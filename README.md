@@ -6,4 +6,7 @@
 
 ## 기술 질문
 ### [HTTP](HTTP.md)
-
+### [JS&&TS](JS&&TS.md)
+### [OOP](OOP.md)
+### [TEST](TEST.md)
+### [DATABASE](DATABASE.md)
