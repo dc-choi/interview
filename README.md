@@ -5,6 +5,7 @@
 ### [질문 예시](FIT.md)
 
 ## 기술 질문
+### [Data-Structure](Data-Structure.md)
 ### [HTTP](HTTP.md)
 ### [JS&&TS](JS&&TS.md)
 ### [OOP](OOP.md)
