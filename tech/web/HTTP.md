@@ -136,7 +136,7 @@ JSON Web Token의 약자로, 사용자의 정보를 JSON 객체로 표현한 토
 	1. Authorization Code Grant
 	리소스 접근을 위해, Authorization Server에서 받은 권한 코드로 리소스에 대한 액세스 토큰을 받는 방식이며 기본이 되는 방식이다. 다른 인증 절차에 비해 보안성이 높기에 주로 사용한다.
 	```
-	![Authorization Code Grant](img/ACG.png)
+	![Authorization Code Grant](../../img/ACG.png)
 
 	```
 	2. Implicit Grant
@@ -145,20 +145,20 @@ JSON Web Token의 약자로, 사용자의 정보를 JSON 객체로 표현한 토
 	Access Token을 획득하기 위한 절차가 간소화되기에 응답성과 효율성은 높아지지만 Access Token이 URL로 전달된다는 단점이 있다.
 	그러므로 Refresh Token 사용이 불가능한 방식이며, 이 방식에서 권한 서버는 client_secret을 사용해 클라이언트를 인증하지 않는다.
 	```
-	![Implicit Grant](img/Implicit.png)
+	![Implicit Grant](../../img/Implicit.png)
 
 	```
 	3. Resource Owner Password Credentials Grant
 	Resource Owner에서 ID, Password를 전달 받아 Resource Server에 인증하는 방식으로 신뢰할 수 있는 Client일 때 사용가능하다. refresh Token의 사용도 가능하다.
 	```
-	![Resource Owner Password Credentials Grant](img/ROPCG.png)
+	![Resource Owner Password Credentials Grant](../../img/ROPCG.png)
 	
 	```
 	4. Client Credentials Grant
 	Client가 컨텍스트 외부에서 엑세스 토큰을 얻어 특정 리소스에 접근을 요청할 때 사용하는 방식이다.
 	즉, 클라이언트의 자격증면만으로 Access token을 획득하는 방식이다.
 	```
-	![Client Credentials Grant](img/CCG.png)
+	![Client Credentials Grant](../../img/CCG.png)
 
 ### HTTP 상태 응답 코드
 - 2xx: 성공(요청을 정상적으로 받았으며 인식했고 수용하였다.)

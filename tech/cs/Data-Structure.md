@@ -34,7 +34,7 @@ LinkedList에서도 단일, 다중 등 여러가지가 존재한다. 단일은 �
 함수의 콜스택, 문자열 역순 출력, 연산자 후위표기법에서 사용한다.
 
 Stack을 연결리스트로 구현한 예제
-```java
+```Java
 public class Node {
 
     public int data;
@@ -48,7 +48,7 @@ public class Node {
     }
 }
 ```
-```java
+```Java
 public class Stack {
     private Node head;
     private Node top;
@@ -124,7 +124,7 @@ Quque의 가장 첫 원소를 front(deQueue 할 위치), 끝 원소를 rear(enQu
 가장 첫 원소와 끝 원소로만 접근 가능하며 데이터를 넣고 뺄 때 해당 값의 위치를 기억해야 함. (스택에서 스택 포인터와 같은 역할)
 
 Quque를 연결리스트로 구현한 예제
-```java
+```Java
 public class Node<T> {
 
     public T data;
@@ -138,7 +138,7 @@ public class Node<T> {
     }
 }
 ```
-```java
+```Java
 public class Queue<T> {
     private Node<T> head;
 
@@ -238,7 +238,7 @@ Heap은 데이터의 중복이 가능하다. (이진 탐색 트리는 중복 허
 ```
 
 Tree의 코드 예제
-```java
+```Java
 public class Tree<T> {
     private Node<T> root;
 
