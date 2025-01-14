@@ -11,7 +11,7 @@
 ---
 
 ### [OOP](tech/sw-engineering/OOP)
-### [TEST](tech/sw-engineering/TEST)
+### [TEST](tech/sw-engineering/test/README)
 
 ---
 
