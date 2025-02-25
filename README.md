@@ -6,7 +6,7 @@
 
 ## 기술 질문
 ### [Data-Structure](tech/cs/Data-Structure)
-### [DATABASE](tech/cs/DATABASE)
+### [DATABASE](tech/cs/database/README)
 
 ---
 
