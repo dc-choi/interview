@@ -1,3 +1,12 @@
+# DATABASE
+Database란 사용자가 필요한 정보를 얻기 위해 논리적으로 연관된 데이터를 모아 구조적으로 통합해 놓은 것입니다.
+
+DBMS는 Database Management System의 약자로 사용자와 데이터베이스를 연결해주는 소프트웨어입니다. 즉, DB를 관리하기 위한 시스템입니다.
+
+### [RDBMS](./RDBMS.md)
+
+### [REDIS](./REDIS.md)
+
 ### RDBMS와 NoSQL의 차이
 
 1. RDBMS(Relational Database Management System)
