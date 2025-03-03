@@ -5,7 +5,7 @@
 ### [질문 예시](fit/FIT)
 
 ## 기술 질문
-### [Data-Structure](tech/cs/Data-Structure)
+### [Data-Structure](tech/cs/data-structure/README)
 ### [DATABASE](tech/cs/database/README)
 
 ---
