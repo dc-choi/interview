@@ -19,6 +19,10 @@ export class HashTable {
         return num % 10;
     }
 
+    newHash(name) {
+        return name.charCodeAt(0) % 10;
+    }
+
     set(key, value) {
         this.arr[this.hash(key)].insert(new HashData(key, value));
     }

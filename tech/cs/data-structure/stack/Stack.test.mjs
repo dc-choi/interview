@@ -1,4 +1,4 @@
-import { MyStack } from "./Stack.mjs";
+import { MyStack, MyStack2 } from "./Stack.mjs";
 
 let stack = new MyStack();
 stack.push(1);
@@ -16,3 +16,13 @@ console.log(stack.peek().data); // 4
 stack.pop();
 console.log(stack.isEmpty()); // null
 console.log(stack.pop()); // null
+
+let stack2 = new MyStack2();
+stack2.push(1);
+stack2.push(2);
+stack2.push(3);
+stack2.push(4);
+stack2.push(5);
+console.log(stack2.pop().data); // 5
+console.log(stack2.pop().data); // 4
+console.log(stack2.pop().data); // 3
