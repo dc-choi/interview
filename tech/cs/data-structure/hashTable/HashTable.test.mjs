@@ -18,3 +18,8 @@ console.log(hashTable.get(1)); // 이운재
 hashTable.remove(1)
 console.log(hashTable.get(1)); // null
 console.log(hashTable.get(21)); // 박지성
+
+console.log(hashTable.newHash("이운재")); // 0
+console.log(hashTable.newHash("최진철")); // 2
+console.log(hashTable.newHash("박지성")); // 9
+console.log(hashTable.newHash("이영표")); // 0
