@@ -1,4 +1,4 @@
-const pow = (x, n) => {
+const pow = (x: number, n: number) => {
     if (n === 0) return 1;
     return pow(x, n - 1) * x;
 }

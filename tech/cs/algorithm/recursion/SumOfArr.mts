@@ -1,4 +1,4 @@
-const sumOfArr = (arr) => {
+const sumOfArr = (arr: number[]) => {
     if (arr.length === 1) return arr[0];
     return sumOfArr(arr.slice(0, -1)) + arr[arr.length - 1];
 };
