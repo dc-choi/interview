@@ -16,7 +16,7 @@
 ---
 
 ### [JS](tech/language/js/JS.md)
-### [TS](tech/language/ts/TS.md)
+### [TS](tech/language/ts/README.md)
 ### [Java](tech/language/Java)
 
 ---
