@@ -19,6 +19,7 @@ type Vec3D = { [key in 'x' | 'y' | 'z'] : number };
 type ABC = { [key in 'a' | 'b' | 'c']: key extends 'b' ? string : number };
 
 let x = {};
+// @ts-ignore
 x[[1,2,3]] = 2;
 console.log(x); /// { '1,2,3': 2 }
 
