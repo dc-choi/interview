@@ -46,3 +46,12 @@ interface Response2 {
 }
 
 // REST API && CodeGen VS GraphQL
+
+// 날짜타입의 응답값은 String으로 내리는게 나은가, Date 객체로 내리는게 나은가
+interface I {
+    releaseDate: Date; // date
+}
+
+interface I2 {
+    releaseDate: string; // iso string
+}
