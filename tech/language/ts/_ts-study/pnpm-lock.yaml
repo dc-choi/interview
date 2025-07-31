@@ -11,12 +11,22 @@ importers:
       es-toolkit:
         specifier: ^1.39.7
         version: 1.39.7
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
 
 packages:
 
   es-toolkit@1.39.7:
     resolution: {integrity: sha512-ek/wWryKouBrZIjkwW2BFf91CWOIMvoy2AE5YYgUrfWsJQM2Su1LoLtrw8uusEpN9RfqLlV/0FVNjT0WMv8Bxw==}
 
+  typescript@5.8.3:
+    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
 snapshots:
 
   es-toolkit@1.39.7: {}
+
+  typescript@5.8.3: {}

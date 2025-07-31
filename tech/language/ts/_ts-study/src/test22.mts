@@ -21,9 +21,59 @@
  *
  * 이 경우는 내가 속한 도메인을 잘 이해해야 하는 것으로 이해했다.
  * 결국 코딩의 본질은 현실을 가상세계로 녹여내는 것이라고 생각한다.
- *
+ */
+
+/**
  * 공식 명칭에는 상표를 붙이기
  *
  * TS가 명목적 타이핑을 사용하는 것이 아니라 구조적 타이핑을 쓰기에 나오게 된 개념.
  * 이 상표 기법을 사용하게 되면 타입 시스템에세도 런타임 오버헤드를 줄이면서 런타임에서 체크하는 것 같은 효과를 지닌다.
  */
+
+type Brand<T, TBrand extends string> = T & {
+    readonly _brand: TBrand;
+};
+
+type Email = Brand<string, 'Email'>;
+type EmailValidator = (email: string) => Email | null;
+
+const createValidatedEmail: EmailValidator = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) ? email as Email : null;
+};
+
+const sendEmail = (to: Email, from: Email, subject: string) => {
+    console.log(`이메일 발송: ${from} -> ${to}, 제목: ${subject}`);
+};
+
+type AccountNumber = Brand<string, 'AccountNumber'>;
+type AccountNumberValidator = (accountNumber: string) => AccountNumber | null;
+
+const createValidatedAccountNumber: AccountNumberValidator = (account: string) => {
+    return /^\d{3}-\d{3}-\d{3}$/.test(account) ? account as AccountNumber : null;
+};
+
+const transferMoney = (from: AccountNumber, to: AccountNumber, amount: number) => {
+    console.log(`${amount}원을 ${from}에서 ${to}로 이체`);
+};
+
+const email = 'WY4yQ@example.com';
+const invalidEmail = 'invalid-email';
+
+const validatedEmail = createValidatedEmail(email);
+const validatedEmail2 = createValidatedEmail(invalidEmail);
+
+if (validatedEmail && validatedEmail2) sendEmail(validatedEmail, validatedEmail2, 'hello');
+
+const accountNumber = '123-456-789';
+const otherAccountNumber = 'invalid-account-number';
+
+const validatedAccountNumber = createValidatedAccountNumber(accountNumber);
+const validatedAccountNumber2 = createValidatedAccountNumber(otherAccountNumber);
+
+if (validatedAccountNumber && validatedAccountNumber2) transferMoney(validatedAccountNumber, validatedAccountNumber2, 1000);
+
+// TS2345: Argument of type AccountNumber is not assignable to parameter of type Email
+// if (validatedEmail && validatedAccountNumber) sendEmail(validatedEmail, validatedAccountNumber, 'hello');
+// TS2345: Argument of type Email is not assignable to parameter of type AccountNumber
+// if (validatedEmail && validatedAccountNumber) transferMoney(validatedEmail, validatedAccountNumber, 1000);

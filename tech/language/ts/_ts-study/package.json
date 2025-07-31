@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "type": "module",
+  "packageManager": "pnpm@10.12.2",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,6 +14,7 @@
   },
   "private": true,
   "dependencies": {
+    "typescript": "^5.8.3",
     "es-toolkit": "^1.39.7"
   }
 }
