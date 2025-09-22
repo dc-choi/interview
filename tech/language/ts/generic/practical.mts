@@ -72,6 +72,7 @@ let numberMap2: MyMap2<number> = {
     three: 3
 };
 
+// 제네릭 클래스
 class List<T> {
     constructor(private items: T[] = []) {}
 
@@ -101,3 +102,22 @@ const stringList = new List<string>(["a", "b"]);
 stringList.pop();
 stringList.push("c");
 console.log(stringList.getAll()); // ['a', 'c']
+
+// 제네릭 Promise
+const promise = new Promise<number>((resolve, reject) => {
+    setTimeout(() => {
+        resolve(100_000);
+    }, 1000);
+    // reject("Error!");
+});
+
+promise.then((res) => {
+    console.log(res);
+});
+
+// catch의 err 타입은 any. 그래서 타입 좁히기 필요
+promise.catch((err) => {
+    if (typeof err === "string") {
+        console.log(err.toUpperCase());
+    }
+})
