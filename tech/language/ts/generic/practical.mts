@@ -71,3 +71,33 @@ let numberMap2: MyMap2<number> = {
     two: 2,
     three: 3
 };
+
+class List<T> {
+    constructor(private items: T[] = []) {}
+
+    push(item: T): void {
+        this.items.push(item);
+    }
+
+    pop(): T | undefined {
+        return this.items.pop();
+    }
+
+    get(index: number): T | undefined {
+        return this.items[index];
+    }
+
+    getAll(): T[] {
+        return this.items;
+    }
+}
+
+const numberList = new List<number>();
+numberList.push(1);
+numberList.push(2);
+console.log(numberList.getAll()); // [1, 2]
+
+const stringList = new List<string>(["a", "b"]);
+stringList.pop();
+stringList.push("c");
+console.log(stringList.getAll()); // ['a', 'c']
