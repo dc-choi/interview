@@ -24,13 +24,9 @@ type ReturnType<Type extends (...args: any) => any> =
     Type extends (...args: any) =>
         infer Result ? Result : never;
 
-function add(x: number, y: number): number;
-function add(x: number, y: number, z: number): number;
-function add(x: number, y: number, z: number, xy: number): number;
-function add(x: number, y: number, z: number, xy: number, xz: number): number;
-function add(x: number, y: number, z: number, xy: number, xz: number, yz: number): number;
-function add(...args: number[]): number {
+const add = (...args: number[]): number => {
     return args.reduce((acc, curr) => acc + curr, 0);
-}
+};
 
+console.log(typeof add); // function
 type AddReturnType = ReturnType<typeof add>; // number
