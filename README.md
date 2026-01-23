@@ -15,21 +15,6 @@
 - [ ] Pagination / Filtering / Sorting
 - [ ] Rate Limit 정책 설계
 
-#### 1.2 인증 & 보안
-- [ ] Session / JWT
-- [ ] OAuth2 / OIDC
-- [ ] Refresh Token Rotation
-- [ ] Token Revocation
-- [ ] CSRF Protection
-- [ ] CORS / CSP
-
-#### 1.3 네트워크 인프라
-- [ ] Reverse Proxy (Nginx, Envoy)
-- [ ] Load Balancer (L4/L7)
-- [ ] CDN (Cache Key, TTL, Invalidation)
-- [ ] DNS 구조 & TTL
-- [ ] NAT / Public vs Private subnet
-
 ### 2. OS & Runtime
 #### 2.1 Linux
 - [ ] Process lifecycle
@@ -148,7 +133,14 @@
 - [ ] Incident runbook
 
 ### 7. Infrastructure & Cloud
-#### 7.1 AWS
+#### 7.1 네트워크 인프라
+- [ ] Reverse Proxy (Nginx, Envoy)
+- [ ] Load Balancer (L4/L7)
+- [ ] CDN (Cache Key, TTL, Invalidation)
+- [ ] DNS 구조 & TTL
+- [ ] NAT / Public vs Private subnet
+
+#### 7.2 AWS
 - [ ] EC2 / ASG / ALB
 - [ ] VPC / Subnet / NAT / SG
 - [ ] RDS / Aurora
@@ -159,13 +151,13 @@
 - [ ] CloudWatch
 - [ ] EBS vs Instance store
 
-#### 7.2 Container
+#### 7.3 Container
 - [ ] Docker
 - [ ] Docker Compose
 - [ ] Multi-stage build
 - [ ] Image size optimization
 
-#### 7.3 Kubernetes
+#### 7.4 Kubernetes
 - [ ] Pod / Deployment / Service / Ingress
 - [ ] HPA / VPA
 - [ ] ConfigMap / Secret
@@ -200,6 +192,15 @@
 - [ ] Chaos testing (optional)
 
 ### 10. Security
+#### 10.1 인증 & 보안
+- [ ] Session / JWT
+- [ ] OAuth2 / OIDC
+- [ ] Refresh Token Rotation
+- [ ] Token Revocation
+- [ ] CSRF Protection
+- [ ] CORS / CSP
+
+#### 10.2 웹/앱 보안
 - [ ] SQL Injection
 - [ ] XSS / CSRF
 - [ ] SSRF
