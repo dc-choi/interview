@@ -3,9 +3,35 @@ Database란 사용자가 필요한 정보를 얻기 위해 논리적으로 연�
 
 DBMS는 Database Management System의 약자로 사용자와 데이터베이스를 연결해주는 소프트웨어입니다. 즉, DB를 관리하기 위한 시스템입니다.
 
-### [MySQL](rdbms/MySQL.md)
+### RDB (OLTP)
+- [SQL](rdbms/SQL.md)
+- [정규화](rdbms/Normalization.md)
+- [트랜잭션 & ACID](rdbms/Transactions.md)
+- [트랜잭션 격리 수준](rdbms/Isolation-Level.md)
+- [Index](rdbms/Index.md)
+- [실행계획](rdbms/Execution-Plan.md)
+- [Cluster](rdbms/Clustering.md)
+- [Replication](rdbms/Replication.md)
+- [Sharding](rdbms/Sharding.md)
 
-### [REDIS](in-memory/REDIS.md)
+### Cache & KV Store (Redis)
+#### Core
+- [캐시란?](in-memory/Cache-Basics.md)
+- [Redis 자료구조](in-memory/Redis-Data-Structures.md)
+- [TTL 전략](in-memory/TTL.md)
+- [Cache 전략](in-memory/Cache-Strategies.md)
+- [Cache invalidation](in-memory/Cache-Invalidation.md)
+- [Hot key 대응](in-memory/Hot-Key.md)
+- [Session store](in-memory/Session-Store.md)
+- [Distributed lock](in-memory/Distributed-Lock.md)
+- [Cache stampede 방지](in-memory/Cache-Stampede.md)
+
+#### Operations
+- [Persistence](in-memory/Persistence.md)
+- [Redis architecture](in-memory/Redis-Architecture.md)
+- [운영 팁](in-memory/Operations.md)
+- [Redis vs Memcached](in-memory/Redis-vs-Memcached.md)
+- [Use cases](in-memory/Use-Cases.md)
 
 ### RDBMS와 NoSQL의 차이
 
@@ -13,7 +39,7 @@ DBMS는 Database Management System의 약자로 사용자와 데이터베이스�
     - 데이터는 스키마에 정의된 2차원 테이블에 저장
     - 각 열은 하나의 속성에 대한 정보를 저장
     - 각 행은 각 열의 데이터 형식에 맞는 데이터가 저장
-    - 데이터 관리르 위해 테이블 간의 관계를 구조화 하는 것이 중요 (관계를 나타내기 위해 외래키를 사용한다.)
+    - 데이터 관리를 위해 테이블 간의 관계를 구조화 하는 것이 중요 (관계를 나타내기 위해 외래키를 사용한다.)
     - 데이터의 일관성을 보장한다.
     - 테이블과 테이블간의 관계가 많아질 수 록 조인 연산이 많은 복잡한 쿼리가 만들어짐
     - Scale-out시 Nosql에 비해서 번거롭다. Scale-out을 할 경우 각각 다른 테이블의 데이터가 다른 영역에 저장될 수 있기 때문이다.
