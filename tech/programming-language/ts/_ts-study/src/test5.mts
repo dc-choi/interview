@@ -1,4 +1,4 @@
-// const el = document.getElementById('test'); // HTMLElement | null
+// const el = document.getElementById('testing-quality'); // HTMLElement | null
 // if (typeof el === 'object') {
 //     el; // HTMLElement | null
 // }
