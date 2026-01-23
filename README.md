@@ -5,7 +5,7 @@
 
 ### 1. Web & Network
 #### 1.1 HTTP & API
-- [ ] HTTP/1.1 / HTTP/2 / HTTP/3
+- [ ] HTTP 1.1 / HTTP 2 / HTTP 3
 - [ ] HTTPS / TLS Handshake
 - [ ] REST / GraphQL / gRPC
 - [ ] Status Code / Header / Cookie
