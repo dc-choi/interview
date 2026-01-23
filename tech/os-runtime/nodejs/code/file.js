@@ -24,7 +24,7 @@ try {
     console.log('File info:', info);
 
     // 파일을 새로 만들거나(없으면 생성) 기존 내용을 덮어쓴다.
-    await writeFile('hello.txt', 'i am backend\n');
+    await writeFile('hello.txt', 'i am os-runtime\n');
 
     // 파일을 지정한 경로로 복사한다.
     await copyFile('hello.txt', 'backup.txt');

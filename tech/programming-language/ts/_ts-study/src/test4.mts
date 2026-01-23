@@ -7,12 +7,12 @@ const example2 = { name: 'example2' } as const;
 // TS2588: Cannot assign to example2 because it is a constant.
 // example2 = { name: 'example2' };
 // TS2540: Cannot assign to name because it is a read-only property.
-// example2.name = 'test';
+// example2.name = 'testing-quality';
 
 let example3 = { name: 'example3' } as const;
 example3 = { name: 'example3' }; // OK
 // TS2540: Cannot assign to name because it is a read-only property
-// example3.name = 'test';
+// example3.name = 'testing-quality';
 
 interface Test {
     name: string;
