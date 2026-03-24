@@ -7,6 +7,11 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 # 인프라&클라우드(Infrastructure&Cloud)
 
+## 현장사례
+- [[Kakao-Ent-Seminar#백엔드인프라전체그림|카카오엔터 백엔드 인프라 전체 그림]] — 네트워크~모니터링 계층별 구성
+- [[SSG-Ecommerce-Seminar#인프라&배포|SSG 인프라&배포]] — Docker+K8s 온프레미스, Bamboo CI/CD
+- [[Fintech-Seminar#망분리|금융 망분리]] — 법적 망분리 의무, eCams CI/CD
+
 ## 네트워크 인프라
 - [ ] [[Reverse-Proxy|Reverse Proxy (Nginx, Envoy)]]
 - [ ] [[Load-Balancer|Load Balancer (L4/L7)]]
