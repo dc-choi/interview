@@ -1,3 +1,10 @@
+---
+tags: [database, rdbms]
+status: done
+category: "Data & Storage - RDB"
+aliases: ["정규화", "Normalization"]
+---
+
 # 정규화
 
 이상 문제를 해결하기 위해 속성들끼리의 종속 관계를 분석하여 여러개의 릴레이션으로 분해하는 과정이다.
@@ -37,3 +44,7 @@
 ```
 1. BCNF의 모든 결정자는 후보키여야 한다. 즉, 후보키가 일반속성에 종속되지 않아야 한다.
 ```
+
+## 관련 문서
+- [[SQL]]
+- [[Sharding]]

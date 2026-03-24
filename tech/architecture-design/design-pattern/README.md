@@ -1,3 +1,10 @@
+---
+tags: [architecture, design-pattern]
+status: index
+category: "Architecture & Design"
+aliases: ["디자인 패턴이란?", "README"]
+---
+
 # 디자인 패턴이란?
 
 ## 개요

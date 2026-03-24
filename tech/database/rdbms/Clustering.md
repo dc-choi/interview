@@ -1,3 +1,10 @@
+---
+tags: [database, rdbms]
+status: done
+category: "Data & Storage - RDB"
+aliases: ["Cluster", "Clustering"]
+---
+
 # Cluster
 
 DB 서버를 여러대 두는 방법이다.
@@ -8,3 +15,7 @@ DB 서버를 여러대 두는 방법이다.
 3. HA(High Availability)을 통해 접근이 거의 항상 가능하다.
 4. 여러개의 서버가 한개의 DB 스토리지를 공유하기에 DB 스토리지에서 병목이 생길 수 있다.
 ```
+
+## 관련 문서
+- [[Replication]]
+- [[Sharding]]

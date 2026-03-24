@@ -1,3 +1,10 @@
+---
+tags: [database, redis, cache]
+status: done
+category: "Data & Storage - Cache & KV"
+aliases: ["Redis 자료구조", "Redis Data Structures"]
+---
+
 # Redis 자료구조
 
 ## string
@@ -45,3 +52,8 @@ set과 비슷하지만 score라는 숫자 값으로 정렬됩니다.
 ```
 log를 저장하기 가장 좋은 자료구조.
 ```
+
+## 관련 문서
+- [[Cache-Basics|캐시란?]]
+- [[Redis-Architecture|Redis architecture]]
+- [[Use-Cases|Use cases]]

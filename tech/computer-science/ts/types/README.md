@@ -1,3 +1,10 @@
+---
+tags: [cs, typescript]
+status: index
+category: "CS - TypeScript"
+aliases: ["타입 특징", "README"]
+---
+
 # 타입 특징
 기본적으로 업캐스팅은 가능하지만 다운캐스팅은 불가능하다.
 

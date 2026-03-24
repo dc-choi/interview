@@ -1,19 +1,26 @@
+---
+tags: [database, redis, cache]
+status: index
+category: "Data & Storage - Cache & KV"
+aliases: ["Cache & KV Store (Redis)", "README"]
+---
+
 # Cache & KV Store (Redis)
 
 ## Core
-- [캐시란?](Cache-Basics.md)
-- [Redis 자료구조](Redis-Data-Structures.md)
-- [TTL 전략](TTL.md)
-- [Cache 전략](Cache-Strategies.md)
-- [Cache invalidation](Cache-Invalidation.md)
-- [Hot key 대응](Hot-Key.md)
-- [Session store](Session-Store.md)
-- [Distributed lock](Distributed-Lock.md)
-- [Cache stampede 방지](Cache-Stampede.md)
+- [[Cache-Basics|캐시란?]]
+- [[Redis-Data-Structures|Redis 자료구조]]
+- [[TTL|TTL 전략]]
+- [[Cache-Strategies|Cache 전략]]
+- [[Cache-Invalidation|Cache invalidation]]
+- [[Hot-Key|Hot key 대응]]
+- [[Session-Store|Session store]]
+- [[Distributed-Lock|Distributed lock]]
+- [[Cache-Stampede|Cache stampede 방지]]
 
 ## Operations
-- [Persistence](Persistence.md)
-- [Redis architecture](Redis-Architecture.md)
-- [운영 팁](Operations.md)
-- [Redis vs Memcached](Redis-vs-Memcached.md)
-- [Use cases](Use-Cases.md)
+- [[Persistence]]
+- [[Redis-Architecture|Redis architecture]]
+- [[Operations|운영 팁]]
+- [[Redis-vs-Memcached|Redis vs Memcached]]
+- [[Use-Cases|Use cases]]

@@ -1,3 +1,10 @@
+---
+tags: [database, rdbms]
+status: done
+category: "Data & Storage - RDB"
+aliases: ["실행계획", "Execution Plan"]
+---
+
 # 실행계획
 
 ## select type: select문의 유형
@@ -39,3 +46,7 @@
 ```
 
 실행계획은 서술된 순서대로 처리되는 것이 이상적임.
+
+## 관련 문서
+- [[Index]]
+- [[SQL]]

@@ -1,3 +1,10 @@
+---
+tags: [senior, leadership]
+status: done
+category: "Senior Engineer Capabilities"
+aliases: ["트레이드오프 & 사이드 이펙트", "Tradeoff"]
+---
+
 # 트레이드오프 & 사이드 이펙트
 
 성과를 추구할 때 반드시 고려해야 하는 주의점들.
@@ -23,3 +30,8 @@
 ## 단기적 최적화
 - 당장의 속도를 위해 코드 품질 포기(Hardcoding)하면 기술 부채로 돌아옴
 - 장기적 관점에서의 균형이 필요
+
+## 관련 문서
+- [[Business-Impact|비즈니스 임팩트 (Business Value)]]
+- [[Technical-Reliability|기술적 탁월함과 안정성 (Technical Reliability)]]
+- [[Operational-Efficiency|운영 및 생산성 효율화 (Operational Efficiency)]]

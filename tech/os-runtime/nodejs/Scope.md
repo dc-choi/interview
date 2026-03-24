@@ -1,3 +1,10 @@
+---
+tags: [runtime, nodejs]
+status: done
+category: "OS & Runtime"
+aliases: ["Scope"]
+---
+
 ### 스코프
 JS 엔진이 식별자를 검색할 때 사용하는 규칙
 
@@ -42,3 +49,7 @@ let과 const 키워드로 선언된 변수는 블록 스코프를 따름.
 
 블록 외부에서 변수에 접근하려고 하면 ReferenceError가 발생함.
 ```
+
+## 관련 문서
+- [[Closure]]
+- [[Execution-Context|Execution Context]]

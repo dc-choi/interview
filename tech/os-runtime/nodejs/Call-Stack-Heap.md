@@ -1,3 +1,10 @@
+---
+tags: [runtime, nodejs]
+status: done
+category: "OS & Runtime"
+aliases: ["Call Stack Heap"]
+---
+
 ### 콜 스택 과 힙
 - 콜 스택
 ```
@@ -8,3 +15,8 @@
 ```
 객체, 배열, 함수와 같이 크기가 동적으로 변할 수 있는 참조 타입 값을 저장하는 곳
 ```
+
+## 관련 문서
+- [[Event-Loop|Event Loop]]
+- [[Scope]]
+- [[Execution-Context|Execution Context]]
