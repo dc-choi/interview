@@ -1,3 +1,10 @@
+---
+tags: [architecture, design-pattern]
+status: index
+category: "Architecture & Design"
+aliases: ["Singleton 패턴이란?", "README"]
+---
+
 # Singleton 패턴이란?
 클래스의 인스턴스가 오직 하나만 존재하도록 보장하고 해당 인스턴스에 대한 전역 접근점은 하나이며 인스턴스 생성은 클래스가 제어하도록 하는 디자인패턴
 

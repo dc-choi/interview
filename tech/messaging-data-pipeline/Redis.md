@@ -1,3 +1,10 @@
+---
+tags: [messaging, redis]
+status: done
+category: "Messaging & Data Pipeline"
+aliases: ["Redis Messaging", "Redis"]
+---
+
 # Redis Messaging
 
 ## list 기반 큐

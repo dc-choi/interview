@@ -1,3 +1,10 @@
+---
+tags: [database, rdbms]
+status: done
+category: "Data & Storage - RDB"
+aliases: ["트랜잭션 격리 수준", "Isolation Level"]
+---
+
 # 트랜잭션 격리 수준
 
 트랜잭션 격리 수준이 중요한 이유는, 격리 레벨을 어떻게 설정하느냐에 따라 읽기 일관성이 달라지기 때문이다.
@@ -40,3 +47,7 @@
 ![격리 수준 레벨](../../../img/Isolation_Level.png)
 
 따라서 트랜잭션 격리 수준은 일관성 및 동시성과도 연관이 있다는 것을 알 수 있다.
+
+## 관련 문서
+- [[Transactions|트랜잭션]]
+- [[Index]]

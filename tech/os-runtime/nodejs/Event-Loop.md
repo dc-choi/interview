@@ -1,3 +1,10 @@
+---
+tags: [runtime, nodejs]
+status: done
+category: "OS & Runtime"
+aliases: ["Event Loop"]
+---
+
 ### 이벤트 루프
 비동기 작업(File, Network I/O)과 이벤트 핸들링(CallBack)을 관리하는 매커니즘
 
@@ -101,3 +108,7 @@ setImmediate 콜백 처리
 8. Close Callbacks
 close 이벤트 처리
 ```
+
+## 관련 문서
+- [[Call-Stack-Heap|Call Stack Heap]]
+- [[Execution-Context|Execution Context]]

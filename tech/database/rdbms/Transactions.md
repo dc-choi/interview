@@ -1,3 +1,10 @@
+---
+tags: [database, rdbms]
+status: done
+category: "Data & Storage - RDB"
+aliases: ["트랜잭션", "Transactions"]
+---
+
 # 트랜잭션
 
 데이터베이스의 상태를 변화시키는 하나의 논리적인 작업 단위이며, 여러개의 연산이 수행될 수 있다. 하나의 트랜잭션은 commit되거나 rollback된다.
@@ -33,3 +40,8 @@
 ```
 1. 성공적으로 완료된 트랜잭션의 결과는 시스템이 고장나더라도 영구적으로 반영되어야 한다.
 ```
+
+## 관련 문서
+- [[Isolation-Level|트랜잭션 격리 수준]]
+- [[Index]]
+- [[SQL]]

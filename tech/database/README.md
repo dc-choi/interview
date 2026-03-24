@@ -1,39 +1,58 @@
-# DATABASE
+---
+tags: [database]
+status: index
+category: "Data & Storage"
+aliases: ["Data & Storage"]
+---
+
+# Data & Storage
+
 Database란 사용자가 필요한 정보를 얻기 위해 논리적으로 연관된 데이터를 모아 구조적으로 통합해 놓은 것입니다.
 
 DBMS는 Database Management System의 약자로 사용자와 데이터베이스를 연결해주는 소프트웨어입니다. 즉, DB를 관리하기 위한 시스템입니다.
 
-### RDB (OLTP)
-- [SQL](rdbms/SQL.md)
-- [정규화](rdbms/Normalization.md)
-- [트랜잭션 & ACID](rdbms/Transactions.md)
-- [트랜잭션 격리 수준](rdbms/Isolation-Level.md)
-- [Index](rdbms/Index.md)
-- [실행계획](rdbms/Execution-Plan.md)
-- [Cluster](rdbms/Clustering.md)
-- [Replication](rdbms/Replication.md)
-- [Sharding](rdbms/Sharding.md)
+## RDB (OLTP)
+- [ ] [[Schema-Design|Schema design]]
+- [x] [[Normalization|Normalization / Denormalization]]
+- [x] [[Index|Index design (B-Tree, covering index)]]
+- [x] [[Transactions|ACID]]
+- [x] [[Isolation-Level|Isolation Level]]
+- [ ] [[Lock|Lock (row / gap / next-key)]]
+- [ ] [[Deadlock|Deadlock handling]]
+- [x] [[Execution-Plan|Execution plan 분석]]
+- [ ] [[Partitioning]]
+- [x] [[Sharding]]
+- [x] [[Replication|Replication (sync / async)]]
+- [ ] [[Read-Replica-Lag|Read replica lag 대응]]
+- [ ] [[Zero-Downtime-Migration|Zero-downtime migration]]
+- [x] [[SQL|SQL 기초]]
+- [x] [[Clustering]]
 
-### Cache & KV Store (Redis)
-#### Core
-- [캐시란?](in-memory/Cache-Basics.md)
-- [Redis 자료구조](in-memory/Redis-Data-Structures.md)
-- [TTL 전략](in-memory/TTL.md)
-- [Cache 전략](in-memory/Cache-Strategies.md)
-- [Cache invalidation](in-memory/Cache-Invalidation.md)
-- [Hot key 대응](in-memory/Hot-Key.md)
-- [Session store](in-memory/Session-Store.md)
-- [Distributed lock](in-memory/Distributed-Lock.md)
-- [Cache stampede 방지](in-memory/Cache-Stampede.md)
+## Cache & KV Store (Redis)
+- [x] [[Redis-Data-Structures|Redis 자료구조]]
+- [x] [[TTL|TTL 전략]]
+- [x] [[Cache-Strategies|Cache Aside / Write Through / Write Behind]]
+- [ ] [[Cache-Invalidation|Cache invalidation]]
+- [x] [[Hot-Key|Hot key 대응]]
+- [x] [[Session-Store|Session store]]
+- [x] [[Distributed-Lock|Distributed lock (Redlock, fencing token)]]
+- [x] [[Cache-Stampede|Cache stampede 방지]]
+- [x] [[Cache-Basics|Cache 기초]]
+- [x] [[Persistence]]
+- [x] [[Redis-Architecture|Redis Architecture]]
+- [x] [[Redis-vs-Memcached|Redis vs Memcached]]
+- [x] [[Use-Cases|Use Cases]]
+- [x] [[Operations]]
 
-#### Operations
-- [Persistence](in-memory/Persistence.md)
-- [Redis architecture](in-memory/Redis-Architecture.md)
-- [운영 팁](in-memory/Operations.md)
-- [Redis vs Memcached](in-memory/Redis-vs-Memcached.md)
-- [Use cases](in-memory/Use-Cases.md)
+## Data Modeling
+- [ ] [[ERD]]
+- [ ] [[Domain-Model|Domain model]]
+- [ ] [[Aggregate-Boundary|Aggregate boundary]]
+- [ ] [[Data-Consistency-Rule|Data consistency rule]]
+- [ ] [[Schema-Versioning|Schema versioning]]
+- [ ] [[Backward-Compatibility|Backward compatibility]]
 
-### RDBMS와 NoSQL의 차이
+## RDBMS와 NoSQL의 차이
 
 1. RDBMS(Relational Database Management System)
     - 데이터는 스키마에 정의된 2차원 테이블에 저장

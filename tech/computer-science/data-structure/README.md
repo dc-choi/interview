@@ -1,3 +1,10 @@
+---
+tags: [cs, data-structure]
+status: index
+category: "CS - 자료구조"
+aliases: ["Data Structure", "README"]
+---
+
 # Data Structure
 
 ### Array vs ArrayList vs LinkedList

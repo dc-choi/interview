@@ -1,3 +1,10 @@
+---
+tags: [database, rdbms]
+status: done
+category: "Data & Storage - RDB"
+aliases: ["SQL"]
+---
+
 # SQL
 
 구조적 질의 언어로 SQL로 데이터베이스를 제어하고 관리할 수 있다.
@@ -36,3 +43,8 @@
 4. 조건에 맞지 않아도 외부 조인에 맞게 결과에 포함한다.
 5. 조인 조건은 WHERE절이 아닌 ON 절에 작성한다.
 ```
+
+## 관련 문서
+- [[Execution-Plan|실행계획]]
+- [[Normalization|정규화]]
+- [[Transactions|트랜잭션]]

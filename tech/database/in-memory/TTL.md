@@ -1,3 +1,10 @@
+---
+tags: [database, redis, cache]
+status: stub
+category: "Data & Storage - Cache & KV"
+aliases: ["TTL 전략", "TTL"]
+---
+
 # TTL 전략
 
 레디스를 캐시로 사용하는 경우에는 expire-time을 설정하는 것이 좋음. 이 값을 설정하지 않으면 레디스 메모리가 가득참.
@@ -5,3 +12,7 @@
 기본값은 메모리가 가득차면 입력을 하지 않는다는 이야기를 하기 때문에 장애가 발생할 수 있음.
 
 MAXMEMORY-POLICY = ALLKEYS-LRU 기준으로 설정하게 된다면 expire-time이 없는 데이터부터 삭제가 됨.
+
+## 관련 문서
+- [[Cache-Basics|캐시란?]]
+- [[Cache-Invalidation|Cache invalidation]]

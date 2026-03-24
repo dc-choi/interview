@@ -1,3 +1,10 @@
+---
+tags: [senior, leadership]
+status: done
+category: "Senior Engineer Capabilities"
+aliases: ["기술적 탁월함과 안정성 (Technical Reliability)", "Technical Reliability"]
+---
+
 # 기술적 탁월함과 안정성 (Technical Reliability)
 
 ## 고가용성 확보 (Scalability)
@@ -12,3 +19,8 @@
 
 ## 테스트 자동화
 - 테스트 커버리지 향상 → 배포 시 Regression 장애 감소
+
+## 관련 문서
+- [[Business-Impact|비즈니스 임팩트 (Business Value)]]
+- [[Operational-Efficiency|운영 및 생산성 효율화 (Operational Efficiency)]]
+- [[Tradeoff|트레이드오프 & 사이드 이펙트]]

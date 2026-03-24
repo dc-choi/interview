@@ -1,3 +1,10 @@
+---
+tags: [database, redis, cache]
+status: done
+category: "Data & Storage - Cache & KV"
+aliases: ["Use cases", "Use Cases"]
+---
+
 # Use cases
 
 ## 카운팅
@@ -13,3 +20,7 @@ hyperloglogs를 사용하여 대량의 데이터를 카운팅 할 때 훨씬 더
 ```
 sorted set를 사용한 실시간 점수 및 랭킹 관리, 게임 점수 랭킹, 스트리밍 서비스 인기 순위
 ```
+
+## 관련 문서
+- [[Redis-vs-Memcached|redis와 memcached의 차이점]]
+- [[Redis-Data-Structures|Redis 자료구조]]

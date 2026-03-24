@@ -1,3 +1,10 @@
+---
+tags: [runtime, nodejs]
+status: index
+category: "OS & Runtime"
+aliases: ["node.js", "README"]
+---
+
 # node.js
 웹 브라우저밖에서 돌아가는 JS 런타임
 
@@ -25,12 +32,12 @@
 Promise의 정적 메서드를 통해서도 비동기처리를 할 수 있습니다.
 ```
 
-### [실행 컨텍스트](./Execution-Context)
+### [[Execution-Context|실행 컨텍스트]]
 
-### [콜 스택 과 힙](./Call-Stack-Heap)
+### [[Call-Stack-Heap|콜 스택 과 힙]]
 
-### [스코프](./Scope)
+### [[Scope|스코프]]
 
-### [클로저](./Closure)
+### [[Closure|클로저]]
 
-### [이벤트루프](./Event-Loop)
+### [[Event-Loop|이벤트루프]]

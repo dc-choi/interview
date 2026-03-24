@@ -1,3 +1,10 @@
+---
+tags: [security]
+status: done
+category: "Security"
+aliases: ["JWT"]
+---
+
 # JWT
 
 JSON Web Token의 약자로, 사용자의 정보를 JSON 객체로 표현한 토큰이다.
@@ -33,3 +40,7 @@ JSON Web Token의 약자로, 사용자의 정보를 JSON 객체로 표현한 토
 이렇게 하면 사용자가 자주 로그인할 필요도 없다.
 하지만 서버는 Refresh Token을 별도로 저장하고 있어야 하므로 JWT의 장점을 완벽하게 누릴 수 없다는게 단점이다.
 ```
+
+## 관련 문서
+- [[Session]]
+- [[OAuth2]]

@@ -1,3 +1,10 @@
+---
+tags: [cs, typescript]
+status: done
+category: "CS - TypeScript"
+aliases: ["동작원리", "compile"]
+---
+
 # 동작원리
 대부분의 프로그래밍 언어는 컴파일러를 사용하여 바이크 코드를 생성한 후 실행합니다.
 

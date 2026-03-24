@@ -1,3 +1,10 @@
+---
+tags: [web, network]
+status: done
+category: "Web & Network"
+aliases: ["WebSocket"]
+---
+
 # WebSocket
 
 서버와 클라이언트간 실시간으로 메시지를 교환하기 위한 통신 방법이다.
@@ -37,3 +44,6 @@
 다만, 서로 문자열만 주고 받을 수 있으며, 문자열의 해독을 어플리케이션단에서 처리해야 한다.
 
 HTTP의 경우 형식을 정해 놓아서 모두가 따르기만 하면 해석이 쉽지만 웹 소켓은 형식을 정해 놓지 않아서 해석이 어렵다.
+
+## 관련 문서
+- [[HTTP-Status-Code|HTTP 상태 응답 코드]]

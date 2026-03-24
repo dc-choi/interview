@@ -1,3 +1,10 @@
+---
+tags: [senior, leadership]
+status: done
+category: "Senior Engineer Capabilities"
+aliases: ["비즈니스 임팩트 (Business Value)", "Business Impact"]
+---
+
 # 비즈니스 임팩트 (Business Value)
 
 회사는 돈을 벌기 위해 존재한다. 기술적 결정이 비즈니스 지표에 어떤 영향을 주었는지가 가장 강력한 성과이다.
@@ -13,3 +20,8 @@
 ## 빠른 시장 출시 (Time to Market)
 - 모듈화된 아키텍처, 효율적인 CI/CD 파이프라인 구축
 - 기획 → 배포까지 걸리는 시간 단축
+
+## 관련 문서
+- [[Technical-Reliability|기술적 탁월함과 안정성 (Technical Reliability)]]
+- [[Operational-Efficiency|운영 및 생산성 효율화 (Operational Efficiency)]]
+- [[Tradeoff|트레이드오프 & 사이드 이펙트]]

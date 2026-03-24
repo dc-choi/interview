@@ -1,3 +1,10 @@
+---
+tags: [runtime, nestjs]
+status: done
+category: "OS & Runtime"
+aliases: ["Request Lifecycle"]
+---
+
 ## Request-Lifecycle
 NestJS의 요청 라이프사이클은 다음과 같다.
 
