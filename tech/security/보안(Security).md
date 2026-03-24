@@ -10,10 +10,15 @@ aliases: ["보안(Security)", "Security"]
 ## 인증 & 보안
 - [x] [[Session]] / [[JWT]]
 - [x] [[OAuth2|OAuth2 / OIDC]]
+- [x] [[FIDO-Seminar|FIDO & 패스키(Passkey)]]
 - [ ] [[Refresh-Token-Rotation|Refresh Token Rotation]]
 - [ ] [[Token-Revocation|Token Revocation]]
 - [x] [[CSRF|CSRF Protection]]
 - [x] [[CORS|CORS / CSP]]
+
+## 현장사례
+- [[Kakao-Ent-Seminar#보안|카카오엔터 보안]] — 서비스 접근 권한, 네트워크 망 설정
+- [[Fintech-Seminar#망분리|금융 망분리]] — 법적 망분리 의무
 
 ## 웹/앱 보안
 - [ ] [[SQL-Injection]]

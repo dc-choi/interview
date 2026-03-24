@@ -7,6 +7,11 @@ aliases: ["관측가능성(Observability)", "Observability"]
 
 # 관측가능성(Observability)
 
+## 현장사례
+- [[SSG-Ecommerce-Seminar#인프라&배포|SSG 모니터링]] — Prometheus + Grafana
+- [[Kakao-Ent-Seminar#백엔드인프라전체그림|카카오엔터 모니터링]] — CloudWatch, Datadog
+- [x] [[Incident-Detection-Logging|장애 감지와 로깅/메트릭 (토스 기준)]]
+
 ## Logging
 - [ ] [[Structured-Logging|Structured logging]]
 - [ ] [[Correlation-ID|Correlation ID / Trace ID]]
