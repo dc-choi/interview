@@ -1,3 +1,10 @@
+---
+tags: [testing]
+status: done
+category: "Testing & Quality"
+aliases: ["performance"]
+---
+
 ## Performance Test
 
 ### 종류

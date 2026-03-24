@@ -1,3 +1,10 @@
+---
+tags: [database, rdbms]
+status: done
+category: "Data & Storage - RDB"
+aliases: ["Replication"]
+---
+
 # Replication
 
 데이터베이스 구조의 복제본을 가진다는 것
@@ -14,3 +21,7 @@
 ```
 
 [AWS에서 실제로 적용되는 Replication](https://aws.amazon.com/ko/rds/features/read-replicas/)
+
+## 관련 문서
+- [[Clustering|Cluster]]
+- [[Sharding]]

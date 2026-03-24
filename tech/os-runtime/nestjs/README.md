@@ -1,3 +1,10 @@
+---
+tags: [runtime, nestjs]
+status: index
+category: "OS & Runtime"
+aliases: ["NestJS", "README"]
+---
+
 # NestJS
 Node.js의 프레임워크이다.
 
@@ -9,8 +16,8 @@ Node.js의 프레임워크이다.
 3. Dependency Injection을 통한 느슨한 결합도
 4. 데코레이터를 활용한 선언적 프로그래밍
 
-### [Controller](overview/Controller)
+### [[Controller]]
 
-### [Provider](overview/Provider)
+### [[Provider]]
 
-### [요청 라이프사이클](faq/Request-Lifecycle)
+### [[Request-Lifecycle|요청 라이프사이클]]

@@ -1,3 +1,10 @@
+---
+tags: [runtime, nodejs]
+status: done
+category: "OS & Runtime"
+aliases: ["Closure"]
+---
+
 ### 클로저
 함수가 선언될 당시의 스코프(outer 참조의 LexicalEnvironment)에 접근할 수 있는 함수
 
@@ -72,3 +79,7 @@ console.log(myCounter.getValue()); // 1
 1. 메모리 누수
 클로저를 잘못 사용하면 참조가 끊어지지 않아 메모리 누수가 발생할 수 있다.
 ```
+
+## 관련 문서
+- [[Scope]]
+- [[Execution-Context|Execution Context]]

@@ -1,3 +1,10 @@
+---
+tags: [web, network]
+status: done
+category: "Web & Network"
+aliases: ["REST"]
+---
+
 # REST
 
 ### RESTful API

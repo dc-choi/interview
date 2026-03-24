@@ -1,3 +1,10 @@
+---
+tags: [database, rdbms]
+status: done
+category: "Data & Storage - RDB"
+aliases: ["Index"]
+---
+
 # Index
 
 데이터베이스의 테이블의 동작 속도를 높여주는 자료구조이다.
@@ -75,3 +82,8 @@
 논 클러스터 인덱스는 책 뒤의 찾아보기에서 원하는 내용과 페이지를 찾고 이동하는 것
 테이블 풀 스캔은 책을 처음부터 한장한장 넘기면서 원하는 내용을 찾는 것 이라고 생각하면 된다.
 ```
+
+## 관련 문서
+- [[Transactions|트랜잭션]]
+- [[Isolation-Level|트랜잭션 격리 수준]]
+- [[Execution-Plan|실행계획]]

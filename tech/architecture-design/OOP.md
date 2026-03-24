@@ -1,3 +1,10 @@
+---
+tags: [architecture, design]
+status: done
+category: "Architecture & Design"
+aliases: ["OOP"]
+---
+
 # OOP
 
 ## 개요
@@ -77,3 +84,6 @@ SuperCar supercar = (SuperCar) car;
 DI 컨테이너나 조립/설정자를 통해 역할과 구현을 분리하면 변경에 강한 구조를 만들 수 있다.
 
 추상화는 비용이 있으므로 변화 가능성이 높은 지점에만 적용한다.
+
+## 관련 문서
+- [[VO-DTO|VO DTO]]

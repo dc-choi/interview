@@ -1,3 +1,10 @@
+---
+tags: [runtime, nodejs]
+status: done
+category: "OS & Runtime"
+aliases: ["Execution Context"]
+---
+
 ### 실행 컨텍스트
 JS 코드가 실행되는 환경
 
@@ -61,3 +68,8 @@ JS 코드가 실행되는 환경
     
     함수 호출 시 새로운 실행 컨텍스트가 생성되어 콜 스택에 쌓이고, 실행이 끝나면 제거됩니다.
     ```
+
+## 관련 문서
+- [[Call-Stack-Heap|Call Stack Heap]]
+- [[Scope]]
+- [[Closure]]

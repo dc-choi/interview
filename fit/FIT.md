@@ -1,3 +1,10 @@
+---
+tags: [fit, interview]
+status: done
+category: "Interview - Fit"
+aliases: ["FIT"]
+---
+
 # FIT
 정답이 없는 질문. 다만, 미리 생각해두는게 좋음.
 

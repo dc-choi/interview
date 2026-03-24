@@ -1,3 +1,10 @@
+---
+tags: [cs, typescript]
+status: done
+category: "CS - TypeScript"
+aliases: ["컴파일러 옵션", "option"]
+---
+
 # 컴파일러 옵션
 include: 이 안의 내용은 컴파일러가 모두 읽어들인다.
 

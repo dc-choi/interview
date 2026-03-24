@@ -1,3 +1,10 @@
+---
+tags: [cs, javascript]
+status: done
+category: "CS - JavaScript"
+aliases: ["JS"]
+---
+
 # JS
 
 ### Promise

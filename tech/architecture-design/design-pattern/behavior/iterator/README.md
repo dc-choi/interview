@@ -1,3 +1,10 @@
+---
+tags: [architecture, design-pattern]
+status: index
+category: "Architecture & Design"
+aliases: ["Iterator 패턴이란?", "README"]
+---
+
 # Iterator 패턴이란?
 컬렉션의 요소들을 순차적으로 접근할 수 있게 해주는 디자인 패턴
 
