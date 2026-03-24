@@ -1,0 +1,3 @@
+Hello, World!
+Welcome to Node.js file system module.
+This is a test file.
