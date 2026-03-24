@@ -1,11 +1,11 @@
 ---
 tags: [senior, leadership]
 status: index
-category: "Senior Engineer Capabilities"
-aliases: ["Senior Engineer Capabilities"]
+category: "시니어역량(SeniorEngineer)"
+aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 ---
 
-# Senior Engineer Capabilities
+# 시니어역량(SeniorEngineer)
 
 ## 성과 정의와 측정
 - [x] [[Business-Impact|비즈니스 임팩트 (성능 최적화, FinOps, Time to Market)]]

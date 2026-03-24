@@ -1,11 +1,11 @@
 ---
 tags: [reliability]
 status: index
-category: "Reliability Engineering"
-aliases: ["Reliability Engineering"]
+category: "안정성엔지니어링(Reliability)"
+aliases: ["안정성엔지니어링(Reliability)", "Reliability Engineering"]
 ---
 
-# Reliability Engineering
+# 안정성엔지니어링(Reliability)
 
 ## Checklist
 - [ ] [[Timeout]]

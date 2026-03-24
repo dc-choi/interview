@@ -1,11 +1,11 @@
 ---
 tags: [infrastructure, aws]
 status: index
-category: "Infrastructure & Cloud"
-aliases: ["Infrastructure & Cloud"]
+category: "인프라&클라우드(Infrastructure&Cloud)"
+aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Cloud"]
 ---
 
-# Infrastructure & Cloud
+# 인프라&클라우드(Infrastructure&Cloud)
 
 ## 네트워크 인프라
 - [ ] [[Reverse-Proxy|Reverse Proxy (Nginx, Envoy)]]

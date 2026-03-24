@@ -1,11 +1,11 @@
 ---
 tags: [performance]
 status: index
-category: "Performance & Scalability"
-aliases: ["Performance & Scalability"]
+category: "성능&확장성(Performance&Scalability)"
+aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalability"]
 ---
 
-# Performance & Scalability
+# 성능&확장성(Performance&Scalability)
 
 ## Checklist
 - [ ] [[Query-Optimization|Query optimization]]

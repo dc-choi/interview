@@ -2,7 +2,7 @@
 tags: [cs, typescript]
 status: index
 category: "CS - TypeScript"
-aliases: ["ts-study", "README"]
+aliases: ["ts-study"]
 ---
 
 # ts-study

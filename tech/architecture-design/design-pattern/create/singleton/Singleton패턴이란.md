@@ -2,7 +2,7 @@
 tags: [architecture, design-pattern]
 status: index
 category: "Architecture & Design"
-aliases: ["Singleton 패턴이란?", "README"]
+aliases: ["Singleton 패턴이란?"]
 ---
 
 # Singleton 패턴이란?

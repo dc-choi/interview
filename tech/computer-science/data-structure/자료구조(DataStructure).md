@@ -2,7 +2,7 @@
 tags: [cs, data-structure]
 status: index
 category: "CS - 자료구조"
-aliases: ["Data Structure", "README"]
+aliases: ["Data Structure"]
 ---
 
 # Data Structure

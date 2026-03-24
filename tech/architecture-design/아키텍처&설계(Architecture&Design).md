@@ -1,15 +1,15 @@
 ---
 tags: [architecture, design]
 status: index
-category: "Architecture & Design"
-aliases: ["Architecture & Design"]
+category: "아키텍처&설계(Architecture&Design)"
+aliases: ["아키텍처&설계(Architecture&Design)", "Architecture & Design"]
 ---
 
-# Architecture & Design
+# 아키텍처&설계(Architecture&Design)
 
 ## Checklist
 - [x] [[OOP|OOP / SOLID]]
-- [x] [[tech/architecture-design/design-pattern/README|Design Patterns]]
+- [x] [[tech/architecture-design/design-pattern/디자인패턴이란|Design Patterns]]
 - [ ] [[Layered-Clean-Hexagonal|Layered / Clean / Hexagonal]]
 - [ ] [[DDD]]
 - [ ] [[Monolith-vs-Microservice|Monolith vs Microservice]]

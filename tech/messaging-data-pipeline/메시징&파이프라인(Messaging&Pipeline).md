@@ -1,11 +1,11 @@
 ---
 tags: [messaging, redis]
 status: index
-category: "Messaging & Data Pipeline"
-aliases: ["Messaging & Data Pipeline"]
+category: "메시징&파이프라인(Messaging&Pipeline)"
+aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pipeline"]
 ---
 
-# Messaging & Data Pipeline
+# 메시징&파이프라인(Messaging&Pipeline)
 
 ## Checklist
 - [ ] [[Event-Driven-Architecture|Event-driven architecture]]

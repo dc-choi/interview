@@ -2,7 +2,7 @@
 tags: [database, redis, cache]
 status: index
 category: "Data & Storage - Cache & KV"
-aliases: ["Cache & KV Store (Redis)", "README"]
+aliases: ["Cache & KV Store (Redis)"]
 ---
 
 # Cache & KV Store (Redis)
