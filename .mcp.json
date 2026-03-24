@@ -2,7 +2,7 @@
   "mcpServers": {
     "obsidian": {
       "command": "npx",
-      "args": ["-y", "obsidian-mcp", "/Users/dc-choi/conductor/workspaces/interview/las-vegas"]
+      "args": ["-y", "obsidian-mcp", "/Users/dc-choi/dev/projects/interview"]
     }
   }
 }
