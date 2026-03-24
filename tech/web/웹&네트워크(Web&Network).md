@@ -1,11 +1,11 @@
 ---
 tags: [web, network]
 status: index
-category: "Web & Network"
-aliases: ["Web & Network"]
+category: "웹&네트워크(Web&Network)"
+aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 ---
 
-# Web & Network
+# 웹&네트워크(Web&Network)
 
 ### HTTP 특징
 - 비연결성(Connectionless): 클라이언트와 서버가 한번 연결을 맺은 후에 요청에 대한 응답을 마치면 논리적으로는 연결이 되어 있다고 생각하고 실제 물리적인 연결을 끊어버리는 것

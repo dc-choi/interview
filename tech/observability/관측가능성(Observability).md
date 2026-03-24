@@ -1,11 +1,11 @@
 ---
 tags: [observability]
 status: index
-category: "Observability"
-aliases: ["Observability"]
+category: "관측가능성(Observability)"
+aliases: ["관측가능성(Observability)", "Observability"]
 ---
 
-# Observability
+# 관측가능성(Observability)
 
 ## Logging
 - [ ] [[Structured-Logging|Structured logging]]

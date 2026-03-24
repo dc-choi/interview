@@ -2,7 +2,7 @@
 tags: [cs, typescript]
 status: index
 category: "CS - TypeScript"
-aliases: ["TS", "README"]
+aliases: ["TS"]
 ---
 
 # TS
@@ -31,3 +31,5 @@ aliases: ["TS", "README"]
 
 ### [[compile|컴파일 원리]]
 ### [[option|컴파일러 옵션]]
+### [[tech/computer-science/ts/types/타입특징|타입특징]]
+### [[tech/computer-science/ts/_ts-study/ts-study|ts-study]]

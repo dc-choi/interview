@@ -2,7 +2,7 @@
 tags: [architecture, design-pattern]
 status: index
 category: "Architecture & Design"
-aliases: ["Iterator 패턴이란?", "README"]
+aliases: ["Iterator 패턴이란?"]
 ---
 
 # Iterator 패턴이란?

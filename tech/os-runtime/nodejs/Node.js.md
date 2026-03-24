@@ -2,7 +2,7 @@
 tags: [runtime, nodejs]
 status: index
 category: "OS & Runtime"
-aliases: ["node.js", "README"]
+aliases: ["node.js"]
 ---
 
 # node.js

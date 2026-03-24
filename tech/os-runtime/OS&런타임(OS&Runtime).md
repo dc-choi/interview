@@ -1,11 +1,11 @@
 ---
 tags: [runtime]
 status: index
-category: "OS & Runtime"
-aliases: ["OS & Runtime"]
+category: "OS&런타임(OS&Runtime)"
+aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 ---
 
-# OS & Runtime
+# OS&런타임(OS&Runtime)
 
 ## Linux
 - [ ] [[Process-Lifecycle|Process lifecycle]]
@@ -34,7 +34,7 @@ aliases: ["OS & Runtime"]
 - [[Execution-Context|Execution Context]]
 
 ## NestJS
-- [[tech/os-runtime/nestjs/README|Overview]]
+- [[tech/os-runtime/nestjs/NestJS|Overview]]
 
 ## Spring
-- [[tech/os-runtime/spring/README|Overview]]
+- [[tech/os-runtime/spring/Spring|Overview]]

@@ -1,11 +1,11 @@
 ---
 tags: [finops]
 status: index
-category: "Cost & Operations (FinOps)"
-aliases: ["Cost & Operations", "FinOps"]
+category: "비용&운영(FinOps)"
+aliases: ["비용&운영(FinOps)", "Cost & Operations", "FinOps"]
 ---
 
-# Cost & Operations (FinOps)
+# 비용&운영(FinOps)
 
 ## Checklist
 - [ ] [[AWS-Pricing|AWS pricing 구조]]

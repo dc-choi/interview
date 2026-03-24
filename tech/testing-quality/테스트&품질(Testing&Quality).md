@@ -1,11 +1,11 @@
 ---
 tags: [testing]
 status: index
-category: "Testing & Quality"
-aliases: ["Testing & Quality"]
+category: "테스트&품질(Testing&Quality)"
+aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 ---
 
-# Testing & Quality
+# 테스트&품질(Testing&Quality)
 
 ## Checklist
 - [x] Unit test

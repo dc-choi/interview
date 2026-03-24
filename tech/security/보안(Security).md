@@ -1,11 +1,11 @@
 ---
 tags: [security]
 status: index
-category: "Security"
-aliases: ["Security"]
+category: "보안(Security)"
+aliases: ["보안(Security)", "Security"]
 ---
 
-# Security
+# 보안(Security)
 
 ## 인증 & 보안
 - [x] [[Session]] / [[JWT]]

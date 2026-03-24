@@ -1,11 +1,11 @@
 ---
 tags: [cicd]
 status: index
-category: "CI/CD & Delivery"
-aliases: ["CI/CD & Delivery"]
+category: "CI/CD&배포(CI/CD&Delivery)"
+aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery"]
 ---
 
-# CI/CD & Delivery
+# CI/CD&배포(CI/CD&Delivery)
 
 ## Checklist
 - [ ] [[Git-Flow|Git Flow / Trunk based]]

@@ -2,7 +2,7 @@
 tags: [runtime, nestjs]
 status: index
 category: "OS & Runtime"
-aliases: ["NestJS", "README"]
+aliases: ["NestJS"]
 ---
 
 # NestJS

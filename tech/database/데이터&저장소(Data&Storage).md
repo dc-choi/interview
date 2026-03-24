@@ -1,11 +1,11 @@
 ---
 tags: [database]
 status: index
-category: "Data & Storage"
-aliases: ["Data & Storage"]
+category: "데이터&저장소(Data&Storage)"
+aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 ---
 
-# Data & Storage
+# 데이터&저장소(Data&Storage)
 
 Database란 사용자가 필요한 정보를 얻기 위해 논리적으로 연관된 데이터를 모아 구조적으로 통합해 놓은 것입니다.
 
