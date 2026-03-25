@@ -21,9 +21,15 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 - [x] [[tech/computer-science/data-structure/자료구조(DataStructure)|HashTable / Set]]
 
 ## 알고리즘
-- [x] 정렬 (Bubble, Insertion, Selection, Merge, Quick)
-- [x] 재귀 (Factorial, Hanoi, Pow)
-- [x] DP (Fibonacci)
+- [x] [[tech/computer-science/algorithm/알고리즘(Algorithm)|시간복잡도 (Big O)]]
+- [x] [[tech/computer-science/algorithm/알고리즘(Algorithm)|재귀 (Factorial, Hanoi, 콜스택)]]
+- [x] [[tech/computer-science/algorithm/알고리즘(Algorithm)|정렬 (Bubble, Insertion, Selection, Merge, Quick)]]
+- [x] [[tech/computer-science/algorithm/알고리즘(Algorithm)|DP (메모이제이션, 타뷸레이션)]]
+- [x] [[tech/computer-science/algorithm/알고리즘(Algorithm)|탐색 (이진 탐색, BFS, DFS)]]
+- [x] [[tech/computer-science/algorithm/알고리즘(Algorithm)|패턴 (투 포인터, 슬라이딩 윈도우, 그리디)]]
+- [x] [[tech/computer-science/algorithm/알고리즘(Algorithm)|최단 경로 (다익스트라, 플로이드-워셜)]]
+- [x] [[tech/computer-science/algorithm/알고리즘(Algorithm)|P-NP (결정 문제, 최적화 문제)]]
+- [x] [[tech/computer-science/algorithm/알고리즘(Algorithm)|백엔드 활용 사례 (Rate Limit, LRU Cache, 로드밸런싱 등)]]
 
 ## TypeScript
 - [x] [[tech/computer-science/ts/타입스크립트(TS)|타입 시스템 (Primitive, Object, Enum, Any/Unknown, Void/Never)]]

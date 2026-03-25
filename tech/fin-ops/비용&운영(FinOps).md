@@ -7,6 +7,9 @@ aliases: ["비용&운영(FinOps)", "Cost & Operations", "FinOps"]
 
 # 비용&운영(FinOps)
 
+## 현장사례
+- [[TS-Backend-Meetup-1#로그 적재 비용 개선기|로그 적재 비용 개선기]] — CloudWatch->FluentBit+Firehose+S3로 300$->2$ 절감
+
 ## Checklist
 - [ ] [[AWS-Pricing|AWS pricing 구조]]
 - [ ] [[Reserved-Instance|Reserved Instance / Savings Plan]]

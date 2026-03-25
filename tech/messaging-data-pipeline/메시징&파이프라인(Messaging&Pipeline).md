@@ -14,7 +14,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 ## Checklist
 - [ ] [[Event-Driven-Architecture|Event-driven architecture]]
 - [ ] [[MQ-SQS|Message Queue: SQS]]
-- [ ] [[MQ-Kafka|Message Queue: Kafka]]
+- [x] [[MQ-Kafka|Message Queue: Kafka (토픽, 파티션, 세그먼트, KRaft)]]
 - [ ] [[MQ-RabbitMQ|Message Queue: RabbitMQ]]
 - [ ] [[MQ-BullMQ|Message Queue: BullMQ]]
 - [ ] [[Delivery-Semantics|Delivery semantics]]

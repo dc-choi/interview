@@ -18,6 +18,7 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [[Tidy-First|Tidy First: 코드 정리]] — B/S 구분, 기술 부채 청산, 가치>가격>비용
 - [[Growth-Principles|성장의 7가지 원칙]] — 반복, 실전, 회고, 실험, 자기효능감, 습관화, 소셜화
 - [[Karrot-Realestate-Seminar|당근 부동산 팀 문화]] — 가설→실행→분석→레슨런 사이클, 1pager PRD, 주도적 기여
+- [[TS-Backend-Meetup-1#스타트업 주니어 개발자의 생존기|스타트업 생존기]] — 사수 없이 성장, 문제 쪼개기, AI 시대 생존 전략
 - [x] [[Architecture-Decision-Making|아키텍처 의사결정과 경제적 관점]]
 - [x] [[Toss-Evaluation-Criteria|토스 내부 평가 기준 (코드/설계, 운영, 제품, 커뮤니케이션, 문화)]]
 
@@ -34,7 +35,7 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [x] [[MOA-Study-Curriculum|MOA 백엔드 스터디 커리큘럼 (멘토링 사례)]]
 - [ ] [[Mentoring|멘토링]]
 - [ ] [[Cross-Team-Communication]]
-- [ ] [[Hiring-Interview|채용 인터뷰]]
+- [x] [[Hiring-Interview|채용 인터뷰 (프론트엔드 채용 면접 질문 프레임워크)]]
 
 ## 설계
-- [ ] [[System-Design-Interview|시스템 설계 인터뷰 대응]]
+- [x] [[System-Design-Interview|시스템 설계 인터뷰 대응 (Mony-Calendar 글로벌 인프라 설계 사례)]]

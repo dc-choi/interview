@@ -11,10 +11,16 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[Kakao-Ent-Seminar#백엔드인프라전체그림|카카오엔터 백엔드 인프라 전체 그림]] — 네트워크~모니터링 계층별 구성
 - [[SSG-Ecommerce-Seminar#인프라&배포|SSG 인프라&배포]] — Docker+K8s 온프레미스, Bamboo CI/CD
 - [[Fintech-Seminar#망분리|금융 망분리]] — 법적 망분리 의무, eCams CI/CD
+- [[TS-Backend-Meetup-1#로그 적재 비용 개선기|로그 적재 아키텍처]] — FluentBit 사이드카, Firehose, S3 적재 구조
+- [[TS-Backend-Meetup-3#MSA (아임웹 사례)|아임웹 MSA 인프라]] — 모노레포, 테라폼 모듈, ArgoCD 자동화, Kong Gateway
+- [[TS-Backend-Meetup-2#세션 1: AWSome IaC|AWSome IaC]] — IaC 필요성, 명령형 vs 명세형, 테라폼 핵심 개념
+
+## IaC (Infrastructure as Code)
+- [x] [[IaC|IaC (Terraform, CDK, Pulumi)]]
 
 ## 네트워크 인프라
 - [ ] [[Reverse-Proxy|Reverse Proxy (Nginx, Envoy)]]
-- [ ] [[Load-Balancer|Load Balancer (L4/L7)]]
+- [x] [[Load-Balancer|Load Balancer (L4/L7, DNS, SPOF, 프록시)]]
 - [ ] [[CDN|CDN (Cache Key, TTL, Invalidation)]]
 - [ ] [[DNS|DNS 구조 & TTL]]
 - [ ] [[NAT-Subnet|NAT / Public vs Private subnet]]
