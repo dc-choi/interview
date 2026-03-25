@@ -21,3 +21,6 @@ Node.js의 프레임워크이다.
 ### [[Provider]]
 
 ### [[Request-Lifecycle|요청 라이프사이클]]
+
+### 현장사례
+- [[TS-Backend-Meetup-3#NestJS DI Deep Dive|DI Deep Dive]] — 메타데이터, 프로바이더 토큰, 의존성 처리 과정

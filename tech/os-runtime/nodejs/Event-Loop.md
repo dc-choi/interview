@@ -109,6 +109,44 @@ setImmediate 콜백 처리
 close 이벤트 처리
 ```
 
+## process.nextTick() vs setImmediate()
+
+| 비교 | process.nextTick() | setImmediate() |
+|------|-------|-------|
+| 실행 시점 | 동일 단계에서 즉시 (현재 작업 완료 후) | 이벤트 루프의 다음 반복 (check 단계) |
+| 기술적 | 이벤트 루프의 일부가 아님. 현재 단계에서 nextTickQueue 처리 | poll 단계 완료 후 실행되는 특수 타이머 |
+| 권장 | 호출 스택 풀린 후 이벤트 루프 전에 콜백 실행이 필요할 때 | 일반적으로 모든 경우에 권장 (추론이 쉬움) |
+
+- process.nextTick()을 재귀적으로 호출하면 poll 단계에 도달하지 못해 I/O를 "고갈"시킬 수 있음
+- I/O 사이클 내에서는 항상 setImmediate() 콜백이 setTimeout보다 먼저 실행
+
+### 실행 우선순위 (CommonJS)
+1. process.nextTick 대기열
+2. promises microtask queue (Promise.then())
+3. macrotask queue (setTimeout, setImmediate)
+
+### ESM에서의 차이
+- ES 모듈은 비동기 작업으로 래핑되어 전체 스크립트가 이미 microtask queue에 있음
+- 따라서 Promise가 즉시 해결되면 해당 콜백이 microtask queue에 추가되어 먼저 실행됨
+- CommonJS와 실행 순서가 달라질 수 있음
+
+## 타이머 심화
+
+### setTimeout 타임아웃 0
+- 콜백은 현재 함수 실행 후 가능한 한 빨리 실행
+- CPU 차단 없이 무거운 계산 중 다른 함수를 실행하는 데 유용
+
+### setInterval의 한계
+- 함수 실행 시간을 고려하지 않고 n밀리초마다 실행
+- 네트워크 조건에 따라 실행 시간이 달라지면 하나의 긴 실행이 다음 실행과 겹칠 수 있음
+- **재귀적 setTimeout**으로 대체 → 콜백 완료 후 다음 실행을 예약
+
+### setImmediate()
+- setTimeout(() => {}, 0)과 동일한 효과
+- Node.js 이벤트 루프의 check 단계에서 실행
+
 ## 관련 문서
 - [[Call-Stack-Heap|Call Stack Heap]]
 - [[Execution-Context|Execution Context]]
+- [[Async-IO|Async I/O]]
+- [[Backpressure|스트림 배압]]
