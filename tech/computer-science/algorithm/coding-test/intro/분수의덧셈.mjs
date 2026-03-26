@@ -1,4 +1,4 @@
-function solution(numer1, denom1, numer2, denom2) {
+const solution = (numer1, denom1, numer2, denom2) => {
     // 분자를 각 상대의 분모를 곱한 값끼리 더함.
     const top = (numer1 * denom2) + (numer2 * denom1);
     // 분모끼리 곱한다.
@@ -15,4 +15,4 @@ function solution(numer1, denom1, numer2, denom2) {
 
     // 최소공배수로 약분한다.
     return [top / lcm, bottom / lcm];
-}
+};

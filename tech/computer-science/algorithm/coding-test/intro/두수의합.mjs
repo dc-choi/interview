@@ -1,0 +1,1 @@
+const solution = (num, num2) => num * num2;
