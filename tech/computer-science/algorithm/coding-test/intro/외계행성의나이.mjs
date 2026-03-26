@@ -1,0 +1,1 @@
+const solution = (age) => age.toString().split('').map(char => "abcdefghij"[char]).join('');
