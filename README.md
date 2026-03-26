@@ -35,9 +35,14 @@
 
 ## 세미나 & 강의 정리
 
+### 취업 & 이직 가이드
+- [[fit/Resume-Portfolio-Guide|이력서 & 포트폴리오 가이드]] — 지원서 작성, 이력서 포맷, 포트폴리오, 합격/탈락 사례
+- [[fit/Job-Search-Strategy|채용공고 분석 & 이직 전략]] — 채용공고 분석, 회사 찾기, 채용 프로세스, 이직 시기/팁
+- [[fit/Coding-Test-Strategy|코딩테스트 준비 전략]] — 단계별 접근, 분류별 필수 지식, 복기 방법
+
 ### 채용시장 & 성장
-- [[fit/Developer-Hiring-Insights|채용인사이트]] — 기업이 원하는 역량, CS 기초의 중요성
-- [[fit/Growth-Principles|성장의 7가지 원칙]] — 반복, 실전, 회고, 실험, 자기효능감, 습관화, 소셜화
+- [[fit/Developer-Hiring-Insights|채용인사이트]] — 기업이 원하는 역량, 개발자 역량, 스터디/프로젝트 자산
+- [[fit/Growth-Principles|성장의 7가지 원칙]] — 반복, 실전, 회고, 실험, 자기효능감, 습관화, 소셜화, 계단식 성장
 - [[fit/Zerobase-Career-Seminar|제로베이스 취업설명회]] — 전자공시 활용, 자소서 정량화, 하향지원 전략
 
 ### 도메인별 세미나
