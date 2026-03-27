@@ -23,6 +23,7 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 - [[11st-Engineer-Seminar#테스트전략|11번가 테스트 전략]] — 컨트롤러→통합, 서비스→단위, Mock 최소화
 - [[11st-Engineer-Seminar#코드리뷰Pn룰|코드리뷰 Pn룰]] — P1~P5 중요도 태그로 리뷰 효율화
 - [[Kakao-Ent-Seminar#테스팅|카카오엔터 테스팅]] — 사전 과제에서 테스트 코드 없으면 탈락
+- [[TS-Backend-Meetup-10#세션 1: AI 시대의 테스팅|AI 시대의 테스팅]] — 구현 은닉, 고전파 vs 런던파, LLM-as-a-judge, 테스트 피라미드 재해석
 - [x] [[Service-Layer-Testing|서비스 레이어와 테스트 경계]]
 
 ## 단위 테스트
