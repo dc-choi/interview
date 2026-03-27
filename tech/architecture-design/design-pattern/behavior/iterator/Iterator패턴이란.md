@@ -97,3 +97,76 @@ while (!result.done) {
     result = iterator.next();
 }
 ```
+
+## Async Iterator
+
+비동기 데이터 소스를 순회하기 위한 프로토콜. Symbol.asyncIterator를 구현하며, for await...of로 사용한다.
+
+### Symbol.asyncIterator
+```typescript
+const asyncIterable = {
+  [Symbol.asyncIterator]() {
+    let i = 0
+    return {
+      async next() {
+        if (i >= 3) return { value: undefined, done: true }
+        const value = await fetchData(i++)
+        return { value, done: false }
+      }
+    }
+  }
+}
+
+for await (const item of asyncIterable) {
+  console.log(item)
+}
+```
+
+### Async Generator
+```typescript
+async function* paginate(url: string) {
+  let page = 1
+  while (true) {
+    const response = await fetch(`${url}?page=${page}`)
+    const data = await response.json()
+    if (data.items.length === 0) return
+    yield data.items
+    page++
+  }
+}
+
+for await (const items of paginate('/api/users')) {
+  items.forEach(user => console.log(user.name))
+}
+```
+
+## Node.js 실전 사용
+
+### Readable Stream as Async Iterable
+Node.js의 Readable 스트림은 Symbol.asyncIterator를 구현하여 for await...of로 직접 사용 가능하다.
+
+```typescript
+import { createReadStream } from 'fs'
+
+const stream = createReadStream('large-file.txt', { encoding: 'utf-8' })
+for await (const chunk of stream) {
+  process.stdout.write(chunk)
+}
+```
+
+### 데이터베이스 커서
+대량 쿼리 결과를 메모리에 전부 로드하지 않고 Async Iterator로 한 행씩 처리:
+
+```typescript
+async function* queryCursor(sql: string) {
+  const cursor = db.query(sql).cursor(100) // 100행씩 fetch
+  for await (const rows of cursor) {
+    for (const row of rows) {
+      yield row
+    }
+  }
+}
+```
+
+### 페이지네이션 API 소비
+API의 다음 페이지가 없을 때까지 자동으로 순회하는 패턴으로, 소비자는 페이지네이션 로직을 신경 쓰지 않아도 된다.
