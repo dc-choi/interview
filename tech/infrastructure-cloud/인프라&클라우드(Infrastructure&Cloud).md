@@ -37,10 +37,10 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [ ] [[EBS-Instance-Store|EBS vs Instance store]]
 
 ## Container
-- [ ] [[Docker]]
-- [ ] [[Docker-Compose|Docker Compose]]
-- [ ] [[Multi-Stage-Build|Multi-stage build]]
-- [ ] [[Image-Size-Optimization|Image size optimization]]
+- [x] [[Docker]]
+- [x] [[Docker-Compose|Docker Compose]]
+- [x] [[Multi-Stage-Build|Multi-stage build]]
+- [x] [[Image-Size-Optimization|Image size optimization]]
 
 ## Kubernetes
 - [ ] [[K8s-Pod-Deployment|Pod / Deployment / Service / Ingress]]
