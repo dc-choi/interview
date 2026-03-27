@@ -31,7 +31,7 @@
 
 ### 기타(Others)
 - [[tech/fin-ops/비용&운영(FinOps)|비용&운영(FinOps)]] (0/8)
-- [[tech/senior/시니어역량(SeniorEngineer)|시니어역량(SeniorEngineer)]] (10/11)
+- [[tech/senior/시니어역량(SeniorEngineer)|시니어역량(SeniorEngineer)]] (11/12)
 - [[fit/FIT|Interview Fit]]
 
 ---
@@ -65,3 +65,4 @@
 - [[fit/TS-Backend-Meetup-1|TS 백엔드 밋업 1회]] — 스타트업 생존기, 패스워드 해싱, 로그 비용 개선기
 - [[fit/TS-Backend-Meetup-2|TS 백엔드 밋업 2회]] — AWSome IaC, 웹소켓, MSA 동시성 프로그래밍
 - [[fit/TS-Backend-Meetup-3|TS 백엔드 밋업 3회]] — DDD, 아임웹 MSA 전환기, NestJS DI Deep Dive
+- [[fit/TS-Backend-Meetup-10|TS 백엔드 밋업 10회]] — AI 시대 테스팅(구현 은닉, LLM-as-a-judge), 1인 개발 수익화, UI 없는 소프트웨어(Saaspocalypse)
