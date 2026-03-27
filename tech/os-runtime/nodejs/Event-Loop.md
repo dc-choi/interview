@@ -8,16 +8,52 @@ aliases: ["Event Loop"]
 ### 이벤트 루프
 비동기 작업(File, Network I/O)과 이벤트 핸들링(CallBack)을 관리하는 매커니즘
 
+**핵심**: 이벤트 루프는 별도의 스레드가 아니라 JS 메인 스레드 내에서 실행된다.
+
+---
+
+## libuv `uv_run` 소스코드
+이벤트 루프의 실제 구현체. 각 페이즈를 순회하며 등록된 콜백을 처리한다.
+```c
+while (r != 0 && loop->stop_flag == 0) {
+    uv__update_time(loop);          // 현재 시간 갱신
+    uv__run_timers(loop);           // Timer 페이즈
+    uv__run_pending(loop);          // Pending Callbacks 페이즈
+    uv__run_idle(loop);             // Idle 페이즈
+    uv__run_prepare(loop);          // Prepare 페이즈
+    uv__io_poll(loop, timeout);     // Poll 페이즈
+    uv__run_check(loop);            // Check 페이즈
+    uv__run_closing_handles(loop);  // Close Callbacks 페이즈
+}
+```
+루프는 처리할 작업(활성 핸들/요청)이 없고 `stop_flag`가 설정되면 종료된다.
+
+---
+
+## 페이즈 간 nextTickQueue & microTaskQueue
+```
+각 페이즈가 전환될 때마다, 현재 페이즈와 관계없이 nextTickQueue와 microTaskQueue가 먼저 비워진다.
+
+[Timer] → nextTick → microtask → [Pending] → nextTick → microtask → [Poll] → ...
+
+이것이 process.nextTick()이 어떤 페이즈에서든 "즉시" 실행되는 이유이다.
+nextTick은 현재 작업 완료 직후 콜 스택에 주입되며, Promise microtask보다 우선순위가 높다.
+```
+
 ---
 
 - 주요 단계
 1. Timers
     ```
     setTimeout() 및 setInterval()에 의해 예약된 콜백을 실행합니다.
-    
+
     타이머는 사용자가 원하는 정확한 시간이 아니라 제공된 콜백이 실행될 수 있는 임계값을 지정합니다.
-    
+
     타이머 콜백은 지정된 시간이 경과한 후 예약 가능한 한 빨리 실행되지만 운영 체제 예약이나 다른 콜백의 실행으로 인해 지연될 수 있습니다.
+
+    내부 구현: 타이머는 min-heap(최소 힙)에 저장된다. O(log N)으로 가장 빠른 타이머를 조회.
+    uv__run_timers는 힙에서 최솟값을 꺼내 registeredTime + delay > currentTime인지 확인한다.
+    따라서 타이머는 정확한 시점이 아니라 "최소한 이 시간 이후"에 실행됨이 보장된다.
     ```
 2. Pending Callbacks
     ```
@@ -33,19 +69,25 @@ aliases: ["Event Loop"]
     
     일반적으로 사용자가 직접 제어할 일은 없습니다.
     ```
-4. Poll
+4. Poll (가장 복잡한 페이즈)
     ```
     이 단계에서는 중요한 두가지 기능이 있습니다.
     1. I/O를 차단하고 폴링해야 하는 기간을 계산
     2. 대기열에서 이벤트를 처리
-    
+
+    내부적으로 uv__io_poll을 호출하며, OS별 API(Linux: epoll, macOS: kqueue, Windows: IOCP)를 사용한다.
+    timeout 동작:
+    - timeout = 0: 즉시 반환 (논블로킹)
+    - timeout > 0: I/O 이벤트 발생 또는 타임아웃까지 블로킹
+    - timeout < 0: I/O 이벤트 발생까지 무한 블로킹 (최대 ~30분)
+
     이벤트 루프가 poll 단계에 들어가고 예약된 timers가 없는 경우 다음 두 가지 중 하나가 발생합니다.
     poll 대기열이 비어 있지 않으면 이벤트 루프는 대기열이 모두 소진되거나 시스템에 따른 하드 제한에 도달할 때까지 콜백 대기열을 반복하여 동기적으로 콜백을 실행합니다.
-    
-    투표 대기열이 비어 있으면 다음 두 가지 중 하나가 추가로 발생합니다.
+
+    poll 대기열이 비어 있으면 다음 두 가지 중 하나가 추가로 발생합니다.
     1. 스크립트가 setImmediate()에 의해 예약된 경우 이벤트 루프는 poll 단계를 종료하고 예약된 스크립트를 실행하기 위해 check 단계로 계속 진행합니다.
     2. 스크립트가 setImmediate()로 예약되지 않은 경우 이벤트 루프는 콜백이 큐에 추가될 때까지 기다린 다음 즉시 실행합니다.
-    
+
     poll 대기열이 비어 있으면 이벤트 루프가 시간 임계값에 도달한 timers를 확인합니다.
     하나 이상의 timers가 준비되면 이벤트 루프가 timers 단계로 다시 래핑되어 해당 timers의 콜백을 실행합니다.
     ```
@@ -145,8 +187,27 @@ close 이벤트 처리
 - setTimeout(() => {}, 0)과 동일한 효과
 - Node.js 이벤트 루프의 check 단계에서 실행
 
+## 이름 혼동 주의
+```
+nextTick과 setImmediate의 이름은 사실 서로 뒤바뀌어야 맞다.
+- process.nextTick(): 실제로는 "즉시(immediate)" 실행됨 (현재 스택 클리어 직후)
+- setImmediate(): 실제로는 "다음 틱(next tick)" 에 실행됨 (다음 루프 반복의 check 페이즈)
+
+이는 역사적인 API 설계 실수이며, 호환성 때문에 변경되지 않았다.
+— James Snell (Node.js Core Contributor)
+```
+
+## 흔한 오해 정리
+```
+1. 이벤트 루프는 별도 스레드다 → ✗ 메인 JS 스레드 내에서 실행된다.
+2. Worker Threads = libuv 스레드 풀이다 → ✗ 완전히 다른 개념이다. (Worker-Threads 참조)
+3. 타이머는 정확한 시간에 실행된다 → ✗ 최소 지연 시간 이후 "가능한 빨리" 실행된다.
+4. 실행 순서는 등록 순서만으로 결정된다 → ✗ 등록 타이밍과 현재 페이즈에 따라 달라진다.
+```
+
 ## 관련 문서
 - [[Call-Stack-Heap|Call Stack Heap]]
 - [[Execution-Context|Execution Context]]
-- [[Async-IO|Async I/O]]
-- [[Backpressure|스트림 배압]]
+- [[Async-Internals|비동기 내부 동작]]
+- [[Stream|스트림]]
+- [[libuv]]

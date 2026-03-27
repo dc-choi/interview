@@ -103,6 +103,25 @@ class LazySingleton {
 ### Registry Singleton
 예제 참고
 
+## Node.js 모듈 캐싱과 Singleton
+
+Node.js의 모듈 시스템은 자동으로 Singleton과 유사한 동작을 제공한다.
+
+### CommonJS 캐싱
+```typescript
+// db.ts
+export const dbInstance = new Database('app-db')
+
+// 모든 require/import에서 같은 인스턴스 반환
+// Node.js가 모듈을 한 번만 실행하고 결과를 캐시하기 때문
+```
+
+### 주의: node_modules 중복
+같은 패키지가 node_modules의 서로 다른 경로에 설치되면(버전 충돌 등) 각각 별도 인스턴스가 생성될 수 있다. resolve 경로가 다르면 캐시 키가 달라지기 때문이다.
+
+### ESM에서의 Singleton
+ES 모듈의 namespace 객체도 캐시되므로 동일한 Singleton 효과를 얻는다. 단, 모듈 경로가 다르면 (심볼릭 링크, 쿼리 파라미터 등) 별도 인스턴스가 될 수 있다.
+
 ## 실 사용 사례
 1. 프론트엔드 상태 관리
 2. API 클라이언트

@@ -6,11 +6,11 @@
 ### 기초(Fundamentals)
 - [[tech/computer-science/CS&프로그래밍(CS&Programming)|CS&프로그래밍(CS&Programming)]] (10/11)
 - [[tech/web/웹&네트워크(Web&Network)|웹&네트워크(Web&Network)]] (2/10)
-- [[tech/os-runtime/OS&런타임(OS&Runtime)|OS&런타임(OS&Runtime)]] (8/13)
+- [[tech/os-runtime/OS&런타임(OS&Runtime)|OS&런타임(OS&Runtime)]] (21/28)
 
 ### 데이터(Data)
 - [[tech/database/데이터&저장소(Data&Storage)|데이터&저장소(Data&Storage)]] (20/27)
-- [[tech/messaging-data-pipeline/메시징&파이프라인(Messaging&Pipeline)|메시징&파이프라인(Messaging&Pipeline)]] (2/18)
+- [[tech/messaging-data-pipeline/메시징&파이프라인(Messaging&Pipeline)|메시징&파이프라인(Messaging&Pipeline)]] (7/19)
 
 ### 설계&성능(Design&Performance)
 - [[tech/architecture-design/아키텍처&설계(Architecture&Design)|아키텍처&설계(Architecture&Design)]] (2/11)
