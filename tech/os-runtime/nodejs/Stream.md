@@ -63,6 +63,35 @@ _transform(chunk, encoding, callback) 메서드를 구현한다.
 5. Readable이 읽기 재개 (resume)
 ```
 
+### highWaterMark와 메모리 관리
+```
+highWaterMark: 내부 버퍼의 최대 크기를 바이트 단위로 지정.
+- 기본값: 16KB (바이트 스트림), 16 objects (objectMode)
+- 배압 무시 시 메모리 영향: ~87MB (배압 준수) vs ~1.5GB (무시) → 약 17배 차이
+- GC 부담도 비례하여 증가 → 응답 시간 저하
+```
+
+**수동 배압 처리 (pipe 미사용 시)**
+```js
+function writeChunks(writable, chunks) {
+  let i = 0;
+  function write() {
+    while (i < chunks.length) {
+      const ok = writable.write(chunks[i++]);
+      if (!ok) {
+        // 버퍼가 가득 찼으면 drain 이벤트까지 대기
+        writable.once('drain', write);
+        return;
+      }
+    }
+    writable.end();
+  }
+  write();
+}
+```
+- `write()`가 `false`를 반환하면 반드시 `drain` 이벤트를 기다려야 한다
+- 이를 무시하면 메모리가 무한히 증가한다
+
 ### pipe()의 중요성
 ```javascript
 // ✗ 배압 미처리: 메모리 문제 발생 가능
@@ -176,6 +205,32 @@ async function compress() {
 ```
 
 결론: 신규 코드에서는 항상 pipeline()을 사용해야 한다. pipe()는 레거시 코드와의 호환성을 위해서만 유지하고, 새로 작성하는 코드에서는 에러 안전성과 리소스 정리가 보장되는 pipeline()이 표준이다.
+
+## cork/uncork 패턴
+
+여러 작은 쓰기를 단일 시스템 콜로 배칭하여 성능을 향상시키는 기법이다.
+
+```js
+const writable = fs.createWriteStream('output.txt');
+
+writable.cork();           // 쓰기를 버퍼에 보류
+writable.write('Hello ');
+writable.write('World');
+writable.write('!');
+
+// nextTick에서 uncork → 3개의 write가 하나의 시스템 콜로 플러시
+process.nextTick(() => writable.uncork());
+```
+
+```
+cork(): 이후의 write()를 내부 버퍼에 보류하고 즉시 시스템 콜을 하지 않는다.
+uncork(): 보류된 데이터를 한꺼번에 플러시한다.
+
+process.nextTick에서 uncork를 호출하는 것이 관용구:
+현재 이벤트 루프 턴에서의 모든 쓰기가 배칭된 후 플러시된다.
+
+여러 번 cork()하면 동일한 횟수만큼 uncork()를 호출해야 플러시된다.
+```
 
 ## 관련 문서
 - [[Event-Loop|이벤트 루프]]

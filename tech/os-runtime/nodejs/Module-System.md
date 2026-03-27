@@ -173,7 +173,66 @@ module.exports = new Database();
 
 **Monkey-patching (비권장)**: 다른 모듈의 exports를 런타임에 수정한다. 테스트 목적으로 간혹 사용되지만, 예측 불가능한 부작용을 초래하므로 권장되지 않는다.
 
+## package.json exports 필드
+
+`exports` 필드는 패키지의 진입점을 정밀하게 제어한다. `main` 필드보다 우선하며, 조건부 exports로 CJS/ESM을 동시에 지원할 수 있다.
+
+```json
+{
+  "exports": {
+    ".": {
+      "import": "./esm/index.mjs",
+      "require": "./cjs/index.js",
+      "default": "./cjs/index.js"
+    },
+    "./utils": {
+      "import": "./esm/utils.mjs",
+      "require": "./cjs/utils.js"
+    }
+  }
+}
+```
+
+| 조건 키 | 매칭 시점 |
+|---------|---------|
+| `import` | ESM `import`로 로드될 때 |
+| `require` | CJS `require()`로 로드될 때 |
+| `node` | Node.js 환경에서만 |
+| `default` | 위 조건에 해당하지 않는 폴백 |
+
+서브경로 패턴으로 `"./lib/*": "./lib/*.js"` 형태의 와일드카드도 지원한다.
+
+## 듀얼 패키지 위험 (Dual-Package Hazard)
+
+동일한 패키지가 애플리케이션 내에서 CJS와 ESM 양쪽으로 로드되면, 두 개의 별도 인스턴스가 생성된다. 이 경우 `instanceof` 검사가 실패하고, 모듈 수준 상태가 분리된다.
+
+```
+완화 방법:
+1. ESM 래퍼 접근법: CJS로 구현하고 ESM은 얇은 래퍼만 제공.
+   → CJS 인스턴스가 하나만 존재하므로 상태 분리 없음.
+2. 상태 격리: 공유 상태를 별도 패키지로 분리하여 양쪽에서 동일 인스턴스 참조.
+```
+
+상세 배포 전략은 [[Package-Publishing|패키지 배포]] 참조.
+
+## Node-API와 ABI 안정성
+
+**Node-API**(구 N-API)는 네이티브 애드온을 위한 안정적인 ABI(Application Binary Interface)를 제공한다. v8.12.0에서 안정화되었다.
+
+```
+ABI vs API:
+- API: 소스 코드 레벨의 인터페이스. 컴파일 시 검증.
+- ABI: 바이너리 레벨의 인터페이스. 런타임 호환성 결정.
+  → ABI가 변경되면 네이티브 모듈을 재컴파일해야 한다.
+
+Node-API의 핵심 가치:
+- Node.js 메이저 버전 업그레이드 시 네이티브 애드온 재컴파일 불필요
+- V8 내부 API 변경에 영향받지 않음
+- 누적 버전 관리: N-API v3를 지원하면 v1, v2도 모두 지원
+```
+
 ## 관련 문서
+- [[Package-Publishing|패키지 배포]]
 - [[Node.js]]
 - [[Closure|클로저]]
 - [[Scope|스코프]]
