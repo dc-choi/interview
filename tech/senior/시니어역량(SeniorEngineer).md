@@ -37,5 +37,8 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [ ] [[Cross-Team-Communication]]
 - [x] [[Hiring-Interview|채용 인터뷰 (프론트엔드 채용 면접 질문 프레임워크)]]
 
+## AI 시대 엔지니어링
+- [x] [[Harness-Engineering|하네스 엔지니어링 (Constrain→Inform→Verify→Correct→Human-in-the-loop)]]
+
 ## 설계
 - [x] [[System-Design-Interview|시스템 설계 인터뷰 대응 (Mony-Calendar 글로벌 인프라 설계 사례)]]
