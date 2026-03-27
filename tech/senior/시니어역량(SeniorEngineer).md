@@ -23,10 +23,10 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [x] [[Toss-Evaluation-Criteria|토스 내부 평가 기준 (코드/설계, 운영, 제품, 커뮤니케이션, 문화)]]
 
 ## 의사결정과 리더십
-- [ ] [[Tech-Decision|기술 의사결정]]
-- [ ] [[Data-Driven-Decision|데이터 기반 의사결정]]
-- [ ] [[Tech-Roadmap|기술 로드맵 수립]]
-- [ ] [[RFC-Writing|RFC 작성]]
+- [x] [[Tech-Decision|기술 의사결정]]
+- [x] [[Data-Driven-Decision|데이터 기반 의사결정]]
+- [x] [[Tech-Roadmap|기술 로드맵 수립]]
+- [x] [[RFC-Writing|RFC 작성]]
 
 ## 장애 대응
 - [ ] [[Incident-Commander|장애 대응 리딩 (Incident Commander)]]

@@ -12,9 +12,9 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery"]
 
 ## Checklist
 - [ ] [[Git-Flow|Git Flow / Trunk based]]
-- [ ] [[GitHub-Actions]]
+- [x] [[GitHub-Actions]]
 - [ ] [[Build-Cache|Build cache]]
-- [ ] [[Docker-Image-Pipeline|Docker image build pipeline]]
+- [x] [[Docker-Image-Pipeline|Docker image build pipeline]]
 - [ ] [[Helm]]
 - [ ] [[ArgoCD|ArgoCD (GitOps)]]
 - [ ] [[Blue-Green|Blue/Green]]
