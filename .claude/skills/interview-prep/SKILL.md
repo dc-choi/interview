@@ -1,32 +1,36 @@
 ---
 name: interview-prep
-description: 채용공고 URL과 이력서를 기반으로 면접 준비 문서를 생성. "면접 준비", "면접 분석", "인터뷰 준비" 등의 요청에 트리거.
-argument-hint: <채용공고 URL> <이력서 경로>
+description: 채용공고 URL과 이력서/포트폴리오를 기반으로 면접 준비 문서를 생성. "면접 준비", "면접 분석", "인터뷰 준비" 등의 요청에 트리거.
+argument-hint: <채용공고 URL> <이력서 경로> [포트폴리오 경로]
 allowed-tools: [Read, Write, Edit, Glob, Grep, Bash, WebFetch, Agent]
 ---
 
 # 면접 준비 문서 생성 스킬
 
-채용공고 URL과 이력서를 분석하여 `fit/interview/Interview-Prep-{회사명}.md` 문서를 생성한다.
+채용공고 URL과 이력서/포트폴리오를 분석하여 `fit/interview/Interview-Prep-{회사명}.md` 문서를 생성한다.
 
 ## 입력
 
 - **필수**: 채용공고 URL
-- **필수**: 이력서 경로 (두 인자 모두 없으면 사용자에게 질문)
+- **필수**: 이력서 경로
+- **선택**: 포트폴리오 경로 (프로젝트 상세, 기술 스택, 성과 등 추가 정보)
+- 필수 인자가 부족하면 사용자에게 질문
 
 ## 처리 순서
 
 ### 1단계: 입력 파싱
 - 첫 번째 인자: 채용공고 URL
-- 두 번째 인자 (있으면): 이력서 경로
-- 인자가 부족하면 사용자에게 질문
+- 두 번째 인자: 이력서 경로
+- 세 번째 인자 (있으면): 포트폴리오 경로
+- 필수 인자가 부족하면 사용자에게 질문
 
 ### 2단계: 데이터 수집 (병렬 처리)
 다음을 동시에 수행:
 1. **채용공고 수집**: WebFetch로 URL 내용을 상세히 추출 (회사 소개, 포지션명, 주요 업무, 자격 요건, 우대 사항, 근무 조건, 채용 절차 등)
 2. **이력서 읽기**: Read로 이력서 PDF 내용 확인
-3. **템플릿 읽기**: `fit/interview/Interview-Prep-Template.md` 읽기
-4. **예시 참고**: `fit/interview/Interview-Prep-ActionPower.md` 읽기 (품질 기준)
+3. **포트폴리오 읽기** (경로 있으면): Read로 포트폴리오 내용 확인 — 프로젝트 상세, 기술 스택, 성과 등 이력서보다 구체적인 정보를 예상 질문과 어필 포인트에 활용
+4. **템플릿 읽기**: `fit/interview/Interview-Prep-Template.md` 읽기
+5. **예시 참고**: `fit/interview/Interview-Prep-ActionPower.md` 읽기 (품질 기준)
 
 ### 3단계: 문서 생성
 `fit/interview/Interview-Prep-{회사명}.md` 파일을 생성한다.
