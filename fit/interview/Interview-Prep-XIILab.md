@@ -60,7 +60,7 @@ aliases: ["XIILab Interview Prep", "씨이랩 면접 준비"]
 |---------|--------|--------|
 | 기획→개발→운영 전 과정 참여 | **강** | PMF → 대형 고객사 PoC → 운영 최적화까지 전 과정 경험 |
 | AWS/GCP/Azure 클라우드 운영 | **강** | AWS 실무 (ECS, RDS, CloudFront, EventBridge, SQS) |
-| 테스트 코드 작성·품질 개선 | **중** | 테스트 0→1 도입 경험은 있으나 이력서에 상세 기술 없음 |
+| 테스트 코드 작성·품질 개선 | **중** | 시솔지주: Mocha+Chai+SonarQube로 커버리지 0→70%, PR 연동 60% 미달 시 머지 불가. 트라이포드랩: jest+supertest, 스케줄링/비즈니스 로직 분리 설계 |
 | 성능 최적화, 장애 대응, 모니터링 | **강** | 슬로우쿼리 99.3% 개선, API 90% 향상, Grafana/Prometheus/Loki 직접 구축 |
 
 ### 기술 스택 비교
@@ -107,37 +107,166 @@ aliases: ["XIILab Interview Prep", "씨이랩 면접 준비"]
 
 ### 이력서 기반 기술 질문
 
-| 질문 | 준비 포인트 | 관련 지식 |
-|------|-----------|----------|
-| DB Lock으로 Race Condition 해결 — 어떤 Lock? 왜? Optimistic vs Pessimistic? | Pessimistic Lock (SELECT FOR UPDATE) 선택: 재고는 정합성 절대적, 충돌 빈도 높아 Optimistic 재시도 비용 과다 | [[Transaction-Lock-Contention\|트랜잭션·락]], [[Transactions\|트랜잭션]] |
-| 슬로우 쿼리 99.3% 개선 — 측정 방법? EXPLAIN 분석? | P95 응답 시간 기준. EXPLAIN ANALYZE로 풀스캔 식별 → 복합 인덱스 설계 (카디널리티 순서, 커버링 인덱스) | [[Index\|인덱스]], [[Execution-Plan\|실행계획]] |
-| Prisma N+1 → SubQuery 전환 과정? ORM vs Raw Query 판단 기준? | include가 개별 쿼리 발생 → relationLoadStrategy: 'join' 적용 → 한계 → MySQL SubQuery 직접 작성. 기준: ORM으로 표현 불가하거나 성능 임계 초과 시 | [[Execution-Plan\|실행계획]], [[SQL\|SQL]] |
-| EventBridge+SQS 선택 이유? Kafka와 차이? | 소규모 팀 운영 부담 고려. Kafka는 브로커 관리 필요, SQS는 서버리스. 처리량 초당 수백건 수준이라 SQS 충분 | [[MQ-Kafka\|MQ·Kafka]], [[Messaging-Patterns\|메시징패턴]] |
-| CloudFront+ECS 전환 — 왜? 어떤 문제? | 단일 NGINX SPOF + 수동 배포 → CloudFront(CDN) + ELB + ECS Fargate(오토스케일링) + 블루/그린 무중단 배포 | [[Load-Balancer\|로드밸런서]], [[Docker\|Docker]] |
-| Docker 이미지 43% 경량화 방법? | 멀티스테이지 빌드: build stage → production stage. devDependencies 제거, alpine 베이스 | [[Multi-Stage-Build\|멀티스테이지빌드]] |
-| Grafana/Prometheus/Loki — 무엇을 모니터링? 알림 기준? | API 응답 시간, 에러율, CPU/메모리. Grafana Alerting으로 P95 임계값 초과, 에러율 급증 시 알림 | [[Incident-Detection-Logging\|장애탐지·로깅]] |
+#### DB Lock으로 Race Condition 해결 — 어떤 Lock? 왜? Optimistic vs Pessimistic?
+> 관련: [[Transaction-Lock-Contention|트랜잭션·락]], [[Transactions|트랜잭션]], [[Distributed-Lock|분산락]]
+
+- Pessimistic Lock (`SELECT FOR UPDATE NO WAIT`) 선택
+- 품목 단위 row lock으로 재고 읽기+갱신을 원자적 처리
+- NO WAIT로 lock 획득 실패 시 즉시 실패 → 100ms 간격 최대 3회 재시도(최악 1초 이내)
+- 트랜잭션 범위 최소화: 디바이스 정보 조회·검증은 트랜잭션 밖, 재고 갱신+데이터 입력만 lock 구간
+- 초기에 Redis 분산락 검토했으나 별도 인프라 의존성+네트워크 레이턴시 리스크로 DB 트랜잭션 레벨 제어로 전환
+
+#### 슬로우 쿼리 99.3% 개선 — 측정 방법? EXPLAIN 분석?
+> 관련: [[Index|인덱스]], [[Execution-Plan|실행계획]]
+
+- 디바이스 최신 상태 조회 서브쿼리 2000ms+ 소요
+- 테이블 100만 건, 850대 디바이스, 디바이스당 평균 1,240건 균등 분포
+- EXPLAIN ANALYZE로 `ORDER BY created_at DESC, id DESC` 후 전체 행 filesort 확인
+- 카디널리티 분석: 디바이스 번호 선택도 0.08% → 복합 인덱스 `(device_number, created_at DESC, id DESC)` 설계
+- 인덱스 스캔만으로 최상단 레코드 즉시 접근. Prisma `@@index`로 선언
+- 결과: 쿼리당 15.4ms → 0.1ms. 3,000대 확장 시에도 인덱스 탐색 1건이라 데이터 양에 무관한 구조
+
+#### Prisma 쿼리 증가 문제 — 구체적으로? ORM vs Raw Query 전환 기준?
+> 관련: [[Execution-Plan|실행계획]], [[SQL|SQL]]
+
+- Prisma는 lazy loading이 없어 전통적 N+1은 아님
+- 문제는 app-level join 방식 — include 시 SQL JOIN이 아니라 관계마다 별도 쿼리를 발생시켜, 조인 엔티티가 늘어날수록 쿼리가 N개씩 증가
+- 기존 평균 100ms → 1000ms까지 저하
+- 로그 분석으로 4개 개별쿼리 확인 → 공식 문서 검토하여 relationLoadStrategy: 'join' 발견
+- DB-level JOIN 전환만으로 82~90% 성능 개선
+- 이후에도 문제가 생기면 실행 계획 확인 후 SQL 튜닝 단계로 넘어가야 함
+
+#### EventBridge+SQS 선택 이유? Kafka와 차이?
+> 관련: [[MQ-Kafka|MQ·Kafka]], [[Messaging-Patterns|메시징패턴]], [[Delivery-Semantics|전달보장]]
+
+- 실제 비용 비교: MSK $574/월 vs EventBridge+SQS $0~18/월 (월 10만 발주 × 5액션 = 50만 SQS 메시지, Free Tier 범위)
+- 발주라는 도메인 특성상 실시간 처리 불필요 + 최종 일관성이면 충분
+- 이벤트 플로우: 발주 → SQS → 수주처리 → SQS → 카톡/이메일/발주서 각각 병렬 처리
+- 채널별 DLQ 설정(카톡: 잘못된 번호 시 실패 처리, 이메일: 무조건 재시도)
+- Kafka가 필요한 시점: 이벤트 리플레이, 순서 보장, 초당 수만건 이상
+
+#### CloudFront+ECS 전환 — 왜? 어떤 문제?
+> 관련: [[Load-Balancer|로드밸런서]], [[Docker|Docker]]
+
+- 단일 EC2에서 Nginx+App 동시 구동 → 트래픽 급증 시 CPU/메모리 집중+배포 시 서비스 중단 위험
+- CloudFront(정적 리소스 캐싱) + ALB(웹 트래픽) + NLB(IoT 디바이스 고정 IP 통신) + ECS Fargate(오토스케일링) + Rolling Update 무중단 배포
+- IoT 디바이스의 IP 기반 통신 요구사항 때문에 NLB를 별도 구성
+
+#### Docker 이미지 43% 경량화 방법?
+> 관련: [[Multi-Stage-Build|멀티스테이지빌드]]
+
+- NestJS 이미지가 909MB(Spring 수준)로 비정상
+- .dockerignore로 불필요 파일 제외 + 멀티스테이지 빌드(build stage → production stage에 필요 파일만 복사)
+- 결과: 909MB → 513MB(43.6%), 배포 시간 3분10초 → 2분20초(26.3% 단축)
+- ECR 저장 비용도 절감
+
+#### Grafana/Prometheus/Loki — 무엇을 모니터링? 알림 기준?
+> 관련: [[Incident-Detection-Logging|장애탐지·로깅]], [[Structured-Logging|구조화로깅]], [[Log-Pipeline|로그파이프라인]]
+
+- GPL 스택 자체 호스팅
+  - Prometheus+Thanos(메트릭, S3 장기 보관)
+  - Loki(로그, Promtail+FireLens로 컨테이너 수집)
+  - Grafana(통합 시각화)
+- 알림 기준:
+  - Error rate 1% `for:5m`
+  - Slow SQL 500ms+ 3회 지속
+  - Event Loop Lag 100ms 3분 지속
+  - RDS CPU 75% 5분
+  - Replica Lag 5초 3분
+- TraceIdMiddleware+HttpLoggingInterceptor로 요청 단위 추적
+- 메트릭 카디널리티 관리: route 정규화, 불필요 라벨 Drop stage 제거
 
 ### JD 기반 기술 질문
 
-| 질문 | 준비 포인트 | 관련 지식 |
-|------|-----------|----------|
-| React 경험이 있나? 프론트엔드 어떻게 할 건가? | 백엔드 API 설계 시 프론트엔드 협업 경험 있음. 컴포넌트 기반 사고, 상태관리 개념 이해. AI 도구 활용해 빠르게 학습할 자신 있음 | — |
-| Full Stack으로 일할 때 프론트/백 우선순위는? | 기능 단위로 프론트→백 수직 슬라이싱. 사용자 경험 관점에서 API 설계부터 UI까지 일관성 있게 | — |
-| DB 모델링 접근법? 정규화 vs 비정규화 기준? | 도메인 모델 기반 설계 → 3NF 기본 → 조회 성능 필요 시 비정규화. MongoDB→MySQL 마이그레이션 경험 | [[Index\|인덱스]], [[SQL\|SQL]] |
-| AWS 클라우드 아키텍처 설계 경험? | ECS+RDS+CloudFront+EventBridge+SQS. 단일 서버→스케일링 전환 직접 주도 | — |
-| 테스트 코드 어떻게 작성하나? | 유닛(서비스 로직)→통합(API 엔드포인트)→E2E. jest + supertest | [[Service-Layer-Testing\|서비스레이어테스트]], [[Test-Isolation\|테스트격리]] |
-| AI 도구를 업무에 어떻게 활용하나? | Cursor, Claude Code를 일상적으로 사용. 코드 작성, 리뷰, 디버깅, 문서화에 활용. 씨이랩의 AX 방향과 일치 | — |
-| DRI로 일한 경험? 문제 정의부터 해결까지 주도한 사례? | Prisma 성능 문제 직접 발견 → 분석 → SubQuery 최적화로 90% 향상. 모니터링 인프라 필요성 제기 → 직접 구축 | — |
+#### React 경험이 있나? 프론트엔드 어떻게 할 건가?
+
+- 백엔드 API 설계 시 프론트엔드 협업 경험 있음 (시솔지주: Swagger 문서화 + 일관된 응답 포맷 설계)
+- 사이드 프로젝트 출석부에서 JS→TypeScript 마이그레이션, REST→tRPC 전환으로 서버/클라이언트 타입 불일치 해결 경험
+- AI 도구(Cursor, Claude Code)를 활용해 빠르게 학습할 자신 있음 — 씨이랩 자체가 AX를 강조하는 회사
+
+#### Full Stack으로 일할 때 프론트/백 우선순위는?
+
+- 기능 단위로 프론트→백 수직 슬라이싱
+- 사용자 경험 관점에서 API 설계부터 UI까지 일관성 있게
+- 실무: 출석부 프로젝트에서 기획→설계→개발→운영 전 과정 직접 담당, 15개 단체 실서비스 운영 중
+
+#### DB 모델링 접근법? 정규화 vs 비정규화 기준?
+> 관련: [[Index|인덱스]], [[SQL|SQL]]
+
+- 도메인 모델 기반 설계 → 3NF 기본 → 조회 성능 필요 시 비정규화
+- 실무: 시솔지주에서 MongoDB→MySQL 마이그레이션
+  - MongoDB 스키마리스 구조를 MySQL 정규화 스키마로 재설계
+  - 배치 프로세스로 100만 건 데이터 무중단 마이그레이션 도구 자체 개발
+  - 데이터 정합성 검증 포함
+
+#### AWS 클라우드 아키텍처 설계 경험?
+
+- 시솔지주: AWS LightSail → EC2+RDS 전환
+- 트라이포드랩: 단일 EC2 → CloudFront+ALB+NLB+ECS Fargate 아키텍처 직접 설계
+- 고객사 On-Premise 마이그레이션: AWS 클라우드 → CentOS 7.1 환경으로 전환, Nginx 리버스 프록시+PM2 무중단 구성
+
+#### 테스트 코드 어떻게 작성하나?
+> 관련: [[Service-Layer-Testing|서비스레이어테스트]], [[Test-Fixture|테스트픽스처]], [[Test-Isolation|테스트격리]]
+
+- 시솔지주: Mocha+Chai로 테스트 0→1 도입
+  - SonarQube 웹 대시보드로 팀 전체 코드 품질 지표 공유
+  - PR 연동하여 커버리지 60% 미달 시 머지 불가 → 최종 70% 달성
+  - CBT 특성상 오발송 시 막대한 손실 가능해서 안정성 확보가 최우선
+- 트라이포드랩: jest+supertest
+  - 발주 자동화 Batch에서 스케줄링과 핵심 비즈니스 로직 분리하여 독립적으로 검증 가능하게 설계
+- 꼬리: 유닛(서비스 로직) → 통합(API 엔드포인트) → E2E 순서로 피라미드 구조 지향
+
+#### AI 도구를 업무에 어떻게 활용하나?
+
+- Cursor, Claude Code를 일상적으로 사용
+- 코드 작성, 리뷰, 디버깅, 문서화에 활용
+- 면접 준비 문서 자체도 Claude Code 스킬로 자동 생성하는 시스템 구축
+- 출석부 프로젝트에서 AI 기반 Spec-Driven Development 워크플로우 도입으로 생산성 향상
+- 씨이랩의 AX 방향과 직접 일치
+
+#### DRI로 일한 경험? 문제 정의부터 해결까지 주도한 사례?
+
+- **Prisma 성능 문제**: 로그 분석으로 4개 개별쿼리 직접 발견 → 공식 문서 검토 → relationLoadStrategy 적용 → 82~90% 성능 개선. 하코 3000명 커뮤니티에서 이 주제로 발표
+- **모니터링 인프라**: CloudWatch 한계(쿼리 성능, 비용) 직접 분석 → Datadog/NewRelic/ELK 대안 비교 → GPL 스택 자체 호스팅 결정 → 직접 구축. SLO 기반 경보 체계 정착
+- **FIDO 서버**: 담당 개발자 퇴사 후 팀 리드 직접 맡음 → 3개월 내 FIDO Spec 처음부터 학습 → 인증 통과. 오픈소스 라이브러리 규격 미준수 발견 → GitHub 이슈 생성으로 커뮤니티 기여
 
 ### 서비스 맥락 질문
 
-| 질문 | 준비 포인트 |
-|------|-----------|
-| CCTV 영상분석 서비스에서 실시간 데이터를 웹에 보여줘야 한다면? | WebSocket/SSE로 실시간 스트리밍, 대시보드 React 컴포넌트 설계. 대량 이벤트는 백엔드에서 집계 후 전송 |
-| 제조 공정 QA/QC 데이터를 대시보드로 제공한다면 설계는? | 시계열 데이터 → 배치 집계 + 실시간 알림 분리. 대시보드는 집계 데이터 조회, 이상 감지 시 실시간 알림 |
-| 고객사마다 다른 요구사항을 하나의 제품으로 대응하려면? | 모듈 중심 아키텍처 경험 활용. 설정 기반 커스터마이징 + 공통 코어 분리. PoC 시 도메인별 모듈 분리로 유연하게 대응한 경험 |
-| AI 모델 결과를 사용자에게 보여주는 UI/UX를 설계한다면? | 처리 상태 표시(로딩/진행률), 결과 시각화, 오류 시 재시도 UX. 비동기 작업은 Job 상태 관리 패턴 |
-| 서비스 장애 시 대응 프로세스? | 1) Grafana 알림 수신 2) 영향 범위 파악 3) 롤백/핫픽스 판단 4) 근본 원인 분석 5) 재발 방지. 실제 모니터링 구축·운영 경험으로 답변 |
+#### CCTV 영상분석 서비스에서 실시간 데이터를 웹에 보여줘야 한다면?
+
+- WebSocket/SSE로 실시간 스트리밍, 대시보드 React 컴포넌트 설계
+- 대량 이벤트는 백엔드에서 집계 후 전송 — 클라이언트 부하 최소화
+- 실무 연결: 트라이포드랩에서 IoT 디바이스 실시간 데이터 수신 처리 경험 (디바이스 타임아웃 1초, 전송 주기 4시간)
+- 꼬리: "이벤트가 너무 많으면?" → 백엔드에서 시간 윈도우 기반 집계, 클라이언트에는 변경분만 전송
+
+#### 제조 공정 QA/QC 데이터를 대시보드로 제공한다면 설계는?
+
+- 시계열 데이터 → 배치 집계 + 실시간 알림 분리
+- 대시보드는 집계 데이터 조회(Read Replica 활용), 이상 감지 시 실시간 알림
+- 실무 연결: 트라이포드랩에서 Read Replica 도입으로 조회 40% 향상, DB CPU 30% 감소한 경험 동일 패턴
+
+#### 고객사마다 다른 요구사항을 하나의 제품으로 대응하려면?
+
+- 클린 아키텍처 기반 모듈 분리 경험 활용
+  - Controller → UseCase → DomainService → Repository 계층 분리
+  - 도메인 로직은 공유, 고객사별 커스텀은 UseCase 레벨에서 분기
+- 실무 연결: 트라이포드랩에서 대형 고객사(제약바이오 280억, F&B 2000억) PoC 시 동일 구조로 유연하게 대응
+
+#### AI 모델 결과를 사용자에게 보여주는 UI/UX를 설계한다면?
+
+- 비동기 Job 패턴: 요청 접수(즉시 jobId 반환) → 큐 → 워커(AI 처리) → 완료 알림
+- Job 테이블: status(pending→processing→done/failed), progress(%), error_message
+- 상태 알림: 초기엔 폴링, 트래픽 커지면 WebSocket 전환
+- 실무 연결: 발주 자동화에서 동일 비동기 처리 패턴 (EventBridge → SQS → 워커)
+
+#### 서비스 장애 시 대응 프로세스?
+
+- 실제 경험 기반:
+  1. Grafana Alerting이 Slack/팀별 라우팅으로 자동 알림 (Error rate 1% `for:5m`, Event Loop Lag 100ms 3분 등 SLO 기반 임계값)
+  2. 대시보드에서 영향 범위 파악 — TraceId로 요청 단위 로그+메트릭 연계 조회
+  3. 롤백(ECS Rolling Update 이전 태스크로 복귀) or 핫픽스 판단
+  4. 근본 원인 분석 — Loki 로그+Prometheus 메트릭 교차 분석
+  5. 재발 방지 — 알림 임계값 조정, 테스트 케이스 추가, 포스트모템 공유
 
 ### 컬처핏 / 소프트스킬 질문
 
@@ -175,15 +304,50 @@ aliases: ["XIILab Interview Prep", "씨이랩 면접 준비"]
 
 ### 보강이 필요한 기술 영역
 
+**프론트엔드 (React) — 최우선**
+
 | 영역 | 관련 문서 | 복습 완료 |
 |------|---------|----------|
 | **React 기초** (컴포넌트, 상태관리, hooks) | (외부 자료) | [ ] |
 | React + API 연동 (fetch/axios, 비동기 처리) | (외부 자료) | [ ] |
-| 테스트 전략/코드 작성 | [[Service-Layer-Testing\|서비스레이어테스트]], [[Test-Fixture\|픽스처]], [[Test-Isolation\|격리]] | [ ] |
-| DB 모델링·정규화 | [[Index\|인덱스]], [[Execution-Plan\|실행계획]] | [ ] |
-| 트랜잭션/격리수준 | [[Transactions\|트랜잭션]], [[Isolation-Level\|격리수준]] | [ ] |
-| 인덱스/실행계획 | [[Index\|인덱스]], [[Execution-Plan\|실행계획]] | [ ] |
-| NestJS 심화 (DI, 모듈, 라이프사이클) | [[NestJS\|NestJS]], [[Request-Lifecycle\|요청라이프사이클]] | [ ] |
+| React + TypeScript 프로젝트 구성 (Vite) | (외부 자료) | [ ] |
+
+**DB / 성능 최적화**
+
+| 영역 | 관련 문서 | 복습 완료 |
+|------|---------|----------|
+| 트랜잭션/격리수준 (RR vs RC, gap lock, Phantom Read) | [[Transactions\|트랜잭션]], [[Isolation-Level\|격리수준]] | [ ] |
+| 인덱스/실행계획 (카디널리티, 선택도, 커버링, 복합 인덱스) | [[Index\|인덱스]], [[Execution-Plan\|실행계획]] | [ ] |
+| DB 모델링·정규화 (3NF, 비정규화 기준) | [[Index\|인덱스]], [[SQL\|SQL]] | [ ] |
+| Prisma ORM 심화 (app-level join, relationLoadStrategy) | [[ORM\|ORM]] | [ ] |
+
+**아키텍처 / 설계 패턴**
+
+| 영역 | 관련 문서 | 복습 완료 |
+|------|---------|----------|
+| 클린 아키텍처 (Controller→UseCase→DomainService→Repository) | (외부 자료) | [ ] |
+| 비동기 처리 패턴 (큐+워커+알림, DLQ, 멱등성) | [[Messaging-Patterns\|메시징패턴]], [[Delivery-Semantics\|전달보장]], [[Idempotency-Key\|멱등성]] | [ ] |
+
+**NestJS / Node.js**
+
+| 영역 | 관련 문서 | 복습 완료 |
+|------|---------|----------|
+| NestJS 심화 (DI/IoC 컨테이너, 모듈, 라이프사이클) | [[NestJS\|NestJS]], [[Request-Lifecycle\|요청라이프사이클]] | [ ] |
+| Node.js 이벤트 루프/libuv | [[Event-Loop\|이벤트루프]], [[libuv\|libuv]], [[Thread-vs-Event-Loop\|스레드vs이벤트루프]] | [ ] |
+| Node.js 비동기 프로그래밍 심화 | [[Async-Programming\|비동기프로그래밍]], [[Async-Internals\|비동기내부구조]] | [ ] |
+
+**인프라 / DevOps**
+
+| 영역 | 관련 문서 | 복습 완료 |
+|------|---------|----------|
+| Docker 멀티스테이지 빌드 / .dockerignore 최적화 | [[Multi-Stage-Build\|멀티스테이지빌드]] | [ ] |
+| 모니터링 (Prometheus+Thanos, Loki, Grafana Alerting, SLO 기반 경보) | [[Incident-Detection-Logging\|장애탐지·로깅]], [[Log-Pipeline\|로그파이프라인]] | [ ] |
+
+**테스트 / 품질**
+
+| 영역 | 관련 문서 | 복습 완료 |
+|------|---------|----------|
+| 테스트 전략 (피라미드, 유닛→통합→E2E, SonarQube 커버리지 관리) | [[Service-Layer-Testing\|서비스레이어테스트]], [[Test-Fixture\|픽스처]], [[Test-Isolation\|격리]] | [ ] |
 
 ### 과제 대비
 > 1차 면접에 과제가 포함됨 — Full Stack 과제일 가능성 높음
@@ -195,11 +359,13 @@ aliases: ["XIILab Interview Prep", "씨이랩 면접 준비"]
 
 ### 강하게 어필할 포인트
 1. **Node.js(NestJS) + MySQL** — JD 자격요건과 정확히 일치
-2. **DRI 경험** — Prisma 성능 문제 발견→분석→해결, 모니터링 인프라 필요성 제기→직접 구축
-3. **제품 전 과정 참여** — PMF → 대형 고객사 PoC → 운영 최적화 (우대사항과 직접 연결)
-4. **정량적 성과** — 슬로우쿼리 99.3% 개선, API 90% 향상, Docker 43% 경량화
-5. **인프라·모니터링** — AWS 아키텍처 전환, Grafana/Prometheus/Loki 구축 (우대사항과 연결)
-6. **AI 도구 활용** — Cursor, Claude Code 일상적 사용 (씨이랩 AX 문화와 연결)
+2. **DRI 경험** — Prisma 성능 문제 로그 분석→공식 문서 검토→82~90% 개선, 하코 3000명 커뮤니티 발표. 모니터링 인프라 필요성 제기→GPL 스택 직접 구축
+3. **제품 전 과정 참여** — PMF → 대형 고객사(제약바이오 280억, F&B 2000억) PoC 성공 → 운영 최적화 (우대사항과 직접 연결)
+4. **정량적 성과** — 슬로우쿼리 99.3%(15.4ms→0.1ms), API 82~90% 향상, Docker 43.6%(909→513MB), 배포 26.3% 단축, 재고관리 95.8% 절감, 발주 완전 자동화
+5. **인프라·모니터링** — 단일 EC2→ALB+NLB+ECS Fargate 직접 설계, Read Replica(조회 40%↑, CPU 30%↓), SLO 기반 경보 7개 지표 체계 구축
+6. **AI 도구 활용** — Cursor, Claude Code 일상적 사용, AI 기반 Spec-Driven Development 워크플로우 도입 (씨이랩 AX 문화와 직접 연결)
+7. **FIDO 서버 팀 리드** — 담당자 퇴사 후 3개월 내 팀 리드+인증 통과. 오픈소스 규격 미준수 발견→커뮤니티 기여. 주도적 문제해결+빠른 학습 능력 증명
+8. **커뮤니티 기여** — 하코 3000명 발표, 카카오테크 캠퍼스 백엔드 멘토, FIDO 오픈소스 이슈 생성
 
 ### 주의사항
 > [[FIT#면접 현장 주의사항|면접 현장 주의사항]] 참고
