@@ -43,5 +43,6 @@ aliases: ["트랜잭션", "Transactions"]
 
 ## 관련 문서
 - [[Isolation-Level|트랜잭션 격리 수준]]
+- [[Lock|DB Lock]]
 - [[Index]]
 - [[SQL]]
