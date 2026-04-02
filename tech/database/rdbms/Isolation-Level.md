@@ -50,4 +50,5 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 
 ## 관련 문서
 - [[Transactions|트랜잭션]]
+- [[Lock|DB Lock]]
 - [[Index]]
