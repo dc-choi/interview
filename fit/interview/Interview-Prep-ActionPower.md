@@ -55,12 +55,12 @@ aliases: ["ActionPower Interview Prep", "액션파워 면접 준비"]
 
 ### 우대사항 vs 내 경험 매칭
 
-| 우대사항 | 매칭도 | 내 근거 |
-|---------|--------|--------|
-| GCP 클라우드 경험 | **약** | AWS 경험 풍부 (ECS, RDS, CloudFront, EventBridge, SQS). GCP 직접 경험 없음 |
-| 메시지 큐 (RabbitMQ, Kafka, Pub/Sub) | **중** | AWS EventBridge+SQS 기반 이벤트 아키텍처 설계·운영. Kafka/Pub/Sub 직접 경험은 없으나 개념 숙지 |
-| 테스트 코드 작성 | **중** | 시솔지주: Mocha+Chai+SonarQube로 테스트 커버리지 0→70% 달성, PR 연동 60% 미달 시 머지 불가. 트라이포드랩: jest+supertest, 스케줄링/비즈니스 로직 분리 설계 |
-| 장애 분석/대응 | **강** | Grafana/Prometheus/Loki 모니터링+알림 직접 구축, 병목 조기 탐지 |
+| 우대사항                             | 매칭도   | 내 근거                                                                                                            |
+| -------------------------------- | ----- | --------------------------------------------------------------------------------------------------------------- |
+| GCP 클라우드 경험                      | **약** | AWS 경험 풍부 (ECS, RDS, CloudFront, EventBridge, SQS). GCP 직접 경험 없음                                                |
+| 메시지 큐 (RabbitMQ, Kafka, Pub/Sub) | **중** | AWS EventBridge+SQS 기반 이벤트 아키텍처 설계·운영. Kafka/Pub/Sub 직접 경험은 없으나 개념 숙지                                           |
+| 테스트 코드 작성                        | **중** | 시솔지주: Mocha+Chai+SonarQube로 테스트 커버리지 0→70% 달성, PR 연동 60% 미달 시 머지 불가. 트라이포드랩: jest+supertest, 스케줄링/비즈니스 로직 분리 설계 |
+| 장애 분석/대응                         | **강** | Grafana/Prometheus/Loki 모니터링+알림 직접 구축, 병목 조기 탐지                                                                 |
 
 ### 기술 스택 비교
 
@@ -157,10 +157,11 @@ aliases: ["ActionPower Interview Prep", "액션파워 면접 준비"]
 | **Gap Lock** | 인덱스 레코드 사이의 간격을 잠금 (삽입 방지) | RR에서 범위 조건 `WHERE id BETWEEN 10 AND 20` |
 | **Next-Key Lock** | Record Lock + Gap Lock 결합 | InnoDB RR 기본 동작. Phantom Read 방지 |
 
-**데드락 예방 및 탐지**
+**데드락 — 완전한 예방은 불가능, 감지+복구가 핵심**
 - 데드락의 전형적 원인: TX1이 A→B 순서, TX2가 B→A 순서로 lock 획득 → 상호 대기
-- 예방: Lock 순서 통일 + 트랜잭션 범위 최소화 + NO WAIT로 대기 자체 회피 + 트랜잭션 안 외부 API 호출 금지
-- 탐지: InnoDB **Wait-for Graph**로 자동 탐지 → 비용 적은 트랜잭션을 rollback
+- **왜 완전한 예방이 불가능한가**: Gap Lock, Next-Key Lock이 개발자가 의도하지 않은 순서로 암묵적으로 잡힘. 쿼리 실행 계획에 따라 lock 범위가 달라져 완벽한 순서 통일은 현실적으로 불가능
+- **감지+복구**: InnoDB **Wait-for Graph**로 자동 탐지 → 비용 적은 트랜잭션을 자동 rollback → 앱에서 `ER_LOCK_DEADLOCK` catch 후 재시도가 정석
+- **확률 완화**: Lock 순서 통일 + 트랜잭션 범위 최소화 + NO WAIT로 대기 회피 + 트랜잭션 안 외부 API 호출 금지
 - 분석: `SHOW ENGINE INNODB STATUS` → LATEST DETECTED DEADLOCK 섹션 확인
 - 모니터링: Grafana에서 `mysql_global_status_innodb_deadlocks` 메트릭 추적
 
@@ -170,7 +171,7 @@ aliases: ["ActionPower Interview Prep", "액션파워 면접 준비"]
 - "ECS 멀티 인스턴스에서도 DB Lock으로 충분한가?" → 같은 DB를 바라보는 한 충분. DB가 분리되면(샤딩 등) 분산 락 필요
 - "Optimistic Lock이 나은 상황은?" → 읽기 중심 서비스, 충돌 빈도 낮은 경우 (예: 게시글 수정, 설정 변경). Lock 보유 없이 동시성 극대화
 - "Gap Lock이 성능에 미치는 영향?" → 범위 잠금이므로 INSERT를 차단할 수 있음. 높은 동시성이 필요하면 RC로 변경하여 Gap Lock 비활성화 고려 (단, Phantom Read 허용 필요)
-- "데드락 발생 시 애플리케이션 처리?" → InnoDB가 한쪽을 자동 rollback → `ER_LOCK_DEADLOCK` 에러 catch 후 재시도. 우리 시스템은 NO WAIT로 데드락 자체를 회피
+- "데드락 발생 시 애플리케이션 처리?" → InnoDB가 한쪽을 자동 rollback → `ER_LOCK_DEADLOCK` 에러 catch 후 재시도. 우리 시스템은 NO WAIT로 상호 대기 자체를 회피하여 발생 확률을 크게 낮춤
 - "테이블 락은 언제 발생?" → DDL(ALTER TABLE), LOCK TABLES 명시 사용, 인덱스 없는 UPDATE/DELETE(풀스캔 시 모든 행에 lock → 사실상 테이블 락)
 
 #### 슬로우 쿼리 99.3% 개선 — 측정 기준? EXPLAIN 분석 방법?
@@ -313,7 +314,16 @@ aliases: ["ActionPower Interview Prep", "액션파워 면접 준비"]
 - "Rolling Update vs Blue/Green?" → Rolling은 점진적 교체(리소스 절약, 배포 중 구/신 버전 공존), Blue/Green은 새 환경 준비 후 즉시 전환(빠른 롤백, 리소스 2배 필요). 비용 고려해 Rolling 선택
 - "오토스케일링 기준은?" → API 서버: CPU 70% or 요청 수 기반, 큐 워커: SQS ApproximateNumberOfMessagesVisible(큐 depth) 기반
 - "동기 → 비동기 전환 시 가장 어려웠던 점?" → 기존에 하나의 트랜잭션으로 묶여있던 로직을 분리하면서 **데이터 정합성 보장**이 핵심 과제. 발주 상태 머신 + 멱등성 키 + DLQ로 "실패해도 복구 가능한 구조"를 우선 설계
-- "이벤트 유실은 어떻게 방지?" → EventBridge → SQS는 AWS 관리형 서비스라 전달 보장이 높음. SQS at-least-once + 소비자 측 멱등성으로 중복은 허용하되 유실은 방지. DLQ로 최종 실패 메시지 보관
+- "이벤트 유실은 어떻게 방지?" → 두 가지 레벨로 나눠서 답변:
+  - **소비자 측(SQS → 워커)**: SQS at-least-once + 소비자 측 멱등성으로 중복은 허용하되 유실은 방지. DLQ로 최종 실패 메시지 보관
+  - **생산자 측(API → 큐)**: 이 부분이 핵심. DB에 발주를 저장하고 EventBridge에 이벤트를 발행하는 건 **서로 다른 시스템에 대한 두 번의 쓰기(Dual Write)**. 앱이 DB 저장 후 이벤트 발행 전에 crash하면 이벤트가 유실됨 → **Transactional Outbox Pattern**으로 해결
+    - 발주 INSERT + outbox 테이블 INSERT를 **같은 DB 트랜잭션**으로 묶음 → 원자적 보장
+    - 별도 Relay 프로세스가 outbox를 폴링하여 EventBridge/SQS에 발행 후 processed 마킹
+    - Relay가 crash해도 outbox 레코드가 남아있으므로 재시작 후 재발행 → at-least-once 발행 보장
+    - 소비자 측 멱등성과 짝을 이루어 **end-to-end 신뢰성** 확보
+    - 구현: NestJS `@Cron('*/5 * * * * *')`으로 5초 간격 폴링. 월 10만 발주 규모에서는 CDC(Debezium) 대비 폴링이 단순하고 충분
+    - outbox 테이블: `(id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at, processed_at)` — processed_at이 NULL이면 미발행
+  - "Dual Write 말고 다른 방법은?" → CDC(Change Data Capture): DB WAL을 읽어 실시간 이벤트 발행. 지연 최소화지만 Debezium+Kafka Connect 등 인프라 복잡도 증가. 현재 규모에서는 과함
 - "Replication Lag 문제는?" → 발주 직후 조회하면 Replica에 아직 반영 안 될 수 있음. 쓰기 직후 조회가 필요한 API는 Primary에서 읽도록 분기. 대시보드/리포트 같은 약간의 지연이 허용되는 조회만 Replica 사용
 - "Graceful Shutdown은?" → ECS 태스크 종료 시 SIGTERM → 진행 중 요청 완료 대기 → 새 요청 거부 → 타임아웃 후 SIGKILL. NestJS의 `enableShutdownHooks()`로 구현. SQS 워커는 현재 처리 중인 메시지 완료 후 종료 — 미완료 메시지는 visibility timeout 만료 후 SQS가 재전달
 
@@ -417,12 +427,58 @@ aliases: ["ActionPower Interview Prep", "액션파워 면접 준비"]
 
 **실무 연결**
 - 재고 갱신 시스템에서 RR 격리 수준 + `SELECT FOR UPDATE`(Current Read) 조합으로 정합성 확보
-- 데드락 예방은 위 DB Lock 섹션의 전략(Lock 순서 통일, 트랜잭션 범위 최소화, NO WAIT)으로 대응
+- 데드락은 완전히 예방할 수 없으므로, 위 DB Lock 섹션의 완화 전략(Lock 순서 통일, 트랜잭션 범위 최소화, NO WAIT)으로 발생 확률을 줄이고, InnoDB 자동 감지+복구에 의존
 
 **꼬리 질문 대비**
 - "RC vs RR 차이?" → RC는 **매 쿼리마다** 최신 커밋 스냅샷 (Non-Repeatable Read 발생). RR은 **트랜잭션 시작 시점** 스냅샷 고정
 - "RR인데 왜 SELECT FOR UPDATE는 최신 데이터를 읽나?" → Consistent Read(일반 SELECT)는 스냅샷, Current Read(FOR UPDATE)는 최신 커밋 데이터. lock을 걸려면 최신 데이터를 봐야 의미가 있음
 - "RR에서 RC로 바꾸면 뭐가 좋아지나?" → Gap Lock이 비활성화되어 INSERT 동시성 향상. 단, Phantom Read 허용 필요
+
+#### Node.js 이벤트 루프? 싱글 스레드인데 어떻게 동시 처리?
+> 관련: [[Event-Loop|이벤트루프]], [[libuv|libuv]], [[Thread-vs-Event-Loop|스레드vs이벤트루프]]
+
+**싱글 스레드의 의미**
+- Node.js는 **JS 코드 실행**이 싱글 스레드(메인 스레드 = V8 엔진의 콜 스택 1개)
+- 하지만 I/O 작업(파일, 네트워크, DB)은 **libuv가 OS 커널 또는 스레드 풀에 위임** → 완료 시 콜백을 이벤트 큐에 등록
+- 결과적으로 JS 코드는 한 줄씩 실행하되, I/O 대기 시간 동안 다른 요청을 처리할 수 있음
+
+**이벤트 루프 6단계 (libuv)**
+1. **Timers** — `setTimeout`, `setInterval` 콜백 실행
+2. **Pending Callbacks** — 이전 루프에서 지연된 I/O 콜백
+3. **Idle/Prepare** — 내부 전용
+4. **Poll** — 새 I/O 이벤트 대기 및 콜백 실행 (대부분의 시간을 여기서 보냄)
+5. **Check** — `setImmediate` 콜백 실행
+6. **Close Callbacks** — `socket.on('close')` 등
+
+**Microtask vs Macrotask**
+- Microtask: `Promise.then`, `process.nextTick` → **각 단계 사이**에 전부 소진될 때까지 실행
+- Macrotask: `setTimeout`, `setInterval`, `setImmediate`, I/O 콜백 → 이벤트 루프 각 단계에서 실행
+- `process.nextTick` > `Promise.then` > `setTimeout` > `setImmediate` 순서
+- **실무 주의**: `process.nextTick`을 재귀 호출하면 이벤트 루프가 다음 단계로 못 넘어감(I/O starvation)
+
+**libuv 스레드 풀**
+- 기본 4개 워커 스레드 (`UV_THREADPOOL_SIZE`로 최대 1024까지 조정)
+- 스레드 풀을 사용하는 작업: DNS lookup(`dns.lookup`), 파일 시스템, 압축(zlib), 암호화(crypto)
+- 네트워크 I/O(TCP, HTTP)는 스레드 풀 사용하지 않음 — OS 커널(epoll/kqueue)에 직접 위임
+
+**이벤트 루프 블로킹 방지**
+- CPU 집약 작업(큰 JSON 파싱, 이미지 처리, 암호화 연산)이 메인 스레드를 블로킹
+- 해결:
+  1. **Worker Threads** — CPU 집약 작업을 별도 스레드에서 실행 (`worker_threads` 모듈)
+  2. **자식 프로세스** — `child_process.fork()`로 별도 프로세스 위임
+  3. **외부 서비스 위임** — STT, LLM 같은 무거운 처리는 전용 서비스(GPU 서버)로 분리하고 Node.js는 I/O 조율만 담당
+  4. **스트리밍 처리** — 대용량 데이터를 한번에 메모리에 올리지 않고 chunk 단위로 처리
+
+**다글로 연결**
+- Node.js가 STT/LLM 서빙에 적합한 이유: AI 처리 자체는 외부 API/GPU 서버가 담당하고, Node.js는 **요청 접수 → 큐 발행 → 결과 전달**이라는 I/O 조율에 집중 → 싱글 스레드로도 높은 동시성 확보
+- 반대로 Node.js에서 하면 안 되는 것: 음성 파일 디코딩, 모델 추론 같은 CPU 집약 작업을 메인 스레드에서 직접 실행
+
+**꼬리 질문 대비**
+- "setTimeout(fn, 0)과 setImmediate 차이?" → `setTimeout(fn, 0)`은 Timers 단계, `setImmediate`는 Check 단계에서 실행. I/O 콜백 안에서는 `setImmediate`가 항상 먼저, 최상위 스코프에서는 순서 비보장
+- "Worker Threads vs child_process?" → Worker Threads는 같은 프로세스 내 메모리 공유 가능(SharedArrayBuffer), child_process는 별도 프로세스(IPC 통신 필요, 메모리 격리). CPU 연산은 Worker Threads, 완전 격리가 필요하면 child_process
+- "이벤트 루프가 느려지는 걸 어떻게 감지?" → `monitorEventLoopDelay` API(Node.js 11+)로 이벤트 루프 지연 측정 → Prometheus 메트릭으로 노출. 실제로 GPL 모니터링에서 Event Loop Lag 100ms 3분 지속 시 알림 설정
+- "Node.js 클러스터링은?" → `cluster` 모듈로 CPU 코어 수만큼 워커 프로세스 fork → 각 워커가 독립적으로 이벤트 루프 실행. 하지만 ECS Fargate 환경에서는 컨테이너 오토스케일링이 더 적합 (각 태스크가 1 프로세스)
+- "Node.js가 멀티코어를 활용 못한다는 건 맞나?" → 메인 스레드는 싱글 코어지만, libuv 스레드 풀 + Worker Threads + 클러스터링으로 멀티코어 활용 가능. 다만 아키텍처적으로는 컨테이너 수평 확장이 더 간단하고 관리하기 쉬움
 
 #### NestJS 모듈 설계? DI 원리? 순환 참조?
 > 관련: [[NestJS|NestJS]], [[Custom-Provider|커스텀프로바이더]], [[Injection-Scopes|인젝션스코프]]
@@ -478,10 +534,26 @@ aliases: ["ActionPower Interview Prep", "액션파워 면접 준비"]
 - 실무 연결: 트라이포드랩에서 동일 구조
   - 발주 이벤트 → EventBridge → SQS → 워커(ECS Fargate)로 비동기 처리
   - 워커가 죽어도 SQS 메시지 유지되어 재처리 가능
-- 꼬리:
-  - "큐가 밀리면?" → 워커 오토스케일링(큐 depth 기반) + 사용자에게 예상 대기시간 안내 + 우선순위 큐(유료 사용자 우선)
-  - "STT 결과를 어디에 저장?" → 오디오 원본은 오브젝트 스토리지(S3/GCS), 텍스트 결과는 DB. 대용량 바이너리는 DB에 넣지 않음
-  - "동시 요청 제한은?" → API Gateway or 애플리케이션 레벨 rate limiting. 사용자별/플랜별 분당 쿼터. 429 Too Many Requests 반환 + Retry-After 헤더
+**대용량 오디오 업로드 — 스트리밍 처리**
+- 1,300만 시간 분량 → 개별 파일이 수백MB~수GB일 수 있음. 전체를 메모리에 올리면 OOM
+- Node.js Stream으로 chunk 단위 처리:
+  - 클라이언트 → API 서버: `multipart/form-data` 스트리밍 수신 (busboy/multer의 stream 모드)
+  - API 서버 → 오브젝트 스토리지: 수신하면서 동시에 GCS/S3에 스트리밍 업로드 (`stream.pipe()`)
+  - 메모리 사용량: 파일 크기와 무관하게 **버퍼 크기(highWaterMark)만큼만** 사용 (기본 16KB~64KB)
+- **백프레셔(Backpressure)**: 생산자(클라이언트)가 소비자(스토리지 업로드)보다 빠르면 Node.js Stream이 자동으로 `pause()` → 내부 버퍼가 `highWaterMark` 이하로 내려가면 `resume()`. `pipe()`가 이 메커니즘을 자동 처리
+- Presigned URL 패턴: 대용량 파일은 API 서버를 경유하지 않고, **서버가 Presigned URL을 발급 → 클라이언트가 GCS/S3에 직접 업로드** → 업로드 완료 콜백/이벤트로 후속 처리 트리거. 서버 부하 제거 + 업로드 속도 향상
+
+**실무 연결**: 트라이포드랩에서 동일 구조
+- 발주 이벤트 → EventBridge → SQS → 워커(ECS Fargate)로 비동기 처리
+- 워커가 죽어도 SQS 메시지 유지되어 재처리 가능
+- IoT 디바이스에서 대량 데이터 수신 시에도 스트리밍 처리로 메모리 안정성 확보
+
+**꼬리:**
+- "큐가 밀리면?" → 워커 오토스케일링(큐 depth 기반) + 사용자에게 예상 대기시간 안내 + 우선순위 큐(유료 사용자 우선)
+- "STT 결과를 어디에 저장?" → 오디오 원본은 오브젝트 스토리지(S3/GCS), 텍스트 결과는 DB. 대용량 바이너리는 DB에 넣지 않음
+- "동시 요청 제한은?" → API Gateway or 애플리케이션 레벨 rate limiting. 사용자별/플랜별 분당 쿼터. 429 Too Many Requests 반환 + Retry-After 헤더
+- "Presigned URL의 보안은?" → URL에 만료 시간(예: 15분) + 파일 크기 제한 + Content-Type 제한 설정. 서버 측에서 업로드 완료 후 파일 유효성 검증(포맷, 크기, 악성 파일 스캔)
+- "스트리밍 중 연결 끊기면?" → GCS/S3의 Resumable Upload 활용. 클라이언트가 중단된 지점부터 재개 가능. 서버 측에서는 미완료 멀티파트 업로드를 lifecycle policy로 자동 정리
 
 #### AI API(OpenAI, Google STT) 호출 시 타임아웃/재시도/비용?
 
@@ -550,7 +622,15 @@ aliases: ["ActionPower Interview Prep", "액션파워 면접 준비"]
 - [x] 기획자 충돌 — [[FIT#기획자와 의견 충돌 사례|FIT]] 결제 환불 사례
 - [x] 긴급 이슈 판단 — [[FIT#긴급 이슈 동시 발생 시 판단 기준|FIT]] 비즈니스 임팩트 기준
 - [x] 성장 목표 — [[FIT#장기적으로 어떤 개발자가 되고 싶은가요?|FIT]] 개발 리드 → CTO
-- [ ] **추가**: "빠르게 변화하는 AI 기술을 어떻게 따라가나?" → 실무 적용 관점에서 검증. 커뮤니티/밋업 활동 (TS 백엔드 밋업 등). 기술 선택은 스펙이 아니라 "이 단계에서 필요한가"로 판단
+- [ ] **추가**: "빠르게 변화하는 AI 기술을 어떻게 따라가나?"
+  - **원칙**: 기술 자체를 쫓는 게 아니라, **"이 단계의 서비스에 필요한가?"**로 판단
+  - **정보 수집**: AI 관련 기술 블로그(OpenAI, Google AI, Anthropic), Hacker News, 커뮤니티 디스커션을 주기적으로 확인. 새 모델/API가 나오면 **비용, 레이턴시, 정확도** 3가지 축으로 빠르게 평가
+  - **검증 프로세스**: 관심 기술 → 프로토타입(1~2일) → 기존 시스템 대비 정량 비교 → 도입 여부 판단. 트라이포드랩에서 EventBridge+SQS 선택 시 MSK와 정량 비교(비용 99% 절감)한 것과 같은 접근
+  - **커뮤니티 활동**: 하코 3000명 커뮤니티 Prisma 성능 개선 발표, 카카오테크 캠퍼스 멘토링. 발표 준비 과정에서 기술을 깊이 파고, 질의응답에서 다른 관점을 얻음
+  - **백엔드 엔지니어로서의 포지셔닝**: AI 모델 자체를 개발하는 게 아니라, AI를 **안정적으로 서빙하는 인프라**가 역할. 새 AI 기술이 나와도 큐+워커, 타임아웃/재시도, 비용 관리 같은 서빙 패턴은 공통 → 이 패턴을 탄탄히 갖추면 어떤 AI 기술이든 빠르게 통합 가능
+  - 꼬리:
+    - "최근 관심 있는 기술은?" → Claude MCP(Model Context Protocol) — AI가 외부 도구/데이터에 접근하는 표준 프로토콜. 백엔드에서 MCP 서버를 구축하면 AI 에이전트가 DB, API, 문서 등을 직접 조회할 수 있어 AI 서비스의 확장성이 크게 높아짐. 다글로처럼 다양한 AI 기능(STT, 번역, 슬라이드)을 제공하는 플랫폼에서 유용할 것으로 기대
+    - "기술 도입 실패 경험은?" → 모든 기술 도입이 성공하진 않음. 중요한 건 **빠르게 실패하고 빠르게 되돌리는 것**. 프로토타입 단계에서 걸러내면 프로덕션 리스크 최소화
 
 ---
 
@@ -595,8 +675,8 @@ aliases: ["ActionPower Interview Prep", "액션파워 면접 준비"]
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ----- |
 | 클린 아키텍처 (Controller→UseCase→DomainService→Repository)             | (외부 자료)                                                                               | [ ]   |
 | REST API 설계 (리소스 URI, 상태 코드, 버전 관리, 에러 포맷)                        | [[REST\|REST]], [[HTTP-Status-Code\|HTTP상태코드]]                                        | [ ]   |
-| 비동기 처리 패턴 (큐+워커+알림, DLQ, 멱등성)                                     | [[Messaging-Patterns\|메시징패턴]], [[Delivery-Semantics\|전달보장]], [[Idempotency-Key\|멱등성]] | [ ]   |
-| 메시지 큐 비교 (Kafka vs SQS vs Pub/Sub, 비용/운영 트레이드오프)                  | [[MQ-Kafka\|MQ·Kafka]], [[Messaging-Patterns\|메시징패턴]]                                 | [ ]   |
+| 비동기 처리 패턴 (큐+워커+알림, DLQ, 멱등성, Transactional Outbox)               | [[Messaging-Patterns\|메시징패턴]], [[Delivery-Semantics\|전달보장]], [[Idempotency-Key\|멱등성]], [[Transactional-Outbox\|아웃박스]] | [ ]   |
+| 메시지 큐 비교 (Kafka vs SQS vs Pub/Sub, 비용/운영 트레이드오프)                  | [[MQ-Kafka\|Kafka]], [[SQS\|SQS]], [[EventBridge\|EventBridge]], [[Messaging-Patterns\|메시징패턴]]  | [ ]   |
 | Circuit Breaker / 재시도 패턴 (exponential backoff, jitter, half-open) | (외부 자료)                                                                               | [ ]   |
 | 멀티테넌시 설계 (논리적/스키마/물리적 격리, noisy neighbor)                         | (외부 자료)                                                                               | [ ]   |
 

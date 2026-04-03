@@ -48,6 +48,36 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 
 따라서 트랜잭션 격리 수준은 일관성 및 동시성과도 연관이 있다는 것을 알 수 있다.
 
+## MVCC와 격리 수준의 관계
+
+| 격리 수준 | 스냅샷 시점 | Consistent Read 동작 |
+|-----------|-----------|---------------------|
+| **Read Committed** | **매 쿼리마다** 최신 커밋 스냅샷 | 같은 트랜잭션 안에서도 SELECT할 때마다 다른 결과 가능 (Non-Repeatable Read) |
+| **Repeatable Read** | **트랜잭션 시작 시점** 스냅샷 고정 | 트랜잭션 동안 동일 SELECT는 항상 같은 결과 |
+
+- RR에서도 `SELECT FOR UPDATE`(Current Read)는 최신 커밋 데이터를 읽음 → 스냅샷과 다를 수 있음
+
+## InnoDB RR에서의 Phantom Read 방지
+
+- 표준 SQL에서 RR은 Phantom Read를 방지하지 못하지만, **InnoDB는 Next-Key Lock**으로 방지
+- 범위 조건 조회 시 Gap Lock이 함께 걸려 해당 범위에 새 행 INSERT를 차단
+- 단, 이로 인해 INSERT 동시성이 저하될 수 있음
+
+## RC vs RR 실무 선택
+
+### RC로 변경하면 좋아지는 점
+- Gap Lock이 비활성화 → INSERT 동시성 향상
+- 각 쿼리가 최신 데이터를 읽음 → 일부 상황에서 더 직관적
+
+### RC로 변경하면 위험한 점
+- Phantom Read 허용 → 범위 조건 결과가 트랜잭션 중 변할 수 있음
+- 트랜잭션 안에서 "읽은 데이터가 커밋 전에 바뀔 수 있다"는 것을 인지해야 함
+
+### 판단 기준
+- 읽기 일관성이 중요하고 Gap Lock 비용이 감수 가능 → **RR** (기본값 유지)
+- INSERT 동시성이 중요하고 Phantom Read를 앱에서 감수 가능 → **RC**
+- 대부분의 경우 InnoDB 기본값 RR로 충분
+
 ## 관련 문서
 - [[Transactions|트랜잭션]]
 - [[Lock|DB Lock]]
