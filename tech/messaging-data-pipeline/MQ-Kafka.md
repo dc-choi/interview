@@ -45,7 +45,16 @@ aliases: ["Kafka", "Message Queue: Kafka"]
 - 주키퍼가 빠졌기 때문에 배포와 운영이 더 쉬워짐
 - 확장성이 **10배 이상** 향상
 
+## Kafka가 필요한 시점
+- 이벤트 리플레이가 필요 (장애 후 재처리, 새 소비자가 과거 이벤트 재생)
+- 파티션 내 순서 보장이 필수
+- 초당 수만 건 이상의 처리량
+- 여러 소비자 그룹이 같은 이벤트를 독립적으로 소비
+- 다른 시스템(SQS, Pub/Sub 등)과의 상세 비교는 [[Messaging-Patterns|메시징 패턴]] 참고
+
 ## 관련 문서
 - [[Event-Driven-Architecture|Event-driven architecture]]
 - [[Consumer-Group|Consumer Group]]
 - [[DLQ|Dead Letter Queue]]
+- [[Messaging-Patterns|메시징 패턴]]
+- [[Delivery-Semantics|전달 보장]]

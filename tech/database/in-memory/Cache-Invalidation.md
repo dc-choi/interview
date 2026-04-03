@@ -1,14 +1,60 @@
 ---
 tags: [database, redis, cache]
-status: stub
+status: done
 category: "Data & Storage - Cache & KV"
-aliases: ["Cache invalidation", "Cache Invalidation"]
+aliases: ["Cache invalidation", "Cache Invalidation", "캐시 무효화"]
 ---
 
-# Cache invalidation
+# Cache Invalidation
 
-정리 필요
+캐시된 데이터가 원본(DB)과 달라졌을 때 이를 갱신하거나 제거하는 전략. **캐시 도입보다 무효화 설계가 더 어렵다.**
+
+## 무효화 전략
+
+### TTL 기반 (Time-To-Live)
+- 캐시 항목에 만료 시간을 설정, 만료 후 자동 삭제 → 다음 조회 시 DB에서 다시 적재
+- 구현이 가장 단순. 대부분의 캐시 시스템에서 기본 지원
+- **TTL이 짧으면**: 캐시 적중률 저하 → DB 부하 증가
+- **TTL이 길면**: 데이터 불일치 허용 구간이 길어짐
+- 적합: 약간의 지연이 허용되는 데이터 (대시보드, 리포트, 설정값)
+
+### Write-Through (동시 쓰기)
+- DB에 쓸 때 캐시도 동시에 갱신
+- 캐시가 항상 최신 → 읽기 시 일관성 보장
+- 단점: 쓰기 시마다 캐시 갱신 오버헤드. 읽히지 않는 데이터도 캐시에 적재될 수 있음
+- 적합: 쓰기 직후 바로 읽기가 빈번한 데이터
+
+### Write-Behind (비동기 쓰기)
+- 캐시에만 먼저 쓰고, 일정 간격으로 DB에 반영
+- 쓰기 성능 극대화, 하지만 캐시 장애 시 데이터 유실 위험
+- 적합: 조회수 카운터, 좋아요 수 등 유실 허용 가능한 집계성 데이터
+
+### Cache-Aside에서의 무효화
+- Cache-Aside(Look-Aside) 패턴에서는 **쓰기 시 캐시를 갱신하지 않고 삭제**하는 것이 안전
+- 이유: 갱신하면 DB 쓰기와 캐시 갱신 사이 race condition 발생 가능 → 오래된 데이터가 캐시에 남을 수 있음
+- 삭제하면 다음 읽기에서 DB 조회 후 최신 데이터로 캐시 재적재 (lazy)
+
+### 이벤트 기반 무효화
+- DB 변경 이벤트(CDC, 메시지 큐)를 구독하여 관련 캐시를 무효화
+- 여러 서비스가 같은 데이터를 캐싱할 때 일관된 무효화 가능
+- 복잡도 증가하지만 분산 환경에서 가장 확실한 방법
+
+## 캐시-DB 불일치 시나리오
+
+### Race Condition 예시
+```
+1. TX-A: DB에서 데이터 읽기 (값: 100)
+2. TX-B: DB에 데이터 쓰기 (값: 200) + 캐시 삭제
+3. TX-A: 캐시에 데이터 쓰기 (값: 100) ← 오래된 값이 캐시에 적재
+```
+- 해결: TTL을 충분히 짧게 설정하여 불일치 구간 최소화, 또는 Write-Through 사용
+
+### 캐시 아발란체 (Avalanche)
+- 대량의 캐시가 동시에 만료 → 모든 요청이 DB로 몰림 → DB 과부하
+- 해결: TTL에 jitter(랜덤 지연) 추가하여 만료 시점 분산
+- [[Cache-Stampede|캐시 스탬피드]]와 함께 고려
 
 ## 관련 문서
 - [[TTL|TTL 전략]]
 - [[Cache-Strategies|Cache 전략]]
+- [[Cache-Stampede|Cache Stampede]]

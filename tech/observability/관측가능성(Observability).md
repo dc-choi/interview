@@ -10,7 +10,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 ## 현장사례
 - [[SSG-Ecommerce-Seminar#인프라&배포|SSG 모니터링]] — Prometheus + Grafana
 - [[Kakao-Ent-Seminar#백엔드인프라전체그림|카카오엔터 모니터링]] — CloudWatch, Datadog
-- [x] [[Incident-Detection-Logging|장애 감지와 로깅/메트릭 (토스 기준)]]
+- [x] [[Incident-Detection-Logging|장애 감지와 로깅/메트릭 (GPL 스택 비교, 아키텍처, SLO 알림, 카디널리티)]]
 - [[TS-Backend-Meetup-1#로그 적재 비용 개선기|로그 비용 개선기]] — FluentBit+Firehose+S3, 300$->2$ 사이드카 패턴
 
 ## Logging
