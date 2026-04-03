@@ -77,8 +77,31 @@ aliases: ["Messaging Patterns", "메시징 패턴"]
 - 응답이 필요한 호출 → Request/Reply
 - 대규모 스트림 처리 → Kafka + Consumer Group
 
+## 기술 비교 (Kafka vs SQS vs Pub/Sub)
+
+| 기준 | Kafka | SQS | Pub/Sub (GCP) |
+|------|-------|-----|---------------|
+| 모델 | 분산 로그 (Consumer가 offset 관리) | 큐 (메시지 삭제형) | Topic 기반 팬아웃 (1:N) |
+| 순서 보장 | 파티션 내 보장 | Standard: 미보장, FIFO: 보장 | 미보장 (ordering key로 부분 보장) |
+| 메시지 보존 | 설정 기간 동안 보존 (리플레이 가능) | 처리 후 삭제 | ACK 후 삭제 |
+| TPS | 초당 수십만~수백만 | Standard: 무제한, FIFO: 300 TPS | 수만~수십만 |
+| 운영 비용 | 높음 (클러스터 관리, MSK $574+/월) | 매우 낮음 (사용량 과금, Free Tier 범위) | 낮음 (관리형) |
+| 적합 | 이벤트 리플레이, 로그 수집, 순서 보장 필요 | 작업 큐, 비동기 처리, 소규모~중규모 | 마이크로서비스 간 이벤트 팬아웃 |
+
+### 선택 기준
+1. **Kafka** — 이벤트 리플레이, 순서 보장, 초당 수만 건+, 여러 소비자 그룹이 독립 소비
+2. **SQS** — 단순 작업 큐(1:1), 최종 일관성 충분, 운영 부담 최소화, 소~중규모
+3. **Pub/Sub** — 하나의 이벤트를 여러 서비스가 구독(팬아웃), GCP 생태계
+
+### AWS 이벤트 서비스 조합
+- **EventBridge + SQS**: EventBridge가 이벤트 라우팅(규칙 기반 필터링), SQS가 큐 역할. 서버리스 이벤트 아키텍처에 적합
+- **SNS + SQS**: SNS가 팬아웃(1:N), SQS가 소비자별 큐. 다수 소비자가 같은 이벤트를 받아야 할 때
+
 ## 관련 문서
 - [[Delivery-Semantics|전달 보장]]
+- [[Transactional-Outbox|Transactional Outbox]]
 - [[Consumer-Group|소비자 그룹]]
 - [[MQ-Kafka|Kafka]]
+- [[SQS|SQS]]
+- [[EventBridge|EventBridge]]
 - [[Redis|Redis Messaging]]

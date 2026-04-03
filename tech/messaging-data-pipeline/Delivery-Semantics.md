@@ -43,7 +43,18 @@ aliases: ["Delivery Semantics", "전달 보장"]
 ## FIFO 큐의 오해
 SQS FIFO는 "exactly-once"를 발행(publishing) 측에서만 5분 내 보장한다. 소비자 측은 여전히 at-least-once이므로 멱등한 핸들러가 필요하다.
 
+## At-Least-Once 구현의 두 축
+
+### 소비자 측 — 멱등성 (Consumer Idempotency)
+중복 메시지를 안전하게 처리하는 패턴. 상세 구현은 [[Idempotency-Key|멱등성 키]] 참고.
+
+### 생산자 측 — 발행 신뢰성 (Transactional Outbox)
+DB 쓰기와 메시지 발행의 원자성 보장. 상세 패턴은 [[Transactional-Outbox|Transactional Outbox]] 참고.
+
+소비자 측 멱등성 + 생산자 측 Outbox가 짝을 이루어 **end-to-end at-least-once 신뢰성**을 확보한다.
+
 ## 관련 문서
 - [[At-Least-Once]]
 - [[Idempotency-Key]]
+- [[Transactional-Outbox|Transactional Outbox]]
 - [[MQ-Kafka|Kafka]]

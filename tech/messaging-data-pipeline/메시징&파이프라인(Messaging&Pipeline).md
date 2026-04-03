@@ -13,7 +13,8 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 
 ## Checklist
 - [ ] [[Event-Driven-Architecture|Event-driven architecture]]
-- [ ] [[MQ-SQS|Message Queue: SQS]]
+- [x] [[SQS|SQS (Standard/FIFO, Visibility Timeout, DLQ, 소비자 패턴)]]
+- [x] [[EventBridge|EventBridge (Rules/Targets, 패턴 매칭, Archive & Replay, vs SNS)]]
 - [x] [[MQ-Kafka|Message Queue: Kafka (토픽, 파티션, 세그먼트, KRaft)]]
 - [ ] [[MQ-RabbitMQ|Message Queue: RabbitMQ]]
 - [ ] [[MQ-BullMQ|Message Queue: BullMQ]]
@@ -29,9 +30,9 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [ ] [[Retry-Backoff|Retry / Backoff]]
 - [ ] [[Replay-Backfill|Replay / Backfill]]
 - [ ] [[CDC|CDC (Debezium 등)]]
-- [ ] [[Outbox-Pattern]]
+- [x] [[Transactional-Outbox|Transactional Outbox (Dual Write 해결, Polling vs CDC)]]
 - [ ] [[Saga-Pattern|Saga Pattern (Choreography / Orchestration)]]
 - [ ] [[Backpressure-Control|Backpressure 제어]]
 - [ ] [[Shadow-Traffic]]
 - [x] [[Redis|Redis Messaging (list, stream)]]
-- [x] [[Messaging-Patterns|메시징 패턴 (Pub/Sub, Task Distribution, Request/Reply)]]
+- [x] [[Messaging-Patterns|메시징 패턴 (Pub/Sub, Task Distribution, Request/Reply, 기술 비교)]]
