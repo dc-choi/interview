@@ -45,6 +45,7 @@
 
 ### 채용시장 & 성장
 - [[fit/Developer-Hiring-Insights|채용인사이트]] — 기업이 원하는 역량, 개발자 역량, 스터디/프로젝트 자산
+- [[fit/Interview-Soft-Skills|인성면접 가이드]] — 하드/소프트스킬, 컬처핏, STAR 기법, 인성면접 예시 질문, 기술부채 관리
 - [[fit/Growth-Principles|성장의 7가지 원칙]] — 반복, 실전, 회고, 실험, 자기효능감, 습관화, 소셜화, 계단식 성장
 - [[fit/Zerobase-Career-Seminar|제로베이스 취업설명회]] — 전자공시 활용, 자소서 정량화, 하향지원 전략
 
