@@ -28,7 +28,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [ ] [[GC-Algorithm|GC 알고리즘]]
 - [ ] [[Heap-Snapshot|Heap snapshot]]
 - [ ] [[Flamegraph]]
-- [ ] [[Memory-Leak-Pattern|Memory leak 패턴]]
+- [x] [[OOM-Troubleshooting|Node.js OOM 트러블슈팅 (V8 힙 한계, 누수 패턴, 대응 방법)]]
 
 ## Node.js
 - [[Node.js|Overview]]
