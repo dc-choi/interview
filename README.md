@@ -6,7 +6,7 @@
 ### 기초(Fundamentals)
 - [[tech/computer-science/CS&프로그래밍(CS&Programming)|CS&프로그래밍(CS&Programming)]] (10/11)
 - [[tech/web/웹&네트워크(Web&Network)|웹&네트워크(Web&Network)]] (3/10)
-- [[tech/os-runtime/OS&런타임(OS&Runtime)|OS&런타임(OS&Runtime)]] (21/28)
+- [[tech/os-runtime/OS&런타임(OS&Runtime)|OS&런타임(OS&Runtime)]] (22/28)
 
 ### 데이터(Data)
 - [[tech/database/데이터&저장소(Data&Storage)|데이터&저장소(Data&Storage)]] (21/27)
@@ -44,9 +44,11 @@
 - [[fit/Coding-Test-Strategy|코딩테스트 준비 전략]] — 단계별 접근, 분류별 필수 지식, 복기 방법
 
 ### 채용시장 & 성장
-- [[fit/Developer-Hiring-Insights|채용인사이트]] — 기업이 원하는 역량, 개발자 역량, 스터디/프로젝트 자산
-- [[fit/Interview-Soft-Skills|인성면접 가이드]] — 하드/소프트스킬, 컬처핏, STAR 기법, 인성면접 예시 질문, 기술부채 관리
+- [[fit/Developer-Hiring-Insights|채용인사이트]] — 기업이 원하는 역량, 개발자 역량, 스터디/프로젝트 자산, 학습 로드맵, 시니어 성장 축
+- [[fit/Interview-Soft-Skills|인성면접 가이드]] — 메타인지, 하드/소프트스킬, 컬처핏, STAR 기법, 인성면접 예시 질문, 기술면접 탈락 요인
 - [[fit/Growth-Principles|성장의 7가지 원칙]] — 반복, 실전, 회고, 실험, 자기효능감, 습관화, 소셜화, 계단식 성장
+- [[fit/Retrospective-Methods|회고 기법]] — CSS, 4L, KPT, TIL, WIW 애자일 회고 프레임
+- [[fit/Common-Interview-Questions|자주하는 면접 질문]] — 1차 기술 질문(꼬꼬무 유도형), Behavioral 질문, Q&A 활용법
 - [[fit/Zerobase-Career-Seminar|제로베이스 취업설명회]] — 전자공시 활용, 자소서 정량화, 하향지원 전략
 
 ### 도메인별 세미나
