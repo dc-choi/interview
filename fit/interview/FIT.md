@@ -292,8 +292,11 @@ aliases: ["FIT"]
 - [[Coding-Test-Strategy|코딩테스트준비전략]] — 단계별 접근, 분류별 필수 지식, 복기 방법
 
 ## 채용시장&성장
-- [[Developer-Hiring-Insights|채용인사이트]] — 기업이 원하는 역량, 개발자 역량, 스터디/프로젝트 자산
+- [[Developer-Hiring-Insights|채용인사이트]] — 기업이 원하는 역량, 개발자 역량, 스터디/프로젝트 자산, 학습 로드맵, 시니어 성장 축
+- [[Interview-Soft-Skills|인성면접가이드]] — 메타인지, 하드/소프트스킬, 컬처핏, 기술면접 탈락 요인
 - [[Growth-Principles|성장의7가지원칙]] — 반복, 실전, 회고, 실험, 자기효능감, 습관화, 소셜화, 계단식 성장
+- [[Retrospective-Methods|회고기법]] — CSS, 4L, KPT, TIL, WIW
+- [[Common-Interview-Questions|자주하는면접질문]] — 1차 기술 질문(꼬꼬무 유도형), Behavioral 질문, Q&A 활용법
 - [[Zerobase-Career-Seminar|제로베이스취업설명회]] — 전자공시 활용, 자소서 정량화, 하향지원 전략
 
 ## 도메인별세미나
