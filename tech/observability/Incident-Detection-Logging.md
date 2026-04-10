@@ -52,7 +52,7 @@ aliases: ["장애 감지와 로깅"]
 
 - ELK: 로그 검색/집계는 강력하지만 동일 데이터량에서 운영 복잡도와 비용이 큼
 - Datadog: 기능은 최고지만 사용량 단가가 치명적
-- CloudWatch: 쿼리 UX 약하고 비용 예측성 낮음
+- CloudWatch: AWS 리소스 메트릭 자체는 충분하지만 ① 커스텀 메트릭 비용($0.30/metric/month)과 고카디널리티 제약, ② PromQL 수준의 레이블 기반 다차원 쿼리 부재, ③ Logs Insights 쿼리 UX 한계, ④ 알림 라우팅·디듀프·억제를 SNS+Lambda로 수동 구현해야 함 (Alertmanager가 기본 제공하는 기능)
 
 ## 모니터링 아키텍처
 
