@@ -331,7 +331,11 @@ aliases: ["ActionPower Interview Prep", "액션파워 면접 준비"]
 > 관련: [[Incident-Detection-Logging|장애탐지·로깅]], [[Structured-Logging|구조화로깅]], [[Log-Pipeline|로그파이프라인]]
 
 **왜 GPL 자체 호스팅?**
-- 기존: CloudWatch + SNS + Lambda로 메트릭 알림 → **메트릭 추적 부족**, 쿼리 UX 약함, 비용 예측성 낮음
+- 기존 CloudWatch+SNS+Lambda 구조의 한계 — AWS 리소스 메트릭은 충분했지만:
+  - **커스텀 비즈니스 메트릭 비용**: metric당 $0.30/month + 고카디널리티 dimension은 비용 폭증
+  - **다차원 쿼리 부재**: PromQL 수준의 레이블 기반 슬라이싱/집계가 Metric Math로는 어색하고 제한적
+  - **로그-메트릭 상관관계 약함**: Logs Insights UX 한계, traceId로 메트릭/로그를 한 화면에서 토글하기 어려움
+  - **알림 라우팅 수동 구현**: SNS+Lambda로 디듀프/grouping/inhibition을 직접 만들어야 함 (Alertmanager 기본 제공)
 - 가중치 기반 대안 비교 후 GPL 선택 (4.65점 / ELK 3.85 / Datadog 3.35 / CloudWatch 3.10)
   - TCO(0.25): GPL 최고 — ELK는 같은 데이터량에서 운영 복잡도, Datadog은 사용량 단가 치명적
   - 메트릭 생태계(0.15): Prometheus 최강급
@@ -379,7 +383,7 @@ aliases: ["ActionPower Interview Prep", "액션파워 면접 준비"]
 | 구성 복잡성 증가                            | Helm values 표준화, ArgoCD 기반 GitOps 선언적 관리                 |
 
 **꼬리 질문 대비**
-- "CloudWatch 대신 자체 호스팅한 이유?" → 기존 CloudWatch+SNS+Lambda로는 메트릭 추적 부족. 가중치 비교에서 GPL이 TCO(5점), 메트릭 생태계(5점), 벤더 종속 회피(5점)로 총 4.65점 최고. CloudWatch는 쿼리 UX/비용 예측성이 약해서 3.10점
+- "CloudWatch 대신 자체 호스팅한 이유?" → CloudWatch가 AWS 리소스 메트릭은 충분하지만, 커스텀 비즈니스 메트릭 비용($0.30/metric/month)과 PromQL 수준의 레이블 기반 다차원 쿼리 부재가 한계였음. SNS+Lambda로 디듀프/inhibition을 수동 구현하던 부담도 컸음. 가중치 비교에서 GPL이 TCO(5점), 메트릭 생태계(5점), 벤더 종속 회피(5점)로 총 4.65점 최고, CloudWatch는 3.10점
 - "ELK 대신 Loki인 이유?" → ELK는 로그 검색/집계는 강력하지만 같은 데이터량에서 운영 복잡도와 비용이 큼 (3.85점). Loki는 인덱스 최소화 설계라 저장 비용이 낮고, LogQL로 requestId/route/level 기반 필터링이면 우리 요구에 충분
 - "Prometheus pull 방식의 한계?" → 짧은 수명 컨테이너는 스크래핑 전 사라질 수 있음 → Pushgateway로 보완. 대규모에서는 service discovery 필수
 - "로그 양이 폭증하면?" → Promtail의 batchSize/batchWait/ingestion rate limit 조정 + log sampling(에러 100%, 정상 10%) + drop stage로 불필요 필드 제거 + 핫/콜드 분리 보존 정책
