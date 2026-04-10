@@ -115,7 +115,7 @@ aliases: ["ActionPower 2nd Interview Prep", "액션파워 2차 면접 준비"]
 
 **내 매칭 에피소드**
 
-1. **CloudWatch → GPL 전환**: "모니터링이 이게 최선인가?" 질문에서 시작. 기존 CloudWatch+SNS+Lambda 구조의 한계(메트릭 추적 부족, 쿼리 UX 약함)를 직접 분석 → 가중치 비교(GPL 4.65 / ELK 3.85 / Datadog 3.35 / CloudWatch 3.10) → GPL 자체 호스팅 결정 → 직접 구축
+1. **CloudWatch → GPL 전환**: "모니터링이 이게 최선인가?" 질문에서 시작. 기존 CloudWatch+SNS+Lambda 구조의 한계(커스텀 비즈니스 메트릭 비용·고카디널리티 제약, PromQL 수준의 다차원 쿼리 부재, Logs Insights UX 한계, SNS+Lambda로 알림 라우팅·디듀프 수동 구현 부담)를 직접 분석 → 가중치 비교(GPL 4.65 / ELK 3.85 / Datadog 3.35 / CloudWatch 3.10) → GPL 자체 호스팅 결정 → 직접 구축
    - 핵심: "원래 쓰던 거니까"를 그냥 넘기지 않음
 
 2. **Prisma 성능 문제 발견**: "왜 API가 느리지?" → 로그에서 4개 개별쿼리 직접 발견 → Prisma가 app-level join을 한다는 사실 확인 → 공식 문서에서 relationLoadStrategy: 'join' 발견 → 82~90% 성능 개선 → 하코 3000명 커뮤니티에서 발표

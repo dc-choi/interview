@@ -208,7 +208,8 @@ aliases: ["XIILab Interview Prep", "씨이랩 면접 준비"]
 > 관련: [[Incident-Detection-Logging|장애탐지·로깅]], [[Structured-Logging|구조화로깅]], [[Log-Pipeline|로그파이프라인]]
 
 **왜 GPL 자체 호스팅?**
-- 기존 CloudWatch+SNS+Lambda로는 메트릭 추적 부족. 가중치 기반 대안 비교 후 GPL 선택 (4.65점 / ELK 3.85 / Datadog 3.35 / CloudWatch 3.10)
+- 기존 CloudWatch+SNS+Lambda 구조의 한계: AWS 리소스 메트릭은 충분했지만, 커스텀 비즈니스 메트릭 비용($0.30/metric/month)·고카디널리티 제약, PromQL 수준의 다차원 쿼리 부재, Logs Insights UX 한계, SNS+Lambda로 알림 라우팅·디듀프 수동 구현 부담
+- 가중치 기반 대안 비교 후 GPL 선택 (4.65점 / ELK 3.85 / Datadog 3.35 / CloudWatch 3.10)
 
 **아키텍처 구성**
 - Prometheus+Thanos(메트릭, S3 장기 보관) + Loki(로그, Promtail+FireLens) + Grafana(통합 시각화)
