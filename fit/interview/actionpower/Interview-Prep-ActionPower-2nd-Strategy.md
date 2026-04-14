@@ -11,10 +11,10 @@ aliases: ["ActionPower 2nd Strategy", "액션파워 2차 전략·핵심가치"]
 ---
 
 ## 0. 면접 전략
-> 참고: [[FIT#면접 전략 (대화의 기술)|면접 전략]], [[Interview-Soft-Skills|인성면접 가이드]], [[Common-Interview-Questions|자주하는 면접 질문]]
+> 참고: [[FIT-Framework#면접 전략 (대화의 기술)|면접 전략]], [[Interview-Soft-Skills|인성면접 가이드]], [[Common-Interview-Questions|자주하는 면접 질문]]
 
 ### 2차 면접의 본질 — 채용은 "같이 일할 사람을 뽑는 활동"
-> [[Interview-Soft-Skills#채용의 본질|채용의 본질]]
+> [[Interview-Soft-Skills-Metacognition#채용의 본질|채용의 본질]]
 
 면접관(대표자 + 인사담당자)이 머릿속으로 던지는 질문:
 - 잘 협업할 수 있는 동료인가?
@@ -26,7 +26,7 @@ aliases: ["ActionPower 2nd Strategy", "액션파워 2차 전략·핵심가치"]
 → **모든 답변을 "팀과 함께", "근거 기반으로", "상대 의견 존중"의 톤**으로 통과시키는 것이 핵심.
 
 ### 면접관이 보는 5가지 평가축
-> [[Interview-Soft-Skills#면접관이 보는 5가지|면접관이 보는 5가지]]
+> [[Interview-Soft-Skills-Metacognition#면접관이 보는 5가지|면접관이 보는 5가지]]
 
 1. **성장 가능성** — 지금보다 나아질 수 있는 사람인가
 2. **문제해결능력** — 정의→분석→실행→정량화의 과정이 있는가
@@ -42,7 +42,7 @@ aliases: ["ActionPower 2nd Strategy", "액션파워 2차 전략·핵심가치"]
 - 서류가 왜 통과했는지 고민: 1차 기술면접도 합격 → **기술은 검증됨, 2차는 "같이 일할 수 있는 사람인가?"에 집중**
 
 ### 메타인지 — 가장 먼저 훈련해야 할 것
-> [[Interview-Soft-Skills#메타인지 — 가장 먼저 훈련해야 할 것|메타인지]]
+> [[Interview-Soft-Skills-Metacognition#메타인지 — 가장 먼저 훈련해야 할 것|메타인지]]
 
 **내가 한 일 vs 팀이 한 일을 명확히 구분할 것**
 - 노련한 면접관(대표자 포함)은 꼬리 질문 2~3단계만 내려가도 부풀린 부분을 안다
@@ -54,7 +54,7 @@ aliases: ["ActionPower 2nd Strategy", "액션파워 2차 전략·핵심가치"]
 - 예: "Pessimistic Lock이 항상 옳은 건 아니지만, IoT 환경의 충돌 빈도가 높은 상황에서는 Optimistic 재시도 비용이 너무 컸다"
 
 ### 면접 심리학 — 절실함은 통제권 상실로 보인다
-> [[Interview-Soft-Skills#면접 심리학|면접 심리학]]
+> [[Interview-Soft-Skills-Metacognition#면접 심리학|면접 심리학]]
 
 - **너무 절실하면 오히려 떨어진다**. 절실함은 면접관에게 "이 사람은 통제권이 없다"는 신호로 읽힘
 - **여유는 자신감의 신호** — 같은 답변도 톤이 다르면 다르게 평가됨
