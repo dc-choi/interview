@@ -109,7 +109,7 @@ aliases: ["ActionPower 2nd Personality 2", "액션파워 2차 인성 질문 2"]
 ## 3. 그라운드룰·리더십 철학 (액션파워 "자율과 책임" 매칭)
 
 > 컬처핏 면접의 핵심 — 이 회사의 일하는 방식과 내가 동기화될 수 있는가
-> [[Interview-Soft-Skills#컬처핏·그라운드룰·리더십|컬처핏·그라운드룰·리더십]]
+> [[Interview-Soft-Skills-Metacognition#컬처핏·그라운드룰·리더십|컬처핏·그라운드룰·리더십]]
 
 ### 그라운드룰을 어떻게 생각하는가
 
