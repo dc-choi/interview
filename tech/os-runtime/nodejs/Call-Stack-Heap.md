@@ -64,7 +64,10 @@ Old Space에서 동작한다. 덜 빈번하지만 더 오래 걸린다.
 2. Sweep: 표시되지 않은 객체를 해제
 3. Compact: 단편화된 메모리를 압축하여 연속 공간 확보
 
-V8은 Incremental Marking과 Concurrent Marking으로 메인 스레드 블로킹을 최소화한다.
+V8은 Orinoco 프로젝트 이후 Tri-color Marking + Concurrent Marking + Parallel Compaction
+조합으로 메인 스레드 블로킹을 수 밀리초 수준까지 줄였다.
+알고리즘 이론과 Tri-color / Incremental / Concurrent / Work Stealing의 차이는
+[[GC-Algorithm|GC 알고리즘]] 문서 참고.
 ```
 
 ### GC와 이벤트 루프의 관계
@@ -77,5 +80,6 @@ GC가 실행되면 메인 스레드가 일시 정지(Stop-the-World)된다.
 ## 관련 문서
 - [[Event-Loop|Event Loop]]
 - [[V8|V8 엔진]]
+- [[GC-Algorithm|GC 알고리즘]]
 - [[Scope]]
 - [[Execution-Context|Execution Context]]
