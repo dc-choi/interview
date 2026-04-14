@@ -11,22 +11,33 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 | 기업   | 현재 단계    | 비고                                                                   |
 | ---- | -------- | -------------------------------------------------------------------- |
-| 씨이랩  | 1차 면접    | 인성검사 먼저 진행, [채용공고](https://xiilab.career.greetinghr.com/ko/o/173262) |
-| 액션파워 | 2차 면접 대기 | 26.03.06 지원, 26.04.06 1차 기술면접 합격                                     |
+| 씨이랩  | 1차 면접 결과 대기 | 인성검사 먼저 진행, 26.04.08 1차 면접 완료, [채용공고](https://xiilab.career.greetinghr.com/ko/o/173262) |
+| 액션파워 | 2차 면접 결과 대기 | 26.03.06 지원, 26.04.06 1차 기술면접 합격, 26.04.10 2차 면접 완료                |
 
 ## 지원할 기업
 
 | 기업 | 링크 | 비고 |
 |------|------|------|
-| 알앤디서클 | https://www.wanted.co.kr/wd/350946 | TS 밋업 이야기하면 서합 |
-| KWE | https://kwe.recruiter.co.kr/career/jobs/85937 | 태섭이형 회사 |
+| KWE | | 태섭이형 회사, 공고 마감 |
 | 에이피알 | https://apr-careers.com/job_posting/8IHMz85J | |
-| MVL | https://www.wanted.co.kr/wd/350485 | |
+| 온다(ONDA) | https://www.wanted.co.kr/wd/340406 | TypeScript 백엔드, NestJS |
+| 크리스틴컴퍼니 | https://www.wanted.co.kr/wd/344506 | 백엔드 0~3년, NestJS |
+| 애쉬코어테크놀로지스 | https://www.wanted.co.kr/wd/348916 | Junior Backend, TypeScript/NestJS |
+| 스트레스솔루션 | https://www.wanted.co.kr/wd/345314 | 백엔드 3~7년, Node.js |
+| 콕스웨이브 | https://www.wanted.co.kr/wd/343279 | 백엔드(AI), TypeScript |
+| 지엔터프라이즈 | https://www.wanted.co.kr/wd/342523 | 백엔드, NestJS/FastAPI |
+| 피에프씨테크놀로지스 | https://www.wanted.co.kr/wd/336443 | Backend, NestJS 포함 |
+| 중고나라 | https://www.wanted.co.kr/wd/343038 | SRE(DevOps) 1~5년 |
+| 페이타랩(패스오더) | https://www.wanted.co.kr/wd/278168 | DevOps, 신입~10년 |
+| 로민 | https://www.wanted.co.kr/wd/352668 | DevOps, AWS/K8s |
+| 원프레딕트 | https://www.wanted.co.kr/wd/348225 | DevOps, K8s/ArgoCD |
+| 에이아이트릭스 | https://www.wanted.co.kr/wd/345372 | DevOps/SRE 5년+ |
 
 ## 지원 완료 (응답 대기)
 
 | 기업 | 지원일 | 링크 |
 |------|--------|------|
+| MVL | 26.04.10 | https://mvl.oopy.io/333d814b-821b-80d2-8714-d491953cbd79 |
 | 미리디 (인재풀) | - | https://www.miridih.com/ko/o/195025 |
 
 ## 2주 경과 무응답
@@ -295,6 +306,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 앤서스랩코리아 | 26.01.20 | 26.01.21 | https://nsuslab.recruit.roundhr.com/c/aozPj4bYhn |
 | 스트라드비전 | 26.01.20 | 26.01.26 | https://stradvision.career.greetinghr.com/ko/o/196620 |
 | 원디엔에스 | 26.01.20 | 26.01.27 | |
+| 모난돌컴퍼니 | 26.01.20 | 26.01.27 | https://www.wanted.co.kr/wd/298486 |
 | 익스텐션 | 26.02.10 | 26.02.11 | |
 | 타이드풀 | 26.02.10 | 26.02.11 | 메일 직접 지원 |
 | 슈프리마 | 26.02.10 | 26.02.13 | https://hr-suprema.career.greetinghr.com/ko/o/199559 |
@@ -312,6 +324,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 핀다 | 26.03.04 | 26.03.16 | https://finda.career.greetinghr.com/ko/o/173229 |
 | 그루우 | 26.03.11 | 26.03.16 | |
 | 버킷플레이스 | 26.03.22 | 26.03.25 | https://bucketplace.career.greetinghr.com/ko/o/191953 |
+| 디서클 | 26.04.10 | 26.04.10 | https://www.wanted.co.kr/wd/350946 |
 
 ## 코테 및 과제
 
