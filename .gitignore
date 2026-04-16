@@ -43,3 +43,6 @@ lerna-debug.log*
 prisma/migrations
 
 api.http
+
+# Playwright MCP runtime artifacts
+.playwright-mcp/

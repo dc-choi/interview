@@ -12,6 +12,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [[Kakao-Ent-Seminar#백엔드인프라전체그림|카카오엔터 모니터링]] — CloudWatch, Datadog
 - [x] [[Incident-Detection-Logging|장애 감지와 로깅/메트릭 (GPL 스택 비교, 아키텍처, SLO 알림, 카디널리티)]]
 - [[TS-Backend-Meetup-1#로그 적재 비용 개선기|로그 비용 개선기]] — FluentBit+Firehose+S3, 300$->2$ 사이드카 패턴
+- [[Metric-Layer-Mismatch|CloudWatch 0% vs Grafana 100%]] — 같은 CPU가 다른 값으로 보인 사건, iowait·측정 레이어 차이
 
 ## Logging
 - [x] [[Structured-Logging|Structured logging]]
@@ -21,6 +22,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [ ] [[PII-Masking|PII masking]]
 
 ## Metrics
+- [x] [[Metric-Layer-Mismatch|메트릭 측정 레이어의 함정 (CloudWatch vs node_exporter, iowait, 두 레이어 교차 알람)]]
 - [ ] [[RED-USE-Method|RED / USE method]]
 - [ ] [[Prometheus]]
 - [ ] [[Cardinality|Cardinality 관리]]

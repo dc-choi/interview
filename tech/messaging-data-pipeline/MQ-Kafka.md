@@ -48,6 +48,51 @@ aliases: ["Kafka", "Message Queue: Kafka"]
 ## Kafka가 필요한 시점
 - 이벤트 리플레이가 필요 (장애 후 재처리, 새 소비자가 과거 이벤트 재생)
 - 파티션 내 순서 보장이 필수
+
+## Consumer 배치 처리: eachMessage vs eachBatch
+
+`kafkajs` 기준, 컨슈머가 메시지를 소비하는 방식은 두 가지다.
+
+### eachMessage (메시지 단위)
+메시지 하나씩 콜백으로 넘겨받아 처리한다. 단순하지만 I/O·DB 호출이 메시지당 발생하므로 **대량 처리 시 처리량 부족과 메모리 누적** 위험이 있다.
+
+```typescript
+await consumer.run({
+    eachMessage: async ({ topic, partition, message }) => {
+        await processOne(message);  // 메시지당 1회 처리
+    },
+});
+```
+
+### eachBatch (배치 단위)
+한 번에 파티션에서 가져온 메시지 묶음(Batch) 단위로 처리한다. **벌크 INSERT, 집계, DB 트랜잭션 최적화에 유리**하다.
+
+```typescript
+await consumer.run({
+    autoCommit: false,
+    eachBatch: async ({ batch, resolveOffset, heartbeat }) => {
+        const holder = new BulkDataHolder();
+        for (const message of batch.messages) {
+            try {
+                const parsed = JSON.parse(message.value?.toString() ?? '');
+                holder.add(parsed);
+            } catch (err) {
+                // 단일 메시지 에러는 스킵하여 메시지 유실 방지
+            }
+        }
+        await holder.flush();  // 배치 단위 벌크 처리
+    },
+});
+```
+
+### 선택 기준
+| 상황 | 권장 |
+|---|---|
+| 메시지별 독립 처리 (알림, 이벤트 라우팅) | `eachMessage` |
+| DB 벌크 INSERT, 집계, 대용량 파이프라인 | `eachBatch` |
+| 전역 버퍼에 메시지 누적해서 주기적 flush | `eachBatch` + 지역 변수 홀더 |
+
+**주의:** `eachBatch`에서 전역 변수에 누적하면 메모리 누수 발생. **배치 내부 지역 스코프**로 홀더를 두고 끝나면 즉시 GC되도록 해야 한다.
 - 초당 수만 건 이상의 처리량
 - 여러 소비자 그룹이 같은 이벤트를 독립적으로 소비
 - 다른 시스템(SQS, Pub/Sub 등)과의 상세 비교는 [[Messaging-Patterns|메시징 패턴]] 참고

@@ -6,8 +6,6 @@ aliases: ["연봉 협상 원칙", "Salary Negotiation Principles"]
 ---
 # 연봉 협상 가이드 — 원칙과 시장 조사
 
-> 출처: Career Repotting Project 연봉협상 가이드북 (정구철), 이직의 정석 뉴스레터, 개발자 취업과 이직 한방에 해결하기
-
 협상 테이블에 오르기 위한 전제 조건, 핵심 원칙, 시장 연봉 조사 방법, 사전 준비 체크리스트를 다룬다.
 
 ---
@@ -135,6 +133,12 @@ aliases: ["연봉 협상 원칙", "Salary Negotiation Principles"]
 - 동종 업계 유사 포지션 처우 수준
 
 ---
+
+## 출처
+
+- Career Repotting Project 연봉협상 가이드북 (정구철)
+- 이직의 정석 뉴스레터
+- 개발자 취업과 이직 한방에 해결하기
 
 ## 관련 문서
 
