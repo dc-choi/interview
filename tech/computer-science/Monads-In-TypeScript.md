@@ -135,6 +135,10 @@ m.flatMap(f).flatMap(g)  ===  m.flatMap(x => f(x).flatMap(g))
 - [evan-moon — 펑터를 넘어서, 모나드까지](https://evan-moon.github.io/2026/02/07/monads-in-typescript/)
 
 ## 관련 문서
+- [[Category-Theory-For-Programmers|Category Theory for Programmers — 수학적 토대]]
+- [[Functors|Functors — 카테고리 이론적 정의와 법칙]]
+- [[Natural-Transformations|Natural Transformations (η, μ 자연 변환)]]
+- [[Kleisli-Category|Kleisli Category — 모나드의 카테고리적 정의]]
 - [[Railway-Oriented-Programming|Railway-Oriented Programming (Result 모나드 실전)]]
 - [[Types-As-Proofs|Types as Proofs (커리-하워드 대응)]]
 - [[tech/computer-science/ts/타입스크립트(TS)|타입스크립트 (제네릭, 타입 조작)]]

@@ -124,6 +124,7 @@ const flatMap = <T, U, E>(r: Result<T, E>, f: (t: T) => Result<U, E>): Result<U,
 - [kciter.so — Railway-Oriented Programming](https://kciter.so/posts/railway-oriented-programming/)
 
 ## 관련 문서
+- [[Category-Theory-For-Programmers|Category Theory for Programmers — 수학적 토대]]
 - [[Monads-In-TypeScript|Monads in TypeScript — Functor/Applicative/Monad 심화]]
 - [[tech/computer-science/ts/타입스크립트(TS)|타입스크립트 (제네릭, 타입 조작)]]
 - [[tech/computer-science/js/Promise-Async|Promise와 Async]]
