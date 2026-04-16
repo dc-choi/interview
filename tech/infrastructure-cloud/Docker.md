@@ -70,6 +70,9 @@ Q. 컨테이너와 VM의 차이는?
 - 컨테이너는 호스트 OS 커널을 공유하여 가볍고 빠름
 - VM은 게스트 OS를 포함하여 더 강한 격리를 제공하지만 무거움
 
+## 출처
+- [Tecoble — Docker 기본](https://tecoble.techcourse.co.kr/post/2022-09-20-docker-basic/)
+
 ## 관련 문서
 - [[Docker-Compose|Docker Compose]]
 - [[Multi-Stage-Build|Multi-stage build]]
