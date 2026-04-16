@@ -1,8 +1,8 @@
 ---
-tags: [architecture, design]
-status: stub
-category: "Architecture & Design"
-aliases: ["VO DTO"]
+tags: [architecture, design, vo, dto]
+status: done
+category: "아키텍처&설계(Architecture&Design)"
+aliases: ["VO DTO", "VO와 DTO"]
 ---
 
 ### VO
@@ -14,4 +14,5 @@ value object의 약어이다. 불변의 특징을 가지고 있고 모든 속성
 일반적으로 Request와 Response로 구분지어서 사용한다. REST API를 설계하는 경우 API 응답으로 엔티티를 쓰게되면, 엔티티에 속성이 추가되거나 삭제될 때마다 API 명세가 바뀌게 된다. 이 경우 API 명세가 테이블에 의존하는 현상이 발생하므로 DTO에게 의존하도록 하는 것이다.
 
 ## 관련 문서
+- [[DTO-Layering|DTO 레이어 스코프 · Entity 변환 위치]]
 - [[OOP]]
