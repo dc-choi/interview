@@ -23,6 +23,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 
 ## Metrics
 - [x] [[Metric-Layer-Mismatch|메트릭 측정 레이어의 함정 (CloudWatch vs node_exporter, iowait, 두 레이어 교차 알람)]]
+- [x] [[Container-Monitoring|컨테이너 모니터링 (cAdvisor·node_exporter·Prometheus·Grafana·Fluentd, 사이드카 vs 데몬셋)]]
 - [ ] [[RED-USE-Method|RED / USE method]]
 - [ ] [[Prometheus]]
 - [ ] [[Cardinality|Cardinality 관리]]

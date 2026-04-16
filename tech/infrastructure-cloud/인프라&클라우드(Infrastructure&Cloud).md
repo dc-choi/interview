@@ -15,11 +15,14 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[TS-Backend-Meetup-3#MSA (아임웹 사례)|아임웹 MSA 인프라]] — 모노레포, 테라폼 모듈, ArgoCD 자동화, Kong Gateway
 - [[TS-Backend-Meetup-2#세션 1: AWSome IaC|AWSome IaC]] — IaC 필요성, 명령형 vs 명세형, 테라폼 핵심 개념
 
+## 클라우드 기초
+- [x] [[Cloud-Service-Models|IaaS/PaaS/FaaS/SaaS (추상화 계층, 책임 공유 모델, 서버리스 범위)]]
+
 ## IaC (Infrastructure as Code)
 - [x] [[IaC|IaC (Terraform, CDK, Pulumi)]]
 
 ## 네트워크 인프라
-- [ ] [[Reverse-Proxy|Reverse Proxy (Nginx, Envoy)]]
+- [x] [[Reverse-Proxy|Reverse Proxy (Nginx·Envoy, proxy_pass·upstream·WebSocket)]]
 - [x] [[Load-Balancer|Load Balancer (L4/L7, DNS, SPOF, 프록시)]]
 - [ ] [[CDN|CDN (Cache Key, TTL, Invalidation)]]
 - [ ] [[DNS|DNS 구조 & TTL]]
@@ -27,6 +30,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## AWS
 - [ ] [[AWS|EC2 / ASG / ALB]]
+- [x] [[AWS-Lambda|AWS Lambda · 서버리스 FaaS (Cold Start, 15분 한도, RDS Proxy)]]
 - [ ] [[VPC|VPC / Subnet / NAT / SG]]
 - [ ] [[RDS-Aurora|RDS / Aurora]]
 - [ ] [[ElastiCache]]

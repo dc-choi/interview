@@ -40,6 +40,35 @@ aliases: ["Load Balancer", "로드밸런서"]
 ### 부하 분산 기준
 - TCP 커넥션(L4), 트래픽, 가중치, HTTP 요청 수(L7)
 
+### 분산 알고리즘 상세
+
+대부분의 LB는 몇 개의 알고리즘을 조합해서 선택한다. 단순한 것부터 복잡한 것 순으로.
+
+| 알고리즘 | 동작 | 장점 | 단점 |
+|---|---|---|---|
+| **Round Robin** | 순번대로 배분 | 구현 단순, 중간값 지연 양호 | 서버 상태 무시. 이질적 서버·느린 요청에서 과부하 서버에도 전달 |
+| **Weighted Round Robin** | 가중치 비율로 배분 | 스펙 차이 반영 | 가중치를 수동 튜닝해야 함 |
+| **Dynamic Weighted RR** | 응답 지연 기반 가중치 자동 산정 | 런타임 변화에 적응 | 측정 잡음, 피드백 지연 |
+| **Least Connections** | 활성 연결이 가장 적은 서버 선택 | 유휴 자원을 잘 활용, 긴 요청·긴 세션에 강함 | 연결 수 ≠ 실제 부하일 수 있음 |
+| **Least Response Time** | 연결 수 + 최근 응답 시간 종합 | 지연 민감 워크로드에 유리 | 구현·측정 비용 증가 |
+| **Power of Two Choices** | 무작위 2개 서버 중 연결 수 적은 쪽 선택 | 전역 상태 없이도 좋은 균형(이론적으로 증명) | 랜덤성 필요 |
+| **PEWMA** | 지연의 지수 이동 평균을 가중치로 | P95·P99 테일 지연이 최고 | 복잡, 튜닝 필요 |
+| **IP Hash / Consistent Hash** | 클라이언트 IP·키 해시로 서버 고정 | 캐시 친화·세션 sticky | 서버 추가/제거 시 재해싱 비용(Consistent Hash로 완화) |
+
+### 알고리즘 선택 가이드
+
+- **요청이 등질·짧음** → Round Robin로 충분. 추가 기계가 할 일을 만들지 않음
+- **요청 길이·비용 편차 큼** → Least Connections 또는 Power of Two
+- **지연 테일(P99) 중요** → PEWMA·Least Response Time
+- **세션 sticky 필요** → IP Hash 또는 쿠키 기반(L7). 단, 서버 장애 시 sticky 키 재연결 고려
+- **전역 상태를 두기 싫음** → Power of Two Choices — 완벽하진 않지만 Round Robin보다 명확히 낫다
+
+### 핵심 트레이드오프
+
+- **중간값(P50) 지연 vs 테일(P99) 지연** — Round Robin은 P50 좋지만 P99 나쁨
+- **단순성 vs 적응성** — 더 똑똑한 알고리즘은 측정·튜닝 비용을 동반
+- **요청 손실 vs 지연** — 큐를 길게 허용하면 손실↓ 지연↑, 짧게 자르면 반대
+
 ### 헬스 체크 방식
 - TCP 연결 가능 여부만 확인
 - 헬스 체크 API를 만들어 요청/응답 확인
@@ -80,6 +109,11 @@ aliases: ["Load Balancer", "로드밸런서"]
 - **서버리스 환경**에서 특히 필요. 커넥션 수가 얼마나 생길지 모르기 때문
 - DB와 웹 서버 중간에 프록시가 필요
 
+## 출처
+- [Tecoble — 로드 밸런싱이란](https://tecoble.techcourse.co.kr/post/2021-11-07-load-balancing/)
+- [samwho.dev — Load Balancing](https://samwho.dev/load-balancing/)
+
 ## 관련 문서
 - [[IaC|IaC]]
 - [[Reverse-Proxy|Reverse Proxy]]
+- [[Realtime-Chat-Architecture|실시간 채팅 아키텍처]]
