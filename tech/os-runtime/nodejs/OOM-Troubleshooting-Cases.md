@@ -103,6 +103,31 @@ fs.createReadStream('/data/huge.csv')
 
 Node.js 스트림은 `highWaterMark`와 `drain` 이벤트로 이를 제어한다. 자세한 내용은 [[Backpressure|배압]] 참조.
 
+## 실전 사례: Kafka → MySQL 파이프라인의 이중 누수
+
+Kafka에서 메시지를 읽어 MySQL에 벌크 INSERT하는 Node.js 서비스에서 겪은 실전 사례. **두 층의 누수**가 겹쳐 있어 진단이 까다로웠다.
+
+### 1차 누수: 전역 메시지 버퍼
+- **증상:** EC2 메모리가 30분 내에 1.5GB까지 치솟고 프로세스 크래시
+- **원인:** Kafka 컨슈머가 `eachMessage`로 메시지를 받아 **전역 변수에 누적**, 주기적 flush 방식이었으나 쌓이는 속도 > 처리 속도
+- **진단:** `clinic doctor`로 메모리 그래프가 우상향하고 GC가 따라가지 못함을 확인
+- **해결:** `eachBatch`로 전환 + 배치 **지역 스코프**에 홀더를 두어 배치 종료 시 자동 GC
+- **효과:** 100MB → 30MB로 안정화
+
+### 2차 누수 (근본 원인): Prepared Statement 캐시 폭발
+- **증상:** 1차 해결 후에도 MySQL 서버와 Node.js 클라이언트 양쪽 메모리가 계속 증가
+- **원인:** 벌크 INSERT 쿼리가 매 배치마다 **행 수·컬럼 조합**이 달라 prepared statement가 재사용되지 않고 캐시에만 쌓임
+- **진단:** Chrome DevTools 힙 스냅샷에서 **retained size의 90% 가까이가 prepared statement 객체**
+- **규모:** 서버 측 커넥션당 16,382개 × 10 커넥션 × 32KB ≈ **5GB**, 4토픽×4프로세스 환경에서 **20GB 규모** 메모리 압박
+- **해결:** 드라이버의 `maxPreparedStatements` 축소 + 동적 쿼리 경로는 `execute()` 대신 `query()` 사용
+- **상세:** [[Prepared-Statement-Cache|Prepared Statement 캐시 폭발]]
+
+### 교훈
+1. **메모리 누수는 층층이 숨어 있다** — 1차 해결 후에도 전체 그래프를 다시 관찰해야 한다
+2. **`eachBatch`는 만능이 아니다** — 배치 내부에서 전역 상태를 건드리면 다시 누수
+3. **드라이버의 숨은 캐시를 의심하라** — `node-mysql2`처럼 투명한 최적화가 역효과를 낼 수 있다
+4. **힙 스냅샷이 정답을 가장 빨리 준다** — 추측으로 GC 튜닝하기 전에 먼저 찍어라
+
 ## 다음 단계
 - [[OOM-Troubleshooting-Response|대응 방법 & 면접 포인트]]
 
@@ -112,3 +137,5 @@ Node.js 스트림은 `highWaterMark`와 `drain` 이벤트로 이를 제어한다
 - [[Call-Stack-Heap|콜 스택 과 힙]]
 - [[Stream|스트림]]
 - [[Backpressure|배압]]
+- [[Prepared-Statement-Cache|Prepared Statement 캐시 폭발]]
+- [[MQ-Kafka|Kafka (eachBatch 패턴)]]

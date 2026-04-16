@@ -19,6 +19,8 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [[Growth-Principles|성장의 7가지 원칙]] — 반복, 실전, 회고, 실험, 자기효능감, 습관화, 소셜화
 - [[Karrot-Realestate-Seminar|당근 부동산 팀 문화]] — 가설→실행→분석→레슨런 사이클, 1pager PRD, 주도적 기여
 - [[TS-Backend-Meetup-1#스타트업 주니어 개발자의 생존기|스타트업 생존기]] — 사수 없이 성장, 문제 쪼개기, AI 시대 생존 전략
+- [[Large-Scale-Traffic-Experience|'대규모 트래픽 경험'이라는 환상]] — 체계 없는 환경에서 인프라 떠맡은 주니어의 성장 궤적, 장애 3종·FinOps 사례
+- [[Death-Of-Agile|애자일의 죽음]] — 빅테크의 스크럼 폐기, 팀 성숙도별 방법론 선택(OKR·Shape Up·No Methodology), 원칙 vs 의식 구분
 - [x] [[Architecture-Decision-Making|아키텍처 의사결정과 경제적 관점]]
 - [x] [[Toss-Evaluation-Criteria|토스 내부 평가 기준 (코드/설계, 운영, 제품, 커뮤니케이션, 문화)]]
 

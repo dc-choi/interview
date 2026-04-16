@@ -14,6 +14,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] [[Transaction-Lock-Contention|트랜잭션 경합과 Lock 문제]]
 
 ## Checklist
+- [x] [[Latency-Optimization|레이턴시 최적화 개관 (캐싱·DB·비동기·네트워크 4대 전략 + P99/SLO 측정)]]
 - [ ] [[Query-Optimization|Query optimization]]
 - [ ] [[Index-Tuning|Index tuning]]
 - [ ] [[Connection-Pool-Sizing|Connection pool sizing]]

@@ -15,6 +15,10 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 ## OOP
 - [x] [[SOLID-In-Practice|SOLID 원칙 실전 적용 (OCP, DIP)]]
 
+## 함수형 프로그래밍
+- [x] [[Railway-Oriented-Programming|Railway-Oriented Programming (Result 모나드, 성공·실패·복구 3선로)]]
+- [x] [[Monads-In-TypeScript|Monads in TypeScript (Functor → Applicative → Monad, 모나드 법칙, Promise는 진짜 모나드인가)]]
+
 ## 자료구조
 - [x] [[tech/computer-science/data-structure/자료구조(DataStructure)|Array / ArrayList / LinkedList]]
 - [x] [[tech/computer-science/data-structure/자료구조(DataStructure)|Stack / Queue / Deque]]
@@ -39,6 +43,7 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 - [x] [[tech/computer-science/ts/타입스크립트(TS)|제네릭]]
 - [x] [[tech/computer-science/ts/타입스크립트(TS)|타입 조작 (keyof, Indexed Access, Mapped, Conditional, Template Literal, infer)]]
 - [x] [[tech/computer-science/ts/타입스크립트(TS)|유틸리티 타입]]
+- [x] [[Types-As-Proofs|Types as Proofs (커리-하워드 대응, never, exhaustive switch, TS 불건전 지점)]]
 
 ## JavaScript
 - [x] [[tech/computer-science/js/Promise-Async|Promise와 Async]]
@@ -46,6 +51,8 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 - [x] [[tech/computer-science/js/Event-Bubbling-Capturing|이벤트 버블링과 캡처링]]
 - [x] [[tech/computer-science/js/Object-Property-Descriptor|프로퍼티 디스크립터와 Object 불변성]]
 - [x] [[tech/computer-science/js/Prototype-OOP|Prototype 기반 OOP]]
+- [x] [[tech/computer-science/js/Code-Readability-Dark-Patterns|코드 가독성 & JS 다크패턴 (Don't Make Me Think)]]
+- [x] [[Readable-Code-Cognition|코드 가독성의 인지과학 (작업 기억·청킹·시스템1/2·게슈탈트·예측 부호화)]]
 
 ## Java
 - [ ] [[Java|Java 기초]]

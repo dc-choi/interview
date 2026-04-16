@@ -31,6 +31,8 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 로민 | https://www.wanted.co.kr/wd/352668 | DevOps, AWS/K8s |
 | 원프레딕트 | https://www.wanted.co.kr/wd/348225 | DevOps, K8s/ArgoCD |
 | 에이아이트릭스 | https://www.wanted.co.kr/wd/345372 | DevOps/SRE 5년+ |
+| 에임인텔리전스 | https://career.aim-intelligence.com/ko/o/210763 | Backend, TypeScript, AI Safety 플랫폼. 3개월 계약 후 정규직 전환 조건 확인 필요 |
+| 도르코퍼레이션(DOR) | https://career.dor.gg/position/community/backend | Backend, Node.js/TS/MySQL, 게이밍 커뮤니티. SF 근무 조건·원격 여부 확인 필요 |
 
 ## 지원 완료 (응답 대기)
 

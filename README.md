@@ -8,34 +8,34 @@
 ## 목차
 
 ### 기초(Fundamentals)
-- [[tech/computer-science/CS&프로그래밍(CS&Programming)|CS&프로그래밍(CS&Programming)]] (10/11)
-- [[tech/web/웹&네트워크(Web&Network)|웹&네트워크(Web&Network)]] (3/10)
-- [[tech/os-runtime/OS&런타임(OS&Runtime)|OS&런타임(OS&Runtime)]] (24/29)
+- [[tech/computer-science/CS&프로그래밍(CS&Programming)|CS&프로그래밍(CS&Programming)]] (33/34)
+- [[tech/web/웹&네트워크(Web&Network)|웹&네트워크(Web&Network)]] (6/13)
+- [[tech/os-runtime/OS&런타임(OS&Runtime)|OS&런타임(OS&Runtime)]] (26/34)
 
 ### 데이터(Data)
-- [[tech/database/데이터&저장소(Data&Storage)|데이터&저장소(Data&Storage)]] (21/27)
-- [[tech/messaging-data-pipeline/메시징&파이프라인(Messaging&Pipeline)|메시징&파이프라인(Messaging&Pipeline)]] (7/19)
+- [[tech/database/데이터&저장소(Data&Storage)|데이터&저장소(Data&Storage)]] (31/40)
+- [[tech/messaging-data-pipeline/메시징&파이프라인(Messaging&Pipeline)|메시징&파이프라인(Messaging&Pipeline)]] (10/26)
 
 ### 설계&성능(Design&Performance)
-- [[tech/architecture-design/아키텍처&설계(Architecture&Design)|아키텍처&설계(Architecture&Design)]] (3/11)
-- [[tech/performance-scalability/성능&확장성(Performance&Scalability)|성능&확장성(Performance&Scalability)]] (0/14)
+- [[tech/architecture-design/아키텍처&설계(Architecture&Design)|아키텍처&설계(Architecture&Design)]] (11/17)
+- [[tech/performance-scalability/성능&확장성(Performance&Scalability)|성능&확장성(Performance&Scalability)]] (2/16)
 
 ### 운영&인프라(Operations&Infrastructure)
-- [[tech/infrastructure-cloud/인프라&클라우드(Infrastructure&Cloud)|인프라&클라우드(Infrastructure&Cloud)]] (6/21)
-- [[tech/ci-cd/CICD&배포(CICD&Delivery)|CICD&배포(CICD&Delivery)]] (2/12)
-- [[tech/observability/관측가능성(Observability)|관측가능성(Observability)]] (0/14)
-- [[tech/reliability/안정성엔지니어링(Reliability)|안정성엔지니어링(Reliability)]] (1/10)
+- [[tech/infrastructure-cloud/인프라&클라우드(Infrastructure&Cloud)|인프라&클라우드(Infrastructure&Cloud)]] (6/32)
+- [[tech/ci-cd/CICD&배포(CICD&Delivery)|CICD&배포(CICD&Delivery)]] (2/13)
+- [[tech/observability/관측가능성(Observability)|관측가능성(Observability)]] (5/17)
+- [[tech/reliability/안정성엔지니어링(Reliability)|안정성엔지니어링(Reliability)]] (2/12)
 
 ### 품질&보안(Quality&Security)
-- [[tech/testing-quality/테스트&품질(Testing&Quality)|테스트&품질(Testing&Quality)]] (5/9)
-- [[tech/security/보안(Security)|보안(Security)]] (6/16)
+- [[tech/testing-quality/테스트&품질(Testing&Quality)|테스트&품질(Testing&Quality)]] (6/15)
+- [[tech/security/보안(Security)|보안(Security)]] (8/22)
 
 ### 비즈니스&제품(Business&Product)
 - [[biz/비즈니스&제품(Business&Product)|비즈니스&제품(Business&Product)]] (10/10)
 
 ### 기타(Others)
-- [[tech/fin-ops/비용&운영(FinOps)|비용&운영(FinOps)]] (0/8)
-- [[tech/senior/시니어역량(SeniorEngineer)|시니어역량(SeniorEngineer)]] (11/12)
+- [[tech/fin-ops/비용&운영(FinOps)|비용&운영(FinOps)]] (0/10)
+- [[tech/senior/시니어역량(SeniorEngineer)|시니어역량(SeniorEngineer)]] (14/24)
 - [[FIT|Interview Fit]]
 
 ---
@@ -51,6 +51,7 @@
 - [[Developer-Hiring-Insights|채용인사이트]] — 기업이 원하는 역량, 개발자 역량, 스터디/프로젝트 자산, 학습 로드맵, 시니어 성장 축
 - [[Interview-Soft-Skills|인성면접 가이드]] — 메타인지, 하드/소프트스킬, 컬처핏, STAR 기법, 인성면접 예시 질문, 기술면접 탈락 요인
 - [[Growth-Principles|성장의 7가지 원칙]] — 반복, 실전, 회고, 실험, 자기효능감, 습관화, 소셜화, 계단식 성장
+- [[Startup-Is-Not-Kindergarten|스타트업은 유치원이 아니다]] — 직설 피드백 문화, 작업물·인격 분리, 프로 스포츠 선수 비유
 - [[Retrospective-Methods|회고 기법]] — CSS, 4L, KPT, TIL, WIW 애자일 회고 프레임
 - [[Common-Interview-Questions|자주하는 면접 질문]] — 1차 기술 질문(꼬꼬무 유도형), Behavioral 질문, Q&A 활용법
 - [[Zerobase-Career-Seminar|제로베이스 취업설명회]] — 전자공시 활용, 자소서 정량화, 하향지원 전략

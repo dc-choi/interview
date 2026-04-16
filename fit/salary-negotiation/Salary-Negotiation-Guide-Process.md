@@ -6,8 +6,6 @@ aliases: ["연봉 협상 프로세스", "Salary Negotiation Process"]
 ---
 # 연봉 협상 가이드 — 프로세스와 실전
 
-> 출처: Career Repotting Project 연봉협상 가이드북 (정구철), 이직의 정석 뉴스레터, 이공이공 처우 협상 실전 사례
-
 협상 우선순위, 프로세스, 대안, 가이드라인, 실전 사례, 면접 질문 대응, 메일 템플릿을 다룬다.
 
 ---
@@ -172,6 +170,12 @@ aliases: ["연봉 협상 프로세스", "Salary Negotiation Process"]
 ```
 
 ---
+
+## 출처
+
+- Career Repotting Project 연봉협상 가이드북 (정구철)
+- 이직의 정석 뉴스레터
+- 이공이공 처우 협상 실전 사례
 
 ## 관련 문서
 
