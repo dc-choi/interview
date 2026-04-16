@@ -16,6 +16,8 @@ aliases: ["보안(Security)", "Security"]
 - [x] [[CSRF|CSRF Protection]]
 - [x] [[CORS|CORS / CSP]]
 - [x] [[Password-Hashing|패스워드 해싱 (argon2, Salt, TLS)]]
+- [x] [[Public-Key-Cryptography|공개키 암호 · 비대칭키 (대칭/비대칭 하이브리드, PKI, MITM)]]
+- [x] [[RSA-Encryption|RSA 암호화 (소인수분해 난제, 키 생성·암복호·서명, OAEP/PSS 패딩)]]
 
 ## 현장사례
 - [[Kakao-Ent-Seminar#보안|카카오엔터 보안]] — 서비스 접근 권한, 네트워크 망 설정
