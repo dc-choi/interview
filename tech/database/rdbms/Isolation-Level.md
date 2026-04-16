@@ -74,7 +74,11 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 - INSERT 동시성이 중요하고 Phantom Read를 앱에서 감수 가능 → **RC**
 - 대부분의 경우 InnoDB 기본값 RR로 충분
 
+## 출처
+- [m0rph2us — MySQL Isolation Level 이해하기](https://m0rph2us.github.io/mysql/transaction/2020/07/06/understanding-mysql-isolation-level.html)
+
 ## 관련 문서
+- [[Isolation-Level-Beyond-ANSI|ANSI 격리의 한계 · Strict Serializable · Snapshot Isolation]]
 - [[Transactions|트랜잭션]]
 - [[Lock|DB Lock]]
 - [[Index]]

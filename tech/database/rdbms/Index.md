@@ -92,6 +92,64 @@ aliases: ["Index"]
 - EXPLAIN에서 Extra 컬럼에 `Using index`가 표시되면 커버링 인덱스가 적용된 것이다.
 - 랜덤 I/O를 줄여 성능 향상 효과가 크지만, 인덱스에 컬럼을 과도하게 추가하면 CUD 성능이 저하되므로 균형이 필요하다.
 
+## 인덱스 추가의 운영 리스크
+
+인덱스는 Read 성능을 올리지만 **CUD 성능·운영 안정성에 부채**를 남긴다. 특히 **운영 중인 테이블에 인덱스를 추가** 하는 것은 조회만큼 위험한 작업.
+
+### Command/Query 비용 비대칭성
+
+- **Query 비용은 선형 감소** (인덱스 타면 빠름)
+- **Command 비용은 인덱스 수에 비례 증가** — INSERT/UPDATE/DELETE마다 인덱스 각각 유지 필요
+- 쓰기 트래픽이 많은 테이블에 인덱스를 늘리면 **쓰기 TPS 절벽**
+- 이미 충분한 인덱스가 있으면 추가 효과가 미미한데 부담은 그대로
+
+### 운영 중 추가의 함정
+
+- PostgreSQL/MySQL에서 인덱스 생성이 **긴 락** 을 걸 수 있음 (테이블 락 또는 강한 row 락)
+- 운영 중 추가 시 트랜잭션이 대기 → 전체 서비스 지연 → 장애
+- PostgreSQL의 `CREATE INDEX CONCURRENTLY`, MySQL의 `ALGORITHM=INPLACE` 같은 **Online DDL** 사용 여부 확인 필수
+- 복제 환경이면 **Replica lag**도 폭증 가능
+
+### 사전 확인 체크리스트
+
+1. **해당 테이블의 쓰기 트래픽** — 평균 TPS·피크 TPS
+2. **기존 인덱스 목록** — 정말 새 인덱스가 필요한지 (기존으로 커버 가능한지)
+3. **예상 Query 개선 효과** — `EXPLAIN`으로 인덱스 사용 여부·비용 추정
+4. **Online DDL 지원 여부** — 락 종류와 소요 시간
+5. **Replica 영향** — 복제 지연 예상
+6. **롤백 계획** — 인덱스 생성 중 중단·제거가 안전하게 가능한가
+7. **피크 시간 회피** — 트래픽 낮은 시간대 진행
+
+### 장애 발생 시 긴급 조치
+
+운영 DB에서 인덱스 추가 후 장애 발생 시:
+
+```sql
+-- PostgreSQL 예
+SELECT pid, query, state, wait_event
+FROM pg_stat_activity
+WHERE state != 'idle';
+
+-- 원인 프로세스 종료
+SELECT pg_cancel_backend(<pid>);   -- soft
+SELECT pg_terminate_backend(<pid>); -- hard
+
+-- 인덱스 롤백
+DROP INDEX CONCURRENTLY idx_name;
+```
+
+**원칙**: 운영 DB에서 **되돌릴 수 있는 작업** 먼저, 구조 변경은 사전 검토·소통 필수.
+
+### 운영 DB 조작 사전 합의 프로세스
+
+장애 재발 방지를 위해 팀 차원의 내규:
+
+- **운영 DB DDL/대량 DML**은 반드시 팀 사전 리뷰
+- **실행자와 리뷰어 2인 이상** 확인
+- **피크 시간 회피**와 **롤백 스크립트** 준비
+- **변경 로그** 를 공유 저장소에 기록 (Notion·Confluence·Slack 채널)
+- **사고 후 포스트모템**으로 재발 방지 항목 도출
+
 ## 관련 문서
 - [[B-Tree-Index-Depth|B-Tree 인덱스 깊이 분석]] — 페이지 구조와 PK 사이즈로 본 깊이 산정
 - [[Transactions|트랜잭션]]
