@@ -122,8 +122,15 @@ aliases: ["이직 전략", "Job Search Strategy", "채용공고 분석"]
 - 포인트는 **회사 업무 안에서의 성장**
 - 내가 공부한 내용을 기반으로 회사 업무에 녹여낼 수 있으면 최고의 성장
 
+## 출처
+- [brunch promiseys — 개발자 이직 가이드](https://brunch.co.kr/@promiseys/3)
+
 ## 관련 문서
 - [[FIT|Interview Fit]]
 - [[Resume-Portfolio-Guide|이력서 & 포트폴리오 가이드]]
+- [[Resume-15-Second-Rules|이력서 15초 승부 · 5원칙]]
+- [[Company-Selection-Criteria|회사 선택 기준]]
+- [[Salary-Trajectory|연봉 궤적 전략]]
 - [[Developer-Hiring-Insights|채용 인사이트]]
+- [[Global-IT-Interview|글로벌 IT 인터뷰 준비]]
 - [[Zerobase-Career-Seminar|제로베이스 취업설명회]]
