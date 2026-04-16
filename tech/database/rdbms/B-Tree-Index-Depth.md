@@ -76,6 +76,7 @@ InnoDB의 B+Tree 인덱스가 **수십억 행 규모에서도 깊이 4 이내로
 
 ## 출처
 - [mysqlinternal.com — B-Tree 인덱스의 깊이에 대해서](https://mysqlinternal.com/2024/10/31/b-tree-%ec%9d%b8%eb%8d%b1%ec%8a%a4%ec%9d%98-%ea%b9%8a%ec%9d%b4%ec%97%90-%eb%8c%80%ed%95%b4%ec%84%9c/)
+- [velog 480 — B-Tree 알고리즘 : DB 인덱스의 내부 알고리즘](https://velog.io/@480/B-Tree-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-DB-%EC%9D%B8%EB%8D%B1%EC%8A%A4%EC%9D%98-%EB%82%B4%EB%B6%80-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98)
 
 ## 관련 문서
 - [[Index|Index 기본 (B-Tree, 커버링, 카디널리티)]]
