@@ -22,6 +22,7 @@ aliases: ["비즈니스&제품(Business&Product)", "Business & Product"]
 - [x] [[GTM-Strategy|Go-to-Market 전략]]
 - [x] [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
 - [x] [[User-Feedback|사용자 피드백 관리]]
+- [x] [[Community-Dark-Patterns|커뮤니티·프로덕트 다크 패턴 (리텐션 vs 조작, 윤리 경계, 4가지 판별 질문)]]
 
 ## 분석 & 관리
 - [x] [[Metrics-Framework|지표 설계 & North Star Metric]]
