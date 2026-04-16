@@ -67,6 +67,8 @@ Aggregate가 소유하기 애매한 경우 도메인 서비스를 둔다.
 정확한 비즈니스 이해가 견고한 시스템을 만든다.
 
 ## 관련 문서
+- [[DDD-Hexagonal-In-Production|DDD + Hexagonal 실무 경험 (부릉 7년)]]
+- [[Hexagonal-In-Practice|Hexagonal 실전 적용]]
 - [[OOP|OOP / SOLID]]
 - [[VO-DTO]]
 - [[Layered-Clean-Hexagonal|Layered / Clean / Hexagonal]]

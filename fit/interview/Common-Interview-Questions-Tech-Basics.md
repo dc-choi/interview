@@ -7,8 +7,6 @@ aliases: ["Common Interview Questions Tech Basics", "기술 질문 기본"]
 
 # 자주하는 면접 질문 — 1차 기술 질문 (기본)
 
-> 출처: 개발자 취업과 이직 한방에 해결하기
-
 브라우저·HTTP·REST·STAR·성능 테스트 등 **기초 개념을 묻는 1차 기술 질문** 4개. 답변 안에 꼬꼬무(꼬리질문)를 유도할 키워드를 심어두는 것이 핵심.
 
 ---
@@ -108,6 +106,9 @@ aliases: ["Common Interview Questions Tech Basics", "기술 질문 기본"]
 > 참고: [[성능&확장성(Performance&Scalability)|성능&확장성]]
 
 ---
+
+## 출처
+- 개발자 취업과 이직 한방에 해결하기
 
 ## 관련 문서
 - [[Common-Interview-Questions|자주하는 면접 질문 (인덱스)]]

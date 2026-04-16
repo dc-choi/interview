@@ -84,6 +84,7 @@ Q. Layered와 Clean Architecture의 차이는?
 - Clean: 바깥→안쪽 의존, Domain이 중심이고 Infrastructure가 바깥
 
 ## 관련 문서
+- [[Hexagonal-In-Practice|Hexagonal 실전 적용 (Port/Adapter 디렉토리 구조와 NestJS 매핑)]]
 - [[DDD|DDD (Aggregate, CQRS, 도메인 서비스)]]
 - [[OOP|OOP / SOLID]]
 - [[App-Architecture-OOP|애플리케이션 아키텍처와 객체지향]]

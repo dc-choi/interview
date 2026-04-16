@@ -7,8 +7,6 @@ aliases: ["Common Interview Questions Behavioral", "Behavioral 질문"]
 
 # 자주하는 면접 질문 — Behavioral 질문
 
-> 출처: 개발자 취업과 이직 한방에 해결하기
-
 STAR 구조 기반 **인성·태도·경험 중심 질문**, 면접 말미의 **Q&A(역질문) 활용법**, 그리고 **처우 협상 접근**까지 정리.
 
 ---
@@ -138,6 +136,9 @@ STAR 구조 기반 **인성·태도·경험 중심 질문**, 면접 말미의 **
 > 자세한 내용은 [[Salary-Negotiation-Guide|연봉 협상 가이드]] 참조.
 
 ---
+
+## 출처
+- 개발자 취업과 이직 한방에 해결하기
 
 ## 관련 문서
 - [[Common-Interview-Questions|자주하는 면접 질문 (인덱스)]]

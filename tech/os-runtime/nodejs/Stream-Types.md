@@ -22,6 +22,37 @@ aliases: ["Stream Types", "스트림 타입"]
 예: fs.createReadStream(), http.IncomingMessage (req), process.stdin
 ```
 
+**push() 반환값과 피드백 신호**
+Readable 스트림을 직접 구현할 때 `push(chunk)`는 **boolean을 반환**하며, 이것이 backpressure 피드백이다.
+- `true` → highWaterMark 미도달, 계속 push 가능
+- `false` → highWaterMark 도달, 더 이상 push하지 말 것 (강제는 아니지만 권장)
+
+**동기 push의 함정**: `_read()` 내부에서 여러 chunk를 **동기적으로** push하면, 스트림은 `push(null)`(종료)을 만날 때까지 `_read()`를 계속 호출하려 한다. 이로 인해 **버퍼가 highWaterMark를 넘어 폭증**할 수 있다.
+
+```js
+// BAD: 동기 push 남용 → 버퍼 오버플로우 가능
+new Readable({
+  read() {
+    this.push('a');
+    this.push('b');
+    this.push('c');
+  }
+});
+
+// GOOD: process.nextTick으로 지연시켜 이벤트 루프에 제어권 반환
+new Readable({
+  read() {
+    process.nextTick(() => {
+      this.push('a');
+      this.push('b');
+      this.push('c');
+    });
+  }
+});
+```
+
+파일 I/O나 네트워크처럼 **실제로 비동기 대기**가 개입되면 자연스럽게 이 함정을 피하게 되지만, 인메모리 데이터로 스트림을 만들 때는 명시적으로 비동기화해야 한다.
+
 ### 2. Writable
 ```
 데이터를 쓸 수 있는 스트림.

@@ -7,8 +7,6 @@ aliases: ["Retrospective Methods", "회고 기법", "애자일 회고"]
 
 # 애자일 회고 기법
 
-> 출처: 개발자 취업과 이직 한방에 해결하기
-
 회고는 성장의 핵심이다. ([[Growth-Principles#3.회고(Reflection)|성장의 7가지 원칙 — 회고]] 참조)
 **"오늘 당장 뭘 할 건가?"로 구체화되지 않으면 회고는 깨달음만 반복하는 자기만족이 된다.**
 
@@ -119,6 +117,9 @@ aliases: ["Retrospective Methods", "회고 기법", "애자일 회고"]
 
 **Q. 실패 경험과 극복 과정은?**
 - 회고(4L의 Lacked/Longed For) → 실험(Try) → 자기효능감 회복의 스토리로 구성
+
+## 출처
+- 개발자 취업과 이직 한방에 해결하기
 
 ## 관련 문서
 - [[Growth-Principles|성장의 7가지 원칙]]
