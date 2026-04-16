@@ -19,3 +19,11 @@ aliases: ["Spring"]
 관점 지향 프로그래밍으로 공통 관심사를 모듈화하여 핵심 비즈니스 로직과 분리하는 프로그래밍 패러다임이다.
 
 AOP를 사용하면 비즈니스 로직과 공통 관심사를 분리할 수 있다. 즉, 비즈니스 로직에 영향을 주지 않고도 공통 관심사를 변경할 수 있다.
+
+## 상세 주제
+
+- [[Servlet-vs-Spring-Container|Servlet Container vs Spring Container (DispatcherServlet, Thread-per-Request, 싱글톤 Bean)]]
+- [[Spring-Request-Lifecycle|Spring 요청 처리 흐름 (Tomcat → DispatcherServlet → Controller, 부팅 순서, Request-per-Thread)]]
+- [[Spring-Exception-Handling|Spring 예외 처리 전략 (@ExceptionHandler · @ControllerAdvice · Filter 예외)]]
+- [[Spring-Transactional|@Transactional (Propagation·Isolation·readOnly, 자기 호출 함정)]]
+- [[JPA-Persistence-Context|JPA 영속성 컨텍스트 · N+1 (1차 캐시·Dirty Checking·Fetch Join)]]

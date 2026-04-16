@@ -70,6 +70,8 @@ Controller (Interface Adapters)
 - 핵심 비즈니스 로직이 변경되어도 UseCase별 영향 최소화
 - 고객사별 커스텀 요구를 UseCase 레벨에서만 분기해서 해결
 
+자세한 NestJS 매핑(포트 인터페이스·Symbol 토큰·테스트 교체 전략): [[Clean-Architecture-NestJS|NestJS Clean Architecture 실전]]
+
 ### [[Controller]]
 
 ### [[Provider]]
