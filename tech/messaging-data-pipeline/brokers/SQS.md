@@ -119,6 +119,10 @@ Consumer ← Receive ← [Visibility Timeout 시작]
 - 64KB 단위로 청구 (256KB 메시지 = 4건)
 - 같은 리전 내 AWS 서비스 간 데이터 전송 무료
 
+## 출처
+- [채널톡 — AWS SQS 도입기](https://channel.io/ko/blog/tech-backend-aws-sqs-introduction)
+- [SK DEVOCEAN — SQS 연재 (소개·Terraform·Spring JMS·Spring Cloud)](https://devocean.sk.com/experts/techBoardDetail.do?ID=163294)
+
 ## 관련 문서
 - [[EventBridge|EventBridge]]
 - [[Messaging-Patterns|메시징 패턴]]
