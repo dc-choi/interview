@@ -14,6 +14,10 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [[TS-Backend-Meetup-1#로그 적재 비용 개선기|로그 비용 개선기]] — FluentBit+Firehose+S3, 300$->2$ 사이드카 패턴
 - [[Metric-Layer-Mismatch|CloudWatch 0% vs Grafana 100%]] — 같은 CPU가 다른 값으로 보인 사건, iowait·측정 레이어 차이
 
+## 기본 개념
+- [x] [[Logs-vs-Metrics|로그 vs 메트릭 vs 추적 (카디널리티·보관·알림 설계 원칙)]]
+- [x] [[Ops-Level-Indicator|운영 레벨 지표 (여러 메트릭을 단일 단계로 압축·시간대 정규화·플레이북)]]
+
 ## Logging
 - [x] [[Structured-Logging|Structured logging]]
 - [x] [[Correlation-ID|Correlation ID / Trace ID]]
