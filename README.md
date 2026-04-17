@@ -13,11 +13,11 @@
 - [[tech/os-runtime/OS&런타임(OS&Runtime)|OS&런타임(OS&Runtime)]] (39/47)
 
 ### 데이터(Data)
-- [[tech/database/데이터&저장소(Data&Storage)|데이터&저장소(Data&Storage)]] (38/47)
+- [[tech/database/데이터&저장소(Data&Storage)|데이터&저장소(Data&Storage)]] (47/56)
 - [[tech/messaging-data-pipeline/메시징&파이프라인(Messaging&Pipeline)|메시징&파이프라인(Messaging&Pipeline)]] (13/28)
 
 ### 설계&성능(Design&Performance)
-- [[tech/architecture-design/아키텍처&설계(Architecture&Design)|아키텍처&설계(Architecture&Design)]] (15/21)
+- [[tech/architecture-design/아키텍처&설계(Architecture&Design)|아키텍처&설계(Architecture&Design)]] (16/21)
 - [[tech/performance-scalability/성능&확장성(Performance&Scalability)|성능&확장성(Performance&Scalability)]] (6/18)
 
 ### 운영&인프라(Operations&Infrastructure)
