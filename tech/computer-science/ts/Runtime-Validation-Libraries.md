@@ -170,6 +170,34 @@ npx zod-aot check src/schemas.ts --fail-under 80 --json
 - **Set/Map을 JSON으로 표현 불가** — Ajv·Typia는 이 타입 지원 제한. Zod AOT만 네이티브
 - **"가장 빠른 라이브러리" 고정 정답 없음** — 유효/무효 비율·객체 크기·타입 특성에 따라 다름
 
+## NestJS에서 Zod 사용 팁
+
+NestJS 공식 문서의 Zod Validation Pipe 예시는 **구버전 기준**. Zod v4에서 깨지는 부분 정리:
+
+### v4에서 바뀐 점
+- `ZodSchema` 타입은 **deprecated** → `ZodType`으로 교체
+- 모듈 경로는 `'zod/v4'` (v3와 병행 설치 지원)
+
+```ts
+import { ZodType } from 'zod/v4';
+
+@Injectable()
+export class ZodValidationPipe implements PipeTransform {
+  constructor(private schema: ZodType) {}
+
+  transform(value: unknown) {
+    return this.schema.parse(value);  // 실패 시 ZodError
+  }
+}
+```
+
+### nestjs-zod 라이브러리
+- DTO를 Zod 스키마로 정의 + 자동 Validation Pipe 연동
+- 단, **Zod v4 대응이 늦음** — 최신 Zod 쓰려면 수동 구성, 편의 우선이면 nestjs-zod + Zod v3 유지
+- 라이브러리 업데이트 시점까지 수동 Pipe 쓰는 게 안전
+
+v4의 성능 개선(파싱 속도 향상)이 탐나도, 프로덕션에선 **라이브러리 호환성·안정성을 우선**하는 게 일반적.
+
 ## 면접 체크포인트
 
 - TS 타입과 **런타임 검증의 차이**
@@ -182,6 +210,7 @@ npx zod-aot check src/schemas.ts --fail-under 80 --json
 
 ## 출처
 - [dev.to @wakita181009 — Zod vs Typia vs Ajv, Vite 플러그인](https://dev.to/wakita181009/zod-vs-typia-vs-ajv-i-built-a-vite-plugin-that-makes-zod-60x-faster-with-zero-code-changes-1poc)
+- [velog @miinhho — NestJS에서 Zod v4 적용해보기](https://velog.io/@miinhho/Nest.js-%EC%97%90%EC%84%9C-Zod-v4-%EC%A0%81%EC%9A%A9%ED%95%B4%EB%B3%B4%EA%B8%B0)
 
 ## 관련 문서
 - [[TypeScript-AST|TypeScript와 AST (컴파일러 파이프라인)]]
