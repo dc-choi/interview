@@ -79,7 +79,63 @@ Q. Access Token이 탈취되면?
 - 짧은 만료 시간(15분 등)으로 피해 범위 제한
 - Refresh Token과 달리 서버에서 즉시 무효화하기 어려우므로 만료 시간이 핵심 방어선
 
+## 프론트엔드 중복 재발급 요청 처리
+
+서버 측 RTR 설계 외에, **클라이언트 측 동시 401 처리**도 중요. 한 페이지가 여러 API를 병렬 호출했는데 전부 401이 떨어지면 **같은 Refresh Token으로 동시 재발급 요청 N개** 발생.
+
+### 문제
+```
+API A → 401 → refresh 요청 (1)
+API B → 401 → refresh 요청 (2)   ← 중복
+API C → 401 → refresh 요청 (3)   ← 중복
+```
+
+RTR이면 요청 (1)이 성공하는 순간 원래 RT 무효 → (2)·(3) 실패 → 가족 감지 로직이 오인해 **가족 전체 강제 로그아웃** 트리거.
+
+### 해결: 큐·Mutex 패턴
+
+첫 401이 refresh 시작하면 나머지는 **대기열**에 추가. refresh 완료 후 큐의 모든 요청을 새 토큰으로 재시도.
+
+```
+class TokenRefreshQueue {
+  private isRefreshing = false;
+  private queue: Array<(token: string) => void> = [];
+
+  async getToken(): Promise<string> {
+    if (this.isRefreshing) {
+      // 대기열에 추가
+      return new Promise(resolve => this.queue.push(resolve));
+    }
+
+    this.isRefreshing = true;
+    try {
+      const newToken = await fetchRefresh();
+      this.queue.forEach(fn => fn(newToken));
+      this.queue = [];
+      return newToken;
+    } finally {
+      this.isRefreshing = false;
+    }
+  }
+}
+```
+
+### 대안: 검증된 라이브러리
+- **`axios-auth-refresh`**: Axios 인터셉터 형태. 대기열·재시도 내장
+- Apollo Client `errorLink`·**`@tanstack/query`** 커스텀 retry
+
+자체 구현은 학습용엔 좋지만 **실전은 검증된 라이브러리** 권장. 엣지 케이스(refresh 자체 실패·네트워크 오류·동시 로그아웃) 모두 처리.
+
+### 백엔드·프론트 협업
+- 백엔드: RTR로 탈취 감지
+- 프론트: 큐 패턴으로 중복 요청 제거
+- 둘 중 하나만 있으면 **"정상 사용자인데 강제 로그아웃"** 오탐 발생
+
+## 출처
+- [velog @miinhho — 중복 토큰 재발급 요청으로 백엔드에 부담을 줘볼까요](https://velog.io/@miinhho/%EC%A4%91%EB%B3%B5-%ED%86%A0%ED%81%B0-%EC%9E%AC%EB%B0%9C%EA%B8%89-%EC%9A%94%EC%B2%AD%EC%9C%BC%EB%A1%9C-%EB%B0%B1%EC%97%94%EB%93%9C%EC%97%90-%EB%B6%80%EB%8B%B4%EC%9D%84-%EC%A4%98%EB%B3%BC%EA%B9%8C%EC%9A%94)
+
 ## 관련 문서
 - [[JWT]]
 - [[Session]]
 - [[CSRF|CSRF Protection]]
+- [[Race-Condition-Patterns|Race Condition 패턴 (async-mutex)]]

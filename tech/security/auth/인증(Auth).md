@@ -10,6 +10,7 @@ aliases: ["Auth", "Authentication"]
 Session·JWT·OAuth2·FIDO·Refresh Token — 인증 방식과 토큰 관리.
 
 ## 목차
+- [x] [[Auth-Method-Selection|인증 방식 선택 (위치·스키마·상황별 가이드)]]
 - [x] [[Session|Session]]
 - [x] [[JWT|JWT]]
 - [x] [[OAuth2|OAuth2 / OIDC]]
