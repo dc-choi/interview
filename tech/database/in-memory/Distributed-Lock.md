@@ -115,7 +115,14 @@ Lock → 짧은 의사결정(상태 전이) → Unlock
 - 상태 키에도 TTL 설정 (좀비 상태 방지)
 - 작업이 비동기면 **idempotency key** 함께 사용 ([[Idempotency-Key]])
 
+## 출처
+- [우아한형제들 기술블로그 — WMS 재고 이관을 위한 분산 락 사용기](https://techblog.woowahan.com/17416/)
+- [velog @imkkuk — Redis로 동시성 문제 해결하기](https://velog.io/@imkkuk/Redis%EB%A1%9C-%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0%ED%95%98%EA%B8%B0)
+- [4sii — Redis 분산 락](https://4sii.tistory.com/456)
+
 ## 관련 문서
 - [[Lock|DB Lock]]
 - [[Redis-Data-Structures|Redis 자료구조]]
+- [[Redis-Atomic-Operations|Redis 원자적 연산]]
+- [[Race-Condition-Patterns|Race Condition 패턴 (3계층 해결)]]
 - [[Idempotency-Key|멱등성 키]]
