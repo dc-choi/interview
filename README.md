@@ -9,7 +9,7 @@
 
 ### 기초(Fundamentals)
 - [[tech/computer-science/CS&프로그래밍(CS&Programming)|CS&프로그래밍(CS&Programming)]] (51/52)
-- [[tech/web/웹&네트워크(Web&Network)|웹&네트워크(Web&Network)]] (11/18)
+- [[tech/web/웹&네트워크(Web&Network)|웹&네트워크(Web&Network)]] (17/22)
 - [[tech/os-runtime/OS&런타임(OS&Runtime)|OS&런타임(OS&Runtime)]] (39/47)
 
 ### 데이터(Data)
