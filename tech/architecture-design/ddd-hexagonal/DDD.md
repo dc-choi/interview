@@ -66,6 +66,50 @@ Aggregate가 소유하기 애매한 경우 도메인 서비스를 둔다.
 **기술 결정을 미루고 비즈니스 로직을 검증하는 것이 먼저다.**
 정확한 비즈니스 이해가 견고한 시스템을 만든다.
 
+## Strategic Design — 경계·언어·맥락
+
+DDD는 크게 **Strategic Design**(거시적 경계 분할)과 **Tactical Design**(구체 구현 패턴)으로 나뉜다. MSA 전환·조직 확대 국면에서는 Strategic Design이 먼저다.
+
+### Ubiquitous Language — 공통 언어
+
+도메인 전문가·개발자·아키텍트가 **같은 용어**를 같은 의미로 사용하는 것. 번역 과정이 없으므로 요구사항 왜곡이 줄어든다.
+
+- "주문"이 누구에게는 "장바구니 확정"이고 누구에게는 "결제 완료"면 버그의 원천
+- 코드의 클래스·메서드·DB 컬럼명까지 **이 언어와 일치**해야 함
+- 용어집(Glossary)·도메인 모델 다이어그램을 팀이 같이 유지
+
+### Bounded Context — 맥락 경계
+
+"같은 단어가 다른 의미"인 구간을 **별도 맥락**으로 분리. 한 맥락 안에서는 언어와 모델이 일관되지만, 다른 맥락에서는 같은 용어가 다른 모델을 가진다.
+
+- 전자상거래 예: `Product`가 상품 카탈로그 맥락에서는 "판매 가능한 물건", 창고 맥락에서는 "재고 단위·위치", 배송 맥락에서는 "운송 대상"
+- **MSA 서비스 경계**의 강력한 후보 — 바운디드 컨텍스트가 마이크로서비스 후보
+- 경계가 무너지면 한 변경이 모든 맥락에 번짐
+
+### Context Map — 맥락 간 관계
+
+여러 Bounded Context가 어떻게 연결·통합되는지 그림으로 표현.
+
+- **Partnership**: 양쪽이 같이 성공·실패하는 강한 협력 관계
+- **Shared Kernel**: 두 맥락이 공유하는 작은 모델 (공용 코드·테이블)
+- **Customer-Supplier**: 상류(supplier)가 변경을 통제, 하류(customer)가 의존
+- **Conformist**: 하류가 상류 모델을 그대로 따를 수밖에 없는 관계
+- **Anti-Corruption Layer**: 외부 모델을 내 도메인 언어로 번역하는 어댑터
+- **Published Language**: 여러 컨텍스트가 공유하는 공식 스키마 (JSON·Protobuf)
+
+## Tactical Design — 구체 구현 패턴
+
+Strategic으로 그려낸 각 Bounded Context **내부를 구현**하는 도구들.
+
+- **Entity·Value Object**: 식별자 기반 vs 값 기반
+- **Aggregate·Aggregate Root**: 트랜잭션 경계
+- **Repository**: Aggregate 단위 영속성 추상화
+- **Domain Service**: Aggregate에 속하지 않는 도메인 규칙
+- **Domain Event**: 도메인 내부에서 일어난 사실
+- **Factory**: 복잡한 Aggregate 생성 책임 분리
+
+Tactical은 Strategic이 없으면 의미가 축소된다. **큰 경계 없이 내부 패턴만** 적용하면 빈약한 도메인 모델·거대 Aggregate 같은 안티패턴으로 회귀하기 쉽다.
+
 ## 관련 문서
 - [[DDD-Hexagonal-In-Production|DDD + Hexagonal 실무 경험 (부릉 7년)]]
 - [[Hexagonal-In-Practice|Hexagonal 실전 적용]]
