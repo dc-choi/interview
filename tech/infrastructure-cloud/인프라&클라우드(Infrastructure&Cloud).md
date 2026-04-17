@@ -15,17 +15,12 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/network/인프라네트워크(InfraNetwork)|인프라 네트워크 (Network)]] — DNS·Load Balancer·Reverse Proxy
 
 ## 미작성 — AWS
-- [ ] [[VPC|VPC / Subnet / NAT / SG]]
-- [ ] [[RDS-Aurora|RDS / Aurora]]
-- [ ] [[ElastiCache]]
-- [ ] [[S3]]
 - [ ] [[IAM]]
 - [ ] [[SQS-SNS-EventBridge|SQS / SNS / EventBridge]]
 - [ ] [[CloudWatch]]
 - [ ] [[EBS-Instance-Store|EBS vs Instance store]]
 
 ## 미작성 — Network
-- [ ] [[CDN|CDN (Cache Key, TTL, Invalidation)]]
 - [ ] [[NAT-Subnet|NAT / Public vs Private subnet]]
 
 ## 미작성 — Kubernetes

@@ -112,6 +112,7 @@ aliases: ["Load Balancer", "로드밸런서"]
 ## 출처
 - [Tecoble — 로드 밸런싱이란](https://tecoble.techcourse.co.kr/post/2021-11-07-load-balancing/)
 - [samwho.dev — Load Balancing](https://samwho.dev/load-balancing/)
+- [devpill — 로드 밸런싱 알고리즘 5가지 전략](https://maily.so/devpill/posts/67aebb20)
 
 ## 관련 문서
 - [[IaC|IaC]]
