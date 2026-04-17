@@ -9,6 +9,21 @@ aliases: ["HTTP Content-Type", "Content-Type", "MIME Type"]
 
 `Content-Type` 헤더는 **요청/응답 본문의 미디어 타입(MIME Type)을 알려주는 메타 정보**다. 수신 측이 바디를 어떤 형식으로 파싱할지 결정하는 단서이며, 잘못 지정하면 JSON 요청이 쿼리 파라미터로 해석되거나 파일 업로드가 깨지는 등 프로토콜 호환성이 곧바로 무너진다.
 
+## 표현 헤더 (Representation Headers)
+
+`Content-Type`은 **표현 헤더(Representation Headers)** 그룹에 속한다. 이 그룹은 메시지 바디의 데이터를 **어떻게 해석할지**에 필요한 메타데이터를 묶은 것으로:
+
+| 헤더 | 역할 |
+|---|---|
+| `Content-Type` | 데이터의 미디어 타입 (JSON·HTML·이미지 등) |
+| `Content-Encoding` | 압축·인코딩 방식 (`gzip`, `br`, `deflate`) |
+| `Content-Language` | 자연어 (`ko`, `en-US`) |
+| `Content-Length` | 본문 바이트 수 |
+
+이 헤더들의 공통 역할은 **바디 자체를 설명**하는 것. 요청·응답 메시지의 **전송 방식**을 결정하는 것이 아니라, 바디에 담긴 **데이터**를 수신 측이 올바르게 해석하도록 돕는다.
+
+혼동 포인트: `Transfer-Encoding: chunked` 같은 **전송 헤더(Transport Headers)**는 "어떻게 운송할지"를 결정 → 표현 헤더와 층위가 다름. 표현 헤더는 hop-by-hop이 아니라 end-to-end 의미.
+
 ## 형식
 
 ```
@@ -105,6 +120,7 @@ hello
 - 파일 업로드에 `multipart/form-data`가 필요한 이유
 - REST API에서 `application/json` + UTF-8이 기본인 이유
 - Content negotiation이 언제 유용하고 언제 과한가
+- **표현 헤더 vs 전송 헤더** 차이 (바디 설명 vs 운송 방식)
 
 ## 출처
 - [6991httam — REST API Content-Type 설정](https://6991httam.medium.com/rest-api-content-type-%EC%84%A4%EC%A0%95-c903e06a9936)
