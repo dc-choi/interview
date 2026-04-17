@@ -66,6 +66,62 @@ main 브랜치에 push될 때 변경 감지 후 자동 배포한다.
 - `latest` — 항상 최신 배포 버전을 가리킴
 - `${{ github.sha }}` — 커밋 해시로 특정 빌드를 추적, 롤백 시 유용
 
+## 속도 최적화 — CI 시간을 수 분 → 수십 초로
+
+CI 시간이 길면 개발자의 컨텍스트 스위칭·PR 리뷰 속도·배포 주기 모두 악화된다. 실제 사례에서 9분 → 5분, 수 분 → 40초, 15분 → 2분까지 단축한 공통 기법 모음.
+
+### 의존성 캐싱
+
+반복 설치에서 가장 큰 시간을 먹는 부분.
+
+- **`actions/cache`**: `package-lock.json`·`yarn.lock`·`pnpm-lock.yaml` 해시를 cache key로. 같은 lock이면 `node_modules` 재사용 → 1분+ → 20초
+- **`actions/setup-node` cache 옵션**: Node.js 생태계는 `cache: 'npm'` / `'yarn'` / `'pnpm'` 내장 지원 — 별도 `actions/cache` 없이 한 줄로 해결
+- **Gradle/Maven**: `actions/setup-java`의 `cache` 옵션 또는 `~/.gradle/caches` 직접 캐시
+
+### Docker Layer 캐싱
+
+Dockerfile 빌드가 매번 처음부터면 수 분 낭비. GitHub Actions Cache를 스토리지로 쓰는 패턴이 표준.
+
+- `docker/build-push-action@v5`의 `cache-from: type=gha`·`cache-to: type=gha,mode=max`
+- 모노레포·쿨백엔드에서 빌드 시간을 **8분+** 단축한 사례 다수
+- **Dockerfile 계층 순서 최적화**: 자주 변하는 파일(소스 코드·커밋 SHA)을 **뒤쪽 레이어**에 배치해 앞쪽 캐시 무효화 방지
+- **Git commit SHA 인자를 마지막에** — 매 커밋마다 앞 계층의 `assets:precompile` 같은 무거운 단계가 무효화되지 않도록
+
+### 병렬 Job 실행
+
+`needs`로 연결하지 말고 **독립된 Job을 병렬로** 실행하면 실패 피드백이 빨라진다.
+
+- lint·test·build·typecheck를 각각 별도 Job으로 분리
+- 의존성 설치를 setup job에서 한 번 하고, `actions/upload-artifact`·`download-artifact`로 다음 Job에 전달
+- Matrix 빌드로 여러 Node·OS 버전 병렬 검증
+
+### Changed Files만 테스트
+
+전체 테스트를 매번 돌리지 않는다.
+
+- **Jest `--changedSince=origin/main`**: 변경된 파일에 의존하는 테스트만
+- **ESLint + `git diff`**: 변경된 파일만 린트
+- **Nx / Turbo**: 영향받은 패키지만 리빌드·리테스트 (모노레포 필수)
+- 작은 PR에서 테스트 단계가 **2분+** 절감된 사례
+
+### Base Image·Gradle 최적화
+
+- **Base Image 경량화**: `openjdk:11`(250MB) → `amazoncorretto:11`(200MB) → 수 초 단축
+- **Gradle `--parallel` 플래그**: 멀티 모듈 빌드를 병렬로 → 4분 → 2분 45초
+
+### Self-Hosted Runner
+
+GitHub-hosted Runner의 한계(비용·캐시 초기화)를 넘어설 때 선택.
+
+- EC2 Auto Scaling Group + Spot으로 운영하면 비용 70~90% 절감
+- EFS/S3로 캐시 영속화 — Runner 재시작에도 이미지·의존성 유지
+- 장점: 리소스 여유·네트워크 대역폭·캐시 유지
+- 단점: 직접 운영·보안 (GitHub-hosted가 기본)
+
+### 비용 관점
+
+CI 시간 단축은 유료 Minute도 절약한다. GitHub Team 플랜·Public 유료 Minute에서 연 수백만 원 차이가 나는 경우도 있음. **빌드 시간을 GB-Minute 비용으로 환산**해 최적화 우선순위를 정하면 설득력이 좋음.
+
 ## 면접 포인트
 
 Q. CI/CD 파이프라인을 어떻게 설계했는가?
@@ -76,7 +132,20 @@ Q. CI/CD 파이프라인을 어떻게 설계했는가?
 Q. 배포 중 문제 발생 시 롤백은?
 - Docker Hub에 commit SHA 태그로 이미지가 보관되므로, 이전 SHA 태그의 이미지로 `docker compose up` 재실행
 
+Q. CI 시간을 단축하기 위해 어떤 전략을 쓰는가?
+- `actions/cache`로 lock 파일 기반 의존성 캐시
+- Docker Layer 캐시(`type=gha`), Dockerfile 계층 순서 최적화
+- lint·test·build를 별도 Job으로 병렬화
+- Jest `--changedSince`로 영향받는 테스트만 실행
+- 모노레포면 Nx·Turbo로 affected 패키지만 리빌드
+
+## 출처
+- [당근 — CircleCI에서 GitHub Actions로 이전하며 배포 속도 개선하기 (15분 → 2분)](https://medium.com/daangn/circleci에서-github-actions로-이전하며-배포-속도-개선하기-39fc41617993)
+- [뱅크샐러드 — GitHub Action npm cache로 CI 40초 달성](https://blog.banksalad.com/tech/github-action-npm-cache/)
+- [studynote — GitHub Actions CI/CD 트러블슈팅 (9분 → 5분)](https://studynote.oopy.io/trouble-shooting/cicd)
+
 ## 관련 문서
 - [[Docker-Image-Pipeline|Docker image build pipeline]]
 - [[Docker|Docker]]
 - [[Multi-Stage-Build|Multi-stage build]]
+- [[AWS-Cost-Optimization|AWS 비용 최적화 (Self-hosted Runner Spot)]]
