@@ -66,11 +66,15 @@ REST의 핵심 차별점. 네 가지 하위 제약:
 - **명사 중심**, 동사 금지 — `GET /users/1` (O), `GET /getUser?id=1` (X)
 - **복수형 컬렉션** — `/users` (복수), 단일 자원 접근은 `/users/{id}`
 - **슬래시(/)로 계층 표현** — `/users/{id}/devices/{deviceId}`
+- **경로에 최대 1개 ID만** — `/orders/{orderId}/courses/{courseId}` (X), `/orders/{orderId}/courses` 후 필터링 (O). 유연성·유지보수성 향상
 - **말미 슬래시 금지** — `/users/` → `/users`로 리다이렉트하거나 거부
 - **소문자 + 하이픈(-) 사용** — `user_profiles`(X), `user-profiles`(△), **camelCase URI는 피하고 kebab-case** 권장. 언더스코어는 가독성 저하
+- **쿼리 파라미터는 camelCase** — `?userId=123` (O), `?user_id=123` (X). JSON 표준과 일관성
 - **확장자 제외** — `/users.json`(X), `Accept: application/json`으로 대체
-- **행위는 Method로** — `/users/1/activate`처럼 어쩔 수 없이 동사를 써야 할 때는 소수의 예외로 허용(비RESTful)
+- **버전은 경로에 명시적** — `/v1/orders` (O), `/orders?version=1` (X). URL 전용 버전 관리가 가장 흔함
+- **행위는 Method로**, 예외적 동사는 ID 뒤로 — 단순 CRUD는 Method로 충분. 그 외 복잡한 행위만 `POST /orders/{orderId}/cancel` 템플릿 허용
 - **필터·정렬·페이징은 쿼리스트링** — `/users?role=admin&sort=-createdAt&page=2&size=20`
+- **리소스 중심 설계** — DB 테이블 구조를 그대로 노출하지 말 것. 도메인이 제공하는 의미에 집중. 권한 구분도 URI에 섞지 말 것(`/admin/users` vs `/users` 이중화 지양 — 토큰 스코프로 해결)
 
 ## 상태 코드 컨벤션
 
@@ -104,6 +108,19 @@ REST의 핵심 차별점. 네 가지 하위 제약:
 - **버전을 쿼리스트링으로 숨기기** — `/api?version=2`보다 `/v2/...` 또는 `Accept: application/vnd.api+json; version=2`
 - **Stateless 위반** — 서버 세션에 사용자 컨텍스트 저장 → 수평 확장 시 스티키 세션 필요
 
+## API 성능 개선 기법
+
+REST API 자체가 성능 튜닝 대상은 아니지만, 설계·응답 수준에서 흔히 쓰는 기법:
+
+- **페이지네이션** — 컬렉션 조회는 기본 페이징 필수. offset-based는 깊은 페이지에서 느려지므로 **cursor-based**(last-seen id) 권장
+- **필드 선택(Sparse Fieldset)** — `?fields=id,name,email`로 필요한 필드만 응답. GraphQL 스타일 오버페칭 완화
+- **응답 압축** — `Accept-Encoding: gzip, br` 활용. **chunked 전송 시 min-response-size 설정은 무효**
+- **HTTP 캐싱** — `Cache-Control`, `ETag`, `If-None-Match`로 304 응답. CDN·Reverse Proxy 캐시 레이어 활용
+- **N+1 회피** — Repository 계층에서 연관 엔티티 한 번에 로딩(fetch join·DataLoader 패턴)
+- **비동기 처리** — 무거운 작업은 202 Accepted + 폴링/웹훅으로 분리
+- **HTTP/2·HTTP/3** — multiplexing으로 커넥션 수 절감. 정적 리소스 많은 API에 특히 유효
+- **Partial Response** — 대용량 파일은 `Range` 헤더로 부분 요청 허용
+
 ## 면접 체크포인트
 
 - REST 6가지 제약 중 필수 5가지 + 선택 1가지
@@ -112,9 +129,12 @@ REST의 핵심 차별점. 네 가지 하위 제약:
 - PUT과 PATCH, POST와 PUT의 차이(멱등성)
 - HATEOAS가 실무에서 덜 쓰이는 이유(Level 3)
 - RESTful API의 목적이 **성능이 아니라 일관성**이라는 포인트
+- REST vs GraphQL vs gRPC 선택 기준 ([[API-Comparison|비교 문서]] 참고)
 
 ## 출처
 - [gmlwjd9405 — REST와 RESTful API](https://gmlwjd9405.github.io/2018/09/21/rest-and-restful.html)
+- [jojoldu — HTTP API 디자인: URI 편](https://jojoldu.tistory.com/783)
+- [lob-dev — RESTful 설계 원칙에 대한 못다 한 이야기](https://lob-dev.tistory.com/90)
 
 ## 관련 문서
 - [[HTTP-Content-Type|HTTP Content-Type · MIME Type]]
