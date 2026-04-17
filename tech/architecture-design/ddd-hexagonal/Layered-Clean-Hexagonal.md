@@ -33,6 +33,46 @@ Robert C. Martin(Uncle Bob)이 제안. **의존성 규칙(Dependency Rule)**이 
 
 **의존성 규칙:** 바깥 원은 안쪽 원에 의존할 수 있지만, 안쪽 원은 바깥 원을 모른다.
 
+### 왜 "DB가 중심"이면 안 되는가
+
+레이어드 아키텍처의 가장 큰 함정은 **DB가 사실상 최상위 중심**이 되는 것. 원칙은 "Presentation → Business → Data"지만 실제로는:
+
+- ORM의 엔티티 = 도메인 엔티티로 혼용됨 → 비즈니스 로직이 DB 스키마에 묶임
+- DB 컬럼이 바뀌면 도메인·UseCase·컨트롤러까지 영향
+- "도메인"이라는 이름을 가진 클래스가 실제로는 **DB row의 OOP 표현**에 불과
+
+Clean Architecture는 이를 뒤집는다: **도메인이 중심, DB는 바깥 메커니즘**. 도메인 정의가 먼저 서고, Repository 인터페이스가 도메인이 원하는 형태를 정의, JPA·MongoDB 등은 이 인터페이스의 **구현 세부**일 뿐.
+
+### 경계(Boundary)와 의존성 역전
+
+안→바깥 의존은 어떻게 막는가? **Use Case 입력·출력 포트**로 역전시킨다.
+
+```
+Controller → [InputPort]  ← UseCase (구현)
+UseCase    → [OutputPort] ← RepositoryAdapter (구현)
+```
+
+- `InputPort`·`OutputPort`는 **안쪽(UseCase)에 정의**된 인터페이스
+- 바깥 계층(Controller·Repository)은 이 인터페이스를 **구현**하거나 **호출**
+- 컴파일 방향은 바깥 → 안쪽, 하지만 **런타임 호출은 양방향** 가능
+
+### 인터페이스 설계 — ISP 관점
+
+- **클라이언트 필요 중심**: 인터페이스는 **구현이 아닌 호출자 관점**에서 설계. 한 서비스가 여러 클라이언트를 모두 만족시키려 하면 **비대해진 인터페이스**가 됨
+- **구현 디테일 노출 금지**: 인터페이스 이름이 `JpaUserRepository`가 아니라 `UserRepository`. JPA는 구현의 선택
+- **파라미터 vs 전체 객체**: 단순 값이면 개별 파라미터, 속성 진화가 예상되면 객체로
+
+### DTO 중복은 "Accidental Duplication"
+
+계층마다 DTO/VO를 따로 두는 것은 **진짜 중복이 아니라 우연적 중복**. 같은 이름이어도:
+
+- Create DTO: 사용자 입력 검증용 (필수·선택 필드)
+- Update DTO: 부분 수정 (모두 nullable)
+- Entity: DB 제약·관계
+- API Response: 외부 계약
+
+시간이 지나면 **각자 다르게 진화**한다. 하나로 묶으려 하면 모든 계층의 제약을 다 수용해야 해서 오염이 누적.
+
 ## Hexagonal Architecture (헥사고날, 포트와 어댑터)
 
 Alistair Cockburn이 제안. 비즈니스 로직(핵심)과 외부 세계 사이에 **포트(인터페이스)**와 **어댑터(구현)**를 둔다.
@@ -83,8 +123,15 @@ Q. Layered와 Clean Architecture의 차이는?
 - Layered: 위→아래 단방향 의존, Infrastructure가 최하단
 - Clean: 바깥→안쪽 의존, Domain이 중심이고 Infrastructure가 바깥
 
+## 출처
+- [우아한형제들 — 클린 아키텍처](https://techblog.woowahan.com/2647/)
+- [coldpresso — 클린 아키텍처 정리](https://coldpresso.tistory.com/24)
+- [당근 — 아키텍처에 대한 고민은 처음이라](https://medium.com/daangn/아키텍처에-대한-고민은-처음이라-b75dffd73eb0)
+- [Clean Architecture 예제 (wikibook)](https://github.com/wikibook/clean-architecture)
+
 ## 관련 문서
 - [[Hexagonal-In-Practice|Hexagonal 실전 적용 (Port/Adapter 디렉토리 구조와 NestJS 매핑)]]
 - [[DDD|DDD (Aggregate, CQRS, 도메인 서비스)]]
+- [[DDD-Hexagonal-In-Production|DDD + Hexagonal 프로덕션 패턴]]
 - [[OOP|OOP / SOLID]]
 - [[App-Architecture-OOP|애플리케이션 아키텍처와 객체지향]]

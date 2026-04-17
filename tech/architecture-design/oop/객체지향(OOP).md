@@ -13,3 +13,4 @@ OOP·SOLID 기본부터 우아한 객체지향·아키텍처 적용까지.
 - [x] [[OOP|OOP / SOLID]]
 - [x] [[App-Architecture-OOP|애플리케이션 아키텍처와 객체지향]]
 - [x] [[Elegant-OOP-Design|우아한 객체지향]]
+- [x] [[OOP-vs-Procedural-In-Practice|OOP vs 절차지향 실무 (Anemic Domain Model·역사·선택 기준)]]

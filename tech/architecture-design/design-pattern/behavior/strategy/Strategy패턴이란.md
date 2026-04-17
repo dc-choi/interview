@@ -75,3 +75,17 @@ class Config {
 2. 결제 시스템: 카드/계좌이체/간편결제 전략
 3. 압축: gzip/brotli/deflate 전략
 4. 정렬: 데이터 크기에 따라 다른 정렬 알고리즘
+5. WMS 피킹: 주문·단품·배치·총량 피킹 4종 (추상 `BasePickingStrategy` + 각 concrete에서 `createInstruction()`·`filterOrders()` 구현)
+
+## 실전 도입 시점
+
+전략 패턴은 **조건문이 3개 이상으로 늘어날 때** 도입을 고민. 2개면 단순 if-else가 더 읽기 좋음. 함정:
+
+- **모든 if-else를 Strategy로**: 과설계. 한 번만 쓰는 분기는 그냥 if
+- **전략 간 공통 로직 반복**: 추상 클래스에 Template Method로 끌어올리거나 합성으로 공유
+- **Strategy 주입을 잊고 Context에서 직접 new**: DI 이점 사라짐 — 팩토리나 DI 컨테이너로 주입
+
+"디자인 패턴은 만능 해법이 아니라 상황에 따른 선택" — 명확한 이유가 없으면 도입하지 말고, 도입 후 오버헤드가 크면 과감히 되돌릴 것.
+
+## 출처
+- [jminc00 — 전략 패턴 구현 예제 (WMS 피킹 리팩토링)](https://jminc00.tistory.com/100)

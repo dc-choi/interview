@@ -7,6 +7,41 @@ aliases: ["Monolith vs Microservice", "MSA"]
 
 # Monolith vs Microservice
 
+## MSA란 무엇인가
+
+Martin Fowler는 MSA를 **"독립적 프로세스로 실행되는 작은 서비스들의 모음, 경량 메커니즘으로 통신하는 단일 애플리케이션"** 으로 정의한다. 모놀리스는 기능 전체를 한 덩어리로 배포·확장하는 반면 MSA는 기능을 서비스 단위로 분해한다.
+
+### 9가지 핵심 특성 (Fowler)
+
+1. **서비스를 통한 Componentization** — 라이브러리가 아닌 독립 배포 단위
+2. **비즈니스 역량 중심 조직** — UI/백엔드/DB 계층이 아니라 결제·주문·회원 같은 도메인으로 팀 분할
+3. **프로젝트가 아닌 프로덕트** — "you build it, you run it". 릴리스 후 인계가 아닌 **전 생애주기 운영**
+4. **Smart Endpoints, Dumb Pipes** — 서비스에 로직 집중, 메시지 버스는 단순 경로 역할. ESB의 "스마트 버스" 반대
+5. **분산 거버넌스** — 언어·DB·프레임워크를 각 팀이 **상황에 맞게 선택** (Polyglot)
+6. **분산 데이터 관리** — 각 서비스가 **자기 DB 소유**. 공유 DB 금지. 대신 이벤트·API로 데이터 정합성 유지
+7. **인프라 자동화** — CI/CD·IaC·컨테이너 오케스트레이션이 필수. 수동 운영으로는 N개 서비스 관리 불가
+8. **실패를 전제로 설계** — 네트워크 호출은 실패한다. Circuit Breaker·Retry·Timeout·Bulkhead로 격리
+9. **Evolutionary Design** — 서비스는 **교체·폐기 가능**하게. 경계를 리팩토링할 수 있는 유연성
+
+### 장단점 요약
+
+| 장점 | 단점 |
+|---|---|
+| 독립 배포·독립 확장 | 분산 트랜잭션 어려움 (Saga 필요) |
+| 기술 선택 자유도 | 운영 복잡도 (관측·추적·네트워크) |
+| 도메인 단위 소규모 팀 자율 | 네트워크 지연·직렬화 비용 |
+| 장애 격리 | 초기 구축 비용 큼 |
+| 부분 릴리스 가능 | 조직 성숙도·자동화 전제 |
+
+## 언제 MSA를 도입할 것인가
+
+- 도메인 복잡도가 단일 배포로 관리 불가능할 때
+- 팀이 커져 **독립적으로 움직여야 할 때** (Conway's Law)
+- 서비스 간 **부하·기술 요구가 크게 다를 때**
+- 이미 **인프라 자동화·관측 도구가 준비**됐을 때
+
+반대로 **초기 스타트업·단순 도메인·작은 팀**은 모놀리스가 빠르고 싸다. "Monolith First → 성장하며 분리"가 Fowler의 권고.
+
 ## 아임웹 MSA 전환 사례
 
 ### 전환 배경
@@ -58,7 +93,14 @@ aliases: ["Monolith vs Microservice", "MSA"]
 - 분산 백엔드에서는 결국 **데이터 동기화**가 가장 중요하다. 이것이 없으면 서비스가 터진다
 - 설계의 문제는 객체지향(OOP), 로직의 문제는 함수형(FP)으로 접근
 
+## 출처
+- [Martin Fowler — Microservices](https://martinfowler.com/articles/microservices.html)
+- [bcho — 대용량 웹서비스를 위한 마이크로 서비스 아키텍쳐의 이해](https://bcho.tistory.com/948)
+
 ## 관련 문서
 - [[DDD]]
-- [[Event-Driven|Event-driven]]
+- [[DDD-Hexagonal-In-Production|DDD + Hexagonal 프로덕션]]
+- [[Event-Driven-Patterns|Event-Driven 패턴]]
+- [[MQ-Kafka|Kafka (MSA 통신 기반)]]
 - [[IaC|IaC — 테라폼으로 MSA 인프라 관리]]
+- [[Transactional-Outbox|Transactional Outbox (분산 데이터)]]
