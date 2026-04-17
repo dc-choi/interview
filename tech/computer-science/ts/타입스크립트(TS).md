@@ -33,3 +33,8 @@ aliases: ["TS"]
 ### [[option|컴파일러 옵션]]
 ### [[tech/computer-science/ts/types/타입특징|타입특징]]
 ### [[tech/computer-science/ts/_ts-study/ts-study|ts-study]]
+
+## 심화 주제
+- [x] [[Types-As-Proofs|Types as Proofs (커리-하워드 대응, never, exhaustive switch, TS 불건전 지점)]]
+- [x] [[TypeScript-AST|TypeScript와 AST (컴파일러 파이프라인, Compiler API, AST 기반 도구)]]
+- [x] [[Runtime-Validation-Libraries|Runtime 검증 라이브러리 (Zod/Typia/Ajv, AOT 최적화, 벤치마크)]]
