@@ -35,7 +35,7 @@
 
 ### 기타(Others)
 - [[tech/fin-ops/비용&운영(FinOps)|비용&운영(FinOps)]] (0/10)
-- [[tech/senior/시니어역량(SeniorEngineer)|시니어역량(SeniorEngineer)]] (24/34)
+- [[tech/senior/시니어역량(SeniorEngineer)|시니어역량(SeniorEngineer)]] (23/33)
 - [[FIT|Interview Fit]]
 
 ---
@@ -98,8 +98,8 @@
 - [[Toss-Runners-High-Seminar|토스 러너스하이]] — 내부 평가 기준 5개 축, 채용 철학, 결과로 말하기
 
 ### 기술 세미나
-- [[tech/web/HTTP-Seminar|HTTP 세미나]] — HTTP 버전별 진화와 핵심 요소
-- [[tech/security/FIDO-Seminar|FIDO 세미나]] — FIDO & 패스키(Passkey)
+- [[tech/web/http/HTTP-Seminar|HTTP 세미나]] — HTTP 버전별 진화와 핵심 요소
+- [[tech/security/auth/FIDO-Seminar|FIDO 세미나]] — FIDO & 패스키(Passkey)
 
 ### 밋업
 - [[TS-Backend-Meetup-1|TS 백엔드 밋업 1회]] — 스타트업 생존기, 패스워드 해싱, 로그 비용 개선기

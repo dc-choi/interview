@@ -16,21 +16,19 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[TS-Backend-Meetup-2#세션 1: AWSome IaC|AWSome IaC]] — IaC 필요성, 명령형 vs 명세형, 테라폼 핵심 개념
 
 ## 클라우드 기초
-- [x] [[Cloud-Service-Models|IaaS/PaaS/FaaS/SaaS (추상화 계층, 책임 공유 모델, 서버리스 범위)]]
-
-## IaC (Infrastructure as Code)
-- [x] [[IaC|IaC (Terraform, CDK, Pulumi)]]
+- [x] [[tech/infrastructure-cloud/foundation/Cloud-Service-Models|IaaS/PaaS/FaaS/SaaS (추상화 계층, 책임 공유 모델, 서버리스 범위)]]
+- [x] [[tech/infrastructure-cloud/foundation/IaC|IaC (Terraform, CDK, Pulumi)]]
 
 ## 네트워크 인프라
-- [x] [[Reverse-Proxy|Reverse Proxy (Nginx·Envoy, proxy_pass·upstream·WebSocket)]]
-- [x] [[Load-Balancer|Load Balancer (L4/L7, DNS, SPOF, 프록시)]]
+- [x] [[tech/infrastructure-cloud/network/Reverse-Proxy|Reverse Proxy (Nginx·Envoy, proxy_pass·upstream·WebSocket)]]
+- [x] [[tech/infrastructure-cloud/network/Load-Balancer|Load Balancer (L4/L7, DNS, SPOF, 프록시)]]
+- [x] [[tech/infrastructure-cloud/network/DNS|DNS 구조 & TTL]]
 - [ ] [[CDN|CDN (Cache Key, TTL, Invalidation)]]
-- [ ] [[DNS|DNS 구조 & TTL]]
 - [ ] [[NAT-Subnet|NAT / Public vs Private subnet]]
 
 ## AWS
-- [ ] [[AWS|EC2 / ASG / ALB]]
-- [x] [[AWS-Lambda|AWS Lambda · 서버리스 FaaS (Cold Start, 15분 한도, RDS Proxy)]]
+- [x] [[tech/infrastructure-cloud/aws/AWS|EC2 / ASG / ALB]]
+- [x] [[tech/infrastructure-cloud/aws/AWS-Lambda|AWS Lambda · 서버리스 FaaS (Cold Start, 15분 한도, RDS Proxy)]]
 - [ ] [[VPC|VPC / Subnet / NAT / SG]]
 - [ ] [[RDS-Aurora|RDS / Aurora]]
 - [ ] [[ElastiCache]]
@@ -41,10 +39,10 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [ ] [[EBS-Instance-Store|EBS vs Instance store]]
 
 ## Container
-- [x] [[Docker]]
-- [x] [[Docker-Compose|Docker Compose]]
-- [x] [[Multi-Stage-Build|Multi-stage build]]
-- [x] [[Image-Size-Optimization|Image size optimization]]
+- [x] [[tech/infrastructure-cloud/container/Docker|Docker]]
+- [x] [[tech/infrastructure-cloud/container/Docker-Compose|Docker Compose]]
+- [x] [[tech/infrastructure-cloud/container/Multi-Stage-Build|Multi-stage build]]
+- [x] [[tech/infrastructure-cloud/container/Image-Size-Optimization|Image size optimization]]
 
 ## Kubernetes
 - [ ] [[K8s-Pod-Deployment|Pod / Deployment / Service / Ingress]]
