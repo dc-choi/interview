@@ -7,9 +7,46 @@ aliases: ["System Design Interview", "시스템 설계 인터뷰"]
 
 # 시스템 설계 인터뷰 대응
 
-## 설계 접근 프레임워크
+## 답변 7단계 프레임워크
 
-시스템 설계 질문은 계층별로 나누어 답변하면 체계적이다.
+면접관이 "Twitter를 설계해보세요" 같은 열린 질문을 줬을 때, 이 순서로 진행하면 체계적.
+
+1. **요구사항 명확화 (Clarify Requirements)**
+   - 기능 요구: 핵심 기능은 무엇·무엇은 뺌(Non-goals)
+   - 비기능 요구: 규모(DAU·QPS)·지연(ms)·일관성·가용성 목표
+   - 침묵으로 가정 금지 — **먼저 질문**
+
+2. **용량 추정 (Capacity Estimation)**
+   - 사용자 수 · 초당 요청 · 저장 용량 · 대역폭
+   - 주관적 숫자라도 근거 제시 ("DAU 1000만 × 평균 10건 → 초당 약 1000 req")
+
+3. **High-Level Design**
+   - 주요 컴포넌트를 **블록 다이어그램**으로: Client → CDN → LB → Service → Cache → DB
+   - 큰 그림부터 합의 후 세부로
+
+4. **데이터베이스 설계**
+   - 엔티티·관계 모델링
+   - SQL vs NoSQL 선택 근거 (접근 패턴 기반)
+   - 샤딩·복제 전략
+
+5. **API 설계**
+   - 엔드포인트와 요청/응답 모양
+   - REST vs GraphQL vs gRPC 선택
+   - 인증·레이트 리밋
+
+6. **Deep Dive (면접관 관심 영역)**
+   - 면접관이 눌러보는 곳을 집중 분석
+   - 트레이드오프 명시 — "A를 택하면 B를 포기"
+   - 캐싱·스케일링·분산 락·일관성 모델
+
+7. **확장·안정성 보강**
+   - 병목 예측 → 수평 확장·캐시·비동기 처리
+   - 장애 대응 (Circuit Breaker·Retry·Fallback)
+   - 모니터링·알림 계획
+
+**핵심 원칙**: 완벽한 답이 목표가 아니라 **문제 분해·트레이드오프·의사소통**을 보여주는 것.
+
+## 계층별 체크리스트 (세부 질문 대비)
 
 1. **엣지 & CDN** — 사용자 가까이에서 처리할 수 있는 것
 2. **애플리케이션 계층** — 서비스 배포와 런타임
@@ -113,6 +150,9 @@ aliases: ["System Design Interview", "시스템 설계 인터뷰"]
 | 타임존 일관성 | 서버 전역 UTC 통일, DTO 검증 강화, DST/날짜 경계 테스트 케이스 추가 |
 | 알림 안정성 | BullMQ 재시도/백오프 정책, 멱등성, 지연/만료 윈도 도입 |
 | 에러 처리 | 에러 코드/메시지 규격 통일, 예외 필터에 런북 링크 포함 |
+
+## 출처
+- [AlgoMaster — How to Answer a System Design Interview Problem](https://blog.algomaster.io/p/how-to-answer-a-system-design-interview-problem)
 
 ## 관련 문서
 - [[Architecture-Decision-Making|아키텍처 의사결정과 경제적 관점]]
