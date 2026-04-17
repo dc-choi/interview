@@ -71,3 +71,10 @@ TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 - "HTTPS가 느린 이유?" → 초기 TLS 핸드셰이크 오버헤드. TLS 1.3에서는 1-RTT로 개선
 - "대칭키와 비대칭키를 왜 같이 쓰나?" → 비대칭키로 안전하게 세션 키(대칭키) 교환, 이후 빠른 대칭키로 통신
 - "HTTPS만 하면 보안 끝?" → XSS, CSRF 등 애플리케이션 레벨 공격은 별도 방어 필요
+
+## 출처
+- [HTTPS 원리 이해하기 — brunch @growthminder](https://brunch.co.kr/@growthminder/79)
+
+## 관련 문서
+- [[ACME-Protocol|ACME Protocol · Let's Encrypt 인증서 자동화]]
+- [[Public-Key-Cryptography|공개키 암호 · PKI]]
