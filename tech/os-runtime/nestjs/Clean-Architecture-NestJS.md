@@ -56,6 +56,41 @@ export class UserModule {}
 - Symbol 토큰으로 추상과 구현 분리 → 인터페이스는 런타임 타입이 없으므로 `@Inject(USER_REPOSITORY)`로 바인딩
 - 테스트에서는 `useClass`를 in-memory mock으로 교체 → 실제 DB 없이 유스케이스 검증
 
+### 대안: 추상 클래스를 토큰 대신 쓰기
+
+Interface는 **컴파일 후 사라져서** 런타임 DI에 쓸 수 없다. TS에서의 두 가지 우회:
+
+**방식 A — Symbol 토큰 (위 예시)**: `interface IUserRepository` + `Symbol('USER_REPOSITORY')`로 바인딩. 전형적.
+
+**방식 B — 추상 클래스를 인터페이스처럼 쓰기**:
+```ts
+// domain/ports/user-repository.ts
+export abstract class UserRepository {
+  abstract findById(id: string): Promise<User | null>;
+  abstract save(user: User): Promise<void>;
+}
+
+// use-cases/register-user.ts
+@Injectable()
+export class RegisterUserUseCase {
+  constructor(private readonly repo: UserRepository) {}  // ← 토큰 없이
+}
+
+// user.module.ts
+providers: [
+  RegisterUserUseCase,
+  { provide: UserRepository, useClass: TypeormUserRepository },
+]
+```
+
+추상 클래스는 **런타임 값**이라 `@Inject()` 데코레이터·Symbol 토큰 불필요. 구체 클래스는 `implements UserRepository`로 계약 명시 (extends보다 `implements`가 의도 명확).
+
+**선택 가이드**:
+- **Symbol 토큰**: 순수 interface 철학 유지·TypeScript 스타일 선호
+- **추상 클래스**: 보일러플레이트 감소·Spring의 `@Autowired` 감각·타입과 토큰이 하나
+
+현업 경험상 추상 클래스 패턴도 **장기 운영에 문제 없음**. 팀 컨벤션 통일이 더 중요.
+
 ## 디렉토리 구조 예시
 
 ```
@@ -110,6 +145,42 @@ export class UserController {
 - **Port 인터페이스 없이 구체 Repository를 바로 주입** → Clean의 핵심 이점(교체성·테스트성)이 사라짐
 - **도메인 엔티티에 데코레이터** → 클래스가 특정 ORM을 알게 되어 교체 비용 발생
 
+## CQRS · Event Handler 확장
+
+단순 Use Case 하나가 아닌, **Command·Query·Event 세 축으로 분리**하는 패턴이 Clean Architecture와 자주 결합된다. NestJS는 `@nestjs/cqrs` 모듈로 공식 지원.
+
+```
+Command Handler  ← 상태 변경 (CreateUserCommand)
+Query Handler    ← 조회 전용 (GetUserByIdQuery, 읽기 전용)
+Event Handler    ← 부수 효과 (UserCreatedEvent → 이메일 발송·알림)
+```
+
+- **Command**: 의도적 상태 변경. Aggregate에 커밋되는 트랜잭션 단위
+- **Query**: 읽기 전용. 별도 Read Model·DTO 직행 가능 → 도메인 모델 우회로 성능 최적화
+- **Event**: 변경 결과를 다른 바운디드 컨텍스트·부수 효과로 전파. 비동기 처리 가능
+
+### Factory 패턴으로 엔티티 생성 + 이벤트 발행
+```ts
+@Injectable()
+export class UserFactory {
+  create(name: string, email: string): User {
+    const user = new User(ulid(), name, email);
+    user.apply(new UserCreatedEvent(user.id));  // 도메인 이벤트 생성
+    return user;
+  }
+}
+```
+- `apply()`는 AggregateRoot 베이스 클래스가 제공 — 트랜잭션 커밋 시점에 이벤트 디스패치
+- Factory는 Use Case와 별개로 두어 **복잡한 엔티티 생성 로직**을 한 곳에
+- `@nestjs/cqrs`의 `EventBus`가 등록된 `EventHandler`로 전달
+
+### 왜 굳이 분리하나
+- **읽기·쓰기 최적화 축을 따로** — Query는 denormalized view, Command는 정규화된 도메인
+- **부수 효과를 도메인 로직에서 분리** — User 생성이 "이메일도 보내야 함"을 몰라야 함. EventHandler가 책임
+- **확장성** — Event Handler를 늘려도 Command Handler는 변하지 않음 (OCP)
+
+단, 작은 CRUD 위주 서비스에 CQRS·Event Handler까지 도입하면 **보일러플레이트 과다**. 바운디드 컨텍스트가 복잡할 때만.
+
 ## Hexagonal과의 차이
 
 | 구분 | Clean Architecture | Hexagonal (Ports & Adapters) |
@@ -126,10 +197,17 @@ export class UserController {
 - NestJS DI 토큰(Symbol)으로 추상/구현을 분리하는 이유
 - TypeORM `@Entity`와 도메인 엔티티를 분리해야 하는 이유
 - `overrideProvider`를 활용한 테스트 경계 설계
+- CQRS(Command/Query/Event) 분리가 주는 이점과 도입 임계점
+- Factory 패턴으로 도메인 이벤트를 생성하는 이유
 - Clean vs Hexagonal을 실무에서 어떻게 합쳐 쓰는가
 
 ## 출처
 - [Better Programming — Clean Node.js Architecture With NestJS and TypeScript](https://medium.com/better-programming/clean-node-js-architecture-with-nestjs-and-typescript-34b9398d790f)
+- [Jonathan Pretre — Clean Architecture with NestJS](https://medium.com/@jonathan.pretre91/clean-architecture-with-nestjs-e089cef65045)
+- [GitHub — jonathanPretre/clean-architecture-nestjs](https://github.com/jonathanPretre/clean-architecture-nestjs)
+- [assu10 — NestJS Clean Architecture](https://assu10.github.io/dev/2023/04/29/nest-clean-architecture/)
+- [kscodebase — NestJS 클린 아키텍처](https://kscodebase.tistory.com/692)
+- [junho2343 — Clean Architecture + Hexagonal Architecture with NestJS](https://junho2343.github.io/posts/clean-architecture-hexagonal-architecture-with-nestjs)
 
 ## 관련 문서
 - [[Layered-Clean-Hexagonal|Layered / Clean / Hexagonal]]
