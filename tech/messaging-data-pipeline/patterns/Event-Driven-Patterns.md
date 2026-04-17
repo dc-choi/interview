@@ -177,6 +177,9 @@ API 서버 (요청자) ─┐
 
 ## 출처
 - [DevPill — 이벤트 기반 시스템 설계 실전 패턴 3종](https://maily.so/devpill/posts/8do7q4pnrgq)
+- [F-Lab — 이벤트 소싱과 CQRS 패턴의 이해와 적용](https://f-lab.kr/insight/event-sourcing-cqrs-20240528)
+- [datamoney — 이벤트 기반 아키텍처 개념 정리](https://datamoney.tistory.com/376)
+- [choidongkuen — 메시지 큐란?](https://velog.io/@choidongkuen/서버-메세지-큐Message-Queue-을-알아보자)
 
 ## 관련 문서
 - [[Messaging-Patterns|메시징 패턴 (Pub/Sub·Task Distribution·Request/Reply)]]
