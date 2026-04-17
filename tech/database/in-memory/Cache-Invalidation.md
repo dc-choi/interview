@@ -54,7 +54,77 @@ aliases: ["Cache invalidation", "Cache Invalidation", "캐시 무효화"]
 - 해결: TTL에 jitter(랜덤 지연) 추가하여 만료 시점 분산
 - [[Cache-Stampede|캐시 스탬피드]]와 함께 고려
 
+## 트랜잭션 경계와 무효화 타이밍
+
+캐시 무효화를 **트랜잭션 안**에서 하면 복잡한 경합이 발생한다. 실무는 보통 **커밋 이후(Post-Commit)** 에 무효화를 수행.
+
+### Pre-Commit 무효화의 문제
+
+```
+트랜잭션 시작
+  ├─ UPDATE users SET name = 'X'
+  ├─ cache.evict('user:1')  ← 여기서 삭제
+  └─ 다른 요청이 user:1 조회 → DB에서 아직 커밋 안 된 '원래 값'을 읽고 캐시에 적재
+커밋
+```
+
+커밋 전에 evict하면 **다른 요청이 아직 보이지 않는 구 데이터로 캐시를 재적재**해버려 일관성이 깨진다.
+
+### Post-Commit 무효화 패턴
+
+Spring 기준 구현:
+
+- **`@TransactionalEventListener(phase = AFTER_COMMIT)`**: 도메인 이벤트를 발행하고 커밋 성공 이후에만 캐시 삭제 리스너가 실행
+- **`@EntityListener`** (JPA): 엔티티 변경 시점에 이벤트 발행, 실제 evict는 `AFTER_COMMIT` 핸들러에서
+- 이 조합으로 "DB 커밋된 사실"만 캐시에 반영
+
+### 커밋 후 Evict 실패 — Circuit Breaker 강제 개방
+
+Post-Commit 무효화의 근본 문제: **커밋은 이미 완료**되었는데 **캐시 evict가 실패**하면? 트랜잭션을 되돌릴 수 없고, 캐시에는 stale 데이터가 남는다.
+
+현실적 해법:
+- **재시도 + DLQ**: evict 명령을 메시지 큐에 넣어 eventual consistency
+- **Circuit Breaker 강제 개방**: Evict 실패가 감지되면 해당 캐시에 대한 Circuit을 열어 **모든 읽기를 DB로 우회**. 캐시 TTL 만료 또는 수동 복구까지 fallback
+- **짧은 TTL + 주기 새로고침**: 일관성 윈도우를 TTL 길이로 제한 → 최악의 경우에도 TTL 후 자동 복구
+
+### Strong Consistency가 필수인 경우
+
+대부분 캐시는 eventual consistency가 허용되지만, **개인정보 동의·철회·결제 같은 도메인**은 stale이 법적·보안 문제로 이어진다.
+
+- **Replication Read Replica 지양**: 복제 지연 동안 철회된 동의가 여전히 "유효"로 조회되면 개인정보 오남용
+- **단일 Source of Truth + Write-Through 또는 Post-Commit Evict**
+- **Evict 실패 대비 Circuit Breaker**를 반드시 설계
+- **감사 로그**: 캐시 사용 구간을 기록해 추적 가능하게
+
+## 무효화와 후속 이벤트의 순서 경합
+
+DB 변경 후 여러 후속 작업이 동시에 일어날 때 순서가 뒤섞일 수 있다. 대표 예: **캐시 Evict · Kafka 이벤트 발행 · 외부 API 호출**.
+
+- Evict가 Kafka 이벤트보다 늦으면, 이벤트를 받은 Consumer가 캐시에서 **변경 전 값**을 읽음
+- 반대로 Evict가 먼저 나가면 다른 소비자가 DB 조회로 정상 동작
+
+### 순서 보장 패턴
+
+- **`TransactionSynchronizationManager`**: Spring이 제공하는 트랜잭션 훅. `registerSynchronization`으로 커밋 후 작업 순서 명시
+- **`@Order`**: 여러 리스너의 우선순위 지정
+- **단일 Post-Commit 작업으로 통합**: Evict → 이벤트 발행을 하나의 리스너에서 순서대로 실행하는 것이 단순·안전
+- **이벤트에 "캐시 무효화 완료" 시점 정보 포함**: Consumer가 판단 가능
+
+### 정책 먼저 재설계
+
+복잡한 동시성 제어를 **코드로 해결하기보다 정책을 재정의**하는 것이 더 단순할 때가 많다.
+
+- "요청 처리"의 경계를 **API 응답 직전까지**로 재정의 → 응답 반환 전 모든 후속 작업 완료 보장
+- "Cache miss 시 DB 조회"의 허용 지연을 명시화 → Circuit Open 상태의 동작 정의
+- 비동기 이벤트와 캐시 무효화를 **같은 AFTER_COMMIT 훅**에 묶어 순서를 코드가 아닌 플로우로 보장
+
+## 출처
+- [Toss — 캐시를 적용하기까지의 험난한 길 (TPS 1만 Strong Consistency 캐싱)](https://toss.tech/article/34481)
+
 ## 관련 문서
 - [[TTL|TTL 전략]]
 - [[Cache-Strategies|Cache 전략]]
 - [[Cache-Stampede|Cache Stampede]]
+- [[Distributed-Lock|분산락]]
+- [[CDC-Debezium|CDC · Debezium (이벤트 기반 무효화)]]
+- [[External-Service-Resilience|외부 서비스 복원성 (Circuit Breaker)]]
