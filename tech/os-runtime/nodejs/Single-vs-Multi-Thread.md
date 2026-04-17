@@ -79,6 +79,27 @@ JS 실행이 싱글 스레드이기 때문에 개발자는 항상 **논블로킹
 
 > "Node.js는 개발자 관점에서는 싱글 스레드입니다. 우리가 작성하는 모든 JS 코드는 메인 스레드 하나에서 실행되기 때문입니다. 하지만 내부적으로는 libuv가 파일 I/O나 DNS 조회 같은 작업을 위해 기본 4개의 스레드 풀을 활용합니다. 네트워크 I/O는 스레드 풀조차 쓰지 않고 epoll, kqueue, IOCP 같은 OS 커널의 비동기 이벤트 시스템에 위임됩니다. 결국 '멀티 스레드를 활용하지만 본질은 싱글 스레드'라고 표현하는 것이 가장 정확합니다. 이 때문에 CPU 집약적 작업은 이벤트 루프를 블로킹할 수 있고, 그럴 때는 Worker Threads나 Cluster를 활용해 해결합니다."
 
+## 실전 사례: 대용량 데이터 처리의 함정
+
+"싱글 스레드지만 내부는 멀티" 라는 모델이 현실에서 **어떻게 한계로 드러나는지** 전형적 사례:
+
+**상황**: 60억 건 JSON 레코드를 MongoDB에서 읽어 변환 후 재삽입하는 마이그레이션.
+
+**관찰**: Node.js 인스턴스가 **CPU 코어 1개를 100% 점유**한 상태로 진행되는데, MongoDB는 CPU 3%만 사용. 작업이 예상 시간의 수 배 소요.
+
+**원인 분석**:
+- JSON.parse·stringify는 **메인 스레드에서** 실행 (CPU bound)
+- libuv 워커 풀은 파일 I/O·DNS에만 사용, JS 로직 실행 안 함
+- 한 인스턴스가 한 코어만 쓰므로 **서버의 나머지 코어는 놀고 있음**
+
+**해결 패턴** — 스레드 늘리기 대신 **수평 확장**:
+- Kubernetes에 **25개 이상 Node.js 인스턴스** 배포
+- 각 인스턴스가 서로 다른 파티션의 데이터를 처리
+- 전체 클러스터의 모든 코어가 병렬 활용됨
+- MongoDB도 병렬 쓰기 부하를 받으며 활용률 상승
+
+**교훈**: Node.js의 "싱글 스레드"는 **잘 설계된 허구**. 진짜 성능은 이 특성을 이해하고 **경량 컨테이너의 수평 확장**으로 끌어내는 데서 나옴. Worker Threads도 옵션이지만, 운영·배포 관점에선 인스턴스 증가가 대부분 더 단순하고 확장 용이.
+
 ## 관련 문서
 - [[Node.js|Node.js Overview]]
 - [[Event-Loop|이벤트 루프]]
@@ -87,3 +108,7 @@ JS 실행이 싱글 스레드이기 때문에 개발자는 항상 **논블로킹
 - [[Worker-Threads|워커 스레드]]
 - [[Thread-vs-Event-Loop|Thread vs Event Loop (멀티스레드 패턴)]]
 - [[Async-IO|Async I/O]]
+- [[Nodejs-Production-Readiness|Node.js 프로덕션 체크리스트]]
+
+## 출처
+- [Naver Financial — Node.js가 싱글스레드 서버라는 미신 (대용량 데이터 처리)](https://medium.com/naverfinancial/node-js%EA%B0%80-%EC%8B%B1%EA%B8%80%EC%8A%A4%EB%A0%88%EB%93%9C-%EC%84%9C%EB%B2%84%EB%9D%BC%EB%8A%94-%EB%AF%B8%EC%8B%A0-feat-node-js%EC%9D%98-%EB%8C%80%EC%9A%A9%EB%9F%89-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%B2%98%EB%A6%AC-cf1d651290be)

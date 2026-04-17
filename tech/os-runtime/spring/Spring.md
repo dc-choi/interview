@@ -26,4 +26,13 @@ AOP를 사용하면 비즈니스 로직과 공통 관심사를 분리할 수 있
 - [[Spring-Request-Lifecycle|Spring 요청 처리 흐름 (Tomcat → DispatcherServlet → Controller, 부팅 순서, Request-per-Thread)]]
 - [[Spring-Exception-Handling|Spring 예외 처리 전략 (@ExceptionHandler · @ControllerAdvice · Filter 예외)]]
 - [[Spring-Transactional|@Transactional (Propagation·Isolation·readOnly, 자기 호출 함정)]]
+- [[Spring-Multipart-JSON|Multipart + JSON REST (@RequestPart 패턴·FormData·MockMvc·대용량 업로드 대안)]]
+- [[Spring-MVC-Essentials|Spring MVC Essentials (@Component 계열·Filter vs Interceptor·WAS vs Web Server·Tomcat)]]
+- [[Spring-Boot-Essentials|Spring Boot Essentials (AutoConfiguration·Starter·Embedded·Actuator)]]
+- [[Spring-Data-JPA-Essentials|Spring Data JPA (JPA vs Hibernate vs SDJ·ddl-auto·ID 생성·isNew/Persistable)]]
+- [[Spring-Batch-Essentials|Spring Batch (Job·Step·Chunk·Reader 성능·JDBC 배치·Partitioning·Scheduler vs Quartz)]]
 - [[JPA-Persistence-Context|JPA 영속성 컨텍스트 · N+1 (1차 캐시·Dirty Checking·Fetch Join)]]
+
+## 다른 프레임워크 비교
+
+- [[NestJS-vs-Spring|NestJS vs Spring (DI·모듈·데코레이터·AOP vs Guard/Pipe/Interceptor·트랜잭션·생태계)]]

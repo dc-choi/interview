@@ -72,6 +72,18 @@ Controller (Interface Adapters)
 
 자세한 NestJS 매핑(포트 인터페이스·Symbol 토큰·테스트 교체 전략): [[Clean-Architecture-NestJS|NestJS Clean Architecture 실전]]
 
+## Spring과의 비교
+
+NestJS는 Spring·Angular의 설계를 TypeScript/Node.js로 옮긴 계보. DI·모듈·데코레이터 구조는 1:1에 가깝게 매핑되지만, 런타임 모델(이벤트 루프 vs 스레드)·트랜잭션 표준 부재·생태계 성숙도에서 차이가 있다.
+
+상세 비교: [[NestJS-vs-Spring|NestJS vs Spring (DI·모듈·데코레이터·AOP vs Guard/Pipe/Interceptor·트랜잭션·생태계)]]
+
+## NestJS 심화 주제
+
+- [[NestJS-Cold-Start-Optimization|Cold Start 최적화 (의존성 그래프·Lazy Module·서버리스)]]
+- [[NestJS-AOP-Interceptor|Interceptor 기반 AOP (Observable 강제 이유·Prisma 에러 처리)]]
+- [[NestJS-Custom-Decorator|커스텀 데코레이터 (SetMetadata·DiscoveryService·@toss/nestjs-aop)]]
+
 ### [[Controller]]
 
 ### [[Provider]]
