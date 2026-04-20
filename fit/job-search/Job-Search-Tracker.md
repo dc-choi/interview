@@ -17,21 +17,11 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 기업 | 링크 | 비고 |
 |------|------|------|
 | KWE | | 태섭이형 회사, 공고 마감 |
-| 에이피알 | https://apr-careers.com/job_posting/8IHMz85J | |
-| 온다(ONDA) | https://www.wanted.co.kr/wd/340406 | TypeScript 백엔드, NestJS |
-| 크리스틴컴퍼니 | https://www.wanted.co.kr/wd/344506 | 백엔드 0~3년, NestJS |
+| 에이피알 | https://apr-careers.com/job_posting/8IHMz85J | 공고 만료 |
+| 크리스틴컴퍼니 | https://www.wanted.co.kr/wd/344506 | 백엔드 0~3년, NestJS — 공고 만료 |
 | 애쉬코어테크놀로지스 | https://www.wanted.co.kr/wd/348916 | Junior Backend, TypeScript/NestJS |
-| 스트레스솔루션 | https://www.wanted.co.kr/wd/345314 | 백엔드 3~7년, Node.js |
-| 콕스웨이브 | https://www.wanted.co.kr/wd/343279 | 백엔드(AI), TypeScript |
-| 지엔터프라이즈 | https://www.wanted.co.kr/wd/342523 | 백엔드, NestJS/FastAPI |
-| 피에프씨테크놀로지스 | https://www.wanted.co.kr/wd/336443 | Backend, NestJS 포함 |
-| 중고나라 | https://www.wanted.co.kr/wd/343038 | SRE(DevOps) 1~5년 |
-| 페이타랩(패스오더) | https://www.wanted.co.kr/wd/278168 | DevOps, 신입~10년 |
-| 로민 | https://www.wanted.co.kr/wd/352668 | DevOps, AWS/K8s |
+| 콕스웨이브 | https://www.wanted.co.kr/wd/343279 | 백엔드(AI), TypeScript — 공고 만료 |
 | 원프레딕트 | https://www.wanted.co.kr/wd/348225 | DevOps, K8s/ArgoCD |
-| 에이아이트릭스 | https://www.wanted.co.kr/wd/345372 | DevOps/SRE 5년+ |
-| 에임인텔리전스 | https://career.aim-intelligence.com/ko/o/210763 | Backend, TypeScript, AI Safety 플랫폼. 3개월 계약 후 정규직 전환 조건 확인 필요 |
-| 도르코퍼레이션(DOR) | https://career.dor.gg/position/community/backend | Backend, Node.js/TS/MySQL, 게이밍 커뮤니티. SF 근무 조건·원격 여부 확인 필요 |
 
 ## 지원 완료 (응답 대기)
 
@@ -39,6 +29,17 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 |------|--------|------|
 | MVL | 26.04.10 | https://mvl.oopy.io/333d814b-821b-80d2-8714-d491953cbd79 |
 | 미리디 (인재풀) | - | https://www.miridih.com/ko/o/195025 |
+| 뤼튼 | 26.04.20 | [[Interview-Prep-Wrtn-JD]] (헤드헌터 지원, JD 별도 전달) |
+| 도르코퍼레이션(DOR) | 26.04.20 | https://career.dor.gg/position/engineer |
+| 피에프씨테크놀로지스 | 26.04.20 | https://pfct.career.greetinghr.com/ko/o/198964 |
+| 스트레스솔루션 | 26.04.20 | https://www.wanted.co.kr/wd/345314 |
+| 온다(ONDA) | 26.04.20 | https://www.wanted.co.kr/wd/340406 |
+| 에임인텔리전스 | 26.04.20 | https://career.aim-intelligence.com/ko/o/210763 |
+| 지엔터프라이즈 | 26.04.20 | https://wx0ljugv.ninehire.site/job_posting/FYkTn8uX |
+| 중고나라 | 26.04.20 | https://joonggonara.ninehire.site/job_posting/EACstcnr |
+| 페이타랩(패스오더) | 26.04.20 | https://recruit.passorder.co.kr/c/umtrEJrqdg |
+| 로민 | 26.04.20 | https://lominpublic.notion.site/DevOps-2bcd46399740809e8ce8cca086aca03e |
+| 에이아이트릭스 | 26.04.20 | https://aitrics.ninehire.site/job_posting/2ToGw1P2 |
 
 ## 2주 경과 무응답
 
