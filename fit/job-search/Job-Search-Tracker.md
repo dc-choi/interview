@@ -29,7 +29,6 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 |------|--------|------|
 | MVL | 26.04.10 | https://mvl.oopy.io/333d814b-821b-80d2-8714-d491953cbd79 |
 | 미리디 (인재풀) | - | https://www.miridih.com/ko/o/195025 |
-| 뤼튼 | 26.04.20 | [[Interview-Prep-Wrtn-JD]] (헤드헌터 지원, JD 별도 전달) |
 | 도르코퍼레이션(DOR) | 26.04.20 | https://career.dor.gg/position/engineer |
 | 피에프씨테크놀로지스 | 26.04.20 | https://pfct.career.greetinghr.com/ko/o/198964 |
 | 스트레스솔루션 | 26.04.20 | https://www.wanted.co.kr/wd/345314 |
@@ -326,6 +325,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 그루우 | 26.03.11 | 26.03.16 | |
 | 버킷플레이스 | 26.03.22 | 26.03.25 | https://bucketplace.career.greetinghr.com/ko/o/191953 |
 | 디서클 | 26.04.10 | 26.04.10 | https://www.wanted.co.kr/wd/350946 |
+| 뤼튼 | 26.04.20 | 26.04.21 | [[Interview-Prep-Wrtn-JD]] (헤드헌터 지원, 페르소나 불일치 — 대규모 트래픽 경험 요구 추정) |
 
 ## 코테 및 과제
 
