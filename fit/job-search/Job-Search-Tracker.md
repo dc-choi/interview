@@ -23,7 +23,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 콕스웨이브 |  | 백엔드(AI), TypeScript — 공고 만료 |
 | 원프레딕트 | https://www.wanted.co.kr/wd/348225 | DevOps, K8s/ArgoCD — 보류 (컷 높음) |
 | 모두싸인 | https://recruit.modusign.co.kr/ko/o/199875 | 백엔드 4~10년, NestJS/TypeORM/MySQL, B2B SaaS Shared System |
-| 게임듀오 | https://gameduo.recruit.roundhr.com/c/8qjXer2x52 | 서버 프로그래머 (NodeJS 2년+), NestJS/Redis/AWS, 과제 전형 있음 |
+| 게임듀오 | https://gameduo.recruit.roundhr.com/c/8qjXer2x52 | 서버 프로그래머 (NodeJS 2년+), NestJS/Redis/AWS — 보류 (블라인드 사내정치·야근·계약직 복지차별 경고, 잡플 1.0) |
 | 카닥 | https://career.cardoc.co.kr/ko/o/209737 | 백엔드 3-6년, NestJS/TS/TypeORM + AWS(ECS/EKS/Lambda/Terraform), 코딩테스트 전형 |
 | 아이헤이트플라잉버그스(밀당PT) | https://careers.mildang.kr/ko/o/69968 | 백엔드 5-7년, NestJS/TS + GraphQL/K8s/Kafka, 밀당PT·AI 디지털교과서, 사전 과제+1차 인터뷰 |
 | 스페이스맵 | https://www.wanted.co.kr/wd/349481 | 백엔드 5년+, NestJS/TS + Python/FastAPI, 우주 딥테크 |
@@ -32,12 +32,12 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 바리코퍼레이션(라이트바겐) | https://www.wanted.co.kr/wd/324984 | 2-10년, Node.js/TS 풀스택, 모터사이클 플랫폼 |
 | 퓨쳐스콜레 | https://www.wanted.co.kr/wd/356093 | 3-8년, Node.js 병행 스택, AI 코딩 도구 활용 필수 |
 | 라이프엑스(마미톡) | https://www.wanted.co.kr/wd/351232 | 5년+, NestJS/Socket/GraphQL/MongoDB/AWS, 산모 수십만 — 26.01 휴먼스케이프 시절 서류 탈락 이력(재도전) |
-| 써밋츠 | https://www.wanted.co.kr/wd/350188 | 2-5년, Nest.js/TS/PostgreSQL/AWS, Claude Code sub-agents 활용 필수 |
-| 에어키친 | https://www.wanted.co.kr/wd/311193 | 백엔드 3년+, Node.js/NestJS/MySQL, O2O 셰프-공간 플랫폼 |
+| 써밋츠(마이비너스) | https://www.wanted.co.kr/wd/350188 | 2-5년, Nest.js/TS/PostgreSQL/AWS — 보류 (인도네시아 성형·피부과 도메인 특화, 페르소나 갭) |
+| 에어키친 | https://www.wanted.co.kr/wd/311193 | 백엔드 3년+, Node.js/NestJS/MySQL, O2O 셰프-공간 플랫폼 — 보류 (회사 정보 확인 불가) |
 | 젠스타파트너스 | https://www.wanted.co.kr/wd/233045 | 백엔드 5-10년, NestJS/TS/MongoDB/PostgreSQL/AWS, 부동산 프롭테크 |
 | 그립랩스 | https://www.wanted.co.kr/wd/303815 | 5-10년, NestJS/TS + Java/Spring 병행, AI 서비스 백엔드 |
 | 브릿지웍스(캐시모어) | https://www.wanted.co.kr/wd/333289 | 1-8년, Node.js/TS/React/Next.js 풀스택, DAU 수만 중규모, AI 도구 필수 |
-| 몰리턴 | https://www.wanted.co.kr/wd/315866 | 3-7년, NestJS + Spring 병행, AI 관리·리뷰 필수 |
+| 몰리턴 | https://www.wanted.co.kr/wd/315866 | 3-7년, NestJS + Spring 병행, AI 관리·리뷰 필수 — 보류 (회사 정보 거의 없음) |
 
 ## 지원 완료 (응답 대기)
 
