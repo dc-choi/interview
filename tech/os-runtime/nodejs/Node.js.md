@@ -260,6 +260,9 @@ npx codemod @nodejs/import-assertions-to-attributes   # 실제 마이그레이�
 
 ### Node.js 런타임
 - [[V8|V8 엔진]]
+  - [[V8-Ignition-TurboFan|V8 컴파일 파이프라인]]
+  - [[V8-Hidden-Class|V8 히든 클래스]]
+  - [[V8-Inline-Cache|V8 인라인 캐시]]
 - [[libuv]]
 - [[Event-Loop|이벤트루프]]
 - [[Module-System|모듈 시스템]]
