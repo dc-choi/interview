@@ -17,11 +17,27 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 기업 | 링크 | 비고 |
 |------|------|------|
 | KWE | | 태섭이형 회사, 공고 마감 |
-| 에이피알 | https://apr-careers.com/job_posting/8IHMz85J | 공고 만료 |
-| 크리스틴컴퍼니 | https://www.wanted.co.kr/wd/344506 | 백엔드 0~3년, NestJS — 공고 만료 |
-| 애쉬코어테크놀로지스 | https://www.wanted.co.kr/wd/348916 | Junior Backend, TypeScript/NestJS |
-| 콕스웨이브 | https://www.wanted.co.kr/wd/343279 | 백엔드(AI), TypeScript — 공고 만료 |
-| 원프레딕트 | https://www.wanted.co.kr/wd/348225 | DevOps, K8s/ArgoCD |
+| 에이피알 |  | 공고 만료 |
+| 크리스틴컴퍼니 |  | 백엔드 0~3년, NestJS — 공고 만료 |
+| 애쉬코어테크놀로지스 | https://www.wanted.co.kr/wd/348916 | Junior Backend, TypeScript/NestJS — 보류 (JD 쎄함) |
+| 콕스웨이브 |  | 백엔드(AI), TypeScript — 공고 만료 |
+| 원프레딕트 | https://www.wanted.co.kr/wd/348225 | DevOps, K8s/ArgoCD — 보류 (컷 높음) |
+| 모두싸인 | https://recruit.modusign.co.kr/ko/o/199875 | 백엔드 4~10년, NestJS/TypeORM/MySQL, B2B SaaS Shared System |
+| 게임듀오 | https://gameduo.recruit.roundhr.com/c/8qjXer2x52 | 서버 프로그래머 (NodeJS 2년+), NestJS/Redis/AWS, 과제 전형 있음 |
+| 카닥 | https://career.cardoc.co.kr/ko/o/209737 | 백엔드 3-6년, NestJS/TS/TypeORM + AWS(ECS/EKS/Lambda/Terraform), 코딩테스트 전형 |
+| 아이헤이트플라잉버그스(밀당PT) | https://careers.mildang.kr/ko/o/69968 | 백엔드 5-7년, NestJS/TS + GraphQL/K8s/Kafka, 밀당PT·AI 디지털교과서, 사전 과제+1차 인터뷰 |
+| 스페이스맵 | https://www.wanted.co.kr/wd/349481 | 백엔드 5년+, NestJS/TS + Python/FastAPI, 우주 딥테크 |
+| 어스얼라이언스 | https://www.wanted.co.kr/wd/355467 | 백엔드 3-8년, NestJS/ECS Fargate/Terraform, 금융 크리에이터 미디어 — 팀 리드 경험 필수 |
+| 다이버즈(널스빌리지) | https://www.wanted.co.kr/wd/349671 | 1-5년, Nest.js/Node.js/React/Next.js 풀스택 메인 엔지니어 |
+| 바리코퍼레이션(라이트바겐) | https://www.wanted.co.kr/wd/324984 | 2-10년, Node.js/TS 풀스택, 모터사이클 플랫폼 |
+| 퓨쳐스콜레 | https://www.wanted.co.kr/wd/356093 | 3-8년, Node.js 병행 스택, AI 코딩 도구 활용 필수 |
+| 라이프엑스(마미톡) | https://www.wanted.co.kr/wd/351232 | 5년+, NestJS/Socket/GraphQL/MongoDB/AWS, 산모 수십만 — 26.01 휴먼스케이프 시절 서류 탈락 이력(재도전) |
+| 써밋츠 | https://www.wanted.co.kr/wd/350188 | 2-5년, Nest.js/TS/PostgreSQL/AWS, Claude Code sub-agents 활용 필수 |
+| 에어키친 | https://www.wanted.co.kr/wd/311193 | 백엔드 3년+, Node.js/NestJS/MySQL, O2O 셰프-공간 플랫폼 |
+| 젠스타파트너스 | https://www.wanted.co.kr/wd/233045 | 백엔드 5-10년, NestJS/TS/MongoDB/PostgreSQL/AWS, 부동산 프롭테크 |
+| 그립랩스 | https://www.wanted.co.kr/wd/303815 | 5-10년, NestJS/TS + Java/Spring 병행, AI 서비스 백엔드 |
+| 브릿지웍스(캐시모어) | https://www.wanted.co.kr/wd/333289 | 1-8년, Node.js/TS/React/Next.js 풀스택, DAU 수만 중규모, AI 도구 필수 |
+| 몰리턴 | https://www.wanted.co.kr/wd/315866 | 3-7년, NestJS + Spring 병행, AI 관리·리뷰 필수 |
 
 ## 지원 완료 (응답 대기)
 
@@ -325,7 +341,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 그루우 | 26.03.11 | 26.03.16 | |
 | 버킷플레이스 | 26.03.22 | 26.03.25 | https://bucketplace.career.greetinghr.com/ko/o/191953 |
 | 디서클 | 26.04.10 | 26.04.10 | https://www.wanted.co.kr/wd/350946 |
-| 뤼튼 | 26.04.20 | 26.04.21 | [[Interview-Prep-Wrtn-JD]] (헤드헌터 지원, 페르소나 불일치 — 대규모 트래픽 경험 요구 추정) |
+| 뤼튼 | 26.04.20 | 26.04.21 | https://wrtn.career.greetinghr.com/ko/o/119686 — 헤드헌터 지원, 페르소나 불일치 (대규모 트래픽 경험 요구 추정) |
 
 ## 코테 및 과제
 
