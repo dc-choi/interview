@@ -28,6 +28,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 에어키친 | https://www.wanted.co.kr/wd/311193 | 백엔드 3년+, Node.js/NestJS/MySQL, O2O 셰프-공간 플랫폼 — 보류 (회사 정보 확인 불가) |
 | 브릿지웍스(캐시모어) | https://www.wanted.co.kr/wd/333289 | 1-8년, Node.js/TS/React/Next.js 풀스택, DAU 수만 중규모, AI 도구 필수 — 보류 (규모 미달 3명) |
 | 몰리턴 | https://www.wanted.co.kr/wd/315866 | 3-7년, NestJS + Spring 병행, AI 관리·리뷰 필수 — 보류 (회사 정보 거의 없음) |
+| 슈퍼센트 | https://supercent.career.greetinghr.com/ko/o/210998 | 게임 백엔드 3-7년, Python/FastAPI 주력, ECS/Redis/Terraform 우대 — 보류 (Node.js 주력과 언어 미스매치, 1차 Python 라이브 코딩 1시간 부담) |
 
 ## 지원 완료 (응답 대기)
 
