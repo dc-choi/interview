@@ -43,12 +43,10 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 지엔터프라이즈 | 26.04.20 | https://wx0ljugv.ninehire.site/job_posting/FYkTn8uX |
 | 중고나라 | 26.04.20 | https://joonggonara.ninehire.site/job_posting/EACstcnr |
 | 페이타랩(패스오더) | 26.04.20 | https://recruit.passorder.co.kr/c/umtrEJrqdg |
-| 로민 | 26.04.20 | https://lominpublic.notion.site/DevOps-2bcd46399740809e8ce8cca086aca03e |
-| 에이아이트릭스 | 26.04.20 | https://aitrics.ninehire.site/job_posting/2ToGw1P2 |
+| 로민 | 26.04.20 | https://lominpublic.notion.site/DevOps-2bcd46399740809e8ce8cca086aca03e — 26.04.23 채용담당자 스크리닝 전화(DevOps 우선 포지셔닝), 26.04.24 결과 발표 예정, LinkedIn 유입 |
 | 모두싸인 | 26.04.22 | https://recruit.modusign.co.kr/ko/o/199875 |
 | 카닥 | 26.04.22 | https://career.cardoc.co.kr/ko/o/209737 |
 | 아이헤이트플라잉버그스(밀당PT) | 26.04.22 | https://careers.mildang.kr/ko/o/69968 |
-| 바리코퍼레이션(라이트바겐) | 26.04.22 | https://www.wanted.co.kr/wd/324984 |
 | 스페이스맵 | 26.04.22 | https://www.wanted.co.kr/wd/349481 |
 | 그립랩스 | 26.04.22 | https://www.wanted.co.kr/wd/303815 |
 | 퓨쳐스콜레 | 26.04.22 | https://www.wanted.co.kr/wd/356093 |
@@ -342,6 +340,8 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 버킷플레이스 | 26.03.22 | 26.03.25 | https://bucketplace.career.greetinghr.com/ko/o/191953 |
 | 디서클 | 26.04.10 | 26.04.10 | https://www.wanted.co.kr/wd/350946 |
 | 뤼튼 | 26.04.20 | 26.04.21 | https://wrtn.career.greetinghr.com/ko/o/119686 — 헤드헌터 지원, 페르소나 불일치 (대규모 트래픽 경험 요구 추정) |
+| 바리코퍼레이션(라이트바겐) | 26.04.22 | 26.04.23 | https://www.wanted.co.kr/wd/324984 |
+| 에이아이트릭스 | 26.04.20 | 26.04.23 | https://aitrics.ninehire.site/job_posting/2ToGw1P2 |
 
 ## 코테 및 과제
 
