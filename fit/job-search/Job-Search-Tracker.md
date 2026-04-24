@@ -11,6 +11,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 | 기업   | 현재 단계    | 비고                                                                   |
 | ---- | -------- | -------------------------------------------------------------------- |
+| 로민   | 코테       | 백엔드 포지션, 기한 26.05.05                                                   |
 
 ## 지원할 기업
 
@@ -43,8 +44,6 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 지엔터프라이즈 | 26.04.20 | https://wx0ljugv.ninehire.site/job_posting/FYkTn8uX |
 | 중고나라 | 26.04.20 | https://joonggonara.ninehire.site/job_posting/EACstcnr |
 | 페이타랩(패스오더) | 26.04.20 | https://recruit.passorder.co.kr/c/umtrEJrqdg |
-| 로민 | 26.04.20 | https://lominpublic.notion.site/DevOps-2bcd46399740809e8ce8cca086aca03e — 26.04.23 채용담당자 스크리닝 전화(DevOps 우선 포지셔닝), 26.04.24 결과 발표 예정, LinkedIn 유입 |
-| 모두싸인 | 26.04.22 | https://recruit.modusign.co.kr/ko/o/199875 |
 | 카닥 | 26.04.22 | https://career.cardoc.co.kr/ko/o/209737 |
 | 아이헤이트플라잉버그스(밀당PT) | 26.04.22 | https://careers.mildang.kr/ko/o/69968 |
 | 스페이스맵 | 26.04.22 | https://www.wanted.co.kr/wd/349481 |
@@ -342,6 +341,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 뤼튼 | 26.04.20 | 26.04.21 | https://wrtn.career.greetinghr.com/ko/o/119686 — 헤드헌터 지원, 페르소나 불일치 (대규모 트래픽 경험 요구 추정) |
 | 바리코퍼레이션(라이트바겐) | 26.04.22 | 26.04.23 | https://www.wanted.co.kr/wd/324984 |
 | 에이아이트릭스 | 26.04.20 | 26.04.23 | https://aitrics.ninehire.site/job_posting/2ToGw1P2 |
+| 모두싸인 | 26.04.22 | 26.04.24 | https://recruit.modusign.co.kr/ko/o/199875 |
 
 ## 코테 및 과제
 
@@ -362,6 +362,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 아이오트러스트 | 탈락 | 25.12.18 지원, 26.01.07 탈락 |
 | 넛지헬스케어 | 탈락 | 26.03.04 지원, 26.03.25 탈락통보 |
 | 버즈빌 | 탈락 | 26.03.11 지원, 26.03.26 탈락 |
+| 로민 | 진행중 | 26.04.20 지원, 26.04.24 코테 안내, 기한 26.05.05, 백엔드 포지션 (코테 결과 보고 진입) |
 
 ## 커피챗
 
@@ -376,6 +377,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 기업 | 결과 | 비고 |
 |------|------|------|
 | 호패 | 통과 | 25.9.2 지원 |
+| 로민 | 통과 | 26.04.20 지원, 26.04.23 스크리닝 전화 (DevOps 우선 언급 → 26.04.24 백엔드 포지션으로 확정) |
 
 ## 1차 면접
 
