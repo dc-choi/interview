@@ -31,7 +31,7 @@
 - [[tech/security/보안(Security)|보안(Security)]] (12/24)
 
 ### 비즈니스&제품(Business&Product)
-- [[biz/비즈니스&제품(Business&Product)|비즈니스&제품(Business&Product)]] (13/13)
+- [[biz/비즈니스&제품(Business&Product)|비즈니스&제품(Business&Product)]] (14/14)
 
 ### 성장&면접(Growth&Interview)
 - [[fit/growth/성장(Growth)|성장(Growth)]] — 커리어 단계·학습·채용시장·소프트스킬·안티패턴·습관·커뮤니티
