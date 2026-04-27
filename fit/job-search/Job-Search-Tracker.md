@@ -12,16 +12,49 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 기업   | 현재 단계    | 비고                                                                   |
 | ---- | -------- | -------------------------------------------------------------------- |
 | 로민   | 코테       | 백엔드 포지션, 기한 26.05.05                                                   |
+| 퓨쳐스콜레(라이브클래스) | 코딩 과제 | 프로덕트 엔지니어 3년+, 마감 26.05.02(토) 23:59                                 |
 
 ## 지원할 기업
 
+### S티어
+
 | 기업 | 링크 | 비고 |
 |------|------|------|
-| KWE | | 태섭이형 회사, 공고 마감 |
+| 리디 | https://www.wanted.co.kr/wd/342644 | Backend Engineer, 5년+, Node.js+TS+MySQL+Go 일부 — 마감 26.04.27(임박), 과거 1회 탈락 후 재도전. 면접 시 배치팀(북스/웹툰/칸타) 확인 |
+| 앤서스랩코리아 (재도전) | https://nsuslab.com/?round_form_id=aozPj4bYhn#/careers | Platform Backend(Node.js) 5년+, NestJS+TS+MSA — iGaming(GGPoker/NSUSLAB) 도메인 수용, 과거 2회 탈락(25.02, 26.01.20→1일 만) 후 재도전. 빠른 탈락 패턴 플래그 |
+| 크림페이 | https://www.wanted.co.kr/wd/348894 | Backend, 3년+, Java/Kotlin/Spring Boot + Spring Batch, 결제 도메인 — 크림(KREAM) 100% 자회사 2025 초 설립 신생 PG, 결제 코어 0→1 설계 기회, 그린팩토리 근무. 리스크: 언어 미스매치, 신생 조직 프로세스 미정립 |
+| 스캐터랩 (제타, 재도전) | https://www.wanted.co.kr/wd/268215 | Backend, 3-10년, Spring Kotlin/Java + RDB/NoSQL/in-memory — 제타 사용자 300만·일본 월매출 11억·3분기 연속 흑자, 자체 LLM 100+ GPU 서빙. 잡플 4.3/블라 4.2 상위. 과거 25.2.26 탈락 후 재도전. 산업/전문연구요원 지정 |
+| AB180 (재도전) | https://www.wanted.co.kr/wd/330977 | Backend(Data Pipeline), 3년+, Kotlin+**Go**+AWS — 분당 100만 req·일 10억 이벤트, 매출 394억(+21%), 잡플 4.0. 과거 탈락 재도전(이력서 정량화·Kotlin/Go 포트폴리오 필요) |
+| 노타(Nota) | https://www.wanted.co.kr/wd/337910 | DevOps Engineer, 5년+, K8s+AWS+Terraform+PyPI — 코스닥 상장사(A486990), 삼성·LG·네이버·카카오 투자, Exynos 2600 공급, 블라 4.0 |
+| CLO 클로버추얼패션 | https://www.wanted.co.kr/wd/345343 | DevOps, 2-10년, K8s+Terraform+멀티클라우드(AWS+Azure+GCP) — 유니콘 시리즈C 500억, 매출 475억(3년 3배), 해외 90%, 아카데미 수상 |
+| 딜라이트룸(Alarmy, 재도전) | https://www.wanted.co.kr/wd/339046 | Senior SWE, 5년+, Go+Node.js+K8s+멀티클라우드 — Alarmy 1억 DL, 매출 460억+35%, **영업이익률 40%+ 부트스트랩**, 한국 최고 보상 수준. 25.3.17 탈락 재도전(이력서·포트폴리오 변화 필요) |
+| 클로봇 | https://www.wanted.co.kr/wd/341448 | 로봇 관제(CROMS) 백엔드, 5년+, Java+Spring Boot — 코스닥 상장사(466100), 매출 412억+23%, 두산로지스틱스 2000억 M&A. 리스크: 계약직 3개월→정규직, 언어 미스매치 |
+| 모레(MOREH) | https://www.wanted.co.kr/wd/337145 | SRE/DevOps, 2년+, K8s+Terraform+Ansible — 시리즈B 300억(KT·AMD), Tenstorrent 파트너십, **사이닝 1000만**. 매출 7.3억 작음은 런웨이 체크 필요 |
+
+### A티어
+
+| 기업 | 링크 | 비고 |
+|------|------|------|
+| 콕스웨이브 (신규 공고) | https://www.wanted.co.kr/wd/355874 | Backend(AX Workflow Builder), 3-5년, Python/Go/Java/TS, Pre-A 70억 — 퇴사율 12개월 -4% 검증 필수, 스톡옵션 행사가 확인 |
+| 지신 | https://www.wanted.co.kr/wd/352640 | Infra/Platform Backend, 2-7년, FastAPI+Go(Pion WebRTC) — Go+WebRTC 희귀 기회, 25.02 설립 초기 리스크(러너웨이·보상 면접 확인) |
+| GC메디아이 (구 유비케어) | https://www.wanted.co.kr/wd/355062 | Back-End, 5-10년, Node.js+Kafka+MSA — 녹십자 계열 상장사, EMR 1위(연 2억건). 리스크: 보상 정체 신호(블라인드 급여 2.8) |
+| 지바이크 (재도전) | https://www.wanted.co.kr/wd/230402 | 비즈니스 로직 백엔드, 5-20년, Java/Kotlin + K8s — 시리즈C 119억·매출 804억(+47%)·2025 IPO 트랙·글로벌 5개국 140개 도시. 과거 탈락 후 재도전. 리스크: 언어 미스매치, 잡플 급여복지 2.5~2.6/경영진 2.7, "편가르기" 리뷰 |
+| 젠틀몬스터(아이아이컴바인드) | https://www.wanted.co.kr/wd/322056 | Backend 5년+, Java/Kotlin/Spring Boot+MySQL+AWS+이벤트드리븐 — K-럭셔리 유니콘, 매출 7891억(+30%), 영업이익률 30%, 해외 40%. 리스크: 언어 미스매치 치명, 온콜 경험 요구 |
+| 테크타카(ARGO) | https://www.wanted.co.kr/wd/333968 | Backend 3년+, Java/Kotlin+Spring+Kafka — Series B 126억(알토스), 월 100만건 목표, 네이버 NFA 파트너. 리스크: 쿠팡식 관리 문화(블라인드 경영진 2.7) |
+| 넵튠 MEEFF (재도전) | https://www.wanted.co.kr/wd/354925 | Backend 3-8년, **Go**+CockroachDB+Redis — 글로벌 소셜 앱(1000만+ DL), 크래프톤 자회사(26.04). 리스크: **3개월 계약직→정규직 전환** 구조, 25.2.19 탈락 재도전 |
+| 베슬에이아이(VESSL AI) | https://www.wanted.co.kr/wd/342762 | Backend Engineer(Junior 표기) 3년+, **Go**+Python+K8s — 시리즈A $12M, CB Insights AI Agent 150, Forbes 2025, 고객사 현대차·KAIST·삼성SDS. Junior는 네고 레버 |
+| 에이티씨아이(CollabOps) | https://www.wanted.co.kr/wd/281230 | Backend **Go(Gin)**+FastAPI+PG, 3-8년 — 구글·세일즈포스 출신 CTO 스핀오프, CursorAI 내재화. 리스크: 6명·투자 라운드 미공개·런웨이 불명, 법인 확정 필요 |
+| 룩코(에이클로젯) | https://www.wanted.co.kr/wd/348590 | Backend 3-10년, **Go/Echo/Gorm**+AWS+PG — 패션 AI·LLM·가상피팅. 리스크: 회사 정보 부족(외부 리뷰·투자 공개 데이터 제한), 규모 미확인 |
+
+## 보류 / 만료
+
+| 기업 | 링크 | 비고 |
+|------|------|------|
+| KWE |  | 태섭이형 회사, 공고 마감 |
 | 에이피알 |  | 공고 만료 |
 | 크리스틴컴퍼니 |  | 백엔드 0~3년, NestJS — 공고 만료 |
+| 콕스웨이브 (이전 공고) |  | 백엔드(AI), TypeScript — 공고 만료 |
 | 애쉬코어테크놀로지스 | https://www.wanted.co.kr/wd/348916 | Junior Backend, TypeScript/NestJS — 보류 (JD 쎄함) |
-| 콕스웨이브 |  | 백엔드(AI), TypeScript — 공고 만료 |
 | 원프레딕트 | https://www.wanted.co.kr/wd/348225 | DevOps, K8s/ArgoCD — 보류 (컷 높음) |
 | 게임듀오 | https://gameduo.recruit.roundhr.com/c/8qjXer2x52 | 서버 프로그래머 (NodeJS 2년+), NestJS/Redis/AWS — 보류 (블라인드 사내정치·야근·계약직 복지차별 경고, 잡플 1.0) |
 | 다이버즈(널스빌리지) | https://www.wanted.co.kr/wd/349671 | 1-5년, Nest.js/Node.js/React/Next.js 풀스택 메인 엔지니어 — 보류 (규모 미달 3명) |
@@ -30,28 +63,25 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 브릿지웍스(캐시모어) | https://www.wanted.co.kr/wd/333289 | 1-8년, Node.js/TS/React/Next.js 풀스택, DAU 수만 중규모, AI 도구 필수 — 보류 (규모 미달 3명) |
 | 몰리턴 | https://www.wanted.co.kr/wd/315866 | 3-7년, NestJS + Spring 병행, AI 관리·리뷰 필수 — 보류 (회사 정보 거의 없음) |
 | 슈퍼센트 | https://supercent.career.greetinghr.com/ko/o/210998 | 게임 백엔드 3-7년, Python/FastAPI 주력, ECS/Redis/Terraform 우대 — 보류 (Node.js 주력과 언어 미스매치, 1차 Python 라이브 코딩 1시간 부담) |
+| 마키나락스 | https://www.wanted.co.kr/wd/302164 | Backend (AI Platform), 5년+, Python+Go+K8s, IPO 26.05.20 임박, Go 전환 타깃 — 보류 (AI App팀 SI성 리스크 + 블라인드 "개발자 무덤" 언급) |
 
 ## 지원 완료 (응답 대기)
 
-| 기업 | 지원일 | 링크 |
-|------|--------|------|
-| MVL | 26.04.10 | https://mvl.oopy.io/333d814b-821b-80d2-8714-d491953cbd79 |
-| 도르코퍼레이션(DOR) | 26.04.20 | https://career.dor.gg/position/engineer |
-| 피에프씨테크놀로지스 | 26.04.20 | https://pfct.career.greetinghr.com/ko/o/198964 |
-| 스트레스솔루션 | 26.04.20 | https://www.wanted.co.kr/wd/345314 |
-| 온다(ONDA) | 26.04.20 | https://www.wanted.co.kr/wd/340406 |
-| 에임인텔리전스 | 26.04.20 | https://career.aim-intelligence.com/ko/o/210763 |
-| 지엔터프라이즈 | 26.04.20 | https://wx0ljugv.ninehire.site/job_posting/FYkTn8uX |
-| 중고나라 | 26.04.20 | https://joonggonara.ninehire.site/job_posting/EACstcnr |
-| 페이타랩(패스오더) | 26.04.20 | https://recruit.passorder.co.kr/c/umtrEJrqdg |
-| 카닥 | 26.04.22 | https://career.cardoc.co.kr/ko/o/209737 |
-| 아이헤이트플라잉버그스(밀당PT) | 26.04.22 | https://careers.mildang.kr/ko/o/69968 |
-| 스페이스맵 | 26.04.22 | https://www.wanted.co.kr/wd/349481 |
-| 그립랩스 | 26.04.22 | https://www.wanted.co.kr/wd/303815 |
-| 퓨쳐스콜레 | 26.04.22 | https://www.wanted.co.kr/wd/356093 |
-| 라이프엑스(마미톡) | 26.04.22 | https://www.wanted.co.kr/wd/351232 |
-| 젠스타파트너스 | 26.04.22 | https://www.wanted.co.kr/wd/233045 |
-| 어스얼라이언스 | 26.04.22 | https://www.wanted.co.kr/wd/355467 |
+| 기업                | 지원일      | 링크                                                       |
+| ----------------- | -------- | -------------------------------------------------------- |
+| MVL               | 26.04.10 | https://mvl.oopy.io/333d814b-821b-80d2-8714-d491953cbd79 |
+| 도르코퍼레이션(DOR)      | 26.04.20 | https://career.dor.gg/position/engineer                  |
+| 피에프씨테크놀로지스        | 26.04.20 | https://pfct.career.greetinghr.com/ko/o/198964           |
+| 스트레스솔루션           | 26.04.20 | https://www.wanted.co.kr/wd/345314                       |
+| 온다(ONDA)          | 26.04.20 | https://www.wanted.co.kr/wd/340406                       |
+| 에임인텔리전스           | 26.04.20 | https://career.aim-intelligence.com/ko/o/210763          |
+| 지엔터프라이즈           | 26.04.20 | https://wx0ljugv.ninehire.site/job_posting/FYkTn8uX      |
+| 페이타랩(패스오더)        | 26.04.20 | https://recruit.passorder.co.kr/c/umtrEJrqdg             |
+| 카닥                | 26.04.22 | https://career.cardoc.co.kr/ko/o/209737                  |
+| 아이헤이트플라잉버그스(밀당PT) | 26.04.22 | https://careers.mildang.kr/ko/o/69968                    |
+| 스페이스맵             | 26.04.22 | https://www.wanted.co.kr/wd/349481                       |
+| 그립랩스              | 26.04.22 | https://www.wanted.co.kr/wd/303815                       |
+| 어스얼라이언스           | 26.04.22 | https://www.wanted.co.kr/wd/355467                       |
 
 ## 2주 경과 무응답
 
@@ -342,6 +372,9 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 바리코퍼레이션(라이트바겐) | 26.04.22 | 26.04.23 | https://www.wanted.co.kr/wd/324984 |
 | 에이아이트릭스 | 26.04.20 | 26.04.23 | https://aitrics.ninehire.site/job_posting/2ToGw1P2 |
 | 모두싸인 | 26.04.22 | 26.04.24 | https://recruit.modusign.co.kr/ko/o/199875 |
+| 중고나라 | 26.04.20 | 26.04.27 | https://joonggonara.ninehire.site/job_posting/EACstcnr — 포지션 마감 통보 (개별 평가 아닌 전형 종료) |
+| 라이프엑스(마미톡) | 26.04.22 | 26.04.27 | https://www.wanted.co.kr/wd/351232 — 2회 탈락 (26.01 마미톡 → 26.04.27 라이프엑스). 도메인 미스핏 가능성 |
+| 젠스타파트너스 | 26.04.22 | 26.04.27 | https://www.wanted.co.kr/wd/233045 |
 
 ## 코테 및 과제
 
@@ -363,6 +396,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 넛지헬스케어 | 탈락 | 26.03.04 지원, 26.03.25 탈락통보 |
 | 버즈빌 | 탈락 | 26.03.11 지원, 26.03.26 탈락 |
 | 로민 | 진행중 | 26.04.20 지원, 26.04.24 코테 안내, 기한 26.05.05, 백엔드 포지션 (코테 결과 보고 진입) |
+| 퓨쳐스콜레(라이브클래스) | 진행중 | 26.04.22 지원, 26.04.27 코딩 과제 안내·링크 오픈, **마감 26.05.02(토) 23:59**, 프로덕트 엔지니어 3년+ |
 
 ## 커피챗
 
