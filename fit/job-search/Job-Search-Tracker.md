@@ -69,7 +69,6 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 | 기업                | 지원일      | 링크                                                       |
 | ----------------- | -------- | -------------------------------------------------------- |
-| MVL               | 26.04.10 | https://mvl.oopy.io/333d814b-821b-80d2-8714-d491953cbd79 |
 | 도르코퍼레이션(DOR)      | 26.04.20 | https://career.dor.gg/position/engineer                  |
 | 피에프씨테크놀로지스        | 26.04.20 | https://pfct.career.greetinghr.com/ko/o/198964           |
 | 스트레스솔루션           | 26.04.20 | https://www.wanted.co.kr/wd/345314                       |
@@ -78,7 +77,6 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 지엔터프라이즈           | 26.04.20 | https://wx0ljugv.ninehire.site/job_posting/FYkTn8uX      |
 | 페이타랩(패스오더)        | 26.04.20 | https://recruit.passorder.co.kr/c/umtrEJrqdg             |
 | 카닥                | 26.04.22 | https://career.cardoc.co.kr/ko/o/209737                  |
-| 아이헤이트플라잉버그스(밀당PT) | 26.04.22 | https://careers.mildang.kr/ko/o/69968                    |
 | 스페이스맵             | 26.04.22 | https://www.wanted.co.kr/wd/349481                       |
 | 그립랩스              | 26.04.22 | https://www.wanted.co.kr/wd/303815                       |
 | 어스얼라이언스           | 26.04.22 | https://www.wanted.co.kr/wd/355467                       |
@@ -162,6 +160,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 로앤컴퍼니 | 26.03.10 | https://lawcompany.career.greetinghr.com/ko/o/196729 |
 | 핀크 | 26.03.11 | https://recruit-finnq.com/job_posting/SbfS34kS |
 | 문토 | 26.03.11 | |
+| MVL | 26.04.10 | https://mvl.oopy.io/333d814b-821b-80d2-8714-d491953cbd79 |
 
 ## 서류 탈락 (미통보)
 
@@ -375,6 +374,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 중고나라 | 26.04.20 | 26.04.27 | https://joonggonara.ninehire.site/job_posting/EACstcnr — 포지션 마감 통보 (개별 평가 아닌 전형 종료) |
 | 라이프엑스(마미톡) | 26.04.22 | 26.04.27 | https://www.wanted.co.kr/wd/351232 — 2회 탈락 (26.01 마미톡 → 26.04.27 라이프엑스). 도메인 미스핏 가능성 |
 | 젠스타파트너스 | 26.04.22 | 26.04.27 | https://www.wanted.co.kr/wd/233045 |
+| 아이헤이트플라잉버그스(밀당PT) | 26.04.22 | 26.04.28 | https://careers.mildang.kr/ko/o/69968 |
 
 ## 코테 및 과제
 
