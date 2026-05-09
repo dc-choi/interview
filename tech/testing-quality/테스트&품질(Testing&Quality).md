@@ -24,6 +24,7 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 - [x] [[Test-Pyramid|Practical Test Pyramid (Unit·Integration·Contract·E2E, 아이스크림 콘 안티패턴)]]
 - [x] [[TestContainers-Integration|Testcontainers 통합 테스트 (멱등성·Random 포트·병렬 테스트)]]
 - [x] [[Transactional-Test-Antipattern|테스트 @Transactional 안티패턴 (JUnit Extension·TRUNCATE·Auto Detection)]]
+- [x] [[NestJS-Testing|NestJS Testing (TestingModule·in-memory DB·트랜잭션 롤백·overrideGuard·Supertest)]]
 
 ## 현장사례
 - [[11st-Engineer-Seminar#테스트전략|11번가 테스트 전략]] — 컨트롤러→통합, 서비스→단위, Mock 최소화

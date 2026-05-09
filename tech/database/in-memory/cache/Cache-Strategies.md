@@ -138,6 +138,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 - **무한 TTL** → 잊혀진 데이터가 메모리 점유
 - **캐시를 "DB 보조"로만 생각** → Request Coalescing·Hot Key 같은 고유 패턴 놓침
 - **AWS DAX 같은 Write-Through 전용 도구에 쓰기 폭주 워크로드** → 비용 절감 효과 없음
+- **캐시 도입 자체가 정답이라는 가정** — 노출률·히트율이 낮으면 제거가 답일 수 있음 ([[Cache-Decision|도입·제거 의사결정]])
 
 ## 면접 체크포인트
 
@@ -155,6 +156,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 
 ## 관련 문서
 - [[Cache-Basics|캐시 기초]]
+- [[Cache-Decision|Cache 도입·제거 의사결정]]
 - [[Cache-Invalidation|Cache invalidation]]
 - [[Cache-Stampede|Cache stampede 방지]]
 - [[Hot-Key|Hot key 대응]]

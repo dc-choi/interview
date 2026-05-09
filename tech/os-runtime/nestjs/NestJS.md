@@ -23,6 +23,32 @@ Node.js의 프레임워크이다.
 - `@Injectable()` 데코레이터로 Provider 등록 → constructor에서 **타입 기반 자동 주입**
 - 개발자는 의존성을 직접 생성하지 않고, 컨테이너에 "무엇이 필요한지"만 선언
 
+### Provider 종류 (5가지)
+
+| 종류 | 등록 방식 | 용도 |
+|------|----------|------|
+| **Class** | `UserService` (단축) / `{ provide: UserService, useClass: ... }` | 기본 — 클래스 인스턴스 |
+| **Value** | `{ provide: 'API_KEY', useValue: process.env.KEY }` | 상수·설정·외부 객체 |
+| **Factory** | `{ provide: TOKEN, useFactory: (deps) => ..., inject: [...] }` | 런타임에 생성 결정·다른 Provider 의존 |
+| **Existing (Alias)** | `{ provide: 'USER_SERVICE', useExisting: UserService }` | 같은 인스턴스에 다른 토큰 별칭 |
+| **Async** | `useFactory: async () => ...` | 외부 호출·비동기 초기화 (DB 연결, 원격 설정) |
+
+문자열·Symbol 토큰 Provider는 `@Inject(TOKEN)`으로 명시적 주입. 클래스 토큰은 타입만으로 자동 해결.
+
+### DI 컨테이너 내부 동작
+
+```
+1. 컴파일 타임 — TypeScript가 reflect-metadata로 파라미터 타입 메타데이터 생성
+   (Reflect.getMetadata('design:paramtypes', SomeService) → [UserService, 'CUSTOM_TOKEN', ...])
+2. 런타임 — NestFactory가 모듈 트리 스캔 → @Injectable 마커 + 메타데이터 수집
+3. 의존성 그래프 구축 — Provider 토큰별 노드 + 주입 엣지
+4. 순환 참조 검사 — 그래프에 사이클 있으면 forwardRef 없이는 throw
+5. 위상 정렬 → 순서대로 인스턴스화 (의존받는 쪽이 먼저)
+6. constructor 호출 시 그래프에서 해결된 인스턴스 주입
+```
+
+`tsconfig`의 `emitDecoratorMetadata: true` + `reflect-metadata` 폴리필이 1단계의 전제. 둘 중 하나라도 빠지면 자동 주입 안 됨 → 모든 Provider에 명시 토큰 필요. 클래스 토큰을 타입만으로 자동 해결할 수 있는 것은 컴파일러가 파라미터 타입을 메타데이터로 emit해주기 때문.
+
 ### Provider Scope
 
 | Scope | 생명주기 | 사용 시점 |
@@ -80,9 +106,23 @@ NestJS는 Spring·Angular의 설계를 TypeScript/Node.js로 옮긴 계보. DI·
 
 ## NestJS 심화 주제
 
+- [[NestJS-Module-Dynamic|Dynamic Module · Global Module · register/registerAsync]]
+- [[NestJS-Guards|Guards (Auth·Roles·Reflector·체인 단락 평가)]]
+- [[NestJS-Pipes|Pipes (Validation·Transform·class-validator 심화)]]
+- [[NestJS-Exception-Filter|Exception Filter (Catch-all·특정 예외·커스텀 HttpException)]]
+- [[NestJS-Middleware|Middleware (함수형/클래스형·Rate Limit·Express 호환)]]
+- [[NestJS-Lifecycle|Lifecycle (Bootstrap 단계·생명주기 훅 실행 순서)]]
+- [[NestJS-ExecutionContext|ExecutionContext (http/ws/rpc 통합·Reflector 메타데이터 조합)]]
 - [[NestJS-Cold-Start-Optimization|Cold Start 최적화 (의존성 그래프·Lazy Module·서버리스)]]
 - [[NestJS-AOP-Interceptor|Interceptor 기반 AOP (Observable 강제 이유·Prisma 에러 처리)]]
 - [[NestJS-Custom-Decorator|커스텀 데코레이터 (SetMetadata·DiscoveryService·@toss/nestjs-aop)]]
+- [[NestJS-Plugin-System|Plugin System (DiscoveryService 기반 클래스 단위 확장·동적 모듈 결합)]]
+- [[NestJS-Circular-Dependency|순환 의존성 해결 (forwardRef·ModuleRef·Event·Facade·Domain 5전략)]]
+- [[NestJS-Microservices|Microservices (ClientProxy·send vs emit·Transport 종류)]]
+- [[NestJS-GraphQL|GraphQL (Resolver·DataLoader·Subscription·N+1 해결)]]
+- [[NestJS-WebSocket-Gateway|WebSocket Gateway (@WebSocketGateway·OnGatewayConnection·Room 브로드캐스트)]]
+- [[NestJS-Testing|Testing (TestingModule·in-memory DB·트랜잭션 롤백 검증)]]
+- [[NestJS-Caching-Integration|Caching Integration (Cacheable·Multi-Level·Stampede·Pub/Sub Coherency)]]
 
 ### [[Controller]]
 

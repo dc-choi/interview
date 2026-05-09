@@ -28,6 +28,9 @@ aliases: ["관측가능성(Observability)", "Observability"]
 ## Metrics
 - [x] [[Metric-Layer-Mismatch|메트릭 측정 레이어의 함정 (CloudWatch vs node_exporter, iowait, 두 레이어 교차 알람)]]
 - [x] [[Container-Monitoring|컨테이너 모니터링 (cAdvisor·node_exporter·Prometheus·Grafana·Fluentd, 사이드카 vs 데몬셋)]]
+- [x] [[K8s-Resource-Right-Sizing|메트릭 기반 리소스 적정화 (P95·집계 기간·PromQL)]] — 측정 방법론 측면
+- [x] [[Application-Performance-Monitoring|APM (process.hrtime·RED/USE·P95/P99·OTel·카디널리티 관리)]]
+- [x] [[CloudWatch|AWS CloudWatch (EMF·Log Insights·Composite Alarm·Container/Lambda Insights)]]
 - [ ] [[RED-USE-Method|RED / USE method]]
 - [ ] [[Prometheus]]
 - [ ] [[Cardinality|Cardinality 관리]]

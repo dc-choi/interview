@@ -23,6 +23,9 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 ## 미작성 — Network
 - [ ] [[NAT-Subnet|NAT / Public vs Private subnet]]
 
+## Kubernetes
+- [x] [[K8s-Resource-Right-Sizing|Resource Right-Sizing (P95·버퍼·역산식·컴포넌트 차등·롤백 기준)]]
+
 ## 미작성 — Kubernetes
 - [ ] [[K8s-Pod-Deployment|Pod / Deployment / Service / Ingress]]
 - [ ] [[K8s-HPA-VPA|HPA / VPA]]
