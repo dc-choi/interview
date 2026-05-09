@@ -70,6 +70,36 @@ callback을 호출해야 다음 청크를 받을 수 있다 → 이것이 배압
 예: net.Socket (TCP 소켓), zlib 스트림
 ```
 
+**Duplex의 실제 사례** — 모두 입력·출력 경로가 **서로 무관**하게 흐름:
+
+| 사례 | 쓰기 측 | 읽기 측 |
+|------|--------|--------|
+| `net.Socket` (TCP) | `socket.write(...)` 송신 | `socket.on('data')` 수신 |
+| HTTP/2 stream | `req.write(...)` 요청 본문 | `req.on('data')` 응답 본문 |
+| Child process stdio | `child.stdin.write(...)` | `child.stdout.on('data')` |
+
+```ts
+// TCP — 양방향 소켓
+net.createServer(socket => {
+  socket.write('greeting');
+  socket.on('data', d => console.log('client said:', d.toString()));
+});
+
+// Child stdio — stdin은 Writable·stdout은 Readable이지만
+// child 자체가 양방향 통신 채널
+const child = spawn('node', ['script.js']);
+child.stdin.write('input');
+child.stdout.on('data', d => console.log(d.toString()));
+```
+
+**Transform vs Duplex** — Transform은 Duplex의 서브셋이지만 의미가 다름:
+
+| 축 | Duplex | Transform |
+|----|--------|-----------|
+| 입력↔출력 관계 | 독립 (무관할 수도) | 1:1 변환 (입력 → 변환 → 출력) |
+| 사용처 | 양방향 통신 채널 | gzip·암호화·인코딩 변환 |
+| 구현 메서드 | `_read`, `_write` | `_transform` |
+
 ### 4. Transform
 ```
 Duplex의 하위 타입. 입력을 변환하여 출력으로 내보낸다.

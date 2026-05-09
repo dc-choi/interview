@@ -1,13 +1,13 @@
 ---
-tags: [web, network, api, rest, graphql, grpc]
+tags: [web, network, api, rest, graphql, grpc, trpc, ts-rest]
 status: done
 category: "웹&네트워크(Web&Network)"
-aliases: ["API Comparison", "REST vs GraphQL vs gRPC"]
+aliases: ["API Comparison", "REST vs GraphQL vs gRPC", "REST vs GraphQL vs gRPC vs tRPC vs ts-rest"]
 ---
 
-# REST vs GraphQL vs gRPC
+# REST vs GraphQL vs gRPC vs tRPC vs ts-rest
 
-세 API 스타일의 본질적 차이를 한눈에 비교하고, 언제 무엇을 선택할지 정리.
+API 스타일의 본질적 차이를 한눈에 비교하고, 언제 무엇을 선택할지 정리. REST·GraphQL·gRPC가 언어 중립 표준 3대장이고, **tRPC·ts-rest는 풀스택 TypeScript 환경의 type-safe 대안** ([[Type-Safe-API]] 참조).
 
 ## 본질적 차이
 
@@ -93,6 +93,31 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 - 다언어 폴리글랏 백엔드 (Java + Go + Python)
 - 강한 계약·자동 코드 생성이 필요한 대규모 조직
 
+## TypeScript 한정 type-safe 대안 — tRPC · ts-rest
+
+| 축 | tRPC | ts-rest |
+|----|------|---------|
+| 패러다임 | RPC (함수 호출) | 계약 우선 REST |
+| 엔드포인트 | 단일 `/trpc/*` | RESTful path 다수 |
+| 클라이언트 | `trpc.user.getById.query({id})` 함수 호출 | `client.users.getById({params:{id}})` |
+| 검증 | Zod·Typia procedure 입력 | Zod·Typia path·body·response schema |
+| OpenAPI | 별도 어댑터 (`trpc-openapi`) | 내장 (`generateOpenApi`) |
+| 다국어 클라 | ✗ (TS 전용) | OpenAPI 경유 가능 |
+| 응답 분기 | throw → catch | status discriminated union |
+| 적합 | 풀스택 TS 모놀리스·Next.js | 외부 공개·Mobile·OpenAPI 필요 |
+
+**선택 기준**: 풀스택 TS + 단일 팀 → tRPC. 외부 클라이언트·OpenAPI·REST 표준 필요 → ts-rest. 자세한 건 [[Type-Safe-API]].
+
+## 5개 스타일 한 줄 요약
+
+| 스타일 | 한 줄 |
+|-------|------|
+| **REST** | 자원 중심·HTTP 표준 캐싱 강력·외부 공개 표준 |
+| **GraphQL** | 클라이언트가 응답 모양 결정·N+1 주의·복잡 중첩 적합 |
+| **gRPC** | Protobuf 바이너리·HTTP/2 양방향 스트리밍·내부 마이크로서비스 |
+| **tRPC** | TS 함수 호출·DX 최강·풀스택 TS 한정 |
+| **ts-rest** | 계약 우선 REST·OpenAPI 내장·TS 안전 + 표준 호환 |
+
 ## 함께 쓰는 패턴
 
 실무에선 단일 선택이 드물고, **계층별로 다른 스타일을 조합**하는 경우가 많다.
@@ -118,3 +143,5 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 - [[REST|REST · RESTful API]]
 - [[GraphQL|GraphQL]]
 - [[gRPC|gRPC]]
+- [[Type-Safe-API|tRPC · ts-rest (TS end-to-end 타입 안전)]]
+- [[Runtime-Validation-Libraries|Typia · Zod · Ajv 검증 라이브러리]]

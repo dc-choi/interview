@@ -8,27 +8,27 @@
 ## 목차
 
 ### 기초(Fundamentals)
-- [[tech/computer-science/CS&프로그래밍(CS&Programming)|CS&프로그래밍(CS&Programming)]] (64/65)
-- [[tech/web/웹&네트워크(Web&Network)|웹&네트워크(Web&Network)]] (23/28)
-- [[tech/os-runtime/OS&런타임(OS&Runtime)|OS&런타임(OS&Runtime)]] (47/56)
+- [[tech/computer-science/CS&프로그래밍(CS&Programming)|CS&프로그래밍(CS&Programming)]] (66/67)
+- [[tech/web/웹&네트워크(Web&Network)|웹&네트워크(Web&Network)]] (24/29)
+- [[tech/os-runtime/OS&런타임(OS&Runtime)|OS&런타임(OS&Runtime)]] (64/73)
 
 ### 데이터(Data)
-- [[tech/database/데이터&저장소(Data&Storage)|데이터&저장소(Data&Storage)]] (54/63)
-- [[tech/messaging-data-pipeline/메시징&파이프라인(Messaging&Pipeline)|메시징&파이프라인(Messaging&Pipeline)]] (13/28)
+- [[tech/database/데이터&저장소(Data&Storage)|데이터&저장소(Data&Storage)]] (66/75)
+- [[tech/messaging-data-pipeline/메시징&파이프라인(Messaging&Pipeline)|메시징&파이프라인(Messaging&Pipeline)]] (14/29)
 
 ### 설계&성능(Design&Performance)
 - [[tech/architecture-design/아키텍처&설계(Architecture&Design)|아키텍처&설계(Architecture&Design)]] (19/24)
 - [[tech/performance-scalability/성능&확장성(Performance&Scalability)|성능&확장성(Performance&Scalability)]] (9/20)
 
 ### 운영&인프라(Operations&Infrastructure)
-- [[tech/infrastructure-cloud/인프라&클라우드(Infrastructure&Cloud)|인프라&클라우드(Infrastructure&Cloud)]] (19/34)
+- [[tech/infrastructure-cloud/인프라&클라우드(Infrastructure&Cloud)|인프라&클라우드(Infrastructure&Cloud)]] (24/39)
 - [[tech/ci-cd/CICD&배포(CICD&Delivery)|CICD&배포(CICD&Delivery)]] (12/21)
-- [[tech/observability/관측가능성(Observability)|관측가능성(Observability)]] (8/20)
+- [[tech/observability/관측가능성(Observability)|관측가능성(Observability)]] (11/23)
 - [[tech/reliability/안정성엔지니어링(Reliability)|안정성엔지니어링(Reliability)]] (5/11)
 
 ### 품질&보안(Quality&Security)
-- [[tech/testing-quality/테스트&품질(Testing&Quality)|테스트&품질(Testing&Quality)]] (12/21)
-- [[tech/security/보안(Security)|보안(Security)]] (12/24)
+- [[tech/testing-quality/테스트&품질(Testing&Quality)|테스트&품질(Testing&Quality)]] (13/22)
+- [[tech/security/보안(Security)|보안(Security)]] (13/25)
 
 ### 비즈니스&제품(Business&Product)
 - [[biz/비즈니스&제품(Business&Product)|비즈니스&제품(Business&Product)]] (14/14)

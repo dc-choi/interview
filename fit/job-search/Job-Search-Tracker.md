@@ -11,8 +11,8 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 | 기업   | 현재 단계    | 비고                                                                   |
 | ---- | -------- | -------------------------------------------------------------------- |
-| 로민   | 코테       | 백엔드 포지션, 기한 26.05.05                                                   |
 | 퓨쳐스콜레(라이브클래스) | 코딩 과제 | 프로덕트 엔지니어 3년+, 마감 26.05.02(토) 23:59                                 |
+| 비단팝팝 | 1차 면접 (26.05.14 16:00 확정) | https://bdanpoppop.notion.site/3347ca69692280fdb7c0d0c584b369db — 26.05.06 채용팀 직접 면접 제안(서핏), 26.05.07 회신, 26.05.07 일정 확정. 단독 면접 40~50분, 개발본부 부장님, 강남 언주로 725 보전빌딩 동관 10층 |
 
 ## 지원할 기업
 
@@ -22,16 +22,14 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | ------------------ | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 노타(Nota)           | https://career.nota.ai/en/o/199925                                           | DevOps Engineer, 5년+, K8s+AWS+Terraform+PyPI — 코스닥 상장사(A486990), 삼성·LG·네이버·카카오 투자, Exynos 2600 공급, 블라 4.0                                                            |
 | CLO 클로버추얼패션        | https://jobs.lever.co/clovirtualfashion/1fcfaf81-2258-409d-b0df-ff1a3d6f6235 | DevOps, 2-10년, K8s+Terraform+멀티클라우드(AWS+Azure+GCP) — 유니콘 시리즈C 500억, 매출 475억(3년 3배), 해외 90%, 아카데미 수상                                                                  |
-| 딜라이트룸(Alarmy, 재도전) | https://team.alar.my/job_posting/6BpuJhsW                                    | Senior SWE, 5년+, Go+Node.js+K8s+멀티클라우드 — Alarmy 1억 DL, 매출 460억+35%, **영업이익률 40%+ 부트스트랩**, 한국 최고 보상 수준. 25.3.17 탈락 재도전(이력서·포트폴리오 변화 필요)                               |
-| 클로봇                | https://clobotroas.ninehire.site/job_posting/19nHDeWL                        | 로봇 관제(CROMS) 백엔드, 5년+, Java+Spring Boot — 코스닥 상장사(466100), 매출 412억+23%, 두산로지스틱스 2000억 M&A. 리스크: 계약직 3개월→정규직, 언어 미스매치                                                 |
 | 모레(MOREH)          | https://moreh.career.greetinghr.com/ko/o/199470                              | SRE/DevOps, 2년+, K8s+Terraform+Ansible — 시리즈B 300억(KT·AMD), Tenstorrent 파트너십, **사이닝 1000만**. 매출 7.3억 작음은 런웨이 체크 필요                                                   |
+| 42dot (Open Platform Eng.) | https://jobs.ashbyhq.com/42dot/51026be0-8b5a-4264-a410-0bd2b1c712e8 | Backend Engineer (Open Platform Engineering), API Gateway/IAM/OAuth/OIDC, 판교 — 현대차그룹 자율주행 자회사. **언어 미명시(Tyk/IAM 도메인 중심)**로 이전 2회 탈락의 언어 갭 해소. 보안·인증 도메인 학습 트랙 매치. 리스크: ① IAM/API Gateway 도메인 깊이 부족 → 학습 동기로 상쇄, ② 24년·25.5 2회 탈락 재도전(직무 다름), ③ 4단계 프로세스(코테+화상 1h+대면 3h) 시간 투자 큼 |
 
 ### A티어
 
 | 기업 | 링크 | 비고 |
 |------|------|------|
 | 지바이크 (재도전) | https://gcoo.io/career/jobs | 비즈니스 로직 백엔드, 5-20년, Java/Kotlin + K8s — 시리즈C 119억·매출 804억(+47%)·2025 IPO 트랙·글로벌 5개국 140개 도시. 과거 탈락 후 재도전. 리스크: 언어 미스매치, 잡플 급여복지 2.5~2.6/경영진 2.7, "편가르기" 리뷰 |
-| 로보티즈AI | https://robotisrecruiter.ninehire.site/job_posting/eNTANKXE | 로봇관제 시스템 WEB 백엔드, 경력 무관, **Node.js/TS**+NestJS+RESTful+MySQL/Mongo, 우대 Kafka/Redis/Docker/K8s — 자율주행로봇 관제, 모회사 로보티즈(코스닥 108490, 액추에이터·휴머노이드) 자회사. 강서구 마곡. 리스크: 자회사 단독 정보 부족, "경력 무관+면접 후 결정"→베이스 낮을 가능성. 풀 언어 매치 |
 
 ## 보류 / 만료
 
@@ -56,6 +54,8 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | GC메디아이 (구 유비케어) | https://www.wanted.co.kr/wd/355062 | Back-End, 5-10년, Node.js+Kafka+MSA — 녹십자 계열 상장사, EMR 1위(연 2억건) — 보류 (공식 홈 미게재, 보상 정체 신호 블라인드 급여 2.8) |
 | 지신 | https://www.wanted.co.kr/wd/352640 | Infra/Platform Backend, 2-7년, FastAPI+Go(Pion WebRTC) — Go+WebRTC 희귀 기회, 25.02 설립 초기 — 보류 (인원 10명, 규모 미달) |
 | 콕스웨이브 (신규 공고) | https://careers.coxwave.com/c/SnHVam6Hjd | Backend(AX Workflow Builder), 3-5년, Python/Go/Java/TS, Pre-A 70억 — 보류 (인원 12명, 규모 미달) |
+| 로보티즈AI | https://robotisrecruiter.ninehire.site/job_posting/eNTANKXE | 로봇관제 WEB 백엔드, Node.js/NestJS 풀 언어 매치, 모회사 코스닥(108490) — 보류 (강서구 마곡, 통근 거리) |
+| 클로봇 | https://clobotroas.ninehire.site/job_posting/19nHDeWL | 로봇 관제(CROMS) 백엔드, Java+Spring Boot, 코스닥(466100), 매출 412억+23%, 두산로지스틱스 2000억 M&A — 보류 (계약직 3개월, 언어 미스매치) |
 | 크림페이 | https://recruit.kreampaycorp.com/rcrt/view.do?annoId=30004712 | Backend 3년+, Java/Kotlin/Spring Boot + Spring Batch, 결제 도메인, KREAM 자회사 신생 PG — 보류 (필수 미달: Java/Spring 메인 경력 + Spring Batch 미경험, 결제 도메인 0) |
 | 넵튠 MEEFF | https://ug6h08u8.ninehire.site/job_posting/SxqSVZ8K | Backend **5년+**, Go+CockroachDB+Redis, 글로벌 소셜 1000만+ DL, 크래프톤 자회사 — 보류 (3중 리스크: ① 3개월 계약직→정규직, ② 5년+ 컷 페르소나 미달, ③ 25.2.19 탈락 재도전) |
 
@@ -68,15 +68,13 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 스트레스솔루션           | 26.04.20 | https://www.wanted.co.kr/wd/345314                       |
 | 온다(ONDA)          | 26.04.20 | https://www.wanted.co.kr/wd/340406                       |
 | 에임인텔리전스           | 26.04.20 | https://career.aim-intelligence.com/ko/o/210763          |
-| 지엔터프라이즈           | 26.04.20 | https://wx0ljugv.ninehire.site/job_posting/FYkTn8uX      |
 | 카닥                | 26.04.22 | https://career.cardoc.co.kr/ko/o/209737                  |
 | 스페이스맵             | 26.04.22 | https://www.wanted.co.kr/wd/349481                       |
 | 그립랩스              | 26.04.22 | https://www.wanted.co.kr/wd/303815                       |
-| 앤서스랩코리아           | 26.04.28 | https://nsuslab.com/?round_form_id=aozPj4bYhn#/careers   |
 | AB180              | 26.04.28 | https://recruit.ab180.co/job_posting/yTlPR6Ki            |
 | 테크타카(ARGO)         | 26.04.28 | https://techtaka.ninehire.site/job_posting/n0xee2mi      |
 | 베슬에이아이(VESSL AI)   | 26.05.04 | https://vessl.recruit.roundhr.com/c/uKCMrULfaT           |
-| 룩코(에이클로젯)         | 26.05.04 | https://www.wanted.co.kr/wd/348590                       |
+| 딜라이트룸(Alarmy, 재도전) | 26.05.07 | https://team.alar.my/job_posting/6BpuJhsW — 25.3.17 탈락 후 재도전 |
 
 ## 2주 경과 무응답
 
@@ -376,6 +374,9 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 스캐터랩 (제타) | 26.04.28 | 26.04.30 | https://www.scatterlab.co.kr/ko/o/123249 — 재지원 (이전 25.2.26 탈락) |
 | 로앤컴퍼니 | 26.03.10 | 26.05.04 | https://lawcompany.career.greetinghr.com/ko/o/196729 — 3회 탈락 (25.4.18, 25.8.25, 26.03.10) |
 | 페이타랩(패스오더) | 26.04.20 | 26.05.04 | https://recruit.passorder.co.kr/c/umtrEJrqdg |
+| 앤서스랩코리아 | 26.04.28 | 26.05.06 | https://nsuslab.com/?round_form_id=aozPj4bYhn#/careers — 3회 탈락 (25.2.20, 26.01.20, 26.04.28) |
+| 지엔터프라이즈 | 26.04.20 | 26.05.06 | https://wx0ljugv.ninehire.site/job_posting/FYkTn8uX |
+| 룩코(에이클로젯) | 26.05.04 | 26.05.07 | https://www.wanted.co.kr/wd/348590 |
 
 ## 코테 및 과제
 
@@ -396,7 +397,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 아이오트러스트 | 탈락 | 25.12.18 지원, 26.01.07 탈락 |
 | 넛지헬스케어 | 탈락 | 26.03.04 지원, 26.03.25 탈락통보 |
 | 버즈빌 | 탈락 | 26.03.11 지원, 26.03.26 탈락 |
-| 로민 | 진행중 | 26.04.20 지원, 26.04.24 코테 안내, 기한 26.05.05, 백엔드 포지션 (코테 결과 보고 진입) |
+| 로민 | 탈락 | 26.04.20 지원, 26.04.24 코테 안내, 기한 26.05.05, 26.05.07 탈락 |
 | 퓨쳐스콜레(라이브클래스) | 진행중 | 26.04.22 지원, 26.04.27 코딩 과제 안내·링크 오픈, **마감 26.05.02(토) 23:59**, 프로덕트 엔지니어 3년+ |
 
 ## 커피챗

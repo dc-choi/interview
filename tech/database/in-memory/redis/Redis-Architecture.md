@@ -68,6 +68,79 @@ EXEC 실패 시 대응:
 - 구독으로 특정 채널을 구독하고 발행으로 메시지를 보냄
 - **메시지를 저장하지 않음** → 실패 시 재시도 불가, 못 받을 수도 있음
 - 못 받을 수 있다고 전제하고 사용하는 것이 좋음
+- 영속 + ACK 필요하면 [[Redis-Streams-PubSub|Streams]]로
+
+## 이벤트 루프 · I/O 모델
+
+Redis는 **싱글 스레드 이벤트 루프 + epoll/kqueue 비동기 I/O**. 명령 자체는 한 번에 하나만 처리해 락이 필요 없음.
+
+| 측면 | 동작 |
+|------|------|
+| 메인 루프 | epoll(Linux)/kqueue(macOS)/IOCP(Windows) |
+| 파일 디스크립터 | 클라이언트당 1개, 다중화 |
+| 명령 처리 | 받은 순서대로 직렬, 각 명령 원자성 |
+| 백그라운드 | RDB/AOF rewrite는 fork된 자식, AOF flush는 별도 스레드 |
+| Threaded I/O (6.0+) | 네트워크 read/write만 멀티스레드, 명령 실행은 여전히 싱글 |
+
+**왜 빠른가**:
+1. 메모리 기반 (디스크 I/O 회피)
+2. 싱글 스레드 → 락·컨텍스트 스위칭 오버헤드 0
+3. 효율적 자료구조 (skiplist·hashtable 등 [[Redis-Internal-Encoding|내부 인코딩]])
+4. epoll/kqueue로 수만 연결을 한 스레드가
+5. Pipeline으로 RTT 제거
+
+## RESP — REdis Serialization Protocol
+
+텍스트 기반 단순 프로토콜. 사람이 읽을 수 있고 파싱이 빠름.
+
+```
+*3\r\n$3\r\nSET\r\n$5\r\nmykey\r\n$7\r\nmyvalue\r\n
+└─ Array(3)
+   ├─ Bulk String "SET"
+   ├─ Bulk String "mykey"
+   └─ Bulk String "myvalue"
+```
+
+| 타입 | 접두사 | 예 |
+|------|--------|-----|
+| Simple String | `+` | `+OK\r\n` |
+| Error | `-` | `-ERR unknown command\r\n` |
+| Integer | `:` | `:1000\r\n` |
+| Bulk String | `$` | `$5\r\nhello\r\n` |
+| Array | `*` | `*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n` |
+
+RESP3(7.0+)는 Map·Set·Big Number 등 추가 — 클라이언트가 협상으로 선택.
+
+## Pipeline vs Transaction
+
+**Pipeline**: 여러 명령을 한 번에 송신하고 응답을 모아 받음. **네트워크 RTT 절감**이 목적, 원자성은 보장 안 함.
+
+```
+SET key1 val1
+SET key2 val2
+GET key1
+# 한 번의 라운드트립으로 3개 명령 처리
+```
+
+**Transaction (MULTI/EXEC)**: 명령들을 큐에 쌓고 EXEC 시점에 일괄 실행. **원자성** 보장 (다른 클라이언트 명령 끼어들지 않음).
+
+```
+MULTI
+SET key1 val1
+SET key2 val2
+EXEC
+```
+
+| 축 | Pipeline | Transaction |
+|----|---------|-------------|
+| 목적 | RTT 감소 | 원자성 |
+| 다른 클라이언트 끼어들기 | 가능 | 불가 |
+| 중간 실패 시 롤백 | — | **롤백 안 됨** (이미 실행된 명령 유지) |
+| 결과 의존 분기 | 불가 (Lua로) | 불가 (Lua로) |
+
+Redis Transaction은 RDBMS와 다름 — **EXEC 중 명령 실패해도 롤백 X**. 진짜 트랜잭션이 필요하면 [[Redis-Atomic-Operations|Lua 스크립트]] (스크립트 전체가 단일 명령처럼 원자 실행).
+
+WATCH + MULTI/EXEC = **낙관적 락(optimistic CAS)**. 위 트랜잭션 섹션 참조.
 
 ## 관련 문서
 - [[Redis-Data-Structures|Redis 자료구조]]
