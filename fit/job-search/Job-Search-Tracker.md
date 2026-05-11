@@ -11,8 +11,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 | 기업   | 현재 단계    | 비고                                                                   |
 | ---- | -------- | -------------------------------------------------------------------- |
-| 퓨쳐스콜레(라이브클래스) | 코딩 과제 | 프로덕트 엔지니어 3년+, 마감 26.05.02(토) 23:59                                 |
-| 비단팝팝 | 1차 면접 (26.05.14 16:00 확정) | https://bdanpoppop.notion.site/3347ca69692280fdb7c0d0c584b369db — 26.05.06 채용팀 직접 면접 제안(서핏), 26.05.07 회신, 26.05.07 일정 확정. 단독 면접 40~50분, 개발본부 부장님, 강남 언주로 725 보전빌딩 동관 10층 |
+| 퓨쳐스콜레(라이브클래스) | 코딩 과제 (제출 완료, 결과 대기) | 프로덕트 엔지니어 3년+, 26.05.02 제출                                 |
 
 ## 지원할 기업
 
@@ -63,16 +62,6 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 | 기업                | 지원일      | 링크                                                       |
 | ----------------- | -------- | -------------------------------------------------------- |
-| 도르코퍼레이션(DOR)      | 26.04.20 | https://career.dor.gg/position/engineer                  |
-| 피에프씨테크놀로지스        | 26.04.20 | https://pfct.career.greetinghr.com/ko/o/198964           |
-| 스트레스솔루션           | 26.04.20 | https://www.wanted.co.kr/wd/345314                       |
-| 온다(ONDA)          | 26.04.20 | https://www.wanted.co.kr/wd/340406                       |
-| 에임인텔리전스           | 26.04.20 | https://career.aim-intelligence.com/ko/o/210763          |
-| 카닥                | 26.04.22 | https://career.cardoc.co.kr/ko/o/209737                  |
-| 스페이스맵             | 26.04.22 | https://www.wanted.co.kr/wd/349481                       |
-| 그립랩스              | 26.04.22 | https://www.wanted.co.kr/wd/303815                       |
-| AB180              | 26.04.28 | https://recruit.ab180.co/job_posting/yTlPR6Ki            |
-| 테크타카(ARGO)         | 26.04.28 | https://techtaka.ninehire.site/job_posting/n0xee2mi      |
 | 베슬에이아이(VESSL AI)   | 26.05.04 | https://vessl.recruit.roundhr.com/c/uKCMrULfaT           |
 | 딜라이트룸(Alarmy, 재도전) | 26.05.07 | https://team.alar.my/job_posting/6BpuJhsW — 25.3.17 탈락 후 재도전 |
 
@@ -155,6 +144,13 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 핀크 | 26.03.11 | https://recruit-finnq.com/job_posting/SbfS34kS |
 | 문토 | 26.03.11 | |
 | MVL | 26.04.10 | https://mvl.oopy.io/333d814b-821b-80d2-8714-d491953cbd79 |
+| 도르코퍼레이션(DOR) | 26.04.20 | https://career.dor.gg/position/engineer |
+| 피에프씨테크놀로지스 | 26.04.20 | https://pfct.career.greetinghr.com/ko/o/198964 |
+| 스트레스솔루션 | 26.04.20 | https://www.wanted.co.kr/wd/345314 |
+| 온다(ONDA) | 26.04.20 | https://www.wanted.co.kr/wd/340406 |
+| 카닥 | 26.04.22 | https://career.cardoc.co.kr/ko/o/209737 |
+| 스페이스맵 | 26.04.22 | https://www.wanted.co.kr/wd/349481 |
+| 그립랩스 | 26.04.22 | https://www.wanted.co.kr/wd/303815 |
 
 ## 서류 탈락 (미통보)
 
@@ -377,6 +373,9 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 앤서스랩코리아 | 26.04.28 | 26.05.06 | https://nsuslab.com/?round_form_id=aozPj4bYhn#/careers — 3회 탈락 (25.2.20, 26.01.20, 26.04.28) |
 | 지엔터프라이즈 | 26.04.20 | 26.05.06 | https://wx0ljugv.ninehire.site/job_posting/FYkTn8uX |
 | 룩코(에이클로젯) | 26.05.04 | 26.05.07 | https://www.wanted.co.kr/wd/348590 |
+| 에임인텔리전스 | 26.04.20 | 26.05.11 | https://career.aim-intelligence.com/ko/o/210763 |
+| AB180 | 26.04.28 | 26.05.11 | https://recruit.ab180.co/job_posting/yTlPR6Ki — 2회 탈락 (이전 에이비일팔공) |
+| 테크타카(ARGO) | 26.04.28 | 26.05.11 | https://techtaka.ninehire.site/job_posting/n0xee2mi |
 
 ## 코테 및 과제
 
@@ -398,7 +397,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 넛지헬스케어 | 탈락 | 26.03.04 지원, 26.03.25 탈락통보 |
 | 버즈빌 | 탈락 | 26.03.11 지원, 26.03.26 탈락 |
 | 로민 | 탈락 | 26.04.20 지원, 26.04.24 코테 안내, 기한 26.05.05, 26.05.07 탈락 |
-| 퓨쳐스콜레(라이브클래스) | 진행중 | 26.04.22 지원, 26.04.27 코딩 과제 안내·링크 오픈, **마감 26.05.02(토) 23:59**, 프로덕트 엔지니어 3년+ |
+| 퓨쳐스콜레(라이브클래스) | 진행중 | 26.04.22 지원, 26.04.27 코딩 과제 안내·링크 오픈, 26.05.02 제출 완료, 결과 대기, 프로덕트 엔지니어 3년+ |
 
 ## 커피챗
 
@@ -446,6 +445,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 알파코드 | 탈락 | 26.02.14 | 26.03.12 탈락 |
 | 씨이랩 | 탈락 | 26.03.04 | 인성검사 먼저 진행, 26.04.02 서류 합격, 26.04.08 1차 면접, 26.04.13 탈락 |
 | 액션파워 | 통과 | 26.03.06 | 26.04.06 1차 기술면접 합격 |
+| 비단팝팝 | 취소(회사 사정) | 26.05.06 | 26.05.06 채용팀 면접 제안(서핏), 26.05.07 일정 확정(5/14 16:00), 26.05.11 채용팀 면접 취소 통보 — 내부 인력 운용 계획 변동으로 백엔드 채용 절차 전면 중단. 26.05.11 회신(향후 재오픈 시 재연락 요청) |
 
 ## 2차 면접
 
