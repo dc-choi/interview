@@ -13,7 +13,7 @@
 - [[tech/os-runtime/OS&런타임(OS&Runtime)|OS&런타임(OS&Runtime)]] (64/73)
 
 ### 데이터(Data)
-- [[tech/database/데이터&저장소(Data&Storage)|데이터&저장소(Data&Storage)]] (66/75)
+- [[tech/database/데이터&저장소(Data&Storage)|데이터&저장소(Data&Storage)]] (69/78)
 - [[tech/messaging-data-pipeline/메시징&파이프라인(Messaging&Pipeline)|메시징&파이프라인(Messaging&Pipeline)]] (14/29)
 
 ### 설계&성능(Design&Performance)

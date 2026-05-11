@@ -13,7 +13,14 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 - [[tech/database/in-memory/캐시&KV(Redis)|Cache & KV Store (Redis)]] — 자료구조·TTL·캐시 전략·분산 Lock·Stampede
 - [[tech/database/nosql/MongoDB-Schema-Design|NoSQL (Document) — MongoDB 스키마 설계]]
 - [[tech/database/nosql/OpenSearch|검색 엔진 — OpenSearch · Elasticsearch]]
+- [[tech/database/nosql/ClickHouse|OLAP — ClickHouse (컬럼 지향 분석 DB)]]
 - [[tech/database/orm/ORM허브(ORMHub)|ORM · 도메인 모델링 (ORM)]] — 임피던스 불일치·Aggregate 경계·Domain Model
+
+## 워크로드 분류
+- [[OLTP-vs-OLAP|OLTP vs OLAP]] — 트랜잭션 처리 vs 분석 처리, 운영/분석 DB 분리 구조
+
+## Data Modeling
+- [[SCD-Type2|SCD Type 2 (이력 차원 관리)]] — Slowly Changing Dimension, KPI 분석용 시계열 보존
 
 ## 미작성 — Data Modeling
 - [ ] [[ERD]]
