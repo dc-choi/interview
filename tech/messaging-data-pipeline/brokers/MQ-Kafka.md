@@ -96,6 +96,51 @@ DB 트랜잭션으로 Outbox 테이블에 이벤트를 기록하고, **Debezium 
 - 이벤트 리플레이가 필요 (장애 후 재처리, 새 소비자가 과거 이벤트 재생)
 - 파티션 내 순서 보장이 필수
 
+## NestJS Kafka 마이크로서비스
+
+NestJS는 `@nestjs/microservices`로 Kafka를 1급 트랜스포트로 지원. 컨슈머만 따로 떠 있는 **배치/이벤트 처리 서버**를 구성할 때 자주 쓰이는 패턴.
+
+```typescript
+async function bootstrap() {
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    BatchServerModule,
+    {
+      transport: Transport.KAFKA,
+      options: {
+        client: {
+          clientId: 'batch-server',
+          brokers: [process.env.KAFKA_HOST],
+        },
+        consumer: {
+          groupId: 'batch-server-consumer',
+        },
+        subscribe: {
+          fromBeginning: true,
+        },
+      },
+    },
+  );
+  await app.listen();
+}
+```
+
+핸들러는 `@MessagePattern`(요청-응답) 또는 `@EventPattern`(단방향 이벤트) 데코레이터로 토픽을 구독.
+
+```typescript
+@Controller()
+export class CdcConsumer {
+  @EventPattern('inhabob.public.customer')
+  async handleCustomerChange(@Payload() event: DebeziumEvent) {
+    // before/after를 SCD Type 2 행으로 변환해 적재
+  }
+}
+```
+
+### 주의점
+- `fromBeginning: true`는 **새 컨슈머 그룹**일 때만 첫 메시지부터 — 기존 그룹이 있으면 offset에서 이어 처리
+- `@nestjs/microservices`의 기본 직렬화는 JSON. Debezium Avro 출력 사용 시 별도 Deserializer 등록
+- 백프레셔·동시성 제어가 필요하면 내부적으로 `kafkajs`의 `eachBatch`로 내려가는 옵션 활용 (아래 참고)
+
 ## Consumer 배치 처리: eachMessage vs eachBatch
 
 `kafkajs` 기준, 컨슈머가 메시지를 소비하는 방식은 두 가지다.
