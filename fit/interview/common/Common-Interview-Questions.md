@@ -13,6 +13,7 @@ aliases: ["Common Interview Questions", "자주하는 면접 질문"]
 - [[Common-Interview-Questions-Tech-Basics|1차 기술 질문 — 기본]] (브라우저 접근, REST, STAR, 성능 테스트)
 - [[Common-Interview-Questions-Tech-Scale|1차 기술 질문 — 확장성·아키텍처]] (DAU 폭증, 기프티콘 이벤트, 억 단위 조회, 강결합)
 - [[Common-Interview-Questions-Behavioral|Behavioral 질문]] (갈등·실패·리더십·Q&A·처우 협상)
+- [[Sensitive-Question-Answers|민감 질문 답변 템플릿]] (단기 재직·권고사직·공백기·AI 도구 깊이·워라밸 강도 — 사회인 언어 변환)
 
 ## 출처
 - 개발자 취업과 이직 한방에 해결하기
