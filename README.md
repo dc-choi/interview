@@ -17,7 +17,7 @@
 - [[tech/messaging-data-pipeline/메시징&파이프라인(Messaging&Pipeline)|메시징&파이프라인(Messaging&Pipeline)]] (14/29)
 
 ### 설계&성능(Design&Performance)
-- [[tech/architecture-design/아키텍처&설계(Architecture&Design)|아키텍처&설계(Architecture&Design)]] (19/24)
+- [[tech/architecture-design/아키텍처&설계(Architecture&Design)|아키텍처&설계(Architecture&Design)]] (21/26)
 - [[tech/performance-scalability/성능&확장성(Performance&Scalability)|성능&확장성(Performance&Scalability)]] (9/20)
 
 ### 운영&인프라(Operations&Infrastructure)
@@ -42,4 +42,4 @@
 
 ### 기타(Others)
 - [[tech/fin-ops/비용&운영(FinOps)|비용&운영(FinOps)]] (2/10)
-- [[tech/senior/시니어역량(SeniorEngineer)|시니어역량(SeniorEngineer)]] (29/39)
+- [[tech/senior/시니어역량(SeniorEngineer)|시니어역량(SeniorEngineer)]] (30/40)
