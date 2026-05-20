@@ -12,6 +12,9 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 기업   | 현재 단계    | 비고                                                                   |
 | ---- | -------- | -------------------------------------------------------------------- |
 | 퓨쳐스콜레(라이브클래스) | 코딩 과제 (제출 완료, 결과 대기) | 프로덕트 엔지니어 3년+, 26.05.02 제출                                 |
+| 스페이스맵 | 1차 면접 (26.05.22 14:30 예정) | 백엔드, 26.04.22 지원, 한양대 융합교육관 908호 대면, https://www.wanted.co.kr/wd/349481 |
+| 토스플레이스 | 사전 과제 (26.05.27 15:00 시작 예정, 48h) | Node.js Developer, 26.05.15 지원, TypeScript, 지인 추천, https://toss.im/career/job-detail?job_id=7686375003&sub_position_id=6679884003&company=%ED%86%A0%EC%8A%A4%ED%94%8C%EB%A0%88%EC%9D%B4%EC%8A%A4 |
+| 윤회주식회사(CARE IDⓒ) | 1차 면접 (26.05.20 14:00 예정) | 백엔드 리드, 26.05.15 대표 전화 완료, 서울창업허브성수 207호 대면, https://groupby.kr/positions/9600 |
 
 ## 지원할 기업
 
@@ -29,6 +32,18 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 기업 | 링크 | 비고 |
 |------|------|------|
 | 지바이크 (재도전) | https://gcoo.io/career/jobs | 비즈니스 로직 백엔드, 5-20년, Java/Kotlin + K8s — 시리즈C 119억·매출 804억(+47%)·2025 IPO 트랙·글로벌 5개국 140개 도시. 과거 탈락 후 재도전. 리스크: 언어 미스매치, 잡플 급여복지 2.5~2.6/경영진 2.7, "편가르기" 리뷰 |
+| 패스트파이브 (플랫폼개발팀) | https://www.wanted.co.kr/wd/361096 | Backend, **Node.js/TS 5년+ 필수**, NestJS/Express/MySQL/TypeORM·Knex, WaaS 부동산(회원·공간·예약·결제·출입 인증), Claude Code/Cursor 명시 — **매출 1,500억(+11.1%)·영업이익 60억(+14.9%) 2년 연속 흑자·11년 연속 성장**, 60개 지점·4,300개 기업. 매치: Node/NestJS/MySQL·AI 도구 정확 매치, 도메인 결 유사(트라이포드 발주 자동화 ↔ 예약·결제). 리스크: ① 5년+ hard cut(본인 3년 10개월), ② Prisma↔TypeORM/Knex ORM 갭, ③ 잡플 3.1 양분·블라인드 "팀마다 워라밸 차이" — 지원 전 블라인드 IT/플랫폼팀 후기 확인 필요 |
+| 111퍼센트 (기술지원팀, 재지원) | https://www.wanted.co.kr/wd/359687 | 웹 서버 개발자, 3년+ "준하는 역량", TS/Node·GCP/AWS, 인하우스툴·BI·공통 서비스·AI 활용 신규 — **매출 1,058억(+3배)·영업이익 52억 흑자 전환(2023 -70억→2024 +52억)·모회사 슈퍼패스트 2,770억·2024 영업이익 100%(150억) 성과급**, 운빨존많겜 글로벌 750만 DL·누적 1,200억. 매치: 연차·라이브 서비스 운영·AI 워크플로우(이력서 인트로 강조). 리스크: ① 25.7.12 1회 탈락 재지원(자기소개 fork 필수 — AI 워크플로우·라이브 운영 강조), ② 게임 도메인 무관(단 기술지원팀은 게임 코어 아닌 운영툴/공통 서비스라 부담 낮음), ③ 1억 유저 트래픽 규모 대비 페르소나 |
+| 에타일렉트로닉스 (Eta-ON, WPT) | https://www.wanted.co.kr/wd/358791 | 백엔드 3년+, **TS/NestJS/Node·MySQL+MongoDB·AWS(EC2/RDS/IoT Core/S3/CodeDeploy)·MQTT/Socket.io/WebSocket·JWT/Passport·GitHub Actions — 스택 거의 100% 매치**, 무선전력전송(WPT) IoT 디바이스 원격 모니터링·제어 플랫폼 — **트라이포드 IoT VMI 도메인과 거의 동형(지금까지 본 공고 중 도메인 매치 최강)**. 회사: 2019 설립·KAIST 창업원·경산 본사·24명(2025.5)·**2024 매출 1억+·캡스톤파트너스 시드**. 리스크: 매출 1억대·24명 = 윤회(9.5억·12명)보다 작음, **재무 fit 윤회와 동일 유형 위험**. 윤회 결과·일정에 따라 시도 순서 결정 |
+| 큐엠아이티 (PLCO, 스포츠 테크) | https://www.wanted.co.kr/wd/358314 | 백엔드 3년+, **TS/Kotlin·NestJS/Spring Boot·PG/Mongo·JPA/MikroORM·Nats·GCP/AWS/K8s·GHA**, DDD/Clean/TDD/MSA 깊이 요구, RESTful+GraphQL — **언어 정확 매치(TS+NestJS) + 사용자 학습 트랙(DDD/Clean/MSA) 일치**. 회사: 2018 설립·47명·**Series A 77억(2023)·네이버 D2SF 투자·매출 4000% 성장·평균 연봉 4,313만·1만+ 프로선수 사용·2025 한국브랜드 소비자평가 대상**. 리스크: ① DDD/Clean/TDD 깊이 면접 변수, ② MSA/K8s/Nats/GraphQL/Mongo/MikroORM 갭 多 (단 학습 트랙 일치), ③ 스포츠 도메인 무관 |
+| 아임웹 Platform (Productivity, 재지원) | https://www.wanted.co.kr/wd/359015 | Back-end Engineer (Platform), 5년+, **Node.js/NestJS or Kotlin/Spring Boot·Aurora PG/MySQL·Redis/Valkey/OpenSearch·AWS(EKS/ECS/RDS/MSK)·ArgoCD·Kafka·Grafana/Datadog**. 업무: **전사 공통화·도구화·자동화·DX 개선·CI/릴리즈/관측성** — 이력서 4축(자동화·관측성·AI 워크플로우·운영 안정성)과 표현 단위 매치. **AI 코딩 도구(Claude Code/Codex/Cursor/Windsurf) 실무 활용 필수 — 이력서 AI 워크플로우 깊이 어필과 100% 일치**. 회사: **2024 매출 255억(+27%)·두 자릿수 영업이익 흑자·ARR 1,400억(SaaS 안정)·누적 90만 브랜드·거래액 5조·122명·평균 연봉 6,234만(검토 회사 중 최고)**. 리스크: ① 5년+ hard cut(본인 3년 10개월), ② **25.4.29 1회 탈락 재지원**(AI 워크플로우·Grafana fork 필수), ③ Kafka/Aurora/OpenSearch/EKS/ArgoCD 미경험. 참고: 같은 회사 Core(359025)·Commerce(359030)도 동일 요건이나 Platform이 본인 매치 최강 |
+| 에고이즘 AX (Growth팀, 성수) | https://www.wanted.co.kr/wd/350984 | AX Engineer 3-12년, **AI 도구(Cursor/Claude Code) 개발 사이클 적용·업무 자동화 재설계·End-to-End 리드** — **이력서 AI 워크플로우(CLAUDE.md/MCP/Subagent/Hook/Stop Hook) + 자동화 리포트·발주 자동화 비즈니스 임팩트와 매치 매우 강 (아임웹과 동급)**. 회사: 2023.11 설립·**2024 매출 139.5억(3년만에 100억 돌파)·순이익률 30%·매년 400% 성장·33명·평균 4,110만**, 굴뚝강아지/미뇽맨션/휴그/바쏠 K-감성 라이프스타일. 리스크: ① **포지션이 백엔드 코어 아닌 AX(AI 자동화) — User Context "현업 백엔드 우선" 방향과 다소 다름**, ② 기술 스택 미공개·R&R 모호 가능성(면접/커피챗 확인 필수), ③ 신생 회사 1.5년차, ④ 브랜드 운영업 도메인 |
+| 와이톤 (Beauty/Health/Fashion 글로벌 브랜드 빌더) | https://www.wanted.co.kr/wd/353202 | 이커머스 테크 백엔드 2년+, **NestJS v11(TS)/FastAPI/Django·PG/Redis/TypeORM·AWS(VPC/EC2/RDS/Lambda)/Terraform/Docker/GHA/Nginx/Traefik·LangGraph/LangChain/Anthropic SDK/OpenAI API/Playwright** — **NestJS+AI 도구+외부 API 연동(네이버/구글/메타) 정확 매치**, 트라이포드 발주 자동화·채널별 DLQ 경험과 동형. 회사: 2019 설립·**국내 매출 100억+·연평균 50% 성장·32명·잡플 19건/연봉 4건/면접 12건**, 광고/홍보/전시 중소기업. 리스크: ① 평균 연봉 3,403만(윤회와 동급 낮음·처우 약점), ② Python 옵션 끼어 있음, ③ PG vs MySQL ORM 갭 |
+| 풀림 [신사업] (애드테크) | https://www.wanted.co.kr/wd/358135 | 백엔드 3년+, **0→1 서비스 구축 필수·Node.js/Python/Java/Go 중 1개·RDBMS 복잡 모델링·AWS·CI/CD·결제/정산/PG 연동·어드민/CMS** — **0→1 + Node + RDBMS 복잡 모델링 + 클라우드 = 트라이포드 단독 운영 경험 정확 매핑**. 회사: 2023.1 설립(신생 2.5년)·**매출 180억(2024)·자본금 5억·2026 직원 150명·매출 200% 성장 목표**, 광고 대행사 + 자체 건강기능식품 브랜드. 리스크: ① 신생 회사, ② 인원 정보 자료마다 차이(공고 32명·원티드 7명·검색 20명), ③ 강의 도메인 신사업·PG 직접 경험 0, ④ 평판 데이터 부족 |
+| 블래스트 (Virtual Entertainment) | https://www.wanted.co.kr/wd/355421 | 서비스 개발자 2년+, **TypeScript/Next.js 풀스택·React·Vercel·AWS CDK·AI 도구 활용**, 게임 엔진 기반 실시간 그래픽 — 풀스택 컷으로 보류 (다이버즈·브릿지웍스·바바·트위닛 동일 패턴) |
+| 컨워스 (Conworth, 건설 DT 빅데이터) | https://www.wanted.co.kr/wd/340256 | 백엔드 주니어 신입-4년, **Spring Boot 또는 NestJS·MySQL/PG·JPA/QueryDSL/Prisma/TypeORM·Docker/CI/CD·ETL/대용량 데이터 파이프라인** — **스택 100% 매치 (NestJS+Prisma+MySQL+Docker)**. 회사: 2020 설립·**매출 15억(2023, 2027 267억 목표)·TIPS+신보+플래티넘 14억 투자·고객 삼성물산/코오롱/한국전력/현대건설/현대ENG/LG화학** 대기업 다수. 보류 사유: ① 매출 15억 = 윤회 수준 재무 약점, ② 건설 도메인 = 본인 IoT/물류 페르소나와 다름(매치 강의 가산 없음), ③ 주니어 포지션 = 4년차 처우 협상 변수. 매치 강하니 윤회 결과 따라 활성 가능 |
+| 퍼플페퍼 (AI·자동화 솔루션) | https://www.wanted.co.kr/wd/353474 | 백엔드 AI(Scraping & AI) **5-11년**, OpenAI API/AI Agent 연동·**외부 사이트 스크래핑·차단 우회 hard 요구**·메시지 큐 대용량·프롬프트 엔지니어링. 회사 강력(**2024 매출 340억·2025 650억·2026 1300억 목표**). 5년+ + 스크래핑(Playwright/Selenium 0) hard cut으로 보류 |
+| 비누랩스 (에브리타임, 플랫폼프로덕트팀) | https://vinulabs.career.greetinghr.com/ko/o/204223 | 웹개발자 **책임급 5년+**, **Node.js/TS·AWS(Elastic Beanstalk/ECS/Lambda)·RDBMS 트랜잭션·대규모 트래픽·데이터 파이프라인·레거시 개선**, Claude/Copilot·CI/CD 우대 — **에브리타임 = 대학생 거의 100% 사용 대규모 실서비스**. Node/TS/AWS/AI 매치 강하나 ① 5년+ 책임급 hard cut, ② 계열사 비누커머스 1차 통과→**처우 협의 단계까지 갔다가 탈락** 이력(컬처핏 평가 데이터 공유 가능성)으로 보류. 재시도 시 필수 fork: ① 이직 사유 자기 귀책 재작성(SI/회사 망함 외부 귀책 톤 → 학습+적용), ② "T 어려워하는 사람" → 동료와 풀어낸 일화 1개, ③ 5년+ 책임급 페르소나(트라이포드 단독 운영·기술 결정), ④ 처우 협의 본인 카드 1개. 회고: [[Interview-Retro-Vinucommerce-2nd]] |
 
 ## 보류 / 만료
 
@@ -38,31 +53,34 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 에이피알 |  | 공고 만료 |
 | 크리스틴컴퍼니 |  | 백엔드 0~3년, NestJS — 공고 만료 |
 | 콕스웨이브 (이전 공고) |  | 백엔드(AI), TypeScript — 공고 만료 |
-| 애쉬코어테크놀로지스 | https://www.wanted.co.kr/wd/348916 | Junior Backend, TypeScript/NestJS — 보류 (JD 쎄함) |
-| 원프레딕트 | https://www.wanted.co.kr/wd/348225 | DevOps, K8s/ArgoCD — 보류 (컷 높음) |
 | 게임듀오 | https://gameduo.recruit.roundhr.com/c/8qjXer2x52 | 서버 프로그래머 (NodeJS 2년+), NestJS/Redis/AWS — 보류 (블라인드 사내정치·야근·계약직 복지차별 경고, 잡플 1.0) |
 | 다이버즈(널스빌리지) | https://www.wanted.co.kr/wd/349671 | 1-5년, Nest.js/Node.js/React/Next.js 풀스택 메인 엔지니어 — 보류 (규모 미달 3명) |
 | 써밋츠(마이비너스) | https://www.wanted.co.kr/wd/350188 | 2-5년, Nest.js/TS/PostgreSQL/AWS — 보류 (인도네시아 성형·피부과 도메인 특화, 페르소나 갭) |
-| 에어키친 | https://www.wanted.co.kr/wd/311193 | 백엔드 3년+, Node.js/NestJS/MySQL, O2O 셰프-공간 플랫폼 — 보류 (회사 정보 확인 불가) |
 | 브릿지웍스(캐시모어) | https://www.wanted.co.kr/wd/333289 | 1-8년, Node.js/TS/React/Next.js 풀스택, DAU 수만 중규모, AI 도구 필수 — 보류 (규모 미달 3명) |
-| 몰리턴 | https://www.wanted.co.kr/wd/315866 | 3-7년, NestJS + Spring 병행, AI 관리·리뷰 필수 — 보류 (회사 정보 거의 없음) |
-| 슈퍼센트 | https://supercent.career.greetinghr.com/ko/o/210998 | 게임 백엔드 3-7년, Python/FastAPI 주력, ECS/Redis/Terraform 우대 — 보류 (Node.js 주력과 언어 미스매치, 1차 Python 라이브 코딩 1시간 부담) |
-| 마키나락스 | https://www.wanted.co.kr/wd/302164 | Backend (AI Platform), 5년+, Python+Go+K8s, IPO 26.05.20 임박, Go 전환 타깃 — 보류 (AI App팀 SI성 리스크 + 블라인드 "개발자 무덤" 언급) |
 | 에이티씨아이(CollabOps) | https://www.wanted.co.kr/wd/281230 | Backend **Go(Gin)**+FastAPI+PG, 3-8년 — 구글·세일즈포스 출신 CTO 스핀오프, CursorAI 내재화 — 보류 (인원 6명, 규모 미달) |
 | 젠틀몬스터(아이아이컴바인드) | https://www.wanted.co.kr/wd/322056 | Backend 5년+, Java/Kotlin/Spring Boot+MySQL+AWS+이벤트드리븐 — K-럭셔리 유니콘, 매출 7891억(+30%), 영업이익률 30%, 해외 40% — 보류 (공식 홈 미게재, 언어 미스매치+온콜 요구) |
-| GC메디아이 (구 유비케어) | https://www.wanted.co.kr/wd/355062 | Back-End, 5-10년, Node.js+Kafka+MSA — 녹십자 계열 상장사, EMR 1위(연 2억건) — 보류 (공식 홈 미게재, 보상 정체 신호 블라인드 급여 2.8) |
 | 지신 | https://www.wanted.co.kr/wd/352640 | Infra/Platform Backend, 2-7년, FastAPI+Go(Pion WebRTC) — Go+WebRTC 희귀 기회, 25.02 설립 초기 — 보류 (인원 10명, 규모 미달) |
-| 콕스웨이브 (신규 공고) | https://careers.coxwave.com/c/SnHVam6Hjd | Backend(AX Workflow Builder), 3-5년, Python/Go/Java/TS, Pre-A 70억 — 보류 (인원 12명, 규모 미달) |
 | 로보티즈AI | https://robotisrecruiter.ninehire.site/job_posting/eNTANKXE | 로봇관제 WEB 백엔드, Node.js/NestJS 풀 언어 매치, 모회사 코스닥(108490) — 보류 (강서구 마곡, 통근 거리) |
 | 클로봇 | https://clobotroas.ninehire.site/job_posting/19nHDeWL | 로봇 관제(CROMS) 백엔드, Java+Spring Boot, 코스닥(466100), 매출 412억+23%, 두산로지스틱스 2000억 M&A — 보류 (계약직 3개월, 언어 미스매치) |
 | 크림페이 | https://recruit.kreampaycorp.com/rcrt/view.do?annoId=30004712 | Backend 3년+, Java/Kotlin/Spring Boot + Spring Batch, 결제 도메인, KREAM 자회사 신생 PG — 보류 (필수 미달: Java/Spring 메인 경력 + Spring Batch 미경험, 결제 도메인 0) |
 | 넵튠 MEEFF | https://ug6h08u8.ninehire.site/job_posting/SxqSVZ8K | Backend **5년+**, Go+CockroachDB+Redis, 글로벌 소셜 1000만+ DL, 크래프톤 자회사 — 보류 (3중 리스크: ① 3개월 계약직→정규직, ② 5년+ 컷 페르소나 미달, ③ 25.2.19 탈락 재도전) |
+| 바바그라운드 | https://www.wanted.co.kr/wd/358964 | [커뮤니티 서비스] 백엔드(CTO 협력), 1-10년, **풀스택 React+Next.js+GraphQL**, 4050 액티브시니어 여성 커뮤니티/여행/건강 — **약 10명/시드 투자 완료**. 풀스택 요구 + 도메인 무관 + 규모 미달(다이버즈·브릿지웍스 라인)로 보류 |
+| 어니스트에이아이 (BaaS, 어니스트펀드) | https://www.wanted.co.kr/wd/291698 | Software Engineer Backend (BaaS), 3-10년, **Kotlin/Java(Spring) 또는 Python(Django/FastAPI) — Node.js 명시 없음**, 어니스트펀드·대출·투자 핀테크 코어, REST/RDBMS/AWS — 언어 hard 미스매치로 보류 |
+| 지비소프트 (인프라, rPPG 헬스케어) | https://www.wanted.co.kr/wd/360680 | **인프라 개발자** 4-10년, Linux/AWS/Docker/CI/CD/모니터링, AI 비접촉 생체신호(rPPG) 헬스케어 — **포지션 자체가 백엔드 아닌 인프라**(User Context "현업 백엔드 경험 축적 우선" 위반) + 4년+ 컷으로 보류 |
+| 그린카 [Data파트] 차량관제 | https://www.wanted.co.kr/wd/336861 | Backend 개발자 **8-13년 hard cut**, Java SpringBoot, 차량관제 백엔드, 카셰어링 — 연차(4년 부족) + 언어(Java) 이중 컷으로 보류 |
+| 그린카 [Backend파트] | https://www.wanted.co.kr/wd/336859 | Backend 개발자 3-8년, **Java/SpringBoot/MySQL**, RESTful·외부 시스템 연동·백오피스·운영, 카셰어링 — 연차 통과나 Java 메인 hard 미스매치로 보류 |
+| 트위닛 (AI 뷰티테크) | https://www.wanted.co.kr/wd/357580 | Software Engineer 3-8년 (풀스택 3년+ 또는 백엔드 5년+), **TS/Python·React/Next.js/Node.js·WASM·AI inference·SDK**, AI 메이크업·SkinPro·Analytics·옴니채널 뷰티. 회사: 2025 흑자전환·분기당 매출 2배. 풀스택 + Python 요구로 보류 (클라썸 [Telta] 동일 패턴) |
+| 모비두 (소스라이브, 라이브커머스) | https://www.wanted.co.kr/wd/358084 | Back-End 5년+, **Java(Spring Boot)+Node.js·AWS(ECS/Lambda/DynamoDB/OpenSearch/Batch)·Redis(Valkey)·WebSocket/Socket.io·Datadog**, 라이브 방송 실시간·트래픽 스파이크 — **회사 강력 (누적 170억 시리즈B Bridge·월 1000+ 라이브·국내 라이브커머스 트래픽 20%)·AI 도구(Claude Code/ChatGPT/Copilot) 우대**. 5년+ hard cut + WebSocket 본격 운영 0 + Java Spring 옛 경험 + 라이브 분산 미경험으로 보류 |
+| 에잇어라운드 | https://www.wanted.co.kr/wd/356283 | Software Engineer 4-6년, **풀스택 + Python(FastAPI/Django) + Flutter + 5인+ 팀 리더/스크럼마스터 필수**, DDD/Hexagonal/클린 아키텍처, AWS — 4개 hard 요건(풀스택·Python·Flutter·리더) 동시 미충족으로 보류 |
+| 필라넷 (AI SaaS, Azure) | https://www.wanted.co.kr/wd/360949 | 백엔드 5-10년 (NestJS 실무 2년+), **NestJS/TS/Node.js·멀티테넌시 SaaS·Azure OpenAI/AI Search/Vector Store·CSR(React/Vue) 이해**. NestJS+TS+멀티테넌시 매치 강 + NestJS 2년+ 통과(본인 2년 4개월). 5년+ hard cut + Azure 미경험(AWS만) + Vector Store 0 + 회사 규모 미공개로 보류 |
+| 로위랩코리아 (3D Sales Kit/DealLock) | https://www.wanted.co.kr/wd/361535 | 백엔드 3-5년 (SaaS본부), **JavaScript/Node.js/Next.js·PostgreSQL·Firebase Auth·AWS(EC2/RDS/S3/Lambda/Route53/VPC)**, 공간 데이터·3D 웹 — 연차 통과나 TS 명시 없음(JS만) + Next.js(풀스택 신호) + Firebase + PG 갭 + 회사 규모 미공개로 보류 |
+| 코코네엔지니어링 (아바타 메타버스, AX Division) | https://www.wanted.co.kr/wd/323558 | Server Engineer 5-15년, **Java/Kotlin/Golang 중 1개 이상 + 비즈니스 일본어 필수 + 포트폴리오 필수**, AI 도구(Copilot/GPT/Gemini/Claude) 활용, RDBMS/NoSQL, CI/CD, 글로벌 서비스 — 5년+ + 언어 + 일본어 3중 hard cut으로 보류 |
+| 엔비티 NBT (캐시슬라이드, G 파티) | https://www.wanted.co.kr/wd/218542 | 백엔드 **6년+** (G 파티 팀), **Spring/Java 또는 Spring/Kotlin**, 캐싱 전략 설계 — 회사 강력(누적 가입자 2,700만·연 매출 300억+). 6년+ hard cut(2년 부족) + Spring Java/Kotlin 메인 + G 파티 10명 소수정예로 보류 |
 
 ## 지원 완료 (응답 대기)
 
 | 기업                | 지원일      | 링크                                                       |
 | ----------------- | -------- | -------------------------------------------------------- |
-| 베슬에이아이(VESSL AI)   | 26.05.04 | https://vessl.recruit.roundhr.com/c/uKCMrULfaT           |
 | 딜라이트룸(Alarmy, 재도전) | 26.05.07 | https://team.alar.my/job_posting/6BpuJhsW — 25.3.17 탈락 후 재도전 |
 
 ## 2주 경과 무응답
@@ -149,7 +167,6 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 스트레스솔루션 | 26.04.20 | https://www.wanted.co.kr/wd/345314 |
 | 온다(ONDA) | 26.04.20 | https://www.wanted.co.kr/wd/340406 |
 | 카닥 | 26.04.22 | https://career.cardoc.co.kr/ko/o/209737 |
-| 스페이스맵 | 26.04.22 | https://www.wanted.co.kr/wd/349481 |
 | 그립랩스 | 26.04.22 | https://www.wanted.co.kr/wd/303815 |
 
 ## 서류 탈락 (미통보)
@@ -376,6 +393,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 에임인텔리전스 | 26.04.20 | 26.05.11 | https://career.aim-intelligence.com/ko/o/210763 |
 | AB180 | 26.04.28 | 26.05.11 | https://recruit.ab180.co/job_posting/yTlPR6Ki — 2회 탈락 (이전 에이비일팔공) |
 | 테크타카(ARGO) | 26.04.28 | 26.05.11 | https://techtaka.ninehire.site/job_posting/n0xee2mi |
+| 베슬에이아이(VESSL AI) | 26.05.04 | 26.05.12 | https://vessl.recruit.roundhr.com/c/uKCMrULfaT |
 
 ## 코테 및 과제
 
@@ -398,6 +416,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 버즈빌 | 탈락 | 26.03.11 지원, 26.03.26 탈락 |
 | 로민 | 탈락 | 26.04.20 지원, 26.04.24 코테 안내, 기한 26.05.05, 26.05.07 탈락 |
 | 퓨쳐스콜레(라이브클래스) | 진행중 | 26.04.22 지원, 26.04.27 코딩 과제 안내·링크 오픈, 26.05.02 제출 완료, 결과 대기, 프로덕트 엔지니어 3년+ |
+| 토스플레이스 | 진행중 | 26.05.15 지원(지인 추천), 26.05.17 사전 과제 안내, 26.05.27 15:00 시작 예약, 48h 이내 제출, TypeScript, Node.js Developer |
 
 ## 커피챗
 
@@ -406,6 +425,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 패러다임시프트 | 25.10.4 | |
 | 온아웃 | 26.02.04 | 스카웃 제안 |
 | 아너드 | 26.02.23 | |
+| 윤회주식회사(CARE IDⓒ) | 26.05.15 전화 완료 (대표 직접, 24분) → 26.05.20(수) 14:00 본 미팅 확정 (서울창업허브성수 207호 대면) | https://groupby.kr/positions/9600 — 백엔드 리드 포지션 확정(CTO 별도 모실 계획), 개발팀 3명(B/E 2+F/E 1)→4명 목표, 작년 POC·올해 대기업/중견 계약 진행, 솔루션+중고의류+자체브랜드+MD 다층 BM, 규제 맞닿음 복잡성 高, 하네스/AI 파이프라인 미적용(사용자 강점 공간 有). 성수, 사용자 성남→지하철 한 번 |
 
 ## 채용담당자 면접
 
@@ -446,6 +466,8 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 씨이랩 | 탈락 | 26.03.04 | 인성검사 먼저 진행, 26.04.02 서류 합격, 26.04.08 1차 면접, 26.04.13 탈락 |
 | 액션파워 | 통과 | 26.03.06 | 26.04.06 1차 기술면접 합격 |
 | 비단팝팝 | 취소(회사 사정) | 26.05.06 | 26.05.06 채용팀 면접 제안(서핏), 26.05.07 일정 확정(5/14 16:00), 26.05.11 채용팀 면접 취소 통보 — 내부 인력 운용 계획 변동으로 백엔드 채용 절차 전면 중단. 26.05.11 회신(향후 재오픈 시 재연락 요청) |
+| 스페이스맵 | 진행중 | 26.04.22 | 26.05.22(금) 14:30 대면, 한양대 융합교육관 908호 (서울 성동구 왕십리로 220) |
+| 윤회주식회사(CARE IDⓒ) | 진행중 | 26.05.15 | 26.05.15 대표 전화(24분) → 26.05.20(수) 14:00 대면, 서울창업허브성수 207호, 백엔드 리드 |
 
 ## 2차 면접
 

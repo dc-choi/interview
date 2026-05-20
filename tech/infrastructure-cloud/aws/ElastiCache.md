@@ -139,6 +139,23 @@ LLM 응답을 프롬프트 임베딩 기반으로 캐시. 유사 프롬프트에
 - **허용**: 리더보드(초 단위 지연 OK)·집계 통계
 - **불허**: 결제·재고·실시간 가격
 
+## 클러스터·노드 구조 (시험 관점)
+
+ElastiCache는 **Node**가 서비스 단위. Node는 EC2처럼 인스턴스 타입을 선택하며 **고정된 메모리·각자의 DNS 엔드포인트**를 갖는다. AWS가 OS 패치·최적화·모니터링·장애 복구·백업을 대행.
+
+**Memcached**: `Cluster ↔ Node` 2계층. 다른 AZ 분산은 되지만 **복제본·Failover 불가**, 용량 증설은 Node 추가만.
+
+**Redis / Valkey**: `Cluster → Shard → Node` 3계층. Shard = Primary 1 + Replica N. Cluster 모드 비활성 시 **Shard 1개**(복제만), 활성 시 **다수 Shard로 키스페이스 샤딩**. 복제본 → **Failover·Multi-AZ 지원**.
+
+### Failover·HA 핵심
+
+| 엔진 | Failover | Multi-AZ | 백업 |
+|------|----------|----------|------|
+| Memcached | 불가 | 노드 분산만 | 없음 |
+| Redis/Valkey | **자동 승격** | 지원 | RDB·AOF 스냅샷, S3 보관 |
+
+상태 보호가 필요하면 무조건 Redis/Valkey. Memcached는 "잃어도 되는 캐시"만.
+
 ## 비용·사이징
 
 - **인스턴스 타입**: `cache.r7g.large` 같은 메모리 최적화 권장. Graviton(G 계열)이 성능·비용 유리
@@ -153,17 +170,20 @@ LLM 응답을 프롬프트 임베딩 기반으로 캐시. 유사 프롬프트에
 - **캐시 스탬피드**(Thundering Herd) — TTL 만료 순간 수천 요청이 동시에 DB로. 락·지수 백오프·Probabilistic Early Recomputation으로 방어
 - **Memcached 선택 후 자료구조 필요해짐** — 설계 시점에 Redis/Valkey가 더 범용적임을 기억
 
-## 면접 체크포인트
+## 면접·시험 체크포인트
 
-- **Redis vs Memcached** 선택 기준 (자료구조·영속성·Pub/Sub)
-- **Cache-Aside / Write-Through / Write-Behind** 차이와 선택 기준
-- **캐시 스탬피드** 문제와 방어 전략
-- **분산락**을 ElastiCache로 구현할 때 주의점(Redlock·락 TTL)
-- **ElastiCache Serverless**가 Provisioned 대비 언제 유리한가
-- Sorted Set으로 리더보드를 O(log N)에 구현하는 원리
+- **Redis vs Memcached** — 자료구조·영속성·Pub/Sub·Failover 차이
+- **Cache-Aside / Write-Through / Write-Behind** 선택 기준
+- **캐시 스탬피드** 방어 (락·지수 백오프·Probabilistic Early Recomputation)
+- **분산락** Redlock·락 TTL 주의점
+- **ElastiCache Serverless** vs Provisioned 적합 시나리오
+- Sorted Set 리더보드의 O(log N) 원리
+- **Memcached는 Failover·복제 불가**, **Redis Cluster 모드 = 다수 Shard** (비활성 = Shard 1개)
+- In-Memory DB의 **휘발성** — RDB/AOF 스냅샷·백업 정책 필수
 
 ## 출처
 - [AWS Docs — 일반적인 ElastiCache 사용 사례](https://docs.aws.amazon.com/ko_kr/AmazonElastiCache/latest/dg/elasticache-use-cases.html)
+- AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서
 - [[Cache-Strategies|캐시 전략 (Cache-Aside·Write-Through·TTL)]]

@@ -20,12 +20,14 @@ AWS의 통합 옵저버빌리티 — **Metrics · Logs · Alarms · Events · In
 
 ## Metrics 계층
 
-| 계층 | 출처 | 비용 |
-|------|------|------|
-| **기본 메트릭** | AWS 서비스 자동 (EC2 CPU·ALB Request·RDS) | 무료 (5분 단위) |
-| **상세 모니터링** | EC2 등 1분 단위 활성화 | 추가 비용 |
-| **커스텀 메트릭** | 앱이 `PutMetricData`로 전송 | 메트릭당 월정액 |
-| **고해상도** | 1초 단위 (high-resolution) | 비용↑↑ |
+| 계층 | 출처 | 주기 | 비용 |
+|------|------|------|------|
+| **기본 모니터링** | AWS 서비스 자동 (EC2 CPU·ALB Request·RDS) | **5분** | 무료, 자동 활성화 |
+| **상세 모니터링** | EC2 등 옵션 활성화 | **1분** | 추가 비용, 선택 사항 |
+| **커스텀 메트릭** | 앱이 `PutMetricData`로 전송 (AWS CLI/API) | 임의 | 메트릭당 월정액 |
+| **고해상도** | 1초 단위 (high-resolution) | 1초 | 비용↑↑ |
+
+EC2 기본 수집 항목: **CPU · Network · Disk · Status Check**. **메모리(Memory)는 기본 메트릭에 없음** — 시험 단골. 메모리·디스크 사용률은 CloudWatch Agent로 커스텀 메트릭 수집.
 
 ### Namespace · Dimension · Metric
 
@@ -81,6 +83,15 @@ Log Group (e.g., /aws/lambda/my-function)
   └── ...
 ```
 
+### 주요 로그 소스
+
+- **EC2** (CloudWatch Agent 경유)
+- **Lambda** (실행 로그 자동)
+- **CloudTrail** — API 호출 감사 로그
+- **VPC Flow Logs** — VPC 내 트래픽 메타데이터
+- **Route 53** — DNS 쿼리 로깅
+- **온프레미스 서버** — Agent 설치 시
+
 | 설정 | 의미 |
 |------|------|
 | **Retention** | 1일~10년·무기한 (기본 무기한 — 비용 함정) |
@@ -115,6 +126,17 @@ CPUUtilization > 80% for 5 consecutive minutes → SNS 알림
 | OK | 임계값 안 |
 | ALARM | 임계값 위반 |
 | INSUFFICIENT_DATA | 데이터 부족 (시작 직후·장애) |
+
+### Alarm Action — 자동 대응
+
+알람 상태 변화에 따라 **자동화 작업**을 트리거:
+
+| 대상 | 가능한 액션 |
+|------|------------|
+| **EC2** | 인스턴스 **중지 · 종료 · 재부팅 · 복구(recover)** |
+| **Auto Scaling** | Simple / Step Scaling Policy 트리거 |
+| **SNS** | 토픽으로 알림 → 이메일·Lambda·SQS 팬아웃 |
+| **Systems Manager** | Incident·OpsItem 자동 생성 |
 
 ### Composite Alarm
 
@@ -173,21 +195,26 @@ X-Ray 분산 추적과 CloudWatch 메트릭·로그 통합 뷰 (트레이스 →
 - **Log Group retention 미설정** — 기본 무기한, 비용 누적
 - **PutMetricData를 hot path에서 동기 호출** — 로그+EMF로 비동기화
 
-## 면접 체크포인트
+## 면접 / 시험 체크포인트
 
 - 메트릭·로그·알람·이벤트의 통합 구조
+- 기본 모니터링 **5분 / 상세 모니터링 1분** (상세는 옵션·유료)
+- EC2 기본 메트릭에 **메모리·디스크 없음** → CloudWatch Agent로 커스텀 수집
 - EMF가 PutMetricData보다 비용·디버깅에서 우월한 이유
 - Dimension 고카디널리티의 함정과 대안 (태그·로그)
 - Composite Alarm vs Static Threshold — 오탐 감소
+- Alarm Action으로 EC2 **중지·종료·재부팅·복구** + Auto Scaling 트리거 가능
 - Log Insights 쿼리 구조 (filter·stats·bin)
-- CloudWatch Agent 없이 EC2 메모리·디스크 모니터링 불가한 이유
+- Logs 소스: **CloudTrail · VPC Flow Log · Route 53 · EC2(Agent) · Lambda**
 - Container Insights·Lambda Insights·X-Ray의 역할 분리
-- Log Retention 비용 함정과 정책
+- Log Retention 기본 **무기한** → 비용 함정
 
 ## 출처
-- [AWS 핵심 서비스 정리 — 학습 메모]
+- AWS 핵심 서비스 정리 — 학습 메모
+- AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서
+- [[관측가능성(Observability)|Observability]]
 - [[Logs-vs-Metrics|Logs vs Metrics]]
 - [[Application-Performance-Monitoring|APM]]
 - [[Structured-Logging|구조화 로깅]]
@@ -196,3 +223,4 @@ X-Ray 분산 추적과 CloudWatch 메트릭·로그 통합 뷰 (트레이스 →
 - [[EventBridge|EventBridge]]
 - [[AWS|EC2]]
 - [[AWS-Lambda|Lambda]]
+- [[Auto-Scaling|EC2 Auto Scaling]]

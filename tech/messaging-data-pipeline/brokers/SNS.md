@@ -1,5 +1,5 @@
 ---
-tags: [messaging, aws, sns, pubsub, fanout]
+tags: [messaging, aws, sns, pubsub, fanout, decoupling, saa-c03]
 status: done
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["SNS", "Amazon SNS", "Simple Notification Service"]
@@ -7,7 +7,13 @@ aliases: ["SNS", "Amazon SNS", "Simple Notification Service"]
 
 # Amazon SNS (Simple Notification Service)
 
-AWS 관리형 **Pub/Sub** 메시징. Topic을 중심으로 다수 Subscriber에게 **Fan-out** 전달. 단순 라우팅·푸시·SMS·이메일까지 통합.
+AWS 관리형 **Pub/Sub** 메시징. Topic을 중심으로 다수 Subscriber에게 **Fan-out** 전달. 단순 라우팅·푸시·SMS·이메일까지 통합. **Push 기반**(SQS의 Polling 대비)으로 발행 즉시 Subscriber로 메시지가 전달된다. AWS Decoupling 3종(SQS=Queue / SNS=Pub-Sub / Kinesis=Real-time Streaming) 중 Pub-Sub 모델.
+
+## Topic이 정의하는 것
+
+- **메시지를 게시할 수 있는 대상 / 받을 수 있는 대상** (Topic Policy)
+- **암호화 여부** (KMS 키 연동)
+- **메시지 전송 정책** (재시도·타임아웃·DLQ)
 
 ## 핵심 모델 — Topic / Subscription / Message
 
@@ -51,6 +57,17 @@ Producer
 - 각 Subscriber가 자기 속도로 SQS Pull (백프레셔 격리)
 - Subscriber 추가·삭제가 Producer에 영향 없음
 - SQS DLQ로 소비 실패 안전 격리
+- 다수 SQS Queue에 직접 fan-out하던 Producer 로직이 비정상 종료/실패해도 일부 Queue만 수신하는 문제 해소 — SNS가 책임지고 전 Subscriber에 전달
+
+### 대표 예시 — S3 Event Fan-out
+
+S3는 버킷당 동일 이벤트에 1개 알림 대상만 직접 지정 가능. 다수 소비자에게 fan-out하려면:
+
+```
+S3 Event (단일 규칙) → SNS Topic → 다수의 SQS Queue / Lambda
+```
+
+이 패턴이 SAA에서 자주 나오는 fan-out 시나리오. SNS → SQS 쓰기를 허용하는 IAM Policy(Topic Subscription에 SQS 자동 권한 부여)도 필수 구성.
 
 ## Message Filtering — Subscription 단위
 
@@ -139,8 +156,18 @@ SNS는 메시징 이외에:
 - HTTP Subscriber 재시도 정책 (3회 즉시 + 7일 백오프)
 - 대용량 페이로드 처리 (S3 + Extended Client)
 
+## 시험 체크포인트 (SAA-C03)
+
+- AWS Decoupling 3종 = SQS / SNS / Kinesis 중 **Push 기반 Pub-Sub** 모델
+- Subscriber 프로토콜: HTTP(S)·Email·SQS·Lambda·Kinesis Data Firehose·Mobile Push·SMS
+- **FIFO Topic의 Subscriber는 SQS FIFO만** 가능 (다른 프로토콜 미지원)
+- Fan-out 표준 패턴: 1개 SNS Topic → N개 SQS Queue (S3 이벤트 다중 소비가 대표 시나리오)
+- SNS → SQS 쓰기에 필요한 IAM Policy 자동 부여 (콘솔 구독 시), 수동 구성 시 SQS Queue Policy 필요
+- KMS Key로 Topic 메시지 SSE 암호화, HTTPS API로 전송 중 암호화, IAM Policy로 API 접근 통제
+
 ## 출처
 - [AWS 핵심 서비스 정리 — 학습 메모]
+- AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서
 - [[SQS|SQS]]

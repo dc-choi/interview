@@ -85,5 +85,5 @@ aliases: ["Self Analysis", "나 찾기"]
 - 커리어 성장 → 영향력 행사 → 사회적 의미 순으로 에너지 집중
 
 ## 관련 문서
-- [[FIT|Interview Fit]]
+- [[Common-Interview-Questions|Interview Fit]]
 - [[Growth-Principles|성장의 7가지 원칙]]

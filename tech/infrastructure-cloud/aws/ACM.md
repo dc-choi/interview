@@ -1,0 +1,102 @@
+---
+status: done
+category: "Infrastructure - AWS"
+tags: [aws, saa, acm, ssl, tls, certificate, security, pki]
+aliases: [ACM, AWS Certificate Manager, Certificate Manager]
+---
+
+# ACM (AWS Certificate Manager)
+
+AWS가 관리형으로 제공하는 SSL/TLS 인증서 발급·저장·자동 갱신 서비스. 퍼블릭 인증서는 무료이며 AWS 통합 서비스(CloudFront·ELB·API Gateway 등)에 바로 연결한다.
+
+## SSL/TLS 인증서 기초
+
+- **목적**: 접속 대상 서버가 위조 서버가 아님을 제3자(CA)가 보증, 클라이언트–서버 통신 암호화에 사용할 세션키를 안전하게 교환.
+- **구조**: 서버는 공개키 포함 인증서를 게시 → 클라이언트가 CA 체인으로 검증 → 대칭키 협상(TLS Handshake).
+- **DNS와 결합**: 인증서는 도메인(FQDN)에 묶이므로 DNS 소유 증명이 발급의 핵심.
+- **현재 표준**: SSL은 폐기, TLS 1.2/1.3 사용. 통념상 "SSL 인증서"라 부르지만 실제는 TLS.
+
+## ACM이란
+
+- AWS 관리형 인증서 서비스. **퍼블릭 인증서 발급·갱신은 무료**.
+- 두 가지 운영 모드:
+  - **AWS 발급 인증서(Public)**: ACM이 Amazon Trust Services에서 발급, **자동 갱신**.
+  - **외부 인증서 가져오기(Import)**: 서드파티 CA에서 받은 인증서·개인키를 ACM에 업로드. 자동 갱신 **불가** (만료 전 수동 재가져오기 필요).
+- **Private CA(ACM PCA)**: 사설 PKI 운영, 내부 서비스/디바이스용 인증서 발급. 별도 과금.
+
+## 통합 가능한 AWS 서비스
+
+ACM 인증서를 직접 연결할 수 있는 대표 서비스.
+
+- **Elastic Load Balancing** (ALB·NLB·CLB) — 리스너 HTTPS/TLS
+- **CloudFront** — 배포 단위 HTTPS
+- **API Gateway** — 커스텀 도메인 (Edge/Regional 모두)
+- **AWS App Runner**, **Amplify**
+- **Cognito** (커스텀 도메인)
+- **CloudFormation** (리소스 속성으로 ARN 참조)
+- **Network Firewall** (TLS 검사)
+
+핵심: ACM 인증서는 **AWS 서비스에 직접 attach만 가능**, 외부 EC2 OS에 다운로드해서 쓰는 용도가 아니다(개인키 추출 불가). 사설 EC2에서 사용하려면 ACM PCA 또는 외부 CA 인증서를 별도로 설치.
+
+## us-east-1 (버지니아 북부) 필수 케이스
+
+- **CloudFront에 연결할 인증서는 반드시 `us-east-1`에서 발급/임포트** 해야 한다. CloudFront는 글로벌 서비스지만 인증서 조회를 N. Virginia 리전에서만 수행.
+- 그 외 리전 서비스(ALB·API Gateway Regional 등)는 해당 서비스가 있는 리전에서 발급.
+
+> 시험 빈출: "CloudFront 배포에 ACM 인증서 적용이 안 된다" → 정답은 거의 `us-east-1` 리전에서 다시 발급.
+
+## 인증서 발급 절차
+
+1. **도메인 입력**: FQDN(`app.example.com`) 또는 **와일드카드**(`*.example.com`). SAN으로 여러 도메인 함께 묶기 가능.
+2. **검증 방식 선택**:
+   - **DNS 검증** — ACM이 제공하는 CNAME 레코드를 도메인 DNS에 추가. **자동 갱신과 궁합 최고**(레코드만 유지하면 갱신 시 추가 확인 불필요). Route 53이면 콘솔에서 원클릭 등록 가능.
+   - **이메일 검증** — WHOIS에 등록된 도메인 관리자/`admin@`·`webmaster@` 등 표준 주소로 검증 메일 발송. 갱신 때마다 이메일 응답 필요(자동화에 불리).
+3. **검증 완료** → "Issued" 상태가 되면 통합 서비스에 attach 가능.
+
+## 자동 갱신
+
+- AWS 발급 인증서는 만료 60일 전부터 ACM이 자동 갱신 시도.
+- **DNS 검증**: CNAME이 유지되면 자동 재검증 → 무중단 갱신.
+- **이메일 검증**: 갱신 시점에 다시 메일 응답 필요. 응답 실패 시 만료.
+- **Imported 인증서**: 자동 갱신 없음. 만료 임박 이벤트는 EventBridge로 알림 가능.
+
+## DNS 검증 vs 이메일 검증 비교
+
+| 항목 | DNS 검증 | 이메일 검증 |
+|---|---|---|
+| 자동화 | 우수 (한 번 등록 후 유지) | 매 갱신마다 수동 응답 |
+| Route 53 통합 | 콘솔 원클릭 | 무관 |
+| 갱신 신뢰성 | 높음 | 낮음 (메일 누락 위험) |
+| WHOIS 비공개 도메인 | 영향 없음 | 메일 못 받을 수 있음 |
+
+운영에서는 **DNS 검증이 기본 권장**.
+
+## 가격·제한
+
+- 퍼블릭 인증서: 무료 (발급·갱신).
+- ACM PCA: CA 운영비 + 발급 인증서당 과금.
+- 도메인 수: 1개 인증서당 SAN 포함 대량 도메인 묶기 가능(쿼터 내).
+- 인증서 자체는 다른 계정/리전으로 복사 불가 → 각 리전에서 별도 발급.
+
+## 시험 체크포인트
+
+- CloudFront에 적용할 인증서는 **`us-east-1`** 발급. 시험 단골.
+- **DNS 검증**이 자동 갱신·자동화에 유리. 이메일 검증의 단점은 갱신 수동 응답.
+- **Imported 인증서는 자동 갱신 없음**. 만료 알림은 EventBridge/CloudWatch.
+- ACM 퍼블릭 인증서 자체는 **무료**, **개인키 추출 불가** (EC2 OS에 못 박음 → ALB 뒤로 두든가 ACM PCA/외부 CA 사용).
+- **ACM PCA**는 사내 PKI/디바이스 인증서 발급용. 퍼블릭 인증서와 구분.
+- 통합 서비스: ELB·CloudFront·API Gateway·Cognito·CloudFormation·Network Firewall. EC2/On-prem 직접 부착은 ❌.
+- 와일드카드(`*.example.com`)는 한 단계 서브도메인만 커버. `a.b.example.com`은 별도 SAN 필요.
+
+## 출처
+
+- AWS SAA C03 학습 자료 (로컬)
+
+## 관련 문서
+
+- [[CloudFront]]
+- [[ELB]]
+- [[API-Gateway]]
+- [[Route53]]
+- [[KMS]]
+- [[ACME-Protocol]]

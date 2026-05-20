@@ -114,6 +114,85 @@ systemctl start docker
 - **Health Check** — EC2 또는 ELB. 비정상은 종료 후 재기동
 - **Lifecycle Hook** — 종료 직전 grace 시간 (드레인·로그 수집)
 
+## EC2 인스턴스 상태(Lifecycle)
+
+| 상태 | 의미 | 과금 |
+|------|------|------|
+| **Pending** | 부팅 준비 중 | 미청구 |
+| **Running** | 정상 실행 중 | **청구** |
+| **Stopping** | 중지 전환 중 | 미청구 (EBS 스토리지 비용은 별도) |
+| **Stopped** | 중지 완료, EBS 데이터 유지 | EC2 미청구, **EBS·EIP는 별도** |
+| **Shutting-down** | 종료 준비 중 | 미청구 |
+| **Terminated** | 종료 완료 | 미청구 |
+
+핵심: **Stop은 EBS 기반 인스턴스만 가능**, Instance Store 기반은 Stop = Terminate. Stop된 인스턴스에 연결된 EIP는 추가 비용 발생.
+
+## AMI (Amazon Machine Image)
+
+인스턴스를 시작하는 데 필요한 정보를 담은 **이미지 템플릿**. OS·애플리케이션·구성·권한 정보 포함.
+
+- **EBS 지원 AMI**: EBS 스냅샷에서 루트 볼륨 생성, Stop/Start 가능
+- **Instance Store 지원 AMI**: S3에 저장된 템플릿에서 스토어 볼륨 생성, Stop 불가
+- **리전 종속** — 다른 리전에서 사용하려면 `CopyImage`로 복사 필요
+- **다른 계정과 공유 가능** (Launch Permission 부여)
+- AMI에 연결된 **스냅샷은 단독 삭제 불가** — AMI Deregister 선행
+- 출처:
+  - AWS 제공 (Amazon Linux, Ubuntu 등)
+  - **AWS Marketplace** — 서드파티 제공 AMI
+  - 사용자 제작 (Packer로 베이크하여 ASG Launch Template 표준화)
+
+AMI 기반 표준화는 부팅 시간 단축·구성 일관성 확보의 핵심 패턴.
+
+## Elastic IP (EIP)
+
+EC2 네트워크 인터페이스에 부여하는 **정적 공인 IP**. 기본 Public IP는 Stop/Start 시 변경되지만, EIP는 명시적 해제 전까지 고정.
+
+- 계정·리전당 **기본 5개까지** 보유 가능 (요청으로 증가)
+- **무료 조건**: 실행 중인 인스턴스에 연결된 상태 1개
+- **유료 발생 조건**:
+  - EIP 생성 후 인스턴스에 미연결
+  - **중지된 인스턴스**에 연결된 상태
+  - 한 인스턴스에 2개 이상 EIP 연결
+- ENI 단위로 부여되며, ENI를 다른 인스턴스로 이동시키면 EIP도 따라감 — **장애 복구·블루/그린 배포**에 활용
+
+권장 패턴: EIP는 **Bastion·NAT Gateway 대체용 NAT Instance** 정도로 제한하고, 웹 서비스는 ALB·CloudFront 뒤로 숨기는 것이 정석.
+
+## ENA (Elastic Network Adapter)
+
+**SR-IOV (Single Root I/O Virtualization)** 기반 고성능 네트워크 인터페이스.
+
+- 최대 **100 Gbps** 대역폭 (인스턴스 패밀리 종속)
+- 인스턴스 간 **저지연**, 높은 PPS (Packets Per Second)
+- 최신 인스턴스 패밀리는 모두 ENA 지원, Nitro 기반에서 표준
+- 클러스터 컴퓨팅·실시간 분석·고성능 DB 통신에 필수
+
+## Key Pair
+
+EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를 인스턴스에 저장, 사용자가 개인키(`*.pem`)를 보유.
+
+- SSH 접속 시 로그인 정보 **암호화·해독**에 사용
+- **개인키 분실 시 접속 불가** — Key Pair 자체에는 복구 메커니즘 없음, EBS 분리 후 다른 인스턴스에 마운트하여 `authorized_keys` 수정 우회
+- OS별 기본 Username 상이:
+  - Amazon Linux: `ec2-user`
+  - Ubuntu: `ubuntu`
+  - CentOS: `centos`
+  - Debian: `admin` 또는 `debian`
+- **보관 원칙**: 개인키 외부 유출 금지, Git 커밋 금지, 권한 `chmod 400`
+
+현업 권장: SSH Key Pair 의존을 줄이고 **AWS Systems Manager Session Manager**로 대체 (IAM 권한 기반, 포트 22 개방 불필요, 세션 로깅).
+
+## On-Demand Capacity Reservations
+
+특정 AZ에 **EC2 용량을 사전 예약**하는 옵션 (구매 약정 별개).
+
+- **약정 없음** — 원하는 기간만 예약하고 해제 가능
+- 예약된 용량은 다른 사용자에게 할당되지 않음 — **용량 부족(Insufficient Capacity) 회피**
+- 사용 여부와 무관하게 **예약된 용량에 대해 On-Demand 요금 청구**
+- Reserved Instances·Savings Plans 할인과 **결합 가능**
+- 적합: 재해 복구 사이트, 분기 결산·이벤트성 대용량 처리, 특정 AZ 용량 보장 필요
+
+비교: **Savings Plans**는 비용 약정으로 할인만, **Capacity Reservations**는 용량 확보 목적. 둘은 직교 개념.
+
 ## 흔한 실수
 
 - **인스턴스 스토어에 영속 데이터** — Stop/Terminate 시 손실
@@ -134,7 +213,24 @@ systemctl start docker
 - Savings Plans · Reserved · Spot 비용 모델 선택 기준
 - ASG의 Launch Template · Scaling Policy · Lifecycle Hook 흐름
 
+## 시험 체크포인트 (SAA-C03)
+
+- EC2 상태 5종 (Pending·Running·Stopping·Shutting-down·Terminated)과 **과금 여부**
+- **Stop은 EBS 기반만 가능**, Instance Store 기반은 Stop = Terminate
+- AMI는 **리전 종속** — Cross-Region 사용 시 복사 필수
+- AMI 연결 스냅샷은 **AMI Deregister 후에만 삭제** 가능
+- Elastic IP는 **실행 중 인스턴스에 연결된 1개만 무료**, 미연결·중지 상태는 과금
+- ENA로 **최대 100 Gbps** 대역폭, Nitro 기반에서 표준
+- Key Pair **개인키 분실 시 복구 불가** — EBS 분리 후 우회 또는 새 인스턴스
+- OS별 기본 SSH Username 차이 (Amazon Linux `ec2-user`, Ubuntu `ubuntu`)
+- **On-Demand Capacity Reservations** — 약정 없이 용량 예약, Savings Plans와 결합 가능
+- Placement Group: **Cluster**(저지연), **Spread**(소수·하드웨어 분산, AZ당 7개), **Partition**(파티션당 자체 랙·전원, 최대 7개)
+- Spot 인스턴스는 가격 입찰 + 2분 통보 회수 → fault-tolerant 워크로드 한정
+- Reserved vs Savings Plans: **Savings Plans가 리전·인스턴스 세대·사이즈 유연성** 우위
+
 ## 관련 문서
+- [[AWS-Fundamentals|AWS 기본 용어 (Region·AZ)]]
+- [[EBS|EBS · Elastic Block Store]]
 - [[AWS-Lambda|AWS Lambda · 서버리스 FaaS]]
 - [[VPC|VPC · Subnet · CIDR]]
 - [[ECS|ECS · 컨테이너 오케스트레이션]]
