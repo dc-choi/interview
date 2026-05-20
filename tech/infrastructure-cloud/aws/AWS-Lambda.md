@@ -1,7 +1,7 @@
 ---
-tags: [aws, lambda, serverless, faas, cold-start]
+tags: [aws, lambda, serverless, faas, cold-start, provisioned-concurrency]
 status: done
-category: "인프라&클라우드(Infrastructure&Cloud)"
+category: "Infrastructure - AWS"
 aliases: ["AWS Lambda", "Lambda", "서버리스 FaaS"]
 ---
 
@@ -47,6 +47,15 @@ AWS Lambda는 **이벤트 구동 함수 실행 서비스(FaaS, Function as a Ser
 | 리전당 동시 실행 | 기본 1,000 (증설 신청 가능) |
 | 환경변수 크기 | 4KB |
 
+## Function 구성요소
+
+함수(Function)는 코드 실행을 위해 호출되는 최소 단위 리소스. 다음 4가지로 구성된다.
+
+- **함수 코드** — 실제 실행되는 핸들러. Runtime(Node.js·Python·Java·Go·Ruby·.NET·Custom), IAM 실행 역할, VPC 설정, 메모리 등을 함께 지정
+- **계층 (Layer)** — 의존성·공통 라이브러리·런타임 확장을 별도 zip으로 분리. 함수당 최대 5개. 패키지 크기 압박 완화·버전 공유
+- **트리거** — 함수를 발동시키는 이벤트 소스 (아래)
+- **전달 대상 (Destinations)** — 비동기 호출 결과를 후속 서비스로 전달
+
 ## 트리거 종류
 
 - **API Gateway** — REST·HTTP·WebSocket API 백엔드
@@ -56,6 +65,62 @@ AWS Lambda는 **이벤트 구동 함수 실행 서비스(FaaS, Function as a Ser
 - **EventBridge·CloudWatch Events** — 이벤트 버스·스케줄(cron)
 - **SNS** — 토픽 fanout
 - **ALB** — HTTP 백엔드로 직접 연결
+- **CloudWatch Logs** — 로그 필터 매칭 시 호출
+
+## 호출 모델 (Invocation Type)
+
+| 모델 | 설명 | 예시 트리거 |
+|---|---|---|
+| **Synchronous (동기)** | 호출자가 결과를 기다림. 에러는 호출자에게 반환 | API Gateway·ALB·CLI 직접 호출 |
+| **Asynchronous (비동기)** | 이벤트 큐에 적재 후 즉시 반환. Lambda가 백그라운드 실행, 실패 시 2회 자동 재시도 | S3·SNS·EventBridge |
+| **Event Source Mapping (Poll)** | Lambda가 소스를 폴링하며 배치로 처리 | SQS·Kinesis·DynamoDB Stream |
+
+### Destinations (전달 대상)
+
+비동기 호출 또는 Stream/Queue 처리 결과를 자동 라우팅.
+
+- **OnSuccess / OnFailure** 분리 지정
+- 대상: **SNS · SQS · Lambda · EventBridge**
+- 예: SNS → Lambda 처리 → 성공 시 SQS 큐 적재, 실패 시 다른 토픽 알림
+
+### DLQ (Dead Letter Queue)
+
+- 비동기 호출에서 **재시도 모두 실패** 시 메시지를 SQS/SNS로 격리
+- Destinations(OnFailure)가 더 유연한 후속자. 신규는 Destinations 권장
+
+## 동시성 제어
+
+| 종류 | 동작 | 용도 |
+|---|---|---|
+| **Reserved Concurrency** | 특정 함수에 동시 실행 슬롯을 **예약**. 다른 함수와 격리 + 상한 보장 | 폭주 함수가 계정 한도(1,000) 잡아먹지 않게 |
+| **Provisioned Concurrency** | 지정 수만큼 **항상 warm 유지** | Cold Start 제거. API 백엔드 지연 안정화 |
+| **Account Concurrency Limit** | 리전당 기본 1,000 (증설 가능) | 한도 초과 시 **Throttle (429 TooManyRequests)** |
+
+Throttle 발생 시: 동기 호출은 즉시 에러, 비동기는 자동 재시도. 버퍼링이 필요하면 **SQS를 앞에 끼우면** 자연스럽게 흡수.
+
+## VPC Lambda
+
+- Lambda 함수를 VPC 내부 리소스(RDS·ElastiCache·EC2)에 붙이려면 **VPC 구성** 필요
+- 함수에 ENI가 할당되고 지정 서브넷·보안 그룹에서 동작
+- 인터넷 통신은 **NAT Gateway** 필요 (퍼블릭 IP 직접 부여 불가)
+- 과거엔 Cold Start 시 ENI 생성으로 지연 컸으나, **Hyperplane ENI(공유 ENI)** 도입 후 초기화 지연 대폭 감소
+
+## Lambda@Edge · CloudFront Functions
+
+- **Lambda@Edge** — CloudFront 엣지에서 실행. 4가지 이벤트(Viewer Request/Response, Origin Request/Response)에서 동작. A/B 테스트·헤더 조작·SEO 라우팅·이미지 변환
+- **CloudFront Functions** — 더 가벼운 JS 함수. Viewer Request/Response만, 1ms 미만 실행. URL 재작성·헤더 조작에 특화 (μ초 단위 비용)
+- 결정: 복잡한 로직·외부 호출이면 Lambda@Edge, 초경량 헤더 조작이면 CloudFront Functions
+
+## EC2 vs Lambda
+
+| 항목 | EC2 | Lambda |
+|---|---|---|
+| OS/네트워크 제어 | 사용자가 직접 | AWS가 추상화 |
+| 스케일 | ASG 설정 필요 | 자동 (동시성 한도 내) |
+| 과금 | 시간 단위 (요금 항상) | 호출 + 실행 시간 + 메모리 (유휴 무료) |
+| 실행 시간 제한 | 없음 | 15분 |
+| Cold Start | 없음 (상시 가동) | 있음 |
+| 적합 워크로드 | 지속·고트래픽·장기 연결 | 이벤트성·spiky·짧은 처리 |
 
 ## 장점
 
@@ -110,20 +175,32 @@ AWS Lambda는 **이벤트 구동 함수 실행 서비스(FaaS, Function as a Ser
 - 장시간 실행(15분 초과) 또는 대량 메모리 필요
 - RDB 커넥션 중심 워크로드(RDS Proxy 비용·복잡도 초과)
 
-## 면접 체크포인트
+## 면접·시험 체크포인트
 
 - Lambda 실행 모델(Init-Invoke-Shutdown)과 컨테이너 재사용 개념
-- Cold Start 원인과 완화 기법 3가지 이상
+- Cold Start 원인과 완화 기법 3가지 이상 (Provisioned Concurrency·SnapStart·작은 패키지)
+- **Reserved vs Provisioned Concurrency** 차이 — 격리/상한 vs 상시 warm
+- **호출 모델 3종**(Sync·Async·Event Source Mapping)과 재시도 동작
+- **Destinations(OnSuccess/OnFailure)** 와 DLQ의 관계
 - Lambda + RDB 조합의 커넥션 폭주 문제와 RDS Proxy 해법
-- 15분 제한·1,000 동시성 한도의 실무 영향
+- 15분 제한·1,000 동시성 한도의 실무 영향, Throttle 발생 시 흐름
+- **VPC Lambda** — NAT Gateway 필요성, ENI 모델
+- **Lambda@Edge vs CloudFront Functions** 차이
+- **Layer**로 의존성 분리하는 이유 (패키지 크기·재사용)
 - 메모리를 늘리면 비용이 줄어들 수 있는 이유(CPU 비례)
 - 서버리스가 어울리지 않는 워크로드 유형
 
 ## 출처
 - [inpa — AWS Lambda 개념·원리](https://inpa.tistory.com/entry/AWS-%F0%9F%93%9A-%EB%9E%8C%EB%8B%A4Lambda-%EA%B0%9C%EB%85%90-%EC%9B%90%EB%A6%AC)
+- AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서
 - [[AWS|AWS]]
+- [[API-Gateway|API Gateway]]
+- [[SQS|Amazon SQS]]
+- [[SNS|Amazon SNS]]
+- [[EventBridge|EventBridge]]
+- [[Kinesis|Kinesis]]
 - [[Load-Balancer|Load Balancer]]
 - [[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound]]
 - [[Latency-Optimization|레이턴시 최적화]]

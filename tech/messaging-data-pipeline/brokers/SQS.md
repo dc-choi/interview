@@ -1,5 +1,5 @@
 ---
-tags: [messaging, aws, sqs]
+tags: [messaging, aws, sqs, decoupling, saa-c03]
 status: done
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["SQS", "Amazon SQS", "Simple Queue Service"]
@@ -7,7 +7,14 @@ aliases: ["SQS", "Amazon SQS", "Simple Queue Service"]
 
 # Amazon SQS (Simple Queue Service)
 
-AWS 관리형 메시지 큐 서비스. 분산 시스템 간 비동기 통신의 가장 기본적인 빌딩 블록.
+AWS 관리형 메시지 큐 서비스. 분산 시스템 간 비동기 통신의 가장 기본적인 빌딩 블록. **Polling 기반**의 Queue 모델로, AWS Decoupling 서비스 3종(SQS=Queue / SNS=Pub-Sub / Kinesis=Real-time Streaming) 중 가장 단순한 모델. 2006년 출시된 AWS 초창기 서비스.
+
+## Decoupling — 왜 필요한가
+
+생산자·소비자의 처리 스펙(처리 속도·가용성)이 다르면 직접 동기 통신 시 메시지가 유실될 수 있다. 사이에 Queue를 두면:
+- 생산자는 소비자 가용성과 무관하게 메시지를 큐에 적재
+- 소비자는 자기 속도로 Pull → 백프레셔 흡수
+- 한쪽 장애가 다른 쪽으로 전파되지 않음 (시간·공간 분리)
 
 ## Standard vs FIFO
 
@@ -119,9 +126,29 @@ Consumer ← Receive ← [Visibility Timeout 시작]
 - 64KB 단위로 청구 (256KB 메시지 = 4건)
 - 같은 리전 내 AWS 서비스 간 데이터 전송 무료
 
+## 보안 · 암호화
+
+| 계층 | 수단 |
+|------|------|
+| **전송 중(in-transit)** | HTTPS API — 모든 요청이 TLS로 암호화 |
+| **저장 시(at-rest)** | KMS Key로 큐 메시지 SSE 암호화 (SSE-SQS 또는 SSE-KMS) |
+| **접근 제어** | IAM Policy로 SQS API 호출 권한 통제, Queue Policy(Resource-based)로 cross-account 허용 |
+
+## 시험 체크포인트 (SAA-C03)
+
+- AWS Decoupling 3종 = SQS(Queue) / SNS(Pub-Sub) / Kinesis(Real-time Streaming) — 모델 차이로 구분
+- **Polling 기반** vs SNS의 **Push 기반** 대비
+- Standard: 무제한 처리량 + at-least-once + 순서 미보장 / FIFO: 300 TPS(배치 3,000) + exactly-once + MessageGroupId 단위 순서
+- 메시지 크기 256KB, 보존 4~14일(기본 4일), 가시성 타임아웃 기본 30초·최대 12시간
+- 처리 지연 시 `ChangeMessageVisibility`로 가시성 연장 → 중복 소비 방지
+- Long Polling 최대 20초 — 빈 응답·API 호출 비용 감소
+- DLQ 보존 기간은 소스 큐보다 길게 (Standard는 enqueue 타임스탬프 유지)
+- KMS로 저장 시 암호화, HTTPS로 전송 중 암호화, IAM Policy로 API 접근 통제
+
 ## 출처
 - [채널톡 — AWS SQS 도입기](https://channel.io/ko/blog/tech-backend-aws-sqs-introduction)
 - [SK DEVOCEAN — SQS 연재 (소개·Terraform·Spring JMS·Spring Cloud)](https://devocean.sk.com/experts/techBoardDetail.do?ID=163294)
+- AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서
 - [[EventBridge|EventBridge]]

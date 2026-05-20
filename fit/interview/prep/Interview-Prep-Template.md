@@ -8,7 +8,7 @@ aliases: ["Interview Prep Template", "면접 준비 템플릿"]
 # 면접 준비 템플릿
 
 > 회사별 면접 분석 시 이 템플릿을 기반으로 `Interview-Prep-{회사명}.md` 파일을 생성한다.
-> 이력서, 포트폴리오, [[FIT|FIT]], [[Self-Analysis|나찾기]] 내용을 기반으로 회사 맞춤 답변을 구성한다.
+> 이력서, 포트폴리오, [[Common-Interview-Questions|FIT]], [[Self-Analysis|나찾기]] 내용을 기반으로 회사 맞춤 답변을 구성한다.
 > 포트폴리오의 STAR 형식 상세 내용을 활용하여 준비 포인트에 구체적 수치와 실무 사례를 포함한다.
 
 ---
@@ -61,7 +61,7 @@ aliases: ["Interview Prep Template", "면접 준비 템플릿"]
 
 ## 2. 회사 맞춤 FIT 답변
 
-> [[FIT|FIT]] 기반으로 이 회사에 맞게 커스터마이징한 답변
+> [[Common-Interview-Questions|FIT]] 기반으로 이 회사에 맞게 커스터마이징한 답변
 
 ### 1분 자기소개
 > 구조: 이름/역할 → 도메인 경험 요약 → 핵심 성과 → 핵심 철학 → 왜 이 회사 → 마무리
@@ -76,8 +76,8 @@ aliases: ["Interview Prep Template", "면접 준비 템플릿"]
 
 ### 이직 사유
 > 구조: 현 회사에서 충분히 성장한 점 → 한계를 느낀 지점(**자기 기준**으로) → 다음 도전 목표 → 지원 회사에서만 가능한 이유
-> B2C 지원 시 / B2B 지원 시 분기 — [[FIT-Questions-Motivation#이직 사유 (현재 회사에서 왜 옮기려 하는가)|FIT 참고]]
-> **외부 귀책 주의**: "그 회사가 X였다"만으로 끝내지 말 것. 장기근속 리스크 시그널. 자기 귀책 + 학습 + 현재 적용으로 재작성. [[FIT-Questions-Motivation#퇴사·이직 사유 답변 원칙 (핵심)|답변 원칙]] 참고
+> B2C 지원 시 / B2B 지원 시 분기 — [[My-Motivation-Reasons#이직 사유 (현재 회사에서 왜 옮기려 하는가)|FIT 참고]]
+> **외부 귀책 주의**: "그 회사가 X였다"만으로 끝내지 말 것. 장기근속 리스크 시그널. 자기 귀책 + 학습 + 현재 적용으로 재작성. [[My-Motivation-Reasons#퇴사·이직 사유 답변 원칙 (핵심)|답변 원칙]] 참고
 
 ---
 
@@ -116,7 +116,7 @@ aliases: ["Interview Prep Template", "면접 준비 템플릿"]
 - 꼬리 질문 대비
 
 ### 컬처핏 / 소프트스킬 질문
-> [[FIT|FIT]], [[Self-Analysis|나찾기]] 기반 — 이미 준비된 답변 중 이 회사에 특히 중요한 것 체크
+> [[Common-Interview-Questions|FIT]], [[Self-Analysis|나찾기]] 기반 — 이미 준비된 답변 중 이 회사에 특히 중요한 것 체크
 
 - [ ] 장단점
 - [ ] 동료 갈등

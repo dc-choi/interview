@@ -7,7 +7,14 @@ aliases: ["IAM", "AWS IAM", "Identity and Access Management"]
 
 # AWS IAM (Identity and Access Management)
 
-AWS 리소스에 대한 **인증·인가**를 관리하는 글로벌 서비스. **누가(Principal) · 무엇을(Action) · 어디서(Resource) · 어떤 조건에서(Condition)** 접근할 수 있는지를 JSON 정책으로 명시.
+AWS 리소스에 대한 **인증·인가**를 관리하는 글로벌 서비스. **누가(Principal) · 무엇을(Action) · 어디서(Resource) · 어떤 조건에서(Condition)** 접근할 수 있는지를 JSON 정책으로 명시. **Region에 국한되지 않는 글로벌 서비스**.
+
+주요 기능:
+- AWS 계정에 대한 **공유 액세스** (다수의 사람·서비스가 단일 계정 사용)
+- 서비스·리소스별 **세분화된 권한** 부여
+- EC2·Lambda 등 AWS 서비스에서 실행되는 앱을 위한 **Role 기반** 리소스 접근
+- **MFA (Multi-Factor Authentication)** 강제
+- **자격 증명 연동 (Identity Federation)** — 외부 IdP 연계
 
 ## 4가지 엔티티
 
@@ -20,6 +27,15 @@ AWS 리소스에 대한 **인증·인가**를 관리하는 글로벌 서비스. 
 
 **Role 우선 원칙** — 영구 Access Key는 유출 위험. EC2·Lambda·ECS Task에는 **Role 부여**, 사람도 **IAM Identity Center(SSO) → Role AssumeRole**.
 
+### User 액세스 타입
+
+| 타입 | 자격증명 | 용도 |
+|------|---------|------|
+| **콘솔 액세스** | 비밀번호 + (MFA) | 웹 콘솔 로그인. 별도 로그인 링크(`https://<account>.signin.aws.amazon.com/console`) |
+| **프로그래밍 액세스** | Access Key + Secret Access Key | CLI·SDK·API 호출 |
+
+신규 유저 생성 시 기본 권한은 **없음**(빈 정책). Access Key는 **생성 시점에만 노출** — Secret Access Key는 다시 볼 수 없으니 즉시 안전한 곳에 보관(혹은 재발급).
+
 ## 정책 타입
 
 | 타입 | 부착 대상 | 우선순위 |
@@ -29,6 +45,14 @@ AWS 리소스에 대한 **인증·인가**를 관리하는 글로벌 서비스. 
 | **Permission Boundary** | User·Role | 최대 권한 한도 (실권 = identity ∩ boundary) |
 | **SCP** (Service Control Policy) | Organization OU·Account | 계정 전체 가드레일 |
 | **Session Policy** | AssumeRole 시점 | 임시 세션 한정 |
+
+### AWS 관리형 vs 고객 관리형 vs Inline
+
+| 종류 | 정의 | 비고 |
+|------|------|------|
+| **AWS Managed Policy** | AWS가 사전 정의 (`AdministratorAccess`, `AmazonS3FullAccess`, `ReadOnlyAccess` 등) | 빠르게 시작·재사용 |
+| **Customer Managed Policy** | 사용자가 만들어 재사용 (JSON 또는 비주얼 에디터) | 권장 — 버전 관리·재사용 |
+| **Inline Policy** | User/Group/Role에 직접 박힘 | 추적·재사용 어려움. 1:1 매핑 |
 
 ## 정책 평가 로직
 
@@ -108,6 +132,22 @@ Role은 **AssumeRole API**로 임시 자격증명(15분~12시간) 발급. 흐름
 | **Federation** | SAML·OIDC로 외부 ID → Role |
 | **AssumeRole 체인** | A → AssumeRole(B) → AssumeRole(C) (체인은 1시간 한도) |
 
+Role의 특징:
+- **다수의 정책을 하나의 Role에 연결** 가능
+- **Region에 국한되지 않음** (글로벌)
+- Role의 주체(Principal)는 IAM User · AWS 서비스(EC2·RDS·ELB 등) · 외부 IdP로 인증된 사용자
+
+### Identity Federation — 외부 ID 연동
+
+| 방식 | 시나리오 |
+|------|---------|
+| **SAML 2.0** | 기업 AD/SSO와 연동 (Okta·ADFS·Azure AD) |
+| **OIDC** | GitHub Actions·Kubernetes·외부 OIDC IdP |
+| **Web Identity Federation** | Cognito·Google·Facebook (모바일/웹 앱) |
+| **IAM Identity Center (구 SSO)** | 다중 계정·SAML 앱 통합 SSO |
+
+외부에서 인증된 사용자 → **STS AssumeRoleWithSAML / AssumeRoleWithWebIdentity** → 임시 자격증명 발급.
+
 ## Permission Boundary — 권한 천장
 
 ```
@@ -136,19 +176,25 @@ Role은 **AssumeRole API**로 임시 자격증명(15분~12시간) 발급. 흐름
 - **콘솔에서 직접 정책 변경** — 추적 불가. IaC (Terraform·CDK)로 관리
 - **Inline policy 남발** — 추적·재사용 어려움. Managed policy 우선
 
-## 면접 체크포인트
+## 면접 / 시험 체크포인트
 
+- IAM은 **글로벌 서비스** — Region 무관
 - 정책 평가 순서 — 명시 Deny → 명시 Allow → default Deny
 - Identity vs Resource Policy 차이와 평가 시 합집합
-- Permission Boundary가 실효 권한에 미치는 영향
+- Permission Boundary가 실효 권한에 미치는 영향 (`실효 = Identity ∩ Boundary`)
 - AssumeRole의 STS 임시 자격증명 흐름과 Trust Policy
 - Cross-Account Access의 ExternalId 패턴
 - EC2 Instance Profile · IRSA의 자격증명 노출 메커니즘 (IMDS·OIDC)
 - Condition Key로 IP·MFA·암호화 강제하는 fine-grained 제어
 - Access Key vs Role — 왜 Role 우선인가
+- **Access Key는 생성 시점에만 노출** — 분실 시 재발급
+- 신규 User는 기본 **권한 없음**, 콘솔·프로그래밍 액세스 별도 선택
+- JSON 정책 구성요소 5가지: **Effect · Principal · Action · Resource · Condition**
+- Federation 종류: **SAML · OIDC · Web Identity · IAM Identity Center**
 
 ## 출처
-- [AWS 핵심 서비스 정리 — 학습 메모]
+- AWS 핵심 서비스 정리 — 학습 메모
+- AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서
 - [[AWS|EC2 (Instance Profile)]]

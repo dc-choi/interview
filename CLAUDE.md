@@ -16,9 +16,76 @@
 
 ## Interview Prep
 
-- 면접 준비 문서를 새로 만들거나 보강할 때, **액션파워 문서(`fit/interview/actionpower/Interview-Prep-ActionPower.md`)를 기준 예시**로 삼을 것.
-- 면접 준비 문서는 **회사별 폴더**(`fit/interview/{회사명}/`)에 저장할 것.
-- 구조(JD 분석, 기술 질문+꼬리 질문, 서비스 맥락 질문, 역질문, 체크리스트)와 깊이를 동일한 수준으로 작성할 것.
+### common/ = 마스터, prep/ = 가이드 (역할 분리)
+
+`fit/interview/`는 **두 폴더**로 명확히 분리:
+- **`common/`** = **내 답변 마스터** (`My-*.md` 본문, `Common-Interview-Questions.md` TOC, `Interview-Retro-Template.md`)
+- **`prep/`** = **가이드·질문 풀·메타·치환·자기분석** (본문 답변 X)
+
+파일 목록은 `ls fit/interview/common/`·`ls fit/interview/prep/`으로 확인. 각 파일 역할은 frontmatter `aliases`·첫 헤더 참조.
+
+### ⚠️ 중복 본문 금지 (가장 중요)
+
+답변 본문은 **`common/` 마스터에만**. prep/는 가이드·치환표·메타만 (본문 X). 회사별 폴더는 **마스터 fork + 회사 매핑 끝줄만** (본문 복제 X). **회사 문서가 자기완결적**이어야 한다 — 사용자는 면접 준비할 때 vault·prep으로 점프 X.
+
+⚠️ **새 답변 작성 시 prep/ 정렬 체크 처음부터**: `Self-Analysis`(WHY) · `Developer-Interview-13-Questions`(질문 의도) · `Developer-Interview-Signals`(답변 톤) 셋이 마스터 답변과 정렬돼야 면접관이 "함께 일하고 싶은 사람" 시그널 감지. 단발 다듬기 X — 아래 신규 회사 워크플로우대로 처음부터 정렬.
+
+### 답변 원칙
+
+- **외부 귀책 금지** — [[My-Motivation-Reasons]] 원칙. 비누커머스·윤회 회고에서 반복된 패턴 (자기 귀책 + 학습 + 현재 적용 구조). 시솔지주 이직 사유는 마스터 옵션 B(시니어 사고 격상) 그대로 사용.
+- **JD 키워드로 마스터 답변 선별**: "강한 몰입·업무 강도·온콜" → My-FIT-Answers 11번(워라밸, 거의 확실), "AI 도구" → 10번(거의 확실), "데이터 파이프라인" → My-Tech-Cards 카드 2·3 우선.
+- **마스터에 없는 회사 특이 질문**은 prep/ 일반 풀(Sensitive·Behavioral·Tech-Basics·Tech-Scale)에서 fork 가능. 새 답변이 자주 나오면 마스터에 역흡수.
+- **사전 통화·커피챗 톤 일관성 (가장 중요)**: 1차 통화·커피챗에서 본인이 안 꺼낸 큰 카드는 본 미팅에서 갑자기 꺼내면 "왜 그때 안 말했나?" 의심 — 진정성 시그널 깨짐. 회사별 폴더 회고 (예: `Interview-Prep-Yunhoe-CoffeeChat-Retro.md`)에서 **본인이 실제로 말한 카드 vs 안 꺼낸 카드** 명확히 분리하고, 본 미팅 답변은 이전에 말한 카드 위주 + 면접관이 직접 물으면만 새 카드 답변.
+
+### 신규 회사 면접 준비 워크플로우 (단일 라운드 로드)
+
+**원칙**: 한 번에 다 로드 → 정렬된 답변 완성 → 다듬기 단계 별도 X. 선별·지연 로드는 누락 + 재로드 토큰 낭비. 회고 후 마스터 역반영만 별도.
+
+**입력 (전부 필수)**:
+1. **JD** (WebFetch) + **이력서·포트폴리오** (Read)
+2. **`common/` 마스터**: `My-*.md` 7개 + `Common-Interview-Questions.md` TOC + `Interview-Retro-Template.md`
+3. **`prep/` 14개 전체** — 선별 X (자세한 목록은 위 B 섹션). 면접 형식별 4종(CS·시스템디자인·라이브코딩·글로벌)은 JD 단계 보고 적용 여부 판단.
+4. **`tech/` vault 딥다이브 (필수)**:
+   - 마스터 카드 8개 각각 → `My-Tech-Cards` 끝 카테고리 인덱스 기반으로 vault 서치
+   - 회사 특이 기술 질문(도메인) → 해당 vault 서치 (Agent로 인덱싱 가능)
+   - vault Read → **정량·비교 표·심화 꼬리를 본문에 흡수** (vault 위키링크 박지 X, 콘텐츠 자체)
+5. **사이드 프로젝트 최신 메트릭 재확인 (필수)** — 정량 수치는 시점이 빠르게 변하므로 답변에 박기 전 **원본 docs 재검증**:
+   - 주일학교 출석부: `~/dev/projects/my-own/school_back/docs/business/STATUS.md` (모임 수·학생·MAO·전환율 등 정량)
+   - 다른 사이드 프로젝트 추가 시 본 항목에 경로 누적
+   - 마스터·회사별 문서의 정량 수치(예: "99개 모임")는 **이 원본과 항상 동기화**. 포트폴리오 PDF 수치도 outdated 가능성 항상 의심.
+6. **(조건부)** 과거 유사 회사 회고 (`fit/interview/{유사회사}/Interview-Retro-*.md`)
+
+**출력 (한 번에)**:
+- JD 매칭 표 + 회사 단계·도메인 분석
+- 마스터 fork 답변 — **prep 5종 정렬(WHY·의도·시그널·치환·메타) + vault 흡수된 본문 + 회사 매핑 끝줄** 처음부터 완성
+- 회사 특이 기술 질문 (vault 흡수된 정량·꼬리)
+- 회사 맞춤 역질문 (`My-Reverse-Questions` 풀 3~5개 + 회사 특이 1~2개)
+- 체크리스트 (외부 귀책·부정 단어·꼬리 끝줄=귀사 연결)
+- (선택) Cheatsheet (D-1~D-day용 30분 훑기)
+
+### vault 링크 위치 룰
+
+| 위치 | vault 링크 | 이유 |
+|---|---|---|
+| 답변 카드 본문 위 (`> 관련 vault: [[Lock]] · ...` 식 매핑 줄) | ❌ | 답변 읽을 때 시끄러움 |
+| common/ 마스터 문서 **끝 "관련 문서" 아래 카테고리 목차** (`### vault 카테고리 인덱스`) | ✅ | 한 문서 안에서 보강 시 어디 보면 되는지 한 번에 |
+| 회사별 폴더 문서 안에 vault 매핑 | ❌ | 회사 문서가 자기완결. 보강은 마스터에 흡수 |
+| 별도 통합 vault 인덱스 문서 신설 (`Tech-Vault-Map.md` 같은) | ❌ | 점프 더 늘림 |
+| 같은 답변 시스템 내 cross-reference (`[[My-FIT-Answers#10. AI 도구]]`) | ✅ | 답변 시스템 안 작은 구조 |
+| prep/ 가이드 매핑 (`[[Self-Analysis]]` 톤·시그널 메타) | ✅ | 답변 다듬을 때 가끔 정렬 체크 |
+
+### 마스터 역반영 룰 (면접 후 회고)
+
+- 회고는 회사별 폴더에 `Interview-Retro-{회사명}-{차수}.md`로 저장 (`common/Interview-Retro-Template` fork).
+- 마스터에 누락된 새 답변·받은 질문이 발견되면 **마스터에 역업데이트**. 마스터를 산 채로 유지.
+
+### 회사별 폴더 (메타)
+
+- 경로: `fit/interview/{회사명}/` (영문 소문자). 신규 회사는 마스터 fork + 회사 고유만 — **슬림 패턴 권장**.
+- **차수별 서브폴더 필수**: `{회사명}/{차수}/` — `1st/` · `2nd/` · `coffeechat/` 등. 신규 차수 등록 시 새 차수 폴더 생성.
+- **회사 폴더 루트**: 모든 차수에 공통 적용되는 자료만 (예: `yunhoe/Interview-Prep-Yunhoe-Domain.md` — DPP 도메인 브리프). 차수 자료(JD·Tech·Cheatsheet·회고)는 절대 루트에 두지 X.
+- **차수 폴더 내부**: 그 차수의 TOC + JD 매칭 + Tech + FIT + Lead·체크 + Cheatsheet + 회고 모두 그 폴더 안에.
+- 액션파워·윤회·스페이스맵은 **마스터 도입 전** 작성이라 답변 본문 중복 있음. 점진적으로 마스터 fork 형태로 슬림화 중.
 
 ## Document Length
 

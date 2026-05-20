@@ -68,6 +68,22 @@ Task = 1개 이상 컨테이너 묶음 (sidecar 가능). Service = ReplicaSet+De
 
 executionRole과 taskRole 분리는 **최소 권한 원칙** — Agent 권한과 앱 권한이 다름.
 
+### EC2 launch type 전용 — EC2 인스턴스 IAM Role
+
+Fargate 외에 **EC2 launch type**에서만 등장하는 3번째 Role.
+
+- **ECS Agent**가 EC2를 ECS Cluster에 **등록**하기 위해 사용
+- ECR에서 도커 이미지 pull, CloudWatch Logs로 컨테이너 로그 전송도 이 Role
+- Fargate는 호스트가 추상화되어 있어 불필요. EC2 launch type 한정
+
+3종 Role 비교 (시험 단골):
+
+| Role | 부여 대상 | 용도 |
+|------|-----------|------|
+| **EC2 Instance Role** | EC2 인스턴스 | ECS Agent의 클러스터 등록·ECR pull·CloudWatch Logs |
+| **Task Execution Role** | ECS Agent (Task 시작 시) | ECR pull·Secrets·로그 — Fargate·EC2 공통 |
+| **Task Role** | Task 내부 앱 | 앱이 호출하는 AWS API 권한 (S3·DynamoDB 등) |
+
 ## Service — desired count + 배포
 
 - **desired count** 유지 — Task가 죽으면 자동 재시작
@@ -125,20 +141,23 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 - **Fargate Spot에 stateful 워크로드** — 2분 통보 후 종료
 - **Task 사이즈 OOM** — 메모리 한도 초과 시 Task killed. soft/hard limit 분리 사용
 
-## 면접 체크포인트
+## 면접·시험 체크포인트
 
 - Task Definition · Task · Service · Cluster의 역할 분리
 - Fargate vs EC2 launch type 선택 기준 (운영 부담·비용·콜드 스타트)
 - `awsvpc` 모드가 표준이 된 이유 (Task별 SG·IAM)
-- executionRole vs taskRole — 최소 권한 분리
+- **3종 IAM Role**: EC2 Instance Role / Task Execution Role / Task Role — 부여 대상·용도 구분
 - Service Connect와 Cloud Map의 역할 — 서비스 메시 없이 옵저버빌리티
 - Capacity Provider — EC2 launch type에서 클러스터 자동 스케일
-- ECS vs EKS 선택 기준 (단순·AWS 통합 vs Kubernetes 표준)
+- ECS vs EKS 선택 기준 (단순·AWS 통합 vs Kubernetes 표준) — 자세한 비교는 [[EKS]]
+- Task = **컨테이너 실행 최소 단위**(1개 이상 컨테이너 묶음), Fargate면 ENI/IP까지 Task 단위
 
 ## 출처
 - [AWS 핵심 서비스 정리 — 학습 메모]
+- AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서
+- [[EKS]]
 - [[AWS|EC2]]
 - [[AWS-Lambda|Lambda]]
 - [[VPC|VPC]]
