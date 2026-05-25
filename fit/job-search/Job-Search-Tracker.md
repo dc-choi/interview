@@ -33,9 +33,9 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 |------|------|------|
 | 지바이크 (재도전) | https://gcoo.io/career/jobs | 비즈니스 로직 백엔드, 5-20년, Java/Kotlin + K8s — 시리즈C 119억·매출 804억(+47%)·2025 IPO 트랙·글로벌 5개국 140개 도시. 과거 탈락 후 재도전. 리스크: 언어 미스매치, 잡플 급여복지 2.5~2.6/경영진 2.7, "편가르기" 리뷰 |
 | 패스트파이브 (플랫폼개발팀) | https://www.wanted.co.kr/wd/361096 | Backend, **Node.js/TS 5년+ 필수**, NestJS/Express/MySQL/TypeORM·Knex, WaaS 부동산(회원·공간·예약·결제·출입 인증), Claude Code/Cursor 명시 — **매출 1,500억(+11.1%)·영업이익 60억(+14.9%) 2년 연속 흑자·11년 연속 성장**, 60개 지점·4,300개 기업. 매치: Node/NestJS/MySQL·AI 도구 정확 매치, 도메인 결 유사(트라이포드 발주 자동화 ↔ 예약·결제). 리스크: ① 5년+ hard cut(본인 3년 10개월), ② Prisma↔TypeORM/Knex ORM 갭, ③ 잡플 3.1 양분·블라인드 "팀마다 워라밸 차이" — 지원 전 블라인드 IT/플랫폼팀 후기 확인 필요 |
-| 111퍼센트 (기술지원팀, 재지원) | https://www.wanted.co.kr/wd/359687 | 웹 서버 개발자, 3년+ "준하는 역량", TS/Node·GCP/AWS, 인하우스툴·BI·공통 서비스·AI 활용 신규 — **매출 1,058억(+3배)·영업이익 52억 흑자 전환(2023 -70억→2024 +52억)·모회사 슈퍼패스트 2,770억·2024 영업이익 100%(150억) 성과급**, 운빨존많겜 글로벌 750만 DL·누적 1,200억. 매치: 연차·라이브 서비스 운영·AI 워크플로우(이력서 인트로 강조). 리스크: ① 25.7.12 1회 탈락 재지원(자기소개 fork 필수 — AI 워크플로우·라이브 운영 강조), ② 게임 도메인 무관(단 기술지원팀은 게임 코어 아닌 운영툴/공통 서비스라 부담 낮음), ③ 1억 유저 트래픽 규모 대비 페르소나 |
+| 111퍼센트 (기술지원팀, 재지원) | https://111percent.career.greetinghr.com/ko/o/215338 | 웹 서버 개발자, 3년+ "준하는 역량", TS/Node·GCP/AWS, 인하우스툴·BI·공통 서비스·AI 활용 신규 — **매출 1,058억(+3배)·영업이익 52억 흑자 전환(2023 -70억→2024 +52억)·모회사 슈퍼패스트 2,770억·2024 영업이익 100%(150억) 성과급**, 운빨존많겜 글로벌 750만 DL·누적 1,200억. 매치: 연차·라이브 서비스 운영·AI 워크플로우(이력서 인트로 강조). 리스크: ① 25.7.12 1회 탈락 재지원(자기소개 fork 필수 — AI 워크플로우·라이브 운영 강조), ② 게임 도메인 무관(단 기술지원팀은 게임 코어 아닌 운영툴/공통 서비스라 부담 낮음), ③ 1억 유저 트래픽 규모 대비 페르소나 |
 | 에타일렉트로닉스 (Eta-ON, WPT) | https://www.wanted.co.kr/wd/358791 | 백엔드 3년+, **TS/NestJS/Node·MySQL+MongoDB·AWS(EC2/RDS/IoT Core/S3/CodeDeploy)·MQTT/Socket.io/WebSocket·JWT/Passport·GitHub Actions — 스택 거의 100% 매치**, 무선전력전송(WPT) IoT 디바이스 원격 모니터링·제어 플랫폼 — **트라이포드 IoT VMI 도메인과 거의 동형(지금까지 본 공고 중 도메인 매치 최강)**. 회사: 2019 설립·KAIST 창업원·경산 본사·24명(2025.5)·**2024 매출 1억+·캡스톤파트너스 시드**. 리스크: 매출 1억대·24명 = 윤회(9.5억·12명)보다 작음, **재무 fit 윤회와 동일 유형 위험**. 윤회 결과·일정에 따라 시도 순서 결정 |
-| 큐엠아이티 (PLCO, 스포츠 테크) | https://www.wanted.co.kr/wd/358314 | 백엔드 3년+, **TS/Kotlin·NestJS/Spring Boot·PG/Mongo·JPA/MikroORM·Nats·GCP/AWS/K8s·GHA**, DDD/Clean/TDD/MSA 깊이 요구, RESTful+GraphQL — **언어 정확 매치(TS+NestJS) + 사용자 학습 트랙(DDD/Clean/MSA) 일치**. 회사: 2018 설립·47명·**Series A 77억(2023)·네이버 D2SF 투자·매출 4000% 성장·평균 연봉 4,313만·1만+ 프로선수 사용·2025 한국브랜드 소비자평가 대상**. 리스크: ① DDD/Clean/TDD 깊이 면접 변수, ② MSA/K8s/Nats/GraphQL/Mongo/MikroORM 갭 多 (단 학습 트랙 일치), ③ 스포츠 도메인 무관 |
+| 큐엠아이티 (PLCO, 스포츠 테크) | https://qmit.career.greetinghr.com/ko/o/214520 | 백엔드 3년+, **TS/Kotlin·NestJS/Spring Boot·PG/Mongo·JPA/MikroORM·Nats·GCP/AWS/K8s·GHA**, DDD/Clean/TDD/MSA 깊이 요구, RESTful+GraphQL — **언어 정확 매치(TS+NestJS) + 사용자 학습 트랙(DDD/Clean/MSA) 일치**. 회사: 2018 설립·47명·**Series A 77억(2023)·네이버 D2SF 투자·매출 4000% 성장·평균 연봉 4,313만·1만+ 프로선수 사용·2025 한국브랜드 소비자평가 대상**. 리스크: ① DDD/Clean/TDD 깊이 면접 변수, ② MSA/K8s/Nats/GraphQL/Mongo/MikroORM 갭 多 (단 학습 트랙 일치), ③ 스포츠 도메인 무관 |
 | 아임웹 Platform (Productivity, 재지원) | https://www.wanted.co.kr/wd/359015 | Back-end Engineer (Platform), 5년+, **Node.js/NestJS or Kotlin/Spring Boot·Aurora PG/MySQL·Redis/Valkey/OpenSearch·AWS(EKS/ECS/RDS/MSK)·ArgoCD·Kafka·Grafana/Datadog**. 업무: **전사 공통화·도구화·자동화·DX 개선·CI/릴리즈/관측성** — 이력서 4축(자동화·관측성·AI 워크플로우·운영 안정성)과 표현 단위 매치. **AI 코딩 도구(Claude Code/Codex/Cursor/Windsurf) 실무 활용 필수 — 이력서 AI 워크플로우 깊이 어필과 100% 일치**. 회사: **2024 매출 255억(+27%)·두 자릿수 영업이익 흑자·ARR 1,400억(SaaS 안정)·누적 90만 브랜드·거래액 5조·122명·평균 연봉 6,234만(검토 회사 중 최고)**. 리스크: ① 5년+ hard cut(본인 3년 10개월), ② **25.4.29 1회 탈락 재지원**(AI 워크플로우·Grafana fork 필수), ③ Kafka/Aurora/OpenSearch/EKS/ArgoCD 미경험. 참고: 같은 회사 Core(359025)·Commerce(359030)도 동일 요건이나 Platform이 본인 매치 최강 |
 | 에고이즘 AX (Growth팀, 성수) | https://www.wanted.co.kr/wd/350984 | AX Engineer 3-12년, **AI 도구(Cursor/Claude Code) 개발 사이클 적용·업무 자동화 재설계·End-to-End 리드** — **이력서 AI 워크플로우(CLAUDE.md/MCP/Subagent/Hook/Stop Hook) + 자동화 리포트·발주 자동화 비즈니스 임팩트와 매치 매우 강 (아임웹과 동급)**. 회사: 2023.11 설립·**2024 매출 139.5억(3년만에 100억 돌파)·순이익률 30%·매년 400% 성장·33명·평균 4,110만**, 굴뚝강아지/미뇽맨션/휴그/바쏠 K-감성 라이프스타일. 리스크: ① **포지션이 백엔드 코어 아닌 AX(AI 자동화) — User Context "현업 백엔드 우선" 방향과 다소 다름**, ② 기술 스택 미공개·R&R 모호 가능성(면접/커피챗 확인 필수), ③ 신생 회사 1.5년차, ④ 브랜드 운영업 도메인 |
 | 와이톤 (Beauty/Health/Fashion 글로벌 브랜드 빌더) | https://www.wanted.co.kr/wd/353202 | 이커머스 테크 백엔드 2년+, **NestJS v11(TS)/FastAPI/Django·PG/Redis/TypeORM·AWS(VPC/EC2/RDS/Lambda)/Terraform/Docker/GHA/Nginx/Traefik·LangGraph/LangChain/Anthropic SDK/OpenAI API/Playwright** — **NestJS+AI 도구+외부 API 연동(네이버/구글/메타) 정확 매치**, 트라이포드 발주 자동화·채널별 DLQ 경험과 동형. 회사: 2019 설립·**국내 매출 100억+·연평균 50% 성장·32명·잡플 19건/연봉 4건/면접 12건**, 광고/홍보/전시 중소기업. 리스크: ① 평균 연봉 3,403만(윤회와 동급 낮음·처우 약점), ② Python 옵션 끼어 있음, ③ PG vs MySQL ORM 갭 |
@@ -79,9 +79,9 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 ## 지원 완료 (응답 대기)
 
-| 기업                | 지원일      | 링크                                                       |
-| ----------------- | -------- | -------------------------------------------------------- |
-| 딜라이트룸(Alarmy, 재도전) | 26.05.07 | https://team.alar.my/job_posting/6BpuJhsW — 25.3.17 탈락 후 재도전 |
+| 기업 | 지원일 | 링크 |
+| --- | --- | --- |
+| (없음) | - | - |
 
 ## 2주 경과 무응답
 
@@ -394,6 +394,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | AB180 | 26.04.28 | 26.05.11 | https://recruit.ab180.co/job_posting/yTlPR6Ki — 2회 탈락 (이전 에이비일팔공) |
 | 테크타카(ARGO) | 26.04.28 | 26.05.11 | https://techtaka.ninehire.site/job_posting/n0xee2mi |
 | 베슬에이아이(VESSL AI) | 26.05.04 | 26.05.12 | https://vessl.recruit.roundhr.com/c/uKCMrULfaT |
+| 딜라이트룸(Alarmy) | 26.05.07 | 26.05.20 | https://team.alar.my/job_posting/6BpuJhsW — 2회 탈락 (25.3.17, 26.05.20 재도전) |
 
 ## 코테 및 과제
 
