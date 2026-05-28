@@ -18,6 +18,10 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [[tech/messaging-data-pipeline/patterns/패턴(MessagingPatterns)|메시징 패턴 (Patterns)]] — Pub/Sub·Fan-out·경쟁 소비자
 - [[tech/messaging-data-pipeline/cdc-outbox/CDC&Outbox|CDC · Outbox]] — Debezium·Transactional Outbox
 
+## 오케스트레이션 (워크플로우 스케줄러 — "어떻게 돌리고 운영")
+
+- [[Airflow-DAG-Parsing|Airflow DAG 파싱 최적화]] — dag-processor 재파싱 비용·메트릭 기반 진단·인프라 튜닝·top-level 안티패턴·2.x→3.x 변경점
+
 ## 관련 (아키텍처 카테고리 — "어떻게 설계")
 
 > 메시징 = 인프라 도구 / 아키텍처 = 설계·모델링 결정. EDA Overview·Saga·Event Sourcing은 모두 아키텍처 카테고리.
