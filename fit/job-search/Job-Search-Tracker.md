@@ -102,7 +102,6 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 42dot (Open Platform Eng.) | 26.05.27 | https://jobs.ashbyhq.com/42dot/51026be0-8b5a-4264-a410-0bd2b1c712e8 — 3번째 도전(신규 포지션·Backend Open Platform, IAM/인증 도메인). 'Why interested'=FIDO 인증 서사, Additional info=인증 경험 나열, Others=Notion 포폴. 다음: 코딩테스트 |
 | 사줘 (SAZO) | 26.05.27 | https://career.sazo.kr/career (공식 채용페이지로 지원) · 원티드 공고 https://www.wanted.co.kr/wd/364092 — Backend(NestJS·Kafka·스크래핑), 다운로드 범용 이력서로 지원(시솔지주 스크래핑·국제배송 도메인 + NestJS·AI 워크플로우 매치). 한일 크로스보더 직구, 의왕 |
 | 에고이즘 AX (Growth팀, 성수) | 26.05.27 | https://egoidsm.com/job_posting/iq0Jfxvs (홈페이지 지원) · 원티드 https://www.wanted.co.kr/wd/350984 — AX Engineer(LLM 업무 자동화), 지원동기+'가장 임팩트 있던 결과'(발주 자동화 메인+AI 워크플로우 브릿지) 작성 제출. 매출 139.5억·순이익률 30%·K-라이프스타일 브랜드 |
-| 패스트파이브 (플랫폼개발팀) | 26.05.27 | https://www.wanted.co.kr/wd/361096 — Backend Node/TS·NestJS/MySQL·AI 도구 정확 매치(WaaS 부동산 회원/예약/결제), 다운로드 범용 이력서로 지원(5년+ 필수 컷 감수). 매출 1,500억·2년 연속 흑자 |
 | 데이터유니버스 (DataUniverse) | 26.05.27 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=53984870 — Backend(**Go 필수**)·K8s MSA·AI 에이전트 강조, 여의도. 연차·AI·규모(747억/76명)·보안 도메인 매치하나 Go 미스매치 감수 지원(학점·희망연봉 기입). 정보보안/핀테크 |
 | 111퍼센트 (기술지원팀, **재지원**) | 26.05.28 | https://111percent.career.greetinghr.com/ko/o/215338 — 웹 서버 개발자 3년+, TS/Node·인하우스툴·공통 서비스·AI 활용 신규. **25.7.12 1회 탈락 → 26.5.28 자기소개 fork 재지원**(인트로 5문단 = 공통 기반·문서화·AI 워크플로우→서비스 접목·기술지원팀 매핑 끝줄로 재배치). GitHub 추가. **매출 1,058억·영업이익 52억 흑자 전환·모회사 슈퍼패스트 2,770억**. 운빨존많겜 글로벌 750만 DL |
 | 인티그레이션 (메디스트림, [AX] 백엔드) | 26.05.28 | https://www.wanted.co.kr/wd/363071 — [AX] 백엔드 3년+, Node.js·TS·PostgreSQL·AWS(EC2/Lambda/ECS/RDS/S3) 코어 스택 100% 매치. 업무: LLM API 게이트웨이·RAG·함수호출·**에이전트 워크플로우**·모델 서빙. **Claude Code·Codex·Cursor 제공 — 이력서 팀 AI 협업 규약(CLAUDE.md/MCP/Subagent/Hook)과 1:1**. **과거 26.01.05 DevOps 포지션 탈락은 별개 팀 — 이번은 첫 [AX] 백엔드 지원**(재지원 fork 불필요 판단). **범용 이력서 + GitHub 추가**로 제출. 강남 테헤란로(위워크 선릉). **Series C2·누적 665억·2024 매출 450억(+88%)** |
@@ -224,6 +223,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 인프랩 | - | https://www.rallit.com/positions/2691/ |
 | 블루엘리펀트 | 25.8.25 | 9.1 탈락 |
 | 팀울트라 | 26.03.04 | 26.03.05 탈락 |
+| 패스트파이브 (플랫폼개발팀) | 26.05.27 | 미통보 탈락. Node/TS, AI 도구 매치였으나 5년+ 컷에 범용 이력서 지원. https://www.wanted.co.kr/wd/361096 |
 
 ## 서류 탈락 (통보)
 
