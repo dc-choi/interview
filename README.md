@@ -33,6 +33,9 @@
 ### 비즈니스&제품(Business&Product)
 - [[biz/비즈니스&제품(Business&Product)|비즈니스&제품(Business&Product)]]
 
+### 경제(Economics)
+- [[econ/경제(Economics)|경제(Economics)]] — 거시경제, 미시경제, 금융시장, 투자. 경제가 돌아가는 원리부터 자본과 위험의 거래, 실전 투자까지
+
 ### 성장&면접(Growth&Interview)
 - [[fit/growth/성장(Growth)|성장(Growth)]] — 커리어 단계·학습·채용시장·소프트스킬·안티패턴·습관·커뮤니티
 - [[fit/interview/common/Common-Interview-Questions|면접 마스터 답변 (Common)]] — 내 답변 본문 (자기소개·이직 사유·기술 카드·FIT 답변·역질문)
