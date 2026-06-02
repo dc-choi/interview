@@ -12,8 +12,9 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 기업   | 현재 단계    | 비고                                                                   |
 | ---- | -------- | -------------------------------------------------------------------- |
 | 스페이스맵 | 1차 면접 (26.05.22 14:30 예정) | 백엔드, 26.04.22 지원, 한양대 융합교육관 908호 대면, https://www.wanted.co.kr/wd/349481 |
-| 토스플레이스 | 사전 과제 제출 완료 (26.05.29, 결과 대기) | Node.js Developer, 26.05.15 지원, TypeScript, 지인 추천, https://toss.im/career/job-detail?job_id=7686375003&sub_position_id=6679884003&company=%ED%86%A0%EC%8A%A4%ED%94%8C%EB%A0%88%EC%9D%B4%EC%8A%A4 |
+| 토스플레이스 | **직무 면접 6/9(화) 11:00 확정 (화상)** | Node.js Developer, 26.05.15 지원, TypeScript, 지인 추천. 26.05.29 사전 과제 제출 → 통과 → 직무 면접. 1부 현업 인터뷰어 약 1h, 과제 중심. 화상 Google Meet(sba-ynur-tsz), 과제 화면 공유, AI 도구 OFF, 5분 전 접속. **본인 1지망**. https://toss.im/career/job-detail?job_id=7686375003&sub_position_id=6679884003 |
 | 윤회주식회사(CARE IDⓒ) | 최종합격·오퍼 수락 (입사 26.06.25 예정) | 백엔드 리드, 26.05.20 1차 면접(개발팀장+대표) → 26.05.28 최종합격 통보, 처우 4항목 서면 합의. 입사일 6/25 제안(회신 대기)·고용승계 제2조 취지는 5/28 메일로 서면 제기 완료(7월 근로계약서 작성 시 문구 확인), 전 직장 이직 처리. https://groupby.kr/positions/9600 |
+| 키노라이츠 (OTT 통합검색·추천) | 1차 실무 인터뷰 **6/8(월) 16:30 확정** (대면, 1~1.5h) | 백엔드, 26.05.28 재지원 2회차 → 26.06.01 서류 합격 → 26.06.02 일정 확정. 주요 기술 경험 발표 20~30분 + Q&A, **발표자료 2일 전(6/6)까지 메일 제출**, 사전질문지 5문항. 장소 강남 테헤란로2길 27, 12층(패파 강남5호점). 당일 12층에서 인사담당자([연락처]) 연락. https://groupby.kr/positions/10649 |
 
 ## 지원할 기업
 
@@ -100,15 +101,11 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | --- | --- | --- |
 | 42dot (Open Platform Eng.) | 26.05.27 | https://jobs.ashbyhq.com/42dot/51026be0-8b5a-4264-a410-0bd2b1c712e8 — 3번째 도전(신규 포지션·Backend Open Platform, IAM/인증 도메인). 'Why interested'=FIDO 인증 서사, Additional info=인증 경험 나열, Others=Notion 포폴. 다음: 코딩테스트 |
 | 사줘 (SAZO) | 26.05.27 | https://career.sazo.kr/career (공식 채용페이지로 지원) · 원티드 공고 https://www.wanted.co.kr/wd/364092 — Backend(NestJS·Kafka·스크래핑), 다운로드 범용 이력서로 지원(시솔지주 스크래핑·국제배송 도메인 + NestJS·AI 워크플로우 매치). 한일 크로스보더 직구, 의왕 |
-| 큐엠아이티 (PLCO, 스포츠 테크) | 26.05.27 | https://qmit.career.greetinghr.com/ko/o/214520 — 백엔드 3년+, TS/NestJS·DDD/Clean/TDD/MSA, 다운로드 범용 이력서로 지원. Series A 77억·네이버 D2SF·47명 |
 | 에고이즘 AX (Growth팀, 성수) | 26.05.27 | https://egoidsm.com/job_posting/iq0Jfxvs (홈페이지 지원) · 원티드 https://www.wanted.co.kr/wd/350984 — AX Engineer(LLM 업무 자동화), 지원동기+'가장 임팩트 있던 결과'(발주 자동화 메인+AI 워크플로우 브릿지) 작성 제출. 매출 139.5억·순이익률 30%·K-라이프스타일 브랜드 |
-| 풀림 [신사업] (애드테크) | 26.05.27 | https://www.wanted.co.kr/wd/358135 — 백엔드 3년+, 0→1·Node·RDBMS 복잡 모델링·결제/정산, 다운로드 범용 이력서로 지원. 매출 180억·신생 2.5년 |
 | 패스트파이브 (플랫폼개발팀) | 26.05.27 | https://www.wanted.co.kr/wd/361096 — Backend Node/TS·NestJS/MySQL·AI 도구 정확 매치(WaaS 부동산 회원/예약/결제), 다운로드 범용 이력서로 지원(5년+ 필수 컷 감수). 매출 1,500억·2년 연속 흑자 |
 | 데이터유니버스 (DataUniverse) | 26.05.27 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=53984870 — Backend(**Go 필수**)·K8s MSA·AI 에이전트 강조, 여의도. 연차·AI·규모(747억/76명)·보안 도메인 매치하나 Go 미스매치 감수 지원(학점·희망연봉 기입). 정보보안/핀테크 |
 | 111퍼센트 (기술지원팀, **재지원**) | 26.05.28 | https://111percent.career.greetinghr.com/ko/o/215338 — 웹 서버 개발자 3년+, TS/Node·인하우스툴·공통 서비스·AI 활용 신규. **25.7.12 1회 탈락 → 26.5.28 자기소개 fork 재지원**(인트로 5문단 = 공통 기반·문서화·AI 워크플로우→서비스 접목·기술지원팀 매핑 끝줄로 재배치). GitHub 추가. **매출 1,058억·영업이익 52억 흑자 전환·모회사 슈퍼패스트 2,770억**. 운빨존많겜 글로벌 750만 DL |
-| 키노라이츠 (OTT 통합검색·추천, **재지원**) | 26.05.28 | https://www.kinolights.net/367add49-a6cb-80e7-9c8b-caf9686e3579 (키노라이츠 직접) · groupby https://groupby.kr/positions/10649 — TS/NestJS·AWS(ECS Fargate/RDS/Lambda)·CI/CD·GraphQL Federation 우대, 5년+. **25.10.2 서류 탈락 → 26.5.28 자기소개 fork 재지원**(인트로 = 백엔드 기술 결정·운영 안정성·이벤트·관측·CI/CD·AI / 끝줄 = 작은 백엔드 조직·기술 의사결정·운영 안정성 매핑). 협업 톤 챙겨 "사실상 단독" 표현 의도적 제외(컬처핏·비누랩스 패턴 의식). GitHub 추가. **매출 28.1억(+97%)·영업이익 +0.77억 첫 흑자전환·정규직(수습 3개월)**. 면접 가면 "기술 결정 오너십 + 동료와 논의" 카드 구두 보강 |
 | 인티그레이션 (메디스트림, [AX] 백엔드) | 26.05.28 | https://www.wanted.co.kr/wd/363071 — [AX] 백엔드 3년+, Node.js·TS·PostgreSQL·AWS(EC2/Lambda/ECS/RDS/S3) 코어 스택 100% 매치. 업무: LLM API 게이트웨이·RAG·함수호출·**에이전트 워크플로우**·모델 서빙. **Claude Code·Codex·Cursor 제공 — 이력서 팀 AI 협업 규약(CLAUDE.md/MCP/Subagent/Hook)과 1:1**. **과거 26.01.05 DevOps 포지션 탈락은 별개 팀 — 이번은 첫 [AX] 백엔드 지원**(재지원 fork 불필요 판단). **범용 이력서 + GitHub 추가**로 제출. 강남 테헤란로(위워크 선릉). **Series C2·누적 665억·2024 매출 450억(+88%)** |
-| 아임웹 Core (Back-end Engineer, **재지원**) | 26.05.28 | https://team.imweb.me/career_detail?id=209669 (imweb 직접) · 원티드 https://www.wanted.co.kr/wd/359025 — Back-end Engineer (Core), 5년+, Node/NestJS·Aurora PG/MySQL·Redis·AWS(EKS/ECS/RDS/MSK)·ArgoCD. **도메인: 인증·구독·PG/주문/결제/환불·백오피스 + PHP 레거시→모던 전환**. **25.4.29 1회 탈락 → 26.5.28 자기소개 fork 재지원**(¶1=키노라이츠 백엔드 시니어 톤 유지·결제·주문 도메인 직접 경험 어필 X / 끝줄=110만 브랜드·결제·구독·인증·레거시 전환 매핑, 본인 발주 자동화·정합성·관측과 본질 같다고 매핑). GitHub 추가. 과정: 서류→**과제 테스트(AI 자유 사용)**→직무 인터뷰→**컬처 애드(피플리드+CTO+CEO)**→최종. 리스크: ① 5년+ hard cut(본인 4년차), ② 컬처 애드 인터뷰 깊음(비누랩스 처우협의 탈락 패턴 환기). **2024 매출 255억(+27%)·영업이익 흑자·ARR 1,400억** |
 
 ## 2주 경과 무응답
 
@@ -424,6 +421,9 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 베슬에이아이(VESSL AI) | 26.05.04 | 26.05.12 | https://vessl.recruit.roundhr.com/c/uKCMrULfaT |
 | 딜라이트룸(Alarmy) | 26.05.07 | 26.05.20 | https://team.alar.my/job_posting/6BpuJhsW — 2회 탈락 (25.3.17, 26.05.20 재도전) |
 | 콕스웨이브 (Coxwave, AX Workflow Builder) | 26.05.27 | 26.05.28 | https://careers.coxwave.com/c/SnHVam6Hjd · 원티드 https://www.wanted.co.kr/wd/363962 — Backend[AX Workflow] 3-7년, TS·워크플로우 실행 엔진·LLM 에이전트. 누적 ~125억·Align AI |
+| 아임웹 Core (Back-end Engineer, **재지원**) | 26.05.28 | 26.06.01 | https://team.imweb.me/career_detail?id=209669 — **2회 탈락** (25.4.29, 26.05.28 자기소개 fork 재지원). 서류 컷, 과제 진입 X. 5년+ hard cut(본인 4년차) 추정. 2024 매출 255억·ARR 1,400억 |
+| 풀림 [신사업] (애드테크) | 26.05.27 | 26.06.01 | https://www.wanted.co.kr/wd/358135 — 백엔드 3년+, 0→1, Node, RDBMS 복잡 모델링, 결제/정산. 정중한 통보 메일. 매출 180억, 신생 2.5년 |
+| 큐엠아이티 (PLCO, 스포츠 테크) | 26.05.27 | 26.06.01 | https://qmit.career.greetinghr.com/ko/o/214520 — 백엔드 3년+, TS/NestJS, DDD/Clean/TDD/MSA. 정중한 통보 메일. Series A 77억, 네이버 D2SF, 47명 |
 
 ## 코테 및 과제
 
@@ -498,6 +498,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 비단팝팝 | 취소(회사 사정) | 26.05.06 | 26.05.06 채용팀 면접 제안(서핏), 26.05.07 일정 확정(5/14 16:00), 26.05.11 채용팀 면접 취소 통보 — 내부 인력 운용 계획 변동으로 백엔드 채용 절차 전면 중단. 26.05.11 회신(향후 재오픈 시 재연락 요청) |
 | 스페이스맵 | 진행중 | 26.04.22 | 26.05.22(금) 14:30 대면, 한양대 융합교육관 908호 (서울 성동구 왕십리로 220) |
 | 윤회주식회사(CARE IDⓒ) | 통과 | 26.05.15 | 26.05.15 대표 전화(24분) → 26.05.20(수) 14:00 대면(개발팀장+대표), 서울창업허브성수 207호, 백엔드 리드 → 26.05.28 최종합격 |
+| 키노라이츠 (OTT 통합검색·추천) | 진행중 | 26.05.28 | 재지원 2회차(25.10.2 첫 서류 탈락). 26.06.01 서류 합격 → **26.06.08(월) 16:30 1차 실무 인터뷰 확정**(대면, 패파 강남5호점 12층). 기술 발표 20~30분 + Q&A, 발표자료 2일 전(6/6) 제출, 사전질문지 5문항 |
 
 ## 2차 면접
 
