@@ -10,6 +10,7 @@ aliases: ["TossPlace Assignment Defense", "토스플레이스 과제 디펜스"]
 > **포지션**: Node.js Developer (TypeScript). 지인 추천. 사전 과제(회의실 예약 시스템, NestJS + MikroORM + SQLite) 통과 → 직무 면접.
 > ⚠️ **저작권**: 과제는 비바리퍼블리카 소유, 유출 금지. 이 문서는 토스 스펙/코드 복제가 아니라 **본인 설계 답변**만 담음. 공개 저장소 푸시 금지.
 > **사용법**: `→` 뒤 답변을 가리고 소리 내어. 면접관은 코드 보며 D3까지 파고듦. 약점은 의도적 미구현(트레이드오프 선긋기)과 진짜 누락(솔직 인정)을 구분해 답한다.
+> 반복 리뷰 추가 발굴: [[Interview-Prep-TossPlace-1st-Deep-Review|심화 리뷰 누적]]
 
 ## 0. 종합 전략
 
