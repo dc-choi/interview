@@ -10,6 +10,7 @@ aliases: ["Outcomes"]
 비즈니스 임팩트·기술적 안정성·생산성 측정 — 성과를 어떻게 정의하고 측정할 것인가.
 
 ## 목차
+- [x] [[Engineering-Influence|엔지니어링 영향력 — 일을 보이게 하기 (가시화, 태도, 레버리지)]]
 - [x] [[Business-Impact|비즈니스 임팩트 (성능 최적화, FinOps, Time to Market)]]
 - [x] [[Technical-Reliability|기술적 안정성 (고가용성, 기술 부채, 테스트 자동화)]]
 - [x] [[Operational-Efficiency|운영 및 생산성 효율화 (DX, 문서화/표준화)]]
