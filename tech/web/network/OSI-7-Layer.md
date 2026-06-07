@@ -36,3 +36,8 @@ aliases: ["OSI 7계층"]
 
 - Ethernet은 LAN 내 장비 간 통신 기술
 - Internet은 여러 LAN을 IP로 연결한 거대 네트워크
+
+## 관련 문서
+
+- [[Physical-DataLink-Layer]] — L1/L2 상세 (허브, 스위치, 충돌 도메인, CSMA/CD, MAC, 프레임)
+- [[네트워크(Network)]] — 카테고리 인덱스
