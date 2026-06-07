@@ -18,8 +18,14 @@ aliases: ["TossPlace 실전 정리", "토스플레이스 1차 실전 정리"]
 4. **분산 환경 미대응** — 리마인더 스케줄러 중복/유실, throttler in-memory. 단 운영 체크리스트로 인지함 → 의도적 미적용으로 선긋기.
 5. **scope enforcement 부재** — 정규화 구조만, 가드 미검증.
 
+추가 (D-4 코드 재검증 = Pass 11):
+6. **자정 넘는 예약은 충돌 검사 회피** — duration 상한 없음 + overlapsWith가 날짜 다르면 즉시 false + 슬롯 date 단위. 23:30+60분이 익일 예약과 안 겹친다고 판정. 대응: duration 상한 + 같은 날 종료.
+7. **JWT 검증 하드닝 2개 (만료 외 미처리)** — `jwt.verify` 알고리즘 핀(HS256) 없음 + 실패 시 `error.message`(jwt expired 등)를 401 본문에 그대로 노출. 2줄 수정. (보안 파고들 때만 정직하게)
+8. **단독 예약 알림 0명 / update 새 초대자는 'invited' 아닌 'changed' 수신** — 주최자 제외 버그의 확장.
+
 ## 먼저 꺼내지 말 것 (실제로는 처리/인지됨 — 자폭 금지)
-- CSRF → 쿠키 sameSite strict + httpOnly로 방어. JWT → 7일 만료(무기한 아님). 레이트리밋 프록시/IPv6/분산 → 운영 체크리스트 주석. 출력 누출 → toResponseDto whitelist. 불가능 날짜 → 그레고리력 validator. **물으면 답하되 먼저 약점이라 말하지 말 것.**
+- CSRF → 쿠키 sameSite strict + httpOnly로 방어. **JWT 만료 → 7일(무기한 아님)**. 레이트리밋 프록시/IPv6/분산 → 운영 체크리스트 주석. 출력 누출 → toResponseDto whitelist. 불가능 날짜 → 그레고리력 validator. **물으면 답하되 먼저 약점이라 말하지 말 것.**
+- ⚠️ 단 JWT는 **만료만** 처리됨. 알고리즘 핀과 에러 제네릭화는 미처리(위 7번) — "처리됨"으로 착각해 "JWT 다 됐습니다"라 답하지 말 것. 물으면 인정.
 
 ## 리드할 강점 5 (화면 공유로 코드/주석 띄우기)
 1. **동시성 설계 서사** — 트랜잭션 경계 + SQLite vs MySQL/PG 비관적 락 + PG EXCLUDE 제약 + 데드락 사전순 락. create UC 헤더 주석이 그대로 답변.
@@ -66,7 +72,11 @@ aliases: ["TossPlace 실전 정리", "토스플레이스 1차 실전 정리"]
 - 약점은 **의도적(트레이드오프 선긋기) vs 진짜 누락(인정 + 수정안)** 구분. 처리된 항목을 약점이라 자폭하지 말 것.
 - 막히면 화면 공유의 장점 — 해당 파일/주석을 띄워 같이 추론.
 
+## FIT / 도메인 (과제 외 — 오프닝·클로징·동기)
+- [[Interview-Prep-TossPlace-1st-FIT-QA|FIT 답변·예상 Q&A·역질문]] — 자기소개, 왜 이 직무, 이직 사유, 사이드 프로젝트
+- [[Interview-Prep-TossPlace-Domain|도메인 브리프]] — 직무 정의(Operations 물류/단말/자동화), 매핑, 도메인 역질문
+
 ## 백업 (상세 근거, 평소엔 안 봐도 됨)
-- [[Interview-Prep-TossPlace-1st-Assignment-Defense|디펜스 시트]] — 이슈별 3뎁스 드릴
+- [[Interview-Prep-TossPlace-1st-Assignment-Defense|디펜스 시트]] — 이슈별 3뎁스 드릴 + §8 직무 매핑 표
 - [[Interview-Prep-TossPlace-1st-Model-Answers|모범답변]] — 구어체 통문장
-- [[Interview-Prep-TossPlace-1st-Deep-Review|심화 리뷰]] — 10패스 누적 발굴
+- [[Interview-Prep-TossPlace-1st-Deep-Review|심화 리뷰]] — 10패스 + Pass 11 코드 재검증

@@ -10,7 +10,7 @@ aliases: ["TossPlace Deep Review", "토스플레이스 심화 리뷰 누적"]
 > [[Interview-Prep-TossPlace-1st-Assignment-Defense|디펜스 시트]]에 없던 추가 발굴을 회차별로 누적. 각 발견 = 심각도 + 내용 + 면접 대응.
 > 심각도: 🔴 실제 버그/누락 · 🟡 트레이드오프/사소 · 🟢 강점 확인. ⚠️ 토스 저작권, 공개 푸시 금지.
 >
-> **진행**: Pass 1~10 완료(전 영역). 루프 종료. 아래 Pass 10이 실전용 종합.
+> **진행**: Pass 1~10(스냅샷 기반) + Pass 11(D-4 실제 소스 재검증). 아래 Pass 10이 실전용 종합, Pass 11이 코드로 검증한 교정.
 
 ## Pass 1 — update UC, 엔티티, 리마인더 스케줄러
 
@@ -141,40 +141,34 @@ aliases: ["TossPlace Deep Review", "토스플레이스 심화 리뷰 누적"]
 4. **보안 설계** — scrypt PHC 인코딩, API Key SHA-256 상수시간, soft-revoke, 쿠키 플래그.
 5. **운영 인식** — helmet/CORS/ValidationPipe/throttler + 운영 배포 전 체크리스트 주석.
 
-### 날카로운 질문 3뎁스 드릴 (이 8개만 입에 붙이면 됨)
+### 날카로운 질문 3뎁스 드릴 (8개)
 
-**Q1. 대기 예약 확정 로직을 설명해보세요.** → 확정과 겹치면 PENDING 생성(거부 X), 확정이 비면 그 슬롯 대기들을 promotePending으로 승격
-- D2. 부분 충돌은? C가 09:30~10:30 대기인데 A(09~10)만 취소하면? → confirmed 전체와 겹침 검사라 B(10~11)가 막아 여전히 대기, A와 B 둘 다 취소돼야 확정
-- D3. 같은 시점 D(09~10)는? → A 취소 즉시 확정 집합과 안 겹쳐 같은 패스에서 확정. 선두(C) 막힘이 뒤(D)를 안 막는 가동률 우선
-
-**Q2. 동시 요청 둘이 같은 빈 슬롯을 예약하면 둘 다 확정되나요?** → 임계구역(확정 읽기 → 상태 결정 → 쓰기)을 한 트랜잭션에. SQLite 단일 writer라 직렬화돼 안전
-- D2. MySQL이면 어디서 깨지나? → 다중 커넥션이 서로 변경 못 본 채 각자 대기를 확정 → 확정끼리 겹침 불변식 붕괴
-- D3. 어떻게 고치나? → Room 행 PESSIMISTIC_WRITE(FOR UPDATE)나 (room,date) advisory lock, PG면 btree_gist EXCLUDE 제약. 데드락은 room,date 사전순 락
-
-**Q3. 대기 예약이 확정되면 누가 알림을 받나요?** → 솔직히 지금은 초대받은 사람만 받고 주최자는 못 받습니다. 대기 걸어둔 주최자가 정작 확정 통보를 못 받는 버그입니다
-- D2. 왜 그렇게 됐나? → factory의 recipients가 invitations.invited만 모아서, 주최자를 빠뜨렸습니다
-- D3. 어떻게 고치나? → recipients에 organizer 포함, 최소한 confirmed는 주최자에게도. 요구의 참석자에 주최자 포함 해석
-
-**Q4. 없는 방이나 사용자로 예약하면 어떻게 되나요?** → 통과합니다. DTO는 @IsInt만, getReference는 존재를 검증 안 하고 FK 제약도 꺼놨습니다
-- D2. 그럼 결과는? → 댕글링 참조로 persist되고 이후 populate에서 깨집니다
-- D3. 고치려면? → 서비스에서 findOne으로 존재 확인, 프로덕션 RDB면 FK 제약 + ON DELETE를 안전망으로
-
-**Q5. 리마인더 스케줄러를 2대 띄우면?** → 둘 다 매분 크론을 돌려 중복 발송 가능. 단일 인스턴스 전제라 SQLite로 우연히 안전했고 분산 락이 없습니다
-- D2. create엔 동시성 주석을 길게 달면서 여긴 왜 안 달았나? → 비대칭 인정. 스케줄러는 단일 인스턴스 가정에 머물렀습니다
-- D3. 고치려면? → 리더 선출이나 분산 락(Redis), 전용 워커. throttler in-memory도 같은 한계라 Redis storage로(체크리스트에 정리해둠)
-
-**Q6. scope 정규화 테이블까지 만들고 가드는 왜 검증을 안 하나요?** → 이번 범위가 인증 확장이고 인가 enforcement는 다음 단계로 봤습니다. 지금은 키가 와일드카드라 전권입니다
-- D2. 그럼 과설계 아닌가? → 스키마와 카탈로그만 선제, 가드 훅은 비워둔 의도적 선택. 검증 로직 없이 구조만 둔 건 인정
-- D3. 어떻게 채우나? → 가드에서 req.apiKey.scopes를 핸들러 @RequireScope 메타데이터와 대조해 403. 한 줄 추가로 동작
-
-**Q7. 비밀번호는 scrypt인데 API Key는 SHA-256인 이유는?** → 성격이 다릅니다. 비번은 저엔트로피라 느린 KDF가 필요하고, 키는 192bit 고엔트로피 랜덤이라 빠른 해시로 충분합니다
-- D2. 나중에 해시 cost를 올리려면? → 비번을 scrypt$N=..,r=..,p=..$salt$hash PHC 형식으로 저장해 파라미터를 보존하니 기존 해시도 그대로 검증됩니다
-- D3. 키 비교 타이밍은? → hex를 timingSafeEqual 상수시간 비교. 다만 없는 prefix는 즉시 return이라 미세 누수는 있고(prefix 2^48이라 영향 낮음)
-
-**Q8. 테스트 격리는 어떻게 했고 다른 RDBMS로 가면?** → 인메모리 SQLite라 매 테스트 DROP+CREATE+시드가 가장 단순하면서 빠릅니다(DDL이 ms)
-- D2. MySQL/PG면? → DDL 비용이 수백 ms~수 초라 TRUNCATE+재시드로, PG는 savepoint 롤백으로 한 단계 더
-- D3. savepoint 롤백의 함정은? → NestJS RequestContext가 EM을 fork하니 픽스처 EM과 요청 EM이 같은 트랜잭션을 공유하게 해야 합니다. 커넥션 풀 1 강제 + RequestContext 조정
+→ 본문은 [[Interview-Prep-TossPlace-1st|실전 정리]]에 단일 소스로 유지(중복 제거). 여기 Pass 11이 그 8개에 더해 실제 코드 재검증으로 잡은 항목.
 
 ### 리허설 원칙
 - 약점은 의도적(트레이드오프 선긋기) vs 진짜 누락(인정 + 수정안) 구분. 처리된 항목을 약점이라 자폭하지 말 것.
 - 막히면 화면 공유의 장점 — 해당 파일/주석을 띄워 같이 추론.
+
+## Pass 11 — 실제 소스 재검증 (D-4, 11th)
+
+> 10패스는 스냅샷/기억 기반이었다. 이번은 실제 소스 16개 파일을 다시 열어 "확인 필요"로 남긴 항목을 검증하고 새로 잡은 것. 결론: 강점은 전부 코드로 사실 확인. 다만 진짜 약점 1종(JWT 하드닝 2개)이 "처리됨"으로 잘못 분류돼 있어 교정한다.
+
+### 코드로 사실 확인된 것 (안심하고 밀어도 됨)
+
+- 🟢 동시성 서사 = create/update/remove UC 헤더 주석 그대로. ReservationSlot 단일 패스(`promotePending`), EXCLUDE 설계, 데드락 사전순 락까지 코드에 존재. 주석이 곧 답변.
+- 🟢 쿠키 플래그(httpOnly + secure(prod) + sameSite strict + maxAge 7d, set/clear 동일), signin 7d 만료, throttler 운영 체크리스트(trust proxy/IPv6 /64/Redis storage/429 헤더) 전부 코드와 주석에 확인. → 약점으로 먼저 꺼내지 말 것 유지.
+- 🔴 주최자 알림 제외 확정 — `factory.recipients = invitations.invited`만. populate도 room/invitations.invited만, organizer 없음.
+- 🔴 없는 roomId/inviteeId 통과 확정 — `em.getReference` + FK 비활성 + 존재 검증 없음.
+- 🟡 과거 검증 날짜 단위 확정 — create의 `isInPast()`도 결국 `isPastDate`(날짜만), update는 `dto.date`가 있을 때만 검사. "create는 시각까지 본다"는 오해 금지, 둘 다 날짜 단위이며 update만 date 미전송 시 검사 자체를 건너뜀.
+- 🟡 reminder `reminderSentAt = now`를 발송 전(수집 트랜잭션)에 찍음 = at-most-once, 윈도우(`start-10m <= now < start`) 경과 시 영영 유실, (status,date,reminderSentAt) 복합 인덱스 부재 확정.
+- 🟡 API Key: 없는 prefix는 해시 비교 전 즉시 return(타이밍 누수, prefix 2^48이라 영향 낮음), `lastUsedAt = now`를 매 인증마다 write 확정. `safeEqualHex`는 timingSafeEqual 상수시간 확정.
+- 🟡 search-users: `find({ username: $like prefix% })`에 limit도 min length도 전무 확정. 빈 prefix는 의도적으로 전체 반환(정규화) — 즉 사용자 전체 덤프 가능.
+- 🟡 `disableForeignKeys: true` + `createForeignKeyConstraints: false`, `debug: !isTest` 확정(프로덕션 쿼리 포매팅 오버헤드).
+
+### 새로 잡은 것 / 분류 교정
+
+- 🟡 **JWT 쿠키 검증 하드닝 2개 — "처리됨"이 아니라 미처리 (교정 포인트)**: `verifyJwtCookie`가 (a) `jwt.verify(token, JWT_SECRET)`에 `algorithms` 미지정(HS256 핀 없음), (b) 실패 시 `Unauthorized access: ${error.message}`로 jwt expired/invalid signature를 그대로 401 본문에 실음. AllExceptionFilter가 HttpException 본문을 passthrough라 실제로 클라이언트까지 샌다. 실전 정리의 "JWT는 처리됨"은 만료(7d)만 가리킨 것 — 알고리즘 핀과 에러 제네릭화는 안 됐다. 둘 다 2줄 수정(`{ algorithms: ['HS256'] }`, 제네릭 401 + 내부 로깅). 자발적으로 먼저 꺼낼 필요는 없지만 보안 파고들면 정직하게 인정.
+- 🔴 **자정 넘는 예약은 충돌 검사를 통째로 회피 (구체 버그 체인)**: duration 상한 없음(@IsPositive만) + `overlapsWith`가 `this.date !== other.date`면 즉시 false + 슬롯이 date 단위 조회. 23:30 + 60분(익일 00:30)은 익일 00:00 예약과 실제로 겹치지만 date 문자열이 달라 미검출되고, 익일 슬롯에서도 안 보인다. 대응: duration 상한 + 같은 날 종료 강제, 또는 멀티데이 예약 별도 모델링.
+- 🟡 **참석자 없는 단독 예약은 어떤 알림도 못 받음**: recipients가 비어 confirmed/reminder/changed 전부 수신자 0명. 주최자 제외 버그의 극단 버전 — 주최자가 초대 없이 혼자 잡은 예약은 리마인더조차 안 온다.
+- 🟡 **update 새 초대자는 'invited'가 아니라 'changed'를 받음**: 누락이 아니라 타입 오류. 처음 초대된 사람이 첫 알림으로 "일정이 변경되었습니다"를 받는다. 반대로 제거된 초대자는 알림이 없다(스냅샷이 제거 후 목록 기준).
+- ⏳ **find-by-date의 $or to-many + limit/offset 정확성 — 미확정**: `$or: [organizer, invitations.invited]` + limit/offset. MikroORM이 to-many 조인에 DISTINCT를 붙이긴 하나, WHERE의 to-many 필터와 limit가 페이지 경계에서 정확한지는 빌드/실행 SQL로 검증 권장. 단언 금지 — 물으면 "정확성을 보장하려면 루트 ID 서브쿼리 분리가 안전" 선에서.
