@@ -17,6 +17,7 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[Primary-Key-Strategy|PK 생성 전략 (AUTO_INCREMENT/UUID v4·v7/ULID/Snowflake, 클러스터링 인덱스 영향)]]
 - [x] [[MySQL-Enum-Antipattern|MySQL ENUM 안티패턴 (정규화 위반·확장 불가·이식성 부족 8가지 이유)]]
 - [x] [[Schema-Migration-Large-Table|대용량 테이블 스키마 변경 (INSTANT/INPLACE/COPY, pt-osc, gh-ost)]]
+- [x] [[MySQL-Charset-Migration|utf8mb4 마이그레이션 안전 절차 (인덱스 키 길이 767/3072, collation 충돌, latin1 복구)]]
 
 ## MySQL 엔진
 - [x] [[MySQL-Architecture|MySQL 아키텍처 · SQL 처리 파이프라인 (2계층 구조·파서/옵티마이저/실행기·스토리지 엔진·뷰)]]
@@ -54,4 +55,5 @@ aliases: ["RDBMS", "OLTP"]
 
 ## 제품 비교
 - [x] [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL (프로세스 모델·MVCC·Hash Join·Partial Index, Aurora 이관 사례)]]
+- [x] [[MySQL-to-PostgreSQL-Migration|MySQL → PostgreSQL 이기종 마이그레이션 (타입 매핑, 함수 재작성, DMS, 시퀀스 보정)]]
 - [x] [[JSON-vs-Text-Column|JSON vs TEXT 컬럼 (MySQL/PostgreSQL, 접근 패턴 기반 선택)]]

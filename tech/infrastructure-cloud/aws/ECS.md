@@ -115,10 +115,12 @@ Service Connect는 **서비스 메시 없이도 옵저버빌리티·재시도** 
 
 ### Service Auto Scaling
 
-CloudWatch 메트릭 기반:
-- Target Tracking — 평균 CPU 50%·ALB RequestCountPerTarget
+Application Auto Scaling으로 Service의 DesiredCount를 조절. CloudWatch 메트릭 기반:
+- Target Tracking — 평균 CPU 50%, ALB RequestCountPerTarget
 - Step Scaling — 임계값 단계
 - Scheduled — 정해진 시간 (배포 시간대 미리 늘리기)
+
+SQS 워커는 CPU가 부하 신호가 아니므로 **backlog-per-task**(큐 메시지 수 / task 수)로 스케일해야 한다. scalable target 등록, Metric Math와 Lambda publish 구현, cooldown 비대칭, scale-to-zero는 → [[ECS-Service-AutoScaling|ECS Service Auto Scaling 심화]]
 
 ### Cluster Capacity Provider (EC2)
 
