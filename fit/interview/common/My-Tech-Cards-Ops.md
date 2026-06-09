@@ -29,6 +29,7 @@ aliases: ["내 기술 답변 마스터 — 관측·인프라·아키텍처", "My
 - **"임계값을 어떻게 정하나?"** → SLO 역산. 사용자 영향 기준 → 에러 예산(예: 99.9% = 월 43분) → 임계 설정
 - **"카디널리티 폭발은?"** → Prometheus label 카디널리티 모니터링 + 고카디널리티 label은 별도 추출(traceId 등)
 - **"포스트모템?"** → 타임라인(발생→감지→대응→복구) + 근본 원인 + 영향 범위 + 재발 방지 액션. blameless 원칙
+- **"통계 알림이 단발 크리티컬 에러를 가리지 않나?"** (키노 1차 실전) → 맞음. SLO 퍼센트 기반은 모수가 크면 **단 한 건(결제나 발주 실패)을 평균에 묻음**. 그래서 알림을 **이원화** — ① 통계형(에러율과 레이턴시 SLO를 Grafana Alerting으로) ② **크리티컬 건별**(결제나 발주는 1건이라도 즉시 Slack 웹훅으로 사람 호출). 기계가 사람을 부르는 알림은 통계 도구가 아니라 **이벤트 트리거**로 따로 둠
 
 ## 카드 6: Docker 멀티스테이지 + ECS Fargate 전환 (3단계 점진)
 
@@ -49,6 +50,7 @@ aliases: ["내 기술 답변 마스터 — 관측·인프라·아키텍처", "My
 - **"오토스케일링 기준?"** → API 서버: CPU 70% or 요청 수 / 큐 워커: SQS `ApproximateNumberOfMessagesVisible` (큐 depth) 기반
 - **"Replication Lag?"** → 쓰기 직후 강한 일관성 필요한 조회는 **Primary 분기**, 대시보드/리포트 같은 약간 지연 허용은 Replica
 - **"Graceful Shutdown?"** → ECS SIGTERM → 진행 중 요청 완료 → 새 요청 거부 → 타임아웃 후 SIGKILL. NestJS `enableShutdownHooks()`. SQS 워커는 현재 메시지 완료 후 종료 — 미완료는 visibility timeout 만료 후 재전달
+- **"환경변수와 시크릿은 어떻게 관리?"** (키노 1차 실전, 현 답변 약했음) → 현재는 GitHub Actions Secrets에 두고 배포 시 주입. 다만 회전과 감사, 세분 권한이 약해 정공법은 **런타임 비밀은 AWS Secrets Manager(자동 회전)나 SSM Parameter Store(SecureString, KMS 암호화)**, 빌드타임 자격증명은 **OIDC로 장기 액세스 키 제거**. 비용이 우선이면 Parameter Store, 자동 회전이 필요하면 Secrets Manager. 코드와 이미지에 평문 금지, KMS 키 정책으로 접근 최소화
 
 > ⚠️ **이미지 경량화 디테일·alpine vs distroless·K8s 전환 시점**: [[My-Tech-Cards-Extended#카드 6 아키텍처 전환 심화|Extended]]
 
@@ -82,6 +84,7 @@ src/orders/
 
 **꼬리**:
 - **"Guard vs Middleware vs Interceptor?"** → Middleware(Express 호환 요청 전처리) / Guard(인가·인증 true/false) / Interceptor(요청·응답 양쪽 변환, RxJS 스트림 캐싱·로깅)
+- **"요청 라이프사이클 순서?"** (키노 1차 실전, 순서 헷갈림) → **Middleware → Guard → Interceptor(전) → Pipe → Controller/Handler → Interceptor(후) → Exception Filter**. 가드가 인터셉터보다 **먼저** — 인가 실패면 인터셉터와 파이프 비용을 안 치르고 끊음. 예외는 어느 단계에서 터지든 Exception Filter로 모임
 - **"Provider scope?"** → DEFAULT(싱글톤, 대부분) / REQUEST(요청마다, 테넌트 컨텍스트) / TRANSIENT(주입마다)
 - **"클린 아키텍처 도입 효과 정량?"** → 고객사별 커스텀 분기 시 핵심 도메인 변경 0건 유지
 

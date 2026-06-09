@@ -27,6 +27,7 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 **꼬리 (핵심)**:
 - **"데드락은?"** → 완전 예방 불가 (Gap Lock/Next-Key Lock이 의도하지 않은 순서로 암묵적). **감지+복구가 정석** — InnoDB Wait-for Graph 자동 탐지 → 비용 적은 TX rollback → 앱에서 `ER_LOCK_DEADLOCK` catch 후 재시도. 우리는 NO WAIT로 상호 대기 자체 회피
 - **"Optimistic이 나은 상황?"** → 읽기 중심 + 충돌 빈도 낮은 경우 (게시글 수정, 설정 변경)
+- **"락에 재시도면 thundering herd로 폭발 안 하나?"** (키노 1차 실전) → **NO WAIT는 대기 큐를 만들지 않고 즉시 실패 후 재시도**라 락 대기가 쌓이는 convoy가 없음. 재시도는 **지수 백오프와 지터**로 동시 재돌입을 분산하고 **상한 3회**로 무한 재시도 차단. 게다가 트래픽이 1~2시간 주기 배치라 동시 충돌 수 자체가 bounded. **진짜 스파이크 도메인이면** 큐 직렬화(SQS FIFO)나 분산락으로 전환
 
 > ⚠️ **더 깊은 꼬리 질문 풀** (NO WAIT vs SKIP LOCKED · FOR UPDATE vs FOR SHARE · InnoDB Lock 5종 · Gap Lock 성능 영향 · 멀티 인스턴스): [[My-Tech-Cards-Extended#카드 1 DB Lock 심화|Extended]]
 
@@ -48,6 +49,7 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 - **"Kafka가 더 맞는 순간?"** → 이벤트 리플레이, 순서 보장(파티션 내), 초당 수만 건 이상
 - **"DB 저장은 됐는데 이벤트 발행 실패? (Dual Write)"** → **Transactional Outbox 패턴**. INSERT + outbox INSERT를 같은 DB 트랜잭션 → 별도 Relay 프로세스가 outbox 폴링 후 발행. NestJS `@Cron('*/5 * * * * *')` 5초 폴링. 월 10만 발주 규모는 CDC(Debezium) 대비 폴링이 단순·충분
 - **"Lambda 안 쓴 이유?"** → Lambda는 cold start로 Prisma 커넥션 풀 관리 어려움(RDS Proxy로 해결 가능하나 추가 비용). ECS 워커는 **NestJS 도메인 로직(Prisma 모델, 발주 비즈니스) 그대로 재사용** + 단일 코드베이스·단일 배포
+- **"아웃박스도 큐, SQS도 큐 아닌가? 폴링과 인터럽트가 섞였는데 왜 SQS 없이 워커 직접 안 붙이나?"** (키노 1차 실전, 가장 크게 흔들린 질문) → ⓐ **단일 서버면** 인메모리 EventEmitter로 충분하지만, **ECS Fargate로 스케일 아웃하면 이벤트가 발생한 인스턴스 안에만 머물러 다른 인스턴스로 전파가 안 됨** → 인스턴스 경계를 넘으려면 외부 브로커가 필연. ⓑ 아웃박스와 SQS는 **역할이 다름** — 아웃박스는 DB 트랜잭션과 원자적인 **발행 보장**(듀얼라이트 유실 방지), SQS는 **소비 분산과 재시도, DLQ**(여러 워커가 경쟁 소비, 실패 격리). 큐가 두 벌이 아니라 발행 신뢰 계층과 소비 분산 계층이 나뉜 것. ⓒ 폴링(아웃박스 릴레이가 DB를 읽는 단계)과 푸시(SQS가 워커로)는 **각 경계에 맞춘 선택**이지 혼재가 아님
 
 > ⚠️ **상태 머신 8단계 흐름·visibility timeout·알림 채널 중복 방지·SQS FIFO vs Pub/Sub·CDC vs Outbox**: [[My-Tech-Cards-Extended#카드 2 EventBridge+SQS 심화|Extended]]
 
