@@ -7,7 +7,7 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 
 # 외부 API 연동 실전 패턴
 
-여행 플랫폼·이커머스·결제 서비스는 **다수의 외부 API**(공급사·OTA·결제 PG·포인트·할인)에 의존한다. 각 API의 **장애·지연·응답 불일치**가 내 서비스로 전파되지 않게 해야 한다. [[External-Service-Resilience|타임아웃·벌크헤드·서킷]]이 기초라면, 이 문서는 **도메인별 실전 패턴**.
+여행 플랫폼, 이커머스, 결제 서비스는 **다수의 외부 API**(공급사, OTA, 결제 PG, 포인트, 할인)에 의존한다. 각 API의 **장애, 지연, 응답 불일치**가 내 서비스로 전파되지 않게 해야 한다. [[External-Service-Resilience|타임아웃, 벌크헤드, 서킷]]이 기초라면, 이 문서는 **도메인별 실전 패턴**.
 
 ## 두 축의 연동 유형
 
@@ -15,13 +15,13 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 
 | 유형 | 성격 | 핵심 가치 | 예시 |
 |---|---|---|---|
-| **조회·카탈로그** | 읽기 위주, 부분 실패 허용 | **내결함성·Fallback** | 상품 상세, 가격 비교, 리뷰 |
-| **거래·예약** | 쓰기, 금전·재고 관련 | **일관성·멱등성** | 결제, 예약 확정, 재고 차감 |
+| **조회, 카탈로그** | 읽기 위주, 부분 실패 허용 | **내결함성, Fallback** | 상품 상세, 가격 비교, 리뷰 |
+| **거래, 예약** | 쓰기, 금전, 재고 관련 | **일관성, 멱등성** | 결제, 예약 확정, 재고 차감 |
 
 ## 조회형 연동 패턴
 
 ### 1. API별 타임아웃 차등
-중요도·평균 응답시간에 따라 **API마다 다른 타임아웃**.
+중요도, 평균 응답시간에 따라 **API마다 다른 타임아웃**.
 - 핵심 API (상품 메인 정보): 2초
 - 보조 API (할인 가격): 500ms
 - 부가 API (리뷰 요약): 300ms
@@ -42,25 +42,25 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 여러 API를 동시에 호출해 **빠른 응답 먼저 사용**. Promise.race 활용. 둘 이상의 소스에서 같은 데이터 얻을 수 있을 때.
 
 ### 4. 응답 캐싱
-- 자주 변하지 않는 데이터는 **CDN·Redis**에 캐시
+- 자주 변하지 않는 데이터는 **CDN, Redis**에 캐시
 - TTL 기반 + 이벤트 기반 무효화 병용
 - **Stale-While-Revalidate**: 만료된 캐시로 즉시 응답 + 백그라운드 재조회
 
 ### 5. 회로 차단 (Circuit Breaker)
-지속 실패 시 일정 시간 **호출 자체를 중단**하고 캐시·기본값으로 응답. [[External-Service-Resilience#Circuit Breaker]] 참고.
+지속 실패 시 일정 시간 **호출 자체를 중단**하고 캐시, 기본값으로 응답. [[External-Service-Resilience#Circuit Breaker]] 참고.
 
 ## 거래형 연동 패턴
 
 ### 1. 상태 머신으로 복잡도 단순화
 예약은 `요청 → 결제 대기 → 결제 완료 → OTA 확정 → 취소 가능 → 취소 완료` 등 단계가 많음. **상태 전이를 명시적으로 모델링**하면:
 - 각 상태에서 가능한 전이가 명확
-- 비정상 전이를 코드·DB에서 차단
-- 복구·조회·재처리 로직이 상태 기준으로 통일
+- 비정상 전이를 코드, DB에서 차단
+- 복구, 조회, 재처리 로직이 상태 기준으로 통일
 
 ### 2. 멱등성 키
 클라이언트가 생성한 **idempotency key**를 모든 쓰기 요청에 필수로:
 - 네트워크 오류 시 재시도 안전
-- 중복 결제·이중 예약 방지
+- 중복 결제, 이중 예약 방지
 - 서버는 key 기준 캐시로 이전 응답 그대로 반환
 
 상세는 [[Idempotency]] 참고.
@@ -99,8 +99,8 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 ## 도메인별 조합
 
 ### 여행 플랫폼 (OTA 연동)
-- 상품 상세: 내결함성 중심 (타임아웃·Fallback·캐싱)
-- 예약 확정: 일관성 중심 (상태 머신·멱등·보상·대사)
+- 상품 상세: 내결함성 중심 (타임아웃, Fallback, 캐싱)
+- 예약 확정: 일관성 중심 (상태 머신, 멱등, 보상, 대사)
 
 ### 결제 시스템
 - 결제 승인: **반드시 멱등 키**
@@ -116,7 +116,7 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 
 외부 API 연동은 **블랙박스**라 모니터링이 생명.
 
-- **응답시간 분포**: API별 p50·p95·p99 대시보드
+- **응답시간 분포**: API별 p50, p95, p99 대시보드
 - **에러율**: 4xx vs 5xx 구분, 상대 비율 추이
 - **재시도 통계**: 재시도 빈도가 올라가면 외부 서비스 상태 악화 신호
 - **Correlation ID**: 내 요청 ↔ 외부 요청을 연결해 분산 추적
@@ -133,7 +133,7 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 ## 면접 체크포인트
 
 - 조회형과 거래형 연동의 핵심 가치 차이 (내결함성 vs 일관성)
-- 상태 머신이 예약·주문 도메인에서 중요한 이유
+- 상태 머신이 예약, 주문 도메인에서 중요한 이유
 - "롤백 불가 작업은 마지막에" 원칙의 의미
 - Saga 패턴과 보상 트랜잭션
 - 배치 대사(Reconciliation)의 역할
@@ -144,5 +144,6 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 ## 관련 문서
 - [[External-Service-Resilience|외부 서비스 장애 대응 (Timeout/Bulkhead/Circuit Breaker)]]
 - [[Idempotency|HTTP 멱등성]]
+- [[Idempotent-Consumer|멱등 컨슈머 (메시지 중복 처리)]]
 - [[Distributed-Lock|분산 락]]
 - [[Transactional-Outbox|Transactional Outbox]]
