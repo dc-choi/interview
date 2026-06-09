@@ -167,3 +167,4 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 - [[Delivery-Semantics|전달 보장]]
 - [[Transactional-Outbox|Transactional Outbox]]
 - [[Idempotency-Key|멱등성 키]]
+- [[Idempotent-Consumer|멱등 컨슈머 (at-least-once 중복 처리 방어)]]

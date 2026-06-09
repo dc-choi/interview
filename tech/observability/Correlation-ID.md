@@ -25,3 +25,4 @@ aliases: ["Correlation ID", "Trace ID"]
 ## 관련 문서
 - [[Structured-Logging|Structured logging]]
 - [[Log-Pipeline|Log Pipeline]]
+- [[OpenTelemetry|OpenTelemetry (W3C trace context 전파)]]
