@@ -31,6 +31,20 @@ aliases: ["Schema Design", "스키마 설계"]
 - 인덱스에 `deletedAt`을 포함해야 성능 유지
 - 시간이 지나면 논리 삭제된 데이터를 물리 삭제하는 정책 필요
 
+### Soft Delete + 유니크 제약 충돌 (면접 빈출 함정)
+
+Soft Delete와 **유니크 컬럼**(예: email)이 만나면 충돌이 난다.
+
+- **문제 1**: email에 단순 유니크를 걸면, 소프트 삭제된 행이 email 값을 그대로 들고 있어 **같은 email로 재가입이 막힘**(죽은 행과 충돌).
+- **문제 2 (MySQL 함정)**: 그래서 `UNIQUE(email, deleted_at)`로 우회하려 하면, **MySQL은 NULL을 서로 다른 값으로 취급**(NULL ≠ NULL)해서 `deleted_at IS NULL`인 활성 행끼리는 유니크가 **안 걸린다** → 같은 email 활성 행이 여러 개 생김.
+
+**해법**:
+- **PostgreSQL**: 부분 유니크 인덱스 `CREATE UNIQUE INDEX ... ON users(email) WHERE deleted_at IS NULL` → 활성 행에만 유니크 적용, 가장 깔끔.
+- **MySQL(부분 인덱스 없음)**:
+  - ① 생성 컬럼으로 활성 표식: `is_active = IF(deleted_at IS NULL, 1, NULL)` 만들고 `UNIQUE(email, is_active)`. 활성은 1로 모여 유니크가 걸리고, 삭제 행은 is_active가 NULL이라 서로 충돌 안 함.
+  - ② `deleted_at`을 NOT NULL + 활성 sentinel(예: 0)로 두고 `UNIQUE(email, deleted_at)`. 삭제 시 실제 타임스탬프를 넣어 행마다 달라지게.
+- ORM(Prisma 등)은 soft delete를 자동 처리하지 않으므로 위 인덱스 설계와 `WHERE` 필터를 **직접** 넣어야 한다.
+
 ## ID 전략
 
 **BigInt 사용:** 대규모 데이터를 다룰 수 있도록 ID를 BigInt로 설정한다.

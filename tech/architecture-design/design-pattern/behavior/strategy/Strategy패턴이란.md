@@ -75,7 +75,8 @@ class Config {
 2. 결제 시스템: 카드/계좌이체/간편결제 전략
 3. 압축: gzip/brotli/deflate 전략
 4. 정렬: 데이터 크기에 따라 다른 정렬 알고리즘
-5. WMS 피킹: 주문·단품·배치·총량 피킹 4종 (추상 `BasePickingStrategy` + 각 concrete에서 `createInstruction()`·`filterOrders()` 구현)
+5. WMS 피킹: 주문, 단품, 배치, 총량 피킹 4종 (추상 `BasePickingStrategy` + 각 concrete에서 `createInstruction()`, `filterOrders()` 구현)
+6. 회의실 예약 승격: FIFO, VIP 우선 등 승격 정책을 `PromotionPolicy` 전략으로 분리. 도메인 객체(슬롯)가 정책을 직접 알지 않고 주입받아 위임
 
 ## 실전 도입 시점
 
@@ -86,6 +87,17 @@ class Config {
 - **Strategy 주입을 잊고 Context에서 직접 new**: DI 이점 사라짐 — 팩토리나 DI 컨테이너로 주입
 
 "디자인 패턴은 만능 해법이 아니라 상황에 따른 선택" — 명확한 이유가 없으면 도입하지 말고, 도입 후 오버헤드가 크면 과감히 되돌릴 것.
+
+## 정책이 늘어날 때: 메서드 분리가 아니라 전략 추출
+
+도메인 객체 하나에 정책이 계속 쌓이는 상황(예: 예약 승격에 FIFO, VIP 우선, 부서 가중치 등이 추가됨)에서 흔한 오답이 메서드를 잘게 나누는 것이다. 메서드 분리는 줄 수만 옮길 뿐 그 객체의 **책임(관심사) 수는 그대로**다. 객체가 모든 정책을 다 안다는 사실 자체가 문제다.
+
+- **인지 부하의 척도는 줄 수가 아니라 관심사 수다.** 한 파일이 200줄이냐가 아니라, 한 객체가 알아야 하는 정책이 몇 개냐가 이해와 변경을 어렵게 한다.
+- 해법은 정책을 객체 밖으로 빼는 것. `PromotionPolicy` 인터페이스 + 구현체(`FifoPromotionPolicy`, `VipPriorityPromotionPolicy`)를 두고, Context(슬롯)는 정책 목록을 주입받아 정렬과 필터를 위임만 한다.
+- 정책 추가 = 새 구현체 한 개(OCP). Context와 기존 정책은 손대지 않는다. 각 정책은 독립 단위 테스트가 가능하다.
+- 권한 판정 같은 분기도 도메인 엔티티에 `checkPermission`을 박지 말고 인가 정책이나 도메인 서비스로 뺀다. 엔티티가 권한 규칙까지 떠안으면 다시 god object가 된다.
+
+이게 OCP의 실전 모습이다 ([[SOLID-In-Practice]]의 할인 정책 확장과 같은 축). 관련 함정은 [[Elegant-OOP-Design]].
 
 ## 출처
 - [jminc00 — 전략 패턴 구현 예제 (WMS 피킹 리팩토링)](https://jminc00.tistory.com/100)
