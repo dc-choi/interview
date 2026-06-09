@@ -22,7 +22,7 @@ $0.10/GB/월 × 109GB = ~월 $10~11 / 리포지토리
 
 ## ECR Lifecycle Policy — 기본 해법
 
-ECR에 **자동 삭제 규칙**을 설정해 주기적으로 오래된 이미지를 정리한다. 콘솔·CLI·Terraform으로 모두 설정 가능.
+ECR에 **자동 삭제 규칙**을 설정해 주기적으로 오래된 이미지를 정리한다. 콘솔, CLI, Terraform으로 모두 설정 가능.
 
 ### 대표 규칙 패턴
 
@@ -87,7 +87,7 @@ ECR에 **자동 삭제 규칙**을 설정해 주기적으로 오래된 이미지
 
 ## 주의점
 
-- **리포지토리별 개별 적용** — 조직 전체 정책은 IAM·CloudFormation·Terraform으로 표준화해 한꺼번에 배포
+- **리포지토리별 개별 적용** — 조직 전체 정책은 IAM, CloudFormation, Terraform으로 표준화해 한꺼번에 배포
 - **복구 불가** — 삭제된 이미지는 되돌릴 수 없음. 정책 변경은 최소 dev 환경에서 시뮬레이션
 - **실행 이미지 삭제 사고** — ECS Task Definition이 참조하는 이미지를 실수로 제거하면 서비스 배포 실패 → `keep last N` 정책 우선, `expire immediately`는 untagged에만
 - **Cross-Region Replication**은 별도 — 복제된 리전의 ECR도 각자 정책 설정 필요
@@ -136,8 +136,8 @@ resource "aws_ecr_lifecycle_policy" "app" {
 
 - ECR 요금 구조(저장 용량 × 시간) 설명
 - Untagged 이미지가 쌓이는 **배포 패턴** 설명 (같은 태그 재사용 시 이전 버전이 untagged가 됨)
-- `expire` vs `keep last N` 전략의 차이·선택 기준
-- 이미지 태그 전략(commit SHA·환경 접두사)이 Lifecycle과 어떻게 연동되는지
+- `expire` vs `keep last N` 전략의 차이, 선택 기준
+- 이미지 태그 전략(commit SHA, 환경 접두사)이 Lifecycle과 어떻게 연동되는지
 - Immutable tag 설정의 이점
 
 ## 출처

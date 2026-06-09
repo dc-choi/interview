@@ -7,7 +7,7 @@ aliases: ["Metric Layer Mismatch", "메트릭 측정 레이어", "CloudWatch vs 
 
 # 메트릭 측정 레이어의 함정 — CloudWatch는 0%, Grafana는 100%
 
-같은 자원의 같은 메트릭이 도구마다 다른 값으로 보이는 이유와 그 함정 정리. CPU·메모리·디스크·네트워크·컨테이너 모두에서 같은 패턴이 나타나며, 원인은 **측정 레이어가 다르기 때문**이다.
+같은 자원의 같은 메트릭이 도구마다 다른 값으로 보이는 이유와 그 함정 정리. CPU, 메모리, 디스크, 네트워크, 컨테이너 모두에서 같은 패턴이 나타나며, 원인은 **측정 레이어가 다르기 때문**이다.
 
 ## 핵심 명제
 
@@ -89,8 +89,8 @@ CPU만의 문제가 아니다. **모든 메트릭은 측정 레이어를 함께 
 | 메트릭 | 흔한 레이어 차이 |
 |---|---|
 | **메모리** | CloudWatch(외부에서 못 봄, 미공개) vs node_exporter(`MemAvailable` 정확) — CloudWatch는 기본 메모리 메트릭이 없어 CWAgent 별도 필요 |
-| **디스크** | CloudWatch(EBS volume 단위) vs OS(파일시스템·마운트 단위) — 볼륨이 100% 차도 마운트는 정상일 수 있음 |
-| **네트워크** | ENI 통계 vs OS `/proc/net/dev` — TCP 재전송·드롭은 OS 레벨에서만 보임 |
+| **디스크** | CloudWatch(EBS volume 단위) vs OS(파일시스템, 마운트 단위) — 볼륨이 100% 차도 마운트는 정상일 수 있음 |
+| **네트워크** | ENI 통계 vs OS `/proc/net/dev` — TCP 재전송, 드롭은 OS 레벨에서만 보임 |
 | **컨테이너 CPU** | ECS/Fargate Service Insights vs cgroup — Throttle 횟수는 cgroup에만 |
 | **JVM 메모리** | OS RSS vs JMX heap — heap이 여유 있어도 OS는 OOM kill 가능 |
 
@@ -106,7 +106,7 @@ CPU만의 문제가 아니다. **모든 메트릭은 측정 레이어를 함께 
 - CloudWatch CPU와 OS CPU가 다른 이유를 **iowait 정의**로 설명할 수 있는가
 - **iowait의 정체** (idle의 일종, 디스크 I/O 대기) 설명
 - `vmstat`의 `r`, `b`, `wa` 컬럼으로 병목을 진단하는 절차
-- 같은 함정이 **메모리·디스크·네트워크·컨테이너·JVM**에서도 발생하는 이유
+- 같은 함정이 **메모리, 디스크, 네트워크, 컨테이너, JVM**에서도 발생하는 이유
 - 알람을 **두 레이어 교차**로 설계하는 이유
 - 클라우드 메트릭만 믿었을 때의 위험과 보완 방법
 
