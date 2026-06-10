@@ -126,9 +126,9 @@ aliases: ["이직 전략", "Job Search Strategy", "채용공고 분석"]
 - [brunch promiseys — 개발자 이직 가이드](https://brunch.co.kr/@promiseys/3)
 
 ## 관련 문서
-- [[FIT|Interview Fit]]
+- [[FIT-Framework|FIT 프레임워크]]
 - [[Resume-Portfolio-Guide|이력서 & 포트폴리오 가이드]]
-- [[Resume-15-Second-Rules|이력서 15초 승부 · 5원칙]]
+- [[Resume-15-Second-Rules|이력서 15초 승부 5원칙]]
 - [[Company-Selection-Criteria|회사 선택 기준]]
 - [[Salary-Trajectory|연봉 궤적 전략]]
 - [[Developer-Hiring-Insights|채용 인사이트]]
