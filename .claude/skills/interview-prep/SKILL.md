@@ -7,7 +7,7 @@ allowed-tools: [Read, Write, Edit, Glob, Grep, Bash, WebFetch, Agent]
 
 # 면접 준비 문서 생성 스킬
 
-채용공고 URL과 이력서/포트폴리오를 분석하여 `fit/interview/{회사명}/Interview-Prep-{회사명}.md` 문서를 생성한다.
+채용공고 URL과 이력서/포트폴리오를 분석하여 `fit/interview/{회사명}/{차수}/Interview-Prep-{회사명}-{차수}.md` 문서를 생성한다. **차수별 서브폴더(`1st/`, `2nd/`, `coffeechat/` 등)는 필수** — 차수 자료를 회사 폴더 루트에 두지 않는다 (CLAUDE.md 회사별 폴더 규칙). 전체 워크플로우(마스터 fork, prep 정렬, vault 흡수)는 CLAUDE.md의 "신규 회사 면접 준비 워크플로우"를 우선 적용한다.
 
 ## 입력
 
@@ -30,10 +30,10 @@ allowed-tools: [Read, Write, Edit, Glob, Grep, Bash, WebFetch, Agent]
 2. **이력서 읽기**: Read로 이력서 PDF 내용 확인
 3. **포트폴리오 읽기** (경로 있으면): Read로 포트폴리오 내용 확인 — 프로젝트 상세, 기술 스택, 성과 등 이력서보다 구체적인 정보를 예상 질문과 어필 포인트에 활용
 4. **템플릿 읽기**: `fit/interview/prep/Interview-Prep-Template.md` 읽기
-5. **예시 참고**: `fit/interview/actionpower/Interview-Prep-ActionPower.md` 읽기 (품질 기준)
+5. **예시 참고**: `fit/interview/actionpower/1st/Interview-Prep-ActionPower.md` 읽기 (품질 기준)
 
 ### 3단계: 문서 생성
-`fit/interview/{회사명}/Interview-Prep-{회사명}.md` 파일을 생성한다.
+`fit/interview/{회사명}/{차수}/Interview-Prep-{회사명}-{차수}.md` 파일을 생성한다. 차수 폴더가 없으면 새로 만든다.
 
 #### 프론트매터
 ```yaml

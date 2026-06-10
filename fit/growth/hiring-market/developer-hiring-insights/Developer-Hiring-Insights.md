@@ -16,6 +16,11 @@ aliases: ["채용 인사이트"]
 - [[Developer-Hiring-Insights-Growth|면접 준비, 스터디, 시니어 로드맵]]
   - 인터뷰 준비 점검, 스터디와 프로젝트를 통한 성장, 주니어에서 시니어로, 개발자 학습 로드맵
 
+## 형제 문서 (hiring-market)
+
+- [[IT-Downturn-Career-Strategy|IT 긴축기 커리어 전략]]
+- [[Large-Scale-Traffic-Experience|대규모 트래픽 경험]]
+
 ## 관련 문서
 - [[Interview-Soft-Skills|인성면접 가이드]]
 - [[Retrospective-Methods|회고 기법]]
