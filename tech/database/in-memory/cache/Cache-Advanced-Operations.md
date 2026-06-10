@@ -5,7 +5,7 @@ category: "Data & Storage - Cache & KV"
 aliases: ["Cache Advanced Operations", "분산 무효화", "캐시 워밍업", "캐시 태깅"]
 ---
 
-# Cache Advanced Operations — 분산 무효화·워밍업·태깅
+# Cache Advanced Operations — 분산 무효화, 워밍업, 태깅
 
 캐시 도입 후 운영에서 마주치는 세 가지 흔한 요구. 단순 `GET`/`SET`/`DEL`로 충분치 않은 영역이다.
 
@@ -45,7 +45,7 @@ Redis Cluster에서는 `SCAN`이 단일 노드만 본다. **모든 노드에 SCA
 
 ## 캐시 워밍업
 
-배포 직후·콜드 캐시 상태에서 첫 요청들이 모두 DB로 몰림(스탬피드). **인기 데이터를 사전 적재**해 첫 충격 회피.
+배포 직후, 콜드 캐시 상태에서 첫 요청들이 모두 DB로 몰림(스탬피드). **인기 데이터를 사전 적재**해 첫 충격 회피.
 
 ### 부팅 시 한 번
 
@@ -67,7 +67,7 @@ export class CacheWarmer implements OnApplicationBootstrap {
 
 ### 주기 갱신
 
-`@Cron`/`SchedulerRegistry`로 인기 데이터 주기 재적재. 비즈니스 트래픽 패턴(런치타임·이벤트 시작)에 맞춰 시점 조정.
+`@Cron`/`SchedulerRegistry`로 인기 데이터 주기 재적재. 비즈니스 트래픽 패턴(런치타임, 이벤트 시작)에 맞춰 시점 조정.
 
 ### 트레이드오프
 
@@ -78,7 +78,7 @@ export class CacheWarmer implements OnApplicationBootstrap {
 | 부팅 시간 | 길어짐 | 짧음 |
 | 인기 분포 변화 | 워밍업 set 갱신 필요 | 자동 반영 |
 
-서비스 첫 페이지·홈·인기 상품 같은 **확실히 hot한 데이터**만 워밍업, 롱테일은 lazy.
+서비스 첫 페이지, 홈, 인기 상품 같은 **확실히 hot한 데이터**만 워밍업, 롱테일은 lazy.
 
 ## 캐시 태깅 — 그룹 단위 무효화
 
@@ -126,7 +126,7 @@ async function invalidateTag(redis: Redis, tag: string) {
 
 - **운영 환경에서 `KEYS` 사용**: 단일 스레드 Redis 블로킹 → 장애. SCAN으로.
 - **`DEL`로 큰 키 또는 대량 키 한 번에 회수**: 블로킹. UNLINK + 배치.
-- **워밍업으로 모든 데이터 적재 시도**: 메모리·부팅 시간 폭증. 인기 hot 데이터만.
+- **워밍업으로 모든 데이터 적재 시도**: 메모리, 부팅 시간 폭증. 인기 hot 데이터만.
 - **태그 Set TTL 안 둠**: 태그가 영구 누적 → 메모리 누수. TTL 또는 주기 GC.
 - **Cluster에서 SCAN 한 노드만**: 다른 노드 키 누락. 모든 마스터 노드 순회.
 - **무효화 후 즉시 같은 키 재조회 → 다시 캐시 채움 race**: 무효화 → 짧은 negative-cache(stale lock) 또는 ETag로 보정.
@@ -137,14 +137,14 @@ async function invalidateTag(redis: Redis, tag: string) {
 - `SCAN`/`SSCAN`의 cursor 기반 점진 스캔 동작
 - `DEL` vs `UNLINK` — 동기 vs 백그라운드 회수
 - Redis Cluster에서 SCAN의 한계와 노드별 순회
-- 캐시 워밍업의 의의와 트레이드오프 (메모리·부팅 시간 vs 콜드 스타트)
+- 캐시 워밍업의 의의와 트레이드오프 (메모리, 부팅 시간 vs 콜드 스타트)
 - 태그 기반 무효화 — Set으로 매핑, 그룹 단위 회수
 - 태그 TTL과 키 TTL 동기화 문제
 
 ## 관련 문서
 
 - [[Cache-Invalidation|기본 캐시 무효화 전략]]
-- [[Cache-Stampede|Cache Stampede·Penetration·Avalanche]]
-- [[Cache-Strategies|캐시 전략 (Cache-Aside·Write-Through·Write-Behind)]]
+- [[Cache-Stampede|Cache Stampede, Penetration, Avalanche]]
+- [[Cache-Strategies|캐시 전략 (Cache-Aside, Write-Through, Write-Behind)]]
 - [[Redis-Atomic-Operations|Redis 원자 연산]]
 - [[Distributed-Lock|분산 락]]

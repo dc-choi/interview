@@ -1,6 +1,6 @@
 ---
 tags: [database, schema]
-status: done
+status: index
 category: "데이터&저장소(Data&Storage)"
 aliases: ["Schema Design", "스키마 설계"]
 ---
@@ -8,6 +8,16 @@ aliases: ["Schema Design", "스키마 설계"]
 # Schema Design
 
 데이터베이스 스키마를 설계할 때 고려해야 할 패턴과 원칙이다.
+
+## 하위 문서
+
+- [[Normalization|Normalization / Denormalization]]
+- [[Primary-Key-Strategy|PK 생성 전략 (AUTO_INCREMENT, UUID v4와 v7, ULID, Snowflake, 클러스터링 인덱스 영향)]]
+- [[Business-Logic-App-vs-DB|비즈니스 로직 위치 (App vs DB, Stored Procedure 기피, 확장성 비대칭)]]
+- [[JSON-vs-Text-Column|JSON vs TEXT 컬럼 (MySQL/PostgreSQL, 접근 패턴 기반 선택)]]
+- [[SCD-Type2|SCD Type 2 (차원 데이터 이력 관리, 변경 이력 행 적재)]]
+- [[Schema-Migration-Large-Table|대용량 테이블 스키마 변경 (INSTANT/INPLACE/COPY, pt-osc, gh-ost)]]
+- [[Data-Dictionary|데이터 딕셔너리 (Oracle vs MySQL)]]
 
 ## 네이밍 컨벤션
 

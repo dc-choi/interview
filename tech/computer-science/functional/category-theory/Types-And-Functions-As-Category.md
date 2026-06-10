@@ -7,7 +7,7 @@ aliases: ["Types and Functions as Category", "타입과 함수의 카테고리",
 
 # 타입과 함수의 카테고리 (Set, Hask)
 
-프로그래밍 언어의 **타입을 집합(set), 함수를 morphism**으로 보면 그 자체가 카테고리를 이룬다. 이 관점은 Functor·Monad 같은 함수형 추상이 왜 "카테고리 이론적"으로 정당한지의 출발점이다. 카테고리 이론의 일반 개념은 [[Category-Theory-For-Programmers]] 참조.
+프로그래밍 언어의 **타입을 집합(set), 함수를 morphism**으로 보면 그 자체가 카테고리를 이룬다. 이 관점은 Functor, Monad 같은 함수형 추상이 왜 "카테고리 이론적"으로 정당한지의 출발점이다. 카테고리 이론의 일반 개념은 [[Category-Theory-For-Programmers]] 참조.
 
 ## 핵심 명제
 
@@ -41,12 +41,12 @@ return expensive + expensive;
 return compute(x) + compute(x);
 ```
 
-순수 함수만으로 표현식을 치환하면 **메모이제이션·병렬화·부분 평가** 같은 최적화가 안전해진다. 또한 수학적 증명·표시적 의미론(denotational semantics)이 적용 가능 → 코드의 형식적 추론이 가능.
+순수 함수만으로 표현식을 치환하면 **메모이제이션, 병렬화, 부분 평가** 같은 최적화가 안전해진다. 또한 수학적 증명, 표시적 의미론(denotational semantics)이 적용 가능 → 코드의 형식적 추론이 가능.
 
 **비순수 함수의 흔적**:
 - I/O (파일, 네트워크, 콘솔)
 - 외부 상태 변경 (전역 변수, mutable 인자)
-- 시간·랜덤 의존
+- 시간, 랜덤 의존
 - 예외 throw
 
 ## Hask vs Set — Bottom 문제
@@ -59,7 +59,7 @@ return compute(x) + compute(x);
 
 이 때문에 엄밀한 카테고리 이론자는 Hask를 "진짜 카테고리"가 아니라고 보기도 한다. 실무에서는 **Hask를 Set처럼 취급해도 무방**하며, partial function 문제는 panic/예외 발생을 별도 채널로 모델링하면 된다.
 
-JavaScript/TypeScript도 비슷한 문제가 있다 — `throw`·`undefined`·infinite loop. 모두 모델 단순화를 위해 무시하거나, Result/Maybe 같은 컨테이너로 명시화.
+JavaScript/TypeScript도 비슷한 문제가 있다 — `throw`, `undefined`, infinite loop. 모두 모델 단순화를 위해 무시하거나, Result/Maybe 같은 컨테이너로 명시화.
 
 ## 단순 타입의 카테고리적 의미
 
@@ -88,7 +88,7 @@ const unit = <A>(_: A): void => undefined;
 - **타입 = 의미적 계약** — 함수 시그니처가 이미 부분적인 명세
 - **순수성을 시그니처에 노출** — Haskell의 `IO a`, Rust의 `Result<T, E>`, TypeScript의 `Promise<T>` 같은 컨테이너로 부수효과를 타입에 박음
 - **리팩토링 안전성** — 결합법칙 + 항등법칙 보장이 큰 파이프라인 분해/재조합에 안전성 부여
-- **설계 사고 도구** — "이 함수가 진짜 morphism인가?"를 자문하면 부수효과·예외·외부 상태 의존을 탐지하게 됨
+- **설계 사고 도구** — "이 함수가 진짜 morphism인가?"를 자문하면 부수효과, 예외, 외부 상태 의존을 탐지하게 됨
 
 ## 자주 헷갈리는 포인트
 
@@ -101,8 +101,8 @@ const unit = <A>(_: A): void => undefined;
 ## 면접 체크포인트
 
 - **타입 = 집합** 매핑과 그 직관 (Bool은 2원소, Integer는 무한)
-- **순수 함수의 3조건**(totality·determinism·compositionality)
-- **Referential transparency**가 메모이제이션·병렬화·증명에 주는 의미
+- **순수 함수의 3조건**(totality, determinism, compositionality)
+- **Referential transparency**가 메모이제이션, 병렬화, 증명에 주는 의미
 - **Bottom**과 Hask vs Set의 차이 (그리고 실용에서 무시해도 되는 이유)
 - **Void(`never`) = initial, Unit(`void`) = terminal**의 의미
 - 정적 타입이 **컴파일 타임 합성 검증기**라는 관점
@@ -112,7 +112,7 @@ const unit = <A>(_: A): void => undefined;
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 카테고리 일반 개념]]
-- [[Order-Monoid-Categories|Order·Monoid 카테고리 (다른 종류의 카테고리들)]]
+- [[Order-Monoid-Categories|Order, Monoid 카테고리 (다른 종류의 카테고리들)]]
 - [[Types-As-Proofs|Types as Proofs (커리-하워드 대응)]]
 - [[Monads-In-TypeScript|Monads in TypeScript (Functor/Applicative/Monad)]]
 - [[Railway-Oriented-Programming|Railway-Oriented Programming]]

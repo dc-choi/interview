@@ -5,9 +5,9 @@ category: "성능&확장성(Performance&Scalability)"
 aliases: ["Load Test K6", "성능 테스트 도구", "k6 vs JMeter"]
 ---
 
-# 성능 테스트 도구 · k6 · JMeter · Keploy
+# 성능 테스트 도구, k6, JMeter, Keploy
 
-성능 테스트는 API·서비스가 **예상 부하에서 SLO를 지키는가**를 확인하는 활동. 도구 선택은 **스크립팅 편의성·리소스 오버헤드·분산 부하·실 트래픽 활용 여부**가 축. 현대 개발자 친화 도구는 **k6**(JS 기반·경량), 전통 강자는 **JMeter**(GUI·확장), 신흥 실 트래픽 도구는 **Keploy**(eBPF 기반 자동 생성).
+성능 테스트는 API, 서비스가 **예상 부하에서 SLO를 지키는가**를 확인하는 활동. 도구 선택은 **스크립팅 편의성, 리소스 오버헤드, 분산 부하, 실 트래픽 활용 여부**가 축. 현대 개발자 친화 도구는 **k6**(JS 기반, 경량), 전통 강자는 **JMeter**(GUI, 확장), 신흥 실 트래픽 도구는 **Keploy**(eBPF 기반 자동 생성).
 
 ## 성능 테스트 유형
 
@@ -21,10 +21,10 @@ aliases: ["Load Test K6", "성능 테스트 도구", "k6 vs JMeter"]
 
 ## 도구 선택 핵심 축
 
-- **스크립팅 언어·편의성**
-- **메모리·CPU 오버헤드**
+- **스크립팅 언어, 편의성**
+- **메모리, CPU 오버헤드**
 - **분산 부하 기본 지원 여부**
-- **시각화·리포팅**
+- **시각화, 리포팅**
 - **CI/CD 통합**
 - **학습 곡선**
 - **실 트래픽 재사용 가능성**
@@ -37,15 +37,15 @@ aliases: ["Load Test K6", "성능 테스트 도구", "k6 vs JMeter"]
 - **Go로 작성** → **메모리 사용량 낮음** (약 100MB)
 - 초당 **수십만 요청** 처리 가능
 - GUI 없음 → 오버헤드 최소
-- Grafana·Datadog·Prometheus와 자연스럽게 연동
+- Grafana, Datadog, Prometheus와 자연스럽게 연동
 - `k6 cloud`로 SaaS 분산 부하
 
 ### 장점
 
-- **코드로 시나리오** — 버전 관리·리뷰 가능
+- **코드로 시나리오** — 버전 관리, 리뷰 가능
 - CI/CD 통합 쉬움 (`k6 run` 한 줄)
 - 리소스 효율 — 단일 머신에서 큰 부하 생성
-- 활발한 생태계, 최신 프로토콜(WebSocket·gRPC) 지원
+- 활발한 생태계, 최신 프로토콜(WebSocket, gRPC) 지원
 
 ### 단점
 
@@ -80,17 +80,17 @@ export default function () {
 
 ### 장점
 
-- **GUI 시나리오 구성** — 비개발자·QA도 사용 가능
-- 풍부한 문서·서적·커뮤니티
-- 다양한 프로토콜(JDBC·JMS·FTP 등) 기본 지원
+- **GUI 시나리오 구성** — 비개발자, QA도 사용 가능
+- 풍부한 문서, 서적, 커뮤니티
+- 다양한 프로토콜(JDBC, JMS, FTP 등) 기본 지원
 - 분산 부하 기본 제공
 
 ### 단점
 
 - **메모리 사용량 높음** (약 600MB)
 - GUI 모드에서 성능 테스트 시 **리소스 오버헤드** 큼 — 실 테스트는 비GUI(`jmeter -n`)로
-- XML 저장 → **가독성·Git 리뷰 어려움**
-- JavaScript·JSON 중심 시대에 **투박함**
+- XML 저장 → **가독성, Git 리뷰 어려움**
+- JavaScript, JSON 중심 시대에 **투박함**
 
 ## k6 vs JMeter 비교
 
@@ -103,12 +103,12 @@ export default function () {
 | Git 리뷰 | 쉬움 (JS) | 어려움 (XML) |
 | CI 통합 | 쉬움 | 가능하지만 복잡 |
 | 학습곡선 | 개발자에게 낮음 | GUI 유저에게 낮음 |
-| 진영 | 개발자·DevOps | QA·전통 기업 |
+| 진영 | 개발자, DevOps | QA, 전통 기업 |
 
 ### 선택 가이드
 
 - **k6 추천**: 개발자 팀, GitOps, CI/CD 통합, 메모리 효율 중요
-- **JMeter 추천**: QA 팀, GUI 선호, 분산 부하 즉시 필요, 다양한 프로토콜(JDBC·JMS 등)
+- **JMeter 추천**: QA 팀, GUI 선호, 분산 부하 즉시 필요, 다양한 프로토콜(JDBC, JMS 등)
 - 많은 조직이 **이행 중** — JMeter에서 k6로
 
 ## Keploy (실 트래픽 기반)
@@ -118,18 +118,18 @@ export default function () {
 - **eBPF 기반 네트워크 트래픽 캡처**
 - 실제 API 호출을 **자동 기록** → 테스트 케이스 + Mock 데이터 생성
 - **코드 수정 불필요** — `keploy record`로 기록, `keploy test`로 재생
-- 언어·프레임워크 무관 (네트워크 레이어에서 동작)
+- 언어, 프레임워크 무관 (네트워크 레이어에서 동작)
 
 ### 강점
 
 - **실제 사용 시나리오** 기반 → 단위 테스트보다 현실적
 - 최대 90% 커버리지 목표 가능
-- DB·Message Queue(PostgreSQL·MongoDB·Kafka·RabbitMQ)도 **결정론적 재현**
-- Statement/Branch Coverage + **API Schema·비즈니스 유스케이스** 커버리지 동시 측정
+- DB, Message Queue(PostgreSQL, MongoDB, Kafka, RabbitMQ)도 **결정론적 재현**
+- Statement/Branch Coverage + **API Schema, 비즈니스 유스케이스** 커버리지 동시 측정
 
 ### 한계
 
-- eBPF 의존 → **Linux 환경**에서 우위, macOS·Windows는 제한적
+- eBPF 의존 → **Linux 환경**에서 우위, macOS, Windows는 제한적
 - 복잡한 상태 의존 테스트는 여전히 수동 케이스 필요
 - 생산 환경 적용 전 **민감 데이터 필터링** 필요
 - 기존 테스트 스위트를 **대체**하지 않고 **보완**
@@ -144,34 +144,34 @@ export default function () {
 
 | 도구 | 주 역할 |
 |---|---|
-| **k6** | 계획된 부하 시나리오·SLO 검증 |
-| **JMeter** | QA 주도 성능 테스트·다양한 프로토콜 |
-| **Keploy** | 실 트래픽 기반 테스트 자동 생성·회귀 |
+| **k6** | 계획된 부하 시나리오, SLO 검증 |
+| **JMeter** | QA 주도 성능 테스트, 다양한 프로토콜 |
+| **Keploy** | 실 트래픽 기반 테스트 자동 생성, 회귀 |
 
 셋은 **경쟁이 아니라 보완**이다 — k6로 SLO 부하, Keploy로 회귀, JMeter로 특수 프로토콜.
 
 ## 실전 설계
 
-- **시나리오**: Baseline(평균) · Peak(피크) · Stress(Peak×2~3) · Spike(순간 폭주) · Soak(24~72h 지속)
-- **측정 지표**: P50·P95·P99 Latency, RPS/TPS, Error Rate, Saturation(CPU·메모리·Connection Pool), Scalability Curve
-- **환경**: Staging에서 Baseline·Peak, 전용 환경에서 Stress·Spike·Soak, Production은 Canary·Shadow로 제한적
+- **시나리오**: Baseline(평균), Peak(피크), Stress(Peak×2~3), Spike(순간 폭주), Soak(24~72h 지속)
+- **측정 지표**: P50, P95, P99 Latency, RPS/TPS, Error Rate, Saturation(CPU, 메모리, Connection Pool), Scalability Curve
+- **환경**: Staging에서 Baseline, Peak, 전용 환경에서 Stress, Spike, Soak, Production은 Canary, Shadow로 제한적
 
 ## 흔한 실수
 
 - **로컬 머신에서 본격 부하 테스트** — CPU 포화로 왜곡된 결과
-- **단일 지표만 봄** (RPS만) — P99·에러율 동반 확인 필수
-- **Warm-up 없이** 측정 — JIT·캐시 초기화 구간 포함해서 평균 왜곡
+- **단일 지표만 봄** (RPS만) — P99, 에러율 동반 확인 필수
+- **Warm-up 없이** 측정 — JIT, 캐시 초기화 구간 포함해서 평균 왜곡
 - **데이터 같은 값 반복** — 캐시에 히트 → 실제와 다름
 - **GUI JMeter로 실 테스트** — JMeter 자체가 병목
 - **SLO 없이 측정** — 기준이 없으면 숫자가 해석 불가
 
 ## 면접 체크포인트
 
-- k6와 JMeter의 **구조적 차이**(언어·메모리·GUI·분산)
+- k6와 JMeter의 **구조적 차이**(언어, 메모리, GUI, 분산)
 - 본인 팀에 맞는 도구 선택 근거
 - Keploy가 기존 성능 테스트와 다른 **트래픽 소스** 관점
 - 성능 테스트 시나리오 5가지(Baseline/Peak/Stress/Spike/Soak)
-- P50·P95·P99·에러율을 동반 보는 이유
+- P50, P95, P99, 에러율을 동반 보는 이유
 - 로컬이 아닌 **전용 환경**에서 테스트하는 이유
 
 ## 출처

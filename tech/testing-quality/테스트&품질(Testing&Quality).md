@@ -18,19 +18,19 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 - [ ] [[Load-Test-Automation|Load test automation]]
 - [ ] [[Chaos-Testing|Chaos testing (optional)]]
 - [x] [[performance|성능 테스트 유형]]
-- [x] [[TDD-BDD|TDD · BDD (Red-Green-Refactor, Given-When-Then, 조합 전략)]]
-- [x] [[Classicist-vs-Mockist-Testing|Classicist vs Mockist · Test Double (Sociable/Solitary, 상태/행위 검증, Inside/Outside-Out)]]
+- [x] [[TDD-BDD|TDD, BDD (Red-Green-Refactor, Given-When-Then, 조합 전략)]]
+- [x] [[Classicist-vs-Mockist-Testing|Classicist vs Mockist, Test Double (Sociable/Solitary, 상태/행위 검증, Inside/Outside-Out)]]
 - [x] [[Mock-Testing-Strategy|Mock 테스트 설계 전략 (Mock Server→@MockBean→@TestConfiguration→test-fixtures, Black Box 격리)]]
-- [x] [[Test-Pyramid|Practical Test Pyramid (Unit·Integration·Contract·E2E, 아이스크림 콘 안티패턴)]]
-- [x] [[TestContainers-Integration|Testcontainers 통합 테스트 (멱등성·Random 포트·병렬 테스트)]]
-- [x] [[Transactional-Test-Antipattern|테스트 @Transactional 안티패턴 (JUnit Extension·TRUNCATE·Auto Detection)]]
-- [x] [[NestJS-Testing|NestJS Testing (TestingModule·in-memory DB·트랜잭션 롤백·overrideGuard·Supertest)]]
+- [x] [[Test-Pyramid|Practical Test Pyramid (Unit, Integration, Contract, E2E, 아이스크림 콘 안티패턴)]]
+- [x] [[TestContainers-Integration|Testcontainers 통합 테스트 (멱등성, Random 포트, 병렬 테스트)]]
+- [x] [[Transactional-Test-Antipattern|테스트 @Transactional 안티패턴 (JUnit Extension, TRUNCATE, Auto Detection)]]
+- [x] [[NestJS-Testing|NestJS Testing (TestingModule, in-memory DB, 트랜잭션 롤백, overrideGuard, Supertest)]]
 
 ## 현장사례
 - [[11st-Engineer-Seminar#테스트전략|11번가 테스트 전략]] — 컨트롤러→통합, 서비스→단위, Mock 최소화
 - [[11st-Engineer-Seminar#코드리뷰Pn룰|코드리뷰 Pn룰]] — P1~P5 중요도 태그로 리뷰 효율화
 - [[Kakao-Ent-Seminar#테스팅|카카오엔터 테스팅]] — 사전 과제에서 테스트 코드 없으면 탈락
-- [[TS-Backend-Meetup-10#세션 1: AI 시대의 테스팅|AI 시대의 테스팅]] — 구현 은닉, 고전파 vs 런던파, LLM-as-a-judge, 테스트 피라미드 재해석
+- [[TS-Backend-Meetup-10#세션 1: AI 시대의 테스팅 (이세호, @D.Circle)|AI 시대의 테스팅]] — 구현 은닉, 고전파 vs 런던파, LLM-as-a-judge, 테스트 피라미드 재해석
 - [x] [[Service-Layer-Testing|서비스 레이어와 테스트 경계]]
 
 ## 단위 테스트

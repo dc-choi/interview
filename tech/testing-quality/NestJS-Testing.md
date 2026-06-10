@@ -28,7 +28,7 @@ const userRepo = module.get<Repository<User>>(getRepositoryToken(User));
 | 레벨 | 의도 | DB | 외부 호출 |
 |------|------|-----|----------|
 | **단위** | Provider 1개 동작 | 모킹 | 모킹 |
-| **통합** | 모듈 트리 + 트랜잭션·SQL | 실제 (in-memory or testcontainers) | 모킹 |
+| **통합** | 모듈 트리 + 트랜잭션, SQL | 실제 (in-memory or testcontainers) | 모킹 |
 | **E2E** | HTTP 입구부터 응답까지 | 실제 | 일부 실제 |
 
 ## 단위 테스트 — Provider 모킹
@@ -69,7 +69,7 @@ beforeAll(async () => {
 - **트랜잭션 롤백** — 테스트마다 트랜잭션 시작 → 끝나면 롤백. fixture 누적 방지.
 - **DB 클린업** — `beforeEach`에서 truncate.
 
-SQLite in-memory는 빠르지만 운영 DB와 SQL 방언 차이가 있어 **PostgreSQL/MySQL 특정 기능**(JSONB·CTE·격리수준) 테스트엔 부적합.
+SQLite in-memory는 빠르지만 운영 DB와 SQL 방언 차이가 있어 **PostgreSQL/MySQL 특정 기능**(JSONB, CTE, 격리수준) 테스트엔 부적합.
 
 ## 트랜잭션 롤백 검증
 
@@ -82,7 +82,7 @@ it('rolls back on validation failure', async () => {
 
 서비스가 `@Transactional` 데코레이터 또는 `EntityManager.transaction(...)`을 제대로 썼는지 검증. 트랜잭션 안 걸어두면 부분 commit으로 count > 0이 되어 실패.
 
-## 외부 서비스 모킹·스파이
+## 외부 서비스 모킹, 스파이
 
 ```ts
 it('handles email failure gracefully', async () => {
@@ -95,7 +95,7 @@ it('handles email failure gracefully', async () => {
 });
 ```
 
-`spyOn`은 실제 인스턴스 메서드를 가로챔 → 호출 횟수·인자 추적 가능. 외부 의존성 실패 케이스를 안전하게 시뮬레이션.
+`spyOn`은 실제 인스턴스 메서드를 가로챔 → 호출 횟수, 인자 추적 가능. 외부 의존성 실패 케이스를 안전하게 시뮬레이션.
 
 ## Guard/Interceptor/Filter 교체
 
@@ -125,7 +125,7 @@ await request(app.getHttpServer())
   .expect(res => expect(res.body.email).toBe(validData.email));
 ```
 
-실제 HTTP 입구부터 응답까지. 미들웨어·Guard·Pipe·Filter 모두 통과.
+실제 HTTP 입구부터 응답까지. 미들웨어, Guard, Pipe, Filter 모두 통과.
 
 ## 흔한 실수
 
@@ -139,7 +139,7 @@ await request(app.getHttpServer())
 ## 면접 체크포인트
 
 - TestingModule이 실제 모듈과 같은 DI를 사용하는 의미 — 단위와 통합이 같은 API
-- 단위 vs 통합 vs E2E 트레이드오프 — 속도·격리도·신뢰도
+- 단위 vs 통합 vs E2E 트레이드오프 — 속도, 격리도, 신뢰도
 - in-memory SQLite의 한계 — 운영 DB 방언 차이
 - 트랜잭션 롤백 검증 — 부분 commit 발견 패턴
 - `overrideGuard` / `overrideProvider`로 인프라 교체

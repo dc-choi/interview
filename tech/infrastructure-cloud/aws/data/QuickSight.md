@@ -21,7 +21,7 @@ aliases: ["QuickSight", "Amazon QuickSight", "BI"]
 
 ## 사용 사례
 
-- 비즈니스 분석·시각화
+- 비즈니스 분석, 시각화
 - 임시 분석 수행
 - 비즈니스 인사이트 대시보드
 
@@ -33,7 +33,7 @@ aliases: ["QuickSight", "Amazon QuickSight", "BI"]
 
 ## 관련 문서
 
-- [[Athena]] · [[Redshift]] · [[S3]]
+- [[Athena]], [[Redshift]], [[S3]]
 
 ## 출처
 

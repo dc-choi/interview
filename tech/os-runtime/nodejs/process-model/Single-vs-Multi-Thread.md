@@ -88,8 +88,8 @@ JS 실행이 싱글 스레드이기 때문에 개발자는 항상 **논블로킹
 **관찰**: Node.js 인스턴스가 **CPU 코어 1개를 100% 점유**한 상태로 진행되는데, MongoDB는 CPU 3%만 사용. 작업이 예상 시간의 수 배 소요.
 
 **원인 분석**:
-- JSON.parse·stringify는 **메인 스레드에서** 실행 (CPU bound)
-- libuv 워커 풀은 파일 I/O·DNS에만 사용, JS 로직 실행 안 함
+- JSON.parse, stringify는 **메인 스레드에서** 실행 (CPU bound)
+- libuv 워커 풀은 파일 I/O, DNS에만 사용, JS 로직 실행 안 함
 - 한 인스턴스가 한 코어만 쓰므로 **서버의 나머지 코어는 놀고 있음**
 
 **해결 패턴** — 스레드 늘리기 대신 **수평 확장**:
@@ -98,13 +98,13 @@ JS 실행이 싱글 스레드이기 때문에 개발자는 항상 **논블로킹
 - 전체 클러스터의 모든 코어가 병렬 활용됨
 - MongoDB도 병렬 쓰기 부하를 받으며 활용률 상승
 
-**교훈**: Node.js의 "싱글 스레드"는 **잘 설계된 허구**. 진짜 성능은 이 특성을 이해하고 **경량 컨테이너의 수평 확장**으로 끌어내는 데서 나옴. Worker Threads도 옵션이지만, 운영·배포 관점에선 인스턴스 증가가 대부분 더 단순하고 확장 용이.
+**교훈**: Node.js의 "싱글 스레드"는 **잘 설계된 허구**. 진짜 성능은 이 특성을 이해하고 **경량 컨테이너의 수평 확장**으로 끌어내는 데서 나옴. Worker Threads도 옵션이지만, 운영, 배포 관점에선 인스턴스 증가가 대부분 더 단순하고 확장 용이.
 
 ## 관련 문서
 - [[Node.js|Node.js Overview]]
 - [[Event-Loop|이벤트 루프]]
 - [[libuv|libuv]]
-- [[libuv-Threading|libuv 스레드 풀·스레딩]]
+- [[libuv-Threading|libuv 스레드 풀, 스레딩]]
 - [[Worker-Threads|워커 스레드]]
 - [[Thread-vs-Event-Loop|Thread vs Event Loop (멀티스레드 패턴)]]
 - [[Async-IO|Async I/O]]

@@ -7,7 +7,7 @@ aliases: ["Microtask Macrotask", "브라우저 vs Node 이벤트 루프"]
 
 # 이벤트 루프 — Microtask/Macrotask & 브라우저 vs Node
 
-Microtask/Macrotask 큐 개념과 브라우저·Node.js의 이벤트 루프 차이.
+Microtask/Macrotask 큐 개념과 브라우저, Node.js의 이벤트 루프 차이.
 
 **핵심**: 이벤트 루프는 별도의 스레드가 아니라 JS 메인 스레드 내에서 실행된다.
 

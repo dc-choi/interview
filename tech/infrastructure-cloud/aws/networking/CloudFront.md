@@ -7,18 +7,18 @@ aliases: ["CloudFront", "AWS CloudFront", "Amazon CloudFront"]
 
 # Amazon CloudFront
 
-AWS의 **CDN(Content Delivery Network) 서비스**. HTTP/HTTPS로 S3·ALB·EC2·외부 서버를 캐싱해 전 세계 Edge Location에서 콘텐츠를 빠르게 제공한다. AWS 백본 네트워크를 통해 Edge 간 콘텐츠 공유.
+AWS의 **CDN(Content Delivery Network) 서비스**. HTTP/HTTPS로 S3, ALB, EC2, 외부 서버를 캐싱해 전 세계 Edge Location에서 콘텐츠를 빠르게 제공한다. AWS 백본 네트워크를 통해 Edge 간 콘텐츠 공유.
 
 ## 핵심 구성 요소
 
 | 용어 | 의미 |
 |------|------|
-| **Origin Server** | 캐싱 대상 원본 서버 (S3·ALB·EC2·외부 서버) |
+| **Origin Server** | 캐싱 대상 원본 서버 (S3, ALB, EC2, 외부 서버) |
 | **Custom Origin** | AWS 외부의 HTTP 서버를 Origin으로 등록한 경우 |
 | **Edge Location (PoP)** | 사용자 가까이에 위치한 캐시 서버. 전 세계 200+개 |
 | **Regional Edge Cache** | Edge와 Origin 사이 중간 계층 캐시 (히트율 개선) |
-| **Distribution** | Origin과 Edge를 묶는 배포 단위. 도메인 1개·설정 1세트 |
-| **TTL** | 캐시 유효 시간. Distribution·Behavior 단위로 조정 |
+| **Distribution** | Origin과 Edge를 묶는 배포 단위. 도메인 1개, 설정 1세트 |
+| **TTL** | 캐시 유효 시간. Distribution, Behavior 단위로 조정 |
 
 ## 콘텐츠 전달 흐름
 
@@ -30,8 +30,8 @@ AWS의 **CDN(Content Delivery Network) 서비스**. HTTP/HTTPS로 S3·ALB·EC2·
                                                  └─ miss → Origin 요청 → 응답을 양쪽에 캐싱
 ```
 
-- Edge 간·Edge↔Origin은 **AWS 백본 네트워크** → 일반 인터넷 경로보다 빠르고 안정
-- ALB·EC2·S3 Website 같은 **AWS Origin**에서 Origin → CloudFront 전송은 무료
+- Edge 간, Edge↔Origin은 **AWS 백본 네트워크** → 일반 인터넷 경로보다 빠르고 안정
+- ALB, EC2, S3 Website 같은 **AWS Origin**에서 Origin → CloudFront 전송은 무료
 
 ## Origin 접근 제어 — OAI vs OAC
 
@@ -63,14 +63,14 @@ S3를 Origin으로 사용할 때 **버킷을 Public으로 풀지 않고 CloudFro
 ### Geolocation Restriction (지리적 제한)
 
 - Distribution 단위로 **Allowlist / Blocklist** 국가 지정
-- 지정 국가 IP는 응답 거부 (라이선스·규제·차단 대응)
+- 지정 국가 IP는 응답 거부 (라이선스, 규제, 차단 대응)
 
 ### Signed URL / Signed Cookie
 
-- 인증된 사용자만 Distribution 접근 허용. **만료 시각·IP 범위** 지정 가능
+- 인증된 사용자만 Distribution 접근 허용. **만료 시각, IP 범위** 지정 가능
 - 사용 흐름: 계정 보안자격증명에서 **CloudFront Key Pair 생성** → 백엔드에서 URL/쿠키 서명 → 클라이언트에 전달
 - 용도: 유료 미디어 스트리밍, 멤버십 콘텐츠, 다운로드 토큰
-- **Signed URL**: 단일 파일 접근. **Signed Cookie**: 다수 파일 묶음 (HLS·DASH 스트리밍)
+- **Signed URL**: 단일 파일 접근. **Signed Cookie**: 다수 파일 묶음 (HLS, DASH 스트리밍)
 
 ## 캐시 제어 — TTL과 Cache Invalidation
 
@@ -94,11 +94,11 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 |------------|----------|------|------|
 | **Price Class All** | 전 세계 모든 Edge | 최고 | 가장 비쌈 |
 | **Price Class 200** | 가장 비싼 리전 제외 | 중간 | 중간 |
-| **Price Class 100** | 가장 저렴한 리전만 (북미·유럽 중심) | 낮음 | 가장 저렴 |
+| **Price Class 100** | 가장 저렴한 리전만 (북미, 유럽 중심) | 낮음 | 가장 저렴 |
 
 추가 요금 포인트:
 - 요청 수 + Edge → 사용자 아웃바운드 전송량
-- **AWS Origin → CloudFront 무료** (S3·ELB·API Gateway)
+- **AWS Origin → CloudFront 무료** (S3, ELB, API Gateway)
 - 월 50GB 무료 전송 (계정별 항시 무료, 프리티어 아님)
 - Invalidation 1,000 경로/월 무료
 
@@ -115,31 +115,31 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 | 항목 | CloudFront Functions | Lambda@Edge |
 |------|----------------------|-------------|
 | 실행 위치 | Edge (최말단) | Regional Edge |
-| 언어 | JavaScript (ES5 서브셋) | Node.js · Python |
-| 최대 실행 시간 | 1ms | 5초(viewer) · 30초(origin) |
+| 언어 | JavaScript (ES5 서브셋) | Node.js, Python |
+| 최대 실행 시간 | 1ms | 5초(viewer), 30초(origin) |
 | 메모리 | 2MB | 최대 10GB |
-| 용도 | 헤더 조작 · URL 재작성 · 간단한 인증 | 이미지 가공 · A/B 테스트 · 복잡한 인증·SSR |
+| 용도 | 헤더 조작, URL 재작성, 간단한 인증 | 이미지 가공, A/B 테스트, 복잡한 인증, SSR |
 | 요금 | 매우 저렴 | 상대적으로 비쌈 |
 
 ## 정적 사이트 패턴 — S3 + CloudFront
 
-자세한 SPA 배포·OAC 설정·Error Response 처리는 [[CDN]] 참조. 핵심만 요약:
+자세한 SPA 배포, OAC 설정, Error Response 처리는 [[CDN]] 참조. 핵심만 요약:
 
 - S3 버킷 Public 차단 → CloudFront만 OAC로 접근
 - ACM 인증서는 us-east-1 발급
 - SPA 404 대응: CloudFront Error Response 404/403 → `/index.html` 200으로 재매핑
 - `index.html`은 `no-cache`, 해시 파일명 자산은 `max-age=31536000, immutable`
 
-## 시험·면접 체크포인트
+## 시험, 면접 체크포인트
 
 - **CDN의 두 가지 효과**: 지리적 근접성(지연 ↓) + Origin 부하 분산
-- Origin 종류: AWS Origin (S3·ALB·API Gateway) vs Custom Origin (외부 HTTP)
-- **OAI vs OAC** — 신규는 OAC. OAC는 SSE-KMS·SigV4·POST 지원
+- Origin 종류: AWS Origin (S3, ALB, API Gateway) vs Custom Origin (외부 HTTP)
+- **OAI vs OAC** — 신규는 OAC. OAC는 SSE-KMS, SigV4, POST 지원
 - **Signed URL vs Signed Cookie** — 단일 vs 다수 파일, HLS/DASH는 Cookie
 - **Geolocation Restriction** — Allowlist/Blocklist
 - **TTL vs Cache Invalidation** — 무효화는 비용 발생, 파일명 해시 병행
 - **Price Class** 3종과 트레이드오프
-- **CloudFront Functions vs Lambda@Edge** 선택 기준 (실행 위치·언어·시간·용도)
+- **CloudFront Functions vs Lambda@Edge** 선택 기준 (실행 위치, 언어, 시간, 용도)
 - ACM 인증서는 **us-east-1** 필수
 - AWS Origin → CloudFront 전송 **무료**, Shield Standard 자동 포함
 
@@ -147,9 +147,9 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - AWS SAA C03 학습 자료 — CloudFront
 
 ## 관련 문서
-- [[CDN|CDN 일반 개념 · S3+CloudFront 정적 배포]]
-- [[S3|S3 (Origin·OAC·Transfer Acceleration)]]
-- [[AWS|EC2/ALB/Route 53]]
+- [[CDN|CDN 일반 개념, S3+CloudFront 정적 배포]]
+- [[S3|S3 (Origin, OAC, Transfer Acceleration)]]
+- [[EC2|EC2/ALB/Route 53]]
 - [[AWS-Lambda|Lambda@Edge]]
 - [[VPC|VPC]]
-- [[IAM|IAM (Signed URL·OAC 정책)]]
+- [[IAM|IAM (Signed URL, OAC 정책)]]

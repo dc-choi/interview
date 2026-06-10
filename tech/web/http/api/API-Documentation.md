@@ -7,22 +7,22 @@ aliases: ["API Documentation", "API 문서화"]
 
 # API 문서화
 
-API는 **서비스의 계약**. 문서화가 구린 API는 소비자(프론트·모바일·외부 파트너)가 실제로 쓸 수 없다. 도구 선택보다 더 중요한 건 **"스펙이 진실과 일치하는가"** — 코드와 동기화 실패가 가장 흔한 실무 함정.
+API는 **서비스의 계약**. 문서화가 구린 API는 소비자(프론트, 모바일, 외부 파트너)가 실제로 쓸 수 없다. 도구 선택보다 더 중요한 건 **"스펙이 진실과 일치하는가"** — 코드와 동기화 실패가 가장 흔한 실무 함정.
 
 ## 문서화 방식 비교
 
 | 방식 | 강점 | 약점 |
 |---|---|---|
-| **OpenAPI/Swagger** | **표준**, Swagger UI·Codegen·Postman 호환 | YAML/JSON 길어짐, 수기 관리 비용 |
+| **OpenAPI/Swagger** | **표준**, Swagger UI, Codegen, Postman 호환 | YAML/JSON 길어짐, 수기 관리 비용 |
 | **Blueprint** | 마크다운 기반, 읽기 좋음 | 생태계 축소, Dredd 같은 도구 제한적 |
 | **GraphQL Schema** | **스키마 자체가 문서** | GraphQL 프로젝트에 한정 |
 | **ReadMe / GitBook** | UI 훌륭, 비개발자 공유 쉬움 | 코드 동기화 어려움 |
 | **Postman Collection** | 즉시 테스트 가능 | 문서 목적으론 제한적 |
-| **Slate / ReDoc / Swagger UI** | 정적 사이트로 배포, 예쁨 | 입력은 OpenAPI·markdown |
+| **Slate / ReDoc / Swagger UI** | 정적 사이트로 배포, 예쁨 | 입력은 OpenAPI, markdown |
 
 ## 오늘날 기본값: OpenAPI 3.x
 
-- **업계 표준** — 거의 모든 언어·프레임워크에 generator 존재
+- **업계 표준** — 거의 모든 언어, 프레임워크에 generator 존재
 - **스펙 파일 → UI 자동 생성** (Swagger UI, ReDoc)
 - **스펙 파일 → 클라이언트 SDK 자동 생성** (openapi-generator)
 - **스펙 파일 → 목(mock) 서버** (Prism, Stoplight)
@@ -33,12 +33,12 @@ API는 **서비스의 계약**. 문서화가 구린 API는 소비자(프론트·
 문서가 거짓말이 되지 않게 하는 게 진짜 과제. 세 접근:
 
 ### 1. Code-First (코드 → 스펙 생성)
-코드에 애노테이션·데코레이터로 메타데이터 추가 → 빌드 시 OpenAPI 생성.
+코드에 애노테이션, 데코레이터로 메타데이터 추가 → 빌드 시 OpenAPI 생성.
 
 예시:
-- Spring: **springdoc-openapi** (`@Operation`·`@Parameter`) 
-- NestJS: **`@nestjs/swagger`** (`@ApiOperation`·`@ApiProperty`)
-- Express: tsoa·express-openapi
+- Spring: **springdoc-openapi** (`@Operation`, `@Parameter`) 
+- NestJS: **`@nestjs/swagger`** (`@ApiOperation`, `@ApiProperty`)
+- Express: tsoa, express-openapi
 - FastAPI: **자동 생성** (타입 힌트 기반, 가장 우아)
 - Django: drf-spectacular
 
@@ -46,9 +46,9 @@ API는 **서비스의 계약**. 문서화가 구린 API는 소비자(프론트·
 **단점**: 애노테이션 보일러플레이트, 코드에 문서화 관심사 섞임.
 
 ### 2. Spec-First (스펙 → 코드 생성)
-OpenAPI 스펙 먼저 작성 → Controller 인터페이스·클라이언트 SDK 자동 생성.
+OpenAPI 스펙 먼저 작성 → Controller 인터페이스, 클라이언트 SDK 자동 생성.
 
-**장점**: API 설계를 코드보다 먼저 검토·합의, 프론트가 mock으로 병렬 개발.
+**장점**: API 설계를 코드보다 먼저 검토, 합의, 프론트가 mock으로 병렬 개발.
 **단점**: 스펙과 구현이 어긋나면 잡기 어려움, 생성된 코드 수정 시 덮어쓰기 충돌.
 
 ### 3. Manual (수기 관리)
@@ -59,8 +59,8 @@ GitBook, Slate, ReadMe, Confluence, 심지어 Excel.
 
 ## 실무 선택 가이드
 
-- **REST API + 내부·외부 소비자** → **OpenAPI Code-First**가 기본. Spring/NestJS/FastAPI 모두 지원
-- **GraphQL** → 스키마 + GraphiQL·Apollo Studio
+- **REST API + 내부, 외부 소비자** → **OpenAPI Code-First**가 기본. Spring/NestJS/FastAPI 모두 지원
+- **GraphQL** → 스키마 + GraphiQL, Apollo Studio
 - **gRPC** → `.proto` 파일이 곧 문서, `buf` 같은 도구로 HTML 생성
 - **비개발자도 보는 공개 API** → OpenAPI + ReDoc으로 정적 사이트 배포
 
@@ -69,16 +69,16 @@ Code-First + 자동 생성된 UI 배포가 가장 일반적.
 ## 좋은 API 문서의 요건
 
 ### 필수
-- **엔드포인트 경로·메서드**
-- **요청**: 경로/쿼리/헤더/바디 파라미터, 각 타입·제약(필수 여부, 범위)
+- **엔드포인트 경로, 메서드**
+- **요청**: 경로/쿼리/헤더/바디 파라미터, 각 타입, 제약(필수 여부, 범위)
 - **응답**: 상태 코드별 바디 스키마, 에러 형식
-- **인증 방식** (Bearer·Cookie·API Key)
-- **예시 요청·응답** (curl, JSON)
+- **인증 방식** (Bearer, Cookie, API Key)
+- **예시 요청, 응답** (curl, JSON)
 
 ### 권장
 - **에러 코드 사전** — `ERR_INVALID_EMAIL` 같은 애플리케이션 레벨 코드와 설명
 - **Rate Limit** 정책
-- **Pagination·Filtering·Sorting** 컨벤션
+- **Pagination, Filtering, Sorting** 컨벤션
 - **Versioning** 정책
 - **Changelog** — 최근 변경 사항
 - **Try it out** 버튼 — 실제 호출 가능 (Swagger UI)
@@ -90,18 +90,18 @@ Code-First + 자동 생성된 UI 배포가 가장 일반적.
 
 ## 리뷰 문화
 
-API 문서는 **"올려놓고 읽어봐 주세요"만으로 안 된다**. 프론트·모바일·QA와 **대면 리뷰**가 효과적:
+API 문서는 **"올려놓고 읽어봐 주세요"만으로 안 된다**. 프론트, 모바일, QA와 **대면 리뷰**가 효과적:
 - 소비자 관점에서 "이 필드는 왜 옵션인가?" 같은 질문으로 설계 결함 발견
-- 인증·에러 처리가 일관성 있는지 확인
+- 인증, 에러 처리가 일관성 있는지 확인
 - 문서화 누락 감지
 
 ## 흔한 실수
 
-- **이메일·비밀번호 예시를 실제 값으로** → 보안 사고
+- **이메일, 비밀번호 예시를 실제 값으로** → 보안 사고
 - **성공 응답만 있고 에러 응답 누락** → 소비자가 장애 처리 못 함
 - **Authentication 설명 모호** → 프론트 개발 시간 2배
 - **버저닝 전략 없음** → v1 파괴적 변경 시 모든 클라이언트 깨짐
-- **자동 생성인데 예시·설명 비어있음** → 타입만 있고 맥락 없음
+- **자동 생성인데 예시, 설명 비어있음** → 타입만 있고 맥락 없음
 
 ## 면접 체크포인트
 
@@ -118,4 +118,4 @@ API 문서는 **"올려놓고 읽어봐 주세요"만으로 안 된다**. 프론
 ## 관련 문서
 - [[REST|REST API]]
 - [[API-Comparison|REST vs GraphQL vs gRPC]]
-- [[API-Conventions|API 컨벤션 (네이밍·날짜·에러)]]
+- [[API-Conventions|API 컨벤션 (네이밍, 날짜, 에러)]]

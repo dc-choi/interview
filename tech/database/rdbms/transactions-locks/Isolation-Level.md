@@ -29,12 +29,12 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 ### 레벨 2: Repeatable Read
 
 - MySQL InnoDB의 기본 격리 수준
-- 선행 트랜잭션이 읽은 데이터는 트랜잭션이 종료될 때까지 후행 트랜잭션이 갱신·삭제할 수 없으므로, 같은 데이터를 두 번 쿼리했을 때 일관성 있는 결과를 리턴
+- 선행 트랜잭션이 읽은 데이터는 트랜잭션이 종료될 때까지 후행 트랜잭션이 갱신, 삭제할 수 없으므로, 같은 데이터를 두 번 쿼리했을 때 일관성 있는 결과를 리턴
 - 표준 SQL에서는 Phantom Read 현상이 발생할 수 있음 (단, InnoDB는 Next-Key Lock으로 방지)
 
 ### 레벨 3: Serializable
 
-- 선행 트랜잭션이 읽은 데이터를 후행 트랜잭션이 갱신·삭제하지 못할 뿐만 아니라, 중간에 새로운 레코드를 삽입하는 것도 막음. 완벽한 읽기 일관성 보장
+- 선행 트랜잭션이 읽은 데이터를 후행 트랜잭션이 갱신, 삭제하지 못할 뿐만 아니라, 중간에 새로운 레코드를 삽입하는 것도 막음. 완벽한 읽기 일관성 보장
 - 사실상 트랜잭션을 직렬로 실행하는 효과 — INSERT/UPDATE/DELETE와 READ가 동시에 진행될 수 없어 동시성이 크게 떨어짐
 
 ## 격리 수준을 설정시 발생하는 문제점들
@@ -76,24 +76,24 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 
 ## Oracle → MySQL 이관 시 격리 수준 함정
 
-기본 격리 수준이 Oracle은 READ COMMITTED(RC), MySQL InnoDB는 REPEATABLE READ(RR). **같은 코드를 그대로 옮기면 Phantom-Read 회피 의도가 깨지거나, 잔액·재고 같은 누적값에서 동시 갱신 충돌이 발생할 수 있다.**
+기본 격리 수준이 Oracle은 READ COMMITTED(RC), MySQL InnoDB는 REPEATABLE READ(RR). **같은 코드를 그대로 옮기면 Phantom-Read 회피 의도가 깨지거나, 잔액, 재고 같은 누적값에서 동시 갱신 충돌이 발생할 수 있다.**
 
-전형적 사례: 결제·잔액 차감 로직
+전형적 사례: 결제, 잔액 차감 로직
 ```
 1. SELECT balance FROM accounts WHERE user_id = ?  -- 잔액 읽기
 2. (트랜잭션 안에서 잔액 검증)
 3. UPDATE accounts SET balance = ... WHERE user_id = ?
 ```
 
-- Oracle (RC): 매 SELECT가 최신 커밋 데이터를 읽음 → A·B 동시 요청에서 늦게 들어온 쪽이 갱신된 잔액을 봄
-- MySQL (RR): 트랜잭션 시작 시점 스냅샷 고정 → A가 먼저 잔액 갱신·커밋해도 B는 여전히 옛 잔액을 봄. B의 UPDATE가 의도치 않은 결과를 만들거나 실패
+- Oracle (RC): 매 SELECT가 최신 커밋 데이터를 읽음 → A, B 동시 요청에서 늦게 들어온 쪽이 갱신된 잔액을 봄
+- MySQL (RR): 트랜잭션 시작 시점 스냅샷 고정 → A가 먼저 잔액 갱신, 커밋해도 B는 여전히 옛 잔액을 봄. B의 UPDATE가 의도치 않은 결과를 만들거나 실패
 
 대응 패턴:
 1. **잔액 읽기를 락 안으로** — `SELECT ... FOR UPDATE`로 Current Read 강제. 락이 풀린 뒤 최신 커밋 데이터를 읽음
 2. **트랜잭션 격리 수준 명시적 변경** — Spring이라면 `@Transactional(isolation = Isolation.READ_COMMITTED)`로 해당 트랜잭션만 RC
 3. **DB 기본값 변경** — `transaction-isolation = READ-COMMITTED` (DBA 협의 필수, 영향 범위 큼)
 
-격리 수준은 절대적으로 좋고 나쁨이 없다. 비즈니스 요구사항(누적값 갱신·재고·잔액·예약)과 동시성 요구사항(처리량·응답시간) 사이의 트레이드오프이며, 이관 시점은 이 가정을 다시 검토할 좋은 기회다.
+격리 수준은 절대적으로 좋고 나쁨이 없다. 비즈니스 요구사항(누적값 갱신, 재고, 잔액, 예약)과 동시성 요구사항(처리량, 응답시간) 사이의 트레이드오프이며, 이관 시점은 이 가정을 다시 검토할 좋은 기회다.
 
 ## 출처
 - [m0rph2us — MySQL Isolation Level 이해하기](https://m0rph2us.github.io/mysql/transaction/2020/07/06/understanding-mysql-isolation-level.html)
@@ -101,7 +101,7 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 - [woojjam — 트랜잭션과 동시성 제어](https://woojjam.tistory.com/9)
 
 ## 관련 문서
-- [[Isolation-Level-Beyond-ANSI|ANSI 격리의 한계 · Strict Serializable · Snapshot Isolation]]
+- [[Isolation-Level-Beyond-ANSI|ANSI 격리의 한계, Strict Serializable, Snapshot Isolation]]
 - [[Transactions|트랜잭션]]
 - [[Lock|DB Lock]]
 - [[Index]]

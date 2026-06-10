@@ -7,14 +7,14 @@ aliases: ["Event-Driven Patterns", "이벤트 드리븐 실전 패턴", "Competi
 
 # 이벤트 드리븐 실전 패턴 3종
 
-이벤트 기반 시스템 설계에서 **반복적으로 등장하는 세 가지 실전 패턴**. 시스템 디자인 면접의 단골 주제이자, 실무에서 비동기 처리를 안전하게 만드는 기본 도구다. 메시징 일반은 [[Messaging-Patterns]]·[[Fan-Out-Architecture]] 참조.
+이벤트 기반 시스템 설계에서 **반복적으로 등장하는 세 가지 실전 패턴**. 시스템 디자인 면접의 단골 주제이자, 실무에서 비동기 처리를 안전하게 만드는 기본 도구다. 메시징 일반은 [[Messaging-Patterns]], [[Fan-Out-Architecture]] 참조.
 
 ## 3가지 패턴 개관
 
 | 패턴 | 해결하는 문제 | 핵심 도구 |
 |---|---|---|
-| **Competing Consumer** | 대량 메시지를 여러 소비자에게 로드 밸런싱 | 잠금·가시성 타임아웃·prefetch |
-| **Retry + DLQ** | 실패한 메시지의 안전한 재시도 | retry queue·DLQ·지수 백오프 |
+| **Competing Consumer** | 대량 메시지를 여러 소비자에게 로드 밸런싱 | 잠금, 가시성 타임아웃, prefetch |
+| **Retry + DLQ** | 실패한 메시지의 안전한 재시도 | retry queue, DLQ, 지수 백오프 |
 | **Async Request-Response** | 인스턴스가 여러 개일 때 응답을 올바른 요청자에게 라우팅 | Correlation ID |
 
 세 패턴은 **배타적이 아니라 보완적** — 실무에서 세 패턴이 한 시스템 안에 공존하는 경우가 흔하다.
@@ -67,7 +67,7 @@ Main Queue → Consumer
 
 **Retry Queue**: 즉시 재시도하지 말고 **일정 시간 지연** 후 재투입. 외부 API 일시 장애가 회복될 여유를 줌.
 
-**DLQ (Dead Letter Queue)**: 재시도 한도를 넘긴 메시지를 **별도 큐에 격리**. 자동 버리지 않고 사람·알림·분석 경로로.
+**DLQ (Dead Letter Queue)**: 재시도 한도를 넘긴 메시지를 **별도 큐에 격리**. 자동 버리지 않고 사람, 알림, 분석 경로로.
 
 ### 지수 백오프 (Exponential Backoff)
 
@@ -80,8 +80,8 @@ Main Queue → Consumer
 
 | 오류 종류 | 처리 |
 |---|---|
-| **일시적 (Transient)** | 재시도 (네트워크·타임아웃·503 Rate Limit) |
-| **영구적 (Permanent)** | 즉시 DLQ (검증 오류·401·404·데이터 스키마 불일치) |
+| **일시적 (Transient)** | 재시도 (네트워크, 타임아웃, 503 Rate Limit) |
+| **영구적 (Permanent)** | 즉시 DLQ (검증 오류, 401, 404, 데이터 스키마 불일치) |
 | **독성 메시지 (Poison)** | 즉시 DLQ (반복 실패, 크기 초과, 악성 페이로드) |
 
 분류 없이 모든 실패를 재시도하면 **영구 오류가 무한 루프**를 만듦.
@@ -89,7 +89,7 @@ Main Queue → Consumer
 ### 필수 동반 요소
 
 - **멱등성 ([[Idempotency-Key]])** — 재시도해도 같은 결과. At-least-once 보장의 전제
-- **메시지 TTL** — 오래된 메시지의 강제 만료 (1일·7일 등)
+- **메시지 TTL** — 오래된 메시지의 강제 만료 (1일, 7일 등)
 - **재시도 횟수 헤더** — 메시지에 재시도 카운트 실어 보내 관리
 - **DLQ 알람** — DLQ가 비어있지 않으면 알림. 방치되면 운영 공백
 
@@ -97,7 +97,7 @@ Main Queue → Consumer
 
 - **AWS SQS**: Main Queue + Redrive Policy(maxReceiveCount 초과 시 DLQ로)
 - **RabbitMQ**: Dead Letter Exchange + delay plugin
-- **Kafka**: 직접 구현 (retry topic·DLT topic)
+- **Kafka**: 직접 구현 (retry topic, DLT topic)
 - **BullMQ**: `backoff.type = 'exponential'` + `attempts` 옵션
 
 ## 3. Async Request-Response Pattern
@@ -122,7 +122,7 @@ Main Queue → Consumer
 
 - **Correlation ID**: UUID v4 또는 `requestId`. 비즈니스 ID(주문 ID)와 분리 — 한 주문에 여러 요청 가능
 - **Reply Queue**: 요청자 측이 구독하는 응답 전용 큐
-- **대기 상태 저장소**: 인스턴스 로컬 (캐시·메모리·DB). 인스턴스 간 공유해야 하면 Redis
+- **대기 상태 저장소**: 인스턴스 로컬 (캐시, 메모리, DB). 인스턴스 간 공유해야 하면 Redis
 - **타임아웃**: 응답이 안 오면 실패 처리 (무한 대기 금지)
 
 ### 분산 추적과의 관계
@@ -167,11 +167,11 @@ API 서버 (요청자) ─┐
 
 ## 면접 체크포인트
 
-- **3패턴의 문제-해결 매칭** (경쟁 소비자·재시도·Correlation ID)
-- **Competing Consumer의 플랫폼별 잠금 메커니즘** (visibility timeout·peek-lock·prefetch·partition)
+- **3패턴의 문제-해결 매칭** (경쟁 소비자, 재시도, Correlation ID)
+- **Competing Consumer의 플랫폼별 잠금 메커니즘** (visibility timeout, peek-lock, prefetch, partition)
 - **Retry + DLQ 아키텍처**와 **지수 백오프 + Jitter** 필요성
 - **오류 분류** (일시적 vs 영구적 vs 독성)
-- **At-least-once와 멱등성**의 필수 결합 ([[At-Least-Once]]·[[Idempotency-Key]])
+- **At-least-once와 멱등성**의 필수 결합 ([[At-Least-Once]], [[Idempotency-Key]])
 - **Correlation ID**의 용도와 분산 추적 Trace ID와의 차이
 - 세 패턴의 **결합 시 아키텍처**
 
@@ -182,7 +182,7 @@ API 서버 (요청자) ─┐
 - [choidongkuen — 메시지 큐란?](https://velog.io/@choidongkuen/서버-메세지-큐Message-Queue-을-알아보자)
 
 ## 관련 문서
-- [[Messaging-Patterns|메시징 패턴 (Pub/Sub·Task Distribution·Request/Reply)]]
+- [[Messaging-Patterns|메시징 패턴 (Pub/Sub, Task Distribution, Request/Reply)]]
 - [[Fan-Out-Architecture|Fan-out Architecture (1:N 분배)]]
 - [[SQS|SQS]]
 - [[MQ-Kafka|Kafka]]

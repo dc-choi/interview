@@ -5,7 +5,7 @@ category: "OS & Runtime"
 aliases: ["libuv Threading", "libuv 스레드 풀", "libuv 스레딩", "libuv 에러"]
 ---
 
-### libuv 스레드 풀·스레딩·에러
+### libuv 스레드 풀, 스레딩, 에러
 libuv의 스레드 풀, 스레딩 프리미티브, 스레드 간 통신(`uv_async`), 동적 라이브러리 로딩, TTY, 시스템 정보 유틸리티, 그리고 에러 처리 규약을 다룬다.
 
 ## 스레드 풀 (`uv_threadpool`)
@@ -153,7 +153,7 @@ libuv의 에러는 음수 상수로 표현된다. 초기화/동기 함수가 음
 | `UV_EADDRINUSE` | 주소 이미 사용 중 |
 | `UV_ECONNREFUSED` / `UV_ECONNRESET` | 연결 거부됨 / 피어에 의해 리셋 |
 | `UV_ETIMEDOUT` | 연결 시간 초과 |
-| `UV_ENOENT` / `UV_EACCES` | 파일·디렉토리 없음 / 권한 부족 |
+| `UV_ENOENT` / `UV_EACCES` | 파일, 디렉토리 없음 / 권한 부족 |
 | `UV_ENOMEM` / `UV_ENOSPC` | 메모리 / 디스크 공간 부족 |
 | `UV_EMFILE` | 열린 파일 디스크립터 한도 초과 |
 | `UV_ECANCELED` / `UV_EOF` | 작업 취소됨 / 파일 끝 (스트림 종료) |
@@ -162,7 +162,7 @@ libuv의 에러는 음수 상수로 표현된다. 초기화/동기 함수가 음
 ## 관련 문서
 - [[libuv|libuv (TOC)]]
 - [[libuv-Architecture|libuv 아키텍처]]
-- [[libuv-Handles|libuv 핸들·요청·스트림]]
-- [[libuv-IO|libuv 네트워킹·파일시스템·프로세스]]
+- [[libuv-Handles|libuv 핸들, 요청, 스트림]]
+- [[libuv-IO|libuv 네트워킹, 파일시스템, 프로세스]]
 - [[Worker-Threads|워커 스레드]]
 - [[Async-Internals|비동기 내부 구조]]

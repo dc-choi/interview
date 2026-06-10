@@ -11,15 +11,15 @@ aliases: ["Secrets Manager", "AWS Secrets Manager"]
 
 ## 핵심
 
-- **Lambda 함수**를 사용하여 교체할 암호를 강제 생성·자동 회전
+- **Lambda 함수**를 사용하여 교체할 암호를 강제 생성, 자동 회전
 - KMS로 암호화
 - **RDS와 통합**: DB 자격 증명 자동 회전 가능
-- 그 외 여러 AWS 서비스·DB에도 즉시 통합
+- 그 외 여러 AWS 서비스, DB에도 즉시 통합
 
 ## 다중 리전 암호
 
 - 여러 AWS 리전에 암호 복제 → 기본 암호와 동기화된 **읽기 전용 복제본** 유지
-- 글로벌 애플리케이션·DR 시나리오
+- 글로벌 애플리케이션, DR 시나리오
 
 ## Parameter Store와 비교
 
@@ -40,7 +40,7 @@ aliases: ["Secrets Manager", "AWS Secrets Manager"]
 
 ## 관련 문서
 
-- [[SSM-Parameter-Store]] · [[KMS]] · [[RDS-Security-Group]]
+- [[SSM-Parameter-Store]], [[KMS]], [[RDS-Security-Group]]
 
 ## 출처
 

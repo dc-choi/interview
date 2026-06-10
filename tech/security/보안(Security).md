@@ -9,9 +9,9 @@ aliases: ["보안(Security)", "Security"]
 
 ## 목차
 
-- [[tech/security/auth/인증(Auth)|인증 (Auth)]] — Session·JWT·OAuth2·FIDO·Refresh Token
-- [[tech/security/crypto/암호(Crypto)|암호 (Cryptography)]] — 패스워드 해싱·공개키·RSA
-- [[tech/security/web-attacks/웹공격(WebAttacks)|웹 공격 (Web Attacks)]] — CORS·CSRF·XSS
+- [[tech/security/auth/인증(Auth)|인증 (Auth)]] — Session, JWT, OAuth2, FIDO, Refresh Token
+- [[tech/security/crypto/암호(Crypto)|암호 (Cryptography)]] — 패스워드 해싱, 공개키, RSA
+- [[tech/security/web-attacks/웹공격(WebAttacks)|웹 공격 (Web Attacks)]] — CORS, CSRF, XSS
 
 ## 미작성
 - [ ] [[Token-Revocation|Token Revocation]]

@@ -5,9 +5,9 @@ category: "OS&런타임(OS&Runtime)"
 aliases: ["Node.js Design Patterns", "Node.js 디자인 패턴", "Creational Patterns in Node.js"]
 ---
 
-# Node.js 생성 패턴 (Singleton · Factory · Builder · Prototype)
+# Node.js 생성 패턴 (Singleton, Factory, Builder, Prototype)
 
-GoF 생성(Creational) 패턴이 Node.js 환경에서 어떻게 적용되는지. 자바스크립트는 프로토타입 기반 객체 모델 + 모듈 캐싱이라는 특성 덕분에 **클래식한 GoF 구현을 그대로 옮기면 과설계**가 되는 경우가 많다. 언어·런타임이 이미 제공하는 기능을 먼저 고려해야 한다.
+GoF 생성(Creational) 패턴이 Node.js 환경에서 어떻게 적용되는지. 자바스크립트는 프로토타입 기반 객체 모델 + 모듈 캐싱이라는 특성 덕분에 **클래식한 GoF 구현을 그대로 옮기면 과설계**가 되는 경우가 많다. 언어, 런타임이 이미 제공하는 기능을 먼저 고려해야 한다.
 
 ## 1. Singleton
 
@@ -28,10 +28,10 @@ const db = require('./db'); // 항상 같은 인스턴스
 ```
 
 **주의할 점**:
-- 모듈 캐시 키는 **해석된 경로** 기준. 심볼릭 링크·모노레포에서 경로가 달라지면 별도 인스턴스 생성
+- 모듈 캐시 키는 **해석된 경로** 기준. 심볼릭 링크, 모노레포에서 경로가 달라지면 별도 인스턴스 생성
 - ESM은 명세상 "한 번만 평가"가 보장되지만 런타임에 따라 캐시 구현 차이 존재
 - **테스트 어려움** — 전역 상태라 테스트 간 누수. 주입형(생성자 파라미터) 구조가 더 유연
-- **멀티 프로세스(cluster·PM2)** 에서는 프로세스별 싱글톤 → 프로세스 간 상태는 Redis 등 외부 저장소로
+- **멀티 프로세스(cluster, PM2)** 에서는 프로세스별 싱글톤 → 프로세스 간 상태는 Redis 등 외부 저장소로
 
 **언제 쓰나**: DB 커넥션 풀, 로거, 설정 객체. 공유 상태가 필요하고 동시성 이슈가 작은 자원.
 
@@ -114,13 +114,13 @@ const c2 = Object.create(Connection).init('b.example.com');
 - 공통 메서드를 여러 인스턴스가 **참조 공유** → 메모리 효율
 - 동적으로 프로토타입을 바꿔 행위를 런타임에 교체 가능
 
-**클래스 vs 프로토타입**: 현대 JS에서는 `class`로 선언해도 내부적으로 프로토타입을 쓰지만, 명시적 `Object.create`가 필요한 경우는 드물다(mixin·다중 상속 우회 정도). 자세한 배경은 [[JavaScript-Prototype-Philosophy|JS가 프로토타입을 선택한 이유]].
+**클래스 vs 프로토타입**: 현대 JS에서는 `class`로 선언해도 내부적으로 프로토타입을 쓰지만, 명시적 `Object.create`가 필요한 경우는 드물다(mixin, 다중 상속 우회 정도). 자세한 배경은 [[JavaScript-Prototype-Philosophy|JS가 프로토타입을 선택한 이유]].
 
 ## 언제 어떤 패턴을 쓰는가
 
 | 상황 | 추천 패턴 |
 |---|---|
-| 앱 전역에서 단 하나의 커넥션·설정 | Singleton(모듈 캐싱) |
+| 앱 전역에서 단 하나의 커넥션, 설정 | Singleton(모듈 캐싱) |
 | 환경/설정에 따라 다른 구체 객체 생성 | Factory |
 | 선택 파라미터가 많고 조건부 구성 | Builder |
 | 공통 행위를 공유하며 경량 인스턴스 다수 생성 | Prototype(또는 class) |
@@ -129,15 +129,15 @@ const c2 = Object.create(Connection).init('b.example.com');
 ## 과설계 주의
 
 - **Factory를 남발**하면 아무것도 숨기지 않는 `createX` 함수가 난립 → 단순 `new`보다 가치가 없음
-- **Singleton을 기본**으로 삼으면 테스트·분산 환경에서 금방 한계. 주입형 + IoC 컨테이너(NestJS·tsyringe)가 기본
+- **Singleton을 기본**으로 삼으면 테스트, 분산 환경에서 금방 한계. 주입형 + IoC 컨테이너(NestJS, tsyringe)가 기본
 - **Builder를 옵션 객체 대신** 무조건 쓰면 보일러플레이트만 증가
 
 ## 면접 체크포인트
 
 - Node.js 모듈 캐싱이 Singleton을 대체하는 이유
 - 모듈 캐시가 "프로세스별"이라는 한계와 멀티 프로세스 대응(Redis 등)
-- Factory와 단순 `new`의 가치 차이(교체 가능성·교차 관심사)
-- Builder가 옵션 객체보다 유리한 상황(조건부·미완성 상태 보호)
+- Factory와 단순 `new`의 가치 차이(교체 가능성, 교차 관심사)
+- Builder가 옵션 객체보다 유리한 상황(조건부, 미완성 상태 보호)
 - Prototype 패턴과 JavaScript 프로토타입 체인의 관계
 
 ## 출처

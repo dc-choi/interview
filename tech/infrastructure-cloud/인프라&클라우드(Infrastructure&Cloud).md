@@ -9,10 +9,10 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## 목차
 
-- [[tech/infrastructure-cloud/foundation/클라우드기초(Foundation)|클라우드 기초 (Foundation)]] — IaaS/PaaS/FaaS·IaC
-- [[tech/infrastructure-cloud/container/컨테이너(Container)|컨테이너 (Container)]] — Docker·Compose·Multi-stage·이미지 최적화
-- [[tech/infrastructure-cloud/aws/AWS서비스(AWSServices)|AWS 서비스 (AWS)]] — EC2/ASG/ALB·Lambda
-- [[tech/infrastructure-cloud/network/인프라네트워크(InfraNetwork)|인프라 네트워크 (Network)]] — DNS·Load Balancer·Reverse Proxy
+- [[tech/infrastructure-cloud/foundation/클라우드기초(Foundation)|클라우드 기초 (Foundation)]] — IaaS/PaaS/FaaS, IaC
+- [[tech/infrastructure-cloud/container/컨테이너(Container)|컨테이너 (Container)]] — Docker, Compose, Multi-stage, 이미지 최적화
+- [[tech/infrastructure-cloud/aws/AWS서비스(AWSServices)|AWS 서비스 (AWS)]] — EC2/ASG/ALB, Lambda
+- [[tech/infrastructure-cloud/network/인프라네트워크(InfraNetwork)|인프라 네트워크 (Network)]] — DNS, Load Balancer, Reverse Proxy
 
 ## 미작성 — AWS
 - [ ] [[IAM]]
@@ -24,7 +24,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [ ] [[NAT-Subnet|NAT / Public vs Private subnet]]
 
 ## Kubernetes
-- [x] [[K8s-Resource-Right-Sizing|Resource Right-Sizing (P95·버퍼·역산식·컴포넌트 차등·롤백 기준)]]
+- [x] [[K8s-Resource-Right-Sizing|Resource Right-Sizing (P95, 버퍼, 역산식, 컴포넌트 차등, 롤백 기준)]]
 
 ## 미작성 — Kubernetes
 - [ ] [[K8s-Pod-Deployment|Pod / Deployment / Service / Ingress]]

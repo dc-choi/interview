@@ -70,7 +70,7 @@ callback을 호출해야 다음 청크를 받을 수 있다 → 이것이 배압
 예: net.Socket (TCP 소켓), zlib 스트림
 ```
 
-**Duplex의 실제 사례** — 모두 입력·출력 경로가 **서로 무관**하게 흐름:
+**Duplex의 실제 사례** — 모두 입력, 출력 경로가 **서로 무관**하게 흐름:
 
 | 사례 | 쓰기 측 | 읽기 측 |
 |------|--------|--------|
@@ -85,7 +85,7 @@ net.createServer(socket => {
   socket.on('data', d => console.log('client said:', d.toString()));
 });
 
-// Child stdio — stdin은 Writable·stdout은 Readable이지만
+// Child stdio — stdin은 Writable, stdout은 Readable이지만
 // child 자체가 양방향 통신 채널
 const child = spawn('node', ['script.js']);
 child.stdin.write('input');
@@ -97,7 +97,7 @@ child.stdout.on('data', d => console.log(d.toString()));
 | 축 | Duplex | Transform |
 |----|--------|-----------|
 | 입력↔출력 관계 | 독립 (무관할 수도) | 1:1 변환 (입력 → 변환 → 출력) |
-| 사용처 | 양방향 통신 채널 | gzip·암호화·인코딩 변환 |
+| 사용처 | 양방향 통신 채널 | gzip, 암호화, 인코딩 변환 |
 | 구현 메서드 | `_read`, `_write` | `_transform` |
 
 ### 4. Transform

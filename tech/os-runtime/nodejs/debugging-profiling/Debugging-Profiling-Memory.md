@@ -65,11 +65,11 @@ Node.js는 가비지 컬렉션 언어이므로, 참조가 남아있는 객체는
 
 | 패턴 | 증상 | 대응 |
 |------|------|------|
-| **전역 변수에 데이터 누적** | 모듈 스코프 Map/Array에 push만 하고 정리 X | TTL·LRU 캐시 또는 명시 정리 |
+| **전역 변수에 데이터 누적** | 모듈 스코프 Map/Array에 push만 하고 정리 X | TTL, LRU 캐시 또는 명시 정리 |
 | **EventEmitter 리스너 누적** | 같은 emitter에 리스너 반복 등록 (`on` 누적) | `once` 사용 또는 `off`/`removeListener` |
 | **클로저가 큰 객체 캡처** | 핸들러 함수가 큰 변수를 참조해 GC 막음 | 필요한 필드만 추출, 핸들러 분리 |
 | **타이머 미정리** | `setInterval` 등록 후 해제 X | `clearInterval`, OnDestroy 정리 |
-| **HTTP 요청 미종료** | 응답 안 끝나서 socket·헤더 잔존 | timeout·`req.destroy()` |
+| **HTTP 요청 미종료** | 응답 안 끝나서 socket, 헤더 잔존 | timeout, `req.destroy()` |
 | **Buffer 풀 슬라이스 장기 보관** | 8KB 풀 전체가 GC 안 됨 | `allocUnsafeSlow` 또는 복사본 |
 
 ```ts

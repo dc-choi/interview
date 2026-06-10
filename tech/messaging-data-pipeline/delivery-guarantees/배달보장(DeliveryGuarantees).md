@@ -7,7 +7,7 @@ aliases: ["Delivery Guarantees"]
 
 # 배달 보장(Delivery Guarantees)
 
-Delivery semantics·At-Least-Once·Idempotency·Consumer Group — 메시지 처리 보장.
+Delivery semantics, At-Least-Once, Idempotency, Consumer Group — 메시지 처리 보장.
 
 ## 목차
 - [x] [[Delivery-Semantics|Delivery semantics (at-least/most/exactly-once, 시스템별 지원)]]

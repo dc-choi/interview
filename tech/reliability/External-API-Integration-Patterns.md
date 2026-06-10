@@ -47,7 +47,7 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 - **Stale-While-Revalidate**: 만료된 캐시로 즉시 응답 + 백그라운드 재조회
 
 ### 5. 회로 차단 (Circuit Breaker)
-지속 실패 시 일정 시간 **호출 자체를 중단**하고 캐시, 기본값으로 응답. [[External-Service-Resilience#Circuit Breaker]] 참고.
+지속 실패 시 일정 시간 **호출 자체를 중단**하고 캐시, 기본값으로 응답. [[External-Service-Resilience#3. Circuit Breaker (서킷 브레이커)|Circuit Breaker]] 참고.
 
 ## 거래형 연동 패턴
 

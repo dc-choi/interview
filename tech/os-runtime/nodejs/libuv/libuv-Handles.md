@@ -5,8 +5,8 @@ category: "OS & Runtime"
 aliases: ["libuv Handles", "libuv 핸들과 요청", "libuv 이벤트 루프 API"]
 ---
 
-### libuv 핸들·요청·스트림
-libuv의 두 가지 핵심 추상화(Handle/Request), 이벤트 루프 API, 참조 카운팅, 스트림, 그리고 보조 핸들(타이머·idle·prepare·check·poll)을 다룬다.
+### libuv 핸들, 요청, 스트림
+libuv의 두 가지 핵심 추상화(Handle/Request), 이벤트 루프 API, 참조 카운팅, 스트림, 그리고 보조 핸들(타이머, idle, prepare, check, poll)을 다룬다.
 
 ## 핸들과 요청
 
@@ -173,7 +173,7 @@ libuv 자체의 TCP/UDP에는 사용하지 않는다.
 ## 관련 문서
 - [[libuv|libuv (TOC)]]
 - [[libuv-Architecture|libuv 아키텍처]]
-- [[libuv-IO|libuv 네트워킹·파일시스템·프로세스]]
-- [[libuv-Threading|libuv 스레드 풀·스레딩·에러]]
+- [[libuv-IO|libuv 네트워킹, 파일시스템, 프로세스]]
+- [[libuv-Threading|libuv 스레드 풀, 스레딩, 에러]]
 - [[Event-Loop|이벤트 루프]]
 - [[Stream|스트림]]

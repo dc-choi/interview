@@ -7,7 +7,7 @@ aliases: ["TS Enum", "TypeScript Enum Antipattern"]
 
 # TypeScript enum — 쓰지 말아야 할 이유와 대안
 
-TS의 `enum`은 처음 배울 땐 "Java처럼 타입 안전한 상수 모음"으로 보이지만, 실제론 **JS로 컴파일되는 과정에서 예상치 못한 부작용**을 낳는다. `as const` 객체·Union Type이 대부분 상황에서 더 낫다.
+TS의 `enum`은 처음 배울 땐 "Java처럼 타입 안전한 상수 모음"으로 보이지만, 실제론 **JS로 컴파일되는 과정에서 예상치 못한 부작용**을 낳는다. `as const` 객체, Union Type이 대부분 상황에서 더 낫다.
 
 ## enum의 4가지 문제
 
@@ -17,9 +17,9 @@ TS의 `enum`은 처음 배울 땐 "Java처럼 타입 안전한 상수 모음"으
 enum Role { ADMIN, USER }
 // → { 0: 'ADMIN', 1: 'USER', ADMIN: 0, USER: 1 }
 ```
-`Object.values(Role)`이 숫자·문자열 모두 반환 → 순회 로직 버그.
+`Object.values(Role)`이 숫자, 문자열 모두 반환 → 순회 로직 버그.
 
-해결책: 문자열 enum (`Role.ADMIN = 'ADMIN'`) 또는 `const enum` — 하지만 const enum은 babel·isolatedModules와 호환 문제.
+해결책: 문자열 enum (`Role.ADMIN = 'ADMIN'`) 또는 `const enum` — 하지만 const enum은 babel, isolatedModules와 호환 문제.
 
 ### 2. 리터럴로 직접 쓸 수 없음
 ```
@@ -27,7 +27,7 @@ function setRole(r: Role) { ... }
 setRole('ADMIN');     // ❌ 에러
 setRole(Role.ADMIN);  // ✅ OK
 ```
-외부 API·JSON에서 온 문자열을 그대로 못 씀. **항상 enum 값으로 변환** 필요 → 쓸모없는 wrapping.
+외부 API, JSON에서 온 문자열을 그대로 못 씀. **항상 enum 값으로 변환** 필요 → 쓸모없는 wrapping.
 
 ### 3. Tree-Shaking 방해
 enum은 **IIFE로 컴파일** → 번들러가 죽은 코드 제거 어려움. 100개 값 중 1개만 써도 100개 모두 번들에 포함.
@@ -62,16 +62,16 @@ type Role = 'ADMIN' | 'USER';
 ```
 
 **장점**:
-- 가장 단순·가벼움
+- 가장 단순, 가벼움
 - 런타임 코드 0
 
 **단점**:
-- 순회·역탐색 불가 (런타임 값 없음)
+- 순회, 역탐색 불가 (런타임 값 없음)
 - 값 추가 시 여러 곳 수정
 
 ## enum을 써도 OK인 경우 (드묾)
 
-- 순수 내부 코드 (외부 API·JSON 교환 없음)
+- 순수 내부 코드 (외부 API, JSON 교환 없음)
 - 번들 크기에 민감하지 않은 Node.js 백엔드
 - `const enum`을 쓰되 빌드 체인이 지원
 

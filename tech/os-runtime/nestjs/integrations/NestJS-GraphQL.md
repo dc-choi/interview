@@ -5,9 +5,9 @@ category: "OS & Runtime - NestJS"
 aliases: ["NestJS GraphQL", "DataLoader", "Resolver"]
 ---
 
-# NestJS GraphQL — Resolver · DataLoader · Subscription
+# NestJS GraphQL — Resolver, DataLoader, Subscription
 
-`@nestjs/graphql`은 Apollo·Mercurius를 백엔드로 GraphQL을 NestJS DI/모듈 시스템에 통합. **code-first** 접근(데코레이터로 스키마 자동 생성)이 권장이며, schema-first도 지원.
+`@nestjs/graphql`은 Apollo, Mercurius를 백엔드로 GraphQL을 NestJS DI/모듈 시스템에 통합. **code-first** 접근(데코레이터로 스키마 자동 생성)이 권장이며, schema-first도 지원.
 
 ## code-first vs schema-first
 
@@ -42,7 +42,7 @@ export class UserResolver {
 }
 ```
 
-`@Args`·`@Info`·`@Context`·`@Parent`는 GraphQL 전용 데코레이터. HTTP의 `@Body`/`@Query`와는 다른 계열.
+`@Args`, `@Info`, `@Context`, `@Parent`는 GraphQL 전용 데코레이터. HTTP의 `@Body`/`@Query`와는 다른 계열.
 
 ## ResolveField — 필드별 비동기 해결
 
@@ -143,4 +143,4 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
 - [[NestJS|NestJS 개요]]
 - [[NestJS-ExecutionContext|ExecutionContext (GqlExecutionContext)]]
 - [[NestJS-Guards|Guards (GraphQL Guard 차이)]]
-- [[REST-vs-GraphQL|REST vs GraphQL]]
+- [[API-Comparison|REST vs GraphQL]]

@@ -5,7 +5,7 @@ category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Bifunctors and Profunctors", "Functoriality", "Bifunctor", "Profunctor", "Contravariant Functor"]
 ---
 
-# Bifunctors · Profunctors · Functor 변형
+# Bifunctors, Profunctors, Functor 변형
 
 기본 [[Functors|Functor]]는 한 인자에 대해 functorial이지만, 실무에서는 **두 인자 모두에 functorial**(Bifunctor), **사상 방향이 역전된**(Contravariant), **두 방향이 섞인**(Profunctor) 변형이 자주 등장한다. 이 변형들과 그 합성 규칙이 ADT가 "자동으로 Functor가 되는" 카테고리적 근거다.
 
@@ -16,9 +16,9 @@ aliases: ["Bifunctors and Profunctors", "Functoriality", "Bifunctor", "Profuncto
 | **Functor** (covariant) | `fmap : (a → b) → f a → f b` | 한 인자, 정방향 |
 | **Bifunctor** | `bimap : (a → c) → (b → d) → f a b → f c d` | 두 인자, 둘 다 정방향 |
 | **Contravariant** | `contramap : (b → a) → f a → f b` | 한 인자, 역방향 |
-| **Profunctor** | `dimap : (a → b) → (c → d) → p b c → p a d` | 두 인자, 첫째 역·둘째 정 |
+| **Profunctor** | `dimap : (a → b) → (c → d) → p b c → p a d` | 두 인자, 첫째 역, 둘째 정 |
 
-이름은 추상적이지만 모두 일상 코드의 핵심 인터페이스에 대응 (Either·Tuple·함수 타입·Lens 등).
+이름은 추상적이지만 모두 일상 코드의 핵심 인터페이스에 대응 (Either, Tuple, 함수 타입, Lens 등).
 
 ## Bifunctor — 두 인자 모두에 functorial
 
@@ -31,7 +31,7 @@ class Bifunctor f where
   second :: (b -> d) -> f a b -> f a d
 ```
 
-`first`·`second`는 `bimap`의 특수 케이스 (한쪽만 변환). 보통 `bimap`이 기본이고 두 보조는 디폴트 구현.
+`first`, `second`는 `bimap`의 특수 케이스 (한쪽만 변환). 보통 `bimap`이 기본이고 두 보조는 디폴트 구현.
 
 ### Tuple은 Bifunctor
 
@@ -65,7 +65,7 @@ const bimapEither = <A, B, C, D>(
     : { tag: 'Right', value: g(e.value) };
 ```
 
-`Result<T, E>`/`Either<L, R>`에서 **에러 변환과 값 변환을 동시에** 할 때 `bimap`이 핵심. 보통 `mapError`·`map` 두 메서드로 노출.
+`Result<T, E>`/`Either<L, R>`에서 **에러 변환과 값 변환을 동시에** 할 때 `bimap`이 핵심. 보통 `mapError`, `map` 두 메서드로 노출.
 
 ## Contravariant Functor — 사상 방향 역전
 
@@ -130,11 +130,11 @@ const dimap = <A, B, C, D>(
 
 직관: 함수 `B → C`를 `A → D`로 만들려면 (1) 입력 `A`를 `B`로 미리 변환(`ab`), (2) 결과 `C`를 `D`로 사후 변환(`cd`). 입력은 역방향, 출력은 정방향.
 
-이 Profunctor 구조가 **Lens·Optics 라이브러리**의 수학적 토대.
+이 Profunctor 구조가 **Lens, Optics 라이브러리**의 수학적 토대.
 
 ## Functor 합성 — 복합 컨테이너도 Functor
 
-Functor·Bifunctor·Profunctor를 합성해도 결과는 같은 종류의 펑터. 즉 펑터들은 **닫힌 합성 시스템**을 이룬다.
+Functor, Bifunctor, Profunctor를 합성해도 결과는 같은 종류의 펑터. 즉 펑터들은 **닫힌 합성 시스템**을 이룬다.
 
 대표 패턴 — 두 펑터를 Bifunctor 안에 넣어 새 Bifunctor 만들기:
 
@@ -150,7 +150,7 @@ instance (Bifunctor bf, Functor fu, Functor gu) =>
 
 ## ADT의 자동 Functor 도출
 
-ADT는 **Const(인자 무시)·Identity(그대로)·Tuple(Bifunctor)·Either(Bifunctor)** 의 합성으로 만들어진다. 빌딩 블록이 이미 펑터이므로 합성 결과도 자동으로 펑터.
+ADT는 **Const(인자 무시), Identity(그대로), Tuple(Bifunctor), Either(Bifunctor)** 의 합성으로 만들어진다. 빌딩 블록이 이미 펑터이므로 합성 결과도 자동으로 펑터.
 
 예: `Maybe a ≅ Either (Const () a) (Identity a)` → 손으로 `fmap`을 짜지 않아도 도출 가능.
 
@@ -158,10 +158,10 @@ Haskell `{-# LANGUAGE DeriveFunctor #-}`의 `data Tree a = ... deriving Functor`
 
 ## 자주 헷갈리는 포인트
 
-- **Bifunctor의 `first`·`second` ≠ Tuple `fst`·`snd`** — 변환 함수이지 추출 함수가 아님
+- **Bifunctor의 `first`, `second` ≠ Tuple `fst`, `snd`** — 변환 함수이지 추출 함수가 아님
 - **`Either`의 `bimap`은 두 함수 모두 받지만 한 case만 적용** — 어느 쪽이냐에 따라 한 함수만 호출
 - **Contravariant는 "거꾸로 매핑"이 아니라 "입력 위치 매핑"** — 함수 합성으로 입력을 변환
-- **Profunctor가 "양방향 Functor" 아님** — 첫 인자 역·둘째 인자 정. 비대칭
+- **Profunctor가 "양방향 Functor" 아님** — 첫 인자 역, 둘째 인자 정. 비대칭
 - **함수 타입은 `(input, output)` 페어가 아닌 Profunctor** — Tuple과 다른 카테고리적 의미
 - **`deriving Functor`가 가능한 건 우연이 아님** — Const/Identity/Either/(,)의 합성이라는 카테고리적 근거. 임의의 타입 생성자는 자동 도출 안 됨
 
@@ -173,7 +173,7 @@ Haskell `{-# LANGUAGE DeriveFunctor #-}`의 `data Tree a = ... deriving Functor`
 - **함수 타입 `a → b`가 Profunctor**인 이유 (입력 역, 출력 정)
 - **ADT가 자동으로 Functor**가 되는 카테고리적 근거 (빌딩 블록 합성)
 - `deriving Functor`/`derive_more`/`#[derive(Debug, Clone)]` 같은 자동 도출의 수학적 정당성
-- **Lens·Optics**가 Profunctor 구조 위에 만들어진다는 사실
+- **Lens, Optics**가 Profunctor 구조 위에 만들어진다는 사실
 
 ## 출처
 - [evan-moon — 프로그래머를 위한 카테고리 이론 8. Functoriality](https://evan-moon.github.io/2024/04/02/category-theory-for-programmers-8-functoriality/)

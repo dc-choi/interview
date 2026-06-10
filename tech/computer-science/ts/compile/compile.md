@@ -1,12 +1,13 @@
 ---
 tags: [cs, typescript]
-status: done
+status: index
 category: "CS - TypeScript"
 aliases: ["동작원리", "compile"]
 ---
 
-# 동작원리
-대부분의 프로그래밍 언어는 컴파일러를 사용하여 바이크 코드를 생성한 후 실행합니다.
+# 동작원리 (compile 인덱스)
+
+대부분의 프로그래밍 언어는 컴파일러를 사용하여 바이트 코드를 생성한 후 실행합니다.
 
 ### JS의 컴파일 과정
 1. JS 소스코드를 AST(추상 구문 트리)로 변환합니다.
@@ -20,3 +21,10 @@ aliases: ["동작원리", "compile"]
 4. 검사가 성공하면 AST를 JS로 변환합니다.
 
 ### TIP!: 타입과 관련된 코드들은 컴파일 결과 모두 제거됩니다.
+
+## 목차
+- [x] [[option|컴파일러 옵션 (target, module, outDir, strict, moduleDetection)]]
+
+## 관련 문서
+- [[타입스크립트(TS)|TS 인덱스]]
+- [[TypeScript-AST|TypeScript와 AST (컴파일러 파이프라인, Compiler API)]]

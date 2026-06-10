@@ -7,13 +7,13 @@ aliases: ["ECR", "Amazon ECR", "Elastic Container Registry"]
 
 # Amazon ECR (Elastic Container Registry)
 
-AWS 내 **Docker 이미지 저장·관리** 레지스트리 서비스. ECS/EKS/Fargate가 컨테이너를 실행할 때 가져오는 이미지 출처.
+AWS 내 **Docker 이미지 저장, 관리** 레지스트리 서비스. ECS/EKS/Fargate가 컨테이너를 실행할 때 가져오는 이미지 출처.
 
 ## 핵심
 
 - AWS 관리형 OCI/Docker 레지스트리
-- **IAM** 통합 — 인증·권한이 AWS 자격증명으로 처리됨
-- ECS·EKS·App Runner·Lambda 컨테이너 이미지 소스로 사용
+- **IAM** 통합 — 인증, 권한이 AWS 자격증명으로 처리됨
+- ECS, EKS, App Runner, Lambda 컨테이너 이미지 소스로 사용
 
 ## 저장 옵션
 
@@ -44,7 +44,7 @@ AWS 내 **Docker 이미지 저장·관리** 레지스트리 서비스. ECS/EKS/F
 
 ## 관련 문서
 
-- [[ECS]] · [[EKS]] · [[AWS-Lambda]]
+- [[ECS]], [[EKS]], [[AWS-Lambda]]
 
 ## 출처
 

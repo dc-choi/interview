@@ -7,7 +7,7 @@ aliases: ["Idempotency", "멱등성", "Idempotent Methods"]
 
 # HTTP 멱등성 (Idempotency)
 
-**같은 요청을 1번 보내든 N번 보내든 서버 상태와 결과가 동일**한 성질. 네트워크 단절·타임아웃으로 재시도가 필요한 분산 환경에서 핵심 안전장치.
+**같은 요청을 1번 보내든 N번 보내든 서버 상태와 결과가 동일**한 성질. 네트워크 단절, 타임아웃으로 재시도가 필요한 분산 환경에서 핵심 안전장치.
 
 ## 정의
 
@@ -62,9 +62,9 @@ Content-Type: application/json
 서버 동작:
 1. `Idempotency-Key`가 DB/캐시에 이미 있으면 → **이전 응답을 그대로 반환** (실제 처리 skip)
 2. 없으면 처리 후 key + 응답을 저장
-3. TTL(24시간·7일 등) 경과 후 자동 정리
+3. TTL(24시간, 7일 등) 경과 후 자동 정리
 
-Stripe·PayPal·Toss Payments 등 결제 API의 표준 패턴.
+Stripe, PayPal, Toss Payments 등 결제 API의 표준 패턴.
 
 ### 구현 포인트
 - 키는 **클라이언트가 생성** (UUIDv4 등)
@@ -90,10 +90,10 @@ POST /users       { "name": "dc" }    // 비멱등: 매번 새 사용자 생성
 
 ## 네트워크 재시도 정책과 결합
 
-- **멱등 메서드**: HTTP 클라이언트가 **자동 재시도** 안전 (타임아웃·5xx 시)
+- **멱등 메서드**: HTTP 클라이언트가 **자동 재시도** 안전 (타임아웃, 5xx 시)
 - **비멱등**: 자동 재시도 금지. 사용자에게 확인 후 수동 재시도 또는 Idempotency-Key로 안전화
 
-Axios·OkHttp·Retrofit 같은 HTTP 클라이언트가 기본 retry 대상으로 GET·PUT·DELETE만 포함하는 이유.
+Axios, OkHttp, Retrofit 같은 HTTP 클라이언트가 기본 retry 대상으로 GET, PUT, DELETE만 포함하는 이유.
 
 ## 면접 체크포인트
 

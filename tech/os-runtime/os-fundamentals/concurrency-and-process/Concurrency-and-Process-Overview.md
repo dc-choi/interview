@@ -140,7 +140,7 @@ aliases: ["OS 개요와 동시성", "Concurrency Overview"]
 - 배열 순차 접근이 연결 리스트보다 빠른 이유 (공간적 지역성)
 
 ## 관련 문서
-- [[Concurrency-and-Process-IPC|원자성·동기화·IPC]]
+- [[Concurrency-and-Process-IPC|원자성, 동기화, IPC]]
 - [[Concurrency-and-Process|동시성과 프로세스 (인덱스)]]
 - [[Process-Lifecycle|프로세스 생명주기]]
 - [[Virtual-Memory|가상 메모리]]

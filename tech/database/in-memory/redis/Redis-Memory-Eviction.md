@@ -7,7 +7,7 @@ aliases: ["Redis Eviction", "maxmemory-policy", "LRU vs LFU"]
 
 # Redis Memory Eviction Policy
 
-`maxmemory` 한도에 도달하면 **새 쓰기를 어떻게 처리할지** 결정하는 정책. 캐시로 쓸 거냐·영속 저장소로 쓸 거냐에 따라 선택이 갈린다. 잘못 고르면 캐시 미스 폭증 또는 OOM crash.
+`maxmemory` 한도에 도달하면 **새 쓰기를 어떻게 처리할지** 결정하는 정책. 캐시로 쓸 거냐, 영속 저장소로 쓸 거냐에 따라 선택이 갈린다. 잘못 고르면 캐시 미스 폭증 또는 OOM crash.
 
 ## 8가지 정책
 
@@ -87,8 +87,8 @@ lfu_decay_time 1   # 분 단위, 1분마다 counter -1
 
 ### LFU 사용 시점
 
-- **인기 키가 명확하고 안정적** (서비스 핵심 페이지·트렌딩 콘텐츠).
-- **일회성 트래픽 폭증**(크롤러·이상 패턴)에 hot 키가 쫓겨나면 안 됨.
+- **인기 키가 명확하고 안정적** (서비스 핵심 페이지, 트렌딩 콘텐츠).
+- **일회성 트래픽 폭증**(크롤러, 이상 패턴)에 hot 키가 쫓겨나면 안 됨.
 
 ## OBJECT FREQ — LFU 모드에서 빈도 확인
 
@@ -122,7 +122,7 @@ maxmemory-policy allkeys-lru
 maxmemory-samples 10
 ```
 
-운영 메모리의 70~80%로 설정. 100% 가까이 두면 OS·복제·persistence 작업이 메모리 부족으로 실패.
+운영 메모리의 70~80%로 설정. 100% 가까이 두면 OS, 복제, persistence 작업이 메모리 부족으로 실패.
 
 ## 흔한 실수
 
@@ -131,7 +131,7 @@ maxmemory-samples 10
 - **`maxmemory-samples 5`로 두고 정확도 불만** → 10으로 올림. CPU 비용 미미.
 - **LFU로 바꿨는데 효과 미미** → `lfu_log_factor`/`lfu_decay_time` 기본값이 워크로드와 안 맞을 수 있음. 빈도 분포 확인 후 튜닝.
 - **단편화 1.5+ 무시** → 메모리 회수 안 됨. `MEMORY PURGE` 또는 재시작 검토. jemalloc 활성 대안.
-- **`evicted_keys` 폭증하는데 캐시 미스 영향 무시** → 응답 시간·DB 부하 ↑. maxmemory 증설 또는 키 정리 정책.
+- **`evicted_keys` 폭증하는데 캐시 미스 영향 무시** → 응답 시간, DB 부하 ↑. maxmemory 증설 또는 키 정리 정책.
 
 ## 면접 체크포인트
 

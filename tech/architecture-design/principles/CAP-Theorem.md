@@ -7,7 +7,7 @@ aliases: ["CAP Theorem", "CAP 정리"]
 
 # CAP 정리 (CAP Theorem)
 
-분산 시스템은 **Consistency(일관성)**, **Availability(가용성)**, **Partition Tolerance(분할 내성)** 중 **최대 2개만 동시에 만족** 가능하다는 이론. Eric Brewer가 2000년 제안, 2002년 Gilbert·Lynch가 수학적 증명.
+분산 시스템은 **Consistency(일관성)**, **Availability(가용성)**, **Partition Tolerance(분할 내성)** 중 **최대 2개만 동시에 만족** 가능하다는 이론. Eric Brewer가 2000년 제안, 2002년 Gilbert, Lynch가 수학적 증명.
 
 실무 해석은 "셋 중 둘 선택"이 아니라 **"네트워크 분할은 피할 수 없으니 C와 A 사이에서 선택"**.
 
@@ -22,7 +22,7 @@ aliases: ["CAP Theorem", "CAP 정리"]
 **살아 있는 모든 노드는 요청에 응답해야 한다**. "데이터가 최신인지"는 보장하지 않고, 응답이 오는 것만 보장.
 
 ### Partition Tolerance (분할 내성)
-노드 간 네트워크가 끊어져도 시스템이 **계속 동작**. 네트워크 분할 = 메시지 유실·지연·노드 간 통신 불가.
+노드 간 네트워크가 끊어져도 시스템이 **계속 동작**. 네트워크 분할 = 메시지 유실, 지연, 노드 간 통신 불가.
 
 ## 왜 "둘만" 선택 가능한가
 
@@ -82,14 +82,14 @@ CAP의 약점: "분할이 없을 때"의 트레이드오프를 설명 못 함. P
 ## 실무 선택 가이드
 
 **CP 선택**:
-- 결제·재고·예약 (불일치하면 금전 손실)
-- 분산 락·리더 선출 (여러 리더가 생기면 안 됨)
+- 결제, 재고, 예약 (불일치하면 금전 손실)
+- 분산 락, 리더 선출 (여러 리더가 생기면 안 됨)
 - 사용자가 "처리 실패" 응답을 받아도 괜찮은 경우
 
 **AP 선택**:
-- 소셜 피드·좋아요 수 (약간의 지연은 용인)
+- 소셜 피드, 좋아요 수 (약간의 지연은 용인)
 - 상품 카탈로그 (stale 조회 허용)
-- 모니터링 데이터·로그 수집 (안 쌓이는 게 쌓이는 것보다 나쁨)
+- 모니터링 데이터, 로그 수집 (안 쌓이는 게 쌓이는 것보다 나쁨)
 
 **경계 넘나드는 패턴**:
 - **Strong Read + Eventual Write**: 읽기는 일관성, 쓰기는 가용성
@@ -110,6 +110,6 @@ CAP의 약점: "분할이 없을 때"의 트레이드오프를 설명 못 함. P
 
 ## 관련 문서
 - [[Monolith-vs-Microservice|Monolith vs Microservice]]
-- [[Isolation-Level-Beyond-ANSI|ANSI 격리 수준의 한계 · Strict Serializable]]
+- [[Isolation-Level-Beyond-ANSI|ANSI 격리 수준의 한계, Strict Serializable]]
 - [[Replication|Replication]]
 - [[Sharding|Sharding]]

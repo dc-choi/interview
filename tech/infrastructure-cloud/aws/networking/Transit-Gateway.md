@@ -7,11 +7,11 @@ aliases: ["Transit Gateway", "AWS Transit Gateway", "TGW", "TGW 허브"]
 
 # AWS Transit Gateway (TGW)
 
-**수천 개의 VPC·온프레미스 네트워크**를 단일 게이트웨이에서 라우팅하는 **네트워크 중앙 허브**. VPC Peering의 풀메시 폭주 문제를 허브-스포크 모델로 해결한다.
+**수천 개의 VPC, 온프레미스 네트워크**를 단일 게이트웨이에서 라우팅하는 **네트워크 중앙 허브**. VPC Peering의 풀메시 폭주 문제를 허브-스포크 모델로 해결한다.
 
 ## 핵심
 
-- **리전 단위 리소스** — 단일 리전 내 모든 VPC·VPN·DX를 하나의 라우터로 통합
+- **리전 단위 리소스** — 단일 리전 내 모든 VPC, VPN, DX를 하나의 라우터로 통합
 - **전이적 라우팅(transitive routing)** 지원 — A↔TGW↔B가 자연스럽게 통신. (VPC Peering은 전이 불가)
 - **계정 간 공유**: **AWS RAM**(Resource Access Manager)으로 다른 계정에 TGW 공유 가능
 - 같은 TGW에 연결된 모든 어태치먼트가 **라우팅 테이블 단위로 격리/공유** 가능
@@ -46,13 +46,13 @@ aliases: ["Transit Gateway", "AWS Transit Gateway", "TGW", "TGW 허브"]
 - 단일 IPsec VPN 터널은 **최대 약 1.25 Gbps** 처리량 한계
 - TGW는 **여러 VPN 터널을 동일 비용 경로로 묶어** 트래픽을 분산 → 처리량을 N배로 확장
 - 예: 4개 터널을 ECMP로 묶으면 ~5 Gbps 가능
-- VPC Peering·VPN Gateway(VGW)는 ECMP 미지원 — **TGW만의 기능**
+- VPC Peering, VPN Gateway(VGW)는 ECMP 미지원 — **TGW만의 기능**
 
 ## 계정 간 공유 — AWS RAM
 
 - 단일 TGW를 여러 AWS 계정이 공유 어태치먼트로 사용 가능
 - 멀티 계정 환경(Organizations)에서 **중앙 네트워크 계정**에 TGW를 두고 다른 계정 VPC가 어태치
-- 라우팅 테이블·연결 정책은 TGW 소유 계정에서 통제
+- 라우팅 테이블, 연결 정책은 TGW 소유 계정에서 통제
 
 ## vs VPC Peering — 시험 핵심 비교
 
@@ -61,7 +61,7 @@ aliases: ["Transit Gateway", "AWS Transit Gateway", "TGW", "TGW 허브"]
 | **연결 모델** | 1:1 풀메시 (N개 VPC → N(N-1)/2 연결) | 허브-스포크 (N개 VPC → N 어태치먼트) |
 | **전이적 라우팅** | X (A↔B, B↔C여도 A↔C 불가) | O |
 | **확장성** | ~125개 피어링 한계, 관리 폭증 | 수천 개 VPC |
-| **온프레미스 통합** | X (별도 VGW/DX 필요) | O (VPN·DX 일원화) |
+| **온프레미스 통합** | X (별도 VGW/DX 필요) | O (VPN, DX 일원화) |
 | **비용** | 트래픽 비용만 | 어태치먼트 시간 요금 + 트래픽 비용 |
 | **암호화** | 리전 내 트래픽 자동 암호화 | VPN은 IPsec, VPC 어태치는 평문 |
 
@@ -84,7 +84,7 @@ aliases: ["Transit Gateway", "AWS Transit Gateway", "TGW", "TGW 허브"]
 
 ## 관련 문서
 
-- [[VPC]] · [[Global-Accelerator]] · [[Route53]] · AWS Direct Connect (DX)
+- [[VPC]], [[Global-Accelerator]], [[Route53]], AWS Direct Connect (DX)
 
 ## 출처
 

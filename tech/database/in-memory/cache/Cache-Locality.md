@@ -13,7 +13,7 @@ aliases: ["Cache Locality", "Locality Principle", "지역성 원리"]
 
 | 종류 | 정의 | 캐시 적용 |
 |------|------|----------|
-| **Temporal Locality (시간적)** | 한 번 접근한 데이터는 가까운 미래에 다시 접근될 가능성↑ | LRU·LFU 같은 eviction 정책의 근거 |
+| **Temporal Locality (시간적)** | 한 번 접근한 데이터는 가까운 미래에 다시 접근될 가능성↑ | LRU, LFU 같은 eviction 정책의 근거 |
 | **Spatial Locality (공간적)** | 한 데이터 근처의 데이터도 곧 접근될 가능성↑ | Prefetch, 캐시 라인, 인덱스 페이지 단위 적재 |
 
 ## 80/20 법칙 (Pareto)
@@ -22,9 +22,9 @@ aliases: ["Cache Locality", "Locality Principle", "지역성 원리"]
 
 | 분포 | 캐시 효과 |
 |------|----------|
-| 멱법칙(Power Law)·Zipfian | 매우 큼 — 작은 캐시로도 hit rate 90%+ |
+| 멱법칙(Power Law), Zipfian | 매우 큼 — 작은 캐시로도 hit rate 90%+ |
 | 균등(Uniform) | 작음 — 캐시 크기 ≈ 데이터 크기여야 효과 |
-| 일회성·랜덤 | 거의 없음 — 캐시가 오히려 오버헤드 |
+| 일회성, 랜덤 | 거의 없음 — 캐시가 오히려 오버헤드 |
 
 캐시 도입 전에 **분포 측정이 선행**돼야 한다. Hit rate 추정의 본질은 분포 추정.
 
@@ -32,10 +32,10 @@ aliases: ["Cache Locality", "Locality Principle", "지역성 원리"]
 
 | 계층 | Temporal 활용 | Spatial 활용 |
 |------|--------------|-------------|
-| **CPU 캐시** (L1/L2/L3) | 최근 명령·데이터 보관 | **캐시 라인** 64B 단위 적재 |
+| **CPU 캐시** (L1/L2/L3) | 최근 명령, 데이터 보관 | **캐시 라인** 64B 단위 적재 |
 | **OS 페이지 캐시** | 최근 파일 페이지 보관 | **read-ahead** (인접 페이지 미리) |
 | **DB Buffer Pool** | hot 페이지 보관 | **B+Tree leaf** 인접 페이지 함께 |
-| **앱 캐시 (Redis 등)** | LRU·LFU eviction | **Prefetch** (관련 키 미리 로드) |
+| **앱 캐시 (Redis 등)** | LRU, LFU eviction | **Prefetch** (관련 키 미리 로드) |
 | **CDN** | 최근 콘텐츠 엣지 보관 | 동일 origin 인접 리소스 사전 캐시 |
 
 같은 원리가 nanoseconds 부터 millisecond까지 모든 계층에 일관되게 작동.
@@ -48,19 +48,19 @@ Spatial은 코드로 직접 활용 가능 — **읽힐 것을 미리 읽기**.
 |------|------|
 | **ID 인접** | `/users/123` 조회 → `/users/122`, `/users/124`도 곧 조회 가능성 |
 | **카테고리** | 상품 상세 → 같은 카테고리 다른 상품 |
-| **시계열** | 오늘 데이터 → 어제·내일 데이터 |
+| **시계열** | 오늘 데이터 → 어제, 내일 데이터 |
 | **그래프 인접** | 친구 목록 조회 → 각 친구 프로필 일괄 |
 
 NestJS 같은 환경에서는 응답 직후 `setImmediate`로 비동기 prefetch 트리거 — 응답 차단 없이 인접 데이터를 캐시에 올린다.
 
 ## 일회성 트래픽이 hot 키를 밀어내는 함정
 
-LRU는 "최근 안 쓰면 삭제" — **크롤러·이상 트래픽이 한 번에 대량 키 접근**하면 진짜 hot 키가 밀려난다 (cache pollution).
+LRU는 "최근 안 쓰면 삭제" — **크롤러, 이상 트래픽이 한 번에 대량 키 접근**하면 진짜 hot 키가 밀려난다 (cache pollution).
 
 대응:
 - **LFU로 전환** — 빈도 기반이라 일회성 폭증에 강함
 - **bot 트래픽 분리** — 별도 캐시 인스턴스 또는 캐시 우회
-- **Window LFU·ARC** 같은 하이브리드 정책 — 최신성과 빈도 동시 고려
+- **Window LFU, ARC** 같은 하이브리드 정책 — 최신성과 빈도 동시 고려
 
 ## Working Set 개념
 
@@ -87,9 +87,9 @@ hit_rate ≈ 1 - (working_set_size - cache_size) / total_requests   (간략)
 
 - Temporal vs Spatial Locality 차이와 각각 어떤 정책에 매핑되는가
 - 80/20 분포가 캐시의 전제 조건인 이유 — 균등 분포면 무용
-- LRU의 cache pollution 문제 → LFU·ARC 대안
+- LRU의 cache pollution 문제 → LFU, ARC 대안
 - Spatial Locality를 앱에서 활용하는 방법 (prefetch 패턴)
-- 같은 원리가 CPU·OS·DB·앱·CDN까지 일관되게 적용되는 이유
+- 같은 원리가 CPU, OS, DB, 앱, CDN까지 일관되게 적용되는 이유
 - working set과 캐시 크기 관계
 - DB의 B+Tree leaf 인접 페이지 적재가 spatial 활용 사례
 

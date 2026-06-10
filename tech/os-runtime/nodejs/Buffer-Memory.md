@@ -5,13 +5,13 @@ category: "OS & Runtime"
 aliases: ["Node.js Buffer", "Buffer Memory Management", "Buffer.alloc"]
 ---
 
-# Node.js Buffer · Memory Management
+# Node.js Buffer, Memory Management
 
-`Buffer`는 V8 힙 밖의 **고정 크기 raw 메모리 영역**을 다루는 클래스. 네트워크 소켓·파일 I/O·암호화처럼 바이트 단위 데이터를 처리할 때 사용. JS 문자열은 UTF-16/UCS-2 인코딩이라 바이트 정확히 다루기 어려운데, Buffer는 **임의 인코딩의 바이트 시퀀스**를 그대로 표현.
+`Buffer`는 V8 힙 밖의 **고정 크기 raw 메모리 영역**을 다루는 클래스. 네트워크 소켓, 파일 I/O, 암호화처럼 바이트 단위 데이터를 처리할 때 사용. JS 문자열은 UTF-16/UCS-2 인코딩이라 바이트 정확히 다루기 어려운데, Buffer는 **임의 인코딩의 바이트 시퀀스**를 그대로 표현.
 
 ## 왜 V8 힙 밖인가
 
-- V8 GC 비용을 피해 **대용량·고빈도 I/O 처리에 유리**.
+- V8 GC 비용을 피해 **대용량, 고빈도 I/O 처리에 유리**.
 - 대신 **OS 메모리 압박을 직접 받는다** — 누수 시 GC가 도와주지 않음.
 - ES2017+ `ArrayBuffer`/`Uint8Array`와 같은 메모리 모델 — `Buffer`는 `Uint8Array`의 서브클래스.
 
@@ -68,7 +68,7 @@ const combined = Buffer.concat([buf, Buffer.from(' world')]);
 | 인코딩 | 용도 |
 |--------|------|
 | `utf8` | 일반 텍스트 |
-| `hex` | 16진수 표현 (HMAC·해시 출력) |
+| `hex` | 16진수 표현 (HMAC, 해시 출력) |
 | `base64`/`base64url` | 이진 데이터 텍스트 전송 |
 | `latin1`/`binary` | 1바이트 1문자, 인코딩 미지정 raw |
 | `ucs2`/`utf16le` | JS 문자열과 동일 인코딩 |
@@ -103,7 +103,7 @@ Node.js v17+에서 `Buffer.prototype.slice`는 **deprecated** — `subarray` 사
 - `Buffer.poolSize` (기본 8KB)와 풀 슬라이스 동작 — 장기 보관 시 함정
 - `subarray`의 zero-copy 의미 — 같은 메모리 공유
 - `Buffer`가 `Uint8Array`의 서브클래스라는 점
-- 인코딩(utf8·hex·base64) 선택 기준
+- 인코딩(utf8, hex, base64) 선택 기준
 - Buffer 메모리 누수 패턴 (풀 슬라이스 잔존, ArrayBuffer view 잔존)
 
 ## 관련 문서
@@ -111,4 +111,4 @@ Node.js v17+에서 `Buffer.prototype.slice`는 **deprecated** — `subarray` 사
 - [[Node.js|Node.js 개요]]
 - [[V8|V8 엔진]]
 - [[Stream-Types|Stream Types (Buffer chunk)]]
-- [[Debugging-Profiling-Memory|메모리 진단·프로파일링]]
+- [[Debugging-Profiling-Memory|메모리 진단, 프로파일링]]

@@ -5,17 +5,17 @@ category: "OS&런타임(OS&Runtime)"
 aliases: ["JPA Persistence Context", "영속성 컨텍스트", "N+1 쿼리", "Dirty Checking"]
 ---
 
-# JPA 영속성 컨텍스트 · N+1
+# JPA 영속성 컨텍스트, N+1
 
-JPA의 **영속성 컨텍스트(Persistence Context)** 는 엔티티를 관리하는 **논리적 저장 공간**. 개발자가 `em.persist()`·`repository.save()`를 호출하면 객체가 이 컨텍스트에 등록되어, 1차 캐시·쓰기 지연·Dirty Checking·지연 로딩 같은 JPA 특성이 동작한다. ORM을 처음 배울 때 "SQL을 직접 안 쓰는 이유"의 대부분이 여기 있다.
+JPA의 **영속성 컨텍스트(Persistence Context)** 는 엔티티를 관리하는 **논리적 저장 공간**. 개발자가 `em.persist()`, `repository.save()`를 호출하면 객체가 이 컨텍스트에 등록되어, 1차 캐시, 쓰기 지연, Dirty Checking, 지연 로딩 같은 JPA 특성이 동작한다. ORM을 처음 배울 때 "SQL을 직접 안 쓰는 이유"의 대부분이 여기 있다.
 
 ## 엔티티 상태
 
 | 상태 | 설명 |
 |---|---|
 | **Transient(비영속)** | `new` 한 객체, 컨텍스트 등록 전 |
-| **Managed(영속)** | `persist()`·`find()`로 컨텍스트에 등록, 변경이 추적됨 |
-| **Detached(준영속)** | 컨텍스트에서 분리(`clear`·`close`·`detach`) — 변경 추적 안 됨 |
+| **Managed(영속)** | `persist()`, `find()`로 컨텍스트에 등록, 변경이 추적됨 |
+| **Detached(준영속)** | 컨텍스트에서 분리(`clear`, `close`, `detach`) — 변경 추적 안 됨 |
 | **Removed(삭제)** | `remove()` 호출, flush 시 DELETE 발행 |
 
 ## 영속성 컨텍스트의 4가지 이점
@@ -35,9 +35,9 @@ assert a == b; // 동일성 보장
 
 ### 2. 쓰기 지연 (Write-Behind)
 
-`persist`·`merge`·`remove`는 **즉시 INSERT/UPDATE/DELETE를 날리지 않는다.** 내부 쓰기 지연 큐에 쌓아두었다가 **flush 시점에 한 번에** SQL 발행.
+`persist`, `merge`, `remove`는 **즉시 INSERT/UPDATE/DELETE를 날리지 않는다.** 내부 쓰기 지연 큐에 쌓아두었다가 **flush 시점에 한 번에** SQL 발행.
 
-- flush는 커밋 직전·`em.flush()` 명시 호출·JPQL 실행 전에 자동
+- flush는 커밋 직전, `em.flush()` 명시 호출, JPQL 실행 전에 자동
 - 같은 트랜잭션의 여러 변경을 모아 **배치 insert/update** 가능(`hibernate.jdbc.batch_size`)
 - 즉시 검증이 필요한 경우 flush를 강제
 
@@ -78,7 +78,7 @@ o.getUser().getName();               // 이때 User SELECT 발행
 | 구분 | 1차 캐시 | 2차 캐시 |
 |---|---|---|
 | 범위 | 트랜잭션(세션) | 애플리케이션 전역 |
-| 기본 제공 | ✓ | 설정 필요(EhCache·Redis) |
+| 기본 제공 | ✓ | 설정 필요(EhCache, Redis) |
 | 일관성 | 자동 | 캐시 무효화 전략 직접 관리 |
 | 용도 | JPA 기본 동작 | 읽기 비중 높은 테이블 |
 
@@ -124,7 +124,7 @@ List<Order> findAll();
 ```
 
 - Fetch Join과 유사하지만 선언적
-- 페이징·여러 연관 동시 로드에 더 편함
+- 페이징, 여러 연관 동시 로드에 더 편함
 
 ### 해결 3 — Batch Size
 
@@ -151,38 +151,38 @@ Spring Boot 기본 `true`. **영속성 컨텍스트를 HTTP 응답 반환까지*
 
 **단점**:
 - DB 커넥션을 오래 쥠 → 고부하 시 커넥션 고갈
-- 컨트롤러·뷰에서 엔티티 변경이 일어나면 **예기치 않은 flush**
+- 컨트롤러, 뷰에서 엔티티 변경이 일어나면 **예기치 않은 flush**
 
 **권장**: 성능 중시 서비스는 `spring.jpa.open-in-view=false`로 끄고, 서비스 레이어 내에서 필요한 모든 데이터를 DTO로 말아서 반환.
 
 ## 트랜잭션과 영속성 컨텍스트의 생명주기
 
 - Spring에서는 보통 **트랜잭션 = 영속성 컨텍스트**
-- `@Transactional` 메서드 진입 시 컨텍스트 시작, 종료 시 flush·close
+- `@Transactional` 메서드 진입 시 컨텍스트 시작, 종료 시 flush, close
 - 여러 메서드에 걸친 작업은 같은 트랜잭션으로 묶어야 동일 컨텍스트 공유
 - `@Transactional(propagation = REQUIRES_NEW)`는 **별도 컨텍스트** 생성 → 주의
 
 ## 흔한 실수
 
-- **엔티티를 그대로 응답** → 직렬화 순간 지연 로딩 발동, 무한 순환·LazyInitializationException. **[[DTO-Layering|DTO 변환]]** 필수
+- **엔티티를 그대로 응답** → 직렬화 순간 지연 로딩 발동, 무한 순환, LazyInitializationException. **[[DTO-Layering|DTO 변환]]** 필수
 - **`findById + save` 반복** — Dirty Checking을 모르고 명시적 save. 이미 영속 상태면 `save` 불필요
 - **`@Transactional` 없이 Lazy 접근** → 예외. 서비스 레이어 바깥에서 지연 로딩하지 말 것
-- **컬렉션 Fetch Join + 페이징** → 경고·메모리 페이징. `@EntityGraph` + BatchSize로 대체
+- **컬렉션 Fetch Join + 페이징** → 경고, 메모리 페이징. `@EntityGraph` + BatchSize로 대체
 - **`EAGER`로 N+1 회피 시도** → JPQL에서는 여전히 N+1. 그리고 불필요 조인으로 성능 악화
 - **OSIV 켜둔 채 장시간 뷰 렌더링** → 커넥션 고갈
 
 ## 면접 체크포인트
 
-- 영속성 컨텍스트의 4가지 이점(1차 캐시·쓰기 지연·Dirty Checking·지연 로딩)
+- 영속성 컨텍스트의 4가지 이점(1차 캐시, 쓰기 지연, Dirty Checking, 지연 로딩)
 - Dirty Checking이 동작하는 조건(영속 상태 + 트랜잭션)
 - N+1이 발생하는 근본 원인(지연 로딩 + 컬렉션 순회)
-- Fetch Join과 `@EntityGraph`의 차이·한계
+- Fetch Join과 `@EntityGraph`의 차이, 한계
 - OSIV의 편의와 위험
 - "엔티티를 응답으로 반환하면 안 되는 이유"의 JPA 관점 설명
 
 ## 관련 문서
 - [[Spring|Spring 개요]]
-- [[Spring-Transactional|Spring @Transactional (Isolation·Propagation)]]
+- [[Spring-Transactional|Spring @Transactional (Isolation, Propagation)]]
 - [[ORM|ORM]]
 - [[ORM-Impedance-Mismatch|ORM과 임피던스 불일치]]
 - [[DTO-Layering|DTO 레이어 스코프]]

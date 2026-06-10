@@ -5,9 +5,9 @@ category: "Infrastructure - Container"
 aliases: ["Docker Entrypoint Exec", "PID 1 Signal", "컨테이너 시그널 처리"]
 ---
 
-# Container Entrypoint와 시그널 — exec·PID 1·Graceful Shutdown
+# Container Entrypoint와 시그널 — exec, PID 1, Graceful Shutdown
 
-컨테이너에서 **PID 1이 받은 시그널을 실제 애플리케이션에 전달하는가**가 Graceful Shutdown의 핵심. 잘못 짜면 `docker stop`·K8s `SIGTERM` 이 애플리케이션까지 도달하지 않아 데이터가 손실되거나 10초 후 강제 종료(SIGKILL)로 중단된다.
+컨테이너에서 **PID 1이 받은 시그널을 실제 애플리케이션에 전달하는가**가 Graceful Shutdown의 핵심. 잘못 짜면 `docker stop`, K8s `SIGTERM` 이 애플리케이션까지 도달하지 않아 데이터가 손실되거나 10초 후 강제 종료(SIGKILL)로 중단된다.
 
 ## PID 1의 특수성
 
@@ -21,7 +21,7 @@ Linux는 PID 1(init 프로세스)에 **특별한 규칙**을 적용한다.
 
 ## exec form vs shell form
 
-Dockerfile의 `CMD`·`ENTRYPOINT`는 두 가지 표기법이 있다.
+Dockerfile의 `CMD`, `ENTRYPOINT`는 두 가지 표기법이 있다.
 
 | 형식 | 예시 | PID 1 | 시그널 전달 |
 |---|---|---|---|
@@ -48,20 +48,20 @@ python main.py          # 셸이 자식으로 실행 → 시그널 전달 실패
 exec python main.py     # 셸을 python으로 치환 → python이 PID 1
 ```
 
-`exec`는 **현재 셸 프로세스를 지정한 프로그램으로 치환**하는 셸 내장 명령. 새 프로세스를 fork하지 않고 메모리 이미지를 교체하므로 PID가 유지된다. 결과: python이 PID 1이 되어 SIGTERM을 직접 수신·처리 가능.
+`exec`는 **현재 셸 프로세스를 지정한 프로그램으로 치환**하는 셸 내장 명령. 새 프로세스를 fork하지 않고 메모리 이미지를 교체하므로 PID가 유지된다. 결과: python이 PID 1이 되어 SIGTERM을 직접 수신, 처리 가능.
 
 ## Graceful Shutdown의 흐름
 
 올바른 구성에서 SIGTERM 수신 시:
 
-1. K8s·Docker가 PID 1에 **SIGTERM** 전송 (`terminationGracePeriodSeconds` 시작)
+1. K8s, Docker가 PID 1에 **SIGTERM** 전송 (`terminationGracePeriodSeconds` 시작)
 2. 애플리케이션이 SIGTERM 처리기 실행 — 새 요청 거부, 진행 중 요청 완료, 커넥션 정리
 3. 처리 완료 후 자발적 종료 → 컨테이너 정상 종료
 4. 타임아웃(기본 30초) 초과 시 SIGKILL 강제 종료
 
 ## 좀비 프로세스 문제와 init
 
-애플리케이션이 자식 프로세스를 만들면(예: Node.js worker·ffmpeg 호출) 자식이 종료된 후 **PID 1이 `wait()`** 해줘야 한다. 일반 애플리케이션은 자식 관리 책임이 없으므로 좀비가 쌓일 수 있음.
+애플리케이션이 자식 프로세스를 만들면(예: Node.js worker, ffmpeg 호출) 자식이 종료된 후 **PID 1이 `wait()`** 해줘야 한다. 일반 애플리케이션은 자식 관리 책임이 없으므로 좀비가 쌓일 수 있음.
 
 ### 해결: 경량 init 프로세스
 
@@ -75,7 +75,7 @@ K8s에서는 보통 `docker run --init` 대신 이미지에 tini를 내장하거
 
 ## 쉘 스크립트 엔트리포인트 패턴
 
-엔트리포인트에서 초기화·환경 주입·단순 검증을 한 뒤 앱을 실행하는 패턴이 흔하다.
+엔트리포인트에서 초기화, 환경 주입, 단순 검증을 한 뒤 앱을 실행하는 패턴이 흔하다.
 
 ```
 #!/bin/sh
@@ -97,7 +97,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["python", "main.py"]
 ```
 
-## 언어·프레임워크별 SIGTERM 처리
+## 언어, 프레임워크별 SIGTERM 처리
 
 애플리케이션 코드에도 **명시적인 SIGTERM 처리**가 필요하다. 컨테이너가 시그널을 전달해도 앱이 처리기를 등록하지 않으면 즉시 종료.
 
@@ -111,7 +111,7 @@ CMD ["python", "main.py"]
 - **shell form 사용** — `CMD python main.py` → 셸이 PID 1 → 시그널 차단
 - **엔트리포인트 스크립트에서 `exec` 빠뜨림** — 마지막 줄이 `python main.py`로만 되어 있음
 - **애플리케이션에 SIGTERM 처리기 없음** — 시그널은 전달되나 graceful 코드가 없어 in-flight 요청 유실
-- **자식 프로세스 수확 안 함** — 오랜 구동 후 좀비 누적·PID 고갈
+- **자식 프로세스 수확 안 함** — 오랜 구동 후 좀비 누적, PID 고갈
 - **`terminationGracePeriodSeconds` 너무 짧게** — 30초 기본 K8s 설정보다 처리 시간이 긴 워크로드에서 강제 종료
 
 ## 검증 방법
@@ -123,11 +123,11 @@ CMD ["python", "main.py"]
 
 ## 면접 체크포인트
 
-- **PID 1의 특수성** (시그널 기본 무시·좀비 수확 책임)
+- **PID 1의 특수성** (시그널 기본 무시, 좀비 수확 책임)
 - **exec form vs shell form** 차이와 왜 exec form이 안전한가
 - 엔트리포인트 스크립트에서 **`exec "$@"` 사용 이유**
 - **tini/dumb-init**이 해결하는 문제(시그널 전달 + 좀비 수확)
-- SIGTERM → Graceful Shutdown 흐름 (로드밸런서에서 제외·in-flight 완료·종료)
+- SIGTERM → Graceful Shutdown 흐름 (로드밸런서에서 제외, in-flight 완료, 종료)
 - K8s `terminationGracePeriodSeconds`와 앱 shutdown 타임아웃의 관계
 
 ## 출처

@@ -1,6 +1,6 @@
 ---
 tags: [database, rdbms]
-status: done
+status: index
 category: "Data & Storage - RDB"
 aliases: ["SQL"]
 ---
@@ -8,6 +8,11 @@ aliases: ["SQL"]
 # SQL
 
 구조적 질의 언어로 SQL로 데이터베이스를 제어하고 관리할 수 있다.
+
+## 하위 문서
+
+- [[SQL-Joins|SQL 조인 (INNER/OUTER/CROSS/NATURAL, 드라이빙과 드리븐, NL/BNL/BKA/Hash 알고리즘)]]
+- [[SQL-Tuning-Terminology|SQL 튜닝 용어 (옵티마이저, 접근 방식, 조건, 서브쿼리, 콜레이션, 통계)]]
 
 ## 종류
 ```

@@ -78,8 +78,8 @@ obs.observe({ entryTypes: ['measure'] });
 
 | entryType | 내용 |
 |-----------|------|
-| `node` | 부팅·DNS·TCP 등 Node 기본 마일스톤 |
-| `gc` | GC 종류·소요 시간 (`--perf-basic-prof` 등 옵션 필요) |
+| `node` | 부팅, DNS, TCP 등 Node 기본 마일스톤 |
+| `gc` | GC 종류, 소요 시간 (`--perf-basic-prof` 등 옵션 필요) |
 | `http` | HTTP 요청 라이프사이클 |
 | `function` | `performance.timerify(fn)`로 감싼 함수 호출 |
 

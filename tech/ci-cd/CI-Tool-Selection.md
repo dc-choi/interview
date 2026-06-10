@@ -7,7 +7,7 @@ aliases: ["CI Tool Selection", "CI 도구 선택"]
 
 # CI/CD 도구 선택
 
-빌드·테스트·배포를 자동화하는 도구 결정. 오늘날 **GitHub Actions**가 사실상 기본값이지만, 조직 상황에 따라 Jenkins·GitLab CI·CircleCI·CodeBuild·Argo 등이 선택지.
+빌드, 테스트, 배포를 자동화하는 도구 결정. 오늘날 **GitHub Actions**가 사실상 기본값이지만, 조직 상황에 따라 Jenkins, GitLab CI, CircleCI, CodeBuild, Argo 등이 선택지.
 
 ## 도구 비교
 
@@ -18,7 +18,7 @@ aliases: ["CI Tool Selection", "CI 도구 선택"]
 | **Jenkins** | self-hosted | 완전한 제어, 플러그인 방대 | **운영 비용 큼**, UI 올드, 설정 분산 |
 | **CircleCI** | SaaS | 빠른 빌드, 좋은 UX | 비용 (규모 커지면) |
 | **Travis CI** | SaaS | 간단, OSS 친화적(과거) | 2020 이후 쇠퇴 |
-| **AWS CodeBuild** | AWS 관리형 | IAM·S3·ECR 네이티브 통합, **사용량만큼 과금** | AWS 종속, UI 제한적 |
+| **AWS CodeBuild** | AWS 관리형 | IAM, S3, ECR 네이티브 통합, **사용량만큼 과금** | AWS 종속, UI 제한적 |
 | **ArgoCD / Argo Workflows** | Kubernetes 네이티브 | GitOps 선두, K8s 배포 특화 | K8s 환경에 한정 |
 | **Tekton** | K8s CRD 기반 | 재사용 가능한 파이프라인 | 러닝 커브 |
 
@@ -31,12 +31,12 @@ aliases: ["CI Tool Selection", "CI 도구 선택"]
 - 단, 대규모 self-hosted 러너가 필요하면 운영 부담 증가
 
 ### AWS 생태계 중심 조직
-**AWS CodeBuild + CodePipeline**. IAM·S3·ECR·ECS와 네이티브 연결. 다만 UI·UX는 GitHub Actions 대비 떨어짐. 비용은 사용량 기반.
+**AWS CodeBuild + CodePipeline**. IAM, S3, ECR, ECS와 네이티브 연결. 다만 UI, UX는 GitHub Actions 대비 떨어짐. 비용은 사용량 기반.
 
 ### GitLab 사용 조직
 **GitLab CI/CD**. `.gitlab-ci.yml` 하나로 파이프라인 완성, 통합된 UX.
 
-### 사내 엔터프라이즈·규제 환경
+### 사내 엔터프라이즈, 규제 환경
 **Jenkins self-hosted**. 완전한 제어권, 모든 플러그인 가능. 대신 운영 인력 상시 필요.
 
 ### Kubernetes 중심
@@ -82,7 +82,7 @@ CI 시간의 절반은 보통 "의존성 설치". 캐싱으로 크게 단축.
 ## 배포 자동화 전략
 
 ### Continuous Integration (CI)
-- PR 단계에서 **빌드·테스트만** 자동. 배포는 별도.
+- PR 단계에서 **빌드, 테스트만** 자동. 배포는 별도.
 
 ### Continuous Delivery (CD)
 - main 머지 시 **스테이징까지 자동**. 프로덕션은 수동 승인.
@@ -96,15 +96,15 @@ CI 시간의 절반은 보통 "의존성 설치". 캐싱으로 크게 단축.
 
 | 전략 | 동작 | 롤백 |
 |---|---|---|
-| **Rolling** | 구 버전을 점진적으로 새 버전으로 교체 | 남은 구 버전을 유지·확대 |
+| **Rolling** | 구 버전을 점진적으로 새 버전으로 교체 | 남은 구 버전을 유지, 확대 |
 | **Blue-Green** | 완전히 새로운 환경 띄우고 트래픽 전환 | 즉시 이전 환경으로 복귀 |
 | **Canary** | 소수(예: 5%)만 새 버전, 점진 확대 | 소수에서 감지되면 즉시 중단 |
 
 Blue-Green은 **즉시 롤백**이 가능하지만 **자원 2배** 필요. Canary는 **작은 블라스트 반경**.
 
-## 비밀·시크릿 관리
+## 비밀, 시크릿 관리
 
-- 환경 변수 평문 저장 금지 — **GitHub Secrets·AWS Secrets Manager·Vault**
+- 환경 변수 평문 저장 금지 — **GitHub Secrets, AWS Secrets Manager, Vault**
 - 파이프라인 로그에 **시크릿이 찍히지 않게** (자동 마스킹 확인)
 - 최소 권한 — 각 파이프라인이 필요한 리소스에만 접근
 
@@ -120,7 +120,7 @@ Blue-Green은 **즉시 롤백**이 가능하지만 **자원 2배** 필요. Canar
 
 - GitHub Actions가 오늘날 기본값인 이유
 - CI vs CD vs Continuous Deployment 구분
-- Rolling·Blue-Green·Canary 배포 전략 선택 기준
+- Rolling, Blue-Green, Canary 배포 전략 선택 기준
 - CI 파이프라인에서 캐싱의 중요성
 - GitOps(ArgoCD)의 핵심 아이디어 (Git = Source of Truth)
 
