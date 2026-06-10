@@ -14,8 +14,6 @@ AWS의 통합 옵저버빌리티 — Metrics, Logs, Alarms, Events, Insights를 
 - [x] [[CloudWatch-Logs-Alarms|CloudWatch Logs와 Alarms (Log Group/Stream, Log Insights, Static/Composite Alarm, Anomaly Detection)]]
 - [x] [[CloudWatch-Operations|CloudWatch 운영 (Container/Lambda Insights, Agent, EventBridge, 비용 함정, 면접 체크포인트)]]
 
-참고: [[CloudWatch-Metrics-EMF]]는 [[CloudWatch-Metrics]]와 본문이 같은 분할 잔재 — 정리 대상.
-
 ## 출처
 - AWS 핵심 서비스 정리 — 학습 메모
 - AWS SAA C03 학습 자료 (로컬)
