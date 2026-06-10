@@ -5,18 +5,18 @@ category: "웹&네트워크(Web&Network)"
 aliases: ["Loopback", "Localhost", "loopback 인터페이스", "127.0.0.1", "::1"]
 ---
 
-# Loopback · Localhost 동작 원리
+# Loopback, Localhost 동작 원리
 
-`localhost` 또는 `127.0.0.1`에 접속하면 **패킷이 물리 NIC를 거치지 않고 커널 내부에서 처리**된다. OS가 부팅과 동시에 제공하는 **가상 네트워크 인터페이스(loopback, lo)** 를 통해서다. 로컬 개발·테스트·IPC의 기본 통로.
+`localhost` 또는 `127.0.0.1`에 접속하면 **패킷이 물리 NIC를 거치지 않고 커널 내부에서 처리**된다. OS가 부팅과 동시에 제공하는 **가상 네트워크 인터페이스(loopback, lo)** 를 통해서다. 로컬 개발, 테스트, IPC의 기본 통로.
 
 ## 핵심 명제
 
 - `localhost` = 호스트명, 자동으로 `127.0.0.1`(IPv4) 또는 `::1`(IPv6)로 해석됨
 - `127.0.0.0/8` 전체 대역이 loopback 전용 예약 (`127.0.0.1`~`127.255.255.254`)
-- 패킷이 OS 라우팅 테이블에서 loopback 인터페이스로 라우팅 → **NIC·네트워크 드라이버 통과 없음**
-- 실제 물리 네트워크를 타지 않으므로 **지연시간 극소·MTU 제한 없음**
+- 패킷이 OS 라우팅 테이블에서 loopback 인터페이스로 라우팅 → **NIC, 네트워크 드라이버 통과 없음**
+- 실제 물리 네트워크를 타지 않으므로 **지연시간 극소, MTU 제한 없음**
 
-## DNS·hosts 해석 경로
+## DNS, hosts 해석 경로
 
 `ping localhost` 입력 시 OS가 거치는 해석 단계:
 
@@ -28,7 +28,7 @@ aliases: ["Loopback", "Localhost", "loopback 인터페이스", "127.0.0.1", "::1
 
 ## Loopback 인터페이스 (lo)
 
-OS가 부팅 시 자동 생성하는 **소프트웨어 가상 NIC**. 물리 장치(이더넷·Wi-Fi 카드)가 없어도 존재.
+OS가 부팅 시 자동 생성하는 **소프트웨어 가상 NIC**. 물리 장치(이더넷, Wi-Fi 카드)가 없어도 존재.
 
 ```
 $ ifconfig lo          # macOS/Linux
@@ -59,7 +59,7 @@ lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST>
 - IPv4 `127.0.0.1`의 IPv6 대응
 - 주소는 정확히 하나 (`::1`) — IPv4처럼 대역이 아님
 - 애플리케이션이 `localhost`로 바인딩할 때 `::1`과 `127.0.0.1` 중 어느 쪽으로 listen할지 설정 주의
-- Node.js·Python 등 일부 환경에서 기본이 IPv6로 바뀌어 "왜 127.0.0.1:3000으로 안 되지?" 혼란 자주 발생
+- Node.js, Python 등 일부 환경에서 기본이 IPv6로 바뀌어 "왜 127.0.0.1:3000으로 안 되지?" 혼란 자주 발생
 
 ## 프로세스 포트 바인딩 — 접근 범위 제어
 
@@ -88,7 +88,7 @@ $ ipconfig /all            # Windows
 ### 포트 listen 상태 확인
 
 ```
-$ netstat -tlnp            # Linux: TCP·listen·숫자·PID
+$ netstat -tlnp            # Linux: TCP, listen, 숫자, PID
 $ ss -tlnp                 # Linux 현대
 $ lsof -iTCP -sTCP:LISTEN  # macOS/Linux
 $ lsof -i :3000            # 3000 포트를 누가 쓰는지
@@ -112,7 +112,7 @@ $ ping 127.0.0.1           # loopback 인터페이스 자체 확인
 4. **바인딩 주소 확인** — 서버가 `127.0.0.1`이 아니라 `::1`이나 `0.0.0.0`에 바인딩됐는지
 5. **IPv4/IPv6 매칭** — curl은 IPv4 선호, 서버는 IPv6만 listen → 불일치
 6. **방화벽/AppArmor/SELinux** — 드물지만 로컬 방화벽이 127.0.0.1을 막기도
-7. **프록시 설정** — 브라우저·HTTP 클라이언트에 프록시가 걸려 127.0.0.1이 프록시 경유
+7. **프록시 설정** — 브라우저, HTTP 클라이언트에 프록시가 걸려 127.0.0.1이 프록시 경유
 
 ## 흔한 함정
 
@@ -120,7 +120,7 @@ $ ping 127.0.0.1           # loopback 인터페이스 자체 확인
 - **`0.0.0.0`과 `127.0.0.1` 혼동** — `0.0.0.0`은 "바인딩 대상"(모든 인터페이스), `127.0.0.1`은 "접속 대상"(특정 IP). 의미 다름
 - **hosts 파일 손상** — `/etc/hosts`에 잘못된 라인이 들어가면 localhost가 이상한 IP로 해석
 - **포트 충돌 메시지 오해** — `EADDRINUSE`는 보통 "누가 이 포트를 쓰고 있다"이지 loopback 문제가 아님
-- **VPN·Docker 네트워크 간섭** — 가끔 VPN이 loopback 라우팅을 변경. `route get 127.0.0.1`로 확인
+- **VPN, Docker 네트워크 간섭** — 가끔 VPN이 loopback 라우팅을 변경. `route get 127.0.0.1`로 확인
 - **Docker 컨테이너 내 `localhost`** — 컨테이너 자기 자신. 호스트 서비스에 접근하려면 `host.docker.internal` (macOS/Windows) 또는 `--network=host` 옵션
 
 ## 면접 체크포인트

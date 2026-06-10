@@ -7,7 +7,7 @@ aliases: ["NestJS WebSocket Gateway", "WebSocketGateway", "SubscribeMessage"]
 
 # NestJS WebSocket Gateway
 
-`@nestjs/websockets`는 Socket.IO·ws를 NestJS DI/모듈에 통합. **Gateway**는 컨트롤러의 WebSocket 버전 — 같은 클래스에서 연결·메시지·종료 이벤트를 다룬다. Guard·Pipe·Interceptor 모두 호환되지만 컨텍스트 추출은 다름.
+`@nestjs/websockets`는 Socket.IO, ws를 NestJS DI/모듈에 통합. **Gateway**는 컨트롤러의 WebSocket 버전 — 같은 클래스에서 연결, 메시지, 종료 이벤트를 다룬다. Guard, Pipe, Interceptor 모두 호환되지만 컨텍스트 추출은 다름.
 
 ## Gateway 구조
 
@@ -41,7 +41,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 | 데코레이터 | 용도 |
 |-----------|------|
-| `@WebSocketGateway(port, options)` | 클래스 마킹 + 포트·네임스페이스·CORS |
+| `@WebSocketGateway(port, options)` | 클래스 마킹 + 포트, 네임스페이스, CORS |
 | `@WebSocketServer()` | Socket.IO Server 인스턴스 주입 |
 | `@SubscribeMessage('event')` | 메시지 핸들러 |
 | `@ConnectedSocket()` | 클라이언트 Socket |
@@ -55,7 +55,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 | `OnGatewayConnection.handleConnection` | 클라이언트 연결마다 |
 | `OnGatewayDisconnect.handleDisconnect` | 클라이언트 종료마다 |
 
-연결 시 인증·룸 join, 종료 시 정리 작업 표준 패턴.
+연결 시 인증, 룸 join, 종료 시 정리 작업 표준 패턴.
 
 ## 인증 — Connection 시점에 검증
 
@@ -95,7 +95,7 @@ async handleMessage(
 
 `server.to(room).emit(event, payload)` — 룸의 모든 클라이언트에 푸시. 송신자 본인 제외하려면 `client.broadcast.to(room).emit(...)`.
 
-## Guard·Pipe·Interceptor 호환
+## Guard, Pipe, Interceptor 호환
 
 HTTP용 Guard는 ExecutionContext 추출이 달라 그대로 안 씀. **WS 전용 Guard**를 따로 만들거나, 공통 Guard에서 `getType()` 분기.
 
@@ -139,7 +139,7 @@ app.useWebSocketAdapter(new RedisIoAdapter(app));
 ## 메시지 응답 — 두 가지 방식
 
 1. **return 값** → ACK 콜백으로 자동 전달. 메시지 패턴이 요청-응답일 때.
-2. **server.emit / client.emit** → 별도 이벤트로 푸시. 비동기 통보·브로드캐스트.
+2. **server.emit / client.emit** → 별도 이벤트로 푸시. 비동기 통보, 브로드캐스트.
 
 ## 흔한 실수
 
@@ -148,7 +148,7 @@ app.useWebSocketAdapter(new RedisIoAdapter(app));
 - **다중 인스턴스에서 인메모리 Adapter**: 룸 메시지가 같은 인스턴스 클라이언트에만 도달. Redis Adapter 필수.
 - **HTTP Guard를 그대로 적용**: `switchToHttp()` 호출이 undefined → 에러. WS 전용 Guard 또는 분기.
 - **CORS 설정 누락**: 브라우저에서 연결 거부. `@WebSocketGateway`의 `cors` 옵션.
-- **Disconnect 핸들러에서 정리 누락**: 룸·DB 세션·타이머가 살아남아 누수.
+- **Disconnect 핸들러에서 정리 누락**: 룸, DB 세션, 타이머가 살아남아 누수.
 
 ## 면접 체크포인트
 

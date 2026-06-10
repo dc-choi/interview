@@ -5,9 +5,9 @@ category: "Database - ORM"
 aliases: ["ORM Hub"]
 ---
 
-# ORM · 도메인 모델링(ORM Hub)
+# ORM, 도메인 모델링(ORM Hub)
 
-ORM·임피던스 불일치·Aggregate 경계·Domain Model — 객체와 관계형 DB의 경계.
+ORM, 임피던스 불일치, Aggregate 경계, Domain Model — 객체와 관계형 DB의 경계.
 
 ## 목차
 - [x] [[ORM|ORM 기초]]

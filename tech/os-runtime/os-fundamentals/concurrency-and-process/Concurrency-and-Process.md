@@ -11,7 +11,7 @@ aliases: ["동시성과 프로세스"]
 
 ## 하위 문서
 - [[Concurrency-and-Process-Overview|OS 개요와 동시성]] — 운영체제 개요, 커널/유저 모드, 프로세스 메모리 구조, 단편화, 지역성
-- [[Concurrency-and-Process-IPC|원자성·동기화·IPC]] — 임계구역, 뮤텍스/세마포어/모니터, 교착상태, IPC, Node.js 동기화
+- [[Concurrency-and-Process-IPC|원자성, 동기화, IPC]] — 임계구역, 뮤텍스/세마포어/모니터, 교착상태, IPC, Node.js 동기화
 
 ## 관련 문서
 - [[Process-Lifecycle|프로세스 생명주기]]

@@ -1,21 +1,26 @@
 ---
 tags: [database, concurrency, race-condition, patterns]
-status: done
+status: index
 category: "Data & Storage - RDB"
 aliases: ["Race Condition Patterns", "경쟁 조건 패턴"]
 ---
 
 # Race Condition 패턴과 해결
 
-**여러 주체가 공유 자원에 동시 접근할 때 실행 순서·타이밍에 따라 결과가 달라지는 현상**. 발생 지점·규모에 따라 해결 도구가 다름. 핵심 원칙: **"락이 마지막 수단. 먼저 원자 연산·낙관적 제어·이벤트 큐를 검토"**.
+**여러 주체가 공유 자원에 동시 접근할 때 실행 순서, 타이밍에 따라 결과가 달라지는 현상**. 발생 지점, 규모에 따라 해결 도구가 다름. 핵심 원칙: **"락이 마지막 수단. 먼저 원자 연산, 낙관적 제어, 이벤트 큐를 검토"**.
+
+## 하위 문서
+
+- [[Race-Condition-Patterns-Process|층위 1: 프로세스 내부 (Node.js 이벤트 루프 race, async-mutex 패턴)]]
+- [[Race-Condition-Patterns-DB-Distributed|층위 2와 3: 단일 DB 다중 서버, 분산 환경 (DB 락, 분산 락, Saga)]]
 
 ## 3가지 층위
 
 | 층위 | 주체 | 해결 도구 |
 |---|---|---|
-| **단일 프로세스·스레드 내부** | 같은 프로세스 안 여러 async 흐름 | async-mutex·메모리 락 |
-| **단일 DB에 여러 API 서버** | 다른 프로세스·다른 서버 | DB 락 (Pessimistic·Optimistic) |
-| **분산 환경** (여러 서버 + 여러 리소스) | 마이크로서비스·여러 DB | 분산 락 (Redis Redlock·Zookeeper) |
+| **단일 프로세스, 스레드 내부** | 같은 프로세스 안 여러 async 흐름 | async-mutex, 메모리 락 |
+| **단일 DB에 여러 API 서버** | 다른 프로세스, 다른 서버 | DB 락 (Pessimistic, Optimistic) |
+| **분산 환경** (여러 서버 + 여러 리소스) | 마이크로서비스, 여러 DB | 분산 락 (Redis Redlock, Zookeeper) |
 
 문제의 층위를 잘못 잡으면 해결책이 비효율. 단일 서버인데 분산 락 쓰면 과함, 분산 환경에 메모리 락만 쓰면 무효.
 
@@ -40,7 +45,7 @@ handler(req):
 ```
 DB.query("UPDATE products SET stock = stock - 1 WHERE id = ? AND stock > 0")
 ```
-DB 자체 연산으로 race 제거. 가장 간단·안전.
+DB 자체 연산으로 race 제거. 가장 간단, 안전.
 
 **2. `async-mutex` 라이브러리** (단일 인스턴스 전용):
 
@@ -81,7 +86,7 @@ await mutex.waitForUnlock();
 
 **한계**: 앱 레벨 락이므로 **여러 서버로 확장하면 무효** → 분산 락 필요.
 
-**3. 큐 + 이벤트**: Bull·BullMQ 같은 큐에 작업 넣고 순차 처리. 응답은 이벤트로. 처리량 제한의 대가로 순서 보장.
+**3. 큐 + 이벤트**: Bull, BullMQ 같은 큐에 작업 넣고 순차 처리. 응답은 이벤트로. 처리량 제한의 대가로 순서 보장.
 
 ## 층위 2: 단일 DB + 여러 서버
 
@@ -95,7 +100,7 @@ User A: INSERT reservation
 User B: INSERT reservation → 이중 예약
 ```
 
-Read Committed·Repeatable Read로도 막지 못함 — **Phantom Read**.
+Read Committed, Repeatable Read로도 막지 못함 — **Phantom Read**.
 
 ### 해결
 **1. Pessimistic Lock** (`SELECT ... FOR UPDATE`):
@@ -120,12 +125,12 @@ WHERE id = ? AND version = ?
 ```
 version 불일치면 rowsAffected=0 → 재시도. 경쟁 적을 때 효율적.
 
-**4. Gap Lock·Next-Key Lock** (MySQL InnoDB):
+**4. Gap Lock, Next-Key Lock** (MySQL InnoDB):
 범위 조건 조회 시 빈 공간까지 잠금. Phantom 방지. ([[MySQL-Gap-Lock]] 참고)
 
 ## 층위 3: 분산 환경
 
-여러 서버 + 여러 DB + Redis·메시지큐. 트랜잭션이 한 경계를 넘는 경우.
+여러 서버 + 여러 DB + Redis, 메시지큐. 트랜잭션이 한 경계를 넘는 경우.
 
 ### 시나리오
 - Redis에 재고 캐시, DB에 영속 상태 → 둘을 동기화하는 지점
@@ -133,7 +138,7 @@ version 불일치면 rowsAffected=0 → 재시도. 경쟁 적을 때 효율적.
 - 여러 마이크로서비스가 같은 엔티티 수정
 
 ### 해결
-**1. 분산 락 (Redis Redlock·Redisson)**:
+**1. 분산 락 (Redis Redlock, Redisson)**:
 - `SETNX lock-key value EX 30` (30초 만료)
 - critical section 수행
 - `DEL lock-key` (fencing token으로 안전 해제)
@@ -141,10 +146,10 @@ version 불일치면 rowsAffected=0 → 재시도. 경쟁 적을 때 효율적.
 주의:
 - **TTL보다 오래 걸리는 작업이면 위험** — TTL 만료 후 다른 서버가 락 획득
 - **fencing token** 없으면 "TTL 만료한 줄 모르고 쓰기" 발생
-- **RedLock 자체의 안전성 논쟁** (Martin Kleppmann 비판) — 진짜 강한 보장이 필요하면 ZooKeeper·etcd
+- **RedLock 자체의 안전성 논쟁** (Martin Kleppmann 비판) — 진짜 강한 보장이 필요하면 ZooKeeper, etcd
 
 **2. Saga + Compensating Transaction**:
-분산 트랜잭션 대신 각 단계가 성공·실패 이벤트 발행, 실패 시 보상 동작. [[External-API-Integration-Patterns]] 참고.
+분산 트랜잭션 대신 각 단계가 성공, 실패 이벤트 발행, 실패 시 보상 동작. [[External-API-Integration-Patterns]] 참고.
 
 **3. 이벤트 소싱 + 단일 Writer**:
 특정 엔티티는 **한 서비스만 쓰기**, 다른 서비스는 이벤트 구독. race 자체를 설계로 제거.
@@ -181,7 +186,7 @@ version 불일치면 rowsAffected=0 → 재시도. 경쟁 적을 때 효율적.
       └─ NO (여러 서버)
           ↓
         같은 DB에서 처리?
-          ├─ YES → DB 락 (Pessimistic·Optimistic·Unique Index)
+          ├─ YES → DB 락 (Pessimistic, Optimistic, Unique Index)
           └─ NO (여러 리소스)
               ↓
             분산 락 + Saga + 상태 키 조합
@@ -189,7 +194,7 @@ version 불일치면 rowsAffected=0 → 재시도. 경쟁 적을 때 효율적.
 
 ## 흔한 실수
 
-- **모든 문제에 분산 락** → 불필요한 성능 저하·복잡도
+- **모든 문제에 분산 락** → 불필요한 성능 저하, 복잡도
 - **낙관적 락만 쓰고 경쟁 심한 리소스** → 재시도 폭증
 - **DB 락 TTL 없음** → 커넥션 풀 고갈 위험
 - **Redlock TTL 만료 감지 안 함** → 이중 작업 수행
@@ -197,10 +202,10 @@ version 불일치면 rowsAffected=0 → 재시도. 경쟁 적을 때 효율적.
 
 ## 면접 체크포인트
 
-- 3가지 층위(프로세스·DB·분산)의 구분과 적합한 도구
+- 3가지 층위(프로세스, DB, 분산)의 구분과 적합한 도구
 - 원자적 DB 연산이 왜 첫 번째 선택지인가
 - Pessimistic vs Optimistic Lock 트레이드오프
-- Redlock의 한계 (TTL·fencing token)
+- Redlock의 한계 (TTL, fencing token)
 - Transactional Outbox가 해결하는 race condition
 - async-mutex `runExclusive` vs `acquire/release` 선택 기준
 - Semaphore(N)가 Mutex와 다른 쓰임새 (동시 허용 개수 제어)
@@ -228,33 +233,33 @@ version 불일치면 rowsAffected=0 → 재시도. 경쟁 적을 때 효율적.
 ### 스핀락 (Spinlock)
 - 락 획득 실패 시 **busy waiting** (루프 돌며 재시도)
 - 컨텍스트 스위치 비용 < 락 예상 보유 시간일 때 유용 (짧은 critical section)
-- OS 커널·저수준 동시성 제어에서 사용
+- OS 커널, 저수준 동시성 제어에서 사용
 
 ### 비교표
 
 | 도구 | 허용 스레드 | Ownership | 대기 방식 | 적합 상황 |
 |---|---|---|---|---|
 | Mutex | 1 | O | block | 일반 critical section |
-| Semaphore(N) | N | X | block | 리소스 풀·연결 수 제한 |
+| Semaphore(N) | N | X | block | 리소스 풀, 연결 수 제한 |
 | Binary Semaphore | 1 | X | block | 신호 (이벤트) |
-| Spinlock | 1 | O/X | busy loop | 매우 짧은 구간·커널 |
+| Spinlock | 1 | O/X | busy loop | 매우 짧은 구간, 커널 |
 
-앱 레벨 라이브러리(async-mutex·Redisson·분산락)는 이 OS 개념을 **애플리케이션 추상화 레벨**로 끌어올린 것. 근본 원리는 동일.
+앱 레벨 라이브러리(async-mutex, Redisson, 분산락)는 이 OS 개념을 **애플리케이션 추상화 레벨**로 끌어올린 것. 근본 원리는 동일.
 
 ## 출처
 - [nodejsdesignpatterns — Node.js Race Conditions](https://www.nodejsdesignpatterns.com/blog/node-js-race-conditions/)
-- [iredays — Race Condition과 예방 방법 (Mutex·Semaphore)](https://iredays.tistory.com/125)
+- [iredays — Race Condition과 예방 방법 (Mutex, Semaphore)](https://iredays.tistory.com/125)
 - [varunkukade (Medium) — JavaScript: Synchronize async calls with async-mutex](https://medium.com/@varunkukade999/javascript-synchronize-async-calls-with-async-mutex-0cd1f8d2562c)
 - [GitHub — DirtyHairy/async-mutex](https://github.com/DirtyHairy/async-mutex)
 - [velog @imkkuk — Redis로 동시성 문제 해결하기](https://velog.io/@imkkuk/Redis%EB%A1%9C-%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0%ED%95%98%EA%B8%B0)
 - [towardsdev — Mutex Implementation in NestJS](https://towardsdev.com/mutex-implementation-in-nestjs-905ae890586a)
-- [tech.kakao — 잃어버린 리포트를 찾아서 (경쟁 조건·안티 패턴)](https://tech.kakao.com/posts/810)
+- [tech.kakao — 잃어버린 리포트를 찾아서 (경쟁 조건, 안티 패턴)](https://tech.kakao.com/posts/810)
 - [4sii — Redis 분산 락](https://4sii.tistory.com/456)
 
 ## 관련 문서
-- [[Lock|DB Lock (Shared·Exclusive·Gap·Next-Key)]]
+- [[Lock|DB Lock (Shared, Exclusive, Gap, Next-Key)]]
 - [[MySQL-Gap-Lock|MySQL Gap Lock]]
-- [[Distributed-Lock|분산 락 (Redlock·fencing token)]]
+- [[Distributed-Lock|분산 락 (Redlock, fencing token)]]
 - [[Redis-Atomic-Operations|Redis 원자적 연산]]
 - [[Isolation-Level|Isolation Level]]
 - [[Transactional-Outbox|Transactional Outbox]]

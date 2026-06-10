@@ -7,7 +7,7 @@ aliases: ["Node.js Error Handling", "uncaughtException", "Error-First Callback"]
 
 # Node.js Error Handling
 
-동기·콜백·Promise·async/await가 섞인 환경에서 에러는 **각 비동기 경계마다 다른 방식으로 흘러간다**. 한 군데서 빠뜨리면 프로세스가 죽거나 무한 대기. 4가지 경로 모두 잡는 표준 패턴이 필요하다.
+동기, 콜백, Promise, async/await가 섞인 환경에서 에러는 **각 비동기 경계마다 다른 방식으로 흘러간다**. 한 군데서 빠뜨리면 프로세스가 죽거나 무한 대기. 4가지 경로 모두 잡는 표준 패턴이 필요하다.
 
 ## 4가지 에러 경로
 
@@ -29,7 +29,7 @@ try {
 }
 ```
 
-**code 분기**가 표준 — 메시지 문자열은 i18n·OS별로 달라짐. `ENOENT`/`EACCES`/`EEXIST`/`EADDRINUSE`/`ECONNREFUSED` 등 안정적.
+**code 분기**가 표준 — 메시지 문자열은 i18n, OS별로 달라짐. `ENOENT`/`EACCES`/`EEXIST`/`EADDRINUSE`/`ECONNREFUSED` 등 안정적.
 
 ## 에러 우선 콜백 (error-first callback)
 
@@ -87,7 +87,7 @@ stream.on('error', err => logger.error(err));   // 필수
 stream.pipe(dest);
 ```
 
-`'error'` 리스너 0개인 EventEmitter가 에러 emit하면 **즉시 throw → 프로세스 종료**. Stream·net.Socket·child_process 모두 EventEmitter라 동일.
+`'error'` 리스너 0개인 EventEmitter가 에러 emit하면 **즉시 throw → 프로세스 종료**. Stream, net.Socket, child_process 모두 EventEmitter라 동일.
 
 ## 전역 핸들러 — 마지막 안전망
 
@@ -110,7 +110,7 @@ process.on('unhandledRejection', (reason, promise) => {
 | `uncaughtExceptionMonitor` | uncaughtException 직전, 종료 막지 않음 — 로그용 |
 | `multipleResolves` | Promise가 여러 번 resolve/reject (deprecated) |
 
-**핵심**: 이 핸들러는 **로그·정리 후 종료** 용도. 계속 실행하지 말 것 — 상태가 손상됐을 가능성 있음. PM2·Cluster·K8s가 재시작.
+**핵심**: 이 핸들러는 **로그, 정리 후 종료** 용도. 계속 실행하지 말 것 — 상태가 손상됐을 가능성 있음. PM2, Cluster, K8s가 재시작.
 
 ## 도메인 에러 모델
 
@@ -141,7 +141,7 @@ export class NotFoundError extends AppError {
 
 `statusCode`/`code`로 분기 가능, 메시지 문자열 매칭 의존 X.
 
-## AbortController·Timeout
+## AbortController, Timeout
 
 ```ts
 const ac = new AbortController();
@@ -155,7 +155,7 @@ try {
 }
 ```
 
-`fs.promises`·`fetch`·`http`가 AbortSignal 지원. 타임아웃·취소 표준 모델.
+`fs.promises`, `fetch`, `http`가 AbortSignal 지원. 타임아웃, 취소 표준 모델.
 
 ## 흔한 실수
 
@@ -164,19 +164,19 @@ try {
 - **`async` 함수의 첫 번째 줄 sync throw** → Promise reject로 변환되지만 `.catch` 없으면 같은 문제.
 - **uncaughtException 후 계속 실행** → 손상된 상태로 계속 → 더 큰 사고.
 - **EventEmitter `error` 리스너 미등록** → throw → 프로세스 종료.
-- **에러를 메시지 문자열로 분기** → i18n·OS별 차이로 깨짐. `code` 또는 `instanceof`로.
+- **에러를 메시지 문자열로 분기** → i18n, OS별 차이로 깨짐. `code` 또는 `instanceof`로.
 - **try/catch에서 모든 에러 swallow** → 프로그래밍 에러까지 묻힘. 알려진 운영 에러만 잡고 나머지 throw.
 - **early return 누락 — `if (err) cb(err);` 후 다음 줄 실행** → 정상 경로도 호출됨. `return cb(err)`.
 
 ## 면접 체크포인트
 
-- 4가지 에러 경로와 잡는 방법 (sync·callback·Promise·EventEmitter)
+- 4가지 에러 경로와 잡는 방법 (sync, callback, Promise, EventEmitter)
 - 에러 우선 콜백 패턴이 표준이 된 이유
 - `unhandledRejection`과 Node 15+ 동작 변경
 - `uncaughtException` 핸들러의 역할 — 로그 후 종료, 계속 실행 금지
 - 운영 에러 vs 프로그래밍 에러 구분
 - `error.code` 분기가 메시지 매칭보다 안정적인 이유
-- AbortController로 타임아웃·취소 처리
+- AbortController로 타임아웃, 취소 처리
 - EventEmitter `error` 리스너 미등록의 결과
 
 ## 관련 문서
@@ -184,5 +184,5 @@ try {
 - [[Node.js|Node.js 개요]]
 - [[Async-Programming-Patterns|비동기 프로그래밍 패턴]]
 - [[Stream-Types|Stream Types (EventEmitter 기반)]]
-- [[Process-Child-Process|Process · Graceful Shutdown]]
+- [[Process-Child-Process|Process, Graceful Shutdown]]
 - [[NestJS-Exception-Filter|NestJS Exception Filter (HTTP 응답 변환)]]

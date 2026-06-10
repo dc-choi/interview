@@ -7,12 +7,12 @@ aliases: ["NestJS Lifecycle", "Bootstrap", "OnModuleInit"]
 
 # NestJS 애플리케이션 라이프사이클
 
-NestJS 앱은 **Bootstrap → 모듈 초기화 → 요청 처리 → 종료** 순으로 진행. 각 단계에 훅이 있어 DI 컨테이너 위에서 안전하게 초기화·정리 작업을 끼워 넣을 수 있다.
+NestJS 앱은 **Bootstrap → 모듈 초기화 → 요청 처리 → 종료** 순으로 진행. 각 단계에 훅이 있어 DI 컨테이너 위에서 안전하게 초기화, 정리 작업을 끼워 넣을 수 있다.
 
 ## 단계 개요
 
 ```
-1. NestFactory.create()           → Provider 인스턴스화·DI 그래프 구성
+1. NestFactory.create()           → Provider 인스턴스화, DI 그래프 구성
 2. 전역 설정 적용                  → useGlobalPipes/Filters/Interceptors, Express 미들웨어
 3. OnModuleInit (각 모듈)          → 의존성 그래프 순서대로
 4. OnApplicationBootstrap (각 모듈) → 모든 모듈 init 후
@@ -106,9 +106,9 @@ export class MyService implements OnModuleInit, OnApplicationBootstrap, OnModule
 
 체감 차이: A가 B에 의존할 때 A의 `OnModuleInit`은 B의 `OnModuleInit` 후에 실행되지만, A가 *B의 다른 메서드를 호출*하기엔 불안정한 시점일 수 있음. 안전하게 다른 모듈을 쓰려면 `OnApplicationBootstrap`.
 
-## 메모리 누수 방지 — 구독·타이머·이벤트 리스너 정리
+## 메모리 누수 방지 — 구독, 타이머, 이벤트 리스너 정리
 
-장기 실행 Provider가 RxJS Subscription·`setInterval`·이벤트 리스너를 만들었으면 종료 시 해제 필수. 안 하면 종료가 멈추거나, 핫 리로드 환경(dev)에서 누수 누적.
+장기 실행 Provider가 RxJS Subscription, `setInterval`, 이벤트 리스너를 만들었으면 종료 시 해제 필수. 안 하면 종료가 멈추거나, 핫 리로드 환경(dev)에서 누수 누적.
 
 ```ts
 @Injectable()
@@ -161,7 +161,7 @@ export class HealthService implements OnModuleDestroy {
 
 `process.on('SIGTERM', ...)` 직접 등록도 가능하지만, NestJS 훅이 DI/모듈 의존 순서를 보장.
 
-## 타임아웃·강제 종료
+## 타임아웃, 강제 종료
 
 종료 훅이 무한 대기에 걸리지 않게 외부에서 타임아웃을 강제. K8s `terminationGracePeriodSeconds` 기본 30초 — 이보다 짧게 정리 끝나야 함.
 

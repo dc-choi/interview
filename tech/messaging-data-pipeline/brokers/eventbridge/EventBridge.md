@@ -1,6 +1,6 @@
 ---
 tags: [messaging, aws, eventbridge, event-driven]
-status: done
+status: index
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["EventBridge", "Amazon EventBridge"]
 ---
@@ -8,6 +8,11 @@ aliases: ["EventBridge", "Amazon EventBridge"]
 # Amazon EventBridge
 
 AWS 서버리스 이벤트 버스. 이벤트 기반 아키텍처의 **중앙 라우터** 역할. 규칙 기반으로 이벤트를 필터링하고 적절한 타겟으로 전달한다.
+
+## 목차
+
+- [[EventBridge-Event-Patterns|이벤트 패턴 매칭 (연산자 문법, 매칭 규칙, 테스트)]]
+- [[EventBridge-SQS-Target|EventBridge → SQS 타겟 패턴 (리소스 정책, 메시지 구조, 컨슈머)]]
 
 ## 핵심 개념
 
@@ -151,11 +156,6 @@ cron/rate 표현식 → Scheduler → Target (Lambda, SQS, Step Functions 등)
 - AWS 서비스 이벤트: **무료**
 - Pipes: ~$0.40 / 100만 건
 - Archive: 저장 비용 + 리플레이 시 이벤트 비용
-
-## 하위 문서
-
-- [[EventBridge-Event-Patterns|이벤트 패턴 매칭 (연산자 문법, 매칭 규칙, 테스트)]]
-- [[EventBridge-SQS-Target|EventBridge → SQS 타겟 패턴 (리소스 정책, 메시지 구조, 컨슈머)]]
 
 ## 관련 문서
 - [[SQS|SQS]]

@@ -5,7 +5,7 @@ category: "성능&확장성(Performance&Scalability)"
 aliases: ["First-Come Coupon Patterns", "선착순 쿠폰 패턴", "선착순 이벤트 설계"]
 ---
 
-# 선착순 이벤트(쿠폰·재고·티켓) 패턴
+# 선착순 이벤트(쿠폰, 재고, 티켓) 패턴
 
 "1000명이 몰리는데 100개만 발급하라"는 유형의 요구. 순진하게 **DB의 count → insert** 두 쿼리로 처리하면 반드시 초과 발급된다. 문제는 Race Condition이며, 해법은 **원자적 감소**와 **쓰기 부하 분리** 두 축이다.
 
@@ -48,7 +48,7 @@ end
 return 1
 ```
 
-Lua 스크립트로 실행하면 `INCR`·한도 비교·`DECR`이 **단일 원자 블록**으로 묶인다.
+Lua 스크립트로 실행하면 `INCR`, 한도 비교, `DECR`이 **단일 원자 블록**으로 묶인다.
 
 ### 4. Redis 기반 분산 락(Redlock)
 
@@ -69,7 +69,7 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 
 - API는 **Kafka produce로 요청 종료** → 사용자 응답 지연 최소
 - Consumer가 자신의 속도로 DB에 적재 → 커넥션 풀 보호
-- 이벤트 로그가 남아 감사·재처리 가능
+- 이벤트 로그가 남아 감사, 재처리 가능
 
 ### 트레이드오프
 
@@ -97,12 +97,12 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 - **Redis 장애 대비** — Redis 싱글 인스턴스 장애 = 이벤트 전체 정지. Replica + Sentinel/Cluster 필수. 혹은 단기 장애는 허용하고 이벤트 재오픈으로 복구
 - **스로틀링** — 응답이 성공이라도 클라이언트 재시도 폭주 방지 차원에서 Rate Limit과 조합
 - **대기열 방식 대안** — 정확성보다 **공정성**이 중요하면 Redis Sorted Set으로 입장 티켓을 발급해 순번 대로 처리(예: 트래픽 많은 티켓 예매 사이트)
-- **정합성 모니터링** — "Redis 카운터 vs DB insert 수" 일치 여부를 주기 점검. 차이가 누적되면 유실·중복 의심
+- **정합성 모니터링** — "Redis 카운터 vs DB insert 수" 일치 여부를 주기 점검. 차이가 누적되면 유실, 중복 의심
 - **DB 스키마** — `(user_id, event_id)` UNIQUE 인덱스. Kafka 지연 상황에서도 중복 insert 차단
 
 ## 선택 가이드
 
-| 규모·요구 | 추천 조합 |
+| 규모, 요구 | 추천 조합 |
 |---|---|
 | 수백 TPS, 단순 | DB Pessimistic Lock |
 | 수천~수만 TPS | Redis INCR + DB 직접 insert |
@@ -121,9 +121,9 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 ## 면접 체크포인트
 
 - Race condition 없이 한도 제한을 어떻게 구현하는가
-- Redis가 원자성을 보장하는 이유(싱글 스레드·Lua)
+- Redis가 원자성을 보장하는 이유(싱글 스레드, Lua)
 - Pessimistic/Optimistic Lock과 Redis `INCR`의 트레이드오프
-- Kafka 도입으로 얻는 이득과 비용(지연·멱등·DLQ)
+- Kafka 도입으로 얻는 이득과 비용(지연, 멱등, DLQ)
 - 선착순 vs 대기열 공정성의 설계 선택
 
 ## 출처
@@ -134,4 +134,4 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 - [[Transaction-Lock-Contention|트랜잭션 경합과 Lock 문제]]
 - [[Latency-Optimization|레이턴시 최적화]]
 - [[Rate-Limiting|Rate Limit 정책 설계]]
-- [[Concurrency-vs-Parallelism|동시성 · 병렬성]]
+- [[Concurrency-vs-Parallelism|동시성, 병렬성]]

@@ -21,7 +21,7 @@ aliases: ["Monads in TypeScript", "모나드", "Functor Applicative Monad", "모
 
 > "내부함자 범주(Endofunctor Category)의 모노이드 대상."
 
-세 요소로 구성: **타입 생성자 `M<_>`**, **항등원 `pure: A → M<A>`**, **이항 연산 `join: M<M<A>> → M<A>`**. 그리고 결합·단위 법칙을 만족.
+세 요소로 구성: **타입 생성자 `M<_>`**, **항등원 `pure: A → M<A>`**, **이항 연산 `join: M<M<A>> → M<A>`**. 그리고 결합, 단위 법칙을 만족.
 
 ## 추상 계단: Functor → Applicative → Monad
 
@@ -73,7 +73,7 @@ m.flatMap(f).flatMap(g)  ===  m.flatMap(x => f(x).flatMap(g))
 ```
 "체인 그룹화 방식과 무관하게 동일 결과." → 어떤 순서로 합성해도 안전.
 
-**실무적 의미**: 이 법칙을 만족하는 한, 체인 순서 변경·헬퍼 추출·합성 분해 같은 리팩토링이 동작 변경 없이 가능.
+**실무적 의미**: 이 법칙을 만족하는 한, 체인 순서 변경, 헬퍼 추출, 합성 분해 같은 리팩토링이 동작 변경 없이 가능.
 
 ## TypeScript에서 만나는 주요 모나드
 
@@ -85,7 +85,7 @@ m.flatMap(f).flatMap(g)  ===  m.flatMap(x => f(x).flatMap(g))
 | **Array** | 비결정 / 다중 결과 | `flatMap`이 카르테시안 곱처럼 작동 |
 | **Reader** | 외부 환경에 의존 | 환경을 함께 끌고 다님 |
 | **State** | 상태를 동반 | 상태를 함께 변형 |
-| **Writer** | 로그·메타데이터 누적 | 추가 데이터를 같이 쌓음 |
+| **Writer** | 로그, 메타데이터 누적 | 추가 데이터를 같이 쌓음 |
 
 ### Array도 모나드다
 

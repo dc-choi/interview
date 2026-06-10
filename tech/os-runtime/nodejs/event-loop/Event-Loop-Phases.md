@@ -7,7 +7,7 @@ aliases: ["Event Loop Phases", "이벤트 루프 페이즈"]
 
 # 이벤트 루프 — 페이즈와 실행 순서
 
-libuv 소스 기반 페이즈 구조, nextTick·microtask 삽입 지점, 실행 순서 심화, 타이머 심화.
+libuv 소스 기반 페이즈 구조, nextTick, microtask 삽입 지점, 실행 순서 심화, 타이머 심화.
 
 ## libuv `uv_run` 소스코드
 이벤트 루프의 실제 구현체. 각 페이즈를 순회하며 등록된 콜백을 처리한다.

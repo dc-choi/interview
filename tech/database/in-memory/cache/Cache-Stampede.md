@@ -34,7 +34,7 @@ aliases: ["Cache stampede 방지", "Cache Stampede"]
 - 구현: TTL의 80% 시점에 갱신 트리거, 또는 별도 스케줄러로 주기적 갱신
 - 적합: 조회 빈도가 매우 높고 DB 조회 비용이 큰 데이터
 
-### 4. PER · XFetch (Probabilistic Early Recomputation)
+### 4. PER, XFetch (Probabilistic Early Recomputation)
 - 캐시 만료 전 일정 확률로 조기 갱신을 시도하는 알고리즘
 - 핵심 공식: `now - delta * beta * ln(random()) >= expiry` 시 조기 갱신
   - `delta` — 직전 갱신에 걸린 시간 (값을 만드는 비용)
@@ -45,7 +45,7 @@ aliases: ["Cache stampede 방지", "Cache Stampede"]
 
 ### 5. Single-Flight (프로세스 내 중복 합치기)
 
-같은 프로세스에서 **동일 키에 대한 동시 요청을 하나로 합쳐** 단일 DB 조회로 처리. Go의 `singleflight` 패키지가 원조. Node·NestJS에서는 `inflight: Map<string, Promise>`로 구현:
+같은 프로세스에서 **동일 키에 대한 동시 요청을 하나로 합쳐** 단일 DB 조회로 처리. Go의 `singleflight` 패키지가 원조. Node, NestJS에서는 `inflight: Map<string, Promise>`로 구현:
 
 ```
 1. 요청 도착 → cache get → miss
@@ -78,7 +78,7 @@ EVAL "if redis.call('get', KEYS[1]) == ARGV[1]
 | TTL Jitter | 낮음 | 중간 | 다수 키 동시 만료 방지 |
 | Mutex Lock | 중간 | 높음 | 단일 Hot Key stampede 방지 |
 | 백그라운드 갱신 | 중간 | 매우 높음 | 극도로 높은 조회 빈도 |
-| PER · XFetch | 낮음 | 높음 | lock 없이 확률적 분산 |
+| PER, XFetch | 낮음 | 높음 | lock 없이 확률적 분산 |
 | Single-Flight | 낮음 | 중간 (프로세스 내) | 프로세스 내 중복 폭주 |
 
 ## 실무 조합
@@ -86,11 +86,11 @@ EVAL "if redis.call('get', KEYS[1]) == ARGV[1]
 - **기본**: TTL Jitter + Single-Flight (프로세스 내 합치기)
 - **Hot Key 1-2개**: 위 + 분산 락 (Lua 해제) 또는 백그라운드 갱신
 - **Hot Key 많음**: 위 + XFetch (확률적 조기 갱신, 락 오버헤드 회피)
-- **트래픽 폭증·외부 의존성 큼**: 위 조합 + 짧은 TTL stale-while-revalidate 패턴
+- **트래픽 폭증, 외부 의존성 큼**: 위 조합 + 짧은 TTL stale-while-revalidate 패턴
 
 ## 관련 문서
 - [[Cache-Strategies|Cache 전략]]
 - [[Cache-Invalidation|Cache Invalidation]]
 - [[Hot-Key|Hot key 대응]]
-- [[Distributed-Lock|분산 락 (Redlock·Lua)]]
+- [[Distributed-Lock|분산 락 (Redlock, Lua)]]
 - [[NestJS-Caching-Integration|NestJS Stampede 통합]]

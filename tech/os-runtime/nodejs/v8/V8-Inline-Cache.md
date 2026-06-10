@@ -55,7 +55,7 @@ read(d);  // POLY (HC_ab + HC_c + HC_d)
 ## 최적화 원칙
 
 ### 1. MONOMORPHIC 상태 유지
-IC가 MONO일 때 TurboFan이 가장 공격적인 최적화를 수행한다. POLY·MEGA는 Deopt 가능성이 높아진다.
+IC가 MONO일 때 TurboFan이 가장 공격적인 최적화를 수행한다. POLY, MEGA는 Deopt 가능성이 높아진다.
 
 ### 2. 동일 Hidden Class 공유
 같은 구조의 객체를 **동일한 생성자**, **동일한 순서**로 생성 → 같은 Hidden Class 재사용. 상세는 [[V8-Hidden-Class|V8 히든 클래스]] 참조.
@@ -69,14 +69,14 @@ function sum(p) { return p.x + p.y; }
 sum({ x: 1, y: 2 });
 sum({ x: 3, y: 4 });
 
-// 나쁨: 다른 Hidden Class → POLY·MEGA로 전락
+// 나쁨: 다른 Hidden Class → POLY, MEGA로 전락
 sum({ x: 1, y: 2 });
 sum({ y: 1, x: 2 });     // 순서 다름 → 다른 HC
 sum({ x: 1, y: 2, z: 3 });// 프로퍼티 추가 → 다른 HC
 ```
 
 ### 4. 동적 유연함의 대가
-JS의 "어떤 모양의 객체든 받을 수 있다"는 유연성은 IC 관점에서 비용이다. **동적·유연한 코드는 성능 대가가 따른다**는 사실을 인지하고, hot path일수록 정적 언어처럼 작성한다.
+JS의 "어떤 모양의 객체든 받을 수 있다"는 유연성은 IC 관점에서 비용이다. **동적, 유연한 코드는 성능 대가가 따른다**는 사실을 인지하고, hot path일수록 정적 언어처럼 작성한다.
 
 ## 관련 문서
 

@@ -5,7 +5,7 @@ category: "웹&네트워크(Web&Network)"
 aliases: ["HTTP Content-Type", "Content-Type", "MIME Type"]
 ---
 
-# HTTP Content-Type · MIME Type
+# HTTP Content-Type, MIME Type
 
 `Content-Type` 헤더는 **요청/응답 본문의 미디어 타입(MIME Type)을 알려주는 메타 정보**다. 수신 측이 바디를 어떤 형식으로 파싱할지 결정하는 단서이며, 잘못 지정하면 JSON 요청이 쿼리 파라미터로 해석되거나 파일 업로드가 깨지는 등 프로토콜 호환성이 곧바로 무너진다.
 
@@ -15,12 +15,12 @@ aliases: ["HTTP Content-Type", "Content-Type", "MIME Type"]
 
 | 헤더 | 역할 |
 |---|---|
-| `Content-Type` | 데이터의 미디어 타입 (JSON·HTML·이미지 등) |
-| `Content-Encoding` | 압축·인코딩 방식 (`gzip`, `br`, `deflate`) |
+| `Content-Type` | 데이터의 미디어 타입 (JSON, HTML, 이미지 등) |
+| `Content-Encoding` | 압축, 인코딩 방식 (`gzip`, `br`, `deflate`) |
 | `Content-Language` | 자연어 (`ko`, `en-US`) |
 | `Content-Length` | 본문 바이트 수 |
 
-이 헤더들의 공통 역할은 **바디 자체를 설명**하는 것. 요청·응답 메시지의 **전송 방식**을 결정하는 것이 아니라, 바디에 담긴 **데이터**를 수신 측이 올바르게 해석하도록 돕는다.
+이 헤더들의 공통 역할은 **바디 자체를 설명**하는 것. 요청, 응답 메시지의 **전송 방식**을 결정하는 것이 아니라, 바디에 담긴 **데이터**를 수신 측이 올바르게 해석하도록 돕는다.
 
 혼동 포인트: `Transfer-Encoding: chunked` 같은 **전송 헤더(Transport Headers)**는 "어떻게 운송할지"를 결정 → 표현 헤더와 층위가 다름. 표현 헤더는 hop-by-hop이 아니라 end-to-end 의미.
 
@@ -39,10 +39,10 @@ Content-Type: <type>/<subtype>; <parameter>=<value>
 | 카테고리 | 대표 타입 | 용도 |
 |---|---|---|
 | **application** | `application/json` | REST API 기본 페이로드 |
-| | `application/xml` | SOAP·레거시 연동 |
+| | `application/xml` | SOAP, 레거시 연동 |
 | | `application/x-www-form-urlencoded` | HTML form submit(기본) — `key=value&key=value` |
 | | `application/octet-stream` | 형식 불명 바이너리 |
-| | `application/pdf`, `application/zip` | 문서·압축 |
+| | `application/pdf`, `application/zip` | 문서, 압축 |
 | **multipart** | `multipart/form-data` | **파일 업로드** — 필드마다 boundary로 분리 |
 | | `multipart/mixed` | 여러 타입 복합 전송(메일 첨부) |
 | **text** | `text/html`, `text/plain`, `text/css`, `text/csv` | 텍스트 포맷 |
@@ -68,7 +68,7 @@ Content-Type: application/json
 {"name":"dc","age":26}
 ```
 
-- 현대 REST API 표준. 중첩·배열·타입(숫자/불리언/null) 표현 가능
+- 현대 REST API 표준. 중첩, 배열, 타입(숫자/불리언/null) 표현 가능
 - Spring `@RequestBody`, Express `express.json()`, NestJS `ValidationPipe` 등이 파싱
 
 ### `application/x-www-form-urlencoded`
@@ -80,8 +80,8 @@ Content-Type: application/x-www-form-urlencoded
 name=dc&age=26
 ```
 
-- HTML form의 기본. URL 쿼리 스트링과 동일 인코딩(`%20`·`+` 등)
-- **대용량·바이너리 부적합** — base64 확장 없이는 파일 전송 불가. 첨부는 `multipart/form-data` 사용
+- HTML form의 기본. URL 쿼리 스트링과 동일 인코딩(`%20`, `+` 등)
+- **대용량, 바이너리 부적합** — base64 확장 없이는 파일 전송 불가. 첨부는 `multipart/form-data` 사용
 - Spring `@ModelAttribute`/`@RequestParam`, Express `express.urlencoded()` 등이 파싱
 
 ## 파일 업로드: `multipart/form-data`
@@ -102,7 +102,7 @@ hello
 ------WebKitBoundary123--
 ```
 
-- 필드마다 서브 Content-Type을 가질 수 있어 텍스트·바이너리 혼합 가능
+- 필드마다 서브 Content-Type을 가질 수 있어 텍스트, 바이너리 혼합 가능
 - boundary 문자열은 바디 안에 등장해선 안 됨(충돌 방지)
 
 ## 자주 생기는 장애 패턴
@@ -128,5 +128,5 @@ hello
 
 ## 관련 문서
 - [[REST|REST API]]
-- [[HTTP-Status-Code|HTTP Status Code · Header]]
+- [[HTTP-Status-Code|HTTP Status Code, Header]]
 - [[HTTP-Seminar|HTTP 버전별 진화와 핵심 요소]]

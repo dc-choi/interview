@@ -7,7 +7,7 @@ aliases: ["NestJS Dynamic Module", "Global Module", "register registerAsync"]
 
 # NestJS Module 시스템 — Dynamic / Global Module
 
-`@Module()` 데코레이터의 기본 사용법(imports/exports/providers/controllers) 위에, **런타임 설정을 받아 모듈 자체를 생성·구성**하는 패턴들. ConfigModule·TypeOrmModule·JwtModule 같은 라이브러리가 모두 이 구조 위에 있다.
+`@Module()` 데코레이터의 기본 사용법(imports/exports/providers/controllers) 위에, **런타임 설정을 받아 모듈 자체를 생성, 구성**하는 패턴들. ConfigModule, TypeOrmModule, JwtModule 같은 라이브러리가 모두 이 구조 위에 있다.
 
 ## Static Import vs Dynamic Import
 
@@ -34,7 +34,7 @@ aliases: ["NestJS Dynamic Module", "Global Module", "register registerAsync"]
 
 ## Global Module — `@Global()`
 
-한 번 import하면 **모든 모듈에서 별도 import 없이** 사용 가능. 루트 모듈 트리에 한 번만 등록되며, 보통 **인프라성 Provider**(Logger·DB Connection·EventBus)에 적합.
+한 번 import하면 **모든 모듈에서 별도 import 없이** 사용 가능. 루트 모듈 트리에 한 번만 등록되며, 보통 **인프라성 Provider**(Logger, DB Connection, EventBus)에 적합.
 
 ```ts
 @Global()
@@ -78,12 +78,12 @@ export class AppModule {}
 
 | 메서드 | 용도 |
 |--------|------|
-| `forRoot(options)` | 앱 전역 1회 — DB·Cache·Queue 같은 싱글톤성 인프라 |
+| `forRoot(options)` | 앱 전역 1회 — DB, Cache, Queue 같은 싱글톤성 인프라 |
 | `forRootAsync(options)` | 위와 동일하나 옵션을 다른 Provider에 의존해 비동기로 생성 |
 | `forFeature(options)` | 도메인/모듈별 — TypeOrmModule.forFeature([User]) 같은 기능 등록 |
 | `register(options)` | 옵션 인자로 모듈 인스턴스 생성 — forRoot보다 가벼운 용도 |
 
-## `registerAsync` — 비동기·DI 의존 옵션
+## `registerAsync` — 비동기, DI 의존 옵션
 
 옵션이 다른 Provider(예: `ConfigService`)에 의존하거나 비동기 호출 결과로 결정될 때.
 
@@ -130,7 +130,7 @@ export class AuthService {
 }
 ```
 
-근본 해결은 **단방향 의존**으로 모듈 경계 재설계. `forwardRef`는 구조가 정말 어쩔 수 없을 때만. 5가지 해결 전략(forwardRef·ModuleRef·Event·Facade·Domain) 비교·트레이드오프·자동화 방어는 [[NestJS-Circular-Dependency|순환 의존성 해결 전략]].
+근본 해결은 **단방향 의존**으로 모듈 경계 재설계. `forwardRef`는 구조가 정말 어쩔 수 없을 때만. 5가지 해결 전략(forwardRef, ModuleRef, Event, Facade, Domain) 비교, 트레이드오프, 자동화 방어는 [[NestJS-Circular-Dependency|순환 의존성 해결 전략]].
 
 ### 이벤트 기반 대안
 
@@ -182,6 +182,6 @@ export class BService implements OnModuleInit {
 
 ## 관련 문서
 
-- [[NestJS|NestJS 개요 · DI · 모듈 기본]]
-- [[NestJS-Lifecycle|NestJS Lifecycle (Bootstrap 단계·생명주기 훅)]]
+- [[NestJS|NestJS 개요, DI, 모듈 기본]]
+- [[NestJS-Lifecycle|NestJS Lifecycle (Bootstrap 단계, 생명주기 훅)]]
 - [[NestJS-vs-Spring|NestJS vs Spring (DI 모듈 비교)]]

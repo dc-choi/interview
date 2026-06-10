@@ -5,9 +5,9 @@ category: "Architecture - 진화"
 aliases: ["Evolution"]
 ---
 
-# 진화 · 전환(Evolution)
+# 진화, 전환(Evolution)
 
-모놀리스 vs MSA·레거시 현대화·런타임 스택 진화.
+모놀리스 vs MSA, 레거시 현대화, 런타임 스택 진화.
 
 ## 목차
 - [x] [[Monolith-vs-Microservice|Monolith vs Microservice (아임웹 MSA 사례)]]

@@ -7,7 +7,7 @@ aliases: ["Consistent Hashing", "일관 해싱", "Hash Ring"]
 
 # Consistent Hashing
 
-분산 캐시·DB·로드밸런서에서 **노드 추가/제거 시 재배치되는 키의 비율을 최소화**하는 해싱 기법. 단순 모듈로 해싱(`hash(key) % N`)은 N이 바뀌면 거의 모든 키가 재배치되지만, Consistent Hashing은 평균 `1/N`만 재배치된다.
+분산 캐시, DB, 로드밸런서에서 **노드 추가/제거 시 재배치되는 키의 비율을 최소화**하는 해싱 기법. 단순 모듈로 해싱(`hash(key) % N`)은 N이 바뀌면 거의 모든 키가 재배치되지만, Consistent Hashing은 평균 `1/N`만 재배치된다.
 
 ## 단순 모듈로 해싱의 문제
 
@@ -54,14 +54,14 @@ N1 → N1#1, N1#2, ..., N1#150 각각 다른 hash로 링에 배치
 N2 → N2#1, N2#2, ..., N2#150 ...
 ```
 
-V는 보통 100-200. 너무 작으면 분포 불균형, 너무 크면 메모리·검색 비용↑.
+V는 보통 100-200. 너무 작으면 분포 불균형, 너무 크면 메모리, 검색 비용↑.
 
-## 키 → 노드 조회 — 이진 탐색 O(log N·V)
+## 키 → 노드 조회 — 이진 탐색 O(log N×V)
 
 링은 **정렬된 해시 배열**로 표현 (구현은 정렬 배열 + 이진 탐색).
 
 ```
-sortedHashes = [h1, h2, h3, ..., hM]   (M = N · V)
+sortedHashes = [h1, h2, h3, ..., hM]   (M = N × V)
 1. hash(key) 계산
 2. sortedHashes에서 해시값 이상의 첫 위치 이진 탐색
 3. 끝을 넘어가면 sortedHashes[0]으로 wrap-around
@@ -75,7 +75,7 @@ sortedHashes = [h1, h2, h3, ..., hM]   (M = N · V)
 | 패턴 | 해결 |
 |------|------|
 | 특정 키에 트래픽 집중 | 해당 키만 **별도 캐시 레이어** 또는 로컬 캐시 백킹 |
-| 특정 노드에 가상 노드가 많이 몰림 | V 증가, 또는 해시 함수 변경 (MD5·xxhash) |
+| 특정 노드에 가상 노드가 많이 몰림 | V 증가, 또는 해시 함수 변경 (MD5, xxhash) |
 | 노드 간 처리 능력 차이 | 큰 노드의 V를 늘려 가중치 부여 |
 
 ## 실제 시스템 사례
@@ -94,7 +94,7 @@ Redis Cluster는 **고정 16384 슬롯**을 노드들이 나눠 가짐 — Consi
 
 | 측면 | Consistent Hashing | Redis Cluster Hash Slot |
 |------|-------------------|------------------------|
-| 슬롯 수 | 가변 (N · V) | 16384 고정 |
+| 슬롯 수 | 가변 (N × V) | 16384 고정 |
 | 노드 추가 | 링 재계산 | 슬롯 재할당 |
 | 키 라우팅 | hash → 시계방향 노드 | hash → 슬롯 → 노드 |
 | 운영 단순성 | 복잡 (V 튜닝) | 단순 (고정 슬롯) |
@@ -105,14 +105,14 @@ Redis Cluster는 **고정 16384 슬롯**을 노드들이 나눠 가짐 — Consi
 
 표준 Consistent Hashing의 약점: **분포 균등** ≠ **부하 균등**. hot 키가 한 노드에 몰리면 그 노드만 과부하.
 
-Bounded-Load는 노드별 **최대 부하 한도** 설정 — 한도 초과 시 다음 노드로 fallback. Google Maglev·HAProxy 등이 채택.
+Bounded-Load는 노드별 **최대 부하 한도** 설정 — 한도 초과 시 다음 노드로 fallback. Google Maglev, HAProxy 등이 채택.
 
 ## 흔한 실수
 
 - **Virtual Node 안 두고 운영** — 분포 매우 불균형. V=100+ 권장
 - **노드 ID에 포트만** — 같은 호스트의 여러 인스턴스 구분 안 됨. host+port+pid
 - **링 재정렬 매 요청** — 한 번 정렬 후 캐시. 노드 변경 시만 재정렬
-- **해시 함수 약함** — 분포 편향. MD5·xxhash·CityHash 등 사용
+- **해시 함수 약함** — 분포 편향. MD5, xxhash, CityHash 등 사용
 - **Hot spot 무시** — 분포가 균등해도 트래픽이 균등하다는 보장 없음. Bounded-Load 검토
 - **Memcached의 다중 클라이언트가 다른 알고리즘** — 같은 키가 다른 노드로. ketama 같은 표준 합의 필수
 
@@ -124,7 +124,7 @@ Bounded-Load는 노드별 **최대 부하 한도** 설정 — 한도 초과 시 
 - 키 조회의 시간복잡도 (이진 탐색 O(log M))
 - Redis Cluster의 16384 Hash Slot이 Consistent Hashing의 단순화 변형인 이유
 - Bounded-Load — 분포 균등 ≠ 부하 균등
-- DynamoDB·Cassandra·Memcached client 사례
+- DynamoDB, Cassandra×Memcached client 사례
 
 ## 출처
 - [TS Backend Meetup — NestJS 캐싱 전략 정리]
@@ -133,5 +133,5 @@ Bounded-Load는 노드별 **최대 부하 한도** 설정 — 한도 초과 시 
 - [[Cache-Strategies|Cache 전략]]
 - [[Multi-Level-Cache|Multi-Level Cache]]
 - [[Hot-Key|Hot key 대응]]
-- [[Redis-Cluster-Sharding|Redis Cluster · Hash Slot]]
+- [[Redis-Cluster-Sharding|Redis Cluster, Hash Slot]]
 - [[Distributed-Lock|분산 락]]

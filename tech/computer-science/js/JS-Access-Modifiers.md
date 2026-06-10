@@ -5,9 +5,9 @@ category: "CS - JavaScript"
 aliases: ["JS Access Modifiers", "접근제어자"]
 ---
 
-# JS·TS 접근 제어자
+# JS, TS 접근 제어자
 
-JS는 원래 **클래스 멤버 접근 제어가 없었지만** ES2022에서 `#` private 문법이 표준화. TS는 그 이전부터 `public`·`private`·`protected` 키워드로 **컴파일 타임 강제**. 둘의 차이를 구분 못 하면 실수하기 쉬움.
+JS는 원래 **클래스 멤버 접근 제어가 없었지만** ES2022에서 `#` private 문법이 표준화. TS는 그 이전부터 `public`, `private`, `protected` 키워드로 **컴파일 타임 강제**. 둘의 차이를 구분 못 하면 실수하기 쉬움.
 
 ## 4가지 접근 단계
 
@@ -39,7 +39,7 @@ u.#password;  // ❌ SyntaxError — 외부 접근 불가
 ```
 
 특징:
-- **런타임에 진짜 차단** — WeakMap으로 구현되어 외부·상속에서도 접근 불가
+- **런타임에 진짜 차단** — WeakMap으로 구현되어 외부, 상속에서도 접근 불가
 - 필드는 **미리 선언** 필요 (`#password;` 줄)
 - Stage 4 → ES2022 표준
 
@@ -67,11 +67,11 @@ class User {
 별도 키워드 없이 모두 public.
 
 ### protected 미지원
-JS는 **protected가 언어 차원에서 없다**. 서브클래스에서만 접근 가능한 상태는 불가. 필요하면 TS 쓰거나 Symbol·클로저로 에뮬레이션.
+JS는 **protected가 언어 차원에서 없다**. 서브클래스에서만 접근 가능한 상태는 불가. 필요하면 TS 쓰거나 Symbol, 클로저로 에뮬레이션.
 
 ## TypeScript
 
-### `public`·`private`·`protected` 키워드
+### `public`, `private`, `protected` 키워드
 ```
 class User {
   public name: string;
@@ -87,7 +87,7 @@ class User {
 ```
 
 ### 특징과 한계
-- **컴파일 타임에만 강제** — 실제 JS로 컴파일되면 `private`·`protected`는 사라지고 전부 public
+- **컴파일 타임에만 강제** — 실제 JS로 컴파일되면 `private`, `protected`는 사라지고 전부 public
 - 런타임에 객체 reflection하면 여전히 보임
 - `#` private과 달리 Test에서 접근 가능 (트레이드오프)
 
@@ -128,7 +128,7 @@ class User {
 | TS 외 환경 | 순수 JS 실행 가능 | TS 필요 |
 
 ### 언제 무엇
-- **라이브러리·SDK**: `#` (외부가 의존하는 객체 내부 완전 차단)
+- **라이브러리, SDK**: `#` (외부가 의존하는 객체 내부 완전 차단)
 - **사내 애플리케이션**: TS `private` (테스트 편의, 타입 체크 충분)
 - **레거시 JS 코드**: `_` 관례 (표준 부재 시기)
 

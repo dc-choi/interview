@@ -7,12 +7,12 @@ aliases: ["SSM Parameter Store", "Parameter Store", "Systems Manager Parameter S
 
 # AWS Systems Manager Parameter Store
 
-**구성·암호**를 위한 보안 스토리지. 암호·DB 문자열·AMI ID·라이선스 코드 같은 데이터를 파라미터로 저장.
+**구성, 암호**를 위한 보안 스토리지. 암호, DB 문자열, AMI ID, 라이선스 코드 같은 데이터를 파라미터로 저장.
 
 ## 핵심
 
-- 구성·보안 데이터를 AWS 계정 내에 **중앙 집중화**
-- 확장성·내구성 보유 (SDK 사용 용이)
+- 구성, 보안 데이터를 AWS 계정 내에 **중앙 집중화**
+- 확장성, 내구성 보유 (SDK 사용 용이)
 - 평문 또는 KMS 암호화 저장
 
 ## 매개변수 티어
@@ -43,14 +43,14 @@ aliases: ["SSM Parameter Store", "Parameter Store", "Systems Manager Parameter S
 
 ## 시험 빈출 포인트
 
-- "**환경 변수·설정값** 저장" → Parameter Store
+- "**환경 변수, 설정값** 저장" → Parameter Store
 - "회전 필요 없으면" → Parameter Store (저렴)
 - "회전 필요" → Secrets Manager
 - "CloudFormation 스택 매개변수 외부 관리" → Parameter Store
 
 ## 관련 문서
 
-- [[Secrets-Manager]] · [[KMS]] · [[CloudFormation]]
+- [[Secrets-Manager]], [[KMS]], [[CloudFormation]]
 
 ## 출처
 

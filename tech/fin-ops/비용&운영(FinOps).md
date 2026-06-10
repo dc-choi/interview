@@ -9,7 +9,7 @@ aliases: ["비용&운영(FinOps)", "Cost & Operations", "FinOps"]
 
 ## 현장사례
 - [[TS-Backend-Meetup-1#로그 적재 비용 개선기|로그 적재 비용 개선기]] — CloudWatch->FluentBit+Firehose+S3로 300$->2$ 절감
-- [[Large-Scale-Traffic-Experience#Redshift → ElasticSearch 전환 (FinOps)|Redshift → ElasticSearch 전환]] — 월 3천만 원 Redshift 로그 검색을 ES로 이전, 연 3억 절감 + 검색 시간 90%+ 단축
+- [[Large-Scale-Traffic-Experience#사례 (참고)|Redshift → ElasticSearch 전환]] — 월 3천만 원 Redshift 로그 검색을 ES로 이전, 연 3억 절감 + 검색 시간 90%+ 단축
 
 ## Checklist
 - [x] [[AWS-Cost-Optimization|AWS 비용 최적화 종합 (Frugal Architect, Spot, RI/SP, VPC Endpoint, 조직 문화)]]

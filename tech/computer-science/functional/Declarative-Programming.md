@@ -7,7 +7,7 @@ aliases: ["Declarative Programming", "선언형 프로그래밍", "Imperative vs
 
 # Declarative Programming
 
-**"무엇(what)"을 명시하고 "어떻게(how)"는 런타임에 맡기는 패러다임**. SQL·Haskell·Terraform·React·CSS 같은 도구의 공통 철학이며, **카테고리 이론이 선언형 추론의 메타언어** 역할을 한다. 명령형과 대비된다.
+**"무엇(what)"을 명시하고 "어떻게(how)"는 런타임에 맡기는 패러다임**. SQL, Haskell, Terraform, React, CSS 같은 도구의 공통 철학이며, **카테고리 이론이 선언형 추론의 메타언어** 역할을 한다. 명령형과 대비된다.
 
 ## 핵심 명제
 
@@ -38,7 +38,7 @@ const sum = xs.reduce((a, b) => a + b, 0);
 ### 데이터 조회
 
 ```ts
-// Imperative — 순회·필터·변환·정렬을 직접
+// Imperative — 순회, 필터, 변환, 정렬을 직접
 const result = [];
 for (const u of users) if (u.active) result.push(u.name);
 result.sort();
@@ -57,7 +57,7 @@ SELECT name FROM users WHERE active = true ORDER BY name;
 const el = document.getElementById('count');
 el.textContent = String(count);
 
-// Declarative — React·Vue
+// Declarative — React, Vue
 <span>{count}</span>   // 상태가 바뀌면 UI가 따라옴
 ```
 
@@ -67,8 +67,8 @@ el.textContent = String(count);
 
 | 접근 | 물리학 | 프로그래밍 |
 |---|---|---|
-| **Local (국소)** | 뉴턴 미분방정식 — "이 순간 힘·가속도로 다음 순간 결정" | Imperative — "이 단계 실행 → 다음 단계" |
-| **Global (전역)** | 페르마 최소시간 원리·최소 작용 원리 — "출발과 도착이 주어지면, 사이 경로는 작용을 최소화" | Declarative — "입력·출력을 명시, 경로는 런타임 선택" |
+| **Local (국소)** | 뉴턴 미분방정식 — "이 순간 힘, 가속도로 다음 순간 결정" | Imperative — "이 단계 실행 → 다음 단계" |
+| **Global (전역)** | 페르마 최소시간 원리, 최소 작용 원리 — "출발과 도착이 주어지면, 사이 경로는 작용을 최소화" | Declarative — "입력, 출력을 명시, 경로는 런타임 선택" |
 
 **두 접근이 같은 결과**를 기술한다 (뉴턴역학 ↔ 라그랑주역학이 동치). 선언형이 실제 실행을 포기하는 게 아니라, **다른 언어로 같은 것을 기술**하는 것.
 
@@ -78,26 +78,26 @@ el.textContent = String(count);
 
 ### 1. 추상적 관계만 존재
 
-카테고리에는 "위치·거리·시간" 같은 국소 개념이 없다. 객체와 사상, 그리고 합성 규칙만. 이는 본질적으로 **전역 선언형 관점** — "이 객체에서 저 객체로 가는 사상이 존재한다"만 말하지 "어떻게 가는가"는 말하지 않음.
+카테고리에는 "위치, 거리, 시간" 같은 국소 개념이 없다. 객체와 사상, 그리고 합성 규칙만. 이는 본질적으로 **전역 선언형 관점** — "이 객체에서 저 객체로 가는 사상이 존재한다"만 말하지 "어떻게 가는가"는 말하지 않음.
 
 ### 2. Universal Construction = 선언형 전역 접근
 
-Product·Coproduct·Exponential·Limit은 모두 "**어떤 속성을 만족하는 유일한 객체**"로 정의된다. 구성 방법이 아니라 성질로 정의 → 선언형 정의의 전형.
+Product, Coproduct, Exponential, Limit은 모두 "**어떤 속성을 만족하는 유일한 객체**"로 정의된다. 구성 방법이 아니라 성질로 정의 → 선언형 정의의 전형.
 
 ```
 -- "Product는 두 projection을 가진 객체이며, 다른 후보를 유일하게 인수분해하는 것"
 -- → 데카르트 곱이라는 구체 구현이 아니라 속성으로 정의
 ```
 
-카테고리 이론에서 배운 패턴(Functor·Monad·Natural Transformation)이 선언형으로 번역되는 이유가 이것.
+카테고리 이론에서 배운 패턴(Functor, Monad, Natural Transformation)이 선언형으로 번역되는 이유가 이것.
 
 ### 3. 조합 가능성의 보장
 
-카테고리 법칙(결합법칙·항등법칙)이 합성의 안전성을 수학적으로 보장 → 선언적 조각을 안심하고 이어붙일 수 있다.
+카테고리 법칙(결합법칙, 항등법칙)이 합성의 안전성을 수학적으로 보장 → 선언적 조각을 안심하고 이어붙일 수 있다.
 
 ## FRP — 이벤트를 선언으로
 
-**Functional Reactive Programming**: 사용자 이벤트·시간 흐름·네트워크 응답 같은 "시간에 따라 변하는 값"을 **무한 스트림**으로 다룬다.
+**Functional Reactive Programming**: 사용자 이벤트, 시간 흐름, 네트워크 응답 같은 "시간에 따라 변하는 값"을 **무한 스트림**으로 다룬다.
 
 ```ts
 // 명령형 — 각 이벤트에 핸들러
@@ -120,7 +120,7 @@ clickStream$.pipe(scan((c) => c + 1, 0)).subscribe(render);
 | **UI** | React JSX, Vue template, SwiftUI | 상태별 렌더링 결과 (DOM 조작은 런타임) |
 | **스타일** | CSS | 요소별 스타일 (렌더링은 브라우저) |
 | **빌드** | Make, Gradle dependency graph | 산출물 간 의존 (실행 순서는 빌드 시스템) |
-| **함수형** | Haskell, Elm, PureScript | 타입·수식 (효과는 런타임) |
+| **함수형** | Haskell, Elm, PureScript | 타입, 수식 (효과는 런타임) |
 | **구성** | Nix, Guix | 의존 그래프로 패키지 정의 |
 
 이들 모두 **"결과가 어떤 속성을 만족해야 한다"** 를 선언하고, 실행 전략은 런타임/시스템이 결정.
@@ -136,10 +136,10 @@ clickStream$.pipe(scan((c) => c + 1, 0)).subscribe(render);
 
 ### 한계
 - **성능 튜닝이 우회적** — SQL 쿼리 힌트, React memo 등 runtime 내부 이해 필요
-- **디버깅 난이도** — "언제·왜 이 순서로 실행됐는가"를 추적하기 어려움
+- **디버깅 난이도** — "언제, 왜 이 순서로 실행됐는가"를 추적하기 어려움
 - **학습 곡선** — 명령형에 익숙한 개발자에게 초기 진입 장벽
-- **저수준 제어 불가** — 실시간·임베디드·드라이버 같은 영역은 명령형이 여전히 유리
-- **선언 가능성의 한계** — 본질적으로 순차적인 로직(파일 쓰기·타임스탬프 기반 처리 등)은 선언으로 표현하기 어색
+- **저수준 제어 불가** — 실시간, 임베디드, 드라이버 같은 영역은 명령형이 여전히 유리
+- **선언 가능성의 한계** — 본질적으로 순차적인 로직(파일 쓰기, 타임스탬프 기반 처리 등)은 선언으로 표현하기 어색
 
 **현실 전략**: 대부분의 프로덕션 코드는 **선언형 껍질 + 명령형 알맹이**의 섞인 구조. 예: React UI는 선언형이지만 useEffect 안은 명령형. SQL로 조회하지만 트랜잭션 스크립트는 명령형.
 
@@ -158,7 +158,7 @@ clickStream$.pipe(scan((c) => c + 1, 0)).subscribe(render);
 - **Universal Construction = 선언형**의 전형인 이유 (속성으로 정의)
 - FRP가 이벤트를 **무한 스트림**으로 다루는 관점
 - **실무 선언형 도구 5가지** (SQL, Terraform, React, CSS, Haskell)
-- 선언형의 **장점(조합성·최적화 자유도)** 과 **한계(디버깅·저수준 제어)**
+- 선언형의 **장점(조합성, 최적화 자유도)** 과 **한계(디버깅, 저수준 제어)**
 - **"선언형 껍질 + 명령형 알맹이"** 의 실무 구조
 
 ## 출처
@@ -168,7 +168,7 @@ clickStream$.pipe(scan((c) => c + 1, 0)).subscribe(render);
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 일반 개념]]
 - [[Types-And-Functions-As-Category|타입과 함수의 카테고리 (순수성)]]
 - [[Products-And-Coproducts|Products and Coproducts (Universal Construction)]]
-- [[Function-Types-And-Currying|Function Types · Currying · CCC]]
+- [[Function-Types-And-Currying|Function Types, Currying, CCC]]
 - [[Natural-Transformations|Natural Transformations (자연 변환)]]
 - [[Monads-In-TypeScript|Monads in TypeScript]]
 - [[Railway-Oriented-Programming|Railway-Oriented Programming]]

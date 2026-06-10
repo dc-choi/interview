@@ -14,7 +14,7 @@ aliases: ["NestJS Pipes", "ValidationPipe", "PipeTransform"]
 ```
 Request → Middleware → Guard → Interceptor(pre) → Pipe → Handler
                                                    ↑
-                                          여기서 변환·검증
+                                          여기서 변환, 검증
 ```
 
 Guard 통과 후 Pipe 실행 — 인가는 끝났고, 입력값을 다듬는 단계.
@@ -40,7 +40,7 @@ findOne(@Param('id', ParseIntPipe) id: number) {}
 findAll(@Query('active', new DefaultValuePipe(false), ParseBoolPipe) active: boolean) {}
 ```
 
-## 커스텀 파이프 — 단순 변환·검증
+## 커스텀 파이프 — 단순 변환, 검증
 
 ```ts
 @Injectable()
@@ -133,16 +133,16 @@ export class CreateUserDto {
 
 핵심:
 - `@ValidateNested({ each: true }) + @Type()` — 중첩 객체/배열 검증. `@Type` 없으면 plain object로 들어와 검증 안 됨.
-- `@Transform` — 정규화(lowercase·trim) 같은 사전 변환.
+- `@Transform` — 정규화(lowercase, trim) 같은 사전 변환.
 - `@IsOptional` — undefined 허용. `@IsString()` 같은 다른 검증은 값이 있을 때만 적용.
 
 ## 커스텀 검증 데코레이터
 
-라이브러리에 없는 검증은 `registerDecorator`로 직접 만들 수 있음(예: `IsUniqueEmail`). 단 DB 의존 검증을 DTO에 두는 건 책임 경계 논쟁 — **DTO 응집도 vs 책임 분리** 트레이드오프. Pipe·Service 레벨로 빼는 게 깔끔하다는 의견도 많음.
+라이브러리에 없는 검증은 `registerDecorator`로 직접 만들 수 있음(예: `IsUniqueEmail`). 단 DB 의존 검증을 DTO에 두는 건 책임 경계 논쟁 — **DTO 응집도 vs 책임 분리** 트레이드오프. Pipe, Service 레벨로 빼는 게 깔끔하다는 의견도 많음.
 
 ## 파일 업로드 검증
 
-크기·MIME 타입 검증은 커스텀 Pipe로 구현 가능하지만, Nest 9+에서는 **`ParseFilePipe` + `FileTypeValidator`/`MaxFileSizeValidator`**가 표준. 직접 구현보다 내장 사용 우선.
+크기, MIME 타입 검증은 커스텀 Pipe로 구현 가능하지만, Nest 9+에서는 **`ParseFilePipe` + `FileTypeValidator`/`MaxFileSizeValidator`**가 표준. 직접 구현보다 내장 사용 우선.
 
 ## 적용 범위
 
@@ -173,7 +173,7 @@ app.useGlobalPipes(new ValidationPipe());
 - **`@ValidateNested` 없이 중첩 객체 검증 기대** → 안 됨. `@ValidateNested` + `@Type()` 둘 다 필요.
 - **Pipe에서 인가 검증** → Guard의 책임. Pipe는 값에만 집중.
 - **검증 실패 메시지를 운영에 그대로 노출** → 스키마 누출. `disableErrorMessages: true` 또는 ExceptionFilter에서 마스킹.
-- **`whitelist: true` 없이** → 클라이언트가 모르는 필드를 던져도 통과 → 보안·일관성 깨짐.
+- **`whitelist: true` 없이** → 클라이언트가 모르는 필드를 던져도 통과 → 보안, 일관성 깨짐.
 
 ## 면접 체크포인트
 
@@ -181,7 +181,7 @@ app.useGlobalPipes(new ValidationPipe());
 - ValidationPipe 옵션 (`transform`, `whitelist`, `forbidNonWhitelisted`)의 효과
 - `@ValidateNested` + `@Type()` 조합이 필요한 이유 — 중첩 검증
 - 동기 vs 비동기 Pipe — DB 의존 검증을 Pipe에 두는 트레이드오프
-- 적용 범위 (전역·컨트롤러·메서드·파라미터) — 어디까지 좁게 적용할지
+- 적용 범위 (전역, 컨트롤러, 메서드, 파라미터) — 어디까지 좁게 적용할지
 - Guard와의 책임 경계 — 인가는 Guard, 값 검증은 Pipe
 - `class-transformer`의 역할 — plain object를 DTO 인스턴스로
 
