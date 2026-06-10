@@ -59,5 +59,5 @@ aliases: ["경제지표 캘린더 읽는 법", "Reading Economic Indicators"]
 ## 관련
 
 - [[News-Causal-Chain-Drill|뉴스 인과 체인 드릴]] — 지표를 파급으로 펼치기
-- [[Inflation|인플레이션]] · [[Business-Cycle|경기순환]] — 지표가 가리키는 대상
+- [[Inflation|인플레이션]], [[Business-Cycle|경기순환]] — 지표가 가리키는 대상
 - [[응용경제(Applied Economics)]] — 지도
