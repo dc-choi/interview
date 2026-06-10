@@ -20,7 +20,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[Reading-Economic-Indicators|경제지표 캘린더 읽는 법]] — CPI, FOMC, 고용보고서. 서프라이즈와 근원지표, 선행과 후행 ✅
 
 ### 2. 의사결정
-- [[Career-Company-Judgment|이직·회사 판단 체크리스트]] — 막연한 불안을 거시 사이클과 측정 가능한 회사 변수로 환원 ✅
+- [[Career-Company-Judgment|이직, 회사 판단 체크리스트]] — 막연한 불안을 거시 사이클과 측정 가능한 회사 변수로 환원 ✅
 - [[Salary-Negotiation-Inflation|연봉 협상에 인플레이션 적용하기]] — 명목 vs 실질임금, 동결은 삭감, 물가상승률은 바닥선 ✅
 
 ### 3. 학습 가속기

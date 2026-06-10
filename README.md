@@ -37,12 +37,12 @@
 - [[econ/경제(Economics)|경제(Economics)]] — 거시경제, 미시경제, 금융시장, 투자. 경제가 돌아가는 원리부터 자본과 위험의 거래, 실전 투자까지
 
 ### 성장&면접(Growth&Interview)
-- [[fit/growth/성장(Growth)|성장(Growth)]] — 커리어 단계·학습·채용시장·소프트스킬·안티패턴·습관·커뮤니티
-- [[fit/interview/common/Common-Interview-Questions|면접 마스터 답변 (Common)]] — 내 답변 본문 (자기소개·이직 사유·기술 카드·FIT 답변·역질문)
-- [[fit/interview/prep/면접준비(InterviewPrep)|면접 준비 가이드 (Prep)]] — 메타·자기분석·시그널·치환표·질문 풀·면접 형식별
-- [[fit/job-search/구직(JobSearch)|구직(Job Search)]] — 회사 이해·이력서·프로세스·트래커
-- [[fit/seminar/세미나(Seminar)|세미나 & 강의(Seminar)]] — 회사 세미나·커리어 특강·밋업
-- [[fit/salary-negotiation/Salary-Negotiation-Guide|연봉 협상(Salary Negotiation)]] — 원칙·프로세스·연봉 궤적
+- [[fit/growth/성장(Growth)|성장(Growth)]] — 커리어 단계, 학습, 채용시장, 소프트스킬, 안티패턴, 습관, 커뮤니티
+- [[fit/interview/common/Common-Interview-Questions|면접 마스터 답변 (Common)]] — 내 답변 본문 (자기소개, 이직 사유, 기술 카드, FIT 답변, 역질문)
+- [[fit/interview/prep/면접준비(InterviewPrep)|면접 준비 가이드 (Prep)]] — 메타, 자기분석, 시그널, 치환표, 질문 풀, 면접 형식별
+- [[fit/job-search/구직(JobSearch)|구직(Job Search)]] — 회사 이해, 이력서, 프로세스, 트래커
+- [[fit/seminar/세미나(Seminar)|세미나 & 강의(Seminar)]] — 회사 세미나, 커리어 특강, 밋업
+- [[fit/salary-negotiation/Salary-Negotiation-Guide|연봉 협상(Salary Negotiation)]] — 원칙, 프로세스, 연봉 궤적
 
 ### 기타(Others)
 - [[tech/fin-ops/비용&운영(FinOps)|비용&운영(FinOps)]]

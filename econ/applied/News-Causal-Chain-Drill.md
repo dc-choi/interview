@@ -14,7 +14,7 @@ aliases: ["뉴스 인과 체인 드릴", "News Causal Chain Drill"]
 응용의 본질은 사건 하나가 들어왔을 때 다음을 추론하는 것이다. 순서는 늘 같다.
 
 ```
-사건 → 1차 효과(직접) → 2차 효과(파급) → ... → 내 삶(커리어·자산)
+사건 → 1차 효과(직접) → 2차 효과(파급) → ... → 내 삶(커리어, 자산)
         각 단계마다 "어느 노트가 켜지는가"를 의식한다
 ```
 
@@ -28,7 +28,7 @@ aliases: ["뉴스 인과 체인 드릴", "News Causal Chain Drill"]
 
 | 단계 | 켜지는 노트 | 추론 |
 |---|---|---|
-| 1 | [[Interest-Rates-Monetary-Policy\|금리·통화정책]] | 시장금리↑ → 대출 비싸짐, 소비와 투자 둔화 |
+| 1 | [[Interest-Rates-Monetary-Policy\|금리, 통화정책]] | 시장금리↑ → 대출 비싸짐, 소비와 투자 둔화 |
 | 2 | [[Bonds\|채권]] | 금리↑ → 기존 채권값↓ (듀레이션 큰 장기채일수록) |
 | 3 | [[Valuation\|밸류에이션]] + [[Stocks\|주식]] | 할인율↑ → 미래 현금흐름 현재가치↓ → 성장주 직격 |
 | 4 | [[Exchange-Rates-Balance-of-Payments\|환율]] | 달러 강세 → 원화 약세 → 수입물가↑, 신흥국 자본유출 |
@@ -67,5 +67,5 @@ aliases: ["뉴스 인과 체인 드릴", "News Causal Chain Drill"]
 ## 관련
 
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 거의 모든 체인의 바닥
-- [[Career-Company-Judgment|이직·회사 판단 체크리스트]] — 체인의 종착지
+- [[Career-Company-Judgment|이직, 회사 판단 체크리스트]] — 체인의 종착지
 - [[응용경제(Applied Economics)]] — 지도
