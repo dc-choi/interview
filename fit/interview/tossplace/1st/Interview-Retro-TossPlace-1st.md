@@ -101,4 +101,5 @@ aliases: ["TossPlace Interview Retro 1st", "토스플레이스 1차 회고"]
 ## 관련 문서
 
 - [[Interview-Prep-TossPlace-1st]], [[Interview-Prep-TossPlace-1st-Model-Answers]], [[Interview-Prep-TossPlace-1st-Deep-Review]], [[Interview-Prep-TossPlace-1st-Assignment-Defense]]
+- [[Interview-Advice-Toss-Hong|홍님 토스 면접 조언 (26.03)]] — 조언 vs 이 면접 적중 대조표 포함
 - [[My-Tech-Cards]], [[Developer-Interview-Signals]], [[Self-Analysis]], [[Interview-Retro-Template]]

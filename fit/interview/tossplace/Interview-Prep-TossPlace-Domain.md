@@ -70,3 +70,4 @@ JD 원문 기준 정확한 정의:
 
 - [[Interview-Prep-TossPlace-1st|1차 실전 정리]] — 과제 디펜스 핵심
 - [[Interview-Prep-TossPlace-1st-Assignment-Defense|디펜스 시트]] §8 — 같은 매핑의 면접 답변용 버전(과제 구현 → 직무 대응 → 입에 붙이는 한 줄). 이 브리프는 이해와 FIT용, §8은 드릴용으로 역할 분리.
+- [[Interview-Advice-Toss-Hong|홍님 토스 면접 조언 (26.03)]] — 토스 계열 공통 면접 성향, 1차 적중 대조
