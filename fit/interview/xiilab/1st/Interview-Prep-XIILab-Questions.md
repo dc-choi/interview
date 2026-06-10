@@ -54,7 +54,7 @@ aliases: ["XIILab 역질문", "씨이랩 면접 체크리스트"]
 |------|---------|----------|
 | 트랜잭션/격리수준 (RR vs RC, gap lock, Phantom Read) | [[Transactions\|트랜잭션]], [[Isolation-Level\|격리수준]] | [ ] |
 | 인덱스/실행계획 (카디널리티, 선택도, 커버링, 복합 인덱스) | [[Index\|인덱스]], [[Execution-Plan\|실행계획]] | [ ] |
-| DB 모델링·정규화 (3NF, 비정규화 기준) | [[Index\|인덱스]], [[SQL\|SQL]] | [ ] |
+| DB 모델링, 정규화 (3NF, 비정규화 기준) | [[Index\|인덱스]], [[SQL\|SQL]] | [ ] |
 | Prisma ORM 심화 (app-level join, relationLoadStrategy) | [[ORM\|ORM]] | [ ] |
 
 **아키텍처 / 설계 패턴**
@@ -77,7 +77,7 @@ aliases: ["XIILab 역질문", "씨이랩 면접 체크리스트"]
 | 영역 | 관련 문서 | 복습 완료 |
 |------|---------|----------|
 | Docker 멀티스테이지 빌드 / .dockerignore 최적화 | [[Multi-Stage-Build\|멀티스테이지빌드]] | [ ] |
-| 모니터링 (Prometheus+Thanos, Loki, Grafana Alerting, SLO 기반 경보) | [[Incident-Detection-Logging\|장애탐지·로깅]], [[Log-Pipeline\|로그파이프라인]] | [ ] |
+| 모니터링 (Prometheus+Thanos, Loki, Grafana Alerting, SLO 기반 경보) | [[Incident-Detection-Logging\|장애탐지, 로깅]], [[Log-Pipeline\|로그파이프라인]] | [ ] |
 
 **테스트 / 품질**
 
@@ -96,11 +96,11 @@ aliases: ["XIILab 역질문", "씨이랩 면접 체크리스트"]
 
 ### 강하게 어필할 포인트
 1. **Node.js(NestJS) + MySQL** — JD 자격요건과 정확히 일치
-2. **React 프로덕션 경험** — 사이드 프로젝트 출석부를 React 19 + tRPC로 직접 개발·운영, 30개 단체 실서비스. 커스텀 훅 아키텍처, 서버 상태 관리, 인증 흐름, GA4 통합까지 프론트엔드 전 영역 경험
+2. **React 프로덕션 경험** — 사이드 프로젝트 출석부를 React 19 + tRPC로 직접 개발, 운영, 30개 단체 실서비스. 커스텀 훅 아키텍처, 서버 상태 관리, 인증 흐름, GA4 통합까지 프론트엔드 전 영역 경험
 3. **DRI 경험** — Prisma 성능 문제 로그 분석→공식 문서 검토→82~90% 개선, 하코 3000명 커뮤니티 발표. 모니터링 인프라 필요성 제기→GPL 스택 직접 구축
 4. **제품 전 과정 참여** — PMF → 대형 고객사(제약바이오 280억, F&B 2000억) PoC 성공 → 운영 최적화 (우대사항과 직접 연결)
 5. **정량적 성과** — 슬로우쿼리 99.3%(15.4ms→0.1ms), API 82~90% 향상, Docker 43.6%(909→513MB), 배포 26.3% 단축, 재고관리 95.8% 절감, 발주 완전 자동화
-6. **인프라·모니터링** — 단일 EC2→ALB+NLB+ECS Fargate 직접 설계, Read Replica(조회 40%↑, CPU 30%↓), SLO 기반 경보 7개 지표 체계 구축
+6. **인프라, 모니터링** — 단일 EC2→ALB+NLB+ECS Fargate 직접 설계, Read Replica(조회 40%↑, CPU 30%↓), SLO 기반 경보 7개 지표 체계 구축
 7. **AI 도구 활용** — Claude Code 일상적 사용, 커스텀 스킬/훅/MCP 서버 구축, AI 기반 Spec-Driven Development 워크플로우 도입 (씨이랩 AX 문화와 직접 연결)
 8. **FIDO 서버 팀 리드** — 담당자 퇴사 후 3개월 내 팀 리드+인증 통과. 오픈소스 규격 미준수 발견→커뮤니티 기여. 주도적 문제해결+빠른 학습 능력 증명
 9. **커뮤니티 기여** — 하코 3000명 발표, 카카오테크 캠퍼스 백엔드 멘토, FIDO 오픈소스 이슈 생성
@@ -121,4 +121,4 @@ aliases: ["XIILab 역질문", "씨이랩 면접 체크리스트"]
 - [[Interview-Prep-XIILab|씨이랩 면접 준비 (인덱스)]]
 - [[Interview-Prep-XIILab-JD|JD 분석 & FIT 답변]]
 - [[Interview-Prep-XIILab-Tech-Resume|이력서 기반 기술 질문]]
-- [[Interview-Prep-XIILab-Tech-JD|JD 기반 기술·서비스·컬처핏 질문]]
+- [[Interview-Prep-XIILab-Tech-JD|JD 기반 기술, 서비스, 컬처핏 질문]]

@@ -2,7 +2,7 @@
 tags: [fit, interview, xiilab]
 status: done
 category: "Interview - Fit"
-aliases: ["XIILab JD 분석", "씨이랩 JD·FIT 답변"]
+aliases: ["XIILab JD 분석", "씨이랩 JD, FIT 답변"]
 ---
 
 # 씨이랩 (XIILab) 면접 준비 — JD 분석 & FIT 답변
@@ -23,7 +23,7 @@ aliases: ["XIILab JD 분석", "씨이랩 JD·FIT 답변"]
 | 단계    | 성장기 (2010년 설립, 스톡옵션 제도 운영)                                                        |
 | 규모    | NVIDIA, AWS 글로벌 파트너                                                               |
 | 도메인   | AI (영상분석, 제조 Vision AI, GPU 컴퓨팅)                                                  |
-| BM 추정 | B2B — 기업·공공기관에 AI 솔루션 납품·구축                                                       |
+| BM 추정 | B2B — 기업, 공공기관에 AI 솔루션 납품, 구축                                                       |
 
 ### 포지션 정보
 
@@ -32,14 +32,14 @@ aliases: ["XIILab JD 분석", "씨이랩 JD·FIT 답변"]
 | 포지션   | Product Engineer (Full Stack)                                 |
 | 연차    | 2~8년                                                          |
 | 소속    | R&D Group                                                     |
-| 주요 업무 | 제품 기능 설계·구현·운영, React 프론트엔드 + 백엔드 API 개발, DB 모델링·최적화, 모니터링·운영 |
+| 주요 업무 | 제품 기능 설계, 구현, 운영, React 프론트엔드 + 백엔드 API 개발, DB 모델링, 최적화, 모니터링, 운영 |
 | 채용 절차 | ~~서류~~ → ~~인성검사~~ → **1차 면접(과제+실무 인터뷰)** → 2차 면접(임원) → 처우 협의  |
 
 ### 핵심 키워드 (면접에서 반복 등장할 것)
 - **Full Stack**: 프론트엔드 + 백엔드 모두 다룰 수 있는 엔지니어
 - **DRI 문화**: 문제 정의부터 실행까지 한 명이 주도적으로 리드
-- **AI 도구 활용(AX)**: Cursor, Claude Code 등을 적극 활용해 개발 속도·품질 향상
-- **제품 중심**: 사용자 경험 개선, 기능 설계·구현·운영 전 과정
+- **AI 도구 활용(AX)**: Cursor, Claude Code 등을 적극 활용해 개발 속도, 품질 향상
+- **제품 중심**: 사용자 경험 개선, 기능 설계, 구현, 운영 전 과정
 - **투명한 소통**: 슬랙 중심, 수평적 '님' 호칭
 
 ### 자격요건 vs 내 경험 매칭
@@ -47,11 +47,11 @@ aliases: ["XIILab JD 분석", "씨이랩 JD·FIT 답변"]
 | 자격요건 | 매칭도 | 내 근거 |
 |---------|--------|--------|
 | 관련 경력 2년 이상 | **강** | 4년차 (트라이포드랩 2년2개월 + 시솔지주 1년 + 이썸테크 6개월) |
-| 웹 프론트엔드 + 백엔드 이해·개발 | **중** | 백엔드 강점. 프론트는 API 연동 협업 경험 있으나 직접 개발 경험 부족 |
-| React 사용 경험 | **중** | 사이드 프로젝트 출석부(school-manage)에서 React 19 + Vite + TypeScript 풀스택 개발·운영. 30개 단체 실서비스 |
+| 웹 프론트엔드 + 백엔드 이해, 개발 | **중** | 백엔드 강점. 프론트는 API 연동 협업 경험 있으나 직접 개발 경험 부족 |
+| React 사용 경험 | **중** | 사이드 프로젝트 출석부(school-manage)에서 React 19 + Vite + TypeScript 풀스택 개발, 운영. 30개 단체 실서비스 |
 | Java/Go/Python/Node.js 중 하나 이상 | **강** | Node.js(NestJS/Express) 4년, Java(Spring) 6개월 |
 | MySQL, PostgreSQL 등 DB 사용 | **강** | MySQL 메인. 슬로우쿼리 99.3% 개선, 복합 인덱스 최적화, Read Replica |
-| 주도적 협업·문제해결 | **강** | FIDO 서버 개발 주도, 아키텍처 설계, 모니터링 인프라 구축 등 |
+| 주도적 협업, 문제해결 | **강** | FIDO 서버 개발 주도, 아키텍처 설계, 모니터링 인프라 구축 등 |
 
 ### 우대사항 vs 내 경험 매칭
 
@@ -59,7 +59,7 @@ aliases: ["XIILab JD 분석", "씨이랩 JD·FIT 답변"]
 |---------|--------|--------|
 | 기획→개발→운영 전 과정 참여 | **강** | PMF → 대형 고객사 PoC → 운영 최적화까지 전 과정 경험 |
 | AWS/GCP/Azure 클라우드 운영 | **강** | AWS 실무 (ECS, RDS, CloudFront, EventBridge, SQS) |
-| 테스트 코드 작성·품질 개선 | **중** | 시솔지주: Mocha+Chai+SonarQube로 커버리지 0→70%, PR 연동 60% 미달 시 머지 불가. 트라이포드랩: jest+supertest, 스케줄링/비즈니스 로직 분리 설계 |
+| 테스트 코드 작성, 품질 개선 | **중** | 시솔지주: Mocha+Chai+SonarQube로 커버리지 0→70%, PR 연동 60% 미달 시 머지 불가. 트라이포드랩: jest+supertest, 스케줄링/비즈니스 로직 분리 설계 |
 | 성능 최적화, 장애 대응, 모니터링 | **강** | 슬로우쿼리 99.3% 개선, API 90% 향상, Grafana/Prometheus/Loki 직접 구축 |
 
 ### 기술 스택 비교
@@ -105,5 +105,5 @@ aliases: ["XIILab JD 분석", "씨이랩 JD·FIT 답변"]
 ## 관련 문서
 - [[Interview-Prep-XIILab|씨이랩 면접 준비 (인덱스)]]
 - [[Interview-Prep-XIILab-Tech-Resume|이력서 기반 기술 질문]]
-- [[Interview-Prep-XIILab-Tech-JD|JD 기반 기술·서비스·컬처핏 질문]]
+- [[Interview-Prep-XIILab-Tech-JD|JD 기반 기술, 서비스, 컬처핏 질문]]
 - [[Interview-Prep-XIILab-Questions|역질문 & 체크리스트]]

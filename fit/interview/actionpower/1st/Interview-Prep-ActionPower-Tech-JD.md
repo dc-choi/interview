@@ -107,11 +107,11 @@ aliases: ["ActionPower JD 기반 기술 질문", "액션파워 JD 기술 질문"
 - 클린 아키텍처 참고하여 계층 분리:
   - Controller(Interface Adapters) → UseCase(Application Core) → DomainService(핵심 비즈니스) → Repository Interface → Prisma Client(External Infrastructure)
 - UseCase별로 사용자 의도 분리(JSON Response용 vs 엑셀 다운로드용), 핵심 비즈니스 변경되어도 UseCase별 영향 최소화
-- DI 원리: NestJS IoC 컨테이너가 Provider의 생성·주입·생명주기 관리, @Injectable 데코레이터로 등록 → constructor에서 타입 기반 자동 주입
+- DI 원리: NestJS IoC 컨테이너가 Provider의 생성, 주입, 생명주기 관리, @Injectable 데코레이터로 등록 → constructor에서 타입 기반 자동 주입
 - 순환 참조: forwardRef()로 해결하되 근본적으로는 모듈 의존 방향을 단방향으로 설계하는 것이 중요
 - 모듈 간 의존은 exports로 명시적 공개
 - 꼬리:
-  - "Guard vs Middleware vs Interceptor 차이?" → Middleware(요청 전처리, Express 호환), Guard(인가/인증 체크, true/false 반환), Interceptor(요청·응답 양쪽 변환, 로깅·캐싱·응답 포맷)
+  - "Guard vs Middleware vs Interceptor 차이?" → Middleware(요청 전처리, Express 호환), Guard(인가/인증 체크, true/false 반환), Interceptor(요청, 응답 양쪽 변환, 로깅, 캐싱, 응답 포맷)
   - "Provider scope 종류?" → DEFAULT(싱글톤, 앱 생명주기), REQUEST(요청마다 생성, 테넌트별 컨텍스트에 유용), TRANSIENT(주입마다 새 인스턴스). 대부분 DEFAULT로 충분
   - "클린 아키텍처 도입 효과?" → UseCase 분리로 단일 도메인 로직 변경 시 영향 범위 최소화. 실제로 고객사별 커스텀 요구를 UseCase 레벨에서만 분기해서 해결
 

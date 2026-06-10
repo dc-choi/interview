@@ -5,9 +5,9 @@ category: "Interview - 내 답변 마스터"
 aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 ---
 
-# 내 기술 답변 심화 — 비교 표 · 꼬리 질문 풀 · 아키텍처 디테일
+# 내 기술 답변 심화 — 비교 표, 꼬리 질문 풀, 아키텍처 디테일
 
-> [[My-Tech-Cards|메인 카드 8개]]의 본문 답변 후 면접관이 더 깊게 들어올 때 참조. **본문 답변엔 핵심만**, 여기엔 **비교 표·아키텍처·정량 비교·심화 꼬리**.
+> [[My-Tech-Cards|메인 카드 8개]]의 본문 답변 후 면접관이 더 깊게 들어올 때 참조. **본문 답변엔 핵심만**, 여기엔 **비교 표, 아키텍처, 정량 비교, 심화 꼬리**.
 
 ## 카드 1 DB Lock 심화
 
@@ -34,7 +34,7 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 ### 심화 꼬리
 
 - **"NO WAIT vs SKIP LOCKED?"** → SKIP LOCKED는 잠긴 행 건너뛰고 다음 행 읽음 (큐 패턴 적합). 재고처럼 특정 행 반드시 처리해야 하면 NO WAIT가 맞음
-- **"FOR UPDATE vs FOR SHARE?"** → FOR UPDATE는 X Lock (배타적, 읽기/쓰기 차단). FOR SHARE는 S Lock (공유, 읽기 허용·쓰기 차단). 읽은 후 바로 쓰면 X Lock 필요
+- **"FOR UPDATE vs FOR SHARE?"** → FOR UPDATE는 X Lock (배타적, 읽기/쓰기 차단). FOR SHARE는 S Lock (공유, 읽기 허용, 쓰기 차단). 읽은 후 바로 쓰면 X Lock 필요
 - **"멀티 인스턴스에서도 DB Lock 충분?"** → 같은 DB 바라보는 한 충분. DB 분리(샤딩)되면 분산 락 필요
 - **"Gap Lock 성능 영향?"** → 범위 잠금이라 INSERT 차단 가능. 동시성 필요하면 RC로 변경 (Gap Lock 비활성화, 단 Phantom Read 허용)
 - **"테이블 락은 언제?"** → DDL(ALTER TABLE), LOCK TABLES 명시, 인덱스 없는 UPDATE/DELETE (풀스캔 → 사실상 테이블 락)
@@ -81,10 +81,10 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at
 
 | 축 | ECS 워커 유리 | Lambda 유리 |
 |---|---|---|
-| 도메인 로직 재사용 | NestJS 모델·로직 그대로 | 별도 패키지로 분리 |
+| 도메인 로직 재사용 | NestJS 모델, 로직 그대로 | 별도 패키지로 분리 |
 | DB 커넥션 풀 | 안정적 유지 | cold start로 어려움 (RDS Proxy 필요) |
 | 인프라 | 이미 ECS 있으면 추가 비용 0 | 별도 파이프라인 필요 |
-| 스케일 패턴 | 상시 + 점진적 스케일 | 불규칙·유휴 시간 긴 워크로드 |
+| 스케일 패턴 | 상시 + 점진적 스케일 | 불규칙, 유휴 시간 긴 워크로드 |
 
 ### 심화 꼬리
 
@@ -108,15 +108,15 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at
 
 - `EXPLAIN (ANALYZE, BUFFERS)` — 실제 실행 + 디스크/캐시 hit 비율
 - `pg_stat_statements` — 슬로우 쿼리 누적 통계
-- 인덱스 종류: B-Tree(기본), Hash(정확 매칭만), **BRIN(시계열·범위 데이터 압축 인덱스)**, **GIN(JSONB·배열·풀텍스트)**, GiST(공간)
+- 인덱스 종류: B-Tree(기본), Hash(정확 매칭만), **BRIN(시계열, 범위 데이터 압축 인덱스)**, **GIN(JSONB, 배열, 풀텍스트)**, GiST(공간)
 - MVCC 구현 차이: PG는 dead tuple + VACUUM, MySQL은 undo log
 - JSONB는 PG가 강함, CTE/Window 함수도 PG 우위
 
 ### 심화 꼬리
 
-- **"인덱스 추가 후 쓰기 페널티 정량?"** → 인덱스 수·페이지 분할 빈도 모니터링. 핫스팟이면 파티셔닝(시간·해시·리스트) 검토
+- **"인덱스 추가 후 쓰기 페널티 정량?"** → 인덱스 수, 페이지 분할 빈도 모니터링. 핫스팟이면 파티셔닝(시간, 해시, 리스트) 검토
 - **"파티셔닝 vs 샤딩?"** → 파티셔닝은 한 DB 내 테이블 분할 (운영 단순), 샤딩은 DB 인스턴스 분리 (라우팅 복잡)
-- **"NoSQL 검토 시점?"** → 위 모든 방법 (인덱스·캐싱·CQRS·파티셔닝·샤딩)으로 안 될 때 마지막 카드
+- **"NoSQL 검토 시점?"** → 위 모든 방법 (인덱스, 캐싱, CQRS, 파티셔닝, 샤딩)으로 안 될 때 마지막 카드
 
 ## 카드 5 관측성 심화
 
@@ -133,10 +133,10 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at
 
 | 계층 | 구성 | 역할 |
 |---|---|---|
-| FE | Sentry SDK → Sentry 서버 | JS 에러·퍼포먼스·세션 리플레이 |
-| BE App | TraceIdMiddleware·HttpLoggingInterceptor·Winston JSON·MetricsInterceptor + prom-client·`/metrics` 엔드포인트 | 요청 단위 추적·구조화 로깅·메트릭 노출 |
+| FE | Sentry SDK → Sentry 서버 | JS 에러, 퍼포먼스, 세션 리플레이 |
+| BE App | TraceIdMiddleware, HttpLoggingInterceptor, Winston JSON, MetricsInterceptor + prom-client, `/metrics` 엔드포인트 | 요청 단위 추적, 구조화 로깅, 메트릭 노출 |
 | Log Routing | FireLens(FluentBit) → Loki | ECS stdout → 중앙집중 로깅 |
-| Logs Plane | Promtail → Loki → S3 | JSON 파싱·라벨링·Chunk 저장·Compactor S3 압축 |
+| Logs Plane | Promtail → Loki → S3 | JSON 파싱, 라벨링, Chunk 저장, Compactor S3 압축 |
 | Metrics Plane | Prometheus → Thanos Sidecar → S3 | 단기 15일 + 장기 S3 (멀티 인스턴스/리전 통합 조회) |
 
 ### SLO 알림 5개 (`for: 5m` 지속 조건)
@@ -169,18 +169,18 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at
 - 멀티 클러스터 운영
 - 복잡한 트래픽 라우팅 (Istio 등)
 - 다중 워크로드 동시 운영 (배치 + API + ML 등)
-- 위가 아니면 **ECS Fargate가 운영 비용·관리 부담 모두 낮음**
+- 위가 아니면 **ECS Fargate가 운영 비용, 관리 부담 모두 낮음**
 
 ## 관련 문서
 
 - [[My-Tech-Cards|기술 카드 마스터 8개 (메인) — vault 카테고리 인덱스도 여기]]
-- [[Interview-Prep-Yunhoe-1st-Tech-Extra|범용 백엔드 안전망 (CS 기초·NestJS 심화·HTTP·인증·시스템 디자인)]]
-- [[Common-Interview-Questions-Tech-Scale|시스템 디자인 4개 (DAU 폭증·기프티콘·억 단위·강결합)]]
+- [[Interview-Prep-Yunhoe-1st-Tech-Extra|범용 백엔드 안전망 (CS 기초, NestJS 심화, HTTP, 인증, 시스템 디자인)]]
+- [[Common-Interview-Questions-Tech-Scale|시스템 디자인 4개 (DAU 폭증, 기프티콘, 억 단위, 강결합)]]
 
 ### vault 심화 — 카드별 추가 자료 (본 Extended에서 더 깊게 보강 시)
 
-- **카드 1 DB Lock 심화**: [[Lock]] · [[Race-Condition-Patterns]] · [[Transaction-Lock-Contention]] · [[MySQL-Gap-Lock]] · [[MySQL-InnoDB-Tuning]]
-- **카드 2 EventBridge+SQS 심화**: [[Transactional-Outbox]] · [[CDC&Outbox]] · [[Idempotency-Key]] · [[Saga-Pattern]]
-- **카드 3 슬로우 쿼리 심화**: [[Execution-Plan]] · [[Covering-Index]] · [[B-Tree-Index-Depth]] · [[SQL-Tuning-Terminology]] · [[Pagination-Optimization]] · [[MySQL-Partitioning]] · [[OLTP-vs-OLAP]] · [[SCD-Type2]]
-- **카드 5 관측성 심화**: [[관측가능성(Observability)]] · [[Container-Monitoring]] · [[Correlation-ID]] · [[CloudWatch]]
-- **카드 6 아키텍처 심화**: [[Multi-Stage-Build]] · [[Image-Size-Optimization]] · [[Docker-Image-Pipeline]] · [[K8s-Resource-Right-Sizing]] · [[Blue-Green]] · [[Replication]] · [[Read-Replica-Routing]]
+- **카드 1 DB Lock 심화**: [[Lock]], [[Race-Condition-Patterns]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]], [[MySQL-InnoDB-Tuning]]
+- **카드 2 EventBridge+SQS 심화**: [[Transactional-Outbox]], [[CDC&Outbox]], [[Idempotency-Key]], [[Saga-Pattern]]
+- **카드 3 슬로우 쿼리 심화**: [[Execution-Plan]], [[Covering-Index]], [[B-Tree-Index-Depth]], [[SQL-Tuning-Terminology]], [[Pagination-Optimization]], [[MySQL-Partitioning]], [[OLTP-vs-OLAP]], [[SCD-Type2]]
+- **카드 5 관측성 심화**: [[관측가능성(Observability)]], [[Container-Monitoring]], [[Correlation-ID]], [[CloudWatch]]
+- **카드 6 아키텍처 심화**: [[Multi-Stage-Build]], [[Image-Size-Optimization]], [[Docker-Image-Pipeline]], [[K8s-Resource-Right-Sizing]], [[Blue-Green]], [[Replication]], [[Read-Replica-Routing]]

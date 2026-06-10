@@ -115,4 +115,4 @@ aliases: ["TossPlace FIT QA", "토스플레이스 FIT 예상질문"]
 
 - [[Interview-Prep-TossPlace-Domain|도메인 브리프]] — 직무 정의, 매핑, 도메인 역질문
 - [[Interview-Prep-TossPlace-1st|과제 실전 정리]] — 면접 본체
-- [[My-FIT-Answers|FIT 마스터]] · [[My-Self-Intro|자기소개 마스터]] · [[My-Motivation-Reasons|이직 사유 마스터]]
+- [[My-FIT-Answers|FIT 마스터]], [[My-Self-Intro|자기소개 마스터]], [[My-Motivation-Reasons|이직 사유 마스터]]

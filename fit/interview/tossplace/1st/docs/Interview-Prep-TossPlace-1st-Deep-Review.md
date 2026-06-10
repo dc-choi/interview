@@ -10,7 +10,7 @@ aliases: ["TossPlace Deep Review", "토스플레이스 심화 리뷰 누적"]
 > 🗄️ **아카이브** — 10패스 감사 추적. 결론(약점 5, 강점 5)은 [[Interview-Prep-TossPlace-1st|실전 정리]]에 흡수됨. 평소엔 실전 정리 한 장만 보면 됨.
 
 > [[Interview-Prep-TossPlace-1st-Assignment-Defense|디펜스 시트]]에 없던 추가 발굴을 회차별로 누적. 각 발견 = 심각도 + 내용 + 면접 대응.
-> 심각도: 🔴 실제 버그/누락 · 🟡 트레이드오프/사소 · 🟢 강점 확인. ⚠️ 토스 저작권, 공개 푸시 금지.
+> 심각도: 🔴 실제 버그/누락, 🟡 트레이드오프/사소, 🟢 강점 확인. ⚠️ 토스 저작권, 공개 푸시 금지.
 >
 > **진행**: Pass 1~10(스냅샷 기반) + Pass 11(D-4 실제 소스 재검증). 아래 Pass 10이 실전용 종합, Pass 11이 코드로 검증한 교정.
 
@@ -72,7 +72,7 @@ aliases: ["TossPlace Deep Review", "토스플레이스 심화 리뷰 누적"]
 
 ## Pass 5 — 에러처리/예외/입력검증
 
-- 🔴 **없는 roomId / inviteeId로 예약·초대 생성 가능** — DTO는 @IsInt만 보고, 서비스는 em.getReference로 lazy 참조라 존재를 검증하지 않으며, FK 제약도 비활성(Pass 3). 없는 방이나 사용자로 예약이 persist되고 이후 populate에서 깨진다.
+- 🔴 **없는 roomId / inviteeId로 예약, 초대 생성 가능** — DTO는 @IsInt만 보고, 서비스는 em.getReference로 lazy 참조라 존재를 검증하지 않으며, FK 제약도 비활성(Pass 3). 없는 방이나 사용자로 예약이 persist되고 이후 populate에서 깨진다.
   - 대응: 인정. roomId/inviteeId 존재를 서비스에서 findOne으로 확인하거나, 프로덕션 RDB면 FK 제약으로 막아야 한다. Pass 3 FK 발견과 결합되는 실질 버그.
 - 🟡 **title/description 길이 상한 미검증** — title은 MinLength(1)만, description은 @IsString만. 엔티티는 title 255/description text라 255 초과 title이면 DB 레벨 실패나 절삭. MaxLength 추가가 맞다.
 - 🟡 **duration 상한 없음 + 자정 넘는 예약** — @IsPositive만이라 거대한 duration이 가능하고, 자정을 넘기면 endAt이 다음 날인데 슬롯이 date 단위라 다음 날 예약과 충돌 검사가 안 된다.

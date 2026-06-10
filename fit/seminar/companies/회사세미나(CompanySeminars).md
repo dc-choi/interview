@@ -7,7 +7,7 @@ aliases: ["Company Seminars"]
 
 # 회사 세미나(Company Seminars)
 
-도메인별 회사 세미나 — 이커머스·패션·금융·엔터·커머스·중고·토스.
+도메인별 회사 세미나 — 이커머스, 패션, 금융, 엔터, 커머스, 중고, 토스.
 
 ## 목차
 - [x] [[SSG-Ecommerce-Seminar|SSG 이커머스 (이커머스 도메인 구조, 면접 요구 수준)]]

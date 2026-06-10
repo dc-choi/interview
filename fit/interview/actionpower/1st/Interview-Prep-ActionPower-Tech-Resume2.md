@@ -2,16 +2,16 @@
 tags: [fit, interview, actionpower]
 status: done
 category: "Interview - Fit"
-aliases: ["ActionPower 이력서 기술 질문 2", "액션파워 MQ·Docker 질문"]
+aliases: ["ActionPower 이력서 기술 질문 2", "액션파워 MQ, Docker 질문"]
 ---
-# 액션파워 1차 — 이력서 기반 기술 질문 (2/3): 이벤트 기반 MQ·Docker 경량화
+# 액션파워 1차 — 이력서 기반 기술 질문 (2/3): 이벤트 기반 MQ, Docker 경량화
 
 > 상위 TOC: [[Interview-Prep-ActionPower|액션파워 1차 면접 준비]]
 
 ---
 
 ### EventBridge+SQS 선택 이유? Kafka와 차이?
-> 관련: [[MQ-Kafka|MQ·Kafka]], [[Messaging-Patterns|메시징패턴]], [[Delivery-Semantics|전달보장]]
+> 관련: [[MQ-Kafka|MQ, Kafka]], [[Messaging-Patterns|메시징패턴]], [[Delivery-Semantics|전달보장]]
 
 **이벤트 기반이 필요한 이유는 아키텍처 전환 섹션 참고** — 핵심은 발주(핵심 도메인)와 후속 처리(부수 효과)를 분리하여 실패 격리 + 독립 확장 + 복구 가능한 구조를 만드는 것
 
