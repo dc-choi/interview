@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, egoism]
-status: active
+status: index
 category: "Interview - Fit"
 aliases: ["Egoism Interview Prep 1st", "에고이즘 AX 전화 인터뷰 준비"]
 ---
@@ -10,6 +10,11 @@ aliases: ["Egoism Interview Prep 1st", "에고이즘 AX 전화 인터뷰 준비"
 > **면접일**: 2026-06-09(화) 16:30~17:00, **전화 인터뷰 (HR 1:1, 30분, 회사가 수신 — [연락처])**. **포지션**: [그로스팀] AX Engineer (성수오피스). **공고**: https://egoidsm.com/job_posting/iq0Jfxvs
 > **채용 절차 (6단계)**: 서류 → **전화(현재, 2/6)** → 1차 실무 → 2차 컬처핏 → 처우협의 → 최종합격. 오늘은 HR 스크리닝이고 깊은 기술 검증은 1차 실무에서 온다.
 > **이미 제출**: 지원동기 + 가장 임팩트 있던 결과. 원문은 §7 — 전화 답변은 제출문 톤과 어긋나면 신뢰가 깨진다.
+
+## 이 차수 문서
+
+1. **본 문서** — 전화 스크리닝 전략, JD 분석, FIT 답변
+2. **[[Interview-Retro-Egoism-1st|전화 스크리닝 회고]]** — 6/9 통화 후 작성. 실제 받은 질문과 면접관이 밝힌 진짜 채용 이유(백엔드/인프라 부재로 인한 자동화 불안정)
 
 ## 0. 전화 스크리닝 전략
 

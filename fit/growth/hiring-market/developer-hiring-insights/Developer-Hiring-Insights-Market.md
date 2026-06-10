@@ -5,7 +5,7 @@ category: "Interview - Fit"
 aliases: ["채용 인사이트 시장", "Developer Hiring Insights Market"]
 ---
 
-# 개발자 채용 인사이트 — 시장·CS·역량
+# 개발자 채용 인사이트 — 시장, CS, 역량
 
 ## 기업이원하는개발자
 
@@ -127,5 +127,5 @@ aliases: ["채용 인사이트 시장", "Developer Hiring Insights Market"]
 
 ## 관련 문서
 - [[Developer-Hiring-Insights|채용 인사이트 (인덱스)]]
-- [[Developer-Hiring-Insights-Growth|면접 준비·스터디·시니어 로드맵]]
+- [[Developer-Hiring-Insights-Growth|면접 준비, 스터디, 시니어 로드맵]]
 - [[Interview-Soft-Skills|인성면접 가이드]]

@@ -7,7 +7,7 @@ aliases: ["Common Interview Questions Behavioral", "Behavioral 질문"]
 
 # 자주하는 면접 질문 — Behavioral 질문
 
-STAR 구조 기반 **인성·태도·경험 중심 질문**, 면접 말미의 **Q&A(역질문) 활용법**, 그리고 **처우 협상 접근**까지 정리.
+STAR 구조 기반 **인성, 태도, 경험 중심 질문**, 면접 말미의 **Q&A(역질문) 활용법**, 그리고 **처우 협상 접근**까지 정리.
 
 ---
 
@@ -52,7 +52,7 @@ STAR 구조 기반 **인성·태도·경험 중심 질문**, 면접 말미의 **
 
 - 공식 리더가 아니어도 가능 (스터디 리드, 마이그레이션 TF, 기술 전파 등)
 - **의사결정 과정** + **팀원 설득** + **결과 책임**의 3박자
-- 서번트 리더십 / 자기 조직화 / 그로스 마인드 ([[Interview-Soft-Skills-Metacognition#컬처핏·그라운드룰·리더십|인성면접 가이드]])
+- 서번트 리더십 / 자기 조직화 / 그로스 마인드 ([[Interview-Soft-Skills-Metacognition#컬처핏, 그라운드룰, 리더십|인성면접 가이드]])
 
 ### Q. 커리어 목표 미달성 경험
 
@@ -78,7 +78,7 @@ STAR 구조 기반 **인성·태도·경험 중심 질문**, 면접 말미의 **
 - 롤 모델은 반드시 실명일 필요 없음 — 특정 역량/태도를 가진 유형도 OK
 - "이 회사에서 그 성장이 가능한가?"를 은근히 어필 (지원 동기와 연결)
 
-> 참고: [[My-FIT-Answers#장기적으로 어떤 개발자가 되고 싶은가요?|장기적 개발자 목표 답변]]
+> 참고: [[My-FIT-Answers#4. 5년 후 / 커리어 목표|장기적 개발자 목표 답변]]
 
 ### Q. 5~6명 소규모 팀 리더로서 팀 성장 도모 방법
 
@@ -143,7 +143,7 @@ STAR 구조 기반 **인성·태도·경험 중심 질문**, 면접 말미의 **
 ## 관련 문서
 - [[Common-Interview-Questions|자주하는 면접 질문 (인덱스)]]
 - [[Common-Interview-Questions-Tech-Basics|기술 질문 — 기본]]
-- [[Common-Interview-Questions-Tech-Scale|기술 질문 — 확장성·아키텍처]]
+- [[Common-Interview-Questions-Tech-Scale|기술 질문 — 확장성, 아키텍처]]
 - [[Common-Interview-Questions|Interview Fit]]
 - [[Interview-Soft-Skills|인성면접 가이드]]
 - [[Self-Analysis|나 찾기]]

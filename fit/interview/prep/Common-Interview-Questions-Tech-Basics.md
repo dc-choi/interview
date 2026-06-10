@@ -7,7 +7,7 @@ aliases: ["Common Interview Questions Tech Basics", "기술 질문 기본"]
 
 # 자주하는 면접 질문 — 1차 기술 질문 (기본)
 
-브라우저·HTTP·REST·STAR·성능 테스트 등 **기초 개념을 묻는 1차 기술 질문** 4개. 답변 안에 꼬꼬무(꼬리질문)를 유도할 키워드를 심어두는 것이 핵심.
+브라우저, HTTP, REST, STAR, 성능 테스트 등 **기초 개념을 묻는 1차 기술 질문** 4개. 답변 안에 꼬꼬무(꼬리질문)를 유도할 키워드를 심어두는 것이 핵심.
 
 ---
 
@@ -112,6 +112,6 @@ aliases: ["Common Interview Questions Tech Basics", "기술 질문 기본"]
 
 ## 관련 문서
 - [[Common-Interview-Questions|자주하는 면접 질문 (인덱스)]]
-- [[Common-Interview-Questions-Tech-Scale|기술 질문 — 확장성·아키텍처]]
+- [[Common-Interview-Questions-Tech-Scale|기술 질문 — 확장성, 아키텍처]]
 - [[Common-Interview-Questions-Behavioral|Behavioral 질문]]
 - [[Common-Interview-Questions|Interview Fit]]

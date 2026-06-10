@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, kinolights]
-status: active
+status: index
 category: "Interview - Fit"
 aliases: ["Kinolights Interview Prep 1st", "키노라이츠 1차 면접 준비"]
 ---
