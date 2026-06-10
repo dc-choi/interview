@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, tossplace]
-status: active
+status: index
 category: "Interview - Fit"
 aliases: ["TossPlace 실전 정리", "토스플레이스 1차 실전 정리"]
 ---
@@ -116,7 +116,7 @@ aliases: ["TossPlace 실전 정리", "토스플레이스 1차 실전 정리"]
 - 이 과제에서 제가 더 팠으면 좋았을 부분을 피드백 주실 수 있을까요?
 
 ## FIT / 도메인 (과제 외 — 오프닝, 클로징, 동기)
-- [[Interview-Prep-TossPlace-1st-FIT-QA|FIT 답변·예상 Q&A·역질문]] — 자기소개, 왜 이 직무, 이직 사유, 사이드 프로젝트
+- [[Interview-Prep-TossPlace-1st-FIT-QA|FIT 답변, 예상 Q&A, 역질문]] — 자기소개, 왜 이 직무, 이직 사유, 사이드 프로젝트
 - [[Interview-Prep-TossPlace-Domain|도메인 브리프]] — 직무 정의(Operations 물류/단말/자동화), 매핑, 도메인 역질문
 
 ## 아카이브 (docs/ — 흡수 완료, 감사 추적용)

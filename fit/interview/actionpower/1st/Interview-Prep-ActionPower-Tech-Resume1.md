@@ -2,9 +2,9 @@
 tags: [fit, interview, actionpower]
 status: done
 category: "Interview - Fit"
-aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB·ORM·MQ 질문"]
+aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질문"]
 ---
-# 액션파워 1차 — 이력서 기반 기술 질문 (1/2): DB·ORM·MQ·Docker
+# 액션파워 1차 — 이력서 기반 기술 질문 (1/2): DB, ORM, MQ, Docker
 
 > 상위 TOC: [[Interview-Prep-ActionPower|액션파워 1차 면접 준비]]
 
@@ -13,7 +13,7 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB·ORM·MQ 질
 ## 3. 예상 질문 — 이력서 기반 기술 질문
 
 ### DB Lock으로 Race Condition 해결 — 어떤 Lock? 왜 그 방식? Optimistic vs Pessimistic?
-> 관련: [[Transaction-Lock-Contention|트랜잭션·락]], [[Transactions|트랜잭션]], [[Distributed-Lock|분산락]], [[Lock|DB Lock]]
+> 관련: [[Transaction-Lock-Contention|트랜잭션, 락]], [[Transactions|트랜잭션]], [[Distributed-Lock|분산락]], [[Lock|DB Lock]]
 
 **문제 상황**
 - 수천 대 IoT 디바이스가 동시에 재고 데이터를 전송 → 같은 품목에 동시 갱신 시 Lost Update 발생
@@ -39,7 +39,7 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB·ORM·MQ 질
 | 구현 | version 컬럼 추가 | SELECT FOR UPDATE |
 
 **트랜잭션 범위 최소화**
-- 디바이스 정보 조회·검증은 트랜잭션 **밖**에서 수행 (lock 보유 시간 줄이기)
+- 디바이스 정보 조회, 검증은 트랜잭션 **밖**에서 수행 (lock 보유 시간 줄이기)
 - 트랜잭션 안: `SELECT FOR UPDATE`(재고 읽기) → 재고 갱신 → 데이터 입력만 배치
 - Lock 순서 통일: 항상 **품목 ID 오름차순**으로 lock 획득 → 교차 대기(데드락) 방지
 
@@ -68,7 +68,7 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB·ORM·MQ 질
 
 **꼬리 질문 대비**
 - "NO WAIT 대신 SKIP LOCKED는?" → SKIP LOCKED는 잠긴 행을 건너뛰고 다음 행을 읽음. 큐 패턴(작업 분배)에 적합하지만, 재고 갱신처럼 **특정 행을 반드시 처리해야 하는** 경우에는 NO WAIT가 맞음
-- "FOR UPDATE와 FOR SHARE 차이?" → FOR UPDATE는 X Lock(배타적, 읽기/쓰기 모두 차단), FOR SHARE는 S Lock(공유, 읽기 허용·쓰기 차단). 재고 갱신은 읽은 후 바로 쓰므로 X Lock 필요
+- "FOR UPDATE와 FOR SHARE 차이?" → FOR UPDATE는 X Lock(배타적, 읽기/쓰기 모두 차단), FOR SHARE는 S Lock(공유, 읽기 허용, 쓰기 차단). 재고 갱신은 읽은 후 바로 쓰므로 X Lock 필요
 - "ECS 멀티 인스턴스에서도 DB Lock으로 충분한가?" → 같은 DB를 바라보는 한 충분. DB가 분리되면(샤딩 등) 분산 락 필요
 - "Optimistic Lock이 나은 상황은?" → 읽기 중심 서비스, 충돌 빈도 낮은 경우 (예: 게시글 수정, 설정 변경). Lock 보유 없이 동시성 극대화
 - "Gap Lock이 성능에 미치는 영향?" → 범위 잠금이므로 INSERT를 차단할 수 있음. 높은 동시성이 필요하면 RC로 변경하여 Gap Lock 비활성화 고려 (단, Phantom Read 허용 필요)
@@ -108,7 +108,7 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB·ORM·MQ 질
 ## 관련 문서
 - [[Interview-Prep-ActionPower|1차 면접 TOC]]
 - [[Interview-Prep-ActionPower-JD|JD 분석 & FIT 답변]]
-- [[Interview-Prep-ActionPower-Tech-Resume2|이력서 기술 질문 2 (MQ·Docker)]]
+- [[Interview-Prep-ActionPower-Tech-Resume2|이력서 기술 질문 2 (MQ, Docker)]]
 - [[Interview-Prep-ActionPower-Tech-Resume3|이력서 기술 질문 3 (아키텍처 전환)]]
 - [[Interview-Prep-ActionPower-Tech-Resume4|이력서 기술 질문 4 (GPL 모니터링)]]
 - [[Interview-Prep-ActionPower-Tech-JD|JD 기반 기술 질문]]

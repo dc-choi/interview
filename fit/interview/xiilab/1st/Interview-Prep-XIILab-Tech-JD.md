@@ -8,7 +8,7 @@ aliases: ["XIILab JD 기반 기술 질문", "씨이랩 서비스 맥락 질문",
 # 씨이랩 (XIILab) 면접 준비 — JD 기반 기술 / 서비스 맥락 / 컬처핏 질문
 
 > 상위 문서: [[Interview-Prep-XIILab|씨이랩 면접 준비]]
-> 범위: Full Stack·React·AI 도메인 관련 JD 중심 질문과 AI 솔루션 서비스 맥락, 컬처핏
+> 범위: Full Stack, React, AI 도메인 관련 JD 중심 질문과 AI 솔루션 서비스 맥락, 컬처핏
 
 ---
 
@@ -28,7 +28,7 @@ aliases: ["XIILab JD 기반 기술 질문", "씨이랩 서비스 맥락 질문",
 - **실전 UX 패턴**: 3단계 온보딩 플로우, 벌크 작업(일괄 삭제/졸업/등록), Excel 임포트/엑스포트, 캘린더 기반 출석 인터페이스, 역할 기반 UI(관리자/게스트)
 - **GA4 애널리틱스 통합**: 중앙화된 analytics 모듈로 가입/로그인/기능 사용 이벤트 추적
 - 백엔드 API 설계 시 프론트엔드 협업 경험 있음 (시솔지주: Swagger 문서화 + 일관된 응답 포맷 설계)
-- AI 도구(Claude Code)를 적극 활용해 빠르게 학습·구현 — 씨이랩 자체가 AX를 강조하는 회사
+- AI 도구(Claude Code)를 적극 활용해 빠르게 학습하고 구현 — 씨이랩 자체가 AX를 강조하는 회사
 - 꼬리 대비:
   - "React 상태관리는 어떻게?" → 서버 상태는 React Query(tRPC), 클라이언트 상태는 Context API + useState. Redux/Zustand 같은 글로벌 상태 라이브러리 없이도 서버 상태와 클라이언트 상태를 명확히 분리하면 충분
   - "컴포넌트 설계 원칙?" → 기능 단위(Feature-Sliced) 폴더 구조. 각 도메인(auth, attendance, student, group)이 자체 hooks/components/utils 보유. 공통 UI만 shared로 분리
@@ -67,7 +67,6 @@ aliases: ["XIILab JD 기반 기술 질문", "씨이랩 서비스 맥락 질문",
   - "무한 루프 방지?" → refresh 실패 시(refresh token도 만료) 로그아웃 처리. refresh 요청 자체에는 인터셉터 미적용
 
 ### DB 모델링 접근법? 정규화 vs 비정규화 기준?
-> 관련: [[Index|인덱스]], [[SQL|SQL]]
 
 - 도메인 모델 기반 설계 → 3NF 기본 → 조회 성능 필요 시 비정규화
 - 실무: 시솔지주에서 MongoDB→MySQL 마이그레이션
@@ -82,7 +81,6 @@ aliases: ["XIILab JD 기반 기술 질문", "씨이랩 서비스 맥락 질문",
 - 고객사 On-Premise 마이그레이션: AWS 클라우드 → CentOS 7.1 환경으로 전환, Nginx 리버스 프록시+PM2 무중단 구성
 
 ### 테스트 코드 어떻게 작성하나?
-> 관련: [[Service-Layer-Testing|서비스레이어테스트]], [[Test-Fixture|테스트픽스처]], [[Test-Isolation|테스트격리]]
 
 - 시솔지주: Mocha+Chai로 테스트 0→1 도입
   - SonarQube 웹 대시보드로 팀 전체 코드 품질 지표 공유
@@ -150,13 +148,13 @@ aliases: ["XIILab JD 기반 기술 질문", "씨이랩 서비스 맥락 질문",
 
 ## 컬처핏 / 소프트스킬 질문
 
-- [ ] 장단점 — [[My-FIT-Answers#본인의 장단점|FIT]] 실행력/성급함
+- [ ] 장단점 — [[My-FIT-Answers#1. 장단점 (한 흐름으로 묶기)|FIT]] 실행력/성급함
 - [ ] 동료 갈등 — [[Common-Interview-Questions|FIT]] 참고
-- [ ] 기획자 충돌 — [[My-Motivation-Reasons#기획자와 의견 충돌 사례|FIT]] 참고
-- [ ] 긴급 이슈 판단 — [[My-Motivation-Reasons#긴급 이슈 동시 발생 시 판단 기준|FIT]] 비즈니스 임팩트 기준
-- [ ] 성장 목표 — [[My-FIT-Answers#장기적으로 어떤 개발자가 되고 싶은가요?|FIT]] 개발 리드 → CTO
+- [ ] 기획자 충돌 — [[My-FIT-Answers#2-A. 환불 정책 — 일정 vs 리스크 (메인 사례, 5/15 검증)|FIT]] 참고
+- [ ] 긴급 이슈 판단 — [[My-FIT-Answers-Extended#17. 긴급 이슈 동시 발생 — 판단 기준|FIT]] 비즈니스 임팩트 기준
+- [ ] 성장 목표 — [[My-FIT-Answers#4. 5년 후 / 커리어 목표|FIT]] 개발 리드 → CTO
 - [ ] **추가**: "새로운 기술(React 등)을 어떻게 학습하나?" → AI 도구 활용 + 공식 문서 + 작은 프로젝트로 빠르게 실전 적용
-- [ ] **추가**: "AI 도구를 활용한 구체적 경험은?" → Claude Code로 코드 작성·리뷰·디버깅, 커스텀 스킬/훅/MCP 서버 구축으로 개발 워크플로우 자동화
+- [ ] **추가**: "AI 도구를 활용한 구체적 경험은?" → Claude Code로 코드 작성, 리뷰, 디버깅, 커스텀 스킬/훅/MCP 서버 구축으로 개발 워크플로우 자동화
 
 ---
 

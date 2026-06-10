@@ -8,14 +8,13 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
 # 씨이랩 (XIILab) 면접 준비 — 이력서 기반 기술 질문
 
 > 상위 문서: [[Interview-Prep-XIILab|씨이랩 면접 준비]]
-> 범위: 트라이포드랩·시솔지주·이썸테크에서 직접 수행한 작업에 대한 예상 기술 질문
+> 범위: 트라이포드랩, 시솔지주, 이썸테크에서 직접 수행한 작업에 대한 예상 기술 질문
 
 ---
 
 ## 이력서 기반 기술 질문
 
 ### DB Lock으로 Race Condition 해결 — 어떤 Lock? 왜? Optimistic vs Pessimistic?
-> 관련: [[Transaction-Lock-Contention|트랜잭션·락]], [[Transactions|트랜잭션]], [[Distributed-Lock|분산락]], [[Lock|DB Lock]]
 
 **문제 상황**
 - 수천 대 IoT 디바이스가 동시에 재고 데이터를 전송 → 같은 품목에 동시 갱신 시 Lost Update 발생
@@ -38,7 +37,7 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
 | 데드락 위험 | 없음 | 있음 (순서 통일로 예방) |
 
 **트랜잭션 범위 최소화**
-- 디바이스 정보 조회·검증은 트랜잭션 **밖**에서 수행 (lock 보유 시간 줄이기)
+- 디바이스 정보 조회와 검증은 트랜잭션 **밖**에서 수행 (lock 보유 시간 줄이기)
 - Lock 순서 통일: 항상 **품목 ID 오름차순**으로 lock 획득 → 교차 대기(데드락) 방지
 
 **Redis 분산락을 선택하지 않은 이유**
@@ -52,7 +51,6 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
 - "데드락 발생 시 처리?" → InnoDB Wait-for Graph로 자동 탐지 → 비용 적은 TX 자동 rollback → 앱에서 catch 후 재시도
 
 ### 슬로우 쿼리 99.3% 개선 — 측정 방법? EXPLAIN 분석?
-> 관련: [[Index|인덱스]], [[Execution-Plan|실행계획]]
 
 - 디바이스 최신 상태 조회 서브쿼리 2000ms+ 소요
 - 테이블 100만 건, 850대 디바이스, 디바이스당 평균 1,240건 균등 분포
@@ -66,7 +64,6 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
   - "커버링 인덱스란?" → 쿼리에 필요한 모든 컬럼이 인덱스에 포함되어 테이블 접근 없이 결과 반환
 
 ### Prisma 쿼리 증가 문제 — 구체적으로? ORM vs Raw Query 전환 기준?
-> 관련: [[Execution-Plan|실행계획]], [[SQL|SQL]]
 
 - Prisma는 lazy loading이 없어 전통적 N+1은 아님
 - 문제는 app-level join 방식 — include 시 SQL JOIN이 아니라 관계마다 별도 쿼리를 발생시켜, 조인 엔티티가 늘어날수록 쿼리가 N개씩 증가
@@ -79,7 +76,6 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
   - "Prisma 말고 다른 ORM은?" → 출석부 프로젝트에서는 Prisma + Kysely 조합 사용. Prisma로 스키마/마이그레이션 관리, Kysely로 복잡한 쿼리를 타입세이프하게 작성
 
 ### EventBridge+SQS 선택 이유? Kafka와 차이?
-> 관련: [[MQ-Kafka|MQ·Kafka]], [[Messaging-Patterns|메시징패턴]], [[Delivery-Semantics|전달보장]]
 
 - 실제 비용 비교: MSK $574/월 vs EventBridge+SQS $0~18/월
 - 발주라는 도메인 특성상 실시간 처리 불필요 + 최종 일관성이면 충분
@@ -91,7 +87,6 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
   - "이벤트 순서 보장이 필요하면?" → SQS FIFO 큐(MessageGroupId 기반, 초당 300 TPS) 또는 Kafka(파티션 내 순서 보장)
 
 ### CloudFront+ECS 전환 — 왜? 어떤 문제?
-> 관련: [[Load-Balancer|로드밸런서]], [[Docker|Docker]], [[Messaging-Patterns|메시징패턴]]
 
 - 단일 EC2에서 Nginx+App 동시 구동 → 트래픽 급증 시 CPU/메모리 집중+배포 시 서비스 중단 위험
 - CloudFront(정적 리소스 캐싱) + ALB(웹 트래픽) + NLB(IoT 디바이스 고정 IP 통신) + ECS Fargate(오토스케일링) + Rolling Update 무중단 배포
@@ -101,7 +96,6 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
   - "Rolling Update vs Blue/Green?" → Rolling은 점진적 교체(리소스 절약), Blue/Green은 즉시 전환(빠른 롤백). 비용 고려해 Rolling 선택
 
 ### Docker 이미지 43% 경량화 방법?
-> 관련: [[Multi-Stage-Build|멀티스테이지빌드]]
 
 - NestJS 이미지가 909MB(Spring 수준)로 비정상
 - .dockerignore로 불필요 파일 제외 + 멀티스테이지 빌드(build stage → production stage에 필요 파일만 복사)
@@ -112,10 +106,9 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
   - "더 최적화 방법?" → esbuild 번들러 사용, Docker layer 캐싱 최적화(자주 변경되는 레이어를 뒤에 배치)
 
 ### Grafana/Prometheus/Loki — 무엇을 모니터링? 알림 기준?
-> 관련: [[Incident-Detection-Logging|장애탐지·로깅]], [[Structured-Logging|구조화로깅]], [[Log-Pipeline|로그파이프라인]]
 
 **왜 GPL 자체 호스팅?**
-- 기존 CloudWatch+SNS+Lambda 구조의 한계: AWS 리소스 메트릭은 충분했지만, 커스텀 비즈니스 메트릭 비용($0.30/metric/month)·고카디널리티 제약, PromQL 수준의 다차원 쿼리 부재, Logs Insights UX 한계, SNS+Lambda로 알림 라우팅·디듀프 수동 구현 부담
+- 기존 CloudWatch+SNS+Lambda 구조의 한계: AWS 리소스 메트릭은 충분했지만, 커스텀 비즈니스 메트릭 비용($0.30/metric/month)과 고카디널리티 제약, PromQL 수준의 다차원 쿼리 부재, Logs Insights UX 한계, SNS+Lambda로 알림 라우팅과 디듀프 수동 구현 부담
 - 가중치 기반 대안 비교 후 GPL 선택 (4.65점 / ELK 3.85 / Datadog 3.35 / CloudWatch 3.10)
 
 **아키텍처 구성**
@@ -140,5 +133,5 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
 ## 관련 문서
 - [[Interview-Prep-XIILab|씨이랩 면접 준비 (인덱스)]]
 - [[Interview-Prep-XIILab-JD|JD 분석 & FIT 답변]]
-- [[Interview-Prep-XIILab-Tech-JD|JD 기반 기술·서비스·컬처핏 질문]]
+- [[Interview-Prep-XIILab-Tech-JD|JD 기반 기술, 서비스, 컬처핏 질문]]
 - [[Interview-Prep-XIILab-Questions|역질문 & 체크리스트]]

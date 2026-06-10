@@ -29,7 +29,7 @@ aliases: ["ActionPower JD 분석", "액션파워 JD 및 FIT 답변"]
 |------|------|
 | 포지션 | Backend 개발자 (주니어) |
 | 연차 | 3년 이상 |
-| 주요 업무 | AI 기능 백엔드 설계·개발·운영, 자동화 시스템 구축, 유관 부서 협업 |
+| 주요 업무 | AI 기능 백엔드 설계, 개발, 운영, 자동화 시스템 구축, 유관 부서 협업 |
 | 채용 절차 | 서류 → **1차 면접(직무)** → 2차 면접(컬처핏) → 처우협의 → 최종합격 |
 | 수습 | 3개월 |
 
@@ -38,7 +38,7 @@ aliases: ["ActionPower JD 분석", "액션파워 JD 및 FIT 답변"]
 - **AI 서빙**: STT, LLM API 호출, 비동기 처리
 - **확장성**: 급격한 사용량 증가 대응
 - **자동화**: 엔지니어 개입 최소화
-- **속도**: 빠르게 발전하는 AI 기술 검증·통합
+- **속도**: 빠르게 발전하는 AI 기술 검증, 통합
 
 ### 자격요건 vs 내 경험 매칭
 
@@ -47,7 +47,7 @@ aliases: ["ActionPower JD 분석", "액션파워 JD 및 FIT 답변"]
 | Node.js, TypeScript 3년+ | **강** | 4년차. 트라이포드랩(NestJS/TS), 시솔지주(Express/JS)          |
 | NestJS API 개발 능숙        | **강** | 트라이포드랩 2년 2개월 NestJS 메인. 모듈 분리 설계, PoC 성공         |
 | MySQL/PostgreSQL 서비스 운영 | **강** | MySQL 기반 슬로우쿼리 99.3% 개선, 복합 인덱스 최적화, Read Replica |
-| RESTful API 설계          | **강** | API 설계·문서화, 프론트엔드 협업 경험                           |
+| RESTful API 설계          | **강** | API 설계, 문서화, 프론트엔드 협업 경험                           |
 | DB 모델링                  | **강** | MongoDB→MySQL 마이그레이션, 도메인별 모듈 분리 설계               |
 | 캐시/트랜잭션 관리              | **강** | Redis 스킬 보유, DB Lock 기반 동시성 제어, 트랜잭션 정합성 확보       |
 
@@ -56,7 +56,7 @@ aliases: ["ActionPower JD 분석", "액션파워 JD 및 FIT 답변"]
 | 우대사항                             | 매칭도   | 내 근거                                                                                                            |
 | -------------------------------- | ----- | --------------------------------------------------------------------------------------------------------------- |
 | GCP 클라우드 경험                      | **약** | AWS 경험 풍부 (ECS, RDS, CloudFront, EventBridge, SQS). GCP 직접 경험 없음                                                |
-| 메시지 큐 (RabbitMQ, Kafka, Pub/Sub) | **중** | AWS EventBridge+SQS 기반 이벤트 아키텍처 설계·운영. Kafka/Pub/Sub 직접 경험은 없으나 개념 숙지                                           |
+| 메시지 큐 (RabbitMQ, Kafka, Pub/Sub) | **중** | AWS EventBridge+SQS 기반 이벤트 아키텍처 설계, 운영. Kafka/Pub/Sub 직접 경험은 없으나 개념 숙지                                           |
 | 테스트 코드 작성                        | **중** | 시솔지주: Mocha+Chai+SonarQube로 테스트 커버리지 0→70% 달성, PR 연동 60% 미달 시 머지 불가. 트라이포드랩: jest+supertest, 스케줄링/비즈니스 로직 분리 설계 |
 | 장애 분석/대응                         | **강** | Grafana/Prometheus/Loki 모니터링+알림 직접 구축, 병목 조기 탐지                                                                 |
 
@@ -87,7 +87,7 @@ aliases: ["ActionPower JD 분석", "액션파워 JD 및 FIT 답변"]
 ### 지원 동기
 > 구조: 회사의 미션 이해 → 내 관련 경험 → 연결점 → 기여하고 싶은 것
 
-- **회사의 문제**: 다글로는 단순한 AI 앱이 아니라, 180만 사용자의 음성·문서·학습 데이터를 실시간으로 처리하는 대규모 AI 플랫폼. 급성장하면서 안정성과 확장성을 동시에 확보해야 하는 단계
+- **회사의 문제**: 다글로는 단순한 AI 앱이 아니라, 180만 사용자의 음성, 문서, 학습 데이터를 실시간으로 처리하는 대규모 AI 플랫폼. 급성장하면서 안정성과 확장성을 동시에 확보해야 하는 단계
 - **내 연결점**: 트라이포드랩에서 정확히 같은 문제를 풀었음 — PMF 달성 후 대형 고객사 확장, 단일 서버에서 CloudFront+ECS 아키텍처로 전환, 이벤트 기반 자동화로 운영 부담 제거
 - **기여하고 싶은 것**: B2B 엔터프라이즈 확장 단계에서 시스템이 깨지지 않도록 안정적인 백엔드 구조를 함께 만들어가고 싶음. 특히 "엔지니어 개입 최소화를 위한 자동화"라는 JD 문구에 공감 — 발주 자동화 경험이 직접 연결됨
 
@@ -96,7 +96,7 @@ aliases: ["ActionPower JD 분석", "액션파워 JD 및 FIT 답변"]
 
 - 트라이포드랩에서 0→1 구축, 대형 고객사 PoC 성공, 단일 서버→ECS 스케일업, 모니터링 구축까지 충분히 성장
 - 하지만 B2B PoC는 피드백 사이클이 수개월 단위 — 이제는 **빠르게 피드백 받으며 개선하는 B2C 환경**에서 성장하고 싶음
-- 다글로는 B2B2C — 180만 B2C 사용자의 빠른 피드백 사이클과, B2B 엔터프라이즈(삼성물산, 대구시청 등)의 데이터 정합성·안정성 요구를 동시에 다루는 환경
+- 다글로는 B2B2C — 180만 B2C 사용자의 빠른 피드백 사이클과, B2B 엔터프라이즈(삼성물산, 대구시청 등)의 데이터 정합성, 안정성 요구를 동시에 다루는 환경
 - 트라이포드랩에서 쌓은 B2B 정합성 경험(DB Lock, 동시성 제어)을 살리면서, B2C의 빠른 개선 사이클을 동시에 경험할 수 있는 곳이라 생각
 - 꼬리 대비:
   - "B2C도 느린데?" → PoC 수개월 vs B2C 주 단위, 피드백 사이클 자체가 빠름
@@ -107,8 +107,8 @@ aliases: ["ActionPower JD 분석", "액션파워 JD 및 FIT 답변"]
 
 ## 관련 문서
 - [[Interview-Prep-ActionPower|1차 면접 TOC]]
-- [[Interview-Prep-ActionPower-Tech-Resume1|이력서 기술 질문 1 (DB·ORM)]]
-- [[Interview-Prep-ActionPower-Tech-Resume2|이력서 기술 질문 2 (MQ·Docker)]]
+- [[Interview-Prep-ActionPower-Tech-Resume1|이력서 기술 질문 1 (DB, ORM)]]
+- [[Interview-Prep-ActionPower-Tech-Resume2|이력서 기술 질문 2 (MQ, Docker)]]
 - [[Interview-Prep-ActionPower-Tech-Resume3|이력서 기술 질문 3 (아키텍처 전환)]]
 - [[Interview-Prep-ActionPower-Tech-Resume4|이력서 기술 질문 4 (GPL 모니터링)]]
 - [[Interview-Prep-ActionPower-Tech-JD|JD 기반 기술 질문]]
