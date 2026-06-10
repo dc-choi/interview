@@ -5,9 +5,9 @@ category: "OS & Runtime"
 aliases: ["Node.js Process", "Child Process", "spawn vs fork"]
 ---
 
-# Node.js Process · Child Process
+# Node.js Process, Child Process
 
-`process`는 현재 Node.js 프로세스의 **전역 객체** — 환경·인자·시그널·종료를 다룬다. `child_process` 모듈은 자식 프로세스를 띄워 외부 명령 실행·CPU 작업 분산·IPC 통신을 수행. CPU 바운드 작업의 두 갈래 해법 중 **프로세스 분리 트랙**(다른 갈래는 [[Worker-Threads]]).
+`process`는 현재 Node.js 프로세스의 **전역 객체** — 환경, 인자, 시그널, 종료를 다룬다. `child_process` 모듈은 자식 프로세스를 띄워 외부 명령 실행, CPU 작업 분산, IPC 통신을 수행. CPU 바운드 작업의 두 갈래 해법 중 **프로세스 분리 트랙**(다른 갈래는 [[Worker-Threads]]).
 
 ## process 객체
 
@@ -17,8 +17,8 @@ aliases: ["Node.js Process", "Child Process", "spawn vs fork"]
 | `process.argv` | 명령행 인수 (`[node, script, ...args]`) |
 | `process.cwd()` | 현재 작업 디렉토리 |
 | `process.pid` / `ppid` | 프로세스 ID / 부모 ID |
-| `process.memoryUsage()` | rss·heapTotal·heapUsed·external·arrayBuffers |
-| `process.cpuUsage()` | user·system µs |
+| `process.memoryUsage()` | rss, heapTotal, heapUsed, external, arrayBuffers |
+| `process.cpuUsage()` | user, system µs |
 | `process.uptime()` | 시작 후 경과 초 |
 | `process.exit(code)` | 즉시 종료 — 정리 콜백 안 부름, 보통 피해야 |
 
@@ -47,7 +47,7 @@ process.on('SIGTERM', async () => {
 
 | API | 모드 | stdout 전달 | 용도 |
 |-----|------|------------|------|
-| `spawn` | 스트림 | `stdout.on('data')` | 대용량·장기 실행, **shell 미사용** |
+| `spawn` | 스트림 | `stdout.on('data')` | 대용량, 장기 실행, **shell 미사용** |
 | `exec` | 버퍼 (전체 stdout 메모리) | callback에 모음 | 짧은 명령, **shell 사용** |
 | `execFile` | 버퍼 | callback | shell 미사용 + 버퍼 결합 |
 | `fork` | 스트림 + IPC | message 이벤트 | **Node.js 스크립트 전용** |
@@ -73,7 +73,7 @@ exec('ls -la | grep node', (err, stdout, stderr) => {
 });
 ```
 
-- shell 사용으로 **파이프·리다이렉션·glob 가능**.
+- shell 사용으로 **파이프, 리다이렉션, glob 가능**.
 - **사용자 입력을 그대로 넣으면 명령 인젝션** 위험. 인자에 검증 없는 변수 금지.
 - stdout 전체를 버퍼링 → 기본 `maxBuffer` 1MB 초과 시 throw.
 
@@ -102,7 +102,7 @@ process.on('message', msg => {
 ```
 
 - **부모-자식 IPC 채널**이 자동 생성 → 객체 송수신 (구조화 복제).
-- 새 V8 인스턴스 → 메모리·시작 시간 비용 큼.
+- 새 V8 인스턴스 → 메모리, 시작 시간 비용 큼.
 - CPU 작업 분리에 사용. 가벼우면 [[Worker-Threads|Worker Threads]]가 더 효율적.
 
 ## spawn vs fork vs Worker Threads
@@ -140,12 +140,12 @@ shell이 필요해도 사용자 입력을 인자로 넣지 말고, 인자 바인
 
 ## 면접 체크포인트
 
-- 4가지 API (spawn·exec·execFile·fork) 차이와 선택 기준
+- 4가지 API (spawn, exec, execFile, fork) 차이와 선택 기준
 - `exec` vs `execFile` 보안 차이 — shell 사용 여부와 명령 인젝션
 - `spawn`이 큰 출력에 유리한 이유 — 스트림 vs 버퍼링
 - `fork`와 Worker Threads 차이 — 프로세스 vs 스레드, V8 인스턴스
 - Graceful Shutdown — SIGTERM 핸들러 + server.close + in-flight 마무리
-- `process.memoryUsage` 필드 (rss·heapTotal·heapUsed·external)의 의미
+- `process.memoryUsage` 필드 (rss, heapTotal, heapUsed, external)의 의미
 - K8s `terminationGracePeriodSeconds`와 시그널 흐름
 - 명령 인젝션 방어 — execFile/spawn으로 인자 분리
 

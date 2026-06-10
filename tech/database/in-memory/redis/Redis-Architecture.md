@@ -70,7 +70,7 @@ EXEC 실패 시 대응:
 - 못 받을 수 있다고 전제하고 사용하는 것이 좋음
 - 영속 + ACK 필요하면 [[Redis-Streams-PubSub|Streams]]로
 
-## 이벤트 루프 · I/O 모델
+## 이벤트 루프, I/O 모델
 
 Redis는 **싱글 스레드 이벤트 루프 + epoll/kqueue 비동기 I/O**. 명령 자체는 한 번에 하나만 처리해 락이 필요 없음.
 
@@ -84,8 +84,8 @@ Redis는 **싱글 스레드 이벤트 루프 + epoll/kqueue 비동기 I/O**. 명
 
 **왜 빠른가**:
 1. 메모리 기반 (디스크 I/O 회피)
-2. 싱글 스레드 → 락·컨텍스트 스위칭 오버헤드 0
-3. 효율적 자료구조 (skiplist·hashtable 등 [[Redis-Internal-Encoding|내부 인코딩]])
+2. 싱글 스레드 → 락, 컨텍스트 스위칭 오버헤드 0
+3. 효율적 자료구조 (skiplist, hashtable 등 [[Redis-Internal-Encoding|내부 인코딩]])
 4. epoll/kqueue로 수만 연결을 한 스레드가
 5. Pipeline으로 RTT 제거
 
@@ -109,7 +109,7 @@ Redis는 **싱글 스레드 이벤트 루프 + epoll/kqueue 비동기 I/O**. 명
 | Bulk String | `$` | `$5\r\nhello\r\n` |
 | Array | `*` | `*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n` |
 
-RESP3(7.0+)는 Map·Set·Big Number 등 추가 — 클라이언트가 협상으로 선택.
+RESP3(7.0+)는 Map, Set, Big Number 등 추가 — 클라이언트가 협상으로 선택.
 
 ## Pipeline vs Transaction
 

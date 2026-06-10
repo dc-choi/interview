@@ -7,7 +7,7 @@ aliases: ["NestJS ExecutionContext", "ArgumentsHost"]
 
 # NestJS ExecutionContext — 다중 컨텍스트 추상화
 
-`ExecutionContext`는 `ArgumentsHost`를 확장한 객체로, **현재 처리 중인 요청의 핸들러·클래스·전송 타입(http/ws/rpc) 정보**를 통합 제공. Guard·Interceptor·Custom Decorator가 동일한 코드로 HTTP/WebSocket/Microservice를 다루게 만드는 추상화.
+`ExecutionContext`는 `ArgumentsHost`를 확장한 객체로, **현재 처리 중인 요청의 핸들러, 클래스, 전송 타입(http/ws/rpc) 정보**를 통합 제공. Guard, Interceptor, Custom Decorator가 동일한 코드로 HTTP/WebSocket/Microservice를 다루게 만드는 추상화.
 
 ## ArgumentsHost vs ExecutionContext
 
@@ -80,7 +80,7 @@ export class MetadataGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    // 메서드와 클래스 모두에서 메타데이터 수집·우선순위 적용
+    // 메서드와 클래스 모두에서 메타데이터 수집, 우선순위 적용
     const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
       context.getHandler(),
       context.getClass(),
@@ -102,11 +102,11 @@ export class MetadataGuard implements CanActivate {
 | `get(key, target)` | 단일 target에서 메타데이터 읽기 |
 | `getAll(key, [targets])` | 여러 target에서 메타데이터 배열로 |
 | `getAllAndOverride(key, [targets])` | 첫 번째 target 우선 — 메서드가 클래스를 override |
-| `getAllAndMerge(key, [targets])` | 배열·객체 메타데이터 병합 |
+| `getAllAndMerge(key, [targets])` | 배열, 객체 메타데이터 병합 |
 
 **override vs merge**:
-- 권한·플래그: `getAllAndOverride` (메서드가 클래스 무시)
-- 태그·역할 누적: `getAllAndMerge`
+- 권한, 플래그: `getAllAndOverride` (메서드가 클래스 무시)
+- 태그, 역할 누적: `getAllAndMerge`
 
 ## Param Decorator에서
 
@@ -153,7 +153,7 @@ app.connectMicroservice({ transport: Transport.KAFKA, options: {...} });
 await app.startAllMicroservices();
 await app.listen(3000);
 
-// Guard·Interceptor·Pipe는 그대로 셋 다에 적용 가능
+// Guard, Interceptor, Pipe는 그대로 셋 다에 적용 가능
 ```
 
 이 시점에 `getType()` 분기 처리가 진짜 의미 있어짐.
@@ -164,12 +164,12 @@ await app.listen(3000);
 - **getType 체크 없이 switchToHttp**: WebSocket 컨텍스트에서 호출하면 undefined → 에러. 멀티 트랜스포트 코드는 반드시 분기.
 - **getHandler vs getClass 혼동**: 메서드 메타데이터는 `getHandler`, 클래스 메타데이터는 `getClass`. 둘 다 보려면 `getAllAndOverride([getHandler, getClass])`.
 - **`get` vs `getAllAndOverride` 차이 무시**: 메서드/클래스 둘 다 메타데이터 가질 수 있는데 `get`만 쓰면 한쪽만 봄.
-- **request mutation 의존**: Guard에서 `request.user = ...` → 다른 Guard/Interceptor에서 그 의존 → 순서·범위 헷갈림. Param Decorator로 명시 추출이 깔끔.
+- **request mutation 의존**: Guard에서 `request.user = ...` → 다른 Guard/Interceptor에서 그 의존 → 순서, 범위 헷갈림. Param Decorator로 명시 추출이 깔끔.
 
 ## 면접 체크포인트
 
 - `ExecutionContext`가 `ArgumentsHost`와 다른 점 — `getHandler/getClass` 추가
-- 어디서 받는지 — Guard·Interceptor·Param Decorator는 ExecutionContext, Filter는 ArgumentsHost
+- 어디서 받는지 — Guard, Interceptor, Param Decorator는 ExecutionContext, Filter는 ArgumentsHost
 - `getType()`으로 http/ws/rpc 분기 — 멀티 트랜스포트 추상화의 핵심
 - `Reflector` 4가지 메서드 (`get`, `getAll`, `getAllAndOverride`, `getAllAndMerge`) 차이
 - 메서드 메타데이터(getHandler) vs 클래스 메타데이터(getClass) 우선순위
@@ -181,5 +181,5 @@ await app.listen(3000);
 - [[NestJS|NestJS 요청 파이프라인]]
 - [[NestJS-Guards|Guards (ExecutionContext 활용 가장 많은 곳)]]
 - [[NestJS-AOP-Interceptor|Interceptor (Reflector + getHandler 활용)]]
-- [[NestJS-Custom-Decorator|커스텀 데코레이터 · createParamDecorator]]
+- [[NestJS-Custom-Decorator|커스텀 데코레이터, createParamDecorator]]
 - [[NestJS-Exception-Filter|Exception Filter (ArgumentsHost만 받음)]]

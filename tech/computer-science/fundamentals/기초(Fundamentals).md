@@ -7,7 +7,7 @@ aliases: ["Fundamentals", "CS Fundamentals"]
 
 # 컴퓨터기초(Fundamentals)
 
-컴퓨터가 동작하는 가장 아래 층 — 진법·인코딩, CPU 연산, 컴파일/런타임 모델.
+컴퓨터가 동작하는 가장 아래 층 — 진법, 인코딩, CPU 연산, 컴파일/런타임 모델.
 
 ## 목차
 - [x] [[Digital-Fundamentals|디지털 기초 (진법, 인코딩, 이미지)]]

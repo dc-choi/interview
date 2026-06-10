@@ -5,7 +5,7 @@ category: "OS&런타임(OS&Runtime)"
 aliases: ["원자성과 IPC", "동기화와 교착상태", "Synchronization and IPC"]
 ---
 
-# 원자성·동기화·IPC
+# 원자성, 동기화, IPC
 
 ## 원자성,동기화,교착상태
 

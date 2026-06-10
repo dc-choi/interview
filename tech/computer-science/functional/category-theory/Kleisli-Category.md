@@ -11,7 +11,7 @@ aliases: ["Kleisli Category", "Kleisli 카테고리", "Kleisli composition", "Fi
 
 ## 왜 필요한가 — 부수효과 함수 합성 문제
 
-순수 함수의 합성은 단순하다. `f: A → B`와 `g: B → C`가 있으면 `g ∘ f: A → C`. 그런데 함수가 부수효과(로깅·실패·비동기·여러 결과)를 가지면 시그니처가 `A → m B` 같은 형태가 되어, 결과 타입이 `m B`라서 다음 함수의 입력 `B`와 직접 안 맞는다.
+순수 함수의 합성은 단순하다. `f: A → B`와 `g: B → C`가 있으면 `g ∘ f: A → C`. 그런데 함수가 부수효과(로깅, 실패, 비동기, 여러 결과)를 가지면 시그니처가 `A → m B` 같은 형태가 되어, 결과 타입이 `m B`라서 다음 함수의 입력 `B`와 직접 안 맞는다.
 
 **전역 상태로 우회한 안티패턴**:
 ```ts
@@ -40,7 +40,7 @@ type Embellished = (a: A) => M<B>;
 
 | `M` | 표현하는 효과 |
 |---|---|
-| `Writer<W, _>` | 로그·메타데이터 누적 (W는 모노이드) |
+| `Writer<W, _>` | 로그, 메타데이터 누적 (W는 모노이드) |
 | `Maybe / Option` | 값이 없을 가능성 |
 | `Either / Result<E, _>` | 실패 가능성 (에러 정보 포함) |
 | `Promise / Task` | 비동기 |
@@ -95,7 +95,7 @@ f >=> g = \x -> f x >>= g
 const pure = <A>(a: A): M<A> => /* 모나드별 정의 */;
 ```
 
-`pure`(또는 `return`)은 **값을 효과 없이 컨테이너에 담는 함수**. 카테고리 항등 법칙이 모나드 좌·우 단위 법칙과 일치:
+`pure`(또는 `return`)은 **값을 효과 없이 컨테이너에 담는 함수**. 카테고리 항등 법칙이 모나드 좌, 우 단위 법칙과 일치:
 
 ```
 f >=> pure = f      (우단위)
@@ -170,18 +170,18 @@ JS의 `Promise.then`이 부분적인 fish 연산자다 (Promise는 엄밀한 모
 ## 자주 헷갈리는 포인트
 
 - **모든 컨테이너가 Kleisli 카테고리를 만드는 건 아니다** — Functor만으로는 부족하고 모나드여야 함 (`flatMap` 필요)
-- **Kleisli 합성은 모나드 종류마다 다르다** — 같은 `>=>` 표기지만 Maybe·Promise·Writer가 각각 다른 합성 동작
+- **Kleisli 합성은 모나드 종류마다 다르다** — 같은 `>=>` 표기지만 Maybe, Promise, Writer가 각각 다른 합성 동작
 - **fish vs `then`/`bind`** — `>=>`는 두 함수의 합성, `>>=`(bind)는 값과 함수의 적용. 둘은 상호 정의 가능하지만 추상화 수준 다름
 - **Promise는 엄밀한 Kleisli 카테고리 아님** — `Promise<Promise<T>>`가 자동 평탄화되어 모나드 법칙을 부분적으로만 만족
-- **부수효과 표현 ≠ 부수효과 실행** — Kleisli 합성은 효과를 **표현**할 뿐, 실제 실행은 별도 (`runIO`·`unsafePerformIO` 같은 경계)
+- **부수효과 표현 ≠ 부수효과 실행** — Kleisli 합성은 효과를 **표현**할 뿐, 실제 실행은 별도 (`runIO`, `unsafePerformIO` 같은 경계)
 
 ## 면접 체크포인트
 
-- **Kleisli 카테고리의 4구성요소**(Object·Embellished morphism·Fish 합성·`pure` 항등)
+- **Kleisli 카테고리의 4구성요소**(Object, Embellished morphism, Fish 합성, `pure` 항등)
 - **부수효과 함수 합성 문제**와 그 해결 (전역 상태 → 결과에 효과 담기)
 - **Fish 연산자(`>=>`)와 일반 합성의 차이** — `flatMap`으로 평탄화
 - **모나드 = Kleisli triple** 이라는 동치성
-- 흔한 모나드 4종(Maybe·Either·Writer·Promise)의 Kleisli 합성 의미
+- 흔한 모나드 4종(Maybe, Either, Writer, Promise)의 Kleisli 합성 의미
 - 부수효과를 **표현 vs 실행** 분리하는 함수형 사고
 
 ## 출처
@@ -190,7 +190,7 @@ JS의 `Promise.then`이 부분적인 fish 연산자다 (Promise는 엄밀한 모
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 일반 개념]]
 - [[Types-And-Functions-As-Category|타입과 함수의 카테고리 (Set/Hask)]]
-- [[Order-Monoid-Categories|Order·Monoid 카테고리 (Writer가 의존하는 모노이드)]]
+- [[Order-Monoid-Categories|Order, Monoid 카테고리 (Writer가 의존하는 모노이드)]]
 - [[Monads-In-TypeScript|Monads in TypeScript (Functor/Applicative/Monad 진화)]]
 - [[Railway-Oriented-Programming|Railway-Oriented Programming (Either/Result Kleisli 패턴)]]
 - [[Types-As-Proofs|Types as Proofs]]

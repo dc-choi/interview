@@ -19,7 +19,7 @@ aliases: ["Redis Search History", "최근 검색 기록"]
 
 ## 방법 1: List (LPUSH + LTRIM)
 
-단순·빠름. 중복 제거는 직접 구현.
+단순, 빠름. 중복 제거는 직접 구현.
 
 ```
 # 새 검색어 추가
@@ -64,7 +64,7 @@ ZREM search:user:123 "검색어"
 ## 선택 기준
 
 - **검색어만 관리**: List (LPUSH + LTRIM)
-- **시각·점수로 정렬·필터**: Sorted Set
+- **시각, 점수로 정렬, 필터**: Sorted Set
 - **"2시간 내 검색만" 같은 범위 쿼리 필요**: Sorted Set 필수
 
 대부분 단순 "최근 N개" 용도면 List로 충분.
@@ -83,7 +83,7 @@ ZREM search:user:123 "검색어"
 
 ### Redis가 적합한 이유
 - **인메모리** — RAM 접근은 디스크 대비 수백 배 빠름
-- **자료구조 네이티브** — List·Sorted Set이 정확히 이 유스케이스
+- **자료구조 네이티브** — List, Sorted Set이 정확히 이 유스케이스
 - **TTL 내장** — 오래된 사용자 검색 기록 자동 정리
 - 쓰기 빈도 높아도 Redis 단일 인스턴스가 초당 수만 req 여유
 
@@ -91,7 +91,7 @@ ZREM search:user:123 "검색어"
 
 검색 기록은 **유실되어도 치명적이지 않은** 데이터. Redis의 RDB 스냅샷만 있어도 충분하고, 아예 persistence 끄고 순수 캐시로 써도 OK (사용자는 "최근 검색어 사라졌네" 정도 영향).
 
-결제·주문 같은 영속 필수 데이터와 다른 도메인이므로 **별도 Redis 인스턴스**에 두어 운영 리스크 분리.
+결제, 주문 같은 영속 필수 데이터와 다른 도메인이므로 **별도 Redis 인스턴스**에 두어 운영 리스크 분리.
 
 ## 데이터 직렬화
 
@@ -122,21 +122,21 @@ ZRANGEBYLEX autocomplete "[py" "[py\xff"
 ```
 
 ### 검색 트렌드 시계열
-RedisTimeSeries 모듈 또는 별도 TSDB (InfluxDB·Prometheus).
+RedisTimeSeries 모듈 또는 별도 TSDB (InfluxDB, Prometheus).
 
 ## 흔한 실수
 
 - **user id 없이 전역 key** → 사용자 간 데이터 섞임
 - **TTL 미설정** → 비활성 사용자 키가 영구 누적 → 메모리 소진
-- **N 제한 없이 LPUSH만** → 리스트 무한 증가 → 메모리·조회 비용 폭증
-- **중복 제거 빠뜨림** → "A·A·A·A·A" 같은 의미 없는 기록
+- **N 제한 없이 LPUSH만** → 리스트 무한 증가 → 메모리, 조회 비용 폭증
+- **중복 제거 빠뜨림** → "A, A, A, A, A" 같은 의미 없는 기록
 - **검색 기록을 주요 영속 데이터와 같은 Redis에** → 장애 영향 섞임
 
 ## 면접 체크포인트
 
 - List vs Sorted Set 중 선택 기준
 - 왜 RDB가 이 유스케이스에 부적합한가
-- LTRIM·ZREMRANGEBYRANK로 최대 N개 유지하는 방법
+- LTRIM, ZREMRANGEBYRANK로 최대 N개 유지하는 방법
 - TTL이 필요한 이유 (비활성 사용자 정리)
 - 검색 기록 Redis와 주요 서비스 Redis를 분리해야 하는 이유
 

@@ -23,7 +23,7 @@ https://a.com/page1   =  https://a.com/page2 (path는 상관없음)
 ## SOP가 막는 것
 
 브라우저 발단의 JavaScript에서 **다른 출처의 응답을 읽는 것**. SOP 없으면:
-- 악성 사이트가 내 세션 쿠키를 이용해 은행 API 호출 → 잔액·이체 정보 탈취 (CSRF와 유사 공격)
+- 악성 사이트가 내 세션 쿠키를 이용해 은행 API 호출 → 잔액, 이체 정보 탈취 (CSRF와 유사 공격)
 - 다른 도메인의 민감 페이지를 iframe으로 로드해 내용 읽기
 
 **요청 전송 자체는 막지 못함**. 응답을 JavaScript에서 못 읽게 할 뿐. 이 차이가 CSRF 공격이 여전히 가능한 이유.
@@ -48,7 +48,7 @@ https://a.com/page1   =  https://a.com/page2 (path는 상관없음)
 서버가 `Access-Control-Allow-Origin`에 요청 Origin을 반환하거나 `*`을 반환해야 통과.
 
 ### 2. Preflight Request
-Simple 조건 벗어나면 (PUT·DELETE·커스텀 헤더·JSON Content-Type 등) 브라우저가 **본 요청 전에 OPTIONS 요청** 먼저 전송해 확인.
+Simple 조건 벗어나면 (PUT, DELETE, 커스텀 헤더, JSON Content-Type 등) 브라우저가 **본 요청 전에 OPTIONS 요청** 먼저 전송해 확인.
 
 ```
 Preflight 요청 (OPTIONS):
@@ -67,7 +67,7 @@ Preflight 응답:
 완화: `Access-Control-Max-Age`로 preflight 결과 캐시 (보통 600초~1시간).
 
 ### 3. Credential Request
-쿠키·Authorization 헤더 같은 **인증 정보 포함** 요청.
+쿠키, Authorization 헤더 같은 **인증 정보 포함** 요청.
 
 ```
 요청 (JS):
@@ -88,7 +88,7 @@ Preflight 응답:
 | `Access-Control-Allow-Origin` | 허용할 Origin (`*` 또는 구체 Origin) |
 | `Access-Control-Allow-Methods` | 허용 메서드 (preflight 응답) |
 | `Access-Control-Allow-Headers` | 허용 요청 헤더 (preflight 응답) |
-| `Access-Control-Allow-Credentials` | 쿠키·인증 정보 포함 허용 여부 |
+| `Access-Control-Allow-Credentials` | 쿠키, 인증 정보 포함 허용 여부 |
 | `Access-Control-Max-Age` | Preflight 결과 캐시 시간 |
 | `Access-Control-Expose-Headers` | JS에서 접근 가능한 응답 헤더 (기본은 제한적) |
 
@@ -97,14 +97,14 @@ Preflight 응답:
 ### 서버 쪽 설정
 - `Access-Control-Allow-Origin: *`만 보내고 쿠키를 기대 → 크레덴셜 요청 실패
 - OPTIONS 메서드를 404로 처리 → 모든 preflight 실패 → 본 요청도 실패
-- 특정 Origin 화이트리스트 — 정규표현식·동적 매칭 시 **버그로 `null`·`*` 반환하면 대형 사고**
+- 특정 Origin 화이트리스트 — 정규표현식, 동적 매칭 시 **버그로 `null`, `*` 반환하면 대형 사고**
 
 ### 클라이언트 쪽
 - `credentials: 'omit'`(기본값)으로 쿠키 안 보내고 "로그인 안 됨" 디버깅 시간 낭비
 - 커스텀 헤더 추가했는데 preflight 허용 헤더에 없어서 실패
 
 ### Reverse Proxy 상황
-- Nginx·Spring Filter에서 CORS 헤더 **이중 설정** → 응답 헤더 중복 → 브라우저 거부
+- Nginx, Spring Filter에서 CORS 헤더 **이중 설정** → 응답 헤더 중복 → 브라우저 거부
 - 애플리케이션에서만 처리하거나 프록시에서만 처리하거나 — 한 군데로 통일
 
 ## CORS와 CSRF의 관계

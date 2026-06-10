@@ -7,7 +7,7 @@ aliases: ["Module System", "모듈 시스템"]
 
 # 모듈 시스템 (Module System)
 
-Node.js는 두 가지 모듈 시스템(CommonJS, ES Modules)을 지원하며, 각각 로딩 방식·바인딩 특성·상호운용성 측면에서 뚜렷한 차이를 가진다.
+Node.js는 두 가지 모듈 시스템(CommonJS, ES Modules)을 지원하며, 각각 로딩 방식, 바인딩 특성, 상호운용성 측면에서 뚜렷한 차이를 가진다.
 
 ## 하위 문서
 

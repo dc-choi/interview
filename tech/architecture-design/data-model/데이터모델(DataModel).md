@@ -7,9 +7,9 @@ aliases: ["Data Model"]
 
 # 데이터 모델(Data Model)
 
-VO·DTO·Entity 레이어링 — 계층 간 데이터 전달 규약.
+VO, DTO, Entity 레이어링 — 계층 간 데이터 전달 규약.
 
 ## 목차
-- [x] [[DTO-Layering|DTO 레이어 스코프 · Entity 변환 위치 (Controller/Service/Mapper 3안, Repository는 Entity만)]]
+- [x] [[DTO-Layering|DTO 레이어 스코프, Entity 변환 위치 (Controller/Service/Mapper 3안, Repository는 Entity만)]]
 - [x] [[VO-DTO|VO vs DTO]]
-- [x] [[Ecommerce-Shopping-Mall-ERD|이커머스·쇼핑몰 ERD 패턴 (스냅샷·소프트 삭제·Unit-Option-Stock·M:N 배송)]]
+- [x] [[Ecommerce-Shopping-Mall-ERD|이커머스, 쇼핑몰 ERD 패턴 (스냅샷, 소프트 삭제, Unit-Option-Stock, M:N 배송)]]

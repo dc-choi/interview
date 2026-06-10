@@ -2,12 +2,12 @@
 tags: [cs, javascript, primitives, reference]
 status: done
 category: "CS - JavaScript"
-aliases: ["JS Value vs Reference", "원시·참조 타입", "Call By Value Reference"]
+aliases: ["JS Value vs Reference", "원시, 참조 타입", "Call By Value Reference"]
 ---
 
-# JS 원시 vs 참조 · undefined vs null · Call by Value
+# JS 원시 vs 참조, undefined vs null, Call by Value
 
-JS 면접 기초 트리오. 셋 다 **"값이냐 참조냐·언제 복사되냐"** 라는 한 뿌리에서 나오는 주제.
+JS 면접 기초 트리오. 셋 다 **"값이냐 참조냐, 언제 복사되냐"** 라는 한 뿌리에서 나오는 주제.
 
 ## 원시(Primitive) vs 참조(Reference) 타입
 
@@ -18,8 +18,8 @@ JS 면접 기초 트리오. 셋 다 **"값이냐 참조냐·언제 복사되냐"
 | `symbol`, `bigint` | `function` |
 
 ### 저장 방식
-- **원시**: 값 자체가 변수에 저장 → 대입·전달 시 **값 복사**
-- **참조**: 힙(Heap)에 객체가 있고 변수는 **주소**만 보유 → 대입·전달 시 **주소 복사**
+- **원시**: 값 자체가 변수에 저장 → 대입, 전달 시 **값 복사**
+- **참조**: 힙(Heap)에 객체가 있고 변수는 **주소**만 보유 → 대입, 전달 시 **주소 복사**
 
 ### 비교
 ```
@@ -50,11 +50,11 @@ o1 === o3; // true — 같은 주소
 ### 언제 `null`을 쓰는가
 - **"이 필드가 있지만 값이 없다"** 를 외부에 알릴 때 (API 응답)
 - 메모리 해제 힌트 — 객체 참조를 `null`로 덮어 GC 대상화
-- 함수 반환값을 **"실패·없음"** 으로 명시 (e.g., `find` 결과)
+- 함수 반환값을 **"실패, 없음"** 으로 명시 (e.g., `find` 결과)
 
 ### 언제 `undefined`를 쓰는가 (권장되지 않음)
 - 보통 **자동으로 발생**하는 상태. 개발자가 명시적으로 할당하는 건 비권장
-- 함수 기본값·optional 파라미터에 자연스럽게 나타남
+- 함수 기본값, optional 파라미터에 자연스럽게 나타남
 
 ### JSON 직렬화 주의
 ```
@@ -116,13 +116,13 @@ function addTag(user, tag) {
 }
 ```
 
-React·Redux 등 현대 상태 관리는 **불변성을 전제**로 동작. 원본 수정하면 변경 감지 실패.
+React, Redux 등 현대 상태 관리는 **불변성을 전제**로 동작. 원본 수정하면 변경 감지 실패.
 
 ## 흔한 실수
 
 - 객체 복사로 `=`만 쓰면 주소만 복사 → 한쪽 수정이 양쪽 반영
 - 깊은 복사가 필요한데 `{...obj}` 얕은 복사만 함 → 중첩 객체는 여전히 공유
-- `null`·`undefined` 판별을 `==`로 했다가 둘 다 true되어 의도와 다른 분기
+- `null`, `undefined` 판별을 `==`로 했다가 둘 다 true되어 의도와 다른 분기
 - 함수에서 객체 재할당하고 "외부 변경"을 기대함
 
 ## 깊은 복사
@@ -134,7 +134,7 @@ Object.assign({}, obj)
 structuredClone(obj)   // ← 깊은 복사 (표준, Node 17+)
 
 // 대체
-JSON.parse(JSON.stringify(obj))  // 함수·Date·Symbol 손실
+JSON.parse(JSON.stringify(obj))  // 함수, Date, Symbol 손실
 lodash cloneDeep(obj)            // 가장 완전
 ```
 
@@ -155,4 +155,4 @@ lodash cloneDeep(obj)            // 가장 완전
 ## 관련 문서
 - [[Prototype-OOP|Prototype 기반 OOP]]
 - [[Object-Property-Descriptor|Object 프로퍼티 디스크립터]]
-- [[JS-Function-Forms|JS 함수 형태·일급객체]]
+- [[JS-Function-Forms|JS 함수 형태, 일급객체]]

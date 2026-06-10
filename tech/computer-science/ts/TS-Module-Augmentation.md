@@ -5,9 +5,9 @@ category: "CS - TypeScript"
 aliases: ["TS Module Augmentation", "Declaration Merging", "declare global", "declare module"]
 ---
 
-# TypeScript Declaration Merging · Module Augmentation
+# TypeScript Declaration Merging, Module Augmentation
 
-같은 이름으로 여러 번 선언된 타입을 컴파일러가 **자동 병합**하는 기능과, 외부 모듈·전역 타입에 새 멤버를 끼워 넣는 기법. **소스 코드를 수정하지 않고 타입 시스템을 확장**하는 것이 핵심.
+같은 이름으로 여러 번 선언된 타입을 컴파일러가 **자동 병합**하는 기능과, 외부 모듈, 전역 타입에 새 멤버를 끼워 넣는 기법. **소스 코드를 수정하지 않고 타입 시스템을 확장**하는 것이 핵심.
 
 ## Declaration Merging — 선언 병합
 
@@ -18,7 +18,7 @@ aliases: ["TS Module Augmentation", "Declaration Merging", "declare global", "de
 | `interface` + `interface` | ✅ | 멤버 합집합 |
 | `namespace` + `namespace` | ✅ | exports 합집합 |
 | `interface` + `namespace` | ✅ | static 멤버 추가 |
-| `class` + `namespace` | ✅ | static 멤버·중첩 타입 |
+| `class` + `namespace` | ✅ | static 멤버, 중첩 타입 |
 | `function` + `namespace` | ✅ | 함수에 속성 부착 |
 | `type` + `type` | ✗ | 중복 선언 에러 |
 | `interface` + `type` | ✗ | 에러 |
@@ -56,7 +56,7 @@ declare module 'lodash' {
 
 ## Global Augmentation — 전역 타입 확장
 
-브라우저 `Window`·Node.js `Process`·`globalThis`에 멤버 추가.
+브라우저 `Window`, Node.js `Process`, `globalThis`에 멤버 추가.
 
 ```ts
 declare global {
@@ -108,7 +108,7 @@ export function init(config: Config): void;
 | 프로젝트 글로벌 타입 | `src/types/global.d.ts` |
 | Module Augmentation | `src/types/<lib>.d.ts` |
 
-`tsconfig.json`의 `include`·`typeRoots`·`types`로 인식 범위 조정.
+`tsconfig.json`의 `include`, `typeRoots`, `types`로 인식 범위 조정.
 
 ## 실전 예 — Express Request 확장
 
@@ -145,7 +145,7 @@ declare module 'express' {
 }
 ```
 
-타입 호환되지 않으면 컴파일 에러. **모노레포·플러그인**에서 자주 발생 — augmentation은 한 곳에 모아 관리.
+타입 호환되지 않으면 컴파일 에러. **모노레포, 플러그인**에서 자주 발생 — augmentation은 한 곳에 모아 관리.
 
 ## 흔한 실수
 
@@ -155,24 +155,24 @@ declare module 'express' {
 - **새 export 추가하려고 augmentation 시도** → 멤버 추가만 가능, export는 불가.
 - **여러 곳에서 같은 모듈 augmentation 충돌** → 컴파일 에러. 한 곳에 집중.
 - **`@types/<lib>`와 라이브러리 자체 타입 충돌** → 라이브러리가 자체 `.d.ts` 가졌으면 `@types` 제거.
-- **`tsconfig`의 `types` 옵션이 막아서 augmentation 안 잡힘** → typeRoots·types 설정 점검.
+- **`tsconfig`의 `types` 옵션이 막아서 augmentation 안 잡힘** → typeRoots, types 설정 점검.
 - **VSCode가 augmentation 못 잡음** → TS 서버 재시작 (`Cmd+Shift+P` → Restart TS Server).
 
 ## 면접 체크포인트
 
-- Declaration Merging 가능한 선언 종류 — interface·namespace는 가능, type은 불가
+- Declaration Merging 가능한 선언 종류 — interface, namespace는 가능, type은 불가
 - 라이브러리 확장에 interface를 쓰는 결정적 이유 — 병합 가능성
 - Module Augmentation 적용 조건 — 같은 파일에 import 또는 export 필요
 - `declare global` 안 `export {}`가 필요한 이유 — 모듈 스코프 진입
 - `declare`의 의미 — 런타임 코드 emit 안 함, 타입만
 - `.d.ts` 파일의 역할과 `@types` (DefinitelyTyped)
 - ProcessEnv augmentation으로 환경변수 타입 안전성 확보
-- Express Request 확장 패턴 (NestJS·미들웨어)
+- Express Request 확장 패턴 (NestJS, 미들웨어)
 - 여러 위치 augmentation 충돌 시 동작
 
 ## 관련 문서
 
-- [[TS-Type-vs-Interface|type vs interface (선언 병합·유니온)]]
+- [[TS-Type-vs-Interface|type vs interface (선언 병합, 유니온)]]
 - [[TypeScript-Type-Compatibility|TS 타입 호환성]]
 - [[TypeScript-Type-Level-Programming|타입 레벨 프로그래밍]]
 - [[TypeScript-AST|TypeScript와 AST]]

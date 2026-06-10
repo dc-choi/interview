@@ -21,7 +21,7 @@ ECMAScript는 객체 프로퍼티를 사전(dictionary) 형태로 정의한다. 
 - `[[Value]]`: 연결된 값
 - `[[Writable]]`: 값 변경 가능 여부
 - `[[Enumerable]]`: `for...in` 열거 가능 여부
-- `[[Configurable]]`: 삭제·속성 변경 가능 여부
+- `[[Configurable]]`: 삭제, 속성 변경 가능 여부
 
 객체 속성 접근 시 키로 사전을 뒤져 Property Attribute를 로드한 뒤 `[[Value]]`를 읽어야 한다.
 
@@ -86,7 +86,7 @@ ECMAScript는 객체 프로퍼티를 사전(dictionary) 형태로 정의한다. 
 
 | 사례 | 공유? | 이유 |
 |---|---|---|
-| `class` 생성자로 만든 객체 vs object literal, 프로퍼티 이름·순서 동일 | ❌ | 서로 다른 생성자 — class 전용 생성자 vs 일반 Object 생성자 |
+| `class` 생성자로 만든 객체 vs object literal, 프로퍼티 이름, 순서 동일 | ❌ | 서로 다른 생성자 — class 전용 생성자 vs 일반 Object 생성자 |
 | 같은 생성자, 프로퍼티 이름 같고 **값 타입만 다름** (`null`, `undefined`, `{}`, `[]`, `Symbol` 포함) | ✅ | 9.1 기준. V8 버전 업데이트로 달라질 수 있음 |
 | 같은 생성자, 프로퍼티를 **다른 순서로 추가** | ❌ | Transition Chain 경로가 달라짐 |
 | 객체 생성 후 `delete`로 프로퍼티 제거 | ❌ | 히든 클래스가 변경됨, TurboFan 최적화 무효화 |
@@ -106,7 +106,7 @@ ECMAScript는 객체 프로퍼티를 사전(dictionary) 형태로 정의한다. 
 
 ### 3. 함수 호출 시 같은 객체 유형 사용
 
-- 함수 인자로 다양한 히든 클래스의 객체를 넘기면 [[V8-Inline-Cache|Inline Cache]]가 polymorphic·megamorphic으로 전락
+- 함수 인자로 다양한 히든 클래스의 객체를 넘기면 [[V8-Inline-Cache|Inline Cache]]가 polymorphic, megamorphic으로 전락
 
 ## 관련 문서
 

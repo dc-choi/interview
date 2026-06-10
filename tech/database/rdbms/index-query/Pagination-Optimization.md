@@ -38,11 +38,11 @@ LIMIT 20;
 
 ### 장점
 - **깊은 페이지에서도 빠름**
-- "더 보기"·무한 스크롤 UX와 자연스럽게 맞음
+- "더 보기", 무한 스크롤 UX와 자연스럽게 맞음
 
 ### 한계
 - **임의 페이지 점프 불가** — 7페이지로 바로 갈 수 없음
-- **유니크한 정렬 키 필요** — 중복이 있으면 경계에서 누락·중복 위험 (보통 PK 또는 복합 키로)
+- **유니크한 정렬 키 필요** — 중복이 있으면 경계에서 누락, 중복 위험 (보통 PK 또는 복합 키로)
 - **뒤로 가기**도 별도 구현 필요 (양방향 커서)
 
 ### 복합 조건 정렬
@@ -55,7 +55,7 @@ ORDER BY created_at DESC, id DESC
 LIMIT 20;
 ```
 
-튜플 비교로 정렬 일관성 유지. QueryDSL·jOOQ·네이티브 SQL로 구현.
+튜플 비교로 정렬 일관성 유지. QueryDSL, jOOQ, 네이티브 SQL로 구현.
 
 ## 해법 2 — Covering Index (OFFSET 유지하면서 가속)
 
@@ -89,12 +89,12 @@ JOIN (
 - QueryDSL 커버링: ~0.57초
 - JdbcTemplate 커버링(단일 쿼리): ~0.27초
 
-**JPQL은 FROM 절 서브쿼리 미지원**이라 QueryDSL로는 쿼리를 2번 쏘는 형태. JdbcTemplate·네이티브 SQL이면 1번에 끝남.
+**JPQL은 FROM 절 서브쿼리 미지원**이라 QueryDSL로는 쿼리를 2번 쏘는 형태. JdbcTemplate, 네이티브 SQL이면 1번에 끝남.
 
 ### 한계
-- 인덱스 설계 부담 — WHERE·ORDER BY·LIMIT/OFFSET에 쓰이는 모든 컬럼이 포함돼야
-- 인덱스가 많아지면 **쓰기 성능·저장 공간 비용** 증가
-- 커버링 조건이 안 맞으면 효과 소멸 → [[Index]]·[[Covering-Index]] 참고
+- 인덱스 설계 부담 — WHERE, ORDER BY, LIMIT/OFFSET에 쓰이는 모든 컬럼이 포함돼야
+- 인덱스가 많아지면 **쓰기 성능, 저장 공간 비용** 증가
+- 커버링 조건이 안 맞으면 효과 소멸 → [[Index]], [[Covering-Index]] 참고
 
 ## 해법 3 — COUNT 쿼리 최적화
 
@@ -142,8 +142,8 @@ PostgreSQL은 `pg_class.reltuples`, MySQL은 `SHOW TABLE STATUS` 같은 **옵티
 
 | 요구사항 | 권장 조합 |
 |---|---|
-| 무한 스크롤·더 보기 | No Offset + LIMIT+1 |
-| 관리자 페이지·번호 UI 필수, 데이터 큼 | Covering Index + Count 캐싱 |
+| 무한 스크롤, 더 보기 | No Offset + LIMIT+1 |
+| 관리자 페이지, 번호 UI 필수, 데이터 큼 | Covering Index + Count 캐싱 |
 | 검색 결과 화면, 대부분 1페이지만 봄 | OFFSET + **고정 페이지 수** |
 | 실시간 카운트 필수 | 인덱스 튜닝 + Redis 실시간 집계 |
 
@@ -153,15 +153,15 @@ PostgreSQL은 `pg_class.reltuples`, MySQL은 `SHOW TABLE STATUS` 같은 **옵티
 - **COUNT 쿼리를 매 요청 실행** → 데이터 조회 쿼리보다 느릴 수도
 - **No Offset에 유니크 정렬 키 누락** → 중복 레코드에서 경계 오류
 - **Covering Index를 위해 컬럼 10개 포함** → 인덱스 비대화, 쓰기 성능 붕괴
-- **JPQL의 FROM 서브쿼리 제한 무시** → QueryDSL 2번 쿼리·JdbcTemplate 전환 필요한 상황 못 알아봄
+- **JPQL의 FROM 서브쿼리 제한 무시** → QueryDSL 2번 쿼리, JdbcTemplate 전환 필요한 상황 못 알아봄
 - **페이지 번호를 유저가 직접 입력하는 API** 에 커서 페이징 적용 → UX 충돌
 
 ## 면접 체크포인트
 
 - `OFFSET/LIMIT`이 깊은 페이지에서 **느려지는 근본 원인**
-- **No Offset(Cursor)** 패턴의 구조와 한계 (임의 점프 불가·유니크 키 필요)
+- **No Offset(Cursor)** 패턴의 구조와 한계 (임의 점프 불가, 유니크 키 필요)
 - **Covering Index** 2단계 쿼리 구조 (인덱스 스캔 → PK로 본 테이블 접근)
-- **COUNT 쿼리 비용**을 줄이는 3~4가지 전략 (고정·캐싱·LIMIT+1·추정치)
+- **COUNT 쿼리 비용**을 줄이는 3~4가지 전략 (고정, 캐싱, LIMIT+1, 추정치)
 - 관리자 페이지처럼 **번호 UI가 필수**인 경우의 Covering Index 필요성
 - JPQL이 FROM 서브쿼리를 지원하지 않아 생기는 제약
 

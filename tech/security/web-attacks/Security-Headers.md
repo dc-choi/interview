@@ -16,16 +16,16 @@ aliases: ["Security Headers", "CSP", "HTTP Security Headers"]
 | `Content-Security-Policy` | XSS, 데이터 인젝션, clickjacking | 로드 가능한 리소스 출처 화이트리스트 |
 | `Strict-Transport-Security` (HSTS) | 다운그레이드 공격 | HTTPS 강제, HTTP 자동 차단 |
 | `X-Frame-Options` | Clickjacking | iframe 임베드 차단 (`DENY`/`SAMEORIGIN`) |
-| `X-Content-Type-Options: nosniff` | MIME 스니핑 | 브라우저가 Content-Type 무시·재해석 차단 |
+| `X-Content-Type-Options: nosniff` | MIME 스니핑 | 브라우저가 Content-Type 무시, 재해석 차단 |
 | `Referrer-Policy` | 정보 누출 | Referer 헤더 송신 정책 |
-| `Permissions-Policy` | 브라우저 API 남용 | 카메라·마이크·지오로케이션 등 사용 제한 |
+| `Permissions-Policy` | 브라우저 API 남용 | 카메라, 마이크, 지오로케이션 등 사용 제한 |
 | `X-XSS-Protection` (레거시) | 반사형 XSS | 대부분 브라우저에서 deprecated — CSP로 대체 |
 
 `X-XSS-Protection: 1; mode=block`은 **모던 브라우저에서 더 이상 효과 없음**. CSP로 가는 것이 표준이지만, 레거시 브라우저 대응 차원에서 같이 둘 수는 있음.
 
 ## CSP — 가장 큰 한 방
 
-XSS의 1차 방어선. 인라인 스크립트·외부 출처 스크립트를 통제.
+XSS의 1차 방어선. 인라인 스크립트, 외부 출처 스크립트를 통제.
 
 ```
 Content-Security-Policy:
@@ -44,7 +44,7 @@ Content-Security-Policy:
 | `script-src` | JS 출처 |
 | `style-src` | CSS 출처 |
 | `img-src` | 이미지 출처 |
-| `connect-src` | XHR·fetch·WebSocket·EventSource 송신 대상 |
+| `connect-src` | XHR, fetch, WebSocket, EventSource 송신 대상 |
 | `frame-ancestors` | 이 페이지를 누가 iframe으로 임베드 가능 (X-Frame-Options 후속) |
 | `report-uri` / `report-to` | 위반 발생 시 알림 받을 엔드포인트 |
 
@@ -74,7 +74,7 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 
 `frame-ancestors`(CSP)가 X-Frame-Options 상위 호환. 모던 브라우저는 `frame-ancestors` 우선. 둘 다 두는 것이 가장 호환.
 
-## NestJS·Express 적용
+## NestJS, Express 적용
 
 ### Helmet (권장)
 ```ts
@@ -100,7 +100,7 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
 
 ## 정적 검사 + SQL Injection은 별개
 
-보안 헤더는 **클라이언트 보호**. 서버 측 입력 검증·파라미터 바인딩은 별도. 정규식으로 SQL 키워드를 차단하는 패턴은 **거짓 양성·우회 둘 다 잘 일어나** 보조 수단으로만 — 본 방어는 ORM/Prepared Statement.
+보안 헤더는 **클라이언트 보호**. 서버 측 입력 검증, 파라미터 바인딩은 별도. 정규식으로 SQL 키워드를 차단하는 패턴은 **거짓 양성, 우회 둘 다 잘 일어나** 보조 수단으로만 — 본 방어는 ORM/Prepared Statement.
 
 ## 흔한 실수
 
@@ -115,7 +115,7 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
 
 - 보안 헤더가 **방어 계층**에서 차지하는 위치 — 서버 검증 + 클라이언트 정책의 조합
 - CSP 디렉티브 종류와 의미 — 특히 `script-src`/`frame-ancestors`
-- `'unsafe-inline'`·`'unsafe-eval'`이 위험한 이유, nonce/hash 대안
+- `'unsafe-inline'`, `'unsafe-eval'`이 위험한 이유, nonce/hash 대안
 - HSTS preload — 한번 등록되면 되돌리기 어려움
 - `X-Frame-Options` vs CSP `frame-ancestors`
 - `X-XSS-Protection`이 deprecated인 이유

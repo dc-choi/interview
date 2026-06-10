@@ -5,9 +5,9 @@ category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Order Monoid Categories", "Order 카테고리", "Monoid as Category", "Preorder", "Poset"]
 ---
 
-# Order·Monoid 카테고리
+# Order, Monoid 카테고리
 
-카테고리는 Set·Hask 같은 거대한 것만 있는 게 아니다. **순서 관계**(Preorder/Poset/Total Order)나 **모노이드** 같은 익숙한 수학 구조도 사실은 작은 카테고리다. 일반 개념은 [[Category-Theory-For-Programmers]]·[[Types-And-Functions-As-Category]] 참조.
+카테고리는 Set, Hask 같은 거대한 것만 있는 게 아니다. **순서 관계**(Preorder/Poset/Total Order)나 **모노이드** 같은 익숙한 수학 구조도 사실은 작은 카테고리다. 일반 개념은 [[Category-Theory-For-Programmers]], [[Types-And-Functions-As-Category]] 참조.
 
 ## 카테고리 종류 개관
 
@@ -43,7 +43,7 @@ aliases: ["Order Monoid Categories", "Order 카테고리", "Monoid as Category",
 
 Order 카테고리에서는 **두 객체 사이 morphism이 0개 또는 1개**(Hom(a,b) ≤ 1). "a ≤ b가 성립한다/안 한다"의 boolean 정보만 필요하기 때문. 이런 카테고리를 **Thin Category**라 부른다.
 
-Thin 카테고리는 단순하지만 정렬·검색·DAG 분석 같은 실무 알고리즘의 토대가 된다.
+Thin 카테고리는 단순하지만 정렬, 검색, DAG 분석 같은 실무 알고리즘의 토대가 된다.
 
 ## Monoid as Category — 단일 객체 카테고리
 
@@ -81,7 +81,7 @@ const StringMonoid: Monoid<string> = {
 - 합성 `g ∘ f` = 모노이드 연산 `g ⊕ f`
 - 항등 사상 `id: • → •` = 항등원 `e`
 
-이 관점에서 **카테고리의 합성·항등 법칙이 곧 모노이드의 결합·항등 법칙**이 된다. 두 정의가 정확히 같은 구조를 다른 언어로 표현한 것.
+이 관점에서 **카테고리의 합성, 항등 법칙이 곧 모노이드의 결합, 항등 법칙**이 된다. 두 정의가 정확히 같은 구조를 다른 언어로 표현한 것.
 
 ### 흔한 모노이드 예시
 
@@ -96,23 +96,23 @@ const StringMonoid: Monoid<string> = {
 | **Function (composition)** | `g ∘ f` | `id` |
 | **Max / Min** | `max` / `min` | `-∞` / `+∞` |
 
-**교환법칙은 필수가 아님** — 문자열 concat은 `"a" + "b" ≠ "b" + "a"`이지만 결합·항등은 만족하므로 모노이드.
+**교환법칙은 필수가 아님** — 문자열 concat은 `"a" + "b" ≠ "b" + "a"`이지만 결합, 항등은 만족하므로 모노이드.
 
 ## 프로그래밍 응용
 
 | 카테고리 구조 | 응용 |
 |---|---|
-| **Preorder/DAG** | 빌드 시스템 의존 그래프 (Make·Bazel·Gradle), 패키지 의존성, 테스트 위상 정렬 |
+| **Preorder/DAG** | 빌드 시스템 의존 그래프 (Make, Bazel, Gradle), 패키지 의존성, 테스트 위상 정렬 |
 | **Poset** | 타입 상속 계층, 권한 계층(Owner > Admin > User), 부분집합 포함 |
-| **Total Order** | 정렬 알고리즘 (퀵소트·머지소트), B-Tree·인덱스 |
-| **Monoid** | `reduce`/`fold` 누적, 분산 집계(MapReduce), CRDT의 LWW·Counter, 함수 합성 |
+| **Total Order** | 정렬 알고리즘 (퀵소트, 머지소트), B-Tree, 인덱스 |
+| **Monoid** | `reduce`/`fold` 누적, 분산 집계(MapReduce), CRDT의 LWW, Counter, 함수 합성 |
 | **Hom Set** | 인터페이스 = "이 객체에서 다른 객체로의 사상 집합" |
 
-특히 **모노이드는 분산 시스템의 친구** — 결합법칙 덕분에 어떤 순서로 합쳐도 같은 결과가 나오므로, 병렬 reduce·MapReduce가 안전하다.
+특히 **모노이드는 분산 시스템의 친구** — 결합법칙 덕분에 어떤 순서로 합쳐도 같은 결과가 나오므로, 병렬 reduce, MapReduce가 안전하다.
 
 ## Locally Small Category
 
-엄밀하게는 **두 객체 사이 morphism이 집합을 이루는** 카테고리만 "Locally Small Category"라 부른다. Set·Hask는 모두 이에 해당. 매우 큰 카테고리(예: 모든 카테고리의 카테고리)는 morphism이 진짜 집합이 아닌 더 큰 구조라 별도 다룬다.
+엄밀하게는 **두 객체 사이 morphism이 집합을 이루는** 카테고리만 "Locally Small Category"라 부른다. Set, Hask는 모두 이에 해당. 매우 큰 카테고리(예: 모든 카테고리의 카테고리)는 morphism이 진짜 집합이 아닌 더 큰 구조라 별도 다룬다.
 
 실무 학습에서는 무시해도 무방. 다만 "왜 굳이 'Locally Small'을 따지나"라는 의문이 들면 답은 **러셀 패러독스 회피** — 집합론의 기초 안전성 문제.
 

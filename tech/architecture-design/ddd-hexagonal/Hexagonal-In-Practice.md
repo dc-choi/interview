@@ -11,14 +11,14 @@ Alistair Cockburn의 **Ports & Adapters 패턴**을 Node.js/TypeScript 환경에
 
 ## 핵심 명제
 
-GUI·HTTP·데이터베이스 같은 외부 의존성을 비즈니스 로직과 철저히 분리한다. **비즈니스 로직 = Application + Domain**, 그 외(HTTP, DB, 큐, 메일, CLI…)는 모두 **교체 가능한 어댑터**로 본다. 의존성 방향: **모든 것이 application을 향하고, application은 아무것도 모른다.**
+GUI, HTTP, 데이터베이스 같은 외부 의존성을 비즈니스 로직과 철저히 분리한다. **비즈니스 로직 = Application + Domain**, 그 외(HTTP, DB, 큐, 메일, CLI…)는 모두 **교체 가능한 어댑터**로 본다. 의존성 방향: **모든 것이 application을 향하고, application은 아무것도 모른다.**
 
 ## Port와 Adapter
 
 | 용어 | 정의 | 위치 |
 |---|---|---|
 | **Port** | 비즈니스 로직과 외부의 경계에 놓인 **인터페이스** | application 계층 내부 |
-| **Adapter** | 포트를 구현하는 구체 클래스 (HTTP·DB·파일 등 실제 기술) | application 계층 바깥 |
+| **Adapter** | 포트를 구현하는 구체 클래스 (HTTP, DB, 파일 등 실제 기술) | application 계층 바깥 |
 
 핵심 원칙: **port는 application이 정의하고, adapter가 구현한다.** application이 외부 라이브러리를 import 하지 않는 것이 합격선.
 
@@ -67,7 +67,7 @@ import 방향: `adapter/* → application/* → domain/*`. 절대 역방향 impo
 
 ### 1. CQS (Command Query Separation)
 
-**상태를 바꾸는 메서드(Command)와 값을 반환하는 메서드(Query)를 분리.** 같은 클래스에 두면 사이드 이펙트 추적이 어려워지고, 캐시·읽기 복제본·이벤트 소싱 적용 시 분리 비용이 커진다.
+**상태를 바꾸는 메서드(Command)와 값을 반환하는 메서드(Query)를 분리.** 같은 클래스에 두면 사이드 이펙트 추적이 어려워지고, 캐시, 읽기 복제본, 이벤트 소싱 적용 시 분리 비용이 커진다.
 
 서비스 단위로 `ArticleCommandService` / `ArticleQueryService`를 나누면 자연스럽게 CQRS로 발전 가능.
 
@@ -106,7 +106,7 @@ NestJS는 헥사고날과 매우 잘 맞는다.
 - **도메인 엔티티를 컨트롤러 응답으로 그대로 반환** → 외부 변경이 도메인을 흔들고, 보안 필드가 새 나감
 - **application이 ORM 어노테이션을 직접 사용** → 인프라가 도메인에 침투. ORM은 adapter 안에서만
 - **port가 너무 굵다** → ISP 위반. 1 유스케이스 1 인터페이스 원칙
-- **모든 외부 호출에 port를 만든다** → 단순한 cross-cutting(로깅, 메트릭)까지 인터페이스화하면 보일러플레이트 폭발. **교체 가능성·테스트 필요성**이 분명한 곳에만
+- **모든 외부 호출에 port를 만든다** → 단순한 cross-cutting(로깅, 메트릭)까지 인터페이스화하면 보일러플레이트 폭발. **교체 가능성, 테스트 필요성**이 분명한 곳에만
 
 ## 트레이드오프
 
@@ -124,9 +124,9 @@ NestJS는 헥사고날과 매우 잘 맞는다.
 - **Driving / Driven**의 의미와 예시
 - **의존성 역전**이 헥사고날에서 어떻게 실현되는가 (port는 인터페이스, adapter가 구현)
 - **CQS / ISP / SRP**가 헥사고날 구조에서 자연스럽게 따라오는 이유
-- 헥사고날과 **클린 아키텍처·DDD**의 관계
+- 헥사고날과 **클린 아키텍처, DDD**의 관계
 - **데이터 캐리어(DTO)** 가 왜 필요한가
-- 이 패턴의 **단점·과잉 설계** 위험을 말할 수 있는가
+- 이 패턴의 **단점, 과잉 설계** 위험을 말할 수 있는가
 
 ## 출처
 - [Node.js 모노레포 튜토리얼 — 2. 육각형 아키텍처](https://nodejs.myeongjae.kim/pages/002-hexagonal-architecture/)

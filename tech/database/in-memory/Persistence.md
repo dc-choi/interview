@@ -56,7 +56,7 @@ redis-check-rdb dump.rdb     # 파일 무결성 검증
 |------|------|----------|
 | `always` | 매 명령마다 fsync | ~0 (가장 안전, 가장 느림) |
 | `everysec` (기본) | 1초마다 fsync | 최대 1초 |
-| `no` | OS에 맡김 | OS·디스크 정책에 따름 |
+| `no` | OS에 맡김 | OS, 디스크 정책에 따름 |
 
 `everysec`이 운영 표준. 결제 등 손실 절대 금지면 `always`지만 처리량 크게 떨어짐.
 
@@ -80,14 +80,14 @@ appendonlydir/
 └── appendonly.aof.manifest       # 매니페스트
 ```
 
-7.0 이전엔 단일 AOF 파일 — rewrite 중 디스크 2배 필요. Multi-Part는 base + incr 분리로 **rewrite 비용·디스크 사용량 ↓**.
+7.0 이전엔 단일 AOF 파일 — rewrite 중 디스크 2배 필요. Multi-Part는 base + incr 분리로 **rewrite 비용, 디스크 사용량 ↓**.
 
 ## 복제와 Persistence
 
 레플리카는 **자체 Persistence와 무관하게 마스터에서 데이터 받음**:
 - Full sync: 마스터가 RDB 만들어 전송
 - Partial sync: PSYNC + replication offset
-- 마스터·레플리카 둘 다 Persistence 끄면 재시작 시 빈 DB로 시작 — **데이터 영구 유실**
+- 마스터, 레플리카 둘 다 Persistence 끄면 재시작 시 빈 DB로 시작 — **데이터 영구 유실**
 
 레플리카만 Persistence 켜는 것도 옵션 (마스터 부하 절감).
 

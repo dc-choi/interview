@@ -14,11 +14,11 @@ aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
 개선의 첫 단계는 **어디가 막히는지 보는 것**. 대시보드 없이 튜닝하면 맞지도 않는 곳을 고치게 됨.
 
 관찰해야 할 4축:
-- **애플리케이션 서버**: CPU·메모리·스레드·GC·Event Loop 지연
-- **Redis / 캐시**: QPS·hit rate·메모리·evicted keys
-- **DB**: 쿼리 시간·Lock 대기·커넥션 풀 사용률·slow query
-- **메시지 큐·Kafka**: 컨슈머 lag·처리량·실패 건수
-- **비즈니스 지표**: 응답 성공률·주문·가입·결제 전환
+- **애플리케이션 서버**: CPU, 메모리, 스레드, GC, Event Loop 지연
+- **Redis / 캐시**: QPS, hit rate, 메모리, evicted keys
+- **DB**: 쿼리 시간, Lock 대기, 커넥션 풀 사용률, slow query
+- **메시지 큐, Kafka**: 컨슈머 lag, 처리량, 실패 건수
+- **비즈니스 지표**: 응답 성공률, 주문, 가입, 결제 전환
 
 **SLO 알림**이 울리면 어떤 축이 먼저 튀는지로 병목 식별.
 
@@ -35,7 +35,7 @@ aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
   ↓
 카나리 배포 (소수 트래픽에 먼저)
   ↓
-지표 확인 (개선됐나·부작용 없나)
+지표 확인 (개선됐나, 부작용 없나)
   ↓ (OK면 전체 배포)
 모니터링
 ```
@@ -44,7 +44,7 @@ aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
 
 ## 3대 공통 병목과 처방
 
-### 1. Redis·캐시 과부하
+### 1. Redis, 캐시 과부하
 
 **증상**: Redis CPU 100% 근접, latency 상승, QPS 임계 도달.
 
@@ -56,16 +56,16 @@ aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
 **처방**:
 - **로컬 캐시 + Redis Pub/Sub 동기화**: 공용(universal) 데이터는 **앱 메모리에 복제**, Redis는 갱신 이벤트만 발행
 - **데이터 구분**: Universal(모든 사용자 공통) vs User-Specific(사용자별) — 전자는 로컬 캐시가 강함
-- **DTO 압축**: 자주 읽는 user-specific 데이터는 gzip·protobuf로 용량 축소
-- **Pipeline·MGET**: 다중 key 조회 시 round-trip 감소
+- **DTO 압축**: 자주 읽는 user-specific 데이터는 gzip, protobuf로 용량 축소
+- **Pipeline, MGET**: 다중 key 조회 시 round-trip 감소
 - **Read Replica**: Redis 6+에서 read 분산
 
 ### 2. DB 병목 (쓰기 경합)
 
-**증상**: DB CPU·디스크 I/O 포화, Lock wait 증가, 커넥션 풀 대기.
+**증상**: DB CPU, 디스크 I/O 포화, Lock wait 증가, 커넥션 풀 대기.
 
 **원인**:
-- 포인트·잔액·재고 같은 **hot row** 동시 UPDATE
+- 포인트, 잔액, 재고 같은 **hot row** 동시 UPDATE
 - 중복 요청 (같은 유저가 여러 번 누름)
 - N+1 쿼리 폭증
 - 커넥션 풀 사이즈 ≠ DB 처리 용량
@@ -74,37 +74,37 @@ aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
 - **분산 락 + Redis 1차 처리**: RedLock으로 중복 방지, 결과는 Redis에 즉시 반환(사용자 빠른 피드백), DB 영속은 Kafka 비동기로
 - **Consumer Throttling**: Kafka 컨슈머가 DB 쓰기 속도 조절 → QPS 스파이크 평탄화
 - **Batch INSERT**: 초당 1만 건을 1초에 한 번 10000건 묶어서 쓰기
-- **N+1 제거**: Fetch Join·DataLoader
+- **N+1 제거**: Fetch Join, DataLoader
 - **Connection Pool 재조정**: Little's Law 기반 ([[Connection-Pool]])
 
-### 3. API 게이트웨이·네트워크 혼잡
+### 3. API 게이트웨이, 네트워크 혼잡
 
 **증상**: 게이트웨이 QPS 한계, bandwidth 포화, 불필요 요청 누적.
 
 **원인**:
-- 클라이언트가 중복 요청·polling 과다
+- 클라이언트가 중복 요청, polling 과다
 - 한 화면을 그리는 데 여러 API 개별 호출
 - 헤더 크기 과대
 - HTTPS handshake 반복
 
 **처방**:
 - **API 통합 (`/view` 엔드포인트)**: 한 화면의 3~4개 API 호출을 서버에서 조합해 1번에 응답 → 피크 시 50% 감소 흔함
-- **중복 요청 분석·제거**: 클라이언트 코드 점검, 같은 화면 진입 시 중복 트리거 제거
-- **HTTP/2·HTTP/3**: multiplexing으로 connection 수 절감
+- **중복 요청 분석, 제거**: 클라이언트 코드 점검, 같은 화면 진입 시 중복 트리거 제거
+- **HTTP/2, HTTP/3**: multiplexing으로 connection 수 절감
 - **Connection Keep-Alive**: handshake 재활용
-- **CDN 앞단**: 정적 자원·캐시 가능 API 응답
+- **CDN 앞단**: 정적 자원, 캐시 가능 API 응답
 
 ## 실전 루프 (라이브 커머스 사례)
 
 분당 수십만 명, 초당 수십만 건 트래픽을 서버 증설 없이 처리한 사례:
 
-1. **모니터링 셋업 먼저** — 앱·Redis·DB·Kafka 전부 대시보드화
+1. **모니터링 셋업 먼저** — 앱, Redis, DB, Kafka 전부 대시보드화
 2. **Redis 병목**: 로컬 캐시 + Pub/Sub 동기화로 해결
 3. **DB 병목**: Redis 선처리 + Kafka 비동기 영속으로 해결
 4. **게이트웨이 혼잡**: 3개 API를 `/view` 하나로 통합, 50% 트래픽 감소
 5. **각 개선 후 카나리 배포**로 검증
 
-핵심: **"서버 더 달자"는 유혹을 참고 병목을 하나씩 제거**. 비용·복잡도 증가 없이 처리량이 배가.
+핵심: **"서버 더 달자"는 유혹을 참고 병목을 하나씩 제거**. 비용, 복잡도 증가 없이 처리량이 배가.
 
 ## 스케일 업 vs 최적화 판단
 
@@ -166,4 +166,4 @@ aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
 - [[Cache-Stampede|Cache Stampede]]
 - [[Distributed-Lock|분산 락]]
 - [[Connection-Pool|Connection Pool 사이징]]
-- [[Logs-vs-Metrics|로그·메트릭·트레이스]]
+- [[Logs-vs-Metrics|로그, 메트릭, 트레이스]]

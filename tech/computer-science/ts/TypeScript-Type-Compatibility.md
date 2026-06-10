@@ -7,14 +7,14 @@ aliases: ["TypeScript Type Compatibility", "타입 호환성"]
 
 # TypeScript 타입 호환성
 
-TS는 **구조적 타이핑**(Structural Typing) 언어. "이름이 같냐"가 아니라 "구조가 맞냐"로 타입 호환성을 판정한다. Java·C#의 명목 타이핑(Nominal Typing)과 반대. 이 차이가 **Freshness·공변/반공변·덕 타이핑** 같은 TS 특유 동작의 뿌리.
+TS는 **구조적 타이핑**(Structural Typing) 언어. "이름이 같냐"가 아니라 "구조가 맞냐"로 타입 호환성을 판정한다. Java, C#의 명목 타이핑(Nominal Typing)과 반대. 이 차이가 **Freshness, 공변/반공변, 덕 타이핑** 같은 TS 특유 동작의 뿌리.
 
 ## 구조적 vs 명목 타이핑
 
 | 축 | Java/C# (Nominal) | TypeScript (Structural) |
 |---|---|---|
-| 호환 판정 | **선언된 이름** 일치 | **구조(필드·시그니처)** 일치 |
-| 명시적 상속 | `implements`·`extends` 필수 | 필요 없음 |
+| 호환 판정 | **선언된 이름** 일치 | **구조(필드, 시그니처)** 일치 |
+| 명시적 상속 | `implements`, `extends` 필수 | 필요 없음 |
 | Duck typing | ✗ | ✅ "walks like a duck" |
 
 예시:
@@ -61,7 +61,7 @@ feed(meal);
 - `// @ts-expect-error` 같은 주석 (비권장)
 - `satisfies` 연산자 (타입 좁히기 + 초과 속성 허용)
 
-## 함수 타입 호환성 (공변·반공변)
+## 함수 타입 호환성 (공변, 반공변)
 
 ### 반환 타입은 공변 (Covariant)
 하위 타입을 반환하는 함수는 상위 타입 반환 함수에 **할당 가능**.
@@ -89,7 +89,7 @@ type FeedDog = (d: Dog) => void;
 **메서드 문법**(`method():`)은 양공변(파라미터도 공변처럼)으로 허술한 편.
 **함수 타입 문법**(`() => void`)에서 `strictFunctionTypes: true`일 때만 진짜 반공변.
 
-실무 함의: **콜백·이벤트 핸들러**에서 타입 안전성 구멍이 있을 수 있음. `strict` 옵션 켜야 타입 체커가 제대로 잡음.
+실무 함의: **콜백, 이벤트 핸들러**에서 타입 안전성 구멍이 있을 수 있음. `strict` 옵션 켜야 타입 체커가 제대로 잡음.
 
 ## 타입 호환 규칙 체크리스트
 
@@ -143,22 +143,22 @@ const n: Empty = 42;   // ✅ — 아무 속성도 요구 안 하니까 뭐든 O
 |---|---|---|
 | **`any`** | 타입 체크 **회피** | 모든 타입과 호환. 전염성 있음. 사용 지양 |
 | **`unknown`** | 타입 안전한 top type | 모든 값 받음. 사용 전 **타입 좁히기** 필수 |
-| **`never`** | bottom type (공집합) | 어떤 값도 될 수 없음. 예외·무한 루프·exhaustive check |
+| **`never`** | bottom type (공집합) | 어떤 값도 될 수 없음. 예외, 무한 루프, exhaustive check |
 
-외부 입력·JSON은 `unknown`으로 받고 런타임 검증 후 좁히는 게 안전 패턴.
+외부 입력, JSON은 `unknown`으로 받고 런타임 검증 후 좁히는 게 안전 패턴.
 
 ## 실무 권장
 
-- **`strict` 옵션 ON** — 반공변·null 체크 모두 켜기
+- **`strict` 옵션 ON** — 반공변, null 체크 모두 켜기
 - **외부 데이터는 `unknown`** — `any` 금지
-- **Brand 타입** — ID·Token 같은 의미 구분 필요할 때
+- **Brand 타입** — ID, Token 같은 의미 구분 필요할 때
 - **빈 인터페이스 주의** — 의도 없으면 쓰지 말기
 
 ## 면접 체크포인트
 
 - 구조적 타이핑과 명목 타이핑의 차이
-- Freshness가 필요한 이유 (오타·의미 혼동 방지)
-- 함수 반환 공변·파라미터 반공변의 의미
+- Freshness가 필요한 이유 (오타, 의미 혼동 방지)
+- 함수 반환 공변, 파라미터 반공변의 의미
 - TS의 양공변(bivariance) 기본 동작과 `strictFunctionTypes`
 - Brand 타입 패턴이 해결하는 문제
 - `any`와 `unknown`의 차이

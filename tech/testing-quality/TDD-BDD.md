@@ -5,7 +5,7 @@ category: "테스트&품질(Testing&Quality)"
 aliases: ["TDD", "BDD", "TDD vs BDD", "Given When Then"]
 ---
 
-# TDD · BDD
+# TDD, BDD
 
 **TDD(Test-Driven Development)** 는 테스트를 먼저 작성하고 그에 맞춰 구현을 채워 나가는 개발 방식. **BDD(Behaviour-Driven Development)** 는 TDD의 파생으로, **"사용자가 관찰 가능한 행위"** 를 기준으로 시나리오를 기술하여 비개발자와도 공유 가능한 명세를 테스트로 쓴다. 배타적이지 않고 보완 관계다.
 
@@ -14,13 +14,13 @@ aliases: ["TDD", "BDD", "TDD vs BDD", "Given When Then"]
 - **TDD = 구현 품질 중심** — "이 함수가 기대대로 동작하는가"
 - **BDD = 요구사항 중심** — "이 기능이 사용자 시나리오를 만족하는가"
 - TDD는 **단위**, BDD는 **기능/스토리** 수준을 주로 다룸
-- 둘 다 **테스트가 먼저**라는 점은 같지만, 테스트의 **시점·주체·서술 방식**이 다르다
+- 둘 다 **테스트가 먼저**라는 점은 같지만, 테스트의 **시점, 주체, 서술 방식**이 다르다
 
 ## TDD: Red-Green-Refactor
 
 1. **Red** — 실패하는 테스트를 먼저 작성. 아직 구현이 없으므로 당연히 실패
 2. **Green** — 테스트를 통과시키는 가장 단순한 구현
-3. **Refactor** — 중복 제거·가독성 개선. 테스트가 안전망 역할
+3. **Refactor** — 중복 제거, 가독성 개선. 테스트가 안전망 역할
 
 ### 얻는 것
 
@@ -49,12 +49,12 @@ Feature: 쿠폰 발급
 ```
 
 - **Given** — 초기 상태(전제)
-- **When** — 일어나는 사건·행동
+- **When** — 일어나는 사건, 행동
 - **Then** — 관찰 가능한 결과
 
 ### 얻는 것
 
-- 비개발자(기획·QA·도메인 전문가)도 **읽고 검증** 가능 → 요구사항 공유 도구
+- 비개발자(기획, QA, 도메인 전문가)도 **읽고 검증** 가능 → 요구사항 공유 도구
 - **외부 행위**에 묶인 테스트이므로 내부 구현 변경에 강함 → TDD의 "깨지는 테스트" 문제 완화
 - 시나리오 자체가 **살아있는 문서(living documentation)** — 문서와 실제 동작이 동기화
 
@@ -62,16 +62,16 @@ Feature: 쿠폰 발급
 
 - 지나친 추상화 — Step 정의가 너무 일반화되면 재사용성은 높아지지만 의미 추적 어려움
 - 시나리오 폭증 — 에지 케이스를 전부 시나리오로 만들면 유지 비용 급증. 단위 테스트와 역할 분담
-- 도구 오버헤드 — Cucumber·Behave 같은 도구의 학습 곡선
+- 도구 오버헤드 — Cucumber, Behave 같은 도구의 학습 곡선
 
 ## 핵심 차이 표
 
 | 축 | TDD | BDD |
 |---|---|---|
 | 관점 | 개발자(내부 구조) | 사용자/이해관계자(외부 행위) |
-| 단위 | 함수·클래스 | 시나리오·스토리 |
+| 단위 | 함수, 클래스 | 시나리오, 스토리 |
 | 서술 | 테스트 코드(assert) | Given-When-Then 자연어 |
-| 도구 | JUnit·Jest·Vitest·pytest | Cucumber·SpecFlow·Behave·Jest describe/it |
+| 도구 | JUnit, Jest, Vitest, pytest | Cucumber, SpecFlow, Behave, Jest describe/it |
 | 리팩터링 내성 | 약함(구현 결합 쉬움) | 강함(행위 결합) |
 | 비개발자 협업 | 어려움 | 용이 |
 
@@ -110,7 +110,7 @@ describe("주문 할인 정책", () => {
 - "BDD = Cucumber" — 도구와 개념을 혼동. Gherkin 없이도 BDD 정신은 살릴 수 있다
 - "BDD는 느리고 번거롭다" — 단위 테스트 대체가 아니라 **상위 레이어 추가**. 역할 분담이 핵심
 - "TDD 하면 디자인이 좋아진다" — 자동은 아님. 리팩터 스텝을 건너뛰면 오히려 오염된다
-- "커버리지 100%면 안전하다" — 커버리지는 충분 조건이 아니라 필요 조건. 분기·경로·상호작용 검증 필요
+- "커버리지 100%면 안전하다" — 커버리지는 충분 조건이 아니라 필요 조건. 분기, 경로, 상호작용 검증 필요
 
 ## 면접 체크포인트
 
@@ -118,7 +118,7 @@ describe("주문 할인 정책", () => {
 - BDD의 Given-When-Then 형식과 얻는 이점
 - TDD와 BDD가 **배타적이지 않은** 이유(피라미드 층위 다름)
 - 구현 디테일에 밀착한 테스트가 왜 해로운가
-- Cucumber 없이 Jest·Vitest만으로 BDD 정신을 살리는 방법
+- Cucumber 없이 Jest, Vitest만으로 BDD 정신을 살리는 방법
 
 ## 출처
 - [Popit — BDD(Behaviour-Driven Development)에 대한 간략한 정리](https://www.popit.kr/bdd-behaviour-driven-development%EC%97%90-%EB%8C%80%ED%95%9C-%EA%B0%84%EB%9E%B5%ED%95%9C-%EC%A0%95%EB%A6%AC/)

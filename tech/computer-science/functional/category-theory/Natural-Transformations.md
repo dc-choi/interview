@@ -70,7 +70,7 @@ const safeHead = <A>(xs: A[]): Maybe<A> =>
 
 ## Parametricity와 Free Theorem
 
-Haskell·Rust 같은 언어의 **매개변수 다형성(parametric polymorphism)** 은 강력한 보장을 준다 — 시그니처 `forall a. F a → G a`인 함수는 **자동으로 자연성 조건을 만족**한다.
+Haskell, Rust 같은 언어의 **매개변수 다형성(parametric polymorphism)** 은 강력한 보장을 준다 — 시그니처 `forall a. F a → G a`인 함수는 **자동으로 자연성 조건을 만족**한다.
 
 이를 **free theorem**(자유 정리, Wadler 1989)이라 부른다 — "타입 시그니처만으로 함수 행동에 대한 정리를 공짜로 얻는다".
 
@@ -154,7 +154,7 @@ G: D → E, G': D → E, β: G ⇒ G'
 
 `Cat`이 2-category — 객체는 (작은) 카테고리, 1-cell은 Functor, 2-cell은 자연 변환. 더 위로 올라가면 ∞-category까지 정의 가능.
 
-이 추상화 계층이 **Adjunction**·**Limit**·**Yoneda Lemma** 같은 고급 개념의 토대.
+이 추상화 계층이 **Adjunction**, **Limit**, **Yoneda Lemma** 같은 고급 개념의 토대.
 
 ## 자주 헷갈리는 포인트
 
@@ -162,7 +162,7 @@ G: D → E, G': D → E, β: G ⇒ G'
 - **Naturality는 자동으로 보장 안 됨** — Haskell의 다형성 + 매개변수성이 있을 때만 자동. 동적 타입 언어에서는 별도 검증 필요
 - **`length`가 자연 변환인 이유** — 결과 타입은 `Int`이지만 `Const Int a`로 보면 펑터 → 펑터 매핑
 - **2-cell vs 1-cell 표기** — 1-cell(Functor)는 `→`, 2-cell(자연 변환)은 `⇒`로 구분
-- **Free theorem이 만능 아님** — type class 제약·side effect·reflection이 있으면 깨짐
+- **Free theorem이 만능 아님** — type class 제약, side effect, reflection이 있으면 깨짐
 - **"자연(natural)"의 어원** — 좌표/표현 선택과 무관하게 정의되는 변환이라서 "자연". 임의 선택에 의존하면 자연스럽지 않음
 
 ## 면접 체크포인트
@@ -182,8 +182,8 @@ G: D → E, G': D → E, β: G ⇒ G'
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 일반 개념]]
 - [[Functors|Functors — 자연 변환의 출발점]]
-- [[Bifunctors-Profunctors|Bifunctors·Profunctors — Functor 변형]]
-- [[Function-Types-And-Currying|Function Types · Currying · CCC]]
+- [[Bifunctors-Profunctors|Bifunctors, Profunctors — Functor 변형]]
+- [[Function-Types-And-Currying|Function Types, Currying, CCC]]
 - [[Monads-In-TypeScript|Monads in TypeScript (η, μ 자연 변환으로 정의)]]
 - [[Kleisli-Category|Kleisli Category]]
 - [[Types-As-Proofs|Types as Proofs]]

@@ -12,7 +12,7 @@ ANSI SQL의 4대 격리 수준(Read Uncommitted / Read Committed / Repeatable Re
 ## 핵심 명제
 
 - ANSI SQL의 격리 정의는 **이상 현상의 발생 유무**를 기준으로 하지만, 현상 목록이 불완전하다
-- MySQL InnoDB·PostgreSQL·Oracle이 같은 "Repeatable Read"·"Serializable"을 다르게 구현
+- MySQL InnoDB, PostgreSQL, Oracle이 같은 "Repeatable Read", "Serializable"을 다르게 구현
 - **Snapshot Isolation**은 ANSI에 정의되지 않았지만 대부분 DB의 "Repeatable Read" 실체
 - **Strict Serializable = Serializable + Linearizable** — 분산 DB에서 필요한 진짜 엄격한 기준
 
@@ -28,7 +28,7 @@ ANSI SQL의 4대 격리 수준(Read Uncommitted / Read Committed / Repeatable Re
 
 ### Dirty Write — ANSI 최소 기준에도 없는 것
 
-ANSI Read Uncommitted도 **Dirty Write는 막는다** — 트랜잭션 A가 쓴 row를 B가 커밋 전에 덮어쓰는 것. Degree 0(Berenson 분류)은 이것도 허용하지만, Oracle·PostgreSQL은 Read Uncommitted 자체를 지원하지 않고, MySQL도 실무에서 거의 안 쓴다.
+ANSI Read Uncommitted도 **Dirty Write는 막는다** — 트랜잭션 A가 쓴 row를 B가 커밋 전에 덮어쓰는 것. Degree 0(Berenson 분류)은 이것도 허용하지만, Oracle, PostgreSQL은 Read Uncommitted 자체를 지원하지 않고, MySQL도 실무에서 거의 안 쓴다.
 
 ## DBMS별 실제 구현 차이
 
@@ -60,11 +60,11 @@ ANSI SQL-99 원문:
 
 - Phantom Read 방지
 - Write Skew 허용 (두 트랜잭션이 서로의 읽기를 기반으로 다른 row를 쓰는 경우)
-- ANSI에는 없지만 **Oracle·PostgreSQL Repeatable Read·CockroachDB 등의 실질 기반**
+- ANSI에는 없지만 **Oracle, PostgreSQL Repeatable Read, CockroachDB 등의 실질 기반**
 
 ### Write Skew 예시
 
-계좌 A·B가 있고 잔액 합이 ≥ $100이면 $50 출금 가능 규칙.
+계좌 A, B가 있고 잔액 합이 ≥ $100이면 $50 출금 가능 규칙.
 - T1: A 잔액 읽음(60) + B 잔액 읽음(50) → A에서 50 인출
 - T2: A 잔액 읽음(60) + B 잔액 읽음(50) → B에서 50 인출
 - 둘 다 커밋 → A=10, B=0, 합 10 (규칙 위반)
@@ -91,7 +91,7 @@ x86/64 CPU조차 완전한 Linearizable은 아님 (메모리 barrier 없이는).
 
 ## 분산 DB에서의 일관성 난제
 
-Replica·Sharding·지리 분산이 들어오면 Serializable만으로는 부족. 각 DB가 다른 접근:
+Replica, Sharding, 지리 분산이 들어오면 Serializable만으로는 부족. 각 DB가 다른 접근:
 
 | 시스템 | 전략 |
 |---|---|
@@ -101,7 +101,7 @@ Replica·Sharding·지리 분산이 들어오면 Serializable만으로는 부족
 | **YugabyteDB** | Raft + HLC, Snapshot/Serializable 선택 |
 | **Cassandra** | 기본 Eventual Consistency, LWT(Lightweight Transaction)로 Linearizable 선택 가능 |
 
-**완벽한 해결책은 아직 없음** — 성능·가용성·일관성 트레이드오프 (CAP·PACELC 이론).
+**완벽한 해결책은 아직 없음** — 성능, 가용성, 일관성 트레이드오프 (CAP, PACELC 이론).
 
 ## 실무 선택 기준
 
@@ -109,9 +109,9 @@ Replica·Sharding·지리 분산이 들어오면 Serializable만으로는 부족
 |---|---|
 | 일반 OLTP, 순서 크게 안 탐 | Read Committed + 낙관적 락 (most DBs default) |
 | 읽기 일관성 필요, 동시성 유지 | Snapshot Isolation (PostgreSQL Repeatable Read) |
-| Write Skew 위험한 도메인 (금융·재고) | Serializable / SSI (PostgreSQL) |
-| 글로벌 분산 + 실시간 순서 | Strict Serializable (Spanner·Cockroach) |
-| 에너지 효율·성능 우선 | Eventual Consistency + 명시적 LWT |
+| Write Skew 위험한 도메인 (금융, 재고) | Serializable / SSI (PostgreSQL) |
+| 글로벌 분산 + 실시간 순서 | Strict Serializable (Spanner, Cockroach) |
+| 에너지 효율, 성능 우선 | Eventual Consistency + 명시적 LWT |
 
 **핵심 원칙**: 격리 수준은 **해결책이 아니라 문제 유형의 지표**. 도메인 규칙이 진짜 엄격히 필요한지 판단이 먼저.
 
@@ -122,7 +122,7 @@ Replica·Sharding·지리 분산이 들어오면 Serializable만으로는 부족
 - **"MySQL Repeatable Read는 Phantom Read를 완전 방지"** — 대부분 방지하지만 일부 엣지 케이스에서 발생 가능
 - **"Snapshot Isolation = Repeatable Read"** — 많은 DB에서 그렇게 구현되지만 표준 용어로는 별개
 - **"분산 DB도 Serializable만 지키면 OK"** — 단일 노드 관점. 분산에서는 Strict Serializable까지 봐야
-- **"격리 수준만 올리면 안전"** — Deadlock·성능 저하·락 확산 같은 비용 증가
+- **"격리 수준만 올리면 안전"** — Deadlock, 성능 저하, 락 확산 같은 비용 증가
 
 ## 면접 체크포인트
 
@@ -131,7 +131,7 @@ Replica·Sharding·지리 분산이 들어오면 Serializable만으로는 부족
 - **MySQL InnoDB vs PostgreSQL vs Oracle**의 동일 격리 이름 다른 구현
 - **Serializable의 진짜 정의** ("어떤 직렬 실행과 동일한 결과")
 - **Linearizable** 의 의미와 Strict Serializable
-- 분산 DB에서 **TrueTime·HLC·Calvin** 같은 일관성 기법의 목적
+- 분산 DB에서 **TrueTime, HLC, Calvin** 같은 일관성 기법의 목적
 - 격리 수준은 **해결책이 아닌 지표**라는 관점
 
 ## 출처
@@ -141,7 +141,7 @@ Replica·Sharding·지리 분산이 들어오면 Serializable만으로는 부족
 
 ## 관련 문서
 - [[Isolation-Level|트랜잭션 격리 수준 (기본)]]
-- [[Transactions|트랜잭션·ACID]]
+- [[Transactions|트랜잭션, ACID]]
 - [[Lock|DB Lock]]
 - [[Replication|Replication]]
 - [[Sharding|샤딩]]

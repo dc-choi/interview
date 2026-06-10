@@ -7,18 +7,18 @@ aliases: ["NestJS Caching", "NestJS 캐시 통합", "NestJS Cache Integration"]
 
 # NestJS Caching Integration
 
-NestJS의 **Interceptor·Decorator·Provider·Module** 메커니즘으로 캐시를 통합하는 패턴. 캐시 일반론은 [[Cache-Strategies|Cache 전략]]·[[Multi-Level-Cache|Multi-Level Cache]] 참조, 여기서는 NestJS 컨텍스트에서 어떻게 매핑하는지에 집중.
+NestJS의 **Interceptor, Decorator, Provider, Module** 메커니즘으로 캐시를 통합하는 패턴. 캐시 일반론은 [[Cache-Strategies|Cache 전략]], [[Multi-Level-Cache|Multi-Level Cache]] 참조, 여기서는 NestJS 컨텍스트에서 어떻게 매핑하는지에 집중.
 
 ## 통합 지점 — NestJS의 어디에서 캐시를 거는가
 
 | 지점 | 적합 | 부적합 |
 |------|------|-------|
-| **Interceptor** | HTTP 응답 전체 캐시, 메서드 단위 일괄 적용 | 세밀한 키 분기·복잡한 무효화 |
-| **Method 데코레이터** | 서비스 메서드 단위 (도메인 로직과 가까움) | 컨트롤러 외부의 콜백·외부 API |
-| **Provider 직접 호출** | Multi-Level·Stampede 보호 등 복잡한 로직 | 보일러플레이트 ↑ |
+| **Interceptor** | HTTP 응답 전체 캐시, 메서드 단위 일괄 적용 | 세밀한 키 분기, 복잡한 무효화 |
+| **Method 데코레이터** | 서비스 메서드 단위 (도메인 로직과 가까움) | 컨트롤러 외부의 콜백, 외부 API |
+| **Provider 직접 호출** | Multi-Level, Stampede 보호 등 복잡한 로직 | 보일러플레이트 ↑ |
 | **Middleware** | 요청 단계 정적 자원 캐시 | 비즈니스 로직 |
 
-요청 파이프라인 ([[NestJS|NestJS 요청 처리]]): `Middleware → Guard → Interceptor → Pipe → Handler → Filter`. 캐시는 보통 Interceptor (요청·응답 양쪽 접근)나 Provider 직접 호출.
+요청 파이프라인 ([[NestJS|NestJS 요청 처리]]): `Middleware → Guard → Interceptor → Pipe → Handler → Filter`. 캐시는 보통 Interceptor (요청, 응답 양쪽 접근)나 Provider 직접 호출.
 
 ## 패턴 1 — Cacheable 데코레이터 + Interceptor
 
@@ -59,22 +59,22 @@ NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인
 - **at-most-once 한계** — 메시지 유실 가능 → L1 TTL 짧게(60초) 백업
 - **Cluster** — 일반 Pub/Sub은 모든 노드 브로드캐스트, 7.0+의 Sharded Pub/Sub (SPUBLISH) 사용
 
-영속·ACK 필요하면 [[Redis-Streams-PubSub|Streams + Consumer Group]]로. 자세한 무효화 패턴은 [[Cache-Invalidation]].
+영속, ACK 필요하면 [[Redis-Streams-PubSub|Streams + Consumer Group]]로. 자세한 무효화 패턴은 [[Cache-Invalidation]].
 
 ## 패턴 5 — CacheModule.registerAsync (Global)
 
-`@nestjs/cache-manager` + `cache-manager-redis-yet` 조합으로 표준 캐시 매니저 등록 (`CacheModule.registerAsync({ isGlobal: true, useFactory })`). 직접 만든 Provider(LRU·MultiLevel·Stampede·Coherency)와 병행 가능. 자세한 동적 모듈 패턴은 [[NestJS-Module-Dynamic]].
+`@nestjs/cache-manager` + `cache-manager-redis-yet` 조합으로 표준 캐시 매니저 등록 (`CacheModule.registerAsync({ isGlobal: true, useFactory })`). 직접 만든 Provider(LRU, MultiLevel, Stampede, Coherency)와 병행 가능. 자세한 동적 모듈 패턴은 [[NestJS-Module-Dynamic]].
 
 `@Global()` 사용 시 imports에 매번 추가할 필요 없지만 의존 방향이 흐려질 수 있어, 도메인 모듈에서만 쓰는 캐시는 모듈 단위로 두는 것도 정당.
 
 ## 패턴 6 — 메트릭 노출 (Prometheus)
 
-`CacheMetricsService`가 hits·misses·latencies(p50·p95·p99)·topMissedKeys 추적, `/metrics` 엔드포인트에서 `cache_hit_rate`·`cache_requests_total`·`cache_latency_p99` 등을 Prometheus 형식으로 노출. 운영 알람: hit_rate < 0.7면 도입 가치 재검토 ([[Cache-Decision]]), p99 폭증은 Redis 부하·네트워크, topMissedKeys 동일 키 반복은 무효화 누락 의심.
+`CacheMetricsService`가 hits, misses, latencies(p50, p95, p99), topMissedKeys 추적, `/metrics` 엔드포인트에서 `cache_hit_rate`, `cache_requests_total`, `cache_latency_p99` 등을 Prometheus 형식으로 노출. 운영 알람: hit_rate < 0.7면 도입 가치 재검토 ([[Cache-Decision]]), p99 폭증은 Redis 부하, 네트워크, topMissedKeys 동일 키 반복은 무효화 누락 의심.
 
 ## NestJS 특이 주의점
 
 - **REQUEST scope Provider 주입 X** — 캐시 서비스는 보통 DEFAULT(싱글톤). REQUEST를 주입받으면 캐시도 REQUEST scope로 전파되어 매 요청 새 인스턴스
-- **Lifecycle 훅** — `OnModuleInit`(Pub/Sub 구독), `OnApplicationShutdown`(Write-Back flush·subscriber.quit())
+- **Lifecycle 훅** — `OnModuleInit`(Pub/Sub 구독), `OnApplicationShutdown`(Write-Back flush, subscriber.quit())
 - **Microservice 환경** — `ClientProxy`로 RPC 호출 결과 캐시할 때 RxJS Observable 캐싱 주의 (subscribe 시점마다 실행)
 - **GraphQL** — DataLoader가 요청 내 N+1 해결, 그 위에 [[Multi-Level-Cache|MultiLevelCache]]로 요청 간 캐시 ([[NestJS-GraphQL]])
 - **테스트** — `overrideProvider`로 캐시 서비스를 Mock으로 교체 ([[NestJS|TestingModule]])
@@ -82,22 +82,22 @@ NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인
 ## 흔한 실수
 
 - **Interceptor에서 직접 Promise resolve** — RxJS Observable 강제 ([[NestJS-AOP-Interceptor]]). `of(value)`로 감쌈
-- **캐시 키에 `JSON.stringify(req.params)`** — 키 순서 다르면 다른 키. 정렬·정규화 필요
+- **캐시 키에 `JSON.stringify(req.params)`** — 키 순서 다르면 다른 키. 정렬, 정규화 필요
 - **REQUEST scope 캐시** — 매 요청 새 LRU 생성 → 사실상 캐시 없음
 - **Pub/Sub subscriber에 일반 명령** — connection blocking 에러. duplicate() 별도 사용
 - **OnApplicationShutdown 미구현** — Write-Back 플러시 안 됨, 데이터 손실
-- **Reflector를 컨트롤러 코드에서 직접** — Interceptor·Guard에서만 써야 응집
+- **Reflector를 컨트롤러 코드에서 직접** — Interceptor, Guard에서만 써야 응집
 - **CacheModule.register만으로 멀티 인스턴스 일관성 기대** — Pub/Sub 무효화 별도 구현 필수
 
 ## 면접 체크포인트
 
-- NestJS Interceptor가 캐시에 적합한 이유 (요청·응답 양쪽 접근, RxJS pipe로 단락 가능)
+- NestJS Interceptor가 캐시에 적합한 이유 (요청, 응답 양쪽 접근, RxJS pipe로 단락 가능)
 - `applyDecorators` + `SetMetadata` + Reflector 조합으로 Cacheable 데코레이터 구현
 - Multi-Level Cache를 NestJS Provider로 통합하는 패턴
 - Pub/Sub subscriber에 별도 connection (duplicate)가 필요한 이유
 - 분산 락 해제에 Lua 스크립트가 필요한 이유 (자기 락 토큰 검증)
 - REQUEST scope Provider 주입이 캐시 서비스를 망치는 이유 (scope 전파)
-- OnModuleInit·OnApplicationShutdown 훅을 캐시 서비스에서 쓰는 시나리오
+- OnModuleInit, OnApplicationShutdown 훅을 캐시 서비스에서 쓰는 시나리오
 - DataLoader (요청 내 N+1) vs MultiLevelCache (요청 간) 역할 구분
 
 ## 출처
@@ -107,7 +107,7 @@ NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인
 - [[NestJS|NestJS 개관]]
 - [[NestJS-Custom-Decorator|커스텀 데코레이터]]
 - [[NestJS-AOP-Interceptor|Interceptor 기반 AOP]]
-- [[NestJS-Module-Dynamic|Dynamic Module · registerAsync]]
+- [[NestJS-Module-Dynamic|Dynamic Module, registerAsync]]
 - [[Cache-Strategies|Cache 전략]]
 - [[Multi-Level-Cache|Multi-Level Cache]]
 - [[Cache-Stampede|Cache Stampede 방지]]

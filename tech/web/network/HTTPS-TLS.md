@@ -76,5 +76,5 @@ TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 - [HTTPS 원리 이해하기 — brunch @growthminder](https://brunch.co.kr/@growthminder/79)
 
 ## 관련 문서
-- [[ACME-Protocol|ACME Protocol · Let's Encrypt 인증서 자동화]]
-- [[Public-Key-Cryptography|공개키 암호 · PKI]]
+- [[ACME-Protocol|ACME Protocol, Let's Encrypt 인증서 자동화]]
+- [[Public-Key-Cryptography|공개키 암호, PKI]]

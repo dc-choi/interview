@@ -17,7 +17,7 @@ aliases: ["Promise와 Async", "JS"]
 |------|------|
 | **Pending (대기)** | 비동기 처리 로직이 아직 완료되지 않은 상태 (초기) |
 | **Fulfilled (이행)** | 비동기 처리가 성공적으로 완료된 상태 |
-| **Rejected (실패)** | 비동기 처리가 실패·오류 발생한 상태 |
+| **Rejected (실패)** | 비동기 처리가 실패, 오류 발생한 상태 |
 | **Settled (정착)** | Fulfilled 또는 Rejected — "더 이상 Pending이 아닌" 모든 상태 |
 
 ### resolve() vs fulfilled — 자주 혼동
@@ -69,19 +69,19 @@ async function bizLogic() {
 ```
 
 - **(A) await 있음**: `bizLogic`이 `await`에서 일시 정지 → 에러 스택에 **`bizLogic` 프레임이 남음**
-- **(B) await 생략**: `bizLogic`이 Promise를 즉시 반환·종료 → 에러 스택에서 **`bizLogic` 증발**, `api.call` 이하만 남음
+- **(B) await 생략**: `bizLogic`이 Promise를 즉시 반환, 종료 → 에러 스택에서 **`bizLogic` 증발**, `api.call` 이하만 남음
 
 프로덕션에서 에러 역추적할 때 **"어느 비즈니스 로직에서 터졌는지"** 보이느냐의 차이. `await` 생략으로 얻는 건 미세한 마이크로태스크 한 번 절약 (< 1µs).
 
 ### 권장 판단
 
-- **백엔드**: 대부분 DB·외부 API 호출이 수 ms~수백 ms. 마이크로태스크 한 번(nano초)은 **무시 가능**. **`return await` 유지가 디버깅 이득 훨씬 큼**
-- **초고빈도 핫 루프**: 트리·리스트 재귀 같은 경우라면 생략 의미 있을 수 있음. 측정 필수
+- **백엔드**: 대부분 DB, 외부 API 호출이 수 ms~수백 ms. 마이크로태스크 한 번(nano초)은 **무시 가능**. **`return await` 유지가 디버깅 이득 훨씬 큼**
+- **초고빈도 핫 루프**: 트리, 리스트 재귀 같은 경우라면 생략 의미 있을 수 있음. 측정 필수
 - **`try-catch`로 감싸는 경우**: `return await` 안 쓰면 함수 밖에서 reject → 내 `catch`가 못 잡음. **반드시 `return await`**
 
 ### 결론
 
-"no return await" 규칙은 옛날 V8 기준 미세 성능 가이드. 오늘날 대부분 코드에서는 **스택 트레이스·에러 처리**가 우선. **ESLint 규칙을 맹신하지 말고 맥락에 맞게** 적용.
+"no return await" 규칙은 옛날 V8 기준 미세 성능 가이드. 오늘날 대부분 코드에서는 **스택 트레이스, 에러 처리**가 우선. **ESLint 규칙을 맹신하지 말고 맥락에 맞게** 적용.
 
 ## 출처
 - [매일메일 — Promise](https://www.maeil-mail.kr/question/65)
