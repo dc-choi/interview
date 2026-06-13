@@ -38,7 +38,7 @@ Noriaki Kano(1984)가 제안한 고객 만족도 분류 프레임워크이다.
 - **Must-have** / **Should-have** / **Could-have** / **Won't-have**
 - 범위(scope) 합의에 적합, 정량적이지 않음
 
-**실무:** RICE로 정량 점수, MoSCoW로 범위 합의, Kano로 고객 관점 확인 — 함께 사용한다.
+**실무:** RICE로 정량 점수, MoSCoW로 범위 합의, Kano로 고객 관점 확인 — 함께 사용한다. 사용 여정 순서로 MVP 범위를 정하는 Story Mapping은 [[Product-Roadmap|프로덕트 로드맵]] 참조.
 
 ## Marty Cagan의 4가지 제품 리스크
 
@@ -65,6 +65,10 @@ Clayton Christensen이 체계화하고, Bob Moesta가 실용적 인터뷰로 발
 - "최종적으로 선택한 결정적 순간은?"
 
 **Job Statement:** "When [상황], I want to [동기], so I can [기대 결과]"
+
+### 간접 관찰 (인터뷰가 어려울 때)
+
+접근하기 어려운 직군, 커뮤니티는 브이로그, SNS, 온라인 커뮤니티 같은 **공개된 일상 기록**을 관찰해 페인 포인트를 도출할 수 있다. 진행 순서: 일상 관찰 → 니즈 도출과 우선순위화(필수 vs Nice to Have) → 기존 서비스 검토 → 개선, 신규 기능 제안. 직군 고유 용어(전문 일정표, 수당 체계 등)가 보이면 그 용어를 중심으로 워크플로우를 재구성하는 것이 페인 발견의 지름길이다.
 
 ## Continuous Discovery (Teresa Torres)
 
@@ -96,3 +100,7 @@ Q. 사용자 피드백을 어떻게 관리하는가?
 ## 관련 문서
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
 - [[Risk-Management|리스크 관리]]
+- [[GTM-Strategy|GTM 전략 (니치 버티컬의 사용자 기반 확장)]]
+
+## 출처
+- [승무원을 위한 서비스 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/60)
