@@ -147,6 +147,7 @@ ENUM('PENDING', 'PAID', 'SHIPPED', 'CANCELLED') 식. 상태 추가 시 ALTER TAB
 - [samchon/prisma-markdown — ERD.md](https://github.com/samchon/prisma-markdown/blob/master/ERD.md)
 
 ## 관련 문서
+- [[Commerce-Overview|커머스 도메인 개요]]
 - [[DTO-Layering|DTO 레이어 스코프]]
 - [[VO-DTO|VO vs DTO]]
 - [[MySQL-Enum-Antipattern|MySQL ENUM 안티패턴]]
