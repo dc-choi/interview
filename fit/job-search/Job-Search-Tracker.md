@@ -42,8 +42,6 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 | 기업 | 지원일 | 링크 |
 | --- | --- | --- |
-| 데이터유니버스 (DataUniverse) | 26.05.27 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=53984870 — Backend(**Go 필수**), K8s MSA, AI 에이전트 강조, 여의도. 연차, AI, 규모(747억/76명), 보안 도메인 매치하나 Go 미스매치 감수 지원(학점, 희망연봉 기입). 정보보안/핀테크 |
-| 인티그레이션 (메디스트림, [AX] 백엔드) | 26.05.28 | https://www.wanted.co.kr/wd/363071 — [AX] 백엔드 3년+, Node.js, TS, PostgreSQL, AWS(EC2/Lambda/ECS/RDS/S3) 코어 스택 100% 매치. 업무: LLM API 게이트웨이, RAG, 함수호출, **에이전트 워크플로우**, 모델 서빙. **Claude Code, Codex, Cursor 제공 — 이력서 팀 AI 협업 규약(CLAUDE.md/MCP/Subagent/Hook)과 1:1**. **과거 26.01.05 DevOps 포지션 탈락은 별개 팀 — 이번은 첫 [AX] 백엔드 지원**(재지원 fork 불필요 판단). **범용 이력서 + GitHub 추가**로 제출. 강남 테헤란로(위워크 선릉). **Series C2, 누적 665억, 2024 매출 450억(+88%)** |
 
 ## 2주 경과 무응답
 
@@ -129,6 +127,8 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | 온다(ONDA) | 26.04.20 | https://www.wanted.co.kr/wd/340406 |
 | 카닥 | 26.04.22 | https://career.cardoc.co.kr/ko/o/209737 |
 | 그립랩스 | 26.04.22 | https://www.wanted.co.kr/wd/303815 |
+| 데이터유니버스 (DataUniverse) | 26.05.27 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=53984870 — Backend(Go 필수), K8s MSA, AI 에이전트, 여의도. Go 미스매치 감수 지원. 26.06.13 2주 경과 |
+| 인티그레이션 (메디스트림, [AX] 백엔드) | 26.05.28 | https://www.wanted.co.kr/wd/363071 — [AX] 백엔드, Node.js/TS/PostgreSQL/AWS 코어 스택 100% 매치, LLM 게이트웨이와 에이전트 워크플로우. 범용 이력서 + GitHub 제출. 26.06.13 2주 경과 |
 
 ## 서류 탈락 (미통보)
 
