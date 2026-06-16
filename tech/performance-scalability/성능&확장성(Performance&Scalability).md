@@ -30,6 +30,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] [[Scale-Up-vs-Out|Scale Up vs Scale Out (수직, 수평 확장 비교, 혼합 패턴)]]
 - [x] [[Traffic-Scaling-Playbook|트래픽 스케일링 실전 (서버 증설 없는 최적화, 모니터링→식별→카나리)]]
 - [x] [[Notification-Broadcast-System|대규모 알림 시스템 (계층적 팬아웃, SQS in-flight, 전용 인프라 격리)]]
+- [x] [[Image-Delivery-Optimization|이미지 전송 최적화 (Lambda@Edge 리사이즈, WebP/AVIF, GIF→MP4, LCP/egress)]]
 - [ ] [[Capacity-Planning|Capacity planning]]
 - [ ] [[Queue-Depth-Scaling|Queue depth 기반 scaling]]
 - [ ] [[Hot-Partition|Hot partition 대응]]

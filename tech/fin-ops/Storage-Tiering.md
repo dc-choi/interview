@@ -36,6 +36,34 @@ aliases: ["Storage Tiering", "Storage tiering", "스토리지 티어링", "S3 st
 
 접근 패턴이 불확실하면 수동 lifecycle 대신 **Intelligent-Tiering**이 안전하다(접근 빈도를 보고 자동 이동, 소액 모니터링 비용).
 
+## 전환 비용 최적화 (업로드 시점 vs Lifecycle vs CopyObject)
+
+기존 객체를 더 싼 클래스로 옮길 때, 전환 자체에 요청 비용이 든다. 방법에 따라 단가가 다르다.
+
+- **업로드 시점 지정이 최선**: 신규 객체는 PutObject에 `StorageClass`를 지정(예: `INTELLIGENT_TIERING`)하면 사후 전환이 필요 없어 **전환 비용 0**.
+- **Lifecycle 전환**: 객체 1000개당 약 $0.01. 규칙만 걸면 자동이지만 단가가 높다.
+- **CopyObject 수동 전환**: 같은 버킷으로 복사하며 클래스를 바꾼다. ListObjects(1000개당 ~$0.005) + CopyObject(1000개당 ~$0.0045)로 **Lifecycle의 약 절반(~2.2배 저렴)**. 같은 버킷 내 복사라 데이터 전송비는 0.
+
+조합 전략: 앞으로 들어올 객체는 업로드 시점 지정, 이미 쌓인 대량 객체는 CopyObject 일괄 전환, 패턴이 계속 바뀌는 버킷은 Intelligent-Tiering으로 자동화. 전체 버킷 동시 적용은 피하고 **트래픽 높은 버킷부터 선별, 비용 모니터링하며 점진 적용**한다.
+
+## Intelligent-Tiering 동작과 적용 조건
+
+- 자동 전환: **30일 미접근 → IA, 90일 미접근 → Archive Instant Access**. 접근하면 다시 상위 티어로. **복원(조회) 비용 0** — Lifecycle로 Glacier에 내린 객체와 달리 꺼낼 때 추가 요금이 없다.
+- 비용: 객체 1000개당 약 $0.0025의 모니터링 요금만 든다.
+- **128KB 미만 객체엔 비효율** — 티어 이동 대상이 128KB 초과 객체뿐이라, 작은 객체가 많으면 모니터링비만 나가고 절감이 없다.
+- 적용 조건: 객체 대부분이 128KB 초과, 간헐적 랜덤 액세스(콜드 전용 아님), 접근 패턴 예측이 어려움, 앞단에 CDN 같은 캐시 계층 존재.
+
+## S3 Inventory로 사전 분석
+
+전환 전에 객체 분포(크기, 개수, 현재 클래스)를 알아야 의사결정이 선다. S3 Inventory는 버킷 전체 객체 메타데이터를 CSV/ORC/Parquet 리포트로 정기 생성한다. Athena로 SQL 분석해 128KB 초과 객체 비중, 총 용량 등을 뽑아 Intelligent-Tiering 적합성을 판단한다.
+
+```sql
+SELECT COUNT(*) AS object_count,
+       SUM(size)/1024/1024/1024 AS total_size_gb
+FROM s3_inventory_table
+WHERE size > 128 * 1024;   -- Intelligent-Tiering 티어 이동 대상
+```
+
 ## EBS / EFS 티어링
 
 - **EBS gp2 → gp3**: 같은 성능에 단가 ~20% 저렴 + IOPS/처리량 독립 설정. 대부분 전환 이득.
@@ -59,14 +87,17 @@ aliases: ["Storage Tiering", "Storage tiering", "스토리지 티어링", "S3 st
 
 - 저장 단가 vs 조회 요금/복원 지연의 트레이드오프
 - S3 클래스 선택 기준(접근 빈도, 즉시성, 내구 AZ)
-- 접근 패턴 불명 시 Intelligent-Tiering이 기본인 이유
+- 접근 패턴 불명 시 Intelligent-Tiering이 기본인 이유 (복원 비용 0, 128KB 조건)
+- 전환 비용 최적화 — 업로드 시점 지정 > CopyObject > Lifecycle 순으로 저렴한 이유
 - gp2→gp3 전환 이득, io2를 아끼는 이유
 - lifecycle 자동 전환/만료와 스냅샷 누적 관리
+- S3 Inventory + Athena로 전환 전 객체 분포를 분석하는 이유
 
 ## 출처
 
 - [AWS — S3 Storage Classes](https://aws.amazon.com/s3/storage-classes/)
 - [AWS — EBS volume types (gp3 vs gp2)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html)
+- [S3 비용 최적화 (Intelligent-Tiering, CopyObject 전환, S3 Inventory) — 인프랩 기술블로그](https://tech.inflab.com/20251029-optimize-s3/)
 
 ## 관련 문서
 
