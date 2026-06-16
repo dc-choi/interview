@@ -15,7 +15,7 @@ aliases: ["SpaceMap STM Domain", "스페이스맵 STM, SSA 도메인 브리프"]
 - **SDA/STM** (Space Domain Awareness / Space Traffic Management) — 위성, 우주물체를 추적, 예측해 **충돌 위험을 계산하고 회피 의사결정을 지원**. 항공관제(ATM)의 우주판(단, 직접 통제권은 없고 경보, 조정 중심).
 - **실시간 정보 서비스** — Safety, Intelligence, Optimization 축으로 민, 군 우주자산 운용 지원.
 - **'42 Talks'** — 위성 충돌위험 상황을 논의하는 **실시간 협업 플랫폼** (운영자 다자 협업). → 윤회 Hocuspocus 실시간 협업과 동형 구조.
-- 미 우주군, 우주청 과제, 방산혁신기업 100, AMOS 컨퍼런스 발표(CEO CEO).
+- 미 우주군, 우주청 과제, 방산혁신기업 100, AMOS 컨퍼런스 발표(CEO).
 
 ## 2. 외워갈 핵심 용어 (자연스럽게 1~2개만 흘리기)
 

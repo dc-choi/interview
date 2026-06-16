@@ -8,7 +8,7 @@ aliases: ["Kinolights 2nd Cheatsheet", "키노라이츠 2차 치트시트"]
 # 키노라이츠 2차 컬처 D-1 치트시트
 
 > 6/14 밤과 6/15 이동 중 30분 훑기용. 본편 [[Interview-Prep-Kinolights-2nd]], 압박 드릴 [[Interview-Prep-Kinolights-2nd-Drill]], 회사 레퍼런스 [[Interview-Prep-Kinolights-2nd-Culture-Map]].
-> 6/15(월) 16:30, 패파 강남5호점 12층. 12층 올라가 인사담당자([연락처]) 연락. 공동대표 2명 + 인사. 복장 편하게.
+> 6/15(월) 16:30, 패파 강남5호점 12층. 12층 올라가 인사담당자 연락. 공동대표 2명 + 인사. 복장 편하게.
 
 ## 면접관 2명 (호칭은 대표님만 — 표기 불확실, 닉네임 금지)
 

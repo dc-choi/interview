@@ -27,6 +27,16 @@ LLM 단발 호출을 도구로 쓰는 단계를 넘어, **에이전트에게 일
 
 Parent의 핵심 책무는 **"정보 부족 시 재확인"**이다. 모호한 요청을 추측으로 채우면 다층 안전망이 무용지물이 된다. 예: "거래 뽑아줘" → "숙박만요, 아니면 전체요?", "취소분 포함요?"로 분기.
 
+## 핵심 엔진: 프레임워크 vs 자체 구현
+
+오케스트레이션 엔진을 LangChain 같은 범용 프레임워크에 계속 맡길지, 자체 구현할지는 성숙도에 따라 갈린다. 프레임워크는 빠르게 PoC를 세우는 데 강하지만, 프로덕션에서 제어권, 디버깅, 성능 튜닝을 가져오려면 추상화가 오히려 족쇄가 된다.
+
+- PoC 단계: 프레임워크로 빠르게 검증
+- 프로덕션 핵심 엔진: ReAct(추론과 행동을 번갈아 도는 루프) 방식 기반으로 자체 구현해 운영
+- 자체 엔진은 매 턴 tool-calling으로 탐색, 행동 방향을 직접 정하고, 폴더 구조와 메타데이터를 컨텍스트로 받아 Progressive Disclosure 방식으로 필요한 만큼씩 파고든다 → [[RAG-Retrieval-Engineering]]
+
+판단 기준은 통제 가능성이다. 핵심 루프의 동작을 한 줄까지 설명, 수정할 수 있어야 비결정성을 통제할 수 있다.
+
 ## Lazy Load 컨텍스트
 
 Parent가 모든 규칙을 메모리에 들고 있으면 세션당 수십만 토큰이 낭비된다. 헤드리스 모드(매 요청마다 새 세션 생성)에서는 더 치명적이다.
@@ -156,6 +166,8 @@ Q. 자동 메모리를 끄는 이유는?
 ## 관련 문서
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain/Inform/Verify/Correct/HITL)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법]]
+- [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링 (구조화 조회, Progressive Disclosure 탐색)]]
+- [[LLM-Eval-Strategy|LLM 평가 전략 (Pass@k, Multi-gate 품질, CSAT vs 정확도)]]
 - [[Software-3-0|Software 3.0]]
 - [[AX-Transformation|AX 조직 전환]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]

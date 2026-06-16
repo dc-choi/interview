@@ -11,9 +11,9 @@ aliases: ["윤회 회사 사실 정보", "윤회 팀 구성과 매출 투자"]
 ## 핵심 멤버 (LinkedIn 6명 검증 2026-05-19)
 
 > 회사 영문명 = **YUNE Inc.** / 제품명 = CARE IDⓒ
-> groupby 회사 페이지의 "CSO CSO" 정보는 사실 X — 실제 CSO = Dajeong
+> groupby 회사 페이지의 CSO 정보는 사실 X — 실제 CSO는 별도 인물
 
-### CEO CEO (CEO) — 2020.08~ (5년 10개월)
+### CEO — 2020.08~ (5년 10개월)
 - **빈티지 → 글로벌 커뮤니티 → 문화, 예술, 브랜딩 14년 종합 경력**:
   - **Blackout Secondhands 2005~2008** (유럽/일본 수입빈티지, 세컨핸즈 몰) — 빈티지 컬렉터 시작
   - Atelier Flaneur 2009.09~2014.04 (서울 예술 대안공간 2,000명 커뮤니티)
@@ -26,19 +26,19 @@ aliases: ["윤회 회사 사실 정보", "윤회 팀 구성과 매출 투자"]
 - **백엔드 비전공 확정** (5/15 본인 발언 일치)
 - **면접 톤**: 시장, 규제 베팅 + 글로벌, 커뮤니티 + B2B 영업 + 문화, 브랜딩 종합
 
-### CSO Dajeong — 2025.12~ (Chief Sustainability Officer, 1년 CARE ID)
+### CSO — 2025.12~ (Chief Sustainability Officer, 1년 CARE ID)
 - 직전: Sustainability & Digital Innovation Lead 2025.06~12
 - **글로벌 패션 인력**: 토론토(Canada Goose), 도쿄(株式会社プレジール), 시드니(Kanzi Fashion), 런던(Baukjen, ShinWon), 서울(OMNIOUS.AI, Mandarina Duck, FRAGILED) 거쳐 **DADA 창립 (2021~2024)**
 - 학력: **London College of Fashion MA Fashion Futures (2023~2024)** + FIT AAS
 - **CARE ID에서 한 일**: **CIRPASS-2 EWG1 참여**, **CARE ID DPP White Paper 리드 저자**, Tier 0–7 traceability architecture, LCA, AI-assisted supply-chain data automation, 30+ fashion brands PoC
 - 인증: Redress Circular Fashion, Carbon Literate, ESG, LCA & Carbon Footprint
 
-### CTO CTO (LinkedIn 비공개 — 1촌 아님, 확인 불가)
+### CTO (LinkedIn 비공개 — 1촌 아님, 확인 불가)
 - groupby 명시: AI/ML 전문가, ESG 스타트업 CTO 5년
 - 5/15 "CTO 별도 모실 계획" 발언과 결 다름 — 본 미팅 B2 확인 필요
-- **백엔드 동료님 = ?** — 5/15에서 들은 "백엔드 동료님 (개발 리드, 백엔드 베이스)" — LinkedIn 6명에 없음 = **CTO와 별개 인물 또는 비공개**
+- **백엔드 동료(합류 예정/사수) = ?** — 5/15에서 들은 "개발 리드, 백엔드 베이스" — LinkedIn 6명에 없음 = **CTO와 별개 인물 또는 비공개**
 
-### 프론트엔드 개발자 (프론트엔드 개발자) — 2025.01~ (Frontend Web Developer, 1년 5개월) ★ 본인 합류 시 협업 핵심
+### 프론트엔드 개발자 — 2025.01~ (Frontend Web Developer, 1년 5개월) ★ 본인 합류 시 협업 핵심
 - **CARE ID B2B DPP SaaS 단독 프론트엔드** (2명 팀 → 1명으로 줄어든 상태)
 - 학력: **Korea National University of Arts 건축학 학사** + Academy of Fine Arts in Prague (체코) + Daeil 외고
 - 비전공 → **스파르타 코딩클럽 부트캠프 (웹 프론트엔드)** 거쳐 개발 입문
@@ -56,24 +56,24 @@ aliases: ["윤회 회사 사실 정보", "윤회 팀 구성과 매출 투자"]
 - 언어: 한국어 native, 영어 Professional Working, 스페인어 elementary
 - 인증: RIBA Part 2, KAAB, IELTS Academic C1
 
-### 경영지원 (경영지원) — 2025.04~ (경영지원 팀장, 1년 2개월)
+### 경영지원 — 2025.04~ (경영지원 팀장, 1년 2개월)
 - 이전: COLLEY 콜리 Operation 2년 2개월, 한국IT서비스산업협회 선임 연구원, 한국IT비즈니스진흥협회 선임 연구원, **육군 Officier 6년**
 - 학력: **육군3사관학교 학사 법학과 (2012~2014)**
 - 스킬: 성과관리, 인사관리, 정부과제
 
-### PM (PM) — 2025.12~ (Project Manager, 6개월, US 거주)
+### PM — 2025.12~ (Project Manager, 6개월, US 거주)
 - 학력: **FIT (Fashion Institute of Technology) Bachelor Knitwear**
 - 이전: **Loro Piana Award Winner + Assistant Knitwear Designer (밀라노)**, A-company RTW (NY), Shop Repurpose Upcycling (NY)
 - 수상: Loro Piana Knit Design Award Winner, CFDA Scholarship Semi-Finalist
 
-### 디자이너 (디자이너) — 2024.06~ (Product Designer, 2년)
+### 디자이너 — 2024.06~ (Product Designer, 2년)
 - LinkedIn 정보 적음 (이전 경력, 학력 미공개)
 
 ## 개발팀 구조 확정 (LinkedIn 6명 + 5/15 발언 종합)
-- **F/E**: 프론트엔드 개발자 (프론트엔드 개발자) 단독 — 2명 팀 → 1명으로 줄어든 상태
+- **F/E**: 프론트엔드 개발자 단독 — 2명 팀 → 1명으로 줄어든 상태
 - **디자인**: 디자이너 (Product Designer)
-- **B/E**: 본인이 합류할 자리. **백엔드 동료님 (개발 리드, 백엔드 베이스) = 누구?** (LinkedIn 6명에 없음 — 별도 인물, 비공개)
-- **CTO CTO** (LinkedIn 1촌 아님 — 확인 불가)
+- **B/E**: 본인이 합류할 자리. **백엔드 동료(합류 예정/사수, 개발 리드, 백엔드 베이스) = 누구?** (LinkedIn 6명에 없음 — 별도 인물, 비공개)
+- **CTO** (LinkedIn 1촌 아님 — 확인 불가)
 - 5/15 발언 "B/E 2명, F/E 1명, 디자인 1명 = 4명" 일치
 - 외부 인정: KDB 산은, 청년창업사관학교, LG 소셜펠로우, 신한 스퀘어브릿지, 이대 스타일테크 대상, 사회적기업 장관상, **TIPS 선정**, **NIPA AI 바우처**, **산자부 '혁신프리미어 1000'**, **KT&G 글로벌트랙 1기(인도) 1등**, **오라클 Miracle 프로그램 선정**, 무신사 특별상
 

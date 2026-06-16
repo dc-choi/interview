@@ -10,7 +10,7 @@ aliases: ["Yunhoe 1st Tech", "윤회 1차 기술 질문"]
 
 > 상위 TOC: [[Interview-Prep-Yunhoe-1st|윤회 1차 본 미팅 준비]]
 
-대표 직접 면접이라 코드 디테일보다 **운영, 아키텍처, 도메인 적용**의 깊이로 들어올 가능성이 큼. 단, **백엔드 동료님 또는 CTO CTO (AI/ML, ESG 스타트업 CTO 5년)**가 옵저버로 들어올 수 있으니 코드 레벨 꼬리 질문 대비 필수. 내용은 아래 네 문서로 분리.
+대표 직접 면접이라 코드 디테일보다 **운영, 아키텍처, 도메인 적용**의 깊이로 들어올 가능성이 큼. 단, **백엔드 동료(합류 예정/사수) 또는 CTO (AI/ML, ESG 스타트업 CTO 5년)**가 옵저버로 들어올 수 있으니 코드 레벨 꼬리 질문 대비 필수. 내용은 아래 네 문서로 분리.
 
 - [[Interview-Prep-Yunhoe-1st-Tech-Mapping|채용공고 주요 업무 정밀 매핑과 프론트엔드 schema-first 협업]]
 - [[Interview-Prep-Yunhoe-1st-Tech-Resume|이력서 기반 기술 질문 (Q1~Q4 — DB Lock, EventBridge+SQS, 슬로우 쿼리, 마이그레이션)]]
