@@ -12,7 +12,7 @@ aliases: ["비용&운영(FinOps)", "Cost & Operations", "FinOps"]
 - [[Large-Scale-Traffic-Experience#사례 (참고)|Redshift → ElasticSearch 전환]] — 월 3천만 원 Redshift 로그 검색을 ES로 이전, 연 3억 절감 + 검색 시간 90%+ 단축
 
 ## Checklist
-- [x] [[AWS-Cost-Optimization|AWS 비용 최적화 종합 (Frugal Architect, Spot, RI/SP, VPC Endpoint, 조직 문화)]]
+- [x] [[AWS-Cost-Optimization|AWS 비용 최적화 종합 (Frugal Architect, FinOps 라이프사이클, Showback/Chargeback, Spot, RI/SP, Managed→Self-Hosted, 적정 기술 선택)]]
 - [x] [[ECR-Cost-Reduction|ECR 비용 절감 (Lifecycle Policy, 태그 전략, Terraform)]]
 - [x] [[AWS-Pricing|AWS 요금 구조 (종량+약정, 서비스별 과금 차원, Calculator)]]
 - [x] [[Reserved-Instance|RI / Savings Plans (RI vs SP, coverage/utilization, 약정 전략)]]

@@ -47,6 +47,7 @@ Edge Location
 - `Cache-Control: no-store` — 캐시 금지 (민감 데이터)
 - `Cache-Control: private` — 개인별 응답은 공유 캐시 금지
 - `Vary: Accept-Encoding` — 동일 URL이라도 헤더에 따라 다른 응답 캐시
+- `Cache-Control: public, s-maxage=60, stale-while-revalidate=59` — **동적 캐싱**. 변경이 드문 동적 페이지(프로필 등)를 짧게 공유 캐시하고, 만료 후엔 stale 응답을 즉시 주면서 백그라운드 재검증. 응답 1초짜리도 캐시 히트 시 0.01~0.1초로 떨어지고 **오리진 서버 부하가 급감해 필요 인스턴스 수가 준다** (서버 비용 절감 레버).
 - `ETag`/`Last-Modified` — 조건부 요청으로 재검증
 
 ## AWS CloudFront
@@ -180,6 +181,7 @@ SPA 배포 시 `index.html`은 항상 최신이 필요하고, 자산(`assets/*.j
 - [CloudFront + S3로 정적 웹사이트 배포하기 — 요즘IT](https://yozm.wishket.com/magazine/detail/1360/)
 
 ## 관련 문서
+- [[Image-Delivery-Optimization|이미지 전송 최적화 (Lambda@Edge 리사이즈, AVIF, GIF→MP4)]]
 - [[Latency-Optimization|레이턴시 최적화 (CDN, 캐시 계층)]]
 - [[Browser-URL-Flow|브라우저 URL 입력 프로세스]]
 - [[Reverse-Proxy|Reverse Proxy]]

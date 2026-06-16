@@ -26,6 +26,10 @@ aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Saving
 - **Regional vs Zonal**: Regional은 AZ 유연 + 적용 범위 넓음, Zonal은 **용량 예약**까지 보장(특정 AZ 자리 확보).
 - **결제 옵션**: All Upfront(최대 할인) > Partial > No Upfront(현금 흐름 유리, 할인 적음).
 
+### RDS, Aurora RI의 용량 정규화
+
+RDS, Aurora RI는 특정 인스턴스 크기, 대수가 아니라 **예약 용량(normalized capacity)** 기준으로 적용된다. 그래서 약정을 유지한 채 같은 용량 안에서 **인스턴스를 다운사이징**할 수 있다. 예: `r6i.4xlarge` 1대를 `r6i.2xlarge` 2대로 바꿔도(용량 동일) 기존 RI가 그대로 덮인다. RI 만료 시점에 맞춰 점진적으로 Scale-In을 계획하면 약정을 버리지 않고도 사이즈를 줄여 절감한다. 전환은 사용자가 적은 시간대에 rolling 방식으로 수행한다.
+
 ## Savings Plans 종류
 
 - **Compute SP**: 가장 유연. 인스턴스 패밀리/리전/OS/테넌시 무관, Fargate/Lambda까지 적용. 할인은 약간 작음.
