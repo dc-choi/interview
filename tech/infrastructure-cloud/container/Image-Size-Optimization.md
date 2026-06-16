@@ -14,7 +14,7 @@ Docker 이미지 크기를 줄이면 pull 속도, 배포 시간, 저장 비용, 
 ### 1. Alpine 베이스 이미지
 `node:24` (~1GB) 대신 `node:24-alpine` (~150MB)을 사용한다. Alpine Linux는 musl libc 기반의 경량 배포판이다.
 
-주의: 네이티브 모듈(bcrypt, sharp 등)이 musl과 호환되지 않을 수 있다. 이 경우 `node:24-slim`(~250MB)을 대안으로 고려한다.
+주의: 네이티브 모듈(bcrypt, sharp 등)이 musl과 호환되지 않을 수 있다. 이 경우 `node:24-slim`(~250MB)을 대안으로 고려한다. 크기 외에 **명령 동작 차이**(busybox vs GNU coreutils)도 마이그레이션 함정이므로 [[Alpine-vs-Debian-Image|Alpine vs Debian 동작 차이]]를 함께 검토한다.
 
 ### 2. Multi-stage Build
 빌드 도구와 devDependencies를 최종 이미지에서 제거한다. Builder 스테이지에서 빌드하고, Runner 스테이지에서 결과물만 복사한다.
@@ -49,3 +49,4 @@ Q. Docker 이미지 최적화 경험이 있는가?
 ## 관련 문서
 - [[Docker]]
 - [[Multi-Stage-Build|Multi-stage build]]
+- [[Alpine-vs-Debian-Image|Alpine vs Debian 동작 차이 (busybox vs GNU coreutils)]]

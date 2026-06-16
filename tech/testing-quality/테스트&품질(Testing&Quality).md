@@ -23,6 +23,7 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 - [x] [[Mock-Testing-Strategy|Mock 테스트 설계 전략 (Mock Server→@MockBean→@TestConfiguration→test-fixtures, Black Box 격리)]]
 - [x] [[Test-Pyramid|Practical Test Pyramid (Unit, Integration, Contract, E2E, 아이스크림 콘 안티패턴)]]
 - [x] [[TestContainers-Integration|Testcontainers 통합 테스트 (멱등성, Random 포트, 병렬 테스트)]]
+- [x] [[LocalStack-Integration-Test|LocalStack AWS 통합 테스트 (단일 4566 엔드포인트, Docker Compose vs Testcontainers, init hooks, --runInBand)]]
 - [x] [[Transactional-Test-Antipattern|테스트 @Transactional 안티패턴 (JUnit Extension, TRUNCATE, Auto Detection)]]
 - [x] [[NestJS-Testing|NestJS Testing (TestingModule, in-memory DB, 트랜잭션 롤백, overrideGuard, Supertest)]]
 
