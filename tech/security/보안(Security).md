@@ -12,13 +12,13 @@ aliases: ["보안(Security)", "Security"]
 - [[tech/security/auth/인증(Auth)|인증 (Auth)]] — Session, JWT, OAuth2, FIDO, Refresh Token
 - [[tech/security/crypto/암호(Crypto)|암호 (Cryptography)]] — 패스워드 해싱, 공개키, RSA
 - [[tech/security/web-attacks/웹공격(WebAttacks)|웹 공격 (Web Attacks)]] — CORS, CSRF, XSS
+- [[tech/security/secrets/Secret-Management|시크릿 관리 (Secret Management)]] — Vault, K8s Secret 제거, CSI/Injector/AVP/ESO 주입, Auto Unseal, 동적 시크릿
 
 ## 미작성
 - [ ] [[Token-Revocation|Token Revocation]]
 - [ ] [[SQL-Injection]]
 - [ ] [[SSRF]]
 - [ ] [[JWT-Security|JWT security]]
-- [ ] [[Secret-Management|Secret management (KMS / Vault)]]
 - [ ] [[TLS-Config|TLS config]]
 - [ ] [[Rate-Limit|Rate limit]]
 - [ ] [[WAF]]
