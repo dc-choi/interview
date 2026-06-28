@@ -147,3 +147,5 @@ Read   → OpenSearch (검색, 리스트, 집계)
 - [[CQRS|CQRS]]
 - [[Index|DB Index (B-Tree 비교)]]
 - [[MongoDB-Schema-Design|MongoDB 스키마 설계]]
+- [[Vector-Similarity-Search|벡터 유사도 검색 (HNSW, 거리)]] — kNN 벡터 검색의 인덱스 원리
+- [[pgvector|pgvector]] — PostgreSQL 내장 벡터 검색 대안

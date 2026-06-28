@@ -118,3 +118,4 @@ aliases: ["Developer Role AI Era", "AI 시대 개발자 역할"]
 - [[AX-Transformation|AX 조직 전환]]
 - [[Harness-Engineering|하네스 엔지니어링]]
 - [[Agent-Spec-Writing|AI 에이전트 스펙 작성법]]
+- [[Flow-Vs-Agent-Orchestration|몰입과 멀티 에이전트 오케스트레이션]] — 오케스트레이션의 주의력 비용

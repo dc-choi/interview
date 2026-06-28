@@ -24,6 +24,7 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[MySQL-InnoDB-Tuning|InnoDB 튜닝 (Buffer Pool, flush_log_at_trx_commit, io_capacity, 압축)]]
 - [x] [[MySQL-Partitioning|MySQL Partitioning (RANGE/HASH/LIST, Partition Pruning, DROP PARTITION)]]
 - [x] [[MySQL-Slow-Query-Diagnosis|Slow Query 진단 (Slow Query Log, performance_schema, processlist, 락 대기)]]
+- [x] [[MySQL-Digest-Statistics|Digest 통계 운영 (max_digest_length, performance_schema_digests_size, Prepared Statement, PG 비교)]]
 
 ## 인덱스 & 쿼리
 - [x] [[Index|Index design (B-Tree, covering index)]]

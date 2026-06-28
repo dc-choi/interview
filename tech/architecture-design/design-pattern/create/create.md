@@ -14,3 +14,4 @@ aliases: ["생성 패턴", "Creational Patterns"]
 - [x] [[Builder패턴이란|Builder (빌더)]]
 - [x] [[Singleton패턴이란|Singleton (싱글턴)]] — 예제 코드 `singleton.mts`
 - [x] [[RevealingConstructor패턴이란|Revealing Constructor (공개 생성자)]]
+- [x] [[Prototype패턴이란|Prototype (프로토타입)]] — 원본 복제, JS 프로토타입의 뿌리

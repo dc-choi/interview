@@ -99,6 +99,7 @@ DB의 중복을 제거하고 **Kotlin Enum 자체**를 Source of Truth로 승격
 - [쏘카 — 백오피스 팀 내 공통 코드 관리 변천사](https://tech.socarcorp.kr/dev/2021/08/17/common-code-management.html)
 
 ## 관련 문서
+- [[Monorepo-Architecture|모노레포 아키텍처 (패키지 결합 관점의 공통 패키지 함정)]]
 - [[Avoid-Hard-Coding|하드코딩 제거]]
 - [[Technical-Terminology-Precision|기술 용어의 엄밀성]]
 - [[TS-Enum-Antipattern|TypeScript Enum 안티패턴]]

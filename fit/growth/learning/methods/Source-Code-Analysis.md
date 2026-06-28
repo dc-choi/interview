@@ -185,6 +185,7 @@ aliases: ["Source Code Analysis", "소스 코드 분석 방법", "Code Reading"]
 - Robert C. Martin, *Clean Code*
 
 ## 관련 문서
+- [[Reverse-Engineering-Learning|역설계 학습]] — git log 순서대로 따라치며 사고 추출
 - [[CS-Learning-Method|CS 지식 학습법]]
 - [[Great-Developer-Habits|뛰어난 개발자의 행동 패턴]]
 - [[Code-Quality-Criteria|코드 품질의 기준]]
