@@ -53,3 +53,5 @@ let과 const 키워드로 선언된 변수는 블록 스코프를 따름.
 ## 관련 문서
 - [[Closure]]
 - [[Execution-Context|Execution Context]]
+- [[Variable-Declarations|var, let, const (함수 vs 블록 스코프)]]
+- [[Hoisting|호이스팅, TDZ]]

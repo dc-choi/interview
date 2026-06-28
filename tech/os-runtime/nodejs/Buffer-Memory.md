@@ -110,5 +110,6 @@ Node.js v17+에서 `Buffer.prototype.slice`는 **deprecated** — `subarray` 사
 
 - [[Node.js|Node.js 개요]]
 - [[V8|V8 엔진]]
+- [[V8-Array-Internals|V8 배열 내부 구현 (ArrayBuffer, Typed Array)]]
 - [[Stream-Types|Stream Types (Buffer chunk)]]
 - [[Debugging-Profiling-Memory|메모리 진단, 프로파일링]]

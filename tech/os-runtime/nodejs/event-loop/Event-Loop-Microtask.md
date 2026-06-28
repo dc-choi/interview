@@ -92,6 +92,12 @@ Node.js:  timers큐 [ setTimeout ]  /  poll큐 [ I/O 콜백 ]  /  check큐 [ set
 4. 실행 순서는 등록 순서만으로 결정된다 → ✗ 등록 타이밍과 현재 페이즈에 따라 달라진다.
 ```
 
+추가로 자주 보이는 오해 세 가지:
+
+- **이벤트 루프가 JS 엔진(V8) 안에 있다** → ✗ V8은 JS를 실행만 한다. 이벤트 루프는 Node.js(libuv) 또는 브라우저가 가진 것으로, JS 엔진 외부다.
+- **setImmediate는 콜백을 큐 맨 앞에 끼워 넣는다** → ✗ setImmediate 전용 페이즈(check)와 큐가 따로 있을 뿐, 모든 큐는 FIFO다. 어떤 API도 큐 안 순서를 앞당기지 못한다.
+- **setTimeout 만료는 OS/커널의 비동기 API가 큐에 넣어 준다** → ✗ 타이머는 외부 요인 없이 JS 측 min-heap에 저장되고, Timer 페이즈가 매 순회마다 만료 여부를 직접 검사해 콜백을 큐에 넣는다.
+
 ## 이름 혼동 주의
 ```
 nextTick과 setImmediate의 이름은 사실 서로 뒤바뀌어야 맞다.

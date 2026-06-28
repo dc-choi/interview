@@ -118,4 +118,5 @@ aliases: ["Great Developer Habits", "뛰어난 개발자의 행동 패턴", "시
 - [[Growth-Principles|성장의 7가지 원칙]]
 - [[Retrospective-Methods|회고 기법]]
 - [[Team-Contribution-Culture|엔지니어링 팀 기여 문화]]
+- [[Software-Craftsmanship-Professionalism|소프트웨어 장인정신과 프로페셔널리즘]] — 행동 패턴의 직업윤리 측면
 - [[Startup-Is-Not-Kindergarten|스타트업은 유치원이 아니다]]

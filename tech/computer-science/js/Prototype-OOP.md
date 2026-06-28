@@ -81,3 +81,8 @@ p instanceof Person; // true
 - "JS에서 class와 prototype의 관계?" → class는 prototype의 문법적 설탕
 - "prototype 체인이란?" → 인스턴스에서 메서드 탐색 시 prototype을 따라 올라가는 메커니즘
 - "JS OOP와 Java OOP의 차이?" → JS는 prototype 기반, Java는 class 기반. 비교보다 각 특성 이해가 중요
+
+## 관련 문서
+- [[Prototype-Mechanism|프로토타입 동작 원리 (prototype 객체, constructor, __proto__, 체인)]]
+- [[JavaScript-Prototype-Philosophy|JS가 프로토타입을 선택한 이유]]
+- [[자바스크립트(JS)|JavaScript 인덱스]]

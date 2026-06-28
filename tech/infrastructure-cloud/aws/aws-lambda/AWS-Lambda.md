@@ -12,6 +12,7 @@ AWS Lambda는 **이벤트 구동 함수 실행 서비스(FaaS, Function as a Ser
 - [[AWS-Lambda-Execution-Model|핵심 명제, 실행 모델과 수명주기, Cold Start 완화, 제약과 스펙, Function 구성요소]]
 - [[AWS-Lambda-Invocation-Concurrency|트리거 종류, 호출 모델 3종과 Destinations, DLQ, 동시성 제어, VPC Lambda, Lambda@Edge]]
 - [[AWS-Lambda-Operations-Exam|EC2 비교, 장단점, 실무 패턴, RDB 궁합과 비용 구조, 흔한 실수, 면접 체크포인트]]
+- [[AWS-Lambda-MicroVMs|MicroVMs — Firecracker 스냅샷 기반 상태 보존형 격리 샌드박스, suspend/resume, Function 비교]]
 
 ## 출처
 - [inpa — AWS Lambda 개념, 원리](https://inpa.tistory.com/entry/AWS-%F0%9F%93%9A-%EB%9E%8C%EB%8B%A4Lambda-%EA%B0%9C%EB%85%90-%EC%9B%90%EB%A6%AC)

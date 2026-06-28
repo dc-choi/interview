@@ -177,6 +177,8 @@ Innodb_buffer_pool_read_requests / (read_requests + reads)  → 적중률
 ## 관련 문서
 
 - [[Execution-Plan|EXPLAIN, 실행계획]]
+- [[DB-Incident-Triage|DB 장애 분석 방법론 (시점 비교, 장애 3유형)]]
+- [[MySQL-Digest-Statistics|Digest 통계 운영 함정 (절단, 포화, Prepared Statement)]]
 - [[Lock|Lock (row/gap/next-key, 데드락)]]
 - [[MySQL-Gap-Lock|Gap Lock 디버깅]]
 - [[MySQL-InnoDB-Tuning|InnoDB 튜닝 (Buffer Pool, 로그)]]

@@ -155,6 +155,7 @@ Python 3.4+는 기본 활성화. Java 8+는 tree화로 최악 O(log n) 보장.
 - [매일메일 — 해시 충돌](https://www.maeil-mail.kr/question/147)
 
 ## 관련 문서
+- [[Hash-Table|해시 테이블 (직접 주소 테이블, 해시 함수, 적재율, 리사이즈)]]
 - [[자료구조(DataStructure)|자료구조 개요]]
 - [[Redis-Data-Structures|Redis 자료구조]]
 - [[Java-Backend-Fundamentals|Java 백엔드 기초 (equals, hashCode)]]

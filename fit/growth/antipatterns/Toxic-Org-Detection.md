@@ -127,6 +127,7 @@ aliases: ["Toxic Org Detection", "독성 조직 판별", "컬처 다크 패턴",
 - [Bite (브런치) — 커뮤니티 다크 패턴 [신천지]](https://brunch.co.kr/@bite/21)
 
 ## 관련 문서
+- [[Team-Attrition-Resilience|팀 이탈 회복력 — 정서적 네트워크 의존의 반대 축(채용 시스템 신뢰)]]
 - [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴 (같은 메커니즘의 프로덕트 버전)]]
 - [[Startup-Is-Not-Kindergarten|스타트업은 유치원이 아니다]]
 - [[Death-Of-Agile|애자일/스크럼을 어떻게 봐야 하는가]]

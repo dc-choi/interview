@@ -77,3 +77,4 @@ aliases: ["트랜잭션", "Transactions"]
 - [[Lock|DB Lock]]
 - [[Index]]
 - [[SQL]]
+- [[NoSQL-Overview|NoSQL 개요, BASE 모델]] — ACID와 대비되는 최종적 일관성

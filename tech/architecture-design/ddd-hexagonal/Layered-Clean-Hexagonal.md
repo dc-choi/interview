@@ -130,6 +130,7 @@ Q. Layered와 Clean Architecture의 차이는?
 - [Clean Architecture 예제 (wikibook)](https://github.com/wikibook/clean-architecture)
 
 ## 관련 문서
+- [[Monorepo-Architecture|모노레포 아키텍처 (SDP, 변화율 계층, 우연적 커플링)]]
 - [[Hexagonal-In-Practice|Hexagonal 실전 적용 (Port/Adapter 디렉토리 구조와 NestJS 매핑)]]
 - [[DDD|DDD (Aggregate, CQRS, 도메인 서비스)]]
 - [[DDD-Hexagonal-In-Production|DDD + Hexagonal 프로덕션 패턴]]

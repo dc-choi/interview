@@ -14,6 +14,8 @@ aliases: ["Interview Prep"]
 - [[FIT-Framework|FIT 프레임워크, 면접 전략, 면접관 사전 확인, 역질문 톤]]
 - [[Self-Analysis|자기 분석 (WHY 시드)]]
 - [[Developer-Interview-Signals|면접 시그널 4개 — 합격/불합격]]
+- [[Experience-Value-Framing|경험 가치 프레이밍 — 시장가치 전달, 의사결정 서사, 반대 분류(방향/부담/정보)]]
+- [[Experience-Narrative-Reframing|경험 서사 재해석 — 해석 vs 과장의 경계, 의미감(영웅의 여정, 세 벽돌공)]]
 - [[Sensitive-Question-Answers|민감 질문 — 사회인 언어 치환표 + 답변 공통 구조]]
 
 ## 질문 풀

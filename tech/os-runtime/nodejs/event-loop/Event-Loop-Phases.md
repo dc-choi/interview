@@ -155,6 +155,10 @@ James Snell의 또 다른 핵심 발언:
 ### setTimeout 타임아웃 0
 - 콜백은 현재 함수 실행 후 가능한 한 빨리 실행
 - CPU 차단 없이 무거운 계산 중 다른 함수를 실행하는 데 유용
+- **실제 지연은 0이 아니라 1ms**: 딜레이가 1 미만이거나 2147483647(약 24.8일) 초과면 1로 클램프된다. `setTimeout(fn, 0)`은 내부적으로 `setTimeout(fn, 1)`이다.
+
+### setImmediate가 setTimeout(0)보다 빠른 이유
+같은 동작을 N번 재귀 호출하면 setImmediate가 setTimeout(0)보다 눈에 띄게 빠르다(작업당 타이머 등록, 만료 시각 비교가 누적되지 않기 때문). Timer 페이즈는 매 순회마다 힙에서 타이머를 꺼내 `현재 시각 ≥ 등록 시각 + delay`를 검사하는 비용을 치르지만, Check 페이즈의 setImmediate는 그 시간 계산 자체가 없다. setImmediate 콜백은 Poll 직후 Check에서 곧장 실행되므로, I/O 콜백 안에서 다음 틱에 일을 미룰 때 setTimeout(0)보다 setImmediate가 더 적합하다.
 
 ### setInterval의 한계
 - 함수 실행 시간을 고려하지 않고 n밀리초마다 실행
@@ -164,8 +168,12 @@ James Snell의 또 다른 핵심 발언:
 ### setImmediate()
 - `setTimeout(() => {}, 0)`과 유사하지만 Node.js 이벤트 루프의 check 단계에서 실행
 
+## 출처
+- [로우 레벨로 살펴보는 Node.js 이벤트 루프 — evan-moon](https://evan-moon.github.io/2019/08/01/nodejs-event-loop-workflow/)
+
 ## 관련 문서
 - [[Event-Loop-Microtask|이벤트 루프 — Microtask/Macrotask & 브라우저 vs Node]]
 - [[Event-Loop|이벤트 루프 (TOC)]]
+- [[libuv-Threading|libuv 스레드 풀 (기본 4, fs/dns.lookup 위임)]]
 - [[libuv]]
 - [[Async-Internals|비동기 내부 동작]]
