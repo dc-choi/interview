@@ -12,6 +12,8 @@ aliases: ["RDS", "Aurora", "Managed Database", "관리형 DB", "RDS vs Aurora"]
 - [[RDS-Aurora-RDS-Core|관리형 DB가 자동화하는 작업과 AWS RDS 핵심 — 인스턴스와 스토리지, Multi-AZ, Read Replica]]
 - [[RDS-Aurora-Backup-Operations|백업과 복구(Automated Backup vs Snapshot), RDS Proxy, Enhanced Monitoring, EC2 자체 설치 비교]]
 - [[RDS-Aurora-Architecture|Aurora 공유 스토리지 아키텍처와 클러스터 엔드포인트, 특장점, RDS 대신 고르는 기준]]
+- [[RDS-Aurora-Endpoints|Endpoint 운영 (Writer/Reader/Custom/Instance, Reader Endpoint 함정과 Writer 폴백, Custom Endpoint 워크로드 격리, Failover read-only + AWS Advanced JDBC Wrapper)]]
+- [[RDS-Aurora-AutoScaling|Auto Scaling 운영 (Custom Metric으로 배치 제외, Target Tracking vs Step Scaling, Flapping, Cooldown, Scale-out/in 커넥션 풀, Cache Warming)]]
 - [[RDS-Aurora-Selection-Exam|NCP 등 타 클라우드 비교, 관리형 DB 선택 기준, 흔한 함정, SAA-C03 체크포인트]]
 
 ## 관련 문서

@@ -22,6 +22,7 @@ aliases: ["비즈니스 임팩트 (Business Value)", "Business Impact"]
 - 기획 → 배포까지 걸리는 시간 단축
 
 ## 관련 문서
+- [[Productivity-Business-Ceiling|개발 생산성과 사업 성과 (Min/Max 프레임)]] — 생산성이 사업 성장에 비례하지 않는 이유
 - [[Technical-Reliability|기술적 탁월함과 안정성 (Technical Reliability)]]
 - [[Operational-Efficiency|운영 및 생산성 효율화 (Operational Efficiency)]]
 - [[Tradeoff|트레이드오프 & 사이드 이펙트]]

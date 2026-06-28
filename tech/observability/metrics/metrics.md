@@ -16,6 +16,7 @@ aliases: ["metrics", "메트릭"]
 - [x] [[Long-Term-Retention|장기 보존 (hot/warm/cold, 다운샘플링, 보존 기준)]]
 - [x] [[RED-USE-Method|RED / USE method (서비스 vs 자원, Saturation, 증상 vs 원인)]]
 - [x] [[Metric-Layer-Mismatch|메트릭 측정 레이어의 함정 (CloudWatch vs node_exporter, iowait, 두 레이어 교차 알람)]]
+- [x] [[Multi-Target-Exporter|멀티타겟 Exporter, 서비스 디스커버리 (probe 모델, file_sd, RDS SD, 대상 증가 시 변경 0)]]
 
 ## 관련 문서
 - [[관측가능성(Observability)|카테고리 인덱스]]

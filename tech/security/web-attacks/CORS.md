@@ -28,6 +28,14 @@ https://a.com/page1   =  https://a.com/page2 (path는 상관없음)
 
 **요청 전송 자체는 막지 못함**. 응답을 JavaScript에서 못 읽게 할 뿐. 이 차이가 CSRF 공격이 여전히 가능한 이유.
 
+## CORS는 브라우저가 강제하는 정책
+
+출처 비교와 응답 차단 로직은 **서버가 아니라 브라우저에 구현**되어 있다. 그래서:
+
+- 서버는 CORS 위반 요청에도 **정상적으로 응답**을 내려준다. 그 응답을 분석해 위반이라 판단하고 **버리는 주체는 브라우저**다. 콘솔엔 빨간 에러가 떠도 **서버 로그엔 정상 응답으로 남아** 에러 트레이싱이 헷갈릴 수 있다.
+- 브라우저를 거치지 않는 **서버 간 통신(server-to-server)에는 CORS가 적용되지 않는다**. 백엔드가 다른 API를 호출할 땐 출처 제약이 없다.
+- preflight 응답 상태 코드가 200이 아니어도, 핵심은 상태 코드가 아니라 **응답 헤더에 유효한 `Access-Control-Allow-Origin`이 있는가**이다.
+
 ## 3가지 요청 타입
 
 ### 1. Simple Request
@@ -67,7 +75,13 @@ Preflight 응답:
 완화: `Access-Control-Max-Age`로 preflight 결과 캐시 (보통 600초~1시간).
 
 ### 3. Credential Request
-쿠키, Authorization 헤더 같은 **인증 정보 포함** 요청.
+쿠키, Authorization 헤더 같은 **인증 정보 포함** 요청. `fetch`, `XMLHttpRequest`는 기본적으로 인증 정보를 싣지 않으며 `credentials` 옵션으로 제어한다.
+
+| 값 | 동작 |
+|---|---|
+| `same-origin` (기본값) | 같은 출처 요청에만 인증 정보 첨부 |
+| `include` | 모든 교차 출처 요청에도 인증 정보 첨부 |
+| `omit` | 어떤 요청에도 인증 정보 미첨부 |
 
 ```
 요청 (JS):
@@ -100,7 +114,7 @@ Preflight 응답:
 - 특정 Origin 화이트리스트 — 정규표현식, 동적 매칭 시 **버그로 `null`, `*` 반환하면 대형 사고**
 
 ### 클라이언트 쪽
-- `credentials: 'omit'`(기본값)으로 쿠키 안 보내고 "로그인 안 됨" 디버깅 시간 낭비
+- `credentials` 기본값(`same-origin`)은 교차 출처에 쿠키를 안 보내는데, 이를 모르고 "로그인 안 됨" 디버깅에 시간 낭비
 - 커스텀 헤더 추가했는데 preflight 허용 헤더에 없어서 실패
 
 ### Reverse Proxy 상황
@@ -113,13 +127,21 @@ Preflight 응답:
 - CSRF 방어는 **CSRF 토큰**이나 **SameSite 쿠키**가 맡음 ([[CSRF]] 참고)
 - CORS는 **"응답 읽기 허용 여부"** 만 제어
 
+## 해결, 우회 방법
+
+- **서버에서 `Access-Control-Allow-Origin` 명시** — 정석. 와일드카드 `*`는 정체 모를 출처까지 허용하므로 구체 Origin을 박는다. Nginx, Apache 설정보다 Spring, Express, Django 등의 **CORS 미들웨어**로 처리하는 편이 관리가 쉽다(이중 설정 주의는 위 함정 참고).
+- **로컬 개발 서버 리버스 프록싱** — 프론트 dev-server(webpack-dev-server, Vite 등)의 proxy 기능으로 `/api`를 실제 API 서버로 프록시하면 브라우저는 같은 출처 요청으로 인식해 CORS를 우회한다. 단 dev-server가 떠 있는 **로컬에서만** 통하고, 프로덕션에서 정적 자원 출처와 API 출처가 다르면 프록시가 없어 깨진다 — 정적 자원과 API를 같은 출처로 서빙할 때만 안전 ([[Reverse-Proxy|리버스 프록시]]).
+- **img/script 태그(no-cors)는 우회가 아니다** — SOP 예외(스크립트, 이미지, 스타일시트)라 요청 자체는 나가지만(`Sec-Fetch-Mode: no-cors`), 브라우저가 그 응답을 JS에 넘기지 않아 **코드 레벨에서 내용을 읽을 수 없다**. 데이터를 받아 쓰는 용도로는 못 쓴다.
+
 ## 면접 체크포인트
 
 - Same-Origin을 구성하는 3요소
 - SOP가 요청을 막는가 응답을 막는가
+- CORS가 브라우저 구현 스펙이라 서버 로그엔 정상 응답으로 남는 점(디버깅 함정), 서버 간 통신엔 미적용
 - Simple vs Preflight 구분 조건
-- `Access-Control-Allow-Origin: *`이 인증 요청에서 안 되는 이유
+- `Access-Control-Allow-Origin: *`이 인증 요청에서 안 되는 이유, `credentials` 기본값
 - Preflight 성능 비용과 Max-Age로 줄이는 방법
+- 로컬 dev-server 프록시 우회가 프로덕션에서 깨지는 이유
 - CORS가 CSRF를 막지 못하는 이유
 
 ## 출처
@@ -129,5 +151,7 @@ Preflight 응답:
 ## 관련 문서
 - [[CSRF|CSRF]]
 - [[XSS|XSS]]
+- [[Security-Headers|보안 헤더]]
 - [[Session|Session]]
 - [[REST|REST API]]
+- [[Reverse-Proxy|리버스 프록시]] — dev-server 프록시 우회

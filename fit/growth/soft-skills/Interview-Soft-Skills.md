@@ -20,6 +20,7 @@ aliases: ["Interview Soft Skills", "인성면접 가이드"]
 - 개발자 취업과 이직 한방에 해결하기
 
 ## 관련 문서
+- [[Trusted-Advisor-Listening|판단 없는 경청 — AI가 대체할 수 없는 조언자 역할]]
 - [[FIT-Framework|FIT 프레임워크]]
 - [[Self-Analysis|나 찾기]]
 - [[Developer-Hiring-Insights|채용 인사이트]]

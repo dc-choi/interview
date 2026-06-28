@@ -20,6 +20,8 @@ aliases: ["채용 인사이트"]
 
 - [[IT-Downturn-Career-Strategy|IT 긴축기 커리어 전략]]
 - [[Large-Scale-Traffic-Experience|대규모 트래픽 경험]]
+- [[Effort-Value-In-Hiring|채용 시장에서 노력의 가치 (신호 인플레이션, 성실은 위생 요인)]]
+- [[Labor-Market-Mindset|노동시장을 시장으로 보기 (거래/게임이론, 능력=상품, 취업=경제활동, 면접=시장조사)]]
 
 ## 관련 문서
 - [[Interview-Soft-Skills|인성면접 가이드]]

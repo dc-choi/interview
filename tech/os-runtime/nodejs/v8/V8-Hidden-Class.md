@@ -113,3 +113,4 @@ ECMAScript는 객체 프로퍼티를 사전(dictionary) 형태로 정의한다. 
 - [[V8|V8 엔진]]
 - [[V8-Inline-Cache|V8 인라인 캐시]]
 - [[V8-Ignition-TurboFan|V8 컴파일 파이프라인]]
+- [[V8-Array-Internals|V8 배열 내부 구현 (배열판 모양 최적화)]]
