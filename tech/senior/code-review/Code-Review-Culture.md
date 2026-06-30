@@ -130,6 +130,7 @@ PR 요청 시 리뷰어 부담을 표시:
 
 ## 관련 문서
 - [[Code-Review-Reviewer-Guide|코드 리뷰어의 자세, 피드백 작성 가이드]]
+- [[Code-Review-Sustainability|코드 리뷰의 정당화와 지속 (도구 자동화, DORA 설득, 갈등 에스컬레이션, 리더 지원)]]
 - [[Team-Contribution-Culture|엔지니어링 팀 기여 문화]]
 - [[Operational-Efficiency|운영 및 생산성 효율화]]
 - [[Software-Productivity-Measurement|소프트웨어 생산성 측정의 함정]]

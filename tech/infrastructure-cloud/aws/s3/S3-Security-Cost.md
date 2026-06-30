@@ -69,6 +69,7 @@ aliases: ["S3 보안", "S3 비용", "S3 암호화"]
 
 ## 관련 문서
 - [[S3|S3 (인덱스)]]
+- [[S3-Security-Patterns|S3 보안 설계 패턴]] — 사용 사례별 아키텍처 (CloudFront, WAF, 계정 분리)
 - [[S3-Storage-Performance|S3 스토리지 모델과 성능]]
 - [[S3-Features-Management|S3 기능과 데이터 관리]]
 - [[IAM|IAM (Bucket Policy, Pre-signed)]]

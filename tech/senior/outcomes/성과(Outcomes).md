@@ -12,6 +12,7 @@ aliases: ["Outcomes"]
 ## 목차
 - [x] [[Engineering-Influence|엔지니어링 영향력 — 일을 보이게 하기 (가시화, 태도, 레버리지)]]
 - [x] [[Business-Impact|비즈니스 임팩트 (성능 최적화, FinOps, Time to Market)]]
+- [x] [[Output-vs-Outcome|산출물 vs 사용자 성과 (완료의 정의, 사용성=품질, SI 다단계 하도급의 구조적 함정)]]
 - [x] [[Productivity-Business-Ceiling|개발 생산성과 사업 성과 (Min/Max 프레임, 영양과다 비타민, 병목 이동)]]
 - [x] [[Startup-Financial-Discipline|스타트업 재무 규율과 단위 경제 (매출 최대/경비 최소, 비용 우위, 돈 vs 시간, 수익화 미루지 말기)]]
 - [x] [[Technical-Reliability|기술적 안정성 (고가용성, 기술 부채, 테스트 자동화)]]
