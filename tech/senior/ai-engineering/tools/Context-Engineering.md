@@ -133,6 +133,7 @@ Q. 규칙을 CLAUDE.md에 둘지 Hook에 둘지?
 
 ## 관련 문서
 
+- [[Agentic-Context-Platform|Context Provider / 에이전트 컨텍스트 플랫폼 (공급 측 — 조직 자산을 모아 신뢰 가능한 맥락 풀로)]]
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain, Inform, Verify, Correct, HITL — 컨텍스트는 Inform 축)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (지시의 저주, 3단계 경계)]]
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (Lazy Load, 분업)]]
