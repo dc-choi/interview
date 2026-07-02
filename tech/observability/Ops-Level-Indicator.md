@@ -38,6 +38,7 @@ aliases: ["Operational Level Indicator", "운영 레벨 지표", "Delivery Infra
 원시 지표를 어떻게 합성할지 결정.
 
 - **수요, 공급 비율**: 주문/라이더, 요청/처리자, 트래픽/용량
+- **부하 대비 가용 여유**: 부하가 얼마나 늘고 있는지(부하증가배수)와 시스템이 몇 배까지 버틸 수 있는지(최대가용배수)를 비교해 임계 상황 판단 — 서비스 규모, 성격과 무관하게 적용 가능한 단일 숫자 기준의 예 ([[SRE]] 위험 탐지)
 - **지연 상위 백분위**: p95, p99 응답 시간
 - **오류율**: 5xx, 4xx 비율
 - **큐 대기 시간**: 처리되지 않고 쌓인 작업의 최고 나이
@@ -115,6 +116,7 @@ SRE의 SLI(Service Level Indicator), SLO(Service Level Objective)와 **겹치지
 
 ## 출처
 - [우아한형제들 — 실시간 배달 상황이 궁금해! 배달 인프라 레벨 구축 경험담](https://techblog.woowahan.com/18254/)
+- [네이버 검색의 SRE 시스템 — NAVER D2](https://d2.naver.com/helloworld/2047663) (가용량 지표)
 
 ## 관련 문서
 - [[Logs-vs-Metrics|Logs vs Metrics]]

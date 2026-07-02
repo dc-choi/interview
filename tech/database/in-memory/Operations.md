@@ -106,3 +106,4 @@ Primary 장애 시 자동 승격(failover) + **고사양 예비 장비를 미리
 ## 관련 문서
 - [[Redis-Architecture|Redis architecture]]
 - [[Persistence]]
+- [[Capacity-Planning|캐퍼시티 플래닝]] — IOPS, UsedMemory 기반 가용량 판단과 클러스터 분리 사례

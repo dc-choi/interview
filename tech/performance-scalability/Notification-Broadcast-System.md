@@ -119,5 +119,6 @@ Final Worker Tier: APNS/FCM에 배치 호출 (iOS 500건, Android 250건 단위)
 - [[Fan-Out-Architecture|Fan-Out Architecture (1:N 분배)]]
 - [[SQS|SQS (FIFO, in-flight 한계)]]
 - [[Traffic-Scaling-Playbook|Traffic Scaling Playbook]]
+- [[Capacity-Planning|캐퍼시티 플래닝]] — 푸시 컴포넌트의 스파이크 장애 사례와 대비 사이클
 - [[First-Come-Coupon-Patterns|선착순 이벤트 패턴]]
 - [[MQ-Kafka|Kafka]]
