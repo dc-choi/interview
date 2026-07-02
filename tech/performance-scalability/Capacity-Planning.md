@@ -85,6 +85,7 @@ aliases: ["Capacity Planning", "캐퍼시티 플래닝", "트래픽 스파이크
 
 ## 관련 문서
 
+- [[Traffic-Spike-Query-Types|예측 불가 트래픽 폭증 (Repetitive vs Unique Query)]] — 시점 예측이 불가능한 스파이크의 흡수 구조 (상보 관계)
 - [[Load-Test-K6|성능 테스트 도구 (k6, JMeter)]] — 시나리오 유형과 도구
 - [[Traffic-Scaling-Playbook|트래픽 스케일링 실전]] — 증설 없는 병목 최적화
 - [[Notification-Broadcast-System|대규모 알림 시스템]] — 푸시 파이프라인의 스파이크 설계
