@@ -1,5 +1,11 @@
 # Rules
 
+## Git Identity
+
+- `~/myown/` 아래 레포는 **무조건 개인 계정**(`dc-choi <ddagae0805@gmail.com>`)으로 커밋, 푸시한다. 커밋 전 `git var GIT_AUTHOR_IDENT`로 identity를 확인하고, 다르면 커밋하지 말고 설정부터 잡는다.
+- 이 머신(markui-MacBookPro)에는 `~/.gitconfig`의 `includeIf "gitdir:~/myown/"` → `~/.gitconfig-personal`로 강제해 둠 (2026-07-02). 새 머신에서 identity가 비어 있으면 같은 구조로 설정한다.
+- **Why**: 글로벌 git identity가 없는 상태로 커밋하면 `mark@<hostname>` 같은 자동 추정 값이 공개 레포 히스토리에 박힌다. 회사 장비에서는 글로벌을 회사 identity로 쓰더라도 개인 레포는 includeIf로 덮는 구조 유지.
+
 ## Job Search Tracker
 
 - 기업을 트래커(Job-Search-Tracker.md)에 추가할 때 **반드시 지원 링크(채용 공고 URL)도 함께 기록**할 것. 링크 없이 기업만 추가하지 말 것.
