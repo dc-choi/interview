@@ -3,8 +3,9 @@
 ## Git Identity
 
 - `~/myown/` 아래 레포는 **무조건 개인 계정**(`dc-choi <ddagae0805@gmail.com>`)으로 커밋, 푸시한다. 커밋 전 `git var GIT_AUTHOR_IDENT`로 identity를 확인하고, 다르면 커밋하지 말고 설정부터 잡는다.
-- 이 머신(markui-MacBookPro)에는 `~/.gitconfig`의 `includeIf "gitdir:~/myown/"` → `~/.gitconfig-personal`로 강제해 둠 (2026-07-02). 새 머신에서 identity가 비어 있으면 같은 구조로 설정한다.
-- **Why**: 글로벌 git identity가 없는 상태로 커밋하면 `mark@<hostname>` 같은 자동 추정 값이 공개 레포 히스토리에 박힌다. 회사 장비에서는 글로벌을 회사 identity로 쓰더라도 개인 레포는 includeIf로 덮는 구조 유지.
+- 이 레포는 **개인 장비와 회사 장비 양쪽에서 사용**한다. identity와 SSH 키 설정은 전부 머신 로컬(`~/.gitconfig`, `~/.ssh`)이므로 장비별로 각각 잡혀 있어야 하고, 세션은 지금 장비의 상태만 확인하면 된다.
+- 회사 장비(markui-MacBookPro)에는 `~/.gitconfig`의 `includeIf "gitdir:~/myown/"` → `~/.gitconfig-personal`(identity + 개인 SSH 키 core.sshCommand)로 강제해 둠 (2026-07-02). 다른 머신에서 identity가 비어 있거나 회사 계정이면 같은 구조로 설정한다.
+- **Why**: 글로벌 git identity가 없는 상태로 커밋하면 `mark@<hostname>` 같은 자동 추정 값이 공개 레포 히스토리에 박힌다. 회사 장비에서는 글로벌을 회사 identity로 쓰더라도 개인 레포는 includeIf로 덮는 구조 유지. SSH도 마찬가지 — 회사 키로는 개인 레포 푸시가 거부된다(계정 불일치).
 
 ## Job Search Tracker
 
