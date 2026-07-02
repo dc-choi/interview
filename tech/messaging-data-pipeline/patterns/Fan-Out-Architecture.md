@@ -114,6 +114,8 @@ Producer → Queue → Workers (N 동시 소비)
 
 대규모 쿠폰 일괄 지급(수백만 건) 같은 시나리오에서 SNS → 35개 SQS → Lambda 5개 패턴으로 분당 ~10,500건 처리한 사례가 있다. 이후 깨달음: **SQS의 진짜 제약은 in-flight 12만 개**라는 사실을 알고 큐를 1~2개로 줄여도 같은 처리량 달성 가능. 큐 개수보다 **소비자 동시성, 다운스트림 처리량, 멱등성**이 본질이라는 시사점.
 
+재고 파이프라인에서 패턴 2(Kafka 단일 토픽 + 다중 컨슈머 그룹)로 동기 임계 경로를 최소화한 사례도 있다 — 변동 이벤트 수신 시 핵심 모델(매장재고)만 동기 적재하고 변동 재고 토픽으로 발행, 품절 여부, 시계열 재고, 재고 이력 컨슈머 그룹이 독립 구독해 모델 간 연쇄 지연을 차단 ([[Inventory-Data-Pipeline|재고 데이터 파이프라인]]).
+
 ## 면접 체크포인트
 
 - **Fan-out vs Fan-in** 구분과 흔한 결합 패턴
@@ -126,9 +128,11 @@ Producer → Queue → Workers (N 동시 소비)
 
 ## 출처
 - [sienna1022 — 팬아웃 아키텍처를 활용한 320만개 쿠폰 안정적으로 배포하기](https://sienna1022.tistory.com/entry/%ED%8C%AC%EC%95%84%EC%9B%83-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-320%EB%A7%8C%EA%B0%9C-%EC%BF%A0%ED%8F%B0-%EC%95%88%EC%A0%95%EC%A0%81%EC%9C%BC%EB%A1%9C-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0)
+- [옴니채널 재고 정합성 한계에 대응하는 인벤토리 데이터 파이프라인 구축기 — 올리브영 테크블로그](https://oliveyoung.tech/2026-07-01/inventory-pipeline/) (Kafka 팬아웃 적재 사례)
 
 ## 관련 문서
 - [[Messaging-Patterns|메시징 패턴 (Pub/Sub, Task Distribution, Request/Reply)]]
+- [[Inventory-Data-Pipeline|재고 데이터 파이프라인]] — 임계 경로 최소화 + Kafka 팬아웃 적재
 - [[SQS|SQS]]
 - [[EventBridge|EventBridge]]
 - [[MQ-Kafka|Kafka]]
