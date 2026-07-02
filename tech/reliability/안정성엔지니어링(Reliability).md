@@ -12,6 +12,7 @@ aliases: ["안정성엔지니어링(Reliability)", "Reliability Engineering"]
 - [[Large-Scale-Traffic-Experience#사례 (참고)|레거시 인프라 3종 장애]] — Fleet 오케스트레이션 붕괴, MongoDB 2.6 포화, Redis Codis BGSAVE 유실
 
 ## Checklist
+- [x] [[SRE|SRE (규모와 신뢰성의 난제, 비상 대응 체계, 위험 탐지 지표, 시간 압축, 도메인 전문성)]]
 - [x] [[External-Service-Resilience|외부 서비스 장애 대응 (Timeout, Bulkhead, Circuit Breaker 통합)]]
 - [x] [[External-API-Integration-Patterns|외부 API 연동 실전 패턴 (조회형, 거래형, 상태머신, Saga, 대사)]]
 - [x] [[Payment-System-Principles|결제 시스템 5원칙 (PG 스펙, 숙련자, DB 제약, 해킹 대비, 신뢰 보호)]]
