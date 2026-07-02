@@ -25,6 +25,7 @@ aliases: ["Cache & KV Store (Redis)"]
 - [[Cache-Advanced-Operations|Cache 운영 패턴 — 분산 무효화, 워밍업, 태깅 (SCAN, UNLINK, pipeline)]]
 - [[Redis-Search-History|Redis 최근 검색 기록 (List, Sorted Set)]]
 - [[Redis-Streams-PubSub|Streams, Pub/Sub (Consumer Group, Sharded Pub/Sub, Kafka 비교)]]
+- [[Redis-Object-Mapping-Cost|Redis 객체 매핑 추상화 비용 (Repository vs 단순 KV, HMSET과 인덱스 Set, MONITOR 진단)]]
 
 ## Operations
 - [[Persistence]]
