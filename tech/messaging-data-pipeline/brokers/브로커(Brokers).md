@@ -21,6 +21,7 @@ SQS, EventBridge, Kafka, Redis — 주요 메시지 브로커.
   - [[MQ-Kafka-Internals|기본 구조와 내부 (토픽, 파티션, 세그먼트, KRaft, 빠른 이유)]]
   - [[MQ-Kafka-Patterns|실전 패턴 (키 순서, Outbox+Debezium, Event Bus, Streams)]]
   - [[MQ-Kafka-Consumer|컨슈머 구현 (NestJS, eachMessage vs eachBatch)]]
+  - [[MQ-Kafka-Streams|Kafka Streams (상태 저장소, KStream/KTable, 윈도우, EOS, 운영)]]
   - [[Kafka-Partition-Sizing|파티션 개수 산정 (산정식, per-partition 처리량, eCKU 한도)]]
 - [x] [[Kinesis|Kinesis (Data Streams, Firehose, Analytics, Video — Shard, Partition Key, KCL/KPL, vs Kafka/SQS)]]
 - [x] [[Amazon-MQ|Amazon MQ (RabbitMQ/ActiveMQ 매니지드, 하이브리드 마이그레이션, 표준 프로토콜)]]
