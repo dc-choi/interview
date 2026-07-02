@@ -31,6 +31,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] [[Traffic-Scaling-Playbook|트래픽 스케일링 실전 (서버 증설 없는 최적화, 모니터링→식별→카나리)]]
 - [x] [[Notification-Broadcast-System|대규모 알림 시스템 (계층적 팬아웃, SQS in-flight, 전용 인프라 격리)]]
 - [x] [[Image-Delivery-Optimization|이미지 전송 최적화 (Lambda@Edge 리사이즈, WebP/AVIF, GIF→MP4, LCP/egress)]]
+- [x] [[Geospatial-Matching|실시간 위치 기반 매칭 (H3 육각형 격자, k-ring, 공간+시간 분할, 핫 파티션)]]
 - [x] [[Capacity-Planning|캐퍼시티 플래닝 (스파이크 대비 사이클, 램프업 vs 스텝 BMT, Redis 가용량 확보 3옵션)]]
 - [x] [[Traffic-Spike-Query-Types|예측 불가 트래픽 폭증 (Repetitive vs Unique Query, 계층별 차등 캐퍼시티)]]
 - [ ] [[Queue-Depth-Scaling|Queue depth 기반 scaling]]

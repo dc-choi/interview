@@ -29,7 +29,7 @@ DB 트랜잭션으로 Outbox 테이블에 이벤트를 기록하고, **Debezium 
 
 ## Kafka Streams로 실시간 집계
 
-원본 이벤트 스트림을 **상태 저장소(State Store)** 로 집계해 지표화. Grafana 대시보드로 시각화 → 이상 감지와 운영 모니터링.
+원본 이벤트 스트림을 **상태 저장소(State Store)** 로 집계해 지표화. Grafana 대시보드로 시각화 → 이상 감지와 운영 모니터링. 상태 저장소, KStream/KTable, 윈도우, EOS, 운영 지표는 [[MQ-Kafka-Streams|Kafka Streams]] 참고.
 
 ## Kafka가 필요한 시점
 
