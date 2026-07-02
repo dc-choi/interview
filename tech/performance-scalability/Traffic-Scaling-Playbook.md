@@ -161,6 +161,7 @@ aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
 - [F-Lab — 대규모 트래픽 시스템 설계 전략](https://f-lab.kr/insight/system-design-for-large-scale-traffic)
 
 ## 관련 문서
+- [[Capacity-Planning|캐퍼시티 플래닝]] — 예측 가능한 스파이크의 사전 대비 사이클
 - [[Scale-Up-vs-Out|Scale Up vs Scale Out]]
 - [[Cache-Strategies|Cache Strategies]]
 - [[Cache-Stampede|Cache Stampede]]
