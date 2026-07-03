@@ -133,6 +133,7 @@ Q. 규칙을 CLAUDE.md에 둘지 Hook에 둘지?
 
 ## 관련 문서
 
+- [[Tool-Output-Filtering|도구 출력 필터링 (컨텍스트를 채우는 도구 출력을 사전 필터링 — Select 전략의 도구 응답 적용판)]]
 - [[Agentic-Context-Platform|Context Provider / 에이전트 컨텍스트 플랫폼 (공급 측 — 조직 자산을 모아 신뢰 가능한 맥락 풀로)]]
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain, Inform, Verify, Correct, HITL — 컨텍스트는 Inform 축)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (지시의 저주, 3단계 경계)]]
