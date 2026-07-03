@@ -12,7 +12,7 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [[tech/senior/outcomes/성과(Outcomes)|성과 정의와 측정 (Outcomes)]] — 비즈니스 임팩트, 안정성, 생산성, 트레이드오프, 토스 평가 기준, OKR
 - [[tech/senior/decision-making/의사결정(DecisionMaking)|의사결정과 리더십 (Decision Making)]] — 기술 의사결정, 데이터 기반, RFC, One-Way Door, 아키텍처 결정
 - [[tech/senior/communication/커뮤니케이션(Communication)|커뮤니케이션 (Communication)]] — 멘토링, 채용, Competent 판별, 기여 문화
-- [[tech/senior/code-review/코드리뷰(CodeReview)|코드 리뷰 (Code Review)]] — 리뷰 문화, 리뷰어 자세, Pn룰
+- [[tech/senior/code-review/코드리뷰(CodeReview)|코드 리뷰 (Code Review)]] — 주 목적(유지보수성 검증), 리뷰 문화, 리뷰어 자세, Pn룰
 - [[tech/senior/ai-engineering/AI엔지니어링(AIEngineering)|AI 시대 엔지니어링 (AI Engineering)]] — 하네스, AX 조직 전환
 - [[tech/senior/design/설계(SeniorDesign)|설계 (Design)]] — 시스템 설계 인터뷰, 포용 디자인
 
