@@ -7,6 +7,18 @@ aliases: ["Spring Batch 구조", "Tasklet vs Chunk"]
 
 # Spring Batch 구조와 처리 모델
 
+## 배치 애플리케이션은 웹과 목적이 다르다
+
+배치 = **정해진 데이터를 사용자와 상호작용 없이 끝까지 처리**하는 애플리케이션.
+
+| 축 | 웹 애플리케이션 | 배치 애플리케이션 |
+|---|---|---|
+| 상호작용 | 요청 → 응답 반복 | 실행 후 상호작용 없음 |
+| 핵심 지표 | **응답 속도** | **완료 가능성, 정확성, 대량 처리 성능** |
+| 예시 | 주문 상세 조회 API | 한 달치 정산 집계 |
+
+시간이 좀 걸려도 정확히 끝나는 것이 배치의 가치. 이 목적 차이가 청크 트랜잭션, 재시작, [[Spring-Batch-Essentials-JobParameter|멱등성]] 같은 설계 우선순위를 만든다.
+
 ## 왜 Spring Batch가 필요한가
 
 - **메타데이터 관리**: 실행 이력, 상태, 파라미터를 DB에 저장 → 장애 후 **중단 지점부터 재시작** 가능
@@ -42,6 +54,8 @@ Job            (최상위 배치 작업)
 | 재시작 | Step 단위 | **Chunk 단위** (중단 지점부터) |
 
 **Chunk 모델이 배치의 정석.** Tasklet은 보조 Step(전처리, 정리)에 쓴다.
+
+두 방식은 대립 개념이 아니다 — **Chunk 기반 Step도 내부적으로는 `ChunkOrientedTasklet`이라는 Tasklet 구현체로 동작**한다. Reader/Processor/Writer는 반복 처리를 표준화한 Tasklet의 특수화 형태.
 
 ## 메타데이터 테이블 6종
 
@@ -92,3 +106,4 @@ Chunk 크기가 곧 **트랜잭션 경계**이자 commit 간격. 10,000건이면
 ## 출처
 - [dkswnkk — Spring Batch란?](https://dkswnkk.tistory.com/707)
 - [SK DEVOCEAN — Spring Batch 시리즈](https://devocean.sk.com/blog/techBoardDetail.do?ID=166164)
+- [Spring Batch 운영과 설계 — YouTube 강의](https://www.youtube.com/watch?v=_nkJkWVH-mo&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=41)
