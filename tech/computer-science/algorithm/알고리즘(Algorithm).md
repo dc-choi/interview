@@ -15,6 +15,7 @@ aliases: ["Algorithm"]
 - [x] [[Algorithm-Sorting|정렬 (버블, 선택, 삽입, 병합, 퀵)]]
 - [x] [[Algorithm-DP|동적 프로그래밍 (메모이제이션, 타뷸레이션)]]
 - [x] [[Algorithm-Practice|필수 알고리즘 체크리스트, 백엔드 활용 사례, 학습 방법]]
+- [x] [[Algorithm-Quad-Remeshing|쿼드 리메싱/리토폴로지 (조합 문제의 연속 완화 + 정수 제약, 위상 하한, 파이프라인 분해)]]
 
 ## 예제 코드 폴더
 - `recursion/` — 팩토리얼, 하노이 탑, pow, 배열 합
