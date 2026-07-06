@@ -1,8 +1,8 @@
 ---
-tags: [infrastructure, load-balancer, dns, proxy, spof]
+tags: [infrastructure, load-balancer, dns, proxy, spof, gslb, health-check]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
-aliases: ["Load Balancer", "로드밸런서"]
+aliases: ["Load Balancer", "로드밸런서", "GSLB", "Global Server Load Balancing"]
 ---
 
 # Load Balancer
@@ -89,10 +89,14 @@ aliases: ["Load Balancer", "로드밸런서"]
 - **문제 1**: DNS Resolve된 IP가 TTL 시간만큼 캐싱됨. IP 추가/삭제/변경 전파에 TTL만큼 소요 → TTL을 짧게 (20초~1분)
 - **문제 2**: 단순 순서대로 IP 전달이라 특정 노드로 트래픽이 몰릴 수 있음
 
-### 더 좋은 DNS (Route53 등)
-- 로드밸런서의 **헬스 체크** 수행
-- 글로벌 서비스 시 **위치 기반**으로 최적의 서버 IP 제공
-- IP별 **가중치** 부하 분산
+### GSLB (Global Server Load Balancing)
+
+단순 DNS Round Robin의 한계를 넘어, **전 세계 여러 리전의 서버 중 사용자에게 가장 적절한 서버를 선택**해 주는 방식. DNS 기반으로 구현되는 경우가 많지만(Route 53 라우팅 정책 등) 단순 DNS와는 목적과 기능의 깊이가 다르다.
+
+- **선택 기준**: 지리적 근접성만이 아니라 서버 상태(헬스 체크), 부하, 네트워크 품질, 장애 여부를 종합
+- **헬스 체크 기반 페일오버**: 서울 리전이 응답하지 않으면 그 IP를 응답에서 제외하고 부산 등 다른 리전으로 유도 — 사용자에게는 서비스 전체 장애가 아니라 일시적 지연으로 보임
+- IP별 **가중치** 분산, 위치 기반 라우팅 (AWS 구현은 [[Route53]] 라우팅 정책)
+- **리전 간 이동의 전제 조건**: 어느 서버로 가도 로그인이 유지되어야 함 → 세션 외부 저장소(Redis) 분리 또는 JWT (위 세션 분산 문제와 같은 축)
 
 ## 프록시
 
@@ -113,8 +117,12 @@ aliases: ["Load Balancer", "로드밸런서"]
 - [Tecoble — 로드 밸런싱이란](https://tecoble.techcourse.co.kr/post/2021-11-07-load-balancing/)
 - [samwho.dev — Load Balancing](https://samwho.dev/load-balancing/)
 - [devpill — 로드 밸런싱 알고리즘 5가지 전략](https://maily.so/devpill/posts/67aebb20)
+- [웹 브라우저 URL 입력 과정과 인프라 흐름 — YouTube 강의](https://www.youtube.com/watch?v=GAyZ_QgYYYo&list=PLXvgR_grOs1DEoZFABFCjo7dsXt1BhVih)
 
 ## 관련 문서
 - [[IaC|IaC]]
 - [[Reverse-Proxy|Reverse Proxy]]
 - [[Realtime-Chat-Architecture|실시간 채팅 아키텍처]]
+- [[Route53|Route 53 (라우팅 정책, 헬스 체크)]]
+- [[Browser-URL-Flow|브라우저 URL 입력 프로세스]]
+- [[Network-Perimeter-Security|네트워크 경계 보안 (공인 IP 배치, UTM, WAF)]]
