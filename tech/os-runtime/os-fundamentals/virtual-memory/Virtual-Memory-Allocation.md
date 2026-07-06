@@ -79,5 +79,6 @@ aliases: ["메모리 할당", "Memory Allocation"]
 ## 관련 문서
 - [[Virtual-Memory-Paging|가상 메모리와 페이징]]
 - [[Virtual-Memory|가상 메모리 (인덱스)]]
+- [[Stack-vs-Heap|스택 vs 힙 (힙 파편화, 메모리 풀, GC 컴팩션)]]
 - [[Concurrency-and-Process|동시성과 프로세스]]
 - [[Storage-and-FileSystem|기억장치와 파일시스템]]
