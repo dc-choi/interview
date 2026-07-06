@@ -20,6 +20,7 @@ aliases: ["OS Fundamentals"]
 - [x] [[Context-Switching|Context switching (CPU 스케줄링, FIFO, SJF, RR, MLFQ)]]
 
 ## 메모리 & 스토리지
+- [x] [[Stack-vs-Heap|스택 vs 힙 (수명, LIFO 한계, 스레드 공유, 메모리 풀, 파편화, GC 컴팩션)]]
 - [x] [[Virtual-Memory|Virtual memory (세그멘테이션, 페이징, 디맨드 페이징, 페이지 교체)]]
 - [x] [[Virtual-Memory-Allocation|Virtual Memory — 할당]]
 - [x] [[Virtual-Memory-Paging|Virtual Memory — 페이징]]
