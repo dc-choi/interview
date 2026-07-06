@@ -76,5 +76,6 @@ aliases: ["Reverse Engineering Learning", "역설계 학습", "모방을 통한 
 - [[Purpose-Driven-Learning|목적 있는 학습]] — 가르치기 위해, 질문을 위해 발췌
 - [[AI-Handicap-Learning|AI 접바둑 학습]] — 교수법을 AI에 심어 모델 모방
 - [[Growth-Principles|성장의 7가지 원칙]] — 반복, 실전, 자기효능감
+- [[TDD-Refactoring-Practice|TDD 리팩토링 연습법]] — 의식적인 연습을 코드 훈련에 적용한 사례
 - [[Career-Attitude|커리어 태도]] — 과정 중심, 사전 판단보다 실행
 - [[Own-Your-Core|코어는 직접 소유하라]] — 즉시 실행과 리스크 분산

@@ -125,6 +125,7 @@ describe("주문 할인 정책", () => {
 - [mingule — TDD, BDD란?](https://mingule.tistory.com/43)
 
 ## 관련 문서
+- [[TDD-Refactoring-Practice|TDD 리팩토링 연습법 (의식적인 연습, 정량적 제약)]]
 - [[Service-Layer-Testing|서비스 레이어와 테스트 경계]]
 - [[Test-Fixture|Test fixture 전략]]
 - [[Test-Isolation|Test isolation]]
