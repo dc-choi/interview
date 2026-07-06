@@ -87,7 +87,10 @@ Q. 무엇을 버릴지 어떻게 정하나?
 
 ## 관련 문서
 
+- [[Agent-Context-Budget|에이전트 컨텍스트 예산 (경계 밖 설계, Lazy Loading 3패턴, Compaction 대신 사전 통제)]]
+- [[Agent-Code-Search|에이전트 코드 검색 (grep+read를 시맨틱 검색으로 대체해 읽는 양 축소)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (수요 측 — Context Rot, Write/Select/Compress/Isolate, 줄 단위 자문)]]
 - [[MCP|MCP (도구 출력의 주요 발생원, 프록시 계층에서 필터링)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (목표, 허용, 금지, 검증 경계 명세)]]
 - [[Agentic-Context-Platform|Context Provider (공급 측 컨텍스트 표준화)]]
+- [[Agent-Ready-API-Design|에이전트 친화 API 설계 (도구가 출력 밀도 옵션을 제공하는 공급 측 해법)]]
