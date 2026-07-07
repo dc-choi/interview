@@ -82,6 +82,15 @@ Refresh Token은 재사용 공격을 막기 위해 [[Refresh-Token-Rotation|Rota
 
 "소셜 로그인"은 대부분 OIDC. OAuth만 쓰면 "권한만 있고 누구인지 모르는" 상태가 된다.
 
+## 위임 범위 설계 — 조직 전체 위임 vs 사용자별 토큰
+
+내부 도구가 구성원의 리소스(캘린더, 메일)를 다룰 때 두 가지 위임 모델이 있다.
+
+- **도메인 전체 위임(Domain-Wide Delegation)** — 서비스 계정 하나가 조직의 전 사용자를 가장(impersonate)해 접근. 구축은 간단하지만 키 하나가 유출되면 전 직원의 리소스가 위험한 **마스터키**이고, 모든 작업의 행위 주체가 봇 계정으로 왜곡된다(예약 주최자가 전부 관리자, 알림이 한 계정에 집중)
+- **사용자별 Authorization Code 플로우** — 각 사용자가 직접 동의하고 자신의 리소스에만 접근. 최소 권한 원칙에 부합하고 행위 주체가 실제 사용자로 기록
+
+사용자별 토큰을 쓸 때의 수명주기 설계: 스코프는 필요한 것만(예: 캘린더 전체가 아니라 `calendar.events`), 토큰은 세션별 암호화 보관, 퇴사와 오프보딩 시 토큰 폐기를 프로세스에 포함.
+
 ## 자주 하는 실수
 
 - Implicit Grant로 SPA 구현 → **Authorization Code + PKCE**로 전환
@@ -99,9 +108,11 @@ Refresh Token은 재사용 공격을 막기 위해 [[Refresh-Token-Rotation|Rota
 - `state`, `nonce`의 역할 차이
 - OAuth와 OIDC의 경계(권한 vs 인증)
 - Refresh Token Rotation이 필요한 이유
+- 도메인 전체 위임의 리스크와 사용자별 토큰 + 최소 스코프 설계
 
 ## 출처
 - [Tecoble — OAuth2.0 이해하기](https://tecoble.techcourse.co.kr/post/2021-07-10-understanding-oauth/)
+- [GA가 AI와 함께 만든 오피스 좌석 배치도 — 아임웹 기술 블로그](https://tech.imweb.me/posts/ga-built-office-seatmap/)
 
 ## 관련 문서
 - [[JWT|JWT]]
