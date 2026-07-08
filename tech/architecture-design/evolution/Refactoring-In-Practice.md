@@ -107,6 +107,7 @@ aliases: ["Refactoring In Practice", "실전 리팩토링", "Monster Method"]
 - [Hyperconnect — Hakuna 라이브룸 입장 API 리팩토링 (85% 지연 감소)](https://hyperconnect.github.io/2022/03/14/develop-liveroom-entrance-on-hakuna.html)
 
 ## 관련 문서
+- [[Technical-Debt|기술 부채 — rewrite로 상환, 리팩터링은 학습 반영]]
 - [[Tidy-First|Tidy First — 구조와 동작 분리]]
 - [[Legacy-Modernization-Strategies|레거시 현대화 전략 (Strangler Fig)]]
 - [[TestContainers-Integration|Testcontainers로 안전망 만들기]]

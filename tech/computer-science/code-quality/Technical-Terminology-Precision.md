@@ -130,6 +130,7 @@ ORM, JPA 맥락은 혼동 용어가 많다.
 - Kent Beck — *Test Driven Development: By Example*
 
 ## 관련 문서
+- [[Technical-Debt|기술 부채 — Cunningham 원래 정의를 찾은 용어 엄밀성의 사례]]
 - [[REST|REST, RESTful API]]
 - [[VO-DTO|VO와 DTO]]
 - [[DTO-Layering|DTO 레이어 스코프]]
