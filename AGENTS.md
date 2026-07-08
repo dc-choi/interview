@@ -18,7 +18,7 @@ This repository is used with both Claude and Codex.
 
 ## MCP Notes
 
-- The existing `.mcp.json` is Claude-style config for the Obsidian MCP server.
+- `.mcp.json` is Claude-style config for the Obsidian MCP server. It is gitignored and machine-local (the vault absolute path differs per machine); copy `.mcp.json.example` and fill in this machine's absolute repo path.
 - This Codex session currently has no MCP servers configured.
 - If the user asks to enable the same Obsidian MCP for Codex, the equivalent command should use the current repository path:
 
