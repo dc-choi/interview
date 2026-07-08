@@ -14,7 +14,7 @@ Before writing, read `CLAUDE.md`, especially `Memo Notes`, `표기 규칙`, `개
 ## Workflow
 
 1. Classify the input.
-   - If the input is an `http` or `https` URL, fetch the source with browsing when available. If extraction is poor, search for supporting context. If the page is YouTube, login-gated, or otherwise unavailable, ask the user for the original text.
+   - If the input is an `http` or `https` URL, fetch the source with browsing when available. If extraction is poor, search for supporting context. If the page is YouTube, login-gated, or otherwise unavailable, ask the user for the original text. After fetching, state the inferred topic in one sentence and confirm it with the user before proceeding to categorize and write.
    - If the input is pasted text, infer the main topic and target category directly.
    - If the text contains the object replacement character `￼`, inspect likely related image files on `~/Desktop/` when filesystem access allows it.
 2. Identify the topic and category.
