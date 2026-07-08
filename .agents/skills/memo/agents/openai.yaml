@@ -1,0 +1,4 @@
+interface:
+  display_name: "Memo"
+  short_description: "Turn notes and URLs into vault docs"
+  default_prompt: "Use $memo to organize this learning note into the project vault."
