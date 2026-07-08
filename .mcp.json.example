@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "obsidian": {
+      "command": "npx",
+      "args": ["-y", "obsidian-mcp", "/absolute/path/to/this/repo/on/this/machine"]
+    }
+  }
+}

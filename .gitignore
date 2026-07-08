@@ -46,3 +46,6 @@ api.http
 
 # Playwright MCP runtime artifacts
 .playwright-mcp/
+
+# Machine-local MCP config (absolute vault path differs per machine — copy from .mcp.json.example)
+.mcp.json

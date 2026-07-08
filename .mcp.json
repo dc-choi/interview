@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "obsidian": {
-      "command": "npx",
-      "args": ["-y", "obsidian-mcp", "/Users/dc-choi/dev/projects/interview"]
-    }
-  }
-}
