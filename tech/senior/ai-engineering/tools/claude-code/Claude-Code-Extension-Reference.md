@@ -75,6 +75,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 ## 관련 문서
 
+- [[Agent-Skills|에이전트 스킬 (스킬 개념, Claude vs Codex 포맷 비교, 스킬 vs 훅)]]
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (Skills, MCP, 서브에이전트 활용)]]
 - [[Claude-Code-Config-Permissions|Claude Code 설정과 권한]]
 - [[MCP|MCP (Model Context Protocol)]]
