@@ -154,6 +154,13 @@
 - auto memory 시스템(`~/.claude/projects/.../memory/`) 사용 금지. 메모리 파일 생성, 수정, 조회 모두 하지 말 것.
 - 사용자 선호, 피드백, 커리어 정보 등 세션 간 유지가 필요한 정보는 **CLAUDE.md의 `# User Context` 섹션에만 기록**한다. 이유: git으로 공유되어 여러 기기에서 동기화되고 이력 추적도 가능.
 
+## Claude/Codex 공존
+
+- 이 레포는 **Claude와 Codex를 함께** 쓴다. Claude는 `CLAUDE.md`와 `.claude/`, Codex는 `AGENTS.md`와 `.agents/`를 읽는다. **정본은 `CLAUDE.md`** — Codex 지침(`AGENTS.md`)도 CLAUDE.md를 source of truth로 위임한다.
+- **스킬은 두 곳에 중복 존재**: `.claude/skills/{memo,interview-prep}/`(Claude)와 `.agents/skills/{memo,interview-prep}/`(Codex, frontmatter만 Codex식 + `agents/openai.yaml`). **한쪽 스킬을 수정하면 다른 쪽도 맞춘다.** 워크플로우 변경은 `CLAUDE.md`에 먼저 반영한 뒤 양쪽 헬퍼 파일을 동기화한다 (`AGENTS.md`의 Coexistence Rules와 대칭).
+- **Claude 파일을 삭제, 개명, 변환하지 않는다** — 사용자가 명시적으로 요청할 때만. `.agents/`는 호환 헬퍼일 뿐 Claude 설정을 대체하지 않는다.
+- **Why**: sync 규칙이 `AGENTS.md`에만 있으면 Codex는 알지만 Claude는 `.agents/` 미러의 존재조차 모른 채 `.claude/` 스킬만 고쳐 두 복사본이 드리프트한다. 규칙을 양쪽 정본에 대칭으로 둬 어느 도구로 작업하든 동기화가 걸리게 한다.
+
 ---
 
 # User Context
