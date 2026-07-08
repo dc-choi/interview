@@ -119,3 +119,4 @@ aliases: ["Developer Role AI Era", "AI 시대 개발자 역할"]
 - [[Harness-Engineering|하네스 엔지니어링]]
 - [[Agent-Spec-Writing|AI 에이전트 스펙 작성법]]
 - [[Flow-Vs-Agent-Orchestration|몰입과 멀티 에이전트 오케스트레이션]] — 오케스트레이션의 주의력 비용
+- [[Technical-Debt|기술 부채 — 인지 부채=위축/탈숙련, 미검토 코드의 정확한 명명]]
