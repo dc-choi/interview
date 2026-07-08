@@ -94,6 +94,7 @@ Claude Code와 Codex가 공유하는 구조.
 ## 관련 문서
 
 - [[Claude-Code-Extension-Reference|Claude Code 확장 메커니즘 (스킬, 훅 세부 메커니즘)]]
+- [[Codex-CLI|Codex CLI (슬래시 명령, 스킬 시스템, AGENTS.md)]]
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (Skills, MCP, 서브에이전트 활용)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (권장 vs 강제 분리)]]
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산 (스킬 Catalog-First 로딩)]]
