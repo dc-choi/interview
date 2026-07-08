@@ -40,7 +40,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 ## 스킬 — 온디맨드 플레이북
 
-- 프론트매터 핵심: description(자동 로드 판단 기준, 1,536자 제한), disable-model-invocation(수동 전용 — 배포나 전송처럼 부작용 있는 스킬에 필수), user-invocable: false(메뉴 숨김, 배경지식용), allowed-tools(**사전 승인이지 제한이 아니다**), context: fork + agent(격리 실행), paths(파일 패턴 자동 활성)
+- 프론트매터 핵심: description(자동 로드 판단 기준, 1,024자 제한, name은 64자), disable-model-invocation(수동 전용 — 배포나 전송처럼 부작용 있는 스킬에 필수), user-invocable: false(메뉴 숨김, 배경지식용), allowed-tools(**사전 승인이지 제한이 아니다**), context: fork + agent(격리 실행), paths(파일 패턴 자동 활성)
 - 치환: `$ARGUMENTS`, `$N`(위치 인자), 동적 컨텍스트는 백틱 셸 실행 — 정책상 차단하려면 disableSkillShellExecution
 - 예산: 스킬 설명 총량은 컨텍스트의 1%(폴백 8,000자), 초과 시 호출 빈도 낮은 스킬부터 설명이 제외된다 — `/doctor`로 확인
 - 라이프사이클: 호출된 본문은 세션 내내 컨텍스트에 남는다 — 500줄 이하로 유지하고 상세는 서포팅 파일로 분리해 온디맨드 로드. 압축 시 최근 스킬은 총 25,000토큰 예산으로 재부착

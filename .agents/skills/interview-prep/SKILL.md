@@ -41,12 +41,25 @@ Ask a short question only when a required input is missing and cannot be inferre
 
 Include these sections when applicable:
 
-- JD matching table and company/domain analysis.
+- JD matching table and company/domain analysis. Rate each JD requirement against the resume as 강 (direct experience with results), 중 (related but not direct, or shallow depth), or 약 (no or very weak experience).
 - Company-specific FIT answers aligned with WHY, question intent, signal, replacement wording, and meta guidance.
-- Technical questions and answer notes with absorbed vault content, quantitative comparisons, and likely follow-ups.
+- Technical questions and answer notes with absorbed vault content, quantitative comparisons, and likely follow-ups. Produce at least 20 expected questions: 7+ resume-based, 7+ JD-based, 5+ service-context, 5+ culture-fit.
 - Reverse questions from `My-Reverse-Questions` plus company-specific questions.
 - Checklist for external-blame risk, negative wording, and company connection in answer endings.
 - Optional D-1 or D-day cheatsheet when the user needs a short review artifact.
+
+## Note Format
+
+Company documents created under `fit/interview/{company}/{round}/` use this frontmatter:
+
+```yaml
+---
+tags: [fit, interview, {회사영문명소문자}]
+status: active
+category: "Interview - Fit"
+aliases: ["{회사영문명} Interview Prep", "{회사한글명} 면접 준비"]
+---
+```
 
 ## Constraints
 

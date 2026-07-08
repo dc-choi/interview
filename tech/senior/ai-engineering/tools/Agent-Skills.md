@@ -58,7 +58,7 @@ Claude Code와 Codex가 공유하는 구조.
 | 추가 메타 | argument-hint, allowed-tools(사전승인), disable-model-invocation, user-invocable, context:fork, paths | agents/openai.yaml (UI, 호출 정책, 도구 의존성) |
 | 스크립트 | 본문 백틱 셸, 서포팅 스크립트 | scripts/ 디렉토리 |
 
-핵심은 두 도구가 Agent Skills라는 사실상 동일한 개방 포맷으로 수렴했다는 것이다. 폴더 + SKILL.md + description 자동 로드가 공통 뼈대이고, 나머지는 관례 차이다. Claude 쪽 세부 메커니즘(description 1,536자 제한, allowed-tools가 제한이 아닌 사전 승인, 예산 초과 시 저빈도 스킬부터 설명 제외 등)은 [[Claude-Code-Extension-Reference]]에 있다.
+핵심은 두 도구가 Agent Skills라는 사실상 동일한 개방 포맷으로 수렴했다는 것이다. 폴더 + SKILL.md + description 자동 로드가 공통 뼈대이고, 나머지는 관례 차이다. Claude 쪽 세부 메커니즘(description 1,024자 제한, allowed-tools가 제한이 아닌 사전 승인, 예산 초과 시 저빈도 스킬부터 설명 제외 등)은 [[Claude-Code-Extension-Reference]]에 있다.
 
 ## 스킬 vs 훅 — 무엇을 할지 vs 언제 실행될지
 
