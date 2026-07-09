@@ -50,7 +50,7 @@ aliases: ["Storage Tiering", "Storage tiering", "스토리지 티어링", "S3 st
 
 - 자동 전환: **30일 미접근 → IA, 90일 미접근 → Archive Instant Access**. 접근하면 다시 상위 티어로. **복원(조회) 비용 0** — Lifecycle로 Glacier에 내린 객체와 달리 꺼낼 때 추가 요금이 없다.
 - 비용: 객체 1000개당 약 $0.0025의 모니터링 요금만 든다.
-- **128KB 미만 객체엔 비효율** — 티어 이동 대상이 128KB 초과 객체뿐이라, 작은 객체가 많으면 모니터링비만 나가고 절감이 없다.
+- **128KB 미만 객체엔 절감 효과 없음** — 모니터링, 자동 티어링 대상이 아니며 Frequent Access 티어에 남는다. 작은 객체가 많으면 Intelligent-Tiering으로 자동 절감되는 범위가 작다.
 - 적용 조건: 객체 대부분이 128KB 초과, 간헐적 랜덤 액세스(콜드 전용 아님), 접근 패턴 예측이 어려움, 앞단에 CDN 같은 캐시 계층 존재.
 
 ## S3 Inventory로 사전 분석
@@ -79,7 +79,7 @@ WHERE size > 128 * 1024;   -- Intelligent-Tiering 티어 이동 대상
 
 - 자주 보는 데이터를 Glacier에 → 조회 요금이 저장 절감 초과
 - 작은 객체 다량을 IA/Glacier에 → 최소 객체 크기/기간 과금으로 역효과
-- Intelligent-Tiering 모니터링 비용을 작은 객체에 적용 → 비효율
+- 128KB 미만 객체가 대부분인데 Intelligent-Tiering 절감을 기대 → 자동 티어링 대상이 아니라 효과가 제한적
 - gp2를 gp3로 안 바꿔 손쉬운 절감 방치
 - 스냅샷/이전 버전이 무한 누적 → lifecycle 미설정
 

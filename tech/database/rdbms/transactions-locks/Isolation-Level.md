@@ -11,7 +11,7 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 
 즉, 트랜잭션 격리 수준에 따라 데이터 조회 결과가 달라질 수 있다는 말이다.
 
-이처럼 트랜잭션 격리 수준에 따라 데이터 조회가 달라지게 하는 기술을 MVCC(Multi Version Concurrency Consistency)라고 한다.
+여러 트랜잭션이 동시에 읽고 쓰면서도 일관된 읽기 관점을 제공하기 위해 MVCC(Multi-Version Concurrency Control)를 사용한다.
 
 ## 레벨
 ### 레벨 0: Read Uncommitted
@@ -29,16 +29,17 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 ### 레벨 2: Repeatable Read
 
 - MySQL InnoDB의 기본 격리 수준
-- 선행 트랜잭션이 읽은 데이터는 트랜잭션이 종료될 때까지 후행 트랜잭션이 갱신, 삭제할 수 없으므로, 같은 데이터를 두 번 쿼리했을 때 일관성 있는 결과를 리턴
-- 표준 SQL에서는 Phantom Read 현상이 발생할 수 있음 (단, InnoDB는 Next-Key Lock으로 방지)
+- 일반 SELECT는 트랜잭션 시작 시점의 스냅샷을 반복해서 읽으므로, 다른 트랜잭션이 커밋해도 같은 쿼리 결과가 유지된다.
+- 다른 트랜잭션의 갱신, 삭제 자체를 막는다는 뜻은 아니다. 잠금 읽기(`SELECT ... FOR UPDATE`, `FOR SHARE`)나 UPDATE/DELETE는 Current Read로 동작하며 lock을 획득한다.
+- 표준 SQL에서는 Phantom Read 현상이 발생할 수 있음. InnoDB는 잠금 읽기와 범위 갱신에서 Next-Key Lock으로 phantom을 막는다.
 
 ### 레벨 3: Serializable
 
-- 선행 트랜잭션이 읽은 데이터를 후행 트랜잭션이 갱신, 삭제하지 못할 뿐만 아니라, 중간에 새로운 레코드를 삽입하는 것도 막음. 완벽한 읽기 일관성 보장
-- 사실상 트랜잭션을 직렬로 실행하는 효과 — INSERT/UPDATE/DELETE와 READ가 동시에 진행될 수 없어 동시성이 크게 떨어짐
+- 트랜잭션 결과가 어떤 직렬 실행 순서와 같아지도록 더 강하게 격리한다.
+- 구현체마다 방식은 다르지만, InnoDB에서는 일반 SELECT도 공유 잠금 읽기처럼 동작해 range insert/update와 충돌할 수 있으므로 동시성이 크게 떨어진다.
 
 ## 격리 수준을 설정시 발생하는 문제점들
-트랜잭션 격리 수준을 너무 낮게 하면 읽기 일관성을 재대로 보장할 수 없고, 너무 높게 하면 읽기 일관성은 완벽하게 보장하지만 데이터를 처리하는 속도(동시성)가 느려지게 된다.
+트랜잭션 격리 수준을 너무 낮게 하면 읽기 일관성을 제대로 보장할 수 없고, 너무 높게 하면 읽기 일관성은 강해지지만 데이터를 처리하는 속도(동시성)가 느려지게 된다.
 
 ![격리 수준 레벨](../../../img/Isolation_Level.png)
 
@@ -55,14 +56,15 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 
 ## InnoDB RR에서의 Phantom Read 방지
 
-- 표준 SQL에서 RR은 Phantom Read를 방지하지 못하지만, **InnoDB는 Next-Key Lock**으로 방지
-- 범위 조건 조회 시 Gap Lock이 함께 걸려 해당 범위에 새 행 INSERT를 차단
+- 표준 SQL에서 RR은 Phantom Read를 방지하지 못하지만, **InnoDB는 잠금 읽기와 범위 변경에서 Next-Key Lock**으로 방지
+- 범위 조건의 `SELECT ... FOR UPDATE`, UPDATE, DELETE는 Gap Lock이 함께 걸려 해당 범위에 새 행 INSERT를 차단
+- 일반 SELECT는 MVCC 스냅샷을 읽으므로 같은 트랜잭션 안에서 phantom이 보이지 않지만, 삽입 자체를 막는 lock을 잡지는 않는다.
 - 단, 이로 인해 INSERT 동시성이 저하될 수 있음
 
 ## RC vs RR 실무 선택
 
 ### RC로 변경하면 좋아지는 점
-- Gap Lock이 비활성화 → INSERT 동시성 향상
+- 일반적인 검색, 인덱스 스캔에서 Gap Lock 사용이 줄어듦 → INSERT 동시성 향상
 - 각 쿼리가 최신 데이터를 읽음 → 일부 상황에서 더 직관적
 
 ### RC로 변경하면 위험한 점
@@ -85,8 +87,9 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 3. UPDATE accounts SET balance = ... WHERE user_id = ?
 ```
 
-- Oracle (RC): 매 SELECT가 최신 커밋 데이터를 읽음 → A, B 동시 요청에서 늦게 들어온 쪽이 갱신된 잔액을 봄
-- MySQL (RR): 트랜잭션 시작 시점 스냅샷 고정 → A가 먼저 잔액 갱신, 커밋해도 B는 여전히 옛 잔액을 봄. B의 UPDATE가 의도치 않은 결과를 만들거나 실패
+- Oracle (RC): 매 SELECT가 실행 시점의 최신 커밋 스냅샷을 읽음. 같은 트랜잭션 안에서 재조회하면 결과가 바뀔 수 있다.
+- MySQL (RR): 일반 SELECT는 트랜잭션 시작 시점 스냅샷을 유지. 앞에서 읽은 값을 애플리케이션이 오래 들고 계산하면 최신 커밋과 어긋날 수 있다.
+- 두 DB 모두 잔액, 재고처럼 누적값을 다룰 때는 격리 수준에 기대지 말고 잠금 읽기, 조건부 UPDATE, 제약 조건으로 불변식을 DB에 걸어야 한다.
 
 대응 패턴:
 1. **잔액 읽기를 락 안으로** — `SELECT ... FOR UPDATE`로 Current Read 강제. 락이 풀린 뒤 최신 커밋 데이터를 읽음

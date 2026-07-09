@@ -35,7 +35,7 @@ assert a == b; // 동일성 보장
 
 ### 2. 쓰기 지연 (Write-Behind)
 
-`persist`, `merge`, `remove`는 **즉시 INSERT/UPDATE/DELETE를 날리지 않는다.** 내부 쓰기 지연 큐에 쌓아두었다가 **flush 시점에 한 번에** SQL 발행.
+JPA는 변경 내용을 영속성 컨텍스트에 모아두었다가 **flush 시점에** SQL로 동기화한다. 다만 `merge()`는 기존 엔티티 조회를 유발할 수 있고, `IDENTITY` 키 전략의 `persist()`는 ID 확보를 위해 INSERT가 빨리 나갈 수 있다.
 
 - flush는 커밋 직전, `em.flush()` 명시 호출, JPQL 실행 전에 자동
 - 같은 트랜잭션의 여러 변경을 모아 **배치 insert/update** 가능(`hibernate.jdbc.batch_size`)
@@ -50,7 +50,7 @@ User user = em.find(User.class, 1L);
 user.setName("Alice"); // UPDATE 자동 발행 (flush 시)
 ```
 
-- JPA가 **스냅샷과 현재 상태를 비교**하여 변경 필드만 SQL에 포함
+- JPA가 **스냅샷과 현재 상태를 비교**하여 변경 여부를 감지한다. Hibernate 기본 UPDATE는 여러 컬럼을 포함할 수 있고, 변경 컬럼만 UPDATE하려면 `@DynamicUpdate` 같은 설정이 필요하다.
 - 변경이 없다면 UPDATE는 아예 발행되지 않음
 - Detached 객체는 감지 안 되므로 `merge()`로 재영속화 필요
 
@@ -98,7 +98,7 @@ for (Order o : orders) {
 
 ### 원인
 
-- **지연 로딩**이 기본이라 `orders`를 가져올 때 `user`는 프록시
+- 위 예시처럼 연관을 **지연 로딩으로 설정**하면 `orders`를 가져올 때 `user`는 프록시
 - 루프 안에서 `getUser()` 호출할 때마다 개별 SELECT
 - 즉시 로딩(`FetchType.EAGER`)도 JPQL에서는 N+1 가능 → 근본 해결 안 됨
 
@@ -151,14 +151,14 @@ Spring Boot 기본 `true`. **영속성 컨텍스트를 HTTP 응답 반환까지*
 
 **단점**:
 - DB 커넥션을 오래 쥠 → 고부하 시 커넥션 고갈
-- 컨트롤러, 뷰에서 엔티티 변경이 일어나면 **예기치 않은 flush**
+- 트랜잭션 경계 밖에서 지연 로딩이 발생해 DB 접근 위치가 흐려지고, 엔티티 변경 의도가 서비스 레이어 밖으로 새기 쉬움
 
 **권장**: 성능 중시 서비스는 `spring.jpa.open-in-view=false`로 끄고, 서비스 레이어 내에서 필요한 모든 데이터를 DTO로 말아서 반환.
 
 ## 트랜잭션과 영속성 컨텍스트의 생명주기
 
-- Spring에서는 보통 **트랜잭션 = 영속성 컨텍스트**
-- `@Transactional` 메서드 진입 시 컨텍스트 시작, 종료 시 flush, close
+- Spring에서는 보통 트랜잭션 범위의 `EntityManager`가 현재 스레드에 바인딩되고, 그 안에서 영속성 컨텍스트가 공유된다.
+- `@Transactional` 메서드 진입 시 컨텍스트가 준비되고, 정상 종료 시 flush 후 트랜잭션 commit. OSIV가 켜져 있으면 컨텍스트 생명주기가 HTTP 응답까지 늘어날 수 있다.
 - 여러 메서드에 걸친 작업은 같은 트랜잭션으로 묶어야 동일 컨텍스트 공유
 - `@Transactional(propagation = REQUIRES_NEW)`는 **별도 컨텍스트** 생성 → 주의
 

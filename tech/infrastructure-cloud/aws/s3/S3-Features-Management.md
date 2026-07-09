@@ -29,6 +29,7 @@ aliases: ["S3 기능 (Event, Select, Replication)", "S3 데이터 관리"]
 ## S3 Select
 
 객체를 다 다운로드하지 않고 **SQL로 부분 조회**하는 기능.
+신규 고객에게는 더 이상 제공되지 않는 레거시 기능이므로, 새 설계에서는 Athena, S3 Object Lambda, 애플리케이션 레벨 필터링을 우선 검토한다.
 
 - 지원 포맷: **CSV, JSON, Apache Parquet**
 - `SELECT s.field FROM S3Object s WHERE s.x = 'y'` 형태

@@ -138,7 +138,7 @@ cron/rate 표현식 → Scheduler → Target (Lambda, SQS, Step Functions 등)
 | 항목 | 값 |
 |------|-----|
 | 이벤트 크기 | 최대 **256KB** |
-| PutEvents TPS | 주요 리전 10,000/sec, 기타 400~2,400/sec |
+| PutEvents TPS | 리전별 quota. us-east-1/us-west-2/eu-west-1 등은 10,000/sec, ap-northeast-2(서울)는 600/sec 기준으로 확인 |
 | Rule 수 | 이벤트 버스당 **300개** (최대 2000까지 상향) |
 | Target 수 | Rule당 **5개** (조정 불가, 하드 리밋) |
 

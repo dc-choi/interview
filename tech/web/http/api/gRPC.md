@@ -11,7 +11,7 @@ gRPC는 Google이 오픈소스로 공개한 **고성능 RPC(Remote Procedure Cal
 
 ## 핵심 명제
 
-- **HTTP/2 기반** — multiplexing, 헤더 압축, 서버 푸시 활용
+- **HTTP/2 기반** — multiplexing, 헤더 압축, 스트리밍 활용
 - **Protobuf 직렬화** — JSON보다 작고 빠름. JSON 82바이트 → Protobuf 33바이트 수준
 - **계약 우선(Contract-first)** — `.proto` 파일로 서비스, 메시지를 먼저 정의 → 다언어 코드 자동 생성
 - **양방향 스트리밍** — 단방향 요청-응답을 넘어 4가지 통신 모드 지원
@@ -28,7 +28,7 @@ REST가 자원 중심(`GET /users/1`)이라면, gRPC는 **함수 호출 중심**
 
 - **단일 연결로 다중 메시지** — HTTP/1.1은 요청마다 새 커넥션(또는 head-of-line blocking). HTTP/2는 한 커넥션에서 여러 스트림 동시 처리
 - **헤더 압축(HPACK)** — 중복 헤더 중복 제거 → 작은 메시지에서 오버헤드 큰 폭 감소
-- **서버 푸시** — 클라이언트 요청 없이 서버가 데이터 전달
+- **스트리밍** — 하나의 RPC에서 서버 스트리밍, 클라이언트 스트리밍, 양방향 스트리밍 지원. HTTP/2 server push와는 다른 개념
 - **바이너리 프레이밍** — 텍스트 파싱 비용 제거
 
 ## Protocol Buffers (Protobuf)

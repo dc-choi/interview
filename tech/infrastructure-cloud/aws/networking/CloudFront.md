@@ -99,7 +99,7 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 추가 요금 포인트:
 - 요청 수 + Edge → 사용자 아웃바운드 전송량
 - **AWS Origin → CloudFront 무료** (S3, ELB, API Gateway)
-- 월 50GB 무료 전송 (계정별 항시 무료, 프리티어 아님)
+- 월 100GB 무료 전송 (CloudFront Free Plan 기준, 운영 전 최신 요금 확인)
 - Invalidation 1,000 경로/월 무료
 
 ## 보안 통합

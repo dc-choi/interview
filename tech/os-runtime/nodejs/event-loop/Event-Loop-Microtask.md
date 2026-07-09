@@ -79,7 +79,7 @@ Node.js:  timers큐 [ setTimeout ]  /  poll큐 [ I/O 콜백 ]  /  check큐 [ set
 | | 브라우저 | Node.js |
 |---|---|---|
 | **구조** | 단일 Macrotask Queue | 페이즈별 분리된 큐 |
-| **Microtask 처리** | Macrotask 1개마다 비움 | 페이즈 전환 시 비움 (v11+부터는 콜백마다) |
+| **Microtask 처리** | Macrotask 1개마다 비움 | 콜백 실행이 끝나는 경계마다 비움. `process.nextTick`이 Promise microtask보다 먼저 처리됨 |
 | **setImmediate** | 없음 | check 페이즈 전용 |
 
 ---

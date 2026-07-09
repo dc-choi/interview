@@ -128,7 +128,7 @@ resource "aws_ecr_lifecycle_policy" "app" {
 
 ## 측정
 
-- **Before/After 스토리지 사용량** — `aws ecr describe-repositories`의 `repositorySizeInBytes`
+- **Before/After 스토리지 사용량** — `aws ecr describe-images`의 `imageDetails[].imageSizeInBytes` 합산 또는 Cost Explorer의 ECR 저장 비용 추이
 - **비용 변화** — Cost Explorer에서 ECR 서비스 필터
 - **배포 실패율 추이** — 정책이 너무 공격적이면 필요한 이미지도 지워질 수 있음
 

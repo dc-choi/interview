@@ -65,7 +65,7 @@ libuv가 이 차이를 추상화하므로, Node.js 코드는 OS와 무관하게 
 하나의 루프 반복(iteration)은 다음 순서로 실행된다:
 
  1. 루프의 'now' 타임스탬프를 갱신한다.
- 2. 만료된 타이머의 콜백을 실행한다 (UV_RUN_DEFAULT 모드).
+ 2. Node.js 20 이전에는 이 위치에서도 만료된 타이머 콜백을 실행했다.
  3. 루프의 alive 상태를 확인한다.
     → active/ref'd 핸들, active 요청, closing 핸들이 하나라도 있으면 alive.
     → alive가 아니면 루프를 즉시 종료한다.
@@ -84,6 +84,7 @@ libuv가 이 차이를 추상화하므로, Node.js 코드는 OS와 무관하게 
     → uv_close()로 닫힌 핸들의 콜백.
 11. 'now' 타임스탬프를 다시 갱신한다.
 12. 만료된 타이머를 실행한다.
+    → Node.js 20(libuv 1.45.0) 이후 Node 이벤트 루프에서는 타이머가 poll 이후에만 실행된다.
     → 주의: 'now'는 다음 반복까지 다시 갱신되지 않는다.
 13. 반복 종료. UV_RUN_NOWAIT/UV_RUN_ONCE면 반환, UV_RUN_DEFAULT면 1단계로.
 ```

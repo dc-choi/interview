@@ -25,9 +25,9 @@ AWS 관리형 메시지 큐 서비스. 분산 시스템 간 비동기 통신의 
 
 | 항목 | Standard | FIFO |
 |------|----------|------|
-| 처리량 | 거의 무제한 | 기본 300 TPS, 배치 시 3,000 TPS |
+| 처리량 | 거의 무제한 | 기본은 API action 300 TPS, 배치 시 3,000 messages/s. High throughput FIFO는 리전별 한도가 더 높으므로 Service Quotas 확인 |
 | 순서 보장 | Best-effort (보장 안 됨) | MessageGroupId 단위 엄격한 FIFO |
-| 메시지 전달 | At-least-once (중복 가능) | Exactly-once processing (5분 내 중복 제거) |
+| 메시지 전달 | At-least-once (중복 가능) | 5분 deduplication window 안의 중복 enqueue 제거. 소비자 처리 자체는 실패, 재시도 때문에 멱등성이 필요 |
 | 큐 이름 | 제한 없음 | `.fifo` 접미사 필수 |
 | 적합 | 대부분의 비동기 작업 | 순서가 중요한 작업 (결제, 상태 변경) |
 
@@ -117,7 +117,7 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 
 | 항목 | 값 |
 |------|-----|
-| 메시지 크기 | 최대 **256KB** (대용량은 S3 + Extended Client Library) |
+| 메시지 크기 | 최대 **1 MiB**. 더 큰 payload는 S3 + Extended Client Library 패턴 |
 | 보존 기간 | 기본 4일, 최대 14일 |
 | 배치 | Send/Receive/Delete 각 최대 **10개** (부분 실패 가능 → 응답 `Failed[]` 확인 필수) |
 | In-flight 제한 | Standard: 120,000개, FIFO: 20,000개 |
@@ -135,7 +135,7 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 - **Free Tier**: 매월 100만 요청 무료
 - Standard: ~$0.40 / 100만 요청
 - FIFO: ~$0.50 / 100만 요청
-- 64KB 단위로 청구 (256KB 메시지 = 4건)
+- 64KB 단위로 청구 (1 MiB 메시지 = 16건)
 - 같은 리전 내 AWS 서비스 간 데이터 전송 무료
 
 ## 보안, 암호화
@@ -150,8 +150,8 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 
 - AWS Decoupling 3종 = SQS(Queue) / SNS(Pub-Sub) / Kinesis(Real-time Streaming) — 모델 차이로 구분
 - **Polling 기반** vs SNS의 **Push 기반** 대비
-- Standard: 무제한 처리량 + at-least-once + 순서 미보장 / FIFO: 300 TPS(배치 3,000) + exactly-once + MessageGroupId 단위 순서
-- 메시지 크기 256KB, 보존 4~14일(기본 4일), 가시성 타임아웃 기본 30초에서 최대 12시간
+- Standard: 무제한 처리량 + at-least-once + 순서 미보장 / FIFO: MessageGroupId 단위 순서 + deduplication window + 처리량은 일반 FIFO와 High throughput FIFO 한도 구분
+- 메시지 크기 1 MiB, 보존 4~14일(기본 4일), 가시성 타임아웃 기본 30초에서 최대 12시간
 - 처리 지연 시 `ChangeMessageVisibility`로 가시성 연장 → 중복 소비 방지
 - Long Polling 최대 20초 — 빈 응답, API 호출 비용 감소
 - DLQ 보존 기간은 소스 큐보다 길게 (Standard는 enqueue 타임스탬프 유지)

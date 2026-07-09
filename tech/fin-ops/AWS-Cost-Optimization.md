@@ -103,7 +103,7 @@ CircleCI, GitHub Actions 같은 SaaS에서 자체 Jenkins + Spot으로 이전한
 
 **항상 싼 게 아니다.** 트래픽이 충분히 크면 일반 인스턴스가 더 쌀 수 있다.
 
-- **Aurora Serverless v2**: ACU(Aurora Capacity Unit)당 과금. 유휴도 최소 0.5 ACU ≠ 0원이라 항상 최소 요금이 붙는다. 쿼리 수준이 예측 가능하면 작은 Provisioned 인스턴스 + RI가 더 싸다. 예측 불가능한 급격한 부하만 Serverless 후보.
+- **Aurora Serverless v2**: ACU(Aurora Capacity Unit)당 과금. 지원 엔진과 버전에서는 최소 0 ACU와 auto pause를 설정할 수 있고, 미지원 구성은 최소 0.5 ACU가 계속 과금된다. 쿼리 수준이 예측 가능하면 작은 Provisioned 인스턴스 + RI가 더 싸다. 예측 불가능한 급격한 부하만 Serverless 후보.
 - **Fargate**: EC2 자체 관리 부담을 없애주지만 단가가 EC2보다 ~10% 높다. 더 큰 제약은 운영 측면 — (1) 컨테이너 SSH 접근 불가, (2) privileged 권한 불가(Docker 빌드, s3fs 마운트 불가), (3) 커널 파라미터 수정 불가(성능 튜닝 제약). 트래픽이 커지면 이 제약이 비용보다 먼저 걸린다.
 - **Lambda**: 요청당 과금이 장점이지만 초당 수천 요청 상시 처리에는 EC2가 저렴할 수 있음
 

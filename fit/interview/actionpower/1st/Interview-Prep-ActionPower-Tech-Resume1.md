@@ -20,9 +20,9 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 - 예: 재고 100개인 품목에 디바이스 A(-5), B(-3)가 동시 도착 → 둘 다 100을 읽고 각각 95, 97로 갱신 → 최종 97 (정상: 92)
 
 **Pessimistic Lock 선택 이유**
-- `SELECT FOR UPDATE NO WAIT`로 품목 단위 Exclusive Row Lock 획득
+- `SELECT FOR UPDATE NOWAIT`로 품목 단위 Exclusive Row Lock 획득
 - 재고 읽기+갱신을 원자적 처리 (읽은 값 기반으로 갱신하므로 Lost Update 원천 차단)
-- `NO WAIT` 옵션: lock 획득 실패 시 즉시 에러 반환 (대기하지 않음) → 100ms 간격 최대 3회 재시도 (최악 1초 이내 완료)
+- `NOWAIT` 옵션: lock 획득 실패 시 즉시 에러 반환 (대기하지 않음) → 100ms 간격 최대 3회 재시도 (최악 1초 이내 완료)
 
 **Optimistic Lock을 선택하지 않은 이유**
 - Optimistic Lock은 version 컬럼 기반으로 UPDATE 시점에 충돌 감지 (`WHERE version = N` → 0 rows affected면 재시도)
@@ -33,7 +33,7 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 | 기준 | Optimistic | Pessimistic |
 |------|-----------|-------------|
 | 충돌 빈도 | 낮을 때 유리 (읽기 많은 서비스) | 높을 때 유리 (쓰기 경합 많은 서비스) |
-| 충돌 시 비용 | 전체 트랜잭션 재실행 | Lock 대기 (NO WAIT면 즉시 실패 후 재시도) |
+| 충돌 시 비용 | 전체 트랜잭션 재실행 | Lock 대기 (NOWAIT면 즉시 실패 후 재시도) |
 | Lock 보유 시간 | 없음 (커밋 시점에 검증) | 트랜잭션 동안 보유 |
 | 데드락 위험 | 없음 | 있음 (순서 통일로 예방) |
 | 구현 | version 컬럼 추가 | SELECT FOR UPDATE |
@@ -62,17 +62,17 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 - 데드락의 전형적 원인: TX1이 A→B 순서, TX2가 B→A 순서로 lock 획득 → 상호 대기
 - **왜 완전한 예방이 불가능한가**: Gap Lock, Next-Key Lock이 개발자가 의도하지 않은 순서로 암묵적으로 잡힘. 쿼리 실행 계획에 따라 lock 범위가 달라져 완벽한 순서 통일은 현실적으로 불가능
 - **감지+복구**: InnoDB **Wait-for Graph**로 자동 탐지 → 비용 적은 트랜잭션을 자동 rollback → 앱에서 `ER_LOCK_DEADLOCK` catch 후 재시도가 정석
-- **확률 완화**: Lock 순서 통일 + 트랜잭션 범위 최소화 + NO WAIT로 대기 회피 + 트랜잭션 안 외부 API 호출 금지
+- **확률 완화**: Lock 순서 통일 + 트랜잭션 범위 최소화 + NOWAIT로 대기 회피 + 트랜잭션 안 외부 API 호출 금지
 - 분석: `SHOW ENGINE INNODB STATUS` → LATEST DETECTED DEADLOCK 섹션 확인
 - 모니터링: Grafana에서 `mysql_global_status_innodb_deadlocks` 메트릭 추적
 
 **꼬리 질문 대비**
-- "NO WAIT 대신 SKIP LOCKED는?" → SKIP LOCKED는 잠긴 행을 건너뛰고 다음 행을 읽음. 큐 패턴(작업 분배)에 적합하지만, 재고 갱신처럼 **특정 행을 반드시 처리해야 하는** 경우에는 NO WAIT가 맞음
+- "NOWAIT 대신 SKIP LOCKED는?" → SKIP LOCKED는 잠긴 행을 건너뛰고 다음 행을 읽음. 큐 패턴(작업 분배)에 적합하지만, 재고 갱신처럼 **특정 행을 반드시 처리해야 하는** 경우에는 NOWAIT가 맞음
 - "FOR UPDATE와 FOR SHARE 차이?" → FOR UPDATE는 X Lock(배타적, 읽기/쓰기 모두 차단), FOR SHARE는 S Lock(공유, 읽기 허용, 쓰기 차단). 재고 갱신은 읽은 후 바로 쓰므로 X Lock 필요
 - "ECS 멀티 인스턴스에서도 DB Lock으로 충분한가?" → 같은 DB를 바라보는 한 충분. DB가 분리되면(샤딩 등) 분산 락 필요
 - "Optimistic Lock이 나은 상황은?" → 읽기 중심 서비스, 충돌 빈도 낮은 경우 (예: 게시글 수정, 설정 변경). Lock 보유 없이 동시성 극대화
 - "Gap Lock이 성능에 미치는 영향?" → 범위 잠금이므로 INSERT를 차단할 수 있음. 높은 동시성이 필요하면 RC로 변경하여 Gap Lock 비활성화 고려 (단, Phantom Read 허용 필요)
-- "데드락 발생 시 애플리케이션 처리?" → InnoDB가 한쪽을 자동 rollback → `ER_LOCK_DEADLOCK` 에러 catch 후 재시도. 우리 시스템은 NO WAIT로 상호 대기 자체를 회피하여 발생 확률을 크게 낮춤
+- "데드락 발생 시 애플리케이션 처리?" → InnoDB가 한쪽을 자동 rollback → `ER_LOCK_DEADLOCK` 에러 catch 후 재시도. 우리 시스템은 NOWAIT로 상호 대기 자체를 회피하여 발생 확률을 크게 낮춤
 - "테이블 락은 언제 발생?" → DDL(ALTER TABLE), LOCK TABLES 명시 사용, 인덱스 없는 UPDATE/DELETE(풀스캔 시 모든 행에 lock → 사실상 테이블 락)
 
 ### 슬로우 쿼리 99.3% 개선 — 측정 기준? EXPLAIN 분석 방법?

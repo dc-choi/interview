@@ -30,13 +30,13 @@ aliases: ["분석과 메시징 함정", "SAA-C03 Pitfalls Analytics Messaging"]
 
 ### Kinesis
 
-- **Data Streams** vs **Firehose** vs **Video Streams** vs **Data Analytics(Flink)**
+- **Data Streams** vs **Data Firehose** vs **Video Streams** vs **Managed Service for Apache Flink**
   | 서비스 | 보존 | 용도 |
   |---|---|---|
   | Data Streams | 1-365일 | 실시간, 재처리 |
-  | Firehose | 보존 X (즉시 전송) | S3, Redshift, OpenSearch 적재 |
+  | Data Firehose | 보존 X (버퍼 후 전송) | S3, Redshift, OpenSearch 적재 |
   | Video Streams | 1시간-10년 | 비디오 분석 |
-  | Data Analytics | - | SQL, Flink 분석 |
+  | Managed Service for Apache Flink | - | Flink 기반 스트림 처리 |
 - **샤드 처리량**: 인 1MB/s, 1000레코드, 아웃 2MB/s. **Enhanced Fan-out**: 소비자당 2MB/s(여러 컨슈머)
 - **리샤딩**: 분할, 병합. **샤드 수는 마법 숫자 아님** — 핫 파티션 키가 더 중요
 - **Producer**: KPL(배치, 집계), KCL(소비자 라이브러리, DDB로 체크포인트)
@@ -54,7 +54,7 @@ aliases: ["분석과 메시징 함정", "SAA-C03 Pitfalls Analytics Messaging"]
   |---|---|---|
   | 순서 | 최선 노력 | 그룹 내 보장 |
   | 중복 | 가능 (적어도 1회) | 중복 제거(5분) |
-  | 처리량 | 무제한 | 3000/s(배치) 또는 300/s |
+  | 처리량 | 무제한 | 일반 FIFO는 300 API TPS 또는 배치 3,000 messages/s. High throughput FIFO는 리전별 한도 확인 |
   | 이름 | 무관 | `.fifo` 접미사 필수 |
 - **Visibility Timeout** 기본 30초, 최대 12시간. 너무 짧으면 중복 처리, 길면 실패 메시지 묶임
 - **Long Polling**(0-20초): 빈 응답 줄여 비용 절감. 기본은 short polling

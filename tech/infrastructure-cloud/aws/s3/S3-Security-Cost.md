@@ -63,7 +63,7 @@ aliases: ["S3 보안", "S3 비용", "S3 암호화"]
 - 암호화 4가지 (SSE-S3, SSE-KMS, SSE-C, Client-Side)와 in transit vs at rest
 - CRR/SRR — Versioning 필수, 비동기, 사슬 불가, 기존 객체는 Batch Replication
 - Event Notification 타겟 4개(SNS, SQS, Lambda, EventBridge)와 EventBridge 선택 이유
-- S3 Select(SQL 부분 조회) vs Athena
+- S3 Select는 신규 고객에게 제공되지 않는 레거시 기능. 새 설계는 Athena나 S3 Object Lambda 우선 검토
 - Pre-signed URL의 보안, TTL 설계
 - Block Public Access, VPC Endpoint, Object Lock의 보안 계층
 

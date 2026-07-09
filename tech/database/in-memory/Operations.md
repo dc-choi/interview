@@ -18,7 +18,7 @@ aliases: ["운영 팁", "Operations"]
 ## MAXMEMORY-POLICY
 - 캐시로 사용 시 expire-time 설정 필수, 미설정 시 메모리 가득 참
 - 기본값은 메모리가 가득 차면 입력을 거부하므로 장애 발생 가능
-- `allkeys-lru`로 설정하면 expire-time이 없는 데이터부터 LRU로 삭제됨
+- `allkeys-lru`는 TTL 여부와 무관하게 모든 키 중 근사 LRU 후보를 삭제한다. TTL 있는 키만 지우려면 `volatile-*` 계열 정책을 사용한다.
 
 ## STOP-WRITES-ON-BGSAVE-ERROR
 ```

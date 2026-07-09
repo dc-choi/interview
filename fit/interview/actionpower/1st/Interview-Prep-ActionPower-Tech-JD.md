@@ -48,7 +48,7 @@ aliases: ["ActionPower JD 기반 기술 질문", "액션파워 JD 기술 질문"
 
 **실무 연결**
 - 재고 갱신 시스템에서 RR 격리 수준 + `SELECT FOR UPDATE`(Current Read) 조합으로 정합성 확보
-- 데드락은 완전히 예방할 수 없으므로, 위 DB Lock 섹션의 완화 전략(Lock 순서 통일, 트랜잭션 범위 최소화, NO WAIT)으로 발생 확률을 줄이고, InnoDB 자동 감지+복구에 의존
+- 데드락은 완전히 예방할 수 없으므로, 위 DB Lock 섹션의 완화 전략(Lock 순서 통일, 트랜잭션 범위 최소화, NOWAIT)으로 발생 확률을 줄이고, InnoDB 자동 감지+복구에 의존
 
 **꼬리 질문 대비**
 - "RC vs RR 차이?" → RC는 **매 쿼리마다** 최신 커밋 스냅샷 (Non-Repeatable Read 발생). RR은 **트랜잭션 시작 시점** 스냅샷 고정
