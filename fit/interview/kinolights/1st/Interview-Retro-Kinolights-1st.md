@@ -39,7 +39,7 @@ aliases: ["Kinolights Interview Retro 1st", "키노라이츠 1차 회고"]
 ### C. 동시성, 정합성
 
 - 레이스컨디션(한 품목 여러 디바이스 동시 입출고) → **비관적 락**. Redis 분산락은 단일장애지점, 아키텍처 간소화 위해 보류.
-- **⚠️ Q. 락과 재시도가 thundering herd로 폭발하는 구조 아닌가?** → "단일 DB라 발생 안 함"으로 회피. **NO WAIT fail-fast, 지수 백오프와 지터, 비스파이크 트래픽(1~2h 주기)** 논리로 정면 반박했어야.
+- **⚠️ Q. 락과 재시도가 thundering herd로 폭발하는 구조 아닌가?** → "단일 DB라 발생 안 함"으로 회피. **NOWAIT fail-fast, 지수 백오프와 지터, 비스파이크 트래픽(1~2h 주기)** 논리로 정면 반박했어야.
 - **Q. 분산락 언제 적절?** → 외부 API(결제 등) 트랜잭션 분리 시. (무난)
 - Decimal.js, 통화별 반올림 → 발주 금액 신뢰 (잘 전달).
 
@@ -107,7 +107,7 @@ aliases: ["Kinolights Interview Retro 1st", "키노라이츠 1차 회고"]
 
 - [x] **폴링 vs 인터럽트 반박** → [[My-Tech-Cards-Data]] 카드 2 꼬리 추가(인메모리 에미터는 인스턴스 간 전파 불가 → 외부 브로커 필연, 아웃박스는 발행 보장 vs SQS는 소비 분산으로 역할 분리).
 - [x] **크리티컬 에러 건별 알림** → [[My-Tech-Cards-Ops]] 카드 5 꼬리 추가(통계형 SLO 알림과 결제나 발주급 크리티컬 건별 슬랙 웹훅 이원화).
-- [x] **thundering herd 반박** → [[My-Tech-Cards-Data]] 카드 1 꼬리 추가(NO WAIT는 convoy 없음, 지수 백오프와 지터, 상한 3회, 비스파이크 트래픽).
+- [x] **thundering herd 반박** → [[My-Tech-Cards-Data]] 카드 1 꼬리 추가(NOWAIT는 convoy 없음, 지수 백오프와 지터, 상한 3회, 비스파이크 트래픽).
 - [x] **AI 시대 인력과 리더십 가치** → [[My-FIT-Answers]] #15 신규 답변(AI는 책임을 못 진다, 구현 위임될수록 판단의 값이 오른다, 선제 프레임). 정렬표와 개수도 갱신.
 - [x] **기초 단답 보강** → NestJS 라이프사이클 순서는 [[My-Tech-Cards-Ops]] 카드 7 꼬리, 타입 소거 vs 런타임 좁히기는 [[TS-Type-Narrowing]], fast-forward는 [[Git-Merge-Strategies]]에 보강. (DI 스코프 3종은 카드 7에 이미 정확하니 암기만.)
 - [x] **시크릿 관리** → [[My-Tech-Cards-Ops]] 카드 6 꼬리 추가(현 GitHub Secrets, 정공법은 Secrets Manager나 Parameter Store, OIDC로 장기 키 제거).

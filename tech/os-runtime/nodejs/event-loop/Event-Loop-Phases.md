@@ -11,14 +11,15 @@ libuv 소스 기반 페이즈 구조, nextTick, microtask 삽입 지점, 실행 
 
 ## libuv `uv_run` 소스코드
 이벤트 루프의 실제 구현체. 각 페이즈를 순회하며 등록된 콜백을 처리한다.
+Node.js 20(libuv 1.45.0) 이후에는 타이머 처리가 poll 이후로만 실행된다. 아래 흐름을 외울 때는 Node 버전에 따라 `setTimeout(0)`과 `setImmediate()`의 상대 순서가 달라질 수 있음을 함께 봐야 한다.
 ```c
 while (r != 0 && loop->stop_flag == 0) {
     uv__update_time(loop);          // 현재 시간 갱신
-    uv__run_timers(loop);           // Timer 페이즈
     uv__run_pending(loop);          // Pending Callbacks 페이즈
     uv__run_idle(loop);             // Idle 페이즈
     uv__run_prepare(loop);          // Prepare 페이즈
     uv__io_poll(loop, timeout);     // Poll 페이즈
+    uv__run_timers(loop);           // Timer 페이즈 (Node.js 20+ 기준)
     uv__run_check(loop);            // Check 페이즈
     uv__run_closing_handles(loop);  // Close Callbacks 페이즈
 }
@@ -29,9 +30,9 @@ while (r != 0 && loop->stop_flag == 0) {
 
 ## 페이즈 간 nextTickQueue & microTaskQueue
 ```
-각 페이즈가 전환될 때마다, 현재 페이즈와 관계없이 nextTickQueue와 microTaskQueue가 먼저 비워진다.
+Node.js는 JS 콜백 하나가 끝나는 경계마다 nextTickQueue와 microTaskQueue를 비운다. 그래서 같은 페이즈 안에서도 콜백 사이에 microtask가 끼어들 수 있다.
 
-[Timer] → nextTick → microtask → [Pending] → nextTick → microtask → [Poll] → ...
+[callback] → nextTick → microtask → [next callback] → nextTick → microtask → ...
 
 이것이 process.nextTick()이 어떤 페이즈에서든 "즉시" 실행되는 이유이다.
 nextTick은 현재 작업 완료 직후 콜 스택에 주입되며, Promise microtask보다 우선순위가 높다.
@@ -84,7 +85,7 @@ nextTick은 현재 작업 완료 직후 콜 스택에 주입되며, Promise micr
 ## 실행 흐름
 ```
 1. Node.js 프로그램 실행: JS 파일 평가, setTimeout/비동기 I/O 등록.
-2. 백그라운드 처리: 비동기 I/O는 libuv 스레드 풀로 전달, 완료되면 콜백이 이벤트 큐에 등록.
+2. 백그라운드 처리: 파일 I/O, 일부 DNS, crypto, zlib 같은 작업은 libuv 스레드 풀로 가고, TCP/UDP 네트워크 I/O는 보통 OS readiness 알림을 통해 완료 콜백이 큐에 등록된다.
 3. 이벤트 루프 처리: 각 단계에서 적합한 큐에 등록된 작업을 하나씩 처리.
 4. 작업 완료: 처리할 작업이 없으면 프로그램 종료.
 ```
@@ -107,7 +108,7 @@ MicrotaskQueue 전부 비움 (Promise 콜백)
 다시 Timer로 (루프)
 ```
 
-**핵심**: 최초 스크립트 실행 자체가 첫 번째 Macrotask이고, 그 이후 각 페이즈(= 분류된 Macrotask Queue)를 순회하며, 페이즈 사이마다 nextTick → microtask 순으로 전부 비운다.
+**핵심**: 최초 스크립트 실행 이후 이벤트 루프는 페이즈별 큐를 순회한다. Node.js는 콜백 실행이 끝나는 지점마다 nextTick → microtask 순으로 큐를 비우므로, 단순히 페이즈 사이에서만 실행된다고 외우면 틀린다.
 
 ## process.nextTick() vs setImmediate()
 
@@ -136,7 +137,7 @@ James Snell의 또 다른 핵심 발언:
 이 말은 **이벤트 루프의 본질**을 한 줄로 요약한다. 메인 스레드가 JS 함수를 실행하는 그 순간에도, libuv 워커 스레드는 파일 I/O를 읽고 있고, OS 커널은 epoll/kqueue/IOCP로 네트워크 이벤트를 감지하고 있다. 메인 스레드의 JS 실행과 백그라운드 I/O는 **진짜로 병행**된다.
 
 **면접 답변에 녹이는 방법:**
-> "Node.js에서 JS 실행은 싱글 스레드지만, 그 동안에도 libuv 스레드 풀과 OS 커널은 백그라운드에서 I/O를 처리하고 있습니다. 이벤트 루프는 JS 실행이 끝날 때마다 이 백그라운드 작업의 완료 결과를 큐에서 꺼내 콜백을 실행하는 구조입니다. 그래서 '동시성은 없지만 병렬성은 있다'고 표현하기도 합니다."
+> "Node.js에서 JS 실행은 한 스레드에서 일어나지만, 그 동안에도 libuv 스레드 풀과 OS 커널은 백그라운드에서 I/O를 처리하고 있습니다. 이벤트 루프는 JS 실행이 끝날 때마다 이 백그라운드 작업의 완료 결과를 큐에서 꺼내 콜백을 실행하는 구조입니다. 그래서 JS 레벨은 단일 스레드 동시성이고, 런타임과 커널 수준에서는 병렬 작업이 함께 진행됩니다."
 
 **실무 함의:** 메인 스레드의 **JS 함수를 작게 유지**하는 것이 성능의 핵심이다. 큰 함수는 이벤트 루프를 블로킹하여, 완료된 I/O 콜백이 실행 기회를 얻지 못하게 만든다.
 

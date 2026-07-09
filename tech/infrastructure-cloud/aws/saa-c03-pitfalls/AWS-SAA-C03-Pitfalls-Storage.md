@@ -30,7 +30,7 @@ aliases: ["스토리지 함정", "SAA-C03 Pitfalls Storage"]
 - **CORS**: 다른 오리진 정적 사이트가 S3 호스팅 콘텐츠 호출 시 — 자주 시험에 등장. 헤더 미설정 시 브라우저 차단
 - **Replication**(CRR/SRR): 버저닝 필수. 기본은 **신규 객체만** 복제(과거 객체는 Batch Replication)
 - **Transfer Acceleration**: CloudFront Edge 통해 업로드 가속. 리전 간 콘텐츠 다운로드 아님(그건 CloudFront)
-- **S3 Select / Glacier Select**: 객체 내 일부 행만 SQL로 추출 — 비용, 시간 절약
+- **S3 Select / Glacier Select**: 기존 사용 고객에게 남아 있는 레거시 기능. 신규 설계나 최신 시험 대비는 Athena, S3 Object Lambda 같은 대안을 우선 확인
 - **Multipart Upload**: 100MB부터 권장, **5GB 이상 필수**. 실패 파트는 수명주기로 정리해야 청구 안 됨
 - **Requester Pays**: 데이터 전송 비용을 요청자(consumer)에게. 무료 계정에서 호출 불가
 - **S3 이벤트 알림**: SNS, SQS, Lambda, EventBridge. **버저닝 미사용 시 동일 키 동시 쓰기는 이벤트 누락 가능**

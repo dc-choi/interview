@@ -40,7 +40,7 @@ aliases: ["FIDO 세미나"]
 ### 구현시고려사항
 - **UV**(User Verification): 기본값으로 설정
 - **RK**(Resident Key): 필수
-- **ATTR**(Attestation): none이면 안됨
+- **Attestation**: 일반 소비자 서비스는 `none`도 가능. 특정 보안 요구나 규제 때문에 인증기 출처를 검증해야 할 때 direct 또는 enterprise attestation을 검토
 - **BS/BE flag**: WebAuthn에서 백업 상태 트래킹을 위해 필요
 - **DPK**(Device Public Key): 동기화된 디바이스인지 확인하는 요소
 - **UVPA**: 크로스 디바이스 인증 시 사용

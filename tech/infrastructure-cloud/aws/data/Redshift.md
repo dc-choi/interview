@@ -30,7 +30,7 @@ PostgreSQL 기반의 **OLAP 전용 완전 관리형 데이터 웨어하우스**.
 - **리더 노드**: 클라이언트와 통신, 쿼리 파싱, 실행 계획 수립, 컴퓨팅 노드에 작업 분배, 결과 집계.
 - **컴퓨팅 노드(Compute Node)**: 실제 데이터, 연산을 보유. 각 노드마다 전용 CPU, 메모리, 디스크 스토리지.
 - **노드 슬라이스(Slice)**: 컴퓨팅 노드 내부에서 데이터, 메모리를 더 잘게 나눈 병렬 처리 단위.
-- **Single-AZ만 지원** (Multi-AZ는 향후 제공 예정). HA가 필요하면 스냅샷 → 다른 리전, AZ에 신규 클러스터 복원.
+- **배포 옵션**: provisioned RA3 클러스터는 Multi-AZ 배포를 지원한다. 단일 노드나 일부 구성은 Single-AZ 전제로 봐야 하며, 리전 장애 대비는 여전히 스냅샷, cross-region snapshot copy, data sharing 같은 DR 설계가 필요하다.
 
 ## 노드 타입
 
@@ -112,7 +112,7 @@ PostgreSQL 기반의 **OLAP 전용 완전 관리형 데이터 웨어하우스**.
 - **S3, DynamoDB, EMR에서 대량 데이터를 빠르게 적재** → **COPY 명령**.
 - **동시 쿼리 폭주 시 성능 유지** → **Concurrency Scaling**.
 - **자주 쓰는 집계 쿼리 응답 시간 단축** → **Materialized View**.
-- Redshift는 **Single-AZ**만 지원. HA, DR이 필요하면 **Cross-Region Snapshot Copy**.
+- Redshift provisioned RA3는 **Multi-AZ** 배포를 지원한다. 리전 단위 DR이 필요하면 **Cross-Region Snapshot Copy**나 데이터 공유 전략을 별도로 설계한다.
 - 노드 타입은 **RA3(컴퓨팅/스토리지 분리, 권장)**, **DC2(작은 데이터셋, 로컬 SSD)** 두 가지를 구분.
 
 ## 출처

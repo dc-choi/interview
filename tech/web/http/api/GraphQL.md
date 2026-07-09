@@ -53,7 +53,7 @@ type Post {
 ## 단점
 
 ### HTTP 캐싱이 어렵다
-모든 요청이 `POST /graphql`로 들어가서 URL 기반 캐시(`Cache-Control`, CDN)가 무력화된다. Apollo, Relay 같은 클라이언트 사이드 캐시로 보완해야 함.
+실무에서 mutation과 복잡한 query를 `POST /graphql` 단일 엔드포인트로 보내는 경우가 많아 URL 기반 캐시(`Cache-Control`, CDN)를 그대로 쓰기 어렵다. 다만 GraphQL over HTTP는 query에 GET을 허용할 수 있고, persisted query를 쓰면 CDN 캐싱 여지도 생긴다. Apollo, Relay 같은 클라이언트 사이드 캐시로 보완하는 경우도 많다.
 
 ### 복잡한 에러 핸들링
 한 쿼리에 여러 리소스가 섞여 있을 때 일부만 실패하면 응답이 `{ data: {...}, errors: [...] }` 형태로 부분 성공/부분 실패. 클라이언트가 필드별로 에러를 파악해야 함. REST의 단순한 4xx/5xx 모델보다 까다롭다.

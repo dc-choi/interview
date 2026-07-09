@@ -33,7 +33,7 @@ aliases: ["EC2 흔한 실수", "EC2 면접, 시험 체크포인트"]
 - **Stop은 EBS 기반만 가능**, Instance Store 기반은 Stop = Terminate
 - AMI는 **리전 종속** — Cross-Region 사용 시 복사 필수
 - AMI 연결 스냅샷은 **AMI Deregister 후에만 삭제** 가능
-- Elastic IP는 **실행 중 인스턴스에 연결된 1개만 무료**, 미연결, 중지 상태는 과금
+- 공인 IPv4와 Elastic IP는 2024년 2월 1일부터 사용 상태와 무관하게 시간당 과금. Free Tier 무료 시간은 계정 조건을 별도 확인
 - ENA로 **최대 100 Gbps** 대역폭, Nitro 기반에서 표준
 - Key Pair **개인키 분실 시 복구 불가** — EBS 분리 후 우회 또는 새 인스턴스
 - OS별 기본 SSH Username 차이 (Amazon Linux `ec2-user`, Ubuntu `ubuntu`)

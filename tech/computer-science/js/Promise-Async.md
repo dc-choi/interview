@@ -22,10 +22,10 @@ aliases: ["Promise와 Async", "JS"]
 
 ### resolve() vs fulfilled — 자주 혼동
 
-- **`resolve()`**: 비동기 작업이 성공으로 끝났음을 알리는 **함수 호출** → 동작
-- **`fulfilled`**: `resolve()` 호출 후 Promise가 전환된 **상태** → 결과
+- **`resolve()`**: Promise를 어떤 값이나 thenable의 결과로 **해결하려는 함수 호출** → 동작
+- **`fulfilled`**: Promise가 성공 값으로 정착한 **상태** → 결과
 
-인과 관계: `resolve(value)` 호출 → Promise의 상태가 `pending` → `fulfilled`로 전환. **실패로 끝내려면 `reject()`** 호출 → 상태 `rejected`.
+보통 `resolve(value)`를 호출하면 `pending` → `fulfilled`로 전환된다. 다만 `resolve(rejectedPromise)`나 rejected thenable을 넘기면 최종 상태는 `rejected`가 될 수 있다. **실패로 끝내려면 보통 `reject()`** 호출 → 상태 `rejected`.
 
 ```
 new Promise((resolve, reject) => {
@@ -58,7 +58,7 @@ new Promise((resolve, reject) => {
 
 ## `return await` 생략은 항상 정답인가
 
-ESLint `no-return-await` 규칙: `return await fn()`의 `await`가 **불필요한 마이크로태스크**를 만든다고 지적. 하지만 **스택 트레이스 가독성**을 희생한다.
+과거 ESLint `no-return-await` 규칙은 `return await fn()`의 `await`를 불필요한 성능 비용으로 봤다. 하지만 최신 ESLint에서는 이 규칙이 deprecated 되었고, 최신 엔진에서는 추가 마이크로태스크가 생긴다는 설명도 맞지 않는다. 여전히 중요한 차이는 **스택 트레이스 가독성**과 `try/catch` 동작이다.
 
 ### 예시
 ```ts
@@ -71,17 +71,17 @@ async function bizLogic() {
 - **(A) await 있음**: `bizLogic`이 `await`에서 일시 정지 → 에러 스택에 **`bizLogic` 프레임이 남음**
 - **(B) await 생략**: `bizLogic`이 Promise를 즉시 반환, 종료 → 에러 스택에서 **`bizLogic` 증발**, `api.call` 이하만 남음
 
-프로덕션에서 에러 역추적할 때 **"어느 비즈니스 로직에서 터졌는지"** 보이느냐의 차이. `await` 생략으로 얻는 건 미세한 마이크로태스크 한 번 절약 (< 1µs).
+프로덕션에서 에러 역추적할 때 **어느 비즈니스 로직에서 터졌는지** 보이느냐의 차이가 난다. 성능상 이득을 기대하기보다 디버깅, 에러 처리 맥락을 기준으로 판단한다.
 
 ### 권장 판단
 
-- **백엔드**: 대부분 DB, 외부 API 호출이 수 ms~수백 ms. 마이크로태스크 한 번(nano초)은 **무시 가능**. **`return await` 유지가 디버깅 이득 훨씬 큼**
+- **백엔드**: 대부분 DB, 외부 API 호출이 수 ms~수백 ms. **`return await` 유지가 디버깅 이득이 큰 경우가 많음**
 - **초고빈도 핫 루프**: 트리, 리스트 재귀 같은 경우라면 생략 의미 있을 수 있음. 측정 필수
 - **`try-catch`로 감싸는 경우**: `return await` 안 쓰면 함수 밖에서 reject → 내 `catch`가 못 잡음. **반드시 `return await`**
 
 ### 결론
 
-"no return await" 규칙은 옛날 V8 기준 미세 성능 가이드. 오늘날 대부분 코드에서는 **스택 트레이스, 에러 처리**가 우선. **ESLint 규칙을 맹신하지 말고 맥락에 맞게** 적용.
+`no-return-await` 계열 조언은 과거 엔진 최적화 전제의 영향이 크다. 오늘날 대부분 코드에서는 **스택 트레이스, 에러 처리**가 우선. **ESLint 규칙을 맹신하지 말고 맥락에 맞게** 적용.
 
 ## 출처
 - [매일메일 — Promise](https://www.maeil-mail.kr/question/65)

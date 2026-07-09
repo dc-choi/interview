@@ -32,4 +32,4 @@ aliases: ["보안(Security)", "Security"]
 ## 현장사례
 - [[Kakao-Ent-Seminar#보안|카카오엔터 보안]] — 서비스 접근 권한, 네트워크 망 설정
 - [[Fintech-Seminar#망분리|금융 망분리]] — 법적 망분리 의무
-- [[TS-Backend-Meetup-1#Cryptographic Hash 101|패스워드 해싱]] — argon2/balloon 권장, SHA-256/bcrypt 부적합
+- [[TS-Backend-Meetup-1#Cryptographic Hash 101|패스워드 해싱]] — Argon2id 우선, scrypt 대안, bcrypt는 입력 길이와 work factor 관리가 필요한 레거시 선택지

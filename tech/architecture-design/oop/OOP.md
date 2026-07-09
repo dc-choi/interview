@@ -49,8 +49,11 @@ Car supercar = new SuperCar();
 다운캐스팅은 타입 안정성을 보장할 수 있을 때만 사용한다.
 
 ```Java
-Car car = new Car();
-SuperCar supercar = (SuperCar) car;
+Car car = new SuperCar();
+SuperCar supercar = (SuperCar) car; // 실제 객체가 SuperCar라서 안전
+
+Car normalCar = new Car();
+// SuperCar broken = (SuperCar) normalCar; // 런타임 ClassCastException
 ```
 
 ## 오버라이딩 / 오버로딩

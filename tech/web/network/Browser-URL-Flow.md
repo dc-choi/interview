@@ -26,7 +26,7 @@ aliases: ["Browser URL Flow", "브라우저 URL 입력 프로세스", "What happ
 - 스킴(`https://`), 호스트(`google.com`), 포트(`443`), 경로, 쿼리, 프래그먼트 분리
 - **휴먼 입력 정규화** — 퍼니코드(IDN) 변환, 공백 trim, 검색어로 간주할지 URL로 간주할지 판단
 - **HSTS 캐시** 확인 — 도메인이 HSTS로 등록돼 있으면 `http://`도 `https://`로 강제 승격
-- **Service Worker** 캐시, 쿠키, CORS 사전 정책 확인
+- **Service Worker** 제어 범위와 캐시, 쿠키 정책 확인. CORS preflight는 주소창 navigation이 아니라 Fetch, XHR 같은 cross-origin 비단순 요청에서 별도로 발생한다.
 
 ## 2. DNS 조회 (도메인 → IP)
 

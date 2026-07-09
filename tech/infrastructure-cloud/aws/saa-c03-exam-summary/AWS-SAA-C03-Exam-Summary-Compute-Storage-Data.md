@@ -48,7 +48,7 @@ aliases: ["SAA-C03 컴퓨팅 스토리지 데이터 요약", "SAA Summary Comput
 
 - **EBS**: EC2 블록 스토리지. **같은 AZ 한정**, 1대 EC2 attach(io1/2는 multi-attach). 볼륨 타입: gp(범용 SSD), io(Provisioned IOPS), st1(처리량 HDD), sc1(콜드 HDD). 스냅샷 백업
 - **EFS**: 탄력적 파일 시스템 (NFS). **여러 AZ에서 다수 EC2/ECS/Lambda 동시 접근**. Standard/IA/One Zone 클래스
-- **S3**: 글로벌 객체 스토리지(리전 단위). 클래스: Standard → Standard-IA → Intelligent Tiering → One-Zone IA → Glacier Instant/Flexible Retrieval → Glacier Deep Archive. **멀티파트 업로드 100MB~ / 5GB 이상 필수**. 전송 가속, 바이트 범위 가져오기, S3 Select. **CORS, MFA Delete, Pre-signed URL, Object Lock, Vault Lock(WORM)**
+- **S3**: 글로벌 객체 스토리지(리전 단위). 클래스: Standard → Standard-IA → Intelligent Tiering → One-Zone IA → Glacier Instant/Flexible Retrieval → Glacier Deep Archive. **멀티파트 업로드 100MB~ / 5GB 이상 필수**. 전송 가속, 바이트 범위 가져오기. S3 Select는 신규 고객에게 제공되지 않는 레거시 기능. **CORS, MFA Delete, Pre-signed URL, Object Lock, Vault Lock(WORM)**
 - **FSx**: 매니지드 파일 시스템. Lustre(HPC/ML), Windows File Server(SMB/AD), NetApp ONTAP, OpenZFS
 - **Storage Gateway**: 온프레미스 ↔ S3 가교. S3 File / FSx File / Volume / Tape Gateway
 - 자세히: [[EBS]], [[EFS]], [[S3]], [[FSx]], [[Storage-Gateway-DataSync]]

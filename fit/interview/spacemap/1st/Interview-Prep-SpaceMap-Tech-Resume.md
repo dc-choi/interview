@@ -18,7 +18,7 @@ aliases: ["SpaceMap 이력서 기술 질문", "스페이스맵 이력서 기반 
 
 **경험 요약**
 - 수천 대 IoT 디바이스가 같은 품목 재고를 동시 갱신 → Lost Update 발생
-- `SELECT FOR UPDATE NO WAIT`로 품목 단위 Row Lock + 100ms 간격 3회 재시도 (디바이스 타임아웃 1초 내 수락/거절 결정)
+- `SELECT FOR UPDATE NOWAIT`로 품목 단위 Row Lock + 100ms 간격 3회 재시도 (디바이스 타임아웃 1초 내 수락/거절 결정)
 - Lock 순서를 품목 ID 오름차순으로 통일 → 데드락 회피
 - 트랜잭션 범위 최소화 (조회, 검증은 트랜잭션 밖, Lock 구간은 갱신만)
 
@@ -29,7 +29,7 @@ aliases: ["SpaceMap 이력서 기술 질문", "스페이스맵 이력서 기반 
 **꼬리 질문 대비**
 - "Optimistic vs Pessimistic?" → 수집 빈도 높고 충돌 잦으면 Pessimistic. 충돌 드물면 version 컬럼 Optimistic. IoT는 동일 품목 동시성이 잦아 Pessimistic 선택
 - "분산락(Redis Redlock)은 왜 안 썼나?" → 단일 RDS면 DB Lock으로 충분. 별도 인프라 의존성, 네트워크 레이턴시 리스크 회피. 샤딩이 들어가면 그때 분산락 검토
-- "`NO WAIT` vs `SKIP LOCKED`?" → 특정 레코드를 반드시 처리해야 하면 NO WAIT, 작업 큐처럼 아무거나 집어 분배하면 SKIP LOCKED
+- "`NOWAIT` vs `SKIP LOCKED`?" → 특정 레코드를 반드시 처리해야 하면 NOWAIT, 작업 큐처럼 아무거나 집어 분배하면 SKIP LOCKED
 
 ---
 

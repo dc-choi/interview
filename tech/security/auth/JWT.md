@@ -15,9 +15,9 @@ JSON Web Token의 약자로, 사용자의 정보를 JSON 객체로 표현한 토
 
 ## 구조
 ```
-1. header(정보 암호화할 해싱 알고리즘, 토큰 타입)
-2. payload(토큰이 가진 정보, key-value 형식으로 이루어져있음)
-3. signature(인코딩된 header와 payload를 더하고 비밀키로 해싱함, 토큰의 위변조 여부를 확인하는데 사용)
+1. header(토큰 타입과 서명 알고리즘 메타데이터)
+2. payload(토큰이 가진 claim. 기본 JWT에서는 암호화되지 않고 Base64URL 인코딩만 됨)
+3. signature(Base64URL(header) + "." + Base64URL(payload)에 대해 HMAC, RSA, ECDSA 등으로 만든 서명 또는 MAC. 위변조 탐지에 사용)
 ```
 
 ## 장점

@@ -13,7 +13,7 @@ aliases: ["SAA-C03 메시징 네트워킹 보안 요약", "SAA Summary Network S
 
 - **SQS**: 큐. Standard(무제한, 중복 가능) / FIFO(순서, 낮은 처리량). 메시지 보존 1분-14일. Long Polling, Visibility Timeout. SendMessage(Producer) / DeleteMessage(Consumer)
 - **SNS**: Pub/Sub. 구독자 = E-mail/SMS/HTTPS/SQS/Lambda/Firehose. **Fanout**(SNS → 다수 SQS). FIFO, 메시지 필터링, KDF로 S3 전송
-- **Kinesis**: 실시간 스트리밍. **Data Stream**(샤드, 레코드, Sequence No, 파티션 키) / **Firehose**(S3, Redshift, OpenSearch로 전달, Queue) / **Data Analytics**(SQL/Flink) / **Video Streams**. Standard(샤드당 2MB/s) / **Enhanced Fanout**(소비자당 2MB/s)
+- **Kinesis**: 실시간 스트리밍. **Data Stream**(샤드, 레코드, Sequence No, 파티션 키) / **Data Firehose**(S3, Redshift, OpenSearch로 버퍼 후 전달) / **Managed Service for Apache Flink**(예전 Data Analytics) / **Video Streams**. Standard(샤드당 2MB/s) / **Enhanced Fanout**(소비자당 2MB/s)
 - **Amazon MQ**: 매니지드 RabbitMQ/ActiveMQ. AMQP/MQTT 표준 프로토콜. **확장성 제한** — 온프레미스 마이그레이션용
 - **EventBridge**: 이벤트 버스. Schedule/cron, 스키마 레지스트리. SQS/SNS와 차이는 **라우팅 룰 기반**
 - 자세히: [[SQS]], [[SNS]], [[Kinesis]], [[Amazon-MQ]], [[EventBridge]]

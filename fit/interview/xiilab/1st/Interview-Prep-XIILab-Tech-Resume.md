@@ -21,9 +21,9 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
 - 예: 재고 100개인 품목에 디바이스 A(-5), B(-3)가 동시 도착 → 둘 다 100을 읽고 각각 95, 97로 갱신 → 최종 97 (정상: 92)
 
 **Pessimistic Lock 선택 이유**
-- `SELECT FOR UPDATE NO WAIT`로 품목 단위 Exclusive Row Lock 획득
+- `SELECT FOR UPDATE NOWAIT`로 품목 단위 Exclusive Row Lock 획득
 - 재고 읽기+갱신을 원자적 처리 (읽은 값 기반으로 갱신하므로 Lost Update 원천 차단)
-- `NO WAIT` 옵션: lock 획득 실패 시 즉시 에러 반환 → 100ms 간격 최대 3회 재시도 (최악 1초 이내 완료)
+- `NOWAIT` 옵션: lock 획득 실패 시 즉시 에러 반환 → 100ms 간격 최대 3회 재시도 (최악 1초 이내 완료)
 
 **Optimistic Lock을 선택하지 않은 이유**
 - IoT 특성상 **충돌 빈도가 높음** (수천 대가 주기적으로 동시 전송) → Optimistic은 재시도 비용이 과도
@@ -32,7 +32,7 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
 | 기준 | Optimistic | Pessimistic |
 |------|-----------|-------------|
 | 충돌 빈도 | 낮을 때 유리 | 높을 때 유리 |
-| 충돌 시 비용 | 전체 트랜잭션 재실행 | Lock 대기 (NO WAIT면 즉시 실패 후 재시도) |
+| 충돌 시 비용 | 전체 트랜잭션 재실행 | Lock 대기 (NOWAIT면 즉시 실패 후 재시도) |
 | Lock 보유 시간 | 없음 | 트랜잭션 동안 보유 |
 | 데드락 위험 | 없음 | 있음 (순서 통일로 예방) |
 
@@ -45,7 +45,7 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
 - 분산 DB/멀티 인스턴스 환경이 되면 그때 Redis 분산락 도입 검토
 
 **꼬리 질문 대비**
-- "NO WAIT 대신 SKIP LOCKED는?" → SKIP LOCKED는 잠긴 행을 건너뛰고 다음 행을 읽음. 큐 패턴에 적합하지만, 재고 갱신처럼 **특정 행을 반드시 처리해야 하는** 경우에는 NO WAIT가 맞음
+- "NOWAIT 대신 SKIP LOCKED는?" → SKIP LOCKED는 잠긴 행을 건너뛰고 다음 행을 읽음. 큐 패턴에 적합하지만, 재고 갱신처럼 **특정 행을 반드시 처리해야 하는** 경우에는 NOWAIT가 맞음
 - "ECS 멀티 인스턴스에서도 DB Lock으로 충분한가?" → 같은 DB를 바라보는 한 충분. DB가 분리되면(샤딩 등) 분산 락 필요
 - "Optimistic Lock이 나은 상황은?" → 읽기 중심 서비스, 충돌 빈도 낮은 경우 (예: 게시글 수정, 설정 변경)
 - "데드락 발생 시 처리?" → InnoDB Wait-for Graph로 자동 탐지 → 비용 적은 TX 자동 rollback → 앱에서 catch 후 재시도

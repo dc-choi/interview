@@ -24,7 +24,7 @@ await는 CPU를 블로킹하지 않는다. 다음과 같이 동작한다:
 3. 다른 태스크가 실행됨
 4. await한 Promise가 resolve되면 저장된 컨텍스트에서 실행 재개
 
-만약 Promise가 이미 resolve된 상태라면, 컨텍스트 스위칭 없이 바로 이어서 실행된다.
+Promise가 이미 fulfilled 상태라도 `await` 이후 코드는 현재 콜스택에서 바로 이어서 실행되지 않고 microtask로 재개된다.
 ```
 
 ### 트랜스파일 예시

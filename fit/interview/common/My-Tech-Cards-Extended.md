@@ -16,7 +16,7 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 | 기준 | Optimistic | Pessimistic |
 |---|---|---|
 | 충돌 빈도 | 낮을 때 유리 (읽기 많은 서비스) | 높을 때 유리 (쓰기 경합 많은 서비스) |
-| 충돌 시 비용 | 전체 트랜잭션 재실행 | Lock 대기 (NO WAIT면 즉시 실패 후 재시도) |
+| 충돌 시 비용 | 전체 트랜잭션 재실행 | Lock 대기 (NOWAIT면 즉시 실패 후 재시도) |
 | Lock 보유 시간 | 없음 (커밋 시점에 검증) | 트랜잭션 동안 보유 |
 | 데드락 위험 | 없음 | 있음 (순서 통일로 예방) |
 | 구현 | version 컬럼 추가 | SELECT FOR UPDATE |
@@ -33,7 +33,7 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 
 ### 심화 꼬리
 
-- **"NO WAIT vs SKIP LOCKED?"** → SKIP LOCKED는 잠긴 행 건너뛰고 다음 행 읽음 (큐 패턴 적합). 재고처럼 특정 행 반드시 처리해야 하면 NO WAIT가 맞음
+- **"NOWAIT vs SKIP LOCKED?"** → SKIP LOCKED는 잠긴 행 건너뛰고 다음 행 읽음 (큐 패턴 적합). 재고처럼 특정 행 반드시 처리해야 하면 NOWAIT가 맞음
 - **"FOR UPDATE vs FOR SHARE?"** → FOR UPDATE는 X Lock (배타적, 읽기/쓰기 차단). FOR SHARE는 S Lock (공유, 읽기 허용, 쓰기 차단). 읽은 후 바로 쓰면 X Lock 필요
 - **"멀티 인스턴스에서도 DB Lock 충분?"** → 같은 DB 바라보는 한 충분. DB 분리(샤딩)되면 분산 락 필요
 - **"Gap Lock 성능 영향?"** → 범위 잠금이라 INSERT 차단 가능. 동시성 필요하면 RC로 변경 (Gap Lock 비활성화, 단 Phantom Read 허용)

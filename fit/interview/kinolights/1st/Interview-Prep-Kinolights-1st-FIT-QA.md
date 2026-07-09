@@ -79,7 +79,7 @@ aliases: ["Kinolights FIT QA", "키노라이츠 FIT 예상질문"]
 | 슬로우 쿼리 — 인덱스 컬럼 순서 근거? | 동등(=) 앞, 범위 뒤, 카디널리티 높은 컬럼 앞 → 스캔 범위 빨리 축소 |
 | 인덱스 쓰기 페널티? | INSERT/UPDATE 시 인덱스 갱신, 쿼리 패턴 기반 설계 + 모니터링 |
 | Prisma vs TypeORM? | TypeORM Active Record/Data Mapper, QueryBuilder, 복잡 쿼리 불안정 / Prisma 스키마 중심, 마이그레이션 강점. **본질(추상화 비용, 실행계획 검증) 동일** |
-| DB Lock — 데드락 대응? | 완전 예방 불가 → InnoDB 자동 탐지+rollback+재시도, NO WAIT로 상호대기 회피, 락 순서 통일 |
+| DB Lock — 데드락 대응? | 완전 예방 불가 → InnoDB 자동 탐지+rollback+재시도, NOWAIT로 상호대기 회피, 락 순서 통일 |
 | Pessimistic 말고 Optimistic? | 읽기 중심, 충돌 낮을 때. IoT는 충돌 빈도 높아 Pessimistic |
 | 관측 — Datadog 안 쓰고 GPL? | 작은 팀 비용 ROI. **키노라이츠 Datadog은 흑자 단계엔 합리적, 전이 가능** |
 | 캐시 스탬피드? | TTL jitter + 만료 전 백그라운드 갱신 + mutex lock |

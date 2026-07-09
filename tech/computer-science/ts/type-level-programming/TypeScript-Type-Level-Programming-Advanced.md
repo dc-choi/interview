@@ -74,4 +74,4 @@ type Reverse<T extends any[]> = T extends [infer First, ...infer Rest]
 type R = Reverse<[1, 2, 3]>  // [3, 2, 1]
 ```
 
-TypeScript 4.1부터 꼬리 재귀 최적화, 4.5부터 **재귀 깊이 확장**. 다만 컴파일 타임에 너무 깊으면 **"Type instantiation is excessively deep"** 에러.
+TypeScript 4.1에서 재귀 조건부 타입을 지원했고, 4.5에서 조건부 타입의 일부 꼬리 재귀 제거가 들어갔다. 다만 컴파일 타임에 너무 깊으면 **Type instantiation is excessively deep** 에러가 난다.

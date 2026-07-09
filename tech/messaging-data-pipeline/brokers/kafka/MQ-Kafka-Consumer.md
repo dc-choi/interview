@@ -75,20 +75,34 @@ await consumer.run({
 ```typescript
 await consumer.run({
     autoCommit: false,
-    eachBatch: async ({ batch, resolveOffset, heartbeat }) => {
+    eachBatchAutoResolve: false,
+    eachBatch: async ({
+        batch,
+        resolveOffset,
+        heartbeat,
+        commitOffsetsIfNecessary,
+        isRunning,
+        isStale,
+    }) => {
         const holder = new BulkDataHolder();
         for (const message of batch.messages) {
+            if (!isRunning() || isStale()) break;
             try {
                 const parsed = JSON.parse(message.value?.toString() ?? '');
                 holder.add(parsed);
             } catch (err) {
-                // 단일 메시지 에러는 스킵하여 메시지 유실 방지
+                await sendToDlq(message, err);
             }
+            resolveOffset(message.offset);
+            await heartbeat();
         }
         await holder.flush();  // 배치 단위 벌크 처리
+        await commitOffsetsIfNecessary();
     },
 });
 ```
+
+`autoCommit: false`를 쓰면 성공한 offset을 직접 `resolveOffset`하고 커밋해야 한다. 실패 메시지를 조용히 건너뛰고 offset만 올리면 유실이므로 DLQ, 재시도 토픽, 처리 중단 중 하나를 명확히 선택한다.
 
 ### 선택 기준
 | 상황 | 권장 |

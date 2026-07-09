@@ -19,7 +19,7 @@ User A: INSERT reservation
 User B: INSERT reservation → 이중 예약
 ```
 
-Read Committed, Repeatable Read로도 막지 못함 — **Phantom Read**.
+단순 조회 후 삽입 패턴은 Read Committed, Repeatable Read만으로 안전하지 않을 수 있다. 빈 결과를 읽었을 때 아무 row도 잠기지 않거나, DB마다 phantom 방지 방식이 다르기 때문이다.
 
 ### 해결
 **1. Pessimistic Lock** (`SELECT ... FOR UPDATE`):
@@ -30,6 +30,7 @@ INSERT ...;
 COMMIT;
 ```
 대기 시간 발생, 하지만 확실.
+단, 빈 범위까지 막으려면 적절한 인덱스와 InnoDB RR의 Gap Lock처럼 범위 삽입을 막는 구현이 필요하다. DB 독립적으로는 Unique Constraint가 더 확실하다.
 
 **2. Unique Constraint**:
 ```
@@ -58,13 +59,13 @@ version 불일치면 rowsAffected=0 → 재시도. 경쟁 적을 때 효율적.
 
 ### 해결
 **1. 분산 락 (Redis Redlock, Redisson)**:
-- `SETNX lock-key value EX 30` (30초 만료)
+- `SET lock-key value NX EX 30` (30초 만료)
 - critical section 수행
-- `DEL lock-key` (fencing token으로 안전 해제)
+- Lua로 `GET lock-key` 값이 내 토큰과 같을 때만 `DEL`
 
 주의:
 - **TTL보다 오래 걸리는 작업이면 위험** — TTL 만료 후 다른 서버가 락 획득
-- **fencing token** 없으면 "TTL 만료한 줄 모르고 쓰기" 발생
+- **fencing token** 없으면 "TTL 만료한 줄 모르고 쓰기" 발생. fencing token은 단순 삭제 토큰이 아니라, 보호 대상 저장소가 더 작은 token의 쓰기를 거부하도록 만드는 단조 증가 번호다.
 - **RedLock 자체의 안전성 논쟁** (Martin Kleppmann 비판) — 진짜 강한 보장이 필요하면 ZooKeeper, etcd
 
 **2. Saga + Compensating Transaction**:

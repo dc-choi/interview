@@ -68,7 +68,7 @@ ORDER BY (created_at, service_id, event_type);
 ### 부적합
 - **단건 조회**(`SELECT * WHERE id = 12345`) — 행을 재조합하느라 오히려 느림. PK로 한 번에 찾는 OLTP가 적합
 - **단건 INSERT** — 매 INSERT마다 새 파트 생성 → 머지 부담 폭증. 반드시 배치
-- **트랜잭션** — 미지원. 결제, 주문처럼 ACID가 필요한 워크로드는 절대 부적합
+- **트랜잭션 중심 OLTP** — 단일 INSERT 원자성 등 제한적 보장은 있지만, 결제, 주문처럼 다중 행, 다중 테이블 ACID 트랜잭션이 핵심인 워크로드에는 부적합
 - **빈번한 UPDATE/DELETE** — `ALTER TABLE ... DELETE` Mutation은 파트를 통째 재작성. 비용 큼. UPDATE는 ReplacingMergeTree로 대체하지만 즉시 반영 아님(머지 시점)
 
 ## 성능 차이의 구조적 원인
