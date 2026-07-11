@@ -12,7 +12,8 @@ aliases: ["logging", "로깅"]
 ## 문서
 - [x] [[Structured-Logging|Structured logging (JSON 구조화 로깅)]]
 - [x] [[Correlation-ID|Correlation ID / Trace ID (요청 단위 로그 연결)]]
-- [x] [[Log-Pipeline|Log pipeline (FluentBit -> Firehose -> S3)]]
+- [x] [[Log-Pipeline|중앙 집중식 로그 파이프라인 (수집, 버퍼, 처리, DLQ, 재생)]]
+- [x] [[Centralized-Logging-with-OpenSearch|AWS Centralized Logging with OpenSearch (종료 일정, 구조, 구축과 삭제)]]
 - [x] [[Log-Sampling|로그/트레이스 샘플링 (head vs tail, 에러 편향, 동적 샘플링)]]
 - [x] [[PII-Masking|PII 마스킹 (생성 시점 마스킹, redaction/tokenization, 허용목록)]]
 

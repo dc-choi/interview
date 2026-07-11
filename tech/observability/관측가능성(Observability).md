@@ -17,11 +17,13 @@ aliases: ["관측가능성(Observability)", "Observability"]
 ## 기본 개념
 - [x] [[Logs-vs-Metrics|로그 vs 메트릭 vs 추적 (카디널리티, 보관, 알림 설계 원칙)]]
 - [x] [[Ops-Level-Indicator|운영 레벨 지표 (여러 메트릭을 단일 단계로 압축, 시간대 정규화, 플레이북)]]
+- [x] [[OpenSearch-Observability|Amazon OpenSearch 통합 관측성 (OpenSearch UI, PPL, 상관분석, AI 장애 조사)]]
 
 ## Logging
 - [x] [[Structured-Logging|Structured logging]]
 - [x] [[Correlation-ID|Correlation ID / Trace ID]]
-- [x] [[Log-Pipeline|Log pipeline (FluentBit -> Firehose -> S3)]]
+- [x] [[Log-Pipeline|중앙 집중식 로그 파이프라인 (수집, 버퍼, 처리, DLQ, 재생)]]
+- [x] [[Centralized-Logging-with-OpenSearch|AWS Centralized Logging with OpenSearch (종료 일정, 구조, 구축과 삭제)]]
 - [x] [[Log-Sampling|로그/트레이스 샘플링 (head vs tail, 에러 편향, 동적 샘플링)]]
 - [x] [[PII-Masking|PII 마스킹 (생성 시점 마스킹, redaction/tokenization, 허용목록)]]
 
