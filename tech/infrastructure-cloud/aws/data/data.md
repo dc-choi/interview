@@ -17,6 +17,8 @@ RDS 외의 데이터베이스와 분석 서비스 모음. RDS, Aurora는 [[rds|r
 - [[EMR|EMR — Hadoop, Spark 클러스터]]
 - [[Lake-Formation|Lake Formation — 데이터레이크 구축과 권한 관리]]
 - [[OpenSearch-Service|OpenSearch Service — 검색, 로그 분석]]
+  - [[OpenSearch-Observability|통합 관측성, PPL과 AI 장애 조사]]
+  - [[Centralized-Logging-with-OpenSearch|Centralized Logging with OpenSearch 배포형 솔루션]]
 - [[QuickSight|QuickSight — BI 대시보드]]
 - [[DMS|DMS — 데이터베이스 마이그레이션 서비스]]
 
