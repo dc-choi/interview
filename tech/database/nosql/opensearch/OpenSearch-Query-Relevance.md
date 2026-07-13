@@ -7,7 +7,7 @@ aliases: ["OpenSearch Lexical Search", "OpenSearch 렉시컬 검색", "OpenSearc
 
 # OpenSearch 렉시컬 검색, Query DSL과 관련도
 
-쿼리 설계의 첫 질문은 조건이 문서를 포함하거나 제외하는 필터인지, 결과 순위를 바꾸는 관련도 조건인지다. 모든 조건에서 점수를 계산하면 느리고 의미도 불명확해진다.
+이 문서는 렉시컬 검색의 기본 정본으로 Query DSL, query와 filter의 구분, BM25 점수의 해석을 다룬다. 쿼리 설계의 첫 질문은 조건이 문서를 포함하거나 제외하는 필터인지, 결과 순위를 바꾸는 관련도 조건인지다. 모든 조건에서 점수를 계산하면 느리고 의미도 불명확해진다.
 
 ## 렉시컬 검색이란
 
@@ -145,11 +145,10 @@ BM25 score는 field와 query term별 기여를 query 구조에 따라 합친 상
 - `prefix_length`, `max_expansions`, fuzziness를 데이터로 제한한다.
 - 고유 코드와 ID에는 fuzzy를 쓰지 않는다.
 
-### Script와 Function score
+### Script와 비즈니스 점수
 
 - Script query와 script score는 cache와 CPU 비용을 고려한다.
-- 인기도와 최신성은 lexical relevance가 안정된 뒤 결합한다.
-- 비즈니스 점수가 본문 관련도를 완전히 덮지 않도록 상한과 decay를 둔다.
+- 인기도와 최신성 결합, 상한, decay, rescore는 기본 관련도가 안정된 뒤 [[OpenSearch-Relevance-Tuning|관련도 튜닝]]에서 다룬다.
 
 ## 관련도 디버깅 도구
 
@@ -175,8 +174,10 @@ Profile은 network latency, fetch phase, queue 대기, coordinator reduce 전체
 
 ## 관련 문서
 
+- [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-Architecture|다음: 아키텍처와 분산 실행 모델]]
 - [[OpenSearch-Mapping-Text-Analysis|매핑과 텍스트 분석]]
 - [[OpenSearch-Korean-Text-Analysis|한국어 analyzer와 사전 운영]]
+- [[OpenSearch-Relevance-Tuning|function_score와 rescore를 이용한 관련도 튜닝]]
 - [[OpenSearch-Hybrid-Search|렉시컬과 시맨틱 점수 결합]]
 - [[OpenSearch-Aggregations-Pagination|집계와 페이지네이션]]
 - [[OpenSearch-Performance-Troubleshooting|검색 성능 진단]]

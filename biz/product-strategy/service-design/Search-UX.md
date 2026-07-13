@@ -43,6 +43,7 @@ aliases: ["Search UX", "검색 UX", "검색 설계"]
 - 탐색형 검색 비중이 높은 서비스에서 검색어 부담을 줄이는 장치(추천, 인기, 태그 통합)는 검색 전환율 지표와 직결된다.
 
 ## 관련 문서
+- [[OpenSearch|OpenSearch 학습 지도]] — 매핑, 관련도, 집계와 운영 원리
 - [[Pagination-Patterns|페이지네이션 UX 패턴]] — 목록 탐색의 형제 주제
 - [[User-Guidance-Patterns|사용자 가이드 제공 패턴]]
 - [[Commerce-Product|커머스 상품 도메인]] — 카테고리, 태그 정책

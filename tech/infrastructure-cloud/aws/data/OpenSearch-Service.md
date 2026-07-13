@@ -7,7 +7,7 @@ aliases: ["Amazon OpenSearch Service", "OpenSearch Service", "Amazon OpenSearch"
 
 # Amazon OpenSearch Service
 
-Amazon OpenSearch Service는 OpenSearch를 AWS에서 운영하는 관리형 서비스다. 프로비저닝형 클러스터인 domain과 자동 용량 관리형인 Serverless collection을 제공한다. 역색인, shard, Query DSL 같은 엔진 내부는 [[OpenSearch|OpenSearch 심화 인덱스]]에서 다룬다.
+Amazon OpenSearch Service는 OpenSearch를 AWS에서 운영하는 관리형 서비스다. 프로비저닝형 클러스터인 domain과 자동 용량 관리형인 Serverless collection을 제공한다. 역색인, shard, Query DSL 같은 엔진 내부는 [[OpenSearch|OpenSearch 학습 지도]]에서 다룬다.
 
 ## 프로젝트와 서비스를 구분하기
 
@@ -167,7 +167,7 @@ CloudWatch 평균만 보지 않고 최소와 최대 statistic, node 차원, `_no
 
 ## 관련 문서
 
-- [[OpenSearch|OpenSearch 검색 엔진 심화 인덱스]]
+- [[OpenSearch|OpenSearch 학습 지도]]
 - [[OpenSearch-Cluster-Reliability|Shard, Multi-AZ와 복구 원리]]
 - [[OpenSearch-Index-Lifecycle|Rollover, Hot, UltraWarm과 Cold storage]]
 - [[OpenSearch-Security-Production|OpenSearch 보안과 프로덕션 점검]]

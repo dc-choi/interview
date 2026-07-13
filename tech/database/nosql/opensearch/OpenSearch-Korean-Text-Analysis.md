@@ -9,34 +9,7 @@ aliases: ["OpenSearch Korean Analysis", "OpenSearch 한국어 분석", "Nori 분
 
 한국어 렉시컬 검색 품질은 형태소 분석기 하나로 결정되지 않는다. 문서와 검색어를 같은 term 공간으로 바꾸는 analyzer, 도메인 단어의 경계를 정하는 사용자 사전, 의미 관계를 확장하는 동의어, 실제 검색 결과를 검증하는 평가 corpus가 함께 맞아야 한다.
 
-## Analyzer의 실행 모델
-
-```text
-원문
-  -> character filter 0개 이상
-  -> tokenizer 정확히 1개
-  -> token filter 0개 이상
-  -> token, position, offset
-```
-
-- Character filter는 HTML 제거, 문자 치환과 표기 정규화를 담당한다.
-- Tokenizer는 문자 흐름을 token으로 나누고 position과 offset을 만든다.
-- Token filter는 token을 제거하거나 변환하고 동의어 token을 추가한다.
-
-분석 순서는 검색 동작을 바꾼다. 예를 들어 lowercase 뒤에 동의어를 적용할 때는 동의어 규칙도 소문자 분석 결과와 맞아야 한다. 특수문자를 먼저 제거하면 `C++`와 `C`가 같은 token으로 무너질 수도 있다.
-
-## Index analyzer와 Search analyzer
-
-Index analyzer는 문서를 역색인의 term으로 바꾼다. Search analyzer는 `match` 같은 full-text query의 입력을 term으로 바꾼다. 기본값은 같은 analyzer지만 다음처럼 의도적으로 분리할 수 있다.
-
-| 요구 | Index analyzer | Search analyzer |
-|---|---|---|
-| 일반 본문 검색 | 같은 형태소와 정규화 규칙 | 같은 형태소와 정규화 규칙 |
-| 자동완성 | edge n-gram 생성 | 일반 token만 생성 |
-| 동의어를 자주 변경 | 원래 term을 보존 | `synonym_graph`로 query 확장 |
-| Phrase에서 불용어 보존 | 불용어 보존 | 일반 검색과 phrase용 analyzer 분리 검토 |
-
-두 analyzer가 같아야 한다는 규칙보다 최종 term과 position이 의도대로 만나는지가 중요하다.
+Analyzer의 실행 순서와 index analyzer, search analyzer의 역할은 [[OpenSearch-Mapping-Text-Analysis#Analyzer 파이프라인|analyzer 파이프라인]]과 [[OpenSearch-Mapping-Text-Analysis#Index analyzer와 Search analyzer|색인 및 검색 분석기]]에서 먼저 다룬다. 이 문서는 그 구조를 전제로 Nori, 사용자 사전, 동의어와 검증 루프에 집중한다.
 
 ## Nori의 역할과 경계
 
@@ -181,6 +154,7 @@ Term Vectors의 `per_field_analyzer`는 지정한 analyzer로 term-vector를 생
 
 ## 관련 문서
 
+- [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-Search-Quality-Evaluation|다음: 검색 품질 평가]]
 - [[OpenSearch-Mapping-Text-Analysis|매핑과 analyzer 기본 구조]]
 - [[OpenSearch-Query-Relevance|BM25와 lexical relevance]]
 - [[OpenSearch-Hybrid-Search|렉시컬과 시맨틱 결과 결합]]

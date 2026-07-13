@@ -5,9 +5,9 @@ category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Search Features", "OpenSearch 자동완성", "OpenSearch Highlight", "OpenSearch Agentic Search"]
 ---
 
-# OpenSearch 자동완성, Highlight, Agentic Search와 응답 제어
+# OpenSearch 검색 기능과 응답 제어
 
-본문 검색 이외의 검색 경험은 별도 데이터 모델과 비용 구조를 가진다. 자동완성, highlight, 응답 필드, 검색 template을 기본 query에 무심코 얹으면 index 크기와 latency가 빠르게 늘어난다.
+이 문서의 기본 범위는 자동완성, highlight, 응답 필드, 검색 template과 실행 제어다. 본문 검색 이외의 기능은 별도 데이터 모델과 비용 구조를 가지므로 기본 query에 무심코 얹으면 index 크기와 latency가 빠르게 늘어난다. Agentic query와 memory는 기본 기능을 익힌 뒤 선택해서 보는 고급 확장으로 분리한다.
 
 ## 자동완성 선택지
 
@@ -122,9 +122,9 @@ Search template은 Mustache 기반 parameter로 query를 만든다. Inline `sour
 
 클라이언트는 HTTP 성공만 보지 말고 `_shards.failed`, `timed_out`, `terminated_early`를 확인한다.
 
-## Agentic query와 memory
+## 고급 확장: Agentic query와 memory
 
-`agentic` query는 새로운 lexical 또는 vector ranking 알고리즘이 아니다. 미리 등록한 agent의 `QueryPlanningTool`과 search pipeline의 `agentic_query_translator`가 자연어와 mapping을 LLM에 보내 Query DSL을 만들고, OpenSearch가 그 DSL을 실행한다. Conversational agent는 이전 응답의 `memory_id`로 후속 요청의 맥락을 이어갈 수 있다.
+이 절은 [[OpenSearch-Query-Relevance|기본 Query DSL]]과 검색 실행 제어를 이해한 뒤 필요한 경우에만 보는 고급 확장이다. `agentic` query는 새로운 lexical 또는 vector ranking 알고리즘이 아니다. 미리 등록한 agent의 `QueryPlanningTool`과 search pipeline의 `agentic_query_translator`가 자연어와 mapping을 LLM에 보내 Query DSL을 만들고, OpenSearch가 그 DSL을 실행한다. Conversational agent는 이전 응답의 `memory_id`로 후속 요청의 맥락을 이어갈 수 있다.
 
 Agentic memory는 단순 대화 로그가 아니라 memory container 안에 working memory, 장기 지식과 preference, 변경 history를 구성하는 framework다. Namespace로 user, session과 agent를 분리할 수 있지만 검색 엔진이 자동으로 안전한 기억 계층이 되는 것은 아니다.
 
@@ -134,19 +134,17 @@ Agentic memory는 단순 대화 로그가 아니라 memory container 안에 work
 - 대화와 preference에는 개인정보가 들어갈 수 있으므로 보존 기간, 삭제, 동의, 수정과 사용자별 격리를 설계한다.
 - LLM과 connector의 latency, quota, 비용과 비결정성을 SLO에 포함하고 실패 시 검증된 lexical query나 제한된 template으로 fallback한다.
 
-## 검색 품질 회귀 테스트
+## 검색 품질 검증
 
-1. 실제 사용자 query와 기대 상위 문서를 고정한다.
-2. 0건이어야 하는 query와 금지 오탐도 포함한다.
-3. Analyzer token snapshot과 ranking 평가를 분리한다.
-4. Mapping, 동의어, boost 변경 전후를 같은 corpus로 비교한다.
-5. Relevance와 p95 latency, index 크기를 함께 본다.
+자동완성 mapping, analyzer, 동의어, template을 바꾸면 검색 결과도 함께 회귀할 수 있다. 대표 query와 judgment 관리, 오프라인 지표, 온라인 지표와 실험 절차는 [[OpenSearch-Search-Quality-Evaluation|검색 품질 평가]]에서 하나의 검증 루프로 다룬다.
 
 ## 관련 문서
 
+- [[OpenSearch|OpenSearch 학습 지도]]
 - [[OpenSearch-Mapping-Text-Analysis|매핑과 analyzer]]
 - [[OpenSearch-Korean-Text-Analysis|한국어 analyzer와 사전 운영]]
 - [[OpenSearch-Query-Relevance|Query DSL과 관련도]]
+- [[OpenSearch-Search-Quality-Evaluation|검색 품질 평가]]
 - [[OpenSearch-Index-Lifecycle|자동완성 mapping 변경과 reindex]]
 - [[OpenSearch-Performance-Troubleshooting|검색 성능 진단]]
 - [[OpenSearch-Security-Production|Agentic memory 접근 제어]]
