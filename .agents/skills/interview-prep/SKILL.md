@@ -11,6 +11,16 @@ Use this as a Codex compatibility copy of `.claude/skills/interview-prep/SKILL.m
 
 Before writing, read `CLAUDE.md`, especially `Interview Prep`, `표기 규칙`, `개인정보`, and `이력서, 포트폴리오 관리`.
 
+## Answer Placement
+
+- Store reusable personal experience, FIT, and personal technical-experience answer bodies only in `fit/interview/common/`.
+- Never save an expected question without preparation guidance.
+- For factual technical questions under `fit/interview/prep/`, always include the question intent, concise core answer, common wrong answers, follow-up questions, and a canonical note or source.
+- For open-ended design questions, always include an answer outline, decision criteria, alternatives, tradeoffs, and follow-up questions instead of inventing one correct answer.
+- For personal experience and FIT questions, include preparation points and a link to the `common/` master without duplicating its answer body.
+- Link to the canonical `tech/` note instead of duplicating a full technical reference in `prep/`.
+- Keep company-specific interview documents self-contained by absorbing the selected master answer and relevant technical content.
+
 ## Required Inputs
 
 - Job description URL or pasted JD.
@@ -34,7 +44,7 @@ Ask a short question only when a required input is missing and cannot be inferre
 5. Produce a self-contained company document.
    - Do not require the user to jump to `prep/` while practicing.
    - Use master-fork style answers with company-specific mapping lines.
-   - Avoid duplicated answer bodies outside `common/` unless the local workflow already requires it.
+   - Do not duplicate personal answer bodies outside `common/` except for the selected company-specific fork.
 6. Update `fit/job-search/Job-Search-Tracker.md` when a company or JD link must be tracked.
 
 ## Output Shape

@@ -7,7 +7,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 # 자주하는 면접 질문 — 1차 기술 질문 (확장성, 아키텍처)
 
-트래픽 폭증, 동시성, 대용량 조회, 도메인 결합 등 **확장성과 아키텍처 설계를 묻는 1차 기술 질문** 4개 + 공통 답변 원칙.
+트래픽 폭증, 동시성, 대용량 조회, 도메인 결합, 분산 검색 등 **확장성과 아키텍처 설계를 묻는 1차 기술 질문** 5개 + 공통 답변 원칙.
 
 ---
 
@@ -124,6 +124,39 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 ---
 
+## Q9. OpenSearch replica와 검색 fan-out
+
+> Primary shard가 3개이고 각 shard마다 replica가 1개씩 있습니다. 전체 shard copy는 6개입니다. 일반적인 검색 요청 한 번은 3개와 6개 중 몇 개의 shard copy를 검색할까요? Replica가 검색 트래픽을 분산한다는 의미와 함께 설명해주세요.
+
+**질문 의도**
+- Logical shard와 shard copy를 구분하는가
+- Replica의 읽기 확장이 요청 하나의 중복 검색이 아니라 동시 요청의 분산이라는 점을 이해하는가
+- Shard별 지역 순위와 coordinator의 전역 병합을 연결할 수 있는가
+
+**핵심 답변**
+
+> 일반적인 검색 요청은 3개의 shard copy를 검색합니다. Primary shard 3개가 서로 다른 데이터 파티션이고, 각 replica는 해당 primary와 같은 logical shard의 복사본이기 때문입니다. Coordinator는 logical shard마다 primary 또는 replica 중 한 copy를 선택합니다. Replica는 요청 하나의 검색 대상을 6개로 늘리는 것이 아니라, 여러 검색 요청을 서로 다른 copy에 분산해 전체 검색 처리량과 가용성을 높입니다. 각 copy가 반환한 지역 top K는 coordinator가 전역 top K로 병합합니다.
+
+**핵심 근거**
+
+- Primary와 replica는 같은 logical shard의 복사본이므로 둘 다 검색하면 동일한 데이터에 중복 작업을 하게 된다.
+- Replica는 서로 다른 검색 요청을 여러 shard copy에 분산하고, 장애 시 가용한 copy로 요청을 보낼 수 있게 한다.
+- 각 shard copy가 지역 top K를 반환하면 coordinator가 이를 전역 top K로 병합한다.
+
+**흔한 오답**
+
+- `6개를 모두 검색한다`: Replica가 검색 트래픽을 분산한다는 말을 요청 하나가 모든 copy를 검색한다는 뜻으로 오해한 답이다. Replica는 같은 logical shard의 중복 데이터이며, 일반적인 검색은 그중 한 copy만 선택한다.
+
+**꼬리질문**
+- Replica 수를 늘리면 검색 처리량과 색인 비용은 어떻게 달라지는가?
+- Primary 장애 시 replica에는 어떤 변화가 생기는가?
+- Replica가 snapshot을 대신할 수 없는 이유는 무엇인가?
+- Custom routing을 사용하면 검색 대상 logical shard 수는 어떻게 달라지는가?
+
+> 학습 정본: [[OpenSearch-Architecture#GET과 Search의 읽기 경로|OpenSearch GET과 Search의 읽기 경로]]
+
+---
+
 ## 1차 기술 질문 공통 답변 원칙
 
 1. **꼬꼬무를 유도**하라 — 답변 안에 다음 질문이 나올 키워드를 심어둘 것
@@ -136,6 +169,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 ## 출처
 - 개발자 취업과 이직 한방에 해결하기
+- [Search shard routing - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/search-shard-routing/)
 
 ## 관련 문서
 - [[Common-Interview-Questions|자주하는 면접 질문 (인덱스)]]
