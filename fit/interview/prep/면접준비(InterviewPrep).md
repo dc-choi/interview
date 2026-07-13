@@ -7,7 +7,9 @@ aliases: ["Interview Prep"]
 
 # 면접 준비(Interview Prep)
 
-질문 풀, 메타 가이드, 자기분석, 치환표, CS/시스템디자인/라이브코딩/글로벌 가이드. **내 답변 본문은 여기 X — [[Common-Interview-Questions|마스터 TOC]], common/ 폴더 My-*.md**.
+질문 풀, 사실형 기술 핵심 답변, 메타 가이드, 자기분석, 치환표, CS/시스템디자인/라이브코딩/글로벌 가이드. **개인 경험과 FIT 답변 본문은 [[Common-Interview-Questions|마스터 TOC]], common/ 폴더 My-*.md에서 관리한다**.
+
+예상 질문은 질문만 저장하지 않는다. 사실형 기술 질문에는 핵심 답변과 흔한 오답을, 설계형 질문에는 답변 골격과 트레이드오프를 반드시 포함한다.
 
 ## 메타 가이드, 원칙
 
@@ -23,7 +25,7 @@ aliases: ["Interview Prep"]
 - [[Developer-Interview-13-Questions|개발자 면접 단골 13개 (의도, STAR, 함정)]]
 - [[Common-Interview-Questions-Behavioral|Behavioral 질문 — STAR 기반 (실패, 리더십, 보람, 미달성, 팀 리더)]]
 - [[Common-Interview-Questions-Tech-Basics|1차 기술 질문 — 기본 (브라우저, REST, STAR, 성능 테스트)]]
-- [[Common-Interview-Questions-Tech-Scale|1차 기술 질문 — 확장성 (DAU 폭증, 기프티콘, 억 단위, 강결합)]]
+- [[Common-Interview-Questions-Tech-Scale|1차 기술 질문 — 확장성 (DAU 폭증, 기프티콘, 대용량 조회, 강결합, OpenSearch shard)]]
 
 ## 면접 형식별 특수 가이드
 
