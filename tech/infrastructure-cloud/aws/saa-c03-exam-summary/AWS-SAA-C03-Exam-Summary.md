@@ -9,6 +9,8 @@ aliases: ["SAA-C03 종합", "AWS SAA Summary", "시험 직전 요약"]
 
 Stephane Maarek 강의 14페이지 압축. 시험 직전 한 번에 훑기용. 각 서비스 핵심 키워드 + 빈출 시험 포인트 위주, 자세한 내용은 위키링크.
 
+> 검증 기준일 2026-07-13 (2026-07-08 지식 교차검증 감사 반영). AWS 서비스 스펙과 시험 범위는 갱신될 수 있으므로 응시 전 최신 공식 문서를 확인한다.
+
 - [[AWS-SAA-C03-Exam-Summary-Compute-Storage-Data|기초, 컴퓨팅, 스토리지, 데이터베이스, 분석]] — EC2, Lambda, 컨테이너, EBS/EFS/S3/FSx, RDS/Aurora/DynamoDB, Athena/Glue/EMR
 - [[AWS-SAA-C03-Exam-Summary-Network-Security-Ops|메시징, 네트워킹, 보안, 거버넌스, IaC]] — SQS/SNS/Kinesis, VPC/ELB/Route53/CloudFront, IAM/KMS/WAF, CloudTrail/Config, CloudFormation
 - [[AWS-SAA-C03-Exam-Summary-Checklist|시험장 직전 체크리스트]] — 빈출 비교 모음 (메시징, 스토리지, 컴퓨팅, 네트워킹, 보안, DB)

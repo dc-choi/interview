@@ -29,7 +29,7 @@ aliases: ["Schema Design", "스키마 설계"]
 
 ## Soft Delete 패턴
 
-레코드를 물리적으로 삭제하지 않고 `deletedAt` 타임스탬프를 기록하는 방식이다.
+레코드를 물리적으로 삭제하지 않고 삭제 시각 타임스탬프를 기록하는 방식이다. 위 네이밍 컨벤션대로 **DB 컬럼은 `deleted_at`(snake_case), 애플리케이션 필드는 `deletedAt`(camelCase)** 이고 ORM `@map`으로 연결한다. 아래 SQL 예시는 `deleted_at`, Prisma 모델 예시는 `deletedAt`로 각 계층 표기를 따른다.
 
 **장점:**
 - 실수로 삭제된 데이터를 복구할 수 있음
@@ -108,16 +108,17 @@ Junction Table(연결 테이블)로 구현한다.
 - 원본 테이블과 동일한 구조 + 스냅샷 생성 시간
 - 데이터 변경 이력을 추적하고, 문제 발생 시 특정 시점으로 복원 가능
 
-## Enum 활용
+## 제한된 선택지 컬럼 — Enum vs 참조 테이블
 
-상태값, 역할, 타입 등 제한된 선택지가 있는 컬럼에 Enum을 사용한다.
+상태값, 역할, 타입처럼 허용 값이 정해진 컬럼은 두 갈래로 나눠서 고른다. 기준은 **값 집합이 앞으로 늘거나 바뀔 여지가 있는가**이다.
 
-- `Role: ADMIN | TEACHER` — 사용자 역할
-- `Gender: MALE | FEMALE` — 성별
-- `GroupType: GRADE | CLASS` — 그룹 유형
-- `JoinStatus: PENDING | APPROVED | REJECTED` — 가입 요청 상태
+| 성격 | 예 | 권장 |
+|---|---|---|
+| 항목이 늘거나 바뀔 수 있음 | `Role`(권한 추가), `GroupType`, `JoinStatus`(상태 단계 추가) | **참조 테이블(lookup table)** — 값 추가가 `INSERT` 한 줄, 라벨, 색상 같은 부가 속성도 붙일 수 있고 FK로 무결성 보장 |
+| 사실상 불변인 소수 상태값 | `Gender: MALE\|FEMALE\|OTHER` | **DB enum 또는 `CHECK` 제약도 선택지** — 조인 없이 간단, 대신 나중에 값이 늘면 마이그레이션 부담 |
 
-DB 수준에서 유효하지 않은 값의 삽입을 방지한다.
+- DB 네이티브 ENUM은 값 추가 시 테이블 재구성, 이식성 저하 등 함정이 많아 기본값으로 남발하지 않는다. 자세한 트레이드오프와 안티패턴은 [[MySQL-Enum-Antipattern]] 참고.
+- 어느 쪽이든 목표는 **DB 수준에서 유효하지 않은 값의 삽입을 방지**하는 것. 참조 테이블은 FK로, enum/CHECK는 제약으로 그 방어선을 만든다.
 
 ## 면접 포인트
 

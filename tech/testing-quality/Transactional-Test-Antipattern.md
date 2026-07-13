@@ -152,7 +152,13 @@ Testcontainers (컨테이너 격리)
 - **빠른 프로토타입, POC** — 안정성보다 속도 우선
 - **실험적 기능의 초기 테스트**
 
-하지만 **Service 레이어 통합 테스트**에는 절대 쓰지 말 것. 허용 시에도 "나중에 제거"라는 기술 부채로 남김을 인지.
+하지만 **Service 레이어 통합 테스트**에는 절대 쓰지 말 것. 허용 시에도 나중에 제거라는 기술 부채로 남김을 인지.
+
+### 스코프 — 이 안티패턴이 겨냥하는 것
+
+이 문서의 비판 대상은 **Spring 테스트 관리 트랜잭션**, 즉 테스트 메서드의 `@Transactional`이 프로덕션 Service 코드까지 하나의 트랜잭션으로 감싸 자동 롤백하는 패턴이다. 이때 프로덕션의 트랜잭션 경계(`REQUIRES_NEW`, 이벤트, 커밋 시점 제약)가 테스트에서 다르게 동작해 false positive가 난다.
+
+다른 스택의 **커넥션 레벨 트랜잭션 롤백 격리**(예: NestJS, TypeORM에서 테스트마다 트랜잭션을 열고 롤백)도 같은 category다. 테스트 대상 코드의 커밋 동작 자체를 검증하지 않는 **단순 Repository 격리, fixture 정리**에는 유효하지만, 프로덕션 커밋 시점 제약과 propagation을 실제로 태우는 **Service 레이어 통합 테스트**에서는 동일한 마스킹 위험을 안는다. 이 경우 TRUNCATE 기반 정리가 안전하다 (→ [[NestJS-Testing]]).
 
 ## 흔한 실수
 
@@ -190,3 +196,4 @@ Testcontainers (컨테이너 격리)
 - [[Spring-Transactional|Spring @Transactional]]
 - [[JPA-Persistence-Context|JPA 영속성 컨텍스트]]
 - [[Service-Layer-Testing|서비스 레이어와 테스트 경계]]
+- [[NestJS-Testing|NestJS 테스트 (TypeORM 격리 전략)]]

@@ -19,7 +19,7 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 
 ## 헤드리스와 CI
 
-- `--bare`: 훅, 스킬, 플러그인, MCP, CLAUDE.md 탐색을 전부 스킵 — CI와 스크립트의 권장 모드(시작 최대 10배 빠름). OAuth를 건너뛰므로 API 키 필요
+- `--bare`: 최소 모드. `claude --help` 기준(확인 2026-07-13) 훅, LSP, 플러그인 sync, attribution, auto-memory, 백그라운드 prefetch, 키체인 읽기, CLAUDE.md 자동 탐색을 스킵하고 `CLAUDE_CODE_SIMPLE=1`을 설정한다 — CI와 스크립트의 권장 모드. 인증은 OAuth와 키체인을 안 읽고 `ANTHROPIC_API_KEY`(또는 `--settings`의 apiKeyHelper)만 사용. 스킵되어도 스킬은 `/스킬이름`으로 여전히 동작하고, 컨텍스트는 `--add-dir`(CLAUDE.md 디렉토리), `--mcp-config`, `--system-prompt`, `--agents` 등으로 명시 주입한다
 - CI 안전장치 4종: `--max-turns`(리뷰 5, 구현 10~15 권장), `--max-budget-usd`, 잡 타임아웃, dontAsk 권한 모드. `--dangerously-skip-permissions`는 격리 컨테이너에서만
 - 구조화 출력: `--output-format json` + `--json-schema`로 파이프라인에서 파싱 가능한 응답 강제
 - GitHub Actions: 공식 액션 + `@claude` 트리거. **모델 버전 고정이 필수** — 별칭이 새 모델을 가리키게 되면 미활성 모델 에러로 파이프라인이 깨진다

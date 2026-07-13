@@ -66,7 +66,7 @@ beforeAll(async () => {
 
 대안:
 - **Testcontainers** — 실제 PostgreSQL/MySQL/Redis 컨테이너를 테스트 시작 시 띄움. 운영 DB와 동일한 동작.
-- **트랜잭션 롤백** — 테스트마다 트랜잭션 시작 → 끝나면 롤백. fixture 누적 방지.
+- **트랜잭션 롤백** — 테스트마다 트랜잭션 시작 → 끝나면 롤백. fixture 누적 방지. 단, 테스트 대상 코드까지 하나의 트랜잭션으로 감싸므로 **커밋 시점 제약, 트랜잭션 전파를 실제로 검증하지 못한다**. 단순 Repository 격리에는 유효하지만, Service 레이어 통합 테스트에서는 마스킹 위험이 있어 TRUNCATE 기반 정리를 권장 (→ [[Transactional-Test-Antipattern|@Transactional 테스트 안티패턴]]).
 - **DB 클린업** — `beforeEach`에서 truncate.
 
 SQLite in-memory는 빠르지만 운영 DB와 SQL 방언 차이가 있어 **PostgreSQL/MySQL 특정 기능**(JSONB, CTE, 격리수준) 테스트엔 부적합.

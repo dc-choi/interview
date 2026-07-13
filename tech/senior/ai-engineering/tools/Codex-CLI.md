@@ -7,7 +7,7 @@ aliases: ["Codex CLI", "코덱스 CLI", "Codex 슬래시 명령", "AGENTS.md"]
 
 # Codex CLI — 슬래시 명령, 스킬, AGENTS.md
 
-Codex CLI는 터미널에서 동작하는 OpenAI의 AI 코딩 에이전트다. 설치는 `npm i -g @openai/codex`, 실행은 `codex`. 인증은 ChatGPT 계정(Plus, Pro, Business, Edu, Enterprise 포함) 또는 OpenAI API 키. 제어 표면은 세 축으로 나뉜다 — 세션 안에서 즉시 쓰는 슬래시 명령, 반복 작업을 캡슐화하는 스킬, 프로젝트 규칙을 고정하는 AGENTS.md.
+Codex CLI는 터미널에서 동작하는 OpenAI의 AI 코딩 에이전트다. 설치는 macOS, Linux에서 스탠드얼론 설치 스크립트(`curl -fsSL https://chatgpt.com/codex/install.sh | sh`)가 공식 권장이고, npm(`npm i -g @openai/codex`)과 Homebrew도 대안으로 제공된다(공식 문서 확인 2026-07-13). 실행은 `codex`. 인증은 ChatGPT 계정(Plus, Pro, Business, Edu, Enterprise 포함) 또는 OpenAI API 키. 제어 표면은 세 축으로 나뉜다 — 세션 안에서 즉시 쓰는 슬래시 명령, 반복 작업을 캡슐화하는 스킬, 프로젝트 규칙을 고정하는 AGENTS.md.
 
 ## 슬래시 명령
 

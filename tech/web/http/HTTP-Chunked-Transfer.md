@@ -65,7 +65,7 @@ Hello\r\n
 
 ## Content-Length와 함께 쓰면 안 됨
 
-RFC 7230에 따라 **`Transfer-Encoding`이 있으면 `Content-Length`는 무시, 금지**된다. 둘 다 보내면 일부 서버, 프록시는 보안 취약점(HTTP Request Smuggling)으로 이어질 수 있다.
+HTTP/1.1 메시징의 최신 표준인 RFC 9112(기존 RFC 7230을 대체)에 따라 **`Transfer-Encoding`이 있으면 `Content-Length`는 무시, 금지**된다. 둘 다 보내면 일부 서버, 프록시는 보안 취약점(HTTP Request Smuggling)으로 이어질 수 있다.
 
 ## HTTP/2, HTTP/3에서는?
 

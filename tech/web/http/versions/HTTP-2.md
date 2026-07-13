@@ -70,7 +70,7 @@ HTTP/2의 멀티플렉싱은 HTTP 계층에선 병렬이지만 단일 TCP 연결
 
 ## 출처
 - AWS 환경에서 HTTP/2 적용하기 (HTTP/2 프로토콜, CloudFront, ALB) — 개인 블로그
-- RFC 7540 (HTTP/2), RFC 7541 (HPACK)
+- RFC 9113 (HTTP/2, RFC 7540을 대체), RFC 7541 (HPACK)
 
 ## 관련 문서
 - [[HTTP-3|HTTP/3, QUIC]] — TCP를 버리고 UDP로, HOL 블로킹 완전 해소

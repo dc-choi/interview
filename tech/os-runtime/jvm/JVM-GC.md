@@ -67,8 +67,8 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 | **Parallel (Throughput)** | JDK 5 | 멀티 스레드 Young+Old | 배치, 처리량 중심 |
 | **CMS** (Concurrent Mark Sweep) | JDK 5~14 | Old를 **동시 마킹**으로 STW 축소 | 응답 지연 민감 앱(Deprecated) |
 | **G1** (Garbage-First) | JDK 7~, 기본(JDK 9+) | **Region 기반**, 예측 가능 pause, Old도 동시 처리 | 일반 대형 힙(4~32GB)의 표준 |
-| **ZGC** | JDK 11~, Production(JDK 15+) | **서브 ms STW**, TB급 힙 지원, Colored Pointer | 초저지연, 초대형 힙 |
-| **Shenandoah** | JDK 12~(OpenJDK) | Concurrent Compaction, ZGC와 유사한 저지연 | 초저지연 대안 |
+| **ZGC** | 실험 JDK 11(JEP 333), Production JDK 15(JEP 377) | **서브 ms STW**, TB급 힙 지원, Colored Pointer | 초저지연, 초대형 힙 |
+| **Shenandoah** | Production JDK 15(JEP 379) | Concurrent Compaction, ZGC와 유사한 저지연. **Oracle JDK 빌드에는 미포함(OpenJDK 계열만)** | 초저지연 대안 |
 | **Epsilon** | JDK 11~ | **아무것도 회수 안 함** | 단기 벤치마크, 메모리 분석 |
 
 ## G1GC (현대 표준)
@@ -87,6 +87,8 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 - **Concurrent Compaction** — 압축(이동)도 동시에 수행. 전통 GC는 STW 중에만 가능
 - 힙 **수 TB 규모**에서도 STW 수 ms 이하
 - CPU, 배리어 오버헤드가 있어 처리량은 G1보다 약간 낮을 수 있음
+
+**ZGC 버전별 caveat**: 초기 ZGC는 세대 구분이 없는 단일 힙(non-generational)이었다. **JDK 21에서 JEP 439로 Generational ZGC가 추가**돼 Young/Old를 분리하며 할당률 높은 워크로드의 효율이 크게 개선됐고, **JDK 23에서 JEP 474로 generational이 기본**이 됐다(`-XX:+ZGenerational`이 기본값). 이후 **JEP 490으로 non-generational 모드는 제거**됐다. 따라서 JDK 버전에 따라 ZGC가 세대형인지 여부가 다르다.
 
 ## 튜닝 포인트
 
