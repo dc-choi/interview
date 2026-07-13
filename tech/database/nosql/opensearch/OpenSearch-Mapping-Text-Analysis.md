@@ -136,15 +136,7 @@ Normalizer는 `keyword` 값을 하나의 token으로 유지하면서 lowercase, 
 
 공식 문서는 CJK word boundary detection에서 `icu_analyzer`가 `cjk`의 bigram 방식보다 정확하다고 설명한다. 대신 ICU는 CPU와 메모리를 더 사용할 수 있으므로 실제 corpus에서 token, 검색 품질, 색인 비용을 함께 비교한다.
 
-Self-managed에서는 `analysis-nori` plugin을 설치한다. Amazon OpenSearch Service 지원표에는 provisioned domain의 Nori가 OpenSearch 1.3 이상, Seunjeon이 1.0 이상으로 구분되어 있고 Serverless 목록에는 Nori가 포함된다. 실제 domain은 `_cat/plugins`로 확인한다. 은전한닢 기반 Seunjeon 옵션을 Nori에 그대로 옮기지 않으며, 분석기 지원만으로 offset 문제가 사라진다고 보지 않는다. `_analyze`의 token, position, start와 end offset, 실제 phrase query와 highlight를 회귀 테스트한 뒤 reindex한다.
-
-프로젝트에서는 다음 corpus를 고정하고 후보 analyzer의 token과 검색 결과를 회귀 테스트한다.
-
-- 고유명사, 상품명, 도메인 용어
-- 띄어쓰기와 조사 변형
-- 한글과 영문, 숫자 혼용
-- 동의어와 약어
-- 기대 hit와 절대 나오면 안 되는 오탐
+한국어 형태소 분석이 필요하면 Nori plugin 지원 범위, 복합어 분해, 사용자 사전, 동의어와 회귀 테스트를 [[OpenSearch-Korean-Text-Analysis|Nori와 사전 운영]]에서 이어서 설계한다.
 
 ## 예시 매핑
 
@@ -181,8 +173,8 @@ PUT products-v1
 
 ## 관련 문서
 
-- [[OpenSearch-Korean-Text-Analysis|한국어 Nori와 사전 운영]], [[OpenSearch-Query-Relevance|Query DSL과 관련도]]
-- [[OpenSearch-Index-Lifecycle|매핑 변경과 reindex]]
+- [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-Query-Relevance|다음: Query DSL과 관련도]]
+- [[OpenSearch-Korean-Text-Analysis|한국어 Nori와 사전 운영]], [[OpenSearch-Index-Lifecycle|매핑 변경과 reindex]]
 - [[OpenSearch-Performance-Troubleshooting|Mapping explosion 진단]]
 
 ## 출처
@@ -196,5 +188,4 @@ PUT products-v1
 - [CJK analyzer - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/language-analyzers/cjk/)
 - [ICU analyzer - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/language-analyzers/icu/)
 - [Analyze API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/analyze-apis/)
-- [OpenSearch Service 지원 plugin - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-plugins.html), [OpenSearch Serverless 지원 plugin - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-genref.html)
 - [후기 서비스 AWS OpenSearch 도입기 - 컬리 기술 블로그](https://helloworld.kurly.com/blog/2023-review-opensearch/)

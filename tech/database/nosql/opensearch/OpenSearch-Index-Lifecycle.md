@@ -42,14 +42,16 @@ POST /_aliases
 
 Field type과 index analyzer 변경은 새 인덱스가 필요하다.
 
-1. 변경 capture를 먼저 시작하고 source high watermark를 기록한다.
+새 인덱스 생성, backfill, catch-up, 검증, alias 전환, rollback과 이전 인덱스 삭제까지의 전체 절차는 이 절을 정본으로 사용한다.
+
+1. 변경 capture가 backfill 전체 기간을 덮도록 먼저 시작하고 source high watermark를 기록한다.
 2. `products-v2`를 새 mapping과 setting으로 생성하고 schema와 analyzer를 검증한다.
-3. Watermark 기준 source snapshot을 `_reindex` 또는 bulk로 backfill한다.
-4. 이후 create, update, delete를 source version 순서로 replay한다.
+3. Watermark와 일치하는 consistent source snapshot을 `_reindex` 또는 bulk로 backfill한다.
+4. Watermark 이후 create, update, delete를 source stream에서 replay하고 문서나 aggregate별 단조 증가 version guard로 순서 역전을 거부한다.
 5. Lag와 DLQ가 기준 안에 들면 partition별 count와 hash, 삭제 건, sample, 핵심 query와 aggregation을 대조한다.
-6. 실제 query를 shadow read하고 결과 정확성, p95와 p99, 오류율을 비교한다.
-7. `_aliases` 한 요청으로 read와 write alias를 전환하고 일정 기간 양쪽을 동기화한다.
-8. 오류가 있으면 write를 차단하고 v2 전환 뒤 변경분을 v1에 재생한 후 alias를 되돌린다. 역동기화 경로가 없으면 write rollback 대신 forward-fix한다.
+6. 실제 query를 shadow read하고 일부 read traffic을 canary로 보내 결과 정확성, p95와 p99, 오류율을 비교한다.
+7. 검증 gate를 통과하면 `_aliases` 한 요청으로 read와 write alias를 전환하고 일정 기간 양쪽을 동기화한다.
+8. 오류가 있으면 write를 차단하고 v2 전환 뒤 변경분을 v1에 재생한 후 alias를 되돌린다. v1이 같은 변경 stream을 계속 받지 않고 원본 replay도 불가능하면 rollback 대신 forward-fix한다.
 9. 보존 기간과 지속 reconciliation을 통과한 뒤 v1을 삭제한다.
 
 Reindex는 source 시점의 view를 복사하며 source 이후 write를 자동 추적하지 않는다. Alias 전환의 원자성도 이름 변경에만 적용되고 양쪽 데이터가 같다는 보장은 아니다. Destination mapping, shard, replica 설정은 자동 복사되지 않으며 `_source`가 꺼져 있으면 Reindex API를 사용할 수 없다.
@@ -149,6 +151,7 @@ delete
 
 ## 관련 문서
 
+- [[OpenSearch]]
 - [[OpenSearch-Indexing-Internals|Bulk와 ingest pipeline]]
 - [[OpenSearch-Cluster-Reliability|Snapshot과 upgrade]]
 - [[OpenSearch-Service|Amazon OpenSearch Service storage tier]]

@@ -148,22 +148,15 @@ Read  -> OpenSearch
 - 새 field 추가와 일부 지원되는 mapping parameter 변경은 기존 인덱스에 적용할 수 있다. 기존 field type과 analyzer처럼 호환되지 않는 변경은 새 인덱스, reindex, alias 전환으로 처리한다.
 - OpenSearch 장애가 원본 쓰기까지 막지 않도록 동기화 경로를 비동기로 격리한다.
 
-## 안전한 Read Model 전환
+## Read Model 전환 원칙
 
-1. 새 mapping과 projection schema, `_id`, source version 규칙을 고정한다.
-2. 변경 capture가 backfill 전체 기간을 덮도록 먼저 시작하고 consistent snapshot과 동일한 source position 또는 high watermark를 기록해 snapshot을 backfill한다.
-3. Watermark 이후 create, update, delete를 source stream에서 replay하고 문서나 aggregate별 단조 증가 version guard로 역전을 거부한다.
-4. Partition별 count와 hash, 삭제 건, sample document, 핵심 query와 aggregation 결과를 대조한다.
-5. Lag와 DLQ가 기준 안에 들면 실제 query를 shadow read하고 p95, p99, 오류율, 결과 차이를 비교한다.
-6. Read traffic을 canary로 전환하고 전체 전환 뒤에도 새 index의 reconciliation을 유지한다.
-7. 이전 index도 같은 source change stream으로 최신 상태를 유지하거나 cutover 이후 변경을 source에서 재생할 수 있을 때만 read rollback한다. 둘 다 불가능하면 단순 alias rollback 대신 forward-fix한다.
+호환되지 않는 mapping과 projection 변경은 새 인덱스를 만들어 전환한다. 변경 capture를 backfill보다 먼저 시작하고, consistent snapshot과 high watermark를 기준으로 적재한 뒤 source version guard가 있는 stream replay로 catch-up한다. Count, hash, 삭제 건, sample, 핵심 query, latency와 오류율을 검증하고 shadow read와 canary를 통과한 뒤 alias를 전환한다.
 
-### 공개 사례와 일반 gate
-
-컬리 공개 사례에서 확인되는 것은 약 1억 건 backfill, event 기반 변경 반영, 일부 서버 canary 배포까지다. High watermark, catch-up, reconciliation과 rollback 절차는 공개되지 않았으며 위 단계는 이를 보강한 일반 운영 gate다.
+이전 인덱스가 같은 변경 stream을 계속 받거나 cutover 이후 변경을 원본에서 재생할 수 있을 때만 rollback한다. 둘 다 불가능하면 alias를 되돌리지 않고 forward-fix한다. 새 인덱스 생성부터 backfill, catch-up, alias 전환과 rollback까지의 전체 절차는 [[OpenSearch-Index-Lifecycle#매핑 변경과 무중단 전환|인덱스 수명주기의 무중단 전환 절차]]를 정본으로 따른다.
 
 ## 관련 문서
 
+- [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-Korean-Text-Analysis|첫 적용: 한국어 텍스트 분석]]
 - [[OpenSearch-Architecture|분산 실행 모델]]
 - [[OpenSearch-Index-Lifecycle|인덱스 수명주기]]
 - [[CDC-Debezium|CDC와 Debezium]]
@@ -186,4 +179,3 @@ Read  -> OpenSearch
 - [Put Mapping API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/put-mapping/)
 - [Tuning for indexing speed - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/performance/)
 - [Transactional outbox pattern - AWS Prescriptive Guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
-- [후기 서비스 AWS OpenSearch 도입기 - 컬리 기술 블로그](https://helloworld.kurly.com/blog/2023-review-opensearch/)
