@@ -100,7 +100,7 @@ Heap 관리. 자세한 내용은 [[JVM-GC|JVM GC]].
 
 ### AOT, GraalVM Native Image
 
-- **AOT(Ahead-of-Time)** — 실행 전 미리 네이티브로 컴파일. JDK 9+ `jaotc` (실험적)
+- **AOT(Ahead-of-Time)** — 실행 전 미리 네이티브로 컴파일. JDK 9에서 실험적 `jaotc`가 도입됐으나 유지 비용 대비 채택이 낮아 **JEP 410으로 JDK 17에서 실험적 Graal JIT와 함께 제거**됐다. 현재 JVM 진영의 AOT 대안은 **GraalVM Native Image 계열**이다
 - **GraalVM Native Image** — 바이트코드 + 종속성을 **단일 네이티브 바이너리**로. 기동 수십 ms, 메모리 낮음 → 서버리스, CLI 선호. 반면 동적 리플렉션, 동적 클래스 로딩 제약
 
 ## 기동 순서, Lazy Loading
@@ -113,7 +113,7 @@ JVM은 **필요한 순간까지 로딩을 미룬다**.
 ## 네이티브 연동
 
 - **JNI(Java Native Interface)** — C/C++ 함수 호출. 성능, OS API 접근 용도. 메모리 누수, ABI 호환 이슈로 신중
-- **Project Panama** (JDK 19+ `java.lang.foreign`) — JNI의 현대적 대체. 정적 안전, 성능 개선
+- **Project Panama / FFM API** (`java.lang.foreign`) — JNI의 현대적 대체. 정적 안전, 성능 개선. JDK 19, 21에서 프리뷰를 거쳐 **JDK 22에서 JEP 454로 정식화(finalized)**됐다
 - JNA(Java Native Access), JNR 같은 라이브러리가 JNI를 래핑
 
 ## 성능 튜닝 포인트

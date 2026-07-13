@@ -9,7 +9,10 @@ aliases: ["API 에러 응답과 페이지네이션", "Envelope 응답 구조"]
 
 ## 에러 응답
 
-### 표준 구조 (RFC 7807 Problem Details)
+### 표준 구조 (RFC 9457 Problem Details)
+
+> RFC 9457이 기존 RFC 7807을 대체(obsolete)한 최신 표준이다. 필드 구조는 동일하고, 9457은 여러 문제를 한 응답에 담는 확장 등을 명확히 했다. 문서나 라이브러리가 7807을 참조하면 9457로 읽으면 된다.
+
 ```
 {
   "type": "https://api.example.com/errors/email-already-exists",

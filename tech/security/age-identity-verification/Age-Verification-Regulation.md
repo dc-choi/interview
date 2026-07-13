@@ -11,6 +11,8 @@ aliases: ["Age Verification Regulation", "연령 검증 규제", "Online Safety 
 
 ## 검증 의무화
 
+> 조회일 2026-07-13 기준 정리. 연령, 신원 검증 규제는 관할별로 개정, 시행 연기, 소송 결과에 따른 변동성이 크다. 아래 시행일과 조항은 방향 파악용이며, 실제 컴플라이언스 판단 전에는 각 1차 규제기관(Ofcom, European Commission, FTC, eSafety 등)의 원문을 반드시 재확인한다.
+
 | 관할 | 핵심 의무 | 시행 | 벌칙 |
 |---|---|---|---|
 | 영국 OSA | highly effective age assurance(HEAA), 자기신고 불인정. Ofcom 4기준(정확성, 견고성, 신뢰성, 공정성) | 성인 콘텐츠 2025-07-25 | 최대 £18M 또는 글로벌 매출 10%, ISP 차단 |

@@ -99,7 +99,7 @@ AX 조직의 신규 기능 출시:
 
 ## 체감 vs 실측의 간극
 
-METR 연구에 따르면 숙련된 개발자들이 AI 도구 사용 후 **실제로는 19% 느려졌지만 체감으로는 20% 빨라졌다**고 보고. 개인의 "혁신 경험"이 조직 성과(매출, 처리 속도)로 옮겨가지 않는 현상이 반복된다.
+METR의 2025년 RCT(무작위 대조 실험)에 따르면 숙련 개발자들이 AI 도구 사용 후 **실제로는 19% 느려졌지만 체감으로는 20% 빨라졌다**고 보고. 실험 조건이 중요한데, 대상은 자기가 평균 5년 다뤄 익숙한 성숙한 오픈소스 레포에서 작업한 경험 많은 개발자 16명(246개 태스크, 주로 Cursor Pro + Claude 3.5/3.7 Sonnet)이다. 잘 아는 코드베이스라 AI의 이점이 적고 검토 비용이 커진 조건이라, 낯선 코드나 보일러플레이트에 그대로 일반화하긴 어렵다. 그럼에도 개발자 체감과 실측이 반대였다는 점, 개인의 혁신 경험이 조직 성과(매출, 처리 속도)로 옮겨가지 않는 현상이 시사점이다.
 
 시사점: **"도구 도입 = 생산성 상승"은 증명되지 않은 가설**. 조직 구조까지 움직여야 진짜 성과가 드러난다.
 
@@ -134,6 +134,7 @@ METR 연구에 따르면 숙련된 개발자들이 AI 도구 사용 후 **실제
 
 ## 출처
 - [flowkater.io — 조직에 Claude Code를 설치한다고 AX가 되지 않는다 (Tony Cho)](https://flowkater.io/posts/2026-03-15-ax-organization-transformation/)
+- [Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity — METR (2025)](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/)
 
 ## 관련 문서
 - [[Harness-Engineering|하네스 엔지니어링]]

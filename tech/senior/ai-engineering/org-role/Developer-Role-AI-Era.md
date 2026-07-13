@@ -11,7 +11,7 @@ aliases: ["Developer Role AI Era", "AI 시대 개발자 역할"]
 
 ## 현재 상황 진단
 
-- AI 도입의 **95~96%가 실패**하거나 명확한 효율 개선을 증명하지 못함
+- MIT NANDA의 [The GenAI Divide: State of AI in Business 2025](https://mlq.ai/media/quarterly_decks/v0.1_State_of_AI_in_Business_2025_Report.pdf)(2025년 8월, 임원 인터뷰 52건, 리더 설문 153건, 공개 배포 300건 분석) 기준 **GenAI 파일럿의 약 95%가 손익(P&L)에 측정 가능한 임팩트를 내지 못함**. 여기서 실패는 모델 성능이 아니라 P&L 임팩트 부재를 뜻하고, 성공한 약 5%는 좁고 워크플로우에 밀착한 용도에 집중했다
 - 빅테크 AI 설비투자 대비 매출 비율 과도 (수백 조 투자, 수십 조 매출)
 - 단기 하이프는 분명 존재 — 그러나 장기 영향은 오히려 **과소평가**되는 중 (아마라의 법칙)
 

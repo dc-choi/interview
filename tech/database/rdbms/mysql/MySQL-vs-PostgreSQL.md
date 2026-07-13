@@ -18,11 +18,13 @@ aliases: ["MySQL vs PostgreSQL", "MySQL PostgreSQL 비교", "Aurora MySQL vs Aur
 
 | 축 | MySQL | PostgreSQL |
 |---|---|---|
-| 프로세스 모델 | **멀티스레드**(스레드 풀) | **멀티프로세스**(커넥션당 프로세스) |
+| 프로세스 모델 | **멀티스레드**(커넥션당 스레드) | **멀티프로세스**(커넥션당 프로세스) |
 | 커넥션 비용 | 가벼움 | 무거움(프로세스 fork + 10MB 내외) → PgBouncer 권장 |
 | 스토리지 엔진 | 교체 가능(InnoDB, MyISAM, MEMORY) | 단일 엔진 |
 | MVCC | InnoDB가 **언두 로그** 기반 | **튜플 버전**을 테이블에 남김 → VACUUM 필요 |
-| 복제 | 논리/물리 복제 모두 | 스트리밍 복제 + 논리 복제 |
+| 복제 | 바이너리 로그 기반(row/statement/mixed), 그룹 복제 | 물리 스트리밍 복제 + 논리 복제 |
+
+MySQL의 커넥션당 스레드 모델은 기본값이다. 진짜 **스레드 풀**은 MySQL Enterprise Edition 플러그인 전용이고, 커뮤니티 에디션에서 스레드 풀이 필요하면 Percona Server나 MariaDB의 오픈소스 구현을 쓴다.
 | 확장성 | 내장 기능 중심 | **익스텐션**(PostGIS, TimescaleDB, pgvector) |
 
 ## 기능 스펙트럼
@@ -31,7 +33,7 @@ aliases: ["MySQL vs PostgreSQL", "MySQL PostgreSQL 비교", "Aurora MySQL vs Aur
 |---|---|---|
 | ACID | **InnoDB만** 완전 준수 | 모든 구성에서 준수 |
 | JOIN 알고리즘 | Nested Loop 중심(8.0부터 Hash Join) | Nested Loop / Hash / Merge 모두 성숙 |
-| 인덱스 타입 | B-Tree, Hash(MEMORY), R-Tree, Full-text, JSON 가상 컬럼 | **B-Tree, Hash, GiST, SP-GiST, GIN, BRIN, BLOOM** |
+| 인덱스 타입 | B-Tree, Hash(MEMORY), R-Tree, Full-text, JSON 가상 컬럼 | **B-Tree, Hash, GiST, SP-GiST, GIN, BRIN** (BLOOM은 contrib `bloom` 확장 설치 시) |
 | 데이터 타입 | 기본 타입 + JSON | + 배열, 범위, 사용자 정의, UUID, JSONB |
 | 윈도우 함수 | 8.0+ | 예전부터 성숙 |
 | CTE / 재귀 | 8.0+ | 예전부터 |
@@ -62,10 +64,10 @@ aliases: ["MySQL vs PostgreSQL", "MySQL PostgreSQL 비교", "Aurora MySQL vs Aur
 
 ## JSON 지원
 
-- **MySQL JSON** — 가상 컬럼 + 인덱스, `JSON_EXTRACT`/`->` 연산자
-- **PostgreSQL JSONB** — 바이너리 저장으로 **조회, 인덱싱 모두 빠름**, GIN 인덱스로 중첩 검색
+- **MySQL JSON** — 바이너리 저장(내부적으로 JSON은 이미 바이너리 포맷), 가상 컬럼 + 인덱스, `JSON_EXTRACT`/`->` 연산자
+- **PostgreSQL JSONB** — 바이너리 저장 + GIN 인덱스로 중첩 키 검색이 강점. 반면 `jsonb`는 키 순서와 중복을 보존하지 않고, 저장 시 파싱, 정규화 비용이 있어 텍스트 `json`보다 쓰기가 느릴 수 있음
 
-문서형 데이터 사용 빈도가 높으면 PostgreSQL JSONB의 이점이 크다. 단, 본격 문서 스토어는 MongoDB 같은 전용 제품 고려.
+문서형 데이터에서 중첩 키 조건 검색 비중이 높으면 PostgreSQL JSONB의 GIN 인덱스 이점이 크다. 단순 저장, 통째 조회 위주면 두 DB 차이가 작다. 단, 본격 문서 스토어는 MongoDB 같은 전용 제품 고려.
 
 ## 선택 가이드
 
@@ -97,7 +99,7 @@ aliases: ["MySQL vs PostgreSQL", "MySQL PostgreSQL 비교", "Aurora MySQL vs Aur
 
 - "PostgreSQL이 항상 빠르다" — 단순 OLTP에서는 MySQL이 동등하거나 빠를 수 있음
 - "MySQL은 엔터프라이즈용이 아니다" — Facebook, Uber 등 대규모 워크로드에 쓰임
-- "JSON은 PostgreSQL만 가능" — MySQL도 지원, 다만 JSONB의 성숙도가 앞섬
+- "JSON은 PostgreSQL만 가능" — MySQL도 바이너리 JSON을 지원. 다만 중첩 키 인덱싱은 PostgreSQL JSONB + GIN이 앞섬
 - "PostgreSQL VACUUM은 자동이라 신경 안 써도 된다" — 대량 업데이트 테이블에선 bloat 관리 필수
 
 ## 면접 체크포인트
