@@ -116,6 +116,14 @@ Bulk는 여러 operation을 NDJSON으로 묶어 네트워크와 coordinating 비
 
 공식 튜닝 문서의 5에서 15MiB는 실험 시작점일 뿐 정답이 아니다. 문서 크기, mapping 복잡도, 노드 CPU와 heap, 네트워크를 보며 처리량이 더 늘지 않는 지점을 찾는다.
 
+### 대량 적재 구간의 setting 조정
+
+Backfill처럼 색인만 하는 구간에는 dynamic index setting을 일시 조정해 처리량을 높이고, 적재가 끝나면 되돌린다.
+
+- `refresh_interval`을 `-1`로 두면 refresh가 중단된다. 완료 후 원래 값으로 되돌리며, 값을 `null`로 주면 기본값으로 복원된다.
+- 아직 서비스 읽기가 없는 초기 적재라면 `number_of_replicas`를 0으로 낮춰 복제 쓰기를 없애고, 완료 후 올려 한 번에 복제시킨다.
+- 둘 다 검색 가시성과 장애 내성을 잠시 포기하는 조정이므로 운영 트래픽을 받는 index에는 쓰지 않는다. 되돌리는 확인까지가 절차다.
+
 ## Ingest pipeline
 
 Pipeline은 색인 전에 processor를 순서대로 실행한다. `set`, `rename`, `remove`, `convert`, `date`, `grok`, `dissect`, `json`, `script`, `drop` 등을 조합할 수 있다.
@@ -175,6 +183,7 @@ Read  -> OpenSearch
 - [Ingest pipelines - OpenSearch Documentation](https://docs.opensearch.org/latest/ingest-pipelines/)
 - [OpenSearch concepts - OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/concepts/)
 - [Index settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
+- [Update Settings API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/update-settings/)
 - [Segment replication - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/)
 - [Put Mapping API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/put-mapping/)
 - [Tuning for indexing speed - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/performance/)
