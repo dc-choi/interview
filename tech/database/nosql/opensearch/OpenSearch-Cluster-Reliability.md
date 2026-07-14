@@ -9,64 +9,9 @@ aliases: ["OpenSearch Cluster Operations", "OpenSearch Reliability", "OpenSearch
 
 좋은 클러스터는 정상 상태의 최대 처리량보다 노드와 zone 장애, shard 이동, reindex, snapshot restore 중에도 SLO를 지키도록 설계한다.
 
-## 샤드 수를 정하는 입력
+## 샤드 설계는 별도 문서로
 
-공식 문서의 shard당 10에서 50GB는 시작점일 뿐 고정 공식이 아니다. 다음 값을 함께 benchmark한다.
-
-- 예상 primary 데이터 크기와 보존 기간
-- 일일 색인량과 peak bulk concurrency
-- 검색과 집계가 hit하는 shard 수
-- 하나의 shard를 복구하는 데 허용되는 시간
-- 노드와 zone 장애 시 남는 CPU, disk, network
-- Rollover와 reindex 동안 원본과 대상이 공존할 여유 공간
-
-`cluster.max_shards_per_node` 기본 제한은 안전한 목표가 아니라 폭주 방지 상한이다. 값을 늘려 과다 샤딩을 숨기지 않는다.
-
-### Amazon OpenSearch Service sizing 휴리스틱
-
-아래 값은 provisioned domain의 초기 추정치다. Serverless나 self-managed cluster의 보장 공식으로 사용하지 않고 대표 데이터와 query fan-out, 동시성, 복구 시간으로 검증한다.
-
-| 입력 | AWS의 초기 기준 | 적용할 때 주의할 점 |
-|---|---|---|
-| Primary shard 크기 | 검색 지연 중심 10에서 30GiB, 로그와 쓰기 중심 30에서 50GiB | 50GiB는 일반 권장 상한이지 안전을 보장하는 제한이 아님 |
-| Node당 shard와 heap | Heap 1GiB당 전체 shard 25개 이하 | `20 shards/GiB`는 현재 AWS 공식 수치가 아니며 service quota와도 다름 |
-| Shard와 CPU | 요청에 관여하는 shard당 1.5 vCPU에서 시작 | Query fan-out과 동시 요청이 겹치므로 부하 시험 필수 |
-| JVM heap | Instance RAM의 50퍼센트, 일반 상한 32GiB | r7g와 optimized instance 예외, Auto-Tune 변경 가능 |
-| Replica | 일반 domain은 최소 1개 권장, Multi-AZ with Standby는 최소 2개 | 읽기 처리량과 장애 내성 대신 모든 쓰기의 복제 비용 증가 |
-
-Hot storage는 원본 크기에 replica와 실제 indexing overhead, Linux 예약 공간과 서비스 예약 공간을 모두 반영한다.
-
-```text
-최소 Hot storage
-= source × (1 + replicas) × (1 + measured indexing overhead) ÷ 0.95 ÷ 0.80
-```
-
-AWS의 단순 worst-case 식은 `source × (1 + replicas) × 1.45`다. 서비스 예약은 노드별 20퍼센트, 최대 20GiB이므로 실제 domain에서는 노드별 계산이 더 정확하다. Indexing overhead를 항상 10퍼센트로 고정하지 말고 sample을 색인한 뒤 `_cat/indices`의 `pri.store.size`로 측정한다. 이 식은 UltraWarm과 cold storage에 적용하지 않는다.
-
-### Scale-up과 Scale-out
-
-- 데이터와 shard가 한 node 범위에 있고 개별 node의 CPU와 heap이 병목이면 scale-up이 단순할 수 있다.
-- 저장 용량, shard 병렬성, query 동시성이나 장애 내성이 node 한 대의 범위를 넘으면 scale-out을 검토한다.
-- Scale-out은 shard가 새 node로 이동하고 실제 작업이 병렬화될 때만 효과가 있다. 과다 shard 상태에서는 coordination, heap과 network 비용이 커질 수 있다.
-- Primary 수를 data node 수의 배수로 맞추는 것은 shard 크기보다 후순위다. Replica와 다른 index까지 포함한 전체 배치를 `_cat/shards`로 확인한다.
-- 정상 상태뿐 아니라 node나 zone 하나를 잃고 recovery가 진행되는 동안의 p99, 429, CPU와 disk를 측정한다.
-
-### 과다 샤딩
-
-- 작은 shard가 수천 개 생김
-- Cluster state와 heap metadata 증가
-- 검색 fan-out과 coordinator reduce 증가
-- 파일 핸들, segment, cache가 분산됨
-- 재시작과 allocation이 느려짐
-
-### 과소 샤딩
-
-- 하나의 shard와 노드가 hot spot이 됨
-- 색인과 검색 병렬성이 제한됨
-- shard 하나의 장애 복구 단위가 너무 커짐
-- 노드를 추가해도 hot shard가 쪼개지지 않음
-
-Primary shard 수는 정적 설계에 가깝고 replica 수는 동적으로 조절할 수 있다. 잘못된 primary 구조는 split, shrink, reindex 중 조건에 맞는 방식을 선택한다.
+Primary shard 수 계산, AWS sizing 휴리스틱, hot storage 공식, scale-up과 scale-out 판단, 과다와 과소 샤딩, storage skew는 [[OpenSearch-Shard-Sizing|샤드 사이징]]을 정본으로 본다. 이 문서는 그 결정 이후의 cluster 운영, 장애와 복구를 다룬다.
 
 ## Manager quorum과 failure domain
 
@@ -176,6 +121,7 @@ Rolling upgrade는 인접 major version만 지원한다. 3.x로 갈 때는 sourc
 ## 관련 문서
 
 - [[OpenSearch-Architecture|Quorum과 shard 구조]]
+- [[OpenSearch-Shard-Sizing|샤드 사이징]]
 - [[OpenSearch-Index-Lifecycle|Rollover와 ISM]]
 - [[OpenSearch-Performance-Troubleshooting|운영 지표와 진단]]
 - [[OpenSearch-Service|Amazon OpenSearch Service 운영]]
@@ -190,7 +136,3 @@ Rolling upgrade는 인접 major version만 지원한다. 3.x로 갈 때는 sourc
 - [Rolling upgrade - OpenSearch Documentation](https://docs.opensearch.org/latest/migrate-or-upgrade/rolling-upgrade/)
 - [Cross-cluster replication - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/replication-plugin/index/)
 - [Cross-cluster replication API - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/replication-plugin/api/)
-- [OpenSearch Service shard 수 선택 - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp-sharding.html)
-- [OpenSearch Service storage 계산 - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp-storage.html)
-- [OpenSearch Service 운영 모범 사례 - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp.html)
-- [OpenSearch Service quota - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html)
