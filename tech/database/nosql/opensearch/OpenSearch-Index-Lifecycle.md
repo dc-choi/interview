@@ -158,7 +158,7 @@ delete
 
 - Index template에 default pipeline과 final pipeline을 설정할 수 있다.
 - Pipeline에서 `date_index_name`을 사용하면 time-based index로 routing할 수 있다.
-- Bulk item 실패는 dead-letter 또는 재처리 큐로 보낸다.
+- Bulk item 실패는 dead-letter 또는 재처리 큐로 보낸다. DLQ 운영과 replay 함정, reconciliation 3단계는 [[OpenSearch-Indexing-Pipeline-Reliability|파이프라인 신뢰성]]이 정본이다.
 - 원본 이벤트를 재생할 수 있어야 index를 처음부터 다시 만들 수 있다.
 - 검색 인덱스를 유일한 원본으로 두지 않는다.
 

@@ -57,7 +57,7 @@ flowchart LR
 
 - **점선(dual write)이 함정인 이유**: DB transaction과 큐 발행은 원자적으로 묶을 수 없다. commit 성공 후 발행 실패면 검색에서 유실, 발행 성공 후 rollback이면 유령 문서, 재시도와 병렬 소비가 겹치면 옛 값이 최신을 덮는 순서 역전.
 - **그래서 출발점을 확정된 변경으로**: outbox(이벤트 row를 같은 transaction에 커밋)나 CDC(binlog에는 커밋된 것만 나옴)로 시작하면 gap이 구조적으로 사라진다.
-- **worker 쪽에 남는 숙제**: 큐는 at-least-once라 멱등 색인(`_id`를 도메인 ID로), 원본 version 기반 순서 방어, DLQ와 재처리가 필요하다. 상세는 [[OpenSearch-Indexing-Internals|색인 내부의 동기화 절]].
+- **worker 쪽에 남는 숙제**: 큐는 at-least-once라 멱등 색인(`_id`를 도메인 ID로), 원본 version 기반 순서 방어, DLQ와 재처리가 필요하다. 구조는 [[OpenSearch-Indexing-Internals|색인 내부의 동기화 절]], 어긋났을 때의 진단과 DLQ 운영은 [[OpenSearch-Indexing-Pipeline-Reliability|파이프라인 신뢰성]].
 
 ## 그림 2. 클러스터 내부 — index는 shard로 쪼개져 node에 분산
 

@@ -152,7 +152,7 @@ Read  -> OpenSearch
 - 이벤트 순서 역전은 `_seq_no`가 아니라 원본의 단조 증가 version, change sequence, LSN 등으로 방어한다. Timestamp를 사용한다면 동률과 clock skew 정책이 필요하다.
 - At-least-once 전달을 가정하고 create, update, delete를 멱등 처리한다. 삭제 version 보존은 `index.gc_deletes`, 기본 60초로 제한되므로 더 늦은 event까지 막으려면 source 측 projection ledger나 soft-delete tombstone을 유지한다.
 - 색인 지연, 실패 item, dead-letter 적체를 별도 지표로 둔다.
-- Source와 read model의 불일치를 찾는 reconciliation job과 freshness SLO를 둔다.
+- Source와 read model의 불일치를 찾는 reconciliation job과 freshness SLO를 둔다. 지표 설계, 증상별 진단, reconciliation 3단계, DLQ 운영은 [[OpenSearch-Indexing-Pipeline-Reliability|파이프라인 신뢰성]]이 정본이다.
 - 새 field 추가와 일부 지원되는 mapping parameter 변경은 기존 인덱스에 적용할 수 있다. 기존 field type과 analyzer처럼 호환되지 않는 변경은 새 인덱스, reindex, alias 전환으로 처리한다.
 - OpenSearch 장애가 원본 쓰기까지 막지 않도록 동기화 경로를 비동기로 격리한다.
 

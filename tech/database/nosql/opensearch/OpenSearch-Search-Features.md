@@ -51,7 +51,7 @@ Suggestion 문서는 보통 표시 문자열, 정규화된 검색 문자열, 대
 - 초성 검색
 - 인기 검색어와 개인화된 suggestion
 
-OpenSearch의 기본 analyzer가 초성 검색을 자동 제공한다고 가정하면 안 된다. 초성 필드가 필요하면 애플리케이션 전처리와 별도 mapping을 명시적으로 설계한다.
+OpenSearch의 기본 analyzer가 초성 검색을 자동 제공한다고 가정하면 안 된다. 초성 필드가 필요하면 애플리케이션 전처리와 별도 mapping을 명시적으로 설계한다. 감지 규칙과 색인 방법은 [[OpenSearch-Query-Understanding#초성 검색과 자모 필드|초성 검색과 자모 필드]]가 정본이다.
 
 ## Highlight
 
