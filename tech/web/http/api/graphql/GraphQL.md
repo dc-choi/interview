@@ -127,6 +127,7 @@ JSON 기반이라 multipart 업로드는 별도 명세(graphql-multipart-request
 
 ## 관련 문서
 - [[GraphQL-Architecture-Map|GraphQL 전체 그림 지도 (요청 라이프사이클, N+1과 운영 관심사의 자리)]]
+- [[Content-Availability-System-Design|콘텐츠 가용성 조회 시스템 설계 사례 (Federation, Redis, Outbox, OpenSearch)]]
 - [[REST|REST, RESTful API]]
 - [[gRPC|gRPC]]
 - [[API-Comparison|REST vs GraphQL vs gRPC 비교]]

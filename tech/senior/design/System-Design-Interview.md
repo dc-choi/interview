@@ -155,6 +155,7 @@ aliases: ["System Design Interview", "시스템 설계 인터뷰"]
 - [AlgoMaster — How to Answer a System Design Interview Problem](https://blog.algomaster.io/p/how-to-answer-a-system-design-interview-problem)
 
 ## 관련 문서
+- [[Content-Availability-System-Design|콘텐츠 가용성 조회 시스템 설계 사례]]
 - [[Architecture-Decision-Making|아키텍처 의사결정과 경제적 관점]]
 - [[Business-Impact|비즈니스 임팩트]]
 - [[IaC|IaC (Terraform)]]
