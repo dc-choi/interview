@@ -26,14 +26,15 @@
 ### common/ = 마스터, prep/ = 가이드 (역할 분리)
 
 `fit/interview/`는 **두 폴더**로 명확히 분리:
-- **`common/`** = **내 답변 마스터** (`My-*.md`의 개인 경험, FIT, 기술 경험 답변 본문, `Common-Interview-Questions.md` TOC, `Interview-Retro-Template.md`)
-- **`prep/`** = **가이드, 질문 풀, 메타, 치환, 자기분석**. 정답이 명확한 기술 질문은 핵심 답변, 질문 의도, 흔한 오답, 꼬리질문과 출처를 반드시 함께 둔다.
+
+- `**common/**` = **내 답변 마스터** (`My-*.md`의 개인 경험, FIT, 기술 경험 답변 본문, `Common-Interview-Questions.md` TOC, `Interview-Retro-Template.md`)
+- `**prep/**` = **가이드, 질문 풀, 메타, 치환, 자기분석**. 정답이 명확한 기술 질문은 핵심 답변, 질문 의도, 흔한 오답, 꼬리질문과 출처를 반드시 함께 둔다.
 
 파일 목록은 `ls fit/interview/common/`, `ls fit/interview/prep/`으로 확인. 각 파일 역할은 frontmatter `aliases`, 첫 헤더 참조.
 
 ### ⚠️ 중복 본문 금지 (가장 중요)
 
-개인 경험, FIT, 개인 기술 경험을 말하는 답변 본문은 **`common/` 마스터에만** 둔다. `prep/`의 기술 질문 풀에는 특정 개인 경험에 의존하지 않는 간결한 사실형 답변을 반드시 포함한다. 상세 기술 설명은 `tech/` 정본을 반복하지 말고 링크하며, 회사별 폴더는 **마스터 fork + 회사 매핑 끝줄만** 사용한다. **회사 문서가 자기완결적**이어야 한다 — 사용자는 면접 준비할 때 vault, prep으로 점프 X.
+개인 경험, FIT, 개인 기술 경험을 말하는 답변 본문은 `**common/` 마스터에만** 둔다. `prep/`의 기술 질문 풀에는 특정 개인 경험에 의존하지 않는 간결한 사실형 답변을 반드시 포함한다. 상세 기술 설명은 `tech/` 정본을 반복하지 말고 링크하며, 회사별 폴더는 **마스터 fork + 회사 매핑 끝줄만** 사용한다. **회사 문서가 자기완결적**이어야 한다 — 사용자는 면접 준비할 때 vault, prep으로 점프 X.
 
 ### 예상 질문 필수 구성
 
@@ -56,37 +57,41 @@
 **원칙**: 한 번에 다 로드 → 정렬된 답변 완성 → 다듬기 단계 별도 X. 선별, 지연 로드는 누락 + 재로드 토큰 낭비. 회고 후 마스터 역반영만 별도.
 
 **입력 (전부 필수)**:
+
 1. **JD** (WebFetch) + **이력서, 포트폴리오** (Read)
-2. **`common/` 마스터**: `My-*.md` 7개 + `Common-Interview-Questions.md` TOC + `Interview-Retro-Template.md`
-3. **`prep/` 14개 전체** — 선별 X (자세한 목록은 위 B 섹션). 면접 형식별 4종(CS, 시스템디자인, 라이브코딩, 글로벌)은 JD 단계 보고 적용 여부 판단.
-4. **`tech/` vault 딥다이브 (필수)**:
-   - 마스터 카드 8개 각각 → `My-Tech-Cards` 끝 카테고리 인덱스 기반으로 vault 서치
-   - 회사 특이 기술 질문(도메인) → 해당 vault 서치 (Agent로 인덱싱 가능)
-   - vault Read → **정량, 비교 표, 심화 꼬리를 본문에 흡수** (vault 위키링크 박지 X, 콘텐츠 자체)
+2. `**common/` 마스터**: `My-*.md` 7개 + `Common-Interview-Questions.md` TOC + `Interview-Retro-Template.md`
+3. `**prep/` 14개 전체** — 선별 X (자세한 목록은 위 B 섹션). 면접 형식별 4종(CS, 시스템디자인, 라이브코딩, 글로벌)은 JD 단계 보고 적용 여부 판단.
+4. `**tech/` vault 딥다이브 (필수)**:
+  - 마스터 카드 8개 각각 → `My-Tech-Cards` 끝 카테고리 인덱스 기반으로 vault 서치
+  - 회사 특이 기술 질문(도메인) → 해당 vault 서치 (Agent로 인덱싱 가능)
+  - vault Read → **정량, 비교 표, 심화 꼬리를 본문에 흡수** (vault 위키링크 박지 X, 콘텐츠 자체)
 5. **사이드 프로젝트 최신 메트릭 재확인 (필수)** — 정량 수치는 시점이 빠르게 변하므로 답변에 박기 전 **원본 docs 재검증**:
-   - 주일학교 출석부: `~/dev/projects/my-own/school_back/docs/business/STATUS.md` (모임 수, 학생, MAO, 전환율 등 정량)
-   - 다른 사이드 프로젝트 추가 시 본 항목에 경로 누적
-   - 마스터, 회사별 문서의 정량 수치(예: "99개 모임")는 **이 원본과 항상 동기화**. 포트폴리오 PDF 수치도 outdated 가능성 항상 의심.
+  - 주일학교 출석부: `~/dev/projects/my-own/school_back/docs/business/STATUS.md` (모임 수, 학생, MAO, 전환율 등 정량)
+  - 다른 사이드 프로젝트 추가 시 본 항목에 경로 누적
+  - 마스터, 회사별 문서의 정량 수치(예: "99개 모임")는 **이 원본과 항상 동기화**. 포트폴리오 PDF 수치도 outdated 가능성 항상 의심.
 6. **(조건부)** 과거 유사 회사 회고 (`fit/interview/{유사회사}/Interview-Retro-*.md`)
 
 **출력 (한 번에)**:
+
 - JD 매칭 표 + 회사 단계, 도메인 분석
 - 마스터 fork 답변 — **prep 5종 정렬(WHY, 의도, 시그널, 치환, 메타) + vault 흡수된 본문 + 회사 매핑 끝줄** 처음부터 완성
 - 회사 특이 기술 질문 (vault 흡수된 정량, 꼬리)
-- 회사 맞춤 역질문 (`My-Reverse-Questions` 풀 3~5개 + 회사 특이 1~2개)
+- 회사 맞춤 역질문 (`My-Reverse-Questions` 풀 3~~5개 + 회사 특이 1~~2개)
 - 체크리스트 (외부 귀책, 부정 단어, 꼬리 끝줄=귀사 연결)
 - (선택) Cheatsheet (D-1~D-day용 30분 훑기)
 
 ### vault 링크 위치 룰
 
-| 위치 | vault 링크 | 이유 |
-|---|---|---|
-| 답변 카드 본문 위 (`> 관련 vault: [[Lock]], ...` 식 매핑 줄) | ❌ | 답변 읽을 때 시끄러움 |
-| common/ 마스터 문서 **끝 "관련 문서" 아래 카테고리 목차** (`### vault 카테고리 인덱스`) | ✅ | 한 문서 안에서 보강 시 어디 보면 되는지 한 번에 |
-| 회사별 폴더 문서 안에 vault 매핑 | ❌ | 회사 문서가 자기완결. 보강은 마스터에 흡수 |
-| 별도 통합 vault 인덱스 문서 신설 (`Tech-Vault-Map.md` 같은) | ❌ | 점프 더 늘림 |
-| 같은 답변 시스템 내 cross-reference (`[[My-FIT-Answers#10. AI 도구]]`) | ✅ | 답변 시스템 안 작은 구조 |
-| prep/ 가이드 매핑 (`[[Self-Analysis]]` 톤, 시그널 메타) | ✅ | 답변 다듬을 때 가끔 정렬 체크 |
+
+| 위치                                                             | vault 링크 | 이유                           |
+| -------------------------------------------------------------- | -------- | ---------------------------- |
+| 답변 카드 본문 위 (`> 관련 vault: [[Lock]], ...` 식 매핑 줄)                | ❌        | 답변 읽을 때 시끄러움                 |
+| common/ 마스터 문서 **끝 "관련 문서" 아래 카테고리 목차** (`### vault 카테고리 인덱스`) | ✅        | 한 문서 안에서 보강 시 어디 보면 되는지 한 번에 |
+| 회사별 폴더 문서 안에 vault 매핑                                          | ❌        | 회사 문서가 자기완결. 보강은 마스터에 흡수     |
+| 별도 통합 vault 인덱스 문서 신설 (`Tech-Vault-Map.md` 같은)                 | ❌        | 점프 더 늘림                      |
+| 같은 답변 시스템 내 cross-reference (`[[My-FIT-Answers#10. AI 도구]]`)   | ✅        | 답변 시스템 안 작은 구조               |
+| prep/ 가이드 매핑 (`[[Self-Analysis]]` 톤, 시그널 메타)                   | ✅        | 답변 다듬을 때 가끔 정렬 체크            |
+
 
 ### 마스터 역반영 룰 (면접 후 회고)
 
@@ -132,6 +137,7 @@
   3. 세미나 원본 (`status: seminar`)
   4. 템플릿 파일
   5. 슬라이드 원본 (frontmatter `marp: true` — 분할하면 프레젠테이션이 깨짐)
+  6. 설정과 규칙 파일 (`CLAUDE.md`, `AGENTS.md`) — 도구가 단일 파일로 로드하므로 분할 불가
 - 새 문서를 작성할 때도 이 규칙을 염두에 두고, 200줄에 근접하면 미리 분할을 검토한다.
 
 ## Folder Structure
@@ -166,7 +172,7 @@
 - 이 레포는 **Claude와 Codex를 함께** 쓴다. Claude는 `CLAUDE.md`와 `.claude/`, Codex는 `AGENTS.md`와 `.agents/`를 읽는다. **정본은 `CLAUDE.md`** — Codex 지침(`AGENTS.md`)도 CLAUDE.md를 source of truth로 위임한다.
 - **스킬은 두 곳에 중복 존재**: `.claude/skills/{memo,interview-prep}/`(Claude)와 `.agents/skills/{memo,interview-prep}/`(Codex, frontmatter만 Codex식 + `agents/openai.yaml`). **한쪽 스킬을 수정하면 다른 쪽도 맞춘다.** 워크플로우 변경은 `CLAUDE.md`에 먼저 반영한 뒤 양쪽 헬퍼 파일을 동기화한다 (`AGENTS.md`의 Coexistence Rules와 대칭).
 - **Claude 파일을 삭제, 개명, 변환하지 않는다** — 사용자가 명시적으로 요청할 때만. `.agents/`는 호환 헬퍼일 뿐 Claude 설정을 대체하지 않는다.
-- **`.mcp.json`은 장비별 로컬 설정**(gitignore). Obsidian MCP의 vault 절대경로가 장비마다 다르므로(개인, 회사 장비 username 상이) 커밋하지 않는다. 새 장비에선 `.mcp.json.example`을 복사해 그 장비의 절대경로로 채운다. identity, SSH 키와 같은 머신 로컬 범주.
+- `**.mcp.json`은 장비별 로컬 설정**(gitignore). Obsidian MCP의 vault 절대경로가 장비마다 다르므로(개인, 회사 장비 username 상이) 커밋하지 않는다. 새 장비에선 `.mcp.json.example`을 복사해 그 장비의 절대경로로 채운다. identity, SSH 키와 같은 머신 로컬 범주.
 - **Why**: sync 규칙이 `AGENTS.md`에만 있으면 Codex는 알지만 Claude는 `.agents/` 미러의 존재조차 모른 채 `.claude/` 스킬만 고쳐 두 복사본이 드리프트한다. 규칙을 양쪽 정본에 대칭으로 둬 어느 도구로 작업하든 동기화가 걸리게 한다.
 
 ---
@@ -236,3 +242,4 @@
   - "이력서/포트폴리오 개선, 정리" 요청 → (1) 특정 회사 JD 최적화인지, (2) Notion 원본 편집 제안인지, (3) 기타인지 **먼저 짧게 확인**. "vault 복제"는 기본 선택지에서 제외.
   - 회사별 JD 매칭이 필요할 땐 `fit/interview/{회사명}/`에 발췌, 분석만.
   - `fit/job-search/resume/`에 `Resume.md`, `Portfolio*.md` 본문 파일을 새로 만들지 않는다.
+
