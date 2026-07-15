@@ -2,7 +2,7 @@
 tags: [database, redis, cache]
 status: done
 category: "Data & Storage - Cache & KV"
-aliases: ["Redis architecture", "Redis Architecture"]
+aliases: ["Redis Architecture"]
 ---
 
 # Redis architecture

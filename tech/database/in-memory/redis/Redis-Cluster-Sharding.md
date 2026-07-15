@@ -2,7 +2,7 @@
 tags: [database, redis, cluster, sharding, hash-slot, gossip]
 status: done
 category: "Data & Storage - Cache & KV"
-aliases: ["Redis Cluster", "Hash Slot", "Consistent Hashing", "Gossip Protocol"]
+aliases: ["Redis Cluster", "Hash Slot", "Redis Consistent Hashing", "Gossip Protocol"]
 ---
 
 # Redis Cluster, Sharding

@@ -2,7 +2,7 @@
 tags: [finops, aws, s3, storage, tiering, lifecycle, glacier, ebs]
 status: done
 category: "비용&운영(FinOps)"
-aliases: ["Storage Tiering", "Storage tiering", "스토리지 티어링", "S3 storage class", "스토리지 클래스"]
+aliases: ["Storage Tiering", "스토리지 티어링", "S3 storage class", "스토리지 클래스"]
 ---
 
 # 스토리지 티어링 (Storage Tiering)

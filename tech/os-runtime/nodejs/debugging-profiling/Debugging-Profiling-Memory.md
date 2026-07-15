@@ -2,7 +2,7 @@
 tags: [runtime, nodejs]
 status: done
 category: "OS & Runtime"
-aliases: ["프로파일링", "메모리 진단", "Profiling Memory"]
+aliases: ["메모리 프로파일링", "메모리 진단", "Profiling Memory"]
 ---
 
 # 디버깅 & 프로파일링 — 프로파일링과 메모리 진단

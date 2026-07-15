@@ -53,4 +53,4 @@ Stripe API는 Idempotency-Key 헤더를 지원한다. 같은 키로 요청하면
 ## 관련 문서
 - [[At-Least-Once]]
 - [[Delivery-Semantics|전달 보장]]
-- [[Deduplication|Deduplication 전략]]
+- Deduplication 전략 (작성 예정: `Deduplication`)

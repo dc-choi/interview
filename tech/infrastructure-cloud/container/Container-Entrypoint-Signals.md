@@ -136,4 +136,4 @@ CMD ["python", "main.py"]
 ## 관련 문서
 - [[Docker|Docker 기본]]
 - [[Graceful-Shutdown|Graceful Shutdown (앱 계층)]]
-- [[K8s-Probes|K8s Liveness/Readiness Probe]]
+- K8s Liveness/Readiness Probe (작성 예정: `K8s-Probes`)

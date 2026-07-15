@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, alias, reindex, ism, data-stream]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Index Lifecycle", "OpenSearch ISM", "OpenSearch 인덱스 수명주기"]
 ---

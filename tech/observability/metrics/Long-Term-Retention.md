@@ -2,7 +2,7 @@
 tags: [observability, retention, downsampling, storage-tiering, cost, logs, metrics]
 status: done
 category: "관측가능성(Observability)"
-aliases: ["Long-Term Retention", "Long-term retention", "장기 보존", "보존 정책", "downsampling"]
+aliases: ["Long-Term Retention", "장기 보존", "보존 정책", "downsampling"]
 ---
 
 # 장기 보존 (Long-Term Retention)

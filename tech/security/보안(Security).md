@@ -2,7 +2,7 @@
 tags: [security]
 status: index
 category: "보안(Security)"
-aliases: ["보안(Security)", "Security"]
+aliases: ["보안(Security)", "Security Index"]
 ---
 
 # 보안(Security)
@@ -21,13 +21,13 @@ aliases: ["보안(Security)", "Security"]
 - [[tech/security/age-identity-verification/연령신원검증(AgeIdentityVerification)|연령/신원 검증 (Age & Identity Verification)]] — age assurance, IDV, PET, 규제 지형, 제3자 위탁 리스크
 
 ## 미작성
-- [ ] [[SQL-Injection]]
-- [ ] [[TLS-Config|TLS config]]
-- [ ] [[Rate-Limit|Rate limit]]
+- [ ] `SQL-Injection` (작성 예정)
+- [ ] TLS config (작성 예정: `TLS-Config`)
+- [ ] Rate limit (작성 예정: `Rate-Limit`)
 - [ ] [[WAF]]
-- [ ] [[Audit-Log|Audit log]]
-- [ ] [[Least-Privilege-IAM|Least privilege IAM]]
-- [ ] [[Dependency-Vulnerability-Scanning|Dependency vulnerability scanning]]
+- [ ] Audit log (작성 예정: `Audit-Log`)
+- [ ] Least privilege IAM (작성 예정: `Least-Privilege-IAM`)
+- [ ] Dependency vulnerability scanning (작성 예정: `Dependency-Vulnerability-Scanning`)
 
 ## 현장사례
 - [[Kakao-Ent-Seminar#보안|카카오엔터 보안]] — 서비스 접근 권한, 네트워크 망 설정

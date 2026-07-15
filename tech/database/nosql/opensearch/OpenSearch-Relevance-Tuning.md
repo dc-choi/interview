@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, relevance, function-score, rescore, ltr]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Relevance Tuning", "OpenSearch 관련도 튜닝", "Learning to Rank 판단"]
 ---

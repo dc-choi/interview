@@ -2,7 +2,7 @@
 tags: [observability, alerting, alert-fatigue, sre, on-call, incident]
 status: done
 category: "관측가능성(Observability)"
-aliases: ["Alert Fatigue", "Alert fatigue", "알람 피로", "알람 피로 방지", "alerting"]
+aliases: ["Alert Fatigue", "알람 피로", "알람 피로 방지", "alerting"]
 ---
 
 # Alert Fatigue 방지

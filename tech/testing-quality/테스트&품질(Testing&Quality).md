@@ -10,13 +10,13 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 ## Checklist
 - [x] Unit test
 - [x] Integration test
-- [ ] [[E2E-Test|E2E test (supertest)]]
-- [ ] [[Contract-Test|Contract test]]
+- [ ] E2E test (supertest) (작성 예정: `E2E-Test`)
+- [ ] Contract test (작성 예정: `Contract-Test`)
 - [x] [[Test-Fixture|Test fixture 전략]]
 - [x] [[Test-Isolation|Test isolation]]
-- [ ] [[Deterministic-Test|Deterministic test]]
-- [ ] [[Load-Test-Automation|Load test automation]]
-- [ ] [[Chaos-Testing|Chaos testing (optional)]]
+- [ ] Deterministic test (작성 예정: `Deterministic-Test`)
+- [ ] Load test automation (작성 예정: `Load-Test-Automation`)
+- [ ] Chaos testing (optional) (작성 예정: `Chaos-Testing`)
 - [x] [[performance|성능 테스트 유형]]
 - [x] [[TDD-BDD|TDD, BDD (Red-Green-Refactor, Given-When-Then, 조합 전략)]]
 - [x] [[TDD-Refactoring-Practice|TDD 리팩토링 연습법 (의식적인 연습, 정량적 제약, 장난감 프로젝트, 학습 테스트, 원시값 포장, 팀 전파)]]

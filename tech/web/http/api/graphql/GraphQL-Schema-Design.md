@@ -1,6 +1,7 @@
 ---
 tags: [web, graphql, api, schema, schema-design]
 status: done
+verified_at: 2026-07-15
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "schema versioning", "mutation payload"]
 ---

@@ -118,7 +118,7 @@ EBS 자체가 AZ 내 자동 복제로 내결함성을 제공하므로, **RAID로
 
 ## 출처
 
-- [AWS SAA C03 학습 자료 — `SAA #3, EBS(Elastic Block Store).pdf`](file:///Users/dc-choi/Downloads/AWS%20SAA%20C03%20%E1%84%89%E1%85%B5%E1%84%92%E1%85%A5%E1%86%B7%20%E1%84%92%E1%85%A2%E1%86%A8%E1%84%89%E1%85%B5%E1%86%B7%20%E1%84%89%E1%85%A5%E1%84%87%E1%85%B5%E1%84%89%E1%85%B3%20%E1%84%8C%E1%85%AE%E1%84%8B%E1%85%AD%20%E1%84%80%E1%85%A2%E1%84%82%E1%85%A7%E1%86%B7/)
+- [Amazon EBS 사용 설명서](https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html)
 
 ## 관련 문서
 

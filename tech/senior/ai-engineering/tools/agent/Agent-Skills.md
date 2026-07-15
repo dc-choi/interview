@@ -2,7 +2,7 @@
 tags: [senior, ai, skills, claude-code, codex, hook]
 status: done
 category: "Senior - AI 엔지니어링"
-aliases: ["Agent Skills", "에이전트 스킬", "Skill", "스킬", "Claude vs Codex Skills"]
+aliases: ["Agent Skills", "에이전트 스킬", "스킬", "Claude vs Codex Skills"]
 ---
 
 # 에이전트 스킬 (Agent Skills)

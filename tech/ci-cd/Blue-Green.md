@@ -110,8 +110,8 @@ Blue-Green은 "전환이 0-1 binary"인 반면 Canary는 "연속적". 둘은 결
 
 ## 관련 문서
 - [[CICD-Basics|CI/CD 기초]]
-- [[Canary|Canary 배포]]
-- [[Zero-Downtime-Deployment|Zero-downtime deployment]]
-- [[Rollback|Rollback 전략]]
-- [[DB-Migration|DB migration 전략]]
+- Canary 배포 (작성 예정: `Canary`)
+- Zero-downtime deployment (작성 예정: `Zero-Downtime-Deployment`)
+- Rollback 전략 (작성 예정: `Rollback`)
+- DB migration 전략 (작성 예정: `DB-Migration`)
 - [[Load-Balancer|Load Balancer]]

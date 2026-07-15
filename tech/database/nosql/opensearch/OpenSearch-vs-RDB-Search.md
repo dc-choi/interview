@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, mysql, postgresql, inverted-index, btree]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch vs RDB Search", "RDB vs 검색엔진 도입 판단", "검색엔진 도입 판단 프레임"]
 ---
@@ -128,4 +129,3 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 - [Comparison of B-Tree and Hash Indexes - MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/index-btree-hash.html)
 - [Controlling Text Search (ts_rank) - PostgreSQL Documentation](https://www.postgresql.org/docs/current/textsearch-controls.html)
 - [pg_trgm - PostgreSQL Documentation](https://www.postgresql.org/docs/current/pgtrgm.html)
-

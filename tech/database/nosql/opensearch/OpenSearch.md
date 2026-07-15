@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, lucene, inverted-index]
 status: index
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch", "검색 엔진", "역색인"]
 ---

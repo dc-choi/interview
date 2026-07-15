@@ -32,7 +32,7 @@ aliases: ["TS"]
 ### [[compile|컴파일 원리]]
 ### [[option|컴파일러 옵션]]
 ### [[tech/computer-science/ts/types/타입특징|타입특징]]
-### [[tech/computer-science/ts/_ts-study/ts-study|ts-study]]
+### [[tech/computer-science/ts/ts-study/ts-study|ts-study]]
 
 ## 심화 주제
 - [x] [[Types-As-Proofs|Types as Proofs (커리-하워드 대응, never, exhaustive switch, TS 불건전 지점)]]

@@ -58,6 +58,5 @@ aliases: ["관리형 DB 선택 기준", "RDS SAA-C03 체크포인트"]
 ## 출처
 - [AWS RDS Read Replicas — 공식 문서](https://aws.amazon.com/ko/rds/features/read-replicas/)
 - [NCP Cloud DB for MySQL](https://www.ncloud.com/product/database/cloudDbMysql)
-- [AWS SAA C03 학습 자료 — SAA #7 RDS-1](/Users/dc-choi/Downloads/AWS%20SAA%20C03%20시험%20핵심%20서비스%20주요%20개념/SAA%20%237,%20RDS%20-%201.pdf)
-- [AWS SAA C03 학습 자료 — SAA #8 RDS-2](/Users/dc-choi/Downloads/AWS%20SAA%20C03%20시험%20핵심%20서비스%20주요%20개념/SAA%20%238,%20RDS%20-%202.pdf)
-- [AWS SAA C03 학습 자료 — SAA #9 Amazon Aurora](/Users/dc-choi/Downloads/AWS%20SAA%20C03%20시험%20핵심%20서비스%20주요%20개념/SAA%20%239,%20Amazon%20Aurora.pdf)
+- [Amazon RDS 사용 설명서](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html)
+- [Amazon Aurora 사용 설명서](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html)

@@ -2,7 +2,7 @@
 tags: [database, redis, cache, concurrency]
 status: done
 category: "Data & Storage - Cache & KV"
-aliases: ["Distributed lock", "Distributed Lock", "분산 락"]
+aliases: ["Distributed Lock", "분산 락"]
 ---
 
 # Distributed Lock

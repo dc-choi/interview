@@ -2,7 +2,7 @@
 tags: [messaging, patterns]
 status: index
 category: "Messaging - 패턴"
-aliases: ["Messaging Patterns"]
+aliases: ["Messaging Patterns Index"]
 ---
 
 # 메시징 패턴(Messaging Patterns)

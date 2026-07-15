@@ -1,6 +1,7 @@
 ---
 tags: [infrastructure, aws, opensearch, cost, serverless, blue-green]
 status: done
+verified_at: 2026-07-15
 category: "Infrastructure - AWS"
 aliases: ["OpenSearch Service Cost Optimization", "OpenSearch 비용 최적화", "OpenSearch 배포 함정"]
 ---
@@ -18,10 +19,11 @@ aliases: ["OpenSearch Service Cost Optimization", "OpenSearch 비용 최적화",
 | 1 | Retention 단축, 저가치 field 제거, sampling | 무료이며 이후 모든 비용의 분모를 줄인다 |
 | 2 | Shard와 replica 정리 | over-sharding은 heap과 CPU 낭비. shard당 10에서 50GiB, heap 1GiB당 25 shard 이하 권고 |
 | 3 | gp2에서 gp3로 전환 | GB당 약 9.6퍼센트 저렴(0.135 대 0.122 USD/GB-월)하고 baseline IOPS와 throughput이 낫다. 단 storage type 변경은 blue-green trigger |
-| 4 | Graviton 최신 세대 전환 | Graviton2가 동급 x86 대비 최대 44퍼센트 price/performance 개선, Graviton3는 Graviton2 대비 최대 25퍼센트 성능 개선. instance type 변경이므로 blue-green trigger |
+| 4 | Graviton 최신 세대 전환 | AWS benchmark의 Graviton2 최대 44퍼센트 price/performance 개선은 previous-generation instance 대비 수치이며 동급 x86 전체에 일반화할 수 없다. Graviton3의 Graviton2 대비 최대 25퍼센트 성능 개선도 workload로 검증한다. Instance type 변경이므로 blue-green trigger |
 | 5 | Right-sizing | CPU 60에서 80, JVM 65에서 85, storage 70에서 85퍼센트가 목표 구간. CPU 40퍼센트 미만 지속은 과잉 프로비저닝 신호 |
 | 6 | Tier 이동 (UltraWarm, cold) | 아래 손익 계산을 통과할 때만 |
-| 7 | Reserved Instances 또는 Database Savings Plans | 구조가 안정된 뒤 약정. no upfront 1년 31, 3년 48퍼센트, all upfront 1년 35, 3년 52퍼센트 할인 |
+| 7 | Reserved Instances | 구조가 안정된 뒤 1년 또는 3년 약정. no upfront와 all upfront별 할인은 pricing page의 현재 조건을 다시 확인 |
+| 8 | Database Savings Plans | 1년 hourly spend commitment로 eligible OpenSearch Service usage 등에 적용. 최대 35퍼센트 수치와 적용 범위는 RI와 별개로 계산 |
 
 Extended Support도 확인한다. 지원 종료 engine version에 머무르면 Normalized Instance Hour당 추가 요금이 붙으므로 upgrade가 곧 절감이다. 로그성 workload라면 `_source` 저장을 생략하는 Derived Source(3.1+)와 index rollup도 storage 분모를 줄이는 수단이다.
 
@@ -99,3 +101,4 @@ Provisioned domain의 설정 변경은 두 부류다. Blue-green은 기존 clust
 - [Off-peak windows - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/off-peak.html)
 - [Amazon OpenSearch Service Pricing - AWS](https://aws.amazon.com/opensearch-service/pricing/)
 - [Improved performance with AWS Graviton2 instances - AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/improved-performance-with-aws-graviton2-instances-on-amazon-opensearch-service/)
+- [Database Savings Plans for OpenSearch Service and Neptune Analytics - AWS](https://aws.amazon.com/about-aws/whats-new/2026/03/dbsp-opensearch-service-neptune-analytics/)

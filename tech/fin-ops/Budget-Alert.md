@@ -2,7 +2,7 @@
 tags: [finops, aws, budgets, alert, budget-actions, governance]
 status: done
 category: "비용&운영(FinOps)"
-aliases: ["Budget Alert", "Budget alert", "예산 알람", "AWS Budgets", "예산 가드레일"]
+aliases: ["Budget Alert", "예산 알람", "AWS Budgets", "예산 가드레일"]
 ---
 
 # 예산 알람 (AWS Budgets)

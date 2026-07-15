@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, mapping, analyzer, cjk]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Mapping", "OpenSearch Text Analysis", "OpenSearch 매핑과 분석기"]
 ---

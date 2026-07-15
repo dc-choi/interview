@@ -83,7 +83,7 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 
 - 클라이언트 입력, 외부 데이터 소스, RAG 저장소, 인터넷은 모두 **신뢰 못 하는 매체**로 취급 (부록 위협 모델의 T/B 경계)
 - 관통하는 원칙: 입력도 출력도 불신, 최소 권한, 권한 강제는 LLM 밖 결정적 시스템에서, 고위험엔 사람 승인, 전 구간 모니터링
-- 기존 웹 보안과의 연결: 출력 처리(LLM05)는 [[XSS]], [[SQL-Injection]]의 LLM 버전, 공급망(LLM03)은 [[Supply-Chain-Security]]의 ML 확장, 시스템 프롬프트(LLM07)는 [[Secret-Management|시크릿 관리]] 원칙과 동일
+- 기존 웹 보안과의 연결: 출력 처리(LLM05)는 [[XSS]], `SQL-Injection` (작성 예정)의 LLM 버전, 공급망(LLM03)은 [[Supply-Chain-Security]]의 ML 확장, 시스템 프롬프트(LLM07)는 [[Secret-Management|시크릿 관리]] 원칙과 동일
 
 ## 면접 체크포인트
 

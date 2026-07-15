@@ -16,24 +16,24 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## 미작성 — AWS
 - [ ] [[IAM]]
-- [ ] [[SQS-SNS-EventBridge|SQS / SNS / EventBridge]]
+- [ ] SQS / SNS / EventBridge (작성 예정: `SQS-SNS-EventBridge`)
 - [ ] [[CloudWatch]]
-- [ ] [[EBS-Instance-Store|EBS vs Instance store]]
+- [ ] EBS vs Instance store (작성 예정: `EBS-Instance-Store`)
 
 ## 미작성 — Network
-- [ ] [[NAT-Subnet|NAT / Public vs Private subnet]]
+- [ ] NAT / Public vs Private subnet (작성 예정: `NAT-Subnet`)
 
 ## Kubernetes
 - [x] [[K8s-Resource-Right-Sizing|Resource Right-Sizing (P95, 버퍼, 역산식, 컴포넌트 차등, 롤백 기준)]]
 
 ## 미작성 — Kubernetes
-- [ ] [[K8s-Pod-Deployment|Pod / Deployment / Service / Ingress]]
-- [ ] [[K8s-HPA-VPA|HPA / VPA]]
-- [ ] [[K8s-ConfigMap-Secret|ConfigMap / Secret]]
-- [ ] [[K8s-Resource-Limit|Resource request / limit]]
-- [ ] [[K8s-Probes|Liveness / Readiness probe]]
-- [ ] [[K8s-PDB|PodDisruptionBudget]]
-- [ ] [[K8s-Node-Autoscaling|Node autoscaling]]
+- [ ] Pod / Deployment / Service / Ingress (작성 예정: `K8s-Pod-Deployment`)
+- [ ] HPA / VPA (작성 예정: `K8s-HPA-VPA`)
+- [ ] ConfigMap / Secret (작성 예정: `K8s-ConfigMap-Secret`)
+- [ ] Resource request / limit (작성 예정: `K8s-Resource-Limit`)
+- [ ] Liveness / Readiness probe (작성 예정: `K8s-Probes`)
+- [ ] PodDisruptionBudget (작성 예정: `K8s-PDB`)
+- [ ] Node autoscaling (작성 예정: `K8s-Node-Autoscaling`)
 
 ## 현장사례
 - [[Kakao-Ent-Seminar#백엔드인프라전체그림|카카오엔터 백엔드 인프라 전체 그림]] — 네트워크~모니터링 계층별 구성

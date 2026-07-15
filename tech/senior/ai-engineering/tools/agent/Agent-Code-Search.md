@@ -21,7 +21,7 @@ aliases: ["Agent Code Search", "에이전트 코드 검색", "Semantic Code Sear
 
 1. **코드 인식 청킹**: tree-sitter로 파일을 구문 단위(함수, 클래스)로 분할 — 고정 길이 청킹이 함수 중간을 자르는 문제를 피함 ([[RAG-Retrieval-Engineering|청킹 전략]])
 2. **이중 검색**: 정적 임베딩(의미 유사도) + BM25(식별자, API명 정확 매칭)를 병행. 의미는 임베딩이, 정확 토큰은 BM25가 맡는 분업
-3. **RRF 융합**: 두 점수 리스트를 Reciprocal Rank Fusion으로 단일 랭킹으로 합침 (하이브리드 검색 일반론은 [[RAG-Retrieval-Engineering#하이브리드 검색]])
+3. **RRF 융합**: 두 점수 리스트를 Reciprocal Rank Fusion으로 단일 랭킹으로 합침 (하이브리드 검색 일반론은 [[RAG-Retrieval-Engineering#하이브리드 검색: 벡터 + BM25]])
 
 ## 정적 임베딩 — CPU에서 밀리초
 

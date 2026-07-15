@@ -2,7 +2,7 @@
 tags: [database, redis, cache]
 status: done
 category: "Data & Storage - Cache & KV"
-aliases: ["Cache invalidation", "Cache Invalidation", "캐시 무효화"]
+aliases: ["Cache Invalidation", "캐시 무효화"]
 ---
 
 # Cache Invalidation

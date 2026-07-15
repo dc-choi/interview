@@ -2,7 +2,7 @@
 tags: [senior, leadership, documentation]
 status: done
 category: "시니어역량(SeniorEngineer)"
-aliases: ["RFC Writing", "RFC 작성", "PRD"]
+aliases: ["RFC Writing", "RFC 작성"]
 ---
 
 # RFC / PRD 작성

@@ -2,7 +2,7 @@
 tags: [infrastructure, network, cdn, cloudfront, performance, cache]
 status: done
 category: "Infrastructure - Network"
-aliases: ["CDN", "Content Delivery Network", "CloudFront"]
+aliases: ["CDN", "Content Delivery Network"]
 ---
 
 # CDN (Content Delivery Network)

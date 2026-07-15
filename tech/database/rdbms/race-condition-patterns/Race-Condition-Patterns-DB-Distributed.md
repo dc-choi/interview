@@ -1,6 +1,7 @@
 ---
 tags: [database, concurrency, race-condition, patterns]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - RDB"
 aliases: ["DB 락과 분산 락 Race Condition", "단일 DB 다중 서버, 분산 환경 race"]
 ---
@@ -29,8 +30,7 @@ SELECT * FROM reservations WHERE time = 10AM FOR UPDATE;
 INSERT ...;
 COMMIT;
 ```
-대기 시간 발생, 하지만 확실.
-단, 빈 범위까지 막으려면 적절한 인덱스와 InnoDB RR의 Gap Lock처럼 범위 삽입을 막는 구현이 필요하다. DB 독립적으로는 Unique Constraint가 더 확실하다.
+이미 존재하는 row를 갱신하는 경쟁에는 적합하지만, 빈 조회 결과만으로 미래의 INSERT까지 막는다고 단정할 수 없다. PostgreSQL의 row lock은 실제로 반환된 row를 잠그며, InnoDB도 빈 범위 삽입 차단 여부가 격리 수준과 인덱스, 검색 범위에 따른 Gap/Next-Key Lock에 달려 있다. 예약 중복 방지처럼 DB에 관계없이 지켜야 하는 불변식은 Unique Constraint로 강제하고 충돌을 처리한다.
 
 **2. Unique Constraint**:
 ```
@@ -86,11 +86,17 @@ version 불일치면 rowsAffected=0 → 재시도. 경쟁 적을 때 효율적.
 - 이벤트 수신 측이 상태를 역조회해 처리
 
 **수정**:
-- **Transactional Outbox** 패턴: 메시지 상태 업데이트 + 이벤트 발행을 한 트랜잭션
-- Outbox 테이블에서 이벤트를 별도 워커가 읽어 발행
-- 상태와 이벤트의 정합성 자동 보장
+- **Transactional Outbox** 패턴: 메시지 상태 업데이트와 Outbox 레코드 저장을 같은 DB 트랜잭션으로 처리
+- 별도 relay가 커밋된 Outbox 레코드를 읽어 broker에 발행
+- relay 재시도로 중복 발행될 수 있으므로 소비자는 멱등하게 처리
 
 상세: [[Transactional-Outbox]]
+
+## 출처
+
+- [PostgreSQL 17 Documentation — Explicit Locking](https://www.postgresql.org/docs/17/explicit-locking.html)
+- [MySQL 8.4 Reference Manual — Transaction Isolation Levels](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-isolation-levels.html)
+- [AWS Prescriptive Guidance — Transactional Outbox Pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
 
 ## 관련 문서
 - [[Lock|DB Lock (Shared, Exclusive, Gap, Next-Key)]]

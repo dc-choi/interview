@@ -25,7 +25,7 @@ JavaScript의 객체는 함수로 생성되고, 그 함수에 딸린 **프로토
 
 프로토타입 객체는 `constructor` 프로퍼티로 자신을 만든 함수를 되가리킨다(`User.prototype.constructor === User`). 인스턴스 자신은 어떤 생성자가 호출됐는지 직접 들고 있지 않지만, 원본(프로토타입)의 `constructor`를 타고 알아낼 수 있다(`instance` → 원본 → `constructor`).
 
-## __proto__ — 원본으로 가는 링크 ([[Prototype]])
+## __proto__ — 원본으로 가는 링크 (`[[Prototype]]`)
 
 인스턴스가 자신의 원본(`User.prototype`)을 가리키는 링크가 `[[Prototype]]` 내부 슬롯이고, 그 별칭이 `__proto__`다(`evan.__proto__ === User.prototype`). 두 개념을 구분해야 한다.
 

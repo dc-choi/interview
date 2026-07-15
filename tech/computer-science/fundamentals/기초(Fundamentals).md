@@ -2,7 +2,7 @@
 tags: [cs, fundamentals]
 status: index
 category: "CS - 기초"
-aliases: ["Fundamentals", "CS Fundamentals"]
+aliases: ["CS Fundamentals"]
 ---
 
 # 컴퓨터기초(Fundamentals)

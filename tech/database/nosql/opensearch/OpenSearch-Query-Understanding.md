@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, query-understanding, typo-correction, korean]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Query Understanding", "OpenSearch 쿼리 이해", "검색어 전처리", "오타 교정", "초성 검색"]
 ---

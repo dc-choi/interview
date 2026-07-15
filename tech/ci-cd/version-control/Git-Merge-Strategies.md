@@ -194,7 +194,7 @@ NEVER rebase commits that have been pushed to a shared branch.
 
 ## 관련 문서
 - [[CICD-Basics|CI/CD 기초]]
-- [[Git-Flow|Git Flow / Trunk based]]
+- Git Flow / Trunk based (작성 예정: `Git-Flow`)
 - [[GitHub-Actions|GitHub Actions]]
 - [[Code-Review-Culture|생산적 코드 리뷰 문화]]
 - [[Blue-Green|Blue/Green 배포]]

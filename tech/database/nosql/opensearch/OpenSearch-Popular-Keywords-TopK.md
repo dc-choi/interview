@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, redis, top-k, system-design]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["실시간 인기 검색어 Top-K", "Popular Keywords Top-K", "인기 검색어 설계"]
 ---

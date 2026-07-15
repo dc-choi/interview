@@ -2,7 +2,7 @@
 tags: [business, model]
 status: index
 category: "Business - 모델"
-aliases: ["Business Model"]
+aliases: ["Business Model Index"]
 ---
 
 # 비즈니스 모델(Business Model)

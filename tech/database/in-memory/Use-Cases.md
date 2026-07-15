@@ -2,7 +2,7 @@
 tags: [database, redis, cache]
 status: done
 category: "Data & Storage - Cache & KV"
-aliases: ["Use cases", "Use Cases"]
+aliases: ["Use Cases"]
 ---
 
 # Use cases

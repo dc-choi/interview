@@ -1,6 +1,7 @@
 ---
 tags: [web, graphql, api, architecture, diagram]
 status: done
+verified_at: 2026-07-15
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Architecture Map", "GraphQL 아키텍처 지도", "GraphQL 요청 라이프사이클", "GraphQL 전체 그림"]
 ---
@@ -49,7 +50,7 @@ flowchart LR
 
 - **Parse**: 쿼리 문자열을 AST로. 문법 오류는 여기서 걸려 실행이 아예 없다.
 - **Validate**: AST를 스키마와 대조해 없는 필드, 타입 안 맞는 인자를 거른다. **depth, complexity 제한이 붙는 자리** — 스키마 검증 자체가 아니라 별도 custom 규칙, demand control로 얹는다. 실행 전에 돌아 악성 깊은 쿼리가 DB를 안 건드린다.
-- **Execute**: 선택 트리를 위에서 아래로 순회하며 필드마다 resolver 호출. 뮤테이션 최상위 필드는 순차 실행(spec 권고: should be executed serially), 쿼리 필드는 병렬 가능. **N+1과 필드 단위 인가가 여기서** 일어난다.
+- **Execute**: 선택 트리를 위에서 아래로 순회하며 필드마다 resolver 호출. 뮤테이션 최상위 selection set은 스펙 실행 의미에 따라 순차 실행하고, 쿼리 필드는 병렬 실행할 수 있다. **N+1과 필드 단위 인가가 여기서** 일어난다.
 - **Response**: `data`와 `errors`를 함께 담는다. 필드 하나가 실패하면 execute 중에 그 필드가 null이 되고, non-null이면 null이 nullable 상위까지 올라간다(null bubbling). 그 결과가 봉투에 담겨 부분 성공, 부분 실패로 나온다.
 
 ## 그림 3. 스키마는 타입 그래프, 쿼리는 부분 트리, 실행은 순회
@@ -110,7 +111,7 @@ flowchart TB
 
 ## 출처
 
-- [GraphQL Spec — Execution](https://spec.graphql.org/October2021/#sec-Execution)
+- [GraphQL September 2025 Specification — Execution](https://spec.graphql.org/September2025/#sec-Execution)
 - [graphql.org — Execution](https://graphql.org/learn/execution/)
 - [graphql.org — Validation](https://graphql.org/learn/validation/)
 - [graphql.org — Security (Demand control: depth, complexity, rate limiting)](https://graphql.org/learn/security/)

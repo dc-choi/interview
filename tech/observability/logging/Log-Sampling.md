@@ -2,7 +2,7 @@
 tags: [observability, logging, sampling, cost, tracing, head-tail-sampling]
 status: done
 category: "관측가능성(Observability)"
-aliases: ["Log Sampling", "Log sampling", "로그 샘플링", "trace sampling", "head/tail sampling"]
+aliases: ["Log Sampling", "로그 샘플링", "trace sampling", "head/tail sampling"]
 ---
 
 # 로그 / 트레이스 샘플링 (Sampling)

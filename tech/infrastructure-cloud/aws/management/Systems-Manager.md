@@ -2,7 +2,7 @@
 tags: [infrastructure, aws, ssm, systems-manager, parameter-store, patch-manager, session-manager]
 status: done
 category: "Infrastructure - AWS"
-aliases: ["SSM", "AWS Systems Manager", "Systems Manager", "Parameter Store"]
+aliases: ["SSM", "AWS Systems Manager", "Systems Manager"]
 ---
 
 # AWS Systems Manager (SSM)

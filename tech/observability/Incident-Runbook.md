@@ -2,7 +2,7 @@
 tags: [observability, runbook, incident, on-call, sre, operations]
 status: done
 category: "관측가능성(Observability)"
-aliases: ["Incident Runbook", "Incident runbook", "런북", "Runbook", "대응 절차서"]
+aliases: ["Incident Runbook", "런북", "Runbook", "대응 절차서"]
 ---
 
 # Incident Runbook

@@ -9,7 +9,7 @@ aliases: ["Self-Service DB Diagnostics", "셀프서비스 DB 진단", "DB Insigh
 
 DB 이슈가 의심되면 보통 개발팀이 APM(Datadog, Sentry)에서 증상을 먼저 보고, Grafana/CloudWatch로 넘어가지만 지표만으로는 원인 쿼리를 짚기 어렵다. 결국 DB팀에 문의하고, DB팀은 Performance Insights, 슬로우 쿼리 로그, 각종 지표를 다시 확인한다. 정보가 여러 도구에 흩어져 있어 **화면을 오가는 비용 + 팀 간 설명/확인 비용**이 크다.
 
-셀프서비스 DB 진단 플랫폼은 이 흩어진 정보를 **한 화면에 모으고, 개발자가 직접 1차 분석**할 수 있게 만드는 내부 도구다. [[Database-Operations-Automation#셀프서비스-진단-도구|DB 운영 자동화]]의 "셀프서비스 진단 도구" 도메인을 구체화한 모습이다.
+셀프서비스 DB 진단 플랫폼은 이 흩어진 정보를 **한 화면에 모으고, 개발자가 직접 1차 분석**할 수 있게 만드는 내부 도구다. [[Database-Operations-Automation#셀프서비스 진단 도구|DB 운영 자동화]]의 "셀프서비스 진단 도구" 도메인을 구체화한 모습이다.
 
 ## 두 가지 목표
 

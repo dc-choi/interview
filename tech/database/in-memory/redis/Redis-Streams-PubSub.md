@@ -2,7 +2,7 @@
 tags: [database, redis, streams, pubsub, consumer-group, message-queue]
 status: done
 category: "Data & Storage - Cache & KV"
-aliases: ["Redis Streams", "Pub/Sub", "Consumer Group", "XADD"]
+aliases: ["Redis Streams", "Pub/Sub", "Redis Consumer Group", "XADD"]
 ---
 
 # Redis Streams, Pub/Sub

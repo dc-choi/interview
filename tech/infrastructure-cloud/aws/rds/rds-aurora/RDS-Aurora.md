@@ -2,7 +2,7 @@
 tags: [infrastructure, aws, rds, aurora, managed-db, database, ncp, saa-c03]
 status: index
 category: "Infrastructure - AWS"
-aliases: ["RDS", "Aurora", "Managed Database", "관리형 DB", "RDS vs Aurora"]
+aliases: ["RDS Overview", "Aurora", "Managed Database", "관리형 DB", "RDS vs Aurora"]
 ---
 
 # 관리형 DB — AWS RDS, Aurora, 클라우드 DB

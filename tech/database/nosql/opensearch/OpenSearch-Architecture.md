@@ -1,12 +1,12 @@
 ---
 tags: [database, search, opensearch, lucene, shard, replication]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Architecture", "OpenSearch 아키텍처"]
 ---
 
 # OpenSearch 아키텍처와 분산 실행 모델
-
 Lucene은 애플리케이션에 임베드되는 검색 라이브러리이며 자체 분산 클러스터 기능을 제공하지 않는다. OpenSearch는 Lucene 위에 JSON API, 매핑, 샤드 배치, 복제, 장애 복구, 클러스터 조정 계층을 제공한다. 핵심 실행 경계는 인덱스 전체가 아니라 샤드다.
 
 ## 제품 구성

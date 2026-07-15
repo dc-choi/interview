@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, lucene, inverted-index, doc-values]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["역색인 물리 구조", "OpenSearch Inverted Index Structures", "Lucene 자료구조"]
 ---

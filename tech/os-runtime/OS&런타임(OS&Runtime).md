@@ -18,10 +18,10 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[tech/os-runtime/spring/Spring|Spring]] — Request Lifecycle, @Transactional, JPA 영속성
 
 ## 미작성 — Linux
-- [ ] [[Page-Cache|Page cache]]
-- [ ] [[File-Descriptor-Limit|File descriptor limit]]
-- [ ] [[Epoll-Kqueue|epoll / kqueue]]
+- [ ] Page cache (작성 예정: `Page-Cache`)
+- [ ] File descriptor limit (작성 예정: `File-Descriptor-Limit`)
+- [ ] epoll / kqueue (작성 예정: `Epoll-Kqueue`)
 
 ## 미작성 — Runtime
-- [ ] [[Heap-Snapshot|Heap snapshot]]
-- [ ] [[Flamegraph]]
+- [ ] Heap snapshot (작성 예정: `Heap-Snapshot`)
+- [ ] `Flamegraph` (작성 예정)
