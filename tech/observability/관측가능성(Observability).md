@@ -42,6 +42,9 @@ aliases: ["관측가능성(Observability)", "Observability"]
 ## Tracing
 - [x] [[OpenTelemetry|OpenTelemetry + 분산 트레이싱 + Trace context propagation (Trace/Span, W3C traceparent, 큐 전파, 샘플링)]]
 
+## Datadog
+- [[tech/observability/datadog/datadog|Datadog 학습 지도]] — Unified Service Tagging, Catalog, APM, Monitor, SLO, 배포 추적
+
 ## Reliability
 - [x] [[Deploy-Observability|배포 가시성 (APM 스팬 태그 공통 신호, 멀티 플랫폼 통합 탐지, 장애 스레드 자동 첨부, FPM vs CLI 계측 함정)]]
 - [x] [[SLI-SLO|SLI / SLO / Error budget (9의 의미, burn rate, 버짓 정책)]]
