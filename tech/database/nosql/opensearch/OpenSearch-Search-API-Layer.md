@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, api-design, caching, resilience]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Search API Layer", "검색 API 계층", "검색 서비스 계층 설계"]
 ---

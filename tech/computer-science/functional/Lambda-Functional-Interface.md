@@ -2,7 +2,7 @@
 tags: [cs, functional, java, javascript, lambda, stream]
 status: done
 category: "CS - 함수형 프로그래밍"
-aliases: ["Lambda", "Functional Interface", "람다", "자바 함수형", "FP in Java"]
+aliases: ["Java Lambda", "Functional Interface", "람다", "자바 함수형", "FP in Java"]
 ---
 
 # 람다, Functional Interface — Java, JavaScript 실전 FP

@@ -1,6 +1,7 @@
 ---
 tags: [web, network, graphql, api, http]
-status: done
+status: index
+verified_at: 2026-07-15
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL"]
 ---

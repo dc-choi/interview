@@ -1,6 +1,7 @@
 ---
 tags: [infrastructure, aws, opensearch, sizing, instance, storage]
 status: done
+verified_at: 2026-07-15
 category: "Infrastructure - AWS"
 aliases: ["OpenSearch Service 인스턴스와 스토리지", "OpenSearch Instance and Storage Sizing", "OpenSearch 하드웨어 사이징"]
 ---

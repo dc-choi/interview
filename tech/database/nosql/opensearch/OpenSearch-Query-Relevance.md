@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, lexical, query-dsl, bm25, relevance]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Lexical Search", "OpenSearch 렉시컬 검색", "OpenSearch Query DSL", "OpenSearch Relevance", "OpenSearch 쿼리"]
 ---

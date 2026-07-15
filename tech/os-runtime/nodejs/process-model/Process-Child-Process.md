@@ -155,4 +155,4 @@ shell이 필요해도 사용자 입력을 인자로 넣지 말고, 인자 바인
 - [[Worker-Threads|Worker Threads (스레드 기반 분리)]]
 - [[Nodejs-Clustering|Cluster (다중 worker 패턴)]]
 - [[Single-vs-Multi-Thread|싱글 vs 멀티 스레드]]
-- [[Security|Node.js 보안 모범 사례]]
+- [[tech/os-runtime/nodejs/Security|Node.js 보안 모범 사례]]

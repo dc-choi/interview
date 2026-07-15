@@ -2,7 +2,7 @@
 tags: [database, redis, cache]
 status: stub
 category: "Data & Storage - Cache & KV"
-aliases: ["Session store", "Session Store"]
+aliases: ["Session Store"]
 ---
 
 # Session store

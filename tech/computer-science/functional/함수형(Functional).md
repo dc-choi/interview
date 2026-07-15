@@ -2,7 +2,7 @@
 tags: [cs, functional, category-theory]
 status: index
 category: "CS - 함수형 프로그래밍"
-aliases: ["Functional", "Category Theory"]
+aliases: ["Functional", "Functional Programming Index"]
 ---
 
 # 함수형 프로그래밍(Functional)

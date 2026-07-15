@@ -1,6 +1,7 @@
 ---
 tags: [econ, investing]
 status: done
+verified_at: 2026-07-15
 category: "Economics"
 aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"]
 ---
@@ -9,7 +10,7 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 
 > 한 줄 요약: 자산배분은 장기 성과의 변동과 위험을 크게 좌우하지만, 수익률 수준의 대부분을 기계적으로 결정한다고 단정하면 Brinson류 연구를 오독하기 쉽다. 분산은 위험을 줄이는 거의 유일한 공짜 점심이다.
 
-## 1. 자산배분이 수익의 대부분을 정한다
+## 1. 자산배분이 위험 구조와 성과 변동을 크게 좌우한다
 
 투자자는 종목 고르기에 가장 많은 에너지를 쓰지만, 장기 성과의 변동성과 손실 폭을 크게 설명하는 것은 **자산군을 어떤 비율로 나눴는가**다. 주식과 채권과 현금을 몇 대 몇으로 가져가느냐가 포트폴리오의 위험 구조를 먼저 정한다. 그래서 큰 그림(배분)을 먼저 정하고 세부(종목)는 그다음이다.
 
@@ -45,7 +46,7 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 
 ## 7. 핵심 개념
 
-- **자산배분 우선**: 종목보다 배분이 결과를 더 좌우
+- **자산배분 우선**: 목표, 시간지평, 위험 감수 수준에 맞는 자산군 비중을 먼저 설계
 - **상관관계**: 분산의 효과를 정하는 진짜 변수
 - **리밸런싱**: 규율로 저가매수 고가매도
 - **시간지평과 위험성향**: 개인별 배분의 두 축
@@ -55,6 +56,11 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 - **많은 종목을 사면 분산이다** → 같이 움직이는 자산은 아무리 많아도 분산이 약하다. 상관관계가 핵심이다.
 - **분산하면 손실이 없다** → 시장 전체가 빠지는 체계적 위험은 못 없앤다 → [[Risk-and-Return|위험과 수익]].
 - **모두에게 맞는 황금 배분이 있다** → 시간지평과 위험성향에 따라 다르다.
+
+## 출처
+
+- [Asset Allocation and Diversification — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
+- [Determinants of Portfolio Performance — Financial Analysts Journal](https://doi.org/10.2469/faj.v51.n1.1869)
 
 ## 관련
 

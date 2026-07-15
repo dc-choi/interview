@@ -168,6 +168,6 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 - [[Blue-Green|Blue/Green 배포]]
 - [[Legacy-Modernization-Strategies|레거시 현대화 전략]]
 - [[RFC-Writing|RFC 작성]]
-- [[Feature-Flag|Feature Flag 시스템]]
+- Feature Flag 시스템 (작성 예정: `Feature-Flag`)
 - [[DRI-Delegation-Culture|DRI와 권한 위임 문화]] — CEO 리스크와 위임, 분산된 의사결정
 - [[Startup-Financial-Discipline|스타트업 재무 규율]] — 단위 경제, 런웨이

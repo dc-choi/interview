@@ -1,6 +1,7 @@
 ---
 tags: [business, commerce, domain, history]
 status: done
+verified_at: 2026-07-15
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Commerce Korea History 1996-2003", "한국 이커머스 역사 1996-2003"]
 ---
@@ -75,7 +76,7 @@ aliases: ["Commerce Korea History 1996-2003", "한국 이커머스 역사 1996-2
 
 - 강력한 솔루션 업체와 외주(RFP로 외주사 선정, 동일 인력풀 순환)에 의존하면서 기술 내재화에 실패했다. 시스템이 서로 비슷해지자 차별성이 사라졌고, **경쟁은 상품과 가격으로 수렴**했다. 마케팅과 저가 경쟁에 지친 대기업들이 수익성 높고 거래 규모가 큰 B2B로 눈을 돌린 배경이다.
 - 대기업은 B2B 임직원몰로 후퇴했다 — 방문자(모기업 임직원), 결제(복지포인트), 구매전환율(필수 사용)이 모두 보장되는 수익 공식상 안전한 모델이지만, 기술 발전은 없었다. 물류창고와 고객센터 투자도 오프라인 유통의 채널 확장 수준이었다.
-- 같은 시기 해외는 PayPal(에스크로 결제), Zappos(IT 시스템 중심 운영)로 달리고 있었고, 2005년 이후 국내와의 기술 격차가 현격해졌다.
+- 같은 시기 해외는 PayPal(이메일 기반 온라인 결제), Zappos(IT 시스템 중심 운영)로 달리고 있었고, 2005년 이후 국내와의 기술 격차가 현격해졌다.
 
 ## 면접 체크포인트
 
@@ -90,6 +91,7 @@ aliases: ["Commerce Korea History 1996-2003", "한국 이커머스 역사 1996-2
 - [[Commerce-Korea-Market|한국 이커머스 시장의 특수성]]
 
 ## 출처
+- [PayPal 2001 Form 10-K — SEC](https://www.sec.gov/Archives/edgar/data/1103415/000091205702009834/a2073071z10-k405.htm)
 - [대한민국 온라인 쇼핑이 등장하다(1996-1999) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/391)
 - [1기 - 온라인 쇼핑의 등장(1996~1999) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/13)
 - [2기 - 커뮤니티, 쇼핑몰의 증가(2000~2003) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/15)

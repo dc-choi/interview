@@ -1,6 +1,7 @@
 ---
 tags: [web, graphql, api, pagination]
 status: done
+verified_at: 2026-07-15
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Pagination", "GraphQL 페이지네이션", "Relay Connection", "커서 페이지네이션", "Global Object Identification"]
 ---
@@ -31,11 +32,11 @@ aliases: ["GraphQL Pagination", "GraphQL 페이지네이션", "Relay Connection"
 ## Connection 모델 (Relay)
 
 - edge 층이 있는 이유: cursor는 객체(User)가 아니라 connection의 속성이라 node 바깥에 둔다. edge는 node와 cursor를 함께 들고, 관계 고유 정보(예: 친구가 된 시각)를 얹을 자리도 된다.
-- connection은 edges와 pageInfo, 선택적 totalCount를 담아 끝에 도달했는지, 전체가 몇 개인지 같은 connection 자체 정보를 준다.
+- connection은 edges와 pageInfo를 담는다. `totalCount`는 Relay Cursor Connections의 필수 field가 아닌 schema별 선택 확장이다.
 
 ```graphql
 type FriendConnection {
-  totalCount: Int              # nullable: 서버가 생략 가능
+  totalCount: Int              # 선택 확장. 선언했다면 선택 결과는 값 또는 null
   edges: [FriendEdge]
   pageInfo: PageInfo!
 }
@@ -53,7 +54,7 @@ type PageInfo {
 ```
 
 - `pageInfo.endCursor`만 있으면 `edges`를 안 골라도 다음 페이지를 요청할 수 있다.
-- `totalCount`는 nullable(`Int`)이라 서버가 뺄 수 있다. 전체 COUNT가 비쌀 수 있어 필요할 때만 계산하라는 신호다(비용 트레이드오프는 일반 지식).
+- Schema에서 `totalCount` field 자체를 노출하지 않을 수 있다. Field를 선언했고 client가 선택했다면 response key를 임의로 생략할 수 없으며 값이나 `null`을 반환해야 한다. Nullable로 두면 COUNT가 너무 비싼 조건에서 `null`을 반환하는 계약을 설계할 수 있다.
 - 위 표준형(`String` cursor, 양방향 pageInfo)은 Relay Cursor Connections 스펙 기준이다. 입문용 단순 예제에서는 cursor를 `ID`로 두고 `hasPreviousPage`를 생략하기도 한다.
 
 ## Global Object Identification
@@ -83,7 +84,7 @@ type Query {
 ## 설계 트레이드오프
 
 - cursor vs offset: cursor는 동시 삽입에도 안정적이고 백엔드 페이징을 감춘다. offset은 임의 페이지 점프와 전체 페이지 수 계산이 쉽다. 무한 스크롤, 피드는 cursor, 페이지 번호 UI는 offset이 자연스럽다.
-- totalCount 비용: 노출하면 전체 COUNT를 강제할 수 있다. nullable로 두고 필요할 때만 계산한다.
+- totalCount 비용: 필수 field가 아니므로 필요할 때만 schema에 노출한다. Nullable로 설계했다면 계산 불가 조건과 `null` 의미를 문서화한다.
 - connection 과설계: 페이지네이션도, connection과 edge 메타도, 백엔드 교체 자유도 다 필요 없으면 그냥 복수형 List가 낫다. 공식도 connection이 더 복잡함을 인정한다.
 
 ## 흔한 실수
@@ -93,7 +94,7 @@ type Query {
 - offset이 항상 일관되다고 가정. 앞쪽 삽입은 중복, 앞쪽 삭제는 누락을 낳는다.
 - 작은 리스트를 connection으로 과설계.
 - node refetch가 항상 성공한다고 가정. null 처리를 빠뜨림.
-- totalCount가 항상 있고 싸다고 가정. nullable이고 생략 가능하다.
+- totalCount가 Relay 필수 field이거나 항상 싸다고 가정. 선택 확장이며, 선언하고 요청받은 field의 response key를 임의로 생략하면 안 된다.
 - 전역 id 안정성 위반(같은 id에 다른 데이터). 클라이언트 캐시 정규화가 깨진다.
 
 ## 면접 체크포인트
@@ -116,3 +117,4 @@ type Query {
 - [graphql.org — Pagination](https://graphql.org/learn/pagination/)
 - [graphql.org — Global Object Identification](https://graphql.org/learn/global-object-identification/)
 - [Relay — GraphQL Cursor Connections Specification](https://relay.dev/graphql/connections.htm)
+- [GraphQL September 2025 Specification — Response](https://spec.graphql.org/September2025/#sec-Response)

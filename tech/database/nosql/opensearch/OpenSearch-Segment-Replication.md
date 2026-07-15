@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, replication, segment, remote-store, aws]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Segment Replication", "OpenSearch 세그먼트 복제", "Remote-Backed Storage와 OR1"]
 ---

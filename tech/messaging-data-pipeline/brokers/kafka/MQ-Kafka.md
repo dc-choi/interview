@@ -35,7 +35,7 @@ aliases: ["Kafka", "Message Queue: Kafka"]
 
 - [[Event-Driven-Architecture|Event-driven architecture]]
 - [[Consumer-Group|Consumer Group]]
-- [[DLQ|Dead Letter Queue]]
+- Dead Letter Queue (작성 예정: `DLQ`)
 - [[Messaging-Patterns|메시징 패턴]]
 - [[Delivery-Semantics|전달 보장]]
 - [[Transactional-Outbox|Transactional Outbox]]

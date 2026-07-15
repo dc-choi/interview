@@ -1,12 +1,12 @@
 ---
 tags: [database, search, opensearch, lexical, semantic, hybrid, rrf]
 status: done
+verified_at: 2026-07-15
 category: "데이터&저장소(Data&Storage)"
 aliases: ["OpenSearch Hybrid Search", "OpenSearch 하이브리드 검색"]
 ---
 
 # OpenSearch 하이브리드 검색과 점수 결합
-
 하이브리드 검색은 lexical query와 semantic query가 만든 후보를 한 검색 결과로 결합한다. 키워드 일치와 의미 유사성은 서로 다른 실패 모드를 가지므로 한쪽을 다른 쪽의 상위 호환으로 보지 않고 query 유형별로 기여도를 평가한다.
 
 이 문서의 semantic branch는 dense vector k-NN을 기준으로 한다. Semantic search는 더 넓은 개념이며 neural sparse search나 reranker도 포함할 수 있다.
@@ -112,7 +112,7 @@ GET products-v1/_search?search_pipeline=product-hybrid-v1
 
 ## Rank 기반 결합과 RRF
 
-`score-ranker-processor`는 Reciprocal Rank Fusion을 사용한다. 각 branch의 절대 score 대신 순위를 `RRF(d) = sum(w_i / (rank_i(d) + C))` 형태로 결합한다.
+`score-ranker-processor`는 OpenSearch 2.19 이상에서 Reciprocal Rank Fusion을 사용한다. 각 branch의 절대 score 대신 순위를 `RRF(d) = sum(w_i / (rank_i(d) + C))` 형태로 결합한다. Amazon OpenSearch Service와 Serverless는 engine version 외에도 해당 processor의 서비스 지원 여부를 배포 전에 확인한다.
 
 - `rank_constant`가 작으면 각 branch의 최상위 결과 영향이 커진다.
 - 값이 크면 순위 간 차이가 완만해진다.

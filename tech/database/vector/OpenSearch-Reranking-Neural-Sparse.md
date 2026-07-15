@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, rerank, cross-encoder, neural-sparse]
 status: done
+verified_at: 2026-07-15
 category: "데이터&저장소(Data&Storage)"
 aliases: ["OpenSearch Reranking", "Neural Sparse Search", "OpenSearch 재정렬과 뉴럴 스파스 검색"]
 ---

@@ -2,7 +2,7 @@
 tags: [observability, logging, pii, security, privacy, masking, compliance]
 status: done
 category: "관측가능성(Observability)"
-aliases: ["PII Masking", "PII masking", "PII 마스킹", "민감정보 마스킹", "로그 마스킹"]
+aliases: ["PII Masking", "PII 마스킹", "민감정보 마스킹", "로그 마스킹"]
 ---
 
 # PII 마스킹 (PII Masking)

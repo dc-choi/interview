@@ -10,6 +10,7 @@ aliases: ["Decision Making"]
 기술 의사결정, 데이터 기반 판단, 가역성, RFC — 시니어의 의사결정 도구.
 
 ## 목차
+- [x] [[Tech-Planning|기술 기획 문서 묶음]]
 - [x] [[Tech-Decision|기술 의사결정]]
 - [x] [[Data-Driven-Decision|데이터 기반 의사결정]]
 - [x] [[Tech-Roadmap|기술 로드맵 수립]]

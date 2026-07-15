@@ -31,10 +31,10 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 - [[SCD-Type2|SCD Type 2 (이력 차원 관리)]] — Slowly Changing Dimension, KPI 분석용 시계열 보존
 
 ## 미작성 — Data Modeling
-- [ ] [[ERD]]
-- [ ] [[Data-Consistency-Rule|Data consistency rule]]
-- [ ] [[Schema-Versioning|Schema versioning]]
-- [ ] [[Backward-Compatibility|Backward compatibility]]
+- [ ] `ERD` (작성 예정)
+- [ ] Data consistency rule (작성 예정: `Data-Consistency-Rule`)
+- [ ] Schema versioning (작성 예정: `Schema-Versioning`)
+- [ ] Backward compatibility (작성 예정: `Backward-Compatibility`)
 
 ## 현장사례
 - [[SSG-Ecommerce-Seminar#데이터베이스|SSG DB 선택]] — MySQL vs PostgreSQL (UPDATE vs INSERT)

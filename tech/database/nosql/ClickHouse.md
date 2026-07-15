@@ -1,6 +1,7 @@
 ---
 tags: [database, olap, columnar, clickhouse, analytics, mergetree]
 status: done
+verified_at: 2026-07-15
 category: "데이터&저장소(Data&Storage)"
 aliases: ["ClickHouse", "OLAP", "컬럼형 DB", "Column-oriented DB"]
 ---
@@ -121,8 +122,8 @@ ORDER BY (created_at, service_id, event_type);
 - **MySQL처럼 단건 INSERT 반복** → 파트 폭증으로 머지 폭주, 디스크 I/O 포화
 - **정렬 키를 아무렇게나** → 컬럼 지향의 장점이 사라짐. WHERE 패턴 분석 선행 필수
 - **UPDATE를 자주** → ReplacingMergeTree로 흉내는 가능하나 즉시 반영 아님. 분석 결과 신뢰성 깨짐
-- **트랜잭션 기대** → 미지원. 데이터 정합성은 적재 파이프라인 단에서 보장해야
-- **운영 DB를 ClickHouse로 대체** → 단건 조회와 트랜잭션이 무너지므로 절대 금지. 항상 분리 운용
+- **OLTP 수준의 트랜잭션 기대** → 단일 block INSERT 등에는 조건부 ACID 보장이 있지만, 여러 테이블을 묶는 `BEGIN`/`COMMIT`/`ROLLBACK`은 실험 기능이고 ClickHouse Cloud에서는 지원되지 않는다. 결제, 주문 같은 범용 OLTP 트랜잭션을 대체하지 말아야 한다
+- **운영 DB를 ClickHouse로 대체** → 고빈도 단건 조회와 수정, 여러 행과 테이블을 묶는 트랜잭션이 핵심이면 OLTP DB를 유지하고 분석 workload를 ClickHouse로 분리
 
 ## 면접 체크포인트
 
@@ -145,6 +146,7 @@ ORDER BY (created_at, service_id, event_type);
 ## 출처
 - [NHN Cloud Meetup — MySQL 3분 vs ClickHouse 0.3초, 같은 쿼리입니다](https://meetup.nhncloud.com/posts/414)
 - [ClickHouse 공식 문서 — Intro](https://clickhouse.com/docs/intro)
+- [ClickHouse 공식 문서 — Transactional (ACID) support](https://clickhouse.com/docs/guides/developer/transactional)
 
 ## 관련 문서
 - [[OLTP-vs-OLAP|OLTP vs OLAP]]

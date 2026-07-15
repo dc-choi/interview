@@ -75,4 +75,4 @@ Q. Docker에서 graceful shutdown이 안 되는 경우는?
 ## 관련 문서
 - [[Docker]]
 - [[Docker-Compose|Docker Compose]]
-- [[Zero-Downtime-Deployment|Zero-downtime deployment]]
+- Zero-downtime deployment (작성 예정: `Zero-Downtime-Deployment`)

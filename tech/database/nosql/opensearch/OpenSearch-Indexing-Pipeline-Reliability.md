@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, cdc, reconciliation, dlq]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Indexing Pipeline Reliability", "색인 파이프라인 신뢰성", "검색 정합성 검증"]
 ---

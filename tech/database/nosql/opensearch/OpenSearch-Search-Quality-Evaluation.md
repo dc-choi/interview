@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, evaluation, relevance, ab-test]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Search Quality Evaluation", "OpenSearch 검색 품질 평가", "검색 품질 측정"]
 ---

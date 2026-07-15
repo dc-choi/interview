@@ -2,7 +2,7 @@
 tags: [cs, javascript, async]
 status: done
 category: "CS&프로그래밍(CS&Programming)"
-aliases: ["Promise와 Async", "JS"]
+aliases: ["Promise와 Async"]
 ---
 
 # Promise와Async

@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, architecture, diagram]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Architecture Map", "OpenSearch 아키텍처 지도", "검색엔진 전체 그림"]
 ---
@@ -169,7 +170,7 @@ flowchart LR
   class S0,S1,S2 os;
 ```
 
-- **term이 만나야 검색이 된다**: 검색어도 색인과 같은 analyzer 규칙으로 분해된다. 색인은 Nori로 했는데 검색은 다른 규칙으로 자르면 term이 어긋나 0건이 된다. 검색 품질 문제의 절반이 이 정렬 문제.
+- **term이 만나야 검색이 된다**: 검색어는 field의 `search_analyzer`로 분해된다. Index analyzer와 search analyzer는 같을 수도 있고 edge n-gram 색인과 standard 검색처럼 의도적으로 다를 수도 있다. 두 analyzer가 같아야 하는 것이 아니라 생성하는 term이 query 의도에 맞게 호환돼야 한다. 분석 결과가 어긋나면 관련 문서를 놓치거나 0건이 될 수 있다.
 - **점수는 로컬, 병합은 위에서**: BM25 점수(문서 내 빈도와 corpus 희소성)는 각 shard가 매기고, coordinator는 top-K만 모아 최종 순위를 만든다. 관련도 랭킹이 RDB에 없는 바로 그 기능.
 
 ## 지도와 0단계 읽기의 매핑
@@ -192,3 +193,7 @@ flowchart LR
 - [[OpenSearch-Architecture|분산 실행 모델 상세]]
 - [[OpenSearch-Indexing-Internals|색인 내부와 가시성 경계]]
 - [[OpenSearch-Query-Relevance|BM25와 Query DSL]]
+
+## 출처
+
+- [Search analyzer - OpenSearch Documentation](https://docs.opensearch.org/latest/field-types/mapping-parameters/search-analyzer/)

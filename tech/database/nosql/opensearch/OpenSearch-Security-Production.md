@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, security, tls, rbac]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Security", "OpenSearch Production Checklist", "OpenSearch 보안"]
 ---

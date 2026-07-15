@@ -63,4 +63,4 @@ async function handleMessage(eventId: string, payload: any) {
 ## 관련 문서
 - [[Delivery-Semantics|전달 보장]]
 - [[Idempotency-Key]]
-- [[DLQ]]
+- `DLQ` (작성 예정)

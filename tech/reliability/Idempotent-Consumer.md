@@ -2,7 +2,7 @@
 tags: [reliability, messaging, idempotency, consumer, exactly-once]
 status: done
 category: "안정성엔지니어링(Reliability)"
-aliases: ["Idempotent Consumer", "멱등 컨슈머", "멱등성", "exactly-once 처리", "effectively-once"]
+aliases: ["Idempotent Consumer", "멱등 컨슈머", "멱등 소비 처리", "exactly-once 처리", "effectively-once"]
 ---
 
 # 멱등 컨슈머 (Idempotent Consumer)

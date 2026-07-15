@@ -17,9 +17,9 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [[tech/senior/design/설계(SeniorDesign)|설계 (Design)]] — 시스템 설계 인터뷰, 포용 디자인
 
 ## 미작성
-- [ ] [[Incident-Commander|장애 대응 리딩 (Incident Commander)]]
-- [ ] [[Mentoring|멘토링]]
-- [ ] [[Cross-Team-Communication]]
+- [ ] 장애 대응 리딩 (Incident Commander) (작성 예정: `Incident-Commander`)
+- [ ] 멘토링 (작성 예정: `Mentoring`)
+- [ ] `Cross-Team-Communication` (작성 예정)
 
 ## 현장사례
 - [[Why-Architecture-Matters|아키텍처의 중요성]] — 경제적 관점, Design Stamina Hypothesis

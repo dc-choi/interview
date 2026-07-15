@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, segment, merge, codec, compression]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Segment Merge", "OpenSearch 세그먼트 머지", "OpenSearch Index Codec"]
 ---

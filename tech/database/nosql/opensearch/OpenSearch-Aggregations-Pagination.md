@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, aggregation, pagination, sorting]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Aggregations", "OpenSearch Pagination", "OpenSearch 집계와 페이지네이션"]
 ---

@@ -2,7 +2,7 @@
 tags: [finops, aws, right-sizing, compute-optimizer, graviton, utilization]
 status: done
 category: "비용&운영(FinOps)"
-aliases: ["Resource Right-Sizing", "Resource right-sizing", "리소스 적정화", "right-sizing", "다운사이징"]
+aliases: ["Resource Right-Sizing", "리소스 적정화", "right-sizing", "다운사이징"]
 ---
 
 # 리소스 적정화 (Right-Sizing)

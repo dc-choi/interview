@@ -2,7 +2,7 @@
 tags: [java, exception, record, first-class-collection, data-class]
 status: index
 category: "CS&프로그래밍(CS&Programming)"
-aliases: ["Java Exception Record Collection", "Checked Unchecked", "Java Record", "1급 컬렉션"]
+aliases: ["Java Exception Record Collection", "Checked Unchecked"]
 ---
 
 # Java 추가 개념 — Checked/Unchecked, Record, 1급 컬렉션, Stack

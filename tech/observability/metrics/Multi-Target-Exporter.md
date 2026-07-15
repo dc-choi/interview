@@ -31,7 +31,7 @@ Prometheus ──scrape──▶ http://exporter:9100/probe?target=db-a.rds.amaz
 
 ## 서비스 디스커버리 — 타겟 목록 자동 갱신
 
-멀티타겟 Exporter를 써도 "새 대상 주소를 Prometheus에 넣는" 문제는 남는다. 이를 **서비스 디스커버리(SD)**가 푼다. Prometheus는 정적 설정 대신 SD로 타겟을 동적으로 발견한다([[Prometheus#동작-모델-pull-기반|Pull 모델의 SD]]).
+멀티타겟 Exporter를 써도 "새 대상 주소를 Prometheus에 넣는" 문제는 남는다. 이를 **서비스 디스커버리(SD)**가 푼다. Prometheus는 정적 설정 대신 SD로 타겟을 동적으로 발견한다([[Prometheus#동작 모델 — Pull 기반|Pull 모델의 SD]]).
 
 - 빌트인 SD: Kubernetes, EC2, Consul 등.
 - **`file_sd`**: 외부 도구가 타겟 목록을 **JSON 파일로 기록**하면 Prometheus가 그 파일을 감시(watch)하다가 변경을 자동 반영. 빌트인 SD로 못 잡는 대상에 쓰는 범용 확장점.

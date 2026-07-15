@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, indexing, translog, segment]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Indexing Internals", "OpenSearch 색인 내부"]
 ---

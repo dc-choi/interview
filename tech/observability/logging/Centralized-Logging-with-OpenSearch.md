@@ -1,6 +1,7 @@
 ---
 tags: [observability, logging, aws, opensearch, centralized-logging]
 status: done
+verified_at: 2026-07-15
 category: "관측가능성(Observability)"
 aliases: ["Centralized Logging with OpenSearch", "AWS OpenSearch 중앙 로깅"]
 ---

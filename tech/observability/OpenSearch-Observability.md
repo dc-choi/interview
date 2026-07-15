@@ -1,6 +1,7 @@
 ---
 tags: [observability, aws, opensearch, opentelemetry, ppl, incident-response, ai-agent]
 status: done
+verified_at: 2026-07-15
 category: "관측가능성(Observability)"
 aliases: ["OpenSearch Observability", "Amazon OpenSearch 관측성", "OpenSearch 지능형 관측성"]
 ---
@@ -25,7 +26,7 @@ OpenSearch UI Observability workspace
 
 OpenTelemetry가 계측과 전송 형식을 표준화하고, OpenSearch Ingestion이 수집 후반의 filtering, enrichment, transformation, routing을 담당한다. 현재 AWS 참조 구조는 로그와 trace를 OpenSearch에 색인하고 metric은 Amazon Managed Service for Prometheus에서 직접 query한다. 모든 telemetry가 OpenSearch index에 저장된다고 이해하면 안 된다.
 
-AWS 관측성 도구는 역할이 겹치지 않는다. CloudWatch는 AWS 리소스의 기본 모니터링과 알람, Amazon Managed Service for Prometheus는 대규모 컨테이너 환경의 metric 수집과 알림, OpenSearch는 로그와 trace의 심층 검색과 분석, 장기 보존에 적합하다. 기본 계기판이 필요한지, 사건을 정밀 조사할 도구가 필요한지로 선택을 나눈다.
+AWS 관측성 도구의 기능은 일부 겹친다. CloudWatch Application Signals도 service map, metric, trace, SLO와 원인 조사 workflow를 제공하고, OpenSearch Observability도 signal correlation과 service 분석을 제공한다. 참조 아키텍처에서는 CloudWatch를 AWS resource와 managed service monitoring의 중심으로, Amazon Managed Service for Prometheus를 대규모 metric 저장과 PromQL로, OpenSearch를 log와 trace의 심층 검색과 장기 보존으로 둘 수 있다. 실제 선택은 retention, query language, correlation workflow, 기존 계측과 비용으로 정한다.
 
 ## 세 신호가 답하는 질문
 
@@ -175,6 +176,7 @@ OpenSearch UI 내장 Agentic AI는 현재 사용자의 IAM과 RBAC, document와 
 ## 출처
 
 - [Observability in Amazon OpenSearch Service - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/observability.html)
+- [CloudWatch Application Signals - AWS Documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Services.html)
 - [Using OpenSearch UI - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/application.html)
 - [Ingesting application telemetry - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/observability-ingestion.html)
 - [Discover Logs - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/observability-analyze-logs.html)

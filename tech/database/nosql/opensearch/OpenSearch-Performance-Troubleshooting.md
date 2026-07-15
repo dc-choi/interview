@@ -1,12 +1,12 @@
 ---
 tags: [database, search, opensearch, performance, troubleshooting, monitoring]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Performance", "OpenSearch Troubleshooting", "OpenSearch 성능 진단"]
 ---
 
 # OpenSearch 성능 진단과 장애 대응
-
 성능 튜닝은 기본값 변경이 아니라 병목 가설을 측정으로 반증하는 과정이다. 데이터 모델과 shard 구조, query fan-out을 먼저 보고 thread pool과 breaker는 마지막에 건드린다.
 
 ## 먼저 고정할 것

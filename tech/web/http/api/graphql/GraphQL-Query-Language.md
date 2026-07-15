@@ -1,6 +1,7 @@
 ---
 tags: [web, graphql, api, query-language, introspection]
 status: done
+verified_at: 2026-07-15
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Query Language", "GraphQL 쿼리 언어", "fragment", "variable", "directive", "introspection"]
 ---
@@ -47,7 +48,8 @@ inline fragment(`... on Type`)는 interface나 union의 구체 타입 필드를 
 
 - 동적 값을 쿼리 문자열에 직접 끼워 넣지 않는다. 사용자 입력으로 쿼리를 문자열 조립하면 안 된다. 대신 값을 별도 변수 딕셔너리로 뺀다.
 - 3단계: 정적 값을 `$이름`으로 교체, 연산이 받는 변수로 선언, 전송 시 `{ 이름: 값 }` 딕셔너리로 전달.
-- 변수를 쓰려면 연산 타입과 이름이 있어야 한다. 변수 타입은 Scalar, Enum, Input Object만 된다. 필드가 non-null 인자를 요구하면 변수도 `!`로 required여야 한다. 기본값(`$episode: Episode = JEDI`)도 줄 수 있다.
+- 변수를 선언하려면 shorthand가 아니라 `query`, `mutation`, `subscription` 중 연산 타입을 명시해야 한다. 연산 이름은 선택 사항이지만 한 문서에 연산이 여러 개면 실행할 이름이 필요하다. 변수 타입은 Scalar, Enum, Input Object와 이들을 감싼 List, Non-Null 같은 input type만 된다.
+- Non-Null 인자에는 보통 Non-Null 변수를 전달한다. 다만 nullable 변수에 Non-Null 기본값이 있거나 인자와 input field 위치에 기본값이 있으면 nullable 변수를 허용한다. 어떤 경우든 runtime에 명시적인 `null`을 보내면 Non-Null 위치에서 오류다.
 
 ## directive (실행)
 
@@ -81,7 +83,7 @@ query { __type(name: "Droid") { name kind fields { name } } }
 - 같은 필드를 다른 인자로 조회하며 alias를 안 씀. 결과 키가 충돌한다.
 - 사용자 입력으로 쿼리 문자열을 조립함. 변수를 써야 한다.
 - 변수 타입에 output Object를 지정. Scalar, Enum, Input Object만 된다.
-- non-null 인자에 optional 변수를 넘김. 변수도 required여야 한다.
+- non-null 인자에 nullable 변수를 무조건 금지하거나 허용함. 변수와 위치의 기본값 예외까지 확인해야 한다.
 - union이나 interface에서 `__typename` 없이 타입 구분 시도.
 - 프로덕션에서 introspection을 방치해 스키마 전체를 노출.
 
@@ -104,4 +106,6 @@ query { __type(name: "Droid") { name kind fields { name } } }
 
 - [graphql.org — Queries and Mutations](https://graphql.org/learn/queries/)
 - [graphql.org — Introspection](https://graphql.org/learn/introspection/)
-- [GraphQL Spec — Type System Directives (@skip, @include)](https://spec.graphql.org/October2021/#sec-Type-System.Directives)
+- [GraphQL September 2025 Specification — Variables](https://spec.graphql.org/September2025/#sec-Variables)
+- [GraphQL September 2025 Specification — Variable usage validation](https://spec.graphql.org/September2025/#sec-All-Variable-Usages-Are-Allowed)
+- [GraphQL September 2025 Specification — Directives](https://spec.graphql.org/September2025/#sec-Type-System.Directives)

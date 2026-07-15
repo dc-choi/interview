@@ -29,12 +29,12 @@ aliases: ["아키텍처&설계(Architecture&Design)", "Architecture & Design"]
 - [[Transactional-Outbox|Outbox 패턴]], [[CDC&Outbox|CDC vs Outbox]], [[Idempotency-Key|멱등성 키]], [[브로커(Brokers)|메시지 브로커]]
 
 ## 미작성
-- [ ] [[API-Versioning-Design|API versioning]]
-- [ ] [[Backward-Compatibility-Design|Backward compatibility]]
-- [ ] [[Schema-Evolution|Schema evolution]]
-- [ ] [[Tech-Debt-Management|Tech debt management]]
-- [ ] [[ADR|ADR (Architecture Decision Record)]]
-- [ ] [[CQRS]]
+- [ ] API versioning (작성 예정: `API-Versioning-Design`)
+- [ ] Backward compatibility (작성 예정: `Backward-Compatibility-Design`)
+- [ ] Schema evolution (작성 예정: `Schema-Evolution`)
+- [ ] Tech debt management (작성 예정: `Tech-Debt-Management`)
+- [ ] ADR (Architecture Decision Record) (작성 예정: `ADR`)
+- [ ] `CQRS` (작성 예정)
 
 ## 관련 문서
 - [[ORM]]

@@ -17,19 +17,19 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery"]
 - [x] [[Version-Control-Tooling|버전 관리 도구 (Git, GitHub, GUI, 브랜치 전략, master 안정성)]]
 - [x] [[Development-Workflow|개발 워크플로 (Issue → Branch → PR → Merge, Conventional Commits)]]
 - [x] [[Dependency-Management|의존성 관리 (Lock 파일, Poetry, pnpm, Gradle, Semver, 취약점 스캔)]]
-- [ ] [[Git-Flow|Git Flow / Trunk based]]
+- [ ] Git Flow / Trunk based (작성 예정: `Git-Flow`)
 - [x] [[Git-Merge-Strategies|Git 머지 전략 (Merge commit/Squash/Rebase, 공유 브랜치 rebase 금지, Interactive Rebase)]]
 - [x] [[GitHub-Actions]]
 - [x] [[Deployment-Automation-ChatOps|배포 자동화, ChatOps (Slack Bot, 승인 플로우, 회고, 자동화 함정)]]
 - [x] [[Monorepo-CICD|모노레포 CI/CD (아티팩트 기준 3파이프라인 독립, pnpm workspace, Turborepo 캐시 무효화 전파, fan-in/out, 순환 의존 Tarjan SCC)]]
-- [ ] [[Build-Cache|Build cache]]
+- [ ] Build cache (작성 예정: `Build-Cache`)
 - [x] [[Docker-Image-Pipeline|Docker image build pipeline]]
-- [ ] [[Helm]]
-- [ ] [[ArgoCD|ArgoCD (GitOps)]]
+- [ ] `Helm` (작성 예정)
+- [ ] ArgoCD (GitOps) (작성 예정: `ArgoCD`)
 - [x] [[Blue-Green|Blue/Green (In-Place vs Blue-Green, LB 스위치, Expand-Contract 스키마)]]
 - [x] [[DevOps-vs-DevSecOps|DevOps vs DevSecOps (Shift Left, SAST/DAST/SCA, Policy as Code)]]
-- [ ] [[Canary]]
-- [ ] [[Feature-Flag|Feature flag 시스템]]
-- [ ] [[Rollback|Rollback 전략]]
-- [ ] [[Zero-Downtime-Deployment|Zero-downtime deployment]]
-- [ ] [[DB-Migration|DB migration 전략]]
+- [ ] `Canary` (작성 예정)
+- [ ] Feature flag 시스템 (작성 예정: `Feature-Flag`)
+- [ ] Rollback 전략 (작성 예정: `Rollback`)
+- [ ] Zero-downtime deployment (작성 예정: `Zero-Downtime-Deployment`)
+- [ ] DB migration 전략 (작성 예정: `DB-Migration`)

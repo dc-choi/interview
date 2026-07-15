@@ -1,6 +1,7 @@
 ---
 tags: [web, graphql, api, security, authorization]
 status: done
+verified_at: 2026-07-15
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Security", "GraphQL 보안", "demand control", "depth limiting", "query complexity", "GraphQL authorization"]
 ---

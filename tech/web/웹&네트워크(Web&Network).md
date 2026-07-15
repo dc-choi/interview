@@ -15,8 +15,8 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [[Mobile-App-Architectures|모바일 앱 개발 방식 4유형]] — 네이티브, 모바일 웹, 웹 앱(SPA), 하이브리드(웹뷰), 다중 버전 공존과 API 호환
 
 ## 미작성
-- [ ] [[HTTP-Versions|HTTP 1.1 / HTTP 2 / HTTP 3]]
-- [ ] [[Content-Negotiation]]
-- [ ] [[Idempotent-Safe-Method|Idempotent / Safe Method]]
-- [ ] [[API-Versioning]]
-- [ ] [[Pagination-Filtering-Sorting|Pagination / Filtering / Sorting]]
+- [ ] HTTP 1.1 / HTTP 2 / HTTP 3 (작성 예정: `HTTP-Versions`)
+- [ ] `Content-Negotiation` (작성 예정)
+- [ ] Idempotent / Safe Method (작성 예정: `Idempotent-Safe-Method`)
+- [ ] `API-Versioning` (작성 예정)
+- [ ] Pagination / Filtering / Sorting (작성 예정: `Pagination-Filtering-Sorting`)

@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, autocomplete, highlighting, agentic, memory]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Search Features", "OpenSearch 자동완성", "OpenSearch Highlight", "OpenSearch Agentic Search"]
 ---

@@ -1,6 +1,7 @@
 ---
 tags: [database, search, opensearch, analyzer, nori, synonym]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Korean Analysis", "OpenSearch 한국어 분석", "Nori 분석기"]
 ---

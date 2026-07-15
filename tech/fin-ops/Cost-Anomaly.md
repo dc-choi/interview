@@ -2,7 +2,7 @@
 tags: [finops, aws, cost-anomaly-detection, monitoring, ml, alert]
 status: done
 category: "비용&운영(FinOps)"
-aliases: ["Cost Anomaly", "Cost anomaly detection", "비용 이상 탐지", "Cost Anomaly Detection"]
+aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 ---
 
 # 비용 이상 탐지 (Cost Anomaly Detection)

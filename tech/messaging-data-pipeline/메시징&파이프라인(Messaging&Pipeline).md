@@ -34,17 +34,17 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [[DDD&Hexagonal|DDD, Hexagonal]] — Aggregate, 경계 모델링 (이벤트 발행 단위)
 
 ## 미작성
-- [ ] [[MQ-RabbitMQ|Message Queue: RabbitMQ]]
-- [ ] [[MQ-BullMQ|Message Queue: BullMQ]]
-- [ ] [[At-Most-Once]]
-- [ ] [[Exactly-Once|Exactly-once]]
-- [ ] [[Deduplication]]
+- [ ] Message Queue: RabbitMQ (작성 예정: `MQ-RabbitMQ`)
+- [ ] Message Queue: BullMQ (작성 예정: `MQ-BullMQ`)
+- [ ] `At-Most-Once` (작성 예정)
+- [ ] Exactly-once (작성 예정: `Exactly-Once`)
+- [ ] `Deduplication` (작성 예정)
 - [x] [[MQ-Kafka-Event-Ordering|Ordering Guarantee (Kafka 순서 보장, 소비자 체이닝)]]
-- [ ] [[DLQ]]
-- [ ] [[Retry-Backoff|Retry / Backoff]]
-- [ ] [[Replay-Backfill|Replay / Backfill]]
-- [ ] [[Backpressure-Control|Backpressure 제어]]
-- [ ] [[Shadow-Traffic]]
+- [ ] `DLQ` (작성 예정)
+- [ ] Retry / Backoff (작성 예정: `Retry-Backoff`)
+- [ ] Replay / Backfill (작성 예정: `Replay-Backfill`)
+- [ ] Backpressure 제어 (작성 예정: `Backpressure-Control`)
+- [ ] `Shadow-Traffic` (작성 예정)
 
 ## 현장사례
 - [[SSG-Ecommerce-Seminar#메시지브로커|SSG 메시지 브로커]] — Kafka 중심, 이벤트 드리븐, 트랜잭션 고려 필수
