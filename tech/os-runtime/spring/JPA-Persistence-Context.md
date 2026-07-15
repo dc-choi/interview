@@ -3,6 +3,7 @@ tags: [spring, jpa, hibernate, persistence-context, orm, n-plus-one]
 status: done
 category: "OS&런타임(OS&Runtime)"
 aliases: ["JPA Persistence Context", "영속성 컨텍스트", "N+1 쿼리", "Dirty Checking"]
+verified_at: 2026-07-15
 ---
 
 # JPA 영속성 컨텍스트, N+1
@@ -56,7 +57,7 @@ user.setName("Alice"); // UPDATE 자동 발행 (flush 시)
 
 ### 4. 지연 로딩 (Lazy Loading)
 
-연관 엔티티는 **실제로 접근하는 순간까지 SELECT를 미룬다**.
+연관 로딩 전략은 매핑마다 다르다. Jakarta Persistence 3.x 기본값은 `@ManyToOne`, `@OneToOne`이 `EAGER`, `@OneToMany`, `@ManyToMany`가 `LAZY`다. 지연 로딩이 필요하면 아래처럼 `fetch = FetchType.LAZY`를 명시하고 실제 쿼리 계획을 확인한다.
 
 ```java
 @Entity
@@ -179,6 +180,11 @@ Spring Boot 기본 `true`. **영속성 컨텍스트를 HTTP 응답 반환까지*
 - Fetch Join과 `@EntityGraph`의 차이, 한계
 - OSIV의 편의와 위험
 - "엔티티를 응답으로 반환하면 안 되는 이유"의 JPA 관점 설명
+
+## 출처
+
+- [ManyToOne annotation — Jakarta Persistence 공식 API](https://jakarta.ee/specifications/persistence/3.0/apidocs/jakarta.persistence/jakarta/persistence/manytoone)
+- [Jakarta Persistence explained — Jakarta EE 공식 가이드](https://jakarta.ee/learn/specification-guides/persistence-explained/)
 
 ## 관련 문서
 - [[Spring|Spring 개요]]

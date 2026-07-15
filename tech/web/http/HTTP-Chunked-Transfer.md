@@ -1,6 +1,7 @@
 ---
 tags: [web, network, http, streaming]
 status: done
+verified_at: 2026-07-15
 category: "웹&네트워크(Web&Network)"
 aliases: ["HTTP Chunked Transfer", "Transfer-Encoding chunked", "분할 전송"]
 ---
@@ -103,6 +104,7 @@ HTTP/1.1 `keep-alive`(기본 동작)에서 동적 응답은 자동으로 chunked
 - SSE, LLM 스트리밍 응답이 chunked인 이유
 
 ## 출처
+- [RFC 9112 — HTTP/1.1 메시징 (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9112)
 - [imprint — HTTP 분할 전송](https://imprint.tistory.com/29)
 - [bbidag — Transfer-Encoding chunked](https://bbidag.tistory.com/18)
 - [sg-choi — HTTP 분할 전송](https://sg-choi.tistory.com/631)

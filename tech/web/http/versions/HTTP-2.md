@@ -1,6 +1,7 @@
 ---
 tags: [web, http, http2, protocol, performance, multiplexing]
 status: done
+verified_at: 2026-07-15
 category: "Web - HTTP"
 aliases: ["HTTP/2", "HTTP2", "멀티플렉싱", "HPACK", "h2"]
 ---
@@ -69,8 +70,9 @@ HTTP/2의 멀티플렉싱은 HTTP 계층에선 병렬이지만 단일 TCP 연결
 - LB, CDN이 HTTP/2를 종단하고 백엔드와 HTTP/1.1로 통신하는 구조
 
 ## 출처
+- [RFC 9113 — HTTP/2 (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9113)
+- [RFC 7541 — HPACK (RFC Editor)](https://www.rfc-editor.org/rfc/rfc7541)
 - AWS 환경에서 HTTP/2 적용하기 (HTTP/2 프로토콜, CloudFront, ALB) — 개인 블로그
-- RFC 9113 (HTTP/2, RFC 7540을 대체), RFC 7541 (HPACK)
 
 ## 관련 문서
 - [[HTTP-3|HTTP/3, QUIC]] — TCP를 버리고 UDP로, HOL 블로킹 완전 해소

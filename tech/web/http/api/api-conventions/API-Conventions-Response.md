@@ -1,6 +1,7 @@
 ---
 tags: [web, http, api, convention]
 status: done
+verified_at: 2026-07-15
 category: "웹&네트워크(Web&Network)"
 aliases: ["API 에러 응답과 페이지네이션", "Envelope 응답 구조"]
 ---
@@ -140,4 +141,5 @@ Response:
 대부분 실무는 envelope 채택.
 
 ## 출처
+- [RFC 9457 — Problem Details for HTTP APIs (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9457)
 - [알잘딱깔센 에러 메시지 쓰는 방법 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/27)

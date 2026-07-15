@@ -1,6 +1,7 @@
 ---
 tags: [senior, ai, career, future]
 status: done
+verified_at: 2026-07-15
 category: "시니어역량(SeniorEngineer)"
 aliases: ["Developer Role AI Era", "AI 시대 개발자 역할"]
 ---
@@ -11,7 +12,7 @@ aliases: ["Developer Role AI Era", "AI 시대 개발자 역할"]
 
 ## 현재 상황 진단
 
-- MIT NANDA의 [The GenAI Divide: State of AI in Business 2025](https://mlq.ai/media/quarterly_decks/v0.1_State_of_AI_in_Business_2025_Report.pdf)(2025년 8월, 임원 인터뷰 52건, 리더 설문 153건, 공개 배포 300건 분석) 기준 **GenAI 파일럿의 약 95%가 손익(P&L)에 측정 가능한 임팩트를 내지 못함**. 여기서 실패는 모델 성능이 아니라 P&L 임팩트 부재를 뜻하고, 성공한 약 5%는 좁고 워크플로우에 밀착한 용도에 집중했다
+- MIT Project NANDA의 [The GenAI Divide: State of AI in Business 2025](https://nanda.media.mit.edu/ai_report_2025.pdf)(2025년 7월 예비 보고서, 임원 인터뷰 52건, 리더 설문 153건, 공개 사례 300건 분석) 기준 **GenAI 파일럿의 약 95%가 손익(P&L)에 측정 가능한 임팩트를 내지 못함**. 여기서 실패는 모델 성능이 아니라 P&L 임팩트 부재를 뜻하고, 성공한 약 5%는 좁고 워크플로우에 밀착한 용도에 집중했다. 이 수치는 예비 연구의 표본과 실패 정의에 묶인 결과이므로 전체 AI 프로젝트의 보편 실패율로 일반화하지 않는다
 - 빅테크 AI 설비투자 대비 매출 비율 과도 (수백 조 투자, 수십 조 매출)
 - 단기 하이프는 분명 존재 — 그러나 장기 영향은 오히려 **과소평가**되는 중 (아마라의 법칙)
 
@@ -110,6 +111,7 @@ aliases: ["Developer Role AI Era", "AI 시대 개발자 역할"]
 - AI 시대에 더 가치 있어지는 개발자 역량 4가지
 
 ## 출처
+- [The GenAI Divide: State of AI in Business 2025 — MIT Project NANDA](https://nanda.media.mit.edu/ai_report_2025.pdf)
 - [Toss Tech — 개발자는 AI에게 대체될 것인가](https://toss.tech/article/will-ai-replace-developers)
 - [비개발자가 한 달 동안 풀스택으로 개발하면서 배운 것 — NAVER D2](https://d2.naver.com/helloworld/0107009)
 

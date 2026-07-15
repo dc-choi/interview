@@ -1,6 +1,7 @@
 ---
 tags: [messaging, kafka, nestjs, consumer]
 status: done
+verified_at: 2026-07-15
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Kafka Consumer", "NestJS Kafka", "eachMessage vs eachBatch"]
 ---
@@ -80,11 +81,11 @@ await consumer.run({
         batch,
         resolveOffset,
         heartbeat,
-        commitOffsetsIfNecessary,
         isRunning,
         isStale,
     }) => {
         const holder = new BulkDataHolder();
+        const offsetsAfterFlush: string[] = [];
         for (const message of batch.messages) {
             if (!isRunning() || isStale()) break;
             try {
@@ -93,16 +94,28 @@ await consumer.run({
             } catch (err) {
                 await sendToDlq(message, err);
             }
-            resolveOffset(message.offset);
+            offsetsAfterFlush.push(message.offset);
             await heartbeat();
         }
-        await holder.flush();  // 배치 단위 벌크 처리
-        await commitOffsetsIfNecessary();
+
+        const lastProcessedOffset = offsetsAfterFlush[offsetsAfterFlush.length - 1];
+        if (isStale() || lastProcessedOffset === undefined) return;
+
+        await holder.flush(); // 실패하면 성공 메시지 offset은 resolve하지 않음
+        for (const offset of offsetsAfterFlush) {
+            resolveOffset(offset);
+        }
+        await heartbeat();
+        await consumer.commitOffsets([{
+            topic: batch.topic,
+            partition: batch.partition,
+            offset: (BigInt(lastProcessedOffset) + 1n).toString(),
+        }]);
     },
 });
 ```
 
-`autoCommit: false`를 쓰면 성공한 offset을 직접 `resolveOffset`하고 커밋해야 한다. 실패 메시지를 조용히 건너뛰고 offset만 올리면 유실이므로 DLQ, 재시도 토픽, 처리 중단 중 하나를 명확히 선택한다.
+`autoCommit: false`를 쓰면 성공한 offset을 직접 `resolveOffset`하고 다음에 읽을 offset인 `마지막 처리 offset + 1`을 커밋해야 한다. 인자 없는 `commitOffsetsIfNecessary()`는 `autoCommitInterval`이나 `autoCommitThreshold` 조건이 없으면 커밋하지 않으므로 이 예제는 `consumer.commitOffsets()`를 명시적으로 호출한다. 벌크 저장이 끝나기 전에 뒤쪽 offset을 resolve하면 앞쪽의 미반영 메시지까지 처리된 것처럼 보일 수 있으므로, 배치의 DB 반영과 DLQ 저장이 모두 성공한 뒤 순서대로 resolve한다. 배치 후반 오류로 재시도되면 이미 보낸 DLQ가 중복될 수 있으므로 DLQ 쓰기도 멱등하게 만든다. 실패 메시지를 조용히 건너뛰고 offset만 올리면 유실이므로 DLQ, 재시도 토픽, 처리 중단 중 하나를 명확히 선택한다.
 
 ### 선택 기준
 | 상황 | 권장 |
@@ -112,6 +125,10 @@ await consumer.run({
 | 전역 버퍼에 메시지 누적해서 주기적 flush | `eachBatch` + 지역 변수 홀더 |
 
 **주의:** `eachBatch`에서 전역 변수에 누적하면 메모리 누수 발생. **배치 내부 지역 스코프**로 홀더를 두고 끝나면 즉시 GC되도록 해야 한다.
+
+## 출처
+
+- [Consuming Messages — KafkaJS 공식 문서](https://kafka.js.org/docs/2.1.0/consuming)
 
 ## 관련 문서
 

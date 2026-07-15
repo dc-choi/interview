@@ -1,6 +1,7 @@
 ---
 tags: [cs, javascript, async]
 status: done
+verified_at: 2026-07-15
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Promise와 Async"]
 ---
@@ -84,6 +85,7 @@ async function bizLogic() {
 `no-return-await` 계열 조언은 과거 엔진 최적화 전제의 영향이 크다. 오늘날 대부분 코드에서는 **스택 트레이스, 에러 처리**가 우선. **ESLint 규칙을 맹신하지 말고 맥락에 맞게** 적용.
 
 ## 출처
+- [no-return-await — ESLint 공식 문서](https://eslint.org/docs/latest/rules/no-return-await)
 - [매일메일 — Promise](https://www.maeil-mail.kr/question/65)
 - [매일메일 — resolve와 fulfilled 차이](https://www.maeil-mail.kr/question/73)
 - [매일메일 — JS 비동기 처리](https://www.maeil-mail.kr/question/57)

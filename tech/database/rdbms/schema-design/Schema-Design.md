@@ -38,7 +38,7 @@ aliases: ["Schema Design", "스키마 설계"]
 
 **주의점:**
 - 모든 조회 쿼리에 `WHERE deleted_at IS NULL` 조건 필요
-- 인덱스에 `deletedAt`을 포함해야 성능 유지
+- 인덱스에 `deleted_at`을 포함해야 성능 유지
 - 시간이 지나면 논리 삭제된 데이터를 물리 삭제하는 정책 필요
 
 ### Soft Delete + 유니크 제약 충돌 (면접 빈출 함정)
@@ -93,9 +93,9 @@ Junction Table(연결 테이블)로 구현한다.
 **기본 원칙:**
 - 외래 키 컬럼에 인덱스 (JOIN 성능)
 - 자주 조회되는 조합에 복합 인덱스
-- `deletedAt`을 포함하는 복합 인덱스 (Soft Delete 시 필수)
+- `deleted_at`을 포함하는 복합 인덱스 (Soft Delete 시 필수)
 
-**예시:**
+**Prisma 모델 예시:**
 - `@@index([organizationId, deletedAt])` — 조직별 활성 데이터 조회
 - `@@index([studentId, groupId])` — 학생-그룹 관계 조회
 - `@@unique([accountId, familyId])` — 토큰 패밀리별 유일성

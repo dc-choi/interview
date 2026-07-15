@@ -3,6 +3,7 @@ tags: [infrastructure, aws, ec2, compute]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["EC2 네트워크와 접근", "IMDS, EIP, ENA, Key Pair"]
+verified_at: 2026-07-15
 ---
 
 # AWS EC2 — 네트워크와 접근
@@ -24,7 +25,7 @@ aliases: ["EC2 네트워크와 접근", "IMDS, EIP, ENA, Key Pair"]
 EC2 네트워크 인터페이스에 부여하는 **정적 공인 IP**. 기본 Public IP는 Stop/Start 시 변경되지만, EIP는 명시적 해제 전까지 고정.
 
 - 계정, 리전당 **기본 5개까지** 보유 가능 (요청으로 증가)
-- **요금 기준 변경**: 2024년 2월 1일부터 AWS 서비스에서 사용하는 모든 공인 IPv4 주소는 시간당 과금된다. 예전의 실행 중 인스턴스 연결 1개 무료 규칙으로 판단하면 안 된다.
+- **요금 기준 변경**: 2024년 2월 1일부터 AWS가 제공하는 공인 IPv4 주소는 연결 여부와 관계없이 시간당 과금된다. EC2 Free Tier의 무료 사용 시간과 BYOIP는 별도 조건이며, 예전의 실행 중 인스턴스 연결 1개 무료 규칙으로 판단하면 안 된다.
 - **유료 발생 조건**:
   - 실행 중 인스턴스에 연결된 EIP
   - EIP 생성 후 인스턴스에 미연결
@@ -39,16 +40,16 @@ EC2 네트워크 인터페이스에 부여하는 **정적 공인 IP**. 기본 Pu
 
 **SR-IOV (Single Root I/O Virtualization)** 기반 고성능 네트워크 인터페이스.
 
-- 최대 **100 Gbps** 대역폭 (인스턴스 패밀리 종속)
+- 대역폭은 인스턴스 타입, 네트워크 카드 수, ENI 배치에 따라 다르다. 일부 최신 인스턴스는 여러 네트워크 카드와 ENI를 사용해 합산 **600 Gbps**까지 지원하며, 단일 ENI 한도는 별도로 확인해야 한다
 - 인스턴스 간 **저지연**, 높은 PPS (Packets Per Second)
-- 최신 인스턴스 패밀리는 모두 ENA 지원, Nitro 기반에서 표준
+- 많은 현행 Nitro 기반 인스턴스 타입이 ENA를 사용하며, 실제 지원 여부와 baseline, burst 대역폭은 타입별 네트워크 사양에서 확인
 - 클러스터 컴퓨팅, 실시간 분석, 고성능 DB 통신에 필수
 
 ## Key Pair
 
 EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를 인스턴스에 저장, 사용자가 개인키(`*.pem`)를 보유.
 
-- SSH 접속 시 로그인 정보 **암호화, 해독**에 사용
+- SSH 접속 시 공개키 인증에 사용한다. 세션 트래픽 암호화는 SSH가 별도로 협상한 세션 키가 담당한다
 - **개인키 분실 시 접속 불가** — Key Pair 자체에는 복구 메커니즘 없음, EBS 분리 후 다른 인스턴스에 마운트하여 `authorized_keys` 수정 우회
 - OS별 기본 Username 상이:
   - Amazon Linux: `ec2-user`
@@ -58,3 +59,11 @@ EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를
 - **보관 원칙**: 개인키 외부 유출 금지, Git 커밋 금지, 권한 `chmod 400`
 
 현업 권장: SSH Key Pair 의존을 줄이고 **AWS Systems Manager Session Manager**로 대체 (IAM 권한 기반, 포트 22 개방 불필요, 세션 로깅).
+
+## 출처
+
+- [AWS charges for all public IPv4 addresses — Amazon VPC 공식 문서](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html)
+- [New AWS Public IPv4 Address Charge — AWS News Blog](https://aws.amazon.com/blogs/aws/new-aws-public-ipv4-address-charge-public-ip-insights/)
+- [Amazon EC2 instance network bandwidth — AWS 공식 문서](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html)
+- [General purpose instance network specifications — AWS 공식 문서](https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html)
+- [Amazon EC2 key pairs — AWS 공식 문서](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html)

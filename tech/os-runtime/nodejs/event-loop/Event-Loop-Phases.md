@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs, event-loop, libuv, phases]
 status: done
+verified_at: 2026-07-15
 category: "OS & Runtime"
 aliases: ["Event Loop Phases", "이벤트 루프 페이즈"]
 ---
@@ -11,7 +12,7 @@ libuv 소스 기반 페이즈 구조, nextTick, microtask 삽입 지점, 실행 
 
 ## libuv `uv_run` 소스코드
 이벤트 루프의 실제 구현체. 각 페이즈를 순회하며 등록된 콜백을 처리한다.
-Node.js 20(libuv 1.45.0) 이후에는 타이머 처리가 poll 이후로만 실행된다. 아래 흐름을 외울 때는 Node 버전에 따라 `setTimeout(0)`과 `setImmediate()`의 상대 순서가 달라질 수 있음을 함께 봐야 한다.
+Node.js 20(libuv 1.45.0) 이후 각 이벤트 루프 반복의 타이머 처리는 poll 이후에 실행된다. 호환성을 위해 이벤트 루프에 처음 진입하기 전에는 타이머를 한 번 처리할 수 있다. 아래 흐름을 외울 때는 Node 버전과 실행 문맥에 따라 `setTimeout(0)`과 `setImmediate()`의 상대 순서가 달라질 수 있음을 함께 봐야 한다.
 ```c
 while (r != 0 && loop->stop_flag == 0) {
     uv__update_time(loop);          // 현재 시간 갱신
@@ -170,6 +171,7 @@ James Snell의 또 다른 핵심 발언:
 - `setTimeout(() => {}, 0)`과 유사하지만 Node.js 이벤트 루프의 check 단계에서 실행
 
 ## 출처
+- [The Node.js Event Loop — Node.js 공식 문서](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)
 - [로우 레벨로 살펴보는 Node.js 이벤트 루프 — evan-moon](https://evan-moon.github.io/2019/08/01/nodejs-event-loop-workflow/)
 
 ## 관련 문서

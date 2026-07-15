@@ -1,6 +1,7 @@
 ---
 tags: [senior, ai, claude-code, cli, ci-cd, cost, troubleshooting]
 status: done
+verified_at: 2026-07-15
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드 트러블슈팅", "클로드 코드 비용"]
 ---
@@ -19,7 +20,7 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 
 ## 헤드리스와 CI
 
-- `--bare`: 최소 모드. `claude --help` 기준(확인 2026-07-13) 훅, LSP, 플러그인 sync, attribution, auto-memory, 백그라운드 prefetch, 키체인 읽기, CLAUDE.md 자동 탐색을 스킵하고 `CLAUDE_CODE_SIMPLE=1`을 설정한다 — CI와 스크립트의 권장 모드. 인증은 OAuth와 키체인을 안 읽고 `ANTHROPIC_API_KEY`(또는 `--settings`의 apiKeyHelper)만 사용. 스킵되어도 스킬은 `/스킬이름`으로 여전히 동작하고, 컨텍스트는 `--add-dir`(CLAUDE.md 디렉토리), `--mcp-config`, `--system-prompt`, `--agents` 등으로 명시 주입한다
+- `--bare`: 최소 모드. 공식 CLI 문서 기준(확인 2026-07-15) 훅, 스킬, 플러그인, MCP 서버, auto-memory, CLAUDE.md의 자동 탐색을 건너뛰고 `CLAUDE_CODE_SIMPLE=1`을 설정한다. Bash와 파일 읽기, 편집 도구는 유지된다. 필요한 컨텍스트와 확장은 `--append-system-prompt`, `--settings`, `--mcp-config`, `--agents`, `--plugin-dir` 같은 플래그로 명시 주입한다. OAuth와 키체인도 읽지 않으므로 인증은 `ANTHROPIC_API_KEY` 또는 `--settings`의 `apiKeyHelper`로 제공한다. CI와 스크립트처럼 장비별 로컬 설정에 영향받지 않아야 할 때 적합하다
 - CI 안전장치 4종: `--max-turns`(리뷰 5, 구현 10~15 권장), `--max-budget-usd`, 잡 타임아웃, dontAsk 권한 모드. `--dangerously-skip-permissions`는 격리 컨테이너에서만
 - 구조화 출력: `--output-format json` + `--json-schema`로 파이프라인에서 파싱 가능한 응답 강제
 - GitHub Actions: 공식 액션 + `@claude` 트리거. **모델 버전 고정이 필수** — 별칭이 새 모델을 가리키게 되면 미활성 모델 에러로 파이프라인이 깨진다
@@ -57,6 +58,8 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 
 ## 출처
 
+- [CLI reference — Claude Code 공식 문서](https://code.claude.com/docs/en/cli-usage)
+- [Run Claude Code programmatically — bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
 - [클로드 코드 가이드 (레퍼런스 03 기본 사용법, 13 CI/CD, 14 CLI, 16 베스트 프랙티스, 17 트러블슈팅) — WikiDocs](https://wikidocs.net/book/19104)
 
 ## 관련 문서
