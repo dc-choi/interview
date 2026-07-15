@@ -9,6 +9,16 @@ aliases: ["GraphQL"]
 
 GraphQL은 Facebook이 만든 **API 쿼리 언어이자 런타임**이다. 클라이언트가 필요한 데이터의 모양을 직접 명세하면 서버가 그 모양대로 응답한다. REST의 오버페칭, 언더페칭, 여러 라운드트립 문제를 한 번의 요청으로 해결하려는 접근.
 
+## 심화 문서 (graphql/ 클러스터)
+
+- [[GraphQL-Architecture-Map|전체 그림 지도]] — 요청 라이프사이클(parse→validate→execute→응답), N+1과 운영 관심사의 자리
+- [[GraphQL-Schema-Types|타입 시스템]] — scalar, enum, interface, union, input, List와 Non-Null 수식자
+- [[GraphQL-Schema-Design|스키마 설계]] — nullability 전략, 버전 없는 진화, mutation 모양, 비즈니스 로직 계층
+- [[GraphQL-Query-Language|쿼리 언어와 introspection]] — fragment, variable, directive, `__typename`, introspection
+- [[GraphQL-Pagination|페이지네이션]] — offset vs cursor, Relay Connection, Global Object Identification
+- [[GraphQL-Caching|캐싱과 HTTP 전송]] — 정규화 캐시, persisted document, GET vs POST, 상태 코드
+- [[GraphQL-Security|보안과 인가]] — demand control, introspection 차단, 인가는 비즈니스 로직 계층
+
 ## 핵심 명제
 
 - **단일 엔드포인트** — `/graphql` 하나로 모든 쿼리, 뮤테이션 수신
@@ -36,7 +46,7 @@ type Post {
 ### Query / Mutation / Subscription
 - **Query**: 데이터 조회 (REST의 GET)
 - **Mutation**: 데이터 변경 (POST/PUT/DELETE)
-- **Subscription**: 실시간 푸시(WebSocket 기반)
+- **Subscription**: long-lived 요청으로 실시간 증분 업데이트. 전송은 스펙이 정하지 않아 서버가 고르며 보통 WebSocket이나 SSE (자세히는 [[NestJS-GraphQL#Subscription — 실시간 푸시|NestJS Subscription]])
 
 ### Resolver
 각 필드를 어떻게 가져올지 정의하는 함수. 스키마와 데이터 소스를 연결.
@@ -115,6 +125,7 @@ JSON 기반이라 multipart 업로드는 별도 명세(graphql-multipart-request
 - [velog @mdy0102 — GraphQL을 사용하며 느낀 장단점](https://velog.io/@mdy0102/GraphQL을-사용하며-느낀-장단점)
 
 ## 관련 문서
+- [[GraphQL-Architecture-Map|GraphQL 전체 그림 지도 (요청 라이프사이클, N+1과 운영 관심사의 자리)]]
 - [[REST|REST, RESTful API]]
 - [[gRPC|gRPC]]
 - [[API-Comparison|REST vs GraphQL vs gRPC 비교]]
