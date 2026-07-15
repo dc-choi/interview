@@ -28,6 +28,7 @@ aliases: ["Yunhoe 1st Interview Prep", "윤회 1차 본 미팅 준비", "CARE ID
 - [[Interview-Prep-Yunhoe-1st-Tech-Extra|예상 기술 질문 — 보강 (범용 백엔드 안전망, 10개 영역 30+개)]]
 - [[Interview-Prep-Yunhoe-1st-Lead-Questions|백엔드 리드, 컬처핏, **AI 도구 깊이**(★ 6개월 책임 영역), **워라밸 강도**, 역질문, 체크리스트]]
 - [[Interview-Prep-Yunhoe-1st-Cheatsheet|🔥 30분 훑기용 치트시트 (면접 직전)]]
+- [[Interview-Retro-Yunhoe-1st|1차 본 미팅 회고]]
 
 ## 마스터 답변 참조
 

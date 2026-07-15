@@ -13,7 +13,7 @@ aliases: ["Kinolights Interview Prep 1st", "키노라이츠 1차 면접 준비"]
 ## 이 차수 문서 (5종)
 
 1. **본 문서** — JD 매칭, 회사 분석, 핵심 전략
-2. **[[Interview-Prep-Kinolights-1st-Tech-Script|30분 기술 발표 대본]]** — 핵심 산출물. 시간 마커 포함 구어체 대본 (인터뷰 2일 전 제출 슬라이드의 원천)
+2. **[[Interview-Prep-Kinolights-1st-Tech-Script|30분 기술 발표 대본]]** — 핵심 산출물. 시간 마커 포함 구어체 대본. 제출본: [[Interview-Prep-Kinolights-1st-Slides|기술 발표 슬라이드]]
 3. **[[Interview-Prep-Kinolights-1st-Tail-Questions|섹션별 꼬리질문 드릴(3뎁스)]]** — 발표 중 끊고 들어오는 질문 대비
 4. **[[Interview-Prep-Kinolights-1st-FIT-QA|FIT 답변, 예상 Q&A, 역질문, 사전질문지]]**
 5. **[[Interview-Retro-Kinolights-1st|1차 회고]]** ⭐ — 6/8 면접 후 작성. 실제 받은 질문, 잘된 카드, 약점, 마스터 역반영 체크리스트

@@ -119,6 +119,9 @@ aliases: ["TossPlace 실전 정리", "토스플레이스 1차 실전 정리"]
 - [[Interview-Prep-TossPlace-1st-FIT-QA|FIT 답변, 예상 Q&A, 역질문]] — 자기소개, 왜 이 직무, 이직 사유, 사이드 프로젝트
 - [[Interview-Prep-TossPlace-Domain|도메인 브리프]] — 직무 정의(Operations 물류/단말/자동화), 매핑, 도메인 역질문
 
+## 면접 후
+- [[Interview-Retro-TossPlace-1st|1차 직무 면접 회고]]
+
 ## 아카이브 (docs/ — 흡수 완료, 감사 추적용)
 - §8 직무 매핑과 구어체 모범답변은 위로 흡수됨. **평소 이 문서 한 장이면 충분.**
 - [[Interview-Prep-TossPlace-1st-Deep-Review|심화 리뷰]] — 10패스 + Pass 11 코드 재검증(감사 추적, 원본 보관)

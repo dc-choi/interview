@@ -23,6 +23,7 @@ aliases: ["SpaceMap Interview Prep", "스페이스맵 면접 준비"]
 - [[Interview-Prep-SpaceMap-Service|서비스 맥락 질문, 컬처핏, 역질문]]
 - [[Interview-Prep-SpaceMap-Checklist|면접 준비 체크리스트]]
 - [[Interview-Prep-SpaceMap-Cheatsheet|🔥 30분 훑기용 치트시트 (면접 직전)]]
+- [[Interview-Retro-SpaceMap-1st|1차 면접 회고]]
 
 ## 이 면접의 3대 관통 전략
 

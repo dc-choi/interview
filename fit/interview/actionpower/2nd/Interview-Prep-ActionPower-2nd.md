@@ -20,6 +20,7 @@ aliases: ["ActionPower 2nd Interview Prep", "액션파워 2차 면접 준비"]
 - [[Interview-Prep-ActionPower-2nd-Personality2|인성/소프트스킬 질문 2 + 그라운드룰, 리더십 철학]]
 - [[Interview-Prep-ActionPower-2nd-Reminder|기술 리마인드 & 역질문]]
 - [[Interview-Prep-ActionPower-2nd-Checklist|면접 준비 체크리스트]]
+- [[Interview-Prep-ActionPower-2nd-Retrospective|2차 면접 회고]]
 
 ## 관련 문서
 - [[Interview-Prep-ActionPower|1차 면접 준비]]
