@@ -18,3 +18,7 @@ aliases: ["Cache", "캐시"]
 - [[Cache-Advanced-Operations|Cache 운영 패턴 — 분산 무효화, 워밍업, 태깅 (SCAN, UNLINK, pipeline)]]
 - [[Multi-Level-Cache|Multi-Level Cache (L1/L2/L3, Inclusion, Coherency)]]
 - [[Consistent-Hashing|Consistent Hashing 일반 (Hash Ring, Virtual Nodes, DynamoDB, Cassandra)]]
+
+## 다른 계층과의 연결
+
+- [[Content-Availability-System-Design|콘텐츠 가용성 조회에서 Redis stale fallback과 Outbox projection을 결합하는 방법]]

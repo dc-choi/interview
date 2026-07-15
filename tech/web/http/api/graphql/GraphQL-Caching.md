@@ -70,6 +70,7 @@ GraphQL-over-HTTP은 Stage 2 draft라 아직 최종 표준이 아니다. 구현�
 - [[GraphQL-Pagination|Global Object Identification (Node, node(id))]]
 - [[GraphQL-Architecture-Map|전체 그림 지도]]
 - [[GraphQL-Security|보안 (trusted document)]]
+- [[Content-Availability-System-Design|Federation subgraph의 서버 캐시와 장애 격리 사례]]
 - [[REST|REST (URL 캐시)]]
 
 ## 출처
