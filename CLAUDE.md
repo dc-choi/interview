@@ -182,7 +182,12 @@
 - 이 레포는 **Claude와 Codex를 함께** 쓴다. Claude는 `CLAUDE.md`와 `.claude/`, Codex는 `AGENTS.md`와 `.agents/`를 읽는다. **정본은 `CLAUDE.md`** — Codex 지침(`AGENTS.md`)도 CLAUDE.md를 source of truth로 위임한다.
 - **스킬은 두 곳에 중복 존재**: `.claude/skills/{memo,interview-prep}/`(Claude)와 `.agents/skills/{memo,interview-prep}/`(Codex, frontmatter만 Codex식 + `agents/openai.yaml`). **한쪽 스킬을 수정하면 다른 쪽도 맞춘다.** 워크플로우 변경은 `CLAUDE.md`에 먼저 반영한 뒤 양쪽 헬퍼 파일을 동기화한다 (`AGENTS.md`의 Coexistence Rules와 대칭).
 - **Claude 파일을 삭제, 개명, 변환하지 않는다** — 사용자가 명시적으로 요청할 때만. `.agents/`는 호환 헬퍼일 뿐 Claude 설정을 대체하지 않는다.
-- `**.mcp.json`은 장비별 로컬 설정**(gitignore). Obsidian MCP의 vault 절대경로가 장비마다 다르므로(개인, 회사 장비 username 상이) 커밋하지 않는다. 새 장비에선 `.mcp.json.example`을 복사해 그 장비의 절대경로로 채운다. identity, SSH 키와 같은 머신 로컬 범주.
+- `.mcp.json`은 장비별 로컬 설정(gitignore)이라 커밋하지 않는다. Obsidian MCP는 저장소 안에서 아래 명령을 실행해 현재 장비의 저장소 루트를 계산해서 등록한다. Claude의 project scope는 로컬 `.mcp.json`을 만들고, Codex는 계산된 절대경로를 사용자 설정에 저장한다. `.mcp.json.example`은 수동 설정이 필요할 때만 사용한다.
+
+```bash
+claude mcp add --scope project obsidian -- npx -y obsidian-mcp "$(git rev-parse --show-toplevel)"
+codex mcp add obsidian -- npx -y obsidian-mcp "$(git rev-parse --show-toplevel)"
+```
 - **Why**: sync 규칙이 `AGENTS.md`에만 있으면 Codex는 알지만 Claude는 `.agents/` 미러의 존재조차 모른 채 `.claude/` 스킬만 고쳐 두 복사본이 드리프트한다. 규칙을 양쪽 정본에 대칭으로 둬 어느 도구로 작업하든 동기화가 걸리게 한다.
 
 ---

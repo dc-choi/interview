@@ -47,5 +47,5 @@ api.http
 # Playwright MCP runtime artifacts
 .playwright-mcp/
 
-# Machine-local MCP config (absolute vault path differs per machine — copy from .mcp.json.example)
+# Machine-local MCP config. Register with the CLI from this repository; use .mcp.json.example only as a manual fallback.
 .mcp.json
