@@ -144,6 +144,7 @@ BM25 score는 field와 query term별 기여를 query 구조에 따라 합친 상
 - 짧은 단어에서 오탐과 term expansion이 급증할 수 있다.
 - `prefix_length`, `max_expansions`, fuzziness를 데이터로 제한한다.
 - 고유 코드와 ID에는 fuzzy를 쓰지 않는다.
+- 한글에서 fuzzy가 잘 안 걸리는 이유(음절 단위 distance)와 자모 field, suggester, 교정 사전의 3계층은 [[OpenSearch-Query-Understanding#오타 교정 계층|오타 교정 계층]]이 정본이다.
 
 ### Script와 비즈니스 점수
 

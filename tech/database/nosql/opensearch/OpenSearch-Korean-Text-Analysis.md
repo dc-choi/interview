@@ -143,7 +143,7 @@ Term Vectors의 `per_field_analyzer`는 지정한 analyzer로 term-vector를 생
 
 ## 품질 개선 루프
 
-1. Exact 이름, 띄어쓰기 변형, 조사 변형, 약어, 영문 혼용, 오타 query를 bucket으로 나눈다.
+1. Exact 이름, 띄어쓰기 변형, 조사 변형, 약어, 영문 혼용, 오타 query를 bucket으로 나눈다. 오타, 초성, 띄어쓰기 bucket의 처리 설계는 [[OpenSearch-Query-Understanding|쿼리 이해와 검색어 전처리]]가 정본이다.
 2. 각 query에 기대 hit와 나오면 안 되는 문서를 기록한다.
 3. `_analyze`로 index와 search token 차이를 확인한다.
 4. `_termvectors`, `_explain`과 highlight로 실제 문서를 진단한다.
