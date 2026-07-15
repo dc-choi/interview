@@ -1,0 +1,128 @@
+---
+tags: [web, graphql, api, schema, type-system]
+status: done
+category: "웹&네트워크(Web&Network)"
+aliases: ["GraphQL Schema Types", "GraphQL 타입 시스템", "GraphQL 스키마 타입", "interface union input scalar enum"]
+---
+
+# GraphQL 타입 시스템 (스키마의 6가지 타입)
+
+GraphQL 스키마는 이름 있는 타입 6종으로 짠다: Object, Scalar, Enum, Interface, Union, Input Object. 여기에 List와 Non-Null 두 수식자가 붙어 배열과 nullability를 표현한다. 각 타입 kind의 문법과 의미가 아래이고, 언제 무엇을 고르는지의 설계 판단은 [[GraphQL-Schema-Design|스키마 설계]]에 있다.
+
+## Object 타입과 필드, 인자
+
+객체 종류와 그 필드를 정의하는 기본 블록. 쿼리에서 그 타입에 대해 물을 수 있는 필드는 여기 정의된 것뿐이다. 모든 필드는 인자를 0개 이상 받고, 인자는 전부 이름으로 전달된다(위치 인자 없음). 선택 인자엔 기본값을 준다.
+
+```graphql
+type Starship {
+  id: ID!
+  length(unit: LengthUnit = METER): Float
+}
+```
+
+Scalar를 반환하는 필드에도 인자를 줄 수 있다(서버측 변환 등).
+
+## Scalar (내장 5종 + custom)
+
+쿼리의 leaf 값이라 하위 선택이 없다. 내장 5종: Int(부호 있는 32비트 정수), Float(배정밀도), String(UTF-8), Boolean, ID(문자열로 직렬화되지만 human-readable이 아님을 의미, refetch나 캐시 키로 씀). custom scalar는 SDL에선 키워드만 두고, serialize, deserialize, validate 동작은 구현이 정의한다.
+
+```graphql
+scalar Date
+```
+
+## Enum
+
+허용된 값 집합으로 제한된 특수 scalar. 인자가 그 집합 중 하나인지 검증하고, 필드가 유한 집합 중 하나임을 타입으로 알린다.
+
+```graphql
+enum Episode { NEWHOPE EMPIRE JEDI }
+```
+
+## List와 Non-Null 수식자
+
+기본은 nullable에 단수다. 수식자는 둘, List `[ ]`와 Non-Null `!`. 개별로도 조합으로도 쓰고 임의 중첩이 된다. Non-Null 출력은 서버 약속이라 resolver가 null을 내면 실행 에러, Non-Null 인자는 검증 규칙이라 null을 넘기면 validation 에러다.
+
+| 표기 | 리스트 자체 | 원소 | 무엇이 에러 |
+|---|---|---|---|
+| `[String]` | nullable | nullable | 없음 (`null`, `[]`, `[null]` 모두 valid) |
+| `[String!]` | nullable | non-null | `[..., null, ...]` |
+| `[String]!` | non-null | nullable | `null` |
+| `[String!]!` | non-null | non-null | `null`, `[..., null, ...]` |
+
+- 기억법: 바깥 `!`은 리스트 자체가 null일 수 있나, 안쪽 `!`은 원소가 null일 수 있나.
+- 빈 리스트 함정: `[String!]!`도 `[]`는 valid다. 비어있지 않음을 타입으로 강제할 방법은 없다.
+
+## Interface
+
+구현 타입이 반드시 포함해야 하는 필드 집합을 정의하는 추상 타입. 같은 필드, 같은 인자, 같은 반환 타입을 강제한다.
+
+```graphql
+interface Character { id: ID! name: String! }
+type Human implements Character { id: ID! name: String! totalCredits: Int }
+```
+
+- interface 필드를 쿼리하면 interface에 있는 필드만 물을 수 있고, 구현 타입 고유 필드는 inline fragment로 꺼낸다: `... on Human { totalCredits }`.
+- interface가 interface를 implement할 수 있다. 단 자기 자신 구현이나 순환 참조는 금지.
+
+## Union
+
+멤버 타입을 묶지만 공통 필드를 정의하지 않는다. 멤버는 반드시 구체 Object 타입이어야 한다(interface나 다른 union 불가).
+
+```graphql
+union SearchResult = Human | Droid | Starship
+```
+
+- 공통 필드가 없어 모든 필드 접근에 inline fragment가 필요하고, 타입 구분은 `__typename` 메타 필드로 한다.
+- interface와 차이: interface는 공통 필드를 보장한다. union은 자체로는 공통 필드가 없어 멤버 필드를 inline fragment로 꺼내지만, 멤버들이 같은 interface를 구현하면 `... on Character` 한 fragment로 공통 필드를 모아 조회할 수 있다. `__typename`은 클라이언트가 응답에서 타입을 구분하는 메타 필드일 뿐 필드 선택의 전제가 아니다.
+
+## Input Object
+
+구조화된 인자를 넘기는 타입. 특히 mutation에서 객체를 통째로 넘길 때 쓴다. `type` 대신 `input` 키워드.
+
+```graphql
+input ReviewInput { stars: Int! commentary: String }
+type Mutation { createReview(review: ReviewInput!): Review }
+```
+
+제약 둘: input 필드는 인자를 가질 수 없고, input과 output 타입을 섞을 수 없다(한 타입을 입력이자 출력으로 못 씀). 변수도 Scalar, Enum, Input Object만 될 수 있다.
+
+## Root 타입 (Query, Mutation, Subscription)
+
+스키마 진입점. Query는 필수, Mutation과 Subscription은 선택이다. 진입점이라는 특별함을 빼면 셋 다 평범한 Object 타입이고 필드도 똑같이 작동한다. `schema { query: ... mutation: ... }`로 루트 타입 이름을 바꿀 수 있다.
+
+## Directive
+
+`@`로 타입, 필드, 인자, 연산을 다르게 검증하거나 실행하게 하는 주석. 타입 시스템 directive(스키마 주석)와 실행 directive(연산에서 `@skip`, `@include`)로 나뉜다. 내장 `@deprecated(reason:)`는 FIELD_DEFINITION과 ENUM_VALUE에 붙는다.
+
+```graphql
+type User { name: String @deprecated(reason: "Use `fullName`.") }
+```
+
+문서화도 구분된다: `"""triple quote"""` description은 introspection으로 노출되는 사람이 읽는 문서화(GraphiQL 등 도구에 표시), `#` 주석은 무시된다.
+
+## 흔한 실수
+
+- interface나 union에서 구체 타입 고유 필드를 직접 물음. inline fragment가 필요하다.
+- union에서 `__typename`을 빠뜨려 멤버 구분 불가.
+- `[T!]!`가 빈 리스트를 막는다고 오해. `[]`는 valid다.
+- 한 타입을 input과 output 겸용으로 씀. input을 따로 만든다.
+
+## 면접 체크포인트
+
+- List와 Non-Null 4조합의 null 허용 차이 (바깥 `!` vs 안쪽 `!`)
+- interface vs union (공통 필드 보장 유무, `__typename` 분기). 언제 무엇을 고르나는 [[GraphQL-Schema-Design]]
+- Non-Null이 출력에선 약속, 입력에선 검증 규칙인 이유
+- input과 output을 왜 못 섞나
+- ID scalar가 문자열이지만 human-readable이 아님을 의미하는 것
+
+## 관련 문서
+
+- [[GraphQL|GraphQL 개념]]
+- [[GraphQL-Schema-Design|스키마 설계 (nullability 전략, breaking change, interface vs union 판단)]]
+- [[GraphQL-Query-Language|쿼리 언어 (fragment, variable, __typename)]]
+- [[GraphQL-Architecture-Map|전체 그림 지도]]
+
+## 출처
+
+- [graphql.org — Schema and Types](https://graphql.org/learn/schema/)
+- [graphql.org — Queries and Mutations](https://graphql.org/learn/queries/)
