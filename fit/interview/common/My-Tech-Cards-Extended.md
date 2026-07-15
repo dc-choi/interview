@@ -88,7 +88,7 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at
 
 ### 심화 꼬리
 
-- **"SQS FIFO?"** → MessageGroupId 기반 순서 보장, 초당 300 TPS 제한
+- **"SQS FIFO?"** → MessageGroupId 기반 순서 보장. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다
 - **"Pub/Sub vs SQS?"** → Pub/Sub은 topic 기반 팬아웃(1:N), SQS는 큐 기반 point-to-point(1:1)
 - **"이벤트 유실 — 생산자 측?"** → Dual Write 문제. Outbox 패턴으로 해결 (위)
 - **"이벤트 유실 — 소비자 측?"** → SQS at-least-once + 멱등성 키 + DLQ로 최종 실패 보관

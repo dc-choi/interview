@@ -13,8 +13,8 @@ aliases: ["스토리지 함정", "SAA-C03 Pitfalls Storage"]
 
 - 클래스: Standard, Standard-IA, Intelligent Tiering, **One Zone-IA**(AZ 1개, 비용 절감), Glacier **Instant Retrieval**(밀리초), Glacier **Flexible Retrieval**(분-시간), Glacier **Deep Archive**(12시간)
 - **Glacier 최소 저장 기간**: Flexible 90일, Deep Archive 180일 — 조기 삭제 시 비용 청구. 자주 변경되는 데이터 → Glacier 금지
-- 수명주기에서 **128KB 미만 객체는 IA/Glacier로 이동 안 됨** — 작은 객체 다수 시나리오는 함정
-- **Intelligent Tiering**은 모니터링 비용($1/100만 객체) 있음. 작은 객체 수십억개는 손해
+- **S3 Lifecycle 소형 객체 기본 동작**: 2024년 9월 이후 생성하거나 수정한 구성은 128KB 미만 객체를 어떤 스토리지 클래스로도 기본 전환하지 않음. 크기 필터로 명시적으로 허용할 수 있고, 기존 구성은 이전 기본값이 유지될 수 있음
+- **Intelligent-Tiering**: 128KB 미만 객체는 모니터링과 자동 티어링 대상이 아니며 Frequent Access 티어에 유지됨. 모니터링 요금은 부과되지 않지만 자동 계층화 절감도 없음
 
 ### S3 보안, 기능
 
@@ -50,8 +50,8 @@ aliases: ["스토리지 함정", "SAA-C03 Pitfalls Storage"]
 
 ### Snow, Storage Gateway, DataSync
 
-- **Snowcone**(8TB, IoT 가능) vs **Snowball Edge Storage Optimized**(80TB) vs **Snowball Edge Compute Optimized**(42TB+GPU) vs **Snowmobile**(100PB+, 트럭)
-- **데이터 전송 결정 기준**: 1주 미만 네트워크 시간 → DataSync, 1주 이상 → Snow. 시험은 시간/비용 둘 다 고려
+- **Snow Family**: 기존 고객은 계속 사용할 수 있지만 신규 고객은 Snowball Edge를 주문할 수 없음
+- **데이터 전송 결정 기준**: 온라인 전송은 DataSync, 물리 전송은 AWS Data Transfer Terminal이나 파트너, 엣지 컴퓨팅은 Outposts를 검토. 기존 Snow 고객만 Snow Family를 선택지에 포함
 - **Storage Gateway 종류**
   | 게이트웨이 | 프로토콜 | 용도 |
   |---|---|---|
@@ -73,4 +73,8 @@ aliases: ["스토리지 함정", "SAA-C03 Pitfalls Storage"]
 
 ## 출처
 
+- [How S3 Intelligent-Tiering works — AWS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html)
+- [Amazon S3 pricing — AWS](https://aws.amazon.com/s3/pricing/)
+- [Transitioning objects using Amazon S3 Lifecycle — AWS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html)
+- [AWS Snowball Edge availability change — AWS](https://docs.aws.amazon.com/snowball/latest/developer-guide/snowball-edge-availability-change.html)
 - AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)

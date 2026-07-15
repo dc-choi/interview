@@ -44,21 +44,21 @@ aliases: ["TS 백엔드 밋업 1회"]
 > "그 패스워드 해싱은 틀렸다"
 
 ### 해시vs암호화해시
-- P-NP 문제: 암호화는 기본적으로 NP 문제를 활용
+- 암호 기법마다 안전성의 근거가 되는 계산 난이도 가정과 보안 모델이 다르므로, 암호를 P-NP 문제 하나로 일반화하면 부정확함
 - 해시를 보고 입력값을 찾기 어려워야 함 (역상 저항성)
 - 입력의 해시를 유지하면서 입력을 변경하기 어려워야 함 (제2역상 저항성)
 - 같은 해시를 가진 두 입력을 찾기 어려워야 함 (충돌 저항성)
-- 같은 입력이라도 prefix가 같으면 안 됨
+- 입력이 조금만 달라져도 출력이 예측하기 어렵게 달라져야 함
 
 ### 해시DoS
-- 해시 충돌을 의도적으로 발생시키는 DDoS 공격
-- 알고리즘 특성상 해시 충돌이 일어날 수밖에 없음
-- 입력이 같으면 출력이 같으므로, 무수히 많은 충돌을 유발 가능
+- 공격자가 같은 해시값이나 버킷으로 몰리는 서로 다른 입력을 대량으로 보내 해시 테이블 연산을 느려지게 만드는 DoS 공격
+- 유한한 출력 공간을 쓰는 해시 함수에는 충돌이 존재할 수 있지만, 안전한 함수에서는 공격자가 유용한 충돌을 찾기 어려워야 함
+- 같은 입력이 같은 출력을 내는 결정성 때문이 아니라, 서로 다른 입력이 같은 해시값이나 버킷으로 몰리는 상황을 악용
 
-### 절대쓰면안되는알고리즘
-- **MD5, SHA-1**: 절대 사용 금지
-- **SHA-256**: 패스워드 해시로 부적합 (비트코인 채굴기가 이 알고리즘을 가장 빨리 품)
-- **bcrypt**: 사실 이것도 안전하지 않음
+### 알고리즘 선택 주의사항
+- **MD5, SHA-1**: 신규 보안 설계와 패스워드 저장에 부적합
+- **SHA-256**: 일반 목적 해시라 너무 빨라 단독 패스워드 저장에 부적합. GPU와 ASIC을 쓰는 대입 공격에 취약
+- **bcrypt**: Argon2id나 scrypt를 쓸 수 없는 레거시 환경의 차선책. work factor 10 이상과 구현별 72바이트 입력 제한 확인 필요
 
 ### Salt의올바른이해
 - Salt는 레인보우 테이블 방어용이지, 해시를 암호화하는 역할이 아님
@@ -66,10 +66,10 @@ aliases: ["TS 백엔드 밋업 1회"]
 - DB가 침해당해도 암호화되어 있으니 괜찮다는 생각도 위험
 
 ### 권장패스워드해시알고리즘
-- **argon2**: blake2를 반복한 해시, 메모리를 많이 사용하도록 강제
-- **balloon**: SHA-3를 여러 번 반복 (KISA 권고 SHA-256 필요 시 대안)
-- **yescrypt**
-- 핵심: 하드웨어 발전으로 연산 속도는 빨라졌지만 메모리는 저렴해지지 않음 -> 메모리 사용을 강제
+- **Argon2id**: 신규 시스템의 우선 선택. 메모리와 연산 비용을 함께 조정해 오프라인 대입 공격 비용을 높임
+- **scrypt**: Argon2id를 사용할 수 없을 때의 대안
+- **PBKDF2-HMAC-SHA-256**: FIPS-140 준수가 필요한 환경의 선택지
+- 핵심: 느린 연산과 메모리 비용으로 오프라인 대입 공격 단가를 높이고, 하드웨어 변화에 맞춰 파라미터를 재조정
 
 ### 모든암호화의원칙
 - 안전성은 **키에 의해서만** 보장되어야 함
@@ -115,3 +115,10 @@ aliases: ["TS 백엔드 밋업 1회"]
 ### 개선포인트
 - 백프레셔 문제: 1초에 1000건까지 처리 가능, 초과 시 Kinesis Data Streams 고려
 - FluentBit/Fluentd fail-over 문제도 추가 검토 필요
+
+## 출처
+
+- [Cryptographic Standards and Guidelines — NIST](https://csrc.nist.gov/Projects/cryptographic-standards-and-guidelines)
+- [Hash Functions — NIST](https://csrc.nist.gov/Projects/hash-functions)
+- [Password Storage Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
+- [RFC 9106: Argon2 Memory-Hard Function — RFC Editor](https://www.rfc-editor.org/rfc/rfc9106.html)

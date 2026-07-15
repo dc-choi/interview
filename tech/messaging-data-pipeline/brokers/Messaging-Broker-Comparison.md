@@ -78,7 +78,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 
 ### 약점
 - **폴링 기반**: Long Polling도 수초 지연. RabbitMQ 대비 느림
-- **메시지 순서**: Standard는 순서 보장 없음. FIFO는 300 TPS 제한
+- **메시지 순서**: Standard는 순서 보장 없음. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지이며 고처리량 FIFO는 리전별 API 할당량 적용
 - **라우팅 약함**: Fanout은 SNS+SQS 조합으로 우회
 - **AWS 종속**: 이식성 없음
 
@@ -163,6 +163,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 - 선택 기준 (트래픽, 운영, 팀, 인프라)
 
 ## 출처
+- [Amazon SQS message quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
 - [myfranchise (Medium) — RabbitMQ vs BullMQ vs SQS 실사용 후기](https://medium.com/@myfranchise/rabbitmq-vs-bullmq-sqs-%EC%8B%A4%EC%82%AC%EC%9A%A9-%ED%9B%84-%EC%86%94%EC%A7%81-%ED%9B%84%EA%B8%B0-c74c1a485143)
 
 ## 관련 문서

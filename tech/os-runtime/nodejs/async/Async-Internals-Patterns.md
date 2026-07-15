@@ -107,9 +107,9 @@ async function correct() {
 }
 ```
 
-try-catch 밖에서는 `return await`가 불필요한 중간 Promise만 생성하므로 생략해도 된다.
+try-catch 밖에서는 `return promise`와 `return await promise` 모두 올바르다. 최신 ECMAScript 동작에서 `return await`는 추가 마이크로태스크를 만들지 않으며, 오히려 에러 스택에 현재 async 함수 프레임을 남겨 디버깅에 유리할 수 있다. 일반 문맥에서는 팀의 일관성 기준으로 선택하고, 에러 처리 문맥에서는 제어 흐름의 정확성을 위해 `return await`를 사용한다.
 
-ESLint 설정으로 이 규칙을 강제할 수 있다: `"@typescript-eslint/return-await": ["error", "in-try-catch"]`
+TypeScript ESLint에서 에러 처리의 정확성만 강제하려면 `"@typescript-eslint/return-await": ["error", "error-handling-correctness-only"]`를 사용한다. 모든 반환 Promise를 await하는 팀은 `always`도 선택할 수 있다. ESLint 코어의 `no-return-await` 규칙은 폐기되었으므로 성능 최적화 근거로 사용하지 않는다.
 
 ## 재귀 Promise 체인 메모리 누수
 
@@ -135,6 +135,12 @@ async function poll() {
 ```
 
 async 함수 내에서 while 루프를 사용하면 각 반복마다 이전 Promise가 해제되어 메모리 누수가 발생하지 않는다.
+
+## 출처
+
+- [no-return-await — ESLint 공식 문서](https://eslint.org/docs/latest/rules/no-return-await)
+- [return-await — typescript-eslint 공식 문서](https://typescript-eslint.io/rules/return-await/)
+- [ECMAScript Language Specification — TC39](https://tc39.es/ecma262/)
 
 ## 관련 문서
 - [[Async-Internals-Mechanism|비동기 내부 동작 — 메커니즘]]

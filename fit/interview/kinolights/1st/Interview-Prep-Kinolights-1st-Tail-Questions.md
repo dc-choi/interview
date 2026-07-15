@@ -137,7 +137,7 @@ aliases: ["Kinolights Tail Questions", "키노라이츠 꼬리질문 드릴"]
 
 **Q. 왜 Kafka가 아니라 EventBridge와 SQS?** → MSK 월 574달러 고정 대 SQS 0에서 18달러, 발주는 최종 일관성 우선
 - D2. Kafka가 맞는 순간은? → 이벤트 리플레이, 파티션 내 순서 보장, 초당 수만 건 이상
-- D3. 나중에 순서 보장이 필요해지면? → SQS FIFO(MessageGroupId, 초당 300건, 배치 시 3000), 또는 그 도메인만 Kafka로 분리
+- D3. 나중에 순서 보장이 필요해지면? → SQS FIFO(MessageGroupId 기반. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다), 또는 그 도메인만 Kafka로 분리
 
 **Q. DB 저장은 됐는데 이벤트 발행이 실패하면?** → 듀얼 라이트 문제, Transactional Outbox로 해결
 - D2. Outbox 구조는? → INSERT와 outbox INSERT를 같은 트랜잭션, 릴레이가 폴링해서 발행

@@ -91,7 +91,7 @@ aliases: ["SpaceMap 이력서 기술 질문", "스페이스맵 이력서 기반 
 **꼬리 질문 대비**
 - "언제 Kafka가 필요?" → 이벤트 리플레이, 순서 보장, 초당 수만 건 이상, 스트림 처리. 우주 데이터가 고빈도 스트림이면 Kafka, Kinesis 검토 — 도메인 트래픽 특성에 따라 결정
 - "메시지 유실은?" → SQS at-least-once → 멱등성 키 필수. 워커는 처리 전 status 확인
-- "순서가 중요하면?" → SQS FIFO(300 TPS 제한) 또는 표준 SQS + 시퀀스 ID. Kafka는 파티션 키 단위 순서 보장
+- "순서가 중요하면?" → SQS FIFO(MessageGroupId 단위 순서 보장. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다) 또는 표준 SQS + 시퀀스 ID. Kafka는 파티션 키 단위 순서 보장
 
 ---
 

@@ -84,7 +84,7 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
 - Kafka가 필요한 시점: 이벤트 리플레이, 순서 보장, 초당 수만건 이상
 - 꼬리:
   - "SQS 메시지 유실 가능성은?" → at-least-once 보장. 소비자 측 멱등성 필수. 발주 ID 기반 상태 머신으로 중복 처리 방지
-  - "이벤트 순서 보장이 필요하면?" → SQS FIFO 큐(MessageGroupId 기반, 초당 300 TPS) 또는 Kafka(파티션 내 순서 보장)
+  - "이벤트 순서 보장이 필요하면?" → SQS FIFO 큐(MessageGroupId 기반. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다) 또는 Kafka(파티션 내 순서 보장)
 
 ### CloudFront+ECS 전환 — 왜? 어떤 문제?
 

@@ -44,7 +44,7 @@ aliases: ["Common Interview Questions Tech Basics", "기술 질문 기본"]
   - 적절한 상태 코드 (200, 201, 204, 400, 401, 403, 404, 409, 422, 500)
   - 페이지네이션 (cursor vs offset)
   - 버저닝 전략 (URI `/v1/`, 헤더 `Accept: application/vnd.api+json;version=1`)
-  - 에러 응답 포맷 통일 (RFC 7807 Problem Details)
+  - 에러 응답 포맷 통일 (RFC 9457 Problem Details, RFC 7807 대체)
   - 캐시 제어 (ETag, Cache-Control, Last-Modified)
   - 보안 (인증/인가, Rate Limiting, CORS)
 
@@ -108,7 +108,9 @@ aliases: ["Common Interview Questions Tech Basics", "기술 질문 기본"]
 ---
 
 ## 출처
+
 - 개발자 취업과 이직 한방에 해결하기
+- [RFC 9457: Problem Details for HTTP APIs — RFC Editor](https://www.rfc-editor.org/rfc/rfc9457.html)
 
 ## 관련 문서
 - [[Common-Interview-Questions|자주하는 면접 질문 (인덱스)]]
