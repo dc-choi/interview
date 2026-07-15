@@ -15,6 +15,8 @@ aliases: ["Kafka Patterns", "카프카 실전 패턴"]
 
 같은 엔티티(예: 주문 ID) 메시지는 **동일 키**로 발행 → 같은 파티션에 저장되어 **키 단위 순서 보장**. 서로 다른 키는 다른 파티션으로 분산되어 병렬 처리가 유지됨.
 
+순서를 지키면서 소비를 병렬화할 때 깨지는 지점(생산자 재시도, 소비자 병렬화)과 소비자 체이닝, watermark식 제한적 비순서는 [[MQ-Kafka-Event-Ordering|이벤트 순서 보장]] 참고.
+
 ## Transactional Outbox + Debezium
 
 DB 트랜잭션으로 Outbox 테이블에 이벤트를 기록하고, **Debezium MySQL Connector**가 binlog를 읽어 Kafka로 발행 (→ [[Transactional-Outbox]], [[CDC-Debezium]]).

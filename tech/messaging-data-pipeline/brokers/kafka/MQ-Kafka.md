@@ -15,6 +15,7 @@ aliases: ["Kafka", "Message Queue: Kafka"]
 - [[MQ-Kafka-Patterns|실전 패턴 (키 기반 순서, Outbox+Debezium, Event Bus, Streams)]]
 - [[MQ-Kafka-Consumer|컨슈머 구현 (NestJS 마이크로서비스, eachMessage vs eachBatch)]]
 - [[MQ-Kafka-Streams|Kafka Streams (상태 저장소, KStream/KTable, 윈도우, EOS, 운영)]]
+- [[MQ-Kafka-Event-Ordering|순서 보장 (파티션 순서의 한계, 소비자 체이닝, watermark식 제한적 비순서)]]
 - [[Kafka-Partition-Sizing|파티션 개수 산정 (산정식, per-partition 처리량, eCKU 한도)]]
 
 ## 핵심 한 줄
@@ -28,6 +29,7 @@ aliases: ["Kafka", "Message Queue: Kafka"]
 - [frogred8 — 카프카는 왜 빠를까?](https://frogred8.github.io/docs/034_why_is_kafka_fast/)
 - [우아한형제들 — 우리팀은 카프카를 어떻게 사용하고 있을까](https://techblog.woowahan.com/17386/)
 - [채널톡 — 카프카 파티션 개수, 어떻게 정할까](https://tech.channel.io/ko/articles/17439f55)
+- [ab180 엔지니어링 — Kafka 이벤트 순서 보장 아키텍처](https://engineering.ab180.co/stories/kafka-event-ordering-at-scale)
 
 ## 관련 문서
 

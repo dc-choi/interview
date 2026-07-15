@@ -39,7 +39,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [ ] [[At-Most-Once]]
 - [ ] [[Exactly-Once|Exactly-once]]
 - [ ] [[Deduplication]]
-- [ ] [[Ordering-Guarantee]]
+- [x] [[MQ-Kafka-Event-Ordering|Ordering Guarantee (Kafka 순서 보장, 소비자 체이닝)]]
 - [ ] [[DLQ]]
 - [ ] [[Retry-Backoff|Retry / Backoff]]
 - [ ] [[Replay-Backfill|Replay / Backfill]]
