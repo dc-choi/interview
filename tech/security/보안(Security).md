@@ -24,7 +24,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [ ] `SQL-Injection` (작성 예정)
 - [ ] TLS config (작성 예정: `TLS-Config`)
 - [ ] Rate limit (작성 예정: `Rate-Limit`)
-- [ ] [[WAF]]
+- [x] [[Shield-WAF-NetworkFirewall|WAF]]
 - [ ] Audit log (작성 예정: `Audit-Log`)
 - [ ] Least privilege IAM (작성 예정: `Least-Privilege-IAM`)
 - [ ] Dependency vulnerability scanning (작성 예정: `Dependency-Vulnerability-Scanning`)
