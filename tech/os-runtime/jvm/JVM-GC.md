@@ -1,6 +1,7 @@
 ---
 tags: [runtime, jvm, gc, java, young-gen, old-gen, g1gc, zgc]
 status: done
+verified_at: 2026-07-15
 category: "OS&런타임(OS&Runtime)"
 aliases: ["JVM GC", "JVM Garbage Collection", "Java GC"]
 ---
@@ -149,6 +150,10 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 - GC 튜닝이 만능이 아닌 이유(할당 패턴이 근원)
 
 ## 출처
+- [JEP 379 — Shenandoah Production (OpenJDK)](https://openjdk.org/jeps/379)
+- [JEP 439 — Generational ZGC (OpenJDK)](https://openjdk.org/jeps/439)
+- [JEP 474 — Generational ZGC by Default (OpenJDK)](https://openjdk.org/jeps/474)
+- [JEP 490 — Remove Non-Generational ZGC (OpenJDK)](https://openjdk.org/jeps/490)
 - [daddyprogrammer — JVM GC](https://daddyprogrammer.org/post/2058/tech-terms-concept/)
 
 ## 관련 문서

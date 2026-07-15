@@ -1,6 +1,7 @@
 ---
 tags: [messaging, aws, eventbridge, event-driven]
 status: index
+verified_at: 2026-07-15
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["EventBridge", "Amazon EventBridge"]
 ---
@@ -135,16 +136,18 @@ cron/rate 표현식 → Scheduler → Target (Lambda, SQS, Step Functions 등)
 
 ## 운영
 
+> quota와 가격 범위는 2026-07-15 AWS 공식 문서 기준이다. 계정의 실제 quota는 Service Quotas 콘솔에서 다시 확인하고, 비용 계산 전에는 최신 가격 페이지를 확인한다.
+
 | 항목 | 값 |
 |------|-----|
-| 이벤트 크기 | 최대 **256KB** |
-| PutEvents TPS | 리전별 quota. us-east-1/us-west-2/eu-west-1 등은 10,000/sec, ap-northeast-2(서울)는 600/sec 기준으로 확인 |
-| Rule 수 | 이벤트 버스당 **300개** (최대 2000까지 상향) |
-| Target 수 | Rule당 **5개** (조정 불가, 하드 리밋) |
+| PutEvents 요청 크기 | 요청 전체 합계 **1MB 미만**, 요청당 최대 10개 entry. entry 하나만 보내면 단일 이벤트가 요청 한도까지 사용할 수 있음 |
+| PutEvents TPS | 리전별 조정 가능 quota. us-east-1/us-west-2/eu-west-1은 10,000/sec, ap-northeast-2(서울)는 600/sec |
+| Rule 수 | 서울을 포함한 대부분 리전에서 계정별 이벤트 버스당 기본 **300개**, 증설 요청 가능 |
+| Target 수 | Rule당 **5개** (조정 불가) |
 
-**타겟 5개는 하드 리밋**이다. Rule 수처럼 Service Quotas로 상향되는 다른 한도와 달리 증설 요청이 안 된다. `PutTargets` API는 호출당 10 엔트리를 받지만 규칙에 실제 붙는 총량은 5개라, 넘기면 거부된다 (시험에서 조정 가능 vs 불가능 구분이 함정). 5개로 부족할 때 워크어라운드:
-- **동일 패턴 규칙 다중화**: 같은 이벤트 패턴 규칙을 2~3개 만들어 타겟을 나눠 담으면 사실상 10~15개. 한 이벤트가 여러 규칙에 매칭되므로 문제없다 (규칙은 버스당 최대 2000개).
-- **SNS 팬아웃**: 타겟 하나를 SNS 토픽으로 두고 구독자를 붙인다. SNS 구독자 수는 사실상 무제한이라 대량 팬아웃에 더 깔끔.
+**타겟 5개는 조정 불가 quota**다. Rule 수처럼 Service Quotas로 상향되는 다른 한도와 달리 증설 요청이 안 된다. `PutTargets` API는 호출당 10 엔트리를 받지만 규칙에 실제 붙는 총량은 5개라, 넘기면 거부된다 (시험에서 조정 가능 vs 불가능 구분이 함정). 5개로 부족할 때 워크어라운드:
+- **동일 패턴 규칙 다중화**: 같은 이벤트 패턴 규칙을 2~3개 만들어 타겟을 나눠 담으면 10~15개 타겟으로 확장할 수 있다. 한 이벤트가 여러 규칙에 매칭되므로 계정의 현재 rule quota 안에서 구성한다.
+- **SNS 팬아웃**: 타겟 하나를 SNS 토픽으로 두고 구독자를 붙인다. 구독 수와 전달 quota는 SNS 공식 한도를 따로 확인한다.
 
 ### Schema Registry
 - 이벤트 구조를 중앙에서 관리
@@ -152,10 +155,16 @@ cron/rate 표현식 → Scheduler → Target (Lambda, SQS, Step Functions 등)
 - **Code Bindings**: 스키마에서 TypeScript/Java/Python 코드 자동 생성
 
 ### 비용
-- Custom/Partner Events: ~$1.00 / 100만 건
-- AWS 서비스 이벤트: **무료**
-- Pipes: ~$0.40 / 100만 건
-- Archive: 저장 비용 + 리플레이 시 이벤트 비용
+- Event Bus custom/partner event 수집: 64KB 청크마다 1개 이벤트로 과금. 공식 가격 예시는 100만 건당 $1.00을 사용한다
+- AWS management event 수집: 추가 요금 $0. 다른 계정으로 전달하거나 리전 간 전송하면 별도 비용이 생길 수 있다
+- Pipes: 필터를 통과한 요청을 기준으로 과금하며 공식 가격 예시는 100만 요청당 $0.40을 사용한다
+- Archive와 replay: 처리량과 저장량, replay된 custom event에 각각 비용이 붙는다
+
+## 출처
+
+- [Amazon EventBridge quotas — AWS 공식 문서](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-quota.html)
+- [Sending events with PutEvents — AWS 공식 문서](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-putevents.html)
+- [Amazon EventBridge pricing — AWS 공식 가격](https://aws.amazon.com/eventbridge/pricing/)
 
 ## 관련 문서
 - [[SQS|SQS]]

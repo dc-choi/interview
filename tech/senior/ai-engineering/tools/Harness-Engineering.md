@@ -1,6 +1,7 @@
 ---
 tags: [senior, ai, harness, productivity]
 status: done
+verified_at: 2026-07-15
 category: "시니어역량(SeniorEngineer)"
 aliases: ["Harness Engineering", "하네스 엔지니어링"]
 ---
@@ -9,7 +10,7 @@ aliases: ["Harness Engineering", "하네스 엔지니어링"]
 
 ## 정의
 
-OpenAI가 2026년 2월 블로그 [Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/)에서 제시한 개념(공식 원문 확인 2026-07-13). **AI 에이전트가 코드를 올바르게 작성할 수 있는 환경을 설계하는 것.**
+OpenAI가 2026년 2월 블로그 [Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/)에서 제시한 개념(공식 원문 확인 2026-07-15). **AI 에이전트가 코드를 올바르게 작성할 수 있는 환경을 설계하는 것.**
 
 핵심은 에이전트 자체가 아니라 에이전트를 감싸는 인프라 — **제약(constraints), 맥락(context), 피드백 루프(feedback loops), 관찰 가능성(observability)** — 를 구축하는 것이다.
 

@@ -3,6 +3,7 @@ tags: [finops, aws, cost-optimization, spot, reserved-instance, savings-plan]
 status: done
 category: "비용&운영(FinOps)"
 aliases: ["AWS 비용 최적화", "Cost Optimization", "FinOps Playbook"]
+verified_at: 2026-07-15
 ---
 
 # AWS 비용 최적화 — 실전 플레이북
@@ -104,7 +105,7 @@ CircleCI, GitHub Actions 같은 SaaS에서 자체 Jenkins + Spot으로 이전한
 **항상 싼 게 아니다.** 트래픽이 충분히 크면 일반 인스턴스가 더 쌀 수 있다.
 
 - **Aurora Serverless v2**: ACU(Aurora Capacity Unit)당 과금. 지원 엔진과 버전에서는 최소 0 ACU와 auto pause를 설정할 수 있고, 미지원 구성은 최소 0.5 ACU가 계속 과금된다. 쿼리 수준이 예측 가능하면 작은 Provisioned 인스턴스 + RI가 더 싸다. 예측 불가능한 급격한 부하만 Serverless 후보.
-- **Fargate**: EC2 자체 관리 부담을 없애주지만 단가가 EC2보다 ~10% 높다. 더 큰 제약은 운영 측면 — (1) 컨테이너 SSH 접근 불가, (2) privileged 권한 불가(Docker 빌드, s3fs 마운트 불가), (3) 커널 파라미터 수정 불가(성능 튜닝 제약). 트래픽이 커지면 이 제약이 비용보다 먼저 걸린다.
+- **Fargate**: 가격은 요청한 vCPU, 메모리, 운영체제, CPU 아키텍처, 추가 스토리지와 실행 시간으로 계산된다. EC2와의 비용 차이는 워크로드 이용률, RI, Savings Plans, Spot 적용과 운영 비용에 따라 달라지므로 AWS Pricing Calculator로 비교한다. privileged 컨테이너는 지원되지 않지만 ECS Exec을 통한 명령 실행은 가능하다.
 - **Lambda**: 요청당 과금이 장점이지만 초당 수천 요청 상시 처리에는 EC2가 저렴할 수 있음
 
 ### Managed → Self-Hosted 판단
@@ -127,13 +128,10 @@ CircleCI, GitHub Actions 같은 SaaS에서 자체 Jenkins + Spot으로 이전한
 
 ## 데이터 전송 — 숨은 요금 폭탄
 
-- **Cross-AZ 트래픽**: GB당 $0.01~0.02
-- **Cross-Region 트래픽**: GB당 $0.02~0.09
-- **Egress to Internet**: 지역에 따라 GB당 $0.08~0.12
-- **NAT Gateway**: 데이터 처리당 GB $0.045 + 시간당 $0.045
+데이터 전송과 NAT Gateway, PrivateLink 요금은 리전, AZ 경계, 서비스, 처리량에 따라 달라진다. 고정 단가 대신 대상 리전 가격표로 계산한다.
 
 ### 감축 전략
-- **VPC Endpoint 사용** — S3, DynamoDB는 **Gateway Endpoint 무료**. 그 외 AWS 서비스는 **Interface Endpoint**(시간당 요금 + GB당 요금, 그래도 NAT보다 쌈)
+- **VPC Endpoint 사용** — S3와 DynamoDB의 Gateway Endpoint는 시간당 요금과 데이터 처리 요금이 없다. Interface Endpoint는 AZ별 시간 요금과 데이터 처리 요금이 있어 서비스 수와 트래픽에 따라 NAT Gateway보다 비쌀 수도 있으므로 비교 계산한다.
 - **내부 통신은 Private IP** — 같은 VPC 안에서 Public DNS로 접근하면 불필요한 NAT 경유
 - **CDN 전진 배치** — Origin 전송을 Edge가 흡수 (→ [[CDN|CloudFront]])
 - **S3 → CloudFront 전송 무료** — 같은 AWS 생태계 유지 시 트래픽 요금 절감
@@ -164,6 +162,10 @@ Inflab 사례가 **연 $300K 절감**을 이룬 핵심은 조직 운영.
 - [The Frugal Architect — AWS re:Invent 2023 / kakao pay 정리](https://tech.kakaopay.com/post/2023-aws-reinvent-2/)
 - [Inflab — 스타트업 AWS 비용 최적화 (연 $300K 절감)](https://tech.inflab.com/20240227-finops-for-startup/)
 - [AWS Blog — 인프랩의 EC2 Spot 기반 Jenkins CI/CD 구축 사례](https://aws.amazon.com/ko/blogs/tech/inflab-ec2-spot-instance/)
+- [How Aurora Serverless v2 works — AWS 공식 문서](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html)
+- [AWS Fargate pricing](https://aws.amazon.com/fargate/pricing/)
+- [Amazon VPC pricing](https://aws.amazon.com/vpc/pricing/)
+- [AWS PrivateLink pricing](https://aws.amazon.com/privatelink/pricing/)
 
 ## 관련 문서
 - [[ECR-Cost-Reduction|ECR Lifecycle Policy로 저장 비용 절감]]

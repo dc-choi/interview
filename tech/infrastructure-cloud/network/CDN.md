@@ -3,6 +3,7 @@ tags: [infrastructure, network, cdn, cloudfront, performance, cache]
 status: done
 category: "Infrastructure - Network"
 aliases: ["CDN", "Content Delivery Network"]
+verified_at: 2026-07-15
 ---
 
 # CDN (Content Delivery Network)
@@ -156,7 +157,7 @@ SPA 배포 시 `index.html`은 항상 최신이 필요하고, 자산(`assets/*.j
 ### 비용 포인트
 
 - **S3 → CloudFront 전송 무료**
-- CloudFront Free Plan 기준 월 100GB 데이터 전송 무료 (계정별, 요금 정책은 변경될 수 있어 운영 전 확인)
+- CloudFront flat-rate Free Plan 기준 월 100GB 데이터 전송 허용량 (계정과 배포의 플랜 자격 조건이 있으므로 운영 전 확인)
 - Invalidation은 월 1,000 경로 무료, 이후 경로당 과금 → 파일명 해시 전략이 비용에도 유리
 
 ## 흔한 실수
@@ -178,6 +179,7 @@ SPA 배포 시 `index.html`은 항상 최신이 필요하고, 자산(`assets/*.j
 
 ## 출처
 - [AWS CloudFront 소개 — 공식 문서](https://docs.aws.amazon.com/ko_kr/AmazonCloudFront/latest/DeveloperGuide/Introduction.html)
+- [CloudFront flat-rate pricing plans — AWS 공식 문서](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/flat-rate-pricing-plan.html)
 - [CloudFront + S3로 정적 웹사이트 배포하기 — 요즘IT](https://yozm.wishket.com/magazine/detail/1360/)
 
 ## 관련 문서

@@ -3,6 +3,7 @@ tags: [security, hashing, cryptography]
 status: done
 category: "보안(Security)"
 aliases: ["Password Hashing", "패스워드 해싱"]
+verified_at: 2026-07-15
 ---
 
 # Password Hashing
@@ -24,7 +25,7 @@ aliases: ["Password Hashing", "패스워드 해싱"]
 입력이 같으면 출력이 같다는 성질 때문이 아니라, 서로 다른 입력이 같은 버킷이나 해시값으로 몰리는 충돌을 악용한다.
 패스워드 저장용 암호화 해시의 충돌 저항성과는 별개의 운영 리스크로 봐야 한다.
 
-## 사용하면 안 되는 알고리즘
+## 알고리즘 선택 주의사항
 
 | 알고리즘 | 이유 |
 |---|---|
@@ -60,6 +61,10 @@ aliases: ["Password Hashing", "패스워드 해싱"]
 - JWT 자체는 토큰 포맷일 뿐
 - 실제 고민 포인트: 토큰을 어떻게 보관할 것인가
 - OTP에 입력 횟수 제한이 없으면 위험
+
+## 출처
+
+- [Password Storage Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 
 ## 관련 문서
 - [[CSRF|CSRF Protection]]

@@ -1,6 +1,7 @@
 ---
 tags: [database, rdbms, lock, concurrency]
 status: done
+verified_at: 2026-07-15
 category: "Data & Storage - RDB"
 aliases: ["DB Lock", "Lock", "락"]
 ---
@@ -57,10 +58,12 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 
 | Lock | 설명 | 발생 상황 |
 |------|------|----------|
-| **Record Lock** | 인덱스 레코드 하나에 거는 lock | PK/유니크 인덱스로 정확히 1행 조회 |
-| **Gap Lock** | 인덱스 레코드 사이의 "간격"을 잠금 (INSERT 방지) | RR에서 범위 조건 조회 시 |
-| **Next-Key Lock** | Record Lock + Gap Lock 결합 | InnoDB RR의 기본 lock 단위. Phantom Read 방지 |
+| **Record Lock** | 인덱스 레코드 하나에 거는 lock | locking read, UPDATE, DELETE가 유니크 인덱스의 고유 조건으로 1행을 찾을 때 |
+| **Gap Lock** | 인덱스 레코드 사이의 "간격"을 잠금 (INSERT 방지) | RR의 locking read, 범위 UPDATE/DELETE가 범위 또는 비고유 인덱스를 스캔할 때 |
+| **Next-Key Lock** | Record Lock + Gap Lock 결합 | 같은 조건에서 스캔한 레코드와 그 앞 간격을 함께 잠가 phantom INSERT를 막을 때 |
 | **Insert Intention Lock** | Gap Lock의 특수 형태. 같은 gap의 다른 위치 INSERT는 서로 차단하지 않음 | INSERT 시 자동 획득 |
+
+여기서 조회는 `SELECT ... FOR UPDATE`나 `SELECT ... FOR SHARE` 같은 **locking read**를 뜻한다. RR과 RC의 일반 `SELECT`는 consistent nonlocking read로 스냅샷을 읽으며 Record, Gap, Next-Key Lock을 잡지 않는다. 단, `SERIALIZABLE`에서는 일반 SELECT도 공유 next-key lock을 잡을 수 있다.
 
 ### 기타 Locks
 
@@ -103,6 +106,10 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 3. **NOWAIT 사용**: lock 대기 자체를 하지 않으므로 상호 대기 상황 회피
 4. **적절한 인덱스**: 인덱스 없으면 풀스캔 → 불필요한 행까지 lock → 경합 증가
 5. **트랜잭션 안에서 외부 호출 금지**: API 호출, 파일 I/O 등은 트랜잭션 밖에서
+
+## 출처
+- [MySQL 8.4 Reference Manual — Locks Set by Different SQL Statements in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html)
+- [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
 
 ## 관련 문서
 - [[Transactions|트랜잭션]]

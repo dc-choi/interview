@@ -3,6 +3,7 @@ tags: [infrastructure, aws, cloudfront, cdn, cache, edge]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["CloudFront", "AWS CloudFront", "Amazon CloudFront"]
+verified_at: 2026-07-15
 ---
 
 # Amazon CloudFront
@@ -99,7 +100,7 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 추가 요금 포인트:
 - 요청 수 + Edge → 사용자 아웃바운드 전송량
 - **AWS Origin → CloudFront 무료** (S3, ELB, API Gateway)
-- 월 100GB 무료 전송 (CloudFront Free Plan 기준, 운영 전 최신 요금 확인)
+- 월 100GB 데이터 전송 허용량 (CloudFront flat-rate Free Plan 기준, 플랜 자격 조건과 최신 요금은 운영 전 확인)
 - Invalidation 1,000 경로/월 무료
 
 ## 보안 통합
@@ -115,7 +116,7 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 | 항목 | CloudFront Functions | Lambda@Edge |
 |------|----------------------|-------------|
 | 실행 위치 | Edge (최말단) | Regional Edge |
-| 언어 | JavaScript (ES5 서브셋) | Node.js, Python |
+| 언어 | JavaScript runtime 2.0 (ES5.1 준수, ES6 이후 일부 기능 지원) | Node.js, Python |
 | 최대 실행 시간 | 1ms | 5초(viewer), 30초(origin) |
 | 메모리 | 2MB | 최대 10GB |
 | 용도 | 헤더 조작, URL 재작성, 간단한 인증 | 이미지 가공, A/B 테스트, 복잡한 인증, SSR |
@@ -145,6 +146,8 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 
 ## 출처
 - AWS SAA C03 학습 자료 — CloudFront
+- [CloudFront flat-rate pricing plans — AWS 공식 문서](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/flat-rate-pricing-plan.html)
+- [CloudFront Functions JavaScript runtime 2.0 — AWS 공식 문서](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/functions-javascript-runtime-20.html)
 
 ## 관련 문서
 - [[CDN|CDN 일반 개념, S3+CloudFront 정적 배포]]

@@ -1,6 +1,7 @@
 ---
 tags: [runtime, jvm, java, classloader, bytecode, jit, runtime-data-area]
 status: done
+verified_at: 2026-07-15
 category: "OS&런타임(OS&Runtime)"
 aliases: ["JVM Architecture", "JVM 구조", "ClassLoader", "Runtime Data Area"]
 ---
@@ -164,6 +165,8 @@ JVM은 **필요한 순간까지 로딩을 미룬다**.
 - "같은 클래스라도 다른 ClassLoader면 다른 타입"이 의미하는 바
 
 ## 출처
+- [JEP 410 — Remove the Experimental AOT and JIT Compiler (OpenJDK)](https://openjdk.org/jeps/410)
+- [JEP 454 — Foreign Function & Memory API (OpenJDK)](https://openjdk.org/jeps/454)
 - [daddyprogrammer — 기술 용어 및 개념 정리](https://daddyprogrammer.org/post/2058/tech-terms-concept/)
 
 ## 관련 문서
