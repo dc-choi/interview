@@ -14,7 +14,8 @@ aliases: ["Yunhoe 1st Tech Extra", "윤회 1차 기술 질문 보강"]
 
 ## 1. Node.js / V8 / 이벤트 루프
 
-- **Q. 이벤트 루프 단계?** → timers → pending callbacks → idle/prepare → poll → check(setImmediate) → close. **마이크로태스크(Promise, queueMicrotask)는 각 단계 사이에 즉시 비움**, `process.nextTick`은 그보다 먼저
+- **Q. 이벤트 루프 단계?** → 개념적으로 timers → pending callbacks → idle/prepare → poll → check(setImmediate) → close callbacks로 설명한다. Node.js 20(libuv 1.45.0)부터 timers는 poll 전후가 아니라 poll 뒤에서만 처리되므로, 이 목록을 고정된 반복 시작 순서로 암기하면 안 된다. Promise와 `queueMicrotask`는 각 JS 콜백이 끝나는 경계에서 처리된다.
+  - **꼬리**: `setTimeout(0)`과 `setImmediate()`의 상대 순서는 실행 문맥에 따라 달라질 수 있다. CommonJS에서는 `process.nextTick` 큐가 Promise microtask보다 먼저지만 ESM 초기 평가는 이미 microtask 안에서 실행돼 상대 순서가 달라질 수 있다.
 - **Q. CPU bound 작업 들어오면?** → 메인 스레드 블로킹 → Event Loop Lag↑ → 모든 요청 지연. 해법: **Worker Thread**(파일 단위 격리, 메시지 패싱), `child_process`(별도 V8), 큐로 외부 워커에 위임 (트라이포드랩 SQS 워커 패턴)
 - **Q. 메모리 누수 의심되면?** → `--inspect` + Chrome DevTools 힙 스냅샷 3장 비교, `clinic.js`, `node --heap-prof`. 흔한 원인: 리스너 누수, 글로벌 캐시 무한 증가, Closure가 큰 객체 잡고 있음
 - **꼬리 패턴**: "Event Loop Lag 어디서 보나?" → Prometheus `nodejs_eventloop_lag_seconds` (prom-client), Grafana 임계 100ms로 알림 — 트라이포드랩 실제 운영
@@ -111,3 +112,8 @@ aliases: ["Yunhoe 1st Tech Extra", "윤회 1차 기술 질문 보강"]
 - [[Interview-Prep-Yunhoe-1st-Tech|예상 기술 질문 (메인 — 도메인 매핑 깊이)]]
 - [[Interview-Prep-Yunhoe-1st-Lead-Questions|백엔드 리드, 컬처핏, 역질문, 체크리스트]]
 - [[My-Tech-Cards|마스터 기술 카드 8개 + vault 카테고리 인덱스]] — 답변 보강 시 마스터로 가서 vault 서치
+
+## 출처
+
+- [The Node.js Event Loop — Node.js 공식 문서](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)
+- [Process: queueMicrotask와 process.nextTick — Node.js 공식 문서](https://nodejs.org/api/process.html#when-to-use-queuemicrotask-vs-processnexttick)

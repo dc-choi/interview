@@ -17,7 +17,7 @@ JD에 "우대"로 적힌 항목 중 약/중 매칭은 면접에서 깊이 들어
 - REST 원칙: 자원 중심 URI, HTTP 메서드 의미 일관성, 무상태성, HATEOAS는 실무에서는 거의 안 씀
 - 멱등성: GET, PUT, DELETE 멱등, POST 비멱등. 결제나 교환 같은 비멱등 작업은 **Idempotency-Key 헤더**로 멱등 보장
 - 버전 관리: URI(`/v1/...`) vs 헤더(`Accept: application/vnd.api+json;version=1`). URI 방식이 단순하고 가시성 높음
-- 에러 응답: HTTP 상태 코드 + RFC 7807 (Problem Details for HTTP APIs) 권장
+- 에러 응답: HTTP 상태 코드 + RFC 9457 (Problem Details for HTTP APIs) 권장
 - 꼬리: "REST vs GraphQL vs gRPC" — 외부 공개 API는 REST(접근성), 내부 마이크로서비스는 gRPC(성능, 타입), 프론트 BFF는 GraphQL(over-fetch 회피)
 
 ---
@@ -64,10 +64,10 @@ JD에 "우대"로 적힌 항목 중 약/중 매칭은 면접에서 깊이 들어
 | 기준 | SQS | Kafka | RabbitMQ |
 |------|-----|-------|----------|
 | 모델 | 큐(point-to-point) | 로그(파티션 기반) | Exchange + Queue (라우팅) |
-| 순서 보장 | FIFO 큐만 (300 TPS 제한) | 파티션 내 보장 | 큐 내 FIFO |
+| 순서 보장 | FIFO 큐에서 MessageGroupId 단위 보장. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인 | 파티션 내 보장 | 큐 내 FIFO |
 | 메시지 보관 | 최대 14일 | 기간 설정(영구도 가능) | 소비 시 삭제 |
 | 리플레이 | 불가 | 오프셋 리셋으로 가능 | 불가 |
-| 처리량 | 표준 무제한 | 매우 높음 (수십만~수백만 TPS) | 중간 |
+| 처리량 | 표준 큐는 매우 높음 | 매우 높음 (수십만~수백만 TPS) | 중간 |
 | 도입 비용 | 관리형, 거의 없음 | 클러스터 운영 필요(MSK 권장) | 단일 노드 단순, 클러스터링 복잡 |
 
 **팝팝에서 Kafka가 필요해질 시점**

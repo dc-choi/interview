@@ -3,6 +3,7 @@ tags: [messaging, aws, sqs, decoupling, saa-c03]
 status: index
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["SQS", "Amazon SQS", "Simple Queue Service"]
+verified_at: 2026-07-15
 ---
 
 # Amazon SQS (Simple Queue Service)
@@ -25,7 +26,7 @@ AWS 관리형 메시지 큐 서비스. 분산 시스템 간 비동기 통신의 
 
 | 항목 | Standard | FIFO |
 |------|----------|------|
-| 처리량 | 거의 무제한 | 기본은 API action 300 TPS, 배치 시 3,000 messages/s. High throughput FIFO는 리전별 한도가 더 높으므로 Service Quotas 확인 |
+| 처리량 | 거의 무제한 | 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지. High throughput FIFO는 리전별 API 할당량 적용 |
 | 순서 보장 | Best-effort (보장 안 됨) | MessageGroupId 단위 엄격한 FIFO |
 | 메시지 전달 | At-least-once (중복 가능) | 5분 deduplication window 안의 중복 enqueue 제거. 소비자 처리 자체는 실패, 재시도 때문에 멱등성이 필요 |
 | 큐 이름 | 제한 없음 | `.fifo` 접미사 필수 |
@@ -150,7 +151,7 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 
 - AWS Decoupling 3종 = SQS(Queue) / SNS(Pub-Sub) / Kinesis(Real-time Streaming) — 모델 차이로 구분
 - **Polling 기반** vs SNS의 **Push 기반** 대비
-- Standard: 무제한 처리량 + at-least-once + 순서 미보장 / FIFO: MessageGroupId 단위 순서 + deduplication window + 처리량은 일반 FIFO와 High throughput FIFO 한도 구분
+- Standard: 매우 높은 처리량 + at-least-once + 순서 미보장 / FIFO: MessageGroupId 단위 순서 + deduplication window + 처리량은 일반 FIFO와 High throughput FIFO 한도 구분
 - 메시지 크기 1 MiB, 보존 4~14일(기본 4일), 가시성 타임아웃 기본 30초에서 최대 12시간
 - 처리 지연 시 `ChangeMessageVisibility`로 가시성 연장 → 중복 소비 방지
 - Long Polling 최대 20초 — 빈 응답, API 호출 비용 감소
@@ -158,6 +159,8 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 - KMS로 저장 시 암호화, HTTPS로 전송 중 암호화, IAM Policy로 API 접근 통제
 
 ## 출처
+- [Amazon SQS message quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+- [Amazon SQS endpoints and quotas — AWS 공식 문서](https://docs.aws.amazon.com/general/latest/gr/sqs-service.html)
 - [채널톡 — AWS SQS 도입기](https://channel.io/ko/blog/tech-backend-aws-sqs-introduction)
 - [SK DEVOCEAN — SQS 연재 (소개, Terraform, Spring JMS, Spring Cloud)](https://devocean.sk.com/experts/techBoardDetail.do?ID=163294)
 - AWS SAA C03 학습 자료 (로컬)
