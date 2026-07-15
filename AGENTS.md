@@ -31,6 +31,7 @@ codex mcp add obsidian -- npx -y obsidian-mcp /Users/mark/myown/interview
 - For repos under `~/myown/`, verify git identity before committing or pushing.
 - Do not store third-party PII, contact details, or personal compensation numbers in the vault.
 - Do not use middle dots anywhere in new or edited text.
+- For volatile technical documents, verify primary sources and record `verified_at: YYYY-MM-DD` only after checking the content.
 - Avoid quote-mark emphasis in external-facing Korean writing.
 - Keep answer bodies in `fit/interview/common/`; use `prep/` for guides and meta material.
 - For job-posting discovery, prefer platform filter URLs over ad hoc web search.
