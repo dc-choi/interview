@@ -25,6 +25,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## Kubernetes
 - [x] [[K8s-Resource-Right-Sizing|Resource Right-Sizing (P95, 버퍼, 역산식, 컴포넌트 차등, 롤백 기준)]]
+- [x] [[Container-Memory-Metrics|컨테이너 메모리 지표 해석 (usage = RSS + page cache, working set, OOM 없는 99%, 고원 vs 우상향, cgroup 실측)]]
 
 ## 미작성 — Kubernetes
 - [ ] Pod / Deployment / Service / Ingress (작성 예정: `K8s-Pod-Deployment`)

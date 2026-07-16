@@ -105,7 +105,7 @@ distroless는 `kubectl exec` 디버깅이 어려우므로 디버그 태그(`:deb
 Jib이 이미지를 만들어도 **JVM 자체의 컨테이너 대응**은 별도 고려 필요.
 
 - **메모리 인식**: JDK 10+ 기본 `UseContainerSupport` 활성 — cgroup 메모리 한도 인식
-- **`-XX:MaxRAMPercentage=75.0`**: 컨테이너 메모리의 비율로 힙 설정 (고정 `-Xmx`보다 유연)
+- **`-XX:MaxRAMPercentage=75.0`**: 컨테이너 메모리의 비율로 힙 설정 (고정 `-Xmx`보다 유연) — 상한 비율은 서비스 실사용에 맞게 조정하고 metaspace, page cache 같은 힙 밖 소비를 남겨둔다 ([[JVM-Container-Memory]])
 - **GC 선택**: 단기 작업은 Serial/Parallel, 장기 서비스는 G1, ZGC
 - **기동 속도**: CDS(Class Data Sharing), AOT(GraalVM native image)로 콜드 스타트 단축
 

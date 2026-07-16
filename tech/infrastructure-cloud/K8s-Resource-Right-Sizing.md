@@ -187,6 +187,7 @@ CPU 사용률 + Throttling 두 쿼리 조합 → 조치 방향:
 
 - [[Container-Monitoring|컨테이너 모니터링]] — cAdvisor, node_exporter, Prometheus 메트릭 수집 구조
 - [[Metric-Layer-Mismatch|메트릭 측정 레이어 함정]] — 같은 CPU도 측정 레이어에 따라 다른 값
+- [[Container-Memory-Metrics|컨테이너 메모리 지표 해석]] — usage 성분 분해 (RSS, page cache), working set의 의미
 - [[Logs-vs-Metrics|로그 vs 메트릭 vs 추적]] — 카디널리티, 보관, 알림 설계 원칙
 
 ## 출처
