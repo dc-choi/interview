@@ -132,5 +132,6 @@ aliases: ["Container Monitoring", "컨테이너 모니터링", "Docker 모니터
 - [[Structured-Logging|Structured logging]]
 - [[Log-Pipeline|Log pipeline]]
 - [[Metric-Layer-Mismatch|메트릭 측정 레이어의 함정]]
+- [[Container-Memory-Metrics|컨테이너 메모리 지표 해석 (usage 성분 분해, working set, page cache)]]
 - [[Correlation-ID|Correlation ID / Trace ID]]
 - [[Docker|Docker]]

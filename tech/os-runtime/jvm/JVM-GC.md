@@ -95,7 +95,7 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 
 ### 힙 크기
 
-- `-Xms` 초기, `-Xmx` 최대. 보통 같은 값으로 → 런타임 리사이즈 비용 제거
+- `-Xms` 초기, `-Xmx` 최대. 보통 같은 값으로 → 런타임 리사이즈 비용 제거 (전용 서버, 지연 민감 기준. 컨테이너에서 커밋 풋프린트와 메모리 지표가 중요하면 Initial을 낮춰 분리하기도 한다 — [[JVM-Container-Memory]])
 - 너무 크면 Full GC가 드물지만 **한 번 돌 때 길어짐** → 지연 민감 서비스는 중간 크기 + G1/ZGC
 
 ### 세대 비율
@@ -158,6 +158,7 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 
 ## 관련 문서
 - [[JVM-Architecture|JVM 아키텍처 (ClassLoader, Runtime Data Area, JIT)]]
+- [[JVM-Container-Memory|JVM 컨테이너 메모리 (used vs committed, RAMPercentage, G1 uncommit)]]
 - [[GC-Algorithm|GC 알고리즘 이론 (Tri-color Marking, Incremental, Concurrent, Work Stealing)]]
 - [[Java-Backend-Fundamentals|Java 백엔드 면접 기초]]
 - [[V8|V8 엔진 (JIT, Generational GC)]]
