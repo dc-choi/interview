@@ -116,6 +116,7 @@ aliases: ["Developer Role AI Era", "AI 시대 개발자 역할"]
 - [비개발자가 한 달 동안 풀스택으로 개발하면서 배운 것 — NAVER D2](https://d2.naver.com/helloworld/0107009)
 
 ## 관련 문서
+- [[AI-Leverage-Small-Teams|AI 시대 작은 팀의 구조적 레버리지]] — 구현 비용 변화와 문제 정의 중심의 팀 구조
 - [[Software-3-0|Software 3.0]]
 - [[AX-Transformation|AX 조직 전환]]
 - [[Harness-Engineering|하네스 엔지니어링]]
