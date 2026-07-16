@@ -7,7 +7,7 @@ aliases: ["Communication"]
 
 # 커뮤니케이션(Communication)
 
-멘토링, 채용, 팀 문화, 공동 리더십, 위기 경영, 협상 — 사람과 조직을 다루는 기술.
+멘토링, 채용, 팀 운영, 팀 문화, 공동 리더십, 위기 경영, 협상 — 사람과 조직을 다루는 기술.
 
 ## 목차
 - [x] [[hiring|채용과 면접 판별 (Hiring-Interview, Competence-Identification, Hiring-Under-Uncertainty)]] — 서브폴더

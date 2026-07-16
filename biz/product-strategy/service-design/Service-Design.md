@@ -12,7 +12,7 @@ aliases: ["Service Design", "서비스 설계"]
 ## 목차
 - [x] [[Service-Design-Principles|서비스 설계 10원칙 (GOV.UK)]] — 사용자 니즈 우선, 적게 하라, 포용 설계, 디자인 시스템, 명사보다 동사
 - [x] [[Gamification|게이미피케이션]] — 5가지 적용 유형, 인증 뱃지, 보상 설계, 다크 패턴 경계
-- [x] [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]] — 리텐션 vs 조작, 윤리 경계, 4가지 판별 질문
+- [x] [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]] — 리텐션 vs 조작, 사용자의 끝낼 자유, 자발적 재방문, 4가지 판별 질문
 - [x] [[Pagination-Patterns|페이지네이션 UX 패턴]] — Pagination, Load More, Infinite Scroll, SEO, 접근성
 - [x] [[Visual-Hierarchy|시각적 위계]] — 크기, 색상, 질감, 공간감, 형태 (폰 레스토프 효과)
 - [x] [[User-Guidance-Patterns|사용자 가이드 제공 패턴]] — 3가지 상황, 5가지 방식, 과업 트리거 설계
