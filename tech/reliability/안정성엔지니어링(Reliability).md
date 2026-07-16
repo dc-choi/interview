@@ -13,6 +13,7 @@ aliases: ["안정성엔지니어링(Reliability)", "Reliability Engineering"]
 
 ## Checklist
 - [x] [[SRE|SRE (규모와 신뢰성의 난제, 비상 대응 체계, 위험 탐지 지표, 시간 압축, 도메인 전문성)]]
+- [x] [[Failure-Evolution-Under-Load|부하에 따른 장애 진화 (단일 원인, 용량/런타임, 상호작용 3단계, 재시도 증폭기, Degradation 사다리, 돈으로 시간 사고 엔지니어링으로 회수)]]
 - [x] [[N-1-Capacity-Headroom|N-1 가용량 헤드룸 (최대가용배수 vs 부하증가배수, 임계 상황 사전 경보)]]
 - [x] [[External-Service-Resilience|외부 서비스 장애 대응 (Timeout, Bulkhead, Circuit Breaker 통합)]]
 - [x] [[External-API-Integration-Patterns|외부 API 연동 실전 패턴 (조회형, 거래형, 상태머신, Saga, 대사)]]
