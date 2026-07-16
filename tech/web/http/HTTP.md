@@ -7,7 +7,7 @@ aliases: ["HTTP"]
 
 # HTTP & API
 
-HTTP 진화, 상태 코드, Content-Type, REST, GraphQL, gRPC, Rate Limit, 분할 전송.
+HTTP 진화, 메서드 의미, 상태 코드, Content-Type, REST, GraphQL, gRPC, Rate Limit, 분할 전송.
 
 ## HTTP 버전
 - [x] [[versions|HTTP 버전 (HTTP-Seminar 진화 타임라인, HTTP/2, HTTP/3 QUIC)]] — 서브폴더
@@ -19,6 +19,7 @@ HTTP 진화, 상태 코드, Content-Type, REST, GraphQL, gRPC, Rate Limit, 분�
 - [x] [[HTTP-Chunked-Transfer|HTTP 분할 전송 (Transfer-Encoding: chunked, 스트리밍, SSE/LLM 응답)]]
 - [x] [[URI-URL-URN|URI, URL, URN 차이]]
 - [x] [[Idempotency|HTTP 멱등성 (Idempotent Methods, Idempotency Key 패턴)]]
+- [x] [[HTTP-QUERY-Method|HTTP QUERY 메서드 (RFC 10008, 안전한 본문 질의, 캐시와 재시도, Accept-Query)]]
 
 ## API
 - [x] [[api|API (api/ 서브폴더) — REST, GraphQL, gRPC, 스타일 비교, 타입 안전 API, 문서화, 실무 컨벤션]]
