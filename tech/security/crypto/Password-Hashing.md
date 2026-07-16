@@ -8,6 +8,12 @@ verified_at: 2026-07-15
 
 # Password Hashing
 
+## 저장과 검증의 기본 흐름
+
+비밀번호는 평문이 아니라 단방향 해시로 저장한다. 해시는 평문으로 복원할 수 없으므로 DB가 유출돼도 원본 비밀번호가 바로 드러나지 않고, 같은 ID와 비밀번호를 재사용하는 다른 서비스로의 2차 피해(credential stuffing)를 줄인다.
+
+로그인 검증은 복호화가 아니라 재계산 비교다. 사용자가 입력한 값을 저장할 때와 같은 방식으로 해싱해 DB의 해시와 일치하는지 확인한다. salt를 쓰는 현대 패스워드 해싱 함수(Argon2id, bcrypt 등)는 salt가 해시 문자열에 함께 저장되므로, 라이브러리의 verify 함수가 그 salt로 재계산해 비교한다.
+
 ## 해시 vs 암호화 해시
 
 현대 암호는 보통 한 방향 함수, 이산로그, 소인수분해, 격자 문제처럼 특정 계산이 현실적으로 어렵다는 가정에 기대며, 단순히 NP 문제를 활용한다고 설명하면 부정확하다.
@@ -65,6 +71,7 @@ verified_at: 2026-07-15
 ## 출처
 
 - [Password Storage Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
+- [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
 
 ## 관련 문서
 - [[CSRF|CSRF Protection]]

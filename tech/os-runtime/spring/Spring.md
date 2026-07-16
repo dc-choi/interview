@@ -30,6 +30,7 @@ AOP를 사용하면 비즈니스 로직과 공통 관심사를 분리할 수 있
 - [[Spring-MVC-Essentials|Spring MVC Essentials (@Component 계열, Filter vs Interceptor, WAS vs Web Server, Tomcat)]]
 - [[Spring-Boot-Essentials|Spring Boot Essentials (AutoConfiguration, Starter, Embedded, Actuator)]]
 - [[Spring-Data-JPA-Essentials|Spring Data JPA (JPA vs Hibernate vs SDJ, ddl-auto, ID 생성, isNew/Persistable)]]
+- [[Spring-Authorization-Server|Spring Authorization Server (OAuth2 인가 서버, RegisteredClient, 필터 체인 분리, JWKS, consent)]]
 - [[Spring-Batch-Essentials|Spring Batch (Job/Step/Chunk, Job Parameter와 멱등성, Reader 성능, JDBC 배치, Jenkins 운영, Scheduler vs Quartz)]]
 - [[JPA-Persistence-Context|JPA 영속성 컨텍스트, N+1 (1차 캐시, Dirty Checking, Fetch Join)]]
 

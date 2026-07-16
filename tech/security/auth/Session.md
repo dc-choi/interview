@@ -32,6 +32,8 @@ HTTP는 요청과 응답의 반복이다. 클라이언트가 문서를 요청하
 
 **로그인 상태 = 브라우저가 가진 쿠키 값과 서버가 가진 세션 정보가 맞아떨어질 때 성립한다.**
 
+user_id 같은 식별자를 쿠키에 직접 담지 않고 추측 불가능한 세션 ID로만 간접 참조한다 — 쿠키 값은 클라이언트가 편집할 수 있기 때문이다. 상세는 [[Cookie]].
+
 ## 매 요청의 로그인 판단
 
 서버는 매 요청마다 쿠키를 확인한다. 유효한 세션 ID가 있으면 로그인 사용자로, 없거나 값이 틀리거나 만료됐으면 비로그인으로 처리한다. HTTP는 Stateless지만 웹 서비스는 이 구조로 Stateful처럼 동작한다.
@@ -68,6 +70,7 @@ HTTP는 요청과 응답의 반복이다. 클라이언트가 문서를 요청하
 ## 출처
 
 - [HTTP Stateless 로그인 판단 원리 — YouTube 강의](https://www.youtube.com/watch?v=K00xh3zsof0&list=PLXvgR_grOs1DEoZFABFCjo7dsXt1BhVih&index=36)
+- [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
 
 ## 관련 문서
 

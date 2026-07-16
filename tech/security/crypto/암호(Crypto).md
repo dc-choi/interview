@@ -10,7 +10,7 @@ aliases: ["Crypto", "Cryptography"]
 패스워드 해싱, 공개키 암호, RSA — 암호화 기초와 실전.
 
 ## 목차
-- [x] [[Password-Hashing|패스워드 해싱 (argon2, Salt, TLS)]]
-- [x] [[Public-Key-Cryptography|공개키 암호, 비대칭키 (대칭/비대칭 하이브리드, PKI, MITM)]]
+- [x] [[Password-Hashing|패스워드 해싱 (저장/검증 흐름, argon2, Salt, TLS)]]
+- [x] [[Public-Key-Cryptography|공개키 암호, 비대칭키 (기초 용어, 단방향/양방향 분류, 대칭/비대칭 하이브리드, PKI, MITM)]]
 - [x] [[RSA-Encryption|RSA 암호화 (소인수분해 난제, 키 생성, 암복호, 서명, OAEP/PSS 패딩)]]
 - [x] [[ACME-Protocol|ACME Protocol, Let's Encrypt (HTTP-01/DNS-01 챌린지, cert-manager, ACM 비교)]]

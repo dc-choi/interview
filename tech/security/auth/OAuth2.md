@@ -67,6 +67,30 @@ Refresh Token은 재사용 공격을 막기 위해 [[Refresh-Token-Rotation|Rota
 5. **API Access** — `Authorization: Bearer <access_token>`으로 Resource Server 호출
 6. **Token Refresh** — Access Token 만료 시 Refresh Token으로 새 Access Token 발급
 
+## 구현 관점 — 두 개의 HTTP 왕복
+
+Authorization Code 흐름을 코드로 구현하면 결국 두 왕복이다.
+
+1. **front-channel (브라우저 리다이렉트)** — Client는 사용자를 인가 서버의 `/authorize`로 보내는 링크만 만든다 (`response_type=code&client_id=...&redirect_uri=...&scope=...`). 로그인과 동의(consent)는 인가 서버 화면에서 일어나므로 Client는 비밀번호를 볼 수 없다. 동의 화면은 요청된 scope 목록을 보여주고 승인 결과를 state와 함께 인가 서버로 되돌린다.
+2. **back-channel (서버 간)** — redirect_uri로 돌아온 code를 Client 서버가 `POST /token`으로 교환한다. 본문은 `application/x-www-form-urlencoded`(`grant_type=authorization_code`, `code`, `redirect_uri`)이고, 응답은 JSON(`access_token`, OIDC면 `id_token`, 허용된 경우 `refresh_token`). 이후 access_token을 `Authorization: Bearer`로 리소스 API에 첨부한다.
+
+### 토큰 엔드포인트의 클라이언트 인증
+
+| 방식 | 자격 전달 위치 | 비고 |
+|---|---|---|
+| client_secret_basic | `Authorization: Basic base64(client_id:client_secret)` 헤더 | RFC 6749 §2.3.1이 인가 서버에 지원을 요구하는 기본 |
+| client_secret_post | form body의 `client_id`, `client_secret` 필드 | RFC상 차선(NOT RECOMMENDED)이지만 카카오 등 실제 제공자가 흔히 사용 |
+
+제공자마다 지원 방식이 다르므로 연동 시 해당 제공자 문서를 확인한다.
+
+### 학습용 코드에서 흔히 생략되는 것 (프로덕션 전 체크)
+
+- `state` 검증 생략 → Login CSRF에 노출
+- PKCE 생략 → 공개 클라이언트의 code 탈취 방어 없음
+- access_token을 화면과 로그에 노출 → 실서비스는 토큰을 서버 세션 뒤로 숨기거나 HttpOnly 쿠키로 관리
+
+인가 서버 쪽 구현(Spring 기준 등록부, 동의 화면, 토큰 서명)은 [[Spring-Authorization-Server]].
+
 ## 핵심 보안 파라미터
 
 - **`state`** — CSRF 방지. 요청 생성 시 난수 → 콜백에서 동일한지 검증
@@ -111,12 +135,16 @@ Refresh Token은 재사용 공격을 막기 위해 [[Refresh-Token-Rotation|Rota
 - 도메인 전체 위임의 리스크와 사용자별 토큰 + 최소 스코프 설계
 
 ## 출처
+- [RFC 6749 — The OAuth 2.0 Authorization Framework (§2.3.1 클라이언트 인증)](https://www.rfc-editor.org/rfc/rfc6749)
 - [Tecoble — OAuth2.0 이해하기](https://tecoble.techcourse.co.kr/post/2021-07-10-understanding-oauth/)
 - [GA가 AI와 함께 만든 오피스 좌석 배치도 — 아임웹 기술 블로그](https://tech.imweb.me/posts/ga-built-office-seatmap/)
+- [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
+- [dingco-web-security — dingcodingco (GitHub, 강의 실습 소스)](https://github.com/dingcodingco/dingco-web-security)
 
 ## 관련 문서
 - [[JWT|JWT]]
 - [[Session|Session]]
+- [[Spring-Authorization-Server|Spring Authorization Server (인가 서버 구현)]]
 - [[Refresh-Token-Rotation|Refresh Token Rotation]]
 - [[Public-Key-Cryptography|공개키 암호]]
 - [[HTTPS-TLS|HTTPS, TLS Handshake]]
