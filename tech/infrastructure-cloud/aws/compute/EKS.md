@@ -55,7 +55,7 @@ Fargate Profile은 **selector**(namespace + label)에 매치되는 Pod를 자동
 
 ### Service Mesh
 
-App Mesh(AWS) 또는 Istio, Linkerd 직접 설치. mTLS, 트래픽 분할, 재시도, 서킷 브레이커.
+App Mesh(AWS) 또는 Istio, Linkerd 직접 설치. mTLS, 트래픽 분할, 재시도, 서킷 브레이커. Istio 배포 방식(sidecar vs ambient)은 [[Istio-Ambient-Mode]] 참조.
 
 ## 권한 — IAM Roles for Service Accounts (IRSA)
 

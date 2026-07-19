@@ -38,6 +38,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [x] [[Cardinality|카디널리티 관리 (라벨 폭발, 신호별 자리, route 템플릿화)]]
 - [x] [[Thanos|Thanos (장기 보존, 글로벌 뷰/HA, 다운샘플링)]]
 - [x] [[Long-Term-Retention|장기 보존 (hot/warm/cold, 다운샘플링, 보존 기준)]]
+- [x] [[Envoy-XDS-Disconnected-Detection|Envoy xDS 단절 탐지 (readiness가 못 보는 control plane 단절, connected_state flapping, 지속 조건 알람)]]
 
 ## Tracing
 - [x] [[OpenTelemetry|OpenTelemetry + 분산 트레이싱 + Trace context propagation (Trace/Span, W3C traceparent, 큐 전파, 샘플링)]]
