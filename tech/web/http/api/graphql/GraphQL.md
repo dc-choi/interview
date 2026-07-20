@@ -1,24 +1,28 @@
 ---
 tags: [web, network, graphql, api, http]
 status: index
-verified_at: 2026-07-15
+verified_at: 2026-07-20
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL"]
 ---
 
 # GraphQL
 
-GraphQL은 Facebook이 만든 **API 쿼리 언어이자 런타임**이다. 클라이언트가 필요한 데이터의 모양을 직접 명세하면 서버가 그 모양대로 응답한다. REST의 오버페칭, 언더페칭, 여러 라운드트립 문제를 한 번의 요청으로 해결하려는 접근.
+GraphQL은 Facebook이 만든 **API 쿼리 언어이자, 데이터에 대해 정의한 타입 시스템으로 쿼리를 실행하는 서버사이드 런타임**이다. 클라이언트가 필요한 데이터의 모양을 직접 명세하면 서버가 그 모양대로 응답한다. REST의 오버페칭, 언더페칭, 여러 라운드트립 문제를 한 번의 요청으로 해결하려는 접근.
+
+**스펙이지 특정 구현체가 아니다** — 2015년 스펙이 오픈소스로 공개된 뒤 여러 언어에서 서버 구현 라이브러리와 클라이언트 라이브러리로 각각 구현되어 있다. 특정 데이터베이스나 스토리지 엔진에 묶이지 않고 기존 코드와 데이터 위에 얹힌다 (조합 계층으로서의 위치는 [[GraphQL-Architecture-Map|지도]] 그림 1).
 
 ## 심화 문서 (graphql/ 클러스터)
 
 - [[GraphQL-Architecture-Map|전체 그림 지도]] — 요청 라이프사이클(parse→validate→execute→응답), N+1과 운영 관심사의 자리
 - [[GraphQL-Schema-Types|타입 시스템]] — scalar, enum, interface, union, input, List와 Non-Null 수식자
-- [[GraphQL-Schema-Design|스키마 설계]] — nullability 전략, 버전 없는 진화, mutation 모양, 비즈니스 로직 계층
+- [[GraphQL-Schema-Design|스키마 설계]] — nullability 전략, 버전 없는 진화, mutation 모양, 네이밍 컨벤션, 비즈니스 로직 계층
 - [[GraphQL-Query-Language|쿼리 언어와 introspection]] — fragment, variable, directive, `__typename`, introspection
 - [[GraphQL-Pagination|페이지네이션]] — offset vs cursor, Relay Connection, Global Object Identification
 - [[GraphQL-Caching|캐싱과 HTTP 전송]] — 정규화 캐시, persisted document, GET vs POST, 상태 코드
 - [[GraphQL-Security|보안과 인가]] — demand control, introspection 차단, 인가는 비즈니스 로직 계층
+- [[GraphQL-File-Uploads|파일 업로드]] — multipart 관례의 리스크 5가지, signed URL 패턴
+- [[GraphQL-Federation|Federation]] — subgraph, gateway, schema composition, 도입 판단, 거버넌스
 
 ## 핵심 명제
 
@@ -50,7 +54,11 @@ type Post {
 - **Subscription**: long-lived 요청으로 실시간 증분 업데이트. 전송은 스펙이 정하지 않아 서버가 고르며 보통 WebSocket이나 SSE (자세히는 [[NestJS-GraphQL#Subscription — 실시간 푸시|NestJS Subscription]])
 
 ### Resolver
-각 필드를 어떻게 가져올지 정의하는 함수. 스키마와 데이터 소스를 연결.
+각 필드를 어떻게 가져올지 정의하는 함수. 스키마와 데이터 소스를 연결. graphql-js 계열의 관례적 시그니처는 `(parent, args, context, info)` — parent는 상위 필드 resolver가 반환한 객체, args는 필드 인자, context는 요청 스코프 공유 객체로 인증된 사용자, DB 접근 같은 것을 나른다 (예: `me` 필드는 context의 인증 정보로, `name` 필드는 그 user id로 DB 조회). info는 현재 연산과 스키마에 대한 필드 메타 정보로 고급 케이스에서만 쓴다.
+
+- resolver를 생략하면 많은 라이브러리가 parent에서 같은 이름의 프로퍼티를 읽어 반환한다(기본 resolver). 단순 필드마다 resolver를 손으로 쓸 필요가 없는 이유.
+- resolver 반환값은 타입 시스템이 스키마 계약에 맞게 변환한다(scalar coercion). 서버 내부 표현이 정수여도 스키마가 enum이면 enum 값 이름으로 나가는 식.
+- resolver는 Promise 같은 비동기 값을 반환할 수 있고, 실행 엔진이 완료를 기다렸다가 하위 필드로 내려간다. 쿼리 쪽은 비동기 여부를 모른다.
 
 ## 장점
 
@@ -79,13 +87,13 @@ type Post {
 스키마 정의 + resolver + DataLoader + 권한 + 캐싱 인프라까지 셋업 비용이 REST보다 크다. 가벼운 서비스에는 오버엔지니어링.
 
 ### 파일 업로드 제한
-JSON 기반이라 multipart 업로드는 별도 명세(graphql-multipart-request) 필요. REST에 비해 번거로움.
+JSON 기반이라 multipart 업로드는 별도 명세(graphql-multipart-request) 필요. REST에 비해 번거로움. 리스크와 signed URL 우회 패턴은 [[GraphQL-File-Uploads|파일 업로드]].
 
 ### 클라이언트 의존성
 백엔드가 필드 타입을 바꾸면 클라이언트 쿼리도 갱신해야 함. 모바일 앱처럼 강제 업데이트가 어려운 환경에선 위험.
 
 ### MSA에서의 복잡도
-여러 마이크로서비스를 GraphQL 한 게이트웨이로 묶으려면 Federation, Schema Stitching이 필요. 추가 설계, 운영 비용.
+여러 마이크로서비스를 GraphQL 한 게이트웨이로 묶으려면 Federation, Schema Stitching이 필요. 추가 설계, 운영 비용. 구조와 도입 판단은 [[GraphQL-Federation|Federation]].
 
 ## 언제 쓸까
 
@@ -114,6 +122,7 @@ JSON 기반이라 multipart 업로드는 별도 명세(graphql-multipart-request
 
 ## 면접 체크포인트
 
+- GraphQL이 스펙이라는 구분 — 특정 언어, 데이터베이스, 스토리지에 묶이지 않는 이유
 - 단일 엔드포인트가 주는 장점 vs HTTP 캐싱 손실 트레이드오프
 - N+1 문제와 DataLoader 패턴의 역할
 - 쿼리 복잡도 제한이 왜 필요한가 (Depth Limit, Complexity Limit)
@@ -122,6 +131,8 @@ JSON 기반이라 multipart 업로드는 별도 명세(graphql-multipart-request
 - Federation이 MSA에서 어떤 역할을 하는가
 
 ## 출처
+- [graphql.org — Introduction to GraphQL](https://graphql.org/learn/introduction/)
+- [graphql.org — Execution](https://graphql.org/learn/execution/)
 - [요즘IT — GraphQL 도입 시 주의할 점](https://yozm.wishket.com/magazine/detail/2113/)
 - [velog @mdy0102 — GraphQL을 사용하며 느낀 장단점](https://velog.io/@mdy0102/GraphQL을-사용하며-느낀-장단점)
 
