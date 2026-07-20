@@ -1,7 +1,7 @@
 ---
 tags: [web, graphql, api, architecture, diagram]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-07-20
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Architecture Map", "GraphQL 아키텍처 지도", "GraphQL 요청 라이프사이클", "GraphQL 전체 그림"]
 ---
@@ -49,9 +49,9 @@ flowchart LR
 ```
 
 - **Parse**: 쿼리 문자열을 AST로. 문법 오류는 여기서 걸려 실행이 아예 없다.
-- **Validate**: AST를 스키마와 대조해 없는 필드, 타입 안 맞는 인자를 거른다. **depth, complexity 제한이 붙는 자리** — 스키마 검증 자체가 아니라 별도 custom 규칙, demand control로 얹는다. 실행 전에 돌아 악성 깊은 쿼리가 DB를 안 건드린다.
+- **Validate**: AST를 스키마와 대조해 없는 필드, 타입 안 맞는 인자를 거른다. 실패는 실행 시작 전의 request error라 응답에 부분 data가 아예 없다(실행 중 field error의 부분 성공과 구분). **depth, complexity 제한이 붙는 자리** — 스키마 검증 자체가 아니라 별도 custom 규칙, demand control로 얹는다. 실행 전에 돌아 악성 깊은 쿼리가 DB를 안 건드린다.
 - **Execute**: 선택 트리를 위에서 아래로 순회하며 필드마다 resolver 호출. 뮤테이션 최상위 selection set은 스펙 실행 의미에 따라 순차 실행하고, 쿼리 필드는 병렬 실행할 수 있다. **N+1과 필드 단위 인가가 여기서** 일어난다.
-- **Response**: `data`와 `errors`를 함께 담는다. 필드 하나가 실패하면 execute 중에 그 필드가 null이 되고, non-null이면 null이 nullable 상위까지 올라간다(null bubbling). 그 결과가 봉투에 담겨 부분 성공, 부분 실패로 나온다.
+- **Response**: 스펙이 허용하는 최상위 키는 셋이다 — `data`, `errors`, 그리고 구현이 자유롭게 쓰는 `extensions`(텔레메트리, rate limit 소모량 같은 부가 정보 객체). `data`와 `errors` 중 최소 하나는 있고, 둘 다 있으면 partial response다. 각 error 객체는 `message`와 (있으면) 문서 내 위치 `locations`를 담는다. 필드 하나가 실패하면 execute 중에 그 필드가 null이 되고, non-null이면 null이 nullable 상위까지 올라간다(null bubbling). 그 결과가 봉투에 담겨 부분 성공, 부분 실패로 나온다.
 
 ## 그림 3. 스키마는 타입 그래프, 쿼리는 부분 트리, 실행은 순회
 
@@ -72,7 +72,7 @@ flowchart TB
 ```
 
 - **간선 = resolver 호출**: `users`가 100건을 주면 그 아래 `posts` 간선은 사용자마다 한 번, 100번 불린다. 이 구조적 곱셈이 N+1이다.
-- **DataLoader가 붙는 자리**: 같은 tick에 모인 `load(id)` 호출을 배치 1회로 접는다. 입력 키 순서 보존과 요청 스코프여야 하는 이유는 [[NestJS-GraphQL#DataLoader — N+1 해결|DataLoader 정본]].
+- **DataLoader가 붙는 자리**: 같은 tick에 모인 `load(id)` 호출을 배치 1회로 접는다. 입력 키 순서 보존과 요청 스코프여야 하는 이유는 [[NestJS-GraphQL#DataLoader — N+1 해결|DataLoader 정본]]. 일부 구현은 배치 대신 selection set을 데이터 소스 최적화 쿼리로 직접 번역해 N+1을 피하기도 한다.
 - **얕게 유지**: 모든 필드를 ResolveField로 쪼개면 라운드트립만 는다. 단순 필드는 부모 resolver가 한 번에 채우고, 무거운 연관만 별도 resolver로.
 
 ## 그림 4. 운영 관심사가 라이프사이클 어디에 붙나
@@ -86,6 +86,7 @@ flowchart TB
 | N+1 → DataLoader | execute | 선택 트리 순회 중 배치 |
 | 부분 실패 errors, null bubbling | execute → response | 전파는 execute에서 계산, data, errors 봉투로 response에 표면화 |
 | HTTP 캐싱 손실 | 단일 POST 엔드포인트 특성 | persisted query + GET로 완화 |
+| 필드 병목, 에러 관측 | execute | resolver 단위 metrics, trace, log 계측 (OpenTelemetry 같은 vendor-agnostic 도구) |
 
 각 항목의 상세와 트레이드오프는 [[GraphQL#단점|개념 정본의 단점 절]]에 있다. 이 표는 그 목록을 흐름 위 위치로 다시 꽂은 것.
 
@@ -114,4 +115,6 @@ flowchart TB
 - [GraphQL September 2025 Specification — Execution](https://spec.graphql.org/September2025/#sec-Execution)
 - [graphql.org — Execution](https://graphql.org/learn/execution/)
 - [graphql.org — Validation](https://graphql.org/learn/validation/)
+- [graphql.org — Response](https://graphql.org/learn/response/)
+- [graphql.org — Performance](https://graphql.org/learn/performance/)
 - [graphql.org — Security (Demand control: depth, complexity, rate limiting)](https://graphql.org/learn/security/)

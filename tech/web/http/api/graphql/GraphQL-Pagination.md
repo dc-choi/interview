@@ -54,12 +54,13 @@ type PageInfo {
 ```
 
 - `pageInfo.endCursor`만 있으면 `edges`를 안 골라도 다음 페이지를 요청할 수 있다.
+- edge 메타가 필요 없는 클라이언트를 위해 connection 안에 node만 담는 직통 리스트 필드를 따로 노출할 수 있다(예: connection 타입에 `friends: [User]` 헬퍼 필드). edge 간접층을 건너뛰는 사용성 개선이고, 페이지네이션에 필요한 cursor는 pageInfo에서 얻는다.
 - Schema에서 `totalCount` field 자체를 노출하지 않을 수 있다. Field를 선언했고 client가 선택했다면 response key를 임의로 생략할 수 없으며 값이나 `null`을 반환해야 한다. Nullable로 두면 COUNT가 너무 비싼 조건에서 `null`을 반환하는 계약을 설계할 수 있다.
 - 위 표준형(`String` cursor, 양방향 pageInfo)은 Relay Cursor Connections 스펙 기준이다. 입문용 단순 예제에서는 cursor를 `ID`로 두고 `hasPreviousPage`를 생략하기도 한다.
 
 ## Global Object Identification
 
-- 목적: 캐싱과 refetch를 우아하게 하려면 서버가 객체 식별자를 표준 방식으로 노출해야 한다.
+- 목적: 캐싱과 refetch를 우아하게 하려면 서버가 객체 식별자를 표준 방식으로 노출해야 한다. 이 식별 스펙은 Relay 클라이언트 호환 기준으로 서술되지만 어떤 클라이언트에도 유용하다.
 - Node 인터페이스: `id: ID!` 하나. 이 id는 전역 유일이고, id만으로 서버가 객체를 다시 가져올 수 있어야 한다.
 
 ```graphql
@@ -79,6 +80,7 @@ type Query {
 - refetch 실패(객체 삭제, DB 불가)는 null 반환이 정상이다. 유효했던 id도 null일 수 있으니 처리해야 한다.
 - field-stability 불변식: 한 응답에 같은 id의 두 객체가 있으면 둘은 같아야 한다. 이게 클라이언트가 id로 캐시를 정규화(중복 병합)할 수 있는 근거다.
 - ID 인코딩: 스펙은 전역 유일만 요구한다. Relay 관례로 base64(`"Type:id"`)를 흔히 쓴다(타입과 DB id를 합쳐 전역 유일 + 불투명). 공식 요구가 아니라 관례임에 주의.
+- plural identifying root field: username 같은 자연 키의 리스트로 객체들을 배치 조회하는 루트 필드(예: `usernames(usernames: [String!]!)`). 인자는 non-null 리스트 of non-null 하나뿐이어야 하고, 반환은 Node(또는 구현 타입)의 리스트다. 응답 리스트는 입력과 길이가 같고 순서가 대응해야 한다(입력을 치환하면 출력도 같은 치환) — 클라이언트가 입력과 응답을 위치로 짝짓는 근거. 응답 원소를 non-null로 감싸지 않기를 권한다. 특정 입력의 객체를 못 가져와도 그 자리에 값을 내야 하므로 null이 유용하다.
 - cursor와 global id는 다르다: cursor는 connection 내 위치 표식, global id는 객체 자체의 정체성. 예제 타입이 겹쳐 보여도 개념이 다르다.
 
 ## 설계 트레이드오프

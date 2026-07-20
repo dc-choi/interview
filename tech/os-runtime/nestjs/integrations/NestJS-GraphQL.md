@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, graphql, dataloader, n+1, subscription]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-07-20
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS GraphQL", "DataLoader", "Resolver"]
 ---
@@ -116,9 +116,11 @@ this.pubSub.publish('userAdded', { userAdded: newUser });
 
 `filter`로 조건 분기, `resolve`로 페이로드 변환 가능. 다중 인스턴스 환경에서는 `PubSub` 인메모리 대신 **Redis PubSub**으로 전파.
 
-전송 프로토콜은 GraphQL 스펙이 정하지 않고 서버가 고른다. WebSocket이 흔하며 현행 구현은 `graphql-ws`, 레거시는 deprecated된 `subscriptions-transport-ws`이고, SSE도 대안이다. Subscription은 stateful long-lived 연결이라 각 구독 클라이언트가 특정 서버 인스턴스에 묶인다. 수평 확장에서 Redis PubSub이 필요한 이유가 이것 — 어느 인스턴스가 발행한 이벤트든 모든 구독자에 닿게 하려면 pub/sub으로 인스턴스 간 전파해야 한다. 한 subscription 연산은 루트 필드 하나만 가질 수 있다(스펙 규칙).
+전송 프로토콜은 GraphQL 스펙이 정하지 않고 서버가 고른다. WebSocket이 흔하며 현행 구현은 `graphql-ws`, 레거시는 deprecated된 `subscriptions-transport-ws`이고, SSE도 대안이다. Subscription은 stateful long-lived 연결이라 — 서버가 구독 수명 내내 GraphQL document, variables, 컨텍스트를 유지해야 한다 — 각 구독 클라이언트가 특정 서버 인스턴스에 묶인다. 수평 확장에서 Redis PubSub이 필요한 이유가 이것 — 어느 인스턴스가 발행한 이벤트든 모든 구독자에 닿게 하려면 pub/sub으로 인스턴스 간 전파해야 한다. 한 subscription 연산은 루트 필드 하나만 가질 수 있다(스펙 규칙).
 
 언제 쓰나: 자주, 증분으로 바뀌는 데이터를 실시간에 가깝게 밀 때. 드문 변경은 폴링, 푸시 알림, refetch가 낫다.
+
+클라이언트 쪽 부담도 있다: 연결이 끊기면 재구독하는 로직, 초기 쿼리 결과와 구독으로 밀려온 업데이트 사이의 race condition 처리가 클라이언트 라이브러리에 필요하다. 일부 구현이 제공하는 live query(쿼리 결과 전체를 계속 최신으로 유지하는, 느슨하게 정의된 기능으로 정식 스펙화는 논의 단계)와는 별개 개념이다 — subscription은 이벤트 단위 증분 스트림이다.
 
 ## Auth — Guard 호환
 
@@ -166,5 +168,6 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
 
 - [NestJS GraphQL quick start](https://docs.nestjs.com/graphql/quick-start)
 - [NestJS GraphQL subscriptions](https://docs.nestjs.com/graphql/subscriptions)
+- [graphql.org — Subscriptions](https://graphql.org/learn/subscriptions/)
 - [DataLoader — request-scoped caching](https://github.com/graphql/dataloader)
 - [graphql-subscriptions](https://github.com/apollographql/graphql-subscriptions)

@@ -170,7 +170,7 @@ Availability subgraph가 완전히 내려가면 그 내부 Redis에 데이터가
 
 ## 관련 문서
 
-- GraphQL: [[GraphQL-Architecture-Map|실행과 부분 오류]], [[GraphQL-Schema-Design|nullability 설계]], [[GraphQL-Caching|클라이언트 캐시와 HTTP 전송]]
+- GraphQL: [[GraphQL-Federation|Federation 개념]], [[GraphQL-Architecture-Map|실행과 부분 오류]], [[GraphQL-Schema-Design|nullability 설계]], [[GraphQL-Caching|클라이언트 캐시와 HTTP 전송]]
 - 캐시: [[Cache-Strategies|Cache-Aside]], [[Cache-Stampede|stampede와 TTL jitter]], [[Cache-Invalidation|post-commit invalidation]], [[Distributed-Lock|분산 잠금]]
 - 데이터 수렴: [[Transactional-Outbox]], [[OpenSearch-Indexing-Pipeline-Reliability]], [[Idempotent-Consumer]]
 - 설계 진행: [[External-Service-Resilience|timeout, bulkhead, circuit breaker]], [[System-Design-Interview|시스템 설계 인터뷰 프레임]]
