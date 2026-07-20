@@ -44,7 +44,7 @@ it('domain layer must not depend on infrastructure', () => {
 ## 성능, 메모리
 
 - **forwardRef 자체 오버헤드는 작음** — 함수 평가 1회. 다만 누적되면 그래프 추적이 느려짐.
-- **REQUEST 스코프 + forwardRef 조합** — 요청마다 재해결 → 비용 큼. 가능하면 DEFAULT 스코프로 유지.
+- **REQUEST 스코프 + forwardRef 조합** — 요청마다 재해결 → 비용 큼. 비용 문제를 넘어 순환 관계가 `Scope.REQUEST` 프로바이더에 걸리면 **의존성이 undefined로 들어올 수 있다** (공식 경고). 가능하면 DEFAULT 스코프로 유지.
 - **ModuleRef.get을 핫패스에서 호출** → 호출마다 lookup. `OnModuleInit`에서 한 번 캐싱.
 
 ## 흔한 실수
@@ -66,3 +66,6 @@ it('domain layer must not depend on infrastructure', () => {
 - Event 기반의 한계 — 트랜잭션 경계 깨짐, 결과적 일관성
 - 자동화 방어 — `import/no-cycle`, 의존성 그래프 분석, 아키텍처 테스트
 - "처음 forwardRef → 가독성 저하 → CQRS 리팩토링" 같은 진화 스토리
+
+## 출처
+- [NestJS — Circular dependency](https://docs.nestjs.com/fundamentals/circular-dependency)

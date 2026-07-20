@@ -15,7 +15,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 
 - [[tech/messaging-data-pipeline/brokers/브로커(Brokers)|브로커 (Brokers)]] — SQS, EventBridge, Kafka, Redis
 - [[tech/messaging-data-pipeline/delivery-guarantees/배달보장(DeliveryGuarantees)|배달 보장 (Delivery Guarantees)]] — Delivery semantics, At-Least-Once, Idempotency, Consumer Group
-- [[tech/messaging-data-pipeline/patterns/패턴(MessagingPatterns)|메시징 패턴 (Patterns)]] — Pub/Sub, Fan-out, 경쟁 소비자
+- [[tech/messaging-data-pipeline/patterns/패턴(MessagingPatterns)|메시징 패턴 (Patterns)]] — Pub/Sub, Fan-out, 경쟁 소비자, 백필 자원 격리
 - [[tech/messaging-data-pipeline/cdc-outbox/CDC&Outbox|CDC, Outbox]] — Debezium, Transactional Outbox
 
 ## 파이프라인 실전 (설계와 오케스트레이션 — 어떻게 설계하고 돌리나)

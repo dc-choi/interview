@@ -23,6 +23,15 @@ aliases: ["NestJS Microservices", "ClientProxy", "Message Pattern"]
 
 선택 기준: **요청-응답이 주면 TCP/gRPC**, **이벤트 발행이 주면 Redis/Kafka/RabbitMQ**, **다언어 강타입은 gRPC**.
 
+### 전송별 시맨틱 노트
+
+- **Redis** (ioredis 기반): Pub/Sub 채널이라 **fire-and-forget** — 구독자가 없으면 메시지가 제거되고 복구 불가, 최소 1회 처리 보장이 없다. 한 메시지를 다수 구독자가 수신 가능. `wildcards: true`면 내부적으로 psubscribe/pmessage를 써 패턴 채널 구독. 컨텍스트는 `RedisContext.getChannel()`.
+- **MQTT**: 제약된 디바이스, 저대역폭/불안정 네트워크용 경량 Pub/Sub. 토픽 와일드카드는 `+`(단일 레벨), `#`(다중 레벨). **구독의 기본 QoS는 0** — 전역은 `subscribeOptions.qos`, 패턴별은 데코레이터 `extras`의 `qos`로 올린다. 컨텍스트는 `MqttContext.getTopic()`.
+- **NATS**: 요청-응답은 내장 request-reply, 이벤트는 subject 기반 fan-out. **queue group**(`queue: 'cats_queue'`)이 내장 로드밸런싱 — 같은 그룹의 구독자 중 **하나만** 메시지를 받아 인스턴스 스케일아웃 시 중복 처리를 막는다. subject 와일드카드는 `*`(한 토큰), `>`(꼬리 전체), 헤더 전달 지원. 컨텍스트는 `NatsContext.getSubject()`.
+- **RabbitMQ**: 유실 방지의 축은 **수동 ACK** — `noAck: false`로 켜고 핸들러에서 `RmqContext.getChannelRef()`와 `getMessage()`로 `channel.ack(originalMsg)`를 보낸다. ACK 없이 컨슈머가 죽으면(채널/연결 종료) RabbitMQ가 메시지를 **재큐잉**한다. `prefetchCount`로 미ACK 상태 선인출 개수 제한, `queueOptions.durable`로 큐 영속성. 라우팅 키 와일드카드는 `*`(정확히 한 단어), `#`(0개 이상 단어) — `wildcards: true`로 활성.
+- **gRPC**: 다른 전송과 계약이 다르다 — `@MessagePattern` 대신 **`@GrpcMethod('서비스명', '메서드명')`**을 쓰고(인자 생략 시 핸들러명 UpperCamelCase, 클래스명으로 자동 매칭), 클라이언트도 ClientProxy가 아니라 **`ClientGrpc`에서 `getService<T>()`로 proto 서비스 인터페이스를 꺼내** 호출한다 (`package` + `protoPath` 옵션으로 .proto 로드). 스트리밍은 RxJS Subject/Observable 핸들러 또는 순수 call stream(Duplex) 두 방식, K8s 헬스체크는 gRPC Health Check 표준(grpc-health-check 패키지)으로. 프로토콜 자체는 [[gRPC]] 정본.
+- **Kafka** (kafkajs 기반): 요청-응답은 Kafka에 없는 모델이라 **reply 토픽으로 구현** — 클라이언트가 `subscribeToResponseOf('토픽')`을 (비동기 생성이면 connect 전에) 호출해 파생 reply 토픽을 구독해야 send가 동작한다. 충돌 방지로 clientId/groupId에 `-client`/`-server`가 **자동 접미**된다. 수신 메시지의 key/value/headers Buffer는 문자열로, object 형태면 JSON으로 자동 파싱. 발신 시 `{ key, value }`로 **키를 실어야 co-partitioning(같은 키 → 같은 파티션 순서 보장)**이 성립한다. 오프셋은 기본 자동 커밋이고 `KafkaContext`의 consumer로 수동 커밋 가능. 핸들러가 예외를 던지면 kafkajs가 **재전달**한다 — 오프셋 미커밋 (이벤트 핸들러의 미처리 예외는 기본이 retriable, 명시적으로는 `KafkaRetriableException`).
+
 ## Microservice 부트스트랩
 
 ```ts
@@ -40,7 +49,7 @@ await app.startAllMicroservices();
 await app.listen(3000);
 ```
 
-하이브리드는 같은 컨트롤러에서 HTTP 엔드포인트 + 메시지 핸들러 공존 가능. 도메인 코어는 한 곳에 두고 입구만 다중화.
+하이브리드는 같은 컨트롤러에서 HTTP 엔드포인트 + 메시지 핸들러 공존 가능. 도메인 코어는 한 곳에 두고 입구만 다중화. **함정: 전역 파이프/가드/인터셉터/필터가 마이크로서비스 쪽에는 기본 미적용** — 상속하려면 `connectMicroservice(options, { inheritAppConfig: true })`.
 
 ## 메시지 패턴 vs 이벤트 패턴
 
@@ -126,6 +135,21 @@ export class GatewayController {
 
 기본은 JSON. Kafka, gRPC는 별도 직렬화기(`Avro`, `Protobuf`)로 강타입, 압축. 클라이언트, 서버 양쪽 옵션을 같게 둬야 함.
 
+## 커스텀 트랜스포터
+
+내장 전송이 없는 브로커(예: Google Cloud Pub/Sub)는 직접 만든다:
+
+- **서버**: `Server`를 상속하고 `CustomTransportStrategy`(listen/close) 구현 — `strategy: new MyServer()`로 등록. `messageHandlers`가 패턴을 키로 한 핸들러 Map이라, 수신 메시지를 패턴으로 lookup해 디스패치한다. 인터셉터와 함께 쓰면 핸들러가 RxJS 스트림으로 감싸지므로 **subscribe해야 실행**된다.
+- **클라이언트**: `ClientProxy`를 상속해 connect/close/publish(요청-응답)/dispatchEvent(이벤트)를 구현하거나, 그냥 라이브러리 SDK를 직접 쓴다.
+
+## 세부 계약
+
+- 핸들러 인자는 `@Payload()`로 메시지 본문을, `@Ctx()`로 **전송별 컨텍스트**(NatsContext 등 — 토픽, 채널, 파티션 같은 전송 메타)를 추출한다.
+- `@MessagePattern` 핸들러가 **Observable을 반환하면 스트림이 완료될 때까지의 값들이 모두 응답**으로 전송된다 (다중 응답).
+- `send()`에는 rxjs `timeout` 오퍼레이터를 파이프해 응답 무한 대기를 끊는 것이 공식 권장 패턴.
+- 운영 관측: `client.status`가 connected/disconnected 상태 변화 Observable이고, `client.on('error', ...)`로 내부 에러 이벤트를 듣고, `unwrap()`으로 하부 드라이버 인스턴스에 직접 접근한다 (서버 쪽도 동일 계열).
+- 파이프, 가드, 필터는 HTTP와 동일하되 예외만 `RpcException`으로 — ValidationPipe는 `exceptionFactory: errors => new RpcException(errors)`로 교체해서 쓴다 (WS의 WsException 교체와 같은 패턴, 필터 상세는 [[NestJS-Exception-Filter-Basics]]).
+
 ## 흔한 실수
 
 - **emit으로 보냈는데 응답 기대**: emit은 응답 X. send 써야 함.
@@ -149,3 +173,17 @@ export class GatewayController {
 - [[NestJS-ExecutionContext|ExecutionContext (rpc 분기)]]
 - [[MQ-Kafka|Kafka — 메시지 큐 기반 트랜스포트]]
 - [[Realtime-Communication-Comparison|실시간 통신 비교]]
+
+## 출처
+- [NestJS — Microservices basics](https://docs.nestjs.com/microservices/basics)
+- [NestJS — Redis transporter](https://docs.nestjs.com/microservices/redis)
+- [NestJS — MQTT transporter](https://docs.nestjs.com/microservices/mqtt)
+- [NestJS — NATS transporter](https://docs.nestjs.com/microservices/nats)
+- [NestJS — RabbitMQ transporter](https://docs.nestjs.com/microservices/rabbitmq)
+- [NestJS — Kafka transporter](https://docs.nestjs.com/microservices/kafka)
+- [NestJS — gRPC transporter](https://docs.nestjs.com/microservices/grpc)
+- [NestJS — Custom transporters](https://docs.nestjs.com/microservices/custom-transport)
+- [NestJS — Microservices Pipes](https://docs.nestjs.com/microservices/pipes)
+- [NestJS — Microservices Guards](https://docs.nestjs.com/microservices/guards)
+- [NestJS — Microservices Interceptors](https://docs.nestjs.com/microservices/interceptors)
+- [NestJS — Hybrid application (FAQ)](https://docs.nestjs.com/faq/hybrid-application)

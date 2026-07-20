@@ -26,6 +26,9 @@ getMe(@CurrentUser() user: User) { ... }
 
 `createParamDecorator`는 NestJS가 제공하는 팩토리. 파라미터 값을 ExecutionContext에서 뽑아 주입.
 
+- **data 인자**: 데코레이터에 넘긴 값이 팩토리의 첫 인자로 들어온다 — `@CurrentUser('email')`처럼 키를 받아 `data ? user?.[data] : user`로 특정 프로퍼티만 추출하는 패턴.
+- **파이프 결합**: 커스텀 파라미터 데코레이터도 내장 `@Body()`, `@Param()`과 동일하게 파이프를 태울 수 있다(`@CurrentUser(new ValidationPipe(...))`). 단 ValidationPipe는 커스텀 데코레이터 인자를 기본으로 검증하지 않으므로 `validateCustomDecorators: true`를 켜야 한다.
+
 용도:
 - `@CurrentUser` — JWT에서 추출된 사용자
 - `@TraceId` — 요청 추적 ID

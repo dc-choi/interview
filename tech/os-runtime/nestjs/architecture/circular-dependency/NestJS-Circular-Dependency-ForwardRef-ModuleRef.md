@@ -27,9 +27,11 @@ export class UserService {
 export class UserModule {}
 ```
 
+관계의 **양쪽 모두** forwardRef를 걸어야 한다 — 프로바이더면 양쪽 서비스 모두 `@Inject(forwardRef)`, 모듈이면 양쪽 imports 모두. 한쪽만 걸면 메타데이터가 부족해 인스턴스화에 실패한다.
+
 ### 함정 — 생성자 시점 사용 금지
 
-forwardRef로 들어온 의존성은 **constructor 종료 시점엔 미해결**일 수 있어 필드 초기화, constructor 본문에서 즉시 호출하면 `undefined`. **메서드 호출 시점**까지 미루면 안전.
+forwardRef로 들어온 의존성은 **constructor 종료 시점엔 미해결**일 수 있어 필드 초기화, constructor 본문에서 즉시 호출하면 `undefined`. **메서드 호출 시점**까지 미루면 안전. 두 클래스의 인스턴스화 순서 자체가 비결정이므로, 어느 쪽 생성자가 먼저 불리는지에 의존하는 코드도 금지.
 
 ## 2. ModuleRef — Lazy Loading
 
@@ -54,3 +56,6 @@ export class UserService implements OnModuleInit {
 | `moduleRef.resolve(Token, contextId)` | REQUEST 스코프 인스턴스 해결 |
 
 **대가**: 의존이 메타데이터에 안 잡혀 정적 분석, 테스트 도움 ↓. 동적 토큰, 플러그인성 의존이 진짜 필요할 때만.
+
+## 출처
+- [NestJS — Circular dependency](https://docs.nestjs.com/fundamentals/circular-dependency)

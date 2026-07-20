@@ -225,6 +225,7 @@ codex mcp add obsidian -- npx -y obsidian-mcp "$(git rev-parse --show-toplevel)"
 - **현업 백엔드 엔지니어 경험 축적 우선**. 부트캠프 강사, 교육 포지션은 역량 자산(42Seoul, 멋사 이수)이 있어도 현 시점 거절
 - 이력: 26.04.21 코드잇 강사 포지션 헤드헌터 제안 → 거절
 - **How to apply**: 교육, 강사, 멘토 포지션 즉권 금지. 현업 백엔드(Node.js/TS 코어, 분산, 트래픽 규모 있는) 포지션 탐색 우선 제안. 사용자가 스탠스 변화 언급하면 즉시 이 섹션 갱신.
+- **2026-07-20 이직 완료**: 새 직장에서 **주력 ORM은 TypeORM** (이전 주력이던 Prisma에서 전환). ORM 관련 학습, 면접 답변, vault 보강 시 TypeORM(@nestjs/typeorm, QueryRunner 트랜잭션, 마이그레이션 CLI)을 우선 축으로 두고, Prisma 경험은 과거 실무 사례(스페이스맵 relationLoadStrategy 등)로 활용.
 
 ## 키노라이츠 인재상, OKR 체득 (2026-07)
 

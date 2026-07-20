@@ -101,3 +101,31 @@ throw new BusinessLogicException('Insufficient balance', 'BALANCE_TOO_LOW');
 ```
 
 `errorCode`로 클라이언트가 분기 — 다국어 메시지, UX 처리.
+
+## 패턴 3: BaseExceptionFilter 상속
+
+전부 새로 쓰는 대신 내장 전역 필터를 확장하는 길. `@nestjs/core`의 `BaseExceptionFilter`를 상속하고 필요한 분기만 처리한 뒤 `super.catch(exception, host)`로 기본 동작에 위임한다 — 플랫폼 종속 응답 로직을 재구현하지 않아도 된다.
+
+```ts
+@Catch()
+export class AllExceptionsFilter extends BaseExceptionFilter {
+  catch(exception: unknown, host: ArgumentsHost) {
+    // 커스텀 분기 (로깅, 특정 예외 변환 등)
+    super.catch(exception, host);
+  }
+}
+```
+
+주의: BaseExceptionFilter를 상속한 필터를 메서드나 컨트롤러 스코프에 쓸 때 `new`로 직접 인스턴스화하지 않는다 — 프레임워크가 인스턴스화하게 둔다(HttpAdapter 주입이 필요하기 때문).
+
+## 패턴 4: 전역 필터 + 에러 트래킹(Sentry) 결합
+
+전역 catch-all 필터가 예외를 응답으로 변환해 **삼키면 외부 에러 트래킹이 그 예외를 못 본다.** Sentry(@sentry/nestjs) 결합 시 두 가지가 계약이다:
+
+- 계측 초기화(`Sentry.init`)를 담은 instrument 파일을 **다른 모든 모듈 import보다 먼저** 로드한다 — require 훅 기반 계측이라 순서가 깨지면 누락된다.
+- 전역 catch-all 필터의 `catch()`에 `@SentryExceptionCaptured()` 데코레이터를 붙여, 필터가 처리하는 예외도 Sentry로 보고되게 한다.
+
+## 출처
+
+- [NestJS — Exception filters](https://docs.nestjs.com/exception-filters)
+- [NestJS — Sentry](https://docs.nestjs.com/recipes/sentry)

@@ -61,6 +61,11 @@ aliases: ["NestJS Core Concepts", "NestJS 핵심 개념"]
 - `exports`: 이 모듈의 Provider를 외부에 공개
 - `providers`: 이 모듈 내부에서 사용할 Provider
 - `controllers`: 이 모듈의 HTTP 엔드포인트
+- **캡슐화가 기본**: 현재 모듈의 Provider이거나 import한 모듈이 export한 Provider만 주입할 수 있다. exports 배열이 곧 모듈의 공개 인터페이스다.
+- **모듈은 기본 싱글턴**: export된 Provider는 import하는 모든 모듈이 같은 인스턴스를 공유한다. 같은 Service를 모듈마다 providers에 중복 등록하면 모듈별로 인스턴스가 분리돼 메모리가 늘고 내부 상태가 어긋난다 — 공유는 재등록이 아니라 export와 import로 한다.
+- **re-export**: import한 모듈을 exports에 그대로 실어 묶음으로 재공개할 수 있다(공통 모듈 번들).
+- **@Global()**: 모듈을 전역 스코프로 만들어 import 없이 어디서나 주입되게 한다(루트나 코어 모듈에서 한 번만 등록). DB 연결, 헬퍼처럼 정말 전역인 것에 한정하고, 기본은 imports의 명시적 공개가 결합을 통제해 구조와 유지보수에 낫다.
+- 모듈 클래스 자체도 Provider를 주입받을 수 있지만(설정 용도), 모듈 클래스를 Provider로 주입할 수는 없다(순환 의존).
 - **순환 참조**: `forwardRef()`로 해결 가능하지만, 근본적으로는 모듈 의존 방향을 **단방향**으로 설계하는 것이 중요 — 상세: [[NestJS-Circular-Dependency|순환 의존성 해결 전략]]
 
 ## 요청 처리 파이프라인
@@ -99,3 +104,6 @@ Controller (Interface Adapters)
 NestJS는 Spring, Angular의 설계를 TypeScript/Node.js로 옮긴 계보. DI, 모듈, 데코레이터 구조는 1:1에 가깝게 매핑되지만, 런타임 모델(이벤트 루프 vs 스레드), 트랜잭션 표준 부재, 생태계 성숙도에서 차이가 있다.
 
 상세 비교: [[NestJS-vs-Spring|NestJS vs Spring (DI, 모듈, 데코레이터, AOP vs Guard/Pipe/Interceptor, 트랜잭션, 생태계)]]
+
+## 출처
+- [NestJS — Modules](https://docs.nestjs.com/modules)

@@ -7,7 +7,7 @@ aliases: ["NestJS WebSocket Gateway", "WebSocketGateway", "SubscribeMessage"]
 
 # NestJS WebSocket Gateway
 
-`@nestjs/websockets`는 Socket.IO, ws를 NestJS DI/모듈에 통합. **Gateway**는 컨트롤러의 WebSocket 버전 — 같은 클래스에서 연결, 메시지, 종료 이벤트를 다룬다. Guard, Pipe, Interceptor 모두 호환되지만 컨텍스트 추출은 다름.
+`@nestjs/websockets`는 Socket.IO, ws를 NestJS DI/모듈에 통합. **Gateway**는 컨트롤러의 WebSocket 버전 — 같은 클래스에서 연결, 메시지, 종료 이벤트를 다룬다. Guard, Pipe, Interceptor 모두 호환되지만 컨텍스트 추출은 다름. 게이트웨이 자체는 플랫폼 무관이고 어댑터가 라이브러리를 연결한다 — 내장 지지 플랫폼은 socket.io와 ws 둘, 커스텀 어댑터도 가능. **기본으로 HTTP 서버와 같은 포트를 리슨**하고, `@WebSocketGateway(80)`처럼 인자를 줄 때만 분리된다.
 
 ## Gateway 구조
 
@@ -112,7 +112,7 @@ export class WsJwtGuard implements CanActivate {
 }
 ```
 
-`@MessageBody`에 `ValidationPipe` 적용도 됨 — DTO 검증.
+`@MessageBody`에 `ValidationPipe` 적용도 됨 — DTO 검증. 단 WS에서 파이프는 **data 파라미터에만 적용**되고(client 인스턴스 검증은 무의미), ValidationPipe는 기본으로 HTTP 예외를 던지므로 `new ValidationPipe({ exceptionFactory: errors => new WsException(errors) })`로 예외 타입을 WS용으로 바꿔야 한다.
 
 ## Adapter — 다중 인스턴스 확장
 
@@ -136,10 +136,31 @@ class RedisIoAdapter extends IoAdapter {
 app.useWebSocketAdapter(new RedisIoAdapter(app));
 ```
 
+### ws 어댑터 — socket.io 대안
+
+`WsAdapter`(@nestjs/platform-ws)를 `app.useWebSocketAdapter(new WsAdapter(app))`로 걸면 socket.io 대신 순수 ws 라이브러리를 쓴다 — **네이티브 브라우저 WebSocket과 완전 호환이고 socket.io보다 훨씬 빠르지만, room 같은 내장 기능이 크게 적다.** 커스텀 어댑터는 `WebSocketAdapter` 인터페이스(create, bindClientConnect, bindMessageHandlers 등) 구현으로 어떤 WS 라이브러리든 연결 가능.
+
 ## 메시지 응답 — 두 가지 방식
 
 1. **return 값** → ACK 콜백으로 자동 전달. 메시지 패턴이 요청-응답일 때.
 2. **server.emit / client.emit** → 별도 이벤트로 푸시. 비동기 통보, 브로드캐스트.
+
+return으로 다른 이벤트명에 응답하려면 `WsResponse<T>`(`{ event, data }`)를 반환한다 — 단 data가 ClassSerializerInterceptor 직렬화에 의존하면 **WsResponse 구현 클래스 인스턴스**를 반환해야 한다 (평문 객체는 직렬화가 무시). `Observable<WsResponse>`를 반환하면 스트림이 완료될 때까지 값이 나올 때마다 응답이 전송된다.
+
+## 단방향 푸시면 SSE — @Sse()
+
+양방향이 필요 없는 서버 → 클라이언트 푸시는 WebSocket 대신 HTTP 위의 SSE로 충분하다 (프로토콜 비교는 [[Realtime-Communication-Comparison]]). NestJS 구현 계약:
+
+```ts
+@Sse('sse')
+sse(): Observable<MessageEvent> {
+  return interval(1000).pipe(map(() => ({ data: { hello: 'world' } })));
+}
+```
+
+- 컨트롤러 라우트에 `@Sse()`(@nestjs/common) — **반드시 Observable<MessageEvent> 스트림 반환**. MessageEvent는 `{ data, id?, type?, retry? }`로 SSE 스펙 필드와 대응.
+- 클라이언트는 EventSource API로 수신 (`text/event-stream`).
+- **클라이언트가 연결을 끊으면 Nest가 Observable을 자동 unsubscribe** — 예시의 interval 타이머까지 자원이 정리된다. 커스텀 정리 로직은 `finalize` 오퍼레이터에.
 
 ## 흔한 실수
 
@@ -167,3 +188,11 @@ app.useWebSocketAdapter(new RedisIoAdapter(app));
 - [[WebSocket|WebSocket 프로토콜]]
 - [[Realtime-Communication-Comparison|실시간 통신 비교]]
 - [[Realtime-Chat-Architecture|실시간 채팅 아키텍처]]
+
+## 출처
+- [NestJS — Gateways](https://docs.nestjs.com/websockets/gateways)
+- [NestJS — WebSocket Pipes](https://docs.nestjs.com/websockets/pipes)
+- [NestJS — WebSocket Guards](https://docs.nestjs.com/websockets/guards)
+- [NestJS — WebSocket Interceptors](https://docs.nestjs.com/websockets/interceptors)
+- [NestJS — WebSocket Adapters](https://docs.nestjs.com/websockets/adapter)
+- [NestJS — Server-Sent Events](https://docs.nestjs.com/techniques/server-sent-events)

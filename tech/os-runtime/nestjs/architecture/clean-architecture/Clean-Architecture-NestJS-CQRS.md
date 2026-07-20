@@ -32,9 +32,15 @@ export class UserFactory {
   }
 }
 ```
-- `apply()`는 AggregateRoot 베이스 클래스가 제공 — 트랜잭션 커밋 시점에 이벤트 디스패치
+- `apply()`는 AggregateRoot 베이스 클래스가 제공 — 쌓인 이벤트는 `EventPublisher.mergeObjectContext`로 병합된 모델에서 **`model.commit()`을 명시 호출할 때** 디스패치된다 (DB 트랜잭션 커밋과 무관한 별개 호출, `autoCommit: true`로 자동화 가능)
 - Factory는 Use Case와 별개로 두어 **복잡한 엔티티 생성 로직**을 한 곳에
 - `@nestjs/cqrs`의 `EventBus`가 등록된 `EventHandler`로 전달
+
+### @nestjs/cqrs 계약 요약
+
+- **CommandBus/QueryBus**: 커맨드와 쿼리는 각각 `@CommandHandler(X)`/`@QueryHandler(X)` 클래스가 **1:1로** 처리하고, `bus.execute(new X(...))`로 디스패치한다.
+- **Saga**: 이벤트 스트림(Observable)을 받아 `ofType`으로 필터링하고 **새 커맨드를 반환**하는 장기 프로세스 — 반환된 커맨드는 CommandBus가 비동기로 디스패치한다 (가입 이벤트 → 환영 메일 커맨드 같은 워크플로우).
+- **미처리 예외**: 이벤트 핸들러는 비동기 실행이라 예외가 호출자에게 전파되지 않는다 — EventBus가 `UnhandledExceptionBus` 스트림으로 밀어 주므로 구독해서 처리해야 한다 ([[NestJS-Events|이벤트 에러 억제]]와 같은 계열의 조용한 실패 지점).
 
 ### 왜 굳이 분리하나
 - **읽기, 쓰기 최적화 축을 따로** — Query는 denormalized view, Command는 정규화된 도메인
@@ -58,3 +64,6 @@ export class UserFactory {
 - CQRS(Command/Query/Event) 분리가 주는 이점과 도입 임계점
 - Factory 패턴으로 도메인 이벤트를 생성하는 이유
 - Clean vs Hexagonal을 실무에서 어떻게 합쳐 쓰는가
+
+## 출처
+- [NestJS — CQRS](https://docs.nestjs.com/recipes/cqrs)

@@ -20,6 +20,15 @@ NestJS의 **Interceptor, Decorator, Provider, Module** 메커니즘으로 캐시
 
 요청 파이프라인 ([[NestJS|NestJS 요청 처리]]): `Middleware → Guard → Interceptor → Pipe → Handler → Filter`. 캐시는 보통 Interceptor (요청, 응답 양쪽 접근)나 Provider 직접 호출.
 
+## 공식 CacheModule 메커니즘 (@nestjs/cache-manager)
+
+- `CacheModule.register()` — 기본 인메모리. 저장 값은 structured clone 알고리즘이 지원하는 타입만.
+- 수동 조작: `@Inject(CACHE_MANAGER) private cache: Cache` 주입 후 `get`(미존재 시 undefined 반환 — cache-manager v6 이전엔 null이었으므로 마이그레이션 시 둘 다 falsy로 취급), `set(key, value, ttl)` — **TTL 단위는 밀리초**, `ttl 0`이면 만료 없음, `del`, `clear`.
+- `CacheInterceptor` 자동 응답 캐시 — **GET 엔드포인트만** 캐시되고, `@Res()`를 주입한 라우트는 사용 불가. **GraphQL에서는 인터셉터가 필드 리졸버마다 실행되므로 CacheModule이 제대로 동작하지 않는다** (공식 경고).
+- 캐시 키는 HTTP에선 요청 URL 기준 — Authorization 헤더별 분리 같은 커스텀은 `CacheInterceptor`를 상속해 `trackBy(context)`를 오버라이드.
+- `@CacheKey`, `@CacheTTL`로 라우트별 오버라이드. WebSocket/마이크로서비스 핸들러에도 적용 가능하지만 그땐 `@CacheKey` 명시가 필수.
+- 스토어: cache-manager v6+는 **Keyv 기반** — Redis는 `@keyv/redis`(KeyvRedis), 인메모리 LRU는 cacheable의 KeyvCacheableMemory, `stores: [...]` 배열로 L1+L2 다층 구성이 공식 경로.
+
 ## 패턴 1 — Cacheable 데코레이터 + Interceptor
 
 `applyDecorators(SetMetadata(...), UseInterceptors(CacheInterceptor))`로 메서드에 캐시 설정 부착. Interceptor는 `Reflector`로 메타데이터 읽고, hit면 `of(value)`로 단락, miss면 `next.handle().pipe(tap(...))`으로 결과 적재. 자세한 데코레이터 메커니즘은 [[NestJS-Custom-Decorator]].
@@ -63,7 +72,7 @@ NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인
 
 ## 패턴 5 — CacheModule.registerAsync (Global)
 
-`@nestjs/cache-manager` + `cache-manager-redis-yet` 조합으로 표준 캐시 매니저 등록 (`CacheModule.registerAsync({ isGlobal: true, useFactory })`). 직접 만든 Provider(LRU, MultiLevel, Stampede, Coherency)와 병행 가능. 자세한 동적 모듈 패턴은 [[NestJS-Module-Dynamic]].
+`@nestjs/cache-manager`로 표준 캐시 매니저 등록 (`CacheModule.registerAsync({ isGlobal: true, useFactory })`). Redis 스토어는 cache-manager v6+ 기준 Keyv 어댑터(`@keyv/redis`)로 연결한다 — `cache-manager-redis-yet`은 v5 시절 스토어 패키지. 직접 만든 Provider(LRU, MultiLevel, Stampede, Coherency)와 병행 가능. 자세한 동적 모듈 패턴은 [[NestJS-Module-Dynamic]].
 
 `@Global()` 사용 시 imports에 매번 추가할 필요 없지만 의존 방향이 흐려질 수 있어, 도메인 모듈에서만 쓰는 캐시는 모듈 단위로 두는 것도 정당.
 
@@ -102,6 +111,7 @@ NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인
 
 ## 출처
 - [TS Backend Meetup — NestJS 캐싱 전략 정리]
+- [NestJS — Caching](https://docs.nestjs.com/techniques/caching)
 
 ## 관련 문서
 - [[NestJS|NestJS 개관]]

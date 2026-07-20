@@ -78,6 +78,10 @@ export class CacheableExplorer implements OnModuleInit {
 
 `OnModuleInit`에서 실행 → 앱 부팅 시 한 번만 스캔. 런타임 오버헤드 없음.
 
+- **DiscoveryModule import 필수**: `DiscoveryService`를 주입받으려면 그 모듈의 imports에 `DiscoveryModule`(@nestjs/core)을 등록해야 한다.
+- `getProviders()`처럼 `getControllers()`도 있다 — 컨트롤러 대상 일괄 처리(분석 트래킹, 자동 등록)에 사용.
+- **전용 데코레이터 팩토리**: `DiscoveryService.createDecorator()`로 만든 데코레이터(`@FeatureFlag('experimental')`)는 `discoveryService.getMetadataByDecorator(FeatureFlag, wrapper)`로 읽는다 — SetMetadata + Reflector 조합 없이 wrapper 단위로 바로 필터링하는 API.
+
 ## 3단계: 실행 (메서드 래핑)
 
 찾은 메서드를 **래퍼 함수로 교체**. 원본 호출 전후에 로직 주입.
@@ -115,3 +119,6 @@ Object.setPrototypeOf(instance[methodName], original);
 - [[NestJS-Custom-Decorator|NestJS 커스텀 데코레이터 (TOC)]]
 - [[NestJS-Custom-Decorator-Patterns|커스텀 데코레이터 활용 패턴]]
 - [[NestJS-Custom-Decorator-Pitfalls|@toss/nestjs-aop과 흔한 실수]]
+
+## 출처
+- [NestJS — Discovery service](https://docs.nestjs.com/fundamentals/discovery-service)
