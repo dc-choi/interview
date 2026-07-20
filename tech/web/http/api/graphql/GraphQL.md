@@ -56,7 +56,9 @@ type Post {
 ### Resolver
 각 필드를 어떻게 가져올지 정의하는 함수. 스키마와 데이터 소스를 연결. graphql-js 계열의 관례적 시그니처는 `(parent, args, context, info)` — parent는 상위 필드 resolver가 반환한 객체, args는 필드 인자, context는 요청 스코프 공유 객체로 인증된 사용자, DB 접근 같은 것을 나른다 (예: `me` 필드는 context의 인증 정보로, `name` 필드는 그 user id로 DB 조회). info는 현재 연산과 스키마에 대한 필드 메타 정보로 고급 케이스에서만 쓴다.
 
-- resolver를 생략하면 많은 라이브러리가 parent에서 같은 이름의 프로퍼티를 읽어 반환한다(기본 resolver). 단순 필드마다 resolver를 손으로 쓸 필요가 없는 이유.
+- resolver를 생략하면 많은 라이브러리가 parent에서 같은 이름의 프로퍼티를 읽어 반환한다(기본 resolver, 프로퍼티가 함수면 호출해 그 결과를 쓴다). 단순 필드마다 resolver를 손으로 쓸 필요가 없는 이유.
+- context 객체는 서버 통합의 context 함수가 요청마다 새로 만들어(헤더 같은 요청 정보 접근) 그 연산의 모든 resolver가 같은 인스턴스를 공유한다. DataLoader 인스턴스를 요청 스코프로 두는 자리가 여기다. resolver가 context를 파괴적으로 수정하지 않는 것이 계약이다.
+- context 함수에서 던지면 그 요청 전체가 거부된다(기본 500, GraphQLError의 `extensions.http`로 401 같은 상태 코드 지정 가능). 인증 실패를 실행 전에 통째로 끊는 자리다 — 실행 중 필드 단위로 판단되어 partial response가 되는 인가 실패와 대비된다([[GraphQL-Security|인증 vs 인가]]). 단 전면 거부는 공개 접근이 전혀 없는 API에만 적합하고, 공개 필드가 섞여 있으면 필드 수준으로 끊어 부분 응답을 살린다.
 - resolver 반환값은 타입 시스템이 스키마 계약에 맞게 변환한다(scalar coercion). 서버 내부 표현이 정수여도 스키마가 enum이면 enum 값 이름으로 나가는 식.
 - resolver는 Promise 같은 비동기 값을 반환할 수 있고, 실행 엔진이 완료를 기다렸다가 하위 필드로 내려간다. 쿼리 쪽은 비동기 여부를 모른다.
 
@@ -67,7 +69,8 @@ type Post {
 - **깊은 객체 구조에 강함** — 4~5단계 중첩에서 특히 유용
 - **프론트엔드 유연성** — 백엔드 DTO 변경 없이 쿼리만 조정. 모바일, 웹, 다른 클라이언트가 같은 엔드포인트를 다르게 사용
 - **자동 문서화** — 스키마 자체가 명세 → GraphiQL, Apollo Studio 등으로 IDE-like 탐색
-- **타입 안전성** — 컴파일 단계에서 클라이언트 코드가 스키마와 일치하는지 검증 가능
+- **타입 안전성** — 컴파일 단계에서 클라이언트 코드가, codegen을 쓰면 서버 resolver 구현까지 스키마와 일치하는지 검증 가능
+- **스키마 기반 모킹** — 스키마가 타입 계약이라 mock 응답을 자동 생성할 수 있다(타입별 기본값 또는 커스텀). 백엔드 완성 전에 프론트가 병렬로 개발하는 근거
 
 ## 단점
 
@@ -133,6 +136,10 @@ JSON 기반이라 multipart 업로드는 별도 명세(graphql-multipart-request
 ## 출처
 - [graphql.org — Introduction to GraphQL](https://graphql.org/learn/introduction/)
 - [graphql.org — Execution](https://graphql.org/learn/execution/)
+- [Apollo Server — Resolvers (context 초기화, 기본 resolver)](https://www.apollographql.com/docs/apollo-server/data/resolvers)
+- [Apollo Server — Context and contextValue](https://www.apollographql.com/docs/apollo-server/data/context)
+- [Apollo Server — Mocking](https://www.apollographql.com/docs/apollo-server/testing/mocking)
+- [Apollo Server — Authentication and authorization](https://www.apollographql.com/docs/apollo-server/security/authentication)
 - [요즘IT — GraphQL 도입 시 주의할 점](https://yozm.wishket.com/magazine/detail/2113/)
 - [velog @mdy0102 — GraphQL을 사용하며 느낀 장단점](https://velog.io/@mdy0102/GraphQL을-사용하며-느낀-장단점)
 
