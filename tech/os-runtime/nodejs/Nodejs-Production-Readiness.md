@@ -128,6 +128,11 @@ Node.js 특유:
 - 의존성 보안 패치 정기 적용
 - 인증서 갱신 자동화 (Let's Encrypt, ACM)
 
+### NestJS 배포 관행
+- **NODE_ENV=production 설정** — Node/Nest 자체는 dev/prod 동작 차이가 없지만, 생태계 라이브러리들이 이 변수로 디버그 출력 등을 전환하므로 관행적 필수.
+- 헬스체크는 **@nestjs/terminus**가 공식 경로 — readiness/liveness 프레임으로 HTTP ping, TypeORM DB, 디스크, 메모리 인디케이터를 내장하고 `HealthIndicatorService`로 커스텀 인디케이터를 만든다 (`check(key)`로 시작해 `indicator.up()`/`down(부가정보)`를 반환하는 v11+ API — 구 HealthIndicator 상속과 HealthCheckError throw 방식은 deprecated, 다음 메이저에서 제거 예정). 응답 status는 `ok`/`error`에 더해 **`shutting_down`**(종료 중이지만 아직 요청을 받는 상태)이 있고, `gracefulShutdownTimeoutMs`를 **readiness 체크 간격보다 약간 길게** 잡으면 K8s 컨테이너 종료 시 무중단이 된다 (수동 HealthService 패턴은 [[NestJS-Lifecycle]]).
+- `nest start`는 `node dist/main.js` 래퍼에 자동 `nest build`가 붙은 것 — 운영에선 빌드 산출물을 `node dist/main.js`로 직접 실행.
+
 ## 초기 스타트업 vs 운영 성숙
 
 완벽부터 추구하면 서비스 출시 못 한다. 단계별 접근:
@@ -162,6 +167,9 @@ Node.js 특유:
 
 ## 출처
 - [supims (brunch) — 안정적인 Node.js 기반 백엔드 시스템 1~9편](https://brunch.co.kr/@supims/122)
+- [NestJS — Deployment](https://docs.nestjs.com/deployment)
+- [NestJS — Terminus (Healthchecks)](https://docs.nestjs.com/recipes/terminus)
+- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)
 
 ## 관련 문서
 - [[Backend-Engineer-Baseline|백엔드 엔지니어 기본 역량 체크리스트]]

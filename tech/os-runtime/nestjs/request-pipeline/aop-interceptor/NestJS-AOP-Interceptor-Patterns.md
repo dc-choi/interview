@@ -80,6 +80,10 @@ export class TimeoutInterceptor implements NestInterceptor {
 
 외부 API 호출 모듈 전용 Interceptor로 두는 게 안전 — 모든 핸들러에 자동 재시도는 멱등성 보장 안 된 메서드(POST, PATCH)에서 위험.
 
+### 응답 직렬화 — 내장 ClassSerializerInterceptor
+
+핸들러 반환값에 class-transformer의 `instanceToPlain()`을 적용해 엔티티의 `@Exclude()`/`@Expose()`/`@Transform()` 규칙을 실행하는 내장 인터셉터 — 전역 적용하면 민감 필드 제거가 중앙 강제된다. 데코레이터별 사용법, 클래스 인스턴스 반환 제약과 `@SerializeOptions({ type })` 우회, StreamableFile 미적용 등 전체 정리는 [[NestJS-Serialization|응답 직렬화]] 정본 참조.
+
 ## 실전 패턴: Prisma 에러 중앙 처리
 
 Prisma 쿼리 에러(`PrismaClientKnownRequestError` 등)를 각 Service에서 try-catch하는 건 중복. AOP Interceptor로 **중앙 처리 + 메서드별 커스텀 메시지**.
@@ -125,3 +129,6 @@ Service는 순수 비즈니스 로직만. 에러 매핑, 메서드별 메시지,
 
 ## 관련 문서
 - [[NestJS-AOP-Interceptor|NestJS AOP Interceptor (TOC)]]
+
+## 출처
+- [NestJS — Serialization](https://docs.nestjs.com/techniques/serialization)

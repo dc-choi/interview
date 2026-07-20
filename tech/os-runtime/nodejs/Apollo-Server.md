@@ -27,8 +27,9 @@ aliases: ["Apollo Server", "아폴로 서버", "@apollo/server"]
 - 필요한 패키지는 둘이다: `graphql`(GraphQL 코어 알고리즘 구현)과 `@apollo/server`(HTTP 요청을 GraphQL 연산으로 바꿔 실행하는 서버 본체).
 - 부팅 흐름: SDL 문자열 typeDefs와 resolver 맵을 `ApolloServer` 생성자에 넘기고, `startStandaloneServer`로 리슨한다. 서버 URL로 접속하면 Apollo Sandbox(GraphOS Explorer 웹 IDE의 계정 불필요 모드)가 떠서 바로 쿼리를 실행해 볼 수 있다.
 - 프로덕션 환경에선 introspection이 기본으로 꺼진다 — 그래서 introspection에 의존하는 Sandbox 같은 도구도 프로덕션 landing page에선 동작하지 않는다 ([[GraphQL-Security|보안]]).
+- helmet과 함께 쓰면 Apollo Sandbox가 CSP에 걸려 깨질 수 있다 — `crossOriginEmbedderPolicy: false` + CSP 지시어에 Apollo landing page CDN, sandbox embed 도메인 허용으로 해결 (NestJS 공식 가이드의 조정 예시).
 - 스키마 기반 모킹은 @graphql-tools/mock의 addMocksToSchema로 스키마를 감싸 켠다. 기본은 mock이 resolver를 덮고, preserveResolvers를 켜면 실제 resolver를 살린 채 빈 곳만 모킹한다. custom scalar는 기본 mock 값이 없어 명시적으로 정의해야 한다.
-- 확장은 플러그인으로 한다: 이벤트가 두 갈래다. 서버 수명 이벤트(serverWillStart 등)는 기동 시 한 번, 요청 수명 이벤트는 요청마다 돈다. 후자는 중첩 패턴이다 — requestDidStart가 요청 시작 시 불리고 그 안에서 parsingDidStart, validationDidStart, executionDidStart 같은 하위 단계 핸들러를 반환해 요청 로직을 한 곳에 캡슐화한다. 훅 이름이 parse, validate, execute 단계([[GraphQL-Architecture-Map|지도]])와 그대로 대응해 로깅, 메트릭 계측을 꽂는 자리다. 각 단계엔 end 훅이 있어 그 단계 종료 후 에러를 받는다(validate의 end 훅은 그 단계의 모든 에러 배열을 받는다).
+- 확장은 플러그인으로 한다: 이벤트가 두 갈래다. 서버 수명 이벤트(serverWillStart 등)는 기동 시 한 번, 요청 수명 이벤트는 요청마다 돈다. 후자는 중첩 패턴이다 — requestDidStart가 요청 시작 시 불리고 그 안에서 parsingDidStart, validationDidStart, executionDidStart 같은 하위 단계 핸들러를 반환해 요청 로직을 한 곳에 캡슐화한다. 훅 이름이 parse, validate, execute 단계([[GraphQL-Architecture-Map|지도]])와 그대로 대응해 로깅, 메트릭 계측을 꽂는 자리다. 각 단계엔 end 훅이 있어 그 단계 종료 후 에러를 받는다(validate의 end 훅은 그 단계의 모든 에러 배열을 받는다). NestJS에서는 ApolloServerPlugin 구현 클래스에 `@Plugin()`(@nestjs/apollo)을 붙여 providers로 등록만 하면 자동 적용된다 — DI를 받는 플러그인이 가능해진다.
 - 전용 헬스체크 엔드포인트는 없다. GraphQL 수준 체크는 `{__typename}` 같은 trivial 쿼리를 GET으로 날린다 — 프로세스 생존만이 아니라 GraphQL 실행 능력까지 확인된다. 이 GET은 Content-Type이 없어 CSRF 방지에 걸리므로 `apollo-require-preflight: true` 헤더를 동봉한다. HTTP 수준 체크만 필요하면 프레임워크에 항상 성공하는 별도 GET 핸들러를 둔다.
 - 통합 테스트는 executeOperation으로 HTTP 없이 요청 파이프라인만 태운다 — 테스트용 contextValue를 직접 주입하고, parse, validate, execute 에러도 던져지지 않고 응답 body(`singleResult.errors`)로 온다. 전송 중립 경계의 실용 이점이다. HTTP 계층과 context 함수의 실제 동작은 supertest 같은 진짜 HTTP e2e로만 검증된다.
 
@@ -113,3 +114,4 @@ aliases: ["Apollo Server", "아폴로 서버", "@apollo/server"]
 - [Apollo Server — Drain HTTP server plugin](https://www.apollographql.com/docs/apollo-server/api/plugin/drain-http-server)
 - [Apollo Server — Subscription callback plugin](https://www.apollographql.com/docs/apollo-server/api/plugin/subscription-callback)
 - [Apollo Server — Building plugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins)
+- [NestJS — GraphQL Plugins](https://docs.nestjs.com/graphql/plugins)

@@ -65,6 +65,14 @@ aliases: ["Monorepo Architecture", "모노레포 아키텍처", "Monorepo Monoli
 
 독립성을 유지하는 규칙은 사람의 기억과 의지가 아니라 **플랫폼(도구)** 이 강제, 측정해야 살아 있다. 계층 규칙은 linter가, 순환 의존은 CI가 차단하고, 느려지는 빌드는 직감이 아니라 지표가 드러내며, fragment 배포는 다른 팀의 승인이 아니라 소유 팀의 manifest 갱신으로 완결된다. 플랫폼 팀의 역할은 다른 팀이 아키텍처 규칙을 의식하지 않아도 올바른 구조를 따를 수밖에 없게 만드는 것이다. 구체 메커니즘은 [[Monorepo-CICD|모노레포 CI/CD]](파이프라인 독립, 캐시, 건강 지표)와 [[Module-Federation|Module Federation]](런타임 통합, 독립 배포)에서 다룬다.
 
+## 사례 — NestJS 모노레포 모드
+
+백엔드 쪽 구현 사례로 NestJS CLI의 monorepo mode가 이 구조를 내장한다: workspace의 프로젝트가 **application**(main.ts 있는 배포 단위)과 **library**(단독 실행 불가, main.ts 없음 — 기능 패키징)로 나뉘고, 앱별 package.json 없이 의존성과 설정은 모노레포 전역 공유(프로젝트별 tsconfig.app.json만 오버라이드)한다. `nest-cli.json`의 root가 가리키는 default project가 프로젝트명 없는 build/start의 대상이 된다.
+
+코드 공유의 3레벨도 명시적이다 — 모듈(한 앱 안), npm 패키지(느슨히 연결된 조직 간 배포), 모노레포 라이브러리(회사/프로젝트 경계 안 경량 공유, `libs/` + `@app` 경로 별칭). 라이브러리의 핵심 이점은 **커밋 즉시 모든 소비자가 최신 버전을 본다**는 것(npm 버저닝/설치 사이클 제거)이고, 무엇을 라이브러리로 뽑을지는 설계 결정이다 — 코드 복사가 아니라 앱과의 디커플링을 강제해 선행 비용이 들지만 다중 앱 조립 속도로 회수한다 (위 공통 패키지 함정의 판단 기준과 같은 축).
+
+워크스페이스 함정 하나: 호이스팅이 어긋나 `@nestjs/core`가 루트와 하위 패키지에 두 벌 로드되면 DI 컨테이너가 갈라져 `ModuleRef`를 못 찾는 에러가 난다 — Yarn은 nohoist, pnpm은 peerDependencies + dependenciesMeta injected로 단일 인스턴스를 강제한다 ([[Custom-Provider|DI 진단]] 참조).
+
 ## 면접 체크포인트
 
 - 모노레포(레포 관리)와 모놀리스(아키텍처, 배포)가 직교하는 개념이라 모노레포이면서 모놀리스인 상태가 가능하다는 점
@@ -77,6 +85,9 @@ aliases: ["Monorepo Architecture", "모노레포 아키텍처", "Monorepo Monoli
 ## 출처
 
 - 모노레포가 모놀리스가 되지 않으려면 (1편, 2편) — 미리캔버스 프론트엔드 팀(종현 김), Medium
+- [NestJS — Workspaces (monorepo mode)](https://docs.nestjs.com/cli/monorepo)
+- [NestJS — Libraries](https://docs.nestjs.com/cli/libraries)
+- [NestJS — Common errors (FAQ)](https://docs.nestjs.com/faq/common-errors)
 
 ## 관련 문서
 

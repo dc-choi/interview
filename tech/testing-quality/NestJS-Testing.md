@@ -45,6 +45,10 @@ const module = await Test.createTestingModule({
 
 핵심: 의존 Provider 모두를 **`useValue`로 mock 객체**로 교체. 실제 클래스 인스턴스화 없이 메서드 시그니처만 만족.
 
+**useMocker — 미지정 의존성 자동 mock**: 의존이 많으면 `.useMocker(token => ...)`를 체인해 providers에 안 넣은 의존성 전부에 mock 팩토리를 적용한다 (jest-mock의 ModuleMocker나 @golevelup/ts-jest의 createMock을 팩토리로). 만들어진 mock도 `moduleRef.get(Token)`으로 꺼낸다. 단 REQUEST, INQUIRER 프로바이더는 컨텍스트에 사전 정의돼 auto-mock 불가 — `overrideProvider`로 교체한다.
+
+**Suites — 컨테이너 없는 자동 mock 단위 테스트**: 오픈소스 Suites(구 Automock)는 TestingModule 없이 클래스 생성자 메타데이터를 읽어 **타입 있는 mock을 전 의존성에 자동 생성**한다 — `TestBed.solitary(UserService).compile()`이면 전부 mock(격리), `TestBed.sociable().expose(...)`면 지정한 의존만 실제 구현. DI 컨테이너를 안 띄우므로 useMocker 방식보다 셋업이 가볍고, 집중 단위 테스트에 적합하다.
+
 ## 통합 테스트 — in-memory DB
 
 ```ts
@@ -112,6 +116,8 @@ const module = await Test.createTestingModule({
 
 전역 Guard를 모든 테스트에서 통과시키거나 — 도메인 로직만 테스트하려는 의도.
 
+**APP_GUARD로 등록한 전역 enhancer는 useExisting 트릭 필요**: `{ provide: APP_GUARD, useClass: JwtAuthGuard }`로 등록하면 테스트에서 교체가 안 된다. `{ provide: APP_GUARD, useExisting: JwtAuthGuard }`로 바꾸고 `JwtAuthGuard`를 일반 프로바이더로도 등록해 두면 Nest에 보이는 일반 프로바이더가 되어 `overrideProvider(JwtAuthGuard).useClass(MockAuthGuard)`로 교체된다. pipe, interceptor, filter의 APP_* 토큰도 동일.
+
 ## E2E — Supertest
 
 ```ts
@@ -126,6 +132,27 @@ await request(app.getHttpServer())
 ```
 
 실제 HTTP 입구부터 응답까지. 미들웨어, Guard, Pipe, Filter 모두 통과.
+
+## Request-scoped Provider 테스트
+
+request-scoped 인스턴스는 요청마다 생성되고 응답 후 GC라, 테스트 코드가 해당 요청의 DI 서브트리에 접근할 수 없다. contextId를 미리 만들어 **모든 요청이 그 서브트리를 쓰도록 고정**한다.
+
+```ts
+const contextId = ContextIdFactory.create();
+jest.spyOn(ContextIdFactory, 'getByRequest').mockImplementation(() => contextId);
+
+// 이후 요청이 만든 request-scoped 인스턴스에 접근 가능
+catsService = await moduleRef.resolve(CatsService, contextId);
+```
+
+## 동적 모듈 중복 인스턴스 스텁 (v11)
+
+v11부터 동적 모듈이 딥 해시로 중복 제거되지 않아(객체 참조 동일성), `forFeature([User])` 같은 호출을 여러 모듈에서 하면 TestingModule 안에 **같은 의존성 인스턴스가 여러 개** 생긴다. 스텁했는데 실제 코드가 다른 인스턴스를 쓰면 안 먹는다. 대응 4가지:
+
+- 프로덕션 코드에서 동적 모듈을 변수로 공유해 중복 자체를 제거
+- `module.select(ParentModule).get(Target)` — 특정 모듈 컨텍스트의 인스턴스를 지정
+- `module.get(Target, { each: true })` — 모든 인스턴스를 배열로 받아 전부 스텁
+- `Test.createTestingModule({...}, { moduleIdGeneratorAlgorithm: 'deep-hash' })` — 그 테스트만 구(v10) 알고리즘으로 회귀
 
 ## 흔한 실수
 
@@ -149,8 +176,14 @@ await request(app.getHttpServer())
 ## 관련 문서
 
 - [[NestJS|NestJS 개요]]
+- [[Module-reference|Module Reference (resolve, ContextIdFactory)]]
 - [[Test-Pyramid|테스트 피라미드]]
 - [[Mock-Testing-Strategy|Mock 전략]]
 - [[Service-Layer-Testing|서비스 레이어 테스팅]]
 - [[TestContainers-Integration|Testcontainers 통합 테스트]]
 - [[Transactional-Test-Antipattern|@Transactional 테스트 안티패턴]]
+
+## 출처
+- [NestJS — Testing](https://docs.nestjs.com/fundamentals/testing)
+- [NestJS — Suites](https://docs.nestjs.com/recipes/suites)
+- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)

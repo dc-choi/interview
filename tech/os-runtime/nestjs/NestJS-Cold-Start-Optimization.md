@@ -48,6 +48,9 @@ console.log(`Bootstrap: ${Date.now() - start}ms`);
 - `node --prof`, `--cpu-prof`로 CPU 분석
 - 반복되는 `require()` 비용 측정 (`require.cache`)
 
+### 4. Nest Devtools Bootstrap performance
+`NestFactory.create(..., { snapshot: true })`로 그래프 메타데이터를 수집하면 Devtools의 Bootstrap performance 페이지에서 **클래스 노드(컨트롤러, 프로바이더, 인핸서)별 인스턴스화 시간**을 나열해 부팅에서 느린 지점을 짚을 수 있다 (DevtoolsModule은 개발 환경 전용).
+
 ## 최적화 전략
 
 ### 1. 도메인 단위 Controller 분리
@@ -88,7 +91,13 @@ async rarelyUsedFeature() {
 }
 ```
 
-관리자 전용, 외부 연동 같은 희소 기능에 적합. 평상시 부팅 시간 감축.
+관리자 전용, 외부 연동 같은 희소 기능에 적합. 평상시 부팅 시간 감축. 입력(라우트, 날짜, 쿼리)에 따라 다른 로직을 태우는 worker, cron, lambda, webhook이 대표 케이스고, 부팅 시간이 덜 중요한 모놀리스엔 실익이 적다.
+
+제약 (공식):
+- **생명주기 훅 미호출** — lazy 로드된 모듈과 서비스에서는 lifecycle hook이 호출되지 않는다.
+- **컨트롤러, 리졸버, 게이트웨이는 lazy 불가** — 라우트/토픽 집합이라 런타임 등록이 안 된다. Fastify는 listen 후 라우트 추가 불가, 마이크로서비스 전송층(Kafka, gRPC, RabbitMQ)은 연결 수립 전에 구독해야 하며, GraphQL code first는 스키마 생성에 전체 클래스 선로드가 필요. `MiddlewareConsumer` 미들웨어도 on-demand 등록 불가.
+- **Global 등록 불가** — 정적 모듈이 모두 인스턴스화된 뒤에야 등록되므로 lazy 모듈의 global 등록은 의미가 없고, global enhancer(가드, 인터셉터)도 제대로 동작하지 않는다.
+- **첫 load() 후 캐시** — 같은 모듈 재로드는 캐시된 인스턴스를 반환해 매우 빠르며, lazy 모듈도 eager 모듈과 같은 모듈 그래프를 공유한다. `load()`가 반환하는 module reference에서 `moduleRef.get(LazyService)`로 프로바이더를 꺼낸다.
 
 ### 4. 가벼운 대안 프로바이더
 - 무거운 초기화가 필요한 프로바이더는 **`useFactory` + 지연 생성**
@@ -96,6 +105,8 @@ async rarelyUsedFeature() {
 
 ### 5. Tree-Shaking과 번들 크기
 - `@nestjs/cli` 빌드 대신 **esbuild, webpack**으로 번들링
+- CLI 안에서 해결하려면 **SWC 빌더**가 공식 권장 — 기본 tsc 컴파일러보다 10배 빠르다는 공식 수치. nest build는 tsc/swc(standard 모드) 또는 webpack+ts-loader(monorepo 모드)의 얇은 래퍼로, **tsconfig-paths 처리 외엔 컴파일 단계를 추가하지 않는다** — 표준 TS 빌드 파이프라인이라 외부 도구로 통째로 대체해도 무방하다는 공식 입장.
+- SWC 전환 시 함정 3가지: (1) **SWC는 타입 체크를 안 한다** — `--type-check`(또는 nest-cli.json `typeCheck: true`)가 tsc를 noEmit으로 병행 실행해 비동기 체크. (2) **GraphQL/Swagger CLI 플러그인은 --type-check가 있어야 실행**되고(직렬화 메타데이터 파일 생성 → 런타임 로드), 모노레포의 swc-loader에선 자동 로드가 안 돼 수동 generator 파일이 필요. (3) **순환 import에 약하다** — TypeORM 엔티티 상호 참조는 `Relation<Profile>` 래퍼 타입으로 감싸 리플렉션 메타데이터에 타입 저장을 막는 워크어라운드가 공식 가이드.
 - 서버리스라면 단일 JS 파일로 최소화
 - 불필요한 polyfill, legacy API 제거
 
@@ -114,6 +125,20 @@ async rarelyUsedFeature() {
 모듈 그래프가 깊어질수록 효과 커짐.
 
 ## 서버리스 특화 팁
+
+### 공식 부팅 벤치마크 — 번들링이 결정 변수
+
+같은 스타터 앱 기준 (공식 문서 측정, MacBook Pro 2014):
+
+| 구성 | 미번들 | webpack 단일 번들(node_modules 포함) |
+|------|--------|-------------------------------------|
+| Nest + platform-express | ~197ms | ~81.5ms |
+| Nest standalone (리스너 없음) | ~112ms | ~32ms |
+| raw Node 스크립트 | ~7ms | ~7ms |
+
+- **컴파일과 번들 방식이 부팅 시간의 결정 변수** — 번들만으로 절반 이하. 10개 리소스 규모 앱은 번들 후에도 ~130ms로, 앱이 클수록 부팅이 늘어난다 (모놀리스를 통째로 서버리스에 올리는 것 자체가 비권장인 이유).
+- 번들 시 Nest 내부의 옵션 모듈(microservices, websockets)의 lazy import는 webpack `IgnorePlugin`으로 무시 처리해야 깨지지 않는다.
+- **warm invocation 캐시**: 부팅 결과(server 핸들러)를 핸들러 함수 밖 변수에 담아 재사용 — cold start에만 bootstrap이 돌게 하는 표준 패턴.
 
 ### Provisioned Concurrency
 - AWS Lambda Provisioned Concurrency: 미리 N개 인스턴스 워밍
@@ -146,8 +171,15 @@ async rarelyUsedFeature() {
 
 ## 출처
 - [velog @miinhho — NestJS 의존성 최적화를 통한 Cold Start 성능 개선](https://velog.io/@miinhho/NestJS-%EC%9D%98%EC%A1%B4%EC%84%B1-%EC%B5%9C%EC%A0%81%ED%99%94%EB%A5%BC-%ED%86%B5%ED%95%9C-Cold-Start-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0)
+- [NestJS — Lazy loading modules](https://docs.nestjs.com/fundamentals/lazy-loading-modules)
+- [NestJS — CLI overview](https://docs.nestjs.com/cli/overview)
+- [NestJS — CLI and scripts](https://docs.nestjs.com/cli/scripts)
+- [NestJS — SWC](https://docs.nestjs.com/recipes/swc)
+- [NestJS — Serverless (FAQ)](https://docs.nestjs.com/faq/serverless)
+- [NestJS — Devtools overview](https://docs.nestjs.com/devtools/overview)
 
 ## 관련 문서
+- [[Module-reference|Module Reference (load()가 반환하는 ModuleRef)]]
 - [[NestJS|NestJS 개요]]
 - [[NestJS-vs-Spring|NestJS vs Spring (Cold Start 비교)]]
 - [[Clean-Architecture-NestJS|Clean Architecture with NestJS]]

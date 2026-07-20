@@ -30,7 +30,7 @@ Guard 통과 후 Pipe 실행 — 인가는 끝났고, 입력값을 다듬는 단
 
 ## 내장 파이프
 
-`ParseIntPipe`, `ParseBoolPipe`, `ParseArrayPipe`, `ParseUUIDPipe`, `ParseEnumPipe`, `ValidationPipe`, `DefaultValuePipe`.
+`ParseIntPipe`, `ParseFloatPipe`, `ParseBoolPipe`, `ParseArrayPipe`, `ParseUUIDPipe`, `ParseEnumPipe`, `ParseDatePipe`, `ParseFilePipe`, `ValidationPipe`, `DefaultValuePipe`.
 
 ```ts
 @Get(':id')
@@ -77,6 +77,10 @@ export class UserExistsPipe implements PipeTransform {
 ```
 
 DI 받는 Pipe는 `@Injectable()` + `new` 대신 클래스 토큰으로 등록.
+
+## 스키마 기반 검증 대안 (Zod)
+
+class-validator 데코레이터 대신 Zod 같은 스키마 라이브러리로 검증하는 경로도 표준으로 제시된다 — 스키마 객체를 받는 커스텀 파이프(ZodValidationPipe)를 만들어 `schema.parse(value)` 실패 시 BadRequestException을 던진다. DTO 데코레이터 방식(아래)과 스키마 방식은 병렬 선택지다.
 
 ## ValidationPipe + class-validator
 
@@ -191,3 +195,7 @@ app.useGlobalPipes(new ValidationPipe());
 - [[NestJS-Guards|Guards (Pipe 앞 단계)]]
 - [[NestJS-Exception-Filter|Pipe 검증 실패 → Exception Filter]]
 - [[NestJS-Custom-Decorator|커스텀 데코레이터]]
+
+## 출처
+
+- [NestJS — Pipes](https://docs.nestjs.com/pipes)

@@ -83,6 +83,8 @@ export class AppModule {}
 | `forFeature(options)` | 도메인/모듈별 — TypeOrmModule.forFeature([User]) 같은 기능 등록 |
 | `register(options)` | 옵션 인자로 모듈 인스턴스 생성 — forRoot보다 가벼운 용도 |
 
+v11부터 동적 모듈의 동일성은 **객체 참조**로 판정한다 — v10까지는 동적 메타데이터의 딥 해시로 같은 `forFeature([User])` 호출들을 한 노드로 중복 제거했지만, 이제 호출마다 별개 모듈이다. **여러 모듈이 같은 동적 모듈을 공유하려면 변수에 담아 그 참조를 import**한다 (성능, 메모리 개선 목적. 통합 테스트에서 의존성 인스턴스가 여러 개 생기는 영향과 대응은 [[NestJS-Testing|NestJS 테스트]]).
+
 ## `registerAsync` — 비동기, DI 의존 옵션
 
 옵션이 다른 Provider(예: `ConfigService`)에 의존하거나 비동기 호출 결과로 결정될 때.
@@ -158,6 +160,13 @@ export class BService implements OnModuleInit {
 
 호출 → 통보 → 응답 패턴이 **느슨하게 결합**되며, 새 구독자가 늘어도 발행자 수정 불필요. 단점은 호출 흐름이 코드만 봐서는 안 보여 디버깅 추적성이 떨어짐 → 도메인 이벤트 카탈로그 문서화 병행.
 
+## ConfigurableModuleBuilder — 보일러플레이트 자동 생성
+
+위의 register/registerAsync와 옵션 토큰을 손으로 짜는 대신, `new ConfigurableModuleBuilder<ModuleOptions>().build()`가 내놓는 `ConfigurableModuleClass`를 모듈이 상속하면 register()와 registerAsync()(useFactory, useClass, useExisting 지원)가 자동 생성된다. 옵션은 함께 생성되는 `MODULE_OPTIONS_TOKEN`으로 서비스에 주입받는다.
+
+- 메서드 이름은 `.setClassMethodName('forRoot')`로 바꾼다 — forRoot와 forRootAsync 쌍으로 생성.
+- `isGlobal`처럼 서비스는 몰라도 되는 모듈 동작 플래그는 `.setExtras()`로 옵션 토큰과 분리해 모듈 정의에만 반영한다.
+
 ## exports 규칙
 
 - export하지 않은 Provider는 **모듈 외부에서 주입 불가**.
@@ -185,3 +194,7 @@ export class BService implements OnModuleInit {
 - [[NestJS|NestJS 개요, DI, 모듈 기본]]
 - [[NestJS-Lifecycle|NestJS Lifecycle (Bootstrap 단계, 생명주기 훅)]]
 - [[NestJS-vs-Spring|NestJS vs Spring (DI 모듈 비교)]]
+
+## 출처
+- [NestJS — Dynamic modules](https://docs.nestjs.com/fundamentals/dynamic-modules)
+- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)

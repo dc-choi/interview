@@ -80,11 +80,31 @@ export class AppModule implements NestModule {
 | `exclude(path)` | 특정 경로 제외 (헬스체크, Swagger 같은 것) |
 | `apply(...mw)` | 여러 미들웨어를 한 번에 |
 
+와일드카드 문법 (Express v5 기준): forRoutes 경로 패턴은 named wildcard로 쓴다 — `abcd/*splat`(이름은 임의)은 abcd/ 뒤에 뭔가 있는 경로만 매칭하고, `abcd/` 자체까지 포함하려면 중괄호로 감싸 `abcd/{*splat}`로 옵셔널화한다. 전체 매칭 `forRoutes('*')`는 그대로 쓸 수 있다. 위 예시의 `/api/*` 같은 bare 와일드카드는 v4 시절 문법이다.
+
 ## Express 미들웨어 호환
 
 `helmet()`, `cors()`, `compression()`, `cookie-parser()` 같은 Express 생태계 미들웨어를 그대로 쓸 수 있는 것이 강점.
 
 전역 적용은 `main.ts`의 `app.use(...)`로도 가능. `MiddlewareConsumer`는 **경로별, DI가 필요한 경우** 사용.
+
+**등록 순서 규칙**: helmet, cors 같은 전역 미들웨어는 다른 `app.use()`나 라우트 정의보다 **먼저** 등록해야 한다 — Express/Fastify는 미들웨어와 라우트의 정의 순서가 곧 적용 순서라, 라우트 정의 뒤에 등록한 미들웨어는 그 라우트에 적용되지 않는다.
+
+모듈 미들웨어(MiddlewareConsumer) 간에는 v11부터 **전역 모듈(@Global)에 등록한 미들웨어가 의존성 그래프상 위치와 무관하게 최우선 실행**된다 — v10까지는 전역/일반 구분 없이 루트 모듈로부터의 위상 정렬 거리 순이어서 비일관적이었다.
+
+쿠키가 대표 사례 — NestJS는 쿠키 파싱을 내장하지 않고 미들웨어에 위임한다:
+- `cookie-parser`가 Cookie 헤더를 파싱해 `req.cookies`로, secret을 주면 서명 쿠키를 검증해 `req.signedCookies`로 노출. **서명 검증에 실패한(변조된) 쿠키는 값이 false**로 들어온다.
+- 응답 쿠키는 `@Res({ passthrough: true })`로 받은 response의 `cookie()` — passthrough 없이 `@Res()`만 쓰면 프레임워크의 응답 처리가 꺼진다.
+- Fastify는 미들웨어 대신 `@fastify/cookie` 플러그인을 `app.register()`로 등록. 플랫폼 무관 접근이 필요하면 `createParamDecorator`로 `@Cookies()` 커스텀 데코레이터를 만든다.
+
+세션도 동일 — `express-session`을 `app.use(session({ secret, resave: false, saveUninitialized: false }))`로 걸고 핸들러에서 `@Session()` 데코레이터(@nestjs/common)로 추출:
+- **기본 인메모리 store는 운영 금지** — 공식 문구로 메모리 누수, 단일 프로세스 한계, 디버깅/개발 전용. 운영은 Redis 같은 외부 store.
+- `secret` 배열이면 첫 요소로 서명하고 전체로 검증 — 시크릿 로테이션 구조. `resave` 기본 true는 deprecated라 false 명시. `saveUninitialized: false`는 로그인 세션, 저장 절약, 쿠키 동의법 준수, 무세션 병렬 요청 race 완화에 유용.
+- `secure: true` 권장 (HTTPS 필수) — 프록시 뒤에서는 Express `trust proxy` 설정 필요. Fastify는 `@fastify/secure-session` 플러그인.
+
+응답 압축도 같은 구조 — Express는 `compression()`(gzip), Fastify는 `@fastify/compress` 플러그인:
+- **고트래픽 운영에선 앱 서버 압축을 쓰지 말고 리버스 프록시(Nginx)로 오프로드**하는 것이 공식 강력 권장 — 그 경우 compression 미들웨어를 빼야 한다.
+- `@fastify/compress`는 브라우저가 지원하면 **기본 Brotli** — 압축률은 좋지만 기본 품질 11이 느리다. `BROTLI_PARAM_QUALITY`(0~11) 튜닝 또는 `encodings: ['gzip', 'deflate']`로 제한해 응답은 커져도 전달을 빠르게 하는 트레이드오프.
 
 ```ts
 // main.ts — 전역, DI 불필요
@@ -163,3 +183,12 @@ export class RateLimitMiddleware implements NestMiddleware {
 - [[NestJS-Guards|Guards (Middleware 다음 단계)]]
 - [[NestJS-AOP-Interceptor|Interceptor와 책임 분리]]
 - [[NestJS-Lifecycle|애플리케이션 라이프사이클]]
+
+## 출처
+
+- [NestJS — Middleware](https://docs.nestjs.com/middleware)
+- [NestJS — Cookies](https://docs.nestjs.com/techniques/cookies)
+- [NestJS — Compression](https://docs.nestjs.com/techniques/compression)
+- [NestJS — Session](https://docs.nestjs.com/techniques/session)
+- [NestJS — Helmet](https://docs.nestjs.com/security/helmet)
+- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)

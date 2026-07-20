@@ -22,6 +22,7 @@ aliases: ["NestJS ExecutionContext", "ArgumentsHost"]
 
 ```ts
 context.getType<'http' | 'ws' | 'rpc'>()   // 전송 타입
+context.getType<GqlContextType>()          // GraphQL 앱은 'graphql' (@nestjs/graphql 타입)
 context.switchToHttp().getRequest()        // Express Request
 context.switchToHttp().getResponse()       // Express Response
 context.switchToWs().getClient()           // Socket.IO/WS Client
@@ -101,12 +102,14 @@ export class MetadataGuard implements CanActivate {
 |--------|------|
 | `get(key, target)` | 단일 target에서 메타데이터 읽기 |
 | `getAll(key, [targets])` | 여러 target에서 메타데이터 배열로 |
-| `getAllAndOverride(key, [targets])` | 첫 번째 target 우선 — 메서드가 클래스를 override |
-| `getAllAndMerge(key, [targets])` | 배열, 객체 메타데이터 병합 |
+| `getAllAndOverride(key, [targets])` | 첫 번째 target 우선 — 메서드가 클래스를 override. v11부터 반환 타입이 T 또는 undefined (메타데이터 부재 처리 강제) |
+| `getAllAndMerge(key, [targets])` | 배열, 객체 메타데이터 병합. v11부터 객체 엔트리가 1개면 단일 원소 배열이 아니라 객체를 반환 |
 
 **override vs merge**:
 - 권한, 플래그: `getAllAndOverride` (메서드가 클래스 무시)
 - 태그, 역할 누적: `getAllAndMerge`
+
+**메타데이터 키 두 방식**: `@SetMetadata('roles', [...])`의 문자열 키는 타입 안전하지 않고, 라우트에 직접 쓰는 것도 비권장(자체 데코레이터로 감싸기). `Reflector.createDecorator<string[]>()`로 만든 데코레이터(`export const Roles = ...` → `@Roles(['admin'])`)는 **데코레이터 참조 자체를 키로** `reflector.get(Roles, context.getHandler())`처럼 읽는다 — 인자 타입이 컴파일 타임에 검증되는 강타입 방식.
 
 ## Param Decorator에서
 
@@ -183,3 +186,7 @@ await app.listen(3000);
 - [[NestJS-AOP-Interceptor|Interceptor (Reflector + getHandler 활용)]]
 - [[NestJS-Custom-Decorator|커스텀 데코레이터, createParamDecorator]]
 - [[NestJS-Exception-Filter|Exception Filter (ArgumentsHost만 받음)]]
+
+## 출처
+- [NestJS — Execution context](https://docs.nestjs.com/fundamentals/execution-context)
+- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)

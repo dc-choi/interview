@@ -39,3 +39,7 @@ if (contextType === 'http') {
   // ...
 }
 ```
+
+## 출처
+
+- [NestJS — Guards](https://docs.nestjs.com/guards)
