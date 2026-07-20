@@ -14,7 +14,10 @@ aliases: ["GraphQL Federation", "GraphQL 페더레이션", "subgraph", "federate
 
 - **Subgraph**: 자기 도메인 몫의 스키마와 resolver를 정의하는 개별 서비스. 팀이 독립적으로 개발, 배포, 확장한다.
 - **Gateway**: 클라이언트와 subgraph들 사이의 진입점. 통합 스키마를 단일 엔드포인트로 노출하고, 쿼리를 적절한 subgraph로 라우팅해 결과를 조립하며, 캐싱과 성능 최적화를 얹기도 한다. Apollo Federation 2 용어로는 이 역할이 Router, 합성된 통합 스키마가 supergraph다.
+  - supergraph 합성 시점이 두 갈래다: 런타임 합성(subgraph 스키마를 기동 시 introspect해 조립 — 로컬 개발용, 네트워크 의존이라 실패 여지와 다중 인스턴스 불일치 위험)과 사전 합성(managed federation이 supergraph를 미리 합성해 문자열로 공급 — 프로덕션 권장, composition 에러를 배포 전에 걸러 기동이 빠르고 재시작 없이 갱신). 어느 쪽이든 composition을 배포 파이프라인 앞으로 당기는 것이 안전하다는 거버넌스 원칙과 이어진다.
+  - 라이브러리 gateway보다 별도 Router(설정 기반, 고부하에서 더 빠름)를 쓰는 방향이 권장된다. 커스텀 인증 같은 특수 로직이 필요할 때만 서버 코드로 gateway를 짠다.
 - **Schema composition**: 여러 subgraph 스키마를 하나로 합성하는 과정. 단순 병합이 아니라 서비스 간 타입 참조를 해결하고 비호환을 감지한다. schema registry가 이 합성과 검증을 담당하는 경우가 많다.
+- 관측도 이 구조를 따른다: gateway가 요청 헤더로 trace를 요청하면 subgraph가 응답 extensions에 필드 단위 실행 트레이스(ftv1)를 실어 보내고, gateway가 이를 집계해 쿼리 플랜과 필드 타이밍을 만든다. 이 trace는 요청하는 클라이언트를 가리지 않으므로 subgraph를 공개 인터넷에 직접 노출하지 않는다.
 
 ## 타입이 subgraph를 가로지르는 법
 
@@ -39,6 +42,10 @@ type Product {
 ```
 
 합성된 통합 스키마에서 클라이언트는 경계를 모르고 쿼리한다. `user { orders { products { title } } }` 한 쿼리에서 user는 Users subgraph, orders는 Orders subgraph, products의 상세는 Products subgraph가 해소하고 gateway가 조립한다.
+
+subgraph가 되려면 일반 서버에 페더레이션 규약이 얹혀야 한다(Apollo에선 `buildSubgraphSchema`가 스키마를 감싸 주입). 노출해야 하는 것: 자기 SDL을 알리는 `_service` 필드, 다른 subgraph가 보낸 엔티티 참조를 해소하는 `_entities` 쿼리, 그리고 `@key` 필드로 엔티티를 가져오는 reference resolver(`__resolveReference`). reference resolver가 곧 그림에서 다른 subgraph가 스텁으로 참조한 엔티티를 실제 값으로 채우는 지점이다. `_entities`가 한 요청에 같은 타입의 참조를 여러 개 받으므로 reference resolver에 DataLoader를 두어 N+1을 접는 것이 권장된다([[GraphQL-Architecture-Map|N+1]]).
+
+router가 쿼리를 실행하는 단위는 query plan — 어느 subgraph를 어떤 순서로 부를지의 계획이다. plan은 원 연산의 합리적 근사이고 캐시가 잘 돼 반복 실행 시 비용이 낮다. 성능 튜닝은 이 계획과 subgraph 지연에 달렸고(subgraph 지연 직접 측정, 소켓 상한 조정, 인라인 트레이스 샘플링), 처리량이 핵심이면 Node gateway 대신 Rust 기반 Router로 간다.
 
 ## 이점
 
@@ -100,3 +107,7 @@ GraphQL을 만든 Meta는 2012년부터 모놀리식 GraphQL API를 유지한다
 - [graphql.org — GraphQL federation](https://graphql.org/learn/federation/)
 - [graphql.org — Schema Ownership and Governance Models](https://graphql.org/learn/governance-ownership/)
 - [graphql.org — Review and validate schema changes](https://graphql.org/learn/schema-review/)
+- [Apollo Server — Inline trace plugin (ftv1)](https://www.apollographql.com/docs/apollo-server/api/plugin/inline-trace)
+- [Apollo Server — Apollo subgraph setup (buildSubgraphSchema, _entities)](https://www.apollographql.com/docs/apollo-server/using-federation/apollo-subgraph-setup)
+- [Apollo Server — Apollo gateway setup (IntrospectAndCompose vs managed)](https://www.apollographql.com/docs/apollo-server/using-federation/apollo-gateway-setup)
+- [Apollo Server — Gateway performance (query plan, _entities DataLoader)](https://www.apollographql.com/docs/apollo-server/using-federation/gateway-performance)

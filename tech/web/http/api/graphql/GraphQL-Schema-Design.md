@@ -43,7 +43,7 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "s
 - 반환 타입: graphql.org 관례는 변경된 엔티티 자체를 반환하는 것이다(`createReview: Review`, `updateHumanName: Human`). 클라이언트가 갱신 후 상태를 바로 가져오게 하려는 것.
 - 목적 특화 mutation: 범용 `updateHuman` 하나보다 `updateHumanName`처럼 좁게 쪼개면 인자를 non-null로 둘 수 있어 표현력이 오른다. 범용은 온갖 nullable 인자와 런타임 검증을 떠안는다.
 - 삭제 반환: 스펙이 정하지 않아 삭제된 id나 payload 객체로 성공을 알린다.
-- payload 래퍼 패턴(errors-as-data): 엔티티 대신 `CreateReviewPayload { review, userErrors }` 같은 결과 타입으로 감싸, 예상되는 도메인 에러(userErrors)를 top-level `errors`가 아니라 데이터로 돌려준다. Relay, Apollo 관례로 출발했고 현재는 공식 에러 처리 가이드도 도메인 에러에 이 패턴을 권장한다. userError에 message, 대상 field 경로, code enum(USERNAME_TAKEN 같은)을 두면 에러 상태가 스키마에 드러나 introspection으로 발견되고 타입 안전해진다. 단일 `input` 인자 관례는 Relay식이다.
+- payload 래퍼 패턴(errors-as-data): 엔티티 대신 `CreateReviewPayload { review, userErrors }` 같은 결과 타입으로 감싸, 예상되는 도메인 에러(userErrors)를 top-level `errors`가 아니라 데이터로 돌려준다. Relay, Apollo 관례로 출발했고 현재는 공식 에러 처리 가이드도 도메인 에러에 이 패턴을 권장한다. userError에 message, 대상 field 경로, code enum(USERNAME_TAKEN 같은)을 두면 에러 상태가 스키마에 드러나 introspection으로 발견되고 타입 안전해진다. 변형으로 payload들이 `MutationResponse { code, success, message }` 같은 공통 인터페이스를 구현해 상태 필드를 표준화하는 관례도 있다. 단일 `input` 인자 관례는 Relay식이다.
 - 에러 채널 선택 기준은 예외성이다: 인프라 장애(DB 타임아웃), 잘못된 GraphQL(문법 오류, 없는 필드), 인증 부재 같은 예외적 실패는 top-level `errors`로, 비즈니스 규칙 위반(사용자명 중복), 입력 검증 실패, 도메인 제약(재고 부족) 같은 예상되는 실패는 errors-as-data로 돌려준다. top-level error에는 `extensions`에 기계가 읽을 code(예: INTERNAL_SERVER_ERROR)를 싣는 관례가 있다.
 - 직렬이지 트랜잭션이 아니다: mutation 최상위 필드는 순차 실행된다 — 한 요청에 같은 자원을 건드리는 필드 둘을 보내도 앞 필드가 끝난 뒤 다음이 시작돼 자기 자신과의 race condition이 없다. 하지만 일부 성공 일부 실패 시 GraphQL은 성공분을 되돌리지 못한다. 원자성이 필요하면 비즈니스 로직 계층에서 직접 만든다. (스펙상 최상위 mutation 필드 외의 필드 resolution은 side-effect-free하고 idempotent해야 한다.)
 
@@ -118,3 +118,4 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "s
 - [graphql.org — Robust Applications](https://graphql.org/learn/robust-applications/)
 - [graphql.org — Naming Conventions and Design Standards](https://graphql.org/learn/naming-design/)
 - [graphql.org — Review and validate schema changes](https://graphql.org/learn/schema-review/)
+- [Apollo Server — Schema basics (MutationResponse 패턴)](https://www.apollographql.com/docs/apollo-server/schema/schema)
