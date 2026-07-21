@@ -30,7 +30,7 @@ CREATE INDEX ON items USING hnsw (embedding vector_cosine_ops);
 |------|--------|------|
 | **타입** | `vector` vs `halfvec` | 정밀도 vs 저장공간/메모리/I/O |
 | **인덱스** | HNSW vs IVFFlat | 동적 데이터엔 HNSW |
-| **거리** | L2 / 코사인 / 내적 | 임베딩 모델 특성에 맞춤 ([[Vector-Similarity-Search#거리 계산 방식|거리]]) |
+| **거리** | L2 / 코사인 / 내적 | 임베딩 모델 특성에 맞춤 ([[Vector-Similarity-Search#거리 계산 방식\|거리]]) |
 
 세 선택이 검색 품질, 저장 공간, 응답 속도, 서버 비용에 직접 영향을 준다.
 

@@ -3,6 +3,7 @@ tags: [database, rdbms]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["트랜잭션 격리 수준", "Isolation Level"]
+verified_at: 2026-07-21
 ---
 
 # 트랜잭션 격리 수준
@@ -29,19 +30,19 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 ### 레벨 2: Repeatable Read
 
 - MySQL InnoDB의 기본 격리 수준
-- 일반 SELECT는 트랜잭션 시작 시점의 스냅샷을 반복해서 읽으므로, 다른 트랜잭션이 커밋해도 같은 쿼리 결과가 유지된다.
+- 일반 SELECT는 기본적으로 트랜잭션 안의 **첫 consistent read 시점**에 만든 스냅샷을 반복해서 읽으므로, 이후 다른 트랜잭션이 커밋해도 같은 읽기 관점을 유지한다. `START TRANSACTION WITH CONSISTENT SNAPSHOT`을 쓰면 시작 시점에 스냅샷을 만든다.
 - 다른 트랜잭션의 갱신, 삭제 자체를 막는다는 뜻은 아니다. 잠금 읽기(`SELECT ... FOR UPDATE`, `FOR SHARE`)나 UPDATE/DELETE는 Current Read로 동작하며 lock을 획득한다.
 - 표준 SQL에서는 Phantom Read 현상이 발생할 수 있음. InnoDB는 잠금 읽기와 범위 갱신에서 Next-Key Lock으로 phantom을 막는다.
 
 ### 레벨 3: Serializable
 
 - 트랜잭션 결과가 어떤 직렬 실행 순서와 같아지도록 더 강하게 격리한다.
-- 구현체마다 방식은 다르지만, InnoDB에서는 일반 SELECT도 공유 잠금 읽기처럼 동작해 range insert/update와 충돌할 수 있으므로 동시성이 크게 떨어진다.
+- 구현체마다 방식은 다르다. InnoDB에서는 `autocommit`이 꺼진 명시적 트랜잭션의 일반 SELECT를 `SELECT ... FOR SHARE`처럼 바꿔 공유 잠금을 잡으므로 range insert/update와 충돌할 수 있다. `autocommit`이 켜진 일반 SELECT는 각 문장이 독립 트랜잭션인 consistent nonlocking read다.
 
 ## 격리 수준을 설정시 발생하는 문제점들
 트랜잭션 격리 수준을 너무 낮게 하면 읽기 일관성을 제대로 보장할 수 없고, 너무 높게 하면 읽기 일관성은 강해지지만 데이터를 처리하는 속도(동시성)가 느려지게 된다.
 
-![격리 수준 레벨](../../../img/Isolation_Level.png)
+![격리 수준 레벨](../../../../img/Isolation_Level.png)
 
 따라서 트랜잭션 격리 수준은 일관성 및 동시성과도 연관이 있다는 것을 알 수 있다.
 
@@ -50,7 +51,7 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 | 격리 수준 | 스냅샷 시점 | Consistent Read 동작 |
 |-----------|-----------|---------------------|
 | **Read Committed** | **매 쿼리마다** 최신 커밋 스냅샷 | 같은 트랜잭션 안에서도 SELECT할 때마다 다른 결과 가능 (Non-Repeatable Read) |
-| **Repeatable Read** | **트랜잭션 시작 시점** 스냅샷 고정 | 트랜잭션 동안 동일 SELECT는 항상 같은 결과 |
+| **Repeatable Read** | 기본적으로 **첫 consistent read 시점**에 스냅샷 고정 | 이후 consistent read는 같은 읽기 관점 사용 |
 
 - RR에서도 `SELECT FOR UPDATE`(Current Read)는 최신 커밋 데이터를 읽음 → 스냅샷과 다를 수 있음
 
@@ -88,7 +89,7 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 ```
 
 - Oracle (RC): 매 SELECT가 실행 시점의 최신 커밋 스냅샷을 읽음. 같은 트랜잭션 안에서 재조회하면 결과가 바뀔 수 있다.
-- MySQL (RR): 일반 SELECT는 트랜잭션 시작 시점 스냅샷을 유지. 앞에서 읽은 값을 애플리케이션이 오래 들고 계산하면 최신 커밋과 어긋날 수 있다.
+- MySQL (RR): 일반 SELECT는 첫 consistent read에서 만든 스냅샷을 유지한다. 앞에서 읽은 값을 애플리케이션이 오래 들고 계산하면 최신 커밋과 어긋날 수 있다.
 - 두 DB 모두 잔액, 재고처럼 누적값을 다룰 때는 격리 수준에 기대지 말고 잠금 읽기, 조건부 UPDATE, 제약 조건으로 불변식을 DB에 걸어야 한다.
 
 대응 패턴:
@@ -102,6 +103,7 @@ aliases: ["트랜잭션 격리 수준", "Isolation Level"]
 - [m0rph2us — MySQL Isolation Level 이해하기](https://m0rph2us.github.io/mysql/transaction/2020/07/06/understanding-mysql-isolation-level.html)
 - [네이버파이낸셜 — 실무에서 만나는 DB Isolation Level](https://medium.com/naverfinancial/실무에서-만나는-db-isolation-level-e94a904bbf9d)
 - [woojjam — 트랜잭션과 동시성 제어](https://woojjam.tistory.com/9)
+- [MySQL 8.4 — Transaction Isolation Levels](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-isolation-levels.html)
 
 ## 관련 문서
 - [[Isolation-Level-Beyond-ANSI|ANSI 격리의 한계, Strict Serializable, Snapshot Isolation]]

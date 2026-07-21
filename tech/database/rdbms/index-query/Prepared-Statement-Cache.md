@@ -3,11 +3,12 @@ tags: [database, mysql, performance, troubleshooting, nodejs]
 status: done
 category: "데이터&저장소(Data&Storage)"
 aliases: ["Prepared Statement Cache", "Prepared Statement 캐시", "PS 캐시 폭발"]
+verified_at: 2026-07-21
 ---
 
 # Prepared Statement 캐시 폭발
 
-Prepared Statement는 반복되는 쿼리에서는 최적화 수단이지만, **매번 다른 쿼리 틀을 생성하면 오히려 메모리 누수의 원인**이 된다. Node.js + MySQL 실전 사례를 기준으로 함정과 대응법을 정리한다.
+Prepared Statement는 반복되는 쿼리에서는 최적화 수단이지만, **매번 다른 쿼리 틀을 생성하면 서버의 열린 statement 수와 클라이언트 캐시가 불필요하게 커질 수 있다**. Node.js + MySQL 사례를 기준으로 함정과 대응법을 정리한다. 이를 곧바로 누수라고 단정하지 않고 연결 종료, 명시적 close, LRU eviction 여부를 함께 본다.
 
 ## Prepared Statement 정상 동작 원리
 
@@ -15,7 +16,7 @@ Prepared Statement는 쿼리 틀(템플릿)을 DB에 먼저 등록하고, 이후
 
 **동작 흐름:**
 1. 클라이언트가 쿼리 틀 전송: `INSERT INTO USERS (name, email) VALUES (?, ?)`
-2. DB가 파싱, 분석, 실행 계획 수립 후 **캐시에 저장**
+2. DB가 해당 세션에 server-side prepared statement를 생성
 3. 이후 실행 시 파라미터만 바인딩 (재파싱 불필요)
 4. 같은 틀이 반복될수록 성능 이득
 
@@ -47,20 +48,19 @@ async bulkInsert(table: string, rows: BulkInsertItem[]): Promise<void> {
 - 매 배치마다 **컬럼 조합**이 다름 → `(col1, col2, col3)` vs `(col1, col2, col4)`
 - 테이블 이름도 다양 → `INSERT INTO table1` vs `INSERT INTO table2`
 
-결과: **거의 모든 쿼리가 단 1회만 실행되고 캐시에 영원히 남음.**
+결과: 거의 모든 쿼리가 한 번만 실행되는데도 연결이 유지되는 동안 server-side statement와 mysql2의 커넥션별 LRU 항목이 늘어난다. 명시적 close, 연결 종료, LRU eviction이 일어나면 해제된다.
 
-### 메모리 폭발 계산
+### 서버 전역 상한과 커넥션별 캐시를 분리한다
 
 **MySQL 서버 측:**
-- 커넥션당 최대 캐싱 수: **16,382개** prepared statement (MySQL 기본값)
-- 커넥션 풀 크기 10 → 최대 **163,820개** 캐싱 가능
-- 구문당 약 **32KB** → **약 5GB** 메모리 점유
-- 4개 토픽 × 4개 프로세스 멀티 → **총 20GB** 규모의 메모리 압박
+- `max_prepared_stmt_count`는 커넥션별 수가 아니라 **서버 전체에서 동시에 열린 prepared statement 상한**이다.
+- 커넥션 풀 크기를 이 전역 상한에 곱하면 안 된다.
+- statement 하나의 메모리 크기는 SQL과 메타데이터, 서버 버전에 따라 달라져 보편적인 32KB 상수로 계산할 수 없다.
+- `Prepared_stmt_count` 증가와 서버 메모리를 함께 관측해 실제 영향을 판단한다.
 
 **Node.js 클라이언트 측:**
-- `node-mysql2` 드라이버도 클라이언트에서 prepared statement를 LRU 캐싱
-- 커넥션당 최대 16,000개 저장
-- 서버와 클라이언트 양쪽에서 **이중으로** 메모리를 잠식
+- mysql2의 `execute()`는 **커넥션별** LRU에 prepared statement를 저장하며 기본 최대치는 16,000개다.
+- eviction 시 mysql2가 statement를 close한다. 따라서 서버 전역 cap과 클라이언트의 커넥션별 캐시 크기를 각각 관측하고 조정한다.
 
 ## 진단 방법
 
@@ -95,7 +95,7 @@ mysql.createPool({
 });
 ```
 
-서버 측도 `max_prepared_stmt_count`를 조정하거나 `COM_STMT_CLOSE`를 명시적으로 호출해 해제한다.
+서버의 `max_prepared_stmt_count`는 전체 안전 상한으로 관리하고, 사용이 끝난 statement는 드라이버의 `unprepare()`나 프로토콜 close로 해제한다. 전역 상한을 낮추는 것만으로 쿼리 모양 폭증의 원인이 해결되지는 않는다.
 
 ### B. Prepared Statement 자체를 쓰지 않기 (근본 처방)
 일회성 쿼리 패턴이 명확하다면 `execute()` 대신 `query()`를 사용한다. `query()`는 prepared statement를 사용하지 않고 일반 텍스트 프로토콜로 전송된다.
@@ -123,13 +123,13 @@ await pool.query(query, params);
 | 항목 | 요약 |
 |---|---|
 | **트레이드오프** | Prepared Statement는 반복 쿼리에서만 효과적, 일회성 쿼리에는 오버헤드 |
-| **이중 캐싱** | 서버, 드라이버 양쪽에서 캐싱하므로 메모리 영향이 2배 |
+| **서로 다른 범위** | MySQL 서버 상한은 전역, mysql2 LRU는 커넥션별이므로 따로 계산하고 관측 |
 | **동적 쿼리 주의** | 행 수, 컬럼 조합이 가변이면 `query()` 또는 캐시 상한 제한 |
 | **진단 순서** | 힙 스냅샷 → MySQL 상태 변수 → 드라이버 옵션 확인 |
 
 ## 면접 포인트
 
-- "Prepared Statement의 트레이드오프는?" → **반복 쿼리 최적화에는 유리하지만, 매번 다른 쿼리 틀이면 캐시만 쌓여 메모리 누수 원인이 된다.**
+- "Prepared Statement의 트레이드오프는?" → **반복 쿼리에는 유리하지만, 매번 다른 쿼리 틀이면 열린 statement와 클라이언트 캐시가 불필요하게 증가할 수 있다.**
 - "MySQL 커넥션 풀에서 메모리가 급증하면?" → **prepared statement 캐시 폭발 가능성을 의심.** 서버의 `Prepared_stmt_count`, 드라이버 힙 스냅샷으로 진단한 뒤, 캐시 상한 조정 또는 `query()` 사용으로 대응.
 
 ## 관련 문서
@@ -138,3 +138,8 @@ await pool.query(query, params);
 - [[OOM-Troubleshooting-Cases|Node.js OOM 발생 케이스]]
 - [[Consumer-Group|Consumer Group]]
 - [[MQ-Kafka|Kafka]]
+
+## 출처
+
+- [MySQL 8.4 — `max_prepared_stmt_count`](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_max_prepared_stmt_count)
+- [mysql2 — Prepared Statements](https://sidorares.github.io/node-mysql2/docs/documentation/prepared-statements)
