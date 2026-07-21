@@ -3,6 +3,7 @@ tags: [infrastructure, aws, redshift, data-warehouse, olap, analytics, saa-c03]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Redshift", "Amazon Redshift", "AWS Redshift", "데이터 웨어하우스", "Data Warehouse"]
+verified_at: 2026-07-21
 ---
 
 # Amazon Redshift — 컬럼 기반 데이터 웨어하우스
@@ -44,30 +45,30 @@ PostgreSQL 기반의 **OLAP 전용 완전 관리형 데이터 웨어하우스**.
 - **DISTKEY (분산 키)**: 행을 어느 컴퓨팅 노드에 배치할지 결정.
   - `DISTSTYLE KEY`: 지정 컬럼 해시로 분산 (조인 컬럼 정렬용).
   - `DISTSTYLE ALL`: 모든 노드에 복제 (작은 차원 테이블).
-  - `DISTSTYLE EVEN`: 라운드로빈 (기본값, 명확한 분산 기준 없을 때).
-  - `DISTSTYLE AUTO`: Redshift가 자동 선택.
+  - `DISTSTYLE EVEN`: 라운드로빈 분산.
+  - `DISTSTYLE AUTO`: Redshift가 자동 선택하며 `CREATE TABLE`의 기본값이다.
 - **SORTKEY (정렬 키)**: 컴퓨팅 노드 내부에서 데이터를 어떤 컬럼 순으로 정렬해 저장할지 결정. 범위 조건(`WHERE date BETWEEN`)에서 블록 스킵으로 스캔량 감소.
 
 ## COPY, UNLOAD
 
-- **COPY**: S3, EMR, DynamoDB, 원격 호스트(SSH) 등에서 **병렬 로드**. INSERT보다 수십~수백 배 빠름. SAA 단골 — 대량 적재는 항상 COPY.
+- **COPY**: S3, DynamoDB, EMR, 원격 호스트의 텍스트 출력 등 지원 소스에서 병렬 로드한다. 외부의 대량 데이터를 적재할 때 개별 `INSERT`보다 COPY를 우선 검토한다. 데이터가 이미 Redshift 테이블에 있으면 `INSERT INTO ... SELECT`나 CTAS가 더 적합할 수 있으므로 항상 COPY인 것은 아니다.
 - **UNLOAD**: Redshift 쿼리 결과를 **S3로 병렬 export**. Parquet/CSV 등 포맷 지원. 다운스트림(Spark, Athena 등)에 데이터 넘길 때 사용.
 
 ## Redshift Spectrum
 
 - 데이터를 Redshift에 적재하지 않고 **S3에 그대로 둔 채 SQL로 직접 쿼리**.
 - Glue Data Catalog의 외부 테이블 정의 사용. Parquet/ORC 같은 컬럼 포맷 권장.
-- 컴퓨팅이 별도 Spectrum 노드 풀에서 실행되므로 클러스터 노드 부하와 독립.
+- RA3와 DC2 provisioned cluster의 Spectrum query는 별도 전용 Spectrum fleet을 사용한다. RG provisioned node와 Redshift Serverless는 integrated data lake engine을 자체 compute에서 실행하므로 외부 테이블 쿼리가 주 compute와 독립이라고 일반화할 수 없다.
 - **활용**: Hot 데이터는 Redshift 내부 테이블, Cold/대용량 로그는 S3 + Spectrum으로 비용 최적화.
 
 ## Concurrency Scaling, Materialized View
 
-- **Concurrency Scaling**: 동시 쿼리 폭주 시 임시 클러스터를 자동 추가해 부하 흡수. 일정 시간(매일 무료 1시간) 초과분만 과금.
+- **Concurrency Scaling**: 동시 쿼리 증가 시 추가 용량을 자동 사용해 부하를 흡수한다. 활성 메인 클러스터 사용량에 비례해 무료 크레딧이 누적되며 초과 사용은 과금되므로 현재 요금 정책을 확인한다.
 - **Materialized View (MV)**: 자주 쓰이는 집계 결과를 사전 계산해 저장. `REFRESH MATERIALIZED VIEW`로 갱신. 대시보드성 반복 쿼리에서 응답 시간 대폭 단축.
 
 ## Cross-Region, Cross-Account 데이터 공유
 
-- **Data Sharing (RA3 전용)**: 다른 클러스터, 계정, 리전과 **데이터 복사 없이** 라이브로 공유. Producer가 share 생성 → Consumer가 mount.
+- **Data Sharing**: 지원되는 RA3 프로비저닝 클러스터와 Serverless 작업 그룹 사이에서 계정, 리전 경계를 넘어 데이터를 복사하지 않고 공유할 수 있다. 지원 조합과 리전은 현재 문서를 확인한다.
 - ETL, 복제 없이 분석 환경 분리(예: 프로덕션 DW → 사내 분석팀 클러스터).
 
 ## 스냅샷과 백업
@@ -75,7 +76,7 @@ PostgreSQL 기반의 **OLAP 전용 완전 관리형 데이터 웨어하우스**.
 - **S3에 저장되는 증분 스냅샷**. 다른 클러스터로 복원 가능.
 - **자동 스냅샷**: 8시간 또는 5GB 변경마다 자동 생성. 보존 1~35일.
 - **수동 스냅샷**: 사용자가 직접 생성, 명시 삭제 전까지 무기한 보존.
-- **Cross-Region Snapshot Copy**: 자동 복사 설정으로 DR 사이트에 즉시 클러스터 배포 가능.
+- **Cross-Region Snapshot Copy**: 자동 복사로 다른 리전에 복구 지점을 준비할 수 있다. 실제 복구에는 새 클러스터 복원 시간과 애플리케이션 전환 절차가 필요하다.
 
 ## Redshift vs RDS/Aurora
 
@@ -85,7 +86,7 @@ PostgreSQL 기반의 **OLAP 전용 완전 관리형 데이터 웨어하우스**.
 | 목표 | 대용량 데이터셋 대상 복합 분석 쿼리 | 단일 행 트랜잭션, 짧은 응답 |
 | 저장 방식 | 컬럼 기반 | 행(Row) 기반 |
 | 스케일 | MPP(노드 추가) | 수직 + 읽기 복제본 |
-| 데이터 규모 | PB급 | 수십 TB |
+| 데이터 규모 | 대규모 분석 데이터에 맞게 확장 | 엔진과 인스턴스, 스토리지 옵션별 한도 안에서 운영 |
 
 ## Redshift vs Athena
 
@@ -117,7 +118,9 @@ PostgreSQL 기반의 **OLAP 전용 완전 관리형 데이터 웨어하우스**.
 
 ## 출처
 
-- AWS SAA C03 학습 자료 (로컬)
+- [CREATE TABLE과 DISTSTYLE](https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_TABLE_NEW.html)
+- [COPY를 사용한 테이블 로드](https://docs.aws.amazon.com/redshift/latest/dg/t_Loading_tables_with_the_COPY_command.html)
+- [Redshift Spectrum 개요와 배포별 실행 모델](https://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-overview.html)
 
 ## 관련 문서
 
