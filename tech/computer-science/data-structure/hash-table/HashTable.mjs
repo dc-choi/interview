@@ -1,4 +1,4 @@
-import { DoublyLinkedList } from "../linkedList/DoublyLinkedList.mjs";
+import { DoublyLinkedList } from "../linked-list/DoublyLinkedList.mjs";
 
 class HashData {
     constructor(key, value) {
@@ -16,7 +16,11 @@ export class HashTable {
     }
 
     hash(num) {
-        return num % 10;
+        if (!Number.isInteger(num)) {
+            throw new TypeError("HashTable keys must be integers");
+        }
+
+        return ((num % this.arr.length) + this.arr.length) % this.arr.length;
     }
 
     newHash(name) {
@@ -24,7 +28,18 @@ export class HashTable {
     }
 
     set(key, value) {
-        this.arr[this.hash(key)].insert(new HashData(key, value));
+        const list = this.arr[this.hash(key)];
+        let current = list.head;
+
+        while (current !== null) {
+            if (current.data.key === key) {
+                current.data.value = value;
+                return;
+            }
+            current = current.next;
+        }
+
+        list.insert(new HashData(key, value));
     }
 
     get(key) {

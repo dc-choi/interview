@@ -1,4 +1,4 @@
-import { HashTable } from "../hashTable/HashTable.mjs";
+import { HashTable } from "../hash-table/HashTable.mjs";
 
 export class MySet {
     constructor() {
@@ -22,11 +22,9 @@ export class MySet {
     }
 
     clear() {
-        this.hashTable.arr.map((data) => {
-            if (data.head !== null) {
-                this.hashTable.remove(data.head.data.key);
-            }
-        });
+        for (const bucket of this.hashTable.arr) {
+            bucket.clearAll();
+        }
     }
 
     isEmpty() {

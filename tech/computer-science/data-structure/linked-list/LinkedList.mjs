@@ -71,7 +71,7 @@ export class LinkedList {
             for (let i = 0; i < index - 1; i++) {
                 current = current.next;
             }
-            deletedNode = current;
+            deletedNode = current.next;
             current.next = current.next.next;
         }
 
