@@ -3,6 +3,7 @@ tags: [business, product, platform, super-app, diversification, strategy]
 status: done
 category: "Business - 제품 전략"
 aliases: ["Platform Power", "플랫폼 파워", "슈퍼앱 전략", "DAU 함정"]
+verified_at: 2026-07-21
 ---
 
 # 플랫폼 파워 — 트래픽 입구와 거래 구조는 다르다
@@ -44,7 +45,7 @@ aliases: ["Platform Power", "플랫폼 파워", "슈퍼앱 전략", "DAU 함정"
 - 계열사 147개 → 88개 감축. 게임즈, 다음(업스테이지), 헬스케어 등 매각과 이전, 모빌리티는 IPO 무산 후 우버 등과 협상
 - 카카오톡 MAU가 인구 대부분에 가까운 규모지만 메시징 외 거래는 외부로 흩어짐 — 트래픽 입구와 거래 플랫폼의 괴리 사례
 - 우버의 인수 관심사는 카카오톡 시너지가 아니라 택시 호출 점유율 90% — 분리 가능 자산의 리트머스 테스트 사례
-- AI 행보: 외부 제휴(OpenAI), 검색 이전(업스테이지 솔라), 자체 LLM 부재 — 방향을 정한 경쟁사(네이버 하이퍼클로바X, 삼성 가우스) 대비 여러 개를 얕게 건드리는 상태
+- AI 행보: 외부 제휴만 있는 것이 아니라 자체 언어모델 **Kanana**와 후속 **Kanana-2**를 공개했다. 외부 모델 제휴와 자체 모델 개발을 병행하는 전략으로 봐야 하며, 자체 LLM 부재라고 평가하면 현재 사실과 맞지 않는다.
 
 ## 체크포인트
 
@@ -57,6 +58,8 @@ aliases: ["Platform Power", "플랫폼 파워", "슈퍼앱 전략", "DAU 함정"
 ## 출처
 
 - [카카오의 선택과 집중은 다각화 실패를 예쁘게 쓴 말이다 — ethancho, Substack](https://ethancho12.substack.com/p/5ab)
+- [카카오 — 자체 개발 언어모델 Kanana 공개](https://www.kakaocorp.com/page/detail/11566)
+- [카카오 — Kanana-2 공개](https://www.kakaocorp.com/page/detail/11904)
 
 ## 관련 문서
 
