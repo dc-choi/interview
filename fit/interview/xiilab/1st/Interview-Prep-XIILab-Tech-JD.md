@@ -16,7 +16,7 @@ aliases: ["XIILab JD 기반 기술 질문", "씨이랩 서비스 맥락 질문",
 
 ### React 경험이 있나? 프론트엔드 어떻게 할 건가?
 
-- **사이드 프로젝트 "출석부" (school-manage)** — React 19 + Vite + TypeScript 기반 풀스택 서비스를 직접 기획→설계→개발→운영. 30개 단체가 실제 사용 중인 프로덕션 앱
+- **사이드 프로젝트 "출석부" (school-manage)** — React 19 + Vite + TypeScript 기반 풀스택 서비스를 직접 기획→설계→개발→운영. 2026-07-15 기준 MAO 34곳, 누적 본당 85곳, 학생 3,669명, 출석 약 22,051건의 프로덕션 앱
 - **React 핵심 패턴 실전 적용 경험**:
   - **커스텀 훅 아키텍처**: 도메인별 훅 설계 (`useStudents`, `useAttendance`, `useGroups`, `useDashboardStatistics` 등). 각 훅이 CRUD + 필터링 + 페이지네이션 + 캐시 무효화를 캡슐화
   - **TanStack React Query + tRPC**: 서버 상태 관리. staleTime 5분, 조건부 쿼리(`enabled: !!groupId`), 뮤테이션 후 캐시 무효화(`utils.student.list.invalidate()`)
@@ -32,14 +32,14 @@ aliases: ["XIILab JD 기반 기술 질문", "씨이랩 서비스 맥락 질문",
 - 꼬리 대비:
   - "React 상태관리는 어떻게?" → 서버 상태는 React Query(tRPC), 클라이언트 상태는 Context API + useState. Redux/Zustand 같은 글로벌 상태 라이브러리 없이도 서버 상태와 클라이언트 상태를 명확히 분리하면 충분
   - "컴포넌트 설계 원칙?" → 기능 단위(Feature-Sliced) 폴더 구조. 각 도메인(auth, attendance, student, group)이 자체 hooks/components/utils 보유. 공통 UI만 shared로 분리
-  - "성능 최적화 경험?" → React Query staleTime으로 불필요한 리페치 방지, 조건부 쿼리로 의존성 없는 fetch 차단. 랜딩 페이지 리디자인으로 이탈률 81.8%→12.5% 개선
+  - "성능 최적화 경험?" → React Query staleTime으로 불필요한 리페치 방지, 조건부 쿼리로 의존성 없는 fetch 차단. 과거 랜딩 이탈률 수치는 현재 정의로 재현되지 않아 성과 수치로 사용하지 않음
   - "SSR/SSG 경험?" → 출석부는 SPA(Vite). SSR이 필요한 경우 Next.js 활용 가능하나 현재 프로젝트는 인증 기반 앱이라 SPA가 적합
 
 ### Full Stack으로 일할 때 프론트/백 우선순위는?
 
 - 기능 단위로 프론트→백 수직 슬라이싱 — 하나의 기능을 API 설계부터 UI까지 한 사람이 일관되게 구현
 - 사용자 경험 관점에서 API 설계부터 UI까지 일관성 있게
-- 실무: 출석부 프로젝트에서 기획→설계→개발→운영 전 과정 직접 담당, 30개 단체 실서비스 운영 중
+- 실무: 출석부 프로젝트에서 기획→설계→개발→운영 전 과정 직접 담당, 2026-07-15 보고서상 모임 레코드 108개
 - **모노레포 구조**: pnpm workspaces + Turborepo로 `apps/api`(Express+tRPC) + `apps/web`(Vite+React) + `packages/trpc`(공유 라우터) 구성. 프론트/백이 같은 타입을 공유하면서 독립 배포 가능
 - 꼬리:
   - "프론트/백 중 어디가 강점?" → 백엔드가 강점이지만 프론트도 직접 프로덕션 서비스를 운영한 경험이 있어 양쪽 모두 기여 가능. 처음에는 백엔드 비중이 높겠지만 점진적으로 풀스택으로 영역 확장

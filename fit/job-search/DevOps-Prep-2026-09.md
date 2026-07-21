@@ -1,11 +1,14 @@
 ---
 tags: [career, job-search, devops, prep]
-status: active
+status: done
 category: "이직 준비"
 aliases: ["DevOps Prep 2026-09", "하반기 지원 준비", "DevOps 하이브리드 준비"]
+verified_at: 2026-07-21
 ---
 
 # DevOps 하반기 지원 준비 로드맵 (2026-05 ~ 2026-08)
+
+> 2026-06-29 이직 완료로 구직 재진입 계획은 종료됐다. 아래 미완료 체크와 일정은 당시 계획 기록이며 현재 실행 계획이 아니다. 시험 정책과 비용은 다시 실행할 때 공식 페이지에서 재확인한다.
 
 ## 목표
 
@@ -45,7 +48,7 @@ aliases: ["DevOps Prep 2026-09", "하반기 지원 준비", "DevOps 하이브리
 
 ### 2026-06: CloudOps 응시 + Terraform
 
-- 주 1: CloudOps 최종 점검 (Performance-Based Lab 시나리오, 인프런 중상급 복습)
+- 주 1: CloudOps 최종 점검 (객관식, 복수응답형 시나리오, 인프런 중상급 복습). Builder Labs는 학습 도구이며 현행 시험의 실기 형식이 아니다.
 - 주 2: **CloudOps 응시** → 시험 직후 **3-4일 완전 휴식 (번아웃 버퍼, 타협 금지)**
 - 주 3: Terraform 기본 (Provider, Resource, State, Module, data source) + 주일학교 플랫폼 IaC 시작 (VPC, RDS, S3)
 - 주 4: 모듈화, 원격 state (S3 backend + DynamoDB lock) + **ECS Fargate로 주일학교 플랫폼 실배포** + GitHub Actions 연동 (plan 리뷰 → apply)
@@ -125,8 +128,8 @@ aliases: ["DevOps Prep 2026-09", "하반기 지원 준비", "DevOps 하이브리
 - 시험 응시료: SAA $150 + CloudOps $150 = **$300**
 - AWS 상시 운영 (주일학교 ECS Fargate + RDS + ElastiCache): **월 $30-60**
 - EKS 샌드박스 실습 (7월만, 시간 단위 운영, 즉시 destroy): **월 $20-40**
-- Skill Builder Subscription (선택): $29/월 (Performance-Based Lab 접근 시 가치 큼)
-- 총 예상: 4개월 **$500-800** 범위. EKS 실습 후 `terraform destroy` 즉시 정리 습관
+- Skill Builder Subscription (선택): 가격과 포함 실습은 재개 시 공식 페이지에서 확인
+- 총 예상 비용은 환율, 시험과 서비스 가격에 따라 달라지므로 재개 시 다시 산정. EKS 실습 후 `terraform destroy` 즉시 정리 습관
 
 ## 원칙 (CLAUDE.md 학습 원칙 반영)
 
@@ -174,8 +177,7 @@ aliases: ["DevOps Prep 2026-09", "하반기 지원 준비", "DevOps 하이브리
 
 **AWS Certified DevOps Engineer - Professional (DOP-C02)**
 
-- SAA + CloudOps + Developer Associate 통합 심화판. 두 Associate 갖추면 베이스 완성
-- AWS 공식 권장: Associate 2개 + 실무 2년 → Pro 도전
+- Associate 자격증 보유는 응시 전제조건이 아니다. AWS가 설명하는 intended candidate는 AWS 환경에서 프로비저닝, 운영, 관리 경험 2년 이상을 갖춘 사람이다.
 - 2026 이직 성공 후 하이브리드 실무 1-2년 축적 → 2027-2028 도전 타이밍 적정
 - **지금 4개월로 무리 도전 금지**. SAA+CloudOps로 기초 다지고 실무 경험이 Pro 합격, 실효성 둘 다 끌어올림
 
@@ -184,3 +186,8 @@ aliases: ["DevOps Prep 2026-09", "하반기 지원 준비", "DevOps 하이브리
 - [[Job-Search-Tracker]] — 지원 트래킹
 - [[Running-A-Tech-Blog]] — 블로그 운영 원칙
 - [[Self-Development-While-Working]] — 근무 중 자기계발 전략
+
+## 검증 출처
+
+- [AWS Certified CloudOps Engineer - Associate](https://aws.amazon.com/certification/certified-cloudops-engineer-associate/)
+- [AWS Certification exam guides](https://docs.aws.amazon.com/aws-certification/latest/examguides/aws-certification-exam-guides.html)
