@@ -42,7 +42,7 @@ aliases: ["ActionPower JD 기반 기술 질문", "액션파워 JD 기술 질문"
 > 관련: [[Isolation-Level|격리수준]], [[Transactions|트랜잭션]]
 
 **InnoDB 격리 수준과 MVCC**
-- MySQL InnoDB 기본 **REPEATABLE READ** — 트랜잭션 시작 시점의 스냅샷(Consistent Read)을 유지
+- MySQL InnoDB 기본 **REPEATABLE READ** — 기본 `START TRANSACTION`에서는 첫 consistent read 시 만든 스냅샷을 재사용하고, `WITH CONSISTENT SNAPSHOT`이면 시작 시점에 스냅샷을 만든다.
 - MVCC(Multi-Version Concurrency Control): undo log에 이전 버전을 보관하여 읽기와 쓰기가 서로 차단하지 않음
 - RR에서 Phantom Read 방지: InnoDB는 Next-Key Lock으로 범위 검색 시 새 행 삽입도 차단
 
@@ -51,7 +51,7 @@ aliases: ["ActionPower JD 기반 기술 질문", "액션파워 JD 기술 질문"
 - 데드락은 완전히 예방할 수 없으므로, 위 DB Lock 섹션의 완화 전략(Lock 순서 통일, 트랜잭션 범위 최소화, NOWAIT)으로 발생 확률을 줄이고, InnoDB 자동 감지+복구에 의존
 
 **꼬리 질문 대비**
-- "RC vs RR 차이?" → RC는 **매 쿼리마다** 최신 커밋 스냅샷 (Non-Repeatable Read 발생). RR은 **트랜잭션 시작 시점** 스냅샷 고정
+- "RC vs RR 차이?" → RC는 consistent read 문장마다 새 스냅샷을 만들고, RR은 기본적으로 첫 consistent read의 스냅샷을 재사용한다. `WITH CONSISTENT SNAPSHOT` 예외도 함께 설명한다.
 - "RR인데 왜 SELECT FOR UPDATE는 최신 데이터를 읽나?" → Consistent Read(일반 SELECT)는 스냅샷, Current Read(FOR UPDATE)는 최신 커밋 데이터. lock을 걸려면 최신 데이터를 봐야 의미가 있음
 - "RR에서 RC로 바꾸면 뭐가 좋아지나?" → Gap Lock이 비활성화되어 INSERT 동시성 향상. 단, Phantom Read 허용 필요
 

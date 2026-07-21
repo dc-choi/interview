@@ -35,12 +35,15 @@ allowed-tools: [Read, Write, Edit, Glob, Grep, Bash, WebFetch, Agent]
 - 필수 인자가 부족하면 사용자에게 질문
 
 ### 2단계: 데이터 수집 (병렬 처리)
-다음을 동시에 수행:
+다음을 선별하지 말고 한 번에 수행:
 1. **채용공고 수집**: WebFetch로 URL 내용을 상세히 추출 (회사 소개, 포지션명, 주요 업무, 자격 요건, 우대 사항, 근무 조건, 채용 절차 등)
 2. **이력서 읽기**: Read로 이력서 PDF 내용 확인
-3. **포트폴리오 읽기** (경로 있으면): Read로 포트폴리오 내용 확인 — 프로젝트 상세, 기술 스택, 성과 등 이력서보다 구체적인 정보를 예상 질문과 어필 포인트에 활용
-4. **템플릿 읽기**: `fit/interview/prep/Interview-Prep-Template.md` 읽기
-5. **예시 참고**: `fit/interview/actionpower/1st/Interview-Prep-ActionPower.md` 읽기 (품질 기준)
+3. **포트폴리오 전체 읽기** (경로 있으면): 프로젝트 상세, 기술 스택, 성과를 예상 질문과 어필 포인트에 활용
+4. **common 전체 읽기**: `My-*.md` 9개, `Common-Interview-Questions.md`, `Interview-Retro-Template.md`
+5. **prep 전체 읽기**: 인덱스와 템플릿을 제외한 가이드 14개 전체. 면접 형식별 문서는 JD를 보고 적용 여부를 판단하되 읽기는 생략하지 않는다.
+6. **최신 지표 검증**: `~/myown/school-manage/docs/business/STATUS.md`에서 수치와 기준일을 다시 확인한다. 활성, 누적, 레코드 수를 서로 바꾸어 쓰지 않는다.
+7. **tech vault 흡수**: 마스터 기술 카드와 회사 특이 도메인의 정본을 찾아 정량, 비교, 심화 꼬리를 회사 문서 본문에 흡수한다. 회사 문서에 vault 링크만 남기지 않는다.
+8. **템플릿과 예시 읽기**: `fit/interview/prep/Interview-Prep-Template.md`, `fit/interview/actionpower/1st/Interview-Prep-ActionPower.md`
 
 ### 3단계: 문서 생성
 `fit/interview/{회사명}/{차수}/Interview-Prep-{회사명}-{차수}.md` 파일을 생성한다. 차수 폴더가 없으면 새로 만든다.
@@ -109,6 +112,6 @@ aliases: ["{회사영문명} Interview Prep", "{회사한글명} 면접 준비"]
   - **강**: 이력서에 직접적 경험과 성과가 있음
   - **중**: 관련 경험은 있으나 직접적이지 않거나 깊이 부족
   - **약**: 경험 없음 또는 매우 부족
-- 예상 질문은 최소 20개 이상 (이력서 기반 7+, JD 기반 7+, 서비스 맥락 5+, 컬처핏 5+)
+- 예상 질문은 최소 24개 이상 (이력서 기반 7+, JD 기반 7+, 서비스 맥락 5+, 컬처핏 5+)
 - 액션파워 예시 문서의 품질과 구체성을 기준으로 작성
 - FIT 답변은 `[[FIT-Framework|FIT 프레임워크]]`, `[[Self-Analysis|나찾기]]` 문서를 참조하도록 링크

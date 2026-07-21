@@ -118,8 +118,8 @@ aliases: ["Bdanpoppop 체크리스트", "비단팝팝 면접 준비 체크리스
 
 | 메일이 콕 집은 강점 | 예상 deep dive 질문 | 답변 준비 |
 |------------------|------------------|---------|
-| **비즈니스 효율 (4시간→10분)** | "어떻게 자동화? 자동화 전후 책임 경계는? 실패 시 운영자 개입은?" | EventBridge+SQS 발주 자동화 — 채널별 DLQ, 멱등성 키, status 머신, visibility timeout 6배 룰. [[Interview-Prep-Bdanpoppop-Tech-Resume#3. EventBridge+SQS 이벤트 아키텍처 — 결제, 교환, 알림 분리에 직결|Tech-Resume #3]] |
-| **안정적 운영 (사용자 증가 대비 + 사전 탐지)** | "어떤 메트릭? 임계치는? 사전 탐지가 실제 사고 막은 사례?" | Grafana, Prometheus, Loki 직접 구축. 4계층 메트릭(비즈니스, 앱, 인프라, 외부 의존성). [[Interview-Prep-Bdanpoppop-Tech-Resume#5. Grafana/Prometheus/Loki 모니터링 — "사전 탐지" 어필 직결|Tech-Resume #5]] |
+| **비즈니스 효율 (4시간→10분)** | "어떻게 자동화? 자동화 전후 책임 경계는? 실패 시 운영자 개입은?" | EventBridge+SQS 발주 자동화 — 채널별 DLQ, 멱등성 키, status 머신, visibility timeout 6배 룰. [[Interview-Prep-Bdanpoppop-Tech-Resume#3. EventBridge+SQS 이벤트 아키텍처 — 결제, 교환, 알림 분리에 직결\|Tech-Resume #3]] |
+| **안정적 운영 (사용자 증가 대비 + 사전 탐지)** | "어떤 메트릭? 임계치는? 사전 탐지가 실제 사고 막은 사례?" | Grafana, Prometheus, Loki 직접 구축. 4계층 메트릭(비즈니스, 앱, 인프라, 외부 의존성). [[Interview-Prep-Bdanpoppop-Tech-Resume#5. Grafana/Prometheus/Loki 모니터링 — "사전 탐지" 어필 직결\|Tech-Resume #5]] |
 | **AI 업무 파이프라인** | "구체적으로 어떤 검수? 정확도와 비용은? 사람 검토가 필요한 경계는?" | 본인 이력서 사례 deep dive — 정확도, 검수 시간 단축률, 휴먼 인 더 루프 설계 |
 
 ### B. 추가 어필 — 메일이 다루지 않은 강점 (면접에서 새 정보로 어필)

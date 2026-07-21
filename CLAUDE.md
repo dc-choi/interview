@@ -60,16 +60,16 @@
 **입력 (전부 필수)**:
 
 1. **JD** (WebFetch) + **이력서, 포트폴리오** (Read)
-2. `**common/` 마스터**: `My-*.md` 7개 + `Common-Interview-Questions.md` TOC + `Interview-Retro-Template.md`
+2. `**common/` 마스터**: `My-*.md` 9개 전체 + `Common-Interview-Questions.md` TOC + `Interview-Retro-Template.md`
 3. `**prep/` 14개 전체** — 선별 X (자세한 목록은 위 B 섹션). 면접 형식별 4종(CS, 시스템디자인, 라이브코딩, 글로벌)은 JD 단계 보고 적용 여부 판단.
 4. `**tech/` vault 딥다이브 (필수)**:
   - 마스터 카드 8개 각각 → `My-Tech-Cards` 끝 카테고리 인덱스 기반으로 vault 서치
   - 회사 특이 기술 질문(도메인) → 해당 vault 서치 (Agent로 인덱싱 가능)
   - vault Read → **정량, 비교 표, 심화 꼬리를 본문에 흡수** (vault 위키링크 박지 X, 콘텐츠 자체)
 5. **사이드 프로젝트 최신 메트릭 재확인 (필수)** — 정량 수치는 시점이 빠르게 변하므로 답변에 박기 전 **원본 docs 재검증**:
-  - 주일학교 출석부: `~/dev/projects/my-own/school_back/docs/business/STATUS.md` (모임 수, 학생, MAO, 전환율 등 정량)
+  - 주일학교 출석부: `~/myown/school-manage/docs/business/STATUS.md` (모임 수, 학생, MAO, 전환율 등 정량)
   - 다른 사이드 프로젝트 추가 시 본 항목에 경로 누적
-  - 마스터, 회사별 문서의 정량 수치(예: "99개 모임")는 **이 원본과 항상 동기화**. 포트폴리오 PDF 수치도 outdated 가능성 항상 의심.
+  - 마스터, 회사별 문서의 현재형 정량 수치는 **이 원본과 항상 동기화**. 과거 스냅숏은 기준일을 명시하고, 포트폴리오 PDF 수치도 outdated 가능성을 항상 의심.
 6. **(조건부)** 과거 유사 회사 회고 (`fit/interview/{유사회사}/Interview-Retro-*.md`)
 
 **출력 (한 번에)**:

@@ -35,8 +35,9 @@ Ask a short question only when a required input is missing and cannot be inferre
 1. Gather source material in one pass.
    - Fetch the JD when a URL is provided.
    - Read the resume and portfolio without copying their full body into the vault.
-   - Read `fit/interview/common/` master files and the full `fit/interview/prep/` guide set required by `CLAUDE.md`.
-2. Verify fast-changing project metrics from source docs before embedding numbers.
+   - Read all nine `My-*.md` masters, `Common-Interview-Questions.md`, and `Interview-Retro-Template.md`.
+   - Read all 14 prep guides required by `CLAUDE.md`; decide applicability after reading the format-specific guides.
+2. Verify fast-changing project metrics from `~/myown/school-manage/docs/business/STATUS.md` before embedding numbers. Keep cumulative, active, and record counts distinct.
 3. Search the `tech/` vault for each relevant master tech card and company-specific technical domain.
 4. Create or update files under `fit/interview/{company}/{round}/`.
    - Keep round-specific materials inside the round folder.
@@ -53,7 +54,7 @@ Include these sections when applicable:
 
 - JD matching table and company/domain analysis. Rate each JD requirement against the resume as 강 (direct experience with results), 중 (related but not direct, or shallow depth), or 약 (no or very weak experience).
 - Company-specific FIT answers aligned with WHY, question intent, signal, replacement wording, and meta guidance.
-- Technical questions and answer notes with absorbed vault content, quantitative comparisons, and likely follow-ups. Produce at least 20 expected questions: 7+ resume-based, 7+ JD-based, 5+ service-context, 5+ culture-fit.
+- Technical questions and answer notes with absorbed vault content, quantitative comparisons, and likely follow-ups. Produce at least 24 expected questions: 7+ resume-based, 7+ JD-based, 5+ service-context, 5+ culture-fit.
 - Reverse questions from `My-Reverse-Questions` plus company-specific questions.
 - Checklist for external-blame risk, negative wording, and company connection in answer endings.
 - Optional D-1 or D-day cheatsheet when the user needs a short review artifact.

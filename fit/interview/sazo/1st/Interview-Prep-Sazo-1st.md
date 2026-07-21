@@ -31,7 +31,7 @@ aliases: ["Sazo Interview Prep 1st", "사줘 1차 핏 인터뷰 준비"]
 
 | 항목 | 내용 |
 |---|---|
-| 회사 | 사줘(SAZO) — 한일 양방향 크로스보더 구매대행, AI 기반 URL 구매. 상세 [[Interview-Prep-Sazo-Domain|도메인 브리프]] |
+| 회사 | 사줘(SAZO) — 한일 양방향 크로스보더 구매대행, AI 기반 URL 구매. 상세 [[Interview-Prep-Sazo-Domain\|도메인 브리프]] |
 | 단계 | 프리A 71억(일본우정캐피탈 리드), 한국 거래액 반년 189배, 메루카리 공식 파트너, 2026 미국 확장 |
 | 포지션 | 백엔드 엔지니어 3년 이상(미들급 우대), NestJS 기반 MSA 설계 구현, 상품 주문 WMS 도메인, 의왕(성남 통근 양호), 수습 3개월(조건 동일) |
 | 조직 | 직원 36명, Tech Lead 2명 — 백엔드 동료가 있는 조직 (1인 자리 아님). 목적조직 기반 팀 단위 개발, 자율적 수평적 문화 명시 |
@@ -44,14 +44,14 @@ aliases: ["Sazo Interview Prep 1st", "사줘 1차 핏 인터뷰 준비"]
 | ---------------------------- | ------ | ----------------------------------------------------------------------------------------------- | ---------------- |
 | 3년 이상 백엔드 (3~7년 미들급)         | **강**  | 4년 10개월 — 밴드 정중앙                                                                                |                  |
 | NestJS (또는 Express, Fastify) | **강**  | 트라이포드 NestJS 메인 + 시솔 Express — 둘 다 실무                                                           |                  |
-| MSA 환경 경험                    | **중**  | 모놀리스 + 이벤트 분리(EventBridge, SQS) + 클린 아키텍처 모듈 경계. 완전한 MSA 운영은 갭 — [[Interview-Prep-Sazo-1st-Tech | Tech §3]] 전환 논리로 |
-| Redis, Kafka 연동              | **중**  | Redis 캐시 전략(카드 8) + Kafka는 검토 후 SQS 선택한 의사결정 보유. 운영 갭 — [[Interview-Prep-Sazo-1st-Tech          | Tech §1]] 정면 돌파  |
+| MSA 환경 경험                    | **중**  | 모놀리스 + 이벤트 분리(EventBridge, SQS) + 클린 아키텍처 모듈 경계. 완전한 MSA 운영은 갭 — [[Interview-Prep-Sazo-1st-Tech\|Tech §3]] 전환 논리로 |
+| Redis, Kafka 연동              | **중**  | Redis 캐시 전략(카드 8) + Kafka는 검토 후 SQS 선택한 의사결정 보유. 운영 갭 — [[Interview-Prep-Sazo-1st-Tech\|Tech §1]] 정면 돌파  |
 | RDB, NoSQL 설계 구현             | **강**  | MySQL 깊음(인덱스 99.3%, Lock 정합성) + MongoDB → MySQL 100만 건 마이그레이션                                   |                  |
 | 디버깅, 문제 해결                   | **강**  | 재현 → 가설 → 검증 6단계 + Prisma 90%, 슬로우쿼리 99.3% 사례                                                   |                  |
 | LLM 기반 개발 도구 활용              | **강**  | Claude Code 파이프라인 재설계(계층형 CLAUDE.md, MCP, Subagent, Hook) — 자격요건에 명시된 회사라 직격                    |                  |
 | (업무) Puppeteer 스크래핑 파이프라인    | **중강** | 시솔 택배사 스크래핑 + Sentry 운영. 단 Puppeteer 헤드리스 자체는 미사용 — 정직하게 + 운영 지식으로                              |                  |
 | (업무) 상품 주문 WMS 도메인           | **강**  | 시솔 CBT OMS, WMS 구축 + 트라이포드 재고 발주 — 도메인 직격                                                       |                  |
-| (업무) Elasticsearch           | **약**  | 실무 경험 없음. 인접(인덱스 내부 구조) + 학습 방향으로 — [[Interview-Prep-Sazo-1st-Tech                              | Tech §2]]        |
+| (업무) Elasticsearch           | **약**  | 실무 경험 없음. 인접(인덱스 내부 구조) + 학습 방향으로 — [[Interview-Prep-Sazo-1st-Tech\|Tech §2]]        |
 
 **우대사항 vs 내 경험** (JD 전문 기준, 2026-06-12 보강)
 
@@ -59,11 +59,11 @@ aliases: ["Sazo Interview Prep 1st", "사줘 1차 핏 인터뷰 준비"]
 |---|---|---|
 | Redis, Kafka, ES를 단순 연동이 아닌 **용도에 맞게 선택**해 사용 | **강** | 본인 최강 카드 직격 — MSK 574달러 vs EventBridge+SQS 0~18달러 정량 비교, GPL vs Datadog/ELK/CloudWatch 가중치 비교, ECS vs EKS. 선택의 근거를 묻는 우대라 의사결정 카드 전부가 답 |
 | 이커머스, 물류 도메인 (상품, 주문, 재고, 입출고) | **강** | 시솔 CBT OMS, WMS + 트라이포드 재고 발주 — 직격 |
-| Puppeteer, Playwright, Selenium 웹 스크래핑 | **중** | HTTP 레벨 스크래핑 + Sentry 운영은 직접. 헤드리스 도구는 미사용 — 정직 + 운영 지식 [[Interview-Prep-Sazo-1st-Tech|Tech §4]] |
+| Puppeteer, Playwright, Selenium 웹 스크래핑 | **중** | HTTP 레벨 스크래핑 + Sentry 운영은 직접. 헤드리스 도구는 미사용 — 정직 + 운영 지식 [[Interview-Prep-Sazo-1st-Tech\|Tech §4]] |
 | 복잡한 상태 흐름 (주문 상태 전이, 재고 변화) 구현 | **강** | 발주 멱등 상태 머신 8단계(PENDING → PROCESSING → COMPLETED/FAILED + 크래시 판정) + IoT 재고 정합성 — [[My-Tech-Cards-Extended]] 카드 2 심화 그대로 |
-| Go, gRPC | **약** | 미경험. gRPC 개념(HTTP/2, Protobuf, 내부 통신 적합)은 설명 가능 — [[Interview-Prep-Sazo-1st-Tech|Tech §6]] |
-| PostgreSQL 기반 TypeORM 활용, 쿼리 최적화 | **중** | 쿼리 최적화 자체는 강(MySQL EXPLAIN, 복합 인덱스 99.3%, Prisma 90%). PG와 TypeORM은 전환 — [[Interview-Prep-Sazo-1st-Tech|Tech §6]] |
-| 분산 시스템 개발의 어려움 이해 | **중강** | at-least-once 중복, 부분 실패, 멱등 컨슈머, Dual Write — [[Interview-Prep-Sazo-1st-Tech|Tech]] 전체가 이 우대 대응 |
+| Go, gRPC | **약** | 미경험. gRPC 개념(HTTP/2, Protobuf, 내부 통신 적합)은 설명 가능 — [[Interview-Prep-Sazo-1st-Tech\|Tech §6]] |
+| PostgreSQL 기반 TypeORM 활용, 쿼리 최적화 | **중** | 쿼리 최적화 자체는 강(MySQL EXPLAIN, 복합 인덱스 99.3%, Prisma 90%). PG와 TypeORM은 전환 — [[Interview-Prep-Sazo-1st-Tech\|Tech §6]] |
+| 분산 시스템 개발의 어려움 이해 | **중강** | at-least-once 중복, 부분 실패, 멱등 컨슈머, Dual Write — [[Interview-Prep-Sazo-1st-Tech\|Tech]] 전체가 이 우대 대응 |
 | 크로스보더 이커머스 개발 경험 또는 heavy user | **강** | 시솔 CBT **개발 경험** — 이 우대를 경험으로 채우는 후보는 드묾. 면접 전 앱 체험으로 user 축도 보강 |
 | 일본어 또는 영어 능통 | **중** | 영어 기술 문서 가능. 일본어 미보유 — 솔직 + 파싱은 언어보다 구조 문제 |
 
@@ -102,13 +102,13 @@ aliases: ["Sazo Interview Prep 1st", "사줘 1차 핏 인터뷰 준비"]
 | 사줘 서비스 써봤나, 어떻게 이해했나    | §0 실사용 멘트 + 도메인 브리프 멘트 1~2개 (깨짐 감지, 환율 시점)                                                                          |                     |
 | 가장 임팩트 있던 일             | §2 발주 자동화 — 정성 먼저, 수치는 꼬리                                                                                           |                     |
 | 이직 사유, 잦은 이직            | §2 — 자기 귀책 + 궤적 프레임                                                                                                 |                     |
-| Kafka, ES 안 써봤는데 괜찮나    | 인정 + 전이 근거 한 줄 + 빠른 흡수 ([[Interview-Prep-Sazo-1st-Tech                                                              | Tech]] 골격). 우기지 말 것 |
+| Kafka, ES 안 써봤는데 괜찮나    | 인정 + 전이 근거 한 줄 + 빠른 흡수 ([[Interview-Prep-Sazo-1st-Tech\|Tech]] 골격). 우기지 말 것 |
 | 기술을 용도에 맞게 선택한 경험       | 우대 1 직격 — MSK vs SQS 정량 비교, GPL 스택 선택, ECS vs EKS 중 하나 골라 30초. 사업 단계와 기술 결정을 함께 본 사례 프레임                            |                     |
-| PostgreSQL, TypeORM 써봤나 | 최적화 방법론은 DB 중립(EXPLAIN, 카디널리티, 커버링) + PG 차이(BUFFERS, BRIN/GIN, VACUUM)는 정리됨 — [[Interview-Prep-Sazo-1st-Tech        | Tech §6]]           |
+| PostgreSQL, TypeORM 써봤나 | 최적화 방법론은 DB 중립(EXPLAIN, 카디널리티, 커버링) + PG 차이(BUFFERS, BRIN/GIN, VACUUM)는 정리됨 — [[Interview-Prep-Sazo-1st-Tech\|Tech §6]]           |
 | AI 도구 어떻게 쓰나            | [[My-FIT-Answers]] 10번 — 파이프라인 재설계, 설계와 의사결정은 직접. AI-First 조직이라 거의 확실                                               |                     |
 | 일본어 가능한가                | 솔직: 못함. 일본 사이트 파싱은 언어보다 구조 문제 + AI 번역 도구 활용 + 필요하면 학습 의지. 영어는 문서 가능                                                 |                     |
 | 협업 방식, 비개발 직군 소통        | [[My-FIT-Answers]] 3번 — 의도 먼저 묻고 재확인, 상대 언어로                                                                        |                     |
-| 사이드 프로젝트                | [[My-FIT-Answers-Extended]] 15번 — 출석부 SaaS (모임 104개, 본당 82곳, 학생 2,864명, 출석 약 1.7만 건, MAO 38곳 — 06-09 기준). 본업 가드 한 줄 |                     |
+| 사이드 프로젝트                | [[My-FIT-Answers-Extended]] 15번 — 출석부 SaaS (2026-07-15 보고서상 모임 레코드 108개, 랜딩 누적 본당 85곳, 학생 3,669명, 출석 약 22,051건, MAO 34곳). 누적치와 활성 수치 구분, 본업 가드 한 줄 |                     |
 | 워라밸, 업무 강도 (스타트업 급성장기)  | [[My-FIT-Answers]] 11번 — 의미 있으면 투자 OK + 지속 가능성 역질문으로 마이크 넘김                                                         |                     |
 | 5년 후                    | [[My-FIT-Answers]] 4번 — Staff 트랙, 권한이 아니라 영향력                                                                       |                     |
 | 처우 기대, 입사 가능 시점         | 시장가 기준으로 처우 단계에서 구체화. ⚠️ 윤회 최종합격 수락 상태(6/29 출근) — 입사 시점 질문에 신중히, 확정 답 피하고 "협의 가능" 선                                 |                     |
