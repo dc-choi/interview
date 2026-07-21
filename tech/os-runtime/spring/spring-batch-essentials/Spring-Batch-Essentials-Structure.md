@@ -3,6 +3,7 @@ tags: [spring-batch, batch, itemreader, itemwriter, chunk, tasklet, performance]
 status: done
 category: "OS & Runtime"
 aliases: ["Spring Batch 구조", "Tasklet vs Chunk"]
+verified_at: 2026-07-21
 ---
 
 # Spring Batch 구조와 처리 모델
@@ -39,7 +40,7 @@ Job            (최상위 배치 작업)
 ```
 
 - **Job**: 여러 Step의 집합. 실행 파라미터에 따라 **JobInstance** 생성
-- **JobInstance**: `job_name + JobParameters` 조합으로 유니크
+- **JobInstance**: `job_name + identifying JobParameters` 조합으로 논리적 실행을 식별
 - **JobExecution**: JobInstance의 실제 실행 시도 (재시도 시 같은 Instance에 새 Execution)
 - **Step**: 실제 로직. Tasklet 또는 Chunk 모델 선택
 - **StepExecution**: Step 실행마다 생성, Read, Write, Skip 카운터 포함
@@ -49,7 +50,7 @@ Job            (최상위 배치 작업)
 | 축 | Tasklet | Chunk |
 |---|---|---|
 | 용도 | 단순 단일 작업 (파일 이동, 테이블 truncate, 플래그 갱신) | 대용량 데이터 Read→Process→Write 반복 |
-| 트랜잭션 | Step 전체가 하나 | **Chunk 단위**로 커밋 |
+| 트랜잭션 | 기본적으로 `Tasklet.execute` 호출마다 트랜잭션. 한 번에 `FINISHED`를 반환하는 Tasklet만 결과적으로 Step 전체가 한 호출 | **Chunk 단위**로 커밋 |
 | 종료 | `RepeatStatus.FINISHED` 반환 | Reader가 null 반환할 때까지 반복 |
 | 재시작 | Step 단위 | **Chunk 단위** (중단 지점부터) |
 
@@ -59,7 +60,7 @@ Job            (최상위 배치 작업)
 
 ## 메타데이터 테이블 6종
 
-Spring Batch가 자동 생성하는 배치 실행 이력 저장소.
+Spring Batch가 사용하는 배치 실행 이력 저장소다. 개발 환경에서는 설정에 따라 초기화할 수 있지만, 운영에서는 버전별 공식 DDL을 마이그레이션 도구로 명시 적용하는 경우가 많다.
 
 | 테이블 | 역할 |
 |---|---|
@@ -70,7 +71,7 @@ Spring Batch가 자동 생성하는 배치 실행 이력 저장소.
 | `BATCH_STEP_EXECUTION` | Step별 실행 상태, Read/Write/Skip 카운터 |
 | `BATCH_STEP_EXECUTION_CONTEXT` | Step 레벨 컨텍스트 (재시작 시 이어서) |
 
-이 테이블 덕에 **같은 파라미터로 완료된 Job은 재실행 거부**되고, 실패 시에는 **마지막 청크부터 재시작** 가능.
+기본 동작에서는 같은 identifying 파라미터로 이미 완료된 JobInstance를 다시 실행할 수 없다. 실패 후 재시작은 Reader, Writer의 `saveState`, 트랜잭션 자원과 `ExecutionContext`가 올바르게 구성됐을 때 마지막으로 커밋된 체크포인트 이후부터 진행하며, 커밋되지 않은 항목은 재처리될 수 있다.
 
 ## Chunk 모델 상세
 
@@ -80,7 +81,7 @@ ItemReader  →  ItemProcessor  →  ItemWriter
 ```
 
 - **ItemReader**: 소스에서 1건씩 읽음 (DB, 파일, 큐)
-- **ItemProcessor**: 1건을 변환, 필터링. `null` 반환 시 해당 아이템 skip
+- **ItemProcessor**: 1건을 변환하거나 필터링. `null` 반환은 해당 항목을 **filter**하며 `filterCount`에 반영된다. 예외 기반 fault tolerance의 skip과는 다른 개념이다.
 - **ItemWriter**: chunk 크기만큼 모인 아이템을 **일괄 쓰기**
 
 Chunk 크기가 곧 **트랜잭션 경계**이자 commit 간격. 10,000건이면 chunk 10,000 → commit 1회.
@@ -91,19 +92,22 @@ Chunk 크기가 곧 **트랜잭션 경계**이자 commit 간격. 10,000건이면
 |---|---|---|
 | `FlatFileItemReader` | CSV, 고정 폭 파일 | 대용량에도 메모리 안전 |
 | `JdbcCursorItemReader` | DB Cursor 기반 | 장시간 커넥션 점유, Replica 권장 |
-| `JdbcPagingItemReader` | OFFSET/LIMIT 페이징 | **대용량에서 OFFSET 비용** 문제 |
-| `JpaPagingItemReader` | JPA 기반 페이징 | JPA 영속성 컨텍스트 오버헤드 |
-| `JpaCursorItemReader` | JPA Cursor (Hibernate 의존) | 구현체 의존성, 제한적 |
-| `Custom ZeroOffset Reader` | PK 기반 커서 페이징 | **대용량의 정석** ([[Spring-Batch-Essentials-Performance|성능 최적화]] 참조) |
+| `JdbcPagingItemReader` | DB별 `PagingQueryProvider` 기반 페이지 조회 | 고유한 sort key와 생성 SQL, 실행 계획 검증 |
+| `JpaPagingItemReader` | JPA 기반 페이징 | 페이지마다 persistence context를 clear해 엔티티가 detach됨 |
+| `JpaCursorItemReader` | JPA query stream 기반 cursor | JPA provider와 JDBC driver의 streaming 동작 검증 |
+| Custom Keyset Reader | 고유 정렬 키 이후를 조회 | 깊은 OFFSET 회피 가능, 인덱스와 변경 중 일관성 설계 필요 ([[Spring-Batch-Essentials-Performance\|성능 최적화]] 참조) |
 
 ### 주요 Writer
 
-- **`JdbcBatchItemWriter`**: JDBC `addBatch`, `executeBatch`로 일괄 쓰기. 가장 빠름
-- **`JpaItemWriter`**: `persist/merge` 반복. JPA 장점은 살지만 느림
-- **`CompositeItemWriter`**: 여러 Writer 동시 실행 (멀티 타깃)
-- **Custom Writer**: 외부 API 호출, Kafka 발행 등
+- **`JdbcBatchItemWriter`**: JDBC batch API로 일괄 쓰기. 드라이버와 SQL에 따라 왕복을 줄일 수 있음
+- **`JpaItemWriter`**: 설정에 따라 `merge` 또는 `persist`를 사용. 엔티티 수명주기와 batch 설정을 함께 검증
+- **`CompositeItemWriter`**: 등록 순서대로 여러 delegate Writer에 같은 chunk를 전달
+- **Custom Writer**: 외부 API 호출, 메시지 발행 등. DB 트랜잭션과 원자적이지 않을 수 있어 멱등성, outbox와 재시도를 설계
 
 ## 출처
+- [Spring Batch TaskletStep](https://docs.spring.io/spring-batch/reference/step/tasklet.html)
+- [Spring Batch record filtering](https://docs.spring.io/spring-batch/reference/processor.html#filtering-records)
+- [Spring Batch database readers and writers](https://docs.spring.io/spring-batch/reference/readers-and-writers/database.html)
 - [dkswnkk — Spring Batch란?](https://dkswnkk.tistory.com/707)
 - [SK DEVOCEAN — Spring Batch 시리즈](https://devocean.sk.com/blog/techBoardDetail.do?ID=166164)
 - [Spring Batch 운영과 설계 — YouTube 강의](https://www.youtube.com/watch?v=_nkJkWVH-mo&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=41)

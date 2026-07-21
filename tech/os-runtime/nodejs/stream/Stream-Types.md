@@ -3,6 +3,7 @@ tags: [runtime, nodejs]
 status: done
 category: "OS & Runtime"
 aliases: ["Stream Types", "스트림 타입"]
+verified_at: 2026-07-21
 ---
 
 # 스트림 타입과 배압
@@ -13,7 +14,7 @@ aliases: ["Stream Types", "스트림 타입"]
 
 ### 1. Readable
 ```
-데이터를 읽을 수 있는 스트림. 내부에 버퍼 큐가 있으며 highWaterMark로 크기 제한.
+데이터를 읽을 수 있는 스트림. 내부에 버퍼 큐가 있으며 highWaterMark를 버퍼링 임계값으로 사용한다. hard limit은 아니다.
 
 두 가지 읽기 모드:
 - Pull 모드 (paused): on('readable') + read() 호출로 직접 꺼냄
@@ -25,28 +26,25 @@ aliases: ["Stream Types", "스트림 타입"]
 **push() 반환값과 피드백 신호**
 Readable 스트림을 직접 구현할 때 `push(chunk)`는 **boolean을 반환**하며, 이것이 backpressure 피드백이다.
 - `true` → highWaterMark 미도달, 계속 push 가능
-- `false` → highWaterMark 도달, 더 이상 push하지 말 것 (강제는 아니지만 권장)
+- `false` → 내부 버퍼가 임계값에 도달했으므로 구현체는 다음 `_read()` 호출까지 생산을 멈춰야 함
 
-**동기 push의 함정**: `_read()` 내부에서 여러 chunk를 **동기적으로** push하면, 스트림은 `push(null)`(종료)을 만날 때까지 `_read()`를 계속 호출하려 한다. 이로 인해 **버퍼가 highWaterMark를 넘어 폭증**할 수 있다.
+**동기 push의 함정**: `_read()`에서 `push()`의 반환값을 무시하고 여러 chunk를 계속 밀면 highWaterMark가 강제 상한이 아니므로 버퍼가 임계값을 넘을 수 있다. 동기 처리 자체가 문제라기보다 `false` 피드백을 무시하는 구현이 문제다.
 
 ```js
-// BAD: 동기 push 남용 → 버퍼 오버플로우 가능
+// BAD: push() 피드백 무시
 new Readable({
   read() {
-    this.push('a');
-    this.push('b');
-    this.push('c');
+    while (hasMore()) this.push(nextChunk());
   }
 });
 
-// GOOD: process.nextTick으로 지연시켜 이벤트 루프에 제어권 반환
+// GOOD: false이면 생산을 멈추고 다음 _read()를 기다림
 new Readable({
   read() {
-    process.nextTick(() => {
-      this.push('a');
-      this.push('b');
-      this.push('c');
-    });
+    while (hasMore()) {
+      if (!this.push(nextChunk())) return;
+    }
+    this.push(null);
   }
 });
 ```
@@ -96,7 +94,7 @@ child.stdout.on('data', d => console.log(d.toString()));
 
 | 축 | Duplex | Transform |
 |----|--------|-----------|
-| 입력↔출력 관계 | 독립 (무관할 수도) | 1:1 변환 (입력 → 변환 → 출력) |
+| 입력↔출력 관계 | 독립 (무관할 수도) | 입력에 의해 출력이 만들어짐. 청크 수와 크기는 1:1일 필요 없음 |
 | 사용처 | 양방향 통신 채널 | gzip, 암호화, 인코딩 변환 |
 | 구현 메서드 | `_read`, `_write` | `_transform` |
 
@@ -105,7 +103,7 @@ child.stdout.on('data', d => console.log(d.toString()));
 Duplex의 하위 타입. 입력을 변환하여 출력으로 내보낸다.
 _transform(chunk, encoding, callback) 메서드를 구현한다.
 
-예: zlib.createGzip(), crypto.createCipher()
+예: zlib.createGzip(), crypto.createCipheriv('aes-256-gcm', key, iv)
 ```
 
 ## 배압 (Backpressure)
@@ -125,8 +123,8 @@ _transform(chunk, encoding, callback) 메서드를 구현한다.
 
 ### highWaterMark와 메모리 관리
 ```
-highWaterMark: 내부 버퍼의 최대 크기를 바이트 단위로 지정.
-- 기본값: 16KB (바이트 스트림), 16 objects (objectMode)
+highWaterMark: 추가 읽기나 쓰기를 멈추라는 버퍼링 임계값. 엄격한 메모리 상한이 아니다.
+- Node.js 24 일반 바이트 스트림 기본값: 64KiB, objectMode: 16개. `fs.createReadStream()` 같은 일부 구현은 별도 기본값을 가진다.
 - 배압 무시 시 메모리 영향: ~87MB (배압 준수) vs ~1.5GB (무시) → 약 17배 차이
 - GC 부담도 비례하여 증가 → 응답 시간 저하
 ```
@@ -174,3 +172,8 @@ pipeline(readable, transform, writable, (err) => {
 - [[Stream|스트림 인덱스]]
 - [[Event-Loop|이벤트 루프]]
 - [[libuv]]
+
+## 출처
+
+- [Node.js — Stream API](https://nodejs.org/api/stream.html)
+- [Node.js — DEP0106 crypto.createCipher and crypto.createDecipher](https://nodejs.org/api/deprecations.html#dep0106-cryptocreatecipher-and-cryptocreatedecipher)

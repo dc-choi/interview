@@ -72,7 +72,7 @@ flowchart TB
 ```
 
 - **간선 = resolver 호출**: `users`가 100건을 주면 그 아래 `posts` 간선은 사용자마다 한 번, 100번 불린다. 이 구조적 곱셈이 N+1이다.
-- **DataLoader가 붙는 자리**: 같은 tick에 모인 `load(id)` 호출을 배치 1회로 접는다. 입력 키 순서 보존과 요청 스코프여야 하는 이유는 [[NestJS-GraphQL#DataLoader — N+1 해결|DataLoader 정본]]. 일부 구현은 배치 대신 selection set을 데이터 소스 최적화 쿼리로 직접 번역해 N+1을 피하기도 한다.
+- **DataLoader가 붙는 자리**: 같은 tick에 모인 `load(id)` 호출을 배치 1회로 접는다. 입력 키 순서 보존과 요청 스코프여야 하는 이유는 [[NestJS-GraphQL-DataLoader#DataLoader — N+1 해결|DataLoader 정본]]. 일부 구현은 배치 대신 selection set을 데이터 소스 최적화 쿼리로 직접 번역해 N+1을 피하기도 한다.
 - **얕게 유지**: 모든 필드를 ResolveField로 쪼개면 라운드트립만 는다. 단순 필드는 부모 resolver가 한 번에 채우고, 무거운 연관만 별도 resolver로.
 
 ## 그림 4. 운영 관심사가 라이프사이클 어디에 붙나

@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
+verified_at: 2026-07-21
 category: "OS & Runtime"
 aliases: ["Async Internals Patterns", "비동기 패턴과 함정"]
 ---
@@ -58,7 +59,7 @@ function inconsistentRead(filename, callback) {
 해결 원칙은 함수가 항상 동기이거나 항상 비동기로 통일되어야 한다는 것이다. 동기 경로를 비동기로 감싸서 일관성을 확보할 수 있다.
 
 - process.nextTick(): 현재 I/O 사이클 내에서, 다음 이벤트 루프 페이즈 전에 실행. 가장 빠름.
-- setImmediate(): 현재 이벤트 루프 사이클의 check 페이즈에서 실행.
+- setImmediate(): poll 이후 check 페이즈에서 실행. 예약 위치에 따라 현재 반복의 check 또는 이후 반복에서 실행된다.
 
 Promise는 이 문제를 자동으로 해결한다. then 핸들러는 resolve가 동기적으로 호출되더라도 항상 비동기(마이크로태스크)로 실행되기 때문이다.
 
@@ -76,12 +77,9 @@ Promise는 이 문제를 자동으로 해결한다. then 핸들러는 resolve가
 
 TaskQueue는 EventEmitter 기반으로 글로벌 동시성을 관리하는 구현이다. 동시 실행 중인 작업 수를 추적하고, 최대치에 도달하면 새 작업을 큐에 넣어두었다가 기존 작업이 완료되면 꺼내서 실행한다. 완료/에러 이벤트를 발생시켜 외부에서 모니터링할 수 있다.
 
-리소스별 권장 동시성은 다음과 같다:
-- CPU 바운드 작업: os.cpus().length (코어 수)
-- I/O 바운드 작업: 5~10개
-- 외부 API 호출: 1~5개 (rate limit 기반으로 조정)
+동시성에 보편적인 숫자는 없다. CPU 작업은 worker 수를 정할 때 `os.availableParallelism()`과 실제 CPU quota를 출발점으로 삼을 수 있다. I/O와 외부 API는 지연 분포, 파일 디스크립터와 소켓, 커넥션 풀, 메모리, 하위 시스템의 rate limit를 반영하고 부하 테스트로 조정한다.
 
-경쟁 조건을 방지하려면 Set으로 현재 처리 중인 리소스를 추적하고, 동일 리소스에 대한 중복 작업을 방지해야 한다.
+현재 처리 중인 key를 `Set`으로 추적하면 한 프로세스 안에서 동일 key의 중복 시작을 막을 수 있다. 하지만 다중 프로세스나 분산 환경, check-then-act, 만료와 재시도 경쟁까지 해결하지는 않는다. 요구되는 일관성에 따라 뮤텍스, 원자적 조건부 쓰기, fencing token, 데이터베이스 제약을 사용한다.
 
 ## return await 규칙
 
@@ -113,7 +111,7 @@ TypeScript ESLint에서 에러 처리의 정확성만 강제하려면 `"@typescr
 
 ## 재귀 Promise 체인 메모리 누수
 
-`return somePromise.then(() => recursiveCall())` 패턴은 재귀 호출마다 새로운 Promise가 체인에 연결되어 무한히 길어지는 체인을 생성한다. 이는 GC가 이전 Promise를 해제하지 못하게 하여 메모리를 지속적으로 소비한다.
+종료되지 않는 재귀 Promise 체인은 각 단계가 다음 Promise를 반환하며 미완료 체인을 계속 연결할 수 있다. 런타임과 콜백이 무엇을 캡처하는지에 따라 이전 reaction이 오래 유지될 수 있으므로 장기 폴링은 반복문과 명시적 취소, 지연, 종료 조건으로 표현하는 편이 관찰과 제어에 유리하다.
 
 ```javascript
 // 문제: 무한 Promise 체인 → 메모리 누수
@@ -134,13 +132,14 @@ async function poll() {
 }
 ```
 
-async 함수 내에서 while 루프를 사용하면 각 반복마다 이전 Promise가 해제되어 메모리 누수가 발생하지 않는다.
+`while` 루프는 재귀적으로 늘어나는 반환 체인을 만들지 않는다. 그렇다고 모든 메모리 누수를 자동으로 막는 것은 아니며, 각 반복에서 참조를 보관하지 않는지와 취소, backoff, 오류 처리를 별도로 확인해야 한다.
 
 ## 출처
 
 - [no-return-await — ESLint 공식 문서](https://eslint.org/docs/latest/rules/no-return-await)
 - [return-await — typescript-eslint 공식 문서](https://typescript-eslint.io/rules/return-await/)
 - [ECMAScript Language Specification — TC39](https://tc39.es/ecma262/)
+- [Node.js os.availableParallelism](https://nodejs.org/api/os.html#osavailableparallelism)
 
 ## 관련 문서
 - [[Async-Internals-Mechanism|비동기 내부 동작 — 메커니즘]]

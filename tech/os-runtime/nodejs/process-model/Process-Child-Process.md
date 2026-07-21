@@ -134,7 +134,7 @@ shell이 필요해도 사용자 입력을 인자로 넣지 말고, 인자 바인
 - **`process.exit(0)` 즉시 호출** → in-flight 작업 끊김. server.close 후 graceful.
 - **`exec`에 신뢰 못 할 입력** → 명령 인젝션. `execFile`/`spawn`으로.
 - **`exec` stdout이 1MB 초과** → throw. 큰 출력은 `spawn` 스트림.
-- **fork 후 child.kill 안 함** → 좀비 프로세스 누적.
+- **장기 실행 child의 lifecycle 미관리** → 살아 있는 child는 zombie가 아니지만 불필요한 프로세스와 핸들이 남을 수 있다. 종료 정책과 `exit`/`close` 처리를 명시한다. zombie는 종료한 자식이 OS에서 wait/reap되지 않은 별도 상태다.
 - **SIGTERM 핸들러에서 새 비동기 작업 시작** → 종료 안 끝남. 정리만.
 - **Cluster + 자체 fork 혼용** → 자식의 자식 관리 복잡. Cluster 안에서는 worker가 fork 안 하는 게 안전.
 
@@ -156,3 +156,7 @@ shell이 필요해도 사용자 입력을 인자로 넣지 말고, 인자 바인
 - [[Nodejs-Clustering|Cluster (다중 worker 패턴)]]
 - [[Single-vs-Multi-Thread|싱글 vs 멀티 스레드]]
 - [[tech/os-runtime/nodejs/Security|Node.js 보안 모범 사례]]
+
+## 출처
+
+- [Node.js Child process API](https://nodejs.org/api/child_process.html)

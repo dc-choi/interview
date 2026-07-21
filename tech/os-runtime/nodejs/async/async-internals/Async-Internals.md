@@ -1,6 +1,6 @@
 ---
 tags: [runtime, nodejs]
-status: done
+status: index
 category: "OS & Runtime"
 aliases: ["Async Internals", "비동기 내부 동작"]
 ---

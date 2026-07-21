@@ -1,6 +1,7 @@
 ---
 tags: [os, context-switching, cpu-scheduling]
 status: done
+verified_at: 2026-07-21
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Context Switching", "컨텍스트 스위칭"]
 ---
@@ -9,7 +10,7 @@ aliases: ["Context Switching", "컨텍스트 스위칭"]
 
 ## 컨텍스트 스위칭
 
-프로세스를 실행하는 중에 다른 프로세스를 실행하기 위해 실행 중인 프로세스 상태를 저장하고 다른 프로세스의 상태값으로 교체하는 작업.
+CPU에서 실행 중인 task 또는 thread의 레지스터와 스케줄링 상태를 저장하고 다른 task의 상태를 복원하는 작업이다. 서로 다른 프로세스 사이에서는 주소 공간 전환도 추가될 수 있다.
 
 ### 동작 과정
 1. 실행 중인 프로세스의 작업 내용을 PCB에 저장
@@ -22,34 +23,35 @@ aliases: ["Context Switching", "컨텍스트 스위칭"]
 - 메모리 정보
 
 ### 발생 조건
-- CPU 점유 시간이 다 된 경우
-- IO 요청이 있는 경우
-- 다른 종류의 인터럽트가 발생한 경우
-- 한 프로세스가 CPU를 너무 오래 점유하면 운영체제가 인터럽트를 발생시켜 강제 전환
+- time slice 만료 뒤 스케줄러가 다른 runnable task를 선택한 경우
+- I/O 요청 등으로 현재 task가 block하거나 명시적으로 yield한 경우
+- interrupt나 wakeup 뒤 더 높은 우선순위 또는 정책상 다른 runnable task가 선택되어 preempt된 경우
+
+I/O 요청과 interrupt는 스케줄러 진입점이 될 수 있지만 실제 context switch를 항상 일으키지는 않는다. 비동기 I/O가 현재 task를 block하지 않거나 interrupt 처리 뒤 같은 task가 계속 선택되면 task switch 없이 복귀한다.
 
 ### 프로세스 vs 스레드 — 왜 스레드 스위칭이 더 빠른가
 
-스레드 컨텍스트 스위칭은 **메모리 관련 추가 작업이 없어** 프로세스 스위칭보다 훨씬 가볍다.
+동일 프로세스의 스레드 전환은 주소 공간을 유지할 수 있어 보통 프로세스 간 전환보다 가볍지만, 레지스터 저장, 스케줄러 실행, 캐시와 분기 예측기 영향 같은 비용은 여전히 있다.
 
 | 구분 | 프로세스 스위칭 | 스레드 스위칭 (동일 프로세스) |
 |---|---|---|
-| 제어 블록 | PCB 교체 | TCB 교체 (레지스터, 스택 포인터만) |
+| 제어 블록 | 프로세스/task 상태와 주소 공간 전환 | thread/task의 레지스터, 스택 포인터, 스케줄링 상태 전환 |
 | 가상 주소 공간 | 변경 (페이지 테이블 Base 교체) | 공유 (변경 없음) |
 | MMU 재설정 | 필요 | 불필요 |
-| TLB flush | 발생 → 다음 메모리 접근이 느려짐 | 미발생 |
-| CPU 캐시 | cold 시작 가능성 높음 | 따뜻함 유지 |
+| TLB | 주소 공간 태그가 없으면 무효화 비용. ASID/PCID 지원 시 일부 엔트리 유지 가능 | 보통 같은 주소 공간 엔트리 재사용 가능 |
+| CPU 캐시 | 작업 집합 차이로 miss가 늘 수 있음 | 작업 집합에 따라 캐시 영향 발생 가능 |
 
 - **MMU(Memory Management Unit)**: 가상 주소 → 물리 주소 매핑 회로
 - **TLB(Translation Lookaside Buffer)**: 가상/물리 주소 매핑을 캐싱하는 하드웨어. flush되면 초기 몇 회 접근이 메모리까지 내려가 느려진다.
-- 다른 프로세스로 전환되면 주소 체계가 달라지므로 TLB 엔트리를 비워야 함 → 이 비용이 프로세스 스위칭을 느리게 만든다.
+- 다른 주소 공간으로 전환할 때 페이지 테이블 기준이 바뀐다. 다만 현대 CPU의 ASID/PCID 같은 주소 공간 태그를 사용하면 TLB 전체 flush를 피하고 해당 주소 공간의 엔트리를 구분해 재사용할 수 있다.
 - 동일 프로세스 내 스레드는 주소 공간이 같아 TLB, 페이지 테이블 Base를 유지할 수 있다.
 
 ## CPU 스케줄링
 
-프로그램 실행 시 메모리에 프로세스가 생성되고 각 프로세스에는 1개 이상의 쓰레드가 있다. 운영체제는 모든 프로세스에게 CPU를 할당/해제하는데 이를 CPU 스케줄링이라 한다.
+운영체제 스케줄러는 실행 가능한 thread 또는 task에 CPU 시간을 배분한다. 프로세스는 자원 격리 단위이고, 실제 스케줄링 단위는 운영체제 모델에 따라 thread/task다.
 
 ### 핵심 고려사항
-1. **어떤 프로세스에게** CPU를 줄 것인가?
+1. **어떤 실행 가능 task에게** CPU를 줄 것인가?
 2. **얼마의 시간 동안** CPU를 사용하게 할 것인가?
 
 - CPU를 할당받아 실행하는 작업: **CPU Burst**
@@ -82,7 +84,6 @@ aliases: ["Context Switching", "컨텍스트 스위칭"]
 - 장점: 단순하고 직관적
 - 단점: 실행 시간이 짧은 프로세스가 긴 프로세스 뒤에 대기, IO 작업 시 계속 대기
 - Burst Time에 따라 성능 차이가 크므로 현대 OS에서 잘 쓰이지 않고 일괄처리 시스템에서 사용
-- **빌레이디의 역설**: Page Fault를 줄이려고 프레임 수를 늘렸는데 오히려 Page Fault가 증가하는 현상. FIFO에서만 발생
 
 ### SJF (Shortest Job First)
 - Burst Time이 짧은 프로세스를 먼저 실행
@@ -97,10 +98,10 @@ aliases: ["Context Switching", "컨텍스트 스위칭"]
 - 컨텍스트 스위칭 오버헤드가 추가되므로 평균 대기시간이 비슷하면 FIFO보다 느림
 - 타임 슬라이스가 크면 → FIFO와 비슷
 - 타임 슬라이스가 작으면 → 컨텍스트 스위칭이 많아져 오버헤드 증가
-- 실제 타임 슬라이스: Windows 20ms, Unix 100ms
+- 실제 시간 할당과 선점 규칙은 운영체제, 스케줄링 클래스, 우선순위, 부하와 하드웨어에 따라 달라져 고정된 Windows/Unix 값으로 일반화할 수 없다.
 
 ### MLFQ (Multi Level Feedback Queue)
-- 오늘날 운영체제에서 가장 일반적으로 쓰이는 스케줄링 기법
+- 교육용으로 널리 쓰이는 피드백 큐 모델이다. 실제 운영체제는 CFS 계열, EEVDF, 우선순위와 실시간 클래스 등 고유 구현을 사용하므로 MLFQ가 모든 현대 OS의 공통 구현이라고 단정하지 않는다.
 - CPU 처리량이 중요한 프로세스 → 타임 슬라이스를 크게
 - IO 응답속도가 중요한 프로세스 → 타임 슬라이스를 짧게
 - 우선순위 큐를 여러 개 준비:
@@ -128,3 +129,9 @@ aliases: ["Context Switching", "컨텍스트 스위칭"]
 - [[Process-Lifecycle|프로세스 생명주기]]
 - [[Concurrency-and-Process|동시성과 프로세스]]
 - [[Virtual-Memory|가상 메모리]]
+
+## 출처
+
+- [Linux kernel scheduler documentation](https://docs.kernel.org/scheduler/)
+- [Linux scheduler monitor semantics](https://docs.kernel.org/trace/rv/monitor_sched.html)
+- [Linux kernel TLB documentation](https://docs.kernel.org/arch/x86/tlb.html)

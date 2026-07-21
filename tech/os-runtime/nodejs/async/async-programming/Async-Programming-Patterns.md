@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
+verified_at: 2026-07-21
 category: "OS & Runtime"
 aliases: ["비동기 프로그래밍 패턴"]
 ---
@@ -30,7 +31,7 @@ function serial(recipient) {
 }
 ```
 
-**3. 완전 병렬 실행 (Full Parallel)**: 모든 작업을 동시에 실행, 완료 카운트 추적
+**3. 무제한 동시 실행 (Unbounded Concurrency)**: 모든 작업을 한꺼번에 시작한다. 입력이 크면 메모리, 소켓, 하위 시스템을 고갈시킬 수 있으므로 작은 고정 집합에만 쓰고 일반적으로는 동시성 제한을 둔다.
 ```js
 recipients.forEach(r => dispatch(r, (err) => {
   if (!err) success++; else failed.push(r.name);
@@ -53,9 +54,9 @@ clearInterval(interval);  // 중지
 
 ### Zero Delay & 재귀적 setTimeout
 ```
-지연 0: 현재 함수 실행 완료 후 가능한 한 빨리 실행. CPU 블로킹 방지.
-setInterval 한계: 함수 완료 시간 무시. 겹침 발생 가능.
-해결: 재귀적 setTimeout → 이전 함수 완료 후 대기.
+지연 0: 현재 함수 실행 완료 후 타이머 임계값이 지난 다음 실행 기회를 요청한다. 무거운 콜백 자체의 CPU 블로킹을 없애지는 않는다.
+setInterval 한계: 같은 JS 스레드에서 콜백끼리 겹치지는 않지만, 긴 실행은 후속 콜백을 지연시켜 주기 정확도를 깨뜨린다.
+완료 시점부터 일정 간격이 필요하면 재귀적 setTimeout으로 이전 함수 완료 후 다음 실행을 예약한다.
 ```
 ```js
 const myFunction = () => {
@@ -80,7 +81,7 @@ fs.readFile('/file.md', (err, data) => {
 moreWork();  // console.log 이전 실행
 ```
 
-**동시성과 처리량**: 웹 서버에서 각 요청이 50ms 중 45ms가 DB I/O라면, 논블로킹 사용 시 요청당 45ms 절약.
+**동시성과 처리량**: 웹 서버에서 요청 시간 대부분이 DB I/O 대기라면 논블로킹 방식은 그 대기 시간 자체를 없애지 않는다. 이벤트 루프가 대기 중 다른 요청을 처리하게 해 스레드 점유와 처리량을 개선할 수 있으며, 개별 요청 지연은 DB와 큐잉 시간에 좌우된다.
 
 **혼용 위험**: 읽기 전에 삭제될 수 있음 → 콜백 내에서 순서 보장.
 
@@ -98,10 +99,10 @@ emitter.emit('start', 1, 100);
 
 | 구분 | `process.nextTick()` | `setImmediate()` |
 |------|----------------------|-----------------|
-| 시기 | 현재 단계 직후 즉시 | 다음 반복 check 단계 |
+| 시기 | 현재 작업 직후, 다음 페이즈 전 | poll 이후 check 단계. 예약 문맥에 따라 현재 또는 이후 반복 |
 | 속도/권장 | 빠르나 재귀 시 I/O starve | 느리나 I/O 차단 없음, 권장 |
 
-I/O 사이클 내에서는 `setImmediate() > setTimeout(0)`이지만, 메인 모듈에서는 비결정적이다.
+같은 I/O 콜백 안에서 둘을 함께 예약하면 현재 콜백 직후 비우는 `nextTick` 큐가 check 페이즈의 `setImmediate()`보다 먼저 실행된다. `setImmediate()`와 `setTimeout(0)`의 상대 순서는 예약 문맥과 이벤트 루프 상태에 따라 달라질 수 있다.
 
 **nextTick 활용: 비동기 보장**
 ```js
@@ -172,3 +173,7 @@ function asyncAvg(n, avgCB) {
 - [[Async-Programming|비동기 프로그래밍 (TOC)]]
 - [[Event-Loop|이벤트 루프]]
 - [[Worker-Threads|워커 스레드]]
+
+## 출처
+
+- [Node.js Event Loop, Timers, and nextTick](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick)

@@ -3,6 +3,7 @@ tags: [nestjs, pipe, validation, class-validator, transform]
 status: done
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Pipes", "ValidationPipe", "PipeTransform"]
+verified_at: 2026-07-21
 ---
 
 # NestJS Pipes — 변환과 유효성 검사
@@ -27,7 +28,6 @@ Guard 통과 후 Pipe 실행 — 인가는 끝났고, 입력값을 다듬는 단
 | **Validation** | DTO 필드 제약 검증, DB 존재 여부 확인 |
 
 `ValidationPipe` 같은 표준 파이프는 둘 다 한다.
-
 ## 내장 파이프
 
 `ParseIntPipe`, `ParseFloatPipe`, `ParseBoolPipe`, `ParseArrayPipe`, `ParseUUIDPipe`, `ParseEnumPipe`, `ParseDatePipe`, `ParseFilePipe`, `ValidationPipe`, `DefaultValuePipe`.
@@ -77,7 +77,6 @@ export class UserExistsPipe implements PipeTransform {
 ```
 
 DI 받는 Pipe는 `@Injectable()` + `new` 대신 클래스 토큰으로 등록.
-
 ## 스키마 기반 검증 대안 (Zod)
 
 class-validator 데코레이터 대신 Zod 같은 스키마 라이브러리로 검증하는 경로도 표준으로 제시된다 — 스키마 객체를 받는 커스텀 파이프(ZodValidationPipe)를 만들어 `schema.parse(value)` 실패 시 BadRequestException을 던진다. DTO 데코레이터 방식(아래)과 스키마 방식은 병렬 선택지다.
@@ -138,7 +137,7 @@ export class CreateUserDto {
 핵심:
 - `@ValidateNested({ each: true }) + @Type()` — 중첩 객체/배열 검증. `@Type` 없으면 plain object로 들어와 검증 안 됨.
 - `@Transform` — 정규화(lowercase, trim) 같은 사전 변환.
-- `@IsOptional` — undefined 허용. `@IsString()` 같은 다른 검증은 값이 있을 때만 적용.
+- `@IsOptional` — 값이 `undefined` 또는 `null`이면 같은 프로퍼티의 다른 validator를 건너뛴다. `null`을 금지해야 하면 별도 조건이나 validator를 둔다.
 
 ## 커스텀 검증 데코레이터
 
@@ -197,5 +196,5 @@ app.useGlobalPipes(new ValidationPipe());
 - [[NestJS-Custom-Decorator|커스텀 데코레이터]]
 
 ## 출처
-
 - [NestJS — Pipes](https://docs.nestjs.com/pipes)
+- [class-validator — `@IsOptional()`](https://github.com/typestack/class-validator#validation-decorators)

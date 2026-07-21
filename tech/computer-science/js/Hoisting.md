@@ -3,6 +3,7 @@ tags: [cs, javascript, hoisting]
 status: done
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["호이스팅", "Hoisting", "TDZ", "Temporal Dead Zone"]
+verified_at: 2026-07-21
 ---
 
 # 호이스팅(Hoisting)
@@ -11,29 +12,29 @@ aliases: ["호이스팅", "Hoisting", "TDZ", "Temporal Dead Zone"]
 - 변수와 함수 **선언**이 코드 실행 전에 해당 스코프의 최상단으로 끌어올려지는 것처럼 동작하는 현상
 - 실제로 코드가 이동하는 것이 아니라, JS 엔진이 실행 전 **선언을 먼저 메모리에 등록**하기 때문
 
-## JS에서만호이스팅이되는이유
+## 선언문 이전 접근이 달라지는 이유
 
-JS 엔진은 코드를 실행하기 전에 **실행 컨텍스트(Execution Context)** 를 생성한다:
+JavaScript는 코드 평가 전에 Environment Record에 선언별 binding을 만든다:
 
-1. **생성 단계(Creation Phase)**: 변수/함수 선언을 스코프에 등록 (메모리 할당)
-2. **실행 단계(Execution Phase)**: 코드를 한 줄씩 실행하며 값을 할당
+1. **선언 인스턴스화**: 변수와 함수 binding을 해당 스코프에 생성
+2. **평가**: 선언 종류에 따라 binding을 초기화하고 문장을 실행
 
-다른 언어(Java, Python 등)는 선언과 실행이 동시에 이루어지지만, JS는 이 두 단계가 분리되어 있어 호이스팅이 발생한다.
+다른 언어도 이름 해석과 초기화 규칙을 따로 가지므로 JavaScript에만 가능한 현상이라고 비교하지 않는다. JavaScript에서는 `var`, lexical declaration과 function declaration의 binding 생성, 초기화 시점 차이가 선언문 이전 접근 결과를 결정한다.
 
 ## 변수 생성 3단계 — 호이스팅 vs TDZ의 갈림
 
 엔진 내부에서 변수는 세 단계를 거쳐 만들어진다.
 
-1. **선언(Declaration)**: 스코프에 변수 식별자를 등록한다. 스코프가 변수 객체를 참조하게 된다.
-2. **초기화(Initialization)**: 그 변수가 가질 값을 담을 메모리 공간을 확보하고 `undefined`로 채운다.
+1. **binding 생성**: Environment Record에 식별자를 등록한다.
+2. **초기화(Initialization)**: binding에 초기값을 연결해 접근 가능한 상태로 만든다.
 3. **할당(Assignment)**: 코드 실행이 선언문에 도달하면 실제 값을 넣는다.
 
 키워드 차이는 **1단계와 2단계의 간격**에서 나온다.
 
 - **var**: 선언과 초기화가 **동시에** 일어난다. 호이스팅 직후 곧장 `undefined`로 초기화되므로, 선언문 이전에 접근해도 에러 없이 `undefined`가 나온다.
-- **let, const**: 선언만 먼저 되고 **초기화는 선언문에 도달할 때까지 보류**된다. 그 사이 변수는 메모리 공간이 아직 없는 상태라 접근하면 에러가 난다. 이 보류 구간이 TDZ다.
+- **let, const**: binding은 먼저 만들어지지만 **초기화는 선언문 평가까지 보류**된다. 메모리가 없어서가 아니라 uninitialized binding에 접근하기 때문에 `ReferenceError`가 난다. 이 구간이 TDZ다.
 
-호이스팅 자체는 셋 다 똑같이 일어난다. V8 내부에서도 변수 객체를 만들 때 호이스팅 플래그(`should_hoist`)는 키워드를 가리지 않고 항상 true로 설정된다. 차이는 초기화 시점에 갈리는데, `var`는 생성 즉시 초기화됨(kCreatedInitialized) 상태로, `let`/`const`는 초기화가 필요함(kNeedsInitialization) 상태로 표시되어 메모리 할당이 선언문 위치까지 미뤄진다.
+세 선언 모두 실행 전 binding 생성과 관련되지만 초기화 시점과 스코프 규칙이 다르다. 특정 V8 내부 flag 이름을 ECMAScript 의미처럼 고정하지 않고 Environment Record의 binding 생성, 초기화 규칙으로 설명한다.
 
 ## var/let/const 차이
 
@@ -83,7 +84,7 @@ var goodbye = function() { console.log("goodbye"); };
 
 ## 면접포인트
 - "호이스팅이란?" → 선언이 스코프 최상단으로 끌어올려지는 현상
-- "왜 JS에서만?" → 실행 컨텍스트의 생성 단계에서 선언을 먼저 등록
+- "왜 선언문 전에 결과가 다른가?" → 선언별 binding 생성과 초기화 시점이 다르기 때문
 - "let/const는 호이스팅 안 되나?" → 된다. 단 초기화가 선언문까지 보류돼 그 사이가 TDZ
 - "var vs let?" → var는 선언+초기화 동시(undefined), let은 초기화 보류로 TDZ 접근 차단
 - 두 에러 구분 — `is not defined`(선언 없음) vs `Cannot access before initialization`(TDZ, 호이스팅의 증거)
@@ -93,3 +94,7 @@ var goodbye = function() { console.log("goodbye"); };
 - [[Scope|스코프 (함수 vs 블록)]]
 - [[Execution-Context|실행 컨텍스트]]
 - [[자바스크립트(JS)|JavaScript 인덱스]]
+
+## 출처
+
+- [ECMAScript Language Specification — Environment Records](https://tc39.es/ecma262/#sec-environment-records)

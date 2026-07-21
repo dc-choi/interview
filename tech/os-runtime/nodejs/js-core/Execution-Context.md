@@ -3,6 +3,7 @@ tags: [runtime, nodejs]
 status: done
 category: "OS & Runtime"
 aliases: ["Execution Context"]
+verified_at: 2026-07-21
 ---
 
 ### 실행 컨텍스트
@@ -31,9 +32,8 @@ JS 코드가 실행되는 환경
 - 컨텍스트 유형
 1. Global Context
     ```
-    진입점이 되는 컨텍스트로 Node.js 어플리케이션이 실행되면 가장 먼저 생성됨.
-    
-    전역 객체인 global과 연결되어 있으며, 기본적으로 모든 전역 변수와 함수를 관리합니다.
+    script 코드의 전역 실행 환경. Node.js에는 globalThis가 있지만 CommonJS와 ESM의 top-level binding은
+    전역 객체의 property로 자동 노출되지 않고 모듈 스코프에 남는다.
     ```
 2. Function Context
     ```
@@ -41,16 +41,13 @@ JS 코드가 실행되는 환경
     ```
 3. Module Context
     ```
-    Node.js의 독특한 실행 컨텍스트로, 각 파일마다 독립적으로 존재하고 자체 실행 컨텍스트를 가지며, 다른 모듈과 전역 스코프를 공유하지 않습니다.
-    
-    파일 내부의 변수와 함수는 기본적으로 모듈 내부에서만 접근 가능하고 외부에서 접근하기 위해서는 exports 객체를 사용해야 합니다. 
-    
-    각 모듈은 exports, require, module, __dirname, __filename 등의 특수 객체를 사용할 수 있습니다.
-    module: 현재 모듈 자체를 나타냄.
-    exports: 다른 모듈에 내보낼 값을 정의.
-    require: 다른 모듈을 가져오는 함수.
-    __dirname: 현재 모듈의 디렉토리 경로.
-    __filename: 현재 모듈의 파일 경로.
+    Node.js 파일의 module scope와 평가는 module system에 따라 다르다.
+
+    CommonJS는 각 파일을 function wrapper로 감싸 exports, require, module, __filename, __dirname을
+    wrapper parameter처럼 제공한다. ESM에는 이 다섯 CommonJS 변수가 없고 import/export와
+    import.meta.filename, import.meta.dirname 같은 ESM API를 사용한다.
+
+    두 방식 모두 top-level 선언을 다른 모듈에 자동 공유하지 않지만 export 방식과 평가 규칙은 서로 다르다.
     ```
 
 ---
@@ -73,3 +70,8 @@ JS 코드가 실행되는 환경
 - [[Call-Stack-Heap|Call Stack Heap]]
 - [[Scope]]
 - [[Closure]]
+
+## 출처
+
+- [Node.js CommonJS Modules — The module wrapper](https://nodejs.org/api/modules.html#the-module-wrapper)
+- [Node.js ECMAScript Modules — Differences between ES modules and CommonJS](https://nodejs.org/api/esm.html#differences-between-es-modules-and-commonjs)

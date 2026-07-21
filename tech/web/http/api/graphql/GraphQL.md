@@ -51,7 +51,7 @@ type Post {
 ### Query / Mutation / Subscription
 - **Query**: 데이터 조회 (REST의 GET)
 - **Mutation**: 데이터 변경 (POST/PUT/DELETE)
-- **Subscription**: long-lived 요청으로 실시간 증분 업데이트. 전송은 스펙이 정하지 않아 서버가 고르며 보통 WebSocket이나 SSE (자세히는 [[NestJS-GraphQL#Subscription — 실시간 푸시|NestJS Subscription]])
+- **Subscription**: long-lived 요청으로 실시간 증분 업데이트. 전송은 스펙이 정하지 않아 서버가 고르며 보통 WebSocket이나 SSE (자세히는 [[NestJS-GraphQL-Subscription|NestJS Subscription]])
 
 ### Resolver
 각 필드를 어떻게 가져올지 정의하는 함수. 스키마와 데이터 소스를 연결. graphql-js 계열의 관례적 시그니처는 `(parent, args, context, info)` — parent는 상위 필드 resolver가 반환한 객체, args는 필드 인자, context는 요청 스코프 공유 객체로 인증된 사용자, DB 접근 같은 것을 나른다 (예: `me` 필드는 context의 인증 정보로, `name` 필드는 그 user id로 DB 조회). info는 현재 연산과 스키마에 대한 필드 메타 정보로 고급 케이스에서만 쓴다.

@@ -119,8 +119,7 @@ uv_process_options_t 구조체로 실행 환경을 제어한다:
 - cwd:   작업 디렉토리
 - flags: 동작 제어 플래그
 
-프로세스 종료 시 exit 콜백이 호출되며, 콜백 이전에 uv_close()를 호출하면 안 된다.
-Unix에서 uv_close() 없이 방치하면 좀비 프로세스가 발생한다.
+프로세스 종료를 관찰하면 exit 콜백이 호출된다. 이 콜백 이전에는 process handle에 `uv_close()`를 호출하지 않고, 콜백 안이나 이후에 handle을 닫아 watcher 자원을 정리한다. libuv가 종료를 관찰해 callback을 전달한 시점에는 자식을 reap했으므로, `uv_close()`는 zombie 방지가 아니라 handle lifecycle 정리다.
 ```
 
 ### 프로세스 플래그
@@ -152,6 +151,10 @@ UV_READABLE_PIPE / UV_WRITABLE_PIPE: 파이프 방향 설정 (자식 관점)
 전송 가능한 핸들: TCP 소켓, 파이프만 가능.
 파이프 초기화 시 ipc=1 필수: uv_pipe_init(loop, &pipe, 1)
 ```
+
+## 출처
+
+- [libuv process guide](https://docs.libuv.org/en/latest/guide/processes.html)
 
 ### 시그널 처리 (`uv_signal_t`)
 ```

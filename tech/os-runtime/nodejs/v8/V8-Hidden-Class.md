@@ -3,6 +3,7 @@ tags: [runtime, nodejs, v8]
 status: done
 category: "OS & Runtime"
 aliases: ["Hidden Class", "V8 Maps", "JSC Structures", "SpiderMonkey Shapes", "Transition Chain"]
+verified_at: 2026-07-21
 ---
 
 # V8 히든 클래스 (Hidden Class)
@@ -16,21 +17,21 @@ aliases: ["Hidden Class", "V8 Maps", "JSC Structures", "SpiderMonkey Shapes", "T
 
 ## 왜 필요한가
 
-ECMAScript는 객체 프로퍼티를 사전(dictionary) 형태로 정의한다. 각 프로퍼티는 내부 슬롯을 가진다:
+ECMAScript는 프로퍼티의 관찰 가능한 의미와 descriptor를 정의하지만, 객체가 메모리에서 사전 형태로 저장돼야 한다고 규정하지 않는다. 데이터 프로퍼티 descriptor에는 다음 속성이 있다:
 
 - `[[Value]]`: 연결된 값
 - `[[Writable]]`: 값 변경 가능 여부
 - `[[Enumerable]]`: `for...in` 열거 가능 여부
 - `[[Configurable]]`: 삭제, 속성 변경 가능 여부
 
-객체 속성 접근 시 키로 사전을 뒤져 Property Attribute를 로드한 뒤 `[[Value]]`를 읽어야 한다.
+실제 저장 방식은 엔진 구현 세부사항이다. V8은 객체 모양이 안정적일 때 Map과 DescriptorArray, in-object 또는 properties backing store를 이용하는 fast properties를 쓰고, 프로퍼티가 많이 추가, 삭제되는 등 특정 상황에서는 dictionary properties로 전환할 수 있다.
 
 ### 동적 언어의 비용
 
-- 컴파일 시점에 Property Offset(위치를 찾기 위한 값)을 기억해둘 수 없음 → **매 접근마다 동적 탐색**
-- 동일 구조 객체를 여러 개 만들면 Property Attribute가 객체마다 반복 생성 → **메모리 낭비**
+- 소스만 보고 모든 객체의 최종 모양과 값 위치를 정적으로 확정하기 어려움
+- 객체마다 구조 메타데이터를 따로 보관하면 접근 최적화와 메모리 공유가 어려움
 
-히든 클래스는 **구조가 같은 객체들이 Property Attribute를 공유**하고, **오프셋 기반 고정 위치 접근**을 가능하게 해 두 문제를 동시에 해결한다.
+Map은 **구조가 같은 객체들이 모양 정보를 공유**하게 하고, inline cache와 최적화된 코드가 확인된 모양에 대해 오프셋 기반 접근을 사용할 수 있게 한다. 안정된 모양을 확인하지 못한 모든 접근이 반드시 같은 비용의 사전 탐색을 하는 것은 아니다.
 
 ## 기본 구조
 
@@ -51,9 +52,9 @@ ECMAScript는 객체 프로퍼티를 사전(dictionary) 형태로 정의한다. 
                                                                +---------------------------+
 ```
 
-- 객체 메모리는 **히든 클래스 포인터 + 값들**로 구성
-- 값 위치는 **Offset**으로 표기 (정적 언어 class의 offset과 동일한 접근 방식)
-- Property Attribute는 히든 클래스가 공유 → 같은 구조의 객체가 N개여도 1세트만 저장
+- 객체는 Map을 가리키고, 프로퍼티 값은 in-object 또는 별도 properties store에 저장될 수 있다
+- Map과 descriptor 정보가 프로퍼티 위치와 속성을 설명한다
+- 같은 모양의 객체는 구조 메타데이터를 공유할 수 있다
 
 ## Transition Chain (동적 프로퍼티 추가)
 
@@ -76,7 +77,7 @@ ECMAScript는 객체 프로퍼티를 사전(dictionary) 형태로 정의한다. 
 
 - 각 히든 클래스는 **Transition 정보** (다음 클래스로 가는 매핑)를 갖는다
 - **back pointer**로 이전 히든 클래스도 참조 → 체인 형태
-- 새 히든 클래스는 **새로 생긴 프로퍼티 정보만** 들고 있음 (나머지는 체인 거슬러 올라가 조회)
+- 전이는 새 모양의 Map으로 이어지며 descriptor 정보는 엔진이 공유하거나 복사할 수 있다. 일반 프로퍼티 접근 때마다 transition chain을 거슬러 올라가 값을 찾는 구조는 아니다.
 
 **같은 순서로 프로퍼티를 추가하면** 다른 객체도 동일 체인을 재사용한다 → [[V8-Inline-Cache|Inline Cache]] 가 잘 먹힘.
 
@@ -114,3 +115,8 @@ ECMAScript는 객체 프로퍼티를 사전(dictionary) 형태로 정의한다. 
 - [[V8-Inline-Cache|V8 인라인 캐시]]
 - [[V8-Ignition-TurboFan|V8 컴파일 파이프라인]]
 - [[V8-Array-Internals|V8 배열 내부 구현 (배열판 모양 최적화)]]
+
+## 출처
+
+- [V8 — Fast properties in V8](https://v8.dev/blog/fast-properties)
+- [ECMAScript 2024 — Property Descriptor Specification Type](https://tc39.es/ecma262/2024/multipage/ecmascript-data-types-and-values.html#sec-property-descriptor-specification-type)
