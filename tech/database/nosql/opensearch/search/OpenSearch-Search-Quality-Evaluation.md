@@ -82,7 +82,7 @@ Experiment는 세 종류다.
 |---|---|
 | `PAIRWISE_COMPARISON` | 두 search configuration을 같은 query set으로 결과 비교 |
 | `POINTWISE_EVALUATION` | 한 configuration을 judgment 대비 채점 |
-| `HYBRID_OPTIMIZER` | hybrid search 파라미터 탐색, [[OpenSearch-Hybrid-Search|하이브리드 검색]] 참고 |
+| `HYBRID_OPTIMIZER` | hybrid search 파라미터 탐색, [[OpenSearch-Hybrid-Search\|하이브리드 검색]] 참고 |
 
 Pointwise 평가는 `Coverage@k`, `Precision@k`, `MAP@k`, `NDCG@k`를 계산한다. Coverage@k는 반환 문서 중 judgment가 있는 비율로, 이 값이 낮으면 나머지 지표를 신뢰할 수 없다는 신호다.
 

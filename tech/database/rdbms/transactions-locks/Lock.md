@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, lock, concurrency]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-07-21
 category: "Data & Storage - RDB"
 aliases: ["DB Lock", "Lock", "락"]
 ---
@@ -63,7 +63,7 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 | **Next-Key Lock** | Record Lock + Gap Lock 결합 | 같은 조건에서 스캔한 레코드와 그 앞 간격을 함께 잠가 phantom INSERT를 막을 때 |
 | **Insert Intention Lock** | Gap Lock의 특수 형태. 같은 gap의 다른 위치 INSERT는 서로 차단하지 않음 | INSERT 시 자동 획득 |
 
-여기서 조회는 `SELECT ... FOR UPDATE`나 `SELECT ... FOR SHARE` 같은 **locking read**를 뜻한다. RR과 RC의 일반 `SELECT`는 consistent nonlocking read로 스냅샷을 읽으며 Record, Gap, Next-Key Lock을 잡지 않는다. 단, `SERIALIZABLE`에서는 일반 SELECT도 공유 next-key lock을 잡을 수 있다.
+여기서 조회는 `SELECT ... FOR UPDATE`나 `SELECT ... FOR SHARE` 같은 **locking read**를 뜻한다. RR과 RC의 일반 `SELECT`는 consistent nonlocking read로 스냅샷을 읽으며 Record, Gap, Next-Key Lock을 잡지 않는다. `SERIALIZABLE`에서는 `autocommit`이 꺼진 명시적 트랜잭션의 일반 SELECT가 `FOR SHARE`로 변환돼 공유 잠금을 잡을 수 있다. `autocommit`이 켜진 일반 SELECT는 문장 단위 nonlocking consistent read다.
 
 ### 기타 Locks
 
@@ -77,7 +77,7 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 
 - **Consistent Read (일반 SELECT)**: MVCC 스냅샷 읽기 → lock 없음, 다른 트랜잭션 차단 안 함
 - **Current Read (SELECT FOR UPDATE/SHARE, UPDATE, DELETE)**: 최신 커밋 데이터를 읽으면서 lock 획득
-- RR에서 일반 SELECT는 트랜잭션 시작 시점 스냅샷 → SELECT FOR UPDATE는 최신 데이터 (이 차이가 면접에서 자주 출제)
+- RR에서 일반 SELECT는 기본적으로 첫 consistent read 시점의 스냅샷을 유지하고, SELECT FOR UPDATE는 최신 상태를 읽으며 잠근다. `WITH CONSISTENT SNAPSHOT`이면 트랜잭션 시작 시점에 스냅샷을 만든다.
 
 ## 데드락
 

@@ -3,6 +3,7 @@ tags: [database, rdbms]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["트랜잭션", "Transactions"]
+verified_at: 2026-07-21
 ---
 
 # 트랜잭션
@@ -24,16 +25,16 @@ aliases: ["트랜잭션", "Transactions"]
 
 ### Consistency(일관성)
 ```
-1. 트랜잭션 수행 전과, 수행 완료 후의 상태가 같아야 한다.
-2. 명시적인 일관성: 기본키, 외래키 등과 같은 무결성 제약조건, 무결성 제약조건을 해치지 않는 데이터들에 대해서만 트랜잭션이 성공적으로 수행되어야 한다.
-3. 비명시적인 일관성: 계좌 이체에서 A계좌에서 출금이 일어나고 그 돈이 B계좌로 입금된다 했을 때, 트랜잭션의 전과 후 두 계좌 잔고의 합이 같아야 한다.
+1. 트랜잭션이 데이터베이스를 정의된 제약과 비즈니스 불변식을 만족하는 유효한 상태에서 다른 유효한 상태로 옮겨야 한다.
+2. 기본키, 외래키, CHECK 같은 DB 제약은 엔진이 강제하고, 계좌 잔고 합 같은 비즈니스 불변식은 애플리케이션과 transaction 설계가 함께 보장한다.
+3. 수행 전후 값이 모두 같아야 한다는 뜻은 아니다. 정상 transaction은 값을 바꾸되 불변식을 깨지 않아야 한다.
 ```
 
 ### Isolation(독립성, 격리성)
 ```
-1. 둘 이상의 트랜잭션이 동시에 병행 실행되는 경우 어느 하나의 트랜잭션 실행중에 다른 트랜잭션의 연산이 끼어들 수 없다.
-2. 수행중인 트랜잭션은 완전히 완료될 때까지 다른 트랜잭션에서 수행결과를 참조할 수 없다.
-3. 읽기 일관성과 동시성에 영향을 미치는 성질
+1. 동시 transaction의 결과가 선택한 isolation level이 허용하는 관찰 규칙을 따라야 한다.
+2. 모든 개입과 가시성을 막는다는 뜻은 아니다. Read uncommitted, Read committed, Repeatable read와 Serializable은 허용하는 anomaly와 동시성이 다르다.
+3. dirty read, non-repeatable read, phantom, serialization anomaly의 허용 여부와 lock, MVCC 동작에 영향을 준다.
 ```
 
 ### Durability(영속성, 지속성)
@@ -47,7 +48,7 @@ aliases: ["트랜잭션", "Transactions"]
 
 ### 동작 원리 (InnoDB)
 - 데이터 변경 시 이전 버전을 **undo log**에 보관
-- 각 트랜잭션은 시작 시점의 **트랜잭션 ID** 기반으로 어떤 버전의 데이터를 볼지 결정
+- read view와 transaction ID를 이용해 어떤 row version이 보이는지 결정
 - 일반 SELECT는 undo log의 스냅샷을 읽음 → lock 없음, 다른 트랜잭션을 차단하지 않음
 
 ### Consistent Read vs Current Read
@@ -55,11 +56,13 @@ aliases: ["트랜잭션", "Transactions"]
 | 구분 | Consistent Read | Current Read |
 |------|----------------|-------------|
 | SQL | 일반 `SELECT` | `SELECT FOR UPDATE`, `SELECT FOR SHARE`, `UPDATE`, `DELETE` |
-| 읽는 데이터 | 트랜잭션 시작 시점의 스냅샷 (undo log) | 최신 커밋된 데이터 |
+| 읽는 데이터 | isolation level의 read view가 허용하는 version | 현재 version을 읽고 필요한 lock 획득 |
 | Lock | 없음 | S Lock 또는 X Lock 획득 |
 | 용도 | 단순 조회 | 갱신을 위한 읽기 (lock을 걸려면 최신 데이터를 봐야 의미가 있음) |
 
-- **RR에서 자주 혼동되는 포인트**: 일반 SELECT는 트랜잭션 시작 시점의 스냅샷을 보지만, `SELECT FOR UPDATE`는 최신 커밋 데이터를 읽음. 같은 트랜잭션 안에서 두 쿼리의 결과가 다를 수 있음
+- **InnoDB RR:** 기본 `START TRANSACTION`은 첫 consistent read에서 snapshot을 만들고 이후 consistent read가 이를 재사용한다. `START TRANSACTION WITH CONSISTENT SNAPSHOT`은 시작 시 read view를 만든다.
+- **InnoDB RC:** 각 consistent read가 statement 시작 시 새 snapshot을 만든다.
+- Locking read는 snapshot read가 아니므로 같은 transaction 안에서도 일반 `SELECT`와 결과가 다를 수 있다.
 
 ## 트랜잭션 설계 원칙
 
@@ -78,3 +81,6 @@ aliases: ["트랜잭션", "Transactions"]
 - [[Index]]
 - [[SQL]]
 - [[NoSQL-Overview|NoSQL 개요, BASE 모델]] — ACID와 대비되는 최종적 일관성
+
+## 출처
+- [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)

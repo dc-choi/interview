@@ -50,7 +50,7 @@ Aurora 클러스터마다 **전용 서브넷 그룹 + 전용 보안 그룹**을 
 |------|------|
 | Audit Log | 누가 어떤 쿼리를 실행했는지 추적 (보안, 컴플라이언스) |
 | Error Log | 장애 원인 분석 |
-| Slow Query Log | 병목 쿼리 발굴, 튜닝의 1차 자료 ([[MySQL-Slow-Query-Diagnosis|Slow Query 진단]]) |
+| Slow Query Log | 병목 쿼리 발굴, 튜닝의 1차 자료 ([[MySQL-Slow-Query-Diagnosis\|Slow Query 진단]]) |
 
 PostgreSQL은 하나의 로그 체계에서 감사, 에러, 슬로우 역할을 함께 관리하며, 감사 로그에는 `pgaudit` 확장이 필요하다. 로그 파이프라인 일반론은 [[Log-Pipeline|로그 파이프라인]], CloudWatch 연동은 [[CloudWatch-Logs-Alarms|CloudWatch Logs]] 참고.
 

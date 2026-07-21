@@ -3,11 +3,12 @@ tags: [database, replication, read-replica, performance, routing]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["Read Replica Routing", "읽기 복제본 라우팅"]
+verified_at: 2026-07-21
 ---
 
 # Read Replica 라우팅
 
-DB에 읽기 복제본이 있으면 **"어떤 쿼리를 어디로 보낼지"** 를 앱이 결정해야 한다. 읽기는 복제본, 쓰기, 트랜잭션은 primary가 기본. 그런데 **복제 지연(replication lag)**이 있어서 단순 규칙만으론 read-after-write 문제가 생기고, 트랜잭션 경계와 일관성 요구에 따라 세밀한 제어가 필요.
+DB에 읽기 복제본이 있으면 **"어떤 쿼리를 어디로 보낼지"** 를 앱이 결정해야 한다. 쓰기와 primary의 최신 상태를 전제로 한 transaction은 primary가 기본이고, stale read를 허용하는 read-only workload는 replica를 사용할 수 있다. **복제 지연(replication lag)** 때문에 read-after-write와 snapshot 시점을 명시해야 한다.
 
 ## 전제: Replication 자체와 다름
 
@@ -82,14 +83,11 @@ primary에서 쓴 후 replica에서 해당 row(또는 GTID)가 보일 때까지 
 
 ## 트랜잭션과 읽기 복제본
 
-**트랜잭션 안의 모든 쿼리는 primary로** 가야 한다. 이유:
+쓰기, locking read와 방금 쓴 값의 read-your-writes가 필요한 transaction은 한 primary connection에 고정한다. primary와 replica를 한 논리 transaction 안에서 섞으면 atomicity와 동일 snapshot을 제공하지 못한다.
 
-- 트랜잭션은 **원자적 일관성**이 핵심 — replica 쓰면 "중간에 본 값이 트랜잭션 종료 후엔 다를 수 있음"
-- 복제본은 **트랜잭션 격리 수준을 보장 못 함** — snapshot 시점이 primary와 다를 수 있음
+다만 replica도 자체 isolation level에 따른 **read-only snapshot transaction**을 실행할 수 있다. 이 snapshot은 replica가 적용한 replication position 기준이라 primary 최신 상태보다 뒤처질 수 있지만, 리포트 안 여러 query를 한 시점으로 맞추는 데 유용하다. 긴 리포트를 transaction 없이 실행해야 한다는 뜻은 아니다.
 
-ORM 확장들이 자동으로 **트랜잭션 내부는 primary 고정**하는 이유.
-
-예외: 긴 읽기 전용 리포트를 replica에서 명시적 트랜잭션 없이 실행. 트랜잭션 없으면 primary 격리 보장도 필요 없음.
+ORM 확장이 transaction을 primary에 고정하는 것은 일반적인 쓰기 transaction의 안전한 기본값이다. stale 허용 read-only transaction을 replica로 보내려면 별도 client, read-only 표시와 freshness 요구를 명시한다.
 
 ## 구현 예 1: Prisma (`extension-read-replicas`)
 
@@ -177,13 +175,15 @@ Replica 죽으면 읽기 실패. **Replica 헬스체크 + primary fallback** 전
 - 라우팅 3계층(DB, 프록시, 앱) 구분
 - 자동 라우팅 규칙 (read → replica, write, transaction → primary)
 - Replication Lag로 생기는 Read-After-Write 문제와 4가지 대응
-- 트랜잭션이 항상 primary로 가야 하는 이유
+- 쓰기, locking read와 read-your-writes transaction을 primary에 고정하는 이유
+- stale 허용 read-only snapshot transaction을 replica에서 실행할 때의 snapshot 시점
 - Raw 쿼리가 기본 primary인 이유 (안전 기본값)
 - 읽기 전용 쿼리를 트랜잭션 밖으로 빼야 하는 이유
 
 ## 출처
 - [Prisma Docs — Read Replicas](https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/read-replicas)
 - [GitHub — prisma/extension-read-replicas](https://github.com/prisma/extension-read-replicas)
+- [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
 
 ## 관련 문서
 - [[Replication|Replication (sync / async)]]
