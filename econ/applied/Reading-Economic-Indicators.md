@@ -3,6 +3,7 @@ tags: [econ, applied, indicators]
 status: done
 category: "Economics"
 aliases: ["경제지표 캘린더 읽는 법", "Reading Economic Indicators"]
+verified_at: 2026-07-21
 ---
 
 # 경제지표 캘린더 읽는 법
@@ -18,7 +19,8 @@ aliases: ["경제지표 캘린더 읽는 법", "Reading Economic Indicators"]
 | 분류 | 지표 | 주기 | 본다 |
 |---|---|---|---|
 | **물가** | CPI, 근원CPI, PCE | 매월 | [[Inflation\|인플레]] 추세, 금리 기대 |
-| **통화정책** | FOMC, 한은 금통위 | 연 8회 / 격월 | [[Interest-Rates-Monetary-Policy\|금리]] 결정, 점도표, 의사록 |
+| **통화정책** | 미국 FOMC 정례회의 | 통상 연 8회, 연준 일정 확인 | [[Interest-Rates-Monetary-Policy\|금리]] 결정, 경제전망과 점도표가 공개되는 회의인지 구분, 의사록 |
+| **통화정책** | 한국은행 금융통화위원회 통화정책방향 결정회의 | 2026년 8회, 매년 공식 일정 확인 | 기준금리와 통화정책방향, 의사록 |
 | **고용** | 미국 비농업고용, 실업률 | 매월 | 노동시장 과열 여부 |
 | **성장** | GDP | 분기 | [[GDP-Economic-Growth\|성장률]] |
 | **선행** | PMI, 신규주문 | 매월 | [[Business-Cycle\|경기]] 방향 미리 |
@@ -61,3 +63,8 @@ aliases: ["경제지표 캘린더 읽는 법", "Reading Economic Indicators"]
 - [[News-Causal-Chain-Drill|뉴스 인과 체인 드릴]] — 지표를 파급으로 펼치기
 - [[Inflation|인플레이션]], [[Business-Cycle|경기순환]] — 지표가 가리키는 대상
 - [[응용경제(Applied Economics)]] — 지도
+
+## 출처
+
+- [한국은행 — 금융통화위원회 의사일정](https://www.bok.or.kr/portal/singl/crncyPolicyDrcMtg/listYear.do?menuNo=200755&mtgSe=A)
+- [Federal Reserve — FOMC calendars and information](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm)
