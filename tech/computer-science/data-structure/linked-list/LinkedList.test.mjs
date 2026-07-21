@@ -1,25 +1,27 @@
-import {LinkedList} from "./LinkedList.mjs";
+import assert from "node:assert/strict";
+import test from "node:test";
 
-let list = new LinkedList();
-list.insert(0);
-list.insert(1);
-list.insert(2);
-list.insert(3);
-list.insert(4);
-list.insert(5);
-list.print();
-list.clearAll();
+import { LinkedList } from "./LinkedList.mjs";
 
-list.insert(0);
-list.insert(1);
-list.insert(2);
-list.insertAt(1, 3);
-list.print();
-list.deleteAt(0);
-list.print();
-list.deleteAt(1);
-list.print();
-list.delete();
-list.print();
+test("inserts, reads, and deletes the requested node", () => {
+    const list = new LinkedList();
+    list.insert(1);
+    list.insert(3);
+    list.insertAt(1, 2);
 
-console.log(list.getNode(0));
+    assert.equal(list.count, 3);
+    assert.equal(list.getNode(1).data, 2);
+    assert.equal(list.deleteAt(1).data, 2);
+    assert.equal(list.getNode(1).data, 3);
+    assert.equal(list.delete().data, 3);
+    assert.equal(list.deleteAt(0).data, 1);
+    assert.equal(list.count, 0);
+});
+
+test("rejects invalid indexes", () => {
+    const list = new LinkedList();
+
+    assert.throws(() => list.getNode(0), /Index out of bounds/);
+    assert.throws(() => list.deleteAt(0), /Index out of bounds/);
+    assert.throws(() => list.insertAt(1, 1), /Index out of bounds/);
+});

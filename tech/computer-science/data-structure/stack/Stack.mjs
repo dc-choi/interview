@@ -1,5 +1,5 @@
-import { LinkedList } from "../linkedList/LinkedList.mjs";
-import { DoublyLinkedList } from "../linkedList/DoublyLinkedList.mjs";
+import { LinkedList } from "../linked-list/LinkedList.mjs";
+import { DoublyLinkedList } from "../linked-list/DoublyLinkedList.mjs";
 
 export class MyStack {
     constructor() {
