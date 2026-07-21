@@ -3,6 +3,7 @@ tags: [infrastructure, aws, opensearch, search, analytics, managed-service]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Amazon OpenSearch Service", "OpenSearch Service", "Amazon OpenSearch"]
+verified_at: 2026-07-21
 ---
 
 # Amazon OpenSearch Service
@@ -85,6 +86,7 @@ AWS가 주로 담당하는 영역:
 두 변경은 서로 다른 수명주기다.
 
 - Service software update는 AWS 운영 계층의 patch와 기능 변경이다. Blue-green 배포를 사용하며 필수 update는 실제 notification deadline을 기준으로 EventBridge와 담당자 alarm을 연결한다. 장기 미적용은 domain 격리와 최종 삭제로 이어질 수 있다.
+- 2026년 4월 24일 이후 적용된 service software update는 적용 방식, 이후 설정 변경 여부와 15일 창 같은 조건을 충족하면 self-service rollback이 가능하다. 자동 강제 적용이나 engine upgrade에는 이 rollback을 적용할 수 없다.
 - Engine upgrade는 OpenSearch major와 minor version 변경이다. 사용자가 시작하고 사전 검증, snapshot, 호환 가능한 upgrade path 확인이 필요하다.
 - Engine version은 downgrade할 수 없다는 전제로 새 domain과 restore 또는 reindex rollback 경로를 준비한다.
 - Blue-green 배포는 일시적으로 cluster manager와 data node 여유를 사용하므로 off-peak와 용량 headroom을 확보한다.

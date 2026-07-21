@@ -3,6 +3,7 @@ tags: [aws, cloudtrail, config, security, governance, audit, compliance]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["CloudTrail", "AWS CloudTrail", "AWS Config", "Config Rules"]
+verified_at: 2026-07-21
 ---
 
 # CloudTrail & Config
@@ -16,7 +17,7 @@ AWS 거버넌스, 감사의 두 축. **CloudTrail**은 "**누가** 무엇을 했
 | 질문 | "Who did what, when?" | "What is the current/past state of resources?" |
 | 단위 | **API 이벤트** (CreateBucket, RunInstances 등) | **리소스 구성 스냅샷** (S3 버킷 정책, SG 규칙 등) |
 | 트리거 | API 호출 (콘솔, CLI, SDK) | 리소스 변경 또는 주기적 평가 |
-| 보존 | 콘솔 이벤트 기록: **90일** / Trail → S3: 무기한 | 변경 이력 + 스냅샷 (S3 보관) |
+| 보존 | 이벤트 기록: **최근 90일의 관리 이벤트** / Trail → S3: 버킷 수명 주기 정책에 따라 보관 | 변경 이력 + 스냅샷 (구성과 전달 설정에 따라 S3 보관) |
 | 평가 기능 | Insights (이상 호출 탐지) | **Config Rules** (구성이 규칙 준수하는지) |
 | 활성화 | 계정 생성 시 자동(이벤트 기록만) — Trail은 별도 | 리전별 명시 활성화 필요 |
 
@@ -26,9 +27,9 @@ AWS 거버넌스, 감사의 두 축. **CloudTrail**은 "**누가** 무엇을 했
 
 ### 구성 요소
 
-1. **이벤트 기록(Event History)**: 콘솔에서 바로 보는 **최근 90일** 이벤트. Trail 없이도 항상 활성.
+1. **이벤트 기록(Event History)**: 각 리전에서 조회하는 **최근 90일의 관리 이벤트**. Trail 생성 여부와 무관하게 제공.
 2. **Trail(추적)**: S3, CloudWatch Logs로 이벤트를 **장기 보관**. 리전 단위 또는 멀티 리전.
-3. **Insights 이벤트**: **Write API 호출의 비정상 패턴**(평소 대비 급증, 급감) 자동 탐지.
+3. **Insights 이벤트**: 활성화한 Trail이나 event data store에서 관리 이벤트의 비정상 활동을 분석하는 선택 기능. 분석 범위와 추가 비용을 확인.
 4. **Lake**: CloudTrail 이벤트를 SQL로 질의하는 매니지드 데이터 레이크.
 
 ### 이벤트 유형
@@ -61,7 +62,7 @@ Trail에 **Log File Validation**을 켜면 SHA-256 다이제스트로 로그 변
 1. 지원 리소스의 **현재 구성**을 JSON으로 기록 (Configuration Item)
 2. 리소스 변경 발생 → 변경 알림 + 새 Configuration Item 저장
 3. **Config Rule**이 구성을 평가 → Compliant / Non-Compliant 판정
-4. 결과는 **Configuration Recorder**로 S3 보관, SNS, EventBridge로 발신
+4. Configuration Recorder가 구성 항목을 기록하고, delivery channel과 EventBridge를 통해 스냅샷, 알림, 이벤트를 전달
 
 ### Config Rules
 
@@ -69,19 +70,19 @@ Trail에 **Log File Validation**을 켜면 SHA-256 다이제스트로 로그 변
 
 | 분류 | 설명 |
 |------|------|
-| **AWS Managed Rules** | AWS 제공 기본 규칙(~200개) — `s3-bucket-public-read-prohibited`, `encrypted-volumes`, `iam-password-policy` 등 |
+| **AWS Managed Rules** | AWS가 유지하는 규칙 — `s3-bucket-public-read-prohibited`, `encrypted-volumes`, `iam-password-policy` 등. 지원 수와 리전은 카탈로그에서 확인 |
 | **Custom Rules** | Lambda 함수로 직접 평가 로직 작성 |
 | **Custom Policy Rules** | Guard DSL로 선언적 규칙 정의 (Lambda 없이) |
 
 ### 트리거 방식
 
-- **Configuration changes**: 리소스 변경 시점에 즉시 평가
+- **Configuration changes**: 지원 리소스의 구성 변경이 기록될 때 평가
 - **Periodic**: 1, 3, 6, 12, 24시간 주기로 평가 (변경 추적이 어려운 리소스 또는 외부 상태 검증)
 
 ### Remediation (자동 조치)
 
 Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
-예: 퍼블릭으로 풀린 S3 버킷 → 자동으로 `BlockPublicAccess` 적용.
+예: 퍼블릭으로 풀린 S3 버킷에 승인된 SSM Automation remediation을 실행해 `BlockPublicAccess` 적용. 자동 조치는 재시도, 권한, 동시성 한도 때문에 즉시 성공을 보장하지 않는다.
 
 ### Conformance Pack
 
@@ -96,16 +97,16 @@ Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 1. **변경 감사**: Config로 "버킷 정책이 언제 풀렸는가" 시점 확인 → CloudTrail로 "누가 PutBucketPolicy 호출했는가" 확인
 2. **루트 계정 사용 감지**: CloudTrail → CloudWatch Alarm → SNS
 3. **암호화 누락 자동 교정**: Config Rule `encrypted-volumes` + Remediation Action
-4. **퍼블릭 S3 차단**: Config Rule + SSM Automation으로 즉시 차단
+4. **퍼블릭 S3 교정**: Config Rule + SSM Automation으로 탐지 후 승인된 교정 수행
 5. **SCP 위반 추적**: CloudTrail에서 AccessDenied 이벤트 추적
 
 ## 비용, 운영 주의
 
-- **CloudTrail Management Event**: 첫 Trail 무료, 두 번째부터 이벤트당 과금
+- **CloudTrail Management Event**: S3로 전달되는 관리 이벤트의 첫 번째 복사본은 리전별로 CloudTrail 요금이 없고, 추가 복사본과 CloudTrail Lake, 데이터 이벤트, 네트워크 활동 이벤트 등은 별도 과금. S3와 CloudWatch Logs 요금도 별도
 - **Data Event**: 양 폭주 — **선택적 활성화** 필수
 - **Config**: Configuration Item 기록 건당 과금. **자주 변경되는 리소스**(Auto Scaling 빈번한 EC2) 많으면 비용 큼
 - **S3 보관 비용**: 장기 보관 시 Glacier 전환 고려
-- **Trail이 멈추면 감사 공백** — CloudTrail Insights, EventBridge로 `StopLogging` 호출을 알람
+- **Trail이 멈추면 감사 공백** — EventBridge 또는 CloudWatch Logs 필터로 `StopLogging`, `DeleteTrail`, 설정 변경 이벤트를 감시하고 조직 차원의 권한 통제를 함께 적용
 
 ## 흔한 실수
 
@@ -131,8 +132,10 @@ Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 
 ## 출처
 
-- AWS Docs — CloudTrail Concepts / Config Developer Guide
-- AWS SAA C03 학습 자료 (로컬)
+- [CloudTrail 개념](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html)
+- [CloudTrail 요금 이해](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-costs.html)
+- [AWS Config 작동 방식](https://docs.aws.amazon.com/config/latest/developerguide/how-does-config-work.html)
+- [AWS Config Managed Rules 목록](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html)
 
 ## 관련 문서
 

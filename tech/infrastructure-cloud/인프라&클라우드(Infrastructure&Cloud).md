@@ -25,7 +25,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## Kubernetes
 - [x] [[K8s-Resource-Right-Sizing|Resource Right-Sizing (P95, 버퍼, 역산식, 컴포넌트 차등, 롤백 기준)]]
-- [x] [[Container-Memory-Metrics|컨테이너 메모리 지표 해석 (usage = RSS + page cache, working set, OOM 없는 99%, 고원 vs 우상향, cgroup 실측)]]
+- [x] [[Container-Memory-Metrics|컨테이너 메모리 지표 해석 (cgroup 계정 범위, RSS와 page cache, working set, 고원 vs 우상향, 실측)]]
 - [x] [[Istio-Ambient-Mode|Istio Ambient Mode (service mesh, ztunnel/waypoint L4-L7 분리, sidecar 대비 트레이드오프)]]
 - [x] [[Istio-Ambient-Traffic-Internals|Istio Ambient 트래픽 내부 구현 (Envoy internal listener, HBONE = HTTP/2 CONNECT + mTLS, packet mark 루프 방지)]]
 - [x] [[Istio-Ambient-Stale-Connection|Stale Connection과 503 (half-open, Envoy pool 키 IP:Port 결함, IP 재사용, retry 완화와 멱등성)]]

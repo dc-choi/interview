@@ -3,6 +3,7 @@ tags: [infrastructure, aws, rds, aurora, managed-db, database, ncp, saa-c03]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Aurora 공유 스토리지", "Aurora 클러스터와 엔드포인트"]
+verified_at: 2026-07-21
 ---
 
 # Aurora — RDS와 무엇이 다른가
@@ -21,9 +22,9 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
   - **6-way 복제(3 AZ × 2 복사본)** — 스토리지 레이어에서 처리
   - 쿼럼: **쓰기는 6개 중 4개 성공, 읽기는 6개 중 3개** 기준 — 한 AZ가 통째로 죽어도 읽기와 쓰기를 계속
   - 장애 난 스토리지 노드는 **자동 복구** — 사용자가 디스크 복구를 직접 하지 않음
-  - 스토리지 자체가 **최대 128 TB까지 자동 확장**
+  - 스토리지는 엔진과 버전별 최대치까지 자동 확장하며 일부 최신 Aurora 버전은 256 TiB를 지원. 대상 release의 quota 확인
   - 오류를 스스로 감지, 복구하는 **Self-healing** 내장
-  - Replica는 데이터 복사 불필요 → **추가 비용↓, Lag ~ms**
+  - Replica가 같은 클러스터 볼륨을 사용하므로 별도 데이터 사본을 유지하는 전통적 복제와 경로가 다르다. replica lag과 비용은 부하, 인스턴스, I/O와 요금 조건에 따라 측정
 
 ## Redo Log 중심 쓰기
 
@@ -31,7 +32,7 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 
 - 컴퓨트 노드의 **체크포인트 부담이 줄고 쓰기 경로가 단순**해진다. 컴퓨트는 데이터 페이지를 직접 정리하기보다 변경 명세를 빠르게 넘기는 역할에 가깝다.
 - Writer와 Reader가 **같은 클러스터 스토리지 볼륨을 공유**하므로, 클러스터 내부 Reader를 늘려도 일반적인 **binlog 복제 오버헤드가 없다**. 읽기 확장과 장애 조치에 유리하다.
-- 단, 외부 MySQL로 복제하거나 특수 목적으로 **binlog를 켜면** 그로 인한 쓰기 지연이 생길 수 있다 (Aurora MySQL 2.10+의 binlog I/O cache로 완화).
+- 단, 외부 MySQL로 복제하거나 특수 목적으로 **binlog를 켜면** 쓰기 비용과 지연이 늘 수 있다. binlog I/O cache는 Aurora MySQL v2.10부터 도입됐지만 v2는 표준 지원이 끝났으므로 현재 지원되는 v3 이상 또는 조건에 맞는 Extended Support release에서 검증한다.
 
 ## 컴퓨트 노드 AZ 배치
 
@@ -43,32 +44,39 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 ## Aurora DB Cluster, Endpoints
 
 - **클러스터** = 기본(writer) DB 인스턴스 + 읽기 복제본(reader) 인스턴스 묶음
-- 읽기 복제본 **최대 15개**, 백업, 스냅샷이 퍼포먼스에 영향 없음
+- 프로비저닝된 Aurora Replica는 일반적으로 클러스터당 최대 15개이며 Serverless와 엔진별 quota를 확인한다. 백업과 스냅샷은 관리형 shared storage 경로를 사용하지만 워크로드 영향이 절대 0이라고 보장하지 말고 지표로 확인
 - **Writer Endpoint** — 항상 마스터(writer) DB만 가리킴 (쓰기 트래픽 진입점)
-- **Reader Endpoint** — 모든 읽기 복제본과 자동 연결, **부하 분산** 수행
+- **Reader Endpoint** — DNS를 통해 connection 요청을 Aurora Replica들에 분산한다. query 단위 부하 분산기가 아니며 기존 connection은 같은 인스턴스에 유지된다. replica가 없을 때 writer로 연결될 수 있으므로 read-only 보장으로 해석하지 않는다
 - 마스터 장애 시 복제본으로 **자동 Failover**
 
 ## Aurora Auto Scaling
 
 - 클러스터에 프로비저닝된 **Read Replica 수를 동적 조정**
 - MySQL, PostgreSQL 모두 지원
-- 트래픽 패턴에 맞춰 항상 적절한 replica 수 유지
+- 사용자가 target metric, 최소와 최대 replica 수를 구성하면 Application Auto Scaling이 그 범위에서 replica 수를 조정한다. 즉시성, connection 재분산과 애플리케이션 준비는 별도 설계
 
 ## 주요 특장점
 
 | 항목 | 설명 |
 |---|---|
-| **빠른 Replica 승격** | 공유 스토리지이므로 primary 장애 시 초~십여 초 내 자동 승격 |
-| **Replica Lag 최소화** | 보통 100ms 이하. 일반 RDS는 수 초까지 튈 수 있음 |
-| **Aurora Global Database** | 1개 기본 리전 + **보조 리전 최대 5개**. 리전 간 복제를 binlog가 아니라 **스토리지 로그 전달**로 처리해 효율적. RPO ~1초, RTO 1분 미만. 기본 리전 장애 시 보조 리전을 기본으로 승격 |
-| **Aurora Serverless v2** | 초 단위 오토스케일, idle 시 낮은 비용. 가변 워크로드용 |
-| **Backtrack** (MySQL) | 언두(undo) 스타일의 72시간 내 시간 되돌리기 — 백업 복원, 접속정보 변경 없이 빠르게 과거 시점으로 |
+| **Replica 승격** | 공유 스토리지를 사용해 전체 데이터 복사 없이 replica를 승격할 수 있다. 실제 failover 시간은 topology, priority tier, cache와 애플리케이션 재연결에 따라 측정 |
+| **Replica Lag** | 전통적인 binlog 복제와 다른 shared-storage 경로를 사용하지만 lag이 0이라고 보장되지 않으므로 `AuroraReplicaLag`와 읽기 일관성 요구를 확인 |
+| **Aurora Global Database** | 1개 primary Region + **최대 10개 read-only secondary Region**. 전용 인프라로 storage-level 변경을 복제하며 AWS는 일반적으로 1초 미만 지연을 설명하지만 실제 RPO/RTO는 관측된 lag, switchover/failover 절차와 애플리케이션 전환에 좌우됨 |
+| **Aurora Serverless v2** | 설정한 최소, 최대 ACU 범위에서 세밀하게 용량을 조정. 0 ACU auto-pause와 지원 범위는 엔진 버전과 설정별로 확인 |
+| **Backtrack** (MySQL) | 지원되는 Aurora MySQL 버전과 Region에서 구성한 window 안의 시점으로 되돌리는 기능. 최대 72시간이지만 제약, 비용과 변경 중단 영향을 확인 |
 | **Database Cloning** | 운영 DB의 특정 시점을 빠르게 복제 DB로. 전체 물리 복사 대신 **스토리지 페이지 공유(copy-on-write)** 라 빠르고 저렴 |
-| **Aurora Limitless Database** | 자동 샤딩으로 페타바이트 규모 + 초당 수백만 쓰기 트랜잭션. 2023 re:Invent 발표 |
+| **Aurora PostgreSQL Limitless Database** | router와 shard로 구성된 DB shard group에서 sharded table을 수평 확장. AWS가 제시하는 petabyte, 대규모 write 처리 목표와 별개로 지원 SQL, shard key, isolation level, Region과 용량 제한을 검증 |
 
 ## 언제 RDS 대신 Aurora를 고르나
 
 - 읽기 트래픽이 많고 Lag에 민감한 서비스
 - Multi-AZ + 다수 Read Replica 구성이 필요한 프로덕션
 - 초단위 오토스케일이 필요한 SaaS(Aurora Serverless)
-- 비용: 인스턴스 단가는 Aurora가 비싸지만 **스토리지, I/O, Replica 구성 총비용**은 낮은 경우가 많음
+- 비용: 인스턴스, I/O-Optimized 여부, 스토리지, replica와 cross-Region 데이터 전송을 포함한 총비용을 RDS 대안과 계산
+
+## 출처
+
+- [Aurora Reader Endpoint](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Reader.html)
+- [Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html)
+- [Aurora Auto Scaling](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html)
+- [Aurora PostgreSQL Limitless Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html)

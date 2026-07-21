@@ -3,6 +3,7 @@ tags: [infrastructure, aws, ssm, systems-manager, parameter-store, patch-manager
 status: done
 category: "Infrastructure - AWS"
 aliases: ["SSM", "AWS Systems Manager", "Systems Manager"]
+verified_at: 2026-07-21
 ---
 
 # AWS Systems Manager (SSM)
@@ -12,7 +13,7 @@ aliases: ["SSM", "AWS Systems Manager", "Systems Manager"]
 ## SSM Agent — 전제 조건
 
 - 대부분 AWS AMI(Amazon Linux, Ubuntu, Windows Server)에 **사전 설치**
-- 노드는 **SSM 권한이 부여된 IAM Role** 필요
+- 노드는 환경에 맞는 IAM 권한과 Systems Manager 등록이 필요. EC2는 instance profile, 하이브리드와 멀티클라우드 노드는 service role과 managed-instance activation 등을 사용
 - 에이전트가 SSM 엔드포인트와 통신 → **인바운드 포트 개방 불필요** (아웃바운드만)
 
 ## 주요 도구
@@ -23,7 +24,7 @@ aliases: ["SSM", "AWS Systems Manager", "Systems Manager"]
 
 - **Standard vs Advanced**: Standard 4 KB, 무료, Advanced 8 KB, TTL, 정책 지원 (유료)
 - **String / StringList / SecureString** 3가지 유형. SecureString은 **KMS** 암호화
-- CloudFormation, Lambda, CodeBuild에서 직접 참조 (`{{resolve:ssm:/db/url}}`)
+- 서비스별 참조 방식이 다르다. CloudFormation은 stack, change set 처리 중 `{{resolve:ssm:/db/url}}` dynamic reference를 해석한다. CodeBuild는 buildspec의 `env: parameter-store`를 사용할 수 있고, Lambda 런타임은 AWS SDK, Parameters and Secrets Lambda Extension 또는 Powertools 등으로 조회한다
 - vs **Secrets Manager**:
   - **자동 회전, 교차 리전 복제 = Secrets Manager 강점**
   - **저비용, 일반 설정값 = Parameter Store 강점**
@@ -64,7 +65,7 @@ aliases: ["SSM", "AWS Systems Manager", "Systems Manager"]
 
 **원하는 구성 상태 유지** (Desired State Configuration).
 
-- 인스턴스가 항상 특정 구성을 따르도록 강제 — 드리프트 발생 시 자동 교정
+- Association을 생성하거나 정해진 일정에 다시 적용해 원하는 구성을 유지하고 컴플라이언스를 보고한다. 실행 주기 사이의 드리프트를 연속적으로 막는 기능은 아니다.
 - 예: 모든 노드에 CloudWatch Agent 설치 유지, 방화벽 규칙 일관성 보장
 - 정기 일정으로 Association 재실행
 
@@ -100,7 +101,7 @@ aliases: ["SSM", "AWS Systems Manager", "Systems Manager"]
 - **인스턴스 구성 드리프트 방지** → **State Manager**
 - **운영 작업 표준화(AMI 생성, 복구)** → **Automation Runbook**
 - **설치 소프트웨어, OS 인벤토리 감사** → **Inventory**
-- SSM Agent + **IAM Role**이 필수 — 인바운드 포트 개방 불필요(아웃바운드만)
+- SSM Agent, 등록과 **적절한 IAM 권한**이 필요 — 서비스 endpoint로 나가는 경로가 있으면 관리용 인바운드 포트를 열지 않고 운영 가능
 
 ## 관련 문서
 
@@ -108,4 +109,7 @@ aliases: ["SSM", "AWS Systems Manager", "Systems Manager"]
 
 ## 출처
 
-- AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)
+- [AWS Systems Manager State Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-state.html)
+- [CloudFormation의 SSM dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references-ssm.html)
+- [CodeBuild buildspec의 Parameter Store](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html)
+- [Lambda Parameters and Secrets Extension](https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html)
