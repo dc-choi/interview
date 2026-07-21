@@ -3,15 +3,15 @@ tags: [cs, javascript, oop, prototype]
 status: seminar
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Prototype 기반 OOP"]
+verified_at: 2026-07-21
 ---
 
 # Prototype기반OOP
 
 ## JS의실행방식
 
-- 소스 코드를 사전에 컴파일하여 실행 파일을 만들지 않음
-- **사용하는 시점에 컴파일하고 실행** (JIT)
-- 함수 키워드를 만나면 함수 오브젝트를 생성하지만, 함수 안 코드는 호출될 때 컴파일됨
+- JavaScript 엔진은 소스를 파싱해 bytecode나 기계어로 실행하며, interpreter와 JIT 최적화의 조합은 엔진 구현에 따라 다름
+- 함수 본문을 언제 파싱하고 컴파일하는지도 엔진의 lazy parsing, 최적화 전략에 따른 구현 세부사항이지 언어 명세의 보장이 아님
 
 ## JS OOP의특징
 
@@ -23,9 +23,9 @@ aliases: ["Prototype 기반 OOP"]
 - class → 인스턴스 생성 → 사용
 
 ### JS의OOP
-- `Object`는 인스턴스를 생성할 수 없음
-- `Function` 자체는 OOP의 객체라고 부르기 어려움
-- **prototype에 메서드를 연결**해서 사용 → Function이 class처럼 동작
+- `Object()`나 `new Object()`는 객체를 만들 수 있고, 객체 리터럴도 별도의 class 선언 없이 일반 객체를 생성함
+- 함수는 호출 가능한 객체다. 일반 함수와 class constructor는 `new`의 대상이 될 수 있지만 arrow function처럼 생성자로 쓸 수 없는 함수도 있음
+- 생성자 함수의 `prototype`에 메서드를 두면 그 생성자로 만든 인스턴스가 프로토타입 체인을 통해 메서드를 공유함
 
 ## Prototype체인
 
@@ -59,9 +59,8 @@ class Person {
 }
 ```
 
-- ES6 `class`는 문법적 설탕(Syntactic Sugar)
-- 내부적으로는 **prototype을 사용하여 연결**
-- `class` 문법이 더 직관적이지만 동작 원리는 동일
+- ES6 `class`의 인스턴스 메서드는 prototype에 놓이고 `extends`도 프로토타입 체인을 구성함
+- 다만 class body의 strict mode, `new` 없는 호출 금지, private field와 derived constructor 규칙처럼 생성자 함수 패턴에 없는 고유 의미가 있어 단순한 텍스트 치환으로 보지는 않음
 
 ## 인스턴스
 
@@ -86,3 +85,7 @@ p instanceof Person; // true
 - [[Prototype-Mechanism|프로토타입 동작 원리 (prototype 객체, constructor, __proto__, 체인)]]
 - [[JavaScript-Prototype-Philosophy|JS가 프로토타입을 선택한 이유]]
 - [[자바스크립트(JS)|JavaScript 인덱스]]
+
+## 출처
+
+- [ECMAScript Language Specification — TC39](https://tc39.es/ecma262/)

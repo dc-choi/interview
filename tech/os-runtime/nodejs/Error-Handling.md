@@ -3,6 +3,7 @@ tags: [runtime, nodejs, error-handling, async]
 status: done
 category: "OS & Runtime"
 aliases: ["Node.js Error Handling", "uncaughtException", "Error-First Callback"]
+verified_at: 2026-07-21
 ---
 
 # Node.js Error Handling
@@ -15,7 +16,7 @@ aliases: ["Node.js Error Handling", "uncaughtException", "Error-First Callback"]
 |------|----------|----------|
 | 동기 throw | `try/catch` | 스택 위로 전파, 안 잡으면 프로세스 종료 |
 | 콜백 비동기 | error-first callback `(err, data)` | 무시되거나 다음 단계로 이상값 전달 |
-| Promise reject | `.catch` / `try/catch` (await) | `unhandledRejection` 이벤트, 향후 process exit |
+| Promise reject | `.catch` / `try/catch` (await) | `unhandledRejection`. 현재 기본 `throw` 모드에서는 처리되지 않으면 프로세스 종료 |
 | EventEmitter | `'error'` 리스너 | 등록 안 하면 throw → 프로세스 종료 |
 
 ## 동기 에러
@@ -77,7 +78,7 @@ try {
 }
 ```
 
-`await` 없는 Promise를 그대로 두면 (`fire-and-forget`) 에러가 unhandledRejection으로. 의도적이라면 `.catch(noop)` 명시.
+`await` 없는 Promise를 그대로 두면 (`fire-and-forget`) 에러가 unhandledRejection으로 이어질 수 있다. 의도적 비동기 작업도 `.catch`에서 로깅, 상태 정리나 상위 실패 신호를 명시하고 조용히 버리지 않는다.
 
 ## EventEmitter 에러
 
@@ -93,13 +94,13 @@ stream.pipe(dest);
 
 ```ts
 process.on('uncaughtException', (err, origin) => {
-  logger.fatal({ err, origin }, 'uncaught');
-  process.exit(1);   // 정리 후 종료 — 계속 실행하지 말 것
+  console.error('uncaught exception', origin, err);
+  process.exit(1);   // 동기식 최소 기록 후 종료
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  logger.fatal({ reason }, 'unhandled rejection');
-  // Node 15+: 기본 동작이 process exit으로 변경됨
+process.on('unhandledRejection', reason => {
+  // listener를 달면 기본 throw 경로를 가로채므로 로그만 남기고 계속 실행하지 않는다.
+  throw reason instanceof Error ? reason : new Error(String(reason));
 });
 ```
 
@@ -111,6 +112,8 @@ process.on('unhandledRejection', (reason, promise) => {
 | `multipleResolves` | Promise가 여러 번 resolve/reject (deprecated) |
 
 **핵심**: 이 핸들러는 **로그, 정리 후 종료** 용도. 계속 실행하지 말 것 — 상태가 손상됐을 가능성 있음. PM2, Cluster, K8s가 재시작.
+
+정상 종료 신호에서는 새 요청 중단, inflight 대기와 연결 종료 같은 bounded graceful shutdown을 할 수 있다. 반면 `uncaughtException`은 상태가 불명확하므로 동기식 최소 정리만 하고 종료하는 것이 안전하다. `unhandledRejection` listener를 등록하면 현재 Node.js의 기본 throw 동작을 대신하게 되므로, 로그만 남긴 채 정상 상태처럼 계속 돌리지 않는다.
 
 ## 도메인 에러 모델
 
@@ -172,7 +175,7 @@ try {
 
 - 4가지 에러 경로와 잡는 방법 (sync, callback, Promise, EventEmitter)
 - 에러 우선 콜백 패턴이 표준이 된 이유
-- `unhandledRejection`과 Node 15+ 동작 변경
+- `unhandledRejection`의 현재 기본 `throw` 동작과 listener 등록 시 책임
 - `uncaughtException` 핸들러의 역할 — 로그 후 종료, 계속 실행 금지
 - 운영 에러 vs 프로그래밍 에러 구분
 - `error.code` 분기가 메시지 매칭보다 안정적인 이유
@@ -186,3 +189,7 @@ try {
 - [[Stream-Types|Stream Types (EventEmitter 기반)]]
 - [[Process-Child-Process|Process, Graceful Shutdown]]
 - [[NestJS-Exception-Filter|NestJS Exception Filter (HTTP 응답 변환)]]
+
+## 출처
+
+- [Node.js Process API](https://nodejs.org/api/process.html)

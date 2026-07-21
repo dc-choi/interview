@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, event-loop, libuv, phases]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-07-21
 category: "OS & Runtime"
 aliases: ["Event Loop Phases", "이벤트 루프 페이즈"]
 ---
@@ -12,20 +12,26 @@ libuv 소스 기반 페이즈 구조, nextTick, microtask 삽입 지점, 실행 
 
 ## libuv `uv_run` 소스코드
 이벤트 루프의 실제 구현체. 각 페이즈를 순회하며 등록된 콜백을 처리한다.
-Node.js 20(libuv 1.45.0) 이후 각 이벤트 루프 반복의 타이머 처리는 poll 이후에 실행된다. 호환성을 위해 이벤트 루프에 처음 진입하기 전에는 타이머를 한 번 처리할 수 있다. 아래 흐름을 외울 때는 Node 버전과 실행 문맥에 따라 `setTimeout(0)`과 `setImmediate()`의 상대 순서가 달라질 수 있음을 함께 봐야 한다.
+Node.js 20(libuv 1.45.0) 이후 일반 반복의 타이머 처리는 poll 뒤에 실행된다. `UV_RUN_DEFAULT`로 처음 진입할 때는 기존 동작 호환을 위해 루프 앞에서 타이머를 한 번 처리할 수 있다. 아래 코드는 현재 libuv v1.x의 핵심 순서를 축약한 것으로, 세부 조건과 pending callback 반복 횟수는 원본 소스를 봐야 한다.
 ```c
+if (mode == UV_RUN_DEFAULT && loop_alive) {
+    uv__update_time(loop);
+    uv__run_timers(loop);           // 최초 진입 호환 처리
+}
+
 while (r != 0 && loop->stop_flag == 0) {
-    uv__update_time(loop);          // 현재 시간 갱신
     uv__run_pending(loop);          // Pending Callbacks 페이즈
     uv__run_idle(loop);             // Idle 페이즈
     uv__run_prepare(loop);          // Prepare 페이즈
     uv__io_poll(loop, timeout);     // Poll 페이즈
-    uv__run_timers(loop);           // Timer 페이즈 (Node.js 20+ 기준)
+    uv__run_pending(loop);          // poll 뒤 pending callback 제한 처리
     uv__run_check(loop);            // Check 페이즈
     uv__run_closing_handles(loop);  // Close Callbacks 페이즈
+    uv__update_time(loop);          // 현재 시간 갱신
+    uv__run_timers(loop);           // Timer 페이즈
 }
 ```
-루프는 처리할 작업(활성 핸들/요청)이 없고 `stop_flag`가 설정되면 종료된다.
+루프는 활성 핸들과 요청이 없어졌거나 실행 모드 조건을 충족했거나 `uv_stop()`으로 중단 요청을 받으면 종료된다.
 
 ---
 
@@ -47,8 +53,8 @@ nextTick은 현재 작업 완료 직후 콜 스택에 주입되며, Promise micr
     ```
     setTimeout() 및 setInterval()에 의해 예약된 콜백을 실행합니다.
     타이머는 사용자가 원하는 정확한 시간이 아니라 제공된 콜백이 실행될 수 있는 임계값입니다.
-    내부 구현: 타이머는 min-heap에 저장. O(log N)으로 최솟값 조회.
-    uv__run_timers는 힙에서 최솟값을 꺼내 registeredTime + delay > currentTime인지 확인.
+    내부 구현: 타이머는 min-heap에 저장. 루트 최솟값 조회는 O(1), 삽입과 제거는 O(log N).
+    uv__run_timers는 `heap_min()`으로 가장 이른 타이머의 미리 계산된 `timeout`을 보고 `loop->time`과 비교한 뒤 만료된 핸들을 힙에서 제거해 콜백을 실행.
     ```
 2. **Pending Callbacks**
     ```
@@ -65,7 +71,7 @@ nextTick은 현재 작업 완료 직후 콜 스택에 주입되며, Promise micr
     timeout 동작:
     - timeout = 0: 즉시 반환 (논블로킹)
     - timeout > 0: I/O 이벤트 또는 타임아웃까지 블로킹
-    - timeout < 0: 무한 블로킹 (최대 ~30분)
+    - timeout < 0: 다음 이벤트까지 제한 없이 대기하도록 poll API에 요청
 
     poll 대기열이 비어 있고 setImmediate가 있으면 check 단계로 진행.
     그렇지 않으면 콜백이 큐에 추가될 때까지 대기.
@@ -100,11 +106,12 @@ nextTickQueue 전부 비움 (process.nextTick)
 MicrotaskQueue 전부 비움 (Promise 콜백)
     ↓
 === 이하 Macrotask (페이즈별 처리) ===
-[Timer] → nextTick/microtask 비움
 [Pending Callbacks] → nextTick/microtask 비움
 [Poll] → nextTick/microtask 비움
+[poll 뒤 Pending Callbacks] → nextTick/microtask 비움
 [Check] → nextTick/microtask 비움
 [Close Callbacks] → nextTick/microtask 비움
+[Timers] → nextTick/microtask 비움
     ↓
 다시 Timer로 (루프)
 ```
@@ -115,18 +122,18 @@ MicrotaskQueue 전부 비움 (Promise 콜백)
 
 | 비교 | process.nextTick() | setImmediate() |
 |------|-------|-------|
-| 실행 시점 | 동일 단계에서 즉시 (현재 작업 완료 후) | 이벤트 루프의 다음 반복 (check 단계) |
+| 실행 시점 | 현재 작업 완료 후, 이벤트 루프가 다음 페이즈로 가기 전 | poll 이후 check 페이즈. 예약 문맥에 따라 현재 반복 또는 이후 반복 |
 | 기술적 | 이벤트 루프의 일부가 아님. 현재 단계에서 nextTickQueue 처리 | poll 단계 완료 후 실행되는 특수 타이머 |
-| 권장 | 호출 스택 풀린 후 이벤트 루프 전에 콜백 실행이 필요할 때 | 일반적으로 모든 경우에 권장 |
+| 선택 기준 | 호출 스택이 풀린 직후, 다음 페이즈 전에 실행해야 할 때. 재귀 사용 주의 | poll 뒤 check 페이즈에서 다음 실행 기회를 원할 때 |
 
 - `process.nextTick()`을 재귀적으로 호출하면 poll 단계에 도달하지 못해 I/O "고갈" 가능
-- I/O 사이클 내에서는 항상 `setImmediate()` 콜백이 `setTimeout`보다 먼저 실행
+- 같은 I/O 콜백 안에서 둘을 함께 예약하면 현재 콜백 직후 `process.nextTick()`이 먼저 실행되고, 이후 check 페이즈에서 `setImmediate()`가 실행된다.
 
 ### James Snell의 네이밍 비판
 James Snell(Node.js Core Contributor)은 **"`nextTick`과 `Immediate`의 이름은 서로 바뀌어야 한다"** 고 지적한다. 이름과 실제 동작이 반대이기 때문이다.
 
 - `process.nextTick()` → 이름은 "다음 틱"이지만, **실제로는 콜 스택이 비워진 직후 즉시** 실행된다 (이벤트 루프의 다음 반복을 기다리지 않음).
-- `setImmediate()` → 이름은 "즉시"지만, **실제로는 이벤트 루프의 다음 반복(check 단계)**에서 실행된다.
+- `setImmediate()` → 이름은 "즉시"지만 **poll 이후 check 단계**에서 실행된다. 예약 위치에 따라 같은 반복의 check에 도달할 수도 있으므로 무조건 다음 반복이라고 외우지 않는다.
 
 면접에서 "왜 둘 다 있는데 이름이 헷갈리는가?"라는 질문이 나오면, **"`nextTick`이 더 빠르다"** 는 한 줄 요약과 함께 이 네이밍 비판을 덧붙이면 이해도를 어필할 수 있다.
 
@@ -156,16 +163,16 @@ James Snell의 또 다른 핵심 발언:
 
 ### setTimeout 타임아웃 0
 - 콜백은 현재 함수 실행 후 가능한 한 빨리 실행
-- CPU 차단 없이 무거운 계산 중 다른 함수를 실행하는 데 유용
+- 실행을 뒤로 미룰 수는 있지만 무거운 계산 자체가 이벤트 루프를 막는 문제는 해결하지 못함. 계산 분할이나 Worker Threads 검토
 - **실제 지연은 0이 아니라 1ms**: 딜레이가 1 미만이거나 2147483647(약 24.8일) 초과면 1로 클램프된다. `setTimeout(fn, 0)`은 내부적으로 `setTimeout(fn, 1)`이다.
 
-### setImmediate가 setTimeout(0)보다 빠른 이유
-같은 동작을 N번 재귀 호출하면 setImmediate가 setTimeout(0)보다 눈에 띄게 빠르다(작업당 타이머 등록, 만료 시각 비교가 누적되지 않기 때문). Timer 페이즈는 매 순회마다 힙에서 타이머를 꺼내 `현재 시각 ≥ 등록 시각 + delay`를 검사하는 비용을 치르지만, Check 페이즈의 setImmediate는 그 시간 계산 자체가 없다. setImmediate 콜백은 Poll 직후 Check에서 곧장 실행되므로, I/O 콜백 안에서 다음 틱에 일을 미룰 때 setTimeout(0)보다 setImmediate가 더 적합하다.
+### setImmediate와 setTimeout(0) 선택
+둘의 상대 순서는 예약한 문맥과 이벤트 루프 상태에 달려 있어 일반적인 속도 순위를 만들 수 없다. I/O 콜백 안에서 다음 실행 기회로 미룰 때는 poll 뒤 check에 놓이는 `setImmediate()`의 순서가 예측 가능하다. 타이머 임계값 이후 실행이라는 의미가 필요하면 `setTimeout()`을 쓴다.
 
 ### setInterval의 한계
-- 함수 실행 시간을 고려하지 않고 n밀리초마다 실행
-- 네트워크 조건에 따라 실행 시간이 달라지면 하나의 긴 실행이 다음 실행과 겹칠 수 있음
-- **재귀적 setTimeout**으로 대체 → 콜백 완료 후 다음 실행을 예약
+- 간격은 정확한 실행 시각이 아니라 실행 가능해지는 임계값이다.
+- 같은 JavaScript 이벤트 루프 스레드에서는 콜백 실행이 서로 겹치지 않는다. 긴 콜백 때문에 후속 실행이 지연되고 기대한 주기가 깨질 수 있다.
+- 완료 시점부터 일정 간격을 두려면 **재귀적 setTimeout**으로 콜백 완료 후 다음 실행을 예약한다.
 
 ### setImmediate()
 - `setTimeout(() => {}, 0)`과 유사하지만 Node.js 이벤트 루프의 check 단계에서 실행

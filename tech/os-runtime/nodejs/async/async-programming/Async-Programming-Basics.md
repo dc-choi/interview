@@ -77,7 +77,7 @@ promise
 
 ```js
 // Promise.all
-const [data1, data2] = await Promise.all([fetchData1, fetchData2]);
+const [data1, data2] = await Promise.all([fetchData1(), fetchData2()]);
 
 // Promise.allSettled
 const results = await Promise.allSettled([promise1, promise2]);

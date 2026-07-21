@@ -3,6 +3,7 @@ tags: [cs, javascript, prototype, oop, philosophy, language-design]
 status: done
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["JavaScript Prototype Philosophy", "JS가 프로토타입을 선택한 이유", "Prototype vs Class"]
+verified_at: 2026-07-21
 ---
 
 # JavaScript가 프로토타입을 선택한 이유
@@ -134,7 +135,7 @@ Animal.prototype.speak = function() { return `${this.name} makes a sound`; };
 
 - **`class` = 클래스 기반 OOP** 오해 — JS의 class는 프로토타입 위 설탕. 동작은 프로토타입
 - **`prototype` 속성 vs `[[Prototype]]`** — 함수의 `prototype` 속성 ≠ 인스턴스의 숨겨진 `[[Prototype]]`(= `__proto__`). 둘은 연결되지만 같은 것이 아님
-- **`__proto__` vs `Object.getPrototypeOf()`** — 전자는 비표준 별칭, 후자가 표준
+- **`__proto__` vs `Object.getPrototypeOf()`** — 전자는 ECMAScript Annex B에 남은 legacy accessor이고 후자가 새 코드에 권장되는 표준 API
 - **상속이 강력한 도구가 아님** — 프로토타입이든 클래스든, 깊은 상속은 피하고 **합성**을 선호하는 게 현대 모범
 - **프로토타입 체인이 느리다** 오해 — V8의 hidden class 최적화 덕에 실제로 매우 빠름. 단, 동적으로 shape가 바뀌면 최적화가 깨짐
 - **프로토타입 = 오래된 방식** 오해 — React, Vue, Node.js 내부는 프로토타입 철학 위에 설계됨. 최신
@@ -150,6 +151,7 @@ Animal.prototype.speak = function() { return `${this.name} makes a sound`; };
 
 ## 출처
 - [medium @limsungmook — 자바스크립트는 왜 프로토타입을 선택했을까](https://medium.com/@limsungmook/%EC%9E%90%EB%B0%94%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8%EB%8A%94-%EC%99%9C-%ED%94%84%EB%A1%9C%ED%86%A0%ED%83%80%EC%9E%85%EC%9D%84-%EC%84%A0%ED%83%9D%ED%96%88%EC%9D%84%EA%B9%8C-997f985adb42)
+- [ECMAScript 2024 Annex B — Object.prototype.__proto__](https://tc39.es/ecma262/2024/multipage/additional-ecmascript-features-for-web-browsers.html#sec-object.prototype.__proto__)
 
 ## 관련 문서
 - [[Prototype-Mechanism|프로토타입 동작 원리 (prototype 객체, constructor, __proto__, 체인)]]

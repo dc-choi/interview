@@ -3,31 +3,31 @@ tags: [runtime, jvm, memory, container, g1gc, tuning]
 status: done
 category: "OS&런타임(OS&Runtime)"
 aliases: ["JVM Container Memory", "JVM 컨테이너 메모리", "used vs committed", "RAMPercentage"]
-verified_at: 2026-07-16
+verified_at: 2026-07-21
 ---
 
 # JVM 컨테이너 메모리 — used vs committed와 RAMPercentage
 
-컨테이너에서 JVM 메모리가 내려오지 않는 것처럼 보일 때 첫 용의자는 힙 누수지만, 실제 범인은 힙 커밋 정책인 경우가 많다. GC가 객체를 정리하면 used는 줄어도 committed(JVM이 OS에 예약해 둔 힙)는 그대로 유지되는 경우가 많고, 프로세스 RSS는 committed를 기준으로 커진다. 돌아오지 않는 메모리의 정체가 누수가 아니라 반환하지 않는 예약인 것이다.
+컨테이너에서 JVM 메모리가 내려오지 않는 것처럼 보일 때 첫 용의자는 힙 누수지만, 힙 커밋 정책이나 파일 캐시가 원인일 수도 있다. GC가 객체를 정리하면 used는 줄어도 committed(JVM이 사용할 수 있도록 확보한 힙 범위)는 유지될 수 있다. 다만 committed는 물리 상주량이 아니므로 RSS와 같다고 보면 안 된다. 페이지가 실제로 접근돼 resident가 됐는지와 힙 밖 메모리를 함께 봐야 한다.
 
 ## used vs committed vs RSS
 
-- **used**: live 객체가 실제로 차지하는 힙.
-- **committed**: JVM이 OS로부터 커밋해 둔 힙. GC 후 used가 내려가도 committed는 유지되는 경우가 많다.
-- **RSS**: committed heap에 metaspace, thread stack, code cache 같은 힙 밖 영역까지 더한 프로세스 물리 점유.
-- 모니터링에서 봐야 할 것은 Heap Used가 아니라 **Heap Committed와 Full GC 후 잔여 힙**이다. used만 보면 커밋이 만든 고원을 놓친다.
+- **used**: 현재 사용 중으로 보고된 힙 용량. 아직 GC되지 않은 도달 불가능 객체도 포함할 수 있으므로 live set과 동일하지 않으며, live set은 보통 GC 직후 지표로 추정한다.
+- **committed**: JVM이 즉시 사용할 수 있도록 확보한 힙 용량. JVM 관점의 용량 지표이며 모든 페이지가 물리 RAM에 상주한다는 뜻은 아니다.
+- **RSS**: 현재 물리 메모리에 resident인 프로세스 페이지. 접근된 힙 페이지와 metaspace, thread stack, code cache, native allocation 일부를 포함하지만 committed와 일대일 대응하지 않는다.
+- 모니터링에서는 Heap Used, Heap Committed, Full GC 후 잔여 힙, 프로세스 RSS, 컨테이너 working set을 함께 본다. 어느 하나를 다른 지표의 대용으로 쓰지 않는다.
 
 ## RAMPercentage 설정의 함정
 
-- InitialRAMPercentage와 MaxRAMPercentage를 같은 값(예: 75/75)으로 두면 컨테이너 limit의 75%를 최대 힙으로 잡고 초기 힙도 같은 비율로 시작한다. G1은 그 상한을 향해 region 단위로 힙을 커밋해 간다.
+- InitialRAMPercentage와 MaxRAMPercentage를 같은 값(예: 75/75)으로 두면 계산된 초기 힙과 최대 힙이 같아질 수 있다. 이는 큰 힙 용량을 일찍 확보하게 하지만 모든 페이지가 즉시 RSS가 된다는 뜻은 아니다.
 - 트래픽이 한 번 오른 뒤 live heap이 다시 내려와도 committed는 상한 근처까지 올라간 뒤 오래 유지된다.
 - 근본 조치는 JDK 버전 업그레이드가 아니라 **상한 자체를 서비스 실사용에 맞게 낮추는 것**이다.
 
 ## G1이 힙을 잘 돌려주지 않는 이유
 
-- G1은 힙 크기 조정과 반환을 주로 **Full GC나 concurrent cycle 종료(Remark 등) 시점**에 검토한다. 할당이 계속 이어지고 G1 자체가 Full GC를 피하도록 설계돼 있어, 빈 region을 OS에 반환할 기회가 실전에서는 드물다.
-- 유휴 시 미사용 커밋 힙을 주기적으로 반환하는 메커니즘(JEP 346, Periodic GC)은 **JDK 12부터** 도입됐다. JDK 11에서는 외부에서 Full GC를 강제하지 않는 한 committed가 상한 근처에서 오래 유지되는 패턴이 자연스럽다.
-- 이후 버전이라고 자동 해결은 아니다 — 주기 반환은 도입 시점부터 기본 비활성이라 설정으로 켜야 동작하고, 사례 분석 시점 기준 JDK 21 G1도 기본 설정에서는 커밋을 오래 유지하는 패턴이 보고된다.
+- G1은 Full GC뿐 아니라 자연스럽게 시작된 concurrent cycle 뒤에도 힙 크기 조정과 미사용 region 반환을 검토할 수 있다. 다만 유휴 상태에서는 allocation이 적어 concurrent cycle 자체가 시작되지 않을 수 있어 committed heap이 오래 유지될 수 있다.
+- JEP 346은 **JDK 12부터** 유휴 시간에도 주기적으로 concurrent cycle을 시작해 미사용 committed memory를 더 신속하게 반환하는 기능을 추가했다. 이는 JDK 11에서 Full GC만이 유일한 반환 경로였다는 뜻이 아니라, 낮은 활동에서 반환 기회를 만들었다는 뜻이다.
+- 이후 버전도 설정과 부하에 따라 반환 시점이 달라진다. `G1PeriodicGCInterval`, 시스템 부하 조건, `-Xms`와 `-Xmx` 관계를 확인하고 실제 committed와 RSS 변화로 검증한다.
 
 ## 컨테이너 튜닝 접근
 
@@ -52,6 +52,8 @@ verified_at: 2026-07-16
 - [돌아오지 않는 메모리를 찾아서 — SSG TECH BLOG](https://medium.com/ssgtech/%EB%8F%8C%EC%95%84%EC%98%A4%EC%A7%80-%EC%95%8A%EB%8A%94-%EB%A9%94%EB%AA%A8%EB%A6%AC%EB%A5%BC-%EC%B0%BE%EC%95%84%EC%84%9C-6988f6d55066)
 - [JEP 346: Promptly Return Unused Committed Memory from G1 — OpenJDK](https://openjdk.org/jeps/346) (반환은 Full GC나 concurrent cycle에서만, 주기 반환 기본 비활성, JDK 12 도입)
 - [Garbage-First Garbage Collector Tuning — Oracle Java SE Docs](https://docs.oracle.com/en/java/javase/17/gctuning/garbage-first-garbage-collector-tuning.html) (G1NewSizePercent 등 튜닝 옵션, Xms=Xmx 리사이즈 제거)
+- [OpenJDK hotspot-gc-dev — committed memory and RSS are different quantities](https://mail.openjdk.org/pipermail/hotspot-gc-dev/2020-July/030387.html)
+- [Java MemoryUsage API](https://docs.oracle.com/en/java/javase/24/docs/api/java.management/java/lang/management/MemoryUsage.html)
 
 ## 관련 문서
 
