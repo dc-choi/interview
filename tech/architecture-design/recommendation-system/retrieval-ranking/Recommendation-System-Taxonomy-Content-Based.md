@@ -1,7 +1,7 @@
 ---
 tags: [architecture, recommendation-system, taxonomy, content-based-filtering, metadata]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-07-22
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Recommendation Taxonomy and Content-Based Filtering", "추천 시스템 택소노미", "택소노미 기반 콘텐츠 추천"]
 ---
@@ -143,6 +143,8 @@ User profile에는 `taxonomyVersion`, 집계 기준 시각, signal policy와 sou
 | Online | 상세 진입, 찜, 유효 OTT 이동과 장기 및 가용성 guardrail |
 
 Version별 concept와 assignment 분포, tag 수, 새 concept 비율과 model-editor disagreement를 감시한다. Taxonomy, assignment index와 user affinity는 serving bundle에 함께 pin하고 요청 중 active alias를 다시 읽지 않는다.
+
+Taxonomy의 incremental Recall은 taxonomy source 단독 Recall이 아니다. 실험 전에 baseline source 목록, source별 K, 총 candidate budget, merge/truncation, canonical ID dedup과 최종 eligibility 순서를 고정한다. 같은 gold set에서 `Recall@K(base ∪ taxonomy) - Recall@K(base)`를 계산하고, 중복과 underfill도 함께 보고해야 taxonomy가 동일 예산 안에서 추가한 가치를 해석할 수 있다.
 
 ## 키노라이츠 적용 가설의 검증 순서
 
