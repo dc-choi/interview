@@ -13,7 +13,8 @@ aliases: ["추천 시스템 기초 학습", "Recommendation System Foundations"]
 
 - [[Recommendation-System-Modeling-Foundations|모델링 기초]] — 벡터, 확률, 통계, implicit feedback과 baseline
 - [[Search-Recommendation-Discovery-Learning-Path|검색과 추천 디스커버리 학습 경로]] — 단계별 산출물과 통과 gate
-- [[2026-H2-Math-Recommendation-DevOps-Roadmap|2026 하반기 실행 로드맵]] — 교재 순서와 DevOps 전환 기준
+- [[2026-H2-Math-Roadmap|2026 하반기 수학 기초 로드맵]] — 완전 기초 단계와 2027 전환 gate
+- [[2027-Search-Recommendation-Roadmap|2027 검색 엔진 우선, 추천 시스템 전환 로드맵]] — 검색 품질 baseline 뒤 추천 실습으로 전환하는 기준
 
 ## 상위 문서
 
