@@ -1,7 +1,7 @@
 ---
 tags: [architecture, recommendation-system, machine-learning, statistics, implicit-feedback]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-07-22
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Recommendation System Modeling Foundations", "추천 시스템 모델링 기초", "추천 모델 기초"]
 ---
@@ -37,6 +37,7 @@ cosine similarity = uᵀv / (||u|| ||v||)
 ### 확률, 기대값과 분산
 
 - 조건부확률 `P(click | user, item, context)`는 feature가 주어진 상황의 확률이다. 관측 CTR 자체와 모델의 예측 확률은 구분한다.
+- Bayes 정리 `P(A | B) = P(B | A)P(A) / P(B)`는 사전확률과 관측의 우도를 결합해 사후확률을 갱신한다. 다만 이 계산만으로 이전 정책의 노출 편향이나 position bias가 교정되지는 않는다.
 - 기대값은 정책을 반복 적용했을 때의 평균 결과를 정의한다. 온라인 실험과 OPE가 추정하려는 대상도 기대 보상이다.
 - 분산은 추정치의 불확실성과 필요한 표본 수를 좌우한다. 평균 상승만으로 출시하지 않고 표준 오차와 신뢰구간을 본다.
 - 조건부확률을 잘 예측하는 calibration과 Top K 순서를 잘 만드는 ranking quality는 같은 성질이 아니다.
@@ -138,6 +139,7 @@ MovieLens는 rating과 timestamp가 있는 교육용 데이터다. 실제 impres
 - [Deep Neural Networks for YouTube Recommendations - Covington et al.](https://research.google/pubs/deep-neural-networks-for-youtube-recommendations/)
 - [Google Machine Learning Crash Course - Logistic Regression](https://developers.google.com/machine-learning/crash-course/logistic-regression)
 - [MovieLens datasets - GroupLens](https://grouplens.org/datasets/movielens/)
+- [Bayes formula - NIST/SEMATECH e-Handbook of Statistical Methods](https://www.itl.nist.gov/div898/handbook/apr/section2/apr1a.htm)
 
 ## 보조 학습 자료
 
