@@ -15,8 +15,8 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [[Mobile-App-Architectures|모바일 앱 개발 방식 4유형]] — 네이티브, 모바일 웹, 웹 앱(SPA), 하이브리드(웹뷰), 다중 버전 공존과 API 호환
 
 ## 추가 주제
-- [ ] HTTP 1.1 / HTTP 2 / HTTP 3 (작성 예정: `HTTP-Versions`)
-- [ ] `Content-Negotiation` (작성 예정)
+- [x] [[tech/web/http/versions/versions|HTTP/1.1, HTTP/2, HTTP/3 (진화, 멀티플렉싱, HPACK, QUIC, HOL 차이)]]
+- [ ] Content Negotiation (작성 예정: `Content-Negotiation`) — 기존 보강: [[HTTP-Content-Type#요청 vs 응답|Accept와 Content-Type의 기본 관계]]
 - [x] [[http/Idempotency|Idempotent / Safe Method]]
-- [ ] `API-Versioning` (작성 예정)
-- [ ] Pagination / Filtering / Sorting (작성 예정: `Pagination-Filtering-Sorting`)
+- [ ] API Versioning (작성 예정: `API-Versioning`) — 기존 보강: [[API-Conventions-Operations#Versioning|URL, Header, Query 버저닝]], [[Mobile-App-Architectures#백엔드 관점: 클라이언트 유형이 서버에 미치는 영향|다중 클라이언트 버전 공존]]
+- [x] [[API-Conventions-Response#페이지네이션|Pagination]] / [[API-Conventions-Response#필터링, 정렬, 검색|Filtering, Sorting, Search]]

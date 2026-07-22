@@ -17,11 +17,11 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[tech/os-runtime/nestjs/NestJS|NestJS]] — Clean Architecture, DI
 - [[tech/os-runtime/spring/Spring|Spring]] — Request Lifecycle, @Transactional, JPA 영속성
 
-## 미작성 — Linux
-- [ ] Page cache (작성 예정: `Page-Cache`)
-- [ ] File descriptor limit (작성 예정: `File-Descriptor-Limit`)
-- [ ] epoll / kqueue (작성 예정: `Epoll-Kqueue`)
+## Linux 체크리스트
+- [x] [[Container-Memory-Metrics|Page cache와 컨테이너 메모리 지표 (RSS, file cache, working set, reclaim, cgroup 진단)]]
+- [ ] File descriptor limit (작성 예정: `File-Descriptor-Limit`) — 기존 보강: [[Storage-and-FileSystem-Files#파일 메타데이터와 파일 디스크립터|파일 디스크립터 구조]], [[libuv-Threading#에러 처리|UV_EMFILE]]
+- [ ] epoll / kqueue (작성 예정: `Epoll-Kqueue`) — 기존 보강: [[libuv-Architecture#이벤트 디멀티플렉서|libuv의 OS별 이벤트 디멀티플렉서]]
 
-## 미작성 — Runtime
-- [ ] Heap snapshot (작성 예정: `Heap-Snapshot`)
-- [ ] `Flamegraph` (작성 예정)
+## Runtime 체크리스트
+- [x] [[Debugging-Profiling-Memory#Heap Snapshot|Heap Snapshot (생성, DevTools 로드, Comparison 분석)]]
+- [x] [[Debugging-Profiling-Memory#Flame Graph|Flame Graph (0x, Linux perf, 스택 해석)]]

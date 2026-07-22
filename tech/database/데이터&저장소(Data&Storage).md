@@ -30,11 +30,11 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 ## Data Modeling
 - [[SCD-Type2|SCD Type 2 (이력 차원 관리)]] — Slowly Changing Dimension, KPI 분석용 시계열 보존
 
-## 미작성 — Data Modeling
-- [ ] `ERD` (작성 예정)
-- [ ] Data consistency rule (작성 예정: `Data-Consistency-Rule`)
-- [ ] Schema versioning (작성 예정: `Schema-Versioning`)
-- [ ] Backward compatibility (작성 예정: `Backward-Compatibility`)
+## 데이터 모델링과 스키마 진화 보강 체크리스트
+- [x] [[Ecommerce-Shopping-Mall-ERD|ERD 패턴 (상품, 주문, 결제, 배송, 스냅샷, 관계 모델링)]]
+- [ ] Data consistency rule (작성 예정: `Data-Consistency-Rule`) — 기존 보강: [[Schema-Design|FK, UNIQUE, CHECK와 도메인 제약]], [[Transactions|원자성과 동시성]]
+- [ ] Schema versioning (작성 예정: `Schema-Versioning`) — 기존 보강: [[Schema-Migration-Large-Table|대용량 스키마 변경]], [[Blue-Green#DB 스키마, 공유 상태의 난제|Expand-Contract]]
+- [ ] Backward compatibility (작성 예정: `Backward-Compatibility`) — 기존 보강: [[Blue-Green#DB 스키마, 공유 상태의 난제|DB 전후방 호환과 Expand-Contract]]
 
 ## 현장사례
 - [[SSG-Ecommerce-Seminar#데이터베이스|SSG DB 선택]] — MySQL vs PostgreSQL (UPDATE vs INSERT)

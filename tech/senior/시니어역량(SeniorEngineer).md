@@ -16,10 +16,10 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [[tech/senior/ai-engineering/AI엔지니어링(AIEngineering)|AI 시대 엔지니어링 (AI Engineering)]] — 하네스, AX 조직 전환
 - [[tech/senior/design/설계(SeniorDesign)|설계 (Design)]] — 시스템 설계 인터뷰, 포용 디자인
 
-## 미작성
-- [ ] 장애 대응 리딩 (Incident Commander) (작성 예정: `Incident-Commander`)
-- [ ] 멘토링 (작성 예정: `Mentoring`)
-- [ ] `Cross-Team-Communication` (작성 예정)
+## 추가 학습 체크리스트
+- [ ] 장애 대응 리딩 (Incident Commander) (작성 예정: `Incident-Commander`) — 기존 보강: [[Incident-Runbook|장애 절차와 에스컬레이션]], [[Incident-Recovery-Prevention|복구와 포스트모템]]
+- [x] [[People-Leadership|멘토링 (1:1, 질문형 코칭, 위임과 안전망, 성장 과제, 온보딩)]]
+- [ ] Cross-Team Communication (작성 예정: `Cross-Team-Communication`) — 기존 보강: [[Cross-Functional-Product-Collaboration|직군 간 프로덕트 협업]], [[Tech-Spec-Writing-Review-Process|의존 팀 테크스펙 리뷰]]
 
 ## 현장사례
 - [[Why-Architecture-Matters|아키텍처의 중요성]] — 경제적 관점, Design Stamina Hypothesis

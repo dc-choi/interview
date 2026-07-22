@@ -33,18 +33,18 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [[Event-Sourcing|Event Sourcing]] — 상태 자체를 이벤트 스트림으로 (CQRS와 짝)
 - [[DDD&Hexagonal|DDD, Hexagonal]] — Aggregate, 경계 모델링 (이벤트 발행 단위)
 
-## 미작성
-- [ ] Message Queue: RabbitMQ (작성 예정: `MQ-RabbitMQ`)
-- [ ] Message Queue: BullMQ (작성 예정: `MQ-BullMQ`)
-- [ ] `At-Most-Once` (작성 예정)
-- [ ] Exactly-once (작성 예정: `Exactly-Once`)
-- [ ] `Deduplication` (작성 예정)
+## 추가 학습 체크리스트
+- [x] [[Messaging-Broker-Comparison|RabbitMQ (AMQP, Exchange 라우팅, 운영 부담, 선택 기준)]] — NestJS 전송 계약은 [[NestJS-Microservices|수동 ACK, prefetch, durable queue]]
+- [x] [[NestJS-Queues|BullMQ (잡 옵션, 재시도와 백오프, WorkerHost, 분리 프로세스)]]
+- [x] [[Delivery-Semantics|At-Most-Once (유실 가능, 중복 없음, 적용 범위)]]
+- [x] [[Idempotent-Consumer|Exactly-once와 effectively-once (브로커 경계, 외부 부수효과, Inbox)]]
+- [x] [[Idempotent-Consumer|Deduplication (자연 멱등, 원자적 중복 제거, 상태 머신)]]
 - [x] [[MQ-Kafka-Event-Ordering|Ordering Guarantee (Kafka 순서 보장, 소비자 체이닝)]]
-- [ ] `DLQ` (작성 예정)
-- [ ] Retry / Backoff (작성 예정: `Retry-Backoff`)
-- [ ] Replay / Backfill (작성 예정: `Replay-Backfill`)
-- [ ] Backpressure 제어 (작성 예정: `Backpressure-Control`)
-- [ ] `Shadow-Traffic` (작성 예정)
+- [x] [[Event-Driven-Patterns|DLQ (오류 분류, 격리, 알람, 플랫폼별 구현)]]
+- [x] [[Event-Driven-Patterns|Retry / Backoff (지수 백오프, jitter, 일시 오류와 영구 오류 분류)]]
+- [x] [[Backfill-Resource-Isolation|Replay / Backfill (전용 토픽과 워커, 청크 처리, 자원 격리)]]
+- [x] [[Backpressure|Backpressure 제어 (pull, feedback, buffer, drop, BullMQ concurrency 경계)]]
+- [ ] Shadow Traffic (작성 예정: `Shadow-Traffic`) — 기존 보강: [[Blue-Green#관련 무중단 배포 전략|Blue-Green과 Shadow/Dark Launch]]
 
 ## 현장사례
 - [[SSG-Ecommerce-Seminar#메시지브로커|SSG 메시지 브로커]] — Kafka 중심, 이벤트 드리븐, 트랜잭션 고려 필수
