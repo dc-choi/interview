@@ -46,12 +46,16 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 
 - 첫 fixture는 작품 50개로 고정하고 서로 겹치지 않는 head/torso/tail 및 의도적 no-match query를 구간별 5개 이상 준비한다. Head/torso/tail에는 relevant 작품이 하나 이상 있어야 하며 빈도 로그가 없으면 구간 분류를 가설로 표시한다.
 - 모든 query-document 쌍을 0에서 3으로 판정하고 relevant threshold를 1로 고정한다.
-- `_analyze`, `_explain`과 Profile 결과를 version-pinned fixture로 저장한다. Rank Evaluation API는 nDCG용 `dcg: {k: 10, normalize: true, unknown_doc_rating: 0}`와 MRR용 `mean_reciprocal_rank: {k: 10, relevant_rating_threshold: 1}`로 나눠 실행하고 검증 script와 대조한다.
-- Query별 `details`를 저장하고 `unrated_docs=0`을 확인한다.
-- Relevant 작품이 있는 query만 nDCG/MRR에 포함한다. Unexpected zero-result와 의도적 no-match 처리 결과는 query 수와 함께 별도 집계한다.
+- 첫 BM25 no-match 정책은 `STRICT_EMPTY`로 고정한다. 교정, 제안이나 fallback은 `responseMode`와 자체 label 및 guardrail을 가진 별도 결과로 평가한다.
+- `_analyze`, `_explain`과 Profile 결과를 version-pinned fixture로 저장한다. 첫 calibration 기준은 OpenSearch 3.6.0이며 Rank Evaluation API는 nDCG용 `dcg: {k: 10, normalize: true, unknown_doc_rating: 0}`와 MRR용 `mean_reciprocal_rank: {k: 10, relevant_rating_threshold: 1}`로 나눠 실행한다. 실제 대상 version이 다르면 해당 tag의 core source와 REST 응답으로 API 기대값을 다시 고정한다.
+- 독립 script의 DCG@10은 OpenSearch 3.6.0과 같이 반환 상위 10개의 각 순위 기여도를 `(2^r-1)/log2(rank+1)`로 합산한다. `rank`는 1부터 10까지 세고 미반환 순위와 unknown rating은 `r=0`, IDCG@10은 전체 judgment의 상위 10개 등급에 같은 식을 적용한다. `Recall@10`은 반환 상위 10개 중 `rating >= 1`인 문서 수를 전체 judgment 중 `rating >= 1`인 문서 수로 나눈다. 10개 반환 query에서 API nDCG와 절대오차가 `1e-9`를 넘으면 채택을 중단하며, query별 `returned_count`, unexpected zero-result와 `underfill_query_rate@10`도 기록한다.
+- 품질 평균과 분리한 `FORMULA_10` fixture의 전체 judgment는 반환할 10개의 `(docId, rating)` 쌍으로만 구성하고 추가 judgment를 두지 않는다. 반환 rating을 `[3, 0, 2, 1, 0, 3, 2, 0, 1, 0]`으로 고정하며, OpenSearch core REST body `details.<queryId>.metric_details.dcg`와 독립 script의 `DCG=12.725156863494`, `IDCG=14.951597943563`, `nDCG=0.851090091609`가 각각 절대오차 `1e-9` 이내여야 한다.
+- `UNDERFILL_1_OF_3` fixture는 전체 judgment rating `[3, 2, 1]` 중 `[3]` 하나만 반환하고 `details.<queryId>.unrated_docs=[]`와 `details.<queryId>.metric_details.dcg.unrated_docs=0`으로 고정한다. OpenSearch 3.6.0 API의 `DCG=7`, `IDCG=7`, `nDCG=1`과 독립 fixed-K의 `DCG=7`, `IDCG=9.392789260714`, `nDCG=0.745252534226`, `Recall@10=1/3`이 각각 절대오차 `1e-9` 이내로 갈라질 때만 제품 query 평가로 넘어간다.
+- Query별 `details`를 저장하고 `details.<queryId>.unrated_docs` 배열 길이와 `details.<queryId>.metric_details.dcg.unrated_docs` 숫자가 모두 0인지 확인한다.
+- Relevant 작품이 있는 query만 ranking metric에 포함한다. No-match는 false-positive query rate를 별도 계산하고 `STRICT_EMPTY`에서는 0만 통과시킨다.
 - 같은 client, query set, concurrency, warm-up, 반복 횟수와 cache 조건을 고정해 end-to-end p95와 error rate를 별도로 측정한다.
 
-- [ ] 통과: 전수 판정 gold set에서 mapping, analyzer 또는 query 변경 하나의 primary metric, 허용할 query별 회귀와 latency/error guardrail을 사전에 고정하고 그 결과로 채택 또는 기각한다.
+- [ ] 통과: `FORMULA_10`과 `UNDERFILL_1_OF_3` calibration fixture를 모두 통과하고, 전수 판정 gold set에서 변경 전에 fixed-K nDCG@10 primary metric, Recall@10, underfill, no-match false positive, query별 회귀와 latency/error guardrail을 고정해 그 결과로 채택 또는 기각한다.
 
 ## 2. 추천 모델링 최소 기반
 
@@ -88,6 +92,19 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 - 같은 gold set에서 `Recall@K(base ∪ taxonomy) - Recall@K(base)`, 중복, underfill과 latency를 계산한다.
 
 - [ ] 통과: 고정한 ablation 계약에서 Surface별 S0-S3 선택과 보류 이유를 데이터 성숙도 및 실패 fallback으로 방어한다.
+
+### 1차 전환 checkpoint
+
+3단계 gate를 닫은 뒤 4단계로 바로 가지 않는다. 먼저 7단계 중 아래 축소 범위만 수행한다.
+
+- Request, candidate source, ranked slate, actual impression, position, timestamp/context와 click/재생 outcome의 join key 및 연결률을 audit한다.
+- Bundle, feature, taxonomy, index와 policy version을 요청 단위로 추적한다.
+- Redis/API의 cache hit/miss, 결과 정확성, latency와 실패 fallback을 model quality와 분리해 검증한다.
+- 0단계부터 3단계와 위 serving 결과의 채택/보류 이유를 하나의 재현 가능한 보고서로 남긴다.
+
+- [ ] 통과: [[2027-Search-Recommendation-Roadmap|검색/추천 로드맵]]의 C 추천 baseline, D1 taxonomy candidate와 D2 logging/serving gate를 모두 닫고 해당 로드맵을 종료한다.
+
+이 checkpoint 뒤에는 [[2027-DevOps-Practical-Roadmap|DevOps 실전 로드맵]]으로 전환한다. DevOps 핵심 4를 통과하기 전에는 4단계부터 6단계와 7단계의 장애 주입, shadow/canary, cutover 및 rollback 범위를 열지 않는다. DevOps 핵심 4 뒤 4단계부터 순서대로 재개하고, 6단계 통과 뒤 7단계의 남은 범위를 완료한다.
 
 ## 4. Personalized Search와 Page 조립
 
@@ -138,6 +155,8 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 
 ## 7. 서빙과 장애 훈련
 
+1차 전환 checkpoint에서 만든 logging, version과 cache 검증 결과를 재사용하고, 여기서는 남은 장애 주입과 배포 안전성 범위를 완료한다.
+
 읽기:
 
 - [[Recommendation-System-Serving-Operations|추천 서빙과 운영]]
@@ -165,3 +184,5 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 
 - [[Recommendation-System-Architecture|추천 시스템 지식 지도]]
 - [[OpenSearch|OpenSearch 학습 지도]]
+- [[2027-Search-Recommendation-Roadmap|2027 검색 엔진 우선, 추천 시스템 전환 로드맵]]
+- [[2027-DevOps-Practical-Roadmap|2027 DevOps 실전 로드맵]]
