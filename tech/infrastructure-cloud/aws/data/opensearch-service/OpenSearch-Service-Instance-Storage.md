@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, opensearch, sizing, instance, storage]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-07-21
 category: "Infrastructure - AWS"
 aliases: ["OpenSearch Service 인스턴스와 스토리지", "OpenSearch Instance and Storage Sizing", "OpenSearch 하드웨어 사이징"]
 ---
@@ -24,11 +24,11 @@ AWS의 공통 전제는 어떤 계열이든 초기 추정 후 대표 workload로
 | im4gn, i3, i4i | NVMe 로컬 | disk latency가 SLO를 직접 깨는 대용량 고IOPS | EBS latency와 throttle이 병목인데 IOPS 증설로도 부족 |
 | or1 | S3 backed | 색인 heavy 로그처럼 durability를 S3에 위임 가능한 쓰기 중심 | OpenSearch 2.11+ domain, remote-backed storage 전제 |
 
-한국어 콘텐츠 검색 서비스라면 출발점은 보통 r 계열이다. 상품이나 게시물 검색은 filter와 aggregation 조합이 많아 memory-bound로 가는 경향이 있고, [[OpenSearch-Korean-Text-Analysis|한국어 분석]]의 형태소 분석 비용은 색인 시점 CPU라서 색인 트래픽이 클 때만 c 계열이 후보가 된다.
+콘텐츠 언어나 서비스 유형만으로 instance 계열을 확정할 수는 없다. 병목이 불명확하면 m 계열을 초기 후보로 두고 representative workload를 실행한다. 형태소 분석과 ingest CPU가 병목이면 c, JVM pressure나 native vector memory가 병목이면 r을 비교한다. Filter와 aggregation이 많다는 사실만으로 r 계열을 고르지 말고 field mapping, cardinality, cache와 실제 지표를 함께 본다.
 
-### Graviton을 기본값으로
+### Graviton을 우선 비교 후보로
 
-같은 세대에서 Graviton(m6g, c6g, r6g, r7g 등)이 x86 대비 price-performance가 낫다는 것이 AWS의 공식 입장이다. Graviton2 기준 x86 동세대(M5, C5, R5) 대비 색인 throughput 최대 38퍼센트 향상, 색인 latency 최대 50퍼센트 감소, query 성능 최대 40퍼센트 향상을 벤치마크로 제시하고, price-performance는 이전 세대 instance 대비 최대 44퍼센트 개선으로 별도 제시한다(x86 동세대 대비 수치가 아님에 유의). plugin 호환성 제약이 없는 관리형에서는 Graviton을 기본으로 두고 x86을 선택할 이유가 있는지를 거꾸로 검증하는 편이 낫다. 단 Graviton3(c7g, m7g, r7g)은 gp3 storage만 지원한다.
+AWS는 특정 OpenSearch benchmark에서 Graviton2가 동세대 x86보다 색인 throughput 최대 38퍼센트, 색인 latency 최대 50퍼센트, query 성능 최대 40퍼센트 향상된 결과를 제시한다. 이는 workload와 세대가 고정된 최대치이지 모든 domain의 보장이 아니다. 지원 engine version, instance/storage 조합을 확인한 뒤 Graviton과 x86을 같은 dataset과 query mix로 비용당 처리량까지 비교한다. Graviton3(c7g, m7g, r7g)은 gp3 storage만 지원한다.
 
 ## Instance store와 EBS gp3
 
@@ -81,26 +81,27 @@ faiss 같은 native engine의 HNSW graph는 JVM heap이 아니라 off-heap nativ
 관리형에서 사용 가능한 graph memory는 다음과 같이 계산한다.
 
 ```text
-graph 가용 memory = RAM × 0.5 (heap 제외) × knn.memory.circuit_breaker.limit (기본 50%)
-예: RAM 32GiB 노드 = 32 × 0.5 × 0.5 = 8GiB
+native index 가용 memory = (RAM - JVM heap) × knn.memory.circuit_breaker.limit
+예: RAM 32GiB, heap 16GiB, limit 50% = (32 - 16) × 0.5 = 8GiB
+예: RAM 100GiB, heap 32GiB, limit 50% = (100 - 32) × 0.5 = 34GiB
 ```
 
-open source 문서의 정의도 같다. RAM 100GB에 heap 32GB면 남은 68GB의 50퍼센트인 34GB가 한도다. 한도를 넘으면 LRU로 native index를 내리고, 사용률이 `knn.circuit_breaker.unset.percentage`(기본 75) 아래로 내려가야 `knn.circuit_breaker.triggered`가 풀린다.
+OpenSearch Service는 RAM의 절반을 JVM heap에 쓰되 heap은 최대 32GiB이므로, 큰 instance에서 `RAM × 0.5 × limit`로 계산하면 가용량을 과소 추정한다. 한도를 넘으면 least recently used native index를 내리고, 사용률이 `knn.circuit_breaker.unset.percentage`(기본 75) 아래로 내려가야 `knn.circuit_breaker.triggered`가 풀린다.
 
 필요량은 HNSW 추정식으로 먼저 계산한다.
 
 ```text
-HNSW memory ~= 1.1 × (4 × dimension + 8 × m) bytes/vector
+Float HNSW memory ~= 1.1 × (4 × dimension + 8 × m) bytes/vector
 예: 1M vectors, dimension 256, m 16 -> 약 1.267GB
 ```
 
-replica는 vector 수를 배로 늘린다는 점, 추정식에 맞춰 dimension 축소나 quantization을 먼저 검토할 수 있다는 점까지 넣어 노드 RAM을 역산한다. 그래서 k-NN data node는 r 계열이 사실상 기본이다. 관리형에서는 `knn.memory.circuit_breaker.enabled`와 `knn.circuit_breaker.triggered`를 제외한 k-NN 설정을 바꿀 수 있고, `KNNGraphMemoryUsage` metric을 한도와 비교해 감시한다. engine별 동작 차이는 [[OpenSearch-Vector-Search]] 참고. 참고로 lucene engine의 vector index는 native cache가 아니라 일반 segment처럼 page cache에 의존한다.
+이 식은 32-bit float를 저장하는 HNSW의 1차 추정이다. Byte/fp16, product quantization, IVF는 다른 식을 쓰므로 mapping의 engine, method와 encoder에 맞는 공식 식을 선택한다. Replica는 cluster 전체 index copy를 늘리지만 shard 배치에 따라 노드당 사용량은 달라진다. Native graph가 병목으로 확인되면 r 계열, dimension 축소나 quantization을 비교한다. 관리형에서는 `knn.memory.circuit_breaker.enabled`와 `knn.circuit_breaker.triggered`를 제외한 k-NN 설정을 바꿀 수 있고, Faiss/NMSLIB는 `KNNGraphMemoryUsage`를 감시한다. Lucene engine은 이 native graph cache가 아니라 일반 segment처럼 page cache에 의존한다.
 
 ## 자주 틀리는 오개념
 
 - heap을 키울수록 좋다는 오해. k-NN과 page cache는 heap 밖 memory를 쓰므로 heap이 크면 오히려 손해일 수 있다. 관리형은 heap 비율을 직접 못 바꾸므로(50퍼센트, 상한 32GiB, r7g와 OR 계열 예외도 자동 적용은 아님) 조정 수단은 instance RAM 크기 자체다.
 - gp3 IOPS 증설이 만능이라는 오해. `IopsThrottle`은 볼륨 한도뿐 아니라 EC2 instance 한도 초과로도 발생하므로 볼륨만 키우면 해결 안 될 수 있다.
-- instance store가 항상 정답이라는 오해. latency는 얻지만 용량 탄력성과 노드 교체 시 재복제 비용을 지불한다. 대부분의 검색 서비스는 gp3 튜닝으로 충분하다.
+- instance store가 항상 정답이라는 오해. latency는 얻지만 용량 탄력성과 노드 교체 시 재복제 비용을 지불한다. gp3와 instance store를 representative I/O workload와 recovery 목표로 비교한다.
 - coordinator를 늘리면 검색이 빨라진다는 오해. reduce 단계 부담만 옮겨질 뿐 shard 수준 병목(느린 query, skew)은 그대로다.
 - 계열 선정을 벤치마크 없이 확정하는 것. AWS 스스로 초기 추정은 시작점일 뿐이며 대표 workload 시험 후 조정하라고 명시한다.
 
@@ -108,12 +109,12 @@ replica는 vector 수를 배로 늘린다는 점, 추정식에 맞춰 dimension 
 
 1. Storage 총량과 shard 수, 크기를 [[OpenSearch-Cluster-Reliability|사이징 휴리스틱]]으로 먼저 고정한다
 2. 요청에 관여하는 shard당 1.5 vCPU 기준으로 필요한 vCPU 총량을 잡는다
-3. 병목 예상(집계 중심이면 r, 색인 중심이면 c, 불명확하면 m)으로 계열을 고르고 Graviton을 기본값으로 둔다
+3. 병목 예상(메모리면 r, CPU면 c, 불명확하면 m)으로 후보를 고르고 Graviton과 x86의 비용당 처리량을 비교한다
 4. 무거운 workload면 storage 100GiB당 2 vCPU, 8GiB RAM 기준과 교차 검증한다
 5. Storage는 EBS gp3로 시작하고 baseline으로 부족한지 throttle 지표로 확인한 뒤에만 IOPS와 throughput을 증설한다
 6. latency SLO가 gp3 한계 밖이면 instance store 계열과 재복제 비용을 저울질한다
 7. 전용 master 3개를 노드와 shard 수 기준으로, coordinator는 data node의 10퍼센트에 최소 2개로 잡는다
-8. k-NN이 있으면 HNSW 추정식으로 graph memory를 역산해 r 계열 RAM을 별도로 정한다
+8. k-NN이 있으면 engine, method, encoder별 식으로 memory를 역산하고 r 계열 필요 여부를 측정한다
 9. Multi-AZ with Standby 기준 3의 배수 data node와 zone 장애, blue-green 여유까지 얹는다
 10. 대표 데이터와 트래픽으로 부하 시험 후 `CPUUtilization`, `JVMMemoryPressure`, throttle 지표를 보고 줄이거나 늘린다
 
