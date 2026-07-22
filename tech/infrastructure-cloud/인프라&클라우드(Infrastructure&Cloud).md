@@ -14,14 +14,14 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/aws/AWS서비스(AWSServices)|AWS 서비스 (AWS)]] — EC2/ASG/ALB, Lambda
 - [[tech/infrastructure-cloud/network/인프라네트워크(InfraNetwork)|인프라 네트워크 (Network)]] — DNS, Load Balancer, Reverse Proxy
 
-## 미작성 — AWS
-- [ ] [[IAM]]
-- [ ] SQS / SNS / EventBridge (작성 예정: `SQS-SNS-EventBridge`)
-- [ ] [[CloudWatch]]
-- [ ] EBS vs Instance store (작성 예정: `EBS-Instance-Store`)
+## AWS 체크리스트
+- [x] [[IAM|AWS IAM (엔티티, 정책 평가, AssumeRole과 Federation, 모범 사례)]]
+- [x] [[SQS|SQS]] / [[SNS|SNS]] / [[EventBridge|EventBridge]] — Queue, Pub/Sub, Event Bus의 선택 기준과 운영
+- [x] [[CloudWatch|CloudWatch (Metrics, Logs, Alarms, Insights, 운영과 비용)]]
+- [x] [[EBS#EBS vs Instance Store (요약)|EBS vs Instance Store (영속성, 성능, 스냅샷, 적용 워크로드)]]
 
-## 미작성 — Network
-- [ ] NAT / Public vs Private subnet (작성 예정: `NAT-Subnet`)
+## Network 체크리스트
+- [x] [[VPC-Subnet-CIDR#서브넷 유형 — 라우팅이 성격을 결정|Public, Private, Isolated Subnet]] / [[VPC-NAT-Security#NAT Gateway vs NAT Instance|NAT Gateway와 NAT Instance]]
 
 ## Kubernetes
 - [x] [[K8s-Resource-Right-Sizing|Resource Right-Sizing (P95, 버퍼, 역산식, 컴포넌트 차등, 롤백 기준)]]
@@ -34,14 +34,14 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[Envoy-Retry-Buffer-507|Envoy Retry Buffer와 507 (retry가 만든 payload 한도, 507 vs 413, 클라이언트 retry와 멱등성)]]
 - [x] [[Envoy-XDS-Disconnected-Detection|Envoy xDS 단절 탐지 (readiness ≠ control plane 연결, connected_state, proxyStatsMatcher 함정)]]
 
-## 미작성 — Kubernetes
-- [ ] Pod / Deployment / Service / Ingress (작성 예정: `K8s-Pod-Deployment`)
-- [ ] HPA / VPA (작성 예정: `K8s-HPA-VPA`)
-- [ ] ConfigMap / Secret (작성 예정: `K8s-ConfigMap-Secret`)
-- [ ] Resource request / limit (작성 예정: `K8s-Resource-Limit`)
-- [ ] Liveness / Readiness probe (작성 예정: `K8s-Probes`)
+### 기초와 운영 체크리스트
+- [ ] Pod / Deployment / Service / Ingress (작성 예정: `K8s-Pod-Deployment`) — 기존 보강: [[EKS#구성 요소 — Kubernetes 모델 그대로|핵심 리소스 개요]], [[EKS#Service & Ingress|EKS의 Service와 Ingress]]
+- [ ] HPA / VPA (작성 예정: `K8s-HPA-VPA`) — 기존 보강: [[EKS#오토스케일링 — 3축|HPA와 VPA 개요]]
+- [ ] ConfigMap / Secret (작성 예정: `K8s-ConfigMap-Secret`) — 기존 보강: [[Secret-Management#두 가지 누출 지점|K8s Secret 위협 모델]], [[Secret-Management#시크릿 주입 4방식|시크릿 주입 방식]]
+- [x] [[K8s-Resource-Right-Sizing|Resource request / limit (스케줄링, CPU 경합, throttling, OOM, 실측 기반 설정)]]
+- [ ] Liveness / Readiness probe (작성 예정: `K8s-Probes`) — 기존 보강: [[Istio-Ambient-Partially-Enrolled-Pod|Kubernetes Ready와 mesh 준비의 차이]], [[Envoy-XDS-Disconnected-Detection#readinessProbe 개선|Envoy readiness 보강]]
 - [ ] PodDisruptionBudget (작성 예정: `K8s-PDB`)
-- [ ] Node autoscaling (작성 예정: `K8s-Node-Autoscaling`)
+- [x] [[EKS#Cluster Autoscaler vs Karpenter|Node autoscaling (Cluster Autoscaler와 Karpenter)]]
 
 ## 현장사례
 - [[Kakao-Ent-Seminar#백엔드인프라전체그림|카카오엔터 백엔드 인프라 전체 그림]] — 네트워크~모니터링 계층별 구성

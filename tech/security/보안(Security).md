@@ -20,14 +20,14 @@ aliases: ["보안(Security)", "Security Index"]
 - [[LLM-Application-Security|LLM 애플리케이션 보안 (OWASP Top 10 2025)]] — 프롬프트 인젝션, 민감정보 유출, 공급망, 데이터 오염, 출력 처리, 과도한 위임, 시스템 프롬프트 유출, RAG 임베딩, 허위정보, 무제한 소비
 - [[tech/security/age-identity-verification/연령신원검증(AgeIdentityVerification)|연령/신원 검증 (Age & Identity Verification)]] — age assurance, IDV, PET, 규제 지형, 제3자 위탁 리스크
 
-## 미작성
-- [ ] `SQL-Injection` (작성 예정)
-- [ ] TLS config (작성 예정: `TLS-Config`)
-- [ ] Rate limit (작성 예정: `Rate-Limit`)
+## 보강 체크리스트
+- [ ] SQL Injection (작성 예정: `SQL-Injection`) — 기존 보강: [[Security-Headers#정적 검사 + SQL Injection은 별개|정규식 차단의 한계와 파라미터 바인딩]], [[Prepared-Statement-Cache#Prepared Statement 정상 동작 원리|Prepared Statement 기본]]
+- [ ] TLS config (작성 예정: `TLS-Config`) — 기존 보강: [[HTTPS-TLS|TLS 핸드셰이크와 버전]], [[Security-Headers#HSTS — HTTPS 강제|HSTS]]
+- [x] [[Rate-Limiting|Rate limit 정책 설계 (알고리즘, 계층, 분산 환경, 429 응답)]]
 - [x] [[Shield-WAF-NetworkFirewall|WAF]]
-- [ ] Audit log (작성 예정: `Audit-Log`)
-- [ ] Least privilege IAM (작성 예정: `Least-Privilege-IAM`)
-- [ ] Dependency vulnerability scanning (작성 예정: `Dependency-Vulnerability-Scanning`)
+- [ ] Audit log (작성 예정: `Audit-Log`) — 기존 보강: [[CloudTrail-Config|AWS API 감사]], [[Secret-Management#운영 필수 항목|Vault Audit Log]], [[Deployment-Automation-ChatOps#보안|ChatOps 감사 로그]]
+- [x] [[IAM-Best-Practices#모범 사례|Least privilege IAM]] / [[IAM-Policy|정책 평가와 권한 경계]]
+- [ ] Dependency vulnerability scanning (작성 예정: `Dependency-Vulnerability-Scanning`) — 기존 보강: [[Dependency-Management#취약점 스캔|Dependabot, Snyk와 언어별 도구]], [[DevOps-vs-DevSecOps#SCA (의존성)|SCA의 파이프라인 위치]], [[Supply-Chain-Security#방어|공급망 방어]]
 
 ## 현장사례
 - [[Kakao-Ent-Seminar#보안|카카오엔터 보안]] — 서비스 접근 권한, 네트워크 망 설정

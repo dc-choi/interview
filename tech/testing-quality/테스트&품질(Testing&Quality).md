@@ -10,12 +10,12 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 ## Checklist
 - [x] Unit test
 - [x] Integration test
-- [ ] E2E test (supertest) (작성 예정: `E2E-Test`)
-- [ ] Contract test (작성 예정: `Contract-Test`)
+- [x] [[NestJS-Testing|E2E test (Supertest, 실제 HTTP 경로, Middleware, Guard, Pipe, Filter)]]
+- [x] [[Test-Pyramid|Contract test (Consumer-Driven Contract, Pact, Spring Cloud Contract, CI 역할)]]
 - [x] [[Test-Fixture|Test fixture 전략]]
 - [x] [[Test-Isolation|Test isolation]]
-- [ ] Deterministic test (작성 예정: `Deterministic-Test`)
-- [ ] Load test automation (작성 예정: `Load-Test-Automation`)
+- [ ] Deterministic test (작성 예정: `Deterministic-Test`) — 기존 보강: [[Test-Isolation|순서 독립, 상태 초기화, fake timer]], [[NestJS-Testing|NestJS 테스트 격리]]
+- [ ] Load test automation (작성 예정: `Load-Test-Automation`) — 기존 보강: [[Load-Test-K6|k6 도구와 시나리오]], [[Test-Pyramid|성능 테스트의 파이프라인 위치]]
 - [ ] Chaos testing (optional) (작성 예정: `Chaos-Testing`)
 - [x] [[performance|성능 테스트 유형]]
 - [x] [[TDD-BDD|TDD, BDD (Red-Green-Refactor, Given-When-Then, 조합 전략)]]
