@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, redis, top-k, system-design]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-07-21
 category: "Data & Storage - NoSQL"
 aliases: ["실시간 인기 검색어 Top-K", "Popular Keywords Top-K", "인기 검색어 설계"]
 ---
@@ -59,12 +59,13 @@ ZREVRANGE popular:merged 0 9 WITHSCORES
 - 시간을 고정 bucket (1분)으로 쪼개고 key를 bucket별로 분리한다. window는 최근 bucket들의 `ZUNIONSTORE` 합산으로 근사한다. 진짜 연속 sliding이 아니라 bucket granularity의 계단식 window지만 인기 검색어 용도로 충분하다.
 - 복잡도: `ZINCRBY`는 O(log N), `ZUNIONSTORE`는 O(N) + O(M log M)이다 (N은 입력 전체 크기, M은 결과 크기). 합산을 매 조회마다 하지 말고 주기 job이 합산해 결과 key를 캐시한다.
 - 메모리는 bucket 수 x bucket당 고유 검색어 수에 비례한다. 검색어 cardinality가 폭발하는 서비스 (long-tail query가 많은 커머스)에서는 bucket TTL을 짧게 잡고, 1회성 검색어까지 다 들고 있을 필요가 없으면 주기적으로 하위 rank를 `ZREMRANGEBYRANK`로 쳐낸다.
-- count 자체는 정확하다. 근사가 들어가는 지점은 window 경계 (bucket granularity)뿐이다. 지연은 초 단위로, 세 경로 중 가장 빠르다.
-- 검색 API의 hot path에 쓰기가 들어가므로 Redis 장애가 검색을 막지 않도록 fire-and-forget으로 격리하고, 인기 검색어 Redis를 세션이나 캐시용 인스턴스와 분리한다.
+- Redis가 받아 처리한 `ZINCRBY`는 bucket 안에서 정확히 누적된다. 그러나 전체 count의 정확도는 이벤트 전달과 재시도에도 달려 있다. Best-effort 비동기 전송은 장애 때 유실되고, 단순 재시도는 같은 이벤트를 중복 가산할 수 있다.
+- 검색 API의 SLO를 인기 집계 장애와 분리한다. 일부 유실을 허용하면 bounded queue와 비동기 전송으로 best-effort임을 계약에 명시한다. 복구 가능한 집계가 필요하면 durable log/outbox에서 consumer가 읽고 event ID로 중복 제거한 뒤 `ZINCRBY`한다. 직접 fire-and-forget하면서 count가 정확하다고 부르면 안 된다.
+- 인기 검색어 Redis를 세션이나 핵심 cache와 분리하면 failure domain과 eviction 정책을 독립적으로 운영할 수 있다.
 
 ## 경로 C: 스트림 근사 집계 개요
 
-검색 로그가 이미 Kafka 같은 스트림으로 흐르고 규모가 단일 Redis의 메모리를 넘어서면, consumer가 count-min sketch로 근사 count를 유지하고 별도 min-heap으로 상위 k 후보만 정확히 추적하는 구조로 간다.
+검색 로그가 이미 Kafka 같은 스트림으로 흐르고 규모가 단일 Redis의 메모리를 넘어서면, consumer가 count-min sketch로 근사 count를 유지하고 min-heap으로 추정값 기준 상위 k 후보를 제한하는 구조로 간다. 충돌로 count가 과대 추정되므로 후보 identity와 빈도 모두 근사다. 정확한 노출 순위가 필요하면 heap 후보를 별도 exact counter나 durable log replay로 다시 센다.
 
 - count-min sketch는 폭 w, 깊이 d의 counter 행렬이다. w = ⌈e/ε⌉, d = ⌈ln(1/δ)⌉로 잡으면 추정치가 실제보다 εN 이상 크게 벗어날 확률이 δ 이하다 (N은 전체 이벤트 수). 과대 추정만 있고 과소 추정은 없다.
 - 검색어가 수백만 개여도 sketch 크기는 ε, δ로만 결정되는 상수라 메모리가 cardinality와 무관하다. 이것이 sorted set 대비 본질적 이점이다.
@@ -74,7 +75,7 @@ ZREVRANGE popular:merged 0 9 WITHSCORES
 
 | 기준 | A: OpenSearch 집계 | B: Redis sorted set | C: 스트림 sketch |
 |---|---|---|---|
-| 정확도 | shard 분산 오차, shard_size로 완화 | count 정확, window만 계단식 | εN 이내 과대 추정 |
+| 정확도 | shard 분산 오차, shard_size로 완화 | 수신 event는 정확, 전체는 전달/중복 제거 계약에 의존 | 항목별 추정치는 εN 오차 경계, top-k 후보도 근사 |
 | 반영 지연 | job 주기 (분 단위) | 초 단위 | 초 단위 |
 | 추가 인프라 | 없음 (로그 색인 전제) | Redis | 스트림 + consumer |
 | 메모리, 비용 | window 스캔 query 반복 | 고유 검색어 수에 비례 | cardinality 무관 상수 |
@@ -96,12 +97,12 @@ count 이전에 무엇을 같은 검색어로 볼 것인가가 순위 품질을 
 인기 검색어 파이프라인의 산출물은 노출 위젯 하나로 끝나지 않는다.
 
 - 자동완성 후보: 집계된 인기 검색어를 suggestion index의 후보와 weight로 공급한다. 후보 생성 시의 정규화, 최소 빈도, 금칙어 filter 기준은 [[OpenSearch-Search-Features]]의 suggestion 설계와 공유한다.
-- 랭킹 신호: 검색어별 인기도와 클릭 로그를 문서 field로 역공급하면 function score나 재정렬의 인기 boost 신호가 된다 ([[OpenSearch-Query-Relevance]]).
+- 랭킹 신호: 전역 조회수처럼 query와 무관한 document popularity는 감쇠한 문서 field로 materialize할 수 있다. 반면 클릭은 `query_id`, `object_id`, 노출 위치, variant가 결합된 query-document interaction이다. 이를 단일 전역 document field로 덮으면 어떤 query에서 클릭됐는지 사라지므로, pair feature나 reranker 학습 데이터로 별도 집계한다 ([[OpenSearch-Query-Relevance]]).
 - 이 재사용 때문에 파이프라인 앞단의 정규화와 어뷰징 filter 품질이 검색 품질 전체로 전파된다. 인기 검색어가 오염되면 자동완성과 랭킹까지 같이 오염된다.
 
 ## 자주 틀리는 오개념
 
-- terms aggregation이 항상 정확한 count를 준다: 단일 shard이거나 `shard_size`가 고유 term 수 이상일 때만 정확하다. multi-shard 기본 설정에서는 근사이며 `doc_count_error_upper_bound`가 0인지로 판단한다.
+- terms aggregation이 항상 정확한 count를 준다: 단일 shard나 모든 고유 term을 shard 후보에 포함시키는 `shard_size`는 정확성을 보장하는 충분조건이지 유일한 정확 조건은 아니다. Multi-shard 기본 설정도 우연히 정확할 수 있다. Count 내림차순에서 오차 상한을 계산할 수 있을 때 반환 bucket의 `doc_count_error_upper_bound=0`이면 해당 count의 보고된 상한이 0인지 확인할 수 있다.
 - HyperLogLog로 인기 검색어를 만든다: HLL은 고유 개수 (cardinality) 추정이지 항목별 빈도가 아니다. top-k에는 sorted set이나 count-min sketch가 맞고, HLL은 검색어별 고유 사용자 수 같은 보조 지표에 쓴다.
 - sliding window는 매 요청 시각으로 정확히 잘라야 한다: bucket 합산 근사로 충분하고, 정확한 연속 window는 이벤트별 timestamp를 다 들고 있어야 해서 비용이 급증한다. 요구를 먼저 의심한다.
 - 실시간이니까 무조건 Redis다: 갱신 주기가 5분이어도 되는 서비스라면 경로 A가 인프라 추가 없이 끝난다. 반영 지연 요구를 숫자로 먼저 합의하는 것이 설계의 시작이다.
@@ -121,4 +122,5 @@ count 이전에 무엇을 같은 검색어로 볼 것인가가 순위 품질을 
 - [ZINCRBY - Redis Documentation](https://redis.io/docs/latest/commands/zincrby/)
 - [ZUNIONSTORE - Redis Documentation](https://redis.io/docs/latest/commands/zunionstore/)
 - [Count-min sketch - Redis Documentation](https://redis.io/docs/latest/develop/data-types/probabilistic/count-min-sketch/)
+- [UBI index schemas - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/ubi/schemas/)
 - [An Improved Data Stream Summary: The Count-Min Sketch and its Applications - Cormode, Muthukrishnan](https://dimacs.rutgers.edu/~graham/pubs/papers/cm-full.pdf)

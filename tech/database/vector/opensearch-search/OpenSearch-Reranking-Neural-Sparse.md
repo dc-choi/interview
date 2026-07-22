@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, rerank, cross-encoder, neural-sparse]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-07-21
 category: "데이터&저장소(Data&Storage)"
 aliases: ["OpenSearch Reranking", "Neural Sparse Search", "OpenSearch 재정렬과 뉴럴 스파스 검색"]
 ---
@@ -12,12 +12,12 @@ Retrieval은 수백만 문서에서 후보를 빠르게 회수하는 문제고, 
 
 ## Retrieve-then-rerank가 표준인 이유
 
-Bi-encoder는 query와 문서를 각각 독립적으로 vector로 만들어 유사도를 계산한다. 문서 embedding을 미리 색인해 두므로 검색 시점 비용은 query 1회 encoding과 ANN 탐색뿐이다. Cross-encoder는 query와 문서를 한 입력으로 붙여 model에 통과시키므로 두 텍스트의 token 간 상호작용을 직접 보고 더 정확하지만, 문서마다 inference 1회가 필요해 전체 corpus에는 적용할 수 없다.
+Bi-encoder는 query와 문서를 각각 독립적으로 vector로 만들어 유사도를 계산한다. 문서 embedding을 미리 색인해 두므로 검색 시점 비용은 query 1회 encoding과 ANN 탐색뿐이다. Cross-encoder는 query와 문서를 한 입력으로 붙여 model에 통과시키므로 두 텍스트의 token 간 상호작용을 직접 보고 더 정확하지만, 후보마다 query-document pair scoring이 필요해 전체 corpus에는 적용하기 어렵다.
 
 | 구조 | 정확도 | 검색 시점 비용 | 적용 범위 |
 |---|---|---|---|
 | Bi-encoder | 낮음에서 중간 | query encoding 1회 + ANN | 전체 corpus 회수 |
-| Cross-encoder | 높음 | 문서 수 x inference | 상위 N 재정렬만 |
+| Cross-encoder | 높음 | 후보 N개의 pair scoring | 상위 N 재정렬만 |
 
 그래서 1단계에서 BM25, dense, hybrid로 후보 상위 N을 싸게 회수하고, 2단계에서 cross-encoder로 그 N개만 재정렬한다. Rerank는 이미 회수된 후보의 순서만 바꾼다. 1단계가 놓친 문서는 rerank가 복원할 수 없으므로 candidate depth가 먼저다. 이 원리는 [[OpenSearch-Hybrid-Search|하이브리드 검색]]의 fusion과 동일하다.
 
@@ -53,7 +53,7 @@ GET products-v1/_search?search_pipeline=rerank-v1
 }
 ```
 
-Rerank 대상 수는 1단계가 반환하는 hit 수, 즉 `size`가 결정한다. `size: 100`이면 query당 cross-encoder inference가 100회다. 재정렬 깊이를 늘리고 싶으면 `size`를 키우고 `by_field`의 `keep_previous_score`나 oversampling 후 상위만 노출하는 방식으로 비용과 품질을 조율한다. Latency는 문서 수에 거의 선형이므로 N 선택이 곧 p99 예산 배분이다.
+Rerank 대상 수는 1단계가 반환하는 hit 수가 결정한다. `size: 100`이면 cross-encoder가 100개의 query-document pair에 점수를 매겨야 한다. 다만 serving 계층이 이를 한 batch나 여러 batch로 묶을 수 있으므로 endpoint 호출 수가 반드시 100회인 것은 아니다. 후보 깊이는 요청 `size` 또는 앞단 `oversample` request processor로 늘리고, 최종 노출 수는 `truncate_hits` response processor로 원래 크기까지 줄일 수 있다. `by_field.keep_previous_score`는 별도 field rerank type의 디버깅용 이전 점수 반환 옵션이며 ML rerank 깊이나 비용을 조절하지 않는다. 계산량과 입력 token은 대체로 pair 수와 길이에 따라 늘지만, 실제 p99는 batch 크기, accelerator, queue, network와 truncation 정책까지 부하 테스트해야 한다.
 
 ## Neural sparse search (2.11+)
 
@@ -89,7 +89,7 @@ Doc-only는 query 시점 model inference가 없어 latency가 BM25급이다. 공
 | BM25 only | 기준선 | lexical 탐색 |
 | Neural sparse doc-only | BM25 대비 유의미한 개선 | lexical급 탐색 |
 | Hybrid | branch 상호 보완 | 두 branch + fusion |
-| Hybrid + rerank | 최상 | 위 전부 + N회 inference |
+| Hybrid + rerank | 가장 높은 잠재 품질 | 위 전부 + N개 pair scoring |
 
 판단 기준: (1) p99 예산이 100ms급이고 외부 rerank API 왕복이 수십에서 수백 ms면 rerank를 뺀 hybrid나 doc-only sparse가 현실적이다. (2) RAG처럼 상위 몇 개의 정밀도가 결과 품질을 지배하고 latency 허용이 크면 rerank 가치가 크다. (3) rerank 도입 전에 [[OpenSearch-Hybrid-Search|hybrid 평가 설계]]의 같은 judgment set으로 rerank 유무를 비교해 nDCG 개선분이 latency 비용을 정당화하는지 확인한다.
 
@@ -111,6 +111,7 @@ Doc-only는 query 시점 model inference가 없어 latency가 BM25급이다. 공
 ## 운영 체크포인트
 
 - [ ] Rerank 대상 N과 p99 예산의 관계를 부하 테스트로 측정했는가
+- [ ] Endpoint의 batch 크기, 최대 입력 길이, truncation 정책을 기록했는가
 - [ ] Rerank model endpoint 장애 시 pipeline을 우회하는 fallback 경로가 있는가
 - [ ] 한국어 query set으로 BM25, sparse, hybrid, rerank를 같은 judgment로 비교했는가
 - [ ] Sparse model version을 문서에 기록하고 model 교체 시 재색인 절차가 있는가
@@ -127,6 +128,7 @@ Doc-only는 query 시점 model inference가 없어 latency가 BM25급이다. 공
 ## 출처
 
 - [Rerank processor - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/rerank-processor/)
+- [Search pipeline processors - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/search-processors/)
 - [Reranking using a cross-encoder model - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-relevance/rerank-cross-encoder/)
 - [Neural sparse search - OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/neural-sparse-search/)
 - [Generating sparse vector embeddings automatically - OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/neural-sparse-with-pipelines/)

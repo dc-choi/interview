@@ -179,8 +179,7 @@ CloudWatch 평균만 보지 않고 최소와 최대 statistic, node 차원, `_no
 ## 출처
 
 - [Amazon OpenSearch 내부 구조, 성능 최적화와 스케일링 - YouTube](https://www.youtube.com/watch?v=e9GpbaT18Mk)
-- [Amazon OpenSearch Service - AWS](https://aws.amazon.com/ko/opensearch-service/)
-- [OpenSearch란 무엇인가요 - AWS](https://aws.amazon.com/ko/what-is/opensearch/)
+- AWS 개요: [Amazon OpenSearch Service](https://aws.amazon.com/ko/opensearch-service/), [OpenSearch란 무엇인가요](https://aws.amazon.com/ko/what-is/opensearch/)
 - [What is Amazon OpenSearch Service - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html)
 - [OpenSearch Service와 Serverless 비교 - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-comparison.html)
 - [Serverless 구조와 제한 - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-overview.html)
@@ -198,5 +197,4 @@ CloudWatch 평균만 보지 않고 최소와 최대 statistic, node 차원, `_no
 - [Serverless IAM - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html)
 - [Serverless network policy - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-network.html)
 - [OpenSearch Ingestion pipeline features - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/osis-features-overview.html)
-- [Recommended CloudWatch alarms - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cloudwatch-alarms.html)
-- [Serverless CloudWatch metrics - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/monitoring-cloudwatch.html)
+- CloudWatch: [Recommended alarms](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cloudwatch-alarms.html), [Serverless metrics](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/monitoring-cloudwatch.html)
