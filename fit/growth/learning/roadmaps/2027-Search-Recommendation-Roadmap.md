@@ -32,7 +32,7 @@ flowchart LR
   A[통합 discovery 계약] --> B[검색 엔진 baseline과 품질]
   B --> C[추천 모델링 baseline]
   C --> D[Taxonomy 후보와 서빙]
-  D --> E[DevOps 핵심 4]
+  D --> E[DevOps 실전 0단계와 핵심 1부터 4]
   E --> F[남은 discovery 단계]
 ```
 
