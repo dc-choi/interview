@@ -1,4 +1,4 @@
 interface:
   display_name: "Interview Prep"
   short_description: "Create company-specific interview prep"
-  default_prompt: "Use $interview-prep to prepare for this company interview from the JD and resume."
+  default_prompt: "Use $interview-prep to prepare for this company interview from the JD, resume, portfolio, and interview round."

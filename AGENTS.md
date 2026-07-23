@@ -1,40 +1,32 @@
 # Codex Project Instructions
 
-This repository is used with both Claude and Codex.
+This repository is used with both Claude and Codex. `CLAUDE.md` files are the canonical repository rules and user context. `AGENTS.md` is a thin Codex router and must not duplicate domain rules.
 
-## Shared Source Of Truth
+## Instruction Loading
 
-- Keep `CLAUDE.md` and `.claude/` intact. They are still used by Claude.
-- Treat `CLAUDE.md` as the shared project rulebook and user context for Codex work in this repository.
-- Before making document, vault, interview-prep, job-search, or git-related changes, read the relevant sections of `CLAUDE.md` and apply them when compatible with the active system, developer, and user instructions.
-- If instructions conflict, follow this order: active system/developer instructions, latest user request, then `CLAUDE.md`.
-- Store durable user preferences and project rules in `CLAUDE.md`, not in Codex memory.
+- Before working, read the root `CLAUDE.md` and every `CLAUDE.md` from the repository root to the target path.
+- When no target path is given, infer the domain from the request using the routing table below and read the same instruction chain before answering or changing files.
+- When a task spans multiple target paths, read only the domain files for those paths. Do not preload unrelated sibling-domain instructions.
+- Use `rg --files -g 'CLAUDE.md' -g 'AGENTS.md'` when the applicable instruction chain is unclear.
+- Apply active system and developer instructions first, then the latest user request. Within repository instructions, load the root first and the closest domain last so the closest domain governs domain-only conflicts.
 
-## Coexistence Rules
+| Target path or request topic | Additional canonical instructions |
+|---|---|
+| `fit/**` or career, reflection, feedback and goal-setting tasks | `fit/CLAUDE.md` |
+| `fit/interview/**` or interview preparation, answers, company analysis and retrospectives | `fit/CLAUDE.md`, then `fit/interview/CLAUDE.md` |
+| `fit/job-search/**` or job search, tracker, resume and portfolio tasks | `fit/CLAUDE.md`, then `fit/job-search/CLAUDE.md` |
+| `fit/growth/learning/**` or learning plans, roadmaps, priorities and progress | `fit/CLAUDE.md`, then `fit/growth/learning/CLAUDE.md` |
+| `tech/**` or technical knowledge, technical documents and category indexes | `tech/CLAUDE.md` |
 
-- Do not delete, rename, or convert Claude files unless the user explicitly asks.
-- Codex-specific skill files under `.agents/skills/` are compatibility helpers only. They must not replace Claude settings.
-- If a workflow changes, update the canonical wording in `CLAUDE.md` first, then keep matching Claude and Codex helper files in sync when practical.
+## Workflow Skills
 
-## MCP Notes
+- For company-specific interview preparation, read and use `.agents/skills/interview-prep/SKILL.md` after the applicable domain instructions.
+- For memo, lecture, seminar, blog or article organization, read and use `.agents/skills/memo/SKILL.md` after the applicable domain instructions.
+- Keep the matching `.claude/skills/` and `.agents/skills/` workflow bodies synchronized when either changes.
 
-- `.mcp.json` is Claude's gitignored, machine-local project configuration. Run the setup commands from anywhere inside this repository so each CLI resolves this machine's repository root. Use `.mcp.json.example` only as a manual fallback.
-- Claude stores the resolved path in the local project configuration, while Codex stores it in the user configuration. Register each clone separately on its machine.
+## Coexistence
 
-```bash
-claude mcp add --scope project obsidian -- npx -y obsidian-mcp "$(git rev-parse --show-toplevel)"
-codex mcp add obsidian -- npx -y obsidian-mcp "$(git rev-parse --show-toplevel)"
-```
-
-## High-Signal Reminders From CLAUDE.md
-
-- For repos under `~/myown/`, verify git identity before committing or pushing.
-- Do not store third-party PII, contact details, or personal compensation numbers in the vault.
-- Do not use middle dots anywhere in new or edited text.
-- For volatile technical documents, verify primary sources and record `verified_at: YYYY-MM-DD` only after checking the content.
-- Scope absolute claims such as always, unlimited, free, identical, and end-of-support by version, Region, edition, date, and exceptions unless an official source guarantees the full claim.
-- When simplifying a technical interview answer, leave the necessary assumptions, version boundary, or exception on the card's final line.
-- Do not use unresolved wiki links as TODO markers. Use a checklist with an inline-code filename, or create a real document with `status: todo`.
-- Avoid quote-mark emphasis in external-facing Korean writing.
-- Keep answer bodies in `fit/interview/common/`; use `prep/` for guides and meta material.
-- For job-posting discovery, prefer platform filter URLs over ad hoc web search.
+- Do not delete, rename or convert `CLAUDE.md`, `.claude/` or other Claude files unless the user explicitly asks.
+- Codex helpers under `.agents/` must not replace Claude settings.
+- Keep durable project rules and user context in the root or closest domain `CLAUDE.md`, not only in this router.
+- MCP setup and machine-local configuration rules live in the root `CLAUDE.md`; do not duplicate them here.
