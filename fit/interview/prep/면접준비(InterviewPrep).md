@@ -36,7 +36,7 @@ aliases: ["Interview Prep"]
 
 ## 회사별 폴더 작성 도구
 
-- [[Interview-Prep-Template|회사별 폴더 작성 템플릿]] (마스터 도입 전 형식, 신규 회사는 슬림 패턴 권장)
+- [[Interview-Prep-Template|회사별 차수 문서 작성 템플릿]] (마스터 fork와 자기완결 구조 적용)
 
 ## 본인 답변 마스터
 
