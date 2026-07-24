@@ -48,6 +48,7 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[Race-Condition-Patterns|Race Condition 패턴 (3계층 해결, 도구 선택 플로차트, 카카오 사례)]]
 
 ## 확장 & 운영
+- [x] [[PostgreSQL-Production-Operations|PostgreSQL 운영 (실행 계획, Online DDL, vacuum, partitioning)]]
 - [x] [[Sharding|Sharding]]
 - [x] [[Replication|Replication (sync / async)]]
 - [x] [[Clustering|Clustering]]
