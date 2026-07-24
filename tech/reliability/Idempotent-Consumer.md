@@ -58,6 +58,12 @@ if (!first) return; // 이미 처리됨
 
 메시지 id를 비즈니스 쓰기와 **같은 DB 트랜잭션**에서 inbox 테이블에 기록한다. 커밋되면 처리와 중복 기록이 원자적으로 함께 확정된다. 발행 쪽 Outbox와 짝.
 
+### 외부 알림 발송과 클라이언트 `event_id`
+
+외부 provider로 보내는 알림은 DB 상태 갱신과 한 트랜잭션으로 묶을 수 없다. 비즈니스 전이, `notification_event(event_id)`와 outbox insert를 함께 커밋하고, Relay가 그 `event_id`를 payload에 넣어 발송한다. Relay가 응답을 받기 전에 죽으면 실제로 provider가 수락했는지 알 수 없어 재시도와 중복 가능성 중 하나를 선택해야 한다.
+
+수신 클라이언트도 표시한 `event_id`를 지속 저장소에 기록해 같은 이벤트의 반복 표시를 막는다. 보관 기간은 provider의 최대 지연, 재시도와 DLQ 재처리 윈도보다 길어야 한다. 앱 코드가 실행되지 않는 자동 표시 경로는 별도 제어가 필요하므로, client dedup을 end-to-end exactly-once 보장으로 부르면 안 된다. provider별 전달 단계와 등록 정보는 [[Notification-Broadcast-System|대규모 알림 시스템]]에서 다룬다.
+
 ## SQS 특이점
 
 - 표준 큐 = at-least-once → 위 전략으로 멱등 직접 구현.
@@ -95,3 +101,5 @@ if (!first) return; // 이미 처리됨
 - [[External-API-Integration-Patterns|외부 API 연동 패턴 (상태 머신, 대사, Saga)]]
 - [[Race-Condition-Patterns|Race Condition 패턴]]
 - [[Transactions|트랜잭션 (Outbox/Inbox)]]
+- [[Transactional-Outbox|Transactional Outbox]]
+- [[Notification-Broadcast-System|대규모 알림 시스템 (상태 전이 알림)]]
