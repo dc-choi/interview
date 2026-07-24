@@ -55,6 +55,17 @@ aliases: ["CICD Basics", "CI/CD 기초", "Continuous Integration", "Continuous D
 
 **Delivery**는 "언제든 배포 가능한 상태", **Deployment**는 "실제로 자동 배포됨". Netflix, Amazon 같은 곳은 Deployment, 금융권은 Delivery가 일반적.
 
+## 코드 배포와 기능 릴리스 분리
+
+**배포(deployment)** 는 새 코드와 설정을 운영 환경에 놓는 일이고, **릴리스(release)** 는 그 동작을 사용자에게 활성화하는 일이다. 둘을 분리하면 코드는 작고 자주 배포하면서 기능 노출은 별도 판단으로 점진 제어할 수 있다.
+
+- **Feature flag**: 새 코드를 기본 OFF로 배포한 뒤 내부 사용자, 일부 tenant와 일정 비율 순서로 켠다. 문제가 생기면 바이너리 rollback보다 빠르게 비활성화할 수 있다.
+- **Shadow traffic**: 실제 요청을 새 경로에도 복제해 결과와 부하를 관찰하되 사용자 응답에는 반영하지 않는다. 새 경로의 외부 쓰기와 알림 같은 부수효과는 차단해야 한다.
+- **검증 기준**: 오류율, 지연, 비즈니스 결과와 중단 임계값을 릴리스 전에 정한다. 기능 OFF와 코드 rollback 중 어떤 복구가 필요한지도 구분한다.
+- **운영 부채**: 임시 flag에는 소유자와 제거일을 두고, 서로 얽힌 flag 조합과 오래된 분기를 정리한다.
+
+릴리스 분리는 위험을 없애지 않는다. 두 코드 경로를 함께 유지하는 비용, shadow의 추가 자원과 개인정보 처리, flag 제어면 장애가 생긴다. 적용 범위는 변경의 위험과 가역성에 맞춘다.
+
 ## 파이프라인 구성 요소
 
 ### 일반적인 단계
@@ -152,6 +163,9 @@ Post-deploy Monitoring
 
 ## 출처
 - [테코블 — CI/CD란?](https://tecoble.techcourse.co.kr/post/2021-08-14-ci-cd/)
+- [Implement Incremental Feature Release Techniques — AWS DevOps Guidance](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/dl.ads.4-implement-incremental-feature-release-techniques.html)
+- [45권의 기술 서적에서 얻은 핵심 인사이트 — GeekNews](https://news.hada.io/topic?id=31718)
+- [Our biggest insights from 45 technical books! — Book Overflow](https://www.youtube.com/watch?v=k2ek5MsUEMo)
 
 ## 관련 문서
 - [[CICD-Tool-Selection|CI/CD 툴 선택 평가 기준]]

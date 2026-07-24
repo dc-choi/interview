@@ -62,6 +62,7 @@ aliases: ["Refactoring In Practice", "실전 리팩토링", "Monster Method"]
 - **한 커밋당 한 가지 의미 단위** — Extract Method, Rename, Inline을 분리
 - 리뷰어가 diff를 읽을 수 있을 만큼 작게
 - 문제 생기면 되돌리기 쉬움
+- **패싱 테스트 커밋마다 멈출 수 있음** — 작은 행동 보존 변경 뒤 테스트가 통과하는 상태를 남긴다. 중단, 우선순위 변경, 리뷰와 롤백이 생겨도 그 시점의 코드는 안전하게 유지된다.
 
 ### 행동 보존
 
@@ -105,6 +106,8 @@ aliases: ["Refactoring In Practice", "실전 리팩토링", "Monster Method"]
 
 ## 출처
 - [Hyperconnect — Hakuna 라이브룸 입장 API 리팩토링 (85% 지연 감소)](https://hyperconnect.github.io/2022/03/14/develop-liveroom-entrance-on-hakuna.html)
+- [45권의 기술 서적에서 얻은 핵심 인사이트 — GeekNews](https://news.hada.io/topic?id=31718)
+- [Our biggest insights from 45 technical books! — Book Overflow](https://www.youtube.com/watch?v=k2ek5MsUEMo)
 
 ## 관련 문서
 - [[Technical-Debt|기술 부채 — rewrite로 상환, 리팩터링은 학습 반영]]
