@@ -81,7 +81,7 @@ Restore를 해보지 않은 backup은 복구 가능성이 검증되지 않은 �
 
 ## Self-managed rolling upgrade
 
-아래 node별 절차는 self-managed OpenSearch에 적용한다. Amazon OpenSearch Service domain에서는 node에 직접 접근하지 않고 [[OpenSearch-Service#Service software와 engine upgrade|AWS의 service software 절차]]와 [[OpenSearch-Service-Engine-Upgrade|engine upgrade 절차]]를 따른다.
+아래 node별 절차는 self-managed OpenSearch에 적용한다. Amazon OpenSearch Service domain에서는 node에 직접 접근하지 않고 [[OpenSearch-Service-Operations#Service software와 engine upgrade|AWS의 service software 절차]]와 [[OpenSearch-Service-Engine-Upgrade|engine upgrade 절차]]를 따른다.
 
 1. Breaking change와 plugin 호환성을 staging에서 확인한다.
 2. 설정 파일을 백업하고 외부 snapshot을 만든다.
@@ -125,7 +125,7 @@ Rolling upgrade는 인접 major version만 지원한다. 3.x로 갈 때는 sourc
 - [[OpenSearch-Shard-Sizing|샤드 사이징]]
 - [[OpenSearch-Index-Lifecycle|Rollover와 ISM]]
 - [[OpenSearch-Performance-Troubleshooting|운영 지표와 진단]]
-- [[OpenSearch-Service|Amazon OpenSearch Service 운영]]
+- [[OpenSearch-Service-Operations|Amazon OpenSearch Service 가용성, 변경과 복구]]
 
 ## 출처
 

@@ -52,7 +52,7 @@ const client = new Client({
 });
 ```
 
-- `service`는 Provisioned domain이 `es`, Serverless collection이 `aoss`다. Serverless 쪽 규칙은 [[OpenSearch-Service#보안 경계|Service 보안 경계]]에서도 다룬다.
+- `service`는 Provisioned domain이 `es`, Serverless collection이 `aoss`다. Serverless 쪽 규칙은 [[OpenSearch-Service-Security-Observability#보안 경계|Service 보안 경계]]에서도 다룬다.
 - 자격 증명은 AWS SDK credential provider에서 가져온다. SDK v3는 `defaultProvider`, v2는 `AWS.config.getCredentials`를 Promise로 감싼다.
 - Lambda에서는 handler 밖에서 client를 초기화해 invocation 간 연결을 재사용한다. Handler 안에서 만들면 호출마다 연결을 새로 맺어 file descriptor 고갈(`ConnectionError: getaddrinfo EMFILE`)로 이어질 수 있다. 연결 재사용의 운영 주의점은 [[AWS-Lambda-Operations-Exam|Lambda 운영]]이 정본이다.
 

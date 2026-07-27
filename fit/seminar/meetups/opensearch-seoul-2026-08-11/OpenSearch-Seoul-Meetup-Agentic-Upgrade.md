@@ -30,7 +30,7 @@ aliases: ["OpenSearch Seoul Meetup Agentic Search와 업그레이드 질문"]
 - **좋은 답의 신호:** 지원 upgrade path, service software update와 engine upgrade의 구분, 호환성 test matrix, 기존 domain 유지 또는 새 domain restore/reindex 경로, least privilege, trace/audit와 kill switch가 나온다.
 - **꼬리 질문:** engine downgrade가 불가능한 조건에서 client 교체와 engine upgrade를 어떤 순서로 분리하며, 출시를 막을 guardrail 세 가지는 무엇인가요?
 - **학습 정본:** [[OpenSearch-Service-Engine-Upgrade|OpenSearch Service Engine Upgrade]]
-- **미리 읽기:** [[OpenSearch-Service#Service software와 engine upgrade|Service software와 engine upgrade 구분]]
+- **미리 읽기:** [[OpenSearch-Service-Operations#Service software와 engine upgrade|Service software와 engine upgrade 구분]]
 
 ## 출처
 

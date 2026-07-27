@@ -145,7 +145,7 @@ Audit는 기본 비활성이다. 필요한 category만 선택한다.
 - [[OpenSearch-Cluster-Reliability|가용성과 복구]]
 - [[OpenSearch-Performance-Troubleshooting|운영 관측과 장애 대응]]
 - [[OpenSearch-Index-Lifecycle|인덱스 변경 절차]]
-- [[OpenSearch-Service|Amazon OpenSearch Service 보안 경계]]
+- [[OpenSearch-Service-Security-Observability|Amazon OpenSearch Service 보안 경계]]
 
 ## 출처
 

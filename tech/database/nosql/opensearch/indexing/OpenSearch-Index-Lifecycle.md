@@ -178,7 +178,7 @@ delete
 - [[OpenSearch]]
 - [[OpenSearch-Indexing-Internals|Bulk와 ingest pipeline]]
 - [[OpenSearch-Cluster-Reliability|Snapshot과 upgrade]]
-- [[OpenSearch-Service|Amazon OpenSearch Service storage tier]]
+- [[OpenSearch-Service-Cost-Optimization|UltraWarm과 cold tier 손익]]
 - [[CDC-Debezium|변경 데이터 재처리]]
 
 ## 출처

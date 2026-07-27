@@ -68,10 +68,13 @@ allowed-tools: [Read, Write, Edit, Glob, Grep, Bash, WebFetch, WebSearch]
 ---
 tags: [관련태그]
 status: done
+verified_at: YYYY-MM-DD # 기술 문서 최신성 기준 해당 시
 category: "카테고리명"
 aliases: ["English Name", "한글명"]
 ---
 ```
+
+`verified_at`은 `tech/CLAUDE.md`의 기술 문서 최신성 기준에 해당하는 문서에 공식 1차 출처를 대조한 날짜로 넣는다.
 
 출처는 문서 하단에 둔다.
 

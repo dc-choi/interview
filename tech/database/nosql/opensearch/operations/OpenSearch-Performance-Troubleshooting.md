@@ -181,7 +181,7 @@ GET /_tasks?detailed=true
 - [[OpenSearch-Query-Relevance|Query 구조와 관련도]]
 - [[OpenSearch-Aggregations-Pagination|집계와 deep pagination]]
 - [[OpenSearch-Cluster-Reliability|Shard와 allocation]]
-- [[OpenSearch-Service|Amazon OpenSearch Service 운영]]
+- [[OpenSearch-Service-Operations|Amazon OpenSearch Service 가용성, 변경과 복구]]
 
 ## 출처
 

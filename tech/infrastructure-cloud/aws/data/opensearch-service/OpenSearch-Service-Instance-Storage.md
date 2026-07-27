@@ -8,7 +8,7 @@ aliases: ["OpenSearch Service 인스턴스와 스토리지", "OpenSearch Instanc
 
 # OpenSearch Service 인스턴스와 스토리지 선정
 
-Shard 설계가 논리 층이라면 이 문서는 그 아래 하드웨어 결정 층이다. Storage 총량 계산과 shard당 1.5 vCPU, heap = RAM 50퍼센트 규칙은 [[OpenSearch-Cluster-Reliability|shard 사이징 휴리스틱]]을 따르고, 여기서는 그 결과를 어떤 instance 계열과 storage 유형으로 받아낼지를 다룬다. 관리형 운영 전반은 [[OpenSearch-Service]] 참고.
+Shard 설계가 논리 층이라면 이 문서는 그 아래 하드웨어 결정 층이다. Storage 총량 계산과 shard당 1.5 vCPU, heap = RAM 50퍼센트 규칙은 [[OpenSearch-Shard-Sizing|shard 사이징 휴리스틱]]을 따르고, 여기서는 그 결과를 어떤 instance 계열과 storage 유형으로 받아낼지를 다룬다. 관리형 운영 전반은 [[OpenSearch-Service]] 참고.
 
 AWS의 공통 전제는 어떤 계열이든 초기 추정 후 대표 workload로 부하 시험을 하고 조정하는 것이다. 과소한 cluster의 부족분보다 과대한 cluster의 여유분을 측정하는 편이 쉬우므로 크게 시작해 줄여가는 접근을 권한다.
 
@@ -107,7 +107,7 @@ Float HNSW memory ~= 1.1 × (4 × dimension + 8 × m) bytes/vector
 
 ## 인스턴스 결정 순서 체크리스트
 
-1. Storage 총량과 shard 수, 크기를 [[OpenSearch-Cluster-Reliability|사이징 휴리스틱]]으로 먼저 고정한다
+1. Storage 총량과 shard 수, 크기를 [[OpenSearch-Shard-Sizing|사이징 휴리스틱]]으로 먼저 고정한다
 2. 요청에 관여하는 shard당 1.5 vCPU 기준으로 필요한 vCPU 총량을 잡는다
 3. 병목 예상(메모리면 r, CPU면 c, 불명확하면 m)으로 후보를 고르고 Graviton과 x86의 비용당 처리량을 비교한다
 4. 무거운 workload면 storage 100GiB당 2 vCPU, 8GiB RAM 기준과 교차 검증한다
@@ -121,7 +121,8 @@ Float HNSW memory ~= 1.1 × (4 × dimension + 8 × m) bytes/vector
 ## 관련 문서
 
 - [[OpenSearch-Service|Amazon OpenSearch Service 관리형 운영]]
-- [[OpenSearch-Cluster-Reliability|Shard 사이징과 복구 원리]]
+- [[OpenSearch-Shard-Sizing|샤드 사이징]]
+- [[OpenSearch-Cluster-Reliability|복구 원리]]
 - [[OpenSearch-Vector-Search|벡터 검색과 하이브리드 검색]]
 - [[OpenSearch-Performance-Troubleshooting|성능과 장애 진단]]
 

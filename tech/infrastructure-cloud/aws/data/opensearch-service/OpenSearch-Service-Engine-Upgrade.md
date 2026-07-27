@@ -8,7 +8,7 @@ aliases: ["OpenSearch Service Engine Upgrade", "OpenSearch 엔진 업그레이�
 
 # OpenSearch Service Engine Upgrade
 
-Engine upgrade는 Amazon OpenSearch Service domain의 OpenSearch 또는 Elasticsearch version을 올리는 사용자 주도 변경이다. AWS 운영 계층의 patch인 service software update와는 수명주기가 다르며, 두 변경의 구분은 [[OpenSearch-Service#Service software와 engine upgrade|서비스 문서]]에서 다룬다. 이 문서는 in-place upgrade의 지원 경로, 진행 단계, 부적격 원인과 rollback 설계를 다룬다.
+Engine upgrade는 Amazon OpenSearch Service domain의 OpenSearch 또는 Elasticsearch version을 올리는 사용자 주도 변경이다. AWS 운영 계층의 patch인 service software update와는 수명주기가 다르며, 두 변경의 구분은 [[OpenSearch-Service-Operations#Service software와 engine upgrade|서비스 운영 문서]]에서 다룬다. 이 문서는 in-place upgrade의 지원 경로, 진행 단계, 부적격 원인과 rollback 설계를 다룬다.
 
 ## In-place upgrade 지원 범위
 
@@ -56,7 +56,7 @@ OpenSearch 1.0 이상 또는 Elasticsearch 5.1 이상을 실행하는 domain은 
 성공한 engine upgrade는 in-place로 되돌릴 수 없다. Snapshot은 forward 방향으로만, 최대 한 major version까지 호환되므로 새 version에서 만든 snapshot은 이전 version cluster에 복원할 수 없고, 이 역방향 제약은 minor version 차이에도 적용된다.
 
 - 자동 pre-upgrade snapshot은 upgrade 후에도 AWS Support를 통해 이전 version의 새 domain에 복원할 수 있다. Support 없이 직접 rollback하려면 upgrade 전에 manual snapshot을 만들고 실제 restore를 검증한다.
-- Manual snapshot은 기본적으로 UltraWarm과 cold tier index를 포함하지 않고, warm index는 snapshot당 하나씩 hot과 섞지 않는 조건으로만 명시해 담을 수 있다. [[OpenSearch-Service#Snapshot과 복구|snapshot 제약]]을 rollback 계획에 반영한다.
+- Manual snapshot은 기본적으로 UltraWarm과 cold tier index를 포함하지 않고, warm index는 snapshot당 하나씩 hot과 섞지 않는 조건으로만 명시해 담을 수 있다. [[OpenSearch-Service-Operations#Snapshot과 복구|snapshot 제약]]을 rollback 계획에 반영한다.
 - Snapshot 이후 쓰기의 복구는 [[OpenSearch-Cluster-Reliability#Self-managed rolling upgrade|rolling upgrade]]의 dual-write와 변경 로그 replay 원칙을 따른다. 검색 index를 원본 DB나 event log에서 재생할 수 있으면 선택지가 늘어난다. [[OpenSearch-Indexing-Internals|Read Model 동기화]] 구조가 이 전제를 만든다.
 
 ## Upgrade 부적격과 실패의 주요 원인

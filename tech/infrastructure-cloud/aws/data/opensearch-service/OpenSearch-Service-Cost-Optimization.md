@@ -8,7 +8,7 @@ aliases: ["OpenSearch Service Cost Optimization", "OpenSearch 비용 최적화",
 
 # Amazon OpenSearch Service 비용 최적화와 배포 함정
 
-과금 항목의 전체 목록과 Provisioned vs Serverless 비교는 [[OpenSearch-Service]], hot과 UltraWarm과 cold tier의 구조는 [[OpenSearch-Index-Lifecycle]]이 다룬다. 이 문서는 그 위에서 무엇부터 줄이는지의 순서, tier 이동과 Serverless의 손익 계산, 그리고 설정 변경이 blue-green 배포를 유발해 비용과 성능을 흔드는 함정을 다룬다. 금액은 별도 표기가 없으면 us-east-1 on-demand 기준이며 리전과 시점에 따라 달라진다.
+과금 항목의 목록은 [[OpenSearch-Service-Security-Observability#비용 입력|보안과 관측 문서의 비용 입력 절]]이, Provisioned vs Serverless 비교는 [[OpenSearch-Service-Deployment#Provisioned domain과 Serverless|배포 모델 절]]이, hot과 UltraWarm과 cold tier의 구조는 [[OpenSearch-Index-Lifecycle]]이 다룬다. 이 문서는 그 위에서 무엇부터 줄이는지의 순서, tier 이동과 Serverless의 손익 계산, 그리고 설정 변경이 blue-green 배포를 유발해 비용과 성능을 흔드는 함정을 다룬다. 금액은 별도 표기가 없으면 us-east-1 on-demand 기준이며 리전과 시점에 따라 달라진다.
 
 ## 줄이는 순서 플레이북
 
@@ -44,7 +44,7 @@ OCU는 6GiB RAM과 상응하는 vCPU 묶음이고 시간당 0.24 USD다. 함정�
 - Redundancy 기본 활성 상태에서 floor는 indexing 1 OCU(0.5 x 2)와 search 1 OCU(0.5 x 2), 합계 2 OCU다. 트래픽이 0이어도 월 약 350 USD가 나간다.
 - Dev/test에서 redundancy를 끄면 indexing 0.5와 search 0.5, 합계 1 OCU(월 약 175 USD)까지 내려간다.
 - floor는 계정(또는 collection group) 단위로 공유된다. 단 KMS key가 다른 collection은 자기 OCU 세트를 새로 만들고, vector search collection은 같은 key라도 search와 time series collection과 OCU를 공유하지 못한다. collection이 유형과 key별로 파편화되면 floor가 곱해진다. 다중 KMS key 구조는 collection group(2026.02+)으로 묶어 공유시킨다.
-- 3유형 제약: data lifecycle policy(retention 자동 삭제)는 time series만 지원하고, time series는 custom `_id`가 없어 upsert 기반 dedup이 안 되며([[OpenSearch-Service]]의 수집 절 참조), vector는 in-memory 모드에서 RAM이 OCU 산정을 지배하므로 disk-optimized 모드(32x binary quantization, RAM 최대 97퍼센트 절감, P90 100에서 200ms)를 먼저 검토한다.
+- 3유형 제약: data lifecycle policy(retention 자동 삭제)는 time series만 지원하고, time series는 custom `_id`가 없어 upsert 기반 dedup이 안 되며([[OpenSearch-Service-Security-Observability#데이터 수집|데이터 수집 절]] 참조), vector는 in-memory 모드에서 RAM이 OCU 산정을 지배하므로 disk-optimized 모드(32x binary quantization, RAM 최대 97퍼센트 절감, P90 100에서 200ms)를 먼저 검토한다.
 - Time series의 OCU는 retention이 직접 결정한다. 공식 예시로 일 1TiB 수집에 30일 보존이면 indexing 20과 search 20 OCU, 7일로 줄이면 각각 약 4 OCU다.
 - 결론: 소규모라도 상시 켜져 있는 workload는 provisioned 소형 domain이 floor보다 싼 경우가 많다. Serverless가 이기는 조건은 간헐적이거나 변동이 큰 부하다. 어느 쪽이든 계정 max OCU cap을 걸어 폭주를 막되, cap에 닿으면 성능 저하로 나타나므로 원인(특히 vector 메모리)을 함께 본다.
 
@@ -83,14 +83,15 @@ Provisioned domain의 설정 변경은 두 부류다. Blue-green은 기존 clust
 
 ## 시나리오: 설정 하나 바꿨는데 클러스터가 왜 두 배가 됐나
 
-비용을 아끼려고 평일 낮에 EBS를 gp2에서 gp3로 바꿨다고 하자. volume type 변경은 blue-green trigger라서 CloudWatch의 `Nodes`가 11에서 22로 뛰고, shard 복사 트래픽 때문에 검색 p99가 오르고 bulk 429가 늘었다. 놀라서 지표를 보다가 두 배 과금을 걱정했지만 청구서 영향은 첫 1시간뿐이었고, 실제 문제는 headroom 없이 peak 시간에 배포를 시작한 판단이었다. 올바른 순서는 이렇다. dry run으로 `DeploymentType`을 확인하고, blue-green이면 off-peak window나 저트래픽 시간대로 스케줄하며, red index와 디스크 여유 같은 validation 항목을 미리 정리하고, 배포 중 master 부하와 latency를 감시한다. 같은 이유로 [[OpenSearch-Service]] 체크리스트의 blue-green 여유 용량 항목은 gp3 전환이나 Graviton 전환 같은 절감 작업 자체의 전제 조건이기도 하다.
+비용을 아끼려고 평일 낮에 EBS를 gp2에서 gp3로 바꿨다고 하자. volume type 변경은 blue-green trigger라서 CloudWatch의 `Nodes`가 11에서 22로 뛰고, shard 복사 트래픽 때문에 검색 p99가 오르고 bulk 429가 늘었다. 놀라서 지표를 보다가 두 배 과금을 걱정했지만 청구서 영향은 첫 1시간뿐이었고, 실제 문제는 headroom 없이 peak 시간에 배포를 시작한 판단이었다. 올바른 순서는 이렇다. dry run으로 `DeploymentType`을 확인하고, blue-green이면 off-peak window나 저트래픽 시간대로 스케줄하며, red index와 디스크 여유 같은 validation 항목을 미리 정리하고, 배포 중 master 부하와 latency를 감시한다. 같은 이유로 [[OpenSearch-Service-Operations|운영 문서]] 체크리스트의 blue-green 여유 용량 항목은 gp3 전환이나 Graviton 전환 같은 절감 작업 자체의 전제 조건이기도 하다.
 
 ## 관련 문서
 
-- [[OpenSearch-Service|Amazon OpenSearch Service 운영]]
+- [[OpenSearch-Service|Amazon OpenSearch Service]]
+- [[OpenSearch-Service-Operations|Amazon OpenSearch Service 가용성, 변경과 복구]]
 - [[OpenSearch-Service-Engine-Upgrade|Engine upgrade 경로와 사전 검증]]
 - [[OpenSearch-Index-Lifecycle|Rollover, ISM과 storage tier]]
-- [[OpenSearch-Cluster-Reliability|Shard와 복구 원리]]
+- [[OpenSearch-Cluster-Reliability|복구와 allocation 원리]]
 
 ## 출처
 

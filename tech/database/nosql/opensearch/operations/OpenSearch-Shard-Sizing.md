@@ -107,7 +107,7 @@ Primary shard 수는 정적 설계에 가깝고 replica 수는 동적으로 조�
 - [[OpenSearch-Architecture|분산 실행과 routing]]
 - [[OpenSearch-Cluster-Reliability|Allocation, snapshot과 복구]]
 - [[OpenSearch-Index-Lifecycle|Rollover와 ISM]]
-- [[OpenSearch-Service|Amazon OpenSearch Service 운영]]
+- [[OpenSearch-Service-Operations|Amazon OpenSearch Service 가용성, 변경과 복구]]
 - [[OpenSearch-Service-Instance-Storage|인스턴스와 스토리지 선정]]
 
 ## 출처
