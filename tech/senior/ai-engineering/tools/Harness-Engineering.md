@@ -150,7 +150,7 @@ Q. 멀티 에이전트로 나누면 뭐가 좋고, 검증은 왜 별도 에이�
 
 ## 관련 문서
 - [[Agent-Loop-Engineering|루프 엔지니어링 (루프 4분류, ralph 계보, 3종 가드 — 하네스의 한 층 위)]]
-- [[Context-Engineering|컨텍스트 엔지니어링 (Inform 축의 토큰 경제학 — Context Rot, CLAUDE.md 200줄, Hook vs Advisory)]]
+- [[Context-Engineering|컨텍스트 엔지니어링 (Inform 축의 토큰 경제학 — Context Rot, CLAUDE.md 200줄, Hook vs Advisory, 모델 세대와 지시 밀도)]]
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (분업, Lazy Load, Defense in Depth)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법]]
 - [[RFC-Writing|RFC / PRD 작성 (SDD)]]

@@ -9,9 +9,9 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 
 같은 모델 패밀리가 성능과 단가가 다른 여러 티어로 나뉘어 출시되는 구조, 그리고 작업마다 어느 티어로 보낼지 고르는 엔지니어링 결정. LLM으로 프로덕션을 만들 때 비용의 대부분이 여기서 갈린다. 가장 비싼 모델을 모든 호출에 쓰는 것은 거의 항상 과지출이다.
 
-## 티어가 수렴하는 3단 구조
+## 티어가 수렴하는 기본 3단 구조
 
-주요 벤더의 모델 라인업은 대체로 세 층으로 수렴한다.
+주요 벤더의 모델 라인업은 대체로 세 층을 기본형으로 수렴하고, 그 위에 최상위 티어가 얹히는 벤더도 있다.
 
 | 티어 | 성격 | 쓰는 곳 |
 |---|---|---|
@@ -19,7 +19,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 | 균형형 | 일상 업무용, 플래그십 대비 큰 폭 저렴 | 대부분의 프로덕션 트래픽, 일반 생성, 요약 |
 | 저비용형 | 가장 빠르고 가장 싼 | 분류, 추출, 라우팅, 단순 변환, 대량 배치 |
 
-벤더별 매핑 예: OpenAI는 Sol(플래그십), Terra(균형형), Luna(저비용형). Anthropic은 Opus, Sonnet, Haiku. Google은 Gemini Pro, Flash 계열. 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
+벤더별 매핑 예: OpenAI는 Sol(플래그십), Terra(균형형), Luna(저비용형). Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. Google은 Gemini Pro, Flash 계열. 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
 
 ## 티어 간 트레이드오프
 
@@ -79,3 +79,4 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - [오픈AI, 차세대 AI 'GPT-5.6' 공개, 정부 승인 파트너만 우선 사용 — 리드경제](https://www.leadeconomy.co.kr/news/articleView.html?idxno=8339)
 - [Previewing GPT-5.6 Sol: a next-generation model — OpenAI](https://openai.com/index/previewing-gpt-5-6-sol/)
 - [차세대 모델 GPT-5.6 Sol 미리 살펴보기 (한국어판) — OpenAI](https://openai.com/ko-KR/index/previewing-gpt-5-6-sol/)
+- [Models overview — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격)

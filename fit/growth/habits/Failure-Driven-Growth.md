@@ -9,6 +9,10 @@ aliases: ["Failure Driven Growth", "실패를 성장으로", "실패 다루기",
 
 실패는 피해야 할 흠이 아니라 학습의 출발점이다. 개발과 제품 만들기는 이미 실패를 전제로 한다. 중요한 것은 실패 여부가 아니라 그 실패를 어떻게 다루느냐다. 실패를 숨기면 반복되고, 실패를 바라보면 학습이 된다.
 
+## 해석 프레임 — 버린 시간이 아니라 과정 자산
+
+같은 실패도 해석에 따라 다음 행동이 달라진다. 버린 시간으로 읽으면 시도를 멈추게 하고, 쌓인 지식과 역량(과정 자산)으로 읽으면 다음 시도의 재료가 된다. 면접 탈락이 내가 설명하지 못하는 개념을, 협업 마찰이 내가 약한 커뮤니케이션 방식을 드러냈다고 재해석하는 식이다 — 해석과 과장의 경계는 [[Experience-Narrative-Reframing|경험 서사 재해석]]을 따른다. 이미 쓴 시간이 아까워 실패하는 방향을 계속 미는 [[Cognitive-Biases-Programming|매몰 비용 오류]]와는 층위가 다르다. 과거 비용은 앞으로의 결정에서 빼되, 그 과정에 남은 지식은 회수 불가능한 비용이 아니라 자산으로 계산한다는 뜻이다. 재능이 없다는 결론으로 노력을 멈추는 [[Self-Belief|자기 믿음]]의 부정 루프를 끊는 실용적인 프레임이다.
+
 ## 실패의 정의를 넓힌다
 
 실패는 거창한 사고만을 뜻하지 않는다. "뜻한 대로 되지 않은 모든 것"이 실패다.
@@ -37,6 +41,7 @@ aliases: ["Failure Driven Growth", "실패를 성장으로", "실패 다루기",
 
 ## 체크포인트
 
+- 실패를 버린 시간으로 읽는가, 과정 자산으로 읽는가
 - 실패를 숨기지 않고 기록하는 개인 루틴이 있는가
 - 회고가 깨달음에서 끝나지 않고 한 가지 행동으로 이어지는가
 - 그 행동을 임팩트(전파성, 반복 차단력) 기준으로 고르는가
@@ -44,6 +49,9 @@ aliases: ["Failure Driven Growth", "실패를 성장으로", "실패 다루기",
 
 ## 관련 문서
 
+- [[Self-Belief|자기 믿음]] — 재능이 없다는 결론으로 노력을 멈추는 부정 루프
+- [[Experience-Narrative-Reframing|경험 서사 재해석]] — 해석과 과장의 경계
+- [[Cognitive-Biases-Programming|프로그래밍 인지 편향]] — 매몰 비용 오류와의 구분
 - [[Retrospective-Methods|애자일 회고 기법]] — 회고를 한 가지 행동으로 끝내기
 - [[Growth-Principles|성장의 7가지 원칙]] — 회고와 실험
 - [[Failure-Tolerant-Culture|실패에 관대한 문화]] — 실패를 학습으로 다루는 조직
@@ -53,3 +61,4 @@ aliases: ["Failure Driven Growth", "실패를 성장으로", "실패 다루기",
 ## 출처
 
 - [개발자 원칙 — 제어 가능한 것, 실패, 전문가성 — YouTube](https://www.youtube.com/watch?v=DJCmvzhFVOI&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=15)
+- [재능이라는 허상 - 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)

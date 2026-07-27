@@ -68,7 +68,7 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - standard `VACUUM`은 dead row version과 index의 공간을 이후 재사용할 수 있게 하지만, 보통 운영체제에 디스크 공간을 반환하지는 않는다.
 - `VACUUM FULL`은 table을 다시 작성해 공간을 반환할 수 있지만 `ACCESS EXCLUSIVE` lock과 추가 디스크 공간을 요구한다. bloat를 발견한 뒤의 기본 대응이 아니라, 원인과 허용 가능한 중단 시간을 확인한 뒤 선택한다.
 - autovacuum은 table별 변경량과 XID age를 기준으로 `VACUUM`과 `ANALYZE`를 실행한다. write가 집중된 relation은 전역 기본값만 보지 말고 dead tuple, worker 포화, I/O, `relfrozenxid`, `relminmxid`와 장기 transaction을 함께 관측한다.
-- XID와 MultiXact wraparound 방지는 가용성 문제다. anti-wraparound vacuum, 오래 열린 transaction, 오래된 prepared transaction과 replication slot을 정기적으로 점검한다.
+- XID와 MultiXact wraparound 방지는 가용성 문제다. anti-wraparound vacuum, 오래 열린 transaction, 오래된 prepared transaction과 replication slot을 정기적으로 점검한다. wraparound 경고 같은 치명 신호는 이메일함이 아니라 대응이 보장되는 알림 경로에 연결한다.
 - index bloat의 재구성은 `REINDEX INDEX CONCURRENTLY` 같은 선택지가 있지만, 지원 버전, 디스크 여유, 작업 시간과 실패 복구를 확인한다.
 
 ## `FOR UPDATE SKIP LOCKED`
@@ -83,6 +83,13 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - 오래된 데이터는 partition을 `DROP`하거나 detach해 행별 `DELETE`와 뒤이은 vacuum 부담을 줄일 수 있다. `DROP`은 parent table lock을 요구할 수 있고, concurrent detach에도 별도 제약이 있다.
 - pruning 뒤에도 많은 partition이 남으면 planning time과 메모리 사용이 증가할 수 있다. partition 수, 실제 query predicate와 `EXPLAIN` 결과를 함께 확인한다.
 - autovacuum은 실제 row를 가진 각 partition을 처리하지만 partitioned parent에는 자동 `ANALYZE`를 수행하지 않는다. partition 분포가 크게 바뀌면 parent 통계도 갱신한다.
+
+## 백업과 복구
+
+쿼리와 vacuum을 다듬어도 복구 절차가 검증되지 않았다면 생존 계획이 아니다. 원칙과 복원 리허설은 [[Backup-Restore|백업과 복구]]가 정본이고, 여기서는 PostgreSQL 선택지만 짚는다.
+
+- 관리형 서비스는 자체 구축보다 적은 비용으로 HA(Multi-AZ), 자동 백업과 PITR(point-in-time recovery)을 갖출 수 있다. 단 RDS DB 인스턴스 기준으로 Multi-AZ는 기본값이 아니라 지정하는 유료 옵션이고([[RDS-Aurora-RDS-Core|RDS/Aurora 코어]]), 백업 보존을 0으로 두면 자동 백업과 PITR이 꺼진다([[RDS-Aurora-Backup-Operations|RDS/Aurora 백업 운영]]). Aurora 클러스터는 AZ 배치를 클러스터가 관리하고 보존 최소값이 1일이다. 복원 리허설은 관리형에서도 사용자 몫이다.
+- 자체 호스팅 PITR은 베이스 백업과 WAL 아카이브를 함께 관리하는 pgBackRest 같은 도구로 구성한다. 압축한 논리 덤프(pg_dump 계열)는 소규모의 출발점이 되지만 덤프 시점으로만 복원되는 한계가 있다.
 
 ## 운영 체크리스트
 
@@ -110,6 +117,7 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - [[Connection-Pool|DB 커넥션 풀, 사이징]]
 - [[Schema-Migration-Large-Table|대용량 스키마 변경, MySQL 중심]]
 - [[Backfill-Resource-Isolation|데이터 백필과 자원 격리 전략]]
+- [[Backup-Restore|백업과 복구 전략]]
 - [[DB-Incident-Triage|DB 장애 분석 방법론]]
 
 ## 출처
@@ -124,3 +132,6 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - [PostgreSQL 18 Documentation, SELECT locking clauses](https://www.postgresql.org/docs/18/sql-select.html)
 - [PostgreSQL 18 Documentation, Table Partitioning](https://www.postgresql.org/docs/18/ddl-partitioning.html)
 - [The startup's Postgres survival guide, Hatchet](https://hatchet.run/blog/postgres-survival-guide)
+- [스타트업의 Postgres 생존 가이드 (토론) - GeekNews](https://news.hada.io/topic?id=31706)
+- [pgBackRest User Guide - pgBackRest](https://pgbackrest.org/user-guide.html)
+- [Multi-AZ DB instance deployments - Amazon RDS User Guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html)

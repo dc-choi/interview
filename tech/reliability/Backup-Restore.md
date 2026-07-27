@@ -76,5 +76,6 @@ aliases: ["Backup Restore", "백업 복원", "데이터 복구", "Data Recovery"
 - [[DR-Strategy|DR 전략 (multi-region)]]
 - [[RDS-Aurora|RDS / Aurora (PITR, 스냅샷, 자동 백업)]]
 - [[MySQL-Backup|MySQL 백업 (mysqldump, XtraBackup, binlog PITR)]]
+- [[PostgreSQL-Production-Operations|PostgreSQL 운영 (pgBackRest PITR, 논리 덤프의 한계)]]
 - [[RDS-Migration-Scenarios|RDS 데이터 마이그레이션 시나리오]]
 - [[RDS-Operational-Pitfalls|RDS 운영 함정 (스냅샷 워밍업)]]

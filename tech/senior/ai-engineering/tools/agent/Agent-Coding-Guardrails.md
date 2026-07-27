@@ -7,7 +7,7 @@ aliases: ["Agent Coding Guardrails", "LLM 코딩 가드레일", "코딩 가드�
 
 # LLM 코딩 가드레일 — 실패 패턴과 교정 4원칙
 
-코딩 에이전트의 사고는 능력 부족보다 행동 습관에서 온다. 확인 없이 가정하고 질주하는 것, 100줄이면 될 코드를 1000줄로 부풀리는 것, 태스크와 무관한 코드를 건드리는 것, 검증 기준 없이 완료를 선언하는 것. 이 반복 패턴은 모델 교체가 아니라 **짧은 행동 규칙을 영속 컨텍스트로 상시 주입**해 교정한다. 4원칙(Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution)이 대표 룰셋이고, CLAUDE.md 병합, 스킬/플러그인, Cursor rule 등 여러 경로로 배포된다.
+코딩 에이전트의 사고는 능력 부족보다 행동 습관에서 온다. 확인 없이 가정하고 질주하는 것, 100줄이면 될 코드를 1000줄로 부풀리는 것, 태스크와 무관한 코드를 건드리는 것, 검증 기준 없이 완료를 선언하는 것. 이 반복 패턴은 모델 교체가 아니라 **짧은 행동 규칙을 영속 컨텍스트로 상시 주입**해 교정한다. 4원칙(Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution)이 대표 룰셋이고, CLAUDE.md 병합, 스킬/플러그인, Cursor rule 등 여러 경로로 배포된다. 규칙은 경직된 금지보다 판단 원칙 형태로 두는 것이 모델 세대가 올라도 유효하다 — 금지형 규칙이 새 세대에서 부채로 반전되는 이유는 [[Context-Engineering|컨텍스트 엔지니어링]]의 모델 세대와 지시 밀도 절 참조.
 
 ## 반복 관찰되는 실패 패턴
 

@@ -98,6 +98,7 @@ DB나 중간 네트워크(방화벽, LB)가 **유휴 커넥션을 끊어버리�
 - **Transaction-level pooling**: 요청 → 커넥션 획득 → 트랜잭션 종료 시 반환 → 다음 요청에 재할당
 - PostgreSQL처럼 연결 비용이 큰 DB에서 효과 큼
 - 제약: prepared statement, 세션 변수 사용에 주의
+- **FIFO vs LIFO**: 풀이 반환된 연결을 고르는 순서는 구현별 선택이다. FIFO(예: SQLAlchemy 기본)는 연결을 고르게 돌려 가용성을 우선하지만 모든 연결이 계속 사용되어 남는 연결을 줄이기 어렵다. LIFO는 최근 반환된 연결에 몰아 써 한가한 꼬리 연결이 타임아웃으로 정리되게 한다 — pgBouncer의 기본이 LIFO고, HikariCP나 Go `database/sql` 같은 여러 앱 풀도 최근 반환 연결을 재사용한다
 
 ## 흔한 실수
 
@@ -134,3 +135,9 @@ DB나 중간 네트워크(방화벽, LB)가 **유휴 커넥션을 끊어버리�
 - [[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound]]
 - [[RDS-Operational-Pitfalls|RDS 운영 함정 (커넥션 고갈이 장애 1순위, max_connections 메모리 비례)]]
 - [[RDS-Connection-Credentials|RDS 앱 연결과 자격증명 (RDS Proxy)]]
+
+## 출처
+
+- [스타트업의 Postgres 생존 가이드 (토론) - GeekNews](https://news.hada.io/topic?id=31706)
+- [PgBouncer config, server_round_robin - PgBouncer](https://www.pgbouncer.org/config.html)
+- [Connection Pooling, use_lifo - SQLAlchemy](https://docs.sqlalchemy.org/en/20/core/pooling.html#pool-use-lifo)

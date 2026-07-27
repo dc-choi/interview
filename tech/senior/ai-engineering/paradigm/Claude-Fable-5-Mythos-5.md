@@ -8,7 +8,7 @@ verified_at: 2026-07-21
 
 # Claude Fable 5, Mythos 5
 
-Claude Fable 5는 가장 널리 출시된 라인 중 최상위 성능 모델로, 까다로운 추론과 장기 에이전트 작업을 겨냥한다. Claude Mythos 5는 동일한 기능을 공유하되 안전 분류기가 없고 Project Glasswing 승인 고객에게만 제한 제공된다. 두 모델은 사양과 가격이 같고, 기존 Claude 모델과 다른 몇 가지 새 API 동작을 도입했다.
+Claude Fable 5는 가장 널리 출시된 라인 중 최상위 성능 모델로, 까다로운 추론과 장기 에이전트 작업을 겨냥한다. Claude Mythos 5는 같은 기능을 공유하되 안전 분류기가 없고 Project Glasswing 승인 고객에게만 제한 제공된다. 두 모델은 사양과 가격이 같고, 기존 Claude 모델과 다른 몇 가지 새 API 동작을 도입했다.
 
 2026-07-21 공식 문서 기준 Fable 5 접근은 복구돼 일반 제공 중이고, Mythos 5는 제한된 고객에게 제공된다. 아래 접근 중단 사례는 현재 상태가 아니라 2026-06의 일시적 사건 기록이다.
 
@@ -17,7 +17,7 @@ Claude Fable 5는 가장 널리 출시된 라인 중 최상위 성능 모델로,
 | 모델 | API ID | 위치 |
 |---|---|---|
 | Claude Fable 5 | `claude-fable-5` | 일반 출시 플래그십, 최고 성능, 안전 분류기 포함 |
-| Claude Mythos 5 | `claude-mythos-5` | Fable 5와 동일 기능, 안전 분류기 없음, Project Glasswing 한정, Mythos Preview 후속 |
+| Claude Mythos 5 | `claude-mythos-5` | Fable 5와 같은 기능, 안전 분류기 없음, Project Glasswing 한정, Mythos Preview 후속 |
 
 ## 사양과 가격 (두 모델 공통)
 
@@ -46,7 +46,7 @@ Fable 5에는 특정 요청을 거부하는 안전 분류기가 들어 있다. M
 
 | 방식 | 동작 | 비고 |
 |---|---|---|
-| 서버 측 | `fallbacks` 파라미터를 넘기면 API가 대신 재시도 | Claude API, AWS Claude Platform 베타 |
+| 서버 측 | `fallbacks` 파라미터를 넘기면 API가 대신 재시도 | Claude API 베타 (Bedrock, Vertex, Foundry 미지원) |
 | 클라이언트 측 | SDK 미들웨어로 클라이언트에서 재시도 | TypeScript, Python, Go, Java, C# |
 | 수동 | 직접 재시도 구현 | 모든 플랫폼, 모든 언어 |
 
@@ -54,9 +54,9 @@ Fable 5에는 특정 요청을 거부하는 안전 분류기가 들어 있다. M
 
 출력이 생성되기 전에 거부되면 과금되지 않는다. 다른 모델로 재시도할 때는 폴백 크레딧이 전환에 따른 프롬프트 캐시 비용을 환불해 같은 비용을 두 번 내지 않게 한다.
 
-## 적응형 사고 항상 켜짐
+## 적응형 사고 상시 적용
 
-적응형 사고(adaptive thinking)가 Fable 5와 Mythos 5의 유일한 사고 모드다. `thinking` 파라미터를 주지 않아도 항상 적용되고, `thinking: {"type": "disabled"}`는 지원하지 않는다. 사고 깊이와 비용은 `effort` 파라미터로 제어한다. (Opus, Sonnet, Haiku의 Messages API 동작은 변하지 않으며 이 절은 Fable 5, Mythos 5 전용이다.)
+적응형 사고(adaptive thinking)가 Fable 5와 Mythos 5의 유일한 사고 모드다. `thinking` 파라미터를 주지 않아도 항상 적용되고, `thinking: {"type": "disabled"}`는 지원하지 않는다. 사고 깊이와 비용은 `effort` 파라미터로 제어한다. (이 절은 Fable 5, Mythos 5 전용이며, 2026-06 출시 시점의 Opus 4.x, Sonnet, Haiku의 Messages API 동작은 바뀌지 않았다. 이후 출시된 [[Claude-Opus-5|Opus 5]]는 사고 기본 켜짐 등 자체 변경을 도입했다.)
 
 ## 원시 사고는 반환되지 않음
 
@@ -98,7 +98,7 @@ Effort, 작업 예산(task budgets, 베타 헤더 `task-budgets-2026-03-13`), �
 
 사례:
 
-- 2026-06 Fable 5가 정부의 수출 통제 지시로 전 고객 접근이 일시 중단됐다. Fable 5는 사이버, 생물, 화학 영역 가드레일을 얹은 Mythos이므로, 그 가드레일을 우회하면 사실상 가드레일 없는 Mythos의 공격적 사이버 역량에 닿는다는 게 규제 측 우려였다. 벤더와 다수 보안 연구자는 동일 수준 역량이 다른 파운데이션, 오픈소스 모델에도 있어 이 모델 하나만 막아도 실질 위험은 줄지 않고 방어자(레드팀, 보안 감사)에게서 도구만 뺏는다고 반박했다. 이후 접근은 복구됐고 Fable 5는 일반 제공 상태가 됐다. 이 사건의 핵심은 현재 가용성이 아니라 frontier 모델의 접근이 기술 결함 외 규제와 벤더 결정으로도 일시 중단될 수 있다는 운영 리스크다.
+- 2026-06 Fable 5가 정부의 수출 통제 지시로 전 고객 접근이 일시 중단됐다. Fable 5는 사이버, 생물, 화학 영역 가드레일을 얹은 Mythos이므로, 그 가드레일을 우회하면 사실상 가드레일 없는 Mythos의 공격적 사이버 역량에 닿는다는 게 규제 측 우려였다. 벤더와 다수 보안 연구자는 비슷한 수준의 역량이 다른 파운데이션, 오픈소스 모델에도 있어 이 모델 하나만 막아도 실질 위험은 줄지 않고 방어자(레드팀, 보안 감사)에게서 도구만 뺏는다고 반박했다. 이후 접근은 복구됐고 Fable 5는 일반 제공 상태가 됐다. 이 사건의 핵심은 현재 가용성이 아니라 frontier 모델의 접근이 기술 결함 외 규제와 벤더 결정으로도 일시 중단될 수 있다는 운영 리스크다.
 
 ## 면접, 적용 포인트
 
@@ -109,6 +109,7 @@ Effort, 작업 예산(task budgets, 베타 헤더 `task-budgets-2026-03-13`), �
 
 ## 관련 문서
 
+- [[Claude-Opus-5|Claude Opus 5 (하위 티어 — 절반 가격에 근접 성능, 같은 refusal 처리 패턴)]]
 - [[LLM-Abstention|LLM Abstention (모른다고 말하는 능력 — refusal과 층위 구분)]]
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (폴백 = 고가용성 워커 풀)]]
 - [[Harness-Engineering|하네스 엔지니어링 (effort, task budget = 루프 통제 손잡이)]]

@@ -15,7 +15,7 @@ Prometheus가 대상의 `/metrics` 엔드포인트를 **주기적으로 긁어�
 
 - **장점**: 대상의 생존 여부를 수집 자체로 알 수 있고(up 메트릭), 대상이 수집기를 몰라도 됨, 중앙에서 수집 주기 제어.
 - **Service Discovery**: 쿠버네티스, EC2, Consul 등에서 대상을 자동 발견해 동적 환경에 대응.
-- **Exporter**: 직접 계측 못 하는 대상은 exporter가 변환한다. `node_exporter`(호스트), `cAdvisor`(컨테이너), DB/Redis exporter 등. [[Container-Monitoring]] 대상이 많고 자주 변하면 하나의 exporter가 여러 대상을 긁는 [[Multi-Target-Exporter|멀티타겟 Exporter + 서비스 디스커버리]]로 확장.
+- **Exporter**: 직접 계측 못 하는 대상은 exporter가 변환한다. `node_exporter`(호스트), `cAdvisor`(컨테이너), DB/Redis exporter 등 ([[Container-Monitoring|컨테이너 모니터링]]). 대상이 많고 자주 변하면 하나의 exporter가 여러 대상을 긁는 [[Multi-Target-Exporter|멀티타겟 Exporter + 서비스 디스커버리]]로 확장.
 - 단명하는 배치 잡은 pull이 어려워 **Pushgateway**로 예외 처리.
 
 ## 데이터 모델 — 다차원 라벨
@@ -60,7 +60,7 @@ histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by 
 - 로컬 보존만 믿고 장기 데이터 유실 → remote-write/Thanos 필요
 - raw 임계값 알람 남발 → 알람 피로 (burn rate로 전환, [[SLI-SLO]])
 - Histogram 버킷을 부적절히 잡아 분위수 부정확
-- Pull 모델에서 방화벽/네트워크로 scrape 실패를 놓침
+- Pull 모델에서 방화벽/네트워크로 scrape 실패를 놓침 — NAT 뒤 대상은 에이전트 push 토폴로지로 우회 ([[Network-Traffic-Monitoring|네트워크 트래픽 모니터링]])
 
 ## 면접 체크포인트
 

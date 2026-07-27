@@ -69,7 +69,7 @@ Prometheus ──watch──▶ targets.json (file_sd) → 새 타겟 자동 scr
 - 1:1 Exporter 모델의 한계와 멀티타겟(probe) 모델이 푸는 문제
 - `__param_target` + `relabel_configs`로 대상을 파라미터화하는 흐름
 - `file_sd` 기반 커스텀 SD(예: RDS SD)로 동적 타겟을 자동 발견하는 메커니즘
-- 멀티타겟과 SD를 **함께** 써야 "대상 증가 시 변경 0"이 되는 이유
+- 멀티타겟과 SD를 **함께** 써야 대상 증가 시 변경 0이 되는 이유
 - 멀티타겟 Exporter의 SPOF, 동시성 함정과 대응
 
 ## 출처

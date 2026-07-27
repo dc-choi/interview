@@ -1,7 +1,7 @@
 ---
 tags: [senior, ai, context-engineering, claude-md, productivity]
 status: done
-verified_at: 2026-07-23
+verified_at: 2026-07-27
 category: "Senior - AI 엔지니어링"
 aliases: ["Context Engineering", "컨텍스트 엔지니어링", "CLAUDE.md 최적화", "Context Rot"]
 ---
@@ -73,6 +73,18 @@ Anthropic은 각 `CLAUDE.md`를 200줄보다 짧게 유지하는 것을 목표�
 
 줄마다 없으면 실제 오류가 늘어나는지, 더 가까운 경로나 Skill로 옮길 수 있는지 확인한다. 긴 설명, 자주 바뀌는 예제, 이미 자동화로 검증되는 규칙은 상시 지시에서 뺀다.
 
+## 모델 세대와 지시 밀도
+
+요구사항을 쌓을수록 성능이 떨어지는 지시의 저주([[Agent-Spec-Writing|에이전트 스펙 작성법]])는 이전에도 있었지만, 맥락 판단력이 오른 모델 세대(Claude 5 세대의 Opus 5, Fable 5)에서는 처방이 규칙 추가에서 규칙 정리로 바뀐다. 이전 모델의 약점을 보완하려고 쌓은 경직된 금지형 규칙이 새 모델에서는 판단을 좁히는 부채가 된다. 판단 원칙 형태의 가드레일([[Agent-Coding-Guardrails|LLM 코딩 가드레일]]의 4원칙 같은)은 이 정리 대상이 아니다.
+
+- **명시적 규칙에서 판단 원칙으로**: 여러 줄 주석 금지 같은 경직된 제약 대신 주변 코드 스타일에 맞추라는 원칙형 지시가 더 잘 작동한다. Claude Code는 자체 코딩 평가에서 측정 가능한 저하 없이 시스템 프롬프트의 80% 이상을 제거했다고 발표했다 (벤더 자체 보고).
+- **중복 지시는 충돌 비용**: 시스템 프롬프트, Skills, `CLAUDE.md`에 겹치거나 충돌하는 지침이 있으면 모델은 행동을 정하기 전에 그 충돌을 더 숙고해야 한다 — 위 Context Rot의 지시 충돌 항목과 같은 축이다. 새 모델은 그 제약 없이도 판단할 수 있으므로 겹침 자체가 정리 대상이 된다.
+- **예시보다 인터페이스**: 도구 사용 예시를 나열하는 대신 표현력 있는 도구 인터페이스 자체를 설계한다.
+- **점진적 공개(progressive disclosure)**: 긴 지침을 필요 시점에 로드되는 Skill로 내리는 위 설계 원칙의 명명이다. 근거 자료로는 마크다운 계획서보다 스펙, 테스트 스위트, 목업, 루브릭 같은 참조 자료를 쓴다 (진행 상태 기록용 계획 문서는 Write 전략대로 유지).
+- **수동 기록에서 자동 메모리로**: `CLAUDE.md` 수동 기록을 자동 메모리로 대체하는 방향이 제시되지만, 이식성(포터블 마크다운 대비 벤더 종속)과 자동 기록이 버전 관리되지 않고 숨겨진 위치에 쌓이는 통제권 문제가 반론 지점이다 (이 vault의 방침은 위 로딩 절 참조).
+
+모델 세대를 올릴 때는 이전 모델용 과잉 지시를 정리 대상으로 본다. Claude Code는 검증과 코드 검토 지침을 상시 주입에서 온디맨드 Skill 호출로 옮겼고, 모델이 이미 하는 검증을 지시로 반복하지 않는 사례는 [[Claude-Opus-5|Claude Opus 5]] 참조.
+
 ## Advisory와 강제 검증
 
 | 수단 | 적합한 역할 | 한계 |
@@ -110,6 +122,7 @@ Hook은 자연어 지시보다 실행 시점이 결정적이지만 성공률을 
 - [ ] 절대적인 성공률이나 모든 모델에 대한 일반화를 쓰지 않았는가
 - [ ] Hook의 실행 시점과 실패 가능성을 구분했는가
 - [ ] 요약에서 나온 결론을 원본 소스, 호출부, 테스트나 설정으로 확인했는가
+- [ ] 모델 세대를 올린 뒤 이전 모델용 과잉 지시와 중복 규칙을 정리했는가
 
 ## 면접 포인트
 
@@ -136,6 +149,8 @@ Q. 반드시 지켜야 할 규칙은 Hook에만 두면 되나?
 - [Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?](https://arxiv.org/abs/2602.11988)
 - [NoLiMa: Long-Context Evaluation Beyond Literal Matching](https://arxiv.org/abs/2502.05167)
 - [효율적인 CLAUDE.md 관리 및 컨텍스트 최적화 전략 - Hancom Tech](https://tech.hancom.com/claude-md-context-optimization/)
+- [The new rules of context engineering for Claude 5 generation models - Anthropic](https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models)
+- [Claude 5 모델을 위한 새로운 컨텍스트 엔지니어링 규칙 - GeekNews](https://news.hada.io/topic?id=31782)
 
 ## 관련 문서
 
@@ -143,6 +158,7 @@ Q. 반드시 지켜야 할 규칙은 Hook에만 두면 되나?
 - [[Agentic-Context-Platform|Context Provider / 에이전트 컨텍스트 플랫폼 (공급 측, 조직 자산을 모아 신뢰 가능한 맥락 풀로)]]
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain, Inform, Verify, Correct, HITL, 컨텍스트는 Inform 축)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (지시의 저주, 3단계 경계)]]
+- [[Claude-Opus-5|Claude Opus 5 (검증 스캐폴딩 제거 — 세대 갱신 시 프롬프트 부채 정리)]]
 - [[Agent-Coding-Guardrails|LLM 코딩 가드레일 (실패 패턴별 원칙, 판정 테스트, 배포 경로)]]
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (Lazy Load, 분업)]]
 - [[Software-3-0|Software 3.0]]

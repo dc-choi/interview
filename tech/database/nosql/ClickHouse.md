@@ -68,7 +68,7 @@ ORDER BY (created_at, service_id, event_type);
 
 ### 부적합
 - **단건 조회**(`SELECT * WHERE id = 12345`) — 행을 재조합하느라 오히려 느림. PK로 한 번에 찾는 OLTP가 적합
-- **단건 INSERT** — 매 INSERT마다 새 파트 생성 → 머지 부담 폭증. 반드시 배치
+- **단건 INSERT** — 매 INSERT마다 새 파트 생성 → 머지 부담 폭증. 배치로 묶는 것이 사실상 필수
 - **트랜잭션 중심 OLTP** — 단일 INSERT 원자성 등 제한적 보장은 있지만, 결제, 주문처럼 다중 행, 다중 테이블 ACID 트랜잭션이 핵심인 워크로드에는 부적합
 - **빈번한 UPDATE/DELETE** — `ALTER TABLE ... DELETE` Mutation은 파트를 통째 재작성. 비용 큼. UPDATE는 ReplacingMergeTree로 대체하지만 즉시 반영 아님(머지 시점)
 
@@ -90,7 +90,7 @@ ORDER BY (created_at, service_id, event_type);
 
 ## Materialized View
 
-일반 VIEW는 조회 시점에 원본을 다시 읽지만, **Materialized View(MV)는 INSERT 시점에 집계를 미리 계산해 별도 테이블에 저장**한다. 대시보드처럼 동일 집계를 반복 조회하는 패턴에서 추가 4~10배 개선이 흔하다.
+일반 VIEW는 조회 시점에 원본을 다시 읽지만, **Materialized View(MV)는 INSERT 시점에 집계를 미리 계산해 별도 테이블에 저장**한다. 대시보드처럼 같은 집계를 반복 조회하는 패턴에서 추가 4~10배 개선이 흔하다.
 
 - INSERT 트리거로 동작 — 원본 테이블에 INSERT되면 MV에도 자동 반영
 - `AggregatingMergeTree` + `*State` 집계 함수와 짝지어 사용하면 부분 집계 누적 가능
@@ -109,13 +109,15 @@ ORDER BY (created_at, service_id, event_type);
 - 변경 데이터 캡처는 [[CDC-Debezium|Debezium]] 등으로
 - ClickHouse 적재는 `INSERT` 배치를 수백~수천 건씩 묶어서 — `kafka` 테이블 엔진 또는 외부 컨슈머
 - KPI 분석용 시계열 이력은 [[SCD-Type2|SCD Type 2]] 모델로
+- 기존 저장소가 있는 시스템에서 한 프로세스가 두 저장소를 모두 소유하고 직접 쓰는 단일 기록자 구조라면, 이중 쓰기(dual-write) 관찰, 읽기 소스 전환, (선택) 이력 이관과 단독 전환 순서로 점진 이관하고, 연속 쓰기 실패가 임계에 도달하면 새 저장소를 unhealthy로 표시하고 기존 저장소 기록을 유지하거나 (단독 전환 이후라면) 다시 켜는 안전장치를 둔다. 별개 시스템 간 복제라면 이중 쓰기 gap이 생기므로 위 표준 흐름처럼 CDC로 확정된 변경을 캡처한다
+- 사례: 소형 수집기가 SQLite와 이중 쓰기하며 buffer 테이블로 소량 쓰기를 완충하는 구조는 [[Network-Traffic-Monitoring|네트워크 트래픽 모니터링]] 참조
 
 ## MySQL 호환성
 
 쿼리 문법 호환성이 매우 높다.
-- `DATE_FORMAT`, `IF`, `CASE WHEN`, `LIKE`/`IN`/`BETWEEN`, `HAVING` 모두 동일
+- `DATE_FORMAT`, `IF`, `CASE WHEN`, `LIKE`/`IN`/`BETWEEN`, `HAVING` 등 대부분 같은 문법으로 동작
 - MySQL Wire Protocol 지원 → MySQL Client로 접속 가능
-- 익숙한 SQL 그대로 들고 와도 진입 장벽 낮음. 단, 위에서 본 적합/부적합 차이를 이해하지 못하면 "느린 MySQL"이 됨
+- 익숙한 SQL 그대로 들고 와도 진입 장벽 낮음. 단, 위에서 본 적합/부적합 차이를 이해하지 못하면 느린 MySQL이 됨
 
 ## 흔한 실수
 
@@ -133,7 +135,7 @@ ORDER BY (created_at, service_id, event_type);
 - UPDATE/DELETE가 비싼 이유와 대체 패턴
 - OLTP DB와 ClickHouse를 함께 쓰는 표준 구조 (CDC → Kafka → ClickHouse)
 - Materialized View로 추가 성능을 끌어내는 원리
-- "단건 조회는 ClickHouse가 오히려 느릴 수 있는 이유"
+- 단건 조회는 ClickHouse가 오히려 느릴 수 있는 이유
 
 ## 사용 사례
 - **카카오페이 증권** — 로그 플랫폼 OpenSearch → ClickHouse, 일 41TB, 200억 건, 비용 85% 절감
@@ -154,3 +156,4 @@ ORDER BY (created_at, service_id, event_type);
 - [[SCD-Type2|SCD Type 2 (이력 차원 관리)]]
 - [[MQ-Kafka|Kafka]]
 - [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL]]
+- [[Network-Traffic-Monitoring|네트워크 트래픽 모니터링 (SQLite와 이중 쓰기 도입 사례)]]

@@ -95,7 +95,7 @@ CGI(30년 전) vs Next.js, Astro(현재). 도구는 비교할 수 없이 발전�
 
 **자주 나오는 오해**
 - "최신 도구를 쓰면 개발이 빨라진다" — 숨겨진 비용이 늘 존재
-- "AI 코딩 도구가 이 역설을 깬다" — 현재까지 관찰로는 비용이 다른 영역(검증, 디버깅, 맥락 유지)으로 이동 중
+- "AI 코딩 도구가 이 역설을 깬다" — 현재까지 관찰로는 비용이 다른 영역(검증, 디버깅, 맥락 유지)으로 이동 중. 기간이 아니라 품질 축의 구조 원인은 [[Software-Quality-Economics|품질의 경제학]]
 
 ## 왜 이 역설들이 구조적인가
 
@@ -145,6 +145,7 @@ CGI(30년 전) vs Next.js, Astro(현재). 도구는 비교할 수 없이 발전�
 - Fred Brooks — *The Mythical Man-Month* (1975)
 
 ## 관련 문서
+- [[Software-Quality-Economics|소프트웨어 품질의 경제학 (품질 축의 구조 원인)]]
 - [[Tech-Decision|기술 의사결정]]
 - [[Tech-Roadmap|기술 로드맵 수립]]
 - [[Operational-Efficiency|운영 및 생산성 효율화]]

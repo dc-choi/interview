@@ -139,6 +139,7 @@ AI가 코드를 거의 공짜로 찍어내면서 부채 은유가 폭발했다. 
 
 ## 관련 문서
 
+- [[Software-Quality-Economics|소프트웨어 품질의 경제학 — 미검토 코드가 쌓이는 인센티브 구조]]
 - [[Refactoring-In-Practice|실전 리팩토링 — 리팩터링은 학습 반영, 변경 비용 감소 투자]]
 - [[Technical-Terminology-Precision|기술 용어의 엄밀성 — 창시자 정의 찾기]]
 - [[Tidy-First|Tidy First — 구조 변경과 동작 변경의 분리]]

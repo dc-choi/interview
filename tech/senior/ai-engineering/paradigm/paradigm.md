@@ -11,4 +11,5 @@ AI 시대 엔지니어링의 토대 — 패러다임 전환과 모델, API 거�
 
 ## 목차
 - [x] [[Software-3-0|Software 3.0 (Karpathy 1.0/2.0/3.0, Harness, 레이어드 아키텍처 매핑)]]
-- [x] [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5 (1M 컨텍스트, 거부=stop_reason refusal HTTP 200, 폴백 3종, 폴백 크레딧, 적응형 사고 항상 켜짐, effort, thinking.display, 모델 가용성 외생 리스크, defense in depth)]]
+- [x] [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5 (1M 컨텍스트, 거부=stop_reason refusal HTTP 200, 폴백 3종, 폴백 크레딧, 적응형 사고 상시 적용(비활성화 미지원), effort, thinking.display, 모델 가용성 외생 리스크, defense in depth)]]
+- [x] [[Claude-Opus-5|Claude Opus 5 (Fable 5 절반 가격에 근접 성능, 사고 기본 켜짐, effort 게이팅, 자동 폴백 라우팅, 대화 중 도구 변경, 검증 스캐폴딩 제거)]]
