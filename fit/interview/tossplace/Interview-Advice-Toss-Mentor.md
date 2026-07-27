@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, tossplace, advice]
-status: active
+status: done
 category: "Interview - Fit"
 aliases: ["Toss Interview Advice Mentor", "멘토 토스 면접 조언"]
 ---

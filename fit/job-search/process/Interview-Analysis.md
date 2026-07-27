@@ -1,6 +1,6 @@
 ---
 tags: [career, job-search, interview, analysis]
-status: active
+status: done
 category: "이직 준비"
 aliases: ["면접 탈락 분석", "면접 패턴 분석"]
 ---

@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, sazo, cheatsheet]
-status: active
+status: done
 category: "Interview - Fit"
 aliases: ["Sazo 1st Cheatsheet", "사줘 1차 치트시트", "사줘 D-day 훑기"]
 ---

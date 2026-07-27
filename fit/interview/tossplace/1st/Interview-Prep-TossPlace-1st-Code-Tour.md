@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, tossplace, code-tour, screen-share]
-status: active
+status: done
 category: "Interview - Fit"
 aliases: ["TossPlace Code Tour", "토스플레이스 코드 투어 동선"]
 ---

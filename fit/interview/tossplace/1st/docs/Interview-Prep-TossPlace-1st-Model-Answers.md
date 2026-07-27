@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, tossplace, assignment-defense, model-answers]
-status: active
+status: done
 category: "Interview - Fit"
 aliases: ["TossPlace Model Answers", "토스플레이스 모범답변 스크립트"]
 ---

@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, tossplace, assignment-defense, drill]
-status: active
+status: done
 category: "Interview - Fit"
 aliases: ["TossPlace Assignment Defense", "토스플레이스 과제 디펜스"]
 ---

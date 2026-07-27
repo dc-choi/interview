@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, tossplace, domain]
-status: active
+status: done
 category: "Interview - Fit"
 aliases: ["TossPlace Domain", "토스플레이스 도메인 브리프"]
 ---

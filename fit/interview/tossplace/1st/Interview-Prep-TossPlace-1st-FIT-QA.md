@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, tossplace, fit-answers, qa]
-status: active
+status: done
 category: "Interview - Fit"
 aliases: ["TossPlace FIT QA", "토스플레이스 FIT 예상질문"]
 ---

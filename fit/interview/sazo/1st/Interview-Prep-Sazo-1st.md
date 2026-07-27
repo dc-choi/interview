@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, sazo]
-status: active
+status: done
 category: "Interview - Fit"
 aliases: ["Sazo Interview Prep 1st", "사줘 1차 핏 인터뷰 준비"]
 ---

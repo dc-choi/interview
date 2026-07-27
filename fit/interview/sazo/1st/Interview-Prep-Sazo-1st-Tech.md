@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, sazo, tech]
-status: active
+status: done
 category: "Interview - Fit"
 aliases: ["Sazo Interview Tech Cards", "사줘 기술 갭 카드"]
 ---

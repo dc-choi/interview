@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, tossplace, deep-review, loop]
-status: active
+status: done
 category: "Interview - Fit"
 aliases: ["TossPlace Deep Review", "토스플레이스 심화 리뷰 누적"]
 ---
