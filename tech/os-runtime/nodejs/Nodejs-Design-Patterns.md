@@ -146,6 +146,6 @@ const c2 = Object.create(Connection).init('b.example.com');
 ## 관련 문서
 - [[tech/architecture-design/design-pattern/디자인패턴이란|디자인 패턴이란]]
 - [[JavaScript-Prototype-Philosophy|JS가 프로토타입을 선택한 이유]]
-- [[tech/computer-science/js/Prototype-OOP|Prototype 기반 OOP]]
+- [[Prototype-OOP|Prototype 기반 OOP]]
 - [[Module-System|Node.js 모듈 시스템]]
 - [[SOLID-In-Practice|SOLID 원칙 실전 적용]]

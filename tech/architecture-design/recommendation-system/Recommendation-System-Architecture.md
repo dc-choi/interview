@@ -1,7 +1,6 @@
 ---
 tags: [architecture, recommendation-system, personalization]
 status: index
-verified_at: 2026-07-21
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Recommendation System Architecture", "추천 시스템 아키텍처", "추천시스템 아키텍처"]
 ---

@@ -20,10 +20,7 @@ JS 언어 핵심 — 비동기, 호이스팅, 이벤트, 프로토타입, 코드
 - [x] [[JS-Access-Modifiers|접근 제어자 (# private, TS private, _ 관례)]]
 
 ## 객체지향(Prototype 기반)
-- [x] [[Prototype-Mechanism|프로토타입 동작 원리 (객체 생성, prototype 객체, constructor, __proto__, 체인)]]
-- [x] [[Prototype-Inheritance|프로토타입 상속 (this vs prototype, 룩업, Object.create 상속)]]
-- [x] [[Prototype-OOP|Prototype 기반 OOP]]
-- [x] [[JavaScript-Prototype-Philosophy|JS가 프로토타입을 선택한 이유 (철학적 배경, Self, 클래스 vs 프로토타입)]]
+- [x] [[JS-Prototype|프로토타입 폴더 인덱스 (동작 원리, 상속, OOP, 철학)]]
 
 ## 코드 가독성
 - [x] [[Code-Readability-Dark-Patterns|코드 가독성 & JS 다크패턴 (Don't Make Me Think)]]

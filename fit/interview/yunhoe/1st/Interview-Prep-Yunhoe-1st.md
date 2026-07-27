@@ -24,8 +24,7 @@ aliases: ["Yunhoe 1st Interview Prep", "윤회 1차 본 미팅 준비", "CARE ID
 ## 하위 문서
 
 - [[Interview-Prep-Yunhoe-1st-FIT|JD 매칭 & FIT 답변 (시솔지주 옵션 B, 왜 백엔드, 잦은 이직, 공백기, 실패 사례)]]
-- [[Interview-Prep-Yunhoe-1st-Tech|예상 기술 질문 — 메인 (도메인 매핑 깊이, 10개)]]
-- [[Interview-Prep-Yunhoe-1st-Tech-Extra|예상 기술 질문 — 보강 (범용 백엔드 안전망, 10개 영역 30+개)]]
+- [[Interview-Prep-Yunhoe-1st-Tech|예상 기술 질문 인덱스 (메인 10개 + 보강, 매핑, 이력서)]]
 - [[Interview-Prep-Yunhoe-1st-Lead-Questions|백엔드 리드, 컬처핏, **AI 도구 깊이**(★ 6개월 책임 영역), **워라밸 강도**, 역질문, 체크리스트]]
 - [[Interview-Prep-Yunhoe-1st-Cheatsheet|🔥 30분 훑기용 치트시트 (면접 직전)]]
 - [[Interview-Retro-Yunhoe-1st|1차 본 미팅 회고]]

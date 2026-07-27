@@ -1,7 +1,6 @@
 ---
 tags: [architecture, recommendation-system, industry-case-study, personalization]
 status: index
-verified_at: 2026-07-21
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Recommendation System Industry Case Studies", "추천 시스템 산업 사례", "추천 시스템 유명 기업"]
 ---

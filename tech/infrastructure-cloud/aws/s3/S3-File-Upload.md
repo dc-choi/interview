@@ -81,8 +81,7 @@ S3가 제공하는 **파일 분할 업로드 API**. 파일을 여러 Part로 쪼
 
 InitiateMultipartUpload 후 Complete도 Abort도 하지 않으면 **part들이 스토리지 비용으로 쌓인다** (보이지 않음).
 
-- **Lifecycle Rule**로 미완료 업로드 7일 후 자동 Abort 설정 권장
-- 업로드 실패 시 앱이 명시적으로 `AbortMultipartUpload` 호출
+- **Lifecycle Rule**로 미완료 업로드 7일 후 자동 Abort 설정을 권장하고, 업로드 실패 시에는 앱이 명시적으로 `AbortMultipartUpload` 호출
 
 ## 4. Presigned URL — 서버 부담 제거
 

@@ -1,7 +1,6 @@
 ---
 tags: [nestjs, graphql, dataloader, subscription]
 status: index
-verified_at: 2026-07-20
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS GraphQL", "NestJS GraphQL 통합"]
 ---

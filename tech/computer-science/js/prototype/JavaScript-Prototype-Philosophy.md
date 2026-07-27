@@ -155,7 +155,7 @@ Animal.prototype.speak = function() { return `${this.name} makes a sound`; };
 
 ## 관련 문서
 - [[Prototype-Mechanism|프로토타입 동작 원리 (prototype 객체, constructor, __proto__, 체인)]]
-- [[tech/computer-science/js/Prototype-OOP|Prototype 기반 OOP (기술 동작)]]
+- [[Prototype-OOP|Prototype 기반 OOP (기술 동작)]]
 - [[tech/computer-science/js/Hoisting|호이스팅]]
 - [[Scope|스코프]]
 - [[tech/computer-science/ts/타입스크립트(TS)|타입스크립트]]

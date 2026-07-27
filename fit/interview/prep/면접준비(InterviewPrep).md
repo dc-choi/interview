@@ -22,6 +22,8 @@ aliases: ["Interview Prep"]
 
 ## 질문 풀
 
+Behavioral, Tech-Basics, Tech-Scale은 `common/common-interview-questions/` 소속이다.
+
 - [[Developer-Interview-13-Questions|개발자 면접 단골 13개 (의도, STAR, 함정)]]
 - [[Common-Interview-Questions-Behavioral|Behavioral 질문 — STAR 기반 (실패, 리더십, 보람, 미달성, 팀 리더)]]
 - [[Common-Interview-Questions-Tech-Basics|1차 기술 질문 — 기본 (브라우저, REST, STAR, 성능 테스트)]]
@@ -40,4 +42,4 @@ aliases: ["Interview Prep"]
 
 ## 본인 답변 마스터
 
-- [[Common-Interview-Questions|마스터 TOC]] — common/ 폴더 (My-Self-Intro, My-Motivation-Reasons, My-Tech-Cards, My-FIT-Answers, My-Reverse-Questions)
+- [[Common-Interview-Questions|마스터 TOC]] — common/ 폴더와 하위 인덱스 (My-Self-Intro, My-Motivation-Reasons, My-Tech-Cards, My-FIT-Answers, My-Reverse-Questions, 질문 풀 3종)

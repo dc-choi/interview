@@ -1,7 +1,6 @@
 ---
 tags: [infrastructure, aws, opensearch, search, analytics, managed-service, index]
 status: index
-verified_at: 2026-07-27
 category: "Infrastructure - AWS"
 aliases: ["Amazon OpenSearch Service", "OpenSearch Service", "Amazon OpenSearch"]
 ---
