@@ -15,3 +15,5 @@ aliases: ["윤회 도메인 브리프", "DPP 도메인", "순환경제 키워드
 
 - [[Interview-Prep-Yunhoe-Domain-Keywords|도메인 키워드 정리 — 순환경제, ESPR, DPP, EPR, 탄소배출권, 기후테크와 CARE ID 연결, 1차 전화용 한 줄, 출처]]
 - [[Interview-Prep-Yunhoe-Domain-Company-Facts|회사 사실 정보 — 핵심 멤버와 개발팀 구조, 조직 문화, 고객사와 파트너, 매출과 투자, 채용과 인프라 시그널]]
+
+차수 폴더 인덱스: [[Interview-Prep-Yunhoe-CoffeeChat|커피챗 (2026-05-15 대표 1차 전화)]]

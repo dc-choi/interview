@@ -9,6 +9,8 @@ aliases: ["Functional", "Functional Programming Index"]
 
 카테고리 이론(Category Theory)의 기초부터 시작해 Functor, Monad, CCC까지, 함수형 프로그래밍의 수학적 기반을 학습 순서대로 배열.
 
+분류 폴더 인덱스: [[category-theory|카테고리 이론 시리즈]]
+
 ## 기초 — 카테고리, 타입, 모노이드
 - [x] [[Category-Theory-For-Programmers|Category Theory for Programmers (객체, 사상, 합성, 항등, 카테고리 법칙)]]
 - [x] [[Types-And-Functions-As-Category|타입과 함수의 카테고리 (Set/Hask, 순수함수 3조건, Bottom, Void/Unit/Bool)]]

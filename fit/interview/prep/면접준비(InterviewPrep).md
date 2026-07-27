@@ -7,7 +7,7 @@ aliases: ["Interview Prep"]
 
 # 면접 준비(Interview Prep)
 
-질문 풀, 사실형 기술 핵심 답변, 메타 가이드, 자기분석, 치환표, CS/시스템디자인/라이브코딩/글로벌 가이드. **개인 경험과 FIT 답변 본문은 [[Common-Interview-Questions|마스터 TOC]], common/ 폴더 My-*.md에서 관리한다**.
+메타 가이드, 자기분석, 치환표, 형식별 질문 풀과 CS/시스템디자인/라이브코딩/글로벌 가이드. **개인 경험과 FIT 답변 본문, Behavioral과 기술 질문 풀은 [[Common-Interview-Questions|마스터 TOC]]가 있는 common/에서 관리한다**.
 
 예상 질문은 질문만 저장하지 않는다. 사실형 기술 질문에는 핵심 답변과 흔한 오답을, 설계형 질문에는 답변 골격과 트레이드오프를 반드시 포함한다.
 
@@ -31,10 +31,7 @@ Behavioral, Tech-Basics, Tech-Scale은 `common/common-interview-questions/` 소�
 
 ## 면접 형식별 특수 가이드
 
-- [[CS-Network-Interview|CS 네트워크 면접]]
-- [[System-Design-Practice-Topics|시스템 설계 연습 주제 카탈로그]]
-- [[Live-Coding-Process|라이브 코딩, 시스템 설계 면접 프로세스]]
-- [[Global-IT-Interview|글로벌 IT 인터뷰 준비]]
+- [[Interview-Format-Guides|형식별 가이드 TOC]] — `interview-formats/` (CS 네트워크, 라이브 코딩, 시스템 설계 주제, 글로벌 IT)
 
 ## 회사별 폴더 작성 도구
 

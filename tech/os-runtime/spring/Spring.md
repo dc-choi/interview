@@ -22,12 +22,8 @@ AOP를 사용하면 비즈니스 로직과 공통 관심사를 분리할 수 있
 
 ## 상세 주제
 
-- [[Servlet-vs-Spring-Container|Servlet Container vs Spring Container (DispatcherServlet, Thread-per-Request, 싱글톤 Bean)]]
-- [[Spring-Request-Lifecycle|Spring 요청 처리 흐름 (Tomcat → DispatcherServlet → Controller, 부팅 순서, Request-per-Thread)]]
-- [[Spring-Exception-Handling|Spring 예외 처리 전략 (@ExceptionHandler, @ControllerAdvice, Filter 예외)]]
+- [[Spring-MVC|Spring MVC 웹 계층 (서블릿 컨테이너, 요청 처리 흐름, 빈출 애노테이션, 예외 처리, Multipart + JSON)]]
 - [[Spring-Transactional|@Transactional (Propagation, Isolation, readOnly, 자기 호출 함정)]]
-- [[Spring-Multipart-JSON|Multipart + JSON REST (@RequestPart 패턴, FormData, MockMvc, 대용량 업로드 대안)]]
-- [[Spring-MVC-Essentials|Spring MVC Essentials (@Component 계열, Filter vs Interceptor, WAS vs Web Server, Tomcat)]]
 - [[Spring-Boot-Essentials|Spring Boot Essentials (AutoConfiguration, Starter, Embedded, Actuator)]]
 - [[Spring-Data-JPA-Essentials|Spring Data JPA (JPA vs Hibernate vs SDJ, ddl-auto, ID 생성, isNew/Persistable)]]
 - [[Spring-Authorization-Server|Spring Authorization Server (OAuth2 인가 서버, RegisteredClient, 필터 체인 분리, JWKS, consent)]]

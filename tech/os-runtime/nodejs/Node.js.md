@@ -247,12 +247,14 @@ npx codemod @nodejs/import-assertions-to-attributes   # 실제 마이그레이�
 ## 하위 문서
 
 ### JS 언어 특성
+- [[js-core|JS 코어 폴더 인덱스 (실행 컨텍스트, 콜 스택, 스코프, 클로저)]]
 - [[Execution-Context|실행 컨텍스트]]
 - [[Call-Stack-Heap|콜 스택 과 힙]]
 - [[Scope|스코프]]
 - [[Closure|클로저]]
 
 ### Node.js 런타임
+- [[process-model|프로세스와 스레드 모델 폴더 인덱스 (싱글 vs 멀티 스레드, child_process, 클러스터링)]]
 - [[V8|V8 엔진]]
   - [[V8-Ignition-TurboFan|V8 컴파일 파이프라인]]
   - [[V8-Hidden-Class|V8 히든 클래스]]
@@ -268,8 +270,9 @@ npx codemod @nodejs/import-assertions-to-attributes   # 실제 마이그레이�
 - [[Advanced-Recipes|고급 레시피]]
 
 ### Node.js 실전
+- [[tooling|개발 도구 폴더 인덱스 (커맨드라인, 패키지 배포, TypeScript 연동)]]
 - [[Command-Line|커맨드라인]]
-- [[HTTP-Networking|HTTP 네트워킹]]
+- [[Nodejs-Web-Server|웹 서버와 프레임워크 (http 모듈, Hono, Apollo Server)]]
 - [[File-System|파일 시스템]]
 - [[Async-Programming|비동기 프로그래밍]]
 - [[Buffer-Memory|Buffer, Memory Management (alloc, allocUnsafe, poolSize)]]
@@ -279,8 +282,6 @@ npx codemod @nodejs/import-assertions-to-attributes   # 실제 마이그레이�
 - [[Test-Runner|테스트 러너]]
 - [[Nodejs-Design-Patterns|Node.js 생성 패턴 (Singleton, Factory, Builder, Prototype)]]
 - [[Nodejs-Production-Readiness|Node.js 프로덕션 운영 체크리스트 (6대 운영 축, 단계별 전략)]]
-- [[Hono|Hono (Web 표준 기반 멀티 런타임 웹 프레임워크, RegExpRouter, RPC)]]
-- [[Apollo-Server|Apollo Server (spec-compliant GraphQL 서버, 버전 지형, 배치 형태)]]
 - [[tech/os-runtime/nodejs/Security|보안 모범 사례]]
 - [[TypeScript-Node|TypeScript]]
 - [[WebAssembly|WebAssembly]]

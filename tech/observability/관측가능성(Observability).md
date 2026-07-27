@@ -20,6 +20,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [x] [[OpenSearch-Observability|Amazon OpenSearch 통합 관측성 (OpenSearch UI, PPL, 상관분석, AI 장애 조사)]]
 
 ## Logging
+- [[logging|로깅 폴더 인덱스]] — 구조화, 상관관계, 파이프라인, 샘플링, PII 마스킹
 - [x] [[Structured-Logging|Structured logging]]
 - [x] [[Correlation-ID|Correlation ID / Trace ID]]
 - [x] [[Log-Pipeline|중앙 집중식 로그 파이프라인 (수집, 버퍼, 처리, DLQ, 재생)]]
@@ -28,6 +29,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [x] [[PII-Masking|PII 마스킹 (생성 시점 마스킹, redaction/tokenization, 허용목록)]]
 
 ## Metrics
+- [[metrics|메트릭 폴더 인덱스]] — Prometheus, RED/USE, 카디널리티, 장기 보존, 측정 레이어
 - [x] [[Metric-Layer-Mismatch|메트릭 측정 레이어의 함정 (CloudWatch vs node_exporter, iowait, 두 레이어 교차 알람)]]
 - [x] [[Container-Monitoring|컨테이너 모니터링 (cAdvisor, node_exporter, Prometheus, Grafana, Fluentd, 사이드카 vs 데몬셋)]]
 - [x] [[K8s-Resource-Right-Sizing|메트릭 기반 리소스 적정화 (P95, 집계 기간, PromQL)]] — 측정 방법론 측면
@@ -47,8 +49,4 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [[tech/observability/datadog/datadog|Datadog 학습 지도]] — Unified Service Tagging, Catalog, APM, Monitor, SLO, 배포 추적
 
 ## Reliability
-- [x] [[Deploy-Observability|배포 가시성 (APM 스팬 태그 공통 신호, 멀티 플랫폼 통합 탐지, 장애 스레드 자동 첨부, FPM vs CLI 계측 함정)]]
-- [x] [[SLI-SLO|SLI / SLO / Error budget (9의 의미, burn rate, 버짓 정책)]]
-- [x] [[Alert-Fatigue|Alert fatigue 방지 (actionable, 증상 기반, burn rate, 그룹핑)]]
-- [x] [[Alert-as-Code|Alert as Code (Terraform+YAML SSOT, proxy 계층 표준화, grouped alert, custom action 권한, deadman switch)]]
-- [x] [[Incident-Runbook|Incident runbook (절차서, 알람 연결, 완화 우선)]]
+- [x] [[Observability-Reliability|관측성 신뢰성 인덱스 (SLI/SLO, alert fatigue, alert as code, 런북, 배포 가시성)]]

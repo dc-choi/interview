@@ -1,6 +1,6 @@
 ---
 tags: [fit, interview, template]
-status: done
+status: template
 category: "Interview - Fit"
 aliases: ["Interview Prep Template", "면접 준비 템플릿"]
 ---

@@ -11,7 +11,7 @@ aliases: ["ActionPower 2nd Interview Prep", "액션파워 2차 면접 준비"]
 > 1차 문서: [[Interview-Prep-ActionPower|액션파워 1차 면접 준비]]
 > 채용 공고: https://actionpower.notion.site/Backend-302ca999eeb2805fba12de3df6c74396
 
-180줄 분할 원칙에 따라 주제별 하위 문서로 분리했습니다. 아래 링크에서 각 주제를 확인하세요.
+200줄 분할 원칙에 따라 주제별 하위 문서로 분리했습니다. 아래 링크에서 각 주제를 확인하세요.
 
 ## 하위 문서
 

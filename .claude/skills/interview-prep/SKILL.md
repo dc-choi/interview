@@ -34,12 +34,9 @@ allowed-tools: [Read, Write, Edit, Glob, Grep, Bash, WebFetch, Agent]
 
 1. URL이면 JD를 가져오고, 텍스트면 그대로 분석한다. 회사 소개, 단계, 도메인, 비즈니스 모델, 주요 업무, 자격 요건, 우대 사항과 전형 절차를 구분한다.
 2. 이력서와 포트폴리오를 전부 읽되 vault에 원문 전체를 복제하지 않는다.
-3. `fit/interview/common/`의 `My-*.md` 9개 전체, `Common-Interview-Questions.md`와 `Interview-Retro-Template.md`를 읽는다. 실제 파일 수가 다르면 누락이나 추가 파일을 먼저 확인한다.
-4. `fit/interview/prep/`의 인덱스와 템플릿을 제외한 다음 14개 가이드를 전부 읽는다.
+3. `fit/interview/common/` 트리의 `My-*.md` 9개 전체(`my-tech-cards/` 하위 포함), `Common-Interview-Questions.md`, `Interview-Retro-Template.md`와 `common-interview-questions/`의 질문 풀 3개(Behavioral, Tech-Basics, Tech-Scale)를 읽는다. 실제 파일 수가 다르면 누락이나 추가 파일을 먼저 확인한다.
+4. `fit/interview/prep/`의 인덱스와 템플릿을 제외한 다음 11개 가이드를 전부 읽는다.
    - `CS-Network-Interview.md`
-   - `Common-Interview-Questions-Behavioral.md`
-   - `Common-Interview-Questions-Tech-Basics.md`
-   - `Common-Interview-Questions-Tech-Scale.md`
    - `Developer-Interview-13-Questions.md`
    - `Developer-Interview-Signals.md`
    - `Experience-Narrative-Reframing.md`

@@ -74,7 +74,7 @@ OpenSearch는 Apache Lucene을 분산 실행 계층으로 감싼 검색 및 분�
 실제 문제에 맞는 한 갈래만 선택한다. 아직 측정된 문제나 품질 기준선이 없다면 이 단계를 서두르지 않는다.
 
 - 엔진 내부 갈래: [[OpenSearch-Inverted-Index-Structures|FST, postings, BKD와 doc_values]], [[OpenSearch-Segment-Merge|Merge policy와 codec]], [[OpenSearch-Segment-Replication|Segment replication과 remote store]]
-- 시맨틱 검색 갈래: [[OpenSearch-Vector-Search|벡터 검색]], [[OpenSearch-Hybrid-Search|하이브리드 검색]], [[OpenSearch-Reranking-Neural-Sparse|Reranking과 neural sparse search]]
+- 시맨틱 검색 갈래: [[OpenSearch-Semantic-Search|시맨틱 검색 지도]], [[OpenSearch-Vector-Search|벡터 검색]], [[OpenSearch-Hybrid-Search|하이브리드 검색]], [[OpenSearch-Reranking-Neural-Sparse|Reranking과 neural sparse search]]
 - 퇴근 후 아웃풋: 내부 구조 갈래는 느린 query나 디스크 증가의 인과를 측정으로 설명한다. 시맨틱 검색 갈래는 같은 judgment로 BM25 기준선과 hybrid 또는 reranking의 품질, latency, 비용을 비교한다.
 - [ ] 통과: 선택한 기법이 기준선보다 나은 조건과 나쁘거나 불필요한 조건을 함께 설명한다.
 

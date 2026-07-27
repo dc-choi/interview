@@ -123,6 +123,7 @@ aliases: ["TossPlace 실전 정리", "토스플레이스 1차 실전 정리"]
 - [[Interview-Retro-TossPlace-1st|1차 직무 면접 회고]]
 
 ## 아카이브 (docs/ — 흡수 완료, 감사 추적용)
+- [[Interview-Prep-TossPlace-1st-Docs|docs 폴더 목차]] — 아카이브 3종 한눈에
 - §8 직무 매핑과 구어체 모범답변은 위로 흡수됨. **평소 이 문서 한 장이면 충분.**
 - [[Interview-Prep-TossPlace-1st-Deep-Review|심화 리뷰]] — 10패스 + Pass 11 코드 재검증(감사 추적, 원본 보관)
 - [[Interview-Prep-TossPlace-1st-Assignment-Defense|디펜스 시트]], [[Interview-Prep-TossPlace-1st-Model-Answers|모범답변]] — 원본 보관(내용은 위로 흡수)

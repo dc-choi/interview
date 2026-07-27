@@ -31,6 +31,7 @@ aliases: ["TS"]
 
 ### [[compile|컴파일 원리]]
 ### [[option|컴파일러 옵션]]
+### [[types|TS 타입 폴더 인덱스]]
 ### [[tech/computer-science/ts/types/타입특징|타입특징]]
 ### [[tech/computer-science/ts/ts-study/ts-study|ts-study]]
 

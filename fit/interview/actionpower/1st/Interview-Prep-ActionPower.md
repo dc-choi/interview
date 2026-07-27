@@ -10,7 +10,7 @@ aliases: ["ActionPower Interview Prep", "액션파워 면접 준비"]
 > 채용 공고: https://actionpower.notion.site/Backend-302ca999eeb2805fba12de3df6c74396
 > 템플릿: [[Interview-Prep-Template|면접 준비 템플릿]]
 
-180줄 분할 원칙에 따라 주제별 하위 문서로 분리했습니다. 아래 링크에서 각 주제를 확인하세요.
+200줄 분할 원칙에 따라 주제별 하위 문서로 분리했습니다. 아래 링크에서 각 주제를 확인하세요.
 
 ## 하위 문서
 

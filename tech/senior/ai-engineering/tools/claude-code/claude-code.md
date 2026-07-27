@@ -19,8 +19,4 @@ AI 코딩 에이전트 Claude Code를 실무에 태우는 방법 — 기초 운�
 
 ## 레퍼런스 (찾아보기)
 
-- [x] [[Claude-Code-Config-Permissions|설정과 권한 (캐스케이드 병합, first-match-wins, bare vs scoped deny, 보호 경로, 샌드박스)]]
-- [x] [[Claude-Code-Extension-Reference|확장 메커니즘 (신호→메커니즘 매핑, 훅 exit 2, 서브에이전트 문법, 스킬 예산, 플러그인, MCP Tool Search)]]
-- [x] [[Claude-Code-Operations|운영 (헤드리스 --bare, CI 안전장치 4종, 비용 정량, 트러블슈팅 진단 순서, 안티패턴 5종)]]
-- [x] [[Claude-Code-Cloud-Security|클라우드 실행과 보안 (격리 VM, 자격 증명 프록시, 다층 방어 5겹, 데이터 보존, ZDR)]]
-- [x] [[Claude-Code-Internals|내부 구조 (쿼리 루프 턴당 5단계, 컴팩션 3종, 도구 파이프라인 10단계, 동시성 파티셔닝, 8대 설계 패턴)]]
+- [x] [[Claude-Code-Reference|레퍼런스 모음 (reference/ 서브폴더) — 설정과 권한, 확장 메커니즘, 운영, 클라우드 실행과 보안, 내부 구조]]

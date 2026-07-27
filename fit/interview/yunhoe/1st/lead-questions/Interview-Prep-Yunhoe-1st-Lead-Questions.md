@@ -3,7 +3,7 @@ tags: [fit, interview, yunhoe]
 status: index
 category: "Interview - Fit"
 company: "윤회주식회사 (CARE IDⓒ)"
-aliases: ["Yunhoe 1st Lead, Questions, Checklist", "윤회 1차 리드, 역질문, 체크"]
+aliases: ["Yunhoe 1st Lead Questions", "윤회 1차 리드 역질문 체크리스트"]
 ---
 
 # 윤회 1차 본 미팅 — 백엔드 리드, 컬처핏, 역질문, 체크리스트 (TOC)

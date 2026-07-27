@@ -10,6 +10,7 @@ aliases: ["vector", "벡터 검색", "Vector Search"]
 임베딩 기반 유사도 검색 문서 모음. 개념과 HNSW 원리에서 시작해 PostgreSQL과 OpenSearch 구현, embedding pipeline, 쿼리 최적화와 운영까지.
 
 - [[Vector-Similarity-Search|벡터 유사도 검색 (임베딩 흐름, ANN, HNSW 원리, m/ef_construction/ef_search, L2/코사인/내적)]]
+- [[OpenSearch-Semantic-Search|OpenSearch 시맨틱 검색 지도 (opensearch-search 폴더 인덱스)]]
 - [[OpenSearch-Vector-Search|OpenSearch 벡터 검색 (k-NN, text와 vector index, embedding pipeline, ONNX, model migration)]]
 - [[OpenSearch-Hybrid-Search|OpenSearch 하이브리드 검색 (normalization, weighted fusion, RRF, 평가)]]
 - [[OpenSearch-Reranking-Neural-Sparse|OpenSearch reranking pipeline과 neural sparse search (cross-encoder, doc-only vs bi-encoder)]]

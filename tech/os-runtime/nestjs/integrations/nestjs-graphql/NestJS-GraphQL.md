@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, graphql, dataloader, subscription]
 status: index
+verified_at: 2026-07-20
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS GraphQL", "NestJS GraphQL 통합"]
 ---
@@ -21,3 +22,7 @@ aliases: ["NestJS GraphQL", "NestJS GraphQL 통합"]
 - [[NestJS|NestJS 개요]]
 - [[Apollo-Server|Apollo Server (드라이버 구현 정본)]]
 - [[API-Comparison|REST vs GraphQL]]
+
+## 출처
+
+- [GraphQL - NestJS Documentation](https://docs.nestjs.com/graphql/quickstart)

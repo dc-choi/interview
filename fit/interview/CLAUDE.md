@@ -7,7 +7,7 @@ ORM 관련 답변이나 기술 vault 내용을 다룰 때는 `tech/CLAUDE.md`도
 ## common과 prep 역할 분리
 
 - `common/`은 개인 경험, FIT, 기술 경험 답변 본문을 관리하는 마스터다. `My-*.md`, `Common-Interview-Questions.md`, `Interview-Retro-Template.md`가 여기에 속한다.
-- `prep/`은 가이드, 메타, 치환, 자기분석과 Sensitive 질문 풀을 관리한다. Behavioral과 기술 질문 풀은 `common/common-interview-questions/`에 있다.
+- `prep/`은 가이드, 메타, 치환, 자기분석과 형식별 질문 풀(Sensitive, CS-Network, System-Design, 단골 13)을 관리한다. Behavioral과 기술 질문 풀(Tech-Basics, Tech-Scale)은 `common/common-interview-questions/`에 있다.
 - 실제 파일 목록은 작업 시점에 확인하고 각 파일의 frontmatter `aliases`와 첫 헤더로 역할을 검증한다.
 
 ## 답변 본문 배치
@@ -54,6 +54,6 @@ ORM 관련 답변이나 기술 vault 내용을 다룰 때는 `tech/CLAUDE.md`도
 - 신규 회사 문서는 마스터 fork와 회사 고유 내용만 두는 슬림 패턴을 사용한다.
 - 차수별 서브폴더 `{회사명}/{차수}/`를 반드시 사용한다. 차수는 `1st/`, `2nd/`, `coffeechat/`처럼 표현한다.
 - 회사 폴더 루트에는 모든 차수에 공통인 자료만 둔다. 예를 들어 회사 도메인 브리프는 루트에 둘 수 있다. JD, Tech, FIT, Lead, 체크리스트, Cheatsheet와 회고는 해당 차수 폴더에 둔다.
-- 회사별 폴더는 leaf 폴더 파일 수 분할 규칙보다 회사와 차수 단위 묶음을 우선한다. 다만 차수 폴더 안에서 같은 접두사 문서가 3개 이상 모이면 주제 서브폴더(`tech/`, `cheatsheet/` 등)로 묶을 수 있고, 문서를 추가하거나 이동하면 차수 폴더의 인덱스 문서 목록도 함께 갱신한다.
+- 회사별 폴더는 leaf 폴더 파일 수 분할 규칙보다 회사와 차수 단위 묶음을 우선한다. 다만 차수 폴더 안에서 같은 접두사 문서가 3개 이상 모이면 루트 규칙에 따라 주제 서브폴더(`tech/`, `cheatsheet/` 등)로 묶고, 문서를 추가하거나 이동하면 차수 폴더의 인덱스 문서 목록도 함께 갱신한다.
 - 회사별 문서는 전형 진행 중 `status: active`로 두고, 사이클이 끝나면(합격, 탈락, 포기) `status: done`으로 바꾼다. TOC 문서(`status: index`)와 템플릿은 제외한다.
 - 액션파워, 윤회와 스페이스맵 문서는 마스터 도입 전에 작성되어 답변 본문 중복이 남아 있다. 기존 문서를 관련 작업으로 수정할 때 마스터 fork 형태로 점진적으로 정리한다.

@@ -7,7 +7,7 @@ aliases: ["내 답변 마스터 TOC", "Common Interview Questions", "자주하�
 
 # 내 답변 마스터 — TOC
 
-개인 경험, FIT, 개인 기술 경험을 말하는 면접 답변의 **본문은 여기에만** 둔다. 회사별 면접 준비 시 fork하며, 일반 질문 풀과 사실형 기술 답변, 가이드와 메타는 [[면접준비(InterviewPrep)|prep 폴더]]에서 관리한다.
+개인 경험, FIT, 개인 기술 경험을 말하는 면접 답변의 **본문은 여기에만** 둔다. 회사별 면접 준비 시 fork하며, 일반 질문 풀과 사실형 기술 답변은 하위 [[Common-Interview-Questions-Pool|질문 풀 인덱스]]에서, 가이드와 메타는 [[면접준비(InterviewPrep)|prep 폴더]]에서 관리한다.
 
 ## 답변 마스터 (7개)
 
@@ -25,7 +25,7 @@ aliases: ["내 답변 마스터 TOC", "Common Interview Questions", "자주하�
 
 ## 질문 풀과 참고 자료
 
-마스터 답변 작성, 보강 시 1순위 참조 자료. 개인 답변 본문은 마스터에만 두고, 질문 풀(Behavioral, Tech-Basics, Tech-Scale)은 이 폴더에, 메타와 자기분석은 `prep/`에 둔다:
+마스터 답변 작성, 보강 시 1순위 참조 자료. 개인 답변 본문은 마스터에만 두고, 질문 풀(Behavioral, Tech-Basics, Tech-Scale)은 하위 `common-interview-questions/` 폴더([[Common-Interview-Questions-Pool|풀 인덱스]])에, 메타와 자기분석은 `prep/`에 둔다:
 
 - [[FIT-Framework|FIT 프레임워크, 면접 전략, 면접관 사전 확인, 역질문 톤]] (메타 가이드)
 - [[Sensitive-Question-Answers|민감 질문 — 사회인 언어 치환표]]

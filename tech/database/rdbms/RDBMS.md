@@ -20,6 +20,7 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[MySQL-Charset-Migration|utf8mb4 마이그레이션 안전 절차 (인덱스 키 길이 767/3072, collation 충돌, latin1 복구)]]
 
 ## MySQL 엔진
+- [x] [[mysql|MySQL 폴더 인덱스 (엔진 내부, 튜닝, 백업, 파티셔닝, PostgreSQL 비교)]]
 - [x] [[MySQL-Architecture|MySQL 아키텍처, SQL 처리 파이프라인 (2계층 구조, 파서/옵티마이저/실행기, 스토리지 엔진, 뷰)]]
 - [x] [[MySQL-InnoDB-Tuning|InnoDB 튜닝 (Buffer Pool, flush_log_at_trx_commit, io_capacity, 압축)]]
 - [x] [[MySQL-Partitioning|MySQL Partitioning (RANGE/HASH/LIST, Partition Pruning, DROP PARTITION)]]
@@ -40,6 +41,7 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[SQL|SQL 기초]]
 
 ## 트랜잭션 & 격리 수준
+- [x] [[transactions-locks|트랜잭션과 락 폴더 인덱스 (ACID, MVCC, 격리 수준, Lock)]]
 - [x] [[Transactions|ACID, MVCC, Consistent Read vs Current Read]]
 - [x] [[Isolation-Level|Isolation Level (Oracle→MySQL 이관 잔액 사례 포함)]]
 - [x] [[Isolation-Level-Beyond-ANSI|ANSI 격리 수준의 한계, Strict Serializable (Snapshot Isolation, Linearizable, 분산 DB)]]
@@ -48,6 +50,7 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[Race-Condition-Patterns|Race Condition 패턴 (3계층 해결, 도구 선택 플로차트, 카카오 사례)]]
 
 ## 확장 & 운영
+- [x] [[scaling-operations|확장과 운영 폴더 인덱스 (샤딩, 복제, 클러스터링, Read Replica 라우팅)]]
 - [x] [[PostgreSQL-Production-Operations|PostgreSQL 운영 (실행 계획, Online DDL, vacuum, partitioning)]]
 - [x] [[Sharding|Sharding]]
 - [x] [[Replication|Replication (sync / async)]]
