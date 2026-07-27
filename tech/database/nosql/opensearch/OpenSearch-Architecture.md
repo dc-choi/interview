@@ -164,7 +164,7 @@ OpenSearch와 OpenSearch Dashboards는 각각 Elasticsearch와 Kibana의 마지�
 
 분기의 직접 계기는 7.11의 라이선스 변경이었다. Elastic은 2024년 Elasticsearch와 Kibana 무료 부분의 source code에 AGPLv3를 ELv2, SSPL과 함께 선택할 수 있도록 추가했지만 기본 배포판은 계속 ELv2로 제공한다. 따라서 OpenSearch는 Apache 2.0, Elasticsearch는 SSPL이라고만 단순화하지 않고 source code와 배포판의 라이선스, 거버넌스, 기능, API, plugin 생태계를 각각 확인한다.
 
-공통 조상은 영구적인 기능 동등성과 client 호환성을 보장하지 않는다. OpenSearch 2.x 이상에서는 OpenSearch client를 기본으로 사용하고, migration 때 source와 target version뿐 아니라 index 생성 version, mapping, plugin, API와 snapshot 호환성을 함께 검증한다. 제품 선택은 source와 배포판 라이선스, 관리형 서비스 조건, 지원 기능의 target version, 운영 역량, 지원 계약, migration 비용과 실제 workload의 총비용을 함께 본다.
+공통 조상은 영구적인 기능 동등성과 client 호환성을 보장하지 않는다. OpenSearch 2.x 이상에서는 [[OpenSearch-JavaScript-Client|OpenSearch client]]를 기본으로 사용하고, migration 때 source와 target version뿐 아니라 index 생성 version, mapping, plugin, API와 snapshot 호환성을 함께 검증한다. 제품 선택은 source와 배포판 라이선스, 관리형 서비스 조건, 지원 기능의 target version, 운영 역량, 지원 계약, migration 비용과 실제 workload의 총비용을 함께 본다.
 
 ### 비교 벤치마크를 읽는 법
 

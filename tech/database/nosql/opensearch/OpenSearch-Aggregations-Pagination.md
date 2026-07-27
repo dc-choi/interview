@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, aggregation, pagination, sorting]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-07-27
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Aggregations", "OpenSearch Pagination", "OpenSearch 집계와 페이지네이션"]
 ---
@@ -34,7 +34,7 @@ Bucket aggregation은 다른 metric과 bucket을 하위에 중첩할 수 있다.
 - `shard_size`를 늘리면 정확도가 개선될 수 있지만 network와 heap 비용이 늘어난다.
 - 기본 `_count: desc` 정렬에서 `doc_count_error_upper_bound`를 확인한다. `show_term_doc_count_error: true`면 bucket별 상한도 볼 수 있다.
 - `sum_other_doc_count`는 응답에서 제외된 bucket의 document count 합이다.
-- OpenSearch 3.0 이상에서 concurrent segment search가 활성화되면 `shard_size`가 segment slice에도 적용되어 추가 count 오차가 생길 수 있다.
+- Concurrent segment search가 활성화된 상태에서는 `shard_size`가 segment slice 수준에 적용되어 추가 count 오차가 생길 수 있다.
 - Count 오름차순으로 희귀 term을 찾지 말고 `rare_terms`를 검토한다.
 - 모든 고유 bucket을 순회하려고 큰 `size`를 한 번에 요청하지 않는다.
 
@@ -146,3 +146,4 @@ PIT는 query 결과 자체가 아니라 Lucene segment view를 유지한다. 너
 - [Sort results - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/sort/)
 - [Asynchronous search - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/async/)
 - [Index rollups - OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/index-rollups/index/)
+- [Concurrent segment search - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/concurrent-segment-search/)

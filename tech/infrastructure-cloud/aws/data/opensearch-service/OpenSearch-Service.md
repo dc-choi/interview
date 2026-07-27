@@ -1,9 +1,9 @@
 ---
 tags: [infrastructure, aws, opensearch, search, analytics, managed-service]
 status: done
+verified_at: 2026-07-27
 category: "Infrastructure - AWS"
 aliases: ["Amazon OpenSearch Service", "OpenSearch Service", "Amazon OpenSearch"]
-verified_at: 2026-07-21
 ---
 
 # Amazon OpenSearch Service
@@ -48,7 +48,7 @@ Provisioned domain은 기본적으로 instance RAM의 50퍼센트를 최대 32Gi
 | 과금 | instance 시간, EBS, 선택 storage와 data transfer | ingest OCU, search OCU, S3 storage |
 | 적합성 | 예측 가능한 지속 부하와 세밀한 튜닝 | 간헐적이거나 변동이 큰 부하, 운영 단순화 |
 
-Serverless가 항상 저렴하거나 완전히 호환되는 것은 아니다. 최소 OCU, peak 동시성, 지원 API와 client, migration 방식까지 workload로 비교한다. Provisioned domain에서 collection으로 자동 이관하는 기능은 없으므로 별도 reindex 경로가 필요하다.
+Serverless가 더 싸거나 그대로 호환된다고 가정하지 않는다. 최소 OCU, peak 동시성, 지원 API와 client, migration 방식까지 workload로 비교한다. Provisioned domain에서 collection으로 자동 이관하는 기능은 없으므로 별도 reindex 경로가 필요하다.
 
 ## 관리 책임 경계
 
@@ -87,17 +87,16 @@ AWS가 주로 담당하는 영역:
 
 - Service software update는 AWS 운영 계층의 patch와 기능 변경이다. Blue-green 배포를 사용하며 필수 update는 실제 notification deadline을 기준으로 EventBridge와 담당자 alarm을 연결한다. 장기 미적용은 domain 격리와 최종 삭제로 이어질 수 있다.
 - 2026년 4월 24일 이후 적용된 service software update는 적용 방식, 이후 설정 변경 여부와 15일 창 같은 조건을 충족하면 self-service rollback이 가능하다. 자동 강제 적용이나 engine upgrade에는 이 rollback을 적용할 수 없다.
-- Engine upgrade는 OpenSearch major와 minor version 변경이다. 사용자가 시작하고 사전 검증, snapshot, 호환 가능한 upgrade path 확인이 필요하다.
+- Engine upgrade는 OpenSearch와 Elasticsearch의 major와 minor version 변경이다. 사용자가 시작하고 사전 검증, snapshot, 호환 가능한 upgrade path 확인이 필요하다. 지원 경로, 진행 단계와 검증 실패 원인은 [[OpenSearch-Service-Engine-Upgrade|Engine upgrade 문서]]에서 다룬다.
 - Engine version은 downgrade할 수 없다는 전제로 새 domain과 restore 또는 reindex rollback 경로를 준비한다.
-- Blue-green 배포는 일시적으로 cluster manager와 data node 여유를 사용하므로 off-peak와 용량 headroom을 확보한다.
-- Firehose, CloudWatch Logs, client library, optional plugin이 목표 engine version을 지원하는지 함께 검증한다.
+- Blue-green 여유 용량, off-peak window와 Firehose, CloudWatch Logs, client, plugin 호환 검증 같은 실행 체크는 [[OpenSearch-Service-Engine-Upgrade|Engine upgrade 문서]]의 체크포인트를 따른다.
 - Serverless engine은 AWS가 upgrade하지만 client는 현재 OpenSearch 3.x와 호환돼야 하며 지원 API와 plugin subset은 애플리케이션이 검증한다.
 
 ## Snapshot과 복구
 
 - OpenSearch와 Elasticsearch 5.3 이상 domain은 AWS 관리 저장소에 자동 snapshot을 매시간 만들고 최대 336개를 14일 보존한다.
 - 자동 snapshot은 해당 domain의 cluster 복구용이다. 장기 보존과 다른 domain 이관에는 자체 S3 repository의 manual snapshot을 사용한다.
-- Manual snapshot은 UltraWarm과 cold tier 데이터를 포함하지 않는다. 필요하면 snapshot 전에 hot tier로 옮기거나 원본 재생 경로를 유지한다.
+- Manual snapshot은 기본적으로 UltraWarm과 cold tier 데이터를 포함하지 않는다. 필요하면 snapshot 전에 hot tier로 옮기거나 원본 재생 경로를 유지한다.
 - Serverless는 매시간 자동 snapshot을 만들지만 manual snapshot과 다른 collection으로의 restore를 지원하지 않는다. 같은 이름의 열린 index를 restore하면 덮어쓸 수 있고 restore 중 해당 index 요청은 실패한다.
 - Red cluster가 지속되면 자동 snapshot도 실패할 수 있으므로 `AutomatedSnapshotFailure`를 감시한다.
 - Manual snapshot은 완벽한 단일 시점 복사본이 아니며 shard별 포함 시점이 다를 수 있다.
@@ -170,6 +169,7 @@ CloudWatch 평균만 보지 않고 최소와 최대 statistic, node 차원, `_no
 ## 관련 문서
 
 - [[OpenSearch|OpenSearch 학습 지도]]
+- [[OpenSearch-Service-Engine-Upgrade|Engine upgrade 경로와 사전 검증]]
 - [[OpenSearch-Cluster-Reliability|Shard, Multi-AZ와 복구 원리]]
 - [[OpenSearch-Index-Lifecycle|Rollover, Hot, UltraWarm과 Cold storage]]
 - [[OpenSearch-Security-Production|OpenSearch 보안과 프로덕션 점검]]

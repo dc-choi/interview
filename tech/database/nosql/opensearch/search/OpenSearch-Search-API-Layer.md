@@ -55,7 +55,7 @@ Client
 - 전체 API SLO에서 역산해 client timeout > API server timeout > OpenSearch 호출 timeout 순서를 지킨다. 거꾸로면 이미 포기된 요청을 위해 일하게 된다.
 - OpenSearch의 `timeout`은 soft다. Hard deadline은 HTTP client 쪽에 건다. 응답의 `timed_out`, `_shards.failed` 확인은 실행 제어 정본을 따른다.
 - 검색은 read라 재시도가 안전하지만, timeout 재시도는 장애 중 부하를 배로 만든다. Backoff와 jitter, 그리고 재시도 총량 예산(retry budget)으로 제한한다.
-- 클라이언트 측 circuit breaker를 둔다. OpenSearch 내부의 memory circuit breaker와는 다른 것이다. 연속 실패 시 호출을 차단하고 half-open으로 회복을 탐지해, 죽은 엔진에 계속 붙는 connection과 thread 고갈을 막는다.
+- 검색 API 계층에 circuit breaker를 둔다. OpenSearch 엔진 내부의 circuit breaker([[OpenSearch-Performance-Troubleshooting|성능 진단]])나 클라이언트 라이브러리의 [[OpenSearch-JavaScript-Client|memory circuit breaker]]와는 다른 것이다. 연속 실패 시 호출을 차단하고 half-open으로 회복을 탐지해, 죽은 엔진에 계속 붙는 connection과 thread 고갈을 막는다.
 - 폴백 메뉴를 좋은 순서로 준비한다. 첫째 stale 캐시 결과에 안내 문구, 둘째 인기 검색어나 추천 목록, 셋째 카테고리 브라우징 유도. 자동완성 실패는 조용히 숨긴다. 자동완성이 죽었다고 검색창까지 막히면 안 된다.
 - 폴백 발동률을 지표로 둔다. 폴백이 상시 발동 중인데 아무도 모르는 상태가 최악이다.
 
@@ -80,6 +80,7 @@ Client
 - [[OpenSearch-Query-Understanding|쿼리 이해와 검색어 전처리]]
 - [[OpenSearch-Security-Production|보안과 DLS]]
 - [[OpenSearch-Popular-Keywords-TopK|인기 검색어 top-k]]
+- [[OpenSearch-JavaScript-Client|JavaScript 클라이언트]]
 - [[Search-UX|검색 UX 설계]]
 
 ## 출처

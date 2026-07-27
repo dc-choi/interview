@@ -29,7 +29,8 @@ aliases: ["OpenSearch Seoul Meetup Agentic Search와 업그레이드 질문"]
 - **핵심 질문:** OpenSearch 2.x와 legacy 호환 client를 쓰는 애플리케이션이 먼저 2.19를 거쳐 3.3 이상으로 갈 때 analyzer token, Query DSL, bulk update, error shape와 alias/reindex 계약 중 무엇을 가장 먼저 호환성 테스트해야 하나요?
 - **좋은 답의 신호:** 지원 upgrade path, service software update와 engine upgrade의 구분, 호환성 test matrix, 기존 domain 유지 또는 새 domain restore/reindex 경로, least privilege, trace/audit와 kill switch가 나온다.
 - **꼬리 질문:** engine downgrade가 불가능한 조건에서 client 교체와 engine upgrade를 어떤 순서로 분리하며, 출시를 막을 guardrail 세 가지는 무엇인가요?
-- **학습 정본:** [[OpenSearch-Service|Amazon OpenSearch Service]]
+- **학습 정본:** [[OpenSearch-Service-Engine-Upgrade|OpenSearch Service Engine Upgrade]]
+- **미리 읽기:** [[OpenSearch-Service#Service software와 engine upgrade|Service software와 engine upgrade 구분]]
 
 ## 출처
 

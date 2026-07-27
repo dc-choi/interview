@@ -65,7 +65,7 @@ OpenSearch는 Apache Lucene을 분산 실행 계층으로 감싼 검색 및 분�
 
 - 목표: 검색 인덱스를 원본에서 다시 만들 수 있고 변경과 장애를 통제할 수 있게 한다.
 - 짜투리 읽기: [[OpenSearch-Indexing-Internals#운영 DB와의 동기화|RDB 동기화]], [[OpenSearch-Indexing-Pipeline-Reliability#증상별 진단|동기화 증상 진단]], [[OpenSearch-Indexing-Pipeline-Reliability#Reconciliation 설계|정합성 검증]], [[OpenSearch-Index-Lifecycle#매핑 변경과 무중단 전환|무중단 전환]], [[OpenSearch-Cluster-Reliability#Unassigned shard 진단|Unassigned shard]], [[OpenSearch-Cluster-Reliability#Snapshot과 Restore|Snapshot과 Restore]], [[OpenSearch-Performance-Troubleshooting#증상별 가설|증상별 가설]]
-- AWS를 쓸 때 읽기: [[OpenSearch-Service#관리 책임 경계|관리 책임 경계]], [[OpenSearch-Service#가용성과 용량|가용성과 용량]], [[OpenSearch-Service#프로덕션 체크리스트|프로덕션 체크리스트]]
+- AWS를 쓸 때 읽기: [[OpenSearch-Service#관리 책임 경계|관리 책임 경계]], [[OpenSearch-Service#가용성과 용량|가용성과 용량]], [[OpenSearch-Service#프로덕션 체크리스트|프로덕션 체크리스트]], [[OpenSearch-Service-Engine-Upgrade|Engine upgrade와 rollback 설계]]
 - 퇴근 후 아웃풋: `backfill → catch-up → 검증 → shadow read → canary → alias 전환 → rollback 또는 forward-fix` Runbook과 결과 누락, 429, 디스크 증가 진단표를 만든다.
 - [ ] 통과: rollback 가능한 조건과 불가능한 조건을 구분하고, 장애 하나의 지표와 가설, 첫 대응을 설명한다.
 
@@ -88,6 +88,7 @@ OpenSearch는 Apache Lucene을 분산 실행 계층으로 감싼 검색 및 분�
 - [[OpenSearch-Query-Understanding|오타 교정, 초성 검색과 검색어 전처리]]
 - [[OpenSearch-Aggregations-Pagination|집계, 정렬, 페이지네이션]]
 - [[OpenSearch-Popular-Keywords-TopK|OpenSearch, Redis, 스트림 기반 인기 검색어 top-k 설계]]
+- [[OpenSearch-JavaScript-Client|opensearch-js 연결, SigV4 서명과 기본 호출]]
 
 ### 운영 레퍼런스
 
@@ -118,6 +119,7 @@ OpenSearch는 Apache Lucene을 분산 실행 계층으로 감싼 검색 및 분�
 - [[OpenSearch-Service|Amazon OpenSearch Service]]
   - [[OpenSearch-Service-Instance-Storage|인스턴스와 스토리지 선정]]
   - [[OpenSearch-Service-Cost-Optimization|비용 최적화와 배포 함정]]
+  - [[OpenSearch-Service-Engine-Upgrade|Engine upgrade 경로와 사전 검증]]
 - [[OpenSearch-Observability|Amazon OpenSearch 통합 관측성과 AI 장애 조사]]
 - [[Centralized-Logging-with-OpenSearch|AWS Centralized Logging with OpenSearch]]
 

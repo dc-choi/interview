@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, opensearch, cost, serverless, blue-green]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-07-27
 category: "Infrastructure - AWS"
 aliases: ["OpenSearch Service Cost Optimization", "OpenSearch 비용 최적화", "OpenSearch 배포 함정"]
 ---
@@ -16,7 +16,7 @@ aliases: ["OpenSearch Service Cost Optimization", "OpenSearch 비용 최적화",
 
 | 순서 | 조치 | 근거 |
 |---|---|---|
-| 1 | Retention 단축, 저가치 field 제거, sampling | 무료이며 이후 모든 비용의 분모를 줄인다 |
+| 1 | Retention 단축, 저가치 field 제거, sampling | 새 과금 항목 없이 비용의 분모를 줄인다. 정리 과정의 재색인과 force merge I/O는 별도 |
 | 2 | Shard와 replica 정리 | over-sharding은 heap과 CPU 낭비. shard당 10에서 50GiB, heap 1GiB당 25 shard 이하 권고 |
 | 3 | gp2에서 gp3로 전환 | GB당 약 9.6퍼센트 저렴(0.135 대 0.122 USD/GB-월)하고 baseline IOPS와 throughput이 낫다. 단 storage type 변경은 blue-green trigger |
 | 4 | Graviton 최신 세대 전환 | AWS benchmark의 Graviton2 최대 44퍼센트 price/performance 개선은 previous-generation instance 대비 수치이며 동급 x86 전체에 일반화할 수 없다. Graviton3의 Graviton2 대비 최대 25퍼센트 성능 개선도 workload로 검증한다. Instance type 변경이므로 blue-green trigger |
@@ -25,7 +25,7 @@ aliases: ["OpenSearch Service Cost Optimization", "OpenSearch 비용 최적화",
 | 7 | Reserved Instances | 구조가 안정된 뒤 1년 또는 3년 약정. no upfront와 all upfront별 할인은 pricing page의 현재 조건을 다시 확인 |
 | 8 | Database Savings Plans | 1년 hourly spend commitment로 eligible OpenSearch Service usage 등에 적용. 최대 35퍼센트 수치와 적용 범위는 RI와 별개로 계산 |
 
-Extended Support도 확인한다. 지원 종료 engine version에 머무르면 Normalized Instance Hour당 추가 요금이 붙으므로 upgrade가 곧 절감이다. 로그성 workload라면 `_source` 저장을 생략하는 Derived Source(3.1+)와 index rollup도 storage 분모를 줄이는 수단이다.
+Extended Support도 확인한다. 표준 지원이 끝나 Extended Support 과금 대상이 된 engine version에 머무르면 Normalized Instance Hour당 추가 요금이 붙으므로 upgrade가 곧 절감이다. 로그성 workload라면 `_source` 저장을 생략하는 Derived Source(3.1+)와 index rollup도 storage 분모를 줄이는 수단이다.
 
 ## UltraWarm 이동 손익 계산
 
@@ -77,7 +77,7 @@ Provisioned domain의 설정 변경은 두 부류다. Blue-green은 기존 clust
 
 - Blue-green 동안 두 배로 계속 과금된다? 아니다. 이중 과금은 최대 첫 1시간이고 실제 대가는 master 부하와 latency다.
 - Node 수를 늘리는 것도 blue-green이다? 아니다. data node 수 변경은 대체로 dynamic update고, type 변경이 trigger다.
-- UltraWarm은 옮기면 무조건 싸다? 아니다. 최소 2대의 warm node 고정비(월 약 348 USD부터)를 storage 절감이 넘어야 한다.
+- UltraWarm은 옮기기만 하면 싸진다? 아니다. 최소 2대의 warm node 고정비(월 약 348 USD부터)를 storage 절감이 넘어야 한다.
 - Serverless는 안 쓰면 0원이다? 아니다. collection이 존재하는 한 OCU floor(redundancy 기준 2 OCU, 월 약 350 USD)가 상시 과금된다.
 - Auto-Tune이 알아서 노드를 늘려준다? 아니다. heap과 queue와 cache 같은 메모리 설정만 조정하며 용량 산정은 사용자 몫이다.
 
@@ -88,6 +88,7 @@ Provisioned domain의 설정 변경은 두 부류다. Blue-green은 기존 clust
 ## 관련 문서
 
 - [[OpenSearch-Service|Amazon OpenSearch Service 운영]]
+- [[OpenSearch-Service-Engine-Upgrade|Engine upgrade 경로와 사전 검증]]
 - [[OpenSearch-Index-Lifecycle|Rollover, ISM과 storage tier]]
 - [[OpenSearch-Cluster-Reliability|Shard와 복구 원리]]
 
@@ -100,5 +101,6 @@ Provisioned domain의 설정 변경은 두 부류다. Blue-green은 기존 clust
 - [Auto-Tune - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/auto-tune.html)
 - [Off-peak windows - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/off-peak.html)
 - [Amazon OpenSearch Service Pricing - AWS](https://aws.amazon.com/opensearch-service/pricing/)
+- [Extended Support - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/extended-support.html)
 - [Improved performance with AWS Graviton2 instances - AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/improved-performance-with-aws-graviton2-instances-on-amazon-opensearch-service/)
 - [Database Savings Plans for OpenSearch Service and Neptune Analytics - AWS](https://aws.amazon.com/about-aws/whats-new/2026/03/dbsp-opensearch-service-neptune-analytics/)
