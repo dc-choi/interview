@@ -80,7 +80,7 @@ OpenSearch는 Apache Lucene을 분산 실행 계층으로 감싼 검색 및 분�
 
 ## 레퍼런스 지도
 
-로드맵을 진행하다 특정 기능, 운영 문제, 내부 구조가 필요할 때 아래 분류에서 찾아본다. 폴더 단위 목차는 [[indexing|색인]], [[query|쿼리]], [[segment|세그먼트]], [[operations|운영]], [[OpenSearch-Search|검색 기능]] 인덱스에 있다.
+로드맵을 진행하다 특정 기능, 운영 문제, 내부 구조가 필요할 때 아래 분류에서 찾아본다. 폴더 단위 목차는 [[OpenSearch-Indexing|색인]], [[OpenSearch-Query|쿼리]], [[OpenSearch-Segment|세그먼트]], [[OpenSearch-Operations|운영]], [[OpenSearch-Search|검색 기능]] 인덱스에 있다.
 
 ### 기능과 사례
 

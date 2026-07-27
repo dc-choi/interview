@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, index]
 status: index
-category: "데이터&저장소(Data&Storage)"
+category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Search Index", "OpenSearch 검색 기능 목차"]
 ---
 

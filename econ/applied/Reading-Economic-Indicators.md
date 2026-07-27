@@ -26,7 +26,7 @@ verified_at: 2026-07-21
 | **선행** | PMI, 신규주문 | 매월 | [[Business-Cycle\|경기]] 방향 미리 |
 | **심리** | 소비자심리지수 | 매월 | 수요의 선행 신호 |
 
-미국 지표가 [[Exchange-Rates-Balance-of-Payments\|달러]]를 통해 전 세계로 퍼지므로, 한국에 있어도 CPI와 FOMC, 고용보고서는 챙겨 본다.
+미국 지표가 [[Exchange-Rates-Balance-of-Payments|달러]]를 통해 전 세계로 퍼지므로, 한국에 있어도 CPI와 FOMC, 고용보고서는 챙겨 본다.
 
 ## 3. 읽는 세 가지 원칙
 
