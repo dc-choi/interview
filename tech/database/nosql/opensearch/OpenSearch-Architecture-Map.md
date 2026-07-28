@@ -24,12 +24,14 @@ flowchart LR
   SYNC -->|"비동기 bulk 색인<br/>지연이 존재"| OS[("OpenSearch<br/>검색 read model")]
   API -->|"검색, 패싯, 랭킹"| OS
   API -->|"read-after-write<br/>원장 조회"| DB
-  classDef rdb fill:#E9EDF3,stroke:#8A94A3,color:#1B2430; classDef os fill:#1E63C4,stroke:#17509E,color:#FFFFFF; classDef cost fill:#E8B84B,stroke:#9A6410,color:#1B2430;
+  classDef rdb fill:#E9EDF3,stroke:#8A94A3,color:#1B2430
+  classDef os fill:#1E63C4,stroke:#17509E,color:#FFFFFF
+  classDef cost fill:#E8B84B,stroke:#9A6410,color:#1B2430
   class DB rdb; class OS os; class SYNC cost;
 ```
 
 - **도입의 대가**: 노란 상자 하나가 새로운 운영 시스템이 된다. dual-write gap, 이벤트 순서 역전, 원본과의 정합성 검증, freshness SLO가 전부 이 구간에서 나온다. 러닝 커브가 아니라 이게 첫 번째 비용.
-- **읽기가 두 갈래인 이유**: refresh 기본 1초의 near real-time이라 방금 쓴 걸 바로 봐야 하는 화면은 MySQL을 읽는다. 검색, 패싯, 관련도 정렬만 OpenSearch로 간다.
+- **읽기가 두 갈래인 이유**: refresh 기본 1초의 near real-time이라 방금 쓴 걸 바로 봐야 하는 화면은 MySQL을 읽는다. 검색, [[OpenSearch-Aggregations-Pagination#패싯 — 집계의 대표 사용처|패싯]], 관련도 정렬만 OpenSearch로 간다.
 - **격리**: 동기화가 비동기인 덕에 OpenSearch가 죽어도 원장 쓰기는 산다. 검색엔진 장애가 주문 실패가 되면 안 되기 때문에 일부러 끊어 둔 것.
 
 ### 그림 1-보충. 노란 상자를 펼치면 — 워커는 어디 있나
@@ -44,7 +46,9 @@ flowchart LR
   Q --> W["Indexer worker<br/>bulk 색인, 재시도, DLQ"]
   W --> OS[("OpenSearch")]
   API -.->|"commit 후 직접 발행 = dual write<br/>유실, 유령 문서, 순서 역전"| Q
-  classDef rdb fill:#E9EDF3,stroke:#8A94A3,color:#1B2430; classDef os fill:#1E63C4,stroke:#17509E,color:#FFFFFF; classDef cost fill:#E8B84B,stroke:#9A6410,color:#1B2430;
+  classDef rdb fill:#E9EDF3,stroke:#8A94A3,color:#1B2430
+  classDef os fill:#1E63C4,stroke:#17509E,color:#FFFFFF
+  classDef cost fill:#E8B84B,stroke:#9A6410,color:#1B2430
   class DB,CAP,Q rdb; class OS os; class W cost;
 ```
 
@@ -73,7 +77,8 @@ flowchart TB
       R0["R0"]
     end
   end
-  classDef pri fill:#1E63C4,stroke:#17509E,color:#FFFFFF; classDef rep fill:#E9EDF3,stroke:#8A94A3,color:#1B2430;
+  classDef pri fill:#1E63C4,stroke:#17509E,color:#FFFFFF
+  classDef rep fill:#E9EDF3,stroke:#8A94A3,color:#1B2430
   class P0,P1,P2 pri; class R0,R1,R2 rep;
 ```
 
@@ -92,7 +97,8 @@ flowchart LR
   DOC["JSON 문서<br/>title: 서울의 봄"] --> AN["Index analyzer<br/>char filter → Nori tokenizer → token filter"]
   AN --> T["term<br/>서울, 봄"]
   T --> II["역색인<br/>term → posting list(문서 목록)"]
-  classDef plain fill:#E9EDF3,stroke:#8A94A3,color:#1B2430; classDef os fill:#1E63C4,stroke:#17509E,color:#FFFFFF;
+  classDef plain fill:#E9EDF3,stroke:#8A94A3,color:#1B2430
+  classDef os fill:#1E63C4,stroke:#17509E,color:#FFFFFF
   class DOC,AN,T plain; class II os;
 ```
 
@@ -153,7 +159,8 @@ flowchart LR
   S1 --> MG
   S2 --> MG
   MG --> RES["응답"]
-  classDef plain fill:#E9EDF3,stroke:#8A94A3,color:#1B2430; classDef os fill:#1E63C4,stroke:#17509E,color:#FFFFFF;
+  classDef plain fill:#E9EDF3,stroke:#8A94A3,color:#1B2430
+  classDef os fill:#1E63C4,stroke:#17509E,color:#FFFFFF
   class Q,SA,CO,MG,RES plain; class S0,S1,S2 os;
 ```
 

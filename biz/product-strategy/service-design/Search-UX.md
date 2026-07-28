@@ -57,7 +57,7 @@ Broder의 웹 검색 분류와 탐색적 검색 연구를 제품 설계 언어�
 정렬, facet, suggestion은 UI 옵션이 아니라 검색 모델과 데이터 파이프라인의 계약이다.
 
 - 최신순은 시간 field와 누락 값 정책, 인기순은 집계 event와 갱신 주기, 관련도순은 scoring과 tie-breaker가 필요하다.
-- Facet은 keyword 또는 taxonomy field, multi-select의 AND/OR 의미, count 계산 기준이 필요하다.
+- Facet은 keyword 또는 taxonomy field, multi-select의 AND/OR 의미, count 계산 기준이 필요하다. count 계산의 구현 선택지는 [[OpenSearch-Aggregations-Pagination#패싯 — 집계의 대표 사용처|패싯 집계]]를 참고한다.
 - 인기 검색어와 suggestion은 로그 수집, 정규화, 시간창, 어뷰징 필터, 삭제 요청 반영이 필요하다.
 - 검색 문서의 광고, 연령, 지역, 구독 가능 여부는 filter 가능한 구조화 field와 갱신 책임자가 필요하다.
 

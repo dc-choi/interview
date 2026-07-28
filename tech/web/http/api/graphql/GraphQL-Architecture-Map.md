@@ -22,8 +22,8 @@ flowchart LR
   GQL -->|"필드 resolver"| DB[("DB")]
   GQL -->|"필드 resolver"| REST["기존 REST API"]
   GQL -->|"필드 resolver"| SVC["다른 서비스"]
-  classDef plain fill:#E9EDF3,stroke:#8A94A3,color:#1B2430;
-  classDef gql fill:#1E63C4,stroke:#17509E,color:#FFFFFF;
+  classDef plain fill:#E9EDF3,stroke:#8A94A3,color:#1B2430
+  classDef gql fill:#1E63C4,stroke:#17509E,color:#FFFFFF
   class C,DB,REST,SVC plain;
   class GQL gql;
 ```
@@ -42,8 +42,8 @@ flowchart LR
   P --> V["2. Validate<br/>스키마 대조: 필드, 타입, 인자"]
   V --> E["3. Execute<br/>선택 트리 순회, 필드마다 resolver"]
   E --> R["4. Response<br/>data 와 errors 봉투"]
-  classDef plain fill:#E9EDF3,stroke:#8A94A3,color:#1B2430;
-  classDef gql fill:#1E63C4,stroke:#17509E,color:#FFFFFF;
+  classDef plain fill:#E9EDF3,stroke:#8A94A3,color:#1B2430
+  classDef gql fill:#1E63C4,stroke:#17509E,color:#FFFFFF
   class REQ,R plain;
   class P,V,E gql;
 ```
@@ -63,9 +63,9 @@ flowchart TB
   UR --> PR["posts resolver<br/>user마다 1번 → 100번 호출"]
   PR --> NN["1 (users) + 100 (posts) = N+1"]
   NN --> DL["DataLoader<br/>같은 tick의 load 100번 → batch 1회"]
-  classDef plain fill:#E9EDF3,stroke:#8A94A3,color:#1B2430;
-  classDef gql fill:#1E63C4,stroke:#17509E,color:#FFFFFF;
-  classDef cost fill:#E8B84B,stroke:#9A6410,color:#1B2430;
+  classDef plain fill:#E9EDF3,stroke:#8A94A3,color:#1B2430
+  classDef gql fill:#1E63C4,stroke:#17509E,color:#FFFFFF
+  classDef cost fill:#E8B84B,stroke:#9A6410,color:#1B2430
   class Q,UR,DL plain;
   class PR gql;
   class NN cost;

@@ -42,7 +42,7 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 
 - `ngram_token_size`는 read-only 서버 변수라 변경에 재시작이 필요하고 기존 FULLTEXT 인덱스는 재생성해야 한다.
 - 모든 텍스트를 N글자 단위로 중첩 분해하므로 인덱스가 원문 대비 크게 팽창하고, token size 1이면 후보 폭발로 부하가 급증한다.
-- 검색어는 ngram phrase로 변환된다. bigram에서 abc 검색은 "ab bc" phrase가 된다. prefix가 token size 이상인 wildcard 검색(`abc*`)은 wildcard가 무시되고 phrase 검색으로 동작한다.
+- 검색어는 ngram phrase로 변환된다. bigram에서 abc 검색은 `ab bc` phrase가 된다. prefix가 token size 이상인 wildcard 검색(`abc*`)은 wildcard가 무시되고 phrase 검색으로 동작한다.
 - 형태소가 아니라 기계적 분해이므로 의미 없는 부분 일치가 관련도 노이즈로 올라온다.
 
 ### InnoDB FTS 운영 제약
@@ -55,7 +55,7 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 
 - tsvector와 tsquery, GIN 인덱스 조합은 stemming 기반 전문 검색을 내장한다. 다만 내장 text search configuration은 영어 등 유럽어 중심이고 한국어 형태소 사전이 없다(외부 dictionary 확장 필요).
 - 랭킹(ts_rank, ts_rank_cd)은 공식 문서가 명시하듯 global 정보를 사용하지 않는다. 문서 내 빈도와 근접도만 보고 corpus 전체의 term 희소성(IDF)을 반영하지 못하며, 매칭된 각 문서의 tsvector를 읽어야 해 I/O bound로 비싸질 수 있다.
-- pg_trgm은 trigram으로 `LIKE`, `ILIKE`(9.1+), 정규식(9.3+) 검색을 GIN 또는 GiST 인덱스로 가속하고 similarity 연산(`%`, 기본 threshold 0.3)으로 오타 fuzzy 매칭을 준다. 중간 문자열 검색의 현실적 1차 해법이지만, 이것은 문자열 유사도이지 관련도 랭킹이 아니고 패싯이나 자동완성의 답도 아니다.
+- pg_trgm은 trigram으로 `LIKE`, `ILIKE`(9.1+), 정규식(9.3+) 검색을 GIN 또는 GiST 인덱스로 가속하고 similarity 연산(`%`, 기본 threshold 0.3)으로 오타 fuzzy 매칭을 준다. 중간 문자열 검색의 현실적 1차 해법이지만, 이것은 문자열 유사도이지 관련도 랭킹이 아니고 [[OpenSearch-Aggregations-Pagination#패싯 — 집계의 대표 사용처|패싯]]이나 자동완성의 답도 아니다.
 
 ## 검색엔진 도입의 대가
 
@@ -81,7 +81,7 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 
 ## 도입 질문에 먼저 물을 숫자 4개
 
-사다리의 어느 단이 정답인지는 기술 지식이 아니라 정량 요구가 정한다. "검색엔진 도입할까요?"에 대한 첫 반응은 기술 이름이 아니라 이 숫자들을 묻는 것이다.
+사다리의 어느 단이 정답인지는 기술 지식이 아니라 정량 요구가 정한다. 검색엔진을 도입할지 묻는 질문에 대한 첫 반응은 기술 이름이 아니라 이 숫자들을 묻는 것이다.
 
 | 물을 숫자 | 결정되는 것 |
 |---|---|
@@ -117,6 +117,7 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 - [[OpenSearch-Service-Deployment|Amazon OpenSearch Service 적합과 부적합]]
 - [[OpenSearch-Indexing-Internals|색인 내부와 운영 DB 동기화]]
 - [[OpenSearch-Query-Relevance|BM25 관련도와 Query DSL]]
+- [[OpenSearch-Aggregations-Pagination|집계, 패싯과 페이지네이션]]
 - [[OpenSearch-Korean-Text-Analysis|한국어 Nori 분석]]
 - [[MySQL-Aurora-Parameter-Tuning|ngram_token_size 표준값]]
 

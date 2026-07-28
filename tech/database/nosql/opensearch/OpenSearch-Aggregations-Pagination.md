@@ -1,14 +1,25 @@
 ---
 tags: [database, search, opensearch, aggregation, pagination, sorting]
 status: done
-verified_at: 2026-07-27
+verified_at: 2026-07-28
 category: "Data & Storage - NoSQL"
-aliases: ["OpenSearch Aggregations", "OpenSearch Pagination", "OpenSearch 집계와 페이지네이션"]
+aliases: ["OpenSearch Aggregations", "OpenSearch Pagination", "OpenSearch 집계와 페이지네이션", "패싯 검색"]
 ---
 
 # OpenSearch 집계, 정렬, 페이지네이션
 
 검색 hit와 집계 bucket은 분산된 shard 결과를 coordinating node가 다시 합치는 연산이다. 높은 cardinality, 깊은 페이지, 불안정한 sort key는 메모리와 정확성 문제를 함께 만든다.
+
+## 패싯 — 집계의 대표 사용처
+
+패싯(facet)은 현재 검색 결과를 카테고리, 브랜드 같은 속성별로 집계해 값마다 문서 수를 붙인 필터 선택지로 보여주는 검색 UI 패턴이다. 쇼핑몰 검색의 왼쪽 필터 패널이 대표 예다.
+
+- 개수는 전체 데이터가 아니라 현재 query에 매칭된 결과 기준이다. 검색어가 바뀌면 패싯 개수도 함께 바뀐다.
+- 구현은 검색 요청에 `terms` 같은 bucket aggregation을 함께 실어 hit와 속성별 count를 한 질의로 받는 것이다.
+- RDB로 같은 화면을 만들려면 대개 hit 조회와 별개로 패싯 집계 질의를 한 번 더 돌린다. PostgreSQL은 `GROUPING SETS`와 CTE 조립으로 한 문장까지 줄일 수도 있지만 그 조립을 매번 직접 짜야 하고, OpenSearch는 검색 요청에 `aggs`를 얹는 것으로 끝난다. 다중 filter와 패싯을 검색과 한 질의로 조합하는 요구가 [[OpenSearch-vs-RDB-Search#도입 판단 사다리|도입 판단 사다리]] 4단의 근거로 꼽히는 이유다.
+- Aggregation은 `post_filter` 적용 전에 계산된다. 선택 조건을 `post_filter`로 두면 hit 목록만 좁혀지고, 선택한 패싯을 포함한 모든 패싯 개수는 선택과 무관한 query 전체 기준으로 남는다. 그래서 브랜드에서 하나를 골라도 나머지 브랜드의 개수가 계속 보여 선택 전환이 가능하다. 패싯이 하나이고 그 안의 multi-select가 OR 의미면 이걸로 충분하다.
+- 패싯이 여러 개면 각 패싯의 개수에 나머지 패싯의 선택을 반영해야 [[Search-UX|검색 UX 설계]]가 요구하는 0건 조합 예방이 된다. 패싯마다 나머지 선택 조건을 `filter`로 감싼 하위 집계를 따로 구성하고 hit 목록에는 `post_filter`를 병용한다. 이 구성은 패싯 안 multi-select가 OR 의미일 때 기준이다. 패싯 개수와 무관하게 multi-select가 AND 의미면 자기 패싯의 선택도 `filter`에 포함해야 표시 개수와 클릭 결과가 일치하고 0건 조합이 안 남는다.
+- Vector와 hybrid 경로에서는 ANN branch가 k개 후보만 만든 뒤 `post_filter`가 그중 일부를 버려 결과가 k보다 크게 적어질 수 있다. 그래도 패싯 선택 조건은 `post_filter`에 두고, ACL과 판매 가능 여부 같은 정합성 조건만 pre-filter로 올린다. 배치 기준은 [[OpenSearch-Hybrid-Search|하이브리드 검색]]의 filter 배치를 따른다.
 
 ## Aggregation 유형
 
@@ -134,10 +145,18 @@ PIT는 query 결과 자체가 아니라 Lucene segment view를 유지한다. 너
 - [[OpenSearch-Query-Relevance|Query DSL과 score]]
 - [[OpenSearch-Mapping-Text-Analysis|집계용 field 설계]]
 - [[OpenSearch-Performance-Troubleshooting|검색 성능 진단]]
+- [[OpenSearch-vs-RDB-Search|RDB vs 검색엔진 도입 판단]]
+- [[OpenSearch-Hybrid-Search|하이브리드 검색의 filter 배치]]
 
 ## 출처
 
 - [Aggregations - OpenSearch Documentation](https://docs.opensearch.org/latest/aggregations/)
+- [Implementing faceted search in OpenSearch - OpenSearch Documentation](https://docs.opensearch.org/latest/tutorials/faceted-search/)
+- [Filter search results - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/filter-search/)
+- [Table Expressions (GROUPING SETS) - PostgreSQL Documentation](https://www.postgresql.org/docs/current/queries-table-expressions.html)
+- [WITH Queries (Common Table Expressions) - PostgreSQL Documentation](https://www.postgresql.org/docs/current/queries-with.html)
+- [Filtering vector search results - OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/filter-search-knn/index/)
+- [Hybrid search with post-filtering - OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/hybrid-search/post-filtering/)
 - [Terms aggregation - OpenSearch Documentation](https://docs.opensearch.org/latest/aggregations/bucket/terms/)
 - [Composite aggregation - OpenSearch Documentation](https://docs.opensearch.org/latest/aggregations/bucket/composite/)
 - [Cardinality aggregation - OpenSearch Documentation](https://docs.opensearch.org/latest/aggregations/metric/cardinality/)

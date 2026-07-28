@@ -146,7 +146,7 @@ RRF는 단순해서 기본값이라는 뜻이 아니다. Weighted score fusion�
 | 각 하위 query filter | Branch별 후보 생성 제약 | Engine별 k-NN filter 조건 |
 | `post_filter` | Scoring 뒤 표시할 hit만 제거 | Query 전체 기준 facet은 유지하고 화면 결과만 제한 |
 
-보안과 정합성 조건은 top-level pre-filter로 강제한다. `post_filter`는 이미 생성한 후보를 버리므로 부족한 결과 수나 낮아진 recall을 복원하지 못한다.
+보안과 정합성 조건은 top-level pre-filter로 강제한다. `post_filter`는 이미 생성한 후보를 버리므로 부족한 결과 수나 낮아진 recall을 복원하지 못한다. 패싯 개수 유지와 다중 패싯 정합성은 [[OpenSearch-Aggregations-Pagination#패싯 — 집계의 대표 사용처|패싯 집계]]가 정본이다.
 
 ## Score 결합보다 먼저 볼 것
 
