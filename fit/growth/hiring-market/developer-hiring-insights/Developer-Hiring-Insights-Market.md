@@ -11,7 +11,7 @@ aliases: ["채용 인사이트 시장", "Developer Hiring Insights Market"]
 
 ### 채용시장의현실
 - 신입에게도 경력직 수준의 스펙과 우대사항을 요구하는 추세
-- 채용 혹한기로 공급은 증가하고 수요는 감소하지만, 채용 눈높이는 낮아지지 않음
+- 채용 혹한기에는 공급이 증가하고 수요가 감소하지만, 채용 눈높이는 낮아지지 않음
 - 결과적으로 소수의 경력직 채용 위주로 시장이 움직임
 
 ### 신입채용의우대사항으로올라온것들
@@ -128,4 +128,5 @@ aliases: ["채용 인사이트 시장", "Developer Hiring Insights Market"]
 ## 관련 문서
 - [[Developer-Hiring-Insights|채용 인사이트 (인덱스)]]
 - [[Developer-Hiring-Insights-Growth|면접 준비, 스터디, 시니어 로드맵]]
+- [[IT-Downturn-Career-Strategy|긴축기 IT 커리어 전략]]
 - [[Interview-Soft-Skills|인성면접 가이드]]

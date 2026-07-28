@@ -52,7 +52,7 @@ aliases: ["Effort Value In Hiring", "채용 신호 인플레이션", "성실은 
 - [[Non-CS-Major-Developer|비전공 개발자와 전공의 가치]] — 학력=약한 신호, 증명이 뒤집는다
 - [[Developer-Hiring-Insights-Market|채용 인사이트 시장 축]] — 수요공급, 차별화
 - [[Developer-Hiring-Insights-Growth|채용 인사이트 성장 축]] — 외부 자산 3축
-- [[IT-Downturn-Career-Strategy|불황기 커리어 전략]] — 거시 수요공급
+- [[IT-Downturn-Career-Strategy|긴축기 IT 커리어 전략]] — 시장 신호와 개인 전략
 - [[Business-Impact|비즈니스 임팩트]] — 성과의 사업 지표 환산
 - [[Productivity-Business-Ceiling|Min/Max 프레임]] — 채용은 Min값 방어
 - [[Hiring-Under-Uncertainty|불확실성 속 채용]] — 실력×태도, 성실의 위치

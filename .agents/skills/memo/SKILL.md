@@ -79,7 +79,7 @@ aliases: ["English Name", "한글명"]
 ```markdown
 ## 출처
 
-- [제목 - 매체/저자](URL)
+- [제목 — 매체/저자](URL)
 ```
 
 ## 연결

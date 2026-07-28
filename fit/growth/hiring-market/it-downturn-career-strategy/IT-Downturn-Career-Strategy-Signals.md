@@ -9,7 +9,7 @@ aliases: ["IT Downturn Signals", "긴축 시그널", "긴축 국면 진입"]
 
 상위 문서: [[IT-Downturn-Career-Strategy|긴축기 IT 커리어 전략]]
 
-> 검토 기준일: 2026-07-15. 주가, 투자 뉴스, 사내 발언 하나만으로 긴축을 판정하지 않는다. 서로 독립적인 지표와 회사의 실제 현금흐름을 함께 본다.
+> 검토 기준일: 2026-07-28. 주가, 투자 뉴스, 사내 발언 하나만으로 긴축을 판정하지 않는다. 서로 독립적인 지표와 회사의 실제 현금흐름을 함께 본다.
 
 ## 시장 신호를 읽는 순서
 
@@ -19,7 +19,7 @@ aliases: ["IT Downturn Signals", "긴축 시그널", "긴축 국면 진입"]
 - 직무별 공고 수, 요구 경력, 채용 소요 기간을 같은 기준으로 주기적으로 기록한다.
 - 해외 전망은 방향을 참고하는 자료로만 쓰고 한국의 개별 직무에 그대로 대입하지 않는다.
 
-미국 BLS는 소프트웨어 개발자 고용 증가를 전망하고 있어 IT 전체가 일괄 축소된다는 해석과 맞지 않는다. 반대로 장기 고용 전망만으로 현재의 경력 초기 채용 난도를 설명할 수도 없다.
+미국 BLS는 소프트웨어 개발자를 포함한 직군의 고용 증가를 전망하고 있어 IT 전체가 일괄 축소된다는 해석과 맞지 않는다. 반대로 장기 고용 전망만으로 현재의 경력 초기 채용 난도를 설명할 수도 없다.
 
 ### 2. 자본시장과 투자 지표
 
@@ -85,7 +85,7 @@ Plan B의 시작 시점은 신호가 정확히 몇 개인지가 아니라, 확�
 
 - [OECD Employment Outlook 2026 — OECD](https://www.oecd.org/en/publications/oecd-employment-outlook-2026_7e710f54-en.html)
 - [Software Developers Occupational Outlook — U.S. Bureau of Labor Statistics](https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm)
-- [고용노동통계조사 — 고용노동부](https://laborstat.moel.go.kr/)
+- [고용노동통계 포털 (조회 진입점) — 고용노동부](https://laborstat.moel.go.kr/)
 - [2026년 상반기 직종별사업체노동력조사 — 고용노동부](https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=19590)
 - [2026년 1분기 벤처투자 동향 — 중소벤처기업부](https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1068271&cbIdx=86&parentSeq=1068271)
 - [2025년 신산업 분야 벤처투자 동향 — 중소벤처기업부](https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1067806&cbIdx=86&parentSeq=1067806)

@@ -72,4 +72,4 @@ aliases: ["Labor Market Mindset", "노동시장 시장 사고", "커리어 시�
 - [[Non-CS-Major-Developer|비전공 개발자와 전공의 가치]] — 정보 비대칭, 증명이 시그널을 덮어쓴다
 - [[Resume-15-Second-Rules|이력서 15초 룰]] — 이력서는 상품 소개서
 - [[Strength-Based-Growth|강점 기반 성장]] — 나만의 캐릭터, 강점의 조합
-- [[IT-Downturn-Career-Strategy|불황기 커리어 전략]] — 거시 수요공급, 임금 양극화
+- [[IT-Downturn-Career-Strategy|긴축기 IT 커리어 전략]] — 시장 신호, 구조 변화와 개인 전략
