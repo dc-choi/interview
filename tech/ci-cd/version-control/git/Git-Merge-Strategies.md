@@ -7,7 +7,7 @@ aliases: ["Git Merge Strategies", "Git 머지 전략", "Rebase vs Squash vs Merg
 
 # Git 머지 전략, Merge, Rebase, Squash
 
-`git merge`에는 겉보기 같은 이름 아래 **3가지 전혀 다른 전략**이 있다. 히스토리 보존 방식이 달라 **협업 스타일, 브랜치 정책, 롤백 용이성**에 직접 영향을 준다. GitHub는 이 셋을 "Create a merge commit / Squash and merge / Rebase and merge"로 제공하며, 팀은 보통 **하나를 정책**으로 고정한다.
+`git merge`에는 겉보기 같은 이름 아래 **3가지 전혀 다른 전략**이 있다. 히스토리 보존 방식이 달라 **협업 스타일, 브랜치 정책, 롤백 용이성**에 직접 영향을 준다. GitHub는 이 셋을 `Create a merge commit` / `Squash and merge` / `Rebase and merge` 버튼으로 제공하며, 팀은 보통 **하나를 정책**으로 고정한다.
 
 ## 핵심 명제
 
@@ -32,7 +32,7 @@ main:  A---B---C-----------M
 feature:         D---E---/
 ```
 
-- **병합 커밋 M** 생성 — "이 지점에서 합쳤다"
+- **병합 커밋 M** 생성 — 이 지점에서 합쳤다는 기록
 - 브랜치 그래프가 **그대로 남음**
 - 각 커밋 메시지, 시점 보존
 
@@ -74,7 +74,7 @@ after:   main ----------→ E   (커밋 추가 없이 포인터만 E로 전진)
 ### Merge commit
 
 **장점**
-- **원본 히스토리 완전 보존** — 언제 브랜치가 시작됐고 합쳐졌는지 추적 가능
+- **원본 히스토리 그대로 보존** — 언제 브랜치가 시작됐고 합쳐졌는지 추적 가능
 - 브랜치별 작업 단위가 **그래프로 시각화**
 - 충돌 해결 이력까지 남음
 
@@ -171,7 +171,7 @@ NEVER rebase commits that have been pushed to a shared branch.
 
 ## 흔한 실수
 
-- **공유 브랜치 force-push** — 팀 작업 날림
+- **공유 브랜치 force-push** — 팀 작업 날림. 개인 브랜치의 안전장치는 [[Git-Reset-Reflog]]의 `--force-with-lease`
 - **Squash로 모든 커밋 정보 소실** → 감사, bisect 시 곤란
 - **Merge commit 남발** → `git log`가 엉망. `--first-parent` 옵션으로 보기
 - **Rebase 중 충돌 많이 나면 포기하고 merge** — 큰 PR은 처음부터 rebase 안 맞음
@@ -193,8 +193,8 @@ NEVER rebase commits that have been pushed to a shared branch.
 - Interactive Rebase의 `pick`, `squash`, `fixup` 차이
 
 ## 관련 문서
+- [[git|Git 폴더 인덱스]] — [[Git-Mental-Model|Git 멘탈 모델]], [[Git-Reset-Reflog|Git Reset과 복구]]
 - [[CICD-Basics|CI/CD 기초]]
-- Git Flow / Trunk based (작성 예정: `Git-Flow`)
 - [[GitHub-Actions|GitHub Actions]]
 - [[Code-Review-Culture|생산적 코드 리뷰 문화]]
 - [[Blue-Green|Blue/Green 배포]]
