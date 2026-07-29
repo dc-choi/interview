@@ -88,7 +88,7 @@ HTTP/1.1 `keep-alive`(기본 동작)에서 동적 응답은 자동으로 chunked
 
 ## 사용 사례
 
-- **SSE(Server-Sent Events)** — 텍스트 기반 단방향 푸시. 내부적으로 chunked 사용
+- **SSE(Server-Sent Events)** — 텍스트 기반 단방향 푸시. HTTP/1.1 연결에서는 보통 chunked 사용
 - **대용량 파일 다운로드** — 메모리에 전체 적재 없이 디스크에서 흘려보냄
 - **JSON Streaming** — `application/x-ndjson`으로 줄 단위 결과 스트리밍 (검색 결과, 로그 조회)
 - **실시간 빌드/배포 로그** — CI 도구가 진행 중인 로그를 실시간 출력
@@ -101,7 +101,7 @@ HTTP/1.1 `keep-alive`(기본 동작)에서 동적 응답은 자동으로 chunked
 - `Content-Length`와 `Transfer-Encoding: chunked`를 함께 보내면 안 되는 이유 (HTTP Request Smuggling)
 - 마지막 청크는 어떻게 표시하나 (`0\r\n\r\n`)
 - HTTP/2에서 chunked가 사라진 이유 (자체 프레이밍)
-- SSE, LLM 스트리밍 응답이 chunked인 이유
+- HTTP/1.1의 SSE, LLM 스트리밍 응답이 chunked를 사용하는 이유
 
 ## 출처
 - [RFC 9112 — HTTP/1.1 메시징 (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9112)
@@ -114,4 +114,5 @@ HTTP/1.1 `keep-alive`(기본 동작)에서 동적 응답은 자동으로 chunked
 - [[HTTP-Seminar|HTTP 버전별 진화 (HTTP/1.1, 2, 3)]]
 - [[HTTP-Status-Code|HTTP Status Code, Header]]
 - [[HTTP-Content-Type|Content-Type, MIME Type]]
+- [[Server-Sent-Events|Server-Sent Events (SSE)]]
 - [[Realtime-Chat-Architecture|실시간 채팅 아키텍처]]

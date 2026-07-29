@@ -14,7 +14,7 @@ aliases: ["Realtime Communication Comparison", "실시간 통신 비교"]
 | 기술 | 방향 | 프로토콜 | 주 용도 | 구현 복잡도 |
 |---|---|---|---|---|
 | **Long Polling** | 양방향 유사 (요청/응답 반복) | HTTP/1.1 | 레거시, 저기능 클라 지원 | 낮음 |
-| **Server-Sent Events** | 서버 → 클라 (단방향) | HTTP/1.1 (chunked) | 알림, 피드, 스트림 | 낮음 |
+| **Server-Sent Events** | 서버 → 클라 (단방향) | HTTP 응답 스트림 | 알림, 피드, 스트림 | 낮음 |
 | **WebSocket** | 양방향 (full-duplex) | HTTP Upgrade → WS 프레임 | 채팅, 게임, 협업 | 중간 (재연결, 확장) |
 | **WebRTC** | P2P (클라↔클라) | UDP + STUN/TURN/ICE | 화상 통화, 저지연 스트리밍 | 높음 (시그널링) |
 | **WebTransport** | 양방향 + 단방향 스트림 | HTTP/3 (QUIC) | 차세대 실시간, 현재 실험적 | 중간 |
@@ -38,7 +38,7 @@ Client → GET /poll  (즉시 재요청)
 
 ## Server-Sent Events (SSE)
 
-**서버 → 클라이언트 단방향** 스트리밍. 하나의 HTTP 응답에 `Transfer-Encoding: chunked`로 이벤트를 계속 흘려보냄.
+**서버 → 클라이언트 단방향** 스트리밍. 하나의 HTTP 응답에 `text/event-stream` 형식으로 이벤트를 계속 흘려보낸다. HTTP/1.1에서는 보통 chunked 전송을 사용하고, HTTP/2와 HTTP/3에서는 각 버전의 프레임을 사용한다.
 
 ```
 Content-Type: text/event-stream
@@ -137,7 +137,7 @@ HTTP/3(QUIC) 기반 **차세대 양방향 통신**. UDP 위에서 신뢰성, 순
 | 레거시 호환, 무조건 HTTP만 | **Long Polling** |
 | 저지연 P2P (화상 통화, 원격) | **WebRTC** |
 | HTTP/3 환경 + 미래 대비 | **WebTransport** |
-| LLM 응답 스트리밍 | **SSE** (chunked + event stream) |
+| LLM 응답 스트리밍 | **SSE** (`text/event-stream`) |
 | 브라우저, 모바일 푸시 | **SSE** 또는 WebSocket |
 | 대규모 채팅 서비스 | **WebSocket + STOMP/Redis Pub/Sub** |
 
@@ -176,4 +176,5 @@ HTTP/3(QUIC) 기반 **차세대 양방향 통신**. UDP 위에서 신뢰성, 순
 - [[WebSocket|WebSocket]]
 - [[STOMP-Protocol|STOMP Protocol]]
 - [[Realtime-Chat-Architecture|실시간 채팅 아키텍처]]
-- [[HTTP-Chunked-Transfer|HTTP Chunked Transfer (SSE 내부)]]
+- [[Server-Sent-Events|Server-Sent Events (SSE)]]
+- [[HTTP-Chunked-Transfer|HTTP Chunked Transfer]]

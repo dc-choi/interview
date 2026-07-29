@@ -86,12 +86,15 @@ server {
 
 ### proxy_buffering, proxy_buffer_size, proxy_buffers
 
-업스트림 응답을 클라이언트로 바로 흘릴지, Nginx 디스크, 메모리에 버퍼링할지 결정.
+업스트림 응답을 읽는 속도와 클라이언트로 보내는 속도를 얼마나 분리할지 결정.
 
-- `proxy_buffering on` (기본) — 업스트림 응답을 Nginx가 모아서 클라이언트에게 전달 → 느린 클라이언트로부터 백엔드 보호
-- `proxy_buffering off` — 스트리밍(SSE, 대용량 파일, 실시간 응답)에서 지연 감소
+- `proxy_buffering on` (기본) — 업스트림 응답을 가능한 한 빨리 버퍼로 읽으면서 클라이언트에 전달. 필요하면 임시 파일도 사용
+- `proxy_buffering off` — 받은 응답을 클라이언트에 동기적으로 전달하고, 전체 응답을 미리 읽지 않음
+- `X-Accel-Buffering` — 업스트림 응답 헤더로 요청별 버퍼링을 제어
 - `proxy_buffer_size` — 응답 헤더 버퍼 크기
 - `proxy_buffers` — 본문 버퍼 수와 크기
+
+버퍼링을 켰다고 응답 전체를 모은 뒤 한 번에 보낸다는 뜻은 아니다. SSE 지연은 압축, 응답 필터, 중간 프록시까지 포함한 실제 경로에서 측정한 뒤 설정을 결정한다.
 
 ### WebSocket 업스트림
 
@@ -153,7 +156,7 @@ server {
 - **SSL 종료 후 앱이 `http`로 인식** — `X-Forwarded-Proto` 필수
 - **WebSocket에 `proxy_http_version 1.1`과 Upgrade 헤더 미설정** → 핸드셰이크 실패
 - **업스트림 keep-alive 미설정** — 매 요청마다 새 TCP 연결 → 지연, CPU 증가
-- **`proxy_buffering on`으로 스트리밍 시도** — SSE, 대용량 다운로드가 끊겨 보이거나 버퍼로 지연
+- **모든 SSE에 `proxy_buffering off` 적용** — 기본 버퍼링에서도 이벤트가 순차 전달될 수 있다. 장기 스트림의 자원 특성과 실제 도착 지연을 측정해 결정
 
 ## 면접 체크포인트
 
@@ -166,9 +169,11 @@ server {
 
 ## 출처
 - [Nginx Docs — NGINX Reverse Proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
+- [Nginx Docs — ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering)
 
 ## 관련 문서
 - [[Load-Balancer|Load Balancer]]
 - [[HTTPS-TLS|HTTPS, TLS Handshake]]
+- [[Server-Sent-Events|Server-Sent Events (SSE)]]
 - [[Realtime-Chat-Architecture|실시간 채팅 아키텍처]]
 - [[Rate-Limiting|Rate Limit 정책 설계]]
