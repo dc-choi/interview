@@ -8,42 +8,42 @@ aliases: ["2027 DevOps 실전 로드맵", "2027 데브옵스 학습 계획"]
 
 # 2027 DevOps 실전 로드맵
 
-백엔드 서비스를 배포하고 관측하며 장애와 복구까지 책임지는 운영 역량을 보강한다. 문서의 2027은 가장 이른 시작 목표다. 추천과 taxonomy 1차 성공선을 통과한 뒤에만 시작하고, 선행 학습이 늦어지면 일정을 압축하지 않고 전체 계획을 뒤로 미룬다.
+백엔드 서비스를 배포하고 관측하며 장애와 복구까지 책임지는 미래 역할 역량을 보강한다. 현재 1순위인 검색과 회사 기술의 빈칸을 밀어내지 않으며, [[Current-Goals-and-Roadmap|통합 로드맵]]의 선택 gate에서 여력이 확인된 경우에만 시작한다. 내부 방향은 Terraform을 먼저 검증하고 다시 선택한 뒤 Kubernetes로 확장하는 것이다. 문서의 2027은 가장 이른 시작 목표다.
 
 ## 결정 요약
 
 | 시기 | 실행 | 종료 조건 |
 |---|---|---|
-| 선행 gate 전 | 현업에 즉시 필요한 운영 지식만 학습 | 별도 진도표나 로드맵 진도로 계산하지 않는다 |
-| 추천과 taxonomy 1차 성공선 뒤 | 준비 구간마다 최대 2회 세션 | 아래 0단계 통과 gate를 모두 닫는다 |
+| 선택 전 | 회사 업무에 즉시 필요한 운영 지식만 학습 | 별도 진도표나 로드맵 진도로 계산하지 않는다 |
+| 미래 투자로 선택한 뒤 | 준비 구간마다 최대 2회 세션 | 아래 0단계 통과 gate를 모두 닫는다 |
 | 준비 gate 뒤 각 핵심 실행 구간 | 최대 24회 실습 세션, 2주는 버퍼 | 아래 성공선까지만 순서대로 닫는다 |
 | 핵심 실행 구간 뒤 | 닫히지 않은 단계 | 구간 회고 뒤 같은 단계부터 새 구간에서 재개한다 |
 
-추천과 taxonomy 1차 성공선은 시작 조건이다. 검색과 추천 디스커버리의 여덟 단계를 모두 끝낼 필요는 없으며 Personalized Search, OPE와 온라인 실험 같은 남은 고급 단계는 DevOps 핵심 4 통과 뒤에 재개한다.
+검색이나 추천 로드맵의 완료는 시작 조건이 아니다. 다만 현재 검색 결과, 다른 회사 기술과 회복이 DevOps보다 항상 앞선다. Terraform 최소 성공선을 닫으면 통합 gate로 돌아가며, 이 미래 투자를 계속하기로 다시 선택한 경우에만 Kubernetes를 연다.
 
 ## 성공선과 세션 상한
 
-한 세션은 기본 2시간이다. 3시간째는 재실행이나 기록에만 쓰며 다음 단계 진도를 당기지 않는다.
-준비는 구간마다 최대 2회다. 두 세션 안에 0단계 gate가 닫히지 않으면 준비 구간을 종료하고 미완료 원인, 다음 변경과 재검토일을 기록한다. 재검토 뒤 새 준비 구간을 열면 준비 상한을 2회로 초기화하고 이미 닫은 준비 gate는 유지하지만, 0단계 gate 전체를 닫기 전에는 핵심 실습을 열지 않는다. 각 핵심 실행 구간의 실습은 최대 24회와 버퍼 2주다. 선행 gate 전의 업무상 즉시 학습은 이 세션 상한과 로드맵 진도에 포함하지 않으며, 쓰지 못한 세션을 다음 구간에 더하지 않는다.
+한 세션은 기본 2시간이다. 3시간째는 재실행이나 기록에만 쓰며 다음 단계 진도를 당기지 않는다. 준비는 구간마다 최대 2회다. 두 세션 안에 0단계 gate가 닫히지 않으면 준비 구간을 종료하고 미완료 원인, 다음 변경과 재검토일을 기록한다. 재검토 뒤 새 준비 구간을 열면 준비 상한을 2회로 초기화하고 이미 닫은 준비 gate는 유지하지만, 0단계 gate 전체를 닫기 전에는 핵심 실습을 열지 않는다. 각 핵심 실행 구간의 실습은 최대 24회와 버퍼 2주다. 선행 gate 전의 업무상 즉시 학습은 이 세션 상한과 로드맵 진도에 포함하지 않으며, 쓰지 못한 세션을 다음 구간에 더하지 않는다.
 
 | 성공선 | 포함 범위 | 실습 세션 상한 | 판정 |
 |---|---|---:|---|
 | 최소 | 핵심 1 Linux와 핵심 2 Terraform/ECS/AWS | 11회 | 핵심 실행 구간에서 먼저 닫을 필수 성공선 |
-| 목표 | 최소 성공선과 핵심 3 CI/CD/rollback | 누적 17회 | 핵심 단계 안에서 순서대로 진행 |
+| 목표 | 최소 성공선과 핵심 3 Kubernetes/CI/CD/rollback | 누적 17회 | Terraform 뒤 재선택한 경우 진행 |
 | 완료 | 목표 성공선과 핵심 4 SRE/복구 | 누적 24회 | 다음 개인 학습 트랙의 전환 gate |
-| 별도 확장 | Kubernetes, EKS와 Redis | 배정 없음 | 남은 디스커버리 완료 뒤 별도 판단 |
+| 선택 확장 | EKS | 배정 없음 | 로컬 Kubernetes gate와 비용 통제 뒤 별도 판단 |
 
 단계별 상한은 핵심 1이 3회, 핵심 2가 8회, 핵심 3이 6회, 핵심 4가 7회다. 시작한 세션은 산출물의 통과, 실패 또는 미완료와 무관하게 현재 구간의 해당 상한에서 한 번 소비한다. 단계 상한 안에 gate가 닫히지 않으면 그 즉시 현재 핵심 실행 구간을 종료하고 다음 단계로 넘어가지 않는다. 구간 회고 뒤 새 핵심 실행 구간을 열 때 전체 상한은 24회로, 현재 미완료 단계와 아직 시작하지 않은 단계의 상한은 원래 값으로 초기화하며 완료한 gate는 유지한다. 이전 구간에서 쓰지 않은 세션은 새 상한에 더하지 않고 일정을 옮긴 것은 실패로 계산하지 않는다.
 
 ## 실행 체크
 
-- [ ] 준비 시작: 추천과 taxonomy 1차 성공선을 통과했다.
+- [ ] 준비 시작: 현재 회사 기술 빈칸과 업무 부담을 확인하고 이 미래 투자를 선택했다.
 - [ ] 준비 시작과 재개: 다른 체계적 개인 학습 트랙을 닫았고 새 준비 구간 ID, 시작일과 2회 상한을 기록했다.
-- [ ] 핵심 실습 시작과 재개: 0단계 gate를 모두 통과했다.
-- [ ] 핵심 실습 시작과 재개: 새 핵심 실행 구간 ID, 시작일, 최대 26주와 초기화한 전체/단계 상한을 기록했다.
+- [ ] 핵심 실습 시작과 재개: 0단계 gate를 모두 통과했고 새 핵심 실행 구간 ID, 시작일, 최대 26주와 초기화한 전체/단계 상한을 기록했다.
+- [ ] 핵심 3 시작: Terraform 최소 성공선을 닫고 통합 gate에서 Kubernetes 진행을 다시 선택했다.
+- [ ] 핵심 4 시작: Kubernetes 목표 성공선을 닫고 통합 gate에서 SRE와 복구 진행을 다시 선택했다.
 - [ ] 3시간째 사용: 새 진도를 열지 않고 재실행이나 기록에만 사용한다.
 
-DevOps를 시작한 뒤에는 다른 개인 학습 로드맵을 열지 않는다. 업무상 긴급한 학습은 예외지만 로드맵 진도로 세지 않는다. 핵심 4 통과 뒤 다음 정규 트랙은 검색과 추천 디스커버리의 남은 단계다. Kubernetes, EKS와 Redis 확장은 남은 디스커버리 완료 뒤 별도로 판단하며, 그 전에 현업상 긴급하게 다룬 범위는 DevOps 확장 진도로 계산하지 않는다.
+DevOps를 시작한 뒤에는 다른 개인 학습 로드맵을 열지 않는다. 검색을 포함한 회사 업무 학습은 예외이며 필요하면 DevOps를 보류한다. 핵심 2, 핵심 3과 핵심 4 뒤에는 통합 gate로 돌아가 다음 하나를 다시 고른다. EKS는 로컬 Kubernetes와 비용 통제를 검증한 뒤에만 별도로 판단한다.
 
 ## 기준 아키텍처
 
@@ -71,7 +71,7 @@ flowchart LR
 - 저장소는 DynamoDB on-demand 한 표로 고정한다. 기준 설정은 tags와 CloudWatch alarm이며 TTL, PITR, stream과 index는 제외하고 별도 표로 복원한다.
 - 별도 `bootstrap/` Terraform 구성과 gitignored local state로 S3 state bucket을 먼저 만든다. 이 bucket은 서비스 teardown 뒤에도 유지하고, 복구 증거를 남긴 다음 object version과 delete marker를 비운 뒤 bootstrap stack에서 마지막으로 삭제한다.
 - 배포는 ECS rolling update와 deployment circuit breaker 자동 rollback 한 경로만 사용한다.
-- worker/SQS, RDS, blue/green, 다중 환경과 Kubernetes는 핵심 1에서 4의 범위에서 제외한다.
+- worker/SQS, RDS, blue/green, 다중 환경과 EKS는 핵심 1에서 4의 범위에서 제외한다. 로컬 Kubernetes는 핵심 3에서 같은 API image로 검증한다.
 - 요청 수, 오류율과 지연 시간을 같은 명령으로 다시 측정할 수 있는 요청 생성 절차를 저장한다.
 
 ## 0단계: 실행 준비, 최대 2회
@@ -84,7 +84,7 @@ flowchart LR
 ### 통과 gate
 
 - [ ] 샘플 API와 인프라 저장소의 경계, 기준 아키텍처와 제외 범위를 문서 없이 다시 그려 설명한다.
-- [ ] 추천과 taxonomy 1차 성공선의 증거 문서, 준비 구간 ID와 시작일을 기록했다.
+- [ ] 미래 투자 선택 근거, 확인한 회사 기술 빈칸, 준비 구간 ID와 시작일을 기록했다.
 - [ ] 최소 resource contract의 생성/삭제 순서, 예산 알림, 리소스 태그, 실습 종료 시각과 비용 중단선이 적혀 있다.
 - [ ] 샘플 API를 로컬에서 한 명령 흐름으로 실행하고 종료하며, 반복 가능한 요청 명령과 요청 수, 오류율, 지연 시간의 초기값을 저장한다.
 
@@ -121,8 +121,10 @@ State와 saved plan에는 민감 정보가 들어갈 수 있다. 버전 관리 �
 - [ ] 격리된 recovery key에서 S3의 이전 state object version을 실제로 복원하고, `plan`에 의도하지 않은 변경이 없는지 확인한다. 활성 state는 덮어쓰지 않는다.
 - [ ] 서비스 stack을 먼저 삭제하고 state 복구 증거를 보존한 뒤, 학습용 bucket의 object version과 delete marker를 비우고 bootstrap stack까지 마지막으로 삭제한다.
 
-## 핵심 3: CI/CD와 rollback, 최대 6회
+## 핵심 3: Kubernetes, CI/CD와 rollback, 최대 6회
 
+- kind의 단일 cluster, Deployment, Service와 선언형 manifest
+- readiness/liveness/startup probe, requests/limits와 rolling update
 - test, SBOM, dependency/image scan, build와 deploy 단계 분리
 - GitHub Actions OIDC, 제한된 trust policy와 IAM permission policy를 사용해 장기 AWS key 제거
 - `terraform fmt`, `validate`, `plan`과 IaC policy/security check
@@ -131,6 +133,8 @@ State와 saved plan에는 민감 정보가 들어갈 수 있다. 버전 관리 �
 
 ### 산출물과 gate
 
+- [ ] kind에 같은 API image를 Deployment와 Service로 배포하고 요청 경로, desired/current/ready replica와 rollout 상태를 설명한다.
+- [ ] probe 오설정과 부족한 resource request/limit을 각각 재현해 이벤트와 상태로 원인을 찾고, 수정 뒤 rollout을 완료한 다음 이전 revision으로 rollback한다.
 - [ ] test, SBOM, dependency/image scan, build와 deploy를 분리하고 `terraform fmt`, `validate`, `plan`과 IaC security check를 통과하며 scan 또는 policy 위반이 배포를 막는지 확인한다. commit SHA로 tag한 image를 배포하고 실행 task의 image digest를 build artifact와 대조한다.
 - [ ] GitHub Actions가 장기 AWS key 없이 OIDC로 제한된 IAM role을 사용하고, workflow `permissions`와 IAM permission policy 증거를 남긴다.
 - [ ] OIDC trust policy의 `aud=sts.amazonaws.com`와 실행 시점 형식에 맞는 repository/ref 또는 environment `sub` 제한을 증거로 남긴다. Environment 기반 `sub`를 쓰면 허용 branch/tag만 배포할 수 있는 environment protection rule도 함께 검증한다.
@@ -154,13 +158,11 @@ State와 saved plan에는 민감 정보가 들어갈 수 있다. 버전 관리 �
 - [ ] 부하와 의존성 실패를 각각 주입해 탐지, 완화와 복구를 수행하고 같은 SLO를 가리키는 error budget, alarm과 runbook 증거를 연결한 blameless postmortem을 남긴다.
 - [ ] 재구축과 전체 삭제 절차를 다른 사람이 따라 할 수 있게 남긴다.
 
-## 남은 디스커버리 완료 뒤 확장
+## 선택 확장
 
 | 범위 | 시작 조건 | 최소 산출물 |
 |---|---|---|
-| 로컬 Kubernetes | 핵심 4와 남은 디스커버리를 통과하고 업무 필요가 있음 | kind 배포, probe 오설정, resource/HPA와 rollback 기록 |
-| EKS 단기 샌드박스 | 로컬 Kubernetes gate와 비용 통제 통과 | ECS 대비 비용, 권한과 운영 부담 비교 뒤 즉시 삭제 |
-| Redis 신뢰성 | 핵심 4와 남은 디스커버리를 통과하고 실제 서비스 필요가 있음 | stampede 또는 전달 보장 장애 재현과 복구 기록 |
+| EKS 단기 샌드박스 | 핵심 3의 로컬 Kubernetes gate와 비용 통제 통과 | ECS 대비 비용, 권한과 운영 부담 비교 뒤 즉시 삭제 |
 
 ## 주간 운영과 자격증 규칙
 
@@ -171,14 +173,11 @@ State와 saved plan에는 민감 정보가 들어갈 수 있다. 버전 관리 �
 
 ## 관련 문서
 
-- [[2026-H2-Math-Roadmap|2026 하반기 수학 기초 로드맵]]
-- [[2027-Search-Recommendation-Roadmap|2027 검색 엔진 우선, 추천 시스템 전환 로드맵]]
-- [[My-Tech-Cards-Ops|내 기술 답변 카드, 관측과 인프라]]
-- [[인프라&클라우드(Infrastructure&Cloud)|인프라와 클라우드]]
-- [[CICD&배포(CICD&Delivery)|CI/CD와 배포]]
-- [[관측가능성(Observability)|관측 가능성]], [[SRE|Site Reliability Engineering]]
-- [[redis-deep-dive|Redis 심화]]
+- [[2026-H2-Math-Roadmap|2026 하반기 수학 기초 로드맵]], [[2027-Search-Recommendation-Roadmap|검색 엔진 우선, 추천 시스템 전환 로드맵]]
+- [[My-Tech-Cards-Ops|내 기술 답변 카드, 관측과 인프라]], [[인프라&클라우드(Infrastructure&Cloud)|인프라와 클라우드]]
+- [[CICD&배포(CICD&Delivery)|CI/CD와 배포]], [[관측가능성(Observability)|관측 가능성]], [[SRE|Site Reliability Engineering]]
 - [[roadmaps|학습 로드맵 인덱스]]
+- [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]]
 
 ## 출처
 
@@ -186,5 +185,5 @@ State와 saved plan에는 민감 정보가 들어갈 수 있다. 버전 관리 �
 - AWS: [Fargate task networking](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-networking.html), [Application Load Balancer subnets](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html), [ECS rolling update](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html), [deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-circuit-breaker.html), [DynamoDB backup and restore](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/CreateBackup.html)
 - AWS: [Budgets](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html), [Secrets rotation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html), [Operational Excellence](https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/welcome.html)
 - GitHub: [AWS에서 OpenID Connect 구성](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws)
-- Kubernetes: [probes](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes), [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/), [HPA](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/)
+- Kubernetes: [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), [Services](https://kubernetes.io/docs/concepts/services-networking/service/), [probes](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes), [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)
 - [Google SRE Workbook](https://sre.google/workbook/table-of-contents/)

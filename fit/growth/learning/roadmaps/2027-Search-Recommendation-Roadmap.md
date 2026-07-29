@@ -8,15 +8,16 @@ aliases: ["2027 검색 추천 로드맵", "검색 엔진 우선 추천 전환 �
 
 # 2027 검색 엔진 우선, 추천 시스템 전환 로드맵
 
-수학 2단계 gate 뒤 검색 엔진의 baseline과 품질 평가를 먼저 실습하고, 그 결과를 추천 시스템 baseline으로 연결한다. 검색은 추천의 수학적 선행조건이 아니다. 현재 업무 우선순위와 공통 discovery 계약의 재사용 가치를 근거로 실행 순서만 검색 우선으로 정한다. 문서의 2027은 가장 이른 시작 목표이며 수학이 늦어지면 이 계획도 그대로 뒤로 미룬다.
+검색은 현재 역할 기술의 1순위다. 실제 Task를 끝내는 데 필요한 학습은 지금 수행하고, 수학 2단계 gate와 입사 첫 90일 회고 뒤에도 역할 수요가 이어지면 이 문서의 독립 fixture와 전체 진도를 정규 개인 트랙으로 선택한다. 검색은 추천의 수학적 선행조건이 아니며 문서의 2027은 정규 트랙의 가장 이른 시작 목표다.
 
 ## 시작 조건과 운영 원칙
 
-- [[2026-H2-Math-Roadmap|2026 하반기 수학 기초 로드맵]]의 2단계 gate를 통과한 뒤 시작한다.
+- 현재 검색 Task와 결과를 먼저 처리한다. 필요한 절과 지식 지도는 개인 학습 gate를 기다리지 않고 사용한다.
+- 독립 fixture를 쓰는 전체 정규 트랙은 [[2026-H2-Math-Roadmap|수학 로드맵]]의 2단계 gate와 입사 첫 90일 회고를 마친 뒤에도 실제 검색 업무, 데이터와 리뷰 환경이 있을 때 선택한다.
 - 이 로드맵을 진행하는 동안 다른 체계적 개인 학습 트랙을 병행하지 않는다.
-- 검색 1차 성공선을 통과한 뒤에만 추천 baseline으로 전환한다.
-- 추천과 taxonomy 1차 성공선을 통과한 뒤에만 DevOps로 전환한다.
-- 업무상 긴급한 검색/추천 학습은 즉시 수행할 수 있지만 로드맵 단계 통과로 자동 인정하지 않는다.
+- 검색 1차 성공선을 통과하고 통합 선택 gate에서 계속하기로 한 경우에만 추천 baseline으로 전환한다.
+- 실제 업무 산출물이 해당 gate의 검증 조건을 충족하면 다시 만들지 않고 증거로 인정한다. 기술을 사용했다는 사실만으로는 통과로 계산하지 않는다.
+- DevOps는 이 로드맵의 다음 단계가 아니라 회사 기술 빈칸이 없을 때 선택하는 별도의 미래 투자다.
 
 ## 검색을 먼저 하는 이유
 
@@ -30,13 +31,18 @@ aliases: ["2027 검색 추천 로드맵", "검색 엔진 우선 추천 전환 �
 ```mermaid
 flowchart LR
   A[통합 discovery 계약] --> B[검색 엔진 baseline과 품질]
-  B --> C[추천 모델링 baseline]
-  C --> D[Taxonomy 후보와 서빙]
-  D --> E[DevOps 실전 0단계와 핵심 1부터 4]
-  E --> F[남은 discovery 단계]
+  B --> G{통합 선택 gate}
+  G -->|추천 역할 수요| C[추천 모델링 baseline]
+  G -->|다른 우선순위| X[회사 기술, 미래 투자, 범용 학습 또는 보류]
+  C --> I{통합 선택 gate}
+  I -->|Taxonomy 역할 수요| D[Taxonomy 후보와 서빙]
+  I -->|다른 우선순위| X
+  D --> H{통합 선택 gate}
+  H -->|검색과 추천 역할 수요| F[남은 discovery 단계]
+  H -->|다른 우선순위| X
 ```
 
-이 문서의 1차 성공선은 [[Search-Recommendation-Discovery-Learning-Path|검색과 추천 디스커버리 학습 경로]]의 0단계와 1단계, 이어서 2단계, D1의 3단계와 D2의 7단계 일부에 대응한다. 전체 완료는 연결 문서의 여덟 단계 산출물과 완료 조건으로만 판정한다.
+이 문서의 검색 모듈은 검색 1차 성공선에서, 추천과 taxonomy 모듈은 각 1차 성공선에서 닫거나 보류할 수 있다. [[Search-Recommendation-Discovery-Learning-Path|검색과 추천 디스커버리 학습 경로]]의 여덟 단계는 별도 고급 경로이며 이 문서의 완료 조건이 아니다.
 
 ## A. 통합 discovery 계약
 
@@ -91,6 +97,8 @@ flowchart LR
 
 검색 성공선에서 막히면 추천으로 넘어가 일정만 맞추지 않는다. corpus, judgement, query 계약 또는 측정 절차 중 실패한 항목을 먼저 수정한다.
 
+검색 1차 성공선을 통과하면 [[Current-Goals-and-Roadmap|통합 로드맵]]으로 돌아가 실제 추천 업무와 데이터 및 리뷰 환경이 있는지 다시 확인한다. 근거가 있으면 C단계로 계속하고, Node.js 빈칸이 더 크거나 가용 시간이 부족하면 이 모듈을 닫거나 보류한다.
+
 ## C. 추천 모델링 baseline
 
 검색에서 만든 ID/event schema, versioning과 평가 규율은 재사용하지만 검색용 작품 fixture와 추천 모델링 데이터는 분리한다. 추천 첫 실습은 stable benchmark인 MovieLens 100K로 두고 배포판 URL, 내려받은 파일의 SHA-256, seed, 시간 cutoff와 동률 처리 규칙을 기록한다.
@@ -118,6 +126,8 @@ flowchart LR
 - [ ] Recall@10과 NDCG@10의 전체 결과와 사용자 활동량 및 작품 인기도 구간의 user/item/pair 분모를 함께 기록하며 최소 분모 미달은 `insufficient`로 표시한다.
 - [ ] 성능 차이뿐 아니라 popularity 대비 복잡도를 늘릴 근거와 보류 조건을 적는다.
 
+추천 baseline 성공선을 닫으면 통합 선택 gate로 돌아간다. 실제 taxonomy 책임, 도메인 데이터와 리뷰 환경이 있을 때만 D단계를 고르고, 그렇지 않으면 이 모듈을 닫거나 보류한다.
+
 ## D. Taxonomy 후보와 logging/serving
 
 이 단계는 MovieLens 지표를 그대로 이어 붙이지 않는다. 검색에서 사용한 도메인 작품 fixture 또는 승인된 내부 catalog snapshot으로 돌아가고, A단계의 ID/event schema와 version 계약만 재사용한다.
@@ -142,7 +152,7 @@ D1을 통과한 뒤 아래 축소 범위만 수행한다.
 
 - [ ] C단계의 추천 baseline gate와 D1 taxonomy candidate gate, D2 logging/serving gate를 모두 닫았다.
 
-이 gate를 통과하면 검색/추천 로드맵을 닫고 DevOps로 전환한다. Personalized Search, page 조립, OPE, 온라인 실험과 전체 장애 훈련은 DevOps 핵심 4 통과 뒤 [[Search-Recommendation-Discovery-Learning-Path|전체 학습 경로]]에서 재개한다. 현업에 즉시 필요한 경우가 아니면 OPE, Two-Tower, deep ranking, Transformer, GNN과 강화학습을 앞당기거나 병행하지 않는다.
+이 gate를 통과하면 [[Current-Goals-and-Roadmap|통합 로드맵]]의 선택 gate로 돌아간다. 검색과 추천 책임이 이어지면 Personalized Search, page 조립, OPE, 온라인 실험과 전체 장애 훈련 중 필요한 단계를 [[Search-Recommendation-Discovery-Learning-Path|전체 학습 경로]]에서 고른다. 그렇지 않으면 다른 회사 기술을 먼저 비교하고, 긴급한 빈칸이 없을 때만 DevOps 같은 미래 투자를 선택한다. 현업에 즉시 필요한 경우가 아니면 OPE, Two-Tower, deep ranking, Transformer, GNN과 강화학습을 앞당기거나 병행하지 않는다.
 
 ## 관련 문서
 
@@ -151,7 +161,9 @@ D1을 통과한 뒤 아래 축소 범위만 수행한다.
 - [[OpenSearch|OpenSearch 학습 지도]]
 - [[Recommendation-System-Modeling-Foundations|추천 시스템 모델링 기초]]
 - [[2027-DevOps-Practical-Roadmap|2027 DevOps 실전 로드맵]]
+- [[Node-Core-Output-Roadmap|Node.js 코어 아웃풋 로드맵]]
 - [[roadmaps|학습 로드맵 인덱스]]
+- [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]]
 
 ## 출처
 

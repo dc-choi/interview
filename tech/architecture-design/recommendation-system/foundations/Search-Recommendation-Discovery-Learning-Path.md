@@ -17,6 +17,7 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 - 검색, 추천과 browse는 공통 데이터가 있어도 목적과 label이 다르므로 한 점수로 합치지 않는다.
 - 앞 단계의 ID, event, eligibility와 평가 계약을 뒤 단계에서 그대로 재사용한다.
 - 검색을 추천보다 먼저 실습하는 것은 현재 업무 우선순위에 따른 실행 순서이며 이론적 선행관계를 뜻하지 않는다.
+- 각 성공선 뒤 통합 선택 gate로 돌아가며 역할 수요가 있을 때만 다음 단계를 고른다.
 
 ## 0. 통합 Discovery 큰 그림
 
@@ -75,6 +76,8 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 
 - [ ] 통과: 분할, 평가 사용자와 제외 사유, full-catalog candidate universe, relevant 기준, 구간별 metric 분모와 구현을 고정한 재현 가능한 notebook 또는 script를 검토받는다.
 
+2단계 성공선 뒤 통합 선택 gate로 돌아간다. 실제 taxonomy 책임, 도메인 데이터와 리뷰 환경이 있을 때만 3단계를 고르고, 그렇지 않으면 이 경로를 닫거나 보류한다.
+
 ## 3. Taxonomy와 추천 Candidate
 
 읽기:
@@ -93,7 +96,7 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 
 - [ ] 통과: 고정한 ablation 계약에서 Surface별 S0-S3 선택과 보류 이유를 데이터 성숙도 및 실패 fallback으로 방어한다.
 
-### 1차 전환 checkpoint
+### 1차 재선택 checkpoint
 
 3단계 gate를 닫은 뒤 4단계로 바로 가지 않는다. 먼저 7단계 중 아래 축소 범위만 수행한다.
 
@@ -102,9 +105,9 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 - Redis/API의 cache hit/miss, 결과 정확성, latency와 실패 fallback을 model quality와 분리해 검증한다.
 - 0단계부터 3단계와 위 serving 결과의 채택/보류 이유를 하나의 재현 가능한 보고서로 남긴다.
 
-- [ ] 통과: [[2027-Search-Recommendation-Roadmap|검색/추천 로드맵]]의 C 추천 baseline, D1 taxonomy candidate와 D2 logging/serving gate를 모두 닫고 해당 로드맵을 종료한다.
+- [ ] 통과: [[2027-Search-Recommendation-Roadmap|검색/추천 로드맵]]의 C 추천 baseline, D1 taxonomy candidate와 D2 logging/serving gate를 모두 닫고 통합 선택 gate로 돌아간다.
 
-이 checkpoint 뒤에는 [[2027-DevOps-Practical-Roadmap|DevOps 실전 로드맵]]으로 전환한다. DevOps 핵심 4를 통과하기 전에는 4단계부터 6단계와 7단계의 장애 주입, shadow/canary, cutover 및 rollback 범위를 열지 않는다. DevOps 핵심 4 뒤 4단계부터 순서대로 재개하고, 6단계 통과 뒤 7단계의 남은 범위를 완료한다.
+이 checkpoint 뒤 검색과 추천 책임이 이어지면 4단계부터 7단계 중 필요한 다음 단계 하나를 고른다. 다른 회사 기술이 더 급하면 먼저 처리하고, DevOps는 회사 기술 빈칸이 없을 때만 선택하는 독립적인 미래 투자로 둔다. 어느 경로도 자동으로 열지 않는다.
 
 ## 4. Personalized Search와 Page 조립
 
@@ -155,7 +158,7 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 
 ## 7. 서빙과 장애 훈련
 
-1차 전환 checkpoint에서 만든 logging, version과 cache 검증 결과를 재사용하고, 여기서는 남은 장애 주입과 배포 안전성 범위를 완료한다.
+1차 재선택 checkpoint에서 만든 logging, version과 cache 검증 결과를 재사용하고, 여기서는 남은 장애 주입과 배포 안전성 범위를 완료한다.
 
 읽기:
 
@@ -182,7 +185,5 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 
 ## 관련 문서
 
-- [[Recommendation-System-Architecture|추천 시스템 지식 지도]]
-- [[OpenSearch|OpenSearch 학습 지도]]
-- [[2027-Search-Recommendation-Roadmap|2027 검색 엔진 우선, 추천 시스템 전환 로드맵]]
-- [[2027-DevOps-Practical-Roadmap|2027 DevOps 실전 로드맵]]
+- [[Recommendation-System-Architecture|추천 시스템 지식 지도]], [[OpenSearch|OpenSearch 학습 지도]]
+- [[2027-Search-Recommendation-Roadmap|검색 엔진 우선, 추천 시스템 전환 로드맵]], [[2027-DevOps-Practical-Roadmap|DevOps 실전 로드맵]]
