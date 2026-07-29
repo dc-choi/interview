@@ -41,7 +41,7 @@ RegisteredClient.withId(UUID.randomUUID().toString())
     .build();
 ```
 
-- client_secret도 사용자 비밀번호처럼 PasswordEncoder(bcrypt 등)로 해시해 저장한다 — [[Password-Hashing]]과 같은 원리. 토큰 교환 때 Client가 보낸 평문 secret을 해시 비교로 검증한다
+- client_secret도 사용자 비밀번호처럼 PasswordEncoder(bcrypt 등)로 해시해 저장한다 — [[Password-Hashing]]과 같은 원리. Authorization Code 교환 때 Client가 보낸 평문 secret을 해시 비교로 검증한다
 - redirect_uri는 사전 등록된 값만 허용된다 — code 탈취 경로 차단 ([[OAuth2]] 핵심 보안 파라미터)
 - `requireAuthorizationConsent(true)`면 로그인 뒤 동의(consent) 화면을 거쳐야 code가 발급된다
 - 데모는 `InMemoryRegisteredClientRepository`, 운영은 JDBC 구현으로 교체한다

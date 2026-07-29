@@ -63,9 +63,11 @@ Refresh Token은 재사용 공격을 막기 위해 [[Refresh-Token-Rotation|Rota
 1. **Client Registration** — Client가 Authorization Server에 사전 등록 → `client_id`, (선택) `client_secret`, `redirect_uri` 할당
 2. **Authorization Request** — 사용자를 `/authorize`로 리다이렉트: `response_type=code`, `code_challenge`, `scope`, `state`
 3. **Authorization Grant** — 사용자가 로그인, 동의 → Authorization Server가 `redirect_uri`에 `code` 첨부
-4. **Token Exchange** — Client가 `/token`에 `code` + `code_verifier`(PKCE)를 보내 Access/Refresh Token 수령
+4. **Authorization Code 교환** — Client가 `/token`에 `code` + `code_verifier`(PKCE)를 보내 Access/Refresh Token 수령
 5. **API Access** — `Authorization: Bearer <access_token>`으로 Resource Server 호출
 6. **Token Refresh** — Access Token 만료 시 Refresh Token으로 새 Access Token 발급
+
+여기서 Authorization Code를 토큰으로 바꾸는 단계는 RFC 8693의 [[OAuth2-Token-Exchange|OAuth 2.0 Token Exchange]]와 다르다. RFC 8693은 이미 존재하는 보안 토큰을 다른 대상과 권한 범위의 토큰으로 바꾸는 별도 grant다.
 
 ## 구현 관점 — 두 개의 HTTP 왕복
 
@@ -146,5 +148,6 @@ Authorization Code 흐름을 코드로 구현하면 결국 두 왕복이다.
 - [[Session|Session]]
 - [[Spring-Authorization-Server|Spring Authorization Server (인가 서버 구현)]]
 - [[Refresh-Token-Rotation|Refresh Token Rotation]]
+- [[OAuth2-Token-Exchange|OAuth 2.0 Token Exchange]]
 - [[Public-Key-Cryptography|공개키 암호]]
 - [[HTTPS-TLS|HTTPS, TLS Handshake]]
