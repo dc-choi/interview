@@ -51,19 +51,22 @@ revert:  A---B---C---C역방향   (C를 되돌리는 새 커밋 추가 — 히�
 ```
 
 - **push 전 로컬 정리는 reset**, **이미 공유된 커밋을 되돌릴 때는 revert**
-- 공유 브랜치의 히스토리를 다시 쓰면 안 되는 이유는 공유 브랜치 rebase 금지 원칙과 같은 맥락 — [[Git-Merge-Strategies]]
+- 공유 브랜치의 히스토리 재작성에 합의와 보존 절차가 필요한 이유는 [[Git-Merge-Strategies|Git 통합 방식]]과 같은 맥락이다.
 
 ## reflog — 포인터 이동 일지 = 내장 백업
 
 reset으로 이름표를 잃은 커밋도 **즉시 삭제되지 않는다**. git은 HEAD와 각 브랜치가 언제 어디로 움직였는지를 로컬에 전부 기록한다.
 
 ```bash
-git reflog                  # HEAD가 거쳐온 커밋 목록
-git reset --hard HEAD@{2}   # 두 번 이동하기 전 위치로 복귀
-git reflog show feature     # 특정 브랜치의 이동 이력
+git reflog --date=iso                         # HEAD가 거쳐온 위치와 시각 확인
+git show <candidate-oid>                      # 복구 후보 내용 검증
+git branch rescue/reflog-recovery <candidate-oid>  # 후보를 비파괴 ref로 보존
+git log --graph --oneline --decorate --all    # 현재 graph에서 위치 재확인
 ```
 
-- 잘못된 `reset --hard`, 꼬인 rebase가 대부분 이걸로 복구된다 — **reflog를 알면 rebase가 무섭지 않다**
+복구 후보를 branch로 보존하고 변경 파일도 별도로 지킨 뒤, 작업 트리가 clean하고 branch pointer를 실제로 옮길 필요가 있을 때만 `git reset --hard rescue/reflog-recovery`를 실행한다. 단순히 commit을 되살리는 목적이라면 rescue branch를 유지한 채 merge, rebase 또는 cherry-pick 중 필요한 방식을 고른다.
+
+- reflog는 잘못 움직인 ref가 가리켰던 commit을 찾는 복구 단서다. 후보 OID와 내용을 검증하지 않고 reflog 순번만 보고 pointer를 옮기지 않는다
 - reflog 항목은 기본 90일, 해당 브랜치의 현재 끝에서 도달할 수 없게 된 항목은 기본 30일 보관된다 (`gc.reflogExpire`, `gc.reflogExpireUnreachable`로 조정 가능). 만료된 뒤에야 gc가 해당 커밋을 지울 수 있다
 - **로컬 전용** — push되지 않고 clone에도 없다. 다른 머신에서는 복구 불가
 
@@ -117,5 +120,5 @@ git range-diff origin/main origin/feature feature
 ## 관련 문서
 
 - [[Git-Mental-Model|Git 멘탈 모델 (커밋/브랜치/HEAD)]]
-- [[Git-Merge-Strategies|Git 머지 전략 (공유 브랜치 rebase 금지)]]
+- [[Git-Merge-Strategies|Git 통합 방식 (공유 브랜치 히스토리 재작성 주의)]]
 - [[Development-Workflow|개발 워크플로 (PR 기반 협업)]]

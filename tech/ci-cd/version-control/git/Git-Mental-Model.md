@@ -61,7 +61,7 @@ A---B---C   ← main, feature (둘 다 C를 가리킴)
              origin/main
 ```
 
-원격보다 뒤처지기만 한 로컬 브랜치에서 pull 할 때 일어나는 일이 정확히 이것. `--no-ff`, `--ff-only` 같은 옵션과 전략 선택은 [[Git-Merge-Strategies]] 참조.
+원격보다 뒤처지기만 한 로컬 브랜치에서 pull이 fast-forward를 허용하는 설정이면 fetch 뒤 통합은 이 포인터 이동으로 끝난다. `--no-ff`나 `pull.ff=false`는 FF 가능한 경우에도 merge commit을 만들 수 있으므로 실제 pull 설정과 선택 기준은 [[Git-Merge-Strategies|Git 통합 방식]]에서 확인한다.
 
 ## 3-way merge — 세 지점을 비교해 새 커밋 생성
 
@@ -123,6 +123,6 @@ base 이후 각자 바꾼 내용을 합쳐 **부모가 둘인 병합 커밋 M**�
 
 ## 관련 문서
 
-- [[Git-Merge-Strategies|Git 머지 전략 (Merge commit/Squash/Rebase, fast-forward 옵션)]]
+- [[Git-Merge-Strategies|Git 통합 방식 (Merge commit/Squash/Rebase, fast-forward 옵션)]]
 - [[Git-Reset-Reflog|Git Reset과 복구 (reset, reflog, force-with-lease, range-diff)]]
 - [[Version-Control-Tooling|버전 관리 도구 (Git vs SVN, 브랜치 전략)]]
