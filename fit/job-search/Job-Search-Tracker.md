@@ -1,13 +1,13 @@
 ---
 tags: [career, job-search]
-status: active
+status: done
 category: "이직 준비"
 aliases: ["Job Search Tracker", "이직 준비 트래커"]
 ---
 
-# 이직 준비 트래커
+# 다음 이직 후보 풀
 
-> 현재 직장: 키노라이츠 (2026.06.29 입사). 이전 사이클(트라이포드랩 → 키노라이츠) 기록은 [[Job-Search-Tracker-2024-2026-Kinolights]].
+> 이직 목표는 키노라이츠 입사로 완료했고 현재 서류 지원은 하지 않는다. 이 문서는 다음 이직을 실제로 시작할 때 재검증할 과거 후보 풀이다. 이전 사이클 기록은 [[Job-Search-Tracker-2024-2026-Kinolights]]에 있다.
 
 ## 전형 진행중
 
