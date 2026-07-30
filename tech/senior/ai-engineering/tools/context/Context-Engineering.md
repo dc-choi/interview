@@ -1,9 +1,9 @@
 ---
-tags: [senior, ai, context-engineering, claude-md, productivity]
+tags: [senior, ai, context-engineering, context-bottleneck, claude-md, productivity]
 status: done
 verified_at: 2026-07-27
 category: "Senior - AI 엔지니어링"
-aliases: ["Context Engineering", "컨텍스트 엔지니어링", "CLAUDE.md 최적화", "Context Rot"]
+aliases: ["Context Engineering", "컨텍스트 엔지니어링", "Context Bottleneck", "맥락 병목", "CLAUDE.md 최적화", "Context Rot"]
 ---
 
 # 컨텍스트 엔지니어링 (Context Engineering)
@@ -13,6 +13,29 @@ aliases: ["Context Engineering", "컨텍스트 엔지니어링", "CLAUDE.md 최�
 컨텍스트 엔지니어링은 모델이 현재 판단에 필요한 정보와 도구를 적절한 시점에 받도록 설계하는 일이다. 목표는 무조건 짧게 만드는 것이 아니라 **관련성, 신뢰도, 시점, 비용**을 함께 관리하는 것이다.
 
 긴 입력이 항상 나쁜 것도, 항상 좋은 것도 아니다. 같은 길이라도 과제, 모델, 정보의 위치와 관련성에 따라 결과가 달라진다. 따라서 컨텍스트 윈도우의 크기를 곧 사용 가능한 품질로 해석하면 안 된다.
+
+## 모델 능력 다음의 병목
+
+모델이 작업을 수행할 기본 능력을 갖춘 범위에서는 더 강한 모델로 바꾸는 것보다 목표, 현재 상태, 업무 용어, 권한과 근거를 정확히 공급하는 일이 성능과 신뢰성의 더 큰 레버가 될 수 있다. 이는 프로덕션과 기업 AI에 대한 조건부 진단이지, 모든 과제에서 모델 능력이 더는 중요하지 않다는 보편 법칙은 아니다.
+
+새로운 추론 능력이 필요한 과제에는 모델 개선이 필요하고, 모델이 이미 풀 수 있지만 조직의 정의와 현재 상태를 몰라 실패하는 과제에는 컨텍스트 공급이 필요하다. 컨텍스트는 모델 능력을 대체하는 것이 아니라, 능력 임계점을 넘은 뒤 드러나는 시스템 병목을 푼다.
+
+| 질문 | 능력 병목 | 맥락 병목 |
+|---|---|---|
+| 실패 이유 | 충분한 근거를 줘도 추론, 계획이나 도구 사용에 실패한다 | 필요한 사실과 상태가 없거나 오래됐고, 서로 충돌한다 |
+| 주요 개선 수단 | 더 나은 모델, 알고리즘, 도구나 학습 | 검색, 메모리, 스펙, 도구 출력과 최신성, 권한 관리 |
+
+### 스킬은 맥락의 대안이 아니다
+
+- Skill은 어떻게 수행할지를 담은 재사용 절차이며, 로드되는 순간 컨텍스트의 일부가 된다.
+- 과제별 목표, 대상, 현재 상태, 조직 용어, 권한과 근거는 고정된 Skill만으로 대체할 수 없다.
+- 좋은 Skill은 지식을 전부 품기보다 필요한 맥락을 도구로 찾아 검증하는 경로를 제공한다. 모든 Skill 본문을 미리 넣으면 오히려 Context Rot을 키울 수 있다.
+
+### 빠른 진단
+
+1. 같은 모델에 정확한 기준 컨텍스트를 줬을 때 성공하면 맥락 병목에 가깝다.
+2. 그래도 실패하면 모델 능력, 도구나 알고리즘 병목을 의심한다.
+3. 정보를 더 넣을수록 나빠지면 윈도우 크기보다 선택, 순서와 충돌 문제를 먼저 본다.
 
 ## Context Rot
 
@@ -150,6 +173,8 @@ Q. 반드시 지켜야 할 규칙은 Hook에만 두면 되나?
 - [NoLiMa: Long-Context Evaluation Beyond Literal Matching](https://arxiv.org/abs/2502.05167)
 - [효율적인 CLAUDE.md 관리 및 컨텍스트 최적화 전략 - Hancom Tech](https://tech.hancom.com/claude-md-context-optimization/)
 - [The new rules of context engineering for Claude 5 generation models - Anthropic](https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models)
+- [AI doesn't have an intelligence problem. AI has a context problem - Databricks / Ali Ghodsi](https://www.linkedin.com/posts/databricks_ai-doesnt-have-an-intelligence-problem-activity-7463039739672027136-qwCa)
+- [Effective context engineering for AI agents - Anthropic](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 - [Claude 5 모델을 위한 새로운 컨텍스트 엔지니어링 규칙 - GeekNews](https://news.hada.io/topic?id=31782)
 
 ## 관련 문서
@@ -158,6 +183,7 @@ Q. 반드시 지켜야 할 규칙은 Hook에만 두면 되나?
 - [[Agentic-Context-Platform|Context Provider / 에이전트 컨텍스트 플랫폼 (공급 측, 조직 자산을 모아 신뢰 가능한 맥락 풀로)]]
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain, Inform, Verify, Correct, HITL, 컨텍스트는 Inform 축)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (지시의 저주, 3단계 경계)]]
+- [[Agent-Skills|에이전트 스킬 (점진적 공개, 재사용 절차와 컨텍스트의 관계)]]
 - [[Claude-Opus-5|Claude Opus 5 (검증 스캐폴딩 제거 — 세대 갱신 시 프롬프트 부채 정리)]]
 - [[Agent-Coding-Guardrails|LLM 코딩 가드레일 (실패 패턴별 원칙, 판정 테스트, 배포 경로)]]
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (Lazy Load, 분업)]]
