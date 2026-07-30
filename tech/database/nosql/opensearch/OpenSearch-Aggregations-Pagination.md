@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, aggregation, pagination, sorting]
 status: done
-verified_at: 2026-07-28
+verified_at: 2026-07-30
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Aggregations", "OpenSearch Pagination", "OpenSearch 집계와 페이지네이션", "패싯 검색"]
 ---
@@ -17,7 +17,7 @@ aliases: ["OpenSearch Aggregations", "OpenSearch Pagination", "OpenSearch 집계
 - 개수는 전체 데이터가 아니라 현재 query에 매칭된 결과 기준이다. 검색어가 바뀌면 패싯 개수도 함께 바뀐다.
 - 구현은 검색 요청에 `terms` 같은 bucket aggregation을 함께 실어 hit와 속성별 count를 한 질의로 받는 것이다.
 - RDB로 같은 화면을 만들려면 대개 hit 조회와 별개로 패싯 집계 질의를 한 번 더 돌린다. PostgreSQL은 `GROUPING SETS`와 CTE 조립으로 한 문장까지 줄일 수도 있지만 그 조립을 매번 직접 짜야 하고, OpenSearch는 검색 요청에 `aggs`를 얹는 것으로 끝난다. 다중 filter와 패싯을 검색과 한 질의로 조합하는 요구가 [[OpenSearch-vs-RDB-Search#도입 판단 사다리|도입 판단 사다리]] 4단의 근거로 꼽히는 이유다.
-- Aggregation은 `post_filter` 적용 전에 계산된다. 선택 조건을 `post_filter`로 두면 hit 목록만 좁혀지고, 선택한 패싯을 포함한 모든 패싯 개수는 선택과 무관한 query 전체 기준으로 남는다. 그래서 브랜드에서 하나를 골라도 나머지 브랜드의 개수가 계속 보여 선택 전환이 가능하다. 패싯이 하나이고 그 안의 multi-select가 OR 의미면 이걸로 충분하다.
+- Filter의 위치가 범위를 결정한다. Query-level `bool.filter`는 hit와 query 범위의 aggregation 후보를 함께 좁히지만 top-level `global` aggregation은 query와 무관하게 전체 문서를 집계한다. `post_filter`는 aggregation 계산 뒤 hit만 좁혀 전체 패싯 선택지를 유지한다. 특정 aggregation만 좁히려면 그 내부의 `filter`를 사용한다. 패싯이 하나이고 multi-select가 OR 의미면 `post_filter`만으로 충분하다.
 - 패싯이 여러 개면 각 패싯의 개수에 나머지 패싯의 선택을 반영해야 [[Search-UX|검색 UX 설계]]가 요구하는 0건 조합 예방이 된다. 패싯마다 나머지 선택 조건을 `filter`로 감싼 하위 집계를 따로 구성하고 hit 목록에는 `post_filter`를 병용한다. 이 구성은 패싯 안 multi-select가 OR 의미일 때 기준이다. 패싯 개수와 무관하게 multi-select가 AND 의미면 자기 패싯의 선택도 `filter`에 포함해야 표시 개수와 클릭 결과가 일치하고 0건 조합이 안 남는다.
 - Vector와 hybrid 경로에서는 ANN branch가 k개 후보만 만든 뒤 `post_filter`가 그중 일부를 버려 결과가 k보다 크게 적어질 수 있다. 그래도 패싯 선택 조건은 `post_filter`에 두고, ACL과 판매 가능 여부 같은 정합성 조건만 pre-filter로 올린다. 배치 기준은 [[OpenSearch-Hybrid-Search|하이브리드 검색]]의 filter 배치를 따른다.
 
@@ -91,11 +91,14 @@ GET events/_search
 
 ## Sorting
 
-- 기본 검색은 `_score` 내림차순이다.
+- 기본 full-text 검색은 `_score` 내림차순이다. 일반 field sort에서는 score를 계산하지 않으므로 필요할 때만 `track_scores: true`를 사용한다.
+- `sort` 배열은 앞 field부터 우선순위를 적용하고, 값이 같을 때만 다음 field를 비교한다.
 - Field sort는 `keyword`, numeric, date의 `doc_values`를 사용한다.
-- `text`는 `.keyword`로 정렬한다.
-- Multi-value field는 `min`, `max`, `avg`, `median` 등 sort mode를 명시한다.
-- 여러 인덱스를 함께 검색하면 `unmapped_type`을 검토한다.
+- 분석된 `text`는 정렬할 수 없으므로 `keyword` multi-field를 사용한다.
+- Multi-value field의 기본 mode는 오름차순 `min`, 내림차순 `max`다. Numeric field는 `avg`, `sum`, `median`도 지원하므로 의도한 mode를 명시한다.
+- 값이 없는 문서는 기본적으로 마지막에 오며, `missing`으로 `_first`, `_last` 또는 대체값을 지정할 수 있다.
+- Nested field 정렬에는 `nested.path`가 필요하다.
+- 여러 인덱스 중 field가 unmapped이면 기본적으로 정렬이 실패한다. 필요한 경우 실제 mapping과 호환되는 `unmapped_type`을 지정해 값 없음으로 처리한다.
 - `_id`는 sort key로 쓰지 말고 별도 `keyword` 식별자를 둔다.
 - 동점이 가능한 sort에는 마지막 tie-breaker로 고유하고 불변인 필드를 넣는다.
 
@@ -114,21 +117,35 @@ GET events/_search
 - 9,990번째부터 10개를 받으려면 각 shard가 앞 후보까지 수집한 뒤 대부분을 버린다.
 - 색인과 삭제가 진행되면 페이지 사이에 중복과 누락이 생길 수 있다.
 
+### Scroll
+
+- 첫 요청 시점의 결과를 query에 묶인 search context로 고정해 앞으로만 순회한다. 사용자 페이지보다 대량 batch export에 적합하다.
+- 빈번한 사용자 페이지네이션은 `sort`와 `search_after`를 사용하고, 일관된 deep pagination은 PIT를 함께 쓴다.
+- `scroll` 유지 시간은 한 batch 처리에 충분한 정도로 두고, 다음 요청에는 응답의 최신 `_scroll_id`를 전달한다.
+- 완료하거나 오류로 중단하면 Clear Scroll API로 context를 명시적으로 닫는다. context가 만료되면 기존 scroll을 이어갈 수 없다.
+
 ### `search_after`
 
 - 첫 페이지와 같은 query와 sort를 사용한다.
 - 이전 페이지 마지막 hit의 `sort` 배열을 그대로 전달한다.
+- `search_after` 값의 개수와 순서는 sort 정의와 정확히 같아야 한다.
 - Sort 값이 같은 문서가 많으면 고유 tie-breaker가 필요하다.
 - 순차 이동에는 적합하지만 임의 페이지 점프에는 맞지 않는다.
 
 ### PIT와 `search_after`
 
-1. Point in Time을 열고 짧은 `keep_alive`를 지정한다.
-2. PIT ID와 안정적인 sort로 첫 페이지를 검색한다.
-3. 마지막 hit의 sort 값을 `search_after`로 전달한다.
-4. 작업이 끝나면 PIT를 명시적으로 닫는다.
+PIT와 `search_after`는 deep pagination의 우선 선택지다. PIT는 query에 묶이지 않은 고정 dataset을 제공해 앞뒤 페이지를 일관되게 조회할 수 있지만, 하나의 순회에서는 query와 sort를 유지해야 cursor 의미가 보존된다.
 
-PIT는 query 결과 자체가 아니라 Lucene segment view를 유지한다. 너무 긴 `keep_alive`와 많은 동시 PIT는 삭제된 segment의 공간 회수를 늦춘다.
+1. `POST /<target_indexes>/_search/point_in_time?keep_alive=...`로 PIT를 만들고 응답의 `pit_id`를 보관한다.
+2. Index 경로 없는 `GET /_search`에 query, 안정적인 sort와 `pit.id`를 전달한다. 활성 순회 중에는 `pit.keep_alive`로 짧게 수명을 연장한다.
+3. 다음 페이지도 같은 query, sort와 `pit.id`를 유지하고 마지막 hit의 sort 값을 `search_after`로 전달한다.
+4. 작업이 끝나면 Delete PIT API로 PIT를 명시적으로 닫는다.
+
+PIT는 query 결과 자체가 아니라 생성 시점의 Lucene segment view를 잠근다. 이후 merge된 segment의 사본도 수명 동안 유지하므로 너무 긴 `keep_alive`와 많은 동시 PIT는 공간 회수를 늦춘다.
+
+`allow_partial_pit_creation`의 기본값은 `true`다. 완전한 snapshot이 필요하면 `false`로 만들거나 생성 응답의 `_shards.failed`를 검사한다. 운영에서는 `point_in_time.max_keep_alive`, `search.max_open_pit_context`, 열린 PIT 목록과 CAT PIT segments로 수명, 개수와 disk 사용량을 확인한다.
+
+PIT가 만료되거나 node 또는 cluster 장애로 context가 사라지면 기존 cursor로 같은 snapshot을 이어갈 수 없다. 새 PIT를 열고 페이지네이션을 다시 시작해야 한다.
 
 ## Async search와 Rollup
 
@@ -151,6 +168,7 @@ PIT는 query 결과 자체가 아니라 Lucene segment view를 유지한다. 너
 ## 출처
 
 - [Aggregations - OpenSearch Documentation](https://docs.opensearch.org/latest/aggregations/)
+- [Global aggregation - OpenSearch Documentation](https://docs.opensearch.org/latest/aggregations/bucket/global/)
 - [Implementing faceted search in OpenSearch - OpenSearch Documentation](https://docs.opensearch.org/latest/tutorials/faceted-search/)
 - [Filter search results - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/filter-search/)
 - [Table Expressions (GROUPING SETS) - PostgreSQL Documentation](https://www.postgresql.org/docs/current/queries-table-expressions.html)
@@ -162,6 +180,7 @@ PIT는 query 결과 자체가 아니라 Lucene segment view를 유지한다. 너
 - [Cardinality aggregation - OpenSearch Documentation](https://docs.opensearch.org/latest/aggregations/metric/cardinality/)
 - [Paginate results - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/paginate/)
 - [Point in Time - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/point-in-time/)
+- [Point in Time API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/point-in-time-api/)
 - [Sort results - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/sort/)
 - [Asynchronous search - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/async/)
 - [Index rollups - OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/index-rollups/index/)

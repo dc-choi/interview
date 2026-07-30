@@ -35,7 +35,7 @@ Client
 - 조건은 filter context로, 검색어는 query context로 보낸다. 점수 계산과 캐시 효율이 갈린다. 구분 기준은 [[OpenSearch-Query-Relevance#Query context와 Filter context|Query와 Filter context]]다.
 - 권한 filter(tenant, 공개 상태, 차단 목록)는 클라이언트 입력과 무관하게 서버가 항상 주입한다. Endpoint마다 각자 붙이는 구조는 하나를 빠뜨리는 순간 유출이므로, 쿼리 빌더 한 곳을 통과해야만 query가 만들어지게 강제한다.
 - 엔진 수준의 이중 방어가 필요하면 [[OpenSearch-Security-Production#DLS와 FLS의 중요한 한계|DLS]]를 함께 쓴다. 애플리케이션 filter는 성능이 좋고 DLS는 우회가 어렵다. 하나를 고르는 문제가 아니라 계층 방어다.
-- 자동완성 경로에도 같은 권한 filter를 태운다. 후보 노출이 곧 문서 존재의 유출인 이유와 suggestion 문서 설계는 [[OpenSearch-Search-Features#자동완성 선택지|자동완성 선택지]]가 정본이다.
+- 문서 자동완성은 본 검색과 같은 서버 권한 filter를 적용한다. Top-level completion `suggest`는 일반 query나 filter로 제한되지 않으므로 tenant나 접근 등급별 index를 분리하거나 대상 환경에서 검증한 DLS 같은 동등한 통제를 둔다. 후보 노출 위험과 suggestion 문서 설계는 [[OpenSearch-Autocomplete|자동완성 설계]]가 정본이다.
 
 ## 캐싱 계층
 

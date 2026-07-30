@@ -88,7 +88,7 @@ ZREVRANGE popular:merged 0 9 WITHSCORES
 count 이전에 무엇을 같은 검색어로 볼 것인가가 순위 품질을 결정한다.
 
 - 정규화: 앞뒤 공백 제거, 연속 공백 축약, 대소문자 통일, 유니코드 정규화 (NFC). 여기까지는 count key 생성 시 필수다.
-- 형태소 수준 통합 (조사 제거, 동의어)은 신중하게 한다. 검색어 원형이 노출 문자열이기도 해서 과하게 합치면 사용자가 클릭했을 때 자기가 본 검색어와 다른 결과가 나온다. 표시용 원문과 count용 정규화 key를 분리 저장하는 것이 정석이며, 이 분리는 suggestion 문서 설계 ([[OpenSearch-Search-Features]])와 같은 원리다.
+- 형태소 수준 통합 (조사 제거, 동의어)은 신중하게 한다. 검색어 원형이 노출 문자열이기도 해서 과하게 합치면 사용자가 클릭했을 때 자기가 본 검색어와 다른 결과가 나온다. 표시용 원문과 count용 정규화 key를 분리 저장하는 것이 정석이며, 이 분리는 suggestion 문서 설계 ([[OpenSearch-Autocomplete]])와 같은 원리다.
 - 어뷰징: 같은 사용자 (또는 IP)의 동일 검색어 반복은 window 내 1회로 dedup한다. Redis라면 `SETNX dedup:{user}:{keyword}` + TTL을 count 앞에 둔다. 봇은 User-Agent와 rate 기반으로 로그 수집 단계에서 거른다. 노출 직전에는 금칙어와 개인정보 패턴 filter를 반드시 통과시킨다. 인기 검색어는 서비스가 직접 노출하는 문구라서 오염 시 사고가 된다.
 - 운영 개입 경로를 처음부터 둔다. 특정 검색어 즉시 제외 (blocklist), 고정 노출 (pin)은 장애나 이슈 상황에서 코드 배포 없이 눌러야 한다.
 
@@ -96,7 +96,7 @@ count 이전에 무엇을 같은 검색어로 볼 것인가가 순위 품질을 
 
 인기 검색어 파이프라인의 산출물은 노출 위젯 하나로 끝나지 않는다.
 
-- 자동완성 후보: 집계된 인기 검색어를 suggestion index의 후보와 weight로 공급한다. 후보 생성 시의 정규화, 최소 빈도, 금칙어 filter 기준은 [[OpenSearch-Search-Features]]의 suggestion 설계와 공유한다.
+- 자동완성 후보: 집계된 인기 검색어를 suggestion index의 후보와 weight로 공급한다. 후보 생성 시의 정규화, 최소 빈도, 금칙어 filter 기준은 [[OpenSearch-Autocomplete]]의 suggestion 설계와 공유한다.
 - 랭킹 신호: 전역 조회수처럼 query와 무관한 document popularity는 감쇠한 문서 field로 materialize할 수 있다. 반면 클릭은 `query_id`, `object_id`, 노출 위치, variant가 결합된 query-document interaction이다. 이를 단일 전역 document field로 덮으면 어떤 query에서 클릭됐는지 사라지므로, pair feature나 reranker 학습 데이터로 별도 집계한다 ([[OpenSearch-Query-Relevance]]).
 - 이 재사용 때문에 파이프라인 앞단의 정규화와 어뷰징 filter 품질이 검색 품질 전체로 전파된다. 인기 검색어가 오염되면 자동완성과 랭킹까지 같이 오염된다.
 
@@ -110,7 +110,7 @@ count 이전에 무엇을 같은 검색어로 볼 것인가가 순위 품질을 
 ## 관련 문서
 
 - [[OpenSearch-Aggregations-Pagination|terms aggregation 분산 오차]]
-- [[OpenSearch-Search-Features|suggestion과 자동완성 설계]]
+- [[OpenSearch-Autocomplete|suggestion과 자동완성 설계]]
 - [[OpenSearch-Query-Relevance|랭킹 신호와 function score]]
 - [[Redis-Search-History|Redis 최근 검색 기록]]
 - [[OpenSearch-Indexing-Internals|refresh와 색인 가시성]]

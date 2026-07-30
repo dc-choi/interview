@@ -1,98 +1,76 @@
 ---
-tags: [database, search, opensearch, autocomplete, highlighting, agentic, memory]
+tags: [database, search, opensearch, highlighting, collapse, agentic, memory]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-07-30
 category: "Data & Storage - NoSQL"
-aliases: ["OpenSearch Search Features", "OpenSearch 자동완성", "OpenSearch Highlight", "OpenSearch Agentic Search"]
+aliases: ["OpenSearch Search Features", "OpenSearch Highlight", "OpenSearch Agentic Search"]
 ---
 
 # OpenSearch 검색 기능과 응답 제어
 
-이 문서의 기본 범위는 자동완성, highlight, 응답 필드, 검색 template과 실행 제어다. 본문 검색 이외의 기능은 별도 데이터 모델과 비용 구조를 가지므로 기본 query에 무심코 얹으면 index 크기와 latency가 빠르게 늘어난다. Agentic query와 memory는 기본 기능을 익힌 뒤 선택해서 보는 고급 확장으로 분리한다.
+이 문서의 기본 범위는 highlight, collapse, 응답 필드, 검색 template과 실행 제어다. 본문 검색 이외의 기능은 별도 데이터 모델과 비용 구조를 가지므로 기본 query에 무심코 얹으면 index 크기와 latency가 빠르게 늘어난다. Agentic query와 memory는 기본 기능을 익힌 뒤 선택해서 보는 고급 확장으로 분리한다.
 
 ## 자동완성 선택지
 
-| 방식 | 적합한 경우 | 비용과 한계 |
-|---|---|---|
-| Prefix query | 작은 데이터와 빠른 실험 | query-time term 확장 |
-| `match_phrase_prefix` | phrase 마지막 token prefix | 후보가 많으면 비용 증가 |
-| Edge n-gram | 일반 검색과 prefix를 함께 설계 | index term과 저장 공간 증가 |
-| `search_as_you_type` | custom 설정을 줄인 prefix와 infix | 자동 생성 subfield 비용 |
-| Completion suggester | 별도 suggestion과 weight 기반 추천 | suggestion 데이터를 별도 색인 |
-
-### Edge n-gram 원칙
-
-- Index analyzer에서만 edge n-gram을 생성한다.
-- Search analyzer는 일반 analyzer를 사용한다.
-- `min_gram`, `max_gram`이 index 크기와 recall을 직접 바꾼다.
-- 짧은 gram은 후보와 오탐을 폭증시킨다.
-- `max_gram`보다 긴 query가 어떻게 분석되는지 `_analyze`로 확인한다.
-
-`데이터`를 `데`, `데이`, `데이터`로 만드는 방식은 일반 n-gram이 아니라 시작 위치를 고정한 edge n-gram이다. 일반 n-gram은 `이`, `터`, `이터` 같은 내부 조각도 만들므로 infix 검색에는 유용하지만 token 수와 오탐이 더 늘어날 수 있다.
-
-### 같은 index와 별도 suggestion index
-
-자동완성에 별도 index가 항상 필요한 것은 아니다.
-
-- 제목과 상품명처럼 원본 문서와 생성, 수정, 삭제 주기가 같으면 같은 index의 autocomplete multi-field나 `search_as_you_type` field로 시작한다.
-- 인기 검색어, 운영자가 관리하는 추천어, weight와 만료 시간이 별도 데이터라면 suggestion 전용 index가 관리하기 쉽다.
-- Completion suggester도 전용 `completion` field가 필요하지만 반드시 별도 index를 요구하지는 않는다.
-- 사용자 검색 로그를 후보로 만들 때는 정규화, 중복 제거, 최소 빈도, 최신성, 금칙어와 민감 정보 필터를 거친다.
-- 접근 제어가 필요한 문서의 제목을 자동완성으로 노출하면 존재 자체가 유출될 수 있으므로 본 검색과 같은 권한 필터를 적용한다.
-
-Suggestion 문서는 보통 표시 문자열, 정규화된 검색 문자열, 대상 ID와 유형, weight, locale을 분리한다. 본문 전체를 잘게 잘라 후보로 쓰기보다 사용자가 선택했을 때 의미 있는 짧은 표현만 색인한다.
+Query-time prefix, edge n-gram, `search_as_you_type`와 completion suggester의 선택 기준, mapping과 운영 경계는 [[OpenSearch-Autocomplete|자동완성 설계]]에서 다룬다.
 
 ### 한국어 자동완성
 
-한국어 본문 analyzer를 자동완성에 그대로 재사용하지 않는다. 다음 요구를 분리한다.
-
-- 완성된 단어 prefix
-- 띄어쓰기 변형
-- 영문과 숫자가 섞인 상품명과 코드
-- 초성 검색
-- 인기 검색어와 개인화된 suggestion
-
-OpenSearch의 기본 analyzer가 초성 검색을 자동 제공한다고 가정하면 안 된다. 초성 필드가 필요하면 애플리케이션 전처리와 별도 mapping을 명시적으로 설계한다. 감지 규칙과 색인 방법은 [[OpenSearch-Query-Understanding#초성 검색과 자모 필드|초성 검색과 자모 필드]]가 정본이다.
+한국어 prefix, 띄어쓰기와 초성 요구의 분리는 [[OpenSearch-Autocomplete#한국어 자동완성|한국어 자동완성]]을 따른다. 초성 감지와 색인 규칙은 [[OpenSearch-Query-Understanding#초성 검색과 자모 필드|초성 검색과 자모 필드]]가 정본이다.
 
 ## Highlight
 
 | Highlighter | 특징 | 적합한 경우 |
 |---|---|---|
-| `unified` | 기본 선택, 대부분의 query 지원 | 일반적인 본문 검색 |
+| `unified` | 기본 선택, term vector와 postings offset을 우선 사용 | 일반적인 lexical highlight |
 | `plain` | field를 재분석해 query를 반영 | 짧은 field와 제한된 hit |
-| `fvh` | 별도 위치와 offset 메타데이터 필요, 긴 field에 유리 | 추가 저장 비용 허용 |
+| `fvh` | `with_positions_offsets` term vector 필수 | `matched_fields`와 phrase 가중 |
+| `semantic` | OpenSearch 3.0 이상, model inference | 의미상 관련 문장과 passage |
 
 주의점:
 
 - Highlight는 `_source` 또는 stored field 원문을 읽으므로 큰 field에서 비싸다.
-- `fvh`용 위치와 offset 메타데이터를 저장하면 index 크기가 커진다.
+- 큰 본문은 `unified`와 `index_options: offsets`를 먼저 검토하고, FVH 전용 기능이 필요할 때 term vector 비용을 지불한다.
 - 복잡한 Boolean query에서는 최종 match 조건과 무관한 term이 표시될 수 있다.
-- `encoder: html`은 원문을 escape한 뒤 highlight tag를 삽입한다. Fragment 전체를 다시 escape하면 `<em>` 같은 tag도 깨진다.
-- 애플리케이션은 고정된 허용 tag만 렌더링하고 custom tag나 `encoder: default`에는 별도 sanitization을 적용한다.
+- `encoder: html`과 server에서 고정한 tag를 사용한다. `encoder: default`나 raw HTML이 필요하면 출력 context에 맞는 sanitization을 적용한다.
+- Fragment, mapping과 성능 선택은 [[OpenSearch-Highlighting|highlighting과 안전한 검색 snippet]]에서 다룬다.
 
-## 응답 payload 줄이기
+## 응답 필드 선택과 payload 줄이기
 
 검색 latency에는 shard 실행뿐 아니라 fetch와 JSON 직렬화, 네트워크 전송도 포함된다.
 
-- `_source` includes와 excludes로 필요한 원문만 반환한다.
-- 정렬과 집계용 값은 `docvalue_fields`를 검토한다.
-- `stored_fields`는 mapping 단계에서 별도 저장 비용을 지불한 특수한 경우에만 사용한다.
+| 방법 | 값의 출처와 응답 위치 | 선택 기준 |
+|---|---|---|
+| `_source` filtering | 저장된 원문 일부, `hit._source` | 원문 JSON 구조가 필요할 때 `includes`, `excludes`와 wildcard로 전송량을 줄인다. |
+| `fields` | `_source`와 mapping, `hit.fields` | field와 wildcard 선택, 날짜 format처럼 mapping을 반영한 반환이 필요할 때 사용한다. |
+| `docvalue_fields` | 열 지향 `doc_values`, `hit.fields` | `keyword`, date, numeric처럼 정렬과 집계에 쓰는 비분석 값을 직접 읽는다. |
+| `stored_fields` | mapping에서 `store: true`로 별도 저장한 값, `hit.fields` | 추가 저장 비용을 감수하고 미리 정한 소수 field만 반복 조회할 때 사용한다. |
+| `script_fields` | 검색 시 계산한 값, `hit.fields` | 응답용 파생값이 필요할 때 사용하되 계산할 hit 수를 제한한다. |
+
+`fields`, `docvalue_fields`, `stored_fields`, `script_fields`는 기본 `_source` 반환을 끄지 않는다. 원문이 불필요하면 요청에 `_source: false`를 지정하고, 함께 필요하면 `_source` filtering으로 범위를 줄인다.
+
+`_source`만 원래 JSON 구조를 유지한다. 나머지 방식의 값은 `hits.hits[].fields` 아래 배열로 반환되므로 client에서 scalar로 가정하지 않는다. Nested field의 `docvalue_fields`나 `stored_fields`는 nested query의 `inner_hits` 안에 지정한다.
+
 - hit가 필요 없고 집계만 필요하면 `size: 0`을 사용한다.
 - 정확한 전체 hit 수가 필요하지 않으면 `track_total_hits` 요구를 낮춘다.
 - 큰 본문을 list API에서 반환하지 않고 detail API로 분리한다.
 
+## Collapse search
+
+`collapse`는 `doc_values`가 활성화된 단일값 `keyword`나 numeric field로 hit를 묶고, 각 group에서 top-level `sort` 기준의 대표 document 하나만 반환한다. 상품 variant처럼 같은 entity가 여러 문서로 검색될 때 목록 중복을 줄이는 응답 제어이며 bucket과 metric을 만드는 aggregation과 목적이 다르다.
+
 ```json
 GET products/_search
 {
-  "_source": ["id", "title", "thumbnail"],
-  "track_total_hits": false,
-  "query": {"match": {"title": "검색어"}},
-  "highlight": {
-    "encoder": "html",
-    "fields": {"title": {}}
-  }
+  "collapse": {"field": "product_id"},
+  "sort": [{"price": "asc"}]
 }
 ```
+
+- `collapse`는 top hit만 바꾸며 aggregation 결과에는 영향을 주지 않는다.
+- `hits.total`은 collapse 전 document hit 수 또는 하한이며 unique group 수가 아니다. `relation`을 확인하고 정확한 document 수가 필요하면 `track_total_hits: true`를 사용해도, 정확한 group 수는 별도로 계산해야 한다.
+- `inner_hits`로 group 내부 문서를 펼칠 수 있지만 collapse field가 index되어 검색 가능해야 하고, 반환 group과 `inner_hits` 정의마다 추가 검색이 실행된다. `size`와 정의 수를 제한하고 `max_concurrent_group_searches`로 동시성을 제어한다.
+- OpenSearch 3.3 이상에서 `collapse`와 `search_after`를 함께 쓰려면 collapse field와 유일한 sort field가 같아야 한다. 관리형 서비스는 engine과 API 지원 여부를 확인하고, 일반적인 cursor 규칙은 [[OpenSearch-Aggregations-Pagination#search_after|페이지네이션 제약]]을 따른다.
 
 ## Search template
 
@@ -137,14 +115,16 @@ Agentic memory는 단순 대화 로그가 아니라 memory container 안에 work
 
 ## 검색 품질 검증
 
-자동완성 mapping, analyzer, 동의어, template을 바꾸면 검색 결과도 함께 회귀할 수 있다. 대표 query와 judgment 관리, 오프라인 지표, 온라인 지표와 실험 절차는 [[OpenSearch-Search-Quality-Evaluation|검색 품질 평가]]에서 하나의 검증 루프로 다룬다.
+[[OpenSearch-Autocomplete|자동완성]] mapping, analyzer, 동의어와 template을 바꾸면 검색 결과도 함께 회귀할 수 있다. 대표 query와 judgment 관리, 오프라인 지표, 온라인 지표와 실험 절차는 [[OpenSearch-Search-Quality-Evaluation|검색 품질 평가]]에서 하나의 검증 루프로 다룬다.
 
 ## 관련 문서
 
 - [[OpenSearch|OpenSearch 학습 지도]]
+- [[OpenSearch-Autocomplete|자동완성 설계]]
 - [[OpenSearch-Mapping-Text-Analysis|매핑과 analyzer]]
 - [[OpenSearch-Korean-Text-Analysis|한국어 analyzer와 사전 운영]]
 - [[OpenSearch-Query-Relevance|Query DSL과 관련도]]
+- [[OpenSearch-Aggregations-Pagination|집계, 정렬과 페이지네이션]]
 - [[OpenSearch-Search-Quality-Evaluation|검색 품질 평가]]
 - [[OpenSearch-Index-Lifecycle|자동완성 mapping 변경과 reindex]]
 - [[OpenSearch-Performance-Troubleshooting|검색 성능 진단]]
@@ -158,11 +138,11 @@ Agentic memory는 단순 대화 로그가 아니라 memory container 안에 work
 - [Agentic query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/specialized/agentic/)
 - [Agentic memory - OpenSearch Documentation](https://docs.opensearch.org/latest/ml-commons-plugin/agentic-memory/)
 - [Amazon OpenSearch Service로 검색 구현하기 - YouTube](https://www.youtube.com/watch?v=2Swr59CkA_w)
-- [Autocomplete - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/autocomplete/)
-- [Edge n-gram token filter - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/token-filters/edge-ngram/)
-- [Search-as-you-type - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/search-as-you-type/)
-- [Completion - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/completion/)
 - [Highlight query matches - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/highlight/)
+- [Retrieve specific fields - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/retrieve-specific-fields/)
+- [Collapse search results - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/collapse-search/)
+- [Collapse field validation - OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/search/collapse/CollapseBuilder.java#L217-L236)
+- [OpenSearch 3.3.0 release notes - GitHub](https://github.com/opensearch-project/OpenSearch/releases/tag/3.3.0)
 - [Search template API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search-template/index/)
 - [Search API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search/)
 - [Search settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/search-settings/)

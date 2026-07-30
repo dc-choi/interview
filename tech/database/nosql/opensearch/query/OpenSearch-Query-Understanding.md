@@ -10,7 +10,7 @@ aliases: ["OpenSearch Query Understanding", "OpenSearch 쿼리 이해", "검색�
 
 사용자가 입력한 문자열은 그대로 엔진 query가 되지 않는다. Analyzer는 정해진 규칙으로 문자열을 term으로 바꿀 뿐, 잘못 입력된 문자열을 고치거나 입력이 어떤 종류인지 판단하지 않는다. 오타, 초성, 띄어쓰기 변형, 필터 의도를 다루는 쿼리 이해 계층은 별도로 설계해야 하며, 한국어 검색의 체감 품질은 ranking보다 이 계층에서 갈리는 경우가 많다.
 
-형태소 분석과 사전 운영은 [[OpenSearch-Korean-Text-Analysis|한국어 텍스트 분석]], 자동완성 mapping 선택은 [[OpenSearch-Search-Features#자동완성 선택지|자동완성 선택지]]가 정본이다. 이 문서는 그 앞단, 입력 문자열이 query가 되기까지를 다룬다.
+형태소 분석과 사전 운영은 [[OpenSearch-Korean-Text-Analysis|한국어 텍스트 분석]], 자동완성 mapping 선택은 [[OpenSearch-Autocomplete|자동완성 설계]]가 정본이다. 이 문서는 그 앞단, 입력 문자열이 query가 되기까지를 다룬다.
 
 ## 한 장으로 보는 처리 순서
 
@@ -60,12 +60,66 @@ aliases: ["OpenSearch Query Understanding", "OpenSearch 쿼리 이해", "검색�
 
 ### Did-you-mean
 
-- Term suggester는 token 단위로, phrase suggester는 문구 전체를 재구성해 후보를 만든다. Phrase suggester의 `collate`로 실제 결과가 있는 제안만 남긴다.
-- 후보의 원천이 색인 term이므로 색인에 없는 표현은 제안할 수 없다.
-- 노출 정책이 품질을 결정한다.
-  - Zero-hit이고 확신이 높으면 자동 재검색하되 원래 검색어로 되돌리는 링크를 함께 둔다.
-  - 결과가 있으면 제안만 표시한다.
-  - 자동 재검색은 사전에 없는 신상품명과 고유명사를 기존 단어로 덮어쓸 수 있다. 신규 콘텐츠 유입이 잦은 도메인일수록 보수적으로 잡는다.
+Did-you-mean은 검색 결과가 아니라 교정 후보를 만든다. 응답은 `hits`가 아니라 `suggest.<이름>[].options`에서 읽고, 후보로 다시 검색할지는 애플리케이션이 결정한다. 후보 생성은 지정 field의 indexed term 통계에 의존하지만, phrase suggester가 term을 조합한 문구 전체가 실제 문서와 일치한다는 보장은 없다.
+
+| 선택지 | 후보 단위 | 준비와 특성 |
+|---|---|---|
+| Term suggester | 분석된 token | analyzed text field면 별도 mapping이 필요 없고, 문구 문맥은 보지 않는다 |
+| Phrase suggester | 문구 전체 | n-gram 언어 모델을 쓰며, 보통 shingle 보조 field를 미리 색인한다 |
+
+#### Term suggester
+
+```json
+GET products/_search
+{
+  "suggest": {
+    "spell-check": {
+      "text": "keybord",
+      "term": {
+        "field": "title",
+        "suggest_mode": "popular",
+        "size": 3
+      }
+    }
+  }
+}
+```
+
+- `field`의 analyzer로 입력을 token화한 뒤 edit distance로 각 token의 후보를 찾는다. 한글에서는 위의 완성형 음절 단위 distance 문제가 그대로 적용된다.
+- `options[]`의 `text`는 후보, `score`는 유사도, `freq`는 해당 term의 문서 빈도다. `suggest_mode: popular`는 원래 term보다 자주 등장하는 후보만 남긴다.
+- `max_edits`는 1 또는 2만 허용한다. `prefix_length`를 늘리면 앞부분이 같은 후보로 제한돼 탐색량과 오탐이 줄어든다.
+- `size`는 token별 최종 후보 수, `shard_size`는 shard별 후보 수다. `shard_size`와 `max_inspections`를 키우면 빈도 정확도가 나아질 수 있지만 지연도 늘어난다.
+
+#### Phrase suggester
+
+아래 예시는 `title.trigram`을 lowercase 뒤 2에서 3개 token의 shingle을 만드는 보조 field로 미리 색인했다고 가정한다.
+
+```json
+GET products/_search
+{
+  "suggest": {
+    "phrase-check": {
+      "text": "wirless keybord",
+      "phrase": {
+        "field": "title.trigram",
+        "size": 3,
+        "max_errors": 2
+      }
+    }
+  }
+}
+```
+
+- Phrase suggester는 n-gram 언어 모델로 문구 전체의 후보를 점수화한다. `max_errors`가 크면 후보 조합이 급증하므로 1 또는 2처럼 낮게 둔다.
+- `collate.query`에 `{{suggestion}}`을 넣어 후보가 실제 query와 맞는지 검사할 수 있다. `prune: true`면 모든 후보에 `collate_match`가 붙는다.
+- `collate`는 후보가 나온 shard에서만 실행된다. `collate_match: true`는 그 shard에서 일치 문서가 있음을 뜻하지만, `false`는 다른 shard까지 포함한 부재를 증명하지 못한다. 기본값인 `prune: false`는 source shard에서 일치하지 않는 후보를 제거하므로 분산 index에서는 주의한다.
+- `direct_generator.suggest_mode`도 shard별로 평가된다. 예를 들어 `missing`은 한 shard에 term이 없으면 다른 shard에 같은 term이 있어도 후보를 만들 수 있다.
+
+#### 노출 정책
+
+- Zero-hit이고 확신이 높으면 자동 재검색하되 원래 검색어로 되돌리는 링크를 함께 둔다.
+- 결과가 있으면 제안만 표시한다.
+- 자동 재검색은 사전에 없는 신상품명과 고유명사를 기존 단어로 덮어쓸 수 있다. 신규 콘텐츠 유입이 잦은 도메인일수록 보수적으로 잡는다.
 
 ### 로그 기반 교정 사전
 
@@ -83,7 +137,7 @@ aliases: ["OpenSearch Query Understanding", "OpenSearch 쿼리 이해", "검색�
 - 색인: 음절 코드 연산으로 초성 문자열을 추출해 별도 field에 저장한다. `(code - 0xAC00) / 588`이 초성 index다. `김치찌개`는 `ㄱㅊㅉㄱ`가 된다. Prefix 매칭이 필요하면 edge n-gram을 얹는다.
 - 자모 field는 초성 field의 확장이다. 타이핑 중간 상태(`김ㅊ` -> `김치`) 매칭과 위의 자모 단위 오타 distance 계산에 함께 쓰인다.
 - 비용: field 수와 색인 크기가 늘어난다. 제목, 상품명처럼 짧고 조회가 많은 field에만 적용하고 본문에는 얹지 않는다.
-- 자동완성 UX와의 결합은 [[OpenSearch-Search-Features#한국어 자동완성|한국어 자동완성]]의 요구 분리를 따른다.
+- 자동완성 UX와의 결합은 [[OpenSearch-Autocomplete#한국어 자동완성|한국어 자동완성]]의 요구 분리를 따른다.
 
 ## 띄어쓰기 변형
 
@@ -114,7 +168,7 @@ aliases: ["OpenSearch Query Understanding", "OpenSearch 쿼리 이해", "검색�
 
 - [[OpenSearch|OpenSearch 학습 지도]]
 - [[OpenSearch-Korean-Text-Analysis|한국어 텍스트 분석과 사전 운영]]
-- [[OpenSearch-Search-Features|자동완성과 검색 기능]]
+- [[OpenSearch-Autocomplete|자동완성 설계]]
 - [[OpenSearch-Query-Relevance|Query DSL과 관련도]]
 - [[OpenSearch-Search-Quality-Evaluation|검색 품질 평가]]
 - [[OpenSearch-Search-API-Layer|검색 API 서비스 계층]]

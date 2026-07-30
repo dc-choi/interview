@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, lexical, query-dsl, bm25, relevance]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-07-30
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Lexical Search", "OpenSearch 렉시컬 검색", "OpenSearch Query DSL", "OpenSearch Relevance", "OpenSearch 쿼리"]
 ---
@@ -12,7 +12,7 @@ aliases: ["OpenSearch Lexical Search", "OpenSearch 렉시컬 검색", "OpenSearc
 
 ## 렉시컬 검색이란
 
-렉시컬 검색은 문서와 검색어를 analyzer가 만든 term으로 비교하는 어휘 기반 검색이다. 원문 문자열 전체가 같아야 하는 검색이 아니라 역색인에서 공통 term을 찾고 BM25 같은 알고리즘으로 관련도 순위를 계산하는 전체 흐름을 뜻한다.
+Keyword search는 문서와 검색어를 최종 term 단위로 비교하는 렉시컬 검색을 뜻한다. 여기서 keyword search는 `keyword` field type이나 `term` query와 같은 뜻이 아니다. 원문 문자열 전체가 같아야 하는 검색이 아니라 역색인에서 공통 term을 찾고 BM25 같은 알고리즘으로 관련도 순위를 계산하는 전체 흐름을 뜻한다.
 
 ```text
 문서 -> index analyzer -> term -> inverted index
@@ -98,7 +98,7 @@ GET products/_search
 
 ## BM25 mental model
 
-OpenSearch의 기본 lexical similarity는 BM25다.
+TF-IDF의 핵심은 `TF-IDF(t,d,D) = TF(t,d) × IDF(t,D)`다. OpenSearch의 기본 lexical similarity인 BM25도 TF와 IDF를 사용하되 term 반복의 한계 효용과 field 길이를 함께 반영한다.
 
 - IDF: shard의 문서 집합에서 드문 term일수록 가중치가 높다.
 - TF saturation: 같은 문서에 term이 반복되어도 점수 증가는 점차 포화한다.
@@ -193,5 +193,7 @@ Profile은 network latency, fetch phase, queue 대기, coordinator reduce 전체
 - [Combined fields query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/combined-fields/)
 - [Boolean query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/bool/)
 - [Keyword search and BM25 - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/keyword-search/)
+- [Okapi BM25 - Wikipedia](https://en.wikipedia.org/wiki/Okapi_BM25)
+- [TF-IDF - Wikipedia](https://en.wikipedia.org/wiki/Tf%E2%80%93idf)
 - [Explain API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/explain/)
 - [Profile API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/profile/)
