@@ -110,5 +110,6 @@ WHO의 ICD-11은 번아웃을 관리되지 않은 만성적 직장 스트레스�
 
 - 2년 근무 회고 (번아웃과 팀, 지속 가능한 페이스) — 개인 블로그 에세이
 - [번아웃과 성과의 관계 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-09-burnout-and-performance/)
+- [번아웃을 한 번에 해결할 수 있는 방법은 성과다 — 테오 블로그](https://dataportal.kr/%EB%B2%88%EC%95%84%EC%9B%83%EC%9D%84-%ED%95%9C-%EB%B2%88%EC%97%90-%ED%95%B4%EA%B2%B0%ED%95%A0-%EC%88%98-%EC%9E%88%EB%8A%94-%EB%B0%A9%EB%B2%95%EC%9D%80-%EC%84%B1%EA%B3%BC%EB%8B%A4/)
 - [Burn-out an occupational phenomenon: International Classification of Diseases — WHO](https://www.who.int/news/item/28-05-2019-burn-out-an-occupational-phenomenon-international-classification-of-diseases)
 - [Mental health at work — WHO](https://www.who.int/news-room/fact-sheets/detail/mental-health-at-work)
