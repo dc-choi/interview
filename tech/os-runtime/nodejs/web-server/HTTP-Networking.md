@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: note
+verified_at: 2026-08-04
 category: "OS & Runtime"
 aliases: ["HTTP 네트워킹"]
 ---
@@ -58,6 +59,27 @@ response.writeHead(200, {
   'X-Powered-By': 'bacon',
 });
 ```
+
+### 요청 URL 파싱
+
+`IncomingMessage.url`은 보통 origin이 없는 request target이다. 고정된 기준 URL과 WHATWG `URL`을 조합하면 경로와 쿼리를 나눠 처리할 수 있다.
+
+```js
+const target = new URL(request.url, 'http://internal.invalid');
+const page = target.searchParams.get('page');
+console.log(target.pathname, page);
+```
+
+외부 origin을 복원해야 할 때는 `Host`와 프록시 전달 헤더를 그대로 신뢰하지 말고 허용한 프록시와 호스트인지 먼저 검증한다.
+
+## HTTP 아래 TCP와 UDP
+
+| 계층 | Node.js API | 데이터 경계와 보장 |
+|---|---|---|
+| TCP와 IPC 스트림 | `node:net` | `net.Socket`은 Duplex 스트림이다. 순서 있는 바이트 흐름이며 애플리케이션 메시지 경계는 직접 프레이밍한다 |
+| UDP 데이터그램 | `node:dgram` | `message` 이벤트가 데이터그램 경계를 보존하지만 전달, 순서와 재전송을 보장하지 않는다 |
+
+TCP는 `net.createServer()`와 `net.createConnection()`으로 서버와 클라이언트를 만들고 `write()`의 배압, `error`, `end`, `close` 수명주기를 관리한다. UDP는 `dgram.createSocket()`으로 만든 소켓을 `bind()`, `send()`, `close()`하며, 유실과 중복을 허용할 수 있는 프로토콜에서 쓴다. HTTP 서버 프레임워크는 이 하위 소켓 계층을 감싸지만, 장시간 연결과 대용량 응답을 진단할 때는 [[Stream-Types|Duplex와 배압]]까지 내려가야 한다.
 
 ## 엔터프라이즈 네트워크 설정
 ```
@@ -158,3 +180,16 @@ socket.addEventListener('message', event => {
 socket.addEventListener('close', event => console.log('종료:', event.code, event.reason));
 socket.addEventListener('error', error => console.error('에러:', error));
 ```
+
+## 출처
+
+- [Node.js — Anatomy of an HTTP Transaction](https://nodejs.org/en/learn/http/anatomy-of-an-http-transaction)
+- [Node.js — Net API](https://nodejs.org/api/net.html)
+- [Node.js — UDP/datagram sockets](https://nodejs.org/api/dgram.html)
+- [Node.js — URL API](https://nodejs.org/api/url.html)
+- [Node.js — Enterprise network configuration](https://nodejs.org/en/learn/http/enterprise-network-configuration)
+- [Node.js — Fetching data with Undici](https://nodejs.org/en/learn/getting-started/fetch)
+- [Node.js — WebSocket global](https://nodejs.org/api/globals.html#class-websocket)
+- [얄팍한 코딩사전 강사 — TCP & UDP](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=271249)
+- [얄팍한 코딩사전 강사 — HTTP](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=271844)
+- [얄팍한 코딩사전 강사 — url, dns, util, os 모듈](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=273476)

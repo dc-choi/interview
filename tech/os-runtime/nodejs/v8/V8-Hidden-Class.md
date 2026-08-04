@@ -85,12 +85,15 @@ Map은 **구조가 같은 객체들이 모양 정보를 공유**하게 하고, i
 
 ## 히든 클래스 공유 조건
 
-| 사례 | 공유? | 이유 |
+Map은 ECMAScript 계약이 아니라 V8 내부 구현이다. 아래는 객체 모양이 안정적인지 판단하는 실용적 기준이지, 모든 V8 버전에서 `%HaveSameMap` 결과를 보장하는 표가 아니다. 값의 표현이나 생성 위치 같은 내부 정보로 Map이 일반화되거나 달라질 수도 있다.
+
+| 사례 | 일반적인 결과 | 이유 |
 |---|---|---|
-| `class` 생성자로 만든 객체 vs object literal, 프로퍼티 이름, 순서 동일 | ❌ | 서로 다른 생성자 — class 전용 생성자 vs 일반 Object 생성자 |
-| 같은 생성자, 프로퍼티 이름 같고 **값 타입만 다름** (`null`, `undefined`, `{}`, `[]`, `Symbol` 포함) | ✅ | 9.1 기준. V8 버전 업데이트로 달라질 수 있음 |
-| 같은 생성자, 프로퍼티를 **다른 순서로 추가** | ❌ | Transition Chain 경로가 달라짐 |
-| 객체 생성 후 `delete`로 프로퍼티 제거 | ❌ | 히든 클래스가 변경됨, TurboFan 최적화 무효화 |
+| 같은 생성 경로, 같은 이름을 같은 순서로 추가 | 같은 Map을 공유하기 쉬움 | 같은 transition 경로를 재사용 |
+| 프로퍼티를 다른 순서로 추가 | 다른 Map으로 갈라지기 쉬움 | transition tree의 분기가 달라짐 |
+| `class` 인스턴스와 object literal | 다른 초기 Map을 쓰기 쉬움 | 생성 경로와 초기 Map이 다름 |
+| 같은 모양이지만 값 타입만 변경 | 모양은 같아도 내부 표현은 일반화될 수 있음 | Map은 이름과 배치뿐 아니라 field representation 정보도 가질 수 있음 |
+| 생성 후 프로퍼티 추가, 삭제 반복 | Map 전환 또는 dictionary properties 가능 | 변경이 잦으면 공유 descriptor와 IC 이점을 잃기 쉬움 |
 
 ## 최적화 팁
 
@@ -109,6 +112,10 @@ Map은 **구조가 같은 객체들이 모양 정보를 공유**하게 하고, i
 
 - 함수 인자로 다양한 히든 클래스의 객체를 넘기면 [[V8-Inline-Cache|Inline Cache]]가 polymorphic, megamorphic으로 전락
 
+## 내부 동작을 실험할 때
+
+V8 intrinsic인 `%HaveSameMap(a, b)`를 쓰면 두 객체가 현재 같은 Map을 가리키는지 실험할 수 있다. Node.js에서는 `node --allow-natives-syntax file.js`처럼 V8 native syntax를 명시적으로 허용해야 한다. 이 intrinsic과 플래그는 표준 JavaScript API가 아니며 이름, 결과, 지원 여부가 바뀔 수 있으므로 학습과 진단에만 쓰고 애플리케이션 로직이나 테스트 계약으로 삼지 않는다.
+
 ## 관련 문서
 
 - [[V8|V8 엔진]]
@@ -119,4 +126,8 @@ Map은 **구조가 같은 객체들이 모양 정보를 공유**하게 하고, i
 ## 출처
 
 - [V8 — Fast properties in V8](https://v8.dev/blog/fast-properties)
+- [V8 — Maps (Hidden Classes) in V8](https://v8.dev/docs/hidden-classes)
 - [ECMAScript 2024 — Property Descriptor Specification Type](https://tc39.es/ecma262/2024/multipage/ecmascript-data-types-and-values.html#sec-property-descriptor-specification-type)
+- [하정훈 강사 — JavaScript 객체모델과 속성접근 방식](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196069)
+- [하정훈 강사 — Transition Chains](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196071)
+- [하정훈 강사 — V8 엔진 내장함수로 비교하기](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196077)

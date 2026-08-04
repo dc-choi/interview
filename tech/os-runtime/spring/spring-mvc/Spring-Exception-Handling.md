@@ -70,7 +70,16 @@ public class GlobalExceptionHandler {
 
 Spring MVC가 기본 제공하는 표준 예외(`MethodArgumentNotValidException`, `HttpMessageNotReadableException` 등)를 일관된 포맷으로 처리할 수 있는 추상 클래스. `@RestControllerAdvice`가 이를 상속하면 `handleExceptionInternal` 훅으로 응답 본문을 일관화.
 
-### 4. Filter 예외는 별도 처리
+### 4. `ProblemDetail`과 `ErrorResponse`
+
+현재 Spring MVC는 RFC 9457 응답을 위한 `ProblemDetail`, `ErrorResponse`, `ErrorResponseException`을 제공한다. `@ExceptionHandler`에서 `ProblemDetail`을 반환하면 status와 `application/problem+json` 표현을 Spring이 처리한다. `ResponseEntityExceptionHandler`는 Spring MVC의 표준 예외를 이 형식으로 모으는 기반이 된다.
+
+- `type`, `title`, `status`, `detail`, `instance`는 표준 의미를 유지한다.
+- 도메인 code나 traceId 같은 확장은 `properties`에 두거나 subclass로 정의한다.
+- 내부 예외 메시지를 `detail`에 그대로 복사하지 않는다.
+- Spring의 `ErrorResponse` 인터페이스와 자체 응답 DTO의 이름이 충돌하지 않게 구분한다.
+
+### 5. Filter 예외는 별도 처리
 
 `@ControllerAdvice`는 **DispatcherServlet 이후**에서만 작동하므로 Filter에서 던진 예외(예: JWT 파싱 실패)는 잡히지 않는다. 세 가지 대안:
 
@@ -126,7 +135,10 @@ RuntimeException 상속 커스텀 예외 계층을 만들어 도메인별로 구
 - Filter 예외를 Resolver로 위임하는 패턴
 
 ## 출처
+
 - [binghe819 TIL — 스프링 예외처리 개념 및 전략](https://github.com/binghe819/TIL/blob/master/Spring/%EA%B8%B0%ED%83%80/%EC%8A%A4%ED%94%84%EB%A7%81%20%EC%98%88%EC%99%B8%EC%B2%98%EB%A6%AC%20%EA%B0%9C%EB%85%90%20%EB%B0%8F%20%EC%A0%84%EB%9E%B5.md)
+- [Spring Framework 공식 문서 — Error Responses](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html)
+- [토비 강사 — API 테스트와 ProblemDetail 예외 핸들러](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=314631)
 
 ## 관련 문서
 - [[Spring|Spring 개요 (IoC, DI, AOP)]]

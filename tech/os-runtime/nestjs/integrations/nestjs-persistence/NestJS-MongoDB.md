@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, mongodb, mongoose, schema, transaction]
 status: done
+verified_at: 2026-08-04
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS MongoDB", "@nestjs/mongoose", "MongooseModule"]
 ---
@@ -33,6 +34,16 @@ Mongoose는 Schema → Model 순으로 파생된다. `@nestjs/mongoose`는 데�
 
 DB에 저장되지 않고 접근 시 계산되는 파생 속성 — `@Virtual({ get() { ... } })` 데코레이터 (fullName 같은 조합 필드).
 
+## Virtual populate와 응답 경계
+
+`populate()`는 `ref`가 가리키는 다른 collection을 조회해 ObjectId 경로를 document로 치환한다. SQL JOIN과 동일한 단일 query라고 가정하지 말고 query 수, projection과 반환 크기를 확인한다.
+
+- 1:N에서 parent document에 child ID 배열을 중복 저장하지 않고 N쪽에 parent reference를 둔다. 반대 방향 탐색이 필요하면 `localField`와 `foreignField`를 지정한 virtual populate를 사용할 수 있다.
+- `populate({ path, select })`로 필요한 field만 가져온다. `match`는 child 결과를 거를 뿐 parent document 자체를 거르지 않는다.
+- `perDocumentLimit`는 parent별 정확한 제한을 주지만 parent마다 별도 query를 실행할 수 있으므로 목록 API에서 비용을 측정한다.
+
+Virtual이나 TypeScript의 `Readonly<T>`는 민감 field를 숨기는 보안 경계가 아니다. password는 `@Prop({ select: false })` 같은 기본 projection과 명시적 query projection으로 조회부터 제한하고, 최종 응답 DTO 또는 [[NestJS-Serialization|직렬화 계층]]에서도 허용 field만 내보낸다.
+
 ## 다중 데이터베이스와 테스트
 
 - `forRoot({ ..., connectionName: 'cats' })` — 커넥션마다 이름 지정, 주입 시 `@InjectModel(Cat.name, 'cats')`.
@@ -48,3 +59,7 @@ DB에 저장되지 않고 접근 시 계산되는 파생 속성 — `@Virtual({ 
 
 ## 출처
 - [NestJS — Mongo](https://docs.nestjs.com/techniques/mongodb)
+- [Mongoose — Populate](https://mongoosejs.com/docs/populate.html)
+- [Mongoose — Virtuals](https://mongoosejs.com/docs/tutorials/virtuals.html)
+- [Mongoose — SchemaType options](https://mongoosejs.com/docs/schematypes.html#schematype-options)
+- 강의: [회원가입과 Virtual Field](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=83830), [Passport와 field projection](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=83833), [댓글과 Virtual Populate](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=87810)

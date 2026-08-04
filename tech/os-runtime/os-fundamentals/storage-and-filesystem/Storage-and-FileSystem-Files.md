@@ -3,7 +3,7 @@ tags: [os, storage, filesystem, directory]
 status: done
 category: "OS&런타임(OS&Runtime)"
 aliases: ["파일시스템 구조", "FAT와 디스크 할당"]
-verified_at: 2026-07-15
+verified_at: 2026-08-04
 ---
 
 # 파일시스템 구조
@@ -52,7 +52,7 @@ verified_at: 2026-07-15
 
 ## 파일과 디스크
 
-디스크 공간을 일정한 크기의 **블록**(1~8KB)으로 나누고 주소를 할당하여 관리.
+파일시스템은 저장 공간을 설정된 allocation block 단위로 관리한다. block 크기와 sector/page의 관계는 파일시스템, 포맷 옵션과 장치에 따라 달라진다.
 
 ### 연속 할당
 - 블록을 디스크에 연속적으로 저장. 파일의 시작만 알면 전체 블록을 찾을 수 있음
@@ -76,6 +76,7 @@ verified_at: 2026-07-15
 
 ## 출처
 
+- 인프런, 감자 강사, [파일과 파일시스템](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100855), [디렉토리](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100856), [파일과 디스크](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100857)
 - [exFAT File System Specification — Microsoft](https://learn.microsoft.com/en-us/windows/win32/fileio/exfat-specification)
 - [ext4 Data Structures and Algorithms — Linux Kernel 공식 문서](https://docs.kernel.org/filesystems/ext4/index.html)
 - [UEFI Boot Manager — UEFI Specification](https://uefi.org/specs/UEFI/2.11/03_Boot_Manager.html)

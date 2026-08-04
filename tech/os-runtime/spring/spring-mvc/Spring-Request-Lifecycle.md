@@ -1,6 +1,7 @@
 ---
 tags: [spring, tomcat, servlet, dispatcher-servlet, request-lifecycle, spring-boot]
 status: done
+verified_at: 2026-08-04
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Spring Request Lifecycle", "Spring 요청 처리 흐름", "DispatcherServlet 내부"]
 ---
@@ -146,3 +147,9 @@ Loom(가상 스레드), WebFlux는 이 한계를 다른 방식으로 넘는다. 
 - [[Thread-vs-Event-Loop|Thread vs Event Loop]]
 - [[Async-vs-Threads|async/await vs 스레드]]
 - [[HTTP-Status-Code|HTTP Status Code, Header]]
+
+## 출처
+
+- [Spring Framework, DispatcherServlet](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet.html)
+- [인프런, 웹 프로그래밍 설계 모델](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13726)
+- [인프런, Spring MVC 구조](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13728)

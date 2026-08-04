@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs, v8]
 status: done
+verified_at: 2026-08-04
 category: "OS & Runtime"
 aliases: ["V8 Pipeline", "Ignition", "TurboFan", "SparkPlug", "Maglev", "Crankshaft", "Full-codegen", "Bytecode", "Accumulator", "hot and stable"]
 ---
@@ -9,7 +10,7 @@ aliases: ["V8 Pipeline", "Ignition", "TurboFan", "SparkPlug", "Maglev", "Cranksh
 
 V8은 JIT(Just-In-Time) 엔진이다. 실행 시점에 코드를 프로파일링해 자주 쓰이는(hot) 코드만 점진적으로 더 공격적인 최적화 계층으로 승격시킨다.
 
-## 전체 흐름 (9.1 이후)
+## 전체 흐름
 
 ```
 JS 소스코드
@@ -18,13 +19,14 @@ JS 소스코드
     ↓  Ignition
   Bytecode ────(프로파일링/피드백 수집)
     ↓
-  ┌── 가벼운 hot → SparkPlug ──→ 비최적화 기계어
-  └── 깊은 hot  → TurboFan   ──→ 최적화 기계어
-                                    ↓ (가정 깨짐)
-                              Deoptimization → Bytecode로 복귀
+  ├── 가벼운 hot → Sparkplug ──→ 비최적화 기계어
+  ├── 중간 hot   → Maglev    ──→ 빠른 최적화 기계어
+  └── 깊은 hot   → TurboFan  ──→ 최고 계층 최적화 기계어
+                                      ↓ (가정 깨짐)
+                                Deoptimization
 ```
 
-114+ 버전부터는 SparkPlug와 TurboFan 사이에 **Maglev**라는 중간 계층 최적화 컴파일러가 추가됐다.
+V8 9.1에서 Sparkplug가 추가됐고, Chrome 117에서 Maglev가 데스크톱에 도입됐다. 실행 계층과 승격 기준은 V8 구현 세부사항이라 버전에 따라 달라질 수 있다.
 
 ## Parser
 
@@ -111,13 +113,12 @@ TurboFan이 최적화 시 세운 **가정이 깨지면** 최적화된 기계어�
 
 - 변수 타입 변경 (number → string)
 - 새 프로퍼티 추가, 삭제로 Hidden Class 변경
-- `try-catch` 블록 내 일부 코드
 
-역최적화 자체가 비용이라 성능에 영향을 준다. 완전히 없애는 게 이상적이지만 JS가 **동적 언어**이므로 어쩔 수 없이 감내해야 한다. 최적화 가정을 깨지 않는 코드 작성이 hot path에서 중요하다.
+역최적화 자체가 비용이라 성능에 영향을 준다. 다만 특정 문법이 무조건 최적화를 막는다는 식의 목록은 오래 유지되지 않는다. 예를 들어 `try`, `catch`, `finally`를 최적화하지 못한 것은 Crankshaft의 한계였고, Ignition과 TurboFan은 예외 처리를 포함한 언어 전체를 지원하도록 설계됐다. 실제 병목을 프로파일링한 뒤 hot path의 타입과 객체 모양 안정성을 확인한다.
 
-## Maglev (114+)
+## Maglev (Chrome 117+)
 
-크롬 114부터 TurboFan과 SparkPlug 사이에 추가된 **경량 최적화 컴파일러**. SparkPlug보다 더 최적화되고, TurboFan보다 빨리 컴파일되는 포지션. 계층 간극을 한 단계 더 세분화한 결과.
+Chrome 117에서 Sparkplug와 TurboFan 사이에 추가된 **빠른 최적화 컴파일러**. Sparkplug보다 나은 코드를 만들면서 TurboFan보다 훨씬 빨리 컴파일하는 포지션이다. runtime feedback으로 관찰한 객체 모양과 타입에 특화된 코드를 만들고, 가정이 깨지면 기존 deoptimization 메커니즘으로 복귀한다.
 
 ## 인라이닝 (Inlining)
 
@@ -133,7 +134,7 @@ TurboFan이 최적화 시 세운 **가정이 깨지면** 최적화된 기계어�
 
 | 엔진 | 인터프리터 | 기본 최적화 | 복잡한 최적화 |
 |---|---|---|---|
-| **V8** (9.1+) | Ignition | SparkPlug (+ Maglev 114+) | TurboFan |
+| **V8** | Ignition | Sparkplug + Maglev | TurboFan |
 | **SpiderMonkey** | Interpreter | Baseline | IonMonkey |
 | **JSC** | LLInt | Baseline + DFG | FTL (Faster Than Light) |
 
@@ -159,13 +160,19 @@ TurboFan이 최적화 시 세운 **가정이 깨지면** 최적화된 기계어�
 
 - Ignition↔TurboFan 간극을 메우는 **비최적화 중간 컴파일러** SparkPlug 추가
 
-### 114+ (Maglev 추가)
+### Chrome 117 (Maglev 추가)
 
 - SparkPlug↔TurboFan 사이에 **경량 최적화 컴파일러** Maglev 추가
 
 ## 출처
 
-- [V8 엔진은 어떻게 내 코드를 실행하는 걸까? — evan-moon](https://evan-moon.github.io/2019/06/28/v8-analysis/)
+- [V8 — Ignition](https://v8.dev/docs/ignition)
+- [V8 — Launching Ignition and TurboFan](https://v8.dev/blog/launching-ignition-and-turbofan)
+- [V8 — Sparkplug, a non-optimizing JavaScript compiler](https://v8.dev/blog/sparkplug)
+- [V8 — Maglev, V8's fastest optimizing JIT](https://v8.dev/blog/maglev)
+- [하정훈 강사 — V8 엔진의 동작방식 (v9.1)](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196058)
+- [하정훈 강사 — V8 엔진의 역사](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196059)
+- [하정훈 강사 — 인라이닝 최적화 이점](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196068)
 
 ## 관련 문서
 

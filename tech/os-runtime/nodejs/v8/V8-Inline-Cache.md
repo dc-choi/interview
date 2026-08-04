@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs, v8]
 status: done
+verified_at: 2026-08-04
 category: "OS & Runtime"
 aliases: ["Inline Cache", "IC", "Monomorphic", "Polymorphic", "Megamorphic", "Transition State"]
 ---
@@ -11,29 +12,31 @@ aliases: ["Inline Cache", "IC", "Monomorphic", "Polymorphic", "Megamorphic", "Tr
 
 ## 동작 원리
 
-1. Ignition이 특정 프로퍼티 접근 패턴을 반복 감지하면, 호출 지점에 **IC 슬롯** 생성
-2. 슬롯에는:
+1. V8이 프로퍼티 접근 같은 연산의 호출 지점에 feedback slot을 두고 실행 중 관찰값을 기록
+2. 피드백에는 구현 버전에 따라 다음 정보가 들어갈 수 있다:
    - **IC 상태** (아래 5단계)
    - 직전에 관찰한 **Hidden Class 주소**
    - 해당 프로퍼티의 **Offset**
 3. 다음 접근 시, 들어온 객체의 Hidden Class와 슬롯의 값을 비교 → 같으면 Offset으로 **바로 조회** (사전 탐색 생략)
 4. 다른 Hidden Class가 들어오면 슬롯에 추가하거나 상태를 전이
 
-## IC Transition State (5단계)
+## IC transition state
+
+다음 이름은 V8 진단 로그와 내부 코드에서 관찰되는 대표 상태다. `POLYMORPHIC`이 몇 개까지인지, `MEGAMORPHIC`에서 어떤 stub과 cache를 쓰는지는 버전과 IC 종류에 따라 달라질 수 있다. 2에서 4개, 5개 이상 같은 숫자를 애플리케이션 계약으로 고정하지 않는다.
 
 | 상태 | 표기 | 설명 |
 |---|---|---|
 | UNINITIALIZED | `0` | 최초 상태. 아직 접근이 한 번도 실행되지 않음 |
-| PREMONOMORPHIC | `.` | 개념상의 중간 상태. 한 번 실행됐고, 다음에 MONO로 전환될 가능성이 높음 |
+| PREMONOMORPHIC | `.` | 일부 버전과 IC에서 보이는 준비 상태 |
 | MONOMORPHIC | `1` | 항상 **같은 Hidden Class**로 접근. **가장 빠름** (1회 비교 후 캐시 히트) |
-| POLYMORPHIC | `P` | 2~4개의 다른 Hidden Class 관찰. 여러 캐시를 순차 비교 |
-| MEGAMORPHIC | `N` | 5개 이상의 Hidden Class 관찰. 캐시 포기, **전역 해시 테이블 조회** (가장 느림) |
+| POLYMORPHIC | `P` | 소수의 다른 Hidden Class를 관찰해 여러 handler를 보관 |
+| MEGAMORPHIC | `N` | 매우 다양한 Hidden Class를 관찰해 더 일반적인 조회 경로 사용 |
 
-상태는 **단방향으로만 전이**한다: UNINIT → PREMONO → MONO → POLY → MEGA. 한 번 MEGA로 가면 되돌아오지 않는다.
+한 feedback slot의 정상적인 학습 과정은 보통 UNINIT → MONO → POLY → MEGA 방향으로 일반화된다. 코드 교체, feedback 초기화 같은 수명주기까지 포함해 절대 되돌아오지 않는 공개 규칙은 아니다.
 
-## 왜 MEGA여도 캐싱을 유지하나
+## 왜 MEGA에도 일반화된 cache가 필요한가
 
-MEGAMORPHIC은 속도가 가장 느리지만, 캐싱 자체를 포기하는 것보단 여전히 낫다. 캐시 엔트리가 없으면 **매번 동적 사전 탐색**이 필요하므로 해시 테이블 조회보다 더 비싸다.
+MEGAMORPHIC은 call site에 몇 개의 Map과 handler를 직접 나열하는 전략을 포기한다. 그렇다고 모든 정보를 버리는 것은 아니다. 구현은 공유 stub이나 megamorphic cache 같은 일반화된 경로를 사용할 수 있다. 핵심은 MONO보다 확인할 가정이 약해져 최적화 여지가 줄어든다는 점이다.
 
 ## 예시: IC 상태 전이
 
@@ -83,3 +86,11 @@ JS의 "어떤 모양의 객체든 받을 수 있다"는 유연성은 IC 관점�
 - [[V8|V8 엔진]]
 - [[V8-Hidden-Class|V8 히든 클래스]]
 - [[V8-Ignition-TurboFan|V8 컴파일 파이프라인]]
+
+## 출처
+
+- [V8 — Maps (Hidden Classes) in V8](https://v8.dev/docs/hidden-classes)
+- [V8 — Fast properties in V8](https://v8.dev/blog/fast-properties)
+- [하정훈 강사 — 인라인 캐싱 동작방식](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196072)
+- [하정훈 강사 — 인라인 캐싱 상태](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196073)
+- [하정훈 강사 — 최적화 팁과 마무리](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196066)

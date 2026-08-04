@@ -14,6 +14,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[tech/os-runtime/runtime/런타임(Runtime)|런타임 (Runtime)]] — Thread vs Event Loop, async/await, Backpressure
 - [[tech/os-runtime/jvm/JVM|JVM]] — 아키텍처, GC, 컨테이너 메모리
 - [[tech/os-runtime/nodejs/Node.js|Node.js]] — V8, libuv, Event Loop, Module System, Stream, Worker Threads
+- [[Deno-Runtime|Deno]] — TypeScript 실행, dependency, task와 권한 모델
 - [[tech/os-runtime/nestjs/NestJS|NestJS]] — Clean Architecture, DI
 - [[tech/os-runtime/spring/Spring|Spring]] — Request Lifecycle, @Transactional, JPA 영속성
 

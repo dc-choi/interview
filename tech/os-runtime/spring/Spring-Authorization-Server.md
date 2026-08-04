@@ -86,3 +86,4 @@ RegisteredClient.withId(UUID.randomUUID().toString())
 - [[JWT|JWT]]
 - [[Password-Hashing|패스워드 해싱]]
 - [[Spring-Boot-Essentials|Spring Boot Essentials]]
+- [[Spring-Security|Spring Security]]

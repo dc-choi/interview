@@ -42,6 +42,12 @@ JDK <-> build tool과 plugin <-> third-party library
 
 오래된 버전에서 여러 major를 건너뛸수록 먼저 직전 안정선으로 이동해야 변경 원인을 한 세대씩 분리할 수 있다.
 
+## Null 계약과 런타임 검증을 구분한다
+
+Spring Framework 7은 null 계약에 JSpecify를 사용하며, `org.springframework.lang`의 JSR-305 기반 `@NonNull`, `@Nullable`, `@NonNullApi`, `@NonNullFields`는 deprecated 상태다. 새 코드에서는 보통 package에 `@NullMarked`를 선언하고 예외 지점에 JSpecify `@Nullable`을 붙인다.
+
+JSpecify null 애노테이션은 IDE/정적 분석기가 읽는 **타입 계약**이다. Jakarta Validation의 `@NotNull`은 Validator가 실행될 때 검사하는 **런타임 제약**이다. 서비스 메서드 검증은 Spring의 `@Validated`와 method validation이 실제로 활성화되어야 하며, 어느 쪽도 생성자와 도메인 메서드의 불변식 검사를 자동으로 대신하지 않는다.
+
 ## 단계별 마이그레이션
 
 ### 1. JDK와 build chain
@@ -111,9 +117,13 @@ DB migration은 application rollback과 독립적으로 되돌릴 수 없을 수
 - [모던 백엔드 강좌 소개 — Nextree](https://www.nextree.io/modeon-baegendeu-gangjwa-sogae/)
 - [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide)
 - [Spring Framework 7 General Availability](https://spring.io/blog/2025/11/13/spring-framework-7-0-general-availability/)
+- [Spring Framework 공식 문서 — Null-safety와 JSpecify](https://docs.spring.io/spring-framework/reference/core/null-safety.html)
+- [Spring Framework 공식 문서 — Bean Validation](https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html)
 - [Oracle JDK 25 Migration Guide](https://docs.oracle.com/en/java/javase/25/migrate/)
 - [GraalVM Reachability Metadata](https://www.graalvm.org/latest/reference-manual/native-image/metadata/)
 - [Spring AI Getting Started](https://docs.spring.io/spring-ai/reference/getting-started.html)
+- [토비 강사 — Spring Null Safety](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=291135)
+- [토비 강사 — @NonNull과 @NotNull](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=468588)
 
 ## 관련 문서
 

@@ -20,6 +20,7 @@ HTTP REST 바깥의 프로토콜, 외부 시스템과 NestJS를 연결하는 패
 - [[NestJS-Queues|Queues — @nestjs/bullmq, 잡 옵션, WorkerHost 컨슈머]]
 - [[NestJS-Events|Events — @nestjs/event-emitter, 리스너 에러 억제와 유실 함정]]
 - [[NestJS-HTTP-Module|HTTP Module — @nestjs/axios, Observable 반환과 firstValueFrom, axiosRef]]
+- [[NestJS-AdminJS|AdminJS — NestJS 관리자 UI 통합과 운영 경계]]
 
 ## 관련 문서
 - [[NestJS|NestJS Overview]]

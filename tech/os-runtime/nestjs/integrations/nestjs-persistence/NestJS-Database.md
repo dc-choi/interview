@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, typeorm, database, transaction, repository]
 status: done
+verified_at: 2026-08-04
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Database", "@nestjs/typeorm", "TypeOrmModule"]
 ---
@@ -24,6 +25,15 @@ aliases: ["NestJS Database", "@nestjs/typeorm", "TypeOrmModule"]
 - `TypeOrmModule.forFeature([User])`가 **현재 모듈 스코프**에 Repository를 등록 → `@InjectRepository(User)`로 주입. 모듈 밖에서 쓰려면 `exports: [TypeOrmModule]`로 재export.
 - **autoLoadEntities 함정**: forFeature로 등록된 엔티티만 자동 수집된다. 관계(relation)로만 참조되고 forFeature에 안 올라간 엔티티는 포함되지 않는다.
 - 루트 모듈 entities 배열에 손으로 나열하면 도메인 경계가 새므로 autoLoadEntities가 권장 경로. glob 패턴 나열은 webpack(HMR, monorepo 빌드)과 비호환이라는 이유도 있다.
+
+## Custom Repository 버전 경계
+
+오래된 TypeORM 예제의 `@EntityRepository()`, `AbstractRepository`와 `getCustomRepository()`는 현재 TypeORM에서 제거됐다. 기본 경로는 `TypeOrmModule.forFeature([User])`와 `@InjectRepository(User)`이고, domain 전용 query는 두 방식 중 하나로 둔다.
+
+- Nest provider class가 주입받은 `Repository<User>`를 감싸고 의미 있는 query method를 노출한다. DI, mock과 application port 연결이 단순하다.
+- TypeORM repository object 자체를 확장해야 하면 `dataSource.getRepository(User).extend({ ... })`를 쓴다. transaction 안에서는 전역 custom repository를 재사용하지 않고 callback의 `manager.withRepository(UserRepository)`로 transaction 전용 instance를 얻는다.
+
+두 방식 모두 transaction 안에서 평소 주입받은 전역 repository를 섞지 않는다. callback manager의 `getRepository()` 또는 QueryRunner의 `manager`에서 시작해야 같은 connection과 transaction 경계를 공유한다.
 
 ## 트랜잭션
 
@@ -62,3 +72,6 @@ aliases: ["NestJS Database", "@nestjs/typeorm", "TypeOrmModule"]
 ## 출처
 - [NestJS — Database](https://docs.nestjs.com/techniques/database)
 - [NestJS — Hot Reload](https://docs.nestjs.com/recipes/hot-reload)
+- [TypeORM — Custom repositories](https://typeorm.io/docs/working-with-entity-manager/custom-repository/)
+- [TypeORM — 0.3에서 1.0으로 업그레이드](https://typeorm.io/docs/releases/1.0/upgrading-from-0.3/)
+- John Ahn 강사 커리큘럼: [Repository 생성하기](https://www.inflearn.com/courses/lecture?courseId=327527&unitId=87234)

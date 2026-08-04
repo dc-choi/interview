@@ -11,7 +11,7 @@ Node.js에서 HTTP 트래픽을 받아 처리하는 계층 문서 묶음. 내장
 
 ## 하위 문서
 
-- [[HTTP-Networking|HTTP 네트워킹 — http 트랜잭션 해부, 프록시 설정, Fetch API, WebSocket]]
+- [[HTTP-Networking|HTTP 네트워킹 — TCP/UDP 소켓, URL 파싱, http 트랜잭션, 프록시, Fetch API, WebSocket]]
 - [[Hono|Hono — Web 표준 기반 멀티 런타임 프레임워크, RegExpRouter, 미들웨어 양파 모델, RPC]]
 - [[Apollo-Server|Apollo Server — spec-compliant GraphQL 서버, 버전 지형, 플러그인, 배치 형태]]
 

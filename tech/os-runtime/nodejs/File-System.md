@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: note
+verified_at: 2026-08-04
 category: "OS & Runtime"
 aliases: ["파일 시스템"]
 ---
@@ -114,6 +115,27 @@ await fsPromises.rename('/old/path', '/new/path');
 fs.rm('/path/to/folder', { recursive: true, force: true }, err => {});
 ```
 
+## 파일 변경 감시
+
+`fs.watch()`는 운영체제의 파일 변경 알림을 사용해 파일이나 디렉터리를 감시한다. 콜백의 `eventType`은 `rename` 또는 `change`이고, 반환된 `FSWatcher`를 닫아야 감시 자원이 해제된다.
+
+```js
+const { watch } = require('node:fs');
+
+const watcher = watch('./config', (eventType, filename) => {
+  console.log(eventType, filename ?? '(filename unavailable)');
+});
+
+process.once('SIGTERM', () => watcher.close());
+```
+
+| API | 방식 | 선택 기준 |
+|---|---|---|
+| `fs.watch()` | OS 이벤트 알림 | 더 효율적이므로 기본 선택 |
+| `fs.watchFile()` | stat 폴링 | OS 알림을 쓸 수 없는 환경의 제한적 대안 |
+
+`fs.watch()`의 세부 동작은 플랫폼마다 다르고 NFS, SMB, 가상화된 호스트 파일 시스템에서는 불안정하거나 사용할 수 없을 수 있다. `filename`도 모든 플랫폼에서 항상 제공된다고 가정하지 않는다. 폴링인 `fs.watchFile()` 역시 더 강한 정확성을 보장하지 않으므로, 빌드 도구처럼 여러 플랫폼과 대량 파일을 지원해야 하면 검증된 감시 라이브러리의 보정 로직을 사용한다.
+
 ## 다양한 파일 시스템 호환성
 ```
 모든 파일 시스템이 동일하게 작동하지는 않는다. 대소문자 구분, 유니코드 형식, 타임스탬프 해상도 등이 다르다.
@@ -131,3 +153,14 @@ function areFilenamesEqual(name1, name2, caseSensitive) {
   return caseSensitive ? name1 === name2 : name1.toLowerCase() === name2.toLowerCase();
 }
 ```
+
+## 관련 문서
+
+- [[Stream-Types|스트림 타입과 배압]]
+- [[Command-Line|커맨드라인과 readline]]
+- [[libuv-IO|libuv 파일 시스템 I/O]]
+
+## 출처
+
+- [Node.js File system API](https://nodejs.org/api/fs.html)
+- [얄팍한 코딩사전 강사 — 파일 시스템 이벤트 (+ 사용자 입력 받기)](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=270913)

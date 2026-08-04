@@ -1,6 +1,7 @@
 ---
 tags: [os, memory, allocation, fragmentation]
 status: done
+verified_at: 2026-08-04
 category: "OS&런타임(OS&Runtime)"
 aliases: ["메모리 할당", "Memory Allocation"]
 ---
@@ -11,29 +12,29 @@ aliases: ["메모리 할당", "Memory Allocation"]
 
 | 종류 | 특징 |
 |------|------|
-| 레지스터 | CPU 내부에 존재. 가장 빠름. 휘발성. 32bit/64bit 구분이 레지스터 크기 |
-| 캐시 | 레지스터와 메인 메모리의 속도 차이를 줄임. L1 → L2 → L3 순으로 확인 |
+| 레지스터 | CPU 실행 상태와 피연산자를 보관. ISA가 노출하는 폭과 종류가 다름 |
+| 캐시 | CPU와 메인 메모리의 지연 차이를 줄임. 계층과 공유 방식은 CPU 구현마다 다름 |
 | 메인 메모리(RAM) | 운영체제와 프로세스가 올라가는 곳. 휘발성 |
-| 보조저장장치(SSD/HDD/플래시) | 비휘발성. 가격 저렴. 실행 중인 프로그램은 여기서 메모리로 적재됨 |
+| 보조저장장치(SSD/HDD/플래시) | 비휘발성. 실행 이미지와 파일을 장기 보관 |
 
 ### 메모리 계층 구조와 접근 속도
-- 레지스터: CPU의 1 사이클
-- 캐시: 수 사이클 ~ 수십 사이클
-- 메인 메모리: 수백 사이클
-- 보조기억장치: **수백만 사이클**
+
+CPU에 가까운 계층은 일반적으로 지연이 짧고 용량당 비용이 높다. 레지스터, 각 cache level, DRAM, SSD/HDD 사이의 실제 지연은 CPU 세대, cache hit 여부, 메모리 토폴로지, 장치와 workload에 따라 크게 달라지므로 고정 cycle 수로 외우지 않는다.
 
 ## 메모리와 주소
 
-운영체제는 메모리를 1바이트 크기로 구역을 나누고 숫자를 매김. 이것이 주소.
+현대 범용 CPU는 보통 byte-addressable 주소 공간을 사용하지만 주소 단위는 아키텍처의 계약이다. 프로그램의 가상 주소를 MMU와 page table이 물리 주소로 변환하며, 운영체제가 mapping과 권한을 관리한다.
 
 ### 32bit vs 64bit
-- 32bit: 레지스터, ALU, 버스가 32bit → 메모리 최대 4GB
-- 64bit: 주소 계산 단위가 64bit지만 실제 CPU와 OS가 구현하는 가상, 물리 주소 폭은 보통 2^64보다 작다.
+- n비트 byte 주소를 전부 구현했다면 이론적 주소 공간은 `2^n`바이트다.
+- CPU word/register 폭, 명령어 피연산자 폭, 가상 주소 폭, 물리 주소 폭과 외부 버스 폭은 서로 관련되지만 같은 값일 필요는 없다.
+- 32비트 환경의 4GiB는 32비트 byte 주소 전체를 쓴다는 이론적 값이다. 실제 process/OS가 사용할 수 있는 범위는 ISA, MMU, ABI와 mapping 정책에 따라 달라진다.
+- 64비트 CPU와 OS도 보통 전체 `2^64` 가상/물리 주소를 구현하지 않는다.
 
 ### 물리 주소 공간 vs 논리 주소 공간
-- **물리 주소 공간**: 메모리를 연결하면 0x00번지부터 시작하는 실제 주소
-- **논리 주소 공간**: 사용자 관점에서 바라본 주소
-- 사용자는 물리 주소를 몰라도 논리 주소로 물리 주소에 접근 가능
+- **물리 주소 공간**: CPU와 메모리 컨트롤러가 보는 addressable physical range. RAM 외 MMIO 영역이 포함될 수 있고 연속일 필요가 없다.
+- **가상 주소 공간**: 각 process가 명령어에서 사용하는 주소 범위와 mapping.
+- 프로그램은 물리 배치를 몰라도 가상 주소로 접근하고 MMU/OS가 허용된 mapping을 변환한다.
 
 ### 경계 레지스터와 MMU
 - 경계 레지스터는 연속 메모리 할당 시절의 단순 보호 모델이다.
@@ -53,7 +54,7 @@ aliases: ["메모리 할당", "Memory Allocation"]
 
 ### 가변 분할 방식
 - 프로세스 크기에 따라 메모리를 나눔 (연속 메모리 할당)
-- 장점: 내부 단편화가 일어나지 않음
+- 장점: 교재의 연속 분할 모델에서는 요청 크기에 맞춰 partition을 만들 수 있음
 - 단점: **외부 단편화** 발생
 
 ### 고정 분할 방식
@@ -67,14 +68,14 @@ aliases: ["메모리 할당", "Memory Allocation"]
 
 ### 내부 단편화
 - 고정 분할에서 프로세스가 고정 크기보다 작을 때 남는 공간이 낭비
-- 완전한 해결은 불가. 고정값 조정으로 최소화
+- allocation 단위와 size class를 조정해 줄일 수 있지만 정렬과 관리 단위가 있는 한 남을 수 있음
 
 ### 버디 시스템
 - 2의 승수로 메모리를 분할하여 할당
 - 프로세스 크기보다 작은 값을 만날 때까지 반복 분할하고 그보다 큰 구역에 할당
 - 내부 단편화가 발생하지만 기존보다 적음
 - 프로세스 종료 후 근접 공간을 합치기 쉬움 (조각모음보다 훨씬 간단)
-- 가변 분할의 유연성 + 외부 단편화 방지의 장점
+- buddy끼리 빠르게 병합해 외부 단편화를 줄이지만 모든 크기의 연속 할당 성공을 보장하지는 않음
 
 ## 관련 문서
 - [[Virtual-Memory-Paging|가상 메모리와 페이징]]
@@ -82,3 +83,8 @@ aliases: ["메모리 할당", "Memory Allocation"]
 - [[Stack-vs-Heap|스택 vs 힙 (힙 파편화, 메모리 풀, GC 컴팩션)]]
 - [[Concurrency-and-Process|동시성과 프로세스]]
 - [[Storage-and-FileSystem|기억장치와 파일시스템]]
+
+## 출처
+
+- 인프런, 감자 강사, [메모리 종류](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100828), [메모리와 주소](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100829), [메모리 할당방식](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100830)
+- [Linux kernel memory management concepts](https://docs.kernel.org/admin-guide/mm/concepts.html)

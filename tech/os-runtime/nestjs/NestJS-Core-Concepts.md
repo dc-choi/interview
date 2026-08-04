@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nestjs, di, module, pipeline]
 status: done
+verified_at: 2026-08-04
 category: "OS & Runtime"
 aliases: ["NestJS Core Concepts", "NestJS 핵심 개념"]
 ---
@@ -16,7 +17,7 @@ aliases: ["NestJS Core Concepts", "NestJS 핵심 개념"]
 - `@Injectable()` 데코레이터로 Provider 등록 → constructor에서 **타입 기반 자동 주입**
 - 개발자는 의존성을 직접 생성하지 않고, 컨테이너에 무엇이 필요한지만 선언
 
-### Provider 종류 (5가지)
+### Provider 등록 방식
 
 | 종류 | 등록 방식 | 용도 |
 |------|----------|------|
@@ -24,23 +25,21 @@ aliases: ["NestJS Core Concepts", "NestJS 핵심 개념"]
 | **Value** | `{ provide: 'API_KEY', useValue: process.env.KEY }` | 상수, 설정, 외부 객체 |
 | **Factory** | `{ provide: TOKEN, useFactory: (deps) => ..., inject: [...] }` | 런타임에 생성 결정, 다른 Provider 의존 |
 | **Existing (Alias)** | `{ provide: 'USER_SERVICE', useExisting: UserService }` | 같은 인스턴스에 다른 토큰 별칭 |
-| **Async** | `useFactory: async () => ...` | 외부 호출, 비동기 초기화 (DB 연결, 원격 설정) |
+
+비동기 초기화는 별도 provider 종류가 아니라 Promise를 반환하는 factory로 표현한다. Nest는 dependent provider를 만들기 전에 그 Promise가 완료되기를 기다린다.
 
 문자열, Symbol 토큰 Provider는 `@Inject(TOKEN)`으로 명시적 주입. 클래스 토큰은 타입만으로 자동 해결. 딥다이브: [[Custom-Provider|Custom Provider, DI Deep Dive]]
 
 ### DI 컨테이너 내부 동작
 
-```
-1. 컴파일 타임 — TypeScript가 reflect-metadata로 파라미터 타입 메타데이터 생성
-   (Reflect.getMetadata('design:paramtypes', SomeService) → [UserService, 'CUSTOM_TOKEN', ...])
-2. 런타임 — NestFactory가 모듈 트리 스캔 → @Injectable 마커 + 메타데이터 수집
-3. 의존성 그래프 구축 — Provider 토큰별 노드 + 주입 엣지
-4. 순환 참조 검사 — 그래프에 사이클 있으면 forwardRef 없이는 throw
-5. 위상 정렬 → 순서대로 인스턴스화 (의존받는 쪽이 먼저)
-6. constructor 호출 시 그래프에서 해결된 인스턴스 주입
+```text
+1. TypeScript가 legacy decorator와 함께 constructor parameter의 제한된 design metadata를 emit한다.
+2. 부트스트랩에서 Nest가 module metadata와 provider token을 수집한다.
+3. container가 module visibility를 지키며 token을 해석하고 instance를 생성한다.
+4. constructor에 해석된 dependency를 주입하고 scope에 맞춰 instance를 보관한다.
 ```
 
-`tsconfig`의 `emitDecoratorMetadata: true` + `reflect-metadata` 폴리필이 1단계의 전제. 둘 중 하나라도 빠지면 자동 주입 안 됨 → 모든 Provider에 명시 토큰 필요. 클래스 토큰을 타입만으로 자동 해결할 수 있는 것은 컴파일러가 파라미터 타입을 메타데이터로 emit해주기 때문.
+`emitDecoratorMetadata: true`, legacy decorators와 `reflect-metadata`가 class token 추론의 기반이다. metadata에는 runtime constructor가 남는 class만 표현할 수 있다. interface, type alias와 generic type argument는 emit에서 사라지므로 string/Symbol token과 `@Inject(TOKEN)`을 사용한다. custom token이 `design:paramtypes`에 문자열로 들어간다고 이해하면 안 된다.
 
 ### Provider Scope
 
@@ -53,6 +52,21 @@ aliases: ["NestJS Core Concepts", "NestJS 핵심 개념"]
 - REQUEST/TRANSIENT scope는 **성능 비용**이 있으므로 필요한 경우에만 사용
 - REQUEST scope Provider를 주입받으면 주입하는 쪽도 REQUEST scope가 됨 (scope 전파)
 - 상세: [[Injection-Scopes|Injection Scopes]]
+
+## Controller, route와 DTO
+
+`@Controller()`와 method decorator는 HTTP method와 path metadata를 class/method에 붙이고 platform adapter가 이를 runtime route로 등록한다. TypeScript return type이나 parameter type만으로 요청 payload가 검증되지는 않는다.
+
+DTO는 runtime에서 class constructor가 남도록 class로 선언한다. interface와 type alias는 소거되므로 `ValidationPipe`가 검사할 metadata가 없다. `class-validator` decorator를 사용한다면 application bootstrap에서 pipe를 실제로 활성화해야 한다.
+
+```typescript
+app.useGlobalPipes(new ValidationPipe({
+  whitelist: true,
+  transform: true,
+}));
+```
+
+`whitelist`는 validation decorator가 없는 property를 제거하고, 거부가 필요하면 `forbidNonWhitelisted`를 함께 검토한다. `transform`은 payload를 DTO class instance나 primitive parameter type으로 변환할 수 있지만 business invariant 검증을 대신하지 않는다.
 
 ## 모듈 시스템
 
@@ -90,12 +104,13 @@ Request → Middleware → Guard → Interceptor(pre) → Pipe → Handler → I
 Controller (Interface Adapters)
   → UseCase (Application Core)
     → DomainService (핵심 비즈니스)
-      → Repository Interface → Prisma Client (External Infrastructure)
+      → Repository Port → TypeORM Repository adapter (External Infrastructure)
 ```
 
 - UseCase별로 사용자 의도를 분리 (JSON 응답용 vs 엑셀 다운로드용)
 - 핵심 비즈니스 로직이 변경되어도 UseCase별 영향 최소화
 - 고객사별 커스텀 요구를 UseCase 레벨에서만 분기해서 해결
+- Prisma 예제는 generated client와 CLI 동작을 구분하고 현재 TypeORM 기준으로 번역 — [[ORM|ORM과 NestJS 영속성 선택]]
 
 자세한 NestJS 매핑(포트 인터페이스, Symbol 토큰, 테스트 교체 전략): [[Clean-Architecture-NestJS|NestJS Clean Architecture 실전]]
 
@@ -106,4 +121,14 @@ NestJS는 Spring, Angular의 설계를 TypeScript/Node.js로 옮긴 계보. DI, 
 상세 비교: [[NestJS-vs-Spring|NestJS vs Spring (DI, 모듈, 데코레이터, AOP vs Guard/Pipe/Interceptor, 트랜잭션, 생태계)]]
 
 ## 출처
+- [NestJS — Controllers](https://docs.nestjs.com/controllers)
+- [NestJS — Providers](https://docs.nestjs.com/providers)
 - [NestJS — Modules](https://docs.nestjs.com/modules)
+- [NestJS — Validation](https://docs.nestjs.com/techniques/validation)
+- [NestJS — Custom providers](https://docs.nestjs.com/fundamentals/custom-providers)
+- yongsoocho, [NestJS 프로젝트 생성](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=137159)
+- yongsoocho, [Module과 Container](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=140851)
+- yongsoocho, [Decorator route mapping](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=140849)
+- yongsoocho, [의존성 주입](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=140858)
+- yongsoocho, [Decorator와 DTO](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=140860)
+- 김빌 강사, [Node와 NestJS 특징](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273667), [NestJS 기본 구조](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273668), [Controller와 Service](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273673), [예상 아키텍처](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273688)

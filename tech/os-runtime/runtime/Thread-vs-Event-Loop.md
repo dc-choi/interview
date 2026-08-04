@@ -1,172 +1,125 @@
 ---
-tags: [os, thread, concurrency, cpu-cache, nodejs]
+tags: [os, thread, concurrency, event-loop, nodejs]
 status: done
+verified_at: 2026-08-04
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Thread vs Event Loop", "멀티스레드 패턴"]
 ---
 
 # Thread vs Event Loop
 
-## 멀티스레드 기본
+스레드와 이벤트 루프는 동시에 여러 작업을 진전시키는 서로 다른 실행 모델이다. 어느 쪽이 더 빠른지가 아니라, 작업의 대기 형태와 공유 상태, 실패 격리, 운영 한도에 맞는 모델을 고른다.
 
-- 실행파일 실행 → 프로세스 생성 → 메인 스레드 생성
-- 멀티스레드: 메인 스레드 외 다른 스레드가 있고 **메모리 공유**가 일어나는 경우
-- 스레드 간 메모리 공유가 없다면 멀티스레드라고 부르기 애매함
+## 프로세스와 스레드
 
-### 프로세스 vs 스레드 면접 포인트
-- 스레드끼리는 같은 프로세스 주소 공간을 기본 공유한다. 프로세스끼리는 기본 주소 공간이 분리되지만 shared memory, mmap, IPC로 명시적 공유가 가능하다.
-- 이 차이가 동시성 문제, 배타 제어, IPC 등 다양한 주제로 이어짐
+- 같은 프로세스의 스레드는 주소 공간을 공유하므로 통신 비용이 낮지만 data race와 deadlock을 관리해야 한다.
+- 프로세스는 기본 주소 공간이 분리되어 실패 격리가 강하다. pipe, socket, shared memory와 `mmap` 같은 IPC로 통신하거나 메모리를 명시적으로 공유할 수 있다.
+- 스레드 수를 늘린다고 처리량이 계속 늘지 않는다. 생성 비용, stack 메모리, 스케줄링과 context switching, 공유 자원 경합이 증가한다.
 
-## 배타 제어 (Exclusive Control)
+## Node.js 실행 모델
 
-### Concurrent 클래스
-- 처음부터 망가뜨릴 수 없는 오브젝트를 만듦 (concurrent prefix 클래스)
-- 구현 방식에 따라 성능 저하 발생 가능
-- 일반 클래스도 read는 스레드 세이프한 경우 있음. write를 한 스레드에서만 하고 read를 여러 스레드가 하면 유용
+기본 Node.js 프로세스는 한 JavaScript 스레드의 이벤트 루프가 callback을 실행한다. 비동기 I/O는 가능한 경우 OS 커널에 맡기고, 일부 파일 시스템, DNS, crypto 작업은 libuv thread pool을 이용한다.
 
-### Lock
-- 특정 코드 구간(크리티컬 섹션)을 한 스레드만 실행하도록 막음
-- 락을 건 구간의 실행 시간이 길수록 성능 저하. 최악엔 싱글 스레드가 나음
-- 그래서 **원 프로세스, 원 스레드 아키텍처**가 등장
+`async` 함수와 `await`는 이 완료 흐름을 Promise로 표현한다. `await`는 현재 async 함수의 나머지를 나중에 재개하도록 양보할 뿐, 별도 스레드를 만들거나 CPU 작업을 병렬화하지 않는다.
 
-### Lock-Free
-- 락 없이 배타 제어. CAS(Compare-And-Swap) 연산이 핵심
-- CAS(메모리 주소, 예상 값, 새 값) → 예상 값 일치 시 교체 후 true, 불일치 시 false 반환하고 재시도
-- 장점: 데드락 방지, 컨텍스트 스위칭 감소, 우선순위 역전 방지
-- 적어도 하나의 스레드는 반드시 진전을 이룬다는 보장이 핵심
-- 웬만하면 쓰지 말라는 의견. 매우 어려움
+CPU 집약 JavaScript는 callback 하나가 이벤트 루프를 오래 점유하므로 Worker Threads나 별도 프로세스로 격리한다. Worker는 생성 비용이 있으므로 요청마다 만들기보다 pool을 재사용한다.
 
-Node.js: Atomics.compareExchange()로 Lock-Free 설계 가능. 분산 시스템에서 낙관적 락도 Lock-Free 철학과 유사
+| 작업 | 기본 선택 | 이유 |
+|---|---|---|
+| 네트워크, DB I/O | 비동기 API와 이벤트 루프 | 대기 동안 다른 callback 진행 |
+| CPU 집약 JS | Worker Threads pool | JavaScript를 실제 병렬 실행 |
+| 강한 실패 격리, 독립 배포 | 프로세스나 서비스 분리 | 주소 공간과 수명 분리 |
+| 작은 공유 상태의 병렬 계산 | Worker와 메시지 전달 우선 | 공유 메모리 동기화 복잡성 축소 |
 
-### Spin Lock
-- 잠금이 풀릴 때까지 CPU를 계속 돌면서(busy-wait) 확인
-- 락이 아주 짧은 시간만 유지되거나, 커널-유저 전환 비용이 더 큰 경우 사용
-- 오래 걸리면 CPU 100% 낭비. OS 커널/low-level 시스템에서 주로 사용
-- Node.js: Atomics.wait() & Atomics.notify()가 Spin Lock보다 CPU 친화적
+## Blocking, Non-Blocking과 완료 통지
 
-## Blocking & Non-Blocking
+Blocking은 호출자가 결과를 기다리며 진행하지 못하는 성질이고, Non-Blocking은 즉시 제어권을 돌려주는 성질이다. 완료를 확인하는 방법은 polling, callback/event, Promise/Future가 있다.
 
-| 구분 | 설명 |
-|------|------|
-| Blocking | 함수 실행 후 모든 코드 완료 후 리턴 |
-| Non-Blocking | 실행한 함수의 코드가 완료되지 않고 리턴 |
+Polling은 확인 주기만큼 지연과 부하가 생긴다. event 기반 통지는 불필요한 확인을 줄이지만, queue 폭증과 handler 실패를 따로 다뤄야 한다. `async/await`도 backpressure, timeout과 취소를 자동으로 제공하지 않는다.
 
-Non-Blocking 함수의 완료를 알 수 있는 방법:
-- **Polling**: 완료를 주기적으로 확인
-- **Event**: 이벤트 발생 시 콜백 함수 호출 → 콜백 지옥 가능성
+## 동시성 정확성의 세 축
 
-### async/await의 장점 (면접 포인트)
-- 콜백 지옥 해결, 동기 함수처럼 보이는 코드 흐름
-- Promise 체인보다 간결, 병렬 처리도 명시적 작성 가능
-- IO 바운드 작업 시 CPU를 놀리지 않고 다른 작업 처리 가능
+| 축 | 질문 | 대표 도구 |
+|---|---|---|
+| Visibility | 다른 실행 주체의 변경을 언제 볼 수 있는가 | Java `volatile`, lock, Node `Atomics` |
+| Ordering | 두 작업 사이 순서가 어떻게 보장되는가 | happens-before, message passing |
+| Atomicity | 복합 갱신이 중간 상태 없이 실행되는가 | lock, atomic read-modify-write |
 
-## CPU Cache와 멀티스레드
+`volatile`을 CPU 캐시 우회로 이해하면 안 된다. 언어 메모리 모델의 가시성과 순서 규칙이며 `count++` 같은 복합 연산을 원자적으로 만들지 않는다. context switch, `sleep()`과 `yield()`도 동기화 경계가 아니다.
 
-CPU 발전 속도 > 메모리 접근 속도 → **Memory Wall** 문제 → CPU Cache 도입. 하지만 멀티스레드에서 곤란해짐.
+Node.js의 `Atomics`는 일반 객체가 아니라 Worker 사이에 공유한 `SharedArrayBuffer`의 typed array에서 사용한다. 이벤트 루프 callback이 직렬 실행되어도 여러 `await` 사이에 다른 요청이 끼어들 수 있으므로 DB나 외부 상태에는 논리적 race condition이 남는다.
 
-### Stale Data (오래된 데이터)
-- 두 스레드가 공유 자원에 접근할 때 캐시로 인해 갱신된 값 대신 기존 데이터를 참조
-- 데이터 무결성이 깨짐
+## 동시성 패턴을 실행 모델에 매핑하기
 
-### ReOrdering (재정렬)
-- 코드 최적화로 실행 순서가 바뀔 수 있음
-- 멀티스레드 환경에서는 조건에 따라 함수가 실행되거나 안 될 수 있음
+| 패턴 | 핵심 | Java | Node.js, NestJS |
+|---|---|---|---|
+| Guarded Suspension | 조건이 참일 때까지 효율적으로 대기 | `wait` 반복 검사, `Condition` | Promise, event, Worker `Atomics.wait` |
+| Balking | 조건이 아니면 기다리지 않고 거절 | 상태 검사 후 즉시 반환 | 중복 실행 거절, try-lock, admission control |
+| Producer-Consumer | 생산과 소비 속도 분리 | bounded `BlockingQueue` | Stream, 제한된 MQ/Worker queue |
+| Read-Write Lock | 읽기 병렬, 쓰기 배타 | `ReentrantReadWriteLock` | 공유 메모리가 아니면 DB/분산 동시성 제어 |
+| Thread Per Message | 작업마다 실행 단위 생성 | virtual thread per task 등 | 요청마다 Worker 생성은 피하고 pool 사용 |
+| Worker Thread | 고정 워커가 queue 소비 | `ExecutorService` | Worker pool, BullMQ/Kafka worker |
+| Future | 미래 결과와 완료 상태 | `Future`, `CompletableFuture` | Promise |
+| Thread-Specific Storage | 실행 문맥별 상태 격리 | `ThreadLocal` | `AsyncLocalStorage` |
 
-### 해결: Visibility, Atomicity, ReOrdering 방지
+패턴 이름을 구현으로 외우지 않는다. 기다릴지 거절할지, queue를 어디서 제한할지, 결과와 취소를 누가 소유할지를 결정하는 도구로 쓴다.
 
-**Visibility**: 해당 메모리를 반드시 메인 메모리에서 읽고/씀 (캐시 우회)
+## Lock, Spin과 Lock-Free
 
-**Atomicity**: 하나의 일관된 동작이 한 스레드에서만 시작하고 종료 = Atomic Operation
+- 일반 lock은 획득하지 못한 실행 주체를 대기시킨다. 임계 구역은 짧게 유지하고 I/O를 넣지 않는다.
+- spin lock은 잠금이 풀릴 때까지 CPU로 반복 확인한다. 짧은 대기가 측정으로 확인된 저수준 코드가 아니라면 CPU 낭비가 크다.
+- lock-free는 CAS 같은 atomic 연산을 사용해 전체 시스템 차원의 진행을 보장하는 알고리즘 속성이다. CAS 사용 자체가 올바른 lock-free 설계를 보장하지 않는다.
+- wait-free는 각 작업이 유한 단계 안에 끝나는 더 강한 보장이다. spin lock은 busy-wait 잠금이므로 lock-free로 분류하지 않는다.
 
-**Memory Barrier (Fence)**:
-- Read Memory Barrier / Write Memory Barrier / Full Memory Barrier
-- 직접 사용은 어려움. Lock, Monitor, volatile, synchronized, Atomics 등 쉬운 방법을 쓸 것
-- Node.js: Atomics.store, Atomics.load 등이 메모리 펜스를 제공하여 ReOrdering 방지
+애플리케이션에서는 검증된 concurrent collection, queue와 lock을 우선한다. 직접 구현하면 ABA, 기아, 재시도 폭증과 메모리 순서까지 함께 증명해야 한다.
 
-### CPU Caching Policy
+## 요청 문맥과 Thread-Specific Storage
 
-| 정책 | 설명 |
-|------|------|
-| Write-Through | Cache에 쓰면 즉시 메인 메모리에도 씀 |
-| Write-Back (Lazy Write) | Cache에 쓰면 지연된 쓰기를 함 |
-| Write No Allocation | Cache Miss 시 바로 메모리에 씀 |
-| Write Allocation | Cache Miss 시 메모리에서 Cache로 가져온 뒤 Cache에 씀 |
+Java `ThreadLocal`은 물리 스레드에 값을 묶는다. 풀 스레드를 재사용하므로 요청 종료 시 `remove()`가 필요하다.
 
-**Dirty Flag**: 캐시된 데이터가 수정되었는지 저장하는 변수. CPU Cache는 이걸로 메인 메모리 write 여부 결정. Redis 캐시 서버도 RDB 영구 저장 시 사용.
+Node `AsyncLocalStorage`는 스레드가 아니라 callback과 Promise 체인을 따라 store를 전파한다. NestJS에서는 middleware에서 `run(store, next)`로 요청 수명을 감싸 REQUEST scope의 대안으로 쓸 수 있다. 암시적 문맥이 커질수록 의존성이 숨으므로 request ID, tenant ID, transaction handle처럼 범위를 좁힌다.
 
-### CPU Cache Line과 적중률
-- CPU Cache Line: 64byte. 메인 메모리 데이터를 그대로 가져와 적재
-- 시간적 지역성 + 공간적 지역성을 고려해야 적중률이 올라감
+## 협력적 취소와 Graceful Shutdown
 
-**Node.js에서 캐시 적중률 높이기:**
-- 일반 JS 배열/객체는 캐시 친화적 제어가 거의 불가능
-- **TypedArray/Buffer**로 바꾸면 진짜 연속 메모리라서 캐시라인 효과를 받음
-- 순방향(+1) 선형 스캔, 작은 stride, packed 배열 유지
-- 복잡 객체가 많으면 SoA(Structure of Arrays)로 분해 (AoS보다 프리패처 친화적)
-- 히든 클래스 안정화: 같은 필드 집합/순서로 객체 생성, 생성 후 속성 추가/삭제 피하기
-- 핫패스에서는 가능한 평평한 배열/버퍼로 처리, 해시/포인터 체이싱 줄이기
+1. 새 요청과 새 작업을 받지 않는다.
+2. queue와 진행 중 작업이 제한 시간 안에 끝나도록 기다린다.
+3. 남은 작업에 취소 신호를 보낸다.
+4. 연결, 파일과 lock을 `finally`에서 정리한다.
 
-## 멀티스레드 디자인 패턴
+Java interrupt와 Node `AbortSignal` 모두 협력적 취소다. 신호를 확인하거나 해당 signal을 지원하는 작업만 중단된다. Node의 `AbortController`는 선택된 Promise 기반 API에 취소를 알리며 임의의 Promise를 강제로 종료하지 않는다.
 
-### Guarded Suspension
-- 할 일이 없는 스레드는 대기열에 넣고 할 일이 생기면 깨워서 실행
-- CPU 자원을 다른 스레드에 집중 할당 가능
-- Node.js: Promise 대기큐, EventEmitter/events.once(), Worker Threads + Atomics.wait
+## Deadlock과 운영 안전장치
 
-### Balking
-- 작업이 있는지 주기적으로 확인. 있으면 하고 없으면 무시
-- Guarded Suspension과 달리 할 일이 없어도 다른 작업을 할 수 있음
+이벤트 루프 자체에는 전통적 스레드 lock deadlock이 드물지만 Worker 공유 메모리, DB transaction과 분산 lock에서는 발생한다.
 
-### Producer-Consumer
-- 한 스레드는 데이터 생산, 다른 스레드는 소비
-- 서버 스레드 모델에서 IO 스레드(Producer)와 Worker 스레드(Consumer)가 이 패턴
-- Node.js: EventEmitter, BullMQ, Kafka, RabbitMQ, SQS, Redis Stream
+- 여러 lock을 얻는 순서를 하나로 고정한다.
+- lock 획득과 외부 호출에 timeout을 둔다.
+- 작업 실패와 취소 경로에서도 `finally`로 lock을 해제한다.
+- queue depth, 거절 수, event loop lag, Worker 사용률과 lock wait를 함께 관측한다.
+- timeout은 원자적 rollback이 아니다. 일부 성공이 가능한 작업에는 transaction이나 보상 동작이 필요하다.
 
-### Read-Write Lock
-- read lock과 write lock을 분리. write 시 read/write 둘 다 불가, read 시 다른 스레드도 read 가능
-- 같은 lock을 거는 것보다 read 성능 향상
-- Node.js: 비동기 로직 → Promise, 공유메모리 → Atomics+SharedArrayBuffer, 분산 → DB락/Redis 분산락
+## 출처
 
-### Thread Per Message
-- 하나의 작업을 다른 스레드에 위임, 작업당 하나의 스레드
-- 스레드 수가 많으면 컨텍스트 스위칭으로 성능 저하
-- Node.js: Worker Thread, Cluster, AsyncLocalStorage, MQ 기반 워커
-
-### Future
-- 비동기 작업의 결과를 미래 시점에서 받을 수 있는 객체
-- Node.js에서 **Promise**가 Future 패턴의 구현
-
-## Thread-Specific-Storage
-
-스레드마다 독립적인 저장 공간. 자기 전용 데이터를 가지면 락이 필요 없다는 아이디어.
-
-### Node.js에서의 구현
-- **AsyncLocalStorage**: 비동기 호출 체인별 데이터 격리. NestJS nestjs-cls도 내부적으로 사용 (요청 단위 request context)
-- **Worker Threads**: 각 워커가 독립된 V8 인스턴스와 메모리를 가지므로 그 자체가 TSS
-
-### 활용 사례
-- 로그 트레이싱, 요청 ID, 트랜잭션 컨텍스트 유지
-
-## Thread Graceful Shutdown
-
-더 이상 새 작업 안 받기 → 진행 중 작업 마무리 → 리소스 정리 → 정상 종료
-
-Node.js 패턴:
-- HTTP 서버 + Worker Threads 풀
-- SharedArrayBuffer + Atomics로 즉시 중지 플래그 (CPU 바운드)
-- AbortController로 비동기 작업 일괄 취소 (I/O 위주)
-
-## Dead Lock (Node.js)
-
-싱글 스레드 이벤트 루프에서는 드물지만 Worker Thread, DB 트랜잭션, Redis 분산락에서 발생 가능
-
-| 상황 | 대응 |
-|------|------|
-| Worker Thread | wait 전후로 notify 보장, timeout 버전 (Atomics.wait(..., timeout)) 사용 |
-| DB 트랜잭션 | 항상 동일한 순서로 자원 접근, retry 로직 추가 |
-| Redis 분산락 | try/finally로 항상 해제, TTL 자동 만료, 락 점유 시간보다 긴 작업 피하기 |
+- [The Node.js Event Loop — Node.js](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)
+- [Worker Threads — Node.js API](https://nodejs.org/api/worker_threads.html)
+- [AsyncLocalStorage — Node.js API](https://nodejs.org/api/async_context.html)
+- [AbortController — Node.js API](https://nodejs.org/api/globals.html#class-abortcontroller)
+- [Async Local Storage — NestJS](https://docs.nestjs.com/recipes/async-local-storage)
+- [Java Language Specification 17, Threads and Locks — Oracle](https://docs.oracle.com/javase/specs/jls/se25/html/jls-17.html)
+- [Process와 Thread는 무엇일까? — 모영철 강사](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178836)
+- [Thread 흐름을 어떻게 컨트롤 하지? — 모영철 강사](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178837)
+- [Producer-Consumer — 모영철 강사](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178842)
+- [Read-Write Lock — 모영철 강사](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178843)
+- [Thread Per Message — 모영철 강사](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178844)
+- [Worker Thread — 모영철 강사](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178854)
+- [Future — 모영철 강사](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178855)
+- [Thread-Specific Storage — 모영철 강사](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178856)
 
 ## 관련 문서
+
+- [[Java-Concurrency-Primitives|Java 동시성 프리미티브]]
 - [[Concurrency-and-Process|동시성과 프로세스]]
-- [[Context-Switching|컨텍스트 스위칭과 CPU 스케줄링]]
 - [[Event-Loop|Node.js Event Loop]]
+- [[Worker-Threads-Core|Worker Threads 핵심]]
+- [[Backpressure|Backpressure]]
+- [[Injection-Scopes|NestJS Injection Scopes]]

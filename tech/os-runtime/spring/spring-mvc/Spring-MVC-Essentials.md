@@ -1,6 +1,7 @@
 ---
 tags: [spring, mvc, annotation, filter, interceptor, tomcat, was]
 status: done
+verified_at: 2026-08-04
 category: "OS & Runtime"
 aliases: ["Spring MVC Essentials", "Spring 애노테이션", "Filter vs Interceptor", "WAS vs Web Server"]
 ---
@@ -38,11 +39,23 @@ Spring Bean으로 등록되는 클래스에 붙이는 4종. 기능적으로는 �
 
 ## `@ResponseBody`
 
-반환값을 View가 아닌 **HTTP 응답 본문으로 직렬화**. 기본 포맷은 JSON(Jackson 자동 연결).
+반환값을 View가 아닌 **HTTP 응답 본문으로 직렬화**한다. 객체는 설정된 `HttpMessageConverter`가 보통 JSON으로 변환한다.
 
 - 단일 메서드에 붙이면 그 메서드만 JSON 반환
 - 클래스에 `@RestController`를 쓰면 모든 메서드에 자동 적용
 - 반환 타입이 `String`이면 그대로 body에 씀 (JSON 아님에 주의)
+
+## 정적 파일, View, API의 세 응답 경로
+
+| 경로 | controller 반환 | 최종 처리 |
+|---|---|---|
+| 정적 파일 | controller 없음 | resource handler가 `/static`, `/public`, `/resources`, `/META-INF/resources` 등에서 파일 탐색 |
+| MVC와 template | view name + `Model` | `ViewResolver`가 Thymeleaf 같은 `View`를 찾아 HTML render |
+| API | `@ResponseBody` 값 | `HttpMessageConverter`가 문자열 또는 JSON 같은 body로 기록 |
+
+같은 URL에 controller mapping이 있으면 controller가 정적 welcome page보다 먼저 선택된다. 정적 `index.html`은 handler가 없는 root request의 fallback이므로, 정적 파일이 controller보다 항상 우선한다는 규칙으로 외우면 안 된다.
+
+HTML form의 `GET`은 화면이나 조회를, `POST`는 제출에 따른 상태 변경을 표현한다. Spring MVC는 form field를 `@ModelAttribute` 입력 DTO에 binding할 수 있지만, persistence entity를 직접 binding 대상으로 노출하지 않는다. controller는 입력을 service use case로 전달하고, 조회 결과는 `Model`의 attribute로 View에 넘긴다.
 
 ## `@Value`
 
@@ -67,6 +80,22 @@ private int timeout;
 | 중첩 객체 | 자연스럽게 지원 | 제한적 |
 
 `multipart` + JSON 같이 쓰는 경우는 [[Spring-Multipart-JSON]] 참고.
+
+## Controller argument와 model
+
+- `@RequestParam`은 query string, form field와 multipart field 같은 Servlet request parameter 하나를 type conversion한다.
+- `@ModelAttribute`는 model 객체를 찾거나 만들고 request parameter를 field에 binding한 뒤 validation할 수 있다.
+- 단순 type의 annotation 없는 argument는 `@RequestParam`, 그 밖의 argument는 기본적으로 `@ModelAttribute`처럼 해석될 수 있다. public API에서는 annotation을 명시해 계약을 드러낸다.
+- `BindingResult`로 binding 오류를 직접 처리하려면 대상 argument 바로 뒤에 둔다.
+- persistence entity를 곧바로 web binding 대상으로 쓰면 의도하지 않은 property까지 변경될 수 있다. 입력 전용 DTO와 허용 field를 사용한다.
+
+HTML controller의 `Model`은 view에 전달할 attribute 모음이고, `ModelAndView`는 model과 view 선택을 한 값으로 반환한다. REST controller에서는 보통 response DTO와 `ResponseEntity`가 경계를 더 잘 드러낸다.
+
+## Redirect와 forward
+
+- `redirect:` view name은 client에게 3xx와 새 location을 보내 새 request를 만들게 한다. POST 성공 뒤 새 GET으로 이동하는 PRG 패턴은 새로 고침에 의한 중복 제출을 줄인다.
+- `forward:`는 server 안에서 같은 request를 다른 resource로 전달한다. browser URL과 request scope가 유지된다.
+- redirect 뒤 값이 필요하면 `RedirectAttributes`로 URL attribute와 일회성 flash attribute를 구분한다. 일반 `Model`의 값이 의도치 않게 query string으로 노출되지 않게 한다.
 
 ## Filter vs Interceptor
 
@@ -136,6 +165,22 @@ Tomcat은 **Servlet Container + Web Server** 기능을 겸하지만, 실무에�
 - [매일메일 — Tomcat](https://www.maeil-mail.kr/question/22)
 - [매일메일 — @Component, @Service, @Controller, @Repository](https://www.maeil-mail.kr/question/72)
 - [매일메일 — WAS와 Web Server의 차이점](https://www.maeil-mail.kr/question/105)
+- [Spring Framework, Controller Method Arguments](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/arguments.html)
+- [Spring Framework, `@ResponseBody`](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/responsebody.html)
+- [Spring Framework, View Resolution](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/viewresolver.html)
+- [Spring Boot 4.1, Static Content와 Welcome Page](https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.spring-mvc.static-content)
+- [Spring Framework, Redirect Attributes](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/redirecting-passing-data.html)
+- [인프런, Service와 DAO 객체](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13730)
+- [인프런, Controller argument binding](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13731)
+- [인프런, ModelAttribute와 Model](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13732)
+- [인프런, Redirect와 Interceptor](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13735)
+- 김영한 강사, [View 환경설정](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49573)
+- 김영한 강사, [정적 content](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49576)
+- 김영한 강사, [MVC와 template engine](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49577)
+- 김영한 강사, [API](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49578)
+- 김영한 강사, [회원 웹 기능, 홈 화면 추가](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49589)
+- 김영한 강사, [회원 웹 기능, 등록](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49590)
+- 김영한 강사, [회원 웹 기능, 조회](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49591)
 
 ## 관련 문서
 - [[Spring-Request-Lifecycle|Spring 요청 처리 흐름]]

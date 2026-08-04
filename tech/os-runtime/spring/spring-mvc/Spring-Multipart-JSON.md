@@ -147,6 +147,15 @@ multipart 한 번에 수 GB를 올리는 건 메모리, 네트워크 모두 부�
 
 파일이 작고(수 MB) 메타데이터와 같은 트랜잭션으로 처리하면 충분할 때만 multipart 1-shot.
 
+## 파일 저장과 다운로드 경계
+
+- `originalFilename`은 client 입력이므로 경로로 직접 사용하지 않는다. Basename/extension allowlist와 별도 server-side identifier를 사용해 path traversal/충돌을 막는다.
+- MIME type과 extension은 신뢰 가능한 content 검사를 대신하지 않는다. 허용 format parsing, malware scanning과 image 재인코딩을 위협 모델에 맞춰 둔다.
+- 공개 파일과 비공개 파일의 storage/bucket/CDN 경계를 분리하고 download마다 authorization을 검증한다.
+- `Content-Disposition` filename은 표준에 맞게 encode하고 CRLF/header injection을 차단한다.
+- Local filesystem + DB path, object storage, DB blob 중 하나가 보편 정답은 아니다. 크기, transaction 결합, backup, deduplication과 lifecycle로 선택한다.
+- Metadata transaction 성공과 binary 저장 성공이 갈라질 수 있으므로 pending state, idempotent finalize와 orphan cleanup을 설계한다.
+
 ## 면접 체크포인트
 
 - **`@RequestBody` vs `@RequestPart` vs `@ModelAttribute`** 사용 기준
@@ -160,6 +169,9 @@ multipart 한 번에 수 GB를 올리는 건 메모리, 네트워크 모두 부�
 - [velog @songs4805 — Controller에서 MultipartFile, DTO 함께 요청하기](https://velog.io/@songs4805/Spring-Controller에서-MultipartFile-Dto를-함께-요청하기)
 - [OKKY — RequestBody와 RequestPart 동시 사용 문제](https://okky.kr/questions/1212782)
 - [seop-official — Spring Boot REST API에서 json dto, multipart 동시처리](https://seop-official.tistory.com/entry/SpringBoot-Rest-API에서-jsondto과-multipart-동시처리)
+
+- [Spring Framework, multipart](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/multipart.html), [OWASP File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html)
+- 파일 업로드: [multipart 개요](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83380), [프로젝트](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83381), [Servlet Part 1](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83382), [Servlet Part 2](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83383), [MultipartFile](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83384), [upload/download 예제](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83385), [정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83386)
 
 ## 관련 문서
 - [[HTTP-Content-Type|HTTP Content-Type]]

@@ -1,7 +1,7 @@
 ---
 tags: [os, process, thread, pcb, fork]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-08-04
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Process Lifecycle", "프로세스 생명주기"]
 ---
@@ -21,7 +21,7 @@ aliases: ["Process Lifecycle", "프로세스 생명주기"]
 | 프로세스 ID (PID) | 프로세스 식별 숫자 |
 | 프로그램 카운터 | 다음 실행될 명령어의 주소. 다른 프로세스 실행 후 돌아왔을 때 이어서 실행하기 위해 필수 |
 | 레지스터 정보 | 실행 시 사용했던 레지스터 값들. 복귀 시 값 복구 용도 |
-| 메모리 정보 | 프로세스의 메모리 위치, 경계 레지스터 값 (메모리 침범 방지) |
+| 메모리 정보 | 주소 공간과 페이지 테이블 같은 메모리 관리 정보 |
 | CPU 스케줄링 정보 | 우선순위, 최종 실행시간, CPU 점유시간 |
 
 ## 프로세스 상태
@@ -64,11 +64,11 @@ aliases: ["Process Lifecycle", "프로세스 생명주기"]
 스레드는 한 주소 공간 안에서 여러 실행 흐름이 자원과 데이터를 공유하도록 한다. 프로세스 간 IPC와 별도 주소 공간 관리에 비해 효율적일 수 있지만 동기화와 장애 격리의 tradeoff가 있다.
 
 ### 쓰레드의 특징
-- 프로세스 안에 존재하며 한 프로세스당 최소 1개 이상
+- 실행 중인 프로세스에는 하나 이상의 실행 스레드가 있으며 종료 과정에서는 실행 가능한 스레드가 남지 않을 수 있다.
 - 같은 프로세스 내 쓰레드들은 주소 공간, 코드, 데이터, 힙과 여러 프로세스 자원을 공유한다.
 - 각 스레드는 스택, 레지스터 상태, 스레드 ID와 스케줄링 상태를 개별 소유한다.
 - 쓰레드 ID와 TCB(Thread Control Block)로 관리
-- 운영체제가 작업을 처리하는 단위는 프로세스 내의 쓰레드
+- 현대 범용 운영체제는 보통 스레드 또는 task를 스케줄링 단위로 삼지만 자료구조와 모델은 구현마다 다르다.
 
 ### 프로세스 vs 쓰레드
 
@@ -105,15 +105,13 @@ aliases: ["Process Lifecycle", "프로세스 생명주기"]
 ## 관련 문서
 - [[Concurrency-and-Process|동시성과 프로세스]]
 - [[Context-Switching|컨텍스트 스위칭과 CPU 스케줄링]]
-
-## 출처
-
-- [Linux execve(2)](https://man7.org/linux/man-pages/man2/execve.2.html)
-- [Linux fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html)
 - [[Virtual-Memory|가상 메모리]]
 
 ## 출처
 
+- 인프런, 감자 강사, [프로그램과 프로세스](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100759), [멀티프로그래밍과 멀티프로세싱](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100760), [PCB](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100761), [프로세스 상태](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100762)
+- 인프런, 감자 강사, [프로세스 생성과 종료](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100764), [쓰레드](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100765), [컴파일과 프로세스](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100824)
+- [Linux execve(2)](https://man7.org/linux/man-pages/man2/execve.2.html)
 - [Linux fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html)
 - [Linux wait(2)](https://man7.org/linux/man-pages/man2/wait.2.html)
 - [Linux exit(3)](https://man7.org/linux/man-pages/man3/exit.3.html)

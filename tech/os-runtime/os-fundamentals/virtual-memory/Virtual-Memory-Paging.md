@@ -1,7 +1,7 @@
 ---
 tags: [os, virtual-memory, paging, segmentation, page-replacement]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-08-04
 category: "OS&런타임(OS&Runtime)"
 aliases: ["가상 메모리와 페이징", "Paging and Segmentation"]
 ---
@@ -57,13 +57,13 @@ aliases: ["가상 메모리와 페이징", "Paging and Segmentation"]
 | 비교 | 세그멘테이션 | 페이징 |
 |------|-------------|--------|
 | 크기 | 가변 (bound 주소 필요) | 고정 (bound 불필요) |
-| 단편화 | 외부 단편화 | 내부 단편화 (심각하지 않음) |
+| 단편화 | 외부 단편화 | 마지막 page/frame과 page 크기 선택에서 내부 단편화 가능 |
 | 논리 구분 | 세그먼트 자체가 논리 영역을 표현 | 페이지 자체에는 의미가 없지만 OS가 mapping과 region으로 코드/데이터/힙 등을 구분 |
 | 공유/권한 | 논리 세그먼트 단위로 표현하기 쉬움 | 현대 MMU에서 페이지 단위 공유와 권한 설정 가능 |
 
 ### 페이지 테이블 크기 문제
 - 프로세스마다 페이지 테이블을 가지므로 프로세스가 많을수록 메모리 사용 증가
-- 페이지 테이블도 물리 메모리의 운영체제 영역에 저장되므로 크기가 크면 사용자 영역 부족
+- 페이지 테이블은 물리 메모리와 커널 회계 자원을 소비한다. 계층형 table은 mapping이 없는 큰 가상 주소 구간의 하위 table을 만들지 않아 비용을 줄인다.
 
 ## 페이지드 세그멘테이션
 
@@ -119,7 +119,7 @@ Demand paging은 가상 페이지를 실제로 접근할 때 page fault를 통�
 ## 페이지 교체 정책
 
 ### Random
-- 무작위 선택. 지역성을 고려하지 않아 자주 사용되는 페이지가 선택될 수 있음. 거의 사용되지 않음
+- 무작위 선택. 구현은 단순하지만 지역성을 반영하지 않아 활성 page를 고를 수 있다.
 
 ### FIFO
 - 메모리에 들어온 지 가장 오래된 페이지를 교체
@@ -182,6 +182,9 @@ Demand paging은 가상 페이지를 실제로 접근할 때 page fault를 통�
 
 ## 출처
 
+- 인프런, 널널한 개발자 강사, [가상 메모리 소개](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128257)
+- 인프런, 감자 강사, [가상메모리 개요](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100834), [세그멘테이션](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100835), [페이징](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100836), [페이지드 세그멘테이션](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100837)
+- 인프런, 감자 강사, [디맨드 페이징](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100838), [페이지 교체정책](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100839), [스레싱과 워킹셋](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100840)
 - [Linux kernel page tables](https://docs.kernel.org/mm/page_tables.html)
 - [Linux kernel page table checks](https://docs.kernel.org/mm/page_table_check.html)
 - [Linux kernel memory management concepts](https://docs.kernel.org/admin-guide/mm/concepts.html)

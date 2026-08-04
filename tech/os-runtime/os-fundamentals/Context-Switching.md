@@ -1,7 +1,7 @@
 ---
 tags: [os, context-switching, cpu-scheduling]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-08-04
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Context Switching", "컨텍스트 스위칭"]
 ---
@@ -37,7 +37,7 @@ I/O 요청과 interrupt는 스케줄러 진입점이 될 수 있지만 실제 co
 |---|---|---|
 | 제어 블록 | 프로세스/task 상태와 주소 공간 전환 | thread/task의 레지스터, 스택 포인터, 스케줄링 상태 전환 |
 | 가상 주소 공간 | 변경 (페이지 테이블 Base 교체) | 공유 (변경 없음) |
-| MMU 재설정 | 필요 | 불필요 |
+| MMU/page table 기준 | 다른 주소 공간이면 전환 | 같은 주소 공간이면 유지 가능 |
 | TLB | 주소 공간 태그가 없으면 무효화 비용. ASID/PCID 지원 시 일부 엔트리 유지 가능 | 보통 같은 주소 공간 엔트리 재사용 가능 |
 | CPU 캐시 | 작업 집합 차이로 miss가 늘 수 있음 | 작업 집합에 따라 캐시 영향 발생 가능 |
 
@@ -75,7 +75,7 @@ I/O 요청과 interrupt는 스케줄러 진입점이 될 수 있지만 실제 co
 - 준비 상태와 대기 상태는 큐 자료구조로 관리
 - **준비 큐**: 프로세스의 우선순위에 따라 여러 큐에 배치. CPU 스케줄러가 적당한 프로세스를 선택하여 실행
 - **대기 큐**: IO 작업 종류에 따라 분류 (HDD 큐, 네트워크 큐 등). IO 완료 인터럽트 발생 시 큐에서 꺼냄
-- 실제로는 프로세스가 아니라 PCB가 큐에 들어감
+- 실제 큐에는 커널이 스케줄링 대상을 표현하는 task, thread 또는 scheduling entity가 연결된다. PCB라는 교재 모델과 구체 자료구조를 동일시하지 않는다.
 
 ## 스케줄링 알고리즘
 
@@ -83,11 +83,11 @@ I/O 요청과 interrupt는 스케줄러 진입점이 될 수 있지만 실제 co
 - 먼저 들어온 프로세스를 먼저 처리
 - 장점: 단순하고 직관적
 - 단점: 실행 시간이 짧은 프로세스가 긴 프로세스 뒤에 대기, IO 작업 시 계속 대기
-- Burst Time에 따라 성능 차이가 크므로 현대 OS에서 잘 쓰이지 않고 일괄처리 시스템에서 사용
+- 비선점 FCFS는 대화형 시스템의 기본 정책으로는 불리하지만 배치 큐 같은 곳에 쓸 수 있다. POSIX/Linux의 실시간 `SCHED_FIFO`는 우선순위와 선점 규칙이 있는 별도 정책이므로 교재의 단순 FCFS와 구분한다.
 
 ### SJF (Shortest Job First)
 - Burst Time이 짧은 프로세스를 먼저 실행
-- 이론적으로 FIFO보다 우수
+- 모든 작업의 실행 시간을 미리 알고 같은 시점에 준비된 비선점 모델에서는 평균 대기 시간을 최소화한다.
 - 문제점:
   1. 프로세스가 얼마나 실행될지 예측하기 어려움
   2. Burst Time이 긴 프로세스는 아주 오랫동안 실행되지 않을 수 있음 (기아 현상)
@@ -132,6 +132,9 @@ I/O 요청과 interrupt는 스케줄러 진입점이 될 수 있지만 실제 co
 
 ## 출처
 
+- 인프런, 감자 강사, [컨텍스트 스위칭](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100763), [CPU스케줄링 개요](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100767), [다중큐](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100768), [스케줄링 목표](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100769)
+- 인프런, 감자 강사, [FIFO](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100770), [SJF](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100771), [RR](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100772), [MLFQ](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100773)
 - [Linux kernel scheduler documentation](https://docs.kernel.org/scheduler/)
+- [Linux sched(7)](https://man7.org/linux/man-pages/man7/sched.7.html)
 - [Linux scheduler monitor semantics](https://docs.kernel.org/trace/rv/monitor_sched.html)
 - [Linux kernel TLB documentation](https://docs.kernel.org/arch/x86/tlb.html)

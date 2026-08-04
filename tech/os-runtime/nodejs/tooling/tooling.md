@@ -11,7 +11,7 @@ Node.js 런타임 내부가 아니라 개발 환경을 다루는 문서 묶음. 
 
 ## 하위 문서
 
-- [[Command-Line|커맨드라인 — 스크립트 실행, --watch, --run, 주요 CLI 옵션]]
+- [[Command-Line|커맨드라인 — 스크립트 실행, --watch, --run, REPL, 환경 변수, npm ci와 npx]]
 - [[Package-Publishing|패키지 배포 — CJS/ESM 진입점 전략, exports 필드]]
 - [[TypeScript-Node|TypeScript in Node.js — 타입 시스템 도입, 실행과 빌드 방식]]
 

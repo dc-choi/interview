@@ -1,169 +1,171 @@
 ---
 tags: [spring, transaction, propagation, isolation, aop]
 status: done
+verified_at: 2026-08-04
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Spring Transactional", "@Transactional", "Transaction Propagation"]
 ---
 
 # Spring `@Transactional`
 
-Spring의 선언적 트랜잭션. AOP 프록시로 감싸 **메서드 진입 시 트랜잭션 시작, 정상 종료 시 커밋, 예외 발생 시 롤백**을 자동 처리. 핵심 옵션은 **Isolation(격리수준)**, **Propagation(전파)**, **ReadOnly**, **Timeout**, **RollbackFor**. 격리수준 이론은 [[Isolation-Level|Isolation Level]] 참조, 이 문서는 Spring 고유 동작과 **Propagation**에 집중.
+Spring transaction 추상화는 업무 단위와 resource별 transaction 제어를 분리한다. 애플리케이션은 `PlatformTransactionManager`라는 공통 계약을 사용하고, JDBC, JPA, JTA 등의 구현체가 실제 begin, commit, rollback을 수행한다.
 
-## AOP 프록시 기반 동작
+## JDBC transaction의 연결 구조
 
-- `@Transactional`이 붙은 빈을 찾아 **CGLIB/JDK Dynamic Proxy** 생성
-- 외부에서 메서드 호출 시 프록시가 가로채 트랜잭션 시작 → 원본 호출 → 종료
-- 종료 시 정상 반환이면 커밋, RuntimeException이면 롤백
-- Connection, 영속성 컨텍스트는 **ThreadLocal**로 전파
+하나의 local JDBC transaction은 한 `Connection`에서 수행된다. Spring의 imperative transaction manager는 transaction synchronization을 통해 현재 execution thread에 resource를 연결하고, `JdbcTemplate`과 `DataSourceUtils`가 그 connection을 재사용하게 한다.
 
-### 자기 호출(self-invocation) 함정
+- transaction manager와 data-access code가 같은 `DataSource`를 사용해야 한다.
+- 별도로 `dataSource.getConnection()`을 호출하면 transaction-bound connection 밖에서 실행될 수 있다.
+- 이 thread-bound 설명은 imperative model의 설명이다. Reactive transaction은 Reactor context를 사용하므로 `ThreadLocal`로 설명하면 안 된다.
 
-같은 객체 안에서 `this.method()`로 호출하면 **프록시를 거치지 않아** 트랜잭션이 걸리지 않는다.
+자세한 JDBC resource 경계는 [[Spring-JDBC-Essentials|Spring JDBC Essentials]]를 참고한다.
+
+## Programmatic 방식
+
+명시적인 흐름 제어가 필요하면 imperative code에는 `TransactionTemplate`, reactive code에는 `TransactionalOperator`를 사용한다. Spring Framework는 일반적인 imperative programmatic flow에 `TransactionTemplate` 사용을 권장한다.
+
+```java
+transactionTemplate.executeWithoutResult(status -> {
+    orderRepository.save(order);
+    paymentRepository.save(payment);
+});
+```
+
+callback 안에서 unchecked exception이 밖으로 전파되면 rollback된다. 업무 조건으로 rollback해야 하는 경우 `status.setRollbackOnly()`를 사용할 수 있지만, 예외와 상태 반환 중 어떤 contract를 쓸지 일관되게 정한다.
+
+## Declarative 방식과 proxy 경계
+
+`@Transactional`은 일반적으로 Spring AOP proxy가 method 호출을 가로채 transaction을 시작하고 종료한다. 정상 반환이면 commit하고, 기본 rollback rule에 해당하는 예외가 밖으로 전파되면 rollback한다.
 
 ```java
 @Service
 class OrderService {
-  public void outer() {
-    this.inner(); // @Transactional 미적용 — 함정
-  }
-  @Transactional
-  public void inner() { ... }
+    @Transactional
+    public void placeOrder(Order order) {
+        orderRepository.save(order);
+        paymentRepository.save(order.payment());
+    }
 }
 ```
 
-해결:
-- 별도 빈으로 분리해서 의존성 주입
-- `AopContext.currentProxy()` (권장 안 함)
-- 구조 변경이 정답
+Proxy mode에서는 같은 객체 안의 `this.inner()` 호출이 proxy를 통과하지 않으므로 `inner()`의 `@Transactional` metadata가 적용되지 않는다. transaction boundary를 별도 bean의 public use-case method로 옮기는 방식이 가장 명확하다. AspectJ mode를 명시적으로 구성한 경우에는 weaving 방식이므로 proxy self-invocation 제약과 다르다.
 
-## 주요 옵션
+Spring Framework 6.0 이후 class-based proxy는 `protected`와 package-visible method도 기본적으로 transaction 대상으로 만들 수 있다. Interface-based proxy의 transactional method는 proxied interface에 선언된 `public` method여야 한다. Proxy 종류에 관계없이 외부에서 proxy를 통과하는 호출만 intercept된다는 경계는 같다.
 
-### `isolation`
+Concrete class의 method에 annotation을 두는 것이 가장 이식성이 높다. Class-level 설정은 해당 class의 기본값이고 method-level metadata가 더 구체적인 정책을 제공한다. Proxy가 완전히 초기화되기 전인 `@PostConstruct` 안에서는 transactional method 호출에 의존하지 않는다.
 
-DB 격리수준을 트랜잭션별로 지정. 기본은 `DEFAULT`(DB 설정 따름).
-- `READ_UNCOMMITTED`, `READ_COMMITTED`, `REPEATABLE_READ`, `SERIALIZABLE`
-- 자세한 내용: [[Isolation-Level|Isolation Level]]
+## 기본 rollback rule
 
-### `readOnly`
+- `RuntimeException`과 `Error`는 기본적으로 rollback한다.
+- checked exception은 기본적으로 commit 대상이다.
+- `rollbackFor`, `noRollbackFor`와 이름 pattern rule로 정책을 바꿀 수 있다.
+- 예외를 잡아 정상 반환하면 interceptor는 그 예외를 볼 수 없다. 이미 참여 transaction이 rollback-only로 표시됐다면 바깥 commit 시 `UnexpectedRollbackException`이 발생할 수 있다.
 
-`true`로 설정하면 **쓰기 플러시를 생략**, Hibernate는 스냅샷 비교를 생략해 메모리, CPU 절약. 성능 최적화용. 실제로 DB에 "읽기 전용" 세마포어를 거는 건 아니므로 **무결성을 보장하는 수단은 아님**.
+기술 예외를 업무 예외로 바꿀 때는 cause를 보존하고, transaction 정책과 API contract를 함께 검토한다.
 
-### `timeout`
+## 주요 속성
 
-초 단위. 지정 시간 내 완료 못 하면 롤백. 지연 테일 제어에 필수.
+| 속성 | 의미 | 주의점 |
+|---|---|---|
+| `propagation` | 기존 transaction과 결합하는 방식 | 물리 transaction과 논리 scope를 구분한다 |
+| `isolation` | DB isolation level 요청 | driver와 DB가 지원하는지 확인한다 |
+| `readOnly` | 읽기 전용 의도를 전달하는 hint | 쓰기 금지를 보장하는 보안 경계가 아니다 |
+| `timeout` | transaction 완료 제한 시간 | 실제 적용 범위는 manager와 resource에 따라 다르다 |
+| `rollbackFor` | 추가 rollback exception | 너무 넓은 rule은 정상 복구 흐름도 rollback할 수 있다 |
+| `transactionManager` | 사용할 manager 선택 | 여러 DB 또는 manager가 있을 때 명시한다 |
 
-### `rollbackFor` / `noRollbackFor`
+`readOnly = true`는 JDBC connection이나 ORM session에 최적화 hint를 전달할 수 있다. 실제 쓰기 차단과 최적화 수준은 transaction manager, persistence provider, driver와 DB에 따라 달라지므로 데이터 무결성 장치로 사용하지 않는다.
 
-- **기본 롤백**: `RuntimeException`, `Error`
-- **기본 커밋**: `Checked Exception` — 이걸 모르면 "왜 롤백 안 됨?"을 만남
-- `rollbackFor = Exception.class`로 Checked도 롤백되게 할 수 있음
+## Propagation
 
-## Propagation (전파 옵션)
+| 전파 | 기존 transaction이 있을 때 | 없을 때 |
+|---|---|---|
+| `REQUIRED` | 같은 물리 transaction에 참여 | 새 transaction 시작 |
+| `REQUIRES_NEW` | 기존 것을 suspend하고 독립 transaction 시작 | 새 transaction 시작 |
+| `SUPPORTS` | 참여 | transaction 없이 실행 |
+| `MANDATORY` | 참여 | 예외 |
+| `NOT_SUPPORTED` | suspend 후 transaction 없이 실행 | transaction 없이 실행 |
+| `NEVER` | 예외 | transaction 없이 실행 |
+| `NESTED` | 지원되는 manager에서 savepoint 사용 | 새 transaction 시작 |
 
-트랜잭션이 **기존 트랜잭션 안에서 호출될 때** 어떻게 처리할지 결정. 가장 Spring다운 부분이며 실무 이슈의 단골.
+`REQUIRED`의 각 method는 논리 scope가 분리돼도 같은 물리 transaction에 참여할 수 있다. 안쪽 scope가 rollback-only로 표시되면 바깥 scope가 정상 반환을 시도해도 전체 물리 transaction은 commit할 수 없다.
 
-### 기본: `REQUIRED`
+`REQUIRES_NEW`는 별도 물리 transaction이므로 JDBC에서는 추가 connection을 요구한다. 바깥 transaction이 connection을 보유한 채 안쪽 transaction이 pool을 기다릴 수 있으므로 호출 concurrency와 pool budget을 함께 계산한다. 외부 HTTP 호출을 독립 DB transaction으로 바꾸는 기능은 아니다.
 
-- 기존 트랜잭션 있으면 **참여**, 없으면 새로 시작
-- 99% 케이스의 기본값
-- 호출된 메서드에서 예외가 나면 **전체가 롤백 마킹** → 호출자가 삼켜도 커밋 실패
+`NESTED`는 savepoint 기반 부분 rollback이며 모든 transaction manager와 resource에서 같은 방식으로 지원되지 않는다. JPA transaction에서 자동으로 동일하게 동작한다고 가정하지 않는다.
 
-### `REQUIRES_NEW`
+## Spring Boot 4.1 자동 구성
 
-- **항상 새 트랜잭션을 시작**. 기존은 일시 중단(suspend)
-- 독립된 Connection, 영속성 컨텍스트
-- 호출된 메서드가 롤백되어도 기존 트랜잭션은 살아남음
-- **용도**: 감사 로그, 알림, 외부 시스템 호출처럼 **실패해도 본 작업은 커밋**되어야 할 때
+Spring Boot 4.1은 classpath, 단일 후보 `DataSource`, 기존 bean 여부 같은 조건이 맞으면 `JdbcTransactionManager`를 자동 구성한다. 사용자 정의 `TransactionManager`가 있거나 여러 resource가 있으면 조건부 자동 구성이 물러나거나 명시적 선택이 필요하다. 자동 구성은 transaction boundary 자체를 만들어 주지 않으며, `@Transactional` 또는 programmatic API로 경계를 선언해야 한다.
 
-```java
-@Transactional
-public void placeOrder() {
-  repo.save(order);
-  auditService.logAudit(); // REQUIRES_NEW로 실패해도 주문은 성공
-}
-```
+## 경계 설계
 
-### `SUPPORTS`
-
-- 기존 트랜잭션 있으면 참여, 없으면 **비트랜잭션**으로 실행
-- 조회 메서드에 간혹 쓰지만 대부분 `REQUIRED` 유지가 안전
-
-### `MANDATORY`
-
-- 기존 트랜잭션 **반드시** 있어야 함, 없으면 예외
-- 내부 헬퍼 메서드가 단독 호출되면 안 되는 경우에 사용
-
-### `NEVER`
-
-- 트랜잭션 있으면 예외. 거의 안 씀
-
-### `NOT_SUPPORTED`
-
-- 기존 트랜잭션 suspend, 비트랜잭션으로 실행
-- JPA와 함께 쓰면 영속성 컨텍스트 동작에 혼란 — 주의
-
-### `NESTED`
-
-- 기존 트랜잭션 안에 **savepoint**를 만들어 부분 롤백 가능
-- 중첩 실패 시 savepoint까지만 롤백, 상위는 유지
-- DB 드라이버가 savepoint를 지원해야 함
-- JPA와의 호환성 제한적 — 실무에서는 `REQUIRES_NEW`가 더 흔한 대안
-
-## Propagation 선택 가이드
-
-| 시나리오 | 추천 |
-|---|---|
-| 일반 서비스 메서드 | `REQUIRED` (기본) |
-| 감사, 로그, 알림(실패해도 본 작업 성공) | `REQUIRES_NEW` |
-| 트랜잭션 필수 내부 메서드 | `MANDATORY` |
-| 조건부 부분 롤백(DB가 savepoint 지원) | `NESTED` |
-
-## ReadOnly 트랜잭션 활용
-
-- 조회 전용 서비스 메서드에 `@Transactional(readOnly = true)` 권장
-- Hibernate가 **Dirty Checking 스킵**, flush 생략 → 성능 향상
-- **JPA 없이 순수 JDBC**라면 체감 차이 적음
-- replica DB 라우팅에도 활용(AbstractRoutingDataSource) — readOnly 플래그 기반 라우팅
-
-## 트랜잭션 경계 설계 원칙
-
-- **서비스 레이어**에 두기 — 컨트롤러, 리포지토리 레이어에 두면 경계가 흩어짐
-- **짧게 유지** — 트랜잭션 안에서 외부 API 호출 금지. Connection을 오래 쥐어 풀 고갈
-- **읽기 전용으로 시작 → 쓰기 필요하면 별도 메서드** — 모니터링, 라우팅에 유리
-- **`@Transactional` 중첩**을 남발하지 말고 **경계 메서드**에만
-- **예외 전략 정렬** — 커스텀 RuntimeException 계열로 도메인 예외 설계
-
-## 분산 트랜잭션 주의
-
-Spring `@Transactional`은 **단일 DB 트랜잭션**만 보장. 여러 DB, 메시지 큐, 외부 API에 걸친 작업의 원자성은 별도 전략 필요.
-
-- **Transactional Outbox** — DB와 이벤트 발행을 한 트랜잭션에 묶음 → [[Transactional-Outbox]]
-- **Saga** — 단계별 보상 트랜잭션
-- **2PC** — 이론적으론 가능하지만 성능, 가용성 비용으로 기피
-
-## 흔한 실수
-
-- **Checked Exception은 기본 롤백 안 됨** — `rollbackFor` 지정 누락
-- **자기 호출로 프록시 우회** → 트랜잭션 미적용
-- **트랜잭션 안에서 외부 HTTP 호출** → 타임아웃 지연이 DB Connection을 점유
-- **`@Transactional(readOnly=true)` 안에서 쓰기 시도** → Hibernate 경고, JDBC에선 통과 후 DB에서 오류
-- **너무 큰 메서드를 통째로 트랜잭션화** → Lock 경합, 롤백 비용↑
-- **`REQUIRES_NEW` 남발** — 별도 Connection이 생기므로 풀 사용량 2배 가능
-- **예외를 try-catch로 삼켜놓고 커밋 기대** → 이미 롤백 마킹되어 커밋 실패
+- 여러 repository 변경이 하나의 업무 성공 또는 실패를 이루는 service use case에 경계를 둔다.
+- transaction 안에서 원격 API, 긴 파일 I/O, 사용자 대기를 수행하지 않는다.
+- database transaction은 broker와 외부 API까지 원자적으로 묶지 않는다. 필요하면 [[Transactional-Outbox|Transactional Outbox]]나 보상 전략을 사용한다.
+- `REQUIRES_NEW`를 실패 은폐 수단으로 쓰지 않는다. 독립 commit이 업무 불변식에 맞는지 먼저 판단한다.
+- integration test에서 실제 transaction manager, propagation, rollback rule과 DB 동작을 검증한다.
 
 ## 면접 체크포인트
 
-- `@Transactional`이 AOP 프록시로 동작하며 **자기 호출 시 미적용**되는 이유
-- 기본 롤백은 `RuntimeException`뿐이고 **Checked Exception은 커밋**되는 점
-- `REQUIRED` vs `REQUIRES_NEW`의 차이와 실무 선택
-- `readOnly = true`가 주는 최적화(Dirty Checking 스킵)
-- 트랜잭션 안에서 외부 API 호출이 위험한 이유
-- 분산 환경에서 `@Transactional`의 한계와 Outbox/Saga
+- `PlatformTransactionManager`가 업무 code와 resource transaction을 어떻게 분리하는지 설명한다.
+- proxy 기반 `@Transactional`에서 self-invocation이 적용되지 않는 이유를 설명한다.
+- `REQUIRED`, `REQUIRES_NEW`, `NESTED`의 논리 scope, connection, rollback 차이를 말한다.
+- checked exception의 기본 commit rule과 명시적 rollback rule을 설명한다.
+- imperative thread-bound synchronization과 reactive context를 구분한다.
+
+## 출처
+
+- [Spring Framework, Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction.html)
+- [Spring Framework, Programmatic Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction/programmatic.html)
+- [Spring Framework, Declarative Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative.html)
+- [Spring Framework, Transaction Propagation](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/tx-propagation.html)
+- [Spring Boot 4.1 API, DataSourceTransactionManagerAutoConfiguration](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/jdbc/autoconfigure/DataSourceTransactionManagerAutoConfiguration.html)
+- 김영한 강사, [문제점들](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110088)
+- 김영한 강사, [트랜잭션 추상화](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110089)
+- 김영한 강사, [트랜잭션 동기화](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110090)
+- 김영한 강사, [트랜잭션 문제 해결, 트랜잭션 매니저 1](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110091)
+- 김영한 강사, [트랜잭션 문제 해결, 트랜잭션 매니저 2](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110092)
+- 김영한 강사, [트랜잭션 문제 해결, 트랜잭션 템플릿](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110093)
+- 김영한 강사, [트랜잭션 문제 해결, 트랜잭션 AOP 이해](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110094)
+- 김영한 강사, [트랜잭션 문제 해결, 트랜잭션 AOP 적용](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110095)
+- 김영한 강사, [트랜잭션 문제 해결, 트랜잭션 AOP 정리](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110096)
+- 김영한 강사, [스프링 부트의 자동 리소스 등록](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110097)
+- 김영한 강사, [정리](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110098)
+- 김영한 강사, [스프링 트랜잭션 소개](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114678)
+- 김영한 강사, [프로젝트 생성](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114679)
+- 김영한 강사, [트랜잭션 적용 확인](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114680)
+- 김영한 강사, [트랜잭션 적용 위치](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114681)
+- 김영한 강사, [트랜잭션 AOP 주의 사항, 프록시 내부 호출 1](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114682)
+- 김영한 강사, [트랜잭션 AOP 주의 사항, 프록시 내부 호출 2](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114683)
+- 김영한 강사, [트랜잭션 AOP 주의 사항, 초기화 시점](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114684)
+- 김영한 강사, [트랜잭션 옵션 소개](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114685)
+- 김영한 강사, [예외와 트랜잭션 커밋, 롤백, 기본](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114686)
+- 김영한 강사, [예외와 트랜잭션 커밋, 롤백, 활용](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114687)
+- 김영한 강사, [스프링 트랜잭션 이해 정리](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114688)
+- 김영한 강사, [스프링 트랜잭션 전파 1, 커밋과 롤백](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114690)
+- 김영한 강사, [스프링 트랜잭션 전파 2, 트랜잭션 두 번 사용](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114691)
+- 김영한 강사, [스프링 트랜잭션 전파 3, 전파 기본](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114692)
+- 김영한 강사, [스프링 트랜잭션 전파 4, 전파 예제](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114693)
+- 김영한 강사, [스프링 트랜잭션 전파 5, 외부 롤백](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114694)
+- 김영한 강사, [스프링 트랜잭션 전파 6, 내부 롤백](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114695)
+- 김영한 강사, [스프링 트랜잭션 전파 7, REQUIRES_NEW](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114696)
+- 김영한 강사, [스프링 트랜잭션 전파 8, 다양한 전파 옵션](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114697)
+- 김영한 강사, [스프링 트랜잭션 전파 기본 정리](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114698)
+- 김영한 강사, [트랜잭션 전파 활용 1, 예제 프로젝트 시작](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114700)
+- 김영한 강사, [트랜잭션 전파 활용 2, 커밋과 롤백](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114701)
+- 김영한 강사, [트랜잭션 전파 활용 3, 단일 트랜잭션](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114702)
+- 김영한 강사, [트랜잭션 전파 활용 4, 전파 커밋](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114703)
+- 김영한 강사, [트랜잭션 전파 활용 5, 전파 롤백](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114704)
+- 김영한 강사, [트랜잭션 전파 활용 6, 복구 REQUIRED](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114705)
+- 김영한 강사, [트랜잭션 전파 활용 7, 복구 REQUIRES_NEW](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114706)
+- 김영한 강사, [트랜잭션 전파 활용 정리](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114707)
 
 ## 관련 문서
+
 - [[Spring|Spring 개요 (IoC, DI, AOP)]]
+- [[Spring-JDBC-Essentials|Spring JDBC Essentials]]
 - [[Isolation-Level|Isolation Level]]
-- [[JPA-Persistence-Context|JPA 영속성 컨텍스트]]
-- [[Transactional-Outbox|Transactional Outbox 패턴]]
 - [[Transactions|ACID 트랜잭션]]
-- [[Spring-Exception-Handling|Spring 예외 처리 전략]]
+- [[Connection-Pool|DB 커넥션 풀]]
+- [[Transactional-Outbox|Transactional Outbox 패턴]]
