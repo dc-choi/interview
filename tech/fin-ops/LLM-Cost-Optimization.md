@@ -69,3 +69,4 @@ Bedrock 기반 배치 워크로드에서 가시성 대시보드 구축, 92% 파�
 - [[AWS-Pricing|AWS 요금 구조 (종량 과금 차원)]]
 - [[Cost-Anomaly|비용 이상 탐지 (베이스라인 모니터링)]]
 - [[LLM-Model-Tiers|LLM 모델 티어 선택, 라우팅 (다운사이즈 레버)]]
+- [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리 (활동량과 비용/품질 분리)]]

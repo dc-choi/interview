@@ -7,7 +7,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 
 # AI 엔지니어링 실천 도구
 
-하네스, AI 네이티브 시스템/조직, 컨텍스트, 에이전트 스펙/아키텍처, RAG, MCP — AI를 프로덕션에서 제어하는 도구. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
+하네스, AI 네이티브 시스템/조직, 컨텍스트, 에이전트 스펙/아키텍처, 사용량 관측, RAG, MCP — AI를 프로덕션에서 제어하는 도구. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
 
 ## 목차
 - [x] [[Harness-Engineering|하네스 엔지니어링 (Constrain→Inform→Verify→Correct→HITL, 프롬프트→컨텍스트→하네스 진화, 멀티 에이전트 오케스트레이션)]]
@@ -17,6 +17,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 - [x] [[AI-Native-Org|AI 네이티브 조직 (팀챗 위 전사 AI 실행 플랫폼, 상태머신+HITL, K8s Job 워커 격리, MCP 프록시, 4계층 메모리, 복구 우선, 조직 6요소)]]
 - [x] [[Context-Hub|컨텍스트 (context/ 서브폴더) — 수요 측 컨텍스트 엔지니어링, 도구 출력 필터링, 공급 측 Context Provider 플랫폼]]
 - [x] [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (분업, Lazy Load, Defense in Depth, Metric Registry, Eval, 고가용성)]]
+- [x] [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리 (공급자별 transcript 정규화, replay-safe 집계, 활동량과 비용/품질 분리, 개인정보와 보존 경계)]]
 - [x] [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링 (구조 기반 청킹, 하이브리드 BM25+벡터, 쿼리 재구성, 계층적 RAG, 엔티티 추출 조회)]]
 - [x] [[Codex-CLI|Codex CLI (슬래시 명령 카탈로그 — 작업평가 /plan, /review, /diff, 스킬 시스템/시스템 스킬/추천 스킬, AGENTS.md 계층, codex exec 비대화형, App vs CLI)]]
 - [x] [[MCP|MCP (Model Context Protocol — Host/Client/Server, Tools/Resources/Prompts, tool-use N×M→N+M, 권한 통제)]]

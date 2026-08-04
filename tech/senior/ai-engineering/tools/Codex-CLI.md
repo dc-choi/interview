@@ -124,3 +124,4 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 - [[Claude-Code-Fundamentals|Claude Code 기초 (CLAUDE.md, 권한 모드 — 대응 개념)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (AGENTS.md = 권장 계층)]]
 - [[Claude-Code-Config-Permissions|Claude Code 설정과 권한 (승인 정책 대응)]]
+- [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리 (세션 기록 집계와 개인정보 경계)]]
