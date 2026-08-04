@@ -25,6 +25,7 @@ AOP를 사용하면 비즈니스 로직과 공통 관심사를 분리할 수 있
 - [[Spring-MVC|Spring MVC 웹 계층 (서블릿 컨테이너, 요청 처리 흐름, 빈출 애노테이션, 예외 처리, Multipart + JSON)]]
 - [[Spring-Transactional|@Transactional (Propagation, Isolation, readOnly, 자기 호출 함정)]]
 - [[Spring-Boot-Essentials|Spring Boot Essentials (AutoConfiguration, Starter, Embedded, Actuator)]]
+- [[Java-Spring-Stack-Migration|Java와 Spring 스택 마이그레이션 (JDK, Boot/Framework, Jakarta/Jackson 호환 그래프, 동작 검증, Native Image와 AI 분리)]]
 - [[Spring-Data-JPA-Essentials|Spring Data JPA (JPA vs Hibernate vs SDJ, ddl-auto, ID 생성, isNew/Persistable)]]
 - [[Spring-Authorization-Server|Spring Authorization Server (OAuth2 인가 서버, RegisteredClient, 필터 체인 분리, JWKS, consent)]]
 - [[Spring-Batch-Essentials|Spring Batch (Job/Step/Chunk, Job Parameter와 멱등성, Reader 성능, JDBC 배치, Jenkins 운영, Scheduler vs Quartz)]]
