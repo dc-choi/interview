@@ -9,6 +9,18 @@ aliases: ["시스템 설계 연습 주제", "System Design Practice Topics"]
 
 라이브 코딩, 시스템 설계 면접 대비 연습 풀. 각 주제는 [[Live-Coding-Process|5단계 프로세스]](명확화 → 제약 → 접근 → 구현 → 개선)를 동일하게 적용한다.
 
+## 회차별 산출물
+
+주제만 바꿔 같은 컴포넌트를 그리지 않도록, 매 연습에서 다음 다섯 가지를 남긴다. 기술 판단의 상세 기준은 [[System-Design-Quality-Attribute-Decision|시스템 설계 품질 속성과 의사결정 증거]]를 따른다.
+
+1. 핵심 사용자 흐름 하나와 우선 품질 속성 하나
+2. 워크로드 가정, 측정 기준과 이번 설계의 non-goal
+3. 기준선과 예상 병목, 비교한 대안과 선택 이유
+4. 같은 조건에서의 검증 결과, 실패 경계와 축소 방식
+5. 목표와 제약 → 병목 → 선택과 대가 → 결과 → 남은 한계의 3분 설명
+
+실측하지 않은 수치는 가정이라고 말한다. 캐시, 큐, 샤딩과 서비스 분리는 목표를 만족시키는 근거가 있을 때만 추가한다.
+
 ## Level 1 — 기본 (30~40분)
 
 ### 1. 추천 피드 시스템
@@ -126,3 +138,7 @@ aliases: ["시스템 설계 연습 주제", "System Design Practice Topics"]
 - [[Live-Coding-Process|라이브 코딩 면접 프로세스 5단계]]
 - [[Interview-Prep-Template|면접 준비 템플릿]]
 - [[Common-Interview-Questions-Tech-Scale|단골 질문 - 규모, 성능]]
+
+## 출처
+
+- 성장랜턴, 시스템 디자인 첫걸음: 면접에서 돋보이는 백엔드 아키텍처 설계하기, [321520 면접에서 돋보이는 프로젝트를 하는 방법](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=321520)
