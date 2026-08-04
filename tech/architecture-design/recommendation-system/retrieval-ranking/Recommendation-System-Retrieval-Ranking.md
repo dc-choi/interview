@@ -19,3 +19,7 @@ aliases: ["추천 후보와 랭킹", "Recommendation Retrieval and Ranking"]
 ## 상위 문서
 
 - [[Recommendation-System-Architecture|추천 시스템 지식 지도]]
+
+## 관련 문서
+
+- [[Vector-Similarity-Search|벡터 유사도 검색 (exact vs ANN, embedding 공간과 소규모 item-to-item batch)]]

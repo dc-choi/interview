@@ -34,6 +34,14 @@ Netflix, YouTube, Spotify는 모두 미디어를 추천하지만 최적화 단�
 
 같은 작품이라도 Continue Watching, 비슷한 작품, 특정 장르 row에서 의미가 다르다. 후보 source와 row 목적을 보존하지 않고 하나의 global score로만 합치면 화면이 중복되거나 탐색 의도가 사라질 수 있다.
 
+### 제품 설명에서 확인되는 입력과 초기화
+
+Netflix의 현재 사용자 도움말은 추천 입력으로 회원의 상호작용, 시청 기록과 평가, 취향이 비슷한 다른 회원의 행동, 작품 정보, 시간대, 언어, 기기와 시청 시간을 설명한다. 연령과 성별 같은 인구통계 정보는 추천을 결정하는 절차에 사용하지 않는다고 명시하지만, 이를 Netflix의 모든 데이터 수집 범위에 대한 주장으로 확대하면 안 된다.
+
+새 프로필에서는 좋아하는 작품을 선택해 초기 추천을 만들 수 있다. 선택을 건너뛰면 인기 작품을 출발점으로 삼고, 이후 실제 이용 기록이 초기 선택을 대체하며 최근 행동에 더 큰 가중치를 둔다. 홈 화면 개인화는 row 선택, row 안의 작품 선택과 작품 순서 세 층에서 일어난다.
+
+이는 사용자가 이해할 수 있도록 공개한 제품 수준의 설명이다. 공개 feature schema, 모델 topology나 정확한 가중치로 해석하지 않는다.
+
 ### 계산 시점의 분리
 
 2013년 공개 아키텍처는 계산을 세 경로로 구분한다.
@@ -95,6 +103,8 @@ Positive example의 weight를 관측 watch time으로 주는 weighted logistic r
 ### 평가와 근거 경계
 
 Offline holdout은 model iteration에 쓰고 최종 효과는 live A/B로 확인한다. Click만 최적화하면 짧거나 낚시성인 video가 유리할 수 있어 당시 Home ranker는 watch time을 더 직접적인 engagement 신호로 사용했다.
+
+2012년 YouTube 공식 글은 discovery의 중심을 view와 click에서 session watch time으로 옮긴 변화를 설명했다. 현재 공식 도움말들은 appeal, engagement, satisfaction과 장기 viewer satisfaction을 설명한다. 따라서 watch time을 영구적인 단일 목표로 보기보다 추천 목적이 확장된 역사적 단계로 읽어야 한다. 2020년 국내 기사도 당시 watch time 중심 전환을 소개하지만 현재 동작의 근거는 최신 공식 설명을 우선한다.
 
 이 논문은 2016년 mobile Home 사례다. 현재 YouTube Home, Watch Next, Search와 Shorts가 동일한 후보 수, feature, objective를 쓴다고 일반화할 수 없고, 현재 YouTube가 watch time 하나만 최적화한다는 근거도 아니다.
 
@@ -160,9 +170,14 @@ OTT에 적용할 때 법적, 연령과 안전 제약은 모든 후보 경로에�
 - [The Netflix Recommender System: Algorithms, Business Value, and Innovation - ACM](https://doi.org/10.1145/2843948)
 - [System Architectures for Personalization and Recommendation - Netflix Technology Blog](https://netflixtechblog.com/system-architectures-for-personalization-and-recommendation-e081aa94b5d8)
 - [Foundation Model for Personalized Recommendation - Netflix Technology Blog](https://netflixtechblog.com/foundation-model-for-personalized-recommendation-1a0bd8e02d39)
+- [Netflix 추천 시스템의 작동 방식 - Netflix 고객 센터](https://help.netflix.com/ko/node/100639)
 - [Deep Neural Networks for YouTube Recommendations - Google Research](https://research.google/pubs/deep-neural-networks-for-youtube-recommendations/)
 - [Deep Neural Networks for YouTube Recommendations - ACM](https://doi.org/10.1145/2959100.2959190)
 - [Recommending What Video to Watch Next: A Multitask Ranking System - Google Research](https://research.google/pubs/recommending-what-video-to-watch-next-a-multitask-ranking-system/)
+- [YouTube Now: Why We Focus on Watch Time - YouTube Blog](https://blog.youtube/news-and-events/youtube-now-why-we-focus-on-watch-time/)
+- [YouTube 추천 시스템이 콘텐츠를 평가하는 방식 - YouTube 고객 센터](https://support.google.com/youtube/answer/16533387?hl=en-GB)
+- [YouTube 검색 및 탐색 시스템이 동영상을 평가하는 방식 - YouTube 고객 센터](https://support.google.com/youtube/answer/16559650?hl=en)
+- [유튜브, 시청시간 긴 영상 우선 노출 - 전자신문, 2020년 역사적 개요](https://www.etnews.com/20201005000062)
 - [Contextual and Sequential User Embeddings for Music Recommendation - ACM](https://doi.org/10.1145/3383313.3412248)
 - [Contextual and Sequential User Embeddings for Music Recommendation - Spotify Research](https://research.atspotify.com/2021/04/contextual-and-sequential-user-embeddings-for-music-recommendation)
 - [Exploiting Sequential Music Preferences via Optimisation-Based Sequencing - Spotify Research](https://research.atspotify.com/2023/10/exploiting-sequential-music-preferences-via-optimisation-based-sequencing)
