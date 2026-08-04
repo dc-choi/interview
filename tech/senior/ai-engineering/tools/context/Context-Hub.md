@@ -12,4 +12,4 @@ aliases: ["컨텍스트", "Context Engineering Hub", "컨텍스트 허브"]
 ## 목차
 - [x] [[Context-Engineering|컨텍스트 엔지니어링 (수요 측 — Context Rot, Write/Select/Compress/Isolate, CLAUDE.md 200줄, Hook vs Advisory, 모델 세대와 지시 밀도)]]
 - [x] [[Tool-Output-Filtering|도구 출력 필터링 (토큰을 먹는 건 프롬프트가 아니라 도구 출력, 사전 필터링 > 사후 요약, 상태 기반 컨텍스트, 탐색 범위 제한)]]
-- [x] [[Agentic-Context-Platform|Context Provider / 에이전트 컨텍스트 플랫폼 (공급 측 — 자동 수집/표준화/연결/최신성, 사람+AI 공용 지식 인프라)]]
+- [x] [[Agentic-Context-Platform|에이전트 컨텍스트 플랫폼 (출처별 의미 단위, provenance, typed evidence, 충돌과 불확실성 상태)]]

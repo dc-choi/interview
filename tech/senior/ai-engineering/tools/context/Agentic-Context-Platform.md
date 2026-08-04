@@ -1,109 +1,184 @@
 ---
-tags: [senior, ai, agent, context, platform]
+tags: [senior, ai, agent, context, platform, provenance]
 status: done
 category: "Senior - AI 엔지니어링"
 aliases: ["Agentic Context Platform", "Context Provider", "컨텍스트 프로바이더", "에이전트 컨텍스트 플랫폼"]
 ---
 
-# Context Provider / 에이전트 컨텍스트 플랫폼 (Agentic Context Platform)
+# 에이전트 컨텍스트 플랫폼(Agentic Context Platform)
 
 ## 정의
 
-조직에 흩어진 자산(데이터, API, 서빙 레이어, 내부 시스템 구조와 상태)을 자동으로 수집, 표준화, 연결해 **AI 에이전트가 업무를 이해하는 데 필요한 맥락을 공급하는 기반 시스템**. 프롬프트에 정보를 붙이는 수준을 넘어, 업무 자산을 구조화하고 지속적으로 최신화하는 *공급 측(supply-side) 인프라*다. 에이전트에게 "우리 팀이 실제로 일하는 방식"을 알려주는 연결 장치라고 볼 수 있다.
+조직의 문서, 대화, 코드와 운영 자산을 수집해 AI 에이전트가 근거 있는 업무 판단에 사용할 수 있는 컨텍스트로 공급하는 계층이다. 단순 검색 결과가 아니라 원문 위치, 변경 시점, 충돌과 불확실성까지 함께 제공해야 한다.
 
-## 왜 필요한가: 에이전트가 엉뚱한 답을 하는 이유
+좋은 검색 결과와 신뢰할 수 있는 컨텍스트는 다르다. 검색 관련성이 높아도 오래됐거나, 비공식 복사본이거나, 다른 근거와 충돌할 수 있다. 따라서 플랫폼은 retrieval과 trust 판단을 분리한다.
 
-에이전트가 틀린 답을 내는 건 모델 성능만의 문제가 아니다. 실제 업무 맥락(팀 데이터, 서비스 구조, 서빙 방식, 운영 지식)을 충분히 받지 못하면 그럴듯하지만 엉뚱한 답이 나온다. 회사 코드베이스도 문서도 안 주고 신입에게 "장애 원인 찾아줘"라고 시키는 것과 같다.
+## Context Engineering과의 경계
 
-→ 모델을 더 좋은 걸로 바꾸기 전에 **맥락이 전달되는 통로**를 먼저 만들어야 한다. 좋은 모델 선택만으로는 부족하다.
-
-## Context Engineering과의 구분 (핵심)
-
-두 개념은 같은 "컨텍스트"를 다루지만 층위가 다르다.
-
-| 구분 | Context Engineering | Context Provider (이 문서) |
+| 구분 | Context Engineering | Context Platform |
 |---|---|---|
-| 관점 | **수요 측** — 컨텍스트 윈도우에 *무엇을 넣을지* | **공급 측** — 조직 자산을 *어떻게 모아 공급할지* |
-| 단위 | 한 세션, 한 프롬프트 | 조직, 팀 단위 플랫폼 |
-| 핵심 문제 | Context Rot, 토큰 예산 | 자산 분산, 비표준, 최신성 |
-| 산출물 | CLAUDE.md, RAG 청크, 요약본 | 자동 수집 파이프라인, 표준 스키마, 카탈로그 |
+| 관점 | 현재 작업에 무엇을 넣을지 | 조직 지식을 어떻게 공급할지 |
+| 범위 | 세션과 컨텍스트 윈도우 | 팀과 조직의 지식 기반 |
+| 핵심 제약 | 토큰 예산, Context Rot | 출처, 최신성, 충돌, 누락 |
+| 산출물 | 선택, 압축, 격리된 작업 컨텍스트 | 검증 가능한 컨텍스트 단위와 관계 |
 
-→ Provider가 *신뢰할 수 있는 맥락 풀*을 만들면, Engineering이 그중 *필요한 최소치*를 골라 윈도우에 넣는다. 둘은 상하 관계로 보완된다. → [[Context-Engineering]]
+플랫폼이 신뢰 가능한 후보 풀을 만들고, [[Context-Engineering]]이 현재 작업에 필요한 최소 근거를 선택한다.
 
-## 공급하는 컨텍스트의 종류
+## 품질을 한 점수로 합치지 않는다
 
-단순 문서가 아니라 업무에 필요한 자산 전반:
-
-- **데이터 자산** — 테이블, 컬럼 정의, 지표 산식, 데이터 출처와 계보(lineage)
-- **API / 인터페이스** — 엔드포인트, 스키마, 호출 규약
-- **서빙 레이어** — 어떤 요청이 어떤 서빙 경로를 타는지
-- **내부 시스템의 구조와 상태** — 서비스 의존 관계, 운영 현황, 장애 대응 기록
-
-## 핵심 구성 요소
-
-정보를 "모으는 것"보다 "쓸 수 있게 만드는 것"이 본질이다. 자산은 흩어져 있고, 이름이 제각각이며, 최신이 아닐 수 있다. 네 가지가 함께 설계돼야 에이전트가 신뢰할 답을 낸다.
-
-| 요소 | 해결하는 문제 | 하는 일 |
+| 축 | 확인할 질문 | 실패 예시 |
 |---|---|---|
-| **자동 수집** | 자산 분산, 수동 등록 한계 | 데이터, 서빙 레이어 등에서 자산을 자동 발견, 적재 |
-| **표준화** | 이름, 형식 제각각 | 명칭, 스키마를 통일된 형태로 정규화 |
-| **연결 관계 파악** | 자산 간 관계 단절 | "이 데이터는 어디서 오나", "이 API는 어떤 경로를 타나"를 그래프로 연결 |
-| **최신성 유지** | 오래된 정보로 오답 | 변경을 추적해 stale 자산을 갱신, 표시 |
+| Granularity | 질문에 맞는 의미 단위인가 | 문서 전체를 한 청크로 저장 |
+| Faithfulness | 원문 의미와 위치를 보존했는가 | 요약에서 예외 조건 누락 |
+| Staleness | 최신 변경을 반영했는가 | 폐기된 API 문서를 현행으로 제시 |
+| Canonicality | 별칭과 동일 개념을 일관되게 통합했는가 | 같은 대상을 분리하거나 동명이인을 합침 |
+| Consistency | 다른 근거와 충돌하는가 | 두 문서가 서로 다른 정책을 주장 |
+| Coverage | 필요한 영역을 충분히 포함하는가 | 핵심 저장소가 수집 대상에서 빠짐 |
 
-→ 자동 수집만으로는 부족하다. 표준화와 연결, 최신성이 빠지면 에이전트는 *오래되고 이름이 어긋난* 자산을 근거로 또 엉뚱한 답을 만든다.
+단일 quality score는 어떤 실패인지 숨긴다. 각 축을 별도 상태로 유지해야 검색, 답변 보류, 사람 검토 같은 후속 정책을 다르게 적용할 수 있다.
 
-## 사람과 AI 동시 수혜 (지식 인프라)
+## 출처별 의미 단위
 
-Provider는 AI 전용 도구가 아니다. 자산이 자동 수집, 정리되면 **사람도 필요한 정보를 더 쉽게 찾는다**. 좋은 Provider는 에이전트 생산성을 높이는 동시에 팀원의 탐색 비용과 반복 질문을 줄이는 *공용 지식 인프라*가 된다.
+고정 토큰 길이만으로 자르면 출처의 구조와 판단 근거가 사라진다.
 
-→ "AI를 위한 메타데이터 정비"가 결국 "사람을 위한 데이터 카탈로그"와 같은 자산을 공유한다. ROI를 AI 한쪽에만 묶지 않는 게 도입 명분에 유리하다.
+- 문서는 heading section을 기본 단위로 삼고 상위 제목 경로를 보존한다.
+- 메신저는 개별 메시지보다 thread를 보존하고 질문, 선택지, 결정, 미해결 상태를 구분한다.
+- 코드는 parser가 찾은 symbol을 원자 단위로 삼는다. 여러 symbol에 걸친 동작은 별도의 behavior card로 연결한다.
+- 데이터와 API는 schema, owner, lineage, version 같은 운영 metadata를 원문과 함께 저장한다.
 
-## "질문이 답이 되는 순간"
+모든 단위는 최소한 다음 계약을 공유한다.
 
-Provider가 갖춰지면 기존에 사람이 여러 시스템을 뒤져야 했던 질문이 에이전트가 즉시 처리 가능한 형태로 바뀐다.
+```yaml
+id: stable-source-scoped-id
+source_type: document | thread | code | schema
+unit_type: section | conversation | symbol | behavior
+source_uri: canonical-location
+anchor: heading-or-line-span
+content_hash: hash-of-source-content
+source_updated_at: source-timestamp
+observed_at: ingestion-timestamp
+extraction_version: parser-or-prompt-version
+metadata: source-specific-fields
+```
 
-- "이 데이터는 어디서 오나?" → 계보 그래프 조회로 자동 응답
-- "이 API는 어떤 서빙 경로를 타나?" → 서빙 레이어 연결 정보로 자동 응답
+요약이나 추출된 개념만 남기지 않는다. 항상 원문 anchor로 돌아갈 수 있어야 한다.
 
-탐색 비용이 표준화, 연결된 맥락 덕분에 *조회 한 번*으로 수렴한다.
+## 개념과 근거 관계
 
-## 작게 시작하기
+서로 다른 출처에서 같은 개념을 말하더라도 텍스트 유사도만으로 합치면 안 된다. 임베딩은 관계 후보를 넓게 찾는 데 사용하고, 후보 관계는 별도로 검증한다.
 
-전사 자산을 한 번에 구조화하려 들면 표준화, 최신성 비용에 깔린다. **자주 묻는 정보부터** 구조화한다.
+```text
+source unit --mentions------> concept
+claim -------supported_by---> evidence unit
+claim -------contradicted_by-> evidence unit
+```
 
-1. 팀 문서, API 목록, 데이터 흐름, 장애 대응 기록 등 반복 질문이 몰리는 자산 식별
-2. 그 자산만 자동 수집 + 표준 스키마로 정규화
-3. 연결 관계(출처, 경로)와 최신성 표시를 붙여 에이전트, 사람이 함께 쓰게 함
-4. 사용 로그에서 다음으로 빈번한 질문 자산을 찾아 확장
+관계에는 관계 유형, 양쪽 anchor, 검증 방식, confidence와 검증 시각을 붙인다. 검증 실패나 낮은 confidence는 관계 없음이 아니라 미확인 상태다. 근거가 부족하면 `insufficient_evidence`를 정상 결과로 반환한다.
 
-## 트레이드오프
+## 변경 기반 검증 파이프라인
 
-- **수집 범위 vs 신뢰도**: 다 모으면 stale, 비표준 자산이 섞여 오히려 오답을 부른다. 좁고 깨끗한 풀이 넓고 더러운 풀을 이긴다 → 인간 큐레이션이 자동 생성을 이기는 [[Context-Engineering]] 원리와 동일.
-- **자동화 vs 최신성 보장**: 자동 수집은 빠르지만, 변경 추적, stale 표시가 없으면 "최신처럼 보이는 옛 정보"가 더 위험하다.
-- **AI 전용 vs 공용 인프라**: AI만 겨냥하면 투자 명분이 약하다. 사람 탐색까지 묶어야 지속 가능.
+```text
+source discovery
+  -> source-aware extraction
+  -> stable ID와 content hash 비교
+  -> 변경 단위만 관계 후보 생성
+  -> 결정론적 검사
+  -> 필요한 후보만 의미 검증
+  -> conflict와 freshness 상태 갱신
+  -> serving index 반영
+```
 
-## 면접 포인트
+- 문서는 stable ID와 content hash로 변경 구간을 찾는다.
+- 코드는 commit, file, symbol span hash를 조합해 이동과 수정을 구분한다.
+- 삭제된 원문에 매달린 관계는 함께 제거하거나 tombstone으로 표시한다.
+- URI 일치, schema 호환성, commit 존재 여부 같은 값싼 결정론적 검사를 먼저 수행한다.
+- 의미 판단이 필요한 변경분에만 LLM 검증을 사용한다.
 
-Q. 에이전트가 자꾸 엉뚱한 답을 한다. 모델을 바꿔야 하나?
-- 먼저 **맥락 공급**을 의심한다. 업무 맥락(데이터, 구조, 운영 지식)이 전달되는 통로가 없으면 좋은 모델도 그럴듯한 오답을 만든다. Context Provider로 자산을 수집, 표준화, 연결, 최신화해 공급해야 한다.
+전체 지식 그래프를 매번 재계산하지 않으면 비용과 비결정성을 줄이면서 최신성을 유지할 수 있다.
 
-Q. Context Engineering이랑 뭐가 다른가?
-- 층위가 다르다. Engineering은 **수요 측**(윈도우에 무엇을 넣을지, Context Rot, 토큰 예산), Provider는 **공급 측**(조직 자산을 어떻게 모아 신뢰 가능한 풀로 만들지). Provider가 만든 풀에서 Engineering이 최소치를 골라 넣는 보완 관계.
+## 충돌과 불확실성은 상태다
 
-Q. Context Provider 구축에서 가장 어려운 건?
-- 수집이 아니라 **"쓸 수 있게 만들기"**. 자산은 흩어지고 이름이 제각각이며 stale하다. 표준화, 연결 관계 파악, 최신성 유지가 자동 수집과 함께 설계돼야 한다. 안 그러면 더러운 컨텍스트가 또 오답을 만든다.
+충돌하는 정보를 조용히 덮어쓰거나 하나로 합치면 중요한 맥락이 사라진다.
 
-Q. 어디서부터 시작하나?
-- 전사 일괄이 아니라 **자주 묻는 정보부터**. 팀 문서, API 목록, 데이터 흐름, 장애 기록을 좁게 구조화하고, 사용 로그로 다음 확장 대상을 정한다. AI와 사람이 같은 자산을 공유하게 설계해 ROI를 양쪽에 건다.
+- `verified`: 현재 근거로 지지됨
+- `disputed`: 유효한 근거가 서로 충돌함
+- `stale_risk`: 원문 또는 의존 근거가 오래됐을 가능성이 큼
+- `insufficient_evidence`: 판단할 근거가 부족함
+- `superseded`: 더 최신의 canonical source가 대체함
+
+충돌을 발견한 시각, 관련 owner와 근거를 보존한다. 정책상 우선순위가 명확할 때만 자동 선택하고, 그렇지 않으면 답변에 충돌을 노출하거나 보류한다.
+
+## 에이전트에 공급하는 계약
+
+검색 API는 텍스트 묶음만 반환하지 않고 다음을 함께 제공한다.
+
+- 질문과 직접 관련된 claim
+- claim별 evidence link와 원문 anchor
+- provenance와 canonical source 여부
+- freshness와 conflict 상태
+- coverage gap과 사용상 제한
+
+이 계약이 있어야 에이전트가 근거를 인용하고, 불확실할 때 [[LLM-Abstention|답변을 보류]]하며, 사용자가 원문을 확인할 수 있다.
+
+## 사람 검토의 위치
+
+모든 수집 결과를 사람이 승인하면 확장되지 않는다. 다음처럼 자동 판단의 기대 손실이 큰 경우에만 review queue로 보낸다.
+
+- 서로 다른 시스템에서 같은 이름을 쓰는 애매한 alias
+- 결제, 권한, 보안 정책처럼 영향이 큰 충돌
+- canonical source를 자동 결정할 수 없는 문서 집합
+- 반복해서 낮은 confidence가 나오는 extraction rule
+
+검토 결과는 일회성 수정이 아니라 alias rule, source priority와 validator로 환류한다.
+
+## 운영 지표
+
+- source와 업무 영역별 coverage gap
+- 원문 anchor가 사라진 orphan relation 비율
+- evidence가 연결되지 않은 claim 비율
+- stale 상태 비율과 갱신 지연
+- conflict queue의 크기와 대기 시간
+- 사람 승인과 반려 결과를 기준으로 한 자동 검증 precision
+- 근거 부족으로 보류한 query 비율과 이후 해결률
+
+검색 클릭률만 높고 evidence coverage가 낮다면 신뢰 가능한 컨텍스트 플랫폼이라고 보기 어렵다.
+
+## 작게 시작하는 순서
+
+1. 반복 질문이 많고 canonical source가 비교적 명확한 한 영역을 고른다.
+2. 출처별 의미 단위와 공통 provenance 계약을 정의한다.
+3. 검색보다 먼저 원문 anchor, 최신성, 삭제 전파를 검증한다.
+4. 자주 발생하는 관계 두세 개만 typed relation으로 만든다.
+5. conflict와 coverage gap을 관찰해 다음 수집 범위를 정한다.
+
+## 피해야 할 설계
+
+- 모든 출처를 같은 고정 길이로 청킹한다.
+- 임베딩 유사도를 사실 관계로 확정한다.
+- 최신 문서가 발견되면 과거 충돌 근거를 삭제한다.
+- 근거 부족을 낮은 관련성으로 취급하고 그럴듯한 답을 만든다.
+- 원문 hash와 extraction version 없이 생성 결과만 저장한다.
+- 전사 지식 그래프를 한 번에 완성하려 한다.
+
+## 면접 체크포인트
+
+- Retrieval relevance와 context trust를 분리했는가?
+- source별 의미 단위와 공통 provenance 계약이 있는가?
+- 변경분만 재검증하고 삭제를 관계에 전파하는가?
+- conflict, stale, insufficient evidence가 명시적 상태인가?
+- 사람이 검토한 결과가 다음 자동화 규칙으로 환류하는가?
 
 ## 출처
 
-- [사람과 AI Agent를 위한 통합 Context Provider 구축 — NAVER D2 (Engineering Day 2026)](https://d2.naver.com/helloworld/7056385)
+- [LLM은 똑똑한데, 왜 우리 회사 일은 모를까 - 토스테크](https://toss.tech/article/llm_context_topic)
+- [사람과 AI Agent를 위한 통합 Context Provider 구축 - NAVER D2](https://d2.naver.com/helloworld/7056385)
+- [PROV-O: The PROV Ontology - W3C](https://www.w3.org/TR/prov-o/)
 
 ## 관련 문서
 
-- [[Context-Engineering|컨텍스트 엔지니어링 (수요 측 — Context Rot, Write/Select/Compress/Isolate, 토큰 예산)]]
-- [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링 (구조 기반 청킹, 계층적 조회, 엔티티 추출)]]
-- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (Metric Registry, 조회 우선순위, 명시적 지식)]]
-- [[MCP|MCP (Model Context Protocol — 컨텍스트, 도구를 표준 프로토콜로 연결)]]
-- [[AI-Native-System|AI 네이티브 시스템 (결정론적 제어, 실수→시스템 흡수 루프)]]
+- [[Context-Engineering|컨텍스트 엔지니어링]]
+- [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]]
+- [[LLM-Abstention|LLM 답변 보류와 선택적 응답]]
+- [[Agent-Code-Search|에이전트 코드 검색]]
+- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]]
+- [[MCP|Model Context Protocol]]
