@@ -82,7 +82,29 @@ DB, 외부 API로 접근 범위 확장. 스코프 3종(user 전역, project는 .
 
 Skills + Hook + MCP + LSP + 출력 스타일을 묶어 배포하는 단위. 검증(validate) → 로컬 테스트(--plugin-dir) → 마켓플레이스 배포. 커뮤니티 플러그인은 **공식 보안 감사가 없으므로** 설치 전 스크립트 직접 확인. LSP 플러그인은 편집 직후 타입 에러를 자동 감지하지만 대형 프로젝트에서 메모리 주의.
 
-## 팀 도입
+## 개인에서 조직으로 확장하는 4단계
+
+AI 코딩 도구를 배포하는 것과 조직의 개발 역량으로 만드는 것은 다르다. 다음 단계는 기능 목록이 아니라 다음 단계로 넘어가기 전에 확보할 운영 능력을 나타낸다.
+
+| 단계 | 확보할 능력 | 통과 조건 |
+|---|---|---|
+| 기반 | 인증, model/region, project settings 재현 | 새 구성원이 같은 환경을 재현하고 실제 호출 확인 |
+| 개인 | Orchestrator, Architect, Reviewer 역할과 SDD | 의도와 spec이 구현, 검증까지 추적됨 |
+| 팀 | Shared spec, 점진적 코드 탐색, harness와 Read/Run 검증 | 누가 작성해도 같은 gate와 review 기준 통과 |
+| 조직 | CI 자동화, 정책 배포, Privilege/Data/Audit/Cost 관리 | 사용량, 품질, 비용과 감사 evidence를 팀별로 설명 |
+
+기반 없이 개인 prompt skill부터 가르치면 설정 차이가 결과 차이로 섞인다. 개인 성공을 바로 전사 배포하면 검증과 비용 통제가 뒤늦게 붙는다. 각 단계의 산출물을 다음 단계의 입력으로 사용한다.
+
+```text
+재현 가능한 실행 환경
+  -> spec으로 통제되는 개인 workflow
+  -> 공유 gate를 가진 team workflow
+  -> 보안, 데이터, 감사와 비용이 관리되는 조직 운영
+```
+
+Model provider는 이 중 기반과 조직 운영의 일부다. 예를 들어 Amazon Bedrock을 사용하면 AWS identity, model/profile, region, billing과 audit 경계를 활용할 수 있지만, Claude Code의 파일과 shell 권한, Hook, MCP와 code quality gate는 별도로 설계해야 한다. 자세한 배포 경계는 [[Claude-Code-Bedrock]]을 참고한다.
+
+### 팀 단계의 공유 계약
 
 - **CLAUDE.md = 팀 표준 문서**: 코드 스타일, Git 규칙, 테스트 기준, 금지 사항을 커밋해 전원 공유. 매 세션 로드되므로 200줄 이하, 길어지면 rules 파일로 분리 ([[Context-Engineering]])
 - 설정의 Git 공유가 곧 표준화: skills, agents 정의, .mcp.json까지 커밋하면 리뷰 기준과 도구가 자동 통일 — 단 시크릿은 절대 커밋 금지
@@ -110,11 +132,16 @@ Claude Code를 만든 엔지니어의 실사용 패턴. 위 원칙들의 극단�
 ## 출처
 
 - [클로드 코드 가이드 (개발 파트 17챕터, 별첨 1 창시자의 워크플로우) — WikiDocs](https://wikidocs.net/book/19104)
+- [개인 생산성에서 조직 생산성으로, Claude Code on Amazon Bedrock 학습 플랜 - AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/claude-code-on-amazon-bedrock-training/)
+- [Claude Code on Amazon Bedrock 온라인 교육 프로그램 - AWS](https://dtlpyb0rtvxql.cloudfront.net/)
 
 ## 관련 문서
 
 - [[Claude-Code-Fundamentals|Claude Code 기초 (권한 모드, 컨텍스트, CLAUDE.md)]]
+- [[Claude-Code-Bedrock|Claude Code on Amazon Bedrock 배포와 운영]]
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain→Inform→Verify→Correct)]]
+- [[AI-Native-Org|AI 네이티브 조직 (공용 실행 계층)]]
+- [[AX-Transformation|AX 조직 전환 (도구 도입과 조직 전환의 차이)]]
 - [[AI-Native-System|AI 네이티브 시스템 (부탁 vs 강제)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (CLAUDE.md 200줄)]]
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산]]
