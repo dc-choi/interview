@@ -9,6 +9,8 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 
 ## 목차
 
+- [[Internet-vs-Web|인터넷과 웹]] — 인터넷 인프라와 웹 응용 시스템의 차이, 웹의 탄생 배경과 개방 표준
+- [[Web-Technology-Evolution|웹 기술의 진화와 퇴장 패턴]] — 플러그인, 브라우저 종속과 표준화가 기술 수명에 미치는 영향
 - [[tech/web/http/HTTP|HTTP & API]] — HTTP 진화, 메서드 의미, Status, Content-Type, REST, GraphQL, gRPC, Rate Limit, Cookie, 분할 전송
 - [[tech/web/network/네트워크(Network)|네트워크 (Network)]] — TLS, OSI, TCP(헤더, 핸드셰이크, 흐름/오류 제어), Loopback, Browser URL Flow
 - [[tech/web/realtime/실시간(Realtime)|실시간 (Realtime)]] — SSE, WebSocket, STOMP, 실시간 통신
