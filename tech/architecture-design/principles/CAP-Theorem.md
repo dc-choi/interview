@@ -73,6 +73,8 @@ CAP의 약점: "분할이 없을 때"의 트레이드오프를 설명 못 함. P
 ### "Eventually Consistent = Consistency 없음"
 아님. 최종적으로는 수렴. 단지 **그 순간**은 노드 간 다를 수 있을 뿐.
 
+최종 일관성은 잠시 달라도 된다는 선언만으로 완성되지 않는다. 복제와 재시도를 통해 변경을 전파하고, 동시 변경이 충돌했을 때 어떤 값을 채택할지 정하며, 허용 가능한 불일치 시간과 수렴 실패를 관측해야 한다. 즉 일시적 불일치와 함께 **수렴 전략**을 계약해야 한다.
+
 ### "ACID vs BASE는 CAP와 같은 축"
 겹치지만 다름. ACID(전통 RDB)는 CP 성향, BASE(NoSQL)는 AP 성향이라는 경향이 있을 뿐.
 
@@ -106,6 +108,7 @@ CAP의 약점: "분할이 없을 때"의 트레이드오프를 설명 못 함. P
 - Eventually Consistent의 정확한 의미
 
 ## 출처
+- [강한 일관성 vs 최종 일관성 - YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=UsTPRQ-nahY)
 - [매일메일 — CAP 정리](https://www.maeil-mail.kr/question/138)
 
 ## 관련 문서
