@@ -15,6 +15,22 @@ HTTP는 Stateless. **매 요청마다 자격증명을 함께 보내야** 서버�
 1. **자격증명을 어디에 실을까** — Header, Body, Cookie, Query
 2. **어떤 스키마로** — Basic, Bearer, API Key, OAuth2
 
+## 쿠키, 세션, JWT의 관계
+
+초기 웹 애플리케이션은 URL에 사용자 식별자를 붙여 요청 사이의 상태를 이어 보기도 했다. URL은 브라우저 기록, 로그와 리퍼러에 노출되고 모든 링크를 오염시키므로 인증 상태를 전달하는 위치로 부적합하다.
+
+| 개념 | 역할 | 서버 상태 |
+|---|---|---|
+| Cookie | 브라우저가 값을 저장하고 조건에 맞는 요청에 자동 첨부하는 전달 수단 | 쿠키 자체가 결정하지 않음 |
+| Session | 불투명한 세션 ID로 서버의 사용자 상태를 조회 | 필요 |
+| JWT | 클레임을 서명하거나 암호화해 전달할 수 있는 토큰 형식 | 자체 검증은 가능하지만 폐기와 회전 정책에는 상태가 생길 수 있음 |
+
+쿠키, 세션과 JWT는 순서대로 서로를 완전히 대체한 세대가 아니다. 세션 ID도 쿠키로 전달하고 JWT도 HttpOnly 쿠키에 담을 수 있다. 선택의 핵심은 자격증명을 어디에 전달할지와 서버가 어느 정도의 상태와 폐기 제어권을 가질지를 나누어 판단하는 것이다.
+
+[[Cookie|쿠키]]는 클라이언트가 저장하고 편집할 수 있으므로 사용자 ID, 권한과 결제 금액처럼 서버가 신뢰해야 할 값을 평문으로 두지 않는다. Domain과 Path 조건에 맞으면 이미지와 CSS 같은 정적 리소스 요청에도 자동 첨부되므로 값의 크기와 전송 범위를 최소화한다.
+
+[[Session|세션]]은 쿠키를 없애는 방식이 아니라, 중요한 상태를 서버로 옮기고 쿠키에는 추측하기 어려운 불투명 ID만 남기는 방식이다. 인메모리 세션은 로드 밸런서가 다음 요청을 다른 인스턴스로 보내면 조회에 실패할 수 있다. Sticky Session은 구현이 단순하지만 특정 인스턴스의 장애와 부하 쏠림에 취약하고, Redis나 DB 같은 공유 저장소는 어느 인스턴스에서도 세션을 조회할 수 있는 대신 네트워크 호출과 저장소 운영 비용이 생긴다.
+
 ## 자격증명 위치
 
 | 위치 | 특징 |
@@ -41,7 +57,7 @@ Authorization: Basic base64(username:password)
 Authorization: Bearer eyJhbGciOiJIUzI1NiI...
 ```
 - 토큰 자체가 **자격증명** — 발급 시 1회 인증 후 유효기간 내 재사용
-- **JWT**: self-contained, 서버 상태 불필요. 검증은 서명만으로
+- **JWT**: self-contained 검증이 가능해 매 요청 저장소 조회를 줄일 수 있음. 서명뿐 아니라 만료, issuer와 audience 등 애플리케이션 검증도 필요
 - **Opaque Token**: 랜덤 문자열, 서버에서 조회 필요 → 취소 가능
 - **사용처**: 대부분의 모던 API
 
@@ -99,7 +115,7 @@ Cookie: session=abc123
 
 - **민감 정보 싣지 말 것** — JWT는 base64 인코딩이지 암호화 아님
 - **서명 검증 잊지 말 것** — `alg: none` 공격, 서명 검증 누락
-- **만료 시간 짧게** — 15분~1시간, Refresh Token으로 갱신
+- **만료 시간 짧게** — 서비스 위험과 재인증 UX에 맞춰 제한하고 필요하면 Refresh Token으로 갱신
 - **취소 어려움** — self-contained라 서버에서 "이 JWT 취소"가 불가 → 블랙리스트, 짧은 수명으로 완화
 - **크기** — 쿠키 4KB 한계와 경쟁
 
@@ -154,6 +170,7 @@ Access Token(짧은 수명) + Refresh Token(긴 수명) 조합. Refresh 시 **�
 - [RFC 6749 — The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749)
 - [RFC 9700 — Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700)
 - [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
+- [쿠키, 세션, JWT HTTP 상태관리 변천사 — 코딩하는기술사](https://www.youtube.com/watch?v=lggnXKm-RyY)
 - [velog @city7310 — 백엔드가 이정도는 해줘야 함 5. 사용자 인증 방식 결정](https://velog.io/@city7310/%EB%B0%B1%EC%97%94%EB%93%9C%EA%B0%80-%EC%9D%B4%EC%A0%95%EB%8F%84%EB%8A%94-%ED%95%B4%EC%A4%98%EC%95%BC-%ED%95%A8-5.-%EC%82%AC%EC%9A%A9%EC%9E%90-%EC%9D%B8%EC%A6%9D-%EB%B0%A9%EC%8B%9D-%EA%B2%B0%EC%A0%95)
 
 ## 관련 문서
