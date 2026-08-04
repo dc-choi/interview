@@ -80,6 +80,7 @@ Sync/Async는 **작업 수행 순서 보장** 축으로 보면 더 분명하다.
 - 가상 스레드(Loom, goroutine)가 이 모델을 어떻게 바꾸는가
 
 ## 출처
+- [동기 vs 비동기 - YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=SI5CLk-fXFU)
 - [jh-7 — Blocking, Non-blocking, Sync, Async의 차이](https://jh-7.tistory.com/25)
 - [동기(Synchronous)는 정확히 무엇을 의미하는걸까? — evan-moon](https://evan-moon.github.io/2019/09/19/sync-async-blocking-non-blocking/)
 

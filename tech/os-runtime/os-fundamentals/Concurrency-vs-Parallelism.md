@@ -90,6 +90,7 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 - Actor vs CSP 채널의 차이
 
 ## 출처
+- [동시성 vs 병렬성 - YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=qCW-N-B7Mgc)
 - [seamless — 동시성 vs 병렬성](https://seamless.tistory.com/42)
 - [binux — 동시성, 액터, 칠판 패턴](https://binux.tistory.com/169)
 - [yeonyeon — Concurrency vs Parallelism](https://yeonyeon.tistory.com/270)

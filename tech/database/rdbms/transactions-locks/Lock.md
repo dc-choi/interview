@@ -10,6 +10,12 @@ aliases: ["DB Lock", "Lock", "락"]
 
 동시에 같은 데이터에 접근하는 트랜잭션들의 정합성을 보장하기 위한 메커니즘.
 
+## 동시성 제어가 없을 때: Lost Update
+
+잔액이 100인 같은 행을 두 요청이 동시에 읽고 각각 50과 10을 더한다고 가정한다. 두 요청이 모두 최초 값 100을 기준으로 계산한 뒤 150, 110 순서로 저장하면 나중 쓰기가 먼저 쓴 값을 덮어 최종 잔액은 110이 된다. 정상 결과 160에서 한 요청의 변경이 사라지는 현상이 **Lost Update**다.
+
+락 전략은 이 충돌을 언제 처리할지 결정한다. 비관적 잠금은 읽기 전에 충돌을 차단하고, 낙관적 잠금은 동시에 작업하도록 둔 뒤 쓰기 시점에 버전 충돌을 감지한다.
+
 ## Lock의 두 가지 전략
 
 ### Pessimistic Lock (비관적 잠금)
@@ -25,6 +31,7 @@ aliases: ["DB Lock", "Lock", "락"]
 - version 컬럼을 사용: `UPDATE ... SET version = version + 1 WHERE id = ? AND version = ?`
 - 0 rows affected → 충돌 발생, 애플리케이션에서 재시도
 - 읽기 중심, 충돌 빈도가 낮은 환경에 적합 (게시글 수정, 설정 변경, 프로필 업데이트)
+- 물리적인 행 잠금을 미리 보유하지 않는다는 뜻이지 DB를 사용하지 않는다는 뜻은 아니다. 애플리케이션이 이전 version을 조건에 넣고, DB가 조건부 UPDATE를 원자적으로 실행한다.
 
 ### 선택 기준
 
@@ -110,6 +117,7 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 ## 출처
 - [MySQL 8.4 Reference Manual — Locks Set by Different SQL Statements in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html)
 - [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
+- [락의 두 종류, 비관적 락 vs 낙관적 락 - 코딩하는기술사](https://www.youtube.com/watch?v=oJrVl6QKzHw)
 
 ## 관련 문서
 - [[Transactions|트랜잭션]]
