@@ -183,6 +183,7 @@ Stored Procedure는 데이터가 있는 DB 안에서 여러 연산을 한 번에
 - [ITWorld — 비즈니스 로직을 DB가 아닌 앱에 넣어야 하는 이유](https://www.itworld.co.kr/article/3566061/)
 
 ## 관련 문서
+- [[Database-Views-and-Programmability|View와 DB 저장 프로그램]]
 - [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL]]
 - [[Sharding|Sharding]]
 - [[Cache-Strategies|Cache 전략]]

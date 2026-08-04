@@ -3,6 +3,7 @@ tags: [architecture, hexagonal, port-adapter, ddd, nodejs, typescript]
 status: done
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Hexagonal In Practice", "헥사고날 실전 적용", "Port and Adapter Pattern", "Ports & Adapters"]
+verified_at: 2026-08-04
 ---
 
 # Hexagonal Architecture 실전 적용
@@ -11,16 +12,16 @@ Alistair Cockburn의 **Ports & Adapters 패턴**을 Node.js/TypeScript 환경에
 
 ## 핵심 명제
 
-GUI, HTTP, 데이터베이스 같은 외부 의존성을 비즈니스 로직과 철저히 분리한다. **비즈니스 로직 = Application + Domain**, 그 외(HTTP, DB, 큐, 메일, CLI…)는 모두 **교체 가능한 어댑터**로 본다. 의존성 방향: **모든 것이 application을 향하고, application은 아무것도 모른다.**
+GUI, HTTP, 데이터베이스 같은 외부 기술을 비즈니스 로직과 분리한다. **비즈니스 로직 = Application + Domain**, 그 외(HTTP, DB, 큐, 메일, CLI 등)는 어댑터로 본다. 핵심은 모든 클래스를 인터페이스로 감싸는 것이 아니라 **외부 기술을 향한 컴파일 의존성을 포트로 역전**하는 것이다.
 
 ## Port와 Adapter
 
 | 용어 | 정의 | 위치 |
 |---|---|---|
-| **Port** | 비즈니스 로직과 외부의 경계에 놓인 **인터페이스** | application 계층 내부 |
+| **Port** | 코어가 외부와 상호작용하는 목적과 규약 | 코어가 소유 |
 | **Adapter** | 포트를 구현하는 구체 클래스 (HTTP, DB, 파일 등 실제 기술) | application 계층 바깥 |
 
-핵심 원칙: **port는 application이 정의하고, adapter가 구현한다.** application이 외부 라이브러리를 import 하지 않는 것이 합격선.
+코드에서는 포트를 주로 인터페이스로 표현한다. 제공 포트는 코어가 외부에 제공하는 기능이고, 요구 포트는 코어가 외부에 요구하는 기능이다. 요구 포트를 코어가 정의하고 어댑터가 구현하면 의존성 역전이 성립한다.
 
 ## Driving (Primary) vs Driven (Secondary)
 
@@ -32,6 +33,7 @@ GUI, HTTP, 데이터베이스 같은 외부 의존성을 비즈니스 로직과 
 | **Driven** | Secondary, Outgoing | 유스케이스에 **호출당하는** 쪽 | DB Repository, 외부 API 클라이언트, 메일 발송기, 메시지 발행자 |
 
 application 안의 port도 두 방향으로 나뉜다.
+
 - `port/incoming/` — 유스케이스 인터페이스 (Driving Adapter가 호출)
 - `port/outgoing/` — 의존성 인터페이스 (Driven Adapter가 구현)
 
@@ -73,18 +75,34 @@ import 방향: `adapter/* → application/* → domain/*`. 절대 역방향 impo
 
 ### 2. ISP (Interface Segregation)
 
-`getArticle()`과 `listArticles()`를 한 인터페이스에 묶지 말 것. **호출자가 필요한 것만 의존**하도록 잘게 쪼갠다 (`ArticleGetUseCase`, `ArticleListUseCase`). 테스트 더블도 가벼워진다.
+**호출자가 필요한 기능만 의존**하도록 포트를 나눈다. 기준은 메서드 개수나 유스케이스 수가 아니라 **상호작용 의도, 변경 이유, 소비자 집합**이다. `getArticle()`과 `listArticles()`가 늘 따로 변한다면 나누고, 같은 소비자가 하나의 조회 계약으로 사용한다면 함께 둘 수 있다.
 
 ### 3. SRP (Single Responsibility)
 
-유스케이스 = 비즈니스 기능 1개. `CreateArticleUseCase`, `PublishArticleUseCase`처럼 동사 단위로 끊는다. "Service에 메서드 30개" 패턴을 끊어내는 가장 효과적인 방법.
+애플리케이션 서비스는 하나의 응집된 변경 이유를 가진다. `CreateArticle`, `PublishArticle`처럼 동사 단위로 분리할 수 있지만, 기계적으로 클래스와 인터페이스를 하나씩 만들 필요는 없다.
 
-### 4. 데이터 캐리어로 도메인을 가두기
+### 4. 외부 계약과 도메인 모델 구분
 
-도메인 엔티티(`ArticleImpl`)를 **application 바깥으로 노출하지 않는다.** 입출력은 `ArticleRequest` / `ArticleResponse` 같은 **데이터 캐리어**(=DTO, behavior 없음)로 변환해서 넘긴다. 이렇게 해야:
+도메인 엔티티를 JSON 응답으로 직접 직렬화하지 않는다. HTTP 요청과 응답은 `ArticleRequest` / `ArticleResponse` 같은 외부 계약으로 변환하는 편이 안전하다.
+
 - 도메인 모델이 외부 직렬화 포맷(JSON 키, 날짜 형식)에 오염되지 않음
 - 컨트롤러가 도메인 메서드를 우회 호출하는 사고 방지
 - API 변경이 도메인을 흔들지 않음
+
+다만 **애플리케이션 포트가 애그리거트를 반환하는 것**과 **컨트롤러가 이를 그대로 전송하는 것**은 다르다. 포트의 소비자가 같은 애플리케이션 내부이고 도메인 행위가 필요하다면 애그리거트 반환도 유효하다. 외부 계약, 읽기 전용 프로젝션, 보안 필드 통제가 필요할 때 DTO를 둔다.
+
+## 애플리케이션 컴포넌트와 수직 슬라이스
+
+코어가 커지면 기능 단위 애플리케이션 컴포넌트로 나눈다. 각 컴포넌트는 제공 포트, 내부 구현, 요구 포트를 소유하고 다른 컴포넌트의 공개 포트만 사용한다.
+
+```text
+member  <-  instructor  <-  course  <-  enrollment
+```
+
+- 의존 관계는 가능한 한 단방향 비순환 그래프로 유지한다.
+- 순환이 생기면 공유 엔티티부터 만들지 말고, 상위 정책이 요구 포트를 소유하도록 의존성을 역전한다.
+- 패키지 규칙은 합의만으로 끝내지 않고 ArchUnit이나 Spring Modulith 검증으로 고정한다.
+- 애그리거트는 일관성 경계이고, 애플리케이션 컴포넌트는 기능과 의존성의 모듈 경계다. 둘을 같은 크기로 맞출 필요는 없다.
 
 ## NestJS에서의 자연스러운 매핑
 
@@ -100,12 +118,19 @@ NestJS는 헥사고날과 매우 잘 맞는다.
 
 핵심 트릭: outgoing port는 TS 인터페이스인데 NestJS DI는 인터페이스 토큰을 못 잡으므로 **`Symbol` 또는 `string` 토큰**으로 등록한다.
 
+## Spring에서의 구현 메모
+
+- `@Component`를 메타 애노테이션으로 사용해 `@ApplicationService` 같은 합성 스테레오타입을 만들 수 있다.
+- `@Transactional`, Bean Validation 같은 프레임워크 애노테이션을 애플리케이션 서비스에 쓰는 것은 실용적 선택이다. 아키텍처의 목적은 프레임워크 이름을 0개로 만드는 것이 아니라 비즈니스 규칙이 기술 세부사항에 끌려가지 않게 하는 것이다.
+- Spring Modulith의 모듈 검증은 순환 의존, 내부 패키지 접근, 허용하지 않은 모듈 의존을 검사할 수 있다.
+
 ## 흔히 만나는 실수
 
 - **port를 application 바깥에 둔다** → adapter가 port를 정의하면 의존 방향이 반대로 뒤집힘
 - **도메인 엔티티를 컨트롤러 응답으로 그대로 반환** → 외부 변경이 도메인을 흔들고, 보안 필드가 새 나감
-- **application이 ORM 어노테이션을 직접 사용** → 인프라가 도메인에 침투. ORM은 adapter 안에서만
-- **port가 너무 굵다** → ISP 위반. 1 유스케이스 1 인터페이스 원칙
+- **ORM 모델 통합/분리를 원칙 하나로 고정** → 도메인과 저장 모델의 간극 및 매핑 비용을 함께 비교해야 함
+- **port가 너무 굵다** → 서로 다른 소비자와 변경 이유를 한 계약에 묶어 ISP 위반
+- **port를 유스케이스마다 기계적으로 생성** → 같은 상호작용 의도를 잘게 찢어 탐색 비용과 보일러플레이트 증가
 - **모든 외부 호출에 port를 만든다** → 단순한 cross-cutting(로깅, 메트릭)까지 인터페이스화하면 보일러플레이트 폭발. **교체 가능성, 테스트 필요성**이 분명한 곳에만
 
 ## 트레이드오프
@@ -114,7 +139,7 @@ NestJS는 헥사고날과 매우 잘 맞는다.
 - **클래스 수가 2~3배** 늘어남 (port + adapter + impl)
 - **CRUD만 있는 작은 서비스에는 과한 구조** — 헥사고날은 도메인 복잡도가 어느 정도 있을 때 빛난다
 - **팀 학습 비용**: Port/Adapter, Driving/Driven 용어와 import 방향 규약 합의 필요
-- **DDD와 결합 시 폭발적 학습 곡선** — Aggregate, Value Object까지 함께 도입하면 진입 장벽 높음
+- **DDD와 결합 시 큰 학습 곡선** — Aggregate, Value Object까지 함께 도입하면 진입 장벽 높음
 
 작은 서비스에는 [[Layered-Clean-Hexagonal|Layered]]로 시작해서, 도메인이 복잡해지는 시점에 헥사고날로 옮기는 것이 현실적.
 
@@ -125,11 +150,25 @@ NestJS는 헥사고날과 매우 잘 맞는다.
 - **의존성 역전**이 헥사고날에서 어떻게 실현되는가 (port는 인터페이스, adapter가 구현)
 - **CQS / ISP / SRP**가 헥사고날 구조에서 자연스럽게 따라오는 이유
 - 헥사고날과 **클린 아키텍처, DDD**의 관계
-- **데이터 캐리어(DTO)** 가 왜 필요한가
+- 애플리케이션 포트 반환 타입과 외부 응답 DTO를 구분하는 이유
 - 이 패턴의 **단점, 과잉 설계** 위험을 말할 수 있는가
 
 ## 출처
+
+- [Alistair Cockburn — Hexagonal Architecture 원문](https://alistair.cockburn.us/hexagonal-architecture/)
 - [Node.js 모노레포 튜토리얼 — 2. 육각형 아키텍처](https://nodejs.myeongjae.kim/pages/002-hexagonal-architecture/)
+- [NestJS 공식 문서 — Custom Providers와 런타임 토큰](https://docs.nestjs.com/fundamentals/custom-providers)
+- [NestJS 공식 문서 — TypeORM Repository](https://docs.nestjs.com/techniques/database)
+- [Spring Framework 공식 문서 — 합성 애노테이션과 컴포넌트 스캔](https://docs.spring.io/spring-framework/reference/core/beans/classpath-scanning.html)
+- [Spring Modulith 공식 문서 — 애플리케이션 모듈](https://docs.spring.io/spring-modulith/reference/fundamentals.html)
+- [Spring Modulith 공식 문서 — 모듈 구조 검증](https://docs.spring.io/spring-modulith/reference/verification.html)
+- [토비 강사 — 포트 설계](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=453033)
+- [토비 강사 — 애플리케이션 컴포넌트](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=454900)
+- [토비 강사 — 애그리거트와 애플리케이션 컴포넌트 의존 관계](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=458026)
+- [토비 강사 — ArchUnit을 이용한 슬라이스 의존 관계 검증](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=461995)
+- [토비 강사 — 애플리케이션 서비스 합성 애노테이션](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=458025)
+- [토비 강사 — DIP를 이용한 양방향 의존관계 해결](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=471511)
+- [토비 강사 — Entity vs DTO](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=264324)
 
 ## 관련 문서
 - [[DDD-Hexagonal-In-Production|DDD + Hexagonal 실무 경험 (멀티 컨텍스트, ACL, 트레이드오프)]]

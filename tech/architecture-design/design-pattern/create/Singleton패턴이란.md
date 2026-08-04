@@ -1,130 +1,61 @@
 ---
-tags: [architecture, design-pattern]
+tags: [architecture, design-pattern, creational, singleton]
 status: done
+verified_at: 2026-08-04
 category: "Architecture & Design"
-aliases: ["Singleton 패턴이란?"]
+aliases: ["Singleton Pattern", "싱글턴 패턴"]
 ---
 
 # Singleton 패턴이란?
-클래스의 인스턴스가 오직 하나만 존재하도록 보장하고 해당 인스턴스에 대한 전역 접근점은 하나이며 인스턴스 생성은 클래스가 제어하도록 하는 디자인패턴
 
-## 왜 쓰을까?
+Singleton은 정해진 범위에서 클래스의 인스턴스 생성을 하나로 제한하고 그 인스턴스에 접근하는 방법을 제공하는 생성 패턴이다. 하나라는 범위가 프로세스, 모듈 그래프 또는 DI 애플리케이션 컨텍스트 중 무엇인지 먼저 정의해야 한다.
 
-### 리소스 제약
-데이터베이스 연결의 경우 초기에 한번만 연결하고 해당 Pool 재사용
+## TypeScript 구현
 
-### 상태 일관성
-앱 전체에서 같은 설정을 봐야 하는 경우
-
-### 순서 제어
-로그의 경우 순서대로 작성되는 것이 중요함.
-
-### 프로세스에서 하나만 존재해야 하는 것
-프린트 스풀러, 파일 시스템, 캐싱
-
-### 전역 접근이 필요한 것
-사용자 인증 정보, 애플리케이션 설정, 이벤트 버스, 국제화 관리자
-
-## 핵심 개념
-
-### Private Constructor
 ```typescript
-class Singleton {
-    private constructor() {
-        console.log("Singleton instance created");
-    }
-}
+class ProcessRegistry {
+  private static instance?: ProcessRegistry
 
-// 컴파일 에러 발생.
-const instance = new Singleton();
-```
+  private constructor() {}
 
-### Static Method && Instance Control Logic
-```typescript
-class Singleton {
-    private static instance: Singleton | null = null;
-    
-    private constructor() {}
-    
-    public static getInstance(): Singleton {
-        if (!Singleton.instance) {
-            Singleton.instance = new Singleton();
-        }
-        return Singleton.instance;
-    }
+  static getInstance(): ProcessRegistry {
+    return this.instance ??= new ProcessRegistry()
+  }
 }
 ```
 
-## 생성 전략
+이 구현은 현재 JavaScript Realm과 로드된 클래스 사본 안에서만 하나다. Worker, Cluster 프로세스, 컨테이너와 Pod가 여러 개면 각각 별도 인스턴스가 생긴다. 중복 모듈 경로도 별도 캐시 항목이 될 수 있다.
 
-### Eager Initialization
+## NestJS에서는 Provider 수명으로 관리한다
+
+NestJS Provider의 기본 Scope는 애플리케이션 전체에서 공유되는 `DEFAULT`다. 대부분은 정적 `getInstance()`보다 Provider를 생성자 주입해 수명과 대체 가능성을 컨테이너에 맡기는 편이 낫다.
+
 ```typescript
-// 클래스 로딩과 동시에 생성
-class EagerSingleton {
-    private static readonly instance = new EagerSingleton();
-
-    private constructor() {}
-
-    public static getInstance(): EagerSingleton {
-        return EagerSingleton.instance;
-    }
-}
+@Injectable()
+class CurrencyTable {}
 ```
 
-장점: 스레드 안전, 구현 간단
+이 역시 Nest 애플리케이션 컨텍스트마다 하나다. 같은 클래스나 토큰을 서로 다른 컨텍스트에서 만들거나 여러 프로세스를 실행하면 전역 단일 인스턴스가 아니다.
 
-단점: 메모리 낭비 가능, 초기화 에러 처리 어려움
+## 언제 경계해야 하는가
 
-### Lazy Initialization
-```typescript
-// static method로 인스턴스 생성
-class LazySingleton {
-    private static instance: LazySingleton | null = null;
-    
-    private constructor() {}
-    
-    public static getInstance(): LazySingleton {
-        if (!LazySingleton.instance) {
-            LazySingleton.instance = new LazySingleton();
-        }
-        return LazySingleton.instance;
-    }
-}
-```
-장점: 메모리 효율적, 필요시에만 생성
+- 사용자별 인증 정보나 요청 상태를 공유 인스턴스의 가변 필드에 저장하면 데이터가 섞인다.
+- 전역 접근점은 의존성을 숨겨 테스트 순서 의존과 초기화 경쟁을 만든다.
+- DB 연결은 인스턴스 하나가 아니라 제한된 여러 연결을 관리하는 Pool인 경우가 일반적이다.
+- 캐시와 이벤트 버스가 프로세스마다 분리돼도 되는지 운영 토폴로지에서 확인한다.
 
-단점: 멀티스레드 환경에서 문제 가능
+프로세스 간 하나의 소유권이 필요하면 DB의 유일성 제약, 분산 Lock, Leader Election 같은 분산 조정 문제로 다뤄야 한다. Singleton 객체만으로 해결되지 않는다.
 
-## 변형 패턴
+## 출처
 
-### Multiton Pattern
-예제 참고
+- 얄팍한 코딩사전, [Singleton 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=242682)
+- Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- [NestJS 공식 문서, Injection scopes](https://docs.nestjs.com/fundamentals/injection-scopes)
+- [Node.js 공식 문서, CommonJS module caching](https://nodejs.org/api/modules.html#caching)
+- yongsoocho, [TypeScript로 구현하는 Singleton](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=149243)
 
-### Registry Singleton
-예제 참고
+## 관련 문서
 
-## Node.js 모듈 캐싱과 Singleton
-
-Node.js의 모듈 시스템은 자동으로 Singleton과 유사한 동작을 제공한다.
-
-### CommonJS 캐싱
-```typescript
-// db.ts
-export const dbInstance = new Database('app-db')
-
-// 모든 require/import에서 같은 인스턴스 반환
-// Node.js가 모듈을 한 번만 실행하고 결과를 캐시하기 때문
-```
-
-### 주의: node_modules 중복
-같은 패키지가 node_modules의 서로 다른 경로에 설치되면(버전 충돌 등) 각각 별도 인스턴스가 생성될 수 있다. resolve 경로가 다르면 캐시 키가 달라지기 때문이다.
-
-### ESM에서의 Singleton
-ES 모듈의 namespace 객체도 캐시되므로 동일한 Singleton 효과를 얻는다. 단, 모듈 경로가 다르면 (심볼릭 링크, 쿼리 파라미터 등) 별도 인스턴스가 될 수 있다.
-
-## 실 사용 사례
-1. 프론트엔드 상태 관리
-2. API 클라이언트
-3. 데이터베이스 커넥션 풀
-4. 캐시 매니저
-5. 로깅 시스템
+- [[Connection-Pool|Connection Pool]]
+- [[Object-Design-Principles|객체 설계 원칙과 리팩터링]]
+- [[Flyweight패턴이란|Flyweight 패턴]]

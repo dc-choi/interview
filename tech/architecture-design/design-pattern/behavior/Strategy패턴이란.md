@@ -6,21 +6,21 @@ aliases: ["Strategy 패턴이란?"]
 ---
 
 # Strategy 패턴이란?
-로직을 "전략"이라는 별도의 상호 교환 가능한 객체로 추출하여, 런타임에 알고리즘을 교체할 수 있게 하는 패턴
+변화하는 알고리즘을 상호 교환 가능한 역할로 추출하고 Context가 합성해 사용하게 하는 패턴이다. 전략은 객체, 함수 또는 클로저로 구현할 수 있다.
 
 ## 왜 쓸까?
 
 ### if-else 체인 없이 알고리즘을 교체
 조건문으로 분기하는 대신, 전략 객체를 주입하여 알고리즘을 선택한다.
 
-### 새 전략 추가 시 기존 코드 수정 불필요 (OCP)
-기존 Context나 다른 전략을 수정하지 않고 새로운 Concrete Strategy만 추가하면 된다.
+### 새 전략 추가 시 안정된 코드 수정 최소화
+기존 Context와 다른 전략을 유지한 채 Concrete Strategy를 추가할 수 있다. 다만 전략을 선택하고 등록하는 구성 루트나 팩토리는 새 구현을 알도록 바뀔 수 있다.
 
 ### 전략 객체를 독립적으로 테스트 가능
 각 전략은 독립된 객체이므로 단위 테스트가 쉽다.
 
 ### 관심사 분리
-Context는 "무엇을" 할지, Strategy는 "어떻게" 할지를 담당한다.
+Context는 무엇을 할지, Strategy는 어떻게 할지를 담당한다.
 
 ## 핵심 개념
 
@@ -34,8 +34,8 @@ Context + Strategy Interface + Concrete Strategies
 | 항목 | Strategy | Template Method |
 |------|----------|-----------------|
 | 관계 | has-a (합성) | is-a (상속) |
-| 변경 시점 | 런타임 | 컴파일타임 |
-| 유연성 | 높음 | 낮음 |
+| 변형 방식 | 전략 객체를 주입하거나 선택 | 하위 클래스가 단계 일부를 재정의 |
+| 결합 대상 | 역할의 구현 | 상위 클래스의 골격과 보호 메서드 |
 
 ### 코드 예시: 멀티포맷 Config
 ```typescript
@@ -50,8 +50,8 @@ const jsonStrategy: ConfigStrategy = {
 }
 
 const iniStrategy: ConfigStrategy = {
-  deserialize: (data) => { /* INI 파싱 로직 */ },
-  serialize: (data) => { /* INI 직렬화 로직 */ }
+  deserialize: parseIni,
+  serialize: stringifyIni
 }
 
 class Config {
@@ -80,13 +80,13 @@ class Config {
 
 ## 실전 도입 시점
 
-전략 패턴은 **조건문이 3개 이상으로 늘어날 때** 도입을 고민. 2개면 단순 if-else가 더 읽기 좋음. 함정:
+조건문 개수만으로 도입을 결정하지 않는다. 같은 변화 축의 알고리즘이 독립적으로 늘고, 클라이언트가 구체 타입을 검사하며, 각 구현을 따로 교체하거나 테스트할 필요가 있을 때 도입을 검토한다. 단순하고 안정적인 분기는 `if`가 더 읽기 좋다. 함정:
 
 - **모든 if-else를 Strategy로**: 과설계. 한 번만 쓰는 분기는 그냥 if
 - **전략 간 공통 로직 반복**: 추상 클래스에 Template Method로 끌어올리거나 합성으로 공유
 - **Strategy 주입을 잊고 Context에서 직접 new**: DI 이점 사라짐 — 팩토리나 DI 컨테이너로 주입
 
-"디자인 패턴은 만능 해법이 아니라 상황에 따른 선택" — 명확한 이유가 없으면 도입하지 말고, 도입 후 오버헤드가 크면 과감히 되돌릴 것.
+디자인 패턴은 만능 해법이 아니라 상황에 따른 선택이다. 명확한 이유가 없으면 도입하지 않고, 도입 후 오버헤드가 크면 되돌린다.
 
 ## 정책이 늘어날 때: 메서드 분리가 아니라 전략 추출
 
@@ -101,3 +101,6 @@ class Config {
 
 ## 출처
 - [jminc00 — 전략 패턴 구현 예제 (WMS 피킹 리팩토링)](https://jminc00.tistory.com/100)
+- 조영호 강사, [유연한 설계, 다형성](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234577)
+- 얄팍한 코딩사전, [Strategy 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=242675)
+- Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994

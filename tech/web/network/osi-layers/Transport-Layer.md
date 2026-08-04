@@ -3,6 +3,7 @@ tags: [web, network, osi, l4, tcp, udp, port, segment]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Transport Layer", "전송 계층", "트랜스포트 계층", "L4", "TCP UDP 포트", "세그먼트"]
+verified_at: 2026-08-04
 ---
 
 # 전송 계층 (Transport Layer, L4)
@@ -46,9 +47,9 @@ IP가 건물 주소라면 포트는 그 건물 안의 방 번호다. 같은 IP�
 
 ## TCP — 신뢰성 우선
 
-TCP(Transmission Control Protocol)는 전송을 통제하고 확인하는 데 초점이 있다. 데이터를 보낸 뒤 상대가 받았는지 확인하고, 응답이 없으면 유실로 보고 재전송한다. 그래서 **순서 보장, 유실 대응, 무결성 확인**이 필요한 통신(웹, HTTPS, 이메일, 파일 전송, SSH)에 맞는다.
+TCP(Transmission Control Protocol)는 전송을 통제하고 확인하는 데 초점이 있다. 수신 확인, 재전송, 순서 복원, 흐름 제어와 혼잡 제어로 애플리케이션에 신뢰성 있는 byte stream을 제공한다. 메시지 경계를 보존하지 않으므로 애플리케이션 프로토콜이 길이나 구분자를 따로 정의해야 한다.
 
-대신 보낼 때마다 응답을 기다리므로 상대적으로 느리다. 확인 절차가 신뢰성을 만들지만 지연과 추가 트래픽을 낳는다. TCP는 데이터 전에 **연결을 먼저 수립**한다(3-way handshake) — 상세 절차와 종료(4-way), TIME_WAIT, RTT 비용은 [[TCP-Handshake]].
+이 메커니즘에는 상태, 헤더와 재전송 비용이 들지만 TCP가 언제나 UDP보다 느리다는 뜻은 아니다. 실제 성능은 RTT, 손실률, 혼잡 제어, 구현, 애플리케이션의 재시도 설계에 달려 있다. TCP는 데이터 전에 **연결을 먼저 수립**한다(3-way handshake) — 상세 절차와 종료, TIME_WAIT, RTT 비용은 [[TCP-Handshake]].
 
 ### TCP 세그먼트의 주요 필드
 
@@ -65,7 +66,7 @@ TCP(Transmission Control Protocol)는 전송을 통제하고 확인하는 데 �
 
 ## UDP — 속도와 단순함 우선
 
-UDP(User Datagram Protocol)는 연결을 미리 맺지 않고 데이터를 바로 보낸다. 수신 확인을 안 하고, 순서가 바뀌거나 일부가 사라져도 기본적으로 재전송하지 않는다. 그래서 TCP보다 빠르고 구조가 단순한 대신 신뢰성은 낮다.
+UDP(User Datagram Protocol)는 연결을 미리 맺지 않고 독립적인 datagram을 보낸다. 메시지 경계를 보존하지만 기본 프로토콜은 전달, 중복 방지와 순서를 보장하지 않는다. 구조가 단순하고 애플리케이션이 필요한 신뢰성만 설계할 수 있지만, 낮은 지연이 자동으로 보장되는 것은 아니다.
 
 세그먼트에 출발지/목적지 포트, 길이, 체크섬, 데이터 정도만 들어간다. 시퀀스/ACK/윈도우/제어 플래그를 관리하지 않아 헤더가 작고 처리가 가볍다. 한 조각 빠져도 전체 경험에 큰 지장이 없는 서비스(스트리밍, 음성 통화, 온라인 게임)에 맞는다. 영상에서 한 프레임 누락은 사용자가 거의 못 느낀다.
 
@@ -76,10 +77,12 @@ UDP(User Datagram Protocol)는 연결을 미리 맺지 않고 데이터를 바�
 | 연결 | 연결 지향 (3-way handshake) | 비연결 (바로 전송) |
 | 신뢰성 | 확인, 재전송, 순서 보장 | 미보장 (유실/순서 변동 허용) |
 | 헤더 | 큼 (seq, ack, window, flags) | 작음 (포트, 길이, 체크섬) |
-| 속도 | 상대적으로 느림 | 빠름 |
+| 전송 비용 | 연결과 신뢰성 상태 관리 | 작은 헤더, 신뢰성 정책은 애플리케이션 몫 |
 | 용도 | 웹, HTTPS, 이메일, 파일, SSH | 스트리밍, 음성, 게임, DNS |
 
-선택 기준은 단순하다. 데이터가 틀리거나 빠지면 안 되면(웹, 로그인, 다운로드, 원격 접속) TCP, 약간의 손실보다 실시간성이 중요하면(음성, 게임, 영상) UDP. TCP는 정확히 보내기, UDP는 빠르게 보내기에 가깝다.
+선택 기준은 신뢰성이냐 속도냐의 한 줄 대립보다 애플리케이션이 원하는 전송 의미다. 신뢰성 있는 byte stream이 필요하면 TCP가 출발점이고, 메시지 단위와 지연 정책을 애플리케이션이 통제하거나 multicast가 필요하면 UDP를 검토한다. UDP 위에서도 QUIC처럼 신뢰성, 암호화와 혼잡 제어를 구현할 수 있다.
+
+QUIC은 더 이상 HTTP/3에 쓰일 예정인 실험적 아이디어가 아니다. RFC 9000이 표준화한 UDP 기반 보안 transport이며 HTTP/3는 RFC 9114로 표준화됐다. 여러 stream을 한 연결에서 운반하고 한 stream의 손실 복구가 다른 stream의 전달을 TCP 연결 전체 수준으로 막지 않도록 설계한다.
 
 ## AWS와 L4
 
@@ -98,11 +101,19 @@ VPC, 보안 그룹(SG), NACL은 포트와 프로토콜(TCP/UDP) 단위로 트래
 - TCP의 신뢰성 메커니즘(확인/재전송/순서)과 그 비용(지연)
 - TCP 세그먼트 핵심 필드(seq, ack, window, flags)와 흐름 제어
 - UDP가 단순/빠른 이유와 적합 사례, TCP/UDP 선택 기준
+- UDP가 낮은 지연을 자동 보장하지 않으며 QUIC이 UDP 위에 신뢰성과 혼잡 제어를 구현한다는 점
 - NLB(L4) vs ALB(L7)의 동작 계층 차이, SG/NACL이 포트/프로토콜 기준인 점
 
 ## 출처
 
+- 김영한 강사, [TCP, UDP](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61354)
+- 김영한 강사, [PORT](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61355)
 - [OSI 7 Layer 기초: Transport Layer (TCP, UDP, 포트, 세그먼트) — YouTube](https://www.youtube.com/watch?v=mHwLHubS_iM&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v&index=3)
+- [RFC 9293 — Transmission Control Protocol](https://www.rfc-editor.org/rfc/rfc9293.html)
+- [RFC 768 — User Datagram Protocol](https://www.rfc-editor.org/rfc/rfc768.html)
+- [RFC 9000 — QUIC](https://www.rfc-editor.org/rfc/rfc9000.html)
+- [RFC 9114 — HTTP/3](https://www.rfc-editor.org/rfc/rfc9114.html)
+- [그림으로 쉽게 배우는 네트워크 — TCP와 UDP, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160826)
 
 ## 관련 문서
 

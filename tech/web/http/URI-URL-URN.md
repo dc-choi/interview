@@ -1,93 +1,77 @@
 ---
 tags: [web, http, uri, url, urn]
 status: done
-category: "웹&네트워크(Web&Network)"
+verified_at: 2026-08-04
+category: "Web - HTTP"
 aliases: ["URI URL URN", "URI/URL/URN 차이"]
 ---
 
 # URI, URL, URN
 
-세 용어 자주 혼용되지만 **포함 관계**가 있는 개념. URI가 상위, URL/URN이 하위.
+URI는 Resource를 식별하는 문자열의 일반 문법이다. URL은 위치와 접근 방법의 관점, URN은 `urn` scheme을 사용하는 지속적 이름의 관점에서 쓰이는 용어다.
 
-```
-URI (Uniform Resource Identifier) — 식별자 (상위 개념)
- ├─ URL (Uniform Resource Locator) — 위치 기반
- └─ URN (Uniform Resource Name) — 이름 기반
-```
+## 단순 포함 트리의 한계
 
-## URI (Uniform Resource Identifier)
+모든 URL과 URN을 서로 배타적인 두 하위 집합으로 그리는 설명은 입문용 근사다. RFC 3986은 URI를 Locator, Name 또는 둘 다로 분류할 수 있다고 설명하고 이후 표준 문서에는 URL/URN보다 일반 용어 URI를 사용하도록 권한다. 따라서 하나의 URI가 위치와 이름의 성격을 함께 가질 수 있다.
 
-인터넷 자원을 **식별**하는 문자열. **위치로 식별하든(URL), 이름으로 식별하든(URN) 모두 URI**.
+브라우저 구현의 parsing, serialization과 origin 계산은 living standard인 WHATWG URL Standard를 따른다. RFC 3986의 일반 URI 문법과 WHATWG의 실제 Web URL 처리 모델을 목적에 맞게 구분한다.
 
-RFC 3986 표준 정의. 실무 대부분의 식별자는 URI이고, 그중 대부분이 URL.
+## URI 구성 요소
 
-## URL (Uniform Resource Locator)
-
-자원의 **"어디 있는지"** + **"어떻게 접근하는지"**(프로토콜)를 명시.
-
-```
-https://www.example.com:443/path/to/resource?query=1#section
-└─┬─┘   └──────┬──────┘ └┬┘ └──────┬──────┘ └──┬──┘ └──┬──┘
-scheme     authority   port   path          query    fragment
+```text
+https://user@example.com:8443/orders/42?expand=items#payment
+\___/   \___________________/\________/ \__________/ \_____/
+scheme          authority        path       query     fragment
 ```
 
-구성:
-- **scheme**: 프로토콜 (`http`, `https`, `ftp`, `mailto`, `file` 등)
-- **authority**: 호스트 + (선택)포트. 사용자 정보도 포함 가능 (`user:pass@host`)
-- **path**: 자원 경로
-- **query**: 검색 조건, 파라미터
-- **fragment**: 문서 내 위치 (브라우저에서만 처리, 서버에 전송 안 됨)
+일반 문법은 다음과 같다.
 
-특징: **자원이 이동하면 URL도 바뀜** → 링크 깨짐(dead link) 필연적.
-
-## URN (Uniform Resource Name)
-
-자원의 **"이름"**을 영구 식별자로 사용. 위치가 바뀌어도 동일한 식별자 유지.
-
-```
-urn:isbn:978-3-16-148410-0          (책 ISBN)
-urn:uuid:6e8bc430-9c3a-11d9-...      (UUID)
-urn:ietf:rfc:3986                    (RFC 문서)
+```text
+URI = scheme ":" [ "//" authority ] path [ "?" query ] [ "#" fragment ]
 ```
 
-형식: `urn:<namespace>:<specific-identifier>`
+- Scheme: 식별 체계와 처리 규칙을 선택한다. `https`, `mailto`, `urn` 등이 있다.
+- Authority: 선택적인 userinfo, host와 port를 담는다. HTTP(S) URI의 userinfo는 deprecated이므로 자격증명을 넣지 않는다.
+- Path: 계층적 경로다. 비어 있을 수도 있다.
+- Query: Resource 식별에 쓰이는 비계층 데이터다. 자체 key-value 문법은 URI 표준이 강제하지 않는다.
+- Fragment: Representation 내부의 2차 Resource를 식별한다. HTTP 요청 Target에는 포함되지 않고 User Agent가 처리한다.
 
-URN은 "**이 자원이 어디 있는지 모르지만 이름은 안다**"는 상황에 유용. 단, URN 자체로는 자원을 가져올 수 없다 — 별도 **리졸버**가 URN → URL로 변환해야 함.
+## HTTP(S) URL 예시
 
-## 실무에서의 현실
+```text
+https://api.example.com:443/orders/42?expand=items
+```
 
-URL이 압도적으로 많이 쓰이고, URN은 RFC 8141로 표준화되어 있지만 일반 웹 API 설계에서는 제한적으로 쓰인다. 실무 API 설계에서 URI 설계라고 말하면 사실상 URL 설계를 의미하는 경우가 많다.
+- `https`의 기본 port는 443이므로 명시하지 않아도 같은 기본 authority로 정규화할 수 있다.
+- DNS host 이름은 대소문자를 구분하지 않지만 path와 query의 대소문자 의미는 Server 계약에 달려 있다.
+- percent-encoding은 octet을 URI 문자로 표현하는 방식이다. 같은 데이터를 무조건 decode하고 다시 encode하면 의미가 바뀔 수 있다.
+- `user:password@host` 형태는 phishing과 자격증명 노출 위험 때문에 HTTP(S) URI에서 사용하지 않는다.
 
-그럼에도 구분을 알아야 하는 이유:
-- 면접 단골 질문
-- HTTP/REST 문서 정확 해석 (RFC는 URI로 표현)
-- 영구 식별자 설계 시 URN 패턴 참고 가치
+## URN
 
-## 자주 혼동되는 포인트
+URN은 `urn:<namespace-id>:<namespace-specific-string>` 형태의 URI다.
 
-### "URL은 URI의 일부" 정확한 의미
-모든 URL은 URI지만, 모든 URI가 URL은 아님. URN도 URI.
+```text
+urn:isbn:9780134685991
+urn:ietf:rfc:3986
+```
 
-### URI vs URL을 실무에서 섞어 써도 되나
-HTTP 스펙, API 문서는 엄격히 URI를 쓰고, 일상 대화에선 URL로 통일해도 의미 통함. **면접에서는 구분해서 답할 것**.
+위치를 직접 제공하지 않으므로 Resource를 가져오려면 Namespace별 해석 절차나 Resolver가 필요할 수 있다. 위치가 변해도 유지할 이름이라는 목표가 있지만 영속성은 발급 주체의 운영 정책까지 필요하다.
 
-### 프래그먼트 `#`는 서버에 전송되는가
-NO. 브라우저가 URL 파싱 후 서버에는 `#` 이전까지만 전송. 프래그먼트는 클라이언트 사이드 라우팅용(SPA의 `#/page`).
+## API 설계에서의 사용
 
-### 쿼리스트링이 URL의 일부인가
-YES. `?key=value` 부분도 URL의 구성 요소. API 설계 시 경로 vs 쿼리 선택 기준은 [[REST#URI 설계 규칙|REST URI 설계]] 참고.
-
-## 면접 체크포인트
-
-- URI, URL, URN의 포함 관계를 한 줄로
-- URL 구성 요소 6개 (scheme, authority, port, path, query, fragment)
-- URN이 실무에서 잘 안 쓰이는 이유
-- 프래그먼트가 서버에 전송되지 않는 이유
-- "URL은 URI다"가 맞고 "URI는 URL이다"는 틀린 이유
+API에서 Resource URI라고 할 때는 보통 HTTP(S) URL을 뜻한다. Path에 Resource를, Method에 요청 의미를 배치하는 방식은 유용한 관례지만 URI 문법 자체가 Path를 명사로 쓰거나 복수형을 쓰라고 강제하지는 않는다.
 
 ## 출처
-- [매일메일 — URI, URL, URN](https://www.maeil-mail.kr/question/149)
+
+- 김영한 강사, [URI](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61357)
+- [RFC 3986, Uniform Resource Identifier Generic Syntax](https://www.rfc-editor.org/rfc/rfc3986.html)
+- [RFC 8141, Uniform Resource Names](https://www.rfc-editor.org/rfc/rfc8141.html)
+- [WHATWG URL Standard](https://url.spec.whatwg.org/)
+- [RFC 9110, HTTP Semantics, HTTP-related URI Schemes](https://www.rfc-editor.org/rfc/rfc9110.html#name-http-related-uri-schemes)
 
 ## 관련 문서
-- [[REST|REST, URI 설계]]
-- [[HTTP-Seminar|HTTP 버전별 진화]]
+
+- [[REST|REST와 Resource URI]]
+- [[Browser-URL-Flow|브라우저 URL 요청 흐름]]
+- [[HTTP-Semantics-and-Messages|HTTP 의미와 메시지]]

@@ -20,6 +20,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 
 ## 파이프라인 실전 (설계와 오케스트레이션 — 어떻게 설계하고 돌리나)
 
+- [[Stream-and-Batch-Processing|스트림과 배치 처리]] — bounded/unbounded 입력, event time/window, Spark JDBC 병렬 추출
 - [[Airflow-DAG-Parsing|Airflow DAG 파싱 최적화]] — dag-processor 재파싱 비용, 메트릭 기반 진단, 인프라 튜닝, top-level 안티패턴, 2.x→3.x 변경점
 - [[ELT-Platform|ELT 플랫폼 (셀프서비스 데이터 파이프라인)]] — 정의와 실행을 DSL로 분리, 동적 DAG 생성, DB→DWH 대량 복제(JDBC 파티셔닝), Build vs Buy
 - [[Inventory-Data-Pipeline|재고 데이터 파이프라인]] — 옴니채널 재고 병목 3종, 기초재고 배치 파티셔닝, 임계 경로 최소화 + Kafka 팬아웃, Push/Pull 하이브리드 전달

@@ -1,98 +1,57 @@
 ---
-tags: [architecture, design-pattern]
+tags: [architecture, design-pattern, structural, proxy]
 status: done
+verified_at: 2026-08-04
 category: "Architecture & Design"
-aliases: ["Proxy 패턴이란?"]
+aliases: ["Proxy Pattern", "프록시 패턴"]
 ---
 
 # Proxy 패턴이란?
-다른 객체(Subject)에 대한 접근을 제어하는 대리 객체. 원본 객체의 동작을 가로채서 검증, 캐싱, 로깅 등의 부가 기능을 수행한다.
 
-## 왜 쓸까?
+GoF Proxy는 실제 Subject와 같은 계약을 제공하면서 대상에 대한 접근, 위치 또는 수명을 제어하는 대리 객체다.
 
-### 데이터 검증
-Subject 접근 전 유효성 검사를 수행하여 잘못된 입력을 차단한다.
+## 대표 유형
 
-### 보안
-권한 확인 후 접근을 허용하여 민감한 리소스를 보호한다.
+- Virtual Proxy: 비용이 큰 실제 객체를 필요할 때 만든다.
+- Remote Proxy: 원격 객체의 통신과 직렬화를 감춘다.
+- Protection Proxy: 권한에 따라 접근을 통제한다.
+- Caching Proxy: 반복 조회를 저장하고 무효화 정책을 적용한다.
 
-### 캐싱
-반복 접근 시 결과를 재사용하여 성능을 향상시킨다.
-
-### 지연 초기화
-실제 사용 시점까지 무거운 객체의 생성을 지연한다.
-
-### 로깅
-메서드 호출을 기록하여 디버깅과 모니터링을 지원한다.
-
-### 원격 객체 표현
-네트워크 너머의 객체를 로컬 객체처럼 사용할 수 있게 한다.
-
-## 핵심 개념
-
-### 구현 방식 3가지
-
-**1. Object Composition (객체 합성)**
-
-Subject를 래핑하는 새 객체를 생성하고 모든 메서드를 수동으로 위임한다. 안전하지만 메서드가 많으면 번거롭다.
-
-**2. Object Extension (Monkey Patching)**
-
-Subject 객체를 직접 수정한다. 구현이 단순하지만 원본을 변경하므로 부작용 위험이 있다. Subject가 여러 곳에서 공유되는 경우 주의가 필요하다.
-
-**3. ES2015 Proxy 객체**
-
-JavaScript 내장 Proxy로 동적 프로퍼티 접근을 가로챈다. handler trap으로 get, set, has, deleteProperty, apply, construct 등을 지원한다. 가장 유연하고 강력한 방식이다.
-
-### 코드 예시: 안전한 계산기
 ```typescript
-const safeCalculatorHandler: ProxyHandler<Calculator> = {
-  get: (target, property) => {
-    if (property === 'divide') {
-      return function () {
-        const divisor = target.peekValue()
-        if (divisor === 0) throw new Error('Division by 0')
-        return target.divide()
-      }
+class AuthorizedReportReader implements ReportReader {
+  constructor(
+    private readonly target: ReportReader,
+    private readonly policy: ReportPolicy,
+  ) {}
+
+  async read(actor: Actor, id: ReportId): Promise<Report> {
+    if (!this.policy.canRead(actor, id)) {
+      throw new ForbiddenException()
     }
-    return (target as any)[property]
+    return this.target.read(actor, id)
   }
 }
-
-const calculator = new Proxy(new Calculator(), safeCalculatorHandler)
 ```
 
-원본 Calculator의 divide 메서드를 가로채서 0으로 나누기를 방지한다. 나머지 메서드는 원본 그대로 동작한다.
+Proxy가 보안 경계라면 우회 가능한 원본 참조가 노출되지 않아야 한다. 캐시는 키, TTL과 무효화 정책이 필요하며 Remote Proxy는 부분 실패, 시간 제한과 네트워크 지연을 로컬 호출처럼 숨기지 않아야 한다.
 
-### Change Observer 패턴
+## JavaScript `Proxy`와 구분
 
-ES Proxy의 set 트랩으로 상태 변경을 감지하여 리스너에게 통지한다. 리액티브 프로그래밍의 기반이 되는 패턴이다.
+JavaScript의 내장 `Proxy`는 프로퍼티 조회, 대입, 함수 호출 같은 내부 연산을 Trap으로 가로채는 언어 메커니즘이다. GoF Proxy를 구현하는 데 사용할 수 있지만, `new Proxy()`를 사용했다는 사실만으로 디자인 패턴의 의도와 계약이 생기지는 않는다. 명세가 요구하는 Proxy 불변식도 지켜야 한다.
 
-```typescript
-function createObservable<T extends object>(target: T, observer: (change: any) => void): T {
-  return new Proxy(target, {
-    set(obj, prop, value) {
-      if (value !== (obj as any)[prop]) {
-        observer({ prop, prev: (obj as any)[prop], curr: value })
-      }
-      ;(obj as any)[prop] = value
-      return true
-    }
-  })
-}
-```
+## Decorator와 구분
 
-프로퍼티 값이 변경될 때마다 observer 콜백이 호출되어 변경 전후 값을 확인할 수 있다.
+두 패턴 모두 같은 인터페이스로 Wrapper를 만들 수 있다. Proxy는 접근 제어가 중심이고 Decorator는 책임 조합이 중심이다. Decorator가 인터페이스를 확장해야 한다는 설명은 부정확하다. 전형적인 GoF Decorator도 Component 계약을 유지한다.
 
-## Proxy vs Decorator 차이
+## 출처
 
-| 항목 | Proxy | Decorator |
-|------|-------|-----------|
-| 목적 | 기존 동작 수정/제어 | 새로운 동작 추가 |
-| 인터페이스 | 동일하게 유지 | 확장됨 |
+- 얄팍한 코딩사전, [Proxy 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=243747)
+- Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- [ECMAScript 명세, Proxy Objects](https://tc39.es/ecma262/multipage/reflection.html#sec-proxy-objects)
+- yongsoocho, [TypeScript로 구현하는 Proxy](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=150435)
 
-## 실 사용 사례
-1. mikro-orm: 엔티티 지연 로딩
-2. NestJS LazyModuleLoader: 모듈 지연 초기화
-3. Vue.js 3: 리액티비티 시스템 (ES Proxy 기반)
-4. MobX: observable 상태 관리
+## 관련 문서
+
+- [[Decorator패턴이란|Decorator 패턴]]
+- [[Adapter패턴이란|Adapter 패턴]]
+- [[Cache-Basics|캐시 기본]]

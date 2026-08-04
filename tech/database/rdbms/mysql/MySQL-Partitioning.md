@@ -1,134 +1,113 @@
 ---
 tags: [database, mysql, partitioning, partition-pruning]
 status: done
+verified_at: 2026-08-04
 category: "Database - RDBMS"
 aliases: ["MySQL Partitioning", "Partition Pruning", "RANGE 파티션"]
 ---
 
 # MySQL Partitioning
 
-큰 테이블을 **물리적으로 분할 저장**해 단일 쿼리가 부분 데이터만 스캔하도록 만드는 기법. 옵티마이저가 WHERE 조건으로 **불필요한 파티션을 가지치기(Partition Pruning)** 해 I/O를 줄인다. 샤딩과 달리 **단일 인스턴스 내 분할** — 분산 처리는 아니다.
+Partitioning은 한 table의 row와 index를 같은 MySQL server 안의 여러 partition으로 나누는 기능이다. Query predicate를 partition expression에 매핑할 수 있으면 optimizer가 필요 없는 partition을 pruning한다. 보존 기간 단위의 drop, archive와 일부 범위 query에 유용하지만 자동 성능 향상이나 수평 확장 기능은 아니다.
 
-## Partitioning vs Sharding
+## Sharding과의 차이
 
 | 축 | Partitioning | Sharding |
-|----|-------------|----------|
-| 위치 | 단일 DB 인스턴스 | 여러 DB 인스턴스 |
-| 분할 단위 | 테이블 내 파티션 | 인스턴스/DB 단위 |
-| 트랜잭션 | 일반 트랜잭션 | 분산 트랜잭션, 2PC |
-| 운영 | DB 자체 기능 | 애플리케이션, 미들웨어 |
-| 목적 | I/O 감소, 관리 단순화 | 수평 확장, 트래픽 분산 |
+|---|---|---|
+| 배치 | 한 MySQL server의 한 table | 여러 server 또는 database |
+| routing | optimizer가 partition 선택 | application 또는 middleware가 shard 선택 |
+| 주된 목적 | pruning, lifecycle 관리 | storage와 traffic의 수평 분산 |
+| 한계 | 단일 server 자원 한계 유지 | cross-shard query와 transaction 복잡성 |
 
-파티션은 **단일 노드 한계 극복은 못 함** — 행 수, 디스크 용량은 그대로. 진짜 확장은 [[Sharding]].
+## 방식 선택
 
-## 파티션 종류
+| 방식 | 기준 | 대표 용도 |
+|---|---|---|
+| `RANGE` | 연속 값 구간 | 날짜, 순차 범위 |
+| `RANGE COLUMNS` | column 값 구간, 다중 column 가능 | `DATE`, 문자열과 복합 범위 |
+| `LIST` | 명시한 값 집합 | 고정 지역 또는 category |
+| `HASH` | expression 결과를 partition 수에 매핑 | 범위 query보다 key 분산이 중요한 경우 |
+| `KEY` | MySQL 내부 hashing | HASH 대안, 다중 column |
 
-| 종류 | 분할 기준 | 적합 |
-|------|----------|------|
-| **RANGE** | 값의 범위 (`< value`) | 시간 기반 (월, 년, 분기) |
-| **LIST** | 값의 집합 매칭 | 카테고리, 국가 코드 |
-| **HASH** | 해시 함수 결과 | 균등 분산이 목표 |
-| **KEY** | MySQL 내부 해시 (PK 자동) | HASH의 대안, 다중 컬럼 |
-| **COLUMNS** (RANGE/LIST 변형) | 다중 컬럼 또는 비숫자 컬럼 | 복합 시간, 문자열 |
+시간 기반 lifecycle에는 범위 경계와 보존 단위가 자연스럽게 맞는 `RANGE` 계열을 먼저 검토한다.
 
-## RANGE 파티셔닝 — 시간 기반
+HASH가 균등 분포를 자동 보장하지는 않는다. Partition expression과 실제 key 분포, NULL/편향과 partition 수에 따라 hotspot과 크기 차이가 생길 수 있으므로 partition별 row/traffic을 측정한다.
 
 ```sql
 CREATE TABLE orders (
-  id BIGINT AUTO_INCREMENT,
-  user_id INT,
-  created_at DATE,
-  amount DECIMAL(10,2),
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  created_at DATE NOT NULL,
+  customer_id BIGINT NOT NULL,
   PRIMARY KEY (id, created_at)
-) PARTITION BY RANGE (YEAR(created_at)) (
-  PARTITION p2024 VALUES LESS THAN (2025),
-  PARTITION p2025 VALUES LESS THAN (2026),
-  PARTITION p2026 VALUES LESS THAN (2027),
-  PARTITION p_future VALUES LESS THAN MAXVALUE
+) PARTITION BY RANGE COLUMNS(created_at) (
+  PARTITION p2025 VALUES LESS THAN ('2026-01-01'),
+  PARTITION p2026 VALUES LESS THAN ('2027-01-01'),
+  PARTITION p_future VALUES LESS THAN (MAXVALUE)
 );
 ```
 
-- **운영 이점**: 오래된 파티션을 `ALTER TABLE ... DROP PARTITION p2024`로 **즉시 삭제** — `DELETE` 대비 비용 압도적으로 적음.
-- **함정**: PK에 파티션 키 컬럼이 포함돼야 함 (위 예의 `(id, created_at)`). 단순 `id` PK는 파티션 불가.
-- 시계열 로그, 주문, 이벤트에 표준.
+## Partition pruning
 
-## HASH 파티셔닝 — 균등 분산
-
-```sql
-CREATE TABLE user_logs (
-  id BIGINT AUTO_INCREMENT,
-  user_id INT,
-  action VARCHAR(50),
-  created_at TIMESTAMP,
-  PRIMARY KEY (id, user_id)
-) PARTITION BY HASH(user_id) PARTITIONS 8;
-```
-
-- 사용자 단위 작업이 균등 분산 — `WHERE user_id = ?` 시 한 파티션만.
-- 단점: 시간 범위 쿼리는 **모든 파티션 스캔** → RANGE만큼 효과 없음.
-
-## Partition Pruning
-
-옵티마이저가 WHERE 조건으로 접근 안 할 파티션을 제외. **`EXPLAIN`의 `partitions` 컬럼**에서 확인.
+Pruning은 table 크기가 아니라 predicate와 partition expression의 관계로 결정된다. `EXPLAIN`의 `partitions` column에서 실제 후보 partition을 확인한다.
 
 ```sql
 EXPLAIN
-SELECT * FROM orders WHERE created_at >= '2025-06-01' AND created_at < '2025-07-01';
--- partitions: p2025
+SELECT id, customer_id
+FROM orders
+WHERE created_at >= '2026-06-01'
+  AND created_at < '2026-07-01';
 ```
 
-가지치기 안 되는 패턴:
-- `WHERE YEAR(created_at) = 2025` — 함수 적용으로 옵티마이저가 매핑 못 함. 항상 **raw 컬럼에 범위 비교**.
-- `WHERE created_at = '2025-06-15'` 비교에 함수 사용, 암묵적 변환.
-- 파티션 키 미포함 WHERE — 모든 파티션 스캔.
+- partition key 조건이 없거나 optimizer가 경계를 계산할 수 없으면 여러 partition을 읽는다.
+- function이 있다는 이유만으로 pruning이 항상 사라지는 것은 아니다. MySQL은 `YEAR()`, `TO_DAYS()`, `TO_SECONDS()`를 사용한 일부 `DATE`와 `DATETIME` partition expression도 pruning할 수 있다.
+- query predicate와 partition expression의 형태가 맞는지 대표 query마다 `EXPLAIN`으로 확인한다.
+- pruning 뒤에도 partition 내부 index가 필요하다. Partitioning은 index 설계를 대체하지 않는다.
 
 ## 운영 작업
 
-| 작업 | SQL | 비고 |
-|------|-----|------|
-| 파티션 추가 | `ALTER TABLE ... ADD PARTITION (PARTITION p2027 VALUES LESS THAN (2028))` | RANGE는 마지막 위치에만 |
-| 파티션 삭제 | `ALTER TABLE ... DROP PARTITION p2024` | 데이터 즉시 회수 |
-| 파티션 분할 | `REORGANIZE PARTITION p_future INTO (...)` | MAXVALUE 파티션 분할 |
-| 파티션 교환 | `EXCHANGE PARTITION p2024 WITH TABLE archive_2024` | 아카이브 패턴 |
-| 파티션 비우기 | `TRUNCATE PARTITION p2024` | DROP보다 메타데이터 유지 |
+| 목적 | 작업 |
+|---|---|
+| 미래 범위 준비 | `ADD PARTITION` 또는 `p_future`를 `REORGANIZE PARTITION` |
+| 보존 기간 만료 | `DROP PARTITION` |
+| 구조는 남기고 비우기 | `TRUNCATE PARTITION` |
+| staging/archive table과 교환 | `EXCHANGE PARTITION` |
 
-`EXCHANGE PARTITION`이 강력 — 아카이브용 별도 테이블로 옮기고 원본은 가벼운 상태 유지.
+범위 partition 생성은 application 배포와 분리해 미리 자동화한다. `DROP PARTITION`은 row별 `DELETE`보다 lifecycle 정리에 유리할 수 있지만 데이터가 제거되는 DDL이므로 backup, metadata lock, replica 영향과 복구 절차를 검증한다. `EXCHANGE PARTITION`도 구조 호환성과 validation 비용을 대상 버전에서 확인한다.
 
-## 한계와 함정
+## 중요한 제약
 
-- **PK, UNIQUE 인덱스에 파티션 키 포함 필수** — 모든 unique key가 파티션 키를 포함해야 함. 일반 인덱스는 자유.
-- **외래 키 미지원** — InnoDB 파티션 테이블은 FK 못 가짐.
-- **TRIGGER 파티션 한계** — 일부 동작 제한.
-- **파티션 수 한계** — 8.0 기준 8192 (실제 운영은 100개 이하 권장).
-- **JOIN 성능** — 파티션 단위 JOIN 최적화는 제한적, 풀스캔 발생 가능.
-- **샤딩의 대체 X** — 단일 인스턴스 내 분할이라 실제 확장은 한계.
-- **글로벌 인덱스 없음** — 모든 인덱스는 파티션 로컬. 파티션 키 미포함 검색은 모든 파티션 스캔.
+- 모든 `PRIMARY KEY`와 `UNIQUE` key는 partition expression에 사용된 모든 column을 포함해야 한다.
+- Partitioned InnoDB table은 foreign key를 가지거나 다른 foreign key의 참조 대상이 될 수 없다.
+- Index는 partition별로 유지된다. Pruning되지 않는 조건은 여러 local index를 탐색할 수 있다.
+- 모든 partition은 같은 storage engine을 사용하며 한 server의 CPU, memory와 I/O를 공유한다.
+- Partition key가 업무 identity에 억지로 들어가면 FK와 unique constraint 설계가 나빠질 수 있다.
 
 ## 도입 판단
 
-| 조건 | 도입 가치 |
-|------|----------|
-| 시계열성 데이터, 오래된 데이터 주기 삭제 필요 | ✅ RANGE 강력 |
-| 1억 row+ 큰 테이블 + 시간 범위 쿼리 | ✅ |
-| 사용자별 격리, 균등 분산 | △ HASH 고려, 샤딩이 더 적합할 수 있음 |
-| 작은 테이블 (<1000만 row) | ✗ 인덱스 튜닝이 우선 |
-| 복잡한 JOIN, 서브쿼리 중심 | ✗ 옵티마이저 한계 — 효과 적음 |
+다음 조건을 함께 만족할수록 가치가 크다.
 
-## 면접 체크포인트
+1. 시간 또는 key 범위에 맞춰 대량 데이터를 반복적으로 보존, 삭제하거나 교환한다.
+2. 핵심 query가 partition key를 자주 포함해 pruning할 수 있다.
+3. composite PK와 unique key 제약, InnoDB FK 제한을 수용할 수 있다.
+4. partition 생성, 누락 감지, pruning 회귀와 archive를 자동화할 수 있다.
 
-- Partitioning vs Sharding 차이 — 단일 인스턴스 vs 분산
-- RANGE / HASH / LIST / KEY 선택 기준
-- Partition Pruning 동작과 EXPLAIN으로 확인
-- `WHERE YEAR(col)` 같은 함수 적용 시 가지치기 깨지는 이유
-- `DROP PARTITION` vs `DELETE` — 시계열 데이터 회수 비용 차이
-- PK에 파티션 키 포함이 필수인 이유 — 글로벌 인덱스 부재
-- 파티셔닝의 한계 — FK 미지원, 단일 인스턴스 한계, 글로벌 인덱스 없음
-- 샤딩으로 가야 할 시점 판단
+단지 table이 크다는 이유만으로 도입하지 않는다. 먼저 query 의미, index와 통계를 고치고 대표 workload에서 scanned partitions, rows, latency와 운영 시간을 비교한다. 단일 server 용량을 넘어서는 문제가 목적이면 [[Sharding|sharding]]과 data lifecycle 분리를 검토한다.
+
+## 출처
+
+- [MySQL 8.4 Reference Manual, Partitioning Overview](https://dev.mysql.com/doc/refman/8.4/en/partitioning-overview.html)
+- [MySQL 8.4 Reference Manual, Partition Pruning](https://dev.mysql.com/doc/refman/8.4/en/partitioning-pruning.html)
+- [MySQL 8.4 Reference Manual, Partitioning Keys and Unique Keys](https://dev.mysql.com/doc/refman/8.4/en/partitioning-limitations-partitioning-keys-unique-keys.html)
+- [MySQL 8.4 Reference Manual, Storage Engine Limitations](https://dev.mysql.com/doc/refman/8.4/en/partitioning-limitations-storage-engines.html)
+- [MySQL 8.4 Reference Manual, RANGE and LIST Partition Management](https://dev.mysql.com/doc/refman/8.4/en/partitioning-management-range-list.html)
+- [인프런, Real MySQL 시즌 1 - Part 2, 테이블 파티셔닝](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226587)
+- [인프런, Hong, 파티셔닝과 인덱스 설계](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338546)
+- [인프런, Hong, Partitioning과 Sharding](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338558)
 
 ## 관련 문서
 
 - [[Sharding|샤딩]]
-- [[Index|Index design]]
-- [[Execution-Plan|EXPLAIN, 실행계획]]
-- [[Schema-Migration-Large-Table|대용량 테이블 스키마 변경]]
+- [[Index|인덱스]]
+- [[Execution-Plan|실행 계획]]
+- [[MySQL-Long-Transactions-and-Batch|MySQL 장기 트랜잭션과 배치]]
 - [[MySQL-Architecture|MySQL 아키텍처]]

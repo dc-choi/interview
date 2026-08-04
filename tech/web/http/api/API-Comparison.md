@@ -1,6 +1,7 @@
 ---
 tags: [web, network, api, rest, graphql, grpc, trpc, ts-rest]
 status: done
+verified_at: 2026-08-04
 category: "웹&네트워크(Web&Network)"
 aliases: ["API Comparison", "REST vs GraphQL vs gRPC", "REST vs GraphQL vs gRPC vs tRPC vs ts-rest"]
 ---
@@ -14,11 +15,11 @@ API 스타일의 본질적 차이를 한눈에 비교하고, 언제 무엇을 �
 | 축 | REST | GraphQL | gRPC |
 |---|---|---|---|
 | 패러다임 | 자원 중심 | 쿼리 중심 | 함수 호출(RPC) 중심 |
-| 프로토콜 | HTTP/1.1 (HTTP/2 가능) | HTTP (POST, 조회 GET은 서버 지원 시 가능) | HTTP/2 필수 |
+| 전송 | HTTP | 주로 HTTP | HTTP/2 기반 |
 | 데이터 형식 | JSON, XML (텍스트) | JSON | Protobuf (바이너리) |
-| 엔드포인트 | 자원별 다수 | 단일 `/graphql` | 함수별 다수 |
+| 엔드포인트 | 자원별 다수 | 보통 단일 `/graphql` | service method |
 | 응답 모양 결정 | 서버 | 클라이언트 | 서버 (스키마 고정) |
-| 통신 방향 | 단방향 | 단방향 (Subscription은 별개) | 양방향 스트리밍 |
+| 상호작용 | request/response | query/mutation, subscription은 별도 전송 고려 | unary, server/client/bidirectional streaming |
 | 스키마 | 선택 (OpenAPI) | 필수 | 필수 (`.proto`) |
 | 결합도 | 느슨 | 중간 | 긴밀 |
 | HTTP 캐싱 | 잘 동작 | 기본 활용은 어려움, GET과 persisted document로 보완 | 직접 구현 |
@@ -57,7 +58,7 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 ## 성능 특성
 
 ### 메시지 크기
-- **gRPC** ≪ **REST** (Protobuf 바이너리 vs JSON 텍스트). JSON 82B → Protobuf 33B 수준
+- gRPC의 Protobuf binary encoding은 JSON보다 작은 경우가 많지만 실제 크기는 schema, 값, metadata와 compression에 따라 달라진다. protocol 이름만으로 고정 배수를 가정하지 않는다
 - **GraphQL**: 필요 필드만 선택 → 응답은 작지만 요청(쿼리 본문)은 더 큼
 
 ### 라운드트립
@@ -87,10 +88,10 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 - DataLoader, 복잡도 제한 등 운영 비용 감수 가능
 
 ### gRPC를 고르는 경우
-- 마이크로서비스 간 내부 통신 (백엔드↔백엔드)
+- 강한 계약과 streaming이 필요한 내부 서비스 통신
 - 양방향 스트리밍 필요 (채팅, 게임, 실시간 데이터)
 - 자원 한정적 환경 (모바일, IoT)
-- 다언어 폴리글랏 백엔드 (Java + Go + Python)
+- 지원 언어가 다른 backend 사이에 공통 IDL과 code generation이 유리할 때
 - 강한 계약, 자동 코드 생성이 필요한 대규모 조직
 
 ## TypeScript 한정 type-safe 대안 — tRPC, ts-rest
@@ -141,6 +142,9 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 - [Caching — GraphQL](https://graphql.org/learn/caching/)
 - [GraphQL over HTTP Stage 2 Draft](https://graphql.github.io/graphql-over-http/draft/)
 - [AWS — gRPC와 REST의 차이](https://aws.amazon.com/ko/compare/the-difference-between-grpc-and-rest/)
+- [gRPC 공식 문서 — What is gRPC](https://grpc.io/docs/what-is-grpc/)
+- [Dowon Lee 강사 — Microservice Architecture의 통신 방법](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289771)
+- [Dowon Lee 강사 — REST, GraphQL, gRPC 비교](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289776)
 
 ## 관련 문서
 - [[REST|REST, RESTful API]]

@@ -11,6 +11,7 @@ Redis 제품 심화 문서 모음. 자료구조와 내부 인코딩부터 아키
 
 - [[Redis-Memory-Internals|자료구조와 메모리 내부 (인코딩, Eviction)]]
 - [[Redis-Atomic-Operations|Redis 원자적 연산 (INCR, MULTI/EXEC, WATCH, Lua)]]
+- [[Redis-Cart-Checkout-Consistency|Redis 장바구니와 주문 정합성 (Hash, TTL, cart version, Outbox cleanup)]]
 - [[Redis-Architecture|Redis architecture (Event Loop, RESP, Pipeline, Transaction)]]
 - [[Redis-Cluster-Sharding|Redis Cluster, Sharding (16384 Hash Slot, CRC16, Gossip)]]
 - [[Redis-Streams-PubSub|Streams, Pub/Sub (Consumer Group, Sharded Pub/Sub, Kafka 비교)]]

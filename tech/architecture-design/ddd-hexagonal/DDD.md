@@ -19,7 +19,7 @@ aliases: ["DDD", "Domain-Driven Design"]
 
 - 소유와 참조가 구분되는 경계
 - 너무 크게 설계하면 안 됨
-- 소유가 아니라면 id만 가질 수 있음
+- 다른 Aggregate와 하나의 일관성 경계를 만들지 않는다. ID 참조가 안전한 기본값이지만, 모델 표현력이 더 중요하고 로딩/트랜잭션 결합을 통제할 수 있다면 객체 참조도 선택할 수 있다.
 
 ## DAO vs Repository
 
@@ -43,16 +43,15 @@ Aggregate가 소유하기 애매한 경우 도메인 서비스를 둔다.
 **도메인 서비스 후보:**
 - 둘 이상의 Aggregate를 동시에 다루는 경우
 - 도메인 규칙이지만 상태를 가지지 않는 경우
-- 외부 API와 연동이 필요한 경우
+- 암호 비교처럼 도메인이 이름 붙인 능력이지만 특정 Entity/VO에 둘 수 없는 경우. 기술 구현은 required port 뒤의 adapter가 맡을 수 있다.
 
 **도메인 서비스가 아닌 경우:**
-- 상태를 저장하는 경우
-- 사이드이펙트가 발생하는 경우
+- 유스케이스 순서, 트랜잭션, 외부 I/O를 조율하는 경우. 이는 application service의 책임이다.
+- 서비스 자체가 변경 가능한 비즈니스 상태를 저장하는 경우
 
 ## 엔티티 매핑
 
-인프라 엔티티와 도메인 엔티티를 그대로 쓰면 도메인과 인프라 관심사가 섞인다.
-**수동 매핑**을 통해 관심사를 분리할 수 있다.
+도메인 모델과 ORM 엔티티는 통합하거나 분리할 수 있다. JPA처럼 영속 도메인 객체를 지원하고 두 모델의 구조가 비슷하면 하나의 클래스로도 풍부한 도메인 모델을 만들 수 있다. 저장 구조와 도메인 언어의 간극이 크면 별도 persistence 모델과 수동 Mapper가 유리하다. 판단 기준은 [[Domain-ORM-Mapper|도메인 모델과 ORM 모델 통합/분리]]에서 다룬다.
 
 ## 비즈니스 모델링 우선
 
@@ -111,9 +110,17 @@ Strategic으로 그려낸 각 Bounded Context **내부를 구현**하는 도구�
 Tactical은 Strategic이 없으면 의미가 축소된다. **큰 경계 없이 내부 패턴만** 적용하면 빈약한 도메인 모델, 거대 Aggregate 같은 안티패턴으로 회귀하기 쉽다.
 
 ## 관련 문서
+
 - [[DDD-Hexagonal-In-Production|DDD + Hexagonal 실무 경험 (부릉 7년)]]
 - [[Hexagonal-In-Practice|Hexagonal 실전 적용]]
 - [[OOP|OOP / SOLID]]
 - [[VO-DTO]]
 - [[Layered-Clean-Hexagonal|Layered / Clean / Hexagonal]]
 - [[Monolith-vs-Microservice|Monolith vs Microservice]]
+
+## 강의 참고
+
+- [토비 강사 — 애그리거트와 JPA](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=313420)
+- [토비 강사 — PasswordEncoder 도메인 서비스](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=291136)
+- [토비 강사 — 애그리거트와 애플리케이션 컴포넌트 의존 관계](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=458026)
+- [토비 강사 — 커리큘럼 도메인 모델](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=470526)

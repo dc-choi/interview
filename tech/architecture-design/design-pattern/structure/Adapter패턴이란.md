@@ -1,68 +1,63 @@
 ---
-tags: [architecture, design-pattern]
+tags: [architecture, design-pattern, structural, adapter]
 status: done
 category: "Architecture & Design"
-aliases: ["Adapter 패턴이란?"]
+aliases: ["Adapter Pattern", "어댑터 패턴"]
 ---
 
 # Adapter 패턴이란?
-호환되지 않는 인터페이스를 변환하여 함께 동작할 수 있게 하는 패턴. USB Type-C 어댑터처럼 중간에서 변환 역할을 한다.
 
-## 왜 쓸까?
+Adapter는 클라이언트가 기대하는 Target 계약과 호환되지 않는 Adaptee의 인터페이스를 변환하는 구조 패턴이다. 외부 SDK나 레거시 시스템의 세부를 애플리케이션 경계 뒤에 격리할 때 유용하다.
 
-### 기존 코드 보존
-기존 코드를 수정하지 않고 새로운 시스템과 통합할 수 있다.
+## NestJS 예시
 
-### 인터페이스 표준화
-서드파티 라이브러리의 인터페이스를 프로젝트 표준에 맞출 수 있다.
-
-### 구현체 교체 용이
-여러 구현체를 동일한 인터페이스로 사용하여 교체가 쉬워진다.
-
-## 핵심 개념
-
-### 구조
-Client -> Adapter -> Adaptee
-
-Client는 표준 인터페이스를 사용하는 코드이다. Adapter는 인터페이스를 변환하는 중간 객체이다. Adaptee는 실제 기능을 제공하지만 다른 인터페이스를 가진 객체이다.
-
-### 코드 예시: LevelDB를 fs API로
 ```typescript
-function createFSAdapter(db: any) {
-  return {
-    readFile(filename: string, options: any, callback: Function) {
-      db.get(
-        path.resolve(filename),
-        { valueEncoding: options.encoding },
-        (err: Error, value: any) => callback(err, value)
-      )
-    },
-    writeFile(filename: string, contents: string, options: any, callback: Function) {
-      db.put(
-        path.resolve(filename),
-        contents,
-        { valueEncoding: options.encoding },
-        callback
-      )
+interface PaymentGateway {
+  charge(command: ChargeCommand): Promise<PaymentResult>
+}
+
+@Injectable()
+class VendorPaymentAdapter implements PaymentGateway {
+  constructor(private readonly client: VendorClient) {}
+
+  async charge(command: ChargeCommand): Promise<PaymentResult> {
+    try {
+      const response = await this.client.request({
+        price: command.amount.toNumber(),
+        key: command.idempotencyKey,
+      })
+      return PaymentResult.approved(response.transactionId)
+    } catch (error) {
+      throw mapVendorError(error)
     }
   }
 }
 ```
 
-LevelDB의 get/put 인터페이스를 fs 모듈의 readFile/writeFile 인터페이스로 변환한다. 클라이언트는 파일 시스템 API를 사용한다고 생각하지만 실제로는 LevelDB에 데이터가 저장된다.
+Adapter는 메서드 이름만 바꾸지 않는다. DTO, 단위, 오류, 동기와 비동기 방식, 타임아웃과 재시도 의미까지 내부 계약으로 변환한다. 의미가 근본적으로 다른 두 시스템을 억지로 같은 인터페이스에 넣으면 차이를 숨길 뿐 제거하지 못한다.
 
-```typescript
-const fsAdapter = createFSAdapter(db)
+## 적용 체크포인트
 
-fsAdapter.writeFile('file.txt', 'Hello!', { encoding: 'utf8' }, (err: Error) => {
-  fsAdapter.readFile('file.txt', { encoding: 'utf8' }, (err: Error, data: string) => {
-    console.log(data) // 'Hello!'
-  })
-})
-```
+- 외부 타입이 도메인과 애플리케이션 내부로 새지 않는가?
+- 외부 오류가 안정된 내부 오류 분류로 변환되는가?
+- 금액, 시간대, 식별자와 nullable 의미가 보존되는가?
+- 재시도 가능한 실패와 영구 실패를 구분하는가?
+- 계약 테스트로 실제 Adaptee와의 호환성을 검증하는가?
 
-## 실 사용 사례
-1. LevelDB 어댑터: LevelDOWN, MemDOWN 등 다양한 백엔드를 동일 API로
-2. 데이터베이스 어댑터: TypeORM의 드라이버 추상화
-3. 로깅 어댑터: winston/pino 등 다른 로거를 통일된 인터페이스로
-4. 파일 스토리지 어댑터: 로컬/S3/GCS를 동일 API로
+## 다른 패턴과 구분
+
+- Facade는 복잡한 서브시스템에 단순한 고수준 진입점을 제공한다.
+- Bridge는 설계 시점부터 독립적인 두 변화 축을 분리한다.
+- Decorator는 같은 Component 계약을 유지하면서 책임을 겹쳐 붙인다.
+
+## 출처
+
+- 얄팍한 코딩사전, [Adapter 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=242783)
+- Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- yongsoocho, [TypeScript로 구현하는 Adapter](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=150430)
+
+## 관련 문서
+
+- [[Facade패턴이란|Facade 패턴]]
+- [[Bridge패턴이란|Bridge 패턴]]
+- [[Hexagonal-In-Practice|헥사고날 아키텍처 실전]]

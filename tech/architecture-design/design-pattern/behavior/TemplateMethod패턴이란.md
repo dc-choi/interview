@@ -6,7 +6,7 @@ aliases: ["Template Method 패턴이란?"]
 ---
 
 # Template Method 패턴이란?
-알고리즘의 골격을 정의하고, 일부 단계를 하위 클래스에서 구현하도록 위임하는 패턴
+상위 클래스가 알고리즘의 골격과 실행 순서를 정의하고 일부 단계나 Hook을 하위 클래스에 위임하는 행동 패턴이다.
 
 ## 왜 쓸까?
 
@@ -16,8 +16,8 @@ aliases: ["Template Method 패턴이란?"]
 ### 코드 중복 제거
 공통 로직은 부모 클래스에, 가변 로직은 하위 클래스에 둔다.
 
-### 하위 클래스가 전체 알고리즘을 변경할 수 없도록 제어
-하위 클래스는 특정 단계만 재정의할 수 있으므로 알고리즘의 구조가 보호된다.
+### 변형 지점을 제한
+하위 클래스가 보호된 단계만 재정의하게 설계하면 전체 흐름을 한곳에서 관리할 수 있다. 다만 TypeScript에는 Java의 `final` 메서드와 같은 강제 수단이 없으므로 상속 계약, 가시성과 테스트로 골격을 보호해야 한다.
 
 ## 핵심 개념
 
@@ -26,7 +26,7 @@ aliases: ["Template Method 패턴이란?"]
 |------|----------------|----------|
 | 관계 | is-a (상속) | has-a (합성) |
 | 변경 단위 | 알고리즘의 일부 단계 | 전체 알고리즘 |
-| 바인딩 시점 | 컴파일타임 (클래스 정의 시) | 런타임 (객체 생성/교체 시) |
+| 선택 방식 | 하위 타입을 생성해 골격에 결합 | 객체나 함수를 주입하고 필요하면 교체 |
 | 확장 방법 | 서브클래싱 | 전략 객체 주입 |
 
 ### Node.js에서의 활용
@@ -60,3 +60,16 @@ abstract class DataProcessor {
 2. HTTP 프레임워크: 요청 처리 파이프라인
 3. 테스트 프레임워크: setup → test → teardown
 4. 데이터 파이프라인: extract → transform → load
+
+상속 결합이 부담스럽거나 단계 조합이 독립적으로 바뀐다면 Strategy와 함수 합성을 먼저 검토한다. 하위 클래스가 골격을 통째로 재정의하거나 상위 클래스 내부 상태를 과도하게 알아야 한다면 패턴의 이점이 약해진다.
+
+## 출처
+
+- 얄팍한 코딩사전, [Template Method 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=242681)
+- Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- yongsoocho, [TypeScript로 구현하는 Template Method](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=227028)
+
+## 관련 문서
+
+- [[Strategy패턴이란|Strategy 패턴]]
+- [[OOP|객체지향 프로그래밍]]

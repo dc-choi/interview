@@ -122,6 +122,7 @@ POST /users       { "name": "dc" }    // 비멱등: 매번 새 사용자 생성
 
 ## 출처
 
+- 김영한 강사, [HTTP 메서드의 속성](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61367)
 - [RFC 9110 — HTTP Semantics — RFC Editor](https://www.rfc-editor.org/info/rfc9110/)
 - [RFC 10008 — The HTTP QUERY Method — RFC Editor](https://www.rfc-editor.org/info/rfc10008/)
 - [The Idempotency-Key HTTP Header Field — IETF Datatracker](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/)

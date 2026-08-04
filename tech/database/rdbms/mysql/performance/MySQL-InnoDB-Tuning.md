@@ -1,190 +1,113 @@
 ---
-tags: [database, mysql, innodb, buffer-pool, tuning]
+tags: [database, mysql, innodb, buffer-pool, redo, io, tuning]
 status: done
+verified_at: 2026-08-04
 category: "Database - RDBMS"
 aliases: ["MySQL InnoDB Tuning", "Buffer Pool", "innodb_flush_log_at_trx_commit"]
 ---
 
-# InnoDB Tuning — Buffer Pool, 로그, I/O
+# InnoDB 메모리, 로그와 I/O 튜닝
 
-InnoDB의 운영 성능은 **메모리(Buffer Pool) ↔ Redo Log ↔ 디스크 I/O** 삼각관계에서 결정된다. 기본값은 안전 우선이라 운영 트래픽에는 보수적 — 워크로드를 알고 조정하면 같은 하드웨어에서 수배 차이가 난다.
+InnoDB tuning은 권장 숫자를 복사하는 일이 아니다. working set, query shape, write burst, storage latency와 durability 요구를 측정하고 한 번에 한 가설만 바꾼다. 설정 변경 절차는 [[MySQL-Configuration-Change-Management|MySQL 설정 변경 관리]]를 따른다.
 
-## 튜닝 우선순위
+## Buffer pool 용량
 
-| 순위 | 항목 | 영향 |
-|------|------|------|
-| 1 | `innodb_buffer_pool_size` | 가장 큼 — 디스크 I/O 90% 결정 |
-| 2 | `innodb_flush_log_at_trx_commit` | 쓰기 성능 vs 내구성 트레이드오프 |
-| 3 | `innodb_log_file_size` | 쓰기 부하, 체크포인트 빈도 |
-| 4 | `innodb_io_capacity` / `_max` | 더티 페이지 flush 속도 |
-| 5 | `innodb_buffer_pool_instances` | 멀티코어 경합 분산 |
-| 6 | `innodb_flush_method` | OS 캐시, 이중 버퍼링 |
+Buffer pool은 InnoDB data와 index page를 cache한다. 크기는 물리 메모리의 고정 비율보다 다음 예산으로 결정한다.
 
-## 1. Buffer Pool — 가장 중요한 변수
-
-InnoDB의 **데이터, 인덱스 페이지 캐시**. Buffer Pool 적중률이 곧 성능. 디스크 I/O의 대부분이 이 캐시 미스에서 발생.
-
-```sql
-SET GLOBAL innodb_buffer_pool_size = '8G';
-SET GLOBAL innodb_buffer_pool_instances = 8;
+```text
+server memory
+- OS and filesystem
+- connection and thread memory
+- sort, join and temporary memory
+- performance schema and other processes
+= buffer pool 후보 상한
 ```
 
-| 권장값 | 근거 |
-|--------|------|
-| 전용 DB 서버: **물리 메모리의 70~80%** | OS, 연결 메모리, tmp 테이블 여유 |
-| 공용 서버: 30~50% | 다른 프로세스와 공존 |
-| 작은 DB (< 8GB): DB 크기 + 30% 여유 | 전체 데이터를 메모리에 |
+`Innodb_buffer_pool_read_requests`와 `Innodb_buffer_pool_reads`로 logical request와 physical read 추세를 볼 수 있지만 hit ratio 하나에 보편적인 합격선은 없다. 큰 sequential scan은 낮은 ratio가 자연스러울 수 있고 99%여도 hot query가 잘못된 index로 많은 page를 읽으면 느릴 수 있다. latency, rows examined, page reads, eviction과 working set을 함께 본다.
 
-**`innodb_buffer_pool_instances`** — Buffer Pool을 N개로 분할해 mutex 경합 감소. 코어 수와 비슷하게(8~16). Buffer Pool 1GB 미만이면 1로 둠.
+MySQL 8.4의 `innodb_buffer_pool_size`는 online resize할 수 있다. 변경 중 내부 작업과 memory pressure를 관찰하고 단계적으로 조정한다. 재시작 warmup이 문제라면 buffer pool dump/load를 검토하되 잘못된 access pattern까지 영구히 데우는 것으로 오해하지 않는다.
 
-### 적중률 모니터링
+## Midpoint insertion LRU
 
-```sql
-SELECT
-  ROUND(
-    (1 - (Innodb_buffer_pool_reads / Innodb_buffer_pool_read_requests)) * 100,
-    2
-  ) AS hit_rate
-FROM (
-  SELECT
-    VARIABLE_VALUE AS Innodb_buffer_pool_reads
-    -- ...
-) t;
-```
+InnoDB는 단순 LRU가 아니라 새 page를 list 중간의 old sublist에 넣어 full scan과 read-ahead가 hot page를 밀어내는 일을 줄인다.
 
-목표 99%+. 95% 미만이면 Buffer Pool 키우기 또는 워킹셋 분석.
+- `innodb_old_blocks_pct`가 old 영역 비율을 조정한다.
+- `innodb_old_blocks_time` 안의 첫 재접근은 즉시 young 영역 승격으로 보지 않는다.
+- scan 뒤 eviction과 hot page churn이 확인될 때만 대표 workload로 값을 비교한다.
 
-### Warmup
+강의나 과거 문서의 고정 비율과 지연 시간을 모든 workload의 정답으로 사용하지 않는다.
 
-재시작 후 Buffer Pool이 비면 응답 시간 폭증. **8.0+는 자동 dump/load**:
+## Adaptive Hash Index
 
-```sql
-SET GLOBAL innodb_buffer_pool_dump_at_shutdown = ON;
-SET GLOBAL innodb_buffer_pool_load_at_startup = ON;
-```
+Adaptive Hash Index는 자주 접근하는 B-tree page의 일부 search pattern에 hash lookup 경로를 만들 수 있다. 모든 lookup을 상수 시간으로 바꾸는 별도 사용자 index가 아니며 workload에 따라 latch contention과 memory 비용이 생길 수 있다.
 
-종료 시 페이지 ID 덤프 → 시작 시 다시 적재.
+MySQL 8.4에서 `innodb_adaptive_hash_index` 기본값은 `OFF`다. 과거 버전의 기본값을 그대로 전제하지 말고 AHI search와 contention을 관찰하며 현실적인 동시성 benchmark로 ON/OFF를 비교한다.
 
-## 2. Redo Log — 내구성 vs 성능
+## Change buffer와 read-ahead
 
-Redo Log는 **트랜잭션 commit이 디스크에 도달했음을 보장**하는 WAL. 설정 하나로 쓰기 성능이 크게 갈림.
+Change buffer는 buffer pool에 없는 secondary index page의 DML 변경을 모았다가 page를 읽을 때 merge해 random I/O를 줄일 수 있다. 대신 buffer pool 공간, merge I/O와 recovery 시간을 소비한다. MySQL 8.4에서 `innodb_change_buffering` 기본값은 `none`이며 descending index 관련 제한도 있다. 과거 default와 bulk insert 관행을 그대로 적용하지 않는다.
 
-```sql
-SET GLOBAL innodb_flush_log_at_trx_commit = 1;   -- 기본 (가장 안전)
-SET GLOBAL innodb_log_file_size = '1G';
-SET GLOBAL innodb_log_buffer_size = '64M';
-```
+Read-ahead는 여러 page를 비동기로 미리 읽는다.
 
-### `innodb_flush_log_at_trx_commit`
+- linear read-ahead는 sequential access를 감지해 다음 extent를 읽는다.
+- random read-ahead는 별도 설정이며 기본적으로 활성화돼 있다고 가정하지 않는다.
+- `Innodb_buffer_pool_read_ahead`, `_evicted`, `_rnd`로 미리 읽은 page가 실제로 쓰였는지 본다.
 
-| 값 | 동작 | 손실 가능 |
-|----|------|----------|
-| **1** (기본) | 매 commit마다 flush + fsync | 0초 (완전 내구성) |
-| **2** | 매 commit마다 OS 버퍼에 write, 1초마다 fsync | OS 크래시 시 1초 |
-| **0** | 1초마다 write + fsync | MySQL 크래시 시 1초 |
+Prefetch를 늘려도 query가 필요한 row가 줄어드는 것은 아니다. 잘못된 full scan과 index를 먼저 고친다.
 
-- 금융, 결제 도메인은 **반드시 1**.
-- 분석, 로그, 캐시성 데이터는 **2가 절충안** — 쓰기 처리량 ~5배.
-- 0은 거의 안 씀 — MySQL 자체 크래시도 영향.
+## Redo와 commit durability
 
-### `innodb_log_file_size`
+`innodb_flush_log_at_trx_commit`은 redo write와 flush 시점을 바꾼다.
 
-체크포인트 주기 결정. **크면**: 체크포인트 빈도 ↓ → 쓰기 부하 균등, 회복 시간 ↑. **작으면**: 빈번한 체크포인트로 I/O 스파이크.
+| 값 | commit 경계 | 주의점 |
+|---|---|---|
+| `1` | commit마다 redo write와 flush | 가장 강한 기본값이지만 storage가 flush를 정직하게 보장해야 한다. |
+| `2` | commit마다 OS에 write, 주기적으로 flush | OS 또는 전원 장애에서 최근 transaction 손실 가능성이 커진다. |
+| `0` | write와 flush를 background 주기에 맡김 | mysqld crash에서도 최근 transaction 손실 가능성이 있다. |
 
-운영급은 1~4GB. log_file_size를 늘리면 회복 시간이 늘어 운영 RTO 영향 — 트레이드오프.
+주기 작업은 scheduling 때문에 정확히 1초를 보장하지 않는다. Binary log를 durability/failover에 사용하면 `sync_binlog`와 group commit도 함께 본다. 결제라는 label만으로 설정을 고정하기보다 승인된 RPO와 storage 보장으로 선택한다.
 
-## 3. I/O Capacity
+MySQL 8.4에서는 redo 용량을 `innodb_redo_log_capacity`로 관리한다. 너무 작으면 aggressive checkpoint와 write stall, 너무 크면 recovery와 disk 예산에 영향을 줄 수 있다. `Innodb_redo_log_capacity_resized`, checkpoint age, log waits와 recovery rehearsal로 정한다.
 
-InnoDB가 백그라운드로 **dirty page를 flush하는 속도** 한계.
+## Flush와 I/O capacity
 
-```sql
-SET GLOBAL innodb_io_capacity = 2000;       -- SSD 기준
-SET GLOBAL innodb_io_capacity_max = 4000;   -- 부하 폭증 시 상한
-```
+`innodb_io_capacity`와 `_max`는 background flushing이 가정하는 IOPS 수준이다. HDD, SSD, NVMe라는 제품명만으로 숫자를 정하지 말고 실제 storage의 지속 IOPS와 latency, 다른 workload가 쓸 여유를 측정한다.
 
-| 디스크 | 권장 |
-|--------|------|
-| HDD | 100~200 |
-| SATA SSD | 1000~2000 |
-| NVMe SSD | 5000~20000 |
+- dirty page 비율과 checkpoint age가 계속 오르는가
+- `Innodb_buffer_pool_wait_free`와 `Innodb_log_waits`가 증가하는가
+- flush가 foreground latency와 replica lag를 악화시키는가
+- OS swap, filesystem와 cloud volume throttle이 있는가
 
-**낮으면** 더티 페이지 누적 → 체크포인트 시 폭발적 I/O. **너무 높으면** 다른 작업 I/O 압박.
+`O_DIRECT` 같은 flush method도 OS, filesystem와 deployment 방식에 따라 효과가 다르다. 설정이 지원되고 실제 double caching과 memory pressure가 문제인지 확인한다.
 
-## 4. flush_method, 더티 페이지
+## 압축과 page 관찰
 
-```sql
-SET GLOBAL innodb_flush_method = 'O_DIRECT';
-SET GLOBAL innodb_max_dirty_pages_pct = 75;   -- 기본
-```
+`ROW_FORMAT=COMPRESSED`, page compression과 binary log compression은 서로 다른 기능이다. Disk 절감률을 가정하지 말고 CPU, buffer pool, page split/reorganization과 write latency를 함께 benchmark한다. 자세한 도입 및 archive 절차는 [[MySQL-Compression-and-Archiving|MySQL 압축과 아카이빙]]에 둔다.
 
-`O_DIRECT` — OS 페이지 캐시 우회. InnoDB가 자체 Buffer Pool 갖고 있어 **이중 캐싱 회피**. Linux + NVMe 표준.
+`INFORMATION_SCHEMA.INNODB_BUFFER_PAGE`는 큰 buffer pool을 scan해 상당한 overhead를 만들 수 있다. 상시 dashboard query 대신 status counters, Performance Schema와 `SHOW ENGINE INNODB STATUS`를 먼저 사용한다.
 
-`innodb_max_dirty_pages_pct` — Buffer Pool 중 더티 비율 상한. 초과 시 강제 flush. 일관 쓰기 부하면 75 적정, 쓰기 폭증 환경은 60~70.
+## 검증 순서
 
-## 5. file_per_table, 테이블 압축
+1. SLO 위반 query와 workload phase를 특정한다.
+2. query plan, logical/physical reads, locks, redo와 storage latency를 같은 시간축으로 수집한다.
+3. query/index 수정과 memory/I/O 설정 변경을 분리한다.
+4. canary에서 throughput뿐 아니라 P95/P99, error, recovery와 replica lag를 비교한다.
+5. 한 번에 한 변경을 적용하고 원복 조건과 이전 값을 기록한다.
 
-```sql
-SET GLOBAL innodb_file_per_table = ON;        -- 8.0 기본 ON
-```
+## 출처
 
-각 테이블이 별도 `.ibd` 파일 — 테이블 DROP 시 디스크 회수, 백업 단위 분리, 압축 가능. 끄면 system tablespace 한 파일에 누적되어 회수 어려움.
-
-### 압축 — `ROW_FORMAT=COMPRESSED`
-
-```sql
-CREATE TABLE compressed_logs (
-  id BIGINT PRIMARY KEY,
-  data TEXT
-) ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=8;
-```
-
-디스크 50~70% 절감. 단점: CPU 비용, Buffer Pool 효율 ↓ (압축 + 비압축 페이지 둘 다 가질 수 있음). **콜드 데이터, 로그 테이블에 적합**, 핫 OLTP에는 부적합.
-
-## 6. 모니터링
-
-```sql
--- Buffer Pool 통계
-SHOW GLOBAL STATUS LIKE 'Innodb_buffer_pool%';
-
--- 더티 페이지, 체크포인트
-SHOW ENGINE INNODB STATUS\G
-
--- 히스토그램(8.0+)
-SELECT * FROM performance_schema.events_waits_summary_global_by_event_name
-WHERE event_name LIKE 'wait/io/file/innodb%';
-```
-
-핵심 신호:
-- `Innodb_buffer_pool_pages_dirty / total` ↑ → I/O capacity 부족
-- `Innodb_log_waits` > 0 → log_buffer 부족
-- `Innodb_buffer_pool_wait_free` > 0 → Buffer Pool 부족 또는 flush 부족
-
-## 흔한 실수
-
-- **Buffer Pool을 메모리의 95%로 설정** → OS, 연결, tmp 메모리 부족 → swap 발생 → 성능 폭락. 70~80% 상한.
-- **`flush_log_at_trx_commit = 2`로 두고 결제 운영** → OS 크래시 시 1초 손실. 도메인별 분리 또는 1로.
-- **log_file_size 너무 작게(48MB 기본)** → 빈번한 체크포인트 I/O 스파이크.
-- **NVMe인데 io_capacity = 200** → 디스크 능력 못 살림. 5000+로.
-- **압축을 OLTP 테이블에 일괄 적용** → CPU 비용, Buffer Pool 효율 저하.
-- **Buffer Pool 적중률 95%인 채로 두고 인덱스 튜닝만** → 워킹셋이 메모리 초과면 어떤 인덱스도 효과 한계. Buffer Pool 먼저 확인.
-- **`innodb_buffer_pool_dump` 비활성** → 재시작 후 콜드 캐시로 응답 폭증.
-
-## 면접 체크포인트
-
-- Buffer Pool 크기 결정 — 메모리의 70~80%, OS 여유
-- `flush_log_at_trx_commit` 0/1/2 차이와 도메인별 선택
-- `log_file_size`의 트레이드오프 — 쓰기 부하 vs 회복 시간
-- `io_capacity` — 디스크 종류별 권장값
-- Buffer Pool 적중률 99% 목표, 관찰 방법
-- 적중률 99%인데 느리다면? — 워킹셋, 인덱스, 쿼리 패턴 확인
-- `O_DIRECT`로 이중 캐싱 회피
-- 압축의 트레이드오프 — 디스크 ↓, CPU, Buffer Pool 효율 ↓
-- Buffer Pool dump/load로 warmup
+- [MySQL 8.4 Reference Manual, Configuring Buffer Pool Size](https://dev.mysql.com/doc/refman/8.4/en/innodb-buffer-pool-resize.html)
+- [MySQL 8.4 Reference Manual, Midpoint Insertion Strategy](https://dev.mysql.com/doc/refman/8.4/en/innodb-performance-midpoint_insertion.html)
+- [MySQL 8.4 Reference Manual, Adaptive Hash Index](https://dev.mysql.com/doc/refman/8.4/en/innodb-adaptive-hash.html)
+- [MySQL 8.4 Reference Manual, Change Buffer](https://dev.mysql.com/doc/refman/8.4/en/innodb-change-buffer.html)
+- [MySQL 8.4 Reference Manual, Read-Ahead](https://dev.mysql.com/doc/refman/8.4/en/innodb-performance-read_ahead.html)
+- [MySQL 8.4 Reference Manual, InnoDB Startup Options and System Variables](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html)
+- [인프런, Hong, 메모리, 트랜잭션, 락](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338555)
 
 ## 관련 문서
 
-- [[MySQL-Architecture|MySQL 아키텍처, SQL 처리 파이프라인]]
-- [[MySQL-Slow-Query-Diagnosis|Slow Query 진단]]
-- [[MySQL-Partitioning|MySQL Partitioning]]
-- [[Transactions|ACID, MVCC]]
-- [[Isolation-Level|격리 수준]]
+- [[MySQL-Architecture|MySQL 아키텍처]]
+- [[MySQL-Slow-Query-Diagnosis|Slow query 진단]]
+- [[MySQL-Configuration-Change-Management|MySQL 설정 변경 관리]]
+- [[Transactions|트랜잭션]]
+- [[Lock|DB Lock]]

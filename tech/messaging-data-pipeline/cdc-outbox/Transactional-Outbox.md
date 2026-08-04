@@ -1,6 +1,7 @@
 ---
 tags: [messaging, reliability, pattern]
 status: done
+verified_at: 2026-08-04
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Transactional Outbox", "Outbox Pattern", "트랜잭셔널 아웃박스"]
 ---
@@ -23,6 +24,8 @@ DB와 메시지 큐는 서로 다른 시스템이므로 하나의 트랜잭션�
 
 - 1)은 성공했지만 2)가 실행되지 않음 → 이벤트 유실 → 후속 처리(수주, 알림)가 영원히 실행되지 않음
 - 반대로 2)를 먼저 하면, 이벤트는 발행됐는데 DB 저장이 실패할 수 있음
+
+Spring `TransactionSynchronizationManager.afterCommit`에서 메시지를 보내도 이 간극은 닫히지 않는다. DB rollback 뒤 이벤트를 보내는 경우는 피하지만, commit 직후 프로세스가 종료되거나 broker 전송이 실패하면 DB 변경만 남는다. callback 순서 제어와 원자성은 다른 문제다.
 
 ## 해결: Outbox 테이블
 
@@ -58,10 +61,10 @@ CREATE TABLE outbox (
 
 ## Relay 구현 방식
 
-| 방식 | 장점 | 단점 | 적합한 규모 |
+| 방식 | 장점 | 단점 | 선택 기준 |
 |------|------|------|------------|
-| **Polling** | 구현 단순, 별도 인프라 불필요 | 폴링 간격만큼 지연 | 월 수십만 건 이하 |
-| **CDC (Change Data Capture)** | 실시간, 지연 최소 | Debezium+Kafka Connect 등 인프라 복잡도 | 대규모 이벤트 처리 |
+| **Polling** | 구현 단순, 별도 변경 로그 인프라 불필요 | 폴링 지연, claim과 중복 발행 제어 필요 | 허용 지연과 DB 조회 부하를 감당할 수 있음 |
+| **CDC (Change Data Capture)** | 변경 로그 기반으로 낮은 지연 | Debezium, Kafka Connect 등 운영 요소 증가 | 이미 CDC 운영 역량이 있거나 낮은 지연이 중요함 |
 
 ### Polling 방식
 - 주기적으로 `WHERE processed_at IS NULL` 조회 → 발행 → 마킹
@@ -119,6 +122,9 @@ Outbox 테이블을 단순 발행 대기열이 아닌 **모든 이벤트의 영�
 Event Sourcing은 더 나아가 **상태 자체를 이벤트 스트림으로만 관리**하지만, Event Store + Outbox는 상태도 유지하면서 감사, 복구 능력을 얻는 **중간 지점**.
 
 ## 출처
+- [Chris Richardson, Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html)
+- [Dowon Lee 강사, Dual Write, Outbox와 CDC](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289780)
+- [최상용 강사, 트랜잭션 이후 Kafka 이벤트 발행](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344376)
 - [우아한형제들 — 회원시스템 이벤트기반 아키텍처 구축하기](https://techblog.woowahan.com/7835/)
 - [우아한형제들 — 배민스토어에 이벤트 기반 아키텍처를 곁들인](https://techblog.woowahan.com/13101/)
 

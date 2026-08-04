@@ -1,14 +1,14 @@
 ---
 tags: [web, network, http, streaming]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-08-04
 category: "웹&네트워크(Web&Network)"
 aliases: ["HTTP Chunked Transfer", "Transfer-Encoding chunked", "분할 전송"]
 ---
 
 # HTTP 분할 전송 (Chunked Transfer Encoding)
 
-응답 본문을 여러 청크(chunk)로 나누어 순차적으로 전송하는 HTTP/1.1 기능. 응답 전체 크기를 미리 알 수 없는 동적, 스트리밍 콘텐츠에 사용한다. 헤더는 `Transfer-Encoding: chunked`, **`Content-Length`는 없다**.
+메시지 content를 여러 chunk로 나누고 마지막 zero-size chunk로 경계를 표시하는 HTTP/1.1 transfer coding이다. 전체 크기를 미리 알기 어려운 동적 응답과 streaming에 흔히 사용하며 요청에도 적용할 수 있다. 발신자는 같은 메시지에 `Content-Length`를 함께 보내면 안 된다.
 
 ## 왜 필요한가
 
@@ -17,7 +17,7 @@ HTTP/1.1은 메시지 경계를 알아야 한다(언제 응답이 끝났는지).
 - 동적 생성 콘텐츠 (DB 결과 스트리밍, 템플릿 렌더링)
 - 실시간 로그, 이벤트 푸시
 - 무거운 압축 후 전송 (압축된 크기를 미리 모름)
-- 대용량 파일 다운로드 (전체를 메모리에 적재하지 않고 흘려보냄)
+- 최종 길이를 미리 알 수 없는 변환, 생성형 대용량 stream
 - 프록시, 게이트웨이가 응답을 변형해 길이가 달라짐
 
 이때 chunked 전송은 "준비되는 대로 보내고, 끝나면 종료 신호" 방식으로 동작한다.
@@ -50,7 +50,7 @@ Hello\r\n
 
 - 각 청크 앞에 **16진수 크기**를 명시
 - 마지막은 **`0` 청크**로 종료를 알림
-- (옵션) 종료 청크 뒤에 **트레일러 헤더** 추가 가능 (`Trailer:` 헤더로 사전 선언)
+- (옵션) 종료 청크 뒤에 **trailer field** 추가 가능 (`Trailer` Field로 사전 선언)
 
 ## Transfer-Encoding의 다른 값
 
@@ -60,13 +60,12 @@ Hello\r\n
 | `gzip` | gzip 압축 (UNIX gzip 포맷) |
 | `deflate` | deflate 알고리즘 압축 |
 | `compress` | LZW (거의 미사용) |
-| `identity` | 인코딩 없음 (기본값) |
 
-`chunked`와 압축을 함께 쓸 수 있다: `Transfer-Encoding: gzip, chunked`.
+표준 문법상 `Transfer-Encoding: gzip, chunked`처럼 여러 transfer coding을 나열할 수 있지만, 현대 Web에서는 압축을 보통 `Content-Encoding`으로 표현한다. 중개자 호환성과 실제 수신자 지원을 확인하지 않은 transfer coding을 임의로 사용하지 않는다.
 
 ## Content-Length와 함께 쓰면 안 됨
 
-HTTP/1.1 메시징의 최신 표준인 RFC 9112(기존 RFC 7230을 대체)에 따라 **`Transfer-Encoding`이 있으면 `Content-Length`는 무시, 금지**된다. 둘 다 보내면 일부 서버, 프록시는 보안 취약점(HTTP Request Smuggling)으로 이어질 수 있다.
+RFC 9112에 따라 발신자는 `Transfer-Encoding`과 `Content-Length`를 함께 보내면 안 된다. 수신 시 `Transfer-Encoding`이 framing에서 우선하지만 모호한 메시지로 취급해야 하며, Server는 거부하거나 규칙대로 처리한 뒤 연결을 닫는다. 중개자의 해석 차이는 HTTP Request Smuggling으로 이어질 수 있다.
 
 ## HTTP/2, HTTP/3에서는?
 
@@ -75,10 +74,10 @@ HTTP/2부터는 **자체 프레이밍**이 청크 역할을 한다. `Transfer-En
 ## 실무 함정
 
 ### Keep-Alive와 chunked
-HTTP/1.1 `keep-alive`(기본 동작)에서 동적 응답은 자동으로 chunked로 전환되는 경우가 많다. 응답 헤더에 `Content-Length`가 안 보이고 `Transfer-Encoding: chunked`만 보이는 게 정상.
+HTTP/1.1의 지속 연결에서 전체 길이를 모르는 동적 응답은 chunked를 선택하는 경우가 많다. 구현은 buffering으로 길이를 계산하거나 연결 종료 framing을 선택할 수도 있으므로 자동 변환을 표준 보장으로 가정하지 않는다.
 
-### 압축 임계치(min-response-size) 무력화
-일부 서버 설정에 "응답이 N바이트 이상일 때만 압축"하는 옵션이 있다. 그러나 chunked로 흘려보낼 땐 **전체 크기를 모르므로 임계치 검사가 불가능** → 모든 응답이 압축되거나, 모든 응답이 압축되지 않거나로 갈린다. 설정이 의도대로 동작하지 않을 수 있음.
+### 압축 임계치와 buffering
+일부 Server는 응답이 N byte 이상일 때만 압축한다. 전체 길이를 모른 채 flush를 시작한 stream에서는 임계치를 미리 판단할 수 없어 구현이 일부를 buffering하거나 압축을 생략할 수 있다. chunked 자체가 임계치를 반드시 무력화하는 것은 아니므로 Server와 Proxy의 실제 동작을 측정한다.
 
 ### 프록시, 로드밸런서 호환
 대부분 정상 처리하지만, 일부 구식 프록시, LB가 chunked 응답을 버퍼링해서 스트리밍 효과를 무력화할 수 있다(전체 응답을 모은 뒤 한 번에 전달).
@@ -89,11 +88,11 @@ HTTP/1.1 `keep-alive`(기본 동작)에서 동적 응답은 자동으로 chunked
 ## 사용 사례
 
 - **SSE(Server-Sent Events)** — 텍스트 기반 단방향 푸시. HTTP/1.1 연결에서는 보통 chunked 사용
-- **대용량 파일 다운로드** — 메모리에 전체 적재 없이 디스크에서 흘려보냄
+- **대용량 파일 다운로드** — 파일 크기를 알면 `Content-Length`로 streaming할 수 있고, 변환 때문에 최종 길이를 모르면 chunked를 사용할 수 있음
 - **JSON Streaming** — `application/x-ndjson`으로 줄 단위 결과 스트리밍 (검색 결과, 로그 조회)
 - **실시간 빌드/배포 로그** — CI 도구가 진행 중인 로그를 실시간 출력
-- **GraphQL Subscriptions over HTTP** — 일부 구현체가 SSE/chunked로 구현
-- **LLM 토큰 스트리밍** — ChatGPT 같은 LLM API가 응답 토큰을 chunked로 흘려보냄
+- **GraphQL Subscriptions over HTTP** — 일부 구현체가 SSE로 구현하며 HTTP/1.1에서는 chunked가 쓰일 수 있음
+- **LLM 토큰 streaming** — SSE나 streaming response를 사용하며 HTTP/1.1에서는 chunked, HTTP/2와 HTTP/3에서는 각 버전의 frame으로 전달할 수 있음
 
 ## 면접 체크포인트
 

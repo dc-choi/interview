@@ -3,7 +3,7 @@ tags: [database, rdbms]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["트랜잭션", "Transactions"]
-verified_at: 2026-07-21
+verified_at: 2026-08-04
 ---
 
 # 트랜잭션
@@ -15,6 +15,16 @@ verified_at: 2026-07-21
 따라서 데이터의 부정합이 일어났을 경우 롤백을 하여 데이터의 부정합을 방지할 수 있다.
 
 예를 들어서 결제를 진행하는 경우 계좌에서 출금 -> 주문 및 결제 완료하는 것을 하나의 논리적인 작업의 단위로 묶어서 반영과 복구를 조정할 수 있다.
+
+## Connection과 session 경계
+
+JDBC에서 하나의 local transaction은 한 `Connection`, 즉 DB의 한 session에서 수행된다. 여러 SQL이 하나의 transaction이어야 한다면 같은 connection에서 실행하고 마지막에 commit 또는 rollback해야 한다. 각 repository가 별도 connection을 얻으면 하나의 원자적 작업으로 묶이지 않는다.
+
+- Auto-commit mode에서는 각 statement가 독립적으로 commit된다. 단일 statement에는 편리하며 그 자체가 잘못된 설정은 아니다.
+- 계좌 이체처럼 여러 statement가 모두 성공하거나 모두 취소돼야 하면 auto-commit을 끄고 명시적 transaction boundary를 둔다.
+- Commit은 현재 transaction의 변경을 확정하고, rollback은 아직 commit하지 않은 변경을 취소한다.
+- Service use case가 transaction boundary를 소유하고 repository가 `Connection`을 business interface로 노출하지 않게 한다.
+- Pool에 connection을 반환할 때 transaction state를 깨끗하게 복원하는 책임은 framework와 pool contract에 맞춰 관리한다.
 
 ## ACID
 ### Atomicity(원자성)
@@ -84,3 +94,17 @@ verified_at: 2026-07-21
 
 ## 출처
 - [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
+- [인프런, Hong, 메모리, 트랜잭션, 락](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338555)
+- [MySQL 8.4 Reference Manual, START TRANSACTION/COMMIT/ROLLBACK](https://dev.mysql.com/doc/refman/8.4/en/commit.html)
+- [Oracle AI Database 26ai, COMMIT and implicit DDL commit](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/COMMIT.html)
+- [Oracle 11g 강의, INSERT, UPDATE, DELETE, COMMIT, ROLLBACK](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4664)
+- 강의: [필요성](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328815), [Commit/Rollback](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328816), [ACID](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328817), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328819)
+- 김영한 강사, [트랜잭션, 개념 이해](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110076)
+- 김영한 강사, [데이터베이스 연결 구조와 DB 세션](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110077)
+- 김영한 강사, [트랜잭션 DB 예제 1, 개념 이해](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110078)
+- 김영한 강사, [트랜잭션 DB 예제 2, 자동 커밋과 수동 커밋](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110079)
+- 김영한 강사, [트랜잭션 DB 예제 3, 트랜잭션 실습](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110080)
+- 김영한 강사, [트랜잭션 DB 예제 4, 계좌이체](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110081)
+- 김영한 강사, [트랜잭션 적용 1](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110085)
+- 김영한 강사, [트랜잭션 적용 2](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110086)
+- 김영한 강사, [정리](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110087)

@@ -7,49 +7,17 @@ aliases: ["SQL"]
 
 # SQL
 
-구조적 질의 언어로 SQL로 데이터베이스를 제어하고 관리할 수 있다.
+SQL은 관계형 데이터베이스의 스키마, 데이터와 권한을 선언적으로 다루는 언어다. 공통 개념과 제품별 차이를 분리해 학습한다.
 
 ## 하위 문서
 
+- [[SQL-Fundamentals|SQL 기본기 (SELECT, NULL, 집계, DDL/DML, 트랜잭션 경계)]]
+- [[MySQL-Query-Fundamentals|MySQL 조회 기본기 (SELECT, NULL, 집계, 서브쿼리, 집합 연산, TypeORM 동적 조회)]]
+- [[SQL-Query-Composition|SQL 쿼리 조합 (JOIN, subquery, UNION, CASE, 결과 grain)]]
+- [[SQL-Window-Functions|SQL window function (partition, order, frame, ranking, top-N)]]
+- [[Database-Views-and-Programmability|View와 DB 저장 프로그램 (procedure, function, trigger)]]
 - [[SQL-Joins|SQL 조인 (INNER/OUTER/CROSS/NATURAL, 드라이빙과 드리븐, NL/BNL/BKA/Hash 알고리즘)]]
 - [[SQL-Tuning-Terminology|SQL 튜닝 용어 (옵티마이저, 접근 방식, 조건, 서브쿼리, 콜레이션, 통계)]]
-
-## 종류
-```
-1. DDL: 데이터베이스 구조를 정의, 수정, 삭제하는 언어이며 create, alter, drop이 있다.
-2. DML: 데이터베이스 내의 자료 검색, 삽입, 갱신, 삭제를 위한 언어로 select, insert, update, delete가 있다.
-3. DCL: 데이터의 무결성을 유지, 병행 수행 제어, 보호와 관리를 위한 언어로 commit, rollback, grant, revoke가 있다.
-```
-
-## Join
-```
-1. 두개 이상의 테이블들을 연결 또는 결합하여 데이터를 출력하는 것
-2. JOIN은 관계형 데이터베이스의 가장 큰 장점이면서 대표적인 핵심 기능이라고 할 수 있다.
-3. 일반적인 경우 행들은 PK나 FK값의 연관에 의해 JOIN이 성립된다.
-4. 하지만 어떤 경우에는 이러한 PK, FK가 없어도 논리적인 값들의 연관만으로 JOIN이 성립 가능하다.
-```
-
-## Inner Join
-```
-1. Equi Join(동등 조인)
-두개의 테이블간의 컬럼 값들이 서로 정확하게 일치하는 경우에 사용된다.
-비교연산자 =를 사용한 조인이다.
-동등 조건에 해당하는 튜플을 반환한다.
-2. Non-Equi Join
-두개의 테이블 간에 컬럼 값들이 서로 정확하게 일치하지 않는 경우에 사용된다.
-= 연산자가 아닌 Between, >, ≥. <, ≤ 등의 연산자들을 사용하여 JOIN을 수행한다.
-```
-
-## Left Join
-```
-1. 여러 테이블에서 한쪽에는 데이터가 존재하고 한쪽에는 데이터가 없는 경우 외부 조인을 사용한다. mysql의 경우 Left, Right로 외부 조인을 한다.
-2. Left Join의 경우 왼쪽에 해당하는 테이블의 결과를 전부 가져온 후, 오른쪽 테이블을 매칭한다.
-3. 매칭 되는 결과가 없을 경우 NULL로 표시된다.
-4. 조건에 맞지 않아도 외부 조인에 맞게 결과에 포함한다.
-5. 조인 조건은 WHERE절이 아닌 ON 절에 작성한다.
-```
-
-## 관련 문서
-- [[Execution-Plan|실행계획]]
-- [[Normalization|정규화]]
-- [[Transactions|트랜잭션]]
+- [[Query-Antipatterns|SQL 쿼리 안티패턴 (행 증폭, DISTINCT 오용, LEFT JOIN 조건, 뷰 중첩)]]
+- [[PostgreSQL-SQL-Patterns|PostgreSQL SQL 패턴 (RETURNING, UPSERT, CTE, 윈도 함수, timestamptz)]]
+- [[Oracle-SQL-Dialect|Oracle SQL 방언 (DUAL, NVL/DECODE, ROLLUP, 외부 조인, DDL transaction)]]

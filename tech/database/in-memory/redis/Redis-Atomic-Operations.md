@@ -1,13 +1,14 @@
 ---
 tags: [database, redis, atomic, concurrency]
 status: done
+verified_at: 2026-08-04
 category: "Data & Storage - Redis"
 aliases: ["Redis Atomic Operations", "Redis 원자성"]
 ---
 
 # Redis 원자적 연산
 
-여러 클라이언트가 같은 key에 동시에 접근할 때 **"읽기 → 변경 → 쓰기"가 끊기지 않아야** 정합성 유지. Redis는 단일 스레드로 명령을 순차 처리하므로, **한 명령의 실행 중엔 다른 명령이 끼어들지 않는다**. 이 특성을 활용하는 4가지 도구.
+여러 클라이언트가 같은 key에 동시에 접근할 때 **읽기 → 변경 → 쓰기가 끊기지 않아야** 정합성을 유지할 수 있다. 핵심은 네트워크 I/O 스레드 수가 아니라 Redis가 명령과 스크립트에 제공하는 실행 경계다. **한 명령이나 짧은 스크립트가 실행되는 동안 다른 명령이 끼어들지 않는다**. 이 특성을 활용하는 4가지 도구.
 
 ## 문제: 멀티 스텝 연산의 race condition
 
@@ -29,8 +30,8 @@ Redis의 많은 명령이 **자체로 원자적**이다.
 |---|---|---|
 | `INCR`, `INCRBY` | 정수 증가 | O(1) |
 | `DECR`, `DECRBY` | 정수 감소 | O(1) |
-| `SETNX` | 없을 때만 설정 | O(1) |
-| `GETSET` | 읽으며 동시에 쓰기 | O(1) |
+| `SET key value NX` | 없을 때만 설정. `SETNX`를 대체 | O(1) |
+| `SET key value GET` | 이전 값을 반환하며 새 값 설정. `GETSET`을 대체 | O(1) |
 | `HSETNX` | Hash에 없는 필드만 추가 | O(1) |
 | `SADD` | Set 추가 | O(1) |
 
@@ -71,7 +72,7 @@ EXEC    ← mykey가 변경됐으면 nil 반환, 재시도 필요
 
 ## 도구 4: Lua Script
 
-여러 명령을 하나의 스크립트로 묶어 Redis에 넘김. **스크립트 실행 중 다른 명령 차단** → 완전한 원자성.
+여러 명령을 하나의 스크립트로 묶어 Redis에 넘김. **스크립트 실행 중 다른 명령 차단** → 하나의 실행 경계로 처리.
 
 ```
 EVAL "
@@ -94,7 +95,7 @@ EVAL "
 - 스크립트 내부 버그는 Redis 디버깅 어려움
 - **실행 시간 주의** — 길면 다른 명령 모두 블록
 
-실무에서 **재고 차감, 쿠폰 발급, 분산 락 해제** 같은 "조건부 수정"에 많이 쓰임.
+실무에서 **재고 차감, 쿠폰 발급, 분산 락 해제** 같은 조건부 수정에 많이 쓰임.
 
 ## 선택 우선순위
 
@@ -103,7 +104,7 @@ EVAL "
 2. 여러 명령을 묶으면 되는데 조건 없음?  → MULTI/EXEC
 3. 조건 검사 + 수정 (CAS)?  → WATCH + MULTI/EXEC 또는 Lua
 4. 복잡한 로직 (여러 key, 조건 분기)?  → Lua Script
-5. 분산 락, 리더 선출 같은 고수준 동시성?  → Redlock, Redisson
+5. 분산 락, 리더 선출 같은 고수준 동시성?  → 검증된 lock 구현 검토
 ```
 
 ## 분산 락은 최후의 수단
@@ -124,14 +125,13 @@ if stock > 0:
   SET stock (stock - 1)
 ```
 
-### 원자 명령 (권장)
+### 단일 원자 명령 (중간 음수 허용 시)
 ```
 # 단순 카운터
 DECR stock              ← 음수 허용
-# 음수 방지 필요하면
-if DECR stock < 0:
-  INCR stock  ← 롤백
 ```
+
+`DECR` 뒤 별도 `INCR`로 되돌리면 두 명령 사이에 다른 요청이 끼어들 수 있다. 재고가 음수가 되면 안 되는 불변식은 아래처럼 조건 검사와 차감을 Lua로 묶는다.
 
 ### Lua Script (안전)
 ```
@@ -153,11 +153,11 @@ EVAL "
 - **Pipeline**: 네트워크 왕복만 줄임. 원자성 없음. 순서 보장.
 - **MULTI/EXEC**: 원자성 + 순서. Pipeline보다 약간 느림.
 
-Pipeline은 "여러 명령을 빠르게 보내고 싶음"에, MULTI는 "중간에 끼어들면 안 됨"에.
+Pipeline은 여러 명령의 네트워크 왕복을 줄일 때, MULTI는 실행 중 다른 명령이 끼어들면 안 될 때 사용한다.
 
 ## 흔한 실수
 
-- **`GET → 조건 → SET` 패턴** → race condition. 항상 원자 명령 or Lua
+- **`GET → 조건 → SET` 패턴** → race condition. 원자 명령이나 Lua로 변경
 - **Lua에서 외부 호출, 무거운 루프** → 다른 모든 명령 블록 → Redis 성능 폭락
 - **WATCH를 락으로 오해** → WATCH는 CAS지, 락이 아님. 경쟁 많으면 재시도 폭증
 - **INCR을 float에 사용** → INCR은 정수. float는 INCRBYFLOAT
@@ -169,10 +169,15 @@ Pipeline은 "여러 명령을 빠르게 보내고 싶음"에, MULTI는 "중간�
 - MULTI/EXEC와 RDBMS 트랜잭션의 차이 (롤백 없음)
 - WATCH의 CAS 패턴과 락의 차이
 - Lua Script가 필요한 상황 (조건부 수정 원자화)
-- "락을 쓰지 않을 수 있으면 쓰지 말라"는 원칙
+- 락보다 원자 명령과 조건부 갱신을 먼저 검토하는 원칙
 
 ## 출처
-- [F-Lab — 대규모 처리 시 Redis 연산의 Atomic을 보장하기](https://f-lab.kr/blog/redis-command-for-atomic-operation)
+- [Redis Docs - Scripting with Lua](https://redis.io/docs/latest/develop/programmability/eval-intro/)
+- [Redis Docs - Transactions](https://redis.io/docs/latest/develop/using-commands/transactions/)
+- [Redis Docs - SET](https://redis.io/docs/latest/commands/set/)
+- [Redis Docs - SETNX](https://redis.io/docs/latest/commands/setnx/)
+- [실습으로 배우는 선착순 이벤트 시스템, 문제점 해결하기 - 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=155153)
+- [재고시스템으로 알아보는 동시성이슈 해결방법, Redis 라이브러리 알아보기 - 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=328995&unitId=119710)
 
 ## 관련 문서
 - [[Redis-Data-Structures|Redis 자료구조]]

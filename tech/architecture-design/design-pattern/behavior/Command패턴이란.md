@@ -1,87 +1,63 @@
 ---
-tags: [architecture, design-pattern]
+tags: [architecture, design-pattern, behavioral, command]
 status: done
+verified_at: 2026-08-04
 category: "Architecture & Design"
-aliases: ["Command 패턴이란?"]
+aliases: ["Command Pattern", "커맨드 패턴"]
 ---
 
 # Command 패턴이란?
-실행할 작업의 모든 정보를 객체로 캡슐화하는 패턴. 요청의 매개변수화, 대기열 처리, 실행 취소를 가능하게 한다.
 
-## 왜 쓸까?
+Command는 요청을 객체로 캡슐화해 요청을 보내는 Invoker와 실제 작업을 수행하는 Receiver를 분리하는 행동 패턴이다. 요청을 매개변수처럼 전달하거나 대기열, 이력과 매크로로 조합할 수 있다.
 
-### 실행 지연
-즉시 실행하지 않고 나중에 실행할 수 있다.
+## 역할
 
-### 직렬화
-명령을 저장하거나 네트워크로 전송할 수 있다.
+- Command: 실행 계약을 정의한다.
+- Concrete Command: Receiver와 실행에 필요한 인자를 보관한다.
+- Invoker: 실행 시점을 결정한다.
+- Receiver: 실제 도메인 작업을 수행한다.
+- Client: Command와 Receiver를 조립한다.
 
-### 실행 취소(Undo)
-역연산을 구현하여 작업을 되돌릴 수 있다.
-
-### 이력 관리
-모든 작업을 기록하여 추적할 수 있다.
-
-### 매크로
-여러 명령을 하나로 묶어 실행할 수 있다.
-
-## 핵심 개념
-
-### 4가지 구성 요소
-- Command: 실행 정보를 담은 객체 (execute, undo 메서드)
-- Client: Command를 생성하는 주체
-- Invoker: Command를 실행하는 주체 (큐, 스케줄러 등)
-- Target (Receiver): Command가 실제 작업을 수행하는 대상
-
-### 코드 예시
 ```typescript
-interface Command {
-  execute(): void
-  undo(): void
-  serialize?(): string
+interface Command<R = void> {
+  execute(): Promise<R>
 }
 
-class AddItemCommand implements Command {
+class CancelOrderCommand implements Command<void> {
   constructor(
-    private cart: ShoppingCart,
-    private item: CartItem
+    private readonly orders: OrderService,
+    private readonly orderId: OrderId,
   ) {}
 
-  execute() {
-    this.cart.addItem(this.item)
-  }
-
-  undo() {
-    this.cart.removeItem(this.item.id)
-  }
-
-  serialize() {
-    return JSON.stringify({
-      type: 'ADD_ITEM',
-      item: this.item
-    })
-  }
-}
-
-// Invoker
-class CommandHistory {
-  private history: Command[] = []
-
-  execute(command: Command) {
-    command.execute()
-    this.history.push(command)
-  }
-
-  undoLast() {
-    const command = this.history.pop()
-    command?.undo()
+  execute(): Promise<void> {
+    return this.orders.cancel(this.orderId)
   }
 }
 ```
 
-## 실 사용 사례
-1. Redux: Action 객체 = Command, Reducer = Target, Store.dispatch = Invoker
-2. CQRS: Command(쓰기)와 Query(읽기) 분리
-3. 텍스트 에디터: Undo/Redo 기능
-4. 작업 큐: BullMQ, SQS에서 직렬화된 명령 처리
-5. Git: commit, revert, cherry-pick
+## 선택 가능한 부가 기능
+
+직렬화, 로깅과 `undo()`는 Command의 필수 요소가 아니다. 필요한 기능마다 별도 계약을 둔다.
+
+- Undo: 역연산이 가능한지, 이전 상태를 Memento로 보관할지 정한다.
+- Queue: 클래스 인스턴스가 아니라 버전이 있는 메시지 DTO와 Handler로 경계를 나눈다.
+- Retry: 멱등성, 중복 실행과 외부 부수효과를 설계한다.
+- History: 민감 정보와 저장 비용, 보존 기간을 제한한다.
+
+NestJS CQRS의 Command는 쓰기 의도를 나타내는 메시지와 Handler를 분리하는 방식이다. GoF Command와 비슷한 분리를 제공하지만 Command 객체가 Receiver나 실행 메서드, Undo를 반드시 갖는 것은 아니다.
+
+## 적용 경계
+
+실행 지연, 재시도, 권한 검사나 이력이 실제로 필요할 때 유용하다. 단순한 동기 메서드 호출까지 모두 Command 클래스로 감싸면 탐색 비용과 보일러플레이트가 커진다.
+
+## 출처
+
+- 얄팍한 코딩사전, [Command 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=244829)
+- Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- [NestJS 공식 문서, CQRS](https://docs.nestjs.com/recipes/cqrs)
+
+## 관련 문서
+
+- [[Memento패턴이란|Memento 패턴]]
+- [[Clean-Architecture-NestJS-CQRS|NestJS Clean Architecture와 CQRS]]
+- [[Transactional-Outbox|Transactional Outbox]]

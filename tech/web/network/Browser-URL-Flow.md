@@ -177,6 +177,7 @@ HTML 내 `<img>`, `<link>`, `<script>` 태그마다 **추가 HTTP 요청**이 �
 - 기본 흐름 다음에 **대규모 확장(CDN, GSLB, 헬스 체크, 세션 유지)** 으로 연결할 수 있는가
 
 ## 출처
+- 김영한 강사, [웹 브라우저 요청 흐름](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61358)
 - [daddyprogrammer — 기술 용어 및 개념 정리](https://daddyprogrammer.org/post/2058/tech-terms-concept/)
 - [웹 브라우저 URL 입력 과정과 인프라 흐름 — YouTube 강의](https://www.youtube.com/watch?v=GAyZ_QgYYYo&list=PLXvgR_grOs1DEoZFABFCjo7dsXt1BhVih)
 

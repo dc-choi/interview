@@ -1,125 +1,132 @@
 ---
-tags: [database, rdbms, primary-key, design]
+tags: [database, rdbms, primary-key, natural-key, surrogate-key, uuid]
 status: done
+verified_at: 2026-08-04
 category: "Data & Storage - RDB"
 aliases: ["PK Strategy", "Primary Key Strategy", "PK 생성 전략"]
 ---
 
-# Primary Key 생성 전략
+# Primary Key 전략
 
-테이블의 PK를 어떻게 만드느냐는 **클러스터링 인덱스 효율, 보안, 분산 환경 호환성**을 모두 좌우한다. AUTO_INCREMENT가 항상 정답이 아니며, 분산, 외부 노출 시 다른 전략이 필요하다.
+Primary key는 row의 장기 identity다. 생성 편의만 보지 않고 **불변성, key 폭, 관계 참조, 생성 위치, 병합 가능성, 외부 노출과 DB storage 구조**를 함께 판단한다.
 
-## 후보 전략 4가지
+## Key 용어
 
-| 전략 | 형태 | 보안 | 저장 크기 | 정렬성 | 분산 생성 |
-|---|---|---|---|---|---|
-| **AUTO_INCREMENT** | `BIGINT` 1, 2, 3... | ✗ (순차 유추) | 8B | ✓ | ✗ (DB 의존) |
-| **UUID v4** | 32자 hex | ✓ | 16B (BINARY) / 36B (CHAR) | ✗ (랜덤) | ✓ |
-| **UUID v7 / ULID** | 시간 + 랜덤 | ✓ | 16B / 26B | ✓ (시간 정렬) | ✓ |
-| **Snowflake** | 64bit 정수 (시간 + 노드 + 시퀀스) | ✓ | 8B | ✓ | ✓ (노드 ID 필요) |
+- Superkey: row를 유일하게 식별하는 attribute 집합이다.
+- Candidate key: 불필요한 attribute를 뺄 수 없는 최소 superkey다.
+- Primary key: candidate key 중 table의 대표 identity로 선택한 key다.
+- Alternate key: 선택되지 않은 candidate key이며 보통 `UNIQUE`로 보존한다.
+- Natural key: 업무 의미에서 나온 key다.
+- Surrogate key: 업무 의미와 분리해 시스템이 만든 identity다.
 
-## AUTO_INCREMENT
+PK를 surrogate로 바꿨다고 email, 사업자 번호나 `(order_id, product_id)`의 중복 규칙이 사라지는 것은 아니다. 자연 key의 업무 유일성은 별도 `UNIQUE`로 남긴다.
 
-**장점**
-- 클러스터링 인덱스(InnoDB)에서 가장 효율적 — PK가 정렬된 순서로 INSERT되어 페이지 분할 거의 없음
-- 저장 크기 작음 (BIGINT 8B)
-- 단순, 디버깅 쉬움
+## Natural key와 surrogate key
 
-**단점**
-- **순차 유추 가능** — `/orders/1234` 보고 `/orders/1235` 추측 → 정보 노출, IDOR 취약
-- **분산 환경 어려움** — 여러 DB, 샤드에서 충돌 위험. 별도 시퀀스 서비스 필요
-- **이관, 합병 시 충돌** — DB를 합치면 PK 충돌
+### Natural key가 맞을 수 있는 경우
 
-**적합**: 내부 시스템, 단일 DB, 외부에 ID 노출 안 함
+- ISO 국가 코드처럼 변경 주체와 변경 가능성이 명확히 제한된다.
+- key가 짧고 모든 참조자가 같은 의미를 공유한다.
+- parent 범위 안의 line number처럼 composite identity가 domain 의미 자체다.
 
-## UUID v4 (랜덤)
+이름, email, 전화번호와 외부 공급자 ID는 보통 변경/재사용/병합 가능성이 있어 PK로 위험하다. 그래도 surrogate PK만 추가하고 natural `UNIQUE`를 빼면 중복 row를 허용하게 된다.
 
-**장점**
-- 충돌 확률 사실상 0 (122-bit 랜덤)
-- 어디서든 즉시 생성 가능 (DB, 앱, 클라이언트 무관)
-- 보안: 추측 불가
+### Surrogate key가 좋은 기본값인 경우
 
-**단점**
-- **랜덤이라 클러스터링 인덱스에 치명적** — INSERT마다 임의 위치에 끼어들어 **페이지 분할, 캐시 오염**. 큰 테이블에서 INSERT 성능 급락
-- 저장 크기: BINARY(16) 16B, CHAR(36) 36B → AUTO_INCREMENT 대비 2~4배
-- 사람이 읽기 어려움 (디버깅, 로그)
+- business identifier가 바뀌거나 여러 개 존재한다.
+- row를 다른 parent로 이동하거나 관계 규칙이 변할 수 있다.
+- 여러 외부 system의 identifier를 한 entity에 연결한다.
+- ORM/API에서 짧고 안정적인 단일 identity가 필요하다.
 
-**적합**: PK가 외부에 노출되지만 트래픽이 작거나, 클러스터링 인덱스에 신경 쓸 필요가 적은 NoSQL 환경
+Surrogate key가 변경 비용을 줄이는 좋은 기본값인 것은 맞지만 모든 table의 유일한 현대적 정답은 아니다. 참조되지 않는 작은 lookup, 순수 junction과 aggregate 내부 row는 natural/composite PK가 더 단순할 수 있다.
 
-## UUID v7 / ULID (시간 + 랜덤)
+## Composite key
 
-UUID v4의 보안성을 유지하면서 **앞부분에 타임스탬프**를 두어 정렬성을 회복한 형태.
+Composite PK는 여러 column 전체로 identity를 표현한다.
 
-- **UUID v7** (RFC 9562, 2024) — 60bit 타임스탬프 + 62bit 랜덤. 표준화됨
-- **ULID** — 48bit 타임스탬프 + 80bit 랜덤. Crockford Base32 인코딩으로 26자
+```sql
+CREATE TABLE enrollment (
+  student_id BIGINT NOT NULL,
+  course_id BIGINT NOT NULL,
+  enrolled_at DATETIME NOT NULL,
+  PRIMARY KEY (student_id, course_id)
+);
+```
 
-**장점**
-- 시간순 정렬 → InnoDB 클러스터링 인덱스 친화적
-- 보안: 외부에서 다음 ID 추측 어려움
-- 분산 생성 가능
+관계가 두 key 조합으로 완전히 식별되고 다른 table이 이 row를 거의 참조하지 않으면 명확하다. 반대로 PK가 여러 단계로 전파되거나 구성 column이 바뀌면 모든 FK/index/API가 함께 복잡해진다. 이 경우 `id` surrogate PK를 추가하고 `(student_id, course_id)`는 `UNIQUE`로 유지할 수 있다.
 
-**단점**
-- 시간이 노출됨 — 생성 시각을 숨겨야 하는 도메인엔 부적합
-- 여전히 16~26B로 AUTO_INCREMENT보다 크다
-- 라이브러리, DB 지원이 상대적으로 새로움 (MySQL 8.0+에서 BINARY로 저장 권장)
+## 생성 전략 비교
 
-**적합**: PK가 외부에 노출되며, 분산, 이관, 합병 가능성이 있고, 시계열 정렬이 자연스러운 도메인
+| 전략 | 크기/정렬 | 강점 | 비용/주의 |
+|---|---|---|---|
+| Auto increment `BIGINT` | 8 byte, 대체로 증가 | 단순, compact, InnoDB locality | DB 의존, merge/shard 조정, 값 유추 가능 |
+| UUIDv4 | 16 byte, random | 분산 생성, 불투명 ID | random insert locality, 넓은 secondary index |
+| UUIDv7 | 16 byte, 시간 순서 성질 | 분산 생성과 locality 절충 | 생성 시각 노출, 같은 ms 내 monotonicity는 구현 확인 |
+| ULID | 128 bit, Base32 표현 | 정렬 가능한 문자열 표현 | UUID 표준과 다름, monotonic generator/encoding 확인 |
+| Snowflake 계열 | 보통 64 bit, 시간 기반 | compact 분산 생성 | node ID, clock rollback, epoch/bit 배분 운영 |
 
-## Snowflake (트위터 방식)
+### Auto increment
 
-64-bit 정수를 시간(41bit) + 데이터센터(5bit) + 머신(5bit) + 시퀀스(12bit)로 구성.
+단일 write DB에서는 운영이 가장 단순한 후보다. sequence에는 rollback/삭제로 gap이 생길 수 있으므로 연속 업무 번호로 사용하지 않는다. 여러 shard 값을 합칠 가능성이 있으면 shard별 범위/offset, central allocator 또는 다른 ID를 비교한다.
 
-**장점**
-- 정렬성 + 분산 생성 + 작은 크기 (8B)
-- 카프카, Kafka, Discord, Twitter가 채택
+### UUIDv4와 UUIDv7
 
-**단점**
-- 노드 ID 할당, 시계 동기화 인프라 필요 (NTP, ZooKeeper 등)
-- 41bit 시간 한계 (2080년대까지) → 새 변형(Sonyflake 등) 등장
-- 시간이 노출됨
+UUID는 `CHAR(36)`보다 native UUID type 또는 `BINARY(16)` 저장을 우선 검토한다. MySQL InnoDB에서는 PK가 모든 secondary index record에 포함되므로 넓은 PK가 table 전체 index 비용을 키운다.
 
-**적합**: 대규모 분산 시스템에서 InnoDB 친화적이면서 정수 PK가 필요한 경우
+RFC 9562의 UUIDv7은 앞 48 bit에 Unix epoch millisecond timestamp를 두고 version/variant를 제외한 나머지 74 bit를 random 또는 monotonicity 보강에 사용한다. 시간 순서 성질은 random UUID보다 insert locality를 개선할 수 있지만, generator 구현과 실제 workload를 benchmark해야 한다.
 
-## 선택 가이드
+RFC 9562는 UUIDv6과 UUIDv7을 표준화했다. v6는 v1의 timestamp field를 database locality에 맞게 재배치한 형식이므로 v1 호환 요구가 없는 새 시스템에서는 v7과 함께 요구사항을 비교한다.
 
-| 상황 | 권장 |
-|---|---|
-| 내부 시스템, 단일 DB, ID 비공개 | **AUTO_INCREMENT** |
-| ID가 URL, API에 노출, 단일 DB | **UUID v7 / ULID** |
-| 분산 DB / 여러 샤드 / MSA | **UUID v7 / ULID** 또는 **Snowflake** |
-| 절대적 보안 (시간 노출도 금지) | **UUID v4** + 별도 정렬 컬럼 (`created_at`) |
-| 외부 노출용은 별도 컬럼으로 | AUTO_INCREMENT (PK) + UUID (외부 키) **이중 ID** 패턴 |
+MySQL 8.4의 `UUID()`는 UUIDv1 값을 만든다. `UUID_TO_BIN(uuid, 1)`의 swap flag는 v1의 time-low와 time-high 부분을 바꿔 binary key의 locality를 개선하기 위한 옵션이다. 임의의 v4나 v7을 정렬해 주는 범용 옵션이 아니므로 다른 UUID version에 기계적으로 적용하지 않는다. v7은 generator의 canonical byte layout을 확인한 뒤 v1 swap 없이 저장한다.
 
-**이중 ID 패턴**: 내부 PK는 AUTO_INCREMENT(클러스터링 인덱스 효율), 외부 노출용 ID는 UUID 컬럼(보안). 단점은 컬럼 2개, 인덱스 2개 비용.
+### 내부 PK와 public ID 분리
 
-## InnoDB 클러스터링 인덱스 관점
+내부 PK는 compact auto increment, 외부 API에는 별도 UUID/public key를 노출할 수 있다. index와 mapping 비용이 늘지만 storage identity와 public contract를 독립적으로 바꿀 수 있다.
 
-PK가 **삽입 순서대로 정렬되지 않으면** B+Tree 페이지 중간에 INSERT가 끼어들어:
-1. 페이지가 가득 차면 **분할(split)** 발생 → I/O 증가
-2. 새로 만들어진 페이지가 캐시에 없으면 디스크 읽기 → 추가 비용
-3. 인덱스 단편화 → 시간이 지날수록 성능 저하
+불투명 ID는 object enumeration을 어렵게 할 뿐 authorization이 아니다. 모든 요청에서 tenant/owner/role을 검사해야 하며 순차 PK 노출 자체를 IDOR 취약점과 동일시하지 않는다.
 
-UUID v4가 INSERT 1만 건 기준 AUTO_INCREMENT 대비 **수 배 느린** 벤치마크가 흔하다. UUID v7, ULID, Snowflake는 시간 정렬 덕에 이 비용을 거의 회피.
+## InnoDB 관점
 
-## 흔한 실수
+InnoDB는 PK를 clustered index로 사용하고 secondary index record에 PK column을 포함한다.
 
-- VARCHAR(36)으로 UUID 저장 → 인덱스, 조인이 모두 느려짐. **BINARY(16)** 사용
-- 분산 환경에서 AUTO_INCREMENT 두 DB가 같은 ID 만들어내고 머지 시점에 충돌
-- ULID/UUID v7을 PK로 쓰면서 별도로 `created_at` 인덱스를 또 만듦 (이미 PK가 시간 정렬)
-- 비즈니스 키(이메일, 주민번호)를 PK로 — 변경 가능성, 보안 이슈
+- 짧은 PK는 secondary index 공간과 cache 효율에 유리하다.
+- 증가 key는 random key보다 leaf page locality가 좋은 경향이 있지만 동시 insert hot spot도 측정한다.
+- random PK는 page split과 낮은 fill locality를 만들 수 있으나 성능 배수는 row 크기, memory와 write pattern에 따라 달라진다.
+- PK가 없으면 InnoDB가 적합한 non-null unique index 또는 hidden clustered key를 선택하므로 명시적으로 설계한다.
 
-## 면접 체크포인트
+PK 선택만으로 query 성능을 결론 내리지 않는다. 대표 secondary index, join, insert concurrency와 storage 크기를 실제 data로 비교한다.
 
-- AUTO_INCREMENT vs UUID v4의 INSERT 성능 차이가 발생하는 이유 (클러스터링 인덱스)
-- UUID v7, ULID가 v4의 어떤 단점을 해결하는가
-- 분산 환경에서 PK 생성을 어떻게 할 것인가
-- 외부 API에 PK를 그대로 노출하면 안 되는 이유
-- BINARY(16) vs CHAR(36)으로 UUID를 저장할 때의 차이
+## TypeORM 적용
+
+- `@PrimaryGeneratedColumn("increment", { type: "bigint" })` 값은 JavaScript safe integer 범위를 넘을 수 있으므로 string mapping/serialization을 정한다.
+- UUID 생성 위치를 DB/application 중 하나로 일관되게 정하고 migration default와 test fixture를 맞춘다.
+- `@PrimaryColumn` 여러 개로 composite PK를 만들 수 있지만 relation FK와 repository API의 복잡도를 확인한다.
+- public ID에는 별도 `@Column({ unique: true })`을 두고 authorization query에 owner/tenant 조건을 함께 넣는다.
+
+## 결정 체크리스트
+
+1. 이 row를 5년 뒤에도 같은 것으로 식별하는 기준은 무엇인가?
+2. natural key가 변경, 재사용, 병합될 수 있는가?
+3. composite identity가 domain 의미인가, 우연한 현재 규칙인가?
+4. key가 몇 개의 secondary index/FK에 복제되는가?
+5. ID를 어느 node에서 만들며 offline merge/shard가 필요한가?
+6. public contract와 storage PK를 분리할 이유가 있는가?
 
 ## 출처
-- [SK DEVOCEAN — PK 생성 전략](https://devocean.sk.com/blog/techBoardDetail.do?ID=165948&boardType=techBlog)
+
+- [RFC 9562, Universally Unique IDentifiers](https://www.rfc-editor.org/rfc/rfc9562.html)
+- [MySQL 8.4, Clustered and Secondary Indexes](https://dev.mysql.com/doc/refman/8.4/en/innodb-index-types.html)
+- [MySQL 8.4, Primary Key Optimization](https://dev.mysql.com/doc/refman/8.4/en/primary-key-optimization.html)
+- [MySQL 8.4, Miscellaneous Functions, UUID and UUID_TO_BIN](https://dev.mysql.com/doc/refman/8.4/en/miscellaneous-functions.html)
+- Key 종류/자연 key: [Key 종류](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347625), [자연 key](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347626)
+- Surrogate key: [개념](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347627), [성능 tradeoff](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347628), [현대 설계](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347629)
+- Composite key: [설계](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347630), [M:N 관계](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347631), [정리](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347632)
+- [인프런, Real MySQL 시즌 1 - Part 2, UUID 사용 주의사항](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226707)
 
 ## 관련 문서
-- [[Index|Index — 클러스터링 인덱스]]
-- [[B-Tree-Index-Depth|B-Tree 인덱스 깊이]]
+
+- [[Data-Modeling-Workflow|데이터 모델링 절차]]
+- [[Relational-Relationship-Modeling|관계형 관계 모델링]]
+- [[Index|Index와 clustered key]]
+- [[Foreign-Key-Integrity|외래 키와 참조 무결성]]
 - [[Schema-Design|Schema design]]

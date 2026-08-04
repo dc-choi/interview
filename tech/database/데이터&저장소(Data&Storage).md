@@ -17,6 +17,7 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 
 ## 워크로드 분류
 - [[OLTP-vs-OLAP|OLTP vs OLAP]] — 트랜잭션 처리 vs 분석 처리, 운영/분석 DB 분리 구조
+- [[Polyglot-Persistence|Polyglot Persistence]] — 저장소별 정본과 projection, CDC/Outbox 기반 변경 전파, 재구축과 대사
 
 ## DB 운영, 자동화
 - [[Database-Operations-Automation|DB 운영 자동화 (DBA 플랫폼 엔지니어링)]] — toil 감소 선순환, 설치/스키마/오토스케일링/K8s Operator 자동화, DBA 역할 진화

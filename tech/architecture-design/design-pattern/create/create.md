@@ -10,8 +10,9 @@ aliases: ["생성 패턴", "Creational Patterns"]
 코드의 재활용과 유연성을 증가시키는 객체 생성 메커니즘 패턴 모음. 상위 인덱스는 [[디자인패턴이란|디자인 패턴이란]].
 
 ## 목차
-- [x] [[Factory패턴이란|Factory (팩토리)]]
+- [x] [[Factory패턴이란|Factory와 Factory Method (팩토리 메서드)]]
+- [x] [[AbstractFactory패턴이란|Abstract Factory (추상 팩토리)]]
 - [x] [[Builder패턴이란|Builder (빌더)]]
 - [x] [[Singleton패턴이란|Singleton (싱글턴)]] — 예제 코드 `singleton.mts`
 - [x] [[RevealingConstructor패턴이란|Revealing Constructor (공개 생성자)]]
-- [x] [[Prototype패턴이란|Prototype (프로토타입)]] — 원본 복제, JS 프로토타입의 뿌리
+- [x] [[Prototype패턴이란|Prototype (프로토타입)]] — 객체 복제 패턴, JS prototype chain과 구분

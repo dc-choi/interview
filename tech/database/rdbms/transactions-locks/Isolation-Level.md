@@ -3,7 +3,7 @@ tags: [database, rdbms]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["트랜잭션 격리 수준", "Isolation Level"]
-verified_at: 2026-07-21
+verified_at: 2026-08-04
 ---
 
 # 트랜잭션 격리 수준
@@ -104,6 +104,7 @@ verified_at: 2026-07-21
 - [네이버파이낸셜 — 실무에서 만나는 DB Isolation Level](https://medium.com/naverfinancial/실무에서-만나는-db-isolation-level-e94a904bbf9d)
 - [woojjam — 트랜잭션과 동시성 제어](https://woojjam.tistory.com/9)
 - [MySQL 8.4 — Transaction Isolation Levels](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-isolation-levels.html)
+- [김영한 강사, 트랜잭션 격리 수준](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328818)
 
 ## 관련 문서
 - [[Isolation-Level-Beyond-ANSI|ANSI 격리의 한계, Strict Serializable, Snapshot Isolation]]

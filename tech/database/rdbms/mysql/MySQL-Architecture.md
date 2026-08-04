@@ -1,150 +1,97 @@
 ---
-tags: [database, rdbms, mysql, architecture]
+tags: [database, rdbms, mysql, innodb, architecture]
 status: done
+verified_at: 2026-08-04
 category: "Data & Storage - RDB"
 aliases: ["MySQL Architecture", "MySQL 엔진 구조"]
 ---
 
-# MySQL 아키텍처, SQL 처리 파이프라인
+# MySQL 아키텍처와 InnoDB 저장 경로
 
-MySQL은 **두 계층**으로 나뉜다: 위쪽 **MySQL 엔진**(SQL 파싱, 옵티마이저, 결과 가공)과 아래쪽 **스토리지 엔진**(실제 디스크/메모리에서 데이터 읽고 쓰기). 이 분리 덕에 같은 SQL 인터페이스 아래 InnoDB, MyISAM, Memory, NDB 같은 다양한 저장 방식을 갈아끼울 수 있다.
+MySQL은 연결과 SQL 의미를 다루는 server layer와 page, index, transaction, lock과 recovery를 다루는 storage engine layer를 handler interface로 분리한다. SQL의 모든 조건이 한 계층에서만 처리되는 것은 아니다. optimizer가 만든 access path와 pushdown 가능 여부에 따라 server와 InnoDB가 일을 나눠 가진다.
 
-## 2계층 구조
+## 요청 경로
 
-```
-[MySQL 엔진 (Server Layer)]
-  - 파서 → 전처리기 → 옵티마이저 → 엔진 실행기
-  - 결과 정렬, 조인, 필터링 등 후처리
-       ↓ Storage Engine API
-[스토리지 엔진 (Storage Layer)]
-  - InnoDB / MyISAM / Memory / NDB / ...
-  - 실제 디스크, 메모리에서 데이터 읽기, 쓰기
-```
-
-핵심 분리:
-- **MySQL 엔진**은 SQL 문법, 옵티마이저, 결과 후처리를 담당. 엔진 종류와 무관
-- **스토리지 엔진**은 데이터를 실제로 어떻게 저장, 읽을지 담당
-- 둘 사이는 **Storage Engine API**(handler interface)로 통신
-
-이 구조 때문에 같은 SQL이라도 어떤 스토리지 엔진을 쓰는지에 따라 트랜잭션, 락, 인덱스 동작이 달라진다.
-
-## SQL 처리 파이프라인
-
-요청이 들어오면 MySQL 엔진은 다음 4단계로 SQL을 처리.
-
-### 1. 파서 (Parser)
-SQL 문자열을 **토큰 단위로 분해**해 트리 구조(AST)로 만들고 **문법 검사**. 이 단계에서 SQL 문법 오류가 나면 다음 단계로 넘어가지 않음.
-
-### 2. 전처리기 (Preprocessor)
-파서 트리를 받아 **의미 검증** 수행:
-- 참조한 테이블, 컬럼, 뷰, 함수가 **실제로 존재**하는가
-- 사용자가 그 객체에 **접근 권한**이 있는가
-- ALL/JOIN/뷰 같은 구조의 의미적 일관성
-
-문법이 맞아도 존재하지 않는 컬럼을 참조하면 여기서 잡힘.
-
-### 3. 옵티마이저 (Optimizer)
-가장 핵심적인 단계. 같은 SQL이라도 **어떻게 실행하느냐**가 성능을 결정.
-
-- 불필요한 조건 제거 (`WHERE 1=1` 같은 trivially true 조건 정리)
-- 연산 단순화 (상수 폴딩 등)
-- 어떤 **테이블 접근 순서**가 최적인가 (조인 순서)
-- 어떤 **인덱스**를 쓸 것인가
-- 정렬, 집계 시 **임시 테이블** 필요한가
-
-비용 기반(Cost-Based Optimizer): 실행 후보가 많을 땐 **모든 경우를 다 비교하지 않고**, 휴리스틱으로 후보를 좁힌 뒤 그중에서 비용이 낮은 것을 선택. **항상 최적은 아닐 수 있으며**, 통계가 부정확하거나 데이터 분포가 편향되면 잘못 고를 수 있음 → 그래서 힌트가 필요.
-
-### 4. 엔진 실행기 (Executor)
-옵티마이저가 만든 실행 계획대로 **스토리지 엔진을 호출**해 데이터를 가져온 뒤, MySQL 엔진 단에서:
-- 정렬 (filesort)
-- 조인 (NL/BNL/BKA/Hash)
-- 임시 테이블 작업 (GROUP BY, DISTINCT)
-- 필터링 (필터 조건 적용)
-- 함수 평가, 결과 포맷팅
-
-핵심 튜닝 원칙: **MySQL 엔진의 부하를 최소화하려면 스토리지 엔진에서 가져오는 데이터를 최대한 줄여야 한다**. WHERE 조건이 액세스 조건으로 잡혀 인덱스에서 처리되면 스토리지 엔진이 적은 데이터만 반환 → 엔진 실행기 부하도 작음. 필터 조건 비중이 크면 그 반대.
-
-## 스토리지 엔진 종류
-
-| 엔진 | 트랜잭션 | 락 | 외래키 | 적합 워크로드 |
-|---|---|---|---|---|
-| **InnoDB** | ✅ ACID | row-level | ✅ | OLTP (기본) |
-| **MyISAM** | ✗ | table-level | ✗ | 대량 INSERT, 분석성 (구식) |
-| **Memory** | ✗ | table-level | ✗ | 휘발성 캐시, 임시 테이블 |
-| **NDB** | ✅ | row-level | ✅ | 분산, MySQL Cluster |
-| **Archive** | ✗ | row-level | ✗ | append-only 로그 |
-| **CSV** | ✗ | - | ✗ | 외부 CSV 파일 인터페이스 |
-
-### InnoDB (기본, 표준)
-- ACID 트랜잭션, MVCC, row-level lock
-- 클러스터드 인덱스 (PK 순으로 정렬 저장)
-- 외래키 지원
-- **OLTP의 사실상 표준**. MySQL 5.5부터 기본 엔진
-
-### MyISAM (레거시)
-- 트랜잭션, MVCC, 외래키 모두 미지원
-- table-level lock → 동시 쓰기 어려움
-- 한때 빠른 SELECT 때문에 사용되었으나 **현대 InnoDB가 동등 이상의 성능** + 트랜잭션 안전성을 제공해 사실상 deprecated
-- 마이그레이션 권장
-
-### Memory (HEAP)
-- 데이터를 **메모리에만** 저장 (서버 재시작 시 데이터 소실)
-- 매우 빠른 SELECT/INSERT
-- 임시 결과, 세션 캐시, 룩업 테이블에 가끔 사용
-- BLOB/TEXT 컬럼 미지원, hash 인덱스 기본
-
-스토리지 엔진은 **테이블별로 다르게 지정** 가능 (`CREATE TABLE ... ENGINE=InnoDB`).
-
-## DB 오브젝트
-
-### 인덱스
-키 기준으로 정렬된 오브젝트로 데이터 접근 속도를 높임. 자세한 내용은 [[Index|Index 문서]], [[Covering-Index|커버링 인덱스]] 참고.
-
-### 뷰 (View)
-**가상 테이블**. 저장 공간을 차지하지 않고, 정의된 쿼리의 결과를 테이블처럼 사용.
-
-```sql
-CREATE VIEW active_users AS
-  SELECT id, email, created_at
-    FROM users
-   WHERE deleted_at IS NULL;
-
-SELECT * FROM active_users WHERE email LIKE '%@example.com';
+```text
+client connection
+  -> parser
+  -> semantic and privilege checks
+  -> optimizer
+  -> executor
+  -> handler API
+  -> InnoDB pages, indexes, locks and logs
 ```
 
-용도:
-- **보안** — 민감 컬럼 숨기고 공개 가능한 컬럼만 노출
-- **추상화** — 복잡한 JOIN, 집계를 단일 이름으로 캡슐화
-- **권한 분리** — 테이블 접근권한 없는 사용자에게 뷰 권한만 부여
-- **인터페이스 안정성** — 테이블 스키마가 바뀌어도 뷰 정의만 갱신하면 클라이언트 코드 보호
+1. parser가 token과 syntax tree를 만든다.
+2. 이름, type, object와 privilege를 검사하고 query block을 정리한다.
+3. optimizer가 통계와 cost model로 join order, access method, index, sort와 materialization 후보를 비교한다.
+4. executor가 iterator를 실행하며 storage engine의 row/index API를 호출하고 필요한 join, sort, aggregate와 expression을 처리한다.
+5. InnoDB가 clustered/secondary index page를 읽고 쓰며 MVCC, row lock과 recovery 정보를 관리한다.
 
-특징:
-- **원본 테이블이 변하면 뷰 결과도 변함** (실시간 반영)
-- 단순 뷰는 INSERT, UPDATE, DELETE 가능 (조건부)
-- 복잡한 JOIN, 집계 뷰는 보통 **읽기 전용**
+optimizer 계획은 추정치다. 통계가 오래됐거나 column 상관관계와 parameter별 skew가 반영되지 않으면 다른 계획이 더 빠를 수 있다. 곧바로 index hint를 고정하기보다 통계, query와 index를 먼저 점검하고 `EXPLAIN ANALYZE`로 추정과 실제를 비교한다.
 
-한계:
-- **성능** — 뷰는 매번 정의된 쿼리를 실행. 같은 데이터를 자주 조회하면 비효율
-- **인덱스 제약** — 뷰 자체에 인덱스를 만들 수 없음 (대안: **Materialized View**)
-- **MySQL은 Materialized View 미지원** — PostgreSQL은 지원 (`CREATE MATERIALIZED VIEW`)
+## 조건 처리는 access path에 따라 달라진다
 
-성능을 위해 결과를 캐시하려면 PostgreSQL의 Materialized View를 쓰거나, MySQL이라면 **요약 테이블 + 트리거/배치 갱신** 패턴.
+- index range condition은 읽을 index 구간 자체를 줄인다.
+- Index Condition Pushdown은 secondary index entry에서 조건을 먼저 평가해 base row lookup을 줄일 수 있다.
+- storage engine이 반환한 row에 남은 predicate는 server layer에서 평가한다.
+- join, filesort와 internal temporary table도 plan에 따라 server iterator가 수행한다.
 
-## 면접 체크포인트
+따라서 `WHERE는 storage engine`, `JOIN은 server`처럼 문법 절만으로 실행 위치를 고정하지 않는다. `EXPLAIN FORMAT=TREE`, `EXPLAIN ANALYZE`의 iterator와 `Extra`를 함께 읽는다.
 
-- MySQL 엔진과 스토리지 엔진을 분리한 설계의 이점
-- SQL 처리 4단계 (파서 → 전처리기 → 옵티마이저 → 실행기)의 역할 구분
-- 옵티마이저가 항상 최적 계획을 못 고르는 이유 (통계 부정확, 데이터 분포, 휴리스틱 한계)
-- InnoDB와 MyISAM의 차이가 운영에 미치는 영향 (트랜잭션, 락, 외래키)
-- 뷰의 용도와 한계 (실시간 반영, 인덱스 불가, 성능)
-- Materialized View가 MySQL에 없을 때 대안
+## InnoDB page와 buffer pool
+
+InnoDB table의 row는 clustered index leaf page에 저장되고 secondary index leaf에는 secondary key와 clustered key가 저장된다. 기본 page size는 16 KiB이며 `innodb_page_size`는 instance 초기화 전에 정한다. page size가 작거나 크다고 자동으로 빠른 것이 아니며 row 폭, I/O와 compression 제약이 달라진다.
+
+Buffer pool은 data와 index page를 cache한다. 새 page가 필요하면 free page를 쓰거나 LRU 계열 정책으로 victim을 고른다. dirty page는 즉시 원래 tablespace에 쓰지 않아도 되고 background flushing과 checkpoint가 나중에 내보낸다. 세부 조정은 [[MySQL-InnoDB-Tuning|InnoDB 튜닝]]에서 다룬다.
+
+`INFORMATION_SCHEMA.INNODB_BUFFER_PAGE`는 page 단위 조사에 유용하지만 큰 buffer pool에서 상당한 overhead를 만들 수 있다. 일반 monitoring query로 반복하지 말고 test instance나 제한된 진단 상황에서 사용한다.
+
+## 쓰기, WAL과 crash recovery
+
+```text
+row change
+  -> buffer pool page becomes dirty
+  -> redo record enters log buffer
+  -> commit durability boundary
+  -> background page flush and checkpoint
+```
+
+Redo log는 page 변경을 tablespace보다 먼저 내구성 경계에 기록하는 WAL이다. commit마다 data page 전체를 쓰지 않아도 crash 뒤 redo를 재적용해 일관된 상태로 전진할 수 있다. 실제 commit 내구성은 `innodb_flush_log_at_trx_commit`, binary log가 있으면 `sync_binlog`, OS와 storage 보장까지 함께 결정한다.
+
+data page를 기록하다 server나 storage가 멈추면 page 일부만 기록된 torn page가 생길 수 있다. doublewrite buffer는 page를 안전한 중간 위치에 먼저 기록하고 최종 tablespace write가 불완전하면 recovery에 사용할 정상 copy를 제공한다. Redo는 변경 기록이고 doublewrite는 완전한 page copy이므로 서로 대체하지 않는다.
+
+## Storage engine 선택
+
+InnoDB는 MySQL 8.4의 기본 storage engine이며 transaction, MVCC, row-level locking, crash recovery와 foreign key를 제공한다. MEMORY, MyISAM, NDB 같은 다른 engine은 transaction, index와 durability 의미가 다르다. 과거에 특정 engine이 빠르다는 일반론으로 선택하지 말고 필요한 보장과 지원 버전을 확인한다.
+
+View, stored routine과 event scheduler는 server object다. View의 갱신 가능성, security context와 materialization 대안은 [[Database-Views-and-Programmability|Database view와 programmability]]에서 다룬다.
+
+## 진단 연결점
+
+| 증상 | 먼저 볼 곳 |
+|---|---|
+| plan 추정과 실제 불일치 | `EXPLAIN ANALYZE`, optimizer statistics |
+| page read와 eviction 증가 | buffer pool reads, working set, access pattern |
+| write latency와 checkpoint 압박 | redo utilization, dirty pages, log waits와 I/O |
+| lock wait | `performance_schema.data_locks`, `data_lock_waits`, transaction age |
+| commit 뒤 replica 지연 | binlog 생성량, receiver/applier 상태와 lag |
 
 ## 출처
-- [yoonseon — 물리 엔진과 오브젝트 용어](https://yoonseon.tistory.com/142)
+
+- [MySQL 8.4 Reference Manual, MySQL Architecture](https://dev.mysql.com/doc/refman/8.4/en/pluggable-storage-overview.html)
+- [MySQL 8.4 Reference Manual, InnoDB Architecture](https://dev.mysql.com/doc/refman/8.4/en/innodb-architecture.html)
+- [MySQL 8.4 Reference Manual, InnoDB Page Size](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_page_size)
+- [MySQL 8.4 Reference Manual, InnoDB Buffer Pool](https://dev.mysql.com/doc/refman/8.4/en/innodb-buffer-pool.html)
+- [MySQL 8.4 Reference Manual, Redo Log](https://dev.mysql.com/doc/refman/8.4/en/innodb-redo-log.html)
+- [MySQL 8.4 Reference Manual, Doublewrite Buffer](https://dev.mysql.com/doc/refman/8.4/en/innodb-doublewrite-buffer.html)
+- [인프런, Hong, 아키텍처와 스토리지 엔진](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338554)
+- [인프런, Hong, Doublewrite Buffer](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=374544)
 
 ## 관련 문서
-- [[Execution-Plan|Execution Plan, EXPLAIN]]
-- [[SQL-Tuning-Terminology|SQL 튜닝 용어]]
-- [[SQL-Joins|SQL 조인]]
+
+- [[Execution-Plan|실행 계획]]
+- [[MySQL-InnoDB-Tuning|InnoDB 튜닝]]
+- [[Transactions|트랜잭션]]
+- [[Lock|DB Lock]]
 - [[Index|Index]]
-- [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL]]

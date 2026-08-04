@@ -130,7 +130,7 @@ PENDING → PAID → REFUND_REQUESTED → REFUNDED
 - [[Transactional-Outbox]] 패턴으로 이벤트 유실 방지
 
 ### 대사 배치 (Reconciliation)
-매일 PG사 거래 내역을 **내 DB와 비교**해서 불일치 감지. 실시간으로 못 잡은 누락, 중복을 배치로 보정.
+주기적으로 PG 거래 원장과 내부 주문/결제 원장을 비교해 실시간 경로가 놓친 누락과 중복을 찾는다. 차집합은 즉시 취소 목록이 아니라 조사 후보이므로 grace period, 최신 상태 재조회와 멱등 조치를 거친다. page/cursor와 자동 보정 기준은 [[Payment-Reconciliation-Worker|결제 대사 worker]] 참고.
 
 ### 테스트 전용 샌드박스
 - PG사 제공 샌드박스 키로 통합 테스트
@@ -158,9 +158,11 @@ PENDING → PAID → REFUND_REQUESTED → REFUNDED
 - [supims (brunch) — 안정적인 Node.js 기반 백엔드 시스템 7편 (결제 시스템)](https://brunch.co.kr/@supims/128)
 
 ## 관련 문서
+- [[Commerce-Change-Propagation-and-Money-Invariants|부분 취소, coupon과 정산 불변식]]
 - [[Idempotency|HTTP 멱등성]]
 - [[Idempotency-Key|Idempotency Key 상세]]
 - [[External-API-Integration-Patterns|외부 API 연동 패턴 (거래형)]]
 - [[Transactional-Outbox|Transactional Outbox]]
 - [[Rate-Limiting|Rate Limiting]]
 - [[Isolation-Level|DB 격리 수준]]
+- [[Payment-Reconciliation-Worker|결제 대사 worker]]

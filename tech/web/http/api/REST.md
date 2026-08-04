@@ -1,20 +1,21 @@
 ---
 tags: [web, network, rest, api, http]
 status: done
+verified_at: 2026-08-04
 category: "웹&네트워크(Web&Network)"
 aliases: ["REST", "RESTful", "REST API"]
 ---
 
 # REST, RESTful API
 
-REST(Representational State Transfer)는 Roy Fielding의 박사 논문에서 제안된 **웹의 아키텍처 스타일**이다. HTTP를 설계한 사람이 "HTTP의 본래 의도를 살려 자원을 다루는 방식"을 6가지 제약으로 정리한 것. **RESTful**은 이 제약을 따르는 시스템, API를 지칭한다.
+REST(Representational State Transfer)는 Roy Fielding의 박사 논문에서 Web 아키텍처를 설명하고 유도한 **분산 Hypermedia System의 아키텍처 스타일**이다. **RESTful**은 이 제약을 만족하는 System이나 API를 가리킨다.
 
 ## 핵심 명제
 
-- **자원(Resource) 중심** — URI가 자원을 가리키고, HTTP Method가 행위를 가리킨다
+- **자원(Resource) 중심** — URI가 자원을 식별하고, HTTP Method가 요청 의미를 전달한다
 - **표현(Representation) 분리** — 실제 자원과 그 표현(JSON, XML, HTML)은 별개
-- **성능이 아니라 일관성이 목적** — RESTful은 성능을 위한 게 아니라 **이해도, 호환성, 확장성**을 높이기 위한 컨벤션
-- **HTTP 표준을 그대로 활용** — 상태 코드, 캐시, 인증 등 이미 있는 것을 재발명하지 않음
+- **품질 속성의 Trade-off** — 성능, 확장성, 단순성, 수정 가능성, 가시성, 이식성과 신뢰성을 함께 고려
+- **HTTP를 쓸 때 표준 의미 활용** — Method, 상태 코드, Cache와 인증 의미를 재발명하지 않음
 
 ## 표현된 상태(Representational State)란
 
@@ -33,9 +34,9 @@ REST의 이름이 곧 핵심이다 — 클라이언트와 서버가 주고받는
 
 ### 2. Stateless(무상태)
 
-각 요청은 **이전 요청과 독립적**이며, 서버는 클라이언트 세션을 보관하지 않는다. 요청에 필요한 모든 정보를 클라이언트가 담아서 보내야 함.
-- 장점: 수평 확장 용이(어느 인스턴스든 요청 처리 가능), 장애 복구 쉬움
-- 비용: 요청 크기 증가(매번 인증 토큰, 컨텍스트 포함)
+각 요청은 **이전 요청과 독립적**이며, 이해에 필요한 정보를 요청 안에서 얻을 수 있어야 한다. REST의 Session State는 Client가 보관하지만 Server는 Resource State와 인증에 필요한 계정, 권한 데이터를 저장할 수 있다.
+- 장점: 요청 사이 Server Session affinity가 없어 가시성, 확장성과 장애 복구가 좋아짐
+- 비용: 요청마다 자격증명과 필요한 Context를 전달하고 검증해야 함
 
 ### 3. Cacheable(캐시 가능)
 
@@ -62,28 +63,24 @@ REST의 핵심 차별점. 네 가지 하위 제약:
 | Method | 의미 | 멱등성 | 안전성 |
 |---|---|---|---|
 | GET | 조회 | ✅ | ✅ |
-| POST | 생성, 비멱등 작업 | ✗ | ✗ |
+| POST | 대상 Resource별 처리 | ✗ | ✗ |
 | PUT | 전체 교체, 없으면 생성 | ✅ | ✗ |
 | PATCH | 부분 수정 | 구현에 따라 | ✗ |
 | DELETE | 삭제 | ✅ | ✗ |
 
-- **Safe**: 서버 상태를 바꾸지 않음
-- **Idempotent**: 같은 요청을 여러 번 보내도 결과가 동일(재시도 안전)
+- **Safe**: Client가 대상 Resource 상태 변경을 요청하거나 기대하지 않음. 로그 같은 부수효과까지 금지하지 않는다.
+- **Idempotent**: 같은 요청을 반복했을 때 의도한 효과가 한 번과 같다. 응답이 같다는 뜻은 아니며 자동 재시도 정책은 별도다.
 
-## URI 설계 규칙
+## Resource URI 설계
 
-- **명사 중심**, 동사 금지 — `GET /users/1` (O), `GET /getUser?id=1` (X)
-- **복수형 컬렉션** — `/users` (복수), 단일 자원 접근은 `/users/{id}`
-- **슬래시(/)로 계층 표현** — `/users/{id}/devices/{deviceId}`
-- **경로에 최대 1개 ID만** — `/orders/{orderId}/courses/{courseId}` (X), `/orders/{orderId}/courses` 후 필터링 (O). 유연성, 유지보수성 향상
-- **말미 슬래시 금지** — `/users/` → `/users`로 리다이렉트하거나 거부
-- **소문자 + 하이픈(-) 사용** — `user_profiles`(X), `user-profiles`(△), **camelCase URI는 피하고 kebab-case** 권장. 언더스코어는 가독성 저하
-- **쿼리 파라미터는 camelCase** — `?userId=123` (O), `?user_id=123` (X). JSON 표준과 일관성
-- **확장자 제외** — `/users.json`(X), `Accept: application/json`으로 대체
-- **버전은 경로에 명시적** — `/v1/orders` (O), `/orders?version=1` (X). URL 전용 버전 관리가 가장 흔함
-- **행위는 Method로**, 예외적 동사는 ID 뒤로 — 단순 CRUD는 Method로 충분. 그 외 복잡한 행위만 `POST /orders/{orderId}/cancel` 템플릿 허용
-- **필터, 정렬, 페이징은 쿼리스트링** — `/users?role=admin&sort=-createdAt&page=2&size=20`
-- **리소스 중심 설계** — DB 테이블 구조를 그대로 노출하지 말 것. 도메인이 제공하는 의미에 집중. 권한 구분도 URI에 섞지 말 것(`/admin/users` vs `/users` 이중화 지양 — 토큰 스코프로 해결)
+다음은 HTTP나 REST가 강제하는 문법이 아니라 팀이 일관되게 선택할 수 있는 관례다.
+
+- Collection과 Member를 `/orders`, `/orders/{orderId}`처럼 구분한다.
+- 실제 하위 Resource 관계라면 `/orders/{orderId}/items/{itemId}`처럼 ID가 여러 개여도 된다. 최대 한 개 규칙은 없다.
+- 조회 조건, 정렬과 Pagination은 Query를 사용한다.
+- 단순 CRUD는 Method 의미를 활용하고, 취소처럼 독립된 도메인 행동은 `POST /orders/{id}/cancellation` 같은 처리 Resource로 모델링할 수 있다.
+- 복수형, kebab-case, trailing slash와 Version 위치는 표준 정답이 아니라 호환성과 운영을 고려한 API convention이다.
+- DB Table을 그대로 노출하기보다 Client에게 안정적인 도메인 Resource와 관계를 제공한다.
 
 ## 상태 코드 컨벤션
 
@@ -95,8 +92,8 @@ REST의 핵심 차별점. 네 가지 하위 제약:
 | 5xx | 서버 오류 | 500, 502, 503, 504 |
 
 - 200과 201 구분, 204(본문 없음) 활용
-- 401(인증 실패) vs 403(권한 부족)을 혼동하지 말 것
-- 422(Unprocessable Entity)는 검증 실패, 400은 포맷 오류에 쓰는 관례
+- 401은 유효한 인증 자격증명이 없고 `WWW-Authenticate` challenge가 필요한 경우다. 403은 요청을 이해했지만 수행을 거부한 경우이며 로그인 여부만으로 정의되지 않는다.
+- 422(Unprocessable Content)는 content 형식과 구문은 이해했지만 포함된 지시를 처리할 수 없는 경우다. 검증 실패에 쓰는 것은 흔한 API 관례다.
 
 ## Richardson Maturity Model (REST 성숙도)
 
@@ -111,19 +108,19 @@ REST의 핵심 차별점. 네 가지 하위 제약:
 
 ## 흔한 안티패턴
 
-- **URI에 동사 사용** — `/createUser`, `/deleteOrder/1`
+- **CRUD 의미를 URI에 중복** — `/createUser`, `/deleteOrder/1`처럼 표준 Method와 같은 의미를 다시 encode
 - **GET으로 상태 변경** — 크롤러, 캐시, 프리페치로 재호출되면 의도치 않은 변경
 - **커스텀 상태 코드 남발** — 200 OK + body 안에 `{"success": false}`를 쓰면 표준 처리 인프라(재시도, 에러 모니터링)가 무력화
-- **버전을 쿼리스트링으로 숨기기** — `/api?version=2`보다 `/v2/...` 또는 `Accept: application/vnd.api+json; version=2`
-- **Stateless 위반** — 서버 세션에 사용자 컨텍스트 저장 → 수평 확장 시 스티키 세션 필요
+- **일관성 없는 Versioning** — URI, Query 또는 Media Type 중 선택한 전략의 Cache key, 관측성과 폐기 정책을 계약에 명시하지 않음
+- **암묵적 Server Session 의존** — 요청만으로 Context를 복원할 수 없어 Instance affinity나 공유 Session 저장소가 필요해짐
 
 ## API 성능 개선 기법
 
 REST API 자체가 성능 튜닝 대상은 아니지만, 설계, 응답 수준에서 흔히 쓰는 기법:
 
-- **페이지네이션** — 컬렉션 조회는 기본 페이징 필수. offset-based는 깊은 페이지에서 느려지므로 **cursor-based**(last-seen id) 권장
+- **페이지네이션** — 큰 Collection은 기본 paging을 제공한다. 임의 page 이동은 offset, 안정적인 순차 탐색과 깊은 page 성능은 cursor가 유리할 수 있어 요구에 맞게 선택한다.
 - **필드 선택(Sparse Fieldset)** — `?fields=id,name,email`로 필요한 필드만 응답. GraphQL 스타일 오버페칭 완화
-- **응답 압축** — `Accept-Encoding: gzip, br` 활용. **chunked 전송 시 min-response-size 설정은 무효**
+- **응답 압축** — `Accept-Encoding: gzip, br`를 활용한다. Streaming 응답은 압축 임계치와 Proxy buffering 동작을 측정한다.
 - **HTTP 캐싱** — `Cache-Control`, `ETag`, `If-None-Match`로 304 응답. CDN, Reverse Proxy 캐시 레이어 활용
 - **N+1 회피** — Repository 계층에서 연관 엔티티 한 번에 로딩(fetch join, DataLoader 패턴)
 - **비동기 처리** — 무거운 작업은 202 Accepted + 폴링/웹훅으로 분리
@@ -137,10 +134,14 @@ REST API 자체가 성능 튜닝 대상은 아니지만, 설계, 응답 수준�
 - URI 설계의 핵심 규칙 5가지 이상
 - PUT과 PATCH, POST와 PUT의 차이(멱등성)
 - HATEOAS가 실무에서 덜 쓰이는 이유(Level 3)
-- RESTful API의 목적이 **성능이 아니라 일관성**이라는 포인트
+- REST 제약이 성능, 확장성, 가시성과 수정 가능성 사이에 만드는 Trade-off
 - REST vs GraphQL vs gRPC 선택 기준 ([[API-Comparison|비교 문서]] 참고)
 
 ## 출처
+- 김영한 강사, [HTTP API를 만들어보자](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61364)
+- 김영한 강사, [HTTP API 설계 예시](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61369)
+- [Roy Fielding, Architectural Styles and the Design of Network-based Software Architectures](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm)
+- [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
 - [gmlwjd9405 — REST와 RESTful API](https://gmlwjd9405.github.io/2018/09/21/rest-and-restful.html)
 - [jojoldu — HTTP API 디자인: URI 편](https://jojoldu.tistory.com/783)
 - [lob-dev — RESTful 설계 원칙에 대한 못다 한 이야기](https://lob-dev.tistory.com/90)

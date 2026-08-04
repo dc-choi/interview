@@ -3,6 +3,7 @@ tags: [web, network, osi, l3, ip, cidr, routing, arp]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Network Layer", "네트워크 계층", "L3", "IP CIDR 라우터 ARP", "패킷 포워딩"]
+verified_at: 2026-08-04
 ---
 
 # 네트워크 계층 (Network Layer, L3)
@@ -49,6 +50,8 @@ L3가 데이터를 담아 옮기는 단위는 패킷이다(L2는 프레임). 패
 
 **서브넷 마스크**는 어디까지가 네트워크 부분인지 표시하는 값이다. `/24`는 `255.255.255.0`에 해당한다. 컴퓨터는 목적지 IP와 서브넷 마스크를 **AND 연산**(두 비트가 모두 1일 때만 1)해 네트워크 주소를 구하고, 자신의 네트워크 주소와 같은지로 같은 네트워크 여부를 판단한다.
 
+초기의 IPv4는 A/B/C 클래스마다 네트워크 비트 수를 고정했지만 주소 낭비와 라우팅 테이블 증가를 감당하지 못했다. 현재 설계 기준은 클래스가 아니라 명시적인 prefix length를 쓰는 **CIDR**다. A/B/C는 역사와 오래된 용어를 읽기 위한 배경이지 신규 대역을 설계하는 규칙이 아니다.
+
 ## 라우팅 — 같은 네트워크인가, 아닌가
 
 데이터를 보낼 때 먼저 묻는다. 목적지가 나와 같은 네트워크 안에 있는가?
@@ -58,6 +61,8 @@ L3가 데이터를 담아 옮기는 단위는 패킷이다(L2는 프레임). 패
 
 라우터는 서로 다른 네트워크를 잇는 L3 장비로, **라우팅 테이블**에 어떤 IP 대역을 어느 방향으로 보낼지를 담는다. 패킷이 오면 목적지 IP를 보고 테이블에서 경로를 찾되, **가장 구체적으로 일치하는 경로(longest prefix match)가 우선**한다. 예를 들어 `0.0.0.0/0`은 모든 IPv4를 뜻하는 기본 경로(default route)이고 `63.33.12.0/24`는 더 구체적이라 우선 적용된다.
 
+라우팅 테이블을 사람이 직접 넣는 정적 라우팅과, 라우터끼리 도달 가능성 정보를 교환해 만드는 동적 라우팅은 운영 특성이 다르다. RIP, OSPF, BGP의 역할과 수렴 방식은 [[Routing-Protocols]].
+
 ## ARP — IP를 MAC으로 해석
 
 실제 프레임 전송에는 MAC이 필요한데 L3는 IP를 다룬다. 이 간극을 잇는 것이 **ARP(Address Resolution Protocol)**다.
@@ -65,6 +70,8 @@ L3가 데이터를 담아 옮기는 단위는 패킷이다(L2는 프레임). 패
 - 같은 LAN에 브로드캐스트로 해당 IP를 가진 장비의 MAC을 묻는다.
 - 그 IP를 가진 장비가 자기 MAC으로 응답한다.
 - 보낸 쪽은 IP와 MAC 대응을 **ARP 테이블에 캐시**해 다음부터 재사용한다.
+
+ICMP는 IP 전달 중 생긴 오류와 진단 정보를 운반한다. `ping`의 echo request/reply가 대표적이지만 ICMP 전체가 ping 전용인 것은 아니다. destination unreachable과 time exceeded 같은 메시지는 장애 분석과 Path MTU 동작에도 관여하므로 방화벽에서 ICMP 전체를 무조건 막는 것은 부작용을 만든다.
 
 ## 패킷은 유지되고 프레임은 구간마다 바뀐다 (핵심)
 
@@ -94,13 +101,21 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 - 패킷 vs 프레임, IP(논리, 가변) vs MAC(물리, 고정)의 역할 구분
 - CIDR `/24` 해석과 서브넷 마스크 AND 연산으로 같은 네트워크를 판단하는 원리
 - 라우팅 테이블의 longest prefix match와 `0.0.0.0/0` 기본 경로
+- 클래스풀 주소 체계는 역사적 배경이며 현재 대역 설계는 CIDR prefix를 기준으로 한다는 점
+- 정적 경로와 동적 라우팅 프로토콜이 라우팅 테이블을 만드는 방식의 차이
 - ARP가 IP를 MAC으로 해석하는 이유와 캐시
 - 패킷 IP는 end-to-end 유지, 프레임 MAC은 hop-by-hop 교체
 - L3가 못 하는 것(앱 구분, 순서/신뢰성) → L4 TCP/UDP로 넘어가는 지점
 
 ## 출처
 
+- 김영한 강사, [인터넷 통신](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61344)
+- 김영한 강사, [IP, 인터넷 프로토콜](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61353)
 - [OSI 7 Layer 기초: Network Layer (IP, CIDR, 라우터, ARP) — YouTube](https://www.youtube.com/watch?v=ZnBskOsDuFY&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v&index=2)
+- [RFC 4632 — Classless Inter-domain Routing](https://www.rfc-editor.org/rfc/rfc4632.html)
+- [RFC 792 — Internet Control Message Protocol](https://www.rfc-editor.org/rfc/rfc792.html)
+- [그림으로 쉽게 배우는 네트워크 — IP 클래스와 서브넷 마스크, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160804)
+- [그림으로 쉽게 배우는 네트워크 — 라우팅 프로토콜, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160809)
 
 ## 관련 문서
 
@@ -108,4 +123,6 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 - [[OSI-7-Layer|OSI 7계층 전체 지도와 Internet vs Ethernet]]
 - [[TCP-Handshake|TCP Handshake (L4 전송 신뢰성)]]
 - [[Browser-URL-Flow|브라우저 URL 입력 흐름 (DNS, ARP, 라우팅)]]
+- [[Routing-Protocols|정적 라우팅과 RIP, OSPF, BGP]]
+- [[IPv4-NAT-and-Traversal|IPv4 NAT, NAPT와 NAT 통과]]
 - [[네트워크(Network)|카테고리 인덱스]]

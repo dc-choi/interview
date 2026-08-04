@@ -1,17 +1,18 @@
 ---
 tags: [web, network, security]
 status: done
+verified_at: 2026-08-04
 category: "웹&네트워크(Web&Network)"
 aliases: ["Rate Limiting", "Rate Limit", "레이트 리밋"]
 ---
 
 # Rate Limit 정책 설계
 
-특정 시간 내 요청 횟수를 제한하여 서비스를 보호하는 기법이다. DDoS 방어, 브루트포스 차단, 공정한 리소스 분배에 활용된다.
+특정 주체가 일정 시간에 소비할 수 있는 요청이나 작업량을 제한해 서비스를 보호하는 기법이다. 과부하와 남용을 줄이는 한 방어층이며, 공격 트래픽이 제한기 자체의 용량을 넘는 DDoS를 단독으로 막지는 못한다.
 
 ## 왜 필요한가
 
-- **보안:** 로그인 브루트포스 공격 차단
+- **보안:** 로그인 브루트포스와 민감한 business flow 남용 완화
 - **안정성:** 단일 클라이언트가 서버 리소스를 독점하는 것을 방지
 - **비용:** 불필요한 요청으로 인한 인프라 비용 증가 방지
 - **공정성:** 모든 사용자에게 균등한 서비스 품질 보장
@@ -66,26 +67,34 @@ aliases: ["Rate Limiting", "Rate Limit", "레이트 리밋"]
 제한 초과 시:
 - **상태 코드:** `429 Too Many Requests`
 - **헤더:** `Retry-After: 60` (재시도까지 대기 시간)
-- **응답 헤더 (선택):** `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
+- **추가 헤더:** provider나 API 계약에서 정의한 limit, remaining, reset 정보를 일관되게 제공
 
 ## 분산 환경에서의 Rate Limiting
 
 서버가 여러 대일 때 각 서버가 독립적으로 카운팅하면 정확하지 않다.
 
 **해결 방법:**
-- **중앙 저장소:** Redis를 활용한 공유 카운터 (`INCR` + `EXPIRE`)
+- **중앙 저장소:** Redis 같은 공유 저장소에서 increment, expiry와 allow/deny 판정을 원자적으로 실행. 분리된 `INCR`와 조건부 `EXPIRE`는 실패 사이에 TTL 없는 key를 남길 수 있어 transaction, server-side function이나 Lua script로 묶는다
 - **API Gateway:** Kong, AWS API Gateway 등에서 중앙 집중 관리
 - **근사치 허용:** 서버별 로컬 카운터 + 주기적 동기화
 
 ## 면접 포인트
 
 Q. Rate Limiting을 어떻게 설계했는가?
-- Global(IP당 100회/분) + Auth 엔드포인트(IP당 10회/분) 2단계 적용
-- Express middleware로 구현, IP 기반 식별
+- 전체 보호 한도와 로그인, 결제 같은 고위험 endpoint 한도를 분리한다
+- IP, user, API key와 tenant 중 공정성과 우회 위험에 맞는 식별자를 선택한다
 
 Q. 분산 환경에서는 어떻게 하는가?
 - Redis의 INCR + EXPIRE로 중앙 집중 카운팅
 - 또는 API Gateway 레벨에서 처리
+
+## 출처
+
+- [RFC 6585, 429 Too Many Requests](https://www.rfc-editor.org/rfc/rfc6585.html#section-4)
+- [Redis, Rate limiter pattern](https://redis.io/docs/latest/commands/incr/#pattern-rate-limiter)
+- [OWASP API Security Top 10 2023, Release Notes](https://owasp.org/API-Security/editions/2023/en/0x04-release-notes/)
+- [Dowon Lee 강사, Rate Limiting Strategies](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289786)
+- [Dowon Lee 강사, API Rate Limiting 실습](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290752)
 
 ## 관련 문서
 - [[CSRF|CSRF Protection]]

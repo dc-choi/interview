@@ -3,6 +3,7 @@ tags: [web, network, ethernet, osi, l2]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Physical Data Link Layer", "물리 데이터링크 계층", "L1 L2", "허브 스위치 MAC 프레임"]
+verified_at: 2026-08-04
 ---
 
 # 물리 계층과 데이터링크 계층 (L1, L2)
@@ -70,6 +71,22 @@ L2가 프레임을 만들고, L1이 이를 다시 비트 스트림으로 바꿔 
 - 목적지가 테이블에 없으면(unknown unicast) 모든 포트로 플러딩한 뒤, 응답을 보고 학습한다.
 - 포트마다 충돌 도메인을 분리한다 → 충돌이 사실상 사라지고 전이중 통신이 가능해진다.
 
+스위치 동작은 다섯 단어로 묶으면 기억하기 쉽다.
+
+- **Learning**: 수신 프레임의 출발지 MAC과 들어온 포트를 테이블에 기록한다.
+- **Forwarding**: 목적지 MAC이 다른 포트에 있으면 그 포트로만 보낸다.
+- **Filtering**: 목적지 MAC이 들어온 포트와 같으면 다시 내보내지 않는다.
+- **Flooding**: 목적지 MAC을 모르거나 브로드캐스트이면 같은 VLAN의 다른 포트로 복제한다.
+- **Aging**: 오래 관찰되지 않은 동적 항목을 지워 이동한 장치와 토폴로지 변화에 적응한다.
+
+### 중복 링크와 Spanning Tree
+
+가용성을 높이려고 스위치 사이에 중복 링크를 두면 L2 프레임의 TTL이 없다는 점이 문제가 된다. 브로드캐스트나 unknown unicast가 순환하면서 같은 프레임이 계속 복제되고, MAC 테이블이 흔들리며 링크가 포화될 수 있다.
+
+Spanning Tree Protocol은 브리지끼리 BPDU를 교환해 루트 브리지를 선출하고 루트까지의 경로 비용을 비교한다. 중복 경로 중 일부 포트를 논리적으로 막아 하나의 loop-free forwarding topology만 남기고, 장애가 생기면 다시 계산해 대체 링크를 연다. 단순히 그래프의 최소 신장 트리를 구한다기보다 **브리지 ID, 포트 비용과 역할에 따라 전달 토폴로지를 합의하는 프로토콜**로 이해해야 정확하다.
+
+고전 STP는 재수렴이 느릴 수 있어 Rapid Spanning Tree가 빠른 재구성을 보완했다. 실제 환경에서는 VLAN별 또는 여러 VLAN을 묶은 spanning tree, 링크 집성 같은 설계도 함께 고려한다.
+
 ### 브로드캐스트와 유니캐스트, 그리고 도메인
 
 - 유니캐스트: 특정 대상 하나에게
@@ -87,6 +104,8 @@ L2는 같은 로컬 네트워크 안에서만 동작한다. 서로 다른 네트
 
 - 허브 vs 스위치: 허브는 L1 단순 복제(하나의 충돌 도메인), 스위치는 L2 MAC 기반 선택 전송(포트별 충돌 도메인 분리)
 - 충돌 도메인 vs 브로드캐스트 도메인: 스위치는 충돌 도메인을 나누지만 브로드캐스트 도메인은 그대로 → VLAN이나 라우터가 나눔
+- 스위치의 Learning, Forwarding, Filtering, Flooding, Aging과 unknown unicast 처리
+- 중복 L2 링크가 broadcast storm과 MAC table instability를 만들며 STP가 일부 경로를 차단하는 이유
 - CSMA/CD가 반이중 공유 매체용이고 현대 전이중 스위치 환경에선 불필요해진 이유
 - MAC(인터페이스 식별, 고정) vs IP(네트워크 위치, 가변)의 역할 구분
 - L2의 로컬 한계 → L3(IP, 라우터)와 ARP로 넘어가는 지점
@@ -94,6 +113,9 @@ L2는 같은 로컬 네트워크 안에서만 동작한다. 서로 다른 네트
 ## 출처
 
 - [OSI 7 Layer 기초: Physical Layer와 Data Link Layer — YouTube](https://www.youtube.com/watch?v=DufRXdDF9zI&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v)
+- [IEEE 802.1w — Rapid Reconfiguration of Spanning Tree](https://www.ieee802.org/1/pages/802.1w.html)
+- [그림으로 쉽게 배우는 네트워크 — 스위치, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160797)
+- [그림으로 쉽게 배우는 네트워크 — 스패닝 트리 프로토콜, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160799)
 
 ## 관련 문서
 

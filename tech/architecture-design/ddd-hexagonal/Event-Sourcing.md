@@ -1,6 +1,7 @@
 ---
 tags: [architecture, pattern, event-sourcing, ddd, cqrs]
 status: done
+verified_at: 2026-08-04
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Event Sourcing", "이벤트 소싱", "ES"]
 ---
@@ -124,7 +125,7 @@ Outbox는 **메시지 발행 신뢰성** 문제 해결이 목적이고, Event So
 
 ## 적합한 도메인
 
-- 감사, 규제 요구가 강한 시스템 (금융, 의료, 정부, SOX, GDPR 대응)
+- 변경 이력과 시점 복원이 핵심인 감사, 회계와 추적 시스템. 규제 적합성은 별도 보존, 접근과 삭제 정책으로 검증
 - 재화, 자산의 흐름을 추적해야 하는 시스템 (거래, 결제, 재고)
 - **제품 생애주기, 상태 전이가 비즈니스 본질인 시스템** (DPP, 공급망 추적, 물류)
 - 과거 시점 상태 재현이 자주 필요한 시스템 (분석, 복기, 디버깅)
@@ -139,7 +140,7 @@ Outbox는 **메시지 발행 신뢰성** 문제 해결이 목적이고, Event So
 
 ## 운영 시 주의점
 
-- **이벤트는 불변** — 수정, 삭제 금지. 보정이 필요하면 새 이벤트(`PaymentReversed`)로 표현
+- **이벤트는 논리적으로 append-only** — 보정은 새 이벤트(`PaymentReversed`)로 표현하되, 개인정보 보존과 법적 삭제 요구는 storage 설계에서 별도로 처리
 - **이벤트 페이로드 최소화** — 변하지 않는 사실만. 외부 시스템 응답, 시간 의존 데이터는 별도 조회 (Zero Payload 전략과 결합)
 - **Aggregate 경계 설계가 핵심** — 너무 크면 동시성 충돌, 이벤트 폭주, 너무 작으면 일관성 보장 깨짐
 - **버전 필드 처음부터** — `event_type` + `version` 으로 시작해야 후속 진화 가능
@@ -155,6 +156,8 @@ Outbox는 **메시지 발행 신뢰성** 문제 해결이 목적이고, Event So
 
 ## 출처
 
+- [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html)
+- [Dowon Lee 강사 — Event Sourcing 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290726)
 - [Event Sourcing 패턴 — 매일메일](https://www.maeil-mail.kr/question/292)
 - [이벤트 소싱(Event Sourcing) 개념 — mjspring on Medium](https://mjspring.medium.com/%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EC%86%8C%EC%8B%B1-event-sourcing-%EA%B0%9C%EB%85%90-50029f50f78c)
 - [Event Sourcing — sabarada](https://sabarada.tistory.com/231)

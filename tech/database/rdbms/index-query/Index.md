@@ -16,8 +16,10 @@ verified_at: 2026-07-21
 
 ## 순차 I/O VS 랜덤 I/O
 
-- **순차 I/O**: 물리적으로 인접한 페이지를 차례대로 읽는 순차 접근 방식. 원하는 데이터를 찾기 위해 풀 스캔 방식을 사용하며, 풀 테이블 스캔에 활용된다.
-- **랜덤 I/O**: 물리적으로 떨어진 페이지들에 임의로 접근하는 방식. 인덱스 레인지 스캔에 사용된다.
+- **순차 접근**: 다음 page를 예측하며 넓은 범위를 읽는 방식. full scan은 read-ahead의 이점을 얻을 수 있지만 실제 물리적 연속성, cache와 storage에 따라 비용이 달라진다.
+- **랜덤 접근**: 떨어진 page를 반복해서 찾는 방식. non-covering secondary scan의 clustered row lookup에서 누적되기 쉽다.
+
+index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentation과 cache 상태에 영향을 받는다. 따라서 `full scan = 순차 I/O`, `index scan = 랜덤 I/O`로 일대일 대응시키지 않는다. covering index와 MRR은 추가 row lookup의 유무와 접근 순서를 바꾼다.
 
 ## Primary Key VS Secondary Key
 - PK는 우리가 흔히 알고 있는 식별자를 의미한다. 테이블에서 PK를 생성하면 Index에 PK에 관한 인덱스가 생긴 것을 볼 수 있다. 즉 PK는 레코드를 대표하는 컬럼의 값으로 만들어진 인덱스를 의미한다. PK를 제외한 나머지 인덱스들을 SK라고 한다.
@@ -50,7 +52,7 @@ verified_at: 2026-07-21
 
 ## 인덱스 레인지 스캔
 
-- 인덱스 풀 스캔보다 빠르며, 검색해야 할 인덱스의 범위가 결정됐을 때 사용하는 방식.
+- 검색할 인덱스 범위가 결정됐을 때 사용하는 방식. 읽는 범위와 추가 row lookup 비용에 따라 index full scan이나 table scan보다 느릴 수도 있다.
 - 리프 노드에서 시작 지점을 찾으면 그 다음부터는 리프 노드의 레코드만 순서대로 읽는다. 리프 노드 끝까지 읽으면 리프 노드 간의 링크를 통해 다음 리프 노드를 찾아 스캔한다.
 - 스캔 종료 지점을 찾으면 지금까지 읽은 레코드를 사용자에게 반환하고 쿼리를 종료한다.
 - 인덱스와 table scan의 손익분기점은 row 폭, clustering, cache, 랜덤 I/O 비용, covering 여부와 통계에 따라 달라진다. **20~25% 같은 고정 임계값은 보편 규칙이 아니며** 실행 계획과 실제 측정으로 판단한다.
@@ -73,11 +75,11 @@ verified_at: 2026-07-21
 
 ## 클러스터링 인덱스
 
-- PK 값이 비슷한 레코드끼리 묶어서 저장하는 방식.
+- row를 clustered key 순서의 B-tree leaf에 저장하는 방식. 논리적 key 순서가 물리적으로 항상 연속된 disk 위치를 보장하는 것은 아니다.
 - InnoDB는 PK가 있으면 이를 clustered index로 사용한다. PK가 없으면 모든 컬럼이 `NOT NULL`인 첫 번째 `UNIQUE` 인덱스를 사용하고, 그것도 없으면 숨은 clustered index를 생성한다.
 - **테이블당 하나만 생성 가능**하다. PK에 의해 레코드의 저장 위치가 결정되며, PK가 변경되면 저장 위치도 변경된다.
 - InnoDB row는 항상 clustered index 리프에 저장된다. 정렬 기준은 위 규칙으로 선택된 clustered key다.
-- 공간 지역성이 좋아 PK 기반 범위 검색이 빠르다.
+- clustered key 기반 범위 검색은 leaf 순서를 활용하고 추가 secondary lookup이 없어 유리할 수 있다.
 - PK의 변경이 느리다. PK가 자주 변경되는 값으로 설정되면 매번 저장 위치가 조정되면서 성능 이슈가 발생한다. 따라서 자주 변경되는 값은 유니크 키로 잡고, PK는 `AUTO_INCREMENT` 같은 인조키를 사용한다.
 
 ## 논 클러스터링 인덱스
@@ -94,9 +96,13 @@ verified_at: 2026-07-21
 - 커버링 인덱스를 만들기 위한 수단으로 자주 활용된다. SELECT에 필요한 컬럼까지 복합 인덱스에 포함시키면 테이블 접근 없이 결과를 반환할 수 있다.
 - 주의: 컬럼을 과도하게 추가하면 인덱스 크기 증가 + CUD 성능 저하로 이어지므로 쿼리 패턴에 맞게 설계해야 한다.
 
+### Prefix index
+
+문자열의 앞 `N`자만 index에 넣으면 크기를 줄일 수 있지만 같은 prefix가 많은 데이터에서는 추가 row 확인이 늘어난다. `N`은 고정 관행이 아니라 실제 distinct prefix 수, index 크기와 query latency로 정한다. 긴 검색어도 prefix로 후보를 줄인 뒤 전체 값을 다시 확인할 수 있고, 정렬과 covering 요구를 완전히 만족하지 못할 수 있다. 복합 index 순서도 가장 높은 cardinality가 아니라 equality/range, 정렬, 그룹과 covering 요구로 결정한다.
+
 ## 카디널리티 (Cardinality)
 - 컬럼의 고유 값(distinct value) 수를 의미한다.
-- 카디널리티가 높을수록(=고유 값이 많을수록) 인덱스 효율이 좋다. 예: 주민번호(높음) vs 성별(낮음)
+- 고유 값이 많으면 equality predicate가 적은 행을 찾을 가능성이 크지만, 실제 분포가 치우칠 수 있으므로 카디널리티만으로 인덱스 효율을 판단하지 않는다.
 - 복합 인덱스 순서는 카디널리티만으로 정하지 않는다. 자주 쓰는 equality와 range 조건, 정렬과 그룹화, skip scan 가능성, covering 요구를 함께 본다.
 
 ## 선택도 (Selectivity)
@@ -169,6 +175,8 @@ DROP INDEX CONCURRENTLY idx_name;
 
 ## 관련 문서
 - [[B-Tree-Index-Depth|B-Tree 인덱스 깊이 분석]] — 페이지 구조와 PK 사이즈로 본 깊이 산정
+- [[MySQL-Advanced-Index-Access|MySQL 고급 인덱스 접근]]
+- [[MySQL-Optimizer-Statistics|MySQL 옵티마이저 통계]]
 - [[Transactions|트랜잭션]]
 - [[Isolation-Level|트랜잭션 격리 수준]]
 - [[Execution-Plan|실행계획]]
@@ -178,3 +186,11 @@ DROP INDEX CONCURRENTLY idx_name;
 - [MySQL 8.4 — Clustered and Secondary Indexes](https://dev.mysql.com/doc/refman/8.4/en/innodb-index-types.html)
 - [MySQL 8.4 — `innodb_page_size`](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_page_size)
 - [MySQL 8.4 — Skip Scan Range Access Method](https://dev.mysql.com/doc/refman/8.4/en/range-optimization.html#range-access-skip-scan)
+- [MySQL 8.4 — Multi-Range Read Optimization](https://dev.mysql.com/doc/refman/8.4/en/mrr-optimization.html)
+- [인프런, B+Tree 내부 구조](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471882)
+- [인프런, 클러스터드 인덱스 소개](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471887)
+- [인프런, 랜덤 I/O와 순차 I/O](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471893)
+- [MySQL 8.4 Reference Manual, Column Indexes](https://dev.mysql.com/doc/refman/8.4/en/column-indexes.html)
+- [인프런, Hong, 파티셔닝과 인덱스 설계](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338546)
+- Index 기초 강의: [Sample](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328787), [필요성](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328788), [소개](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328789), [Tree](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328790), [DDL/EXPLAIN](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328791), [Equality](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328792), [Range](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328793), [LIKE](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328794), [Sort](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328795), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328796)
+- Index 설계 강의: [Optimizer 선택](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328798), [Covering](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328799), [Composite 1](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328800), [2](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328801), [3](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328802), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328803), [Guide](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328804), [비용](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328805), [문제](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328806), [전체 정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328807)

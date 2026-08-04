@@ -1,172 +1,74 @@
 ---
-tags: [architecture, design-pattern]
+tags: [architecture, design-pattern, behavioral, iterator]
 status: done
+verified_at: 2026-08-04
 category: "Architecture & Design"
-aliases: ["Iterator 패턴이란?"]
+aliases: ["Iterator Pattern", "반복자 패턴"]
 ---
 
 # Iterator 패턴이란?
-컬렉션의 요소들을 순차적으로 접근할 수 있게 해주는 디자인 패턴
 
-## 왜 쓰을까?
+Iterator는 컬렉션의 내부 표현을 노출하지 않고 요소를 차례로 방문하는 인터페이스를 제공하는 행동 패턴이다. 순회 위치는 Iterator가 관리하므로 같은 컬렉션에도 여러 독립 순회와 DFS, BFS 같은 다른 순서를 제공할 수 있다.
 
-### 캡슐화
-자세한 내용은 구현 코드 참고
+## JavaScript와 TypeScript 프로토콜
 
-### 메모리 효율성
+- Iterable은 `[Symbol.iterator]()`로 Iterator를 만든다.
+- Iterator의 `next()`는 `{ value, done }` 형태의 결과를 반환한다.
+- `for...of`는 Iterable에서 Iterator를 얻어 순회한다.
+- 비동기 데이터는 `[Symbol.asyncIterator]()`와 `for await...of`를 사용할 수 있다.
+
 ```typescript
-// 일반적인 방법 - 모든 데이터를 한 번에 메모리에 로드
-const allNumbers = [1, 2, 3, ... 1000000]; // 메모리 많이 사용
+class Range implements Iterable<number> {
+  constructor(
+    private readonly start: number,
+    private readonly end: number,
+  ) {}
 
-// 이터레이터 방법 - 필요할 때만 하나씩 생성
-const numberIterator = new RangeIterator(1, 1000000); // 메모리 적게 사용
-```
-
-### 다형성 (통일된 인터페이스)
-```typescript
-// 배열, 문자열, 맵, 셋... 모두 같은 방식으로 순회 가능
-for (const item of [1, 2, 3]) {} // 배열
-for (const char of "hello") {} // 문자열  
-for (const [k, v] of new Map()) {} // 맵
-```
-
-### 지연 실행
-```typescript
-// 실제로 사용할 때까지 계산을 미룸
-const fibonacci = infiniteFibonacci(); // 아직 계산 안함
-const first10 = fibonacci.take(10); // 이때 처음 10개만 계산
-```
-
-## 핵심 개념
-
-### 상태를 가짐
-```typescript
-const iter = [1, 2, 3][Symbol.iterator]();
-console.log(iter.next()); // {value: 1, done: false}
-console.log(iter.next()); // {value: 2, done: false} - 상태가 변함
-console.log(iter.next()); // {value: 3, done: false}
-console.log(iter.next()); // {value: undefined, done: true}
-```
-
-### 한 방향으로만 진행
-```typescript
-// 이터레이터는 보통 앞으로만 갈 수 있어요
-// 뒤로 가려면 새로운 이터레이터를 만들어야 해요
-const iter1 = [1, 2, 3][Symbol.iterator]();
-iter1.next(); // 1
-iter1.next(); // 2
-// iter1에서 다시 1로 돌아갈 수 없음
-
-const iter2 = [1, 2, 3][Symbol.iterator](); // 새로 만들어야 함
-```
-
-## 실 사용 사례
-1. 큰 데이터셋 처리: 파일, 데이터베이스 결과 
-2. 무한 시퀀스: 수학적 수열, 스트림 데이터 
-3. 메모리 제약: 제한된 메모리 환경 
-4. 순차 처리: 데이터를 순서대로만 처리하면 되는 경우
-
-## TypeScript의 이터레이터
-
-### 내장 이터러블
-```typescript
-// 1. 
-// 이미 이터레이터를 지원하는 것들
-Array, String, Map, Set, NodeList, Arguments
-```
-
-### Symbol.iterator
-```typescript
-const arr = [1, 2, 3];
-const iterator = arr[Symbol.iterator]();
-```
-
-### for...of 루프
-```typescript
-// 내부적으로 이터레이터를 사용
-for (const item of [1, 2, 3]) {
-    console.log(item);
-}
-
-// 위 코드는 실제로 이렇게 동작:
-const iterator = [1, 2, 3][Symbol.iterator]();
-let result = iterator.next();
-while (!result.done) {
-    const item = result.value;
-    console.log(item);
-    result = iterator.next();
-}
-```
-
-## Async Iterator
-
-비동기 데이터 소스를 순회하기 위한 프로토콜. Symbol.asyncIterator를 구현하며, for await...of로 사용한다.
-
-### Symbol.asyncIterator
-```typescript
-const asyncIterable = {
-  [Symbol.asyncIterator]() {
-    let i = 0
-    return {
-      async next() {
-        if (i >= 3) return { value: undefined, done: true }
-        const value = await fetchData(i++)
-        return { value, done: false }
-      }
+  *[Symbol.iterator](): Iterator<number> {
+    for (let value = this.start; value <= this.end; value += 1) {
+      yield value
     }
   }
 }
 
-for await (const item of asyncIterable) {
-  console.log(item)
+for (const value of new Range(1, 3)) {
+  console.log(value)
 }
 ```
 
-### Async Generator
-```typescript
-async function* paginate(url: string) {
-  let page = 1
-  while (true) {
-    const response = await fetch(`${url}?page=${page}`)
-    const data = await response.json()
-    if (data.items.length === 0) return
-    yield data.items
-    page++
-  }
-}
+Generator는 Iterator를 편리하게 만드는 언어 기능이다. Iterator 자체가 지연 생성이나 메모리 절약을 보장하지는 않는다. 이미 모든 요소를 메모리에 가진 배열도 Iterator를 제공하며, 구현이 미리 전체 결과를 계산할 수도 있다.
 
-for await (const items of paginate('/api/users')) {
-  items.forEach(user => console.log(user.name))
-}
-```
-
-## Node.js 실전 사용
-
-### Readable Stream as Async Iterable
-Node.js의 Readable 스트림은 Symbol.asyncIterator를 구현하여 for await...of로 직접 사용 가능하다.
+## 비동기 페이지 순회
 
 ```typescript
-import { createReadStream } from 'fs'
-
-const stream = createReadStream('large-file.txt', { encoding: 'utf-8' })
-for await (const chunk of stream) {
-  process.stdout.write(chunk)
+async function* listOrders(client: OrdersClient) {
+  let cursor: string | undefined
+  do {
+    const page = await client.list({ cursor })
+    yield* page.items
+    cursor = page.nextCursor
+  } while (cursor)
 }
 ```
 
-### 데이터베이스 커서
-대량 쿼리 결과를 메모리에 전부 로드하지 않고 Async Iterator로 한 행씩 처리:
+이 구현은 소비 속도에 맞춰 다음 페이지를 요청한다. 실패 재시도, 취소, 페이지 사이 데이터 변경과 중복 처리는 별도 계약이다. TypeORM 결과를 스트리밍할 때도 드라이버의 커서와 트랜잭션 수명, 연결 반환 시점을 확인해야 한다.
 
-```typescript
-async function* queryCursor(sql: string) {
-  const cursor = db.query(sql).cursor(100) // 100행씩 fetch
-  for await (const rows of cursor) {
-    for (const row of rows) {
-      yield row
-    }
-  }
-}
-```
+## 적용 경계
 
-### 페이지네이션 API 소비
-API의 다음 페이지가 없을 때까지 자동으로 순회하는 패턴으로, 소비자는 페이지네이션 로직을 신경 쓰지 않아도 된다.
+- 컬렉션 구조와 순회 알고리즘을 분리하고 싶다.
+- 같은 데이터에 여러 순회 방식이나 독립 커서가 필요하다.
+- 소비자가 컬렉션의 인덱스, 트리 링크나 페이지 토큰을 몰라야 한다.
+
+단순 배열 순회라면 내장 반복 프로토콜로 충분하다. 직접 구현할 때는 순회 중 컬렉션 변경, Iterator 재사용 가능 여부와 종료 후 동작을 정한다.
+
+## 출처
+
+- 얄팍한 코딩사전, [Iterator 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=247068)
+- Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- [TypeScript 공식 문서, Iterators and Generators](https://www.typescriptlang.org/docs/handbook/iterators-and-generators.html)
+- [ECMAScript 명세, Iterator Interface](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-iterator-interface)
+
+## 관련 문서
+
+- [[Composite패턴이란|Composite 패턴]]
+- [[File-System|Node.js 파일 시스템]]

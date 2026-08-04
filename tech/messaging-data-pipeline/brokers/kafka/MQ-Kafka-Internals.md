@@ -1,6 +1,7 @@
 ---
 tags: [messaging, kafka, event-streaming]
 status: done
+verified_at: 2026-08-04
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Kafka Internals", "카프카 기본 구조와 내부"]
 ---
@@ -9,13 +10,16 @@ aliases: ["Kafka Internals", "카프카 기본 구조와 내부"]
 
 > 상위 인덱스: [[MQ-Kafka|Kafka]]
 
+Kafka는 event를 topic의 partition log에 append하고 여러 consumer group이 각자 offset으로 읽는 분산 event streaming platform이다. queue처럼 작업을 분산할 수 있지만, consume 뒤 record가 즉시 사라지는 전통적인 queue와 달리 retention 정책 동안 다시 읽을 수 있다.
+
 ## 기본 구조
 
 | 구성요소 | 역할 |
 |----------|------|
-| 프로듀서 | 메시지를 생산하는 서버 |
-| 카프카 클러스터 | 프로듀서에서 생산되는 메시지를 보관 |
-| 컨슈머 | 클러스터에 보관된 메시지를 polling |
+| Producer | event를 topic에 발행하고 partition을 선택 |
+| Broker | partition log를 저장하고 client의 읽기/쓰기를 처리 |
+| Consumer | 할당된 partition을 polling하고 처리 위치를 관리 |
+| Controller quorum | cluster metadata와 partition leader 상태를 관리 |
 
 - 카프카는 데이터를 한번에 합쳐서 보낼 수 있음 (배치)
 
@@ -26,56 +30,65 @@ aliases: ["Kafka Internals", "카프카 기본 구조와 내부"]
 - 파티션 안에는 **offset**(메시지 일련번호)이 있음
 
 ### 파티션과 컨슈머 규칙
-- 프로듀서는 서로 다른 파티션에 메시지를 발행 (지정 안 하면 라운드로빈)
-- **파티션 하나에 컨슈머 하나**가 메시지를 처리
-- 하나의 토픽을 처리할 수 있는 **컨슈머 그룹** 지정 가능
-- 컨슈머가 죽으면 다른 파티션의 데이터를 받아올 수 있음 (리밸런싱)
-- 파티션 하나에 컨슈머 두 개는 **불가능**
-- 파티션 두 개에 컨슈머 하나는 **가능**
+- Producer는 명시한 partition, record key와 partitioner 정책으로 목적 partition을 고른다. key 없는 record가 항상 단순 round-robin이라고 가정하지 않는다.
+- 같은 key는 partition 수와 partitioner가 유지되는 동안 같은 partition에 모이고, 그 partition의 append 순서로 읽힌다.
+- **한 consumer group 안에서는** partition 하나가 같은 시점에 최대 한 consumer에게 할당된다.
+- 다른 consumer group은 같은 partition을 독립적으로 읽을 수 있으므로 "partition 하나에 consumer 하나"는 cluster 전체 규칙이 아니다.
+- consumer 수가 partition 수보다 많으면 같은 group의 남는 consumer는 idle이다. consumer 하나가 여러 partition을 맡는 것은 가능하다.
+- consumer가 추가, 제거되거나 장애가 나면 group이 partition을 재할당한다. 처리 중 중복과 pause를 고려해 idempotency와 rebalance 대응이 필요하다.
 - 토픽 생성 시 초기 파티션 개수 산정(프로듀서와 컨슈머 요구량, per-partition 처리량, 플랫폼 한도)은 [[Kafka-Partition-Sizing|파티션 개수 산정]] 참고
+
+key는 같은 entity event의 partition affinity와 순서를 다루는 도구다. consumer가 handler 내부에서 병렬 처리하거나 여러 topic/group이 같은 DB row를 수정하면 race는 다시 생긴다. key만으로 동시성 제어, exactly-once business 처리나 global ordering이 보장되지는 않는다.
 
 ## 세그먼트
 
-- 파티션에서 메시지를 디스크에 저장할 때 저장되는 파일 이름
-- 영구 저장이 아니라 **삭제 정책**에 따라 삭제될 수 있음
-- 세그먼트 데이터를 읽다가 실패하면 처음부터 다시 가져올 수 있음
+- partition log는 여러 segment file로 나뉘어 저장되고 size/time 조건으로 active segment가 roll된다.
+- retention 또는 compaction 정책에 따라 오래된 record가 제거될 수 있으므로 Kafka를 무기한 archive로 간주하지 않는다.
+- consumer는 저장된 group offset이나 명시한 offset으로 다시 읽는다. 장애가 나면 무조건 처음부터 시작하는 것이 아니며 retention 밖의 offset은 복구할 수 없다.
 
 ## KRaft
 
-- 주키퍼를 대체하는 합의 프로토콜
-- 주키퍼가 빠졌기 때문에 배포와 운영이 더 쉬워짐
-- 확장성이 **10배 이상** 향상
+KRaft는 Kafka controller quorum이 Raft 기반 metadata log를 관리하는 mode다. Apache Kafka 4.0부터 ZooKeeper mode가 제거되어 Kafka는 KRaft로만 실행된다.
+
+- 새 local/production 구성은 KRaft 기준으로 작성한다.
+- 오래된 ZooKeeper Docker Compose 예제는 당시 version을 재현할 때만 사용하고 현재 기본 예제로 복사하지 않는다.
+- 별도 ZooKeeper ensemble이 사라져 구성 요소와 metadata 운영 경로가 단순해졌지만, 모든 workload가 일정 배수 빨라진다고 일반화하지 않는다.
+- controller quorum과 broker 역할을 같은 process에 둘지 분리할지는 개발과 production 규모에 따라 결정한다.
+
+## 순서, 내구성과 transaction 경계
+
+- 순서는 topic 전체가 아니라 partition 안에서 보장된다. 같은 key 사용은 전역 순서를 만들지 않는다.
+- replication은 broker 장애 내성을 높이지만 producer `acks`, `min.insync.replicas`, unclean leader election과 retention 설정이 실제 손실 경계를 바꾼다.
+- offset commit 전에 side effect를 끝내면 재처리 때 중복될 수 있고, 먼저 commit하면 장애 때 처리가 유실될 수 있다. consumer side effect를 멱등하게 만든다.
+- 주문 DB commit 뒤 Kafka에 바로 publish하는 코드는 crash gap이 있다. 주문 row와 outbox row를 같은 RDB transaction에 저장한 뒤 relay가 발행한다.
+- NestJS 단방향 event는 `emit()`과 `@EventPattern()`을 사용한다. `send()`와 `@MessagePattern()`은 reply topic을 사용하는 request-response 용도다.
 
 ## 카프카가 빠른 이유
 
-디스크 기반인데도 메모리급 처리량을 내는 이유는 **물리적 I/O 구조**에 있다.
+Kafka의 처리량은 한 가지 기술이 아니라 다음 구조의 조합에서 나온다.
 
-### Sequential I/O + Append-Only Log
-파티션은 끝에만 쓰는 append-only 로그. 디스크의 랜덤 seek이 없어 HDD에서도 **수백 MB/s** 처리량. 소비자는 자신의 offset으로 순차 읽기 → 캐시 지역성 양호.
-
-### Zero-Copy (`sendfile`)
-일반 파일 전송 과정은 `디스크 → 커널 버퍼 → 유저 버퍼 → 소켓 버퍼 → NIC`로 4번 복사와 4번 컨텍스트 스위칭. Kafka는 Java NIO `transferTo()`가 내부적으로 Linux `sendfile` 시스템 콜을 써서 **유저 공간을 건너뛴다** → 1~2번 복사와 2번 컨텍스트 스위칭.
-- IBM 벤치마크 기준 약 **65% 처리량 개선**
-- 압축된 메시지를 해제 없이 그대로 전송 가능
-
-### Page Cache 활용
-Kafka는 JVM 힙에 메시지를 캐시하지 않고 **OS Page Cache**에 맡긴다. 수 GB에서 수십 GB의 RAM을 활용하면서도 GC 부담이 없음. OS가 이미 잘 튜닝한 LRU와 readahead를 그대로 활용.
-
-### Batching + Compression
-- 프로듀서는 `linger.ms` 동안 메시지를 모아 **배치 전송**
-- 배치 단위로 gzip, lz4, snappy, zstd 압축
-- 네트워크 대역폭과 디스크 쓰기량 동시에 감소
-
-### 파티션 병렬화
-토픽을 N개 파티션으로 쪼개면 N대의 컨슈머가 **독립적으로 병렬 처리** → 수평 확장이 선형에 가깝다.
+- **Sequential log**: append와 offset 기반 순차 읽기로 작은 random I/O를 줄인다.
+- **OS page cache**: broker heap에 record cache를 중복해 두기보다 filesystem cache와 read-ahead를 활용한다.
+- **Batching**: producer request, broker append와 consumer fetch를 batch로 처리해 왕복과 작은 I/O 비용을 나눈다.
+- **Compression**: record batch를 압축한 상태로 log에 저장하고 consumer까지 전달해 network와 disk 양을 줄인다.
+- **Zero-copy 경로**: 조건이 맞으면 page cache의 데이터를 `sendfile` 경로로 socket에 전달해 user-space copy를 줄인다. Kafka 공식 문서상 SSL 경로에서는 이 최적화를 사용하지 않는다.
+- **Partition 병렬성**: 여러 broker와 consumer에 작업을 나눌 수 있다. 처리량이 partition 수에 항상 선형 비례하는 것은 아니며 key skew, broker I/O, network와 downstream 처리량에 제한된다.
 
 ## 출처
 
+- [Apache Kafka, Introduction](https://kafka.apache.org/documentation/)
+- [Apache Kafka 4.0 release announcement, KRaft only](https://kafka.apache.org/blog/2025/03/18/apache-kafka-4.0.0-release-announcement/)
+- [Apache Kafka, Design](https://kafka.apache.org/41/design/design/)
+- [NestJS, Microservices basics](https://docs.nestjs.com/microservices/basics)
 - [frogred8 — 카프카는 왜 빠를까?](https://frogred8.github.io/docs/034_why_is_kafka_fast/)
+- 김빌 강사, [Kafka 이론](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273696), [Docker Compose 실습](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273697), [주문 로직 리팩터링](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273698)
 
 ## 관련 문서
 
 - [[MQ-Kafka|Kafka 인덱스]]
 - [[MQ-Kafka-Patterns|실전 패턴]]
+- [[MQ-Kafka-Event-Ordering|Kafka 이벤트 순서 보장]]
 - [[Kafka-Partition-Sizing|파티션 개수 산정]]
 - [[Consumer-Group|Consumer Group]]
+- [[Transactional-Outbox|Transactional Outbox]]
+- [[Delivery-Semantics|전달 보장]]

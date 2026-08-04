@@ -55,7 +55,7 @@ aliases: ["정규화", "Normalization"]
 
 ## 보이스-코드 정규화 (BCNF)
 
-BCNF는 모든 유효한 함수 종속 `X → Y`에서 X가 후보키 또는 슈퍼키가 되도록 요구한다. 제3정규형보다 결정자 조건이 엄격하다.
+BCNF는 모든 비자명 함수 종속 `X → Y`에서 X가 슈퍼키가 되도록 요구한다. 제3정규형보다 결정자 조건이 엄격하다.
 
 ## 반정규화
 
@@ -87,10 +87,15 @@ BCNF는 모든 유효한 함수 종속 `X → Y`에서 X가 후보키 또는 슈
 
 - [이번에 확실히 정리하고 가시죠, RDB 정규화 - 코딩하는기술사](https://www.youtube.com/watch?v=KDkPizapEAA)
 - [8분 만에 이해하는 1, 2, 3 정규화 - 코딩하는기술사](https://www.youtube.com/watch?v=tyBSrMhJtDY)
+- 정규화 시작/1NF: [시작](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347664), [1NF](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347665)
+- 2NF/3NF/BCNF: [2NF](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347666), [3NF](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347667), [BCNF](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347668)
+- 실무 적용: [실무와 정규화](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347669), [정리](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347670)
+- [인프런, Hong, DB 설계](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338544)
 
 ## 관련 문서
 
 - [[SQL]]
 - [[Schema-Design|스키마 설계]]
+- [[Data-Modeling-Workflow|데이터 모델링 절차]]
 - [[Ecommerce-Shopping-Mall-ERD|쇼핑몰 ERD 패턴]]
 - [[Sharding]]

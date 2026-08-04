@@ -87,101 +87,57 @@ ON과 비슷하지만 USING은 **결과셋에 조인 컬럼이 한 번만** 등�
 
 ## 드라이빙 vs 드리븐 테이블
 
-조인은 두 테이블에 동시 접근하지 못하므로 **순서**가 생긴다.
+Nested-loop 계열 계획에는 먼저 row를 공급하는 outer 또는 driving input과, 그 row로 반복 탐색하는 inner 또는 driven input이 있다.
 
 - **드라이빙 테이블 (Outer Table)**: 먼저 접근하는 쪽
 - **드리븐 테이블 (Inner Table)**: 드라이빙 결과로 검색하는 쪽
 
-규칙:
-1. **드라이빙은 결과 행이 적은 쪽**으로 (적은 행 × 적은 검색)
-2. **드리븐의 조인 컬럼은 인덱스 필수** (드라이빙 행마다 검색하므로)
-3. 옵티마이저가 자동 선택하지만, `STRAIGHT_JOIN` 힌트로 강제 가능
-
-드라이빙이 1만 건 × 드리븐 인덱스 없으면 1만 × 풀스캔 → 재앙.
+작은 table을 항상 먼저 읽는 것은 아니다. predicate 적용 뒤의 예상 rows, inner access 비용, join dependency, 정렬과 결과 보존 조건을 함께 비교한다. inner join key의 selective index는 반복 탐색을 줄이지만 모든 join에 필수인 보편 규칙은 아니다. hash join처럼 다른 알고리즘이 유리할 수도 있다.
 
 ## 조인 알고리즘
 
 ### Nested Loop Join (NL)
-드라이빙 1행마다 드리븐을 검색. **OLTP에서 가장 흔함**.
-
-예시: 학생 100건 × 비상연락망 1000건, `WHERE 학번 IN (1, 100)`
-
-**case 1: 인덱스 없음**
-- 학번 1 검색: 학생 100건 풀스캔 + 비상연락망 1000건 풀스캔
-- 학번 100 검색: 또 100건 + 1000건
-- 총 (100+1000) × 2 = 2200건 액세스 → 매우 비효율
-
-**case 2: 양쪽 학번 인덱스 있음**
-- 학번 1: 인덱스로 학생 1건 즉시 + 비상연락망 매칭(예: 2건) 즉시
-- 학번 100: 동일하게 1+2건
-- 총 6건 액세스 → 효율 폭증
-
-핵심: **드리븐 테이블 조인 컬럼의 인덱스**가 NL의 성능을 좌우. 비고유 인덱스는 매칭마다 랜덤 액세스 발생.
-
-### Block Nested Loop Join (BNL)
-드리븐에 인덱스가 없을 때 NL을 개선한 변형. **드라이빙 행을 조인 버퍼에 모아서** 드리븐을 한 번만 풀스캔.
-
-수행:
-1. 드라이빙에서 매칭 행을 조인 버퍼에 적재
-2. 버퍼가 가득 차거나 끝나면 드리븐을 **1회 풀스캔**하면서 버퍼와 비교
-3. 매칭되는 행 출력
-
-NL은 드라이빙 행마다 드리븐 풀스캔이 필요한데, BNL은 **드리븐 풀스캔 횟수를 N분의 1로** 줄임.
+outer row마다 inner input에서 matching row를 찾는다. 비용은 대략 `outer rows * inner lookup cost`로 누적된다. inner index가 있어도 outer가 크고 조회가 non-covering이면 clustered row lookup이 비쌀 수 있다. `EXPLAIN ANALYZE`의 actual rows와 loops로 실제 반복량을 본다.
 
 ### Batch Key Access Join (BKA)
-NL의 랜덤 액세스 문제를 해결. 드리븐의 조인 키를 **미리 정렬**해서 시퀀셜 액세스로 변환.
-
-수행:
-1. 드라이빙 조인 키를 조인 버퍼에 배치로 모음
-2. **랜덤 버퍼**에 드리븐의 예상 데이터 위치를 미리 정렬
-3. **다중 범위 읽기 (Multi-Range Read, MRR)**로 드리븐을 시퀀셜 액세스
-4. 매칭 결과 출력
-
-장점: 인덱스가 있어도 랜덤 액세스 비용이 큰 상황(SSD 아닌 HDD, 인덱스 깊이가 깊음 등)에서 NL 대비 향상. MRR + BKA는 함께 동작하며 옵티마이저가 적절히 선택.
+BKA는 outer의 lookup key를 join buffer에 모으고 MRR로 inner base row 접근의 지역성을 개선하는 nested-loop 계열 방식이다. MySQL 8.4에서는 기본으로 켜져 있지 않으며 `mrr`, `mrr_cost_based`, `batched_key_access` 설정과 비용을 검증해야 한다.
 
 ### Hash Join
-**MySQL 8.0.18+** 지원. PostgreSQL은 오래전부터 성숙.
-
-수행:
-1. 작은 쪽(빌드 입력) 테이블의 조인 컬럼으로 **인메모리 해시 테이블** 구축
-2. 큰 쪽(프로브 입력)을 한 번 스캔하면서 해시 조회로 매칭
-3. 결과 출력
-
-특징:
-- **인덱스 불필요** — 조인 키에 인덱스가 없는 대용량 테이블 조인에서 NL을 압도
-- 동등 조건 조인(`=`)에만 적용. 부등호 조인은 NL/Sort-Merge
-- 빌드 입력이 메모리에 들어가야 효율적. 너무 크면 디스크 hash 분할 (느림)
+build input으로 hash table을 만들고 probe input을 대조한다. MySQL 8.4는 applicable join index가 없는 equi-join뿐 아니라 non-equi 조건, outer join, semijoin과 antijoin도 지원 범위가 있다. non-equi 조건은 hash Cartesian product 뒤 filter가 될 수 있고, memory를 넘으면 disk를 사용할 수 있으므로 항상 NL보다 빠르다고 단정하지 않는다.
 
 ### Sort-Merge Join
-양쪽을 조인 키로 정렬한 뒤 동시 스캔. 양쪽이 이미 정렬돼 있거나 정렬 비용이 작을 때 효율적. MySQL은 거의 안 쓰고, PostgreSQL이 종종 선택.
+양쪽 input을 join key로 정렬한 뒤 함께 순회한다. PostgreSQL은 후보로 사용할 수 있지만 MySQL 8.4의 일반적인 물리 join 알고리즘 목록으로 가정하지 않는다.
 
 ## 조인 알고리즘 선택
 
-| 상황 | 권장 알고리즘 |
+| 상황 | 우선 확인할 후보 |
 |---|---|
-| 작은 드라이빙 + 인덱스 있는 드리븐 | NL |
-| 인덱스 없는 드리븐 | BNL (또는 인덱스 추가) |
-| 랜덤 액세스 비용 큰 환경 | BKA + MRR |
-| 대용량 + 인덱스 없음 + 동등 조건 | Hash Join |
-| 양쪽 정렬돼 있음 | Sort-Merge |
+| 적은 outer rows, selective inner index | nested loop |
+| applicable join index가 없는 큰 equi-join | hash join |
+| 반복되는 non-covering inner lookup | covering index, BKA와 MRR 검토 |
+| 예상과 실제 rows가 크게 다름 | 통계, histogram, data skew 점검 |
 
-옵티마이저가 통계 기반으로 자동 선택. 잘못 선택하면 `STRAIGHT_JOIN` 또는 `JOIN_FIXED_ORDER` 힌트로 개입.
+hint로 join 순서를 강제하기 전에 통계, predicate와 index를 고친다. outer join에서는 predicate 위치를 바꾸면 결과 집합 자체가 달라질 수 있으므로 semantic regression test가 필요하다.
 
 ## 면접 체크포인트
 
 - INNER vs LEFT OUTER 차이
 - 암시적 조인 vs 명시적 조인 (가독성, 유지보수)
 - NATURAL JOIN을 권장하지 않는 이유
-- 드라이빙 테이블 선택 기준 (적은 행)
-- NL Join에서 드리븐 인덱스가 왜 결정적인가
-- Hash Join이 MySQL에서 8.0.18 이전엔 없었던 이유와 영향
-- BKA가 NL 대비 어떤 문제를 해결하는가 (랜덤 → 시퀀셜)
+- join 종류와 물리 실행 알고리즘의 차이
+- NL Join에서 `actual rows * loops`를 보는 이유
+- Hash Join의 build/probe와 memory spill
+- BKA와 MRR이 반복 row lookup을 줄이는 방식
 
 ## 출처
 - [yoonseon — 논리적인 SQL 개념 용어](https://yoonseon.tistory.com/143)
+- [MySQL 8.4, Nested-Loop Join Algorithms](https://dev.mysql.com/doc/refman/8.4/en/nested-loop-joins.html)
+- [MySQL 8.4, Hash Join Optimization](https://dev.mysql.com/doc/refman/8.4/en/hash-joins.html)
+- [MySQL 8.4, Batched Key Access Joins](https://dev.mysql.com/doc/refman/8.4/en/bnl-bka-optimization.html)
 
 ## 관련 문서
 - [[SQL-Tuning-Terminology|SQL 튜닝 용어]]
 - [[Index|Index]]
 - [[Execution-Plan|Execution Plan]]
+- [[MySQL-Join-Optimization|MySQL 조인 최적화]]
 - [[SQL|SQL 기초]]

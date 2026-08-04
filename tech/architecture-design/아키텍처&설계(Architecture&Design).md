@@ -10,6 +10,7 @@ aliases: ["아키텍처&설계(Architecture&Design)", "Architecture & Design"]
 ## 큰 그림 (먼저 보기)
 
 - [[Event-Driven-Architecture|Event-Driven Architecture (EDA) — 결정 프레임워크]] — 신뢰성, 결합도, 일관성 3축 트레이드오프 + 8개 결정 층 + 패턴 매핑 그림
+- [[Reactive-Systems-Principles|리액티브 시스템 원칙]] — 응답성, 회복성, 탄력성과 메시지 구동의 관계, backpressure와 BASE 경계
 - [[Monorepo-Architecture|모노레포 아키텍처]] — 모노레포 vs 모놀리스(직교), 공통 패키지 함정, 변화율 계층(SDP), Public API, Conway's Law
 - [[Module-Federation|Module Federation]] — Build/Run-time 통합, 마이크로 프론트엔드, 공유 스코프, manifest 독립 배포
 

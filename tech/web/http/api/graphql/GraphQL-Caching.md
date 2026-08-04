@@ -27,6 +27,27 @@ REST는 URL이 자원의 전역 유일 키라 HTTP 캐시가 그냥 된다. Grap
 - 서버가 안정적인 객체 id를 주면 클라이언트는 응답 그래프를 객체 단위로 펼쳐, id를 키로 하는 평면 저장소에 담을 수 있다. 같은 객체가 여러 쿼리에 나와도 한 곳에 병합된다.
 - 정규화 캐시와 `id`, `__typename` 조합 키는 Apollo Client, Relay, urql 같은 클라이언트 라이브러리 관례다. 공식이 권장하는 것은 단일 전역 유일 `id`이고, 서버가 id를 못 주면 클라이언트가 `__typename`과 타입 내 식별자로 직접 식별자를 만드는 대안을 든다.
 
+## Apollo Client에서 조회와 변경을 연결하는 법
+
+Apollo Client v4의 React 통합은 네트워크, 캐시, UI 구독을 한 흐름으로 묶는다. `ApolloClient`에 `HttpLink`와 `InMemoryCache`를 주고, 루트의 `ApolloProvider`가 같은 client를 컴포넌트 트리에 공급한다. 코어 객체와 `gql`은 `@apollo/client`, React 훅과 Provider는 `@apollo/client/react`에서 가져온다. 오래된 예제의 단일 패키지 import를 그대로 복사하지 말고 설치한 major 버전 문서를 확인한다.
+
+```tsx
+const client = new ApolloClient({
+  link: new HttpLink({ uri: "/graphql" }),
+  cache: new InMemoryCache(),
+});
+
+const { loading, error, data, dataState } = useQuery(GET_TEAMS, {
+  variables: { role },
+});
+```
+
+- `useQuery`는 렌더링과 함께 연산을 실행하고 `loading`, `error`, `data`, `dataState`를 UI에 연결한다. 기본 fetch policy는 `cache-first`라 요청 필드를 캐시가 모두 충족하면 네트워크 요청을 생략한다. 최신성이 더 중요할 때만 `network-only`, `cache-and-network` 같은 정책을 의도적으로 고른다.
+- `useMutation`은 실행 함수와 상태를 돌려준다. mutation 응답에 수정된 객체의 `__typename`과 식별 필드를 포함하면 정규화 캐시의 같은 객체 필드는 자동 병합된다.
+- 객체가 캐시에 들어오는 것과 목록이 바뀌는 것은 별개다. 새 `Todo` 객체가 저장돼도 `ROOT_QUERY.todos`의 멤버십은 자동으로 늘지 않는다. 생성, 삭제, 정렬 변경처럼 목록 구조가 바뀌면 `update`와 `cache.modify`로 정확히 고치거나 영향을 받은 활성 쿼리만 `refetchQueries`로 다시 가져온다.
+- refetch는 구현이 단순하고 서버를 진실의 원천으로 다시 확인하지만 네트워크 비용이 든다. 캐시 직접 갱신은 즉시 반영되지만 서버 mutation의 효과를 빠짐없이 재현해야 한다. 변경 범위와 일관성 요구에 맞춰 선택하고, 필요하면 optimistic update 뒤 선택적 refetch를 결합한다.
+- GraphQL fragment는 여러 연산에서 선택 필드를 재사용하고 컴포넌트의 데이터 요구를 가까이 두는 단위다([[GraphQL-Query-Language#fragment|fragment]]). fragment 자체가 요청을 일으키지는 않는다. Apollo Client의 `useFragment`도 캐시의 해당 조각을 구독할 뿐 네트워크 요청은 `useQuery` 같은 연산 훅이 담당한다.
+
 ## 서버 응답 캐시 (필드 단위 cache hint)
 
 - 응답 모양을 클라이언트가 정하므로 캐시 수명도 고정일 수 없다. 필드마다 maxAge와 scope(PUBLIC, PRIVATE) 힌트를 두고, 응답 전체는 포함된 필드 중 가장 제한적인 값으로 계산한다: maxAge는 최솟값, 하나라도 PRIVATE면 PRIVATE, 하나라도 0이면 응답을 캐시하지 않는다.
@@ -65,6 +86,7 @@ GraphQL-over-HTTP은 Stage 2 draft라 아직 최종 표준이 아니다. 구현�
 - GraphQL도 URL HTTP 캐시가 그냥 된다고 가정.
 - HTTP 상태 코드만 보고 GraphQL `errors`를 무시.
 - 전역 유일 id 없이 클라이언트 정규화 캐시를 기대.
+- mutation 응답 객체가 정규화됐으니 목록의 추가, 삭제, 정렬까지 자동 반영됐다고 가정.
 - mutation을 GET으로 보냄.
 - 긴 쿼리를 GET에 그대로 실어 URL 한도 초과(persisted document로 해결).
 
@@ -72,6 +94,7 @@ GraphQL-over-HTTP은 Stage 2 draft라 아직 최종 표준이 아니다. 구현�
 
 - GraphQL에서 HTTP URL 캐시가 왜 어려운가(단일 엔드포인트, 객체별 URL 부재)
 - 전역 유일 id가 클라이언트 정규화 캐시의 전제인 이유
+- mutation 뒤 객체 필드 병합과 목록 멤버십 갱신이 다른 이유
 - persisted document가 GET 캐싱을 어떻게 살리나
 - HTTP 상태 코드와 GraphQL `data`, `errors`가 서로 다른 계층인 이유
 - 필드 단위 cache hint에서 응답 정책이 가장 제한적인 값으로 계산되는 이유(클라이언트가 응답 모양을 정하므로)
@@ -92,6 +115,11 @@ GraphQL-over-HTTP은 Stage 2 draft라 아직 최종 표준이 아니다. 구현�
 - [graphql.org — Serving over HTTP](https://graphql.org/learn/serving-over-http/)
 - [graphql.org — Performance](https://graphql.org/learn/performance/)
 - [graphql.org — Common GraphQL over HTTP Errors](https://graphql.org/learn/debug-errors/)
+- [Apollo Client v4 — Get started](https://www.apollographql.com/docs/react/get-started)
+- [Apollo Client v4 — Queries](https://www.apollographql.com/docs/react/data/queries)
+- [Apollo Client v4 — Mutations](https://www.apollographql.com/docs/react/data/mutations)
+- [Apollo Client v4 — Caching overview](https://www.apollographql.com/docs/react/caching/overview)
+- [Apollo Client v4 — Fragments](https://www.apollographql.com/docs/react/data/fragments)
 - [Apollo Server — Server-side caching (@cacheControl)](https://www.apollographql.com/docs/apollo-server/performance/caching)
 - [Apollo Server — Response cache eviction](https://www.apollographql.com/docs/apollo-server/performance/response-cache-eviction)
 - [Apollo Server — Automatic persisted queries](https://www.apollographql.com/docs/apollo-server/performance/apq)
@@ -99,3 +127,5 @@ GraphQL-over-HTTP은 Stage 2 draft라 아직 최종 표준이 아니다. 구현�
 - [Apollo Server — Cache control plugin (defaultMaxAge, inheritMaxAge)](https://www.apollographql.com/docs/apollo-server/api/plugin/cache-control)
 - [GraphQL-over-HTTP Stage 2 Draft](https://graphql.github.io/graphql-over-http/draft/)
 - [Apollo Router — Automatic Persisted Queries](https://www.apollographql.com/docs/graphos/routing/operations/apq)
+- [얄팍한 코딩사전 강사 — React와 Apollo Client](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=65906)
+- [얄팍한 코딩사전 강사 — Query와 Mutation을 사용하여 웹페이지 만들기](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=65979)

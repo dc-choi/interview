@@ -13,6 +13,7 @@ HTTP 진화, 메서드 의미, 상태 코드, Content-Type, REST, GraphQL, gRPC,
 - [x] [[versions|HTTP 버전 (HTTP-Seminar 진화 타임라인, HTTP/2, HTTP/3 QUIC)]] — 서브폴더
 
 ## HTTP 기본
+- [x] [[HTTP-Core|HTTP 핵심 (의미, 메시지, 헤더, 캐싱)]] — `core/` 서브폴더
 - [x] [[HTTP-Status-Code|Status Code / Header]]
 - [x] [[Cookie|Cookie]]
 - [x] [[HTTP-Content-Type|Content-Type, MIME Type, 표현 헤더 (JSON/form-urlencoded/multipart)]]

@@ -14,7 +14,7 @@ ELT는 추출(Extract) → 적재(Load) → 변환(Transform) 순서로, 원천 
 - ETL: 파이프라인(중간 엔진)에서 변환 → 적재량은 줄지만 변환 로직이 파이프라인에 묶임
 - ELT: DWH(BigQuery, Snowflake 등) 안에서 SQL로 변환 → 원본 보존, 변환을 나중에 자유롭게 재정의
 
-클라우드 DWH의 저장과 연산 비용이 싸지면서 일단 다 적재하고 나중에 변환하는 ELT가 기본값이 됐다. 한 플랫폼이 둘 다 지원하기도 한다(적재 시 컬럼/행 필터로 가벼운 변환을 앞에서, 본격 변환은 DWH에서).
+클라우드 DWH가 저장과 연산을 분리하고 SQL 기반 변환 생태계를 제공하면서 ELT 선택이 쉬워졌다. 그렇다고 원천을 무조건 모두 복제하는 것이 기본은 아니다. 비용, PII와 보존 정책에 따라 앞단에서 column/row를 제한하고 변환 위치를 정한다.
 
 ## 문제: 정의와 실행의 강결합
 
@@ -54,7 +54,7 @@ DSL 기반 실행을 Airflow로 구현할 때 쓰는 기법. DAG를 파일마다
 - 스냅샷/배치 sync: 주기적으로 테이블을 통째로(또는 증분 키 기준) 읽어 적재. 단순하고 정합성 추론이 쉬움. 주기 사이 지연(분 단위)이 존재
 - CDC: 원천의 변경 로그(binlog 등)를 스트리밍해 실시간 반영. 지연은 낮지만 운영 복잡도가 높음 → [[CDC&Outbox|CDC]]
 
-수십억 row 테이블이 병목이다. 단일 커넥션으로 풀스캔하면 sync 시간이 비현실적이 된다. 해법은 JDBC 파티셔닝이다. 숫자나 시간 컬럼을 기준으로 범위를 쪼개 여러 워커가 병렬로 읽는다(Spark의 `partitionColumn`, `numPartitions`). 분산 엔진(Spark on EMR/EKS)을 쓰는 이유가 이 파티션 병렬화와 리소스 세밀 조정이다.
+큰 table을 단일 connection으로 scan하면 완료 시간이 길 수 있어 Spark JDBC 범위 병렬화를 검토한다. `partitionColumn`은 numeric, date 또는 timestamp column이어야 하고 `lowerBound`, `upperBound`는 filter가 아니라 partition stride를 정한다. `numPartitions`는 동시 JDBC connection 상한이기도 하므로 source DB의 pool, CPU와 I/O 예산 안에서 정한다. 범위 분포가 치우치면 task skew가 생기며 병렬 query 사이 snapshot 시점도 달라질 수 있다. 자세한 안전 조건은 [[Stream-and-Batch-Processing|스트림과 배치 처리]]에서 다룬다.
 
 ## Build vs Buy (자체 구축 vs OSS/SaaS)
 
@@ -64,7 +64,7 @@ Airbyte, Fivetran 같은 기성 커넥터 솔루션이 있는데 왜 자체 구�
 - 파티션 병렬화, 리소스(Executor 수와 메모리) 세밀 조정이 막힘
 - 외부 의존도와 비용을 줄이고 자사 인프라(EKS, BigQuery)에 최적화
 
-트레이드오프: 자체 구축은 초기와 유지 비용을 떠안는 대신, 규모 한계와 튜닝 자유도를 얻는다. 규모가 작으면 기성 도구가 거의 항상 옳다. 자체 구축은 기성 도구가 우리 규모에서 깨질 때의 선택이다.
+트레이드오프: 자체 구축은 초기와 유지 비용을 떠안는 대신, 규모 한계와 튜닝 자유도를 얻는다. 작은 규모에서는 기성 도구의 connector 유지보수와 운영 기능이 자체 구축보다 유리할 가능성이 크다. 자체 구축은 측정된 제약이 있고 장기 소유 비용을 감당할 팀이 있을 때 선택한다.
 
 ## 보안: PII 컬럼 자동 제외
 
@@ -85,6 +85,7 @@ Airbyte, Fivetran 같은 기성 커넥터 솔루션이 있는데 왜 자체 구�
 ## 출처
 
 - [당근 200개 DB를 옮기는 ELT 플랫폼(DT Platform)을 만든 이야기 — 당근 기술 블로그](https://medium.com/daangn/%EB%8B%B9%EA%B7%BC-200-%EA%B0%9C-db-%EB%A5%BC-%EC%98%AE%EA%B8%B0%EB%8A%94-elt-%ED%94%8C%EB%9E%AB%ED%8F%BC-dt-platform-%EC%9D%84-%EB%A7%8C%EB%93%A0-%EC%9D%B4%EC%95%BC%EA%B8%B0-65a499b4967a)
+- [Apache Spark Documentation, JDBC Data Source](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
 ## 관련 문서
 

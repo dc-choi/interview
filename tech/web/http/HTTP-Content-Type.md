@@ -1,6 +1,7 @@
 ---
 tags: [web, http, content-type, mime, rest]
 status: done
+verified_at: 2026-08-04
 category: "웹&네트워크(Web&Network)"
 aliases: ["HTTP Content-Type", "Content-Type", "MIME Type"]
 ---
@@ -9,20 +10,20 @@ aliases: ["HTTP Content-Type", "Content-Type", "MIME Type"]
 
 `Content-Type` 헤더는 **요청/응답 본문의 미디어 타입(MIME Type)을 알려주는 메타 정보**다. 수신 측이 바디를 어떤 형식으로 파싱할지 결정하는 단서이며, 잘못 지정하면 JSON 요청이 쿼리 파라미터로 해석되거나 파일 업로드가 깨지는 등 프로토콜 호환성이 곧바로 무너진다.
 
-## 표현 헤더 (Representation Headers)
+## 표현 메타데이터와 인접 Field
 
-`Content-Type`은 **표현 헤더(Representation Headers)** 그룹에 속한다. 이 그룹은 메시지 바디의 데이터를 **어떻게 해석할지**에 필요한 메타데이터를 묶은 것으로:
+`Content-Type`, `Content-Encoding`, `Content-Language`는 선택된 Representation을 해석하는 메타데이터다. `Content-Length`는 문맥에 따라 실제 message content나 선택된 Representation의 예상 길이를 나타낸다.
 
 | 헤더 | 역할 |
 |---|---|
 | `Content-Type` | 데이터의 미디어 타입 (JSON, HTML, 이미지 등) |
 | `Content-Encoding` | 압축, 인코딩 방식 (`gzip`, `br`, `deflate`) |
 | `Content-Language` | 자연어 (`ko`, `en-US`) |
-| `Content-Length` | 본문 바이트 수 |
+| `Content-Length` | 문맥에 따른 content 또는 선택된 표현의 예상 octet 수 |
 
-이 헤더들의 공통 역할은 **바디 자체를 설명**하는 것. 요청, 응답 메시지의 **전송 방식**을 결정하는 것이 아니라, 바디에 담긴 **데이터**를 수신 측이 올바르게 해석하도록 돕는다.
+앞의 세 Field는 content를 어떻게 해석할지 알려 준다. `Content-Length`는 HTTP/1.1에서 message framing에도 관여하므로 단순한 표현 형식 정보로만 분류하지 않는다.
 
-혼동 포인트: `Transfer-Encoding: chunked` 같은 **전송 헤더(Transport Headers)**는 "어떻게 운송할지"를 결정 → 표현 헤더와 층위가 다름. 표현 헤더는 hop-by-hop이 아니라 end-to-end 의미.
+혼동 포인트: `Transfer-Encoding: chunked`는 HTTP/1.1의 현재 hop에서 메시지 경계를 정하는 transfer coding이다. `Content-Encoding: gzip`처럼 Representation 자체에 적용되는 end-to-end coding과 구분한다.
 
 ## 형식
 
@@ -30,15 +31,15 @@ aliases: ["HTTP Content-Type", "Content-Type", "MIME Type"]
 Content-Type: <type>/<subtype>; <parameter>=<value>
 ```
 
-- 예: `application/json; charset=utf-8`, `multipart/form-data; boundary=----Web...`
+- 예: `application/json`, `text/plain; charset=utf-8`, `multipart/form-data; boundary=----Web...`
 - 등록 기관: IANA가 공식 MIME Type 목록 관리(`type/subtype`)
-- `x-`로 시작하는 것은 **비표준**(예: `application/x-www-form-urlencoded`은 관습적으로 널리 쓰이지만 x-prefix 비표준 네이밍)
+- `x-` prefix만 보고 현재 등록 여부를 판단하지 않는다. `application/x-www-form-urlencoded`는 이름에 `x-`가 남아 있지만 IANA에 등록됐고 HTML 표준이 form encoding 알고리즘을 정의한다.
 
 ## 주요 타입 맵
 
 | 카테고리 | 대표 타입 | 용도 |
 |---|---|---|
-| **application** | `application/json` | REST API 기본 페이로드 |
+| **application** | `application/json` | HTTP API에서 흔한 구조화 페이로드 |
 | | `application/xml` | SOAP, 레거시 연동 |
 | | `application/x-www-form-urlencoded` | HTML form submit(기본) — `key=value&key=value` |
 | | `application/octet-stream` | 형식 불명 바이너리 |
@@ -68,7 +69,7 @@ Content-Type: application/json
 {"name":"dc","age":26}
 ```
 
-- 현대 REST API 표준. 중첩, 배열, 타입(숫자/불리언/null) 표현 가능
+- 현대 HTTP API에서 흔한 선택이다. REST 제약이 JSON을 필수 형식으로 정하는 것은 아니다. 중첩, 배열, 숫자, 불리언과 null을 표현할 수 있다.
 - Spring `@RequestBody`, Express `express.json()`, NestJS `ValidationPipe` 등이 파싱
 
 ### `application/x-www-form-urlencoded`
@@ -80,8 +81,9 @@ Content-Type: application/x-www-form-urlencoded
 name=dc&age=26
 ```
 
-- HTML form의 기본. URL 쿼리 스트링과 동일 인코딩(`%20`, `+` 등)
-- **대용량, 바이너리 부적합** — base64 확장 없이는 파일 전송 불가. 첨부는 `multipart/form-data` 사용
+- HTML form의 기본 encoding이다. 공백은 보통 `+`, 그 밖의 문자는 form algorithm에 따라 percent-encode한다.
+- Query처럼 보이지만 RFC 3986의 일반 Query 문법과 같은 개념은 아니다. URL API와 Framework가 제공하는 전용 encoder를 사용한다.
+- **대용량, 바이너리 부적합** — 임의 binary를 직접 표현하는 형식이 아니며 text 변환은 크기와 처리 비용을 늘린다. 첨부는 `multipart/form-data`를 사용한다.
 - Spring `@ModelAttribute`/`@RequestParam`, Express `express.urlencoded()` 등이 파싱
 
 ## 파일 업로드: `multipart/form-data`
@@ -109,7 +111,7 @@ hello
 
 - **`Content-Type` 누락** — Express/Spring에서 JSON 파서가 동작하지 않아 `req.body`가 비어 있음
 - **클라가 JSON을 보냈는데 헤더는 form-urlencoded** — 서버가 key=value 파서로 해석하여 400/422
-- **charset 미지정** — 비영문 텍스트에서 깨짐. `application/json`은 UTF-8이 기본이지만 다른 타입은 명시 필요
+- **문자 encoding 오해** — Internet 사이에서 교환하는 JSON text는 UTF-8을 사용하고 `application/json` 등록에는 `charset` parameter가 정의돼 있지 않다. 다른 text media type은 각 등록 정의를 확인한다.
 - **boundary 잘못** — multipart 업로드 전체가 실패
 - **Content-Type 기반 content negotiation 남용** — REST에서는 보통 JSON 하나로 통일. 여러 타입을 제공해야 하면 Accept와 조합
 
@@ -118,11 +120,17 @@ hello
 - `Content-Type`과 `Accept`의 차이(요청 바디 vs 받고 싶은 응답)
 - JSON과 form-urlencoded의 적합 영역과 구조적 차이
 - 파일 업로드에 `multipart/form-data`가 필요한 이유
-- REST API에서 `application/json` + UTF-8이 기본인 이유
+- JSON의 wire encoding이 UTF-8이며 `application/json`에 `charset` parameter가 정의되지 않은 이유
 - Content negotiation이 언제 유용하고 언제 과한가
-- **표현 헤더 vs 전송 헤더** 차이 (바디 설명 vs 운송 방식)
+- **표현 메타데이터 vs 전송 coding** 차이 (content 해석 vs HTTP/1.1 hop의 운송 방식)
 
 ## 출처
+- 김영한 강사, [클라이언트에서 서버로 데이터 전송](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61368)
+- 김영한 강사, [표현](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61375)
+- [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
+- [RFC 8259, JSON](https://www.rfc-editor.org/rfc/rfc8259.html)
+- [IANA, application/x-www-form-urlencoded](https://www.iana.org/assignments/media-types/application/x-www-form-urlencoded)
+- [WHATWG HTML, URL-encoded form data](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#url-encoded-form-data)
 - [6991httam — REST API Content-Type 설정](https://6991httam.medium.com/rest-api-content-type-%EC%84%A4%EC%A0%95-c903e06a9936)
 - [yunzema — HTTP Content-Type 정리](https://yunzema.tistory.com/186)
 

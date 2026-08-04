@@ -24,18 +24,18 @@ SQL 문을 받아 **여러 실행 계획 중 가장 비용이 낮은 것을 선�
 컬럼 값의 **분포**를 표현한 통계. 단순 카디널리티만으론 알 수 없는 편향(skew)을 잡아내 옵티마이저가 더 정확한 행 추정.
 
 ### 힌트 (Hint)
-옵티마이저의 자동 선택을 **수동으로 강제**. MySQL: `STRAIGHT_JOIN`, `USE INDEX`, `FORCE INDEX`, `IGNORE INDEX`. 옵티마이저가 잘못된 계획을 선택할 때 임시 처방.
+옵티마이저가 고려할 계획이나 join 순서에 제약을 준다. MySQL은 `JOIN_ORDER`, `USE_INDEX`, `NO_INDEX` 같은 optimizer hint와 index hint를 제공한다. 문법상 허용돼도 충돌하거나 적용할 수 없으면 무시될 수 있으므로 통계와 schema를 먼저 점검하고 실제 계획을 확인한다.
 
 ## 접근 방식 (Scan)
 
 ### 테이블 풀 스캔 (Table Full Scan)
-인덱스 없이 **테이블 전체를 처음부터 끝까지** 읽음. 작은 테이블이거나 결과가 전체의 25% 이상이면 오히려 효율적.
+인덱스 대신 **테이블 전체를 처음부터 끝까지** 읽음. 작은 테이블이나 많은 행을 반환하는 쿼리에서는 인덱스 조회보다 효율적일 수 있다. 보편적인 비율 임계값은 없으며 row 폭, covering 여부, clustering, cache와 I/O 비용에 따라 달라진다.
 
 ### 인덱스 풀 스캔 (Index Full Scan)
-인덱스 전체를 **처음부터 끝까지** 읽음. 테이블 풀 스캔보다 가벼움 (인덱스가 더 작으니).
+인덱스 전체를 **처음부터 끝까지** 읽음. 필요한 컬럼을 덮는 secondary index가 clustered row보다 좁다면 테이블 풀 스캔보다 가벼울 수 있다.
 
 ### 인덱스 레인지 스캔 (Index Range Scan)
-인덱스의 **시작점만 찾고 그 뒤로 순차 읽기**. `WHERE x > 100`, `BETWEEN`, `LIKE 'foo%'` 등에 적용. 가장 흔한 효율적 패턴.
+인덱스에서 범위의 시작점을 찾고 종료 조건까지 읽는다. `WHERE x > 100`, `BETWEEN`, prefix `LIKE` 등에 적용될 수 있다. 범위가 넓고 non-covering row lookup이 많으면 full scan보다 비쌀 수 있다.
 
 ### 인덱스 고유 스캔 (Index Unique Scan)
 유니크 인덱스로 **딱 한 행** 찾기. PK 조회의 가장 빠른 형태.
@@ -44,13 +44,13 @@ SQL 문을 받아 **여러 실행 계획 중 가장 비용이 낮은 것을 선�
 인덱스의 **앞부분만 건너뛰며 읽기**. GROUP BY 시 각 그룹의 첫 행만 필요할 때.
 
 ### 인덱스 병합 스캔 (Index Merge)
-**여러 인덱스를 동시에 사용**해 결과를 합치거나 교집합. 단일 복합 인덱스보다 비효율적인 경우가 많아 주의.
+한 table의 여러 index range 결과를 `intersection`, `union`, `sort_union`으로 결합한다. 선택됐다는 이유만으로 나쁜 계획은 아니며, 실제 조건과 정렬을 지원하는 복합 인덱스 대안도 함께 비교한다.
 
 ### 시퀀셜 액세스 / 랜덤 액세스
-- **시퀀셜**: 물리적으로 인접한 페이지를 차례대로 읽음. 디스크 헤드 이동 최소화. **multi-page read**로 한 번에 여러 페이지를 읽어 throughput 최대화. 풀 스캔에서 활용
-- **랜덤**: 임의 페이지에 점프해 접근. 디스크 헤드 이동, 캐시 미스 비용. 한 번에 한 페이지만 처리 → 다중 페이지 효율 낮음
+- **시퀀셜 접근**: 다음 page를 예측하며 넓은 범위를 읽는다. full scan은 read-ahead의 이점을 얻을 수 있지만 물리적 연속성과 cache 상태에 영향을 받는다.
+- **랜덤 접근**: 떨어진 page를 반복해 찾는다. non-covering secondary scan의 clustered row lookup에서 누적되기 쉽다.
 
-인덱스 레인지 스캔 후 실제 데이터를 읽으러 가는 것은 **랜덤 액세스** → 데이터가 많으면 풀스캔보다 느려질 수 있음 (그래서 25% 룰).
+index leaf는 key 순서로 읽을 수 있고 MRR은 base row key를 모아 접근 순서를 개선한다. access 방식과 물리 I/O를 일대일 대응하거나 고정 손익분기점을 두지 않는다.
 
 ## 조건 (Condition)
 
@@ -67,24 +67,21 @@ EXPLAIN에서 **`Using where`**가 필터 조건이 적용됐다는 신호. 액�
 ### 선택도 (Selectivity)
 조건으로 걸러지는 행의 비율. `선택도 = 선택된 건수 / 전체 건수`.
 - **낮음 (선택도 0.001)** = 적은 행 반환 → 인덱스 효과 큼
-- **높음 (선택도 0.5)** = 절반 반환 → 인덱스 무용
+- **높음 (선택도 0.5)** = 많은 행 반환 → non-covering index의 이점이 줄 수 있음
 
-매번 조건절의 결과 건수를 미리 계산할 수 없어서 옵티마이저는 **변형된 선택도 = 1 / DISTINCT(컬럼)**를 사용한다. 즉 컬럼의 **고유 값 수의 역수**로 추정. 데이터 분포가 균등하다는 가정.
+균등 분포를 가정한 equality 추정에는 distinct count가 쓰일 수 있지만 실제 optimizer는 index statistics, index dive, histogram과 조건별 규칙도 사용한다. `1 / DISTINCT`를 모든 predicate의 공식으로 적용하지 않는다.
 
 ### 필터 비율 (filtered)
-EXPLAIN의 **`filtered`** 컬럼. 액세스 조건으로 가져온 데이터 중 필터 조건 통과 비율(%). 100에 가까울수록 효율적, 1~10이면 **불필요한 행을 너무 많이 읽고 있다**는 신호 → 필터 조건을 액세스 조건으로 옮길 수 있는지 검토.
+EXPLAIN의 **`filtered`** 컬럼. 해당 table에서 추정한 rows 중 table condition을 통과할 비율이다. `rows * filtered / 100`으로 다음 table에 전달할 행을 근사한다. 낮다는 사실만으로 비효율이라고 단정하지 말고 실제 읽은 rows, 조건 평가 비용과 다음 join의 loops를 본다.
 
 ### 카디널리티 (Cardinality)
-**예상되는 결과 행 수**. 통계상 선택도 × 전체 건수.
-혹은 **컬럼의 고유 값 수**. 두 의미를 문맥으로 구분.
-
-높은 카디널리티 = 다양한 값 = 인덱스 효율 좋음.
+문맥에 따라 **예상 결과 행 수** 또는 **컬럼의 distinct 값 수**를 뜻한다. distinct 값이 많아도 분포가 치우치거나 query가 넓은 범위를 읽으면 인덱스 효율을 보장하지 않는다.
 
 ### 동등 조건 vs 범위 조건
-- **동등 (`=`, `IN`, `IS NULL`)**: 인덱스 활용 효율 최대
-- **범위 (`<`, `>`, `BETWEEN`, `LIKE 'foo%'`)**: 인덱스 활용 가능하지만 범위 이후 컬럼은 인덱스 사용 불가
+- **동등 (`=`, `IN`, `IS NULL`)**: 연속된 key part의 범위를 좁히는 데 유리한 경우가 많다.
+- **범위 (`<`, `>`, `BETWEEN`, prefix `LIKE`)**: range interval을 만든 뒤 뒤 key part가 interval을 더 줄이지 못할 수 있다.
 
-복합 인덱스 `(A, B, C)`에서 `WHERE A = 1 AND B > 10 AND C = 5`라면 C는 인덱스 활용 안 됨 (B가 범위라서).
+복합 인덱스 `(A, B, C)`에서 `A = 1 AND B > 10 AND C = 5`라면 보통 `A, B`가 scan interval을 정한다. `C`도 ICP로 index entry에서 평가하거나 covering에 쓰일 수 있으므로 "인덱스에서 전혀 사용하지 않는다"고 단정하지 않는다.
 
 ## 조인
 
@@ -92,6 +89,7 @@ EXPLAIN의 **`filtered`** 컬럼. 액세스 조건으로 가져온 데이터 중
 - **종류**: INNER, LEFT/RIGHT/FULL OUTER, CROSS, NATURAL, USING
 - **드라이빙 vs 드리븐**: 먼저 접근하는 vs 그 결과로 검색하는 테이블
 - **알고리즘**: Nested Loop, Block Nested Loop, Batch Key Access, Hash, Sort-Merge
+- 물리 알고리즘과 지원 범위는 DBMS/version별로 다르므로 [[MySQL-Join-Optimization|MySQL 조인 최적화]]처럼 대상 문서를 확인
 
 ## 서브쿼리
 
@@ -101,8 +99,8 @@ EXPLAIN의 **`filtered`** 컬럼. 액세스 조건으로 가져온 데이터 중
 - **중첩 서브쿼리** — WHERE 절. `IN`, `EXISTS`, 비교 연산자와 결합
 
 ### 메인쿼리 관계성
-- **비상관 (Non-correlated)** — 서브쿼리가 **독립적으로 1회 실행** 후 결과를 메인쿼리에 전달. 옵티마이저가 뷰 병합으로 단일 쿼리로 재작성 가능
-- **상관 (Correlated)** — 서브쿼리가 **메인쿼리 행마다 재실행** (메인쿼리의 컬럼 참조). N번 실행되므로 비쌈
+- **비상관 (Non-correlated)** — 외부 쿼리 컬럼을 참조하지 않는다. 물리적으로 한 번만 실행된다고 보장되지는 않으며 optimizer가 materialization, merge나 semijoin을 선택할 수 있다.
+- **상관 (Correlated)** — 외부 쿼리 컬럼을 참조한다. 논리적으로 외부 행에 의존하지만 optimizer가 decorrelation이나 semijoin으로 바꿀 수 있으므로 행마다 독립 실행된다고 단정하지 않는다.
 
 ### 반환 결과별 분류
 - **단일행** — 결과 1건. `WHERE col = (SELECT MAX(...) ...)`
@@ -112,12 +110,12 @@ EXPLAIN의 **`filtered`** 컬럼. 액세스 조건으로 가져온 데이터 중
 ## 결과 정렬, 중복
 
 ### Using filesort
-EXPLAIN의 `Extra`. 인덱스로 정렬을 해결 못 해 **추가 정렬 작업** 발생. 메모리 또는 디스크에서 sort_buffer로 처리. 결과셋이 크면 디스크 정렬 → 매우 느림.
+EXPLAIN의 `Extra`. index 순서만으로 결과를 만들지 못해 **추가 정렬 작업**이 발생한다. memory buffer를 사용하고 필요하면 disk temporary file을 쓰지만, 표시 자체가 disk sort나 느린 query를 뜻하지 않는다.
 
 ### Using temporary
-중간 결과를 **임시 테이블**에 저장. GROUP BY, DISTINCT, UNION 등에서 흔함. 메모리 임시 테이블이 부족하면 디스크 임시 테이블로 강등 → 성능 급락.
+중간 결과를 **internal temporary table**에 저장. GROUP BY, DISTINCT, UNION 등에서 흔하다. memory 한도를 넘으면 disk table로 전환될 수 있으므로 실제 입력 크기와 spill을 확인한다.
 
-`Using temporary` + `Using filesort`가 EXPLAIN에 함께 나오면 튜닝 우선순위 1순위.
+`Using temporary`와 `Using filesort`가 함께 보이면 중간 결과 크기와 실제 시간을 확인할 신호다. 작은 결과에서는 정상일 수 있으므로 표식만으로 튜닝 우선순위를 정하지 않는다.
 
 ## Collation, 캐릭터셋
 
@@ -153,19 +151,26 @@ ALTER TABLE products MODIFY name VARCHAR(100) COLLATE utf8mb4_bin;
 
 - 카디널리티와 선택도의 정확한 정의, 차이
 - 액세스 조건 vs 필터 조건의 차이가 성능에 미치는 영향
-- 인덱스 레인지 스캔이 25% 이상이면 풀스캔이 더 빠른 이유 (랜덤 I/O)
+- 인덱스와 풀 스캔의 손익분기점이 고정 비율이 아닌 이유
 - `Using filesort`, `Using temporary`가 보일 때 어떻게 튜닝할지
 - 옵티마이저가 **선택도를 어떻게 추정**하는가 (`1/DISTINCT`)
-- 상관 서브쿼리가 비싼 이유 (메인쿼리 행마다 재실행)
+- 상관 서브쿼리의 논리적 의존성과 optimizer의 decorrelation 가능성
 - 캐릭터셋과 콜레이션의 차이, JOIN 시 콜레이션 불일치가 일으키는 문제
 - `utf8` vs `utf8mb4` 차이 (이모지 지원)
 
 ## 출처
 - [yoonseon — 논리적인 SQL 개념 용어](https://yoonseon.tistory.com/143)
 - [yoonseon — 개념적인 튜닝 용어](https://yoonseon.tistory.com/144)
+- [MySQL 8.4 Reference Manual, Optimizing Subqueries](https://dev.mysql.com/doc/refman/8.4/en/subquery-optimization.html)
+- [MySQL 8.4 Reference Manual, Semijoin and Antijoin Transformations](https://dev.mysql.com/doc/refman/8.4/en/semijoins-antijoins.html)
+- [MySQL 8.4 Reference Manual, EXPLAIN Output](https://dev.mysql.com/doc/refman/8.4/en/explain-output.html)
+- [MySQL 8.4 Reference Manual, Range Optimization](https://dev.mysql.com/doc/refman/8.4/en/range-optimization.html)
+- [MySQL 8.4 Reference Manual, Optimizer Statistics](https://dev.mysql.com/doc/refman/8.4/en/optimizer-statistics.html)
 
 ## 관련 문서
 - [[Index|Index]]
 - [[Execution-Plan|Execution Plan]]
 - [[Covering-Index|Covering Index]]
+- [[MySQL-Optimizer-Statistics|MySQL 옵티마이저 통계]]
+- [[MySQL-Query-Pipeline-and-Sorting|MySQL 파이프라인과 정렬]]
 - [[SQL|SQL 기초]]

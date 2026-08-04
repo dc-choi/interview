@@ -1,68 +1,132 @@
 ---
 tags: [architecture, evolution, legacy, ai, onboarding, characterization-test]
 status: done
+verified_at: 2026-08-04
 category: "Architecture - 진화"
-aliases: ["AI Assisted Legacy Onboarding", "AI 레거시 공략", "레거시 온보딩", "AI 역공학", "레거시는 기본값"]
+aliases: ["AI Assisted Legacy Onboarding", "AI 레거시 공략", "레거시 온보딩", "AI 역공학"]
 ---
 
-# AI로 레거시 코드 공략하기 (온보딩 역공학)
+# AI를 활용한 레거시 온보딩과 변경
 
-새로 합류하는 코드베이스가 문서도 테스트도 히스토리도 없는 레거시일 확률은 생각보다 높다. 이를 예외가 아니라 **기본값**으로 전제하고, AI로 어떻게 빠르게 장악할지를 합류 직후의 핵심 역량으로 본다. 고전적 레거시 현대화 전략([[Legacy-Modernization-Strategies|Strangler Fig 등]])이 "어떻게 점진적으로 바꿀까"라면, 이 글은 그 앞단인 **"낯선 레거시를 어떻게 이해하고 안전하게 손댈까"**를 AI로 가속하는 방법이다.
+AI coding agent는 낯선 codebase의 탐색과 반복 수정을 빠르게 할 수 있다. 그러나 정적 코드만 보고 복원한 규칙은 **검증 전 가설**이다. 안전한 변경의 주체는 요구사항, 운영 동작과 데이터 불변식을 확인하고 결과를 승인하는 개발자와 팀이다.
 
-## 왜 채용하는 팀일수록 레거시인가
+## 먼저 현재 동작의 증거를 모은다
 
-개발자 채용은 양극화되어 있다.
+코드 정리부터 시작하면 버그인지 호환 동작인지 모르는 부분까지 바꿀 수 있다. 다음 순서로 현재 상태를 복원한다.
 
-- 비즈니스 속도가 안정권에 들고 레거시가 해소된 팀은 충원을 거의 안 한다(퇴사해도 자리를 안 채움).
-- 여전히 속도를 내는 팀만 공격적으로 채용한다. 이런 팀은 부채를 "해결 대상"이 아니라 "쌓이는 것"으로 보고, 속도가 떨어지면 인력을 더 넣어 속도를 유지한다 — 부채보다 비즈니스 성장 둔화가 더 무섭기 때문이다.
+1. 실행 방법, test, migration, 배포와 rollback 절차를 찾는다.
+2. 사용자 진입점에서 controller, use case, repository와 외부 연동을 따라간다.
+3. schema, constraint, 실제 query, log와 metric으로 정적 분석을 교차 검증한다.
+4. 문서와 코드가 다르면 어느 쪽이 현재 production 동작인지 확인한다.
+5. 알려진 입력과 출력을 characterization test로 고정한다.
 
-즉 **공격적 채용 = 속도 우선 = 부채 누적**일 확률이 높다. 채용이 사업 속도(하방, Min) 방어에서 발생한다는 [[Productivity-Business-Ceiling|Min/Max 프레임]]과도 맞물린다. 그래서 합류하는 개발자에게 레거시는 디폴트 환경이다.
+AI에게 전체 repository 설명을 한 번에 요청하기보다 구체적인 path와 질문을 준다. 예를 들어 상품 주문 흐름의 entry point, 상태 전이, transaction 경계, 외부 부수효과와 미확인 가정을 각각 요구한다. 결과에는 근거 file/symbol을 붙이게 하고 직접 source를 읽는다.
 
-## 레거시 온보딩의 전형적 벽
+## 요구사항을 실행 가능한 계약으로 바꾼다
 
-- 히스토리를 아는 개발자가 모두 퇴사해 물어볼 사람이 없다
-- 문서 부재 — 흩어진 메신저 로그, 초기 컨셉만 남은 위키, 주석 없는 코드, comment 없는 테이블 스키마
-- 시스템 구조 불명 — 호출 중인 API에 속성 하나 추가하려 해도 누구와 얘기하고 어느 프로젝트를 봐야 할지 모른다
-- 테스트 부재 — 코드를 고치면 무슨 일이 날지 모르고, 테스트를 넣자니 입력/출력 스펙조차 모른다
-- 그 와중에 요구사항 분석과 일정을 요구받고, 부채 해결 시간은 별도 할당되지 않으며, 수습 평가가 진행된다
+러프한 화면이나 한 문장 요구사항에는 구현을 결정할 정보가 부족하다. agent를 실행하기 전에 다음을 명시한다.
 
-"레거시가 심해 일할 수 없다"는 평가 환경에서 불리하므로, 환경 탓이 아니라 **빠르게 장악하는 능력**으로 증명해야 한다.
+| 축 | 확인할 질문 |
+|---|---|
+| Actor | 요청자, 소유자, 결제자와 승인자는 누구인가 |
+| State | 정상 상태와 허용된 전이, 취소/재시도 규칙은 무엇인가 |
+| Data | 기준 ID, snapshot, 기존 row와 migration은 어떻게 다루는가 |
+| Time | 조회 기간, timezone, freshness와 cutoff는 무엇인가 |
+| Money | 통화 단위, 할인/환불 배분, 반올림과 상한은 무엇인가 |
+| Failure | 중간 실패, 중복 요청과 외부 timeout 뒤 복구 방법은 무엇인가 |
+| Compatibility | 구 client, API와 순차 배포를 얼마나 유지해야 하는가 |
+| Operations | log, metric, audit, reconciliation과 rollback 증거는 무엇인가 |
 
-## AI로 공략하는 법
+성공 예시만 주지 말고 경계값, 권한 거부, 이미 처리된 요청, 부분 실패와 동시 요청 예시를 함께 준다. 요구사항의 모호함을 agent가 임의의 정책으로 채우지 못하게 **미결정 사항은 질문 또는 TODO로 남기라**고 지시한다.
 
-예전이라면 며칠 걸리던 분석을 몇 시간으로 줄이는 것이 목표다.
+## 작은 변경 loop
 
-- **코드 → 기능 명세 역생성**: 미문서화 코드를 AI로 읽어 동작 명세, 처리 흐름을 추출한다. 의존성/호출 관계를 추적해 시스템 구조 맵(어느 프로젝트가 어떤 API를 호출하는지)을 복원한다.
-- **현재 동작 → 특성화 테스트(characterization test)**: I/O 스펙을 모를 때, 정답을 새로 정의하는 게 아니라 **현재 코드의 동작을 그대로 캡처해 고정**하는 테스트를 AI로 생성한다. 로그와 실제 입출력을 표본으로 삼는다. 이렇게 만든 안전망이 있어야 "고치면 무슨 일이 날지 모름"이 "이 테스트가 깨지면 행동이 바뀐 것"으로 바뀐다. 안전망 위 리팩토링은 [[Refactoring-In-Practice|실전 리팩토링]] 2단계와 같다.
-- **기획서, 요구 해독**: 모호한 PO/PM 문서를 AI로 정리해 요구사항, 스코프, 영향 범위를 구조화하고 일정 추정을 보조한다.
-- **변경 영향 분석**: 수정하려는 지점의 호출자/피호출자를 AI로 훑어 파급 범위를 추정하고, 누구와 협의해야 하는지 후보를 좁힌다.
+```text
+Observe -> Specify -> Plan -> Patch -> Verify -> Review -> Record
+```
 
-## 주의 — AI 출력은 가설, 검증이 필수
+### Observe
 
-AI가 복원한 명세, 테스트, 구조도는 **현재 코드를 근거로 한 추측**이다. 잘못된 가정을 그대로 흡수하면 레거시 위에 또 다른 부채를 쌓는다.
+관련 caller, test, schema와 production evidence를 좁혀 읽는다. agent가 만든 architecture map은 탐색 후보이며 사실 목록이 아니다.
 
-- AI가 만든 특성화 테스트는 "현재 동작 == 의도된 동작"을 보장하지 않는다(버그까지 고정할 수 있음). 비정상 동작인지 사람이 판별한다.
-- 복원한 명세는 실행, 로그 대조로 검증한다. AI를 답 대신받기가 아니라 **직접 경험을 가속**하는 도구로 쓴다 — [[First-Hand-Experience-AI-Era|직접 경험 가속]], [[AI-Handicap-Learning|의존도 줄이기]].
+### Specify
 
-## 포지셔닝
+외부 동작, 보존할 호환성, 금지 범위와 acceptance test를 적는다. refactoring과 behavior change를 같은 patch에서 섞지 않는 것이 review에 유리하다.
 
-레거시는 합류 환경의 기본값이므로, 차별점은 "깨끗한 코드베이스를 만나는 운"이 아니라 **레거시를 AI로 빠르게 장악하는 역량**이다. 고전 전략서(레거시 코드 활용, 데이터베이스 리팩토링 등)의 점진 해소 노하우는 여전히 유효하고, AI는 그 분석과 안전망 구축 단계를 압축한다. "AI로 레거시를 어떻게 공략할지"가 별도의 학습 대상이 된 셈이다.
+### Plan
 
-## 체크포인트
+변경 file, data migration, rollout 순서, rollback과 예상 risk를 agent에게 먼저 제시하게 한다. 계획이 기존 경계를 불필요하게 넓히면 구현 전에 줄인다.
 
-- 합류 코드베이스의 레거시를 예외로 보는가, **기본값**으로 전제하는가
-- 손대기 전에 **특성화 테스트로 안전망**부터 까는가 (행동 보존)
-- AI가 복원한 명세/테스트를 **가설로 두고 검증**하는가, 그대로 신뢰하는가
-- 변경 영향 범위와 협의 대상을 AI로 좁혀 들어가는가
-- 분석에 며칠을 쓰는가, AI로 몇 시간에 1차 장악하고 사람 검증으로 좁히는가
+### Patch
+
+한 번에 한 invariant나 한 vertical slice만 맡긴다. 여러 domain을 동시에 바꾸는 큰 prompt보다 product option schema, backfill, read path 전환처럼 검증 가능한 단위가 안전하다.
+
+### Verify
+
+lint와 unit test만으로 끝내지 않는다. integration test, migration rehearsal, query plan, 외부 sandbox와 핵심 business invariant를 위험에 맞춰 확인한다.
+
+### Review
+
+agent가 요구사항을 충족했는지뿐 아니라 삭제한 동작, 숨은 query, transaction 범위, authorization, error handling과 unused code까지 source diff로 본다. test가 통과해도 test 자체가 잘못된 정책을 고정했을 수 있다.
+
+### Record
+
+새로 확인한 규칙만 repository instruction, ADR와 test에 남긴다. 특정 구현에서 우연히 발견한 패턴을 팀의 보편 규칙으로 승격하지 않는다.
+
+## project guideline의 역할
+
+지속 instruction에는 agent가 추론하기 어려우면서 여러 작업에 반복되는 사실을 둔다.
+
+- build/test/migration 명령과 target path
+- layer와 dependency boundary
+- transaction, error와 logging 원칙
+- 현재 framework 기준과 금지된 legacy API
+- source of truth와 검증 절차
+
+패키지 이름이나 `Manager`, `Reader`, `Assembler` 같은 용어 자체가 좋은 설계를 보장하지 않는다. 팀이 의미와 책임을 합의하고 source/test로 강제할 수 있을 때만 guideline에 둔다. JetBrains Junie도 project instruction을 context로 사용하지만 생성 결과는 비결정적이므로 검토가 필요하다.
+
+## 자주 발생하는 실패
+
+- **정적 코드만으로 규칙 생성**: 역사적 우연과 dead code를 표준으로 만든다.
+- **동작 확인 전 대규모 정리**: 호환 동작과 버그를 구분하지 못한다.
+- **통과하는 test만 목표화**: agent가 assertion이나 fixture를 약하게 바꿔 green을 만들 수 있다.
+- **복잡한 금액 정책을 한 prompt로 구현**: 부분 취소, coupon 복원과 반올림 정책이 서로 충돌한다.
+- **schema 변경을 application code로만 처리**: backfill, 혼합 version과 rollback이 빠진다.
+- **N+1과 과도한 조회**: 보기 좋은 component 분리가 실제 query 수를 숨긴다.
+- **generic 이름으로 책임 은폐**: manager와 processor가 여러 domain 결정을 빨아들인다.
+- **AI 생성물이 새 legacy가 됨**: 의도, test와 운영 evidence가 남지 않는다.
+
+## NestJS와 TypeORM 적용
+
+- controller에서 domain 조합이 커지면 use case/application service로 옮기되 계층 이름보다 transaction과 책임 경계를 먼저 정한다.
+- TypeORM entity를 여러 component 사이의 만능 DTO로 전달하지 않는다. 필요한 ID, value object와 command/query model로 의도를 드러낸다.
+- production schema는 `synchronize`에 맡기지 않고 migration을 version 관리한다.
+- repository 분리 뒤 실제 SQL 수가 늘지 않았는지 query log와 plan으로 확인한다.
+- 외부 결제 호출과 local DB transaction을 하나의 ACID transaction으로 착각하지 않고 idempotency, 상태 기록과 복구 절차를 설계한다.
+
+## 완료 조건
+
+- 변경 전 동작과 미확인 가정이 구분되어 있다.
+- acceptance test가 정상, 실패, 권한, 중복과 동시성 경계를 포함한다.
+- schema/data migration과 mixed-version rollout을 rehearsal했다.
+- agent가 수정한 모든 file을 사람이 review했다.
+- query, transaction, external side effect와 rollback을 확인했다.
+- 새 지식은 source/test/ADR 가운데 유지 가능한 곳에 남았다.
 
 ## 출처
-- AI 시대 레거시 환경과 온보딩 — 개인 블로그 에세이
-- 레거시 코드 활용 전략(Working Effectively with Legacy Code), 리팩토링 데이터베이스 — 점진적 레거시 해소 노하우
+
+- [JetBrains, Junie Playbook](https://www.jetbrains.com/guide/ai/article/junie/)
+- [JetBrains, Junie project settings](https://junie.jetbrains.com/docs/junie-plugin-project-settings.html)
+- [제미니 강사, 입사 첫날 레거시와 AI](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392728)
+- [제미니 강사, 상품 목록 요구사항 분석](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392731)
+- [제미니 강사, 리뷰 기능의 AI 구현과 검토](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392783)
+- [제미니 강사, 취소 기능의 단계적 AI 구현](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392803)
+- [제미니 강사, 정산 기능의 AI 구현과 검토](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392808)
 
 ## 관련 문서
-- [[Legacy-Modernization-Strategies|레거시 현대화 전략]] — 점진 전환(Strangler Fig 등)
-- [[Refactoring-In-Practice|실전 리팩토링]] — 분석 → 안전망 → 최적화 3단계
-- [[Productivity-Business-Ceiling|개발 생산성과 사업 성과]] — 채용이 속도(Min) 방어에서 발생
-- [[First-Hand-Experience-AI-Era|AI 시대 직접 경험기]] — AI 출력 검증의 자세
-- [[Test-Pyramid|테스트 피라미드]] — 안전망 테스트 구성
+
+- [[Legacy-Modernization-Strategies|레거시 현대화 전략]]
+- [[Refactoring-In-Practice|실전 리팩토링]]
+- [[Agent-Coding-Guardrails|AI coding agent guardrail]]
+- [[Agent-Spec-Writing|agent 작업 명세 작성]]
+- [[Test-Pyramid|테스트 피라미드]]

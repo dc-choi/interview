@@ -1,143 +1,125 @@
 ---
 tags: [performance, database, connection-pool, hikari, scalability]
 status: done
+verified_at: 2026-08-04
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["Connection Pool", "Connection Pool Sizing", "DB 커넥션 풀", "HikariCP"]
 ---
 
 # DB 커넥션 풀, 사이징
 
-데이터베이스 커넥션은 **열고 닫는 비용이 비싸다** — TCP 핸드셰이크, 인증(암호 해시 비교, TLS), 세션 변수 초기화까지. 요청마다 새로 열면 지연이 누적되고 DB 측 자원도 금방 고갈. **미리 일정 개수를 열어 두고 재사용**하는 구조가 커넥션 풀이다. 크기 설정이 전체 처리량의 상한을 결정한다.
+Database connection 생성에는 network 연결, TLS, 인증과 session 초기화가 포함될 수 있다. Connection pool은 미리 열어 둔 물리 connection을 재사용해 이 비용을 나누고, application이 동시에 DB에 보낼 작업 수를 제한한다.
 
-## 왜 필요한가
+Pooling이 모든 query를 빠르게 만드는 것은 아니다. DB가 감당할 수 있는 concurrency보다 pool을 크게 잡으면 CPU, I/O, lock과 memory 경합이 늘어 오히려 latency가 악화될 수 있다.
 
-- **연결 수립 비용**: 수십 ms ~ 수백 ms (지리적으로 멀거나 TLS 포함 시)
-- **DB 측 한계**: MySQL `max_connections` 기본 151, PostgreSQL 기본 100. 수천 커넥션은 메모리, 컨텍스트 스위칭으로 DB 자체가 느려짐
-- **웹 서버 동시성**: 스레드 풀과 독립적 — **DB 커넥션 풀이 실질 동시성 상한**
-- **예측 가능한 지연**: 풀에서 즉시 꺼내므로 지연 분포가 좁아짐
+## `DataSource`와 pool 구분
 
-## 구성 요소
+Java SE의 `DataSource`는 connection을 얻는 표준 factory 계약이다. API는 구현 성격을 basic, connection pooling, distributed transaction 세 범주로 설명한다. 따라서 `DataSource`라고 해서 반드시 pool은 아니다.
 
-| 축 | 역할 |
-|---|---|
-| **Min Pool Size** | 최소 유지 커넥션. idle 상태여도 유지 |
-| **Max Pool Size** | 최대 허용 커넥션 |
-| **Connection Timeout** | 풀에서 꺼내기 대기 한도 |
-| **Idle Timeout** | 유휴 커넥션 반납, 종료 시간 |
-| **Max Lifetime** | 커넥션 최대 생존 시간 (DB 측 kill 대비) |
-| **Validation Query** | 커넥션 살아있는지 확인용 (`SELECT 1`) |
-
-## 대표 구현
-
-| 라이브러리 | 언어, 생태계 | 특징 |
+| 예시 | `getConnection()` 동작 | 주 용도 |
 |---|---|---|
-| **HikariCP** | Java, Spring Boot 기본 | 가장 빠름, 경량, 튜닝 단순 |
-| **Apache DBCP** / **Tomcat JDBC** | Java 레거시 | Tomcat 내장 |
-| **c3p0** | Java 구식 | 복잡, 느림, 지금은 비권장 |
-| **pgBouncer** | PostgreSQL 프록시 | **외부 프로세스**로 앱 풀 앞단에 배치 |
-| **node-postgres pool** | Node.js | 프로세스별 풀 |
-| **MySQL2 pool** | Node.js | 동일 |
+| `DriverManagerDataSource` | 매번 새 물리 connection 생성 | test와 간단한 standalone code |
+| `HikariDataSource` | pool에서 논리 connection 대여 | 일반적인 server application |
+| JNDI `DataSource` | application server 설정에 위임 | container-managed 환경 |
 
-## 사이징: 큰 수가 항상 좋은 건 아님
+Pooled `DataSource`가 반환하는 `Connection`은 보통 proxy다. application이 `close()`하면 물리 socket을 바로 닫기보다 pool에 반환한다. 이 동작은 구현 contract에 따르므로 connection을 field에 보관하거나 close를 생략하지 않는다.
 
-직관과 달리 **풀을 키우면 오히려 느려질 수 있다.** DB CPU, 디스크 I/O, 락 경합이 한정돼 있어 동시 처리 능력이 하드웨어로 제한되기 때문.
+## Spring Boot 4.1의 선택
 
-### HikariCP 공식 가이드
+Spring Boot 4.1은 pooling `DataSource`를 자동 구성할 때 classpath에서 HikariCP, Tomcat pool, DBCP2, Oracle UCP 순으로 후보를 선택한다. JDBC와 JPA starter는 HikariCP dependency를 제공하므로 일반적인 starter 구성에서는 HikariCP가 선택된다.
 
-$$pool\_size = (core\_count \times 2) + effective\_spindle\_count$$
+- 공통 설정은 `spring.datasource.*`, Hikari 전용 설정은 `spring.datasource.hikari.*`를 사용한다.
+- `spring.datasource.type`으로 구현을 명시하거나 custom `DataSource` bean을 제공할 수 있다.
+- custom bean을 제공하면 해당 자동 구성이 물러난다. 현재 실제 bean type과 property binding 결과를 test로 확인한다.
+- Boot 4.1의 `spring.datasource.connection-fetch=lazy`는 auto-configured pooled `DataSource`를 `LazyConnectionDataSourceProxy`로 감싸 첫 JDBC statement까지 실제 대여를 늦출 수 있다.
 
-- `core_count`: DB 서버 CPU 코어 수
-- `effective_spindle_count`: 디스크 스핀들 수 (SSD는 1로 간주 가능)
-- 예: 8코어 + SSD → 약 17개 권장
+## 주요 설정 축
 
-실무 관찰: **대부분의 OLTP에서 한 DB 당 10~30개면 충분**. "1,000 동시 요청을 받으려면 풀도 1,000"이 아니라, **DB 자체 TPS가 300이면 풀은 20으로도 300 TPS를 낼 수 있다** — 대기 큐가 조금 쌓일 뿐.
+| 축 | 판단 기준 |
+|---|---|
+| maximum pool size | 모든 application instance의 합과 DB connection 예산 |
+| minimum idle | idle connection 유지 비용과 burst 준비 시간 |
+| connection timeout | 대기 허용 시간과 상위 request deadline |
+| idle timeout | 남는 connection을 줄일 시점 |
+| max lifetime | DB, proxy, network가 connection을 강제 종료하기 전 교체 |
+| keepalive | idle connection의 network 유효성 유지 필요 |
 
-### 왜 크면 더 나빠지는가
+각 timeout은 독립된 숫자가 아니다. HTTP deadline보다 connection acquisition timeout이 길면 호출자가 포기한 뒤에도 server thread가 기다릴 수 있다. 반대로 너무 짧으면 정상적인 짧은 burst도 실패시킨다. 목표 SLO와 부하 test를 기준으로 정한다.
 
-- DB는 Lock, Latch, Cache Line 경합이 커질수록 개별 쿼리가 느려짐
-- 더 많은 커넥션 → 더 많은 컨텍스트 스위칭, 메모리 사용
-- 결과: 처리량 곡선이 정점을 찍고 하락(Little's Law)
+JDBC 4 driver가 `Connection.isValid()`를 제대로 구현하면 HikariCP는 이를 사용할 수 있다. 임의의 validation query는 driver 지원이 없을 때만 검토한다. `maxLifetime`은 database나 network 장비가 정한 connection 제한보다 여유 있게 짧게 두되, 모든 connection이 동시에 교체되지 않도록 pool 구현의 분산 동작을 확인한다.
 
-## Little's Law로 본 적정 풀 크기
+## 사이징 절차
 
-$$L = \lambda \times W$$
+Pool size는 formula 하나로 확정하지 않고 다음 순서로 검증한다.
 
-- L: 시스템 내 평균 요청 수(≈ 필요한 커넥션 수)
-- λ: 도착률(RPS)
-- W: 평균 응답 시간(초)
+1. DB의 connection 한도에서 관리자, migration, batch와 장애 대응용 여유를 뺀다.
+2. 남은 예산을 production instance 수와 read/write pool에 배분한다. autoscaling 최대 instance 수도 포함한다.
+3. 실제 query mix의 DB 점유 시간을 측정한다.
+4. 후보 pool size별 부하 test에서 throughput, acquisition wait, query latency, DB CPU, I/O와 lock wait를 함께 본다.
+5. 목표 throughput을 만족하는 가장 작은 안정 구간을 선택하고 alert threshold를 정한다.
 
-예: 500 RPS × 40ms = 20 커넥션이면 이론적으로 포화 직전 처리 가능. 안전 마진 1.5~2배로 30~40.
+Little's Law의 `L = λW`는 초기 추정에 쓸 수 있다. DB를 초당 500회 사용하고 각 작업이 connection을 평균 40ms 점유한다면 평균 동시 점유는 약 20이다. 그러나 tail latency, transaction 길이, burst, retry와 lock wait가 빠져 있으므로 이 값만으로 maximum size를 정하지 않는다.
 
-## 대기 큐와 타임아웃
+HikariCP의 pool sizing 문서는 CPU core와 spinning disk 수를 이용한 PostgreSQL의 출발점 공식을 소개하지만 보편적인 정답으로 제시하지 않는다. SSD, remote DB, query 병렬성, 여러 application의 경쟁이 다르므로 측정값으로 조정한다.
 
-풀이 다 차면 요청은 **대기**. 이 대기 시간도 지연에 포함.
+## 포화 상태 해석
 
-- **`connectionTimeout`**(HikariCP 기본 30초): 이 시간 내 획득 실패면 예외
-- 너무 길면 부하 상황에서 스레드가 계속 쌓임 → OOM
-- **짧게(1~3초) + 명확한 실패**가 장애 전파 방지에 낫다(Fail Fast)
+Pool이 모두 사용 중이면 요청은 acquisition queue에서 기다리거나 timeout된다. 이때 maximum size를 즉시 늘리기 전에 다음을 구분한다.
 
-## 연결 검증과 Max Lifetime
+- query가 느려져 connection 점유 시간이 늘었는가
+- 긴 transaction이나 외부 API 호출이 connection을 붙잡는가
+- connection leak가 있는가
+- DB CPU, I/O 또는 lock이 이미 포화됐는가
+- retry가 부하를 증폭하는가
+- instance 증가로 전체 connection 수가 예상보다 커졌는가
 
-DB나 중간 네트워크(방화벽, LB)가 **유휴 커넥션을 끊어버리는** 경우가 있다. 죽은 커넥션을 풀에서 꺼내면 첫 쿼리가 실패.
+Pool metric은 active, idle, pending, timeout을 함께 본다. Application metric의 transaction duration, DB의 active session, slow query와 lock wait를 같은 시간축으로 연결해야 원인을 찾을 수 있다.
 
-- **Validation Query/Ping** — 꺼내기 전 `SELECT 1` (HikariCP는 JDBC4 `isValid()` 기본)
-- **Max Lifetime** — DB 측 `wait_timeout`보다 짧게 설정(예: MySQL 8h → Hikari 30min)
-- **Keep-alive Time** — 유휴 커넥션을 주기적으로 검증해 네트워크 끊김 방지
+## 분리와 proxy
 
-## 고려할 워크로드 패턴
-
-- **트랜잭션 길이** — 긴 트랜잭션, 배치는 커넥션을 오래 점유 → 별도 풀 권장
-- **Read replica 분리** — 쓰기, 읽기 풀 분리로 경합 완화
-- **쓰기 집중** — Lock 경합이 병목. 풀 키우지 말고 쿼리 최적화, 샤딩
-- **Serverless (Lambda)** — 프로세스 폭증으로 커넥션 폭주. **RDS Proxy, pgBouncer** 필수 → [[AWS-Lambda]]
-
-## Sidecar Proxy (pgBouncer, ProxySQL)
-
-앱 풀과 별개로 **DB 앞단에 경량 프록시**를 두어 커넥션을 재사용.
-
-- **Transaction-level pooling**: 요청 → 커넥션 획득 → 트랜잭션 종료 시 반환 → 다음 요청에 재할당
-- PostgreSQL처럼 연결 비용이 큰 DB에서 효과 큼
-- 제약: prepared statement, 세션 변수 사용에 주의
-- **FIFO vs LIFO**: 풀이 반환된 연결을 고르는 순서는 구현별 선택이다. FIFO(예: SQLAlchemy 기본)는 연결을 고르게 돌려 가용성을 우선하지만 모든 연결이 계속 사용되어 남는 연결을 줄이기 어렵다. LIFO는 최근 반환된 연결에 몰아 써 한가한 꼬리 연결이 타임아웃으로 정리되게 한다 — pgBouncer의 기본이 LIFO고, HikariCP나 Go `database/sql` 같은 여러 앱 풀도 최근 반환 연결을 재사용한다
+- 긴 batch와 latency-sensitive OLTP가 서로 pool을 점유한다면 별도 concurrency budget을 검토한다.
+- Read replica pool은 connection과 부하를 분리하지만 replication lag와 read-after-write 정책이 필요하다.
+- PgBouncer나 RDS Proxy 같은 외부 proxy는 여러 process의 물리 connection을 다중화할 수 있다. Transaction pooling에서는 session 변수, temporary table, prepared statement 같은 session state 제약을 확인한다.
+- Serverless scale-out은 instance마다 pool을 만들 수 있으므로 최대 동시 instance까지 계산하거나 managed proxy를 검토한다.
 
 ## 흔한 실수
 
-- **풀을 크게 하면 빨라진다고 오해** → 오히려 DB 포화로 악화
-- **`connectionTimeout`을 길게** → 장애 시 스레드 누적 → OOM
-- **`maxLifetime` 미설정** → 네트워크 idle kill로 간헐 오류
-- **스프링 Tomcat 스레드 200 + 풀 10** → 대기 큐 쌓임. 균형 조정 필요
-- **단일 풀로 배치, OLTP 공유** → 배치가 풀을 점령해 OLTP 지연
-- **Lambda에서 각 인스턴스가 풀 생성** → 수천 커넥션 생성 → DB 폭주. RDS Proxy
-
-## 튜닝 체크리스트
-
-- 평균 쿼리 지연과 목표 RPS로 Little's Law 계산 → 후보 크기
-- HikariCP 공식 가이드(코어 × 2 + 스핀들) 비교
-- 부하 테스트(k6, JMeter)로 풀 크기를 10→20→30→40으로 점증하며 **TPS, P99** 측정 — 정점 파악
-- 정점 이후 하락 구간이 나오면 **그보다 약간 낮은 값** 선택
-- `connectionTimeout` 1~3초, `maxLifetime` DB 타임아웃보다 짧게
-- DB 측 `max_connections` 대비 **앱 서버 수 × 풀 크기 합**이 초과하지 않는지
+- `DataSource`와 pooled implementation을 같은 개념으로 취급한다.
+- pool을 크게 하면 throughput도 비례해 증가한다고 가정한다.
+- 한 process의 설정만 보고 전체 instance의 connection 합을 계산하지 않는다.
+- transaction 안에서 원격 API를 기다려 connection을 오래 점유한다.
+- `Connection.close()`를 생략해 반환 누락을 만든다.
+- acquisition timeout만 늘려 DB 포화 신호를 숨긴다.
+- test 환경의 H2 결과로 운영 DB의 connection과 lock 특성을 단정한다.
 
 ## 면접 체크포인트
 
-- 커넥션 풀이 필요한 이유와 연결 비용의 구성 요소(TCP, 인증, TLS)
-- 풀 크기를 키우면 **오히려 느려질 수 있는** 이유(하드웨어 동시 처리 한계)
-- HikariCP 권장 공식(`core × 2 + spindle`)의 배경
-- Little's Law로 풀 크기를 추산하는 방법
-- `maxLifetime`을 DB `wait_timeout`보다 짧게 두어야 하는 이유
-- Serverless(Lambda)에서 커넥션 풀이 문제되는 시나리오와 RDS Proxy 해법
-
-## 관련 문서
-- [[Latency-Optimization|레이턴시 최적화]]
-- [[First-Come-Coupon-Patterns|선착순 이벤트 패턴]]
-- [[AWS-Lambda|AWS Lambda]]
-- [[Transaction-Lock-Contention|트랜잭션 경합과 Lock 문제]]
-- [[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound]]
-- [[RDS-Operational-Pitfalls|RDS 운영 함정 (커넥션 고갈이 장애 1순위, max_connections 메모리 비례)]]
-- [[RDS-Connection-Credentials|RDS 앱 연결과 자격증명 (RDS Proxy)]]
+- `DataSource` 계약과 pooling 구현을 구분한다.
+- pooled connection의 `close()`가 일반적으로 무엇을 의미하는지 설명한다.
+- pool size가 너무 클 때 DB가 느려질 수 있는 이유를 말한다.
+- process별 pool을 전체 DB connection budget으로 환산한다.
+- acquisition wait와 slow query를 metric으로 구분한다.
 
 ## 출처
 
-- [스타트업의 Postgres 생존 가이드 (토론) - GeekNews](https://news.hada.io/topic?id=31706)
-- [PgBouncer config, server_round_robin - PgBouncer](https://www.pgbouncer.org/config.html)
-- [Connection Pooling, use_lifo - SQLAlchemy](https://docs.sqlalchemy.org/en/20/core/pooling.html#pool-use-lifo)
+- [Java SE 26 API, DataSource](https://docs.oracle.com/en/java/javase/26/docs/api/java.sql/javax/sql/DataSource.html)
+- [Spring Boot 4.1, SQL Databases](https://docs.spring.io/spring-boot/reference/data/sql.html)
+- [Spring Framework, Controlling Database Connections](https://docs.spring.io/spring-framework/reference/data-access/jdbc/connections.html)
+- [HikariCP, About Pool Sizing](https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing)
+- [HikariCP, Configuration](https://github.com/brettwooldridge/HikariCP#configuration-knobs-baby)
+- [PgBouncer, Features](https://www.pgbouncer.org/features.html)
+- 김영한 강사, [커넥션 풀 이해](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110070)
+- 김영한 강사, [DataSource 이해](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110071)
+- 김영한 강사, [DataSource 예제 1, DriverManager](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110072)
+- 김영한 강사, [DataSource 예제 2, 커넥션 풀](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110073)
+- 김영한 강사, [DataSource 적용](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110074)
+- 김영한 강사, [정리](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110075)
+
+## 관련 문서
+
+- [[Spring-JDBC-Essentials|Spring JDBC Essentials]]
+- [[Spring-Transactional|Spring @Transactional]]
+- [[Latency-Optimization|레이턴시 최적화]]
+- [[Transaction-Lock-Contention|트랜잭션 경합과 Lock 문제]]
+- [[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound]]
+- [[RDS-Connection-Credentials|RDS 앱 연결과 자격증명]]

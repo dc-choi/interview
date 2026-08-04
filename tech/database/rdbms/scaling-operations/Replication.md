@@ -1,78 +1,96 @@
 ---
-tags: [database, rdbms]
+tags: [database, rdbms, mysql, replication, binlog, consistency]
 status: done
+verified_at: 2026-08-04
 category: "Data & Storage - RDB"
-aliases: ["Replication"]
+aliases: ["Replication", "MySQL Replication"]
 ---
 
-# Replication
+# MySQL Replication
 
-데이터베이스 구조의 복제본을 가진다는 것.
+MySQL replication은 source가 binary log에 기록한 transaction event를 replica가 받아 relay log에 저장하고 적용하는 구조다. 기본은 asynchronous이므로 source의 commit 성공이 replica 적용이나 수신을 보장하지 않는다.
 
-## 특징
+## Event 전달과 적용
 
-1. 데이터가 여러 곳에 복제되므로 한 DB에 문제가 생겨도 다른 DB에 같은 데이터가 저장되어 있어 데이터를 잃지 않을 수 있다.
-2. 여러 곳에 데이터베이스를 두면 지연을 줄일 수 있다.
-3. **Replication Lag**: 다른 복제본으로 복사되는 시간. 복사 시간이 길어지면 데이터 일관성이 달라질 수 있다.
-
-## 동기 vs 비동기 복제
-
-- **Synchronous replication**: 클라이언트가 쓰기를 요청하면 모든 복제본에 변경된 데이터를 적용한 후에 쓰기 성공 메시지를 보낸다. 데이터 일관성은 지킬 수 있으나 모든 복제본에 쓰기를 해야 해 시간이 오래 걸리고, 복제본 하나라도 쓰기에 실패하면 쓰기 자체가 실패한다.
-- **Asynchronous replication**: 클라이언트가 쓰기를 요청하면 원본에 적용한 후 바로 쓰기 성공 메시지를 보내고, 그 뒤에 변경 메시지를 다른 복제본으로 보내 적용한다. 쓰기는 빨라지지만 일부 복제본이 실패하면 데이터 일관성이 깨질 수 있다.
-
-## MySQL 복제 과정
-
-Source가 변경 내용을 **Binary Log**에 기록하고, Replica가 이를 읽어 재적용하는 비동기 스트리밍 구조.
-
-```
-Source                                    Replica
-┌────────┐                              ┌─────────┐
-│ 쓰기   │ → Binary Log 기록            │ IO Thread│ ← Binary Log 스트리밍 수신
-└────────┘                              └────┬────┘
-                                             ↓
-                                        Relay Log 저장
-                                             ↓
-                                        ┌─────────┐
-                                        │SQL Thread│ → 실제 적용
-                                        └─────────┘
+```text
+source transaction
+  -> binary log
+  -> binlog dump thread
+  -> replica receiver thread
+  -> relay log
+  -> coordinator and applier worker threads
+  -> replica InnoDB
 ```
 
-1. Source가 변경 쿼리를 **Binary Log**에 기록
-2. Replica의 **IO Thread**가 Binary Log를 네트워크로 받아옴
-3. Replica의 **Relay Log**에 일단 저장
-4. Replica의 **SQL Thread**가 Relay Log를 읽어 실제 DB에 적용
+- source의 dump thread는 연결된 replica에 binlog 내용을 보낸다.
+- replica receiver thread는 source에 연결해 event를 받아 relay log에 쓴다. 주기적 table polling이 아니다.
+- applier는 relay log transaction을 적용한다. `replica_parallel_workers`가 1 이상이면 coordinator와 worker가 병렬 적용할 수 있다.
+- GTID는 각 transaction에 전역 식별자를 부여해 position 추적, failover와 중복 실행 판정을 단순화한다.
 
-일반적 동기화 지연은 ~100ms 수준이지만, 대량 쓰기, 롱 트랜잭션, 네트워크 지연에서는 크게 벌어짐 → **Replication Lag** 모니터링 필수.
+Receiver가 따라잡았어도 applier가 밀릴 수 있다. Network lag와 apply lag를 분리해 본다.
 
-### Binary Log 기록 방식
+## Binary log format
 
-MySQL은 Binary Log 포맷을 3가지 중 선택할 수 있다.
+| format | 기록 단위 | 주요 trade-off |
+|---|---|---|
+| `ROW` | 변경된 row event | 결정적 적용에 유리하지만 변경 row가 많으면 log가 커질 수 있음 |
+| `STATEMENT` | 실행한 SQL statement | log가 작을 수 있지만 일부 비결정적 statement는 unsafe |
+| `MIXED` | 상황에 따라 statement와 row 선택 | 동작 추론과 운영 검증이 더 복잡할 수 있음 |
 
-| 방식 | 기록 내용 | 장점 | 단점 |
-|---|---|---|---|
-| **Row** | 변경된 각 행의 전/후 이미지 | 데이터 일관성 높음, 비결정적 함수 안전 | 로그 크기 큼, 대량 UPDATE에 부담 |
-| **Statement** | 실행된 SQL 문 자체 | 로그 크기 작음, 직관적 | `NOW()`, `RAND()`, `AUTO_INCREMENT` 같은 비결정적 값에서 Source와 Replica 데이터 불일치 위험 |
-| **Mixed** | 결정적 SQL은 Statement, 비결정적은 Row로 자동 전환 | 공간 효율 + 일관성 절충 | 내부 판단 로직 복잡 |
+Binary log는 SQL 문자열만 모은 파일이라고 단정하지 않는다. format에 따라 event 내용이 달라진다. CDC, point-in-time recovery와 replica compatibility 요구까지 포함해 선택한다.
 
-MySQL 5.7.7+ 기본값은 **Row**. 안정성을 중시하는 현대 운영 환경은 Row를 주로 사용한다.
+## Async와 semisync
 
-## 관리형 DB의 Replica 한계
+Asynchronous replication에서는 source가 replica의 수신이나 적용을 기다리지 않는다. Source 장애 시 commit됐지만 어떤 replica에도 전달되지 않은 transaction이 있을 수 있다.
 
-| 서비스 | 최대 Read Replica |
-|---|---|
-| AWS RDS (MySQL, MariaDB, PostgreSQL, SQL Server) | 15개 |
-| AWS RDS (Oracle) | 5개 |
-| AWS Aurora | 15개 (공유 스토리지 기반, Lag ~ms) |
-| NCP Cloud DB for MySQL | Read Slave 구성 지원 |
+Semisynchronous replication은 source가 configured 수의 semisync replica로부터 transaction event를 받았다는 acknowledgment를 기다린다. 이는 replica가 transaction을 적용했다는 확인이 아니다. TCP round trip과 replica relay-log 경로만큼 commit latency가 늘고 timeout 뒤 asynchronous mode로 돌아갈 수 있으므로 timeout, wait point와 fallback alarm을 명시한다.
 
-관리형 DB 특유의 아키텍처(Aurora 공유 스토리지, NCP Standby Master)는 [[RDS-Aurora|RDS/Aurora]] 참고.
+Semisync는 잠재적인 data-loss window를 줄이지만 consensus나 자동 failover를 제공하지 않는다. 적용 지연, promotion 후보의 GTID와 split-brain fencing을 별도로 설계한다.
 
-## 참고
-- [AWS RDS Read Replicas](https://aws.amazon.com/ko/rds/features/read-replicas/)
-- [매일메일 — DB 이중화](https://www.maeil-mail.kr/question/109)
+## Read consistency를 계약한다
+
+Replica read는 source보다 오래된 상태를 반환할 수 있다. 모든 `SELECT`를 자동으로 replica에 보내지 않고 freshness 요구로 분류한다.
+
+- write 직후 사용자 확인은 primary에 고정한다.
+- session stickiness로 최근 write가 있는 session을 일정 정책 동안 primary에 보낼 수 있다.
+- 정확한 position이 필요하면 commit GTID/token을 전달하고 replica가 해당 position까지 적용했는지 확인한다.
+- feed, 검색과 집계처럼 stale read를 허용하면 최대 lag와 UX를 계약한다.
+- 한 logical transaction에서 primary와 replica를 섞어 동일 snapshot과 atomicity를 기대하지 않는다.
+
+자세한 application routing은 [[Read-Replica-Routing|Read Replica 라우팅]]에서 다룬다. Cache를 write path에서 동시에 갱신하면 별도의 dual-write 실패가 생긴다. Outbox/CDC, invalidation과 rebuild 경로 없이 replication lag를 cache로 덮지 않는다.
+
+## Lag 원인과 관찰
+
+- long transaction과 큰 row event가 한 worker 또는 commit 순서를 오래 점유
+- source write burst, network throughput과 relay log I/O 부족
+- replica의 CPU, storage, lock contention과 DDL
+- worker 병렬성을 활용할 수 없는 transaction dependency
+- replica query가 apply와 자원을 경쟁
+
+`SHOW REPLICA STATUS`, Performance Schema replication tables와 GTID set으로 receiver/applier 상태, last error와 queue를 본다. `Seconds_Behind_Source` 하나는 NULL, clock과 workload에 영향을 받으므로 relay log space, transaction queue, heartbeat와 end-to-end freshness를 함께 본다.
+
+## Failover와 복구 원칙
+
+1. promotion 전에 candidate가 필요한 GTID까지 적용했는지 확인한다.
+2. old source를 fencing한 뒤 write endpoint를 전환한다.
+3. client retry가 중복 transaction을 만들 수 있으므로 business idempotency를 둔다.
+4. 다른 replica를 새 source에 재연결하고 data consistency를 검사한다.
+5. replica는 source의 실수와 logical delete도 복제하므로 backup을 대체하지 않는다.
+
+Replication 도입은 read scale만의 선택이 아니다. RPO/RTO, failover ownership, lag SLO, DDL과 backup 운영까지 함께 준비한다.
+
+## 출처
+
+- [MySQL 8.4 Reference Manual, Replication](https://dev.mysql.com/doc/refman/8.4/en/replication.html)
+- [MySQL 8.4 Reference Manual, Replication Threads](https://dev.mysql.com/doc/refman/8.4/en/replication-threads.html)
+- [MySQL 8.4 Reference Manual, Replication Formats](https://dev.mysql.com/doc/refman/8.4/en/replication-formats.html)
+- [MySQL 8.4 Reference Manual, GTID Replication](https://dev.mysql.com/doc/refman/8.4/en/replication-gtids.html)
+- [MySQL 8.4 Reference Manual, Semisynchronous Replication](https://dev.mysql.com/doc/refman/8.4/en/replication-semisync.html)
+- [인프런, Hong, Replication과 Distribution](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338557)
 
 ## 관련 문서
-- [[Clustering|Cluster]]
-- [[Sharding]]
-- [[RDS-Storage-Shrink-Runbook|RDS 스토리지 축소 (네이티브 binlog 복제 활용)]]
-- [[RDS-Zero-Downtime-Migration|무중단 마이그레이션 (CDC로 따라잡기)]]
+
+- [[Read-Replica-Routing|Read Replica 라우팅]]
+- [[MySQL-Backup|MySQL 백업과 복구]]
+- [[Transactional-Outbox|Transactional Outbox]]
+- [[Sharding|Sharding]]
