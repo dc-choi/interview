@@ -131,6 +131,7 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 - [golf-dev — 선착순 쿠폰 서비스 부하 감소](https://golf-dev.tistory.com/77)
 
 ## 관련 문서
+- [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처]]
 - [[Transaction-Lock-Contention|트랜잭션 경합과 Lock 문제]]
 - [[Latency-Optimization|레이턴시 최적화]]
 - [[Rate-Limiting|Rate Limit 정책 설계]]
