@@ -16,6 +16,7 @@ aliases: ["logging", "로깅"]
 - [x] [[Centralized-Logging-with-OpenSearch|AWS Centralized Logging with OpenSearch (종료 일정, 구조, 구축과 삭제)]]
 - [x] [[Log-Sampling|로그/트레이스 샘플링 (head vs tail, 에러 편향, 동적 샘플링)]]
 - [x] [[PII-Masking|PII 마스킹 (생성 시점 마스킹, redaction/tokenization, 허용목록)]]
+- [x] [[Application-Method-Trace-Design|애플리케이션 method trace 설계]]
 
 ## 세미나
 - [[Incident-Detection-Logging|장애 감지와 로깅/메트릭 (GPL 스택 비교, 아키텍처, SLO 알림, 카디널리티)]]

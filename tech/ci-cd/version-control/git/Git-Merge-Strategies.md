@@ -1,7 +1,7 @@
 ---
 tags: [cicd, git, merge, rebase, squash]
 status: done
-verified_at: 2026-07-29
+verified_at: 2026-08-04
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["Git Merge Strategies", "Git 머지 전략", "Rebase vs Squash vs Merge"]
 ---
@@ -162,6 +162,8 @@ git rebase -i HEAD~5
 
 **Cherry-pick vs Rebase**: Cherry-pick은 특정 커밋 하나를 다른 브랜치로 복사(일회성 패치), Rebase는 연속된 여러 커밋을 다른 베이스 위로 이동(브랜치 재구성).
 
+`git rebase --onto <newbase> <upstream> <branch>`는 `branch`에서 `upstream`에 포함되지 않은 커밋들을 골라 `newbase` 위에 다시 만든다. 잘못된 base에서 시작한 하위 branch를 떼어 옮길 때 유용하지만 대상 범위를 `git log <upstream>..<branch>`로 먼저 확인한다.
+
 ## 흔한 실수
 
 - **공유 브랜치 force-push** — 원격의 다른 commit을 덮어쓸 수 있다. 현재 ref, 팀 합의와 복구 경로를 먼저 확인한다
@@ -182,6 +184,7 @@ git rebase -i HEAD~5
 ## 출처
 
 - Git: [git merge](https://git-scm.com/docs/git-merge), [git rebase](https://git-scm.com/docs/git-rebase), [권장 workflow](https://git-scm.com/docs/gitworkflows)
+- 얄팍한 코딩사전, [Fast-Forward vs 3-Way Merge](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401704), [체리픽, 잔가지 옮기기, 마디 묶어 가져오기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=402152)
 
 ## 관련 문서
 

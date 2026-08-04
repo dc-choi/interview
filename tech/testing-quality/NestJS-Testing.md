@@ -175,6 +175,7 @@ v11부터 동적 모듈이 딥 해시로 중복 제거되지 않아(객체 참�
 
 ## 관련 문서
 
+- [[HTTP-API-Integration-Testing|HTTP API 통합 테스트]]
 - [[NestJS|NestJS 개요]]
 - [[Module-reference|Module Reference (resolve, ContextIdFactory)]]
 - [[Test-Pyramid|테스트 피라미드]]

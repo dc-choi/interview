@@ -1,6 +1,7 @@
 ---
 tags: [testing, pyramid, unit-test, integration-test, e2e, contract-test]
 status: done
+verified_at: 2026-08-04
 category: "테스트&품질(Testing&Quality)"
 aliases: ["Test Pyramid", "테스트 피라미드", "Practical Test Pyramid"]
 ---
@@ -41,9 +42,8 @@ aliases: ["Test Pyramid", "테스트 피라미드", "Practical Test Pyramid"]
 ### 작성 원칙
 
 - **테스트 이름**이 의도를 드러냄 — `shouldReturnEmptyWhenInputIsNull`
-- 한 테스트 = 한 개의 단언
-- 의존 객체는 Test Double로 ([[Classicist-vs-Mockist-Testing]])
-- 도메인 로직 커버리지 **높게** (Service Layer 기준 70~80%)
+- 한 테스트 = 한 동작이나 규칙. 같은 결과를 설명하는 관련 단언은 함께 둘 수 있음
+- 의존 객체는 필요할 때 Test Double로 격리 ([[Classicist-vs-Mockist-Testing]])
 
 ## Integration Test
 
@@ -116,19 +116,19 @@ Unit과 Integration 사이의 **계약 검증**.
 
 ## 계층별 비중 가이드
 
-| 층 | 비중 | 실행 속도 | 주 도구 |
+| 층 | 상대 수량 | 실행 속도 | 주 도구 |
 |---|---|---|---|
-| Unit | 70% | ms | JUnit, Jest, pytest |
-| Integration | 20% | 초 | Testcontainers, Wiremock |
-| Contract | 5% | 초 | Pact, Spring Cloud Contract |
-| E2E | 5% | 분 | Cypress, Playwright |
+| Unit | 많음 | 빠름 | JUnit, Jest, pytest |
+| Integration | 중간 | 중간 | Testcontainers, Wiremock |
+| Contract | 소비 계약별 | 중간 | Pact, Spring Cloud Contract |
+| E2E | 핵심 여정 소수 | 느림 | Cypress, Playwright |
 
 **이상적 수치는 없다** — 도메인, 리스크, 팀 성숙도에 따라 조정.
 
 ## 테스트 중복 피하기
 
 - 같은 로직을 **여러 층**에서 중복 검증 = 유지 비용만 증가
-- Unit에서 이미 검증한 것을 E2E에서 다시 확인 금지
+- Unit에서 이미 충분히 검증한 세부 분기를 E2E마다 반복하지 않음. 핵심 여정의 의도적인 중첩은 허용
 - **계층별 책임** 명확히:
   - Unit: 도메인 로직
   - Integration: 외부 상호작용
@@ -147,19 +147,12 @@ Unit과 Integration 사이의 **계약 검증**.
 ## 배포 파이프라인과의 연결
 
 ```
-PR 생성 → Unit/Integration (2~3분) → Merge
-Merge → Contract + Smoke E2E (5~10분) → Staging
-Staging → 전체 E2E + 성능 (30분~) → Production
+PR 생성 → 빠른 Unit/Integration → Merge
+Merge → Contract + Smoke E2E → Staging
+Staging → 위험 기반 E2E + 성능 → Production
 ```
 
 빠른 피드백이 필요한 단계엔 **하위 테스트만**, 최종 검증에 E2E.
-
-## 조직별 현실
-
-- **스타트업 초기**: Unit + 일부 Integration. E2E 없거나 최소
-- **중견**: 3층 + Contract
-- **엔터프라이즈**: 5층 이상 + Exploratory, Performance 별도
-- **마이크로서비스 조직**: Contract Test의 비중 高
 
 ## 흔한 실수
 
@@ -180,7 +173,10 @@ Staging → 전체 E2E + 성능 (30분~) → Production
 ## 출처
 - [integer blog — Practical Test Pyramid](https://www.integer.blog/practical-test-pyramid/)
 - Mike Cohn, *Succeeding with Agile* (원전)
-- Martin Fowler — Test Pyramid
+- [Toby Clemson, Testing Strategies in a Microservice Architecture](https://martinfowler.com/articles/microservice-testing/)
+- [Pact, Consumer Tests](https://docs.pact.io/implementation_guides/go/docs/consumer)
+- [Dowon Lee 강사, Microservice Testing Strategies](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290729)
+- [Dowon Lee 강사, Testing Pyramid](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290730)
 
 ## 관련 문서
 - [[Classicist-vs-Mockist-Testing|Classicist vs Mockist, Test Double]]

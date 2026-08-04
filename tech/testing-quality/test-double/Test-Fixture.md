@@ -30,6 +30,17 @@ aliases: ["Test Fixture", "테스트 픽스처"]
 - 테스트에서 관심 있는 필드만 명시하면 됨
 - 엔티티 구조 변경 시 팩토리만 수정
 
+## 무작위 Fixture와 재현성
+
+정적 기본값만 반복하면 우연히 한 입력만 검증하게 된다. 무작위 객체 생성기는 테스트가 관심 없는 필드를 채우고 더 다양한 조합을 통과시키는 데 유용하지만, 실패를 재현할 seed가 반드시 남아야 한다.
+
+- 실패 로그의 seed로 같은 객체 그래프를 다시 생성한다.
+- 테스트의 핵심 조건과 경계값은 명시하고 나머지 필드만 생성기에 맡긴다.
+- random fixture는 property-based testing이나 명시적인 edge case를 대체하지 않는다.
+- Bean Validation 애노테이션을 읽어 유효한 값을 생성해도 도메인 불변식까지 자동으로 만족한다고 가정하지 않는다.
+
+Java에서는 Instancio 같은 도구가 객체 그래프와 seed 재현을 지원한다. Bean Validation/JPA 애노테이션 기반 생성은 현재 opt-in 실험 기능이므로 설정과 지원 애노테이션을 확인하고, 도메인 전용 generator는 테스트 코드에서 명시적으로 관리한다.
+
 ## Mock 계층 구성
 
 외부 의존성을 계층별로 모킹한다.
@@ -76,5 +87,12 @@ Q. 외부 의존성은 어떻게 처리하는가?
 - 인프라: 메일, 외부 API 등을 mock하여 사이드이펙트 제거
 
 ## 관련 문서
+
 - [[Test-Isolation|Test isolation]]
 - [[Service-Layer-Testing|서비스 레이어와 테스트 경계]]
+
+## 출처
+
+- [Instancio 공식 User Guide — Seed와 Bean Validation](https://www.instancio.org/user-guide/)
+- [토비 강사 — 랜덤 테스트 픽스처](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=458027)
+- [토비 강사 — 테스트 픽스처에 Instancio 적용](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=460612)

@@ -95,3 +95,4 @@ verified_at: 2026-07-21
 - [Lambda VPC 인터넷 액세스](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc-internet.html)
 - [Lambda 요금](https://aws.amazon.com/lambda/pricing/)
 - [EC2 On-Demand 요금](https://aws.amazon.com/ec2/pricing/on-demand/)
+- [Sungmin Kim 강사 — Lambda란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=52051) — 입문 구조 참고. 강의의 5분 제한은 현재 15분으로 변경됨

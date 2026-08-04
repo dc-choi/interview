@@ -3,7 +3,7 @@ tags: [cicd, git, internals, merge, rebase]
 status: done
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["Git Mental Model", "Git 멘탈 모델", "커밋 브랜치 HEAD"]
-verified_at: 2026-07-29
+verified_at: 2026-08-04
 ---
 
 # Git 멘탈 모델 — 커밋은 점, 브랜치는 포인터
@@ -120,6 +120,7 @@ base 이후 각자 바꾼 내용을 합쳐 **부모가 둘인 병합 커밋 M**�
 - [git-merge 공식 문서 — HOW CONFLICTS ARE PRESENTED, MERGE STRATEGIES(ort)](https://git-scm.com/docs/git-merge)
 - [git-config 공식 문서 — merge.conflictStyle(zdiff3)](https://git-scm.com/docs/git-config)
 - [Git 2.35 릴리즈 노트 — zdiff3 도입](https://github.com/git/git/blob/master/Documentation/RelNotes/2.35.0.adoc)
+- 얄팍한 코딩사전, [Git을 특별하게 만드는 것](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401052), [Git의 3가지 공간](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401053), [HEAD](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401059)
 
 ## 관련 문서
 

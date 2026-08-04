@@ -11,6 +11,7 @@ aliases: ["AWS 관리 인덱스"]
 
 - [[AWS-Organizations|Organizations — 멀티 계정 관리, SCP, OU, 통합 결제]]
 - [[CloudFormation|CloudFormation — IaC 템플릿, 스택]]
+- [[Step-Functions|Step Functions — 상태 머신, 서비스 오케스트레이션, 재시도와 보상]]
 - [[CloudTrail-Config|CloudTrail과 Config — API 감사, 리소스 구성 추적]]
 - [[Systems-Manager|Systems Manager — Run Command, Patch Manager, Session Manager]]
 - [[SSM-Parameter-Store|SSM Parameter Store — 계층형 설정 저장, Secrets Manager 비교]]

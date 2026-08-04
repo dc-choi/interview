@@ -149,6 +149,7 @@ Preflight 응답:
 - [매일메일 — CORS 심화 질문 96](https://www.maeil-mail.kr/question/96)
 
 ## 관련 문서
+- [[Single-Host-SPA-API-Deployment|단일 서버 SPA/API 배포에서의 CORS와 공개 환경 변수]]
 - [[CSRF|CSRF]]
 - [[XSS|XSS]]
 - [[Security-Headers|보안 헤더]]

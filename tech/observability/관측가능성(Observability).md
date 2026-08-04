@@ -37,6 +37,9 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [x] [[CloudWatch|AWS CloudWatch (EMF, Log Insights, Composite Alarm, Container/Lambda Insights)]]
 - [x] [[RED-USE-Method|RED / USE method (서비스 vs 자원, Saturation, 증상 vs 원인)]]
 - [x] [[Prometheus|Prometheus (pull 모델, PromQL, Alertmanager, TSDB 한계)]]
+- [x] [[Spring-Boot-Actuator-Operations|Spring Boot Actuator 운영]]
+- [x] [[Spring-Boot-Micrometer-Prometheus-Grafana|Spring Boot metric pipeline]]
+- [x] [[Spring-Boot-Custom-Metrics-and-Monitoring|Spring Boot custom metric]]
 - [x] [[Cardinality|카디널리티 관리 (라벨 폭발, 신호별 자리, route 템플릿화)]]
 - [x] [[Multi-Target-Exporter|멀티타겟 Exporter, 서비스 디스커버리 (probe 모델, file_sd, RDS SD, 대상 증가 시 변경 0)]]
 - [x] [[Thanos|Thanos (장기 보존, 글로벌 뷰/HA, 다운샘플링)]]
@@ -46,6 +49,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 
 ## Tracing
 - [x] [[OpenTelemetry|OpenTelemetry + 분산 트레이싱 + Trace context propagation (Trace/Span, W3C traceparent, 큐 전파, 샘플링)]]
+- [x] [[AWS-X-Ray|AWS X-Ray (trace map, segment/subsegment, annotation, OTel 이전)]]
 
 ## Datadog
 - [[tech/observability/datadog/datadog|Datadog 학습 지도]] — Unified Service Tagging, Catalog, APM, Monitor, SLO, 배포 추적

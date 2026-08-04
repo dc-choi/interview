@@ -176,6 +176,7 @@ Request
 - [[HTTP-Status-Code|HTTP 상태 코드]]
 - [[IDOR|IDOR와 자원 단위 인가]]
 - [[NestJS-Guards-Patterns|NestJS Guards와 정책 기반 인가]]
+- [[Spring-Security-Authorization|Spring Security Request와 Method 인가]]
 - [[IAM-Policy|AWS IAM 정책 평가]]
 - [[IAM-Best-Practices|AWS IAM 최소 권한]]
 - [[IAM-Entities-Access|AWS IAM 주체와 접근 구조]]

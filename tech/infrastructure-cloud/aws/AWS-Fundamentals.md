@@ -1,6 +1,7 @@
 ---
 tags: [aws, infrastructure, fundamentals, region, az, cloud]
 status: done
+verified_at: 2026-08-04
 category: "Infrastructure - AWS"
 aliases: ["AWS Fundamentals", "AWS 기본 용어", "Region", "Availability Zone", "AZ", "Edge Location"]
 ---
@@ -8,6 +9,12 @@ aliases: ["AWS Fundamentals", "AWS 기본 용어", "Region", "Availability Zone"
 # AWS Fundamentals — 기본 용어
 
 AWS 모든 서비스의 기반이 되는 인프라 개념. **Region, AZ, Edge Location**의 3 계층 위에 모든 AWS 서비스가 배치되며, 가용성, 지연 시간, 비용, 규정 준수의 설계가 이 계층 위에서 결정된다.
+
+## 사용량 기반 비용 모델
+
+- 대부분의 AWS 서비스는 장기 계약 없이 사용한 리소스와 시간, 요청, 저장량, 전송량 등에 따라 과금하는 pay-as-you-go 모델이다. 서버를 직접 사는 초기 자본비용을 줄일 수 있지만, 리소스를 만들고 잊어도 스토리지, 공인 IPv4, 스냅샷 같은 비용은 남을 수 있다.
+- Savings Plans, Reserved Instances처럼 사용량을 약정해 단가를 낮추는 선택도 있다. 사용량 기반이라는 말이 항상 최저 비용이라는 뜻은 아니다.
+- Free Tier는 모든 사용이 무료라는 뜻이 아니다. 가입 시점, 계정 플랜, 서비스, 지역별 혜택과 한도를 넘으면 표준 요금이 적용될 수 있으므로 Billing, Budgets, Cost Explorer와 알람을 처음부터 설정한다.
 
 ## Region
 
@@ -94,6 +101,9 @@ Out/In은 **stateless 워크로드**에 적합 (웹, API). Up/Down은 **DB, 캐�
 ## 출처
 
 - [AWS 글로벌 인프라](https://aws.amazon.com/about-aws/global-infrastructure/)
+- [AWS Pricing](https://aws.amazon.com/pricing/)
+- [AWS Free Tier](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier.html)
+- [Sungmin Kim 강사 — AWS 입문과 클라우드 비용 모델](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43720)
 
 ## 관련 문서
 

@@ -71,6 +71,7 @@ user_id 같은 식별자를 쿠키에 직접 담지 않고 추측 불가능한 �
 
 - [HTTP Stateless 로그인 판단 원리 — YouTube 강의](https://www.youtube.com/watch?v=K00xh3zsof0&list=PLXvgR_grOs1DEoZFABFCjo7dsXt1BhVih&index=36)
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
+- [인프런, Spring MVC 세션과 쿠키](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13734)
 
 ## 관련 문서
 
@@ -80,3 +81,4 @@ user_id 같은 식별자를 쿠키에 직접 담지 않고 추측 불가능한 �
 - [[Auth-Method-Selection|인증 방식 선택]]
 - [[Refresh-Token-Rotation|Refresh Token Rotation]]
 - [[Load-Balancer|Load Balancer (세션 분산)]]
+- [[Spring-Security-Session-and-CSRF|Spring Security Session과 CSRF]]

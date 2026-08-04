@@ -1,6 +1,7 @@
 ---
 tags: [observability, aws, cloudwatch, monitoring, logs, metrics]
 status: done
+verified_at: 2026-08-04
 category: "Observability"
 aliases: ["CloudWatch Logs", "CloudWatch Alarms"]
 ---
@@ -63,6 +64,8 @@ CPUUtilization > 80% for 5 consecutive minutes → SNS 알림
 | ALARM | 임계값 위반 |
 | INSUFFICIENT_DATA | 데이터 부족 (시작 직후, 장애) |
 
+`INSUFFICIENT_DATA`를 장애나 정상으로 자동 해석하지 않는다. 지표 특성에 맞춰 missing data를 `missing`, `ignore`, `breaching`, `notBreaching` 중 하나로 취급한다. 지속적으로 들어와야 하는 heartbeat는 missing을 장애 신호로 볼 수 있지만, 오류가 있을 때만 생기는 sparse metric은 missing을 정상으로 보는 편이 맞다.
+
 ### Alarm Action — 자동 대응
 
 알람 상태 변화에 따라 **자동화 작업**을 트리거:
@@ -85,3 +88,10 @@ ALARM(CPU_High) AND ALARM(Memory_High) → Composite ALARM
 ### Anomaly Detection
 
 ML 기반 정상 범위 자동 학습 — 정적 임계값 대신 동적 밴드. 트래픽 패턴이 시간대마다 다른 서비스에 적합.
+
+## 출처
+
+- [Amazon CloudWatch — Configuring how alarms treat missing data](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarms-and-missing-data.html)
+- [Amazon CloudWatch — SetAlarmState API](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_SetAlarmState.html)
+- [Sungmin Kim 강사 — CloudWatch란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=48604)
+- [Sungmin Kim 강사 — CloudWatch Alarm](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=49555)

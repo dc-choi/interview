@@ -12,7 +12,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Application-Security|애플리케이션 보안 / 시큐어코딩]] — 4대 원칙, 진단 vs 모의해킹, OWASP Top 10, 트렌드 리스크, 클라이언트 불신, 학습 경로
 - [[CIA-Triad|CIA Triad (기밀성, 무결성, 가용성)]] — 세 보안 목표, 위협과 통제, 트레이드오프와 가장 약한 고리
 - [[Access-Control-Models|접근 제어 모델 (RBAC, ABAC, PBAC)]] — 역할, 속성, 정책의 관계, PAP/PDP/PIP/PEP, 하이브리드 설계와 운영
-- [[tech/security/auth/인증(Auth)|인증 (Auth)]] — Session, JWT, OAuth2, Token Exchange, FIDO, Refresh Token
+- [[tech/security/auth/인증(Auth)|인증 (Auth)]] — Session, JWT, OAuth2, Token Exchange, FIDO, Refresh Token, Spring Security
 - [[tech/security/crypto/암호(Crypto)|암호 (Cryptography)]] — 패스워드 해싱, 공개키, RSA
 - [[tech/security/web-attacks/웹공격(WebAttacks)|웹 공격 (Web Attacks)]] — CORS, CSRF, XSS, IDOR, SSRF
 - [[Actuator-Exposure|Actuator 노출 (Security Misconfiguration)]] — 운영 엔드포인트 노출, 필요한 것만 열기

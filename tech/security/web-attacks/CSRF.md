@@ -28,6 +28,7 @@ NestJS/Express 배선은 csrf-csrf 패키지:
 - [[CORS]]
 - [[XSS]]
 - [[Cookie]]
+- [[Spring-Security-Session-and-CSRF|Spring Security CSRF]]
 
 ## 출처
 - [NestJS — CSRF Protection](https://docs.nestjs.com/security/csrf)

@@ -1,6 +1,7 @@
 ---
 tags: [observability, opentelemetry, otel, distributed-tracing, trace-context]
 status: done
+verified_at: 2026-08-04
 category: "관측가능성(Observability)"
 aliases: ["OpenTelemetry", "OTel", "분산 트레이싱", "Distributed Tracing", "Trace Context Propagation", "W3C traceparent"]
 ---
@@ -11,7 +12,7 @@ aliases: ["OpenTelemetry", "OTel", "분산 트레이싱", "Distributed Tracing",
 
 ## OpenTelemetry란
 
-CNCF 표준이자 SDK 모음으로, **추적(traces), 메트릭(metrics), 로그(logs) 세 신호를 한 규격**으로 다룬다. OpenTracing과 OpenCensus를 통합한 후속이다. 특정 벤더(Datadog, Jaeger 등)에 코드를 묶지 않는 게 핵심 가치다.
+CNCF 프로젝트인 OpenTelemetry는 telemetry를 생성, 수집하고 내보내는 **벤더 중립 관측 프레임워크와 도구 모음**이다. traces, metrics와 logs를 다루고 context propagation으로 신호를 연결한다. 관측 데이터를 저장하고 질의하는 backend 자체는 아니다.
 
 - **SDK/API**: 앱에 심는 계측 라이브러리
 - **Collector**: 받고(receive) 가공하고(process) 내보내는(export) 중간 계층. 앱과 백엔드를 분리해, 백엔드를 바꿔도 앱 코드는 그대로
@@ -82,7 +83,9 @@ sdk.start();
 ## 출처
 
 - [OpenTelemetry 공식 문서 — Concepts, Instrumentation](https://opentelemetry.io/docs/)
+- [OpenTelemetry 공식 문서 — What is OpenTelemetry](https://opentelemetry.io/docs/what-is-opentelemetry/)
 - [W3C Trace Context 명세](https://www.w3.org/TR/trace-context/)
+- [Dowon Lee 강사 — Observability를 위한 기술 스택](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290736)
 
 ## 관련 문서
 

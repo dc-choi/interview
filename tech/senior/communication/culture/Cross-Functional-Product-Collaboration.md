@@ -84,3 +84,4 @@ Q. 개발자가 기획, 디자인에 어디까지 개입해야 하나?
 - [[Engineering-Business-Alignment|개발팀의 비즈니스 align]]
 - [[Retrospective-Methods|애자일 회고 기법 (감정 체크인, 액션 반영)]]
 - [[Team-Contribution-Culture|엔지니어링 팀 기여 문화]]
+- [[Product-Design-Workflow-and-Handoff|프로덕트 디자인 워크플로와 개발 핸드오프]]

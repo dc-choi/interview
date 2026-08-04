@@ -1,6 +1,7 @@
 ---
 tags: [cicd, deployment, blue-green, zero-downtime, rollback]
 status: done
+verified_at: 2026-08-04
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["Blue-Green Deployment", "Blue-Green 배포", "블루 그린 배포"]
 ---
@@ -107,6 +108,8 @@ Blue-Green은 "전환이 0-1 binary"인 반면 Canary는 "연속적". 둘은 결
 
 ## 출처
 - [ninanung gist — 서버 무중단 배포 방식(In-Place vs Blue-Green)](https://gist.github.com/ninanung/9d63304cb0d070642e89f9b94b6fe24b)
+- [AWS CodeDeploy — In-place and blue/green deployments](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments.html)
+- [Sungmin Kim 강사 — CodeDeploy](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=66574)
 
 ## 관련 문서
 - [[CICD-Basics|CI/CD 기초]]

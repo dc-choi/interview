@@ -12,6 +12,7 @@ aliases: ["Culture", "리더십과 조직 문화"]
 ## 목차
 - [x] [[People-Leadership|사람을 키우는 시니어 리더십 (1:1, 위임-성장설계, 부정성 관리, 성장욕구별 과제, 온보딩, 스킬트리 학습, 모른다 말하기)]]
 - [x] [[Cross-Functional-Product-Collaboration|직군 간 프로덕트 협업 (기획/디자인/개발 역할, "안 된다"+대안, 예시와 레퍼런스 소통, 스프린트 파이프라인, 고정관념 깨기)]]
+- [x] [[Product-Design-Workflow-and-Handoff|프로덕트 디자인 워크플로와 개발 핸드오프 (단계별 완료 조건, 출처별 SSOT, Figma 상태, 디자인 시스템)]]
 - [x] [[Co-Leadership-Partnership|공동 리더십 (역할 분담과 상호 이해, 책임 분산, 양방향 언어 학습)]]
 - [x] [[Startup-Crisis-Leadership|스타트업 위기 리더십과 레이오프 (전시 CEO, 사람을 계획에 맞추기, 레이오프 원칙)]]
 - [x] [[Team-Contribution-Culture|엔지니어링 팀 기여 문화 (플랫폼, 기여 난이도, 친화 문화 3조건, 도우미형 리드)]]

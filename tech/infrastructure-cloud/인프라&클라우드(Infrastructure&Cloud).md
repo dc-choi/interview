@@ -25,9 +25,13 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[VPC-Subnet-CIDR#서브넷 유형 — 라우팅이 성격을 결정|Public, Private, Isolated Subnet]] / [[VPC-NAT-Security#NAT Gateway vs NAT Instance|NAT Gateway와 NAT Instance]]
 
 ## Kubernetes
+- [x] [[K8s-Core-Workloads-and-Service|Core workload와 Service (Pod, Deployment, rollout, EndpointSlice, Namespace)]]
+- [x] [[K8s-Configuration-Storage-and-Probes|Configuration, storage와 probe (ConfigMap/Secret, PV/PVC, health contract)]]
+- [x] [[K8s-Traffic-Entry-Helm-and-GitOps|Traffic entry, Helm과 GitOps (Ingress/Gateway API, Argo CD)]]
 - [x] [[K8s-Resource-Right-Sizing|Resource Right-Sizing (P95, 버퍼, 역산식, 컴포넌트 차등, 롤백 기준)]]
 - [x] [[Container-Memory-Metrics|컨테이너 메모리 지표 해석 (cgroup 계정 범위, RSS와 page cache, working set, 고원 vs 우상향, 실측)]]
 - [x] [[Istio-Ambient-Mode|Istio Ambient Mode (service mesh, ztunnel/waypoint L4-L7 분리, sidecar 대비 트레이드오프)]]
+- [x] [[Istio-Traffic-Management-and-Resilience|Istio traffic management와 resilience (Gateway, VirtualService, DestinationRule, canary, fault injection)]]
 - [x] [[Istio-Ambient-Traffic-Internals|Istio Ambient 트래픽 내부 구현 (Envoy internal listener, HBONE = HTTP/2 CONNECT + mTLS, packet mark 루프 방지)]]
 - [x] [[Istio-Ambient-Stale-Connection|Stale Connection과 503 (half-open, Envoy pool 키 IP:Port 결함, IP 재사용, retry 완화와 멱등성)]]
 - [x] [[Istio-Ambient-Partially-Enrolled-Pod|Partially Enrolled Pod (K8s Ready ≠ mesh 준비, DaemonSet 스케줄 race, startup taint + untaint controller)]]
@@ -36,11 +40,11 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[Envoy-XDS-Disconnected-Detection|Envoy xDS 단절 탐지 (readiness ≠ control plane 연결, connected_state, proxyStatsMatcher 함정)]]
 
 ### 기초와 운영 체크리스트
-- [ ] Pod / Deployment / Service / Ingress (작성 예정: `K8s-Pod-Deployment`) — 기존 보강: [[EKS#구성 요소 — Kubernetes 모델 그대로|핵심 리소스 개요]], [[EKS#Service & Ingress|EKS의 Service와 Ingress]]
+- [x] [[K8s-Core-Workloads-and-Service|Pod / Deployment / Service]] / [[K8s-Traffic-Entry-Helm-and-GitOps|Ingress와 Gateway API]]
 - [ ] HPA / VPA (작성 예정: `K8s-HPA-VPA`) — 기존 보강: [[EKS#오토스케일링 — 3축|HPA와 VPA 개요]]
-- [ ] ConfigMap / Secret (작성 예정: `K8s-ConfigMap-Secret`) — 기존 보강: [[Secret-Management#두 가지 누출 지점|K8s Secret 위협 모델]], [[Secret-Management#시크릿 주입 4방식|시크릿 주입 방식]]
+- [x] [[K8s-Configuration-Storage-and-Probes|ConfigMap / Secret]] — 보안 심화: [[Secret-Management#두 가지 누출 지점|K8s Secret 위협 모델]]
 - [x] [[K8s-Resource-Right-Sizing|Resource request / limit (스케줄링, CPU 경합, throttling, OOM, 실측 기반 설정)]]
-- [ ] Liveness / Readiness probe (작성 예정: `K8s-Probes`) — 기존 보강: [[Istio-Ambient-Partially-Enrolled-Pod|Kubernetes Ready와 mesh 준비의 차이]], [[Envoy-XDS-Disconnected-Detection#readinessProbe 개선|Envoy readiness 보강]]
+- [x] [[K8s-Configuration-Storage-and-Probes|Startup / Liveness / Readiness probe]] — mesh 심화: [[Istio-Ambient-Partially-Enrolled-Pod|Kubernetes Ready와 mesh 준비의 차이]]
 - [ ] PodDisruptionBudget (작성 예정: `K8s-PDB`)
 - [x] [[EKS#Cluster Autoscaler vs Karpenter|Node autoscaling (Cluster Autoscaler와 Karpenter)]]
 

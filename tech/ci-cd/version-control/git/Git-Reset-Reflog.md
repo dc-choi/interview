@@ -3,7 +3,7 @@ tags: [cicd, git, reset, reflog, recovery]
 status: done
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["Git Reset Reflog", "Git 복구", "force-with-lease"]
-verified_at: 2026-07-29
+verified_at: 2026-08-04
 ---
 
 # Git Reset과 복구 — reset, revert, reflog, force-with-lease, range-diff
@@ -116,6 +116,7 @@ git range-diff origin/main origin/feature feature
 - [git-push 공식 문서 — --force-with-lease와 fetch 상호작용 경고](https://git-scm.com/docs/git-push)
 - [git-range-diff 공식 문서 — base rev1 rev2 형식](https://git-scm.com/docs/git-range-diff)
 - [git-fsck 공식 문서 — --lost-found](https://git-scm.com/docs/git-fsck)
+- 얄팍한 코딩사전, [과거로 돌아가는 세 가지 방법](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401003), [나머지 두 방법들](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401004), [reset 했어도 희망은 있다](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401084)
 
 ## 관련 문서
 

@@ -17,3 +17,4 @@ Session, JWT, OAuth2, Token Exchange, FIDO, Refresh Token — 인증 방식과 �
 - [x] [[OAuth2-Token-Exchange|OAuth 2.0 Token Exchange (Keycloak V2, V1 가장, 위임)]]
 - [x] [[FIDO-Seminar|FIDO & 패스키(Passkey)]]
 - [x] [[Refresh-Token-Rotation|Refresh Token Rotation]]
+- [x] [[Spring-Security|Spring Security (FilterChain, 인증, Session, 인가와 동적 정책)]]

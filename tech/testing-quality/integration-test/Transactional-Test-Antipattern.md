@@ -1,199 +1,122 @@
 ---
-tags: [testing, transactional, spring, jpa, junit, integration-test]
+tags: [testing, transactional, spring, jpa, jdbc, integration-test]
 status: done
+verified_at: 2026-08-04
 category: "테스트&품질(Testing&Quality)"
 aliases: ["Transactional Test Antipattern", "테스트 @Transactional 안티패턴", "테스트 데이터 롤백"]
 ---
 
-# 테스트에서 `@Transactional`, 안티패턴과 대안
+# Spring database 통합 테스트와 transaction 격리
 
-Spring Boot + JPA 테스트에서 `@Transactional`은 **데이터 자동 롤백**이라는 강력한 편의를 제공한다. 하지만 **테스트 트랜잭션이 프로덕션 경로와 달라** 실제 버그를 가리거나 **false positive**를 만들 위험이 크다. "테스트를 안 하느니만 못한" 결과를 막으려면 대안을 알고 써야 한다. 원칙은 간단하다 — **테스트 환경에서 `@Transactional`을 쓰지 말고, 수동으로 데이터를 롤백하라**.
+Spring TestContext의 test-managed transaction은 각 test 뒤에 data를 rollback해 빠른 격리를 제공한다. 이것은 유용한 도구지만 production transaction 경계, commit 시점과 thread가 달라지는 시나리오까지 검증하지는 않는다. Test 목적에 따라 rollback 격리와 실제 commit 검증을 나눈다.
 
-## 왜 `@Transactional` 테스트가 위험한가
+## Test-managed transaction
 
-- **트랜잭션 경계 차이** — 프로덕션은 Service 메서드 단위, 테스트는 메서드 전체가 하나의 트랜잭션. `REQUIRES_NEW`, 이벤트 발행, flush 동작이 다르게 작동
-- **JPA flush 시점 차이** — 커밋 시점까지 지연되어 NOT NULL, UNIQUE 제약 오류가 테스트에서 안 보임
-- **Dirty Checking의 가짜 성공** — 영속성 컨텍스트 안 객체만 변경되고 DB 반영 없이 단언이 성공
-- **수동 정리 기술 약화** — 자동 롤백에 익숙해지면 MyBatis, JDBCTemplate 같은 비-JPA 경로의 데이터 정리 방법을 잃음
-
-**결과**: 커버리지 숫자는 올라가지만 실제 버그는 그대로. 팀 단위로 테스트에서 `@Transactional`을 **금지**하는 컨벤션이 대안.
-
-## 데이터 롤백 전략 진화
-
-`@Transactional`을 버리면 **수동으로** 데이터를 정리해야 한다. 3단계 진화가 있다.
-
-### 1단계: `Repository.deleteAll()`
+Test class 또는 method에 Spring `@Transactional`을 붙이면 `TransactionalTestExecutionListener`가 test 실행 전 transaction을 시작하고 기본적으로 test 완료 뒤 rollback한다. Application의 `REQUIRED`와 `SUPPORTS` transaction은 대개 이 transaction에 참여한다.
 
 ```java
-@AfterEach
-void clean() {
-    seasonRepository.deleteAll();
-    stayRepository.deleteAll();
-    userRepository.deleteAll();
-}
-```
-
-**문제**:
-- 모든 테스트 클래스에 같은 코드 중복
-- 새 Repository 추가 시 매번 업데이트 필요 — **누락되면 테스트 오염**
-- **외래키 제약 순서**를 고려해야 함 (자식 → 부모)
-- MyBatis, JDBCTemplate로 넣은 데이터는 **롤백 못 함**
-
-### 2단계: 테이블 전체 `TRUNCATE`
-
-```java
-private void truncate() {
-    var tableNames = findDatabaseTableNames();
-    jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-    for (String tableName : tableNames) {
-        jdbcTemplate.execute("TRUNCATE TABLE " + tableName);
-    }
-    jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
-}
-
-private List<String> findDatabaseTableNames() {
-    return jdbcTemplate.query("SHOW TABLES", (rs, rowNum) -> rs.getString(1)).stream().toList();
-}
-```
-
-**개선**:
-- **모든 테이블 순회** → 누락 불가능
-- **외래키 제약 일시 해제** → 삭제 순서 신경 안 써도 됨
-- ORM 무관 — MyBatis, JDBC도 같이 롤백
-
-**남은 문제**: 모든 테스트 클래스에 이 코드를 **복붙**해야 함.
-
-### 3단계: JUnit Extension + Auto Detection
-
-JUnit 5의 확장 모델로 **전역 적용**. `BeforeEachCallback` 구현체에서 `SpringExtension.getApplicationContext()`로 컨텍스트 조회 → `DatabaseCleaner.clear()` 호출.
-
-```java
-public class NoTransactionExtension implements BeforeEachCallback {
-    @Override
-    public void beforeEach(ExtensionContext ctx) {
-        var appCtx = SpringExtension.getApplicationContext(ctx);
-        DatabaseCleaner.clear(appCtx);
+@SpringBootTest
+@Transactional
+class ItemRepositoryTest {
+    @Test
+    void savesItem() {
+        repository.save(new Item("book"));
+        assertThat(repository.count()).isEqualTo(1);
     }
 }
 ```
 
-Cleaner 내부는 `TransactionTemplate`으로 묶어 `entityManager.clear()` + TRUNCATE 실행. 사용법: `@ExtendWith(NoTransactionExtension.class)` 한 줄.
+같은 transaction-bound `DataSource`를 쓰는 `JdbcTemplate`과 MyBatis 호출도 rollback 대상에 참여할 수 있다. ORM이 아니라서 rollback되지 않는다는 설명은 정확하지 않다. 다른 `DataSource`, 새 thread, independent transaction을 쓰면 경계가 달라진다.
 
-## JUnit Extension 수명주기, Auto Detection
+## 지원 범위
 
-Extension 훅 지점: `BeforeAllCallback → BeforeAll → BeforeEachCallback → BeforeEach → BeforeTestExecutionCallback → Test → AfterTestExecutionCallback → AfterEach → AfterEachCallback → AfterAll → AfterAllCallback`. `BeforeEachCallback.beforeEach(ExtensionContext)`에서 **각 테스트 전** 데이터 정리이 자연스러운 위치.
+TestContext의 `@Transactional` attribute는 production interceptor와 완전히 같지 않다.
 
-**Auto Detection**으로 `@ExtendWith` 없이 전역 적용:
+- `value`와 `transactionManager`는 manager 선택에 사용할 수 있다.
+- `propagation`은 test 실행 여부를 위한 `NOT_SUPPORTED`, `NEVER`만 특별히 지원한다.
+- `isolation`, `timeout`, `readOnly`, exception rollback rule은 test-managed transaction 설정으로 지원되지 않는다.
+- Commit 또는 rollback을 programmatic하게 바꾸려면 `TestTransaction`을 사용한다.
+- `@Commit`과 `@Rollback(false)`는 test transaction을 commit하게 한다.
 
-1. `src/test/resources/META-INF/services/org.junit.jupiter.api.extension.Extension` 생성
-2. 파일 내용에 Extension 전체 경로 (`banlife.NoTransactionExtension`) 기재
-3. `junit-platform.properties`에 `junit.jupiter.extensions.autodetection.enabled=true`
+Method-level `@BeforeEach`와 `@AfterEach` code는 test-managed transaction 안에서 실행되지만 lifecycle method 자체에 `@Transactional`을 붙이는 방식은 지원되지 않는다. `@BeforeAll`과 `@AfterAll`은 그 transaction 밖이다.
 
-→ 프로젝트, 모듈의 모든 테스트에 자동 적용.
+## 잘 맞는 test
 
-## `@Transactional` 사용을 **차단**하는 기술적 방법
+- Repository mapping, query와 constraint를 빠르게 반복 검증한다.
+- Test가 같은 thread와 같은 transaction manager에서 실행된다.
+- Commit callback, propagation과 external resource가 검증 대상이 아니다.
+- Rollback 뒤 sequence 값까지 원상 복구될 필요가 없다.
 
-컨벤션만으론 실수를 막기 어려우니 Extension이 **테스트 전 `@Transactional` 존재를 감지**해 `Assertions.fail()`.
+JPA test는 `persist`나 dirty checking만 확인하고 끝내면 SQL이 flush되지 않아 constraint 오류를 놓칠 수 있다. `EntityManager.flush()` 후 필요하면 `clear()`하고 다시 조회해 DB round trip과 mapping을 검증한다.
 
-- **클래스 레벨**: `TestContextAnnotationUtils.hasAnnotation(testClass, Transactional.class)`
-- **메서드 레벨**: `AnnotatedElementUtils.hasAnnotation(testMethod, Transactional.class)`
-- **Spring + Jakarta** 두 `@Transactional` 모두 감지
-- `@DataJpaTest`처럼 내부에 `@Transactional`이 포함된 메타 어노테이션도 자동 감지
+## 다른 전략이 필요한 test
 
-**효과**: 코드 리뷰 단계의 "컨벤션 어긋남" 지적 전에, **테스트 실행 실패**로 개발자가 먼저 인지. 감정 소모 없이 교정.
+| 검증 대상 | 권장 격리 방식 |
+|---|---|
+| Commit-time constraint와 transaction callback | 실제 commit 후 cleanup |
+| `REQUIRES_NEW`, rollback-only, outbox | Production과 같은 service transaction, schema reset |
+| Async, scheduler, 다른 thread | 명시적 cleanup 또는 격리 DB |
+| 여러 datasource와 broker | Resource별 reset, Testcontainers |
+| Migration과 운영 DB dialect | 운영과 같은 engine에 migration 적용 |
 
-## 라이브러리화
+`REQUIRES_NEW`는 test-managed transaction과 독립적으로 commit할 수 있다. Preemptive timeout이 test body를 다른 thread에서 실행하면 thread-bound transaction 밖의 변경이 commit될 수 있다. JUnit Jupiter의 `assertTimeoutPreemptively` 같은 API와 rollback test를 함께 쓸 때 특히 주의한다.
 
-같은 Extension을 **여러 프로젝트에서 재사용**하려면 라이브러리화가 자연스럽다.
+## Test database 선택
 
-- GitHub에 독립 레포 생성
-- JitPack, Maven Central로 배포
-- 각 프로젝트 `build.gradle`에 **의존성 + Auto Detection 설정** 한 번으로 적용
+### 별도 shared database
 
-```gradle
-repositories { maven { url 'https://jitpack.io' } }
+Local 개발 DB와 test DB의 URL, credential과 schema를 분리한다. Test가 운영이나 개발 data를 지우지 않도록 least privilege와 profile guard를 둔다. Parallel test에서는 schema 또는 database namespace까지 격리한다.
 
-dependencies {
-    testImplementation 'com.github.banlife:no-transactional:preRelease-5'
-}
+### Embedded database
 
-test {
-    systemProperty("junit.jupiter.extensions.autodetection.enabled", true)
-}
-```
+Spring Boot는 compatible embedded DB가 classpath에 있고 별도 URL이 없으면 test용 `DataSource`를 자동 구성할 수 있다. H2 memory mode는 빠르지만 production DB의 SQL, isolation, lock, collation과 constraint timing이 다를 수 있다. Repository contract의 일부는 실제 engine test로 보완한다.
 
-한 곳에서 **관리 포인트 집중** — 개선, 버그 수정이 모든 프로젝트에 전파.
+Test context마다 embedded DB를 분리해야 하면 `spring.datasource.generate-unique-name=true`를 검토한다. Schema는 `schema.sql` 편의 기능보다 production migration을 같은 순서로 적용하는 방식이 drift를 줄인다.
 
-## 대안 정리
+### Ephemeral production-like database
 
-| 방식 | 복잡도 | 커버리지 | 누락 가능성 | 추천 |
-|---|---|---|---|---|
-| `@Transactional` | 0 | 부분 (false positive 위험) | 있음 | ❌ |
-| `Repository.deleteAll()` | 낮음 | 부분 | 높음 | ❌ |
-| `TRUNCATE` 전체 테이블 | 중간 | 완전 | 낮음 | △ |
-| JUnit Extension | 중간 | 완전 | 없음 | ✅ 단일 프로젝트 |
-| OSS 라이브러리 | 높음(초기) | 완전 | 없음 | ✅ 멀티 프로젝트 |
+Testcontainers 등으로 실제 engine version을 띄우고 migration을 적용한다. Startup 비용은 container reuse, image cache와 test suite 단위 lifecycle로 줄일 수 있지만 test 간 data reset은 별도로 필요하다.
 
-## Testcontainers와의 결합
+## Cleanup 전략
 
-[[TestContainers-Integration|Testcontainers]]로 매 테스트 깨끗한 DB를 얻더라도, **테스트 간 데이터 격리**는 별도로 필요. Extension + TRUNCATE 패턴이 자연스럽게 결합된다.
+| 방식 | 장점 | 주의점 |
+|---|---|---|
+| Transaction rollback | 빠르고 단순 | Commit과 독립 transaction을 가릴 수 있음 |
+| `deleteAll` | API만으로 명시적 | FK 순서, 누락, callback 비용 |
+| `TRUNCATE` 또는 schema reset | ORM 밖 변경도 정리 | DB별 syntax, privilege, sequence와 parallelism |
+| Database 또는 schema 재생성 | 가장 강한 격리 | Startup과 migration 비용 |
 
-```
-Testcontainers (컨테이너 격리)
-  + NoTransactionExtension (테스트 간 데이터 격리)
-  = 프로덕션과 동일 환경 + 격리된 결정론적 테스트
-```
+`TRUNCATE` target을 metadata에서 만들 때도 identifier를 사용자 입력과 섞지 않고 test 전용 schema allowlist를 둔다. Cleanup 실패를 삼키지 말고 다음 test를 중단해 오염을 드러낸다.
 
-## 언제 `@Transactional`이 허용되는가
+## 설계 원칙
 
-예외 케이스:
-
-- **매우 단순한 Repository 단위 테스트** — Service 호출 없이 엔티티 저장, 조회만 검증
-- **빠른 프로토타입, POC** — 안정성보다 속도 우선
-- **실험적 기능의 초기 테스트**
-
-하지만 **Service 레이어 통합 테스트**에는 절대 쓰지 말 것. 허용 시에도 나중에 제거라는 기술 부채로 남김을 인지.
-
-### 스코프 — 이 안티패턴이 겨냥하는 것
-
-이 문서의 비판 대상은 **Spring 테스트 관리 트랜잭션**, 즉 테스트 메서드의 `@Transactional`이 프로덕션 Service 코드까지 하나의 트랜잭션으로 감싸 자동 롤백하는 패턴이다. 이때 프로덕션의 트랜잭션 경계(`REQUIRES_NEW`, 이벤트, 커밋 시점 제약)가 테스트에서 다르게 동작해 false positive가 난다.
-
-다른 스택의 **커넥션 레벨 트랜잭션 롤백 격리**(예: NestJS, TypeORM에서 테스트마다 트랜잭션을 열고 롤백)도 같은 category다. 테스트 대상 코드의 커밋 동작 자체를 검증하지 않는 **단순 Repository 격리, fixture 정리**에는 유효하지만, 프로덕션 커밋 시점 제약과 propagation을 실제로 태우는 **Service 레이어 통합 테스트**에서는 동일한 마스킹 위험을 안는다. 이 경우 TRUNCATE 기반 정리가 안전하다 (→ [[NestJS-Testing]]).
-
-## 흔한 실수
-
-- 테스트 커버리지만 보고 `@Transactional` 방치
-- `@Transactional` 있는 테스트 통과 후 프로덕션에서 제약 오류 발생
-- Repository `deleteAll()`에서 **외래키 순서 고려 누락**
-- MyBatis 데이터를 `deleteAll()`로 롤백하려 함
-- Extension 만들었지만 **`@ExtendWith` 누락**된 클래스가 존재
-- Auto Detection 설정 후 **기존 `@Transactional` 테스트 대량 실패** 상황에 대비 못 함
-
-## 마이그레이션 전략
-
-기존 코드베이스 전환: (1) Extension 배포 - 관찰, 로깅만 (2) 한 주 경고 수집 → `@Transactional` 사용처 파악 (3) 우선순위 제거 - 복잡한 Service 통합 테스트부터 (4) `Assertions.fail()` 활성화로 재발 방지 (5) CI 문서에 컨벤션 기재.
-
-## 면접 체크포인트
-
-- 테스트 `@Transactional`의 **4가지 위험**(프로덕션 경계 차이, flush, Dirty Checking, 수동 기술 약화)
-- 수동 롤백의 3단계 진화(`deleteAll` → `TRUNCATE` → Extension)
-- JUnit Extension 수명주기와 `BeforeEachCallback` 활용
-- Auto Detection 설정 흐름 (META-INF, junit-platform.properties)
-- 컨벤션을 코드 리뷰 대신 **테스트 실패**로 강제하는 설계 가치
-- OSS 라이브러리화로 얻는 이득(멀티 프로젝트 일관성)
+- Rollback test와 production transaction behavior test를 별도 suite로 둔다.
+- Repository test에서는 flush, clear와 직접 DB assertion으로 persistence context 착시를 줄인다.
+- Service test에서는 실제 public use-case entry point를 호출한다.
+- Test 전용 profile이 production credential을 참조하지 않는지 startup에서 검증한다.
+- Migration, seed와 cleanup은 반복 실행 가능하게 만든다.
+- DB engine 차이를 의도적으로 허용한 범위와 실제 engine 검증 범위를 문서화한다.
 
 ## 출처
-- [banlife — @Transactional 없애려다 오픈소스 라이브러리까지 만든 이야기](https://blog.ban-life.com/transactional-없애려다-오픈소스-라이브러리까지-만든-이야기-5426116036bb)
-- [banlife/no-transactional (GitHub)](https://github.com/banlife/no-transactional)
+
+- [Spring Framework 7.0, TestContext Transaction Management](https://docs.spring.io/spring-framework/reference/testing/testcontext-framework/tx.html)
+- [Spring Framework 7.0, `@Rollback`](https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-rollback.html)
+- [Spring Boot 4.1, SQL Databases](https://docs.spring.io/spring-boot/reference/data/sql.html)
+- [Spring Boot 4.1, Testing](https://docs.spring.io/spring-boot/reference/testing/index.html)
+- 김영한 강사, [테스트, 데이터베이스 연동](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114634)
+- 김영한 강사, [테스트, 데이터베이스 분리](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114635)
+- 김영한 강사, [테스트, 데이터 롤백](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114636)
+- 김영한 강사, [테스트, `@Transactional`](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114637)
+- 김영한 강사, [테스트, 임베디드 모드 DB](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114638)
+- 김영한 강사, [테스트, 스프링 부트와 임베디드 모드](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114639)
+- 김영한 강사, [테스트 정리](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114640)
+- 김영한 강사, 활용 1: [회원 기능 테스트](https://www.inflearn.com/courses/lecture?courseId=324119&unitId=24291), [주문 기능 테스트](https://www.inflearn.com/courses/lecture?courseId=324119&unitId=24300)
 
 ## 관련 문서
-- [[Mock-Testing-Strategy|Mock 테스트 설계 전략]]
-- [[Classicist-vs-Mockist-Testing|Classicist vs Mockist, Test Double]]
-- [[Test-Pyramid|Practical Test Pyramid]]
+
+- [[Integration-Test-Environment|통합 테스트 환경]]
+- [[Migration-Backed-Test-Database|마이그레이션 기반 테스트 DB]]
 - [[TestContainers-Integration|Testcontainers 통합 테스트]]
-- [[Test-Isolation|Test Isolation]]
-- [[Test-Fixture|Test Fixture 전략]]
-- [[Spring-Transactional|Spring @Transactional]]
+- [[Spring-Transactional|Spring transaction]]
 - [[JPA-Persistence-Context|JPA 영속성 컨텍스트]]
-- [[Service-Layer-Testing|서비스 레이어와 테스트 경계]]
-- [[NestJS-Testing|NestJS 테스트 (TypeORM 격리 전략)]]
+- [[Test-Isolation|Test isolation]]

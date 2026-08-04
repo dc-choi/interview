@@ -1,6 +1,7 @@
 ---
 tags: [cicd, devops, sre, gitops, kubernetes, decision]
 status: done
+verified_at: 2026-08-04
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["CICD Tool Selection", "CI/CD 툴 선택", "GitOps 도구 선택"]
 ---
@@ -64,6 +65,30 @@ CI/CD 도구는 한 번 선택하면 **팀 워크플로, 운영 부담, 인프�
 | GitLab CI | GitLab Auto Deploy | GitLab 단일 플랫폼 |
 | Tekton | ArgoCD | K8s 네이티브 통일성 |
 
+## AWS 관리형 파이프라인의 역할 분리
+
+AWS Code 시리즈는 하나의 도구가 아니라 단계별 서비스 조합이다.
+
+| 서비스 | 책임 |
+|---|---|
+| CodeCommit 또는 외부 Git | source revision과 협업 |
+| CodeBuild | build, test, artifact 생성 |
+| CodeDeploy | EC2/온프레미스 in-place 또는 blue/green, Lambda/ECS traffic shifting |
+| CodePipeline | source, build, test, deploy, approval, invoke action과 artifact 흐름을 orchestration |
+
+CodePipeline은 직접 컴파일하거나 배포하는 실행기가 아니다. stage와 action의 순서, 병렬성, 승인, 입력과 출력 artifact 전달을 관리하고 실제 작업은 CodeBuild, CodeDeploy, 외부 provider가 수행한다. AWS IAM과 서비스 통합이 장점이지만, pipeline 정의와 artifact store, service role, 여러 서비스의 로그를 함께 운영해야 한다.
+
+CodeCommit의 신규 계정 제공 상태는 공식 페이지끼리도 어긋나 있다. User Guide history는 2024년 7월 신규 고객 중단 뒤 2025년 11월 재개를 기록하지만, pricing 페이지에는 중단 안내가 남아 있다. 새 도입 전 대상 계정과 리전의 console에서 생성 가능 여부를 확인하고 GitHub, GitLab 같은 source provider도 비교한다.
+
+### CodeDeploy AppSpec와 lifecycle hook
+
+AppSpec file은 revision의 파일을 어디에 배치하고 배포 생명주기의 어느 시점에 검증, 전환 스크립트를 실행할지 정하는 배포 계약이다.
+
+- EC2와 on-premises 배포의 AppSpec은 YAML이며 `files`, `permissions`, `hooks`로 복사와 script 실행을 정의한다.
+- Lambda와 ECS 배포는 YAML 또는 JSON을 사용하고 traffic routing 구성과 validation Lambda hook을 연결한다.
+- 지원하는 hook 이름과 실행 순서는 EC2, Lambda, ECS마다 다르다. 하나의 공통 hook 순서를 암기하지 말고 compute platform별 공식 표를 기준으로 작성한다.
+- hook script는 timeout, 실행 사용자, 로그 위치와 재실행 안전성을 명시하고 실패 시 배포가 어느 상태에서 멈추는지 검증한다.
+
 ## 의사결정 프레임워크
 
 새 도구를 도입할 때 답해야 할 5가지 질문.
@@ -104,6 +129,19 @@ K8s 마이그레이션 시 작은 SRE 팀이 흔히 채택하는 조합: **GitHu
 
 ## 출처
 - [sienna1022 — [SRE] CI/CD 툴 선택 및 이유](https://sienna1022.tistory.com/entry/SRE-CICD-%ED%88%B4-%EC%84%A0%ED%83%9D-%EB%B0%8F-%EC%9D%B4%EC%9C%A0)
+- [AWS CodePipeline — Concepts](https://docs.aws.amazon.com/codepipeline/latest/userguide/concepts.html)
+- [AWS CodeDeploy — Working with deployments](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments.html)
+- [AWS CodeDeploy — AppSpec files](https://docs.aws.amazon.com/codedeploy/latest/userguide/application-specification-files.html)
+- [AWS CodeDeploy — AppSpec hooks](https://docs.aws.amazon.com/codedeploy/latest/userguide/reference-appspec-file-structure-hooks.html)
+- [AWS CodeCommit — Document history](https://docs.aws.amazon.com/codecommit/latest/userguide/history.html)
+- [AWS CodeCommit — Pricing page](https://aws.amazon.com/codecommit/pricing/)
+- [Sungmin Kim 강사 — CI/CD](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=63210)
+- [Sungmin Kim 강사 — CodePipeline](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=68643)
+- [Sungmin Kim 강사 — CodeDeploy Life Cycle Event Hooks](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=76001)
+- [Sungmin Kim 강사 — CodeDeploy 실습 1부](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=76256)
+- [Sungmin Kim 강사 — CodeDeploy 실습 2부](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=76218)
+- [Sungmin Kim 강사 — CodePipeline 실습 1부](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=75999)
+- [Sungmin Kim 강사 — CodePipeline 실습 2부](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=76000)
 
 ## 관련 문서
 - [[GitHub-Actions|GitHub Actions]]

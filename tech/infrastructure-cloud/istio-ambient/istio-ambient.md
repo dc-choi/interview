@@ -10,6 +10,7 @@ aliases: ["Istio Ambient Index", "Istio Ambient 목차"]
 ## 개념과 트래픽 구조
 
 - [[Istio-Ambient-Mode|Istio Ambient Mode]]
+- [[Istio-Traffic-Management-and-Resilience|Istio traffic management와 resilience]]
 - [[Istio-Ambient-Traffic-Internals|Istio Ambient 트래픽 내부 구현]]
 
 ## 운영과 장애 대응

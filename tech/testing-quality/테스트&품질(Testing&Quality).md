@@ -10,6 +10,9 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 ## Checklist
 - [x] Unit test
 - [x] Integration test
+- [x] [[Jest-Express-Testing|Jest와 Express 컨트롤러 테스트 (Jest mock, 비동기 오류, Supertest CRUD 계약)]]
+- [x] [[Spring-Testing-Essentials|Spring test 경계 (단위, context, DB transaction)]]
+- [x] [[HTTP-API-Integration-Testing|HTTP API 통합 테스트 (계약 행렬, NestJS와 Supertest, TypeORM 격리)]]
 - [x] [[NestJS-Testing|E2E test (Supertest, 실제 HTTP 경로, Middleware, Guard, Pipe, Filter)]]
 - [x] [[Test-Pyramid|Contract test (Consumer-Driven Contract, Pact, Spring Cloud Contract, CI 역할)]]
 - [x] [[Test-Double-Strategy|Test fixture 전략, 테스트 대역 (Classicist vs Mockist, Mock 설계 전략, Test Double)]]

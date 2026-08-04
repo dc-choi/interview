@@ -145,6 +145,7 @@ Q. CI 시간을 단축하기 위해 어떤 전략을 쓰는가?
 - [studynote — GitHub Actions CI/CD 트러블슈팅 (9분 → 5분)](https://studynote.oopy.io/trouble-shooting/cicd)
 
 ## 관련 문서
+- [[Single-Host-SPA-API-Deployment|단일 서버 SPA/API 배포]]
 - [[Docker-Image-Pipeline|Docker image build pipeline]]
 - [[Docker|Docker]]
 - [[Multi-Stage-Build|Multi-stage build]]

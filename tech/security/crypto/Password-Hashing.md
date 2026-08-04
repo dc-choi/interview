@@ -78,3 +78,4 @@ verified_at: 2026-07-15
 - [[CORS|CORS / CSP]]
 - [[JWT]]
 - [[Session]]
+- [[Spring-Security-Authentication-Core|Spring Security 인증과 PasswordEncoder]]

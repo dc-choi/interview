@@ -1,6 +1,7 @@
 ---
 tags: [infrastructure, aws, iam, security, identity]
 status: done
+verified_at: 2026-08-04
 category: "Infrastructure - AWS"
 aliases: ["IAM 정책", "IAM Policy 평가 로직"]
 ---
@@ -83,6 +84,18 @@ aliases: ["IAM 정책", "IAM Policy 평가 로직"]
 | `aws:SecureTransport` | HTTPS 강제 |
 | `s3:x-amz-server-side-encryption` | 암호화 강제 |
 | `kms:ViaService` | 특정 서비스 경유한 KMS 호출만 |
+
+## IAM Policy Simulator로 사전 검증
+
+Policy Simulator는 identity policy와 permissions boundary를 실제 API 호출 없이 action, resource, context key 조합으로 평가한다. 아직 부착하지 않은 새 policy도 붙여 넣어 실험하고, 어떤 statement가 allow 또는 deny를 만들었는지 추적할 수 있다.
+
+시뮬레이션 결과를 운영 권한의 증명으로 보지는 않는다. 실제 요청을 실행하지 않고 production의 실제 context 값을 자동으로 가져오지 않으며, role의 resource-based policy, cross-account 접근, 조건이 있는 SCP, RCP, 일부 서비스별 권한 모델을 모두 재현하지 못한다. simulator로 빠르게 좁힌 뒤 별도 테스트 계정이나 안전한 read action으로 실제 환경을 확인한다.
+
+## 출처
+
+- [AWS IAM — IAM policy testing with the policy simulator](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_testing-policies.html)
+- [Sungmin Kim 강사 — IAM이란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43727)
+- [Sungmin Kim 강사 — IAM 정책 시뮬레이터](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43728)
 
 ## 관련 문서
 - [[IAM|IAM (인덱스)]]

@@ -11,6 +11,8 @@ Docker, Compose, Multi-stage, 이미지 최적화.
 
 ## 목차
 - [x] [[Docker|Docker]]
+- [x] [[Container-Linux-Internals|Linux 컨테이너 내부 구조 (namespace, cgroup, OverlayFS, OCI)]]
+- [x] [[Docker-Bridge-Networking|Docker bridge networking (veth, routing, netfilter, NAT)]]
 - [x] [[Docker-Compose|Docker Compose]]
 - [x] [[Multi-Stage-Build|Multi-stage build]]
 - [x] [[Image-Size-Optimization|Image size optimization]]
