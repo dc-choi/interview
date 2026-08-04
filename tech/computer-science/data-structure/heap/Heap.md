@@ -83,3 +83,8 @@ aliases: ["Heap", "힙", "Max Heap", "Min Heap", "완전 이진 트리", "Comple
 - [[Algorithm-Sorting|정렬 (힙 정렬, 분할 정복)]]
 - [[Algorithm-Complexity|시간복잡도와 Big O]]
 - [[Algorithm-Recursion|재귀 (버블 업/트릭클 다운 구현)]]
+
+## 출처
+
+- [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — 우선순위 큐와 힙, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135761)
+- [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — 힙 정렬, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135765)

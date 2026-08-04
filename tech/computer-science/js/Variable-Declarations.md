@@ -7,7 +7,7 @@ aliases: ["Variable Declarations", "var let const", "변수 선언 키워드", "
 
 # var, let, const 변수 선언
 
-ES6에서 `let`과 `const`가 추가된 건 `var`의 느슨함이 만든 버그를 막기 위해서다. `var`는 재선언, 넓은 스코프, 키워드 생략을 모두 허용해 의도치 않은 변수 변경을 추적하기 어렵게 만든다. 네 가지 축에서 세 키워드가 갈린다.
+ES6에서 `let`과 `const`가 추가된 건 `var`의 느슨한 재선언과 함수 스코프가 만든 버그를 줄이기 위해서다. 선언 키워드 없는 대입은 `var`의 기능이 아니라 strict/sloppy mode와 unresolvable reference의 문제다.
 
 ## 재선언 (중복 선언)
 
@@ -25,7 +25,7 @@ ES6에서 `let`과 `const`가 추가된 건 `var`의 느슨함이 만든 버그�
 
 ## 키워드 생략 — 암묵적 전역
 
-`var`는 키워드 없이 값을 대입하면 변수를 만들 수 있는데, 이 경우 함수 안이든 어디든 **전역 객체의 프로퍼티**가 된다(암묵적 전역). 변수명을 오타 내면 새로운 전역이 조용히 생겨 버그를 추적하기 어렵다.
+sloppy classic script에서 선언되지 않은 이름에 값을 대입하면 전역 객체에 property가 생길 수 있다. 이는 `var` 선언이 아니며 host/실행 형태에 따라 달라진다. 변수명을 오타 내면 전역 state가 조용히 생길 수 있다.
 
 ```javascript
 function f() {
@@ -33,7 +33,7 @@ function f() {
 }
 ```
 
-`let`/`const`는 키워드 생략이 불가능하므로 이런 사고가 없다. 그리고 strict mode에서는 키워드 없는 대입 자체가 `ReferenceError`로 막힌다.
+strict mode에서는 이런 unresolvable assignment가 `ReferenceError`로 막힌다. ESM은 자동 strict mode이고 classic script는 그렇지 않을 수 있으므로 module boundary와 lint rule을 함께 사용한다.
 
 ## const의 불변성
 
@@ -94,4 +94,5 @@ const b;     // SyntaxError
 - [[Scope|스코프 (함수 vs 블록)]]
 - [[JS-Value-vs-Reference|원시 vs 참조, Call by Value (const 내부 변경)]]
 - [[Object-Property-Descriptor|프로퍼티 디스크립터, Object 불변성]]
+- [[JavaScript-Lexical-Scope-and-Modern-Syntax|렉시컬 스코프와 모던 문법]]
 - [[자바스크립트(JS)|JavaScript 인덱스]]

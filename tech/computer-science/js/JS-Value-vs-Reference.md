@@ -17,9 +17,11 @@ JS 면접 기초 트리오. 셋 다 **"값이냐 참조냐, 언제 복사되냐"
 | `undefined`, `null` | `array` |
 | `symbol`, `bigint` | `function` |
 
-### 저장 방식
-- **원시**: 값 자체가 변수에 저장 → 대입, 전달 시 **값 복사**
-- **참조**: 힙(Heap)에 객체가 있고 변수는 **주소**만 보유 → 대입, 전달 시 **주소 복사**
+### 값 전달과 identity
+- **원시**: 대입과 인자 전달에서 primitive value가 전달된다.
+- **객체**: 대입과 인자 전달에서 같은 object identity를 가리키는 reference value가 전달된다.
+
+ECMAScript 명세는 application에 raw memory address를 노출하지 않는다. heap/주소 설명은 구현 직관일 뿐 언어 계약으로 단정하지 않는다.
 
 ### 비교
 ```
@@ -50,7 +52,7 @@ o1 === o3; // true — 같은 주소
 ### 언제 `null`을 쓰는가
 - **"이 필드가 있지만 값이 없다"** 를 외부에 알릴 때 (API 응답)
 - 메모리 해제 힌트 — 객체 참조를 `null`로 덮어 GC 대상화
-- 함수 반환값을 **"실패, 없음"** 으로 명시 (e.g., `find` 결과)
+- 외부 API schema에서 **"필드는 있지만 값이 없음"** 을 명시
 
 ### 언제 `undefined`를 쓰는가 (권장되지 않음)
 - 보통 **자동으로 발생**하는 상태. 개발자가 명시적으로 할당하는 건 비권장
@@ -65,7 +67,7 @@ JSON.stringify({a: undefined, b: null})
 
 ## Call by Value vs Call by Reference
 
-**JS는 전부 Call by Value**. 단지 참조 타입의 "값"이 **주소**일 뿐.
+**JS는 인자를 value로 전달한다.** object를 전달하면 두 binding이 같은 object identity를 가리킬 수 있어 property mutation이 관찰되는 것이다.
 
 ```
 function modify(x) {
@@ -97,7 +99,7 @@ console.log(o.x);     // 'original' — 외부 변수는 원래 객체 가리킴
 2. **객체 파라미터 속성 수정**: 외부 영향 (같은 주소)
 3. **객체 파라미터 재할당**: 외부 무관 (지역 변수만 새 주소)
 
-**"Call by Reference"는 JS에 없다** — 정확히는 "Call by Sharing" 또는 "참조의 값 전달(pass by value of reference)"이라 불러야 정확. 면접에서 "JS는 Call by Reference 있냐"고 물으면 위 예시로 반박.
+caller의 변수 binding 자체를 callee가 재할당할 수 있는 call-by-reference는 아니다. 이 object 전달 의미를 call by sharing 또는 reference value의 전달이라고 설명하기도 한다.
 
 ## 불변성(Immutability) 패턴
 
@@ -131,12 +133,14 @@ React, Redux 등 현대 상태 관리는 **불변성을 전제**로 동작. 원�
 // 얕은 복사 (1단계만)
 { ...obj }
 Object.assign({}, obj)
-structuredClone(obj)   // ← 깊은 복사 (표준, Node 17+)
+structuredClone(obj)   // 지원 type/cycle을 복제하는 표준 algorithm
 
 // 대체
-JSON.parse(JSON.stringify(obj))  // 함수, Date, Symbol 손실
-lodash cloneDeep(obj)            // 가장 완전
+JSON.parse(JSON.stringify(obj))  // JSON-compatible data round trip일 뿐
+domainMapper(obj)                // class/invariant 보존이 필요하면 명시적 변환
 ```
+
+`structuredClone`도 function, WeakMap, Symbol 등 모든 값을 복제하지 않고 custom class behavior를 그대로 보존하지 않는다. 자세한 선택 기준은 [[JavaScript-Object-and-Array-Operations|Object와 Array 연산]]에서 다룬다.
 
 ## 면접 체크포인트
 
@@ -156,3 +160,4 @@ lodash cloneDeep(obj)            // 가장 완전
 - [[Prototype-OOP|Prototype 기반 OOP]]
 - [[Object-Property-Descriptor|Object 프로퍼티 디스크립터]]
 - [[JS-Function-Forms|JS 함수 형태, 일급객체]]
+- [[JavaScript-Object-and-Array-Operations|Object와 Array 연산]]

@@ -7,64 +7,65 @@ aliases: ["Hash Table", "해시 테이블", "HashTable", "직접 주소 테이�
 
 # Hash Table (해시 테이블)
 
-키를 해시 함수에 통과시켜 나온 인덱스에 값을 저장하는 자료구조다(보통 배열로 구현). 값의 위치를 계산으로 바로 얻으므로 읽기, 삽입, 삭제가 평균 O(1)이다. 언어마다 맵, 해시맵, 딕셔너리, Set 등으로 불린다. 충돌 해결 전략의 깊은 비교는 [[Hash-Collision|해시 충돌]].
+dictionary 또는 map ADT는 key를 value에 대응시킨다. hash table은 이 ADT를 구현하는 한 방법으로, key의 hash를 bucket index로 압축하고 collision resolution 규칙에 따라 항목을 저장한다. Set도 value 없이 key만 저장하는 방식으로 구현할 수 있지만 모든 map과 set이 hash table인 것은 아니다.
 
-## 출발점 — 직접 주소 테이블 (Direct Address Table)
+## 직접 주소 테이블에서 출발하기
 
-값 자체를 배열 인덱스로 쓰는 가장 단순한 매핑이다. 값 `v`를 `table[v]`에 저장하면, 값을 아는 순간 인덱스도 알기 때문에 테이블을 뒤질 필요 없이 바로 접근한다. 탐색, 삽입, 수정, 삭제가 모두 O(1)이다.
+key universe가 작고 정수 index로 바로 쓸 수 있다면 `table[key]`에 값을 두는 direct-address table을 만들 수 있다. lookup, insert와 delete는 worst-case O(1)이지만 공간은 실제 항목 수가 아니라 universe 크기 Θ(|U|)만큼 필요하다. key 범위가 크거나 sparse하면 대부분의 칸이 비어 비효율적이다.
 
-단순 자료구조가 느려지는 두 원인 — (1) 찾는 값이 어디 있는지 몰라 뒤져야 함(이진 탐색 트리), (2) 삽입, 삭제가 다른 값의 위치에 영향을 줌(연결 리스트) — 을 직접 주소 테이블은 둘 다 피한다.
+hash table은 더 작은 bucket array를 두고 hash function으로 넓은 key 공간을 bucket 범위에 대응시킨다. 공간을 줄인 대신 서로 다른 key가 같은 bucket으로 가는 collision을 처리해야 한다.
 
-문제는 **공간 효율**이다. 값의 범위만큼 테이블을 잡아야 해서, 3, 10, 90 세 개만 넣어도 길이 91짜리 배열이 필요하고 나머지 칸은 빈 채 메모리만 점유한다.
+## Hash function의 계약
 
-## 적재율 (Load Factor)
+- 동등한 key는 같은 hash 결과를 내야 한다.
+- 계산 비용이 작고 실제 key 분포를 bucket 전체에 고르게 분산해야 한다.
+- hash code를 bucket 수로 압축할 때 음수, overflow와 table 크기를 올바르게 처리해야 한다.
+- 일반 hash table에서 원상 복원이 어렵다는 암호학적 단방향성은 필수 조건이 아니다. 공격자가 key를 고를 수 있는 환경에서는 별도로 무작위 seed나 충돌 공격 방어가 필요할 수 있다.
 
-> 적재율 = 저장된 값 개수 / 테이블 크기
+좋은 분포와 collision resolution, 적절한 resize를 전제로 lookup, insert와 delete의 expected 또는 amortized 비용은 보통 Θ(1)이다. 한 bucket이나 probe cluster에 key가 몰리면 worst case는 Θ(n)이 될 수 있다. 평균 O(1)을 무조건 보장으로 표현하지 않는다.
 
-직접 주소 테이블은 값의 범위가 넓을수록 적재율이 바닥을 친다(예: 3개를 91칸에 = 약 3%). 큰 값 하나가 더 들어오면 테이블이 그만큼 커져 적재율은 더 떨어진다. 직접 주소 테이블이 유효한 경우는 값이 연속적이거나 범위 차가 작을 때뿐이다.
+## Collision resolution
 
-## 해시 함수 (Hash Function)
+### Separate chaining
 
-임의 길이의 임의 데이터를 고정 길이 값으로 매핑하는 함수이고, 그 결과물을 해시(hash)라 한다. 두 가지 성질이 핵심이다.
+각 bucket이 key-value 항목의 list나 다른 검색 구조를 가리킨다. 먼저 bucket을 계산하고 그 안에서 동등한 key를 찾는다. list의 head에 새 항목을 넣는 동작 자체는 O(1)이지만 기존 key 확인까지 포함한 `set` 비용은 chain 길이에 좌우된다.
 
-- **출력 범위 고정**: 어떤 입력이든 테이블 크기 안의 인덱스로 떨어진다(예: `key % tableSize` → 0~size-1). 덕분에 테이블 크기를 데이터 범위와 무관하게 작게 고정할 수 있다 — 직접 주소 테이블의 공간 낭비를 푸는 지점.
-- **단방향성**: 해시만 보고 원래 입력을 역추정하기 어렵다(나머지 연산처럼 정보가 버려지므로). 이 성질은 암호학에서도 쓰인다.
+### Open addressing
 
-관건은 값을 얼마나 **균등하게** 퍼뜨리느냐다. 한 인덱스로 쏠리는 함수는 충돌을 키운다. 좋은 해시 함수의 조건은 [[Hash-Collision#해시 함수의 품질|해시 충돌 문서]].
+항목을 bucket array 안에 직접 두고 충돌하면 정해진 probe sequence에서 다음 후보를 찾는다. linear probing, quadratic probing과 double hashing이 대표적이다. 빈 slot이 필요하므로 load factor는 1보다 작아야 하고, 삭제는 probe chain을 끊지 않도록 tombstone 또는 재배치 규칙이 필요하다.
 
-## 해시 테이블 = 직접 주소 테이블 + 해시 함수
+자세한 비교는 [[Hash-Collision|해시 충돌]]에서 다룬다.
 
-값을 그대로 인덱스로 쓰지 않고 해시 함수를 통과시킨 결과를 인덱스로 쓴다. 테이블 크기를 담을 데이터 개수보다 작게 고정해도 모든 값이 그 안에 저장되므로 공간 효율을 얻는다. 대신 새 문제가 따라온다 — 충돌이다.
+## Load factor와 resize
 
-## 충돌 (Collision)
+`α = 저장된 항목 수 n / bucket 수 m`으로 둔다.
 
-서로 다른 키가 같은 해시(인덱스)를 내는 것. 출력 공간이 입력보다 작으므로 비둘기집 원리상 피할 수 없다. 해시 테이블은 애초에 테이블을 작게 잡으려는 자료구조라 충돌 해결책이 함께 설계됐다. 두 갈래다.
+- separate chaining에서는 α가 bucket당 평균 항목 수이고 1을 넘을 수 있다.
+- open addressing에서는 점유 비율이고 반드시 1보다 작다.
 
-- **개방 주소법(Open Addressing)**: 충돌 시 테이블 안의 빈 다른 칸을 탐사해 저장 (선형 탐사, 제곱 탐사, 이중 해싱)
-- **분리 연결법(Separate Chaining)**: 한 버킷에 연결 리스트나 트리로 여러 값을 매닮
+α가 커지면 chain이나 probe가 길어진다. 구현은 정책 임계치에서 더 큰 table을 만들고 항목을 새 bucket 수에 맞춰 재배치한다. 한 번의 resize는 Θ(n)이지만 충분히 큰 폭으로 확장하면 여러 insert에 나눈 amortized 비용을 작게 유지할 수 있다. 임계치와 성장 배수는 구현 정책이지 보편 상수가 아니다.
 
-탐사 전략, 일차/이차 군집화, 트레이드오프의 상세는 [[Hash-Collision|해시 충돌]]에서 다룬다.
+## Key와 구현 주의점
 
-### 분리 연결법의 머리 삽입
+- 동등성 비교와 hash 계약을 함께 지킨다. Java에서는 `equals`가 true인 key가 같은 `hashCode`를 내야 한다.
+- table에 들어간 동안 동등성이나 hash 결과에 관여하는 key 상태를 바꾸면 lookup이 실패할 수 있다.
+- 같은 key를 다시 `set`할 때 새 항목을 중복 삽입할지 기존 value를 갱신할지 ADT 계약을 명확히 한다.
+- iteration order, thread safety와 null key 허용 여부는 구현마다 다르다.
 
-분리 연결법에서 새 노드를 리스트 **꼬리**에 붙이려면 끝까지 순회해야 해 O(n)이지만, **머리**에 붙이면 순회 없이 O(1)이다. 그래서 보통 머리에 삽입한다(저장 순서가 역순으로 보이는 이유). 단 해시가 편중돼 한 버킷의 리스트만 길어지면 탐색이 O(n)으로 떨어지므로, 결국 균등 분포시키는 해시 함수가 관건이다.
+## 저장소 예제의 범위
 
-## 리사이즈 (Resizing, Rehashing)
+`HashTable.mjs`는 정수 key를 10개 bucket에 나머지 연산으로 배치하고 doubly linked list로 chaining한다. collision, 기존 key 갱신과 음수 key 정규화를 관찰하기 위한 학습 구현이며 resize, 일반 key hashing, iteration과 concurrency는 제공하지 않는다.
 
-테이블은 유한하므로 데이터가 차면 성능이 떨어진다. 개방 주소법은 빈칸이 없어 저장이 막히고, 분리 연결법은 버킷 리스트가 길어져 탐색 비용이 커진다. 그래서 꽉 채우기보다 어느 정도 비워 두는 편이 빠르며, 적재율이 임계(보통 0.7~0.75)를 넘으면 테이블을 2배 정도로 키워 전 항목을 다시 해싱(rehash)한다. 리사이즈는 O(n) 블로킹이라 점진적 리사이즈로 회피하기도 한다.
-
-## 예제 코드
-`HashTable.mjs`, `HashTable.test.mjs`
-
-## 면접 체크포인트
-
-- 직접 주소 테이블의 O(1)과 공간 비효율(적재율), 해시 테이블이 그것을 푸는 방식
-- 해시 함수의 역할(고정 범위로 매핑해 테이블 크기를 작게 고정)과 단방향성
-- 충돌이 불가피한 이유(비둘기집)와 두 해결 갈래(개방 주소법 vs 분리 연결법)
-- 분리 연결법에서 머리 삽입을 쓰는 이유(O(1))
-- 적재율 임계와 리사이즈, 재해싱
+예제 코드: `HashTable.mjs`, `HashTable.test.mjs`
 
 ## 관련 문서
+
 - [[Hash-Collision|해시 충돌 (체이닝, 개방 주소법, 클러스터링, Load Factor, HashDoS)]]
 - [[자료구조(DataStructure)|자료구조 인덱스]]
 - [[Algorithm-Complexity|시간복잡도와 Big O]]
+
+## 출처
+
+- 인프런, 감자 강사, [해시테이블 개념](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=115974), [해시테이블 구현](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=115975)
+- [NIST DADS, hash table](https://xlinux.nist.gov/dads/HTML/hashtab.html)
+- [Princeton Algorithms, Hash Tables](https://algs4.cs.princeton.edu/34hash/)

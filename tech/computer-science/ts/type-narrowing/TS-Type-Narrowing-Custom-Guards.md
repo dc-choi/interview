@@ -1,6 +1,7 @@
 ---
 tags: [cs, typescript, type-narrowing, type-guard, type-predicate]
 status: done
+verified_at: 2026-08-04
 category: "CS - TypeScript"
 aliases: ["사용자 정의 타입 가드", "asserts x is T"]
 ---
@@ -51,3 +52,12 @@ function double(value: unknown) {
 | 사용 | `if (isFoo(x)) {...}` | `assertFoo(x); use(x);` |
 | 실패 시 | 다른 분기로 | throw |
 | 적합 | 분기 처리 필요 | "여기서부터 X 타입이 보장됨" |
+
+사용자 정의 predicate는 함수 구현을 검사해 반환 타입의 진실성을 증명하지 않는다. 외부 데이터 경계에서는 속성 몇 개만 확인한 가드를 전체 schema validation으로 오해하지 않고, 검증된 결과를 domain type으로 변환한다.
+
+## 출처
+
+- [TypeScript Handbook, Using Type Predicates](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates)
+- [TypeScript Handbook, Assertion Functions](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#assertion-functions)
+- yongsoocho, [type guard](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=138762)
+- yongsoocho, [type guard 보충](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=138764)

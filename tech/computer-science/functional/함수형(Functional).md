@@ -28,6 +28,9 @@ aliases: ["Functional", "Functional Programming Index"]
 - [x] [[Natural-Transformations|Natural Transformations (Functor 사이 매핑, naturality square, parametricity, 2-Category Cat)]]
 
 ## 실무 적용
+- [x] [[JavaScript-Function-Composition-and-Currying|JavaScript 함수 합성과 커링]]
+- [x] [[JavaScript-Iterable-Functional-Pipelines|JavaScript 이터러블 함수형 파이프라인]]
+- [x] [[JavaScript-Async-Iterable-Pipelines|JavaScript 비동기 이터러블 파이프라인]]
 - [x] [[Declarative-Programming|Declarative Programming (What vs How, Universal Construction, FRP, SQL, Terraform, React)]]
 - [x] [[Railway-Oriented-Programming|Railway-Oriented Programming (Result 모나드, 성공, 실패, 복구 3선로)]]
 - [x] [[Monads-In-TypeScript|Monads in TypeScript (Functor → Applicative → Monad, 모나드 법칙)]]

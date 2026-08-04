@@ -7,155 +7,83 @@ aliases: ["Hash Collision", "해시 충돌"]
 
 # Hash Collision (해시 충돌)
 
-해시 테이블의 **공간은 유한하고 입력은 무한**하기 때문에 다른 키가 같은 해시 값을 만드는 건 피할 수 없다. 충돌을 **얼마나 잘 처리하냐**가 해시 테이블 성능을 가른다. 평균 O(1), 최악 O(n)의 간극이 여기서 나옴.
+서로 동등하지 않은 key가 같은 bucket index로 대응되면 collision이 발생한다. 가능한 key 수가 bucket 수보다 많으면 비둘기집 원리상 모든 key에 collision 없는 mapping을 보장할 수 없다. 고정되어 미리 알려진 key 집합에는 perfect hashing을 설계할 수 있지만 일반적인 동적 입력의 collision 처리 필요성이 사라지는 것은 아니다.
 
-## 왜 충돌은 피할 수 없나
+## Separate chaining
 
-- 해시 함수는 임의 크기 입력 → **고정 크기 정수** 매핑
-- 입력 경우의 수 ≫ 출력 경우의 수 → **비둘기집 원리**상 충돌 불가피
-- 완벽한 해시 함수(Perfect Hash)는 입력 집합이 **사전에 고정**돼 있을 때만 가능
+각 bucket이 같은 index로 온 항목들의 list나 다른 검색 구조를 가진다.
 
-따라서 해시 테이블 설계는 **"충돌이 난다는 전제"**에서 출발.
-
-## 해결 방법 ① — Separate Chaining (분리 연결법)
-
-같은 버킷에 **연결 리스트(또는 트리)**로 여러 값 저장.
-
-```
-Bucket 3: [Key1, Value1] → [Key2, Value2] → [Key3, Value3]
+```text
+bucket 3: [key1, value1] -> [key2, value2] -> [key3, value3]
 ```
 
-### 장점
-- 구현 단순
-- 부하율(load factor)이 1 초과해도 동작
-- 삭제가 쉬움
+- insert 전에 같은 key를 찾는 비용과 lookup/delete 비용은 chain 길이에 좌우된다.
+- head에 새 node를 연결하는 동작만 보면 O(1)이다.
+- load factor α가 1보다 커도 저장할 수 있지만 평균 chain 길이가 함께 증가한다.
+- node/reference overhead와 pointer chasing 때문에 open addressing보다 cache locality가 불리할 수 있다.
 
-### 단점
-- **포인터 오버헤드** (각 노드에 next 포인터)
-- 캐시 친화성 낮음 (메모리 점프)
-- 충돌 많으면 체인이 길어져 O(n)
+균일 hashing 가정에서 bucket당 평균 항목 수는 `α = n/m`이고 search 비용은 이에 비례한다. 실제 성능은 hash 품질과 key 분포에 달려 있다.
 
-### 최적화
-- Java 8+ `HashMap`: 체인이 **8개 넘으면 Red-Black Tree로 전환** → 최악 O(log n)
-- 해시 품질이 나빠 한 버킷에 집중돼도 허용 가능한 성능
+## Open addressing
 
-## 해결 방법 ② — Open Addressing (개방 주소법)
+모든 항목을 하나의 bucket array에 저장한다. home bucket이 차 있으면 probe sequence를 따라 빈 slot이나 같은 key를 찾는다.
 
-충돌 시 **다른 빈 버킷**을 찾아 저장. 테이블 자체가 값을 담음.
+### Linear probing
 
-### 탐사(Probing) 3종
+`h(key), h(key)+1, h(key)+2, ...` 순서로 확인한다. 연속 memory 접근은 cache에 유리하지만 점유 구간이 더 큰 점유 구간을 끌어들이는 primary clustering이 생길 수 있다.
 
-**1. Linear Probing (선형 탐사)**
-```
-hash(key) + 1, +2, +3, ... 순차 탐색
-```
-- 단순, 캐시 친화
-- **Primary Clustering**: 충돌 난 자리 근처가 계속 밀집 → 성능 저하
+### Quadratic probing
 
-**2. Quadratic Probing (이차 탐사)**
-```
-hash(key) + 1², + 2², + 3², ... 간격이 점점 벌어짐
-```
-- 클러스터링 완화
-- **Secondary Clustering**: 같은 해시를 가진 키들은 같은 탐사 순서 → 여전히 밀집 가능
+제곱 간격 같은 비선형 offset을 사용해 primary clustering을 줄인다. 같은 home bucket을 가진 key가 같은 probe sequence를 공유하면 secondary clustering은 남을 수 있다. table 크기와 계수 선택에 따라 모든 slot을 방문하지 못할 수 있으므로 구현 조건을 함께 설계한다.
 
-**3. Double Hashing (이중 해싱)**
-```
-hash1(key) + i × hash2(key)
-```
-- 두 번째 해시 함수로 탐사 간격 결정
-- 클러스터링 가장 적음
-- 계산 비용 가장 큼
+### Double hashing
 
-### 장점 (공통)
-- 포인터 없음 → 메모리 지역성 우수
-- 캐시 성능 좋음
+두 번째 hash로 step을 정해 `h1(key) + i * h2(key)`를 탐사한다. step과 table 크기가 서로소가 되도록 해야 전체 table을 순회할 수 있다. clustering을 줄이는 대신 hash 계산이 추가된다.
 
-### 단점 (공통)
-- 부하율 ~ 70% 넘으면 급격히 느려짐 → **리사이즈 필요**
-- **Tombstone**: 삭제한 자리를 "비었음"으로 못 표시 (탐사 체인 끊김) → 특수 마커 유지
-- 부하율 관리가 까다로움
+## 삭제와 tombstone
 
-## Separate Chaining vs Open Addressing
+open addressing에서 삭제 slot을 처음부터 비어 있던 slot처럼 표시하면 그 뒤에 이어진 probe chain의 key를 찾지 못할 수 있다. tombstone을 두거나 후속 항목을 재배치해 search 경로를 보존한다. tombstone이 쌓이면 probe가 길어져 정리나 rehash가 필요하다.
 
-| 축 | Separate Chaining | Open Addressing |
+## Load factor와 resize
+
+| 방식 | α의 의미 | 제약 |
 |---|---|---|
-| 부하율 허용 | 1.0 초과 가능 | ~0.7 한계 |
-| 메모리 | 노드 포인터 비용 | 테이블만 |
-| 캐시 친화 | 낮음 | 높음 |
-| 삭제 | 간단 | Tombstone 관리 |
-| 충돌 집중 시 | O(n) 또는 O(log n)(tree화) | O(n) |
-| 구현 복잡도 | 낮음 | 중간 |
+| separate chaining | bucket당 평균 항목 수 | 1을 넘을 수 있음 |
+| open addressing | 점유된 slot 비율 | 빈 slot이 필요하므로 1 미만 |
 
-**Java HashMap**: Separate Chaining + tree화
-**Python dict**: Open Addressing (Compact Dict)
-**Go map**: Open Addressing (bucket 기반)
+open addressing의 probe 비용은 α가 1에 가까워질수록 빠르게 증가한다. 특정 임계치가 모든 구현에 공통인 것은 아니다. 구현은 목표 지연, memory 비용과 collision scheme에 맞춰 resize 시점을 고른다.
 
-각 언어 설계 철학이 다름. 범용 라이브러리는 Chaining이 안전, 고성능 인메모리는 Open Addressing 택하는 경향.
+resize는 더 큰 table을 만들고 새 bucket 수에 맞춰 항목을 다시 배치하므로 한 번에 Θ(n)이 든다. 성장 폭을 충분히 크게 잡으면 여러 insert에 걸친 amortized 비용은 작게 유지할 수 있다. latency가 중요한 구현은 migration을 여러 operation에 나눌 수 있다.
 
-## Load Factor와 리사이즈
+## Hash function 품질
 
-```
-Load Factor = 저장된 항목 수 / 버킷 수
-```
+- table의 동등성 계약상 같은 key는 같은 hash 결과를 내야 한다.
+- 예상 key 분포를 bucket 전체에 고르게 퍼뜨려야 한다.
+- key를 읽고 hash를 계산하는 비용을 포함해 충분히 빨라야 한다.
+- table 크기로 압축한 뒤의 분포까지 확인해야 한다.
 
-임계 초과 시 **버킷 수를 2배 (보통)** 로 늘려 재해싱(rehash).
+암호학적 preimage resistance는 일반 hash table의 필수 조건이 아니다. 반대로 외부 사용자가 key를 제어할 수 있으면 의도적인 collision으로 worst-case 경로를 유발할 수 있으므로 seeded hashing, 입력 제한, tree 기반 bucket 같은 방어를 구현 특성에 맞춰 고려한다.
 
-- **Separate Chaining**: 0.75 기본 (Java HashMap)
-- **Open Addressing**: 0.5~0.7
+## 구현을 해석할 때 확인할 것
 
-리사이즈 비용:
-- 모든 항목을 재해싱 → O(n) 블로킹
-- Redis, 일부 DB는 **점진적 리사이즈**로 블로킹 회피
+- expected, amortized, worst-case 중 어떤 복잡도인지
+- hash가 균일하다는 확률 가정이 있는지
+- key equality와 hash 계약이 일치하는지
+- resize가 stop-the-world인지 점진적인지
+- iteration order와 concurrency를 보장하는지
 
-## 해시 함수의 품질
-
-충돌은 불가피하지만 **균등 분포**해야 성능 유지.
-
-좋은 해시 함수 조건:
-- **결정성**: 같은 입력 → 같은 출력
-- **균등성**: 출력이 공간 전체에 고르게 분포
-- **빠른 계산**: O(입력 크기)
-- **스노우 플레이크 효과**: 입력 한 비트만 바뀌어도 출력 절반이 바뀜
-
-대표 알고리즘:
-- **MurmurHash**, **xxHash**: 해시 테이블 전용, 빠름
-- **SHA-256, MD5**: 암호학적, 느리지만 충돌 어려움
-- **Java `String.hashCode()`**: 31의 승수 방식, 단순하지만 공격 가능
-
-## 해시 충돌 공격 (HashDoS)
-
-악의적 입력이 **모든 키를 같은 버킷**에 몰리게 만들면 → O(n) 저하 → 서비스 거부.
-
-2011년 Java, Python, Ruby 모두 영향받음. 방어:
-- **Randomized Hashing**: 프로세스마다 다른 시드
-- **Per-table Salt**
-- Java: 위협 감지 시 tree화 강제
-
-Python 3.4+는 기본 활성화. Java 8+는 tree화로 최악 O(log n) 보장.
-
-## 실무 힌트
-
-- `HashMap` 초기 용량을 **예상 크기의 1.3~1.5배**로 설정 → 리사이즈 회피
-- 키로 **Mutable 객체 사용 금지** (equals, hashCode 바뀌면 찾을 수 없음)
-- `equals`와 `hashCode`는 **함께 오버라이드** (계약)
-- JS `Map`은 내부 해시 테이블, 키로 **객체 참조** 가능 (오브젝트 ID 기반)
-
-## 면접 체크포인트
-
-- 해시 충돌이 **불가피한** 이유 (비둘기집 원리)
-- Separate Chaining과 Open Addressing의 구조 차이
-- Linear, Quadratic, Double Hashing의 클러스터링 차이
-- Java 8 HashMap의 tree화 기준 (8개 초과)
-- Load Factor와 리사이즈의 관계
-- HashDoS 공격과 방어 (Randomized Hashing)
-- Java의 `equals` / `hashCode` 계약
-
-## 출처
-- [매일메일 — 해시 충돌](https://www.maeil-mail.kr/question/147)
+초기 capacity는 고정 배수로 외우지 않는다. 예상 항목 수가 `n`이고 구현의 목표 load factor가 `α`라면 최소 bucket 수를 대략 `ceil(n/α)`로 계산하되, 실제 생성자가 power-of-two 정규화나 최대 크기 제한을 적용하는지 확인한다.
 
 ## 관련 문서
+
 - [[Hash-Table|해시 테이블 (직접 주소 테이블, 해시 함수, 적재율, 리사이즈)]]
 - [[자료구조(DataStructure)|자료구조 개요]]
 - [[Redis-Data-Structures|Redis 자료구조]]
 - [[Java-Backend-Fundamentals|Java 백엔드 기초 (equals, hashCode)]]
+
+## 출처
+
+- 인프런, 감자 강사, [해시테이블 개념](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=115974), [해시테이블 구현](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=115975)
+- [NIST DADS, hash table](https://xlinux.nist.gov/dads/HTML/hashtab.html)
+- [Princeton Algorithms, Hash Tables](https://algs4.cs.princeton.edu/34hash/)
+- [Oracle Java HashMap API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/HashMap.html)

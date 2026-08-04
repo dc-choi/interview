@@ -1,98 +1,136 @@
 ---
-tags: [cs, javascript, async]
+tags: [cs, javascript, async, promise]
 status: done
-verified_at: 2026-07-15
-category: "CS&프로그래밍(CS&Programming)"
-aliases: ["Promise와 Async"]
+verified_at: 2026-08-04
+category: "CS - JavaScript"
+aliases: ["Promise와 Async", "JavaScript Promise"]
 ---
 
-# Promise와Async
+# Promise와 async/await
 
-## Promise
+Promise는 아직 끝나지 않았거나 이미 끝난 계산의 결과를 값으로 전달하는 표준 객체다. callback보다 중요한 차이는 성공/실패와 후속 계산을 반환값으로 합성할 수 있다는 점이다. Promise 자체가 실행 중인 작업을 자동 취소하거나 동시성 부하를 제한하지는 않는다.
 
-비동기 처리 시 사용되는 객체이며 실행 순서를 보장하지만 실행 완료 순서는 보장하지 않는다.
+## 상태와 fate
 
-### 3가지 상태 + Settled
+| 상태 | 의미 |
+|---|---|
+| pending | 아직 fulfilled/rejected가 아님 |
+| fulfilled | 성공 값으로 settled |
+| rejected | 실패 이유로 settled |
+| settled | fulfilled 또는 rejected |
 
-| 상태 | 설명 |
-|------|------|
-| **Pending (대기)** | 비동기 처리 로직이 아직 완료되지 않은 상태 (초기) |
-| **Fulfilled (이행)** | 비동기 처리가 성공적으로 완료된 상태 |
-| **Rejected (실패)** | 비동기 처리가 실패, 오류 발생한 상태 |
-| **Settled (정착)** | Fulfilled 또는 Rejected — "더 이상 Pending이 아닌" 모든 상태 |
+`resolve(x)`는 무조건 즉시 fulfilled로 만든다는 뜻이 아니다. `x`가 Promise/thenable이면 그 결과를 따르도록 resolve된 뒤 한동안 pending일 수 있고, 최종적으로 rejected될 수도 있다. 한 번 다른 결과를 따르도록 정해지거나 settled되면 이후 resolve/reject 호출은 상태를 바꾸지 않는다.
 
-### resolve() vs fulfilled — 자주 혼동
-
-- **`resolve()`**: Promise를 어떤 값이나 thenable의 결과로 **해결하려는 함수 호출** → 동작
-- **`fulfilled`**: Promise가 성공 값으로 정착한 **상태** → 결과
-
-보통 `resolve(value)`를 호출하면 `pending` → `fulfilled`로 전환된다. 다만 `resolve(rejectedPromise)`나 rejected thenable을 넘기면 최종 상태는 `rejected`가 될 수 있다. **실패로 끝내려면 보통 `reject()`** 호출 → 상태 `rejected`.
-
-```
-new Promise((resolve, reject) => {
-  // 성공 조건이면
-  resolve('ok');       // → fulfilled 상태, value = 'ok'
-  // 실패 조건이면
-  reject(new Error()); // → rejected 상태
+```ts
+const outer = new Promise((resolve) => {
+  resolve(fetchUser());
 });
 ```
 
-`then()`은 fulfilled에 호출, `catch()`는 rejected에 호출. `finally()`는 **settled** 시점에 호출 (성공/실패 무관).
+`new Promise(executor)`의 executor는 constructor 호출 중 동기적으로 실행된다. Promise를 배열에 넣었다고 작업 시작이 자동으로 지연되는 것은 아니다.
 
-### 상태 전이는 1회뿐
-한 번 `fulfilled` 또는 `rejected`가 되면 **다시 못 돌아감**. `resolve()` 여러 번 호출해도 첫 번째만 유효. 이 불변성이 Promise 안전성의 핵심.
+## then은 새 Promise를 만든다
 
-## async&await
+`then(onFulfilled, onRejected)`은 원본을 변경하지 않고 새 Promise를 반환한다.
 
-- 프로미스 객체를 가독성 있게 사용하기 위한 문법
-- async 함수는 항상 Promise를 반환
-- async 함수 내에서 await 키워드로 비동기 작업 완료를 대기
-- 남발할 경우 성능 문제 발생 가능 (순차 실행으로 인한 병목)
+- handler가 일반 값을 반환하면 새 Promise는 그 값으로 fulfilled된다.
+- Promise/thenable을 반환하면 새 Promise가 그 결과를 따른다.
+- handler가 throw하면 새 Promise는 rejected된다.
+- rejection handler가 정상 값을 반환하면 실패가 복구되어 fulfilled chain으로 돌아온다.
 
-## Promise.all()vsPromise.allSettled()
-
-| 메서드 | 동작 | 사용시점 |
-|--------|------|---------|
-| Promise.all() | 모든 프로미스 실행, **하나라도 실패하면 전체 실패** | 모두 성공해야 하는 경우 |
-| Promise.allSettled() | 모든 프로미스 실행, **각각의 상태를 개별 관리** | 각각 독립적으로 처리해도 되는 경우 |
-
-
-## `return await` 생략은 항상 정답인가
-
-과거 ESLint `no-return-await` 규칙은 `return await fn()`의 `await`를 불필요한 성능 비용으로 봤다. 하지만 최신 ESLint에서는 이 규칙이 deprecated 되었고, 최신 엔진에서는 추가 마이크로태스크가 생긴다는 설명도 맞지 않는다. 여전히 중요한 차이는 **스택 트레이스 가독성**과 `try/catch` 동작이다.
-
-### 예시
 ```ts
-async function bizLogic() {
-  return await api.call();     // (A) await 있음
-  // return api.call();         // (B) await 생략
+fetchUser()
+  .then(validate)
+  .then(save)
+  .catch((error) => classify(error));
+```
+
+중첩 Promise가 평탄해 보이는 이유는 Promise resolution procedure가 thenable을 동화하기 때문이다. 이것을 일반적인 container의 `map`과 동일하다고 단정하면 Promise의 eager 실행과 rejection channel을 놓친다.
+
+## async/await의 의미
+
+- async function은 호출 결과를 Promise로 반환한다.
+- `return value`는 fulfilled 결과가 되고, uncaught throw는 rejected 결과가 된다.
+- `await value`는 `Promise.resolve(value)`와 연결된 결과가 settled될 때까지 현재 async function만 일시 중단한다.
+- thread나 event loop 전체가 멈추는 것은 아니다.
+
+```ts
+async function load(): Promise<User> {
+  const response = await fetch("/users/1");
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
 }
 ```
 
-- **(A) await 있음**: `bizLogic`이 `await`에서 일시 정지 → 에러 스택에 **`bizLogic` 프레임이 남음**
-- **(B) await 생략**: `bizLogic`이 Promise를 즉시 반환, 종료 → 에러 스택에서 **`bizLogic` 증발**, `api.call` 이하만 남음
+`await`는 제어 흐름을 문장형으로 표현하고 pipeline은 계산 단계를 합성한다. 둘은 경쟁 관계가 아니며, imperative workflow 안에서 순수 transform pipeline을 호출하는 식으로 함께 쓸 수 있다.
 
-프로덕션에서 에러 역추적할 때 **어느 비즈니스 로직에서 터졌는지** 보이느냐의 차이가 난다. 성능상 이득을 기대하기보다 디버깅, 에러 처리 맥락을 기준으로 판단한다.
+## 순차와 동시 실행
 
-### 권장 판단
+```ts
+// 의존성이 있거나 의도적으로 순차 실행
+const user = await loadUser();
+const orders = await loadOrders(user.id);
 
-- **백엔드**: 대부분 DB, 외부 API 호출이 수 ms~수백 ms. **`return await` 유지가 디버깅 이득이 큰 경우가 많음**
-- **초고빈도 핫 루프**: 트리, 리스트 재귀 같은 경우라면 생략 의미 있을 수 있음. 측정 필수
-- **`try-catch`로 감싸는 경우**: `return await` 안 쓰면 함수 밖에서 reject → 내 `catch`가 못 잡음. **반드시 `return await`**
+// 서로 독립이고 동시 시작이 안전
+const userPromise = loadUser();
+const policyPromise = loadPolicy();
+const [user2, policy] = await Promise.all([userPromise, policyPromise]);
+```
 
-### 결론
+`Promise.all`은 입력 순서로 성공 값을 반환하고 하나가 reject되면 결과 Promise를 reject한다. 다른 작업을 취소하지는 않는다. `Promise.allSettled`는 각 결과를 모두 수집하지만 실패를 성공으로 바꾸는 것은 아니므로 caller가 정책을 결정해야 한다. 큰 입력에는 [[JavaScript-Async-Iterable-Pipelines|bounded concurrency와 backpressure]]를 적용한다.
 
-`no-return-await` 계열 조언은 과거 엔진 최적화 전제의 영향이 크다. 오늘날 대부분 코드에서는 **스택 트레이스, 에러 처리**가 우선. **ESLint 규칙을 맹신하지 말고 맥락에 맞게** 적용.
+## 오류 경계
+
+동기 throw는 호출 stack의 `try/catch`가 잡는다. Promise rejection은 해당 chain의 rejection handler 또는 그 Promise를 `await`하는 `try/catch`가 잡는다. 생성만 하고 await/return하지 않은 Promise의 실패는 주변 `try/catch`가 잡지 못한다.
+
+```ts
+async function run() {
+  try {
+    await mayReject();
+  } catch (error) {
+    // 이 await의 rejection 처리
+  }
+}
+```
+
+- 예상 가능한 부재/skip은 무차별 rejection보다 `Option`/tagged result를 검토한다.
+- `catch(() => undefined)`는 실제 장애까지 숨길 수 있다.
+- fire-and-forget 작업도 owner, timeout, rejection handler와 shutdown policy가 필요하다.
+- pipeline 마지막에서만 잡을지 단계별로 복구할지 domain 의미로 정한다.
+
+## return await 판단
+
+`try/catch`가 반환 Promise의 rejection을 처리해야 한다면 `return await`가 필요하다.
+
+```ts
+async function saveWithContext() {
+  try {
+    return await save();
+  } catch (error) {
+    throw enrich(error);
+  }
+}
+```
+
+그 밖에도 `return await`는 async stack trace를 더 읽기 쉽게 만들 수 있다. 과거의 추가 microtask 성능 조언은 현재 엔진에 그대로 적용되지 않으므로 측정과 오류 가독성으로 판단한다.
+
+## Promise와 모나드 표현의 한계
+
+Promise는 `.then`으로 비동기 계산을 합성할 수 있어 모나드와 비슷한 실무 직관을 준다. 그러나 thenable assimilation으로 `Promise<Promise<T>>`를 그대로 관찰할 수 없고 실행 시점/오류 의미까지 포함하면 엄밀한 law 논의가 필요하다. `map`이라는 단어만으로 안전한 합성이 보장된다고 말하지 않는다. 자세한 구분은 [[Monads-In-TypeScript|TypeScript 모나드]] 참고.
 
 ## 출처
-- [no-return-await — ESLint 공식 문서](https://eslint.org/docs/latest/rules/no-return-await)
-- [매일메일 — Promise](https://www.maeil-mail.kr/question/65)
-- [매일메일 — resolve와 fulfilled 차이](https://www.maeil-mail.kr/question/73)
-- [매일메일 — JS 비동기 처리](https://www.maeil-mail.kr/question/57)
-- [jojoldu — no-return-await는 항상 정답일까](https://jojoldu.tistory.com/699)
+
+- [ECMAScript Language Specification, Promise objects](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise-objects)
+- [ECMAScript Language Specification, async function definitions](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-async-function-definitions)
+- [ESLint, no-return-await](https://eslint.org/docs/latest/rules/no-return-await)
+- Promise 심화: [Promise 구조](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49499), [resolve/reject](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49519), [then/catch](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49570), [chain](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49615), [all/race](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49769), [오류 흐름](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49862)
+- Promise 합성: [callback과 Promise](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16617), [비동기를 값으로](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16618), [Promise 값 활용](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16619), [Promise와 모나드](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16620), [Kleisli composition](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16621), [비동기 pipeline](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16622), [then 규칙](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16623)
+- async/await와 오류: [async/await](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16636), [Array map과 async map](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16637), [await와 pipeline](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16638), [함께 사용하기](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16639), [동기 오류](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16640), [비동기 오류](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16641), [pipeline 오류 경계](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16642), [마무리](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16643)
 
 ## 관련 문서
+
+- [[JavaScript-Async-Iterable-Pipelines|JavaScript 비동기 이터러블 파이프라인]]
+- [[JavaScript-Function-Composition-and-Currying|JavaScript 함수 합성과 커링]]
 - [[Event-Loop|Node.js Event Loop]]
 - [[Async-Internals|비동기 내부 동작]]
-- [[JS-Function-Forms|JS 함수 형태]]
-- [[Monads-In-TypeScript|Monads (Promise는 진짜 모나드인가)]]
+- [[Monads-In-TypeScript|TypeScript 모나드]]

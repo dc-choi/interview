@@ -3,7 +3,7 @@ tags: [cs, javascript, prototype, oop]
 status: done
 category: "CS - JavaScript"
 aliases: ["Prototype Mechanism", "프로토타입 동작 원리", "프로토타입 객체", "Prototype Object", "constructor", "__proto__", "프로토타입 체인", "Prototype Chain"]
-verified_at: 2026-07-21
+verified_at: 2026-08-04
 ---
 
 # 프로토타입 동작 원리 (객체 생성과 체인)
@@ -44,6 +44,18 @@ GoF의 Prototype 생성 패턴은 원본 객체를 **복제**해 새 객체를 �
 
 많은 일반 객체의 체인은 해당 Realm의 `Object.prototype`을 거쳐 `null`에서 끝난다. 그러나 `Object.create(null)`로 만든 null-prototype 객체는 처음부터 `null`에서 끝나며, 모든 객체가 `Object.prototype`에 도달하는 것은 아니다. 다른 Realm의 객체는 그 Realm의 intrinsic prototype을 따른다. 프로퍼티를 읽을 때 객체 자신에 없으면 체인을 따라 찾고, 끝까지 없으면 `undefined`다.
 
+## 생성과 공유 시점
+
+`new Constructor(...args)`는 construct operation을 실행해 새 object를 만들고 `Constructor.prototype`이 object면 그 값을 새 object의 `[[Prototype]]`으로 연결한 뒤 constructor body를 새 `this`로 호출한다. constructor가 다른 object를 명시적으로 반환하면 그 object가 최종 결과가 될 수 있다.
+
+- instance own property가 같은 이름의 prototype property보다 먼저 조회된다.
+- instance 생성 뒤에도 같은 prototype object에 method를 추가/변경하면 기존 instance lookup에 보일 수 있다.
+- `Constructor.prototype = replacement`로 property 자체를 교체하면 기존 instance의 `[[Prototype]]`은 바뀌지 않고 이후 생성되는 instance만 새 object에 연결된다.
+- prototype method를 `instance.method()`로 호출할 때 `this`는 lookup 위치가 아니라 receiver인 instance다.
+- `Constructor.prototype.method()` 직접 호출의 receiver는 prototype object다.
+
+runtime prototype mutation은 모든 기존 instance behavior를 바꿀 수 있어 plugin/polyfill처럼 통제된 bootstrap 외에는 피한다.
+
 ## 클래스와의 관계
 
 ES6 `class`는 이 메커니즘 위에 얹은 문법이다. 단순한 문법 설탕을 넘어 재선언 금지, 호이스팅 시 TDZ 등 더 엄격한 제약을 더하지만, 내부 동작은 그대로 프로토타입이다(`class` 메서드는 결국 `prototype`에 얹힌다). JS가 클래스 기반 언어가 된 것이 아니라, 클래스의 외형을 두른 프로토타입이다. 레거시 ES5 코드의 프로토타입 상속을 읽고 마이그레이션하려면 이 원리를 알아야 한다.
@@ -60,8 +72,10 @@ ES6 `class`는 이 메커니즘 위에 얹은 문법이다. 단순한 문법 설
 ## 출처
 
 - [자바스크립트의 프로토타입 훑어보기 — evan-moon](https://evan-moon.github.io/2019/10/23/js-prototype/)
-- [ECMAScript 2024 Language Specification — Ordinary Object Internal Methods and Internal Slots](https://tc39.es/ecma262/2024/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ordinary-object-internal-methods-and-internal-slots)
-- [ECMAScript 2024 Annex B — Object.prototype.__proto__](https://tc39.es/ecma262/2024/multipage/additional-ecmascript-features-for-web-browsers.html#sec-object.prototype.__proto__)
+- [ECMAScript Language Specification, ordinary object internal methods](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ordinary-object-internal-methods-and-internal-slots)
+- [ECMAScript Annex B, Object.prototype.__proto__](https://tc39.es/ecma262/multipage/additional-ecmascript-features-for-web-browsers.html#sec-object.prototype.__proto__)
+- 생성/instance: [function instance](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26699), [constructor/new](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26700), [constructor property](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26701)
+- prototype lookup: [목적/상속](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26702), [확장/constructor 연결](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26703), [this/직접 호출](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26704), [공유 시점](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26705), [own property 우선](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26706)
 
 ## 관련 문서
 

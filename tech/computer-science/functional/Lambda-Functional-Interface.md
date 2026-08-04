@@ -185,6 +185,7 @@ c(); c(); // 2
 - **병렬 스트림이 항상 빠르지 않은** 이유
 
 ## 출처
+
 - [SK DEVOCEAN — 함수형 프로그래밍 (Java, JavaScript)](https://devocean.sk.com/blog/techBoardDetail.do?ID=165705)
 
 ## 관련 문서
@@ -194,3 +195,4 @@ c(); c(); // 2
 - [[Monads-In-TypeScript|Monad in TypeScript]]
 - [[Railway-Oriented-Programming|Railway-Oriented (Result 모나드)]]
 - [[Declarative-Programming|Declarative Programming]]
+- [[Java-Functional-Programming|Java lambda, Stream과 함수형 프로그래밍]]

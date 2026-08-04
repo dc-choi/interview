@@ -3,17 +3,18 @@ tags: [cs, typescript, type-theory, curry-howard, functional]
 status: done
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Types As Proofs", "타입은 증명이다", "커리-하워드 대응", "Curry-Howard"]
+verified_at: 2026-08-04
 ---
 
 # Types as Proofs (타입은 증명이다)
 
-타입 시스템을 **수학적 증명 체계**로 보는 관점. 커리-하워드 대응(Curry-Howard correspondence)을 TypeScript 코드로 푼다.
+타입 시스템을 **수학적 증명 체계**로 보는 관점이다. 커리-하워드 대응(Curry-Howard correspondence)을 TypeScript 코드에 적용하되, TypeScript는 의도적으로 불건전한 실용 언어이므로 이 대응을 엄밀한 정리 증명과 동일시하지 않는다.
 
 ## 한 줄 요약
 
 > **타입은 명제이고, 그 타입의 값을 만드는 프로그램은 그 명제의 증명이다.**
 
-`tsc`가 통과하는 것은 단순히 "에러가 없다"는 의미가 아니라 **선언된 명제를 만족하는 증명 항이 존재함**을 의미한다. 타입 검사 = 증명 검사.
+건전한 타입 체계에서는 타입을 만족하는 프로그램을 증명 항으로 볼 수 있다. TypeScript의 타입 검사는 선언된 정적 모델 안에서 계약을 점검하지만 `any`, 타입 단언, 부정확한 선언 파일과 런타임 입력 때문에 통과 자체가 프로그램의 완전한 증명은 아니다.
 
 ## 논리학 ↔ 타입 대응 표
 
@@ -23,7 +24,7 @@ aliases: ["Types As Proofs", "타입은 증명이다", "커리-하워드 대응"
 | `A ∧ B` (논리곱) | `[A, B]` 또는 `{ a: A; b: B }` | 두 타입의 곱(Product) |
 | `A ∨ B` (논리합) | `A \| B` | 두 타입의 합(Sum) |
 | `⊥` (거짓) | `never` | 값이 존재할 수 없는 타입 |
-| `⊤` (참) | `unknown` (또는 `void`) | 모든 값을 포함하는 타입 |
+| `⊤` (참) | `unknown` | 모든 값을 안전하게 받을 수 있는 타입 |
 | `∀T. P(T)` (전칭) | `<T>(x: T) => ...` | 제네릭 함수 |
 | `¬A` (부정) | `(a: A) => never` | A를 받아 모순을 도출 |
 
@@ -113,12 +114,13 @@ TS는 JS와의 실용적 호환을 위해 **불건전(unsound)** 한 지점들�
 |---|---|
 | `any` | 모든 명제를 즉시 참으로 만듦. 증명 체계 자체 무효화 |
 | 타입 단언 `as T` | 증명 없이 명제를 받아들임 |
-| 함수 파라미터 **이변성**(bivariance) | 반공변성(contravariance)이 완벽하지 않음. `--strictFunctionTypes` 권장 |
+| 함수 매개변수의 예외 | `strictFunctionTypes`를 끄거나 메서드 문법을 쓰면 이변적 검사가 남음. 함수 타입은 `strictFunctionTypes`에서 반공변 검사 |
 | 인덱스 시그니처 | 없는 키 접근이 `undefined`로 추론되지 않음. `--noUncheckedIndexedAccess` 필요 |
-| 옵셔널 프로퍼티 `{ a?: T }` | "키 없음"과 "값이 `undefined`" 구분 불가 |
-| `Function`, `Object` 타입 | 사실상 `any`에 가까움 |
+| 옵셔널 프로퍼티 `{ a?: T }` | 기본 설정에서는 "키 없음"과 명시적 `undefined` 대입을 허용. `exactOptionalPropertyTypes`로 구분 가능 |
+| 전역 `Function` 타입 | 호출 결과가 `any`가 되어 구체 함수 시그니처보다 안전하지 않음 |
+| 전역 `Object`, 빈 객체 `{}` | `any`는 아니지만 의도가 모호함. 비원시 값에는 `object`, 모든 값에는 `unknown` 권장 |
 
-**실무 권장**: `strict: true` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes`로 탈출구를 최대한 닫는다.
+**실무 권장**: `strict: true`에 `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`를 검토해 대표적인 안전성 구멍을 줄인다. 이 옵션들도 런타임 검증을 대신하지는 않는다.
 
 ## 면접 체크포인트
 
@@ -131,29 +133,31 @@ TS는 JS와의 실용적 호환을 위해 **불건전(unsound)** 한 지점들�
 
 ## OOP vs 함수형 — TS는 어느 쪽에 가까운가
 
-Java/C#은 **런타임에도 타입 정보 유지** (reflection, `instanceof`, 어노테이션 기반 DI). 반면 TS는 **컴파일 후 타입 소멸** → 런타임 객체지향 메커니즘이 제한적.
+Java/C#의 명목 클래스와 일부 타입 메타데이터는 런타임 reflection과 DI에 활용할 수 있다. 세부 보존 범위는 언어와 타입 종류마다 다르다. TypeScript 고유의 타입 주석과 interface는 emit에서 사라지지만 JavaScript class와 `instanceof` 같은 런타임 값은 남는다.
 
-### TS에서 불가능하거나 번거로운 Java스러운 것들
+### 타입 소거를 고려해야 하는 패턴
 - `@Autowired` 같은 **인터페이스 기반 DI** — TS interface는 런타임에 없음 → Symbol 토큰이나 추상 클래스로 우회 ([[Clean-Architecture-NestJS]])
 - **`instanceof` 기반 분기** — 인터페이스로는 불가, 클래스로만
-- **Sealed interface, 강한 Pattern Matching** — 부분적으로 Discriminated Union으로 대체
-- **Annotation 기반 메타프로그래밍** — `reflect-metadata`로 부분 지원
+- **폐쇄된 타입 계층과 exhaustive 분기** — Discriminated Union과 `never` 검사로 표현 가능
+- **Decorator 기반 메타프로그래밍** — 런타임 토큰과 메타데이터를 별도로 설계해야 하며 interface 정보가 자동으로 생기지 않음
 
-### TS가 잘 맞는 스타일
+### TypeScript에서 선택할 수 있는 표현
 - **함수가 일급 객체** — 전략을 class 대신 **함수의 Record**로 표현
 - **구조적 타이핑(duck typing)** — 상속 없이도 형태가 맞으면 호환
-- **불변성, 순수 함수** + Discriminated Union — 상태 표현이 자연스러움
+- **불변성, 순수 함수**와 Discriminated Union — 상태 전이를 값으로 표현하기 쉬움
 
 ### 실용 원칙
-- **강한 OOP 패턴을 TS에 억지로 이식하지 말 것** — Strategy, Observer 같은 고전 패턴도 함수, Union Type으로 더 간결하게 표현 가능
-- **OOP, FP 하이브리드**가 TS의 자연스러운 자리 — 도메인 모델링은 class, interface, 비즈니스 로직은 순수 함수
-- 작은 전략은 `Record<string, (x: T) => U>` 같은 함수 맵으로 충분 — class 계층 필요 없음
-
-상속, 다형성, 캡슐화를 TS에서 "되긴 되는" 수준으로 쓸 수 있지만, **Java 수준의 런타임 OOP 보장**은 기대하지 말 것. 팀 컨벤션은 구조적 타이핑 + 함수형을 기본으로 잡는 게 덜 피곤.
+- 패턴 이름보다 런타임 정체성, 확장 지점과 상태 모델을 먼저 본다. Strategy 같은 패턴은 작은 함수나 함수 맵으로 충분할 수도 있고, 수명 주기와 캡슐화가 중요하면 class가 더 명확할 수도 있다.
+- 타입 수준의 `private`와 interface에 런타임 보안을 기대하지 않는다. 실제 캡슐화에는 JavaScript `#private`, 모듈 경계와 런타임 검증을 사용한다.
+- OOP와 함수형 표현 중 하나를 언어의 유일한 기본값으로 일반화하지 않고, 팀이 유지할 수 있는 계약과 도구를 기준으로 선택한다.
 
 ## 출처
 - [evan-moon — 타입 시스템은 왜 증명처럼 동작하는가](https://evan-moon.github.io/2026/01/25/types-as-proofs-typescript-hidden-math/)
 - [velog @miinhho — OOP와 TypeScript](https://velog.io/@miinhho/oop-and-typescript)
+- [TypeScript Handbook, More on Functions](https://www.typescriptlang.org/docs/handbook/2/functions.html)
+- [TypeScript Declaration Files, Do's and Don'ts](https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html)
+- [TypeScript TSConfig, strictFunctionTypes](https://www.typescriptlang.org/tsconfig/strictFunctionTypes.html)
+- [TypeScript TSConfig, exactOptionalPropertyTypes](https://www.typescriptlang.org/tsconfig/exactOptionalPropertyTypes.html)
 
 ## 관련 문서
 - [[Math-Logic-For-Programming|프로그래밍에 필요한 수학과 논리]] — 명제, 집합, 귀납법의 기초 (커리-하워드의 전제)

@@ -14,7 +14,13 @@ aliases: ["Algorithm"]
 - [x] [[Algorithm-Recursion|재귀 (기저 조건, 콜스택, 하향식 계산)]]
 - [x] [[Algorithm-Sorting|정렬 (버블, 선택, 삽입, 병합, 퀵)]]
 - [x] [[Algorithm-DP|동적 프로그래밍 (메모이제이션, 타뷸레이션)]]
+- [x] [[Graph-Traversal-and-Shortest-Path|그래프 표현, DFS/BFS, Dijkstra와 경로 복원]]
+- [x] [[Graph-Optimization-Algorithms|Greedy, 최소 신장 트리, 최대 유량, interval scheduling]]
+- [x] [[Bitmask-DP-and-TSP|비트마스크 DP와 외판원 문제]]
+- [x] [[Trees-and-Balanced-Search-Trees|BST, AVL, Red-Black Tree]]
+- [x] [[Trie-and-Autocomplete|Trie와 자동완성]]
 - [x] [[Algorithm-Practice|필수 알고리즘 체크리스트, 백엔드 활용 사례, 학습 방법]]
+- [x] [[Problem-Solving-Techniques|누적합, 완전탐색, Greedy, 이분탐색, LIS와 Fenwick tree]]
 - [x] [[Algorithm-Quad-Remeshing|쿼드 리메싱/리토폴로지 (조합 문제의 연속 완화 + 정수 제약, 위상 하한, 파이프라인 분해)]]
 
 ## 예제 코드 폴더
