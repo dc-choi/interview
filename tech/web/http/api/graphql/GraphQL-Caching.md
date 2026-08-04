@@ -1,7 +1,7 @@
 ---
 tags: [web, graphql, api, caching, http]
 status: done
-verified_at: 2026-07-20
+verified_at: 2026-08-04
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Caching", "GraphQL 캐싱", "serving over HTTP", "persisted query", "global object id caching"]
 ---
@@ -56,16 +56,14 @@ GraphQL-over-HTTP은 Stage 2 draft라 아직 최종 표준이 아니다. 구현�
 
 ## 상태 코드
 
-- JSON이나 GraphQL document를 parsing하지 못하면 현행 draft는 400을 권고한다. 지원하지 않는 HTTP 메서드(PUT, DELETE, mutation을 GET으로)는 405, 못 알아듣는 Content-Type(text/plain 등)은 구현에 따라 415로 나온다.
-- 잘못된 request parameter, validation 실패, operation 선택 실패, variable coercion 실패처럼 실행 전 request error에는 422를 권고한다. 단 공식 디버깅 가이드는 400을 1차 권고로 두고 422를 대부분의 경우 스펙이 권하지 않는 구현 특이 코드로 분류한다 — 문서와 draft revision에 따라 서술이 갈리는 지점.
-- 실행이 시작된 뒤 생긴 field error는 GraphQL response의 `errors`로 표현한다. 2026-07-13 Stage 2 draft는 status-code 본문에서 `data`와 `errors`가 함께 있으면 294를 권고하지만 field-error 예시는 200을 권고하므로 현재 문서 자체에도 불일치가 있다. Production 계약은 media type, server 구현과 고정한 draft revision으로 테스트한다.
-- GraphQL response를 만들 수 없는 transport, authentication, overload 실패에는 의미에 맞는 4xx 또는 5xx를 사용한다. `application/json` legacy client의 동작은 별도 호환성 테스트가 필요하다.
-- 디버깅 요령: 응답의 errors 배열과 data 유무를 본다. data가 있으면 문서는 유효하고 런타임 예외(잘못된 입력, 접근 거부, 서버 버그) 쪽이고, data가 아예 없으면 validation 단계 실패 쪽이다. 레거시 서버가 완전 실패에도 200 + errors로 응답하는 경우에 특히 유용하다.
+- 모든 GraphQL 오류가 200이라는 규칙은 없다. 실행 전 요청 오류와 GraphQL 응답을 만들 수 없는 전송 실패는 적절한 4xx, 5xx를 사용할 수 있고, 실행 중 필드 오류는 `data`와 `errors`가 함께 오는 부분 응답이 될 수 있다.
+- GraphQL-over-HTTP은 아직 Stage 2 draft다. 현행 draft 본문은 `data`와 `errors`가 함께 있는 응답에 IETF 표준이 아닌 294를 실험적으로 제안하지만, 같은 문서의 field error 예시는 200을 권고한다. 확정 표준으로 보지 말고 사용하는 미디어 타입, 서버 구현, draft revision을 고정해 계약 테스트로 확인한다.
+- 클라이언트는 `application/graphql-response+json`과 본문의 `data`, `errors`를 기준으로 처리한다. request error와 execution error의 응답 차이는 [[GraphQL-Architecture-Map#request error와 execution error를 응답에서 구분하기|요청 라이프사이클]]에 있다.
 
 ## 흔한 실수
 
 - GraphQL도 URL HTTP 캐시가 그냥 된다고 가정.
-- `data`가 있는데 필드 에러가 있다고 5xx를 기대(부분 성공은 2xx).
+- HTTP 상태 코드만 보고 GraphQL `errors`를 무시.
 - 전역 유일 id 없이 클라이언트 정규화 캐시를 기대.
 - mutation을 GET으로 보냄.
 - 긴 쿼리를 GET에 그대로 실어 URL 한도 초과(persisted document로 해결).
@@ -75,7 +73,7 @@ GraphQL-over-HTTP은 Stage 2 draft라 아직 최종 표준이 아니다. 구현�
 - GraphQL에서 HTTP URL 캐시가 왜 어려운가(단일 엔드포인트, 객체별 URL 부재)
 - 전역 유일 id가 클라이언트 정규화 캐시의 전제인 이유
 - persisted document가 GET 캐싱을 어떻게 살리나
-- `data`가 있으면 에러가 있어도 2xx인 이유(부분 성공)
+- HTTP 상태 코드와 GraphQL `data`, `errors`가 서로 다른 계층인 이유
 - 필드 단위 cache hint에서 응답 정책이 가장 제한적인 값으로 계산되는 이유(클라이언트가 응답 모양을 정하므로)
 
 ## 관련 문서
@@ -83,6 +81,7 @@ GraphQL-over-HTTP은 Stage 2 draft라 아직 최종 표준이 아니다. 구현�
 - [[GraphQL|GraphQL 개념]]
 - [[GraphQL-Pagination|Global Object Identification (Node, node(id))]]
 - [[GraphQL-Architecture-Map|전체 그림 지도]]
+- [[GraphQL-Schema-Design|에러 채널과 errors-as-data]]
 - [[GraphQL-Security|보안 (trusted document)]]
 - [[Content-Availability-System-Design|Federation subgraph의 서버 캐시와 장애 격리 사례]]
 - [[REST|REST (URL 캐시)]]

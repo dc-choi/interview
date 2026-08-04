@@ -1,7 +1,7 @@
 ---
 tags: [web, graphql, api, architecture, diagram]
 status: done
-verified_at: 2026-07-20
+verified_at: 2026-08-04
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Architecture Map", "GraphQL 아키텍처 지도", "GraphQL 요청 라이프사이클", "GraphQL 전체 그림"]
 ---
@@ -51,7 +51,33 @@ flowchart LR
 - **Parse**: 쿼리 문자열을 AST로. 문법 오류는 여기서 걸려 실행이 아예 없다.
 - **Validate**: AST를 스키마와 대조해 없는 필드, 타입 안 맞는 인자를 거른다. 실패는 실행 시작 전의 request error라 응답에 부분 data가 아예 없다(실행 중 field error의 부분 성공과 구분). **depth, complexity 제한이 붙는 자리** — 스키마 검증 자체가 아니라 별도 custom 규칙, demand control로 얹는다. 실행 전에 돌아 악성 깊은 쿼리가 DB를 안 건드린다.
 - **Execute**: 선택 트리를 위에서 아래로 순회하며 필드마다 resolver 호출. 뮤테이션 최상위 selection set은 스펙 실행 의미에 따라 순차 실행하고, 쿼리 필드는 병렬 실행할 수 있다. **N+1과 필드 단위 인가가 여기서** 일어난다.
-- **Response**: 스펙이 허용하는 최상위 키는 셋이다 — `data`, `errors`, 그리고 구현이 자유롭게 쓰는 `extensions`(텔레메트리, rate limit 소모량 같은 부가 정보 객체). `data`와 `errors` 중 최소 하나는 있고, 둘 다 있으면 partial response다. 각 error 객체는 `message`와 (있으면) 문서 내 위치 `locations`를 담는다. 필드 하나가 실패하면 execute 중에 그 필드가 null이 되고, non-null이면 null이 nullable 상위까지 올라간다(null bubbling). 그 결과가 봉투에 담겨 부분 성공, 부분 실패로 나온다.
+- **Response**: 스펙이 허용하는 최상위 키는 셋이다 — `data`, `errors`, 그리고 구현이 자유롭게 쓰는 `extensions`(텔레메트리, rate limit 소모량 같은 부가 정보 객체). `data`와 `errors` 중 최소 하나는 있고, 둘 다 있으면 partial response다. 각 error 객체는 `message`와 (있으면) 문서 내 위치 `locations`, 실행 오류라면 응답 내 실패 위치 `path`를 담는다. 필드 하나가 실패하면 execute 중에 그 필드가 null이 되고, non-null이면 null이 nullable 상위까지 올라간다(null bubbling).
+
+### request error와 execution error를 응답에서 구분하기
+
+실행 전 문법, validation, 변수 변환 오류는 resolver를 호출하지 않고 `data` 없는 `errors`만 반환한다. 실행 중 필드 오류는 실패 위치를 `null`로 바꾼 뒤 가능한 형제 필드를 계속 해결하므로 아래처럼 `data`와 `errors`가 함께 올 수 있다.
+
+```json
+{
+  "data": {
+    "post": null,
+    "recentPosts": [{ "id": "p2", "title": "GraphQL" }]
+  },
+  "errors": [
+    {
+      "message": "Post is not accessible",
+      "locations": [{ "line": 2, "column": 3 }],
+      "path": ["post"],
+      "extensions": { "code": "POST_FORBIDDEN" }
+    }
+  ]
+}
+```
+
+- `path`는 스키마 필드 경로가 아니라 응답 경로다. alias를 썼다면 alias가 들어가고 리스트 원소는 0부터 시작하는 인덱스로 표시된다.
+- 이 경로로 정상 데이터가 없는 `null`과 실행 오류로 생긴 `null`을 구분한다. 오류가 non-null 부모로 전파돼 부모가 `null`이 되어도 `path`는 원래 실패 위치를 가리킨다.
+- `extensions.code`는 구현체의 확장 계약이다. GraphQL 코어 스펙이 코드 목록을 정하지 않으므로 클라이언트와 별도로 안정성을 합의하고, 사람이 읽는 `message` 문자열로 로직을 분기하지 않는다.
+- 예상 가능한 도메인 실패를 payload의 데이터로 둘지 top-level `errors`로 둘지는 [[GraphQL-Schema-Design#mutation 설계|mutation 에러 채널]]에서 결정한다. HTTP 200만으로 전체 성공을 판정할 수 없는 이유는 [[GraphQL-Caching#상태 코드|상태 코드]]에 있다.
 
 ## 그림 3. 스키마는 타입 그래프, 쿼리는 부분 트리, 실행은 순회
 
@@ -106,6 +132,8 @@ flowchart TB
 ## 관련 문서
 
 - [[GraphQL|GraphQL 개념 정본 (스키마, resolver, 단점, REST 비교)]]
+- [[GraphQL-Schema-Design|GraphQL 스키마 설계 (nullability, errors-as-data)]]
+- [[Apollo-Server#테스트 전략|GraphQL 테스트 전략 (resolver, operation, E2E)]]
 - [[NestJS-GraphQL|NestJS 구현 정본 (resolver, DataLoader, Subscription)]]
 - [[API-Comparison|REST vs GraphQL vs gRPC 선택 가이드]]
 - [[REST|REST, RESTful API]]
@@ -118,3 +146,4 @@ flowchart TB
 - [graphql.org — Response](https://graphql.org/learn/response/)
 - [graphql.org — Performance](https://graphql.org/learn/performance/)
 - [graphql.org — Security (Demand control: depth, complexity, rate limiting)](https://graphql.org/learn/security/)
+- [Hong 강사 — GraphQL의 Custom Error 패턴을 활용한 코드 관리](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449787)

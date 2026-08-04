@@ -11,7 +11,7 @@ API 스타일 선택부터 실무 컨벤션, 문서화까지. 상위 인덱스�
 
 ## API 스타일
 - [x] [[REST|REST, RESTful API]]
-- [x] [[GraphQL|GraphQL 클러스터 (개념, 실행 구조, 타입, 스키마, 쿼리, 캐싱, 보안)]] — `api/graphql/`
+- [x] [[GraphQL|GraphQL 클러스터 (실행 구조, 타입, 스키마, 쿼리, 에러, 페이지네이션, 테스트, 보안, Federation)]] — `api/graphql/`
 - [x] [[gRPC|gRPC (HTTP/2, Protobuf, 4가지 통신 방식, MSA 내부 통신)]]
 - [x] [[API-Comparison|REST vs GraphQL vs gRPC vs tRPC vs ts-rest 비교 (선택 가이드, BFF 패턴)]]
 - [x] [[Type-Safe-API|tRPC, ts-rest (TS end-to-end 타입 안전 API)]]

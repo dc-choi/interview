@@ -1,7 +1,7 @@
 ---
 tags: [nodejs, graphql, apollo-server, api]
 status: done
-verified_at: 2026-07-20
+verified_at: 2026-08-04
 category: "OS & Runtime"
 aliases: ["Apollo Server", "아폴로 서버", "@apollo/server"]
 ---
@@ -31,7 +31,36 @@ aliases: ["Apollo Server", "아폴로 서버", "@apollo/server"]
 - 스키마 기반 모킹은 @graphql-tools/mock의 addMocksToSchema로 스키마를 감싸 켠다. 기본은 mock이 resolver를 덮고, preserveResolvers를 켜면 실제 resolver를 살린 채 빈 곳만 모킹한다. custom scalar는 기본 mock 값이 없어 명시적으로 정의해야 한다.
 - 확장은 플러그인으로 한다: 이벤트가 두 갈래다. 서버 수명 이벤트(serverWillStart 등)는 기동 시 한 번, 요청 수명 이벤트는 요청마다 돈다. 후자는 중첩 패턴이다 — requestDidStart가 요청 시작 시 불리고 그 안에서 parsingDidStart, validationDidStart, executionDidStart 같은 하위 단계 핸들러를 반환해 요청 로직을 한 곳에 캡슐화한다. 훅 이름이 parse, validate, execute 단계([[GraphQL-Architecture-Map|지도]])와 그대로 대응해 로깅, 메트릭 계측을 꽂는 자리다. 각 단계엔 end 훅이 있어 그 단계 종료 후 에러를 받는다(validate의 end 훅은 그 단계의 모든 에러 배열을 받는다). NestJS에서는 ApolloServerPlugin 구현 클래스에 `@Plugin()`(@nestjs/apollo)을 붙여 providers로 등록만 하면 자동 적용된다 — DI를 받는 플러그인이 가능해진다.
 - 전용 헬스체크 엔드포인트는 없다. GraphQL 수준 체크는 `{__typename}` 같은 trivial 쿼리를 GET으로 날린다 — 프로세스 생존만이 아니라 GraphQL 실행 능력까지 확인된다. 이 GET은 Content-Type이 없어 CSRF 방지에 걸리므로 `apollo-require-preflight: true` 헤더를 동봉한다. HTTP 수준 체크만 필요하면 프레임워크에 항상 성공하는 별도 GET 핸들러를 둔다.
-- 통합 테스트는 executeOperation으로 HTTP 없이 요청 파이프라인만 태운다 — 테스트용 contextValue를 직접 주입하고, parse, validate, execute 에러도 던져지지 않고 응답 body(`singleResult.errors`)로 온다. 전송 중립 경계의 실용 이점이다. HTTP 계층과 context 함수의 실제 동작은 supertest 같은 진짜 HTTP e2e로만 검증된다.
+- 통합 테스트는 `executeOperation`으로 HTTP 없이 요청 파이프라인을 태울 수 있다. 검증 범위와 E2E와의 경계는 아래 [[#테스트 전략|테스트 전략]]에서 다룬다.
+
+## 테스트 전략
+
+GraphQL 테스트는 resolver 직접 호출, 실제 연산 실행, 전송 계층 E2E를 구분한다. 빠른 테스트를 아래에 많이 두고, 각 경계를 통과해야만 드러나는 계약을 상위 테스트로 올린다.
+
+| 계층 | 검증하는 것 | 놓치는 것 |
+|---|---|---|
+| 서비스 단위 테스트 | 비즈니스 규칙, 인가, 저장소 호출 | GraphQL 스키마와 실행 규칙 |
+| resolver 단위 테스트 | parent, args, context를 서비스 호출로 연결하는 어댑터 | parse, validate, coercion, null bubbling, plugin |
+| `executeOperation` 통합 테스트 | 실제 스키마, 변수, resolver chain, contextValue, `data`와 `errors` | HTTP 헤더, 실제 context 함수, 네트워크 |
+| HTTP E2E | 미들웨어, 쿠키와 인증 헤더, context 생성, 미디어 타입, 상태 코드, CSRF | WebSocket 장기 연결 |
+| Subscription E2E | 연결 인증, filter, 이벤트 전달, 구독 해제와 재연결 | 외부 broker를 대체했다면 다중 인스턴스 전파 |
+
+resolver 단위 테스트는 외부 의존성을 mock으로 바꾸고 resolver를 직접 호출한다. 인증 없음, 권한 부족, parent에서 DataLoader key를 잘못 뽑는 케이스를 빠르게 만들 수 있다. 다만 SDL과 resolver 타입 불일치나 non-null 전파는 잡지 못하므로 resolver는 얇게 두고 복잡한 규칙은 서비스 단위 테스트로 내린다.
+
+`ApolloServer.executeOperation()`은 HTTP 없이 parse, validate, execute를 포함한 요청 파이프라인을 실행한다. query와 mutation 모두 입력 객체의 키는 `query`이며, 테스트용 `contextValue`를 두 번째 인자로 넘길 수 있다. 결과는 성공 값만 보지 말고 `response.body.kind === 'single'`로 좁힌 뒤 `singleResult.data`, `singleResult.errors`, 각 오류의 `path`와 공개 `extensions.code`를 함께 검증한다. 오류는 보통 throw되지 않고 응답 결과에 들어온다.
+
+직접 넣은 `contextValue`는 실제 context 초기화 함수를 우회한다. 인증 헤더와 쿠키로 user가 만들어지는지, production 에러 마스킹과 HTTP 상태가 맞는지는 supertest 같은 실제 HTTP 클라이언트로 검증한다. DB까지 연결할지는 목적에 따라 고른다. resolver chain과 TypeORM 매핑을 검증할 때만 production과 같은 migration을 적용한 격리 테스트 DB를 쓰고, 스키마 파이프라인만 볼 때는 저장소를 mock으로 바꾼다.
+
+GraphQL 특유의 회귀 항목:
+
+- 실행 전 오류는 `data` 없이 반환되고 resolver가 호출되지 않는가
+- 실행 오류는 가능한 형제 데이터를 살리며 `path`와 null bubbling 경계가 맞는가
+- N개의 parent 관계 조회가 DataLoader batch로 제한되고, batch 결과가 key 순서를 보존하는가
+- 같은 요청의 중복 key는 캐시되지만 다음 요청과 다른 사용자에게 loader cache가 공유되지 않는가
+- cursor 첫 페이지, 마지막 페이지, 빈 결과, 중간 삽입 경계가 중복과 누락 없이 동작하는가
+- Subscription 연결 인증, filter, 구독 해제, 재연결과 외부 PubSub 전파가 맞는가
+
+정확한 SQL 문자열보다 쿼리 횟수 상한과 결과 대응을 검증하면 ORM 변경에도 N+1 회귀 테스트가 덜 깨진다. 요청 단계와 partial response의 정확한 모양은 [[GraphQL-Architecture-Map|GraphQL 전체 그림]], DataLoader 계약은 [[NestJS-GraphQL-DataLoader|Resolver와 DataLoader]]에 있다.
 
 ## 에러 처리
 
@@ -80,6 +109,7 @@ aliases: ["Apollo Server", "아폴로 서버", "@apollo/server"]
 ## 관련 문서
 
 - [[GraphQL|GraphQL 개념]]
+- [[GraphQL-Architecture-Map|GraphQL 요청 라이프사이클과 partial response]]
 - [[NestJS-GraphQL|NestJS GraphQL (Apollo 드라이버 통합)]]
 - [[GraphQL-Federation|Federation (subgraph, gateway)]]
 - [[Hono|Hono (다른 Node.js 웹 프레임워크)]]
@@ -100,6 +130,7 @@ aliases: ["Apollo Server", "아폴로 서버", "@apollo/server"]
 - [Apollo Server — Operation request format (CSRF prevention)](https://www.apollographql.com/docs/apollo-server/workflow/requests)
 - [Apollo Server — Mocking](https://www.apollographql.com/docs/apollo-server/testing/mocking)
 - [Apollo Server — Integration testing (executeOperation)](https://www.apollographql.com/docs/apollo-server/testing/testing)
+- [Hong 강사 — 서비스 단위 테스트부터 통합 테스트 진행하기](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449789)
 - [GraphOS — Explorer (Sandbox와의 관계)](https://www.apollographql.com/docs/graphos/platform/explorer)
 - [Apollo Server — Configuring cache backends](https://www.apollographql.com/docs/apollo-server/performance/cache-backends)
 - [Apollo Server — Configuring CORS](https://www.apollographql.com/docs/apollo-server/security/cors)

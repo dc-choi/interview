@@ -1,7 +1,7 @@
 ---
 tags: [web, network, graphql, api, http]
 status: index
-verified_at: 2026-07-20
+verified_at: 2026-08-04
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL"]
 ---
@@ -14,10 +14,11 @@ GraphQL은 Facebook이 만든 **API 쿼리 언어이자, 데이터에 대해 정
 
 ## 심화 문서 (graphql/ 클러스터)
 
-- [[GraphQL-Architecture-Map|전체 그림 지도]] — 요청 라이프사이클(parse→validate→execute→응답), N+1과 운영 관심사의 자리
+- [[GraphQL-Architecture-Map|전체 그림 지도]] — 요청 라이프사이클(parse→validate→execute→응답), partial response, N+1과 운영 관심사의 자리
 - [[GraphQL-Schema-Types|타입 시스템]] — scalar, enum, interface, union, input, List와 Non-Null 수식자
 - [[GraphQL-Schema-Design|스키마 설계]] — nullability 전략, 버전 없는 진화, mutation 모양, 네이밍 컨벤션, 비즈니스 로직 계층
 - [[GraphQL-Query-Language|쿼리 언어와 introspection]] — fragment, variable, directive, `__typename`, introspection
+- [[Apollo-Server#테스트 전략|테스트 전략]] — resolver 단위 테스트, executeOperation 통합 테스트, HTTP와 Subscription E2E
 - [[GraphQL-Pagination|페이지네이션]] — offset vs cursor, Relay Connection, Global Object Identification
 - [[GraphQL-Caching|캐싱과 HTTP 전송]] — 정규화 캐시, persisted document, GET vs POST, 상태 코드
 - [[GraphQL-Security|보안과 인가]] — demand control, introspection 차단, 인가는 비즈니스 로직 계층
@@ -49,8 +50,8 @@ type Post {
 ```
 
 ### Query / Mutation / Subscription
-- **Query**: 데이터 조회 (REST의 GET)
-- **Mutation**: 데이터 변경 (POST/PUT/DELETE)
+- **Query**: 데이터 조회. 수집된 필드는 결과 순서에 영향이 없는 범위에서 임의 순서로 실행하고 병렬화할 수 있지만 실제 동시 실행을 보장하지 않는다. side effect는 없어야 한다
+- **Mutation**: 데이터 변경. 최상위 필드만 문서 순서대로 하나씩 완료하며, 하위 selection set은 일반 규칙으로 실행한다. 전체 연산이 자동으로 트랜잭션이 되는 것은 아니다
 - **Subscription**: long-lived 요청으로 실시간 증분 업데이트. 전송은 스펙이 정하지 않아 서버가 고르며 보통 WebSocket이나 SSE (자세히는 [[NestJS-GraphQL-Subscription|NestJS Subscription]])
 
 ### Resolver
@@ -78,7 +79,7 @@ type Post {
 실무에서 mutation과 복잡한 query를 `POST /graphql` 단일 엔드포인트로 보내는 경우가 많아 URL 기반 캐시(`Cache-Control`, CDN)를 그대로 쓰기 어렵다. 다만 GraphQL over HTTP는 query에 GET을 허용할 수 있고, persisted query를 쓰면 CDN 캐싱 여지도 생긴다. Apollo, Relay 같은 클라이언트 사이드 캐시로 보완하는 경우도 많다.
 
 ### 복잡한 에러 핸들링
-한 쿼리에 여러 리소스가 섞여 있을 때 일부만 실패하면 응답이 `{ data: {...}, errors: [...] }` 형태로 부분 성공/부분 실패. 클라이언트가 필드별로 에러를 파악해야 함. REST의 단순한 4xx/5xx 모델보다 까다롭다.
+한 쿼리에 여러 리소스가 섞여 있을 때 일부만 실패하면 응답이 `{ data: {...}, errors: [...] }` 형태로 부분 성공/부분 실패. 클라이언트가 `path`와 안정적인 error code로 필드별 실패를 파악해야 한다. request error와 execution error의 차이는 [[GraphQL-Architecture-Map|요청 라이프사이클]], top-level errors와 errors-as-data의 선택은 [[GraphQL-Schema-Design|스키마 설계]], HTTP 상태 코드 경계는 [[GraphQL-Caching#상태 코드|HTTP 전송]]에 있다.
 
 ### 쿼리 복잡도 폭발
 악의적, 실수로 깊은 중첩이나 큰 리스트를 요청하면 서버가 N+1 폭발하거나 타임아웃. **Query depth limit, complexity limit, timeout, persisted queries**를 사전에 설계해야 한다.
@@ -140,6 +141,7 @@ JSON 기반이라 multipart 업로드는 별도 명세(graphql-multipart-request
 - [Apollo Server — Context and contextValue](https://www.apollographql.com/docs/apollo-server/data/context)
 - [Apollo Server — Mocking](https://www.apollographql.com/docs/apollo-server/testing/mocking)
 - [Apollo Server — Authentication and authorization](https://www.apollographql.com/docs/apollo-server/security/authentication)
+- [Hong 강사 — 3가지 통신 패턴 및 횡단 관심사를 위한 Directive와 설계 원칙](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449777)
 - [요즘IT — GraphQL 도입 시 주의할 점](https://yozm.wishket.com/magazine/detail/2113/)
 - [velog @mdy0102 — GraphQL을 사용하며 느낀 장단점](https://velog.io/@mdy0102/GraphQL을-사용하며-느낀-장단점)
 
