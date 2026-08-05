@@ -7,7 +7,7 @@ aliases: ["Security Headers", "CSP", "HTTP Security Headers"]
 
 # HTTP Security Headers
 
-브라우저에 송신하는 응답 헤더로 **클라이언트 측 보안 정책**을 강제한다. 서버 코드에 취약점이 있어도 헤더가 깔려 있으면 1차 방어선으로 동작. Helmet 같은 미들웨어가 모범 기본값을 한 번에 적용.
+브라우저에 송신하는 응답 헤더로 **클라이언트 측 보안 정책**을 강제한다. 서버 측 방어가 뚫렸을 때 피해를 줄이는 심층 방어 계층이다. Helmet 같은 미들웨어가 모범 기본값을 한 번에 적용.
 
 ## 핵심 헤더
 
@@ -23,9 +23,9 @@ aliases: ["Security Headers", "CSP", "HTTP Security Headers"]
 
 `X-XSS-Protection: 1; mode=block`은 **모던 브라우저에서 더 이상 효과 없음**. CSP로 가는 것이 표준이지만, 레거시 브라우저 대응 차원에서 같이 둘 수는 있음.
 
-## CSP — 가장 큰 한 방
+## CSP — 심층 방어의 핵심 계층
 
-XSS의 1차 방어선. 인라인 스크립트, 외부 출처 스크립트를 통제.
+출력 인코딩과 살균 위에 얹는 심층 방어 계층([[XSS]]). 인라인 스크립트, 외부 출처 스크립트를 통제.
 
 ```
 Content-Security-Policy:
@@ -100,11 +100,11 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
 
 ## 정적 검사 + SQL Injection은 별개
 
-보안 헤더는 **클라이언트 보호**. 서버 측 입력 검증, 파라미터 바인딩은 별도. 정규식으로 SQL 키워드를 차단하는 패턴은 **거짓 양성, 우회 둘 다 잘 일어나** 보조 수단으로만 — 본 방어는 ORM/Prepared Statement.
+보안 헤더는 **클라이언트 보호** 계층이고 SQL Injection의 본 방어는 서버 측 파라미터 바인딩이다 — 정규식 키워드 차단이 거짓 양성과 우회로 보조 수단에 그치는 이유를 포함한 상세는 [[SQL-Injection]].
 
 ## 흔한 실수
 
-- **`'unsafe-inline'`을 켜둔 채 운영**: XSS 1차 방어 무력화. nonce/hash로.
+- **`'unsafe-inline'`을 켜둔 채 운영**: CSP 계층 무력화. nonce/hash로.
 - **HSTS preload 켜고 짧은 max-age로 토글**: preload 등록되면 변경 어려움. 충분히 검증 후.
 - **CSP 도입 즉시 차단 모드**: 합법적인 리소스까지 막아 화면 깨짐. Report-Only로 시작.
 - **X-XSS-Protection만 믿음**: deprecated. CSP로.
@@ -125,6 +125,7 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
 ## 관련 문서
 
 - [[XSS|XSS 공격과 방어]]
+- [[SQL-Injection|SQL Injection (파라미터 바인딩)]]
 - [[CSRF|CSRF]]
 - [[CORS|CORS]]
 - [[NestJS-Middleware|NestJS Middleware (Helmet 적용)]]

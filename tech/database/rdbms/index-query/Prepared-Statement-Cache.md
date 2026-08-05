@@ -8,7 +8,7 @@ aliases: ["Prepared Statement Cache", "Prepared Statement 캐시", "PS 캐시 �
 
 # Prepared Statement와 캐시 경계
 
-Prepared Statement는 SQL 구조를 먼저 준비하고 실행할 때 값만 바인딩한다. 같은 SQL shape를 한 세션에서 반복하면 parsing 변환 비용을 줄이고, 값이 SQL 문법으로 해석되지 않게 해 injection 위험을 낮춘다. 일회성 shape가 계속 늘면 준비와 캐시 비용만 커질 수 있다.
+Prepared Statement는 SQL 구조를 먼저 준비하고 실행할 때 값만 바인딩한다. 같은 SQL shape를 한 세션에서 반복하면 parsing 변환 비용을 줄이고, 값이 SQL 문법으로 해석되지 않게 해 injection 위험을 낮춘다(방어 범위와 식별자 자리의 한계는 [[SQL-Injection]]). 일회성 shape가 계속 늘면 준비와 캐시 비용만 커질 수 있다.
 
 ## 서버 동작
 

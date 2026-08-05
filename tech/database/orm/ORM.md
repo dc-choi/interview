@@ -89,7 +89,7 @@ N+1은 부모 N건을 읽은 뒤 각 부모의 relation을 따로 읽어 query�
 
 - 필요한 relation만 join하거나 batch query한다.
 - 목록 API는 필요한 column만 projection하고 pagination을 명시한다.
-- 복잡한 read model은 QueryBuilder, raw SQL 또는 별도 query service를 사용한다.
+- 복잡한 read model은 QueryBuilder, raw SQL 또는 별도 query service를 사용한다. raw SQL로 내려갈 때는 ORM이 대신 해주던 파라미터 바인딩이 사라지므로 값을 문자열로 이어붙이지 않는다([[SQL-Injection]]).
 - 실제 SQL 수, 실행 계획과 반환 row 수로 개선 여부를 검증한다.
 
 ## 관련 문서

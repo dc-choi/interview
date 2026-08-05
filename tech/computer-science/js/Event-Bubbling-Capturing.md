@@ -84,5 +84,5 @@ ordinary `addEventListener` callback의 `this`는 일반적으로 `currentTarget
 
 - [[Browser-DOM-Manipulation-and-Safety|브라우저 DOM 조작과 안전성]]
 - [[JavaScript-this-and-Function-Invocation|JavaScript this와 callback]]
-- [[Security-Headers#CSP — 가장 큰 한 방|Content Security Policy]]
+- [[Security-Headers#CSP — 심층 방어의 핵심 계층|Content Security Policy]]
 - [[CSRF|CSRF]]

@@ -3,11 +3,12 @@ tags: [security, cors, browser, web]
 status: done
 category: "Security"
 aliases: ["CORS", "Cross-Origin Resource Sharing"]
+verified_at: 2026-08-05
 ---
 
 # CORS (Cross-Origin Resource Sharing)
 
-브라우저의 **Same-Origin Policy(SOP)** 가 기본으로 차단하는 교차 출처 요청을 **서버가 명시적으로 허용**하도록 확장한 메커니즘. "보안을 풀어주는 것"이 아니라 **"어느 출처에 한해 SOP를 완화할지 서버가 선언**"하는 것.
+브라우저의 **Same-Origin Policy(SOP)** 가 기본으로 차단하는 교차 출처 요청을 **서버가 명시적으로 허용**하도록 확장한 메커니즘. 보안을 풀어주는 것이 아니라 **어느 출처에 한해 SOP를 완화할지 서버가 선언**하는 것.
 
 ## Origin 정의
 
@@ -26,7 +27,7 @@ https://a.com/page1   =  https://a.com/page2 (path는 상관없음)
 - 악성 사이트가 내 세션 쿠키를 이용해 은행 API 호출 → 잔액, 이체 정보 탈취 (CSRF와 유사 공격)
 - 다른 도메인의 민감 페이지를 iframe으로 로드해 내용 읽기
 
-**요청 전송 자체는 막지 못함**. 응답을 JavaScript에서 못 읽게 할 뿐. 이 차이가 CSRF 공격이 여전히 가능한 이유.
+**요청 전송 자체는 막지 못함**. 응답을 JavaScript에서 못 읽게 할 뿐. 이 차이가 CSRF 공격이 여전히 가능한 이유. 다만 preflight가 붙는 요청은 preflight가 실패하면 본 요청이 아예 나가지 않으므로, 전송을 막지 못한다는 말은 simple request 범위에서 성립한다.
 
 ## CORS는 브라우저가 강제하는 정책
 
@@ -34,15 +35,20 @@ https://a.com/page1   =  https://a.com/page2 (path는 상관없음)
 
 - 서버는 CORS 위반 요청에도 **정상적으로 응답**을 내려준다. 그 응답을 분석해 위반이라 판단하고 **버리는 주체는 브라우저**다. 콘솔엔 빨간 에러가 떠도 **서버 로그엔 정상 응답으로 남아** 에러 트레이싱이 헷갈릴 수 있다.
 - 브라우저를 거치지 않는 **서버 간 통신(server-to-server)에는 CORS가 적용되지 않는다**. 백엔드가 다른 API를 호출할 땐 출처 제약이 없다.
-- preflight 응답 상태 코드가 200이 아니어도, 핵심은 상태 코드가 아니라 **응답 헤더에 유효한 `Access-Control-Allow-Origin`이 있는가**이다.
+- **본 요청**은 상태 코드가 404든 500이든 무관하다. 응답을 읽을 수 있는지는 **응답 헤더에 유효한 `Access-Control-Allow-Origin`이 있는가**로 갈린다.
+- 반면 **preflight 응답은 2xx여야 한다**. Fetch 스펙의 CORS-preflight fetch는 CORS check 성공과 `response's status is an ok status`를 함께 요구하고, 하나라도 어긋나면 network error를 반환한다. 200이나 204를 쓴다.
 
-## 3가지 요청 타입
+## Simple, Preflight와 credentials 축
 
 ### 1. Simple Request
 브라우저가 **Preflight 없이** 바로 요청 보냄. 조건:
 - 메서드: `GET`, `HEAD`, `POST`
-- 헤더: `Accept`, `Content-Type`, `Content-Language`만 (사용자 정의 헤더 없음)
+- 헤더: CORS-safelisted 요청 헤더인 `Accept`, `Accept-Language`, `Content-Language`, `Content-Type`, `Range`만 (사용자 정의 헤더 없음). `Range`는 `bytes=0-1023` 형태의 단일 바이트 범위여야 하고, 각 헤더 값 길이는 128자를 넘을 수 없다
 - Content-Type이 `application/x-www-form-urlencoded`, `multipart/form-data`, `text/plain`만
+- `XMLHttpRequest.upload`에 이벤트 리스너가 등록돼 있지 않음 (업로드 진행률 추적을 붙이면 preflight가 붙는다)
+- 요청에 `ReadableStream`을 쓰지 않음
+
+뒤의 두 조건은 Fetch 스펙에서 use-CORS-preflight flag로 묶여 있다. 메서드와 헤더만 보고 simple이라 판단했다가 어긋나는 지점이라 놓치기 쉽다.
 
 이 조건 만족하면:
 ```
@@ -72,10 +78,12 @@ Preflight 응답:
 
 그 다음에 본 요청이 나감. **왕복 2번** 발생 → 성능 비용.
 
-완화: `Access-Control-Max-Age`로 preflight 결과 캐시 (보통 600초~1시간).
+완화: `Access-Control-Max-Age`로 preflight 결과 캐시. 헤더가 없거나 파싱에 실패하면 5초가 기본이고, 브라우저가 자체 상한으로 잘라낸다 — Chromium은 2시간(7200초, v76 이전은 10분), Firefox는 24시간(86400초). 상한을 넘겨 보내도 상한까지만 적용되므로 86400을 박아도 Chromium에서는 2시간이다.
 
-### 3. Credential Request
-쿠키, Authorization 헤더 같은 **인증 정보 포함** 요청. `fetch`, `XMLHttpRequest`는 기본적으로 인증 정보를 싣지 않으며 `credentials` 옵션으로 제어한다.
+### credentials 축 — 인증 정보 포함 요청
+쿠키, Authorization 헤더 같은 **인증 정보 포함** 여부는 앞의 둘과 배타적인 별개 타입이 아니라 두 경로 모두에 겹쳐 적용되는 축이다 — 인증 정보를 실은 요청도 조건에 따라 simple이거나 preflight를 탄다.
+
+요청의 credentials 모드는 기본값이 `same-origin`이라 교차 출처에는 인증 정보가 실리지 않는다. `fetch`는 `credentials` 옵션으로, `XMLHttpRequest`는 `withCredentials` 불리언으로 제어한다(`true`가 `include`에 해당).
 
 | 값 | 동작 |
 |---|---|
@@ -93,7 +101,9 @@ Preflight 응답:
   Access-Control-Allow-Credentials: true
 ```
 
-**보안상 `Access-Control-Allow-Origin: *` + Credentials는 금지**. 와일드카드는 인증 있는 요청에서 막힘. 구체 Origin 명시 필수.
+**인증 정보가 실린 요청에서는 `*`가 와일드카드로 동작하지 않는다.** `Access-Control-Allow-Origin`뿐 아니라 `Access-Control-Allow-Headers`, `Access-Control-Allow-Methods`, `Access-Control-Expose-Headers`까지 리터럴 `*`라는 이름으로 해석돼 매칭에 실패한다. 값을 하나하나 명시해야 한다.
+
+`Authorization`은 제약이 더 강하다. Fetch 스펙의 CORS non-wildcard request-header name이라 인증 정보 유무와 무관하게 `Access-Control-Allow-Headers: *`로는 허용되지 않고, 헤더 이름을 직접 나열해야 한다.
 
 ## 응답 헤더 정리
 
@@ -104,7 +114,7 @@ Preflight 응답:
 | `Access-Control-Allow-Headers` | 허용 요청 헤더 (preflight 응답) |
 | `Access-Control-Allow-Credentials` | 쿠키, 인증 정보 포함 허용 여부 |
 | `Access-Control-Max-Age` | Preflight 결과 캐시 시간 |
-| `Access-Control-Expose-Headers` | JS에서 접근 가능한 응답 헤더 (기본은 제한적) |
+| `Access-Control-Expose-Headers` | JS에서 추가로 읽게 할 응답 헤더. 명시하지 않아도 노출되는 기본값은 `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, `Pragma` 7개 |
 
 ## 흔한 함정
 
@@ -114,7 +124,7 @@ Preflight 응답:
 - 특정 Origin 화이트리스트 — 정규표현식, 동적 매칭 시 **버그로 `null`, `*` 반환하면 대형 사고**
 
 ### 클라이언트 쪽
-- `credentials` 기본값(`same-origin`)은 교차 출처에 쿠키를 안 보내는데, 이를 모르고 "로그인 안 됨" 디버깅에 시간 낭비
+- `credentials` 기본값(`same-origin`)은 교차 출처에 쿠키를 안 보내는데, 이를 모르고 로그인이 안 된다며 디버깅에 시간 낭비
 - 커스텀 헤더 추가했는데 preflight 허용 헤더에 없어서 실패
 
 ### Reverse Proxy 상황
@@ -124,8 +134,8 @@ Preflight 응답:
 ## CORS와 CSRF의 관계
 
 - **CORS는 CSRF를 막지 못함** — CSRF는 브라우저가 자동으로 쿠키 첨부해 요청을 보내는 걸 이용. 응답을 읽을 필요 없음
-- CSRF 방어는 **CSRF 토큰**이나 **SameSite 쿠키**가 맡음 ([[CSRF]] 참고)
-- CORS는 **"응답 읽기 허용 여부"** 만 제어
+- CSRF 방어는 **CSRF 토큰**이 본 방어, **SameSite 쿠키**는 함께 쓰는 심층 방어층 ([[CSRF]] 참고)
+- CORS는 **응답 읽기 허용 여부**만 제어
 
 ## 해결, 우회 방법
 
@@ -138,13 +148,19 @@ Preflight 응답:
 - Same-Origin을 구성하는 3요소
 - SOP가 요청을 막는가 응답을 막는가
 - CORS가 브라우저 구현 스펙이라 서버 로그엔 정상 응답으로 남는 점(디버깅 함정), 서버 간 통신엔 미적용
-- Simple vs Preflight 구분 조건
+- Simple vs Preflight 구분 조건, 업로드 진행률 리스너와 `ReadableStream`도 preflight를 유발한다는 점
+- preflight 응답은 2xx여야 하지만 본 요청은 상태 코드와 무관하다는 차이
 - `Access-Control-Allow-Origin: *`이 인증 요청에서 안 되는 이유, `credentials` 기본값
 - Preflight 성능 비용과 Max-Age로 줄이는 방법
 - 로컬 dev-server 프록시 우회가 프로덕션에서 깨지는 이유
 - CORS가 CSRF를 막지 못하는 이유
 
 ## 출처
+- [MDN — CORS-safelisted request header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header)
+- [MDN — Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS)
+- [MDN — Access-Control-Max-Age](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Max-Age)
+- [MDN — Access-Control-Allow-Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Allow-Headers)
+- [WHATWG Fetch Standard — CORS protocol, CORS-preflight fetch, CORS check](https://fetch.spec.whatwg.org/#http-cors-protocol)
 - [매일메일 — CORS 질문 78](https://www.maeil-mail.kr/question/78)
 - [매일메일 — CORS 심화 질문 96](https://www.maeil-mail.kr/question/96)
 

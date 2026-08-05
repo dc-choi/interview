@@ -101,5 +101,5 @@ CSS layout은 legacy `float`보다 flex/grid가 의도를 더 잘 표현하는�
 
 - [[Event-Bubbling-Capturing|DOM event 전파와 위임]]
 - [[Code-Readability-Dark-Patterns|JavaScript DOM code 가독성]]
-- [[Security-Headers#CSP — 가장 큰 한 방|Content Security Policy]]
+- [[Security-Headers#CSP — 심층 방어의 핵심 계층|Content Security Policy]]
 - [[XSS|Cross-Site Scripting]]

@@ -87,4 +87,4 @@ Well-known Symbol은 언어 operation이 object behavior를 조회하는 protoco
 - [[JavaScript-Iterator-and-Generator-Protocol|Iterator와 Generator]]
 - [[JavaScript-Proxy-and-Reflect|Proxy와 Reflect]]
 - [[Object-Property-Descriptor|property descriptor]]
-- [[Security-Headers#정적 검사 + SQL Injection은 별개|SQL injection 방어 경계]]
+- [[SQL-Injection|SQL injection 방어 경계]]

@@ -41,7 +41,7 @@ aliases: ["Application Security", "애플리케이션 보안", "시큐어코딩"
 웹 애플리케이션에서 특히 위험한 취약점 10가지 목록. 우선순위를 잡는 지도로 쓴다.
 
 - **Broken Access Control (접근 제어 실패)** — 2021년 기준 1위. 권한 없는 사용자가 남의 정보에 접근하거나, 일반 사용자가 관리자 기능을 실행. [[IDOR]]가 대표 사례.
-- **Injection** — 과거보다 순위는 내려갔지만 여전히 중요. 프레임워크, ORM이 기본 방어(파라미터 바인딩)를 제공해 줄었으나, 설정 실수나 안전 기능 우회 시 여전히 발생.
+- **Injection** — 과거보다 순위는 내려갔지만 여전히 중요. 프레임워크, ORM이 기본 방어(파라미터 바인딩)를 제공해 줄었으나, 설정 실수나 안전 기능 우회 시 여전히 발생. 대표 사례는 [[SQL-Injection]]과 [[XSS]].
 
 ## 최근 개발 트렌드가 만드는 리스크
 
@@ -87,6 +87,7 @@ Q. 보안팀과 개발팀의 충돌은?
 
 - [[IDOR|IDOR / Broken Access Control (인가 누락)]]
 - [[SSRF|SSRF (서버 측 요청 위조, 클라우드 메타데이터)]]
+- [[SQL-Injection|SQL Injection (파라미터 바인딩과 식별자 자리 한계)]]
 - [[XSS|XSS]]
 - [[Actuator-Exposure|Actuator 노출 (Security Misconfiguration)]]
 - [[JWT|JWT (토큰 무효화, 저장 위치)]]
