@@ -3,6 +3,7 @@ tags: [aws, vpc, network, subnet, peering, transit-gateway, infrastructure]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["VPC 흔한 실수", "VPC 면접 체크포인트"]
+verified_at: 2026-08-05
 ---
 
 # VPC 흔한 실수와 면접 체크포인트
@@ -14,7 +15,7 @@ aliases: ["VPC 흔한 실수", "VPC 면접 체크포인트"]
 - **Public Subnet에 DB 배치** — 외부 노출 위험
 - **SG를 0.0.0.0/0 허용** — 검토 없이 임시 오픈 후 방치
 - **Single AZ 운영** — AZ 장애 시 전체 서비스 다운
-- **NAT Gateway 비용 무시** — 데이터 처리 GB당 $0.045, 대량 트래픽에서 큰 비중
+- **NAT Gateway 비용 무시** — US East (Ohio) 기준 시간당 $0.045에 데이터 처리 GB당 $0.045가 별도로 붙는다. 단가는 리전마다 다르므로 대상 리전 가격표를 확인하고, 대량 트래픽에서는 비중이 커진다
 
 ## 면접 체크포인트
 
@@ -24,3 +25,8 @@ aliases: ["VPC 흔한 실수", "VPC 면접 체크포인트"]
 - **CIDR 설계 원칙**과 비중첩, 여유 할당의 이유
 - **VPC Endpoint**로 NAT 비용 줄이는 방법
 - 3-Tier 서브넷 구조와 Multi-AZ 복제
+
+## 출처
+
+- [Amazon VPC Pricing](https://aws.amazon.com/vpc/pricing/)
+- [Pricing for NAT gateways — Amazon VPC User Guide](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html)

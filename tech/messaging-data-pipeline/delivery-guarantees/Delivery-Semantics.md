@@ -30,13 +30,13 @@ aliases: ["Delivery Semantics", "전달 보장"]
 - ACK 유실과 재시도 때문에 broker 전달 횟수와 비즈니스 효과의 횟수는 같지 않을 수 있음
 - 실무에서는 At-Least-Once + 멱등성, 중복 제거, 트랜잭션을 조합해 effectively-once 효과를 구현
 - 높은 구현 복잡도와 성능 비용
-- Kafka의 Exactly-Once Semantics (EOS): 트랜잭션 기반 Producer-Consumer
+- Kafka의 Exactly-Once Semantics (EOS): 단일 클러스터 안의 read-process-write 경계 한정이다. Kafka 토픽에서 읽어 Kafka 토픽으로 쓰는 구간만 트랜잭션으로 출력과 오프셋 커밋을 원자적으로 묶고, 외부 DB나 API 같은 부수효과는 컨슈머 멱등으로 effectively-once를 만든다 ([[Idempotent-Consumer|멱등 컨슈머]])
 
 ## 시스템별 지원 현황
 
 | 시스템 | At-Most-Once | At-Least-Once | Exactly-Once |
 |--------|-------------|---------------|--------------|
-| Kafka | 지원 | 기본값 | 트랜잭션 기반 |
+| Kafka | 지원 | 기본값 | 단일 클러스터 read-process-write 한정, 외부 부수효과는 컨슈머 멱등 |
 | RabbitMQ | 지원 | 기본값 | 미지원 (앱 레벨 구현) |
 | SQS | 지원 | Standard 기본 | FIFO의 5분 발행 중복 제거, message group 순서. 소비자 재처리는 별도 대비 |
 | Redis Streams | 지원 | XACK 기반 | 미지원 |

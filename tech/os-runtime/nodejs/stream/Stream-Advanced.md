@@ -29,16 +29,14 @@ EventEmitter 아키텍처, Web Streams 비교, 에러 안전한 pipeline(), cork
 |------|-------------|-------------|
 | 기반 | EventEmitter | Promise |
 | 호환성 | Node.js 전용 | 브라우저 + Node.js |
-| 성능 | **더 빠름** (이벤트 기반) | 상대적으로 느림 (Promise 오버헤드) |
+| 성능 특성 | 이벤트 기반, 할당 적음 | Promise, 객체 할당 오버헤드 |
 | API | on/pipe/write | getReader/getWriter/pipeTo |
 | 배압 | drain 이벤트 기반 | pull 기반 (내장) |
 | 적합 대상 | Node.js 서버 고성능 I/O | 브라우저-서버 범용 코드 |
 
-```
-James Snell (Node.js Core Contributor):
-"Web Streams는 이식성이 좋지만, Node Streams가 상당히 더 빠르다.
-성능이 중요한 서버 사이드에서는 Node Streams를 사용하라."
-```
+Node Congress 2026 발표에서 James Snell은 Node.js의 ReadableStream 구현이 Node Streams보다 열 배 수준(order of magnitude)으로 느리며, 여러 런타임과 프레임워크 벤치마크에서도 Web Streams가 눈에 띄게 느리게 나온다고 말했다.
+
+다만 이 격차는 사양이 아니라 구현과 워크로드에 달려 있다. 2026년 Vercel은 Node.js 내장 Web Streams의 불필요한 할당과 Promise 오버헤드를 줄인 유저랜드 구현으로 최대 10배 이상 개선한 사례를 공개했다. 어느 쪽이 빠른지는 대상 Node.js 버전, 청크 크기, 파이프 단계 수로 직접 측정해 판단한다. 이식성이 필요하면 Web Streams, Node.js 전용 고성능 I/O면 Node Streams가 기본 선택이다.
 
 ## EventEmitter vs Callback 선택 기준
 
@@ -135,3 +133,9 @@ process.nextTick에서 uncork를 호출하는 것이 관용구:
 - [[Stream|스트림 인덱스]]
 - [[Event-Loop|이벤트 루프]]
 - [[Node.js]]
+
+## 출처
+
+- [We Deserve a Better Streams API for the Web — James Snell, Node Congress 2026](https://gitnation.com/contents/we-deserve-a-better-streams-api-for-the-web)
+- [Node.js — Web Streams API](https://nodejs.org/api/webstreams.html)
+- [We Ralph Wiggumed WebStreams to make them 10x faster — Vercel](https://vercel.com/blog/we-ralph-wiggumed-webstreams-to-make-them-10x-faster)

@@ -78,7 +78,7 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 앞단계 중 실패하면 이전까지 롤백. OTA 확정은 모든 선행 조건이 OK일 때만.
 
 ### 4. 보상 트랜잭션 (Compensation)
-분산 환경에서 분산 트랜잭션(2PC)은 현실적으로 불가 → **Saga 패턴**.
+외부 API처럼 XA를 지원하지 않는 참여자가 섞이면 2PC가 성립하지 않는다 → **Saga 패턴** ([[Distributed-Transaction-Strategies|분산 트랜잭션 전략]]).
 
 각 단계가 실패하면 **이미 성공한 단계를 역순으로 보상**:
 - OTA 예약 후 포인트 적립 실패 → OTA 예약 취소 API 호출

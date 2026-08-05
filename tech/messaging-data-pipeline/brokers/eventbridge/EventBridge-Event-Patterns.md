@@ -126,4 +126,3 @@ aliases: ["EventBridge Event Pattern", "이벤트 패턴 매칭", "EventBridge �
 ## 출처
 
 - [Amazon EventBridge event patterns — AWS 공식 문서](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html)
-</content>

@@ -17,7 +17,7 @@ aliases: ["NestJS vs Spring 런타임과 DI", "NestJS Spring 모듈 구조 비�
 | 동시성 | **스레드-per-요청** (Servlet, Tomcat 스레드 풀) | **싱글 스레드 + 이벤트 루프** (libuv) |
 | 확장 | JVM 스레드 수 증가, 가상 스레드(Java 21+) | 수평 확장(cluster, PM2), 워커 스레드 |
 
-같은 "동시 요청 N개"를 처리하는 방식이 근본적으로 다르다. Spring은 CPU-바운드 작업에 유리하고, NestJS는 I/O-바운드, 대규모 동시 연결에 유리.
+같은 시점의 동시 요청 N개를 처리하는 방식이 근본적으로 다르다. 서블릿 컨테이너는 요청 처리 중 블로킹을 흡수하려고 큰 스레드 풀을 두는 반면(Spring 공식 문서), Node.js는 적은 수의 스레드로 다수 클라이언트를 받기 때문에 콜백 하나가 이벤트 루프를 오래 점유하면 대기 중인 다른 요청이 밀린다(Node.js 공식 문서). 여기서 나오는 일반 경향은 긴 CPU 연산이 섞이면 스레드 풀 모델이 덜 취약하고, 지연이 큰 네트워크 I/O와 대규모 동시 연결에서는 이벤트 루프 모델이 적은 스레드로 확장하기 유리하다는 정도다. 다만 Spring 공식 문서도 논블로킹이 곧 더 빠름을 뜻하지는 않으며 이점은 지연이 있는 구간에서 드러난다고 밝히고 있고, Node.js는 worker thread, Spring은 WebFlux와 가상 스레드로 각자 반대편을 보완할 수 있다. 워크로드 구성과 실측 없이 어느 쪽이 CPU 바운드에 유리하다고 단정할 수는 없다.
 
 ## DI (의존성 주입)
 
@@ -59,3 +59,8 @@ NestJS는 의존 그래프가 **코드로 명시**되어 추적이 쉬운 반면
 | 타겟 | 클래스, 메서드, 필드, 파라미터 등 | 클래스, 메서드, 접근자, 속성, 파라미터 |
 
 NestJS의 데코레이터는 TypeScript의 `experimentalDecorators` + `emitDecoratorMetadata` 컴파일러 옵션에 의존. 최신 TC39 Stage 3 데코레이터는 의미론이 약간 달라 NestJS가 점진적 전환 중.
+
+## 출처
+
+- [Node.js — Don't block the event loop (or the worker pool)](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)
+- [Spring Framework — Spring WebFlux Overview (Concurrency Model, Performance)](https://docs.spring.io/spring-framework/reference/web/webflux/new-framework.html)

@@ -1,6 +1,7 @@
 ---
 tags: [testing, isolation]
 status: done
+verified_at: 2026-08-05
 category: "테스트&품질(Testing&Quality)"
 aliases: ["Test Isolation", "테스트 격리"]
 ---
@@ -18,16 +19,7 @@ aliases: ["Test Isolation", "테스트 격리"]
 
 ## 격리 전략
 
-### 1. 순차 실행 (Sequential)
-
-테스트를 병렬이 아닌 순차로 실행하여 공유 자원 경합을 방지한다.
-
-- 단위 테스트: 빠르므로 순차 실행해도 부담 적음
-- 통합 테스트: DB 등 공유 자원을 사용하므로 순차 실행이 안전
-
-Vitest 설정에서 `pool: 'forks'`와 `poolOptions.forks.singleFork: true`로 단일 프로세스 순차 실행을 강제할 수 있다.
-
-### 2. 테스트별 상태 초기화
+### 1. 테스트별 상태 초기화
 
 각 테스트 전후에 상태를 초기화한다.
 
@@ -35,7 +27,7 @@ Vitest 설정에서 `pool: 'forks'`와 `poolOptions.forks.singleFork: true`로 �
 - `afterEach` — 생성된 데이터 정리
 - `vi.clearAllMocks()` — 모든 mock의 호출 기록 초기화
 
-### 3. Mock 기반 격리
+### 2. Mock 기반 격리
 
 실제 외부 시스템 대신 mock을 사용하면 자연스럽게 격리된다.
 
@@ -43,7 +35,7 @@ Vitest 설정에서 `pool: 'forks'`와 `poolOptions.forks.singleFork: true`로 �
 - 네트워크 mock: 외부 API 호출 없음
 - 시간 mock: `vi.useFakeTimers()`로 시간 의존 테스트 격리
 
-### 4. 컨텍스트 분리
+### 3. 컨텍스트 분리
 
 tRPC caller factory 패턴으로 각 테스트마다 독립적인 사용자 컨텍스트를 생성한다.
 
@@ -51,27 +43,33 @@ tRPC caller factory 패턴으로 각 테스트마다 독립적인 사용자 컨�
 - 조직(organization) 스코프도 테스트별로 다르게 설정
 - 권한(ADMIN/TEACHER) 분리 테스트도 가능
 
+### 4. 순차 실행 (Sequential) — 완화책
+
+순차 실행은 격리 설계의 대체물이 아니라 경합이 드러날 확률을 낮추는 완화책이다. 공유 자원을 그대로 두면 순서 의존과 잔여 데이터 문제는 남는다. 병렬로 돌려야 한다면 worker별 database, schema 또는 container로 namespace를 나누는 것이 정공법이다 ([[HTTP-API-Integration-Testing|HTTP API 통합 테스트]]).
+
+Vitest 3까지는 `pool: 'forks'`와 `poolOptions.forks.singleFork: true`로 단일 child process 실행을 강제했다. Vitest 4는 `poolOptions`를 제거하면서 이 설정을 `maxWorkers: 1`과 `isolate: false` 조합으로 대체했다. 즉 순차 실행을 끝까지 밀면 파일 단위 격리(`isolate`, 기본값 `true`)를 오히려 끄게 된다. 워커 수만 줄이려면 `fileParallelism: false` 또는 `maxWorkers: 1`을 쓰고 `isolate`는 유지한다.
+
 ## 단위 테스트 vs 통합 테스트 격리
 
 | 구분 | 단위 테스트 | 통합 테스트 |
 |---|---|---|
 | 격리 대상 | 외부 의존성 (DB, API) | 테스트 간 공유 상태 |
 | 방법 | Mock/Stub | 트랜잭션 롤백, DB 초기화 |
-| 실행 | 순차 (빠름) | 순차 (안전) |
+| 실행 | mock 격리 위에서 병렬 가능 | worker별 namespace 분리, 없으면 순차로 완화 |
 | 타임아웃 | 짧게 (10초) | 길게 (30초) |
 
 ## Vitest 설정 예시
 
 - 단위 테스트: `include: ['test/*.test.ts']`, `testTimeout: 10000`
 - 통합 테스트: `include: ['test/integration/**/*.test.ts']`, `testTimeout: 30000`
-- 공통: `sequence: { concurrent: false }` (순차 실행)
+- 공통: `sequence: { concurrent: false }` — 한 파일 안의 테스트를 순차로 실행하는 Vitest 기본값
 
 ## 면접 포인트
 
 Q. 테스트 격리를 어떻게 보장하는가?
-- 순차 실행으로 공유 자원 경합 방지
 - beforeEach에서 mock/상태 초기화
 - 테스트별 독립 컨텍스트(사용자, 조직) 생성
+- 병렬 실행 시 worker별 database, schema로 namespace 분리, 순차 실행은 그것이 없을 때의 완화책
 
 Q. Flaky test는 어떻게 해결하는가?
 - 공유 상태 제거 (mock 기반 격리)
@@ -80,4 +78,13 @@ Q. Flaky test는 어떻게 해결하는가?
 
 ## 관련 문서
 - [[Test-Fixture|Test fixture 전략]]
+- [[HTTP-API-Integration-Testing|HTTP API 통합 테스트]]
 - Deterministic test (작성 예정: `Deterministic-Test`)
+
+## 출처
+
+- [Vitest 공식 문서, pool](https://vitest.dev/config/pool)
+- [Vitest 공식 문서, isolate](https://vitest.dev/config/isolate)
+- [Vitest 공식 문서, fileParallelism](https://vitest.dev/config/fileparallelism)
+- [Vitest 공식 문서, sequence.concurrent](https://vitest.dev/config/sequence)
+- [Vitest 공식 문서, Migration Guide](https://vitest.dev/guide/migration.html)

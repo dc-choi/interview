@@ -117,12 +117,14 @@ async rarelyUsedFeature() {
 
 ## 실측 예시
 
-한 프로젝트에서 Controller 분리만으로:
+아래 수치는 공식 문서가 아니라 velog @miinhho의 개인 사례 글에서 인용한 것이다 (측정 환경은 원문에 명시되지 않음). Controller 분리만으로:
 - **before**: 단일 UserController가 4개 도메인 의존 → 235ms
-- **after**: 4개 Controller로 분리 → 197ms
-- **16% 개선**
+- **after**: User, Post, Follow, Comment 4개 Controller로 분리 → 197ms
+- **약 16% 개선**
 
-모듈 그래프가 깊어질수록 효과 커짐.
+이 197ms는 아래 공식 벤치마크의 197ms(미번들 Nest + platform-express 스타터 부팅 시간)와 값만 겹칠 뿐 별개 환경의 서로 무관한 측정이다.
+
+단일 사례라 절대값은 그대로 일반화하기 어렵지만, 모듈 그래프가 깊어질수록 분리 효과가 커진다는 방향성은 참고할 수 있다.
 
 ## 서버리스 특화 팁
 
@@ -136,7 +138,7 @@ async rarelyUsedFeature() {
 | Nest standalone (리스너 없음) | ~112ms | ~32ms |
 | raw Node 스크립트 | ~7ms | ~7ms |
 
-- **컴파일과 번들 방식이 부팅 시간의 결정 변수** — 번들만으로 절반 이하. 10개 리소스 규모 앱은 번들 후에도 ~130ms로, 앱이 클수록 부팅이 늘어난다 (모놀리스를 통째로 서버리스에 올리는 것 자체가 비권장인 이유).
+- **컴파일과 번들 방식이 부팅 시간의 결정 변수** — 번들만으로 절반 이하. 10개 리소스 규모 앱은 ~130ms(공식 FAQ 수치, 번들 여부는 원문 미명시)로, 앱이 클수록 부팅이 늘어난다 (모놀리스를 통째로 서버리스에 올리는 것 자체가 비권장인 이유).
 - 번들 시 Nest 내부의 옵션 모듈(microservices, websockets)의 lazy import는 webpack `IgnorePlugin`으로 무시 처리해야 깨지지 않는다.
 - **warm invocation 캐시**: 부팅 결과(server 핸들러)를 핸들러 함수 밖 변수에 담아 재사용 — cold start에만 bootstrap이 돌게 하는 표준 패턴.
 

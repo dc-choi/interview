@@ -3,6 +3,7 @@ tags: [aws, vpc, network, subnet, peering, transit-gateway, infrastructure]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["NAT Gateway vs NAT Instance", "SG vs NACL"]
+verified_at: 2026-08-05
 ---
 
 # VPC NAT와 보안 (SG, NACL, 규제)
@@ -15,7 +16,7 @@ NAT Instance는 **추천하지 않음** — Public Subnet에 두는 특수 EC2(`
 |---|---|---|
 | 관리 | AWS 관리형, 유지보수 불필요 | 사용자가 직접 관리 |
 | 가용성 | AZ 내 이중화 자동 | 단일 EC2 — 스크립트로 Failover 필요 |
-| 대역폭 | 최대 **45 Gbps** 확장 | 인스턴스 유형에 종속 |
+| 대역폭 | 기본 5 Gbps, **최대 100 Gbps**까지 자동 확장 | 인스턴스 유형에 종속 |
 | 보안그룹 | **적용 불가** (NACL만 가능) | 적용 가능 |
 | Source/Dest Check | N/A | **비활성화 필수** |
 
@@ -30,7 +31,7 @@ NAT Instance는 **추천하지 않음** — Public Subnet에 두는 특수 EC2(`
 | 룰 | allow만 (deny 없음) | allow + **deny 가능** |
 | 기본값 | 인바운드 거부 / 아웃바운드 허용 | 인, 아웃 모두 허용 |
 | 평가 순서 | 규칙 리스트 전체 매칭 | **우선순위(번호) 순** — 작은 값이 먼저 |
-| 인스턴스 부착 | 인스턴스당 **최대 5개** SG | 서브넷당 1개 NACL |
+| 인스턴스 부착 | ENI당 SG **기본 쿼터 5개** (최대 16개까지 조정 가능) | 서브넷당 1개 NACL |
 | 체크 시점 | 트래픽이 ENI에 도달할 때 | 서브넷 경계 진입/이탈 |
 | 적용 | 변경 즉시 반영 | 변경 즉시 반영 |
 
@@ -42,3 +43,8 @@ NAT Instance는 **추천하지 않음** — Public Subnet에 두는 특수 EC2(`
 - **Flow Logs**: VPC, Subnet, ENI 단위 트래픽 기록. CloudWatch Logs, S3로 저장 → 보안 감사, 장애 원인 분석
 - **Bastion vs SSM Session Manager**: 최근은 SSM으로 SSH 포트 없이 접근 권장
 - **프라이빗 연결 우선**: 내부 서비스 간 통신은 Private IP로 — Public DNS 경유 시 NAT 거쳐 비용↑
+
+## 출처
+
+- [NAT gateway basics — Amazon VPC User Guide](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html)
+- [Amazon VPC quotas — ENI당 보안 그룹 기본 5개, 최대 16개까지 조정](https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html)

@@ -98,4 +98,4 @@ Q. 분산 환경에서는 어떻게 하는가?
 
 ## 관련 문서
 - [[CSRF|CSRF Protection]]
-- [[CORS|CORS / CSP]]
+- [[CORS|CORS]]

@@ -35,12 +35,12 @@ aliases: ["Cache stampede 방지", "Cache Stampede"]
 - 적합: 조회 빈도가 매우 높고 DB 조회 비용이 큰 데이터
 
 ### 4. PER, XFetch (Probabilistic Early Recomputation)
-- 캐시 만료 전 일정 확률로 조기 갱신을 시도하는 알고리즘
-- 핵심 공식: `now - delta * beta * ln(random()) >= expiry` 시 조기 갱신
+- 캐시 만료 전 일정 확률로 조기 갱신을 시도하는 알고리즘. Vattani, Chierichetti, Lowenstein의 VLDB 2015 논문에서 제안, 증명됨
+- 핵심 공식: 논문 Figure 3의 `Time() - delta * beta * log(rand()) >= expiry` 시 조기 갱신 (논문의 log는 자연로그)
   - `delta` — 직전 갱신에 걸린 시간 (값을 만드는 비용)
-  - `beta` — 조정 파라미터 (1.0 기본, ↑ 더 일찍 갱신)
-  - `ln(random())` — 0 이하 음수, 만료에 가까울수록 갱신 확률 ↑ 베타 분포
-- 메타데이터로 `delta`, `expiry`를 별도 키에 저장 (`{key}:meta`) — 갱신 비용을 알아야 적절히 앞당김
+  - `beta` — 조정 파라미터 (기본 1, ↑ 더 일찍 갱신. 논문은 기본 1만으로도 충분히 효과적이라고 명시)
+  - `-delta * beta * log(rand())` — 지수 분포 `Exp(1/beta)` 표본을 delta배로 스케일한 값. 만료에 가까울수록 갱신 확률 ↑
+- 논문 Figure 3 기본형은 `CacheWrite(key, (value, delta), ttl)`로 **`delta`만 값에 저장**하고, `expiry`는 캐시 읽기가 함께 돌려주는 것을 전제한다. 캐시 서버가 만료 시각을 주지 못하면 값을 `(value, delta, Time() + ttl)`로 확장해 `expiry`까지 넣으라는 것이 논문이 제시한 변형이다. 별도 메타 키(`{key}:meta`)로 두는 것도 같은 목적의 구현 변형
 - lock 없이 확률적으로 분산하므로 구현이 단순하면서도 효과적
 
 ### 5. Single-Flight (프로세스 내 중복 합치기)
@@ -87,6 +87,9 @@ EVAL "if redis.call('get', KEYS[1]) == ARGV[1]
 - **Hot Key 1-2개**: 위 + 분산 락 (Lua 해제) 또는 백그라운드 갱신
 - **Hot Key 많음**: 위 + XFetch (확률적 조기 갱신, 락 오버헤드 회피)
 - **트래픽 폭증, 외부 의존성 큼**: 위 조합 + 짧은 TTL stale-while-revalidate 패턴
+
+## 출처
+- [Andrea Vattani, Flavio Chierichetti, Keegan Lowenstein — Optimal Probabilistic Cache Stampede Prevention, PVLDB Vol. 8 No. 8, pp. 886-897, 2015](http://www.vldb.org/pvldb/vol8/p886-vattani.pdf)
 
 ## 관련 문서
 - [[Cache-Strategies|Cache 전략]]

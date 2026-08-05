@@ -1,6 +1,7 @@
 ---
 tags: [database, redis, cache]
 status: done
+verified_at: 2026-08-05
 category: "Data & Storage - Cache & KV"
 aliases: ["Persistence"]
 ---
@@ -12,26 +13,16 @@ aliases: ["Persistence"]
 따라서 redis를 캐시 이외의 용도로 사용한다면 적절한 데이터 백업이 필요함.
 
 ## AOF (append only file)
-```
-데이터를 변경하는 커맨드가 들어오면 커맨드를 그대로 모두 저장함. 데이터가 커지게 됨. 따라서 주기적으로 압축해서 재 작성되는 과정을 거쳐야 함.
 
-레디스 프로토콜 형태로 저장됨.
+서버가 받은 쓰기 커맨드를 순서대로 파일에 덧붙이고, 재시작 시 이를 재생해 원래 데이터셋을 복원한다. 커맨드는 레디스 프로토콜과 같은 형식으로 기록된다. 로그가 계속 커지므로 주기적으로 현재 상태 기준의 최소 명령 집합으로 재작성(rewrite)해야 한다.
 
-자동으로 생성하는 방법은 redis.conf 파일에서 auto-aof-rewrite-pertenage 옵션을 세팅한다.
-
-수동으로 생성하는 방법은 BGREWRITEAOF 커맨드를 사용해서 CLI 창에서 수동으로 AOF 파일 저장
-```
+`redis.conf`에서 `appendonly yes`로 활성화한다. 자동 재작성 기준은 `auto-aof-rewrite-percentage` 옵션으로 설정하고, 수동 재작성은 `BGREWRITEAOF` 커맨드로 실행한다.
 
 ## RDB
-```
-스냅샷 방식을 사용하기 때문에 저장 당시의 메모리에 있는 데이터 그대로 파일로 저장함.
 
-바이너리 파일 형태로 저장됨.
+지정한 시점의 데이터셋을 스냅샷으로 남긴다. 저장 당시 메모리에 있던 데이터가 그대로 바이너리 파일(기본 `dump.rdb`)로 기록된다.
 
-자동으로 생성하는 방법은 redis.conf 파일에서 save 옵션을 세팅한다.
-
-수동으로 생성하는 방법은 BGSAVE 커맨드를 사용해서 CLI 창에서 수동으로 RDB 파일 저장.
-```
+자동 저장은 `redis.conf`의 `save` 옵션으로 N초 동안 M개 이상 변경이 있을 때 스냅샷을 만들도록 지정한다(예: `save 60 1000`). 수동 저장은 `BGSAVE` 또는 `SAVE` 커맨드로 실행한다.
 
 ### RDB 내부 동작
 
@@ -92,16 +83,15 @@ appendonlydir/
 레플리카만 Persistence 켜는 것도 옵션 (마스터 부하 절감).
 
 ## 선택 기준
-```
-백업은 필요하지만 어느정도 데이터 손실이 발생해도 괜찮은 경우
-RDB 단독으로 사용.
 
-장애 직전 상황까지 모든 데이터가 보장되어야 하는 경우
-AOF 사용. 이때 APPENDFSYNC 옵션이 everysec인 경우 최대 1초 사이의 데이터 유실 가능성 존재
+백업은 필요하지만 재해 상황에서 몇 분 정도의 데이터 손실을 감수할 수 있으면 RDB 단독으로 충분하다.
 
-제일 강력한 내구성이 필요한 경우
-둘 다 사용.
-```
+PostgreSQL에 준하는 수준의 데이터 안전성이 필요하면 두 방식을 함께 쓴다. 공식 문서는 AOF 단독 사용은 권장하지 않는데, 백업과 빠른 재시작, AOF 엔진 자체의 버그 대비를 위해 주기적인 RDB 스냅샷이 여전히 유용하기 때문이다.
+
+AOF를 켜도 손실이 0이 되지는 않는다. `appendfsync everysec`이면 재해 시 최대 1초 분량의 쓰기가 유실될 수 있고, 이를 더 줄이려면 `always`를 써야 하지만 처리량 손해가 크다.
+
+## 출처
+- [Redis Docs, Redis persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)
 
 ## 관련 문서
 - [[Redis-Architecture|Redis architecture]]

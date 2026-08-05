@@ -1,6 +1,7 @@
 ---
 tags: [security, supply-chain, dependency, devsecops, ai-tooling]
 status: done
+verified_at: 2026-08-05
 category: "보안(Security)"
 aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의존성 공격", "AI 네이티브 보안 딜레마"]
 ---
@@ -93,12 +94,17 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 
 ## 사례
 
-- 2026년 3월, LLM 프록시 라이브러리(litellm)의 특정 PyPI 버전이 GitHub에 없는 채로 레지스트리에 직접 올라와 `.pth` 자동 실행으로 크레덴셜 수집, K8s 횡이동을 시도. AI 코딩 도구의 플러그인 의존성으로 딸려 들어온 케이스가 발견됨.
-- 2026년 3월, HTTP 클라이언트(axios)의 메인테이너 npm 계정이 탈취돼 CI를 우회한 악성 버전이 배포. 소스에서 import하지 않는 가짜 의존성을 postinstall로 실행. 인프라 모니터링 도구(Datadog CI 등)가 이를 의존성으로 가져 점검 대상이 됨.
-- 2026년 2월, 브라우저(Chrome) 제로데이가 악용 정황과 함께 공개되어 즉시 업데이트가 필요 — AI 도구와 무관한 기본 보안 운영 부담의 예.
+- **litellm (PyPI, 2026-03-24)** — 공급자 공지 기준, 공격자가 공식 CI/CD 워크플로를 우회해 `1.82.7`, `1.82.8`을 PyPI에 직접 업로드(GitHub 저장소 자체는 미침해). `1.82.8`에는 `litellm_init.pth`가 들어 있어 파이썬 프로세스 시작마다 자동 실행되며 환경변수, SSH 키, 클라우드 크레덴셜(AWS, GCP, Azure), K8s 토큰, DB 비밀번호를 수집해 외부 도메인으로 유출. 10:39 UTC부터 약 40분간 노출됐고, 공지는 AI 에이전트 프레임워크, MCP 서버, LLM 오케스트레이션 도구를 통해 핀 없이 전이 의존성으로 딸려 들어온 경우도 영향 대상으로 명시.
+- **axios (npm, 2026-03-31)** — 리드 메인테이너 npm 계정이 탈취돼 `1.14.1`과 `0.30.4`가 배포. 소스에서 import하지 않는 `plain-crypto-js` 의존성이 설치 시점에 크로스플랫폼 RAT를 내려받아 실행했고, 약 3시간 뒤 npm에서 제거. `@datadog/datadog-ci`가 `axios: ^1.13.5`를 의존성으로 선언해 lockfile 없이 설치하면 악성 버전으로 해석되는 경로가 보고됨.
+- **Chrome 제로데이 (2026-02-13)** — CSS use-after-free 취약점(CVE-2026-2441)을 수정한 스테이블 업데이트가 배포됐고, 릴리스 노트에 악용 사례가 실제로 존재한다고 명시. AI 도구와 무관한 기본 보안 운영 부담의 예.
 
 ## 출처
-- 공급망 공격과 AI 네이티브 조직의 보안 딜레마 — 개인 블로그 에세이
+- [Security Update: Suspected Supply Chain Incident — LiteLLM](https://docs.litellm.ai/blog/security-update-march-2026)
+- [CRITICAL: Malicious litellm_init.pth in litellm 1.82.8 — BerriAI/litellm Issue #24512](https://github.com/BerriAI/litellm/issues/24512)
+- [Post Mortem: axios npm supply chain compromise — axios/axios Issue #10636](https://github.com/axios/axios/issues/10636)
+- [Supply chain risk: runtime `npx` install exposes users to transitive dependency attacks — DataDog/junit-upload-github-action Issue #49](https://github.com/DataDog/junit-upload-github-action/issues/49)
+- [Stable Channel Update for Desktop (2026-02-13) — Chrome Releases](https://chromereleases.googleblog.com/2026/02/stable-channel-update-for-desktop_13.html)
+- 공급망 공격과 AI 네이티브 조직의 보안 딜레마 — 개인 블로그 에세이 (상방-하방 딜레마 등 조직 관점 서술의 출처)
 
 ## 관련 문서
 - [[Secret-Management|시크릿 관리]] — 크레덴셜 로테이션, 동적 시크릿

@@ -11,13 +11,7 @@ aliases: ["Load Test K6", "성능 테스트 도구", "k6 vs JMeter"]
 
 ## 성능 테스트 유형
 
-- **Load Test** — 예상 부하에서 안정성
-- **Stress Test** — 한계점 탐지
-- **Spike Test** — 순간 폭주 대응
-- **Soak/Endurance** — 장시간 안정성
-- **Scalability Test** — 스케일 아웃 효과 검증
-
-자세한 구분: [[performance|성능 테스트 유형]]
+유형 구분(Load, Stress, Endurance, Spike, Volume)과 각 유형의 부하 모양, 종료 조건은 [[performance|성능 테스트 유형]]이 정본이다. 이 문서는 그 시나리오를 **어떤 도구로 돌릴지**에 집중한다.
 
 ## 도구 선택 핵심 축
 
@@ -152,9 +146,9 @@ export default function () {
 
 ## 실전 설계
 
-- **시나리오**: Baseline(평균), Peak(피크), Stress(Peak×2~3), Spike(순간 폭주), Soak(24~72h 지속)
-- **측정 지표**: P50, P95, P99 Latency, RPS/TPS, Error Rate, Saturation(CPU, 메모리, Connection Pool), Scalability Curve
-- **환경**: Staging에서 Baseline, Peak, 전용 환경에서 Stress, Spike, Soak, Production은 Canary, Shadow로 제한적
+- **유형과 지표 축**: [[performance|성능 테스트 유형]] 참고. 이 절은 도구 측 설정만 다룬다.
+- **k6가 방출하는 기본 메트릭**: `http_req_duration`은 요청 전체 소요를 trend로, `http_req_failed`는 실패 비율을 rate로 내보낸다. threshold 표현식은 이 메트릭 이름 위에 건다.
+- **환경 분리**: Load는 Staging, Stress와 Endurance, Spike는 전용 환경, Production은 Canary, Shadow로 제한적
 
 ## 흔한 실수
 
@@ -164,15 +158,15 @@ export default function () {
 - **데이터 같은 값 반복** — 캐시에 히트 → 실제와 다름
 - **GUI JMeter로 실 테스트** — JMeter 자체가 병목
 - **SLO 없이 측정** — 기준이 없으면 숫자가 해석 불가
-- **램프업 시나리오만 테스트** — 순간 수 배 급증(스텝)은 커넥션 폭증, Full GC 같은 별도 실패 모드를 유발. 점진 증가 통과가 스파이크 안전을 보장하지 않는다 ([[Capacity-Planning|캐퍼시티 플래닝]])
+- **램프업 시나리오만 테스트** — 스텝 급증에서만 나는 커넥션 폭증과 Full GC를 못 본다 ([[Capacity-Planning|캐퍼시티 플래닝]])
 
 ## 면접 체크포인트
 
 - k6와 JMeter의 **구조적 차이**(언어, 메모리, GUI, 분산)
 - 본인 팀에 맞는 도구 선택 근거
 - Keploy가 기존 성능 테스트와 다른 **트래픽 소스** 관점
-- 성능 테스트 시나리오 5가지(Baseline/Peak/Stress/Spike/Soak)
-- P50, P95, P99, 에러율을 동반 보는 이유
+- 성능 테스트 유형 5가지(Load, Stress, Endurance, Spike, Volume)와 판정 기준은 [[performance|성능 테스트 유형]]
+- k6의 `http_req_duration`, `http_req_failed`가 각각 무엇을 재는지
 - 로컬이 아닌 **전용 환경**에서 테스트하는 이유
 
 ## 출처

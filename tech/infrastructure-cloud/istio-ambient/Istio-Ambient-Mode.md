@@ -112,7 +112,7 @@ sidecar는 idle 상태여도 Pod 수만큼 상주 비용이 쌓인다. Pod 4,000
 - [[Envoy-Retry-Buffer-507|Envoy Retry Buffer와 507]] — retry 정책이 만든 보이지 않는 payload 한도
 - [[Envoy-XDS-Disconnected-Detection|Envoy xDS 단절 탐지]] — readiness가 못 보는 control plane 단절과 탐지 메트릭
 - [[K8s-Resource-Right-Sizing|K8s Resource Right-Sizing]] — 프록시 상주 비용 산정과 같은 축의 리소스 역산
-- [[EKS]] — EKS 위 service mesh 옵션 (App Mesh, Istio, Linkerd)
+- [[EKS]] — EKS 위 service mesh 옵션(Istio, Linkerd)과 App Mesh 지원 종료 현황
 - [[Monolith-vs-Microservice|모놀리스 vs 마이크로서비스]] — mesh 도입 판단의 전 단계인 서비스 분리 결정
 - [[Forward-vs-Reverse-Proxy|Forward vs Reverse Proxy]] — 프록시 기본 개념
 

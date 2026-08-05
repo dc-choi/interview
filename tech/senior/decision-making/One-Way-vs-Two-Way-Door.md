@@ -39,6 +39,8 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 
 모두 No면 Two-Way. **빨리 시작하고, 돌면서 배우는 편이 낫다**.
 
+여기 쓰인 6개월, 연간 예산 10%, 수년 같은 수치는 아래 출처 어디에도 없다. 2015년 주주 서한은 결정의 중대성(consequential)과 되돌림 가능성으로 Type 1, Type 2를 구분할 뿐 정량 임계값은 제시하지 않으며, 특강 노트도 마찬가지다. 따라서 **예시 임계값으로만 쓰고, 조직의 규모, 런웨이, 리스크 허용도에 맞게 직접 정한다**.
+
 ## Two-Way Door 확장 기법
 
 "One-Way처럼 보이는 결정을 Two-Way로 재설계"하는 기법들.
@@ -140,7 +142,7 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 주주 결정이 One-Way Door인 또 하나의 이유는 투자 계약에 딸려 오는 권리들이 회사와 창업자의 보통주에 장기 부담으로 남기 때문이다. 투자자는 리스크를 줄이려 여러 안전장치를 건다.
 
 - **전환사채(CB)**: 채권으로 빌려줬다가 나중에 주식으로 전환.
-- **상환전환우선주(RCPS)**: 원할 때 상환을 요구하거나 배당을 받는 우선주.
+- **상환전환우선주(RCPS)**: 계약 조건에 따라 상환을 청구하거나(회사의 배당가능이익 범위 내) 보통주로 전환할 수 있는 우선주.
 - **청산우선권**: 청산 시 우선주가 보통주보다 잔여재산을 먼저 분배받음.
 - **Tag-along**: 지배주주가 지분을 팔 때 투자자 지분도 함께 팔도록 요구.
 
@@ -155,7 +157,7 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 - 커리어 결정에서 Two-Way로 재해석 가능한 예시 3가지 이상
 
 ## 출처
-- Jeff Bezos — 2015 Amazon Shareholder Letter
+- [Jeff Bezos — 2015 Amazon Shareholder Letter](https://s2.q4cdn.com/299287126/files/doc_financials/annual/2015-Letter-to-Shareholders.PDF)
 - [[Han-Keeyong-Career-Seminar|한기용 특강 — 커리어 결정에의 적용]]
 - 창업자와 주주 관계, 엑시트 플랜에 대한 개인 블로그 에세이 (스타트업 회고)
 

@@ -71,7 +71,7 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 | **Operate** | WAF, 런타임 보안 모니터링 |
 | **Monitor** | 이상 감지, 침해 대응 |
 
-초기 단계에서 잡는 비용 < 배포 후 잡는 비용의 **약 100배** 차이.
+초기 단계에서 잡는 비용이 배포 후 잡는 비용보다 낮다는 것이 Shift Left의 근거다. 다만 흔히 인용되는 **배포 후 약 100배** 수치는 IBM Systems Sciences Institute 자료로 귀속되지만 원 연구가 확인되지 않는 경험칙이다. 방향성 근거로만 쓰고, 측정된 값처럼 인용하지 않는다.
 
 ## 대표 도구 스택
 
@@ -157,14 +157,15 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 ## 면접 체크포인트
 
 - DevOps와 DevSecOps의 **한 문장 차이**
-- Shift Left의 정의와 이득 산정 근거(100x 법칙)
+- Shift Left의 정의와 이득. 100x 법칙을 근거로 들 때 원 연구가 확인되지 않는다는 한계까지 말할 수 있는가
 - SAST, DAST, SCA, IaC Security 용어 구분
 - False Positive가 DevSecOps의 실패를 만드는 메커니즘
 - 조직 성숙도별 **도입 단계**(CI 스캔 → IaC 정책 → Runtime)
 - Policy as Code가 주는 이점과 주의
 
 ## 출처
-- [요즘IT — 데브옵스 vs 데브섹옵스](https://yozm.wishket.com/magazine/detail/1553/)
+- [요즘IT — 데브옵스 vs 데브섹옵스](https://yozm.wishket.com/magazine/detail/1553/) — 문서의 뼈대. 다만 이 기사에 100배 수치는 없고, 운영 환경에서 발견된 결함은 수정 비용이 크다는 서술만 있다
+- [The Register (2021-07-22) — Everyone cites that 'bugs are 100x more expensive to fix in production' research, but the study might not even exist](https://www.theregister.com/2021/07/22/bugs_expense_bs/) — Laurent Bossavit, Hillel Wayne의 추적. IBM Systems Sciences Institute는 사내 교육 프로그램이었고 차트를 뒷받침하는 데이터가 확인되지 않는다
 
 ## 관련 문서
 - [[CICD-Basics|CI/CD 기초]]

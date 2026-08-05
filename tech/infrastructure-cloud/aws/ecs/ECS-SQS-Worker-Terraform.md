@@ -196,4 +196,3 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
 
 - [Amazon ECS service auto scaling — AWS 공식 문서](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html)
 - [terraform-provider-aws — aws_ecs_capacity_provider, aws_appautoscaling_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
-</content>

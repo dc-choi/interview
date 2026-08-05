@@ -3,6 +3,7 @@ tags: [database, nosql, mongodb, schema-design, document-database]
 status: done
 category: "데이터&저장소(Data&Storage)"
 aliases: ["MongoDB Schema Design", "MongoDB 스키마 설계", "Embed vs Reference"]
+verified_at: 2026-08-05
 ---
 
 # MongoDB 스키마 설계
@@ -90,7 +91,7 @@ RDB는 FK 조인이 기본, MongoDB는 선택지가 둘.
 
 ## 16MB, 배열 성장 경고
 
-MongoDB 문서는 최대 **16MB**. 한계에 가까워지는 상황:
+MongoDB 문서는 최대 **16MB** (공식 규격 표기는 16 mebibytes, BSON 중첩은 100 레벨까지). 한계에 가까워지는 상황:
 - 댓글, 이벤트 로그를 한 문서 배열에 누적
 - 사용자별 활동 피드
 - 센서 측정값 배열
@@ -104,13 +105,13 @@ MongoDB 문서는 최대 **16MB**. 한계에 가까워지는 상황:
 
 앱 계층 검증만으로는 데이터 이상이 DB에 스며든다. 해결:
 - `$jsonSchema` 기반 **Schema Validation** 활성화 → 필수 필드, 타입, 범위 강제
-- 검증 수준: `strict`(거부) vs `moderate`(기존 문서는 면제)
+- `validationLevel`: `strict`(기본, 모든 insert와 update에 적용) vs `moderate`(규칙에 맞지 않던 기존 문서의 update는 검증 면제)
 - 마이그레이션 시 **점진적 스키마 진화** 가능
 
 ## 트랜잭션 여부
 
 - 단일 문서 쓰기는 **원자적** — 대부분의 시나리오는 문서 설계로 해결
-- **멀티 문서 트랜잭션**은 4.0+ 지원하지만 **비용과 레이턴시**가 커 남발 금지
+- **멀티 문서 트랜잭션**은 레플리카셋 4.0+, 샤드 클러스터는 4.2+부터 지원하지만 **비용과 레이턴시**가 커 남발 금지 (공식 문서도 스키마 설계의 대체재로 쓰지 말라고 명시)
 - 서로 다른 컬렉션의 관련 데이터를 embed로 묶을 수 있다면 그게 더 안전
 
 ## RDB 출신 개발자의 흔한 실수
@@ -139,6 +140,10 @@ MongoDB 문서는 최대 **16MB**. 한계에 가까워지는 상황:
 - RDB 정규화 사고를 그대로 옮기면 생기는 문제
 
 ## 출처
+- [MongoDB Docs — MongoDB Limits and Thresholds (16 mebibytes, 중첩 100 레벨)](https://www.mongodb.com/docs/manual/reference/limits/)
+- [MongoDB Docs — ESR (Equality, Sort, Range) Guideline](https://www.mongodb.com/docs/manual/tutorial/equality-sort-range-guideline/)
+- [MongoDB Docs — Transactions (레플리카셋 4.0, 샤드 클러스터 4.2)](https://www.mongodb.com/docs/manual/core/transactions/)
+- [MongoDB Docs — Specify Validation Level](https://www.mongodb.com/docs/manual/core/schema-validation/specify-validation-level/)
 - [G마켓 기술블로그 — MongoDB 스키마 설계 가이드](https://dev.gmarket.com/32)
 
 ## 관련 문서

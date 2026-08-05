@@ -3,13 +3,14 @@ tags: [database, redis, memory, eviction, lru, lfu]
 status: done
 category: "Data & Storage - Cache & KV"
 aliases: ["Redis Eviction", "maxmemory-policy", "LRU vs LFU"]
+verified_at: 2026-08-05
 ---
 
 # Redis Memory Eviction Policy
 
 `maxmemory` 한도에 도달하면 **새 쓰기를 어떻게 처리할지** 결정하는 정책. 캐시로 쓸 거냐, 영속 저장소로 쓸 거냐에 따라 선택이 갈린다. 잘못 고르면 캐시 미스 폭증 또는 OOM crash.
 
-## 8가지 정책
+## 정책 목록
 
 | 정책 | 동작 | 적합 |
 |------|------|------|
@@ -23,6 +24,8 @@ aliases: ["Redis Eviction", "maxmemory-policy", "LRU vs LFU"]
 | `volatile-ttl` | TTL 짧은 순서 삭제 | 만료 임박한 데이터부터 |
 
 기본은 `noeviction`. 캐시 용도면 **`allkeys-lru` 또는 `allkeys-lfu`**가 표준.
+
+Redis 8.6부터 읽기가 아니라 **쓰기 시각만 갱신하는 LRM(Least Recently Modified)** 계열 `allkeys-lrm`, `volatile-lrm`이 추가돼 정책은 10종이다. 위 8종은 8.4 이하 기준이고, 8.6+에서 읽기는 잦지만 갱신이 멈춘 데이터를 걷어내려면 LRM을 검토한다.
 
 ## allkeys vs volatile 선택
 
@@ -42,7 +45,7 @@ Redis는 **정확한 LRU가 아니라 근사 LRU**. 메모리 비용 압축 + �
 |------|-----------|----------------|
 | 자료구조 | 이중 연결 리스트 + 해시 | 키마다 24bit 시간 필드만 |
 | 메모리/키 | ~16~24바이트 추가 | 3바이트 |
-| 정확도 | 완벽 | 충분히 좋음 (5~10 샘플로 95%+) |
+| 정확도 | 완벽 | 충분히 좋음 (샘플 10이면 이론적 LRU에 근접) |
 
 ### 동작
 
@@ -62,7 +65,7 @@ LRU는 "최근 안 쓰면 삭제" — 일회성 폭증 키가 hot 키를 밀어�
 ```
 객체의 lru 필드 (24bit) =
   ├── counter (8bit) — Morris 확률적 카운터
-  └── decay  (16bit) — 마지막 접근 시간 (분 단위)
+  └── decay  (16bit) — 마지막 감소 시각 (분 단위)
 ```
 
 ### Morris Counter
@@ -74,15 +77,15 @@ P(증가) = 1 / ((counter - LFU_INIT_VAL) * lfu_log_factor + 1)
 ```
 
 - counter 작을수록 자주 증가, 클수록 거의 안 증가.
-- `lfu_log_factor` 기본 10 — 카운터가 ~1M 접근까지 도달 가능.
-- 8bit으로 백만 단위 빈도 표현.
+- `lfu-log-factor` 기본 10 — 약 100만 접근에서 카운터가 255로 포화.
+- 8bit으로 백만 단위 빈도 표현. factor를 낮추면 저빈도 구간 해상도가 좋아지고, 높이면 고빈도 구간을 더 잘 구분한다.
 
 ### Decay
 
 오래 안 쓰면 카운터 감소 — 과거 hot이 영원히 살아남는 문제 회피.
 
 ```
-lfu_decay_time 1   # 분 단위, 1분마다 counter -1
+lfu-decay-time 1   # 기본 1, 샘플링 시 이 분 수보다 오래되면 counter 감소 (0이면 감소 없음)
 ```
 
 ### LFU 사용 시점
@@ -129,13 +132,13 @@ maxmemory-samples 10
 - **기본값(noeviction) 그대로 캐시 운영** → maxmemory 도달 시 쓰기 모두 실패. 도메인에 맞춰 명시 설정.
 - **`volatile-*` 쓰면서 캐시 키에 TTL 안 둠** → 사실상 noeviction. 캐시 키는 반드시 EXPIRE.
 - **`maxmemory-samples 5`로 두고 정확도 불만** → 10으로 올림. CPU 비용 미미.
-- **LFU로 바꿨는데 효과 미미** → `lfu_log_factor`/`lfu_decay_time` 기본값이 워크로드와 안 맞을 수 있음. 빈도 분포 확인 후 튜닝.
+- **LFU로 바꿨는데 효과 미미** → `lfu-log-factor`, `lfu-decay-time` 기본값이 워크로드와 안 맞을 수 있음. 빈도 분포 확인 후 튜닝.
 - **단편화 1.5+ 무시** → 메모리 회수 안 됨. `MEMORY PURGE` 또는 재시작 검토. jemalloc 활성 대안.
 - **`evicted_keys` 폭증하는데 캐시 미스 영향 무시** → 응답 시간, DB 부하 ↑. maxmemory 증설 또는 키 정리 정책.
 
 ## 면접 체크포인트
 
-- 8가지 정책 분류 — allkeys vs volatile, noeviction의 의미
+- 정책 분류 — allkeys vs volatile, noeviction의 의미
 - 근사 LRU의 메모리 절감 (24bit) + 샘플링 (`maxmemory-samples`)
 - LRU vs LFU 선택 기준 — 일회성 폭증에서 hot 키 보호
 - Morris Counter — 8bit으로 백만 단위 빈도 표현하는 확률적 트릭
@@ -143,6 +146,13 @@ maxmemory-samples 10
 - `volatile-*` 정책의 함정 — TTL 없는 키 가득 차면 noeviction
 - `mem_fragmentation_ratio` 1.5+의 의미와 대응
 - `evicted_keys` 폭증 모니터링
+
+## 출처
+
+- [Redis Docs, Key eviction](https://redis.io/docs/latest/develop/reference/eviction/)
+- [Redis Docs, OBJECT FREQ](https://redis.io/docs/latest/commands/object-freq/)
+- [redis.conf 8.0 (maxmemory-policy 기본값, maxmemory-samples)](https://github.com/redis/redis/blob/8.0/redis.conf)
+- [antirez, Random notes on improving the Redis LRU algorithm](http://antirez.com/news/109)
 
 ## 관련 문서
 

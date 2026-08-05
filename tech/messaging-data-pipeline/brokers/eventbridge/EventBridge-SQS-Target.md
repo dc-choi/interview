@@ -131,4 +131,3 @@ Lambda 대신 상시 떠 있는 컨슈머면 `@aws-sdk/client-sqs`로 `ReceiveMe
 - [[SQS|SQS]]
 - [[Delivery-Semantics|전달 보장]]
 - [[Transactional-Outbox|Transactional Outbox]]
-</content>

@@ -18,15 +18,16 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 | **SQS** | AWS 관리형 단순 큐 | 서버리스, AWS 통합, 무관리 |
 | **Kafka** | 분산 로그, 스트리밍 플랫폼 | 대용량 이벤트 스트리밍, 재생 |
 
-## 성능 비교 (단순 메시지 처리)
+## 성능 비교 (특정 실험 1건의 결과)
 
-30만 건 기준 처리량:
-1. **RabbitMQ** — 가장 빠름 (TCP 직접 통신, 최적화된 AMQP)
-2. **BullMQ** — 중간 (Redis 레이턴시 + 상태 추적 오버헤드)
-3. **SQS** — 느림 (HTTP + polling 기반, Visibility Timeout 비용)
-4. **Kafka** — 대용량 배치에 최적, 낮은 단건 지연은 아님
+아래는 브로커 일반의 성능 순위가 아니라, Node.js 앱에서 메시지 30만 건을 돌린 한 회사(마이프차) 기술 블로그의 실험 1건의 결과다.
 
-단, 성능만으로 선택하면 **운영 편의, 기능 부족**으로 후회할 수 있음.
+- **실험 조건**: 메시지 300,000개, Publish를 모두 끝낸 뒤 Consume 시작, RabbitMQ는 `amqplib`, BullMQ는 `bullmq`와 `ioredis`, BullMQ Worker는 `concurrency=1000`. 하드웨어, 노드 구성, 브로커 튜닝 값은 원문에 없다.
+- **실측 대상은 RabbitMQ와 BullMQ 둘뿐**: RabbitMQ가 더 빨랐고(TCP 직접 통신, 단순 메시지 전달에 최적화), BullMQ는 상태 추적과 재시도, 백오프 오버헤드로 느렸다.
+- **SQS는 측정하지 않았다**: 원문은 폴링 특성상 BullMQ보다 낮을 것이라는 저자의 추정치만 적었다.
+- **Kafka는 실험에 포함되지 않았다**: 원문도 후속 과제로만 언급한다. Kafka 처리량은 파티션 수, 배치 크기, `acks` 설정에 좌우돼 단일 클라이언트 단건 전송 실험으로는 순위를 매길 수 없다.
+
+즉 이 순위는 단건 전송 위주의 한 조건에서 나온 값이고, 아래 Kafka 항목의 대량 스트리밍 처리량은 파티션 확장과 배치 전송을 전제한 다른 조건이다. 성능만으로 선택하면 **운영 편의, 기능 부족**으로 후회할 수 있음.
 
 ## RabbitMQ
 
@@ -77,7 +78,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 - **DLQ, FIFO**: 내장 지원
 
 ### 약점
-- **폴링 기반**: Long Polling도 수초 지연. RabbitMQ 대비 느림
+- **폴링 기반**: 컨슈머가 받아가기 전까지 큐 대기 시간이 붙는다. 위 성능 절의 실험에서 SQS는 실측이 아니라 저자 추정이다
 - **메시지 순서**: Standard는 순서 보장 없음. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지이며 고처리량 FIFO는 리전별 API 할당량 적용
 - **라우팅 약함**: Fanout은 SNS+SQS 조합으로 우회
 - **AWS 종속**: 이식성 없음
@@ -91,11 +92,11 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 ## Kafka
 
 ### 강점
-- **대용량 이벤트 스트리밍**: 초당 수십만~수백만 msg
+- **대용량 이벤트 스트리밍**: 파티션 확장과 배치 전송을 전제로 한 높은 처리량. 절대 수치는 파티션 수, 배치 크기, `acks`와 하드웨어에 좌우되므로 벤치마크 조건 없이 인용하지 않는다
 - **재생(Replay) 가능**: 메시지 보관 기간 내 임의 시점부터 재소비
 - **파티션 기반 확장**: 수평 확장 선형
 - **생태계**: Connect, Streams, KSQL 등 통합 도구
-- **정확히 한 번(Exactly-once)** 처리 가능 (Idempotent Producer + Transactions)
+- **read-process-write 경계의 exactly-once**: Kafka 토픽에서 읽어 처리하고 Kafka 토픽으로 쓰는 구간은 Idempotent Producer와 트랜잭션으로 출력과 오프셋 커밋을 원자적으로 묶는다. 외부 DB나 API 같은 다른 destination은 해당 시스템의 협조가 필요해, 종단 간으로는 at-least-once 전달 + 멱등 처리로 effectively-once를 만든다 ([[Delivery-Semantics|전달 보장]], [[Idempotent-Consumer|멱등 컨슈머]])
 
 ### 약점
 - **운영 복잡도**: Zookeeper(또는 KRaft), Broker, 토픽, 파티션 관리
@@ -164,7 +165,8 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 
 ## 출처
 - [Amazon SQS message quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
-- [myfranchise (Medium) — RabbitMQ vs BullMQ vs SQS 실사용 후기](https://medium.com/@myfranchise/rabbitmq-vs-bullmq-sqs-%EC%8B%A4%EC%82%AC%EC%9A%A9-%ED%9B%84-%EC%86%94%EC%A7%81-%ED%9B%84%EA%B8%B0-c74c1a485143)
+- [Apache Kafka Documentation — Message Delivery Semantics](https://kafka.apache.org/documentation/#semantics)
+- [마이프차 기술 블로그 (Medium) — RabbitMQ vs BullMQ (+SQS) 실사용 후 솔직 후기 (30만 건 실험, RabbitMQ와 BullMQ만 실측)](https://medium.com/@myfranchise/rabbitmq-vs-bullmq-sqs-%EC%8B%A4%EC%82%AC%EC%9A%A9-%ED%9B%84-%EC%86%94%EC%A7%81-%ED%9B%84%EA%B8%B0-c74c1a485143)
 
 ## 관련 문서
 - [[SQS|SQS]]
@@ -173,3 +175,4 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 - [[EventBridge|EventBridge]]
 - [[Messaging-Patterns|메시징 패턴]]
 - [[Delivery-Semantics|Delivery Semantics]]
+- [[Idempotent-Consumer|멱등 컨슈머]]

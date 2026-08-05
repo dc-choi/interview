@@ -56,18 +56,6 @@ verified_at: 2026-07-15
 | **scrypt** | Argon2id를 쓸 수 없을 때 권장되는 메모리 하드 대안 |
 | **bcrypt** | Argon2id와 scrypt를 쓸 수 없는 레거시 환경의 차선책. work factor 10 이상과 입력 길이 제한 처리가 필요 |
 
-## 암호화 원칙
-
-- 모든 암호화의 안전성은 **키에 의해서만** 보장되어야 함
-- 현대 보안에서는 감청당해도 안전하게 통신 가능 -> **HTTPS 필수**
-- TLS 1.3 이상 권고, 최소 1.2 사용 필요
-
-## JWT 보관
-
-- JWT 자체는 토큰 포맷일 뿐
-- 실제 고민 포인트: 토큰을 어떻게 보관할 것인가
-- OTP에 입력 횟수 제한이 없으면 위험
-
 ## 출처
 
 - [Password Storage Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
@@ -75,7 +63,7 @@ verified_at: 2026-07-15
 
 ## 관련 문서
 - [[CSRF|CSRF Protection]]
-- [[CORS|CORS / CSP]]
+- [[CORS|CORS]]
 - [[JWT]]
 - [[Session]]
 - [[Spring-Security-Authentication-Core|Spring Security 인증과 PasswordEncoder]]

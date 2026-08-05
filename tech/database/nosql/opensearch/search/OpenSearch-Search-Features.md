@@ -70,7 +70,7 @@ GET products/_search
 - `collapse`는 top hit만 바꾸며 aggregation 결과에는 영향을 주지 않는다.
 - `hits.total`은 collapse 전 document hit 수 또는 하한이며 unique group 수가 아니다. `relation`을 확인하고 정확한 document 수가 필요하면 `track_total_hits: true`를 사용해도, 정확한 group 수는 별도로 계산해야 한다.
 - `inner_hits`로 group 내부 문서를 펼칠 수 있지만 collapse field가 index되어 검색 가능해야 하고, 반환 group과 `inner_hits` 정의마다 추가 검색이 실행된다. `size`와 정의 수를 제한하고 `max_concurrent_group_searches`로 동시성을 제어한다.
-- OpenSearch 3.3 이상에서 `collapse`와 `search_after`를 함께 쓰려면 collapse field와 유일한 sort field가 같아야 한다. 관리형 서비스는 engine과 API 지원 여부를 확인하고, 일반적인 cursor 규칙은 [[OpenSearch-Aggregations-Pagination#search_after|페이지네이션 제약]]을 따른다.
+- OpenSearch 3.3 이상에서 `collapse`와 `search_after`를 함께 쓰려면 collapse field와 유일한 sort field가 같아야 한다. 관리형 서비스는 engine과 API 지원 여부를 확인하고, 일반적인 cursor 규칙은 [[OpenSearch-Aggregations-Pagination#`search_after`|페이지네이션 제약]]을 따른다.
 
 ## Search template
 

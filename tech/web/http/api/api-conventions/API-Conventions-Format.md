@@ -50,4 +50,4 @@ aliases: ["API 시간 포맷", "JSON 키 네이밍"]
 /users?sort=-createdAt   ← 정렬 `-` 접두사로 내림차순
 ```
 
-세부는 [[REST#URI 설계 규칙|REST URI 설계]] 참고.
+세부는 [[REST#Resource URI 설계|REST URI 설계]] 참고.

@@ -32,7 +32,7 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
 | 즉시 일관성 ✅ | **최종 일관성** |
 | 확장 어려움 | 새 구독자 추가 자유 |
 
-**결정 기준**: 도메인이 최종 일관성을 받아들일 수 있나? UI/UX가 "방금 한 작업이 즉시 반영" 가정으로 설계되어 있나?
+**결정 기준**: 도메인이 최종 일관성을 받아들일 수 있나? UI/UX가 방금 한 작업이 즉시 반영된다는 가정으로 설계되어 있나?
 
 ### 층 2: 발행자 신뢰성 (Producer-Side Reliability)
 
@@ -60,14 +60,14 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
 ### 층 4: 이벤트의 본질 (What is an Event?)
 
 **문제**: 명령형 이벤트는 발행자가 수신자 행동을 지시 → 결합도 다시 올라감.
-- `ProcessOrderCommand` ❌ — 발행자가 "이거 해라" 지시
+- `ProcessOrderCommand` ❌ — 발행자가 수신자에게 할 일을 지시
 - `OrderPlaced` ✅ — 발행자는 사실만 알리고, 수신자가 자기 대응 결정
 
 **해결**:
 - **사실 기반 이벤트** — 동사 과거형 (`OrderPlaced`, `PaymentReceived`, `ProductRecycled`)
 - **Zero Payload 전략** — ID만 발행, Consumer가 Source of Truth 재조회
   - 트레이드오프: 조회 1회 추가
-  - 이점: 순서 무관, 스키마 안정, 항상 최신 상태
+  - 이점: 순서 무관, 스키마 안정, 조회 시점의 최신 상태
 
 **결과**: 새 구독자 추가 시 발행자 수정 X. 결합도 진짜 낮아짐.
 
@@ -172,10 +172,10 @@ CQRS와의 결합:
 
 ## 자주 만나는 오해
 
-- **"이벤트 기반 = 마이크로서비스"** — 모놀리스 안에서도 EDA 도입 가능 (도메인 분리 + Outbox)
-- **"Kafka를 써야 EDA"** — SNS/SQS, RabbitMQ, EventBridge로도 충분. Kafka는 이벤트 보존, 재처리, 다소비자 스트림 필요할 때
-- **"Event Sourcing이 EDA의 끝판왕"** — 도메인이 안 맞으면 과설계. 대부분은 Outbox + 사실 이벤트로 충분
-- **"분산 트랜잭션 = 2PC"** — 2PC는 거의 안 씀. Saga + 보상 또는 Outbox로 결과적 일관성
+- **이벤트 기반 = 마이크로서비스** — 모놀리스 안에서도 EDA 도입 가능 (도메인 분리 + Outbox)
+- **Kafka를 써야 EDA** — SNS/SQS, RabbitMQ, EventBridge로도 충분. Kafka는 이벤트 보존, 재처리, 다소비자 스트림 필요할 때
+- **Event Sourcing이 EDA의 끝판왕** — 도메인이 안 맞으면 과설계. 대부분은 Outbox + 사실 이벤트로 충분
+- **분산 트랜잭션 = 2PC** — 2PC가 유일한 선택지는 아니다. 참여자가 XA를 지원하지 않거나 사용자 흐름이 길면 Saga + 보상 또는 Outbox 기반 결과적 일관성이 유리하고, 반대로 원자적 결정의 가치가 크고 참여 기술과 복구 체계가 갖춰졌다면 2PC가 더 단순할 수 있다. 다만 prepared 상태가 오래 남으면 락을 계속 보유하므로 외부 transaction manager가 신속히 종료해야 한다 ([[Distributed-Transaction-Strategies|분산 트랜잭션 전략]])
 
 ## 운영 시 핵심 메트릭
 
@@ -189,10 +189,10 @@ CQRS와의 결합:
 
 ## 관련 문서
 
-- [[브로커(Brokers)]]
-- [[Transactional-Outbox]]
-- [[CDC&Outbox]]
-- [[Idempotency-Key]]
-- [[Saga-Pattern]]
-- [[Event-Sourcing]]
-- [[EventBridge]], [[SQS]], [[SNS]]
+- [[브로커(Brokers)]], [[EventBridge]], [[SQS]], [[SNS]]
+- [[Transactional-Outbox]], [[CDC&Outbox]], [[Idempotency-Key]]
+- [[Saga-Pattern]], [[Event-Sourcing]], [[Distributed-Transaction-Strategies]]
+
+## 출처
+
+- [PostgreSQL, PREPARE TRANSACTION](https://www.postgresql.org/docs/current/sql-prepare-transaction.html)

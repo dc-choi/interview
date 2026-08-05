@@ -1,6 +1,7 @@
 ---
 tags: [security, cryptography, rsa, public-key, asymmetric]
 status: done
+verified_at: 2026-08-05
 category: "보안(Security)"
 aliases: ["RSA", "RSA Encryption", "RSA 암호화"]
 ---
@@ -23,7 +24,7 @@ RSA(Rivest–Shamir–Adleman)는 **큰 정수의 소인수분해가 어렵다**
 4. **공개 지수 e** 선택: 1 < e < Φ(n), gcd(e, Φ(n)) = 1. 관례적으로 e = 65537(2^16 + 1)
 5. **개인 지수 d** 계산: e × d ≡ 1 (mod Φ(n)) — 확장 유클리드 알고리즘
 6. **공개키 = (n, e)**, **개인키 = (n, d)**
-7. p, q, Φ(n)은 **즉시 파기** — 유출되면 d를 쉽게 재구성 가능
+7. Φ(n)과 계산 중간값은 **폐기** — 유출되면 d를 쉽게 재구성 가능. p와 q는 CRT를 쓰지 않을 때만 폐기하고, CRT 표현(p, q, dP, dQ, qInv)을 쓰면 개인키의 일부로 보관되므로 개인키 전체를 보호한다
 
 ## 암호화, 복호화
 
@@ -56,19 +57,21 @@ RSA(Rivest–Shamir–Adleman)는 **큰 정수의 소인수분해가 어렵다**
 ## 성능 특성
 
 - **암호화 지수 e가 작음**(65537) → 공개키 연산은 상대적으로 빠름
-- **복호화 지수 d는 n만큼 큼** → 개인키 연산이 느림. CRT(중국인의 나머지 정리) 최적화로 4배 가속
-- **대칭키 대비 약 1000배 느림** → 본 데이터를 직접 암호화하지 않고, **세션 키(AES)를 RSA로 감싸서 전달**
+- **복호화 지수 d는 n만큼 큼** → 개인키 연산이 느림. RFC 8017은 이를 위해 개인키의 두 번째 표현(p, q, dP, dQ, qInv)을 정의하고, RSA 연산에 CRT(중국인의 나머지 정리)를 적용하는 이점을 [FASTDEC] 인용으로 언급한다(연산 비용이 낮아진다는 서술 자체는 multi-prime RSA에 대한 것이다). 배수를 계산해 보면, 모듈러 곱셈 비용이 비트 길이의 제곱에 비례하고 CRT 재조합 비용을 무시한다는 가정에서 **약 4배** 빨라진다. 곱셈 알고리즘과 구현이 달라지면 실제 배수도 달라진다
+- **대칭키 대비 느림** — 배수는 연산 종류, 키 길이, 구현에 따라 달라져 단일 수치로 단정하지 않는다 → 본 데이터를 직접 암호화하지 않고, **세션 키(AES)를 RSA로 감싸서 전달**
 
 ## 보안 강도, 키 길이
 
 | RSA 키 | 동등 대칭키 | 비고 |
 |---|---|---|
-| 1024비트 | ~80비트 | **취약, 사용 금지** |
+| 1024비트 | ≤ 80비트(NIST 표기) | **취약, 사용 금지** |
 | 2048비트 | 112비트 | 현재 최소 권장 |
 | 3072비트 | 128비트 | 장기 보관 문서 |
-| 4096비트 | ~140비트 | 오버스펙, 성능 저하 |
+| 4096비트 | NIST 미부여 | 3072(128비트)과 7680(192비트) 사이, 연산 비용 증가 |
 
-ECC 256비트 = RSA 3072비트 수준 보안 → 모바일, IoT는 ECC가 유리.
+대응값은 NIST SP 800-57 Part 1 Rev. 5 Table 2 기준이다(1024 → ≤ 80, 2048 → 112, 3072 → 128, 7680 → 192, 15360 → 256비트). 4096비트는 이 표에 없어 NIST가 강도를 부여하지 않으므로 특정 수치로 단정하지 않는다.
+
+ECC 256비트 = RSA 3072비트 수준 보안(같은 표에서 128비트 강도의 ECC는 f = 256-383) → 모바일, IoT는 ECC가 유리.
 
 ## 공격 벡터
 
@@ -104,6 +107,9 @@ ECC 256비트 = RSA 3072비트 수준 보안 → 모바일, IoT는 ECC가 유리
 - 왜 대용량 데이터를 RSA로 직접 암호화하지 않는가
 
 ## 출처
+- [RFC 8017 — PKCS #1: RSA Cryptography Specifications Version 2.2](https://www.rfc-editor.org/rfc/rfc8017)
+- [NIST SP 800-57 Part 1 Rev. 5 — Recommendation for Key Management: General (Table 2)](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf)
+- [Handbook of Applied Cryptography, Chapter 14 (Note 14.75) — Menezes, van Oorschot, Vanstone](https://cacr.uwaterloo.ca/hac/about/chap14.pdf)
 - [charming-kyu — RSA 암호 체계](https://charming-kyu.tistory.com/9)
 - [velog 480 — RSA 암호화 3분 만에 이해하기](https://velog.io/@480/RSA-%EC%95%94%ED%98%B8%ED%99%94-3%EB%B6%84-%EB%A7%8C%EC%97%90-%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0)
 

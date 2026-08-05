@@ -94,4 +94,3 @@ FIFO ESM은 **활성 MessageGroupId 수만큼만** 동시성으로 스케일한�
 ## 출처
 
 - [Amazon SQS event source for Lambda — AWS 공식 문서](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html)
-</content>

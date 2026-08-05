@@ -155,4 +155,3 @@ BacklogPerTask 알람에 단계별 조정을 직접 정의한다. 살짝 넘으�
 
 - [Scaling based on Amazon SQS — AWS Auto Scaling 공식 문서](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html)
 - [Amazon ECS service auto scaling — AWS 공식 문서](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html)
-</content>

@@ -19,7 +19,7 @@ aliases: ["검증 라이브러리 성능 벤치마크", "Zod AOT Fast Path"]
 
 **관찰**:
 - 원시형은 AOT 계열이 V8 한계까지 수렴 (~10.5M)
-- 객체가 커질수록 AOT vs 런타임 해석형의 격차 급증 (최대 70배 이상)
+- 객체가 커질수록 AOT vs 런타임 해석형의 격차 급증 — 100항목 대형 객체에서 Zod AOT 627K는 v3 8.6K 대비 약 73배, v4 11.6K 대비 약 54배
 - Typia가 객체 검증에서 약간 앞섬
 - Zod AOT만 **Set/Map 네이티브 지원**
 - Ajv는 **무효 입력 처리**가 빠름 (간결한 에러 포맷)
@@ -48,4 +48,7 @@ typeof input === 'object' && input !== null && typeof input.name === 'string'
 3. IR(중간 표현) 생성
 4. AST 기반 소스 교체로 원본 스키마를 래퍼로 치환
 
-**장점**: 기존 Zod 코드에 **변경 없이** 50~60배 가속. `Object.create()` 래퍼로 원본 API 호환성 유지.
+**장점**: 기존 Zod 코드에 **변경 없이** 가속. 원문이 제목으로 내세우는 배수는 60배이고, 위 표의 100항목 대형 객체에서 실제로 v3 대비 약 73배, v4 대비 약 54배가 나온다. 시나리오마다 배수가 달라지므로 하나의 고정 배수로 말하지 않는다. `Object.create()` 래퍼로 원본 API 호환성 유지.
+
+## 출처
+- [dev.to @wakita181009 (Tetsuya Wakita) — Zod vs Typia vs Ajv, Vite 플러그인](https://dev.to/wakita181009/zod-vs-typia-vs-ajv-i-built-a-vite-plugin-that-makes-zod-60x-faster-with-zero-code-changes-1poc) — 위 벤치마크 표와 Fast/Slow Path 원리의 출처

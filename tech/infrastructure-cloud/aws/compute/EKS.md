@@ -3,6 +3,7 @@ tags: [aws, eks, kubernetes, container, orchestration, fargate]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["EKS", "Amazon EKS", "Elastic Kubernetes Service"]
+verified_at: 2026-08-05
 ---
 
 # Amazon EKS (Elastic Kubernetes Service)
@@ -55,7 +56,9 @@ Fargate Profile은 **selector**(namespace + label)에 매치되는 Pod를 자동
 
 ### Service Mesh
 
-App Mesh(AWS) 또는 Istio, Linkerd 직접 설치. mTLS, 트래픽 분할, 재시도, 서킷 브레이커. Istio 배포 방식(sidecar vs ambient)은 [[Istio-Ambient-Mode]] 참조.
+Istio 또는 Linkerd를 직접 설치한다. mTLS, 트래픽 분할, 재시도, 서킷 브레이커. Istio 배포 방식(sidecar vs ambient)은 [[Istio-Ambient-Mode]] 참조.
+
+AWS App Mesh는 2024-09-24부터 신규 고객 온보딩이 중단됐고 2026-09-30에 지원이 종료돼 콘솔과 리소스 접근이 막히므로 **신규 도입 대상이 아니다**(2026-08-05 공식 문서 확인). AWS 관리형 옵션이 필요하면 VPC Lattice를 검토한다.
 
 ## 권한 — IAM Roles for Service Accounts (IRSA)
 
@@ -131,7 +134,7 @@ Karpenter는 AWS가 만든 오픈소스로 **유연성, 비용 효율**이 압�
 - **인스턴스 IAM Role에 광범위 권한 부여** — 모든 Pod가 공유. IRSA/Pod Identity로 Pod 단위 분리
 - **노드당 Pod 한도 무시** — m5.large에 50 Pod 못 띄움. Prefix Delegation 또는 큰 인스턴스
 - **Cluster Autoscaler 미사용** — Pending Pod가 영원히 대기
-- **Control Plane 버전 업그레이드 미적용** — EKS는 14개월 후 EOL. 강제 업그레이드됨
+- **Control Plane 버전 업그레이드 미적용** — 마이너 버전은 EKS 출시 후 14개월 표준 지원, 이어서 12개월 extended support(기본 활성화, 클러스터 시간당 요금이 표준 $0.10에서 $0.60으로 오름). 총 26개월이 지나면 컨트롤 플레인이 지원 중인 가장 낮은 버전으로 자동 업그레이드됨 (노드와 애드온은 수동 갱신)
 - **`LoadBalancer` Service 남발** — Service마다 NLB 생성 → 비용. **Ingress(ALB)**로 통합
 - **Pod 리소스 requests/limits 미설정** — 스케줄링 부정확, OOM, Throttling
 - **EBS Pod를 다른 AZ로 스케줄** — 마운트 실패. AZ-aware 스케줄링 필요
@@ -154,6 +157,11 @@ Karpenter는 AWS가 만든 오픈소스로 **유연성, 비용 효율**이 압�
 - AWS Docs — EKS User Guide
 - Kubernetes Docs — Concepts
 - AWS SAA C03 학습 자료 (로컬)
+- [Understand the Kubernetes version lifecycle on EKS](https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html)
+- [Amazon EKS pricing](https://aws.amazon.com/eks/pricing/)
+- [What Is AWS App Mesh? — 2026-09-30 지원 종료 공지](https://docs.aws.amazon.com/app-mesh/latest/userguide/what-is-app-mesh.html)
+- [aws/aws-app-mesh-roadmap README — 2024-09-24 신규 고객 온보딩 중단](https://github.com/aws/aws-app-mesh-roadmap)
+- [Migrating from AWS App Mesh to Amazon VPC Lattice — EKS 이관 가이드](https://aws.amazon.com/blogs/containers/migrating-from-aws-app-mesh-to-amazon-vpc-lattice/)
 
 ## 관련 문서
 

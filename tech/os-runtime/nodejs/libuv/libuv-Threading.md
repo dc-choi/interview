@@ -3,6 +3,7 @@ tags: [runtime, nodejs]
 status: done
 category: "OS & Runtime"
 aliases: ["libuv Threading", "libuv 스레드 풀", "libuv 스레딩", "libuv 에러"]
+verified_at: 2026-08-05
 ---
 
 ### libuv 스레드 풀, 스레딩, 에러
@@ -56,7 +57,7 @@ uv_queue_work(loop, &baton->req, work_fn, after_fn);
 ```
 
 ### `uv_cancel` — 작업 취소
-아직 시작되지 않은 fs/dns/work 요청만 취소 가능. 취소 성공 시 콜백은 `UV_ECANCELED` 상태로 호출된다. 이미 실행 중인 작업은 취소할 수 없다.
+취소 가능한 요청은 `uv_fs_t`, `uv_getaddrinfo_t`, `uv_getnameinfo_t`, `uv_random_t`, `uv_work_t`, `uv_write_t` 여섯 종류다. 이미 실행 중이거나 끝난 요청은 실패하며, write만 예외로 진행 중인 쓰기도 중단을 시도한다(콜백이 부분 쓰기를 보고할 수 있음). 취소되면 fs는 `req->result`가, 나머지는 콜백 status가 `UV_ECANCELED`가 된다.
 
 ## 스레딩
 
@@ -114,7 +115,7 @@ uv_dlerror(&lib)            — 에러 메시지 조회. 플러그인 시스템 
 ### TTY (`uv_tty_t`)
 ```
 터미널 입출력 핸들. uv_stream_t의 하위 타입.
-uv_tty_init(loop, &tty, fd, readable)  — 초기화 (0=stdin, 1=stdout, 2=stderr)
+uv_tty_init(loop, &tty, fd, unused)    — 초기화 (fd: 0=stdin, 1=stdout, 2=stderr. 4번째 인자는 v1.23.1부터 미사용)
 uv_tty_set_mode(&tty, mode)            — UV_TTY_MODE_NORMAL / UV_TTY_MODE_RAW
 uv_tty_get_winsize(&tty, &width, &height) — 터미널 크기 조회
 uv_tty_reset_mode()                     — 프로그램 종료 시 터미널 복원 (필수)
@@ -158,6 +159,19 @@ libuv의 에러는 음수 상수로 표현된다. 초기화/동기 함수가 음
 | `UV_EMFILE` | 열린 파일 디스크립터 한도 초과 |
 | `UV_ECANCELED` / `UV_EOF` | 작업 취소됨 / 파일 끝 (스트림 종료) |
 | `UV_EINVAL` / `UV_EIO` | 잘못된 인자 / I/O 에러 |
+
+## 출처
+
+- [libuv — Thread pool work scheduling](https://docs.libuv.org/en/v1.x/threadpool.html)
+- [libuv — Threading and synchronization utilities](https://docs.libuv.org/en/v1.x/threading.html)
+- [libuv guide — Threads](https://docs.libuv.org/en/v1.x/guide/threads.html)
+- [libuv — uv_req_t (uv_cancel)](https://docs.libuv.org/en/v1.x/request.html)
+- [libuv — uv_async_t](https://docs.libuv.org/en/v1.x/async.html)
+- [libuv — Shared library handling](https://docs.libuv.org/en/v1.x/dll.html)
+- [libuv — uv_tty_t](https://docs.libuv.org/en/v1.x/tty.html)
+- [libuv — Miscellaneous utilities](https://docs.libuv.org/en/v1.x/misc.html)
+- [libuv — Error handling](https://docs.libuv.org/en/v1.x/errors.html)
+- [Don't Block the Event Loop — Node.js 공식 문서](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)
 
 ## 관련 문서
 - [[libuv|libuv (TOC)]]

@@ -21,7 +21,9 @@ NODE_ENV=production node --prof app.js              # 틱 파일 생성
 node --prof-process isolate-0xnnnn-v8.log > processed.txt  # 분석
 ```
 
-### 실제 사례: 동기 → 비동기 암호 해싱
+### 예시: 동기 → 비동기 암호 해싱
+아래 수치는 Node.js 공식 프로파일링 가이드에 실린 ApacheBench 측정값이다. 직접 측정한 값이 아니며 하드웨어와 부하 조건에 따라 달라진다.
+
 ```js
 // 동기식 (이벤트 루프 차단) — 5.33 req/s
 const hash = crypto.pbkdf2Sync(password, salt, 10000, 512, 'sha512');
@@ -160,6 +162,9 @@ cat perfs.out | stackcollapse-perf.pl | flamegraph.pl --colors=js > profile.svg
 
 # 또는 flamegraph.com에 perfs.out 업로드
 ```
+
+## 출처
+- [Profiling Node.js Applications — Node.js 공식 문서](https://nodejs.org/en/learn/getting-started/profiling)
 
 ## 관련 문서
 - [[Debugging-Profiling|디버깅 & 프로파일링 인덱스]]
