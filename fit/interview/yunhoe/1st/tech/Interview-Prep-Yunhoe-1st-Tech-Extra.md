@@ -62,7 +62,7 @@ aliases: ["Yunhoe 1st Tech Extra", "윤회 1차 기술 질문 보강"]
 
 ## 7. 트랜잭션 패턴
 
-- **Q. 분산 트랜잭션 왜 어렵나?** → 2PC는 코디네이터 장애, 블로킹, 성능 이슈. 실무는 **Saga + 보상 트랜잭션** 또는 **Outbox 패턴**으로 결과적 일관성
+- **Q. 분산 트랜잭션 왜 어렵나?** → 2PC는 코디네이터 장애, 블로킹, 복구 운영 부담이 있어 참여자가 전부 XA를 지원하고 트랜잭션이 짧게 끝날 때만 성립한다. 이질 저장소가 섞이거나 흐름이 길면 **Saga + 보상 트랜잭션** 또는 **Outbox 패턴**으로 결과적 일관성
 - **Q. Outbox 패턴?** → DB 트랜잭션 안에 도메인 변경 + outbox 테이블 INSERT를 **같이 커밋** → 별도 publisher가 outbox를 폴링/CDC해서 이벤트 발행. **"DB 저장은 됐는데 이벤트는 안 갔다" 사고 방지**
 - **Q. Saga 두 가지 스타일?** → Choreography(각 서비스가 이벤트 듣고 자기 단계 수행) vs Orchestration(중앙 코디네이터가 호출 순서 통제). 단계 적으면 코레오, 복잡하면 오케스트레이션
 - **꼬리**: "Outbox vs Transactional Messaging?" → Kafka Transactions처럼 native가 있어도, **DB와 브로커가 다른 시스템**이면 Outbox가 가장 보편적 안전망

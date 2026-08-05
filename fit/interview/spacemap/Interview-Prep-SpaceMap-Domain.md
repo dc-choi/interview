@@ -84,4 +84,3 @@ aliases: ["SpaceMap STM Domain", "스페이스맵 STM, SSA 도메인 브리프"]
 ## 관련 문서
 
 - [[Interview-Prep-SpaceMap|1차 면접 TOC]], [[Interview-Prep-SpaceMap-Tech-JD|JD 기반 기술 질문 #5 파이프라인]], [[Interview-Prep-SpaceMap-Cheatsheet|치트시트]]
-</content>

@@ -116,5 +116,3 @@ aliases: ["Egoism Interview Retro 1st", "에고이즘 1차 전화 회고"]
 - [[Interview-Prep-Egoism-1st]], [[Interview-Retro-Template]]
 - [[My-Motivation-Reasons]], [[My-FIT-Answers]], [[My-Tech-Cards-Ops]], [[My-Reverse-Questions]]
 - [[Career-Company-Judgment]], [[Self-Analysis]], [[Developer-Interview-Signals]]
-</content>
-</invoke>

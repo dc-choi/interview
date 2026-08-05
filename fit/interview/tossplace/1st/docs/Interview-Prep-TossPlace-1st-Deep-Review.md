@@ -116,7 +116,7 @@ aliases: ["TossPlace Deep Review", "토스플레이스 심화 리뷰 누적"]
 
 ## Pass 9 — 확장성/운영 (config, bootstrap, throttler, signin)
 
-- 🟢 **Pass 2 보안 우려 해소 (중요 — 약점으로 먼저 꺼내지 말 것)** — signin이 JWT를 expiresIn 7d로 발급(무기한 아님), 쿠키는 httpOnly + secure(prod) + sameSite strict + maxAge 7d로 XSS/CSRF 방어, set/clear 옵션 동일. 레이트리밋은 trust proxy/IPv6 /64/분산 Redis storage/429 헤더까지 "운영 배포 전 체크리스트"로 주석화. → Pass 2의 CSRF, JWT 만료, throttler 프록시는 실제로는 처리/인지된 항목이다.
+- 🟢 **Pass 2 보안 우려 해소 (중요 — 약점으로 먼저 꺼내지 말 것)** — signin이 JWT를 expiresIn 7d로 발급(무기한 아님), 쿠키는 httpOnly + secure(prod) + sameSite strict + maxAge 7d로 XSS 방어와 CSRF 1차 완화, set/clear 옵션 동일. 레이트리밋은 trust proxy/IPv6 /64/분산 Redis storage/429 헤더까지 "운영 배포 전 체크리스트"로 주석화. → Pass 2의 JWT 만료와 throttler 프록시는 처리/인지된 항목이고, CSRF는 sameSite strict + httpOnly로 1차 완화된 수준이다(상태 변경 경로의 본 방어는 CSRF 토큰).
 - 🟡 **graceful shutdown 부재** — enableShutdownHooks/SIGTERM 처리가 없어 @Cron 스케줄러와 in-flight 요청이 종료 시 안전하게 드레인되지 않는다. 대응: enableShutdownHooks + 진행 요청 완료 대기.
 - 🟡 **signin 타이밍 사용자 열거** — 없는 이메일은 scrypt를 안 돌려 빠르게 응답하므로 응답 시간으로 이메일 존재를 추정할 수 있다. signin 10/min throttle로 완화되나, dummy scrypt를 항상 수행하면 더 안전.
 - 🟡 **중앙 설정 모듈 부재 + main().catch 부재** — env가 app.config/index/throttler에 분산되고 부팅 시 스키마 검증(@nestjs/config + Joi/zod)이 없다(PORT/JWT_SECRET fail-fast는 있음). bootstrap main()에 .catch가 없어 부팅 실패 시 unhandled rejection.
@@ -134,7 +134,7 @@ aliases: ["TossPlace Deep Review", "토스플레이스 심화 리뷰 누적"]
 5. **scope enforcement 부재** — 정규화 구조만, 가드 미검증(Pass 2).
 
 ### 먼저 꺼내지 말 것 (실제로는 처리/인지된 것 — 자폭 금지)
-- CSRF → 쿠키 sameSite strict + httpOnly로 방어(Pass 9). JWT → 7일 만료(무기한 아님). 레이트리밋 프록시/IPv6/분산 → 운영 체크리스트 주석. 출력 누출 → toResponseDto whitelist. 불가능 날짜 → 그레고리력 validator. 물으면 답하되 먼저 약점이라 말하지 말 것.
+- CSRF → 쿠키 sameSite strict + httpOnly로 1차 완화(Pass 9). SameSite는 심층 방어라 상태 변경 경로의 본 방어는 CSRF 토큰 — 완화 수준까지만 말할 것. JWT → 7일 만료(무기한 아님). 레이트리밋 프록시/IPv6/분산 → 운영 체크리스트 주석. 출력 누출 → toResponseDto whitelist. 불가능 날짜 → 그레고리력 validator. 물으면 답하되 먼저 약점이라 말하지 말 것.
 
 ### 리드할 강점 5 (화면 공유로 코드/주석 띄우기)
 1. **동시성 설계 서사** — 트랜잭션 경계 + SQLite vs MySQL/PG 비관적 락 + PG EXCLUDE 제약 + 데드락 사전순 락. create UC 헤더 주석이 그대로 답변.
@@ -158,7 +158,7 @@ aliases: ["TossPlace Deep Review", "토스플레이스 심화 리뷰 누적"]
 ### 코드로 사실 확인된 것 (안심하고 밀어도 됨)
 
 - 🟢 동시성 서사 = create/update/remove UC 헤더 주석 그대로. ReservationSlot 단일 패스(`promotePending`), EXCLUDE 설계, 데드락 사전순 락까지 코드에 존재. 주석이 곧 답변.
-- 🟢 쿠키 플래그(httpOnly + secure(prod) + sameSite strict + maxAge 7d, set/clear 동일), signin 7d 만료, throttler 운영 체크리스트(trust proxy/IPv6 /64/Redis storage/429 헤더) 전부 코드와 주석에 확인. → 약점으로 먼저 꺼내지 말 것 유지.
+- 🟢 쿠키 플래그(httpOnly + secure(prod) + sameSite strict + maxAge 7d, set/clear 동일), signin 7d 만료, throttler 운영 체크리스트(trust proxy/IPv6 /64/Redis storage/429 헤더) 전부 코드와 주석에 확인. → 약점으로 먼저 꺼내지 말 것 유지. 단 sameSite strict는 CSRF 1차 완화까지이고 상태 변경 경로의 본 방어는 CSRF 토큰이라, 물으면 완화 수준으로 답한다.
 - 🔴 주최자 알림 제외 확정 — `factory.recipients = invitations.invited`만. populate도 room/invitations.invited만, organizer 없음.
 - 🔴 없는 roomId/inviteeId 통과 확정 — `em.getReference` + FK 비활성 + 존재 검증 없음.
 - 🟡 과거 검증 날짜 단위 확정 — create의 `isInPast()`도 결국 `isPastDate`(날짜만), update는 `dto.date`가 있을 때만 검사. "create는 시각까지 본다"는 오해 금지, 둘 다 날짜 단위이며 update만 date 미전송 시 검사 자체를 건너뜀.

@@ -76,7 +76,7 @@ JD에 "우대"로 적힌 항목 중 약/중 매칭은 면접에서 깊이 들어
 - 초당 수천~수만 교환 이벤트 트래픽
 
 **꼬리 질문 대비**
-- "exactly-once delivery?" → SQS, Kafka 모두 기본은 at-least-once. exactly-once는 Kafka transactional producer + idempotent consumer로 가능하지만 비용 높음. **현실적으로는 at-least-once + 멱등 소비자**가 표준
+- "exactly-once delivery?" → SQS, Kafka 모두 기본은 at-least-once. Kafka EOS는 트랜잭션 프로듀서와 read_committed 컨슈머가 오프셋을 출력과 같은 트랜잭션에 커밋하는 Kafka 내부 read-process-write 경계에서만 성립하고, 단일 클러스터 한정이며 처리량 비용도 있음. 외부 DB나 API 호출 같은 부수효과는 그 경계 밖이라 컨슈머 멱등(처리 키 중복 제거)으로 effectively-once를 만든다. **현실적으로는 at-least-once + 멱등 소비자**가 표준
 - "RabbitMQ는 어떤 경우?" → 라우팅 규칙이 복잡(여러 exchange, binding) + 처리량 중간 + 단순 운영. 팝팝 케이스에서는 SQS, Kafka가 더 일반적
 
 ---

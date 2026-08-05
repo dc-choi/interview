@@ -117,4 +117,3 @@ aliases: ["SpaceMap 1st Retro", "스페이스맵 1차 회고"]
 
 - [[Interview-Prep-SpaceMap|1차 준비 TOC]], [[Interview-Prep-SpaceMap-Domain|STM 도메인 브리프]]
 - [[My-Motivation-Reasons|이직 사유 마스터]], [[My-Tech-Cards-Data|데이터 카드]], [[My-Tech-Cards-Ops|운영 카드]]
-</content>

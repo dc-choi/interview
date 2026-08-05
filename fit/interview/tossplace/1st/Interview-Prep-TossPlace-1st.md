@@ -24,7 +24,7 @@ aliases: ["TossPlace 실전 정리", "토스플레이스 1차 실전 정리"]
 8. **단독 예약 알림 0명 / update 새 초대자는 'invited' 아닌 'changed' 수신** — 주최자 제외 버그의 확장.
 
 ## 먼저 꺼내지 말 것 (실제로는 처리/인지됨 — 자폭 금지)
-- CSRF → 쿠키 sameSite strict + httpOnly로 방어. **JWT 만료 → 7일(무기한 아님)**. 레이트리밋 프록시/IPv6/분산 → 운영 체크리스트 주석. 출력 누출 → toResponseDto whitelist. 불가능 날짜 → 그레고리력 validator. **물으면 답하되 먼저 약점이라 말하지 말 것.**
+- CSRF → 쿠키 sameSite strict + httpOnly로 1차 완화. 단 SameSite는 심층 방어라 상태 변경 경로(POST/PATCH/DELETE)의 본 방어는 CSRF 토큰이다 — 완화 수준까지만 말할 것. **JWT 만료 → 7일(무기한 아님)**. 레이트리밋 프록시/IPv6/분산 → 운영 체크리스트 주석. 출력 누출 → toResponseDto whitelist. 불가능 날짜 → 그레고리력 validator. **물으면 답하되 먼저 약점이라 말하지 말 것.**
 - ⚠️ 단 JWT는 **만료만** 처리됨. 알고리즘 핀과 에러 제네릭화는 미처리(위 7번) — "처리됨"으로 착각해 "JWT 다 됐습니다"라 답하지 말 것. 물으면 인정.
 
 ## 리드할 강점 5 (화면 공유로 코드/주석 띄우기)
