@@ -131,7 +131,7 @@ await request(app.getHttpServer())
   .expect(res => expect(res.body.email).toBe(validData.email));
 ```
 
-실제 HTTP 입구부터 응답까지. 미들웨어, Guard, Pipe, Filter 모두 통과.
+실제 HTTP 입구부터 응답까지 태운다. 단 `createNestApplication`이 재현하는 것은 **모듈에 등록한 미들웨어와 `APP_GUARD`, `APP_PIPE`, `APP_FILTER` 같은 프로바이더로 등록한 enhancer**까지다. `main.ts`에서 `useGlobalPipes`, `useGlobalFilters`, `setGlobalPrefix`로만 붙인 전역 설정은 `TestingModule`이 자동으로 재현하지 않아, 프로덕션에서만 걸리는 검증이나 prefix를 테스트가 놓친다. 프로덕션과 테스트가 같은 HTTP 설정 함수를 호출하게 하는 패턴은 [[HTTP-API-Integration-Testing|HTTP API 통합 테스트]] 참조.
 
 ## Request-scoped Provider 테스트
 

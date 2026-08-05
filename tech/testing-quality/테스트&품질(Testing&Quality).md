@@ -8,24 +8,21 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 # 테스트&품질(Testing&Quality)
 
 ## Checklist
-- [x] Unit test
-- [x] Integration test
-- [x] [[Jest-Express-Testing|Jest와 Express 컨트롤러 테스트 (Jest mock, 비동기 오류, Supertest CRUD 계약)]]
-- [x] [[Spring-Testing-Essentials|Spring test 경계 (단위, context, DB transaction)]]
-- [x] [[HTTP-API-Integration-Testing|HTTP API 통합 테스트 (계약 행렬, NestJS와 Supertest, TypeORM 격리)]]
-- [x] [[NestJS-Testing|E2E test (Supertest, 실제 HTTP 경로, Middleware, Guard, Pipe, Filter)]]
+- [x] [[Test-Pyramid#Unit Test|Unit test (단위 범위, AAA 구조, 격리와 실행 비용)]]
+- [x] [[Test-Pyramid#Integration Test|Integration test (외부 의존과의 상호작용 검증 범위)]]
+- [x] [[framework-testing|프레임워크 테스트 (프레임워크 DI 컨테이너 위의 테스트 경계, Jest mock, Spring test context, NestJS TestingModule override와 request-scoped, 동적 모듈 스텁)]]
+- [x] [[HTTP-API-Integration-Testing|HTTP API 통합 테스트 (검증 범위 구분, CRUD 계약 행렬, 전역 HTTP 설정 공유, 실제 DB와 migration 격리)]]
 - [x] [[Test-Pyramid|Contract test (Consumer-Driven Contract, Pact, Spring Cloud Contract, CI 역할)]]
 - [x] [[Test-Double-Strategy|Test fixture 전략, 테스트 대역 (Classicist vs Mockist, Mock 설계 전략, Test Double)]]
-- [x] [[Test-Isolation|Test isolation]]
+- [x] [[Test-Isolation|Test isolation (상태 초기화, Mock 격리, 컨텍스트 분리, 순차 실행 완화책)]]
 - [ ] Deterministic test (작성 예정: `Deterministic-Test`) — 기존 보강: [[Test-Isolation|순서 독립, 상태 초기화, fake timer]], [[NestJS-Testing|NestJS 테스트 격리]]
-- [ ] Load test automation (작성 예정: `Load-Test-Automation`) — 기존 보강: [[Load-Test-K6|k6 도구와 시나리오]], [[Test-Pyramid|성능 테스트의 파이프라인 위치]]
+- [ ] Load test automation (작성 예정: `Load-Test-Automation`) — 기존 보강: [[performance|SLO 역산 threshold로 CI 판정 자동화]], [[Load-Test-K6|k6 도구와 시나리오]], [[Test-Pyramid|성능 테스트의 파이프라인 위치]]
 - [ ] Chaos testing (optional) (작성 예정: `Chaos-Testing`)
-- [x] [[performance|성능 테스트 유형]]
+- [x] [[performance|성능 테스트 (유형별 종료 조건, 핵심 지표, open과 closed 부하 모델, threshold CI 판정, 생성기 병목 확인)]]
 - [x] [[TDD-BDD|TDD, BDD (Red-Green-Refactor, Given-When-Then, 조합 전략)]]
 - [x] [[TDD-Refactoring-Practice|TDD 리팩토링 연습법 (의식적인 연습, 정량적 제약, 장난감 프로젝트, 학습 테스트, 원시값 포장, 팀 전파)]]
 - [x] [[Test-Pyramid|Practical Test Pyramid (Unit, Integration, Contract, E2E, 아이스크림 콘 안티패턴)]]
 - [x] [[Integration-Test-Environment|통합 테스트 환경 (Testcontainers, LocalStack, 테스트 @Transactional 안티패턴)]]
-- [x] [[NestJS-Testing|NestJS Testing (TestingModule, in-memory DB, 트랜잭션 롤백, overrideGuard, Supertest)]]
 
 ## 현장사례
 - [[11st-Engineer-Seminar#테스트전략|11번가 테스트 전략]] — 컨트롤러→통합, 서비스→단위, Mock 최소화
@@ -33,30 +30,3 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 - [[Kakao-Ent-Seminar#테스팅|카카오엔터 테스팅]] — 사전 과제에서 테스트 코드 없으면 탈락
 - [[TS-Backend-Meetup-10#세션 1: AI 시대의 테스팅 (이세호, @D.Circle)|AI 시대의 테스팅]] — 구현 은닉, 고전파 vs 런던파, LLM-as-a-judge, 테스트 피라미드 재해석
 - [x] [[Service-Layer-Testing|서비스 레이어와 테스트 경계]]
-
-## 단위 테스트
-1. 개별 소프트웨어 구성 요소를 테스트하는 소프트웨어 테스트의 한 유형
-2. 모듈 단위로 완전히 분리해서 테스트를 진행
-3. 다른 시스템의 개입 없이 테스트를 진행
-
-## 통합 테스트
-1. 모듈간의 인터페이스를 테스트하기에 광범위한 유형의 테스트
-2. 각 인터페이스의 연결을 확인하기에 다른 시스템과의 연결을 테스트를 진행
-
-## [[performance|성능 테스트]]
-1. 시스템의 성능을 측정하는 테스트이며 시스템의 성능을 측정하고, 성능을 최적화하는데 사용함.
-2. 시스템의 응답 시간, 처리량, 안정성, 확장성, 리소스 사용량 등을 측정
-
-## Stub
-1. 가짜 객체를 인스턴스화하여 실제로 동작하는 것처럼 보이게 만드는 객체
-2. 해당 인터페이스나 클래스를 최소한으로 구현
-3. 호출된 요청에 대해서 미리 프로그래밍된 것 외에 응답하지 않음
-
-## Mock
-1. 호출에 대한 기대를 명세하고, 내용에 따라 동작하도록 프로그래밍 된 객체입니다.
-2. 테스트 작성을 위한 환경 구축이 어려울 때, 테스트하고자 하는 코드와 엮인 객체들을 대신하기 위해 만들어진 객체입니다.
-
-## Stub과 Mock의 차이
-- Stub은 상태 검증을 사용하고 Mock은 행위 검증을 사용합니다.
-- 상태 검증: 메서드가 수행된 후, 객체의 상태를 확인하여 올바르게 동작했는지를 확인하는 검증법
-- 행위 검증: 메서드의 리턴 값으로 판단할 수 없는 경우, 특정 동작을 수행하는지 확인하는 검증법
