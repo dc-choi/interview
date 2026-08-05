@@ -47,6 +47,16 @@ LIMIT 20;
 
 index 정렬이 가능해도 많은 base row lookup이 필요하면 optimizer가 table scan과 filesort를 더 싸게 볼 수 있다. query가 covering인지, 반환 비율과 `LIMIT`이 어떤지 함께 비교한다.
 
+## 실무 사례: 필터와 정렬을 한 index로 묶어 filesort 제거
+
+IoT 재고관리(VMI) 서비스에서 직접 잡은 슬로우 쿼리다. 디바이스의 최근 상태를 가져오는 서브쿼리가 2000ms대로 기록됐다. 테이블은 약 100만 건, 디바이스 850대, 디바이스당 평균 1,240건이 쌓인 분포였다.
+
+`EXPLAIN ANALYZE`로 본 원인은 단일 column index가 `ORDER BY created_at DESC, id DESC`를 풀지 못한다는 것이었다. `EXPLAIN ANALYZE`에 정렬 대상으로 기록된 약 9,000행을 filesort로 정렬한 뒤 1건만 남기고 버리고 있었다.
+
+디바이스 번호 equality가 100만 행을 평균 1,240행(선택도 약 0.12%)으로 좁혀 선행 key로 두고, 정렬 key를 방향까지 맞춰 `(device_number, created_at DESC, id DESC)` 복합 index를 만들었다. 선행 key가 상수로 고정되니 뒤 key part의 순서가 그대로 쓰여 filesort가 사라지고 상위 1건에서 scan이 끝났다.
+
+실측은 두 축으로 나뉜다. `EXPLAIN ANALYZE` 실행시간은 쿼리 1건 기준 15.4ms에서 0.1ms로, 디바이스 850대를 순회하는 배치 총시간은 5분 15초에서 약 2초로 줄었다. 배치 총시간에는 애플리케이션 처리와 네트워크 왕복이 함께 들어가므로 단건 실행시간에 850을 곱한 값과 일치하지 않는다. 앞의 2000ms대는 운영 슬로우 쿼리 로그에 남은 값이라 EXPLAIN ANALYZE로 다시 잰 15.4ms와는 측정 시점과 조건이 다르다. 읽는 행이 데이터 누적과 무관하게 index 탐색 1건으로 수렴하는 형태라 적재량이 늘어도 같은 비용을 유지한다. index 정의는 ORM schema에 선언해 형상 관리 대상에 넣었다.
+
 ## Internal temporary table
 
 MySQL은 `GROUP BY`, `DISTINCT`, `UNION`, 일부 window function이나 materialization에 internal temporary table을 사용할 수 있다. `Using temporary`는 진단 신호이지 즉시 장애라는 판정은 아니다.

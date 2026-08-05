@@ -122,4 +122,4 @@ CA 대신 **개인 간 신뢰 링크**로 공개키 정당성을 검증. 대규�
 - [[HTTPS-TLS|HTTPS, TLS Handshake]]
 - [[JWT|JWT]]
 - [[Password-Hashing|패스워드 해싱]]
-- [[FIDO-Seminar|FIDO, 패스키]]
+- [[FIDO-WebAuthn|FIDO2, WebAuthn (공개키 기반 인증)]]

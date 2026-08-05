@@ -42,6 +42,8 @@ aliases: ["장애 감지와 로깅"]
 
 ## 모니터링 스택 선택
 
+> 아래 절부터는 세미나 내용이 아니라, 재직 중 IoT 재고관리(VMI) 서비스에 직접 구축한 관측 스택 기록이다.
+
 ### 대안 비교 (가중치 평가)
 | 스택 | TCO (0.25) | 메트릭 생태계 (0.15) | 벤더 종속 (0.10) | 총점 |
 |------|-----------|-------------------|----------------|------|
@@ -51,7 +53,7 @@ aliases: ["장애 감지와 로깅"]
 | CloudWatch | 3 | 3 | 2 | 3.10 |
 
 - ELK: 로그 검색/집계는 강력하지만 동일 데이터량에서 운영 복잡도와 비용이 큼
-- Datadog: 기능은 최고지만 사용량 단가가 치명적
+- Datadog, NewRelic: 기능은 최고지만 트래픽이 늘수록 사용량 단가가 그대로 비용 증가로 이어짐
 - CloudWatch: AWS 리소스 메트릭 자체는 충분하지만 ① 커스텀 메트릭 비용($0.30/metric/month)과 고카디널리티 제약, ② PromQL 수준의 레이블 기반 다차원 쿼리 부재, ③ Logs Insights 쿼리 UX 한계, ④ 알림 라우팅, 디듀프, 억제를 SNS+Lambda로 수동 구현해야 함 (Alertmanager가 기본 제공하는 기능)
 
 ## 모니터링 아키텍처
@@ -63,21 +65,23 @@ aliases: ["장애 감지와 로깅"]
 | | HttpLoggingInterceptor | 요청/응답/예외를 한 지점에서 구조적으로 로깅 |
 | | Winston JSON Logger | flat JSON line 포맷으로 기록 |
 | | MetricsInterceptor + prom-client | method, route, status, latency를 Prometheus 형식으로 기록 |
-| **Log Routing** | FireLens(FluentBit) → Loki | ECS/Fargate 컨테이너 stdout → 중앙집중 로깅 |
+| **Log Routing** | FireLens(FluentBit) → Loki, 호스트 로그는 Promtail → Loki | ECS/Fargate 컨테이너 stdout → 중앙집중 로깅 |
 | **Metrics Plane** | Prometheus → Thanos Sidecar → S3 | 메트릭 수집 → 장기 보관. Thanos Querier로 멀티 인스턴스 통합 조회 |
 | **Alerting** | Grafana Alerting → Slack | SLO 기반 알람 → 서비스/팀별 라우팅 |
 
 ## 알림 기준 (SLO 기반)
 
-`for: 5m` 지속 조건으로 단발성 스파이크 필터링:
+지속 조건(`for`)으로 단발성 스파이크를 걸렀고, 지속 시간은 메트릭마다 다르게 뒀다. 각 임계값을 그 숫자로 정한 근거와 나머지 알람(로그 ingestion rate 감소, threads_connected, 컨테이너 리소스)은 [[Alert-Fatigue|Alert fatigue 방지]]의 사례 절에 정리했다.
 
 | 메트릭 | 임계값 | 지속 시간 |
 |--------|--------|----------|
 | Error rate | 1% | 5분 |
 | Slow SQL | 500ms+ | 3회 지속 |
-| Event Loop Lag | 100ms | 3분 |
+| Event Loop Lag (1단) | 100ms | 3분 |
+| Event Loop Lag (2단) | 250ms | 1분 |
 | RDS CPU | 75% | 5분 |
-| Replica Lag | 5초 | 3분 |
+| Replica Lag (주의) | 5초 | 3분 |
+| Replica Lag (경고) | 10초 | 1분 |
 
 ## 보존 전략
 - **메트릭**: Prometheus 단기 보존(15일) → Thanos Sidecar가 S3로 업로드 (장기 조회 가능)
@@ -88,6 +92,7 @@ aliases: ["장애 감지와 로깅"]
 - route/path 라벨 정규화 (URL 파라미터를 `:id`로 치환)
 - **userId, traceId를 라벨에 절대 포함하지 않음** → 라벨 조합 폭증 → Prometheus OOM
 - traceId는 로그 본문(flat JSON)에 기록하고 LogQL로 검색
+- 알람과 대시보드에서 쓰지 않는 라벨과 필드는 수집 단계에서 drop (`metric_relabel_configs`) — 저장 전에 잘라야 비용과 OOM을 동시에 막는다 ([[Cardinality]])
 
 ## 면접포인트
 - "장애를 어떻게 감지하나?" → SLO 기반 알림(Error rate, Slow SQL, Event Loop Lag 등)으로 시스템적 감지. `for` 지속 조건으로 오탐 필터링

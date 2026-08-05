@@ -69,6 +69,15 @@ Replica read는 source보다 오래된 상태를 반환할 수 있다. 모든 `S
 
 `SHOW REPLICA STATUS`, Performance Schema replication tables와 GTID set으로 receiver/applier 상태, last error와 queue를 본다. `Seconds_Behind_Source` 하나는 NULL, clock과 workload에 영향을 받으므로 relay log space, transaction queue, heartbeat와 end-to-end freshness를 함께 본다.
 
+## 실무 사례: 쓰기 중심 워크로드에서 조회를 replica로 분리
+
+IoT 재고관리(VMI) 서비스에서 직접 대응한 건이다. IoT 디바이스가 일정 주기로 재고 데이터를 올리는 쓰기 중심 구조였고 하루 약 5만 건의 쓰기가 들어오는 상황에서 조회 응답이 2초에서 3초까지 밀렸다. 쓰기와 조회가 같은 인스턴스의 CPU와 I/O를 경쟁한다고 의심하고, RDS Read Replica로 조회를 분리해 그 가정을 검증했다.
+
+- 옮긴 대상은 stale read를 허용할 수 있는 조회로 한정했다. 동시성이 중요한 로직의 읽기는 primary에 남겼다.
+- ReplicaLag는 CloudWatch와 Grafana 대시보드로 상시 관찰했다. ORM 레벨에서 lag를 감지해 라우팅을 되돌리는 방식은 제어 범위가 좁아, lag가 커지면 인스턴스 스케일업 같은 인프라 차원으로 대응하도록 정리했다.
+
+실측 기준 주요 조회 API가 약 40% 빨라지고 DB CPU 부하가 30% 줄었다. 다만 이 구조는 앱이 lag를 자동으로 흡수하지 못하므로, 어떤 조회가 replica로 가는지와 허용 가능한 지연을 위의 read consistency 계약으로 함께 남겨야 한다.
+
 ## Failover와 복구 원칙
 
 1. promotion 전에 candidate가 필요한 GTID까지 적용했는지 확인한다.

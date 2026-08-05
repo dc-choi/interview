@@ -58,6 +58,15 @@ Runner 단계:
 - `NODE_ENV=production` 설정으로 런타임 최적화 활성화
 - `.dockerignore`로 불필요한 파일(node_modules, .git 등) 제외
 
+## 실무 사례 — 909MB에서 513MB로
+
+실무에서 직접 적용한 IoT 재고관리(VMI) 서비스의 NestJS 이미지 최적화 사례다.
+
+- **상황**: 단일 스테이지로 빌드한 이미지가 909MB였고, 빌드부터 ECS 배포 완료까지 3분 10초가 걸렸다. 배포가 잦은 시기에는 이 대기 시간이 그대로 개발 리드타임에 붙었다.
+- **조치**: `.dockerignore`로 `node_modules`, `.git`, 로컬 환경 파일을 빌드 컨텍스트에서 먼저 걷어내고, Dockerfile을 Builder와 Runner 두 스테이지로 나눠 Runner에는 빌드 산출물과 프로덕션 의존성만 남겼다.
+- **베이스 이미지 판단**: Alpine과 distroless도 후보였지만 bcrypt 같은 네이티브 모듈의 호환성 검증 비용이 커서 보류했다. 멀티스테이지만으로 목표한 크기에 도달해 베이스 교체까지 가지 않았다.
+- **결과**: 실측 기준 909MB에서 513MB로 43.6% 감소, 배포 3분 10초에서 2분 20초로 26.3% 단축. 이미지 리비전마다 용량이 줄어든 만큼 ECR 저장 비용도 함께 내려갔다.
+
 ## 면접 포인트
 
 Q. Multi-stage build의 목적은?
@@ -67,6 +76,9 @@ Q. Multi-stage build의 목적은?
 Q. COPY --from=builder는 무엇인가?
 - 이전 스테이지(builder)에서 특정 파일만 현재 스테이지로 복사하는 명령
 - 필요한 빌드 산출물만 가져와 이미지를 가볍게 유지
+
+## 출처
+- 본인 블로그: [Docker Image Size를 줄여 성능 개선](https://dc-choi.tistory.com/94)
 
 ## 관련 문서
 - [[Docker]]
