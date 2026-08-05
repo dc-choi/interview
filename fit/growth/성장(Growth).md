@@ -12,6 +12,7 @@ aliases: ["Growth"]
 ## 목차
 
 - [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]] — 키노라이츠 적응, 생활과 장기 개발자 목표의 우선순위
+- [[Kinolights-Performance-Playbook|키노라이츠 성과 플레이북]] — 성과의 통화, 기준선, 기록 전환
 - [[fit/growth/career-stages/커리어단계(CareerStages)|커리어 단계 (Career Stages)]] — 백엔드 진로, Dreyfus, Tool Mastery, 첫 90일
 - [[fit/growth/learning/학습(Learning)|학습 방법 (Learning)]] — CS 학습법, 소스 코드 분석, 영어, 블로그, 성장 원칙
 - [[Hiring-Market|채용 시장 (Hiring Market)]] — 기업 역량 요구, IT 긴축기, 대규모 트래픽 경험

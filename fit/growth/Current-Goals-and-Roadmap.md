@@ -163,6 +163,7 @@ DevOps는 현재 회사 기술보다 앞서는 당장 과제가 아니라 미래
 ## 관련 문서
 
 - [[Kinolights-Engineer-Growth-Direction|키노라이츠에서의 엔지니어 성장 방향]]
+- [[Kinolights-Performance-Playbook|키노라이츠 성과 플레이북 (성과의 통화, 기준선, 기록 전환)]]
 - [[Meeting-Debrief-Template|면담 복기 템플릿]]
 - [[roadmaps|기술 학습 로드맵]]
 - [[git|Git 실무 학습 순서]]
