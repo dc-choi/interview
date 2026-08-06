@@ -108,6 +108,7 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - [[Pricing-Strategy|가격 정책 설계]]
 - [[Market-Analysis|시장 분석]]
 - [[Category-Expansion|카테고리 확장과 카니발리제이션]]
+- [[Kinolights-Domain-OTT-Business-Models|OTT 수익 모델 (SVOD, AVOD, TVOD)]]
 
 ## 출처
 - [서비스 기획자를 위한 시장 분석 실전 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/52)
