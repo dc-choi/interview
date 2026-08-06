@@ -115,7 +115,7 @@ await consumer.run({
 });
 ```
 
-`autoCommit: false`를 쓰면 성공한 offset을 직접 `resolveOffset`하고 다음에 읽을 offset인 `마지막 처리 offset + 1`을 커밋해야 한다. 인자 없는 `commitOffsetsIfNecessary()`는 `autoCommitInterval`이나 `autoCommitThreshold` 조건이 없으면 커밋하지 않으므로 이 예제는 `consumer.commitOffsets()`를 명시적으로 호출한다. 벌크 저장이 끝나기 전에 뒤쪽 offset을 resolve하면 앞쪽의 미반영 메시지까지 처리된 것처럼 보일 수 있으므로, 배치의 DB 반영과 DLQ 저장이 모두 성공한 뒤 순서대로 resolve한다. 배치 후반 오류로 재시도되면 이미 보낸 DLQ가 중복될 수 있으므로 DLQ 쓰기도 멱등하게 만든다. 실패 메시지를 조용히 건너뛰고 offset만 올리면 유실이므로 DLQ, 재시도 토픽, 처리 중단 중 하나를 명확히 선택한다.
+`autoCommit: false`를 쓰면 성공한 offset을 직접 `resolveOffset`하고 다음에 읽을 offset인 `마지막 처리 offset + 1`을 커밋해야 한다. 인자 없는 `commitOffsetsIfNecessary()`는 `autoCommitInterval`이나 `autoCommitThreshold` 조건이 없으면 커밋하지 않으므로 이 예제는 `consumer.commitOffsets()`를 명시적으로 호출한다. 벌크 저장이 끝나기 전에 뒤쪽 offset을 resolve하면 앞쪽의 미반영 메시지까지 처리된 것처럼 보일 수 있으므로, 배치의 DB 반영과 DLQ 저장이 모두 성공한 뒤 순서대로 resolve한다. 배치 후반 오류로 재시도되면 이미 보낸 DLQ가 중복될 수 있으므로 DLQ 쓰기도 멱등하게 만든다. 실패 메시지를 조용히 건너뛰고 offset만 올리면 유실이므로 DLQ, 재시도 토픽, 처리 중단 중 하나를 명확히 선택한다 (설계 결정 축은 [[MQ-Kafka-Retry-DLT|재시도와 DLT]] 참고).
 
 ### 선택 기준
 | 상황 | 권장 |

@@ -63,4 +63,4 @@ async function handleMessage(eventId: string, payload: any) {
 ## 관련 문서
 - [[Delivery-Semantics|전달 보장]]
 - [[Idempotency-Key]]
-- `DLQ` (작성 예정)
+- [[Event-Driven-Patterns|DLQ (Retry + DLQ 패턴)]], Kafka 구현은 [[MQ-Kafka-Retry-DLT|재시도와 DLT]]

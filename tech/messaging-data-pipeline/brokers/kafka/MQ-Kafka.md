@@ -17,6 +17,7 @@ aliases: ["Kafka", "Message Queue: Kafka"]
 - [[MQ-Kafka-Streams|Kafka Streams (상태 저장소, KStream/KTable, 윈도우, EOS, 운영)]]
 - [[MQ-Kafka-Event-Ordering|순서 보장 (파티션 순서의 한계, 소비자 체이닝, watermark식 제한적 비순서)]]
 - [[Kafka-Partition-Sizing|파티션 개수 산정 (산정식, per-partition 처리량, eCKU 한도)]]
+- [[MQ-Kafka-Retry-DLT|재시도와 DLT (non-blocking retry, opt-in 재시도, 공통 DLT envelope, 구현 함정)]]
 
 ## 핵심 한 줄
 
@@ -35,7 +36,6 @@ aliases: ["Kafka", "Message Queue: Kafka"]
 
 - [[Event-Driven-Architecture|Event-driven architecture]]
 - [[Consumer-Group|Consumer Group]]
-- Dead Letter Queue (작성 예정: `DLQ`)
 - [[Messaging-Patterns|메시징 패턴]]
 - [[Delivery-Semantics|전달 보장]]
 - [[Transactional-Outbox|Transactional Outbox]]

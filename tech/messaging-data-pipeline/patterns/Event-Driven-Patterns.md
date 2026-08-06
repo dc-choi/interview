@@ -76,6 +76,8 @@ Main Queue → Consumer
 - **외부 시스템 회복 여유**: 다운스트림이 과부하면 거리두기
 - **Jitter 추가**: `base × 2^n + random(0, jitter)` — 소비자들의 재시도 시점이 같아지지 않게
 
+실패 원인이 선행 데이터 미도착처럼 도착 예상 시간이 있는 유형이면 고정 지연이 맞을 수 있다 — [[MQ-Kafka-Retry-DLT|Kafka 재시도와 DLT]]의 백오프 선택 참조.
+
 ### 오류 분류 — 재시도 vs 즉시 DLQ
 
 | 오류 종류 | 처리 |
@@ -97,7 +99,7 @@ Main Queue → Consumer
 
 - **AWS SQS**: Main Queue + Redrive Policy(maxReceiveCount 초과 시 DLQ로)
 - **RabbitMQ**: Dead Letter Exchange + delay plugin
-- **Kafka**: 직접 구현 (retry topic, DLT topic)
+- **Kafka**: 직접 구현 (retry topic, DLT topic) — 설계 결정과 함정은 [[MQ-Kafka-Retry-DLT|Kafka 재시도와 DLT 설계]]
 - **BullMQ**: `backoff.type = 'exponential'` + `attempts` 옵션
 
 ## 3. Async Request-Response Pattern
@@ -175,12 +177,6 @@ API 서버 (요청자) ─┐
 - **Correlation ID**의 용도와 분산 추적 Trace ID와의 차이
 - 세 패턴의 **결합 시 아키텍처**
 
-## 출처
-- [DevPill — 이벤트 기반 시스템 설계 실전 패턴 3종](https://maily.so/devpill/posts/8do7q4pnrgq)
-- [F-Lab — 이벤트 소싱과 CQRS 패턴의 이해와 적용](https://f-lab.kr/insight/event-sourcing-cqrs-20240528)
-- [datamoney — 이벤트 기반 아키텍처 개념 정리](https://datamoney.tistory.com/376)
-- [choidongkuen — 메시지 큐란?](https://velog.io/@choidongkuen/서버-메세지-큐Message-Queue-을-알아보자)
-
 ## 관련 문서
 - [[Messaging-Patterns|메시징 패턴 (Pub/Sub, Task Distribution, Request/Reply)]]
 - [[Fan-Out-Architecture|Fan-out Architecture (1:N 분배)]]
@@ -191,3 +187,9 @@ API 서버 (요청자) ─┐
 - [[Idempotency-Key|Idempotency Key]]
 - [[Consumer-Group|Consumer Group]]
 - [[Correlation-ID|Correlation ID (분산 추적)]]
+
+## 출처
+- [DevPill — 이벤트 기반 시스템 설계 실전 패턴 3종](https://maily.so/devpill/posts/8do7q4pnrgq)
+- [F-Lab — 이벤트 소싱과 CQRS 패턴의 이해와 적용](https://f-lab.kr/insight/event-sourcing-cqrs-20240528)
+- [datamoney — 이벤트 기반 아키텍처 개념 정리](https://datamoney.tistory.com/376)
+- [choidongkuen — 메시지 큐란?](https://velog.io/@choidongkuen/서버-메세지-큐Message-Queue-을-알아보자)
