@@ -22,6 +22,7 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 - [x] [[TDD-BDD|TDD, BDD (Red-Green-Refactor, Given-When-Then, 조합 전략)]]
 - [x] [[TDD-Refactoring-Practice|TDD 리팩토링 연습법 (의식적인 연습, 정량적 제약, 장난감 프로젝트, 학습 테스트, 원시값 포장, 팀 전파)]]
 - [x] [[Test-Pyramid|Practical Test Pyramid (Unit, Integration, Contract, E2E, 아이스크림 콘 안티패턴)]]
+- [x] [[Test-Pyramid-Blind-Spots|초록불이 못 잡는 것 (배포/인프라 경계, 스모크 실행, 계약 부재의 죽은 코드)]]
 - [x] [[Integration-Test-Environment|통합 테스트 환경 (Testcontainers, LocalStack, 테스트 @Transactional 안티패턴)]]
 
 ## 현장사례

@@ -165,7 +165,7 @@ aliases: ["Global IT Interview", "글로벌 IT 인터뷰", "해외 IT 회사 인
 - [[Common-Interview-Questions|자주하는 면접 질문]]
 - [[Developer-Interview-13-Questions|개발자 면접 단골 질문 13개]]
 - [[Resume-Portfolio-Guide|이력서, 포트폴리오 가이드]]
-- [[Job-Search-Strategy|채용공고 분석, 이직 전략]]
+- [[Job-Search-Strategy|이직 전략]]
 - [[Company-Selection-Criteria|회사 선택 기준]]
 - [[Interview-Soft-Skills|인성면접 가이드]]
 - [[FIT-Framework|FIT 프레임워크]]

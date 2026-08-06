@@ -125,7 +125,7 @@ Offer를 받은 후 **24~48시간 냉정 검토**.
 - [Disquiet groupby — 개발자가 성장하기 좋은 회사 환경](https://disquiet.io/@groupby/makerlog/개발자가-성장하기-좋은-회사-환경)
 
 ## 관련 문서
-- [[Job-Search-Strategy|채용공고 분석, 이직 전략]]
+- [[Job-Search-Strategy|이직 전략]]
 - [[Toxic-Org-Detection|독성 조직 판별 프레임]]
 - [[Developer-Hiring-Insights|채용 인사이트]]
 - [[Growth-Principles|성장의 7가지 원칙]]

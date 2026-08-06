@@ -102,4 +102,4 @@ LRU, LFU
 ## 관련 문서
 - [[CS&프로그래밍(CS&Programming)|CS & 프로그래밍]]
 - [[Resume-Portfolio-Guide|이력서 & 포트폴리오 가이드]]
-- [[Job-Search-Strategy|채용공고 분석 & 이직 전략]]
+- [[Job-Search-Strategy|이직 전략]]

@@ -81,6 +81,8 @@ Unit과 Integration 사이의 **계약 검증**.
 - 배포 독립성 확보
 - CI 시간 단축
 
+계약이 없을 때의 전형적 증상(폴백만 타는 죽은 코드, 아무도 읽지 않는 값)은 [[Test-Pyramid-Blind-Spots|초록불이 못 잡는 것]] 참조.
+
 ## UI / E2E Test
 
 ### 정의
@@ -154,6 +156,10 @@ Staging → 위험 기반 E2E + 성능 → Production
 
 빠른 피드백이 필요한 단계엔 **하위 테스트만**, 최종 검증에 E2E.
 
+## 초록불이 못 잡는 것
+
+유닛 그린과 로컬 실행 성공이 놓치는 결함 영역(배포와 인프라 경계, 스모크 실행, 운영 규모 검증)은 [[Test-Pyramid-Blind-Spots|초록불이 못 잡는 것]]으로 분리했다.
+
 ## 흔한 실수
 
 - **피라미드가 아닌 아이스크림 콘**: E2E 과다, Unit 부족 → CI 지옥
@@ -179,9 +185,10 @@ Staging → 위험 기반 E2E + 성능 → Production
 - [Dowon Lee 강사, Testing Pyramid](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290730)
 
 ## 관련 문서
-- [[Classicist-vs-Mockist-Testing|Classicist vs Mockist, Test Double]]
-- [[Mock-Testing-Strategy|Mock 테스트 설계 전략]]
+- [[Test-Pyramid-Blind-Spots|초록불이 못 잡는 것 — 테스트의 사각지대]]
+- [[Classicist-vs-Mockist-Testing|Classicist vs Mockist, Test Double]], [[Mock-Testing-Strategy|Mock 테스트 설계 전략]]
 - [[TestContainers-Integration|Testcontainers 통합 테스트]]
+- [[Migration-Backed-Test-Database|마이그레이션 기반 테스트 데이터베이스]]
 - [[TDD-BDD|TDD, BDD]]
 - [[Test-Fixture|Test Fixture 전략]]
 - [[Test-Isolation|Test Isolation]]

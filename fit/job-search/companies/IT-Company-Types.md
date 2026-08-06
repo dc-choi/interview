@@ -151,7 +151,7 @@ aliases: ["IT Company Types", "IT 기업 유형", "개발자 회사 종류"]
 
 ## 관련 문서
 - [[Company-Selection-Criteria|회사 선택 기준]]
-- [[Job-Search-Strategy|채용공고 분석, 이직 전략]]
+- [[Job-Search-Strategy|이직 전략]]
 - [[Salary-Trajectory|연봉 궤적 전략]]
 - [[Global-IT-Interview|글로벌 IT 인터뷰 준비]]
 - [[Startup-Is-Not-Kindergarten|스타트업은 유치원이 아니다]]
