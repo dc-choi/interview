@@ -145,6 +145,7 @@ fun shouldSendEmailOnRegistration() {
 - **상태 검증 시 저장 객체를 그대로 비교** — self-assertion. 하드 코딩 값 권장
 - **Mockist 스타일 테스트를 리팩터 후 그대로** → 대량 실패. 상태 검증으로 교체 고려
 - **Classic vs Mockist 흑백 논쟁** — 둘 다 도구. 상황에 맞춰
+- **실제 구현보다 관대한 Fake** — 예를 들어 실제 구현은 문맥 앵커가 있어야 매칭하는데 페이크는 대상 문자열만 보이면 치환하는 식이면, 그 시나리오를 정확히 겨냥한 회귀 테스트도 초록불만 켠다. Fake는 성공 결과만 흉내 내지 말고 **실제 구현의 실패 조건까지** 흉내 내야 한다
 
 ## 면접 체크포인트
 
@@ -157,6 +158,7 @@ fun shouldSendEmailOnRegistration() {
 ## 출처
 - [dev-monkey-dugi — Test Double vs Real Objects](https://dev-monkey-dugi.tistory.com/140)
 - [cl8d — Classic TDD vs Mockist TDD](https://cl8d.tistory.com/43)
+- [테스트는 다 초록불이었다 — 아무도 안 읽는 값이었고, 마스킹도 안 걸릴 뻔했다 — velog](https://velog.io/@donghoong2/OCR-WORKER-%ED%85%8C%EC%8A%A4%ED%8A%B8%EB%8A%94-%EB%8B%A4-%EC%B4%88%EB%A1%9D%EB%B6%88%EC%9D%B4%EC%97%88%EB%8B%A4-%EA%B7%BC%EB%8D%B0-%EC%95%84%EB%AC%B4%EB%8F%84-%EC%95%88-%EC%9D%BD%EB%8A%94-%EA%B0%92%EC%9D%B4%EC%97%88%EA%B3%A0-%EB%A7%88%EC%8A%A4%ED%82%B9%EB%8F%84-%EC%82%AC%EC%8B%A4-%EC%95%88-%EA%B1%B8%EB%A6%B4-%EB%BB%94%ED%96%88%EB%8B%A4)
 
 ## 관련 문서
 - [[Mock-Testing-Strategy|Mock 테스트 설계 전략]]

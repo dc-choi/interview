@@ -63,6 +63,8 @@ AI가 답을 만드는 비용을 낮추면 눈앞의 성과와 내 안에 남는
 
 이를 이미 확정된 보편 법칙으로 볼 수는 없지만, AI를 통해 더 많이 생각하는 사람과 덜 생각하는 사람 사이의 **인지적 양극화 위험**을 설명하는 유용한 모델이다. 학습에서는 산출량만 보지 말고, 도움을 제거한 뒤에도 설명하고 적용할 수 있는지를 함께 측정해야 한다.
 
+이 의지는 구호가 아니라 **행동 패턴**이다 — 모르는 걸 만났을 때 넘어가지 않고 한 번 더 파는 습관이 그 예다(AI 답을 검증 대상으로 두는 실천은 아래 절). 개별 지식과 정답은 AI, 검색, 동료에게 빌릴 수 있지만, 체화된 기초와 태도는 빌릴 수 없다. 기술과 프레임워크는 바뀌어도 묻고, 파고, 점검하는 태도는 남는다 — 지식과 함께 기본기를 이루는, 빌릴 수 없는 쪽의 축이다.
+
 ## 사고를 남기는 AI 상호작용
 
 AI를 튜터나 사서처럼 쓰려면 결과물만 얻는 것이 아니라 **내가 생각해야 하는 구간을 남겨야 한다.** 다음 순서는 접바둑의 돌을 점차 줄이는 실천 방법이다.
@@ -88,12 +90,14 @@ AI를 튜터나 사서처럼 쓰려면 결과물만 얻는 것이 아니라 **�
 
 ## 출처
 - AI를 학습 난이도 조절 도구로 (접바둑 비유) — 개인 블로그 에세이
+- [기본기는 지식이 아닙니다 — Team Grit](https://teamgrit.co/article/314)
 - [인프런 MCP - Inflearn](https://www.inflearn.com/pages/mcp)
 - [The People Who Will Thrive in the AI Age — The Atlantic](https://www.theatlantic.com/ideas/2026/06/ai-open-ai-anthropic/687689/)
 - [AI 시대에 번영할 사람들 — GeekNews](https://news.hada.io/topic?id=31683)
 
 ## 관련 문서
 - [[Growth-Principles|성장의 7가지 원칙]] — 자기효능감, 계단식 성장, 보이지 않는 벽돌
+- [[CS-Fundamentals-Value|CS 기초의 가치]] — 판단 도구로서의 지식 (태도와 짝을 이루는 축)
 - [[First-Hand-Experience-AI-Era|AI 시대 직접 경험기]] — AI를 직접 경험 가속 도구로
 - [[CS-Learning-Method|CS 지식 학습법]] — 키워드 기반 목차 접근
 - [[MCP|Model Context Protocol]] — 사용자 소유 콘텐츠를 AI 컨텍스트로 연결하는 기술 경계

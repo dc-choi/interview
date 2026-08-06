@@ -21,6 +21,8 @@ aliases: ["MySQL DML 패턴", "MySQL UPSERT", "MySQL 배치 갱신"]
 
 `IGNORE`는 안전 모드가 아니다. 적재가 끝난 뒤 warning 수와 실제 반영 건수를 확인하지 않으면 잘못된 값이나 누락된 행을 성공으로 오인할 수 있다. `REPLACE`도 기존 행의 일부 컬럼을 보존하는 갱신이 아니므로 일반적인 UPSERT 기본값으로 두지 않는다.
 
+락 관점의 차이도 있다. `INSERT IGNORE`는 중복 키를 확인하며 기존 인덱스 레코드에 S Lock을 잡을 수 있는데, 같은 트랜잭션에서 이어서 그 행을 UPDATE하면 S에서 X로 올리는 업그레이드가 된다 — 동시 요청이 각자 S Lock을 쥔 채 서로의 해제를 기다리는 데드락의 전형 패턴이다. 있으면 넘어가고 없으면 만드는 목적이라면 no-op ODKU(`ON DUPLICATE KEY UPDATE col = col`)가 중복 시 UPDATE 경로로 들어가 처음부터 X Lock을 잡으므로, 결과는 같아도 경합이 순환 대기 대신 직렬 대기로 정리된다.
+
 ```sql
 INSERT INTO account_balance (account_id, balance, updated_at)
 VALUES (42, 1000, NOW()) AS incoming
@@ -104,6 +106,7 @@ LIMIT 5000;
 ## 출처
 
 - [MySQL 8.4 Reference Manual, INSERT](https://dev.mysql.com/doc/refman/8.4/en/insert.html)
+- [DB Lock으로 동시성을 해결하려다 Deadlock을 만난 이야기 — velog](https://velog.io/@joona95/DB-Lock%EC%9C%BC%EB%A1%9C-%EB%8F%99%EC%8B%9C%EC%84%B1%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-Deadlock%EC%9D%84-%EB%A7%8C%EB%82%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0)
 - [MySQL 8.4 Reference Manual, INSERT ON DUPLICATE KEY UPDATE](https://dev.mysql.com/doc/refman/8.4/en/insert-on-duplicate.html)
 - [MySQL 8.4 Reference Manual, REPLACE](https://dev.mysql.com/doc/refman/8.4/en/replace.html)
 - [MySQL 8.4 Reference Manual, UPDATE](https://dev.mysql.com/doc/refman/8.4/en/update.html)

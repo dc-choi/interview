@@ -14,7 +14,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] [[Transaction-Lock-Contention|트랜잭션 경합과 Lock 문제]]
 
 ## Checklist
-- [x] [[Latency-Optimization|레이턴시 최적화 개관 (캐싱, DB, 비동기, 네트워크 4대 전략 + P99/SLO 측정)]]
+- [x] [[Latency-Optimization|레이턴시 최적화 개관 (캐싱, DB, 비동기, 네트워크 4대 전략 + P99/SLO 측정, wall-clock 프로파일링)]]
 - [x] [[Throughput-vs-Latency|처리량과 지연시간 (부하 곡선, knee point, Little's Law, SLO 기준 처리량)]]
 - [x] [[Read-Write-Performance-Strategies|읽기와 쓰기 성능 전략 (계층별 병목, 상충 관계, 측정과 검증)]]
 - [x] [[Cache-vs-Queue|캐시와 큐 (값 재사용 vs 작업 전달, 접수와 완료, 선택 기준)]]

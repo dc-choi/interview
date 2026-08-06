@@ -12,4 +12,4 @@ ACID, MVCC, 격리 수준, Lock 메커니즘 문서 모음. Race Condition 패�
 - [[Transactions|ACID, MVCC, Consistent Read vs Current Read]]
 - [[Isolation-Level|Isolation Level (Oracle에서 MySQL 이관 잔액 사례 포함)]]
 - [[Isolation-Level-Beyond-ANSI|ANSI 격리 수준의 한계, Strict Serializable (Snapshot Isolation, Linearizable, 분산 DB)]]
-- [[Lock|Lock (row / gap / next-key, Pessimistic vs Optimistic, 데드락 예방)]]
+- [[Lock|Lock (row / gap / next-key, Pessimistic vs Optimistic, 스냅샷 읽기 vs 현재 읽기, 데드락 예방)]]

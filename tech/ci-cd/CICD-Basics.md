@@ -16,6 +16,10 @@ aliases: ["CICD Basics", "CI/CD 기초", "Continuous Integration", "Continuous D
 - 자동화의 목적: **휴먼 에러 감소, 조기 문제 발견, 릴리즈 시간 단축**
 - "작고 자주"가 핵심 — 큰 배치를 한 번에 하면 오류 원인 파악이 어려워지고 롤백 리스크 증가
 
+## 배포가 무서울 때 — 미루기가 더 위험하다
+
+배포가 무서운 것은 당연하다 — 결과를 되돌리기 어려운 행동이기 때문이다. 문제는 두려움 자체가 아니라 그것이 배포 미루기로 이어지는 것이다. 미루면 변경사항이 쌓이고, 한꺼번에 나가는 배포가 훨씬 더 위험해진다 — 작고 자주가 심리적으로도 답인 이유다. 무서움의 초점도 옮긴다. 문제는 장애 자체가 아니라 장애가 났을 때 어떻게 복구하는가다. 배포를 자주 하면 배포 하나하나가 가벼워지고, 익숙해지는 방법은 배포를 피하는 게 아니라 자주 하는 것이다. 배포는 개발의 마지막 단계가 아니라 개발의 일부이고, 두려움을 없애는 것은 공부가 아니라 배포다.
+
 ## CI — Continuous Integration
 
 ### 목적
@@ -166,6 +170,7 @@ Post-deploy Monitoring
 - [Implement Incremental Feature Release Techniques — AWS DevOps Guidance](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/dl.ads.4-implement-incremental-feature-release-techniques.html)
 - [45권의 기술 서적에서 얻은 핵심 인사이트 — GeekNews](https://news.hada.io/topic?id=31718)
 - [Our biggest insights from 45 technical books! — Book Overflow](https://www.youtube.com/watch?v=k2ek5MsUEMo)
+- [배포가 무서운 개발자에게 — Team Grit](https://teamgrit.co/article/384)
 
 ## 관련 문서
 - [[CICD-Tool-Selection|CI/CD 툴 선택 평가 기준]]

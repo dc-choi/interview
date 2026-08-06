@@ -112,6 +112,11 @@ Random port는 host 충돌만 줄인다. 같은 database와 table을 공유하�
 
 DDL transaction 지원은 엔진마다 다르다. 예를 들어 MySQL은 여러 DDL 문에서 implicit commit이 발생한다. 모든 migration이 한 transaction으로 rollback된다고 가정하지 않는다.
 
+Migration이 적용됐다는 믿음 자체도 검증 대상이다.
+
+- **`CREATE TABLE IF NOT EXISTS`는 드리프트를 만든다** — 테이블이 이미 존재하면 문장이 통째로 무시되므로, 이전 버전으로 만들어진 테이블에는 이후 migration 파일을 아무리 고쳐도 반영되지 않는다. 기본값이나 컬럼 변경은 별도의 ALTER migration으로 강제한다. 실제 스키마와 파일의 일치는 `information_schema` 조회로 확인할 수 있다.
+- **배포 이미지에 migration 파일이 실제로 들어갔는지 확인한다** — Dockerfile COPY 누락이면 시작 시 migration을 적용하는 코드가 존재하지 않는 폴더를 glob해 빈 리스트를 받고 조용히 아무것도 하지 않고 지나간다. 에러가 없는 것이 적용의 증거가 아니므로, 시작 로그에 적용된 migration 목록을 남겨 확인 가능하게 한다. 같은 레포의 형제 서비스에서 고친 버그가 다른 서비스에 남아 있는 복제 실수도 이 유형에서 잦다.
+
 ## 선택 기준
 
 | 상황 | 권장 접근 |
@@ -141,6 +146,7 @@ DDL transaction 지원은 엔진마다 다르다. 예를 들어 MySQL은 여러 
 - [Build Cache - Gradle](https://docs.gradle.org/current/userguide/build_cache.html)
 - [Repeatable task outputs - Gradle](https://docs.gradle.org/current/userguide/build_cache_concepts.html)
 - [Statements That Cause an Implicit Commit - MySQL](https://dev.mysql.com/doc/refman/8.4/en/implicit-commit.html)
+- [유닛 테스트 209개를 통과한 PR인데, 실제로 돌려보니 저장이 한 건도 안 됐다 — velog](https://velog.io/@donghoong2/OCR-WORKER-%EC%9C%A0%EB%8B%9B-%ED%85%8C%EC%8A%A4%ED%8A%B8-209%EA%B0%9C%EB%A5%BC-%ED%86%B5%EA%B3%BC%ED%95%9C-PR%EC%9D%B8%EB%8D%B0-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%8F%8C%EB%A0%A4%EB%B3%B4%EB%8B%88-%EC%A0%80%EC%9E%A5%EC%9D%B4-%ED%95%9C-%EA%B1%B4%EB%8F%84-%EC%95%88-%EB%90%90%EB%8B%A4)
 
 ## 관련 문서
 

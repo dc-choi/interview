@@ -112,7 +112,7 @@ export class OrderFulfillmentSaga {
 
 **관찰성 부족** — Choreography에서는 주문이 어느 단계인지 알기 어렵다. **Saga 상태 테이블**에 `businessKey`, `currentStep`, `status`, `attempts`, `nextAttemptAt`, `lastError`를 기록한다.
 
-**이벤트 순서** — Kafka key로 같은 aggregate의 이벤트를 같은 partition에 배치할 수 있고, Kafka는 그 partition 안의 기록 순서를 보장한다. 이는 전역 순서나 consumer의 exactly-once 업무 처리를 뜻하지 않으므로 handler의 멱등성과 상태 전이 검증이 필요하다.
+**이벤트 순서** — Kafka key로 같은 aggregate의 이벤트를 같은 partition에 배치할 수 있고, Kafka는 그 partition 안의 기록 순서를 보장한다. 이는 전역 순서나 consumer의 exactly-once 업무 처리를 뜻하지 않으므로 handler의 멱등성과 상태 전이 검증이 필요하다. 보상(취소) 이벤트가 원 작업 이벤트보다 먼저 도착하는 역전도 일어날 수 있다 — 취소할 대상 기록이 없으면 건너뛰도록 처리해 두면 순서 역전에도 안전하게 동작한다.
 
 **보상 복구 유실** — 메모리에서만 보상 목록을 관리하면 coordinator 종료와 함께 복구 단서도 사라진다. 실패한 보상은 durable registry에 목표 동작, 상태, 재시도 시각, 마지막 오류를 저장하고 worker가 이어서 처리한다. 자동 판단이 안전하지 않은 항목만 운영자에게 올린다.
 
@@ -149,6 +149,7 @@ Q. 보상 트랜잭션 설계 시 주의점?
 - [최상용 강사, Saga Orchestration](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=337601)
 - [최상용 강사, 보상 작업 기록과 재시도](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=337628)
 - [최상용 강사, Saga Choreography](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325831)
+- [Kafka를 사용해도 데이터 정합성은 자동으로 보장되지 않는다 — velog](https://velog.io/@shyeon4643/Kafka%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%B4%EB%8F%84-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A0%95%ED%95%A9%EC%84%B1%EC%9D%80-%EC%9E%90%EB%8F%99%EC%9C%BC%EB%A1%9C-%EB%B3%B4%EC%9E%A5%EB%90%98%EC%A7%80-%EC%95%8A%EB%8A%94%EB%8B%A4)
 
 ## 관련 문서
 - [[Domain-ORM-Mapper|도메인 ↔ ORM Mapper 패턴]]

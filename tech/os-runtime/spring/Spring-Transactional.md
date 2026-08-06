@@ -104,6 +104,7 @@ Spring Boot 4.1은 classpath, 단일 후보 `DataSource`, 기존 bean 여부 같
 - transaction 안에서 원격 API, 긴 파일 I/O, 사용자 대기를 수행하지 않는다.
 - database transaction은 broker와 외부 API까지 원자적으로 묶지 않는다. 필요하면 [[Transactional-Outbox|Transactional Outbox]]나 보상 전략을 사용한다.
 - `REQUIRES_NEW`를 실패 은폐 수단으로 쓰지 않는다. 독립 commit이 업무 불변식에 맞는지 먼저 판단한다.
+- `REQUIRES_NEW`는 앞선 성공을 보존하는 수단이지 외부 시스템과 내부 상태의 정합을 자동으로 맞추는 수단이 아니다. 바깥 transaction이 롤백될 수 있는 구조에서 안쪽만 먼저 commit되면, 외부 결제는 완료됐는데 바깥이 관리하던 상태는 롤백되는 dual-write 불일치가 더 명확하게 남을 수 있다. 외부 호출은 transaction 밖으로 빼고 중간 상태 기록과 완료 확정으로 단계를 나눈다 — [[External-API-Integration-Patterns|외부 API 연동 패턴]]의 3단계 분리.
 - integration test에서 실제 transaction manager, propagation, rollback rule과 DB 동작을 검증한다.
 
 ## 면접 체크포인트
@@ -117,6 +118,7 @@ Spring Boot 4.1은 classpath, 단일 후보 `DataSource`, 기존 bean 여부 같
 ## 출처
 
 - [Spring Framework, Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction.html)
+- [예약 취소와 환불에서 REQUIRES_NEW만으로 정합성을 지킬 수 없었던 이유 — velog](https://velog.io/@khs0305/%EB%B0%A5%ED%92%80-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%98%88%EC%95%BD-%EC%B7%A8%EC%86%8C%ED%99%98%EB%B6%88%EC%97%90%EC%84%9C-REQUIRESNEW%EB%A7%8C%EC%9C%BC%EB%A1%9C-%EC%A0%95%ED%95%A9%EC%84%B1%EC%9D%84-%EC%A7%80%ED%82%AC-%EC%88%98-%EC%97%86%EC%97%88%EB%8D%98-%EC%9D%B4%EC%9C%A0)
 - [Spring Framework, Programmatic Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction/programmatic.html)
 - [Spring Framework, Declarative Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative.html)
 - [Spring Framework, Transaction Propagation](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/tx-propagation.html)
@@ -169,3 +171,4 @@ Spring Boot 4.1은 classpath, 단일 후보 `DataSource`, 기존 bean 여부 같
 - [[Transactions|ACID 트랜잭션]]
 - [[Connection-Pool|DB 커넥션 풀]]
 - [[Transactional-Outbox|Transactional Outbox 패턴]]
+- [[External-API-Integration-Patterns|외부 API 연동 패턴]] — 외부 호출의 3단계 분리, 대사

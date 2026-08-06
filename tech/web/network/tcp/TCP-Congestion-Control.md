@@ -94,6 +94,12 @@ Tahoe 이후 정책으로, **3 ACK Duplicated와 Timeout을 구분**한다.
 
 Tahoe와 Reno는 대역폭이 좁던 시절 설계라 손실 기반에 보수적이어서, 대역폭이 수백~수천 배 넓어진 현대 망에서는 비효율적이다. 손실 확률이 낮아진 만큼 최근 정책은 **얼마나 빠르게 CWND를 키우고, 얼마나 똑똑하게 혼잡을 감지할지**에 초점이 맞춰져 있다. **CUBIC**(3차 함수로 혼잡 회피 시엔 거의 안 늘리다 혼잡이 풀리면 폭발적으로 증가, 리눅스 기본값), New Reno, BBR 등이 대표적이다. 큰 틀(Slow Start로 시작, 혼잡 시 윈도우 축소)은 Tahoe/Reno의 메커니즘을 계승한다.
 
+## 응용 관점 — 고지연 링크에서 크기는 왕복 횟수다
+
+RTT가 큰 링크(위성망 등)에서 응답 크기가 레이턴시에 미치는 영향은 대역폭이 아니라 **Slow Start 왕복 횟수**로 나타난다. 위의 교과서 모델은 초기 CWND를 1 MSS로 두지만 현대 리눅스의 기본 초기 윈도우는 10 MSS다(RFC 6928이 실험 표준으로 제안한 IW10 — 공식은 `min(10*MSS, max(2*MSS, 14600))`). 이 초기 윈도우를 넘는 payload는 cwnd만큼 도착 → ACK 왕복 대기 → 다음 버스트의 패턴으로 여러 RTT를 소비한다 — RTT 1초인 링크에서 60여 세그먼트면 그것만으로 약 3 RTT다. 압축 등으로 payload가 초기 윈도우 안에 들어오면 1 RTT로 끝난다. 첫 14KB가 중요하다는 웹 성능 원칙과 같은 축이다.
+
+CWND는 커넥션에 종속된 값이다 — 새 커넥션은 항상 초기 윈도우에서 다시 시작하고, 재사용된 커넥션은 커진 CWND를 이어 쓸 수 있다. keep-alive와 커넥션 풀이 고지연 링크에서 handshake 1 RTT 이상의 이득을 주는 이유다. 단 리눅스 기본 설정(`tcp_slow_start_after_idle=1`)에서는 유휴가 길어진 커넥션의 CWND가 초기 윈도우로 되돌아간다.
+
 ## 면접 체크포인트
 
 - 혼잡 붕괴가 무엇이고 혼잡 제어가 푸는 문제, 흐름 제어와의 구분(수신 능력 vs 망 상태)
@@ -108,10 +114,13 @@ Tahoe와 Reno는 대역폭이 좁던 시절 설계라 손실 기반에 보수적
 - TCP의 혼잡 제어 — 개인 블로그
 - RFC 5681 (TCP Congestion Control)
 - RFC 9293 (Transmission Control Protocol)
+- [RFC 6928 (Increasing TCP's Initial Window)](https://www.rfc-editor.org/rfc/rfc6928)
+- [latency가 길때 API 응답속도 개선하기 — velog](https://velog.io/@huhdy32/Async-Profiler-%EB%A1%9C-%EB%B3%91%EB%AA%A9-%EC%A7%84%EB%8B%A8-%EB%B0%8F-%EC%9D%91%EB%8B%B5%EC%86%8D%EB%8F%84-6%EB%B0%B0-%EA%B0%9C%EC%84%A0)
 
 ## 관련 문서
 - [[TCP-Flow-Error-Control|TCP 흐름 제어와 오류 제어 (RWND, 슬라이딩 윈도우, ARQ)]]
 - [[TCP-Header|TCP 헤더 구조 (Window Size, MSS 옵션)]]
 - [[TCP-Handshake|TCP Handshake]]
 - [[HTTP-3|HTTP/3, QUIC — TCP를 버린 이유]]
+- [[Latency-Optimization|레이턴시 최적화]] — 크기가 왕복 횟수로 바뀌는 실무 진단
 - [[Transport-Layer|전송 계층 (L4)]]

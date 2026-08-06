@@ -30,6 +30,14 @@ aliases: ["FIT Framework", "면접 준비 프레임워크", "면접 전략"]
 - 아키텍처 설계 / 기술 의사결정 / 운영 관점 설계 / 팀 리드 등
 - 나중에 합류할 개발자들이 이해할 수 있는 구조를 남기는 역할
 
+### 기술 답변 준비 순서 — 의사결정 복기가 먼저
+
+CS 요약집 암기부터 시작하면 무너진다. 면접관이 처음 파는 것은 지원자가 직접 짠 코드와 기술 선택의 이유다 — 개념 원리는 막힘없이 설명해도 자기 프로젝트에서 그 기술을 왜 적용했는지(또는 왜 안 했는지)에 말문이 막히면 소용없다. 면접관은 지식 검색 엔진을 뽑지 않는다.
+
+1. **의사결정 복기** — 이력서와 포트폴리오의 모든 기술 선택에 왜를 묻고 답을 글로 정리한다. 보편적으로 써서는 실격이고, 대안 대비 트레이드오프와 그래서 관리한 포인트까지 나와야 한다. 질문 역산 방법은 [[Resume-Experience-Narrative-and-Evidence|이력서 경험 서술]], 포트폴리오 서면에서의 같은 원칙은 [[Resume-Portfolio-Writing-Guide|포트폴리오 작성 가이드]]의 3축 참조.
+2. **CS를 경험에 이식** — 개념 정의 암기가 아니라 내 프로젝트의 결정과 연결한다. ACID가 무엇인가가 아니라 결제 동시성에서 격리 수준을 어떻게 설정했는가로. 지식은 실무 경험의 언어로 번역될 때 무기가 된다 — [[CS-Learning-Method|CS 학습법]]의 개념별 세 질문과 같은 축.
+3. **꼬리와 한계 대비** — 답변마다 왜 그 방식을 골랐고 한계는 무엇이었는지 스스로 묻는다. 면접은 정답을 제출하는 시험장이 아니라 기술 대화다. 선택한 구조의 한계를 인정하고 대안을 고민한 흔적이 인상을 남긴다.
+
 ### 페르소나 분석 — "이미 그 직무에서 일하는 것처럼"
 
 면접 준비의 마지막 레이어는 **그 자리에 필요한 사람상**을 구체적으로 그려보는 것.
@@ -166,6 +174,7 @@ aliases: ["FIT Framework", "면접 준비 프레임워크", "면접 전략"]
 - [품질과 일정, 기술부채의 트레이드오프, 코드빌런 강사, unit 242766](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242766)
 - [메타인지와 꼬리질문 준비, 코드빌런 강사, unit 242710](https://www.inflearn.com/courses/lecture?courseId=334892&unitId=242710)
 - [F-Lab — LG전자, Intel 출신 멘토 인터뷰](https://f-lab.kr/blog/250408-devclub)
+- [개발자 면접 준비 순서, 무엇부터 파야 하는가 — Team Grit](https://teamgrit.co/article/479)
 
 ## 관련 문서
 - [[My-FIT-Answers|내 FIT 답변 마스터]]
@@ -174,3 +183,6 @@ aliases: ["FIT Framework", "면접 준비 프레임워크", "면접 전략"]
 - [[Sensitive-Question-Answers|민감 질문 — 사회인 언어 치환]]
 - [[Common-Interview-Questions|자주하는 면접 질문]]
 - [[Self-Analysis|나 찾기]]
+- [[Resume-Experience-Narrative-and-Evidence|이력서 경험 서술과 증거 설계]] — 이력서에서 면접 질문 역산
+- [[CS-Learning-Method|CS 지식 학습법]] — 개념을 경험과 연결하는 세 질문
+- [[Resume-Portfolio-Writing-Guide|포트폴리오 작성 가이드]] — 서면에서의 선택 기준 3축

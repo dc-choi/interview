@@ -12,6 +12,7 @@ aliases: ["Salary Trajectory", "연봉 궤적 전략", "연봉은 실력의 결�
 ## 핵심 명제
 
 - **연봉 = 회사 이력의 함수** — 최근 직장 수준이 다음 직장의 기준점이 된다
+- **낮은 출발점은 복리로 남는다** — 시작 연봉이 낮으면 같은 인상률로는 격차가 좁혀지지 않고, 시작 시점 몇백만 원의 차이가 몇 년 누적되면 그 몇 배의 소득 차이가 된다
 - **연봉 협상은 "결정"에 가까움** — 본인 기여도보다 회사의 밴드, 직전 연봉, 경쟁 오퍼가 지배
 - **이직만큼 강한 연봉 상승 레버는 없다** — 내부 승진은 보통 5~10%, 외부 이직은 10~30%+ 가능
 - **행복 vs 돈**은 장기로 균형 필요 — 돈만 추구하면 번아웃, 돈 없이는 자율성 없음
@@ -153,11 +154,12 @@ aliases: ["Salary Trajectory", "연봉 궤적 전략", "연봉은 실력의 결�
 ## 출처
 - [요즘IT — 연봉은 실력의 결과가 아니다](https://yozm.wishket.com/magazine/detail/1740/)
 - [Venture Square — 개발자 연봉과 회사 궤적 (syndicated)](https://www.venturesquare.net/820855)
+- [연봉 협상을 못 하는 개발자에게 — Team Grit](https://teamgrit.co/article/303)
 
 ## 관련 문서
 - [[Salary-Negotiation-Guide|연봉 협상 가이드]]
 - [[Salary-Negotiation-Guide-Principles|연봉 협상 원칙]]
 - [[Salary-Negotiation-Guide-Process|연봉 협상 프로세스]]
-- [[Job-Search-Strategy|채용공고 분석, 이직 전략]]
+- [[Job-Search-Strategy|이직 전략]]
 - [[Company-Selection-Criteria|회사 선택 기준]]
 - [[Global-IT-Interview|글로벌 IT 인터뷰 준비]]

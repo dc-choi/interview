@@ -91,6 +91,16 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - 관리형 서비스는 자체 구축보다 적은 비용으로 HA(Multi-AZ), 자동 백업과 PITR(point-in-time recovery)을 갖출 수 있다. 단 RDS DB 인스턴스 기준으로 Multi-AZ는 기본값이 아니라 지정하는 유료 옵션이고([[RDS-Aurora-RDS-Core|RDS/Aurora 코어]]), 백업 보존을 0으로 두면 자동 백업과 PITR이 꺼진다([[RDS-Aurora-Backup-Operations|RDS/Aurora 백업 운영]]). Aurora 클러스터는 AZ 배치를 클러스터가 관리하고 보존 최소값이 1일이다. 복원 리허설은 관리형에서도 사용자 몫이다.
 - 자체 호스팅 PITR은 베이스 백업과 WAL 아카이브를 함께 관리하는 pgBackRest 같은 도구로 구성한다. 압축한 논리 덤프(pg_dump 계열)는 소규모의 출발점이 되지만 덤프 시점으로만 복원되는 한계가 있다.
 
+## 감사 로깅 (pgAudit)
+
+민감 데이터를 누가 읽었는지 남기는 쿼리 감사는 켜는 것보다 **범위와 대상**이 본질이다.
+
+- 세션 레벨(`pgaudit.log = READ,WRITE`)은 DB 전체, 전 테이블, 전 쿼리를 무차별로 잡는다. 폴링 쿼리(예: outbox 워커의 주기적 SELECT) 같은 무관 트래픽으로 로그가 도배되면 비용만 늘고 정작 아무도 로그를 보지 않게 된다.
+- 객체 단위 감사로 좁힌다 — 세션 레벨 감사를 끄고, NOLOGIN 전용 역할을 만들어 감시 대상 테이블에만 SELECT를 GRANT한 뒤 `pgaudit.role`로 지정하면 그 테이블 접근만 남는다 (객체 감사는 세션 감사의 대체재라 둘을 함께 켜면 다시 도배된다). RDS PostgreSQL은 이 역할 이름을 `rds_pgaudit` 하나로 고정하며 직접 생성해야 한다.
+- **감사 대상 선정이 틀리면 전부 헛일이다** — 마스킹을 거쳐 저장되는 테이블만 감시하고, 정작 원문 개인정보가 그대로 들어가는 테이블(회원 정보, 자유 텍스트 컬럼)이 목록에서 빠지기 쉽다. ERD를 전수로 훑어 크리덴셜 유출이나 내부자 열람 시 가장 먼저 노출될 데이터가 어디 있는지를 기준으로 고른다.
+
+감사 로깅이 켜져 있다는 사실 자체는 아무것도 보장하지 않는다. 노이즈에 묻히지 않는지, 정말 봐야 할 것을 보고 있는지를 확인하기 전까지 감사 중이라는 말은 반쪽이다.
+
 ## 운영 체크리스트
 
 ### 느린 쿼리 또는 DB 부하
@@ -119,10 +129,12 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - [[Backfill-Resource-Isolation|데이터 백필과 자원 격리 전략]]
 - [[Backup-Restore|백업과 복구 전략]]
 - [[DB-Incident-Triage|DB 장애 분석 방법론]]
+- [[PII-Masking|로그의 민감정보 마스킹]] — 감사와 마스킹은 별개의 방어선
 
 ## 출처
 
 - [PostgreSQL 18 Documentation, Using EXPLAIN](https://www.postgresql.org/docs/18/using-explain.html)
+- [민감 테이블 감사 로그를 켰는데, 정작 제일 위험한 테이블은 빠져 있었다 — velog](https://velog.io/@donghoong2/%EC%9D%B8%ED%94%84%EB%9D%BC-%EB%AF%BC%EA%B0%90-%ED%85%8C%EC%9D%B4%EB%B8%94-%EA%B0%90%EC%82%AC-%EB%A1%9C%EA%B7%B8%EB%A5%BC-%EC%BC%B0%EB%8A%94%EB%8D%B0-%EC%A0%95%EC%9E%91-%EC%A0%9C%EC%9D%BC-%EC%9C%84%ED%97%98%ED%95%9C-%ED%85%8C%EC%9D%B4%EB%B8%94%EC%9D%80-%EB%B9%A0%EC%A0%B8-%EC%9E%88%EC%97%88%EB%8B%A4)
 - [PostgreSQL 18 Documentation, Routine Vacuuming](https://www.postgresql.org/docs/18/routine-vacuuming.html)
 - [PostgreSQL 18 Documentation, CREATE INDEX](https://www.postgresql.org/docs/18/sql-createindex.html)
 - [PostgreSQL 18 Documentation, ALTER TABLE](https://www.postgresql.org/docs/18/sql-altertable.html)

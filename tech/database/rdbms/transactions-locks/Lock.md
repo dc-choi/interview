@@ -128,6 +128,8 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 - **Consistent Read (일반 SELECT)**: MVCC 스냅샷 읽기 → lock 없음, 다른 트랜잭션 차단 안 함
 - **Current Read (SELECT FOR UPDATE/SHARE, UPDATE, DELETE)**: 최신 커밋 데이터를 읽으면서 lock 획득
 - RR에서 일반 SELECT는 기본적으로 첫 consistent read 시점의 스냅샷을 유지하고, SELECT FOR UPDATE는 최신 상태를 읽으며 잠근다. `WITH CONSISTENT SNAPSHOT`이면 트랜잭션 시작 시점에 스냅샷을 만든다.
+- **트랜잭션으로 묶었으니 안전하다는 오해**: Atomicity는 전부 반영하거나 전부 취소한다는 뜻일 뿐, plain SELECT와 이후 UPDATE 사이에 다른 트랜잭션이 끼어드는 것은 Isolation과 Lock의 문제다. RR에서는 재조회해도 같은 Read View의 스냅샷을 볼 수 있어 SELECT 기반 check-then-act 검증은 성립하지 않는다. 검증 조건을 UPDATE의 WHERE 안으로 옮기면 X Lock이 동일 행 변경을 직렬화하고, 대기하던 트랜잭션은 선행 트랜잭션 커밋 이후의 **현재 상태로 조건을 재평가**하므로 (affected rows 0 = 실패) 한도 초과 같은 불변식 위반을 막는다. 단 대상 행이 이미 존재한다는 전제에서다 — 행이 아직 없다면 동시 INSERT와 유니크 충돌의 영역이라 유니크 제약과 UPSERT 같은 별도 전략이 필요하다.
+- **자기 변경은 즉시 보인다**: 같은 트랜잭션 안에서 자신이 변경한 데이터는 커밋 전에도 다음 SELECT에서 바로 보인다. Read View는 다른 트랜잭션 변경의 가시성을 결정하는 장치다 — COMMIT은 내 변경을 나에게 보이게 만드는 시점이 아니라 확정하는 시점이다.
 
 ## 데드락
 
@@ -135,6 +137,7 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 - TX1: A행 lock → B행 lock 시도
 - TX2: B행 lock → A행 lock 시도
 - 상호 대기 → 데드락
+- **같은 행에서도 난다 (S → X 업그레이드)**: 두 트랜잭션이 공유 가능한 S Lock을 함께 잡은 뒤 같은 행의 X Lock으로 올리려 할 때. 대표 경로는 `INSERT IGNORE`의 중복 키 확인과, 자식 INSERT의 FK 검증이 부모 인덱스 레코드에 잡는 S Lock — 부모 행이 발급마다 갱신되는 핫 카운터를 겸하면 뒤따르는 UPDATE의 X 요청과 충돌한다. 해법은 S를 거치지 않고 처음부터 X를 잡는 구조다: no-op ODKU로 UPDATE 경로를 태우거나, 부모 카운터 UPDATE를 자식 INSERT보다 앞으로 옮겨 X를 선점하거나, 실익 낮은 FK를 제거한다.
 
 ### 예방만으로 충분하지 않은 이유
 - 이론적으로 Lock 순서를 통일하면 Circular Wait를 제거하여 데드락을 예방할 수 있음
@@ -145,7 +148,7 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 ### 감지 + 자동 복구 (InnoDB 기본 전략)
 - **Wait-for Graph** 알고리즘으로 순환 대기를 자동 탐지
 - 비용이 적은 트랜잭션(수정한 행 수가 적은 쪽)을 자동 rollback
-- 앱에서 `ER_LOCK_DEADLOCK` 에러를 catch하고 **재시도**하는 것이 정석 대응
+- 앱에서 `ER_LOCK_DEADLOCK` 에러를 catch하고 **재시도**하는 것이 정석 대응. 재시도는 서버 안에서 데드락 예외만 좁게 잡아 제한 횟수와 짧은 랜덤 지연으로, 매 시도를 새 트랜잭션으로 수행한다 — 클라이언트의 무차별 재시도는 경합 중인 서버에 요청량과 동시성을 더하는 방향으로 작동할 수 있다. 재시도는 복구 전략이지 Lock 의존 관계를 바꾸는 구조 개선이 아니다
 - `SHOW ENGINE INNODB STATUS` → LATEST DETECTED DEADLOCK 섹션에서 확인
 - `innodb_print_all_deadlocks=ON`으로 모든 데드락을 에러 로그에 기록
 
@@ -177,6 +180,8 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 - 김영한 강사, [DB 락, 개념 이해](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110082)
 - 김영한 강사, [DB 락, 변경](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110083)
 - 김영한 강사, [DB 락, 조회](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110084)
+- [Row Lock은 언제 걸리고 언제 풀릴까: 동시성 문제를 해결하며 파고든 MySQL MVCC와 Lock — velog](https://velog.io/@joona95/Row-Lock%EC%9D%80-%EC%96%B8%EC%A0%9C-%EA%B1%B8%EB%A6%AC%EA%B3%A0-%EC%96%B8%EC%A0%9C-%ED%92%80%EB%A6%B4%EA%B9%8C-%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C%EB%A5%BC-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A9%B0-%ED%8C%8C%EA%B3%A0%EB%93%A0-MySQL-MVCC%EC%99%80-Lock)
+- [DB Lock으로 동시성을 해결하려다 Deadlock을 만난 이야기 — velog](https://velog.io/@joona95/DB-Lock%EC%9C%BC%EB%A1%9C-%EB%8F%99%EC%8B%9C%EC%84%B1%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-Deadlock%EC%9D%84-%EB%A7%8C%EB%82%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0)
 
 ## 관련 문서
 - [[Transactions|트랜잭션]]

@@ -26,6 +26,8 @@ retry topic은 실패한 메시지를 지연 뒤 다시 소비하기 위해 두�
 
 실패 상태도 Kafka 토픽(retry topic, DLT)에 두어야 브로커의 내구성과 복구 수단을 그대로 활용한다.
 
+브로커 밖이라도 내구 저장소면 사정이 다르다 — 실패 메시지를 DB 테이블(dead letter table)에 적재하고 운영자가 원인을 해결한 뒤 관리 API로 Kafka에 재발행하는 변형도 유실 없이 성립한다. 실패 조회와 재처리 UI를 DB 위에 얹기 쉬운 대신, 재발행 경로와 중복 방지를 애플리케이션이 직접 유지해야 한다.
+
 ## 결정 2 — blocking vs non-blocking 재시도
 
 | 방식 | 동작 | 비용 |
@@ -56,6 +58,7 @@ retry topic은 실패한 메시지를 지연 뒤 다시 소비하기 위해 두�
   - 원본 좌표 — retry topic이 아니라 origin 기준의 topic, partition, offset
   - payload 원문 — 정상 payload는 파싱 가능한 JSON으로, 역직렬화 실패 payload는 raw 문자열로 최대한 원문 그대로
 - DLT는 종착지가 아니라 사람이 확인한 뒤 원본 topic으로 재발행(re-drive)해 정상 소비 경로를 태우는 대기열이다. envelope에 원문과 좌표를 보존하는 이유가 재발행이다.
+- 선후관계가 중요한 이벤트는 단순 재발행만으로 부족할 수 있다 — 재발행 시점에는 이미 다른 이벤트가 앞질러 소비됐을 수 있으므로, 처리 단계와 선행 단계 완료 여부를 기록해 후속 단계가 선행 완료 이후에만 실행되게 게이트하는 방법이 있다.
 - 발행 라이브러리의 책임은 DLT 발행까지다. DLT 소비(저장, 알림, 재처리)는 read-side로 분리해야 모든 컨슈머 서비스가 DB와 알림 의존성을 끌고 들어가지 않는다.
 
 ## Spring Kafka 구현 지도
@@ -115,3 +118,4 @@ public void consume(ConsumerRecord<String, OrderCompleted> record) {
 
 - [Spring Kafka Reference — Non-Blocking Retries](https://docs.spring.io/spring-kafka/reference/retrytopic.html)
 - [실패한 메시지는 어디로 가야 할까? Kafka Retry/DLT 설계와 운영에서 밟은 3가지 함정 — 여기어때 기술블로그](https://techblog.gccompany.co.kr/%EC%8B%A4%ED%8C%A8%ED%95%9C-%EB%A9%94%EC%8B%9C%EC%A7%80%EB%8A%94-%EC%96%B4%EB%94%94%EB%A1%9C-%EA%B0%80%EC%95%BC-%ED%95%A0%EA%B9%8C-kafka-retry-dlt-%EC%84%A4%EA%B3%84%EC%99%80-%EC%9A%B4%EC%98%81%EC%97%90%EC%84%9C-%EB%B0%9F%EC%9D%80-3%EA%B0%80%EC%A7%80-%ED%95%A8%EC%A0%95-dd7a71a07954)
+- [Kafka를 사용해도 데이터 정합성은 자동으로 보장되지 않는다 — velog](https://velog.io/@shyeon4643/Kafka%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%B4%EB%8F%84-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A0%95%ED%95%A9%EC%84%B1%EC%9D%80-%EC%9E%90%EB%8F%99%EC%9C%BC%EB%A1%9C-%EB%B3%B4%EC%9E%A5%EB%90%98%EC%A7%80-%EC%95%8A%EB%8A%94%EB%8B%A4)

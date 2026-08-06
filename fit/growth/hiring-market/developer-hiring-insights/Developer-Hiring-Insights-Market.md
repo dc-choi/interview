@@ -19,6 +19,7 @@ aliases: ["채용 인사이트 시장", "Developer Hiring Insights Market"]
 - 협업도구(Slack, Jira, Git 브랜치 전략)
 - 운영경험(배포, 모니터링, 장애 대응)
 - 이런 역량은 현장 경험이 필요하지만, 학교에서는 얻기 어려움
+- 2025~26년에는 AI 도구 활용 경험이 더해졌다 — 우대를 넘어 기본 기대치로 이동 중, 상세는 [[Effort-Value-In-Hiring|AI 활용의 디폴트화]]
 
 ### 차별화포인트
 - 똑같은 포트폴리오로는 안 됨
@@ -130,3 +131,4 @@ aliases: ["채용 인사이트 시장", "Developer Hiring Insights Market"]
 - [[Developer-Hiring-Insights-Growth|면접 준비, 스터디, 시니어 로드맵]]
 - [[IT-Downturn-Career-Strategy|긴축기 IT 커리어 전략]]
 - [[Interview-Soft-Skills|인성면접 가이드]]
+- [[Effort-Value-In-Hiring|채용 시장에서 노력의 가치]] — AI 활용의 디폴트화

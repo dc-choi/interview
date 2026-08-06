@@ -67,6 +67,7 @@ aliases: ["Kinolights Performance Playbook", "키노라이츠 성과 플레이�
 - [[Kinolights-Engineer-Growth-Direction|키노라이츠 엔지니어 성장 방향 (행동 가설, 업무 루프, 월간 점검)]]
 - [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]]
 - [[Interview-Prep-Kinolights-1st|키노라이츠 1차 면접 준비 (JD 분석, 회사 개요)]]
+- [[Engineering-Influence|엔지니어링 영향력]] — 일을 보이게 하기의 일반 원칙
 - [[Technical-Reliability|기술 신뢰성 성과 서술]]
 - [[Business-Impact|비즈니스 임팩트 서술 프레임]]
 - [[Tradeoff|트레이드오프 성과 서술]]

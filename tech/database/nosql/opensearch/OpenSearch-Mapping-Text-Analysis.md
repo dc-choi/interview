@@ -42,17 +42,17 @@ Limit 상향은 schema 문제를 해결하지 않고 장애 시점을 늦출 뿐
 
 ## 필드 타입 선택
 
-| 요구사항 | 권장 타입 |
-|---|---|
-| 자연어 제목과 본문 검색 | `text` |
-| ID, 상태, 코드, 태그, exact filter | `keyword` |
-| 같은 문자열로 검색과 정렬, 집계 | `text`와 `keyword` multi-field |
-| 숫자 비교와 정렬 | 충분한 범위의 numeric 타입 |
-| 시간 범위와 histogram | `date` |
-| 객체 배열 원소 간 관계 불필요 | `object` |
-| 객체 배열의 같은 원소 조건 보존 | `nested` |
-| 미리 알 수 없는 부가 속성 보관 | `flat_object`, 2.7 이상 |
-| substring과 정규식이 주 요구 | `wildcard`, 2.15 이상 검토 |
+| 요구사항                         | 권장 타입                         |
+| ---------------------------- | ----------------------------- |
+| 자연어 제목과 본문 검색                | `text`                        |
+| ID, 상태, 코드, 태그, exact filter | `keyword`                     |
+| 같은 문자열로 검색과 정렬, 집계           | `text`와 `keyword` multi-field |
+| 숫자 비교와 정렬                    | 충분한 범위의 numeric 타입            |
+| 시간 범위와 histogram             | `date`                        |
+| 객체 배열 원소 간 관계 불필요            | `object`                      |
+| 객체 배열의 같은 원소 조건 보존           | `nested`                      |
+| 미리 알 수 없는 부가 속성 보관           | `flat_object`, 2.7 이상         |
+| substring과 정규식이 주 요구         | `wildcard`, 2.15 이상 검토        |
 
 ### `text`와 `keyword`
 

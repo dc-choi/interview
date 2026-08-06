@@ -31,3 +31,4 @@ aliases: ["연봉 협상 가이드", "Salary Negotiation Guide"]
 - 이직의 정석 뉴스레터
 - 이공이공 처우 협상 실전 사례
 - 개발자 취업과 이직 한방에 해결하기
+- [연봉 협상을 못 하는 개발자에게 — Team Grit](https://teamgrit.co/article/303)

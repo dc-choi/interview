@@ -48,6 +48,10 @@ aliases: ["PII Masking", "PII 마스킹", "민감정보 마스킹", "로그 마�
 - 토큰/쿠키/Authorization 헤더를 디버그로 평문 출력
 - 파이프라인에서만 마스킹 → 앱 로컬 파일엔 평문
 - 마스킹을 해놓고 trace/예외 리포팅 툴엔 평문 전송
+- 탐지 정규식의 구분자에 `\s` 포함 → 개행까지 매치되어 여러 줄의 무관한 숫자 조각을 카드번호로 오탐 (실제 카드번호는 한 줄에 인쇄된다 — 구분자에서 개행만 제외하면 된다)
+- fail-closed 잔류 검증의 검사 목록에 빠진 항목(예: 이름)은 새어도 아무도 못 잡음 — 탐지기와 잔류 검증의 대상 목록을 함께 관리
+- 탐지기 일부(예: NER 모델)가 배포 설정 기본값으로 꺼진 채 운영 — 마스킹 경로가 설정에 의존하면 설정값 자체를 배포 검증 대상에 포함
+- 검출과 치환이 서로 다른 컨텍스트에서 두 번 도는 구조 — 전체 텍스트 컨텍스트로 PII를 판정해 놓고 치환 단계에서 해당 라인만 떼어 다시 검출하면, 라벨과 값이 분리된 라인에서 문맥 앵커가 매칭되지 않아 원문이 그대로 남는다. 판정 단계에서 찾은 스팬을 좌표로 잘라 그대로 재사용해 치환한다
 
 ## 면접 체크포인트
 
@@ -61,6 +65,8 @@ aliases: ["PII Masking", "PII 마스킹", "민감정보 마스킹", "로그 마�
 
 - [OWASP — Logging Cheat Sheet (data to exclude)](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html)
 - [AWS — Protecting sensitive data with CloudWatch Logs data protection](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/mask-sensitive-log-data.html)
+- [유닛 테스트 209개를 통과한 PR인데, 실제로 돌려보니 저장이 한 건도 안 됐다 — velog](https://velog.io/@donghoong2/OCR-WORKER-%EC%9C%A0%EB%8B%9B-%ED%85%8C%EC%8A%A4%ED%8A%B8-209%EA%B0%9C%EB%A5%BC-%ED%86%B5%EA%B3%BC%ED%95%9C-PR%EC%9D%B8%EB%8D%B0-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%8F%8C%EB%A0%A4%EB%B3%B4%EB%8B%88-%EC%A0%80%EC%9E%A5%EC%9D%B4-%ED%95%9C-%EA%B1%B4%EB%8F%84-%EC%95%88-%EB%90%90%EB%8B%A4)
+- [테스트는 다 초록불이었다 — 아무도 안 읽는 값이었고, 마스킹도 안 걸릴 뻔했다 — velog](https://velog.io/@donghoong2/OCR-WORKER-%ED%85%8C%EC%8A%A4%ED%8A%B8%EB%8A%94-%EB%8B%A4-%EC%B4%88%EB%A1%9D%EB%B6%88%EC%9D%B4%EC%97%88%EB%8B%A4-%EA%B7%BC%EB%8D%B0-%EC%95%84%EB%AC%B4%EB%8F%84-%EC%95%88-%EC%9D%BD%EB%8A%94-%EA%B0%92%EC%9D%B4%EC%97%88%EA%B3%A0-%EB%A7%88%EC%8A%A4%ED%82%B9%EB%8F%84-%EC%82%AC%EC%8B%A4-%EC%95%88-%EA%B1%B8%EB%A6%B4-%EB%BB%94%ED%96%88%EB%8B%A4)
 
 ## 관련 문서
 

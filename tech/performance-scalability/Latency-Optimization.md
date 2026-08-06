@@ -79,6 +79,8 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 - **분산 추적 (Distributed Tracing)**: OpenTelemetry, Jaeger, Tempo로 구간별 분해
 - **부하 테스트**: k6, Locust, Gatling로 실제 부하 하에서의 P99 검증
 - **SLO 설정**: "API P99 < 300ms at 99.9% availability" 같은 구체 목표를 먼저 정하고 최적화
+- **wall-clock 프로파일링**: CPU 프로파일은 스레드가 CPU를 쓰는 순간만 샘플링해 소켓 대기 같은 블로킹 시간이 그래프에 나타나지 않는다. 응답은 느린데 서버 CPU는 한가하면 경과 시간 전체를 샘플링하는 wall-clock 모드(예: async-profiler `-e wall`)로 스레드가 어디서 시간을 흘리는지 본다
+- **대조 실험으로 가설을 반박**: 네트워크가 느려서라는 가설은 같은 API를 다른 클라이언트로 호출해 보면 검증된다. 같은 서버, 같은 회선에서 한쪽만 느리면 원인은 회선이 아니라 클라이언트 측 차이다 — 예: HTTP 클라이언트가 Accept-Encoding gzip 협상을 하지 않아 비압축 원본 전체를 수신하는 경우. 고지연 링크에서 크기가 왕복 횟수로 바뀌는 기전은 [[TCP-Congestion-Control|TCP 혼잡 제어]] 참조
 
 ## 흔한 실수
 
@@ -101,8 +103,10 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 
 ## 출처
 - [DevPill — 서비스가 느리다고요? 레이턴시 최적화의 모든 것](https://maily.so/devpill/posts/8do7dnkyogq)
+- [latency가 길때 API 응답속도 개선하기 — velog](https://velog.io/@huhdy32/Async-Profiler-%EB%A1%9C-%EB%B3%91%EB%AA%A9-%EC%A7%84%EB%8B%A8-%EB%B0%8F-%EC%9D%91%EB%8B%B5%EC%86%8D%EB%8F%84-6%EB%B0%B0-%EA%B0%9C%EC%84%A0)
 
 ## 관련 문서
+- [[TCP-Congestion-Control|TCP 혼잡 제어]] — 고지연 링크에서 응답 크기가 왕복 횟수로 바뀌는 기전
 - [[Transaction-Lock-Contention|트랜잭션 경합과 Lock 문제]]
 - [[Sorting-Operations|정렬 연산 회피]]
 - [[HTTP-Seminar|HTTP 세미나]]

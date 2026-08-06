@@ -11,7 +11,7 @@ MySQL 엔진 내부와 운영 문서 모음. InnoDB 구조와 튜닝, 백업, �
 
 - [[MySQL-Fundamentals|MySQL 기본기 (조회, 자료형, 변경 안전성, 권한, NestJS와 TypeORM)]]
 - [[MySQL-Architecture|MySQL 아키텍처, SQL 처리 파이프라인 (2계층 구조, 파서/옵티마이저/실행기, 스토리지 엔진, 뷰)]]
-- [[DML-Conflict-and-Batch-Patterns|MySQL DML 충돌 처리와 배치 패턴 (IGNORE, UPSERT, REPLACE, 조건부 갱신)]]
+- [[DML-Conflict-and-Batch-Patterns|MySQL DML 충돌 처리와 배치 패턴 (IGNORE, UPSERT, REPLACE, 조건부 갱신, INSERT IGNORE의 S Lock 함정)]]
 - [[MySQL-Performance|성능 튜닝, 진단 (InnoDB Buffer Pool, Aurora 파라미터 표준, Slow Query, Digest 통계)]]
 - [[MySQL-Operations|운영 (설정 변경, 압축과 아카이빙, MySQL Job Queue)]]
 - [[MySQL-Gap-Lock|MySQL Gap Lock (Next-Key Lock, INSERT Intention, 데드락 시나리오, 회피 전략)]]

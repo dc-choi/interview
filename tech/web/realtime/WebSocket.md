@@ -70,6 +70,8 @@ HTTP 위에서 **단일 TCP 연결을 유지하며 양방향 실시간 통신**�
 - 같은 원리: 웹훅 터널링(ngrok), self-hosted CI 러너의 아웃바운드 롱커넥션, NAT 뒤 IoT 디바이스
 - 트레이드오프: 재연결, ping/pong 등 연결 유지 관리가 이쪽 몫이 되고, 수평 확장 시 어느 인스턴스가 연결을 여는지 조정이 필요
 
+개발 터널링으로 확장한 사례가 하이브리드 앱의 웹뷰를 배포 없이 로컬 개발 서버로 잇는 구조다(우아한형제들 ITDA, 2026). 로컬 클라이언트가 프록시에 아웃바운드 WebSocket을 먼저 열어 유지하고, CDN 엣지 함수는 요청이 터널 대상인지 **판별만** 해서 프록시로 redirect한다 — 엣지에서 origin을 바꾸는 rewrite는 보안 요구와 결합하기 어려웠고, 앱 계층에서 라우팅하면 지원 대상이 늘 때마다 앱 변경이 필요하고 웹 라우팅 책임이 앱에 쌓인다. redirect는 도메인이 바뀌므로 쿠키, 세션과 브라우저 보안 정책 검토가 전제다. 한 WebSocket 위에 HTML, JS, CSS 등 여러 리소스 요청을 실으려면 **요청마다 고유 ID를 붙여 응답을 원래 요청과 매칭**한다(멀티플렉싱). 라우팅 규칙이 없거나 터널이 끊기면 원래 환경으로 폴백해 터널을 쓰지 않는 요청에 영향을 주지 않고, 오래 보관할 라우팅 규칙은 DB에, 살아 있는 연결은 프록시가 직접 관리한다.
+
 ## 면접 체크포인트
 
 - 핸드셰이크에서 HTTP → WebSocket으로 전환되는 상태 코드(**101**)와 필수 헤더
@@ -84,6 +86,7 @@ HTTP 위에서 **단일 TCP 연결을 유지하며 양방향 실시간 통신**�
 - [RFC 6455, The WebSocket Protocol](https://www.rfc-editor.org/rfc/rfc6455)
 - [Tecoble — WebSocket이란](https://tecoble.techcourse.co.kr/post/2021-08-14-web-socket/)
 - [GA가 AI와 함께 만든 오피스 좌석 배치도 — 아임웹 기술 블로그](https://tech.imweb.me/posts/ga-built-office-seatmap/)
+- [배포 없이 앱과 로컬 웹을 잇다 — 우아한형제들 기술블로그](https://techblog.woowahan.com/26729/)
 
 ## 관련 문서
 - [[STOMP-Protocol|STOMP 서브 프로토콜]]

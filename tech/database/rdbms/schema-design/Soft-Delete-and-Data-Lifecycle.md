@@ -72,6 +72,7 @@ ALTER TABLE account
 - 계정 identity를 보존해야 하면 login identifier를 별도 identity table에서 관리한다.
 - 삭제 시 email을 임의 문자열로 덮는 방식은 감사, 재가입과 외부 연동 의미를 바꾸므로 정책 없이 사용하지 않는다.
 - PostgreSQL 같은 DB는 partial unique index를 사용할 수 있다.
+- 활성 여부를 `is_active` 같은 별도 컬럼으로 중복 관리하지 않는다. 같은 키의 삭제 이력이 두 건 쌓이면 false 값끼리 다시 unique에 걸리고, `deleted_at`과 어긋난 상태도 생길 수 있다. 활성 키는 `deleted_at`에서 파생하는 generated column으로 계산한다 — 위 `active_key` 같은 플래그형 대신 활성일 때만 원본 값을 투영하는 형태(`IF(deleted_at IS NULL, start_at, NULL)`)도 같은 원리다.
 
 생성 column/functional index의 지원 범위와 online DDL 조건은 대상 MySQL version에서 확인한다.
 
@@ -118,6 +119,7 @@ ALTER TABLE account
 ## 출처
 
 - [TypeORM, DeleteDateColumn](https://typeorm.io/docs/help/decorator-reference/#deletedatecolumn)
+- [Soft Delete 환경에서 활성 회차 중복과 재생성 충돌을 해결한 방법 — velog](https://velog.io/@khs0305/%EB%B0%A5%ED%92%80-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-Soft-Delete-%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-%ED%99%9C%EC%84%B1-%ED%9A%8C%EC%B0%A8-%EC%A4%91%EB%B3%B5%EA%B3%BC-%EC%9E%AC%EC%83%9D%EC%84%B1-%EC%B6%A9%EB%8F%8C%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%9C-%EB%B0%A9%EB%B2%95)
 - [MySQL 8.4, CREATE INDEX](https://dev.mysql.com/doc/refman/8.4/en/create-index.html)
 - [인프런, Hong, UPDATE와 DELETE](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338552)
 - [김영한 강사, soft delete가 필요한 이유](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401982)

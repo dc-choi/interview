@@ -40,6 +40,12 @@ aliases: ["Great Developer Habits", "뛰어난 개발자의 행동 패턴", "시
 
 **개선 방향**: 주기적으로 다양한 오픈소스 코드 읽기 훈련. 특정 부분을 가져와서 내 프로젝트에 적용해보기
 
+**에러 로그부터 읽는다**: 빨간 에러가 뜨면 스택 트레이스 첫 줄도 읽지 않고 검색창이나 AI로 직행하는 습관은 디버깅 실력을 제자리에 멈추게 한다. 에러 메시지는 질책이 아니라 문제의 시작 지점을 알려주는 안내서이고, 위치와 원인이 로그에 이미 적혀 있는 경우가 많다.
+
+- 프레임워크 내부 예외의 긴 이름에 압도되지 말고, 수십 줄 로그에서 **내가 작성한 패키지와 파일명이 등장하는 지점**(내 코드와 프레임워크의 교차점)을 찾는다
+- 예외 이름이라는 결과에 집착하지 말고 그 값이 어디서부터 잘못 넘어왔는지 **역추적**한다
+- AI가 대신 읽어주는 시대일수록 중요하다 — 로그의 맥락을 스스로 읽지 못하면 AI가 제시한 해결책도 검증할 수 없다 ([[CS-Fundamentals-Value|CS 기초의 가치]]의 판별 축). 에러가 뜨면 잠깐 손을 떼고 예외 이름, 파일명, 라인 번호부터 읽는다
+
 ## 4. 논리적 증명 (엔지니어링 사고)
 
 - 가설에 **논리적 빈틈**이 없는지 자가 점검
@@ -110,8 +116,9 @@ aliases: ["Great Developer Habits", "뛰어난 개발자의 행동 패턴", "시
 > "특히 **논리적 증명 습관**이 인상 깊었습니다. 같은 이슈를 봤을 때 주니어였던 저는 '이것 같은데요'로 말했는데, 그 동료는 로그 발췌, 재현 시나리오, 시퀀스 다이어그램까지 준비해서 근거로 제안했습니다. 그 이후로 저도 주장할 때는 근거를 먼저 준비하는 방식으로 바꿨습니다."
 
 ## 출처
-- [F-Lab — 뛰어난 동료 개발자에게 배운 것](https://f-lab.kr/blog/things-I-learned-from-great-fellow-developers)
-- [F-Lab — 개발자로 크게 성장한 계기와 노력](https://f-lab.kr/blog/growth-developer)
+- [뛰어난 동료 개발자에게 배운 것 — F-Lab](https://f-lab.kr/blog/things-I-learned-from-great-fellow-developers)
+- [개발자로 크게 성장한 계기와 노력 — F-Lab](https://f-lab.kr/blog/growth-developer)
+- [에러 로그를 보지 않는 개발자에게 — Team Grit](https://teamgrit.co/article/488)
 
 ## 관련 문서
 - [[Developer-Hiring-Insights-Growth|개발자 채용 인사이트 — 성장]]
@@ -120,3 +127,4 @@ aliases: ["Great Developer Habits", "뛰어난 개발자의 행동 패턴", "시
 - [[Team-Contribution-Culture|엔지니어링 팀 기여 문화]]
 - [[Software-Craftsmanship-Professionalism|소프트웨어 장인정신과 프로페셔널리즘]] — 행동 패턴의 직업윤리 측면
 - [[Startup-Is-Not-Kindergarten|스타트업은 유치원이 아니다]]
+- [[CS-Fundamentals-Value|CS 기초의 가치]] — AI 출력을 판별하는 기초

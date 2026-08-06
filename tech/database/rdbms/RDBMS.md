@@ -79,7 +79,7 @@ aliases: ["RDBMS", "OLTP"]
 
 ## 확장 & 운영
 - [x] [[scaling-operations|확장과 운영 폴더 인덱스 (샤딩, 복제, 클러스터링, Read Replica 라우팅)]]
-- [x] [[PostgreSQL-Production-Operations|PostgreSQL 운영 (실행 계획, Online DDL, vacuum, partitioning)]]
+- [x] [[PostgreSQL-Production-Operations|PostgreSQL 운영 (실행 계획, Online DDL, vacuum, partitioning, pgAudit 감사 로깅)]]
 - [x] [[PostgreSQL-Extensions|PostgreSQL 확장 생태계 (PostGIS, 검색, pg_cron, Citus)]]
 - [x] [[Sharding|Sharding]]
 - [x] [[Replication|Replication (sync / async)]]
