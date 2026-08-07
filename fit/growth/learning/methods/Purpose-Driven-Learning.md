@@ -97,4 +97,5 @@ AI 도구가 대표 사례다.
 - [[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]] — 무엇을 골라 배울지의 상위 판단
 - [[Thin-Start-Project-Approach|얇게 시작하기]] — 만들 것을 작은 단위로 쪼개기
 - [[Peer-Driven-Growth|함께 성장하기]] — 스터디, 멘토링으로 밖에 꺼내 검증받기
+- [[Backend-Study-Order|백엔드 공부 순서]] — 목표가 서기 전 입문 단계의 요청 흐름 기본 경로
 - [[Self-Development-While-Working|일하면서 자기계발]]

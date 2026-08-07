@@ -181,3 +181,4 @@ int main() { return 0; }
 - [[Resume-15-Second-Rules|이력서 15초 승부, 5원칙]]
 - [[Resume-Portfolio-Writing-Guide|포트폴리오 작성 가이드]] — 면접용 포트폴리오의 평가 3축
 - [[Developer-Growth-Stages|개발자 성장 단계]]
+- [[Backend-Study-Order|백엔드 공부 순서]] — 완성 경험이 아니라 밑단 이해가 목적일 때의 반대 방향 경로

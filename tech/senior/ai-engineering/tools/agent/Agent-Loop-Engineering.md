@@ -83,4 +83,4 @@ aliases: ["Loop Engineering", "루프 엔지니어링", "Agent Loops", "에이�
 - [[Agent-Coding-Guardrails|LLM 코딩 가드레일 (Goal-Driven Execution — 성공 기준과 검증 루프)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (검증 가능한 완료 기준, LLM-as-a-Judge)]]
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (스킬을 루프에 태우는 반복 업무 자동화)]]
-- [[LLM-Workflow-Patterns|LLM 워크플로우 패턴 (체인 vs 에이전트 선택)]]
+- [[LLM-Workflow-Patterns|LLM 워크플로우 패턴 (체인 vs 에이전트 선택, Plan-and-Execute)]]

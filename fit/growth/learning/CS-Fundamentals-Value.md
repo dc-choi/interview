@@ -68,6 +68,7 @@ aliases: ["CS Fundamentals Value", "CS 기초의 가치", "CS 전공의 진짜 �
 - [[Dreyfus-Skill-Model|드레퓌스 기술 습득 모형]] — Novice 단계의 기초 체화
 - [[Developer-Growth-Stages|개발자 성장 단계]] — 추상화 수준의 상승
 - [[Backend-Engineer-Baseline|백엔드 엔지니어 기본 역량]] — CS 기초 체크리스트
+- [[Backend-Study-Order|백엔드 공부 순서]] — 요청 흐름 먼저, 프레임워크는 도구
 - [[자료구조(DataStructure)|자료구조]] — 배열, 맵, 메모리 할당
 - [[Algorithm-Complexity|시간복잡도]] — Big O
 - [[CORS|CORS]] — 네트워크, 보안 사례
