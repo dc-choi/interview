@@ -113,7 +113,7 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 
 ## 관련 문서
 
-- [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-Mapping-Text-Analysis|다음: 매핑과 텍스트 분석]]
+- [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-Basics|이전: OpenSearch 기초]], [[OpenSearch-Mapping-Text-Analysis|다음: 매핑과 텍스트 분석]]
 - [[OpenSearch-Service-Deployment|Amazon OpenSearch Service 적합과 부적합]]
 - [[OpenSearch-Indexing-Internals|색인 내부와 운영 DB 동기화]]
 - [[OpenSearch-Query-Relevance|BM25 관련도와 Query DSL]]

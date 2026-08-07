@@ -183,6 +183,7 @@ flowchart LR
 ## 관련 문서
 
 - [[OpenSearch|OpenSearch 학습 지도]]
+- [[OpenSearch-Basics|OpenSearch 기초 (시작 전 단계, 역색인 실물 예시)]]
 - [[OpenSearch-vs-RDB-Search|도입 판단 프레임 (0단계 정본)]]
 - [[OpenSearch-Architecture|분산 실행 모델 상세]]
 - [[OpenSearch-Indexing-Internals|색인 내부와 가시성 경계]]
