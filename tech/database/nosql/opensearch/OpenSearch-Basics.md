@@ -1,14 +1,25 @@
 ---
 tags: [database, search, opensearch, inverted-index, rest-api, query-dsl]
 status: done
-verified_at: 2026-08-10
+verified_at: 2026-08-08
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Basics", "OpenSearch 기초", "OpenSearch 입문"]
 ---
 
 # OpenSearch 기초 — 요청과 응답의 실물
 
-[[OpenSearch|학습 지도]] 0단계 전의 진입 계단이다. 다른 문서들은 인덱스, 매핑, analyzer, term 같은 단어의 실물을 이미 봤다고 전제한다. 이 문서는 그 실물을 처음 보여준다. 인덱스 하나를 만들고 문서를 넣고 검색해 응답을 읽을 수 있으면 통과다.
+[[OpenSearch|학습 지도]] 0단계 전의 진입 계단이다. 실행 중인 cluster가 없다면 [[OpenSearch-Local-Quickstart|Local Docker Quickstart]]를 먼저 따른다. 다른 문서들은 인덱스, 매핑, analyzer, term 같은 단어의 실물을 이미 봤다고 전제한다. 이 문서는 그 실물을 처음 보여준다. 인덱스 하나를 만들고 문서를 넣고 검색해 응답을 읽을 수 있으면 통과다.
+
+## 무엇을 위한 엔진인가
+
+OpenSearch는 JSON document를 색인한 뒤 검색과 분석을 함께 수행하는 분산 엔진이다. 단일 node에서도 실행할 수 있고, 데이터와 부하가 커지면 shard copy를 여러 node에 배치해 확장할 수 있다.
+
+| 워크로드 | OpenSearch가 제공하는 가치 |
+|---|---|
+| 서비스 검색 | 전문 검색, filter, 관련도 순위와 aggregation을 한 query에서 결합 |
+| 로그와 보안 분석 | 대량 event를 조건으로 검색하고 집계해 패턴과 이상 징후를 조사 |
+
+검색엔진 도입은 원장 DB를 자동으로 대체한다는 뜻이 아니다. 어떤 요구에서 별도 검색 read model이 필요한지는 [[OpenSearch-vs-RDB-Search|RDB 검색과의 경계]]에서 판단한다.
 
 ## RDB 개념 대응표
 
@@ -20,7 +31,7 @@ aliases: ["OpenSearch Basics", "OpenSearch 기초", "OpenSearch 입문"]
 | row | document | 고정 컬럼이 아니라 중첩 가능한 JSON 문서 |
 | column | field | 타입에 따라 색인 구조가 달라짐 |
 | schema (DDL) | mapping | 필드 타입과 분석 방식을 정의하는 JSON |
-| SQL | Query DSL | JSON 형태의 질의 언어 |
+| SQL | Query DSL | 애플리케이션 검색의 주 경로인 JSON 질의. OpenSearch SQL/PPL과 Dashboards DQL은 별도 목적 인터페이스 |
 
 ## 역색인의 실물
 
@@ -39,30 +50,19 @@ term (정렬된 단어 사전)   posting list (문서 ID 목록)
 이어폰                → [1, 3]
 ```
 
-- 문장을 term으로 바꾸는 처리 파이프라인이 analyzer다. 쪼개는 단계가 tokenizer이고 소문자화 같은 정규화 단계가 뒤따른다. 그렇게 나온 검색 단위 하나가 term이다.
-- 정렬된 term 목록이 term dictionary, term마다 붙은 문서 ID 목록이 posting list다 (다른 문서에서는 postings로도 쓴다).
+- Analyzer는 raw text에 0개 이상의 character filter, 정확히 1개의 tokenizer, 0개 이상의 token filter를 순서대로 적용한다. Tokenizer가 position과 offset 같은 metadata를 가진 token을 만들고, token filter 단계를 지난 최종 token value가 역색인의 term dictionary에 저장되어 matching에 쓰이는 term이다. 세부 단계는 [[OpenSearch-Mapping-Text-Analysis#Analyzer 파이프라인|Analyzer 파이프라인]]에서 다룬다.
+- 정렬된 term 목록이 term dictionary, term마다 붙은 문서 ID 목록이 posting list다 (다른 문서에서는 postings로도 쓴다). 기본 `text` field의 postings에는 빈도와 token position도 저장되며, position은 phrase query의 단어 순서와 거리를 판정할 때 사용한다.
 - 블루투스 이어폰 검색은 두 term의 posting list를 조회해 합치는 것으로 끝난다. 문서 전체를 훑지 않는다.
 
 기본 standard analyzer는 Unicode 단어 경계 기준으로 쪼갠 뒤 대소문자가 있는 문자를 소문자로 정규화한다 (한국어는 대소문자가 없어 그대로다). 위처럼 띄어쓰기된 한국어는 공백 단위로 나뉘고, 조사가 붙는 실전 한국어(예: 이어폰을)는 형태소 분석이 필요하다. [[OpenSearch-Korean-Text-Analysis|Nori]]가 그 역할이다. 이 구조를 B-tree와 같은 데이터로 비교한 그림 버전은 [[OpenSearch-Architecture-Map|아키텍처 한 장 지도]]에 있다.
 
-## 로컬 실행 환경
-
-아래 요청을 따라 실행할 단일 노드를 Docker로 띄운다. 보안 플러그인을 끈 이 구성은 공식 quickstart의 방식이고 테스트 환경 전용이다. 인증과 TLS가 없으니 실습이 끝나면 컨테이너를 내리고, 보안 구성과 프로덕션 체크리스트는 [[OpenSearch-Security-Production|보안 문서]]가 다룬다.
-
-```bash
-docker run -d -p 9200:9200 -p 9600:9600 \
-  -e "discovery.type=single-node" \
-  -e "DISABLE_SECURITY_PLUGIN=true" \
-  opensearchproject/opensearch:latest
-
-curl http://localhost:9200   # 클러스터 이름과 버전 JSON이 나오면 준비 완료
-```
-
-Dev Tools 콘솔까지 원하면 Docker 설치 문서의 개발용 docker-compose 파일로 클러스터째 띄운다. 이 문서처럼 노드의 보안을 끈 구성에서는 Dashboards도 보안을 꺼야 해서(`DISABLE_SECURITY_DASHBOARDS_PLUGIN=true`) 단일 컨테이너를 그냥 붙일 수 없고, 이 문서 범위는 curl로 충분하다.
-
 ## 인덱스 생성부터 검색까지
 
-색인, 검색, 인덱스 관리는 HTTP REST API로 한다. 아래 요청은 Dashboards의 Dev Tools 콘솔 문법이고, curl로 실행하려면 메서드와 호스트, `Content-Type: application/json` 헤더, `-d` 본문 형태로 바꾼다.
+색인, 검색, 인덱스 관리는 HTTP REST API로 한다. 아래 요청은 Dashboards Dev Tools의 축약 문법이다.
+
+- Dev Tools는 로그인한 browser session을 통해 `METHOD /path`와 JSON body만 보낸다.
+- Terminal의 curl은 `METHOD scheme://host:port/path?query` 전체 URL을 쓰고, JSON body가 있으면 `Content-Type: application/json`과 `-d`를 제공한다. `pretty`는 사람이 응답을 읽을 때만 붙인다.
+- Security plugin을 끈 로컬 Quickstart는 HTTP와 무인증, 공식 demo security 구성은 HTTPS와 인증을 사용한다. 실제 배포에서는 endpoint의 TLS 설정을 확인하고 CA를 검증한다. Demo certificate에서 `-k`로 검증을 끄는 예외는 [[OpenSearch-Local-Quickstart#Demo security 구성|로컬 Quickstart]]에만 한정한다.
 
 ### 1. 매핑과 함께 인덱스 생성
 
@@ -81,7 +81,7 @@ PUT /products
 
 - `text`: analyzer가 term으로 쪼개 역색인한다. 전문 검색용.
 - `keyword`: 값을 통째로 하나의 term으로 저장한다. 정확 일치 필터, 정렬, 집계용.
-- 매핑 없이 문서를 먼저 넣으면 값을 보고 타입을 추측해 자동 생성한다(dynamic mapping). 운영 함정은 [[OpenSearch-Mapping-Text-Analysis|매핑 문서]] 참고.
+- 매핑 없이 문서를 먼저 넣으면 값을 보고 타입을 추측해 자동 생성한다(dynamic mapping). `GET /products/_mapping`으로 실제 추론 결과를 확인한다. 한 번 생성된 field type은 제자리에서 바꿀 수 없으므로 잘못 추론됐다면 명시적 mapping의 새 index를 만들고 reindex한다. 운영 함정은 [[OpenSearch-Mapping-Text-Analysis|매핑 문서]] 참고.
 
 ### 2. 문서 색인
 
@@ -90,7 +90,7 @@ PUT /products/_doc/1
 { "title": "무선 블루투스 이어폰", "category": "전자기기", "price": 39000 }
 ```
 
-응답의 `"result": "created"`와 `_id`, `_version`을 확인한다. 같은 `_id`로 다시 넣으면 덮어쓰기이고 `"result": "updated"`가 된다. 위 예시의 문서 2, 3도 같은 방식으로 넣는다.
+응답의 `"result": "created"`와 `_id`, `_version`을 확인한다. 같은 `_id`에 `PUT /products/_doc/1`을 다시 보내면 document 전체를 교체하고 `"result": "updated"`가 된다. ID를 자동 생성하려면 `POST /products/_doc`을 사용한다. 일부 field만 바꾸는 `POST /products/_update/1`은 `doc`을 현재 `_source`에 합친 뒤 내부적으로 다시 색인한다. `DELETE /products/_doc/1`은 document, `DELETE /products`는 index 전체를 삭제하므로 마지막 요청은 버려도 되는 실습 index에서만 실행한다. 위 예시의 문서 2, 3도 같은 방식으로 넣는다.
 
 ### 3. ID로 조회
 
@@ -101,6 +101,8 @@ GET /products/_doc/1
 `_source`에 넣은 JSON 원문이 그대로 들어 있고 `"found": true`가 붙는다. 검색과 달리 ID 조회는 기본 설정에서 real-time이라 색인 직후에도 바로 보인다.
 
 ### 4. 검색과 응답 읽기
+
+본문 없는 `GET /products/_search`는 `match_all`과 같지만 일치 문서 중 기본 10건만 반환한다. `GET /products/_search?q=title:이어폰`처럼 Lucene query string을 URL에 넣을 수도 있다. 다만 `q`는 엄격한 문법과 예약 문자를 사용하며 request body의 `query`보다 우선하므로, 사용자 입력을 받는 애플리케이션은 보통 아래처럼 Query DSL의 `match` 또는 문법 오류에 관대한 `simple_query_string`을 사용한다.
 
 ```json
 GET /products/_search
@@ -113,7 +115,8 @@ GET /products/_search
 
 ```json
 {
-  "took": 4,
+  "took": 4, "timed_out": false,
+  "_shards": { "total": 1, "successful": 1, "skipped": 0, "failed": 0 },
   "hits": {
     "total": { "value": 3, "relation": "eq" },
     "max_score": 1.87,
@@ -126,13 +129,13 @@ GET /products/_search
 }
 ```
 
-점수는 예시 값이고 `timed_out`, `_shards`와 각 hit의 `_index` 필드는 생략했다. 읽는 순서는 세 가지다.
-
-- `took`: 검색에 걸린 밀리초.
+- `took`: OpenSearch 내부 검색에 걸린 밀리초. `timed_out: true`이면 제한 시간까지 수집된 부분 결과일 수 있고, `_shards.failed`가 0보다 크면 일부 shard가 실패한 것이다. HTTP 성공만으로 완전한 결과라고 간주하지 않으며, 완전성이 필수라면 [[OpenSearch-Search-Features#검색 실행 제어|검색 실행 제어]]의 `allow_partial_search_results`도 검토한다.
 - `hits.total.value`: 조건에 맞은 문서 수. 기본 설정에서는 큰 결과일 때 정확한 수 대신 `"value": 10000, "relation": "gte"`처럼 하한으로 표시될 수 있다. 왜 그런지는 [[OpenSearch-Inverted-Index-Structures#Block-Max WAND와 track_total_hits|track_total_hits]] 참고.
-- `hits.hits[]._score`: 관련도 점수. 검색어를 블루투스 이어폰으로 넣으면 두 term 중 하나만 있어도 매칭되고(기본 OR), 둘 다 가진 문서 1이 더 높은 점수로 먼저 온다. 이 점수를 계산하는 공식의 이름이 BM25이고, 원리는 [[OpenSearch-Query-Relevance|관련도 문서]]가 다룬다.
+- `hits.hits[]._score`: 관련도 점수. 각 hit의 `_index`는 예시에서 생략했고, 위 점수는 예시 값이다. 검색어를 블루투스 이어폰으로 넣으면 두 term 중 하나만 있어도 매칭되고(기본 OR), 둘 다 가진 문서 1이 더 높은 점수로 먼저 온다. 이 점수를 계산하는 공식의 이름이 BM25이고, 원리는 [[OpenSearch-Query-Relevance|관련도 문서]]가 다룬다.
 
 RDB와 가장 다른 지점이 이 `_score`다. WHERE는 참과 거짓만 가르지만, 검색은 얼마나 잘 맞는지의 순위를 만든다.
+
+BM25의 입문 mental model은 세 가지다. 같은 field에서 query term이 자주 나타날수록 유리하지만 반복 효과는 점차 포화하고(TF), 문서 집합에서 드문 term일수록 중요하게 본다(IDF). 같은 term 증거라면 긴 field는 길이 정규화로 불리할 수 있다. `_score`는 확률이 아니라 같은 query 안에서 순서를 정하기 위한 상대값이다.
 
 ## match, term, bool — 쿼리의 최소 어휘
 
@@ -179,20 +182,18 @@ GET /products/_search
 ## 관련 문서
 
 - [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-vs-RDB-Search|다음: RDB vs 검색엔진]]
-- [[OpenSearch-Mapping-Text-Analysis|매핑과 텍스트 분석]]
-- [[OpenSearch-Query-Relevance|BM25 관련도와 Query DSL]]
+- [[OpenSearch-Mapping-Text-Analysis|매핑과 텍스트 분석]], [[OpenSearch-Query-Relevance|BM25 관련도와 Query DSL]], [[OpenSearch-JavaScript-Client|애플리케이션용 JavaScript client]]
 
 ## 출처
 
-- [Installation quickstart - OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/quickstart/)
-- [Docker - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/)
-- [Intro to OpenSearch - OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/intro/)
+- [Introduction to OpenSearch — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/intro/), [OpenSearch concepts — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/concepts/)
 - [Communicate with OpenSearch - OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/communicate/)
 - [Index document - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
 - [Reindex data - OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/reindex-data/)
 - [Get document - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/get-documents/)
 - [Term-level and full-text queries compared - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/term-vs-full-text/)
-- [Match query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/match/)
+- [Search API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search/)
+- [Search your data - OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/search-data/)
 - [Standard analyzer - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/supported-analyzers/standard/)
 - [Boolean queries - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/bool/)
 - [Range query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/term/range/)

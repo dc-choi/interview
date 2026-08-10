@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, lucene, inverted-index]
 status: index
-verified_at: 2026-07-15
+verified_at: 2026-08-08
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch", "검색 엔진", "역색인"]
 ---
@@ -23,6 +23,52 @@ OpenSearch는 Apache Lucene을 분산 실행 계층으로 감싼 검색 및 분�
 
 `term`은 analyzer가 만든 검색 단위이고, postings는 해당 term을 가진 문서 ID 목록이다. 이 용어들의 실물 예시는 시작 전 단계의 [[OpenSearch-Basics|기초 문서]]에서 익힌다.
 
+## 핵심 개념과 구조
+
+OpenSearch의 논리적 데이터 모델과 물리적 실행 구조는 구분해서 본다. RDB의 row와 table 비유는 입문에는 유용하지만, 실제 검색과 복제의 실행 단위는 shard이고 물리 저장 단위는 Lucene segment다.
+
+| 개념                       | 역할                                                                                          | 놓치기 쉬운 점                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Document                 | 색인, ID 조회, 갱신의 논리적 단위인 JSON 데이터                                                             | API가 다루는 기본 단위이지 내부 물리 저장의 최소 단위는 아니다                         |
+| Mapping과 field           | field 타입, analyzer와 색인 구조를 정의하는 index schema                                                | 직접 정의할 수도 있고 dynamic mapping으로 추론될 수도 있다                      |
+| Index                    | 관련 document와 mapping, settings를 묶는 논리적 경계                                                   | 검색 요청은 index 전체가 아니라 index를 구성하는 shard에서 분산 실행된다              |
+| Primary shard            | routing으로 document가 배정되는 논리적 partition                                                      | 각 shard copy는 독립적으로 검색 가능한 완전한 Lucene index다                  |
+| Replica shard            | primary shard의 복제본                                                                          | 장애 대응과 읽기 분산에는 유용하지만 primary routing 공간은 늘리지 않는다              |
+| Node                     | OpenSearch process 하나이며 shard copy를 저장하거나 cluster 역할을 수행                                    | 모든 node가 요청을 조율할 수 있고 전용 역할 분리는 workload에 따라 결정한다             |
+| Cluster와 cluster manager | 하나 이상의 node가 공유하는 실행 경계이며 선출된 manager가 cluster state, node membership과 shard allocation을 조율 | manager는 검색과 쓰기의 중앙 프록시가 아니다                                  |
+| Segment                  | shard copy 안의 불변 Lucene 검색 단위                                                               | refresh로 검색 가능해지고 작은 segment는 background merge로 합쳐진다          |
+| Inverted index           | analyzer가 만든 term에서 document ID 목록인 postings로 가는 구조                                         | phrase와 proximity 검색은 저장된 token position을 사용하며 의미 문맥 이해와는 다르다 |
+| `doc_values`             | document ID에서 field 값으로 가는 column-oriented on-disk 구조                                       | 정렬과 집계에 사용하며 `text` field에는 기본 제공되지 않는다                       |
+| BM25                     | `text` 검색의 기본 lexical similarity                                                            | TF, IDF, 반복 포화와 검색 대상 field 길이를 사용하며 score는 확률이 아니다           |
+
+### 저장 계층
+
+```text
+Cluster (2-node 배치 예시)
+└── Index
+    ├── Shard group 0
+    │   ├── Primary copy on Node A → Lucene index → immutable segments
+    │   └── Replica copy on Node B → Lucene index → immutable segments
+    └── Shard group 1 → 다른 document partition
+```
+
+OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본값은 primary shard마다 replica 1개지만, 같은 shard group의 primary와 replica는 같은 node에 함께 할당되지 않아 shard를 할당할 수 있는 별도 data node가 없으면 replica는 unassigned 상태로 남는다. 배포판과 관리형 서비스의 기본값은 다를 수 있으므로 운영에서는 index template에 명시한다.
+
+### 쓰기와 검색 흐름
+
+1. 쓰기는 `_id` 또는 custom routing의 hash로 primary shard를 고른다. 기본 DOCUMENT replication에서는 primary가 작업을 적용하고 active replica에 전달하지만, 성공 응답이 곧 Search 가시성을 뜻하지는 않는다. 새 segment가 refresh되어야 검색할 수 있다.
+2. 일반적인 lexical top-hits 검색은 coordinating 기능을 수행하는 node가 각 logical shard의 사용 가능한 copy 하나에 요청을 보낸다. 각 shard가 segment의 postings를 조회하고 local top K를 만든 뒤 coordinator가 전체 결과를 병합한다. Primary와 replica를 모두 중복 검색하는 구조가 아니다.
+3. Full-text match는 inverted index를, 정렬과 집계는 주로 `doc_values`를 사용한다. 기본 similarity 설정에서는 query context의 lexical 결과를 BM25로 채점하고, filter context는 점수를 계산하지 않는다.
+
+### 설계 체크포인트
+
+- Shard와 replica는 많을수록 좋은 설정이 아니다. Shard마다 CPU, heap metadata, file handle과 검색 fan-out 비용이 생기고 replica는 저장 공간과 쓰기 비용을 늘린다.
+- Replica는 가용성을 높이는 재료이지 단독 보장은 아니다. Failure domain, allocation awareness와 cluster-manager quorum을 함께 설계한다.
+- Node 역할 분리는 workload 격리 선택이다. 전용 cluster manager는 운영 cluster의 control plane을 보호하고, ingest와 coordinating 전용화는 실제 부하를 benchmark해 결정한다.
+- 관련도 개선은 BM25 parameter부터 바꾸지 않는다. Mapping과 analyzer, query와 filter 구분, field boost, 대표 query set과 품질 지표를 먼저 검증한다.
+
+세부 동작은 [[OpenSearch-Architecture|분산 실행 모델]], [[OpenSearch-Mapping-Text-Analysis|매핑과 저장 구조]], [[OpenSearch-Inverted-Index-Structures|역색인 물리 구조]], [[OpenSearch-Query-Relevance|BM25와 Query DSL]]에서 이어서 본다.
+
 이 흐름에서 답해야 할 질문은 다섯 가지다. 왜 RDB 검색만으로 부족한가, 무엇을 어떤 term으로 저장할 것인가, 어떤 조건을 필터와 점수로 나눌 것인가, 분산 실행의 비용은 무엇인가, 원본 DB와 검색 결과의 시차를 어떻게 관리할 것인가.
 
 ## 단계별 로드맵
@@ -41,7 +87,7 @@ OpenSearch는 Apache Lucene을 분산 실행 계층으로 감싼 검색 및 분�
 ### 시작 전: 실물 익히기
 
 - 목표: 이후 문서 대부분이 전제하는 인덱스, 매핑, analyzer, term, 역색인, 검색 응답의 실물을 손에 익힌다.
-- 읽기: [[OpenSearch-Basics|OpenSearch 기초 — 요청과 응답의 실물]] 전체 (다른 문서와 달리 절 단위가 아니라 처음부터 끝까지 읽고 따라 실행한다)
+- 읽기: 실행 중인 cluster가 없으면 [[OpenSearch-Local-Quickstart|Local Docker Quickstart]], 이어서 [[OpenSearch-Basics|OpenSearch 기초 — 요청과 응답의 실물]] 전체
 - [ ] 통과: 인덱스 생성부터 match 검색까지 네 요청을 문서 없이 작성하고, 응답의 `hits`와 `_score`를 설명한다.
 
 ### 0단계: 도입 판단
@@ -140,5 +186,15 @@ OpenSearch 엔진을 잘 운영하는 것과 사용자가 좋은 검색 경험�
 
 ## 출처
 
+- [Get started with OpenSearch: Fundamental concepts — OpenSearch](https://www.youtube.com/watch?v=GbkRaxj-bJw)
+- [Introduction to OpenSearch — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/intro/)
+- [OpenSearch concepts — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/concepts/)
+- [Mappings — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/)
+- [Doc values mapping parameter — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-parameters/doc-values/)
+- [Creating a cluster — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/)
+- [Search shard routing — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/search-shard-routing/)
+- [Segment replication — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/index/)
+- [Keyword search and BM25 — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/keyword-search/)
+- [Query and filter context — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/query-filter-context/)
 - [OpenSearch Documentation - OpenSearch Project](https://docs.opensearch.org/latest/about/)
 - [OpenSearch 내부 구조 참고 영상 - YouTube](https://www.youtube.com/watch?v=J2uEQrCE2Hs)

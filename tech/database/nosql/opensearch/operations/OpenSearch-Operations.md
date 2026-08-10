@@ -7,8 +7,9 @@ aliases: ["OpenSearch Operations Index", "OpenSearch 운영 폴더 인덱스"]
 
 # OpenSearch 운영 폴더 인덱스
 
-Cluster의 용량 설계, 복구, 성능 진단과 프로덕션 보안을 다룬다.
+Local 실행부터 Cluster의 용량 설계, 복구, 성능 진단과 프로덕션 보안을 다룬다.
 
+- [[OpenSearch-Local-Quickstart|Local Docker Quickstart]] — 단일 node와 Compose 실행, 보안 경계와 첫 검증
 - [[OpenSearch-Shard-Sizing|Shard 사이징]] — shard 수, 크기와 storage 산정
 - [[OpenSearch-Cluster-Reliability|Cluster 신뢰성]] — allocation, snapshot, 복구와 rolling upgrade
 - [[OpenSearch-Performance-Troubleshooting|성능 진단]] — 증상별 가설, circuit breaker와 장애 대응
