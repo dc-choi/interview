@@ -28,6 +28,11 @@ aliases: ["Data Structure"]
 - [x] [[Trie-and-Autocomplete|Trie, prefix search와 자동완성]]
 - [x] [[Heap|Heap, Priority Queue와 heap sort]]
 
+## 검색 자료구조와 모델
+
+- [x] [[Inverted-Index-and-TF-IDF|역색인, TF-IDF와 Redis 집합 연산]]
+- [x] [[Vector-Space-Model-and-Cosine-Similarity|벡터 공간 모델, Bag of Words와 코사인 유사도]]
+
 ## 선택 기준
 
 | 요구 | 대표 구조 | 핵심 비용 |

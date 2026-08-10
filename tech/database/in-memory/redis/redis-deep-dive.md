@@ -10,6 +10,7 @@ aliases: ["Redis 심화", "Redis Deep Dive"]
 Redis 제품 심화 문서 모음. 자료구조와 내부 인코딩부터 아키텍처, 메모리 정책, 클러스터까지. 캐시 일반 원리는 형제 폴더 [[cache|캐시]] 참고.
 
 - [[Redis-Memory-Internals|자료구조와 메모리 내부 (인코딩, Eviction)]]
+- [[Inverted-Index-and-TF-IDF|Set과 Sorted Set으로 구현하는 역색인과 TF-IDF]]
 - [[Redis-Atomic-Operations|Redis 원자적 연산 (INCR, MULTI/EXEC, WATCH, Lua)]]
 - [[Redis-Cart-Checkout-Consistency|Redis 장바구니와 주문 정합성 (Hash, TTL, cart version, Outbox cleanup)]]
 - [[Redis-Architecture|Redis architecture (Event Loop, RESP, Pipeline, Transaction)]]

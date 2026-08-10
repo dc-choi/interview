@@ -123,6 +123,7 @@ DEVOCEAN 사례는 1,291개 글의 embedding을 MySQL에 저장하고 batch memo
 - model, task type, 차원과 전처리를 함께 versioning해야 하는 이유
 
 ## 관련 문서
+- [[Vector-Space-Model-and-Cosine-Similarity|희소 렉시컬 벡터 공간 모델]]
 - [[pgvector|pgvector (PostgreSQL 벡터 검색)]] — PostgreSQL 구현, 타입과 운영
 - [[pgvector-Query-Optimization|pgvector 쿼리 최적화]] — ef_search/LIMIT, iterative scan
 - [[OpenSearch-Vector-Search|OpenSearch 벡터 검색]] — 검색 엔진 쪽 k-NN과 embedding pipeline
