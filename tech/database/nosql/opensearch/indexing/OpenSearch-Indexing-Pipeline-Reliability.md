@@ -54,7 +54,7 @@ aliases: ["OpenSearch Indexing Pipeline Reliability", "색인 파이프라인 �
 
 ## DLQ 운영
 
-- 들어가야 하는 것은 원인을 고치기 전엔 재시도가 무의미한 결정적 실패다. 파싱 불가, mapping 충돌, validation 오류가 여기 속한다. 429와 timeout 같은 일시 오류는 backoff 재시도로 소화하고 DLQ에 넣지 않는다. 분류 기준은 [[OpenSearch-Indexing-Internals#Bulk API|Bulk 재시도 원칙]]과 같다.
+- 들어가야 하는 것은 원인을 고치기 전엔 재시도가 무의미한 결정적 실패다. 파싱 불가, mapping 충돌, validation 오류가 여기 속한다. 429와 timeout 같은 일시 오류는 backoff 재시도로 소화하고 DLQ에 넣지 않는다. 분류 기준은 [[OpenSearch-Data-Ingestion#부분 성공과 재시도|Bulk 재시도 원칙]]과 같다.
 - Replay에는 함정이 있다. DLQ에 있던 이벤트보다 나중 이벤트가 이미 색인됐을 수 있으므로, version guard 없이 replay하면 stale이 최신을 덮는다. Replay 경로에도 정상 경로와 같은 guard를 태운다.
 - DLQ가 비어 있는 것과 DLQ를 아무도 안 보는 것은 다르다. 적체 알람과 정기 검토 주기를 함께 둔다. 원인 유형별 집계가 남으면 백로그가 된다.
 
@@ -63,7 +63,7 @@ aliases: ["OpenSearch Indexing Pipeline Reliability", "색인 파이프라인 �
 - 엔진이 밀리면(bulk 429, thread pool queue 포화) 소비자가 속도를 줄인다. Consumer pause, batch 크기 축소, backoff가 수단이다. 이 시간은 곧 색인 지연으로 전가되므로 지연 알람과 함께 해석한다.
 - OpenSearch의 shard indexing backpressure는 노드가 넘어지기 전에 요청을 거부하는 장치이지만 기본값이 꺼져 있다. `shard_indexing_pressure.enabled`가 false이고, 켜도 `enforced`가 false인 동안은 지표만 쌓고 거부하지 않는다. 켜져 있다고 가정하고 소비자를 설계하면 오지 않는 신호를 기다리게 된다.
 - 그렇다고 429가 안 오는 것은 아니다. 기본 cluster에서 살아 있는 출처가 셋이다. Write thread pool queue 거부, node 수준 indexing pressure(`indexing_pressure.memory.limit`, 기본 heap의 10퍼센트, 끄는 flag가 없어 항상 동작), circuit breaker다. 429는 장애가 아니라 속도를 줄이라는 신호이되, `_nodes/stats`의 `thread_pool.write.rejected`, `indexing_pressure.memory.total.*_rejections`, `breakers.*.tripped`로 어느 쪽인지 가른 뒤 대응한다. 분류 순서는 [[OpenSearch-Performance-Troubleshooting#Thread pool과 429|429 대응 순서]], 기본값 구분은 [[OpenSearch-Performance-Troubleshooting#Backpressure|backpressure]]가 정본이다.
-- Backfill과 서비스 증분 색인이 같은 cluster 자원을 두고 경쟁한다. 시간대 분리나 backfill 속도 상한을 두고, 적재 구간의 setting 조정은 [[OpenSearch-Indexing-Internals#대량 적재 구간의 setting 조정|정본]]을 따른다.
+- Backfill과 서비스 증분 색인이 같은 cluster 자원을 두고 경쟁한다. 시간대 분리나 backfill 속도 상한을 두고, 적재 구간의 setting 조정은 [[OpenSearch-Data-Ingestion#대량 적재 구간의 setting 조정|정본]]을 따른다.
 
 ## 복구 우선순위
 
@@ -76,7 +76,7 @@ Read model이라는 사실이 복구 전략의 근거다.
 ## 관련 문서
 
 - [[OpenSearch|OpenSearch 학습 지도]]
-- [[OpenSearch-Indexing-Internals|색인 내부와 동기화 아키텍처]]
+- [[OpenSearch-Data-Ingestion|수집과 Bulk 실행]], [[OpenSearch-Indexing-Internals|색인 내부와 동기화 아키텍처]]
 - [[OpenSearch-Index-Lifecycle|무중단 전환과 rebuild]]
 - [[OpenSearch-Cluster-Reliability|Cluster 수준 복구]]
 - [[OpenSearch-Performance-Troubleshooting|엔진 성능 진단]]

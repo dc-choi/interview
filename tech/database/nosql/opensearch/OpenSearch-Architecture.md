@@ -15,7 +15,7 @@ Lucene은 애플리케이션에 임베드되는 검색 라이브러리이며 자
 |---|---|
 | OpenSearch | JSON 문서 저장, 색인, 검색과 집계를 실행하는 분산 엔진 |
 | OpenSearch Dashboards | Query 탐색, 시각화, 인덱스와 plugin 관리 UI |
-| Data Prepper | Source, processor, sink를 연결하는 별도 server-side 수집기 |
+| Data Prepper | [[OpenSearch-Data-Ingestion#Ingest pipeline과 Data Prepper|Source, buffer, processor와 sink를 연결하는 별도 수집 component]] |
 
 ## 계층 구조
 

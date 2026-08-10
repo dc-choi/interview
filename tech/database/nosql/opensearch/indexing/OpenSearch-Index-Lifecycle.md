@@ -176,7 +176,7 @@ delete
 ## 관련 문서
 
 - [[OpenSearch]]
-- [[OpenSearch-Indexing-Internals|Bulk와 ingest pipeline]]
+- [[OpenSearch-Data-Ingestion|Bulk와 ingest pipeline]]
 - [[OpenSearch-Cluster-Reliability|Snapshot과 upgrade]]
 - [[OpenSearch-Service-Cost-Optimization|UltraWarm과 cold tier 손익]]
 - [[CDC-Debezium|변경 데이터 재처리]]

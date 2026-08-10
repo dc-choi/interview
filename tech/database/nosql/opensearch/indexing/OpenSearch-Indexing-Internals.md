@@ -93,51 +93,11 @@ PUT products/_doc/42?if_seq_no=17&if_primary_term=3
 
 과거 이벤트가 최신 projection을 덮는 문제는 원본 system의 단조 증가 version으로 막는다. 충돌이 계속되는 hot document에서 재시도 횟수만 높이지 말고 event fan-in과 문서 경계를 재설계한다.
 
-## Bulk API
+## 단건과 Bulk의 공통 색인 경로
 
-Bulk는 여러 operation을 NDJSON으로 묶어 네트워크와 coordinating 비용을 줄인다.
+단건 Index API와 Bulk API는 전송 단위가 다르다. Bulk는 여러 operation의 network와 coordinating overhead를 줄이지만 각 item은 별도로 검증되고 target primary shard에 routing된다. 수집 경로 선택, NDJSON 계약, item별 재시도, 대량 적재 setting과 ingest pipeline은 [[OpenSearch-Data-Ingestion|데이터 수집과 Bulk 색인]]이 정본이다.
 
-```text
-{ "index": { "_index": "products", "_id": "42" } }
-{ "name": "keyboard", "status": "ACTIVE" }
-{ "delete": { "_index": "products", "_id": "41" } }
-```
-
-### 반드시 지킬 것
-
-- 마지막 줄에도 newline이 필요하다.
-- HTTP 200은 전체 item 성공을 뜻하지 않는다.
-- 최상위 `errors`와 각 `items[].error`를 검사한다.
-- 동일 payload에서 반복되는 mapper parsing과 deterministic validation, authorization 오류는 원인을 고치기 전에는 재시도하지 않는다.
-- 429, 일시적인 5xx, shard unavailable, timeout, network 오류는 status와 error type을 분류해 backoff와 jitter를 적용한다.
-- Bulk 전체를 그대로 재시도하면 이미 성공한 operation을 중복 처리할 수 있다.
-- 성공 item은 제외하고 실패 item만 재시도하며 operation의 멱등성을 확인한다.
-- 대량 적재에서 매 요청 `refresh=true`를 사용하지 않는다.
-- Bulk의 `update` action에는 user-defined ingest pipeline이 실행되지 않는다. Pipeline이 필요하면 `index` 또는 검증된 upsert 흐름을 사용한다.
-
-공식 튜닝 문서의 5에서 15MiB는 실험 시작점일 뿐 정답이 아니다. 문서 크기, mapping 복잡도, 노드 CPU와 heap, 네트워크를 보며 처리량이 더 늘지 않는 지점을 찾는다.
-
-### 대량 적재 구간의 setting 조정
-
-Backfill처럼 색인만 하는 구간에는 dynamic index setting을 일시 조정해 처리량을 높이고, 적재가 끝나면 되돌린다.
-
-- `refresh_interval`을 `-1`로 두면 refresh가 중단된다. 완료 후 원래 값으로 되돌리며, 값을 `null`로 주면 기본값으로 복원된다.
-- 아직 서비스 읽기가 없는 초기 적재라면 `number_of_replicas`를 0으로 낮춰 복제 쓰기를 없애고, 완료 후 올려 한 번에 복제시킨다.
-- 둘 다 검색 가시성과 장애 내성을 잠시 포기하는 조정이므로 운영 트래픽을 받는 index에는 쓰지 않는다. 되돌리는 확인까지가 절차다.
-
-## Ingest pipeline
-
-Pipeline은 색인 전에 processor를 순서대로 실행한다. `set`, `rename`, `remove`, `convert`, `date`, `grok`, `dissect`, `json`, `script`, `drop` 등을 조합할 수 있다.
-
-권장 절차:
-
-1. 대표 문서로 `_simulate?verbose=true`를 실행한다.
-2. 각 processor에 식별 가능한 `tag`를 붙인다.
-3. 실패를 조용히 무시하지 말고 `on_failure`에 원인과 원문 식별자를 남긴다.
-4. 선택 pipeline은 요청의 `pipeline`, 기본 pipeline은 `index.default_pipeline`을 사용한다.
-5. 반드시 실행돼야 하는 정책은 `index.final_pipeline`을 검토한다.
-
-Pipeline은 OpenSearch 노드 CPU를 사용한다. 무거운 ETL은 별도 데이터 처리 계층으로 보내 검색 SLO와 격리하는 편이 낫다.
+Ingest pipeline을 지정한 operation은 processor 실행을 통과한 뒤 색인 경로로 들어간다. Item이 수락된 다음에는 단건과 Bulk 모두 primary의 translog, in-memory buffer, replica operation 복제와 refresh라는 같은 생명주기를 따른다. 따라서 Bulk request의 전송 성공, 각 item의 색인 성공, Search 가시성도 서로 다른 경계다.
 
 ## 운영 DB와의 동기화
 
@@ -165,7 +125,7 @@ Read  -> OpenSearch
 
 ## 관련 문서
 
-- [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-Korean-Text-Analysis|첫 적용: 한국어 텍스트 분석]]
+- [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-Data-Ingestion|데이터 수집과 Bulk 색인]], [[OpenSearch-Korean-Text-Analysis|첫 적용: 한국어 텍스트 분석]]
 - [[OpenSearch-Architecture|분산 실행 모델]]
 - [[OpenSearch-Index-Lifecycle|인덱스 수명주기]]
 - [[CDC-Debezium|CDC와 Debezium]]
@@ -175,17 +135,14 @@ Read  -> OpenSearch
 ## 출처
 
 - [Index document - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
-- [Bulk API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/bulk/)
 - [Update Document API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/update-document/)
 - [Delete Document API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/delete-document/)
 - [Refresh index - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/refresh/)
 - [Flush - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/flush/)
 - [Force merge - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/force-merge/)
-- [Ingest pipelines - OpenSearch Documentation](https://docs.opensearch.org/latest/ingest-pipelines/)
 - [OpenSearch concepts - OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/concepts/)
 - [Index settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
 - [Update Settings API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/update-settings/)
 - [Segment replication - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/)
 - [Put Mapping API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/put-mapping/)
-- [Tuning for indexing speed - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/performance/)
 - [Transactional outbox pattern - AWS Prescriptive Guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
