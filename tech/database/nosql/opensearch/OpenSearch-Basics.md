@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, inverted-index, rest-api, query-dsl]
 status: done
-verified_at: 2026-08-07
+verified_at: 2026-08-10
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Basics", "OpenSearch 기초", "OpenSearch 입문"]
 ---
@@ -44,6 +44,21 @@ term (정렬된 단어 사전)   posting list (문서 ID 목록)
 - 블루투스 이어폰 검색은 두 term의 posting list를 조회해 합치는 것으로 끝난다. 문서 전체를 훑지 않는다.
 
 기본 standard analyzer는 Unicode 단어 경계 기준으로 쪼갠 뒤 대소문자가 있는 문자를 소문자로 정규화한다 (한국어는 대소문자가 없어 그대로다). 위처럼 띄어쓰기된 한국어는 공백 단위로 나뉘고, 조사가 붙는 실전 한국어(예: 이어폰을)는 형태소 분석이 필요하다. [[OpenSearch-Korean-Text-Analysis|Nori]]가 그 역할이다. 이 구조를 B-tree와 같은 데이터로 비교한 그림 버전은 [[OpenSearch-Architecture-Map|아키텍처 한 장 지도]]에 있다.
+
+## 로컬 실행 환경
+
+아래 요청을 따라 실행할 단일 노드를 Docker로 띄운다. 보안 플러그인을 끈 이 구성은 공식 quickstart의 방식이고 테스트 환경 전용이다. 인증과 TLS가 없으니 실습이 끝나면 컨테이너를 내리고, 보안 구성과 프로덕션 체크리스트는 [[OpenSearch-Security-Production|보안 문서]]가 다룬다.
+
+```bash
+docker run -d -p 9200:9200 -p 9600:9600 \
+  -e "discovery.type=single-node" \
+  -e "DISABLE_SECURITY_PLUGIN=true" \
+  opensearchproject/opensearch:latest
+
+curl http://localhost:9200   # 클러스터 이름과 버전 JSON이 나오면 준비 완료
+```
+
+Dev Tools 콘솔까지 원하면 Docker 설치 문서의 개발용 docker-compose 파일로 클러스터째 띄운다. 이 문서처럼 노드의 보안을 끈 구성에서는 Dashboards도 보안을 꺼야 해서(`DISABLE_SECURITY_DASHBOARDS_PLUGIN=true`) 단일 컨테이너를 그냥 붙일 수 없고, 이 문서 범위는 curl로 충분하다.
 
 ## 인덱스 생성부터 검색까지
 
@@ -111,7 +126,7 @@ GET /products/_search
 }
 ```
 
-점수는 예시 값이고 `timed_out`, `_shards` 필드는 생략했다. 읽는 순서는 세 가지다.
+점수는 예시 값이고 `timed_out`, `_shards`와 각 hit의 `_index` 필드는 생략했다. 읽는 순서는 세 가지다.
 
 - `took`: 검색에 걸린 밀리초.
 - `hits.total.value`: 조건에 맞은 문서 수. 기본 설정에서는 큰 결과일 때 정확한 수 대신 `"value": 10000, "relation": "gte"`처럼 하한으로 표시될 수 있다. 왜 그런지는 [[OpenSearch-Inverted-Index-Structures#Block-Max WAND와 track_total_hits|track_total_hits]] 참고.
@@ -169,6 +184,8 @@ GET /products/_search
 
 ## 출처
 
+- [Installation quickstart - OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/quickstart/)
+- [Docker - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/)
 - [Intro to OpenSearch - OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/intro/)
 - [Communicate with OpenSearch - OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/communicate/)
 - [Index document - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
@@ -178,4 +195,5 @@ GET /products/_search
 - [Match query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/match/)
 - [Standard analyzer - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/supported-analyzers/standard/)
 - [Boolean queries - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/bool/)
+- [Range query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/term/range/)
 - [Index settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)

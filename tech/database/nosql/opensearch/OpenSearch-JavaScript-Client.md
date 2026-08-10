@@ -28,6 +28,7 @@ const client = new Client({
 
 - URL에 자격 증명을 넣는 방식은 로그와 설정 파일에 비밀이 새기 쉬우므로 운영에서는 환경 변수나 secret 관리로 조립한다.
 - `ssl.rejectUnauthorized: false`는 인증서 검증을 끄는 것이므로 로컬 개발 밖에서 쓰지 않는다. mTLS가 필요하면 `ssl.cert`와 `ssl.key`를 함께 지정한다.
+- [[OpenSearch-Basics|기초 문서]]의 보안 플러그인을 끈 로컬 학습 노드는 인증과 TLS가 없으므로 `node: "http://localhost:9200"` 하나면 되고 `ssl` 블록을 쓰지 않는다.
 - Client 인스턴스는 connection pool을 유지하므로 요청마다 만들지 말고 프로세스에서 싱글턴으로 재사용한다.
 
 ## AWS SigV4 서명
