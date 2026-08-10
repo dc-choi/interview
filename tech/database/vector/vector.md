@@ -1,5 +1,5 @@
 ---
-tags: [database, vector, embedding, pgvector, opensearch, hnsw]
+tags: [database, vector, embedding, pgvector, opensearch, redis, hnsw]
 status: index
 category: "데이터&저장소(Data&Storage)"
 aliases: ["vector", "벡터 검색", "Vector Search"]
@@ -7,7 +7,7 @@ aliases: ["vector", "벡터 검색", "Vector Search"]
 
 # 벡터 검색 (vector 인덱스)
 
-임베딩 기반 유사도 검색 문서 모음. Exact와 ANN 선택, embedding 공간 계약과 소규모 batch에서 시작해 PostgreSQL과 OpenSearch 구현, 쿼리 최적화와 운영까지.
+임베딩 기반 유사도 검색 문서 모음. Exact와 ANN 선택, embedding 공간 계약과 소규모 batch에서 시작해 PostgreSQL, OpenSearch와 Redis 구현, 쿼리 최적화와 운영까지.
 
 - [[Vector-Similarity-Search|벡터 유사도 검색 (exact vs ANN, embedding 공간 versioning, 소규모 item-to-item batch, HNSW/IVF, 거리 함수)]]
 - [[OpenSearch-Semantic-Search|OpenSearch 시맨틱 검색 지도 (opensearch-search 폴더 인덱스)]]
@@ -16,6 +16,7 @@ aliases: ["vector", "벡터 검색", "Vector Search"]
 - [[OpenSearch-Reranking-Neural-Sparse|OpenSearch reranking pipeline과 neural sparse search (cross-encoder, doc-only vs bi-encoder)]]
 - [[pgvector|pgvector (CREATE EXTENSION, vector vs halfvec, HNSW 선택, 파티셔닝, 데드 튜플, 비동기 임베딩)]]
 - [[pgvector-Query-Optimization|pgvector 쿼리 최적화 (검색 후 필터, ef_search/LIMIT 함정, iterative scan 0.8.0, relaxed/strict, shared_buffers/pg_prewarm, PgBouncer, REINDEX)]]
+- [[Redis-Data-Structures#확장 타입|Redis Vector set (Redis 8.0 beta 도입, HNSW, 양자화, 속성 필터)]]
 
 ## 관련 문서
 - [[데이터&저장소(Data&Storage)|카테고리 인덱스]]

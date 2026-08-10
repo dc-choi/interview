@@ -63,7 +63,7 @@ worker 하나가 로컬에서 유일성을 판정할 수 있도록 분산 테이
 - [Citus 분산 테이블과 분산 쿼리 - 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440746)
 - [스케줄러와 분산 집계 - 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440748)
 - [인프런, Hong, Partitioning과 Sharding](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338558)
-- [우아한테크 — Redis 운영, 자료구조, 분산 설계](https://www.youtube.com/watch?v=mPB2CZiAkKM)
+- [우아한테크세미나 191121 우아한레디스 — 우아한테크](https://www.youtube.com/watch?v=mPB2CZiAkKM)
 
 ## 관련 문서
 - [[Clustering|Cluster]]

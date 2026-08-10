@@ -39,7 +39,7 @@ TTL 갱신 정책도 제품 의미로 정한다.
 - [Redis Docs, EXPIRE](https://redis.io/docs/latest/commands/expire/)
 - [Redis Docs, HEXPIRE](https://redis.io/docs/latest/commands/hexpire/)
 - [Redis Docs, Key eviction](https://redis.io/docs/latest/develop/reference/eviction/)
-- [우아한테크, Redis 운영, 자료구조, 분산 설계](https://www.youtube.com/watch?v=mPB2CZiAkKM)
+- [우아한테크세미나 191121 우아한레디스 — 우아한테크](https://www.youtube.com/watch?v=mPB2CZiAkKM)
 
 ## 관련 문서
 - [[Cache-Basics|캐시란?]]

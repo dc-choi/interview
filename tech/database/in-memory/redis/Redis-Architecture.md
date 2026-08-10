@@ -155,7 +155,7 @@ Redis Transaction은 RDBMS와 다름 — **EXEC 중 명령 실패해도 롤백 X
 WATCH + MULTI/EXEC = **낙관적 락(optimistic CAS)**. 위 트랜잭션 섹션 참조.
 
 ## 출처
-- [우아한테크 — Redis 운영, 자료구조, 분산 설계](https://www.youtube.com/watch?v=mPB2CZiAkKM)
+- [우아한테크세미나 191121 우아한레디스 — 우아한테크](https://www.youtube.com/watch?v=mPB2CZiAkKM)
 
 ## 관련 문서
 - [[Redis-Data-Structures|Redis 자료구조]]

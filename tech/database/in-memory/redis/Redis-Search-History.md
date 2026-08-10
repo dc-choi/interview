@@ -110,7 +110,7 @@ Spring이면 `RedisTemplate<String, SearchLog>`에 JSON 직렬화 설정.
 ## 확장 시나리오
 
 ### 인기 검색어 (집계)
-사용자별 기록과 별개로 **전체 인기 검색어**는 다른 key에 HyperLogLog(cardinality) 또는 Sorted Set(count).
+사용자별 기록과 별개로 **전체 인기 검색어**는 다른 key에 Sorted Set(count)으로 집계한다. HyperLogLog는 고유 검색어 수 추정용이지 항목별 빈도 랭킹이 아니다.
 ```
 ZINCRBY popular:search:daily 1 "파이썬"
 ```
@@ -145,5 +145,6 @@ RedisTimeSeries 모듈 또는 별도 TSDB (InfluxDB, Prometheus).
 
 ## 관련 문서
 - [[Redis-Data-Structures|Redis 자료구조]]
+- [[OpenSearch-Popular-Keywords-TopK|인기 검색어 top-k 설계 (Sorted Set, count-min sketch)]]
 - [[Cache-Strategies|Cache Strategies]]
 - [[TTL|TTL 전략]]

@@ -10,7 +10,7 @@ aliases: ["Cache & KV Store (Redis)"]
 ## Core
 - [[Cache-Basics|캐시란?]]
 - [[Cache-Locality|Cache Locality 원리 (Temporal, Spatial, 80/20)]]
-- [[Redis-Data-Structures|Redis 자료구조]]
+- [[Redis-Data-Structures|Redis 자료구조 (코어 타입과 JSON, Geo, 확률형, Time series, Vector set)]]
 - [[Redis-Internal-Encoding|Redis 내부 인코딩 (SDS, listpack, quicklist, intset, skiplist)]]
 - [[Redis-Atomic-Operations|Redis 원자적 연산 (INCR, MULTI/EXEC, WATCH, Lua)]]
 - [[Redis-Cart-Checkout-Consistency|Redis 장바구니와 주문 정합성 (Hash, TTL, cart version, Outbox cleanup)]]

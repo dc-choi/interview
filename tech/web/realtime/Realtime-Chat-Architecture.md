@@ -146,7 +146,7 @@ const flush = () => {
 - **커넥션 분산**: LB가 sticky가 아닌 일반 분산 + Pub/Sub로 backhaul
 - **Pub/Sub 선택**: Redis Pub/Sub (단순, 고속, 메시지 보존 X) vs Kafka (보존, 리플레이 O, 운영 부담)
 - **Hot Room**: 한 방에 수만 명 접속 시 특정 Pub/Sub 채널에 트래픽 집중 → 샤딩, 다중 채널
-- **Presence**: 접속자 목록 관리는 고비용. Redis HyperLogLog(근사치)나 Sorted Set으로
+- **Presence**: 접속자 목록은 Set(수는 `SCARD`)이나 heartbeat 타임스탬프를 score로 둔 Sorted Set(수는 `ZCARD`, 유령 커넥션은 `ZREMRANGEBYSCORE`로 정리)으로 관리. HyperLogLog는 제거가 불가해 현재 접속자 수가 아니라 기간별 고유 방문 집계용
 - **연결 감시**: Heartbeat + idle 커넥션 타임아웃 + 서버 재시작 시 우아한 종료(graceful shutdown)
 - **메시지 유실 방지**: at-least-once + 클라이언트 멱등 처리(메시지 ID)
 
@@ -155,7 +155,7 @@ const flush = () => {
 - **WebSocket 위에 모든 기능 올리기** — REST로 가능한 것까지 WS로 → 디버깅 지옥
 - **RDB 동기 호출** — 이벤트 루프 블로킹 → 전체 커넥션 지연
 - **Sticky Session 맹신** — 한 서버 장애 시 해당 사용자 일괄 재연결
-- **Heartbeat 없음** — 좀비 커넥션, 프록시 idle timeout으로 "유령 접속"
+- **Heartbeat 없음** — 좀비 커넥션, 프록시 idle timeout으로 유령 접속 발생
 - **어드민 DOM 폭증 무시** — 메시지 많은 방에서 관리자 화면이 먼저 죽음
 - **Presence를 실시간 DB 쿼리로** — 커넥션 수천 개 * 쿼리 = 즉시 장애
 - **메시지 순서를 가정** — Pub/Sub은 순서 보장 약함. 채널별 키 설계로 해결
