@@ -39,10 +39,10 @@ RDS 재시작, 장애 조치(failover), 인스턴스 생성 같은 **인스턴�
 
 ### Rollback Segment History List Length (HLL)
 
-InnoDB는 읽기 일관성(MVCC)을 위해 과거 버전 데이터를 유지한다. 커밋되지 않았거나 오래 실행되는 트랜잭션이 있으면 오래된 버전을 purge하지 못해 **HLL이 증가**한다.
+InnoDB는 읽기 일관성(MVCC)을 위해 과거 버전 데이터를 유지한다. 오래 유지되는 read view가 있으면 — 커밋 안 된 장기 트랜잭션뿐 아니라 autocommit으로 장기 실행되는 단일 SELECT도 — 오래된 버전을 purge하지 못해 **HLL이 증가**한다.
 
-- 값이 커지면 오래된 버전을 걸러내는 비용이 늘어 성능 저하로 이어진다. **롱 트랜잭션 감지 지표**다.
-- 예시 임계(고QPS 환경): Warning 약 3만, Critical 약 7만. 변경 트래픽이 적은 DB에서는 이 값이 크게 오르지 않을 수 있다.
+- 값이 커지면 오래된 버전을 걸러내는 비용이 늘어 성능 저하로 이어질 수 있다. **롱 트랜잭션과 장기 조회 감지 지표**다. 증가 메커니즘, 진단 절차와 대응은 [[MySQL-Undo-Purge-HLL|Undo Purge와 HLL]] 참고.
+- 예시 임계(고QPS 환경): Warning 약 3만, Critical 약 7만. 절대 임계와 함께 평소 기준선 대비 급증 여부를 본다. 변경 트래픽이 적은 DB에서는 이 값이 크게 오르지 않을 수 있다.
 
 ### Slow Query, 로그 증가 추이
 
@@ -108,6 +108,7 @@ InnoDB는 읽기 일관성(MVCC)을 위해 과거 버전 데이터를 유지한�
 ## 관련 문서
 
 - [[RDS-Monitoring|RDS 모니터링]] — 기본 3계층, CloudWatch 지표, 로그 알람
+- [[MySQL-Undo-Purge-HLL|Undo Purge와 HLL]] — read view 수명, HLL 급증 진단과 대응
 - [[RDS-Aurora-Architecture|Aurora 아키텍처]] — redo log, binlog, 공유 스토리지
 - [[RDS-Aurora-Graviton|Aurora Graviton 전환]] — 버전, 쓰기 워크로드
 - [[RDS-Operational-Pitfalls|RDS 운영 함정]]

@@ -13,7 +13,7 @@ aliases: ["RDS Rare Pitfalls", "RDS 저빈도 함정", "RDS 진단 어려운 문
 
 ## 장기 실행 트랜잭션이 디스크를 부풀린다
 
-트랜잭션을 열어놓고 안 닫거나 너무 오래 도는 배치/리포트 쿼리가 있으면, MySQL은 롤백/MVCC용 **undo 로그**를 계속 쌓고, PostgreSQL은 오래된 튜플을 VACUUM이 못 치워 **테이블 bloat**이 생긴다. 트랜잭션 하나가 몇 시간 떠 있으면 스토리지가 슬금슬금 차고 복제 지연도 같이 커진다.
+트랜잭션을 열어놓고 안 닫거나 너무 오래 도는 배치/리포트 쿼리가 있으면, MySQL은 롤백/MVCC용 **undo 로그**를 계속 쌓고, PostgreSQL은 오래된 튜플을 VACUUM이 못 치워 **테이블 bloat**이 생긴다. 트랜잭션 하나가 몇 시간 떠 있으면 스토리지가 슬금슬금 차고 복제 지연도 같이 커진다. MySQL 쪽 메커니즘(read view 수명, HLL 지표)과 진단 절차는 [[MySQL-Undo-Purge-HLL|Undo Purge와 HLL]] 참고.
 
 ORM에서 가장 흔한 원인은 **트랜잭션 안에서 외부 API를 await**하는 것이다.
 

@@ -41,7 +41,7 @@ DB에 읽기 복제본이 있으면 **"어떤 쿼리를 어디로 보낼지"** �
 
 대부분의 ORM이 두 가지 API를 제공:
 - **primary 강제**: 쓰고 바로 읽을 때 (Read-Your-Own-Writes 보장)
-- **replica 강제**: 무거운 분석 쿼리가 primary에 영향 안 주게
+- **replica 강제**: 무거운 분석 쿼리가 primary에 영향 안 주게. 단, Aurora처럼 공유 스토리지면 Reader의 장기 조회도 Writer의 undo purge를 지연시킬 수 있다 → [[MySQL-Undo-Purge-HLL|Undo Purge와 HLL]]
 
 구체 이름은 도구마다 다름:
 | 도구 | primary 강제 | replica 강제 |

@@ -19,7 +19,7 @@ InnoDB는 변경 전 row version을 undo log에 남겨 MVCC consistent read를 �
 - 오래 보유한 row lock 때문에 lock wait와 deadlock 가능성이 커진다.
 - 장애나 명시적 rollback 때 되돌릴 작업이 커진다.
 
-`autocommit=0` 상태에서 consistent read를 실행한 뒤 `COMMIT`이나 `ROLLBACK`을 잊는 경우도 위험하다. 세션이 idle인지보다 필요한 read view와 transaction이 열려 있는지를 확인한다.
+`autocommit=0` 상태에서 consistent read를 실행한 뒤 `COMMIT`이나 `ROLLBACK`을 잊는 경우도 위험하다. 세션이 idle인지보다 필요한 read view와 transaction이 열려 있는지를 확인한다. 명시적으로 `BEGIN`을 하지 않은 autocommit 상태여도 장기 실행되는 단일 SELECT statement는 실행 내내 read view를 유지하므로 같은 purge 지연을 만든다. HLL 지표 해석과 진단은 [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length]] 참고.
 
 ## 관찰 지점
 

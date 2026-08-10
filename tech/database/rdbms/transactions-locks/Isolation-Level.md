@@ -54,6 +54,7 @@ verified_at: 2026-08-04
 | **Repeatable Read** | 기본적으로 **첫 consistent read 시점**에 스냅샷 고정 | 이후 consistent read는 같은 읽기 관점 사용 |
 
 - RR에서도 `SELECT FOR UPDATE`(Current Read)는 최신 커밋 데이터를 읽음 → 스냅샷과 다를 수 있음
+- 격리 수준은 read view 수명의 단위(트랜잭션 단위냐 statement 단위냐)만 정할 뿐, 그 단위 하나가 실제로 얼마나 오래 걸리는지는 정하지 못한다. RC라도 하나의 statement가 오래 실행되면 그 read view가 실행 내내 유지되어 undo purge를 막는다 → [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length]]
 
 ## InnoDB RR에서의 Phantom Read 방지
 

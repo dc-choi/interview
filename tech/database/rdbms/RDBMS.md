@@ -38,6 +38,7 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[MySQL-Partitioning|MySQL Partitioning (RANGE/HASH/LIST, Partition Pruning, DROP PARTITION)]]
 - [x] [[MySQL-Slow-Query-Diagnosis|Slow Query 진단 (Slow Query Log, performance_schema, processlist, 락 대기)]]
 - [x] [[MySQL-Digest-Statistics|Digest 통계 운영 (max_digest_length, performance_schema_digests_size, Prepared Statement, PG 비교)]]
+- [x] [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length (read view 수명, HLL 급증 진단, Aurora ARRRC)]]
 
 ## Oracle
 - [x] [[oracle|Oracle Database 폴더 인덱스 (SQL 방언, sequence, 계층 query, PL/SQL, 11g 역사 자료)]]

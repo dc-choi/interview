@@ -38,6 +38,7 @@ Custom Endpoint로 **OLTP용 Reader 그룹과 배치용 Reader 그룹을 분리*
 - 배치 전용 인스턴스는 보통 1대, 기다릴 수 있는 작업만 할당
 - 인스턴스 이름에 `batch` 같은 용도 키워드를 넣어 운영자가 즉시 식별
 - 배치 Reader는 CPU가 원래 높게 튀므로 **Auto Scaling 지표 대상에서 제외** (상세는 [[RDS-Aurora-AutoScaling|Aurora Auto Scaling]])
+- Aurora MySQL 기준, Reader 그룹 분리는 버퍼 풀 캐시와 CPU/I/O 경합을 격리할 뿐 공유 스토리지의 undo purge 부담은 분리되지 않는다. 배치 Reader의 장기 조회는 여전히 Writer의 History List Length를 키울 수 있다 → [[MySQL-Undo-Purge-HLL|Undo Purge와 HLL]]
 
 ## Failover 시 read-only transaction 오류
 
@@ -67,6 +68,7 @@ Endpoint 멤버십, 제외 대상, Auto Scaling 정책, 알람 연결은 CLI로 
 
 ## 출처
 - [Aurora Endpoint와 Auto Scaling 운영 (YouTube)](https://www.youtube.com/watch?v=qzjx24vJ350&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=2)
+- [Amazon Aurora User Guide, Aurora MySQL isolation levels](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.IsolationLevels.html)
 
 ## 관련 문서
 - [[RDS-Aurora-AutoScaling|Aurora Auto Scaling 운영]] — Reader 스케일링, Flapping, Cache Warming

@@ -25,6 +25,7 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
   - 스토리지는 엔진과 버전별 최대치까지 자동 확장하며 일부 최신 Aurora 버전은 256 TiB를 지원. 대상 release의 quota 확인
   - 오류를 스스로 감지, 복구하는 **Self-healing** 내장
   - Replica가 같은 클러스터 볼륨을 사용하므로 별도 데이터 사본을 유지하는 전통적 복제와 경로가 다르다. replica lag과 비용은 부하, 인스턴스, I/O와 요금 조건에 따라 측정
+  - 공유 볼륨이라 Reader의 장기 조회가 만든 오래된 read view가 Writer의 undo purge를 막아 Writer의 History List Length로 나타날 수 있다. 무거운 조회를 Reader로 옮기는 것만으로는 purge 부담이 분리되지 않는다. 완화(ARRRC)와 진단은 [[MySQL-Undo-Purge-HLL|Undo Purge와 HLL]] 참고
 
 ## Redo Log 중심 쓰기
 
@@ -45,7 +46,7 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 
 - **클러스터** = 기본(writer) DB 인스턴스 + 읽기 복제본(reader) 인스턴스 묶음
 - 프로비저닝된 Aurora Replica는 일반적으로 클러스터당 최대 15개이며 Serverless와 엔진별 quota를 확인한다. 백업과 스냅샷은 관리형 shared storage 경로를 사용하지만 워크로드 영향이 절대 0이라고 보장하지 말고 지표로 확인
-- **Writer Endpoint** — 항상 마스터(writer) DB만 가리킴 (쓰기 트래픽 진입점)
+- **Writer Endpoint** — 현재 writer 인스턴스를 가리킴 (쓰기 트래픽 진입점. failover 시 새 writer로 자동 전환)
 - **Reader Endpoint** — DNS를 통해 connection 요청을 Aurora Replica들에 분산한다. query 단위 부하 분산기가 아니며 기존 connection은 같은 인스턴스에 유지된다. replica가 없을 때 writer로 연결될 수 있으므로 read-only 보장으로 해석하지 않는다
 - 마스터 장애 시 복제본으로 **자동 Failover**
 
@@ -80,3 +81,4 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 - [Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html)
 - [Aurora Auto Scaling](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html)
 - [Aurora PostgreSQL Limitless Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html)
+- [Amazon Aurora User Guide, Aurora MySQL isolation levels](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.IsolationLevels.html)
