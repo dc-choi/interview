@@ -1,0 +1,4 @@
+interface:
+  display_name: "Retro"
+  short_description: "Run daily, weekly, monthly, event, and project retrospectives"
+  default_prompt: "Use $retro to guide and record this retrospective."

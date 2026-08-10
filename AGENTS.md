@@ -22,6 +22,7 @@ This repository is used with both Claude and Codex. `CLAUDE.md` files are the ca
 
 - For company-specific interview preparation, read and use `.agents/skills/interview-prep/SKILL.md` after the applicable domain instructions.
 - For memo, lecture, seminar, blog or article organization, read and use `.agents/skills/memo/SKILL.md` after the applicable domain instructions.
+- For daily retrospectives including TIL or Today I Learned, and for weekly, monthly, event or project retrospectives, read and use `.agents/skills/retro/SKILL.md` after the applicable domain instructions.
 - Keep the matching `.claude/skills/` and `.agents/skills/` workflow bodies synchronized when either changes.
 
 ## Coexistence

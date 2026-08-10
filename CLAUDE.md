@@ -84,7 +84,7 @@
 ## Claude/Codex 공존
 
 - 이 레포는 **Claude와 Codex를 함께** 쓴다. Claude는 루트와 하위 경로의 `CLAUDE.md` 및 `.claude/`를, Codex는 `AGENTS.md`와 `.agents/`를 읽는다. 저장소 규칙의 정본은 루트와 대상 경로의 `CLAUDE.md`다.
-- **스킬은 두 곳에 중복 존재**: `.claude/skills/{memo,interview-prep}/`와 `.agents/skills/{memo,interview-prep}/`. 한쪽 스킬을 수정하면 frontmatter 차이를 제외한 워크플로우를 다른 쪽에도 반영한다. 불변 규칙이 바뀌면 해당 도메인 `CLAUDE.md`를 먼저 고친 뒤 양쪽 스킬을 동기화한다.
+- **스킬은 두 곳에 중복 존재**: `.claude/skills/{memo,interview-prep,retro}/`와 `.agents/skills/{memo,interview-prep,retro}/`. 한쪽 스킬을 수정하면 frontmatter 차이를 제외한 워크플로우를 다른 쪽에도 반영한다. 불변 규칙이 바뀌면 해당 도메인 `CLAUDE.md`를 먼저 고친 뒤 양쪽 스킬을 동기화한다.
 - **Claude 파일을 삭제, 개명, 변환하지 않는다** — 사용자가 명시적으로 요청할 때만. `.agents/`는 호환 헬퍼일 뿐 Claude 설정을 대체하지 않는다.
 - `.mcp.json`은 장비별 로컬 설정(gitignore)이라 커밋하지 않는다. Obsidian MCP는 저장소 안에서 아래 명령을 실행해 현재 장비의 저장소 루트를 계산해서 등록한다. Claude의 project scope는 로컬 `.mcp.json`을 만들고, Codex는 계산된 절대경로를 사용자 설정에 저장한다. `.mcp.json.example`은 수동 설정이 필요할 때만 사용한다.
 
