@@ -103,17 +103,36 @@ GET contents/_search
 
 읽는 법: 인기도(log 압축)와 최신성(개봉 30일까지는 감쇠 없음, 이후 90일 scale의 gauss, weight 2)을 더한 값이 최대 3배까지만 BM25 점수를 증폭한다. 관련 없는 인기작은 애초에 `must`를 못 넘고, 관련도가 비슷한 후보들 사이에서만 비즈니스 신호가 순서를 가른다.
 
+## 피드백을 점수 feature로 바꾸기
+
+학습할 judgment가 적을 때는 과거의 유사 query에서 얻은 feedback을 별도 feature로 넣는 저데이터 baseline을 만들 수 있다. Feedback이 있는 query 집합을 `Q_f`라 하고, [[Vector-Space-Model-and-Cosine-Similarity|TF-IDF cosine]]이 가장 높은 이웃을 찾는다.
+
+```text
+q* = argmax(q' in Q_f) sim(q, q')
+positive_rate(q*, d) = n+(q*, d) / (n+(q*, d) + n-(q*, d))  # denominator > 0
+negative_rate(q*, d) = n-(q*, d) / (n+(q*, d) + n-(q*, d))  # denominator > 0
+f+(q, d) = sim(q, q*) * positive_rate(q*, d)
+f-(q, d) = sim(q, q*) * negative_rate(q*, d)
+score = w_text * lexical_score + w+ * f+ - w- * f-
+```
+
+관측이 없는 query-document 쌍의 두 feedback feature는 0으로 두어 lexical score로 fallback한다. 단일 이웃은 작은 표본과 query drift에 민감하므로 minimum support, smoothing, similarity threshold, weight clipping, 시간 감쇠와 여러 이웃의 가중 평균을 검토한다. Document ID, analyzer와 feedback schema도 versioning해 오래되거나 다른 term 공간의 신호가 섞이지 않게 한다.
+
+여기서 `n+`, `n-`는 명시적 판단이나 편향을 보정한 implicit judgment여야 한다. Raw click을 positive, skip을 negative로 바로 바꾸면 이전 ranking의 position, selection과 trust bias를 다시 학습하는 자기강화 루프가 된다. 노출되지 않았거나 사용자가 보지 않은 결과는 negative가 아니라 unknown이다. 수집 계약과 보정은 [[OpenSearch-Search-Quality-Evaluation#Judgment list 구축|Judgment list 구축]]을 따른다.
+
+이 방식은 사람이 정한 weight에 feedback feature를 추가하는 heuristic이지 feature weight를 학습하는 LTR은 아니다. 충분한 query별 judgment와 안정적인 평가 체계가 쌓이면 다음 단계에서 pointwise classifier보다 같은 query 안의 순서를 학습하는 ranking objective를 함께 비교한다.
+
 ## Learning to Rank로 넘어가는 판단
 
 수동 boost 튜닝의 한계: 신호가 3~4개를 넘으면 weight 조합이 폭발하고, 한 query 유형을 고치면 다른 유형이 깨지는 두더지 잡기가 시작된다. weight가 전역 상수라 query마다 최적 비중이 다르다는 사실을 표현할 수 없다.
 
 LTR로 넘어갈 조건 세 가지가 모두 갖춰졌을 때다.
 
-1. **판단 데이터**: 클릭, 전환 로그나 사람 평가로 judgment list(query별 문서 등급, 예: 0~4)를 만들 수 있다.
+1. **판단 데이터**: 사람 평가나 노출과 위치가 연결된 행동 로그를 편향 보정해 judgment list(query별 문서 등급, 예: 0~4)를 만들 수 있다.
 2. **feature 후보**: BM25 field 점수, 인기도, 최신성 등 문서와 query의 신호가 이미 정의돼 있다.
 3. **평가 체계**: 모델이 수동 튜닝보다 나아졌는지 잴 offline 지표가 돌아간다.
 
-LTR plugin 흐름 (AWS OpenSearch Service 지원, Elasticsearch는 7.7 이상 요구):
+OpenSearch LTR plugin 흐름:
 
 ```text
 PUT _ltr (.ltrstore 생성)
@@ -140,6 +159,7 @@ PUT _ltr (.ltrstore 생성)
 - [[OpenSearch|OpenSearch 학습 지도]]
 - [[OpenSearch-Query-Relevance|렉시컬 검색, Query DSL과 관련도]]
 - [[OpenSearch-Search-Quality-Evaluation|검색 품질 평가]]
+- [[Vector-Space-Model-and-Cosine-Similarity|희소 렉시컬 벡터와 cosine scoring]]
 - [[OpenSearch-Hybrid-Search|벡터와 하이브리드 검색]]
 - [[OpenSearch-Performance-Troubleshooting|검색 성능 진단]]
 
@@ -149,6 +169,8 @@ PUT _ltr (.ltrstore 생성)
 - [Rescore - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/rescore/)
 - [Learning to Rank - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/ltr/index/)
 - [Learning to Rank for Amazon OpenSearch Service - AWS](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/learning-to-rank.html)
+- [Making text search learn from feedback - Martin Davtyan, Filament AI](https://medium.com/filament-ai/making-text-search-learn-from-feedback-4fe210fd87b0)
+- [Unbiased Learning-to-Rank with Biased Feedback - Joachims, Swaminathan, Schnabel](https://arxiv.org/abs/1608.04468)
 - [Keyword search and BM25 - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/keyword-search/)
 - [BM25 vs Lucene Default Similarity - Elastic Blog](https://www.elastic.co/blog/found-bm-vs-lucene-default-similarity)
 - [BM25 The Next Generation of Lucene Relevance - OpenSource Connections](https://opensourceconnections.com/blog/2015/10/16/bm25-the-next-generation-of-lucene-relevation/)

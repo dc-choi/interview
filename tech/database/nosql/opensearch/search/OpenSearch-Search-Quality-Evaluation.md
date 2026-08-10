@@ -166,6 +166,7 @@ Pointwise metric 집합과 relevance threshold는 version에 종속된다. Workb
 - [[OpenSearch|OpenSearch 학습 지도]]
 - [[OpenSearch-Korean-Text-Analysis|한국어 텍스트 분석]]
 - [[OpenSearch-Query-Relevance|Query와 관련도]]
+- [[OpenSearch-Relevance-Tuning|관련도 튜닝과 LTR]]
 - [[OpenSearch-Search-Features|검색 기능과 회귀 테스트]]
 - [[OpenSearch-Hybrid-Search|하이브리드 검색]]
 - [[OpenSearch-Vector-Search|벡터 검색]]
