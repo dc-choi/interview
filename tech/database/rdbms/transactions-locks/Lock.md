@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, lock, concurrency]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-08-11
 category: "Data & Storage - RDB"
 aliases: ["DB Lock", "Lock", "락"]
 ---
@@ -27,7 +27,7 @@ aliases: ["DB Lock", "Lock", "락"]
   - `SKIP LOCKED` — 잠긴 행을 건너뛰고 다음 행 반환 (큐 패턴에 적합)
 
 ### Optimistic Lock (낙관적 잠금)
-- 충돌이 드물다고 보고 lock 없이 진행한 뒤 쓰기 시점에 충돌 감지
+- 충돌이 드물다고 보고 선행 조회와 작업 단계에서 lock을 선점하지 않은 뒤 쓰기 시점의 조건부 UPDATE로 충돌 감지
 - version 컬럼을 사용: `UPDATE ... SET version = version + 1 WHERE id = ? AND version = ?`
 - 0 rows affected → 충돌 발생, 애플리케이션에서 재시도
 - 읽기 중심, 충돌 빈도가 낮은 환경에 적합 (게시글 수정, 설정 변경, 프로필 업데이트)
@@ -39,13 +39,13 @@ aliases: ["DB Lock", "Lock", "락"]
 |------|-----------|-------------|
 | 충돌 빈도 | 낮을 때 유리 | 높을 때 유리 |
 | 충돌 시 비용 | 전체 트랜잭션 재실행 | Lock 대기 or 즉시 실패 후 재시도 |
-| 동시성 | 높음 (lock 안 잡으므로) | 낮음 (lock 보유 기간 동안 차단) |
+| 동시성 | 선행 조회와 작업 중 선점 lock 없음. 조건부 UPDATE는 X lock을 잡아 transaction 종료까지 보유 | 읽기부터 lock을 보유해 충돌을 앞에서 직렬화 |
 | 데드락 위험 | 낮음. 여러 행, 여러 자원을 함께 갱신하면 DB 데드락은 여전히 가능 | 있음 (순서 통일로 완화) |
 | 구현 복잡도 | version 컬럼 + 재시도 로직 | SELECT FOR UPDATE |
 
 ### 잠금 읽기의 경계
 
-`FOR SHARE`는 읽은 행에 S Lock을 걸어 다른 transaction의 변경을 막고, `FOR UPDATE`는 UPDATE와 같은 방식으로 검색 중 만난 index record에 X Lock을 건다. 둘 다 명시적 transaction 안에서 사용하며 commit 또는 rollback 때 해제한다.
+`FOR SHARE`는 읽은 행에 S Lock을 걸어 다른 transaction의 변경을 막고, `FOR UPDATE`는 UPDATE와 같은 방식으로 검색 중 만난 index record에 X Lock을 건다. 둘 다 `START TRANSACTION`이나 `autocommit=0`으로 연 transaction에서 사용하며 commit 또는 rollback 때 해제한다.
 
 - 부모 존재를 확인한 뒤 사용자 정의 자식 작업을 할 때 `FOR SHARE`를 쓸 수 있다. 표준 FK 무결성만 필요하다면 FK가 우선이다.
 - `FOR SHARE`로 읽은 뒤 같은 행을 UPDATE하면 S에서 X로 올리는 과정에서 다른 transaction과 deadlock이 날 수 있다. 수정 가능성이 높으면 처음부터 `FOR UPDATE`를 검토한다.
@@ -113,21 +113,21 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 | **Next-Key Lock** | Record Lock + Gap Lock 결합 | 같은 조건에서 스캔한 레코드와 그 앞 간격을 함께 잠가 phantom INSERT를 막을 때 |
 | **Insert Intention Lock** | Gap Lock의 특수 형태. 같은 gap의 다른 위치 INSERT는 서로 차단하지 않음 | INSERT 시 자동 획득 |
 
-여기서 조회는 `SELECT ... FOR UPDATE`나 `SELECT ... FOR SHARE` 같은 **locking read**를 뜻한다. RR과 RC의 일반 `SELECT`는 consistent nonlocking read로 스냅샷을 읽으며 Record, Gap, Next-Key Lock을 잡지 않는다. `SERIALIZABLE`에서는 `autocommit`이 꺼진 명시적 트랜잭션의 일반 SELECT가 `FOR SHARE`로 변환돼 공유 잠금을 잡을 수 있다. `autocommit`이 켜진 일반 SELECT는 문장 단위 nonlocking consistent read다.
+여기서 조회는 `SELECT ... FOR UPDATE`나 `SELECT ... FOR SHARE` 같은 **locking read**를 뜻한다. RR과 RC의 일반 `SELECT`는 consistent nonlocking read로 스냅샷을 읽으며 Record, Gap, Next-Key Lock을 잡지 않는다. `SERIALIZABLE`에서는 `autocommit`이 꺼진 트랜잭션의 일반 SELECT가 `FOR SHARE`로 변환돼 공유 잠금을 잡을 수 있다. `autocommit`이 켜진 일반 SELECT는 문장 단위 nonlocking consistent read다.
 
 ### 기타 Locks
 
 | Lock | 설명 |
 |------|------|
-| **Table Lock** | 테이블 전체 잠금. DDL(ALTER TABLE)이나 LOCK TABLES로 발생 |
+| **Table Lock / Metadata Lock** | `LOCK TABLES`의 table lock과 object 정의를 보호하는 MDL은 별개다. `ALTER TABLE`은 기존 transaction의 MDL과 충돌할 수 있음 |
 | **Intention Lock** | 테이블에 거는 S/X 의향 표시 (IS, IX). Row lock 전에 자동 획득. 테이블 lock과의 호환성 확인용 |
 | **Auto-Inc Lock** | AUTO_INCREMENT 값 생성 시 사용하는 특수 테이블 lock |
 
 ## MVCC와 Lock의 관계
 
-- **Consistent Read (일반 SELECT)**: MVCC 스냅샷 읽기 → lock 없음, 다른 트랜잭션 차단 안 함
-- **Current Read (SELECT FOR UPDATE/SHARE, UPDATE, DELETE)**: 최신 커밋 데이터를 읽으면서 lock 획득
-- RR에서 일반 SELECT는 기본적으로 첫 consistent read 시점의 스냅샷을 유지하고, SELECT FOR UPDATE는 최신 상태를 읽으며 잠근다. `WITH CONSISTENT SNAPSHOT`이면 트랜잭션 시작 시점에 스냅샷을 만든다.
+- **Consistent Read (일반 SELECT)**: MVCC 스냅샷 읽기 → row/index record lock을 잡지 않음. MDL 같은 다른 lock까지 없다는 뜻은 아님
+- **Locking read와 DML (흔히 Current Read라고 부름)**: 현재 record를 대상으로 lock을 획득하고, 필요한 lock이 있으면 기다린 뒤 상태를 읽음
+- RR에서 일반 SELECT는 기본적으로 첫 consistent read 시점의 스냅샷을 유지하고, SELECT FOR UPDATE는 그 read view를 재사용하지 않고 현재 record를 읽으며 잠근다. RR에서 `WITH CONSISTENT SNAPSHOT`을 사용하면 트랜잭션 시작 시점에 스냅샷을 만든다.
 - **트랜잭션으로 묶었으니 안전하다는 오해**: Atomicity는 전부 반영하거나 전부 취소한다는 뜻일 뿐, plain SELECT와 이후 UPDATE 사이에 다른 트랜잭션이 끼어드는 것은 Isolation과 Lock의 문제다. RR에서는 재조회해도 같은 Read View의 스냅샷을 볼 수 있어 SELECT 기반 check-then-act 검증은 성립하지 않는다. 검증 조건을 UPDATE의 WHERE 안으로 옮기면 X Lock이 동일 행 변경을 직렬화하고, 대기하던 트랜잭션은 선행 트랜잭션 커밋 이후의 **현재 상태로 조건을 재평가**하므로 (affected rows 0 = 실패) 한도 초과 같은 불변식 위반을 막는다. 단 대상 행이 이미 존재한다는 전제에서다 — 행이 아직 없다면 동시 INSERT와 유니크 충돌의 영역이라 유니크 제약과 UPSERT 같은 별도 전략이 필요하다.
 - **자기 변경은 즉시 보인다**: 같은 트랜잭션 안에서 자신이 변경한 데이터는 커밋 전에도 다음 SELECT에서 바로 보인다. Read View는 다른 트랜잭션 변경의 가시성을 결정하는 장치다 — COMMIT은 내 변경을 나에게 보이게 만드는 시점이 아니라 확정하는 시점이다.
 
@@ -177,9 +177,7 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 - [인프런, Real MySQL 시즌 1 - Part 1, SELECT FOR UPDATE](https://www.inflearn.com/courses/lecture?courseId=333931&unitId=226567)
 - [인프런, Real MySQL 시즌 1 - Part 2, SELECT FOR UPDATE NOWAIT와 SKIP LOCKED](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226578)
 - [인프런, Real MySQL 시즌 1 - Part 2, 데드락](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226583)
-- 김영한 강사, [DB 락, 개념 이해](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110082)
-- 김영한 강사, [DB 락, 변경](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110083)
-- 김영한 강사, [DB 락, 조회](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110084)
+- [MySQL 8.4 Reference Manual - Metadata Locking](https://dev.mysql.com/doc/refman/8.4/en/metadata-locking.html)
 - [Row Lock은 언제 걸리고 언제 풀릴까: 동시성 문제를 해결하며 파고든 MySQL MVCC와 Lock — velog](https://velog.io/@joona95/Row-Lock%EC%9D%80-%EC%96%B8%EC%A0%9C-%EA%B1%B8%EB%A6%AC%EA%B3%A0-%EC%96%B8%EC%A0%9C-%ED%92%80%EB%A6%B4%EA%B9%8C-%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C%EB%A5%BC-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A9%B0-%ED%8C%8C%EA%B3%A0%EB%93%A0-MySQL-MVCC%EC%99%80-Lock)
 - [DB Lock으로 동시성을 해결하려다 Deadlock을 만난 이야기 — velog](https://velog.io/@joona95/DB-Lock%EC%9C%BC%EB%A1%9C-%EB%8F%99%EC%8B%9C%EC%84%B1%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-Deadlock%EC%9D%84-%EB%A7%8C%EB%82%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0)
 
@@ -187,5 +185,6 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 - [[Transactions|트랜잭션]]
 - [[Isolation-Level|트랜잭션 격리 수준]]
 - [[Distributed-Lock|분산 락]]
+- [[MySQL-InnoDB-Locking-and-Deadlocks|MySQL 8.4 InnoDB Locking과 Deadlock]]
 - [[Transaction-Lock-Contention|트랜잭션 경합]]
 - [[Index|인덱스]]

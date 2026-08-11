@@ -41,7 +41,9 @@ MVCC는 스냅샷 읽기와 동시 쓰기의 row lock 충돌을 줄이지만 wri
 - secondary index column이 바뀌면 이전 entry를 delete-mark하고 새 entry를 추가한다. 바뀌지 않은 secondary index는 같은 이유로 다시 쓸 필요가 없다.
 - purge는 어떤 read view도 필요로 하지 않는 undo와 delete-marked record를 정리한다. 오래된 read view가 있으면 History List Length와 undo tablespace가 커질 수 있다.
 
-Consistent Read와 Current Read는 여기서 InnoDB 용어로만 사용한다. PostgreSQL의 일반 `SELECT`에 그대로 대응시키지 않는다. 격리 수준별 read view 수명은 [[Isolation-Level|MySQL InnoDB 격리 수준]]과 [[Lock|MySQL InnoDB Lock]]에서, purge 운영은 [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length]]에서 다룬다.
+Consistent read는 MySQL 매뉴얼의 InnoDB 용어이고, Current Read는 locking read와 DML을 가리킬 때 흔히 쓰는 약칭이다. PostgreSQL의 일반 `SELECT`에 그대로 대응시키지 않는다. 격리 수준별 read view 수명은 [[Isolation-Level|MySQL InnoDB 격리 수준]]과 [[Lock|MySQL InnoDB Lock]]에서, purge 운영은 [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length]]에서 다룬다.
+
+MySQL 8.4의 hidden system field, secondary index 가시성 확인과 재현 실험은 [[MySQL-InnoDB-MVCC-and-Undo|InnoDB MVCC와 Undo]]가 소유한다. 이 비교 문서에서는 PostgreSQL의 tuple 가시성 용어와 InnoDB의 undo 용어를 하나의 구현처럼 합치지 않는다.
 
 ## 다른 version 저장 위치
 
@@ -79,6 +81,7 @@ Consistent Read와 Current Read는 여기서 InnoDB 용어로만 사용한다. P
 - [[Lock|MySQL InnoDB Lock]]
 - [[PostgreSQL-Production-Operations|PostgreSQL 운영]]
 - [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length]]
+- [[MySQL-InnoDB-MVCC-and-Undo|MySQL 8.4 InnoDB MVCC와 Undo]]
 
 ## 출처
 

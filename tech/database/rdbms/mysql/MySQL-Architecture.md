@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, innodb, architecture]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-08-11
 category: "Data & Storage - RDB"
 aliases: ["MySQL Architecture", "MySQL 엔진 구조"]
 ---
@@ -57,9 +57,11 @@ row change
   -> background page flush and checkpoint
 ```
 
-Redo log는 page 변경을 tablespace보다 먼저 내구성 경계에 기록하는 WAL이다. commit마다 data page 전체를 쓰지 않아도 crash 뒤 redo를 재적용해 일관된 상태로 전진할 수 있다. 실제 commit 내구성은 `innodb_flush_log_at_trx_commit`, binary log가 있으면 `sync_binlog`, OS와 storage 보장까지 함께 결정한다.
+Redo log는 page 변경을 tablespace보다 먼저 내구성 경계에 기록하는 WAL이다. 일반 InnoDB crash recovery는 redo로 page를 전진시킨 뒤 영속화된 transaction state와 undo로 미완료 transaction을 rollback한다. Binary log가 켜진 경우 prepare된 transaction의 outcome은 server가 internal 2PC로 별도 조정하며, redo 자체는 binlog 조정이나 PITR을 제공하지 않는다. 실제 commit 내구성은 `innodb_flush_log_at_trx_commit`, binary log가 있으면 `sync_binlog`, OS와 storage 보장까지 함께 결정한다.
 
-data page를 기록하다 server나 storage가 멈추면 page 일부만 기록된 torn page가 생길 수 있다. doublewrite buffer는 page를 안전한 중간 위치에 먼저 기록하고 최종 tablespace write가 불완전하면 recovery에 사용할 정상 copy를 제공한다. Redo는 변경 기록이고 doublewrite는 완전한 page copy이므로 서로 대체하지 않는다.
+data page를 기록하다 server나 storage가 멈추면 page 일부만 기록된 torn page가 생길 수 있다. `innodb_doublewrite=ON` 또는 `DETECT_AND_RECOVER`이면 doublewrite buffer가 page를 안전한 중간 위치에 먼저 기록하고 최종 tablespace write가 불완전할 때 recovery에 사용할 정상 copy를 제공한다. `DETECT_ONLY`는 torn page를 탐지하지만 복구할 page copy는 보관하지 않고, `OFF`는 doublewrite를 비활성화한다. Redo는 변경 기록이고 doublewrite는 완전한 page copy이므로 서로 대체하지 않는다.
+
+Undo, redo, checkpoint, doublewrite와 binary log 2단계 commit의 정확한 책임 경계는 [[MySQL-InnoDB-MVCC-and-Undo|InnoDB MVCC와 Undo]], [[MySQL-InnoDB-Redo-and-Crash-Recovery|InnoDB Redo와 Crash Recovery]]에서 이어서 다룬다.
 
 ## Storage engine 선택
 
@@ -85,6 +87,8 @@ View, stored routine과 event scheduler는 server object다. View의 갱신 가�
 - [MySQL 8.4 Reference Manual, InnoDB Buffer Pool](https://dev.mysql.com/doc/refman/8.4/en/innodb-buffer-pool.html)
 - [MySQL 8.4 Reference Manual, Redo Log](https://dev.mysql.com/doc/refman/8.4/en/innodb-redo-log.html)
 - [MySQL 8.4 Reference Manual, Doublewrite Buffer](https://dev.mysql.com/doc/refman/8.4/en/innodb-doublewrite-buffer.html)
+- [MySQL 8.4 Reference Manual, InnoDB Recovery](https://dev.mysql.com/doc/refman/8.4/en/innodb-recovery.html)
+- [MySQL 8.4 Reference Manual, Binary Log](https://dev.mysql.com/doc/refman/8.4/en/binary-log.html)
 - [인프런, Hong, 아키텍처와 스토리지 엔진](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338554)
 - [인프런, Hong, Doublewrite Buffer](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=374544)
 
@@ -92,6 +96,7 @@ View, stored routine과 event scheduler는 server object다. View의 갱신 가�
 
 - [[Execution-Plan|실행 계획]]
 - [[MySQL-InnoDB-Tuning|InnoDB 튜닝]]
+- [[MySQL-InnoDB-Internals|MySQL 8.4 InnoDB 내부 구조]]
 - [[Transactions|트랜잭션]]
 - [[Lock|DB Lock]]
 - [[Index|Index]]

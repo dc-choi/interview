@@ -33,6 +33,7 @@ aliases: ["RDBMS", "OLTP"]
 ## MySQL 엔진
 - [x] [[mysql|MySQL 폴더 인덱스 (엔진 내부, 튜닝, 백업, 파티셔닝, PostgreSQL 비교)]]
 - [x] [[MySQL-Architecture|MySQL 아키텍처, SQL 처리 파이프라인 (2계층 구조, 파서/옵티마이저/실행기, 스토리지 엔진, 뷰)]]
+- [x] [[MySQL-InnoDB-Internals|MySQL 8.4 InnoDB 내부 구조 (MVCC/Undo, Locking/Deadlock, Redo/Crash Recovery)]]
 - [x] [[DML-Conflict-and-Batch-Patterns|MySQL DML 충돌 처리와 배치 패턴 (IGNORE, UPSERT, REPLACE, 조건부 갱신)]]
 - [x] [[MySQL-InnoDB-Tuning|InnoDB 튜닝 (Buffer Pool, flush_log_at_trx_commit, io_capacity, 압축)]]
 - [x] [[MySQL-Partitioning|MySQL Partitioning (RANGE/HASH/LIST, Partition Pruning, DROP PARTITION)]]

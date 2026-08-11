@@ -7,10 +7,11 @@ aliases: ["MySQL"]
 
 # MySQL
 
-MySQL 엔진 내부와 운영 문서 모음. InnoDB 구조와 튜닝, 백업, 파티셔닝, 진단, PostgreSQL 비교까지.
+MySQL 엔진 내부와 운영 문서 모음. MySQL 8.4 InnoDB 구조와 튜닝, 백업, 파티셔닝, 진단, PostgreSQL 비교까지.
 
 - [[MySQL-Fundamentals|MySQL 기본기 (조회, 자료형, 변경 안전성, 권한, NestJS와 TypeORM)]]
 - [[MySQL-Architecture|MySQL 아키텍처, SQL 처리 파이프라인 (2계층 구조, 파서/옵티마이저/실행기, 스토리지 엔진, 뷰)]]
+- [[MySQL-InnoDB-Internals|MySQL 8.4 InnoDB 내부 구조 (MVCC/Undo, Locking/Deadlock, Redo/Crash Recovery)]]
 - [[DML-Conflict-and-Batch-Patterns|MySQL DML 충돌 처리와 배치 패턴 (IGNORE, UPSERT, REPLACE, 조건부 갱신, INSERT IGNORE의 S Lock 함정)]]
 - [[MySQL-Performance|성능 튜닝, 진단 (InnoDB Buffer Pool, Aurora 파라미터 표준, Slow Query, Digest 통계, Undo Purge와 HLL)]]
 - [[MySQL-Operations|운영 (설정 변경, 압축과 아카이빙, MySQL Job Queue)]]

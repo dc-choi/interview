@@ -1,14 +1,14 @@
 ---
 tags: [database, mysql, innodb, mvcc, undo, purge, aurora]
 status: done
-verified_at: 2026-08-10
+verified_at: 2026-08-11
 category: "Database - RDBMS"
 aliases: ["History List Length", "MySQL HLL", "MySQL Undo Purge", "RollbackSegmentHistoryListLength"]
 ---
 
 # Undo Purge와 History List Length (HLL)
 
-History List Length는 커밋됐지만 아직 purge되지 못한 undo log의 백로그 길이다. 이 숫자를 움직이는 것은 격리 수준이 아니라 read view(스냅샷)의 수명이며, 수명은 트랜잭션과 statement의 실행 시간이 정한다.
+History List Length는 커밋됐지만 아직 purge되지 못한 update undo log의 백로그 길이다. 백로그 증감은 undo 생성 속도와 실제 purge 속도의 차이로 정해지며, 실제 purge 속도는 오래된 read view가 정하는 purge 가능 경계와 purge thread의 처리 용량에 함께 좌우된다. 오래된 read view는 흔한 제한 요인이지만 유일한 원인은 아니다.
 
 ## 정의와 관찰 지점
 
@@ -18,11 +18,13 @@ History List Length는 커밋됐지만 아직 purge되지 못한 undo log의 백
 
 ## 증가 메커니즘
 
-HLL은 undo 생성 속도가 purge 정리 속도를 넘을 때 쌓인다. 전형적인 경로는 오래 살아 있는 read view다.
+HLL은 purge 대상 update undo의 생성 속도가 실제 purge 속도를 넘을 때 쌓인다. 오래된 read view가 purge 가능 경계를 붙드는 경우의 전형적인 경로는 다음과 같다.
 
 1. 오래된 read view가 하나 있으면 purge는 그 시점 이후의 undo를 제거할 수 없다.
 2. 그 사이 동시 UPDATE와 DELETE가 만든 undo가 계속 누적된다.
 3. read view가 닫히면 purge가 따라잡으면서 HLL이 급락한다.
+
+오래된 read view가 없어도 쓰기 부하가 크거나 DML이 하나의 hot table에 집중되어 purge 처리 용량을 넘으면 HLL이 커질 수 있다.
 
 주의할 성질 세 가지.
 
@@ -30,7 +32,7 @@ HLL은 undo 생성 속도가 purge 정리 속도를 넘을 때 쌓인다. 전형
 - history list에 남는 것은 delete-marked 레코드를 만든 UPDATE와 DELETE의 undo다. INSERT undo는 커밋 시 즉시 폐기되므로 HLL을 키우지 않는다.
 - `BEGIN`만으로는 read view가 생기지 않는다. 첫 consistent read가 실행되는 순간 만들어진다. REPEATABLE READ의 `START TRANSACTION WITH CONSISTENT SNAPSHOT`은 예외로 시작 시점에 만들며, 다른 격리 수준에서는 이 절이 무시되고 경고가 발생한다.
 
-## 격리 수준이 아니라 스냅샷 수명이 문제다
+## 장기 read view가 원인이라면 스냅샷 수명을 본다
 
 | 격리 수준 | read view 생성 | read view 수명 |
 |---|---|---|
@@ -76,20 +78,25 @@ SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;
 2. 장기 read view를 찾는다. `information_schema.innodb_trx`에서 시작 시각, 상태와 실행 중 쿼리를 본다 (쿼리 예시는 [[MySQL-Long-Transactions-and-Batch|장기 트랜잭션과 배치]]의 관찰 지점 참고). REPEATABLE READ는 트랜잭션 시작이 아니라 첫 consistent read부터 스냅샷을 유지하므로 시작 시각과 실제 쿼리를 함께 본다.
 3. Aurora라면 Writer만 보지 말고 Reader의 장기 조회까지 함께 본다.
 4. slow query log 분포와 HLL 스파이크의 시간대를 겹쳐 인과를 확인한다. 쿼리 종료 시점과 HLL 급락 시점이 일치하면 원인일 가능성이 높다.
-5. 세션을 종료하기 전에 소유자, 재시도 가능성과 서비스 영향도를 확인한다.
+5. 오래된 read view가 없다면 쓰기량, hot table의 DML 집중도와 purge 처리 용량을 확인한다.
+6. 세션을 종료하기 전에 소유자, 재시도 가능성과 서비스 영향도를 확인한다.
 
 Aurora는 보조 지표도 제공한다. `TransactionAgeMaximum`(가장 오래된 활성 트랜잭션의 나이, Aurora MySQL 3.08 이상)과 `PurgeBoundary`, `PurgeFinishedPoint`(purge 허용 지점과 완료 지점, v2 2.11 이상과 v3 3.08 이상)를 HLL과 조합하면 원인 read view를 더 빨리 좁힌다.
 
 ## 대응 우선순위
 
-격리 수준이나 파라미터보다 조회 구조를 먼저 고친다.
+원인에 맞춰 대응한다. 장기 read view가 확인된 경우에는 격리 수준이나 파라미터보다 조회 구조를 먼저 고친다.
 
 1. 장기 statement를 keyset 기반 chunk로 분할해 read view 수명을 짧게 줄인다. 조회 시작 시점의 최대 PK를 고정하고 PK 범위로 나눠 읽으면 앞부분 재스캔 없이 진행된다. 실행 패턴은 [[MySQL-Long-Transactions-and-Batch|장기 트랜잭션과 배치]] 참고.
 2. 스캔 범위 자체를 줄인다 (인덱스, 조건, 필요 컬럼).
 3. timeout으로 폭주를 차단한다.
 4. Reader의 READ COMMITTED(ARRRC)는 데이터 계약을 점검한 뒤 마지막 수단으로 쓴다.
 
-분할의 트레이드오프는 전체 배치 시간 증가다. 각 chunk가 독립 statement가 되므로 총 소요는 늘지만, purge가 chunk 사이마다 진행할 수 있어 HLL 급증 규모가 크게 줄어든다.
+오래된 read view가 없다면 조회 chunking을 먼저 적용할 근거가 없다. 쓰기 부하와 hot table의 DML 집중, purge 처리 용량을 조정한다.
+
+REPEATABLE READ에서 chunk 분할이 read view를 놓으려면 각 chunk를 autocommit 상태의 독립 statement로 실행하거나 chunk마다 `COMMIT`으로 트랜잭션을 끝내야 한다. 여러 chunk를 한 트랜잭션 안에서 실행하면 첫 read view가 유지된다. READ COMMITTED는 각 consistent read마다 새로운 statement read view를 만든다.
+
+분할의 트레이드오프는 전체 배치 시간 증가와 chunk 간 일관성 약화다. 각 chunk가 서로 다른 read view를 사용하므로 배치 전체를 한 시점의 스냅샷으로 읽는 보장은 사라진다. 조회 시작 시점의 최대 PK를 고정해도 처리 중 커밋된 변경이 뒤쪽 chunk 결과에 반영될 수 있다. 대신 purge가 chunk 사이마다 진행할 수 있어 HLL 급증 규모를 줄일 수 있다.
 
 ### 사례
 
@@ -97,17 +104,19 @@ Aurora는 보조 지표도 제공한다. `TransactionAgeMaximum`(가장 오래�
 
 ## 면접 체크포인트
 
-- HLL의 정의와 증가 메커니즘 (오래된 read view가 purge를 막고 동시 쓰기의 undo가 쌓인다)
+- HLL의 정의와 증가 메커니즘 (undo 생성 속도, purge 가능 경계와 purge 처리 용량의 균형)
 - 격리 수준은 read view 수명의 단위(트랜잭션이냐 statement냐)만 정하고 실제 수명은 statement와 트랜잭션 길이가 정한다는 구분
 - READ COMMITTED에서도 장기 단일 statement가 purge를 막는 이유
+- REPEATABLE READ chunk가 read view를 놓기 위한 트랜잭션 경계와 chunk 간 일관성의 대가
 - Aurora 공유 스토리지에서 Reader 장기 조회가 Writer HLL로 나타나는 구조
 - ARRRC의 두 가지 적용 조건과 완화된 일관성의 대가, 데이터 계약 기반 판단
-- HLL 급증의 근본 해결이 격리 수준 변경이 아니라 statement 분할인 이유
+- 장기 read view가 원인인 HLL 급증에서 격리 수준 변경보다 statement 분할이 직접 대응인 이유
 
 ## 출처
 
 - [963초짜리 쿼리 하나가 HLL 205만까지 끌어올렸습니다 — 아임웹 테크](https://tech.imweb.me/posts/aurora-hll-snapshot-lifetime/)
 - [MySQL 8.4 Reference Manual, InnoDB Multi-Versioning](https://dev.mysql.com/doc/refman/8.4/en/innodb-multi-versioning.html)
+- [MySQL 8.4 Reference Manual, autocommit, Commit, and Rollback](https://dev.mysql.com/doc/refman/8.4/en/innodb-autocommit-commit-rollback.html)
 - [MySQL 8.4 Reference Manual, Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
 - [MySQL 8.4 Reference Manual, Purge Configuration](https://dev.mysql.com/doc/refman/8.4/en/innodb-purge-configuration.html)
 - [Amazon Aurora User Guide, Aurora MySQL isolation levels](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.IsolationLevels.html)
@@ -123,3 +132,4 @@ Aurora는 보조 지표도 제공한다. `TransactionAgeMaximum`(가장 오래�
 - [[MySQL-Slow-Query-Diagnosis|Slow Query 진단]] — 원인 쿼리 특정
 - [[MySQL-InnoDB-Tuning|InnoDB 튜닝]] — buffer pool과 I/O 맥락
 - [[Transactions|트랜잭션]] — 트랜잭션과 MVCC 기본
+- [[MySQL-InnoDB-MVCC-and-Undo|InnoDB MVCC와 Undo]] — hidden system field, undo version 복원과 secondary index 가시성 확인

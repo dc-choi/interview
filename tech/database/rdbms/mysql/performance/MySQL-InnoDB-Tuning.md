@@ -107,6 +107,7 @@ MySQL 8.4에서는 redo 용량을 `innodb_redo_log_capacity`로 관리한다. �
 ## 관련 문서
 
 - [[MySQL-Architecture|MySQL 아키텍처]]
+- [[MySQL-InnoDB-Redo-and-Crash-Recovery|InnoDB Redo와 Crash Recovery]]
 - [[MySQL-Slow-Query-Diagnosis|Slow query 진단]]
 - [[MySQL-Configuration-Change-Management|MySQL 설정 변경 관리]]
 - [[Transactions|트랜잭션]]
