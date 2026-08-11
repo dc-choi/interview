@@ -71,7 +71,8 @@ aliases: ["RDBMS", "OLTP"]
 
 ## 트랜잭션 & 격리 수준
 - [x] [[transactions-locks|트랜잭션과 락 폴더 인덱스 (ACID, MVCC, 격리 수준, Lock)]]
-- [x] [[Transactions|ACID, MVCC, Consistent Read vs Current Read]]
+- [x] [[Transactions|ACID와 트랜잭션 경계]]
+- [x] [[MVCC-Implementation-Tradeoffs|MVCC 공통 원리와 구현 트레이드오프]]
 - [x] [[Isolation-Level|Isolation Level (Oracle→MySQL 이관 잔액 사례 포함)]]
 - [x] [[Isolation-Level-Beyond-ANSI|ANSI 격리 수준의 한계, Strict Serializable (Snapshot Isolation, Linearizable, 분산 DB)]]
 - [x] [[Lock|Lock (row / gap / next-key, Pessimistic vs Optimistic, 데드락 예방)]]

@@ -1,5 +1,5 @@
 ---
-tags: [database, rdbms]
+tags: [database, rdbms, transaction, mvcc]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["트랜잭션", "Transactions"]
@@ -54,25 +54,12 @@ JDBC에서 하나의 local transaction은 한 `Connection`, 즉 DB의 한 sessio
 
 ## MVCC (Multi-Version Concurrency Control)
 
-읽기와 쓰기가 서로를 차단하지 않도록 **여러 버전의 데이터를 유지**하는 동시성 제어 기법.
+각 statement나 transaction이 snapshot에 맞는 row version을 읽도록 **여러 버전의 데이터를 유지**하는 동시성 제어 기법. 스냅샷 읽기와 동시 쓰기의 row lock 충돌을 줄이지만 모든 종류의 lock과 write conflict를 없애지는 않는다.
 
-### 동작 원리 (InnoDB)
-- 데이터 변경 시 이전 버전을 **undo log**에 보관
-- read view와 transaction ID를 이용해 어떤 row version이 보이는지 결정
-- 일반 SELECT는 undo log의 스냅샷을 읽음 → lock 없음, 다른 트랜잭션을 차단하지 않음
+이전 version의 저장 위치, index 연결과 cleanup 방식은 제품마다 다르다. 공통 원리와 구현 차이는 [[MVCC-Implementation-Tradeoffs|MVCC 구현 트레이드오프]]에서 분리해 다룬다.
 
-### Consistent Read vs Current Read
-
-| 구분 | Consistent Read | Current Read |
-|------|----------------|-------------|
-| SQL | 일반 `SELECT` | `SELECT FOR UPDATE`, `SELECT FOR SHARE`, `UPDATE`, `DELETE` |
-| 읽는 데이터 | isolation level의 read view가 허용하는 version | 현재 version을 읽고 필요한 lock 획득 |
-| Lock | 없음 | S Lock 또는 X Lock 획득 |
-| 용도 | 단순 조회 | 갱신을 위한 읽기 (lock을 걸려면 최신 데이터를 봐야 의미가 있음) |
-
-- **InnoDB RR:** 기본 `START TRANSACTION`은 첫 consistent read에서 snapshot을 만들고 이후 consistent read가 이를 재사용한다. `START TRANSACTION WITH CONSISTENT SNAPSHOT`은 시작 시 read view를 만든다.
-- **InnoDB RC:** 각 consistent read가 statement 시작 시 새 snapshot을 만든다.
-- Locking read는 snapshot read가 아니므로 같은 transaction 안에서도 일반 `SELECT`와 결과가 다를 수 있다.
+- MySQL InnoDB의 read view, Consistent Read와 Current Read는 [[Isolation-Level|MySQL InnoDB 격리 수준]]과 [[Lock|MySQL InnoDB Lock]] 참고
+- PostgreSQL의 `VACUUM`과 bloat 운영은 [[PostgreSQL-Production-Operations|PostgreSQL 운영]] 참고
 
 ## 트랜잭션 설계 원칙
 
@@ -88,12 +75,12 @@ JDBC에서 하나의 local transaction은 한 `Connection`, 즉 DB의 한 sessio
 ## 관련 문서
 - [[Isolation-Level|트랜잭션 격리 수준]]
 - [[Lock|DB Lock]]
+- [[MVCC-Implementation-Tradeoffs|MVCC 구현 트레이드오프]]
 - [[Index]]
 - [[SQL]]
 - [[NoSQL-Overview|NoSQL 개요, BASE 모델]] — ACID와 대비되는 최종적 일관성
 
 ## 출처
-- [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
 - [인프런, Hong, 메모리, 트랜잭션, 락](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338555)
 - [MySQL 8.4 Reference Manual, START TRANSACTION/COMMIT/ROLLBACK](https://dev.mysql.com/doc/refman/8.4/en/commit.html)
 - [Oracle AI Database 26ai, COMMIT and implicit DDL commit](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/COMMIT.html)

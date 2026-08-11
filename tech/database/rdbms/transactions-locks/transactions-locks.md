@@ -9,7 +9,8 @@ aliases: ["Transactions & Locks", "트랜잭션과 락"]
 
 ACID, MVCC, 격리 수준, Lock 메커니즘 문서 모음. Race Condition 패턴은 형제 폴더 [[Race-Condition-Patterns]] 참고.
 
-- [[Transactions|ACID, MVCC, Consistent Read vs Current Read]]
+- [[Transactions|ACID와 트랜잭션 경계]]
+- [[MVCC-Implementation-Tradeoffs|MVCC 공통 원리와 구현 트레이드오프]]
 - [[Isolation-Level|Isolation Level (Oracle에서 MySQL 이관 잔액 사례 포함)]]
 - [[Isolation-Level-Beyond-ANSI|ANSI 격리 수준의 한계, Strict Serializable (Snapshot Isolation, Linearizable, 분산 DB)]]
 - [[Lock|Lock (row / gap / next-key, Pessimistic vs Optimistic, 스냅샷 읽기 vs 현재 읽기, 데드락 예방)]]
