@@ -87,9 +87,11 @@ Client                           Server
 
 ### Half-Close (우아한 종료)
 
-이론상 종료는 FIN으로 시작하지만, 실제로 캡처하면 첫 FIN에 ACK가 함께 실린 **FIN+ACK**로 나간다. **Half-Close** 때문이다 — 연결을 한 번에 닫지 않고 **전송 스트림과 수신 스트림 중 한쪽만 먼저 닫는** 방식이다.
+이론상 종료는 FIN으로 시작하지만, 실제로 캡처하면 첫 FIN이 **FIN+ACK**로 나간다. TCP가 최초 SYN을 제외한 연결 성립 이후의 모든 세그먼트에 ACK 비트를 세팅해 지금까지 받은 데이터의 확인 번호를 함께 싣기 때문이다(RFC 9293 §3.1). Half-Close를 쓰지 않고 `close()`로 닫아도 첫 FIN은 FIN+ACK로 관측된다.
 
-먼저 닫는 쪽(Active Closer)은 "나는 더 보낼 게 없지만 받는 귀는 열어둔다. 여기까지 받았으니 남은 것 있으면 마저 보내라"는 뜻으로 FIN+ACK를 보낸다. 상대(Passive Closer)는 남은 데이터를 마저 전송한 뒤 자신의 FIN을 보낸다. 덕분에 종료 중에도 미전송 데이터가 유실되지 않는다.
+**Half-Close**는 이 표기의 원인이 아니라 종료 절차가 (2)ACK와 (3)FIN으로 나뉘는 이유다 — 연결을 한 번에 닫지 않고 **전송 스트림과 수신 스트림 중 한쪽만 먼저 닫는** 방식이다.
+
+먼저 닫는 쪽(Active Closer)은 "나는 더 보낼 게 없지만 받는 귀는 열어둔다. 여기까지 받았으니 남은 것 있으면 마저 보내라"는 뜻으로 FIN을 보낸다(이 FIN 역시 위 이유로 ACK 비트가 함께 켜진다). 상대(Passive Closer)는 남은 데이터를 마저 전송한 뒤 자신의 FIN을 보낸다. 덕분에 종료 중에도 미전송 데이터가 유실되지 않는다.
 
 소켓 API에서 `shutdown(fd, SHUT_WR)`은 전송 스트림만 닫아 Half-Close를 쓰고, `close()`는 즉시 모든 스트림을 파기한다 — `close()`로 닫으면 상대가 뒤늦게 보낸 데이터를 처리할 수 없다. 이것이 4-way가 (2)ACK와 (3)FIN을 분리하는 실질적 이유다.
 
@@ -160,6 +162,7 @@ HTTPS는 3-way handshake **+ TLS handshake** (TLS 1.2: 2 RTT, TLS 1.3: 1 RTT) �
 ## 출처
 - [매일메일 — 3-way handshake](https://www.maeil-mail.kr/question/76)
 - [F-Lab — CS 면접: 네트워크](https://f-lab.kr/blog/cs-interview-network)
+- [RFC 9293 — TCP, Header Format](https://www.rfc-editor.org/rfc/rfc9293.html#name-header-format)
 
 ## 관련 문서
 - [[TCP-Header|TCP 헤더 구조 (시퀀스/승인 번호, 플래그, 윈도우, 체크섬)]]

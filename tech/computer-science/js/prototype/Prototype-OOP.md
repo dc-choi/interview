@@ -3,7 +3,7 @@ tags: [cs, javascript, oop, prototype]
 status: seminar
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Prototype 기반 OOP"]
-verified_at: 2026-07-21
+verified_at: 2026-08-12
 ---
 
 # Prototype기반OOP
@@ -67,7 +67,7 @@ class Person {
 | 개념 | 설명 |
 |------|------|
 | 생성 | `new` 연산자로 class/constructor function에서 생성 |
-| 메서드 | class에 작성된 메서드를 prototype 체인으로 사용 가능 |
+| 메서드 | class에 작성된 인스턴스 메서드를 prototype 체인으로 사용 가능 (static 메서드는 생성자에 놓여 인스턴스에서 호출 불가) |
 | 프로퍼티 | 인스턴스마다 독립적으로 값 유지 |
 | 타입 확인 | `instanceof` 연산자로 확인 |
 
@@ -77,7 +77,7 @@ p instanceof Person; // true
 ```
 
 ## 면접포인트
-- "JS에서 class와 prototype의 관계?" → class는 prototype의 문법적 설탕
+- "JS에서 class와 prototype의 관계?" → class 인스턴스 메서드는 prototype에 놓이고 `extends`도 프로토타입 체인을 구성하지만, class body의 strict mode 평가, `new` 없는 호출 시 TypeError, private field의 brand check, derived constructor에서 `super()` 이전 `this` 접근 금지 같은 고유 의미가 있어 생성자 함수로의 단순 치환은 아님 (세부 규칙은 [[JavaScript-Class-Semantics]])
 - "prototype 체인이란?" → 인스턴스에서 메서드 탐색 시 prototype을 따라 올라가는 메커니즘
 - "JS OOP와 Java OOP의 차이?" → JS는 prototype 기반, Java는 class 기반. 비교보다 각 특성 이해가 중요
 
@@ -89,3 +89,4 @@ p instanceof Person; // true
 ## 출처
 
 - [ECMAScript Language Specification — TC39](https://tc39.es/ecma262/)
+- [static — MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/static)

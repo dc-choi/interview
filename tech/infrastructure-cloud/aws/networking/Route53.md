@@ -3,7 +3,7 @@ tags: [infrastructure, aws, route53, dns, networking, routing-policy]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Route 53", "Route53", "Amazon Route 53"]
-verified_at: 2026-07-21
+verified_at: 2026-08-12
 ---
 
 # Amazon Route 53
@@ -31,7 +31,7 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 | **A** | 도메인 → **IPv4** 주소 |
 | **AAAA** | 도메인 → **IPv6** 주소 |
 | **CNAME** | 도메인 → **다른 도메인** (별칭). 루트 도메인 지정 **불가** |
-| **Alias** | 도메인 → 지원되는 AWS 리소스 또는 같은 호스팅 영역의 다른 레코드 |
+| **Alias** | 도메인 → 지원되는 AWS 리소스 또는 같은 호스팅 영역의 같은 타입 레코드 |
 | **MX** | 메일 서버 지정 |
 | **NS** | 호스팅 영역의 네임 서버 지정 |
 | **SOA** | 영역의 시작 레코드 (관리 정보) |
@@ -48,17 +48,18 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 - TTL이 짧으면 — resolver cache 시간이 줄어 변경 수렴이 빨라질 수 있지만 기존 cache와 DNS 전파 때문에 즉시 반영을 보장하지 않으며 쿼리 수와 비용은 늘 수 있음
 - **장애 전환을 빨리** 하려면 페일오버 레코드 TTL을 짧게 (예: 60초)
 
-## Routing Policy 7종
+## Routing Policy 8종
 
 | 정책 | 동작 | 사용 사례 |
 |------|------|-----------|
-| **Simple** | 같은 레코드에 여러 값을 두면 Route 53이 한 응답에 최대 8개를 임의 순서로 반환 | 단일 리소스 또는 단순 다중 값 응답 |
+| **Simple** | 같은 레코드에 여러 값을 두면 Route 53이 모든 값을 임의 순서로 재귀 resolver에 반환. Health Check 연동 없음 | 단일 리소스 또는 단순 다중 값 응답 |
 | **Weighted** | 동일 이름 레코드에 **가중치** 부여 | A/B 테스트, 점진적 트래픽 전환, Region 간 비율 분배 |
-| **Latency-based** | AWS가 측정한 리전 간 지연 데이터를 바탕으로 더 낮은 지연이 예상되는 리전을 선택 | 글로벌 사용자의 지연 최적화 |
+| **Latency-based** | AWS가 수집한 사용자와 AWS 리전 사이의 지연 데이터를 바탕으로 지연이 더 낮은 리전의 레코드를 선택 | 글로벌 사용자의 지연 최적화 |
 | **Failover** | **Primary 장애 시 Secondary**로 전환 (Active/Standby) | DR(재해 복구), Primary-DR 구성 |
 | **Geolocation** | **사용자의 지리적 위치(국가, 대륙)** 기반 라우팅 | 지역별 컨텐츠, 언어 차별화, 규제 대응 |
 | **Geo-proximity** | **사용자-리소스 간 지리적 거리** 기반. **Bias 값**으로 특정 리전 트래픽 가감 가능 | 일반 public/private hosted zone 레코드로 직접 구성 가능. Traffic Flow는 시각화와 복합 정책에 선택적으로 사용 |
-| **Multi-Value Answer** | 다수 IP 반환(Simple 유사) + **Health Check 가능** → 실패 시 자동 제외 | 단순 부하 분산 + 상태 감시 |
+| **IP-based** | 관리자가 올린 CIDR 컬렉션(클라이언트 IP 대역과 엔드포인트 매핑) 기준 라우팅. 프라이빗 호스팅 영역에서는 사용 불가 | 특정 ISP, 사내 IP 대역을 지정 엔드포인트로 보내는 네트워크 비용, 성능 튜닝 |
+| **Multi-Value Answer** | 다수 IP 반환 + **Health Check 가능** → 실패 시 자동 제외. **헬시 레코드를 최대 8개까지 응답**하고, 헬시 레코드가 8개 이하면 전부 반환하며, 전부 unhealthy면 unhealthy 레코드를 최대 8개 반환 | 단순 부하 분산 + 상태 감시 |
 
 ### 정책 선택 가이드
 
@@ -67,6 +68,7 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 - 응답 속도 최적화 → **Latency-based**
 - 메인-DR 구조 → **Failover**
 - 사용자 국가 기준 분기 → **Geolocation**
+- 클라이언트 IP 대역(ISP 등) 기준 분기 → **IP-based**
 - 거리 + 가중치(bias) 정밀 조정 → **Geo-proximity**
 - ELB 없이 단순 분산 + 헬스체크 → **Multi-Value Answer**
 
@@ -82,7 +84,10 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
   - **Elastic Beanstalk** 환경
   - **VPC Interface Endpoint**
   - **Global Accelerator**
-  - 동일 호스팅 영역의 다른 Route 53 레코드
+  - **App Runner** 서비스
+  - **OpenSearch Service** 커스텀 도메인
+  - **AppSync** 도메인 이름
+  - 동일 호스팅 영역의 같은 타입 Route 53 레코드
 
 ### CNAME vs Alias
 
@@ -100,9 +105,10 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 - 엔드포인트 상태를 주기적으로 감시 → 실패 시 라우팅에서 자동 제외
 - 종류
   - **Endpoint** — 특정 IP, 도메인 직접 헬스체크
-  - **Calculated** — 여러 헬스체크를 AND/OR로 조합
-  - **CloudWatch Alarm** — CloudWatch 알람 상태를 헬스체크로 활용
-- 글로벌 분산된 Health Checker가 동시 점검 → 일정 비율 이상 실패 시 unhealthy
+  - **Calculated** — 부모 헬스체크가 자식 헬스체크(최대 255개)를 감시해 헬시인 자식 수가 지정 임계값 이상이면 healthy
+  - **CloudWatch Alarm** — CloudWatch 알람이 보는 지표 데이터 스트림을 헬스체크로 활용
+  - **ARC 라우팅 컨트롤** — Application Recovery Controller의 라우팅 컨트롤(on/off 스위치)을 페일오버 레코드에 연결
+- 엔드포인트 상태 확인은 전 세계에 분산된 Health Checker가 점검하고 결과를 취합 → 헬시로 보고한 비율이 18%를 넘으면 healthy, 18% 이하면 unhealthy (AWS는 이 값이 바뀔 수 있다고 명시. Calculated, CloudWatch, ARC는 위의 각자 기준으로 판정)
 - 페일오버, Multi-Value Answer 정책과 함께 쓸 때 핵심
 
 ## DNSSEC
@@ -120,6 +126,7 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 - **Primary 장애 시 Secondary로 자동 전환** → **Failover + Health Check**
 - ELB 없이 **다수 IP에 분산 + 상태 감시** → **Multi-Value Answer**
 - **A/B 테스트, 카나리 배포, 점진적 전환** → **Weighted**
+- **특정 ISP, 클라이언트 IP 대역**을 지정 엔드포인트로 → **IP-based** (CIDR 컬렉션)
 - **VPC 내부에서만 해석**되는 도메인 → **Private Hosted Zone**
 - 하나의 Private Zone을 **여러 VPC에 공유** 가능
 - 온프레미스에서 Private Zone 쿼리 → **Route 53 Resolver Endpoint**
@@ -134,6 +141,13 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 - [레코드 공통 값](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-shared.html)
 - [Route 53 DNSSEC 서명 구성](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec-cmk-requirements.html)
 - [Geo-proximity routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geoproximity.html)
+- [Simple routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-simple.html)
+- [Multivalue answer routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-multivalue.html)
+- [Choosing a routing policy](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html)
+- [IP-based routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-ipbased.html)
+- [Latency-based routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html)
+- [Route 53 상태 확인 종류](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-types.html)
+- [상태 확인의 healthy 판정 방식](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-determining-health-of-endpoints.html)
 
 ## 관련 문서
 

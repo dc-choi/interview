@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
+verified_at: 2026-08-12
 category: "OS & Runtime"
 aliases: ["libuv Architecture", "libuv 설계", "libuv 이벤트 루프 구조"]
 ---
@@ -62,31 +63,35 @@ libuv가 이 차이를 추상화하므로, Node.js 코드는 OS와 무관하게 
 
 ### 이벤트 루프 반복 단계
 ```
+루프 진입 전: 'now' 타임스탬프를 최초 설정하고, UV_RUN_DEFAULT(Node가 쓰는 모드)로
+uv_run에 최초 진입했고 alive 확인 결과가 참일 때만 만료된 타이머 콜백을 1회 실행한다.
+반복 목록의 일부가 아니라 while 루프 바깥의 처리다. (루프 밖 타이머 1회 실행은 libuv
+1.45.0부터, 기존 동작 호환 목적. alive와 stop_flag 조건이 붙은 것은 1.46.0부터이며
+아래 설명은 현행 libuv v1.x 기준이다.)
+
 하나의 루프 반복(iteration)은 다음 순서로 실행된다:
 
- 1. 루프의 'now' 타임스탬프를 갱신한다.
- 2. Node.js 20 이전에는 이 위치에서도 만료된 타이머 콜백을 실행했다.
- 3. 루프의 alive 상태를 확인한다.
+ 1. 루프의 alive 상태를 확인한다.
     → active/ref'd 핸들, active 요청, closing 핸들이 하나라도 있으면 alive.
     → alive가 아니면 루프를 즉시 종료한다.
- 4. Pending 콜백을 실행한다.
+ 2. Pending 콜백을 실행한다.
     → 이전 반복에서 연기된 I/O 콜백을 여기서 처리한다.
- 5. Idle 핸들 콜백을 실행한다.
+ 3. Idle 핸들 콜백을 실행한다.
     → 이름과 달리, 활성 idle 핸들은 매 반복마다 실행된다.
- 6. Prepare 핸들 콜백을 실행한다.
+ 4. Prepare 핸들 콜백을 실행한다.
     → I/O 폴링 직전에 호출된다.
- 7. Poll 타임아웃을 계산한다.
- 8. I/O를 위해 블로킹한다.
+ 5. Poll 타임아웃을 계산한다.
+ 6. I/O를 위해 블로킹한다.
     → 계산된 타임아웃 동안 대기하며, 읽기/쓰기 준비된 FD의 콜백을 실행한다.
- 9. Check 핸들 콜백을 실행한다.
+ 7. Check 핸들 콜백을 실행한다.
     → I/O 폴링 직후에 호출된다. Prepare의 대칭.
-10. Close 콜백을 실행한다.
+ 8. Close 콜백을 실행한다.
     → uv_close()로 닫힌 핸들의 콜백.
-11. 'now' 타임스탬프를 다시 갱신한다.
-12. 만료된 타이머를 실행한다.
-    → Node.js 20(libuv 1.45.0) 이후 Node 이벤트 루프에서는 타이머가 poll 이후에만 실행된다.
+ 9. 'now' 타임스탬프를 갱신한다.
+10. 만료된 타이머를 실행한다.
+    → libuv 1.45.0(Node.js 20.3.0에 반영) 이후 루프 반복 안의 타이머 처리는 poll 뒤로 옮겨졌다.
     → 주의: 'now'는 다음 반복까지 다시 갱신되지 않는다.
-13. 반복 종료. UV_RUN_NOWAIT/UV_RUN_ONCE면 반환, UV_RUN_DEFAULT면 1단계로.
+11. 반복 종료. UV_RUN_NOWAIT/UV_RUN_ONCE면 반환, UV_RUN_DEFAULT면 1단계로.
 ```
 
 ### Poll 타임아웃 계산 규칙
@@ -142,6 +147,12 @@ Node.js(libuv)는 기본적으로 Reactor 패턴이지만,
 Windows에서는 IOCP(Proactor)를 사용하여 내부적으로 Reactor 인터페이스에 맞게 변환한다.
 이 추상화 덕분에 Node.js 코드는 OS와 무관하게 동일하게 동작한다.
 ```
+
+## 출처
+
+- [libuv v1.45.0 릴리스 노트 — 타이머 실행 순서 변경](https://github.com/libuv/libuv/releases/tag/v1.45.0)
+- [Node.js 20.3.0 릴리스 공지 — libuv 1.45.0 반영](https://nodejs.org/en/blog/release/v20.3.0)
+- [libuv Design overview](https://docs.libuv.org/en/v1.x/design.html)
 
 ## 관련 문서
 - [[libuv|libuv (TOC)]]

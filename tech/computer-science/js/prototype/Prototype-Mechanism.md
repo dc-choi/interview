@@ -33,7 +33,7 @@ GoF의 Prototype 생성 패턴은 원본 객체를 **복제**해 새 객체를 �
 - 함수의 `prototype` 프로퍼티: **자손에게 물려줄 원본** 객체
 - 인스턴스의 `[[Prototype]]`: **프로퍼티 조회를 위임할 객체**로 가는 링크
 
-`__proto__` accessor는 ECMAScript Annex B에 표준화돼 있지만 웹 호환성을 위한 legacy 기능이며 normative optional이다. 일반 코드에서는 `Object.getPrototypeOf()`와 `Object.setPrototypeOf()`를 쓰고, prototype을 지정해 객체를 만들 때는 `Object.create(proto)`를 쓴다. 성능과 예측 가능성 때문에 생성 후 prototype 변경은 피하는 편이 좋다.
+`__proto__` accessor는 ECMAScript 명세 본문(20.1.3.8)에 Normative Optional, Legacy로 표준화돼 있는 웹 호환성용 기능이다. 일반 코드에서는 `Object.getPrototypeOf()`와 `Object.setPrototypeOf()`를 쓰고, prototype을 지정해 객체를 만들 때는 `Object.create(proto)`를 쓴다. 성능과 예측 가능성 때문에 생성 후 prototype 변경은 피하는 편이 좋다.
 
 ## 프로토타입 체인
 
@@ -73,7 +73,7 @@ ES6 `class`는 이 메커니즘 위에 얹은 문법이다. 단순한 문법 설
 
 - [자바스크립트의 프로토타입 훑어보기 — evan-moon](https://evan-moon.github.io/2019/10/23/js-prototype/)
 - [ECMAScript Language Specification, ordinary object internal methods](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ordinary-object-internal-methods-and-internal-slots)
-- [ECMAScript Annex B, Object.prototype.__proto__](https://tc39.es/ecma262/multipage/additional-ecmascript-features-for-web-browsers.html#sec-object.prototype.__proto__)
+- [ECMAScript — Object.prototype.__proto__ (20.1.3.8, Normative Optional)](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.prototype.__proto__)
 - 생성/instance: [function instance](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26699), [constructor/new](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26700), [constructor property](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26701)
 - prototype lookup: [목적/상속](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26702), [확장/constructor 연결](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26703), [this/직접 호출](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26704), [공유 시점](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26705), [own property 우선](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26706)
 

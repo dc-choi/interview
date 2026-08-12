@@ -48,7 +48,7 @@ Producer → Queue ─┬─ Consumer 1
 ### 주의사항
 - **처리 시간 > 잠금 타임아웃**이면 같은 메시지가 두 번 처리됨 → 반드시 **멱등성** 확보
 - **Prefetch 크기 튜닝** — 너무 작으면 throughput 저하, 너무 크면 실패 시 재분배 지연
-- Kafka의 경쟁은 파티션 단위 → 소비자 < 파티션 수면 나머지 소비자 idle
+- Kafka의 경쟁은 파티션 단위 → 소비자 수 > 파티션 수면 남는 소비자는 idle (소비자 수 < 파티션 수면 소비자 하나가 여러 파티션을 맡음)
 - Competing Consumer는 **Pub/Sub과 다름** — 한 메시지가 여러 소비자에게 가지 않음
 
 ## 2. Retry + DLQ Pattern (메시지 재시도)
@@ -193,3 +193,4 @@ API 서버 (요청자) ─┐
 - [F-Lab — 이벤트 소싱과 CQRS 패턴의 이해와 적용](https://f-lab.kr/insight/event-sourcing-cqrs-20240528)
 - [datamoney — 이벤트 기반 아키텍처 개념 정리](https://datamoney.tistory.com/376)
 - [choidongkuen — 메시지 큐란?](https://velog.io/@choidongkuen/서버-메세지-큐Message-Queue-을-알아보자)
+- [Apache Kafka Documentation — Consumers (Consumer Group)](https://kafka.apache.org/documentation/#intro_consumers)

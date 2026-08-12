@@ -7,7 +7,7 @@ aliases: ["V8 Array Internals", "Elements Kinds", "배열 내부 구현", "Packe
 
 # V8 배열 내부 구현 (Array Internals)
 
-JavaScript의 `Array`는 명세상 정수 키를 가진 객체일 뿐, 메모리 연속성을 보장하지 않는다. 그런데도 실무에서 배열이 빠른 이유는 V8이 조건을 만족하는 배열을 내부적으로 연속 메모리 배열로 깔아 두기 때문이다. 그 조건을 깨면 객체(해시) 표현으로 떨어져 수십 배 느려진다. 이 최적화의 규칙이 elements kinds다.
+JavaScript의 `Array`는 명세상 정수 키를 가진 객체일 뿐, 메모리 연속성을 보장하지 않는다. 그런데도 실무에서 배열이 빠른 이유는 V8이 조건을 만족하는 배열을 내부적으로 연속 메모리 배열로 깔아 두기 때문이다. 그 조건을 깨면 더 느린 표현으로 내려가고, 희소해지면 객체(해시) 표현까지 떨어져 크게 느려진다. 이 최적화의 규칙이 elements kinds다.
 
 ## 진짜 배열 — 연속성과 인접성
 
@@ -23,8 +23,8 @@ ECMAScript 명세에서 배열은 키가 정수 문자열인 객체에 가깝다
 
 현대 V8은 배열의 원소들을 관찰해 **두 가지 백킹 스토어** 중 하나로 관리한다.
 
-- **Fast Elements (연속 메모리 배열)**: 원소가 단일 타입이고 빈 칸이 없으면 C 배열처럼 연속 메모리에 담아 O(1) 접근. JIT(TurboFan)는 이 배열에 정적 언어 수준의 인덱싱 코드를 생성한다.
-- **Dictionary Elements (해시 모드)**: 타입이 섞이거나 배열이 희소(sparse)해지면 키-값 해시 테이블로 전락. 임의 접근이 해시 조회가 되어 느려지고 JIT 최적화 대상에서 빠진다.
+- **Fast Elements (연속 메모리 배열)**: 원소를 C 배열처럼 연속 메모리에 담아 O(1) 접근. 타입이 섞이거나 hole이 생겨도 아래의 elements kind가 더 일반적인 쪽으로 바뀔 뿐 연속 메모리는 유지된다. JIT(TurboFan)는 단일 타입 밀집 배열일수록 정적 언어 수준의 인덱싱 코드를 생성한다.
+- **Dictionary Elements (해시 모드)**: 단순히 hole이 생기는 수준(Holey)이 아니라 빈 슬롯 비율이 커 충분히 희소해지거나 인덱스가 매우 커지면 키-값 해시 테이블로 전락. 임의 접근이 해시 조회가 되어 느려지고 JIT 최적화 대상에서 빠진다.
 
 Fast Elements는 다시 **두 축**으로 세분된다.
 
@@ -43,7 +43,7 @@ hole이 생기는 대표 동작: `delete arr[i]`, 인덱스를 건너뛴 할당(
 
 ## 역최적화 — 타입 혼합과 hole의 비용
 
-단일 타입 Packed 배열에 다른 타입 원소를 하나라도 섞으면 백킹 스토어가 더 일반적인 kind(최악엔 dictionary)로 바뀌고, TurboFan이 세웠던 타입 가정이 깨져 역최적화가 일어난다. 측정상 동일 타입 삽입 루프와 객체 한 개를 섞은 삽입 루프는 같은 코드인데도 약 20배 이상 벌어진다. 역최적화 메커니즘 자체는 [[V8-Ignition-TurboFan#Deoptimization (역최적화)|컴파일 파이프라인의 Deoptimization]] 참고. 배열은 그 가정 중 하나가 elements kind라는 점이 핵심이다.
+단일 타입 Packed 배열에 다른 타입 원소를 하나라도 섞으면 elements kind가 더 일반적인 쪽(`PACKED_SMI_ELEMENTS` → `PACKED_DOUBLE_ELEMENTS` → `PACKED_ELEMENTS`)으로 바뀌고, TurboFan이 세웠던 타입 가정이 깨져 역최적화가 일어난다. 이 단계에서도 백킹 스토어는 여전히 연속 메모리이며, dictionary 전락은 별개로 배열이 희소해지거나 매우 커질 때 일어난다. 측정상 동일 타입 삽입 루프와 객체 한 개를 섞은 삽입 루프는 같은 코드인데도 약 20배 이상 벌어진다. 역최적화 메커니즘 자체는 [[V8-Ignition-TurboFan#Deoptimization (역최적화)|컴파일 파이프라인의 Deoptimization]] 참고. 배열은 그 가정 중 하나가 elements kind라는 점이 핵심이다.
 
 ## Fast 배열을 유지하는 규칙
 
@@ -78,7 +78,7 @@ ES2015는 일반 `Array`의 한계를 우회할 **타입이 고정된 연속 메
 
 - JS 배열이 명세상 객체인데도 실무에서 빠른 이유 — V8이 조건 충족 시 연속 메모리(Fast Elements)로 깔기 때문
 - elements kinds 두 축(타입 SMI→Double→Tagged, 밀집도 Packed→Holey)과 전이가 일방향이라는 점
-- 단일 타입 배열에 다른 타입을 섞으면 dictionary로 전락 + 역최적화(약 20배 차이) — [[V8-Ignition-TurboFan|Deopt]]의 한 사례
+- 단일 타입 배열에 다른 타입을 섞으면 더 일반적인 elements kind로 전이(SMI → Double → Tagged) + 타입 가정이 깨져 역최적화(출처 벤치마크 기준 약 20배 차이). dictionary 전락은 별개로 배열이 희소해지거나 매우 커질 때 발생 — [[V8-Ignition-TurboFan|Deopt]]의 한 사례
 - Fast 배열 유지 규칙 — 단일 타입, hole 금지(delete 대신 splice), 끝에서 조작
 - Typed Array가 항상 연속 메모리인 이유(타입, 길이 고정)와 ArrayBuffer/View/SharedArrayBuffer 역할
 - `Buffer`가 `Uint8Array` 서브클래스라는 연결
@@ -86,6 +86,7 @@ ES2015는 일반 `Array`의 한계를 우회할 **타입이 고정된 연속 메
 ## 출처
 
 - [Diving deep into JavaScript array - evolution & performance — Paul Shan (evan-moon 번역)](https://evan-moon.github.io/2019/06/15/diving-into-js-array/)
+- [Elements kinds in V8 — V8 공식 블로그](https://v8.dev/blog/elements-kinds)
 
 ## 관련 문서
 

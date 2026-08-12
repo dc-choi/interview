@@ -1,6 +1,7 @@
 ---
 tags: [security, http-header, csp, helmet]
 status: done
+verified_at: 2026-08-12
 category: "보안(Security)"
 aliases: ["Security Headers", "CSP", "HTTP Security Headers"]
 ---
@@ -19,9 +20,11 @@ aliases: ["Security Headers", "CSP", "HTTP Security Headers"]
 | `X-Content-Type-Options: nosniff` | MIME 스니핑 | 브라우저가 Content-Type 무시, 재해석 차단 |
 | `Referrer-Policy` | 정보 누출 | Referer 헤더 송신 정책 |
 | `Permissions-Policy` | 브라우저 API 남용 | 카메라, 마이크, 지오로케이션 등 사용 제한 |
-| `X-XSS-Protection` (레거시) | 반사형 XSS | 대부분 브라우저에서 deprecated — CSP로 대체 |
+| `X-XSS-Protection` (레거시) | 반사형 XSS | 모던 브라우저에서 제거됨 — `0`으로 명시 비활성화, 방어는 CSP |
 
-`X-XSS-Protection: 1; mode=block`은 **모던 브라우저에서 더 이상 효과 없음**. CSP로 가는 것이 표준이지만, 레거시 브라우저 대응 차원에서 같이 둘 수는 있음.
+`X-XSS-Protection`은 필터를 제거한 모던 브라우저(Chrome 78에서 XSS Auditor 삭제, WebKit도 제거, Firefox는 미구현)에서는 값과 무관하게 동작하지 않는다. 레거시 대응으로 `1; mode=block`을 남기는 것은 현행 권고가 아니다 — OWASP Secure Headers Project와 HTTP Headers Cheat Sheet는 `X-XSS-Protection: 0`(명시적 비활성화)이나 아예 보내지 않는 쪽을 권장한다.
+
+`0` 권고의 이유는 필터가 아직 남아 있는 구형 브라우저에서 필터 자체가 공격 표면이 되기 때문이다. sanitize 모드(`1`)에서 브라우저가 주입으로 오판한 조각을 지우면 원래 안전하던 페이지의 전제(예: `productionMode` 플래그)가 무너져 디버그 경로 같은 취약한 코드가 실행될 수 있다. `1; mode=block`은 이 시나리오는 막지만, 페이지가 iframe으로 임베드 가능하면 렌더 차단 여부가 side-channel이 되어 토큰 유출에 악용될 수 있다. 반사형 XSS의 본 방어는 CSP(`script-src`에서 `'unsafe-inline'` 제거, nonce/hash)다.
 
 ## CSP — 심층 방어의 핵심 계층
 
@@ -107,7 +110,8 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
 - **`'unsafe-inline'`을 켜둔 채 운영**: CSP 계층 무력화. nonce/hash로.
 - **HSTS preload 켜고 짧은 max-age로 토글**: preload 등록되면 변경 어려움. 충분히 검증 후.
 - **CSP 도입 즉시 차단 모드**: 합법적인 리소스까지 막아 화면 깨짐. Report-Only로 시작.
-- **X-XSS-Protection만 믿음**: deprecated. CSP로.
+- **X-XSS-Protection만 믿음**: 모던 브라우저에서 제거된 기능. CSP로.
+- **레거시 대응이라며 `1; mode=block`을 남겨둠**: 현행 권고와 반대. `0`으로 끄거나 헤더를 보내지 않는다.
 - **subdomain에 includeSubDomains 켜고 일부만 HTTPS**: 다른 서브도메인 접속 불가.
 - **API 응답에도 CSP 적용**: API는 브라우저가 직접 렌더 안 함 → 효과 적음. 적용 대상은 HTML 응답.
 
@@ -118,9 +122,15 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
 - `'unsafe-inline'`, `'unsafe-eval'`이 위험한 이유, nonce/hash 대안
 - HSTS preload — 한번 등록되면 되돌리기 어려움
 - `X-Frame-Options` vs CSP `frame-ancestors`
-- `X-XSS-Protection`이 deprecated인 이유
+- `X-XSS-Protection`을 `1; mode=block`이 아니라 `0`으로 두는 이유 — 필터 자체가 취약점을 만들 수 있음
 - Helmet 같은 라이브러리를 쓰는 이유 — 새 헤더 자동 반영
 - SQL Injection 정규식 차단의 한계
+
+## 출처
+
+- [X-XSS-Protection — MDN (deprecated, CSP 권고와 필터가 만드는 취약점 설명)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-XSS-Protection)
+- [OWASP Secure Headers Project — X-XSS-Protection (0 설정 권고)](https://github.com/OWASP/www-project-secure-headers/blob/master/mainsite/01_headers.md#x-xss-protection)
+- [OWASP HTTP Security Response Headers Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html)
 
 ## 관련 문서
 

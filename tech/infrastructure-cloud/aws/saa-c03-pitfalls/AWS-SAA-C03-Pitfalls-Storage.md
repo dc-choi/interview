@@ -43,14 +43,14 @@ aliases: ["스토리지 함정", "SAA-C03 Pitfalls Storage"]
 - **EBS 암호화**: 스냅샷도 자동 암호화. 기존 비암호화 볼륨은 스냅샷 → 복사 시 암호화 옵션 → 새 볼륨
 - **EFS 성능 모드**: General Purpose / Max I/O(지연 ↑, 동시성 ↑)
 - **EFS 처리량 모드**: Bursting(크기 비례) / Provisioned / **Elastic**(자동 조정, 신규 권장)
-- **EFS-IA**: Lifecycle Management로 자동 이동 — 액세스 시 자동으로 Standard로 복귀
+- **EFS-IA**: Lifecycle Management로 미액세스 파일을 IA(기본 30일), Archive(기본 90일)로 자동 이동. IA나 Archive 파일을 액세스해도 **기본값은 Standard로 복귀하지 않음**(Transition into Standard 기본값 None) — 복귀시키려면 On first access를 명시적으로 지정
 - **FSx Lustre**: HPC/ML, S3와 통합(레이지 로드). **Scratch(임시)** vs **Persistent(고가용)**
 - **FSx Windows File Server**: SMB, AD 통합 — 리프트앤시프트 Windows 워크로드 정답
 - **FSx ONTAP** vs **FSx OpenZFS**: ONTAP은 NetApp 기능(SnapMirror, dedup), OpenZFS는 ZFS 기반 NFS
 
 ### Snow, Storage Gateway, DataSync
 
-- **Snow Family**: 기존 고객은 계속 사용할 수 있지만 신규 고객은 Snowball Edge를 주문할 수 없음
+- **Snow Family**: 기존 고객은 계속 사용할 수 있지만 신규 고객은 Snowball Edge를 주문할 수 없음. Snowcone은 2024-11부터 기존 고객 포함 주문 불가, Snowmobile은 2024-04 종료, 상용 리전의 Snowball 디바이스 지원은 2026-12-31 종료 예정 — 상세는 [[Snow-Family]]
 - **데이터 전송 결정 기준**: 온라인 전송은 DataSync, 물리 전송은 AWS Data Transfer Terminal이나 파트너, 엣지 컴퓨팅은 Outposts를 검토. 기존 Snow 고객만 Snow Family를 선택지에 포함
 - **Storage Gateway 종류**
   | 게이트웨이 | 프로토콜 | 용도 |
@@ -76,5 +76,6 @@ aliases: ["스토리지 함정", "SAA-C03 Pitfalls Storage"]
 - [How S3 Intelligent-Tiering works — AWS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html)
 - [Amazon S3 pricing — AWS](https://aws.amazon.com/s3/pricing/)
 - [Transitioning objects using Amazon S3 Lifecycle — AWS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html)
+- [Managing storage lifecycle — AWS](https://docs.aws.amazon.com/efs/latest/ug/lifecycle-management-efs.html)
 - [AWS Snowball Edge availability change — AWS](https://docs.aws.amazon.com/snowball/latest/developer-guide/snowball-edge-availability-change.html)
 - AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)

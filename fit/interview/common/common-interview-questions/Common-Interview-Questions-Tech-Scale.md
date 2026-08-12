@@ -50,7 +50,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 **아키텍처 구성 요소**
 
-1. **진입 제어**: CDN + Rate Limiting (IP/UID 단위), 대기열 시스템 (Netflix Zuul 스타일, 또는 Redis Sorted Set 기반 큐)
+1. **진입 제어**: CDN + Rate Limiting (IP/UID 단위), 대기열 시스템 (Redis Sorted Set 기반 자체 큐 또는 관리형 대기실). API 게이트웨이(Netflix Zuul 등)는 대기열이 아니라 대기 토큰을 검증하는 집행 지점
 2. **자격 검증** (구매 이력 + 1회 제한): Redis로 "이미 참여" 플래그 선행 체크 (DB 부하 감소)
 3. **재고 차감**
    - **Redis `DECR` 기반 원자적 차감** (INCR/DECR은 싱글 스레드 보장 → 동시성 안전)
@@ -68,7 +68,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 - "선차감 후 실제 지급" 구조는 실패 시 보상 트랜잭션(재고 복구) 필요
 - 강한 일관성 vs 가용성 → **재고만 강하게, 알림/지급은 eventually**
 
-> 참고: [[Delivery-Semantics|Delivery Semantics]], [[Idempotency-Key|Idempotency Key]], [[At-Least-Once|At-Least-Once]]
+> 참고: [[Delivery-Semantics|Delivery Semantics]], [[Idempotency-Key|Idempotency Key]], [[At-Least-Once|At-Least-Once]], [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처]]
 
 ---
 

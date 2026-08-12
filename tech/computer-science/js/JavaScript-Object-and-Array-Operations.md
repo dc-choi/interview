@@ -51,7 +51,7 @@ object spread도 얕은 복사지만 일반적으로 새 object에 data property
 
 ## prototype 변경
 
-`__proto__` accessor는 web compatibility를 위한 legacy Annex B 기능이다. 조회에는 `Object.getPrototypeOf`, 생성에는 `Object.create`, 꼭 필요한 변경에는 `Object.setPrototypeOf`를 사용한다.
+`__proto__` accessor는 web compatibility를 위해 명세 본문(20.1.3.8)에 Normative Optional, Legacy로 남은 기능이다. 조회에는 `Object.getPrototypeOf`, 생성에는 `Object.create`, 꼭 필요한 변경에는 `Object.setPrototypeOf`를 사용한다.
 
 이미 생성된 object의 prototype을 바꾸면 engine 최적화를 방해하고 object 전체의 lookup 의미를 바꾼다. prototype pollution 입력과도 경계가 맞닿으므로 untrusted key를 prototype 조작에 사용하지 않는다. 동적 상속 조립보다 class/composition과 명시적 factory를 우선한다.
 

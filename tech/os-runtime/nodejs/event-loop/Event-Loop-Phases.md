@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, event-loop, libuv, phases]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-08-12
 category: "OS & Runtime"
 aliases: ["Event Loop Phases", "이벤트 루프 페이즈"]
 ---
@@ -12,7 +12,7 @@ libuv 소스 기반 페이즈 구조, nextTick, microtask 삽입 지점, 실행 
 
 ## libuv `uv_run` 소스코드
 이벤트 루프의 실제 구현체. 각 페이즈를 순회하며 등록된 콜백을 처리한다.
-Node.js 20(libuv 1.45.0) 이후 일반 반복의 타이머 처리는 poll 뒤에 실행된다. `UV_RUN_DEFAULT`로 처음 진입할 때는 기존 동작 호환을 위해 루프 앞에서 타이머를 한 번 처리할 수 있다. 아래 코드는 현재 libuv v1.x의 핵심 순서를 축약한 것으로, 세부 조건과 pending callback 반복 횟수는 원본 소스를 봐야 한다.
+libuv 1.45.0(Node.js 20.3.0에 반영) 이후 일반 반복의 타이머 처리는 poll 뒤에 실행된다. `UV_RUN_DEFAULT`로 처음 진입할 때는 기존 동작 호환을 위해 루프 앞에서 타이머를 한 번 처리할 수 있다. 아래 코드는 현재 libuv v1.x의 핵심 순서를 축약한 것으로, 세부 조건과 pending callback 반복 횟수는 원본 소스를 봐야 한다.
 ```c
 if (mode == UV_RUN_DEFAULT && loop_alive) {
     uv__update_time(loop);
@@ -42,12 +42,14 @@ Node.js는 JS 콜백 하나가 끝나는 경계마다 nextTickQueue와 microTask
 [callback] → nextTick → microtask → [next callback] → nextTick → microtask → ...
 
 이것이 process.nextTick()이 어떤 페이즈에서든 "즉시" 실행되는 이유이다.
-nextTick은 현재 작업 완료 직후 콜 스택에 주입되며, Promise microtask보다 우선순위가 높다.
+nextTick은 현재 작업 완료 직후 콜 스택에 주입되며, CommonJS 모듈에서는 Promise microtask보다 먼저 실행된다 (ESM 최상위는 반대. 아래 ESM 절 참고).
 ```
 
 ---
 
 ## 주요 단계
+
+아래 번호는 페이즈 설명 순서일 뿐이다. libuv 1.45.0(Node.js 20.3.0) 이후 한 반복의 실제 실행 순서는 위 `uv_run` 코드처럼 Pending Callbacks에서 시작해 Timers로 끝난다 (Timers가 앞서는 것은 최초 진입 시 루프 밖 1회 처리뿐).
 
 1. **Timers**
     ```
@@ -113,7 +115,7 @@ MicrotaskQueue 전부 비움 (Promise 콜백)
 [Close Callbacks] → nextTick/microtask 비움
 [Timers] → nextTick/microtask 비움
     ↓
-다시 Timer로 (루프)
+다시 Pending Callbacks로 (루프. 최초 진입의 타이머 1회 처리는 루프 밖)
 ```
 
 **핵심**: 최초 스크립트 실행 이후 이벤트 루프는 페이즈별 큐를 순회한다. Node.js는 콜백 실행이 끝나는 지점마다 nextTick → microtask 순으로 큐를 비우므로, 단순히 페이즈 사이에서만 실행된다고 외우면 틀린다.
@@ -156,7 +158,7 @@ James Snell의 또 다른 핵심 발언:
 
 ### ESM에서의 차이
 - ES 모듈은 비동기 작업으로 래핑되어 전체 스크립트가 이미 microtask queue에 있음
-- 따라서 Promise가 즉시 해결되면 해당 콜백이 microtask queue에 추가되어 먼저 실행됨
+- 따라서 **모듈 최상위(top-level)에서는** Promise가 즉시 해결되면 해당 콜백이 microtask queue에 추가되어 process.nextTick보다 먼저 실행됨 (콜백 안에서 예약하면 CJS와 같이 nextTick이 먼저)
 - CommonJS와 실행 순서가 달라질 수 있음
 
 ## 타이머 심화
@@ -180,6 +182,10 @@ James Snell의 또 다른 핵심 발언:
 ## 출처
 - [The Node.js Event Loop — Node.js 공식 문서](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)
 - [로우 레벨로 살펴보는 Node.js 이벤트 루프 — evan-moon](https://evan-moon.github.io/2019/08/01/nodejs-event-loop-workflow/)
+- [libuv v1.45.0 릴리스 노트 — 타이머 실행 순서 변경](https://github.com/libuv/libuv/releases/tag/v1.45.0)
+- [Node.js 20.3.0 릴리스 공지 — libuv 1.45.0 반영](https://nodejs.org/en/blog/release/v20.3.0)
+- [queueMicrotask()와 process.nextTick() 사용 기준 — Node.js 공식 API 문서](https://nodejs.org/api/process.html#when-to-use-queuemicrotask-vs-processnexttick)
+- [Deep Dive into Node.js with James Snell — This Dot Labs (네이밍 비판, 동시 진행 발언 출처)](https://www.thisdot.co/blog/deep-dive-into-node-js-with-james-snell)
 
 ## 관련 문서
 - [[Event-Loop-Microtask|이벤트 루프 — Microtask/Macrotask & 브라우저 vs Node]]

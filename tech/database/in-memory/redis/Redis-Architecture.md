@@ -1,6 +1,7 @@
 ---
 tags: [database, redis, cache]
 status: done
+verified_at: 2026-08-12
 category: "Data & Storage - Cache & KV"
 aliases: ["Redis Architecture"]
 ---
@@ -88,15 +89,17 @@ Redis는 **싱글 스레드 이벤트 루프 + epoll/kqueue 비동기 I/O**. 명
 
 | 측면 | 동작 |
 |------|------|
-| 메인 루프 | epoll(Linux)/kqueue(macOS)/IOCP(Windows) |
+| 메인 루프 | 컴파일 시 하나 선택: evport(Solaris) → epoll(Linux) → kqueue(BSD, macOS) → select(폴백) |
 | 파일 디스크립터 | 클라이언트당 1개, 다중화 |
 | 명령 처리 | 받은 순서대로 직렬, 각 명령 원자성 |
 | 백그라운드 | RDB/AOF rewrite는 fork된 자식, AOF flush는 별도 스레드 |
 | Threaded I/O (6.0+) | 네트워크 read/write만 멀티스레드, 명령 실행은 여전히 싱글 |
 
+이벤트 루프(`src/ae.c`)는 시스템이 지원하는 가장 빠른 것을 컴파일 타임에 하나 고른다. IOCP 백엔드는 없다 — IOCP는 libuv, Node.js 쪽 디멀티플렉서고 Redis는 공식 Windows 네이티브 빌드를 제공하지 않는다 (Windows에서는 WSL2나 서드파티 제품).
+
 **왜 빠른가**:
 1. 메모리 기반 (디스크 I/O 회피)
-2. 싱글 스레드 → 락, 컨텍스트 스위칭 오버헤드 0
+2. 싱글 스레드 명령 실행 → 공유 자료구조 락 경합과 그로 인한 컨텍스트 스위칭 비용이 크게 줄어듦 (백그라운드 스레드와 6.0+ Threaded I/O에는 내부 동기화가 있고, OS 스케줄링에 따른 스위치는 여전히 발생)
 3. 효율적 자료구조 (skiplist, hashtable 등 [[Redis-Internal-Encoding|내부 인코딩]])
 4. epoll/kqueue로 수만 연결을 한 스레드가
 5. Pipeline으로 RTT 제거
@@ -121,7 +124,7 @@ Redis는 **싱글 스레드 이벤트 루프 + epoll/kqueue 비동기 I/O**. 명
 | Bulk String | `$` | `$5\r\nhello\r\n` |
 | Array | `*` | `*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n` |
 
-RESP3(7.0+)는 Map, Set, Big Number 등 추가 — 클라이언트가 협상으로 선택.
+RESP3(6.0+)는 Map, Set, Null, Double, Big Number, Push 등을 추가한, 대체로 RESP2의 상위집합인 프로토콜(공식 규격 표현도 mostly a superset — null 표현 등 일부 비대칭 존재). 연결은 RESP2로 시작하고 클라이언트가 `HELLO 3`으로 승격을 협상한다 (HELLO는 6.0.0부터). 6.0에서는 실험적 opt-in이었고, Redis 7부터는 RESP2와 RESP3 클라이언트 모두 코어 명령 전체를 호출할 수 있다 (명령별 응답 타입은 프로토콜 버전에 따라 다를 수 있음).
 
 ## Pipeline vs Transaction
 
@@ -156,6 +159,10 @@ WATCH + MULTI/EXEC = **낙관적 락(optimistic CAS)**. 위 트랜잭션 섹션 
 
 ## 출처
 - [우아한테크세미나 191121 우아한레디스 — 우아한테크](https://www.youtube.com/watch?v=mPB2CZiAkKM)
+- [redis/src/ae.c — 이벤트 루프 백엔드 조건부 선택](https://github.com/redis/redis/blob/unstable/src/ae.c)
+- [Redis serialization protocol (RESP) spec](https://redis.io/docs/latest/develop/reference/protocol-spec/)
+- [HELLO 명령 — Redis Docs](https://redis.io/docs/latest/commands/hello/)
+- [Install Redis on Windows — Redis Docs 아카이브 (공식 네이티브 빌드 미제공, WSL2 안내)](https://redis.io/docs/latest/operate/oss_and_stack/install/archive/install-redis/install-redis-on-windows/)
 
 ## 관련 문서
 - [[Redis-Data-Structures|Redis 자료구조]]

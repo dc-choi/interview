@@ -95,7 +95,7 @@ aliases: ["Storage Gateway", "AWS Storage Gateway", "DataSync", "AWS DataSync"]
 - **NFS/SMB로 S3 객체에 접근 + 로컬 캐시**가 키워드면 → **File Gateway**
 - **iSCSI 블록 스토리지 + EBS Snapshot 백업**이면 → **Volume Gateway** (Cached/Stored 구분 주의)
 - **VTL, 가상 테이프 라이브러리, 기존 백업 SW 유지**가 보이면 → **Tape Gateway**
-- **온프레미스 → S3 일회성 페타바이트 이전**은 → **DataSync** (혹은 더 크면 Snowball Family)
+- **온프레미스 → S3 일회성 페타바이트 이전**은 → **DataSync** (혹은 더 크면 Snowball Family — 기존 Snow 고객 한정, 신규는 Data Transfer Terminal이나 파트너, [[Snow-Family]])
 - **AWS 스토리지 서비스 간 동기화** (S3 ↔ EFS, EFS ↔ FSx) → **DataSync**
 - **상시 마운트해서 사용**할 거면 Storage Gateway, **이전, 복제 자동화**면 DataSync
 - File Gateway는 **S3 콘솔에서 객체 직접 확인 가능**, Volume Gateway는 **불가** (스냅샷 형식)

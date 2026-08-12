@@ -22,7 +22,7 @@ Node.js는 단일 프로세스가 이벤트 루프 하나만 돌리므로 **멀�
 
 ### 1. 내장 `cluster` 모듈
 
-Node.js가 기본 제공. 마스터가 워커를 `fork()`하고 **동일 포트를 공유**한다(커널이 round-robin으로 소켓 전달, Windows는 워커가 accept 경쟁).
+Node.js가 기본 제공. primary(마스터)가 워커를 `fork()`하고 **동일 포트로 서비스**한다. 기본값인 round-robin(`SCHED_RR`, Windows 제외 전 플랫폼)에서는 primary가 포트를 listen해 연결을 accept한 뒤 워커에 round-robin으로 넘긴다. `SCHED_NONE`(Windows 기본값)에서는 primary가 listen 소켓을 워커에 넘겨 워커가 직접 accept 경쟁을 하고, 분배는 OS 스케줄러에 맡겨진다. 아래 예제처럼 워커 코드가 `listen()`을 호출해도 실제 바인딩은 primary에 위임되므로 포트 충돌이 나지 않는다.
 
 ```js
 import cluster from 'node:cluster';
@@ -110,6 +110,7 @@ K8s 환경에서는 **Pod 수평 확장을 우선**하고, 컨테이너 내부�
 
 ## 출처
 - [요즘IT — Node.js 병렬처리를 위한 PM2, Docker 기반 실험](https://yozm.wishket.com/magazine/detail/1556/)
+- [Node.js Docs — Cluster](https://nodejs.org/api/cluster.html)
 
 ## 관련 문서
 - [[Single-vs-Multi-Thread|Node.js 싱글 vs 멀티 스레드]]

@@ -1,6 +1,7 @@
 ---
 tags: [database, rdbms, mysql, gis, spatial-index]
 status: done
+verified_at: 2026-08-12
 category: "Data & Storage - RDB"
 aliases: ["MySQL Spatial Index", "GIS", "공간 데이터"]
 ---
@@ -35,7 +36,11 @@ CREATE TABLE stores (
 | `ST_Dimension(g)` | 차원 (Point=0, Line=1, Polygon=2) |
 | `ST_Envelope(g)` | 최소 경계 사각형(MBR) |
 | `ST_SRID(g)` / `ST_SRID(g, srid)` | SRID 조회/변경 |
-| `ST_Area(g)` | 면적 (Polygon, MultiPolygon만, 그 외 NULL) |
+
+### Polygon 전용
+| 함수 | 용도 |
+|---|---|
+| `ST_Area(g)` | 면적 (Polygon, MultiPolygon 전용. 그 외 유효 형상은 `ER_UNEXPECTED_GEOMETRY_TYPE` 에러, 인자가 NULL이거나 빈 geometry면 NULL) |
 
 ### Point 전용
 | 함수 | 용도 |
@@ -109,6 +114,7 @@ H3가 S2(구글) 대비 우위인 이유: 육각형은 인접 셀과의 거리�
 ## 출처
 - [MySQL 8.0 — Geometry Property Functions](https://dev.mysql.com/doc/refman/8.0/en/gis-property-functions.html)
 - [MySQL 8.0 — Point Property Functions](https://dev.mysql.com/doc/refman/8.0/en/gis-point-property-functions.html)
+- [MySQL 8.0 — Polygon and MultiPolygon Property Functions](https://dev.mysql.com/doc/refman/8.0/en/gis-polygon-property-functions.html)
 - [Coupang Engineering — 로켓배송 공간 색인 기반 배송 영역 관리 시스템](https://medium.com/coupang-engineering/쿠팡-로켓배송-공간-색인-기반의-배송-영역-관리-시스템-a59006bc4b6e)
 
 ## 관련 문서

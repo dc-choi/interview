@@ -158,7 +158,7 @@ Testcontainers는 **통합 테스트** 영역. Unit Test까지 가져가면 속�
 
 - Repository/DAO: 통합 테스트로 Testcontainers 사용
 - Domain/Service: Unit Test + Mock
-- [[Test-Pyramid|테스트 피라미드]] 내 20% 비중이 적절
+- [[Test-Pyramid|테스트 피라미드]]의 Integration 층에 위치 — 이상적 비율은 정해져 있지 않고, Unit보다 적고 E2E보다 많은 중간 수량을 유지
 
 ## 흔한 실수
 

@@ -44,15 +44,20 @@ const add = (a, b) => a + b;
 ## 호이스팅 비교
 
 ```
-sayHi();          // ✅ "hi" — 전체 호이스팅
+sayHi();          // ✅ "hi" — 함수 선언식은 전체 호이스팅
 function sayHi() { console.log('hi'); }
 
-sayBye();         // ❌ TypeError — 변수만 호이스팅, undefined 상태
+goodbye();        // ❌ TypeError: goodbye is not a function — var는 undefined로 초기화
+var goodbye = function() { console.log('bye'); };
+
+sayBye();         // ❌ ReferenceError: Cannot access 'sayBye' before initialization — const는 TDZ
 const sayBye = function() { console.log('bye'); };
 
-sayHello();       // ❌ ReferenceError — const는 TDZ
+sayHello();       // ❌ ReferenceError — 화살표 함수도 const에 담기면 같은 TDZ
 const sayHello = () => console.log('hello');
 ```
+
+함수 표현식의 에러 종류를 가르는 건 우변이 `function`이냐 화살표냐가 아니라 **좌변 선언 키워드**다. `var`면 binding이 undefined로 초기화돼 호출 시 TypeError, `let`과 `const`면 초기화 전 접근이라 ReferenceError(TDZ).
 
 ## `this` 바인딩 차이
 
@@ -164,7 +169,7 @@ ES6 이전엔 모듈 격리용. 요즘은 ESM, 블록 스코프로 대체.
 
 - 객체 메서드에 화살표 함수 → `this`가 외부로 새서 버그
 - 클래스 메서드에 일반 함수 + 콜백 전달 → `this` 잃음 (`bind` 또는 화살표 필드로 해결)
-- 함수 표현식을 선언 전에 호출 → `undefined is not a function`
+- 함수 표현식을 선언 전에 호출 → var면 TypeError(`X is not a function`), let과 const면 ReferenceError(TDZ)
 - 클로저로 변수 잡아놓고 해제 안 함 → 메모리 누수
 
 ## 면접 체크포인트

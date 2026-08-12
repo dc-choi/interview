@@ -56,7 +56,7 @@ verified_at: 2026-07-21
 
 ### Route 53
 
-- **라우팅 정책 7종**
+- **라우팅 정책 8종**
   | 정책 | 용도 |
   |---|---|
   | Simple | 단순 다중 값 응답. 레코드 자체에 헬스 체크 연결 불가 |
@@ -66,8 +66,9 @@ verified_at: 2026-07-21
   | Geolocation | 사용자 위치 |
   | Geoproximity | 위치+편향(bias). 일반 hosted zone record로 직접 구성 가능, Traffic Flow는 복합 정책 시 선택 |
   | Multi-Value | 최대 8개 헬시 IP 반환(LB 대체 아님) |
+  | IP-based | 클라이언트 IP의 CIDR 컬렉션 기준 라우팅. 프라이빗 호스팅 영역 사용 불가 |
 - **Alias** vs **CNAME**
-  - Alias: 지원되는 AWS 리소스 또는 같은 hosted zone의 레코드. **apex(zone root) 가능**. AWS 리소스 alias query에는 Route 53 쿼리 요금이 없지만 대상 서비스와 기타 DNS 기능 요금은 별도
+  - Alias: 지원되는 AWS 리소스 또는 같은 hosted zone의 같은 타입 레코드. **apex(zone root) 가능**. AWS 리소스 alias query에는 Route 53 쿼리 요금이 없지만 대상 서비스와 기타 DNS 기능 요금은 별도
   - CNAME: apex 불가. 비AWS 도메인 가능. 쿼리당 과금
 - **Alias의 Evaluate Target Health** 지원 여부와 의미는 대상 리소스에 따라 다르다. 일반 레코드도 지원되는 유형이면 별도 Route 53 health check를 연결할 수 있다
 - **헬스체크**: TCP/HTTP/HTTPS, 다른 헬스체크 조합, CloudWatch Alarm 모니터링

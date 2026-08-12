@@ -39,7 +39,8 @@ u.#password;  // ❌ SyntaxError — 외부 접근 불가
 ```
 
 특징:
-- **런타임에 진짜 차단** — WeakMap으로 구현되어 외부, 상속에서도 접근 불가
+- **런타임에 진짜 차단** — 명세가 객체의 `[[PrivateElements]]` internal slot과 Private Name으로 정의. 클래스 밖 코드의 `obj.#x`는 구문 단계에서 SyntaxError, 클래스 내부 코드가 해당 private field 없는 객체에 접근하면 brand check(PrivateElementFind) 실패로 `TypeError`. 외부와 상속 모두 접근 불가
+- WeakMap은 `#` 이전의 에뮬레이션 기법이자 Babel, TS가 구형 타깃으로 다운레벨할 때 쓰는 트랜스파일 전략일 뿐 언어 메커니즘이 아님
 - 필드는 **미리 선언** 필요 (`#password;` 줄)
 - Stage 4 → ES2022 표준
 
@@ -123,7 +124,7 @@ class User {
 |---|---|---|
 | 런타임 강제 | ✅ | ✗ (컴파일 타임만) |
 | 표준 | ES2022 JS | TypeScript only |
-| 바이너리 작음 | 아주 약간 큼 (WeakMap) | 동일 |
+| 출력 크기 | ES2022 이상 타깃이면 그대로 출력, ES2021 이하로 다운레벨하면 WeakMap 헬퍼가 붙어 약간 증가 | 컴파일 후 제거되어 증가 없음 |
 | 테스트에서 접근 | 불가 | 가능 (cast로) |
 | TS 외 환경 | 순수 JS 실행 가능 | TS 필요 |
 
@@ -172,6 +173,8 @@ class B extends A { get y() { return this.#x; } }  // ❌ 에러
 
 ## 출처
 - [매일메일 — JavaScript 접근제어자](https://www.maeil-mail.kr/question/113)
+- [ECMAScript — PrivateElementFind](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-privateelementfind)
+- [MDN — Private properties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_properties)
 
 ## 관련 문서
 - [[Prototype-OOP|Prototype 기반 OOP]]

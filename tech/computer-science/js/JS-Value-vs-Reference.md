@@ -133,14 +133,16 @@ React, Redux 등 현대 상태 관리는 **불변성을 전제**로 동작. 원�
 // 얕은 복사 (1단계만)
 { ...obj }
 Object.assign({}, obj)
-structuredClone(obj)   // 지원 type/cycle을 복제하는 표준 algorithm
+
+// 깊은 복사 (표준 structured clone algorithm, Node 17+)
+structuredClone(obj)   // 중첩 객체를 재귀 복제하고 순환 참조도 보존
 
 // 대체
 JSON.parse(JSON.stringify(obj))  // JSON-compatible data round trip일 뿐
 domainMapper(obj)                // class/invariant 보존이 필요하면 명시적 변환
 ```
 
-`structuredClone`도 function, WeakMap, Symbol 등 모든 값을 복제하지 않고 custom class behavior를 그대로 보존하지 않는다. 자세한 선택 기준은 [[JavaScript-Object-and-Array-Operations|Object와 Array 연산]]에서 다룬다.
+`structuredClone`은 깊은 복사이지만 function, WeakMap, Symbol 등은 복제하지 못하고 custom class behavior도 그대로 보존하지 않는다. 한계는 복사 깊이가 아니라 복제 가능한 값의 종류에 있다. 자세한 선택 기준은 [[JavaScript-Object-and-Array-Operations|Object와 Array 연산]]에서 다룬다.
 
 ## 면접 체크포인트
 
@@ -155,6 +157,7 @@ domainMapper(obj)                // class/invariant 보존이 필요하면 명�
 - [매일메일 — undefined와 null 차이](https://www.maeil-mail.kr/question/63)
 - [매일메일 — Call By Value, Call By Reference](https://www.maeil-mail.kr/question/152)
 - [매일메일 — JavaScript 배열](https://www.maeil-mail.kr/question/32)
+- [HTML Standard — StructuredSerializeInternal (structured clone)](https://html.spec.whatwg.org/multipage/structured-data.html#structuredserializeinternal)
 
 ## 관련 문서
 - [[Prototype-OOP|Prototype 기반 OOP]]

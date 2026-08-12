@@ -117,7 +117,7 @@ aliases: ["관리, 마이그레이션, DR 함정", "SAA-C03 Pitfalls Management"
 
 ## 빈출 시험 패턴 (요약)
 
-- **"가장 비용 효율적"** + 대용량 일회성 전송 → **Snowball Edge**
+- **"가장 비용 효율적"** + 대용량 일회성 전송 → **Snowball Edge** (시험 기준. 실무는 기존 Snow 고객 한정, 신규는 Data Transfer Terminal이나 파트너 — [[Snow-Family]])
 - **"가장 비용 효율적"** + S3 자주 변경 안 됨 → **Intelligent-Tiering** 또는 **Standard-IA**
 - **"가장 비용 효율적"** + 30일 후 거의 안 봄 → 수명주기로 **Glacier**
 - **"가장 비용 효율적"** + 컨테이너 단순 실행 → **Fargate** (관리 부담 없음)

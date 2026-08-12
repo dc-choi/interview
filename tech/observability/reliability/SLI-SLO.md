@@ -48,10 +48,13 @@ aliases: ["SLI SLO", "SLI / SLO / Error budget", "에러 버짓", "Error Budget"
 
 raw 임계값("에러율 > 1%")으로 알람하면 오탐이 쏟아진다([[Alert-Fatigue]]). 대신 **버짓을 얼마나 빨리 태우는가(burn rate)**로 본다.
 
-- **빠른 소진**(예: 1시간에 버짓 2% = 14.4배 속도) → 즉시 호출(page).
-- **느린 소진**(예: 6시간에 10%) → 티켓(낮은 긴급도).
+아래는 Google SRE Workbook의 표준 조합(30일 윈도, 99.9% SLO 기준)이다.
 
-이 **multi-window multi-burn-rate** 알람이 "진짜 위험"만 깨우고 소음을 줄인다.
+- **빠른 소진**(예: 1시간에 버짓 2% = 14.4배 속도) → 즉시 호출(page).
+- **중간 소진**(예: 6시간에 버짓 5% = 6배 속도) → 즉시 호출(page).
+- **느린 소진**(예: 3일에 버짓 10% = 1배 속도) → 티켓(낮은 긴급도).
+
+각 항목은 long window와 함께 short window(순서대로 5분, 30분, 6시간)까지 동시에 임계를 넘길 때만 발화한다. 이 **multi-window multi-burn-rate** 알람이 "진짜 위험"만 깨우고 소음을 줄인다.
 
 ## Error Budget Policy
 

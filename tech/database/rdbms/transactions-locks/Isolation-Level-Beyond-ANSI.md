@@ -3,7 +3,7 @@ tags: [database, rdbms, isolation-level, serializable, linearizable, snapshot-is
 status: done
 category: "Data & Storage - RDB"
 aliases: ["Isolation Level Beyond ANSI", "Strict Serializable", "Linearizable", "Snapshot Isolation", "ANSI SQL 격리 한계"]
-verified_at: 2026-07-21
+verified_at: 2026-08-12
 ---
 
 # ANSI 격리 수준의 한계와 Strict Serializable
@@ -23,13 +23,13 @@ ANSI SQL의 4대 격리 수준(Read Uncommitted / Read Committed / Repeatable Re
 
 - **이상 현상 정의가 너무 느슨** — 같은 이름의 격리에서 구현자마다 다른 해석 가능
 - **Snapshot Isolation 누락** — 실제로 널리 쓰이는데 ANSI에는 없음
-- **Serializable의 정의가 모호** — "이상 현상이 없다"로만 정의되어, 완전 비어있는 결과를 리턴해도 만족 가능
+- **현상 목록만으로 Serializable을 판단하면 약해짐** — 논문은 세 현상만 금지한 해석을 ANOMALY SERIALIZABLE이라 부른다. Snapshot Isolation은 A1, A2, A3(dirty read, non-repeatable read, phantom의 좁은 해석)를 모두 피하면서도 진짜 serializable은 아니어서, 표만 보고 serializable로 판단하는 오해가 흔하다
 
 결과적으로 표준은 있지만 **DBMS 간 호환성 보장이 안 됨**.
 
 ### Dirty Write — 현상 목록만으로는 빠진 문제
 
-Dirty Write는 트랜잭션 A가 쓴 row를 A의 커밋이나 롤백 전에 B가 덮어쓰는 현상이다. Berenson 논문의 비판처럼 SQL-92가 나열한 세 read phenomenon만으로는 이를 충분히 포착하지 못한다. 주요 DBMS는 복구 가능성을 위해 가장 낮은 격리에서도 dirty write를 막지만, 그 사실을 ANSI 현상 정의만으로 증명하면 안 된다. Oracle과 PostgreSQL은 별도의 Read Uncommitted 동작을 제공하지 않고 요청을 Read Committed처럼 처리한다.
+Dirty Write는 트랜잭션 A가 쓴 row를 A의 커밋이나 롤백 전에 B가 덮어쓰는 현상이다. Berenson 논문의 비판처럼 SQL-92가 나열한 세 read phenomenon만으로는 이를 충분히 포착하지 못한다. 주요 DBMS는 복구 가능성을 위해 가장 낮은 격리에서도 dirty write를 막지만, 그 사실을 ANSI 현상 정의만으로 증명하면 안 된다. Oracle과 PostgreSQL 모두 Read Uncommitted 동작 자체는 제공하지 않지만 요청 처리 방식은 다르다. PostgreSQL은 `READ UNCOMMITTED` 구문을 받아들이되 내부적으로 Read Committed로 처리하고, Oracle은 Read Committed(기본), Serializable, Read Only만 지원해 같은 구문을 ORA-02179(valid options: ISOLATION LEVEL { SERIALIZABLE | READ COMMITTED })로 거부한다 (Read Only는 격리 수준 구문이 아니라 `SET TRANSACTION READ ONLY` 별개 구문으로 설정한다).
 
 ## DBMS별 실제 구현 차이
 
@@ -37,7 +37,7 @@ Dirty Write는 트랜잭션 A가 쓴 row를 A의 커밋이나 롤백 전에 B가
 |---|---|---|
 | **MySQL InnoDB** | Snapshot + Next-Key Lock(잠금 읽기와 범위 변경의 Phantom 방지) | `autocommit`이 꺼진 명시적 트랜잭션의 일반 SELECT를 `SELECT ... FOR SHARE`처럼 처리. autocommit 단일 SELECT는 nonlocking consistent read |
 | **PostgreSQL** | Snapshot Isolation (Phantom Read 완전 방지) | SSI (Serializable Snapshot Isolation) — Serializable 보장 |
-| **Oracle** | 미지원 (Read Committed만) | 실질적으로 Snapshot Isolation (진짜 Serializable 아님) |
+| **Oracle** | 미지원 (Read Committed, Serializable, Read Only만 제공) | 실질적으로 Snapshot Isolation (진짜 Serializable 아님) |
 | **SQL Server** | `REPEATABLE READ`는 읽은 key의 shared lock을 트랜잭션 끝까지 유지. `SNAPSHOT`은 별도 격리 수준 | `SERIALIZABLE`은 key-range lock으로 phantom도 방지 |
 | **Db2** | Read Stability(RS)가 ANSI Repeatable Read에 가까우며 Cursor Stability(CS)는 Read Committed에 가까움 | Repeatable Read(RR)가 가장 강한 수준으로 ANSI Serializable에 대응 |
 
@@ -51,7 +51,7 @@ ANSI SQL-99 원문:
 핵심: 동시 실행의 결과가 **어떤 직렬 실행**(some serial execution)과 동일한 결과면 됨.
 - "어떤"이라는 조건 — 순서가 **특정되지 않음**
 - 트랜잭션 순서가 실제 시간과 달라도 무방
-- 심지어 읽기가 "빈 상태"를 반환하더라도, 동일 결과를 내는 직렬 실행이 하나만 존재하면 만족
+- 심지어 읽기가 빈 상태를 반환하더라도, 동일 결과를 내는 직렬 실행이 하나라도 존재하면 만족 (Jepsen은 모든 읽기를 시각 0에 실행한 것처럼 처리하는 구현을 예로 든다)
 
 Serializable은 단일 머신에서도 실시간 순서를 자동으로 보장하지 않는다. 외부 관찰 순서까지 필요한 시스템은 구현체가 strict serializability 또는 external consistency를 명시적으로 제공하는지 확인해야 한다.
 
@@ -94,10 +94,10 @@ Replica, Sharding, 지리 분산이 들어오면 Serializable만으로는 부족
 
 | 시스템 | 전략 |
 |---|---|
-| **Google Spanner** | TrueTime (원자시계 + GPS)로 글로벌 타임스탬프. Paxos 동기 복제, 동기 복제 센터 간 거리 1,000마일 제한 |
+| **Google Spanner** | TrueTime (GPS + 원자시계)로 글로벌 타임스탬프. Paxos 복제 위에 TrueTime 기반 commit wait으로 external consistency 제공, 복제본 수와 복제본 간 거리는 애플리케이션이 제약으로 지정 |
 | **CockroachDB** | HLC (Hybrid Logical Clock) + Serializable Isolation |
 | **FaunaDB** | Calvin 알고리즘 (결정적 순서 결정) |
-| **YugabyteDB** | Raft + HLC, Snapshot/Serializable 선택 |
+| **YugabyteDB** | Raft + HLC, Serializable/Snapshot/Read Committed 선택 |
 | **Cassandra** | 기본 Eventual Consistency, LWT(Lightweight Transaction)로 Linearizable 선택 가능 |
 
 **완벽한 해결책은 아직 없음** — 성능, 가용성, 일관성 트레이드오프 (CAP, PACELC 이론).
@@ -135,11 +135,17 @@ Replica, Sharding, 지리 분산이 들어오면 Serializable만으로는 부족
 
 ## 출처
 - [vwjdalsgkv (네이버 블로그) — Read uncommitted 이하 Serializable 이상](https://blog.naver.com/vwjdalsgkv/223285219248)
-- Berenson et al. — *A Critique of ANSI SQL Isolation Levels* (1995)
+- [Berenson et al. — *A Critique of ANSI SQL Isolation Levels* (SIGMOD 1995, MSR-TR-95-51)](https://arxiv.org/abs/cs/0701157)
 - [Jepsen — Consistency models](https://jepsen.io/consistency)
+- [Jepsen — Serializability (읽기를 시각 0에 배치하는 예)](https://jepsen.io/consistency/models/serializable)
+- [PostgreSQL — Transaction Isolation (Repeatable Read = Snapshot Isolation, Phantom Read 미발생, SSI)](https://www.postgresql.org/docs/current/transaction-iso.html)
+- [Spanner: Google's Globally-Distributed Database (OSDI 2012)](https://www.usenix.org/system/files/conference/osdi12/osdi12-final-16.pdf)
+- [YugabyteDB — Transaction isolation levels](https://docs.yugabyte.com/stable/architecture/transactions/isolation-levels/)
 - [CockroachDB transaction isolation](https://www.cockroachlabs.com/docs/stable/demo-serializable)
 - [Microsoft SQL Server — Transaction locking and row versioning guide](https://learn.microsoft.com/en-us/sql/relational-databases/sql-server-transaction-locking-and-row-versioning-guide)
 - [IBM Db2 — Isolation levels](https://www.ibm.com/docs/en/db2/12.1.x?topic=issues-isolation-levels)
+- [Oracle — ORA-02179 (지원 격리 수준 구문)](https://docs.oracle.com/en/error-help/db/ora-02179/)
+- [Oracle Database 19c Concepts — Data Concurrency and Consistency (Read Committed, Serializable, Read Only)](https://docs.oracle.com/en/database/oracle/oracle-database/19/cncpt/data-concurrency-and-consistency.html)
 
 ## 관련 문서
 - [[Isolation-Level|트랜잭션 격리 수준 (기본)]]

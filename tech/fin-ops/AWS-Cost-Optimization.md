@@ -3,7 +3,7 @@ tags: [finops, aws, cost-optimization, spot, reserved-instance, savings-plan]
 status: done
 category: "비용&운영(FinOps)"
 aliases: ["AWS 비용 최적화", "Cost Optimization", "FinOps Playbook"]
-verified_at: 2026-07-15
+verified_at: 2026-08-12
 ---
 
 # AWS 비용 최적화 — 실전 플레이북
@@ -12,9 +12,9 @@ verified_at: 2026-07-15
 
 ## Frugal Architect — 비용을 비기능 요구사항으로
 
-Werner Vogels가 제시한 원칙: **"비용은 버그처럼 추적하고 해결해야 할 비기능 요구사항이다."**
+Werner Vogels가 제시한 Frugal Architect 7법칙 중 첫 번째: **비용을 비기능 요구사항으로 만들라(Make Cost a Non-functional Requirement)**.
 
-- 기능 요구사항만 충족하고 끝나는 게 아니라, 실행 비용을 항상 함께 측정한다
+- 기능 요구사항만 충족하고 끝나는 게 아니라, 실행 비용을 함께 측정한다
 - 새 기능이 비용을 크게 늘리면 설계, 배포 단계에서 재검토
 - 비용 절감은 **일회성 이벤트가 아니라 지속 루틴** — 정기 리뷰, 대시보드, 책임자 할당이 필수
 
@@ -38,12 +38,12 @@ FinOps Foundation의 표준 3단계. 비용 관리는 이 사이클을 **반복*
 | **Cost Explorer** | 서비스별, 태그별 비용 추이, 예측 |
 | **AWS Budgets** | 월 예산 초과 시 알림, Slack 연동 |
 | **Cost Anomaly Detection** | ML 기반 비정상 비용 탐지 |
-| **Cost Optimization Hub** | 전 서비스 절감 추천을 한 화면에 집계 (최대 75% 절감 추천) |
+| **Cost Optimization Hub** | 계정, 리전에 흩어진 절감 추천(Right-Sizing, 유휴 리소스 삭제, SP/RI)을 한 화면에 집계하고 예상 절감액을 정량화 |
 | **myApplications** | 앱 단위로 비용, 성능, 보안을 한 대시보드에서 |
 
 ### 태그 정책
 - 모든 리소스에 `Environment`, `Service`, `Owner`, `CostCenter` 필수 태그
-- 태그 없는 리소스는 `AWS Config` 룰로 감지, 자동 차단
+- 태그 없는 리소스는 `AWS Config` 룰로 감지하고 SSM Automation 기반 자동 교정을 연결 (생성 자체를 막으려면 `aws:RequestTag` 조건을 건 SCP 같은 예방 통제가 별도로 필요. Organizations 태그 정책의 기본 준수 규칙은 태그 없는 생성 자체는 막지 못한다)
 - 태그로 **리소스→비용→팀** 매핑이 가능해야 책임 소재가 명확해짐
 
 ## Top 10 전략 — 큰 덩어리부터
@@ -58,7 +58,7 @@ Divide & Conquer: 비용 상위 10개 서비스가 전체의 80~90%를 차지하
 6. **미사용 리소스 삭제** — 유휴 EBS, Elastic IP, 오래된 AMI, Untagged ECR 이미지 (→ [[ECR-Cost-Reduction|ECR]])
 7. **ELB 유휴화** — 트래픽 없는 ALB/NLB
 8. **데이터 전송** — Cross-AZ, Egress 최소화
-9. **Managed Service 재평가** — MediaConvert 같은 고가 서비스 → 자체 Batch/ECS+ffmpeg로 10~20배 절감 가능
+9. **Managed Service 재평가** — MediaConvert 같은 고가 서비스 → 자체 Batch/ECS+ffmpeg로 15~20배 절감 사례
 10. **CDN 캐싱 강화** — Origin 트래픽 감소 → [[CDN|CloudFront 설정]]
 
 ## 컴퓨트 비용 — 인스턴스 구매 모델
@@ -67,9 +67,9 @@ Divide & Conquer: 비용 상위 10개 서비스가 전체의 80~90%를 차지하
 |---|---|---|
 | **On-Demand** | 0% | 예측 불가 트래픽, 초기 실험 |
 | **Spot Instance** | **70~90%** | 중단 감내 가능한 배치, CI/CD, 학습 워커 |
-| **Reserved Instance (1yr/3yr)** | 30~50% | 상시 구동 서버, 기저 부하 |
-| **Savings Plans (Compute/EC2)** | 30~50% | 인스턴스 타입 바꿔도 적용되는 유연 할인 |
-| **Graviton (ARM)** | ~20% + 성능 개선 | x86 호환 워크로드 대부분 |
+| **Reserved Instance (1yr/3yr)** | 30~72% (Standard 기준, Convertible 최대 66%) | 상시 구동 서버, 기저 부하 |
+| **Savings Plans (Compute/EC2)** | 30~72% (EC2 Instance 기준, Compute 최대 66%) | 인스턴스 타입 바꿔도 적용되는 유연 할인 |
+| **Graviton (ARM)** | 동급 x86 인스턴스 대비 최대 20% 저렴 (AWS 공식 표기) | x86 호환 워크로드 대부분 |
 
 ### 실전 팁
 - **CI/CD Jenkins, 빌드 러너**: Spot으로 70~90% 절감
@@ -77,6 +77,7 @@ Divide & Conquer: 비용 상위 10개 서비스가 전체의 80~90%를 차지하
 - **상시 서비스**: 기저 부하는 RI/SP, 피크는 On-Demand로 혼합
 - **Graviton 이전**: 대부분 언어 런타임(Java, Node.js, Python)은 무변경 이식 가능 → 성능↑, 비용↓
 - **MSP(Managed Service Provider) 활용**: RI/SP 최적 조합 추천, 관리 위임
+- **RI/SP 할인 폭의 상한**: AWS 공식 기준 Standard RI와 EC2 Instance Savings Plans는 On-Demand 대비 최대 72%, Convertible RI와 Compute Savings Plans는 최대 66%. 실제 할인율은 약정 기간(1년/3년)과 결제 옵션(All/Partial/No Upfront)에 따라 30%대에서 70%대까지 벌어짐
 
 ### 사례 — Jenkins on Spot (CI/CD 비용 4.5배 절감)
 
@@ -113,7 +114,7 @@ CircleCI, GitHub Actions 같은 SaaS에서 자체 Jenkins + Spot으로 이전한
 관리형 서비스는 초기엔 인프라 관리를 없애 소수 인원으로 빠르게 굴러가게 한다. 트래픽과 팀이 커지면 단가, 제약이 부담이 되어 전환을 검토한다.
 
 - **전환 이득 사례**: MediaConvert를 Batch+ECS+ffmpeg 자체 솔루션으로 교체 → **15~20배 절감**. Fargate→EC2 전환 + 오버프로비저닝 Scale-Down → 월 비용 **약 50% 절감**.
-- **전환의 대가**: 운영 복잡도, 서버 관리 부담, 보안/인프라 노하우, 그를 감당할 **팀 규모**가 필요. "충분한 규모의 팀 + 관리 능력"이 있을 때만 이득이 비용을 넘는다.
+- **전환의 대가**: 운영 복잡도, 서버 관리 부담, 보안/인프라 노하우, 그를 감당할 **팀 규모**가 필요. 충분한 규모의 팀과 관리 능력이 있을 때만 이득이 비용을 넘는다.
 
 **실제 워크로드 패턴**으로 계산기를 돌린 후 선택한다.
 
@@ -159,6 +160,7 @@ Inflab 사례가 **연 $300K 절감**을 이룬 핵심은 조직 운영.
 - 조직 관점에서 FinOps를 **지속 가능하게** 운영하는 방법
 
 ## 출처
+- [The Frugal Architect — 7법칙 공식 사이트](https://thefrugalarchitect.com/)
 - [The Frugal Architect — AWS re:Invent 2023 / kakao pay 정리](https://tech.kakaopay.com/post/2023-aws-reinvent-2/)
 - [Inflab — 스타트업 AWS 비용 최적화 (연 $300K 절감)](https://tech.inflab.com/20240227-finops-for-startup/)
 - [AWS Blog — 인프랩의 EC2 Spot 기반 Jenkins CI/CD 구축 사례](https://aws.amazon.com/ko/blogs/tech/inflab-ec2-spot-instance/)
@@ -166,6 +168,13 @@ Inflab 사례가 **연 $300K 절감**을 이룬 핵심은 조직 운영.
 - [AWS Fargate pricing](https://aws.amazon.com/fargate/pricing/)
 - [Amazon VPC pricing](https://aws.amazon.com/vpc/pricing/)
 - [AWS PrivateLink pricing](https://aws.amazon.com/privatelink/pricing/)
+- [Amazon EC2 Reserved Instances](https://aws.amazon.com/ec2/pricing/reserved-instances/)
+- [Compute Savings Plans pricing](https://aws.amazon.com/savingsplans/compute-pricing/)
+- [Cost Optimization Hub — AWS 공식 문서](https://docs.aws.amazon.com/cost-management/latest/userguide/cost-optimization-hub.html)
+- [Gateway endpoints — 추가 요금 없음 (AWS PrivateLink 문서)](https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html)
+- [Remediating Noncompliant Resources with AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/remediation.html)
+- [AWS Graviton — 동급 x86 대비 최대 20% 저렴](https://aws.amazon.com/ec2/graviton/)
+- [Amazon CloudFront pricing — AWS 오리진에서 CloudFront로의 전송 요금 면제](https://aws.amazon.com/cloudfront/pricing/)
 
 ## 관련 문서
 - [[ECR-Cost-Reduction|ECR Lifecycle Policy로 저장 비용 절감]]

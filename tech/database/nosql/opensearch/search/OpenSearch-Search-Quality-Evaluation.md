@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, evaluation, relevance, ab-test]
 status: done
-verified_at: 2026-07-22
+verified_at: 2026-08-12
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Search Quality Evaluation", "OpenSearch 검색 품질 평가", "검색 품질 측정"]
 ---
@@ -188,4 +188,4 @@ Pointwise metric 집합과 relevance threshold는 version에 종속된다. Workb
 - [Measuring and improving search quality metrics - OpenSearch Blog](https://opensearch.org/blog/measuring-and-improving-search-quality-metrics/)
 - [Amazon OpenSearch Service now supports OpenSearch version 3.1 - AWS](https://aws.amazon.com/about-aws/whats-new/2025/09/amazon-opensearch-service-opensearch-version-3-1/)
 - [Large-scale validation and analysis of interleaved search evaluation - Chapelle et al., ACM TOIS 2012](https://dl.acm.org/doi/10.1145/2094072.2094078)
-- [Unbiased Learning-to-Rank with Biased Feedback](https://arxiv.org/abs/1907.07260)
+- [Unbiased Learning-to-Rank with Biased Feedback - Joachims, Swaminathan, Schnabel](https://arxiv.org/abs/1608.04468)

@@ -3,12 +3,12 @@ tags: [infrastructure, aws, redshift, data-warehouse, olap, analytics, saa-c03]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Redshift", "Amazon Redshift", "AWS Redshift", "데이터 웨어하우스", "Data Warehouse"]
-verified_at: 2026-07-21
+verified_at: 2026-08-12
 ---
 
 # Amazon Redshift — 컬럼 기반 데이터 웨어하우스
 
-PostgreSQL 기반의 **OLAP 전용 완전 관리형 데이터 웨어하우스**. PB 단위 데이터에 대해 표준 SQL, BI 도구로 복잡한 분석 쿼리를 빠르게 실행하도록 **MPP(Massively Parallel Processing) + 컬럼 스토리지**로 설계되었다.
+PostgreSQL 기반의 **OLAP에 최적화된 완전 관리형 데이터 웨어하우스**. INSERT, DELETE 같은 OLTP 기능 자체는 제공하지만 대규모 데이터셋의 분석과 리포팅에 맞춰 최적화되어 있다. PB 단위 데이터에 대해 표준 SQL, BI 도구로 복잡한 분석 쿼리를 빠르게 실행하도록 **MPP(Massively Parallel Processing) + 컬럼 스토리지**로 설계되었다.
 
 ## DW/ETL/BI 기본 개념
 
@@ -31,14 +31,17 @@ PostgreSQL 기반의 **OLAP 전용 완전 관리형 데이터 웨어하우스**.
 - **리더 노드**: 클라이언트와 통신, 쿼리 파싱, 실행 계획 수립, 컴퓨팅 노드에 작업 분배, 결과 집계.
 - **컴퓨팅 노드(Compute Node)**: 실제 데이터, 연산을 보유. 각 노드마다 전용 CPU, 메모리, 디스크 스토리지.
 - **노드 슬라이스(Slice)**: 컴퓨팅 노드 내부에서 데이터, 메모리를 더 잘게 나눈 병렬 처리 단위.
-- **배포 옵션**: provisioned RA3 클러스터는 Multi-AZ 배포를 지원한다. 단일 노드나 일부 구성은 Single-AZ 전제로 봐야 하며, 리전 장애 대비는 여전히 스냅샷, cross-region snapshot copy, data sharing 같은 DR 설계가 필요하다.
+- **배포 옵션**: provisioned RG 또는 RA3 클러스터는 Multi-AZ 배포를 지원한다. 단일 노드나 일부 구성은 Single-AZ 전제로 봐야 하며, 리전 장애 대비는 여전히 스냅샷, cross-region snapshot copy, data sharing 같은 DR 설계가 필요하다.
 
 ## 노드 타입
 
 | 타입 | 특성 | 용도 |
 |---|---|---|
-| **RA3** | 컴퓨팅과 스토리지 분리(RMS, Redshift Managed Storage). 노드 크기와 무관하게 S3 기반 스토리지로 확장 | 데이터 증가율이 높고 컴퓨팅과 별도로 스케일하고 싶을 때 (현행 권장) |
+| **RG** | AWS Graviton 기반, RMS 사용. 데이터 레이크 쿼리 엔진을 클러스터 자체 compute에서 실행(별도 Spectrum fleet 불필요) | 최신 세대 권장. 데이터 웨어하우스와 데이터 레이크 쿼리를 함께 다룰 때 |
+| **RA3** | 컴퓨팅과 스토리지 분리(RMS, Redshift Managed Storage). 로컬 SSD를 넘어서는 데이터는 S3로 자동 오프로드되며, 관리형 스토리지 한도는 노드 크기별로 정해져 있다 | 데이터 증가율이 높고 컴퓨팅과 별도로 스케일하고 싶을 때 (RG와 함께 현행 권장) |
 | **DC2** | 로컬 SSD에 데이터, 컴퓨팅 통합. 노드 늘리면 스토리지도 함께 증가 | 데이터셋이 작고(<1TB) 빠른 I/O가 필요할 때 |
+
+이 문서의 Data Sharing 서술은 RA3와 Serverless 기준이며, RG의 지원 범위는 공식 문서에서 별도 확인이 필요하다.
 
 ## 분산 키, 정렬 키
 
@@ -57,13 +60,13 @@ PostgreSQL 기반의 **OLAP 전용 완전 관리형 데이터 웨어하우스**.
 ## Redshift Spectrum
 
 - 데이터를 Redshift에 적재하지 않고 **S3에 그대로 둔 채 SQL로 직접 쿼리**.
-- Glue Data Catalog의 외부 테이블 정의 사용. Parquet/ORC 같은 컬럼 포맷 권장.
+- 외부 데이터 카탈로그(Glue Data Catalog, Athena 카탈로그, 자체 Hive 메타스토어)의 외부 테이블 정의 사용. Parquet/ORC 같은 컬럼 포맷 권장.
 - RA3와 DC2 provisioned cluster의 Spectrum query는 별도 전용 Spectrum fleet을 사용한다. RG provisioned node와 Redshift Serverless는 integrated data lake engine을 자체 compute에서 실행하므로 외부 테이블 쿼리가 주 compute와 독립이라고 일반화할 수 없다.
 - **활용**: Hot 데이터는 Redshift 내부 테이블, Cold/대용량 로그는 S3 + Spectrum으로 비용 최적화.
 
 ## Concurrency Scaling, Materialized View
 
-- **Concurrency Scaling**: 동시 쿼리 증가 시 추가 용량을 자동 사용해 부하를 흡수한다. 활성 메인 클러스터 사용량에 비례해 무료 크레딧이 누적되며 초과 사용은 과금되므로 현재 요금 정책을 확인한다.
+- **Concurrency Scaling**: 동시 쿼리 증가 시 추가 용량을 자동 사용해 부하를 흡수한다. 메인 클러스터가 실행 중인 24시간마다 1시간의 무료 크레딧이 누적되고 활성 클러스터당 최대 30시간까지 쌓이며, 크레딧을 초과한 사용분은 과금되므로 현재 요금 정책을 확인한다.
 - **Materialized View (MV)**: 자주 쓰이는 집계 결과를 사전 계산해 저장. `REFRESH MATERIALIZED VIEW`로 갱신. 대시보드성 반복 쿼리에서 응답 시간 대폭 단축.
 
 ## Cross-Region, Cross-Account 데이터 공유
@@ -74,8 +77,8 @@ PostgreSQL 기반의 **OLAP 전용 완전 관리형 데이터 웨어하우스**.
 ## 스냅샷과 백업
 
 - **S3에 저장되는 증분 스냅샷**. 다른 클러스터로 복원 가능.
-- **자동 스냅샷**: 8시간 또는 5GB 변경마다 자동 생성. 보존 1~35일.
-- **수동 스냅샷**: 사용자가 직접 생성, 명시 삭제 전까지 무기한 보존.
+- **자동 스냅샷**: 기본값은 약 8시간마다 또는 노드당 5GB 변경마다 생성(먼저 도달하는 쪽 기준). 기본 보존 기간은 1일이고, RG와 RA3는 1~35일 범위에서 설정한다.
+- **수동 스냅샷**: 사용자가 직접 생성. 기본적으로는 삭제 전까지 보존되며 생성, 수정 시 보존 기간을 지정할 수 있다.
 - **Cross-Region Snapshot Copy**: 자동 복사로 다른 리전에 복구 지점을 준비할 수 있다. 실제 복구에는 새 클러스터 복원 시간과 애플리케이션 전환 절차가 필요하다.
 
 ## Redshift vs RDS/Aurora
@@ -113,14 +116,19 @@ PostgreSQL 기반의 **OLAP 전용 완전 관리형 데이터 웨어하우스**.
 - **S3, DynamoDB, EMR에서 대량 데이터를 빠르게 적재** → **COPY 명령**.
 - **동시 쿼리 폭주 시 성능 유지** → **Concurrency Scaling**.
 - **자주 쓰는 집계 쿼리 응답 시간 단축** → **Materialized View**.
-- Redshift provisioned RA3는 **Multi-AZ** 배포를 지원한다. 리전 단위 DR이 필요하면 **Cross-Region Snapshot Copy**나 데이터 공유 전략을 별도로 설계한다.
-- 노드 타입은 **RA3(컴퓨팅/스토리지 분리, 권장)**, **DC2(작은 데이터셋, 로컬 SSD)** 두 가지를 구분.
+- Redshift provisioned RG와 RA3는 **Multi-AZ** 배포를 지원한다. 리전 단위 DR이 필요하면 **Cross-Region Snapshot Copy**나 데이터 공유 전략을 별도로 설계한다.
+- 노드 타입은 **RG(Graviton 기반 최신 세대, 데이터 레이크 쿼리 엔진 내장)**, **RA3(컴퓨팅/스토리지 분리, RMS)**, **DC2(작은 데이터셋, 로컬 SSD)**로 구분. 시험(SAA-C03) 기준은 RA3/DC2 구분이고, 현행 실무 권장은 RG 또는 RA3, 압축 기준 1TB 미만 소규모 데이터셋에는 DC2.
 
 ## 출처
 
 - [CREATE TABLE과 DISTSTYLE](https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_TABLE_NEW.html)
 - [COPY를 사용한 테이블 로드](https://docs.aws.amazon.com/redshift/latest/dg/t_Loading_tables_with_the_COPY_command.html)
 - [Redshift Spectrum 개요와 배포별 실행 모델](https://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-overview.html)
+- [Redshift provisioned 클러스터와 노드 타입](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html)
+- [데이터 웨어하우스 시스템 아키텍처](https://docs.aws.amazon.com/redshift/latest/dg/c_high_level_system_architecture.html)
+- [Multi-AZ 배포](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)
+- [스냅샷과 백업](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html)
+- [Redshift 요금(Concurrency Scaling 크레딧)](https://aws.amazon.com/redshift/pricing/)
 
 ## 관련 문서
 

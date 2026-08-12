@@ -3,7 +3,7 @@ tags: [cs, javascript, prototype, oop, philosophy, language-design]
 status: done
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["JavaScript Prototype Philosophy", "JS가 프로토타입을 선택한 이유", "Prototype vs Class"]
-verified_at: 2026-07-21
+verified_at: 2026-08-12
 ---
 
 # JavaScript가 프로토타입을 선택한 이유
@@ -33,7 +33,7 @@ JS의 `class`가 ES6에 추가됐지만 내부 모델은 여전히 **프로토�
 
 인지심리학자 Eleanor Rosch는 이를 **프로토타입 이론**(1970년대)으로 구체화. 사람은 대상을 분류할 때 속성 목록을 체크하지 않고 **가장 전형적인 예시(원형)와의 유사성**으로 판단한다. "참새는 전형적 새, 타조는 주변부 새".
 
-**Self 언어**(Xerox PARC, 1987)는 이 이론을 프로그래밍으로 구현:
+**Self 언어**(Xerox PARC, 1986 설계)는 이 이론을 프로그래밍으로 구현:
 - 클래스 없음. 모든 것이 구체 객체
 - 객체를 복제(cloning)해 파생
 - 메서드, 슬롯을 런타임에 추가, 삭제
@@ -65,7 +65,7 @@ a.say();   // 'Alice'
 b.say();   // 'Bob' — 같은 함수, 다른 this
 ```
 
-`this`는 **"누가 이 함수를 호출했는가"** 로 결정. 클래스의 `this`는 정의 시점에 고정이지만, JS는 **수신자(receiver)에 따라 동적**.
+`this`는 **"누가 이 함수를 호출했는가"** 로 결정. 클래스 기반 언어에서도 `this`는 그 메서드를 호출한 객체를 가리키지만(Java JLS 15.8.3) 메서드가 선언 클래스에 묶여 있다. JS는 같은 함수를 어떤 객체에나 붙일 수 있어 **수신자(receiver)에 따라 동적**.
 
 비트겐슈타인의 "단어의 의미는 **사용되는 문맥**에서 결정된다"와 정확히 일치.
 
@@ -83,7 +83,7 @@ user.role = 'admin';
 
 클래스는 정의 시점에 멤버가 고정되지만, JS 객체는 **언제든 속성 추가, 제거** 가능. 현실 세계의 "존재는 고정된 형상이 아니라 변화하는 관계망"이라는 세계관.
 
-## ES6 `class` — 문법적 설탕일 뿐
+## ES6 `class` — 프로토타입 위에 얹힌 문법 (단순 설탕은 아님)
 
 ```ts
 class Animal {
@@ -94,12 +94,12 @@ class Animal {
 
 내부는 여전히 프로토타입:
 ```ts
-// 위 class는 대략 아래와 동치
+// 위 class와 구조는 닮았지만 동치는 아니다 (아래 차이 참고)
 function Animal(name) { this.name = name; }
 Animal.prototype.speak = function() { return `${this.name} makes a sound`; };
 ```
 
-**표면만 바뀜**. 프로토타입 체인, 동적 바인딩, 런타임 확장 모두 그대로. 더글라스 크록포드 등은 `class` 도입이 "JS의 진짜 강점(유연성)을 숨긴다"고 비판.
+**객체 모델은 그대로**. 프로토타입 체인, 동적 바인딩, 런타임 확장은 class를 써도 변하지 않는다. 다만 문법 설탕에 그치지 않고 명세 수준의 제약이 더해진다 — class body는 자동 strict mode로 평가되고, instance method는 `prototype`에 non-enumerable로 정의돼 `for...in`에 잡히지 않으며, class constructor는 `new` 없이 호출하면 TypeError, class 이름 binding은 `let`처럼 TDZ를 가지고, `super`는 `this`가 아니라 `[[HomeObject]]`를 기준으로 해석된다. 그래서 위 constructor function 버전은 같은 코드가 아니다. 더글라스 크록포드 등이 `class` 도입을 비판한 지점은 문법이 프로토타입의 유연성을 가린다는 것이지 동작이 같다는 뜻은 아니다. 세부 규칙은 [[JavaScript-Class-Semantics]] 참조.
 
 ## 각 모델의 장단점
 
@@ -133,9 +133,9 @@ Animal.prototype.speak = function() { return `${this.name} makes a sound`; };
 
 ## 자주 헷갈리는 포인트
 
-- **`class` = 클래스 기반 OOP** 오해 — JS의 class는 프로토타입 위 설탕. 동작은 프로토타입
+- **`class` = 클래스 기반 OOP** 오해 — JS의 class는 새 상속 모델이 아니라 프로토타입 위 문법. 단, 단순 설탕도 아니어서 strict mode, non-enumerable method, `new` 강제, TDZ 같은 제약이 추가됨
 - **`prototype` 속성 vs `[[Prototype]]`** — 함수의 `prototype` 속성 ≠ 인스턴스의 숨겨진 `[[Prototype]]`(= `__proto__`). 둘은 연결되지만 같은 것이 아님
-- **`__proto__` vs `Object.getPrototypeOf()`** — 전자는 ECMAScript Annex B에 남은 legacy accessor이고 후자가 새 코드에 권장되는 표준 API
+- **`__proto__` vs `Object.getPrototypeOf()`** — 전자는 ECMAScript 본문 20.1.3.8에 Normative Optional, Legacy로 표시된 accessor(MDN 표기는 deprecated)이고 후자가 새 코드에 권장되는 표준 API
 - **상속이 강력한 도구가 아님** — 프로토타입이든 클래스든, 깊은 상속은 피하고 **합성**을 선호하는 게 현대 모범
 - **프로토타입 체인이 느리다** 오해 — V8의 hidden class 최적화 덕에 실제로 매우 빠름. 단, 동적으로 shape가 바뀌면 최적화가 깨짐
 - **프로토타입 = 오래된 방식** 오해 — React, Vue, Node.js 내부는 프로토타입 철학 위에 설계됨. 최신
@@ -145,13 +145,17 @@ Animal.prototype.speak = function() { return `${this.name} makes a sound`; };
 - **프로토타입 vs 클래스 기반 OOP**의 철학적 차이 (이데아 vs 가족 유사성)
 - **Self 언어** 가 JS에 준 영향
 - JS의 동적 특성(동적 `this`, 런타임 확장, lexical scope)이 모두 **"맥락이 의미를 결정"** 한다는 원칙의 구현임을 설명 가능
-- **ES6 `class`가 문법적 설탕**이라는 사실과 내부 동작
+- **ES6 `class`의 내부 동작** — 프로토타입 모델이 유지된다는 점과, 그럼에도 constructor function 패턴과 동치가 아닌 이유(strict mode, method descriptor, `new` 강제, TDZ, `super`의 `[[HomeObject]]`)
 - 프로토타입, 클래스 각각의 **장단점과 언제 유리한가**
 - TypeScript가 **두 세계를 어떻게 조화**시키는가 (정적 타입 + 프로토타입 유연성)
 
 ## 출처
 - [medium @limsungmook — 자바스크립트는 왜 프로토타입을 선택했을까](https://medium.com/@limsungmook/%EC%9E%90%EB%B0%94%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8%EB%8A%94-%EC%99%9C-%ED%94%84%EB%A1%9C%ED%86%A0%ED%83%80%EC%9E%85%EC%9D%84-%EC%84%A0%ED%83%9D%ED%96%88%EC%9D%84%EA%B9%8C-997f985adb42)
-- [ECMAScript 2024 Annex B — Object.prototype.__proto__](https://tc39.es/ecma262/2024/multipage/additional-ecmascript-features-for-web-browsers.html#sec-object.prototype.__proto__)
+- [ECMAScript — Object.prototype.__proto__ (Normative Optional, Legacy)](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.prototype.__proto__)
+- [MDN — Object.prototype.__proto__ (Deprecated)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/proto)
+- [ECMAScript — Class Definitions](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-class-definitions)
+- [Self — The Self language (Xerox PARC, 1986)](https://selflanguage.org/)
+- [Java Language Specification SE 21 — 15.8.3 this](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.8.3)
 
 ## 관련 문서
 - [[Prototype-Mechanism|프로토타입 동작 원리 (prototype 객체, constructor, __proto__, 체인)]]

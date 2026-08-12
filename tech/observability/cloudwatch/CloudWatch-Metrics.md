@@ -1,6 +1,7 @@
 ---
 tags: [observability, aws, cloudwatch, monitoring, logs, metrics]
 status: done
+verified_at: 2026-08-12
 category: "Observability"
 aliases: ["CloudWatch Metrics", "CloudWatch EMF"]
 ---
@@ -20,12 +21,14 @@ aliases: ["CloudWatch Metrics", "CloudWatch EMF"]
 
 | 계층 | 출처 | 주기 | 비용 |
 |------|------|------|------|
-| **기본 모니터링** | AWS 서비스 자동 (EC2 CPU, ALB Request, RDS) | **5분** | 무료, 자동 활성화 |
-| **상세 모니터링** | EC2 등 옵션 활성화 | **1분** | 추가 비용, 선택 사항 |
+| **기본 모니터링 (EC2)** | EC2 자동 수집 | **5분** | 추가 과금 없음, 자동 활성화 |
+| **상세 모니터링 (EC2)** | EC2 옵션 활성화 | **1분** | 추가 비용, 선택 사항 |
 | **커스텀 메트릭** | 앱이 `PutMetricData`로 전송 (AWS CLI/API) | 임의 | 메트릭당 월정액 |
 | **고해상도** | 1초 단위 (high-resolution) | 1초 | 비용↑↑ |
 
 EC2 기본 수집 항목: **CPU, Network, Disk, Status Check**. **메모리(Memory)는 기본 메트릭에 없음** — 시험 단골. 메모리, 디스크 사용률은 CloudWatch Agent로 커스텀 메트릭 수집.
+
+**기본/상세(5분 대 1분)는 EC2의 개념** — 다른 서비스의 기본 게시 주기는 서비스마다 다르다. ALB는 요청이 흐르는 동안 60초 간격으로(무트래픽 구간은 데이터포인트 결측), RDS는 기본 1분 주기로 메트릭을 보내므로 1분 지표를 얻으려고 상세 모니터링을 켤 필요가 없다. RDS의 Enhanced Monitoring은 CloudWatch 메트릭 주기를 바꾸는 기능이 아니라 OS 레벨 지표를 CloudWatch Logs로 보내는 별개 기능이다.
 
 ### Namespace, Dimension, Metric
 
@@ -68,3 +71,9 @@ JSON 로그 안에 메트릭을 임베드하면 CloudWatch가 자동 파싱:
 - **PutMetricData API 호출 0** — 로그 송출만으로 메트릭화
 - 로그, 메트릭 동일 시점 (디버깅 시 메트릭 → 로그 연결)
 - Lambda, ECS에 EMF SDK 적용 — 비용, 코드 단순화
+
+## 출처
+
+- [CloudWatch metrics for your Application Load Balancer — AWS](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-cloudwatch-metrics.html)
+- [Monitoring Amazon RDS metrics with Amazon CloudWatch — AWS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/monitoring-cloudwatch.html)
+- [Amazon CloudWatch Pricing — AWS](https://aws.amazon.com/cloudwatch/pricing/)

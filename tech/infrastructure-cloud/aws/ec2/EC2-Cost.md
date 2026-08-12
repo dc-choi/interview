@@ -12,8 +12,8 @@ aliases: ["EC2 비용 모델", "Savings Plans, Spot, Capacity Reservations"]
 | 모델 | 할인 | 적합 |
 |------|------|------|
 | On-Demand | 0% | 단기, 예측 불가 |
-| Reserved Instances (1, 3년) | ~30-60% | 안정적 24/7 워크로드 |
-| **Savings Plans** (Compute, EC2) | ~30-66% | 유연한 약정 (RI 후속) |
+| Reserved Instances (1, 3년) | ~30-72% (Standard 기준, Convertible 최대 66%) | 안정적 24/7 워크로드 |
+| **Savings Plans** (Compute, EC2) | ~30-72% (EC2 Instance 기준, Compute 최대 66%) | 유연한 약정 (RI 후속) — 상세는 [[AWS-Cost-Optimization]] |
 | **Spot** | ~70-90% | 중단 허용 배치, stateless |
 | Dedicated Host | premium | 라이선스 BYOL, 컴플라이언스 |
 

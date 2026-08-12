@@ -71,12 +71,12 @@ Spring Boot에서는 내장 서블릿 컨테이너(기본 Tomcat)를 사용하�
 
 ## Non-Blocking 대안: Spring WebFlux
 
-WebFlux는 서블릿 API를 쓰지 않고 **Netty(기본), Undertow, Jetty(리액티브 모드)** 위에서 동작한다.
+WebFlux는 **서블릿 컨테이너(Tomcat, Jetty)와 Netty 같은 non-서블릿 런타임** 양쪽에서 동작한다. 서블릿 컨테이너 위에서 돌 때는 **Servlet non-blocking I/O**를 쓰고, spring-web이 이를 Reactive Streams 백프레셔로 잇는다(`ServletHttpHandlerAdapter`). 서블릿 API가 저수준 어댑터 뒤에 숨어 애플리케이션 코드에 노출되지 않을 뿐, 안 쓰는 것은 아니다. 다만 공식 문서는 WebFlux에서 서블릿 필터 매핑이나 서블릿 API 직접 조작은 피하라고 권고한다.
 - Thread-per-Request 모델을 버리고 **이벤트 루프 + 워커 풀**
 - `DispatcherHandler`가 `DispatcherServlet`을 대체
 - 한 스레드가 수만 커넥션을 관리 → WebSocket, SSE, 스트리밍 유리
 
-따라서 "Spring Container는 Servlet Container 위에서 동작한다"는 명제는 **Spring MVC에만 해당**하며, WebFlux에서는 맞지 않다.
+따라서 "Spring Container는 Servlet Container 위에서 동작한다"는 명제는 **Spring MVC에서는 필수 전제**지만, WebFlux에서는 **선택지 중 하나**다. WebFlux는 서블릿 컨테이너를 요구하지 않고 Netty 같은 non-서블릿 런타임에서도 동작하며, 서블릿 컨테이너에 배포하더라도 요청을 받는 쪽은 `DispatcherServlet`이 아니라 `DispatcherHandler`다.
 
 ## 흔한 오해
 
@@ -95,6 +95,8 @@ WebFlux는 서블릿 API를 쓰지 않고 **Netty(기본), Undertow, Jetty(리�
 
 ## 출처
 - [sigridjin — ServletContainer와 SpringContainer는 무엇이 다른가](https://sigridjin.medium.com/servletcontainer%EC%99%80-springcontainer%EB%8A%94-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%A4%EB%A5%B8%EA%B0%80-626d27a80fe5)
+- [Spring Framework Reference — Reactive Spring Web (Server)](https://docs.spring.io/spring-framework/reference/web/webflux/reactive-spring.html)
+- [Spring Framework Reference — Spring WebFlux 개요](https://docs.spring.io/spring-framework/reference/web/webflux/new-framework.html)
 
 ## 관련 문서
 - [[Spring|Spring 개요 (IoC, DI, AOP)]]
