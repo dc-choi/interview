@@ -62,7 +62,7 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 검색엔진 선택은 기능을 얻는 결정이 아니라 비용을 옮기는 결정이다.
 
 - 동기화 파이프라인이 하나의 운영 시스템이 된다. dual-write gap, 이벤트 순서 역전, reconciliation, freshness SLO 전부 [[OpenSearch-Indexing-Internals|색인 내부]]의 동기화 섹션과 [[OpenSearch-Indexing-Pipeline-Reliability|파이프라인 신뢰성]]이 다루는 비용이다.
-- 다중 행 transaction, foreign key, join이 없다. 역정규화로 join 비용을 쓰기로 옮기므로 원본 한 건 변경이 갱신할 검색 문서 수를 설계해야 한다.
+- 다중 행 transaction과 foreign key가 없고, 검색 경로에 쓸 수 있는 범용 join도 없다. 역정규화로 join 비용을 쓰기로 옮기므로 원본 한 건 변경이 갱신할 검색 문서 수를 설계해야 한다. 관계를 어떤 문서 구조로 실체화할지는 [[OpenSearch-Entity-Relationship-Search|개체 관계 검색 모델링]]이 다룬다.
 - 기본 `refresh_interval` 1초의 near real-time이라 read-after-write가 필요한 화면은 검색엔진이 아니라 원본 DB를 읽게 경로를 나눠야 한다.
 - mapping 비호환 변경은 reindex와 alias 전환이 필요하고, 클러스터 자체가 관리 대상이다(관리형이어도 [[OpenSearch-Service-Deployment|책임 경계]]가 남는다).
 

@@ -117,6 +117,7 @@ Nested `docvalue_fields`와 `stored_fields`는 top-level 요청이 아니라 `in
 
 - [[OpenSearch|OpenSearch 학습 지도]]
 - [[OpenSearch-Mapping-Text-Analysis#object, nested, flat_object|nested 매핑 선택]]
+- [[OpenSearch-Entity-Relationship-Search|개체 관계 검색 모델링]]
 - [[OpenSearch-Query-Relevance|Query DSL과 관련도]]
 - [[OpenSearch-Search-Features|응답 field와 collapse]]
 - [[OpenSearch-Performance-Troubleshooting|검색 성능 진단]]

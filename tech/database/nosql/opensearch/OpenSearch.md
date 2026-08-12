@@ -140,6 +140,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 - [[OpenSearch-Autocomplete|자동완성 설계]]
 - [[OpenSearch-Search-Features|Highlight, 응답과 검색 실행 제어]]
 - [[OpenSearch-Query-Understanding|오타 교정, 초성 검색과 검색어 전처리]]
+- [[OpenSearch-Entity-Relationship-Search|인물과 출연작 같은 개체 관계 검색 모델링]]
 - [[OpenSearch-Aggregations-Pagination|집계, 패싯, 정렬과 페이지네이션]]
 - [[OpenSearch-Popular-Keywords-TopK|OpenSearch, Redis, 스트림 기반 인기 검색어 top-k 설계]]
 - [[OpenSearch-JavaScript-Client|opensearch-js 연결, SigV4 서명과 기본 호출]]

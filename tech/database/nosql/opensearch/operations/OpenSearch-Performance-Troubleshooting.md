@@ -57,7 +57,7 @@ OpenSearch Benchmark로 실제 문서와 query 비율을 재현한다. 단일 bu
 
 ## 검색용 field model
 
-- `nested`는 내부 객체를 별도 Lucene document처럼 저장하고 parent-child `join`은 비용이 큰 joining query다. 관계 의미가 필요하면 사용하되 읽기 비중이 높고 갱신 fan-out을 감수할 수 있을 때 역정규화를 비교한다.
+- `nested`는 내부 객체를 별도 Lucene document처럼 저장하고 parent-child `join`은 비용이 큰 joining query다. 관계 의미가 필요하면 사용하되 읽기 비중이 높고 갱신 fan-out을 감수할 수 있을 때 역정규화를 비교한다. 구조 선택 기준은 [[OpenSearch-Entity-Relationship-Search|개체 관계 검색 모델링]]을 따른다.
 - `copy_to`는 여러 field의 원시 값을 검색용 field로 복사해 query를 단순화하지만 `_source`를 바꾸거나 관계 의미를 보존하지 않는다. 반복되는 안정적인 계산값의 사전 계산도 query-time script를 줄이는 대신 쓰기, 저장과 재색인 비용을 늘린다.
 
 ## 검색 latency
