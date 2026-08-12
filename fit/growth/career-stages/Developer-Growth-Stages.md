@@ -55,7 +55,7 @@ aliases: ["Developer Growth Stages", "개발자 성장 단계", "주니어에서
 
 ### 계단형
 
-성장은 매일 균등히 쌓이지 않는다. **한 단계 안에서는 정체 → 다음 단계로 도약 → 또 정체**. 벽 앞에서 "내가 발전 없다"고 느끼는 시기가 반복되는 건 정상.
+성장은 매일 균등히 쌓이지 않는다. **한 단계 안에서는 정체 → 다음 단계로 도약 → 또 정체**. 벽 앞에서 "내가 발전 없다"고 느끼는 시기가 반복되는 건 정상. 정체기는 다음 계단을 오르기 위한 압축 기간이라, 이 시기에 몇 주 단위로 새 기술만 갈아타며 도망치면 계단 하나도 제대로 오르지 못한다 — 갈아타기 사이클의 구조는 [[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]] 참조. 슬럼프와 번아웃의 구분과 처방은 [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]] 참조.
 
 ### 신체 학습
 
@@ -111,7 +111,7 @@ aliases: ["Developer Growth Stages", "개발자 성장 단계", "주니어에서
 - **A-Z 독립 구축** — 인프라, CI/CD, DB까지 전체 책임
 - **공개 글쓰기, 발표** — 모호한 이해를 언어로 정리
 
-## 입사 6개월 슬럼프와 이직 판단
+## 입사 6개월 차 회의감과 이직 판단
 
 입사 초반의 흥분이 가라앉는 6개월 전후에 기대와 현실의 괴리가 온다 — 레거시 코드, 반복 업무, 성장이 안 느껴지는 막막함. 이 감각 자체는 정상이며 잘못된 선택의 신호가 아니다. 코드베이스 숙련, 팀 패턴 인식, 질문 수준 향상 같은 실제 성장은 대개 **6개월~1년 사이에 시작**된다. 핵심은 무조건 버티는 것이 아니라 **떠나는 이유를 구분**하는 것이다.
 
@@ -139,10 +139,13 @@ aliases: ["Developer Growth Stages", "개발자 성장 단계", "주니어에서
 - [이브레인 — 소프트웨어 개발자 성장의 5단계](https://www.ebrain.kr/article?id=41)
 - [Jay's Code Factory — 4년차 개발자의 성장 곡선](https://jay-ji.tistory.com/100)
 - [6개월 차에 그만두고 싶다는 개발자에게 — Team Grit](https://teamgrit.co/article/280)
+- [개발자 슬럼프 극복법 — Team Grit](https://teamgrit.co/article/505)
 
 ## 관련 문서
 - [[Developer-Growth-Stages-Junior-To-Mid|주니어 → 미드레벨 전환 7단계]]
 - [[Growth-Principles|성장의 7가지 원칙]]
+- [[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]]
+- [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]]
 - [[Career-Attitude|커리어 태도와 비선형 경로]]
 - [[First-90-Days|새 직장 첫 90일 원칙]]
 - [[Toxic-Org-Detection|독성 조직 판별 프레임]]

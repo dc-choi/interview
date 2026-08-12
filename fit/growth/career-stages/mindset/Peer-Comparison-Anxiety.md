@@ -61,7 +61,7 @@ aliases: ["Peer Comparison Anxiety", "동료 비교 불안", "뒤처짐 신호 �
 - [[Self-Belief|자기 믿음]] — 타인의 평가는 타인의 것, 자기충족 예언
 - [[Self-Knowledge-Through-Others|타인을 통한 자기 인식]] — 내가 생각한 나 vs 진짜 나
 - [[Developer-Growth-Stages|개발자 성장 단계]] — 계단형 성장, 정체기는 정상
-- [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]] — 뒤처짐 불안과 회복
+- [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]] — 번아웃과 슬럼프 구분, 뒤처짐 불안과 회복
 - [[Self-Development-While-Working|일하면서 자기계발]] — 흔한 함정의 동료 비교
 - [[Self-Analysis|자기 분석 (확신 vs 정보)]] — 불안의 정체 분해
 - [[Code-Review-Culture|생산적 코드 리뷰 문화]] — 리뷰 문화와 피드백 톤
