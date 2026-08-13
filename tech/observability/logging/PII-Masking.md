@@ -37,6 +37,24 @@ aliases: ["PII Masking", "PII 마스킹", "민감정보 마스킹", "로그 마�
 
 평문 문자열 로그는 정규식으로 잡아야 해 누락이 잦다. **구조화 로깅(JSON)이면 필드 단위**로 허용/마스킹을 강제할 수 있어 정확하다. [[Structured-Logging]]
 
+## 관측 싱크 전체를 하나의 경계로 본다
+
+한 로거에 sanitizer를 넣어도 다른 전송 경로가 남으면 보호가 끝난 것이 아니다. 값이 복제되는 경로를 기준으로 inventory한다.
+
+- 애플리케이션 로그와 stdout
+- trace tag, query source와 span resource
+- error reporter의 context와 extra
+- 감사 로그, 분석 event와 metric label
+- queue payload, DLQ와 실패 시 fallback sink
+
+각 싱크에서 같은 default-closed 직렬화 규칙을 사용하고, 허용된 진단 필드만 내보낸다. 특히 요청의 key 이름이 client가 정할 수 있는 구조에서는 `password` 같은 이름의 denylist를 우회할 수 있으므로 key 관례를 보안 경계로 삼지 않는다.
+
+검증도 sanitizer 함수 하나에서 끝내지 않는다. 비관례적 key, 중첩 객체, 배열, 인라인 값과 예외 경로를 포함한 fixture를 실제 활성 싱크까지 보내 민감값이 남지 않는지 확인한다.
+
+## 이미 저장된 값은 별도 대응한다
+
+코드 수정은 앞으로의 노출만 막는다. 과거 노출 가능성이 있으면 보존 기간, 접근자, 복제와 export 범위를 확인하고 삭제, 자격증명 회전, token 폐기와 통지 필요성을 별도로 판단한다. 저장 단계의 scanner가 있었다면 범위를 줄이는 증거일 뿐, 생성 시점 차단을 미룰 근거는 아니다.
+
 ## 컴플라이언스
 
 개인정보보호법, GDPR, PCI-DSS는 민감정보의 저장/보관을 규제한다. 로그 보존 기간([[Long-Term-Retention]])과 결합해 **수집 최소화 + 마스킹 + 보존 한도**를 함께 설계해야 한다.
