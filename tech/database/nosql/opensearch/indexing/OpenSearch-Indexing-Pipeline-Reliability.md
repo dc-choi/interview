@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, cdc, reconciliation, dlq]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-08-13
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Indexing Pipeline Reliability", "색인 파이프라인 신뢰성", "검색 정합성 검증"]
 ---
@@ -24,12 +24,23 @@ aliases: ["OpenSearch Indexing Pipeline Reliability", "색인 파이프라인 �
 
 색인 지연은 평균이 아니라 꼬리로 본다. 대부분 문서가 1초 안에 붙는데 특정 파티션만 1시간 밀리는 장애가 평균에는 묻힌다.
 
+## 성공 계약은 실행 끝까지 이어진다
+
+전송 성공과 작업 성공을 구분한다. Bulk API가 HTTP 성공을 반환해도 응답 안의 일부 item은 실패할 수 있으므로 `errors`, item 수, 각 status와 error를 검사해야 한다.
+
+- 하위 계층의 부분 실패와 transport 오류는 호출자, job 종료 코드와 scheduler 상태까지 전파한다. `catch`로 삼키거나 실패 반환값을 무시하면 재시도와 알람이 모두 정상 성공으로 기록된다.
+- retry할 batch는 live buffer에서 원자적으로 분리해 새 입력과 격리하고, durable 성공까지 in-flight 상태로 보존한다. 실패하면 같은 batch를 재시도하거나 durable queue에 되돌리며, 성공 전에 유일한 retry copy를 버리지 않는다.
+- 요청 수명 밖의 비동기 색인은 process가 종료되기 전에 모두 await한다. 정상 배포의 graceful shutdown도 데이터 유실 경계다.
+- 최종 성공은 "API가 응답했다"가 아니라 item 성공, process 성공과 정합성 확인이 같은 결과를 가리키는 상태다.
+
+Exactly-once 실행을 먼저 만들 필요는 없다. 외부 ID와 version guard로 retry를 멱등하게 만들고, 실패를 숨기지 않으며 reconciliation을 복구 안전망으로 두는 편이 작고 검증 가능하다.
+
 ## 증상별 진단
 
-첫 갈림길은 `GET {index}/_doc/{id}`다. 신고된 문서를 `_id`로 직접 조회한다.
+첫 갈림길은 write가 도착한 concrete index와 custom routing 계약을 확인한 뒤 신고된 문서를 `_id`로 직접 조회하는 것이다. 애플리케이션이 alias에 쓴다면 단일 대상 또는 `is_write_index: true`인 대상을 먼저 해석한다. Document API는 하나의 index 또는 단일 index를 가리키는 alias만 받으므로 다중 index alias를 그대로 조회하지 않는다. 기본 routing이면 `GET {concrete-index}/_doc/{id}`, custom routing이면 색인할 때 쓴 값을 그대로 넣어 `GET {concrete-index}/_doc/{id}?routing={value}`를 사용한다. Custom routing 값을 빼거나 틀리면 정상 문서도 `found: false`가 된다.
 
-- 문서가 있고 내용도 맞다면 파이프라인이 아니라 query, analyzer, 권한 filter 문제다. `_explain`과 [[OpenSearch-Query-Relevance|query 진단]]으로 넘어간다.
-- 문서가 없거나 옛 값이면 파이프라인 문제다. 아래 표로 간다.
+- 정확한 target과 routing으로 조회한 문서가 있고 내용도 맞다면 파이프라인이 아니라 query, analyzer, 권한 filter 문제다. `_explain`과 [[OpenSearch-Query-Relevance|query 진단]]으로 넘어간다.
+- 같은 조건에서 문서가 없거나 옛 값이면 파이프라인 문제다. 아래 표로 간다.
 
 | 증상 | 원인 후보 | 확인 | 대응 |
 |---|---|---|---|
@@ -62,7 +73,7 @@ aliases: ["OpenSearch Indexing Pipeline Reliability", "색인 파이프라인 �
 
 - 엔진이 밀리면(bulk 429, thread pool queue 포화) 소비자가 속도를 줄인다. Consumer pause, batch 크기 축소, backoff가 수단이다. 이 시간은 곧 색인 지연으로 전가되므로 지연 알람과 함께 해석한다.
 - OpenSearch의 shard indexing backpressure는 노드가 넘어지기 전에 요청을 거부하는 장치이지만 기본값이 꺼져 있다. `shard_indexing_pressure.enabled`가 false이고, 켜도 `enforced`가 false인 동안은 지표만 쌓고 거부하지 않는다. 켜져 있다고 가정하고 소비자를 설계하면 오지 않는 신호를 기다리게 된다.
-- 그렇다고 429가 안 오는 것은 아니다. 기본 cluster에서 살아 있는 출처가 셋이다. Write thread pool queue 거부, node 수준 indexing pressure(`indexing_pressure.memory.limit`, 기본 heap의 10퍼센트, 끄는 flag가 없어 항상 동작), circuit breaker다. 429는 장애가 아니라 속도를 줄이라는 신호이되, `_nodes/stats`의 `thread_pool.write.rejected`, `indexing_pressure.memory.total.*_rejections`, `breakers.*.tripped`로 어느 쪽인지 가른 뒤 대응한다. 분류 순서는 [[OpenSearch-Performance-Troubleshooting#Thread pool과 429|429 대응 순서]], 기본값 구분은 [[OpenSearch-Performance-Troubleshooting#Backpressure|backpressure]]가 정본이다.
+- 그렇다고 요청 거부가 사라지는 것은 아니다. 기본 cluster에도 write thread pool queue, node 수준 indexing pressure(`indexing_pressure.memory.limit`, 기본 heap의 10퍼센트)와 circuit breaker가 있다. 거부 응답은 속도를 줄이라는 신호이되, `_nodes/stats`의 `thread_pool.write.rejected`, `indexing_pressure.memory.total.*_rejections`, `breakers.*.tripped`로 어느 쪽인지 가른 뒤 대응한다. 분류 순서는 [[OpenSearch-Performance-Troubleshooting#Thread pool과 429|429 대응 순서]], 기본값 구분은 [[OpenSearch-Performance-Troubleshooting#Backpressure|backpressure]]가 정본이다.
 - Backfill과 서비스 증분 색인이 같은 cluster 자원을 두고 경쟁한다. 시간대 분리나 backfill 속도 상한을 두고, 적재 구간의 setting 조정은 [[OpenSearch-Data-Ingestion#대량 적재 구간의 setting 조정|정본]]을 따른다.
 
 ## 복구 우선순위
@@ -86,7 +97,13 @@ Read model이라는 사실이 복구 전략의 근거다.
 ## 출처
 
 - [Bulk API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/bulk/)
+- [Document APIs - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/)
+- [Get document - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/get-documents/)
+- [Manage aliases API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/alias/aliases-api/)
+- [Routing metadata field - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/metadata-fields/routing/)
 - [Shard indexing backpressure - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/shard-indexing-backpressure/)
 - [Shard indexing backpressure settings - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/shard-indexing-settings/)
+- [Index settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
+- [Nodes Stats API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/nodes-apis/nodes-stats/)
 - [Debezium FAQ (delivery semantics) - Debezium](https://debezium.io/documentation/faq/)
 - [Transactional outbox pattern - AWS Prescriptive Guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
