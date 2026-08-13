@@ -9,12 +9,12 @@ description: Guide and record daily, weekly, monthly, event, milestone, and proj
 
 ## 시작 전 로드
 
-1. 루트 `CLAUDE.md`, `fit/CLAUDE.md`, `fit/growth/habits/Retrospective-Methods.md`와 `fit/growth/retrospectives/회고(Retrospectives).md`를 읽는다.
+1. 루트 `AGENTS.md`, `fit/AGENTS.md`, `fit/growth/habits/Retrospective-Methods.md`와 `fit/growth/retrospectives/회고(Retrospectives).md`를 읽는다.
 2. 회고 주제와 유형에 맞는 정본만 추가로 읽는다.
    - 성장 우선순위, WIP나 습관을 다루는 데일리, 주간 및 월간 회고: `fit/growth/Current-Goals-and-Roadmap.md`
    - 키노라이츠 업무 및 커리어 월간 회고: 위 로드맵의 월간 회고, `fit/growth/career-stages/Kinolights-Engineer-Growth-Direction.md`의 진행 중인 행동 실험과 월간 점검, `fit/growth/Kinolights-Performance-Playbook.md`의 기록 루프와 점검 시점
-   - 행사나 프로젝트 종료: 사용자가 지정한 계획, 결과와 피드백 자료 및 대상 경로의 `CLAUDE.md`
-3. 학습 주제나 트랙 상태를 판단할 때만 `fit/growth/learning/CLAUDE.md`와 해당 로드맵을 읽는다.
+   - 행사나 프로젝트 종료: 사용자가 지정한 계획, 결과와 피드백 자료 및 대상 경로의 `AGENTS.md`
+3. 학습 주제나 트랙 상태를 판단할 때만 `fit/growth/learning/AGENTS.md`와 해당 로드맵을 읽는다.
 4. 같은 대상이나 기간의 기존 회고와 작업 트리 상태를 확인한다. 다른 변경은 수정하거나 함께 묶지 않는다.
 
 면접 회고는 기존 `fit/interview/` 구조와 면접 도메인 지침을 따르고 일반 회고 폴더로 옮기지 않는다.
@@ -47,7 +47,7 @@ description: Guide and record daily, weekly, monthly, event, milestone, and proj
 
 ## 기록 경계
 
-- 이 저장소의 일반 성장 회고는 `fit/CLAUDE.md`가 지정한 `fit/growth/retrospectives/`의 유형별 폴더에 기록한다.
+- 이 저장소의 일반 성장 회고는 `fit/AGENTS.md`가 지정한 `fit/growth/retrospectives/`의 유형별 폴더에 기록한다.
 - 관계, 신앙과 생활의 구체적인 내용은 공개 저장소에 기록하지 않는다. 별도 비공개 회고 여부와 운동, 독서처럼 공개 정본에서 이미 관리하는 습관의 상태 및 공개 가능한 결정은 남길 수 있다.
 - 별도 비공개 저장소나 문서를 자동으로 만들지 않는다. 사용자가 명시적으로 요청할 때만 다룬다.
 - 타인의 실명과 연락처, 본인의 처우 금액, 내부 링크, 사내 Task ID, 비공개 운영 수치와 민감한 운영 정보를 쓰지 않는다.
@@ -80,7 +80,7 @@ aliases: ["회고를 식별하는 이름"]
 
 - WIP, 유지 기준이나 집중 자리가 바뀌면 `Current-Goals-and-Roadmap.md`의 해당 정본만 갱신한다.
 - 학습 트랙 상태가 바뀌면 가장 구체적인 로드맵을 먼저 갱신하고 참조 문서의 상태 표현만 동기화한다.
-- 커리어 스탠스가 바뀌면 `fit/CLAUDE.md`를 갱신한다.
+- 커리어 스탠스가 바뀌면 `fit/AGENTS.md`를 갱신한다.
 - 행사나 프로젝트의 후속 문서는 사용자가 확정한 행동이 직접 영향을 줄 때만 최소 수정한다.
 - 기술 사례 전환, 비공개 기록 생성, 커밋과 푸시는 사용자가 별도로 요청할 때만 수행한다.
 

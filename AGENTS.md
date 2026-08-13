@@ -1,33 +1,118 @@
-# Codex Project Instructions
+# Repository Rules
 
-This repository is used with both Claude and Codex. `CLAUDE.md` files are the canonical repository rules and user context. `AGENTS.md` is a thin Codex router and must not duplicate domain rules.
+## Instruction Scope
 
-## Instruction Loading
+- 이 파일에는 저장소 전체에 적용되는 규칙만 둔다. 특정 도메인에만 필요한 규칙과 사용자 컨텍스트는 대상 경로의 `AGENTS.md`에 둔다.
+- 작업 전 저장소 루트부터 대상 경로까지 존재하는 `AGENTS.md`를 모두 읽는다. 관련 없는 형제 도메인의 지침은 미리 읽지 않는다.
+- 현재 도메인 지침은 `fit/AGENTS.md`, `fit/interview/AGENTS.md`, `fit/job-search/AGENTS.md`, `fit/growth/learning/AGENTS.md`, `tech/AGENTS.md`에서 관리한다.
+- 반복 실행 절차는 `.claude/skills/`와 `.agents/skills/`에서 관리한다. 도메인 `AGENTS.md`에는 결과를 제약하는 불변 규칙만 둔다.
+- 루트 파일에서 도메인 지침을 import하지 않는다. Claude의 하위 경로 로딩과 Codex의 `AGENTS.md` 라우팅을 사용한다.
+- 파일 경로가 없는 대화형 요청도 주제로 대상 도메인을 정하고 다음 지침을 읽는다.
+  - 커리어 판단, 회고, 피드백과 목표 설정은 `fit/AGENTS.md`
+  - 면접 준비, 답변, 회사별 분석과 회고는 `fit/AGENTS.md`, `fit/interview/AGENTS.md`
+  - 구직, 채용 트래커, 이력서와 포트폴리오는 `fit/AGENTS.md`, `fit/job-search/AGENTS.md`
+  - 학습 계획, 로드맵, 우선순위와 진행 판단은 `fit/AGENTS.md`, `fit/growth/learning/AGENTS.md`
+  - 기술 지식, 기술 문서와 카테고리 인덱스는 `tech/AGENTS.md`
+- 여러 도메인이 걸리면 관련 도메인만 함께 읽고, 주제가 근거 확인 뒤에도 불명확하면 사용자에게 묻는다.
+- 적용 가능한 지침 체인이 불명확하면 `rg --files -g 'AGENTS.md' -g 'CLAUDE.md'`로 확인한다.
+- 활성 system 지침과 developer 지침을 먼저 적용하고 최신 사용자 요청을 그다음 적용한다.
+- 규칙이 충돌하면 대상 경로에 더 가까운 지침이 우선한다.
 
-- Before working, read the root `CLAUDE.md` and every `CLAUDE.md` from the repository root to the target path.
-- When no target path is given, infer the domain from the request using the routing table below and read the same instruction chain before answering or changing files.
-- When a task spans multiple target paths, read only the domain files for those paths. Do not preload unrelated sibling-domain instructions.
-- Use `rg --files -g 'CLAUDE.md' -g 'AGENTS.md'` when the applicable instruction chain is unclear.
-- Apply active system and developer instructions first, then the latest user request. Within repository instructions, load the root first and the closest domain last so the closest domain governs domain-only conflicts.
+## 작업 중 불확실성 확인
 
-| Target path or request topic | Additional canonical instructions |
-|---|---|
-| `fit/**` or career, reflection, feedback and goal-setting tasks | `fit/CLAUDE.md` |
-| `fit/interview/**` or interview preparation, answers, company analysis and retrospectives | `fit/CLAUDE.md`, then `fit/interview/CLAUDE.md` |
-| `fit/job-search/**` or job search, tracker, resume and portfolio tasks | `fit/CLAUDE.md`, then `fit/job-search/CLAUDE.md` |
-| `fit/growth/learning/**` or learning plans, roadmaps, priorities and progress | `fit/CLAUDE.md`, then `fit/growth/learning/CLAUDE.md` |
-| `tech/**` or technical knowledge, technical documents and category indexes | `tech/CLAUDE.md` |
+- 작업 중 의문이 생기면 임의의 가정으로 메우지 않는다. 소스나 공식 자료로 확인할 수 있는 사실은 먼저 확인하고, 확인 뒤에도 작업 의도, 범위, 자료의 역할, 우선순위 또는 결과 해석에 의문이 남으면 반드시 사용자에게 묻고 답을 받은 뒤 진행한다.
+- 특히 주자료와 보충 자료의 구분, 학습 순서, 기존 내용의 삭제나 보존처럼 결과의 방향을 바꾸는 판단을 사용자 확인 없이 대신 결정하지 않는다.
+
+## 학습 확인
+
+- 한 번 통과한 주제도 영구 숙달로 간주하지 않는다. 같은 주제의 후속 학습에서 간격을 두고 짧은 회상 또는 실무 적용 퀴즈를 1~2회 더 내고, 틀린 부분만 보강한다.
+- 사용자의 가벼운 짜증 표현만으로 복습을 중단하지 않는다. 사용자가 명시적으로 중단을 요청하면 멈춘다.
+
+## Git Identity
+
+- `~/myown/` 아래 레포는 **무조건 개인 계정**(`dc-choi <ddagae0805@gmail.com>`)으로 커밋, 푸시한다. 커밋 전 `git var GIT_AUTHOR_IDENT`로 identity를 확인하고, 다르면 커밋하지 말고 설정부터 잡는다.
+- 이 레포는 **개인 장비와 회사 장비 양쪽에서 사용**한다. identity와 SSH 키 설정은 전부 머신 로컬(`~/.gitconfig`, `~/.ssh`)이므로 장비별로 각각 잡혀 있어야 하고, 세션은 지금 장비의 상태만 확인하면 된다.
+- 회사 장비(markui-MacBookPro)에는 `~/.gitconfig`의 `includeIf "gitdir:~/myown/"` → `~/.gitconfig-personal`(identity + 개인 SSH 키 core.sshCommand)로 강제해 둠 (2026-07-02). 다른 머신에서 identity가 비어 있거나 회사 계정이면 같은 구조로 설정한다.
+- **Why**: 글로벌 git identity가 없는 상태로 커밋하면 `mark@<hostname>` 같은 자동 추정 값이 공개 레포 히스토리에 박힌다. 회사 장비에서는 글로벌을 회사 identity로 쓰더라도 개인 레포는 includeIf로 덮는 구조 유지. SSH도 마찬가지 — 회사 키로는 개인 레포 푸시가 거부된다(계정 불일치).
+
+## 표기 규칙 (문체)
+
+- **가운뎃점(U+00B7, 미들돗) 전면 사용 금지.** 외부 제출 텍스트(면접 답변, 폼 제출문)뿐 아니라 **내부 문서, 메타 노트, 표, 위키링크 구분자까지 어디에도 쓰지 않는다.** 항목을 나열할 땐 쉼표(,)나 자연스러운 연결어("~와", "~하고")로 잇는다.
+- 적용 범위: 새로 생성하는 모든 텍스트 (채팅 응답, 신규 문서, 폼 답변). **기존 문서도 발견하거나 편집으로 손대면 그 자리에서 제거한다** (이전의 '일괄 치환 안 함' 예외는 폐지).
+- **따옴표("")를 강조 용도로 쓰지 않는다.** 실제 발화나 사고의 인용, 글이나 책의 제목 인용, 표현이나 용어 자체를 지칭하는 인용은 허용한다 — 금지 대상은 단어나 문장을 도드라지게 하려는 강조 용법이다. 외부 제출문(폼 답변, 자기소개, 이메일)은 사람이 직접 쓴 것처럼 읽혀야 하므로 AI 특유의 흔적(따옴표 강조, 과한 대구, 군더더기 연결어, 이모지)을 피하고, 면접 답변문에 특히 엄수한다.
+
+## 개인정보 (PII) 익명화
+
+- **타인의 실명과 연락처는 vault에 평문으로 저장하지 않는다.** 면접관, HR, 채용담당자, 레퍼리, 회사 팀원 등 모든 제3자는 **역할 기반 표기로 익명화**하고, 전화번호, 이메일 등 연락처는 저장하지 않거나 `[연락처]`로 대체한다.
+  - 예: `홍길동 인사매니저` → `인사담당자`, `김OO 과장 + 연락처` → `채용담당자`, 레퍼리 → `전 직속 상사`, `동료 A`, `사이드 프로젝트 리드`.
+- **본인 실명도** 자기소개 문장 등에서는 `[이름]` 플레이스홀더로 둔다.
+- **내 처우/연봉 금액은 저장하지 않는다.** 합격 오퍼의 연봉, 기본급, 상여, 사이닝 등 본인이 받았거나 제안받은 처우 수치는 트래커, 회사 폴더, 회고 어디에도 적지 않는다. `처우 4항목 서면 합의`, `처우 합의 완료`처럼 사실만 남기고 금액은 비운다.
+  - **공개 정보는 예외**: 잡플래닛 평균연봉, 채용공고에 명시된 연봉밴드, 시장 시세 가이드 같은 공개 통계는 유지한다 (내 개인 정보가 아니라 공고 타겟팅 자료).
+  - **Why**: 2026-06-18 공개 저장소 히스토리에 윤회와 이공이공 처우 금액이 노출돼 filter-repo로 스크럽한 전례. 처우는 협상력과 직결된 민감 정보다.
+- **적용 범위**: 새 문서는 처음부터 익명으로 작성하고, 기존 문서에서 실명이나 연락처를 발견하거나 편집으로 손대면 그 자리에서 익명화한다 (표기 규칙과 동일한 적용 원칙).
+- **Why**: 이 저장소는 공개(public)될 수 있고, 타인의 PII는 본인이 노출할 권리가 없다. 2026-06-16 공개 상태에서 면접관, 레퍼리 전화번호가 히스토리째 노출돼 filter-repo로 전수 스크럽한 전례가 있다.
+- **예외**: 공개 출판물과 공개 발표의 저자, 발표자 표기(`## 출처`의 바이라인, 세미나와 밋업 기록의 발표자명, 강연자명 등)는 인용 귀속이라 유지할 수 있다. 공인의 공개 활동명을 기술 예시나 도메인 예시로 인용하는 경우(예: 검색 설계 예시의 배우명과 작품명)도 같다 — 공개 페르소나는 보호할 연락처나 사적 정보가 아니다 (2026-08-12).
+
+## Document Length
+
+- 마크다운 문서가 **200줄을 초과하면 주제 단위로 분할**할 것. 사람과 AI가 파일을 인식하기에 200줄이 실용적 한계다.
+- 분할 방식은 **Parent-as-TOC 패턴**을 기본으로 한다:
+  1. 원본 파일명은 그대로 두고 내용만 30줄 이내 TOC(목차)로 교체 (프론트매터 `status: index`)
+  2. 섹션별 내용은 새 형제 파일 `<원본>-<주제>.md`로 분리 (프론트매터 `status: done`)
+  3. 외부 위키 링크 `[[원본]]`은 그대로 유효하다. 대상 카테고리 인덱스 반영 여부는 해당 도메인 규칙을 따르고, 규칙이 없으면 대상 카테고리 인덱스를 갱신한다
+- **분할 제외 대상** (200줄 초과여도 분할하지 않음):
+  1. 인덱스 파일 (`status: index`) — 순수 TOC는 30줄 이내를 지향하되 로드맵형 학습 지도는 200줄을 넘을 수 있다
+  2. 트래커와 종료된 트래커 아카이브 (예: `Job-Search-Tracker.md` — 단일 파일 운영 필수)
+  3. 세미나 원본 (`status: seminar`)
+  4. 템플릿 파일
+  5. 슬라이드 원본 (frontmatter `marp: true` — 분할하면 프레젠테이션이 깨짐)
+  6. 지침 로더 (`CLAUDE.md`, `AGENTS.md`) — 일반 Parent-as-TOC로 분할하지 않고 전역 규칙은 루트, 경로 규칙은 더 가까운 지침 로더, 반복 절차는 Skill로 이동
+- 새 문서를 작성할 때도 이 규칙을 염두에 두고, 200줄에 근접하면 미리 분할을 검토한다. 200줄 초과 전의 선제 분할은 부모를 TOC로 전환하지 않고 주제 절만 `<원본>-<주제>.md`로 떼어낼 수 있다 (부모에는 위임 문장을 남기고, 대상 카테고리 인덱스는 갱신한다).
+
+## Folder Structure
+
+- 하나의 leaf 폴더(예: `tech/os-runtime/nodejs`)에 같은 주제 접두사를 공유하는 파일이 **3개 이상** 모이면 해당 접두사로 **하위 폴더**를 만들어 묶는다.
+  - 예: `Event-Loop.md`, `Event-Loop-Microtask.md`, `Event-Loop-Phases.md` → `event-loop/` 서브폴더로 이동
+  - 폴더명은 **kebab-case 소문자**, 원래 접두사와 매핑되도록
+  - **예외**: 부모 폴더명과 같거나 그에 상응하는 접두사(예: `resume/`의 `Resume-*`, `testing-quality/`의 `Test-*`)는 폴더 주제 자체이므로 이 규칙의 트리거로 세지 않는다 — 문면대로 적용하면 `resume/resume/` 같은 무의미한 중첩이 생긴다.
+- 폴더에 직접 든 파일이 **10개를 초과**하면 하위 폴더 유무와 무관하게 재분할을 적극 검토한다 (10개는 한 번에 훑기 가능한 실용 한계).
+- 10개 초과로 재분할할 때는 공유 접두사가 없어도 주제 단위로 하위 폴더를 만들 수 있다. 모든 분할에서 폴더 인덱스 파일명이 vault의 다른 파일과 동명(대소문자 무시)이 되거나 일반명사라 충돌 위험이 크면 `<폴더명>.md` 대신 대표 접두사형(예: `OpenSearch-Operations.md`, `JS-Prototype.md`)을 쓴다. 기존 `<폴더명>.md` 인덱스는 실제 충돌이 생길 때 개명한다.
+- 분할한 서브폴더에는 **폴더 단위 TOC 인덱스**를 둔다 (프론트매터 `status: index`). 파일명은 `<폴더명>.md` 또는 접두사 대표 파일이 이미 있으면 그걸 index로 승격.
+- **분할 제외 대상**:
+  - 템플릿/세미나 원본(`status: seminar|template|index`) — 분할 대상 아님
+- **위키링크 안전성**: Obsidian은 `[[파일명]]`을 파일명만으로 매칭하므로 이동 자체는 링크 안 깨짐. 단, **동명 파일 발생 금지** — 이동 후 중복되면 `<주제>-<세부>.md`로 명시 개명.
+- **작성 예정 항목 표기**: 아직 없는 문서를 `[[미작성-파일]]` 형태의 깨진 위키링크로 두지 않는다. 인덱스에는 `- [ ] 주제 (작성 예정: \`파일명\`)` 체크박스로 남기거나, 실제 파일을 만들고 frontmatter를 `status: todo`로 둔다. 위키링크는 실제 파일이 존재할 때만 사용한다.
+
+## Memory
+
+- auto memory 시스템(`~/.claude/projects/.../memory/`) 사용 금지. `.claude/settings.json`의 `autoMemoryEnabled: false`를 유지하고 메모리 파일을 생성, 수정하거나 조회하지 말 것.
+- 사용자 선호, 피드백, 커리어 정보 등 세션 간 유지가 필요한 정보는 루트 또는 가장 가까운 도메인의 `AGENTS.md`에 기록한다. 이유: 필요한 작업에서만 로드되고 git으로 여러 기기에 동기화되며 이력 추적도 가능하다.
 
 ## Workflow Skills
 
-- For company-specific interview preparation, read and use `.agents/skills/interview-prep/SKILL.md` after the applicable domain instructions.
-- For memo, lecture, seminar, blog or article organization, read and use `.agents/skills/memo/SKILL.md` after the applicable domain instructions.
-- For daily retrospectives including TIL or Today I Learned, and for weekly, monthly, event or project retrospectives, read and use `.agents/skills/retro/SKILL.md` after the applicable domain instructions.
-- Keep the matching `.claude/skills/` and `.agents/skills/` workflow bodies synchronized when either changes.
+- 회사별 면접 준비에는 Codex에서 `.agents/skills/interview-prep/SKILL.md`, Claude에서 `.claude/skills/interview-prep/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
+- 메모, 강의, 세미나, 블로그와 아티클 정리에는 Codex에서 `.agents/skills/memo/SKILL.md`, Claude에서 `.claude/skills/memo/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
+- 데일리 회고와 TIL, 주간, 월간, 행사 및 프로젝트 회고에는 Codex에서 `.agents/skills/retro/SKILL.md`, Claude에서 `.claude/skills/retro/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
+- 대응하는 `.claude/skills/`와 `.agents/skills/` 워크플로우 본문은 한쪽이 바뀌면 동기화한다. 단, Claude용 스킬의 읽기 경로는 `CLAUDE.md`, Codex용 스킬의 읽기 경로는 `AGENTS.md`를 사용하며 규칙을 수정하는 대상은 모두 정본인 `AGENTS.md`로 둔다.
 
-## Coexistence
+## Claude/Codex 공존
 
-- Do not delete, rename or convert `CLAUDE.md`, `.claude/` or other Claude files unless the user explicitly asks.
-- Codex helpers under `.agents/` must not replace Claude settings.
-- Keep durable project rules and user context in the root or closest domain `CLAUDE.md`, not only in this router.
-- MCP setup and machine-local configuration rules live in the root `CLAUDE.md`; do not duplicate them here.
+- 이 레포는 **Claude와 Codex를 함께** 쓴다. 저장소 규칙과 사용자 컨텍스트의 정본은 루트와 대상 경로의 `AGENTS.md`다. Codex는 `AGENTS.md`를 직접 읽고, Claude는 같은 경로의 `CLAUDE.md`에 있는 `@AGENTS.md` import를 통해 동일한 규칙을 읽는다.
+- **스킬은 두 곳에 중복 존재**: `.claude/skills/{memo,interview-prep,retro}/`와 `.agents/skills/{memo,interview-prep,retro}/`. 한쪽 스킬을 수정하면 frontmatter와 위의 도구별 읽기 경로 차이를 제외한 워크플로우를 다른 쪽에도 반영한다. 불변 규칙이 바뀌면 해당 도메인 `AGENTS.md`를 먼저 고친 뒤 양쪽 스킬을 동기화한다.
+- `CLAUDE.md`에는 같은 경로의 `@AGENTS.md` import만 두고 별도 규칙을 추가하지 않는다. `CLAUDE.md`, `.claude/`와 다른 Claude 파일은 사용자가 명시적으로 요청할 때만 삭제, 개명하거나 변환한다. `.agents/`는 호환 헬퍼일 뿐 Claude 설정을 대체하지 않는다.
+- MCP setup과 장비별 로컬 설정 규칙은 루트 `AGENTS.md`에서 관리한다. `.mcp.json`은 장비별 로컬 설정(gitignore)이라 커밋하지 않는다. Obsidian MCP는 저장소 안에서 아래 명령을 실행해 현재 장비의 저장소 루트를 계산해서 등록한다. Claude의 project scope는 로컬 `.mcp.json`을 만들고, Codex는 계산된 절대경로를 사용자 설정에 저장한다. `.mcp.json.example`은 수동 설정이 필요할 때만 사용한다.
+
+```bash
+claude mcp add --scope project obsidian -- npx -y obsidian-mcp "$(git rev-parse --show-toplevel)"
+codex mcp add obsidian -- npx -y obsidian-mcp "$(git rev-parse --show-toplevel)"
+```
+
+- **Why**: 규칙 본문을 `AGENTS.md`에 한 번만 두고 `CLAUDE.md`가 import하면 어느 도구로 작업하든 같은 정본을 읽어 드리프트를 막는다.
+
+---
+
+## 협업 톤
+
+- 감정적으로 힘든 상황(면접 탈락, 좌절 등)에서 차갑고 단답식 응대 금지.
+- **Why**: 사무적, 건조한 톤이 "띠껍다", "장난해?" 반응을 유발. 화풀이/감정 표현 상황에서 "뭘 되돌릴지 알려주세요" 식 기계적 응대는 역효과.
+- **How to apply**: 먼저 공감, 실수 인정은 변명 없이 깔끔하게. 과한 사과는 하지 말 것. 냉정한 조언은 OK — 냉정함과 차가움은 다름.

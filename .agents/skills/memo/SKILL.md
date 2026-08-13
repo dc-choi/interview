@@ -9,9 +9,9 @@ description: Organize pasted notes, lecture notes, seminar notes, learning notes
 
 ## 시작 전 필수 로드
 
-1. 루트 `CLAUDE.md`를 읽는다.
-2. 예상 대상이 `tech/`이면 `tech/CLAUDE.md`를 읽는다.
-3. 예상 대상이 `fit/`이면 `fit/CLAUDE.md`와 해당 하위 도메인의 `CLAUDE.md`를 읽는다.
+1. 루트 `AGENTS.md`를 읽는다.
+2. 예상 대상이 `tech/`이면 `tech/AGENTS.md`를 읽는다.
+3. 예상 대상이 `fit/`이면 `fit/AGENTS.md`와 해당 하위 도메인의 `AGENTS.md`를 읽는다.
 4. 대상 경로가 불명확하면 기존 인덱스와 파일을 확인한 뒤에도 남는 선택지만 사용자에게 묻는다.
 
 ## 입력 판별
@@ -72,7 +72,7 @@ aliases: ["English Name", "한글명"]
 ---
 ```
 
-`verified_at`은 `tech/CLAUDE.md`의 기술 문서 최신성 기준에 해당하는 문서에 공식 1차 출처를 대조한 날짜로 넣는다.
+`verified_at`은 `tech/AGENTS.md`의 기술 문서 최신성 기준에 해당하는 문서에 공식 1차 출처를 대조한 날짜로 넣는다.
 
 출처는 문서 하단에 둔다.
 
@@ -87,7 +87,7 @@ aliases: ["English Name", "한글명"]
 - 완료한 기존 계획 항목은 카테고리 인덱스에서 `[ ]`를 `[x]`로 바꾼다. 새 주제면 기존 형식에 맞춰 항목을 추가한다.
 - 지식 문서 하단의 `## 관련 문서`를 갱신한다.
 - 실제 대상이 존재하는지 확인한 뒤 `[[파일명|표시명]]`을 사용한다.
-- 루트와 도메인 `CLAUDE.md`의 문서 길이, 폴더 분할, PII와 표기 규칙을 따른다.
+- 루트와 도메인 `AGENTS.md`의 문서 길이, 폴더 분할, PII와 표기 규칙을 따른다.
 
 ## 세미나와 일반 학습 구분
 

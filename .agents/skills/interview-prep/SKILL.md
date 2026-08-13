@@ -11,11 +11,11 @@ description: Create company-specific interview preparation documents from a job 
 
 다음 파일을 전부 읽고 서로 충돌하는 내용이 있으면 사용자에게 확인한다.
 
-1. 루트 `CLAUDE.md`
-2. `fit/CLAUDE.md`
-3. `fit/interview/CLAUDE.md`
-4. `fit/job-search/CLAUDE.md`
-5. 기술 답변과 vault 내용을 다룰 때 `tech/CLAUDE.md`
+1. 루트 `AGENTS.md`
+2. `fit/AGENTS.md`
+3. `fit/interview/AGENTS.md`
+4. `fit/job-search/AGENTS.md`
+5. 기술 답변과 vault 내용을 다룰 때 `tech/AGENTS.md`
 
 ## 필수 입력
 
@@ -85,4 +85,4 @@ aliases: ["{회사영문명} Interview Prep", "{회사한글명} 면접 준비"]
 ---
 ```
 
-루트와 도메인 `CLAUDE.md`의 PII, 표기, 답변 배치 및 이력서 복제 금지 규칙을 그대로 적용한다.
+루트와 도메인 `AGENTS.md`의 PII, 표기, 답변 배치 및 이력서 복제 금지 규칙을 그대로 적용한다.
