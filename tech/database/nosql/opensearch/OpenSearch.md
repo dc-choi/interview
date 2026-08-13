@@ -73,7 +73,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 
 ## 단계별 로드맵
 
-단계의 완료는 문서를 읽었다는 체크가 아니라 문서를 보지 않고 아웃풋을 만들 수 있는지로 판단한다. 업무 중 짜투리에는 지정한 절만 읽고, 퇴근 후에는 설계와 실험에 집중한다.
+단계의 완료는 문서를 읽었다는 체크가 아니라 문서를 보지 않고 아웃풋을 만들 수 있는지로 판단한다. 각 단계의 현재 진도는 이 대화에서 확인한 근거만 반영한다. `미검증`은 모른다는 뜻이 아니라 아직 직접 확인하지 않았다는 뜻이다.
 
 | 단계 | 핵심 질문 | 퇴근 후 아웃풋 |
 |---:|---|---|
@@ -88,14 +88,25 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 
 - 목표: 이후 문서 대부분이 전제하는 인덱스, 매핑, analyzer, term, 역색인, 검색 응답의 실물을 손에 익힌다.
 - 읽기: 실행 중인 cluster가 없으면 [[OpenSearch-Local-Quickstart|Local Docker Quickstart]], 이어서 [[OpenSearch-Basics|OpenSearch 기초 — 요청과 응답의 실물]] 전체
-- [ ] 통과: 인덱스 생성부터 match 검색까지 네 요청을 문서 없이 작성하고, 응답의 `hits`와 `_score`를 설명한다.
+- 현재 진도:
+  - [ ] 실행 미검증: local cluster 응답과 상태 확인
+  - [ ] 실행 미검증: mapping을 포함한 index 생성
+  - [ ] 실행 미검증: 문서 색인과 ID 기반 GET
+  - [ ] 실행 미검증: `match` 검색과 `hits`, `_score` 해석
+- [ ] 시작 전 통과: 위 네 요청을 문서 없이 작성하고 응답을 설명한다.
 
 ### 0단계: 도입 판단
 
 - 목표: RDB 검색으로 충분한 요구와 OpenSearch가 필요한 요구를 구분한다.
 - 짜투리 읽기: [[OpenSearch-vs-RDB-Search#B-tree vs 역색인|B-tree vs 역색인]], [[OpenSearch-vs-RDB-Search#검색엔진 도입의 대가|검색엔진 도입의 대가]], [[OpenSearch-vs-RDB-Search#도입 판단 사다리|도입 판단 사다리]]
 - 퇴근 후 아웃풋: 익숙한 서비스 하나를 골라 요구, 검토한 대안, 새 운영 비용, 최종 판단을 네 문단으로 작성한다.
-- [ ] 통과: MySQL로 충분한 경우와 OpenSearch가 필요한 경우를 90초 안에 모두 설명한다.
+- 현재 진도:
+  - [x] RDB로 충분한 exact match, filter, sort 요구 구분
+  - [x] 형태소 분석, 초성, 유의어, relevance 같은 검색엔진 도입 신호 구분
+  - [x] 이중 저장소 정합성, 인프라 운영, 학습 비용 설명
+  - [x] 20만 건의 단순 요구에서는 MySQL을 선택하고 근거 설명
+  - [ ] 후속 회상: 다른 요구사항에서도 같은 기준으로 다시 판단
+- [x] 0단계 1차 통과: MySQL로 충분한 경우와 OpenSearch가 필요한 경우를 90초 안에 모두 설명한다.
 
 ### 1단계: 핵심 원리
 
@@ -103,7 +114,14 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 - 짜투리 읽기: [[OpenSearch-Mapping-Text-Analysis#필드 타입 선택|필드 타입]], [[OpenSearch-Mapping-Text-Analysis#저장 구조 세 가지|저장 구조]], [[OpenSearch-Mapping-Text-Analysis#Analyzer 파이프라인|Analyzer]], [[OpenSearch-Query-Relevance#Term-level과 Full-text|Term-level과 Full-text]], [[OpenSearch-Query-Relevance#Query context와 Filter context|Query와 Filter]], [[OpenSearch-Query-Relevance#BM25 mental model|BM25]]
 - 이어서 읽기: [[OpenSearch-Architecture#계층 구조|계층 구조]], [[OpenSearch-Architecture#기본 DOCUMENT replication 쓰기 흐름|쓰기]], [[OpenSearch-Architecture#GET과 Search의 읽기 경로|읽기]], [[OpenSearch-Indexing-Internals#한 문서의 생명주기|문서 생명주기]]
 - 퇴근 후 아웃풋: 한국어 콘텐츠의 `title`, `status`, `category`, `price` 매핑과 query를 설계하고 OpenSearch index 요청부터 검색 응답까지 한 장에 그린다.
-- [ ] 통과: 각 field type과 query 선택 이유, 저장 직후 Search에서 보이지 않을 수 있는 이유를 문서 없이 설명한다.
+- 현재 진도:
+  - [x] 매핑과 query 선택: `text`, `keyword`, `integer`와 `match`, `term`, `range`
+  - [x] Bool query 구성: `must`, `filter`, `should`와 exact match용 keyword multi-field 가산점
+  - [x] 검색 가시성: translog, segment, refresh와 ID GET/Search의 차이
+  - [ ] 보강 필요: `문서 → analyzer → term → postings`를 index/search analyzer 차이까지 연결
+  - [ ] 보강 필요: BM25의 TF, IDF, 길이 보정으로 `_score` 차이 설명
+  - [ ] 미진행: routing, primary/replica, shard별 top K와 coordinator 병합
+- [ ] 1단계 통과: 위 흐름 전체와 field/query 선택 이유를 문서 없이 한 장으로 설명한다.
 
 ### 2단계: 검색 품질
 
@@ -112,7 +130,13 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 - 측정할 때 읽기: [[OpenSearch-Performance-Troubleshooting#운영과 닮은 benchmark|운영과 닮은 benchmark]], [[OpenSearch-Search-Quality-Evaluation#검색 로그에서 개선 백로그까지|로그 백로그]]
 - 필요할 때 읽기: [[OpenSearch-Relevance-Tuning#function_score 실전|function_score]], [[OpenSearch-Relevance-Tuning#rescore — top-N 2단계 재정렬|rescore]]
 - 퇴근 후 아웃풋: 문서 50개 이상, 대표 query 20개, 관련도 등급을 준비하고 nDCG@10, zero-result rate, p95 기준선을 만든다. 한 번에 한 변수만 바꿔 전후를 기록한다.
-- [ ] 통과: 품질 변경이 미리 정한 latency budget을 지키는지 판단하고, 채택하거나 기각한 근거를 설명한다.
+- 현재 진도:
+  - [x] 기초 판단: exact title과 별명을 다른 필드로 두고 title에 더 높은 우선순위 부여
+  - [ ] 보강 필요: 별명, 유의어, 사용자 사전의 역할과 적용 위치 구분
+  - [ ] 미진행: Nori, 오타 교정, 초성/자모 필드의 선택 기준
+  - [ ] 미진행: query set, judgment list와 관련도 등급 작성
+  - [ ] 미진행: nDCG@10, zero-result rate, p95 기준선과 한 변수 비교
+- [ ] 2단계 통과: 품질 변경이 latency budget을 지키는지 판단하고 채택하거나 기각한 근거를 설명한다.
 
 ### 3단계: 운영
 
@@ -120,7 +144,14 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 - 짜투리 읽기: [[OpenSearch-Indexing-Internals#운영 DB와의 동기화|RDB 동기화]], [[OpenSearch-Indexing-Pipeline-Reliability#증상별 진단|동기화 증상 진단]], [[OpenSearch-Indexing-Pipeline-Reliability#Reconciliation 설계|정합성 검증]], [[OpenSearch-Index-Lifecycle#매핑 변경과 무중단 전환|무중단 전환]], [[OpenSearch-Cluster-Reliability#Unassigned shard 진단|Unassigned shard]], [[OpenSearch-Cluster-Reliability#Snapshot과 Restore|Snapshot과 Restore]], [[OpenSearch-Performance-Troubleshooting#증상별 가설|증상별 가설]]
 - AWS를 쓸 때 읽기: [[OpenSearch-Service-Deployment#관리 책임 경계|관리 책임 경계]], [[OpenSearch-Service-Operations#가용성과 용량|가용성과 용량]], [[OpenSearch-Service-Operations#프로덕션 체크리스트|프로덕션 체크리스트]], [[OpenSearch-Service-Engine-Upgrade|Engine upgrade와 rollback 설계]]
 - 퇴근 후 아웃풋: `backfill → catch-up → 검증 → shadow read → canary → alias 전환 → rollback 또는 forward-fix` Runbook과 결과 누락, 429, 디스크 증가 진단표를 만든다.
-- [ ] 통과: rollback 가능한 조건과 불가능한 조건을 구분하고, 장애 하나의 지표와 가설, 첫 대응을 설명한다.
+- 현재 진도:
+  - [x] 위험 인식: 이중 저장소 정합성과 consumer 지연 문제 설명
+  - [ ] 보강 필요: 재시도, 멱등성, 순서 역전, reconciliation로 누락과 중복 통제
+  - [ ] 미진행: backfill, catch-up, 검증, shadow read, canary 흐름
+  - [ ] 미진행: alias 전환과 rollback 또는 forward-fix 판단
+  - [ ] 미진행: unassigned shard, 429, 디스크 증가, snapshot/restore 대응
+  - [ ] 미진행: 관리형 서비스 책임 경계, 용량과 engine upgrade
+- [ ] 3단계 통과: rollback 가능 여부를 구분하고 장애 하나의 지표와 가설, 첫 대응을 설명한다.
 
 ### 4단계: 선택 심화
 
@@ -129,7 +160,12 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 - 엔진 내부 갈래: [[OpenSearch-Inverted-Index-Structures|FST, postings, BKD와 doc_values]], [[OpenSearch-Segment-Merge|Merge policy와 codec]], [[OpenSearch-Segment-Replication|Segment replication과 remote store]]
 - 시맨틱 검색 갈래: [[OpenSearch-Semantic-Search|시맨틱 검색 지도]], [[OpenSearch-Vector-Search|벡터 검색]], [[OpenSearch-Hybrid-Search|하이브리드 검색]], [[OpenSearch-Reranking-Neural-Sparse|Reranking과 neural sparse search]]
 - 퇴근 후 아웃풋: 내부 구조 갈래는 느린 query나 디스크 증가의 인과를 측정으로 설명한다. 시맨틱 검색 갈래는 같은 judgment로 BM25 기준선과 hybrid 또는 reranking의 품질, latency, 비용을 비교한다.
-- [ ] 통과: 선택한 기법이 기준선보다 나은 조건과 나쁘거나 불필요한 조건을 함께 설명한다.
+- 현재 진도:
+  - [ ] 선택 대기: 2단계나 3단계에서 측정된 문제 확보
+  - [ ] 미선택: FST, postings, BKD, doc_values와 segment 내부 구조 갈래
+  - [ ] 미선택: vector, hybrid, reranking과 neural sparse 갈래
+  - [ ] 미진행: 선택한 한 기법을 기존 기준선과 품질, latency, 비용으로 비교
+- [ ] 4단계 통과: 선택한 기법이 기준선보다 나은 조건과 나쁘거나 불필요한 조건을 함께 설명한다.
 
 ## 레퍼런스 지도
 

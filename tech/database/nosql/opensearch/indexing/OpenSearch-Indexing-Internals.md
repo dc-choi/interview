@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, indexing, translog, segment]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-08-13
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Indexing Internals", "OpenSearch 색인 내부"]
 ---
@@ -33,6 +33,12 @@ Index request
 
 이 흐름은 개념적 순서다. Refresh와 flush는 문서마다 반드시 차례로 실행되는 단계가 아니라 별도 조건과 주기로 실행된다. Refresh는 search reader의 가시성을 갱신하고, flush는 아직 commit되지 않은 operation을 포함해 durable Lucene commit을 만든다.
 
+핵심 역할은 세 문장으로 구분한다.
+
+- Translog는 어떤 operation이 일어났는지 남기는 장애 복구용 로그다.
+- Segment는 역색인, points, `doc_values`와 `_source`를 포함한 stored field를 묶은 불변 검색 자료구조다.
+- Refresh는 indexing buffer의 변경으로 새 segment를 만들고 Search reader에 공개하는 가시성 경계다. Translog를 segment로 바꾸는 작업은 아니다.
+
 ## Translog
 
 Translog는 아직 Lucene durable commit에 포함되지 않은 acknowledged operation을 crash 후 재실행하기 위한 로그다.
@@ -41,6 +47,24 @@ Translog는 아직 Lucene durable commit에 포함되지 않은 acknowledged ope
 - 기본 request durability에서는 응답 전에 translog를 fsync한다.
 - Refresh 전 문서가 Search에는 안 보여도 이미 durable할 수 있다.
 - `index.translog.flush_threshold_size`를 높여 더 큰 translog를 허용하면 flush 빈도를 줄일 수 있지만 장애 복구 시 replay할 데이터가 늘어난다.
+
+## 실시간 GET과 Search가 갈리는 이유
+
+`GET /{index}/_doc/{id}`는 기본값이 `realtime=true`다. `_id`의 hash로 대상 shard group을 바로 찾고, 엔진은 최근 operation의 ID와 version, translog 위치를 `LiveVersionMap`에서 추적한다. 아직 외부 Search reader에 보이지 않는 최신 문서는 translog에서 직접 읽거나 필요한 내부 reader를 열어 반환할 수 있다. 이미 알고 있는 ID 하나를 찾는 경로라서 Search용 refresh를 기다릴 필요가 없다.
+
+```text
+알고 있는 ID -> shard routing -> version map -> translog 또는 내부 reader -> GET
+일치 문서 탐색 -> shard fan-out -> refresh된 Lucene segment -> Search
+```
+
+Search가 같은 방식으로 translog까지 함께 읽지 않는 이유는 단순히 구현이 빠졌기 때문이 아니다.
+
+- Search는 ID를 모르므로 inverted index의 term dictionary와 postings, 숫자 범위용 point, 정렬과 집계용 doc values로 일치 문서를 찾아야 한다.
+- Translog는 복구용 operation log이지 field별 검색 구조가 아니다. 검색할 때마다 refresh 전 operation을 순회하고 분석하면 비용이 미반영 write 수에 비례한다.
+- Update와 delete를 기존 segment hit와 합쳐 최신 상태로 중복 제거해야 하고, 점수 계산, 정렬과 집계에도 같은 보정이 필요하다.
+- 계속 변하는 translog tail을 결과에 섞으면 segment snapshot과 query cache의 안정성도 깨지고, 검색 지연이 write 양에 직접 끌려간다.
+
+그래서 OpenSearch는 indexing buffer의 변경을 refresh 시점에 한 번 searchable segment로 만들고 reader를 다시 연다. 검색 구조 생성 비용을 여러 Search 요청이 나눠 쓰는 대신, refresh 전까지의 짧은 가시성 지연을 받아들이는 near real-time 설계다. `realtime=false`인 GET도 마지막 refresh 기준으로 읽는다.
 
 ## Refresh
 
@@ -108,6 +132,15 @@ Write -> RDBMS -> CDC 또는 outbox -> OpenSearch
 Read  -> OpenSearch
 ```
 
+동기화 파이프라인 지연과 OpenSearch 내부의 refresh 지연은 서로 다른 경계다.
+
+```text
+DB commit -> outbox 또는 CDC -> consumer -> Index operation 적용 -> refresh -> Search 노출
+           <--------- 파이프라인 지연 --------->              <- 가시성 지연 ->
+```
+
+`refresh=wait_for`는 consumer가 Index API를 호출한 뒤 다음 refresh까지만 기다린다. Outbox 대기와 consumer lag에는 영향을 주지 않으므로 비동기 파이프라인 전체의 read-after-write를 보장하지 않는다. End-to-end freshness는 원본 commit부터 Search 노출까지 별도로 측정한다.
+
 - 외부 도메인 ID를 OpenSearch `_id`로 사용하면 재처리의 멱등성이 좋아진다.
 - DB commit 뒤 event publish를 호출하는 것만으로는 dual-write gap이 남는다. Transactional outbox나 committed change log 기반 CDC로 확정된 변경을 capture한다.
 - 이벤트 순서 역전은 `_seq_no`가 아니라 원본의 단조 증가 version, change sequence, LSN 등으로 방어한다. Timestamp를 사용한다면 동률과 clock skew 정책이 필요하다.
@@ -137,6 +170,8 @@ Read  -> OpenSearch
 - [Index document - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
 - [Update Document API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/update-document/)
 - [Delete Document API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/delete-document/)
+- [Get Document API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/get-documents/)
+- [Source metadata field - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/metadata-fields/source/)
 - [Refresh index - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/refresh/)
 - [Flush - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/flush/)
 - [Force merge - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/force-merge/)
@@ -145,4 +180,5 @@ Read  -> OpenSearch
 - [Update Settings API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/update-settings/)
 - [Segment replication - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/)
 - [Put Mapping API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/put-mapping/)
+- [InternalEngine - OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/index/engine/InternalEngine.java)
 - [Transactional outbox pattern - AWS Prescriptive Guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
