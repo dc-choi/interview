@@ -41,7 +41,7 @@ RDB에서 join으로 풀던 관계를 색인 시점에 미리 join해서 문서 
 | Parent-join | 관계 문서와 부모 문서의 갱신 주기를 분리해야 할 때 | 같은 shard routing 강제, query 비용 최대 |
 | 별도 인물 인덱스 | 인물 자체가 검색 결과(인물 페이지 랜딩)일 때 | 인덱스 하나 추가 운영 |
 
-`nested`와 parent-join의 mapping 선택은 [[OpenSearch-Mapping-Text-Analysis#object, nested, flat_object|nested 매핑 선택]], 매치된 내부 문서 반환은 [[OpenSearch-Inner-Hits|inner_hits]]에서 다룬다.
+`nested`와 parent-join의 mapping 선택은 [[OpenSearch-Mapping-Text-Analysis#`object`, `nested`, `flat_object`|nested 매핑 선택]], 매치된 내부 문서 반환은 [[OpenSearch-Inner-Hits|inner_hits]]에서 다룬다.
 
 ### 평탄화 필드 예시
 

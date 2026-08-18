@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, lexical, query-dsl, bm25, relevance]
 status: done
-verified_at: 2026-07-30
+verified_at: 2026-08-18
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Lexical Search", "OpenSearch 렉시컬 검색", "OpenSearch Query DSL", "OpenSearch Relevance", "OpenSearch 쿼리"]
 ---
@@ -35,6 +35,8 @@ Keyword search는 문서와 검색어를 최종 term 단위로 비교하는 렉�
 - `prefix`, `wildcard`, `regexp`, `fuzzy`
 
 `term`은 입력을 분석하지 않는다. 분석된 `text` 필드에 원문을 그대로 넣으면 0건이나 예상 밖 결과가 나올 수 있다.
+
+`term`의 필드 인자는 `value`(필수), `boost`, `_name`, `case_insensitive`다. `case_insensitive: true`는 2.x 이하에서 문자 수에 따라 복잡도가 지수적으로 늘어 heap 사용량과 성능을 해칠 수 있다. 대소문자 무시가 목적이면 색인 필드 analyzer에 lowercase token filter를 두고 query term도 소문자로 맞춘다.
 
 ### Full-text
 
@@ -80,21 +82,9 @@ GET products/_search
 }
 ```
 
-## `bool`의 정확한 의미
+## compound 쿼리는 별도 문서
 
-| Clause | 필수 여부 | 점수 |
-|---|---|---|
-| `must` | 필수 | 기여 |
-| `filter` | 필수 | 기여하지 않음 |
-| `must_not` | 제외 | 기여하지 않음 |
-| `should` | 조건에 따라 선택 | boost |
-
-중요한 함정은 `minimum_should_match` 기본값이다.
-
-- `should`만 있으면 기본 1
-- `must` 또는 `filter`가 있으면 기본 0
-
-기존 query에 filter를 추가하면 `should`가 필수 조건에서 단순 boost로 바뀔 수 있다. 의도가 필수라면 값을 명시한다.
+Clause별 논리와 점수 기여, `minimum_should_match` 기본값 함정, `_name` 디버깅, 중첩 bool과 dis_max는 [[OpenSearch-Query-Relevance-Compound|bool과 dis_max]]가 정본이다.
 
 ## BM25 mental model
 
@@ -119,7 +109,7 @@ BM25 score는 field와 query term별 기여를 query 구조에 따라 합친 상
 
 ## 여러 필드 검색
 
-`multi_match` 유형을 의도에 맞게 고른다.
+`multi_match` 유형을 의도에 맞게 고른다. `best_fields`의 점수 결합은 [[OpenSearch-Query-Relevance-Compound|dis_max]]로 실행된다.
 
 | 유형 | 적합한 경우 |
 |---|---|
@@ -137,7 +127,7 @@ BM25 score는 field와 query term별 기여를 query 구조에 따라 합친 상
 
 - 선행 wildcard인 `*suffix`는 많은 term을 열거할 수 있다.
 - 사용자 입력의 정규식을 무제한 허용하지 않는다.
-- 본질적인 substring 요구는 `wildcard` field type을 검토한다.
+- 본질적인 substring 요구는 `wildcard` field type을 검토하고, 점수가 필요한 부분일치는 [[OpenSearch-Autocomplete#전체 위치 ngram|ngram 계열]]과 비교한다.
 - Prefix 요구는 edge n-gram, `search_as_you_type`, completion과 비교한다.
 
 ### Fuzzy
@@ -168,7 +158,7 @@ Profile은 network latency, fetch phase, queue 대기, coordinator reduce 전체
 1. 대표 query와 기대 결과, 실패 결과를 고정한다.
 2. `_analyze`로 index와 query token을 확인한다.
 3. 정확 조건을 filter로 분리한다.
-4. `operator`와 `minimum_should_match`를 명시한다.
+4. `operator`와 `minimum_should_match`를 명시한다. 기본값 함정은 [[OpenSearch-Query-Relevance-Compound|bool과 dis_max]] 참고.
 5. 제목, 본문, exact field의 boost를 조절한다.
 6. Phrase와 동의어를 추가한다.
 7. `_explain`으로 상위와 누락 문서를 비교한다.
@@ -179,6 +169,7 @@ Profile은 network latency, fetch phase, queue 대기, coordinator reduce 전체
 - [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-Architecture|다음: 아키텍처와 분산 실행 모델]]
 - [[OpenSearch-Mapping-Text-Analysis|매핑과 텍스트 분석]]
 - [[OpenSearch-Korean-Text-Analysis|한국어 analyzer와 사전 운영]]
+- [[OpenSearch-Query-Relevance-Compound|bool과 dis_max compound 쿼리]]
 - [[OpenSearch-Relevance-Tuning|function_score와 rescore를 이용한 관련도 튜닝]]
 - [[OpenSearch-Hybrid-Search|렉시컬과 시맨틱 점수 결합]]
 - [[OpenSearch-Aggregations-Pagination|집계와 페이지네이션]]
@@ -189,9 +180,9 @@ Profile은 network latency, fetch phase, queue 대기, coordinator reduce 전체
 - [Amazon OpenSearch Service로 검색 구현하기 - YouTube](https://www.youtube.com/watch?v=2Swr59CkA_w)
 - [Query DSL - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/)
 - [Query and filter context - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/query-filter-context/)
+- [Term query — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/query-dsl/term/term/)
 - [Full-text queries - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/index/)
 - [Combined fields query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/combined-fields/)
-- [Boolean query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/bool/)
 - [Keyword search and BM25 - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/keyword-search/)
 - [Okapi BM25 - Wikipedia](https://en.wikipedia.org/wiki/Okapi_BM25)
 - [TF-IDF - Wikipedia](https://en.wikipedia.org/wiki/Tf%E2%80%93idf)

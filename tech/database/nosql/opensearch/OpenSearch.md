@@ -111,7 +111,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 ### 1단계: 핵심 원리
 
 - 목표: `문서 → analyzer → term → 역색인 → shard 검색 → top K 병합` 흐름과 검색 가시성 경계를 연결한다.
-- 짜투리 읽기: [[OpenSearch-Mapping-Text-Analysis#필드 타입 선택|필드 타입]], [[OpenSearch-Mapping-Text-Analysis#저장 구조 세 가지|저장 구조]], [[OpenSearch-Mapping-Text-Analysis#Analyzer 파이프라인|Analyzer]], [[OpenSearch-Query-Relevance#Term-level과 Full-text|Term-level과 Full-text]], [[OpenSearch-Query-Relevance#Query context와 Filter context|Query와 Filter]], [[OpenSearch-Query-Relevance#BM25 mental model|BM25]]
+- 짜투리 읽기: [[OpenSearch-Mapping-Text-Analysis#필드 타입 선택|필드 타입]], [[OpenSearch-Mapping-Text-Analysis#저장 구조 세 가지|저장 구조]], [[OpenSearch-Mapping-Text-Analysis#Analyzer 파이프라인|Analyzer]], [[OpenSearch-Query-Relevance#Term-level과 Full-text|Term-level과 Full-text]], [[OpenSearch-Query-Relevance#Query context와 Filter context|Query와 Filter]], [[OpenSearch-Query-Relevance-Compound|bool과 dis_max]], [[OpenSearch-Query-Relevance#BM25 mental model|BM25]]
 - 이어서 읽기: [[OpenSearch-Architecture#계층 구조|계층 구조]], [[OpenSearch-Architecture#기본 DOCUMENT replication 쓰기 흐름|쓰기]], [[OpenSearch-Architecture#GET과 Search의 읽기 경로|읽기]], [[OpenSearch-Indexing-Internals#한 문서의 생명주기|문서 생명주기]]
 - 퇴근 후 아웃풋: 한국어 콘텐츠의 `title`, `status`, `category`, `price` 매핑과 query를 설계하고 OpenSearch index 요청부터 검색 응답까지 한 장에 그린다.
 - 현재 진도:

@@ -62,6 +62,7 @@ OpenSearch의 `function_score`는 query가 반환한 문서의 점수를 다시 
 ## 관련 문서
 
 - [[OpenSearch-Query-Understanding|쿼리 이해와 정규화]]
+- [[OpenSearch-Autocomplete|edge n-gram과 ngram 구현]]
 - [[OpenSearch-Query-Relevance|Query DSL과 관련도 진단]]
 - [[OpenSearch-Relevance-Tuning|랭킹 튜닝]]
 - [[OpenSearch-Search-Quality-Evaluation|검색 품질 평가와 golden set]]

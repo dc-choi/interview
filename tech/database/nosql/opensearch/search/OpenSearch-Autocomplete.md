@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, autocomplete, prefix, ngram, completion]
 status: done
-verified_at: 2026-07-30
+verified_at: 2026-08-18
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Autocomplete", "OpenSearch 자동완성", "검색어 자동완성"]
 ---
@@ -57,7 +57,6 @@ Edge n-gram은 token의 시작부터 여러 길이의 prefix를 index에 저장�
 PUT products-edge-v1
 {
   "settings": {
-    "index.max_ngram_diff": 13,
     "analysis": {
       "filter": {"autocomplete_edge":
         {"type": "edge_ngram", "min_gram": 2, "max_gram": 15}},
@@ -89,6 +88,10 @@ GET products-edge-v1/_search
 - `min_gram`이 너무 작으면 후보와 오탐이 늘고, 너무 크면 짧은 입력을 찾지 못한다.
 - `max_gram`보다 긴 입력은 대응하는 term이 없을 수 있다. 실제 검색어 길이를 기준으로 정하고 `_analyze`로 확인한다.
 - 기존 field의 index analyzer를 바꾸면 기존 term은 변하지 않으므로 새 index에 reindex해야 한다.
+
+### 전체 위치 ngram
+
+네 가지 구현 방식의 다섯 번째가 아니라, 자동완성 범위를 벗어나는 부분일치 요구의 경계다. Prefix가 아니라 단어 중간까지 걸리는 부분일치가 필요하면 `ngram` tokenizer가 모든 위치의 substring을 색인한다. 기본값은 `min_gram` 1, `max_gram` 2이고, `token_chars` 기본은 빈 리스트라 공백과 문장부호까지 모든 문자가 token에 남는다. `ngram` tokenizer와 `ngram` token filter에서는 `min_gram`과 `max_gram`의 차이가 index 설정 `index.max_ngram_diff`(기본 1)로 제한되며, `edge_ngram` 계열에는 이 제한이 적용되지 않는다. Edge n-gram보다 생성 term이 훨씬 많아 index 크기와 색인 비용이 커지므로 도입 전에 측정하고, 점수 없는 패턴 매칭이 목적이면 `wildcard` field type을 먼저 검토한다. 적용 판단은 [[OpenSearch-Query-Requirement-Classification|검색 요구사항 분류]] 참고.
 
 ## Search as you type
 
@@ -177,13 +180,14 @@ GET suggestions-v1/_search
 
 ## 관련 문서
 
-- [[OpenSearch-Mapping-Text-Analysis|매핑과 analyzer]], [[OpenSearch-Query-Understanding|오타 교정, 초성과 검색어 전처리]]
+- [[OpenSearch-Mapping-Text-Analysis|매핑과 analyzer]], [[OpenSearch-Query-Understanding|오타 교정, 초성과 검색어 전처리]], [[OpenSearch-Query-Requirement-Classification|검색 요구사항 분류]]
 - [[OpenSearch-Popular-Keywords-TopK|인기 검색어 후보와 weight]], [[OpenSearch-Search-API-Layer|검색 API 보호와 폴백]], [[OpenSearch-Search-Quality-Evaluation|검색 품질 평가]]
 
 ## 출처
 
 - [Autocomplete functionality - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/autocomplete/)
 - [Edge n-gram token filter - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/token-filters/edge-ngram/)
+- [N-gram tokenizer — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/analyzers/tokenizers/ngram/)
 - [Search-as-you-type field type - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/search-as-you-type/)
 - [Completion field type - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/completion/)
 - [Index settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)

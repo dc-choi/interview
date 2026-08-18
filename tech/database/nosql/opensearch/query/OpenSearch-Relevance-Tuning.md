@@ -8,7 +8,7 @@ aliases: ["OpenSearch Relevance Tuning", "OpenSearch 관련도 튜닝", "Learnin
 
 # OpenSearch 관련도 튜닝 실전
 
-이 문서는 [[OpenSearch-Query-Relevance|렉시컬 검색과 BM25 기본]]을 이해하고 본문 관련도가 안정된 뒤 보는 다음 단계다. BM25의 작동 방식, bool 구조, 기본 개선 순서는 반복하지 않고, 인기도와 최신성 같은 비즈니스 신호의 결합, 비싼 재정렬의 적용 범위, 수동 boost를 LTR로 넘기는 판단을 다룬다.
+이 문서는 [[OpenSearch-Query-Relevance|렉시컬 검색과 BM25 기본]]을 이해하고 본문 관련도가 안정된 뒤 보는 다음 단계다. BM25의 작동 방식, [[OpenSearch-Query-Relevance-Compound|bool과 dis_max 구조]], 기본 개선 순서는 반복하지 않고, 인기도와 최신성 같은 비즈니스 신호의 결합, 비싼 재정렬의 적용 범위, 수동 boost를 LTR로 넘기는 판단을 다룬다.
 
 ## BM25 vs TF-IDF
 
@@ -61,7 +61,7 @@ Lucene은 6.0에서 기본 similarity를 classic TF-IDF에서 BM25로 교체했�
 
 - 매치된 모든 문서에서 script가 실행된다. query phase 비용이 문서 수에 비례해 커지고 결과는 query cache 대상이 아니다.
 - `doc['field'].value`로 doc_values만 읽고, `params`로 상수를 밖으로 빼서 script compile cache가 재사용되게 한다.
-- 사용 조건: 내장 함수(`field_value_factor`, decay)로 표현 불가능한 수식일 때만. 그마저도 전 문서가 아니라 아래 rescore 안에 넣어 top-N으로 제한하는 편이 낫다. 색인 시점에 미리 계산해 field로 박을 수 있으면 그것이 항상 가장 싸다.
+- 사용 조건: 내장 함수(`field_value_factor`, decay)로 표현 불가능한 수식일 때만. 그마저도 전 문서가 아니라 아래 rescore 안에 넣어 top-N으로 제한하는 편이 낫다. 색인 시점에 미리 계산해 field로 박을 수 있으면 대개 그쪽이 가장 싸다.
 
 ## rescore — top-N 2단계 재정렬
 

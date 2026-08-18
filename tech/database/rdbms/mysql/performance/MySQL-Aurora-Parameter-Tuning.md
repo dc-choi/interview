@@ -7,7 +7,7 @@ aliases: ["MySQL Aurora Parameter Tuning", "Aurora 파라미터 표준", "DB 파
 
 # MySQL/Aurora 파라미터 표준 튜닝 (fleet 안전)
 
-기본 파라미터는 "특정 워크로드 최적"이 아니라 "넓은 호환과 안전"을 노려 잡혀 있다. 다양한 크기의 인스턴스가 섞인 fleet에서는 **작은 인스턴스(T 계열 등)에서 기본값이 오히려 위험**해지는 경우가 많다. 표준 파라미터 템플릿은 이 작은 인스턴스 안전과 일관성을 동시에 노린다. 파라미터를 표준 템플릿에서 복사해 적용하는 구조는 [[DB-Provisioning-Pipeline|DB 프로비저닝 파이프라인]] 참고.
+기본 파라미터는 특정 워크로드 최적이 아니라 넓은 호환과 안전을 노려 잡혀 있다. 다양한 크기의 인스턴스가 섞인 fleet에서는 **작은 인스턴스(T 계열 등)에서 기본값이 오히려 위험**해지는 경우가 많다. 표준 파라미터 템플릿은 이 작은 인스턴스 안전과 일관성을 동시에 노린다. 파라미터를 표준 템플릿에서 복사해 적용하는 구조는 [[DB-Provisioning-Pipeline|DB 프로비저닝 파이프라인]] 참고.
 
 ## max_connections — 기본값은 작은 인스턴스에서 너무 낮다
 
@@ -16,7 +16,7 @@ aliases: ["MySQL Aurora Parameter Tuning", "Aurora 파라미터 표준", "DB 파
 - **표준 접근**: 인스턴스 메모리 크기에 **로그 함수를 적용**해 크기별로 적절한 연결 수가 자동으로 나오도록 스케일링. (선형으로 늘리면 큰 인스턴스에서 과해진다)
 - **트레이드오프**: 연결 수를 늘리면 **커넥션당 메모리**도 함께 늘어난다. 그래서 버퍼/임시테이블 메모리 파라미터와 **함께** 봐야 한다. 커넥션 자체의 비용 관리는 [[Connection-Pool|커넥션 풀]]로 보완.
 
-## 버퍼 메모리 — 비율보다 '고정 차감'
+## 버퍼 메모리 — 비율보다 고정 차감
 
 InnoDB Buffer Pool(MySQL)과 Shared Buffers(PostgreSQL)는 데이터/인덱스 캐시 영역으로 성능을 좌우한다([[MySQL-InnoDB-Tuning|InnoDB 튜닝]]). 기본값은 메모리의 **큰 비율**로 잡혀 있어, 작은 인스턴스에서는 남는 메모리가 부족해진다.
 
@@ -53,7 +53,7 @@ MySQL 8.0의 **TempTable 엔진**은 내부 임시 테이블을 **메모리 → 
 
 MySQL Fulltext의 **n-gram 파서**는 문장을 N글자 단위로 쪼개 인덱스를 만든다. 한국어는 띄어쓰기만으로 단어 분리가 어려워 n-gram 방식이 유용하다.
 
-- 토큰 크기 **1**: 한 글자 검색도 가능하지만 후보 토큰이 폭발해 인덱스 크기와 검색 부하가 급증.
+- 토큰 크기 **1**: 한 글자 검색이 필요할 때만. 공식 문서는 token size가 작을수록 인덱스가 작고 검색이 빠르다고 하지만, 발표 사례 기준으로는 한 글자 매칭 후보가 넓어져 검색 부하와 결과 노이즈가 커진다.
 - 토큰 크기 **2**: 검색 품질과 부하의 균형점. 특별한 이유가 없으면 `ngram_token_size=2`를 표준으로.
 
 ## Aurora OOM Response — 인스턴스 재시작 방지
@@ -61,7 +61,7 @@ MySQL Fulltext의 **n-gram 파서**는 문장을 N글자 단위로 쪼개 인덱
 메모리가 부족할 때 아무 대응이 없으면 OS의 **OOM Killer가 DB 프로세스를 종료** → 인스턴스 재시작 → 서비스 영향.
 
 - Aurora MySQL의 **OOM Response**는 메모리 부족 상황에서 문제 쿼리를 **기록하거나 종료**하는 기능.
-- **표준 접근**: 문제 쿼리를 로그에 남기고(원인 추적), 위험한 쿼리는 종료해서 **"기록은 남기고 인스턴스는 살리는"** 방향. 프로세스 전체가 죽는 것보다 개별 쿼리를 희생하는 게 가용성에 낫다.
+- **표준 접근**: 문제 쿼리를 로그에 남기고(원인 추적), 위험한 쿼리는 종료해서 **기록은 남기고 인스턴스는 살리는** 방향. 프로세스 전체가 죽는 것보다 개별 쿼리를 희생하는 게 가용성에 낫다.
 
 ## 표준 파라미터 한눈에
 
@@ -72,7 +72,7 @@ MySQL Fulltext의 **n-gram 파서**는 문장을 N글자 단위로 쪼개 인덱
 | `temptable_max_ram/mmap` | 작아서 임시테이블 한계 | 최소값 상향 | 복잡 쿼리 실패 방지 |
 | `sysdate_is_now` | SYSDATE 비결정성 | ON | 복제 안정, 인덱스 활용 |
 | `cte_max_recursion_depth` | 폭주 가능 | 보수적 하향 | 재귀 쿼리 차단 |
-| `ngram_token_size` | 1이면 부하 폭발 | 2 | 한국어 검색 균형 |
+| `ngram_token_size` | 1이면 한 글자 후보 노이즈 | 2 | 한국어 검색 균형 |
 | Aurora OOM Response | 미설정 시 OOM Kill | 기록 + 위험 쿼리 종료 | 인스턴스 생존 |
 
 ## 면접 체크포인트
@@ -82,10 +82,11 @@ MySQL Fulltext의 **n-gram 파서**는 문장을 N글자 단위로 쪼개 인덱
 - 버퍼를 비율이 아니라 **고정 차감**하는 게 작은/큰 인스턴스 모두에 안전한 이유
 - `NOW()` vs `SYSDATE()` 차이가 복제와 인덱스에 미치는 영향
 - ngram_token_size 1 vs 2의 검색 품질, 부하 균형
-- OOM Response가 "프로세스 종료" 대신 "쿼리 종료"로 가용성을 지키는 메커니즘
+- OOM Response가 프로세스 종료 대신 쿼리 종료로 가용성을 지키는 메커니즘
 
 ## 출처
 - [Aurora DB 생성 자동화와 표준 운영 — DB 밋업 (YouTube)](https://www.youtube.com/watch?v=NrPY9J1a2ag&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=4)
+- [ngram Full-Text Parser — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/fulltext-search-ngram.html)
 
 ## 관련 문서
 - [[DB-Provisioning-Pipeline|DB 프로비저닝 파이프라인]] — 이 파라미터를 템플릿으로 복사해 적용

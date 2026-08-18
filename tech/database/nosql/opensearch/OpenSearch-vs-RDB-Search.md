@@ -1,10 +1,11 @@
 ---
 tags: [database, search, opensearch, mysql, postgresql, inverted-index, btree]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-08-18
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch vs RDB Search", "RDB vs 검색엔진 도입 판단", "검색엔진 도입 판단 프레임"]
 ---
+
 # RDB vs 검색엔진 — 도입 판단 프레임
 
 검색 요구가 나오면 바로 OpenSearch를 꺼내는 것도, 무조건 MySQL로 버티는 것도 설계가 아니다. 판단의 밑단은 자료구조다. B-tree는 값에서 위치로 가는 정렬 탐색이고, 역색인은 term에서 문서 목록으로 가는 조회다. 이 차이에서 어떤 요구까지 RDB가 커버되고 어디서부터 검색엔진이 정당화되는지가 갈린다. 도입 이후의 비용은 [[OpenSearch-Indexing-Internals|색인 내부와 동기화]], 관리형 서비스 선택은 [[OpenSearch-Service]] 참고. 이 문서는 도입 이전의 판단 층만 다룬다.
@@ -38,17 +39,21 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 
 ### ngram parser의 대가
 
-한국어 대응으로 ngram parser를 쓰면(`ngram_token_size` 기본 2, 범위 1~10, [[MySQL-Aurora-Parameter-Tuning]]에서 표준값 근거) 새 제약이 생긴다.
+한국어 대응으로 ngram parser를 쓰면(`WITH PARSER ngram`, `ngram_token_size` 기본 2, 범위 1~10, [[MySQL-Aurora-Parameter-Tuning|ngram_token_size 표준값]]에서 근거) 새 제약이 생긴다.
 
-- `ngram_token_size`는 read-only 서버 변수라 변경에 재시작이 필요하고 기존 FULLTEXT 인덱스는 재생성해야 한다.
-- 모든 텍스트를 N글자 단위로 중첩 분해하므로 인덱스가 원문 대비 크게 팽창하고, token size 1이면 후보 폭발로 부하가 급증한다.
-- 검색어는 ngram phrase로 변환된다. bigram에서 abc 검색은 `ab bc` phrase가 된다. prefix가 token size 이상인 wildcard 검색(`abc*`)은 wildcard가 무시되고 phrase 검색으로 동작한다.
+- `ngram_token_size`는 read-only 서버 변수라 변경에 재시작이 필요하고 기존 FULLTEXT 인덱스는 재생성해야 한다. 값은 검색할 가장 큰 단위에 맞추고 한 글자 검색이 필요할 때만 1로 둔다. 공식 문서 기준으로 작은 token size는 인덱스가 작고 검색이 빠르지만, 실무 사례에서는 한 글자 후보가 넓어져 부하와 노이즈가 커진다는 보고가 있다.
+- 모든 텍스트를 N글자 단위로 중첩 분해하므로 공백 기준 parser보다 인덱스가 크게 팽창한다.
+- 검색 mode에 따라 변환이 다르다. Natural language mode는 ngram term의 합집합이라 bigram에서 abc 검색이 `ab bc` OR 매칭이 되어 `ab`만 있는 문서도 잡힌다. Boolean mode는 ngram phrase로 변환되어 `ab`만 있는 문서가 제외된다. Phrase 검색도 ngram phrase로 변환되는데, `abc`뿐 아니라 같은 ngram 열을 만드는 `ab bc`가 든 문서도 함께 반환된다.
+- Wildcard 검색은 prefix가 token size보다 짧으면 그 prefix로 시작하는 ngram을 포함한 모든 행을 반환하고, token size보다 길면 wildcard가 무시된 ngram phrase 검색으로 동작한다(`abc*` → `ab bc`).
+- Stopword 처리가 다르다. 기본 parser는 stopword와 같은 token만 제외하지만 ngram parser는 stopword를 포함한 token을 통째로 제외한다. 기본 stopword 목록은 영어용이라 CJK에는 자체 목록을 만들어야 하고, `ngram_token_size`보다 긴 stopword는 무시된다.
+- 공백은 파싱 시 제거되어 공백에 걸친 token은 만들어지지 않는다. `innodb_ft_min_token_size`, `innodb_ft_max_token_size`, `ft_min_word_len`, `ft_max_word_len`은 ngram 인덱스에 적용되지 않는다.
 - 형태소가 아니라 기계적 분해이므로 의미 없는 부분 일치가 관련도 노이즈로 올라온다.
 
 ### InnoDB FTS 운영 제약
 
 - FULLTEXT 인덱스를 처음 만들 때 hidden column `FTS_DOC_ID`가 추가되며 table rebuild가 발생한다. 대형 테이블이면 사전에 명시적으로 정의해 회피한다.
-- 역색인이 6개 auxiliary table로 분할 저장되고, delete는 즉시 지워지지 않고 `FTS_*_DELETED`에 쌓여 검색 시 필터링된다. 공간 회수는 `innodb_optimize_fulltext_only=ON` 상태의 `OPTIMIZE TABLE`을 별도로 돌려야 한다.
+- 역색인이 6개 auxiliary table로 분할 저장되고(병렬 생성 지원용, 대형 테이블 인덱스 생성 시 `innodb_ft_sort_pll_degree` 기본 2 상향 검토), delete는 즉시 지워지지 않고 `FTS_*_DELETED`에 쌓여 검색 시 필터링된다. 공간 회수는 `innodb_optimize_fulltext_only=ON` 상태의 `OPTIMIZE TABLE`을 별도로 돌려야 한다.
+- FULLTEXT 인덱스를 drop해도 공용 index table(`fts_*_deleted`, `fts_*_config` 등)과 `FTS_DOC_ID` 컬럼은 남는다. `FTS_DOC_ID` 제거에는 테이블 rebuild가 필요해 유지된다.
 - FULLTEXT 검색은 committed 데이터만 본다. 같은 transaction 안에서 방금 넣은 행이 MATCH에 안 잡힌다.
 
 ## PostgreSQL의 커버 범위
@@ -124,8 +129,10 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 ## 출처
 
 - [ngram Full-Text Parser - MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/fulltext-search-ngram.html)
+- [ngram_token_size 시스템 변수 - MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_ngram_token_size)
 - [Fine-Tuning MySQL Full-Text Search - MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/fulltext-fine-tuning.html)
 - [InnoDB Full-Text Indexes - MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/innodb-fulltext-index.html)
+- [InnoDB Full-Text Indexes — MySQL 9.7 Reference Manual](https://dev.mysql.com/doc/refman/9.7/en/innodb-fulltext-index.html)
 - [Natural Language Full-Text Searches - MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/fulltext-natural-language.html)
 - [Comparison of B-Tree and Hash Indexes - MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/index-btree-hash.html)
 - [Controlling Text Search (ts_rank) - PostgreSQL Documentation](https://www.postgresql.org/docs/current/textsearch-controls.html)

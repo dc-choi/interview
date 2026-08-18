@@ -162,7 +162,7 @@ GET /products/_search
 | `bool` | 여러 쿼리를 `must`(점수 계산), `filter`(참거짓만), `should`, `must_not`으로 조합 | 검색과 필터의 결합 |
 
 - 흔한 함정: `text` 필드에 `term` 쿼리를 쓰면 쿼리 문자열은 쪼개지 않고 색인된 쪽만 쪼개져 있어, 블루투스 이어폰처럼 분석 결과와 어긋나는 값은 0건이 된다. 단일 term과 우연히 일치하면 매칭되기도 해서 더 헷갈린다. 전문 검색은 `match`, 정확 일치는 `keyword` 필드에 `term`.
-- `filter`는 점수에 영향을 주지 않고, 자주 반복되는 조건은 캐시로 재사용될 수 있다. WHERE에 해당하는 조건은 `filter`에 두는 것이 기본형이고, 구분의 원리는 [[OpenSearch-Query-Relevance|Query context와 Filter context]] 참고.
+- `filter`는 점수에 영향을 주지 않고, 자주 반복되는 조건은 캐시로 재사용될 수 있다. WHERE에 해당하는 조건은 `filter`에 두는 것이 기본형이고, 구분의 원리는 [[OpenSearch-Query-Relevance|Query context와 Filter context]], bool clause별 의미는 [[OpenSearch-Query-Relevance-Compound|compound 쿼리 문서]] 참고.
 - 카테고리별 개수 집계처럼 검색 결과를 묶어 세는 기능이 aggregation이고, 그걸로 만드는 필터 UI가 패싯이다. [[OpenSearch-Aggregations-Pagination|집계 문서]] 참고.
 
 ## 방금 넣은 문서가 검색에 안 보이는 이유

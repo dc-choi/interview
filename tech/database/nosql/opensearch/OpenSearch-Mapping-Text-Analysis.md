@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, mapping, analyzer, cjk]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-08-18
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Mapping", "OpenSearch Text Analysis", "OpenSearch 매핑과 분석기"]
 ---
@@ -60,6 +60,9 @@ Limit 상향은 schema 문제를 해결하지 않고 장애 시점을 늦출 뿐
 - `keyword`는 각 입력값 전체를 하나의 term으로 색인하고 기본 `doc_values`로 exact filter, sort, aggregation을 처리한다.
 - `text`는 `doc_values`를 지원하지 않는다. `fielddata: true`로 token을 heap에 올릴 수 있지만 메모리 비용이 크고 분석된 token 기준이다.
 - 원문 단위 정렬과 집계는 `.keyword` multi-field를 기본으로 사용한다.
+- 검색이 필요 없는 `keyword`는 `index: false`로 색인을 끄고 `doc_values`로만 정렬, 집계와 조회에 쓰면 디스크를 아낄 수 있다.
+- 명시 mapping의 `ignore_above` 기본값은 2147483647로 dynamic subfield의 256과 다르다. 다만 `keyword`는 값 전체가 token 한 개라 32,766 byte를 넘는 값은 색인이 실패하므로, 긴 값이 올 수 있는 필드는 `ignore_above`를 직접 정해 초과 값을 색인 대상에서 제외한다. 단 `ignore_above`는 byte가 아니라 문자 수 기준이라, 문자당 최대 3 byte 환산으로 10922 이하면 byte 한도를 확실히 피한다. Elasticsearch 가이드는 보수적으로 32766/4 = 8191을 권고한다.
+- 집계가 잦은 `keyword`는 `eager_global_ordinals`(기본 false)로 global ordinals 빌드를 refresh 시점으로 옮길 수 있지만, refresh가 느려지고 heap에 상주하는 트레이드오프다. 판단 기준은 [[OpenSearch-Inverted-Index-Structures|역색인 물리 구조]] 참고.
 
 ### `object`, `nested`, `flat_object`
 
@@ -107,7 +110,7 @@ raw text
 
 ## Index analyzer와 Search analyzer
 
-기본 원칙은 양쪽을 같게 두어 동일한 term 공간을 만드는 것이다. 다르게 두는 대표 사례는 autocomplete다.
+기본 원칙은 양쪽을 같게 두어 같은 term 공간을 만드는 것이다. Query 시점의 analyzer는 query의 `analyzer` 파라미터, 필드의 `search_analyzer`, 인덱스의 `analysis.analyzer.default_search` 설정, 필드의 `analyzer`, `standard` 순서로 결정된다. 다르게 두는 대표 사례는 [[OpenSearch-Autocomplete|autocomplete]]다.
 
 - 색인 시 edge n-gram으로 여러 prefix를 만든다.
 - 검색 시 일반 analyzer로 query를 한 번만 분석한다.
@@ -185,7 +188,11 @@ PUT products-v1
 - [Mapping explosion - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-explosion/)
 - [Supported field types - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/index/)
 - [Doc values - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-parameters/doc-values/)
+- [Keyword field type — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/field-types/supported-field-types/keyword/)
+- [ignore_above — Elasticsearch Mapping Reference](https://www.elastic.co/docs/reference/elasticsearch/mapping-reference/ignore-above)
 - [Text analysis - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/)
+- [Analyzer mapping parameter — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/field-types/mapping-parameters/analyzer/)
+- [Search analyzers — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/analyzers/search-analyzers/)
 - [CJK analyzer - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/language-analyzers/cjk/)
 - [ICU analyzer - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/language-analyzers/icu/)
 - [Analyze API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/analyze-apis/)
