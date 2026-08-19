@@ -1,9 +1,9 @@
 ---
 tags: [database, search, opensearch, lucene, shard, replication]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-08-19
 category: "Data & Storage - NoSQL"
-aliases: ["OpenSearch Architecture", "OpenSearch 아키텍처"]
+aliases: ["OpenSearch Architecture", "OpenSearch 아키텍처", "OpenSearch Node Roles", "OpenSearch 노드 역할"]
 ---
 
 # OpenSearch 아키텍처와 분산 실행 모델
@@ -50,7 +50,7 @@ Cluster
 | `coordinating_only` | shard fan-out과 결과 reduce | 큰 검색에서 heap 병목 가능 |
 | `search` | Search replica shard를 호스팅 | 색인과 검색 workload 분리 |
 
-모든 노드는 암묵적으로 coordinating 기능을 수행한다. 규모가 작으면 여러 역할을 겸할 수 있지만, 운영 규모에서는 전용 cluster manager를 두고 애플리케이션 트래픽을 직접 보내지 않는 편이 안전하다.
+모든 노드는 암묵적으로 coordinating 기능을 수행한다. 규모가 작으면 여러 역할을 겸할 수 있지만, 운영 규모에서는 전용 cluster manager를 두고 애플리케이션 트래픽을 직접 보내지 않는 편이 안전하다. `cluster_manager`는 Elasticsearch와 OpenSearch 1.x가 master라고 부르던 역할로, 2.x에서 비포용 용어 정리로 개명되어 3.0에서 기존 표기가 제거된다. 장애 영향도 역할마다 다르다. Data node 하나를 잃으면 replica가 있는 한 검색을 지속하면서 shard를 재배치하지만, elected cluster manager를 잃으면 새 선거가 끝날 때까지 cluster state 변경이 멈춘다. 상세 동작은 아래 Cluster state와 quorum 절 참고.
 
 ## 문서 라우팅
 
@@ -188,7 +188,7 @@ OpenSearch와 OpenSearch Dashboards는 각각 Elasticsearch와 Kibana의 마지�
 - [Language clients — OpenSearch Documentation](https://docs.opensearch.org/latest/clients/)
 - [OpenSearch란 무엇인가 — WikiDocs](https://wikidocs.net/280293)
 - [OpenSearch concepts — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/concepts/)
-- [Creating a cluster — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/)
+- [Creating a cluster — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/), [Breaking changes — OpenSearch Documentation](https://docs.opensearch.org/latest/breaking-changes/)
 - [Index settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
 - [Document APIs — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/)
 - [Routing — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/metadata-fields/routing/)
