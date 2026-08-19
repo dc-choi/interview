@@ -169,10 +169,10 @@ Codemod는 기계적인 변경을 줄일 뿐 의미 보존을 증명하지 않�
 
 ## 출처
 
-- [TypeORM 1.1.0 release - TypeORM](https://github.com/typeorm/typeorm/releases/tag/1.1.0)
-- [TypeORM 1.1.0 package metadata - TypeORM](https://github.com/typeorm/typeorm/blob/1.1.0/package.json)
-- [TypeORM 1.0 is here - TypeORM](https://typeorm.io/blog/typeorm-1-0/)
-- [Upgrading from 0.3 to 1.0 - TypeORM](https://typeorm.io/docs/releases/1.0/upgrading-from-0.3/)
-- [Release Notes 1.0 - TypeORM](https://typeorm.io/docs/releases/1.0/release-notes/)
-- [Distinct count pull request - TypeORM](https://github.com/typeorm/typeorm/pull/11965)
-- [Null and undefined handling - TypeORM](https://typeorm.io/docs/data-source/null-and-undefined-handling/)
+- [TypeORM 1.1.0 release — TypeORM](https://github.com/typeorm/typeorm/releases/tag/1.1.0)
+- [TypeORM 1.1.0 package metadata — TypeORM](https://github.com/typeorm/typeorm/blob/1.1.0/package.json)
+- [TypeORM 1.0 is here — TypeORM](https://typeorm.io/blog/typeorm-1-0/)
+- [Upgrading from 0.3 to 1.0 — TypeORM](https://typeorm.io/docs/releases/1.0/upgrading-from-0.3/)
+- [Release Notes 1.0 — TypeORM](https://typeorm.io/docs/releases/1.0/release-notes/)
+- [Distinct count pull request — TypeORM](https://github.com/typeorm/typeorm/pull/11965)
+- [Null and undefined handling — TypeORM](https://typeorm.io/docs/data-source/null-and-undefined-handling/)

@@ -188,8 +188,8 @@ Provider response
 
 ## 출처
 
-- [How We Work - EIDR](https://www.eidr.org/how-we-work)
-- [Introduction to the EIDR Data Model - EIDR](https://www.eidr.org/documents/Introduction%20to%20the%20EIDR%20Data%20Model.pdf)
-- [EIDR Data Fields Reference - EIDR](https://www.eidr.org/documents/EIDR%202.6%20Data%20Fields%20Reference.pdf)
-- [Creating a schema mapping - AWS Entity Resolution](https://docs.aws.amazon.com/entityresolution/latest/userguide/create-schema-mapping.html)
-- [Creating a rule-based matching workflow - AWS Entity Resolution](https://docs.aws.amazon.com/entityresolution/latest/userguide/creating-matching-workflow-rule-based.html)
+- [How We Work — EIDR](https://www.eidr.org/how-we-work)
+- [Introduction to the EIDR Data Model — EIDR](https://www.eidr.org/documents/Introduction%20to%20the%20EIDR%20Data%20Model.pdf)
+- [EIDR Data Fields Reference — EIDR](https://www.eidr.org/documents/EIDR%202.6%20Data%20Fields%20Reference.pdf)
+- [Creating a schema mapping — AWS Entity Resolution](https://docs.aws.amazon.com/entityresolution/latest/userguide/create-schema-mapping.html)
+- [Creating a rule-based matching workflow — AWS Entity Resolution](https://docs.aws.amazon.com/entityresolution/latest/userguide/creating-matching-workflow-rule-based.html)

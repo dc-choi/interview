@@ -150,18 +150,18 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 - 선착순 vs 대기열 공정성의 설계 선택
 
 ## 출처
-- [Redis Docs - SADD](https://redis.io/docs/latest/commands/sadd/)
-- [Redis Docs - Scripting with Lua](https://redis.io/docs/latest/develop/programmability/eval-intro/)
-- [Redis Docs - Multi-key operations](https://redis.io/docs/latest/develop/using-commands/multi-key-operations/)
-- [Apache Kafka 4.3.1 - KafkaProducer](https://kafka.apache.org/43/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html)
-- [Apache Kafka 4.3.1 - KafkaConsumer](https://kafka.apache.org/43/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html)
-- [Apache Kafka 4.3 - Design](https://kafka.apache.org/43/design/design/)
-- [TypeORM - Transactions](https://typeorm.io/docs/transactions/)
-- [실습으로 배우는 선착순 이벤트 시스템, 문제점 - 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=153928)
-- [실습으로 배우는 선착순 이벤트 시스템, 문제점 해결하기 - 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=155153)
-- [실습으로 배우는 선착순 이벤트 시스템, Consumer 사용하기 - 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=158584)
-- [실습으로 배우는 선착순 이벤트 시스템, 발급가능한 쿠폰개수를 1인당 1개로 제한하기 - 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=159888)
-- [실습으로 배우는 선착순 이벤트 시스템, 쿠폰을 발급하다가 에러가 발생하면 어떻게 하나요? - 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=163908)
+- [Redis Docs — SADD](https://redis.io/docs/latest/commands/sadd/)
+- [Redis Docs — Scripting with Lua](https://redis.io/docs/latest/develop/programmability/eval-intro/)
+- [Redis Docs — Multi-key operations](https://redis.io/docs/latest/develop/using-commands/multi-key-operations/)
+- [Apache Kafka 4.3.1 — KafkaProducer](https://kafka.apache.org/43/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html)
+- [Apache Kafka 4.3.1 — KafkaConsumer](https://kafka.apache.org/43/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html)
+- [Apache Kafka 4.3 — Design](https://kafka.apache.org/43/design/design/)
+- [TypeORM — Transactions](https://typeorm.io/docs/transactions/)
+- [실습으로 배우는 선착순 이벤트 시스템, 문제점 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=153928)
+- [실습으로 배우는 선착순 이벤트 시스템, 문제점 해결하기 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=155153)
+- [실습으로 배우는 선착순 이벤트 시스템, Consumer 사용하기 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=158584)
+- [실습으로 배우는 선착순 이벤트 시스템, 발급가능한 쿠폰개수를 1인당 1개로 제한하기 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=159888)
+- [실습으로 배우는 선착순 이벤트 시스템, 쿠폰을 발급하다가 에러가 발생하면 어떻게 하나요? — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=163908)
 
 ## 관련 문서
 - [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처]]

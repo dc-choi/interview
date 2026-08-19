@@ -77,7 +77,7 @@ TypeORM transaction 안에서는 전역 manager나 평소 주입받은 repositor
 
 ## 출처
 
-- [DataSource - TypeORM](https://typeorm.io/docs/data-source/data-source/)
-- [Data Source Options - TypeORM](https://typeorm.io/docs/data-source/data-source-options/)
-- [Transactions - TypeORM](https://typeorm.io/docs/transactions/)
-- [Migration setup - TypeORM](https://typeorm.io/docs/migrations/setup/)
+- [DataSource — TypeORM](https://typeorm.io/docs/data-source/data-source/)
+- [Data Source Options — TypeORM](https://typeorm.io/docs/data-source/data-source-options/)
+- [Transactions — TypeORM](https://typeorm.io/docs/transactions/)
+- [Migration setup — TypeORM](https://typeorm.io/docs/migrations/setup/)

@@ -10,7 +10,7 @@ aliases: ["OpenSearch Korean Analysis", "OpenSearch 한국어 분석", "Nori 분
 
 한국어 렉시컬 검색 품질은 형태소 분석기 하나로 결정되지 않는다. 문서와 검색어를 같은 term 공간으로 바꾸는 analyzer, 도메인 단어의 경계를 정하는 사용자 사전, 의미 관계를 확장하는 동의어, 실제 검색 결과를 검증하는 평가 corpus가 함께 맞아야 한다.
 
-Analyzer의 실행 순서와 index analyzer, search analyzer의 역할은 [[OpenSearch-Mapping-Text-Analysis#Analyzer 파이프라인|analyzer 파이프라인]]과 [[OpenSearch-Mapping-Text-Analysis#Index analyzer와 Search analyzer|색인 및 검색 분석기]]에서 먼저 다룬다. 이 문서는 그 구조를 전제로 Nori, 사용자 사전, 동의어와 검증 루프에 집중한다.
+Analyzer의 실행 순서와 index analyzer, search analyzer의 역할은 [[OpenSearch-Mapping-Text-Analysis-Analyzer#Analyzer 파이프라인|analyzer 파이프라인]]과 [[OpenSearch-Mapping-Text-Analysis-Analyzer#Index analyzer와 Search analyzer|색인 및 검색 분석기]]에서 먼저 다룬다. 이 문서는 그 구조를 전제로 Nori, 사용자 사전, 동의어와 검증 루프에 집중한다.
 
 ## Nori의 역할과 경계
 
@@ -156,20 +156,20 @@ Term Vectors의 `per_field_analyzer`는 지정한 analyzer로 term-vector를 생
 ## 관련 문서
 
 - [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-Search-Quality-Evaluation|다음: 검색 품질 평가]]
-- [[OpenSearch-Mapping-Text-Analysis|매핑과 analyzer 기본 구조]]
+- [[OpenSearch-Mapping-Text-Analysis-Analyzer|analyzer 기본 구조]], [[OpenSearch-Mapping-Text-Analysis|매핑과 저장 구조]]
 - [[OpenSearch-Query-Relevance|BM25와 lexical relevance]]
 - [[OpenSearch-Hybrid-Search|렉시컬과 시맨틱 결과 결합]]
 
 ## 출처
 
-- [Amazon OpenSearch Service로 검색 구현하기 - YouTube](https://www.youtube.com/watch?v=2Swr59CkA_w)
-- [AWS OpenSearch 검색 기능 정리 - YouTube](https://www.youtube.com/watch?v=YyF2vBhFlAY)
-- [Text analysis - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/)
-- [Analyze API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/analyze-apis/)
-- [Term vectors - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/termvector/)
-- [Synonym graph token filter - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/token-filters/synonym-graph/)
-- [Refresh search analyzer - OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/refresh-analyzer/)
-- [Additional plugins - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/additional-plugins/)
-- [Nori tokenizer implementation - OpenSearch](https://github.com/opensearch-project/OpenSearch/blob/main/plugins/analysis-nori/src/main/java/org/opensearch/index/analysis/NoriTokenizerFactory.java)
-- [OpenSearch Service 지원 plugin - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-plugins.html), [OpenSearch Serverless 지원 plugin - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-genref.html)
-- [OpenSearch Service custom package - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/custom-packages.html)
+- [Amazon OpenSearch Service로 검색 구현하기 — YouTube](https://www.youtube.com/watch?v=2Swr59CkA_w)
+- [AWS OpenSearch 검색 기능 정리 — YouTube](https://www.youtube.com/watch?v=YyF2vBhFlAY)
+- [Text analysis — OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/)
+- [Analyze API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/analyze-apis/)
+- [Term vectors — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/termvector/)
+- [Synonym graph token filter — OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/token-filters/synonym-graph/)
+- [Refresh search analyzer — OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/refresh-analyzer/)
+- [Additional plugins — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/additional-plugins/)
+- [Nori tokenizer implementation — OpenSearch](https://github.com/opensearch-project/OpenSearch/blob/main/plugins/analysis-nori/src/main/java/org/opensearch/index/analysis/NoriTokenizerFactory.java)
+- [OpenSearch Service 지원 plugin — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-plugins.html), [OpenSearch Serverless 지원 plugin — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-genref.html)
+- [OpenSearch Service custom package — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/custom-packages.html)

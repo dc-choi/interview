@@ -161,8 +161,8 @@ decisionEvidenceRef
 
 ## 출처
 
-- [Candidate generation overview - Google for Developers](https://developers.google.com/machine-learning/recommendation/overview/candidate-generation)
-- [Content-based filtering - Google for Developers](https://developers.google.com/machine-learning/recommendation/content-based/basics)
-- [Collaborative filtering - Google for Developers](https://developers.google.com/machine-learning/recommendation/collaborative/basics)
-- [Rules of Machine Learning - Google for Developers](https://developers.google.com/machine-learning/guides/rules-of-ml)
-- [Collaborative Filtering for Implicit Feedback Datasets - Hu, Koren, Volinsky](https://yifanhu.net/PUB/cf.pdf)
+- [Candidate generation overview — Google for Developers](https://developers.google.com/machine-learning/recommendation/overview/candidate-generation)
+- [Content-based filtering — Google for Developers](https://developers.google.com/machine-learning/recommendation/content-based/basics)
+- [Collaborative filtering — Google for Developers](https://developers.google.com/machine-learning/recommendation/collaborative/basics)
+- [Rules of Machine Learning — Google for Developers](https://developers.google.com/machine-learning/guides/rules-of-ml)
+- [Collaborative Filtering for Implicit Feedback Datasets — Hu, Koren, Volinsky](https://yifanhu.net/PUB/cf.pdf)

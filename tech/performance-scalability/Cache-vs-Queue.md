@@ -92,4 +92,4 @@ Redis는 cache, stream이나 작업 큐의 기반으로 모두 사용할 수 있
 
 ## 출처
 
-- [캐시 vs 큐 - YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=dVCB5jQAYMA)
+- [캐시 vs 큐 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=dVCB5jQAYMA)

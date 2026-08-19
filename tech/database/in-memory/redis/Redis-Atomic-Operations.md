@@ -172,12 +172,12 @@ Pipeline은 여러 명령의 네트워크 왕복을 줄일 때, MULTI는 실행 
 - 락보다 원자 명령과 조건부 갱신을 먼저 검토하는 원칙
 
 ## 출처
-- [Redis Docs - Scripting with Lua](https://redis.io/docs/latest/develop/programmability/eval-intro/)
-- [Redis Docs - Transactions](https://redis.io/docs/latest/develop/using-commands/transactions/)
-- [Redis Docs - SET](https://redis.io/docs/latest/commands/set/)
-- [Redis Docs - SETNX](https://redis.io/docs/latest/commands/setnx/)
-- [실습으로 배우는 선착순 이벤트 시스템, 문제점 해결하기 - 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=155153)
-- [재고시스템으로 알아보는 동시성이슈 해결방법, Redis 라이브러리 알아보기 - 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=328995&unitId=119710)
+- [Redis Docs — Scripting with Lua](https://redis.io/docs/latest/develop/programmability/eval-intro/)
+- [Redis Docs — Transactions](https://redis.io/docs/latest/develop/using-commands/transactions/)
+- [Redis Docs — SET](https://redis.io/docs/latest/commands/set/)
+- [Redis Docs — SETNX](https://redis.io/docs/latest/commands/setnx/)
+- [실습으로 배우는 선착순 이벤트 시스템, 문제점 해결하기 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=155153)
+- [재고시스템으로 알아보는 동시성이슈 해결방법, Redis 라이브러리 알아보기 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=328995&unitId=119710)
 
 ## 관련 문서
 - [[Redis-Data-Structures|Redis 자료구조]]

@@ -181,9 +181,9 @@ Booking은 click보다 희소해 raw user와 listing ID만으로 long-term embed
 
 ## 출처
 
-- [Amazon.com Recommendations: Item-to-Item Collaborative Filtering - IEEE](https://doi.org/10.1109/MIC.2003.1167344)
-- [Two Decades of Recommender Systems at Amazon.com - Amazon Science](https://www.amazon.science/publications/two-decades-of-recommender-systems-at-amazon-com)
-- [Deep Interest Network for Click-Through Rate Prediction - Alibaba 연구진](https://arxiv.org/abs/1706.06978)
-- [Multi-Interest Network with Dynamic Routing for Recommendation at Tmall - Alibaba 연구진](https://arxiv.org/abs/1904.08030)
-- [Real-time Personalization using Embeddings for Search Ranking at Airbnb - KDD](https://www.kdd.org/kdd2018/accepted-papers/view/real-time-personalization-using-embeddings-for-search-ranking-at-airbnb)
-- [Listing Embeddings for Similar Listing Recommendations and Search Personalization - Airbnb Engineering](https://medium.com/airbnb-engineering/listing-embeddings-for-similar-listing-recommendations-and-real-time-personalization-in-search-601172f7603e)
+- [Amazon.com Recommendations: Item-to-Item Collaborative Filtering — IEEE](https://doi.org/10.1109/MIC.2003.1167344)
+- [Two Decades of Recommender Systems at Amazon.com — Amazon Science](https://www.amazon.science/publications/two-decades-of-recommender-systems-at-amazon-com)
+- [Deep Interest Network for Click-Through Rate Prediction — Alibaba 연구진](https://arxiv.org/abs/1706.06978)
+- [Multi-Interest Network with Dynamic Routing for Recommendation at Tmall — Alibaba 연구진](https://arxiv.org/abs/1904.08030)
+- [Real-time Personalization using Embeddings for Search Ranking at Airbnb — KDD](https://www.kdd.org/kdd2018/accepted-papers/view/real-time-personalization-using-embeddings-for-search-ranking-at-airbnb)
+- [Listing Embeddings for Similar Listing Recommendations and Search Personalization — Airbnb Engineering](https://medium.com/airbnb-engineering/listing-embeddings-for-similar-listing-recommendations-and-real-time-personalization-in-search-601172f7603e)

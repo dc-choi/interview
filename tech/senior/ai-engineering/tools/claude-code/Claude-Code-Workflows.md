@@ -132,8 +132,8 @@ Claude Code를 만든 엔지니어의 실사용 패턴. 위 원칙들의 극단�
 ## 출처
 
 - [클로드 코드 가이드 (개발 파트 17챕터, 별첨 1 창시자의 워크플로우) — WikiDocs](https://wikidocs.net/book/19104)
-- [개인 생산성에서 조직 생산성으로, Claude Code on Amazon Bedrock 학습 플랜 - AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/claude-code-on-amazon-bedrock-training/)
-- [Claude Code on Amazon Bedrock 온라인 교육 프로그램 - AWS](https://dtlpyb0rtvxql.cloudfront.net/)
+- [개인 생산성에서 조직 생산성으로, Claude Code on Amazon Bedrock 학습 플랜 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/claude-code-on-amazon-bedrock-training/)
+- [Claude Code on Amazon Bedrock 온라인 교육 프로그램 — AWS](https://dtlpyb0rtvxql.cloudfront.net/)
 
 ## 관련 문서
 

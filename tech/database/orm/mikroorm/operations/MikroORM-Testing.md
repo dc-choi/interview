@@ -164,7 +164,7 @@ await Test.createTestingModule({
 
 ## 출처
 
-- [Getting Started Guide - MikroORM v7.1](https://mikro-orm.io/docs/guide)
-- [Project Setup Guide - MikroORM v7.1](https://mikro-orm.io/docs/guide/project-setup)
-- [Migrations - MikroORM v7.1](https://mikro-orm.io/docs/migrations)
-- [Schema Generator - MikroORM v7.1](https://mikro-orm.io/docs/schema-generator)
+- [Getting Started Guide — MikroORM v7.1](https://mikro-orm.io/docs/guide)
+- [Project Setup Guide — MikroORM v7.1](https://mikro-orm.io/docs/guide/project-setup)
+- [Migrations — MikroORM v7.1](https://mikro-orm.io/docs/migrations)
+- [Schema Generator — MikroORM v7.1](https://mikro-orm.io/docs/schema-generator)

@@ -67,7 +67,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 - Node 역할 분리는 workload 격리 선택이다. 전용 cluster manager는 운영 cluster의 control plane을 보호하고, ingest와 coordinating 전용화는 실제 부하를 benchmark해 결정한다.
 - 관련도 개선은 BM25 parameter부터 바꾸지 않는다. Mapping과 analyzer, query와 filter 구분, field boost, 대표 query set과 품질 지표를 먼저 검증한다.
 
-세부 동작은 [[OpenSearch-Architecture|분산 실행 모델]], [[OpenSearch-Mapping-Text-Analysis|매핑과 저장 구조]], [[OpenSearch-Inverted-Index-Structures|역색인 물리 구조]], [[OpenSearch-Query-Relevance|BM25와 Query DSL]]에서 이어서 본다.
+세부 동작은 [[OpenSearch-Architecture|분산 실행 모델]], [[OpenSearch-Mapping-Text-Analysis|매핑과 저장 구조]], [[OpenSearch-Mapping-Text-Analysis-Analyzer|텍스트 분석]], [[OpenSearch-Inverted-Index-Structures|역색인 물리 구조]], [[OpenSearch-Query-Relevance|BM25와 Query DSL]]에서 이어서 본다.
 
 이 흐름에서 답해야 할 질문은 다섯 가지다. 왜 RDB 검색만으로 부족한가, 무엇을 어떤 term으로 저장할 것인가, 어떤 조건을 필터와 점수로 나눌 것인가, 분산 실행의 비용은 무엇인가, 원본 DB와 검색 결과의 시차를 어떻게 관리할 것인가.
 
@@ -98,7 +98,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 ### 0단계: 도입 판단
 
 - 목표: RDB 검색으로 충분한 요구와 OpenSearch가 필요한 요구를 구분한다.
-- 짜투리 읽기: [[OpenSearch-vs-RDB-Search#B-tree vs 역색인|B-tree vs 역색인]], [[OpenSearch-vs-RDB-Search#검색엔진 도입의 대가|검색엔진 도입의 대가]], [[OpenSearch-vs-RDB-Search#도입 판단 사다리|도입 판단 사다리]]
+- 자투리 읽기: [[OpenSearch-vs-RDB-Search#B-tree vs 역색인|B-tree vs 역색인]], [[OpenSearch-vs-RDB-Search#검색엔진 도입의 대가|검색엔진 도입의 대가]], [[OpenSearch-vs-RDB-Search#도입 판단 사다리|도입 판단 사다리]]
 - 퇴근 후 아웃풋: 익숙한 서비스 하나를 골라 요구, 검토한 대안, 새 운영 비용, 최종 판단을 네 문단으로 작성한다.
 - 현재 진도:
   - [x] RDB로 충분한 exact match, filter, sort 요구 구분
@@ -111,7 +111,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 ### 1단계: 핵심 원리
 
 - 목표: `문서 → analyzer → term → 역색인 → shard 검색 → top K 병합` 흐름과 검색 가시성 경계를 연결한다.
-- 짜투리 읽기: [[OpenSearch-Mapping-Text-Analysis#필드 타입 선택|필드 타입]], [[OpenSearch-Mapping-Text-Analysis#저장 구조 세 가지|저장 구조]], [[OpenSearch-Mapping-Text-Analysis#Analyzer 파이프라인|Analyzer]], [[OpenSearch-Query-Relevance#Term-level과 Full-text|Term-level과 Full-text]], [[OpenSearch-Query-Relevance#Query context와 Filter context|Query와 Filter]], [[OpenSearch-Query-Relevance-Compound|bool과 dis_max]], [[OpenSearch-Query-Relevance#BM25 mental model|BM25]]
+- 자투리 읽기: [[OpenSearch-Mapping-Text-Analysis#필드 타입 선택|필드 타입]], [[OpenSearch-Mapping-Text-Analysis#저장 구조 세 가지|저장 구조]], [[OpenSearch-Mapping-Text-Analysis-Analyzer#Analyzer 파이프라인|Analyzer]], [[OpenSearch-Query-Relevance#Term-level과 Full-text|Term-level과 Full-text]], [[OpenSearch-Query-Relevance#Query context와 Filter context|Query와 Filter]], [[OpenSearch-Query-Relevance-Compound|bool과 dis_max]], [[OpenSearch-Query-Relevance#BM25 mental model|BM25]]
 - 이어서 읽기: [[OpenSearch-Architecture#계층 구조|계층 구조]], [[OpenSearch-Architecture#기본 DOCUMENT replication 쓰기 흐름|쓰기]], [[OpenSearch-Architecture#GET과 Search의 읽기 경로|읽기]], [[OpenSearch-Indexing-Internals#한 문서의 생명주기|문서 생명주기]]
 - 퇴근 후 아웃풋: 한국어 콘텐츠의 `title`, `status`, `category`, `price` 매핑과 query를 설계하고 OpenSearch index 요청부터 검색 응답까지 한 장에 그린다.
 - 현재 진도:
@@ -126,7 +126,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 ### 2단계: 검색 품질
 
 - 목표: analyzer와 ranking 변경을 감이 아니라 같은 query set과 지표로 비교한다.
-- 짜투리 읽기: [[OpenSearch-Korean-Text-Analysis#Nori의 역할과 경계|Nori]], [[OpenSearch-Korean-Text-Analysis#사용자 사전, 동의어, 불용어는 목적이 다르다|사전과 동의어]], [[OpenSearch-Query-Understanding#오타 교정 계층|오타 교정]], [[OpenSearch-Query-Understanding#초성 검색과 자모 필드|초성 검색]], [[OpenSearch-Search-Quality-Evaluation#Judgment list 구축|Judgment]], [[OpenSearch-Search-Quality-Evaluation#rank_eval API|rank_eval]], [[OpenSearch-Search-Quality-Evaluation#온라인 지표|온라인 지표]]
+- 자투리 읽기: [[OpenSearch-Korean-Text-Analysis#Nori의 역할과 경계|Nori]], [[OpenSearch-Korean-Text-Analysis#사용자 사전, 동의어, 불용어는 목적이 다르다|사전과 동의어]], [[OpenSearch-Query-Understanding#오타 교정 계층|오타 교정]], [[OpenSearch-Query-Understanding#초성 검색과 자모 필드|초성 검색]], [[OpenSearch-Search-Quality-Evaluation#Judgment list 구축|Judgment]], [[OpenSearch-Search-Quality-Evaluation#rank_eval API|rank_eval]], [[OpenSearch-Search-Quality-Evaluation#온라인 지표|온라인 지표]]
 - 측정할 때 읽기: [[OpenSearch-Performance-Troubleshooting#운영과 닮은 benchmark|운영과 닮은 benchmark]], [[OpenSearch-Search-Quality-Evaluation#검색 로그에서 개선 백로그까지|로그 백로그]]
 - 필요할 때 읽기: [[OpenSearch-Relevance-Tuning#function_score 실전|function_score]], [[OpenSearch-Relevance-Tuning#rescore — top-N 2단계 재정렬|rescore]]
 - 퇴근 후 아웃풋: 문서 50개 이상, 대표 query 20개, 관련도 등급을 준비하고 nDCG@10, zero-result rate, p95 기준선을 만든다. 한 번에 한 변수만 바꿔 전후를 기록한다.
@@ -141,7 +141,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 ### 3단계: 운영
 
 - 목표: 검색 인덱스를 원본에서 다시 만들 수 있고 변경과 장애를 통제할 수 있게 한다.
-- 짜투리 읽기: [[OpenSearch-Indexing-Internals#운영 DB와의 동기화|RDB 동기화]], [[OpenSearch-Indexing-Pipeline-Reliability#증상별 진단|동기화 증상 진단]], [[OpenSearch-Indexing-Pipeline-Reliability#Reconciliation 설계|정합성 검증]], [[OpenSearch-Index-Lifecycle#매핑 변경과 무중단 전환|무중단 전환]], [[OpenSearch-Cluster-Reliability#Unassigned shard 진단|Unassigned shard]], [[OpenSearch-Cluster-Reliability#Snapshot과 Restore|Snapshot과 Restore]], [[OpenSearch-Performance-Troubleshooting#증상별 가설|증상별 가설]]
+- 자투리 읽기: [[OpenSearch-Indexing-Internals#운영 DB와의 동기화|RDB 동기화]], [[OpenSearch-Indexing-Pipeline-Reliability#증상별 진단|동기화 증상 진단]], [[OpenSearch-Indexing-Pipeline-Reliability#Reconciliation 설계|정합성 검증]], [[OpenSearch-Index-Lifecycle#매핑 변경과 무중단 전환|무중단 전환]], [[OpenSearch-Cluster-Reliability#Unassigned shard 진단|Unassigned shard]], [[OpenSearch-Cluster-Reliability#Snapshot과 Restore|Snapshot과 Restore]], [[OpenSearch-Performance-Troubleshooting#증상별 가설|증상별 가설]]
 - AWS를 쓸 때 읽기: [[OpenSearch-Service-Deployment#관리 책임 경계|관리 책임 경계]], [[OpenSearch-Service-Operations#가용성과 용량|가용성과 용량]], [[OpenSearch-Service-Operations#프로덕션 체크리스트|프로덕션 체크리스트]], [[OpenSearch-Service-Engine-Upgrade|Engine upgrade와 rollback 설계]]
 - 퇴근 후 아웃풋: `backfill → catch-up → 검증 → shadow read → canary → alias 전환 → rollback 또는 forward-fix` Runbook과 결과 누락, 429, 디스크 증가 진단표를 만든다.
 - 현재 진도:
@@ -173,7 +173,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 
 ### 기능과 사례
 
-- [[OpenSearch-Autocomplete|자동완성 설계]]
+- [[OpenSearch-Autocomplete|자동완성 설계]], [[OpenSearch-Autocomplete-Operations|자동완성 운영과 검증]]
 - [[OpenSearch-Search-Features|Highlight, 응답과 검색 실행 제어]]
 - [[OpenSearch-Query-Understanding|오타 교정, 초성 검색과 검색어 전처리]]
 - [[OpenSearch-Entity-Relationship-Search|인물과 출연작 같은 개체 관계 검색 모델링]]
@@ -233,5 +233,5 @@ OpenSearch 엔진을 잘 운영하는 것과 사용자가 좋은 검색 경험�
 - [Segment replication — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/index/)
 - [Keyword search and BM25 — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/keyword-search/)
 - [Query and filter context — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/query-filter-context/)
-- [OpenSearch Documentation - OpenSearch Project](https://docs.opensearch.org/latest/about/)
-- [OpenSearch 내부 구조 참고 영상 - YouTube](https://www.youtube.com/watch?v=J2uEQrCE2Hs)
+- [OpenSearch Documentation — OpenSearch Project](https://docs.opensearch.org/latest/about/)
+- [OpenSearch 내부 구조 참고 영상 — YouTube](https://www.youtube.com/watch?v=J2uEQrCE2Hs)

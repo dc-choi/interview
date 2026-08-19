@@ -64,4 +64,4 @@ aliases: ["Generalization vs Abstraction", "일반화와 추상화"]
 
 ## 출처
 
-- [객체지향 일반화 vs 추상화 - YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=kyerFnx8ngg)
+- [객체지향 일반화 vs 추상화 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=kyerFnx8ngg)

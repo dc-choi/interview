@@ -85,8 +85,8 @@ BCNF는 모든 비자명 함수 종속 `X → Y`에서 X가 슈퍼키가 되도�
 
 ## 출처
 
-- [이번에 확실히 정리하고 가시죠, RDB 정규화 - 코딩하는기술사](https://www.youtube.com/watch?v=KDkPizapEAA)
-- [8분 만에 이해하는 1, 2, 3 정규화 - 코딩하는기술사](https://www.youtube.com/watch?v=tyBSrMhJtDY)
+- [이번에 확실히 정리하고 가시죠, RDB 정규화 — 코딩하는기술사](https://www.youtube.com/watch?v=KDkPizapEAA)
+- [8분 만에 이해하는 1, 2, 3 정규화 — 코딩하는기술사](https://www.youtube.com/watch?v=tyBSrMhJtDY)
 - 정규화 시작/1NF: [시작](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347664), [1NF](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347665)
 - 2NF/3NF/BCNF: [2NF](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347666), [3NF](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347667), [BCNF](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347668)
 - 실무 적용: [실무와 정규화](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347669), [정리](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347670)

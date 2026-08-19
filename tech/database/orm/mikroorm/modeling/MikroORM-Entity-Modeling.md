@@ -157,7 +157,7 @@ const CustomerSchema = defineEntity({
 
 ## 출처
 
-- [Defining Entities - MikroORM](https://mikro-orm.io/docs/defining-entities)
-- [Using Decorators - MikroORM](https://mikro-orm.io/docs/using-decorators)
-- [Separating Concerns using Embeddables - MikroORM](https://mikro-orm.io/docs/embeddables)
-- [Inheritance Mapping - MikroORM](https://mikro-orm.io/docs/inheritance-mapping)
+- [Defining Entities — MikroORM](https://mikro-orm.io/docs/defining-entities)
+- [Using Decorators — MikroORM](https://mikro-orm.io/docs/using-decorators)
+- [Separating Concerns using Embeddables — MikroORM](https://mikro-orm.io/docs/embeddables)
+- [Inheritance Mapping — MikroORM](https://mikro-orm.io/docs/inheritance-mapping)

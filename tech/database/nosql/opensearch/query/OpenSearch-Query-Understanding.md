@@ -175,9 +175,9 @@ GET products/_search
 
 ## 출처
 
-- [Fuzzy query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/term/fuzzy/)
-- [Match query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/match/)
-- [Did-you-mean - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/did-you-mean/)
-- [Autocomplete - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/autocomplete/)
-- [ICU normalization character filter - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/character-filters/icu-normalization/)
-- [Nori tokenizer (analysis-nori) - Elastic Documentation](https://www.elastic.co/docs/reference/elasticsearch/plugins/analysis-nori-tokenizer)
+- [Fuzzy query — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/term/fuzzy/)
+- [Match query — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/match/)
+- [Did-you-mean — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/did-you-mean/)
+- [Autocomplete — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/autocomplete/)
+- [ICU normalization character filter — OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/character-filters/icu-normalization/)
+- [Nori tokenizer (analysis-nori) — Elastic Documentation](https://www.elastic.co/docs/reference/elasticsearch/plugins/analysis-nori-tokenizer)

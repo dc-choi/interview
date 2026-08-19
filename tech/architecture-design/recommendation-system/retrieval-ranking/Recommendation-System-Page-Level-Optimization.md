@@ -169,10 +169,10 @@ Offline replay는 제약 위반, 중복과 latency 회귀를 거르는 데 유�
 
 ## 출처
 
-- [The Netflix Recommender System: Algorithms, Business Value, and Innovation - ACM](https://doi.org/10.1145/2843948)
-- [How Netflix's Recommendations System Works - Netflix](https://help.netflix.com/en/node/100639)
-- [Full-Page Recommender: A Modular Framework for Multi-Carousel Recommendations - ACM RecSys](https://doi.org/10.1145/3705328.3748753)
-- [Seq2Slate: Re-ranking and Slate Optimization with RNNs - Google Research](https://research.google/pubs/seq2slate-re-ranking-and-slate-optimization-with-rnns/)
-- [Reinforcement Learning for Slate-based Recommender Systems - Google Research](https://research.google/pubs/reinforcement-learning-for-slate-based-recommender-systems-a-tractable-decomposition-and-practical-methodology/)
-- [Intersection Observer - W3C](https://www.w3.org/TR/intersection-observer/)
-- [Trustworthy Analysis of Online A/B Tests - Microsoft Research](https://www.microsoft.com/en-us/research/publication/trustworthy-analysis-of-online-a-b-tests-pitfalls-challenges-and-solutions/)
+- [The Netflix Recommender System: Algorithms, Business Value, and Innovation — ACM](https://doi.org/10.1145/2843948)
+- [How Netflix's Recommendations System Works — Netflix](https://help.netflix.com/en/node/100639)
+- [Full-Page Recommender: A Modular Framework for Multi-Carousel Recommendations — ACM RecSys](https://doi.org/10.1145/3705328.3748753)
+- [Seq2Slate: Re-ranking and Slate Optimization with RNNs — Google Research](https://research.google/pubs/seq2slate-re-ranking-and-slate-optimization-with-rnns/)
+- [Reinforcement Learning for Slate-based Recommender Systems — Google Research](https://research.google/pubs/reinforcement-learning-for-slate-based-recommender-systems-a-tractable-decomposition-and-practical-methodology/)
+- [Intersection Observer — W3C](https://www.w3.org/TR/intersection-observer/)
+- [Trustworthy Analysis of Online A/B Tests — Microsoft Research](https://www.microsoft.com/en-us/research/publication/trustworthy-analysis-of-online-a-b-tests-pitfalls-challenges-and-solutions/)

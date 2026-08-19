@@ -169,7 +169,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 ## 출처
 - 개발자 취업과 이직 한방에 해결하기
-- [Search shard routing - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/search-shard-routing/)
+- [Search shard routing — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/search-shard-routing/)
 
 ## 관련 문서
 - [[Common-Interview-Questions|자주하는 면접 질문 (인덱스)]]

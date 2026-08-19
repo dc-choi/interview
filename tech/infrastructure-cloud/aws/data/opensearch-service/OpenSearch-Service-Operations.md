@@ -67,10 +67,10 @@ Provisioned domain의 가용성 설계, service software update와 engine upgrad
 
 ## 출처
 
-- [Multi-AZ domain 구성 - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html)
-- [Service software updates - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/service-software.html)
-- [Domain engine upgrade - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/version-migration.html)
-- [Handling errors - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html)
-- [OpenSearch Service snapshots - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-snapshots.html)
-- [Manual snapshot 제한 - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-snapshot-create.html)
-- [Serverless snapshots - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-snapshots.html)
+- [Multi-AZ domain 구성 — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html)
+- [Service software updates — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/service-software.html)
+- [Domain engine upgrade — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/version-migration.html)
+- [Handling errors — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html)
+- [OpenSearch Service snapshots — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-snapshots.html)
+- [Manual snapshot 제한 — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-snapshot-create.html)
+- [Serverless snapshots — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-snapshots.html)

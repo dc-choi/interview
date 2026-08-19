@@ -162,13 +162,13 @@ Request
 
 ## 출처
 
-- [인증과 인가 - 코딩하는기술사](https://www.youtube.com/watch?v=jpA5XIF-etA)
-- [RBAC/ABAC/PBAC, 역할/속성/정책 기반 접근 제어 - JackerLab](https://itpe.jackerlab.com/entry/RBACABACPBAC-%EC%97%AD%ED%95%A0%C2%B7%EC%86%8D%EC%84%B1%C2%B7%EC%A0%95%EC%B1%85-%EA%B8%B0%EB%B0%98-%EC%A0%91%EA%B7%BC-%EC%A0%9C%EC%96%B4)
-- [Role Based Access Control - NIST](https://csrc.nist.gov/projects/role-based-access-control)
-- [Guide to Attribute Based Access Control, SP 800-162 - NIST](https://csrc.nist.gov/pubs/sp/800/162/upd2/final)
+- [인증과 인가 — 코딩하는기술사](https://www.youtube.com/watch?v=jpA5XIF-etA)
+- [RBAC/ABAC/PBAC, 역할/속성/정책 기반 접근 제어 — JackerLab](https://itpe.jackerlab.com/entry/RBACABACPBAC-%EC%97%AD%ED%95%A0%C2%B7%EC%86%8D%EC%84%B1%C2%B7%EC%A0%95%EC%B1%85-%EA%B8%B0%EB%B0%98-%EC%A0%91%EA%B7%BC-%EC%A0%9C%EC%96%B4)
+- [Role Based Access Control — NIST](https://csrc.nist.gov/projects/role-based-access-control)
+- [Guide to Attribute Based Access Control, SP 800-162 — NIST](https://csrc.nist.gov/pubs/sp/800/162/upd2/final)
 - [A Report on the Privilege Access Management Workshop, NIST IR 7657](https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir7657.pdf)
-- [Guide to Secure Web Services, SP 800-95 - NIST](https://doi.org/10.6028/NIST.SP.800-95)
-- [XACML Version 3.0 Core Specification - OASIS](https://docs.oasis-open.org/xacml/3.0/xacml-3.0-core-spec-os-en.html)
+- [Guide to Secure Web Services, SP 800-95 — NIST](https://doi.org/10.6028/NIST.SP.800-95)
+- [XACML Version 3.0 Core Specification — OASIS](https://docs.oasis-open.org/xacml/3.0/xacml-3.0-core-spec-os-en.html)
 
 ## 관련 문서
 

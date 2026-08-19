@@ -132,7 +132,7 @@ Highlight는 사용자 설명용 snippet이지 query match의 감사 증거가 �
 ## 관련 문서
 
 - [[OpenSearch|OpenSearch 학습 지도]]
-- [[OpenSearch-Mapping-Text-Analysis|매핑과 analyzer]]
+- [[OpenSearch-Mapping-Text-Analysis|매핑과 저장 구조]], [[OpenSearch-Mapping-Text-Analysis-Analyzer|analyzer와 텍스트 분석]]
 - [[OpenSearch-Query-Relevance|Query DSL과 관련도]]
 - [[OpenSearch-Search-Features|검색 기능과 응답 field]]
 - [[OpenSearch-Inner-Hits|nested와 parent-child 내부 highlight]]
@@ -140,9 +140,9 @@ Highlight는 사용자 설명용 snippet이지 query match의 감사 증거가 �
 
 ## 출처
 
-- [Highlight query matches - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/highlight/)
-- [Index options - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-parameters/index-options/)
-- [Term vector - OpenSearch Documentation](https://docs.opensearch.org/latest/field-types/mapping-parameters/term-vector/)
-- [Index settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
-- [Highlight fetch phase - OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/search/fetch/subphase/highlight/HighlightPhase.java)
-- [Cross Site Scripting Prevention - OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
+- [Highlight query matches — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/highlight/)
+- [Index options — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-parameters/index-options/)
+- [Term vector — OpenSearch Documentation](https://docs.opensearch.org/latest/field-types/mapping-parameters/term-vector/)
+- [Index settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
+- [Highlight fetch phase — OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/search/fetch/subphase/highlight/HighlightPhase.java)
+- [Cross Site Scripting Prevention — OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)

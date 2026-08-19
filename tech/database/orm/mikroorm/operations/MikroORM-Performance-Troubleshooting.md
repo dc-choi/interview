@@ -140,8 +140,8 @@ v7.1은 EntityManager, QueryBuilder와 fork에 `AbortSignal`을 받을 수 있�
 
 ## 출처
 
-- [Logging - MikroORM v7.1](https://mikro-orm.io/docs/logging)
-- [Result cache - MikroORM v7.1](https://mikro-orm.io/docs/caching)
-- [Read Replica Connections - MikroORM v7.1](https://mikro-orm.io/docs/read-connections)
-- [Loading Strategies - MikroORM v7.1](https://mikro-orm.io/docs/loading-strategies)
-- [Query cancellation - MikroORM v7.1](https://mikro-orm.io/docs/query-cancellation)
+- [Logging — MikroORM v7.1](https://mikro-orm.io/docs/logging)
+- [Result cache — MikroORM v7.1](https://mikro-orm.io/docs/caching)
+- [Read Replica Connections — MikroORM v7.1](https://mikro-orm.io/docs/read-connections)
+- [Loading Strategies — MikroORM v7.1](https://mikro-orm.io/docs/loading-strategies)
+- [Query cancellation — MikroORM v7.1](https://mikro-orm.io/docs/query-cancellation)

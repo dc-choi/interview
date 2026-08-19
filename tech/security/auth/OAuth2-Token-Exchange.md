@@ -148,10 +148,10 @@ V1은 `subject_token` 없이 `requested_subject`에 username이나 user ID만 �
 
 ## 출처
 
-- [RFC 8693 - OAuth 2.0 Token Exchange](https://www.rfc-editor.org/rfc/rfc8693.html)
-- [Keycloak 26.6.4 - Configuring and using token exchange](https://github.com/keycloak/keycloak/blob/26.6.4/docs/guides/securing-apps/token-exchange.adoc)
-- [RFC 9700 - Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700.html)
-- [넥스트리 - Keycloak 토큰 교환으로 인증 시스템 구축](https://www.nextree.io/keycloak-tokeun-gyohwaneuro-injeung-siseutem-gucug/)
+- [RFC 8693 — OAuth 2.0 Token Exchange](https://www.rfc-editor.org/rfc/rfc8693.html)
+- [Keycloak 26.6.4 — Configuring and using token exchange](https://github.com/keycloak/keycloak/blob/26.6.4/docs/guides/securing-apps/token-exchange.adoc)
+- [RFC 9700 — Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700.html)
+- [넥스트리 — Keycloak 토큰 교환으로 인증 시스템 구축](https://www.nextree.io/keycloak-tokeun-gyohwaneuro-injeung-siseutem-gucug/)
 
 ## 관련 문서
 

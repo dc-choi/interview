@@ -182,9 +182,9 @@ Cache 창 안의 쓰기는 즉시 보이지 않을 수 있다. TypeORM이 domain
 
 ## 출처
 
-- [Database, Testing - NestJS](https://docs.nestjs.com/techniques/database)
-- [Select QueryBuilder, debugging - TypeORM](https://typeorm.io/docs/query-builder/select-query-builder/)
-- [Logging - TypeORM](https://typeorm.io/docs/logging/)
-- [Listeners and Subscribers - TypeORM](https://typeorm.io/docs/listeners-and-subscribers/)
-- [Caching queries - TypeORM](https://typeorm.io/docs/query-builder/caching/)
-- [Upgrading from 0.3 to 1.0 - TypeORM](https://typeorm.io/docs/releases/1.0/upgrading-from-0.3/)
+- [Database, Testing — NestJS](https://docs.nestjs.com/techniques/database)
+- [Select QueryBuilder, debugging — TypeORM](https://typeorm.io/docs/query-builder/select-query-builder/)
+- [Logging — TypeORM](https://typeorm.io/docs/logging/)
+- [Listeners and Subscribers — TypeORM](https://typeorm.io/docs/listeners-and-subscribers/)
+- [Caching queries — TypeORM](https://typeorm.io/docs/query-builder/caching/)
+- [Upgrading from 0.3 to 1.0 — TypeORM](https://typeorm.io/docs/releases/1.0/upgrading-from-0.3/)

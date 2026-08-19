@@ -170,9 +170,9 @@ source discovery
 
 ## 출처
 
-- [LLM은 똑똑한데, 왜 우리 회사 일은 모를까 - 토스테크](https://toss.tech/article/llm_context_topic)
-- [사람과 AI Agent를 위한 통합 Context Provider 구축 - NAVER D2](https://d2.naver.com/helloworld/7056385)
-- [PROV-O: The PROV Ontology - W3C](https://www.w3.org/TR/prov-o/)
+- [LLM은 똑똑한데, 왜 우리 회사 일은 모를까 — 토스테크](https://toss.tech/article/llm_context_topic)
+- [사람과 AI Agent를 위한 통합 Context Provider 구축 — NAVER D2](https://d2.naver.com/helloworld/7056385)
+- [PROV-O: The PROV Ontology — W3C](https://www.w3.org/TR/prov-o/)
 
 ## 관련 문서
 

@@ -91,7 +91,7 @@ AI를 튜터나 사서처럼 쓰려면 결과물만 얻는 것이 아니라 **�
 ## 출처
 - AI를 학습 난이도 조절 도구로 (접바둑 비유) — 개인 블로그 에세이
 - [기본기는 지식이 아닙니다 — Team Grit](https://teamgrit.co/article/314)
-- [인프런 MCP - Inflearn](https://www.inflearn.com/pages/mcp)
+- [인프런 MCP — Inflearn](https://www.inflearn.com/pages/mcp)
 - [The People Who Will Thrive in the AI Age — The Atlantic](https://www.theatlantic.com/ideas/2026/06/ai-open-ai-anthropic/687689/)
 - [AI 시대에 번영할 사람들 — GeekNews](https://news.hada.io/topic?id=31683)
 

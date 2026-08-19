@@ -190,11 +190,11 @@ Hybrid query, normalization processor와 score ranker processor는 서로 다른
 
 ## 출처
 
-- [Amazon OpenSearch 시맨틱 검색과 하이브리드 검색 - YouTube](https://www.youtube.com/watch?v=mX6XNgbW_kE)
-- [AWS OpenSearch 검색 기능 정리 - YouTube](https://www.youtube.com/watch?v=YyF2vBhFlAY)
-- [Hybrid search - OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/hybrid-search/index/)
-- [Hybrid query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/hybrid/)
-- [Normalization processor - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/normalization-processor/)
-- [Score ranker processor - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/score-ranker-processor/)
-- [Hybrid score explanation - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/explanation-processor/)
-- [Optimizing hybrid search - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-relevance/optimize-hybrid-search/)
+- [Amazon OpenSearch 시맨틱 검색과 하이브리드 검색 — YouTube](https://www.youtube.com/watch?v=mX6XNgbW_kE)
+- [AWS OpenSearch 검색 기능 정리 — YouTube](https://www.youtube.com/watch?v=YyF2vBhFlAY)
+- [Hybrid search — OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/hybrid-search/index/)
+- [Hybrid query — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/hybrid/)
+- [Normalization processor — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/normalization-processor/)
+- [Score ranker processor — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/score-ranker-processor/)
+- [Hybrid score explanation — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/explanation-processor/)
+- [Optimizing hybrid search — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-relevance/optimize-hybrid-search/)

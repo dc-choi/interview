@@ -89,4 +89,4 @@ L = λW
 
 ## 출처
 
-- [처리량 vs 지연시간 - YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=63_ApTsEHhU)
+- [처리량 vs 지연시간 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=63_ApTsEHhU)

@@ -108,7 +108,7 @@ CIA Triad는 정보와 시스템을 보호할 때 함께 검토해야 하는 세
 
 ## 출처
 
-- [보안의 3요소, 기밀성, 무결성, 가용성 - 코딩하는기술사](https://www.youtube.com/watch?v=2Px26HdAm34)
+- [보안의 3요소, 기밀성, 무결성, 가용성 — 코딩하는기술사](https://www.youtube.com/watch?v=2Px26HdAm34)
 
 ## 관련 문서
 

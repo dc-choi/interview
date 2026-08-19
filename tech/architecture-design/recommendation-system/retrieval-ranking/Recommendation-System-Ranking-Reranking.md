@@ -153,13 +153,13 @@ Soft objective는 정확도와 tradeoff가 있으므로 weight와 영향 범위�
 
 ## 출처
 
-- [Scoring - Google for Developers](https://developers.google.com/machine-learning/recommendation/dnn/scoring)
-- [Re-ranking - Google for Developers](https://developers.google.com/machine-learning/recommendation/dnn/re-ranking)
-- [Listwise ranking - TensorFlow Recommenders](https://www.tensorflow.org/recommenders/examples/listwise_ranking)
-- [Multi-task recommenders - TensorFlow Recommenders](https://www.tensorflow.org/recommenders/examples/multitask)
-- [Recommending What Video to Watch Next - Google Research](https://research.google/pubs/recommending-what-video-to-watch-next-a-multitask-ranking-system/)
-- [BPR: Bayesian Personalized Ranking - Rendle et al.](https://arxiv.org/abs/1205.2618)
-- [Self-Attentive Sequential Recommendation - Kang, McAuley](https://arxiv.org/abs/1808.09781)
-- [Joint Multisided Exposure Fairness for Recommendation - Google Research](https://research.google/pubs/joint-multisided-exposure-fairness-for-recommendation/)
-- [Learning to Rank - XGBoost](https://xgboost.readthedocs.io/en/stable/tutorials/learning_to_rank.html)
-- [개인화 추천 시스템 2, Personalized Content Ranking - 오늘의집](https://www.bucketplace.com/post/2024-07-10-%EA%B0%9C%EC%9D%B8%ED%99%94-%EC%B6%94%EC%B2%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-2-personalized-content-ranking/)
+- [Scoring — Google for Developers](https://developers.google.com/machine-learning/recommendation/dnn/scoring)
+- [Re-ranking — Google for Developers](https://developers.google.com/machine-learning/recommendation/dnn/re-ranking)
+- [Listwise ranking — TensorFlow Recommenders](https://www.tensorflow.org/recommenders/examples/listwise_ranking)
+- [Multi-task recommenders — TensorFlow Recommenders](https://www.tensorflow.org/recommenders/examples/multitask)
+- [Recommending What Video to Watch Next — Google Research](https://research.google/pubs/recommending-what-video-to-watch-next-a-multitask-ranking-system/)
+- [BPR: Bayesian Personalized Ranking — Rendle et al.](https://arxiv.org/abs/1205.2618)
+- [Self-Attentive Sequential Recommendation — Kang, McAuley](https://arxiv.org/abs/1808.09781)
+- [Joint Multisided Exposure Fairness for Recommendation — Google Research](https://research.google/pubs/joint-multisided-exposure-fairness-for-recommendation/)
+- [Learning to Rank — XGBoost](https://xgboost.readthedocs.io/en/stable/tutorials/learning_to_rank.html)
+- [개인화 추천 시스템 2, Personalized Content Ranking — 오늘의집](https://www.bucketplace.com/post/2024-07-10-%EA%B0%9C%EC%9D%B8%ED%99%94-%EC%B6%94%EC%B2%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-2-personalized-content-ranking/)

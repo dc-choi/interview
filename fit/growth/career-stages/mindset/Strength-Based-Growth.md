@@ -39,7 +39,7 @@ aliases: ["Strength Based Growth", "강점 기반 성장", "약점 보완 vs 강
 ## 출처
 
 - 강점 기반 성장과 강점찾기 — 개인 블로그 회고
-- [재능이라는 허상 - 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
+- [재능이라는 허상 — 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
 
 ## 관련 문서
 

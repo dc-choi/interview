@@ -111,7 +111,7 @@ Martin Fowler와 James Lewis는 MSA를 독립 프로세스로 실행되고 경�
 - [Martin Fowler — Monolith First](https://martinfowler.com/bliki/MonolithFirst.html)
 - [han jeong heon 강사 — 모노리스와 마이크로서비스](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104423)
 - [bcho — 대용량 웹서비스를 위한 마이크로 서비스 아키텍쳐의 이해](https://bcho.tistory.com/948)
-- [스타트업 딜레마, 모놀리스냐 MSA냐? - 코딩하는기술사](https://www.youtube.com/watch?v=p71m3q2QsfU)
+- [스타트업 딜레마, 모놀리스냐 MSA냐? — 코딩하는기술사](https://www.youtube.com/watch?v=p71m3q2QsfU)
 
 ## 관련 문서
 - [[Modular-Monolith|모듈러 모노리스 (중간 지점)]]

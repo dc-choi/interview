@@ -59,7 +59,7 @@ aliases: ["Failure Driven Growth", "실패를 성장으로", "실패 다루기",
 ## 출처
 
 - [개발자 원칙 — 제어 가능한 것, 실패, 전문가성 — YouTube](https://www.youtube.com/watch?v=DJCmvzhFVOI&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=15)
-- [재능이라는 허상 - 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
+- [재능이라는 허상 — 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
 - [자기 코드가 마음에 들지 않는 개발자에게 — Team Grit](https://teamgrit.co/article/332)
 - [같은 실수를 반복하는 개발자에게 — Team Grit](https://teamgrit.co/article/347)
 

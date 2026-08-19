@@ -136,8 +136,8 @@ OPE가 실패했다는 뜻은 새 정책이 나쁘다는 뜻이 아니다. 현�
 
 ## 출처
 
-- [Doubly Robust Policy Evaluation and Learning - Dudík et al.](https://arxiv.org/abs/1103.4601)
-- [Counterfactual Risk Minimization - Swaminathan, Joachims](https://www.jmlr.org/papers/v16/swaminathan15a.html)
-- [Optimal and Adaptive Off-policy Evaluation in Contextual Bandits - Wang et al.](https://proceedings.mlr.press/v70/wang17a.html)
-- [Off-policy Evaluation for Slate Recommendation - Swaminathan et al.](https://proceedings.neurips.cc/paper/2017/hash/5352696a9ca3397beb79f116f3a33991-Abstract.html)
-- [Recommendations as Treatments - Schnabel et al.](https://proceedings.mlr.press/v48/schnabel16.html)
+- [Doubly Robust Policy Evaluation and Learning — Dudík et al.](https://arxiv.org/abs/1103.4601)
+- [Counterfactual Risk Minimization — Swaminathan, Joachims](https://www.jmlr.org/papers/v16/swaminathan15a.html)
+- [Optimal and Adaptive Off-policy Evaluation in Contextual Bandits — Wang et al.](https://proceedings.mlr.press/v70/wang17a.html)
+- [Off-policy Evaluation for Slate Recommendation — Swaminathan et al.](https://proceedings.neurips.cc/paper/2017/hash/5352696a9ca3397beb79f116f3a33991-Abstract.html)
+- [Recommendations as Treatments — Schnabel et al.](https://proceedings.mlr.press/v48/schnabel16.html)

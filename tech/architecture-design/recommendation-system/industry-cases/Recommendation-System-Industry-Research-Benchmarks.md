@@ -138,9 +138,9 @@ MovieLens
 
 ## 출처
 
-- [GroupLens: An Open Architecture for Collaborative Filtering of Netnews - ACM](https://doi.org/10.1145/192844.192905)
-- [The MovieLens Datasets: History and Context - GroupLens](https://files.grouplens.org/papers/harper-tiis2015.pdf)
-- [MovieLens Datasets - GroupLens](https://grouplens.org/datasets/movielens/)
+- [GroupLens: An Open Architecture for Collaborative Filtering of Netnews — ACM](https://doi.org/10.1145/192844.192905)
+- [The MovieLens Datasets: History and Context — GroupLens](https://files.grouplens.org/papers/harper-tiis2015.pdf)
+- [MovieLens Datasets — GroupLens](https://grouplens.org/datasets/movielens/)
 - [ACM Conference on Recommender Systems](https://recsys.acm.org/)
 - [RecSys 2026 Call for Contributions](https://recsys.acm.org/recsys26/call/)
 - [RecSys 2020 Reproducibility Contributions](https://recsys.acm.org/recsys20/accepted-contributions/)

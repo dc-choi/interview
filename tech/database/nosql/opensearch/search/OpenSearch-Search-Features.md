@@ -12,7 +12,7 @@ aliases: ["OpenSearch Search Features", "OpenSearch Highlight", "OpenSearch Agen
 
 ## 자동완성 선택지
 
-Query-time prefix, edge n-gram, `search_as_you_type`와 completion suggester의 선택 기준, mapping과 운영 경계는 [[OpenSearch-Autocomplete|자동완성 설계]]에서 다룬다.
+Query-time prefix, edge n-gram, `search_as_you_type`와 completion suggester의 선택 기준과 mapping은 [[OpenSearch-Autocomplete|자동완성 설계]], 후보 데이터와 운영 경계는 [[OpenSearch-Autocomplete-Operations|자동완성 운영과 검증]]에서 다룬다.
 
 ### 한국어 자동완성
 
@@ -121,7 +121,7 @@ Agentic memory는 단순 대화 로그가 아니라 memory container 안에 work
 
 - [[OpenSearch|OpenSearch 학습 지도]]
 - [[OpenSearch-Autocomplete|자동완성 설계]]
-- [[OpenSearch-Mapping-Text-Analysis|매핑과 analyzer]]
+- [[OpenSearch-Mapping-Text-Analysis|매핑과 저장 구조]], [[OpenSearch-Mapping-Text-Analysis-Analyzer|analyzer와 텍스트 분석]]
 - [[OpenSearch-Korean-Text-Analysis|한국어 analyzer와 사전 운영]]
 - [[OpenSearch-Query-Relevance|Query DSL과 관련도]]
 - [[OpenSearch-Aggregations-Pagination|집계, 정렬과 페이지네이션]]
@@ -133,16 +133,16 @@ Agentic memory는 단순 대화 로그가 아니라 memory container 안에 work
 
 ## 출처
 
-- [OpenSearch vs Elasticsearch 비교 - YouTube](https://www.youtube.com/watch?v=EPGVqk9TrTI)
-- [Agentic search - OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/)
-- [Agentic query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/specialized/agentic/)
-- [Agentic memory - OpenSearch Documentation](https://docs.opensearch.org/latest/ml-commons-plugin/agentic-memory/)
-- [Amazon OpenSearch Service로 검색 구현하기 - YouTube](https://www.youtube.com/watch?v=2Swr59CkA_w)
-- [Highlight query matches - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/highlight/)
-- [Retrieve specific fields - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/retrieve-specific-fields/)
-- [Collapse search results - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/collapse-search/)
-- [Collapse field validation - OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/search/collapse/CollapseBuilder.java#L217-L236)
-- [OpenSearch 3.3.0 release notes - GitHub](https://github.com/opensearch-project/OpenSearch/releases/tag/3.3.0)
-- [Search template API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search-template/index/)
-- [Search API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search/)
-- [Search settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/search-settings/)
+- [OpenSearch vs Elasticsearch 비교 — YouTube](https://www.youtube.com/watch?v=EPGVqk9TrTI)
+- [Agentic search — OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/)
+- [Agentic query — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/specialized/agentic/)
+- [Agentic memory — OpenSearch Documentation](https://docs.opensearch.org/latest/ml-commons-plugin/agentic-memory/)
+- [Amazon OpenSearch Service로 검색 구현하기 — YouTube](https://www.youtube.com/watch?v=2Swr59CkA_w)
+- [Highlight query matches — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/highlight/)
+- [Retrieve specific fields — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/retrieve-specific-fields/)
+- [Collapse search results — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/collapse-search/)
+- [Collapse field validation — OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/search/collapse/CollapseBuilder.java#L217-L236)
+- [OpenSearch 3.3.0 release notes — GitHub](https://github.com/opensearch-project/OpenSearch/releases/tag/3.3.0)
+- [Search template API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search-template/index/)
+- [Search API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search/)
+- [Search settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/search-settings/)

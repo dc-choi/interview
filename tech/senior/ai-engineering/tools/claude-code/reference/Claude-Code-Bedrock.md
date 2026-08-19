@@ -146,16 +146,16 @@ Prompt와 completion을 비용 분석에 그대로 저장하지 않아도 token�
 
 ## 출처
 
-- [개인 생산성에서 조직 생산성으로, Claude Code on Amazon Bedrock 학습 플랜 - AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/claude-code-on-amazon-bedrock-training/)
-- [Claude Code on Amazon Bedrock 온라인 교육 프로그램 - AWS](https://dtlpyb0rtvxql.cloudfront.net/)
-- [Claude Code on Amazon Bedrock - Anthropic](https://code.claude.com/docs/en/amazon-bedrock)
-- [Cross-Region Inference - Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html)
-- [Data protection - Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/data-protection.html)
-- [Data retention - Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html)
-- [Abuse detection - Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/abuse-detection.html)
-- [Model invocation logging - Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html)
-- [Cost management - Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/cost-management.html)
-- [Application inference profile 비용 관리 - Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-application-inference-profiles.html)
+- [개인 생산성에서 조직 생산성으로, Claude Code on Amazon Bedrock 학습 플랜 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/claude-code-on-amazon-bedrock-training/)
+- [Claude Code on Amazon Bedrock 온라인 교육 프로그램 — AWS](https://dtlpyb0rtvxql.cloudfront.net/)
+- [Claude Code on Amazon Bedrock — Anthropic](https://code.claude.com/docs/en/amazon-bedrock)
+- [Cross-Region Inference — Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html)
+- [Data protection — Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/data-protection.html)
+- [Data retention — Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html)
+- [Abuse detection — Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/abuse-detection.html)
+- [Model invocation logging — Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html)
+- [Cost management — Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/cost-management.html)
+- [Application inference profile 비용 관리 — Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-application-inference-profiles.html)
 
 ## 관련 문서
 

@@ -131,9 +131,9 @@ OpenSearch의 shard, rollover, storage tier는 [[OpenSearch-Index-Lifecycle]]을
 
 ## 출처
 
-- [Fluent Bit buffering - Official Manual](https://docs.fluentbit.io/manual/administration/buffering-and-storage)
-- [Fluent Bit backpressure - Official Manual](https://docs.fluentbit.io/manual/administration/backpressure)
-- [Amazon Data Firehose delivery semantics - AWS Documentation](https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html)
-- [Amazon Data Firehose delivery failures - AWS Documentation](https://docs.aws.amazon.com/firehose/latest/dev/retry.html)
-- [OpenSearch Ingestion pipeline features - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/osis-features-overview.html)
+- [Fluent Bit buffering — Official Manual](https://docs.fluentbit.io/manual/administration/buffering-and-storage)
+- [Fluent Bit backpressure — Official Manual](https://docs.fluentbit.io/manual/administration/backpressure)
+- [Amazon Data Firehose delivery semantics — AWS Documentation](https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html)
+- [Amazon Data Firehose delivery failures — AWS Documentation](https://docs.aws.amazon.com/firehose/latest/dev/retry.html)
+- [OpenSearch Ingestion pipeline features — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/osis-features-overview.html)
 - [TS Backend Meetup 1 로그 적재 비용 개선기](https://woowa.tech/ts-backend-meetup-1)

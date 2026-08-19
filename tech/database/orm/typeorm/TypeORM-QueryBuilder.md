@@ -176,13 +176,13 @@ relation id만 바꿀 때는 graph 전체를 읽고 `save`하는 대신 Relation
 - [[Transactions|트랜잭션]]
 ## 출처
 
-- [Select using Query Builder - TypeORM](https://typeorm.io/docs/query-builder/select-query-builder/)
-- [Insert using Query Builder - TypeORM](https://typeorm.io/docs/query-builder/insert-query-builder/)
-- [Update using Query Builder - TypeORM](https://typeorm.io/docs/query-builder/update-query-builder/)
-- [Delete using Query Builder - TypeORM](https://typeorm.io/docs/query-builder/delete-query-builder/)
-- [Relation Query Builder - TypeORM](https://typeorm.io/docs/query-builder/relational-query-builder/)
-- [Transactions - TypeORM](https://typeorm.io/docs/transactions/)
-- [Handling null and undefined values - TypeORM](https://typeorm.io/docs/data-source/null-and-undefined-handling/)
-- [Upgrading from 0.3 to 1.0 - TypeORM](https://typeorm.io/docs/releases/1.0/upgrading-from-0.3/)
-- [Release Notes 1.0 - TypeORM](https://typeorm.io/docs/releases/1.0/release-notes/)
-- [TypeORM 1.1.0 release - TypeORM GitHub](https://github.com/typeorm/typeorm/releases/tag/1.1.0)
+- [Select using Query Builder — TypeORM](https://typeorm.io/docs/query-builder/select-query-builder/)
+- [Insert using Query Builder — TypeORM](https://typeorm.io/docs/query-builder/insert-query-builder/)
+- [Update using Query Builder — TypeORM](https://typeorm.io/docs/query-builder/update-query-builder/)
+- [Delete using Query Builder — TypeORM](https://typeorm.io/docs/query-builder/delete-query-builder/)
+- [Relation Query Builder — TypeORM](https://typeorm.io/docs/query-builder/relational-query-builder/)
+- [Transactions — TypeORM](https://typeorm.io/docs/transactions/)
+- [Handling null and undefined values — TypeORM](https://typeorm.io/docs/data-source/null-and-undefined-handling/)
+- [Upgrading from 0.3 to 1.0 — TypeORM](https://typeorm.io/docs/releases/1.0/upgrading-from-0.3/)
+- [Release Notes 1.0 — TypeORM](https://typeorm.io/docs/releases/1.0/release-notes/)
+- [TypeORM 1.1.0 release — TypeORM GitHub](https://github.com/typeorm/typeorm/releases/tag/1.1.0)

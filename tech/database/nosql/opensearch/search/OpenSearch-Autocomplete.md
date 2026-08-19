@@ -152,17 +152,6 @@ GET suggestions-v1/_search
 - Fuzzy completion의 `unicode_aware` 기본값은 `false`라 edit distance를 byte로 계산한다. 한글 오타는 `true`로 두고 느려지는 비용과 한 음절 치환 결과를 함께 측정한다.
 - 후보 목록을 먼저 색인해야 하며 빠른 조회의 대가로 메모리 사용이 늘어난다.
 
-## 후보 데이터와 운영 경계
-
-- 원본 문서와 생성, 수정, 삭제 주기가 같으면 같은 index의 multi-field나 `search_as_you_type`으로 시작한다.
-- 인기 검색어, 운영자 추천어, weight와 만료 주기가 다르면 suggestion 전용 index로 분리한다.
-- Suggestion 문서는 표시 문자열, 정규화 key, 대상 ID와 유형, locale, weight를 분리한다.
-- 사용자 검색 로그는 최소 빈도, 최신성, 중복, 금칙어와 민감 정보 필터를 통과한 후보만 반영한다.
-- 문서 검색 방식은 본 검색과 같은 server-side 권한 filter를 적용한다.
-- Completion의 top-level `suggest`는 일반 query와 filter가 후보를 제한하지 않는다. 비공개 후보는 tenant나 접근 등급별 index로 분리하거나 target 환경에서 검증한 DLS만 사용하고, 다른 권한의 후보가 나오지 않는 negative integration test를 둔다.
-- 입력마다 요청되므로 client debounce와 최소 글자 수, server rate limit을 함께 둔다.
-- 실패해도 검색 입력 자체를 막지 말고 suggestion을 숨기거나 인기 검색어로 대체한다.
-
 ## 한국어 자동완성
 
 - 완성된 단어 prefix, 띄어쓰기 변형, 영문과 숫자 혼합, 초성 검색을 별도 요구로 나눈다.
@@ -170,25 +159,20 @@ GET suggestions-v1/_search
 - 기본 analyzer는 초성 검색을 만들지 않는다. 필요하면 애플리케이션에서 초성을 생성해 별도 field로 색인한다.
 - 표시 문자열과 검색용 정규화 문자열을 분리해 사용자가 선택한 문구가 갑자기 바뀌지 않게 한다.
 
-## 검증 체크리스트
+## 운영과 검증은 별도 문서
 
-- 대표 입력마다 `_analyze` 결과와 실제 후보를 snapshot으로 남긴다.
-- 한 글자, 긴 입력, 띄어쓰기, 한글 한 음절 오타와 zero-result 입력을 포함한다.
-- 같은 query set으로 relevance와 후보 중복, p95 latency를 비교한다.
-- Edge n-gram과 `search_as_you_type`은 index 크기와 색인 처리량을 함께 측정한다.
-- Completion 메모리와 refresh 이후 노출 시점, 다른 권한 후보의 부재, 실제 keystroke QPS의 debounce와 rate limit을 함께 검증한다.
+후보 데이터의 분리 기준, 권한과 노출 경계, 도입 전 검증 체크리스트는 [[OpenSearch-Autocomplete-Operations|자동완성 운영과 검증]]이 정본이다.
 
 ## 관련 문서
 
-- [[OpenSearch-Mapping-Text-Analysis|매핑과 analyzer]], [[OpenSearch-Query-Understanding|오타 교정, 초성과 검색어 전처리]], [[OpenSearch-Query-Requirement-Classification|검색 요구사항 분류]]
+- [[OpenSearch-Autocomplete-Operations|자동완성 운영과 검증]], [[OpenSearch-Mapping-Text-Analysis-Analyzer|analyzer와 텍스트 분석]], [[OpenSearch-Query-Understanding|오타 교정, 초성과 검색어 전처리]], [[OpenSearch-Query-Requirement-Classification|검색 요구사항 분류]]
 - [[OpenSearch-Popular-Keywords-TopK|인기 검색어 후보와 weight]], [[OpenSearch-Search-API-Layer|검색 API 보호와 폴백]], [[OpenSearch-Search-Quality-Evaluation|검색 품질 평가]]
 
 ## 출처
 
-- [Autocomplete functionality - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/autocomplete/)
-- [Edge n-gram token filter - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/token-filters/edge-ngram/)
+- [Autocomplete functionality — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/autocomplete/)
+- [Edge n-gram token filter — OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/token-filters/edge-ngram/)
 - [N-gram tokenizer — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/analyzers/tokenizers/ngram/)
-- [Search-as-you-type field type - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/search-as-you-type/)
-- [Completion field type - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/completion/)
-- [Index settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
-- [Document-level security - OpenSearch Documentation](https://docs.opensearch.org/latest/security/access-control/document-level-security/)
+- [Search-as-you-type field type — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/search-as-you-type/)
+- [Completion field type — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/completion/)
+- [Index settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)

@@ -112,9 +112,9 @@ Primary shard 수는 정적 설계에 가깝고 replica 수는 동적으로 조�
 
 ## 출처
 
-- [OpenSearch Service shard 수 선택 - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp-sharding.html)
-- [OpenSearch Service 운영 모범 사례 - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp.html)
-- [OpenSearch Service storage 계산 - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp-storage.html)
-- [OpenSearch Service quota - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html)
-- [Index document - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
-- [Routing metadata field - OpenSearch Documentation](https://docs.opensearch.org/latest/field-types/metadata-fields/routing/)
+- [OpenSearch Service shard 수 선택 — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp-sharding.html)
+- [OpenSearch Service 운영 모범 사례 — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp.html)
+- [OpenSearch Service storage 계산 — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp-storage.html)
+- [OpenSearch Service quota — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html)
+- [Index document — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
+- [Routing metadata field — OpenSearch Documentation](https://docs.opensearch.org/latest/field-types/metadata-fields/routing/)

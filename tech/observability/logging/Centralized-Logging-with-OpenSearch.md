@@ -173,13 +173,13 @@ ALB 같은 producer가 사용하는 bucket을 먼저 삭제하면 계속 전달 
 
 ## 출처
 
-- [Centralized Logging with OpenSearch - AWS Solutions](https://docs.aws.amazon.com/solutions/centralized-logging-with-opensearch/)
-- [Solution overview - AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/solution-overview.html)
-- [Architecture details - AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/architecture-details.html)
-- [Service log analytics pipeline - AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/service-log-analytics-pipeline.html)
-- [Application log analytics pipeline - AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/application-log-analytics-pipeline.html)
-- [Supported AWS services - AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/supported-aws-services.html)
-- [Getting started - AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/getting-started.html)
-- [Uninstall the solution - AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/uninstall-the-centralized-logging-with-opensearch.html)
-- [AWS OpenSearch 기반 중앙집중식 로그 수집과 분석 - YouTube](https://www.youtube.com/watch?v=EIELtPoSMKI)
-- [AWS OpenSearch 중앙 집중식 로그 수집 실습 - YouTube](https://www.youtube.com/watch?v=gXpen0pSdPE)
+- [Centralized Logging with OpenSearch — AWS Solutions](https://docs.aws.amazon.com/solutions/centralized-logging-with-opensearch/)
+- [Solution overview — AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/solution-overview.html)
+- [Architecture details — AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/architecture-details.html)
+- [Service log analytics pipeline — AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/service-log-analytics-pipeline.html)
+- [Application log analytics pipeline — AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/application-log-analytics-pipeline.html)
+- [Supported AWS services — AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/supported-aws-services.html)
+- [Getting started — AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/getting-started.html)
+- [Uninstall the solution — AWS Documentation](https://docs.aws.amazon.com/solutions/latest/centralized-logging-with-opensearch/uninstall-the-centralized-logging-with-opensearch.html)
+- [AWS OpenSearch 기반 중앙집중식 로그 수집과 분석 — YouTube](https://www.youtube.com/watch?v=EIELtPoSMKI)
+- [AWS OpenSearch 중앙 집중식 로그 수집 실습 — YouTube](https://www.youtube.com/watch?v=gXpen0pSdPE)

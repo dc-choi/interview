@@ -175,8 +175,8 @@ TF, IDF, BM25, MRR, Recall@K와 NDCG@K는 현재 검색 업무와 [[2027-Search-
 
 ## 출처
 
-- [컴퓨팅 사고력을 키우는 이산수학 3판 - 알라딘](https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=286268266)
-- [컴퓨팅 사고력을 키우는 이산수학 3판 - 한빛아카데미](https://www.hanbit.co.kr/store/books/look.php?p_code=B1836224274)
-- [개발자를 위한 필수 수학 - 알라딘](https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=340346630)
-- [개발자를 위한 필수 수학 - 한빛미디어](https://www.hanbit.co.kr/store/books/look.php?p_code=B6844303854)
+- [컴퓨팅 사고력을 키우는 이산수학 3판 — 알라딘](https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=286268266)
+- [컴퓨팅 사고력을 키우는 이산수학 3판 — 한빛아카데미](https://www.hanbit.co.kr/store/books/look.php?p_code=B1836224274)
+- [개발자를 위한 필수 수학 — 알라딘](https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=340346630)
+- [개발자를 위한 필수 수학 — 한빛미디어](https://www.hanbit.co.kr/store/books/look.php?p_code=B6844303854)
 - [EBSMath 전체 교과](https://www.ebsmath.co.kr/siteMap)

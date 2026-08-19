@@ -174,10 +174,10 @@ partial entity를 도메인 변경용으로 재사용하지 않는다. 필요한
 
 ## 출처
 
-- [MikroORM documentation versions - MikroORM](https://mikro-orm.io/versions)
-- [Upgrading from v6 to v7 - MikroORM](https://mikro-orm.io/docs/upgrading-v6-to-v7)
-- [Relationship Loading Strategies - MikroORM](https://mikro-orm.io/docs/loading-strategies)
-- [Populating relations - MikroORM](https://mikro-orm.io/docs/populating-relations)
-- [Dataloaders - MikroORM](https://mikro-orm.io/docs/dataloaders)
-- [Type-Safe Relations - MikroORM](https://mikro-orm.io/docs/type-safe-relations)
-- [Collections - MikroORM](https://mikro-orm.io/docs/collections)
+- [MikroORM documentation versions — MikroORM](https://mikro-orm.io/versions)
+- [Upgrading from v6 to v7 — MikroORM](https://mikro-orm.io/docs/upgrading-v6-to-v7)
+- [Relationship Loading Strategies — MikroORM](https://mikro-orm.io/docs/loading-strategies)
+- [Populating relations — MikroORM](https://mikro-orm.io/docs/populating-relations)
+- [Dataloaders — MikroORM](https://mikro-orm.io/docs/dataloaders)
+- [Type-Safe Relations — MikroORM](https://mikro-orm.io/docs/type-safe-relations)
+- [Collections — MikroORM](https://mikro-orm.io/docs/collections)

@@ -102,9 +102,9 @@ PostgreSQL에서는 `EXPLAIN (ANALYZE, BUFFERS)`로 cache hit, read와 temp I/O�
 - [PostgreSQL 18 Documentation, ANALYZE](https://www.postgresql.org/docs/18/sql-analyze.html)
 - [PostgreSQL 18 Documentation, Indexes on Expressions](https://www.postgresql.org/docs/18/indexes-expressional.html)
 - [PostgreSQL 18 Documentation, Operator Classes](https://www.postgresql.org/docs/18/indexes-opclass.html)
-- [PostgreSQL EXPLAIN과 인덱스 성능 비교 - 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439101)
-- [데이터베이스 성능 최적화 패턴 1 - 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439102)
-- [데이터베이스 성능 최적화 패턴 2 - 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439103)
+- [PostgreSQL EXPLAIN과 인덱스 성능 비교 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439101)
+- [데이터베이스 성능 최적화 패턴 1 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439102)
+- [데이터베이스 성능 최적화 패턴 2 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439103)
 - [요즘IT — 쿼리 튜닝 기초 (EXPLAIN / ANALYZE)](https://yozm.wishket.com/magazine/detail/2260/)
 - [jojoldu — 단일 테이블 컬럼을 최대한 활용하기](https://jojoldu.tistory.com/788)
 

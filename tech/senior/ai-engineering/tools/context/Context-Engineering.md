@@ -164,19 +164,19 @@ Q. 반드시 지켜야 할 규칙은 Hook에만 두면 되나?
 
 ## 출처
 
-- [Claude Code memory and instruction loading - Anthropic](https://code.claude.com/docs/en/memory)
-- [Claude Code best practices - Anthropic](https://code.claude.com/docs/en/best-practices)
-- [Extend Claude with skills - Anthropic](https://code.claude.com/docs/en/slash-commands)
-- [Automate actions with hooks - Anthropic](https://code.claude.com/docs/en/hooks-guide)
-- [Create custom subagents - Anthropic](https://code.claude.com/docs/en/sub-agents)
-- [Context Rot: How Increasing Input Tokens Impacts LLM Performance - Chroma](https://www.trychroma.com/research/context-rot)
+- [Claude Code memory and instruction loading — Anthropic](https://code.claude.com/docs/en/memory)
+- [Claude Code best practices — Anthropic](https://code.claude.com/docs/en/best-practices)
+- [Extend Claude with skills — Anthropic](https://code.claude.com/docs/en/slash-commands)
+- [Automate actions with hooks — Anthropic](https://code.claude.com/docs/en/hooks-guide)
+- [Create custom subagents — Anthropic](https://code.claude.com/docs/en/sub-agents)
+- [Context Rot: How Increasing Input Tokens Impacts LLM Performance — Chroma](https://www.trychroma.com/research/context-rot)
 - [Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?](https://arxiv.org/abs/2602.11988)
 - [NoLiMa: Long-Context Evaluation Beyond Literal Matching](https://arxiv.org/abs/2502.05167)
-- [효율적인 CLAUDE.md 관리 및 컨텍스트 최적화 전략 - Hancom Tech](https://tech.hancom.com/claude-md-context-optimization/)
-- [The new rules of context engineering for Claude 5 generation models - Anthropic](https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models)
-- [AI doesn't have an intelligence problem. AI has a context problem - Databricks / Ali Ghodsi](https://www.linkedin.com/posts/databricks_ai-doesnt-have-an-intelligence-problem-activity-7463039739672027136-qwCa)
-- [Effective context engineering for AI agents - Anthropic](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
-- [Claude 5 모델을 위한 새로운 컨텍스트 엔지니어링 규칙 - GeekNews](https://news.hada.io/topic?id=31782)
+- [효율적인 CLAUDE.md 관리 및 컨텍스트 최적화 전략 — Hancom Tech](https://tech.hancom.com/claude-md-context-optimization/)
+- [The new rules of context engineering for Claude 5 generation models — Anthropic](https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models)
+- [AI doesn't have an intelligence problem. AI has a context problem — Databricks / Ali Ghodsi](https://www.linkedin.com/posts/databricks_ai-doesnt-have-an-intelligence-problem-activity-7463039739672027136-qwCa)
+- [Effective context engineering for AI agents — Anthropic](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+- [Claude 5 모델을 위한 새로운 컨텍스트 엔지니어링 규칙 — GeekNews](https://news.hada.io/topic?id=31782)
 
 ## 관련 문서
 

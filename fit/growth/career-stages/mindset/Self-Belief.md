@@ -64,7 +64,7 @@ aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "
 - [피드백을 받으면 무너지는 개발자에게 — Team Grit](https://teamgrit.co/article/323)
 - [칭찬받은 코드가 제일 무서운 개발자에게 — Team Grit](https://teamgrit.co/article/508)
 - 창궁의 묘성(아사다 지로) — 가짜 점괘를 믿고 운명을 개척하는 인물
-- [재능이라는 허상 - 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
+- [재능이라는 허상 — 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
 
 ## 관련 문서
 

@@ -125,9 +125,9 @@ Treatment가 공유 후보, 재고, social graph, 모델 학습 데이터나 hou
 
 ## 출처
 
-- [Improving the Sensitivity of Online Controlled Experiments by Utilizing Pre-Experiment Data - Deng et al.](https://doi.org/10.1145/2433396.2433413)
-- [Diagnosing Sample Ratio Mismatch in Online Controlled Experiments - Fabijan et al.](https://www.microsoft.com/en-us/research/publication/diagnosing-sample-ratio-mismatch-in-online-controlled-experiments-a-taxonomy-and-rules-of-thumb-for-practitioners/)
-- [Always Valid Inference: Continuous Monitoring of A/B Tests - Johari et al.](https://doi.org/10.1287/opre.2021.2135)
-- [Reducing Symbiosis Bias through Better A/B Tests of Recommendation Algorithms - Google Research](https://research.google/pubs/reducing-symbiosis-bias-through-better-ab-tests-of-recommendation-algorithms/)
-- [Design and Analysis of Switchback Experiments - Bojinov et al.](https://arxiv.org/abs/2009.00148)
-- [Trustworthy Online Controlled Experiments - Kohavi et al.](https://doi.org/10.1017/9781108653985)
+- [Improving the Sensitivity of Online Controlled Experiments by Utilizing Pre-Experiment Data — Deng et al.](https://doi.org/10.1145/2433396.2433413)
+- [Diagnosing Sample Ratio Mismatch in Online Controlled Experiments — Fabijan et al.](https://www.microsoft.com/en-us/research/publication/diagnosing-sample-ratio-mismatch-in-online-controlled-experiments-a-taxonomy-and-rules-of-thumb-for-practitioners/)
+- [Always Valid Inference: Continuous Monitoring of A/B Tests — Johari et al.](https://doi.org/10.1287/opre.2021.2135)
+- [Reducing Symbiosis Bias through Better A/B Tests of Recommendation Algorithms — Google Research](https://research.google/pubs/reducing-symbiosis-bias-through-better-ab-tests-of-recommendation-algorithms/)
+- [Design and Analysis of Switchback Experiments — Bojinov et al.](https://arxiv.org/abs/2009.00148)
+- [Trustworthy Online Controlled Experiments — Kohavi et al.](https://doi.org/10.1017/9781108653985)

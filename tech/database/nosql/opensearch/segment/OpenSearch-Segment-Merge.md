@@ -89,8 +89,8 @@ Fetch, highlight 비용과의 연결: stored fields는 문서 단위가 아니�
 
 ## 출처
 
-- [Index settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
-- [Force merge - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/force-merge/)
-- [Index codecs - OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/index-codecs/)
-- [TieredMergePolicy - Apache Lucene 10.2 Javadoc](https://lucene.apache.org/core/10_2_1/core/org/apache/lucene/index/TieredMergePolicy.html)
-- [Choosing the number of shards - Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp-sharding.html)
+- [Index settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
+- [Force merge — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/force-merge/)
+- [Index codecs — OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/index-codecs/)
+- [TieredMergePolicy — Apache Lucene 10.2 Javadoc](https://lucene.apache.org/core/10_2_1/core/org/apache/lucene/index/TieredMergePolicy.html)
+- [Choosing the number of shards — Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp-sharding.html)

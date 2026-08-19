@@ -57,6 +57,6 @@ aliases: ["OpenSearch Seoul Meetup 현장 질문"]
 
 ## 출처
 
-- [Ranking Evaluation API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/rank-eval/)
-- [Agentic search - OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/)
-- [Agentic search in Amazon OpenSearch Service - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/agentic-search.html)
+- [Ranking Evaluation API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/rank-eval/)
+- [Agentic search — OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/)
+- [Agentic search in Amazon OpenSearch Service — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/agentic-search.html)

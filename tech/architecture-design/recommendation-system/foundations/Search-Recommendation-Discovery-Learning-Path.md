@@ -38,7 +38,7 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 
 읽기:
 
-- [[OpenSearch-Mapping-Text-Analysis|매핑과 분석기]]
+- [[OpenSearch-Mapping-Text-Analysis|매핑과 저장 구조]], [[OpenSearch-Mapping-Text-Analysis-Analyzer|텍스트 분석]]
 - [[OpenSearch-Query-Understanding|쿼리 이해]]
 - [[OpenSearch-Relevance-Tuning|관련도 튜닝과 LTR]]
 - [[OpenSearch-Search-Quality-Evaluation|검색 품질 평가]]

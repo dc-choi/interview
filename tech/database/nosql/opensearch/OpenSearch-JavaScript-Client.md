@@ -123,8 +123,8 @@ const client = new Client({
 
 ## 출처
 
-- [JavaScript client - OpenSearch Documentation](https://docs.opensearch.org/latest/clients/javascript/index/)
-- [Index document API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
-- [Circuit breaker settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/circuit-breaker/)
-- [Supported operations in OpenSearch Serverless - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-genref.html)
-- [Compatibility with OpenSearch - opensearch-js GitHub](https://github.com/opensearch-project/opensearch-js/blob/main/COMPATIBILITY.md)
+- [JavaScript client — OpenSearch Documentation](https://docs.opensearch.org/latest/clients/javascript/index/)
+- [Index document API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
+- [Circuit breaker settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/circuit-breaker/)
+- [Supported operations in OpenSearch Serverless — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-genref.html)
+- [Compatibility with OpenSearch — opensearch-js GitHub](https://github.com/opensearch-project/opensearch-js/blob/main/COMPATIBILITY.md)

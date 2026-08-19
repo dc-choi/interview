@@ -66,5 +66,5 @@ MVP 관행이 행복 경로만 구현하고 출시하는 습관으로 굳으면 
 
 ## 출처
 
-- [Nothing Works and Everyone Is Euphoric - Piotr (ptrchm)](https://ptrchm.com/posts/nothing-works-and-everyone-is-euphoric/)
-- [코딩이 해결됐다면 왜 소프트웨어는 계속 나빠지는가? - GeekNews](https://news.hada.io/topic?id=31787)
+- [Nothing Works and Everyone Is Euphoric — Piotr (ptrchm)](https://ptrchm.com/posts/nothing-works-and-everyone-is-euphoric/)
+- [코딩이 해결됐다면 왜 소프트웨어는 계속 나빠지는가? — GeekNews](https://news.hada.io/topic?id=31787)

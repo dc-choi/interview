@@ -183,8 +183,8 @@ npx mikro-orm seeder:run
 
 ## 출처
 
-- [Migrations - MikroORM v7.1](https://mikro-orm.io/docs/migrations)
-- [Schema Generator - MikroORM v7.1](https://mikro-orm.io/docs/schema-generator)
-- [Seeding - MikroORM v7.1](https://mikro-orm.io/docs/seeding)
-- [Schema and Database - MikroORM v7.1](https://mikro-orm.io/docs/schema-database)
+- [Migrations — MikroORM v7.1](https://mikro-orm.io/docs/migrations)
+- [Schema Generator — MikroORM v7.1](https://mikro-orm.io/docs/schema-generator)
+- [Seeding — MikroORM v7.1](https://mikro-orm.io/docs/seeding)
+- [Schema and Database — MikroORM v7.1](https://mikro-orm.io/docs/schema-database)
 - [MikroORM v7.1.11 release](https://github.com/mikro-orm/mikro-orm/releases/tag/v7.1.11)

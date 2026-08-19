@@ -129,11 +129,11 @@ Rolling upgrade는 인접 major version만 지원한다. 3.x로 갈 때는 sourc
 
 ## 출처
 
-- [Creating a cluster - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/index/)
-- [Voting and quorum - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/discovery-cluster-formation/voting-quorums/)
-- [Cluster settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/cluster-settings/)
-- [Cluster allocation explain - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/cluster-api/cluster-allocation/)
-- [Take and restore snapshots - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/snapshots/snapshot-restore/)
-- [Rolling upgrade - OpenSearch Documentation](https://docs.opensearch.org/latest/migrate-or-upgrade/rolling-upgrade/)
-- [Cross-cluster replication - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/replication-plugin/index/)
-- [Cross-cluster replication API - OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/replication-plugin/api/)
+- [Creating a cluster — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/index/)
+- [Voting and quorum — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/discovery-cluster-formation/voting-quorums/)
+- [Cluster settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/cluster-settings/)
+- [Cluster allocation explain — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/cluster-api/cluster-allocation/)
+- [Take and restore snapshots — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/snapshots/snapshot-restore/)
+- [Rolling upgrade — OpenSearch Documentation](https://docs.opensearch.org/latest/migrate-or-upgrade/rolling-upgrade/)
+- [Cross-cluster replication — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/replication-plugin/index/)
+- [Cross-cluster replication API — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/replication-plugin/api/)

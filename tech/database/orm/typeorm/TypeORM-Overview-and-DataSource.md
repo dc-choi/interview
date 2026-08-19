@@ -179,9 +179,9 @@ entities: [__dirname + "/**/*.entity{.js,.ts}"]
 
 ## 출처
 
-- [Getting Started - TypeORM](https://typeorm.io/docs/getting-started/)
-- [DataSource - TypeORM](https://typeorm.io/docs/data-source/data-source/)
-- [Data Source Options - TypeORM](https://typeorm.io/docs/data-source/data-source-options/)
-- [Active Record vs Data Mapper - TypeORM](https://typeorm.io/docs/guides/active-record-data-mapper/)
-- [Database - NestJS](https://docs.nestjs.com/techniques/database)
-- [TypeORM 1.1.0 package metadata - TypeORM](https://github.com/typeorm/typeorm/blob/1.1.0/package.json)
+- [Getting Started — TypeORM](https://typeorm.io/docs/getting-started/)
+- [DataSource — TypeORM](https://typeorm.io/docs/data-source/data-source/)
+- [Data Source Options — TypeORM](https://typeorm.io/docs/data-source/data-source-options/)
+- [Active Record vs Data Mapper — TypeORM](https://typeorm.io/docs/guides/active-record-data-mapper/)
+- [Database — NestJS](https://docs.nestjs.com/techniques/database)
+- [TypeORM 1.1.0 package metadata — TypeORM](https://github.com/typeorm/typeorm/blob/1.1.0/package.json)

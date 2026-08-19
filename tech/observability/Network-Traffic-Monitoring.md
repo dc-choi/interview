@@ -70,5 +70,5 @@ aliases: ["Network Traffic Monitoring", "네트워크 트래픽 모니터링"]
 
 ## 출처
 
-- [neko-master - 네트워크 트래픽 시각화 및 분석용 대시보드 - GeekNews](https://news.hada.io/topic?id=31816)
-- [neko-master - GitHub](https://github.com/foru17/neko-master)
+- [neko-master - 네트워크 트래픽 시각화 및 분석용 대시보드 — GeekNews](https://news.hada.io/topic?id=31816)
+- [neko-master — GitHub](https://github.com/foru17/neko-master)

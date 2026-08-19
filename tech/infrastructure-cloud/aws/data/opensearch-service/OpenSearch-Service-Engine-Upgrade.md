@@ -96,12 +96,12 @@ Cross-cluster 연결이 있으면 upgrade 후에도 source와 destination의 호
 
 ## 출처
 
-- [Upgrading Amazon OpenSearch Service domains - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/version-migration.html)
-- [Can't downgrade after upgrade - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#troubleshooting-upgrade-snapshot)
-- [Migrating to Amazon OpenSearch Service - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/migration.html)
-- [Making configuration changes - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html)
-- [Breaking changes - OpenSearch Documentation](https://docs.opensearch.org/latest/breaking-changes/)
-- [k-NN index settings - OpenSearch Documentation](https://docs.opensearch.org/2.6/search-plugins/knn/knn-index/)
-- [UltraWarm manual snapshots - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ultrawarm.html)
-- [Taking manual snapshots - AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-snapshot-create.html)
-- [Concurrent segment search - OpenSearch Documentation](https://docs.opensearch.org/2.17/search-plugins/concurrent-segment-search/)
+- [Upgrading Amazon OpenSearch Service domains — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/version-migration.html)
+- [Can't downgrade after upgrade — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#troubleshooting-upgrade-snapshot)
+- [Migrating to Amazon OpenSearch Service — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/migration.html)
+- [Making configuration changes — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html)
+- [Breaking changes — OpenSearch Documentation](https://docs.opensearch.org/latest/breaking-changes/)
+- [k-NN index settings — OpenSearch Documentation](https://docs.opensearch.org/2.6/search-plugins/knn/knn-index/)
+- [UltraWarm manual snapshots — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ultrawarm.html)
+- [Taking manual snapshots — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-snapshot-create.html)
+- [Concurrent segment search — OpenSearch Documentation](https://docs.opensearch.org/2.17/search-plugins/concurrent-segment-search/)

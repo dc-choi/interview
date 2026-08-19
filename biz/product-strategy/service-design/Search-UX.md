@@ -121,8 +121,8 @@ Broder의 웹 검색 분류와 탐색적 검색 연구를 제품 설계 언어�
 
 ## 출처
 
-- [A Taxonomy of Web Search - Andrei Broder](https://sigir.hosting.acm.org/files/forum/F2002/broder.pdf)
-- [Exploratory Search: From Finding to Understanding - Gary Marchionini](https://doi.org/10.1145/1121949.1121979)
-- [Good Abandonment in Mobile and PC Internet Search - Google Research](https://research.google/pubs/good-abandonment-in-mobile-and-pc-internet-search/)
-- [Combobox Pattern - W3C WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)
-- [UBI index schemas - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/ubi/schemas/)
+- [A Taxonomy of Web Search — Andrei Broder](https://sigir.hosting.acm.org/files/forum/F2002/broder.pdf)
+- [Exploratory Search: From Finding to Understanding — Gary Marchionini](https://doi.org/10.1145/1121949.1121979)
+- [Good Abandonment in Mobile and PC Internet Search — Google Research](https://research.google/pubs/good-abandonment-in-mobile-and-pc-internet-search/)
+- [Combobox Pattern — W3C WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)
+- [UBI index schemas — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/ubi/schemas/)

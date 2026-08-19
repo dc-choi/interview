@@ -169,7 +169,7 @@ orphanRemoval은 부모가 소유하는 OneToOne 또는 OneToMany에만 의미�
 
 ## 출처
 
-- [Modeling Entity Relationships - MikroORM](https://mikro-orm.io/docs/relationships)
-- [Collections - MikroORM](https://mikro-orm.io/docs/collections)
-- [Type-Safe Relations - MikroORM](https://mikro-orm.io/docs/type-safe-relations)
-- [Cascading persist, merge and remove - MikroORM](https://mikro-orm.io/docs/cascading)
+- [Modeling Entity Relationships — MikroORM](https://mikro-orm.io/docs/relationships)
+- [Collections — MikroORM](https://mikro-orm.io/docs/collections)
+- [Type-Safe Relations — MikroORM](https://mikro-orm.io/docs/type-safe-relations)
+- [Cascading persist, merge and remove — MikroORM](https://mikro-orm.io/docs/cascading)

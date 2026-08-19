@@ -68,18 +68,18 @@ JS 엔진과 Node.js 아키텍처의 세부 글 제목은 실험을 끝낸 뒤 �
 
 ### 정본
 
-- [Introduction to Node.js - Node.js Learn](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs)
+- [Introduction to Node.js — Node.js Learn](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs)
 
 나머지 공식 Learn 문서, API reference와 소스 링크는 [[Node-Core-Output-Roadmap#공식 자료|Node.js 코어 로드맵의 공식 자료]]에서 관리한다.
 
 ### 보조 자료
 
-- [Node.js Under The Hood Series - DEV Community](https://dev.to/_staticvoid/series/2008)
-- [Deep dive into Node.js Architecture - DEV Community](https://dev.to/altamashali/deep-dive-into-nodejs-architecture-5190)
-- [How Node.js Works Under the Hood: A Deep Dive - Medium](https://medium.com/@AbbasPlusPlus/how-node-js-works-under-the-hood-a-deep-dive-77da13adfa52)
-- [Deep Dive into the Event Loop: Understanding Node.js Internals - Medium](https://smit90.medium.com/deep-dive-into-the-event-loop-understanding-node-js-internals-f9263ef91233)
-- [How Node.js Works Under the Hood and Its Advantages - Medium](https://medium.com/@pushpendrapal_/how-node-js-works-under-the-hood-and-its-advantages-57d77f34bd87)
-- [Deep Dive into Node.js with James Snell - This Dot Labs](https://www.thisdot.co/blog/deep-dive-into-node-js-with-james-snell)
+- [Node.js Under The Hood Series — DEV Community](https://dev.to/_staticvoid/series/2008)
+- [Deep dive into Node.js Architecture — DEV Community](https://dev.to/altamashali/deep-dive-into-nodejs-architecture-5190)
+- [How Node.js Works Under the Hood: A Deep Dive — Medium](https://medium.com/@AbbasPlusPlus/how-node-js-works-under-the-hood-a-deep-dive-77da13adfa52)
+- [Deep Dive into the Event Loop: Understanding Node.js Internals — Medium](https://smit90.medium.com/deep-dive-into-the-event-loop-understanding-node-js-internals-f9263ef91233)
+- [How Node.js Works Under the Hood and Its Advantages — Medium](https://medium.com/@pushpendrapal_/how-node-js-works-under-the-hood-and-its-advantages-57d77f34bd87)
+- [Deep Dive into Node.js with James Snell — This Dot Labs](https://www.thisdot.co/blog/deep-dive-into-node-js-with-james-snell)
 - [비동기 처리를 조금 더 효율적으로 해보자](https://0xffffffff.tistory.com/95)
 - [동시성과 이벤트 처리 문제 0, GIL과 Proactor/Reactor](https://0xffffffff.tistory.com/98)
 - [동시성과 이벤트 처리 문제 1, Node.js 구조와 Event Loop](https://0xffffffff.tistory.com/99)

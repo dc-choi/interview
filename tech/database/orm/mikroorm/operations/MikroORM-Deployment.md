@@ -151,7 +151,7 @@ npx mikro-orm migration:pending
 
 ## 출처
 
-- [Deployment - MikroORM v7.1](https://mikro-orm.io/docs/deployment)
-- [Metadata Cache - MikroORM v7.1](https://mikro-orm.io/docs/metadata-cache)
-- [Configuration - MikroORM v7.1](https://mikro-orm.io/docs/configuration)
-- [Upgrading from v6 to v7 - MikroORM](https://mikro-orm.io/docs/upgrading-v6-to-v7)
+- [Deployment — MikroORM v7.1](https://mikro-orm.io/docs/deployment)
+- [Metadata Cache — MikroORM v7.1](https://mikro-orm.io/docs/metadata-cache)
+- [Configuration — MikroORM v7.1](https://mikro-orm.io/docs/configuration)
+- [Upgrading from v6 to v7 — MikroORM](https://mikro-orm.io/docs/upgrading-v6-to-v7)

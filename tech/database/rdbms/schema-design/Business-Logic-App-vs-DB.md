@@ -179,7 +179,7 @@ Stored Procedure는 데이터가 있는 DB 안에서 여러 연산을 한 번에
 - ORM + 네이티브 SQL의 균형을 어떻게 잡는가
 
 ## 출처
-- [ORM vs Stored Procedure - YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=B6GcNoZtkkk)
+- [ORM vs Stored Procedure — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=B6GcNoZtkkk)
 - [ITWorld — 비즈니스 로직을 DB가 아닌 앱에 넣어야 하는 이유](https://www.itworld.co.kr/article/3566061/)
 
 ## 관련 문서

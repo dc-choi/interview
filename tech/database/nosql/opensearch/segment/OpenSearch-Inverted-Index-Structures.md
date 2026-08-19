@@ -101,11 +101,11 @@ Term 하나에 매칭되는 문서 ID 목록이 postings list다. Lucene은 이�
 
 ## 출처
 
-- [Lucene99PostingsFormat - Apache Lucene API](https://lucene.apache.org/core/9_11_0/core/org/apache/lucene/codecs/lucene99/Lucene99PostingsFormat.html)
-- [Lucene90BlockTreeTermsWriter - Apache Lucene API](https://lucene.apache.org/core/9_11_0/core/org/apache/lucene/codecs/lucene90/blocktree/Lucene90BlockTreeTermsWriter.html)
-- [BKDWriter, BKDConfig - Apache Lucene API](https://lucene.apache.org/core/9_11_0/core/org/apache/lucene/util/bkd/BKDWriter.html)
-- [Lazy loading Lucene FST offheap using mmap, LUCENE-8635 - Apache Lucene](https://github.com/apache/lucene/issues/9681)
-- [Eager global ordinals - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-parameters/eager_global_ordinals/)
-- [Doc values - OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-parameters/doc-values/)
-- [Search API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search/)
-- [What's new in Apache Lucene 8 - Elastic Blog](https://www.elastic.co/blog/whats-new-in-lucene-8)
+- [Lucene99PostingsFormat — Apache Lucene API](https://lucene.apache.org/core/9_11_0/core/org/apache/lucene/codecs/lucene99/Lucene99PostingsFormat.html)
+- [Lucene90BlockTreeTermsWriter — Apache Lucene API](https://lucene.apache.org/core/9_11_0/core/org/apache/lucene/codecs/lucene90/blocktree/Lucene90BlockTreeTermsWriter.html)
+- [BKDWriter, BKDConfig — Apache Lucene API](https://lucene.apache.org/core/9_11_0/core/org/apache/lucene/util/bkd/BKDWriter.html)
+- [Lazy loading Lucene FST offheap using mmap, LUCENE-8635 — Apache Lucene](https://github.com/apache/lucene/issues/9681)
+- [Eager global ordinals — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-parameters/eager_global_ordinals/)
+- [Doc values — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-parameters/doc-values/)
+- [Search API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search/)
+- [What's new in Apache Lucene 8 — Elastic Blog](https://www.elastic.co/blog/whats-new-in-lucene-8)

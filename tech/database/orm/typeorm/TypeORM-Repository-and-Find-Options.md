@@ -180,11 +180,11 @@ const rows = await orders.findBy({
 
 ## 출처
 
-- [Repository API - TypeORM](https://typeorm.io/docs/working-with-entity-manager/repository-api/)
-- [Repository - TypeORM](https://typeorm.io/docs/working-with-entity-manager/working-with-repository/)
-- [Custom repositories - TypeORM](https://typeorm.io/docs/working-with-entity-manager/custom-repository/)
-- [Find Options - TypeORM](https://typeorm.io/docs/working-with-entity-manager/find-options/)
-- [Handling null and undefined values - TypeORM](https://typeorm.io/docs/data-source/null-and-undefined-handling/)
-- [Transactions - TypeORM](https://typeorm.io/docs/transactions/)
-- [Upgrading from 0.3 to 1.0 - TypeORM](https://typeorm.io/docs/releases/1.0/upgrading-from-0.3/)
-- [TypeORM 1.1.0 release - TypeORM GitHub](https://github.com/typeorm/typeorm/releases/tag/1.1.0)
+- [Repository API — TypeORM](https://typeorm.io/docs/working-with-entity-manager/repository-api/)
+- [Repository — TypeORM](https://typeorm.io/docs/working-with-entity-manager/working-with-repository/)
+- [Custom repositories — TypeORM](https://typeorm.io/docs/working-with-entity-manager/custom-repository/)
+- [Find Options — TypeORM](https://typeorm.io/docs/working-with-entity-manager/find-options/)
+- [Handling null and undefined values — TypeORM](https://typeorm.io/docs/data-source/null-and-undefined-handling/)
+- [Transactions — TypeORM](https://typeorm.io/docs/transactions/)
+- [Upgrading from 0.3 to 1.0 — TypeORM](https://typeorm.io/docs/releases/1.0/upgrading-from-0.3/)
+- [TypeORM 1.1.0 release — TypeORM GitHub](https://github.com/typeorm/typeorm/releases/tag/1.1.0)

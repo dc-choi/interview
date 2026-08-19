@@ -163,10 +163,10 @@ Monolith 논문이 직접 확인하는 제품 배포는 BytePlus Recommend다. �
 
 ## 출처
 
-- [Deep Learning Recommendation Model for Personalization and Recommendation Systems - Meta 연구진](https://arxiv.org/abs/1906.00091)
-- [DLRM Reference Implementation - Meta GitHub](https://github.com/facebookresearch/dlrm)
-- [The Architectural Implications of Facebook's DNN-based Personalized Recommendation - Meta Research](https://ai.meta.com/research/publications/the-architectural-implications-of-facebooks-dnn-based-personalized-recommendation/)
-- [Scaling the Instagram Explore Recommendations System - Meta Engineering](https://engineering.fb.com/2023/08/09/ml-applications/scaling-instagram-explore-recommendations-system/)
-- [Sequence Learning for Personalized Ads Recommendations - Meta Engineering](https://engineering.fb.com/2024/11/19/data-infrastructure/sequence-learning-personalized-ads-recommendations/)
-- [Monolith: Real Time Recommendation System With Collisionless Embedding Table - ACM RecSys workshop](https://ceur-ws.org/Vol-3303/paper8.pdf)
-- [Monolith Source Code - ByteDance GitHub](https://github.com/bytedance/monolith)
+- [Deep Learning Recommendation Model for Personalization and Recommendation Systems — Meta 연구진](https://arxiv.org/abs/1906.00091)
+- [DLRM Reference Implementation — Meta GitHub](https://github.com/facebookresearch/dlrm)
+- [The Architectural Implications of Facebook's DNN-based Personalized Recommendation — Meta Research](https://ai.meta.com/research/publications/the-architectural-implications-of-facebooks-dnn-based-personalized-recommendation/)
+- [Scaling the Instagram Explore Recommendations System — Meta Engineering](https://engineering.fb.com/2023/08/09/ml-applications/scaling-instagram-explore-recommendations-system/)
+- [Sequence Learning for Personalized Ads Recommendations — Meta Engineering](https://engineering.fb.com/2024/11/19/data-infrastructure/sequence-learning-personalized-ads-recommendations/)
+- [Monolith: Real Time Recommendation System With Collisionless Embedding Table — ACM RecSys workshop](https://ceur-ws.org/Vol-3303/paper8.pdf)
+- [Monolith Source Code — ByteDance GitHub](https://github.com/bytedance/monolith)

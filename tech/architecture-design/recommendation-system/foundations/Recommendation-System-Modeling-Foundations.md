@@ -133,21 +133,21 @@ MovieLens는 rating과 timestamp가 있는 교육용 데이터다. 실제 impres
 
 ## 출처
 
-- [Collaborative Filtering for Implicit Feedback Datasets - Hu, Koren, Volinsky](https://yifanhu.net/PUB/cf.pdf)
-- [BPR: Bayesian Personalized Ranking from Implicit Feedback - Rendle et al.](https://arxiv.org/abs/1205.2618)
-- [Matrix Factorization Techniques for Recommender Systems - Koren, Bell, Volinsky](https://doi.org/10.1109/MC.2009.263)
-- [Deep Neural Networks for YouTube Recommendations - Covington et al.](https://research.google/pubs/deep-neural-networks-for-youtube-recommendations/)
-- [Google Machine Learning Crash Course - Logistic Regression](https://developers.google.com/machine-learning/crash-course/logistic-regression)
-- [MovieLens datasets - GroupLens](https://grouplens.org/datasets/movielens/)
-- [Bayes formula - NIST/SEMATECH e-Handbook of Statistical Methods](https://www.itl.nist.gov/div898/handbook/apr/section2/apr1a.htm)
+- [Collaborative Filtering for Implicit Feedback Datasets — Hu, Koren, Volinsky](https://yifanhu.net/PUB/cf.pdf)
+- [BPR: Bayesian Personalized Ranking from Implicit Feedback — Rendle et al.](https://arxiv.org/abs/1205.2618)
+- [Matrix Factorization Techniques for Recommender Systems — Koren, Bell, Volinsky](https://doi.org/10.1109/MC.2009.263)
+- [Deep Neural Networks for YouTube Recommendations — Covington et al.](https://research.google/pubs/deep-neural-networks-for-youtube-recommendations/)
+- [Google Machine Learning Crash Course — Logistic Regression](https://developers.google.com/machine-learning/crash-course/logistic-regression)
+- [MovieLens datasets — GroupLens](https://grouplens.org/datasets/movielens/)
+- [Bayes formula — NIST/SEMATECH e-Handbook of Statistical Methods](https://www.itl.nist.gov/div898/handbook/apr/section2/apr1a.htm)
 
 ## 보조 학습 자료
 
 아래 자료는 용어와 전체 흐름을 훑는 입문용 읽을거리다. 위 수식과 운영 계약의 검증 근거로 사용하지 않는다.
 
-- [추천 시스템 입문 - NVIDIA](https://www.nvidia.com/ko-kr/glossary/recommendation-system/)
-- [추천 시스템 입문 - Intel](https://www.intel.co.kr/content/www/kr/ko/learn/recommendation-systems.html)
-- [추천 시스템 - 위키백과](https://ko.wikipedia.org/wiki/%EC%B6%94%EC%B2%9C_%EC%8B%9C%EC%8A%A4%ED%85%9C)
-- [추천 알고리즘 기본 개념 - Tistory](https://cherie-ssom.tistory.com/25)
-- [추천 알고리즘 종류 - Tistory](https://calmmimiforest.tistory.com/100)
-- [Content-Based Recommendation System - Velog](https://velog.io/@9e0na/%EC%B6%94%EC%B2%9C%EC%8B%9C%EC%8A%A4%ED%85%9C-Content-Based-Recommender-System)
+- [추천 시스템 입문 — NVIDIA](https://www.nvidia.com/ko-kr/glossary/recommendation-system/)
+- [추천 시스템 입문 — Intel](https://www.intel.co.kr/content/www/kr/ko/learn/recommendation-systems.html)
+- [추천 시스템 — 위키백과](https://ko.wikipedia.org/wiki/%EC%B6%94%EC%B2%9C_%EC%8B%9C%EC%8A%A4%ED%85%9C)
+- [추천 알고리즘 기본 개념 — Tistory](https://cherie-ssom.tistory.com/25)
+- [추천 알고리즘 종류 — Tistory](https://calmmimiforest.tistory.com/100)
+- [Content-Based Recommendation System — Velog](https://velog.io/@9e0na/%EC%B6%94%EC%B2%9C%EC%8B%9C%EC%8A%A4%ED%85%9C-Content-Based-Recommender-System)

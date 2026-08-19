@@ -54,7 +54,7 @@ MikroORM 모델링은 테이블을 클래스에 기계적으로 옮기는 작업
 
 ## 출처
 
-- [MikroORM documentation versions - MikroORM](https://mikro-orm.io/versions)
-- [MikroORM v7.1.11 release - mikro-orm/mikro-orm](https://github.com/mikro-orm/mikro-orm/releases/tag/v7.1.11)
-- [Defining Entities - MikroORM](https://mikro-orm.io/docs/defining-entities)
-- [Modeling Entity Relationships - MikroORM](https://mikro-orm.io/docs/relationships)
+- [MikroORM documentation versions — MikroORM](https://mikro-orm.io/versions)
+- [MikroORM v7.1.11 release — mikro-orm/mikro-orm](https://github.com/mikro-orm/mikro-orm/releases/tag/v7.1.11)
+- [Defining Entities — MikroORM](https://mikro-orm.io/docs/defining-entities)
+- [Modeling Entity Relationships — MikroORM](https://mikro-orm.io/docs/relationships)

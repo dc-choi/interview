@@ -155,7 +155,7 @@ Bag-of-words vector는 term 순서를 버린다. 같은 단어를 다른 순서�
 
 - [[Inverted-Index-and-TF-IDF|역색인과 TF-IDF]]
 - [[OpenSearch-Query-Relevance#BM25 mental model|TF-IDF와 BM25]]
-- [[OpenSearch-Mapping-Text-Analysis|Analyzer와 tokenization]]
+- [[OpenSearch-Mapping-Text-Analysis-Analyzer|Analyzer와 tokenization]]
 - [[OpenSearch-Relevance-Tuning#피드백을 점수 feature로 바꾸기|피드백 기반 검색 랭킹]]
 - [[Vector-Similarity-Search|Dense embedding vector 유사도 검색]]
 - [[Recommendation-System-Modeling-Foundations#벡터, 내적과 코사인|추천 모델의 내적과 코사인]]

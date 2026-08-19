@@ -59,11 +59,11 @@ aliases: ["OpenSearch Seoul Meetup 검색 품질과 운영 질문"]
 
 ## 출처
 
-- [Update Document API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/update-document/)
-- [Search settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/search-settings/)
-- [Circuit breaker pattern - AWS Prescriptive Guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/circuit-breaker.html)
-- [Analyze API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/analyze-apis/)
-- [Function score - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/function-score/)
-- [Ranking Evaluation API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/rank-eval/)
-- [Index aliases - OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/index-alias/)
-- [Reindex Documents API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/reindex/)
+- [Update Document API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/update-document/)
+- [Search settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/search-settings/)
+- [Circuit breaker pattern — AWS Prescriptive Guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/circuit-breaker.html)
+- [Analyze API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/analyze-apis/)
+- [Function score — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/function-score/)
+- [Ranking Evaluation API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/rank-eval/)
+- [Index aliases — OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/index-alias/)
+- [Reindex Documents API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/reindex/)

@@ -138,14 +138,14 @@ Migration이 적용됐다는 믿음 자체도 검증 대상이다.
 
 ## 출처
 
-- [DDL이 코드 밖에서 온다면, 테스트 DB 구성을 빌드 안에 선언한다 - flex](https://flex.team/blog/2026/07/23/backend33)
-- [What is a changelog? - Liquibase](https://docs.liquibase.com/concepts/changelogs/home.html)
+- [DDL이 코드 밖에서 온다면, 테스트 DB 구성을 빌드 안에 선언한다 — flex](https://flex.team/blog/2026/07/23/backend33)
+- [What is a changelog? — Liquibase](https://docs.liquibase.com/concepts/changelogs/home.html)
 - [Liquibase update command](https://docs.liquibase.com/reference-guide/init-update-and-rollback-commands/update)
-- [Database containers - Testcontainers for Java](https://java.testcontainers.org/modules/databases/)
-- [Manual container lifecycle control - Testcontainers for Java](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/)
-- [Build Cache - Gradle](https://docs.gradle.org/current/userguide/build_cache.html)
-- [Repeatable task outputs - Gradle](https://docs.gradle.org/current/userguide/build_cache_concepts.html)
-- [Statements That Cause an Implicit Commit - MySQL](https://dev.mysql.com/doc/refman/8.4/en/implicit-commit.html)
+- [Database containers — Testcontainers for Java](https://java.testcontainers.org/modules/databases/)
+- [Manual container lifecycle control — Testcontainers for Java](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/)
+- [Build Cache — Gradle](https://docs.gradle.org/current/userguide/build_cache.html)
+- [Repeatable task outputs — Gradle](https://docs.gradle.org/current/userguide/build_cache_concepts.html)
+- [Statements That Cause an Implicit Commit — MySQL](https://dev.mysql.com/doc/refman/8.4/en/implicit-commit.html)
 - [유닛 테스트 209개를 통과한 PR인데, 실제로 돌려보니 저장이 한 건도 안 됐다 — velog](https://velog.io/@donghoong2/OCR-WORKER-%EC%9C%A0%EB%8B%9B-%ED%85%8C%EC%8A%A4%ED%8A%B8-209%EA%B0%9C%EB%A5%BC-%ED%86%B5%EA%B3%BC%ED%95%9C-PR%EC%9D%B8%EB%8D%B0-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%8F%8C%EB%A0%A4%EB%B3%B4%EB%8B%88-%EC%A0%80%EC%9E%A5%EC%9D%B4-%ED%95%9C-%EA%B1%B4%EB%8F%84-%EC%95%88-%EB%90%90%EB%8B%A4)
 
 ## 관련 문서

@@ -151,10 +151,10 @@ Fallback event에는 원인, 빠진 source, 이전과 최종 policy 및 latency 
 
 ## 출처
 
-- [The Netflix Recommender System: Algorithms, Business Value, and Innovation - ACM](https://doi.org/10.1145/2843948)
-- [Recommendations and Results Organization in Netflix Search - Netflix Research](https://arxiv.org/abs/2105.14134)
-- [Real-time Personalization using Embeddings for Search Ranking at Airbnb - KDD](https://www.kdd.org/kdd2018/accepted-papers/view/real-time-personalization-using-embeddings-for-search-ranking-at-airbnb)
-- [Federated Search - Microsoft Research](https://www.microsoft.com/en-us/research/publication/federated-search/)
-- [Beyond Ten Blue Links: Enabling User Click Modeling in Federated Web Search - Microsoft Research](https://www.microsoft.com/en-us/research/publication/beyond-ten-blue-links-enabling-user-click-modeling-in-federated-web-search/)
-- [Hybrid search - OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/hybrid-search/index/)
-- [SKOS Simple Knowledge Organization System Reference - W3C](https://www.w3.org/TR/skos-reference/)
+- [The Netflix Recommender System: Algorithms, Business Value, and Innovation — ACM](https://doi.org/10.1145/2843948)
+- [Recommendations and Results Organization in Netflix Search — Netflix Research](https://arxiv.org/abs/2105.14134)
+- [Real-time Personalization using Embeddings for Search Ranking at Airbnb — KDD](https://www.kdd.org/kdd2018/accepted-papers/view/real-time-personalization-using-embeddings-for-search-ranking-at-airbnb)
+- [Federated Search — Microsoft Research](https://www.microsoft.com/en-us/research/publication/federated-search/)
+- [Beyond Ten Blue Links: Enabling User Click Modeling in Federated Web Search — Microsoft Research](https://www.microsoft.com/en-us/research/publication/beyond-ten-blue-links-enabling-user-click-modeling-in-federated-web-search/)
+- [Hybrid search — OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/hybrid-search/index/)
+- [SKOS Simple Knowledge Organization System Reference — W3C](https://www.w3.org/TR/skos-reference/)

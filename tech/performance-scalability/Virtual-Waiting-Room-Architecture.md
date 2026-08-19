@@ -169,10 +169,10 @@ Redis 성공 뒤 RDB에 바로 저장하거나 MQ에 이벤트를 발행해 Work
 
 ## 출처
 
-- [수백만 동시 접속을 처리하는 선착순 예매 시스템 아키텍처 설계 - 코딩하는기술사](https://www.youtube.com/watch?v=c-ERjEodn_o)
-- [대규모 예매 시스템에서 대기열에 Kafka가 아닌 Redis를 사용하는 이유 - 코딩하는기술사](https://www.youtube.com/watch?v=IjI4DJvZcAs)
-- [대규모 예매 시스템에서 대기열과 통신하는 방법, 폴링 - 코딩하는기술사](https://www.youtube.com/watch?v=tJeQoxceipY)
-- [대규모 대기열에서 WebSocket이 아니라 폴링을 사용하는 이유 - 코딩하는기술사](https://www.youtube.com/watch?v=pJTvEoc3Mr4)
+- [수백만 동시 접속을 처리하는 선착순 예매 시스템 아키텍처 설계 — 코딩하는기술사](https://www.youtube.com/watch?v=c-ERjEodn_o)
+- [대규모 예매 시스템에서 대기열에 Kafka가 아닌 Redis를 사용하는 이유 — 코딩하는기술사](https://www.youtube.com/watch?v=IjI4DJvZcAs)
+- [대규모 예매 시스템에서 대기열과 통신하는 방법, 폴링 — 코딩하는기술사](https://www.youtube.com/watch?v=tJeQoxceipY)
+- [대규모 대기열에서 WebSocket이 아니라 폴링을 사용하는 이유 — 코딩하는기술사](https://www.youtube.com/watch?v=pJTvEoc3Mr4)
 
 ## 관련 문서
 

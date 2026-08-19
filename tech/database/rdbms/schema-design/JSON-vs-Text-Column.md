@@ -154,7 +154,7 @@ WHERE payload @> '{"type":"payment"}';
 - [인프런, JSON 사용 가이드라인](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=402027)
 - [인프런, 관계형 데이터베이스 vs NoSQL](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=402028)
 - [인프런, JSON 설계 정리](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=402029)
-- [PostgreSQL JSONB와 역인덱싱 - 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439099)
+- [PostgreSQL JSONB와 역인덱싱 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439099)
 - [당근마켓 — MySQL JSON vs TEXT](https://medium.com/daangn/json-vs-text-c2c1448b8b1f)
 - [인프런, Real MySQL 시즌 1 - Part 2, JSON 타입 활용](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226581)
 

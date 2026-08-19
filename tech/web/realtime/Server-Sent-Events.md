@@ -159,12 +159,12 @@ Nginx의 `proxy_buffering on`은 응답 전체를 받은 뒤에만 전송한다�
 
 ## 출처
 
-- [WHATWG HTML Standard - Server-sent events](https://html.spec.whatwg.org/dev/server-sent-events.html)
-- [WHATWG Fetch Standard - RequestInit](https://fetch.spec.whatwg.org/#requestinit)
-- [MDN - Using server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
-- [MDN - Response.body](https://developer.mozilla.org/en-US/docs/Web/API/Response/body)
-- [NGINX - Module ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)
-- [우아한형제들 기술블로그 - BFF 서버에 SSE를 도입한 이유: 전시 서버의 통신 구조 재설계](https://techblog.woowahan.com/26507/)
+- [WHATWG HTML Standard — Server-sent events](https://html.spec.whatwg.org/dev/server-sent-events.html)
+- [WHATWG Fetch Standard — RequestInit](https://fetch.spec.whatwg.org/#requestinit)
+- [MDN — Using server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+- [MDN — Response.body](https://developer.mozilla.org/en-US/docs/Web/API/Response/body)
+- [NGINX — Module ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)
+- [우아한형제들 기술블로그 — BFF 서버에 SSE를 도입한 이유: 전시 서버의 통신 구조 재설계](https://techblog.woowahan.com/26507/)
 
 ## 관련 문서
 

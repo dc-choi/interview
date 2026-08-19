@@ -100,4 +100,4 @@ CDN과 cache-aside로 반복 요청을 줄이고, DB에는 조회 조건에 맞�
 
 ## 출처
 
-- [읽기와 쓰기 성능 전략 - YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=LGlsqP-dOGU)
+- [읽기와 쓰기 성능 전략 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=LGlsqP-dOGU)

@@ -50,7 +50,7 @@ term (정렬된 단어 사전)   posting list (문서 ID 목록)
 이어폰                → [1, 3]
 ```
 
-- Analyzer는 raw text에 0개 이상의 character filter, 정확히 1개의 tokenizer, 0개 이상의 token filter를 순서대로 적용한다. Tokenizer가 position과 offset 같은 metadata를 가진 token을 만들고, token filter 단계를 지난 최종 token value가 역색인의 term dictionary에 저장되어 matching에 쓰이는 term이다. 세부 단계는 [[OpenSearch-Mapping-Text-Analysis#Analyzer 파이프라인|Analyzer 파이프라인]]에서 다룬다.
+- Analyzer는 raw text에 0개 이상의 character filter, 정확히 1개의 tokenizer, 0개 이상의 token filter를 순서대로 적용한다. Tokenizer가 position과 offset 같은 metadata를 가진 token을 만들고, token filter 단계를 지난 최종 token value가 역색인의 term dictionary에 저장되어 matching에 쓰이는 term이다. 세부 단계는 [[OpenSearch-Mapping-Text-Analysis-Analyzer#Analyzer 파이프라인|Analyzer 파이프라인]]에서 다룬다.
 - 정렬된 term 목록이 term dictionary, term마다 붙은 문서 ID 목록이 posting list다 (다른 문서에서는 postings로도 쓴다). 기본 `text` field의 postings에는 빈도와 token position도 저장되며, position은 phrase query의 단어 순서와 거리를 판정할 때 사용한다.
 - 블루투스 이어폰 검색은 두 term의 posting list를 조회해 합치는 것으로 끝난다. 문서 전체를 훑지 않는다.
 
@@ -182,19 +182,19 @@ GET /products/_search
 ## 관련 문서
 
 - [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-vs-RDB-Search|다음: RDB vs 검색엔진]]
-- [[OpenSearch-Mapping-Text-Analysis|매핑과 텍스트 분석]], [[OpenSearch-Query-Relevance|BM25 관련도와 Query DSL]], [[OpenSearch-JavaScript-Client|애플리케이션용 JavaScript client]]
+- [[OpenSearch-Mapping-Text-Analysis|매핑과 저장 구조]], [[OpenSearch-Query-Relevance|BM25 관련도와 Query DSL]], [[OpenSearch-JavaScript-Client|애플리케이션용 JavaScript client]]
 
 ## 출처
 
 - [Introduction to OpenSearch — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/intro/), [OpenSearch concepts — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/concepts/)
-- [Communicate with OpenSearch - OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/communicate/)
-- [Index document - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
-- [Reindex data - OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/reindex-data/)
-- [Get document - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/get-documents/)
-- [Term-level and full-text queries compared - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/term-vs-full-text/)
-- [Search API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search/)
-- [Search your data - OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/search-data/)
-- [Standard analyzer - OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/supported-analyzers/standard/)
-- [Boolean queries - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/bool/)
-- [Range query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/term/range/)
-- [Index settings - OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
+- [Communicate with OpenSearch — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/communicate/)
+- [Index document — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
+- [Reindex data — OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/reindex-data/)
+- [Get document — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/get-documents/)
+- [Term-level and full-text queries compared — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/term-vs-full-text/)
+- [Search API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search/)
+- [Search your data — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/search-data/)
+- [Standard analyzer — OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/supported-analyzers/standard/)
+- [Boolean queries — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/bool/)
+- [Range query — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/term/range/)
+- [Index settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)

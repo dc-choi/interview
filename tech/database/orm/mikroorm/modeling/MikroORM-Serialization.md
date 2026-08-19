@@ -159,6 +159,6 @@ queue payload와 outbox event도 같은 원칙을 쓴다. entity instance를 직
 
 ## 출처
 
-- [Serializing - MikroORM](https://mikro-orm.io/docs/serializing)
-- [Type-Safe Relations - MikroORM](https://mikro-orm.io/docs/type-safe-relations)
-- [MikroORM documentation versions - MikroORM](https://mikro-orm.io/versions)
+- [Serializing — MikroORM](https://mikro-orm.io/docs/serializing)
+- [Type-Safe Relations — MikroORM](https://mikro-orm.io/docs/type-safe-relations)
+- [MikroORM documentation versions — MikroORM](https://mikro-orm.io/versions)

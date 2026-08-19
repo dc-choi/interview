@@ -166,4 +166,4 @@ aliases: ["OS 개요와 동시성", "Concurrency Overview"]
 - 인프런, 감자 강사, [컴퓨터의 부팅과정](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100756), [인터럽트](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100757)
 - [UEFI 2.11, Boot Manager](https://uefi.org/specs/UEFI/2.11/03_Boot_Manager.html)
 - [RISC-V ISA, Exceptions, Traps, and Interrupts](https://docs.riscv.org/reference/isa/unpriv/intro.html)
-- [메모리 구조 관점에서 프로세스와 쓰레드 비교 - YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=gQ4c6IzhU9Q)
+- [메모리 구조 관점에서 프로세스와 쓰레드 비교 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=gQ4c6IzhU9Q)

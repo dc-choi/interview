@@ -133,9 +133,9 @@ PinSage = graph와 node feature로 재사용 가능한 embedding을 학습하는
 
 ## 출처
 
-- [Building a Large-Scale Recommendation System: People You May Know - LinkedIn Engineering](https://www.linkedin.com/blog/engineering/recommendations/building-a-large-scale-recommendation-system-people-you-may-know)
-- [Candidate Generation in a Large Scale Graph Recommendation System: People You May Know - LinkedIn Engineering](https://www.linkedin.com/blog/engineering/recommendations/candidate-generation-in-a-large-scale-graph-recommendation-system-people-you-may-know)
-- [Fairness-Aware Ranking in Search and Recommendation Systems with Application to LinkedIn Talent Search - KDD](https://www.kdd.org/kdd2019/accepted-papers/view/fairness-aware-ranking-in-search-recommendation-systems-with-application-to)
-- [Pixie: A System for Recommending Billions of Items in Real-Time - Pinterest 연구진](https://arxiv.org/abs/1711.07601)
-- [Introducing Pixie - Pinterest Engineering](https://medium.com/pinterest-engineering/introducing-pixie-an-advanced-graph-based-recommendation-system-e7b4229b664b)
-- [Graph Convolutional Neural Networks for Web-Scale Recommender Systems - Pinterest 연구진](https://arxiv.org/abs/1806.01973)
+- [Building a Large-Scale Recommendation System: People You May Know — LinkedIn Engineering](https://www.linkedin.com/blog/engineering/recommendations/building-a-large-scale-recommendation-system-people-you-may-know)
+- [Candidate Generation in a Large Scale Graph Recommendation System: People You May Know — LinkedIn Engineering](https://www.linkedin.com/blog/engineering/recommendations/candidate-generation-in-a-large-scale-graph-recommendation-system-people-you-may-know)
+- [Fairness-Aware Ranking in Search and Recommendation Systems with Application to LinkedIn Talent Search — KDD](https://www.kdd.org/kdd2019/accepted-papers/view/fairness-aware-ranking-in-search-recommendation-systems-with-application-to)
+- [Pixie: A System for Recommending Billions of Items in Real-Time — Pinterest 연구진](https://arxiv.org/abs/1711.07601)
+- [Introducing Pixie — Pinterest Engineering](https://medium.com/pinterest-engineering/introducing-pixie-an-advanced-graph-based-recommendation-system-e7b4229b664b)
+- [Graph Convolutional Neural Networks for Web-Scale Recommender Systems — Pinterest 연구진](https://arxiv.org/abs/1806.01973)

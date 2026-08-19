@@ -96,7 +96,7 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 - [Python 3.14, Python support for free threading](https://docs.python.org/3/howto/free-threading-python.html)
 - [Go runtime, GOMAXPROCS](https://pkg.go.dev/runtime#GOMAXPROCS)
 - [Effective Go, concurrency and parallelism](https://go.dev/doc/effective_go#concurrency)
-- [동시성 vs 병렬성 - YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=qCW-N-B7Mgc)
+- [동시성 vs 병렬성 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=qCW-N-B7Mgc)
 - [seamless — 동시성 vs 병렬성](https://seamless.tistory.com/42)
 - [binux — 동시성, 액터, 칠판 패턴](https://binux.tistory.com/169)
 - [yeonyeon — Concurrency vs Parallelism](https://yeonyeon.tistory.com/270)

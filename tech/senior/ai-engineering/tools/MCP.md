@@ -82,12 +82,12 @@ MCP는 하네스의 Inform(맥락 주입)과 도구 실행 축을 표준화한 �
 
 ## 출처
 
-- [Architecture overview - Model Context Protocol](https://modelcontextprotocol.io/docs/learn/architecture)
-- [인프런 MCP - Inflearn](https://www.inflearn.com/pages/mcp)
-- [Inflearn Connector - Claude](https://claude.ai/directory/connectors/inflearn)
-- [Inflearn App - ChatGPT](https://chatgpt.com/plugins/plugin_asdk_app_6a60947c82c8819191097ba682d36c68)
-- [Connectors overview - Anthropic](https://claude.com/docs/connectors/overview)
-- [Bring your app to ChatGPT - OpenAI](https://learn.chatgpt.com/use-cases/chatgpt-apps)
+- [Architecture overview — Model Context Protocol](https://modelcontextprotocol.io/docs/learn/architecture)
+- [인프런 MCP — Inflearn](https://www.inflearn.com/pages/mcp)
+- [Inflearn Connector — Claude](https://claude.ai/directory/connectors/inflearn)
+- [Inflearn App — ChatGPT](https://chatgpt.com/plugins/plugin_asdk_app_6a60947c82c8819191097ba682d36c68)
+- [Connectors overview — Anthropic](https://claude.com/docs/connectors/overview)
+- [Bring your app to ChatGPT — OpenAI](https://learn.chatgpt.com/use-cases/chatgpt-apps)
 - [비개발자가 한 달 동안 풀스택으로 개발하면서 배운 것 — NAVER D2](https://d2.naver.com/helloworld/0107009)
 
 ## 관련 문서

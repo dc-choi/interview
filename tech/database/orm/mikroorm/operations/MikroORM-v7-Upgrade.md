@@ -181,7 +181,7 @@ search 결과는 후보 목록이다. 각 호출의 transaction, error handling,
 
 ## 출처
 
-- [Upgrading from v6 to v7 - MikroORM](https://mikro-orm.io/docs/upgrading-v6-to-v7)
+- [Upgrading from v6 to v7 — MikroORM](https://mikro-orm.io/docs/upgrading-v6-to-v7)
 - [MikroORM 7 released](https://mikro-orm.io/blog/mikro-orm-7-released)
 - [MikroORM v7.1.11 release](https://github.com/mikro-orm/mikro-orm/releases/tag/v7.1.11)
-- [Configuration - MikroORM v7.1](https://mikro-orm.io/docs/configuration)
+- [Configuration — MikroORM v7.1](https://mikro-orm.io/docs/configuration)

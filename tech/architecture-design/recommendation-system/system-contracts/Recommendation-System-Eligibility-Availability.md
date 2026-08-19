@@ -114,4 +114,4 @@ Candidate 단계의 `SOURCE_UNSUPPORTED_DEFERRED`는 후보를 탈락시키지 �
 
 ## 출처
 
-- [Filtering vector matches - Google Cloud](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/vector-search/filtering)
+- [Filtering vector matches — Google Cloud](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/vector-search/filtering)

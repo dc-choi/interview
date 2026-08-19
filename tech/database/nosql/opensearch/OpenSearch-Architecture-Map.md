@@ -186,9 +186,10 @@ flowchart LR
 - [[OpenSearch-Basics|OpenSearch 기초 (시작 전 단계, 역색인 실물 예시)]]
 - [[OpenSearch-vs-RDB-Search|도입 판단 프레임 (0단계 정본)]]
 - [[OpenSearch-Architecture|분산 실행 모델 상세]]
+- [[OpenSearch-Mapping-Text-Analysis-Analyzer|analyzer와 텍스트 분석]]
 - [[OpenSearch-Indexing-Internals|색인 내부와 가시성 경계]]
 - [[OpenSearch-Query-Relevance|BM25와 Query DSL]]
 
 ## 출처
 
-- [Document APIs - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index/) / [TransportWriteAction - OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/action/support/replication/TransportWriteAction.java) / [Segment replication](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/index/) / [Search analyzer](https://docs.opensearch.org/latest/field-types/mapping-parameters/search-analyzer/)
+- [Document APIs — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index/) / [TransportWriteAction — OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/action/support/replication/TransportWriteAction.java) / [Segment replication](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/index/) / [Search analyzer](https://docs.opensearch.org/latest/field-types/mapping-parameters/search-analyzer/)

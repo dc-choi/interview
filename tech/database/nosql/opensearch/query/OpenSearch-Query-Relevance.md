@@ -167,7 +167,7 @@ Profile은 network latency, fetch phase, queue 대기, coordinator reduce 전체
 ## 관련 문서
 
 - [[OpenSearch|OpenSearch 학습 지도]], [[OpenSearch-Architecture|다음: 아키텍처와 분산 실행 모델]]
-- [[OpenSearch-Mapping-Text-Analysis|매핑과 텍스트 분석]]
+- [[OpenSearch-Mapping-Text-Analysis|매핑과 저장 구조]], [[OpenSearch-Mapping-Text-Analysis-Analyzer|텍스트 분석]]
 - [[OpenSearch-Korean-Text-Analysis|한국어 analyzer와 사전 운영]]
 - [[OpenSearch-Query-Relevance-Compound|bool과 dis_max compound 쿼리]]
 - [[OpenSearch-Relevance-Tuning|function_score와 rescore를 이용한 관련도 튜닝]]
@@ -177,14 +177,14 @@ Profile은 network latency, fetch phase, queue 대기, coordinator reduce 전체
 
 ## 출처
 
-- [Amazon OpenSearch Service로 검색 구현하기 - YouTube](https://www.youtube.com/watch?v=2Swr59CkA_w)
-- [Query DSL - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/)
-- [Query and filter context - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/query-filter-context/)
+- [Amazon OpenSearch Service로 검색 구현하기 — YouTube](https://www.youtube.com/watch?v=2Swr59CkA_w)
+- [Query DSL — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/)
+- [Query and filter context — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/query-filter-context/)
 - [Term query — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/query-dsl/term/term/)
-- [Full-text queries - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/index/)
-- [Combined fields query - OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/combined-fields/)
-- [Keyword search and BM25 - OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/keyword-search/)
-- [Okapi BM25 - Wikipedia](https://en.wikipedia.org/wiki/Okapi_BM25)
-- [TF-IDF - Wikipedia](https://en.wikipedia.org/wiki/Tf%E2%80%93idf)
-- [Explain API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/explain/)
-- [Profile API - OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/profile/)
+- [Full-text queries — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/index/)
+- [Combined fields query — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/combined-fields/)
+- [Keyword search and BM25 — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/keyword-search/)
+- [Okapi BM25 — Wikipedia](https://en.wikipedia.org/wiki/Okapi_BM25)
+- [TF-IDF — Wikipedia](https://en.wikipedia.org/wiki/Tf%E2%80%93idf)
+- [Explain API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/explain/)
+- [Profile API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/profile/)

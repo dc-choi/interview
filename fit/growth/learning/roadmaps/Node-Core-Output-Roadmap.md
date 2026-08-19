@@ -141,10 +141,10 @@ JS, TS와 Node.js 코어를 공식 문서와 런타임 실험으로 다시 검�
 
 ## 공식 자료
 
-- [Node.js Learn - How much JavaScript do you need to know?](https://nodejs.org/en/learn/getting-started/how-much-javascript-do-you-need-to-know-to-use-nodejs)
-- [Node.js Learn - The Node.js Event Loop](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick)
-- [Node.js Learn - Don't Block the Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)
-- [Node.js Learn - Streams](https://nodejs.org/en/learn/modules/how-to-use-streams)
+- [Node.js Learn — How much JavaScript do you need to know?](https://nodejs.org/en/learn/getting-started/how-much-javascript-do-you-need-to-know-to-use-nodejs)
+- [Node.js Learn — The Node.js Event Loop](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick)
+- [Node.js Learn — Don't Block the Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)
+- [Node.js Learn — Streams](https://nodejs.org/en/learn/modules/how-to-use-streams)
 - [Node.js API reference](https://nodejs.org/api/)
 - [Node.js source documentation](https://github.com/nodejs/node/tree/main/doc/api)
 

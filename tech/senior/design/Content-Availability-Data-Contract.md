@@ -148,8 +148,8 @@ OpenSearch physical delete의 version 정보는 `index.gc_deletes` 동안만 유
 
 ## 출처
 
-- [Index document and external versioning - OpenSearch](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
-- [Delete document and deleted version retention - OpenSearch](https://docs.opensearch.org/latest/api-reference/document-apis/delete-document/)
-- [Index settings and index.gc_deletes - OpenSearch](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings)
-- [Reindex documents and external version preservation - OpenSearch](https://docs.opensearch.org/latest/api-reference/document-apis/reindex/)
-- [GraphQL Specification September 2025 - Handling Execution Errors](https://spec.graphql.org/September2025/#sec-Handling-Execution-Errors)
+- [Index document and external versioning — OpenSearch](https://docs.opensearch.org/latest/api-reference/document-apis/index-document/)
+- [Delete document and deleted version retention — OpenSearch](https://docs.opensearch.org/latest/api-reference/document-apis/delete-document/)
+- [Index settings and index.gc_deletes — OpenSearch](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings)
+- [Reindex documents and external version preservation — OpenSearch](https://docs.opensearch.org/latest/api-reference/document-apis/reindex/)
+- [GraphQL Specification September 2025 — Handling Execution Errors](https://spec.graphql.org/September2025/#sec-Handling-Execution-Errors)

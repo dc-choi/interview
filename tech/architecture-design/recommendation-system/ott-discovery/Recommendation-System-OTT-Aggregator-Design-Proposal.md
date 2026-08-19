@@ -187,4 +187,4 @@ Taxonomy가 검증된 시나리오에서 LLM은 허용 concept 안의 할당 후
 ## 출처
 
 - 키노라이츠 공개 제품: [웹 안내 llms.txt](https://m.kinolights.com/llms.txt), [홈](https://kinolights.com/), [검색](https://kinolights.com/search), [앱 설명과 버전 기록](https://apps.apple.com/kr/app/%ED%82%A4%EB%85%B8%EB%9D%BC%EC%9D%B4%EC%B8%A0/id1411855404)
-- [Learning to Rank - XGBoost](https://xgboost.readthedocs.io/en/stable/tutorials/learning_to_rank.html)
+- [Learning to Rank — XGBoost](https://xgboost.readthedocs.io/en/stable/tutorials/learning_to_rank.html)

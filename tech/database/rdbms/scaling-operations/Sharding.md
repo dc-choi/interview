@@ -59,9 +59,9 @@ worker 하나가 로컬에서 유일성을 판정할 수 있도록 분산 테이
 - [Citus 13.0 Documentation, Concepts](https://docs.citusdata.com/en/stable/get_started/concepts.html)
 - [Citus 13.0 Documentation, Query Performance Tuning](https://docs.citusdata.com/en/stable/performance/performance_tuning.html)
 - [Citus 13.0 Documentation, Creating and Modifying Distributed Objects](https://docs.citusdata.com/en/stable/develop/reference_ddl.html)
-- [분산 처리와 스케줄링 환경 - 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440745)
-- [Citus 분산 테이블과 분산 쿼리 - 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440746)
-- [스케줄러와 분산 집계 - 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440748)
+- [분산 처리와 스케줄링 환경 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440745)
+- [Citus 분산 테이블과 분산 쿼리 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440746)
+- [스케줄러와 분산 집계 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440748)
 - [인프런, Hong, Partitioning과 Sharding](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338558)
 - [우아한테크세미나 191121 우아한레디스 — 우아한테크](https://www.youtube.com/watch?v=mPB2CZiAkKM)
 
