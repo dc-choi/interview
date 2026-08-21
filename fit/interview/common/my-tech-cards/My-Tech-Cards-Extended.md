@@ -17,8 +17,8 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 |---|---|---|
 | 충돌 빈도 | 낮을 때 유리 (읽기 많은 서비스) | 높을 때 유리 (쓰기 경합 많은 서비스) |
 | 충돌 시 비용 | 전체 트랜잭션 재실행 | Lock 대기 (NOWAIT면 즉시 실패 후 재시도) |
-| Lock 보유 시간 | 없음 (커밋 시점에 검증) | 트랜잭션 동안 보유 |
-| 데드락 위험 | 없음 | 있음 (순서 통일로 예방) |
+| Lock 보유 시간 | 선점 없음 (쓰기 시점 검증, 조건부 UPDATE의 X Lock은 커밋까지) | 트랜잭션 동안 보유 |
+| 데드락 위험 | 낮음 (여러 행, 여러 자원 갱신이 얽히면 가능) | 있음 (순서 통일로 완화) |
 | 구현 | version 컬럼 추가 | SELECT FOR UPDATE |
 
 ### InnoDB Lock 5종
@@ -33,12 +33,13 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 
 ### 심화 꼬리
 
-- **"NOWAIT vs SKIP LOCKED?"** → SKIP LOCKED는 잠긴 행 건너뛰고 다음 행 읽음 (큐 패턴 적합). 재고처럼 특정 행 반드시 처리해야 하면 NOWAIT가 맞음
+- **"NOWAIT vs SKIP LOCKED?"** → SKIP LOCKED는 잠긴 행 건너뛰고 다음 행 읽음 (큐 패턴 적합). 재고처럼 특정 행 반드시 처리해야 하면 NOWAIT가 맞음. 둘 다 row lock 대기에만 적용(MDL 등은 남음)이고 statement 기반 replication엔 안전하지 않음
 - **"FOR UPDATE vs FOR SHARE?"** → FOR UPDATE는 X Lock (배타적, 읽기/쓰기 차단). FOR SHARE는 S Lock (공유, 읽기 허용, 쓰기 차단). 읽은 후 바로 쓰면 X Lock 필요
 - **"멀티 인스턴스에서도 DB Lock 충분?"** → 같은 DB 바라보는 한 충분. DB 분리(샤딩)되면 분산 락 필요
-- **"Gap Lock 성능 영향?"** → 범위 잠금이라 INSERT 차단 가능. 동시성 필요하면 RC로 변경 (Gap Lock 비활성화, 단 Phantom Read 허용)
+- **"Gap Lock 성능 영향?"** → 범위 잠금이라 INSERT 차단 가능. 동시성 필요하면 RC 검토 — 단 RC는 gap lock 제거 스위치가 아니라 격리 계약이 바뀌는 선택. 일반 잠금 읽기의 Gap Lock은 대부분 사라지지만 FK와 중복 키 검사에는 남고, Non-Repeatable Read와 Phantom Read를 허용하게 됨
 - **"테이블 락은 언제?"** → DDL(ALTER TABLE), LOCK TABLES 명시, 인덱스 없는 UPDATE/DELETE (풀스캔 → 사실상 테이블 락)
 - **"데드락 감지 분석?"** → `SHOW ENGINE INNODB STATUS` → LATEST DETECTED DEADLOCK 섹션. Grafana `mysql_global_status_innodb_deadlocks` 메트릭 추적
+- **"같은 행인데도 데드락?"** → S→X 승격 패턴. `INSERT IGNORE` 중복 확인이나 FK 검증이 잡은 S Lock을 두 TX가 나눠 쥔 채 같은 행의 X로 승격하려 할 때. 중복 확인 경로는 no-op ODKU(`ON DUPLICATE KEY UPDATE col = col`)로 중복 시점에 S 대신 X를 잡아 순환 대기를 직렬 대기로 바꾸고(중복 PK면 레코드 락, UNIQUE 키면 앞 갭까지 묶는 next-key 락), FK 경로는 부모 UPDATE를 앞으로 옮겨 X를 선점하거나 실익 낮은 FK 제거. 더 나아가 그 행을 갱신하게 만든 카운터를 조회 계산으로 바꾸면(행 수가 적어 계산이 쌀 때) X 락과 `FOR UPDATE`의 이유가 사라짐 — 중복 확인 자체의 락(`INSERT IGNORE`면 S, no-op ODKU면 X)은 남으므로 경합이 없어지는 게 아니라 짧아지는 것
 
 ## 카드 2 EventBridge+SQS 심화
 
@@ -179,7 +180,7 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at
 
 ### vault 심화 — 카드별 추가 자료 (본 Extended에서 더 깊게 보강 시)
 
-- **카드 1 DB Lock 심화**: [[Lock]], [[Race-Condition-Patterns]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]], [[MySQL-InnoDB-Tuning]]
+- **카드 1 DB Lock 심화**: [[Lock]], [[Lock-Deadlock]], [[MySQL-InnoDB-Locking-and-Deadlocks]], [[DML-Conflict-and-Batch-Patterns]], [[Retry-Backoff-Jitter]], [[Race-Condition-Patterns]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]], [[MySQL-InnoDB-Tuning]]
 - **카드 2 EventBridge+SQS 심화**: [[Transactional-Outbox]], [[CDC&Outbox]], [[Idempotency-Key]], [[Saga-Pattern]]
 - **카드 3 슬로우 쿼리 심화**: [[Execution-Plan]], [[Covering-Index]], [[B-Tree-Index-Depth]], [[SQL-Tuning-Terminology]], [[Pagination-Optimization]], [[MySQL-Partitioning]], [[OLTP-vs-OLAP]], [[SCD-Type2]]
 - **카드 5 관측성 심화**: [[관측가능성(Observability)]], [[Container-Monitoring]], [[Correlation-ID]], [[CloudWatch]]

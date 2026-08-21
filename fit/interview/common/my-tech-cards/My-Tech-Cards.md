@@ -37,7 +37,7 @@ aliases: ["내 기술 답변 마스터", "My Tech Cards"]
 
 ### 카드별 매핑
 
-- **카드 1 DB Lock**: [[Lock]], [[Isolation-Level]], [[Isolation-Level-Beyond-ANSI]], [[Race-Condition-Patterns]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]], [[MySQL-InnoDB-Tuning]], [[Transactions]]
+- **카드 1 DB Lock**: [[Lock]], [[Lock-Deadlock]], [[MySQL-InnoDB-Locking-and-Deadlocks]], [[DML-Conflict-and-Batch-Patterns]], [[Retry-Backoff-Jitter]], [[Isolation-Level]], [[Isolation-Level-Beyond-ANSI]], [[Race-Condition-Patterns]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]], [[MySQL-InnoDB-Tuning]], [[Transactions]]
 - **카드 2 EventBridge+SQS**: [[Event-Driven-Architecture]] (전체 그림 — 8개 결정 층), [[EventBridge]], [[SQS]], [[SNS]], [[브로커(Brokers)]], [[CDC&Outbox]], [[Transactional-Outbox]], [[Idempotency-Key]], [[Saga-Pattern]], [[Event-Sourcing]]
 - **카드 3 슬로우 쿼리**: [[Index]], [[Covering-Index]], [[B-Tree-Index-Depth]], [[MySQL-Slow-Query-Diagnosis]], [[Execution-Plan]], [[SQL-Tuning-Terminology]], [[Pagination-Optimization]], [[MySQL-Partitioning]], [[OLTP-vs-OLAP]]
 - **카드 4 Prisma/ORM**: [[ORM]], [[ORM-Impedance-Mismatch]], [[Domain-ORM-Mapper]], [[SQL-Joins]]

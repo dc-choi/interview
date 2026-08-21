@@ -11,7 +11,7 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 
 ## 카드 1: IoT 수천 대 동시 정합성 — DB Lock 전략
 
-**결론**: 같은 SKU, 창고에 동시 입출고 이벤트가 들어올 때 재고 카운트가 깨지는 문제를 **`SELECT … FOR UPDATE NOWAIT` (Exclusive Row Lock) + 트랜잭션 짧게 + 인덱스 키로 락 범위 좁히기 + 100ms 간격 최대 3회 재시도(최악 1초 이내)**로 해결.
+**결론**: 같은 SKU, 창고에 동시 입출고 이벤트가 들어올 때 재고 카운트가 깨지는 문제를 **`SELECT … FOR UPDATE NOWAIT` (Exclusive Row Lock) + 트랜잭션 짧게 + 인덱스 키로 락 범위 좁히기 + 100ms 시작 지수 백오프 최대 3회 재시도**로 해결.
 
 **왜 Pessimistic Lock**: IoT 자동 트래픽 = **충돌 빈도 높음** → Optimistic은 전체 트랜잭션 재실행 비용 과도. Pessimistic은 충돌 시 한 번만 수행. 재고 갱신은 ms 단위 짧은 트랜잭션이라 Lock 대기 시간 무시 수준.
 
@@ -25,11 +25,12 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 - {회사} → "{회사 도메인 매핑}"
 
 **꼬리 (핵심)**:
-- **"데드락은?"** → 완전 예방 불가 (Gap Lock/Next-Key Lock이 의도하지 않은 순서로 암묵적). **감지+복구가 정석** — InnoDB Wait-for Graph 자동 탐지 → 비용 적은 TX rollback → 앱에서 `ER_LOCK_DEADLOCK` catch 후 재시도. 우리는 NOWAIT로 상호 대기 자체 회피
+- **"데드락은?"** → 이론상 락 순서 통일로 예방 가능하지만 실무에선 완전 예방 불가 (Gap/Next-Key Lock이 의도치 않은 순서로 암묵적 획득). **감지+복구가 정석** — InnoDB가 Wait-for Graph로 탐지해 한쪽 rollback → 앱에서 `ER_LOCK_DEADLOCK` catch 후 새 트랜잭션으로 제한 재시도. 락 순서 통일은 이미 적용했고, 그래도 반복되면 락이 필요했던 이유(카운터성 UPDATE 등)를 없애는 게 다음 단계
 - **"Optimistic이 나은 상황?"** → 읽기 중심 + 충돌 빈도 낮은 경우 (게시글 수정, 설정 변경)
-- **"락에 재시도면 thundering herd로 폭발 안 하나?"** (키노 1차 실전) → **NOWAIT는 대기 큐를 만들지 않고 즉시 실패 후 재시도**라 락 대기가 쌓이는 convoy가 없음. 재시도는 **지수 백오프와 지터**로 동시 재돌입을 분산하고 **상한 3회**로 무한 재시도 차단. 게다가 트래픽이 1~2시간 주기 배치라 동시 충돌 수 자체가 bounded. **진짜 스파이크 도메인이면** 큐 직렬화(SQS FIFO)나 분산락으로 전환
+- **"락에 재시도면 thundering herd로 폭발 안 하나?"** (키노 1차 실전) → **NOWAIT를 건 잠금 읽기에는 대기 큐가 생기지 않아** row lock 대기가 쌓이는 convoy가 없음. 재시도는 **지수 백오프와 지터**로 동시 재돌입을 분산하고 **상한 3회**로 무한 재시도 차단. 게다가 트래픽이 1~2시간 주기 배치라 동시 충돌 수 자체가 bounded. **진짜 스파이크 도메인이면** 큐 직렬화(SQS FIFO)나 분산락으로 전환
+- **조건 표기**: victim 선택은 변경 행 수가 적은 쪽을 고르려는 시도일 뿐 보장 없음. NOWAIT는 그 잠금 읽기의 row lock 대기만 없앰 — 같은 트랜잭션 뒤쪽 INSERT의 잠금 대기와 MDL 대기는 남음
 
-> ⚠️ **더 깊은 꼬리 질문 풀** (NOWAIT vs SKIP LOCKED, FOR UPDATE vs FOR SHARE, InnoDB Lock 5종, Gap Lock 성능 영향, 멀티 인스턴스): [[My-Tech-Cards-Extended#카드 1 DB Lock 심화|Extended]]
+> ⚠️ **더 깊은 꼬리 질문 풀** (NOWAIT vs SKIP LOCKED, FOR UPDATE vs FOR SHARE, InnoDB Lock 5종, Gap Lock 성능 영향, 같은 행 데드락, 멀티 인스턴스): [[My-Tech-Cards-Extended#카드 1 DB Lock 심화|Extended]]
 
 ## 카드 2: EventBridge + SQS 이벤트 아키텍처 (발주 자동화)
 
