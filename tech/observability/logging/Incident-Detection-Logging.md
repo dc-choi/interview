@@ -48,30 +48,34 @@ aliases: ["장애 감지와 로깅"]
 
 > 아래 절부터는 세미나 내용이 아니라, 재직 중 IoT 재고관리(VMI) 서비스에 직접 구축한 관측 스택 기록이다.
 
-### 대안 비교 (가중치 평가)
-| 스택 | TCO (0.25) | 메트릭 생태계 (0.15) | 벤더 종속 (0.10) | 총점 |
-|------|-----------|-------------------|----------------|------|
-| **GPL (Grafana+Prometheus+Loki)** | 5 | 5 | 5 | **4.65** |
-| ELK | 3 | 4 | 4 | 3.85 |
-| Datadog | 2 | 5 | 2 | 3.35 |
-| CloudWatch | 3 | 3 | 2 | 3.10 |
+### 핵심 축 비교 (당시 평가 일부)
+| 스택 | TCO (0.25) | 메트릭 생태계 (0.15) | 벤더 종속 (0.10) |
+|------|-----------|-------------------|----------------|
+| **GPL (Grafana+Prometheus+Loki)** | 5 | 5 | 5 |
+| ELK | 3 | 4 | 4 |
+| Datadog | 2 | 5 | 2 |
+| CloudWatch | 3 | 3 | 2 |
+
+당시 선택의 일부 평가 축만 남아 있어 위 가중치 합은 0.50이다. 누락 축을 복원할 근거가 없으므로 재현할 수 없는 총점은 사용하지 않고, 운영 인력과 예상 사용량을 포함한 당시 조건에서 GPL을 선택했다고 설명한다.
 
 - ELK: 로그 검색/집계는 강력하지만 동일 데이터량에서 운영 복잡도와 비용이 큼
 - Datadog, NewRelic: 기능은 최고지만 트래픽이 늘수록 사용량 단가가 그대로 비용 증가로 이어짐
-- CloudWatch: AWS 리소스 메트릭 자체는 충분하지만 ① 커스텀 메트릭 비용($0.30/metric/month)과 고카디널리티 제약, ② PromQL 수준의 레이블 기반 다차원 쿼리 부재, ③ Logs Insights 쿼리 UX 한계, ④ 알림 라우팅, 디듀프, 억제를 SNS+Lambda로 수동 구현해야 함 (Alertmanager가 기본 제공하는 기능)
+- CloudWatch: AWS 리소스 메트릭 자체는 충분하지만 당시 비교에서는 커스텀 메트릭 비용과 고카디널리티 제약, PromQL 수준의 레이블 기반 다차원 쿼리 부재, Logs Insights 쿼리 UX, 알림 라우팅과 억제의 추가 구성을 비용으로 봤다
 
 ## 모니터링 아키텍처
 
 | 계층 | 구성 요소 | 역할 |
 |------|---------|------|
 | **FE** | Sentry SDK → Sentry 서버 | 브라우저 JS 에러, 네트워크 지연, 퍼포먼스 트레이스 자동 수집 |
-| **BE (App)** | TraceIdMiddleware | 요청마다 고유 `x-request-id` 생성 → 로그/메트릭에 전파 |
+| **BE (App)** | TraceIdMiddleware | 요청마다 고유 `x-request-id` 생성 → 응답과 JSON 로그를 요청 단위로 연결 |
 | | HttpLoggingInterceptor | 요청/응답/예외를 한 지점에서 구조적으로 로깅 |
 | | Winston JSON Logger | flat JSON line 포맷으로 기록 |
-| | MetricsInterceptor + prom-client | method, route, status, latency를 Prometheus 형식으로 기록 |
-| **Log Routing** | FireLens(FluentBit) → Loki, 호스트 로그는 Promtail → Loki | ECS/Fargate 컨테이너 stdout → 중앙집중 로깅 |
+| | MetricsInterceptor + prom-client | method, 정규화한 route, status label과 request-duration histogram을 Prometheus 형식으로 노출 |
+| **Log Routing (당시)** | FireLens(Fluent Bit) → Loki, 호스트 로그는 Promtail → Loki | stdout 수집, JSON 파싱과 정규화, 라벨 구성, 배치와 라우팅 |
 | **Metrics Plane** | Prometheus → Thanos Sidecar → S3 | 메트릭 수집 → 장기 보관. Thanos Querier로 멀티 인스턴스 통합 조회 |
 | **Alerting** | Grafana Alerting → Slack | SLO 기반 알람 → 서비스/팀별 라우팅 |
+
+Promtail은 2026-03-02 EOL이다. 위 구성은 당시 경험이고, 신규 구성은 Grafana Alloy 또는 FireLens/Fluent Bit 같은 지원 클라이언트를 검토한다. 현재 운영 환경의 이전 완료 여부는 확인되지 않았다. [[Loki]]
 
 ## 알림 기준 (SLO 기반)
 
@@ -89,8 +93,8 @@ aliases: ["장애 감지와 로깅"]
 
 ## 보존 전략
 - **메트릭**: Prometheus 단기 보존(15일) → Thanos Sidecar가 S3로 업로드 (장기 조회 가능)
-- **로그**: Loki 30일 핫 보관 → S3 콜드 보관. Compactor가 자동 블록 압축/정리
-- **로그 폭증 시**: Promtail `batchSize`/`batchWait`/`ingestion rate limit` 조정 + log sampling
+- **로그**: 당시 기록에는 Loki 30일 핫 보관과 S3 콜드 보관으로 남아 있지만 자동 전환 메커니즘과 정확한 저장 경계는 보존되지 않았다. S3가 Loki object store였다면 Ingester가 수집 시점부터 청크를 flush한다. 다만 당시 Loki 버전, index schema, `retention_enabled`, `retention_period` 설정이 남아 있지 않아 30일 보존을 Compactor가 적용했는지는 확인할 수 없다. 별도 archive였다면 export, lifecycle과 복원 경로가 추가로 필요하다
+- **로그 폭증 시**: 당시 Promtail의 `batchSize`/`batchWait`와 Loki ingestion rate limit 조정 + log sampling. 신규 수집기는 Alloy나 Fluent Bit의 대응 설정을 확인
 
 ## 카디널리티 관리
 - route/path 라벨 정규화 (URL 파라미터를 `:id`로 치환)

@@ -13,9 +13,9 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 
 **결론**: 같은 SKU, 창고에 동시 입출고 이벤트가 들어올 때 재고 카운트가 깨지는 문제를 **`SELECT … FOR UPDATE NOWAIT` (Exclusive Row Lock) + 트랜잭션 짧게 + 인덱스 키로 락 범위 좁히기 + 100ms 시작 지수 백오프 최대 3회 재시도**로 해결.
 
-**왜 Pessimistic Lock**: IoT 자동 트래픽 = **충돌 빈도 높음** → Optimistic은 전체 트랜잭션 재실행 비용 과도. Pessimistic은 충돌 시 한 번만 수행. 재고 갱신은 ms 단위 짧은 트랜잭션이라 Lock 대기 시간 무시 수준.
+**왜 Pessimistic Lock**: IoT 자동 트래픽 = **충돌 빈도 높음** → Optimistic은 충돌을 늦게 발견해 수행한 작업을 버리고 전체 트랜잭션을 다시 실행할 수 있음. Pessimistic은 변경 전에 충돌을 조정하고, NOWAIT 실패만 제한 재시도. 재고 갱신 트랜잭션을 ms 단위로 짧게 유지하되 lock hold time과 실패율은 별도 관측.
 
-**왜 Redis 분산락 아닌가**: 별도 인프라 의존성 + 네트워크 레이턴시 + 클럭 동기화 문제. **단일 DB 환경에서 DB 자체 lock이면 충분** (인프라 단순성 우선). 분산 DB/멀티 인스턴스 환경 되면 그때 검토.
+**왜 Redis 분산락 아닌가**: 별도 인프라 의존성 + 네트워크 레이턴시 + 클럭 동기화 문제. **여러 앱 인스턴스가 같은 DB를 써도 DB lock이 경합을 조정하므로 충분** (인프라 단순성 우선). 보호할 자원이 여러 DB, shard나 외부 시스템 경계에 걸쳐 단일 DB 트랜잭션으로 묶이지 않을 때 분산락을 검토.
 
 **트랜잭션 범위 최소화**: 디바이스 정보 조회, 검증은 트랜잭션 **밖**, 트랜잭션 안엔 `SELECT FOR UPDATE` → 재고 갱신 → 데이터 입력만. **Lock 순서 통일**(품목 ID 오름차순) → 데드락 확률 완화.
 
@@ -27,7 +27,7 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 **꼬리 (핵심)**:
 - **"데드락은?"** → 이론상 락 순서 통일로 예방 가능하지만 실무에선 완전 예방 불가 (Gap/Next-Key Lock이 의도치 않은 순서로 암묵적 획득). **감지+복구가 정석** — InnoDB가 Wait-for Graph로 탐지해 한쪽 rollback → 앱에서 `ER_LOCK_DEADLOCK` catch 후 새 트랜잭션으로 제한 재시도. 락 순서 통일은 이미 적용했고, 그래도 반복되면 락이 필요했던 이유(카운터성 UPDATE 등)를 없애는 게 다음 단계
 - **"Optimistic이 나은 상황?"** → 읽기 중심 + 충돌 빈도 낮은 경우 (게시글 수정, 설정 변경)
-- **"락에 재시도면 thundering herd로 폭발 안 하나?"** (키노 1차 실전) → **NOWAIT를 건 잠금 읽기에는 대기 큐가 생기지 않아** row lock 대기가 쌓이는 convoy가 없음. 재시도는 **지수 백오프와 지터**로 동시 재돌입을 분산하고 **상한 3회**로 무한 재시도 차단. 게다가 트래픽이 1~2시간 주기 배치라 동시 충돌 수 자체가 bounded. **진짜 스파이크 도메인이면** 큐 직렬화(SQS FIFO)나 분산락으로 전환
+- **"락에 재시도면 thundering herd로 폭발 안 하나?"** (키노 1차 실전) → **NOWAIT를 건 잠금 읽기에는 대기 큐가 생기지 않아** row lock 대기가 쌓이는 convoy가 없음. 재시도는 **지수 백오프와 지터**로 동시 재돌입을 분산하고 **상한 3회**로 무한 재시도 차단. 게다가 트래픽이 1~2시간 주기 배치라 동시 충돌 수 자체가 bounded. **진짜 스파이크 도메인이면** SQS FIFO의 MessageGroupId 같은 업무 키 단위 큐와 제한된 워커 동시성으로 흡수. 분산락은 임계 구역을 직렬화할 뿐 유입량을 흡수하지 못함
 - **조건 표기**: victim 선택은 변경 행 수가 적은 쪽을 고르려는 시도일 뿐 보장 없음. NOWAIT는 그 잠금 읽기의 row lock 대기만 없앰 — 같은 트랜잭션 뒤쪽 INSERT의 잠금 대기와 MDL 대기는 남음
 
 > ⚠️ **더 깊은 꼬리 질문 풀** (NOWAIT vs SKIP LOCKED, FOR UPDATE vs FOR SHARE, InnoDB Lock 5종, Gap Lock 성능 영향, 같은 행 데드락, 멀티 인스턴스): [[My-Tech-Cards-Extended#카드 1 DB Lock 심화|Extended]]
@@ -38,9 +38,9 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 
 **결론**: 도메인 이벤트(재고 임계치) → EventBridge 규칙 → 채널별 SQS(카톡/이메일/내부 알림) → 워커(ECS Fargate) → 외부 API. **수기 발주 1시간 → 자동화, 수기 재고관리 4시간 → 10분 (95.8% 절감)**.
 
-**채널별 DLQ + 재시도 차등**: 카톡(잘못된 번호 점진 재시도 후 포기), 이메일(무조건 재시도), 최종 실패 → 긴급 알림 + 수동 처리 큐.
+**채널별 DLQ + 오류 분류**: 잘못된 번호 같은 **영구 오류는 재시도 없이 즉시 실패로 확정하고 실패 기록과 수동 처리로 격리**, 네트워크 오류나 서버 부하 같은 **일시 오류만 점진적으로 제한 재시도**. 메일도 오류를 분류하고, 재시도 예산 소진 → DLQ + 긴급 알림 + 수동 처리 큐.
 
-**MSK(Kafka) 대비 선택 근거**: **MSK $574/월 vs EventBridge+SQS $0~18/월** (월 10만 발주 × 5액션 = 50만 SQS, Free Tier 범위). 운영 인력 부족 + 트래픽 규모에서 EventBridge+SQS의 관리 부담, 비용이 압도적 유리. **사업 단계와 기술 결정을 함께 본 사례**.
+**MSK(Kafka) 대비 선택 근거**: **당시 필요한 MSK 구성은 약 $574/월, EventBridge+SQS는 고정비 없는 사용량 과금으로 비교**. 월 10만 발주 × 5액션 = 약 50만 메시지이고, 비배치 성공 처리라면 Send, Receive, Delete로 약 150만 SQS API 요청이 발생한다. 2026-08-21 서울 리전 표준 큐 단가와 월 100만 요청 Free Tier를 적용하면 SQS 초과분은 약 $0.20이고 EventBridge 과금은 별도다. 실제 비용은 배치, 빈 폴링, 재시도, payload 크기, 리전과 시점에 따라 달라진다. 운영 인력과 트래픽 규모에서 고정비 없는 관리형 구성이 유리했고, **사업 단계와 기술 결정을 함께 본 사례**.
 
 **도메인 매핑 placeholder**:
 - DPP → "제품 상태 변화(생산, 검수, 출고, 폐기, 재활용) = 도메인 이벤트, 브랜드사, 재활용업체, 소비자 알림으로 fan-out 동형"
@@ -57,9 +57,9 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 
 ## 카드 3: 슬로우 쿼리 99.3% 개선 — 복합 인덱스 + 쿼리 재작성
 
-**결론**: 디바이스 최신 상태 조회 서브쿼리 **2000ms+** → 테이블 **100만 건, 850대 디바이스, 디바이스당 평균 1,240건**. EXPLAIN ANALYZE로 `ORDER BY created_at DESC, id DESC` 후 **전체 행 filesort** 확인 → **카디널리티 분석(디바이스 번호 선택도 0.08%)** → 복합 인덱스 `(device_number, created_at DESC, id DESC)` 설계 → 인덱스 스캔만으로 최상단 레코드 즉시 접근. **쿼리당 15.4ms → 0.1ms**. 3,000대 확장 시에도 인덱스 탐색 1건이라 데이터 양 무관.
+**결론**: 디바이스 최신 상태 조회 서브쿼리 **2000ms+** → 테이블 **100만 건, 850대 디바이스, 디바이스당 평균 1,240건**. EXPLAIN ANALYZE로 `ORDER BY created_at DESC, id DESC` 후 **전체 행 filesort** 확인 → **카디널리티 분석(디바이스 번호 선택도 약 0.12%)** → 복합 인덱스 `(device_number, created_at DESC, id DESC)` 설계 → 인덱스 스캔만으로 최상단 레코드 즉시 접근. **쿼리당 15.4ms → 0.1ms**. 3,000대 확장 시에도 equality prefix로 범위를 좁히고 상위 1건에서 스캔을 끝내 데이터 누적의 영향을 제한. 단, 실제 비용은 B-Tree 깊이, 캐시, I/O와 데이터 분포에 따라 달라짐.
 
-**복합 인덱스 컬럼 순서 룰**: **동등 조건(=) 컬럼 앞, 범위 조건(>, BETWEEN) 뒤**. 카디널리티가 높은 컬럼이 앞에 올수록 스캔 범위가 빨리 좁혀짐.
+**복합 인덱스 컬럼 순서 룰**: 이 쿼리는 equality 조건인 `device_number`를 앞에 두고 정렬 키를 방향까지 맞춤. 일반화할 때는 **equality, range, 정렬, 그룹화와 covering 요구를 실제 쿼리로 함께 판단**하며, 높은 카디널리티만으로 순서를 정하지 않음.
 
 **검증**: Before/After P99, QPS 비교, 인덱스로 인한 쓰기 비용 모니터링.
 
@@ -85,7 +85,7 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 - {회사} → "{회사 핵심 ORM, 쿼리 패턴}에서도 같은 식 ORM 추상화 비용 점검 필요"
 
 **꼬리 (핵심)**:
-- **"Prisma vs TypeORM vs Drizzle?"** → TypeORM은 Active Record+Data Mapper 둘 다 지원하지만 복잡한 쿼리에서 불안정. Drizzle은 SQL에 가까운 타입 세이프 쿼리 빌더. **Prisma는 스키마 중심 설계+마이그레이션이 강점**이지만 복잡한 쿼리에서 한계
+- **"Prisma vs TypeORM vs Drizzle?"** → TypeORM은 Active Record+Data Mapper를 모두 지원하고 QueryBuilder, raw SQL까지 내려갈 수 있지만, alias, property path와 raw fragment의 문자열 경계는 컴파일 단계 검증이 약함. 복잡한 쿼리는 생성 SQL과 `EXPLAIN`을 확인하고 integration test로 검증. Drizzle은 SQL에 가까운 타입 세이프 쿼리 빌더. **Prisma는 스키마 중심 설계+마이그레이션이 강점**이지만 복잡한 쿼리에서 한계
 - **"전체 쿼리 모니터링?"** → **Client Extensions `$extends`의 query 컴포넌트**로 실행 시간 측정 + Grafana로 P99 추적 (middleware `$use`는 v4.16.0 deprecated, v6.14.0에서 제거)
 
 ## 관련 문서

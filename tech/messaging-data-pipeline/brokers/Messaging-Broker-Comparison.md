@@ -140,7 +140,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 재직 중 직접 설계한 IoT 재고관리(VMI) 서비스의 발주 자동화에서, Kafka(MSK)를 먼저 검토했다가 기각했다. 근거는 셋이다.
 
 - **고정비 vs 사용량 과금**: MSK는 브로커를 띄워두는 순간부터 고정비가 나간다. 당시 필요 구성으로 산정한 값이 월 약 $574. SQS는 요청 수 과금이라 트래픽이 없으면 0에 수렴한다.
-- **트래픽을 실제로 세어봤다**: 월 발주 약 10만 건 x 이벤트 액션 5종 = 월 약 50만 메시지. 다만 SQS 과금 단위는 메시지가 아니라 API 요청이고 메시지 1건에 Send, Receive, Delete로 최소 3요청이 붙으므로, 요청 기준으로는 약 150만이라 당시 프리 티어 기준(월 100만 요청)을 다소 넘는 규모였다. 그래도 표준 큐 요청 단가(백만 건당 $0.40, 2026-08-05 요금 기준)로는 초과분 과금이 월 $1 안팎이라, Kafka의 처리량과 리플레이가 필요한 구간도 아닌 상황에서 고정비와 자릿수가 달랐다. EventBridge 이벤트 발행 과금은 여기에 별도로 더해진다.
+- **트래픽을 실제로 세어봤다**: 월 발주 약 10만 건 x 이벤트 액션 5종 = 월 약 50만 메시지. 비배치 성공 처리라면 Send, Receive, Delete로 약 150만 SQS API 요청이 발생해 월 100만 요청 Free Tier를 다소 넘는 규모였다. 2026-08-21 AWS 공식 가격표의 Asia Pacific (Seoul) 표준 큐 1단계 단가(백만 건당 $0.40)를 적용하면 SQS 초과분은 약 $0.20이고 EventBridge 이벤트 발행 과금은 별도다. 실제 청구는 배치, 빈 폴링, 재시도, payload 크기, 리전과 계정의 프리 티어 적용 여부에 따라 달라지지만, Kafka의 처리량과 리플레이가 필요하지 않은 상황에서 고정비와 자릿수가 달랐다.
 - **도메인 특성**: 발주는 초 단위 실시간성보다 최종 일관성이 중요하다. 몇 초 뒤에 발주서가 나가도 업무가 깨지지 않는다. 대신 유실은 안 되므로 진짜 요구사항은 재시도와 DLQ였다.
 
 결론은 EventBridge + SQS. 발주 이벤트가 발생하면 발주 처리 큐로 메시지를 보내고, 발주가 끝나면 수주 처리로 이어진다. 그다음 알림 이벤트에서 공급사 발주 알림톡, 공급사 발주서 메일, 고객사 거래명세서 메일이 각각의 SQS 큐로 병렬 분기해 워커가 동시에 처리한다. 발주 도메인의 비즈니스 로직에서 후속 처리 호출이 빠져 결합도가 내려갔고, 브로커 고정비는 발생하지 않았다. 채널별 DLQ 정책은 [[EventBridge-SQS-Target|EventBridge → SQS 타겟 패턴]].
@@ -174,6 +174,8 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 - 선택 기준 (트래픽, 운영, 팀, 인프라)
 
 ## 출처
+- [Amazon SQS pricing — 요청 과금, Free Tier](https://aws.amazon.com/sqs/pricing/)
+- [AWS Price List API — Amazon SQS 현재 리전별 단가](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSQueueService/current/index.json)
 - [Amazon SQS message quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
 - [Apache Kafka Documentation — Message Delivery Semantics](https://kafka.apache.org/documentation/#semantics)
 - [마이프차 기술 블로그 (Medium) — RabbitMQ vs BullMQ (+SQS) 실사용 후 솔직 후기 (30만 건 실험, RabbitMQ와 BullMQ만 실측)](https://medium.com/@myfranchise/rabbitmq-vs-bullmq-sqs-%EC%8B%A4%EC%82%AC%EC%9A%A9-%ED%9B%84-%EC%86%94%EC%A7%81-%ED%9B%84%EA%B8%B0-c74c1a485143)

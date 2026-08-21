@@ -37,7 +37,7 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 - **"FOR UPDATE vs FOR SHARE?"** → FOR UPDATE는 X Lock (배타적, 읽기/쓰기 차단). FOR SHARE는 S Lock (공유, 읽기 허용, 쓰기 차단). 읽은 후 바로 쓰면 X Lock 필요
 - **"멀티 인스턴스에서도 DB Lock 충분?"** → 같은 DB 바라보는 한 충분. DB 분리(샤딩)되면 분산 락 필요
 - **"Gap Lock 성능 영향?"** → 범위 잠금이라 INSERT 차단 가능. 동시성 필요하면 RC 검토 — 단 RC는 gap lock 제거 스위치가 아니라 격리 계약이 바뀌는 선택. 일반 잠금 읽기의 Gap Lock은 대부분 사라지지만 FK와 중복 키 검사에는 남고, Non-Repeatable Read와 Phantom Read를 허용하게 됨
-- **"테이블 락은 언제?"** → DDL(ALTER TABLE), LOCK TABLES 명시, 인덱스 없는 UPDATE/DELETE (풀스캔 → 사실상 테이블 락)
+- **"테이블 락은 언제?"** → 명시적 `LOCK TABLES`와 일부 DDL에서 발생. 인덱스 없는 UPDATE/DELETE는 명시적 테이블 락이 아니라 스캔한 인덱스 레코드 다수를 잠가 테이블 전체가 막힌 것처럼 보이는 경우이며, 객체 정의를 보호하는 MDL은 별도
 - **"데드락 감지 분석?"** → `SHOW ENGINE INNODB STATUS` → LATEST DETECTED DEADLOCK 섹션으로 원인 분석. 누계 추세는 `information_schema.INNODB_METRICS`의 `lock_deadlocks` 카운터 (vanilla MySQL엔 `Innodb_deadlocks` status 변수가 없음. MariaDB 확장). mysqld_exporter는 `--collect.info_schema.innodb_metrics`로 켜고 Grafana에서 `mysql_info_schema_innodb_metrics_lock_lock_deadlocks_total` 증가율을 봄
 - **"같은 행인데도 데드락?"** → S→X 승격 패턴. `INSERT IGNORE` 중복 확인이나 FK 검증이 잡은 S Lock을 두 TX가 나눠 쥔 채 같은 행의 X로 승격하려 할 때. 중복 확인 경로는 no-op ODKU(`ON DUPLICATE KEY UPDATE col = col`)로 중복 시점에 S 대신 X를 잡아 순환 대기를 직렬 대기로 바꾸고(중복 PK면 레코드 락, UNIQUE 키면 앞 갭까지 묶는 next-key 락), FK 경로는 부모 UPDATE를 앞으로 옮겨 X를 선점하거나 실익 낮은 FK 제거. 더 나아가 그 행을 갱신하게 만든 카운터를 조회 계산으로 바꾸면(행 수가 적어 계산이 쌀 때) X 락과 `FOR UPDATE`의 이유가 사라짐 — 중복 확인 자체의 락(`INSERT IGNORE`면 S, no-op ODKU면 X)은 남으므로 경합이 없어지는 게 아니라 짧아지는 것
 
@@ -57,12 +57,12 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 
 **visibility timeout 설정**: 처리 평균 시간의 **6배**. 짧으면 정상 처리 중 중복, 길면 실패 후 재처리 대기 길어짐.
 
-**알림 채널 중복 방지**: 알림 로그 테이블에 `(발주_id, channel)` UNIQUE 제약 → 카톡/이메일/발주서 이중 발송 원천 차단.
+**알림 채널 로컬 중복 방지**: **실제 구현**은 알림 로그 테이블의 `(order_id, channel)` UNIQUE 제약으로 주문과 채널 단위 로컬 중복 처리를 차단했다. 이는 주문당 채널별 알림이 하나라는 전제이고, 외부 provider가 수락한 뒤 Relay가 응답 전에 죽는 중복까지 막지 못한다. **지금 개선한다면** 알림 사건마다 안정적인 `event_id`를 만들고 `(event_id, channel)`로 로컬 멱등성을 잡은 뒤 provider가 지원하는 idempotency key로 같은 값을 전달하며, 수락 여부가 불명확한 건은 상태 조회나 수동 대사로 닫는다.
 
 ### Outbox 패턴 디테일
 
 ```sql
-outbox: (id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at, processed_at)
+outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at, processed_at)
 -- processed_at NULL이면 미발행
 ```
 
@@ -122,14 +122,15 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at
 
 ## 카드 5 관측성 심화
 
-### CloudWatch vs ELK vs Datadog vs GPL 가중치 비교
+### CloudWatch vs ELK vs Datadog vs GPL 핵심 축 비교
 
 | 축 | GPL | ELK | Datadog | CloudWatch |
 |---|---|---|---|---|
-| TCO (0.25) | 5 | 3 | 2 | 4 |
-| 메트릭 생태계 (0.15) | 5 | 3 | 5 | 3 |
-| 벤더 종속 회피 (0.10) | 5 | 5 | 1 | 1 |
-| **총점** | **4.65** | 3.85 | 3.35 | 3.10 |
+| TCO (당시 가중치 0.25) | 5 | 3 | 2 | 3 |
+| 메트릭 생태계 (당시 가중치 0.15) | 5 | 4 | 5 | 3 |
+| 벤더 종속 회피 (당시 가중치 0.10) | 5 | 4 | 2 | 2 |
+
+> 당시 선택의 일부 평가 축만 남아 있어 위 가중치 합은 0.50이다. 누락 축을 복원할 근거가 없으므로 재현할 수 없는 총점은 사용하지 않고, 운영 인력과 예상 사용량을 포함한 당시 조건에서 GPL을 선택했다고 설명한다.
 
 ### 아키텍처 5층
 
@@ -137,9 +138,13 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at
 |---|---|---|
 | FE | Sentry SDK → Sentry 서버 | JS 에러, 퍼포먼스, 세션 리플레이 |
 | BE App | TraceIdMiddleware, HttpLoggingInterceptor, Winston JSON, MetricsInterceptor + prom-client, `/metrics` 엔드포인트 | 요청 단위 추적, 구조화 로깅, 메트릭 노출 |
-| Log Routing | FireLens(FluentBit) → Loki | ECS stdout → 중앙집중 로깅 |
-| Logs Plane | Promtail → Loki → S3 | JSON 파싱, 라벨링, Chunk 저장, Compactor S3 압축 |
+| Log Routing (당시) | ECS FireLens(Fluent Bit), 호스트 Promtail → Loki | stdout 수집, JSON 파싱과 정규화, 라벨 구성, 배치와 라우팅 |
+| Logs Plane | Loki, S3 (정확한 저장 경계 기록 없음) | 수집 검증, Ingester의 청크 압축과 flush, 청크/인덱스 저장과 조회, Compactor의 인덱스 압축과 설정된 경우의 보존 적용 |
 | Metrics Plane | Prometheus → Thanos Sidecar → S3 | 단기 15일 + 장기 S3 (멀티 인스턴스/리전 통합 조회) |
+
+> **조건 표기**: Promtail은 2026-03-02 EOL이다. 위 구성은 당시 경험이고, 신규 구성은 Grafana Alloy 또는 이미 사용 중인 FireLens/Fluent Bit 같은 지원 클라이언트를 검토한다. 현재 운영 환경의 이전 완료 여부는 확인되지 않았다.
+> **운영 경계**: 위 당시 구성에는 OpenTelemetry trace pipeline과 exemplar 구축 근거가 없다. 둘은 3축 연결을 위한 후속 학습 설계다.
+> **저장 경계**: 당시 기록의 Loki 30일 핫 보관과 S3 콜드 보관만으로 자동 전환을 주장할 수 없다. S3가 Loki object store였는지 별도 archive였는지, lifecycle과 복원 경로는 현재 기록에 없다.
 
 ### SLO 알림 5개 (`for: 5m` 지속 조건)
 
@@ -181,8 +186,11 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at
 
 ### vault 심화 — 카드별 추가 자료 (본 Extended에서 더 깊게 보강 시)
 
-- **카드 1 DB Lock 심화**: [[Lock]], [[Lock-Deadlock]], [[MySQL-InnoDB-Locking-and-Deadlocks]], [[DML-Conflict-and-Batch-Patterns]], [[Retry-Backoff-Jitter]], [[Race-Condition-Patterns]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]], [[MySQL-InnoDB-Tuning]]
-- **카드 2 EventBridge+SQS 심화**: [[Transactional-Outbox]], [[CDC&Outbox]], [[Idempotency-Key]], [[Saga-Pattern]], [[SQS-Worker-Reliability]]
+- **카드 1 DB Lock 심화**: [[Lock]], [[Lock-Deadlock]], [[MySQL-InnoDB-Locking-and-Deadlocks]], [[DML-Conflict-and-Batch-Patterns]], [[Retry-Backoff-Jitter]], [[Lock-Wait-Convoy]], [[Race-Condition-Patterns]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]], [[MySQL-InnoDB-Tuning]]
+- **카드 2 EventBridge+SQS 심화**: [[Transactional-Outbox]], [[CDC&Outbox]], [[Idempotency-Key]], [[Idempotent-Consumer]], [[Saga-Pattern]], [[SQS-Worker-Reliability]]
 - **카드 3 슬로우 쿼리 심화**: [[Execution-Plan]], [[Covering-Index]], [[B-Tree-Index-Depth]], [[SQL-Tuning-Terminology]], [[Pagination-Optimization]], [[MySQL-Partitioning]], [[OLTP-vs-OLAP]], [[SCD-Type2]]
-- **카드 5 관측성 심화**: [[관측가능성(Observability)]], [[Container-Monitoring]], [[Correlation-ID]], [[CloudWatch]]
-- **카드 6 아키텍처 심화**: [[Multi-Stage-Build]], [[Image-Size-Optimization]], [[Docker-Image-Pipeline]], [[K8s-Resource-Right-Sizing]], [[Blue-Green]], [[Replication]], [[Read-Replica-Routing]]
+- **카드 4 Prisma/ORM 심화**: [[Prisma-Query-Performance]], [[ORM]], [[ORM-Impedance-Mismatch]], [[Domain-ORM-Mapper]], [[SQL-Joins]]
+- **카드 5 관측성 심화**: [[관측가능성(Observability)]], [[Container-Monitoring]], [[Correlation-ID]], [[OpenTelemetry]], [[Exemplars]], [[Loki]], [[Grafana-Alerting]], [[Alert-Fatigue]], [[Incident-Detection-Logging]], [[CloudWatch]]
+- **카드 6 아키텍처 심화**: [[Multi-Stage-Build]], [[Image-Size-Optimization]], [[Docker-Image-Pipeline]], [[ECS-Rolling-Deployment]], [[ECS-Secrets-Injection]], [[K8s-Resource-Right-Sizing]], [[Blue-Green]], [[Replication]], [[Read-Replica-Routing]]
+- **카드 7 Clean Architecture/NestJS 심화**: [[Clean-Architecture-NestJS]], [[RxJS-Essentials]], [[NestJS]], [[NestJS-Circular-Dependency]], [[Injection-Scopes]]
+- **카드 8 캐시/Redis 심화**: [[Cache-Strategies]], [[Cache-Invalidation]], [[Cache-Stampede]], [[Redis-Data-Structures]], [[Redis-Cluster-Sharding]], [[Rate-Limiting]], [[External-Collection-Pipeline-Reliability]]
