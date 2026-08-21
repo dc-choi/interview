@@ -38,7 +38,7 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 - **"멀티 인스턴스에서도 DB Lock 충분?"** → 같은 DB 바라보는 한 충분. DB 분리(샤딩)되면 분산 락 필요
 - **"Gap Lock 성능 영향?"** → 범위 잠금이라 INSERT 차단 가능. 동시성 필요하면 RC 검토 — 단 RC는 gap lock 제거 스위치가 아니라 격리 계약이 바뀌는 선택. 일반 잠금 읽기의 Gap Lock은 대부분 사라지지만 FK와 중복 키 검사에는 남고, Non-Repeatable Read와 Phantom Read를 허용하게 됨
 - **"테이블 락은 언제?"** → DDL(ALTER TABLE), LOCK TABLES 명시, 인덱스 없는 UPDATE/DELETE (풀스캔 → 사실상 테이블 락)
-- **"데드락 감지 분석?"** → `SHOW ENGINE INNODB STATUS` → LATEST DETECTED DEADLOCK 섹션. Grafana `mysql_global_status_innodb_deadlocks` 메트릭 추적
+- **"데드락 감지 분석?"** → `SHOW ENGINE INNODB STATUS` → LATEST DETECTED DEADLOCK 섹션으로 원인 분석. 누계 추세는 `information_schema.INNODB_METRICS`의 `lock_deadlocks` 카운터 (vanilla MySQL엔 `Innodb_deadlocks` status 변수가 없음. MariaDB 확장). mysqld_exporter는 `--collect.info_schema.innodb_metrics`로 켜고 Grafana에서 `mysql_info_schema_innodb_metrics_lock_lock_deadlocks_total` 증가율을 봄
 - **"같은 행인데도 데드락?"** → S→X 승격 패턴. `INSERT IGNORE` 중복 확인이나 FK 검증이 잡은 S Lock을 두 TX가 나눠 쥔 채 같은 행의 X로 승격하려 할 때. 중복 확인 경로는 no-op ODKU(`ON DUPLICATE KEY UPDATE col = col`)로 중복 시점에 S 대신 X를 잡아 순환 대기를 직렬 대기로 바꾸고(중복 PK면 레코드 락, UNIQUE 키면 앞 갭까지 묶는 next-key 락), FK 경로는 부모 UPDATE를 앞으로 옮겨 X를 선점하거나 실익 낮은 FK 제거. 더 나아가 그 행을 갱신하게 만든 카운터를 조회 계산으로 바꾸면(행 수가 적어 계산이 쌀 때) X 락과 `FOR UPDATE`의 이유가 사라짐 — 중복 확인 자체의 락(`INSERT IGNORE`면 S, no-op ODKU면 X)은 남으므로 경합이 없어지는 게 아니라 짧아지는 것
 
 ## 카드 2 EventBridge+SQS 심화
@@ -50,6 +50,7 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 3. `COMPLETED` → 이미 처리, 메시지 삭제 후 skip
 4. `PENDING`/`FAILED` → `PROCESSING`으로 + `processing_started_at` 현재 시각 → 로직 실행
 5. `PROCESSING` 발견 시 → **`processing_started_at` 확인**: visibility timeout의 2배 초과면 이전 워커 crash로 판단 → `FAILED` 후 재처리. 미초과면 다른 워커 정상 처리 중이므로 skip
+   - **한계**: 시작 시각만으로는 느린 워커와 crash한 워커를 구분하지 못해 이중 실행 위험이 남는다. 임계값을 늘리면 회수가 늦고 줄이면 정상 워커를 뺏는다. 개선 방향은 하트비트 신선도 판정과 완료 UPDATE의 owner token 조건.
 6. 성공 → `COMPLETED` + 메시지 삭제
 7. 실패 → `FAILED` + 메시지 안 삭제 → visibility timeout 만료 후 SQS 재전달
 8. SQS `maxReceiveCount`(예: 3회) 초과 → DLQ + 알림 + 수동 확인
@@ -181,7 +182,7 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSONB, created_at
 ### vault 심화 — 카드별 추가 자료 (본 Extended에서 더 깊게 보강 시)
 
 - **카드 1 DB Lock 심화**: [[Lock]], [[Lock-Deadlock]], [[MySQL-InnoDB-Locking-and-Deadlocks]], [[DML-Conflict-and-Batch-Patterns]], [[Retry-Backoff-Jitter]], [[Race-Condition-Patterns]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]], [[MySQL-InnoDB-Tuning]]
-- **카드 2 EventBridge+SQS 심화**: [[Transactional-Outbox]], [[CDC&Outbox]], [[Idempotency-Key]], [[Saga-Pattern]]
+- **카드 2 EventBridge+SQS 심화**: [[Transactional-Outbox]], [[CDC&Outbox]], [[Idempotency-Key]], [[Saga-Pattern]], [[SQS-Worker-Reliability]]
 - **카드 3 슬로우 쿼리 심화**: [[Execution-Plan]], [[Covering-Index]], [[B-Tree-Index-Depth]], [[SQL-Tuning-Terminology]], [[Pagination-Optimization]], [[MySQL-Partitioning]], [[OLTP-vs-OLAP]], [[SCD-Type2]]
 - **카드 5 관측성 심화**: [[관측가능성(Observability)]], [[Container-Monitoring]], [[Correlation-ID]], [[CloudWatch]]
 - **카드 6 아키텍처 심화**: [[Multi-Stage-Build]], [[Image-Size-Optimization]], [[Docker-Image-Pipeline]], [[K8s-Resource-Right-Sizing]], [[Blue-Green]], [[Replication]], [[Read-Replica-Routing]]

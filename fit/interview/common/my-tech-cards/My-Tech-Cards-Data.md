@@ -75,7 +75,7 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 
 ## 카드 4: Prisma → MySQL SubQuery API 응답 90% 개선
 
-**결론**: **Prisma는 lazy loading 없어서 전통적 N+1 아님**. 실제 문제는 **app-level join 방식** — include 시 SQL JOIN이 아니라 관계마다 별도 쿼리 발생 → 조인 엔티티 늘수록 쿼리 N개씩 증가. **평균 100ms → 1000ms 저하**. 로그 분석으로 4개 개별 쿼리 확인 → 공식 문서에서 **`relationLoadStrategy: 'join'`** 발견 → DB-level JOIN 전환만으로 **82~90% 성능 개선**.
+**결론**: **Prisma는 lazy loading 없어서 전통적 N+1 아님**. 실제 문제는 **app-level join 방식** — include 시 SQL JOIN이 아니라 관계마다 별도 쿼리 발생 → 조인 엔티티 늘수록 쿼리 N개씩 증가. **평균 100ms → 1000ms 저하**. 로그 분석으로 4개 개별 쿼리 확인 → 공식 문서에서 **`relationLoadStrategy: 'join'`** 발견 → 단일 correlated subquery + JSON 함수 형태로 통합해 **82~90% 성능 개선**. **옵션 이름이 생성 SQL 형태를 보장하지 않는다** — MySQL에선 DB-level JOIN이 아니라 subquery로 내려가는 것을 실행계획으로 확인하고 적용. (조건: `relationJoins`는 Preview 기능이라 `previewFeatures` 활성이 전제)
 
 **왜 ORM 안 버리고**: 타입 안정성, 마이그레이션 관리, 생산성. **성능 크리티컬한 부분만 Raw Query로 전환**. 대부분 CRUD는 ORM이 충분.
 
@@ -86,7 +86,7 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 
 **꼬리 (핵심)**:
 - **"Prisma vs TypeORM vs Drizzle?"** → TypeORM은 Active Record+Data Mapper 둘 다 지원하지만 복잡한 쿼리에서 불안정. Drizzle은 SQL에 가까운 타입 세이프 쿼리 빌더. **Prisma는 스키마 중심 설계+마이그레이션이 강점**이지만 복잡한 쿼리에서 한계
-- **"전체 쿼리 모니터링?"** → Prisma middleware로 실행 시간 측정 + Grafana로 P99 추적
+- **"전체 쿼리 모니터링?"** → **Client Extensions `$extends`의 query 컴포넌트**로 실행 시간 측정 + Grafana로 P99 추적 (middleware `$use`는 v4.16.0 deprecated, v6.14.0에서 제거)
 
 ## 관련 문서
 
