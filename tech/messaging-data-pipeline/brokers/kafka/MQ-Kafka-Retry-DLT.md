@@ -47,7 +47,7 @@ retry topic은 실패한 메시지를 지연 뒤 다시 소비하기 위해 두�
 
 ## 결정 4 — 재시도 정책과 retry topic 수
 
-- 백오프 선택: 실패 원인이 선행 데이터 미도착처럼 도착 예상 시간이 있는 유형이면 지수 백오프보다 고정 지연이 적합하다. 이런 실패는 공유 다운스트림의 회복을 기다리는 게 아니라서 지수 백오프와 jitter가 주는 몰림 분산 이점이 크지 않다. 원인 불명의 외부 장애 회복 대기 유형이라면 기본값은 [[Event-Driven-Patterns|지수 백오프]] 쪽이다.
+- 백오프 선택: 실패 원인이 선행 데이터 미도착처럼 도착 예상 시간이 있는 유형이면 지수 백오프보다 고정 지연이 적합하다. 이런 실패는 공유 다운스트림의 회복을 기다리는 게 아니라서 지수 백오프와 jitter가 주는 몰림 분산 이점이 크지 않다. 원인 불명의 외부 장애 회복 대기 유형이라면 기본값은 [[Retry-Backoff-Jitter|지수 백오프]] 쪽이다.
 - retry topic 수: Spring Kafka 3.1 이하는 시도 수보다 하나 적은 수만큼 retry topic(`-retry-0`, `-retry-1`)을 만드는 것이 기본이었다. 3.2부터는 `@RetryableTopic`의 sameIntervalTopicReuseStrategy 기본값이 SINGLE_TOPIC이라 고정 지연이면 `{topic}-retry` 1개로 접힌다 (프로그래밍 방식 RetryTopicConfigurationBuilder는 3.3까지 MULTIPLE_TOPICS 기본, 4.1부터 SINGLE_TOPIC). 버전에 기대지 말고 정책을 어노테이션 기본값에 명시해 리스너당 retry topic 1개를 보장한다. 토픽 수는 곧 운영 비용(모니터링, ACL, 파티션)이다.
 - 네이밍은 규칙으로 못 박는다 (예: `retry.{originTopic}`). 단 consumer group이 이름에 없으면 같은 토픽을 여러 그룹이 각자 재시도할 때 retry topic이 충돌한다. 이 충돌은 네이밍에 groupId를 포함하는 opt-in 옵션으로 풀 수 있고, 그 옵션을 넣기 전까지는 사용 제한으로 막아야 하는 잔여 공백이다.
 

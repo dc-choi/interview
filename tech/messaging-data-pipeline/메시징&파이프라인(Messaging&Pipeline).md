@@ -42,7 +42,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [x] [[Idempotent-Consumer|Deduplication (자연 멱등, 원자적 중복 제거, 상태 머신)]]
 - [x] [[MQ-Kafka-Event-Ordering|Ordering Guarantee (Kafka 순서 보장, 소비자 체이닝)]]
 - [x] [[Event-Driven-Patterns|DLQ (오류 분류, 격리, 알람, 플랫폼별 구현)]] — Kafka 구현은 [[MQ-Kafka-Retry-DLT|재시도와 DLT]]
-- [x] [[Event-Driven-Patterns|Retry / Backoff (지수 백오프, jitter, 일시 오류와 영구 오류 분류)]]
+- [x] [[Event-Driven-Patterns|Retry / Backoff (재시도 지연, 일시 오류와 영구 오류 분류)]] — 공식과 jitter 변형 비교는 [[Retry-Backoff-Jitter|지수 백오프와 지터]]
 - [x] [[Backfill-Resource-Isolation|Replay / Backfill (전용 토픽과 워커, 청크 처리, 자원 격리)]]
 - [x] [[Backpressure|Backpressure 제어 (pull, feedback, buffer, drop, BullMQ concurrency 경계)]]
 - [ ] Shadow Traffic (작성 예정: `Shadow-Traffic`) — 기존 보강: [[Blue-Green#관련 무중단 배포 전략|Blue-Green과 Shadow/Dark Launch]]

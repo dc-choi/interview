@@ -74,7 +74,7 @@ Main Queue → Consumer
 재시도 간 지연을 점진 증가 — `1s → 2s → 4s → 8s → 16s …`. 목적:
 - **Thundering Herd 방지**: 실패한 메시지들이 회복 시점에 동시 몰리는 현상
 - **외부 시스템 회복 여유**: 다운스트림이 과부하면 거리두기
-- **Jitter 추가**: `base × 2^n + random(0, jitter)` — 소비자들의 재시도 시점이 같아지지 않게
+- **Jitter 추가**: 가산형 `base × 2^n + random(0, jitter)` — 소비자들의 재시도 시점이 같아지지 않게. 가산형은 하한이 지수 지연 전체라 흩는 폭이 좁으므로 full jitter 등 변형 비교는 [[Retry-Backoff-Jitter|지수 백오프와 지터]]
 
 실패 원인이 선행 데이터 미도착처럼 도착 예상 시간이 있는 유형이면 고정 지연이 맞을 수 있다 — [[MQ-Kafka-Retry-DLT|Kafka 재시도와 DLT]]의 백오프 선택 참조.
 

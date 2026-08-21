@@ -94,7 +94,7 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 
 ### 6. 재시도 정책
 - **멱등 요청**만 자동 재시도
-- **지수 백오프 + 지터** (1s, 2s+random, 4s+random, 8s+random...)
+- **지수 백오프 + 지터** (가산형 예: 1s+random, 2s+random, 4s+random, 8s+random...) — full jitter 등 변형 비교는 [[Retry-Backoff-Jitter|지수 백오프와 지터]]
 - 최대 재시도 횟수 명시 (무한 재시도 금지)
 - 재시도 실패 시 **DLQ(Dead Letter Queue)** 로 보내 사람이 개입
 

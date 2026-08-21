@@ -91,6 +91,9 @@ HTTP 클라이언트 라이브러리마다 이름이 다르므로 **무엇을 �
 - 장애 중인 외부 서비스에 불필요한 부하를 주지 않음 (회복 기회 제공)
 - 사용자에게 **즉시 실패 응답** → 대기 없이 폴백 메시지 제공
 
+### 한계
+서킷 브레이커는 모달(modal) 동작이라 테스트가 어렵고, 의존성이 회복된 뒤에도 열린 회로가 정상 트래픽 복귀를 늦춰 전체 복구 시간을 늘릴 수 있다. 재시도 부하 억제만이 목적이면 토큰 버킷 재시도 예산이 대안이다 ([[Retry-Backoff-Jitter|지수 백오프와 지터]]).
+
 ### 구현
 - **Resilience4j** (Java): `CircuitBreaker` 모듈, Spring과 통합
 - **Hystrix** (Netflix): 유지보수 모드 (후속은 Resilience4j 권장)
@@ -99,7 +102,7 @@ HTTP 클라이언트 라이브러리마다 이름이 다르므로 **무엇을 �
 ## 함께 쓰는 보조 패턴
 
 ### Retry
-타임아웃, 일시 오류 시 재시도. **멱등한 요청에만**. 지수 백오프(1s, 2s, 4s, 8s) + Jitter(랜덤) 필수. Thundering Herd 방지.
+타임아웃, 일시 오류 시 재시도. **멱등한 요청에만**. 지수 백오프 + Jitter 필수 (가산형 예: 1s+random, 2s+random, 4s+random, 8s+random). Thundering Herd 방지. 공식, full jitter 등 변형 비교와 토큰 버킷 재시도 예산은 [[Retry-Backoff-Jitter|지수 백오프와 지터]].
 
 ### Fallback
 차단 시 기본값, 캐시, 부분 기능 제공. 예: 추천 서비스 다운 시 인기 상품 리스트 반환.
@@ -148,6 +151,7 @@ public CompletableFuture<PaymentResult> pay(...) { ... }
 
 ## 출처
 - [매일메일 — 외부 서비스 장애 대응](https://www.maeil-mail.kr/question/74)
+- [Timeouts, retries, and backoff with jitter — Amazon Builders' Library, Marc Brooker](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/)
 - [매일메일 — 타임아웃](https://www.maeil-mail.kr/question/102)
 
 ## 관련 문서
