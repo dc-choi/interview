@@ -122,7 +122,7 @@ const rows = await dataSource
 CTE와 recursive CTE의 지원, quoting, materialization은 DB driver와 DB version에 따라 다르다. TypeORM method가 있어도 모든 target DB에 같은 SQL 또는 성능이 보장되지는 않는다.
 ## Lock과 transaction context
 
-비관적 lock은 lock select와 후속 write가 같은 transaction, manager, connection 안에 있을 때만 의미가 있다. mode, isolation, deadlock, retry는 [[Lock]]과 [[Transactions|트랜잭션]]에서 결정한다.
+비관적 lock은 lock select와 후속 write가 같은 transaction, manager, connection 안에 있을 때만 의미가 있다. mode, isolation, deadlock, retry는 [[Lock]], [[Lock-Deadlock|DB 데드락]]과 [[Transactions|트랜잭션]]에서 결정한다.
 ```typescript
 await dataSource.transaction(async (manager) => {
   const order = await manager

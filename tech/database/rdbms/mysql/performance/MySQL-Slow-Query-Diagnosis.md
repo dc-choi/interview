@@ -115,4 +115,5 @@ Hit ratio나 `long_query_time`에 보편적인 합격선은 없다. 사용자 SL
 - [[MySQL-InnoDB-Tuning|InnoDB 튜닝]]
 - [[MySQL-Connection-Management|MySQL connection 관리]]
 - [[Lock|DB Lock]]
+- [[Lock-Deadlock|DB 데드락]]
 - [[DB-Incident-Triage|DB 장애 분석 방법론]]

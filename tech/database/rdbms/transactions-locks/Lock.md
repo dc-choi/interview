@@ -40,7 +40,7 @@ aliases: ["DB Lock", "Lock", "락"]
 | 충돌 빈도 | 낮을 때 유리 | 높을 때 유리 |
 | 충돌 시 비용 | 전체 트랜잭션 재실행 | Lock 대기 or 즉시 실패 후 재시도 |
 | 동시성 | 선행 조회와 작업 중 선점 lock 없음. 조건부 UPDATE는 X lock을 잡아 transaction 종료까지 보유 | 읽기부터 lock을 보유해 충돌을 앞에서 직렬화 |
-| 데드락 위험 | 낮음. 여러 행, 여러 자원을 함께 갱신하면 DB 데드락은 여전히 가능 | 있음 (순서 통일로 완화) |
+| 데드락 위험 | 낮음. 여러 행, 여러 자원을 함께 갱신하면 DB 데드락은 여전히 가능 | 있음 (순서 통일로 완화, [[Lock-Deadlock|데드락]]) |
 | 구현 복잡도 | version 컬럼 + 재시도 로직 | SELECT FOR UPDATE |
 
 ### 잠금 읽기의 경계
@@ -48,7 +48,7 @@ aliases: ["DB Lock", "Lock", "락"]
 `FOR SHARE`는 읽은 행에 S Lock을 걸어 다른 transaction의 변경을 막고, `FOR UPDATE`는 UPDATE와 같은 방식으로 검색 중 만난 index record에 X Lock을 건다. 둘 다 `START TRANSACTION`이나 `autocommit=0`으로 연 transaction에서 사용하며 commit 또는 rollback 때 해제한다.
 
 - 부모 존재를 확인한 뒤 사용자 정의 자식 작업을 할 때 `FOR SHARE`를 쓸 수 있다. 표준 FK 무결성만 필요하다면 FK가 우선이다.
-- `FOR SHARE`로 읽은 뒤 같은 행을 UPDATE하면 S에서 X로 올리는 과정에서 다른 transaction과 deadlock이 날 수 있다. 수정 가능성이 높으면 처음부터 `FOR UPDATE`를 검토한다.
+- `FOR SHARE`로 읽은 뒤 같은 행을 UPDATE하면 S에서 X로 올리는 과정에서 다른 transaction과 deadlock이 날 수 있다([[Lock-Deadlock|데드락]]). 수정 가능성이 높으면 처음부터 `FOR UPDATE`를 검토한다.
 - 바깥 SELECT의 `FOR UPDATE`는 nested subquery의 테이블까지 자동으로 잠그지 않는다. 그 행도 잠가야 하면 subquery에도 locking clause를 둔다.
 - `NOWAIT`와 `SKIP LOCKED`는 대기 정책을 바꾸는 옵션이지 일관된 snapshot을 만드는 기능이 아니다. 특히 `SKIP LOCKED`는 queue 같은 패턴에 제한한다.
 - `NOWAIT`와 `SKIP LOCKED`는 row-level lock에만 영향을 주며 metadata lock 같은 대기까지 없애지 않는다. Statement-based replication에는 안전하지 않으므로 binlog format도 확인한다.
@@ -133,39 +133,12 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 
 ## 데드락
 
-### 발생 원인
-- TX1: A행 lock → B행 lock 시도
-- TX2: B행 lock → A행 lock 시도
-- 상호 대기 → 데드락
-- **같은 행에서도 난다 (S → X 업그레이드)**: 두 트랜잭션이 공유 가능한 S Lock을 함께 잡은 뒤 같은 행의 X Lock으로 올리려 할 때. 대표 경로는 `INSERT IGNORE`의 중복 키 확인과, 자식 INSERT의 FK 검증이 부모 인덱스 레코드에 잡는 S Lock — 부모 행이 발급마다 갱신되는 핫 카운터를 겸하면 뒤따르는 UPDATE의 X 요청과 충돌한다. 해법은 S를 거치지 않고 처음부터 X를 잡는 구조다: no-op ODKU로 UPDATE 경로를 태우거나, 부모 카운터 UPDATE를 자식 INSERT보다 앞으로 옮겨 X를 선점하거나, 실익 낮은 FK를 제거한다.
-
-### 예방만으로 충분하지 않은 이유
-- 이론적으로 Lock 순서를 통일하면 Circular Wait를 제거하여 데드락을 예방할 수 있음
-- 하지만 실무에서는 Gap Lock, Next-Key Lock이 **개발자가 의도하지 않은 순서로 암묵적으로 획득**됨
-- 쿼리 실행 계획에 따라 InnoDB가 잡는 lock 범위가 달라질 수 있어 완벽한 순서 통일은 현실적으로 불가능
-- 따라서 **데드락은 발생할 수 있다는 전제** 하에 감지 + 복구를 설계하는 것이 핵심
-
-### 감지 + 자동 복구 (InnoDB 기본 전략)
-- **Wait-for Graph** 알고리즘으로 순환 대기를 자동 탐지
-- 비용이 적은 트랜잭션(수정한 행 수가 적은 쪽)을 자동 rollback
-- 앱에서 `ER_LOCK_DEADLOCK` 에러를 catch하고 **재시도**하는 것이 정석 대응. 재시도는 서버 안에서 데드락 예외만 좁게 잡아 제한 횟수와 짧은 랜덤 지연으로, 매 시도를 새 트랜잭션으로 수행한다 — 클라이언트의 무차별 재시도는 경합 중인 서버에 요청량과 동시성을 더하는 방향으로 작동할 수 있다. 재시도는 복구 전략이지 Lock 의존 관계를 바꾸는 구조 개선이 아니다
-- `SHOW ENGINE INNODB STATUS` → LATEST DETECTED DEADLOCK 섹션에서 확인
-- `innodb_print_all_deadlocks=ON`으로 모든 데드락을 에러 로그에 기록
-
-### 발생 확률 완화 전략
-발생 확률을 줄이는 전략:
-1. **Lock 순서 통일**: 일관된 순서(예: PK 오름차순)로 lock 획득 → Circular Wait 가능성 감소
-2. **트랜잭션 범위 최소화**: lock 보유 시간을 줄여 교차 가능성 감소
-3. **NOWAIT 사용**: lock 대기 자체를 하지 않으므로 상호 대기 상황 회피
-4. **적절한 인덱스**: 인덱스 없으면 풀스캔 → 불필요한 행까지 lock → 경합 증가
-5. **트랜잭션 안에서 외부 호출 금지**: API 호출, 파일 I/O 등은 트랜잭션 밖에서
+발생 원인(ABBA, S → X 업그레이드), InnoDB의 감지와 자동 복구, 완화 전략과 락의 이유를 없애는 설계는 [[Lock-Deadlock|DB 데드락]]으로 분리했다.
 
 ## 출처
 - [MySQL 8.4 Reference Manual — Locks Set by Different SQL Statements in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html)
 - [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
 - [MySQL 8.4 Reference Manual — Locking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
-- [MySQL 8.4 Reference Manual — Deadlocks in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-deadlocks.html)
-- [MySQL 8.4 Reference Manual — Deadlock Detection](https://dev.mysql.com/doc/refman/8.4/en/innodb-deadlock-detection.html)
 - [MySQL 8.4 Reference Manual — Locking Functions](https://dev.mysql.com/doc/refman/8.4/en/locking-functions.html)
 - [TypeORM — Select using Query Builder, Set locking](https://typeorm.io/docs/query-builder/select-query-builder/)
 - [TypeORM — Update using Query Builder](https://typeorm.io/docs/query-builder/update-query-builder/)
@@ -176,12 +149,12 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 - [재고시스템으로 알아보는 동시성이슈 해결방법, Named Lock 활용해보기 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=328995&unitId=174918)
 - [인프런, Real MySQL 시즌 1 - Part 1, SELECT FOR UPDATE](https://www.inflearn.com/courses/lecture?courseId=333931&unitId=226567)
 - [인프런, Real MySQL 시즌 1 - Part 2, SELECT FOR UPDATE NOWAIT와 SKIP LOCKED](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226578)
-- [인프런, Real MySQL 시즌 1 - Part 2, 데드락](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226583)
 - [MySQL 8.4 Reference Manual — Metadata Locking](https://dev.mysql.com/doc/refman/8.4/en/metadata-locking.html)
 - [Row Lock은 언제 걸리고 언제 풀릴까: 동시성 문제를 해결하며 파고든 MySQL MVCC와 Lock — velog](https://velog.io/@joona95/Row-Lock%EC%9D%80-%EC%96%B8%EC%A0%9C-%EA%B1%B8%EB%A6%AC%EA%B3%A0-%EC%96%B8%EC%A0%9C-%ED%92%80%EB%A6%B4%EA%B9%8C-%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C%EB%A5%BC-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A9%B0-%ED%8C%8C%EA%B3%A0%EB%93%A0-MySQL-MVCC%EC%99%80-Lock)
 - [DB Lock으로 동시성을 해결하려다 Deadlock을 만난 이야기 — velog](https://velog.io/@joona95/DB-Lock%EC%9C%BC%EB%A1%9C-%EB%8F%99%EC%8B%9C%EC%84%B1%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-Deadlock%EC%9D%84-%EB%A7%8C%EB%82%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0)
 
 ## 관련 문서
+- [[Lock-Deadlock|DB 데드락]]
 - [[Transactions|트랜잭션]]
 - [[Isolation-Level|트랜잭션 격리 수준]]
 - [[Distributed-Lock|분산 락]]

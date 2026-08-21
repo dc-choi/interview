@@ -56,7 +56,8 @@ Locking read, `UPDATE`와 `DELETE`는 보통 검색하며 스캔한 index record
 - 과거 undo version에는 lock을 걸 수 없다. locking read는 필요한 현재 record가 잠겨 있으면 기다린 뒤 그 상태를 읽는다.
 - 바깥 query의 locking clause는 nested subquery가 읽는 table에 자동 전파되지 않는다. 그 table도 잠가야 하면 subquery에 clause를 둔다.
 - `NOWAIT`는 기다리지 않고 오류를 반환한다.
-- `SKIP LOCKED`는 잠긴 row를 제외하므로 일관된 view가 아니며 queue 형태에 제한한다. row lock에만 적용되고 statement-based replication에도 안전하지 않다.
+- `SKIP LOCKED`는 잠긴 row를 제외하므로 일관된 view가 아니며 queue 형태에 제한한다.
+- `NOWAIT`와 `SKIP LOCKED` 모두 row lock에만 적용되고 statement-based replication에도 안전하지 않다.
 
 ## Deadlock과 lock wait
 
@@ -179,4 +180,5 @@ Performance Schema lock table들은 빠르게 변하고 서로 원자적인 snap
 - [[MySQL-InnoDB-MVCC-and-Undo|InnoDB MVCC와 Undo]]
 - [[MySQL-Gap-Lock|Gap Lock 사례와 회피 전략]]
 - [[Lock|DB Lock 전략과 애플리케이션 적용]]
+- [[Lock-Deadlock|데드락 완화와 락 제거 설계]]
 - [[MySQL-Slow-Query-Diagnosis|Slow Query와 lock wait 진단]]

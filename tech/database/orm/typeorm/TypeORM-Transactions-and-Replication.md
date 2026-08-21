@@ -83,7 +83,7 @@ try {
 
 - `DataSourceOptions.isolationLevel`을 설정하면 explicit level이 없는 transaction의 기본값이 된다. callback 또는 `QueryRunner`의 explicit level이 이를 override한다.
 - isolation을 높여도 business invariant가 자동으로 생기지 않는다. 조건부 `UPDATE`, unique constraint, version CAS 또는 pessimistic lock 중 충돌 모델에 맞는 제어를 선택한다.
-- engine별 현상은 [[Isolation-Level|트랜잭션 격리 수준]], InnoDB lock 세부는 [[Lock|DB Lock]]과 [[MySQL-InnoDB-Locking-and-Deadlocks|MySQL InnoDB Locking과 Deadlock]]에서 확인한다.
+- engine별 현상은 [[Isolation-Level|트랜잭션 격리 수준]], InnoDB lock 세부는 [[Lock|DB Lock]]과 [[MySQL-InnoDB-Locking-and-Deadlocks|MySQL InnoDB Locking과 Deadlock]], 데드락 대응은 [[Lock-Deadlock|DB 데드락]]에서 확인한다.
 
 ## lock, deadlock과 retry 경계
 

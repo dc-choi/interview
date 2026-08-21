@@ -163,6 +163,7 @@ Foreign Key 검사는 RC에서도 gap 계열 lock을 사용할 수 있다. lock 
 - [[Isolation-Level|트랜잭션 격리 수준]]
 - [[Isolation-Level-Beyond-ANSI|ANSI 격리의 한계, Strict Serializable]]
 - [[Lock|DB Lock (row/gap/next-key, Pessimistic vs Optimistic)]]
+- [[Lock-Deadlock|DB 데드락]]
 - [[Transactions|트랜잭션 ACID]]
 - [[Execution-Plan|실행 계획]]
 - [[Index|Index]]

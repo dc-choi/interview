@@ -1,7 +1,7 @@
 ---
 tags: [messaging, kafka, event-streaming, ordering]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-08-21
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Kafka Event Ordering", "카프카 이벤트 순서 보장", "순서 보장 병렬 소비"]
 ---
@@ -17,6 +17,7 @@ Kafka의 순서 보장은 파티션 안에서만 성립한다. 같은 키를 같
 - **파티션 단위**: 전역 순서는 보장되지 않는다. 토픽 전체 순서가 필요하면 파티션이 1개뿐이어야 하고, 그러면 병렬성이 사라진다. 순서와 병렬성은 파티션 수에서 맞바꾼다.
 - **생산자 재시도가 파티션 안에서도 순서를 뒤집는다**: 멱등성이 꺼져 있고(`enable.idempotence=false`) `max.in.flight.requests.per.connection`이 1보다 크며 재시도가 켜져 있으면, 앞 요청이 실패해 재전송되는 사이 뒤 요청이 먼저 저장돼 순서가 뒤집힌다. Kafka 3.0부터 idempotence는 충돌 설정이 없을 때 기본 활성화된다. 보장에는 `acks=all`, `retries>0`, `max.in.flight.requests.per.connection<=5`가 필요하다. 명시적으로 true인데 조건이 충돌하면 configuration error가 나고, true를 명시하지 않은 충돌 설정은 idempotence를 비활성화할 수 있다. Sequence 기반 중복 제거와 순서 보장은 producer session과 partition 범위다.
 - **소비자 측 병렬화가 순서를 깬다**: 한 파티션은 그룹 내 소비자 하나가 읽지만([[MQ-Kafka-Internals#파티션과 컨슈머 규칙|파티션-컨슈머 규칙]]), 읽은 뒤 레코드를 스레드 풀에 흩뿌려 처리하면 파티션 안 순서가 사라진다. 파티션 순서를 지키려면 파티션 단위로는 순차 처리해야 한다.
+- **토픽을 넘는 순서는 키로 만들 수 없다**: 한 흐름의 이벤트(주문, 이용완료, 취소 등)가 도메인별로 서로 다른 토픽에 발행되면 모든 토픽에 같은 엔티티 키를 써도 토픽 사이 순서는 보장되지 않는다. 발행 측의 토픽 구조와 파티셔닝을 소비 측이 바꿀 수 없다면, 동시 처리와 중복과 역순 도착을 전제로 소비자를 순서 독립적이고 멱등하게([[Idempotent-Consumer|멱등 컨슈머]]) 설계하고 정합성은 DB 계층(유니크 제약, 조건부 갱신, [[Lock-Deadlock|락 설계]])에서 지킨다.
 
 ## 순서가 깨지는 지점: 이질적 소비자
 
@@ -77,8 +78,12 @@ Kafka의 순서 보장은 파티션 안에서만 성립한다. 같은 키를 같
 - [[Kafka-Partition-Sizing|파티션 개수 산정]]
 - [[Delivery-Semantics|전달 보장]]
 - [[Idempotency-Key|멱등성 키]]
+- [[Idempotent-Consumer|멱등 컨슈머]]
+- [[Lock-Deadlock|DB 데드락]]
 
 ## 출처
 
 - [Kafka 이벤트 순서 보장 아키텍처 — ab180 엔지니어링](https://engineering.ab180.co/stories/kafka-event-ordering-at-scale)
+- [데드락을 해결하려다, 락을 줄이게 된 이야기 — 여기어때 기술블로그](https://techblog.gccompany.co.kr/%EB%8D%B0%EB%93%9C%EB%9D%BD%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-%EB%9D%BD%EC%9D%84-%EC%A4%84%EC%9D%B4%EA%B2%8C-%EB%90%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0-97bf2b0c91b6)
 - [Apache Kafka producer configuration — enable.idempotence](https://kafka.apache.org/35/generated/producer_config.html#producerconfigs_enable.idempotence)
+- [Introduction — Apache Kafka](https://kafka.apache.org/intro)
