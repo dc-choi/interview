@@ -25,5 +25,5 @@ MySQL 성능을 좌우하는 실행 계획, 인덱스, 정렬과 join, 파라미
 ## 쿼리 진단
 
 - [[MySQL-Slow-Query-Diagnosis|Slow Query 진단 (Slow Query Log, performance_schema, processlist, 락 대기)]]
-- [[MySQL-Digest-Statistics|Digest 통계 운영 (max_digest_length 절단, digests_size 포화/truncate, Prepared Statement PI 영향, PG 비교)]]
+- [[MySQL-Digest-Statistics|Digest 통계 운영 (max_digest_length 절단, digests_size 포화/truncate, histogram BUCKET_QUANTILE P99, COUNT_STAR/Questions QPS, Prepared Statement PI 영향, PG 비교)]]
 - [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length (read view 수명, HLL 급증 진단, Aurora 공유 스토리지와 ARRRC)]]

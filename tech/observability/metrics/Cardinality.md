@@ -74,6 +74,7 @@ http_requests_total{method, route, status, user_id}
 
 - [[Prometheus|Prometheus (다차원 라벨 모델)]]
 - [[Logs-vs-Metrics|로그 vs 메트릭 vs 추적 (신호 선택)]]
+- [[Exemplars|Exemplar (고카디널리티 라벨 대신 샘플 트레이스로 연결)]]
 - [[Application-Performance-Monitoring|APM (카디널리티 관리)]]
 - [[OpenTelemetry|OpenTelemetry (추적으로 요청 단위 추적)]]
 - [[Long-Term-Retention|장기 보존 (카디널리티가 비용에 미치는 영향)]]

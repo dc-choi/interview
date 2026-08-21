@@ -1,7 +1,7 @@
 ---
 tags: [messaging, reliability, pattern]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-08-21
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Transactional Outbox", "Outbox Pattern", "트랜잭셔널 아웃박스"]
 ---
@@ -70,11 +70,53 @@ CREATE TABLE outbox (
 - 주기적으로 `WHERE processed_at IS NULL` 조회 → 발행 → 마킹
 - NestJS `@Cron('*/5 * * * * *')`로 5초 간격 구현 가능
 - 단일 코드베이스에서 바로 구현할 수 있어 소규모 팀에 적합
+- 인스턴스를 2개 이상 띄우는 순간 같은 행을 여러 Relay가 집는다 → 아래 다중 인스턴스 절
 
 ### CDC 방식
 - Debezium이 DB WAL(Write-Ahead Log)을 읽어 outbox 테이블 변경을 감지
 - 변경 즉시 Kafka로 발행 → 거의 실시간
 - 애플리케이션 코드 수정 없이 동작하지만 인프라 운영 부담 증가
+
+## Relay를 여러 인스턴스에서 돌릴 때
+
+폴링 Relay를 애플리케이션에 심으면 Relay의 인스턴스 수가 애플리케이션의 인스턴스 수를 따라간다. NestJS `@Cron`은 그 프로세스의 스케줄러에 잡을 등록하므로, 서비스를 3개 태스크로 띄우면 스케줄러도 3개가 되어 세 프로세스가 같은 `processed_at IS NULL` 행 집합을 동시에 읽는다. 아무 장치가 없으면 같은 이벤트가 인스턴스 수만큼 발행된다. 배포 중 구인스턴스와 신인스턴스가 겹치는 순간에도 같은 일이 일어난다.
+
+중복 제거 축은 셋이고, 실무에서는 보통 섞어 쓴다.
+
+| 축 | 방식 | 얻는 것 | 잃는 것 |
+|---|---|---|---|
+| 행 단위 claim | 트랜잭션 안에서 `FOR UPDATE SKIP LOCKED`로 배치를 잠그고 상태를 전이 | 인스턴스 수만큼 처리량이 늘고 중복 조회가 사라짐 | claim 상태 컬럼과 좌초 회수 로직이 추가로 필요 |
+| 단일 러너 선출 | advisory lock이나 리더 선출로 한 프로세스만 폴링 | 구현이 가장 단순하고 발행 순서가 한 곳으로 모임 | 처리량이 한 인스턴스에 묶이고 그 프로세스가 멈추면 발행 전체가 멈춤 |
+| 중복 발행 허용 | 제어 없이 발행하고 소비자 멱등으로 흡수 | Relay 코드가 가장 얇음 | 브로커 비용과 소비자 부하가 인스턴스 수에 비례 |
+
+### 행 단위 claim
+
+```sql
+BEGIN;
+
+SELECT id, event_type, payload
+FROM outbox
+WHERE processed_at IS NULL
+ORDER BY id
+LIMIT 100
+FOR UPDATE SKIP LOCKED;
+
+-- 같은 트랜잭션에서 claim 표시(claimed_at, claimed_by)까지 하고 즉시 커밋
+COMMIT;
+```
+
+- `SKIP LOCKED`는 잠긴 행을 결과에서 빼므로 인스턴스들이 서로 다른 행을 가져간다. 다만 일관된 스냅샷이 아니라서 PostgreSQL과 MySQL 문서 모두 일반 트랜잭션 작업에는 부적합하고 큐 성격 테이블의 경쟁 소비에 쓰라고 명시한다.
+- **발행 I/O를 claim 트랜잭션 안에 넣지 않는다.** 브로커 호출을 트랜잭션 안에서 하면 락과 커넥션을 네트워크 지연만큼 붙잡아 Relay가 직렬화된다. claim 트랜잭션은 잠그고 표시하고 끝내며, 발행과 `processed_at` 마킹은 밖에서 짧은 트랜잭션으로 한다.
+- claim 이후 프로세스가 죽으면 그 행이 claim 상태로 남는다. lease와 하트비트 기반 회수가 필요하고, 설계는 [[SQS-Worker-Reliability#PROCESSING으로 좌초된 행 회수|좌초 회수]], [[MySQL-Job-Queue|MySQL 작업 큐]]와 같다.
+
+### 단일 러너 선출
+
+- PostgreSQL advisory lock은 시스템이 사용을 강제하지 않는 애플리케이션 규약이다. 세션 수준 락은 트랜잭션이 롤백돼도 풀리지 않아 해제 책임이 앱에 있고, 트랜잭션 수준 락은 트랜잭션이 끝날 때 자동 해제된다. 폴링 틱마다 잡았다 놓는 용도라면 트랜잭션 수준이 다루기 쉽다.
+- 락을 못 잡은 인스턴스는 그 틱을 건너뛰고 다음 틱에 다시 시도한다. 승자가 죽으면 세션 종료와 함께 락이 풀려 다음 틱에서 다른 인스턴스가 승계한다. 이 승계 지연이 곧 발행 공백이다.
+
+### 어느 축도 중복을 없애지는 못한다
+
+claim을 걸어도 발행은 성공했는데 `processed_at` 마킹 직전에 프로세스가 죽으면 그 이벤트는 회수 뒤 다시 발행된다. 발행과 마킹이 서로 다른 시스템이라 여기서 dual write가 다시 나타나기 때문이다. Outbox는 dual write를 없앤 것이 아니라 **유실을 중복으로 바꾼** 패턴이고, 위 세 축은 중복의 빈도를 줄일 뿐이다. 중복을 실제로 흡수하는 것은 소비자 측 [[Idempotent-Consumer|멱등 처리]]다.
 
 ## 3계층 이벤트 전파 구조
 
@@ -105,7 +147,7 @@ CREATE TABLE outbox (
 분산 환경에서 이벤트는 **순서가 뒤바뀌어 도착**할 수 있다 (네트워크 재시도, 파티션 리밸런싱). 순서를 완전히 보장하기 어렵다면:
 
 - 이벤트 페이로드에 **전체 상태를 담지 않고 식별자만** 싣는다
-- Consumer는 식별자로 **Source of Truth를 다시 조회** → 항상 최신 상태
+- Consumer는 식별자로 **Source of Truth를 다시 조회** → 조회 시점의 최신 상태
 - 스키마 변경에도 유연 (페이로드가 최소하므로 호환성 이슈 감소)
 
 트레이드오프: 조회 1회 추가. 하지만 **순서 보장, 스키마 안정성**이 그만한 가치.
@@ -122,6 +164,9 @@ Outbox 테이블을 단순 발행 대기열이 아닌 **모든 이벤트의 영�
 Event Sourcing은 더 나아가 **상태 자체를 이벤트 스트림으로만 관리**하지만, Event Store + Outbox는 상태도 유지하면서 감사, 복구 능력을 얻는 **중간 지점**.
 
 ## 출처
+- [SELECT — The Locking Clause (SKIP LOCKED) — PostgreSQL 공식 문서](https://www.postgresql.org/docs/current/sql-select.html)
+- [Explicit Locking — Advisory Locks — PostgreSQL 공식 문서](https://www.postgresql.org/docs/current/explicit-locking.html)
+- [Locking Reads (SKIP LOCKED, NOWAIT) — MySQL 8.4 공식 문서](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
 - [Chris Richardson, Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html)
 - [Dowon Lee 강사, Dual Write, Outbox와 CDC](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289780)
 - [최상용 강사, 트랜잭션 이후 Kafka 이벤트 발행](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344376)
@@ -131,5 +176,8 @@ Event Sourcing은 더 나아가 **상태 자체를 이벤트 스트림으로만 
 ## 관련 문서
 - [[Delivery-Semantics|전달 보장]]
 - [[Idempotency-Key|멱등성 키]]
+- [[Idempotent-Consumer|멱등 컨슈머]]
 - [[Messaging-Patterns|메시징 패턴]]
+- [[MySQL-Job-Queue|MySQL 작업 큐 (lease와 SKIP LOCKED claim)]]
+- [[SQS-Worker-Reliability|SQS 워커 신뢰성 (좌초 회수, 재시도 간격)]]
 - [[MQ-Kafka|Kafka]]

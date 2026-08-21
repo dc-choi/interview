@@ -53,6 +53,8 @@ async function handleMessage(eventId: string, payload: any) {
 }
 ```
 
+워커가 죽으면 행이 `PROCESSING`으로 좌초되고, 이후 재전달은 전부 위의 `PROCESSING` 분기에서 스킵된다. 메시지는 조용히 maxReceiveCount를 태우고 DLQ로 간다. 그래서 하트비트 신선도 기반 회수와 완료 UPDATE의 owner token이 함께 필요하다. [[SQS-Worker-Reliability#PROCESSING으로 좌초된 행 회수]]
+
 ## 구현 체크리스트
 - eventId에 UNIQUE 인덱스 설정
 - 상태 확인 시 비관적 잠금 (FOR UPDATE) 적용

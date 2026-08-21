@@ -12,6 +12,8 @@ AWS 관리형 컨테이너 오케스트레이션 서비스. **Task Definition, S
 
 ecs 폴더 문서 구성:
 
+- [[ECS-Rolling-Deployment|ECS 롤링 배포 메커니즘 — 용량 산술, deployment circuit breaker, 드레이닝과 stopTimeout]]
+- [[ECS-Secrets-Injection|ECS 런타임 시크릿 주입 — secrets valueFrom, 역할 분리, 회전과 재기동]]
 - [[ECS-Service-AutoScaling|ECS Service Auto Scaling — Scalable Target, 정책 3종, backlog-per-task 패턴]]
 - [[ECS-SQS-Worker-Terraform|SQS 워커 ECS 오토스케일링 Terraform 구성 — Fargate vs EC2, Capacity Provider]]
 
@@ -110,7 +112,7 @@ Fargate 외에 **EC2 launch type**에서만 등장하는 3번째 Role.
 | `LINEAR`, `CANARY` | 같은 비율씩 단계적 이동 / 일부 비율 먼저 보내고 지정 시간 뒤 나머지 한 번에 이동 |
 | `EXTERNAL` 컨트롤러 | 사용자 정의 (Spinnaker, Argo) — Task Set을 직접 관리 |
 
-Blue/Green은 ECS 자체 기능이라 CodeDeploy 없이 쓸 수 있다. CodeDeploy 기반 blue/green(`CODE_DEPLOY` 컨트롤러)도 별도로 남아 있다.
+Blue/Green은 ECS 자체 기능이라 CodeDeploy 없이 쓸 수 있다. CodeDeploy 기반 blue/green(`CODE_DEPLOY` 컨트롤러)도 별도로 남아 있다. 롤링의 용량 계산, circuit breaker 임계값, 타깃 그룹 드레이닝과 `stopTimeout`이 맞물리는 순서는 → [[ECS-Rolling-Deployment|ECS 롤링 배포 메커니즘]]
 
 ## Service Connect, Service Discovery
 

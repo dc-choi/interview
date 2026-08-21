@@ -22,4 +22,5 @@ NestJS가 Interceptor 반환값으로 **Promise가 아닌 `Observable`** 을 요
 - [[NestJS|NestJS 개요, 요청 파이프라인]]
 - [[NestJS-vs-Spring|NestJS vs Spring (AOP 비교)]]
 - [[NestJS-Custom-Decorator|NestJS 커스텀 데코레이터]]
+- [[RxJS-Essentials|RxJS 기본기]]
 - [[Spring-Exception-Handling|Spring Exception Handling]]

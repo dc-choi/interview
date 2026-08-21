@@ -13,6 +13,7 @@ SQS, EventBridge, Kafka, Redis — 주요 메시지 브로커.
 - [x] [[SQS|SQS (Standard/FIFO, Visibility Timeout, DLQ, 멱등성, 소비자 패턴)]]
   - [[SQS-Lambda-ESM|Lambda 폴링 (ESM 스케일링, throttling 가짜 DLQ, concurrency, Provisioned Mode)]]
   - [[SQS-Consumer-Lambda-vs-ECS|컨슈머 선택 (Lambda vs ECS 워커 트레이드오프)]]
+  - [[SQS-Worker-Reliability|워커 신뢰성 (재시도 간격 원시 기능, 가시성 하트비트, PROCESSING 좌초 회수)]]
 - [x] [[SNS|SNS (Topic, Fan-out, Filter, SNS+SQS, SNS vs EventBridge)]]
 - [x] [[EventBridge|EventBridge (이벤트 버스 3종, Rules/Targets, Scheduler, Archive & Replay, vs SNS)]]
   - [[EventBridge-Event-Patterns|이벤트 패턴 매칭 (연산자 문법, 매칭 규칙, $or, 테스트)]]

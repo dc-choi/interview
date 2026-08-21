@@ -17,7 +17,9 @@ aliases: ["NestJS Interceptor Observable 설계", "Promise vs Observable AOP"]
 | **연산자 체이닝** (map, tap, retry, timeout) | 제한적 | ✅ 수십 종 |
 | **라이프사이클 훅** (시작, 진행, 완료, 에러) | 일부 | ✅ 전부 |
 | **재시도 로직** | 수동 구현 | `retry(N)` 한 줄 |
-| **다수 관찰자** | 불가 | ✅ multicast |
+| **실행 공유 모델** | 한 번 실행 후 결과 공유 | 기본 unicast, 공유하려면 Subject |
+
+unicast와 multicast의 구분은 [[RxJS-Essentials|RxJS 기본기]]에 정리돼 있다.
 
 AOP는 **"원본 코드를 손대지 않고 횡단 관심사를 끼워 넣는" 기술**. 로깅, 캐싱, 재시도, 모니터링, 권한 체크 — 이 모든 게 **함수의 시작, 진행, 완료, 에러, 취소 지점**에 개입이 필요. Promise는 **완료 시점 하나**만 잡을 수 있어 AOP 도구로 부족.
 

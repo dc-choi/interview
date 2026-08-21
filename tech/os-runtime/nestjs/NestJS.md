@@ -31,6 +31,7 @@ aliases: ["NestJS"]
 ## 루트 문서
 - [x] [[NestJS-Cold-Start-Optimization|Cold Start 최적화 (의존성 그래프, Lazy Module, 서버리스)]]
 - [x] [[NestJS-Logging|Logging (내장 Logger, JSON 로깅, bufferLogs + useLogger)]]
+- [x] [[RxJS-Essentials|RxJS 기본기 (Observable vs Promise, Subject, 평탄화 연산자, Interceptor에서의 활용)]]
 
 ## 현장사례
 - [[TS-Backend-Meetup-3#NestJS DI Deep Dive|DI Deep Dive]] — 메타데이터, 프로바이더 토큰, 의존성 처리 과정

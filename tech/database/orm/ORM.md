@@ -143,6 +143,7 @@ raw query로 내려가는 선택지를 먼저 검토했지만 type 안전성과 
 배운 점은 옵션 이름이 생성 SQL의 형태를 보장하지 않는다는 것이다. `join`이라는 이름만 믿었다면 검증 없이 적용했을 것이고, 반대로 예상과 다르다는 이유로 되돌렸다면 더 나은 계획을 버릴 뻔했다. 판단 근거는 옵션 이름이 아니라 실행 계획이다.
 
 ## 관련 문서
+- [[Prisma-Query-Performance|Prisma 쿼리 계측과 relation 로딩 전략]]
 - [[TypeORM|TypeORM 실무 가이드]]
 - [[MikroORM|MikroORM 학습 지도]]
 - [[SQL]]

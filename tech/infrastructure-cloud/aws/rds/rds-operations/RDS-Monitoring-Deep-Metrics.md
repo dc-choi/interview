@@ -1,9 +1,9 @@
 ---
-tags: [aws, rds, aurora, monitoring, observability, prometheus, commitlatency]
+tags: [aws, rds, aurora, monitoring, observability, prometheus, commitlatency, deadlock]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-08-21
 category: "Infrastructure - AWS"
-aliases: ["RDS Monitoring Deep Metrics", "RDS 모니터링 심화", "Aurora 장애 지표", "CommitLatency History List Length"]
+aliases: ["RDS Monitoring Deep Metrics", "RDS 모니터링 심화", "Aurora 장애 지표", "CommitLatency History List Length", "lock_deadlocks 지표"]
 ---
 
 # RDS / Aurora 모니터링 심화
@@ -60,6 +60,28 @@ InnoDB는 읽기 일관성(MVCC)을 위해 과거 버전 데이터를 유지한�
 - Prometheus exporter로 수집할 만한 지표: 롱 트랜잭션 수, 실행 계정, 접속 호스트, IP별 커넥션 수, 계정별 커넥션 수, DB 크기.
 - **PostgreSQL**: exporter 설정 파일에 쿼리를 추가해 롱 트랜잭션, vacuum, 테이블 단편화, 통계 정보를 수집한다.
 
+### InnoDB 데드락 카운터의 실제 출처
+
+데드락 누계를 대시보드에 올릴 때 흔한 오해가 `SHOW GLOBAL STATUS`의 `Innodb_deadlocks`를 쓰는 것이다. 이 status 변수는 MariaDB가 문서화한 확장이고, MySQL 8.4의 서버 status 변수 목록에는 없다. mysqld_exporter의 global status 수집기는 `SHOW GLOBAL STATUS`가 돌려준 행을 그대로 `mysql_global_status_<변수명>`으로 내보내므로, 서버가 그 변수를 노출하지 않으면 `mysql_global_status_innodb_deadlocks` 시계열 자체가 생기지 않는다. 쿼리가 실패하는 게 아니라 지표가 조용히 비는 형태라 알람이 영원히 안 울리는 방식으로 망가진다.
+
+MySQL에서 데드락 누계는 `information_schema.INNODB_METRICS`의 `lock_deadlocks` 카운터로 노출된다. subsystem은 `lock`이고 MySQL 8.4 문서의 카운터 목록에서 기본 `enabled` 상태라 `innodb_monitor_enable` 설정 없이 읽힌다. 같은 subsystem의 `lock_timeouts`, `lock_row_lock_waits`를 함께 보면 데드락과 lock wait timeout을 구분할 수 있다.
+
+| 단계 | 내용 |
+|---|---|
+| 서버 | `information_schema.INNODB_METRICS`에서 `NAME = 'lock_deadlocks'`, `STATUS = 'enabled'` |
+| exporter 플래그 | `--collect.info_schema.innodb_metrics` (기본 비활성이라 명시적으로 켠다) |
+| Prometheus 지표 | `mysql_info_schema_innodb_metrics_lock_lock_deadlocks_total` |
+
+지표 이름에 `lock`이 두 번 들어가는 것은 오타가 아니다. exporter가 `innodb_metrics_<subsystem>_<name>` 규칙으로 이름을 만드는데 subsystem이 `lock`, 카운터 이름이 `lock_deadlocks`라 겹친다. `TYPE`이 `status_counter`인 카운터에는 `_total` 접미사가 붙는다.
+
+관리형 환경에서는 다음을 확인한다.
+
+- RDS for MySQL 마스터 사용자는 `PROCESS` 권한을 받으므로 `INNODB_METRICS` 조회가 된다. exporter 전용 계정을 따로 만들면 이 권한을 빠뜨리지 않도록 부여 목록에 넣는다.
+- RDS(비 Aurora) 인스턴스의 CloudWatch 지표 목록에는 데드락 지표가 없다. 엔진 내부에서 직접 수집하거나 Database Insights의 부하 데이터로 본다.
+- Aurora MySQL에는 CloudWatch `Deadlocks` 지표(초당 평균 건수)가 있고 `BlockedTransactions`, `RowLockTime`도 함께 제공된다. Aurora에서 InnoDB 모니터 카운터를 더 켜야 하면 `SET GLOBAL`이 아니라 DB 파라미터 그룹의 `innodb_monitor_enable`로 설정한다.
+
+카운터는 누계라 값 자체가 아니라 증가율을 본다. 데드락은 0이 목표가 아니라 재시도로 흡수되는 수준인지, 특정 배포 이후 급증했는지를 보는 지표다. 원인 분석은 `SHOW ENGINE INNODB STATUS`의 LATEST DETECTED DEADLOCK 섹션과 error log에서 한다.
+
 ### Slow Query 통계 뷰 (개발자도 함께 본다)
 
 개별 slow query 로그만으로는 장애 상황에서 패턴을 파악하기 어렵다. 같은 형태의 쿼리가 얼마나 자주, 얼마나 오래 실행됐는지 집계해야 한다.
@@ -103,6 +125,7 @@ InnoDB는 읽기 일관성(MVCC)을 위해 과거 버전 데이터를 유지한�
 - CommitLatency, History List Length 같은 Aurora/InnoDB 깊은 지표를 보는가
 - 인스턴스 이벤트(failover 등)를 Event Subscription으로 받는가
 - CloudWatch로 부족한 엔진 지표를 커스텀 exporter로 보강했는가
+- 대시보드에 올린 지표 이름이 그 엔진과 배포판에 실제로 존재하는지 확인했는가 (데드락은 vanilla MySQL에서 `Innodb_deadlocks`가 아니라 `INNODB_METRICS`의 `lock_deadlocks`)
 - 핵심 DB에 필요한 Database Insights mode와 retention을 사전에 설정했는가
 
 ## 관련 문서
@@ -113,6 +136,8 @@ InnoDB는 읽기 일관성(MVCC)을 위해 과거 버전 데이터를 유지한�
 - [[RDS-Aurora-Graviton|Aurora Graviton 전환]] — 버전, 쓰기 워크로드
 - [[RDS-Operational-Pitfalls|RDS 운영 함정]]
 - [[Prometheus|Prometheus]] — exporter, 커스텀 지표
+- [[Alert-Fatigue|알람 피로]] — 심각도 분리
+- [[RED-USE-Method|RED, USE 방법론]] — 지표 설계 프레임
 
 ## 출처
 
@@ -122,6 +147,11 @@ InnoDB는 읽기 일관성(MVCC)을 위해 과거 버전 데이터를 유지한�
 - [Aurora MySQL binlog I/O cache](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/binlog-optimization.html)
 - [Aurora MySQL release calendar](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraMySQLReleaseNotes/AuroraMySQL.release-calendars.html)
 - [Aurora Replica Auto Scaling](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html)
-- [[Alert-Fatigue|알람 피로]] — 심각도 분리
-- [[RED-USE-Method|RED, USE 방법론]] — 지표 설계 프레임
+- [Amazon CloudWatch metrics for Amazon Aurora — AWS Aurora User Guide](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraMySQL.Monitoring.Metrics.html)
+- [Amazon CloudWatch metrics for Amazon RDS — AWS RDS User Guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-metrics.html)
+- [Master user account privileges — AWS RDS User Guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.MasterAccounts.html)
+- [InnoDB INFORMATION_SCHEMA Metrics Table — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/innodb-information-schema-metrics-table.html)
+- [Server Status Variables — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/server-status-variables.html)
+- [InnoDB Status Variables (Innodb_deadlocks) — MariaDB Documentation](https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/system-variables/innodb-status-variables)
+- [mysqld_exporter — Prometheus, GitHub](https://github.com/prometheus/mysqld_exporter)
 - [RDS Aurora Graviton2 성능 이슈와 RDS 모니터링 — YouTube](https://www.youtube.com/watch?v=c6mak2ioTqs&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=16)

@@ -160,4 +160,5 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 - [[Distributed-Lock|분산 락]]
 - [[MySQL-InnoDB-Locking-and-Deadlocks|MySQL 8.4 InnoDB Locking과 Deadlock]]
 - [[Transaction-Lock-Contention|트랜잭션 경합]]
+- [[Lock-Wait-Convoy|락 대기 큐와 convoy]]
 - [[Index|인덱스]]

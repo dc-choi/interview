@@ -22,6 +22,8 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 - [x] [[EBS|EBS (gp2/gp3/io1/io2/st1/sc1, io2 Multi-Attach, 증분 스냅샷, Cross-Region 공유, KMS 암호화)]]
 - [x] [[Auto-Scaling|EC2 Auto Scaling (ASG, Launch Template, Target Tracking/Simple/Step, Cooldown, Lifecycle Hook, Health Check)]]
 - [x] [[ECS|ECS, Fargate (Task Definition, Service Connect, awsvpc, Capacity Provider, IAM Role 3종)]]
+  - [[ECS-Rolling-Deployment|롤링 배포 메커니즘 (minimumHealthyPercent/maximumPercent, circuit breaker 롤백, 드레이닝, stopTimeout)]]
+  - [[ECS-Secrets-Injection|런타임 시크릿 주입 (secrets valueFrom, Execution Role vs Task Role, 회전과 force new deployment)]]
   - [[ECS-Service-AutoScaling|Service Auto Scaling (backlog-per-task, Metric Math, scale-to-zero, graceful shutdown)]]
   - [[ECS-SQS-Worker-Terraform|SQS 워커 오토스케일링 Terraform (Fargate vs EC2, Capacity Provider)]]
 - [x] [[EKS|EKS (Control Plane, Node Group, Fargate Profile, VPC CNI, IRSA, HPA/VPA, Karpenter, EKS vs ECS)]]

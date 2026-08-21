@@ -1,9 +1,9 @@
 ---
 tags: [messaging, aws, sqs, decoupling, saa-c03]
 status: index
+verified_at: 2026-07-15
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["SQS", "Amazon SQS", "Simple Queue Service"]
-verified_at: 2026-07-15
 ---
 
 # Amazon SQS (Simple Queue Service)
@@ -14,6 +14,7 @@ AWS 관리형 메시지 큐 서비스. 분산 시스템 간 비동기 통신의 
 
 - [[SQS-Lambda-ESM|SQS → Lambda 폴링 (ESM 스케일링, 가짜 DLQ, concurrency)]]
 - [[SQS-Consumer-Lambda-vs-ECS|컨슈머 선택: Lambda vs ECS 워커]]
+- [[SQS-Worker-Reliability|워커 신뢰성 (재시도 간격 제어, 가시성 하트비트, 좌초 회수)]]
 
 ## Decoupling — 왜 필요한가
 
@@ -53,7 +54,8 @@ Consumer ← Receive ← [Visibility Timeout 시작]
 - 시간 내 Delete하지 않으면 다시 visible → 다른 Consumer가 재처리
 - `ChangeMessageVisibility` API로 처리 중 타임아웃 연장 가능 (하트비트 패턴). 이때 `VisibilityTimeout`은 **호출 시점 기준으로 새로 설정**된다 (수신 시점 누적이 아님)
 - 설정 기준: 처리 평균 시간의 **6배** 정도. 너무 짧으면 정상 처리 중 재노출(불필요한 중복), 너무 길면 실패 후 재처리까지 대기가 김
-- **in-flight 한도 함정**: 처리 중 메시지가 한도(Standard 약 120,000, FIFO 약 20,000)에 차면 큐에 메시지가 있어도 `ReceiveMessage`가 빈 응답을 준다. Consumer가 느리거나 멈춰 삭제가 밀릴 때 발생 — 장애 디버깅에서 놓치기 쉬움
+- 12시간 상한은 **최초 수신 시점 기준**이고 연장 호출이 이 상한을 리셋하지 않는다. 재시도 간격 제어와 하트비트 운용은 → [[SQS-Worker-Reliability|워커 신뢰성]]
+- **in-flight 한도 함정**: 처리 중 메시지가 한도(Standard 약 120,000, FIFO 120,000)에 차면 큐에 메시지가 있어도 새로 못 받는다. Standard는 short polling이면 `ReceiveMessage`가 `OverLimit` 에러를 내고 long polling이면 에러 없이 빈 응답을 준다. FIFO는 한도에 닿아도 에러를 반환하지 않고 처리만 영향을 받는다 (2026-08-21 AWS 문서 확인). Consumer가 느리거나 멈춰 삭제가 밀릴 때 발생 — 장애 디버깅에서 놓치기 쉬움
 
 ## Long Polling vs Short Polling
 
@@ -121,7 +123,7 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 | 메시지 크기 | 최대 **1 MiB**. 더 큰 payload는 S3 + Extended Client Library 패턴 |
 | 보존 기간 | 기본 4일, 최대 14일 |
 | 배치 | Send/Receive/Delete 각 최대 **10개** (부분 실패 가능 → 응답 `Failed[]` 확인 필수) |
-| In-flight 제한 | Standard: 120,000개, FIFO: 20,000개 |
+| In-flight 제한 | Standard: 약 120,000개, FIFO: 120,000개 |
 
 ### 주요 CloudWatch 메트릭
 
@@ -160,6 +162,8 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 
 ## 출처
 - [Amazon SQS message quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+- [Amazon SQS FIFO queue quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-fifo.html)
+- [ReceiveMessage (OverLimit 에러) — AWS SQS API Reference](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html)
 - [Amazon SQS endpoints and quotas — AWS 공식 문서](https://docs.aws.amazon.com/general/latest/gr/sqs-service.html)
 - [채널톡 — AWS SQS 도입기](https://channel.io/ko/blog/tech-backend-aws-sqs-introduction)
 - [SK DEVOCEAN — SQS 연재 (소개, Terraform, Spring JMS, Spring Cloud)](https://devocean.sk.com/experts/techBoardDetail.do?ID=163294)
