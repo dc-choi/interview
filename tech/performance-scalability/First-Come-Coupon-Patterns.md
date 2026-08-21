@@ -33,7 +33,20 @@ aliases: ["First-Come Coupon Patterns", "선착순 쿠폰 패턴", "선착순 �
 - 충돌 시 재시도. 경쟁이 적으면 빠름
 - 경쟁이 커질수록 충돌과 재시도가 늘어 실제 처리량이 떨어질 수 있다.
 
-### 3. Redis `INCR`/`DECR`
+### 3. 조건부 원자적 UPDATE (affected rows 판정)
+
+```sql
+UPDATE course
+SET current_count = current_count + 1
+WHERE id = :courseId AND current_count < capacity;
+```
+
+- 한도 검증과 증가를 한 문장으로 묶어 조회와 쓰기 사이의 check-then-act 틈 자체를 없앤다. 변경 행 수가 1이면 성공, 0이면 마감이다.
+- 잠금 읽기(`FOR UPDATE`) 선행이 없어 왕복하는 문장 수가 줄고, 대기하던 UPDATE는 선행 커밋 이후의 현재 값으로 조건을 재평가한다. 같은 행의 X 락 직렬화 자체는 남는다.
+- 별도 인프라 없이 단일 DB로 닫히므로, 정원과 재고처럼 불변식을 WHERE 하나로 표현할 수 있으면 첫 후보다. 중복 신청 방지는 신청 테이블의 `(user_id, course_id)` UNIQUE와 짝으로 걸고, 카운터 증가와 신청 insert는 한 트랜잭션으로 묶는다.
+- 패턴 상세는 [[DML-Conflict-and-Batch-Patterns|MySQL DML 충돌 패턴]]과 [[Lock|DB Lock]] 참고.
+
+### 4. Redis `INCR`/`DECR`
 
 - Redis는 명령 하나를 다른 명령이 끼어들지 않는 실행 경계로 처리한다. 네트워크 I/O 스레딩 여부와 명령의 원자성은 구분해야 한다.
 - `INCR`의 반환값으로 요청마다 서로 다른 순번을 얻을 수 있다.
@@ -58,7 +71,7 @@ Lua 스크립트는 실행 중 다른 명령이 끼어들지 않지만 RDBMS처�
 
 Redis Cluster에서는 한 Lua 스크립트가 접근하는 key들이 같은 hash slot에 있어야 한다. `participants:{eventId}`와 `count:{eventId}`처럼 같은 hash tag를 사용한다.
 
-### 4. Redis 기반 분산 락(Redlock)
+### 5. Redis 기반 분산 락(Redlock)
 
 - 더 복잡한 비즈니스 로직(한도 + 중복 참여 금지 등)이 필요할 때
 - 단순 카운팅에는 과함. `INCR`이 이미 원자적이므로 락 불필요
@@ -127,7 +140,8 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 
 | 규모, 요구 | 추천 조합 |
 |---|---|
-| 단일 DB, 경합이 감당 가능한 단순 흐름 | DB Pessimistic Lock |
+| 한도 불변식을 WHERE 하나로 표현 가능 | 조건부 원자적 UPDATE + UNIQUE 중복 방지 |
+| 단일 DB, 읽고 판단할 상태가 여러 개인 흐름 | DB Pessimistic Lock |
 | 짧은 원자 판정과 빠른 거절이 중요 | Redis INCR + DB 직접 insert |
 | 피크에 커넥션 풀 압박 | Redis INCR + Kafka + Consumer |
 | 공정 순번 필수 | Redis Sorted Set 대기열 |
@@ -136,6 +150,7 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 ## 흔한 실수
 
 - `SELECT COUNT + INSERT` 순차 실행 → 초과 발급
+- `@Transactional`만 붙이면 동시 접근이 막힌다는 오해 — 원자성은 all-or-nothing이지 격리가 아니다 ([[Lock|DB Lock]])
 - Redis `INCR`은 했지만 실패 시 `DECR` 안 함 → 카운터가 실제보다 커짐
 - Kafka에 produce만 하고 retry 정책 없음 → 네트워크 실패 시 유실
 - Consumer가 동기 DB 쓰기만 하고 멱등 처리 없음 → 재실행 시 중복 발급
@@ -162,6 +177,7 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 - [실습으로 배우는 선착순 이벤트 시스템, Consumer 사용하기 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=158584)
 - [실습으로 배우는 선착순 이벤트 시스템, 발급가능한 쿠폰개수를 1인당 1개로 제한하기 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=159888)
 - [실습으로 배우는 선착순 이벤트 시스템, 쿠폰을 발급하다가 에러가 발생하면 어떻게 하나요? — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=163908)
+- [선착순 수강신청 동시성 이슈 — Nextree 기술블로그](https://www.nextree.io/seoncagsun-sugang-sinceong-dongsiseong-isyu/)
 
 ## 관련 문서
 - [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처]]

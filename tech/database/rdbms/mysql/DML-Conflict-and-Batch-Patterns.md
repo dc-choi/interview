@@ -109,6 +109,7 @@ LIMIT 5000;
 - [MySQL 8.4 Reference Manual, Locks Set by Different SQL Statements in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html)
 - [DB Lock으로 동시성을 해결하려다 Deadlock을 만난 이야기 — velog](https://velog.io/@joona95/DB-Lock%EC%9C%BC%EB%A1%9C-%EB%8F%99%EC%8B%9C%EC%84%B1%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-Deadlock%EC%9D%84-%EB%A7%8C%EB%82%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0)
 - [데드락을 해결하려다, 락을 줄이게 된 이야기 — 여기어때 기술블로그](https://techblog.gccompany.co.kr/%EB%8D%B0%EB%93%9C%EB%9D%BD%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-%EB%9D%BD%EC%9D%84-%EC%A4%84%EC%9D%B4%EA%B2%8C-%EB%90%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0-97bf2b0c91b6)
+- [선착순 수강신청 동시성 이슈 — Nextree 기술블로그](https://www.nextree.io/seoncagsun-sugang-sinceong-dongsiseong-isyu/)
 - [MySQL 8.4 Reference Manual, INSERT ON DUPLICATE KEY UPDATE](https://dev.mysql.com/doc/refman/8.4/en/insert-on-duplicate.html)
 - [MySQL 8.4 Reference Manual, REPLACE](https://dev.mysql.com/doc/refman/8.4/en/replace.html)
 - [MySQL 8.4 Reference Manual, UPDATE](https://dev.mysql.com/doc/refman/8.4/en/update.html)
