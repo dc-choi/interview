@@ -37,7 +37,7 @@ aliases: ["SQS Consumer Lambda vs ECS", "Lambda vs ECS 워커", "SQS 컨슈머 �
 
 ```typescript
 import { Injectable, OnApplicationShutdown, Logger } from '@nestjs/common';
-import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand, Message } from '@aws-sdk/client-sqs';
+import { SQSClient, ReceiveMessageCommand, ChangeMessageVisibilityCommand, DeleteMessageCommand, Message } from '@aws-sdk/client-sqs';
 
 @Injectable()
 export class OrderConsumer implements OnApplicationShutdown {
@@ -48,18 +48,30 @@ export class OrderConsumer implements OnApplicationShutdown {
 
   async start() {
     while (this.running) {
+      const receiveStartedAt = Date.now();
       const { Messages } = await this.sqs.send(new ReceiveMessageCommand({
         QueueUrl: this.queueUrl, MaxNumberOfMessages: 10, WaitTimeSeconds: 20, // long polling
       }));
       if (!Messages?.length) continue;
-      await Promise.all(Messages.map((m) => this.handle(m))); // task당 동시 처리 = 백프레셔
+      await Promise.all(Messages.map((m) => this.handle(m, receiveStartedAt))); // task당 동시 처리 = 백프레셔
     }
   }
 
-  private async handle(message: Message) {
+  private async handle(message: Message, receiveStartedAt: number) {
     this.inFlight++;
     try {
-      await this.orderService.process(JSON.parse(message.Body!)); // 도메인 서비스 재사용
+      const result = await this.orderService.process(JSON.parse(message.Body!));
+      if (result.kind === 'BUSY') {
+        const seconds = Math.max(1, Math.ceil((result.deferUntil.getTime() - Date.now()) / 1000));
+        const elapsed = Math.ceil((Date.now() - receiveStartedAt) / 1000);
+        const remainingLimit = Math.max(0, 43200 - elapsed - 1);
+        if (remainingLimit > 0) {
+          await this.sqs.send(new ChangeMessageVisibilityCommand({
+            QueueUrl: this.queueUrl, ReceiptHandle: message.ReceiptHandle!, VisibilityTimeout: Math.min(remainingLimit, seconds),
+          }));
+        }
+        return; // 다른 owner의 lease가 끝나기 전에는 다시 받지 않고, 삭제도 하지 않음
+      }
       await this.sqs.send(new DeleteMessageCommand({              // 성공해야만 삭제
         QueueUrl: this.queueUrl, ReceiptHandle: message.ReceiptHandle!,
       }));
@@ -74,6 +86,8 @@ export class OrderConsumer implements OnApplicationShutdown {
   }
 }
 ```
+
+`orderService.process()`의 반환 계약도 ACK의 일부다. 새로 `COMPLETED`가 됐거나 이미 `COMPLETED`인 경우만 `ACK`, 다른 owner의 신선한 `PROCESSING`은 남은 lease와 jitter가 반영된 `deferUntil`을 포함한 `BUSY`를 반환한다. 컨슈머는 `BUSY`면 visibility만 연장하고 삭제하지 않는다. 연장값은 `ReceiveMessage` 요청 직전부터 흐른 시간을 12시간에서 빼고 1초 여유를 둔 남은 한도 이하로 제한한다. 더 긴 lease는 다음 수신에서 다시 미루며, 그 수신도 `maxReceiveCount` 예산에 포함한다. 상세 상태 전이는 [[At-Least-Once|At-Least-Once]]를 따른다.
 
 배치, visibility 연장, 에러 처리를 직접 짜기 싫으면 `sqs-consumer`(BBC)를 NestJS 서비스로 감싸는 패턴도 흔하다. 다만 NestJS 래퍼들은 유지보수 상태가 들쭉날쭉하니 최근 커밋과 버전 호환을 확인하고 도입한다.
 

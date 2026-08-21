@@ -11,7 +11,7 @@ aliases: ["내 기술 답변 마스터 — 관측, 인프라, 아키텍처", "My
 
 ## 카드 5: Grafana/Prometheus/Loki 관측 인프라
 
-**결론**: 로그, 메트릭 수집 + Grafana Alerting으로 **SLO 기반 경보 정책 정립**(Error rate 1% `for:5m`, Event Loop Lag 100ms 3분 등) → 병목 조기 탐지 + 장애 대응 속도 향상.
+**결론**: 로그, 메트릭 수집 + Grafana Alerting으로 **서비스와 인프라 정적 임계 경보를 운영**(Error rate 1% `for:5m`, Event Loop Lag 100ms 3분 등) → 병목 조기 탐지 + 장애 대응 속도 향상. SLO 경보로 개선한다면 사용자 영향 SLI와 목표 기간을 정한 뒤 multi-window, multi-burn-rate를 별도로 적용.
 
 **실제 운영 범위**: `x-request-id`를 JSON 로그에 남기고 prom-client 메트릭은 method, 정규화한 route, status만 제한된 label로 사용하며 latency는 request-duration histogram으로 관측. OpenTelemetry trace pipeline과 exemplar를 실제로 구축했다는 근거는 현재 정본에 남아 있지 않다.
 
@@ -28,19 +28,19 @@ aliases: ["내 기술 답변 마스터 — 관측, 인프라, 아키텍처", "My
 
 **꼬리 대비**:
 - **"RED vs USE?"** → RED(Rate/Errors/Duration, API 서비스) / USE(Utilization/Saturation/Errors, DB, 큐 리소스)
-- **"임계값을 어떻게 정하나?"** → SLO 역산. 사용자 영향 기준 → 에러 예산(예: 99.9% = 월 43분) → 임계 설정
+- **"임계값을 어떻게 정하나?"** → 에러율과 레이턴시는 사용자 영향 SLI, 목표 기간과 SLO에서 burn rate를 역산. Event Loop Lag, CPU, Replica Lag 같은 원인 지표는 정상 구간의 baseline과 포화 지점을 바탕으로 별도 임계 설정
 - **"카디널리티 폭발은?"** → 실제 운영에서는 userId, traceId 같은 고카디널리티 값을 Prometheus label에 넣지 않고 request ID를 로그 본문으로 추적했습니다. 트레이싱까지 확장하면 메트릭은 exemplar, 로그는 본문 또는 structured metadata로 연결합니다.
 - **새벽에 장애가 나면 어떤 순서로 대응하나?**: 가장 먼저 상황을 팀에 전파합니다. 혼자 조용히 고치려다 영향 범위나 다른 작업과의 충돌을 놓치는 게 더 큰 리스크라, 무엇이 어디서 터졌는지 먼저 공유하고 대응을 시작합니다. 그다음 지표로 에러가 어디서 나는지 좁혀 우선 비즈니스를 정상으로 되돌리는 임시 조치나 버그 수정을 하고, 원인과 조치 내역은 급한 불을 끈 뒤 포스트모템으로 정리해 공유합니다. 전파를 먼저 두는 이유는 알림이 사람을 부르는 순간 가장 비싼 게 시간이라, 한 명이 더 빨리 붙거나 영향받는 쪽이 미리 대비하게 만드는 게 복구를 앞당기기 때문입니다.
 - **"포스트모템?"** → 타임라인(발생→감지→대응→복구) + 근본 원인 + 영향 범위 + 재발 방지 액션. blameless 원칙
-- **"통계 알림이 단발 크리티컬 에러를 가리지 않나?"** (키노 1차 실전) → 맞음. SLO 퍼센트 기반은 모수가 크면 **단 한 건(결제나 발주 실패)을 평균에 묻음**. 그래서 알림을 **이원화** — ① 통계형(에러율과 레이턴시 SLO를 Grafana Alerting으로) ② **크리티컬 건별**(결제나 발주는 1건이라도 즉시 Slack 웹훅으로 사람 호출). 기계가 사람을 부르는 알림은 통계 도구가 아니라 **이벤트 트리거**로 따로 둠
+- **"통계 알림이 단발 크리티컬 에러를 가리지 않나?"** (키노 1차 실전) → 맞음. 비율 기반 경보는 모수가 크면 **단 한 건(결제나 발주 실패)을 평균에 묻음**. 당시에는 ① 에러율과 레이턴시의 지속 임계 경보 ② **크리티컬 건별** Slack 웹훅을 분리했고, SLO burn-rate는 지금 다시 설계할 때의 개선안으로 구분
 
 ## 카드 6: Docker 멀티스테이지 + ECS Fargate 전환 (3단계 점진)
 
-**결론**: 단일 NGINX 서버 → **CloudFront + ALB(L7 웹) + NLB(L4 IoT 고정 IP) + ECS Fargate** 아키텍처로 전환. Docker 멀티스테이지로 이미지 **909MB → 513MB (43% 감소)**, 배포 시간 **3분 10초 → 2분 20초 (26% 단축)**. Read Replica로 조회 API 40% 개선, DB CPU 30% 감소.
+**결론**: 단일 NGINX 서버 → **CloudFront + ALB(L7 웹) + NLB(L4 IoT 고정 IP) + ECS Fargate** 아키텍처로 전환. Docker 멀티스테이지로 이미지 **909MB → 513MB (43% 감소)**, 배포 시간 **3분 10초 → 2분 20초 (26% 단축)**. Read Replica로 조회와 쓰기 부하를 분리했지만 조회 40%, DB CPU 30% 수치는 baseline, 기간과 측정 방법이 현재 기록에 없어 정확한 성과 수치로 사용하지 않음.
 
 **3단계 점진 전환**: ① **컨테이너+LB**(ALB/NLB 이중 + CloudFront + Rolling 무중단) → ② **이벤트 분리**(EventBridge+SQS) → ③ **DB 읽기/쓰기 분리**(실제: Prisma 조회를 RDS Read Replica로 라우팅, 정확한 client 분기 구현은 현재 기록에 없음). transaction과 쓰기 직후 읽기는 Primary에 고정. 지금 구현한다면 primary/replica 별도 client를 쓰거나, Prisma 7+에서 Driver Adapter 또는 Accelerate와 `@prisma/extension-read-replicas`를 사용.
 
-**왜 ALB + NLB 이중**: IoT 디바이스가 펌웨어에 IP 하드코딩 → **NLB의 고정 IP(Elastic IP) 필요**. 웹 트래픽은 ALB로 경로 기반 라우팅. 두 종류 트래픽을 한 LB로 못 묶음.
+**왜 ALB + NLB 이중**: IoT 디바이스가 펌웨어에 IP 하드코딩 → **NLB의 고정 IP(Elastic IP) 필요**. 웹 트래픽은 ALB로 경로 기반 라우팅. 당시에는 요구와 운영 경계를 분리했지만 두 트래픽을 한 구조로 조합하는 것이 불가능한 것은 아니며, 필요하면 NLB의 ALB target 구성을 검토.
 
 **왜 Rolling (vs Blue/Green)**: Rolling은 점진 교체 (리소스 절약), Blue/Green은 환경 2배 필요. **비용 고려해 Rolling 선택**. 즉시 롤백 필요한 운영 단계 도달하면 Blue/Green 재고.
 
@@ -104,10 +104,10 @@ src/orders/
 **Redis 죽으면**: 캐시는 보조 계층이라 DB fallback. 단 **캐시 아발란체** 위험 → DB 커넥션 풀 제한 + rate limiting으로 보호.
 
 **자료구조별 실전 활용**:
-- **Sorted Set** — 랭킹(`ZADD leaderboard 1500 account:42`), 시간 기반 큐(score=timestamp로 만료 처리), 요청 timestamp를 score로 저장하고 지난 항목을 제거하는 sliding-window log rate limit
-- **Stream** — Kafka-lite. 그룹 컨슈머 + ACK. 작은 규모 이벤트 버스 (Kafka 과투자일 때)
+- **Sorted Set** — 랭킹(`ZADD leaderboard 1500 account:42`), 시간 기반 큐와 sliding-window log rate limit. 멤버별 자동 TTL은 없으므로 밀리초 epoch를 score로 저장하고 `ZREMRANGEBYSCORE`로 지난 항목을 명시적으로 정리
+- **Stream** — append-only log, consumer group, ACK와 replay가 필요한 작은 이벤트 흐름에 사용. Kafka와 달리 persistence, replication과 장애 복구 보장 경계는 별도 검토
 - **HyperLogLog** — 대규모 고유 방문자 수를 최대 약 12KB 상태로 근사. 원소 자체와 정확한 목록은 복원할 수 없음
-- **Bitmap** — 출석/플래그 (1년 365비트 = 46바이트로 user별 출석)
+- **Bitmap** — 출석/플래그 (1년 365비트 = 46바이트 payload, Redis key와 객체 오버헤드는 별도)
 - **Hash** — 객체 (`HSET account:42 tier 4`) — String 다중 키보다 메모리 효율
 
 **꼬리**:

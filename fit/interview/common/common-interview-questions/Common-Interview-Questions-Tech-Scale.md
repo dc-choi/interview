@@ -24,7 +24,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 - **외부 API Rate Limit 초과**
 
 **조치 방법 (단기 → 장기)**
-1. **즉시**: 스케일 아웃 (WAS 인스턴스 증설), DB 리드 레플리카 추가, CDN 캐시 TTL 상향
+1. **즉시**: 병목을 측정한 뒤 WAS를 스케일 아웃하고 CDN 캐시 TTL을 조정. DB가 읽기 병목이며 stale read를 허용할 때만 리드 레플리카를 추가하고, read-after-write는 primary로 고정
 2. **단기**: Redis 캐시 전면 도입, N+1 쿼리 제거, Connection Pool 튜닝
 3. **중기**: 비동기 처리 전환 (Kafka/SQS로 오프로딩), 핫 경로 프로파일링
 4. **장기**: 읽기/쓰기 분리, 샤딩, 도메인 분리(MSA), 오토스케일링 규칙 정교화
@@ -42,7 +42,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 > 특정 상품의 구매 이력이 있는 회원에게 설문을 요청하고 제출 시 스타벅스 기프티콘을 자동 지급합니다. 하루 동안 진행되고 오전 9시 정시에 오픈, 기프티콘 소진 시 종료되는 이벤트의 아키텍처를 어떻게 설계할까요?
 
 **핵심 요구사항 분해**
-- **폭발적 동시 접근** (오픈 시각 직후 쏠림) — 초당 수만 TPS
+- **폭발적 동시 접근** (오픈 시각 직후 쏠림) — 초당 수만 TPS는 요구사항과 과거 지표를 확인하기 전의 가정
 - **한정 수량** (재고 정확도 필요 — 초과 지급 불가)
 - **중복 지급 방지** (한 회원 1회)
 - **외부 API 의존** (기프티콘 발송 서비스)
@@ -50,23 +50,20 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 **아키텍처 구성 요소**
 
-1. **진입 제어**: CDN + Rate Limiting (IP/UID 단위), 대기열 시스템 (Redis Sorted Set 기반 자체 큐 또는 관리형 대기실). API 게이트웨이(Netflix Zuul 등)는 대기열이 아니라 대기 토큰을 검증하는 집행 지점
-2. **자격 검증** (구매 이력 + 1회 제한): Redis로 "이미 참여" 플래그 선행 체크 (DB 부하 감소)
-3. **재고 차감**
-   - **Redis `DECR` 기반 원자적 차감** (INCR/DECR은 싱글 스레드 보장 → 동시성 안전)
-   - 음수 체크 후 실패 시 즉시 거절
-   - Lua 스크립트로 "참여 여부 확인 + 재고 차감"을 원자적으로 묶음
-4. **실제 지급 (비동기)**
-   - 차감 성공 시 Kafka/SQS에 지급 요청 발행
-   - Consumer가 외부 기프티콘 API 호출 → 실패 시 재시도 / DLQ
-   - [[Transactional-Outbox|Transactional Outbox]] 패턴으로 DB 저장과 메시지 발행 원자성 확보
-5. **멱등성**: Idempotency Key (회원ID + 이벤트ID) 로 중복 제출 차단
-6. **모니터링**: 재고, 참여자, 실패율, 큐 적체 실시간 대시보드
+1. **기본 접수 경로**: 구매 이력을 확인한 뒤 하나의 DB transaction에서 조건부 재고 차감, 참여 행, outbox 행을 함께 확정
+   - `UNIQUE(event_id, user_id)`와 안정적인 Idempotency Key(`event_id:user_id`)로 먼저 참여 행 insert를 시도. 중복이면 rollback하고 기존 결과를 반환
+   - 신규 참여에만 `UPDATE event_inventory ... SET remaining = remaining - 1 WHERE event_id = ? AND remaining > 0`을 실행하고, 한 행을 갱신한 경우에만 진행
+   - 참여 상태를 `accepted`로 저장하고 같은 transaction에 지급 요청 outbox 행을 insert. 재고 부족이면 transaction 전체를 rollback
+2. **실제 지급 (비동기)**: Outbox publisher가 Kafka/SQS에 적어도 한 번 전달하고, provider가 지원하면 consumer는 같은 Idempotency Key로 외부 기프티콘 API를 호출. 지원하지 않으면 지급 상태 조회와 대사 절차로 중복과 불명확한 결과를 닫음
+   - 성공하면 `issued`, 재시도 중이면 `retrying`, 최종 실패면 `failed` 상태를 남김
+   - 재시도 횟수 제한과 DLQ를 두고, `accepted`인데 `issued`가 아닌 건을 주기적으로 대사해 재발행 또는 운영자 처리
+3. **진입 제어는 선택 사항**: peak RPS, DB lock wait, connection pool, 외부 API quota를 측정해 DB 접수 경로가 버티지 못할 때만 Redis 기반 대기열 또는 admission control을 추가. Redis는 도착을 평탄화할 뿐 DB 재고와 원자적으로 묶지 않으며, 최종 재고 정본은 DB transaction
+4. **모니터링**: 남은 재고, transaction 충돌, outbox lag, `accepted/issued/failed` 수, DLQ와 대사 지연을 대시보드와 경보로 관리
 
 **트레이드오프**
-- DB 락 기반 차감은 정확하지만 TPS 한계 → Redis 원자 연산으로 선차감
-- "선차감 후 실제 지급" 구조는 실패 시 보상 트랜잭션(재고 복구) 필요
-- 강한 일관성 vs 가용성 → **재고만 강하게, 알림/지급은 eventually**
+- 기본 DB transaction은 재고와 중복 접수의 정합성이 명확하지만 같은 재고 행의 경합이 처리량을 제한할 수 있음
+- 측정된 병목이 있을 때만 대기열이나 admission control로 접수량을 조절. 이것은 정합성 수단이 아니라 부하 완화 수단
+- 메시지와 외부 지급은 적어도 한 번 처리될 수 있으므로 Idempotency Key, 상태, 재시도와 대사가 필요
 
 > 참고: [[Delivery-Semantics|Delivery Semantics]], [[Idempotency-Key|Idempotency Key]], [[At-Least-Once|At-Least-Once]], [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처]]
 
@@ -87,9 +84,10 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 7. **구조 개선**: 조회용 테이블 비정규화 (CQRS), Materialized View / Summary Table
 8. **파티셔닝**: 회원 단위 / 날짜 단위 파티션 (최근 데이터만 뜨거움)
 9. **샤딩**: 회원 단위 수평 분할 (라우팅 복잡도 증가)
-10. **NoSQL 검토**: 위 모든 방법으로도 안 되면 → DynamoDB/Cassandra. **마지막 카드**
 
-**답변 요령**: 면접관은 순서 있게 옵션을 나열하고 트레이드오프를 이해하는지 본다. "샤딩부터 하자"는 답변은 감점.
+**별도 데이터 모델 분기**: NoSQL은 위 단계를 모두 소진한 뒤의 10단계가 아니다. 데이터 모델과 접근 패턴, 일관성 및 확장 요구가 DynamoDB/Cassandra 같은 모델에 더 맞는지 초기에 별도로 비교한다.
+
+**답변 요령**: RDBMS 경로에서는 측정 결과에 따라 저비용 옵션부터 검토하고 각 트레이드오프를 설명한다. 근거 없이 "샤딩부터 하자"는 답변은 감점.
 
 > 참고: [[데이터&저장소(Data&Storage)|데이터&저장소]], [[성능&확장성(Performance&Scalability)|성능&확장성]]
 

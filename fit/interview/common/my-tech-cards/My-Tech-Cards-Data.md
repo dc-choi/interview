@@ -49,8 +49,8 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 **꼬리 (핵심)**:
 - **"Kafka가 더 맞는 순간?"** → 이벤트 리플레이, 순서 보장(파티션 내), 초당 수만 건 이상
 - **"DB 저장은 됐는데 이벤트 발행 실패? (Dual Write)"** → **Transactional Outbox 패턴**. INSERT + outbox INSERT를 같은 DB 트랜잭션 → 별도 Relay 프로세스가 outbox 폴링 후 발행. NestJS `@Cron('*/5 * * * * *')` 5초 폴링. 월 10만 발주 규모는 CDC(Debezium) 대비 폴링이 단순, 충분
-- **"Lambda 안 쓴 이유?"** → Lambda는 cold start로 Prisma 커넥션 풀 관리 어려움(RDS Proxy로 해결 가능하나 추가 비용). ECS 워커는 **NestJS 도메인 로직(Prisma 모델, 발주 비즈니스) 그대로 재사용** + 단일 코드베이스, 단일 배포
-- **"아웃박스도 큐, SQS도 큐 아닌가? 폴링과 인터럽트가 섞였는데 왜 SQS 없이 워커 직접 안 붙이나?"** (키노 1차 실전, 가장 크게 흔들린 질문) → ⓐ **단일 서버면** 인메모리 EventEmitter로 충분하지만, **ECS Fargate로 스케일 아웃하면 이벤트가 발생한 인스턴스 안에만 머물러 다른 인스턴스로 전파가 안 됨** → 인스턴스 경계를 넘으려면 외부 브로커가 필연. ⓑ 아웃박스와 SQS는 **역할이 다름** — 아웃박스는 DB 트랜잭션과 원자적인 **발행 보장**(듀얼라이트 유실 방지), SQS는 **소비 분산과 재시도, DLQ**(여러 워커가 경쟁 소비, 실패 격리). 큐가 두 벌이 아니라 발행 신뢰 계층과 소비 분산 계층이 나뉜 것. ⓒ 폴링(아웃박스 릴레이가 DB를 읽는 단계)과 푸시(SQS가 워커로)는 **각 경계에 맞춘 선택**이지 혼재가 아님
+- **"Lambda 안 쓴 이유?"** → Lambda도 SQS 소비에 적합하지만, 당시에는 **NestJS 도메인 로직과 Prisma 모델을 같은 코드베이스와 배포 경로에서 재사용**하고 DB 연결 수와 워커 동시성을 직접 제한하기 위해 ECS 워커를 선택. Lambda라면 이벤트 소스 매핑의 최대 동시성과 DB 연결 예산을 함께 제한하고 필요할 때 RDS Proxy를 검토
+- **"아웃박스도 큐, SQS도 큐 아닌가? 폴링이 두 번인데 왜 SQS 없이 워커 직접 안 붙이나?"** (키노 1차 실전, 가장 크게 흔들린 질문) → ⓐ **단일 서버면** 인메모리 EventEmitter로 충분하지만, **ECS Fargate로 스케일 아웃하면 이벤트가 발생한 인스턴스 안에만 머물러 다른 인스턴스로 전파가 안 됨** → 인스턴스 경계를 넘으려면 외부 브로커가 필요. ⓑ 아웃박스와 SQS는 **역할이 다름** — 아웃박스는 DB 트랜잭션과 함께 기록해 **발행 의도 유실을 방지**하고, SQS는 **소비 분산과 재시도, DLQ**를 제공. ⓒ 아웃박스 Relay는 DB를 폴링하고 ECS 워커는 SQS `ReceiveMessage` long polling으로 가져온다. 서로 다른 경계의 두 pull이며 SQS가 워커로 push하는 구조가 아님
 - **"한 발주 안에서도 단계를 다 같은 흐름에 묶나?"** → 한 발주 안에서도 단계마다 중요도가 달라서 처리 순서를 분리했습니다. 공급사 발주와 고객사 수주처럼 비즈니스가 곧바로 의존하는 앞단은 먼저 확정하고, 발주서나 일정 뒤에 나오는 거래명세서 같은 후속 산출물은 이벤트로 떼어내 백그라운드에서 처리하며 실패하면 재시도와 전송 실패 처리로 따로 관리합니다. 모든 단계를 한 동기 흐름에 묶으면 뒷단 하나가 실패할 때 앞단까지 전체가 롤백되는데, 정작 중요한 앞단은 이미 성공시킬 수 있는 일이라 그렇게 묶지 않았습니다.
 
 > ⚠️ **상태 머신 8단계 흐름, visibility timeout, 알림 채널 중복 방지, SQS FIFO vs Pub/Sub, CDC vs Outbox**: [[My-Tech-Cards-Extended#카드 2 EventBridge+SQS 심화|Extended]]
@@ -75,7 +75,7 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 
 ## 카드 4: Prisma → MySQL SubQuery API 응답 90% 개선
 
-**결론**: **Prisma는 lazy loading 없어서 전통적 N+1 아님**. 실제 문제는 **app-level join 방식** — include 시 SQL JOIN이 아니라 관계마다 별도 쿼리 발생 → 조인 엔티티 늘수록 쿼리 N개씩 증가. **평균 100ms → 1000ms 저하**. 로그 분석으로 4개 개별 쿼리 확인 → 공식 문서에서 **`relationLoadStrategy: 'join'`** 발견 → 단일 correlated subquery + JSON 함수 형태로 통합해 **82~90% 성능 개선**. **옵션 이름이 생성 SQL 형태를 보장하지 않는다** — MySQL에선 DB-level JOIN이 아니라 subquery로 내려가는 것을 실행계획으로 확인하고 적용. (조건: `relationJoins`는 Preview 기능이라 `previewFeatures` 활성이 전제)
+**결론**: **Prisma는 lazy loading 없어서 전통적 N+1 아님**. 당시 사용한 Prisma 구성은 `relationJoins`를 활성화하지 않아 **app-level join 방식**으로 include 관계마다 별도 쿼리가 발생했고, 조인 엔티티가 늘며 **평균 100ms → 1000ms 저하**. 로그 분석으로 4개 개별 쿼리 확인 → 공식 문서에서 **`relationLoadStrategy: 'join'`** 발견 → 단일 correlated subquery + JSON 함수 형태로 통합해 **82~90% 성능 개선**. 현재 `relationJoins`를 활성화한 Prisma에서는 `join`이 기본이고 별도 쿼리는 `query` 전략이므로, 당시 버전과 설정에 한정한 경험이다. **옵션 이름이 생성 SQL 형태를 보장하지 않는다** — MySQL에선 DB-level JOIN이 아니라 subquery로 내려가는 것을 실행계획으로 확인하고 적용. (조건: `relationJoins`는 Preview 기능이라 `previewFeatures` 활성이 전제)
 
 **왜 ORM 안 버리고**: 타입 안정성, 마이그레이션 관리, 생산성. **성능 크리티컬한 부분만 Raw Query로 전환**. 대부분 CRUD는 ORM이 충분.
 

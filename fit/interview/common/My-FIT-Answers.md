@@ -9,6 +9,7 @@ aliases: ["내 FIT 답변 마스터", "My FIT Answers"]
 
 > **본문은 여기에만**. 모든 면접에서 자주 나오는 핵심 13개. 보조 11개는 [[My-FIT-Answers-Extended|Extended]].
 > 원천 가이드: [[FIT-Framework|FIT 프레임워크]], [[Self-Analysis|WHY 시드]], [[Developer-Interview-13-Questions|13Q 의도]], [[Developer-Interview-Signals|시그널]], [[Sensitive-Question-Answers|민감 질문 치환]]. 본인 화자 톤은 여기.
+> 현재 이직 사이클은 키노라이츠 입사로 종료됐다. 다음 이직 준비가 실제로 시작되면 현재 회사와 이직 사유를 다시 확인한 뒤 이 답변을 재사용한다.
 
 ## 0. 왜 백엔드 (정체성)
 
@@ -28,11 +29,11 @@ aliases: ["내 FIT 답변 마스터", "My FIT Answers"]
 
 **단점: 규모 있는 시스템, 표준 인프라를 직접 운영해본 경험이 얇다**.
 - 트라이포드랩 발주 자동화 시 Kafka 검토했으나 규모, 비용 고려해 EventBridge+SQS 결정 — 판단은 했으나 직접 운영 기회는 없었음
-- **보완**: 학습한 내용을 '언제, 왜 쓰는지' 기준으로 문서화. 메시지 브로커 4종(RabbitMQ, BullMQ, SQS, Kafka) 성능, 운영 부담, 유스케이스, 선택 기준 비교 정리. **이벤트 아키텍처 직접 설계로 전달 보장, 멱등성 본질 체화 → 도구 전이는 빠를 것**
+- **보완**: 학습한 내용을 '언제, 왜 쓰는지' 기준으로 문서화. 메시지 브로커 4종(RabbitMQ, BullMQ, SQS, Kafka)의 성능, 운영 부담, 유스케이스와 선택 기준을 비교 정리. EventBridge와 SQS에서 전달 보장, 멱등성, 상태 전이를 설계한 경험을 바탕으로 Kafka를 학습하되, partition, offset, rebalance, EOS가 장애 복구와 운영에 주는 의미는 별도로 익혀야 함
 
 **한 흐름**: 구조로 파고드는 성향은 있으나 무대가 중소 규모라 대규모 인프라는 못 다뤄봤음 → 그 파고드는 성향을 지금 인프라 학습에 쓰는 중.
 
-**꼬리**: "Kafka 안 써봤는데 가능?" → EventBridge, SQS로 DLQ, 멱등성, status 머신까지 다룸. 메시징의 본질은 같고 도구 문법만 익히면 됨 / "작은 회사만 선호?" → 0→1, 풀스택 범위는 충분히 경험, 다음 단계로 규모 있는 환경 (지원 동기와 연결)
+**꼬리**: "Kafka 안 써봤는데 가능?" → EventBridge, SQS로 DLQ, 멱등성, 상태 전이까지 다뤘습니다. 다만 Kafka 전이는 도구 문법만 바꾸는 일이 아니며, partition, offset commit, rebalance, EOS가 장애 복구와 운영에 주는 차이를 별도로 학습하고 실제 책임에서 검증하겠습니다. / "작은 회사만 선호?" → 0→1, 풀스택 범위는 충분히 경험, 다음 단계로 규모 있는 환경 (지원 동기와 연결)
 
 ## 2. 갈등, 소통 (일정, 우선순위 조율 패턴)
 
@@ -83,13 +84,15 @@ aliases: ["내 FIT 답변 마스터", "My FIT Answers"]
 
 > [[Sensitive-Question-Answers]] 6번 시드. 본인 깊이 어필 카드라 거의 확실히 받음.
 
-> "단순 코드 생성을 넘어 **개발 파이프라인 자체로 재설계**해서 씁니다. Claude Code 위에 **계층형 CLAUDE.md로 컨텍스트 분할**, MCP(context7)로 라이브러리 최신 문서, **Subagent 3종**(api-documenter, security-reviewer, performance-analyzer), **PostToolUse Hook**으로 편집 파일만 lint, prettier, **Stop Hook 자가 리뷰**로 작업 종료 시 버그, 품질 점검 자동화."
+> "단순 코드 생성을 넘어 **개발 파이프라인 자체로 재설계**해서 씁니다. 당시 팀에서는 Claude Code 위에 **계층형 CLAUDE.md로 컨텍스트 분할**, MCP(context7)로 라이브러리 최신 문서, **Subagent 3종**(api-documenter, security-reviewer, performance-analyzer), **PostToolUse Hook**으로 편집 파일만 lint, prettier, **Stop Hook 자가 리뷰**로 작업 종료 시 버그, 품질 점검을 자동화했습니다."
+
+**현재 개인 정본**: Claude와 Codex를 함께 쓰며 저장소 규칙과 사용자 컨텍스트는 `AGENTS.md`를 정본으로 둔다. Claude는 `CLAUDE.md` import로, Codex는 `AGENTS.md`를 직접 읽는다.
 
 **원칙**: **설계, 의사결정은 직접, 반복 작업은 AI와 협업**.
 
 **꼬리**:
-- "AI 추천이 틀린 적은?" → EventBridge vs Kafka 선택 시 AI는 일반 비교만, 도메인 특성(발주 월 10만 건) 정량 비교는 직접 — 99.7% 비용 절감
-- "Cursor는?" → Claude Code 기반 (Cursor는 IDE 통합 강점, 본인은 터미널 + 하네스 우선)
+- "AI 추천이 틀린 적은?" → EventBridge와 MSK 선택 시 AI는 일반 비교만 했고, 도메인 특성과 당시 산정 조건으로 비용을 직접 비교했습니다. 이는 그 조건의 비용 비교이지 검증된 총비용 99.7% 절감 성과로 말하지 않습니다.
+- "Cursor는?" → 당시에는 Claude Code 중심이었습니다. Cursor는 IDE 통합 강점이 있고, 본인은 터미널과 하네스 중심 흐름을 우선했습니다.
 
 ## 11. 워라밸, 강도 ★ (역질문 패턴)
 
@@ -107,7 +110,7 @@ aliases: ["내 FIT 답변 마스터", "My FIT Answers"]
 
 ## 13. 개발 환경, 도구 ★
 
-> "터미널 중심. **Claude Code를 IDE 수준으로 커스터마이징** — 계층형 CLAUDE.md, MCP, Subagent 3종, PostToolUse Hook, Stop Hook 자가 리뷰. dotfile은 zsh + tmux + neovim 통일. 회사, 개인 프로젝트 모두 같은 환경에서 즉시 작업 가능."
+> "터미널 중심. 당시에는 **Claude Code를 IDE 수준으로 커스터마이징**해 계층형 CLAUDE.md, MCP, Subagent 3종, PostToolUse Hook과 Stop Hook 자가 리뷰를 사용했습니다. dotfile은 zsh, tmux, neovim으로 통일했습니다."
 
 **자연스러운 흐름**: 13번 → 10번 (AI 도구 깊이 본문) → CARE ID 6개월 도입 4단계 같은 매핑.
 
@@ -146,7 +149,7 @@ aliases: ["내 FIT 답변 마스터", "My FIT Answers"]
 
 > 변화 주도와 저항 극복을 묻는 질문. 팀 컨텍스트 엔지니어링 사례. 관련 도구 디테일은 [[My-FIT-Answers#10. AI 도구 활용 깊이 ★ (자주 받음)]].
 
-도메인별 폴더마다 CLAUDE.md를 두고 AI가 그 영역에 들어가면 맥락을 자동으로 로드하게 하는 방식을 팀에 도입했습니다. 처음엔 그걸 일일이 정리할 시간에 그냥 짜는 게 빠르지 않냐는 반응이 있었습니다. 저는 이걸 한 사람의 취향이 아니라 팀 생산성 문제로 봤습니다. 같은 공간에서 세 명이 같은 코드를 만지는데 맥락이 머릿속에만 있으면 인수인계 때마다 비용이 들고, 풀스택으로 넘어오려는 동료도 진입이 어렵기 때문입니다. 예를 들어 재고 금액은 부동소수점 오차가 크리티컬하니 Decimal 계열을 쓰라거나, 재고는 디바이스 물품에 종속되니 관련 로직은 어디를 보라는 식의 맥락을 문서에 박아두니, 사람이 보든 AI가 보든 같은 기준으로 작업하게 됐습니다. 지금도 계속 운영하고 있고, 처음 회의적이던 동료도 같은 방식으로 자기 도메인 문서를 쓰고 있습니다.
+당시 팀에서는 도메인별 폴더마다 CLAUDE.md를 두고 AI가 해당 영역의 맥락을 자동으로 읽게 하는 방식을 도입했습니다. 처음에는 이를 정리할 시간에 바로 구현하는 편이 빠르지 않냐는 반응도 있었습니다. 저는 한 사람의 취향이 아니라 팀 생산성 문제로 봤습니다. 같은 공간에서 세 명이 같은 코드를 만질 때 맥락이 머릿속에만 있으면 인수인계 비용이 들고, 풀스택으로 넘어오려는 동료도 진입하기 어렵기 때문입니다. 재고 금액에는 Decimal 계열을 쓰고, 재고 로직은 디바이스 물품 도메인과 함께 보라는 식의 맥락을 문서화하니 사람과 AI가 같은 기준으로 작업할 수 있었습니다. 이후 회의적이던 동료도 같은 방식으로 자기 도메인 문서를 작성했습니다.
 
 ## 16. 마지막 한마디 ★ (모든 면접 클로징)
 

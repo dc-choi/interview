@@ -1,7 +1,7 @@
 ---
 tags: [messaging, aws, sqs, decoupling, saa-c03]
 status: index
-verified_at: 2026-07-15
+verified_at: 2026-08-21
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["SQS", "Amazon SQS", "Simple Queue Service"]
 ---
@@ -53,7 +53,8 @@ Consumer ← Receive ← [Visibility Timeout 시작]
 - 기본: **30초**, 최대: **12시간**
 - 시간 내 Delete하지 않으면 다시 visible → 다른 Consumer가 재처리
 - `ChangeMessageVisibility` API로 처리 중 타임아웃 연장 가능 (하트비트 패턴). 이때 `VisibilityTimeout`은 **호출 시점 기준으로 새로 설정**된다 (수신 시점 누적이 아님)
-- 설정 기준: 처리 평균 시간의 **6배** 정도. 너무 짧으면 정상 처리 중 재노출(불필요한 중복), 너무 길면 실패 후 재처리까지 대기가 김
+- 설정 기준: 실제 처리와 Delete의 측정된 최대 시간, 또는 p99에 안전 여유를 더한 값. 처리 시간이 크게 달라지면 짧은 초기값에서 시작해 하트비트로 연장한다. 너무 짧으면 정상 처리 중 재노출(불필요한 중복), 너무 길면 실패 후 재처리까지 대기가 길어진다
+- 함수 timeout의 **6배**는 SQS를 Lambda Event Source Mapping으로 소비할 때의 권고다. 직접 폴링하는 ECS 등 일반 컨슈머에는 적용하지 않고 위 기준과 하트비트로 정한다. [[SQS-Lambda-ESM]]
 - 12시간 상한은 **최초 수신 시점 기준**이고 연장 호출이 이 상한을 리셋하지 않는다. 재시도 간격 제어와 하트비트 운용은 → [[SQS-Worker-Reliability|워커 신뢰성]]
 - **in-flight 한도 함정**: 처리 중 메시지가 한도(Standard 약 120,000, FIFO 120,000)에 차면 큐에 메시지가 있어도 새로 못 받는다. Standard는 short polling이면 `ReceiveMessage`가 `OverLimit` 에러를 내고 long polling이면 에러 없이 빈 응답을 준다. FIFO는 한도에 닿아도 에러를 반환하지 않고 처리만 영향을 받는다 (2026-08-21 AWS 문서 확인). Consumer가 느리거나 멈춰 삭제가 밀릴 때 발생 — 장애 디버깅에서 놓치기 쉬움
 
@@ -95,7 +96,7 @@ Consumer ← Receive ← [Visibility Timeout 시작]
 ## 소비자 패턴
 
 ### 멱등성 (모든 컨슈머의 전제)
-Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 위해 메시지를 여러 서버에 분산 복제하고, Receive 시 그 서버들을 샘플링하다 Delete 전파가 덜 된 서버가 메시지를 또 내주면 중복이 생긴다. 따라서 컨슈머는 **무조건 멱등**해야 한다. 비즈니스 키에 unique 제약을 걸고 INSERT 실패를 잡거나(또는 Redis `SET key val NX EX`), 같은 메시지가 두 번 와도 결과가 한 번과 같게 만든다 (→ [[Idempotency-Key]]).
+Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 위해 메시지를 여러 서버에 분산 복제하고, Receive 시 그 서버들을 샘플링하다 Delete 전파가 덜 된 서버가 메시지를 또 내주면 중복이 생긴다. 따라서 컨슈머는 **무조건 멱등**해야 한다. 자연 멱등 연산을 쓰거나 같은 DB의 업무 쓰기와 Inbox 상태를 한 트랜잭션으로 묶고, 외부 API는 안정적인 idempotency key와 대사로 보호한다. Redis `SET NX`나 unique INSERT는 원자적 claim일 뿐 완료 기록이 아니므로 그 뒤의 crash gap까지 닫아야 한다 (→ [[Idempotency-Key]], [[Idempotent-Consumer]]).
 
 ### Lambda Event Source Mapping
 - Lambda가 SQS를 직접 폴링 (별도 폴링 코드 불필요)
@@ -145,8 +146,9 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 
 | 계층 | 수단 |
 |------|------|
-| **전송 중(in-transit)** | HTTPS API — 모든 요청이 TLS로 암호화 |
-| **저장 시(at-rest)** | KMS Key로 큐 메시지 SSE 암호화 (SSE-SQS 또는 SSE-KMS) |
+| **전송 중(in-transit)** | HTTPS/TLS를 사용하고 Queue Policy에서 `aws:SecureTransport=false`를 명시적으로 거부 |
+| **저장 시 SSE-SQS** | SQS 소유 키로 메시지 body를 암호화 |
+| **저장 시 SSE-KMS** | AWS 관리형 또는 고객 관리형 KMS key 사용. key policy, 권한과 KMS 비용을 함께 관리 |
 | **접근 제어** | IAM Policy로 SQS API 호출 권한 통제, Queue Policy(Resource-based)로 cross-account 허용 |
 
 ## 시험 체크포인트 (SAA-C03)
@@ -163,6 +165,11 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 ## 출처
 - [Amazon SQS message quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
 - [Amazon SQS FIFO queue quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-fifo.html)
+- [Amazon SQS visibility timeout — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html)
+- [Processing messages in a timely manner — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/best-practices-processing-messages-timely-manner.html)
+- [Creating and configuring an SQS event source mapping — AWS Lambda 공식 문서](https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-configure.html)
+- [Amazon SQS security best practices — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-security-best-practices.html)
+- [Encryption at rest in Amazon SQS — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html)
 - [ReceiveMessage (OverLimit 에러) — AWS SQS API Reference](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html)
 - [Amazon SQS endpoints and quotas — AWS 공식 문서](https://docs.aws.amazon.com/general/latest/gr/sqs-service.html)
 - [채널톡 — AWS SQS 도입기](https://channel.io/ko/blog/tech-backend-aws-sqs-introduction)

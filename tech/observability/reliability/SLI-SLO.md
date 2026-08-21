@@ -84,7 +84,7 @@ raw 임계값("에러율 > 1%")으로 알람하면 오탐이 쏟아진다([[Aler
 ## 관련 문서
 
 - [[Application-Performance-Monitoring|APM (RED/USE, P95/P99)]]
-- [[Incident-Detection-Logging|장애 감지와 SLO 알림]]
+- [[Incident-Detection-Logging|장애 감지의 정적 임계 경보와 SLO 개선]]
 - [[Alert-Fatigue|Alert fatigue 방지]]
 - [[RDS-Monitoring|RDS 모니터링 (지표/알람 설계)]]
 - [[Ops-Level-Indicator|운영 레벨 지표]]

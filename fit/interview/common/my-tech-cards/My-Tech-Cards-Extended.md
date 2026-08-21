@@ -35,7 +35,7 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 
 - **"NOWAIT vs SKIP LOCKED?"** → SKIP LOCKED는 잠긴 행 건너뛰고 다음 행 읽음 (큐 패턴 적합). 재고처럼 특정 행 반드시 처리해야 하면 NOWAIT가 맞음. 둘 다 row lock 대기에만 적용(MDL 등은 남음)이고 statement 기반 replication엔 안전하지 않음
 - **"FOR UPDATE vs FOR SHARE?"** → FOR UPDATE는 X Lock (배타적, 읽기/쓰기 차단). FOR SHARE는 S Lock (공유, 읽기 허용, 쓰기 차단). 읽은 후 바로 쓰면 X Lock 필요
-- **"멀티 인스턴스에서도 DB Lock 충분?"** → 같은 DB 바라보는 한 충분. DB 분리(샤딩)되면 분산 락 필요
+- **"멀티 인스턴스에서도 DB Lock 충분?"** → 같은 DB를 바라보는 한 충분. 샤딩됐다는 이유만으로 분산 락이 필요한 것은 아니고, 보호할 자원이 여러 DB, shard나 외부 시스템 경계를 실제로 넘어 단일 트랜잭션으로 묶이지 않을 때 검토
 - **"Gap Lock 성능 영향?"** → 범위 잠금이라 INSERT 차단 가능. 동시성 필요하면 RC 검토 — 단 RC는 gap lock 제거 스위치가 아니라 격리 계약이 바뀌는 선택. 일반 잠금 읽기의 Gap Lock은 대부분 사라지지만 FK와 중복 키 검사에는 남고, Non-Repeatable Read와 Phantom Read를 허용하게 됨
 - **"테이블 락은 언제?"** → 명시적 `LOCK TABLES`와 일부 DDL에서 발생. 인덱스 없는 UPDATE/DELETE는 명시적 테이블 락이 아니라 스캔한 인덱스 레코드 다수를 잠가 테이블 전체가 막힌 것처럼 보이는 경우이며, 객체 정의를 보호하는 MDL은 별도
 - **"데드락 감지 분석?"** → `SHOW ENGINE INNODB STATUS` → LATEST DETECTED DEADLOCK 섹션으로 원인 분석. 누계 추세는 `information_schema.INNODB_METRICS`의 `lock_deadlocks` 카운터 (vanilla MySQL엔 `Innodb_deadlocks` status 변수가 없음. MariaDB 확장). mysqld_exporter는 `--collect.info_schema.innodb_metrics`로 켜고 Grafana에서 `mysql_info_schema_innodb_metrics_lock_lock_deadlocks_total` 증가율을 봄
@@ -43,19 +43,20 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 
 ## 카드 2 EventBridge+SQS 심화
 
-### 멱등성 상태 머신 흐름 (워커 처리)
+### 멱등성 상태 머신 흐름 (안전한 개선 기준)
 
 1. SQS 메시지 수신 (발주 ID 포함)
-2. 발주 레코드 `SELECT FOR UPDATE`로 잠그고 status 확인
-3. `COMPLETED` → 이미 처리, 메시지 삭제 후 skip
-4. `PENDING`/`FAILED` → `PROCESSING`으로 + `processing_started_at` 현재 시각 → 로직 실행
-5. `PROCESSING` 발견 시 → **`processing_started_at` 확인**: visibility timeout의 2배 초과면 이전 워커 crash로 판단 → `FAILED` 후 재처리. 미초과면 다른 워커 정상 처리 중이므로 skip
-   - **한계**: 시작 시각만으로는 느린 워커와 crash한 워커를 구분하지 못해 이중 실행 위험이 남는다. 임계값을 늘리면 회수가 늦고 줄이면 정상 워커를 뺏는다. 개선 방향은 하트비트 신선도 판정과 완료 UPDATE의 owner token 조건.
-6. 성공 → `COMPLETED` + 메시지 삭제
-7. 실패 → `FAILED` + 메시지 안 삭제 → visibility timeout 만료 후 SQS 재전달
-8. SQS `maxReceiveCount`(예: 3회) 초과 → DLQ + 알림 + 수동 확인
+2. 발주 레코드를 잠그고 status, `owner_token`, `heartbeat_at` 확인
+3. `COMPLETED` → 이미 처리됐으므로 메시지 삭제
+4. `PENDING`/`FAILED` 또는 heartbeat가 만료된 `PROCESSING` → 조건부 UPDATE로 새 owner가 lease를 획득한 경우에만 실행
+5. heartbeat가 신선한 `PROCESSING` → 다른 워커가 처리 중이므로 **현재 수신자는 실행하지 않고 메시지도 삭제하지 않음**. 남은 lease 또는 회수 시점에 jitter를 더한 만큼 visibility를 미뤄 불필요한 재수신을 줄임
+6. 처리 중 heartbeat와 visibility를 연장하고, 성공 시 `owner_token`이 같은 행만 `COMPLETED`로 바꾼 뒤 메시지 삭제
+7. 실패 시 메시지를 삭제하지 않아 visibility 만료 후 재전달
+8. SQS `maxReceiveCount`는 실제 실패뿐 아니라 `BUSY` 재수신도 세므로 처리시간과 lease를 반영해 정하고, DLQ 유입 원인을 구분해 알림과 수동 확인
 
-**visibility timeout 설정**: 처리 평균 시간의 **6배**. 짧으면 정상 처리 중 중복, 길면 실패 후 재처리 대기 길어짐.
+> **실제 구현 경계**: 당시에는 `processing_started_at` 임계로 crash를 추정했지만 느린 워커와 죽은 워커를 구별하지 못한다. 위 lease, heartbeat, owner token 흐름은 지금 다시 설계할 때의 개선안이며 실제 운영 완료로 말하지 않는다.
+
+**visibility timeout 설정**: 일반 ECS 소비자는 관측한 최대 또는 p99 처리시간에 여유를 두고, 길어질 수 있는 작업은 heartbeat로 연장한다. 함수 timeout의 6배 권고는 SQS의 Lambda 이벤트 소스 매핑에만 적용한다.
 
 **알림 채널 로컬 중복 방지**: **실제 구현**은 알림 로그 테이블의 `(order_id, channel)` UNIQUE 제약으로 주문과 채널 단위 로컬 중복 처리를 차단했다. 이는 주문당 채널별 알림이 하나라는 전제이고, 외부 provider가 수락한 뒤 Relay가 응답 전에 죽는 중복까지 막지 못한다. **지금 개선한다면** 알림 사건마다 안정적인 `event_id`를 만들고 `(event_id, channel)`로 로컬 멱등성을 잡은 뒤 provider가 지원하는 idempotency key로 같은 값을 전달하며, 수락 여부가 불명확한 건은 상태 조회나 수동 대사로 닫는다.
 
@@ -84,8 +85,8 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 | 축 | ECS 워커 유리 | Lambda 유리 |
 |---|---|---|
 | 도메인 로직 재사용 | NestJS 모델, 로직 그대로 | 별도 패키지로 분리 |
-| DB 커넥션 풀 | 안정적 유지 | cold start로 어려움 (RDS Proxy 필요) |
-| 인프라 | 이미 ECS 있으면 추가 비용 0 | 별도 파이프라인 필요 |
+| DB 연결과 동시성 | 상시 풀과 워커 수를 직접 제한 | 이벤트 소스 매핑 동시성과 DB 연결 예산 제한, 필요 시 RDS Proxy 검토 |
+| 인프라 | 기존 코드와 배포 경로 재사용, task 실행 비용 발생 | 사용량 과금, 함수 배포와 운영 경계 필요 |
 | 스케일 패턴 | 상시 + 점진적 스케일 | 불규칙, 유휴 시간 긴 워크로드 |
 
 ### 심화 꼬리
@@ -118,7 +119,7 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 
 - **"인덱스 추가 후 쓰기 페널티 정량?"** → 인덱스 수, 페이지 분할 빈도 모니터링. 핫스팟이면 파티셔닝(시간, 해시, 리스트) 검토
 - **"파티셔닝 vs 샤딩?"** → 파티셔닝은 한 DB 내 테이블 분할 (운영 단순), 샤딩은 DB 인스턴스 분리 (라우팅 복잡)
-- **"NoSQL 검토 시점?"** → 위 모든 방법 (인덱스, 캐싱, CQRS, 파티셔닝, 샤딩)으로 안 될 때 마지막 카드
+- **"NoSQL 검토 시점?"** → SQL 최적화 순서를 모두 소진한 뒤가 아니라, 요구하는 데이터 모델과 접근 패턴, 일관성 및 확장 조건이 RDBMS보다 NoSQL에 더 맞는지 비교해 결정
 
 ## 카드 5 관측성 심화
 
@@ -140,19 +141,21 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 | BE App | TraceIdMiddleware, HttpLoggingInterceptor, Winston JSON, MetricsInterceptor + prom-client, `/metrics` 엔드포인트 | 요청 단위 추적, 구조화 로깅, 메트릭 노출 |
 | Log Routing (당시) | ECS FireLens(Fluent Bit), 호스트 Promtail → Loki | stdout 수집, JSON 파싱과 정규화, 라벨 구성, 배치와 라우팅 |
 | Logs Plane | Loki, S3 (정확한 저장 경계 기록 없음) | 수집 검증, Ingester의 청크 압축과 flush, 청크/인덱스 저장과 조회, Compactor의 인덱스 압축과 설정된 경우의 보존 적용 |
-| Metrics Plane | Prometheus → Thanos Sidecar → S3 | 단기 15일 + 장기 S3 (멀티 인스턴스/리전 통합 조회) |
+| Metrics Plane | Prometheus + Thanos Sidecar → S3, Querier + Store Gateway | Sidecar가 블록 업로드와 Store API를 제공하고, Querier가 현재 데이터와 Store Gateway의 과거 블록을 통합 조회 |
 
 > **조건 표기**: Promtail은 2026-03-02 EOL이다. 위 구성은 당시 경험이고, 신규 구성은 Grafana Alloy 또는 이미 사용 중인 FireLens/Fluent Bit 같은 지원 클라이언트를 검토한다. 현재 운영 환경의 이전 완료 여부는 확인되지 않았다.
 > **운영 경계**: 위 당시 구성에는 OpenTelemetry trace pipeline과 exemplar 구축 근거가 없다. 둘은 3축 연결을 위한 후속 학습 설계다.
 > **저장 경계**: 당시 기록의 Loki 30일 핫 보관과 S3 콜드 보관만으로 자동 전환을 주장할 수 없다. S3가 Loki object store였는지 별도 archive였는지, lifecycle과 복원 경로는 현재 기록에 없다.
 
-### SLO 알림 5개 (`for: 5m` 지속 조건)
+### 당시 정적 임계 알림 5개 (지속 조건 상이)
 
 - Error rate **1%** for 5m
 - Slow SQL **500ms+** 3회 지속
 - Event Loop Lag **100ms** 3분
 - RDS CPU **75%** 5분
 - Replica Lag **5초** 3분
+
+> Error rate와 latency는 SLI 후보지만, 위 `for` 기반 임계 경보 전체가 SLO burn-rate 경보는 아니다. SLO로 개선한다면 사용자 영향 SLI와 목표 기간을 정하고 multi-window, multi-burn-rate 조건을 별도로 둔다.
 
 ### 카디널리티 관리 룰
 
@@ -187,10 +190,10 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 ### vault 심화 — 카드별 추가 자료 (본 Extended에서 더 깊게 보강 시)
 
 - **카드 1 DB Lock 심화**: [[Lock]], [[Lock-Deadlock]], [[MySQL-InnoDB-Locking-and-Deadlocks]], [[DML-Conflict-and-Batch-Patterns]], [[Retry-Backoff-Jitter]], [[Lock-Wait-Convoy]], [[Race-Condition-Patterns]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]], [[MySQL-InnoDB-Tuning]]
-- **카드 2 EventBridge+SQS 심화**: [[Transactional-Outbox]], [[CDC&Outbox]], [[Idempotency-Key]], [[Idempotent-Consumer]], [[Saga-Pattern]], [[SQS-Worker-Reliability]]
-- **카드 3 슬로우 쿼리 심화**: [[Execution-Plan]], [[Covering-Index]], [[B-Tree-Index-Depth]], [[SQL-Tuning-Terminology]], [[Pagination-Optimization]], [[MySQL-Partitioning]], [[OLTP-vs-OLAP]], [[SCD-Type2]]
-- **카드 4 Prisma/ORM 심화**: [[Prisma-Query-Performance]], [[ORM]], [[ORM-Impedance-Mismatch]], [[Domain-ORM-Mapper]], [[SQL-Joins]]
-- **카드 5 관측성 심화**: [[관측가능성(Observability)]], [[Container-Monitoring]], [[Correlation-ID]], [[OpenTelemetry]], [[Exemplars]], [[Loki]], [[Grafana-Alerting]], [[Alert-Fatigue]], [[Incident-Detection-Logging]], [[CloudWatch]]
-- **카드 6 아키텍처 심화**: [[Multi-Stage-Build]], [[Image-Size-Optimization]], [[Docker-Image-Pipeline]], [[ECS-Rolling-Deployment]], [[ECS-Secrets-Injection]], [[K8s-Resource-Right-Sizing]], [[Blue-Green]], [[Replication]], [[Read-Replica-Routing]]
-- **카드 7 Clean Architecture/NestJS 심화**: [[Clean-Architecture-NestJS]], [[RxJS-Essentials]], [[NestJS]], [[NestJS-Circular-Dependency]], [[Injection-Scopes]]
-- **카드 8 캐시/Redis 심화**: [[Cache-Strategies]], [[Cache-Invalidation]], [[Cache-Stampede]], [[Redis-Data-Structures]], [[Redis-Cluster-Sharding]], [[Rate-Limiting]], [[External-Collection-Pipeline-Reliability]]
+- **카드 2 EventBridge+SQS 심화**: [[EventBridge-SQS-Target]], [[SQS-Consumer-Lambda-vs-ECS]], [[Delivery-Semantics]], [[Transactional-Outbox]], [[CDC&Outbox]], [[Idempotency-Key]], [[Idempotent-Consumer]], [[SQS-Worker-Reliability]]
+- **카드 3 슬로우 쿼리 심화**: [[MySQL-Query-Pipeline-and-Sorting]], [[Execution-Plan]], [[Covering-Index]], [[B-Tree-Index-Depth]], [[SQL-Tuning-Terminology]], [[Pagination-Optimization]], [[MySQL-Partitioning]], [[OLTP-vs-OLAP]], [[SCD-Type2]]
+- **카드 4 Prisma/ORM 심화**: [[Prisma-Query-Performance]], [[TypeORM-QueryBuilder]], [[TypeORM-Transactions-and-Replication]], [[ORM]], [[ORM-Impedance-Mismatch]], [[Domain-ORM-Mapper]], [[SQL-Joins]]
+- **카드 5 관측성 심화**: [[관측가능성(Observability)]], [[Prometheus]], [[RED-USE-Method]], [[SLI-SLO]], [[Cardinality]], [[Container-Monitoring]], [[Correlation-ID]], [[OpenTelemetry]], [[Exemplars]], [[Loki]], [[Thanos]], [[Grafana-Alerting]], [[Alert-Fatigue]], [[Incident-Detection-Logging]], [[CloudWatch]]
+- **카드 6 아키텍처 심화**: [[Multi-Stage-Build]], [[Image-Size-Optimization]], [[Docker-Image-Pipeline]], [[ELB]], [[ECS-Service-AutoScaling]], [[ECS-Rolling-Deployment]], [[ECS-Secrets-Injection]], [[Container-Entrypoint-Signals]], [[K8s-Resource-Right-Sizing]], [[Blue-Green]], [[Replication]], [[Read-Replica-Routing]]
+- **카드 7 Clean Architecture/NestJS 심화**: [[Clean-Architecture-NestJS]], [[RxJS-Essentials]], [[NestJS]], [[Custom-Provider]], [[Request-Lifecycle]], [[NestJS-Circular-Dependency]], [[Injection-Scopes]]
+- **카드 8 캐시/Redis 심화**: [[Cache-Decision]], [[Cache-Strategies]], [[Cache-Invalidation]], [[Cache-Stampede]], [[Redis-Data-Structures]], [[Redis-Streams-PubSub]], [[Redis-Cluster-Sharding]], [[Rate-Limiting]], [[External-Collection-Pipeline-Reliability]]

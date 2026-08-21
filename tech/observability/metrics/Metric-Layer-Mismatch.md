@@ -132,7 +132,7 @@ CPU만의 문제가 아니다. **모든 메트릭은 측정 레이어를 함께 
 - [딤섬뮨 — 같은 CPU, 다른 값: CloudWatch는 0%, Grafana는 100%였던 이유](https://sienna1022.tistory.com/entry/%EA%B0%99%EC%9D%80-CPU-%EB%8B%A4%EB%A5%B8-%EA%B0%92-CloudWatch%EB%8A%94-0-Grafana%EB%8A%94-100%EC%98%80%EB%8D%98-%EC%9D%B4%EC%9C%A0)
 
 ## 관련 문서
-- [[Incident-Detection-Logging|장애 감지와 로깅/메트릭 (GPL 스택 비교, SLO 알림)]]
+- [[Incident-Detection-Logging|장애 감지와 로깅/메트릭 (GPL 스택 비교, 정적 임계 경보와 SLO 개선)]]
 - [[Structured-Logging|Structured logging]]
 - [[Latency-Optimization|레이턴시 최적화 개관]]
 - [[Incident-Recovery-Prevention|장애 복구와 재발 방지]]

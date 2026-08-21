@@ -19,7 +19,7 @@ aliases: ["내 기술 답변 마스터", "My Tech Cards"]
 - **카드 4**: Prisma → MySQL SubQuery API 응답 90% 개선 (`relationLoadStrategy: 'join'`)
 
 ### [[My-Tech-Cards-Ops|관측, 인프라, 아키텍처 — 카드 5, 6, 7, 8]]
-- **카드 5**: Grafana/Prometheus/Loki 관측 인프라 (GPL 자체 호스팅, SLO 기반 알림)
+- **카드 5**: Grafana/Prometheus/Loki 관측 인프라 (GPL 자체 호스팅, 정적 임계 경보와 SLO 개선 설계)
 - **카드 6**: Docker 멀티스테이지 + ECS Fargate 전환 (909MB → 513MB, 3분 → 2분)
 - **카드 7**: Clean Architecture 스타일 + NestJS 모듈 설계 (5계층)
 - **카드 8**: 캐시 전략 — Cache-Aside + 스탬피드 방어 (3초 → 0.9초)
@@ -38,13 +38,13 @@ aliases: ["내 기술 답변 마스터", "My Tech Cards"]
 ### 카드별 매핑
 
 - **카드 1 DB Lock**: [[Lock]], [[Lock-Deadlock]], [[MySQL-InnoDB-Locking-and-Deadlocks]], [[DML-Conflict-and-Batch-Patterns]], [[Retry-Backoff-Jitter]], [[Lock-Wait-Convoy]], [[Isolation-Level]], [[Isolation-Level-Beyond-ANSI]], [[Race-Condition-Patterns]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]], [[MySQL-InnoDB-Tuning]], [[Transactions]]
-- **카드 2 EventBridge+SQS**: [[Event-Driven-Architecture]] (전체 그림 — 8개 결정 층), [[EventBridge]], [[SQS]], [[SNS]], [[브로커(Brokers)]], [[Messaging-Broker-Comparison]], [[CDC&Outbox]], [[Transactional-Outbox]], [[Idempotency-Key]], [[Idempotent-Consumer]], [[SQS-Worker-Reliability]], [[Saga-Pattern]], [[Event-Sourcing]]
-- **카드 3 슬로우 쿼리**: [[Index]], [[Covering-Index]], [[B-Tree-Index-Depth]], [[MySQL-Slow-Query-Diagnosis]], [[Execution-Plan]], [[SQL-Tuning-Terminology]], [[Pagination-Optimization]], [[MySQL-Partitioning]], [[OLTP-vs-OLAP]]
-- **카드 4 Prisma/ORM**: [[Prisma-Query-Performance]], [[ORM]], [[ORM-Impedance-Mismatch]], [[Domain-ORM-Mapper]], [[SQL-Joins]]
-- **카드 5 관측 인프라**: [[관측가능성(Observability)]], [[Logs-vs-Metrics]], [[Application-Performance-Monitoring]], [[Container-Monitoring]], [[Correlation-ID]], [[OpenTelemetry]], [[Exemplars]], [[Loki]], [[Grafana-Alerting]], [[Alert-Fatigue]], [[Incident-Detection-Logging]], [[CloudWatch]]
-- **카드 6 Docker/ECS**: [[Docker]], [[Multi-Stage-Build]], [[Image-Size-Optimization]], [[Docker-Image-Pipeline]], [[ECS]], [[ECS-Rolling-Deployment]], [[ECS-Secrets-Injection]], [[K8s-Resource-Right-Sizing]], [[Blue-Green]], [[Replication]], [[Read-Replica-Routing]]
-- **카드 7 Clean Architecture/NestJS**: [[DDD&Hexagonal]], [[DDD]], [[DDD-Hexagonal-In-Production]], [[Layered-Clean-Hexagonal]], [[Clean-Architecture-NestJS]], [[RxJS-Essentials]], [[NestJS]], [[NestJS-Middleware]], [[NestJS-Guards]], [[NestJS-AOP-Interceptor]], [[Injection-Scopes]], [[NestJS-Circular-Dependency]], [[Saga-Pattern]], [[Event-Sourcing]]
-- **카드 8 캐시/Redis**: [[Cache-Basics]], [[Cache-Strategies]], [[Cache-Invalidation]], [[Cache-Stampede]], [[Redis-Architecture]], [[Redis-Data-Structures]], [[Redis-Cluster-Sharding]], [[Rate-Limiting]], [[External-Collection-Pipeline-Reliability]], [[NestJS-Caching-Integration]]
+- **카드 2 EventBridge+SQS**: [[Event-Driven-Architecture]] (전체 그림 — 8개 결정 층), [[EventBridge]], [[EventBridge-SQS-Target]], [[SQS]], [[SQS-Consumer-Lambda-vs-ECS]], [[SNS]], [[브로커(Brokers)]], [[Messaging-Broker-Comparison]], [[Delivery-Semantics]], [[CDC&Outbox]], [[Transactional-Outbox]], [[Idempotency-Key]], [[Idempotent-Consumer]], [[SQS-Worker-Reliability]]
+- **카드 3 슬로우 쿼리**: [[Index]], [[Covering-Index]], [[B-Tree-Index-Depth]], [[MySQL-Slow-Query-Diagnosis]], [[MySQL-Query-Pipeline-and-Sorting]], [[Execution-Plan]], [[SQL-Tuning-Terminology]], [[Pagination-Optimization]], [[MySQL-Partitioning]], [[OLTP-vs-OLAP]]
+- **카드 4 Prisma/ORM**: [[Prisma-Query-Performance]], [[TypeORM-QueryBuilder]], [[TypeORM-Transactions-and-Replication]], [[ORM]], [[ORM-Impedance-Mismatch]], [[Domain-ORM-Mapper]], [[SQL-Joins]]
+- **카드 5 관측 인프라**: [[관측가능성(Observability)]], [[Logs-vs-Metrics]], [[Application-Performance-Monitoring]], [[Prometheus]], [[RED-USE-Method]], [[SLI-SLO]], [[Cardinality]], [[Container-Monitoring]], [[Correlation-ID]], [[OpenTelemetry]], [[Exemplars]], [[Loki]], [[Thanos]], [[Grafana-Alerting]], [[Alert-Fatigue]], [[Incident-Detection-Logging]], [[CloudWatch]]
+- **카드 6 Docker/ECS**: [[Docker]], [[Multi-Stage-Build]], [[Image-Size-Optimization]], [[Docker-Image-Pipeline]], [[ECS]], [[ELB]], [[ECS-Service-AutoScaling]], [[ECS-Rolling-Deployment]], [[ECS-Secrets-Injection]], [[Container-Entrypoint-Signals]], [[K8s-Resource-Right-Sizing]], [[Blue-Green]], [[Replication]], [[Read-Replica-Routing]]
+- **카드 7 Clean Architecture/NestJS**: [[DDD&Hexagonal]], [[DDD]], [[DDD-Hexagonal-In-Production]], [[Layered-Clean-Hexagonal]], [[Clean-Architecture-NestJS]], [[RxJS-Essentials]], [[NestJS]], [[Custom-Provider]], [[Request-Lifecycle]], [[NestJS-Middleware]], [[NestJS-Guards]], [[NestJS-AOP-Interceptor]], [[Injection-Scopes]], [[NestJS-Circular-Dependency]]
+- **카드 8 캐시/Redis**: [[Cache-Basics]], [[Cache-Decision]], [[Cache-Strategies]], [[Cache-Invalidation]], [[Cache-Stampede]], [[Redis-Architecture]], [[Redis-Data-Structures]], [[Redis-Streams-PubSub]], [[Redis-Cluster-Sharding]], [[Rate-Limiting]], [[External-Collection-Pipeline-Reliability]], [[NestJS-Caching-Integration]]
 
 ### 범용 백엔드 안전망 (마스터 카드 밖 질문 대비)
 

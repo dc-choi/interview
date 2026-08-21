@@ -26,23 +26,30 @@ aliases: ["Idempotent Consumer", "멱등 컨슈머", "멱등 소비 처리", "ex
 
 연산 자체가 멱등이면 중복 추적이 필요 없다. `SET status = 'PAID'`(절대값 대입), `UPSERT`, id 기준 `DELETE`처럼 **여러 번 실행해도 같은 결과**가 되게 설계한다. `balance = balance + 100`(증분) 같은 비멱등 연산을 피한다.
 
-### 2. 멱등 키 + 중복 제거 저장소
+### 2. 멱등 키 + 상태 저장소
 
-프로듀서가 메시지에 고유 키(메시지 id 또는 **비즈니스 멱등 키**, 예: `orderId`)를 붙이고, 컨슈머는 처리한 키를 저장소에 기록해 이미 본 키면 건너뛴다.
+프로듀서가 메시지에 고유 키(메시지 id 또는 **비즈니스 멱등 키**, 예: `orderId`)를 붙이고, 컨슈머는 그 키의 상태를 저장한다. 유니크 INSERT나 Redis `SET NX`는 **처리 완료의 증명**이 아니라 원자적인 claim일 뿐이다. 외부 부수효과보다 먼저 완료 marker를 확정하면, 그 직후 프로세스가 죽었을 때 다음 수신이 작업을 건너뛰어 유실된다.
 
-```sql
--- DB 유니크 제약으로: 중복이면 INSERT가 실패 → 건너뜀 (원자적)
-INSERT INTO processed_messages (idempotency_key, processed_at)
-VALUES ('order-9921', NOW())
-ON CONFLICT (idempotency_key) DO NOTHING;
--- affected rows = 0 이면 이미 처리됨 → skip
+같은 DB의 짧은 효과는 Inbox와 업무 쓰기를 하나의 짧은 트랜잭션으로 묶는다. 이 경우 crash 시 미커밋 claim도 함께 rollback되므로 durable `PROCESSING` lease나 heartbeat가 필요 없다.
+
+```text
+BEGIN
+  UNIQUE idempotency_key로 inbox INSERT
+  중복이면 저장된 COMPLETED 결과를 반환
+  신규이면 같은 DB의 비즈니스 UPDATE와 inbox COMPLETED를 함께 기록
+COMMIT 후 ACK
 ```
+
+오래 걸리거나 외부 효과가 있는 작업은 claim을 별도 트랜잭션에서 `PROCESSING` lease로 커밋한 뒤 실행한다. 신선한 lease는 ACK하지 않고, 만료된 lease만 새 owner token으로 회수한다. 완료도 owner 조건으로 커밋하며 외부 호출은 provider 멱등 키와 대사로 보호한다. 두 방식을 한 트랜잭션인 것처럼 섞으면 안 된다.
 
 ```typescript
-// Redis: SET NX 로 check-and-set을 원자적으로 (TTL은 재전달 윈도보다 길게)
-const first = await redis.set(`idem:${key}`, '1', 'NX', 'EX', 86400);
-if (!first) return; // 이미 처리됨
+// Redis SET NX는 완료 marker가 아니라 짧은 lease로만 쓴다.
+const acquired = await redis.set(`lease:${key}`, ownerToken, 'NX', 'EX', 60);
+if (!acquired) throw new RetryableError(); // 다른 owner가 처리 중, ACK하지 않음
+// 긴 작업은 owner token을 확인하며 lease를 연장한다.
 ```
+
+외부 API 효과는 DB에 의도와 outbox를 함께 기록한 뒤, provider가 보장하는 안정적인 `Idempotency-Key`로 호출한다. 응답을 받기 전에 죽어 결과가 불명확하면 같은 키로 재시도하고 provider 또는 대사 기록으로 결과를 확정한다. 신선한 `PROCESSING`은 완료가 아니므로 ACK하지 않는 흐름은 [[At-Least-Once|At-Least-Once]]와 같다.
 
 ### 3. 상태 머신 가드 (조건부 전이)
 
@@ -52,7 +59,7 @@ if (!first) return; // 이미 처리됨
 
 가장 흔한 버그는 **"확인 후 처리"를 따로 하는 것**이다. 같은 메시지가 동시에 두 번 전달되면(visibility 만료가 처리 중에 겹침) 둘 다 "안 봤다"를 통과해 이중 처리된다. 중복 체크는 반드시 **원자적**(`INSERT ... ON CONFLICT`, `SET NX`)이어야 한다. [[Race-Condition-Patterns]]
 
-또 하나 — **부수효과와 멱등 기록이 따로 놀면** 부분 실패가 난다. 부수효과는 됐는데 기록 전에 죽으면 재처리되고, 기록만 되고 부수효과가 실패하면 유실된다. 둘을 한 트랜잭션에 묶거나(Inbox 패턴), 부수효과 자체를 멱등 키로 보호한다(외부 API는 `Idempotency-Key` 헤더, 예: 결제 PG).
+또 하나 — **부수효과와 완료 기록이 따로 놀면** 부분 실패가 난다. 부수효과는 됐는데 완료 기록 전에 죽으면 재처리되고, 완료 기록만 먼저 쓰면 실제 효과가 유실된다. 같은 DB의 효과는 Inbox 트랜잭션으로 묶고, 외부 API는 provider의 멱등 키와 대사로 보호한다.
 
 ### Inbox 패턴
 
@@ -71,11 +78,12 @@ if (!first) return; // 이미 처리됨
 
 ## 사례 — 발주 자동화 컨슈머
 
-주문 메시지가 중복 전달되면 **이중 발주**가 나간다. 멱등 키 = `orderId`로 `orders_processed`에 유니크 제약을 걸고, 발주 호출 직전 원자적 INSERT가 성공할 때만 진행한다. 외부 발주 API에도 `Idempotency-Key`를 실어 양쪽에서 막는다. 처리 컨슈머 골격은 [[SQS-Consumer-Lambda-vs-ECS]].
+주문 메시지가 중복 전달되면 **이중 발주**가 나간다. 멱등 키 = `orderId`로 inbox와 주문 상태를 같은 DB 트랜잭션에서 관리하고, 외부 발주 API에는 같은 `Idempotency-Key`를 재사용한다. 호출 결과가 불명확하면 같은 키로 재시도하거나 provider 기록과 대사한다. 처리 컨슈머 골격은 [[SQS-Consumer-Lambda-vs-ECS]].
 
 ## 흔한 함정
 
 - check-then-act 비원자 구현 → 동시 중복에 뚫림
+- `SET NX`나 유니크 INSERT를 완료 marker로 먼저 확정 → crash 뒤 작업 유실
 - 멱등 키 TTL이 재전달 윈도보다 짧음 → 만료 후 재처리
 - 전달만 멱등 처리하고 **부수효과(외부 호출)**는 멱등이 아님
 - DLQ 재처리 시 멱등 키가 만료돼 중복
@@ -84,7 +92,7 @@ if (!first) return; // 이미 처리됨
 
 - at-least-once에서 멱등성이 컨슈머 책임인 이유, exactly-once가 effectively-once인 이유
 - 자연 멱등 설계 vs 멱등 키 dedup vs 상태 머신 가드
-- check-then-act 레이스와 원자적 dedup(`ON CONFLICT`, `SET NX`)
+- check-then-act 레이스와 원자적 claim(`ON CONFLICT`, `SET NX`), 완료 상태와의 차이
 - 부수효과와 멱등 기록의 원자성(Inbox), 외부 API `Idempotency-Key`
 - SQS FIFO content-based dedup의 5분 한계
 

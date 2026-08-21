@@ -72,14 +72,14 @@ aliases: ["장애 감지와 로깅"]
 | | Winston JSON Logger | flat JSON line 포맷으로 기록 |
 | | MetricsInterceptor + prom-client | method, 정규화한 route, status label과 request-duration histogram을 Prometheus 형식으로 노출 |
 | **Log Routing (당시)** | FireLens(Fluent Bit) → Loki, 호스트 로그는 Promtail → Loki | stdout 수집, JSON 파싱과 정규화, 라벨 구성, 배치와 라우팅 |
-| **Metrics Plane** | Prometheus → Thanos Sidecar → S3 | 메트릭 수집 → 장기 보관. Thanos Querier로 멀티 인스턴스 통합 조회 |
-| **Alerting** | Grafana Alerting → Slack | SLO 기반 알람 → 서비스/팀별 라우팅 |
+| **Metrics Plane** | Prometheus + Thanos Sidecar → S3, Querier + Store Gateway | Sidecar가 블록을 업로드하고 Querier가 현재 데이터와 Store Gateway의 과거 블록을 통합 조회 |
+| **Alerting** | Grafana Alerting → Slack | 서비스와 인프라의 정적 임계 경보 → 서비스/팀별 라우팅 |
 
 Promtail은 2026-03-02 EOL이다. 위 구성은 당시 경험이고, 신규 구성은 Grafana Alloy 또는 FireLens/Fluent Bit 같은 지원 클라이언트를 검토한다. 현재 운영 환경의 이전 완료 여부는 확인되지 않았다. [[Loki]]
 
-## 알림 기준 (SLO 기반)
+## 당시 운영한 정적 임계 경보
 
-지속 조건(`for`)으로 단발성 스파이크를 걸렀고, 지속 시간은 메트릭마다 다르게 뒀다. 각 임계값을 그 숫자로 정한 근거와 나머지 알람(로그 ingestion rate 감소, threads_connected, 컨테이너 리소스)은 [[Alert-Fatigue|Alert fatigue 방지]]의 사례 절에 정리했다.
+지속 조건(`for`)으로 단발성 스파이크를 걸렀고, 지속 시간은 메트릭마다 다르게 뒀다. 이는 정적 임계 경보이며 `for`를 붙였다는 이유만으로 SLO 경보가 되지는 않는다. Error rate와 latency는 사용자 영향 SLI 후보이고, Slow SQL, Event Loop Lag, CPU와 Replica Lag는 원인 또는 증상 지표다. SLO로 개선한다면 목표 기간과 에러 버짓을 정한 뒤 multi-window, multi-burn-rate를 별도로 적용한다. 각 임계값의 근거와 나머지 알람은 [[Alert-Fatigue|Alert fatigue 방지]], SLO 경계는 [[SLI-SLO|SLI, SLO, Error Budget]]에 정리했다.
 
 | 메트릭 | 임계값 | 지속 시간 |
 |--------|--------|----------|
@@ -92,7 +92,7 @@ Promtail은 2026-03-02 EOL이다. 위 구성은 당시 경험이고, 신규 구�
 | Replica Lag (경고) | 10초 | 1분 |
 
 ## 보존 전략
-- **메트릭**: Prometheus 단기 보존(15일) → Thanos Sidecar가 S3로 업로드 (장기 조회 가능)
+- **메트릭**: Prometheus 단기 보존(15일) → Thanos Sidecar가 S3로 업로드하고 Store Gateway가 과거 블록을 제공하며 Querier가 통합 조회
 - **로그**: 당시 기록에는 Loki 30일 핫 보관과 S3 콜드 보관으로 남아 있지만 자동 전환 메커니즘과 정확한 저장 경계는 보존되지 않았다. S3가 Loki object store였다면 Ingester가 수집 시점부터 청크를 flush한다. 다만 당시 Loki 버전, index schema, `retention_enabled`, `retention_period` 설정이 남아 있지 않아 30일 보존을 Compactor가 적용했는지는 확인할 수 없다. 별도 archive였다면 export, lifecycle과 복원 경로가 추가로 필요하다
 - **로그 폭증 시**: 당시 Promtail의 `batchSize`/`batchWait`와 Loki ingestion rate limit 조정 + log sampling. 신규 수집기는 Alloy나 Fluent Bit의 대응 설정을 확인
 
@@ -103,7 +103,7 @@ Promtail은 2026-03-02 EOL이다. 위 구성은 당시 경험이고, 신규 구�
 - 알람과 대시보드에서 쓰지 않는 라벨과 필드는 수집 단계에서 drop (`metric_relabel_configs`) — 저장 전에 잘라야 비용과 OOM을 동시에 막는다 ([[Cardinality]])
 
 ## 면접포인트
-- "장애를 어떻게 감지하나?" → SLO 기반 알림(Error rate, Slow SQL, Event Loop Lag 등)으로 시스템적 감지. `for` 지속 조건으로 오탐 필터링
+- "장애를 어떻게 감지하나?" → 당시에는 Error rate, Slow SQL, Event Loop Lag 등의 정적 임계 경보와 `for` 지속 조건으로 시스템적으로 감지. SLO 경보는 사용자 영향 SLI와 burn rate를 별도로 설계
 - "로깅 전략?" → flat JSON line 포맷 + TraceId 전파 + 구조적 필터링(requestId/route/level)
 - "배포 후 무엇을 확인하나?" → 임팩트 측정, 예상 vs 실제 비교. Grafana 대시보드에서 배포 전후 메트릭 비교
 - "Prometheus pull 방식의 한계?" → 짧은 수명 컨테이너는 스크래핑 전 사라질 수 있음 → Pushgateway로 보완

@@ -20,7 +20,7 @@ aliases: ["logging", "로깅"]
 - [x] [[Application-Method-Trace-Design|애플리케이션 method trace 설계]]
 
 ## 세미나
-- [[Incident-Detection-Logging|장애 감지와 로깅/메트릭 (GPL 스택 비교, 아키텍처, SLO 알림, 카디널리티)]]
+- [[Incident-Detection-Logging|장애 감지와 로깅/메트릭 (GPL 스택 비교, 정적 임계 경보와 SLO 개선, 카디널리티)]]
 
 ## 관련 문서
 - [[관측가능성(Observability)|카테고리 인덱스]]
