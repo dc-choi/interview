@@ -1,7 +1,7 @@
 ---
 tags: [senior, ai, codex, llm, agent, tool-calling]
 status: done
-verified_at: 2026-08-21
+verified_at: 2026-08-22
 category: "Senior - AI 엔지니어링"
 aliases: ["Codex Agent Execution Model", "Codex 동작 원리", "코덱스 에이전트 동작 원리"]
 ---
@@ -24,18 +24,18 @@ ChatGPT의 파일 기능도 관찰 가능한 역할만 놓고 보면 두 번째 
 ## 다섯 키워드로 먼저 외우기
 
 ```text
-Tokenizer → Context → Model → Tool → Verification
-   쪼갠다      모은다     판단한다   실행한다    확인한다
+Context → Tokenizer → Model → Tool → Verification
+  모은다      쪼갠다      계산한다   실행한다    정책에 따라 확인한다
 ```
 
 조금 더 펼치면 다음 구조다.
 
 ```text
-사용자 문장
+사용자 문장 + 지침 + 대화 + 파일 내용 + 도구 설명
+  ↓ Context Builder
+현재 Context
   ↓ Tokenizer
 Token과 Token ID
-  ↓ Context Builder
-지침 + 대화 + 파일 내용 + 도구 설명
   ↓ Model
   ├─ Final Answer ─────────────→ 채팅 화면
   └─ Tool Call → Runtime → 파일/셸
@@ -120,7 +120,7 @@ P(다음 Token | 지금까지의 Token들)
 Model → Tool Call → Runtime → Tool Result → Model → ... → Final Answer
 ```
 
-작업 중 보이는 진행 메시지는 루프가 끝났다는 뜻이 아니다. 최종 답변을 반환하면 루프가 종료된다.
+작업 중 보이는 진행 메시지는 루프가 끝났다는 뜻이 아니다. 정상적으로 최종 답변을 반환하면 한 턴의 루프가 끝나지만, 오류, 승인 거절, 호출 한도, 예산 상한과 진전 없음으로도 중단될 수 있다.
 
 ## 5. 행동을 통제하고 확장하는 키워드
 
@@ -143,8 +143,8 @@ Model → Tool Call → Runtime → Tool Result → Model → ... → Final Answ
 
 | 단계 | 일반 채팅 | 문서 수정 |
 |---|---|---|
-| 입력 처리 | Tokenizer가 문장을 Token으로 바꿈 | 같다. |
-| 판단 재료 | 지침과 대화가 Context에 들어감 | 여기에 파일 내용과 저장소 규칙이 더해짐 |
+| 입력 구성 | 지침과 대화를 Context로 조립 | 여기에 파일 내용과 저장소 규칙이 더해짐 |
+| Tokenization | 조립된 Context를 Token ID로 변환 | 같다. |
 | 모델 처리 | 다음 출력을 생성 | 같다. |
 | 출력 분기 | 주로 Final Answer | 파일 도구가 필요하면 Tool Call |
 | 실제 행동 | 화면에 답변 표시 | Runtime이 작업 디렉터리의 파일을 수정 |
@@ -154,8 +154,8 @@ Model → Tool Call → Runtime → Tool Result → Model → ... → Final Answ
 
 ## 지금 이 문서를 고치는 실제 흐름
 
-1. 사용자의 문장이 Tokenizer를 거쳐 토큰이 된다.
-2. 요청, 저장소 지침과 도구 설명이 Context로 조립된다.
+1. 요청, 저장소 지침, 대화와 도구 설명이 Context로 조립된다.
+2. 조립된 Context가 Tokenizer를 거쳐 토큰이 된다.
 3. 모델이 기존 문서를 읽기 위한 Tool Call을 만든다.
 4. Runtime이 파일을 읽고, 그 내용이 Tool Result를 통해 Context에 들어온다.
 5. 모델이 키워드 중심 개정안을 만들고 수정 Tool Call을 보낸다.
@@ -175,6 +175,7 @@ Model → Tool Call → Runtime → Tool Result → Model → ... → Final Answ
 
 ## 관련 문서
 
+- [[LLM-Generation-Mechanics|LLM 학습과 생성 원리]]
 - [[Codex-CLI|Codex CLI 사용과 설정]]
 - [[Context-Engineering|컨텍스트 엔지니어링]]
 - [[Agent-Loop-Engineering|에이전트 루프 엔지니어링]]
