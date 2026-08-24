@@ -65,4 +65,5 @@ TypeORM의 추상 예외 이름만 저장하면 MySQL 원인이 사라질 수 �
 
 - [[Transactions|트랜잭션]]
 - [[Lock|DB Lock]]
+- [[MySQL-SQL-Mode|MySQL SQL Mode]]
 - [[NestJS-Exception-Filter|NestJS 예외 필터]]

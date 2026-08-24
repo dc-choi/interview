@@ -26,7 +26,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] [[Connection-Pool|Connection Pool 사이징 (HikariCP 공식, Little's Law, 과대 풀의 역설)]]
 - [ ] Thread pool sizing (작성 예정: `Thread-Pool-Sizing`) — 기존 보강: [[External-Service-Resilience|Bulkhead와 자원 격리]], [[OpenSearch-Performance-Troubleshooting|Thread pool과 429 진단]]
 - [x] [[Cache-Strategies|Cache strategy (읽기와 쓰기 5전략, 선택 매트릭스, TTL, 무효화, stampede)]]
-- [x] [[Transaction-Lock-Contention|Lock contention 분석]] — [[MySQL-Slow-Query-Diagnosis|MySQL 대기 사슬과 deadlock 진단]]
+- [x] [[Transaction-Lock-Contention|Lock contention 분석]] — [[Lock-Wait-Convoy|락 대기 큐와 convoy]], [[MySQL-Slow-Query-Diagnosis|Slow Query 진단 (현재 blocker와 lock wait 특정)]]
 - [x] [[Debugging-Profiling|CPU / Memory profiling (도구 선택, V8/Perf, Heap Snapshot, GC, Flame Graph)]]
 - [x] Bottleneck tracing — [[Application-Performance-Monitoring|APM (RED/USE, P95/P99, slow request, trace ID)]]와 [[OpenTelemetry|분산 트레이싱]]
 - [x] 성능 테스트 — [[performance|유형과 시나리오 (종료 조건, open/closed 부하 모델, 스파이크 설계, 종단 간 유실 측정)]]와 [[Load-Test-K6|도구 (k6, JMeter, Keploy, 실행 설정, 전용 환경)]]

@@ -117,6 +117,7 @@ if (result.affected !== 1) {
 
 ## 관련 문서
 
+- [[MySQL-SQL-Mode|MySQL SQL Mode]]
 - [[Primary-Key-Strategy|PK 생성 전략]]
 - [[Foreign-Key-Integrity|외래 키와 참조 무결성]]
 - [[Index|인덱스]]

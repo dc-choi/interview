@@ -77,4 +77,5 @@ MySQL 8.4 공식 규칙상 trigger에서 `NEW.generated_col`이나 `OLD.generate
 
 - [[Index|인덱스]]
 - [[Query-Antipatterns|SQL 쿼리 안티패턴]]
+- [[MySQL-Stored-Functions|MySQL 저장 함수]]
 - [[Schema-Migration-Large-Table|대용량 스키마 변경]]

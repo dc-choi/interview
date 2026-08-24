@@ -128,6 +128,7 @@ LIMIT 5000;
 ## 관련 문서
 
 - [[Transactions|트랜잭션]]
+- [[MySQL-SQL-Mode|MySQL SQL Mode]]
 - [[Lock|DB Lock]]
 - [[Lock-Deadlock|DB 데드락]]
 - [[Schema-Design|스키마 설계]]

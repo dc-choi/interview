@@ -31,15 +31,18 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[MySQL-Charset-Migration|utf8mb4 마이그레이션 안전 절차 (인덱스 키 길이 767/3072, collation 충돌, latin1 복구)]]
 
 ## MySQL 엔진
-- [x] [[mysql|MySQL 폴더 인덱스 (엔진 내부, 튜닝, 백업, 파티셔닝, PostgreSQL 비교)]]
+- [x] [[mysql|MySQL 폴더 인덱스 (기본기, 엔진 내부, 성능, 운영, 백업, 파티셔닝, PostgreSQL 비교)]]
+- [x] [[MySQL-Fundamentals|MySQL 기본기 폴더 인덱스 (조회와 SQL 기능, 컬럼과 타입, 안전성과 서버 동작)]]
+- [x] [[MySQL-Performance|MySQL 성능 폴더 인덱스 (Query 최적화, 파라미터 튜닝, 진단)]]
+- [x] [[MySQL-SQL-Mode|MySQL SQL Mode (strict mode, 8.4 기본 모드, IGNORE 상호작용, 조합 모드와 운영 주의점)]]
 - [x] [[MySQL-Architecture|MySQL 아키텍처, SQL 처리 파이프라인 (2계층 구조, 파서/옵티마이저/실행기, 스토리지 엔진, 뷰)]]
 - [x] [[MySQL-InnoDB-Internals|MySQL 8.4 InnoDB 내부 구조 (MVCC/Undo, Locking/Deadlock, Redo/Crash Recovery)]]
 - [x] [[DML-Conflict-and-Batch-Patterns|MySQL DML 충돌 처리와 배치 패턴 (IGNORE, UPSERT, REPLACE, 조건부 갱신)]]
 - [x] [[MySQL-InnoDB-Tuning|InnoDB 튜닝 (Buffer Pool, flush_log_at_trx_commit, io_capacity, 압축)]]
 - [x] [[MySQL-Partitioning|MySQL Partitioning (RANGE/HASH/LIST, Partition Pruning, DROP PARTITION)]]
-- [x] [[MySQL-Slow-Query-Diagnosis|Slow Query 진단 (Slow Query Log, performance_schema, processlist, 락 대기)]]
-- [x] [[MySQL-Digest-Statistics|Digest 통계 운영 (max_digest_length, performance_schema_digests_size, Prepared Statement, PG 비교)]]
-- [x] [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length (read view 수명, HLL 급증 진단, Aurora ARRRC)]]
+- [x] [[MySQL-Slow-Query-Diagnosis|Slow Query 진단 (Slow Query Log, performance_schema, processlist, 락 대기, 실행 계획 대조, 시스템 신호 연결)]]
+- [x] [[MySQL-Digest-Statistics|Digest 통계 운영 (max_digest_length 절단, digests_size 포화/truncate, QUANTILE_99와 BUCKET_QUANTILE P99, COUNT_STAR/Questions QPS, Prepared Statement PI 영향, PG 비교)]]
+- [x] [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length (read view 수명, HLL 급증 진단, Aurora 공유 스토리지와 ARRRC)]]
 
 ## Oracle
 - [x] [[oracle|Oracle Database 폴더 인덱스 (SQL 방언, sequence, 계층 query, PL/SQL, 11g 역사 자료)]]

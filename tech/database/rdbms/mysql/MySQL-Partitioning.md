@@ -111,3 +111,4 @@ WHERE created_at >= '2026-06-01'
 - [[Execution-Plan|실행 계획]]
 - [[MySQL-Long-Transactions-and-Batch|MySQL 장기 트랜잭션과 배치]]
 - [[MySQL-Architecture|MySQL 아키텍처]]
+- [[MySQL-SQL-Mode|MySQL SQL Mode]]

@@ -69,6 +69,7 @@ SET PERSIST_ONLY some_read_only_variable = 'value';
 ## 관련 문서
 
 - [[MySQL-Connection-Management|MySQL connection 관리]]
+- [[MySQL-SQL-Mode|MySQL SQL Mode]]
 - [[MySQL-InnoDB-Tuning|InnoDB 튜닝]]
 - [[MySQL-Slow-Query-Diagnosis|Slow query 진단]]
 - [[MySQL-Collation|MySQL collation]]

@@ -75,7 +75,7 @@ HAVING COUNT(*) >= 3;
 - `WHERE`는 집계 입력을 줄이고 `HAVING`은 만들어진 그룹을 거른다.
 - 단순 중복 제거가 목적이면 `DISTINCT`, 그룹별 계산이 목적이면 `GROUP BY`를 사용한다. `DISTINCT`는 함수가 아니라 SELECT modifier이므로 `DISTINCT column`으로 쓰며, 어느 쪽이 더 빠르다고 단정하지 않고 실행 계획을 확인한다.
 - `GROUP BY`가 결과를 정렬한다는 전제를 두지 않는다.
-- 기본 `ONLY_FULL_GROUP_BY`에서는 비집계 컬럼이 그룹 키에 없고 함수 종속성도 인정되지 않으면 쿼리를 거부한다. 임의의 한 행을 고르게 만들려고 이 모드를 끄지 않는다.
+- 기본 `ONLY_FULL_GROUP_BY`에서는 비집계 컬럼이 그룹 키에 없고 함수 종속성도 인정되지 않으면 쿼리를 거부한다. 대응 방법은 [[MySQL-SQL-Mode|MySQL SQL Mode]]에 둔다.
 - `WITH ROLLUP`은 소계와 총계 행을 추가하므로 NULL이 원본 값인지 집계 표식인지 구분해야 한다.
 
 ## COUNT 비용과 결과 계약
@@ -141,6 +141,7 @@ const businesses = await businessRepository
 ## 관련 문서
 
 - [[SQL-Joins|SQL 조인]]
+- [[MySQL-SQL-Mode|MySQL SQL Mode]]
 - [[SQL-Tuning-Terminology|SQL 튜닝 용어]]
 - [[Query-Antipatterns|SQL 쿼리 안티패턴]]
 - [[Index|인덱스]]
