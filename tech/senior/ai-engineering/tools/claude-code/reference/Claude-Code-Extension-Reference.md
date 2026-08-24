@@ -36,7 +36,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - 호출: description 기반 자동 위임, `@agent-이름` 강제 지정, `claude --agent`로 메인 스레드 자체를 에이전트화
 - 제약: 중첩 최대 5단계, 부모가 bypassPermissions면 프론트매터 permissionMode 무시, 기본 백그라운드 실행. 영구 메모리는 스코프별 agent-memory (첫 200줄/25KB만 로드)
 - 포크 서브에이전트(실험적): 대화 전체와 도구를 상속하고 프롬프트 캐시를 공유해 저렴 — 빈 컨텍스트에서 시작하는 격리 서브에이전트와 정반대 트레이드오프
-- 에이전트 팀(실험적): 팀원 간 메시징 + 공유 태스크. 일반 세션 대비 약 7배 토큰이고 워크트리 격리가 없어 파일 영역 분담이 필수
+- 에이전트 팀(실험적): 리드 에이전트가 피어 세션을 감독하며 팀원 간 메시징 + 공유 태스크로 조율. 팀원이 plan 모드로 돌면 일반 세션 대비 약 7배 토큰이고, 토큰은 활성 팀원 수와 각 팀원의 실행 시간에 비례해 증가. 팀원끼리 같은 파일을 편집하면 덮어쓰기가 나므로 파일 영역 분담이 필수 (워크트리 격리는 별도 수동 방식). 대화가 조율할 규모를 넘는 대량 fan-out은 [[Claude-Code-Dynamic-Workflows|동적 워크플로우]]
 
 ## 스킬 — 온디맨드 플레이북
 
@@ -72,11 +72,14 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 ## 출처
 
 - [클로드 코드 가이드 (레퍼런스 08 MCP, 09 훅, 10 서브에이전트, 11 스킬, 18 플러그인) — WikiDocs](https://wikidocs.net/book/19104)
+- [Orchestrate teams of Claude Code sessions — Claude Code Docs](https://code.claude.com/docs/en/agent-teams)
+- [Manage costs (agent team token costs) — Claude Code Docs](https://code.claude.com/docs/en/costs)
 
 ## 관련 문서
 
 - [[Agent-Skills|에이전트 스킬 (스킬 개념, Claude vs Codex 포맷 비교, 스킬 vs 훅)]]
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (Skills, MCP, 서브에이전트 활용)]]
+- [[Claude-Code-Dynamic-Workflows|동적 워크플로우 (스크립트 오케스트레이션, 대규모 fan-out)]]
 - [[Claude-Code-Config-Permissions|Claude Code 설정과 권한]]
 - [[MCP|MCP (Model Context Protocol)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (경계 명세)]]

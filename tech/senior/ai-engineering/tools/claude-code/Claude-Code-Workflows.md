@@ -57,7 +57,7 @@ CLAUDE.md는 무시될 수 있는 가이드라인이고, 반드시 지켜야 하
 
 브랜치 전환 없이 독립 디렉토리에서 여러 세션 동시 가동 (`claude -w 브랜치명`). 핵심은 **파일 수정 영역이 겹치지 않는 독립 작업 할당** — 기능 개발, 버그 수정, 리팩토링을 나눠 맡긴다. 로컬 worktree 여러 개 + 클라우드 세션을 합쳐 10개 이상 병렬 운용하는 패턴도 있다. 머지 전 변경 파일 중복 확인.
 
-## 확장 — Skills, MCP, 서브에이전트, 플러그인
+## 확장 — Skills, MCP, 서브에이전트, 에이전트 팀, 동적 워크플로우, 플러그인
 
 ### Skills
 
@@ -72,11 +72,12 @@ CLAUDE.md는 무시될 수 있는 가이드라인이고, 반드시 지켜야 하
 
 DB, 외부 API로 접근 범위 확장. 스코프 3종(user 전역, project는 .mcp.json으로 Git 공유, local 개인). **접속 문자열의 비밀번호가 설정에 평문 저장**되므로 project 스코프에서는 읽기 전용 계정 사용 ([[MCP]] 참조).
 
-### 서브에이전트와 에이전트 팀
+### 서브에이전트, 에이전트 팀, 동적 워크플로우
 
 - 서브에이전트: 메인 세션 내 독립 컨텍스트, 결과만 반환. **리뷰, 분석 에이전트에는 읽기 전용 도구만 부여**하고 worktree 격리로 의도치 않은 수정 방지
 - 에이전트 팀: 독립 인스턴스 병렬 + 상호 통신. 토큰 비용이 커서 필요할 때만
 - 에이전트별 memory로 세션 간 지식 축적 가능
+- 동적 워크플로우: 대화가 조율할 수 있는 규모를 넘는 대량 fan-out(전체 감사, 대량 마이그레이션)을 스크립트로 오케스트레이션 ([[Claude-Code-Dynamic-Workflows|동적 워크플로우]])
 
 ### 플러그인
 
@@ -138,6 +139,7 @@ Claude Code를 만든 엔지니어의 실사용 패턴. 위 원칙들의 극단�
 ## 관련 문서
 
 - [[Claude-Code-Fundamentals|Claude Code 기초 (권한 모드, 컨텍스트, CLAUDE.md)]]
+- [[Claude-Code-Dynamic-Workflows|동적 워크플로우 (대규모 서브에이전트 오케스트레이션)]]
 - [[Claude-Code-Bedrock|Claude Code on Amazon Bedrock 배포와 운영]]
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain→Inform→Verify→Correct)]]
 - [[AI-Native-Org|AI 네이티브 조직 (공용 실행 계층)]]

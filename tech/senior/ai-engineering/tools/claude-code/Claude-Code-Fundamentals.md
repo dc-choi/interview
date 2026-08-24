@@ -26,7 +26,7 @@ Desktop 앱의 3탭 구분이 핵심: **Chat**(파일 접근 없음, 첨부만),
 작업 난이도에 품질과 토큰 비용을 맞추는 두 손잡이:
 
 - `/model`: 플래그십(장기 계획, 아키텍처) ~ 저비용 고속(단순 변환) 중 선택 ([[LLM-Model-Tiers|모델 티어]])
-- `/effort [low~max|auto]`: 사고 깊이. 오타 수정은 low, 아키텍처 분석은 high 이상. max는 현재 세션만
+- `/effort [low~max|auto]`: 사고 깊이. 오타 수정은 low, 아키텍처 분석은 high 이상. max는 현재 세션만. xhigh 지원 모델에서는 워크플로우 자동 오케스트레이션을 묶은 `ultracode`도 메뉴에 나온다 (버전 등 조건은 [[Claude-Code-Dynamic-Workflows|동적 워크플로우]]가 정본)
 - `ultrathink` 키워드를 메시지에 넣으면 그 턴만 더 깊이 추론 (in-context 지시, "think hard"류는 인식 안 됨)
 
 높을수록 좋지만 토큰 = 비용이므로 업무별로 조절하는 것이 요점.
