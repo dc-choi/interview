@@ -29,7 +29,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] [[Transaction-Lock-Contention|Lock contention 분석]] — [[MySQL-Slow-Query-Diagnosis|MySQL 대기 사슬과 deadlock 진단]]
 - [x] [[Debugging-Profiling|CPU / Memory profiling (도구 선택, V8/Perf, Heap Snapshot, GC, Flame Graph)]]
 - [x] Bottleneck tracing — [[Application-Performance-Monitoring|APM (RED/USE, P95/P99, slow request, trace ID)]]와 [[OpenTelemetry|분산 트레이싱]]
-- [x] [[Load-Test-K6|성능 테스트 도구 (k6, JMeter, Keploy, 시나리오, 측정 지표, 전용 환경)]]
+- [x] 성능 테스트 — [[performance|유형과 시나리오 (종료 조건, open/closed 부하 모델, 스파이크 설계, 종단 간 유실 측정)]]와 [[Load-Test-K6|도구 (k6, JMeter, Keploy, 실행 설정, 전용 환경)]]
 - [x] Autoscaling — [[Auto-Scaling|EC2 ASG (target tracking, step, scheduled, warmup)]]와 [[ECS-Service-AutoScaling|ECS 서비스 오토스케일링]]
 - [x] [[Scale-Up-vs-Out|Scale Up vs Scale Out (수직, 수평 확장 비교, 혼합 패턴)]]
 - [x] [[Traffic-Scaling-Playbook|트래픽 스케일링 실전 (서버 증설 없는 최적화, 모니터링→식별→카나리)]]

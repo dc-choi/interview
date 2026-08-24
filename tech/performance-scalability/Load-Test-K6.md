@@ -1,6 +1,7 @@
 ---
 tags: [performance, load-test, k6, jmeter, keploy, testing-tools]
 status: done
+verified_at: 2026-08-24
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["Load Test K6", "성능 테스트 도구", "k6 vs JMeter"]
 ---
@@ -28,7 +29,7 @@ aliases: ["Load Test K6", "성능 테스트 도구", "k6 vs JMeter"]
 ### 특징
 
 - **JavaScript 기반** 스크립트 — 개발자 친화
-- **Go로 작성** → **메모리 사용량 낮음** (약 100MB)
+- **Go로 작성** → **메모리 사용량 낮음** (간단한 테스트 기준 프로세스 약 100MB, VU당 약 1~5MB — 파일 업로드나 큰 모듈은 VU당 수십 MB, [[performance|성능 테스트 유형]]의 생성기 병목 절)
 - 초당 **수십만 요청** 처리 가능
 - GUI 없음 → 오버헤드 최소
 - Grafana, Datadog, Prometheus와 자연스럽게 연동
@@ -91,7 +92,7 @@ export default function () {
 | 축 | k6 | JMeter |
 |---|---|---|
 | 스크립트 | JavaScript | XML (GUI 편집) |
-| 메모리 | ~100MB | ~600MB |
+| 메모리 | 간단 테스트 ~100MB (VU당 1~5MB) | ~600MB |
 | 최대 부하 | 수십만 RPS (단일 머신) | 제한됨(워커 필요) |
 | 분산 부하 | 외부 서비스 필요 | 기본 지원 |
 | Git 리뷰 | 쉬움 (JS) | 어려움 (XML) |
@@ -147,7 +148,8 @@ export default function () {
 ## 실전 설계
 
 - **유형과 지표 축**: [[performance|성능 테스트 유형]] 참고. 이 절은 도구 측 설정만 다룬다.
-- **k6가 방출하는 기본 메트릭**: `http_req_duration`은 요청 전체 소요를 trend로, `http_req_failed`는 실패 비율을 rate로 내보낸다. threshold 표현식은 이 메트릭 이름 위에 건다.
+- **k6가 방출하는 기본 메트릭**: `http_req_duration`은 sending, waiting, receiving의 합계(DNS 조회와 커넥션 수립 시간은 제외)를 trend로, `http_req_failed`는 실패 비율을 rate로 내보낸다. threshold 표현식은 이 메트릭 이름 위에 건다.
+- **구간별 목표 도착률 지정**: 스파이크처럼 도착률을 직접 제어하려면 k6는 `ramping-arrival-rate` executor를 쓴다. 지정 값은 timeUnit당 iteration 시작 수라서 iteration 1건이 요청 1건일 때만 그 값이 곧 TPS다. 목표율을 유지할 VU는 `preAllocatedVUs`로 미리 확보하고, `maxVUs`를 따로 주지 않으면 그 값이 곧 상한이라 확보량이 모자라면 목표 도착률을 채우지 못한다. JMeter의 Constant Throughput Timer는 목표값을 변수나 함수로 테스트 중 바꿀 수는 있지만 새 값이 반영되기까지 시간이 걸려 구간별 급변에 맞지 않다. 대신 jmeter-plugins의 Throughput Shaping Timer로 구간별 RPS 스케줄을 만들되 타이머는 스레드를 지연만 시키므로 Concurrency Thread Group의 Schedule Feedback Function으로 스레드를 공급하고, 또는 JMeter 5.5부터 코어에 포함된 Open Model Thread Group(공식 문서상 experimental)으로 도착률을 직접 표현한다. 시나리오 설계는 [[performance#스파이크 시나리오 설계와 해석|성능 테스트 유형]] 참고.
 - **환경 분리**: Load는 Staging, Stress와 Endurance, Spike는 전용 환경, Production은 Canary, Shadow로 제한적
 
 ## 흔한 실수
@@ -172,6 +174,13 @@ export default function () {
 ## 출처
 - [velog yongtae923 — k6 vs JMeter](https://velog.io/@yongtae923/k6-vs-JMeter)
 - [keploy GitHub](https://github.com/keploy/keploy)
+- [Grafana k6 공식 문서, Ramping arrival rate](https://grafana.com/docs/k6/latest/using-k6/scenarios/executors/ramping-arrival-rate/)
+- [Grafana k6 공식 문서, Arrival-rate VU allocation](https://grafana.com/docs/k6/latest/using-k6/scenarios/concepts/arrival-rate-vu-allocation/)
+- [Grafana k6 공식 문서, Metrics reference](https://grafana.com/docs/k6/latest/using-k6/metrics/reference/)
+- [Apache JMeter Component Reference](https://jmeter.apache.org/usermanual/component_reference.html)
+- [Apache JMeter Changes History (5.5, Open Model Thread Group)](https://jmeter.apache.org/changes_history.html)
+- [JMeter Plugins, Throughput Shaping Timer](https://jmeter-plugins.org/wiki/ThroughputShapingTimer/)
+- [스파이크 테스트를 활용한 TPS 검증 — Nextree, jungboke](https://www.nextree.io/seupaikeu-teseuteureul-hwalyonghan-tps-geomjeung/)
 
 ## 관련 문서
 - [[Latency-Optimization|레이턴시 최적화]]

@@ -73,3 +73,4 @@ sleep = min(cap, base * 2 ** attempt)
 - [[MQ-Kafka-Retry-DLT|Kafka 재시도와 DLT]]
 - [[Event-Driven-Patterns|이벤트 드리븐 실전 패턴]]
 - [[Idempotency|멱등성]]
+- [[performance|성능 테스트 (스파이크로 재시도 버스트 검증)]]
