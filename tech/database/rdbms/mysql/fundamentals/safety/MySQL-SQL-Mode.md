@@ -89,6 +89,21 @@ InnoDB의 `innodb_strict_mode`(8.4 기본 ON)는 별개 변수다. 이는 CREATE
 - **`ONLY_FULL_GROUP_BY`나 strict를 끄는 것으로 오류를 해결하지 않는다.** 오류는 쿼리나 데이터의 문제를 드러낸 것이고, 모드를 끄면 문제가 비결정적 결과나 조용한 값 보정으로 바뀔 뿐이다.
 - **legacy 데이터 이관 시 모드 차이를 명시적으로 다룬다.** zero date나 잘린 값이 들어 있는 구버전 덤프는 기본 모드에서 복원이 실패할 수 있다. 임시로 세션 모드를 낮추더라도 범위와 기간을 정해 두고 되돌린다.
 
+## 실서버 값 확인과 strict 전환
+
+8.4 기본값은 엔진이 컴파일해 둔 출발점일 뿐이고, 실서버의 실제 값은 위의 영구 반영 수단들이 덮는다. 현재 값과 그 출처부터 확인한다.
+
+```sql
+SELECT variable_source, variable_path
+FROM performance_schema.variables_info
+WHERE variable_name = 'sql_mode';
+-- COMPILED, COMMAND_LINE, GLOBAL/SERVER(설정 파일), EXPLICIT(--defaults-file), PERSISTED, DYNAMIC(런타임 SET) 등
+```
+
+- RDS와 Aurora에서는 파라미터 그룹이 정본이다. 파라미터 그룹이 주는 sql_mode는 엔진 기본값과 같다고 가정하지 말고 `aws rds describe-engine-default-parameters`(패밀리는 RDS `mysql8.4`, Aurora는 해당 버전의 `aurora-mysql*`)와 인스턴스에 붙은 그룹의 실제 값으로 확인한다. 수정은 커스텀 파라미터 그룹으로 하고(기본 그룹은 수정 불가), writer와 reader에 같은 그룹을 적용해 양단 모드를 맞춘다. 표준 파라미터 템플릿을 쓰는 조직이라면 템플릿의 sql_mode 항목부터 확인한다([[MySQL-Aurora-Parameter-Tuning|MySQL/Aurora 파라미터 표준 튜닝]]).
+- 관대한 모드로 운영되던 DB에 strict를 바로 켜지 않는다. 보정되어 저장된 데이터와 관대한 동작에 의존하는 쿼리가 있으면 잘 돌던 변경문이 그날부터 오류가 된다. 클라이언트 쪽에서 warning 카운트와 `SHOW WARNINGS`를 수집하거나 strict 세션의 스테이징에 워크로드를 재생해 걸리는 문장을 찾고, 데이터와 쿼리를 정리한 뒤에 전역으로 올린다. 데이터가 들어간 파티션 테이블이 있으면 위 체크포인트대로 서버 모드는 바꾸지 않는다.
+- 빈 sql_mode는 설계가 아니라 유산이다. strict 계열이 기본값이 된 것은 MySQL 5.7(5.7.5~5.7.8에 걸쳐 추가)부터이고, 그 전에 만들어진 데이터, 설정과 이관 호환 관행이 복사되며 살아남는다.
+
 ## 점검 질문
 
 - `STRICT_TRANS_TABLES`와 `STRICT_ALL_TABLES`의 차이를 논트랜잭셔널 테이블의 부분 갱신 관점에서 설명할 수 있는가.
@@ -102,6 +117,7 @@ InnoDB의 `innodb_strict_mode`(8.4 기본 ON)는 별개 변수다. 이는 CREATE
 - [[MySQL-Data-and-Access-Safety|MySQL 데이터와 접근 안전성]]
 - [[DML-Conflict-and-Batch-Patterns|MySQL DML 충돌 처리와 배치 패턴]]
 - [[MySQL-Configuration-Change-Management|MySQL 설정 변경 관리]]
+- [[MySQL-Aurora-Parameter-Tuning|MySQL/Aurora 파라미터 표준 튜닝]]
 - [[MySQL-Error-Handling|MySQL 오류 처리]]
 - [[MySQL-Partitioning|MySQL Partitioning]]
 
@@ -112,3 +128,7 @@ InnoDB의 `innodb_strict_mode`(8.4 기본 ON)는 별개 변수다. 이는 CREATE
 - [MySQL 8.4 Reference Manual, Replication and Variables](https://dev.mysql.com/doc/refman/8.4/en/replication-features-variables.html)
 - [MySQL 8.4 Reference Manual, InnoDB Startup Options and System Variables](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_strict_mode)
 - [MySQL 8.4 Reference Manual, Persisted System Variables](https://dev.mysql.com/doc/refman/8.4/en/persisted-system-variables.html)
+- [MySQL 8.4 Reference Manual, The variables_info Table](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-variables-info-table.html)
+- [MySQL 5.7 Reference Manual, Server SQL Modes](https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html)
+- [Amazon RDS User Guide, Parameters for MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.MySQL.Parameters.html)
+- [Amazon RDS User Guide, Overview of parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/parameter-groups-overview.html)

@@ -93,4 +93,5 @@ MySQL Fulltext의 **n-gram 파서**는 문장을 N글자 단위로 쪼개 인덱
 - [[MySQL-InnoDB-Tuning|InnoDB 튜닝]] — Buffer Pool, redo log, I/O 심화
 - [[MySQL-Architecture|MySQL 아키텍처]] — 옵티마이저, 복제 처리 맥락
 - [[MySQL-Slow-Query-Diagnosis|Slow Query 진단]] — 파라미터 조정 효과 검증
+- [[MySQL-SQL-Mode|MySQL SQL Mode]] — 파라미터 그룹이 덮는 sql_mode와 strict 전환
 - [[RDS-Aurora-Architecture|Aurora 아키텍처]] — Reader/Writer 스토리지 차이
