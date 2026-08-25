@@ -15,7 +15,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 > 초기 DAU 만명 단위의 서비스가 모바일 앱을 출시하면서 사용자가 폭발적으로 늘어나고 있는 상황입니다. 서버 측면에서 예상되는 현상과 조치 방법에 대해서 설명해주세요.
 
-**예상 현상**
+**답변 골격: 예상 현상**
 - **응답 지연 → Timeout** → 연쇄 장애
 - **DB Connection Pool 고갈** → 쿼리 대기 폭증
 - **CPU/메모리 포화** → GC pause 증가
@@ -25,7 +25,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 **조치 방법 (단기 → 장기)**
 1. **즉시**: 병목을 측정한 뒤 WAS를 스케일 아웃하고 CDN 캐시 TTL을 조정. DB가 읽기 병목이며 stale read를 허용할 때만 리드 레플리카를 추가하고, read-after-write는 primary로 고정
-2. **단기**: Redis 캐시 전면 도입, N+1 쿼리 제거, Connection Pool 튜닝
+2. **단기**: 측정된 핫 읽기 경로 중 stale read를 허용하는 곳에만 Cache Aside 적용, 캐시 무효화 설계, N+1 쿼리 제거, Connection Pool 튜닝
 3. **중기**: 비동기 처리 전환 (Kafka/SQS로 오프로딩), 핫 경로 프로파일링
 4. **장기**: 읽기/쓰기 분리, 샤딩, 도메인 분리(MSA), 오토스케일링 규칙 정교화
 
@@ -35,13 +35,19 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 - 장애 리허설 (Chaos Engineering)
 - 모니터링 경보 임계값 재조정
 
+**판단 기준**: 실제 RPS, p95/p99, 오류율, DB 대기와 외부 API quota를 먼저 측정해 병목을 특정하고, 데이터 신선도와 read-after-write 요구를 확인한 뒤 캐시나 리드 레플리카를 선택한다.
+
+**대안과 트레이드오프**: 캐시와 리드 레플리카는 읽기 부하를 낮추지만 stale read를 허용하는 경로에만 쓴다.
+
+**꼬리질문**: 스케일 아웃 전에 어떤 지표가 병목의 위치를 보여주는가?
+
 ---
 
 ## Q6. 기프티콘 한정 이벤트 아키텍처 (동시성 + 재고 소진)
 
 > 특정 상품의 구매 이력이 있는 회원에게 설문을 요청하고 제출 시 스타벅스 기프티콘을 자동 지급합니다. 하루 동안 진행되고 오전 9시 정시에 오픈, 기프티콘 소진 시 종료되는 이벤트의 아키텍처를 어떻게 설계할까요?
 
-**핵심 요구사항 분해**
+**답변 골격: 핵심 요구사항 분해**
 - **폭발적 동시 접근** (오픈 시각 직후 쏠림) — 초당 수만 TPS는 요구사항과 과거 지표를 확인하기 전의 가정
 - **한정 수량** (재고 정확도 필요 — 초과 지급 불가)
 - **중복 지급 방지** (한 회원 1회)
@@ -60,10 +66,14 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 3. **진입 제어는 선택 사항**: peak RPS, DB lock wait, connection pool, 외부 API quota를 측정해 DB 접수 경로가 버티지 못할 때만 Redis 기반 대기열 또는 admission control을 추가. Redis는 도착을 평탄화할 뿐 DB 재고와 원자적으로 묶지 않으며, 최종 재고 정본은 DB transaction
 4. **모니터링**: 남은 재고, transaction 충돌, outbox lag, `accepted/issued/failed` 수, DLQ와 대사 지연을 대시보드와 경보로 관리
 
-**트레이드오프**
+**대안과 트레이드오프**
 - 기본 DB transaction은 재고와 중복 접수의 정합성이 명확하지만 같은 재고 행의 경합이 처리량을 제한할 수 있음
 - 측정된 병목이 있을 때만 대기열이나 admission control로 접수량을 조절. 이것은 정합성 수단이 아니라 부하 완화 수단
 - 메시지와 외부 지급은 적어도 한 번 처리될 수 있으므로 Idempotency Key, 상태, 재시도와 대사가 필요
+
+**판단 기준**: 재고 정합성, 중복 지급 방지와 외부 지급 지연을 분리해 각 경로의 실패 처리를 설계한다.
+
+**꼬리질문**: 외부 지급 서비스가 Idempotency Key를 지원하지 않으면 어떤 대사 절차가 필요한가?
 
 > 참고: [[Delivery-Semantics|Delivery Semantics]], [[Idempotency-Key|Idempotency Key]], [[At-Least-Once|At-Least-Once]], [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처]]
 
@@ -73,7 +83,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 > 이커머스에서 나의 구매 목록을 조회하는 기능이 있다고 할 때, 초반에는 데이터가 적어 페이지 로딩이 빠르지만 시간이 지나 억 단위 데이터가 생성되면 조회할 때마다 느려집니다. 어떻게 개선할 수 있을까요?
 
-**개선 단계 (저비용 → 고비용)**
+**답변 골격: 개선 단계 (저비용 → 고비용)**
 
 1. **SQL 최적화**: 실행 계획 분석 (EXPLAIN ANALYZE), N+1 제거, 불필요한 JOIN 제거, 필요한 컬럼만 SELECT
 2. **인덱스 최적화**: 복합 인덱스 (회원ID + 주문일시 DESC), Covering Index, 인덱스 선택도/카디널리티 점검
@@ -89,6 +99,12 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 **답변 요령**: RDBMS 경로에서는 측정 결과에 따라 저비용 옵션부터 검토하고 각 트레이드오프를 설명한다. 근거 없이 "샤딩부터 하자"는 답변은 감점.
 
+**판단 기준**: 실제 쿼리의 실행 계획, 반환 행 수와 접근 패턴을 보고 인덱스와 페이지네이션부터 판단한다.
+
+**대안과 트레이드오프**: Cursor는 깊은 페이지의 성능과 일관성에 유리하지만 임의 페이지 이동과 정렬 조건에 제약이 있다.
+
+**꼬리질문**: 복합 인덱스의 컬럼 순서는 어떤 조건과 정렬을 기준으로 정하는가?
+
 > 참고: [[데이터&저장소(Data&Storage)|데이터&저장소]], [[성능&확장성(Performance&Scalability)|성능&확장성]]
 
 ---
@@ -97,7 +113,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 > 이커머스에서 상품을 결제할 때, 주문과 결합된 여러 도메인이 있습니다. 주문 데이터 저장 이후 결제, 재고 업데이트, 배송 준비, 구매 완료 메일 발송 등의 작업이 모두 강결합일 경우, 트래픽이 몰리면 예상되는 문제점과 해결 방법은?
 
-**예상 문제점**
+**답변 골격: 예상 문제점**
 - **응답 지연** — 결제 후 메일 발송까지 모두 동기 대기 → 사용자 체감 지연
 - **연쇄 장애** — 메일 서버 장애 시 주문 자체가 실패
 - **분산 트랜잭션 복잡도** — 여러 도메인의 롤백 처리 어려움
@@ -105,18 +121,24 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 - **DB 락 경합** — 재고 업데이트 + 주문 저장이 한 트랜잭션 안에 있으면 락 지속 시간 증가
 
 **해결 방법**
-1. **이벤트 기반 아키텍처로 전환**: 핵심 트랜잭션(주문 저장 + 결제)만 동기 처리, 재고/배송/메일은 이벤트 발행 후 비동기 처리
+1. **이벤트 기반 아키텍처로 전환**: 요청 경로에서는 주문을 `PENDING`으로 저장하고, 결제와 재고를 비동기 처리해 둘 다 성공하면 `CONFIRMED`, 실패하면 `CANCELED`와 보상 처리. 배송과 메일은 확정 후 실행
 2. **메시지 브로커 도입** (Kafka / RabbitMQ / SQS): 도메인 간 느슨한 결합 (Event-Driven)
-3. **Transactional Outbox 패턴**: DB 저장과 메시지 발행의 원자성 보장
+3. **Transactional Outbox 패턴**: 주문과 outbox 행을 한 DB 트랜잭션으로 저장. 별도 publisher는 재시도로 적어도 한 번 전달하며 중복 발행될 수 있으므로 consumer를 멱등하게 처리
 4. **SAGA 패턴**: 분산 트랜잭션 대신 보상 트랜잭션으로 일관성 확보
 5. **Dead Letter Queue (DLQ)**: 실패한 이벤트를 격리하여 재처리
 6. **멱등성 보장**: At-Least-Once 전달 시 중복 처리 방지 (Idempotency Key)
 
 **아키텍처 예시**
 ```
-[Order API] → [DB (Order + Outbox)] → [Outbox Publisher] → [Kafka: order.created]
-  → [Payment / Inventory / Shipping / Notification Consumer]
+[Order API] → [DB: Order PENDING + Outbox] → [Publisher] → [Payment / Inventory]
+  → [Saga: CONFIRMED 또는 CANCELED] → [Shipping / Notification]
 ```
+
+**판단 기준**: 요청에서 확정 결과를 줄지 접수 상태를 줄지, 결제와 재고의 허용 지연 및 보상 경계를 먼저 정한다.
+
+**대안과 트레이드오프**: 동기 호출은 즉시 결과를 주지만 장애 전파와 결합이 커지고, 비동기 처리는 복원력 대신 상태 추적과 보상 처리가 필요하다.
+
+**꼬리질문**: 결제는 성공했지만 재고 이벤트가 실패한 경우 어떤 상태와 보상 흐름을 설계하는가?
 
 > 참고: [[Transactional-Outbox|Transactional Outbox]], [[Messaging-Patterns|Messaging Patterns]], [[Monolith-vs-Microservice|Monolith vs Microservice]]
 
@@ -167,6 +189,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 ## 출처
 - 개발자 취업과 이직 한방에 해결하기
+- [AWS Prescriptive Guidance, Transactional outbox pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
 - [Search shard routing — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/search-shard-routing/)
 
 ## 관련 문서
