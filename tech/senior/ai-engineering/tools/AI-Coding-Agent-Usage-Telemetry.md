@@ -113,3 +113,4 @@ TokenPhage는 Claude Code, Codex와 opencode의 로컬 기록을 공급자별로
 - [[Claude-Code-Operations|Claude Code 운영과 진단]]
 - [[LLM-Cost-Optimization|LLM 비용 최적화와 호출 단위 가시성]]
 - [[관측가능성(Observability)|관측가능성]]
+- [[Agent-Skills|에이전트 스킬 (수명주기 감사 — 세션 로그 집계로 죽은 스킬 식별)]]

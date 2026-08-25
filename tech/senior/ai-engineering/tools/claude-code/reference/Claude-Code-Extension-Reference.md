@@ -1,6 +1,7 @@
 ---
 tags: [senior, ai, claude-code, hooks, subagent, skills, plugin, mcp]
 status: done
+verified_at: 2026-08-25
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Extension Reference", "클로드 코드 확장 메커니즘", "훅 레퍼런스", "스킬 레퍼런스"]
 ---
@@ -40,9 +41,9 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 ## 스킬 — 온디맨드 플레이북
 
-- 프론트매터 핵심: description(자동 로드 판단 기준, 1,024자 제한, name은 64자), disable-model-invocation(수동 전용 — 배포나 전송처럼 부작용 있는 스킬에 필수), user-invocable: false(메뉴 숨김, 배경지식용), allowed-tools(**사전 승인이지 제한이 아니다**), context: fork + agent(격리 실행), paths(파일 패턴 자동 활성)
+- 프론트매터 핵심: description(자동 로드 판단 기준, 목록 표시는 when_to_use와 합산 1,536자에서 절삭 — `skillListingMaxDescChars`로 조정, name은 Agent Skills 스펙 기준 64자), disable-model-invocation(수동 전용 — 배포나 전송처럼 부작용 있는 스킬에 필수), user-invocable: false(메뉴 숨김, 배경지식용), allowed-tools(**사전 승인이지 제한이 아니다**), context: fork + agent(격리 실행), paths(파일 패턴 자동 활성)
 - 치환: `$ARGUMENTS`, `$N`(위치 인자), 동적 컨텍스트는 백틱 셸 실행 — 정책상 차단하려면 disableSkillShellExecution
-- 예산: 스킬 설명 총량은 컨텍스트의 1%(폴백 8,000자), 초과 시 호출 빈도 낮은 스킬부터 설명이 제외된다 — `/doctor`로 확인
+- 예산: 스킬 목록은 이름을 유지한 채 모델 컨텍스트 윈도의 1%를 기본값으로 하는 문자 예산으로 관리된다(`skillListingBudgetFraction`, `SLASH_COMMAND_TOOL_CHAR_BUDGET`로 조정, 스킬별 `skillOverrides` name-only로 설명 제외 가능). 초과 시 호출 빈도 낮은 스킬부터 설명이 제외되어 최다 사용 스킬은 전문을 유지한다 — `/doctor`로 확인
 - 라이프사이클: 호출된 본문은 세션 내내 컨텍스트에 남는다 — 500줄 이하로 유지하고 상세는 서포팅 파일로 분리해 온디맨드 로드. 압축 시 최근 스킬은 총 25,000토큰 예산으로 재부착
 - 접근 제어는 권한 규칙 `Skill(name)`. 트리거가 안 되면 description 키워드를, 과다 트리거면 description 구체화나 disable-model-invocation을 점검
 
@@ -74,10 +75,12 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - [클로드 코드 가이드 (레퍼런스 08 MCP, 09 훅, 10 서브에이전트, 11 스킬, 18 플러그인) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code Docs, Orchestrate teams of Claude Code sessions](https://code.claude.com/docs/en/agent-teams)
 - [Claude Code Docs, Manage costs (agent team token costs)](https://code.claude.com/docs/en/costs)
+- [Claude Code Docs, Extend Claude with skills](https://code.claude.com/docs/en/skills)
+- [Agent Skills, Specification](https://agentskills.io/specification)
 
 ## 관련 문서
 
-- [[Agent-Skills|에이전트 스킬 (스킬 개념, Claude vs Codex 포맷 비교, 스킬 vs 훅)]]
+- [[Agent-Skills|에이전트 스킬 (스킬 개념, Claude vs Codex 포맷 비교, 스킬 vs 훅, 수명주기 감사)]]
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (Skills, MCP, 서브에이전트 활용)]]
 - [[Claude-Code-Dynamic-Workflows|동적 워크플로우 (스크립트 오케스트레이션, 대규모 fan-out)]]
 - [[Claude-Code-Config-Permissions|Claude Code 설정과 권한]]

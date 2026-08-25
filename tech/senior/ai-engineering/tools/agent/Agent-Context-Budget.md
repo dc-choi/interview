@@ -36,7 +36,7 @@ aliases: ["Agent Context Budget", "컨텍스트 예산", "Context Budget", "에�
 
 ## 패턴 3 — 스킬, 지침 문서: Catalog-First
 
-- 모델에게는 **카탈로그(이름 + 한 줄 설명)만 상시 노출**
+- 모델에게는 **카탈로그(이름 + 한 줄 설명)만 상시 노출** — 자체 구축 에이전트라 노출 정책을 직접 정한 설계다
 - 실제 문서 본문은 `read_skill` 도구로 필요할 때만, 역시 서버 hard cap 적용
 - 모델이 여러 문서를 한 번에 통째로 읽는 탐색 폭주를 원천 차단 (just-in-time retrieval 계열)
 
@@ -79,3 +79,4 @@ Q. 모델이 알아서 조금만 읽게 프롬프트로 지시하면?
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (Lazy Load, Defense in Depth)]]
 - [[AI-Native-System|AI 네이티브 시스템 (부탁 vs 강제, 결정론적 제어)]]
 - [[Agentic-Context-Platform|Context Provider (공급 측)]]
+- [[Agent-Skills|에이전트 스킬 (카탈로그 노출 비용과 수명주기 감사)]]
