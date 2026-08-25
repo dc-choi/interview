@@ -51,5 +51,5 @@ aliases: ["Lambda 실행 모델", "Lambda Cold Start"]
 
 - **함수 코드** — 실제 실행되는 핸들러. Runtime(Node.js, Python, Java, Go, Ruby, .NET, Custom), IAM 실행 역할, VPC 설정, 메모리 등을 함께 지정
 - **계층 (Layer)** — 의존성, 공통 라이브러리, 런타임 확장을 별도 zip으로 분리. 함수당 최대 5개. 패키지 크기 압박 완화, 버전 공유
-- **트리거** — 함수를 발동시키는 이벤트 소스 (아래)
+- **트리거** — 함수를 발동시키는 이벤트 소스. 종류와 호출 모델은 [[AWS-Lambda-Invocation-Concurrency|트리거 종류와 호출 모델]] 참고
 - **전달 대상 (Destinations)** — 비동기 호출 결과를 후속 서비스로 전달
