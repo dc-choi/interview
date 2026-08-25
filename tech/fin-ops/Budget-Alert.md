@@ -1,6 +1,7 @@
 ---
 tags: [finops, aws, budgets, alert, budget-actions, governance]
 status: done
+verified_at: 2026-08-25
 category: "비용&운영(FinOps)"
 aliases: ["Budget Alert", "예산 알람", "AWS Budgets", "예산 가드레일"]
 ---
@@ -33,16 +34,20 @@ aliases: ["Budget Alert", "예산 알람", "AWS Budgets", "예산 가드레일"]
 임계 도달 시 **자동 조치**를 실행한다(승인 단계 둘 수 있음).
 
 - **IAM/SCP 적용**: 신규 리소스 생성 권한을 제한(deny 정책 부착).
-- **EC2/RDS 중지**: 비핵심 환경의 인스턴스 정지.
-- **SNS/Slack 통보**: 책임자에게 에스컬레이션.
+- **EC2/RDS 중지**: 특정 비핵심 EC2/RDS 인스턴스를 대상으로 정지.
 
 dev/test 환경에 특히 유용 — 실험 비용이 폭주하면 자동으로 묶는다. 프로덕션엔 차단보다 통보 위주로.
+
+## Notifications — 책임자 통보
+
+- 예산 임계 알림은 이메일 수신자 또는 Amazon SNS topic으로 보낸다.
+- Slack 전달은 SNS를 받은 별도 채팅 연동을 통해 구성하며, Budget Action 자체가 아니다.
 
 ## 층으로 쓰기
 
 ```
-예측 80% → 알림 (조심)
-실제 100% → 알림 + 책임자 에스컬레이션
+예측 80% → 이메일/SNS 알림 (조심)
+실제 100% → 이메일/SNS 알림 + 책임자 에스컬레이션
 실제 120% → Budget Action으로 dev 신규 생성 차단
 ```
 
@@ -66,8 +71,9 @@ dev/test 환경에 특히 유용 — 실험 비용이 폭주하면 자동으로 
 
 ## 출처
 
-- [AWS — AWS Budgets](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html)
-- [AWS — Budget Actions](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html)
+- [AWS, AWS Budgets](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html)
+- [AWS, Configuring budget actions](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html)
+- [AWS, Configuring a budget action](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-action-configure.html)
 
 ## 관련 문서
 

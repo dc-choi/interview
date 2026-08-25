@@ -3,6 +3,7 @@ tags: [infrastructure, aws, storage-gateway, datasync, hybrid-cloud]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Storage Gateway", "AWS Storage Gateway", "DataSync", "AWS DataSync"]
+verified_at: 2026-08-25
 ---
 
 # Storage Gateway & DataSync
@@ -17,15 +18,15 @@ aliases: ["Storage Gateway", "AWS Storage Gateway", "DataSync", "AWS DataSync"]
 - 게이트웨이 형태
   - 온프레미스 VM(VMware ESXi, Microsoft Hyper-V, KVM)
   - AWS 내 EC2 인스턴스
-  - Storage Gateway **하드웨어 어플라이언스** (Amazon.com 구매)
+  - 기존 Storage Gateway **하드웨어 어플라이언스**. 2025-05-12부터 신규 판매가 종료됐고 기존 장비는 2028년 5월까지 지원된다.
 - **Volume Gateway의 Stored Volume을 제외하면** 나머지 유형은 AWS의 EC2 기반 게이트웨이를 마운트 포인트로 활용 가능
 
-## 3종 Storage Gateway 비교
+## Storage Gateway 유형 비교
 
 | 유형 | 프로토콜 | 백엔드 스토리지 | 데이터 형식 | 사용 사례 |
 |------|----------|-----------------|-------------|-----------|
 | **File Gateway** | NFS / SMB | S3 (Standard, Intelligent-Tiering, Standard-IA, One Zone-IA) | S3 객체 | 파일 공유, 백업 |
-| **FSx File Gateway** | SMB | FSx for Windows File Server | FSx 파일 | Windows 환경 SMB 캐싱 |
+| **FSx File Gateway** | SMB | FSx for Windows File Server | FSx 파일 | 기존 고객의 Windows SMB 캐싱. 신규 고객은 사용 불가 |
 | **Volume Gateway** | iSCSI | S3 (EBS Snapshot 형식) | 블록 | 온프레미스 블록 스토리지 백업 |
 | **Tape Gateway** | iSCSI (VTL) | S3 / S3 Glacier | 가상 테이프 | 기존 테이프 백업 SW 대체 |
 
@@ -39,6 +40,7 @@ aliases: ["Storage Gateway", "AWS Storage Gateway", "DataSync", "AWS DataSync"]
 
 ### FSx File Gateway
 
+- 신규 고객에게는 제공되지 않으며 기존 고객만 계속 사용할 수 있다.
 - 온프레미스에서 **Amazon FSx for Windows File Server**에 SMB로 접근
 - 파일 읽기, 쓰기는 로컬 캐시에서 수행하고, 변경분만 백그라운드에서 FSx에 동기화
 - FSx가 SMB를 직접 지원하는데도 게이트웨이를 두는 이유 → **자주 접근하는 데이터의 로컬 캐싱**
@@ -69,7 +71,7 @@ aliases: ["Storage Gateway", "AWS Storage Gateway", "DataSync", "AWS DataSync"]
 
 - 온프레미스 ↔ AWS, 또는 AWS 서비스 간 **대량 데이터 이전, 동기화 자동화** 서비스
 - 전송 채널 — **AWS Direct Connect, VPN, 인터넷**
-- **DataSync Agent**를 통해 데이터 전송 (VMware ESXi, Hyper-V, KVM에 배포)
+- 온프레미스 또는 다른 클라우드의 스토리지와 전송할 때는 **DataSync Agent**를 배포한다. 지원되는 AWS 스토리지 서비스 간 전송은 agent 없이 구성할 수 있다.
 - 전송 작업의 스케줄링, 증분 동기화, 검증, 암호화, 압축 자동 처리
 - TLS 전송 중 암호화 기본 활성화
 
@@ -103,6 +105,10 @@ aliases: ["Storage Gateway", "AWS Storage Gateway", "DataSync", "AWS DataSync"]
 
 ## 출처
 
+- [AWS Storage Gateway, How Volume Gateway works](https://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html)
+- [AWS Storage Gateway, Hardware Appliance end of availability](https://docs.aws.amazon.com/storagegateway/latest/vgw/appliance-launch-gateway.html)
+- [AWS Storage Gateway API, GatewayInfo](https://docs.aws.amazon.com/storagegateway/latest/APIReference/API_GatewayInfo.html)
+- [AWS DataSync, Where can I transfer my data?](https://docs.aws.amazon.com/datasync/latest/userguide/working-with-locations.html)
 - AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서

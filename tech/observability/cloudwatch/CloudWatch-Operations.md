@@ -1,6 +1,7 @@
 ---
 tags: [observability, aws, cloudwatch, monitoring, logs, metrics]
 status: done
+verified_at: 2026-08-25
 category: "Observability"
 aliases: ["CloudWatch Agent", "CloudWatch 운영과 비용 함정"]
 ---
@@ -45,7 +46,7 @@ X-Ray 분산 추적과 CloudWatch 메트릭, 로그 통합 뷰 (트레이스 →
 
 ## 흔한 실수
 
-- **로그에 시크릿 평문** — Subscription Filter로 KMS 암호화, 마스킹
+- **로그에 시크릿 평문** — 데이터 보호 정책으로 감사, 마스킹하고 로그 그룹은 KMS 키로 암호화. Subscription Filter는 Kinesis Data Streams, Firehose, Lambda로 로그를 실시간 전달
 - **Alarm 임계값을 인스턴스 단위로** — Composite, Anomaly Detection로 그룹, 동적
 - **메모리 메트릭 없는데 알람 못 만든다고 포기** — CloudWatch Agent로 수집
 - **Lambda 로그를 Lambda Insights 없이 디버깅** — 콜드 스타트, 메모리 분리 분석 어려움
@@ -65,3 +66,8 @@ X-Ray 분산 추적과 CloudWatch 메트릭, 로그 통합 뷰 (트레이스 →
 - Logs 소스: **CloudTrail, VPC Flow Log, Route 53, EC2(Agent), Lambda**
 - Container Insights, Lambda Insights, X-Ray의 역할 분리
 - Log Retention 기본 **무기한** → 비용 함정
+
+## 출처
+
+- [AWS, PutAccountPolicy](https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_PutAccountPolicy.html)
+- [AWS, Encrypt log data in CloudWatch Logs using AWS Key Management Service](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)

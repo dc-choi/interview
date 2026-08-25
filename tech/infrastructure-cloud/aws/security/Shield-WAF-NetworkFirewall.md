@@ -3,6 +3,7 @@ status: done
 category: "Infrastructure - AWS"
 tags: [aws, saa, security, shield, waf, network-firewall, ddos, web-security]
 aliases: [Shield, WAF, Network Firewall, AWS Shield, AWS WAF, AWS Network Firewall]
+verified_at: 2026-08-25
 ---
 
 # Shield, WAF, Network Firewall
@@ -29,15 +30,15 @@ AWS 보안 3종 세트. 계층(L3/L4 vs L7)과 적용 위치(엣지/리전 LB vs
 
 ### Shield Advanced
 
-- **월 정액(약 $3,000) + DT 보호 + 24/7 DRT 액세스**. 조직(Organization) 단위 가입.
+- **월 $3,000 + 보호 리소스의 데이터 전송량 기반 요금**, 1년 구독 약정. payer account 기준으로 월 구독료를 청구한다.
 - 추가 기능:
   - **L7 트래픽 모니터링, 메트릭** + 공격 사후 분석 리포트.
-  - **DDoS Response Team (DRT)** 지원.
-  - **WAF 무료 사용** (Advanced 구독자에 한해 WAF 룰 비용 포함).
-  - **Cost Protection**: DDoS로 인한 AutoScaling/CloudFront 데이터 전송 비용 환급.
+  - **Shield Response Team (SRT)** 지원. 연락에는 Business 또는 Enterprise Support가 필요하다.
+  - 보호 리소스의 표준 WAF Web ACL, 룰, 기본 요청 요금을 월 500억 요청과 기본 1,500 WCU 범위에서 포함한다. Bot/Fraud Control, 초과 WCU, Marketplace 관리형 룰 등은 별도 과금한다.
+  - **Cost Protection**: 자격 요건을 충족하면 DDoS로 증가한 일부 AWS 사용료를 크레딧으로 보전한다.
   - **Health-based detection**: Route 53 헬스체크 기반 정밀 탐지.
 - 보호 대상:
-  - **EC2, ELB, CloudFront, Global Accelerator, Route 53** + 연동 애플리케이션.
+  - **EC2의 Elastic IP, ELB, CloudFront, Global Accelerator, Route 53** 같은 지원 리소스.
   - CloudFront 뒤가 AWS가 아닌 외부 Origin이어도 보호 범위.
 
 ### Standard vs Advanced 결정 트리
@@ -67,7 +68,7 @@ NLB, EC2 직접 부착 ❌. NLB는 L4라 WAF 비대상.
 - **Web ACL** — 룰 묶음. 리소스에 1개 attach.
 - **Rule** — 매칭 조건(Statement) + 액션(Allow/Block/Count/CAPTCHA/Challenge).
   - 조건 종류: IP set, geo match, string/regex match (URI, 헤더, 바디, 쿼리), size, SQLi/XSS 매처.
-- **Rate-based Rule** — 5분 윈도우 내 동일 IP 요청 수 초과 시 차단. 자격무차별 대입, 스크래핑 방어.
+- **Rate-based Rule** — 1, 2, 5, 10분 중 선택한 평가 구간의 요청 수를 집계하며 기본값은 5분이다. IP 외의 집계 키도 선택할 수 있고 한도는 근사적으로 적용된다.
 - **Rule Group** — 룰 묶음 재사용. 직접 작성 또는 다음 두 종류 활용:
   - **AWS Managed Rules** — Core, Known Bad Inputs, SQLi, Linux/Windows OS, PHP, WordPress, Anonymous IP, Bot Control 등.
   - **AWS Marketplace** 서드파티 룰(F5, Fortinet 등).
@@ -80,14 +81,14 @@ NLB, EC2 직접 부착 ❌. NLB는 L4라 WAF 비대상.
 
 ### 로깅, 모니터링
 
-- **WAF Logs**: Kinesis Firehose → S3/CloudWatch Logs/OpenSearch.
+- **WAF Logs**: CloudWatch Logs, S3 또는 Amazon Data Firehose로 전송.
 - CloudWatch 메트릭: `AllowedRequests`, `BlockedRequests`, 룰별 카운트.
 
 ### 시험에 잘 나오는 함정
 
 - WAF는 **HTTP/HTTPS만**. TCP/UDP DDoS는 Shield.
 - **NLB에는 부착 불가** — ALB 또는 CloudFront 뒤로 두기.
-- Web ACL은 **CloudFront에 붙이면 글로벌(IAD)**, ALB/API Gateway는 리전.
+- Web ACL은 CloudFront용 글로벌 scope와 ALB/API Gateway용 리전 scope를 구분한다.
 - Shield Advanced 가입자는 WAF 사용료 일부 면제.
 
 ---
@@ -98,7 +99,7 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 
 ### 동작 위치
 
-- VPC 내부에 **방화벽 엔드포인트(서브넷)** 배치 → Route Table을 통해 모든 in/out 트래픽이 방화벽을 경유하도록 라우팅.
+- VPC 내부에 **방화벽 엔드포인트(서브넷)**를 배치하고, 검사할 ingress, egress 또는 east-west 경로가 엔드포인트를 통과하도록 Route Table을 구성한다.
 - **VPC 단위 / AZ 단위** 배포. 멀티 AZ면 AZ별 엔드포인트 필요.
 - 일반적 토폴로지: 인터넷 GW ↔ Firewall Subnet ↔ 워크로드 서브넷.
 
@@ -159,9 +160,9 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 
 ## 시험 체크포인트
 
-- **Shield Standard는 기본 활성, 무료**. Advanced는 비용 보호 + DRT + WAF 비용 면제.
+- **Shield Standard는 추가 요금 없이 자동 적용**. Advanced는 조건부 비용 보호, SRT 지원, 정해진 범위의 WAF 요금 포함.
 - WAF는 **CloudFront, ALB, API Gateway, AppSync, Cognito**에 부착. **NLB ❌**.
-- Rate-based Rule = **5분 윈도우 동일 IP 요청 수** 기준.
+- Rate-based Rule = **1, 2, 5, 10분 평가 구간**과 집계 키별 요청 수 기준. 기본 구간은 5분.
 - **AWS Managed Rules**로 OWASP, SQLi, Bot Control 빠르게 적용.
 - Network Firewall 키워드: **VPC 단위 / Suricata / Stateful + Stateless / Domain filtering**.
 - "특정 도메인으로의 outbound만 허용" → **Network Firewall** (또는 Route 53 Resolver DNS Firewall이지만 DNS 차원).
@@ -169,6 +170,11 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 
 ## 출처
 
+- [AWS Shield pricing](https://aws.amazon.com/shield/pricing/)
+- [AWS WAF, What are AWS WAF and AWS Shield Advanced?](https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html)
+- [AWS WAF, Rate-based rule high-level settings](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based-high-level-settings.html)
+- [AWS WAF, Logging destinations](https://docs.aws.amazon.com/waf/latest/developerguide/logging-destinations.html)
+- [AWS Network Firewall, Architecture with an internet gateway and a NAT gateway](https://docs.aws.amazon.com/network-firewall/latest/developerguide/arch-igw-ngw.html)
 - AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서

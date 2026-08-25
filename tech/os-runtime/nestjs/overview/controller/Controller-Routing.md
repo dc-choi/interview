@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nestjs, controller, routing]
 status: done
+verified_at: 2026-08-25
 category: "OS & Runtime"
 aliases: ["Controller 라우팅과 요청", "Controller Routing"]
 ---
@@ -12,9 +13,7 @@ aliases: ["Controller 라우팅과 요청", "Controller Routing"]
 Controller의 목적은 애플리케이션에 대한 특정 요청을 처리하는 것. 라우팅 메커니즘에 따라 각 요청을 처리할 Controller가 결정됨. Controller에는 여러 개의 경로가 있는 경우가 많으며 각 경로마다 다른 작업을 수행.
 
 ### 라우팅
-라우팅이 성공하면 200 상태 코드를 반환하며, 이 경우 문자열입니다.
-
-왜 이런 일이 발생할까요?
+표준 응답 처리에서는 핸들러의 반환값을 응답으로 보낸다. 객체나 배열은 JSON으로 직렬화하고, 문자열, 숫자, 불리언은 값 그대로 전송한다. 기본 상태 코드는 POST 요청의 201을 제외하고 200이다.
 
 이를 설명하기 위해 먼저 Nest가 응답을 조작하는 데 두 가지 옵션을 사용한다는 개념을 소개할 필요가 있습니다.
 

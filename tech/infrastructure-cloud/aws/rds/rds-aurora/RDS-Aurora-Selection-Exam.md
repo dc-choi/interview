@@ -3,6 +3,7 @@ tags: [infrastructure, aws, rds, aurora, managed-db, database, ncp, saa-c03]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["관리형 DB 선택 기준", "RDS SAA-C03 체크포인트"]
+verified_at: 2026-08-25
 ---
 
 # 관리형 DB 선택 기준과 시험 체크포인트
@@ -25,8 +26,8 @@ aliases: ["관리형 DB 선택 기준", "RDS SAA-C03 체크포인트"]
 
 - **규제, 데이터 주권**: 국내 공공, 금융은 NCP, KT 같은 국내 클라우드가 선호됨
 - **생태계 통합**: AWS 전반을 쓴다면 RDS/Aurora가 Lambda, S3, IAM과 바로 연결
-- **성능, 스케일**: 읽기 부하가 크면 Aurora, 표준 요구면 RDS/NCP
-- **비용**: 작은 워크로드는 RDS가 저렴, 대규모, 고가용성은 Aurora가 총비용↓가 될 수 있음
+- **성능, 스케일**: 읽기 부하만으로 제품을 정하지 않고 엔진 호환성, 장애 복구 목표, 읽기 복제 구조와 부하 측정값을 함께 비교
+- **비용**: 인스턴스, I/O, 백업, 데이터 전송과 운영비를 동일 부하로 계산. 워크로드 측정 없이 RDS나 Aurora가 더 싸다고 단정하지 않음
 - **운영 숙련도**: 팀이 my.cnf까지 건드려야 하면 Self-managed, 기능이 충분하면 관리형
 
 ## 흔한 함정
@@ -42,21 +43,24 @@ aliases: ["관리형 DB 선택 기준", "RDS SAA-C03 체크포인트"]
 
 - 관리형 DB가 자동화하는 **운영 영역**과 SSH, OS 제어 제약
 - **Multi-AZ vs Read Replica** 차이 (동기, 비동기, HA, 확장, 자동, 수동 승격)
-- Multi-AZ **Failover 트리거 5가지** (AZ 중단, 마스터 오류, 인스턴스 유형 변경, OS 패치, 수동 재부팅)
+- Multi-AZ DB instance와 Multi-AZ DB cluster의 토폴로지, 읽기 가능 여부, failover 조건 차이
 - **Automated Backup vs Snapshot** — 보존기간, 복원 시점, 만료 여부, 복원 결과
-- 백업, 스냅샷 중 **단일 AZ는 I/O 중단**, Multi-AZ는 기본 AZ I/O 영향 없음
-- PITR — 최근 **5분 단위** 임의 시점 복구
-- Read Replica 수 한계(엔진별 15 / Oracle 5)
+- 백업, 스냅샷의 I/O 영향은 엔진과 배포 유형마다 다르므로 해당 엔진의 백업 동작 확인
+- PITR — 보존 기간 안에서 **초 단위 시점**을 지정하며, 최신 복원 가능 시점은 보통 현재보다 약 5분 전
+- Read Replica 수 한계: MySQL, MariaDB, PostgreSQL과 SQL Server 15개, Oracle 5개, Db2 3개. 엔진 버전과 에디션별 지원 범위 확인
 - **RDS Proxy + Lambda** 조합과 IAM 인증, 퍼블릭 액세스 불가
 - **Enhanced Monitoring** — 에이전트 vs 하이퍼바이저, 1초 단위, CW Logs 30일
-- **RDS vs Aurora** 선택 기준과 공유 스토리지의 이점 (6-way, 128 TB, self-healing)
+- **RDS vs Aurora** 선택 기준과 3개 AZ, 6개 스토리지 복제본. Aurora 최대 스토리지는 엔진 버전에 따라 128 TiB 또는 256 TiB
 - Aurora **Writer / Reader Endpoint**의 역할 분리
-- Aurora Global Database — 보조 리전 최대 5개, RPO 1초, RTO 1분 미만
-- Blue/Green Deployment를 이용한 무중단 스키마 변경
+- Aurora Global Database — 보조 리전 최대 10개. 복제 지연은 보통 1초 미만이고 보조 리전 승격은 1분 미만이 가능하지만 실제 RPO와 RTO는 별도로 검증
+- Blue/Green Deployment로 staging 검증 후 전환. switchover는 보통 1분 미만이지만 무중단으로 단정하지 않음
 - 국내 클라우드(NCP, KT)를 선택해야 하는 상황과 AWS와의 차이점
 
 ## 출처
-- [AWS RDS Read Replicas — 공식 문서](https://aws.amazon.com/ko/rds/features/read-replicas/)
-- [NCP Cloud DB for MySQL](https://www.ncloud.com/product/database/cloudDbMysql)
-- [Amazon RDS 사용 설명서](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html)
-- [Amazon Aurora 사용 설명서](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html)
+- [Amazon RDS, Working with DB instance read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html)
+- [Amazon RDS for Db2, Working with replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/db2-replication.html)
+- [NAVER Cloud Platform, Cloud DB for MySQL](https://www.ncloud.com/product/database/cloudDbMysql)
+- [Amazon RDS User Guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html)
+- [Amazon Aurora, What is Amazon Aurora?](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html)
+- [Amazon Aurora, Quotas and constraints](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_Limits.html)
+- [Amazon Aurora, Using Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html)

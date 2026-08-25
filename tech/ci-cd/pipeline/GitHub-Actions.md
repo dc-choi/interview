@@ -1,6 +1,7 @@
 ---
 tags: [cicd, github-actions]
 status: done
+verified_at: 2026-08-25
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["GitHub Actions", "깃헙 액션"]
 ---
@@ -82,7 +83,7 @@ CI 시간이 길면 개발자의 컨텍스트 스위칭, PR 리뷰 속도, 배�
 
 Dockerfile 빌드가 매번 처음부터면 수 분 낭비. GitHub Actions Cache를 스토리지로 쓰는 패턴이 표준.
 
-- `docker/build-push-action@v5`의 `cache-from: type=gha`, `cache-to: type=gha,mode=max`
+- `docker/build-push-action@v7`의 `cache-from: type=gha`, `cache-to: type=gha,mode=max`
 - 모노레포, 쿨백엔드에서 빌드 시간을 **8분+** 단축한 사례 다수
 - **Dockerfile 계층 순서 최적화**: 자주 변하는 파일(소스 코드, 커밋 SHA)을 **뒤쪽 레이어**에 배치해 앞쪽 캐시 무효화 방지
 - **Git commit SHA 인자를 마지막에** — 매 커밋마다 앞 계층의 `assets:precompile` 같은 무거운 단계가 무효화되지 않도록
@@ -140,6 +141,8 @@ Q. CI 시간을 단축하기 위해 어떤 전략을 쓰는가?
 - 모노레포면 Nx, Turbo로 affected 패키지만 리빌드
 
 ## 출처
+- [GitHub Docs, Understanding GitHub Actions](https://docs.github.com/en/actions/get-started/understand-github-actions)
+- [docker/build-push-action — GitHub](https://github.com/docker/build-push-action)
 - [당근 — CircleCI에서 GitHub Actions로 이전하며 배포 속도 개선하기 (15분 → 2분)](https://medium.com/daangn/circleci에서-github-actions로-이전하며-배포-속도-개선하기-39fc41617993)
 - [뱅크샐러드 — GitHub Action npm cache로 CI 40초 달성](https://blog.banksalad.com/tech/github-action-npm-cache/)
 - [studynote — GitHub Actions CI/CD 트러블슈팅 (9분 → 5분)](https://studynote.oopy.io/trouble-shooting/cicd)

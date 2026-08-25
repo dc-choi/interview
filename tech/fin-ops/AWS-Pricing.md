@@ -1,6 +1,7 @@
 ---
 tags: [finops, aws, pricing, billing, cost-model]
 status: done
+verified_at: 2026-08-25
 category: "비용&운영(FinOps)"
 aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 모델"]
 ---
@@ -11,10 +12,10 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 
 ## 큰 원칙
 
-- **종량제(pay-as-you-go)**: 쓴 만큼 낸다. 약정으로 단가를 깎는다(RI/SP). [[Reserved-Instance]]
-- **선결제 없음 + 규모의 경제**: 쓸수록 단가 구간이 내려가는 서비스(S3 등)도 있음.
+- **On-Demand 종량제(pay-as-you-go)**: 선결제 없이 쓴 만큼 낸다. Reserved Instances와 Savings Plans는 사용량 약정으로 단가를 낮출 수 있다. [[Reserved-Instance]]
+- **규모의 경제**: 쓸수록 단가 구간이 내려가는 서비스(S3 등)도 있음.
 - **리전별 단가 차이**: 같은 서비스도 리전마다 가격이 다르다.
-- **Free Tier**: 12개월 무료, 상시 무료, 트라이얼 3종 — 실험엔 유용하나 프로덕션 기준 아님.
+- **Free Tier**: 2025-07-15 이후 만든 신규 계정은 Free 또는 Paid account plan을 고른다. Free plan은 계정 생성 뒤 최대 6개월 또는 크레딧 소진까지이며, Always Free 서비스에는 월별 무료 한도가 있다. 그 이전 계정에는 서비스별 레거시 조건이 남아 있을 수 있으므로 계정과 서비스 문서를 확인한다. 실험용 혜택일 뿐 프로덕션 비용 기준으로 쓰지 않는다.
 
 ## 서비스별 과금 차원
 
@@ -31,8 +32,8 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 
 ## 단가를 낮추는 레버
 
-- **약정**: Reserved Instance, Savings Plans로 30~70% 절감. [[Reserved-Instance]]
-- **Spot**: 중단 감내 워크로드 70~90% 절감.
+- **약정**: Reserved Instances와 Savings Plans로 단가를 낮춘다. 할인 폭은 서비스, 기간, 결제 옵션에 따라 다르다. [[Reserved-Instance]]
+- **Spot**: 중단을 감내할 수 있는 워크로드에서 단가를 낮춘다. 중단 가능성과 재시작 설계를 함께 검토한다.
 - **티어링**: 접근 빈도에 맞는 스토리지 클래스. [[Storage-Tiering]]
 - **아키텍처**: 전송 줄이기(VPC Endpoint, CDN), right-sizing. [[Egress-Cost]], [[Resource-Right-Sizing]]
 
@@ -60,7 +61,10 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 
 ## 출처
 
-- [AWS — How AWS Pricing Works (whitepaper)](https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/how-aws-pricing-works.html)
+- [AWS, How AWS Pricing Works](https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/how-aws-pricing-works.html)
+- [AWS, Explore AWS services with AWS Free Tier](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier.html)
+- [AWS, AWS Free Tier FAQs](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-FAQ.html)
+- [AWS, Track your Free Tier usage for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-free-tier-usage.html)
 - [AWS Pricing Calculator](https://calculator.aws/)
 
 ## 관련 문서

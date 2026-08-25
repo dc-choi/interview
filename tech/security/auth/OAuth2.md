@@ -1,6 +1,7 @@
 ---
 tags: [security, oauth, oauth2, authorization, sso, token]
 status: done
+verified_at: 2026-08-25
 category: "보안(Security)"
 aliases: ["OAuth2", "OAuth 2.0"]
 ---
@@ -45,13 +46,12 @@ Refresh Token은 재사용 공격을 막기 위해 [[Refresh-Token-Rotation|Rota
 
 - Authorization Server가 **Access Token을 즉시 프래그먼트(`#access_token=...`)로** 반환
 - `client_secret` 없이 SPA가 사용. 하지만 토큰이 URL, 브라우저 이력에 노출
-- **OAuth 2.1**에서 사실상 제거 — 대신 **Authorization Code + PKCE**를 쓸 것
+- OAuth 2.1은 아직 Internet-Draft이며, 초안에서 이 grant를 제외한다. 현행 보안 BCP인 RFC 9700도 Implicit Grant를 사용하지 말라고 권고한다. 대신 **Authorization Code + PKCE**를 쓴다
 
 ### 3. Resource Owner Password Credentials (ROPC)
 
 - 사용자 ID/PW를 Client가 직접 받아 Authorization Server에 전달
-- 1st-party 신뢰 앱 외에는 **사용 금지** — OAuth의 "비밀번호 공유 안 함" 철학을 파괴
-- OAuth 2.1에서 제거됨
+- OAuth 2.1 Internet-Draft에는 이 grant가 포함되지 않는다. RFC 9700은 ROPC를 사용해서는 안 된다고 규정한다
 
 ### 4. Client Credentials Grant
 
@@ -138,6 +138,8 @@ Authorization Code 흐름을 코드로 구현하면 결국 두 왕복이다.
 
 ## 출처
 - [RFC 6749 — The OAuth 2.0 Authorization Framework (§2.3.1 클라이언트 인증)](https://www.rfc-editor.org/rfc/rfc6749)
+- [IETF Internet-Draft — The OAuth 2.1 Authorization Framework](https://datatracker.ietf.org/doc/draft-ietf-oauth-v2-1/)
+- [RFC 9700 — Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700.html)
 - [Tecoble — OAuth2.0 이해하기](https://tecoble.techcourse.co.kr/post/2021-07-10-understanding-oauth/)
 - [GA가 AI와 함께 만든 오피스 좌석 배치도 — 아임웹 기술 블로그](https://tech.imweb.me/posts/ga-built-office-seatmap/)
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)

@@ -1,6 +1,7 @@
 ---
 tags: [messaging, aws, sqs, lambda, event-source-mapping]
 status: done
+verified_at: 2026-08-25
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["SQS Lambda ESM", "Event Source Mapping", "Lambda SQS 폴링"]
 ---
@@ -26,7 +27,8 @@ SQS를 Lambda 트리거로 연결하면 `ReceiveMessage`와 `DeleteMessage`를 �
 
 - 메시지가 들어오면 **5개 배치를 5개 동시 invocation**으로 시작
 - 메시지가 계속 있으면 **분당 최대 300개씩** 배치 처리 프로세스를 늘림
-- ESM 하나가 동시에 처리하는 배치 최대치는 **1,000개**, 기본 동시 함수 인스턴스 최대 **1,250개**
+- Standard ESM 하나는 기본적으로 동시에 최대 **1,250개 invocation**까지 처리할 수 있다. 계정 동시성 쿼터가 더 낮으면 그 값이 먼저 제한한다.
+- 사용자가 설정하는 `MaximumConcurrency`의 범위는 **2~1,000**이며, ESM의 기본 처리 상한과 다른 값이다.
 - 트래픽이 줄면 5개로, 비용을 아끼려고 **최소 2개 배치까지** 내림 (빈 큐 long polling 요청 비용 절감)
 - 단, **maximum concurrency를 켜면 이 최소-2-배치 최적화는 꺼진다**
 
@@ -48,7 +50,7 @@ throttle → 배치 실패 → 메시지 안 지워짐 → ReceiveCount 증가
 | **Maximum concurrency** | ESM(이벤트 소스)별 | 이 큐가 띄울 동시 invocation 상한. 함수에 여러 SQS 소스가 붙으면 소스마다 따로 | 2 ~ 1,000 |
 | **Reserved concurrency** | 함수별 | 이 함수에 보장(겸 상한)되는 동시성 | 0 ~ 계정 한도 |
 
-**정석 조합: maximum concurrency를 reserved보다 낮게** 잡는다. 그래야 함수가 throttle되지 않아 위 가짜 DLQ 함정이 차단된다.
+같은 함수에 연결된 Standard ESM은 설정한 `MaximumConcurrency` 또는 미설정 시 서비스 상한을, Provisioned Mode ESM은 `MaximumPollers × 10`을 동시성 예산으로 잡는다. 이 합계와 다른 트리거의 여유가 함수의 reserved concurrency와 계정 동시성 쿼터 안에 들어야 한다. 공유 예산이 불명확하면 함수를 분리한다.
 
 ```bash
 aws lambda create-event-source-mapping \
@@ -72,18 +74,20 @@ FIFO ESM은 **활성 MessageGroupId 수만큼만** 동시성으로 스케일한�
 
 기본 on-demand 스케일링은 분당 300개씩 늘어 스파이크 따라잡기에 지연이 있다. 이게 싫으면 **폴러를 미리 확보**하는 모드.
 
-- 전용 event poller를 ESM에 붙여 **분당 최대 1,000 동시 invoke 오토스케일(약 3배 빠름), 최대 20,000 동시성(약 16배), 집계 2 GBps**까지
+- 전용 event poller를 ESM에 붙여 **분당 최대 1,000 동시 invoke 오토스케일(약 3배 빠름)**을 지원한다. 직접적인 Provisioned Mode 문서는 maximum poller 최대 10,000개와 ESM당 최대 100,000 동시 invoke를 명시한다. 다른 AWS 구성 문서에는 최대 2,000개로 남아 있어 배포 직전 콘솔과 API 한도를 확인한다
+- poller 하나는 최대 1 MB/s, 동시 invoke 10개 또는 SQS polling API 호출 초당 10개를 처리
 - `ProvisionedPollerConfig`로 폴러 min/max를 직접 지정
+- Provisioned Mode에서는 `ScalingConfig.MaximumConcurrency`를 함께 쓸 수 없고, maximum poller로 상한을 제어
 - sub-second 지연이 mission critical이거나 0에서 대량으로 튀는 스파이크가 잦을 때 고려, 평범한 비동기 처리면 기본 모드로 충분
-- 따끈한 기능이라 정확한 필드와 한도는 도입 직전 최신 문서로 확인
+- 한도는 기능 변경이 잦으므로 배포 직전 콘솔과 API 기준으로 다시 확인
 
 ## 실무 체크리스트
 
-- visibility timeout은 함수 timeout의 **최소 6배**
-- DLQ + 합리적인 `maxReceiveCount`(보통 3~5)
-- **maximum concurrency를 reserved보다 낮게** → throttling발 가짜 DLQ 차단 (핵심 조합)
+- visibility timeout은 함수 timeout의 **최소 6배**, 배치 윈도우가 있으면 그 시간도 더함
+- DLQ의 `maxReceiveCount`는 AWS 권장 최소 5부터 검토하고 poison message와 재시도 비용에 맞게 조정
+- Standard ESM 상한, Provisioned Mode의 `MaximumPollers × 10`과 다른 트리거 여유를 reserved concurrency와 계정 쿼터 안에 배치해 throttling발 가짜 DLQ 차단
 - **partial batch response**(`ReportBatchItemFailures`)로 배치 전체 재처리 방지
-- BatchSize 기본 10, 배치 윈도우(`MaximumBatchingWindowInSeconds` 최대 300초) 쓰면 최대 10,000건(페이로드 6MB 상한)
+- BatchSize 기본 10. Standard는 최대 10,000건이며 10건 초과에는 1초 이상 배치 윈도우가 필요, FIFO는 최대 10건이고 배치 윈도우를 지원하지 않음(페이로드 6MB 상한)
 
 ## 관련 문서
 
@@ -94,3 +98,5 @@ FIFO ESM은 **활성 MessageGroupId 수만큼만** 동시성으로 스케일한�
 ## 출처
 
 - [Amazon SQS event source for Lambda — AWS 공식 문서](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html)
+- [Creating and configuring an Amazon SQS event source mapping — AWS 공식 문서](https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-configure.html)
+- [Configuring scaling behavior for SQS event source mappings — AWS 공식 문서](https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-scaling.html)

@@ -1,26 +1,27 @@
 ---
 tags: [database, redis, streams, pubsub, consumer-group, message-queue]
 status: done
+verified_at: 2026-08-25
 category: "Data & Storage - Cache & KV"
 aliases: ["Redis Streams", "Pub/Sub", "Redis Consumer Group", "XADD"]
 ---
 
 # Redis Streams, Pub/Sub
 
-Redis의 두 가지 메시징 도구. **Pub/Sub은 fire-and-forget 방송**, **Streams는 영속 로그 + Consumer Group**. Kafka와 유사한 의미론을 단일 Redis 인스턴스에서 가벼운 비용으로 제공.
+Redis의 두 가지 메시징 도구. **Pub/Sub은 fire-and-forget 방송**, **Streams는 보존된 entry와 Consumer Group**. Streams의 내구성 경계는 RDB/AOF, 복제, 보존 정책에 따라 달라진다.
 
 ## Pub/Sub vs Streams 한눈에
 
 | 축 | Pub/Sub | Streams |
 |----|---------|---------|
-| 영속성 | ✗ (메모리 휘발) | ✅ (RDB/AOF로 보존) |
+| 영속성 | ✗ (메모리 휘발) | 설정한 RDB/AOF와 복제 정책에 따라 보존 |
 | 메시지 보존 | 즉시 송신, 즉시 폐기 | 명시 삭제 또는 MAXLEN까지 |
 | 오프라인 구독자 | 메시지 유실 | 재접속 후 따라잡기 가능 |
 | ACK | ✗ | ✅ XACK |
 | Consumer Group | ✗ | ✅ |
 | 키 기반 분산 | 없음 (모든 구독자 수신) | 다른 stream 사용 또는 Cluster |
 
-**규칙**: 통보, 이벤트 전파(놓쳐도 OK) → Pub/Sub. 작업 큐, 이벤트 소싱(놓치면 안 됨) → Streams.
+**규칙**: 통보, 이벤트 전파(놓쳐도 OK) → Pub/Sub. ACK와 재처리가 필요한 작업 → Streams. 놓치면 안 되는 흐름은 Streams만 고르지 말고 AOF fsync, 복제, 보존, producer outbox와 consumer 멱등성까지 함께 설계한다.
 
 ## Pub/Sub
 
@@ -115,21 +116,21 @@ XCLAIM orders order-processor consumer2 60000 1733564000000-0
 # 60초 idle인 메시지를 consumer2가 인계
 ```
 
-XCLAIM, XAUTOCLAIM으로 죽은 컨슈머 메시지 재배분. **at-least-once** 의미론 — 멱등 처리 필수.
+XCLAIM, XAUTOCLAIM으로 죽은 컨슈머 메시지 재배분. **at-least-once** 의미론은 보존된 stream entry에만 적용되므로, producer 변경과 `XADD` 사이 또는 consumer 효과와 `XACK` 사이의 경계는 별도로 멱등하게 설계한다.
 
 ## Streams vs Kafka
 
 | 축 | Redis Streams | Kafka |
 |----|--------------|-------|
-| 처리량 | 단일 노드 수십만 msg/s | 수백만 msg/s |
-| 영속성 | RDB/AOF 의존 | 디스크 로그 + 복제 |
+| 처리량 | 명령 조합, payload, persistence와 배포 구조로 부하 테스트 | 파티션 수, payload, 복제와 클러스터 구성으로 부하 테스트 |
+| 영속성 | RDB/AOF, 복제, 보존 정책이 손실 경계를 결정 | 디스크 로그 + 복제 |
 | 보존 | MAXLEN으로 메모리 한계 | 보존 정책(시간, 크기, 무한) |
 | 파티셔닝 | 다른 stream으로 수동 | 토픽 파티션 자동 |
-| 운영 부담 | 가벼움 | Zookeeper(또는 KRaft) + 브로커 |
+| 운영 부담 | 기존 Redis를 재사용하면 낮출 수 있으나 persistence와 failover 운영 필요 | 브로커와 KRaft controller 운영 필요 |
 | 통신 모델 | 단일 stream + 그룹 | 토픽 + 컨슈머 그룹 |
-| 적합 | 작업 큐, 이벤트 소싱 작은~중간 규모 | 대규모 이벤트 백본 |
+| 적합 | 재처리 가능한 작업 큐, 보존과 복구 경계를 명시한 소규모 이벤트 로그 | 대규모 이벤트 백본 |
 
-**규칙**: 이미 Redis 쓰고 메시지 양이 단일 인스턴스 한계 안이면 Streams가 운영 단순. 수백만 msg/s 또는 다중 팀 데이터 백본은 Kafka.
+**규칙**: 이미 Redis를 운영하고 측정된 처리량, 보존, 복구 목표를 만족하면 Streams를 검토한다. 장기 보존, 재처리, 파티셔닝과 다중 팀 데이터 계약이 핵심이면 Kafka 같은 전용 로그 브로커를 검토한다.
 
 ## 적합 시나리오
 
@@ -137,9 +138,9 @@ XCLAIM, XAUTOCLAIM으로 죽은 컨슈머 메시지 재배분. **at-least-once**
 |------|------|
 | 캐시 무효화 통보 (놓쳐도 OK) | Pub/Sub |
 | 실시간 채팅 메시지 (놓쳐도 OK) | Pub/Sub + 별도 영속화 |
-| 작업 큐 (각 작업은 한 워커만) | Streams + Consumer Group |
-| 이벤트 소싱 | Streams (영속 + ID 시간순) |
-| 활동 피드 | Streams (XRANGE로 시간 역순 조회) |
+| 작업 큐 (각 작업은 한 워커만) | Streams + Consumer Group + 멱등 소비 |
+| 이벤트 소싱 후보 | Streams의 보존, 복제, 복구 목표와 source of truth를 먼저 결정 |
+| 활동 피드 | Streams (`XREVRANGE`로 최신순 조회) |
 | 메트릭 수집 + 일괄 처리 | Streams + MAXLEN 정리 |
 
 ## 흔한 실수
@@ -149,6 +150,7 @@ XCLAIM, XAUTOCLAIM으로 죽은 컨슈머 메시지 재배분. **at-least-once**
 - **XADD ID를 명시 지정** → 자동 시간 ID 사용 권장 (`*`). 명시는 마이그레이션 같은 특수 케이스만.
 - **XACK 누락** → PEL 누적, 같은 메시지 재처리 폭증.
 - **컨슈머 멱등성 X** → at-least-once니까 중복 가능. ID 기반 멱등 키 또는 외부 dedupe.
+- **RDB/AOF만 켜면 무유실이라고 가정** → RDB snapshot, AOF fsync, failover와 producer/consumer 경계마다 손실 가능성을 검토.
 - **Cluster에서 일반 Pub/Sub** → 모든 노드에 브로드캐스트, 비용 큼. Sharded Pub/Sub로.
 - **Streams를 Kafka 대체로 무리** → 처리량, 다중 팀 거버넌스에서 한계. 도메인에 맞춰.
 
@@ -162,6 +164,11 @@ XCLAIM, XAUTOCLAIM으로 죽은 컨슈머 메시지 재배분. **at-least-once**
 - Consumer Group의 PEL과 XCLAIM/XAUTOCLAIM 인계
 - at-least-once 의미론 → 멱등 처리 필수
 - Streams vs Kafka 선택 기준 — 운영 부담 vs 처리량 한계
+
+## 출처
+
+- [Redis, Streams](https://redis.io/docs/latest/develop/data-types/streams/)
+- [Redis, Persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)
 
 ## 관련 문서
 

@@ -3,11 +3,12 @@ tags: [infrastructure, aws, ssm, parameter-store, configuration, security]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["SSM Parameter Store", "Parameter Store", "Systems Manager Parameter Store"]
+verified_at: 2026-08-25
 ---
 
 # AWS Systems Manager Parameter Store
 
-**구성, 암호**를 위한 보안 스토리지. 암호, DB 문자열, AMI ID, 라이선스 코드 같은 데이터를 파라미터로 저장.
+환경 이름, 엔드포인트, AMI ID 같은 **정적 구성값**을 중앙에서 관리하는 스토리지. `SecureString`도 지원하지만 DB 자격 증명, API 키, 토큰처럼 교체가 필요한 비밀은 Secrets Manager가 우선이다.
 
 ## 핵심
 
@@ -17,10 +18,10 @@ aliases: ["SSM Parameter Store", "Parameter Store", "Systems Manager Parameter S
 
 ## 매개변수 티어
 
-| 티어 | 매개변수 정책 | 매개변수 값 크기 | TTL |
-|------|--------------|------------------|-----|
-| **Standard** | X | 4 KB | X |
-| **Advanced** | O | 8 KB | TTL 할당 가능 (만료 정책) |
+| 티어 | 계정, 리전당 최대 개수 | 값 크기 | 매개변수 정책 | 비용 경계 |
+|------|------------------------|---------|-----------------|-----------|
+| **Standard** | 10,000 | 4 KB | X | 저장은 추가 요금 없음. 높은 처리량은 별도 과금 |
+| **Advanced** | 100,000 | 8 KB | O (만료 정책 포함) | 과금 |
 
 ## CloudFormation 통합
 
@@ -36,8 +37,8 @@ aliases: ["SSM Parameter Store", "Parameter Store", "Systems Manager Parameter S
 
 | 측면 | Parameter Store | Secrets Manager |
 |------|-----------------|-----------------|
-| **비용** | Standard 무료 | $0.40/월/비밀 |
-| **자동 회전** | X (Lambda 직접 작성 시 가능) | O |
+| **비용** | Standard 저장은 추가 요금 없음. Advanced, 높은 처리량은 과금 | 비밀 수와 API 호출량에 따라 과금 |
+| **자동 교체** | 기본 제공 X | O |
 | **RDS 통합** | X | O |
 | **사용처** | 일반 설정값, API 키, 환경 정보 | DB 자격 증명, 회전 필요 비밀 |
 
@@ -54,4 +55,7 @@ aliases: ["SSM Parameter Store", "Parameter Store", "Systems Manager Parameter S
 
 ## 출처
 
+- [AWS Systems Manager, Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html)
+- [AWS Systems Manager pricing](https://aws.amazon.com/systems-manager/pricing/)
+- [AWS Secrets Manager, What is AWS Secrets Manager?](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html)
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)

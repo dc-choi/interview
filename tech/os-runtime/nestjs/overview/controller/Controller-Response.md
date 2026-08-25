@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nestjs, controller, response, dto]
 status: done
+verified_at: 2026-08-25
 category: "OS & Runtime"
 aliases: ["Controller 응답 처리", "Controller Response"]
 ---
@@ -93,7 +94,11 @@ ValidationPipe 는 메서드 핸들러가 수신해서는 안 되는 프로퍼�
 ### 쿼리 문자열
 라우트에서 쿼리 매개변수를 처리할 때 @Query() 데코레이터를 사용하여 수신 요청에서 해당 매개변수를 추출할 수 있습니다.
 
-`qs`는 중첩과 배열을 지원하는 쿼리 문자열 구문 분석기입니다. `npm install qs`를 사용하여 설치할 수 있습니다.
+Nest 11에서 Express v5를 쓰면 기본 쿼리 파서는 `simple`이라 중첩 객체와 배열 쿼리 문자열을 파싱하지 않는다. 이전 동작이 필요하면 `NestFactory.create<NestExpressApplication>(...)` 뒤 `app.set('query parser', 'extended')`를 설정한다.
+
+## 출처
+
+- [NestJS, Migration guide (v11)](https://docs.nestjs.com/migration-guide)
 
 ## 관련 문서
 - [[Controller-Routing|Controller 라우팅과 요청 객체]]

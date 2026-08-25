@@ -1,6 +1,7 @@
 ---
 tags: [architecture, design, dto, entity, layered]
 status: done
+verified_at: 2026-08-25
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["DTO Layering", "DTO 레이어 스코프", "DTO Entity 변환 위치"]
 ---
@@ -125,7 +126,7 @@ public class UserDto {
 - Entity에 `@JsonIgnore`로 민감 필드 숨기기 → 도메인이 직렬화 포맷을 알게 되는 역전된 의존성
 - DTO에 비즈니스 로직(계산, 분기) 추가 → DTO가 앱 서비스화. 변환은 단순 매핑만
 - 하나의 DTO를 Request와 Response에 재사용 → 입력 검증, 응답 필드가 뒤섞임. Request/Response 분리 권장
-- Mapper를 수동 작성 후 필드 추가 시 누락 → MapStruct, ModelMapper로 컴파일 타임 보장
+- Mapper를 수동 작성 후 필드 추가 시 누락 → MapStruct는 `unmappedTargetPolicy = ReportingPolicy.ERROR` 같은 설정으로 빌드 단계 검출을 강화할 수 있다. ModelMapper는 런타임 매퍼이므로 `validate()`와 매핑 테스트를 둔다.
 
 ## 면접 체크포인트
 
@@ -136,6 +137,8 @@ public class UserDto {
 - Request DTO와 Response DTO를 분리해야 하는 이유
 
 ## 출처
+- [MapStruct FAQ](https://mapstruct.org/faq/)
+- [ModelMapper API](https://modelmapper.org/javadoc/org/modelmapper/ModelMapper.html)
 - [Tecoble — DTO의 사용 범위에 대하여](https://tecoble.techcourse.co.kr/post/2021-04-25-dto-layer-scope/)
 - [세당당 — DTO를 Entity로 변환하는 최적의 계층](https://sedangdang.tistory.com/296)
 - [aidenshin — DTO에 관한 고찰](https://velog.io/@aidenshin/DTO%EC%97%90-%EA%B4%80%ED%95%9C-%EA%B3%A0%EC%B0%B0)

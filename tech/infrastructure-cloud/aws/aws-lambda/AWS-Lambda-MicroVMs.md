@@ -1,6 +1,7 @@
 ---
 tags: [aws, lambda, microvm, firecracker, sandbox, serverless, stateful, snapshot]
 status: done
+verified_at: 2026-08-25
 category: "Infrastructure - AWS"
 aliases: ["AWS Lambda MicroVMs", "Lambda MicroVMs", "람다 마이크로VM", "격리 샌드박스"]
 ---
@@ -33,11 +34,11 @@ MicroVM은 Firecracker 마이크로VM 위에서 돈다. Firecracker는 Lambda Fu
 
 ## Suspend / Resume — 생명주기 제어
 
-상태를 보존한 채 **유휴 비용을 끄는** 것이 차별점이다.
+상태를 보존하면서 유휴 컴퓨트 비용을 줄이는 것이 차별점이다.
 
 - **자동(idle policy)** — 예: 15분 비활성 시 자동 suspend, 다음 요청 도착 시 자동 resume
 - **프로그래매틱** — API로 직접 suspend, resume 호출
-- **suspend 효과** — 메모리, 디스크, 실행 중 프로세스를 보존하면서 과금되는 컴퓨트는 줄인다. resume 시 세션 상태가 그대로 살아 있어 사용자 입장에선 끊김 없이 이어진다
+- **suspend 효과** — 메모리, 디스크, 실행 중 프로세스를 보존하고, suspended 상태에서는 컴퓨트 요금이 발생하지 않는다. 단, 스냅샷 스토리지 요금은 발생한다. resume 후 보존된 상태를 복원해 세션을 이어간다
 - **최대 8시간** — 한 MicroVM의 총 런타임 상한
 
 ## 네트워킹, 접근
@@ -54,7 +55,7 @@ MicroVM은 Firecracker 마이크로VM 위에서 돈다. Firecracker는 Lambda Fu
 | 최대 실행 | 15분(900초) | 8시간 |
 | 기동 | cold start(런타임 로드, init) | 스냅샷 resume(near-instant) |
 | 생명주기 제어 | 없음(AWS가 정리) | suspend/resume 직접 제어 |
-| 격리 단위 | 호출당 micro-VM(내부) | 세션당 micro-VM(노출, 제어) |
+| 격리 단위 | 재사용 가능한 execution environment. 동시 호출은 별도 환경에서 처리 | 세션당 micro-VM(노출, 제어) |
 | 접근 | 트리거, 호출 모델 | 전용 URL + 토큰 인증 |
 
 둘은 대체재가 아니라 용도 분화다. 짧은 무상태 처리는 Functions, **각 사용자, 세션마다 살아 있는 격리 환경**이 필요하면 MicroVMs.
@@ -73,8 +74,8 @@ MicroVM은 Firecracker 마이크로VM 위에서 돈다. Firecracker는 Lambda Fu
 
 ## 가격 모델
 
-- **실행(running) 중인 시간만큼** 기본 컴퓨트 리소스에 과금. suspend 동안은 컴퓨트 과금이 빠지므로 유휴 비용이 절감된다
-- 추가로 끌어 쓴 리소스는 **실제 사용량 기준**으로만 청구
+- **running** 상태에는 컴퓨트 요금이 발생한다. **suspended** 상태에는 컴퓨트 요금은 없지만 스냅샷 스토리지 요금이 발생한다
+- **terminated** 상태에는 요금이 발생하지 않는다
 
 ## 사용 사례
 
@@ -95,6 +96,8 @@ MicroVM은 Firecracker 마이크로VM 위에서 돈다. Firecracker는 Lambda Fu
 - [Run isolated sandboxes with full lifecycle control: AWS Lambda introduces MicroVMs — AWS Blog](https://aws.amazon.com/blogs/aws/run-isolated-sandboxes-with-full-lifecycle-control-aws-lambda-introduces-microvms/)
 - [AWS introduces Lambda MicroVMs — What's New](https://aws.amazon.com/about-aws/whats-new/2026/06/aws-lambda-microvms/)
 - [AWS Lambda MicroVMs — Developer Guide](https://docs.aws.amazon.com/lambda/latest/dg/lambda-microvms-guide.html)
+- [AWS Lambda — Running and using MicroVMs](https://docs.aws.amazon.com/lambda/latest/dg/microvms-launching.html)
+- [Understanding the Lambda execution environment lifecycle — AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)
 
 ## 관련 문서
 

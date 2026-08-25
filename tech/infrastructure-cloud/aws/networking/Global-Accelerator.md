@@ -3,16 +3,17 @@ status: done
 category: "Infrastructure - AWS"
 tags: [aws, saa, global-accelerator, network, anycast, edge, performance]
 aliases: [Global Accelerator, AGA, AWS Global Accelerator]
+verified_at: 2026-08-25
 ---
 
 # Global Accelerator
 
-AWS 엣지 로케이션의 **Anycast IP 2개**를 글로벌 진입점으로 제공하고, 그 뒤로 **AWS 백본 네트워크**를 통해 가까운 리전 엔드포인트(ALB/NLB/EC2/EIP)로 트래픽을 흘려보내는 L4 네트워크 가속 서비스.
+AWS 엣지 로케이션의 **고정 Anycast IP**를 글로벌 진입점으로 제공하고, AWS 글로벌 네트워크를 통해 가까운 리전 엔드포인트로 트래픽을 보내는 L4 네트워크 가속 서비스. IPv4 accelerator는 IPv4 주소 2개, dual-stack accelerator는 IPv4 2개와 IPv6 2개를 제공한다.
 
 ## 핵심 개념
 
-- **글로벌 진입점**: 모든 사용자에게 **고정 Anycast IP 2개** 제공. DNS 변경 없이 IP만 클라이언트에 박아 둘 수 있어 게임, VoIP, IoT처럼 DNS 캐싱이 어려운 환경에 유리.
-- **AWS 백본**: 사용자는 가까운 엣지로 들어오고, 거기서부터 목적지 리전까지는 인터넷이 아니라 AWS 사설 백본을 탄다 → 지연, 지터, 패킷 손실 감소.
+- **글로벌 진입점**: IPv4는 고정 IP 2개, dual-stack은 고정 IP 4개를 제공. DNS 변경 없이 고정 IP를 허용 목록에 둘 수 있어 게임, VoIP, IoT처럼 DNS 캐싱이 어려운 환경에 유리.
+- **AWS 글로벌 네트워크**: 사용자는 가까운 엣지로 들어오고, 목적지 리전까지 AWS 네트워크 경로를 사용한다. 실제 성능 이득은 사용자 위치와 기존 인터넷 경로에 따라 측정한다.
 - **L4 가속**: TCP/UDP 둘 다 지원. HTTP/HTTPS에 국한되지 않음.
 - **AWS Shield Standard 자동 통합** → Anycast IP가 DDoS 흡수면 역할.
 
@@ -26,13 +27,13 @@ AWS 엣지 로케이션의 **Anycast IP 2개**를 글로벌 진입점으로 제�
 
 ### Accelerator
 
-- 최상위 리소스. 생성 시 **Anycast IP 2개** 자동 할당 (또는 BYOIP).
+- 최상위 리소스. IPv4 생성 시 Anycast IPv4 2개, dual-stack 생성 시 IPv4 2개와 IPv6 2개를 할당한다. IPv4는 BYOIP도 가능하다.
 - 표준(Standard) / 사용자 지정 라우팅(Custom Routing) 2종.
 
 ### Listener
 
 - 서비스 포트와 프로토콜 정의(TCP/UDP).
-- **Client IP Preservation**: 엔드포인트가 ALB 또는 EC2일 때 활성화 가능(기본 ON). 백엔드에서 원본 클라이언트 IP를 그대로 본다. NLB, EIP 엔드포인트는 비해당.
+- **Client IP Preservation**: 표준 accelerator의 ALB, EC2, 보안 그룹이 있는 NLB에서 지원한다. 보안 그룹이 없는 NLB와 EIP에서는 지원하지 않으며, 엔드포인트별 요구사항을 확인해야 한다. 사용자 지정 라우팅 accelerator는 항상 원본 IP를 보존한다.
 
 ### Endpoint Group
 
@@ -44,7 +45,7 @@ AWS 엣지 로케이션의 **Anycast IP 2개**를 글로벌 진입점으로 제�
 
 ### Endpoint
 
-- 실제 트래픽이 도달할 대상. 종류: **ALB / NLB / EC2 인스턴스 / Elastic IP**.
+- 표준 accelerator의 실제 트래픽 대상은 **ALB / NLB / EC2 인스턴스 / Elastic IP**다. 사용자 지정 라우팅 accelerator는 VPC 서브넷을 엔드포인트로 사용한다.
 - 그룹 내에서 **Endpoint Weight (0–255)** 로 가중치 분배.
 - 헬스체크는 TCP/HTTP/HTTPS 중 선택. UDP 리스너도 상태체크는 이 3종으로.
 
@@ -68,18 +69,18 @@ AWS 엣지 로케이션의 **Anycast IP 2개**를 글로벌 진입점으로 제�
 | 항목 | Global Accelerator | CloudFront |
 |---|---|---|
 | 계층 | L4 (TCP/UDP) | L7 (HTTP/HTTPS, WebSocket) |
-| 진입 IP | **고정 Anycast IP 2개** | 동적 IP (DNS 기반) |
+| 진입 IP | IPv4 2개 또는 dual-stack 4개의 고정 Anycast IP | 동적 IP (DNS 기반) |
 | 캐싱 | 없음 | 있음 (엣지 캐시) |
 | 주 용도 | 비-HTTP, 고정 IP, 백본 가속 | 정적/동적 콘텐츠 캐싱, 글로벌 웹 가속 |
 | 오리진 | ALB/NLB/EC2/EIP | S3, ALB, 외부 HTTP 오리진 등 |
-| 클라이언트 IP 보존 | ALB, EC2에서 옵션 | 헤더(`X-Forwarded-For`)로 전달 |
+| 클라이언트 IP 보존 | ALB, EC2, 보안 그룹이 있는 NLB에서 지원 | 헤더(`X-Forwarded-For`)로 전달 |
 | WAF 연동 | 직접 ❌ (오리진 측에서) | 직접 ✅ |
 
 **결정 룰**: 캐시가 의미 있는 HTTP 콘텐츠 → CloudFront. 그 외(UDP, 고정 IP, 백본만 필요) → Global Accelerator. 둘 다 쓰는 구성도 가능.
 
 ## BYOIP
 
-- **Bring Your Own IP**: 자체 보유 IPv4 주소 범위(`/24` 이상)를 AWS로 가져와 Global Accelerator의 Anycast IP로 사용.
+- **Bring Your Own IP**: 요건을 충족하는 자체 보유 IPv4 `/24` 범위를 AWS로 가져와 Global Accelerator의 Anycast IP로 사용. IPv6 BYOIP는 지원하지 않는다.
 - 기존 IP 평판, 화이트리스트를 그대로 유지하면서 AWS로 이전할 때 유용.
 
 ## 가격
@@ -89,17 +90,20 @@ AWS 엣지 로케이션의 **Anycast IP 2개**를 글로벌 진입점으로 제�
 
 ## 시험 체크포인트
 
-- **고정 IP 2개**가 필요한가? → Global Accelerator. CloudFront는 동적 IP.
+- **고정 Anycast IP**가 필요한가? → Global Accelerator. IPv4는 2개, dual-stack은 4개다.
 - **UDP/비-HTTP**? → Global Accelerator. CloudFront는 HTTP/HTTPS, WebSocket만.
 - **글로벌 페일오버 / Traffic Dial**로 점진 절체 시나리오 → Global Accelerator.
 - **AWS 백본을 타고 빠르게**가 키워드면 Global Accelerator.
-- 엔드포인트 = **ALB / NLB / EC2 / EIP**. S3, Lambda 직접 ❌.
-- **Client IP Preservation**: ALB, EC2 엔드포인트에서만, NLB, EIP는 불필요(NLB는 원래 보존).
+- 표준 accelerator 엔드포인트 = **ALB / NLB / EC2 / EIP**. S3, Lambda 직접 ❌.
+- **Client IP Preservation**: ALB, EC2, 보안 그룹이 있는 NLB에서 지원. 보안 그룹이 없는 NLB와 EIP는 미지원.
 - **Shield Standard** 자동 포함. Advanced는 별도.
 - CloudFront vs AGA 결정 트리: 캐시 필요 + HTTP → CF / 그 외 + 고정 IP → AGA.
 
 ## 출처
 
+- [AWS Global Accelerator, How AWS Global Accelerator works](https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html)
+- [AWS Global Accelerator, Preserve client IP addresses](https://docs.aws.amazon.com/global-accelerator/latest/dg/preserve-client-ip-address.html)
+- [AWS Global Accelerator, BYOIP requirements](https://docs.aws.amazon.com/global-accelerator/latest/dg/using-byoip.requirements.html)
 - AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서

@@ -1,6 +1,7 @@
 ---
 tags: [messaging, aws, eventbridge, sqs, event-driven]
 status: done
+verified_at: 2026-08-25
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["EventBridge SQS Target", "EventBridge to SQS", "EventBridge SQS 패턴"]
 ---
@@ -19,11 +20,11 @@ Lambda로 바로 push해도 되지만, 중간에 SQS를 끼우면 **버퍼와 �
 - **백프레셔와 속도 평탄화**: 이벤트가 폭주해도 컨슈머가 자기 페이스로 pull. Lambda 동시성 폭발 방지.
 - **배치 처리**: 컨슈머가 여러 메시지를 묶어 처리.
 - **실패 처리 일원화**: 큐 레벨에서 재시도와 DLQ.
-- **순서가 필요하면 FIFO 큐**: EventBridge 자체는 순서 보장이 없으니 여기서 보완.
+- **순서 제약이 필요하면 FIFO 큐**: EventBridge 입력 순서를 복원하지는 않으며, 정한 `MessageGroupId` 안에서만 SQS 순서 보장을 얻는다.
 
 ## 함정 1: SQS 리소스 정책 (제일 자주 빠뜨림)
 
-SQS 큐에 "EventBridge가 메시지 보내도 된다"는 **리소스 기반 정책**을 안 붙이면, EventBridge가 **조용히 전달 실패**한다. 에러도 안 뜨고 메시지만 안 와서 한참 헤맨다.
+SQS 큐에 EventBridge의 `sqs:SendMessage`를 허용하는 **리소스 기반 정책**이 없으면 전달에 실패한다. 애플리케이션 요청 경로에는 직접 오류가 없어 조용해 보일 수 있지만, EventBridge의 `FailedInvocations` 지표와 타겟 DLQ의 `NO_PERMISSIONS` 오류 코드로 관측할 수 있다. 알람과 DLQ가 없으면 메시지만 오지 않는 것처럼 보인다.
 
 ```json
 {
@@ -95,6 +96,8 @@ EventBridge가 SQS로 보낼 땐 **이벤트 전체(envelope)가 메시지 body�
 
 `functionResponseTypes: ["ReportBatchItemFailures"]`를 켜면 배치 중 실패한 메시지만 재시도되고 나머지는 정상 삭제된다. 안 켜면 하나만 실패해도 전체 배치가 재유입되어 이미 처리한 것까지 중복된다.
 
+아래 코드는 Standard 큐 기준이다. FIFO 큐에서 partial batch response를 사용하면 첫 실패 뒤 처리를 멈추고 실패한 메시지와 아직 처리하지 않은 메시지를 모두 `batchItemFailures`에 반환해야 그룹 순서를 보존할 수 있다.
+
 ```typescript
 import { SQSEvent, SQSBatchResponse, SQSBatchItemFailure } from "aws-lambda";
 
@@ -121,8 +124,10 @@ Lambda 대신 상시 떠 있는 컨슈머면 `@aws-sdk/client-sqs`로 `ReceiveMe
 
 - **멱등성 필수**: EventBridge는 at-least-once라 같은 이벤트가 2번 올 수 있다. orderId 같은 키로 중복 차단.
 - **DLQ를 2단으로**: ① EventBridge → SQS **전달 실패용** DLQ(타겟 설정), ② SQS 컨슈머 **처리 실패용** DLQ(큐의 redrivePolicy). 둘은 다른 것.
-- **Visibility timeout**: Lambda 트리거면 함수 타임아웃의 **최소 6배** 권장.
-- **FIFO 큐**: EventBridge가 dedup ID를 넣어주지 않으므로 타겟 FIFO 큐에 **content-based deduplication**을 켜야 한다. 안 켜면 전달이 거부된다.
+- **Visibility timeout**: Lambda 트리거면 함수 타임아웃의 **최소 6배**로 두고, batch window를 사용하면 그 시간도 더한다.
+- **FIFO 큐**: EventBridge가 dedup ID를 넣어주지 않으므로 타겟 FIFO 큐에 **content-based deduplication**을 켠다. 동시에 타겟의 `SqsParameters.MessageGroupId`, CDK의 `messageGroupId`를 명시한다.
+- **그룹 선택**: EventBridge rule target의 `MessageGroupId`는 정적 문자열 또는 원본 이벤트를 가리키는 전체 JSONPath를 받을 수 있다. `orders`처럼 고정하면 하나의 순서 lane으로 직렬화되고, `$.detail.orderId`처럼 지정하면 주문별 순서와 병렬성을 함께 얻는다. 동적 값은 input transformer 결과가 아니라 원본 이벤트에 있어야 한다.
+- **전달 실패 관측**: `FailedInvocations`, `InvocationsSentToDlq`, `InvocationsFailedToBeSentToDlq`에 알람을 걸고 타겟 DLQ의 `ERROR_CODE`를 확인한다.
 
 ## 사례 — 채널별로 DLQ 정책을 다르게 간 발주 자동화
 
@@ -133,6 +138,15 @@ Lambda 대신 상시 떠 있는 컨슈머면 `@aws-sdk/client-sqs`로 `ReceiveMe
 - **메일 DLQ (일시 오류 위주)**: 발주서와 거래명세서 메일은 실패 원인이 대부분 일시적이라 점진 재시도를 돌리고, 최종 실패에서만 긴급 알림을 낸다.
 
 같은 이벤트에서 갈라져 나온 큐인데 정책이 다른 이유는 실패의 회복 가능성이 다르기 때문이다. 영구 오류를 재시도하면 DLQ가 무의미한 재시도 기록으로 차고, 보상이 필요한 실패를 그냥 재시도하면 데이터가 어긋난 채 남는다. 브로커 선택 근거는 [[Messaging-Broker-Comparison|메시지 브로커 비교]], 오류 분류 일반론은 [[Event-Driven-Patterns|이벤트 드리븐 실전 패턴]].
+
+## 출처
+
+- [Amazon EventBridge API Reference, Target](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_Target.html)
+- [Amazon EventBridge, Event bus targets](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html)
+- [Amazon EventBridge, Monitoring Amazon EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-monitoring.html)
+- [Amazon EventBridge, Using dead-letter queues to process undelivered events](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-dlq.html)
+- [AWS Lambda, Handling errors for an SQS event source](https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-errorhandling.html)
+- [AWS CDK API Reference, SqsQueueProps](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events_targets.SqsQueueProps.html)
 
 ## 관련 문서
 
