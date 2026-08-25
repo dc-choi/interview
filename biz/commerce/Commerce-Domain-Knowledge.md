@@ -104,14 +104,14 @@ aliases: ["Commerce Domain Knowledge", "이커머스 도메인 지식"]
 - 새 도메인에 어떻게 온보딩하는가라는 질문에는 프레임 구축 → 실무 병행 → 지식 자동 정리의 순서가 답변 골격이 된다. 자료를 다 읽고 시작하는 게 아니라 뼈대를 잡고 일하면서 채운다.
 - 백엔드 커리어에서 이커머스 도메인의 범용성 — 결제가 붙는 모든 서비스가 주문, 결제, 정산 골격을 내장하므로 프레임 시스템 경험은 도메인이 바뀌어도 이전된다. 왜 이커머스 도메인을 공부하는가에 대한 구조적 답.
 
-## 관련 문서
-- [[Commerce-Overview|커머스 도메인 개요]]
-- [[Commerce-Order|커머스 주문 도메인]]
-- [[Commerce-Korea-Market|한국 이커머스 시장의 특수성]]
-- [[Category-Expansion|카테고리 확장과 카니발리제이션]] — 도메인 흡수의 사업 전략 측면
-
 ## 출처
 - [이커머스 도메인 지식이 왜 필요해요? — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/371)
 - [내가 이커머스 도메인 지식을 배운 3가지 방법 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/378)
 - [이커머스 기획자의 현실로의 온보딩을 위한 노력 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/386)
 - [빅블러 시대, 이커머스로 입사해야하는 이유 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/436)
+
+## 관련 문서
+- [[Commerce-Overview|커머스 도메인 개요]]
+- [[Commerce-Order|커머스 주문 도메인]]
+- [[Commerce-Korea-Market|한국 이커머스 시장의 특수성]]
+- [[Category-Expansion|카테고리 확장과 카니발리제이션]] — 도메인 흡수의 사업 전략 측면

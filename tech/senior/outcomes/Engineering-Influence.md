@@ -82,6 +82,7 @@ aliases: ["엔지니어링 영향력 (가시화)", "Engineering Influence", "영
 - [[Business-Impact|비즈니스 임팩트 (성과를 숫자로)]]
 - [[Result-Oriented-Career|결과 지향 커리어]] — IC 트랙에서도 요구되는 영향력, 회피 vs 선택
 - [[Resume-15-Second-Rules|이력서 15초 룰]] — 성과 로그의 이력서 전환
+- [[Problem-Discovery|문제 발견 — 해결할 가치가 있는 문제를 찾는 법]]
 - [[Team-Contribution-Culture|엔지니어링 팀 기여 문화 (레버리지)]]
 - [[RFC-Writing|RFC 작성 (결정 가시화)]]
 - [[Incident-Recovery-Prevention|장애 복구와 재발방지]]

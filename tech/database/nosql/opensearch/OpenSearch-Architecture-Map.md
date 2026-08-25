@@ -192,4 +192,4 @@ flowchart LR
 
 ## 출처
 
-- [Document APIs — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/index/) / [TransportWriteAction — OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/action/support/replication/TransportWriteAction.java) / [Segment replication](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/index/) / [Search analyzer](https://docs.opensearch.org/latest/field-types/mapping-parameters/search-analyzer/)
+- [OpenSearch Documentation, Document APIs](https://docs.opensearch.org/latest/api-reference/document-apis/index/) / [TransportWriteAction — OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/action/support/replication/TransportWriteAction.java) / [Segment replication](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/index/) / [Search analyzer](https://docs.opensearch.org/latest/field-types/mapping-parameters/search-analyzer/)

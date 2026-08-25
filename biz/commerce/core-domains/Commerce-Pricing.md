@@ -163,11 +163,6 @@ aliases: ["Commerce Pricing", "커머스 가격"]
 - 적립금을 단일 잔액 컬럼으로 관리하면 안 되는 이유 — 적립, 사용, 소멸 이력의 원장(ledger) 관리.
 - 배송비 설계 질문에는 할인과 실비의 차이부터 — 무료배송 평가는 손실 주체(판매자 vs 플랫폼), 절감 수단(물동량 단가), 보전 구조(조건부 기준금액 = 마진 손익분기)의 3축. 다운그레이드 비가역성 때문에 무료 정책은 도입보다 철회가 어렵다.
 
-## 관련 문서
-- [[Commerce-Overview|커머스 도메인 개요]]
-- [[Pricing-Strategy|가격 정책 설계]]
-- [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]
-
 ## 출처
 - [도메인 공부 커머스 - 가격(Pricing) — Good or Better (Tistory)](https://todayis1jun.tistory.com/entry/%EB%8F%84%EB%A9%94%EC%9D%B8-%EA%B3%B5%EB%B6%80-%EC%BB%A4%EB%A8%B8%EC%8A%A4-%EA%B0%80%EA%B2%A9Pricing)
 - [쇼핑몰의 첫인상은 복잡하다 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/2)
@@ -177,3 +172,8 @@ aliases: ["Commerce Pricing", "커머스 가격"]
 - [무료배송은 장기 지속이 가능할까? — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/297)
 - [쿠폰을 기획할 때 기억해야할 5가지 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/319)
 - [이커머스 레드오션의 시작: 쿠폰행사 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/407)
+
+## 관련 문서
+- [[Commerce-Overview|커머스 도메인 개요]]
+- [[Pricing-Strategy|가격 정책 설계]]
+- [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]

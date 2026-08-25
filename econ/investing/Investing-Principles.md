@@ -52,14 +52,14 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 - **현금이 가장 안전하다** → 명목으로는 안전해도 인플레이션에 실질가치가 깎인다.
 - **수익률만 높으면 된다** → 비용과 세금을 빼지 않은 수익률은 허상이다.
 
-## 관련
+## 출처
+
+- [Investor.gov — Asset Allocation, Diversification, and Rebalancing](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
+
+## 관련 문서
 
 - [[Risk-and-Return|위험과 수익]] — 투자 전반을 관통하는 트레이드오프
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 원칙을 포트폴리오로
 - [[투자(Investing)]] — 지도
 
 > 이 문서는 일반 학습 자료이며 개인의 목표, 재무상태, 세금과 위험 감내도를 반영한 투자 자문이 아니다.
-
-## 출처
-
-- [Investor.gov — Asset Allocation, Diversification, and Rebalancing](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)

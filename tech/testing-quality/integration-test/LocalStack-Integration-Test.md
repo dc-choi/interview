@@ -153,7 +153,7 @@ done
 
 ## 출처
 - [LocalStack을 활용한 AWS 통합테스트 — 인프랩 기술블로그](https://tech.inflab.com/202202-integration-test-with-localstack/)
-- [Initialization Hooks — LocalStack Docs](https://docs.localstack.cloud/aws/capabilities/config/initialization-hooks/)
+- [LocalStack Docs, Initialization Hooks](https://docs.localstack.cloud/aws/capabilities/config/initialization-hooks/)
 
 ## 관련 문서
 - [[TestContainers-Integration|Testcontainers 통합 테스트]]

@@ -35,7 +35,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 | **아웃풋** | 블로그와 대화로 설명해 내 것으로 | 위 둘을 글로 |
 | **도메인** | 핀테크 등 업의 맥락 이해 | [[Financial-System-Overview\|금융시스템]] |
 
-## 관련
+## 관련 문서
 
 - [[경제(Economics)]] — 상위 도메인 인덱스
 - [[Self-Analysis]] — 확신 vs 정보 프레임(이직 판단의 메타)

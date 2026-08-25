@@ -62,7 +62,7 @@ aliases: ["금융시스템 개관", "Financial System Overview"]
 - **2차 시장 거래는 기업에 돈을 준다** → 유통시장 거래는 투자자끼리의 손바뀜이고, 기업에 새 자금이 들어가는 건 발행시장이다.
 - **은행은 받은 예금만 빌려준다** → 신용창조로 통화를 늘린다 → [[Interest-Rates-Monetary-Policy|통화정책]].
 
-## 관련
+## 관련 문서
 
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 모든 자산 가격의 기준
 - [[Stocks|주식]], [[Bonds|채권]] — 직접금융의 두 축

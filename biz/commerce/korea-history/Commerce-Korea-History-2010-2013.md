@@ -89,13 +89,13 @@ aliases: ["Commerce Korea History 2010-2013", "한국 이커머스 역사 2010-2
 - 재고 정합성은 취급 상품 수와 재고 소유의 함수 — 입점 구조는 구조적으로 재고를 통제할 수 없고, 직매입과 자체 물류만이 배송과 품절 경험을 통제한다. 쿠팡의 출발점이 이것.
 - 채널 전환(PC → 모바일)은 기존 차별화 자산을 리셋한다 — 대응 속도는 전략이 아니라 조직 구조(어느 채널 중심으로 짜였나)가 결정한다.
 
+## 출처
+- [6기 - 스마트폰과 개인정보보호법(2010~2011) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/25)
+- [7기 - 모바일시대 쇼핑몰 전략의 희비(2012~2013) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/26)
+
 ## 관련 문서
 - [[Commerce-Korea-History|한국 이커머스 역사 (목차)]]
 - [[Commerce-Korea-History-2003-2009|이전 시대: 2003-2009]]
 - [[Commerce-Korea-History-2014-2017|다음 시대: 2014-2017]]
 - [[Commerce-Korea-Market|한국 이커머스 시장의 특수성]]
 - [[Payment-Service|결제 서비스]] — 간편결제(토큰)의 구조
-
-## 출처
-- [6기 - 스마트폰과 개인정보보호법(2010~2011) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/25)
-- [7기 - 모바일시대 쇼핑몰 전략의 희비(2012~2013) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/26)

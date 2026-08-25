@@ -128,12 +128,12 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 
 ## 출처
 
-- [ngram Full-Text Parser — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/fulltext-search-ngram.html)
-- [ngram_token_size 시스템 변수 — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_ngram_token_size)
-- [Fine-Tuning MySQL Full-Text Search — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/fulltext-fine-tuning.html)
-- [InnoDB Full-Text Indexes — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/innodb-fulltext-index.html)
-- [InnoDB Full-Text Indexes — MySQL 9.7 Reference Manual](https://dev.mysql.com/doc/refman/9.7/en/innodb-fulltext-index.html)
-- [Natural Language Full-Text Searches — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/fulltext-natural-language.html)
-- [Comparison of B-Tree and Hash Indexes — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/index-btree-hash.html)
-- [Controlling Text Search (ts_rank) — PostgreSQL Documentation](https://www.postgresql.org/docs/current/textsearch-controls.html)
-- [pg_trgm — PostgreSQL Documentation](https://www.postgresql.org/docs/current/pgtrgm.html)
+- [MySQL 8.4 Reference Manual, ngram Full-Text Parser](https://dev.mysql.com/doc/refman/8.4/en/fulltext-search-ngram.html)
+- [MySQL 8.4 Reference Manual, ngram_token_size 시스템 변수](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_ngram_token_size)
+- [MySQL 8.4 Reference Manual, Fine-Tuning MySQL Full-Text Search](https://dev.mysql.com/doc/refman/8.4/en/fulltext-fine-tuning.html)
+- [MySQL 8.4 Reference Manual, InnoDB Full-Text Indexes](https://dev.mysql.com/doc/refman/8.4/en/innodb-fulltext-index.html)
+- [MySQL 9.7 Reference Manual, InnoDB Full-Text Indexes](https://dev.mysql.com/doc/refman/9.7/en/innodb-fulltext-index.html)
+- [MySQL 8.4 Reference Manual, Natural Language Full-Text Searches](https://dev.mysql.com/doc/refman/8.4/en/fulltext-natural-language.html)
+- [MySQL 8.4 Reference Manual, Comparison of B-Tree and Hash Indexes](https://dev.mysql.com/doc/refman/8.4/en/index-btree-hash.html)
+- [PostgreSQL Documentation, Controlling Text Search (ts_rank)](https://www.postgresql.org/docs/current/textsearch-controls.html)
+- [PostgreSQL Documentation, pg_trgm](https://www.postgresql.org/docs/current/pgtrgm.html)

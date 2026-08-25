@@ -99,10 +99,10 @@ Q. 시장 분석을 어떻게 했는가?
 
 신규 시장이나 도메인 검토 질문에는 규모(TAM/SAM/SOM) → 성장률(CAGR, 침투율) → 동인 → 경쟁사 순서로 구조화해 답하면 거시부터 좁혀 들어가는 사고를 보여줄 수 있다.
 
+## 출처
+- [서비스 기획자를 위한 시장 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/51)
+
 ## 관련 문서
 - [[Competitive-Analysis|경쟁사 분석]]
 - [[GTM-Strategy|Go-to-Market 전략]]
 - [[Category-Expansion|카테고리 확장과 카니발리제이션 (분석 프레임의 실전 적용)]]
-
-## 출처
-- [서비스 기획자를 위한 시장 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/51)

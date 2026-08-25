@@ -68,13 +68,13 @@ aliases: ["Community Strategy", "커뮤니티 전략", "커머스 커뮤니티"]
 - 운영 리스크 3종(콜드 스타트, 외재 보상 함정, 친목질)을 같이 말해야 균형 잡힌 답이 된다.
 - 백엔드 관점: 상품 태깅 직연동은 콘텐츠-상품-장바구니를 잇는 데이터 모델이고, 커뮤니티 행동 데이터는 별도 수집, 집계 파이프라인 설계가 따라온다.
 
+## 출처
+- [마켓컬리의 커뮤니티 서비스 컬리로그 전략 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/59)
+- [상품평과 Q&A, 타인의 말을 활용하는 법 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/38)
+- [쇼핑몰에서 굳이 커뮤니티를 해야할까? — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/49)
+
 ## 관련 문서
 - [[GTM-Strategy|GTM 전략]] — Community-Led Growth 모션
 - [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]] — 커뮤니티 메커니즘의 윤리 경계
 - [[Commerce-Revenue-Formula|이커머스 수익 공식]] — 거래액 레버 분해
 - [[Gamification|게이미피케이션]] — 보상 설계의 한계
-
-## 출처
-- [마켓컬리의 커뮤니티 서비스 컬리로그 전략 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/59)
-- [상품평과 Q&A, 타인의 말을 활용하는 법 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/38)
-- [쇼핑몰에서 굳이 커뮤니티를 해야할까? — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/49)

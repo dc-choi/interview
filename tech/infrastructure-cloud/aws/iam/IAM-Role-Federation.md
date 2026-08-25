@@ -78,9 +78,9 @@ CI 워크플로우에 AWS 액세스 키를 리포지토리 시크릿으로 박�
 위임 관리자가 이 한도 안에서만 사용자와 Role을 만들 수 있게 보장한다. 개발자에게 IAM 관리 위임할 때, 자기보다 강한 권한 부여 못 하게 막는 가드.
 
 ## 출처
-- [Configuring OpenID Connect in Amazon Web Services — GitHub Docs](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws)
-- [AssumeRole — AWS STS API Reference, DurationSeconds 900초(15분)~43200초(12시간)](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html)
-- [IAM roles, Roles terms and concepts — AWS IAM User Guide, role chaining 최대 1시간](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html)
+- [GitHub Docs, Configuring OpenID Connect in Amazon Web Services](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws)
+- [AWS STS API Reference, AssumeRole](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html) — DurationSeconds 900초(15분)~43200초(12시간)
+- [AWS IAM User Guide, IAM roles, Roles terms and concepts](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html) — role chaining 최대 1시간
 
 ## 관련 문서
 - [[IAM|IAM (인덱스)]]

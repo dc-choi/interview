@@ -73,11 +73,11 @@ verified_at: 2026-07-21
 
 - [돌아오지 않는 메모리를 찾아서 — SSG TECH BLOG](https://medium.com/ssgtech/%EB%8F%8C%EC%95%84%EC%98%A4%EC%A7%80-%EC%95%8A%EB%8A%94-%EB%A9%94%EB%AA%A8%EB%A6%AC%EB%A5%BC-%EC%B0%BE%EC%95%84%EC%84%9C-6988f6d55066)
 - [JEP 346: Promptly Return Unused Committed Memory from G1 — OpenJDK](https://openjdk.org/jeps/346) (반환은 Full GC나 concurrent cycle에서만, 주기 반환 기본 비활성, JDK 12 도입)
-- [Garbage-First Garbage Collector Tuning — Oracle Java SE Docs](https://docs.oracle.com/en/java/javase/17/gctuning/garbage-first-garbage-collector-tuning.html) (G1NewSizePercent 등 튜닝 옵션, Xms=Xmx 리사이즈 제거)
+- [Oracle Java SE Docs, Garbage-First Garbage Collector Tuning](https://docs.oracle.com/en/java/javase/17/gctuning/garbage-first-garbage-collector-tuning.html) (G1NewSizePercent 등 튜닝 옵션, Xms=Xmx 리사이즈 제거)
 - [OpenJDK hotspot-gc-dev — committed memory and RSS are different quantities](https://mail.openjdk.org/pipermail/hotspot-gc-dev/2020-July/030387.html)
 - [Java MemoryUsage API](https://docs.oracle.com/en/java/javase/24/docs/api/java.management/java/lang/management/MemoryUsage.html)
-- [Resource Management for Pods and Containers — Kubernetes Docs](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) (memory limit은 커널 OOM kill로 반응적 강제)
-- [java Command Reference — Oracle Java SE Docs](https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html) (UseContainerSupport 컨테이너 감지, MaxDirectMemorySize는 NIO direct buffer 총량 상한이며 미설정 시 JVM 자동 결정)
+- [Kubernetes Docs, Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) (memory limit은 커널 OOM kill로 반응적 강제)
+- [Oracle Java SE Docs, java Command Reference](https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html) (UseContainerSupport 컨테이너 감지, MaxDirectMemorySize는 NIO direct buffer 총량 상한이며 미설정 시 JVM 자동 결정)
 - [Kubernetes 환경 OOMKilled 원인 분석 — Nextree](https://www.nextree.io/kubernetes-hwangyeong-oomkilled-weonin-bunseog/)
 
 ## 관련 문서

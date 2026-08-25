@@ -128,7 +128,7 @@ await consumer.run({
 
 ## 출처
 
-- [Consuming Messages — KafkaJS 공식 문서](https://kafka.js.org/docs/2.1.0/consuming)
+- [KafkaJS 공식 문서, Consuming Messages](https://kafka.js.org/docs/2.1.0/consuming)
 
 ## 관련 문서
 

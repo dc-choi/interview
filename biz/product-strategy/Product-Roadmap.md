@@ -55,12 +55,12 @@ aliases: ["Product Roadmap", "프로덕트 로드맵", "Story Mapping", "스토�
 - Theme을 고객 가치 문장으로 말하는 습관 — 기술 과제도 그 결과 고객이 얻는 것으로 번역.
 - 엔지니어로서는 의존성 기반 순서, 리스크 후순위, 단계별 독립 가치([[Tech-Roadmap|기술 로드맵]])를 보완 축으로 함께 답할 수 있다.
 
+## 출처
+- [서비스 기획자의 로드맵 수립 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/54)
+
 ## 관련 문서
 - [[Tech-Roadmap|기술 로드맵 수립]]
 - [[Project-Management|프로젝트 관리 (로드맵 이후의 실행 관리)]]
 - [[User-Feedback|사용자 피드백 관리 (Kano, RICE, MoSCoW)]]
 - [[PRD-Writing|PRD 작성법]]
 - [[GTM-Strategy|Go-to-Market 전략]]
-
-## 출처
-- [서비스 기획자의 로드맵 수립 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/54)

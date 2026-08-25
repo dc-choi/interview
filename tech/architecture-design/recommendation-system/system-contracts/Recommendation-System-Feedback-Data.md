@@ -178,7 +178,7 @@ Off-policy estimator는 실험을 완전히 대체하지 않는다. 편향을 �
 - [Top-K Off-Policy Correction for a REINFORCE Recommender System — Google Research](https://research.google/pubs/top-k-off-policy-correction-for-a-reinforce-recommender-system/)
 - [Batch Learning from Logged Bandit Feedback through Counterfactual Risk Minimization — JMLR](https://www.jmlr.org/papers/v16/swaminathan15a.html)
 - [Off-policy Evaluation for Slate Recommendation — NeurIPS](https://proceedings.neurips.cc/paper/2017/hash/5352696a9ca3397beb79f116f3a33991-Abstract.html)
-- [Point-in-time joins — Feast Documentation](https://docs.feast.dev/getting-started/concepts/point-in-time-joins)
+- [Feast Documentation, Point-in-time joins](https://docs.feast.dev/getting-started/concepts/point-in-time-joins)
 - [Scoring and positional bias — Google for Developers](https://developers.google.com/machine-learning/recommendation/dnn/scoring)
 - [Rules of Machine Learning — Google for Developers](https://developers.google.com/machine-learning/guides/rules-of-ml)
 - [Data Quality for Trustworthy A/B Testing — Microsoft Research](https://www.microsoft.com/en-us/research/articles/data-quality-fundamental-building-blocks-for-trustworthy-a-b-testing-analysis/)

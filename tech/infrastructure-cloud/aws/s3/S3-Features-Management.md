@@ -98,5 +98,5 @@ S3 자체가 정적 페이지 서버 역할. `index.html`, `error.html` 지정�
 
 ## 출처
 
-- [Querying data in place with Amazon S3 Select — AWS 공식 문서](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html)
-- [Amazon S3 Object Lambda availability change — AWS 공식 문서](https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazons3-ol-change.html)
+- [AWS 공식 문서, Querying data in place with Amazon S3 Select](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html)
+- [AWS 공식 문서, Amazon S3 Object Lambda availability change](https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazons3-ol-change.html)

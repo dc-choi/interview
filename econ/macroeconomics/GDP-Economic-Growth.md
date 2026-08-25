@@ -90,14 +90,14 @@ GDP는 강력하지만 모든 것을 담지는 못한다.
 - **GDP는 나라의 재산 총액이다** → 쌓인 재산(저량)이 아니라 한 해 생산(유량)이다.
 - **명목 GDP가 늘면 성장한 것이다** → 물가가 오른 착시일 수 있다. 성장은 실질로만 말한다.
 
-## 관련
-
-- [[Inflation|인플레이션과 디플레이션]] — 명목과 실질을 가르는 물가
-- [[Business-Cycle|경기순환]] — 실제 GDP가 잠재 주위로 진동
-- [[거시경제(Macroeconomics)]] — 지도
-
 ## 출처
 
 - [United Nations — System of National Accounts, Chapter 2](https://unstats.un.org/unsd/statcom/39th-session/documents/sna-chapter2-E.pdf)
 - [United Nations SNA, Price and Volume Measures](https://unstats.un.org/unsd/statcom/doc08/SNA-Chapter15.pdf)
 - [OECD — Key facts about the OECD Economic Outlook](https://www.oecd.org/en/topics/sub-issues/economic-outlook/key-facts-about-the-oecd-economic-outlook.html)
+
+## 관련 문서
+
+- [[Inflation|인플레이션과 디플레이션]] — 명목과 실질을 가르는 물가
+- [[Business-Cycle|경기순환]] — 실제 GDP가 잠재 주위로 진동
+- [[거시경제(Macroeconomics)]] — 지도

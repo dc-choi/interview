@@ -76,13 +76,13 @@ aliases: ["UI Terminology", "UI 용어", "모달 vs 팝업"]
 - 파괴적 액션의 컨펌 강제는 어드민, 백오피스 설계의 기본기 — [[Visual-Hierarchy|시각적 위계]]의 위험 액션 대비 설계와 한 세트.
 - 용어 통일은 협업 비용 절감 장치다 — 기획, 디자인, 개발이 같은 단어로 같은 동작을 떠올리게 하는 것이 스펙 문서의 역할.
 
+## 출처
+- [UI 용어 정리 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/3)
+- [터치 제스처 알아보기 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/19)
+- [터치 제스처 적용 시 고려해야 할 5가지 Point — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/21)
+
 ## 관련 문서
 - [[Visual-Hierarchy|시각적 위계]]
 - [[User-Guidance-Patterns|사용자 가이드 제공 패턴]] — 툴팁, 레이어의 안내 용도
 - [[Service-Design-Principles|서비스 설계 10원칙 (GOV.UK)]] — 디자인 시스템과 일관성
 - [[PRD-Writing|PRD 작성법]] — 화면 명세에서 용어 일관성이 필요한 이유
-
-## 출처
-- [UI 용어 정리 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/3)
-- [터치 제스처 알아보기 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/19)
-- [터치 제스처 적용 시 고려해야 할 5가지 Point — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/21)

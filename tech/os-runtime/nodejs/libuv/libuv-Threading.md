@@ -171,7 +171,7 @@ libuv의 에러는 음수 상수로 표현된다. 초기화/동기 함수가 음
 - [libuv — uv_tty_t](https://docs.libuv.org/en/v1.x/tty.html)
 - [libuv — Miscellaneous utilities](https://docs.libuv.org/en/v1.x/misc.html)
 - [libuv — Error handling](https://docs.libuv.org/en/v1.x/errors.html)
-- [Don't Block the Event Loop — Node.js 공식 문서](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)
+- [Node.js 공식 문서, Don't Block the Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)
 
 ## 관련 문서
 - [[libuv|libuv (TOC)]]

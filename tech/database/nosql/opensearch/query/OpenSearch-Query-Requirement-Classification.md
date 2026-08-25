@@ -69,8 +69,8 @@ OpenSearch의 `function_score`는 query가 반환한 문서의 점수를 다시 
 
 ## 출처
 
-- [Query DSL — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/)
-- [Match query — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/full-text/match/)
-- [Term-level queries — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/term/index/)
-- [Function score — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/function-score/)
-- [N-gram token filter — OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/token-filters/ngram/)
+- [OpenSearch Documentation, Query DSL](https://docs.opensearch.org/latest/query-dsl/)
+- [OpenSearch Documentation, Match query](https://docs.opensearch.org/latest/query-dsl/full-text/match/)
+- [OpenSearch Documentation, Term-level queries](https://docs.opensearch.org/latest/query-dsl/term/index/)
+- [OpenSearch Documentation, Function score](https://docs.opensearch.org/latest/query-dsl/compound/function-score/)
+- [OpenSearch Documentation, N-gram token filter](https://docs.opensearch.org/latest/analyzers/token-filters/ngram/)

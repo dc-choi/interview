@@ -85,9 +85,9 @@ Client
 
 ## 출처
 
-- [Search API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/search/)
-- [Index request cache — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/caching/request-cache/)
-- [Paginate results — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/paginate/)
-- [Search settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/search-settings/)
-- [Index settings (max_result_window) — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
+- [OpenSearch Documentation, Search API](https://docs.opensearch.org/latest/api-reference/search-apis/search/)
+- [OpenSearch Documentation, Index request cache](https://docs.opensearch.org/latest/search-plugins/caching/request-cache/)
+- [OpenSearch Documentation, Paginate results](https://docs.opensearch.org/latest/search-plugins/searching-data/paginate/)
+- [OpenSearch Documentation, Search settings](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/search-settings/)
+- [OpenSearch Documentation, Index settings (max_result_window)](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
 - [Timeouts, retries, and backoff with jitter — AWS Builders' Library](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/)

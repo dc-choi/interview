@@ -74,13 +74,13 @@ aliases: ["재정정책", "Fiscal Policy"]
 - **재정적자는 무조건 나쁘다** → 침체기엔 오히려 필요하다. 흑자를 고집하면 불황을 키운다.
 - **균형재정이 항상 옳다** → 경기와 같은 방향(호황에 더 풀고 불황에 졸라매기)으로 가면 진폭을 키워 해가 된다. 경기와 반대로 가는 게 원칙이다.
 
-## 관련
+## 출처
+
+- [IMF — Fiscal Multipliers: Size, Determinants, and Use in Macroeconomic Projections](https://www.imf.org/en/publications/tnm/issues/2016/12/31/fiscal-multipliers-size-determinants-and-use-in-macroeconomic-projections-41784)
+
+## 관련 문서
 
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 재정정책의 짝
 - [[Business-Cycle|경기순환]] — 재정정책이 대응하는 리듬
 - [[GDP-Economic-Growth|GDP와 경제성장]] — 정부지출 G는 GDP의 한 축
 - [[거시경제(Macroeconomics)]] — 지도
-
-## 출처
-
-- [IMF — Fiscal Multipliers: Size, Determinants, and Use in Macroeconomic Projections](https://www.imf.org/en/publications/tnm/issues/2016/12/31/fiscal-multipliers-size-determinants-and-use-in-macroeconomic-projections-41784)

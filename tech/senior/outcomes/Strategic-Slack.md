@@ -57,6 +57,7 @@ aliases: ["Strategic Slack", "의도적 여유", "80% 가동률", "Doing Nothing
 ## 관련 문서
 
 - [[Engineering-Influence|엔지니어링 영향력 — 일을 보이게 하기]]
+- [[Problem-Discovery|문제 발견]] — 확보한 여유를 주변 관찰에 쓰는 쪽의 짝
 - [[Productivity-Business-Ceiling|개발 생산성과 사업 성과 (Min/Max 프레임)]]
 - [[Software-Productivity-Measurement|소프트웨어 생산성 측정의 함정]]
 - [[Output-vs-Outcome|산출물 vs 사용자 성과]]

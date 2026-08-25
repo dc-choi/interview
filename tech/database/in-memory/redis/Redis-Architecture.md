@@ -161,8 +161,8 @@ WATCH + MULTI/EXEC = **낙관적 락(optimistic CAS)**. 위 트랜잭션 섹션 
 - [우아한테크세미나 191121 우아한레디스 — 우아한테크](https://www.youtube.com/watch?v=mPB2CZiAkKM)
 - [redis/src/ae.c — 이벤트 루프 백엔드 조건부 선택](https://github.com/redis/redis/blob/unstable/src/ae.c)
 - [Redis serialization protocol (RESP) spec](https://redis.io/docs/latest/develop/reference/protocol-spec/)
-- [HELLO 명령 — Redis Docs](https://redis.io/docs/latest/commands/hello/)
-- [Install Redis on Windows — Redis Docs 아카이브 (공식 네이티브 빌드 미제공, WSL2 안내)](https://redis.io/docs/latest/operate/oss_and_stack/install/archive/install-redis/install-redis-on-windows/)
+- [Redis Docs, HELLO 명령](https://redis.io/docs/latest/commands/hello/)
+- [Redis Docs 아카이브, Install Redis on Windows](https://redis.io/docs/latest/operate/oss_and_stack/install/archive/install-redis/install-redis-on-windows/) — 공식 네이티브 빌드 미제공, WSL2 안내
 
 ## 관련 문서
 - [[Redis-Data-Structures|Redis 자료구조]]

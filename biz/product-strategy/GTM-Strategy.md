@@ -110,11 +110,11 @@ Q. GTM 전략을 어떻게 수립/실행했는가?
 - 포지셔닝: 현재 타깃과 확장 가설을 분리해 설명
 - 전환은 동일 cohort 계측 이후 판정하고, 현재는 MAO와 행동 신호를 구분
 
+## 출처
+- [승무원을 위한 서비스 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/60)
+
 ## 관련 문서
 - [[Marketing-Fundamentals|마케팅, 브랜딩, 광고 기초 (층위, STP, 4P, Customer Journey)]]
 - [[Market-Analysis|시장 분석]]
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
 - [[Content-Marketing|콘텐츠 마케팅]]
-
-## 출처
-- [승무원을 위한 서비스 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/60)

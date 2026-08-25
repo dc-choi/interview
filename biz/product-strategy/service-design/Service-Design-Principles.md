@@ -55,13 +55,13 @@ aliases: ["Service Design Principles", "서비스 설계 원칙", "GOV.UK Design
 - 적게 하라 원칙은 공통 플랫폼화, API 우선 설계와 연결해 말할 수 있다.
 - 단순성 원칙의 한 줄 — 사용자에게 단순해 보이려면 복잡성을 없애는 게 아니라 시스템 뒤로 옮겨야 한다. 백엔드가 무게를 지는 이유.
 
+## 출처
+- [영국 정부에게 배우는 서비스 기획 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/38)
+- [쌓아놓기에서 미니멀리스트 기획자되기 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/384)
+
 ## 관련 문서
 - [[User-Feedback|사용자 피드백 관리]] — 사용자 니즈 우선, 데이터 기반의 실행 방법
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]] — MVP 반복 검증
 - [[Pagination-Patterns|페이지네이션 UX 패턴]] — 접근성, SEO가 걸린 구체 패턴
 - [[Content-Marketing|콘텐츠 마케팅]] — SEO
 - [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]] — 사용자 우선 원칙이 무너진 반대편
-
-## 출처
-- [영국 정부에게 배우는 서비스 기획 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/38)
-- [쌓아놓기에서 미니멀리스트 기획자되기 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/384)

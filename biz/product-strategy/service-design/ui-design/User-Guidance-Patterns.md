@@ -39,10 +39,10 @@ aliases: ["User Guidance Patterns", "사용자 가이드 패턴", "서비스 가
 - 백엔드 관점: 과업 트리거 안내는 행동 이벤트 기반 메시징 시스템(이벤트 발행 → 조건 매칭 → 발송)으로 구현된다.
 - 악용 방지 가이드는 어뷰징 정책의 첫 방어선이다 — 고지 없이 제재하면 CS 분쟁이 된다.
 
+## 출처
+- [서비스 가이드 제공 방법 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/12)
+
 ## 관련 문서
 - [[Service-Design-Principles|서비스 설계 10원칙 (GOV.UK)]]
 - [[Gamification|게이미피케이션]] — 리워드 설계의 효과와 한계
 - [[GTM-Strategy|GTM 전략]] — 온보딩 활성화 분기점
-
-## 출처
-- [서비스 가이드 제공 방법 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/12)

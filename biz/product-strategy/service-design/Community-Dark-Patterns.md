@@ -130,6 +130,11 @@ aliases: ["Community Dark Patterns", "커뮤니티 다크 패턴", "리텐션 �
 - 규제 동향(EU DSA, FTC, 공정위)이 프로덕트에 주는 제약
 - 프로덕트 윤리를 평가할 **4가지 판별 질문**
 
+## 출처
+
+- [Bite (브런치) — 커뮤니티 다크 패턴 [신천지]](https://brunch.co.kr/@bite/21)
+- [제품에 철학을 담다 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-10-philosophy-in-product/)
+
 ## 관련 문서
 - [[User-Feedback|사용자 피드백 관리]]
 - [[Metrics-Framework|지표 설계 & North Star Metric]]
@@ -138,8 +143,3 @@ aliases: ["Community Dark Patterns", "커뮤니티 다크 패턴", "리텐션 �
 - [[Gamification|게이미피케이션 (같은 장치의 정상 사용 버전 — 경계 판별)]]
 - [[Output-vs-Outcome|산출물 vs 사용자 성과]] — 사용자가 과업을 끝내는가
 - [[DRI-Delegation-Culture|DRI와 권한 위임 문화]] — 팀의 자율성과 사용자 통제권
-
-## 출처
-
-- [Bite (브런치) — 커뮤니티 다크 패턴 [신천지]](https://brunch.co.kr/@bite/21)
-- [제품에 철학을 담다 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-10-philosophy-in-product/)

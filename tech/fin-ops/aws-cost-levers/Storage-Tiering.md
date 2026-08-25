@@ -95,7 +95,7 @@ WHERE size > 128 * 1024;   -- Intelligent-Tiering 티어 이동 대상
 
 - [AWS — S3 Storage Classes](https://aws.amazon.com/s3/storage-classes/)
 - [Amazon S3 pricing](https://aws.amazon.com/s3/pricing/)
-- [Understanding and managing Amazon S3 storage classes — AWS 공식 문서](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html)
+- [AWS 공식 문서, Understanding and managing Amazon S3 storage classes](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html)
 - [AWS — EBS volume types (gp3 vs gp2)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html)
 - [S3 비용 최적화 (Intelligent-Tiering, CopyObject 전환, S3 Inventory) — 인프랩 기술블로그](https://tech.inflab.com/20251029-optimize-s3/)
 

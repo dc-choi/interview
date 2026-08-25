@@ -85,6 +85,6 @@ aliases: ["TossPlace Code Tour", "토스플레이스 코드 투어 동선"]
 - **모르는 질문**: 추측 금지. "이 부분은 지금 확신이 없는데, 코드를 보면서 짚어보겠습니다" 하고 관련 파일 열어 같이 추론
 - **속도**: 면접관이 특정 이슈만 깊게 파면 동선을 버리고 따라가되, 안 본 강점(동시성, 테스트)은 끝에 "한 가지만 더 보여드려도 될까요"로 챙기기
 
-## 관련
+## 관련 문서
 - [[Interview-Prep-TossPlace-1st-Assignment-Defense|디펜스 시트 (3뎁스 드릴)]]
 - [[Interview-Prep-TossPlace-1st-Model-Answers|모범답변 스크립트]]

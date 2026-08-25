@@ -77,14 +77,14 @@ verified_at: 2026-07-21
 - **경상흑자는 클수록 좋다** → 과도한 흑자는 통상 마찰을 부르고 내수가 약하다는 신호일 수 있다. 균형이 건강하다.
 - **외환보유액은 많을수록 좋다** → 위기 방어엔 좋지만 쌓아두는 데도 비용(낮은 수익의 안전자산에 묶임)이 든다. 적정 수준이 있다.
 
-## 관련
+## 출처
+
+- [IMF — Balance of Payments and International Investment Position Manual, Sixth Edition](https://www.imf.org/-/media/websites/imf/imported-full-text-pdf/external/pubs/ft/bop/2007/pdf/_bpm6.pdf)
+- [IMF, Choice of Exchange Rate Arrangement](https://www.imf.org/en/-/media/files/publications/miscellaneous/english/2022/mcm-technical-assistance-handbook/choice-of-exchange-rate-arrangement.pdf)
+
+## 관련 문서
 
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 금리차가 환율을 움직임
 - [[Inflation|인플레이션과 디플레이션]] — 환율과 물가가 서로를 끌어당김
 - [[GDP-Economic-Growth|GDP와 경제성장]] — 순수출(X − M)이 GDP의 한 축
 - [[거시경제(Macroeconomics)]] — 지도
-
-## 출처
-
-- [IMF — Balance of Payments and International Investment Position Manual, Sixth Edition](https://www.imf.org/-/media/websites/imf/imported-full-text-pdf/external/pubs/ft/bop/2007/pdf/_bpm6.pdf)
-- [IMF, Choice of Exchange Rate Arrangement](https://www.imf.org/en/-/media/files/publications/miscellaneous/english/2022/mcm-technical-assistance-handbook/choice-of-exchange-rate-arrangement.pdf)

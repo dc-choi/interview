@@ -104,11 +104,11 @@ Amazon OpenSearch Service의 OpenSearch optimized 인스턴스로, remote-backed
 
 ## 출처
 
-- [Segment replication — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/index/)
-- [Segment replication backpressure — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/backpressure/)
+- [OpenSearch Documentation, Segment replication](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/index/)
+- [OpenSearch Documentation, Segment replication backpressure](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/backpressure/)
 - [Segment replication, generally available in OpenSearch 2.7 — OpenSearch Blog](https://opensearch.org/blog/segment-replication/)
-- [Remote-backed storage — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/remote-store/index/)
-- [CAT segment replication — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/cat/cat-segment-replication/)
-- [OpenSearch Optimized Instances for Amazon OpenSearch Service domains — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/or1.html)
-- [Supported instance types in Amazon OpenSearch Service — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html)
+- [OpenSearch Documentation, Remote-backed storage](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/remote-store/index/)
+- [OpenSearch Documentation, CAT segment replication](https://docs.opensearch.org/latest/api-reference/cat/cat-segment-replication/)
+- [AWS Documentation, OpenSearch Optimized Instances for Amazon OpenSearch Service domains](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/or1.html)
+- [AWS Documentation, Supported instance types in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html)
 - [Introducing highly durable Amazon OpenSearch Service clusters with 30% price/performance improvement — AWS News Blog](https://aws.amazon.com/blogs/aws/introducing-highly-durable-amazon-opensearch-service-clusters-with-30-price-performance-improvement/)

@@ -165,10 +165,10 @@ Redis Search는 core Sorted Set을 조합하는 구현이 아니라 자체 최�
 ## 출처
 
 - [Building a search engine using Redis and redis-py — Josiah Carlson](https://www.dr-josiah.com/2010/07/building-search-engine-using-redis-and.html)
-- [Redis sorted sets — Redis Documentation](https://redis.io/docs/latest/develop/data-types/sorted-sets/)
-- [ZUNIONSTORE — Redis Documentation](https://redis.io/docs/latest/commands/zunionstore/)
-- [Redis pipelining — Redis Documentation](https://redis.io/docs/latest/develop/using-commands/pipelining/)
-- [EXPIRE and UNLINK — Redis Documentation](https://redis.io/docs/latest/commands/expire/), [UNLINK](https://redis.io/docs/latest/commands/unlink/)
-- [Redis Cluster multi-key operations — Redis Documentation](https://redis.io/docs/latest/develop/using-commands/multi-key-operations/)
-- [Redis Search — Redis Documentation](https://redis.io/docs/latest/develop/ai/search-and-query/)
-- [Redis Search technical overview — Redis Documentation](https://redis.io/docs/latest/develop/ai/search-and-query/administration/overview/)
+- [Redis Documentation, Redis sorted sets](https://redis.io/docs/latest/develop/data-types/sorted-sets/)
+- [Redis Documentation, ZUNIONSTORE](https://redis.io/docs/latest/commands/zunionstore/)
+- [Redis Documentation, Redis pipelining](https://redis.io/docs/latest/develop/using-commands/pipelining/)
+- [Redis Documentation, EXPIRE and UNLINK](https://redis.io/docs/latest/commands/expire/), [UNLINK](https://redis.io/docs/latest/commands/unlink/)
+- [Redis Documentation, Redis Cluster multi-key operations](https://redis.io/docs/latest/develop/using-commands/multi-key-operations/)
+- [Redis Documentation, Redis Search](https://redis.io/docs/latest/develop/ai/search-and-query/)
+- [Redis Documentation, Redis Search technical overview](https://redis.io/docs/latest/develop/ai/search-and-query/administration/overview/)

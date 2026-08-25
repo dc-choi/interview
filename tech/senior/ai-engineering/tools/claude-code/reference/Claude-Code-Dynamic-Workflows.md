@@ -108,7 +108,7 @@ A, B, C, D 순서로 시작하고 B 실행 중에 멈추면 A만 캐시로 돌�
 
 ## 출처
 
-- [Orchestrate subagents at scale with dynamic workflows — Claude Code Docs](https://code.claude.com/docs/en/workflows)
+- [Claude Code Docs, Orchestrate subagents at scale with dynamic workflows](https://code.claude.com/docs/en/workflows)
 
 ## 관련 문서
 

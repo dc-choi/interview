@@ -56,13 +56,13 @@ SPIVA scorecard에서는 여러 시장과 기간에 걸쳐 다수의 액티브 �
 - **떨어질 때 빠졌다가 오를 때 들어가면 된다** → 큰 상승일을 놓칠 위험이 더 크다. 타이밍은 대체로 실패한다.
 - **인덱스 투자는 언제나 액티브보다 낫다** → SPIVA의 여러 장기 범주에서는 비용 후 benchmark 미달 비율이 높았지만 결과는 시장, 자산군과 기간마다 다르다.
 
-## 관련
-
-- [[Valuation|밸류에이션]] — 가치투자의 도구
-- [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]] — 전략을 무너뜨리는 심리
-- [[투자(Investing)]] — 지도
-
 ## 출처
 
 - [SPIVA U.S. Year-End 2025](https://www.spglobal.com/spdji/en/spiva/article/spiva-us)
 - [Investor.gov, Index Funds](https://www.investor.gov/introduction-investing/investing-basics/investment-products/mutual-funds-and-exchange-traded-4)
+
+## 관련 문서
+
+- [[Valuation|밸류에이션]] — 가치투자의 도구
+- [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]] — 전략을 무너뜨리는 심리
+- [[투자(Investing)]] — 지도

@@ -59,10 +59,10 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 
 ## 출처
 
-- [Asset Allocation and Diversification — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
+- [Asset Allocation, Diversification, and Rebalancing — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
 - [Determinants of Portfolio Performance — Financial Analysts Journal](https://doi.org/10.2469/faj.v51.n1.1869)
 
-## 관련
+## 관련 문서
 
 - [[Risk-and-Return|위험과 수익]] — 분산이 작동하는 이론적 토대
 - [[Investing-Principles|투자의 기본 원칙]] — 시간지평과 위험-수익

@@ -86,7 +86,7 @@ MySQL Fulltext의 **n-gram 파서**는 문장을 N글자 단위로 쪼개 인덱
 
 ## 출처
 - [Aurora DB 생성 자동화와 표준 운영 — DB 밋업 (YouTube)](https://www.youtube.com/watch?v=NrPY9J1a2ag&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=4)
-- [ngram Full-Text Parser — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/fulltext-search-ngram.html)
+- [MySQL 8.4 Reference Manual, ngram Full-Text Parser](https://dev.mysql.com/doc/refman/8.4/en/fulltext-search-ngram.html)
 
 ## 관련 문서
 - [[DB-Provisioning-Pipeline|DB 프로비저닝 파이프라인]] — 이 파라미터를 템플릿으로 복사해 적용

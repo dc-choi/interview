@@ -112,10 +112,10 @@ MySQL의 커넥션당 스레드 모델은 기본값이다. 진짜 **스레드 �
 - 이관 시 고려해야 할 호환성, 도구 변화
 
 ## 출처
-- [MySQL Enterprise Thread Pool — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/thread-pool.html)
-- [MySQL Replication Formats — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/replication-formats.html)
-- [JSON Types — PostgreSQL 공식 문서](https://www.postgresql.org/docs/current/datatype-json.html)
-- [bloom extension — PostgreSQL 공식 문서](https://www.postgresql.org/docs/current/bloom.html)
+- [MySQL 8.4 Reference Manual, MySQL Enterprise Thread Pool](https://dev.mysql.com/doc/refman/8.4/en/thread-pool.html)
+- [MySQL 8.4 Reference Manual, MySQL Replication Formats](https://dev.mysql.com/doc/refman/8.4/en/replication-formats.html)
+- [PostgreSQL 공식 문서, JSON Types](https://www.postgresql.org/docs/current/datatype-json.html)
+- [PostgreSQL 공식 문서, bloom extension](https://www.postgresql.org/docs/current/bloom.html)
 - [AWS — MySQL vs PostgreSQL 비교](https://aws.amazon.com/ko/compare/the-difference-between-mysql-vs-postgresql/)
 - [minji.sql — PostgreSQL, MySQL 비교](https://medium.com/@minji.sql/postgresql-mysql-%EB%B9%84%EA%B5%90-4b32bedb187e)
 - [우아한형제들 — Aurora MySQL에서 Aurora PostgreSQL로 이관](https://techblog.woowahan.com/6550/)

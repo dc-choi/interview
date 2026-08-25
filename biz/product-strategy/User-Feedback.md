@@ -97,10 +97,10 @@ Q. 사용자 피드백을 어떻게 관리하는가?
 - 반복 빈도 + RICE 점수로 우선순위화
 - 이탈 사용자는 피드백을 주지 않으므로 GA4로 "무언의 이탈" 감지
 
+## 출처
+- [승무원을 위한 서비스 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/60)
+
 ## 관련 문서
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
 - [[Risk-Management|리스크 관리]]
 - [[GTM-Strategy|GTM 전략 (니치 버티컬의 사용자 기반 확장)]]
-
-## 출처
-- [승무원을 위한 서비스 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/60)

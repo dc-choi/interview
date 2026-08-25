@@ -136,7 +136,7 @@ DEVOCEAN 사례는 1,291개 글의 embedding을 MySQL에 저장하고 batch memo
 ## 출처
 
 - [Amazon OpenSearch 시맨틱 검색과 하이브리드 검색 — YouTube](https://www.youtube.com/watch?v=mX6XNgbW_kE)
-- [Methods and engines — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/knn-methods-engines/)
+- [OpenSearch Documentation, Methods and engines](https://docs.opensearch.org/latest/mappings/supported-field-types/knn-methods-engines/)
 - [pgvector — exact와 approximate nearest neighbor search](https://github.com/pgvector/pgvector)
 - [Gemini embeddings](https://ai.google.dev/gemini-api/docs/embeddings)
 - [Embedding task type](https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/task-types)

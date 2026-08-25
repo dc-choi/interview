@@ -99,6 +99,7 @@ AI를 튜터나 사서처럼 쓰려면 결과물만 얻는 것이 아니라 **�
 - [[Growth-Principles|성장의 7가지 원칙]] — 자기효능감, 계단식 성장, 보이지 않는 벽돌
 - [[CS-Fundamentals-Value|CS 기초의 가치]] — 판단 도구로서의 지식 (태도와 짝을 이루는 축)
 - [[First-Hand-Experience-AI-Era|AI 시대 직접 경험기]] — AI를 직접 경험 가속 도구로
+- [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 마찰과 판단 위임의 경계, 가드레일 RCT
 - [[CS-Learning-Method|CS 지식 학습법]] — 키워드 기반 목차 접근
 - [[MCP|Model Context Protocol]] — 사용자 소유 콘텐츠를 AI 컨텍스트로 연결하는 기술 경계
 - [[Self-Development-While-Working|일하면서 자기계발]]

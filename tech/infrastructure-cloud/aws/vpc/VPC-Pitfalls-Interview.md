@@ -29,4 +29,4 @@ verified_at: 2026-08-05
 ## 출처
 
 - [Amazon VPC Pricing](https://aws.amazon.com/vpc/pricing/)
-- [Pricing for NAT gateways — Amazon VPC User Guide](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html)
+- [Amazon VPC User Guide, Pricing for NAT gateways](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html)

@@ -98,7 +98,7 @@ aliases: ["Messaging Patterns", "메시징 패턴"]
 - **SNS + SQS**: SNS가 팬아웃(1:N), SQS가 소비자별 큐. 다수 소비자가 같은 이벤트를 받아야 할 때
 
 ## 출처
-- [Amazon SQS message quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+- [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
 
 ## 관련 문서
 - [[Delivery-Semantics|전달 보장]]

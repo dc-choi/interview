@@ -90,7 +90,7 @@ CREATE INDEX ON items USING hnsw (embedding vector_cosine_ops);
 
 ## 출처
 - [pgvector README — indexing, filtering, iterative scans and scaling](https://github.com/pgvector/pgvector)
-- [Aurora PostgreSQL extension versions — AWS Documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Extensions.html)
+- [AWS Documentation, Aurora PostgreSQL extension versions](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Extensions.html)
 - [pgvector 검색 최적화 — HNSW, halfvec, 쿼리 패턴, 운영 (YouTube)](https://www.youtube.com/watch?v=n3_LY7YFCwE&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=6)
 
 ## 관련 문서

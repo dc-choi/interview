@@ -165,12 +165,12 @@ PUT _ltr (.ltrstore 생성)
 
 ## 출처
 
-- [Function score — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/function-score/)
-- [Rescore — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/rescore/)
-- [Learning to Rank — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/ltr/index/)
+- [OpenSearch Documentation, Function score](https://docs.opensearch.org/latest/query-dsl/compound/function-score/)
+- [OpenSearch Documentation, Rescore](https://docs.opensearch.org/latest/query-dsl/rescore/)
+- [OpenSearch Documentation, Learning to Rank](https://docs.opensearch.org/latest/search-plugins/ltr/index/)
 - [Learning to Rank for Amazon OpenSearch Service — AWS](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/learning-to-rank.html)
 - [Making text search learn from feedback — Martin Davtyan, Filament AI](https://medium.com/filament-ai/making-text-search-learn-from-feedback-4fe210fd87b0)
 - [Unbiased Learning-to-Rank with Biased Feedback — Joachims, Swaminathan, Schnabel](https://arxiv.org/abs/1608.04468)
-- [Keyword search and BM25 — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/keyword-search/)
+- [OpenSearch Documentation, Keyword search and BM25](https://docs.opensearch.org/latest/search-plugins/keyword-search/)
 - [BM25 vs Lucene Default Similarity — Elastic Blog](https://www.elastic.co/blog/found-bm-vs-lucene-default-similarity)
 - [BM25 The Next Generation of Lucene Relevance — OpenSource Connections](https://opensourceconnections.com/blog/2015/10/16/bm25-the-next-generation-of-lucene-relevation/)

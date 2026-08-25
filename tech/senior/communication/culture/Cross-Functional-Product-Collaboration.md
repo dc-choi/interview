@@ -91,6 +91,7 @@ Q. 개발자가 기획, 디자인에 어디까지 개입해야 하나?
 
 - [[Co-Leadership-Partnership|공동 리더십 (역할 분담, 양방향 언어 학습)]]
 - [[Developer-Communication|개발자 커뮤니케이션]] — 첫 질문은 왜, 기술 부채 번역
+- [[Problem-Discovery|문제 발견]] — 요청 뒤의 문제를 읽는 같은 질문 패턴
 - [[Trust-Respect-Teamwork|신뢰와 존중의 팀워크]] — 심리적 안정감과 협업 신뢰
 - [[Engineering-Business-Alignment|개발팀의 비즈니스 align]]
 - [[Retrospective-Methods|애자일 회고 기법 (감정 체크인, 액션 반영)]]

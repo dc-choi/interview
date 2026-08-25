@@ -115,5 +115,5 @@ aliases: ["Yunhoe 1st Tech Extra", "윤회 1차 기술 질문 보강"]
 
 ## 출처
 
-- [The Node.js Event Loop — Node.js 공식 문서](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)
-- [Process: queueMicrotask와 process.nextTick — Node.js 공식 문서](https://nodejs.org/api/process.html#when-to-use-queuemicrotask-vs-processnexttick)
+- [Node.js 공식 문서, The Node.js Event Loop](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)
+- [Node.js 공식 문서, Process: queueMicrotask와 process.nextTick](https://nodejs.org/api/process.html#when-to-use-queuemicrotask-vs-processnexttick)

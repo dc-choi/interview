@@ -58,12 +58,12 @@ aliases: ["채권", "Bonds"]
 - **만기까지 들고 있으면 손해가 없다** → 채무불이행이 없고 계약이 액면 상환을 약속한 채권이어야 명목 원금을 받는다. 중도 현금흐름, 재투자, 인플레이션, 환율과 기회비용까지 고려하면 경제적 손실이 없다는 뜻은 아니다.
 - **이자가 높은 채권이 좋다** → 높은 이자는 그만큼 높은 신용위험의 보상일 때가 많다(고수익 채권 = 고위험).
 
-## 관련
+## 출처
+
+- [Investor.gov — Bonds or Fixed Income Products](https://www.investor.gov/introduction-investing/investing-basics/investment-products/bonds-or-fixed-income-products)
+
+## 관련 문서
 
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 채권 가격을 움직이는 힘
 - [[Stocks|주식]] — 자본구조에서 채권의 반대편
 - [[금융시장(Financial Markets)]] — 지도
-
-## 출처
-
-- [Investor.gov — Bonds or Fixed Income Products](https://www.investor.gov/introduction-investing/investing-basics/investment-products/bonds-or-fixed-income-products)

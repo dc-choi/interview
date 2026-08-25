@@ -105,12 +105,6 @@ iPhone(2007)의 국내 유통이 2년 늦어지고 윈도우 기반 옴니아의
 - 근본적으로 막을 수 없는 리스크는 사후 보상 정책으로 신뢰 자산화할 수 있다 — 11번가 위조품 보상제. 신뢰가 가격 비교의 최소 전제 조건이라는 트레저헌터 시대의 교훈과 한 쌍.
 - 플랫폼 침투는 트래픽 → 회원 → 결제 순으로 진행된다 — 외부 채널이 결제까지 쥐면 사실상 커머스 인프라가 된다 (네이버 체크아웃).
 
-## 관련 문서
-- [[Commerce-Korea-History|한국 이커머스 역사 (목차)]]
-- [[Commerce-Korea-History-1996-2003|이전 시대: 1996-2003]]
-- [[Commerce-Korea-Market|한국 이커머스 시장의 특수성]]
-- [[Commerce-Revenue-Formula|이커머스 수익 공식]]
-
 ## 출처
 - [닷컴버블과 폐쇄적 수익구조의 강화(2003-2005) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/394)
 - [3기 - 폐쇄적 수익구조의 강화(2003~2005) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/21)
@@ -120,3 +114,9 @@ iPhone(2007)의 국내 유통이 2년 늦어지고 윈도우 기반 옴니아의
 - [모바일 앞에서 머뭇거리다(2007-2009) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/397)
 - [Fulfillment by Amazon — Wikipedia (2006-09-19 출시)](https://en.wikipedia.org/wiki/Fulfillment_by_Amazon)
 - [A Decade of Fulfillment by Amazon (FBA) — Marketplace Pulse](https://www.marketplacepulse.com/articles/a-decade-of-fulfillment-by-amazon-fba)
+
+## 관련 문서
+- [[Commerce-Korea-History|한국 이커머스 역사 (목차)]]
+- [[Commerce-Korea-History-1996-2003|이전 시대: 1996-2003]]
+- [[Commerce-Korea-Market|한국 이커머스 시장의 특수성]]
+- [[Commerce-Revenue-Formula|이커머스 수익 공식]]

@@ -169,4 +169,4 @@ Bag-of-words vector는 term 순서를 버린다. 같은 단어를 다른 순서�
 - [Document and query weighting schemes — Introduction to Information Retrieval](https://nlp.stanford.edu/IR-book/html/htmledition/document-and-query-weighting-schemes-1.html)
 - [Dot products — Introduction to Information Retrieval](https://nlp.stanford.edu/IR-book/html/htmledition/dot-products-1.html)
 - [Computing vector scores — Introduction to Information Retrieval](https://nlp.stanford.edu/IR-book/html/htmledition/computing-vector-scores-1.html)
-- [TfidfTransformer — scikit-learn Documentation](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfTransformer.html)
+- [scikit-learn Documentation, TfidfTransformer](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfTransformer.html)

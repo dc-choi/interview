@@ -149,12 +149,6 @@ CI가 있다는 이유만으로 여러 회원제 정보를 목적 제한 없이 
 - 구매자와 판매자 계정을 한 모델로 둘 것인가 분리할 것인가 — 인증은 공유하되 역할(Role)과 프로필을 분리하는 패턴이 일반적.
 - 신규 가입 혜택 어뷰징 방지(본인확인 기반 단일 계정)와 가입 전환율 사이의 트레이드오프를 설명할 수 있는가.
 
-## 관련 문서
-- [[Commerce-Overview|커머스 도메인 개요]]
-- [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]
-- [[Commerce-Order|커머스 주문 도메인]] — 마이페이지 대시보드와 클레임의 본체
-- [[Metrics-Framework|지표 설계]] — 클릭 로그 기반 개선의 측정 설계
-
 ## 출처
 - [국가법령정보센터 — 개인정보 보호법 제17조](https://law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1020398489)
 - [국가법령정보센터 — 개인정보 보호법, 업무위탁 제26조](https://law.go.kr/lsInfoP.do?lsiSeq=270351)
@@ -165,3 +159,9 @@ CI가 있다는 이유만으로 여러 회원제 정보를 목적 제한 없이 
 - [회원이 서 말이라도 꿰어야 보배지 (통합회원제) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/215)
 - [브랜드사, 이커머스의 미래를 대비하라 1편 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/45)
 - [오프라인 유통이 생각보다 데이터를 못 모으는 이유 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/299)
+
+## 관련 문서
+- [[Commerce-Overview|커머스 도메인 개요]]
+- [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]
+- [[Commerce-Order|커머스 주문 도메인]] — 마이페이지 대시보드와 클레임의 본체
+- [[Metrics-Framework|지표 설계]] — 클릭 로그 기반 개선의 측정 설계

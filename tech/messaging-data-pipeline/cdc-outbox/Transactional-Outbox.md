@@ -164,9 +164,9 @@ Outbox 테이블을 단순 발행 대기열이 아닌 **모든 이벤트의 영�
 Event Sourcing은 더 나아가 **상태 자체를 이벤트 스트림으로만 관리**하지만, Event Store + Outbox는 상태도 유지하면서 감사, 복구 능력을 얻는 **중간 지점**.
 
 ## 출처
-- [SELECT — The Locking Clause (SKIP LOCKED) — PostgreSQL 공식 문서](https://www.postgresql.org/docs/current/sql-select.html)
-- [Explicit Locking — Advisory Locks — PostgreSQL 공식 문서](https://www.postgresql.org/docs/current/explicit-locking.html)
-- [Locking Reads (SKIP LOCKED, NOWAIT) — MySQL 8.4 공식 문서](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
+- [PostgreSQL 공식 문서, SELECT — The Locking Clause (SKIP LOCKED)](https://www.postgresql.org/docs/current/sql-select.html)
+- [PostgreSQL 공식 문서, Explicit Locking — Advisory Locks](https://www.postgresql.org/docs/current/explicit-locking.html)
+- [MySQL 8.4 공식 문서, Locking Reads (SKIP LOCKED, NOWAIT)](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
 - [Chris Richardson, Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html)
 - [Dowon Lee 강사, Dual Write, Outbox와 CDC](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289780)
 - [최상용 강사, 트랜잭션 이후 Kafka 이벤트 발행](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344376)

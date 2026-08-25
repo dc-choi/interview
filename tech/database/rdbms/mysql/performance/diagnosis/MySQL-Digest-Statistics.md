@@ -90,11 +90,11 @@ MySQL에서 Prepared Statement를 쓰면 Performance Insights에서 **쿼리 통
 ## 출처
 
 - [KDMS 데이터베이스 인사이트, DB 이슈 분석 도구와 운영 — YouTube](https://www.youtube.com/watch?v=NrPY9J1a2ag&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=5)
-- [Performance Schema Statement Digests and Sampling — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-statement-digests.html)
-- [Statement Summary Tables — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-statement-summary-tables.html)
-- [Statement Histogram Summary Tables — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-statement-histogram-summary-tables.html)
-- [Performance Schema System Variables — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-system-variables.html)
-- [Server Status Variables — MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/server-status-variables.html)
+- [MySQL 8.4 Reference Manual, Performance Schema Statement Digests and Sampling](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-statement-digests.html)
+- [MySQL 8.4 Reference Manual, Statement Summary Tables](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-statement-summary-tables.html)
+- [MySQL 8.4 Reference Manual, Statement Histogram Summary Tables](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-statement-histogram-summary-tables.html)
+- [MySQL 8.4 Reference Manual, Performance Schema System Variables](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-system-variables.html)
+- [MySQL 8.4 Reference Manual, Server Status Variables](https://dev.mysql.com/doc/refman/8.4/en/server-status-variables.html)
 
 ## 관련 문서
 - [[MySQL-Slow-Query-Diagnosis|MySQL Slow Query 진단]] — events_statements_summary_by_digest 활용

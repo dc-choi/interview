@@ -180,7 +180,7 @@ James Snell의 또 다른 핵심 발언:
 - `setTimeout(() => {}, 0)`과 유사하지만 Node.js 이벤트 루프의 check 단계에서 실행
 
 ## 출처
-- [The Node.js Event Loop — Node.js 공식 문서](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)
+- [Node.js 공식 문서, The Node.js Event Loop](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)
 - [로우 레벨로 살펴보는 Node.js 이벤트 루프 — evan-moon](https://evan-moon.github.io/2019/08/01/nodejs-event-loop-workflow/)
 - [libuv v1.45.0 릴리스 노트 — 타이머 실행 순서 변경](https://github.com/libuv/libuv/releases/tag/v1.45.0)
 - [Node.js 20.3.0 릴리스 공지 — libuv 1.45.0 반영](https://nodejs.org/en/blog/release/v20.3.0)

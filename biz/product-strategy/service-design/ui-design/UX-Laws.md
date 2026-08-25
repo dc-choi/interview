@@ -36,6 +36,9 @@ aliases: ["UX Laws", "UX 심리학 법칙", "Laws of UX"]
 - 입력 검증 설계를 포스텔의 법칙으로 — 프론트 입력 제약(1차)과 서버 검증(최종 방어선)의 역할 분담.
 - 기능 단순화 요구에 테슬러의 법칙으로 — 복잡성은 사라지지 않고 이동할 뿐이므로, 누가(사용자 vs 시스템) 감당할지의 의사결정임을 짚는다.
 
+## 출처
+- [당근마켓으로 배우는 UX 심리학 법칙 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/11)
+
 ## 관련 문서
 - [[Visual-Hierarchy|시각적 위계]] — 폰 레스토프 효과의 적용
 - [[Service-Design-Principles|서비스 설계 10원칙 (GOV.UK)]] — 단순성, 일관성 원칙
@@ -43,6 +46,3 @@ aliases: ["UX Laws", "UX 심리학 법칙", "Laws of UX"]
 - [[User-Guidance-Patterns|사용자 가이드 제공 패턴]]
 - [[Cross-Device-UX|크로스 디바이스 심리스 UX]] — 포그 행동 모델 (동기 × 장벽)
 - [[Metoo-Strategy|Me-too 서비스 기획]] — 제이콥의 법칙을 후발 기획 방법론으로 확장
-
-## 출처
-- [당근마켓으로 배우는 UX 심리학 법칙 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/11)

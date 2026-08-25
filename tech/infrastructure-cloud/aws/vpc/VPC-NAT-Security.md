@@ -46,5 +46,5 @@ NAT Instance는 **추천하지 않음** — Public Subnet에 두는 특수 EC2(`
 
 ## 출처
 
-- [NAT gateway basics — Amazon VPC User Guide](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html)
+- [Amazon VPC User Guide, NAT gateway basics](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html)
 - [Amazon VPC quotas — ENI당 보안 그룹 기본 5개, 최대 16개까지 조정](https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html)

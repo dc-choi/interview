@@ -70,10 +70,10 @@ CloudWatch 평균만 보지 않고 최소와 최대 statistic, node 차원, `_no
 
 ## 출처
 
-- [Fine-grained access control — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/fgac.html)
-- [Handling errors — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html)
-- [Serverless IAM — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html)
-- [Serverless network policy — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-network.html)
-- [OpenSearch Ingestion pipeline features — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/osis-features-overview.html)
-- [CloudWatch metrics — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-cloudwatchmetrics.html)
+- [AWS Documentation, Fine-grained access control](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/fgac.html)
+- [AWS Documentation, Handling errors](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html)
+- [AWS Documentation, Serverless IAM](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html)
+- [AWS Documentation, Serverless network policy](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-network.html)
+- [AWS Documentation, OpenSearch Ingestion pipeline features](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/osis-features-overview.html)
+- [AWS Documentation, CloudWatch metrics](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-cloudwatchmetrics.html)
 - CloudWatch: [Recommended alarms](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cloudwatch-alarms.html), [Serverless metrics](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/monitoring-cloudwatch.html)

@@ -146,12 +146,12 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 
 ## 출처
 - AWS SAA C03 학습 자료 — CloudFront
-- [CloudFront flat-rate pricing plans — AWS 공식 문서](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/flat-rate-pricing-plan.html)
-- [CloudFront Functions JavaScript runtime 2.0 — AWS 공식 문서](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/functions-javascript-runtime-20.html)
-- [CloudFront Functions와 Lambda@Edge 비교 — AWS 공식 문서](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html)
-- [OAC로 S3 origin 접근 제한 — AWS 공식 문서](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)
-- [Signed URL trusted signer — AWS 공식 문서](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html)
-- [CloudFront cache expiration — AWS 공식 문서](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html)
+- [AWS 공식 문서, CloudFront flat-rate pricing plans](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/flat-rate-pricing-plan.html)
+- [AWS 공식 문서, CloudFront Functions JavaScript runtime 2.0](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/functions-javascript-runtime-20.html)
+- [AWS 공식 문서, CloudFront Functions와 Lambda@Edge 비교](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html)
+- [AWS 공식 문서, OAC로 S3 origin 접근 제한](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)
+- [AWS 공식 문서, Signed URL trusted signer](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html)
+- [AWS 공식 문서, CloudFront cache expiration](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html)
 
 ## 관련 문서
 - [[CDN|CDN 일반 개념, S3+CloudFront 정적 배포]]

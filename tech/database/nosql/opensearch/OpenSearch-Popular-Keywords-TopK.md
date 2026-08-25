@@ -117,10 +117,10 @@ count 이전에 무엇을 같은 검색어로 볼 것인가가 순위 품질을 
 
 ## 출처
 
-- [Terms aggregation — OpenSearch Documentation](https://docs.opensearch.org/latest/aggregations/bucket/terms/)
-- [Date histogram aggregation — OpenSearch Documentation](https://docs.opensearch.org/latest/aggregations/bucket/date-histogram/)
-- [ZINCRBY — Redis Documentation](https://redis.io/docs/latest/commands/zincrby/)
-- [ZUNIONSTORE — Redis Documentation](https://redis.io/docs/latest/commands/zunionstore/)
-- [Count-min sketch — Redis Documentation](https://redis.io/docs/latest/develop/data-types/probabilistic/count-min-sketch/)
-- [UBI index schemas — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/ubi/schemas/)
+- [OpenSearch Documentation, Terms aggregation](https://docs.opensearch.org/latest/aggregations/bucket/terms/)
+- [OpenSearch Documentation, Date histogram aggregation](https://docs.opensearch.org/latest/aggregations/bucket/date-histogram/)
+- [Redis Documentation, ZINCRBY](https://redis.io/docs/latest/commands/zincrby/)
+- [Redis Documentation, ZUNIONSTORE](https://redis.io/docs/latest/commands/zunionstore/)
+- [Redis Documentation, Count-min sketch](https://redis.io/docs/latest/develop/data-types/probabilistic/count-min-sketch/)
+- [OpenSearch Documentation, UBI index schemas](https://docs.opensearch.org/latest/search-plugins/ubi/schemas/)
 - [An Improved Data Stream Summary: The Count-Min Sketch and its Applications — Cormode, Muthukrishnan](https://dimacs.rutgers.edu/~graham/pubs/papers/cm-full.pdf)

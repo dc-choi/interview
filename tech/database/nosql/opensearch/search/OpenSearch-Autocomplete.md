@@ -170,9 +170,9 @@ GET suggestions-v1/_search
 
 ## 출처
 
-- [Autocomplete functionality — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/autocomplete/)
-- [Edge n-gram token filter — OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/token-filters/edge-ngram/)
-- [N-gram tokenizer — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/analyzers/tokenizers/ngram/)
-- [Search-as-you-type field type — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/search-as-you-type/)
-- [Completion field type — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/completion/)
-- [Index settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
+- [OpenSearch Documentation, Autocomplete functionality](https://docs.opensearch.org/latest/search-plugins/searching-data/autocomplete/)
+- [OpenSearch Documentation, Edge n-gram token filter](https://docs.opensearch.org/latest/analyzers/token-filters/edge-ngram/)
+- [OpenSearch Documentation 2.19, N-gram tokenizer](https://docs.opensearch.org/2.19/analyzers/tokenizers/ngram/)
+- [OpenSearch Documentation, Search-as-you-type field type](https://docs.opensearch.org/latest/mappings/supported-field-types/search-as-you-type/)
+- [OpenSearch Documentation, Completion field type](https://docs.opensearch.org/latest/mappings/supported-field-types/completion/)
+- [OpenSearch Documentation, Index settings](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)

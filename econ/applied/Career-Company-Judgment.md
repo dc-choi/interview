@@ -65,7 +65,7 @@ aliases: ["이직, 회사 판단 체크리스트", "Career and Company Judgment"
 
 이 체크리스트의 불안, 생존 관점은 **본인 의사결정용**이지 면접 답변용이 아니다. 면접에서 회사 생존을 따지는 톤은 부정 신호가 된다. 지원 동기는 안전 버전으로 분리한다(→ [[My-Motivation-Reasons]]).
 
-## 관련
+## 관련 문서
 
 - [[News-Causal-Chain-Drill|뉴스 인과 체인 드릴]] — 사이클을 읽는 연습
 - [[Business-Cycle|경기순환]], [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 펀딩 환경의 뿌리

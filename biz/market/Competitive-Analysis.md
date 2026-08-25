@@ -107,12 +107,6 @@ Q. 경쟁사를 어떻게 분석했는가?
 - 도메인 특화(전례력, 교구 계층)를 경쟁 해자로 활용
 - 인접 경쟁자(브랜치스) 벤치마크 + 대체재(엑셀) 위협 대응
 
-## 관련 문서
-- [[Market-Analysis|시장 분석]]
-- [[GTM-Strategy|GTM 전략]]
-- [[Commerce-Revenue-Formula|이커머스 수익 공식]]
-- [[Service-Design|서비스 설계와 UX 패턴]] — UX 벤치마킹으로 수집한 패턴의 정리처
-
 ## 출처
 - [Branches 공식 페이지](https://branches.team/)
 - [서비스 기획자를 위한 시장 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/51)
@@ -120,3 +114,9 @@ Q. 경쟁사를 어떻게 분석했는가?
 - [사업적 필요성이 반영된 서비스 기획 역기획 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/29)
 - [넷플릭스의 경쟁사가 라면회사인 이유 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/31)
 - [뱅크샐러드는 왜 유전자 검사 키트를 제공할까 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/33)
+
+## 관련 문서
+- [[Market-Analysis|시장 분석]]
+- [[GTM-Strategy|GTM 전략]]
+- [[Commerce-Revenue-Formula|이커머스 수익 공식]]
+- [[Service-Design|서비스 설계와 UX 패턴]] — UX 벤치마킹으로 수집한 패턴의 정리처

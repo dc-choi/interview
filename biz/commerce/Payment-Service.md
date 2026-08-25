@@ -76,15 +76,15 @@ verified_at: 2026-07-21
 - 간편결제 연동은 토큰(빌링키) 관리 문제다 — 발급, 저장, 폐기 주기와 본인 인증. [[Commerce-Order|커머스 주문 도메인]]의 원클릭 주문이 이 위에서 성립한다.
 - 페이 도입의 사업 효과(수수료 수익, 락인, 익명성)는 [[Commerce-Member|커머스 회원 도메인]]의 자체 페이 참조.
 
-## 관련 문서
-- [[Commerce-Order|커머스 주문 도메인]] — 결제 프로세스, 빌링키
-- [[Commerce-Member|커머스 회원 도메인]] — 자체 페이의 다중 효과
-- [[In-App-Purchase|인앱결제]] — 결제시스템 강제와 수수료
-- [[Commerce-Overview|커머스 도메인 개요]]
-
 ## 출처
 - [페이 서비스가 뭔지 이해해보자 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/101)
 - [데이터 관점에서 보는 네이버페이 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/212)
 - [오프라인 유통이 생각보다 데이터를 못 모으는 이유 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/299)
 - [PCI Security Standards Council — PCI DSS](https://www.pcisecuritystandards.org/standards/pci-dss/)
 - [EMVCo — Payment Tokenisation](https://www.emvco.com/emv-technologies/payment-tokenisation/)
+
+## 관련 문서
+- [[Commerce-Order|커머스 주문 도메인]] — 결제 프로세스, 빌링키
+- [[Commerce-Member|커머스 회원 도메인]] — 자체 페이의 다중 효과
+- [[In-App-Purchase|인앱결제]] — 결제시스템 강제와 수수료
+- [[Commerce-Overview|커머스 도메인 개요]]

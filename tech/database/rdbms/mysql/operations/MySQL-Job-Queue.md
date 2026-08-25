@@ -86,6 +86,7 @@ lease는 예상 처리 시간보다 무조건 길게 잡는 값이 아니다. �
 
 ## 관련 문서
 
+- [[Distributed-Batch-Execution|분산 배치 실행 (트리거 외부화와 원자적 선점)]]
 - [[DML-Conflict-and-Batch-Patterns|MySQL DML 충돌 처리와 배치 패턴]]
 - [[MySQL-Long-Transactions-and-Batch|MySQL 장기 트랜잭션과 배치]]
 - [[At-Least-Once|At-Least-Once]]

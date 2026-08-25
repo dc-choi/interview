@@ -42,16 +42,16 @@ Apple App Store는 앱 안에서 소비하는 디지털 기능과 콘텐츠에 �
 - 디지털 콘텐츠 가격 설계 질문에 채널별 수수료 구조를 기본 변수로 — 결제 플로우 설계(웹 결제 유도, 결제 채널 분기)가 수수료 구조의 함수라는 관점.
 - 규제 우회 패턴 — 플랫폼 정책 리스크를 평가할 때 법 통과 여부가 아니라 실효(수수료율 변화)를 본다.
 
-## 관련 문서
-- [[Business-Model|비즈니스 모델 & 수익 구조]] — 중개 모델의 독과점 부작용
-- [[Payment-Service|결제 서비스]] — PG, VAN, 간편결제의 인프라 구조
-- [[Commerce-Pricing|커머스 가격 도메인]]
-- [[Commerce-Overview|커머스 도메인 개요]] — 수수료 구조
-- [[Category-Expansion|카테고리 확장]] — 본업 규제 리스크 평가
-
 ## 출처
 - [Apple — App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
 - [Apple — Distributing apps using a third-party payment provider in South Korea](https://developer.apple.com/support/storekit-external-entitlement-kr/)
 - [Google Play — Changes to billing requirements for users in South Korea](https://support.google.com/googleplay/android-developer/answer/11222040?hl=en)
 - [Google Play — Understanding lower service fees and rollout timeline](https://support.google.com/googleplay/android-developer/answer/16954621?hl=en)
 - [European Commission — Apple and Meta breach the Digital Markets Act](https://digital-strategy.ec.europa.eu/en/news/commission-finds-apple-and-meta-breach-digital-markets-act)
+
+## 관련 문서
+- [[Business-Model|비즈니스 모델 & 수익 구조]] — 중개 모델의 독과점 부작용
+- [[Payment-Service|결제 서비스]] — PG, VAN, 간편결제의 인프라 구조
+- [[Commerce-Pricing|커머스 가격 도메인]]
+- [[Commerce-Overview|커머스 도메인 개요]] — 수수료 구조
+- [[Category-Expansion|카테고리 확장]] — 본업 규제 리스크 평가

@@ -102,12 +102,12 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 ## 출처
 - AWS SAA C03 학습 자료 (로컬)
 - [Amazon API Gateway 공식 문서](https://docs.aws.amazon.com/apigateway/)
-- [Amazon API Gateway quotas — AWS 공식 문서](https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html)
-- [API endpoint types for REST APIs — AWS 공식 문서](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html)
-- [Stage variables for REST APIs — AWS 공식 문서](https://docs.aws.amazon.com/apigateway/latest/developerguide/stage-variables.html)
-- [Canary release deployments for REST APIs — AWS 공식 문서](https://docs.aws.amazon.com/apigateway/latest/developerguide/create-canary-deployment.html)
-- [Usage plans and API keys for REST APIs — AWS 공식 문서](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html)
-- [AWS WAF for REST APIs — AWS 공식 문서](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-aws-waf.html)
+- [AWS 공식 문서, Amazon API Gateway quotas](https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html)
+- [AWS 공식 문서, API endpoint types for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html)
+- [AWS 공식 문서, Stage variables for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/stage-variables.html)
+- [AWS 공식 문서, Canary release deployments for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/create-canary-deployment.html)
+- [AWS 공식 문서, Usage plans and API keys for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html)
+- [AWS 공식 문서, AWS WAF for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-aws-waf.html)
 
 ## 관련 문서
 - [[AWS-Lambda|AWS Lambda]]

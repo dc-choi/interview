@@ -76,13 +76,13 @@ aliases: ["인플레이션과 디플레이션", "Inflation and Deflation"]
 - **인플레이션은 물가가 오르는 것** → 정확히는 물가가 **계속** 오르는 것. 한 번 점프하고 멈추면 일회성 가격 조정이지 인플레이션이 아니다.
 - **임금이 오르니 인플레는 손해가 아니다** → 명목임금이 물가만큼 따라잡는다는 보장이 없고, 보통 시차를 두고 뒤처진다. 그 격차만큼 실질소득이 준다.
 
-## 관련
-
-- [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 인플레이션을 잡는 도구
-- [[Business-Cycle|경기순환]] — 과열기엔 인플레, 침체기엔 디플레 압력
-- [[거시경제(Macroeconomics)]] — 지도
-
 ## 출처
 
 - [U.S. BEA, GDP Price Deflator](https://www.bea.gov/data/prices-inflation/gdp-price-deflator)
 - [IMF, Inflation: Prices on the Rise](https://www.imf.org/en/publications/fandd/issues/series/back-to-basics/inflation)
+
+## 관련 문서
+
+- [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 인플레이션을 잡는 도구
+- [[Business-Cycle|경기순환]] — 과열기엔 인플레, 침체기엔 디플레 압력
+- [[거시경제(Macroeconomics)]] — 지도

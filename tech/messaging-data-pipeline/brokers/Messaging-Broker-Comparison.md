@@ -176,7 +176,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 ## 출처
 - [Amazon SQS pricing — 요청 과금, Free Tier](https://aws.amazon.com/sqs/pricing/)
 - [AWS Price List API — Amazon SQS 현재 리전별 단가](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSQueueService/current/index.json)
-- [Amazon SQS message quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+- [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
 - [Apache Kafka Documentation — Message Delivery Semantics](https://kafka.apache.org/documentation/#semantics)
 - [마이프차 기술 블로그 (Medium) — RabbitMQ vs BullMQ (+SQS) 실사용 후 솔직 후기 (30만 건 실험, RabbitMQ와 BullMQ만 실측)](https://medium.com/@myfranchise/rabbitmq-vs-bullmq-sqs-%EC%8B%A4%EC%82%AC%EC%9A%A9-%ED%9B%84-%EC%86%94%EC%A7%81-%ED%9B%84%EA%B8%B0-c74c1a485143)
 

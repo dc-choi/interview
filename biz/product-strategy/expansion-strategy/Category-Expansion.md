@@ -100,15 +100,15 @@ O2O 확장의 예로는 인테리어 플랫폼의 이사 시장 진출이 있다
 - 온라인 침투율이 낮은 시장은 기회이자 경고다 — 침투율이 낮은 구조적 이유(표준화 난이도, 불투명 거래)와 선행 철수 사례부터 확인한다.
 - 종료된 서비스의 원인 분석은 좋은 훈련 소재다 — 왜 만들었나(목표 지표), 왜 실패했나(구조적 원인), 대안은 무엇이었나 순으로 분해하면 성공 사례 분석보다 프레임이 선명하게 드러난다.
 
-## 관련 문서
-- [[Market-Analysis|시장 분석]]
-- [[Competitive-Analysis|경쟁사 분석]]
-- [[Business-Model|비즈니스 모델]]
-- [[Pricing-Strategy|가격 정책 설계]]
-
 ## 출처
 - [서비스 기획자를 위한 시장 분석 실전 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/52)
 - [종료한 서비스 분석으로 생각하는 힘 기르기 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/55)
 - [서비스 전략 기획 사례 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/57)
 - [이사는 왜 이렇게 우릴 힘들게 하는가 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/61)
 - [뱅크샐러드는 왜 유전자 검사 키트를 제공할까 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/33)
+
+## 관련 문서
+- [[Market-Analysis|시장 분석]]
+- [[Competitive-Analysis|경쟁사 분석]]
+- [[Business-Model|비즈니스 모델]]
+- [[Pricing-Strategy|가격 정책 설계]]

@@ -55,8 +55,8 @@ uptime이 긴 pod 하나에 들어가 확인한다 (cgroup v1 기준 경로. v2�
 ## 출처
 
 - [돌아오지 않는 메모리를 찾아서 — SSG TECH BLOG](https://medium.com/ssgtech/%EB%8F%8C%EC%95%84%EC%98%A4%EC%A7%80-%EC%95%8A%EB%8A%94-%EB%A9%94%EB%AA%A8%EB%A6%AC%EB%A5%BC-%EC%B0%BE%EC%95%84%EC%84%9C-6988f6d55066)
-- [Node-pressure Eviction — Kubernetes Docs](https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/) (working set 기준 축출, inactive_file 제외)
-- [Memory Resource Controller — Linux Kernel Docs](https://docs.kernel.org/admin-guide/cgroup-v1/memory.html) (한도 도달 시 회수 후 OOM, memory.stat 항목)
+- [Kubernetes Docs, Node-pressure Eviction](https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/) (working set 기준 축출, inactive_file 제외)
+- [Linux Kernel Docs, Memory Resource Controller](https://docs.kernel.org/admin-guide/cgroup-v1/memory.html) (한도 도달 시 회수 후 OOM, memory.stat 항목)
 - [Linux kernel — proc filesystem, VmRSS and resident set fields](https://docs.kernel.org/filesystems/proc.html)
 - [Linux cgroup v2 memory controller](https://docs.kernel.org/admin-guide/cgroup-v2.html)
 

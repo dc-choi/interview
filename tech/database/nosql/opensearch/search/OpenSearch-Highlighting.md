@@ -140,9 +140,9 @@ Highlight는 사용자 설명용 snippet이지 query match의 감사 증거가 �
 
 ## 출처
 
-- [Highlight query matches — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/highlight/)
-- [Index options — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-parameters/index-options/)
-- [Term vector — OpenSearch Documentation](https://docs.opensearch.org/latest/field-types/mapping-parameters/term-vector/)
-- [Index settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
+- [OpenSearch Documentation, Highlight query matches](https://docs.opensearch.org/latest/search-plugins/searching-data/highlight/)
+- [OpenSearch Documentation, Index options](https://docs.opensearch.org/latest/mappings/mapping-parameters/index-options/)
+- [OpenSearch Documentation, Term vector](https://docs.opensearch.org/latest/field-types/mapping-parameters/term-vector/)
+- [OpenSearch Documentation, Index settings](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
 - [Highlight fetch phase — OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/search/fetch/subphase/highlight/HighlightPhase.java)
 - [Cross Site Scripting Prevention — OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)

@@ -79,4 +79,4 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - [오픈AI, 차세대 AI 'GPT-5.6' 공개, 정부 승인 파트너만 우선 사용 — 리드경제](https://www.leadeconomy.co.kr/news/articleView.html?idxno=8339)
 - [Previewing GPT-5.6 Sol: a next-generation model — OpenAI](https://openai.com/index/previewing-gpt-5-6-sol/)
 - [차세대 모델 GPT-5.6 Sol 미리 살펴보기 (한국어판) — OpenAI](https://openai.com/ko-KR/index/previewing-gpt-5-6-sol/)
-- [Models overview — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격)
+- [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격)

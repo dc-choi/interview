@@ -28,6 +28,7 @@ Spring Batch와 함께 자주 언급되는 **스케줄링** 문제. 배치를 �
 - **지속되는 동적 스케줄, misfire 정책, calendar, 클러스터 조정 필요** → 공유 JobStore를 둔 Quartz
 - **`@Scheduled` 중복 실행만 막으면 됨** → ShedLock 같은 공유 락을 적용할 수 있음
 - **Kubernetes가 실행 주기를 소유** → CronJob의 `concurrencyPolicy`, Job 기록, deadline을 사용하고 애플리케이션 레플리카의 `@Scheduled`와 중복 운영하지 않음
+- **중복 방지를 넘어 처리량 확장까지 필요** → 트리거를 인스턴스 밖으로 꺼내고 실행은 원자적 선점으로 병렬화 ([[Distributed-Batch-Execution|분산 배치 실행]])
 
 K8s 다중 인스턴스라는 이유만으로 Quartz가 필수인 것은 아니다. 필요한 기능이 단순한 단일 실행 보장인지, 영속적인 스케줄과 misfire 처리인지에 따라 Quartz, 공유 락, Kubernetes CronJob, 리더 선출 중에서 고른다.
 

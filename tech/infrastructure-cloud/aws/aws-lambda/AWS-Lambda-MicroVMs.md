@@ -95,7 +95,7 @@ MicroVM은 Firecracker 마이크로VM 위에서 돈다. Firecracker는 Lambda Fu
 
 - [Run isolated sandboxes with full lifecycle control: AWS Lambda introduces MicroVMs — AWS Blog](https://aws.amazon.com/blogs/aws/run-isolated-sandboxes-with-full-lifecycle-control-aws-lambda-introduces-microvms/)
 - [AWS introduces Lambda MicroVMs — What's New](https://aws.amazon.com/about-aws/whats-new/2026/06/aws-lambda-microvms/)
-- [AWS Lambda MicroVMs — Developer Guide](https://docs.aws.amazon.com/lambda/latest/dg/lambda-microvms-guide.html)
+- [Developer Guide, AWS Lambda MicroVMs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-microvms-guide.html)
 - [AWS Lambda — Running and using MicroVMs](https://docs.aws.amazon.com/lambda/latest/dg/microvms-launching.html)
 - [Understanding the Lambda execution environment lifecycle — AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)
 

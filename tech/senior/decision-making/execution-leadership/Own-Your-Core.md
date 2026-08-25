@@ -58,5 +58,6 @@ B2B 원두 납품이 핵심 사업인 한 카페의 대표는 언어 장벽 때�
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 위임의 4분면(무엇을 인간이 쥘까)
 - [[Team-Attrition-Resilience|팀 이탈 회복력]] — 핵심 인력 의존, 버스 팩터
 - [[Feedback-Delay|피드백 지연]] — 시작은 빠르게, 결과 판단은 천천히
+- [[Problem-Discovery|문제 발견]] — 증거를 모으는 대기와 즉시 실행의 축 구분
 - [[Career-Attitude|커리어 태도]] — 사전 판단보다 즉시 실행
 - [[Deferred-Life-Plan|미뤄 놓은 인생 설계]] — 조건부 목표 미루기 경계

@@ -88,8 +88,8 @@ Claude Code와 Codex가 공유하는 구조.
 ## 출처
 
 - [Claude Code Skills vs Codex Skills: 구조와 차이 완전 정리 — AlienCoder](https://aliencoder.tistory.com/243)
-- [Agent Skills — Claude Docs](https://code.claude.com/docs/ko/skills)
-- [Skills — OpenAI Codex Docs](https://developers.openai.com/codex/skills)
+- [Claude Docs, Agent Skills](https://code.claude.com/docs/ko/skills)
+- [OpenAI Codex Docs, Skills](https://developers.openai.com/codex/skills)
 
 ## 관련 문서
 

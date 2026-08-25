@@ -59,11 +59,11 @@ aliases: ["OpenSearch Seoul Meetup 검색 품질과 운영 질문"]
 
 ## 출처
 
-- [Update Document API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/update-document/)
-- [Search settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/search-settings/)
+- [OpenSearch Documentation, Update Document API](https://docs.opensearch.org/latest/api-reference/document-apis/update-document/)
+- [OpenSearch Documentation, Search settings](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/search-settings/)
 - [Circuit breaker pattern — AWS Prescriptive Guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/circuit-breaker.html)
-- [Analyze API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/analyze-apis/)
-- [Function score — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/compound/function-score/)
-- [Ranking Evaluation API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/search-apis/rank-eval/)
-- [Index aliases — OpenSearch Documentation](https://docs.opensearch.org/latest/im-plugin/index-alias/)
-- [Reindex Documents API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/reindex/)
+- [OpenSearch Documentation, Analyze API](https://docs.opensearch.org/latest/api-reference/analyze-apis/)
+- [OpenSearch Documentation, Function score](https://docs.opensearch.org/latest/query-dsl/compound/function-score/)
+- [OpenSearch Documentation, Ranking Evaluation API](https://docs.opensearch.org/latest/api-reference/search-apis/rank-eval/)
+- [OpenSearch Documentation, Index aliases](https://docs.opensearch.org/latest/im-plugin/index-alias/)
+- [OpenSearch Documentation, Reindex Documents API](https://docs.opensearch.org/latest/api-reference/document-apis/reindex/)

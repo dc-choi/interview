@@ -100,12 +100,12 @@ function lockErrno(e: unknown): number | undefined {
 
 ## 출처
 
-- [MySQL 8.4 Reference Manual — Locking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
-- [MySQL 8.4 Reference Manual — InnoDB Error Handling](https://dev.mysql.com/doc/refman/8.4/en/innodb-error-handling.html)
-- [MySQL 8.4 Reference Manual — InnoDB Lock and Lock-Wait Information](https://dev.mysql.com/doc/refman/8.4/en/innodb-information-schema-understanding-innodb-locking.html)
-- [MySQL 8.4 Reference Manual — The INFORMATION_SCHEMA INNODB_TRX Table](https://dev.mysql.com/doc/refman/8.4/en/information-schema-innodb-trx-table.html)
-- [MySQL 8.4 Reference Manual — InnoDB Startup Options and System Variables](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html)
-- [MySQL 8.4 Error Reference — Server Error Message Reference](https://dev.mysql.com/doc/mysql-errors/8.4/en/server-error-reference.html)
+- [MySQL 8.4 Reference Manual, Locking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
+- [MySQL 8.4 Reference Manual, InnoDB Error Handling](https://dev.mysql.com/doc/refman/8.4/en/innodb-error-handling.html)
+- [MySQL 8.4 Reference Manual, InnoDB Lock and Lock-Wait Information](https://dev.mysql.com/doc/refman/8.4/en/innodb-information-schema-understanding-innodb-locking.html)
+- [MySQL 8.4 Reference Manual, The INFORMATION_SCHEMA INNODB_TRX Table](https://dev.mysql.com/doc/refman/8.4/en/information-schema-innodb-trx-table.html)
+- [MySQL 8.4 Reference Manual, InnoDB Startup Options and System Variables](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html)
+- [MySQL 8.4 Error Message Reference, Server Error Message Reference](https://dev.mysql.com/doc/mysql-errors/8.4/en/server-error-reference.html)
 - [MySQL Worklog WL#8919 — InnoDB: Implement NOWAIT and SKIP LOCKED](https://dev.mysql.com/worklog/task/?id=8919)
 - [node-mysql2 — typings/mysql/lib/protocol/sequences/Query.d.ts, QueryError](https://github.com/sidorares/node-mysql2/blob/master/typings/mysql/lib/protocol/sequences/Query.d.ts)
 - [TypeORM — src/error/QueryFailedError.ts](https://github.com/typeorm/typeorm/blob/master/src/error/QueryFailedError.ts)

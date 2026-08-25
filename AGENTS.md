@@ -4,7 +4,7 @@
 
 - 이 파일에는 저장소 전체에 적용되는 규칙만 둔다. 특정 도메인에만 필요한 규칙과 사용자 컨텍스트는 대상 경로의 `AGENTS.md`에 둔다.
 - 작업 전 저장소 루트부터 대상 경로까지 존재하는 `AGENTS.md`를 모두 읽는다. 관련 없는 형제 도메인의 지침은 미리 읽지 않는다.
-- 현재 도메인 지침은 `fit/AGENTS.md`, `fit/interview/AGENTS.md`, `fit/job-search/AGENTS.md`, `fit/growth/learning/AGENTS.md`, `tech/AGENTS.md`에서 관리한다.
+- 현재 도메인 지침은 `fit/AGENTS.md`, `fit/interview/AGENTS.md`, `fit/job-search/AGENTS.md`, `fit/growth/learning/AGENTS.md`, `tech/AGENTS.md`, `biz/AGENTS.md`, `econ/AGENTS.md`에서 관리한다.
 - 반복 실행 절차는 `.claude/skills/`와 `.agents/skills/`에서 관리한다. 도메인 `AGENTS.md`에는 결과를 제약하는 불변 규칙만 둔다.
 - 루트 파일에서 도메인 지침을 import하지 않는다. Claude의 하위 경로 로딩과 Codex의 `AGENTS.md` 라우팅을 사용한다.
 - 파일 경로가 없는 대화형 요청도 주제로 대상 도메인을 정하고 다음 지침을 읽는다.
@@ -13,6 +13,8 @@
   - 구직, 채용 트래커, 이력서와 포트폴리오는 `fit/AGENTS.md`, `fit/job-search/AGENTS.md`
   - 학습 계획, 로드맵, 우선순위와 진행 판단은 `fit/AGENTS.md`, `fit/growth/learning/AGENTS.md`
   - 기술 지식, 기술 문서와 카테고리 인덱스는 `tech/AGENTS.md`
+  - 비즈니스와 제품 지식 문서는 `biz/AGENTS.md`
+  - 경제와 투자 지식 문서는 `econ/AGENTS.md`
 - 여러 도메인이 걸리면 관련 도메인만 함께 읽고, 주제가 근거 확인 뒤에도 불명확하면 사용자에게 묻는다.
 - 적용 가능한 지침 체인이 불명확하면 `rg --files -g 'AGENTS.md' -g 'CLAUDE.md'`로 확인한다.
 - 활성 system 지침과 developer 지침을 먼저 적용하고 최신 사용자 요청을 그다음 적용한다.

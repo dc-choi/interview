@@ -80,8 +80,8 @@ AWS가 주로 담당하는 영역:
 
 - [Amazon OpenSearch 내부 구조, 성능 최적화와 스케일링 — YouTube](https://www.youtube.com/watch?v=e9GpbaT18Mk)
 - AWS 개요: [Amazon OpenSearch Service](https://aws.amazon.com/ko/opensearch-service/), [OpenSearch란 무엇인가요](https://aws.amazon.com/ko/what-is/opensearch/)
-- [What is Amazon OpenSearch Service — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html)
-- [OpenSearch Service와 Serverless 비교 — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-comparison.html)
-- [Serverless 구조와 제한 — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-overview.html)
-- [Auto-Tune — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/auto-tune.html)
-- [OpenSearch Service quotas — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html)
+- [AWS Documentation, What is Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html)
+- [AWS Documentation, OpenSearch Service와 Serverless 비교](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-comparison.html)
+- [AWS Documentation, Serverless 구조와 제한](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-overview.html)
+- [AWS Documentation, Auto-Tune](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/auto-tune.html)
+- [AWS Documentation, OpenSearch Service quotas](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html)

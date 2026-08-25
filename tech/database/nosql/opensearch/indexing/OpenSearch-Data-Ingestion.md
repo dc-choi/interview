@@ -176,11 +176,11 @@ Ingest pipeline은 OpenSearch node CPU를 사용한다. Source 연결, buffer, �
 
 ## 출처
 
-- [Ingest your data into OpenSearch — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/ingest-data/)
-- [Bulk API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/bulk/)
-- [OpenSearch Data Prepper — OpenSearch Documentation](https://docs.opensearch.org/latest/data-prepper/)
-- [Data Prepper buffers — OpenSearch Documentation](https://docs.opensearch.org/latest/data-prepper/pipelines/configuration/buffers/buffers/)
-- [OpenSearch sink — OpenSearch Documentation](https://docs.opensearch.org/latest/data-prepper/pipelines/configuration/sinks/opensearch/)
-- [Ingest pipelines — OpenSearch Documentation](https://docs.opensearch.org/latest/ingest-pipelines/)
-- [OpenSearch tools — OpenSearch Documentation](https://docs.opensearch.org/latest/tools/)
-- [Tuning for indexing speed — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/performance/)
+- [OpenSearch Documentation, Ingest your data into OpenSearch](https://docs.opensearch.org/latest/getting-started/ingest-data/)
+- [OpenSearch Documentation, Bulk API](https://docs.opensearch.org/latest/api-reference/document-apis/bulk/)
+- [OpenSearch Documentation, OpenSearch Data Prepper](https://docs.opensearch.org/latest/data-prepper/)
+- [OpenSearch Documentation, Data Prepper buffers](https://docs.opensearch.org/latest/data-prepper/pipelines/configuration/buffers/buffers/)
+- [OpenSearch Documentation, OpenSearch sink](https://docs.opensearch.org/latest/data-prepper/pipelines/configuration/sinks/opensearch/)
+- [OpenSearch Documentation, Ingest pipelines](https://docs.opensearch.org/latest/ingest-pipelines/)
+- [OpenSearch Documentation, OpenSearch tools](https://docs.opensearch.org/latest/tools/)
+- [OpenSearch Documentation, Tuning for indexing speed](https://docs.opensearch.org/latest/tuning-your-cluster/performance/)

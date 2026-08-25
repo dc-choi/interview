@@ -162,8 +162,8 @@ cron/rate 표현식 → Scheduler → Target (Lambda, SQS, Step Functions 등)
 
 ## 출처
 
-- [Amazon EventBridge quotas — AWS 공식 문서](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-quota.html)
-- [Sending events with PutEvents — AWS 공식 문서](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-putevents.html)
+- [AWS 공식 문서, Amazon EventBridge quotas](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-quota.html)
+- [AWS 공식 문서, Sending events with PutEvents](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-putevents.html)
 - [Amazon EventBridge pricing — AWS 공식 가격](https://aws.amazon.com/eventbridge/pricing/)
 
 ## 관련 문서

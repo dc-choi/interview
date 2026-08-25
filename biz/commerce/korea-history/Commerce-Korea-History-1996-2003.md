@@ -85,11 +85,6 @@ aliases: ["Commerce Korea History 1996-2003", "한국 이커머스 역사 1996-2
 - 수익 공식(방문수 × 전환율 × 객단가 - 비용)은 모델 평가의 공용 잣대 — 경매는 전환율, 공동구매는 객단가, B2B몰은 전부 보장처럼 어떤 모델이든 공식에 대입해 구조적 강약을 설명할 수 있다.
 - 기술 내재화 실패의 결과는 동질화와 가격 경쟁 — 솔루션, 외주 의존이 편할수록 차별화 수단을 잃는다는 교훈은 현재의 SaaS, 외주 의사결정에도 그대로 적용된다.
 
-## 관련 문서
-- [[Commerce-Korea-History|한국 이커머스 역사 (목차)]]
-- [[Commerce-Korea-History-2003-2009|다음 시대: 2003-2009]]
-- [[Commerce-Korea-Market|한국 이커머스 시장의 특수성]]
-
 ## 출처
 - [PayPal 2001 Form 10-K — SEC](https://www.sec.gov/Archives/edgar/data/1103415/000091205702009834/a2073071z10-k405.htm)
 - [대한민국 온라인 쇼핑이 등장하다(1996-1999) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/391)
@@ -105,3 +100,8 @@ aliases: ["Commerce Korea History 1996-2003", "한국 이커머스 역사 1996-2
 - [엔에이치엔커머스(구 고도소프트) — 한국어 위키백과 (2002년 1월 설립)](https://ko.wikipedia.org/wiki/%EA%B3%A0%EB%8F%84%EC%86%8C%ED%94%84%ED%8A%B8)
 - [카페24 연혁 (1999 설립, 2003 쇼핑몰센터 오픈) — 카페24 공식](https://www.cafe24corp.com/company/history)
 - [스타일난다 김소희 창업 스토리 — 포브스코리아](http://www.forbeskorea.co.kr/news/articleView.html?idxno=312961)
+
+## 관련 문서
+- [[Commerce-Korea-History|한국 이커머스 역사 (목차)]]
+- [[Commerce-Korea-History-2003-2009|다음 시대: 2003-2009]]
+- [[Commerce-Korea-Market|한국 이커머스 시장의 특수성]]

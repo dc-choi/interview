@@ -121,7 +121,7 @@ GET products/_search
 
 ## 출처
 
-- [Boolean query — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/query-dsl/compound/bool/)
-- [Disjunction max query — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/query-dsl/compound/disjunction-max/)
-- [Multi-match query — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/query-dsl/full-text/multi-match/)
+- [OpenSearch Documentation 2.19, Boolean query](https://docs.opensearch.org/2.19/query-dsl/compound/bool/)
+- [OpenSearch Documentation 2.19, Disjunction max query](https://docs.opensearch.org/2.19/query-dsl/compound/disjunction-max/)
+- [OpenSearch Documentation 2.19, Multi-match query](https://docs.opensearch.org/2.19/query-dsl/full-text/multi-match/)
 - [SearchHit.java — OpenSearch 2.19 소스, matched_queries 직렬화 조건](https://github.com/opensearch-project/OpenSearch/blob/2.19/server/src/main/java/org/opensearch/search/SearchHit.java)

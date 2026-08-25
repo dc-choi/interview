@@ -1,7 +1,7 @@
 ---
 tags: [cdc, debezium, kafka, mysql, data-pipeline, change-data-capture, binlog]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-08-25
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["CDC 개념과 아키텍처", "CDC 구현 방식과 대안 도구"]
 ---
@@ -19,6 +19,8 @@ Change Data Capture는 committed data change를 지속적으로 읽어 다른 �
 | transaction log 기반 CDC | committed 순서와 delete를 낮은 source query 부하로 읽음 | log retention, connector offset, snapshot과 schema history 운영 |
 
 Log 기반이 항상 무침습인 것은 아니다. Binary log 설정과 보관, replication 권한, initial snapshot, network와 connector가 source에 부하를 만든다. 요구와 운영 역량으로 선택한다.
+
+증가 key polling의 대표 함정은 auto_increment 갭이다. InnoDB에서 auto_increment 값은 INSERT 문 처리 시점에 할당되고, 정상 운영에서는 트랜잭션이 롤백돼도 재사용되지 않아 값에 갭이 남으며(비정상 종료 후 카운터 재초기화 시의 재사용 가능성은 문서화된 예외), 동시 트랜잭션에서는 할당 순서와 커밋 순서가 일치한다는 보장이 없다. 커서가 max(id)를 지나간 뒤에 더 작은 id의 행이 뒤늦게 커밋되어 보이면 폴러는 그 행을 놓치고, 그 갭은 저절로 메워지지 않으므로 갭이 메워지길 기다리는 로직은 멈춘다. 커서를 일정 구간 겹쳐 다시 읽고 중복은 멱등 처리로 흡수하거나, 타임스탬프 컬럼에 지연 윈도우를 두거나, log 기반 CDC로 전환해 완화한다.
 
 ## Debezium MySQL 흐름
 
@@ -69,11 +71,13 @@ Exactly-once라는 제품 옵션이 있어도 외부 API, 다른 DB와 search in
 - [Debezium Documentation, MySQL Connector](https://debezium.io/documentation/reference/stable/connectors/mysql.html)
 - [Debezium Documentation, Architecture](https://debezium.io/documentation/reference/stable/architecture.html)
 - [Debezium Documentation, Outbox Event Router](https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html)
+- [MySQL 8.4 Reference Manual, AUTO_INCREMENT Handling in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-auto-increment-handling.html)
 - [인프런, Hong, CDC](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338563)
 
 ## 관련 문서
 
 - [[CDC-Debezium-Operations|CDC와 Debezium 운영]]
+- [[Distributed-Batch-Execution|분산 배치 실행]] — 폴링 기반 배치의 트리거와 선점 설계
 - [[CDC-Debezium-Setup|Debezium DB별 설정]]
 - [[Transactional-Outbox|Transactional Outbox]]
 - [[Delivery-Semantics|Delivery Semantics]]

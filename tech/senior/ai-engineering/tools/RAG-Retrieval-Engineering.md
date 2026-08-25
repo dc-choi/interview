@@ -116,6 +116,6 @@ Q. 도메인 사전은 무조건 만드는 게 좋은가?
 - [Ragas: Automated Evaluation of Retrieval Augmented Generation](https://arxiv.org/abs/2309.15217)
 - [ARES: An Automated Evaluation Framework for Retrieval-Augmented Generation Systems — NAACL 2024](https://aclanthology.org/2024.naacl-long.20/)
 - [Enabling Large Language Models to Generate Text with Citations — ALCE](https://arxiv.org/abs/2305.14627)
-- [Rerank processor — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/rerank-processor/)
+- [OpenSearch Documentation, Rerank processor](https://docs.opensearch.org/latest/search-plugins/search-pipelines/rerank-processor/)
 - [AI ENGINEER NIGHT Q&A 총정리 — 채널톡 Tech](https://tech.channel.io/ko/articles/4052f1f4)
 - [LLM 에이전트 실무 사례 (리트리벌 스킬, RankJ 근거 태깅) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)

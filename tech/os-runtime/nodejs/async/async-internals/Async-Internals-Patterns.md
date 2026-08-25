@@ -136,8 +136,8 @@ async function poll() {
 
 ## 출처
 
-- [no-return-await — ESLint 공식 문서](https://eslint.org/docs/latest/rules/no-return-await)
-- [return-await — typescript-eslint 공식 문서](https://typescript-eslint.io/rules/return-await/)
+- [ESLint 공식 문서, no-return-await](https://eslint.org/docs/latest/rules/no-return-await)
+- [typescript-eslint 공식 문서, return-await](https://typescript-eslint.io/rules/return-await/)
 - [ECMAScript Language Specification — TC39](https://tc39.es/ecma262/)
 - [Node.js os.availableParallelism](https://nodejs.org/api/os.html#osavailableparallelism)
 

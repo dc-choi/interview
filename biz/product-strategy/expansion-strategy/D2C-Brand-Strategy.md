@@ -44,12 +44,12 @@ aliases: ["D2C", "Brand Strategy", "브랜드 데이터 전략", "탈플랫폼 �
 - IoT와 자사 앱의 가치는 기능이 아니라 판매 후 데이터 접점 — 이커머스가 배제되는 유일한 구간이라는 관점.
 - 커스터마이징 상품은 취향 대응이 아니라 추천, 비교가 불가능한 상품을 만드는 탈플랫폼 전략이기도 하다.
 
+## 출처
+- [브랜드사, 이커머스의 미래를 대비하라 2편 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/48)
+
 ## 관련 문서
 - [[Commerce-Member|커머스 회원 도메인]] — 입점의 데이터 비대칭 (문제의 출발점)
 - [[Personalization-Recommendation|개인화와 추천]] — AI 추천 구조, 선제 커머스
 - [[Payment-Service|결제 서비스]] — 플랫폼 진영의 데이터 수집 전략
 - [[Content-Marketing|콘텐츠 마케팅]] — 유입과 락인용 콘텐츠
 - [[Marketing-Fundamentals|마케팅 기초]] — 브랜드 아키텍처
-
-## 출처
-- [브랜드사, 이커머스의 미래를 대비하라 2편 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/48)

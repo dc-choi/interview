@@ -91,6 +91,6 @@ Claude Opus 5는 Opus 4.8의 후속으로 2026-07-24 출시된 Opus 라인 최�
 ## 출처
 
 - [Introducing Claude Opus 5 — Anthropic](https://www.anthropic.com/news/claude-opus-5)
-- [Model migration guide — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/models/migration-guide)
-- [Models overview — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/models/overview)
-- [What's new in Claude Opus 5 — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/models/whats-new-opus-5)
+- [Anthropic Platform Docs, Model migration guide](https://platform.claude.com/docs/en/about-claude/models/migration-guide)
+- [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview)
+- [Anthropic Platform Docs, What's new in Claude Opus 5](https://platform.claude.com/docs/en/about-claude/models/whats-new-opus-5)

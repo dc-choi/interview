@@ -185,8 +185,8 @@ Demo security 구성이라면 URL을 HTTPS로 바꾸고 CA 검증과 인증 정�
 
 ## 출처
 
-- [Installation quickstart — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/quickstart/)
-- [Docker installation — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/)
-- [Installing OpenSearch — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/index/)
-- [Communicate with OpenSearch — OpenSearch Documentation](https://docs.opensearch.org/latest/getting-started/communicate/)
-- [Best practices for OpenSearch security — OpenSearch Documentation](https://docs.opensearch.org/latest/security/configuration/best-practices/)
+- [OpenSearch Documentation, Installation quickstart](https://docs.opensearch.org/latest/getting-started/quickstart/)
+- [OpenSearch Documentation, Docker installation](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/)
+- [OpenSearch Documentation, Installing OpenSearch](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/index/)
+- [OpenSearch Documentation, Communicate with OpenSearch](https://docs.opensearch.org/latest/getting-started/communicate/)
+- [OpenSearch Documentation, Best practices for OpenSearch security](https://docs.opensearch.org/latest/security/configuration/best-practices/)

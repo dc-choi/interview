@@ -73,6 +73,8 @@ Spring Batch가 사용하는 배치 실행 이력 저장소다. 개발 환경에
 
 기본 동작에서는 같은 identifying 파라미터로 이미 완료된 JobInstance를 다시 실행할 수 없다. 실패 후 재시작은 Reader, Writer의 `saveState`, 트랜잭션 자원과 `ExecutionContext`가 올바르게 구성됐을 때 마지막으로 커밋된 체크포인트 이후부터 진행하며, 커밋되지 않은 항목은 재처리될 수 있다.
 
+실무에서 이 테이블은 프레임워크가 소유한 재시작과 이력 저장소로 두는 것이 일반적이다. 메타데이터를 직접 조회, 조작해 도메인 재처리 로직을 얹으면 내부 스키마와 결합해 복잡도만 커진다 — 도메인 재처리는 [[Spring-Batch-Essentials-JobParameter|Job Parameter]]로 대상을 명시한 재실행으로 풀되, 위의 재실행 거부 때문에 식별 파라미터를 하나 더해 새 JobInstance로 돌린다. 이 경로는 처음부터 다시 도는 재처리다 — 실패한 실행을 마지막 체크포인트부터 잇는 재시작은 같은 JobInstance에서 이뤄지는 별개 경로이고, 그 판단은 메타데이터와 ExecutionContext에 맡긴다.
+
 ## Chunk 모델 상세
 
 ```
@@ -105,6 +107,7 @@ Chunk 크기가 곧 **트랜잭션 경계**이자 commit 간격. 10,000건이면
 - **Custom Writer**: 외부 API 호출, 메시지 발행 등. DB 트랜잭션과 원자적이지 않을 수 있어 멱등성, outbox와 재시도를 설계
 
 ## 출처
+- [Spring Batch domain language](https://docs.spring.io/spring-batch/reference/domain.html)
 - [Spring Batch TaskletStep](https://docs.spring.io/spring-batch/reference/step/tasklet.html)
 - [Spring Batch record filtering](https://docs.spring.io/spring-batch/reference/processor.html#filtering-records)
 - [Spring Batch database readers and writers](https://docs.spring.io/spring-batch/reference/readers-and-writers/database.html)

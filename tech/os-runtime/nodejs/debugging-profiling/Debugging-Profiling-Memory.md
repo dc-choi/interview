@@ -164,7 +164,7 @@ cat perfs.out | stackcollapse-perf.pl | flamegraph.pl --colors=js > profile.svg
 ```
 
 ## 출처
-- [Profiling Node.js Applications — Node.js 공식 문서](https://nodejs.org/en/learn/getting-started/profiling)
+- [Node.js 공식 문서, Profiling Node.js Applications](https://nodejs.org/en/learn/getting-started/profiling)
 
 ## 관련 문서
 - [[Debugging-Profiling|디버깅 & 프로파일링 인덱스]]

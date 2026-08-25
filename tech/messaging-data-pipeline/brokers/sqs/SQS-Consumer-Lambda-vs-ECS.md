@@ -106,4 +106,4 @@ export class OrderConsumer implements OnApplicationShutdown {
 
 ## 출처
 
-- [Amazon SQS event source for Lambda — AWS 공식 문서](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html)
+- [AWS 공식 문서, Amazon SQS event source for Lambda](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html)

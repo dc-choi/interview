@@ -55,7 +55,7 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 - **정보가 많을수록 잘 투자한다** → 정보 과잉은 과신과 과잉매매를 부추기기도 한다.
 - **손실은 본전이 올 때까지 버티면 된다** → 회복을 못 하는 자산도 있다. 미리 정한 규칙으로 끊는 게 낫다.
 
-## 관련
+## 관련 문서
 
 - [[Investment-Strategies|투자 전략]] — 편향을 막는 규율적 전략
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 리스크 관리의 토대

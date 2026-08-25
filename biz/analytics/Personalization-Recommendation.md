@@ -69,6 +69,11 @@ aliases: ["Personalization", "Recommendation", "개인화", "추천 시스템"]
 - 추천 기능은 단계표보다 제품 목표와 현재 신호부터 본다. 지금 가능한 baseline과 다음 개선에 필요한 수집을 구분해야 현실적인 답이 된다.
 - 알고리즘 고도화 이전에 제외 규칙(이미 구매, 품절, 테스트 데이터)이 추천 품질의 체감을 좌우한다.
 
+## 출처
+- [쇼핑몰이 고객을 분석한다 (개인화와 추천) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/41)
+- [재주는 AI가 부려도, 돈 버는 왕서방이 책임도 져라 (FAT) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/218)
+- [브랜드사, 이커머스의 미래를 대비하라 1편 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/45)
+
 ## 관련 문서
 - [[Recommendation-System-Architecture|추천 시스템 기술 아키텍처]] — 후보 생성, 랭킹, 재랭킹, 서빙과 평가
 - [[Recommendation-System-Modeling-Foundations|추천 모델링 기초]] — 벡터, 통계, implicit feedback과 baseline
@@ -78,8 +83,3 @@ aliases: ["Personalization", "Recommendation", "개인화", "추천 시스템"]
 - [[Commerce-Product|커머스 상품 도메인]] — 상품상세의 연결고리(추천) 영역
 - [[Commerce-Order|커머스 주문 도메인]] — 위시리스트와 장바구니 데이터
 - [[Metrics-Framework|지표 설계]]
-
-## 출처
-- [쇼핑몰이 고객을 분석한다 (개인화와 추천) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/41)
-- [재주는 AI가 부려도, 돈 버는 왕서방이 책임도 져라 (FAT) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/218)
-- [브랜드사, 이커머스의 미래를 대비하라 1편 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/45)

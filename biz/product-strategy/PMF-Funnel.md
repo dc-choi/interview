@@ -95,10 +95,10 @@ Q. PMF를 어떻게 검증했는가?
 - 재현되지 않는 과거 전환율과 현재 운영 지표를 분리
 - Sean Ellis survey, cohort retention, activation과 정성 인터뷰를 구분하고 한 지표로 PMF를 확정하지 않음
 
-## 관련 문서
-- [[Metrics-Framework|지표 설계]]
-- [[GTM-Strategy|GTM 전략]]
-
 ## 출처
 
 - [First Round Review — How Superhuman Built an Engine to Find Product-Market Fit](https://review.firstround.com/how-to-measure-product-market-fit/)
+
+## 관련 문서
+- [[Metrics-Framework|지표 설계]]
+- [[GTM-Strategy|GTM 전략]]

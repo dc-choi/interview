@@ -69,8 +69,8 @@ ElastiCache 인플레이스 업그레이드는 새 노드를 붙여 데이터를
 
 ## 출처
 
-- [Migration from Redis to Valkey — Valkey 공식 문서](https://valkey.io/topics/migration/)
-- [Redis licensing overview — Redis 공식 문서](https://redis.io/legal/licenses/)
+- [Valkey 공식 문서, Migration from Redis to Valkey](https://valkey.io/topics/migration/)
+- [Redis 공식 문서, Redis licensing overview](https://redis.io/legal/licenses/)
 - [Amazon ElastiCache pricing — AWS](https://aws.amazon.com/elasticache/pricing/)
 - [Redis 6.x에서 Valkey 9.0으로 — 아임웹 기술블로그](https://tech.imweb.me/posts/redis-oss-valkey-upgrade/)
 

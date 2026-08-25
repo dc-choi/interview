@@ -72,8 +72,8 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 ## 출처
 
 - [클로드 코드 가이드 (레퍼런스 08 MCP, 09 훅, 10 서브에이전트, 11 스킬, 18 플러그인) — WikiDocs](https://wikidocs.net/book/19104)
-- [Orchestrate teams of Claude Code sessions — Claude Code Docs](https://code.claude.com/docs/en/agent-teams)
-- [Manage costs (agent team token costs) — Claude Code Docs](https://code.claude.com/docs/en/costs)
+- [Claude Code Docs, Orchestrate teams of Claude Code sessions](https://code.claude.com/docs/en/agent-teams)
+- [Claude Code Docs, Manage costs (agent team token costs)](https://code.claude.com/docs/en/costs)
 
 ## 관련 문서
 

@@ -104,12 +104,6 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - 구독 기능을 먼저 만들지 않고 90일 동안 실제 수납, 납품 시간과 노동 조정 공헌이익을 검증
 - 사제 네트워크는 과거 단일 유입 사례가 있으나 반복 가능한 획득 채널인지는 미검증
 
-## 관련 문서
-- [[Pricing-Strategy|가격 정책 설계]]
-- [[Market-Analysis|시장 분석]]
-- [[Category-Expansion|카테고리 확장과 카니발리제이션]]
-- [[Kinolights-Domain-OTT-Business-Models|OTT 수익 모델 (SVOD, AVOD, TVOD)]]
-
 ## 출처
 - [서비스 기획자를 위한 시장 분석 실전 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/52)
 - [종료한 서비스 분석으로 생각하는 힘 기르기 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/55)
@@ -117,3 +111,9 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - [하이브의 뉴진스 단독 앱 포닝 출시 전략 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/41)
 - [쇼핑몰을 플랫폼으로 변화시킬 수 있을까? — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/112)
 - [Rochet and Tirole — Platform Competition in Two-Sided Markets](https://onlinelibrary.wiley.com/doi/10.1162/154247603322493212)
+
+## 관련 문서
+- [[Pricing-Strategy|가격 정책 설계]]
+- [[Market-Analysis|시장 분석]]
+- [[Category-Expansion|카테고리 확장과 카니발리제이션]]
+- [[Kinolights-Domain-OTT-Business-Models|OTT 수익 모델 (SVOD, AVOD, TVOD)]]

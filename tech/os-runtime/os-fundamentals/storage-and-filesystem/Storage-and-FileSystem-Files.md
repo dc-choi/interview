@@ -78,10 +78,10 @@ verified_at: 2026-08-04
 
 - 인프런, 감자 강사, [파일과 파일시스템](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100855), [디렉토리](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100856), [파일과 디스크](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100857)
 - [exFAT File System Specification — Microsoft](https://learn.microsoft.com/en-us/windows/win32/fileio/exfat-specification)
-- [ext4 Data Structures and Algorithms — Linux Kernel 공식 문서](https://docs.kernel.org/filesystems/ext4/index.html)
+- [Linux Kernel 공식 문서, ext4 Data Structures and Algorithms](https://docs.kernel.org/filesystems/ext4/index.html)
 - [UEFI Boot Manager — UEFI Specification](https://uefi.org/specs/UEFI/2.11/03_Boot_Manager.html)
 - [open(2) — Linux manual page](https://www.man7.org/linux/man-pages/man2/open.2.html)
-- [Overview of the Linux Virtual File System — Linux Kernel 공식 문서](https://docs.kernel.org/filesystems/vfs.html)
+- [Linux Kernel 공식 문서, Overview of the Linux Virtual File System](https://docs.kernel.org/filesystems/vfs.html)
 
 ## 관련 문서
 - [[Storage-and-FileSystem|기억장치와 파일시스템 (목차)]]

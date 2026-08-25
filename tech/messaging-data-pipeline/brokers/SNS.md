@@ -169,10 +169,10 @@ SNS는 메시징 이외에:
 - KMS Key로 Topic 메시지 SSE 암호화, HTTPS API로 전송 중 암호화, IAM Policy로 API 접근 통제
 
 ## 출처
-- [Amazon SNS service quotas — AWS 공식 문서](https://docs.aws.amazon.com/general/latest/gr/sns.html)
-- [High throughput FIFO topics — AWS 공식 문서](https://docs.aws.amazon.com/sns/latest/dg/fifo-high-throughput.html)
-- [Amazon SNS message delivery retries — AWS 공식 문서](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html)
-- [Amazon SQS message quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+- [AWS 공식 문서, Amazon SNS service quotas](https://docs.aws.amazon.com/general/latest/gr/sns.html)
+- [AWS 공식 문서, High throughput FIFO topics](https://docs.aws.amazon.com/sns/latest/dg/fifo-high-throughput.html)
+- [AWS 공식 문서, Amazon SNS message delivery retries](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html)
+- [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
 - [AWS 핵심 서비스 정리 — 학습 메모]
 - AWS SAA C03 학습 자료 (로컬)
 

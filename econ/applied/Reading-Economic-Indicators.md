@@ -58,13 +58,13 @@ verified_at: 2026-07-21
 - **한 지표로 판단한다** → 물가와 고용과 성장을 교차해서 본다. 단일 지표는 노이즈가 크다.
 - **발표 직후 반응이 영구적이다** → 첫 반응엔 과잉과 노이즈가 섞인다. 추세는 여러 발표에 걸쳐 확인한다.
 
-## 관련
-
-- [[News-Causal-Chain-Drill|뉴스 인과 체인 드릴]] — 지표를 파급으로 펼치기
-- [[Inflation|인플레이션]], [[Business-Cycle|경기순환]] — 지표가 가리키는 대상
-- [[응용경제(Applied Economics)]] — 지도
-
 ## 출처
 
 - [한국은행 — 금융통화위원회 의사일정](https://www.bok.or.kr/portal/singl/crncyPolicyDrcMtg/listYear.do?menuNo=200755&mtgSe=A)
 - [Federal Reserve — FOMC calendars and information](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm)
+
+## 관련 문서
+
+- [[News-Causal-Chain-Drill|뉴스 인과 체인 드릴]] — 지표를 파급으로 펼치기
+- [[Inflation|인플레이션]], [[Business-Cycle|경기순환]] — 지표가 가리키는 대상
+- [[응용경제(Applied Economics)]] — 지도

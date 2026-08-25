@@ -25,4 +25,4 @@ aliases: ["NestJS GraphQL", "NestJS GraphQL 통합"]
 
 ## 출처
 
-- [GraphQL — NestJS Documentation](https://docs.nestjs.com/graphql/quickstart)
+- [NestJS Documentation, GraphQL](https://docs.nestjs.com/graphql/quickstart)

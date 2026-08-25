@@ -64,12 +64,12 @@ aliases: ["Gamification", "게이미피케이션"]
 - 커머스의 등급제 멤버십, 적립금도 레벨, 보상형 게이미피케이션의 변형이다 — 플랫폼 충성도가 낮은 시장에서 락인 수단으로 기능 ([[Commerce-Member|커머스 회원 도메인]]).
 - 다크 패턴 경계 질문이 따라올 수 있다 — 손실 회피 장치의 윤리 기준을 함께 답할 수 있어야 한다.
 
-## 관련 문서
-- [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]]
-- [[Commerce-Member|커머스 회원 도메인]]
-- [[User-Feedback|사용자 피드백 관리]]
-
 ## 출처
 - [게이미피케이션 적용 방법론 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/8)
 - [서비스 전략 기획 사례 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/57)
 - [나이키 Run Club은 어떻게 허영심을 자극하는가 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/36)
+
+## 관련 문서
+- [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]]
+- [[Commerce-Member|커머스 회원 도메인]]
+- [[User-Feedback|사용자 피드백 관리]]

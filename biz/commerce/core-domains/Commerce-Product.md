@@ -157,12 +157,6 @@ aliases: ["Commerce Product", "커머스 상품"]
 - 온오프 통합(옴니채널) 재고 시스템이 어려운 이유 — 기술이 아니라 오프라인 입력 품질(바코드 관행)과 판매 단위 비표준이 병목. 재고 뻥튀기([[Commerce-Korea-Market|한국 이커머스 시장의 특수성]])가 입점 구조의 정합성 문제라면 이쪽은 입력 품질의 정합성 문제.
 - 규모의 경제를 말할 때는 무엇의 단위 비용이 어떤 물량 축으로 떨어지는지 명시한다 — 인프라 확장과 규모의 경제는 다른 것. 물류 투자의 손익 전환점은 외부 물동량 수용(풀필먼트 개방) 여부다.
 
-## 관련 문서
-- [[Commerce-Overview|커머스 도메인 개요]]
-- [[Commerce-Member|커머스 회원 도메인]]
-- [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]
-- [[Personalization-Recommendation|개인화와 추천]] — 연결고리(추천) 영역의 데이터 수준과 로직
-
 ## 출처
 - [도메인 공부 커머스 - 상품(Product) — Good or Better (Tistory)](https://todayis1jun.tistory.com/entry/%EB%8F%84%EB%A9%94%EC%9D%B8-%EA%B3%B5%EB%B6%80-%EC%BB%A4%EB%A8%B8%EC%8A%A4-%EC%83%81%ED%92%88Product)
 - [쇼핑몰의 첫인상은 복잡하다 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/2)
@@ -171,3 +165,9 @@ aliases: ["Commerce Product", "커머스 상품"]
 - [사업적 필요성이 반영된 서비스 기획 역기획 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/29)
 - [오프라인 마트가 생각보다 데이터를 못 모으는 이유 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/322)
 - [규모의 경제란 대체 무엇일까 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/674)
+
+## 관련 문서
+- [[Commerce-Overview|커머스 도메인 개요]]
+- [[Commerce-Member|커머스 회원 도메인]]
+- [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]
+- [[Personalization-Recommendation|개인화와 추천]] — 연결고리(추천) 영역의 데이터 수준과 로직

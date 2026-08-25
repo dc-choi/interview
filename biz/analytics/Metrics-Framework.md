@@ -81,10 +81,10 @@ Q. 어떤 지표를 추적하고 왜 그 지표를 선택했는가?
 - MAO, 누적 본당과 사용자 MAU처럼 단위가 다른 지표를 분리
 - 온보딩 전환은 같은 코호트 계측을 완성한 뒤에만 계산
 
+## 출처
+- [허수지표가 되기 쉬운 KPI — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/754)
+
 ## 관련 문서
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
 - [[Data-Driven-Decision|데이터 기반 의사결정]]
 - [[Commerce-Pricing|커머스 가격 도메인]] — 쿠폰의 비용 효과 측정
-
-## 출처
-- [허수지표가 되기 쉬운 KPI — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/754)

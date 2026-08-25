@@ -69,13 +69,13 @@ Normalizer는 `keyword` 값을 하나의 token으로 유지하면서 lowercase, 
 
 ## 출처
 
-- [Text analysis — OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/)
-- [Analyzer mapping parameter — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/field-types/mapping-parameters/analyzer/)
-- [Search analyzers — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/analyzers/search-analyzers/)
-- [Normalizers — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/analyzers/normalizers/)
-- [Standard analyzer — OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/supported-analyzers/standard/)
-- [CJK analyzer — OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/language-analyzers/cjk/)
-- [ICU analyzer — OpenSearch Documentation](https://docs.opensearch.org/latest/analyzers/language-analyzers/icu/)
-- [Analyze API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/analyze-apis/)
-- [Put Mapping API — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/api-reference/index-apis/put-mapping/)
-- [_source metadata field — OpenSearch Documentation](https://docs.opensearch.org/latest/field-types/metadata-fields/source/)
+- [OpenSearch Documentation, Text analysis](https://docs.opensearch.org/latest/analyzers/)
+- [OpenSearch Documentation 2.19, Analyzer mapping parameter](https://docs.opensearch.org/2.19/field-types/mapping-parameters/analyzer/)
+- [OpenSearch Documentation 2.19, Search analyzers](https://docs.opensearch.org/2.19/analyzers/search-analyzers/)
+- [OpenSearch Documentation 2.19, Normalizers](https://docs.opensearch.org/2.19/analyzers/normalizers/)
+- [OpenSearch Documentation, Standard analyzer](https://docs.opensearch.org/latest/analyzers/supported-analyzers/standard/)
+- [OpenSearch Documentation, CJK analyzer](https://docs.opensearch.org/latest/analyzers/language-analyzers/cjk/)
+- [OpenSearch Documentation, ICU analyzer](https://docs.opensearch.org/latest/analyzers/language-analyzers/icu/)
+- [OpenSearch Documentation, Analyze API](https://docs.opensearch.org/latest/api-reference/analyze-apis/)
+- [OpenSearch Documentation 2.19, Put Mapping API](https://docs.opensearch.org/2.19/api-reference/index-apis/put-mapping/)
+- [OpenSearch Documentation, _source metadata field](https://docs.opensearch.org/latest/field-types/metadata-fields/source/)

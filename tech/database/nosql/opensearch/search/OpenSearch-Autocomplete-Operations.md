@@ -38,9 +38,9 @@ aliases: ["OpenSearch Autocomplete Operations", "OpenSearch 자동완성 운영"
 
 ## 출처
 
-- [Autocomplete functionality — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/autocomplete/)
-- [Document-level security — OpenSearch Documentation](https://docs.opensearch.org/latest/security/access-control/document-level-security/)
-- [Search-as-you-type field type — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/search-as-you-type/)
-- [Completion field type — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/completion/)
+- [OpenSearch Documentation, Autocomplete functionality](https://docs.opensearch.org/latest/search-plugins/searching-data/autocomplete/)
+- [OpenSearch Documentation, Document-level security](https://docs.opensearch.org/latest/security/access-control/document-level-security/)
+- [OpenSearch Documentation, Search-as-you-type field type](https://docs.opensearch.org/latest/mappings/supported-field-types/search-as-you-type/)
+- [OpenSearch Documentation, Completion field type](https://docs.opensearch.org/latest/mappings/supported-field-types/completion/)
 - [CompletionSuggester.java — OpenSearch 2.19 소스, suggest와 query/filter의 독립 실행](https://github.com/opensearch-project/OpenSearch/blob/2.19/server/src/main/java/org/opensearch/search/suggest/completion/CompletionSuggester.java)
-- [Refresh API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/index-apis/refresh/)
+- [OpenSearch Documentation, Refresh API](https://docs.opensearch.org/latest/api-reference/index-apis/refresh/)

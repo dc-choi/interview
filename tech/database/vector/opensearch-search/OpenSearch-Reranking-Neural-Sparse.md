@@ -127,14 +127,14 @@ Doc-only는 query 시점 model inference가 없어 latency가 BM25급이다. 공
 
 ## 출처
 
-- [Rerank processor — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/rerank-processor/)
-- [Search pipeline processors — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/search-processors/)
-- [Reranking using a cross-encoder model — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-relevance/rerank-cross-encoder/)
-- [Neural sparse search — OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/neural-sparse-search/)
-- [Generating sparse vector embeddings automatically — OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/neural-sparse-with-pipelines/)
-- [Neural sparse query two-phase processor — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/search-pipelines/neural-sparse-query-two-phase-processor/)
-- [Pretrained models — OpenSearch Documentation](https://docs.opensearch.org/latest/ml-commons-plugin/pretrained-models/)
+- [OpenSearch Documentation, Rerank processor](https://docs.opensearch.org/latest/search-plugins/search-pipelines/rerank-processor/)
+- [OpenSearch Documentation, Search pipeline processors](https://docs.opensearch.org/latest/search-plugins/search-pipelines/search-processors/)
+- [OpenSearch Documentation, Reranking using a cross-encoder model](https://docs.opensearch.org/latest/search-plugins/search-relevance/rerank-cross-encoder/)
+- [OpenSearch Documentation, Neural sparse search](https://docs.opensearch.org/latest/vector-search/ai-search/neural-sparse-search/)
+- [OpenSearch Documentation, Generating sparse vector embeddings automatically](https://docs.opensearch.org/latest/vector-search/ai-search/neural-sparse-with-pipelines/)
+- [OpenSearch Documentation, Neural sparse query two-phase processor](https://docs.opensearch.org/latest/search-plugins/search-pipelines/neural-sparse-query-two-phase-processor/)
+- [OpenSearch Documentation, Pretrained models](https://docs.opensearch.org/latest/ml-commons-plugin/pretrained-models/)
 - [Improving document retrieval with sparse semantic encoders — OpenSearch Blog](https://opensearch.org/blog/improving-document-retrieval-with-sparse-semantic-encoders/)
 - [opensearch-neural-sparse-encoding-multilingual-v1 — Hugging Face](https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-multilingual-v1)
-- [Amazon OpenSearch Service ML connectors — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ml-amazon-connector.html)
+- [AWS Documentation, Amazon OpenSearch Service ML connectors](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ml-amazon-connector.html)
 - [Integrate sparse and dense vectors for RAG — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/integrate-sparse-and-dense-vectors-to-enhance-knowledge-retrieval-in-rag-using-amazon-opensearch-service/)

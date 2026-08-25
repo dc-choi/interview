@@ -88,12 +88,12 @@ Load More, Infinite Scroll은 보통 JS로 구현되는데, **Google 크롤러�
 - **스크롤 위치 복원**을 어떻게 구현했는지 (URL state, history API, scroll restoration)
 - 대량 목록에서 **virtualization**을 적용한 경험
 
+## 출처
+
+- [사이트에 가장 적합한 UX 패턴 선택 — Google Search Central](https://developers.google.com/search/docs/specialty/ecommerce/pagination-and-incremental-page-loading?hl=ko)
+
 ## 관련 문서
 
 - [[PRD-Writing|PRD 작성법]]
 - [[User-Feedback|사용자 피드백 관리]]
 - [[Search-UX|검색 UX 설계]] — 목록 탐색의 형제 주제 (정렬, 필터, 스코프)
-
-## 출처
-
-- [사이트에 가장 적합한 UX 패턴 선택 — Google Search Central](https://developers.google.com/search/docs/specialty/ecommerce/pagination-and-incremental-page-loading?hl=ko)

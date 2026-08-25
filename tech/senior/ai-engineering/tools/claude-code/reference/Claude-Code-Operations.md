@@ -58,7 +58,7 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 
 ## 출처
 
-- [CLI reference — Claude Code 공식 문서](https://code.claude.com/docs/en/cli-usage)
+- [Claude Code 공식 문서, CLI reference](https://code.claude.com/docs/en/cli-usage)
 - [Run Claude Code programmatically — bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
 - [클로드 코드 가이드 (레퍼런스 03 기본 사용법, 13 CI/CD, 14 CLI, 16 베스트 프랙티스, 17 트러블슈팅) — WikiDocs](https://wikidocs.net/book/19104)
 

@@ -150,17 +150,6 @@ verified_at: 2026-07-21
 - 같은 중개라도 수수료 모델(카테고리 정액 vs 결제수단별)이 정산 데이터 모델을 가른다 — 복합결제의 상품별 배분과 부분 취소 시 재배분은 백엔드 설계 난도가 높은 단골 문제.
 - 데이터 모델 관점의 표준 패턴(스냅샷, 옵션-재고 모델링)은 [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]] 참조.
 
-## 관련 문서
-- [[Commerce-Member|커머스 회원 도메인]]
-- [[Commerce-Product|커머스 상품 도메인]]
-- [[Commerce-Pricing|커머스 가격 도메인]]
-- [[Commerce-Order|커머스 주문 도메인]]
-- [[Commerce-Domain-Knowledge|이커머스 도메인 지식]]
-- [[Commerce-Korea-History|한국 이커머스 역사]]
-- [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]
-- [[Business-Model|비즈니스 모델 & 수익 구조]]
-- [[Pricing-Strategy|가격 정책 설계]]
-
 ## 출처
 - [도메인공부 커머스 - 소개 — Good or Better (Tistory)](https://todayis1jun.tistory.com/entry/%EB%8F%84%EB%A9%94%EC%9D%B8%EA%B3%B5%EB%B6%80-%EC%BB%A4%EB%A8%B8%EC%8A%A4-%EC%86%8C%EA%B0%9C)
 - [이커머스 도메인 필수 지식 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/47)
@@ -172,3 +161,14 @@ verified_at: 2026-07-21
 - [네이버스마트스토어는 왜 오픈마켓이 아니라고 할까? — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/264)
 - [중국 이커머스가 무자비하게 가격을 낮출 수 있는 이유 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/755)
 - [국가법령정보센터 — 전자상거래 등에서의 소비자보호에 관한 법률](https://www.law.go.kr/LSW/lsInfoP.do?ancYnChk=0&chrClsCd=010202&efYd=20260120&lsiSeq=282793&urlMode=lsInfoP)
+
+## 관련 문서
+- [[Commerce-Member|커머스 회원 도메인]]
+- [[Commerce-Product|커머스 상품 도메인]]
+- [[Commerce-Pricing|커머스 가격 도메인]]
+- [[Commerce-Order|커머스 주문 도메인]]
+- [[Commerce-Domain-Knowledge|이커머스 도메인 지식]]
+- [[Commerce-Korea-History|한국 이커머스 역사]]
+- [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]
+- [[Business-Model|비즈니스 모델 & 수익 구조]]
+- [[Pricing-Strategy|가격 정책 설계]]

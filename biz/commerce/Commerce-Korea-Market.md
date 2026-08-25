@@ -105,11 +105,6 @@ AI, 빅데이터, 챗봇, 블록체인, AR/VR 같은 신기술 정보는 넘치�
 - 플랫폼 충성도가 낮은 시장에서는 락인 수단(유료 멤버십, 적립금)의 가치가 상대적으로 커진다 — [[Commerce-Member|커머스 회원 도메인]]의 멤버십, [[Commerce-Pricing|커머스 가격 도메인]]의 적립금과 연결.
 - 유통 대기업의 온라인 부진 질문에는 출발이 늦어서가 아니라(개척자였다) 강점 유출, 타이밍 상실, 화학적 통합 실패의 구조로 답한다. 회복 사례의 공통분모는 코어 상품 + 정물일치 + PO 조직 — 기술 도입이 아니라 비즈니스와 시스템의 일치가 본체.
 
-## 관련 문서
-- [[Commerce-Overview|커머스 도메인 개요]]
-- [[Commerce-Domain-Knowledge|이커머스 도메인 지식]]
-- [[Commerce-Korea-History|한국 이커머스 역사]]
-
 ## 출처
 - [독한 눈빛의 이커머스의 이용자들 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/390)
 - [돋보기 - 온라인 갈라파고스 대한민국 이용자 생태 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/396)
@@ -118,3 +113,8 @@ AI, 빅데이터, 챗봇, 블록체인, AR/VR 같은 신기술 정보는 넘치�
 - [한국 이커머스에는 빌런이 산다 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/213)
 - [국내 이커머스에 절대 강자가 없었던 이유, 메타쇼핑몰 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/546)
 - [유통공룡들, 쿠팡에 이커머스 선두 빼앗긴 결정적 실수들 — 도그냥 (이코노미스트 기고)](https://brunch.co.kr/@windydog/772)
+
+## 관련 문서
+- [[Commerce-Overview|커머스 도메인 개요]]
+- [[Commerce-Domain-Knowledge|이커머스 도메인 지식]]
+- [[Commerce-Korea-History|한국 이커머스 역사]]

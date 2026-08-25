@@ -94,3 +94,4 @@ aliases: ["Tech Trend Learning Strategy", "기술 변화와 학습 전략", "기
 - [[Self-Belief|자기 믿음]] — 타인의 평가에 휘둘리지 않기
 - [[Backend-Developer-Career-Overview|백엔드 개발자 진로 개요]] — 변하는 구현 방식과 변하지 않는 책임
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 구현 위임 이후에도 남는 판단과 책임
+- [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 마찰과 판단 위임의 경계, 가드레일 RCT

@@ -194,6 +194,6 @@ lease에는 TTL과 소유자, heartbeat, 가능하면 fencing token을 둔다. �
 ## 출처
 
 - [토스의 디바이스 팜 만들기 — 토스 테크, 차영훈](https://toss.tech/article/device-farm-nebula)
-- [How Does Appium Work? — Appium Documentation](https://appium.io/docs/en/latest/intro/appium/)
-- [Intro to Appium Drivers — Appium Documentation](https://appium.io/docs/en/latest/intro/drivers/)
+- [Appium Documentation, How Does Appium Work?](https://appium.io/docs/en/latest/intro/appium/)
+- [Appium Documentation, Intro to Appium Drivers](https://appium.io/docs/en/latest/intro/drivers/)
 - [WebDriver — W3C](https://www.w3.org/TR/webdriver2/)

@@ -116,13 +116,13 @@ STP로 전략이 섰다면 4P로 실행한다.
 - Awareness: 노출, 리치, Consideration: CTR, 체류시간, Conversion: 가입/구매 전환율, Retention: 재방문, DAU/MAU, Advocacy: 추천, NPS.
 - 단계별 최적 채널이 다르므로 단일 지표로 마케팅 전체 성과를 판단하지 않는다.
 
+## 출처
+- [Les Binet and Peter Field, advertising effectiveness](https://www.thinkbox.tv/news-and-opinion/opinion/advertising-effectiveness-for-dot-coms-by-les-binet-and-peter-field)
+- [서비스 전략 기획 사례 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/57)
+- [하이브의 뉴진스 단독 앱 포닝 출시 전략 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/41)
+
 ## 관련 문서
 - [[GTM-Strategy|GTM 전략]] — 마케팅의 하위 개념인 제품 출시 실행 전략
 - [[Content-Marketing|콘텐츠 마케팅]] — TOFU/MOFU/BOFU 단계별 콘텐츠, SEO
 - [[Market-Analysis|시장 분석]] — TAM/SAM/SOM과 시장 정의
 - [[PMF-Funnel|PMF & 전환 퍼널]] — Customer Journey의 전환 구간 실측
-
-## 출처
-- [Les Binet and Peter Field, advertising effectiveness](https://www.thinkbox.tv/news-and-opinion/opinion/advertising-effectiveness-for-dot-coms-by-les-binet-and-peter-field)
-- [서비스 전략 기획 사례 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/57)
-- [하이브의 뉴진스 단독 앱 포닝 출시 전략 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/41)

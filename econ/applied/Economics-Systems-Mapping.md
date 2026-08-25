@@ -49,7 +49,7 @@ aliases: ["경제와 분산시스템 매핑", "Economics and Distributed Systems
 - **경제는 시스템처럼 결정론적이다** → 기대와 반사성 때문에 같은 입력이 다른 출력을 낸다.
 - **매핑이 맞으면 예측도 된다** → 구조가 닮았어도 변수와 비선형성이 달라 예측력은 제한된다.
 
-## 관련
+## 관련 문서
 
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 제어 루프의 원형
 - [[Business-Cycle|경기순환]] — 지연 피드백이 만드는 진동

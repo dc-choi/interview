@@ -164,7 +164,7 @@ IPS, SNIPS, Direct Method, Doubly Robust, clipping과 Switch-DR의 식, ESS와 w
 
 - [Ranking metrics — TensorFlow Ranking](https://www.tensorflow.org/ranking/api_docs/python/tfr/keras/metrics)
 - [On Sampled Metrics for Item Recommendation — Google Research](https://research.google/pubs/on-sampled-metrics-for-item-recommendation/)
-- [Point-in-time joins — Feast Documentation](https://docs.feast.dev/getting-started/concepts/point-in-time-joins)
+- [Feast Documentation, Point-in-time joins](https://docs.feast.dev/getting-started/concepts/point-in-time-joins)
 - [Trustworthy Analysis of Online A/B Tests — Microsoft Research](https://www.microsoft.com/en-us/research/publication/trustworthy-analysis-of-online-a-b-tests-pitfalls-challenges-and-solutions/)
 - [Data Quality for Trustworthy A/B Testing — Microsoft Research](https://www.microsoft.com/en-us/research/articles/data-quality-fundamental-building-blocks-for-trustworthy-a-b-testing-analysis/)
 - [Patterns of Trustworthy Experimentation, Post-Experiment — Microsoft Research](https://www.microsoft.com/en-us/research/articles/patterns-of-trustworthy-experimentation-post-experiment-stage/)

@@ -79,11 +79,11 @@ Sorted Set의 score는 정수처럼 보여도 내부적으로 IEEE 754 배정밀
 
 ## 출처
 
-- [Redis data types — Redis Documentation](https://redis.io/docs/latest/develop/data-types/)
-- [GEOADD — Redis Documentation](https://redis.io/docs/latest/commands/geoadd/)
-- [Redis vector sets — Redis Documentation](https://redis.io/docs/latest/develop/data-types/vector-sets/)
-- [VADD — Redis Documentation](https://redis.io/docs/latest/commands/vadd/)
-- [Redis 8.0 — What's new — Redis Documentation](https://redis.io/docs/latest/develop/whats-new/8-0/)
-- [Redis JSON — Redis Documentation](https://redis.io/docs/latest/develop/data-types/json/)
+- [Redis Documentation, Redis data types](https://redis.io/docs/latest/develop/data-types/)
+- [Redis Documentation, GEOADD](https://redis.io/docs/latest/commands/geoadd/)
+- [Redis Documentation, Redis vector sets](https://redis.io/docs/latest/develop/data-types/vector-sets/)
+- [Redis Documentation, VADD](https://redis.io/docs/latest/commands/vadd/)
+- [Redis Documentation, Redis 8.0 — What's new](https://redis.io/docs/latest/develop/whats-new/8-0/)
+- [Redis Documentation, Redis JSON](https://redis.io/docs/latest/develop/data-types/json/)
 - [우아한테크세미나 191121 우아한레디스 — 우아한테크](https://www.youtube.com/watch?v=mPB2CZiAkKM)
 - [엔지니어라면 반드시 알아야 할 Redis 자료구조 10가지 총정리 — CloudBro](https://www.cloudbro.ai/t/%F0%9F%9A%80-%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4%EB%9D%BC%EB%A9%B4-%EB%B0%98%EB%93%9C%EC%8B%9C-%EC%95%8C%EC%95%84%EC%95%BC-%ED%95%A0-redis-%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0-10%EA%B0%80%EC%A7%80-%EC%B4%9D%EC%A0%95%EB%A6%AC/4498)

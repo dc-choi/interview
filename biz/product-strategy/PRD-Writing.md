@@ -129,14 +129,6 @@ PRD는 **의견 대립 시 판단 기준점**이다. "디자이너와 개발자�
 - Non-Scope를 명시해서 스코프 크리프를 막은 경험
 - 배포 후 KPI가 기대치에 못 미쳐 PRD를 업데이트, 재기획한 과정
 
-## 관련 문서
-
-- [[GTM-Strategy|Go-to-Market 전략]]
-- [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
-- [[User-Feedback|사용자 피드백 관리]]
-- [[Pagination-Patterns|페이지네이션 UX 패턴]]
-- [[UI-Terminology|UI 용어 정리]] — 화면 명세의 공용 용어
-
 ## 출처
 
 - [PRD 제품 요구사항 정의서 작성법 — 코드스테이츠](https://www.codestates.com/blog/content/prd-%EC%A0%9C%ED%92%88%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD%EC%A0%95%EC%9D%98%EC%84%9C)
@@ -144,3 +136,11 @@ PRD는 **의견 대립 시 판단 기준점**이다. "디자이너와 개발자�
 - [미래의 나에게 쓰는 기획서 작성 시 유의사항 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/10)
 - [유저 시나리오와 유저 스토리 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/20)
 - [유저플로우 그리는 방법 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/25)
+
+## 관련 문서
+
+- [[GTM-Strategy|Go-to-Market 전략]]
+- [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
+- [[User-Feedback|사용자 피드백 관리]]
+- [[Pagination-Patterns|페이지네이션 UX 패턴]]
+- [[UI-Terminology|UI 용어 정리]] — 화면 명세의 공용 용어

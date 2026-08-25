@@ -118,7 +118,7 @@ KDS와 Firehose는 자주 함께 쓰인다: KDS로 수집, 재읽기 가능하�
 - "S3로 near real-time 적재" 요구사항 = **Firehose** (서버리스, 변환 가능)
 
 ## 출처
-- [Amazon SQS message quotas — AWS 공식 문서](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+- [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
 - AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서

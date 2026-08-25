@@ -151,11 +151,6 @@ aliases: ["Commerce Order", "커머스 주문"]
 - 결제 정보 검증 단계의 역할 — 클라이언트가 보낸 금액을 신뢰하지 않고 서버에서 재계산, 결제 승인의 멱등성 처리.
 - 클레임 처리가 정산에 미치는 영향 — 환불은 결제만의 문제가 아니라 판매자 정산 차감까지 이어지는 흐름.
 
-## 관련 문서
-- [[Commerce-Overview|커머스 도메인 개요]]
-- [[Commerce-Pricing|커머스 가격 도메인]]
-- [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]
-
 ## 출처
 - [도메인 공부 커머스 - 주문(Order) — Good or Better (Tistory)](https://todayis1jun.tistory.com/entry/%EB%8F%84%EB%A9%94%EC%9D%B8-%EA%B3%B5%EB%B6%80-%EC%BB%A4%EB%A8%B8%EC%8A%A4-%EC%A3%BC%EB%AC%B8Order)
 - [기능의 아이덴티티를 고민하다 (위시리스트) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/3)
@@ -163,3 +158,8 @@ aliases: ["Commerce Order", "커머스 주문"]
 - [뻔한 주문 페이지의 개선 기획 (간단 주문서) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/86)
 - [쇼핑 주문서의 임시저장 기능? — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/229)
 - [셀러와 구매자 사이, 이커머스 플랫폼이 골치아픈 이유 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/635)
+
+## 관련 문서
+- [[Commerce-Overview|커머스 도메인 개요]]
+- [[Commerce-Pricing|커머스 가격 도메인]]
+- [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]

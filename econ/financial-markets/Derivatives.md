@@ -51,13 +51,13 @@ verified_at: 2026-07-21
 - **옵션은 사면 무조건 손해 볼 수 있다** → 옵션 매수자의 최대 손실은 낸 프리미엄으로 한정된다. 이론상 무제한 손실은 기초자산 가격 상한이 없는 **무담보 short call**에 해당한다. short put의 손실은 기초자산 가격이 0이 될 때까지로 제한되고, covered option이나 spread는 보유 자산과 다른 leg 때문에 손익 범위가 달라진다.
 - **헤지하면 모든 불확실성이 사라지고 상승 여력도 포기한다** → 헤지는 특정 위험 노출을 줄이는 것이며 basis, 수량과 시점 불일치 때문에 잔여 위험이 남을 수 있다. 선도나 선물로 가격을 고정하면 유리한 움직임도 포기하지만, 보호적 옵션은 프리미엄을 내고 유리한 방향의 일부 상승 여력을 유지할 수 있다.
 
-## 관련
-
-- [[Risk-and-Return|위험과 수익]] — 파생상품이 옮기고 키우는 대상
-- [[Financial-System-Overview|금융시스템 개관]] — 위험 이전이라는 시장 기능
-- [[금융시장(Financial Markets)]] — 지도
-
 ## 출처
 
 - [CFTC Glossary, basis risk](https://www.cftc.gov/LearnAndProtect/AdvisoriesAndArticles/CFTCGlossary/index.htm)
 - [CME Group, protective put example](https://www.cmegroup.com/education/articles-and-reports/trading-micro-e-mini-options)
+
+## 관련 문서
+
+- [[Risk-and-Return|위험과 수익]] — 파생상품이 옮기고 키우는 대상
+- [[Financial-System-Overview|금융시스템 개관]] — 위험 이전이라는 시장 기능
+- [[금융시장(Financial Markets)]] — 지도

@@ -34,8 +34,8 @@ aliases: ["OpenSearch Seoul Meetup Agentic Search와 업그레이드 질문"]
 
 ## 출처
 
-- [Agentic search — OpenSearch Documentation](https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/)
-- [Agentic search in Amazon OpenSearch Service — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/agentic-search.html)
-- [Upgrading Amazon OpenSearch Service domains — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/version-migration.html)
-- [Service software updates in Amazon OpenSearch Service — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/service-software.html)
-- [OpenSearch language clients — OpenSearch Documentation](https://docs.opensearch.org/latest/clients/)
+- [OpenSearch Documentation, Agentic search](https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/)
+- [AWS Documentation, Agentic search in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/agentic-search.html)
+- [AWS Documentation, Upgrading Amazon OpenSearch Service domains](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/version-migration.html)
+- [AWS Documentation, Service software updates in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/service-software.html)
+- [OpenSearch Documentation, OpenSearch language clients](https://docs.opensearch.org/latest/clients/)

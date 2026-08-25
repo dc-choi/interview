@@ -96,14 +96,14 @@ Read model이라는 사실이 복구 전략의 근거다.
 
 ## 출처
 
-- [Bulk API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/bulk/)
-- [Document APIs — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/)
-- [Get document — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/document-apis/get-documents/)
-- [Manage aliases API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/alias/aliases-api/)
-- [Routing metadata field — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/metadata-fields/routing/)
-- [Shard indexing backpressure — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/shard-indexing-backpressure/)
-- [Shard indexing backpressure settings — OpenSearch Documentation](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/shard-indexing-settings/)
-- [Index settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
-- [Nodes Stats API — OpenSearch Documentation](https://docs.opensearch.org/latest/api-reference/nodes-apis/nodes-stats/)
+- [OpenSearch Documentation, Bulk API](https://docs.opensearch.org/latest/api-reference/document-apis/bulk/)
+- [OpenSearch Documentation, Document APIs](https://docs.opensearch.org/latest/api-reference/document-apis/)
+- [OpenSearch Documentation, Get document](https://docs.opensearch.org/latest/api-reference/document-apis/get-documents/)
+- [OpenSearch Documentation, Manage aliases API](https://docs.opensearch.org/latest/api-reference/alias/aliases-api/)
+- [OpenSearch Documentation, Routing metadata field](https://docs.opensearch.org/latest/mappings/metadata-fields/routing/)
+- [OpenSearch Documentation, Shard indexing backpressure](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/shard-indexing-backpressure/)
+- [OpenSearch Documentation, Shard indexing backpressure settings](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/shard-indexing-settings/)
+- [OpenSearch Documentation, Index settings](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
+- [OpenSearch Documentation, Nodes Stats API](https://docs.opensearch.org/latest/api-reference/nodes-apis/nodes-stats/)
 - [Debezium FAQ (delivery semantics) — Debezium](https://debezium.io/documentation/faq/)
 - [Transactional outbox pattern — AWS Prescriptive Guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)

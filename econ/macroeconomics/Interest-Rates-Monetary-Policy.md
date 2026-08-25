@@ -90,14 +90,14 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 - **중앙은행이 모든 금리를 정한다** → 중앙은행은 운영 체계에 따라 하나의 목표 금리나 목표 범위, 여러 예금과 대출 제도 금리를 정할 수 있다. ECB는 세 가지 key interest rates를 공표하고, 연준은 연방기금금리 목표 범위와 IORB 등을 함께 운용한다. 장기금리와 민간 대출금리는 기대, 만기와 신용위험까지 반영해 시장에서 형성된다.
 - **본원통화를 늘리면 곧장 같은 비율의 인플레이션이 난다** → 은행 준비금과 민간의 결제용 예금은 같지 않다. 물가 영향은 총수요, 공급 여건, 기대, 신용과 통화 유통속도를 포함한 전달 경로에 달려 있어 기계적인 일대일 관계가 아니다.
 
-## 관련
-
-- [[Inflation|인플레이션과 디플레이션]] — 통화정책이 잡으려는 대상
-- [[Business-Cycle|경기순환]] — 통화정책이 대응하는 리듬
-- [[거시경제(Macroeconomics)]] — 지도
-
 ## 출처
 
 - [Bank of England — Money creation in the modern economy](https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy)
 - [ECB — Key ECB interest rates](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html)
 - [Federal Reserve, Implementing Monetary Policy in an Ample-Reserves Regime](https://www.federalreserve.gov/econres/notes/feds-notes/implementing-monetary-policy-in-an-ample-reserves-regime-the-basics-note-1-of-3-20200701.html)
+
+## 관련 문서
+
+- [[Inflation|인플레이션과 디플레이션]] — 통화정책이 잡으려는 대상
+- [[Business-Cycle|경기순환]] — 통화정책이 대응하는 리듬
+- [[거시경제(Macroeconomics)]] — 지도

@@ -55,12 +55,12 @@ aliases: ["Commerce Revenue Formula", "이커머스 수익 공식"]
 - 광고 수익 모델을 제안하려면 전제 조건(고정 트래픽, 다수 입점사)이 충족됐는지부터 — 단계에 맞지 않는 수익원은 성립하지 않는다.
 - 장바구니, 주문서의 핵심 지표가 다른 이유([[Commerce-Order|커머스 주문 도메인]] — 장바구니는 전환 유도, 주문서는 빠른 통과)도 결국 전환율 항의 분해다.
 
+## 출처
+- [돋보기1) 이커머스1.0의 수익공식 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/393)
+- [마켓컬리의 커뮤니티 서비스 컬리로그 전략 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/59)
+
 ## 관련 문서
 - [[Commerce-Overview|커머스 도메인 개요]]
 - [[Commerce-Korea-History|한국 이커머스 역사]]
 - [[Commerce-Order|커머스 주문 도메인]]
 - [[Metrics-Framework|지표 설계]]
-
-## 출처
-- [돋보기1) 이커머스1.0의 수익공식 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/393)
-- [마켓컬리의 커뮤니티 서비스 컬리로그 전략 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/59)

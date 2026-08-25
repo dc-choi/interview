@@ -37,3 +37,7 @@
 - 회고, 피드백, 우선순위와 목표 설정에서 해당 가치와 `tech/senior/`의 decision-making, communication, culture 및 outcomes/okr 지식을 연결한다.
 - 실패 회고에는 훌륭한 실패의 세 조건을, 피드백 고민에는 Radical Candor와 I-message를 적용한다. 일이 많을 때는 파격적 집중에 따라 하나를 먼저 고른다.
 - 되는 이유를 찾는 확신 프레임과 발전적 의심을 같은 축으로 연결한다.
+
+## 문서 표기
+
+- fit 문서의 `## 출처` 표기와 새 지식 문서의 하단 절 순서는 `tech/AGENTS.md`의 출처 표기 규칙을 준용한다.

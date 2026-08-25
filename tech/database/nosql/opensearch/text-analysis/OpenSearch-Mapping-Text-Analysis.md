@@ -136,12 +136,12 @@ PUT products-v1
 
 ## 출처
 
-- [Mappings — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/)
-- [Dynamic mapping parameter — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-parameters/dynamic/)
-- [Mapping explosion — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-explosion/)
-- [Supported field types — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/index/)
-- [Doc values — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/mapping-parameters/doc-values/)
-- [Keyword field type — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/field-types/supported-field-types/keyword/)
-- [ignore_above — Elasticsearch Mapping Reference](https://www.elastic.co/docs/reference/elasticsearch/mapping-reference/ignore-above)
-- [Analyzer mapping parameter — OpenSearch Documentation 2.19](https://docs.opensearch.org/2.19/field-types/mapping-parameters/analyzer/)
+- [OpenSearch Documentation, Mappings](https://docs.opensearch.org/latest/mappings/)
+- [OpenSearch Documentation, Dynamic mapping parameter](https://docs.opensearch.org/latest/mappings/mapping-parameters/dynamic/)
+- [OpenSearch Documentation, Mapping explosion](https://docs.opensearch.org/latest/mappings/mapping-explosion/)
+- [OpenSearch Documentation, Supported field types](https://docs.opensearch.org/latest/mappings/supported-field-types/index/)
+- [OpenSearch Documentation, Doc values](https://docs.opensearch.org/latest/mappings/mapping-parameters/doc-values/)
+- [OpenSearch Documentation 2.19, Keyword field type](https://docs.opensearch.org/2.19/field-types/supported-field-types/keyword/)
+- [Elasticsearch Mapping Reference, ignore_above](https://www.elastic.co/docs/reference/elasticsearch/mapping-reference/ignore-above)
+- [OpenSearch Documentation 2.19, Analyzer mapping parameter](https://docs.opensearch.org/2.19/field-types/mapping-parameters/analyzer/)
 - [후기 서비스 AWS OpenSearch 도입기 — 컬리 기술 블로그](https://helloworld.kurly.com/blog/2023-review-opensearch/)

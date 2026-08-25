@@ -124,12 +124,12 @@ Nested `docvalue_fields`와 `stored_fields`는 top-level 요청이 아니라 `in
 
 ## 출처
 
-- [Retrieve inner hits — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/inner-hits/)
-- [Nested query — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/joining/nested/)
-- [Has child query — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/joining/has-child/)
-- [Has parent query — OpenSearch Documentation](https://docs.opensearch.org/latest/query-dsl/joining/has-parent/)
-- [Join field type — OpenSearch Documentation](https://docs.opensearch.org/latest/mappings/supported-field-types/join/)
-- [Retrieve specific fields — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/retrieve-specific-fields/)
-- [Index settings — OpenSearch Documentation](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
-- [Collapse search results — OpenSearch Documentation](https://docs.opensearch.org/latest/search-plugins/searching-data/collapse-search/)
+- [OpenSearch Documentation, Retrieve inner hits](https://docs.opensearch.org/latest/search-plugins/searching-data/inner-hits/)
+- [OpenSearch Documentation, Nested query](https://docs.opensearch.org/latest/query-dsl/joining/nested/)
+- [OpenSearch Documentation, Has child query](https://docs.opensearch.org/latest/query-dsl/joining/has-child/)
+- [OpenSearch Documentation, Has parent query](https://docs.opensearch.org/latest/query-dsl/joining/has-parent/)
+- [OpenSearch Documentation, Join field type](https://docs.opensearch.org/latest/mappings/supported-field-types/join/)
+- [OpenSearch Documentation, Retrieve specific fields](https://docs.opensearch.org/latest/search-plugins/searching-data/retrieve-specific-fields/)
+- [OpenSearch Documentation, Index settings](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
+- [OpenSearch Documentation, Collapse search results](https://docs.opensearch.org/latest/search-plugins/searching-data/collapse-search/)
 - [Inner hits fetch phase — OpenSearch source](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/search/fetch/subphase/InnerHitsPhase.java)

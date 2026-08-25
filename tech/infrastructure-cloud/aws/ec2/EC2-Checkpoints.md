@@ -45,14 +45,14 @@ verified_at: 2026-07-15
 
 ## 출처
 
-- [AWS charges for all public IPv4 addresses — Amazon VPC 공식 문서](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html)
+- [Amazon VPC 공식 문서, AWS charges for all public IPv4 addresses](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html)
 - [New AWS Public IPv4 Address Charge — AWS News Blog](https://aws.amazon.com/blogs/aws/new-aws-public-ipv4-address-charge-public-ip-insights/)
-- [Stop and start Amazon EC2 instances — AWS 공식 문서](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html)
-- [Amazon EC2 instance state changes — AWS 공식 문서](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html)
-- [General purpose instance network specifications — AWS 공식 문서](https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html)
-- [View Spot Instance pricing history — AWS 공식 문서](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances-history.html)
-- [Spot Instance interruption notices — AWS 공식 문서](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html)
-- [Savings Plans types — AWS 공식 문서](https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html)
+- [AWS 공식 문서, Stop and start Amazon EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html)
+- [AWS 공식 문서, Amazon EC2 instance state changes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html)
+- [AWS 공식 문서, General purpose instance network specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html)
+- [AWS 공식 문서, View Spot Instance pricing history](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances-history.html)
+- [AWS 공식 문서, Spot Instance interruption notices](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html)
+- [AWS 공식 문서, Savings Plans types](https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html)
 
 ## 관련 문서
 - [[EC2|AWS EC2 (목차)]]

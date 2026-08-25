@@ -146,4 +146,4 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - [The startup's Postgres survival guide, Hatchet](https://hatchet.run/blog/postgres-survival-guide)
 - [스타트업의 Postgres 생존 가이드 (토론) — GeekNews](https://news.hada.io/topic?id=31706)
 - [pgBackRest User Guide — pgBackRest](https://pgbackrest.org/user-guide.html)
-- [Multi-AZ DB instance deployments — Amazon RDS User Guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html)
+- [Amazon RDS User Guide, Multi-AZ DB instance deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html)

@@ -149,10 +149,10 @@ Audit는 기본 비활성이다. 필요한 category만 선택한다.
 
 ## 출처
 
-- [Security — OpenSearch Documentation](https://docs.opensearch.org/latest/security/)
-- [Security best practices — OpenSearch Documentation](https://docs.opensearch.org/latest/security/configuration/best-practices/)
-- [TLS certificates — OpenSearch Documentation](https://docs.opensearch.org/latest/security/configuration/tls/)
-- [Defining users and roles — OpenSearch Documentation](https://docs.opensearch.org/latest/security/access-control/users-roles/)
-- [Document-level security — OpenSearch Documentation](https://docs.opensearch.org/latest/security/access-control/document-level-security/)
-- [Field-level security — OpenSearch Documentation](https://docs.opensearch.org/latest/security/access-control/field-level-security/)
-- [Audit logs — OpenSearch Documentation](https://docs.opensearch.org/latest/security/audit-logs/index/)
+- [OpenSearch Documentation, Security](https://docs.opensearch.org/latest/security/)
+- [OpenSearch Documentation, Security best practices](https://docs.opensearch.org/latest/security/configuration/best-practices/)
+- [OpenSearch Documentation, TLS certificates](https://docs.opensearch.org/latest/security/configuration/tls/)
+- [OpenSearch Documentation, Defining users and roles](https://docs.opensearch.org/latest/security/access-control/users-roles/)
+- [OpenSearch Documentation, Document-level security](https://docs.opensearch.org/latest/security/access-control/document-level-security/)
+- [OpenSearch Documentation, Field-level security](https://docs.opensearch.org/latest/security/access-control/field-level-security/)
+- [OpenSearch Documentation, Audit logs](https://docs.opensearch.org/latest/security/audit-logs/index/)

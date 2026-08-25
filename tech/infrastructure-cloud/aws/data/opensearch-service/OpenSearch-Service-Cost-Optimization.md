@@ -95,13 +95,13 @@ Provisioned domain의 설정 변경은 두 부류다. Blue-green은 기존 clust
 
 ## 출처
 
-- [Cost optimization techniques — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cost-optimization.html)
-- [Making configuration changes — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html)
-- [Managing capacity limits for Serverless — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-scaling.html)
-- [UltraWarm storage — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ultrawarm.html)
-- [Auto-Tune — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/auto-tune.html)
-- [Off-peak windows — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/off-peak.html)
+- [AWS Documentation, Cost optimization techniques](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cost-optimization.html)
+- [AWS Documentation, Making configuration changes](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html)
+- [AWS Documentation, Managing capacity limits for Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-scaling.html)
+- [AWS Documentation, UltraWarm storage](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ultrawarm.html)
+- [AWS Documentation, Auto-Tune](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/auto-tune.html)
+- [AWS Documentation, Off-peak windows](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/off-peak.html)
 - [Amazon OpenSearch Service Pricing — AWS](https://aws.amazon.com/opensearch-service/pricing/)
-- [Extended Support — AWS Documentation](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/extended-support.html)
+- [AWS Documentation, Extended Support](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/extended-support.html)
 - [Improved performance with AWS Graviton2 instances — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/improved-performance-with-aws-graviton2-instances-on-amazon-opensearch-service/)
 - [Database Savings Plans for OpenSearch Service and Neptune Analytics — AWS](https://aws.amazon.com/about-aws/whats-new/2026/03/dbsp-opensearch-service-neptune-analytics/)

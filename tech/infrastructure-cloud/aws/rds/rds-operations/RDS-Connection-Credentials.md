@@ -96,7 +96,7 @@ RDS 요금은 대략 다섯 축으로 쌓인다. 단가는 리전/인스턴스 �
 ## 출처
 
 - [Amazon RDS User Guide — Connecting, IAM database authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html)
-- [Using SSL/TLS to encrypt a connection to a DB instance — AWS 공식 문서](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html)
+- [AWS 공식 문서, Using SSL/TLS to encrypt a connection to a DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html)
 - [RDS DB engine 업그레이드](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Upgrading.html)
 - [자동 백업 retention](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.BackupRetention.html)
 - [RDS backup storage 요금 조건](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.Retaining.html)

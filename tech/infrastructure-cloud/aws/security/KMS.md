@@ -142,12 +142,12 @@ KMS의 핵심 동작 방식. **데이터 키로 데이터를 암호화하고, �
 ## 출처
 
 - AWS SAA C03 학습 자료 (로컬)
-- [Enable automatic key rotation — AWS KMS 공식 문서](https://docs.aws.amazon.com/kms/latest/developerguide/example_kms_EnableKeyRotation_section.html)
+- [AWS KMS 공식 문서, Enable automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/example_kms_EnableKeyRotation_section.html)
 - [GenerateDataKey — AWS KMS API](https://docs.aws.amazon.com/kms/latest/APIReference/API_GenerateDataKey.html)
 - [Encrypt — AWS KMS API](https://docs.aws.amazon.com/kms/latest/APIReference/API_Encrypt.html)
-- [Data keys — AWS KMS 공식 문서](https://docs.aws.amazon.com/kms/latest/developerguide/data-keys.html)
-- [IAM policies with AWS KMS — AWS 공식 문서](https://docs.aws.amazon.com/kms/latest/developerguide/iam-policies.html)
-- [Allowing users in other accounts to use a KMS key — AWS 공식 문서](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html)
+- [AWS KMS 공식 문서, Data keys](https://docs.aws.amazon.com/kms/latest/developerguide/data-keys.html)
+- [AWS 공식 문서, IAM policies with AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/iam-policies.html)
+- [AWS 공식 문서, Allowing users in other accounts to use a KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html)
 - [AWS KMS pricing](https://aws.amazon.com/kms/pricing/)
 - [AWS KMS 키 스토어](https://docs.aws.amazon.com/kms/latest/developerguide/key-store-overview.html)
 - [AWS KMS 키 로테이션](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html)

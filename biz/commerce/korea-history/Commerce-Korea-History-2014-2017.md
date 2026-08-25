@@ -140,6 +140,12 @@ Apple Pay(미국), 알리페이(중국 — 위조지폐가 많은 환경이 모�
 - 무료 입점은 손실 리더 전략 — 포기한 수수료보다 큰 것(결제 데이터, 광고 인벤토리, 검색 장악)을 얻는 구조인지로 평가한다.
 - AI 추천의 전제는 알고리즘이 아니라 데이터 정형화 — 표준 코드, 속성, 단일 가격 같은 데이터 모델 정리가 먼저다. 백엔드 관점에서는 추천 시스템 투자 이전의 스키마, 정규화 작업이 이에 해당한다.
 
+## 출처
+- [8기 - 배송혁명과 핀테크의 도약(2014) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/32)
+- [9기 - 이커머스의 경계가 허물어지다(2015) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/53)
+- [10기 - 모바일 ONLY시대의 생존경쟁(2016) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/128)
+- [10.5기 - 이커머스3.0 과도기의 준비(2017) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/129)
+
 ## 관련 문서
 - [[Commerce-Korea-History|한국 이커머스 역사 (목차)]]
 - [[Commerce-Korea-History-2010-2013|이전 시대: 2010-2013]]
@@ -148,9 +154,3 @@ Apple Pay(미국), 알리페이(중국 — 위조지폐가 많은 환경이 모�
 - [[Business-Model|비즈니스 모델]] — 수익 모델 전환
 - [[Category-Expansion|카테고리 확장과 카니발리제이션]]
 - [[Personalization-Recommendation|개인화와 추천]] — 이커머스 3.0의 본체
-
-## 출처
-- [8기 - 배송혁명과 핀테크의 도약(2014) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/32)
-- [9기 - 이커머스의 경계가 허물어지다(2015) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/53)
-- [10기 - 모바일 ONLY시대의 생존경쟁(2016) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/128)
-- [10.5기 - 이커머스3.0 과도기의 준비(2017) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/129)

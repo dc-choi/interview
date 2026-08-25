@@ -74,8 +74,8 @@ verified_at: 2026-07-16
 ## 출처
 
 - [LLM 비용 64% 절감, 캐시 히트율 98% 달성기 — 무신사 테크블로그 (29CM)](https://techblog.musinsa.com/llm-%EB%B9%84%EC%9A%A9-64-%EC%A0%88%EA%B0%90-%EC%BA%90%EC%8B%9C-%ED%9E%88%ED%8A%B8%EC%9C%A8-98-%EB%8B%AC%EC%84%B1%EA%B8%B0-d568135bd40e)
-- [Prompt caching — Anthropic Docs](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching) (가격 배율, 최소 토큰, TTL 갱신, 조직 간 격리)
-- [Prompt caching — AWS Bedrock User Guide](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html) (TTL 리셋, 모델별 최소 토큰, 읽기/쓰기 과금)
+- [Anthropic Docs, Prompt caching](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching) (가격 배율, 최소 토큰, TTL 갱신, 조직 간 격리)
+- [AWS Bedrock User Guide, Prompt caching](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html) (TTL 리셋, 모델별 최소 토큰, 읽기/쓰기 과금)
 - [Prompt Caching: The Secret to 60% Cost Reduction in LLM Applications — Thomson Reuters Labs](https://medium.com/tr-labs-ml-engineering-blog/prompt-caching-the-secret-to-60-cost-reduction-in-llm-applications-6c792a0ac29b)
 - [How we cut LLM costs with prompt caching — ProjectDiscovery](https://projectdiscovery.io/blog/how-we-cut-llm-cost-with-prompt-caching)
 
