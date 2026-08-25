@@ -12,10 +12,7 @@ aliases: ["Oracle", "Oracle Database"]
 ## 하위 문서
 
 - [[Oracle-11g-Historical-Setup|Oracle 11g 학습 환경, 역사 자료와 현재 대안]]
-- [[Oracle-SQL-Dialect|Oracle SQL 방언 (함수, DUAL, 외부 조인, DDL transaction)]]
-- [[Oracle-Sequences-and-Hierarchical-Queries|Oracle sequence와 계층형 query]]
-- [[PL-SQL-Fundamentals|PL/SQL 기본기 (block, 변수, record, collection, bind, 제어문)]]
-- [[PL-SQL-Cursors-Routines-and-Triggers|PL/SQL 커서, 예외, subprogram, package와 trigger]]
+- [[Oracle-SQL-and-PL-SQL|Oracle SQL과 PL/SQL (방언, sequence와 계층형 query, PL/SQL 프로그래밍)]]
 - [[Oracle-Tablespaces|Oracle tablespace와 공간 관리]]
 - [[Oracle-Users-Privileges-and-Roles|Oracle user, privilege, role과 profile]]
 - [[Oracle-Index-Features|Oracle index 기능과 운영]]

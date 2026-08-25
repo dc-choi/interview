@@ -13,12 +13,9 @@ JPA는 객체 그래프와 관계형 스키마 사이의 반복 매핑을 줄이
 
 - [[JPA-Ecosystem-and-Version-Migration|생태계와 버전 전환]]: 표준, 구현체, Spring Data JPA, `javax`에서 `jakarta`로의 전환
 - [[JPA-Persistence-Context|영속성 컨텍스트]]: 상태, 1차 캐시, 쓰기 지연, 변경 감지, flush와 detach
-- [[JPA-Entity-Mapping|엔티티 매핑]]: entity 요건, schema 생성, field, identifier와 상속
-- [[JPA-Relationship-Mapping|연관관계 매핑]]: FK 소유, 방향, 다중성과 관계 entity
+- [[JPA-Mapping|JPA 매핑]]: entity, 연관관계, 값 타입과 애그리거트 컬렉션 매핑
 - [[JPA-Loading-and-Cascade|로딩과 생명주기 전파]]: proxy, fetch plan, N+1, cascade와 orphan removal
-- [[JPA-Value-Types|값 타입]]: embeddable, 불변성, equality와 element collection
 - [[JPA-JPQL|JPQL과 HQL]]: projection, join, subquery, fetch join, named query와 bulk DML
-- [[JPA-Aggregate-Collection-Mapping|애그리거트 컬렉션 매핑]]: root가 통제하는 자식, 순서와 조회 계획
 - [[Spring-Data-JPA-Essentials|Spring Data JPA]]: repository, 저장, query, paging과 확장 기능
 - [[Querydsl|Querydsl]]: Q type, 동적 predicate, projection과 query repository
 - [[JPA-API-Performance|API 조회 성능]]: DTO 경계, fetch join, 컬렉션 조회, paging과 OSIV

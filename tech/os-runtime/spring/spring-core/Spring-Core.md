@@ -21,6 +21,7 @@ Spring Core의 중심은 annotation 암기가 아니라 **객체 graph의 생성
 | [[Spring-Core-Registration-and-Autowiring|Bean 등록과 자동 주입]] | scan, 수동 등록, constructor injection과 후보 선택을 어떻게 운영하는가 |
 | [[Spring-Core-Scope-and-Lifecycle|Bean scope와 lifecycle]] | instance를 어디까지 공유하고, 초기화와 정리를 누가 책임지는가 |
 | [[Spring-Core-AOP|AOP와 proxy]] | 횡단 관심사를 어디에 적용하고 proxy 경계를 어떻게 검증하는가 |
+| [[Spring-IoC-DI-and-Bean-Lifecycle|Spring IoC, DI와 Bean 생명주기]] | 위 주제들을 처음 읽을 때 전체 그림을 어떻게 잡는가 — 등록부터 lifecycle callback까지의 개요 |
 
 ## 하나의 흐름으로 읽기
 
@@ -59,7 +60,6 @@ container는 OCP나 DIP를 자동으로 만들어 주지 않는다. 클라이언
 
 ## 관련 문서
 
-- [[Spring-IoC-DI-and-Bean-Lifecycle|Spring IoC, DI와 Bean 생명주기]]
 - [[OOP|객체지향 기본]]
 - [[Object-Design-Principles|객체 설계 원칙과 리팩터링]]
 - [[NestJS-vs-Spring-Runtime-DI|NestJS vs Spring 런타임과 DI]]

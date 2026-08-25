@@ -16,6 +16,7 @@ aliases: ["TS 타입 폴더", "types 인덱스"]
 - [x] [[TS-Collection-Type-Design|인덱스 시그니처, 배열, 튜플과 readonly]]
 - [x] [[TS-Type-Design-Principles|유효한 상태 중심 타입 설계]]
 - [x] [[TS-Any-Boundaries|any와 unknown 경계 설계]]
+- [x] [[TS-Enum-Antipattern|enum의 런타임 동작과 as const, 문자열 union 대안 선택 기준]]
 
 ## 예제 코드 폴더
 - `primitive/` — number, string, boolean, literal, null, undefined

@@ -11,7 +11,7 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 
 - [[tech/computer-science/fundamentals/기초(Fundamentals)|컴퓨터 기초 (Fundamentals)]] — 진법, 인코딩, CPU, 컴파일/런타임
 - [[tech/computer-science/oop/SOLID-In-Practice|OOP / SOLID]] — OCP, DIP 실전 적용
-- [[tech/computer-science/code-quality/코드품질(CodeQuality)|코드 품질 (Code Quality)]] — 하드코딩 제거, 응집, 용어 엄밀성
+- [[tech/computer-science/code-quality/코드품질(CodeQuality)|코드 품질 (Code Quality)]] — 하드코딩 제거, 응집, 가독성 인지과학, 용어 엄밀성
 - [[tech/computer-science/functional/함수형(Functional)|함수형 프로그래밍 (Functional)]] — 카테고리 이론, Functor, Monad, CCC
 - [[tech/computer-science/data-structure/자료구조(DataStructure)|자료구조 (Data Structure)]] — Array, LinkedList, Stack, Queue, Hash, Set
 - [[tech/computer-science/algorithm/알고리즘(Algorithm)|알고리즘 (Algorithm)]] — Big O, 재귀, 정렬, DP, 탐색, 최단 경로, P-NP

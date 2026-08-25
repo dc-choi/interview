@@ -7,17 +7,11 @@ aliases: ["Career Stages"]
 
 # 커리어 단계(Career Stages)
 
-개발자 성장 단계, 도구 숙련도, 첫 90일, 커리어 태도, 성장 원칙.
+커리어 태도와 성장 단계 모델, 직군별 진로와 기본 역량, 새 직장과 현 직장에서의 실행 계획.
 
 ## 목차
 - [x] [[mindset|마인드셋, 웰빙 (커리어 태도, 자기 믿음, 자기 인식, 번아웃과 슬럼프, 동기, 강점 기반 성장, 결과 지향)]] — 서브폴더
-- [x] [[Backend-Developer-Career-Overview|백엔드 개발자 진로 개요 (일의 범위, 보람/고충, 향후 전망, ML, 기획/경영 확장)]]
-- [x] [[Backend-Engineer-Baseline|백엔드 엔지니어 기본 역량 체크리스트 (10개 영역, 레벨별 기대치, 혼자할때 함정)]]
-- [x] [[Frontend-Engineer-Growth|프론트엔드 엔지니어 성장 (JS 프로그래밍 사고, UX 중심, 바닐라 우선, 컴포넌트, HTML/CSS→FE)]]
-- [x] [[Developer-Growth-Stages|개발자 성장 단계 (5단계 성장 이론, 입사 6개월 차 회의감과 이직 판단, 4년차 성장 곡선)]]
-- [x] [[Developer-Growth-Stages-Junior-To-Mid|주니어 → 미드레벨 전환 7단계 (행동 체크리스트, 니즈 재정의)]]
-- [x] [[Non-CS-Major-Developer|비전공 개발자와 전공의 가치 (학력=최소 보험 시그널, 증명이 뒤집는다, 복수 전문성/도메인 강점)]]
-- [x] [[Dreyfus-Skill-Model|드레퓌스 기술 습득 모형 (Novice~Expert 5단계, Competent 경계)]]
-- [x] [[Tool-Mastery-Levels|개발 도구 숙련도 5단계 (Level 0~4, 신입 기대 Level 2)]]
+- [x] [[Growth-Stage-Models|성장 단계와 숙련도 모델 (개발자 성장 5단계, 주니어→미드레벨 전환, 드레퓌스, 도구 숙련도)]] — 서브폴더
+- [x] [[Engineer-Role-Tracks|직군별 진로와 기본 역량 (백엔드 진로 개요, 백엔드 기본 역량, 프론트엔드 성장)]] — 서브폴더
 - [x] [[First-90-Days|새 직장 첫 90일 원칙 (매니저 스타일 파악, 작은 성취 반복, 자기검열 금지, 팀 코드 먼저 읽기, 온보딩이 없을 때)]]
 - [x] [[Kinolights-Engineer-Growth-Direction|키노라이츠 엔지니어 성장 방향 (제품팀 맥락, 인재상의 행동 번역, 4주 실험)]]

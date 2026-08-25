@@ -7,42 +7,16 @@ aliases: ["JS", "JavaScript"]
 
 # JavaScript(JS)
 
-JS 언어 핵심 — 비동기, 호이스팅, 이벤트, 프로토타입, 코드 가독성.
+JS 언어 핵심을 주제별 폴더로 나눠 모은다 — 값과 표현식, 선언과 스코프, 함수와 클래스, 객체 모델, 컬렉션, 순회와 비동기, 프로토타입, 그리고 브라우저 host API. 코드 가독성 문서도 함께 둔다.
 
-## 언어 동작
-- [x] [[JavaScript-Expressions-Control-Flow-and-Coercion|표현식, 타입 변환과 제어 흐름]]
-- [x] [[JavaScript-Class-Semantics|Class 의미와 상속 (TDZ, prototype, super, this)]]
-- [x] [[JavaScript-Proxy-and-Reflect|Proxy와 Reflect (trap, receiver, invariant)]]
-- [x] [[JavaScript-ES-Modules|ES Modules (live binding, graph, browser/Node loader)]]
-- [x] [[JavaScript-Lexical-Scope-and-Modern-Syntax|렉시컬 스코프와 모던 문법 (arrow, spread, destructuring)]]
-- [x] [[JavaScript-Function-Objects-and-Calls|Function Object와 호출 준비 (internal slot, arguments)]]
-- [x] [[JavaScript-this-and-Function-Invocation|this와 함수 호출 (call, apply, bind)]]
-- [x] [[JavaScript-Numbers-Strings-and-Regular-Expressions|숫자, Unicode 문자열과 정규표현식]]
-- [x] [[JavaScript-Object-and-Array-Operations|Object와 Array 연산 (복사, descriptor, mutation)]]
-- [x] [[JavaScript-Array-Mutation-Iteration-and-Sorting|Array 변경, 순회와 정렬]]
-- [x] [[JavaScript-Global-JSON-Date-and-Builtins|global object, JSON과 Date]]
-- [x] [[JavaScript-Keyed-Collections-and-Weak-References|Map, Set과 약한 참조]]
-- [x] [[JavaScript-Template-Literals-and-Symbols|Template Literal과 Symbol protocol]]
-- [x] [[JavaScript-Iterator-and-Generator-Protocol|Iterator와 Generator protocol]]
-- [x] [[JavaScript-Binary-Data-and-Workers|바이너리 데이터와 Worker (ArrayBuffer, TypedArray, Atomics)]]
-- [x] [[Browser-Fetch-and-XHR|브라우저 Fetch와 XHR (HTTP 오류, 취소, CORS)]]
-- [x] [[Browser-DOM-Manipulation-and-Safety|브라우저 DOM 조작과 안전성]]
-- [x] [[Browser-CSS-Animation-and-Compatibility|CSS 애니메이션과 호환성]]
-- [x] [[JavaScript-Function-Composition-and-Currying|함수 합성과 커링 (일급 함수, 고차 함수, pipeline)]]
-- [x] [[JavaScript-Iterable-Functional-Pipelines|이터러블 함수형 파이프라인 (iterator, generator, lazy evaluation)]]
-- [x] [[JavaScript-Async-Iterable-Pipelines|비동기 이터러블 파이프라인 (Promise, 동시성 제한, lifecycle)]]
-- [x] [[Promise-Async|Promise와 Async (상태, resolve/fulfilled 차이, Promise.all)]]
-- [x] [[Hoisting|호이스팅, TDZ (변수 생성 3단계, var/let/const)]]
-- [x] [[Variable-Declarations|var, let, const 변수 선언 (재선언, 스코프, const 불변성)]]
-- [x] [[Event-Bubbling-Capturing|이벤트 버블링과 캡처링]]
-- [x] [[Object-Property-Descriptor|프로퍼티 디스크립터와 Object 불변성]]
-- [x] [[JS-Value-vs-Reference|원시, 참조 타입, undefined/null, Call by Value]]
-- [x] [[JS-Function-Forms|함수 형태 (선언식, 표현식, 화살표), 일급객체, 클로저, 고차함수]]
-- [x] [[JS-Access-Modifiers|접근 제어자 (# private, TS private, _ 관례)]]
+## 목차
 
-## 객체지향(Prototype 기반)
-- [x] [[JS-Prototype|프로토타입 폴더 인덱스 (동작 원리, 상속, OOP, 철학)]]
-
-## 코드 가독성
-- [x] [[Code-Readability-Dark-Patterns|코드 가독성 & JS 다크패턴 (Don't Make Me Think)]]
-- [x] [[Readable-Code-Cognition|코드 가독성의 인지과학 (작업 기억, 청킹, 시스템1/2, 게슈탈트, 예측 부호화)]]
+- [[JS-Values-and-Expressions|값, 표현식과 타입 변환]]: 연산자와 제어 흐름, 원시와 참조, 숫자, 문자열, 정규표현식, template literal과 Symbol
+- [[JS-Scope-and-Declarations|선언, 스코프와 모듈]]: 호이스팅과 TDZ, var/let/const, 렉시컬 스코프와 모던 문법, ES Modules
+- [[JS-Function-and-Class|함수와 클래스]]: 함수 형태와 클로저, function object와 호출, this 결정, 합성과 커링, class 상속, 접근 제어자
+- [[JS-Object-Model|객체 모델과 표준 내장 객체]]: descriptor와 불변성, Proxy와 Reflect, Object/Array 연산, global object와 내장 객체
+- [[JS-Collections-and-Binary-Data|컬렉션과 바이너리 데이터]]: Map, Set과 약한 참조, Array 변경과 정렬, ArrayBuffer와 Worker 전송
+- [[JS-Iterable-and-Async|이터러블과 비동기]]: iterator와 generator protocol, 지연 평가 파이프라인, 동시성 제한, Promise와 async/await
+- [[JS-Prototype|프로토타입]]: prototype chain 동작 원리, 상속 구현, prototype 기반 OOP와 설계 철학
+- [[JS-Browser-APIs|브라우저 API]]: DOM 조작과 XSS 안전성, event 전파와 위임, Fetch와 XHR, CSS 애니메이션과 호환성
+- [[Code-Readability-Dark-Patterns|코드 가독성과 JS 다크패턴]]: 영리한 코드가 리뷰를 통과하지 못하는 이유, Don't Make Me Think

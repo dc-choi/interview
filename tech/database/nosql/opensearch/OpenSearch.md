@@ -169,7 +169,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 
 ## 레퍼런스 지도
 
-로드맵을 진행하다 특정 기능, 운영 문제, 내부 구조가 필요할 때 아래 분류에서 찾아본다. 폴더 단위 목차는 [[OpenSearch-Indexing|색인]], [[OpenSearch-Query|쿼리]], [[OpenSearch-Segment|세그먼트]], [[OpenSearch-Operations|운영]], [[OpenSearch-Search|검색 기능]] 인덱스에 있다.
+로드맵을 진행하다 특정 기능, 운영 문제, 내부 구조가 필요할 때 아래 분류에서 찾아본다. 폴더 단위 목차는 [[OpenSearch-Indexing|색인]], [[OpenSearch-Query|쿼리]], [[OpenSearch-Segment|세그먼트]], [[OpenSearch-Operations|운영]], [[OpenSearch-Search|검색 기능]], [[OpenSearch-Text-Analysis|매핑과 텍스트 분석]] 인덱스에 있다.
 
 ### 기능과 사례
 

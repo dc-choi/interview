@@ -19,36 +19,19 @@ JavaScript도 대규모 애플리케이션에 사용된다. TypeScript가 해결
 - JavaScript와 호환되는 점진적 도입을 지원하지만 `any`, 타입 단언, 느슨한 컴파일러 옵션은 안전성을 낮춘다.
 - 타입 추론, 유니온, 인터페이스와 타입 별칭, 제네릭으로 코드의 관계와 불변식을 표현한다.
 
-## 기초 문서
+## 목차
 
-- [[compile|컴파일 원리]]
-- [[option|컴파일러 옵션]]
-- [[types|TS 타입 폴더 인덱스]]
-- [[tech/computer-science/ts/types/타입특징|타입 특징]]
-- [[TS-Declaration-Spaces-and-Inference|타입 공간, 값 공간과 추론]]
-- [[TS-Collection-Type-Design|컬렉션 타입 설계]]
-- [[TS-Type-Design-Principles|타입 설계 원칙]]
-- [[TS-Any-Boundaries|any 경계 설계]]
-- [[TS-Type-Assertions|타입 단언과 satisfies]]
-- [[TS-Class-Type-System|클래스 타입 시스템]]
-- [[TS-Generics|제네릭]]
-- [[TS-Decorators|Decorators]]
-- [[TS-React-Type-Contracts|React 타입 계약]]
-- [[TS-JavaScript-Migration|JavaScript에서 TypeScript로 마이그레이션]]
+- [[compile|동작원리 (컴파일 파이프라인, 컴파일러 옵션, AST, JavaScript 마이그레이션)]]
+- [[types|TS 타입 (타입 특징, 단언과 satisfies, 선언 공간과 추론, 컬렉션 설계, any 경계, enum 대안)]]
+- [[TS-Type-System-Principles|TS 타입 시스템 원리 (타입은 증명이다, 구조적 타이핑과 타입 호환성)]]
+- [[TS-Interface-Declarations|TS 인터페이스 선언과 병합 (type vs interface, Declaration Merging, Module Augmentation)]]
+- [[TS-Class-and-Decorators|TS 클래스와 데코레이터 (클래스 타입 시스템, proposal과 legacy 데코레이터)]]
+- [[TypeScript-Type-Level-Programming|타입 레벨 프로그래밍 (Conditional, Mapped, Infer, Recursive)]]
+- [[TS-Type-Narrowing|Type Narrowing (typeof, instanceof, in, predicate, assertion function, 패턴 매칭)]]
+- [[Runtime-Validation-Libraries|Runtime 검증 라이브러리 (Zod/Typia/Ajv, AOT 최적화, 벤치마크)]]
 - [[tech/computer-science/ts/ts-study/ts-study|실습 프로젝트]]
-
-## 심화 주제
-- [x] [[Types-As-Proofs|Types as Proofs (커리-하워드 대응, never, exhaustive switch, TS 불건전 지점)]]
-- [x] [[TypeScript-AST|TypeScript와 AST (컴파일러 파이프라인, Compiler API, AST 기반 도구)]]
-- [x] [[Runtime-Validation-Libraries|Runtime 검증 라이브러리 (Zod/Typia/Ajv, AOT 최적화, 벤치마크)]]
-- [x] [[TS-Type-vs-Interface|type vs interface (선언 병합, 유니온, 복잡한 타입)]]
-- [x] [[TS-Enum-Antipattern|TS enum 안티패턴 (as const, Union Type 대안)]]
-- [x] [[TypeScript-Type-Level-Programming|타입 레벨 프로그래밍 (Conditional, Mapped, Infer, Recursive)]]
-- [x] [[TypeScript-Type-Compatibility|타입 호환성 (구조적 타이핑, Freshness, 공변/반공변, Brand)]]
-- [x] [[TS-Pattern-Matching|패턴 매칭 (ts-pattern, Discriminated Union, exhaustive check)]]
-- [x] [[TS-Type-Narrowing|Type Narrowing (typeof, instanceof, in, predicate, assertion function, exhaustive)]]
-- [x] [[TS-Module-Augmentation|Module Augmentation (Declaration Merging, declare global, declare module, .d.ts)]]
-- [x] [[TS-Function-Overloading|함수 오버로딩 (오버로드 vs 구현 시그니처, 조건부 타입 대비)]]
+- [[TS-Generics|제네릭 (타입 관계 보존, 제약과 기본 타입 인자)]]
+- [[TS-Function-Overloading|함수 오버로딩 (오버로드 vs 구현 시그니처, 조건부 타입 대비)]]
 
 ## 출처
 

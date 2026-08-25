@@ -15,9 +15,7 @@ GraphQL은 Facebook이 만든 **API 쿼리 언어이자, 데이터에 대해 정
 ## 심화 문서 (graphql/ 클러스터)
 
 - [[GraphQL-Architecture-Map|전체 그림 지도]] — 요청 라이프사이클(parse→validate→execute→응답), partial response, N+1과 운영 관심사의 자리
-- [[GraphQL-Schema-Types|타입 시스템]] — scalar, enum, interface, union, input, List와 Non-Null 수식자
-- [[GraphQL-Schema-Design|스키마 설계]] — nullability 전략, 버전 없는 진화, mutation 모양, 네이밍 컨벤션, 비즈니스 로직 계층
-- [[GraphQL-Query-Language|쿼리 언어와 introspection]] — fragment, variable, directive, `__typename`, introspection
+- [[GraphQL-Schema-and-Query|스키마와 쿼리 언어]] — 타입 시스템, 스키마 설계, 쿼리 언어와 introspection
 - [[Apollo-Server#테스트 전략|테스트 전략]] — resolver 단위 테스트, executeOperation 통합 테스트, HTTP와 Subscription E2E
 - [[GraphQL-Pagination|페이지네이션]] — offset vs cursor, Relay Connection, Global Object Identification
 - [[GraphQL-Caching|캐싱과 HTTP 전송]] — 정규화 캐시, persisted document, GET vs POST, 상태 코드

@@ -23,9 +23,7 @@ Unicode text <-> Charset <-> byte stream
 - [[Java-Byte-and-Character-Streams|byte stream과 character stream]]: partial read, buffering, decorator, 자원 수명
 - [[Java-IO-Serialization-and-Data-Formats|직렬화와 데이터 형식]]: DataStream, Java serialization, JSON와 schema format
 - [[Java-Path-Files-and-Copy|Path, Files와 file copy]]: file metadata, traversal, copy 전략
-- [[Java-Network-Fundamentals-and-Sockets|네트워크 기초와 Java socket]]: IP/TCP/UDP/DNS, blocking socket server
-- [[Java-Socket-Lifecycle-Timeout-and-Protocol|socket 수명, timeout과 application protocol]]: framing, EOF, FIN/RST, shutdown
-- [[Java-HTTP-Server-From-Socket-to-Routing|socket에서 HTTP routing까지]]: parser, thread pool, route table과 운영 한계
+- [[Java-Network-and-HTTP|Java 네트워크와 HTTP]]: socket 기초, timeout과 protocol, socket 위의 HTTP server
 - [[Java-Reflection|Java reflection]]: metadata 탐색, 동적 호출, module access 경계
 - [[Java-Annotations|Java annotation]]: retention, target, inheritance와 metadata 기반 검증
 

@@ -19,6 +19,4 @@ MySQL 엔진 내부와 운영 문서 모음. 기본기, MySQL 8.4 InnoDB 구조,
 - [[MySQL-Partitioning|MySQL Partitioning (RANGE/HASH/LIST, Partition Pruning, DROP PARTITION)]]
 - [[MySQL-Backup|MySQL 백업, 복원 (mysqldump, XtraBackup, binlog PITR, RTO/RPO)]]
 - [[MySQL-Enum-Antipattern|MySQL ENUM 안티패턴 (정규화 위반, 확장 불가, 이식성 부족 8가지 이유)]]
-- [[MySQL-Charset-Migration|utf8mb4 마이그레이션 안전 절차 (인덱스 키 길이 767/3072, collation 충돌, latin1 복구)]]
-- [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL (프로세스 모델, MVCC, Hash Join, Partial Index, Aurora 이관 사례)]]
-- [[MySQL-to-PostgreSQL-Migration|MySQL → PostgreSQL 이기종 마이그레이션 (타입 매핑, 함수 재작성, DMS, 시퀀스 보정)]]
+- [[MySQL-Migration-and-Comparison|마이그레이션과 제품 비교 (utf8mb4 전환, PostgreSQL 이기종 이관, 엔진 비교)]]

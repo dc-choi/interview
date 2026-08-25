@@ -20,7 +20,5 @@ Bartosz Milewski의 Category Theory for Programmers 시리즈 정리. 객체와 
 - [x] [[Algebraic-Data-Types|Algebraic Data Types (타입 대수, 항등원/분배법칙, 재귀 방정식) — algebraic-data-types/ 하위 인덱스]]
 
 ## Functor, Natural Transformation
-- [x] [[Functors|Functors (카테고리 사이 매핑, 두 법칙, Endofunctor, Maybe/List/Reader/Const)]]
-- [x] [[Bifunctors-Profunctors|Bifunctors, Profunctors, Functor 변형 (bimap, contramap, dimap, ADT 자동 Functor 도출)]]
+- [x] [[Functors-and-Natural-Transformations|Functor와 자연 변환 (Functor 두 법칙, Bifunctor/Profunctor 변형, 자연 변환) — functors-and-transformations/ 하위 인덱스]]
 - [x] [[Function-Types-And-Currying|Function Types, Currying, CCC (Exponential Object, eval, 람다 계산 모델)]]
-- [x] [[Natural-Transformations|Natural Transformations (Functor 사이 매핑, naturality square, parametricity, 2-Category Cat)]]

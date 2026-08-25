@@ -142,4 +142,4 @@ m.flatMap(f).flatMap(g)  ===  m.flatMap(x => f(x).flatMap(g))
 - [[Railway-Oriented-Programming|Railway-Oriented Programming (Result 모나드 실전)]]
 - [[Types-As-Proofs|Types as Proofs (커리-하워드 대응)]]
 - [[tech/computer-science/ts/타입스크립트(TS)|타입스크립트 (제네릭, 타입 조작)]]
-- [[tech/computer-science/js/Promise-Async|Promise와 Async]]
+- [[Promise-Async|Promise와 Async]]

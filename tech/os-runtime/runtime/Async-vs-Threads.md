@@ -106,4 +106,4 @@ CPU 바운드는 **Worker Threads**로, I/O 바운드는 **이벤트 루프**로
 - [[Backpressure|Backpressure (스트림 배압)]]
 - [[Async-IO|Async I/O]]
 - [[Worker-Threads|워커 스레드]]
-- [[tech/computer-science/js/Promise-Async|Promise와 Async]]
+- [[Promise-Async|Promise와 Async]]

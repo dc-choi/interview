@@ -21,6 +21,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 
 ## Logging
 - [[logging|로깅 폴더 인덱스]] — 구조화, 상관관계, 파이프라인, 샘플링, PII 마스킹
+- [[Log-Collection-and-Backends|로그 수집과 저장 백엔드 폴더 인덱스]] — 파이프라인, Loki, AWS 중앙 로깅 솔루션
 - [x] [[Structured-Logging|Structured logging]]
 - [x] [[Correlation-ID|Correlation ID / Trace ID]]
 - [x] [[Log-Pipeline|중앙 집중식 로그 파이프라인 (수집, 버퍼, 처리, DLQ, 재생)]]

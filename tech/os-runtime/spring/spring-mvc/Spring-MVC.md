@@ -7,26 +7,13 @@ aliases: ["Spring MVC", "Spring Web MVC", "스프링 웹 계층"]
 
 # Spring MVC — 웹 요청 처리 계층
 
-Spring MVC는 서블릿 컨테이너 위에 `DispatcherServlet` 하나를 올려 **Front Controller 패턴**으로 HTTP 요청을 처리한다. Tomcat이 소켓과 스레드를 관리하고, Spring 컨테이너가 핸들러 Bean과 전략 객체를 제공하는 **두 컨테이너의 핸드오프**가 이 계층의 뼈대다. 요청 진입, 바인딩, 예외 처리까지 웹 계층에서 반복되는 주제를 모았다.
+Spring MVC는 서블릿 컨테이너 위에 `DispatcherServlet` 하나를 올려 **Front Controller 패턴**으로 HTTP 요청을 처리한다. Tomcat이 소켓과 스레드를 관리하고, Spring 컨테이너가 핸들러 Bean과 전략 객체를 제공하는 **두 컨테이너의 핸드오프**가 이 계층의 뼈대다. 요청 진입, 바인딩, 서버 렌더링, 예외 처리까지 웹 계층에서 반복되는 주제를 모았다.
 
-- [[Servlet-vs-Spring-Container|Servlet Container vs Spring Container — 레이어 구분, DispatcherServlet의 이중 정체성, Thread-per-Request, 싱글톤 Bean, WebFlux 대안]]
-- [[Spring-Request-Lifecycle|요청 처리 흐름 — Tomcat부터 Controller까지 전 구간, Root vs Servlet ApplicationContext, 부팅 순서, Request-per-Thread]]
-- [[Spring-MVC-Essentials|빈출 애노테이션과 주변 개념 — @Component 계열, @RequestBody vs @ModelAttribute, Filter vs Interceptor, WAS vs Web Server]]
-- [[Spring-Exception-Handling|예외 처리 전략 — 발생 지점별 처리 경로, @ExceptionHandler와 @ControllerAdvice, Filter 예외, 에러 응답 포맷]]
-- [[Spring-Multipart-JSON|Multipart + JSON REST — @RequestPart 패턴, 혼용 금지 원칙, MockMvc 테스트, 크기 제한, 대용량 업로드 대안]]
-- [[Web-MVC-and-Front-Controller-Evolution|Servlet/JSP MVC에서 Front Controller로 발전하는 책임 분리]]
-- [[Spring-MVC-Dispatch-Architecture|DispatcherServlet, HandlerMapping/Adapter와 ViewResolver 구조]]
-- [[Spring-MVC-Request-Mapping-and-Binding|요청 mapping, parameter/body binding과 message converter]]
-- [[Spring-MVC-Server-Rendered-CRUD|Thymeleaf SSR CRUD, form binding, PRG와 redirect]]
-- [[Thymeleaf-Templates-Expressions-and-Safety|Thymeleaf template, expression, fragment와 안전한 출력]]
-- [[Thymeleaf-Spring-Forms-and-Binding|Thymeleaf Spring form binding과 선택 input]]
-- [[Spring-Messages-and-Internationalization|MessageSource, locale와 국제화]]
-- [[Spring-MVC-Manual-Validation|BindingResult, error code와 Spring Validator]]
-- [[Spring-MVC-Bean-Validation|Jakarta Validation과 use-case별 DTO]]
-- [[Spring-MVC-Session-Authentication|Cookie/Session login과 보안 경계]]
-- [[Spring-MVC-Filters-and-Interceptors|Filter, Interceptor와 ArgumentResolver]]
-- [[Spring-MVC-Error-Dispatch-and-API-Responses|Servlet error dispatch, resolver와 API 오류 응답]]
-- [[Spring-MVC-Type-Conversion-and-Formatting|ConversionService, Converter와 Formatter]]
+- [[Spring-MVC-Dispatch-and-Lifecycle|디스패치 구조와 요청 생명주기]]: Front Controller로의 진화, DispatcherServlet과 전략 객체, Tomcat부터 Controller까지의 흐름, Servlet/Spring 컨테이너 레이어
+- [[Spring-MVC-Binding-and-Validation|요청 바인딩과 검증]]: mapping 조건, parameter와 body binding, 타입 변환과 formatting, multipart, 수동 검증과 Jakarta Validation
+- [[Spring-MVC-Server-Rendering|서버 렌더링과 화면 문구]]: Thymeleaf SSR CRUD와 PRG, template 표현식과 escaping, form binding, MessageSource와 국제화
+- [[Spring-MVC-Cross-Cutting-and-Errors|횡단 관심사와 오류 처리]]: Filter와 Interceptor 경계, Cookie/Session 인증, 예외 처리 전략, error dispatch와 API 오류 응답
+- [[Spring-MVC-Essentials|빈출 애노테이션과 주변 개념]]: 네 폴더를 가로지르는 한 장 요약 (@Component 계열, @RequestBody vs @ModelAttribute, Redirect와 forward, Filter vs Interceptor, WAS vs Web Server와 Tomcat 기초)
 
 ## 출처
 

@@ -22,6 +22,7 @@ aliases: ["Functional", "Functional Programming Index"]
 - [x] [[Algebraic-Data-Types|Algebraic Data Types (타입 대수, 항등원/분배법칙, 재귀 방정식)]]
 
 ## Functor, Natural Transformation
+- [x] [[Functors-and-Natural-Transformations|Functor와 자연 변환 폴더 인덱스 (Functors, Bifunctors/Profunctors, Natural Transformations)]]
 - [x] [[Functors|Functors (카테고리 사이 매핑, 두 법칙, Endofunctor, Maybe/List/Reader/Const)]]
 - [x] [[Bifunctors-Profunctors|Bifunctors, Profunctors, Functor 변형 (bimap, contramap, dimap, ADT 자동 Functor 도출)]]
 - [x] [[Function-Types-And-Currying|Function Types, Currying, CCC (Exponential Object, eval, 람다 계산 모델)]]
