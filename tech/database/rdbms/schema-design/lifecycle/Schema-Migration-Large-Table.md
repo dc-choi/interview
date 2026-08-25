@@ -145,6 +145,7 @@ pt-osc와 비슷하지만 **트리거 대신 binlog**를 읽어 동기화. 트�
 - [jojoldu — MySQL 대용량 테이블 스키마 변경](https://jojoldu.tistory.com/244)
 
 ## 관련 문서
+- [[Schema-Versioning|스키마 버전 관리]]
 - [[Index|Index 추가의 운영 리스크]]
 - [[Replication|Replication]]
 - [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL — Online DDL 차이]]

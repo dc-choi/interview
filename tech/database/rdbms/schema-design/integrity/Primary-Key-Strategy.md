@@ -98,7 +98,7 @@ PK 선택만으로 query 성능을 결론 내리지 않는다. 대표 secondary 
 
 ## TypeORM 적용
 
-- `@PrimaryGeneratedColumn("increment", { type: "bigint" })` 값은 JavaScript safe integer 범위를 넘을 수 있으므로 string mapping/serialization을 정한다.
+- `@PrimaryGeneratedColumn("increment", { type: "bigint" })` 값은 JavaScript safe integer 범위를 넘을 수 있으므로 string mapping/serialization을 정한다. tRPC + SuperJSON 같은 transformer로 BigInt 직렬화를 자동 처리할 수도 있다.
 - UUID 생성 위치를 DB/application 중 하나로 일관되게 정하고 migration default와 test fixture를 맞춘다.
 - `@PrimaryColumn` 여러 개로 composite PK를 만들 수 있지만 relation FK와 repository API의 복잡도를 확인한다.
 - public ID에는 별도 `@Column({ unique: true })`을 두고 authorization query에 owner/tenant 조건을 함께 넣는다.

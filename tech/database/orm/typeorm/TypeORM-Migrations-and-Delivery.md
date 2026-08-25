@@ -147,6 +147,7 @@ TypeORM은 기본적으로 모든 pending migration을 하나의 wrapping transa
 
 ## 관련 문서
 
+- [[Schema-Versioning|스키마 버전 관리]]
 - [[ORM|ORM과 NestJS 영속성 선택]]
 - [[ORM-Upgrade-Verification|ORM 업그레이드 검증]]
 - [[Schema-Migration-Large-Table|대용량 테이블 스키마 변경]]

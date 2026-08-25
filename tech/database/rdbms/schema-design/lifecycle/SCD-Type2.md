@@ -1,7 +1,7 @@
 ---
 tags: [database, data-modeling, data-warehouse, history, slowly-changing-dimension]
 status: done
-category: "데이터&저장소(Data&Storage)"
+category: "Data & Storage - RDB"
 aliases: ["SCD Type 2", "Slowly Changing Dimension Type 2", "차원 데이터 이력 관리"]
 ---
 

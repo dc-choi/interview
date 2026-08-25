@@ -114,6 +114,7 @@ DAEMON 스케줄링 전략의 `minimumHealthyPercent` 기본값은 CLI, SDK, API
 ## 관련 문서
 
 - [[ECS|Amazon ECS]]
+- [[Zero-Downtime-Deployment|무중단 배포 (5계층 일반론)]]
 - [[ECS-Secrets-Injection|ECS 런타임 시크릿 주입]]
 - [[ECS-Service-AutoScaling|ECS Service Auto Scaling]]
 - [[ELB|ELB, 타깃 그룹]]

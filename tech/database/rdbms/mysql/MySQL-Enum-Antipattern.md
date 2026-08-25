@@ -83,7 +83,7 @@ CHECK 제약은 MySQL 8.0.16+에서 정식 동작 (이전 버전은 무시).
 - DB 이식성, 재사용을 고려할 필요 없음
 - 단일 테이블에서만 사용
 
-심지어 이 조건도 시간이 지나면 깨지기 쉽다. 판단 기준은 하나로 정리된다 — **항목이 늘거나 바뀔 여지가 있으면 참조 테이블, 사실상 불변인 소수 상태값이면 enum이나 `CHECK` 제약도 선택지**. [[Schema-Design]]의 Enum vs 참조 테이블 결정 표와 같은 기준이다. 애매하면 참조 테이블이 기본값이다.
+심지어 이 조건도 시간이 지나면 깨지기 쉽다. 판단 기준은 하나로 정리된다 — **항목이 늘거나 바뀔 여지가 있으면 참조 테이블, 사실상 불변인 소수 상태값이면 enum이나 `CHECK` 제약도 선택지**. [[Data-Integrity-Constraints|데이터 무결성 제약]]의 Enum vs 참조 테이블 결정 표는 이 기준의 요약이다. 애매하면 참조 테이블이 기본값이다.
 
 ## 면접 체크포인트
 
@@ -97,6 +97,7 @@ CHECK 제약은 MySQL 8.0.16+에서 정식 동작 (이전 버전은 무시).
 - [velog @leejh3224 — MySQL ENUM 타입을 사용하지 말아야 할 8가지 이유 (번역)](https://velog.io/@leejh3224/번역-MySQL의-ENUM-타입을-사용하지-말아야-할-8가지-이유)
 
 ## 관련 문서
-- [[Schema-Design|Schema Design]]
+- [[Data-Integrity-Constraints|데이터 무결성 제약]]
+- [[Schema-Design|스키마 설계]]
 - [[Normalization|Normalization]]
 - [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL — 데이터 타입 차이]]

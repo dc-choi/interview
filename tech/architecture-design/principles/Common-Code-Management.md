@@ -119,7 +119,7 @@ export type OrderStatus = (typeof ORDER_STATUS)[number];
 
 ## 관련 문서
 
-- [[Schema-Design|스키마 설계]]
+- [[Data-Integrity-Constraints|데이터 무결성 제약 (Enum vs 참조 테이블)]]
 - [[Flexible-Attribute-Modeling|가변 속성 모델링]]
 - [[Foreign-Key-Integrity|외래 키와 참조 무결성]]
 - [[TS-Enum-Antipattern|TypeScript Enum 안티패턴]]

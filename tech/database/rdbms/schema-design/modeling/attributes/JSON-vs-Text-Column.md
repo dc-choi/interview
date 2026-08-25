@@ -2,7 +2,7 @@
 tags: [database, rdbms, mysql, postgresql, json, jsonb, text, column-type]
 status: done
 verified_at: 2026-08-04
-category: "데이터&저장소(Data&Storage)"
+category: "Data & Storage - RDB"
 aliases: ["JSON vs TEXT", "JSON vs Text 컬럼", "MySQL JSON vs TEXT"]
 ---
 

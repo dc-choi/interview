@@ -150,6 +150,7 @@ raw query로 내려가는 선택지를 먼저 검토했지만 type 안전성과 
 - [[Transactions|트랜잭션]]
 - [[NestJS-Persistence|NestJS 영속성 통합]]
 - [[NestJS-Database|NestJS Database, TypeORM]]
+- [[Domain-Model|Domain Model]]
 - [[Domain-ORM-Mapper|도메인 모델과 ORM 모델]]
 - [[Lock|DB Lock]]
 - [[Foreign-Key-Integrity|외래 키와 참조 무결성]]

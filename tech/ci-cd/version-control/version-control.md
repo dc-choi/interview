@@ -12,7 +12,7 @@ aliases: ["Version Control", "버전 관리"]
 ## 문서
 
 - [[Version-Control-Tooling|버전 관리 도구 선택 (VCS, 호스팅, 클라이언트, 브랜치 전략)]]
-- [[Development-Workflow|개발 워크플로 (Issue, Branch, PR, Merge, Fork)]]
+- [[Development-Workflow|개발 워크플로 (Issue, Branch, PR, Merge, Fork, Conventional Commits)]]
 - [[GitHub-Repository-Operations|GitHub 저장소 운영 (remote, 인증, PR, Projects, Pages, 서명, gh)]]
 - [[git|Git 폴더 인덱스 (멘탈 모델, 커밋, 통합, 복구, 디버깅, worktree, hooks)]]
   - [[Git-Mental-Model|Git 멘탈 모델 (커밋 스냅샷/브랜치 포인터/HEAD, fast-forward, 3-way merge, rebase 원리)]]

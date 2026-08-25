@@ -173,6 +173,7 @@ Node.js 특유:
 
 ## 관련 문서
 - [[Backend-Engineer-Baseline|백엔드 엔지니어 기본 역량 체크리스트]]
+- [[Zero-Downtime-Deployment|무중단 배포]]
 - [[Node.js|Node.js 개요]]
 - [[Scale-Up-vs-Out|Scale Up vs Scale Out]]
 - [[Logs-vs-Metrics|로그, 메트릭, 트레이스]]

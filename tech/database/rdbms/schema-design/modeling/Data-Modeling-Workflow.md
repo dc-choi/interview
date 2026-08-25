@@ -85,6 +85,7 @@ ERD는 비즈니스와 schema를 소통하는 지도다. 모든 column, framewor
 ### 이름과 type
 
 - `snake_case`, 단수/복수 같은 관행 중 하나를 정해 일관되게 적용한다.
+- DB는 `snake_case`, 애플리케이션은 `camelCase`처럼 계층별 관행이 다르면 ORM naming strategy나 명시적 column name으로 매핑을 분리해 양쪽 표기를 각각 지킨다.
 - data type은 현재 sample이 아니라 허용 범위, 정밀도, 정렬/비교와 client 직렬화를 기준으로 정한다.
 - PK를 무조건 `BIGINT`로 고정하지 않는다. 성장 상한과 secondary index 비용을 비교한다.
 - 금액은 통화/최소 단위를 명시한 integer 또는 정확한 `DECIMAL`을 쓰고 부동소수점은 피한다.

@@ -120,4 +120,4 @@ Q. Docker에서 graceful shutdown이 안 되는 경우는?
 - [[Container-Entrypoint-Signals|컨테이너 엔트리포인트와 시그널 (PID 1, exec form, init)]]
 - [[Docker]]
 - [[Docker-Compose|Docker Compose]]
-- Zero-downtime deployment (작성 예정: `Zero-Downtime-Deployment`)
+- [[Zero-Downtime-Deployment|무중단 배포]]

@@ -68,6 +68,18 @@ FK는 child key가 parent의 candidate key를 참조하도록 보장하고 `REST
 
 선택한 방식의 conflict retry, 사용자 응답과 timeout 뒤 결과 확인을 함께 설계한다. Isolation level만 높이면 모든 business invariant가 자동으로 지켜지는 것은 아니다.
 
+## 제한된 선택지 컬럼: Enum vs 참조 테이블
+
+상태값, 역할, 타입처럼 허용 값이 정해진 컬럼은 값 집합이 앞으로 늘거나 바뀔 여지가 있는가를 기준으로 고른다.
+
+| 성격 | 예 | 권장 |
+|---|---|---|
+| 항목이 늘거나 바뀔 수 있음 | Role(권한 추가), JoinStatus(상태 단계 추가) | 참조 테이블(lookup table) — 값 추가가 INSERT 한 줄, 라벨 같은 부가 속성 확장, FK로 무결성 보장 |
+| 사실상 불변인 소수 상태값 (값 불변, 부가 메타데이터와 이식성 요구 없음이 전부 확실할 때만) | 성별 구분처럼 고정된 집합 | DB enum 또는 CHECK 제약 — 조인 없이 간단, 값이 늘면 마이그레이션 부담 |
+
+- 어느 쪽이든 목표는 DB 수준에서 유효하지 않은 값의 삽입을 방지하는 것이다. 참조 테이블은 FK로, enum/CHECK는 제약으로 방어선을 만든다. 판단이 애매하면 참조 테이블이 기본값이다 ([[MySQL-Enum-Antipattern|MySQL ENUM 안티패턴]] 기준).
+- DB 네이티브 ENUM의 함정은 [[MySQL-Enum-Antipattern|MySQL ENUM 안티패턴]], 표시 메타데이터와 캐시까지 포함한 운영은 [[Common-Code-Management|공통 코드 관리]]가 소유한다.
+
 ## Constraint migration
 
 운영 table에 제약을 추가하기 전에 기존 위반 row를 조사한다.

@@ -50,7 +50,7 @@ aliases: ["Backend Engineer Baseline", "백엔드 엔지니어 기본 역량"]
 ## 5. 데이터베이스
 
 - [ ] **RDBMS vs NoSQL** 선택 기준 ([[MySQL-vs-PostgreSQL]])
-- [ ] **스키마 설계** — 정규화 vs 반정규화 트레이드오프 ([[Schema-Design]])
+- [ ] **스키마 설계** — 정규화 vs 반정규화 트레이드오프 ([[Normalization]])
 - [ ] **인덱스 설계** — 복합 인덱스 순서, 커버링 인덱스 ([[Index]], [[Covering-Index]])
 - [ ] **트랜잭션, 격리 수준** ([[Transactions]], [[Isolation-Level]])
 - [ ] **Lock** — 공유, 배타, Gap, Next-Key ([[Lock]], [[MySQL-Gap-Lock]])

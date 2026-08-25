@@ -1,7 +1,7 @@
 ---
 tags: [database, mysql, oracle, metadata]
 status: seminar
-category: "데이터&저장소(Data&Storage)"
+category: "Data & Storage - RDB"
 aliases: ["데이터 딕셔너리"]
 ---
 

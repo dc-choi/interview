@@ -141,6 +141,7 @@ Q. 도메인 모델과 ORM 엔티티를 분리해야 하는가?
 
 ## 관련 문서
 
+- [[Domain-Model|Domain Model (rich vs anemic, invariant)]]
 - [[DDD|DDD (Aggregate, CQRS, 도메인 서비스)]]
 - [[DDD-Hexagonal-In-Production|DDD + Hexagonal 실무 적용]]
 - [[Hexagonal-In-Practice|Hexagonal 실전 적용]]

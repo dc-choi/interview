@@ -19,6 +19,7 @@ aliases: ["Oracle", "Oracle Database"]
 - [[Oracle-Tablespaces|Oracle tablespace와 공간 관리]]
 - [[Oracle-Users-Privileges-and-Roles|Oracle user, privilege, role과 profile]]
 - [[Oracle-Index-Features|Oracle index 기능과 운영]]
+- [[Data-Dictionary|데이터 딕셔너리 (Oracle vs MySQL 메타데이터 매핑)]]
 
 ## 공통 개념
 

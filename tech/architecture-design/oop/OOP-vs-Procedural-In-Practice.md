@@ -149,6 +149,7 @@ Spring + JPA 조합이 OOP를 지원해도 **관습**은 이어졌음:
 
 ## 관련 문서
 - [[OOP|OOP / SOLID]]
+- [[Domain-Model|Domain Model (rich vs anemic, invariant)]]
 - [[App-Architecture-OOP|애플리케이션 아키텍처와 객체지향]]
 - [[Elegant-OOP-Design|우아한 객체지향 설계]]
 - [[DDD|DDD (Aggregate, Bounded Context)]]

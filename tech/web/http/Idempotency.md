@@ -118,6 +118,7 @@ POST /users       { "name": "dc" }    // 비멱등: 매번 새 사용자 생성
 - [[HTTP-QUERY-Method|HTTP QUERY 메서드]]
 - [[HTTP-Status-Code|HTTP Status Code]]
 - [[Rate-Limiting|Rate Limiting]]
+- [[Zero-Downtime-Deployment|무중단 배포]]
 - [[Idempotency#POST를 멱등하게 만드는 패턴|Idempotency Key 패턴]]
 
 ## 출처

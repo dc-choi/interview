@@ -18,7 +18,7 @@ aliases: ["Hierarchical Data Modeling", "계층형 데이터 모델링", "Closur
 - 최대 깊이가 제한되는가, cycle을 어떻게 막는가
 - 삭제가 subtree 전체인지, 자식을 승격하는지
 
-고정 UI depth를 schema의 영구 제약으로 착각하지 않는다. category가 현재 3단계여도 정책이 바뀔 수 있다면 self-reference가 더 자연스럽다.
+고정 UI depth를 schema의 영구 제약으로 착각하지 않는다. category가 현재 3단계여도 정책이 바뀔 수 있다면 self-reference가 더 자연스럽다. 반대로 서로 다른 고정 단계의 엔티티(각 단계가 고유 속성과 생명주기를 가짐)를 depth 하나로 뭉개 한 트리 테이블로 합치지 않는다. self-reference는 같은 종류의 노드가 깊이를 바꿀 수 있을 때 맞는 선택이다.
 
 ## Adjacency list
 

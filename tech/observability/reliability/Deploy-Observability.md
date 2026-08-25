@@ -70,3 +70,4 @@ prod 서비스 247개(ECS, EC2, EKS 전체)를 통합, 장애 스레드 배포 �
 - [[Alert-Fatigue|Alert fatigue 방지]]
 - [[Deployment-Automation-ChatOps|배포 자동화, ChatOps]]
 - [[Blue-Green|Blue/Green 배포]]
+- [[Zero-Downtime-Deployment|무중단 배포]]

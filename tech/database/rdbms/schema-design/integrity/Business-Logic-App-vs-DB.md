@@ -1,7 +1,7 @@
 ---
 tags: [database, business-logic, architecture, scalability, sql]
 status: done
-category: "데이터&저장소(Data&Storage)"
+category: "Data & Storage - RDB"
 aliases: ["Business Logic App vs DB", "비즈니스 로직 위치", "DB 로직 vs 앱 로직"]
 ---
 
