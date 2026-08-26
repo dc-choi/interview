@@ -97,7 +97,7 @@ KDS와 Firehose는 자주 함께 쓰인다: KDS로 수집, 재읽기 가능하�
 | 모델 | Queue (Polling) | Pub-Sub (Push) | Real-time Streaming | Pub-Sub Streaming |
 | 소비 후 메시지 | **Delete** (소비 후 제거) | Subscriber로 전송 후 종료 | **보존**(24h~365d), 다수 소비자 재읽기 | 보존(설정), 다수 컨슈머 재읽기 |
 | 순서 보장 | Standard 미보장 / FIFO O | Standard 미보장 / FIFO O | **Partition Key 단위로 보장** | Partition 단위 보장 |
-| 처리량 단위 | Standard 거의 무제한 / 일반 FIFO 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지 / 고처리량 FIFO 리전별 API 할당량 | 리전별 quota(Standard) | **Shard 단위 1MB/s, 1,000 rec/s** | Partition 단위 |
+| 처리량 단위 | Standard 거의 무제한 / 일반 FIFO 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지 / 고처리량 FIFO는 리전별 API 할당량 | 리전별 quota(Standard) | **Shard 단위 1MB/s, 1,000 rec/s** | Partition 단위 |
 | 운영 | 완전 관리형 | 완전 관리형 | 관리형 (Shard 직접 조정 또는 On-Demand) | 자체 운영 or MSK |
 | 적합 | 작업 큐, decouple | Fan-out 알림 | 로그/클릭스트림/IoT 실시간 | 동일 + 더 큰 생태계 |
 

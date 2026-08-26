@@ -1,7 +1,7 @@
 ---
 tags: [reliability, shutdown]
 status: done
-verified_at: 2026-08-05
+verified_at: 2026-08-26
 category: "안정성엔지니어링(Reliability)"
 aliases: ["Graceful Shutdown", "우아한 종료"]
 ---
@@ -14,10 +14,10 @@ aliases: ["Graceful Shutdown", "우아한 종료"]
 
 프로세스를 즉시 종료(kill -9)하면:
 - 처리 중인 HTTP 요청이 중단되어 클라이언트에 에러 반환
-- DB 트랜잭션이 반쯤 실행된 상태로 남아 데이터 정합성 훼손
-- DB 커넥션 풀이 정리되지 않아 커넥션 누수
-- 스케줄러/크론 작업이 중간에 끊겨 불완전한 상태 발생
-- 파일 핸들, 소켓 등 리소스 누수
+- 미커밋 DB 트랜잭션은 연결 종료 시 보통 rollback되지만, 클라이언트가 결과를 모호하게 받아 같은 작업을 중복 실행할 수 있음
+- DB 밖의 API 호출, 메시지 발행과 파일 쓰기까지 한 작업은 일부 부수효과만 끝난 채 중단될 수 있음
+- 스케줄러/크론 작업이 중간에 끊겨 재실행 또는 보상 기준이 불명확해질 수 있음
+- OS는 로컬 파일 descriptor와 socket을 회수하지만, 사용자 공간에 버퍼링한 로그와 출력은 유실되고 상대 시스템은 연결 종료를 늦게 감지할 수 있음
 
 ## 구현 흐름
 
@@ -25,7 +25,7 @@ aliases: ["Graceful Shutdown", "우아한 종료"]
 2. **신규 수신 중단** — 헬스 체크를 실패로 전환하고 로드밸런서가 라우팅에서 뺄 때까지 기다린 뒤 `close()`로 새 연결 수락을 중단한다(전파 대기 근거는 아래 Docker, K8s 절). 메시지 컨슈머와 스케줄러도 이 시점에 새 작업을 더 받지 않도록 멈춘다.
 3. **in-flight drain** — 이미 받은 요청과 이미 꺼낸 메시지를 처리 완료까지 기다린다. 여기서 흔히 걸리는 것이 keep-alive 커넥션이다. Node 19 미만에서는 `closeIdleConnections()`(v18.2.0 추가)를 함께 호출해야 유휴 커넥션이 끊겼고, 19부터는 `close()`가 반환 전에 유휴 커넥션을 먼저 닫는다. 다만 요청을 보내는 중이거나 응답을 기다리는 커넥션은 그대로 남으므로 강제 종료 타이머는 여전히 필요하다.
 4. **리소스 정리** — DB 커넥션 풀, 외부 클라이언트, 파일 핸들을 순서대로 닫는다. 진행 중인 작업이 아직 DB를 쓰므로 **DB는 반드시 마지막**이다.
-5. **프로세스 종료** — `process.exit(0)`. drain이 끝나지 않아도 강제 종료할 타이머를 함께 걸어 무한 대기를 막는다.
+5. **프로세스 종료** — 정상 정리가 끝나면 `process.exitCode = 0`만 설정해 event loop가 비워진 뒤 자연 종료한다. grace period보다 짧은 deadline을 함께 두고, 그때까지 drain이 끝나지 않은 실패 경로에서만 `process.exit(1)`로 무한 대기를 끊는다.
 
 ## Node.js/Express 구현 패턴
 
@@ -104,7 +104,7 @@ graceful shutdown에도 제한 시간을 두어야 한다. 무한 대기하면 �
 Q. Graceful shutdown을 왜, 어떻게 구현했는가?
 - SIGTERM/SIGINT 핸들러 등록
 - 스케줄러 → HTTP 서버 → DB 커넥션 순으로 정리
-- 배포 시 처리 중인 요청 중단 없이 무중단 전환
+- 라우팅 전파와 drain deadline 안에서 처리 중 요청의 중단을 최소화
 
 Q. Docker에서 graceful shutdown이 안 되는 경우는?
 - PID 1이 셸이면 SIGTERM이 앱까지 전달되지 않는다. exec form, `exec "$@"`, init 프로세스는 [[Container-Entrypoint-Signals|컨테이너 엔트리포인트와 시그널]] 참고.

@@ -25,12 +25,32 @@ aliases: ["Node.js Process", "Child Process", "spawn vs fork"]
 ## 시그널 처리 — Graceful Shutdown
 
 ```ts
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received');
-  server.close();             // 새 연결 거부, in-flight 처리 마무리
-  await db.disconnect();
-  process.exit(0);
-});
+let shuttingDown = false;
+
+async function shutdown(signal: NodeJS.Signals) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(`${signal} received`);
+
+  const deadline = setTimeout(() => process.exit(1), 25_000);
+  deadline.unref();
+
+  try {
+    // 새 연결을 막고 in-flight 요청이 끝날 때까지 기다린 뒤 DB를 닫는다.
+    await new Promise<void>((resolve, reject) => {
+      server.close(err => err ? reject(err) : resolve());
+    });
+    await db.disconnect();
+    // unref된 deadline은 정상 종료를 늦추지 않으며, 남은 핸들이 있으면 강제 종료한다.
+    process.exitCode = 0;
+  } catch (err) {
+    console.error('graceful shutdown failed', err);
+    process.exitCode = 1;
+  }
+}
+
+process.once('SIGTERM', () => void shutdown('SIGTERM'));
+process.once('SIGINT', () => void shutdown('SIGINT'));
 ```
 
 | 시그널 | 의미 |
@@ -41,7 +61,7 @@ process.on('SIGTERM', async () => {
 | `SIGUSR1`/`SIGUSR2` | Node.js 디버거 활성화 / 사용자 정의 |
 | `SIGKILL` | 즉시 강제 종료 — **트랩 불가** |
 
-**K8s `terminationGracePeriodSeconds`** (기본 30s) 안에 정리 끝내야 SIGKILL 안 맞음.
+**K8s `terminationGracePeriodSeconds`** (기본 30s) 안에 정리를 끝내야 SIGKILL을 피할 수 있다. 예제의 25초 deadline은 그보다 먼저 실패를 드러내기 위한 값이므로 실제 배포의 grace period에 맞춰 조정한다. 정상 경로에서는 `process.exit()`로 비동기 정리를 끊지 않고 `exitCode`만 설정한다.
 
 ## Child Process — 4가지 API
 
@@ -160,3 +180,4 @@ shell이 필요해도 사용자 입력을 인자로 넣지 말고, 인자 바인
 ## 출처
 
 - [Node.js Child process API](https://nodejs.org/api/child_process.html)
+- [Node.js HTTP API, `server.close()`](https://nodejs.org/api/http.html#serverclosecallback)

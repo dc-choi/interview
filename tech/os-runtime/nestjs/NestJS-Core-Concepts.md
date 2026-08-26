@@ -14,7 +14,7 @@ aliases: ["NestJS Core Concepts", "NestJS 핵심 개념"]
 
 ### IoC 컨테이너
 - NestJS가 Provider의 **생성, 주입, 생명주기**를 관리
-- `@Injectable()` 데코레이터로 Provider 등록 → constructor에서 **타입 기반 자동 주입**
+- `@Injectable()`은 주입 가능한 클래스에 metadata를 붙임. 실제 Provider 등록은 `@Module({ providers: [...] })`에서 하고, 이후 constructor의 타입이나 토큰으로 의존성을 해석
 - 개발자는 의존성을 직접 생성하지 않고, 컨테이너에 무엇이 필요한지만 선언
 
 ### Provider 등록 방식

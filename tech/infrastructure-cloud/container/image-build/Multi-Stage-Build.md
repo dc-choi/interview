@@ -55,7 +55,7 @@ Runner 단계:
 ## 추가 최적화 팁
 
 - 타임존 설정은 Runner 스테이지에서 (`apk add tzdata`)
-- `NODE_ENV=production` 설정으로 런타임 최적화 활성화
+- production dependency 설치 옵션을 사용하고, 애플리케이션이나 라이브러리가 `NODE_ENV`를 해석할 때만 `NODE_ENV=production`을 명시. Node.js 자체가 이 값만으로 최적화되는 것은 아님
 - `.dockerignore`로 불필요한 파일(node_modules, .git 등) 제외
 
 ## 실무 사례 — 909MB에서 513MB로

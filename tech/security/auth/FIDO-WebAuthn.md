@@ -1,7 +1,7 @@
 ---
 tags: [security, auth, fido, webauthn, passkey]
 status: done
-verified_at: 2026-08-05
+verified_at: 2026-08-26
 category: "Security - 인증"
 aliases: ["FIDO2", "WebAuthn", "웹 인증 API"]
 ---
@@ -39,20 +39,22 @@ attestation은 인증기 모델의 출처를 증명하는 선택 절차다. 포�
 3. 인증기가 `authenticatorData`와 서명을 반환하고, 클라이언트는 type이 `webauthn.get`인 `clientDataJSON`을 함께 반환한다.
 4. 서버는 저장해 둔 공개키로 서명을 검증하고 sign counter와 백업 상태를 갱신한다.
 
-## 서명 대상
+## assertion의 서명 대상
 
-두 플로우 모두 서명은 아래 바이트열을 대상으로 한다.
+인증(assertion)에서는 credential private key로 아래 바이트열에 서명한다.
 
 ```
 sig = Sign(privateKey, authenticatorData || SHA-256(clientDataJSON))
 ```
 
-`clientDataJSON`에는 challenge, origin, type이 들어가고, `authenticatorData`에는 RP ID의 SHA-256 해시(rpIdHash), 플래그(UP, UV, BE, BS), sign counter가 들어간다. 즉 서명 한 번으로 어떤 사이트에(rpIdHash, origin) 어떤 요청에 대해(challenge) 사용자가 실제로 있었는지(UP, UV)가 한꺼번에 묶인다. 이 값 중 하나만 바뀌어도 서명 검증이 깨진다.
+`clientDataJSON`에는 challenge, origin, type이 들어가고, `authenticatorData`에는 RP ID의 SHA-256 해시(rpIdHash), 플래그(UP, UV, BE, BS), sign counter가 들어간다. 따라서 assertion 서명은 어떤 사이트에(rpIdHash, origin) 어떤 요청에 대해(challenge) 사용자가 실제로 있었는지(UP, UV)를 한꺼번에 묶는다. 이 값 중 하나만 바뀌어도 서명 검증이 깨진다.
+
+등록(attestation)은 하나의 고정된 서명 공식으로 일반화할 수 없다. `attestationObject` 안의 `fmt`, `attStmt`, `authData`를 꺼내고, 해당 포맷이 정의한 절차로 `authData`와 `SHA-256(clientDataJSON)`을 검증한다. 포맷과 attestation 유형에 따라 attestation key나 credential key를 쓸 수 있고, `none` 포맷에는 검증할 attestation 서명이 없다.
 
 ## 피싱과 재사용 공격에 강한 이유
 
 - **자격증명이 RP ID에 묶인다** — 인증기가 만든 자격증명은 등록된 RP ID 범위 밖 도메인에서는 쓰이지 않는다. 피싱 사이트가 `get()`을 호출해도 클라이언트와 인증기가 정품 도메인의 키를 넘겨주지 않는다.
-- **origin이 서명에 포함된다** — 스펙은 RP가 등록과 인증 양쪽에서 client data의 origin을 반드시 검증하도록 요구한다. 자격증명 범위 제한이 1차 방어이고, 서버의 origin 검증은 인증기 구현이 범위 강제에 실패했을 때를 대비한 추가 계층이다.
+- **origin을 RP가 검증하고 assertion 서명이 묶는다** — 스펙은 RP가 등록과 인증 양쪽에서 client data의 origin을 반드시 검증하도록 요구한다. 인증에서는 origin이 든 `clientDataJSON`의 해시가 assertion 서명에 포함된다. 등록은 attestation 포맷별 검증을 따르며 `none`에는 attestation 서명이 없지만, RP의 origin 검증과 자격증명의 RP ID 범위 제한은 그대로 적용된다.
 - **challenge가 매번 다르다** — WebAuthn은 재전송 공격을 막기 위해 랜덤 challenge에 의존한다. 스펙은 challenge를 RP가 신뢰하는 환경에서 생성하고, 최소 16바이트 이상의 엔트로피를 가지며, 응답의 challenge가 발급값과 일치해야 한다고 규정한다. 불일치를 눈감으면 프로토콜의 보안이 무너진다.
 - **서버 유출로 로그인할 수 없다** — 서버가 가진 것은 공개키뿐이라 유출돼도 서명을 만들 수 없다. 비밀번호 해시 유출과 근본적으로 다른 지점이다.
 - **비밀번호 재사용 문제가 사라진다** — 사이트마다 별도 키쌍이 생성되므로 한 서비스의 자격증명이 다른 서비스로 번지지 않는다.
@@ -95,7 +97,7 @@ sign counter가 역행해도 그 자체는 복제의 증거가 아니라 신호�
 ## 면접 체크포인트
 
 - 비밀번호 대비 FIDO가 서버 유출에 강한 이유를 키 보관 위치로 설명할 수 있는가
-- 서명 대상이 `authData || hash(clientDataJSON)`이라는 점과, 그래서 origin과 challenge 위조가 왜 불가능한지
+- assertion 서명 대상이 `authData || hash(clientDataJSON)`이라는 점과, 그래서 origin과 challenge 위조가 왜 불가능한지
 - attestation과 assertion의 목적 차이, attestation을 `none`으로 둘 수 있는 경우
 - 패스키, discoverable credential, WebAuthn, FIDO2의 관계 정리
 - sign counter 역행을 즉시 차단하지 않고 신호로 다루는 이유

@@ -129,7 +129,7 @@ Node.js 특유:
 - 인증서 갱신 자동화 (Let's Encrypt, ACM)
 
 ### NestJS 배포 관행
-- **NODE_ENV=production 설정** — Node/Nest 자체는 dev/prod 동작 차이가 없지만, 생태계 라이브러리들이 이 변수로 디버그 출력 등을 전환하므로 관행적 필수.
+- **환경 모드 명시** — `NODE_ENV`는 Node.js 자체의 예약 동작이 아니라 애플리케이션과 라이브러리가 해석하는 관례다. 사용하는 의존성이 요구하면 `production`을 명시하고, 실제로 바뀌는 로깅, 캐시와 오류 노출 동작을 배포 전 검증한다.
 - 헬스체크는 **@nestjs/terminus**가 공식 경로 — readiness/liveness 프레임으로 HTTP ping, TypeORM DB, 디스크, 메모리 인디케이터를 내장하고 `HealthIndicatorService`로 커스텀 인디케이터를 만든다 (`check(key)`로 시작해 `indicator.up()`/`down(부가정보)`를 반환하는 v11+ API — 구 HealthIndicator 상속과 HealthCheckError throw 방식은 deprecated, 다음 메이저에서 제거 예정). 응답 status는 `ok`/`error`에 더해 **`shutting_down`**(종료 중이지만 아직 요청을 받는 상태)이 있고, `gracefulShutdownTimeoutMs`를 **readiness 체크 간격보다 약간 길게** 잡으면 K8s 컨테이너 종료 시 무중단이 된다 (수동 HealthService 패턴은 [[NestJS-Lifecycle]]).
 - `nest start`는 `node dist/main.js` 래퍼에 자동 `nest build`가 붙은 것 — 운영에선 빌드 산출물을 `node dist/main.js`로 직접 실행.
 

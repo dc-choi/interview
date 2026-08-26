@@ -73,7 +73,7 @@ Nest는 기본 플랫폼(기본적으로 Express)에서 요청 객체에 대한 
 | @Body(key?: string)     | 요청 본문       | req.body / req.body[key]        |
 | @Headers(name?: string) | HTTP 헤더     | req.headers / req.headers[name] |
 | @Ip()                   | 클라이언트 IP 주소 | req.ip                          |
-| @HostParam()            | 호스트 매개변수    | req.params                      |
+| @HostParam()            | 호스트 매개변수    | req.hosts                       |
 
 기본 HTTP 플랫폼에서의 타이핑과의 호환성을 위해 Nest는 @Res() 및 @Response() 데코레이터를 제공합니다. 
 

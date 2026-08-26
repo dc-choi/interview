@@ -45,7 +45,8 @@ export class CacheInterceptor implements NestInterceptor {
     const key = `${request.method}:${request.url}`;
 
     const cached = this.cacheService.get(key);
-    if (cached) return of(cached);
+    // 이 예제에서 cache miss는 undefined다. 0, false, 빈 문자열, null은 유효한 hit다.
+    if (cached !== undefined) return of(cached);
 
     return next.handle().pipe(
       tap(response => this.cacheService.set(key, response, 60)),
@@ -56,9 +57,9 @@ export class CacheInterceptor implements NestInterceptor {
 
 운영급은 Redis 같은 공유 store 필수 — 메모리는 다중 인스턴스에서 일관성 깨짐. NestJS `CacheModule` + Redis store가 표준.
 
-### 조건부 재시도 (Retry with backoff)
+### 타임아웃과 재시도 경계 분리
 
-타임아웃 + 4xx는 재시도 안 함, 5xx, 네트워크 에러만 재시도, 지수 백오프.
+핸들러 전체를 감싸는 Interceptor에는 deadline만 둔다. `retry()`는 source를 재구독하므로 `next.handle()`에 적용하면 DB 쓰기나 외부 호출을 포함한 핸들러 전체가 다시 실행될 수 있다.
 
 ```ts
 @Injectable()
@@ -66,19 +67,16 @@ export class TimeoutInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       timeout(5000),
-      retry({
-        count: 3,
-        delay: (error, retryCount) => {
-          if (error.status >= 400 && error.status < 500) throw error;  // 4xx 단락
-          return timer(Math.pow(2, retryCount) * 1000);                // 지수 백오프
-        },
+      catchError(error => {
+        if (error instanceof TimeoutError) throw new RequestTimeoutException();
+        throw error;
       }),
     );
   }
 }
 ```
 
-외부 API 호출 모듈 전용 Interceptor로 두는 게 안전 — 모든 핸들러에 자동 재시도는 멱등성 보장 안 된 메서드(POST, PATCH)에서 위험.
+재시도는 멱등성을 판단할 수 있는 outbound client 메서드에 둔다. API 계약에 따라 일시적인 네트워크 오류, timeout, 일부 408/425/429와 5xx만 분류하고, 횟수 상한, backoff, jitter와 `Retry-After`를 적용한다. status가 없다는 이유만으로 모든 오류를 재시도하지 않는다. 비멱등 요청은 idempotency key가 없으면 자동 재시도하지 않는다. 자세한 규율은 [[Retry-Backoff-Jitter|재시도, 지수 백오프와 지터]].
 
 ### 응답 직렬화 — 내장 ClassSerializerInterceptor
 

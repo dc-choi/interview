@@ -27,7 +27,7 @@ AWS 관리형 메시지 큐 서비스. 분산 시스템 간 비동기 통신의 
 
 | 항목 | Standard | FIFO |
 |------|----------|------|
-| 처리량 | 거의 무제한 | 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지. High throughput FIFO는 리전별 API 할당량 적용 |
+| 처리량 | 거의 무제한 | 일반 FIFO 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지. High throughput FIFO는 리전별 API 할당량 적용 |
 | 순서 보장 | Best-effort (보장 안 됨) | MessageGroupId 단위 엄격한 FIFO |
 | 메시지 전달 | At-least-once (중복 가능) | 5분 deduplication window 안의 중복 enqueue 제거. 소비자 처리 자체는 실패, 재시도 때문에 멱등성이 필요 |
 | 큐 이름 | 최대 80자, 영숫자와 하이픈(`-`), 밑줄(`_`) 사용 | Standard와 같은 제한, `.fifo` 접미사 필수 |

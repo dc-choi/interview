@@ -15,7 +15,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 |---|---|---|
 | **RabbitMQ** | 성숙한 AMQP 브로커, 유연한 라우팅 | 복잡한 pub/sub, RPC, 워크 큐 |
 | **BullMQ** | Redis 기반 Node.js 작업 큐 | 작업 상태 추적, 재시도, 지연 큐 |
-| **SQS** | AWS 관리형 단순 큐 | 서버리스, AWS 통합, 무관리 |
+| **SQS** | AWS 관리형 단순 큐 | 서버리스, AWS 통합, 낮은 인프라 운영 부담 |
 | **Kafka** | 분산 로그, 스트리밍 플랫폼 | 대용량 이벤트 스트리밍, 재생 |
 
 ## 성능 비교 (특정 실험 1건의 결과)
@@ -71,22 +71,22 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 ## SQS (Amazon Simple Queue Service)
 
 ### 강점
-- **완전 관리형**: 서버, 클러스터링 고민 0
+- **완전 관리형**: 브로커 서버와 클러스터를 직접 운영하지 않음
 - **AWS 네이티브 통합**: Lambda, EventBridge, SNS, Step Functions 자연 연결
-- **무한 확장**: AWS가 알아서 스케일
+- **관리형 확장**: Standard queue는 높은 처리량을 제공하지만 service quota, consumer 처리량과 downstream 용량은 직접 설계
 - **비용**: 사용량 기반 (저트래픽이면 매우 저렴)
 - **DLQ, FIFO**: 내장 지원
 
 ### 약점
 - **폴링 기반**: 컨슈머가 받아가기 전까지 큐 대기 시간이 붙는다. 위 성능 절의 실험에서 SQS는 실측이 아니라 저자 추정이다
-- **메시지 순서**: Standard는 순서 보장 없음. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지이며 고처리량 FIFO는 리전별 API 할당량 적용
+- **메시지 순서**: Standard는 순서 보장 없음. 일반 FIFO 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지이며 고처리량 FIFO는 리전별 API 할당량과 MessageGroupId 분산을 확인
 - **라우팅 약함**: Fanout은 SNS+SQS 조합으로 우회
 - **AWS 종속**: 이식성 없음
 
 ### 적합
 - AWS 생태계 중심 인프라
 - 서버리스 아키텍처 (Lambda 트리거)
-- 무관리 우선, 팀 크기 작음
+- 브로커 인프라 운영 부담 최소화가 우선이고 팀 크기가 작음
 - 트래픽이 불규칙, 저트래픽
 
 ## Kafka
@@ -94,13 +94,13 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 ### 강점
 - **대용량 이벤트 스트리밍**: 파티션 확장과 배치 전송을 전제로 한 높은 처리량. 절대 수치는 파티션 수, 배치 크기, `acks`와 하드웨어에 좌우되므로 벤치마크 조건 없이 인용하지 않는다
 - **재생(Replay) 가능**: 메시지 보관 기간 내 임의 시점부터 재소비
-- **파티션 기반 확장**: 수평 확장 선형
+- **파티션 기반 확장**: broker와 partition을 늘려 병렬 처리량을 확장. 증가 폭은 key 분포, rebalance, replication과 storage 병목에 따라 선형이 아닐 수 있음
 - **생태계**: Connect, Streams, KSQL 등 통합 도구
 - **read-process-write 경계의 exactly-once**: Kafka 토픽에서 읽어 처리하고 Kafka 토픽으로 쓰는 구간은 Idempotent Producer와 트랜잭션으로 출력과 오프셋 커밋을 원자적으로 묶는다. 외부 DB나 API 같은 다른 destination은 해당 시스템의 협조가 필요해, 종단 간으로는 at-least-once 전달 + 멱등 처리로 effectively-once를 만든다 ([[Delivery-Semantics|전달 보장]], [[Idempotent-Consumer|멱등 컨슈머]])
 
 ### 약점
-- **운영 복잡도**: Zookeeper(또는 KRaft), Broker, 토픽, 파티션 관리
-- **단건 지연 높음**: 배치 최적화라 단건 처리엔 오버헤드
+- **운영 복잡도**: KRaft controller, broker, topic과 partition 관리. Kafka 4.0부터 ZooKeeper mode는 제거됐고 기존 3.x cluster는 migration이 필요
+- **단건 지연 tradeoff**: batching, `linger.ms`, replication과 `acks` 설정이 처리량과 지연을 함께 바꿈
 - **학습 곡선**: Consumer Group, Offset, Rebalancing 이해 필요
 - **저트래픽에 과함**: 작은 서비스엔 인프라 비용 낭비
 
@@ -108,7 +108,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 - **이벤트 소싱, CDC**: 모든 변경을 로그로
 - **대용량 실시간 분석**: 클릭스트림, IoT, 로그 수집
 - **메시지 재생 필요** 도메인
-- 대기업, 데이터팀이 있는 조직
+- 운영 전문성을 갖추거나 관리형 Kafka의 비용을 감당할 수 있는 조직
 
 ## 선택 플로차트
 
@@ -139,8 +139,8 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 
 재직 중 직접 설계한 IoT 재고관리(VMI) 서비스의 발주 자동화에서, Kafka(MSK)를 먼저 검토했다가 기각했다. 근거는 셋이다.
 
-- **고정비 vs 사용량 과금**: MSK는 브로커를 띄워두는 순간부터 고정비가 나간다. 당시 필요 구성으로 산정한 값이 월 약 $574. SQS는 요청 수 과금이라 트래픽이 없으면 0에 수렴한다.
-- **트래픽을 실제로 세어봤다**: 월 발주 약 10만 건 x 이벤트 액션 5종 = 월 약 50만 메시지. 비배치 성공 처리라면 Send, Receive, Delete로 약 150만 SQS API 요청이 발생해 월 100만 요청 Free Tier를 다소 넘는 규모였다. 2026-08-21 AWS 공식 가격표의 Asia Pacific (Seoul) 표준 큐 1단계 단가(백만 건당 $0.40)를 적용하면 SQS 초과분은 약 $0.20이고 EventBridge 이벤트 발행 과금은 별도다. 실제 청구는 배치, 빈 폴링, 재시도, payload 크기, 리전과 계정의 프리 티어 적용 여부에 따라 달라지지만, Kafka의 처리량과 리플레이가 필요하지 않은 상황에서 고정비와 자릿수가 달랐다.
+- **Provisioned 고정비 vs 사용량 과금**: 당시 비교 메모의 MSK Provisioned 산정은 브로커 유형과 수, 스토리지, 데이터 전송 가정이 남아 있지 않아 정확한 금액을 재현할 수 없다. 현재 의사결정에는 그 값을 인용하지 않고 실제 workload와 AWS 가격표로 다시 산정한다. MSK Serverless는 사용량 과금이므로 같은 고정비 모델로 일반화하지 않는다. SQS는 요청 수 중심의 사용량 과금이다.
+- **트래픽을 실제로 세어봤다**: 월 발주 약 10만 건 x 이벤트 액션 5종 = 월 약 50만 메시지. 비배치 성공 처리라면 Send, Receive, Delete로 약 150만 SQS API 요청이 발생해 월 100만 요청 Free Tier를 다소 넘는 규모였다. 2026-08-21 AWS 공식 가격표의 Asia Pacific (Seoul) 표준 큐 1단계 단가(백만 건당 $0.40)를 적용하면 SQS 초과분은 약 $0.20이고 EventBridge 이벤트 발행 과금은 별도다. 실제 청구는 배치, 빈 폴링, 재시도, payload 크기, 리전과 계정의 프리 티어 적용 여부에 따라 달라진다. 재현 가능한 결론은 이 조건의 SQS 요청 초과분이 작았고, Kafka의 처리량과 리플레이가 요구사항이 아니었다는 데까지다.
 - **도메인 특성**: 발주는 초 단위 실시간성보다 최종 일관성이 중요하다. 몇 초 뒤에 발주서가 나가도 업무가 깨지지 않는다. 대신 유실은 안 되므로 진짜 요구사항은 재시도와 DLQ였다.
 
 결론은 EventBridge + SQS. 발주 이벤트가 발생하면 발주 처리 큐로 메시지를 보내고, 발주가 끝나면 수주 처리로 이어진다. 그다음 알림 이벤트에서 공급사 발주 알림톡, 공급사 발주서 메일, 고객사 거래명세서 메일이 각각의 SQS 큐로 병렬 분기해 워커가 동시에 처리한다. 발주 도메인의 비즈니스 로직에서 후속 처리 호출이 빠져 결합도가 내려갔고, 브로커 고정비는 발생하지 않았다. 채널별 DLQ 정책은 [[EventBridge-SQS-Target|EventBridge → SQS 타겟 패턴]].
@@ -149,11 +149,11 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 
 | 축 | RabbitMQ | BullMQ | SQS | Kafka |
 |---|---|---|---|---|
-| 셋업 난이도 | 중 | **낮음** | **0 (관리형)** | 높음 |
-| 운영 부담 | 중~높 | 중 | **0** | **높** |
+| 셋업 난이도 | 중 | **낮음** | **낮음** (IAM, queue policy, DLQ와 alarm 구성) | 높음 |
+| 운영 부담 | 중~높 | 중 | **낮음** (quota, consumer, DLQ와 비용 감시) | **높음** |
 | 관측성 도구 | Management UI | Bull Board | CloudWatch | Prometheus, Grafana, Confluent |
 | 확장성 | 클러스터링 | Redis Cluster | 자동 | 파티션 확장 |
-| 메시지 보관 | 짧음 (ACK 전) | Redis 설정 | 최대 14일 | 설정 가능 (장기 가능) |
+| 메시지 보관 | ACK까지 보관, TTL과 queue limit 설정 가능. ACK 뒤 Kafka식 replay는 불가 | Redis 설정 | 최대 14일 | retention 설정 범위에서 replay 가능 |
 
 ## 흔한 실수
 
@@ -174,10 +174,13 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 - 선택 기준 (트래픽, 운영, 팀, 인프라)
 
 ## 출처
+- [Amazon MSK pricing](https://aws.amazon.com/msk/pricing/)
 - [Amazon SQS pricing — 요청 과금, Free Tier](https://aws.amazon.com/sqs/pricing/)
 - [AWS Price List API — Amazon SQS 현재 리전별 단가](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSQueueService/current/index.json)
 - [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+- [RabbitMQ 공식 문서, Time-To-Live and Expiration](https://www.rabbitmq.com/docs/ttl)
 - [Apache Kafka Documentation — Message Delivery Semantics](https://kafka.apache.org/documentation/#semantics)
+- [Apache Kafka 4.0 Release Announcement — KRaft only](https://kafka.apache.org/blog/2025/03/18/apache-kafka-4.0.0-release-announcement/)
 - [마이프차 기술 블로그 (Medium) — RabbitMQ vs BullMQ (+SQS) 실사용 후 솔직 후기 (30만 건 실험, RabbitMQ와 BullMQ만 실측)](https://medium.com/@myfranchise/rabbitmq-vs-bullmq-sqs-%EC%8B%A4%EC%82%AC%EC%9A%A9-%ED%9B%84-%EC%86%94%EC%A7%81-%ED%9B%84%EA%B8%B0-c74c1a485143)
 
 ## 관련 문서

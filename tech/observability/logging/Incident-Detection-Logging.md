@@ -67,7 +67,7 @@ aliases: ["장애 감지와 로깅"]
 | 계층 | 구성 요소 | 역할 |
 |------|---------|------|
 | **FE** | Sentry SDK → Sentry 서버 | 브라우저 JS 에러, 네트워크 지연, 퍼포먼스 트레이스 자동 수집 |
-| **BE (App)** | TraceIdMiddleware | 요청마다 고유 `x-request-id` 생성 → 응답과 JSON 로그를 요청 단위로 연결 |
+| **BE (App)** | TraceIdMiddleware | 이름과 달리 분산 trace가 아니라 요청마다 고유 `x-request-id`를 생성해 응답과 JSON 로그를 요청 단위로 연결 |
 | | HttpLoggingInterceptor | 요청/응답/예외를 한 지점에서 구조적으로 로깅 |
 | | Winston JSON Logger | flat JSON line 포맷으로 기록 |
 | | MetricsInterceptor + prom-client | method, 정규화한 route, status label과 request-duration histogram을 Prometheus 형식으로 노출 |
@@ -98,17 +98,20 @@ Promtail은 2026-03-02 EOL이다. 위 구성은 당시 경험이고, 신규 구�
 
 ## 카디널리티 관리
 - route/path 라벨 정규화 (URL 파라미터를 `:id`로 치환)
-- **userId, traceId를 라벨에 절대 포함하지 않음** → 라벨 조합 폭증 → Prometheus OOM
-- traceId는 로그 본문(flat JSON)에 기록하고 LogQL로 검색
+- **userId, requestId를 메트릭 라벨에 포함하지 않음** → 라벨 조합 폭증과 메모리 사용량 증가
+- requestId는 로그 본문(flat JSON)에 기록하고 LogQL로 검색. 실제 분산 추적을 도입하면 별도의 traceId와 spanId를 전파한다
 - 알람과 대시보드에서 쓰지 않는 라벨과 필드는 수집 단계에서 drop (`metric_relabel_configs`) — 저장 전에 잘라야 비용과 OOM을 동시에 막는다 ([[Cardinality]])
 
 ## 면접포인트
 - "장애를 어떻게 감지하나?" → 당시에는 Error rate, Slow SQL, Event Loop Lag 등의 정적 임계 경보와 `for` 지속 조건으로 시스템적으로 감지. SLO 경보는 사용자 영향 SLI와 burn rate를 별도로 설계
-- "로깅 전략?" → flat JSON line 포맷 + TraceId 전파 + 구조적 필터링(requestId/route/level)
+- "로깅 전략?" → flat JSON line 포맷 + requestId 전파 + 구조적 필터링(requestId/route/level). 당시에는 분산 trace 파이프라인이 아니었음
 - "배포 후 무엇을 확인하나?" → 임팩트 측정, 예상 vs 실제 비교. Grafana 대시보드에서 배포 전후 메트릭 비교
-- "Prometheus pull 방식의 한계?" → 짧은 수명 컨테이너는 스크래핑 전 사라질 수 있음 → Pushgateway로 보완
-- "Thanos 없이 Prometheus만?" → 단기 보존만 가능하고 디스크 부담. Thanos로 S3 장기 보관 + 멀티 인스턴스 통합 조회
+- "Prometheus pull 방식의 한계?" → 스크랩 전에 끝나는 서비스 수준 batch job은 Pushgateway를 검토. 일반적인 단명 컨테이너는 서비스 디스커버리나 지원되는 수집 에이전트로 관측하고 Pushgateway에 무차별 push하지 않음
+- "Thanos 없이 Prometheus만?" → Prometheus의 로컬 보존 기간은 설정할 수 있지만 단일 인스턴스 디스크와 조회 범위에 묶인다. Thanos로 object storage 장기 보관, 글로벌 조회와 HA 구성을 더함
 
 ## 출처
 
+- [Prometheus, When to use the Pushgateway](https://prometheus.io/docs/practices/pushing/)
+- [Prometheus, Storage](https://prometheus.io/docs/prometheus/latest/storage/)
+- [Thanos, Getting Started](https://thanos.io/tip/thanos/getting-started.md/)
 - [유닛 테스트 209개를 통과한 PR인데, 실제로 돌려보니 저장이 한 건도 안 됐다 — velog](https://velog.io/@donghoong2/OCR-WORKER-%EC%9C%A0%EB%8B%9B-%ED%85%8C%EC%8A%A4%ED%8A%B8-209%EA%B0%9C%EB%A5%BC-%ED%86%B5%EA%B3%BC%ED%95%9C-PR%EC%9D%B8%EB%8D%B0-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%8F%8C%EB%A0%A4%EB%B3%B4%EB%8B%88-%EC%A0%80%EC%9E%A5%EC%9D%B4-%ED%95%9C-%EA%B1%B4%EB%8F%84-%EC%95%88-%EB%90%90%EB%8B%A4)

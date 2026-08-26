@@ -3,6 +3,7 @@ tags: [messaging]
 status: done
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Messaging Patterns", "메시징 패턴"]
+verified_at: 2026-08-26
 ---
 
 # 메시징 패턴 (Messaging Patterns)
@@ -84,13 +85,13 @@ aliases: ["Messaging Patterns", "메시징 패턴"]
 | 모델 | 분산 로그 (Consumer가 offset 관리) | 큐 (메시지 삭제형) | Topic 기반 팬아웃 (1:N) |
 | 순서 보장 | 파티션 내 보장 | Standard: 미보장, FIFO: 보장 | 미보장 (ordering key로 부분 보장) |
 | 메시지 보존 | 설정 기간 동안 보존 (리플레이 가능) | 처리 후 삭제 | ACK 후 삭제 |
-| TPS | 초당 수십만~수백만 | Standard: 거의 무제한. 일반 FIFO: 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지. 고처리량 FIFO: 리전별 API 할당량 | 수만~수십만 |
-| 운영 비용 | 높음 (클러스터 관리, MSK $574+/월) | 매우 낮음 (사용량 과금, Free Tier 범위) | 낮음 (관리형) |
-| 적합 | 이벤트 리플레이, 로그 수집, 순서 보장 필요 | 작업 큐, 비동기 처리, 소규모~중규모 | 마이크로서비스 간 이벤트 팬아웃 |
+| 처리량 | 파티션, 브로커 구성과 워크로드에 따라 측정 | Standard는 매우 높은 처리량을 지원. FIFO 할당량은 리전, 파티션과 배치 여부에 따라 확인 | 프로젝트와 리전 할당량, 메시지 크기에 따라 확인 |
+| 비용 구조 | 직접 운영과 프로비저닝형 서비스는 용량 고정비와 운영 비용이 있고, MSK Serverless는 사용량 과금 | 요청과 데이터 전송 기반 사용량 과금. 무료 사용량은 현재 계정 자격과 가격 정책을 확인 | 처리량과 데이터 전송 기반 사용량 과금. 현재 가격 정책을 확인 |
+| 적합 | 이벤트 리플레이, 로그 수집, 파티션 내 순서 보장 필요 | 작업 큐, 비동기 처리, 운영 부담 최소화 | 마이크로서비스 간 이벤트 팬아웃 |
 
 ### 선택 기준
-1. **Kafka** — 이벤트 리플레이, 순서 보장, 초당 수만 건+, 여러 소비자 그룹이 독립 소비
-2. **SQS** — 단순 작업 큐(1:1), 최종 일관성 충분, 운영 부담 최소화, 소~중규모
+1. **Kafka** — 이벤트 리플레이, 파티션 내 순서 보장, 높은 지속 처리량, 여러 소비자 그룹의 독립 소비
+2. **SQS** — 여러 worker가 경쟁 소비하는 작업 큐, 최종 일관성 허용, 운영 부담 최소화
 3. **Pub/Sub** — 하나의 이벤트를 여러 서비스가 구독(팬아웃), GCP 생태계
 
 ### AWS 이벤트 서비스 조합
@@ -99,6 +100,10 @@ aliases: ["Messaging Patterns", "메시징 패턴"]
 
 ## 출처
 - [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+- [Amazon Web Services, Amazon MSK pricing](https://aws.amazon.com/msk/pricing/)
+- [Amazon Web Services, Amazon SQS pricing](https://aws.amazon.com/sqs/pricing/)
+- [Google Cloud, Pub/Sub pricing](https://cloud.google.com/pubsub/pricing)
+- [Google Cloud, Pub/Sub quotas and limits](https://docs.cloud.google.com/pubsub/quotas)
 
 ## 관련 문서
 - [[Delivery-Semantics|전달 보장]]

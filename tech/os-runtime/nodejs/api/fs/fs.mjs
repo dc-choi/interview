@@ -1,39 +1,55 @@
-import {mkdir, access, constants, createReadStream, createWriteStream} from 'node:fs';
-import {fileURLToPath} from "node:url";
-import path from "node:path";
+import { createReadStream, createWriteStream } from 'node:fs';
+import { access, mkdtemp, rm } from 'node:fs/promises';
+import { once } from 'node:events';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-export const __filename = fileURLToPath(import.meta.url);
-export const __dirname = path.dirname(__filename);
+async function main() {
+  let workDirectory;
 
-// make directory 'test' if it doesn't exist
-mkdir(`${__dirname}/test`, { recursive: true }, (err) => {
-  if (err) throw err;
-});
+  try {
+    workDirectory = await mkdtemp(join(tmpdir(), 'node-fs-stream-'));
+    const file = join(workDirectory, 'text.txt');
 
-const file = `${__dirname}/test/text.txt`;
+    // Create a writable stream to write data to an isolated temporary file.
+    const writeStream = createWriteStream(file);
+    const writeFinished = once(writeStream, 'finish');
+    const writeClosed = once(writeStream, 'close');
+    writeStream.write('Hello, World!\n');
+    writeStream.write('Welcome to Node.js file system module.\n');
+    writeStream.end('This is a test file.');
+    await Promise.all([writeFinished, writeClosed]);
 
-// Create a writable stream to write data to the file
-const writeStream = createWriteStream(file);
+    await access(file);
+    console.log('File exists');
 
-// Write some data to the file
-writeStream.write('Hello, World!\n');
-writeStream.write('Welcome to Node.js file system module.\n');
-writeStream.write('This is a test file.');
-writeStream.end();
+    // Create a readable stream only after the write stream has finished.
+    const readStream = createReadStream(file, { encoding: 'utf8' });
+    const readEnded = once(readStream, 'end');
+    const readClosed = once(readStream, 'close');
+    let contents = '';
+    readStream.on('data', (chunk) => {
+      contents += chunk;
+    });
+    await Promise.all([readEnded, readClosed]);
 
-// Create a readable stream to read data from the file
-writeStream.on('finish', () => {
-  const readStream = createReadStream(file, { encoding: 'utf8' });
+    if (!contents.includes('Hello, World!')) {
+      throw new Error('Unexpected file contents');
+    }
+    console.log('Read contents:', contents);
+  } catch (error) {
+    console.error('Error:', error);
+    process.exitCode = 1;
+  } finally {
+    if (workDirectory) {
+      try {
+        await rm(workDirectory, { recursive: true, force: true });
+      } catch (error) {
+        console.error('Cleanup error:', error);
+        process.exitCode = 1;
+      }
+    }
+  }
+}
 
-  readStream.on('data', (chunk) => {
-    console.log('Read chunk:', chunk);
-  });
-
-  readStream.on('end', () => {
-    console.log('Finished reading the file.');
-  });
-});
-
-access(file, constants.F_OK, (err) => {
-  console.log(err ? 'File does not exist' : 'File exists');
-});
+await main();

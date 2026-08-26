@@ -40,7 +40,7 @@ Publisher가 발행하면 모든 Subscription에 **자동 fan-out** — 1:N 메�
 
 FIFO Topic의 Subscriber는 SQS FIFO만 — 다른 프로토콜 미지원. 결제, 상태 변경처럼 순서, 중복 보장이 필수일 때.
 
-고처리량 FIFO Topic을 SQS FIFO와 연결하면 큐에도 고처리량 모드를 활성화하는 것이 권장된다. 일반 SQS FIFO 큐는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지다. 고처리량 큐는 리전별 API 할당량을 따른다.
+고처리량 FIFO Topic을 SQS FIFO와 연결하면 큐에도 고처리량 모드를 활성화하는 것이 권장된다. 일반 SQS FIFO 큐의 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지다. 고처리량 큐는 리전별 API 할당량과 MessageGroupId 분산을 확인한다.
 
 ## Fan-out 패턴 — SNS + 다수 SQS
 

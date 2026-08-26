@@ -12,7 +12,7 @@ aliases: ["Injection Scopes"]
 
 Node.js는 각 요청이 별도의 스레드에서 처리되는 request/response Multi-Threaded Stateless Model을 사용하지 않는다는 점을 이해하는 것이 중요합니다.
 
-따라서 Nest에서 싱글톤 인스턴스를 사용하는 것은 애플리케이션에 완전히 안전합니다.
+따라서 상태를 공유하지 않거나 공유 상태를 안전하게 관리하는 Provider에는 싱글톤 인스턴스가 적합합니다. 다만 요청별 가변 상태를 싱글톤 필드에 보관하면 `await` 사이에 다른 요청과 섞일 수 있으므로, 지역 변수, 요청 스코프 또는 `AsyncLocalStorage`로 분리해야 합니다.
 
 하지만 컨트롤러에 요청 기반 수명을 설정해야 하는 특정 사례가 있을 수 있습니다.
 

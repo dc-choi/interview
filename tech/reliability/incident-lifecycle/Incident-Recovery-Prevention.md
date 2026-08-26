@@ -60,7 +60,7 @@ aliases: ["장애 복구와 재발 방지"]
 
 ```
 1. 감지 (Grafana Alerting → Slack 자동 알림)
-2. 영향 범위 파악 (TraceId로 요청 단위 로그+메트릭 연계 조회)
+2. 영향 범위 파악 (`x-request-id`로 로그 추적, 같은 시간대의 method, route와 status 집계 메트릭 대조)
 3. 판단: 롤백 vs 핫픽스
    - 데이터 정합성 문제 → 즉시 롤백
    - 단순 로직 버그 → 핫픽스

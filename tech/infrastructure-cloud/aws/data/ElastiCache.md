@@ -35,14 +35,15 @@ AWS 관리형 인메모리 캐시 서비스. **Redis, Valkey, Memcached** 엔진
 
 ### 1. 쿼리 캐시 (Cache-Aside)
 
-가장 흔한 패턴. 읽기 경로에서 캐시 miss 시 DB 조회 후 캐시 write.
+가장 흔한 패턴. 읽기 경로에서 캐시 miss 시 DB 조회 후 캐시 write. 아래 의사 코드는 캐시 어댑터가 miss만 고유한 `CACHE_MISS` sentinel로 반환한다고 가정한다. `0`, `false`, 빈 문자열처럼 유효하지만 falsy인 값도 hit로 처리해야 한다.
 
 ```
-if (value = cache.get(key)) return value
-else:
-  value = db.query(...)
-  cache.set(key, value, ttl)
-  return value
+CACHE_MISS = unique sentinel
+value = cache.get(key)
+if value is not CACHE_MISS: return value
+value = db.query(...)
+cache.set(key, value, ttl)
+return value
 ```
 
 - 캐시 대상: **조회가 느리고, 자주 읽히고, 자주 바뀌지 않는** 데이터 (예: 상품 상세, 사용자 프로필, 설정값)
@@ -124,7 +125,7 @@ LLM 응답을 프롬프트 임베딩 기반으로 캐시하면 유사 프롬프�
 
 ### 쓰기 전략
 
-- **Write-Through**: DB 쓰기 시 캐시도 동시에 갱신 — 일관성↑, 쓰기 지연↑
+- **Write-Through**: DB 쓰기 경로에서 캐시도 갱신해 stale 가능성을 낮춘다. 별도 DB와 캐시 사이의 원자성을 자동 보장하지 않으므로 부분 실패를 위한 재시도, 무효화와 재조정 절차가 필요하다
 - **Write-Behind**: 캐시만 갱신, DB는 지연 쓰기 — 쓰기 빠름, 일관성↓, 손실 위험
 - **Cache-Aside + TTL**: 읽을 때만 캐시 채움, TTL 만료로 갱신 — 가장 널리 쓰임
 

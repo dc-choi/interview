@@ -29,7 +29,7 @@ export const Cacheable = (options: CacheOptions) =>
 
 // 3. 사용
 class UserService {
-  @Cacheable({ ttl: 60 })
+  @Cacheable({ ttl: 60_000 }) // cache-manager TTL은 밀리초
   getUser(id: string) { ... }
 }
 ```

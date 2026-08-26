@@ -19,7 +19,7 @@ aliases: ["커스텀 데코레이터 3단계 구조", "마킹 탐색 실행 파�
 
 ## 1단계: 마킹 (Metadata 부착)
 
-NestJS의 `SetMetadata()`는 내부적으로 `Reflect.defineMetadata()` 호출. `reflect-metadata` 폴리필 필요 (`tsconfig`의 `emitDecoratorMetadata: true`).
+NestJS의 `SetMetadata()`는 내부적으로 `Reflect.defineMetadata()`를 호출해 커스텀 메타데이터를 붙인다. 이를 위해 `reflect-metadata`가 로드되어야 한다. `emitDecoratorMetadata`는 TypeScript가 타입 기반 design metadata를 내보내는 별도 옵션이므로, `SetMetadata()` 자체의 필수 조건은 아니다.
 
 ```ts
 export const CACHEABLE_KEY = Symbol('cacheable');
@@ -29,7 +29,7 @@ export const Cacheable = (options: CacheOptions) =>
 
 // 사용
 class UserService {
-  @Cacheable({ ttl: 60 })
+  @Cacheable({ ttl: 60_000 }) // cache-manager TTL은 밀리초
   getUser(id: string) { ... }
 }
 ```
@@ -41,9 +41,12 @@ class UserService {
 NestJS의 `DiscoveryService`로 앱 전체 Provider를 훑고, `MetadataScanner`로 각 Provider의 메서드를 순회.
 
 ```ts
+import { CACHE_MANAGER, type Cache } from '@nestjs/cache-manager';
+
 @Injectable()
 export class CacheableExplorer implements OnModuleInit {
   constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private discoveryService: DiscoveryService,
     private metadataScanner: MetadataScanner,
     private reflector: Reflector,
@@ -79,8 +82,17 @@ export class CacheableExplorer implements OnModuleInit {
 `OnModuleInit`에서 실행 → 앱 부팅 시 한 번만 스캔. 런타임 오버헤드 없음.
 
 - **DiscoveryModule import 필수**: `DiscoveryService`를 주입받으려면 그 모듈의 imports에 `DiscoveryModule`(@nestjs/core)을 등록해야 한다.
+- 캐시를 쓰는 모듈은 `CacheModule`을 등록하고, `CacheableExplorer` 자체도 해당 모듈의 `providers`에 넣어야 초기화 훅이 실행된다.
 - `getProviders()`처럼 `getControllers()`도 있다 — 컨트롤러 대상 일괄 처리(분석 트래킹, 자동 등록)에 사용.
 - **전용 데코레이터 팩토리**: `DiscoveryService.createDecorator()`로 만든 데코레이터(`@FeatureFlag('experimental')`)는 `discoveryService.getMetadataByDecorator(FeatureFlag, wrapper)`로 읽는다 — SetMetadata + Reflector 조합 없이 wrapper 단위로 바로 필터링하는 API.
+
+```ts
+@Module({
+  imports: [DiscoveryModule, CacheModule.register()],
+  providers: [CacheableExplorer],
+})
+export class CacheableModule {}
+```
 
 ## 3단계: 실행 (메서드 래핑)
 
@@ -94,7 +106,8 @@ private wrap(instance: any, methodName: string, options: CacheOptions) {
   instance[methodName] = async function (...args: any[]) {
     const cacheKey = generateKey(methodName, args);
     const cached = await self.cacheManager.get(cacheKey);
-    if (cached) return cached;
+    // 이 예제에서 cache miss는 undefined다. 0, false, 빈 문자열, null은 유효한 hit다.
+    if (cached !== undefined) return cached;
 
     const result = await original.apply(this, args);
     await self.cacheManager.set(cacheKey, result, options.ttl);
@@ -122,3 +135,5 @@ Object.setPrototypeOf(instance[methodName], original);
 
 ## 출처
 - [NestJS — Discovery service](https://docs.nestjs.com/fundamentals/discovery-service)
+- [NestJS — Caching](https://docs.nestjs.com/techniques/caching)
+- [NestJS — SetMetadata decorator source](https://github.com/nestjs/nest/blob/master/packages/common/decorators/core/set-metadata.decorator.ts)

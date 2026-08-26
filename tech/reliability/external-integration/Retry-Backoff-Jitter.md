@@ -38,10 +38,10 @@ sleep = min(cap, base * 2 ** attempt)
 ## 재시도 규율 — 언제, 어디서, 몇 번
 
 - **멱등한 요청에만**: 타임아웃이나 실패가 부수효과가 없었다는 뜻이 아니다. 부수효과 있는 API는 멱등성 보장 없이 재시도하면 안전하지 않다 ([[Idempotency|멱등성]]).
-- **클라이언트 오류(4xx)는 재시도하지 않는다**: 같은 요청은 나중에도 성공하지 않는다. 단 eventual consistency가 이 경계를 흐린다 — 방금 만든 리소스의 404는 상태가 전파되면 성공으로 바뀔 수 있다.
+- **상태 코드만으로 재시도 여부를 뭉뚱그리지 않는다**: 검증 실패, 권한 거부처럼 결정적인 4xx는 반복해도 성공하지 않는다. 반면 408, 다른 connection에서 시도할 수 있는 421, 425, 429, 충돌 회복이 가능한 일부 409, eventual consistency 구간의 404는 API 계약에 따라 재시도 대상이 될 수 있다. 401도 자격증명 refresh가 가능한 경우에 한해 refresh 후 한 번 다시 시도할 수 있다. `Retry-After`가 있으면 우선하고, 멱등성과 호출 예산을 별도로 확인한다.
 - **단일 계층에서만 재시도**: 5층 스택이 층마다 3회씩 재시도하면 최하단 DB에는 3의 5제곱, 243배 부하가 도달해 회복이 어려워진다. 저비용 작업 기준의 원칙은 스택의 한 지점에서만 재시도하는 것이다.
 - **토큰 버킷 재시도 예산**: 단일 계층 재시도라도 오류가 시작되면 트래픽이 크게 는다. 서킷 브레이커는 이를 통째로 끊지만 모달(modal) 동작이 생겨 테스트가 어렵고 회복 시간을 늘릴 수 있다. 토큰 버킷으로 재시도율을 로컬에서 제한하면 토큰이 있는 동안은 전부 재시도하고, 소진되면 고정 비율로만 재시도한다. AWS는 2016년 AWS SDK에 이 동작을 추가했다.
-- **다운스트림이 건강할 때만**: 재시도가 가용성을 개선하지 못하고 있으면 멈춘다.
+- **성공 가능성과 예산이 있을 때만**: 재시도가 가용성을 개선하지 못하거나 다운스트림 과부하를 키우면 멈춘다. 429나 일시적인 과부하는 `Retry-After`, backoff, jitter와 재시도 예산 안에서만 다룬다.
 
 ## 지터는 재시도 전용이 아니다
 
@@ -58,12 +58,14 @@ sleep = min(cap, base * 2 ** attempt)
 - full, equal, decorrelated jitter의 공식 차이와 무엇을 기본으로 고를지
 - 계층형 재시도 증폭(243배)과 단일 계층 재시도 원칙
 - 서킷 브레이커 대신 토큰 버킷 재시도 예산을 쓰는 이유
-- 재시도하면 안 되는 실패 (비멱등 요청, 4xx, 과부하 중인 다운스트림)
+- 재시도하면 안 되는 실패와 예외적으로 다시 시도할 수 있는 408/409/421/425/429, refresh 가능한 401의 구분
 
 ## 출처
 
 - [Exponential Backoff and Jitter — AWS Architecture Blog, Marc Brooker](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/)
 - [Timeouts, retries, and backoff with jitter — Amazon Builders' Library, Marc Brooker](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/)
+- [RFC 9110, 408 Request Timeout and Retry-After](https://www.rfc-editor.org/rfc/rfc9110)
+- [RFC 6585, 429 Too Many Requests](https://www.rfc-editor.org/rfc/rfc6585.html#section-4)
 
 ## 관련 문서
 

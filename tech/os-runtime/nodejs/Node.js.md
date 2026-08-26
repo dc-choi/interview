@@ -225,12 +225,12 @@ Promise의 정적 메서드를 통해서도 비동기처리를 할 수 있습니
 ## 개발 vs 프로덕션
 ```
 Node.js 자체에는 개발과 프로덕션 간의 차이가 없다.
-그러나 npm 라이브러리들이 NODE_ENV를 인식하므로, 항상 NODE_ENV=production으로 실행해야 한다.
+NODE_ENV는 Node.js 자체의 예약된 동작이 아니라 애플리케이션, 프레임워크와 라이브러리가 해석하는 관례다.
 ```
 
-**NODE_ENV가 안티패턴으로 간주되는 이유**: 개발자들이 최적화와 소프트웨어 동작을 실행 환경과 결합하면, 프로덕션과 스테이징이 달라져 신뢰할 수 있는 테스트가 불가능해진다.
+프로덕션 배포에서는 사용하는 프레임워크나 라이브러리가 요구하는 경우에만 `NODE_ENV=production`을 명시하고, 스테이징과 테스트는 목적에 맞는 값을 의도적으로 설정한다. 값의 의미와 배포 절차는 애플리케이션이 문서화해야 한다.
 
-**권장**: 모든 환경에서 동일한 코드 로직 유지. 환경별 설정은 환경 변수나 설정 파일로 관리.
+**권장**: 최적화나 비즈니스 동작을 실행 환경과 무심코 결합하지 말고, 필요한 환경별 설정만 별도 환경 변수나 설정 파일로 관리한다. 프로덕션과 같은 경로가 필요한 검증은 별도 배포 설정으로 재현한다.
 
 ## Userland Migrations
 ```
@@ -291,4 +291,5 @@ npx codemod @nodejs/import-assertions-to-attributes   # 실제 마이그레이�
 
 - [Node.js, Don't Block the Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)
 - [Node.js Node-API](https://nodejs.org/api/n-api.html)
+- [Node.js, Environment Variables](https://nodejs.org/api/environment_variables.html)
 - [ECMAScript Jobs and Promise reactions](https://tc39.es/ecma262/)

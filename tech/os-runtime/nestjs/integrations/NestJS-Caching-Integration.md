@@ -23,7 +23,7 @@ NestJS의 **Interceptor, Decorator, Provider, Module** 메커니즘으로 캐시
 ## 공식 CacheModule 메커니즘 (@nestjs/cache-manager)
 
 - `CacheModule.register()` — 기본 인메모리. 저장 값은 structured clone 알고리즘이 지원하는 타입만.
-- 수동 조작: `@Inject(CACHE_MANAGER) private cache: Cache` 주입 후 `get`(미존재 시 undefined 반환 — cache-manager v6 이전엔 null이었으므로 마이그레이션 시 둘 다 falsy로 취급), `set(key, value, ttl)` — **TTL 단위는 밀리초**, `ttl 0`이면 만료 없음, `del`, `clear`.
+- 수동 조작: `@Inject(CACHE_MANAGER) private cache: Cache` 주입 후 `get`(미존재 시 현재 버전은 `undefined`, cache-manager v6 이하에서는 `null`. 마이그레이션 호환이 필요하면 `value == null`로 두 miss 값만 확인하고 `0`, `false`, 빈 문자열 같은 유효한 hit를 일반 falsy 검사로 버리지 않는다), `set(key, value, ttl)` — **TTL 단위는 밀리초**, `ttl 0`이면 만료 없음, `del`, `clear`.
 - `CacheInterceptor` 자동 응답 캐시 — **GET 엔드포인트만** 캐시되고, `@Res()`를 주입한 라우트는 사용 불가. **GraphQL에서는 인터셉터가 필드 리졸버마다 실행되므로 CacheModule이 제대로 동작하지 않는다** (공식 경고).
 - 캐시 키는 HTTP에선 요청 URL 기준 — Authorization 헤더별 분리 같은 커스텀은 `CacheInterceptor`를 상속해 `trackBy(context)`를 오버라이드.
 - `@CacheKey`, `@CacheTTL`로 라우트별 오버라이드. WebSocket/마이크로서비스 핸들러에도 적용 가능하지만 그땐 `@CacheKey` 명시가 필수.
@@ -78,7 +78,7 @@ NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인
 
 ## 패턴 6 — 메트릭 노출 (Prometheus)
 
-`CacheMetricsService`가 hits, misses, latencies(p50, p95, p99), topMissedKeys 추적, `/metrics` 엔드포인트에서 `cache_hit_rate`, `cache_requests_total`, `cache_latency_p99` 등을 Prometheus 형식으로 노출. 운영 알람: hit_rate < 0.7면 도입 가치 재검토 ([[Cache-Decision]]), p99 폭증은 Redis 부하, 네트워크, topMissedKeys 동일 키 반복은 무효화 누락 의심.
+`CacheMetricsService`가 hits, misses, latencies(p50, p95, p99), topMissedKeys 추적, `/metrics` 엔드포인트에서 `cache_hit_rate`, `cache_requests_total`, `cache_latency_p99` 등을 Prometheus 형식으로 노출. 운영 판단은 워크로드별 기준선과 목표 대비 hit rate가 지속 하락할 때 캐시 도입 가치, 키, TTL을 재검토한다 ([[Cache-Decision]]). p99 급등은 Redis 부하나 네트워크를, topMissedKeys의 동일 키 반복은 무효화 누락을 의심할 신호다.
 
 ## NestJS 특이 주의점
 

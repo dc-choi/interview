@@ -3,7 +3,7 @@ tags: [runtime, nodejs, error-handling, async]
 status: done
 category: "OS & Runtime"
 aliases: ["Node.js Error Handling", "uncaughtException", "Error-First Callback"]
-verified_at: 2026-07-21
+verified_at: 2026-08-26
 ---
 
 # Node.js Error Handling
@@ -83,12 +83,17 @@ try {
 ## EventEmitter 에러
 
 ```ts
-const stream = fs.createReadStream('file.txt');
-stream.on('error', err => logger.error(err));   // 필수
-stream.pipe(dest);
+import { pipeline } from 'node:stream/promises';
+
+try {
+  await pipeline(fs.createReadStream('file.txt'), dest);
+} catch (err) {
+  logger.error(err);   // source와 destination 어느 쪽의 실패도 여기로 온다.
+  throw err;
+}
 ```
 
-`'error'` 리스너 0개인 EventEmitter가 에러 emit하면 **즉시 throw → 프로세스 종료**. Stream, net.Socket, child_process 모두 EventEmitter라 동일.
+`'error'` 리스너 0개인 EventEmitter가 에러 emit하면 **즉시 throw → 프로세스 종료**. Stream, net.Socket, child_process 모두 EventEmitter라 동일하다. 스트림을 연결할 때는 한쪽 리스너만 다는 대신 `pipeline()`으로 전체 체인의 오류 전파와 정리를 맡긴다.
 
 ## 전역 핸들러 — 마지막 안전망
 
@@ -147,18 +152,15 @@ export class NotFoundError extends AppError {
 ## AbortController, Timeout
 
 ```ts
-const ac = new AbortController();
-setTimeout(() => ac.abort(), 5000);
-
 try {
-  const res = await fetch(url, { signal: ac.signal });
+  const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
 } catch (err) {
-  if (err.name === 'AbortError') { /* 타임아웃 */ }
+  if (err instanceof DOMException && err.name === 'TimeoutError') { /* 타임아웃 */ }
   else throw err;
 }
 ```
 
-`fs.promises`, `fetch`, `http`가 AbortSignal 지원. 타임아웃, 취소 표준 모델.
+`fetch`와 여러 Node.js 비동기 API가 AbortSignal을 받는다. 지원 여부는 API별 시그니처를 확인한다. 호출자가 직접 취소할 때는 `AbortController`, 단순 deadline에는 타이머 정리가 필요 없는 `AbortSignal.timeout()`을 쓸 수 있다.
 
 ## 흔한 실수
 
@@ -193,3 +195,5 @@ try {
 ## 출처
 
 - [Node.js Process API](https://nodejs.org/api/process.html)
+- [Node.js Stream API, `pipeline()`](https://nodejs.org/api/stream.html#streampipelinesource-transforms-destination-callback)
+- [Node.js Globals API, `AbortSignal.timeout()`](https://nodejs.org/api/globals.html#static-method-abortsignaltimeoutdelay)

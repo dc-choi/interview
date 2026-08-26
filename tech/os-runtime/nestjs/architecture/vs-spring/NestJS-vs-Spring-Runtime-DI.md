@@ -3,6 +3,7 @@ tags: [nestjs, spring, framework, comparison]
 status: done
 category: "OS - Runtime - NestJS"
 aliases: ["NestJS vs Spring 런타임과 DI", "NestJS Spring 모듈 구조 비교"]
+verified_at: 2026-08-26
 ---
 
 # NestJS vs Spring: 런타임과 DI, 모듈 구조
@@ -29,8 +30,9 @@ aliases: ["NestJS vs Spring 런타임과 DI", "NestJS Spring 모듈 구조 비�
 
 ### NestJS
 - **`@Module` 단위 선언** — 각 모듈이 `providers`, `controllers`, `imports`, `exports`를 명시
-- 주입 방식: **TypeScript constructor 매개변수** + 타입 정보를 `reflect-metadata`로 런타임에 읽음
-- **런타임 데코레이터 처리** — `emitDecoratorMetadata: true` 필요
+- 주입 방식: **constructor token** 기반. 클래스 타입 주입은 자동 생성된 설계 타입 메타데이터를 읽고, 문자열이나 심벌 같은 사용자 정의 token은 `@Inject()`로 명시
+- `@Injectable()`은 클래스를 Nest IoC 컨테이너가 관리할 수 있다는 메타데이터를 붙인다. 실제 provider 등록은 `@Module({ providers: [...] })`가 담당
+- 기존 TypeScript 데코레이터 모드에서 constructor 타입을 자동 추론하려면 `emitDecoratorMetadata`와 `reflect-metadata`가 필요하다. 명시적 token 주입은 자동 타입 추론과 구분한다
 - 스코프: `DEFAULT`(싱글턴, 기본), `REQUEST`, `TRANSIENT`
 
 두 프레임워크 모두 "생성자 주입 + 싱글턴 기본"이라는 핵심 패턴을 공유. NestJS는 **모듈 단위로 제공자 가시성을 명시**해야 하는 점이 Spring의 자동 스캔보다 더 엄격.
@@ -53,14 +55,18 @@ NestJS는 의존 그래프가 **코드로 명시**되어 추적이 쉬운 반면
 
 | 축 | Java 어노테이션 | TypeScript 데코레이터 |
 |---|---|---|
-| 처리 시점 | **컴파일 + 런타임 리플렉션** | **런타임에만** (transpile 시 `__decorate` 호출로 변환) |
-| 메타데이터 접근 | `Reflection API` 표준 | `reflect-metadata` 라이브러리 |
-| 표준 지위 | JLS 표준 | TC39 **Stage 3** (2024+ 정식 표준화 중) |
-| 타겟 | 클래스, 메서드, 필드, 파라미터 등 | 클래스, 메서드, 접근자, 속성, 파라미터 |
+| 처리 시점 | 컴파일 처리와 런타임 리플렉션 | transpile된 데코레이터 함수가 클래스 정의 시 실행 |
+| 메타데이터 접근 | `Reflection API` 표준 | Nest의 기존 모드는 `reflect-metadata` 사용 |
+| 표준 지위 | JLS 표준 | Nest가 쓰는 기존 TypeScript 데코레이터와 TypeScript 5.0 이후 표준 데코레이터는 의미론이 다름 |
+| 타겟 | 클래스, 메서드, 필드, 파라미터 등 | 기존 TypeScript 모드에서 클래스, 메서드, 접근자, 속성, 파라미터 |
 
-NestJS의 데코레이터는 TypeScript의 `experimentalDecorators` + `emitDecoratorMetadata` 컴파일러 옵션에 의존. 최신 TC39 Stage 3 데코레이터는 의미론이 약간 달라 NestJS가 점진적 전환 중.
+NestJS의 일반적인 TypeScript 설정은 기존 `experimentalDecorators` 모드를 사용한다. `emitDecoratorMetadata`는 장식된 선언의 설계 타입 정보를 추가로 내보내 constructor 타입 기반 주입에 쓰인다. 반면 `@SetMetadata()` 같은 데코레이터는 지정한 key/value를 직접 기록하므로 그 명시적 메타데이터 자체가 자동 설계 타입 생성에 의존하지 않는다.
 
 ## 출처
 
 - [Node.js — Don't block the event loop (or the worker pool)](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)
 - [Spring Framework — Spring WebFlux Overview (Concurrency Model, Performance)](https://docs.spring.io/spring-framework/reference/web/webflux/new-framework.html)
+- [NestJS, Providers](https://docs.nestjs.com/providers)
+- [NestJS, Custom decorators](https://docs.nestjs.com/custom-decorators)
+- [TypeScript, Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
+- [TypeScript, emitDecoratorMetadata](https://www.typescriptlang.org/tsconfig/emitDecoratorMetadata.html)

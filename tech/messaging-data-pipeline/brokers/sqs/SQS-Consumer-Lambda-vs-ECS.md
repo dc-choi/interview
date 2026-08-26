@@ -16,20 +16,20 @@ aliases: ["SQS Consumer Lambda vs ECS", "Lambda vs ECS 워커", "SQS 컨슈머 �
 | 축 | Lambda (ESM) | ECS 워커 (NestJS) |
 |---|---|---|
 | 제어권 | ESM이 폴링, 배치, 삭제를 위임 처리. 1건 처리 로직만 | Receive long-polling 루프와 Delete를 직접. 프리페치, 동시성, 백프레셔, 종료까지 손안 |
-| 스케일링 | 메시지 양 따라 자동, **scale-to-zero**(유휴 0원) | Task 수를 직접 오토스케일(backlog-per-task). 컨테이너 시작 지연, scale-to-zero 까다로움 |
-| 실행 시간 | **최대 15분** | 무제한 (수 시간 작업 OK) |
+| 스케일링 | 메시지 양 따라 자동, Lambda compute는 **scale-to-zero** | Task 수를 직접 오토스케일(backlog-per-task). 컨테이너 시작 지연, scale-to-zero 까다로움 |
+| 실행 시간 | 호출당 **최대 15분** | 호출당 플랫폼 상한은 없지만 task lifecycle과 배포 종료 예산은 있음 |
 | 콜드 스타트 | 있음. NestJS DI 부팅 + Prisma 엔진 로딩으로 더 아픔 | 떠 있으면 콜드 스타트 없음, 첫 메시지부터 저지연 |
-| 비용 | invocation + GB초. 간헐적이면 압도적으로 쌈 | task 떠있는 시간만큼. 꾸준한 고처리량이면 더 쌈(EC2 Spot 더↓) |
+| 비용 | invocation + GB초. 간헐적 workload에 유리할 수 있음 | task 실행 시간 과금. 꾸준한 고처리량에 유리할 수 있음(EC2 Spot 선택 가능) |
 | DB 커넥션 | 인스턴스마다 커넥션 → 스케일아웃 시 RDS 고갈 위험 | task 수 × 풀로 총 커넥션 정밀 제어 |
-| 코드 재사용 | 가벼운 핸들러에 적합. 무거운 도메인은 궁합 X | 기존 NestJS 모듈, DI, Prisma, 도메인 서비스 그대로 재사용 |
-| 운영 부담 | 패치, 스케일, 가용성 모두 AWS. 거의 0 | task 정의, 오토스케일 정책, 헬스체크, 배포, ECR 이미지 관리 |
+| 코드 재사용 | 가벼운 핸들러에 적합. NestJS 모듈도 쓸 수 있지만 package 크기, cold start와 connection 비용을 확인 | 기존 NestJS 모듈, DI, Prisma, 도메인 서비스 그대로 재사용 |
+| 운영 부담 | 인프라 부담은 낮지만 IAM, ESM 동시성, DLQ, alarm과 실패 처리는 필요 | task 정의, 오토스케일 정책, 헬스체크, 배포, ECR 이미지 관리 |
 
 ## Prisma/RDS 커넥션이 갈림길이 되는 이유
 
 실무에서 가장 자주 간과되는 축이다.
 
 - **Lambda**: 인스턴스마다 자기 커넥션을 연다. 분당 300개씩 스케일아웃하면 순식간에 **RDS 커넥션을 고갈**시킨다(Lambda + Prisma + RDS의 고전적 사고). 막으려면 **RDS Proxy**를 끼우거나 maximum concurrency로 빡세게 제한.
-- **ECS**: `task 5개 × 풀 10 = 최대 50 커넥션`처럼 총량이 **예측 가능**. 백프레셔도 동시 처리 개수(`Promise.all` 묶음)로 직관적으로 조절. 다운스트림 보호는 명백히 ECS가 쉽다.
+- **ECS**: `task 5개 × 풀 10 = 최대 50 커넥션`처럼 오토스케일 상한 안에서 총량을 예측할 수 있다. 백프레셔도 동시 처리 개수(`Promise.all` 묶음)로 직접 조절한다. Lambda도 ESM maximum concurrency, reserved concurrency와 RDS Proxy로 제한할 수 있으므로, 핵심 차이는 제어 수단과 운영 방식이다.
 
 ## NestJS 워커 컨슈머 골격
 
@@ -38,27 +38,54 @@ aliases: ["SQS Consumer Lambda vs ECS", "Lambda vs ECS 워커", "SQS 컨슈머 �
 ```typescript
 import { Injectable, OnApplicationShutdown, Logger } from '@nestjs/common';
 import { SQSClient, ReceiveMessageCommand, ChangeMessageVisibilityCommand, DeleteMessageCommand, Message } from '@aws-sdk/client-sqs';
+import { setTimeout as delay } from 'node:timers/promises';
 
 @Injectable()
 export class OrderConsumer implements OnApplicationShutdown {
   private readonly sqs = new SQSClient({ region: 'ap-northeast-2' });
+  private readonly logger = new Logger(OrderConsumer.name);
   private readonly queueUrl = process.env.QUEUE_URL!;
-  private running = true;
-  private inFlight = 0;
+  private readonly receiveAbort = new AbortController();
+  private receiveLoop?: Promise<void>;
 
-  async start() {
-    while (this.running) {
+  constructor(private readonly orderService: OrderService) {}
+
+  start() {
+    if (this.receiveLoop) return;
+    this.receiveLoop = this.poll();
+    void this.receiveLoop.catch((error) => this.logger.error(error));
+  }
+
+  private async poll() {
+    let consecutiveReceiveFailures = 0;
+    while (!this.receiveAbort.signal.aborted) {
       const receiveStartedAt = Date.now();
-      const { Messages } = await this.sqs.send(new ReceiveMessageCommand({
-        QueueUrl: this.queueUrl, MaxNumberOfMessages: 10, WaitTimeSeconds: 20, // long polling
-      }));
+      let Messages: Message[] | undefined;
+      try {
+        ({ Messages } = await this.sqs.send(new ReceiveMessageCommand({
+          QueueUrl: this.queueUrl, MaxNumberOfMessages: 10, WaitTimeSeconds: 20, // long polling
+        }), { abortSignal: this.receiveAbort.signal }));
+      } catch (error) {
+        if (this.receiveAbort.signal.aborted) return;
+        consecutiveReceiveFailures++;
+        const ceilingMs = Math.min(30_000, 500 * 2 ** Math.min(consecutiveReceiveFailures - 1, 6));
+        this.logger.error(error);
+        try {
+          await delay(Math.random() * ceilingMs, undefined, { signal: this.receiveAbort.signal });
+        } catch (delayError) {
+          if (this.receiveAbort.signal.aborted) return;
+          throw delayError;
+        }
+        continue;
+      }
+      consecutiveReceiveFailures = 0;
+      if (this.receiveAbort.signal.aborted) return;
       if (!Messages?.length) continue;
       await Promise.all(Messages.map((m) => this.handle(m, receiveStartedAt))); // task당 동시 처리 = 백프레셔
     }
   }
 
   private async handle(message: Message, receiveStartedAt: number) {
-    this.inFlight++;
     try {
       const result = await this.orderService.process(JSON.parse(message.Body!));
       if (result.kind === 'BUSY') {
@@ -77,15 +104,29 @@ export class OrderConsumer implements OnApplicationShutdown {
       }));
     } catch (e) {
       this.logger.error(e); // 삭제 안 함 → SQS가 재시도, 결국 DLQ
-    } finally { this.inFlight--; }
+    }
   }
 
   async onApplicationShutdown() { // SIGTERM(배포, 스케일인) → graceful
-    this.running = false;
-    while (this.inFlight > 0) await new Promise((r) => setTimeout(r, 200)); // in-flight 소진 대기
+    this.receiveAbort.abort();
+    let deadline: NodeJS.Timeout | undefined;
+    try {
+      await Promise.race([
+        this.receiveLoop ?? Promise.resolve(),
+        new Promise<never>((_, reject) => {
+          deadline = setTimeout(() => reject(new Error('SQS consumer drain timed out')), 25_000);
+          deadline.unref();
+        }),
+      ]);
+    } finally {
+      if (deadline) clearTimeout(deadline);
+      this.sqs.destroy();
+    }
   }
 }
 ```
+
+수신 오류는 루프 안에서 full jitter 지수 백오프로 다시 시도하고, 대기 상한은 30초로 제한한다. 종료 시에는 같은 `AbortSignal`로 백오프와 long poll을 먼저 중단하고 `receiveLoop`를 기다린다. 루프가 현재 배치의 `Promise.all`까지 포함하므로 이미 시작한 handler도 함께 drain된다. 25초 안에 끝나지 않으면 hook을 실패시켜 상위 프로세스의 전체 종료 제한이 강제 종료를 맡게 한다.
 
 `orderService.process()`의 반환 계약도 ACK의 일부다. 새로 `COMPLETED`가 됐거나 이미 `COMPLETED`인 경우만 `ACK`, 다른 owner의 신선한 `PROCESSING`은 남은 lease와 jitter가 반영된 `deferUntil`을 포함한 `BUSY`를 반환한다. 컨슈머는 `BUSY`면 visibility만 연장하고 삭제하지 않는다. 연장값은 `ReceiveMessage` 요청 직전부터 흐른 시간을 12시간에서 빼고 1초 여유를 둔 남은 한도 이하로 제한한다. 더 긴 lease는 다음 수신에서 다시 미루며, 그 수신도 `maxReceiveCount` 예산에 포함한다. 상세 상태 전이는 [[At-Least-Once|At-Least-Once]]를 따른다.
 
@@ -107,3 +148,6 @@ export class OrderConsumer implements OnApplicationShutdown {
 ## 출처
 
 - [AWS 공식 문서, Amazon SQS event source for Lambda](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html)
+- [AWS 공식 문서, Lambda timeout](https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html)
+- [AWS 공식 문서, SQS event source mapping 구성과 maximum concurrency](https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-configure.html)
+- [AWS SDK for JavaScript v3, AbortController](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/introduction/)

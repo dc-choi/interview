@@ -15,7 +15,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 |---|---|---|---|
 | **Cache-Aside (Look-Aside)** | 읽기 | 앱이 캐시, DB를 직접 조율 | 범용, 가장 흔함 |
 | **Read-Through** | 읽기 | 캐시가 미스 시 자동으로 DB 조회 | 캐시 라이브러리 제공 시 |
-| **Write-Through** | 쓰기 | 쓰기를 캐시와 DB 동시에 (동기) | 일관성 필수, 재사용 확실 |
+| **Write-Through** | 쓰기 | 앱이 DB와 캐시 갱신을 조율 | 최신성 요구와 복구 경로가 명확한 데이터 |
 | **Write-Around** | 쓰기 | DB에만 쓰고 캐시는 건너뜀 | 쓰고 나서 거의 안 읽는 데이터 |
 | **Write-Back (Write-Behind)** | 쓰기 | 캐시에 쓰고 DB는 비동기 | 쓰기 성능 최우선 |
 
@@ -68,17 +68,17 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 
 **흐름**
 1. 앱이 쓰기 요청
-2. 캐시에 저장 + DB에 저장 (둘 다 성공해야 완료)
-3. 응답
+2. DB와 캐시를 정해진 순서로 갱신
+3. 요구된 쓰기가 성공하면 응답
 
 **장점**
-- 캐시-DB **강한 일관성** (읽을 때 항상 최신)
-- Read-Through와 조합 시 캐시 미스 자체가 거의 없어짐
+- 성공한 쓰기 뒤 캐시를 미리 채워 즉시 재사용되는 데이터의 miss를 줄일 수 있음
+- Read-Through와 조합하면 동일한 적재 경로를 유지하기 쉬움
 
 **단점**
 - 매 쓰기가 두 저장소 대기 → 지연 증가
 - **재사용되지 않는 데이터도 캐시에 저장** → 리소스 낭비 (TTL 설계 필수)
-- 한쪽 실패 시 롤백, 재시도 로직 필요
+- 두 저장소에 공통 트랜잭션이 없으면 장애, 재시도, 순서 역전으로 stale 캐시가 남을 수 있음. 원본 저장소, 재시도, 재조정과 필요하면 버전 또는 조건부 갱신을 함께 설계해야 함
 
 ### 4. Write-Around — DB에만 쓰고 캐시 건너뜀
 
@@ -115,7 +115,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 | 데이터 특성 | 권장 전략 |
 |---|---|
 | 읽기 중심, 일관성 적당히 | **Cache-Aside + TTL** |
-| 읽기, 쓰기 모두 많고 일관성 필수 | **Read-Through + Write-Through** |
+| 읽기, 쓰기 모두 많고 최신성 요구가 큼 | **Read-Through + Write-Through**, 단 실패 복구와 원자성 경계를 명시 |
 | 쓰고 나서 잘 안 읽히는 로그, 시계열 | **Write-Around** |
 | 쓰기 폭주 + 즉시 DB 반영 불필요 | **Write-Back** (단, 손실 허용) |
 | 사용자 프로필, 설정 (읽기 중심, 가끔 갱신) | **Cache-Aside + 쓰기 시 캐시 무효화** |
@@ -124,7 +124,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 ## 실무 고려사항
 
 - **TTL 설계**: 얼마나 stale이 허용되는가? 프로필은 분, 뉴스는 초, 재고는 즉시
-- **캐시 무효화 전략** — 쓰기 시 `DEL`/`EVICT`를 꼭 호출해야 일관성 유지 (자세한 건 [[Cache-Invalidation]])
+- **캐시 무효화 전략** — 쓰기와 `DEL`/`EVICT`의 실패, 재시도, 재조정을 함께 설계해야 stale 노출을 제한할 수 있음 (자세한 건 [[Cache-Invalidation]])
 - **Cache Stampede 방지** — 인기 키 만료 시 동시 쿼리 폭주. Jitter TTL, Request Coalescing, probabilistic refresh ([[Cache-Stampede]])
 - **Hot Key 분산** — 특정 키에 트래픽 집중 시 샤딩, 로컬 캐시 추가 ([[Hot-Key]])
 - **캐시 크기, Eviction 정책** — LRU, LFU, ARC 선택. 메모리 부족 시 제거 순서 결정
@@ -132,7 +132,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 
 ## 흔한 실수
 
-- **Write-Through 없이 쓰기 후 캐시 무효화 누락** → stale 영구 노출
+- **쓰기 후 캐시 무효화 누락** → TTL이 없으면 stale 값이 계속 남고, TTL이 있어도 만료 전까지 노출
 - **Write-Back에 중요 데이터 사용** → 장애 시 손실
 - **모든 쿼리에 캐시** → 재사용 없는 데이터까지 올려 메모리 낭비 (Write-Around 미사용)
 - **무한 TTL** → 잊혀진 데이터가 메모리 점유
@@ -144,7 +144,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 
 - **5가지 전략**의 동작 원리와 선택 기준
 - **Cache-Aside vs Read-Through** 차이 (앱이 관리 vs 캐시 라이브러리가 관리)
-- **Write-Through vs Write-Back** 트레이드오프 (일관성 vs 쓰기 성능)
+- **Write-Through vs Write-Back** 트레이드오프 (최신성 처리와 복구 비용 vs 쓰기 성능)
 - **Write-Around**가 어떤 데이터 유형에 적합한가 (로그, 시계열)
 - Cache-Aside의 **Cache Stampede** 발생 원인과 완화책
 - 전략과 **일관성, 지연, 비용** 트레이드오프
@@ -153,6 +153,8 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 ## 출처
 - [DevPill — 잘못된 캐싱 전략이 당신의 서비스를 망치고 있습니다](https://maily.so/devpill/posts/8do7dxleogq)
 - [Inpa Dev — Redis 캐시 설계 전략 지침 총정리](https://inpa.tistory.com/entry/REDIS-%F0%9F%93%9A-%EC%BA%90%EC%8B%9CCache-%EC%84%A4%EA%B3%84-%EC%A0%84%EB%9E%B5-%EC%A7%80%EC%B9%A8-%EC%B4%9D%EC%A0%95%EB%A6%AC)
+- [Redis, Transactions](https://redis.io/docs/latest/develop/using-commands/transactions/)
+- [Redis, Client-side caching](https://redis.io/docs/latest/develop/clients/client-side-caching/)
 
 ## 관련 문서
 - [[Cache-Basics|캐시 기초]]

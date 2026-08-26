@@ -135,9 +135,8 @@ Node.js는 적은 수의 스레드로 많은 클라이언트를 처리. 두 가�
 
 ## NODE_ENV
 
-- NODE_ENV를 production으로 설정하면:
-  - express: 로깅 최소화, 더 많은 캐싱, 템플릿 엔진 캐시
-  - 많은 라이브러리가 NODE_ENV를 인식하여 최적화 적용
+- `NODE_ENV`는 Node.js 자체의 예약 동작이 아니라 애플리케이션과 라이브러리가 해석하는 관례다.
+- Express 같은 일부 라이브러리는 `production`일 때 캐시나 오류 출력 방식을 바꾸므로, 사용하는 버전의 실제 동작을 확인하고 배포 설정에 명시한다.
 
 ## 관련 문서
 - [[Event-Loop|Node.js Event Loop]]
