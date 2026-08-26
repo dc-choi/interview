@@ -1,6 +1,7 @@
 ---
 tags: [architecture, oop, rdd, grasp, responsibility]
 status: done
+verified_at: 2026-08-26
 category: "Architecture - OOP"
 aliases: ["Responsibility-Driven Design", "책임 주도 설계", "GRASP"]
 ---

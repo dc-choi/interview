@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, circular-dependency, di, architecture]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["forwardRef 지연 평가", "ModuleRef Lazy Loading"]
 ---
@@ -29,13 +30,13 @@ export class UserModule {}
 
 관계의 **양쪽 모두** forwardRef를 걸어야 한다 — 프로바이더면 양쪽 서비스 모두 `@Inject(forwardRef)`, 모듈이면 양쪽 imports 모두. 한쪽만 걸면 메타데이터가 부족해 인스턴스화에 실패한다.
 
-### 함정 — 생성자 시점 사용 금지
+### 함정 — 생성자 순서에 의존하지 않기
 
-forwardRef로 들어온 의존성은 **constructor 종료 시점엔 미해결**일 수 있어 필드 초기화, constructor 본문에서 즉시 호출하면 `undefined`. **메서드 호출 시점**까지 미루면 안전. 두 클래스의 인스턴스화 순서 자체가 비결정이므로, 어느 쪽 생성자가 먼저 불리는지에 의존하는 코드도 금지.
+`forwardRef()` 자체가 싱글턴 의존성을 생성자 안에서 `undefined`로 만드는 것은 아니다. 다만 두 클래스의 인스턴스화 순서는 비결정이므로, 어느 쪽 생성자가 먼저 실행되는지나 상대 객체의 초기화 완료를 가정하는 부작용은 두지 않는다. `Scope.REQUEST`가 포함된 순환 의존성은 `undefined` 의존성으로 이어질 수 있으므로 피한다.
 
 ## 2. ModuleRef — Lazy Loading
 
-`ModuleRef`를 주입받아 `OnModuleInit` 시점에 직접 해결. 의존성을 컴파일 타임 그래프에서 제거.
+`ModuleRef`를 주입받아 `OnModuleInit` 시점에 직접 해결. 생성자 DI의 직접 간선을 런타임 조회로 바꾼다.
 
 ```ts
 @Injectable()

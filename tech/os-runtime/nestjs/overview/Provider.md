@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nestjs]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime"
 aliases: ["Provider"]
 ---
@@ -16,7 +17,7 @@ Provider의 핵심 아이디어는 종속성으로 주입되어 객체가 서로
 
 이 전에는 Controller에 대해 알아보았습니다. Controller는 HTTP 요청을 처리하고 더 복잡한 작업을 Provider에게 위임해야 합니다.
 
-Provider는 NestJS 모듈에서 Provider로 선언된 클래스입니다.
+Provider는 NestJS 모듈의 `providers`에 등록하는 DI 항목입니다. 클래스뿐 아니라 값, 팩토리, 별칭도 Provider가 될 수 있습니다.
 
 자세한 내용은 'Modules' 챕터를 참조하세요.
 
@@ -42,7 +43,7 @@ Nest는 Dependency Injection이라는 강력한 디자인 패턴을 기반으로
 
 [공식 Angular 문서](https://angular.dev/guide/di)에서 이 개념에 대한 훌륭한 글을 읽어보실 것을 적극 권장합니다.
 
-Nest에서는 TypeScript의 기능 덕분에 종속성이 유형에 따라 해결되므로 종속성 관리가 간단합니다.
+Nest에서는 클래스 Provider를 생성자 매개변수의 런타임 타입 메타데이터로 해결합니다. 문자열이나 Symbol 같은 커스텀 토큰은 `@Inject(token)`으로 명시합니다.
 
 Nest는 Service의 인스턴스를 생성하고 반환하여(또는 싱글톤의 경우 다른 곳에서 이미 요청된 경우 기존 인스턴스를 반환하여) Service를 해결합니다.
 

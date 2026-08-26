@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, event-emitter, event-driven, decoupling]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Events", "@nestjs/event-emitter", "OnEvent"]
 ---

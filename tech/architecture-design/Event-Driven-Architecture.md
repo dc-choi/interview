@@ -67,7 +67,7 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
 - **사실 기반 이벤트** — 동사 과거형 (`OrderPlaced`, `PaymentReceived`, `ProductRecycled`)
 - **Zero Payload 전략** — ID만 발행, Consumer가 Source of Truth 재조회
   - 트레이드오프: 조회 1회 추가
-  - 이점: 순서 무관, 스키마 안정, 조회 시점의 최신 상태
+  - 이점: 오래된 payload 완화, 스키마 안정, 조회 시점의 최신 상태. 순서 자체는 보장하지 않음
 
 **결과**: 새 구독자 추가 시 발행자 수정 X. 결합도 진짜 낮아짐.
 
@@ -77,10 +77,10 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
 
 **해결**:
 - **FIFO + MessageGroupId** — 특정 키 단위 순서 보장 (SQS FIFO, Kafka 파티션 키). 처리량은 그룹별 병렬
-- **Zero Payload** — 순서 무의미하게 만듦 (최신 상태 재조회)
-- **idempotent processing** — 같은 키 재처리해도 동일 결과
+- **Zero Payload** — 오래된 payload 완화. 순서 보장은 아님 ([[Transactional-Outbox]])
+- **version/order guard + idempotent processing** — 오래된 이벤트 거부, 같은 키 재처리 흡수
 
-**결정**: 진짜 순서가 필요한가? 대부분의 경우 Zero Payload + idempotent로 우회 가능.
+**결정**: 현재 상태만 필요하면 Zero Payload + idempotent를 검토한다. 상태 전이나 외부 효과는 source version 또는 순서 조건을 함께 둔다.
 
 ### 층 6: 분산 트랜잭션 (Distributed Transactions)
 

@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nestjs, validation, dto, class-validator]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime"
 aliases: ["Validation", "ValidationPipe 딥다이브", "Mapped Types"]
 ---

@@ -8,11 +8,13 @@ aliases: ["파일 시스템"]
 
 # 파일 시스템
 
+아래 코드 블록은 각각 Node.js ESM `.mjs` 파일 하나로 저장해 실행한다. `/path/to/...` 경로는 실제 존재하는 파일이나 폴더로 바꾼다.
+
 ## 파일 상태 (Stats)
 ```js
-const fs = require('node:fs/promises');
+import { stat } from 'node:fs/promises';
 
-const stats = await fs.stat('/path/to/file.txt');
+const stats = await stat('/path/to/file.txt');
 stats.isFile();          // true
 stats.isDirectory();     // false
 stats.isSymbolicLink();  // false
@@ -21,7 +23,8 @@ stats.size;              // 바이트 단위 파일 크기
 
 ## 파일 경로 (Path)
 ```js
-const path = require('node:path');
+import * as path from 'node:path';
+
 const notes = '/users/joe/notes.txt';
 
 path.dirname(notes);    // /users/joe
@@ -37,22 +40,23 @@ path.normalize('/users/joe/..//test.txt');      // /users/test.txt
 
 ## 파일 읽기
 ```js
+import { createReadStream, readFile, readFileSync } from 'node:fs';
+import { readFile as readFileAsync } from 'node:fs/promises';
+
 // 비동기 (콜백)
-const fs = require('node:fs');
-fs.readFile('/path/to/file.txt', 'utf8', (err, data) => {
+readFile('/path/to/file.txt', 'utf8', (err, data) => {
   if (err) { console.error(err); return; }
   console.log(data);
 });
 
 // 동기
-const data = fs.readFileSync('/path/to/file.txt', 'utf8');
+const data = readFileSync('/path/to/file.txt', 'utf8');
 
 // Promise 기반
-const fsPromises = require('node:fs/promises');
-const data2 = await fsPromises.readFile('/path/to/file.txt', { encoding: 'utf8' });
+const data2 = await readFileAsync('/path/to/file.txt', { encoding: 'utf8' });
 
 // 스트림 (큰 파일 - 메모리 효율)
-const readStream = fs.createReadStream('/path/to/file.txt', { encoding: 'utf8' });
+const readStream = createReadStream('/path/to/file.txt', { encoding: 'utf8' });
 for await (const chunk of readStream) {
   console.log(chunk);
 }
@@ -60,14 +64,16 @@ for await (const chunk of readStream) {
 
 ## 파일 쓰기
 ```js
+import { appendFile, writeFile } from 'node:fs/promises';
+
 // 기본 (파일이 존재하면 덮어씀)
-await fsPromises.writeFile('/path/to/file.txt', 'content');
+await writeFile('/path/to/file.txt', 'content');
 
 // 파일에 내용 추가 (append)
-await fsPromises.appendFile('/path/to/file.log', 'new content');
+await appendFile('/path/to/file.log', 'new content');
 
 // 플래그 옵션으로 쓰기 모드 제어
-fs.writeFile('/path/to/file.txt', 'content', { flag: 'a+' }, err => {});
+await writeFile('/path/to/file.txt', 'content', { flag: 'a+' });
 ```
 
 | 플래그 | 설명 | 파일 생성 |
@@ -79,13 +85,14 @@ fs.writeFile('/path/to/file.txt', 'content', { flag: 'a+' }, err => {});
 
 ## 파일 디스크립터
 ```
-파일 디스크립터(fd)는 열려있는 파일에 대한 참조로, fs.open()으로 파일을 열 때 반환되는 숫자이다.
+파일 디스크립터(fd)는 열려있는 파일에 대한 숫자 참조다. callback `fs.open()`은 callback으로 fd를 넘기고, `fs/promises`의 `open()`은 fd를 관리하는 `FileHandle`을 반환한다.
 ```
 ```js
-const fsPromises = require('node:fs/promises');
+import { open } from 'node:fs/promises';
+
 let filehandle;
 try {
-  filehandle = await fsPromises.open('/path/to/file.txt', 'r');
+  filehandle = await open('/path/to/file.txt', 'r');
   console.log(filehandle.fd);
   console.log(await filehandle.readFile({ encoding: 'utf8' }));
 } finally {
@@ -95,24 +102,25 @@ try {
 
 ## 폴더 작업
 ```js
-const fs = require('node:fs');
-const path = require('node:path');
+import { lstat, mkdir, readdir, rename, rm } from 'node:fs/promises';
+import * as path from 'node:path';
 
-// 폴더 생성
-if (!fs.existsSync('/path/to/folder')) {
-  fs.mkdirSync('/path/to/folder');
-}
+// 폴더 생성. recursive로 존재 여부 확인과 생성 사이의 race를 피한다.
+await mkdir('/path/to/folder', { recursive: true });
 
 // 디렉토리 읽기 + 파일만 필터링
-const files = fs.readdirSync('/path/to/folder')
-  .map(f => path.join('/path/to/folder', f))
-  .filter(f => fs.lstatSync(f).isFile());
+const paths = (await readdir('/path/to/folder'))
+  .map(name => path.join('/path/to/folder', name));
+const files = [];
+for (const file of paths) {
+  if ((await lstat(file)).isFile()) files.push(file);
+}
 
 // 폴더 이름 변경
-await fsPromises.rename('/old/path', '/new/path');
+await rename('/old/path', '/new/path');
 
 // 폴더 제거 (내용 포함, 재귀적)
-fs.rm('/path/to/folder', { recursive: true, force: true }, err => {});
+await rm('/path/to/folder', { recursive: true, force: true });
 ```
 
 ## 파일 변경 감시
@@ -120,7 +128,7 @@ fs.rm('/path/to/folder', { recursive: true, force: true }, err => {});
 `fs.watch()`는 운영체제의 파일 변경 알림을 사용해 파일이나 디렉터리를 감시한다. 콜백의 `eventType`은 `rename` 또는 `change`이고, 반환된 `FSWatcher`를 닫아야 감시 자원이 해제된다.
 
 ```js
-const { watch } = require('node:fs');
+import { watch } from 'node:fs';
 
 const watcher = watch('./config', (eventType, filename) => {
   console.log(eventType, filename ?? '(filename unavailable)');
@@ -146,13 +154,14 @@ process.platform으로 파일 시스템 동작을 추론하지 말 것.
 
 ```js
 // 잘못된 방법
-filename = filename.toUpperCase();  // 사용자 데이터 손상!
+const filename = 'Report.txt';
+const normalized = filename.toUpperCase(); // 사용자 데이터 손상!
 
-// 올바른 방법: 비교만 정규화
-function areFilenamesEqual(name1, name2, caseSensitive) {
-  return caseSensitive ? name1 === name2 : name1.toLowerCase() === name2.toLowerCase();
-}
+// 보존할 값은 원문 그대로 둔다.
+const storedFilename = filename;
 ```
+
+`toLowerCase()` 비교만으로 두 path가 같은 file을 가리키는지 판정할 수는 없다. case folding, Unicode normalization, mount option과 file system 규칙이 다르기 때문이다. application이 논리적 이름 중복을 막아야 한다면 canonicalization과 collision 정책을 별도 contract로 정하고, 실제 target 확인에는 file system operation 결과를 사용한다.
 
 ## 관련 문서
 

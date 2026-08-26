@@ -1,13 +1,14 @@
 ---
 tags: [nestjs, lifecycle, bootstrap, hooks]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Lifecycle Hooks", "OnApplicationBootstrap", "부팅과 생명주기 훅"]
 ---
 
 # NestJS 부팅과 생명주기 훅
 
-Bootstrap 표준 형태와 생명주기 훅 6종, 훅 실행 순서를 다룬다. 전체 단계 지도는 [[NestJS-Lifecycle|라이프사이클 인덱스]], 종료 쪽은 [[NestJS-Lifecycle-Shutdown|종료와 리소스 정리]].
+Bootstrap 표준 형태와 생명주기 훅 5종, 훅 실행 순서를 다룬다. 전체 단계 지도는 [[NestJS-Lifecycle|라이프사이클 인덱스]], 종료 쪽은 [[NestJS-Lifecycle-Shutdown|종료와 리소스 정리]].
 
 ## Bootstrap 코드 표준 형태
 
@@ -28,7 +29,7 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
 
-  // Express/Fastify 미들웨어
+  // Express 어댑터의 전역 미들웨어
   app.use(helmet());
   app.use(compression());
 
@@ -48,19 +49,20 @@ bootstrap();
 
 `enableShutdownHooks()`의 역할과 함정은 [[NestJS-Lifecycle-Shutdown|종료와 리소스 정리]] 참조.
 
-## 생명주기 훅 6종
+## 생명주기 훅 5종
 
 | 훅 | 시점 | 용도 |
 |------|------|------|
 | `OnModuleInit` | 모듈의 모든 의존성 해결 직후 | DB 연결, 초기 데이터 로드 |
 | `OnApplicationBootstrap` | 모든 모듈 init 완료 후 | 외부 서비스 연결, 작업 스케줄러 시작, 다른 모듈 의존 작업 |
-| `OnModuleDestroy` | 종료 신호 수신 시 (모듈별, init 역순) | 리소스 정리, 큐 비우기 |
-| `BeforeApplicationShutdown` | 모든 OnModuleDestroy 완료(Promise resolve/reject 포함) 후, 연결 닫기(app.close()) 직전 | 종료 전 마지막 알림 (관제 통보) |
-| `OnApplicationShutdown` | 연결이 닫힌 뒤 (app.close() resolve 후) | 남은 리소스 정리, 로그 flush |
-| (signal 인자 받음) | SIGTERM/SIGINT 등 | 신호 종류별 분기 처리 |
+| `OnModuleDestroy` | `app.close()` 또는 `enableShutdownHooks()` 후 종료 신호 수신 뒤, v11에서는 init 역순 | 리소스 정리, 큐 비우기 |
+| `BeforeApplicationShutdown` | 모든 OnModuleDestroy 호출이 settle되고 실패가 기록된 후, 연결 닫기(app.close()) 직전 | 종료 전 마지막 알림 (관제 통보) |
+| `OnApplicationShutdown` | adapter와 연결 dispose 뒤, `app.close()`가 resolve되기 직전 | 남은 리소스 정리, 로그 flush |
+
+종료 신호로 실행된 종료 훅은 신호 이름을 인자로 받을 수 있다.
 
 위 훅들은 **request-scoped 클래스에는 호출되지 않는다** — 수명이 요청 단위(요청마다 생성, 응답 후 GC)라 앱 생명주기와 무관. init 계열(OnModuleInit, OnApplicationBootstrap)은 `app.init()`이나 `app.listen()`을 호출해야 트리거된다.
-훅은 async 가능 — Promise를 반환하면 Nest가 resolve/reject까지 다음 단계를 진행하지 않는다 (초기화 완료 보장에 유용, 반대로 무거운 await는 부팅 지연).
+훅은 async 가능하다. init 훅은 Promise가 resolve될 때까지 기다리고 reject되면 초기화를 중단한다. 반면 Nest v11의 종료 훅은 같은 계층의 Provider 호출을 `Promise.allSettled`로 기다리고 실패를 로그한 뒤 다음 계층과 종료 단계를 계속한다. 따라서 각 정리 훅은 다른 훅의 중단에 기대지 말고 자체 실패를 안전하게 다뤄야 한다.
 
 ## 실행 순서
 
@@ -81,7 +83,8 @@ export class MyService implements OnModuleInit, OnApplicationBootstrap, OnModule
 [OnModuleInit]                         ← 의존성 순서대로 (의존하는 쪽이 먼저 init 받음)
 [OnApplicationBootstrap]               ← 모든 모듈 init 완료 후
 ... 요청 처리 ...
-[OnModuleDestroy]                      ← 종료 신호, init 역순
+[OnModuleDestroy]                      ← app.close() 또는 종료 신호, v11에서는 init 역순
+[BeforeApplicationShutdown]            ← 모든 OnModuleDestroy 완료 후
 [OnApplicationShutdown]
 ```
 
@@ -113,3 +116,4 @@ export class MyService implements OnModuleInit, OnApplicationBootstrap, OnModule
 ## 출처
 - [NestJS — Lifecycle events](https://docs.nestjs.com/fundamentals/lifecycle-events)
 - [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)
+- [NestJS source — on-module-destroy hook](https://github.com/nestjs/nest/blob/master/packages/core/hooks/on-module-destroy.hook.ts)

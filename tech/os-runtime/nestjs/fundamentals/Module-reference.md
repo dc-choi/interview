@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nestjs]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime"
 aliases: ["Module reference", "ModuleRef"]
 ---
@@ -59,7 +60,7 @@ this.catsFactory = await this.moduleRef.create(CatsFactory);
 `NestFactory.createApplicationContext(AppModule)`은 **네트워크 리스너 없는 IoC 컨테이너 래퍼** — CRON 스크립트, CLI를 Nest DI 위에 세운다.
 
 - `app.get(Token)`은 등록된 **모든 모듈을 검색**하는 쿼리. 엄격한 컨텍스트 체크는 `app.select(TasksModule).get(TasksService, { strict: true })`로 특정 모듈 서브그래프에서만 조회.
-- 스크립트가 끝나면 **`app.close()`를 반드시 호출** — 안 하면 프로세스가 종료되지 않는다 ([[NestJS-Lifecycle|app.close() 시맨틱]]).
+- 스크립트가 끝나면 `app.close()`를 호출해 리소스를 정리한다. 열린 핸들이 있으면 호출하지 않을 때 프로세스 종료가 지연될 수 있다 ([[NestJS-Lifecycle|app.close() 시맨틱]]).
 - 같은 축의 디버깅 도구로 **REPL 모드**가 있다 — `repl(AppModule)`(@nestjs/core)로 띄우면 터미널에서 의존성 그래프를 검사하고 프로바이더/컨트롤러 메서드를 직접 호출한다 (`get()`, scoped용 `resolve()`, 메서드 목록 `methods()`, 전체 모듈 트리 `debug()`).
 - 본격 CLI 앱은 **nest-commander**(서드파티)가 공식 추천 경로 — `@Command()` 클래스 구조로 커맨드를 정의하고 `CommandFactory.run(AppModule)`이 createApplicationContext 자리를 대신한다.
 

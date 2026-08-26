@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, schedule, cron, batch]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Task Scheduling", "@nestjs/schedule", "NestJS Cron"]
 ---

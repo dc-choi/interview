@@ -1,6 +1,7 @@
 ---
 tags: [architecture, oop, solid, refactoring, value-object]
 status: done
+verified_at: 2026-08-26
 category: "Architecture - OOP"
 aliases: ["Object Design Principles", "객체 설계 원칙과 리팩터링"]
 ---

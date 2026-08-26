@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, architecture, clean-architecture, typescript, di]
 status: done
+verified_at: 2026-08-26
 category: "OS&런타임(OS&Runtime)"
 aliases: ["NestJS CQRS와 Event Handler 확장", "Clean vs Hexagonal NestJS"]
 ---
@@ -17,7 +18,7 @@ Query Handler    ← 조회 전용 (GetUserByIdQuery, 읽기 전용)
 Event Handler    ← 부수 효과 (UserCreatedEvent → 이메일 발송, 알림)
 ```
 
-- **Command**: 의도적 상태 변경. Aggregate에 커밋되는 트랜잭션 단위
+- **Command**: 의도적 상태 변경. 트랜잭션 경계와 Aggregate 저장은 핸들러와 리포지터리에서 명시적으로 관리
 - **Query**: 읽기 전용. 별도 Read Model, DTO 직행 가능 → 도메인 모델 우회로 성능 최적화
 - **Event**: 변경 결과를 다른 바운디드 컨텍스트, 부수 효과로 전파. 비동기 처리 가능
 
@@ -32,6 +33,8 @@ export class UserFactory {
   }
 }
 ```
+
+여기서 Factory가 반환하는 `User`는 `AggregateRoot`를 상속하거나 `IAggregateRoot`를 구현해야 한다.
 - `apply()`는 AggregateRoot 베이스 클래스가 제공 — 쌓인 이벤트는 `EventPublisher.mergeObjectContext`로 병합된 모델에서 **`model.commit()`을 명시 호출할 때** 디스패치된다 (DB 트랜잭션 커밋과 무관한 별개 호출, `autoCommit: true`로 자동화 가능)
 - Factory는 Use Case와 별개로 두어 **복잡한 엔티티 생성 로직**을 한 곳에
 - `@nestjs/cqrs`의 `EventBus`가 등록된 `EventHandler`로 전달

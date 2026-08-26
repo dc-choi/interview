@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, exception-filter, error-handling, http-exception]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["전역 Catch-all Filter 패턴", "커스텀 HttpException"]
 ---
@@ -35,10 +36,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
         message = errorResponse as string;
       }
     } else if (exception instanceof QueryFailedError) {
-      // TypeORM 쿼리 실패 → 400으로
-      status = 400;
+      // 도메인에서 명시적으로 매핑하지 않은 DB 오류는 서버 오류로 처리
+      status = 500;
       message = 'Database query failed';
-      errors = exception.driverError;
+      this.logger.error('Database query failed', exception);
     } else {
       // 진짜 예상 못한 에러
       status = 500;
@@ -80,7 +81,7 @@ export class ValidationFilter implements ExceptionFilter {
 }
 ```
 
-같은 컨트롤러에 `AllExceptionsFilter`와 함께 두면 **구체 타입이 우선** — 검증 예외만 422로, 나머지는 일반 처리.
+여러 filter를 함께 바인딩할 때 Nest가 예외 타입의 구체성을 자동 비교하지는 않는다. 먼저 선택된 catch-all filter가 예외를 소비할 수 있으므로 등록 순서에 의존하기보다 하나의 filter에서 타입을 분기하거나 catch-all의 범위를 분리한다.
 
 ## 커스텀 HttpException
 

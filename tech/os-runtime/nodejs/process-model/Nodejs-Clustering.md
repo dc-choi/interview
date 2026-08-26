@@ -1,22 +1,23 @@
 ---
 tags: [nodejs, runtime, cluster, pm2, scaling, multi-core]
 status: done
+verified_at: 2026-08-26
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Node.js Clustering", "Node.js PM2 Cluster", "Node.js 멀티코어 활용"]
 ---
 
 # Node.js 클러스터링, 멀티코어 활용
 
-Node.js는 단일 프로세스가 이벤트 루프 하나만 돌리므로 **멀티코어 장비의 잉여 코어를 놀린다.** 클러스터링은 동일 애플리케이션을 **프로세스 단위로 복제**해 각 코어에 배치, 공통 포트를 공유하며 요청을 분산하는 기법이다.
+Node.js의 한 프로세스는 JavaScript callback을 주로 이벤트 루프 한 곳에서 실행하므로 CPU-bound JavaScript만으로는 여러 코어를 동시에 쓰지 못한다. 클러스터링은 동일 애플리케이션을 **프로세스 단위로 복제**해 공통 포트를 공유하며 요청을 분산하는 기법이다. 비동기 파일 I/O와 암호화 등 일부 API는 별도의 libuv worker pool을 사용하므로 프로세스 전체가 언제나 코어 하나만 쓴다는 뜻은 아니다.
 
 ## 왜 필요한가
 
-- **싱글 스레드 모델의 한계**: JS 실행은 메인 스레드 1개 → CPU 4개 장비에서 최대 25% 활용
+- **JavaScript 실행 경로의 한계**: 한 이벤트 루프에서 CPU-bound callback을 계속 실행하면 여러 코어의 계산 능력을 동시에 활용하지 못함
 - **이벤트 루프 블로킹 격리**: 한 워커가 느린 연산으로 멎어도 다른 워커는 계속 요청 처리
 - **장애 격리**: 한 워커가 죽어도 매니저가 재시작 → 가용성↑
 - **배포 무중단**: rolling restart로 워커를 하나씩 교체
 
-세션 유지나 공유 상태가 필요하다면 Redis 같은 외부 저장소가 필수 — 워커 간 메모리는 격리된다.
+워커 간 메모리는 격리된다. 여러 워커가 같은 세션과 상태를 봐야 한다면 Redis 같은 외부 저장소를 쓰거나, 상태를 서버 밖으로 옮기고 연결 affinity의 한계를 명시한다.
 
 ## 두 가지 주요 방식
 
@@ -45,7 +46,7 @@ if (cluster.isPrimary) {
 
 ### 2. PM2(Process Manager 2)
 
-프로덕션에서 가장 흔한 선택. 프로세스 감독, 로그 집계, 무중단 reload, 모니터링 대시보드까지 제공.
+프로세스 감독이 필요한 환경에서 사용할 수 있는 선택지다. 로그 집계, reload와 모니터링 기능을 제공한다.
 
 ```bash
 pm2 start app.js -i max          # 가용 코어 수만큼 워커
@@ -65,7 +66,7 @@ pm2 monit
 | **1 컨테이너 = 1 Node 프로세스** | K8s HPA로 수평 확장, 단순 | 코어 수만큼 파드 필요 |
 | **1 컨테이너 = N 워커(cluster/PM2)** | 파드 수↓, 컨텍스트 스위칭 비용↓ | 컨테이너 OOM이 전 워커 동반 사망 |
 
-K8s 환경에서는 **Pod 수평 확장을 우선**하고, 컨테이너 내부는 프로세스 1개가 일반적이다. 클러스터링은 단일 VM, 베어메탈이나 legacy PaaS에서 더 가치가 크다.
+K8s에서는 Pod 수평 확장과 컨테이너 내부 cluster 중 장애 격리, CPU request와 운영 단위를 기준으로 선택한다. 프로세스 하나인 컨테이너는 단순하지만 필수 규칙은 아니며, cluster는 단일 VM이나 Pod 수를 줄여야 하는 환경에서 선택할 수 있다.
 
 ## 구조적 주의점
 
@@ -81,8 +82,8 @@ K8s 환경에서는 **Pod 수평 확장을 우선**하고, 컨테이너 내부�
 |---|---|---|
 | 메모리 공간 | 독립 | 공유 가능(SharedArrayBuffer) |
 | IPC 비용 | 직렬화 필요, 상대적 고비용 | 메시지, SharedArrayBuffer, 저비용 |
-| 장애 격리 | 강함 | 한 워커 크래시가 프로세스 전체 영향 가능 |
-| 용도 | **I/O 동시성 확장** | **CPU 집약 연산 오프로드** |
+| 장애 격리 | 프로세스별 격리 | JavaScript 예외는 해당 worker 종료로 격리되지만 native crash와 공유 메모리 오류의 경계는 더 약함 |
+| 용도 | **network server process 확장과 격리** | **CPU 집약 연산 offload** |
 
 둘은 대체가 아니라 보완 관계. 자세한 비교는 [[Worker-Threads|워커 스레드]].
 
@@ -106,11 +107,12 @@ K8s 환경에서는 **Pod 수평 확장을 우선**하고, 컨테이너 내부�
 - `cluster` 모듈 vs Worker Threads의 용도 차이
 - K8s 환경에서 파드 확장 vs 컨테이너 내 클러스터 선택 기준
 - 클러스터링 시 세션, WebSocket, 로그에서 생기는 이슈
-- PM2 `reload`가 무중단인 이유(워커 순차 교체)
+- PM2 `reload`가 무중단에 가까워지려면 필요한 조건(워커 순차 교체, 준비 완료 신호와 잔여 용량)
 
 ## 출처
 - [요즘IT — Node.js 병렬처리를 위한 PM2, Docker 기반 실험](https://yozm.wishket.com/magazine/detail/1556/)
 - [Node.js Docs — Cluster](https://nodejs.org/api/cluster.html)
+- [Node.js Docs — Worker threads](https://nodejs.org/api/worker_threads.html)
 
 ## 관련 문서
 - [[Single-vs-Multi-Thread|Node.js 싱글 vs 멀티 스레드]]

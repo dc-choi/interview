@@ -1,10 +1,10 @@
 ---
 tags: [nestjs, module, dynamic-module]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Dynamic Module", "Global Module", "register registerAsync"]
 ---
-
 # NestJS Module 시스템 — Dynamic / Global Module
 
 `@Module()` 데코레이터의 기본 사용법(imports/exports/providers/controllers) 위에, **런타임 설정을 받아 모듈 자체를 생성, 구성**하는 패턴들. ConfigModule, TypeOrmModule, JwtModule 같은 라이브러리가 모두 이 구조 위에 있다.

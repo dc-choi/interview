@@ -1,7 +1,7 @@
 ---
 tags: [aws, rds, monitoring, cloudwatch, observability, performance-insights]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-08-26
 category: "Infrastructure - AWS"
 aliases: ["RDS Monitoring", "RDS 모니터링"]
 ---
@@ -22,16 +22,16 @@ RDS는 관리형이지만 **운영 책임은 여전히 우리에게 있다.** �
 
 ## CloudWatch 핵심 지표
 
-| 지표 | 임계 예시 | 의미 |
+| 지표 | 관찰 기준 예시 | 의미 |
 |---|---|---|
-| `CPUUtilization` | > 80% | CPU 포화 — 쿼리, 인덱스 재검토 |
-| `DatabaseConnections` | > max_connections × 0.8 | 커넥션 고갈 위험 — 풀 사이즈, 애플리케이션 누수 확인 |
-| `FreeableMemory` | < 여유 10% | OOM, swap 위험 — 인스턴스 업그레이드 고려 |
-| `FreeStorageSpace` | < 20% | 자동 확장 미설정 시 장애 위험 |
+| `CPUUtilization` | 평소 대비 지속 상승 | DB Load의 CPU wait, 쿼리와 인덱스를 함께 확인 |
+| `DatabaseConnections` | 실제 `max_connections`의 80% 접근 | 커넥션 고갈 위험 — 풀 사이즈, 애플리케이션 누수 확인 |
+| `FreeableMemory` | 하락 추세와 `SwapUsage` 상승 | 캐시 사용을 메모리 부족으로 단정하지 말고 swap, 엔진 메모리와 함께 확인 |
+| `FreeStorageSpace` | 자동 확장 최대치와 증설 소요 시간 접근 | 즉시 증설을 가정하지 말고 증가율과 최대 storage threshold 확인 |
 | `ReadIOPS` / `WriteIOPS` | gp3의 baseline 또는 provisioned IOPS, throughput 대비 | gp3 설정 한도 포화 가능성 — IOPS, throughput, 큐와 지연을 함께 확인 |
-| `ReplicaLag` | > 5s | Read-After-Write 실패 위험 |
-| `DiskQueueDepth` | > 10 | I/O 병목 — 쿼리, 스토리지 재검토 |
-| `BurstBalance` | < 20% | gp2 버스트 크레딧 소진 임박 |
+| `ReplicaLag` | 서비스의 허용 지연, RPO 초과 | lag가 0보다 크면 read-after-write가 깨질 수 있어 라우팅 정책과 함께 확인 |
+| `DiskQueueDepth` | 정상 기준선 대비 지속 상승 | 지연, IOPS와 함께 I/O 병목 여부 판단 |
+| `BurstBalance` | gp2에서 지속 하락 | 버스트 크레딧 소진 전에 스토리지 유형과 용량 재검토 |
 
 ### 알람 임계치 설계 원칙
 
@@ -45,8 +45,7 @@ AWS는 Performance Insights 독립 콘솔 경험을 **2026-07-31** 종료하고 
 
 - **Standard**: DB Load의 주요 contributor와 기본 분석, 유연한 retention을 제공한다.
 - **Advanced**: fleet view, 일부 엔진의 lock과 execution plan 진단, on-demand analysis 같은 확장 기능을 제공한다. 기능과 Region 지원 여부를 확인한다.
-- RDS 콘솔 생성 wizard는 현재 모든 RDS 엔진에서 Performance Insights를 기본 선택하지만, 기존 인스턴스와 API, IaC 생성 경로까지 항상 활성이라고 가정하지 말고 실제 설정을 확인한다.
-
+- 생성 wizard의 기본값과 지원 기능은 엔진, Region과 시점에 따라 달라질 수 있다. 콘솔 표시만 믿지 말고 각 DB의 Database Insights mode, retention과 수집 상태를 API 또는 IaC 설정으로 확인한다.
 - **DB Load** = 평균 활성 세션(AAS), 즉 CPU에서 실행 중이거나 wait 중인 세션의 평균. vCPU 선은 해석 기준이지만 wait event 분해가 필요하다.
 - 시간대별 Top SQL과 엔진, 버전별 대기 이벤트 분포를 그래프로 본다. 예를 들어 Aurora MySQL v2의 `io/aurora_redo_log_flush`, v3의 `io/redo_log_flush`, PostgreSQL 계열의 lock wait처럼 실제 엔진 문서에 정의된 이름을 사용
 - 문제 쿼리 식별 후 `EXPLAIN`, 인덱스 조정으로 연결
@@ -145,7 +144,7 @@ Slack Webhook (채널별 분기)
 - **Engine Error**: MySQL error log에 실제 기록되는 시작, 종료, 크래시, 플러그인과 엔진 오류를 분류 (빨강). 제약조건 위반과 SQL 문법 오류 같은 애플리케이션 쿼리 오류는 앱 로그, APM, audit/general log 등 별도 소스가 필요하다. 모든 InnoDB deadlock을 error log에 남기려면 `innodb_print_all_deadlocks=ON`이 필요하며 기본값은 OFF다
 
 구현 포인트:
-- CloudWatch Logs Subscription Filter는 로그 그룹당 **최대 2개** — 복수 Slack 채널로 분기하려면 단일 Lambda에서 내부 분기
+- CloudWatch Logs Subscription Filter 수는 로그 그룹별 service quota이므로 대상 Region의 Service Quotas와 API를 확인한다. 복수 Slack 채널은 단일 Lambda에서 내부 분기할 수 있다
 - 압축된(gzip) 로그 이벤트를 Lambda가 해제 후 파싱
 - 모니터링 도구 트래픽(Datadog, PMM) 쿼리는 필터로 제외해야 노이즈 감소
 - UTC → KST 변환해 가독성 확보
@@ -189,6 +188,7 @@ AWS 기본 도구만으로 부족하거나 멀티클라우드, 온프렘 환경�
 - [AWS Docs — Enhanced Monitoring 활성화](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.Enabling.html)
 - [AWS Docs — RDS 스토리지](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
 - [AWS Docs — CloudWatch Logs에 MySQL 로그 게시](https://docs.aws.amazon.com/ko_kr/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQLDB.PublishtoCloudWatchLogs.html)
+- [AWS Docs — CloudWatch Logs quotas](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/cloudwatch_limits_cwl.html)
 
 ## 관련 문서
 - [[RDS-Monitoring-Deep-Metrics|RDS 모니터링 심화]] — CommitLatency, History List Length, Event Subscription, 커스텀 Prometheus, Support Case

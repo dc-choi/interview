@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, execution-context, reflector, metadata]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS ExecutionContext", "ArgumentsHost"]
 ---
@@ -16,7 +17,7 @@ aliases: ["NestJS ExecutionContext", "ArgumentsHost"]
 | `ArgumentsHost` | Exception Filter | `getType`, `switchToHttp/Ws/Rpc` |
 | `ExecutionContext extends ArgumentsHost` | Guard, Interceptor, Param Decorator | `getHandler()`, `getClass()` |
 
-`ExecutionContext`가 부모(`ArgumentsHost`) 기능 + 핸들러/클래스 메타데이터 접근까지 포함. Filter는 **예외만 응답으로 변환**이라 핸들러 메타데이터 필요 없음 → `ArgumentsHost`로 충분.
+`ExecutionContext`가 부모(`ArgumentsHost`) 기능과 핸들러/클래스 메타데이터 접근을 모두 포함한다. Exception Filter의 `catch()`에는 `ArgumentsHost`가 전달된다. 핸들러/클래스 메타데이터로 예외 정책을 나눠야 하면 Guard나 Interceptor에 그 정책을 두거나 별도 해석 경계를 설계한다.
 
 ## 핵심 메서드
 

@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, guard, authn, authz, execution-context]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Guards 기본", "CanActivate 시그니처"]
 ---

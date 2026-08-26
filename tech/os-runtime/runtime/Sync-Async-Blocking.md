@@ -1,33 +1,32 @@
 ---
 tags: [os, runtime, concurrency, async, blocking, interview]
 status: done
+verified_at: 2026-08-26
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Sync Async Blocking", "Blocking Non-Blocking Sync Async", "동기, 비동기, 블로킹, 논블로킹"]
 ---
 
 # 동기, 비동기, 블로킹, 논블로킹
 
-자주 섞여 쓰이지만 **제어권 반환 시점**과 **결과 처리 주체**라는 서로 다른 축을 가진 독립 개념이다. 네 가지 조합(2×2)을 명확히 구분해야 이벤트 루프, 스레드 모델, I/O 설계를 오해 없이 설명할 수 있다.
+자주 섞여 쓰이지만 **개별 호출이 기다리는 방식**과 **완료를 전달하는 계약**이라는 서로 다른 층위의 개념이다. I/O API, 커널 대기, 애플리케이션 continuation 중 어느 층을 말하는지 먼저 정해야 이벤트 루프와 스레드 모델을 정확히 설명할 수 있다.
 
 ## 두 축의 정의
 
 | 축 | 관점 | 구분 |
 |---|---|---|
-| **Blocking / Non-Blocking** | 호출 시 **제어권이 언제 돌아오는가** | Blocking: 작업 끝날 때까지 호출자 멈춤 / Non-Blocking: 즉시 반환 |
-| **Synchronous / Asynchronous** | **결과를 누가 처리하고 이어서 실행하는가** | Sync: 호출자가 결과를 직접 받아 이어서 처리 / Async: 호출된 쪽(또는 이벤트 루프)이 완료 시점에 콜백, 알림으로 처리 |
+| **Blocking / Non-Blocking** | 특정 호출이 **대기하는가** | Blocking: I/O가 진행되거나 완료될 때까지 현재 스레드가 기다릴 수 있음 / Non-Blocking: 현재 상태를 즉시 반환, 준비되지 않았으면 `EAGAIN` 등으로 알림 |
+| **Synchronous / Asynchronous** | **완료 결과의 전달 계약** | Sync: 반환 경로로 결과를 받음 / Async: 나중에 callback, event, future 같은 완료 알림으로 받음 |
 
-두 축은 독립이다. "Non-Blocking ≠ Async" — 제어권은 바로 돌아왔지만 호출자가 폴링으로 상태를 계속 확인하면 그건 여전히 Sync다.
+두 축은 독립이다. Non-Blocking 호출 뒤 호출자가 상태를 폴링하면 완료 전달은 여전히 동기적일 수 있다. 반대로 비동기 future의 `get()`은 현재 스레드를 block할 수 있고, `await`는 보통 continuation을 suspend한다. 둘을 같은 blocking으로 부르지 말고 API와 scheduler 층을 구분한다. Sync/Async 자체는 작업의 실행 순서나 완료 순서를 보장하지 않는다. 필요한 순서는 `await`, join, queue, lock 같은 별도 동기화로 만든다.
 
-Sync/Async는 **작업 수행 순서 보장** 축으로 보면 더 분명하다. Sync는 현재 작업의 완료(응답)와 다음 작업의 시작(요청) 타이밍을 맞춰 순서를 보장하고, 호출자가 하위 작업의 종료 시점을 계속 추적한다. Async는 그 타이밍을 풀어 완료 순서를 보장하지 않으며, 호출자는 종료 시점을 추적하지 않고 콜백, 알림에 위임한다. Blocking/Non-Blocking은 그 사이 호출자가 유휴 상태인지(다른 일을 할 수 있는지)의 축이라 서로 직교한다.
-
-## 2×2 조합
+## 대표 API 조합과 레이어 사례
 
 ### 1. Sync + Blocking (가장 직관적)
 
 - 호출자가 멈추고 결과를 직접 받아 이어간다
 - 예: `fs.readFileSync()`, JDBC 일반 쿼리, 파이썬 `requests.get()`
 - 장점: 코드가 순차적이라 읽기 쉬움
-- 단점: I/O 대기 동안 스레드가 유휴. 요청당 스레드 모델에서만 실용적
+- 단점: 실행 흐름이 I/O 완료까지 멈춘다. 플랫폼 스레드 기반 모델은 대기 동안 스레드를 점유하고, 가상 스레드는 지원되는 I/O에서 carrier를 비울 수 있다. 동시 요청 서버에서는 어느 모델이든 하위 커넥션 풀과 자원 한도를 관리해야 한다
 
 ### 2. Sync + Non-Blocking
 
@@ -36,53 +35,55 @@ Sync/Async는 **작업 수행 순서 보장** 축으로 보면 더 분명하다.
 - 장점: 블로킹 없이 다른 일 가능
 - 단점: 폴링 간격 튜닝이 어렵고 CPU 낭비. 드물게 사용
 
-### 3. Async + Non-Blocking (현대 서버의 기본)
+### 3. 호출자 관점의 Async 완료와 즉시 반환
 
 - 호출은 즉시 반환, 완료 시 **콜백/Promise/이벤트**로 결과 전달
-- 예: Node.js의 논블로킹 I/O(libuv + epoll, kqueue, IOCP), Netty, Kotlin 코루틴
-- 장점: 소수의 스레드로 수만 커넥션 유지 가능
+- 네트워크 readiness를 쓰는 이벤트 루프는 실제 I/O도 non-blocking으로 처리할 수 있다. 반면 Node.js의 일부 파일 I/O와 DNS API는 worker pool의 blocking 호출로 구현되지만 JavaScript 호출자에게는 비동기 완료를 전달한다
+- 코루틴의 `suspend`도 호출자 스레드를 점유하지 않는다는 뜻이지, 하위 I/O 구현까지 non-blocking이라는 증거는 아니다
+- 장점: readiness 기반 I/O에서는 적은 수의 이벤트 루프 스레드로 많은 연결을 다중화할 수 있음
 - 단점: 제어 흐름이 비선형 — 콜백 지옥, 컬러 함수, 디버깅 난도
 
-### 4. Async + Blocking
+### 4. 이벤트 루프에서 대기와 알림을 분리하기
 
-두 얼굴이 있다.
+`select`, `poll`, `epoll`, `kqueue`는 파일 디스크립터의 **readiness**를 알려 주는 API다. `select`나 `epoll_wait()` 자체는 이벤트가 생길 때까지 block할 수 있지만, 이는 이벤트 루프가 대기하는 호출이다. 준비된 FD에 실제 I/O를 수행할 때는 보통 non-blocking 모드와 함께 사용한다.
 
-- **의도적 — I/O 다중화(I/O multiplexing)**: 저수준 OS 모델의 정통 사례다. 호출자를 일부러 블로킹해 두고, 그 블로킹 한 번으로 **여러 FD의 완료를 한꺼번에 비순차로 감시**한다. POSIX `select`/`poll`이 대표인데, 감시할 FD 집합과 타임아웃을 넘기면 그동안 프로세스를 멈춘 채 읽기, 쓰기, 예외 이벤트를 지켜보다가, 이벤트가 난 FD 개수를 돌려주며 블로킹이 풀린다. 동기 블로킹 I/O의 직관적 흐름을 유지하면서도 다중 I/O를 한 스레드로 처리하려는 절충이다. 다만 깨어날 때마다 전체 FD 집합을 훑어야 해(O(n)) 성능은 낮고, 그래서 `epoll`/`kqueue`/IOCP 기반 Async+Non-Blocking(3번)으로 발전했다.
-- **비의도적 — 설계 실수**: 논블로킹을 기대하고 Async API를 썼지만 제어권이 돌아오지 않는 경우. 예로 이벤트 루프 스레드에서 `await` 사이에 CPU 집약 연산을 끼워 넣어 실제로는 루프가 멈춘다.
-
-핵심은 비동기(완료를 비순차로 수신)와 블로킹(그동안 호출자는 멈춤)이 독립 축이라 공존할 수 있다는 점이다.
+IOCP처럼 완료를 알리는 **completion** 모델은 readiness 모델과 다르다. 따라서 `epoll`이 IOCP로 발전했다거나 둘을 하나의 Async+Non-Blocking 칸으로 묶으면 계층이 섞인다. Node.js 같은 런타임은 OS readiness 또는 completion 알림과 worker pool을 조합해 JavaScript API에는 비동기 완료를 전달한다.
 
 ## 흔한 오해 바로잡기
 
-- **"Async면 빠르다"** — 아니다. 싱글 요청 지연은 Sync가 더 짧을 수도 있다. Async의 이득은 **동시성(처리량)** 이지 개별 응답 시간이 아님
+- **"Async면 빠르다"** — 자동으로 그렇지 않다. 주된 이점은 대기 작업을 겹쳐 동시성과 처리량을 높이는 것이며, 한 요청 안의 독립 I/O를 겹치면 지연도 줄 수 있지만 순차 의존 작업은 그대로다
 - **"Non-Blocking이면 Async"** — 폴링 기반 Non-Blocking은 여전히 Sync. 두 축 독립
 - **"Blocking은 항상 나쁘다"** — 요청당 스레드 모델이나 배치 작업에서는 오히려 단순해서 좋음. 선택의 문제
-- **"Callback이면 Async"** — 콜백이 **같은 스택에서 즉시 호출**되면 Sync. 이벤트 루프를 거쳐 나중에 호출될 때만 Async
+- **"Callback이면 Async"** — 콜백이 **같은 스택에서 즉시 호출**되면 Sync. 이벤트 루프, 다른 스레드나 완료 큐를 통해 나중에 호출될 때 Async 완료 계약이 된다
 
 ## 런타임별 선택
 
 | 런타임 | 기본 모델 | 이유 |
 |---|---|---|
-| **Node.js** | Async + Non-Blocking | 싱글 스레드 → 블로킹 시 전체 정지 |
-| **Java(전통)** | Sync + Blocking (요청당 스레드) | OS 스레드가 충분히 저렴하다고 가정 |
-| **Java(Loom)** | Sync 코드가 실제로는 Async | 가상 스레드가 yield 지점 자동 관리 |
-| **Go** | Sync 코드 + goroutine + 런타임 스케줄링 | 사용자 코드는 블로킹처럼 보이게 |
-| **Nginx, Netty** | Async + Non-Blocking | 이벤트 드리븐 리액터 |
+| **Node.js** | JavaScript API는 비동기 완료 중심 | 메인 이벤트 루프를 오래 block하지 않고, OS 알림과 worker pool을 사용 |
+| **Java(전통)** | 동기식 blocking API와 요청당 스레드 풀이 흔함 | 스레드 수, I/O 대기를 운영에서 관리 |
+| **Java 가상 스레드** | 동기식 blocking 코드를 유지 | 지원되는 blocking I/O에서 virtual thread를 unmount해 carrier를 비움. 비동기 API로 바꾸는 것은 아님 |
+| **Go** | 동기식처럼 보이는 goroutine 코드 | 런타임 스케줄링을 별도 층으로 봄 |
+| **Nginx, Netty** | 이벤트 루프와 readiness 기반 I/O를 주로 사용 | API와 커널 대기 층을 구분해 설명 |
 
 ## 면접 체크포인트
 
-- **두 축이 독립**이라는 것과 4가지 조합 예시
-- Sync 축을 작업 순서 보장과 종료 시점 추적 주체로 설명할 수 있는가
+- **두 축이 독립**이라는 것과 대표 API 조합 예시
+- 호출의 대기 방식과 완료 전달 계약을 서로 다른 층위로 설명할 수 있는가
 - Sync/Non-Blocking이 폴링 기반이고 왜 드문지
 - Node.js가 Async/Non-Blocking을 기본으로 하는 이유
 - Async/Non-Blocking에서 이벤트 루프 블로킹이 일어나는 시나리오(CPU 집약)
-- Async+Blocking의 정통 사례가 I/O 다중화(select/poll)이고, epoll/kqueue로 발전한 이유
-- 가상 스레드(Loom, goroutine)가 이 모델을 어떻게 바꾸는가
+- readiness(select/poll/epoll/kqueue)와 completion(IOCP)의 차이, `epoll_wait()`가 block할 수 있다는 점
+- 가상 스레드가 동기식 API의 의미를 유지한 채 carrier를 비우는 조건과 한계
 
 ## 출처
 - [동기 vs 비동기 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=SI5CLk-fXFU)
 - [jh-7 — Blocking, Non-blocking, Sync, Async의 차이](https://jh-7.tistory.com/25)
 - [동기(Synchronous)는 정확히 무엇을 의미하는걸까? — evan-moon](https://evan-moon.github.io/2019/09/19/sync-async-blocking-non-blocking/)
+- [Linux man-pages, epoll(7)](https://man7.org/linux/man-pages/man7/epoll.7.html)
+- [Linux man-pages, epoll_wait(2)](https://man7.org/linux/man-pages/man2/epoll_wait.2.html)
+- [Node.js, Don't Block the Event Loop or the Worker Pool](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)
+- [OpenJDK, JEP 444: Virtual Threads](https://openjdk.org/jeps/444)
 
 ## 관련 문서
 - [[Async-IO|Async I/O]]

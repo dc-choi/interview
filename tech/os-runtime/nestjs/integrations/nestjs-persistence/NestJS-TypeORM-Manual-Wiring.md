@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, typeorm, database, custom-provider, repository]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS TypeORM Manual Wiring", "TypeORM 수동 배선", "SQL TypeORM Recipe"]
 ---
@@ -15,12 +16,13 @@ aliases: ["NestJS TypeORM Manual Wiring", "TypeORM 수동 배선", "SQL TypeORM 
 
 ```ts
 // database.providers.ts
+import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 export const databaseProviders = [
   {
     provide: 'DATA_SOURCE',
-    useFactory: async () => {
+    useFactory: () => {
       const dataSource = new DataSource({
         type: 'mysql',
         host: 'localhost',
@@ -36,6 +38,15 @@ export const databaseProviders = [
     },
   },
 ];
+
+@Injectable()
+export class DataSourceLifecycle implements OnApplicationShutdown {
+  constructor(@Inject('DATA_SOURCE') private readonly dataSource: DataSource) {}
+
+  async onApplicationShutdown() {
+    if (this.dataSource.isInitialized) await this.dataSource.destroy();
+  }
+}
 ```
 
 - `synchronize: true`는 **운영 금지** — 스키마를 엔티티에 맞춰 바꾸며 운영 데이터를 잃을 수 있다.
@@ -43,12 +54,19 @@ export const databaseProviders = [
 
 ```ts
 // database.module.ts
+import { Module } from '@nestjs/common';
+import { databaseProviders, DataSourceLifecycle } from './database.providers';
+
 @Module({
-  providers: [...databaseProviders],
+  providers: [...databaseProviders, DataSourceLifecycle],
   exports: [...databaseProviders],
 })
 export class DatabaseModule {}
 ```
+
+Nest는 임의 객체의 `destroy()` 메서드를 자동 호출하지 않는다. lifecycle provider가 `OnApplicationShutdown`에서 pool을 닫아야 `app.close()` 경로가 정리된다. 운영체제 종료 신호에도 이 훅을 실행하려면 `enableShutdownHooks()`가 필요하다.
+
+현재 TypeORM 구현은 `isInitialized` 설정 뒤 실패하면 스스로 `destroy()`하지만, query result cache 연결이 그 전에 실패하거나 같은 인스턴스의 `initialize()`를 동시에 호출하면 연결이 남을 수 있다는 [미해결 이슈 #12705](https://github.com/typeorm/typeorm/issues/12705)가 있다. 이 예시는 cache를 켜지 않고 Nest provider factory가 한 번만 초기화하며, 다른 경로에서 재초기화하지 않는다. cache를 추가한다면 해당 실패 경로가 수정된 버전을 확인하고 초기화 실패 통합 테스트를 둔다.
 
 `DATA_SOURCE`에 의존하는 모든 클래스는 **Promise가 resolve될 때까지 인스턴스화가 대기**한다 — DB 연결이 서기 전에 앱이 요청을 받지 않게 되는 구조가 여기서 나온다.
 
@@ -86,6 +104,9 @@ Repository도 커스텀 프로바이더로 — DataSource를 inject 받아 `getR
 
 ```ts
 // photo.providers.ts
+import { DataSource } from 'typeorm';
+import { Photo } from './photo.entity';
+
 export const photoProviders = [
   {
     provide: 'PHOTO_REPOSITORY',
@@ -101,6 +122,10 @@ export const photoProviders = [
 
 ```ts
 // photo.service.ts
+import { Inject, Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { Photo } from './photo.entity';
+
 @Injectable()
 export class PhotoService {
   constructor(
@@ -118,6 +143,11 @@ export class PhotoService {
 
 ```ts
 // photo.module.ts — 조립
+import { Module } from '@nestjs/common';
+import { DatabaseModule } from '../database/database.module';
+import { photoProviders } from './photo.providers';
+import { PhotoService } from './photo.service';
+
 @Module({
   imports: [DatabaseModule],
   providers: [...photoProviders, PhotoService],
@@ -139,6 +169,7 @@ PhotoModule을 루트 AppModule에 import하는 것까지가 배선.
 ## 면접 체크포인트
 
 - async provider(useFactory가 Promise 반환)가 의존 클래스의 인스턴스화를 지연시키는 계약 — DB 연결 전 요청 수신 방지
+- 수동 DataSource의 lifecycle owner가 `OnApplicationShutdown`에서 `destroy()`를 호출해야 하는 이유
 - Repository를 DataSource에서 파생시키는 inject 체인 (`DATA_SOURCE` → `getRepository`)
 - 문자열 토큰의 위험(매직 스트링)과 constants 분리, [[Custom-Provider|인터페이스는 토큰이 될 수 없다]]와 같은 축
 - synchronize: true 운영 금지 이유
@@ -152,3 +183,4 @@ PhotoModule을 루트 AppModule에 import하는 것까지가 배선.
 
 ## 출처
 - [NestJS — SQL (TypeORM) recipe](https://docs.nestjs.com/recipes/sql-typeorm)
+- [TypeORM — DataSource source](https://github.com/typeorm/typeorm/blob/master/src/data-source/DataSource.ts)

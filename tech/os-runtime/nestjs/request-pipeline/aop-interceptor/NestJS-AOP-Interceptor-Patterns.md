@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, aop, interceptor, observable, rxjs]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Interceptor 실전 패턴", "Prisma 에러 중앙 처리"]
 ---
@@ -55,7 +56,7 @@ export class CacheInterceptor implements NestInterceptor {
 }
 ```
 
-운영급은 Redis 같은 공유 store 필수 — 메모리는 다중 인스턴스에서 일관성 깨짐. NestJS `CacheModule` + Redis store가 표준.
+다중 인스턴스가 같은 cache 결과를 봐야 한다면 Redis 같은 shared store를 사용한다. instance별 cache도 허용할 수 있지만 서로 다른 값을 잠시 반환할 수 있으므로 허용 가능한 stale 범위와 invalidation 방식을 먼저 정한다.
 
 ### 타임아웃과 재시도 경계 분리
 
@@ -114,13 +115,21 @@ export class PrismaErrorInterceptor implements NestInterceptor {
   }
 }
 
-// 3. Service 사용
-@PrismaErrorHandler({ P2002: '이미 존재하는 이메일입니다' })
-async createUser(dto) {
-  return this.prisma.user.create({ data: dto });
-  // try-catch 없음. Interceptor가 처리
+// 3. Controller의 route handler에 적용
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Post()
+  @PrismaErrorHandler({ P2002: '이미 존재하는 이메일입니다' })
+  createUser(@Body() dto: CreateUserDto) {
+    return this.usersService.createUser(dto);
+    // Service에는 try-catch가 없다. Interceptor가 route handler를 감싼다.
+  }
 }
 ```
+
+`@UseInterceptors()`는 controller, route handler 또는 전역 범위에 붙는다. Service provider의 메서드에 데코레이터만 붙여서는 HTTP 요청 파이프라인이 그 메서드를 감싸지 않는다. 모든 route에 같은 Prisma 매핑이 필요하면 전역 interceptor로 등록하고, 메서드별 메시지가 필요하면 위처럼 controller handler에 메타데이터를 둔다.
 
 ### 효과
 Service는 순수 비즈니스 로직만. 에러 매핑, 메서드별 메시지, 로깅이 모두 Interceptor 한 곳.
@@ -130,3 +139,4 @@ Service는 순수 비즈니스 로직만. 에러 매핑, 메서드별 메시지,
 
 ## 출처
 - [NestJS — Serialization](https://docs.nestjs.com/techniques/serialization)
+- [NestJS, Interceptors](https://docs.nestjs.com/interceptors)

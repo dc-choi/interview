@@ -3,7 +3,7 @@ tags: [runtime, nodejs]
 status: index
 category: "OS & Runtime"
 aliases: ["node.js"]
-verified_at: 2026-07-21
+verified_at: 2026-08-26
 ---
 
 # node.js
@@ -11,19 +11,19 @@ verified_at: 2026-07-21
 
 ## 탄생 배경
 
-Node.js는 2009년 5월 27일 JSConf EU에서 **Ryan Dahl**이 발표하며 세상에 나왔다. 당시 주류였던 Apache HTTP 서버의 **요청당 스레드 모델**은 동시 연결 수가 많아질수록 스레드 생성, 컨텍스트 스위칭 비용 때문에 성능이 급격히 떨어지는 한계가 있었다. Ryan Dahl은 실시간 업로드 진행률 표시 같은 기능을 구현하면서 이 문제를 절감했고, **논블로킹 I/O 기반의 새로운 서버 런타임**을 구상했다.
+Node.js는 2009년 5월 27일 처음 공개됐고, Ryan Dahl은 같은 해 11월 JSConf.eu에서 이를 발표했다. 당시 흔했던 연결별 프로세스나 스레드와 blocking I/O 모델은 동시 연결이 많을 때 메모리와 스케줄링 비용이 커질 수 있었다. Node.js는 이 대안으로 이벤트 기반 I/O를 JavaScript 런타임에 결합했다.
 
 ### 핵심 설계 선택
 - **V8 엔진 채택**: 구글이 Chrome을 위해 만든 고성능 JS 엔진이 이미 오픈소스로 공개돼 있었다. JIT 컴파일로 인터프리터보다 훨씬 빠르고, JS라는 이미 널리 쓰이는 언어를 서버에 끌어올 수 있다는 장점이 컸다.
-- **이벤트 기반 비동기 I/O**: 요청당 스레드 대신 **하나의 이벤트 루프 + 논블로킹 I/O** 모델을 선택. 적은 메모리로 수천 개 동시 연결을 처리할 수 있다.
-- **싱글 스레드 모델**: 스레드 동기화/락/데드락 등 멀티 스레드의 복잡성을 개발자에게서 숨기고, 단순한 프로그래밍 모델을 제공하는 것을 우선시했다.
+- **이벤트 기반 비동기 I/O**: JavaScript callback을 이벤트 루프로 조정하고, OS의 readiness/completion 알림과 libuv worker pool을 함께 사용한다. 동시 I/O마다 JavaScript 스레드를 하나씩 둘 필요가 없다.
+- **JavaScript 실행 모델**: 기본 isolate의 JavaScript는 주로 한 메인 스레드에서 실행되지만 Node.js 런타임이 한 스레드뿐인 것은 아니다. worker pool과 `worker_threads`는 별도 스레드를 사용한다.
 
 ### 철학: Unix의 영향
 Node.js의 설계 철학은 Unix의 영향을 강하게 받았다. **"작고 단순한 것이 아름답다(Small is beautiful)"**, **"한 가지 일을 잘하는 프로그램"** 같은 Unix 격언이 Node.js의 모듈 생태계(npm)와 코어 모듈 설계에 그대로 녹아 있다. 코어는 최소한만 제공하고, 나머지는 작은 모듈을 조합해 해결하는 방식이다.
 
 ### 면접 포인트
-- "왜 Node.js가 등장했나?" → **Apache 요청당 스레드 모델의 C10K 문제를 해결하기 위해.** 논블로킹 I/O + 이벤트 루프로 적은 리소스에서 많은 동시 연결을 처리할 수 있다.
-- "왜 싱글 스레드를 선택했나?" → **개발자가 동시성 버그(경쟁 조건, 데드락 등)를 걱정하지 않도록 복잡성을 런타임 내부로 숨기기 위해.** 대신 CPU 집약적 작업은 Worker Threads로 해결.
+- "왜 Node.js가 등장했나?" → 당시 흔했던 연결별 프로세스나 스레드와 blocking I/O 모델의 동시성 비용을 줄이기 위해서다. 이벤트 루프와 비동기 I/O로 많은 대기 연결을 적은 JavaScript 스레드에서 다중화한다.
+- "왜 기본 JavaScript 실행을 한 메인 스레드에 뒀나?" → 한 isolate 안의 공유 메모리 스레드 동기화 부담을 줄이고 callback 실행 모델을 단순화한다. 비동기 상태의 논리적 race는 여전히 제어해야 하고, CPU 집약 작업에 Worker Threads를 쓰면 공유 메모리 동기화도 다시 필요하다.
 
 ## 핵심 정의
 기본 Node.js 프로세스는 한 V8 isolate의 JavaScript를 메인 스레드와 이벤트 루프에서 실행한다. 하지만 프로세스 안에는 libuv thread pool과 런타임 보조 스레드가 있을 수 있고, 애플리케이션도 Worker Threads나 child process를 추가할 수 있다. 요청마다 JavaScript 스레드를 새로 만드는 모델은 아니다.
@@ -76,7 +76,7 @@ ECMAScript는 Promise, async function, job queue 같은 비동기 제어 의미�
 ```
 1. 이벤트루프를 활용하여 비동기 I/O를 효율적으로 처리. 단일 서버에서 수천 개 동시 연결 가능.
 2. NPM에서 제공되는 다양한 오픈 소스 라이브러리와 도구를 쉽게 사용할 수 있음.
-3. 스레드 동시성 관리 부담이 없어 동시성 버그가 적음.
+3. 기본 isolate에서는 공유 메모리 스레드 동기화 부담이 작음. 비동기 상태 race와 Worker Threads의 공유 메모리는 별도 제어 필요.
 4. 새로운 ECMAScript 표준을 브라우저 업데이트 없이 바로 사용 가능.
    Node.js 버전을 변경하여 사용할 ECMAScript 버전을 결정할 수 있고,
    --experimental-* 플래그로 실험적 기능도 활성화 가능.
@@ -160,8 +160,7 @@ JavaScript는 브라우저와 Node.js 모두에서 동작하지만, 두 환경�
 
 ## npm 패키지 관리자
 ```
-npm은 Node.js의 표준 패키지 관리자. npm 레지스트리에는 210만 개 이상의 패키지가 등록되어 있으며,
-지구상에서 가장 큰 단일 언어 코드 저장소이다. 대안: Yarn, pnpm
+npm은 Node.js와 함께 널리 쓰이는 패키지 관리자이며, 매우 큰 공개 레지스트리를 제공한다. 대안으로 Yarn, pnpm이 있다.
 ```
 
 ### 의존성 설치
@@ -175,9 +174,9 @@ npm install --no-save <package>          # package.json에 추가하지 않음
 
 | 타입 | 설명 |
 |------|------|
-| `dependencies` | 프로덕션 번들에 포함되는 필수 패키지 |
-| `devDependencies` | 개발 단계에만 필요 (테스트, 빌드 도구 등) |
-| `optionalDependencies` | 빌드 실패해도 설치 계속 진행 |
+| `dependencies` | 패키지 실행에 필요한 의존성. 번들 포함 여부는 번들러 설정과 배포 방식이 결정 |
+| `devDependencies` | 로컬 개발, 테스트, 빌드에 필요한 의존성. 배포 산출물을 미리 빌드한다면 런타임 설치에서 제외 가능 |
+| `optionalDependencies` | 설치에 실패해도 전체 설치는 실패하지 않는 선택 의존성. 코드에서 부재를 처리해야 함 |
 
 ### 스크립트 실행
 ```json
@@ -194,24 +193,17 @@ npm run start-dev
 npm run test
 ```
 
-## ECMAScript 2015+ 지원
-```
-Node.js는 최신 V8 엔진을 기반으로 구축. ECMA-262 명세의 새로운 기능을 적시에 제공한다.
-V8 버전 확인: node -p process.versions.v8
-```
+## ECMAScript와 V8 옵션
 
-| 분류 | 설명 | 플래그 |
-|------|------|--------|
-| Shipping | V8에서 안정적으로 판단한 기능. 기본 활성화 | 불필요 |
-| Staged | 거의 완성되었지만 불안정. `--harmony` 필요 | `--harmony` |
-| In Progress | 개발 중. 테스트 목적으로만 권장 | 개별 harmony 플래그 |
+Node.js가 제공하는 ECMAScript 기능은 **배포 대상 Node.js 릴리스에 포함된 V8**에 따라 달라진다. 지원 여부는 대상 릴리스의 Node.js 문서와 실제 버전으로 확인한다.
 
 ```bash
-node --harmony script.js          # staged 기능 활성화
-node --v8-options | grep "in progress"  # 진행 중인 기능 확인
+node --version
+node -p process.versions.v8
+node --v8-options
 ```
-- 프로덕션에서는 `--harmony` 플래그 사용을 제거하는 것이 권장됨
-- 지원 기능 확인: node.green 웹사이트
+
+`node --v8-options`는 현재 설치된 Node.js가 포함한 V8 옵션을 보여 준다. V8 옵션은 Node.js의 안정성 보장을 받지 않으므로, `--harmony`나 임의의 V8 실험 플래그를 기능 활성화의 일반 전략으로 쓰지 않는다. 운영 설정에는 대상 Node.js 릴리스가 문서화한 Node CLI 옵션만 명시한다.
 
 ## 비동기 프로그래밍
 ```
@@ -231,18 +223,6 @@ NODE_ENV는 Node.js 자체의 예약된 동작이 아니라 애플리케이션, 
 프로덕션 배포에서는 사용하는 프레임워크나 라이브러리가 요구하는 경우에만 `NODE_ENV=production`을 명시하고, 스테이징과 테스트는 목적에 맞는 값을 의도적으로 설정한다. 값의 의미와 배포 절차는 애플리케이션이 문서화해야 한다.
 
 **권장**: 최적화나 비즈니스 동작을 실행 환경과 무심코 결합하지 말고, 필요한 환경별 설정만 별도 환경 변수나 설정 파일로 관리한다. 프로덕션과 같은 경로가 필요한 검증은 별도 배포 설정으로 재현한다.
-
-## Userland Migrations
-```
-Node.js는 "userland" 코드가 새 기능을 채택하고 breaking changes를 처리하도록
-Codemod와의 협력으로 구축된 migrations를 제공한다.
-```
-
-```bash
-npx codemod @nodejs/import-assertions-to-attributes   # 실제 마이그레이션 예제
-```
-
-**모범 사례**: 별도 브랜치에서 실행, 변경사항 검토, 테스트 실행, 포맷팅/린팅 확인
 
 ## 하위 문서
 
@@ -290,6 +270,10 @@ npx codemod @nodejs/import-assertions-to-attributes   # 실제 마이그레이�
 ## 출처
 
 - [Node.js, Don't Block the Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)
+- [Node.js 0.1.5 documentation, early release archive](https://nodejs.org/download/docs/v0.1.5/)
+- [Ryan Dahl: Node.js — JSConf.eu 2009](https://www.jsconf.eu/2009/2009.html)
 - [Node.js Node-API](https://nodejs.org/api/n-api.html)
 - [Node.js, Environment Variables](https://nodejs.org/api/environment_variables.html)
+- [Node.js, Command-line API](https://nodejs.org/api/cli.html)
+- [npm, package.json dependencies](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#dependencies)
 - [ECMAScript Jobs and Promise reactions](https://tc39.es/ecma262/)

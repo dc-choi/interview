@@ -1,28 +1,29 @@
 ---
 tags: [architecture, monorepo, modularity, dependency, layered]
 status: done
+verified_at: 2026-08-26
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Monorepo Architecture", "모노레포 아키텍처", "Monorepo Monolith", "모노레포 모놀리스", "공통 패키지 함정", "Common Component Trap", "Conway's Law", "역 콘웨이 법칙", "Inverse Conway Maneuver"]
 ---
 
-# 모노레포 아키텍처 (모놀리스로 안 무너뜨리기)
+# 모노레포 아키텍처 (결합도와 배포 경계 관리)
 
-모노레포는 시간이 지나면 패키지들이 거대한 덩어리로 결합되는 모놀리스로 퇴화하기 쉽다. 파일은 한 저장소에 모여 있는데 내부 아키텍처는 모놀리스인 상태를 모노레포 모놀리스(Monorepo Monolith)라 한다. 모노레포의 이점을 지키려면 패키지의 독립성을 의도적으로 설계하고 도구로 강제해야 한다.
+모노레포에서는 저장소가 같다는 이유로 패키지 경계를 넘는 참조가 늘기 쉽다. 일부 팀은 이런 과도한 결합 상태를 비공식적으로 모노레포 모놀리스(Monorepo Monolith)라고 부른다. 하지만 모놀리스는 본래 하나의 배포 단위를 뜻하며, 내부가 잘 분리된 모듈러 모놀리스도 가능하다. 저장소 구조, 배포 경계, 코드 결합도를 구분해 관리해야 한다.
 
 ## 모노레포 vs 모놀리스 — 다른 축
 
 두 용어는 다루는 관점이 완전히 다르고 서로 직교한다.
 
-- **모놀리스(Monolith)** 는 아키텍처 관점이다. 하나의 코드베이스가 하나의 빌드 결과물로 패키징되어 배포되고, 내부 모듈이 강하게 결합돼 한 부분을 바꾸면 전체가 영향받는 구조다. 코드를 어디에 두든 빌드, 배포가 하나의 단위면 모놀리스다.
-- **모노레포(Monorepo)** 는 레포지토리 관리 관점이다. 여러 독립 패키지를 한 저장소에서 관리하는 방식일 뿐, 패키지들이 서로 어떻게 결합돼 있는지는 말하지 않는다.
+- **모놀리스(Monolith)** 는 아키텍처와 배포 관점이다. 애플리케이션이 하나의 배포 단위로 배포되며, 내부 모듈의 결합도는 별도 설계 문제다. 모듈 경계가 분명하고 내부 결합도가 낮은 모듈러 모놀리스도 가능하다.
+- **모노레포(Monorepo)** 는 레포지토리 관리 관점이다. 여러 프로젝트나 패키지를 한 저장소에서 관리하는 방식일 뿐, 배포 단위나 내부 결합도를 결정하지 않는다.
 
-그래서 멀티레포이면서 모놀리스일 수도, 모노레포이면서 완전히 독립된 패키지 집합일 수도, 모노레포이면서 동시에 모놀리스일 수도 있다. 모노레포 정의에 숨은 핵심어는 **독립적인(independent)** 이다. 물리적으로 같은 저장소에 있다는 사실이 논리적으로 결합돼야 한다는 뜻은 아니다. 각 패키지의 책임이 명확하고 변경이 불필요하게 전파되지 않아야 한다.
+그래서 멀티레포이면서 모놀리스일 수도, 모노레포에서 여러 서비스를 따로 배포할 수도, 모노레포이면서 하나의 모놀리스로 배포할 수도 있다. 물리적으로 같은 저장소에 있다는 사실이 논리적으로 결합돼야 한다는 뜻은 아니다. 각 패키지의 책임을 명확히 하고 변경이 불필요하게 전파되지 않게 관리해야 한다.
 
 증상으로 드러나는 모노레포 모놀리스: 유틸 함수 하나 고쳤는데 CI가 30분 돌고, 한 팀이 shared 인터페이스를 바꾸자 다른 팀 PR이 줄줄이 막히고, common 패키지가 수천 줄로 불어 뭘 하는지 아무도 모르고, 신규 입사자가 이 패키지를 건드리면 어디까지 영향이 가냐 물어도 답하는 사람이 없다.
 
 ## 공통 패키지 함정 (Common Component Trap)
 
-모노레포를 모놀리스로 만드는 가장 큰 원인은 공통이라는 단어의 남용이다. 코드가 두 곳에서 반복된다는 사실이 곧 그것이 공통임을 의미하지 않는다 — 반복을 보자마자 shared, common으로 추출하는 것은 1차원적 사고다.
+모노레포 내부 결합도를 키우는 주요 원인은 공통이라는 단어의 남용이다. 코드가 두 곳에서 반복된다는 사실이 곧 그것이 공통임을 의미하지 않는다 — 반복을 보자마자 shared, common으로 추출하는 것은 1차원적 사고다.
 
 예를 들어 로그인 유저의 권한을 확인하는 `useUserPermission` 훅이 두 화면에서 쓰인다고 공통 패키지에 넣으면, 그 순간 shared가 User, Permission이라는 **도메인 지식**을 갖게 된다. 권한 모델이 바뀌면 shared를 고쳐야 하고, shared를 참조하는 모든 패키지가 영향받는다. shared의 fan-in(피참조 수)이 높을수록 작은 도메인 변경 하나가 거대한 재빌드 폭풍을 일으킨다.
 
@@ -32,13 +33,15 @@ aliases: ["Monorepo Architecture", "모노레포 아키텍처", "Monorepo Monoli
 
 탈출법은 단순하다. 코드가 반복되는 **이유**를 묻는다. 같은 도메인 개념을 다루기 때문이라면 공통이 아니라 특정 도메인 계층에 속하고, 도메인과 무관하게 언제 어디서든 쓰일 수 있는 것만이 진정한 공통이다.
 
-## 변화율(Rate of Change)로 계층 나누기
+## 의존 안정성과 변화율을 함께 보기
 
-패키지 독립성을 폴더 구조로 구현하는 기준은 **변화율**이다. 근거는 Robert C. Martin의 Clean Architecture에 나오는 **Stable Dependencies Principle(SDP)** — 컴포넌트는 자신보다 더 안정적인(stable) 컴포넌트에만 의존해야 한다. 여기서 안정적이란 변화율이 낮다는 뜻이다. 불안정한 것이 안정적인 것에 의존하는 방향은 자연스럽지만, 반대로 안정적인 것이 불안정한 것에 의존하면 안정성이 깨진다. 그래서 변화율이 낮은 순으로 계층을 쌓고 의존을 한 방향으로만 흐르게 한다.
+Robert C. Martin의 **Stable Dependencies Principle(SDP)** 은 컴포넌트가 자신보다 안정적인 컴포넌트에 의존해야 한다고 말한다. 여기서 안정성은 변경 빈도가 아니라 의존 그래프의 `I = Ce / (Ca + Ce)`로 측정한다. `Ce`는 밖으로 나가는 의존, `Ca`는 밖에서 들어오는 의존이며, `I`가 낮을수록 `Ca`가 `Ce`에 비해 우세한 안정적 위치라는 뜻이다. 소비자 수와 변경 영향은 절대 `Ca`, fan-in과 실제 영향 범위로 별도 확인한다.
 
-아래로 갈수록 안정적인(변화율 낮은) 계층 예시:
+변화율은 별도 관측값이다. Git 이력, 소유 팀, 릴리스 빈도와 장애 영향으로 확인한다. 낮은 `I`의 패키지가 실제로 자주 바뀌면 public API를 더 작게 만들거나 경계를 재검토해야 한다. 반대로 자주 바뀌는 feature가 안정적인 기반에 의존하는 것은 자연스럽다.
 
-- **shared** — 도메인 지식이 전혀 없는 기반. 날짜 포맷, 문자열 처리, 수학 유틸, 공통 타입 가드. 가장 안정적이어야 하며, 여기가 자주 바뀌면 위에 쌓인 모든 것이 흔들린다.
+아래는 한 프런트엔드 계층 규칙의 예시다. SDP가 이 폴더명을 직접 요구하는 것은 아니며, 의존 방향과 실제 변화 데이터를 함께 검증해야 한다.
+
+- **shared** — 도메인 지식이 전혀 없는 기반. 날짜 포맷, 문자열 처리, 수학 유틸, 공통 타입 가드. fan-in이 높아 변경 비용이 크므로 API를 작게 유지하고 변경 이력도 관찰한다.
 - **entity** — 도메인 모델. User, Document, Template 같은 핵심 개념을 타입으로 표현하고 검증, 변환 로직을 담는 데이터의 형태(shape) 정의 공간. shared보다는 변화율이 높지만 비즈니스 규칙보다는 안정적이다.
 - **feature** — 단일 feature의 mutation과 그에 필요한 validation, 비즈니스 로직. 아직 UI는 직접 다루지 않는다.
 - **service** — 실제 비즈니스 use-case. n개의 entity와 m개의 feature를 호출, 조합해 하나의 비즈니스 플로우를 완결한다.
@@ -48,7 +51,7 @@ aliases: ["Monorepo Architecture", "모노레포 아키텍처", "Monorepo Monoli
 
 이 구조의 두 규칙:
 
-1. **단방향 의존** — 상위 계층만 하위 계층을 참조한다. feature는 entity, shared를 참조할 수 있지만 entity가 feature를 참조하는 역방향은 금지한다.
+1. **단방향 의존** — 이 계층 규칙에서는 상위 계층만 하위 계층을 참조한다. feature는 entity, shared를 참조할 수 있지만 entity가 feature를 참조하는 역방향은 금지한다.
 2. **같은 계층 간 참조 금지** — feature-auth가 feature-payment를 직접 참조할 수 없다. 두 feature가 공유할 것이 있으면 하위 계층(entity 또는 shared)으로 내린다. 이것이 추상화를 적절한 위치로 강제 이동시킨다. 같은 계층끼리 참조하면 순환 의존이 생기거나, 순환이 없어도 변경 전파 경로가 예측 불가능해져 계층 경계가 무의미해지기 때문이다.
 
 ## 규칙을 코드로 강제 — Public API 패턴
@@ -71,13 +74,13 @@ aliases: ["Monorepo Architecture", "모노레포 아키텍처", "Monorepo Monoli
 
 코드 공유의 3레벨도 명시적이다 — 모듈(한 앱 안), npm 패키지(느슨히 연결된 조직 간 배포), 모노레포 라이브러리(회사/프로젝트 경계 안 경량 공유, `libs/` + `@app` 경로 별칭). 라이브러리의 핵심 이점은 **커밋 즉시 모든 소비자가 최신 버전을 본다**는 것(npm 버저닝/설치 사이클 제거)이고, 무엇을 라이브러리로 뽑을지는 설계 결정이다 — 코드 복사가 아니라 앱과의 디커플링을 강제해 선행 비용이 들지만 다중 앱 조립 속도로 회수한다 (위 공통 패키지 함정의 판단 기준과 같은 축).
 
-워크스페이스 함정 하나: 호이스팅이 어긋나 `@nestjs/core`가 루트와 하위 패키지에 두 벌 로드되면 DI 컨테이너가 갈라져 `ModuleRef`를 못 찾는 에러가 난다 — Yarn은 nohoist, pnpm은 peerDependencies + dependenciesMeta injected로 단일 인스턴스를 강제한다 ([[Custom-Provider|DI 진단]] 참조).
+워크스페이스 함정 하나: 호이스팅이 어긋나 `@nestjs/core`가 루트와 하위 패키지에 두 벌 로드되면 DI 컨테이너가 갈라져 `ModuleRef`를 못 찾는 에러가 난다. 공유 라이브러리는 Nest 패키지를 `peerDependencies`로 선언하고 소비 앱이 호환 버전 하나를 제공하게 한다. pnpm의 `dependenciesMeta.*.injected`는 consumer별 peer dependency 해석을 위해 hard-linked copy를 만드는 기능이지 단일 인스턴스를 강제하는 옵션이 아니다 ([[Custom-Provider|DI 진단]] 참조).
 
 ## 면접 체크포인트
 
 - 모노레포(레포 관리)와 모놀리스(아키텍처, 배포)가 직교하는 개념이라 모노레포이면서 모놀리스인 상태가 가능하다는 점
 - 코드 반복이 곧 공통이 아니다 — 도메인 의존 여부로 진짜 공통과 도메인 계층을 가른다 (God Package, fan-in 폭증)
-- SDP: 변화율이 낮은(안정적인) 쪽으로만 의존, 그래서 변화율을 기준으로 계층을 쌓는다
+- SDP: `I = Ce / (Ca + Ce)`가 낮은 의존 안정성 쪽으로 의존한다. 변경 빈도는 별도 데이터로 관찰한다
 - 단방향 의존 + 같은 계층 참조 금지가 순환 의존과 변경 전파를 막는 메커니즘
 - 규칙은 linter, CI로 강제 — Public API(배럴) 패턴으로 우연적 커플링 차단과 내부 구현 캡슐화
 - Conway's Law와 역 콘웨이 법칙 — 팀 독립성을 코드 구조(fragment 자율 배포)로 보장, 규칙은 플랫폼이 강제
@@ -85,9 +88,12 @@ aliases: ["Monorepo Architecture", "모노레포 아키텍처", "Monorepo Monoli
 ## 출처
 
 - 모노레포가 모놀리스가 되지 않으려면 (1편, 2편) — 미리캔버스 프론트엔드 팀(종현 김), Medium
+- [AWS Prescriptive Guidance — Decomposing monoliths into microservices](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/)
+- [Principles and Patterns — Robert C. Martin](https://objectmentor.com/resources/articles/Principles_and_Patterns.pdf)
 - [NestJS — Workspaces (monorepo mode)](https://docs.nestjs.com/cli/monorepo)
 - [NestJS — Libraries](https://docs.nestjs.com/cli/libraries)
 - [NestJS — Common errors (FAQ)](https://docs.nestjs.com/faq/common-errors)
+- [pnpm — dependenciesMeta.injected](https://pnpm.io/package_json#dependenciesmetainjected)
 
 ## 관련 문서
 

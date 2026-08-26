@@ -7,7 +7,7 @@ aliases: ["Bifunctors and Profunctors", "Functoriality", "Bifunctor", "Profuncto
 
 # Bifunctors, Profunctors, Functor 변형
 
-기본 [[Functors|Functor]]는 한 인자에 대해 functorial이지만, 실무에서는 **두 인자 모두에 functorial**(Bifunctor), **사상 방향이 역전된**(Contravariant), **두 방향이 섞인**(Profunctor) 변형이 자주 등장한다. 이 변형들과 그 합성 규칙이 ADT가 "자동으로 Functor가 되는" 카테고리적 근거다.
+기본 [[Functors|Functor]]는 한 인자에 대해 functorial이지만, 실무에서는 **두 인자 모두에 functorial**(Bifunctor), **사상 방향이 역전된**(Contravariant), **두 방향이 섞인**(Profunctor) 변형이 자주 등장한다. 이 변형과 합성 규칙은 일부 ADT에서 `map`을 유도하는 근거가 되지만, 모든 ADT가 자동으로 Functor가 되는 것은 아니다.
 
 ## 핵심 명제
 
@@ -132,9 +132,9 @@ const dimap = <A, B, C, D>(
 
 이 Profunctor 구조가 **Lens, Optics 라이브러리**의 수학적 토대.
 
-## Functor 합성 — 복합 컨테이너도 Functor
+## Functor 합성 — 복합 컨테이너에 map을 유도할 수 있는 경우
 
-Functor, Bifunctor, Profunctor를 합성해도 결과는 같은 종류의 펑터. 즉 펑터들은 **닫힌 합성 시스템**을 이룬다.
+Functor `F: C → D`와 `G: D → E`는 합성 `G ∘ F`도 Functor다. 아래는 Bifunctor 안쪽에 두 Functor를 넣어 새 Bifunctor를 만드는 특정 구성이다. Bifunctor와 Profunctor 일반이 같은 방식으로 무조건 합성된다는 뜻은 아니다.
 
 대표 패턴 — 두 펑터를 Bifunctor 안에 넣어 새 Bifunctor 만들기:
 
@@ -146,15 +146,11 @@ instance (Bifunctor bf, Functor fu, Functor gu) =>
     bimap f g (BiComp x) = BiComp (bimap (fmap f) (fmap g) x)
 ```
 
-이게 **ADT가 자동으로 Functor가 되는 이유**.
+## ADT에서 Functor를 도출할 수 있는 조건
 
-## ADT의 자동 Functor 도출
+`Maybe a ≅ Either () a`처럼 마지막 타입 변수 `a`가 공변 위치에만 나타나는 ADT는 `fmap`을 구조적으로 유도할 수 있다. 반대로 `data Contra a = Contra (a -> Int)`처럼 함수 입력의 반공변 위치에 `a`가 나타나면 일반적인 `Functor`를 만들 수 없다.
 
-ADT는 **Const(인자 무시), Identity(그대로), Tuple(Bifunctor), Either(Bifunctor)** 의 합성으로 만들어진다. 빌딩 블록이 이미 펑터이므로 합성 결과도 자동으로 펑터.
-
-예: `Maybe a ≅ Either (Const () a) (Identity a)` → 손으로 `fmap`을 짜지 않아도 도출 가능.
-
-Haskell `{-# LANGUAGE DeriveFunctor #-}`의 `data Tree a = ... deriving Functor`가 이 카테고리적 사실에 근거한 자동 코드 생성. Rust/Scala의 derive 매크로도 같은 원리.
+Haskell의 `DeriveFunctor`도 이 조건을 검사한다. 자동 생성은 구현 생성을 도울 뿐, 사용자가 정의한 `map`이나 다른 언어의 매크로가 Functor 법칙까지 증명해 주지는 않는다. Rust와 Scala에는 언어 표준의 범용 `Functor` derive가 없으므로 라이브러리별 제약과 생성 결과를 확인한다.
 
 ## 자주 헷갈리는 포인트
 
@@ -163,7 +159,7 @@ Haskell `{-# LANGUAGE DeriveFunctor #-}`의 `data Tree a = ... deriving Functor`
 - **Contravariant는 "거꾸로 매핑"이 아니라 "입력 위치 매핑"** — 함수 합성으로 입력을 변환
 - **Profunctor가 "양방향 Functor" 아님** — 첫 인자 역, 둘째 인자 정. 비대칭
 - **함수 타입은 `(input, output)` 페어가 아닌 Profunctor** — Tuple과 다른 카테고리적 의미
-- **`deriving Functor`가 가능한 건 우연이 아님** — Const/Identity/Either/(,)의 합성이라는 카테고리적 근거. 임의의 타입 생성자는 자동 도출 안 됨
+- **`deriving Functor`는 무조건 가능하지 않음** — 마지막 타입 변수가 공변 위치에만 나타나는지 확인해야 하며, 임의의 타입 생성자는 자동 도출할 수 없음
 
 ## 면접 체크포인트
 
@@ -171,12 +167,13 @@ Haskell `{-# LANGUAGE DeriveFunctor #-}`의 `data Tree a = ... deriving Functor`
 - **Contravariant Functor**의 `contramap`과 함수 입력 위치의 카테고리적 의미
 - **Profunctor**의 `dimap`이 함수 변환에 어떻게 동작하는가
 - **함수 타입 `a → b`가 Profunctor**인 이유 (입력 역, 출력 정)
-- **ADT가 자동으로 Functor**가 되는 카테고리적 근거 (빌딩 블록 합성)
-- `deriving Functor`/`derive_more`/`#[derive(Debug, Clone)]` 같은 자동 도출의 수학적 정당성
+- ADT에서 `Functor`를 도출할 수 있는 공변 위치 조건
+- `DeriveFunctor`가 거부하는 반공변 위치와 Functor 법칙 검증의 책임
 - **Lens, Optics**가 Profunctor 구조 위에 만들어진다는 사실
 
 ## 출처
 - [evan-moon — 프로그래머를 위한 카테고리 이론 8. Functoriality](https://evan-moon.github.io/2024/04/02/category-theory-for-programmers-8-functoriality/)
+- [GHC User's Guide, Deriving Functor instances](https://downloads.haskell.org/~ghc/9.12.3/docs/users_guide/exts/deriving_extra.html)
 
 ## 관련 문서
 - [[Functors|Functors — 기본 정의와 법칙]]

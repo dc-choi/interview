@@ -1,13 +1,14 @@
 ---
 tags: [performance, cpu-bound, io-bound, optimization, nodejs, language]
 status: done
+verified_at: 2026-08-26
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["CPU-Bound vs IO-Bound", "CPU-Intensive vs IO-Intensive", "CPU vs IO", "병목 구분"]
 ---
 
 # CPU-Bound vs I/O-Bound
 
-작업의 **병목이 CPU인지 I/O인지**에 따라 최적화 전략이 완전히 달라진다. 언어, 하드웨어, 아키텍처 선택의 출발점.
+작업의 **병목이 CPU인지 I/O인지**에 따라 우선할 최적화 전략이 크게 달라진다. 언어, 하드웨어, 아키텍처 선택의 출발점이다.
 
 ## 핵심 명제
 
@@ -39,40 +40,41 @@ aliases: ["CPU-Bound vs IO-Bound", "CPU-Intensive vs IO-Intensive", "CPU vs IO",
 - 메시지 큐 소비
 - 사용자 입력 대기
 
-진단 명령: `top`, `htop`에서 `%CPU`는 낮은데 응답 지연이 크면 I/O-Bound. `%CPU`가 코어 수 × 100%에 근접하면 CPU-Bound. `iotop`, `netstat`, 분산 추적으로 확인.
+진단할 때 `top`, `htop`에서 `%CPU`가 코어 수에 비례해 포화되는지는 CPU 병목의 단서다. CPU는 낮은데 응답이 느리면 I/O 대기뿐 아니라 lock 경합, connection pool 대기와 upstream queueing도 후보이므로 CPU profile, `iotop`, socket 지표와 분산 추적으로 시간을 나눠 확인한다.
 
 ## 언어 선택에 주는 영향
 
 ### CPU-Bound에서 언어가 중요한 이유
 
-단일 스레드 기준 성능:
-- **C/C++/Rust**: 기계어에 가까움 → 가장 빠름
-- **Go/Java/C# (JIT)**: C++ 대비 1.5~3배 느림
-- **Node.js V8**: JIT이지만 dynamic typing 오버헤드
-- **Python**: C/C++ 대비 10~100배 느림 (GIL 포함)
+단일 thread의 CPU 성능은 언어 이름만으로 고정되지 않는다.
 
-알고리즘 대회에서 C/C++이 유리한 이유, BOJ에서 Python +10s, Java +2s 주는 이유.
+- **C/C++/Rust**는 native compilation과 memory control로 낮은 runtime overhead를 만들 수 있다.
+- **Go/Java/C#**은 runtime과 JIT 또는 AOT 특성, GC, warm-up과 workload에 따라 결과가 달라진다.
+- **Node.js V8**도 JIT 최적화를 하지만 value shape 변화와 allocation이 hot path 비용에 영향을 줄 수 있다.
+- **Python**의 pure Python loop는 interpreter overhead가 크지만 native extension, vectorization과 다른 process로 병목을 옮길 수 있다.
 
-### I/O-Bound에서 언어가 중요하지 않은 이유
+온라인 judge의 언어별 시간 보정은 해당 judge의 측정 정책이며 일반적인 언어 성능 배수로 사용하지 않는다.
 
-I/O 대기 중에는 CPU가 idle. 언어가 아무리 빨라도 **네트워크 RTT 10ms를 줄일 수 없음**. 이때 중요한 건:
+### I/O-Bound에서 언어 차이의 비중이 줄 수 있는 이유
+
+I/O 대기 중에는 해당 작업이 CPU를 계속 쓰지 않는다. 언어 실행 속도만으로 **외부 네트워크 RTT 자체를 없앨 수는 없다**. 이때 중요한 건:
 - 비동기 I/O 지원 (epoll, kqueue, io_uring)
 - 이벤트 루프, async/await의 완성도
 - 커넥션 풀, 스트림, backpressure 처리
 
-**Node.js, Go, Python asyncio**가 C++보다 **개발 생산성**이 좋으므로 웹 서버에선 오히려 유리.
+Node.js, Go, Python asyncio와 C++는 비동기 I/O를 처리하는 방식과 생태계가 다르다. 개발 생산성은 팀 숙련도와 라이브러리, 운영 요구를 포함해 판단한다.
 
-## 웹 서버 — 대부분 I/O-Bound
+## 웹 서버 — I/O 대기가 큰 경우가 많다
 
 일반적인 웹 백엔드 요청 흐름:
 1. HTTP 요청 수신 (I/O)
 2. JSON 파싱 (CPU, 짧음)
-3. DB 조회 (I/O, 압도적)
+3. DB 조회 (I/O)
 4. 비즈니스 로직 (CPU 대부분 짧음)
 5. 외부 API 호출 (I/O)
 6. 응답 직렬화 (CPU, 짧음)
 
-99%가 I/O 대기 → **언어 선택이 큰 영향을 주지 않음**. Node.js가 C++만큼 빠른 서버를 만들 수 있는 이유.
+대부분이 I/O 대기라면 언어 실행 비용의 비중은 작아질 수 있다. 다만 serialization, 메모리 관리와 런타임 overhead는 남으므로 같은 성능을 보장하지 않고 실제 workload로 측정한다.
 
 ## 대용량 서비스에서 CPU-Bound가 늘어난다
 
@@ -84,7 +86,7 @@ I/O 대기 중에는 CPU가 idle. 언어가 아무리 빨라도 **네트워크 R
 - 검색 인덱싱
 
 이때 흔히 취하는 패턴:
-- **서비스 분리** — CPU-heavy 작업을 별도 서비스로 (Node → Python/Go/C++ 마이크로서비스)
+- **서비스 분리** — 격리와 독립 확장이 필요할 때 CPU-heavy 작업을 별도 worker나 서비스로 분리
 - **언어 혼용** — 한 프로세스 안에서 C++ addon 호출 (Python C extension, Node native module, Tensorflow)
 - **전용 하드웨어** — GPU, TPU, FPGA로 오프로드
 - **사전 계산** — 쿼리 시점 계산을 쓰기 시점이나 배치로
@@ -101,10 +103,10 @@ I/O 대기 중에는 CPU가 idle. 언어가 아무리 빨라도 **네트워크 R
 
 ## 흔한 오해
 
-- **"C++로 짜면 무조건 빨라진다"** — I/O-Bound에서는 거의 차이 없음. 개발 비용만 커짐
-- **"Node.js는 느려서 대규모 서비스에 부적합"** — 웹 서버 대부분 I/O-Bound라 충분. 넷플릭스, 우버도 Node 사용
-- **"비동기 = 빠름"** — 비동기는 I/O-Bound에서만 의미. CPU-Bound 작업을 async로 감싸면 오히려 이벤트 루프 블로킹
-- **"멀티스레드면 CPU 최적화"** — I/O-Bound 작업을 멀티스레드로 만들어도 대기 시간은 같음. 병렬 처리에 필요한 동시성 향상은 async로 충분
+- **"C++로 짜면 무조건 빨라진다"** — I/O-Bound에서는 네트워크와 저장소 대기가 더 큰 병목일 수 있다. 측정 없이 언어 교체부터 하지 않는다.
+- **"Node.js는 느려서 대규모 서비스에 부적합"** — 요청별 JavaScript 작업을 작게 유지하는 I/O 중심 workload에는 적합할 수 있고, CPU-heavy 경로는 별도로 측정하고 격리한다.
+- **"비동기 = 빠름"** — 비동기는 대기 중 다른 작업을 진행하게 하지만 CPU-Bound JavaScript를 병렬화하지 않는다. CPU 작업은 worker, 별도 process나 native 경로로 격리한다.
+- **"멀티스레드면 CPU 최적화"** — thread를 늘린다고 외부 I/O 지연이 줄지는 않는다. blocking API 격리나 CPU 병렬화처럼 thread가 필요한 이유와 queueing 비용을 먼저 측정한다.
 - **"Node.js는 싱글 스레드"** — 이벤트 루프만 싱글. libuv 스레드 풀, Worker Threads로 CPU-Bound 처리 가능 (자세히 [[Single-vs-Multi-Thread]])
 - **"CPU-Bound를 async로 처리"** — 실패 패턴. Worker Thread, 별도 프로세스, RPC로 분리해야
 
@@ -131,6 +133,7 @@ I/O 대기 중에는 CPU가 idle. 언어가 아무리 빨라도 **네트워크 R
 ## 출처
 - [arca.live 프로그래머즈 — CPU-intensive vs I/O-intensive (모댕숲)](https://arca.live/b/programmers/62350982)
 - [Node.js — Don't Block the Event Loop](https://nodejs.org/ko/docs/guides/dont-block-the-event-loop/)
+- [Node.js, Worker threads](https://nodejs.org/api/worker_threads.html)
 
 ## 관련 문서
 - [[Latency-Optimization|레이턴시 최적화 개관]]

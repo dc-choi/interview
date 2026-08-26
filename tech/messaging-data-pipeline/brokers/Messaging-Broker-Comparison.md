@@ -1,6 +1,7 @@
 ---
 tags: [messaging, rabbitmq, bullmq, sqs, kafka, broker]
 status: done
+verified_at: 2026-08-26
 category: "Messaging - 브로커"
 aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 ---
@@ -34,12 +35,12 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 ### 강점
 - **성숙도**: 2007년부터 프로덕션 사용. 검증됨
 - **유연한 라우팅**: Direct, Fanout, Topic, Headers Exchange 4종으로 거의 모든 메시징 패턴 표현
-- **성능**: TCP 기반 직접 통신 → 낮은 지연
-- **프로토콜**: AMQP, MQTT, STOMP, HTTP 등 다양
-- **신뢰성**: Mirroring, Persistence, Quorum Queue로 고가용성
+- **지연 특성**: 장기 AMQP 연결로 메시지를 전달한다. 실제 지연은 publisher confirm, persistence, queue 종류와 복제 설정을 함께 측정
+- **프로토콜**: AMQP 0-9-1과 AMQP 1.0을 중심으로, plugin을 통해 MQTT와 STOMP 등을 지원. HTTP는 관리 API의 별도 경로
+- **복제 고가용성**: RabbitMQ 4.x에서는 Quorum Queue 또는 Stream을 사용. classic queue mirroring은 4.0에서 제거됐고, persistence만으로는 복제나 고가용성을 제공하지 않음
 
 ### 약점
-- **운영 부담**: 클러스터링, 미러링, Disk, Erlang 런타임 이해 필요
+- **운영 부담**: 클러스터링, Quorum Queue 또는 Stream, Disk, Erlang 런타임 이해 필요
 - **수동 처리 필요**: 커넥션, 재시도, persistence 옵션을 앱에서 설계해야
 - **Node.js 통합**: 라이브러리는 있으나 BullMQ만큼 매끈하지 않음
 
@@ -51,16 +52,16 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 ## BullMQ
 
 ### 강점
-- **작업 상태 내장**: Pending, Active, Completed, Failed, Delayed, Waiting 자동 관리
+- **작업 상태 내장**: wait, prioritized, delayed, waiting-children, active, completed, failed 등을 관리
 - **재시도, 백오프**: 내장. 설정만 하면 됨
-- **NestJS 친화**: `@Processor()`, `@Process()` 데코레이터로 선언적
+- **NestJS 친화**: BullMQ consumer는 `@Processor()`와 `WorkerHost.process(job)`로 선언적으로 구현 (`@Process()` handler는 BullMQ에 쓰지 않음)
 - **Bull Board**: 웹 대시보드로 작업 모니터링
-- **지연 큐, 반복 작업**: cron 표현으로 정기 작업 간단
+- **지연 작업, Job Scheduler**: 지연 실행과 cron 또는 주기 기반 작업 생성 지원
 
 ### 약점
 - **Redis 의존**: Redis 장애가 곧 큐 장애. Redis 자체 이중화 필요
 - **메시지 브로커보다 작업 큐**: pub/sub, fanout 패턴은 Redis pub/sub으로 별도
-- **성능**: RabbitMQ 대비 느림 (Redis 오버헤드)
+- **상태 관리 비용**: 작업 상태, 재시도와 잠금 갱신을 Redis에 기록하므로 단순 전달 브로커와 비용 구조가 다름. 처리량은 작업 옵션과 Redis 구성으로 측정
 
 ### 적합
 - Node.js/NestJS 환경
@@ -78,10 +79,10 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 - **DLQ, FIFO**: 내장 지원
 
 ### 약점
-- **폴링 기반**: 컨슈머가 받아가기 전까지 큐 대기 시간이 붙는다. 위 성능 절의 실험에서 SQS는 실측이 아니라 저자 추정이다
+- **폴링 기반**: 컨슈머가 `ReceiveMessage`로 배치를 가져간다. long polling은 빈 응답과 호출 수를 줄이지만, 처리 지연은 poll 대기, consumer 수와 batch 설정으로 측정해야 한다. 위 성능 절의 SQS 평가는 실측이 아니다
 - **메시지 순서**: Standard는 순서 보장 없음. 일반 FIFO 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지이며 고처리량 FIFO는 리전별 API 할당량과 MessageGroupId 분산을 확인
 - **라우팅 약함**: Fanout은 SNS+SQS 조합으로 우회
-- **AWS 종속**: 이식성 없음
+- **AWS 종속**: IAM, EventBridge, Lambda 통합을 깊게 쓰면 다른 큐로 이전할 때 어댑터와 운영 구성을 다시 만들어야 함
 
 ### 적합
 - AWS 생태계 중심 인프라
@@ -113,7 +114,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 ## 선택 플로차트
 
 ```
-메시지 양 > 수만/초 + 재생 필요?
+재생과 장기 보관이 핵심이고 파티션 확장이 필요한가?
   ├─ YES → Kafka
   └─ NO
       ↓
@@ -128,7 +129,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 
 ## 조합 사용도 흔함
 
-실제 대규모 시스템은 **한 브로커만 쓰지 않음**:
+요구사항이 분명히 다르면 여러 브로커를 조합할 수 있다:
 - 내부 이벤트, CDC: **Kafka**
 - 비동기 작업 처리 (이메일, 알림): **BullMQ** 또는 **SQS**
 - 서비스 간 RPC, fanout: **RabbitMQ** (또는 Kafka)
@@ -143,7 +144,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 - **트래픽을 실제로 세어봤다**: 월 발주 약 10만 건 x 이벤트 액션 5종 = 월 약 50만 메시지. 비배치 성공 처리라면 Send, Receive, Delete로 약 150만 SQS API 요청이 발생해 월 100만 요청 Free Tier를 다소 넘는 규모였다. 2026-08-21 AWS 공식 가격표의 Asia Pacific (Seoul) 표준 큐 1단계 단가(백만 건당 $0.40)를 적용하면 SQS 초과분은 약 $0.20이고 EventBridge 이벤트 발행 과금은 별도다. 실제 청구는 배치, 빈 폴링, 재시도, payload 크기, 리전과 계정의 프리 티어 적용 여부에 따라 달라진다. 재현 가능한 결론은 이 조건의 SQS 요청 초과분이 작았고, Kafka의 처리량과 리플레이가 요구사항이 아니었다는 데까지다.
 - **도메인 특성**: 발주는 초 단위 실시간성보다 최종 일관성이 중요하다. 몇 초 뒤에 발주서가 나가도 업무가 깨지지 않는다. 대신 유실은 안 되므로 진짜 요구사항은 재시도와 DLQ였다.
 
-결론은 EventBridge + SQS. 발주 이벤트가 발생하면 발주 처리 큐로 메시지를 보내고, 발주가 끝나면 수주 처리로 이어진다. 그다음 알림 이벤트에서 공급사 발주 알림톡, 공급사 발주서 메일, 고객사 거래명세서 메일이 각각의 SQS 큐로 병렬 분기해 워커가 동시에 처리한다. 발주 도메인의 비즈니스 로직에서 후속 처리 호출이 빠져 결합도가 내려갔고, 브로커 고정비는 발생하지 않았다. 채널별 DLQ 정책은 [[EventBridge-SQS-Target|EventBridge → SQS 타겟 패턴]].
+결론은 EventBridge + SQS. 발주 이벤트가 발생하면 발주 처리 큐로 메시지를 보내고, 발주가 끝나면 수주 처리로 이어진다. 그다음 알림 이벤트에서 공급사 발주 알림톡, 공급사 발주서 메일, 고객사 거래명세서 메일이 각각의 SQS 큐로 병렬 분기해 워커가 동시에 처리한다. 발주 도메인의 비즈니스 로직에서 후속 처리 호출이 빠져 결합도가 내려갔고, 별도 브로커 인스턴스의 고정비는 없었지만 SQS와 EventBridge의 사용량 과금은 발생할 수 있다. 채널별 DLQ 정책은 [[EventBridge-SQS-Target|EventBridge → SQS 타겟 패턴]].
 
 ## 운영 관점 차이
 
@@ -178,6 +179,9 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 - [Amazon SQS pricing — 요청 과금, Free Tier](https://aws.amazon.com/sqs/pricing/)
 - [AWS Price List API — Amazon SQS 현재 리전별 단가](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSQueueService/current/index.json)
 - [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+- [RabbitMQ 공식 문서, What's New in RabbitMQ 4.0](https://blog.rabbitmq.com/docs/4.0/whats-new)
+- [NestJS 공식 문서, Queues (BullMQ consumers)](https://docs.nestjs.com/techniques/queues)
+- [BullMQ 공식 문서, Architecture와 job lifecycle](https://docs.bullmq.io/guide/architecture)
 - [RabbitMQ 공식 문서, Time-To-Live and Expiration](https://www.rabbitmq.com/docs/ttl)
 - [Apache Kafka Documentation — Message Delivery Semantics](https://kafka.apache.org/documentation/#semantics)
 - [Apache Kafka 4.0 Release Announcement — KRaft only](https://kafka.apache.org/blog/2025/03/18/apache-kafka-4.0.0-release-announcement/)

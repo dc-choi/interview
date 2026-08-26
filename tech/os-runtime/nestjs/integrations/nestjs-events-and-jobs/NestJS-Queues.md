@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, bullmq, queue, redis, background-job]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Queues", "@nestjs/bullmq", "BullMQ 통합"]
 ---
@@ -56,7 +57,7 @@ export class AudioConsumer extends WorkerHost {
 ## 큐 관리와 분리 프로세스
 
 - `queue.pause()` / `resume()` — pause는 **새 잡 처리만** 멈추고, 진행 중인 잡은 끝까지 계속된다.
-- **Separate processes**: processor를 파일 경로로 등록하면 forked 프로세스에서 실행 — 크래시가 워커에 전파되지 않고(샌드박스), 블로킹 코드를 써도 잡이 stall되지 않으며, 멀티코어 활용과 Redis 연결 수 감소 이점.
+- **Separate processes**: processor를 파일 경로로 등록하면 forked 프로세스에서 실행 — 크래시가 워커에 전파되지 않고(샌드박스), 블로킹 코드를 써도 잡이 stall되지 않으며, 멀티코어 활용과 Redis 연결 수 감소 이점. 대신 fork된 함수에는 Nest DI/IoC 컨테이너가 없으므로 필요한 외부 의존성을 그 파일에서 직접 생성해야 한다.
 
 ## 관련 문서
 

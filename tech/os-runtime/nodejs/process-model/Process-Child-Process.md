@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs, process, child-process, ipc]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime"
 aliases: ["Node.js Process", "Child Process", "spawn vs fork"]
 ---
@@ -121,7 +122,7 @@ process.on('message', msg => {
 });
 ```
 
-- **부모-자식 IPC 채널**이 자동 생성 → 객체 송수신 (구조화 복제).
+- **부모-자식 IPC 채널**이 자동 생성된다. 기본 직렬화는 JSON이므로 JSON으로 표현 가능한 값만 보낸다. `BigInt`, `Map`, `Set`, `Buffer` 등이 필요하면 `fork('./worker.js', [], { serialization: 'advanced' })`처럼 명시적으로 opt-in한다. advanced 직렬화는 V8 serializer와 structured clone 기반이다.
 - 새 V8 인스턴스 → 메모리, 시작 시간 비용 큼.
 - CPU 작업 분리에 사용. 가벼우면 [[Worker-Threads|Worker Threads]]가 더 효율적.
 

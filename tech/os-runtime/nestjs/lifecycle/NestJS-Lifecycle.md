@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, lifecycle, bootstrap, hooks, graceful-shutdown]
 status: index
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Lifecycle", "Bootstrap", "OnModuleInit"]
 ---
@@ -18,13 +19,12 @@ NestJS 앱은 **Bootstrap → 모듈 초기화 → 요청 처리 → 종료** �
                                    ── 운영 ──
 6. SIGTERM/SIGINT
 7. OnModuleDestroy (각 모듈, init 역순)
-8. OnApplicationShutdown
-9. 프로세스 종료
+8. BeforeApplicationShutdown → adapter와 연결 dispose
+9. OnApplicationShutdown → app.close() resolve, event loop가 비면 자연 종료
 ```
 
 | 문서 | 내용 |
 |------|------|
-| [[NestJS-Lifecycle-Hooks\|부팅과 생명주기 훅]] | Bootstrap 표준 형태, 훅 6종, 실행 순서 (전역 모듈, v11 역순 보장), OnModuleInit vs OnApplicationBootstrap |
+| [[NestJS-Lifecycle-Hooks\|부팅과 생명주기 훅]] | Bootstrap 표준 형태, 훅 5종, 실행 순서 (전역 모듈, v11 역순 보장), OnModuleInit vs OnApplicationBootstrap |
 | [[NestJS-Lifecycle-Shutdown\|종료와 리소스 정리]] | enableShutdownHooks, Graceful Shutdown, 메모리 누수 방지, 타임아웃, 흔한 실수 |
-
 관련: [[NestJS|NestJS (폴더 인덱스)]], [[NestJS-Module-Dynamic|Dynamic Module (registerAsync 옵션 초기화)]], [[NestJS-Cold-Start-Optimization|Cold Start 최적화 (Lazy Module로 init 비용 분산)]]

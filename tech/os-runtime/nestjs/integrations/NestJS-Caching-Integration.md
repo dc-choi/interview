@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nestjs, cache, interceptor, decorator]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime"
 aliases: ["NestJS Caching", "NestJS 캐시 통합", "NestJS Cache Integration"]
 ---
@@ -13,9 +14,9 @@ NestJS의 **Interceptor, Decorator, Provider, Module** 메커니즘으로 캐시
 
 | 지점 | 적합 | 부적합 |
 |------|------|-------|
-| **Interceptor** | HTTP 응답 전체 캐시, 메서드 단위 일괄 적용 | 세밀한 키 분기, 복잡한 무효화 |
-| **Method 데코레이터** | 서비스 메서드 단위 (도메인 로직과 가까움) | 컨트롤러 외부의 콜백, 외부 API |
-| **Provider 직접 호출** | Multi-Level, Stampede 보호 등 복잡한 로직 | 보일러플레이트 ↑ |
+| **Interceptor** | HTTP, WebSocket, 마이크로서비스 handler 응답 캐시 | 임의의 서비스 메서드, 세밀한 무효화 |
+| **Handler 데코레이터** | 컨트롤러와 transport handler별 TTL, 키 설정 | 일반 Provider 메서드 |
+| **Provider 직접 호출** | 서비스 메서드, Multi-Level, Stampede 보호 등 복잡한 로직 | 보일러플레이트 ↑ |
 | **Middleware** | 요청 단계 정적 자원 캐시 | 비즈니스 로직 |
 
 요청 파이프라인 ([[NestJS|NestJS 요청 처리]]): `Middleware → Guard → Interceptor → Pipe → Handler → Filter`. 캐시는 보통 Interceptor (요청, 응답 양쪽 접근)나 Provider 직접 호출.
@@ -29,9 +30,9 @@ NestJS의 **Interceptor, Decorator, Provider, Module** 메커니즘으로 캐시
 - `@CacheKey`, `@CacheTTL`로 라우트별 오버라이드. WebSocket/마이크로서비스 핸들러에도 적용 가능하지만 그땐 `@CacheKey` 명시가 필수.
 - 스토어: cache-manager v6+는 **Keyv 기반** — Redis는 `@keyv/redis`(KeyvRedis), 인메모리 LRU는 cacheable의 KeyvCacheableMemory, `stores: [...]` 배열로 L1+L2 다층 구성이 공식 경로.
 
-## 패턴 1 — Cacheable 데코레이터 + Interceptor
+## 패턴 1 — Handler 데코레이터 + Interceptor
 
-`applyDecorators(SetMetadata(...), UseInterceptors(CacheInterceptor))`로 메서드에 캐시 설정 부착. Interceptor는 `Reflector`로 메타데이터 읽고, hit면 `of(value)`로 단락, miss면 `next.handle().pipe(tap(...))`으로 결과 적재. 자세한 데코레이터 메커니즘은 [[NestJS-Custom-Decorator]].
+`applyDecorators(SetMetadata(...), UseInterceptors(CacheInterceptor))`로 컨트롤러, Gateway나 마이크로서비스 handler에 캐시 설정을 부착한다. Nest는 임의의 Provider 메서드 호출에 interceptor를 적용하지 않으므로 서비스 메서드 캐싱에는 이 패턴을 쓰지 않는다. Interceptor는 `Reflector`로 메타데이터를 읽고, hit면 `of(value)`로 단락하고 miss면 `next.handle().pipe(tap(...))`으로 결과를 적재한다. 서비스 계층에서는 캐시 Provider를 명시적으로 호출하거나 [[NestJS-Custom-Decorator-Pipeline|Provider 래핑 방식]]을 사용한다.
 
 옵션 구성: `{ key, ttl, level: 'L1'|'L2'|'L1+L2', stampedeProtection }`. `key`는 문자열 또는 인자 기반 함수.
 
@@ -56,19 +57,22 @@ Lua 스크립트의 atomic 해제 — 락 TTL 만료 후 다른 요청이 새 �
 
 자세한 Stampede 알고리즘은 [[Cache-Stampede]].
 
-## 패턴 4 — 멀티 인스턴스 L1 일관성 (Pub/Sub)
+## 패턴 4 — 멀티 인스턴스 캐시 일관성 (Pub/Sub)
 
 NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인스턴스가 DB 갱신해도 다른 인스턴스 L1은 stale.
 
-`OnModuleInit`에서 `redis.duplicate()`로 별도 connection 만들고 `cache:invalidation` 채널 구독. 쓰기 시 `{ key, instanceId, op }` 페이로드 publish, 다른 인스턴스는 자기 instanceId가 아니면 L1에서 해당 key 삭제.
+`OnModuleInit`에서 `redis.duplicate()`로 별도 connection을 만들고 `cache:invalidation` 채널을 구독한다. 쓰기는 **DB commit → 공유 L2 삭제 또는 갱신 → writer의 L1 삭제 또는 갱신 → `{ key, instanceId, op }` publish → 다른 인스턴스의 L1 삭제** 순서로 처리한다. L2를 먼저 처리해야 다른 인스턴스가 L1을 비운 직후 stale L2로 다시 채우지 않는다. 자기 메시지를 무시해도 안전한 이유는 publish 전에 writer가 L2와 자기 L1을 이미 처리했기 때문이다.
 
 핵심 디테일:
 - **별도 Redis 커넥션** — `duplicate()`. Pub/Sub 모드에선 일반 명령 못 씀
-- **자기 메시지 무시** — instanceId 필터로 echo 방지
-- **at-most-once 한계** — 메시지 유실 가능 → L1 TTL 짧게(60초) 백업
+- **L2 우선 무효화** — 공유 L2를 먼저 삭제하거나 갱신한 뒤 각 인스턴스의 L1을 비움
+- **writer L1 직접 처리** — L2 처리 뒤 writer의 L1을 삭제하거나 새 값으로 갱신하고 publish
+- **자기 메시지 무시** — 로컬 무효화가 끝난 뒤 instanceId 필터로 echo 방지
+- **DB/Redis 원자성 한계** — DB commit과 L2 무효화, publish는 한 transaction이 아니다. 실패 재시도와 transactional outbox를 두고 TTL로 stale 상한을 제한한다. 강한 read-after-write가 필요하면 versioned key나 cache bypass 같은 별도 계약이 필요
+- **at-most-once 한계** — Pub/Sub 메시지가 유실될 수 있으므로 L1 TTL로 stale 상한을 제한
 - **Cluster** — 일반 Pub/Sub은 모든 노드 브로드캐스트, 7.0+의 Sharded Pub/Sub (SPUBLISH) 사용
 
-영속, ACK 필요하면 [[Redis-Streams-PubSub|Streams + Consumer Group]]로. 자세한 무효화 패턴은 [[Cache-Invalidation]].
+영속과 ACK가 필요해도 하나의 shared Consumer Group을 쓰면 안 된다. 같은 group에서는 이벤트를 인스턴스 하나만 받아 L1 무효화가 fan-out되지 않는다. 안정적인 인스턴스 식별자마다 독립 group/offset을 두고 retention, 재접속 catch-up과 폐기된 group 정리를 운영하거나, outbox와 durable fan-out 구독을 사용한다. [[Redis-Streams-PubSub|Streams와 Consumer Group 차이]] 및 [[Cache-Invalidation]] 참고.
 
 ## 패턴 5 — CacheModule.registerAsync (Global)
 
@@ -83,7 +87,7 @@ NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인
 ## NestJS 특이 주의점
 
 - **REQUEST scope Provider 주입 X** — 캐시 서비스는 보통 DEFAULT(싱글톤). REQUEST를 주입받으면 캐시도 REQUEST scope로 전파되어 매 요청 새 인스턴스
-- **Lifecycle 훅** — `OnModuleInit`(Pub/Sub 구독), `OnApplicationShutdown`(Write-Back flush, subscriber.quit())
+- **Lifecycle 훅** — `OnModuleInit`에서 Pub/Sub를 구독한다. `OnApplicationShutdown`은 `app.close()`를 호출했거나 bootstrap에서 `app.enableShutdownHooks()`를 켠 뒤 `SIGTERM` 같은 종료 신호를 받을 때만 기대할 수 있다. Write-Back flush와 subscriber 종료는 이 경로에 두되, 영속성 보장으로 취급하지 않는다
 - **Microservice 환경** — `ClientProxy`로 RPC 호출 결과 캐시할 때 RxJS Observable 캐싱 주의 (subscribe 시점마다 실행)
 - **GraphQL** — DataLoader가 요청 내 N+1 해결, 그 위에 [[Multi-Level-Cache|MultiLevelCache]]로 요청 간 캐시 ([[NestJS-GraphQL]])
 - **테스트** — `overrideProvider`로 캐시 서비스를 Mock으로 교체 ([[NestJS|TestingModule]])
@@ -93,25 +97,26 @@ NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인
 - **Interceptor에서 직접 Promise resolve** — RxJS Observable 강제 ([[NestJS-AOP-Interceptor]]). `of(value)`로 감쌈
 - **캐시 키에 `JSON.stringify(req.params)`** — 키 순서 다르면 다른 키. 정렬, 정규화 필요
 - **REQUEST scope 캐시** — 매 요청 새 LRU 생성 → 사실상 캐시 없음
-- **Pub/Sub subscriber에 일반 명령** — connection blocking 에러. duplicate() 별도 사용
-- **OnApplicationShutdown 미구현** — Write-Back 플러시 안 됨, 데이터 손실
-- **Reflector를 컨트롤러 코드에서 직접** — Interceptor, Guard에서만 써야 응집
+- **Pub/Sub subscriber connection에 일반 명령 실행** — subscriber mode 연결은 일반 명령에 쓰지 않고 `duplicate()`로 별도 연결 사용
+- **종료 훅만으로 Write-Back 내구성 보장 기대** — `SIGKILL`, 프로세스 crash, 종료 유예시간 초과에는 훅이 실행되지 않을 수 있다. flush는 시간 제한을 두고, 중요한 쓰기는 영속 저장소나 재처리 가능한 queue와 startup recovery로 보호
+- **Reflector를 비즈니스 컨트롤러에서 직접 해석** — 메타데이터 해석을 Interceptor, Guard나 전용 Provider에 모아 횡단 관심사를 분리
 - **CacheModule.register만으로 멀티 인스턴스 일관성 기대** — Pub/Sub 무효화 별도 구현 필수
 
 ## 면접 체크포인트
 
 - NestJS Interceptor가 캐시에 적합한 이유 (요청, 응답 양쪽 접근, RxJS pipe로 단락 가능)
-- `applyDecorators` + `SetMetadata` + Reflector 조합으로 Cacheable 데코레이터 구현
+- `applyDecorators` + `SetMetadata` + Reflector 조합이 transport handler에만 적용되는 이유
 - Multi-Level Cache를 NestJS Provider로 통합하는 패턴
 - Pub/Sub subscriber에 별도 connection (duplicate)가 필요한 이유
 - 분산 락 해제에 Lua 스크립트가 필요한 이유 (자기 락 토큰 검증)
 - REQUEST scope Provider 주입이 캐시 서비스를 망치는 이유 (scope 전파)
-- OnModuleInit, OnApplicationShutdown 훅을 캐시 서비스에서 쓰는 시나리오
+- shutdown hook 활성화 조건과 Write-Back flush가 보장하지 않는 강제 종료 경로
 - DataLoader (요청 내 N+1) vs MultiLevelCache (요청 간) 역할 구분
 
 ## 출처
-- [TS Backend Meetup — NestJS 캐싱 전략 정리]
 - [NestJS — Caching](https://docs.nestjs.com/techniques/caching)
+- [NestJS — Lifecycle events](https://docs.nestjs.com/fundamentals/lifecycle-events)
+- [Node.js — Process](https://nodejs.org/api/process.html)
 
 ## 관련 문서
 - [[NestJS|NestJS 개관]]

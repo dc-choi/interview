@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, axios, http-client, rxjs]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS HTTP Module", "@nestjs/axios", "HttpService"]
 ---

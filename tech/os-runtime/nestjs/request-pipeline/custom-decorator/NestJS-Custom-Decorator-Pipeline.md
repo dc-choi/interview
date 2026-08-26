@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, decorator, metadata, aop]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["커스텀 데코레이터 3단계 구조", "마킹 탐색 실행 파이프라인"]
 ---
@@ -79,7 +80,7 @@ export class CacheableExplorer implements OnModuleInit {
 }
 ```
 
-`OnModuleInit`에서 실행 → 앱 부팅 시 한 번만 스캔. 런타임 오버헤드 없음.
+`OnModuleInit`에서 앱 부팅 시 한 번만 스캔한다. 반복 스캔 비용은 없지만 교체된 wrapper와 캐시 조회 비용은 각 호출에 남는다.
 
 - **DiscoveryModule import 필수**: `DiscoveryService`를 주입받으려면 그 모듈의 imports에 `DiscoveryModule`(@nestjs/core)을 등록해야 한다.
 - 캐시를 쓰는 모듈은 `CacheModule`을 등록하고, `CacheableExplorer` 자체도 해당 모듈의 `providers`에 넣어야 초기화 훅이 실행된다.

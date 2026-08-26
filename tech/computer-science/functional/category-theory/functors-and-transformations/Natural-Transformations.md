@@ -7,7 +7,7 @@ aliases: ["Natural Transformations", "자연 변환", "Naturality", "Free Theore
 
 # Natural Transformations
 
-**두 Functor 사이의 구조 보존 매핑**. 같은 카테고리에서 다른 카테고리로 가는 두 Functor `F`, `G: C → D`가 있을 때, 이들 사이의 "변환"을 정의한다. 프로그래밍에서는 **다형성 함수**(`forall a. F a → G a`)가 자동으로 자연 변환이며, 이 사실이 **free theorem**의 기반. Functor 일반은 [[Functors]] 참조.
+**두 Functor 사이의 구조 보존 매핑**. 같은 카테고리에서 다른 카테고리로 가는 두 Functor `F`, `G: C → D`가 있을 때, 이들 사이의 변환을 정의한다. 순수하고 강한 매개변수성을 만족하는 다형성 함수(`forall a. F a → G a`)는 자연 변환으로 해석할 수 있으며, 이 사실이 **free theorem**의 기반이다. 시그니처만으로 항상 보장되는 것은 아니다. Functor 일반은 [[Functors]] 참조.
 
 ## 핵심 명제
 
@@ -63,16 +63,14 @@ const safeHead = <A>(xs: A[]): Maybe<A> =>
 | `length : List ⇒ Const Int` | 컨테이너 → 길이 (값 무시) |
 | `listToMaybe : List ⇒ Maybe` | 첫 원소만 |
 | `maybeToList : Maybe ⇒ List` | 0개 또는 1개 리스트 |
-| `Promise.resolve : Identity ⇒ Promise` | 값을 비동기 컨테이너로 |
-| `keys : Map ⇒ List` | 맵의 키 목록 |
+| `singleton : Identity ⇒ List` | 값을 원소 하나인 리스트로 |
+| `keys : Map K ⇒ Const (List K)` | 키 타입 `K`를 고정하고 값 타입만 매개변수로 볼 때, 키 목록으로 변환 |
 
-이들은 모두 **타입 안에 든 값이 무엇이냐와 무관하게** 작동하므로 자연 변환.
+이들은 지정한 타입 매개변수 안의 값이 무엇이냐와 무관하게 작동하므로 자연 변환이다. `keys`는 키와 값을 모두 동시에 매개변수로 보는 `Map` 전체가 아니라, `K`를 고정한 `Map K`에 대한 예시다.
 
 ## Parametricity와 Free Theorem
 
-Haskell, Rust 같은 언어의 **매개변수 다형성(parametric polymorphism)** 은 강력한 보장을 준다 — 시그니처 `forall a. F a → G a`인 함수는 **자동으로 자연성 조건을 만족**한다.
-
-이를 **free theorem**(자유 정리, Wadler 1989)이라 부른다 — "타입 시그니처만으로 함수 행동에 대한 정리를 공짜로 얻는다".
+Haskell의 순수하고 매개변수적인 부분에서는 시그니처 `forall a. F a → G a`로부터 자연성 같은 **free theorem**을 얻을 수 있다. 전제는 함수가 `a`의 구체 타입이나 값을 관찰하지 못하고, unsafe 기능과 관찰 가능한 부수효과를 쓰지 않는다는 것이다.
 
 ```haskell
 f :: forall a. [a] -> Maybe a
@@ -80,12 +78,15 @@ f :: forall a. [a] -> Maybe a
 -- fmap g . f = f . fmap g
 ```
 
-**왜 자동인가**: 다형성 함수는 `a`의 구체 값을 들여다볼 수 없다(parametric). `a`에 의존하는 결정을 못 하니, `a`의 변환과 함수가 commute할 수밖에 없음.
+Rust와 TypeScript의 제네릭 시그니처만으로는 같은 보장을 얻지 못한다. 예를 들어 Rust의 `size_of::<T>()`는 `T`의 타입별 크기를 관찰할 수 있다.
 
-**예외**:
-- 함수 타입에 type class 제약(`Eq a`, `Ord a` 등)이 있으면 깨짐 — 비교/정렬 가능하므로 a를 들여다봄
-- `unsafeCoerce`/`reflection` 같은 메커니즘으로 깨질 수 있음
-- TypeScript의 다형성은 type erasure이지만 일부 reflection으로 깨짐
+```rust
+fn choose<T>(xs: Vec<T>) -> Option<T> {
+    if std::mem::size_of::<T>() == 0 { None } else { xs.into_iter().next() }
+}
+```
+
+`g: () → u8`와 `xs = vec![()]`에 대해 `choose(xs).map(g)`는 `None`이지만, 먼저 `g`를 `Vec`에 map한 뒤 `choose`하면 `Some(0)`이다. 따라서 `Vec ⇒ Option` 자연 변환이 아니다. Haskell에서도 type class 제약, `unsafeCoerce`, 타입 관찰이나 효과가 들어가면 전제를 다시 확인해야 한다.
 
 ## Functor Category `[C, D]`
 
@@ -158,8 +159,8 @@ G: D → E, G': D → E, β: G ⇒ G'
 
 ## 자주 헷갈리는 포인트
 
-- **자연 변환 ≠ 함수 변환** — 하나의 함수가 아니라 **각 타입마다 하나씩**의 함수 family. 다형성 함수와 동일
-- **Naturality는 자동으로 보장 안 됨** — Haskell의 다형성 + 매개변수성이 있을 때만 자동. 동적 타입 언어에서는 별도 검증 필요
+- **자연 변환 ≠ 함수 변환** — 하나의 함수가 아니라 **각 타입마다 하나씩**의 함수 family. 매개변수성 전제를 만족하는 다형성 함수와 대응한다
+- **Naturality는 시그니처만으로 보장되지 않음** — 순수한 Haskell의 매개변수적 부분에서는 free theorem으로 얻을 수 있지만, Rust와 TypeScript 제네릭에는 타입 관찰 경로가 있다
 - **`length`가 자연 변환인 이유** — 결과 타입은 `Int`이지만 `Const Int a`로 보면 펑터 → 펑터 매핑
 - **2-cell vs 1-cell 표기** — 1-cell(Functor)는 `→`, 2-cell(자연 변환)은 `⇒`로 구분
 - **Free theorem이 만능 아님** — type class 제약, side effect, reflection이 있으면 깨짐
@@ -169,8 +170,8 @@ G: D → E, G': D → E, β: G ⇒ G'
 
 - **자연 변환의 정의** — 두 Functor 사이, 성분 사상, naturality condition
 - **naturality square**가 commute 한다는 의미
-- **다형성 함수 = 자연 변환** 의 직관과 free theorem
-- 흔한 자연 변환 5종 (`safeHead`, `reverse`, `length`, `keys`, `Promise.resolve`)
+- **매개변수적 다형성 함수가 자연 변환이 되는 조건**과 free theorem
+- 흔한 자연 변환 5종 (`safeHead`, `reverse`, `length`, `keys`, `singleton`)
 - **Functor category `[C, D]`** 의 구조 — Functor가 객체, 자연 변환이 morphism
 - **Vertical vs Horizontal composition** 차이
 - **2-Category Cat** — 객체→Functor→Natural Transformation 추상화 계층
@@ -178,6 +179,7 @@ G: D → E, G': D → E, β: G ⇒ G'
 
 ## 출처
 - [evan-moon — 프로그래머를 위한 카테고리 이론 10. Natural Transformations](https://evan-moon.github.io/2024/06/01/category-theory-for-programmers-10-natural-transformations/)
+- [Rust, std::mem::size_of](https://doc.rust-lang.org/stable/std/mem/fn.size_of.html)
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 일반 개념]]

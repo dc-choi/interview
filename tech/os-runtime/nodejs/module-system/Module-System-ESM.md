@@ -1,13 +1,14 @@
 ---
 tags: [runtime, nodejs]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime"
 aliases: ["ESM", "ES Modules"]
 ---
 
 # ESM 모듈 시스템
 
-ES Modules는 CommonJS와 달리 비동기 로딩, 정적 분석, live binding을 지원하는 JavaScript 표준 모듈 시스템이다.
+ES Modules는 정적으로 분석 가능한 import/export 그래프와 live binding을 제공하는 JavaScript 표준 모듈 시스템이다. 동적 `import()`는 비동기이고 top-level `await`는 모듈 평가를 비동기로 만들 수 있지만, ESM 자체를 항상 비동기 로딩으로 단정하면 안 된다.
 
 ## ESM 3단계 로딩
 
@@ -43,10 +44,10 @@ console.log(count); // 1 (원본의 변경이 즉시 반영됨)
 
 | 항목 | CommonJS | ESM |
 |------|----------|-----|
-| 시점 | 런타임 | 파싱타임 |
-| 바인딩 | 값 복사 | 라이브 참조 |
+| 해석과 연결 | `require()` 호출 시 | 정적 import/export 그래프를 link한 뒤 평가 |
+| 바인딩 | `module.exports` 객체를 캐시해 반환 | 라이브 바인딩 |
 | Tree-shaking | 제한적 | 가능 (정적 분석) |
-| 순환 의존성 | 불완전 exports 반환 | Live Bindings로 해결 |
+| 순환 의존성 | 초기화 중인 exports를 볼 수 있음 | live binding과 temporal dead zone이 적용됨. 어느 쪽도 순환을 자동으로 해결하지 않음 |
 | 조건부 로딩 | 지원 (if 내 require) | dynamic import() 필요 |
 | Top-level await | 불가 | 가능 |
 | this | module.exports | undefined |
@@ -55,9 +56,9 @@ console.log(count); // 1 (원본의 변경이 즉시 반영됨)
 
 ESM에서 CJS를 가져오는 것은 일반적으로 동작한다. CJS의 module.exports를 ESM의 default export로 취급한다. 단, CJS의 named exports를 직접 구조 분해할 수 있는지는 Node.js 버전과 패키지 구성에 따라 다르다.
 
-CJS에서 ESM을 가져오는 것은 제한적이다. static require()로는 ESM을 불러올 수 없고, async dynamic import()만 사용 가능하다. 이는 ESM의 비동기 로딩 특성 때문이다.
+CJS에서 ESM을 가져오는 방식은 Node.js 버전과 ESM 그래프에 따라 다르다. 현재 Node.js는 top-level `await`가 없는 **동기 ESM 그래프**를 `require()`로 불러올 수 있다. top-level `await`가 있거나 지원 범위를 넓혀야 하면 CJS와 ESM 모두에서 가능한 비동기 `import()`를 사용한다. 배포 대상 Node.js 버전에서 직접 검증한다.
 
-ESM에서는 __filename과 __dirname이 제공되지 않는다. 대신 import.meta.url과 fileURLToPath를 조합하여 재구성할 수 있다.
+ESM에는 CommonJS 전역 `__filename`, `__dirname`이 제공되지 않는다. 다만 현재 Node.js의 `file:` 모듈에서는 `import.meta.filename`, `import.meta.dirname`을 제공한다. 브라우저 등 다른 host까지 고려하면 `import.meta.url`과 `fileURLToPath` 조합이 이식성 있는 대안이다.
 
 ```javascript
 import { fileURLToPath } from 'url';
@@ -65,6 +66,12 @@ import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+```
+
+```javascript
+// Node.js의 file: ESM에서만 사용
+const filename = import.meta.filename;
+const dirname = import.meta.dirname;
 ```
 
 ## package.json exports 필드
@@ -111,7 +118,7 @@ const __dirname = dirname(__filename);
 
 ## Node-API와 ABI 안정성
 
-**Node-API**(구 N-API)는 네이티브 애드온을 위한 안정적인 ABI(Application Binary Interface)를 제공한다. v8.12.0에서 안정화되었다.
+**Node-API**(구 N-API)는 네이티브 애드온을 위한 Node.js 메이저 버전 간 ABI 안정성을 제공한다. 다만 해당 애드온이 Node-API만 사용하고, 외부 네이티브 라이브러리와 대상 OS, 아키텍처가 호환될 때의 보장이다.
 
 ```
 ABI vs API:
@@ -120,10 +127,16 @@ ABI vs API:
   → ABI가 변경되면 네이티브 모듈을 재컴파일해야 한다.
 
 Node-API의 핵심 가치:
-- Node.js 메이저 버전 업그레이드 시 네이티브 애드온 재컴파일 불필요
-- V8 내부 API 변경에 영향받지 않음
-- 누적 버전 관리: N-API v3를 지원하면 v1, v2도 모두 지원
+- 지원하는 Node-API 버전 안에서는 Node.js 메이저 업그레이드 때 재컴파일을 피할 수 있음
+- V8 내부 API 변경과 분리됨. V8, libuv, Node.js C++ API를 함께 쓰면 같은 보장이 적용되지 않음
+- 필요한 Node-API 버전과 배포 대상 플랫폼을 명시해 호환성을 검증
 ```
+
+## 출처
+
+- [Node.js, Modules: Packages](https://nodejs.org/api/packages.html)
+- [Node.js, ECMAScript modules](https://nodejs.org/api/esm.html)
+- [Node.js, Node-API](https://nodejs.org/api/n-api.html)
 
 ## 관련 문서
 - [[Module-System-CommonJS|CommonJS 모듈 시스템]]

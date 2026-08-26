@@ -1,7 +1,7 @@
 ---
 tags: [reliability, retry, backoff, jitter, concurrency]
 status: done
-verified_at: 2026-08-21
+verified_at: 2026-08-26
 category: "Reliability"
 aliases: ["Retry Backoff Jitter", "지수 백오프와 지터", "Exponential Backoff"]
 ---

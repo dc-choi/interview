@@ -1,18 +1,19 @@
 ---
 tags: [nestjs, fastify, express, adapter, performance]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Platform Adapter", "FastifyAdapter", "Express vs Fastify"]
 ---
 
 # NestJS Platform Adapter — Express 기본, Fastify 전환
 
-Nest의 프레임워크 독립성은 **어댑터가 미들웨어와 핸들러를 라이브러리별 구현으로 프록시**하는 구조로 달성된다. 어댑터를 만들 수 있는 조건은 대상 라이브러리가 Express류의 request/response 파이프라인을 제공하는 것.
+Nest의 프레임워크 독립성은 **어댑터가 미들웨어와 핸들러를 라이브러리별 구현으로 연결**하는 구조로 달성된다. 플랫폼별 HTTP 서버와 라우팅 기능은 어댑터 뒤에 둔다.
 
 ## 왜 Express가 기본인가
 
 - Express: 가장 널리 쓰이고, **호환 미들웨어 생태계가 거대** — out of the box 활용.
-- Fastify: 설계 문제를 Express와 비슷한 방식으로 풀면서 벤치마크상 **약 2배 빠름** — 성능이 최우선이면 선택. `new FastifyAdapter()`를 NestFactory.create 두 번째 인자로.
+- Fastify: Nest 공식 안내가 인용한 단순 benchmark에서는 Express보다 거의 두 배 빠른 결과를 보인다. 실제 서비스 처리량은 middleware, serialization과 downstream I/O에 따라 달라지므로 같은 workload로 측정한 뒤 선택한다. `new FastifyAdapter()`를 NestFactory.create 두 번째 인자로 전달한다.
 - 버전 기준: **Nest 11부터 Express v5가 기본** 통합이고 Fastify v5를 지원하며, 런타임은 **Node.js 20 이상**을 요구한다 (v16, v18 지원 종료).
 
 ## Fastify 전환 시 실전 차이

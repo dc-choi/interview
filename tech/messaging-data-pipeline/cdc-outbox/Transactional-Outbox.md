@@ -1,7 +1,7 @@
 ---
 tags: [messaging, reliability, pattern]
 status: done
-verified_at: 2026-08-21
+verified_at: 2026-08-26
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Transactional Outbox", "Outbox Pattern", "트랜잭셔널 아웃박스"]
 ---
@@ -14,7 +14,7 @@ DB 쓰기와 메시지 발행 사이의 유실을 막는 패턴. 이벤트 기�
 
 ## 문제: Dual Write Problem
 
-DB와 메시지 큐는 서로 다른 시스템이므로 하나의 트랜잭션으로 묶을 수 없다.
+DB와 메시지 큐는 서로 다른 시스템이라 하나의 **로컬** 트랜잭션으로 묶이지 않는다. 양쪽이 XA/2PC를 지원하면 분산 트랜잭션을 검토할 수 있지만, 지원 범위와 가용성, 운영 비용 때문에 Outbox를 선택하는 경우가 많다.
 
 ```
 발주 API:
@@ -43,7 +43,7 @@ Spring `TransactionSynchronizationManager.afterCommit`에서 메시지를 보내
 ### 왜 되는가
 - 비즈니스 데이터와 이벤트 기록이 **같은 DB 트랜잭션** → 둘 다 성공하거나 둘 다 실패
 - Relay가 crash해도 outbox에 레코드가 남아 있으므로 재시작 후 재발행
-- at-least-once 발행 보장 → 소비자 측 [[Idempotency-Key|멱등성]]과 짝을 이루어 end-to-end 신뢰성
+- Relay 재시도와 outbox 보존으로 at-least-once 발행을 목표로 함. Relay가 계속 실행되고 장애를 감시, 복구한다는 운영 전제가 필요하며 소비자 측 [[Idempotency-Key|멱등성]]과 짝을 이룸
 
 ### Outbox 테이블 설계
 
@@ -73,9 +73,9 @@ CREATE TABLE outbox (
 - 인스턴스를 2개 이상 띄우는 순간 같은 행을 여러 Relay가 집는다 → 아래 다중 인스턴스 절
 
 ### CDC 방식
-- Debezium이 DB WAL(Write-Ahead Log)을 읽어 outbox 테이블 변경을 감지
+- Debezium이 DB 변경 로그(PostgreSQL WAL, MySQL binlog 등)를 읽어 outbox 테이블 변경을 감지
 - 변경 즉시 Kafka로 발행 → 거의 실시간
-- 애플리케이션 코드 수정 없이 동작하지만 인프라 운영 부담 증가
+- 애플리케이션의 별도 polling relay 코드는 줄일 수 있지만 outbox 기록과 connector 설정, CDC 인프라 운영은 필요
 
 ## Relay를 여러 인스턴스에서 돌릴 때
 
@@ -111,8 +111,8 @@ COMMIT;
 
 ### 단일 러너 선출
 
-- PostgreSQL advisory lock은 시스템이 사용을 강제하지 않는 애플리케이션 규약이다. 세션 수준 락은 트랜잭션이 롤백돼도 풀리지 않아 해제 책임이 앱에 있고, 트랜잭션 수준 락은 트랜잭션이 끝날 때 자동 해제된다. 폴링 틱마다 잡았다 놓는 용도라면 트랜잭션 수준이 다루기 쉽다.
-- 락을 못 잡은 인스턴스는 그 틱을 건너뛰고 다음 틱에 다시 시도한다. 승자가 죽으면 세션 종료와 함께 락이 풀려 다음 틱에서 다른 인스턴스가 승계한다. 이 승계 지연이 곧 발행 공백이다.
+- PostgreSQL advisory lock은 시스템이 사용을 강제하지 않는 애플리케이션 규약이다. 전체 poll, publish 주기를 한 runner로 제한하려면 전용 연결의 세션 수준 락이나 별도 leader election을 사용하고 `finally`에서 해제한다. 연결이 끊기면 세션 락도 풀린다.
+- 트랜잭션 수준 advisory lock은 짧은 claim 또는 상태 전이만 보호할 때 적합하다. 원격 broker I/O까지 보호하려고 트랜잭션을 오래 열어 두지 않는다. 락을 못 잡은 인스턴스는 그 틱을 건너뛰며, 승자가 죽은 뒤 다음 선출까지의 시간이 발행 공백이다.
 
 ### 어느 축도 중복을 없애지는 못한다
 
@@ -142,15 +142,15 @@ claim을 걸어도 발행은 성공했는데 `processed_at` 마킹 직전에 프
 
 사실 기반 이벤트는 **새 구독자가 추가될 때 발행자 수정 불필요** → 느슨한 결합 유지.
 
-## Zero Payload 전략 — 순서 문제의 실용 해법
+## Zero Payload 전략 — 오래된 payload 완화와 스키마 유연성
 
-분산 환경에서 이벤트는 **순서가 뒤바뀌어 도착**할 수 있다 (네트워크 재시도, 파티션 리밸런싱). 순서를 완전히 보장하기 어렵다면:
+분산 환경에서 이벤트는 **순서가 뒤바뀌거나 중복 도착**할 수 있다 (네트워크 재시도, 파티션 리밸런싱). 순서를 보장할 수 없는 구독자가 현재 상태만 필요하다면:
 
 - 이벤트 페이로드에 **전체 상태를 담지 않고 식별자만** 싣는다
-- Consumer는 식별자로 **Source of Truth를 다시 조회** → 조회 시점의 최신 상태
+- Consumer는 식별자로 **Source of Truth를 다시 조회** → 오래된 상태 스냅샷을 적용하는 위험을 줄임
 - 스키마 변경에도 유연 (페이로드가 최소하므로 호환성 이슈 감소)
 
-트레이드오프: 조회 1회 추가. 하지만 **순서 보장, 스키마 안정성**이 그만한 가치.
+트레이드오프는 조회 1회 추가와 source DB 부하다. **재조회는 순서를 보장하지 않는다.** 중간 상태 전이, 외부 부수효과, projection 갱신처럼 순서가 의미 있으면 원본의 단조 증가 version, change sequence 또는 LSN을 이벤트에 싣고 소비자가 더 오래된 값을 거부해야 한다. 브로커의 순서 보장도 key 또는 partition 범위를 확인하고, 처리 자체는 멱등이어야 한다 ([[OpenSearch-Indexing-Internals|색인 내부 구조]], [[Idempotent-Consumer|멱등 컨슈머]]).
 
 ## Event Store
 
@@ -167,6 +167,7 @@ Event Sourcing은 더 나아가 **상태 자체를 이벤트 스트림으로만 
 - [PostgreSQL 공식 문서, SELECT — The Locking Clause (SKIP LOCKED)](https://www.postgresql.org/docs/current/sql-select.html)
 - [PostgreSQL 공식 문서, Explicit Locking — Advisory Locks](https://www.postgresql.org/docs/current/explicit-locking.html)
 - [MySQL 8.4 공식 문서, Locking Reads (SKIP LOCKED, NOWAIT)](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
+- [Apache Kafka Documentation, Introduction (topic partition ordering)](https://kafka.apache.org/documentation/)
 - [Chris Richardson, Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html)
 - [Dowon Lee 강사, Dual Write, Outbox와 CDC](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289780)
 - [최상용 강사, 트랜잭션 이후 Kafka 이벤트 발행](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344376)

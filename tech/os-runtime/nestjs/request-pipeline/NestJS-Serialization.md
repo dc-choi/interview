@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, serialization, class-transformer, response]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Serialization", "응답 직렬화", "ClassSerializerInterceptor"]
 ---

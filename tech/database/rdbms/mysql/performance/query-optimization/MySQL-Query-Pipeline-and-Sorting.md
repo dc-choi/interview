@@ -3,7 +3,7 @@ tags: [database, rdbms, mysql, iterator, sorting, group-by, performance]
 status: done
 category: "Database - RDBMS"
 aliases: ["MySQL Query Pipeline and Sorting", "MySQL 파이프라인과 정렬"]
-verified_at: 2026-08-04
+verified_at: 2026-08-26
 ---
 
 # MySQL 쿼리 파이프라인과 정렬
@@ -55,7 +55,7 @@ IoT 재고관리(VMI) 서비스에서 직접 잡은 슬로우 쿼리다. 디바�
 
 디바이스 번호 equality가 100만 행을 평균 1,240행(선택도 약 0.12%)으로 좁혀 선행 key로 두고, 정렬 key를 방향까지 맞춰 `(device_number, created_at DESC, id DESC)` 복합 index를 만들었다. 선행 key가 상수로 고정되니 뒤 key part의 순서가 그대로 쓰여 filesort가 사라지고 상위 1건에서 scan이 끝났다.
 
-실측은 두 축으로 나뉜다. `EXPLAIN ANALYZE` 실행시간은 쿼리 1건 기준 15.4ms에서 0.1ms로, 디바이스 850대를 순회하는 배치 총시간은 5분 15초에서 약 2초로 줄었다. 배치 총시간에는 애플리케이션 처리와 네트워크 왕복이 함께 들어가므로 단건 실행시간에 850을 곱한 값과 일치하지 않는다. 앞의 2000ms대는 운영 슬로우 쿼리 로그에 남은 값이라 EXPLAIN ANALYZE로 다시 잰 15.4ms와는 측정 시점과 조건이 다르다. 읽는 행이 데이터 누적과 무관하게 index 탐색 1건으로 수렴하는 형태라 적재량이 늘어도 같은 비용을 유지한다. index 정의는 ORM schema에 선언해 형상 관리 대상에 넣었다.
+실측은 두 축으로 나뉜다. `EXPLAIN ANALYZE` 실행시간은 쿼리 1건 기준 15.4ms에서 0.1ms로, 디바이스 850대를 순회하는 배치 총시간은 5분 15초에서 약 2초로 줄었다. 배치 총시간에는 애플리케이션 처리와 네트워크 왕복이 함께 들어가므로 단건 실행시간에 850을 곱한 값과 일치하지 않는다. 앞의 2000ms대는 운영 슬로우 쿼리 로그에 남은 값이라 EXPLAIN ANALYZE로 다시 잰 15.4ms와는 측정 시점과 조건이 다르다. 같은 equality 조건과 index plan이 유지되면 상위 1건에서 scan을 멈춰 읽는 후보 행 수를 작게 유지할 수 있다. 다만 적재량이 늘면 index 깊이, cache miss, base row lookup, 동시성에 따라 실제 지연 시간은 달라지므로 같은 데이터 분포로 다시 측정한다. index 정의는 ORM schema에 선언해 형상 관리 대상에 넣었다.
 
 ## Internal temporary table
 

@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, testing, jest, integration-test, mock]
 status: done
+verified_at: 2026-08-26
 category: "테스트&품질(Testing&Quality)"
 aliases: ["NestJS Testing", "TestingModule", "Test.createTestingModule"]
 ---
@@ -84,7 +85,7 @@ it('rolls back on validation failure', async () => {
 });
 ```
 
-서비스가 `@Transactional` 데코레이터 또는 `EntityManager.transaction(...)`을 제대로 썼는지 검증. 트랜잭션 안 걸어두면 부분 commit으로 count > 0이 되어 실패.
+서비스가 프로젝트의 트랜잭션 경계(예: `EntityManager.transaction(...)`)를 제대로 적용했는지 검증. 트랜잭션이 없으면 부분 commit으로 count > 0이 되어 실패.
 
 ## 외부 서비스 모킹, 스파이
 

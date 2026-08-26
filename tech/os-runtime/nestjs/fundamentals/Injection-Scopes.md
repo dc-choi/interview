@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nestjs]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime"
 aliases: ["Injection Scopes"]
 ---

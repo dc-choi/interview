@@ -1,20 +1,23 @@
 ---
 tags: [database, operations, self-service, observability, aiops, mcp, security]
 status: done
+verified_at: 2026-08-26
 category: "데이터&저장소(Data&Storage)"
 aliases: ["Self-Service DB Diagnostics", "셀프서비스 DB 진단", "DB Insight 도구", "DB AIOps", "KDMS Database Insight"]
 ---
 
 # 셀프서비스 DB 진단 플랫폼
 
-DB 이슈가 의심되면 보통 개발팀이 APM(Datadog, Sentry)에서 증상을 먼저 보고, Grafana/CloudWatch로 넘어가지만 지표만으로는 원인 쿼리를 짚기 어렵다. 결국 DB팀에 문의하고, DB팀은 Performance Insights, 슬로우 쿼리 로그, 각종 지표를 다시 확인한다. 정보가 여러 도구에 흩어져 있어 **화면을 오가는 비용 + 팀 간 설명/확인 비용**이 크다.
+DB 이슈가 의심되면 보통 개발팀이 APM(Datadog, Sentry)에서 증상을 먼저 보고, Grafana/CloudWatch로 넘어가지만 지표만으로는 원인 쿼리를 짚기 어렵다. 결국 DB팀에 문의하고, DB팀은 CloudWatch Database Insights, 슬로우 쿼리 로그, 각종 지표를 다시 확인한다. 정보가 여러 도구에 흩어져 있어 **화면을 오가는 비용 + 팀 간 설명/확인 비용**이 크다.
 
 셀프서비스 DB 진단 플랫폼은 이 흩어진 정보를 **한 화면에 모으고, 개발자가 직접 1차 분석**할 수 있게 만드는 내부 도구다. [[Database-Operations-Automation#셀프서비스 진단 도구|DB 운영 자동화]]의 "셀프서비스 진단 도구" 도메인을 구체화한 모습이다.
 
 ## 두 가지 목표
 
 1. **개발자 직접 분석**: DB팀 도움 없이도 기본적인 DB 이슈를 좁힐 수 있게 한다 → DBA가 병목이 되지 않음.
-2. **정보 통합**: Performance Insights, Grafana, CloudWatch, 로그 그룹에 흩어진 정보를 한 화면에 모은다.
+2. **정보 통합**: Database Insights, Performance Insights API, Grafana, CloudWatch, 로그 그룹에 흩어진 정보를 한 화면에 모은다.
+
+AWS는 2026-07-31에 Performance Insights 콘솔 경험을 종료했고 콘솔을 CloudWatch Database Insights로 전환했다. Performance Insights API는 유지되므로 기존 수집 코드는 호환성을 확인해 재사용할 수 있지만, 새 UI와 기능 명칭은 Database Insights 기준으로 설계한다.
 
 곧 DB 분석을 "전문가만 보는 계기판"에서 "개발자도 이해하는 대시보드"로 바꾸는 일이다.
 
@@ -27,7 +30,7 @@ DB 이슈가 의심되면 보통 개발팀이 APM(Datadog, Sentry)에서 증상�
 | **행동으로 이어지는 정보** | CPU, QPS, 레이턴시, 신규 쿼리, 실행 계획처럼 곧장 조치로 연결되는 지표 우선 |
 
 주요 탭 구성:
-- **Top Query**: Performance Insights 기반 상위 SQL과 통계.
+- **Top Query**: Database Insights 또는 Performance Insights API 기반 상위 SQL과 통계.
 - **Slow Query**: 해당 시간대 실제 발생한 슬로우 쿼리.
 - **Monitoring**: Grafana/CloudWatch에서 보던 주요 DB 지표를 한곳에.
 
@@ -35,11 +38,11 @@ DB 이슈가 의심되면 보통 개발팀이 APM(Datadog, Sentry)에서 증상�
 
 ## DB팀 문의 — 맥락 전달 비용 제거
 
-개발자가 추가 도움이 필요하면 도구에서 바로 Slack으로 문의한다. 문의 시 **쿼리, 진단 화면 링크, 실행 계획이 스레드에 자동 첨부**된다. DBA는 "어느 DB, 어느 시간, 어떤 쿼리, 어떤 실행 계획인지"를 되묻지 않고 곧장 분석을 시작한다 — 맥락 재수집 비용이 0에 수렴.
+개발자가 추가 도움이 필요하면 도구에서 바로 Slack으로 문의한다. 권한이 확인된 채널에 **literal과 PII를 마스킹한 SQL fingerprint, 진단 화면 링크, 조회 가능한 실행 계획**을 자동 첨부한다. 원문 SQL은 별도 권한 확인과 명시적 승인 뒤 진단 도구에서 조회한다. DBA는 어느 DB, 어느 시간, 어떤 쿼리 형태인지 되묻는 일을 줄이고 곧장 분석을 시작할 수 있다.
 
 ## AI 보조 분석 — 조수, 대체자가 아님
 
-실행 계획을 조회하면 AI가 효율/비효율을 판단하고 튜닝 방향을 제안한다. AI는 DBA를 대체하는 게 아니라 **개발자가 첫 분석을 빠르게 시작하도록 돕는 조수**다.
+실행 계획을 조회할 수 있으면 AI가 효율/비효율을 판단하고 튜닝 방향을 제안한다. Database Insights의 실행 계획과 on-demand analysis는 2026-07-31 이후 Advanced mode에서만 제공되고 실행 계획 지원 엔진도 제한된다. 지원되지 않는 환경은 저장된 계획이나 승인된 읽기 전용 `EXPLAIN` 결과를 별도 입력으로 사용하며, 운영 쿼리를 실제 실행하는 `EXPLAIN ANALYZE`는 자동화하지 않는다. AI는 DBA를 대체하는 게 아니라 **개발자가 첫 분석을 빠르게 시작하도록 돕는 조수**다.
 
 LLM 답변은 실행마다 흔들리므로, **엔진별 판단 기준을 프롬프트에 명시**해 결과를 안정화한다.
 
@@ -65,10 +68,15 @@ DB 정보는 민감해서 AI를 붙이는 것보다 **AI가 봐도 되는 정보
 
 | 통제 | 방법 |
 |------|------|
-| **접근 제어** | 허용된 Slack 채널/사용자에 대해서만 자동 분석 동작 |
+| **호출자 인증** | 허용된 Slack 채널/사용자에 대해서만 자동 분석 동작. 이는 트리거 권한일 뿐 DB 접근 권한은 아님 |
+| **리소스 범위 RBAC** | 서버가 호출자 역할과 소속으로 허용 DB, 클러스터, 테넌트를 결정. 클라이언트가 보낸 DB 식별자만 믿지 않음 |
+| **도구 allowlist** | 지표 조회, 미리 정의한 실행 계획 조회처럼 read-only 도구만 노출. 임의 SQL, DDL/DML, 자격증명 조회는 금지 |
+| **입력과 결과 제한** | DB 식별자와 시간 범위를 검증하고, 결과 row 수, 쿼리 시간, 동시 호출 수를 제한. SQL literal과 PII는 AI 응답과 Slack 첨부 전에 마스킹 |
 | **호출 경로** | LLM 호출은 사내 LLM 라우터 경유 (외부 직접 호출 차단) |
 | **네트워크 격리** | MCP 서버를 사내망에 배치해 외부에서 직접 호출 불가 |
-| **데이터 최소화** | 쿼리 문자열 등 민감 정보는 **마스킹**해 전달 |
+| **감사와 승인** | 호출자, 대상 리소스, 도구, 허용 또는 거부 결과를 감사 로그로 남김. 쓰기 작업은 MCP 자동 실행이 아니라 별도 승인 절차로 분리 |
+
+MCP transport 인증은 서버가 어떤 사용자 요청인지 확인하는 출발점일 뿐이다. 실제 DB 리소스에 대한 권한 판정과 결과 제한은 MCP 서버가 매 호출마다 강제해야 한다.
 
 ## 면접 체크포인트
 
@@ -77,12 +85,17 @@ DB 정보는 민감해서 AI를 붙이는 것보다 **AI가 봐도 되는 정보
 - Slack 문의에 쿼리/화면 링크/실행 계획을 자동 첨부해 맥락 비용을 없애는 설계
 - AI를 "대체자"가 아니라 "조수"로 두고 엔진별 판단 기준을 프롬프트에 고정하는 이유
 - MCP로 같은 기능을 웹/Slack/에이전트에 재사용하는 구조
-- AI 연동 보안 4종(채널/사용자 제한, 사내 LLM 라우터, MCP 사내망, 쿼리 마스킹)
+- AI 연동 보안: 호출자 인증, 리소스 범위 RBAC, read-only allowlist, 입력과 결과 제한, 사내 LLM 라우터, MCP 사내망, 감사 로그
 
 ## 사례
-- 대규모 DB fleet 운영팀이 내부 DB 어드민(KDMS)에 "데이터베이스 인사이트"를 만들어 Performance Insights/Grafana/CloudWatch/로그를 한 화면에 통합하고, Slack 문의와 MCP 기반 AI 자동 분석(이모지 트리거)까지 확장한 사례가 있다. AI 연동에는 채널/사용자 제한, 사내 LLM 라우터, MCP 사내망 배치, 쿼리 마스킹을 적용했다.
+- 대규모 DB fleet 운영팀이 내부 DB 어드민(KDMS)에 데이터베이스 인사이트를 만들어 DB 부하 데이터, Grafana, CloudWatch와 로그를 한 화면에 통합하고, Slack 문의와 MCP 기반 AI 자동 분석까지 확장한 사례가 있다. 실제 운영에서는 채널/사용자 제한에 더해 리소스 범위 RBAC, read-only 도구 allowlist, 결과 제한과 감사 로그가 필요하다.
 
 ## 출처
+- [Amazon CloudWatch, CloudWatch Database Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html)
+- [Amazon RDS, Performance Insights overview and console end of life](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.Overview.html)
+- [Model Context Protocol 2026-07-28, Authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)
+- [Model Context Protocol 2026-07-28, Resources (Security Considerations)](https://modelcontextprotocol.io/specification/2026-07-28/server/resources)
+- [OWASP API Security Top 10, Broken Object Level Authorization and Unrestricted Resource Consumption](https://devguide.owasp.org/en/07-training-education/07-api-top-ten/)
 - [KDMS 데이터베이스 인사이트 — DB 이슈 분석 도구와 운영 (YouTube)](https://www.youtube.com/watch?v=NrPY9J1a2ag&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=5)
 
 ## 관련 문서

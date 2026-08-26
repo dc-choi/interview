@@ -128,20 +128,19 @@ mapMaybe(xs, (arr) => arr.map(n => n * 2));
 // → { tag: 'Just', value: [2, 4, 6] }
 ```
 
-Functor 합성도 Functor 법칙을 자동으로 만족 → 합성된 컨테이너에도 안전하게 `fmap` 사용 가능. 카테고리 이론적으로 **Functor들이 이루는 카테고리(Cat)** 가 존재.
+Functor 합성도 Functor 법칙을 만족하므로 합성된 컨테이너에도 `fmap`을 적용할 수 있다. 고정한 `C`, `D` 사이의 Functor와 자연 변환은 `[C, D]` 또는 `Fun(C, D)`를 이룬다. `Cat`은 카테고리, Functor, 자연 변환을 각각 0, 1, 2-cell로 갖는 2-category이므로 둘을 같은 이름으로 부르지 않는다.
 
 ## Functor 법칙이 깨지는 경우 — 사이드이펙트
 
 `fmap`은 함수가 **순수**해야 안전하다. 사이드이펙트가 있으면 합성 법칙(`fmap (g.f) = fmap g . fmap f`)이 깨진다.
 
 ```ts
-let counter = 0;
-const tick = (x: number): number => { counter++; return x + 1; };
+const effects: string[] = [];
+const f = (x: number): number => { effects.push(`f${x}`); return x + 1; };
+const g = (x: number): number => { effects.push(`g${x}`); return x * 2; };
 
-[1, 2, 3].map(x => tick(tick(x)));   // counter += 6
-[1, 2, 3].map(tick).map(tick);        // counter += 6 (같은 결과처럼 보이지만…)
-
-// 만약 tick이 더 복잡한 사이드이펙트(IO, 상태 변경)면 두 호출 패턴의 의미가 갈릴 수 있음
+[1, 2].map(x => g(f(x)));   // f1, g2, f2, g3
+[1, 2].map(f).map(g);       // f1, f2, g2, g3
 ```
 
 **referential transparency**가 모든 함수형 추론의 전제. 이 때문에 함수형 언어가 순수성을 강조한다 ([[Types-And-Functions-As-Category]] 참조).
@@ -163,8 +162,8 @@ const tick = (x: number): number => { counter++; return x + 1; };
 - **Functor는 함수가 아니라 매핑** — "객체와 사상을 동시에 옮기는" 두 단계 매핑이지 단일 함수 아님
 - **타입 생성자 ≠ 타입** — `Maybe`는 타입이 아니라 타입을 받아 타입을 만드는 것 (kind `* → *`). `Maybe Int`가 진짜 타입
 - **`fmap`이 항상 컨테이너 안 값만 바꾸는 건 아니다** — Reader Functor의 `fmap`은 함수 합성. 의미는 "출력 변환"
-- **모든 컨테이너가 Functor인 것은 아니다** — `Set`은 `fmap` 정의가 까다롭다 (해시, 순서 의존). 엄밀하게는 Functor 아님
-- **`fmap id = id`만으로 Functor 보장 안 됨** — 합성 법칙도 동시에 만족해야. JS의 `Set.prototype.map`은 둘 다 보장 못 할 수 있음 (구현 의존)
+- **JS에 `map`이 없다고 Functor가 아닌 것은 아님** — 수학적 `Set`은 원소의 상(image)으로 map을 정의할 수 있다. JavaScript `Set`에는 표준 `map`이 없고, 사용자 구현은 동등성, 가변값, 두 법칙을 직접 점검해야 한다
+- **`fmap id = id`만으로 Functor 보장 안 됨** — 합성 법칙도 동시에 만족해야 한다. 사용자 정의 `map`은 두 법칙을 함께 검증한다
 - **Const Functor가 "Functor 같지 않다"** — 인자를 무시해서 직관에 반하지만 법칙은 만족. Functor의 정의가 "변환을 강제"하는 게 아니라 "법칙을 만족"임을 보여줌
 
 ## 면접 체크포인트

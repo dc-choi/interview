@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, decorator, metadata, aop]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["@toss/nestjs-aop과 흔한 실수", "커스텀 데코레이터 함정과 면접 체크포인트"]
 ---
@@ -36,6 +37,8 @@ class UserService {
 
 직접 DiscoveryService, MetadataScanner 다루는 대신 `@Aspect`, `LazyDecorator` 추상화로. 팀 내 AOP 데코레이터가 많아지면 도입 고려.
 
+실행하려면 `AopModule`을 import하고 Aspect 구현체를 provider로 등록한다. TestingModule에서는 `compile()` 뒤 `module.init()`까지 호출해야 초기화 시점의 메서드 래핑이 적용된다.
+
 ## 흔한 실수
 
 | 함정 | 증상, 원인 | 대응 |
@@ -58,6 +61,7 @@ class UserService {
 ## 출처
 - [NestJS — Custom decorators](https://docs.nestjs.com/custom-decorators)
 - [Toss Tech — NestJS 환경에 맞는 Custom Decorator 만들기](https://toss.tech/article/nestjs-custom-decorator)
+- [toss/nestjs-aop](https://github.com/toss/nestjs-aop)
 
 ## 관련 문서
 - [[NestJS-Custom-Decorator|NestJS 커스텀 데코레이터 (TOC)]]

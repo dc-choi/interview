@@ -1,20 +1,21 @@
 ---
 tags: [nestjs, middleware, express, rate-limit]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Middleware", "NestMiddleware"]
 ---
 
 # NestJS Middleware
 
-요청 파이프라인의 **가장 바깥쪽 단계**. Express/Fastify 미들웨어와 호환되며, 라우팅 매칭 직후, Guard 직전에 실행. 보통 로깅, CORS, 요청 ID 부착, 압축, 헬멧 같은 **HTTP 레벨 횡단 관심사**.
+요청 파이프라인의 **가장 바깥쪽 단계**. Express 어댑터에서는 Express 미들웨어와 호환하며, Fastify의 helmet, cookie, compression은 어댑터용 플러그인으로 등록한다. 라우팅 매칭 직후, Guard 직전에 실행. 보통 로깅, CORS, 요청 ID 부착, 압축, 헬멧 같은 **HTTP 레벨 횡단 관심사**.
 
 ## 위치 — 요청 파이프라인에서
 
 ```
 Request → [Middleware] → Guard → Interceptor(pre) → Pipe → Handler → ...
             ↑
-    Express 호환 영역 — req/res/next
+    Express 어댑터 영역 — req/res/next
 ```
 
 NestJS 컨텍스트(ExecutionContext, Reflector, DI 토큰)는 Middleware에서 **부분적으로만** 접근 가능. 클래스형으로 만들면 DI는 받지만, ExecutionContext는 없음. NestJS 메타데이터/Guard, Pipe와 결합한 작업은 Interceptor, Guard로.
@@ -62,13 +63,13 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL })
+      .forRoutes({ path: '{*splat}', method: RequestMethod.ALL })
 
       .apply(RateLimitMiddleware)
-      .forRoutes({ path: '/api/*', method: RequestMethod.ALL })
+      .forRoutes({ path: 'api/{*splat}', method: RequestMethod.ALL })
 
       .apply(cors(), helmet())  // Express 미들웨어 그대로
-      .forRoutes('*');
+      .forRoutes('{*splat}');
   }
 }
 ```
@@ -80,15 +81,15 @@ export class AppModule implements NestModule {
 | `exclude(path)` | 특정 경로 제외 (헬스체크, Swagger 같은 것) |
 | `apply(...mw)` | 여러 미들웨어를 한 번에 |
 
-와일드카드 문법 (Express v5 기준): forRoutes 경로 패턴은 named wildcard로 쓴다 — `abcd/*splat`(이름은 임의)은 abcd/ 뒤에 뭔가 있는 경로만 매칭하고, `abcd/` 자체까지 포함하려면 중괄호로 감싸 `abcd/{*splat}`로 옵셔널화한다. 전체 매칭 `forRoutes('*')`는 그대로 쓸 수 있다. 위 예시의 `/api/*` 같은 bare 와일드카드는 v4 시절 문법이다.
+와일드카드 문법 (Express v5 기준): forRoutes 경로 패턴은 named wildcard로 쓴다 — `abcd/*splat`(이름은 임의)은 abcd/ 뒤에 뭔가 있는 경로만 매칭하고, `abcd/` 자체까지 포함하려면 중괄호로 감싸 `abcd/{*splat}`로 옵셔널화한다. 전체 매칭은 `forRoutes('{*splat}')`로 쓴다. `forRoutes('*')`는 Nest v11에서 변환될 수 있어도 Express v5 문법으로는 권장하지 않는다.
 
 ## Express 미들웨어 호환
 
-`helmet()`, `cors()`, `compression()`, `cookie-parser()` 같은 Express 생태계 미들웨어를 그대로 쓸 수 있는 것이 강점.
+Express 어댑터에서는 `helmet()`, `cors()`, `compression()`, `cookie-parser()` 같은 Express 생태계 미들웨어를 그대로 쓸 수 있다.
 
-전역 적용은 `main.ts`의 `app.use(...)`로도 가능. `MiddlewareConsumer`는 **경로별, DI가 필요한 경우** 사용.
+Express의 전역 적용은 `main.ts`의 `app.use(...)`로도 가능. Fastify의 helmet, cookie, compression은 각각의 `@fastify/*` 플러그인을 `app.register()`로 등록한다. `MiddlewareConsumer`는 **경로별, DI가 필요한 경우** 사용.
 
-**등록 순서 규칙**: helmet, cors 같은 전역 미들웨어는 다른 `app.use()`나 라우트 정의보다 **먼저** 등록해야 한다 — Express/Fastify는 미들웨어와 라우트의 정의 순서가 곧 적용 순서라, 라우트 정의 뒤에 등록한 미들웨어는 그 라우트에 적용되지 않는다.
+**등록 순서 규칙**: Express adapter의 `app.use()`는 등록 순서대로 실행되므로 helmet, CORS 같은 전역 middleware를 route보다 먼저 둔다. Fastify plugin은 registration order와 encapsulation scope가 적용 범위를 정하므로 해당 `@fastify/*` plugin 문서를 함께 확인한다.
 
 모듈 미들웨어(MiddlewareConsumer) 간에는 v11부터 **전역 모듈(@Global)에 등록한 미들웨어가 의존성 그래프상 위치와 무관하게 최우선 실행**된다 — v10까지는 전역/일반 구분 없이 루트 모듈로부터의 위상 정렬 거리 순이어서 비일관적이었다.
 

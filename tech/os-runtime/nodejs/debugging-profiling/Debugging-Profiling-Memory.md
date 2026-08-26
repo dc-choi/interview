@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime"
 aliases: ["메모리 프로파일링", "메모리 진단", "Profiling Memory"]
 ---
@@ -80,9 +81,11 @@ setInterval(() => {
   emitter.on('data', handler);   // 매 1초마다 새 리스너 → 메모리 폭증
 }, 1000);
 
-// ✅ once 또는 명시 해제
+// ✅ 한 번만 처리할 소비자는 한 번만 등록
 emitter.once('data', handler);
-// 또는
+
+// 반복 소비자를 제거할 때는 같은 함수 참조로 해제
+emitter.on('data', handler);
 emitter.off('data', handler);
 ```
 
@@ -101,11 +104,13 @@ v8.writeHeapSnapshot();  // 파일로 저장됨
 // Comparison 뷰로 두 스냅샷 간 차이 비교 (누수 객체 식별)
 ```
 
+Heap snapshot 생성 중에는 main thread가 멈추고 heap 크기만큼 추가 memory가 필요할 수 있다. 운영 instance에서 바로 실행하면 응답 중단이나 OOM으로 process가 종료될 수 있으므로 traffic을 분리한 instance와 충분한 memory 여유에서 실행한다.
+
 ### Heap Profiler (Allocation Sampling)
 ```
 Chrome DevTools Memory 탭에서:
 - Allocation instrumentation on timeline: 시간에 따른 할당 패턴 추적
-- Allocation sampling: 더 가벼운 샘플링 기반 분석 (프로덕션 사용 가능)
+- Allocation sampling: instrumentation보다 가벼운 sampling 기반 분석. 운영 적용 전 overhead를 통제된 환경에서 측정
 ```
 
 ### GC 추적
@@ -165,6 +170,8 @@ cat perfs.out | stackcollapse-perf.pl | flamegraph.pl --colors=js > profile.svg
 
 ## 출처
 - [Node.js 공식 문서, Profiling Node.js Applications](https://nodejs.org/en/learn/getting-started/profiling)
+- [Node.js, V8](https://nodejs.org/api/v8.html)
+- [Node.js, Events](https://nodejs.org/api/events.html)
 
 ## 관련 문서
 - [[Debugging-Profiling|디버깅 & 프로파일링 인덱스]]

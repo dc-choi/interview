@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, config, env, dotenv, validation]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Configuration", "@nestjs/config", "ConfigModule"]
 ---

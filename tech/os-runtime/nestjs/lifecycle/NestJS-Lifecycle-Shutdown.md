@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, lifecycle, graceful-shutdown]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Graceful Shutdown", "enableShutdownHooks", "종료와 리소스 정리"]
 ---
@@ -46,31 +47,20 @@ REQUEST 스코프 Provider는 요청 종료 시 자동 GC지만, **DEFAULT 스�
 
 K8s/ECS 환경에서 **롤링 배포 중 in-flight 요청을 안전하게 마무리**하는 패턴.
 
-```ts
-// 1. 시그널 수신 시 헬스체크 unhealthy 응답으로 전환
-@Injectable()
-export class HealthService implements OnModuleDestroy {
-  private isShuttingDown = false;
+`enableShutdownHooks()`만으로 readiness 전파 대기까지 생기지는 않는다. Nest의 종료 순서는 `OnModuleDestroy` → `BeforeApplicationShutdown` → HTTP/WebSocket adapter dispose → `OnApplicationShutdown`이다. 따라서 request가 쓰는 DB pool을 `OnModuleDestroy`에서 먼저 닫으면 아직 처리 중인 요청이 실패할 수 있다.
 
-  isHealthy() { return !this.isShuttingDown; }
+안전한 순서는 다음처럼 배포 환경과 함께 구성한다.
 
-  onModuleDestroy() {
-    this.isShuttingDown = true;
-  }
-}
+1. `OnModuleDestroy`에서 readiness를 false로 바꾸고 새 background job과 queue 소비를 중단한다.
+2. `BeforeApplicationShutdown`에서 readiness probe와 load balancer 전파 시간을 제한된 범위로 기다린다.
+3. Nest가 HTTP adapter를 닫아 새 연결을 막고 진행 중인 요청이 끝나기를 기다린다.
+4. `OnApplicationShutdown`에서 DB pool, Redis subscriber처럼 request-critical 리소스를 닫는다.
 
-// 2. enableShutdownHooks 활성화 → SIGTERM 들어오면
-//    - HealthService가 unhealthy로 전환
-//    - 로드밸런서가 트래픽 끊음 (헬스체크 실패)
-//    - 진행 중 요청 끝나길 대기
-//    - DB 연결, 큐 컨슈머 등 정리
-```
-
-`process.on('SIGTERM', ...)` 직접 등록도 가능하지만, NestJS 훅이 DI/모듈 의존 순서를 보장.
+전파 대기 시간과 전체 deadline은 health check 주기, load balancer 설정, K8s `terminationGracePeriodSeconds`로 정한다. 직접 `process.on('SIGTERM', ...)`를 함께 등록해 같은 리소스를 두 번 닫지 말고, 종료 조정자를 한 곳에 둔다.
 
 ## 타임아웃, 강제 종료
 
-종료 훅이 무한 대기에 걸리지 않게 외부에서 타임아웃을 강제. K8s `terminationGracePeriodSeconds` 기본 30초 — 이보다 짧게 정리 끝나야 함.
+종료 훅이 무한 대기에 걸리지 않게 외부에서 타임아웃을 강제. K8s `terminationGracePeriodSeconds` 안에 정리를 끝내도록 종료 시간을 설계한다. `forceCloseConnections: true`는 deadline을 넘긴 연결을 끊는 fallback으로만 사용하며, 활성 요청을 중단할 수 있으므로 정상 drain 설정으로 설명하지 않는다.
 
 ## 흔한 실수
 
@@ -80,7 +70,7 @@ export class HealthService implements OnModuleDestroy {
 - **종료 훅에서 새 비동기 작업 시작**: 정리 끝나기 전에 새 작업 만들면 영원히 안 끝남. 이미 시작된 작업 마무리만.
 - **OnModuleDestroy에서 DB 쓰기 시도하다 연결 이미 끊김**: 다른 Provider의 종료가 먼저 일어났을 수 있음 — 의존성 순서 확인.
 - **app.close()가 프로세스를 죽인다고 가정**: 훅만 트리거할 뿐 프로세스는 종료되지 않음 — interval, 장기 백그라운드 작업이 남아 있으면 계속 산다.
-- **Keep-Alive 장수명 연결로 종료가 안 끝남**: HTTP 어댑터는 기본으로 응답 종료까지 대기 — enableShutdownHooks를 켰는데 앱이 안 죽거나 --watch 재시작이 멈추면 이 증상. `NestFactory.create(AppModule, { forceCloseConnections: true })`로 연결을 강제 종료.
+- **Keep-Alive 장수명 연결로 종료가 안 끝남**: HTTP 어댑터는 기본으로 활성 응답 종료를 기다린다. 먼저 요청 deadline과 전체 종료 deadline을 두고, `forceCloseConnections: true`는 시간이 끝난 뒤 요청 중단을 감수하는 fallback으로만 사용한다.
 
 ## 면접 체크포인트
 

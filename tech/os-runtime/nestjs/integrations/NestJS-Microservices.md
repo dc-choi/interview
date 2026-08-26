@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, microservices, client-proxy, transport, message-pattern]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Microservices", "ClientProxy", "Message Pattern"]
 ---
@@ -129,11 +130,11 @@ export class GatewayController {
 | 적합 | 동기적 비즈니스 결정 | 통보, 로깅, 후처리 |
 | 운영 위험 | 수신자 장애가 호출자에 전파 | 메시지 유실은 브로커 설정에 종속 |
 
-**규칙**: 비즈니스 결정에 의존하면 `send`, 곁가지 후처리는 `emit`. emit으로 모든 걸 처리하면 일관성 깨짐, send만 쓰면 연쇄 장애 발생.
+**선택 기준**: 결과가 필요한 비즈니스 결정에는 `send`, 비동기 후처리에는 `emit`을 검토한다. 선택만으로 일관성이나 연쇄 장애가 결정되지는 않으므로, 보장 수준과 timeout, retry, DLQ를 함께 설계한다.
 
 ## 메시지 패턴 직렬화, 역직렬화
 
-기본은 JSON. Kafka, gRPC는 별도 직렬화기(`Avro`, `Protobuf`)로 강타입, 압축. 클라이언트, 서버 양쪽 옵션을 같게 둬야 함.
+직렬화는 전송별로 다르다. Nest Kafka 전송은 기본적으로 객체를 JSON으로 직렬화하며, gRPC 계약은 `.proto`의 Protobuf를 사용한다. Avro 같은 추가 형식은 별도 serializer 또는 클라이언트 통합으로 양쪽 계약을 맞춘다.
 
 ## 커스텀 트랜스포터
 

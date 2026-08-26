@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, guard, authn, authz, execution-context]
 status: done
+verified_at: 2026-08-26
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Guard 패턴", "JWT Guard와 RolesGuard"]
 ---
@@ -17,14 +18,14 @@ export class JwtAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-    if (!token) return false;
+    if (!token) throw new UnauthorizedException();
 
     try {
       const payload = await this.jwtService.verifyAsync(token);
       request['user'] = payload;   // 다음 단계(Pipe, Handler)에서 사용
       return true;
     } catch {
-      return false;
+      throw new UnauthorizedException();
     }
   }
 
@@ -34,6 +35,8 @@ export class JwtAuthGuard implements CanActivate {
   }
 }
 ```
+
+`canActivate()`가 `false`를 반환하면 Nest가 기본으로 403을 던진다. 누락되거나 유효하지 않은 자격 증명에는 위처럼 `UnauthorizedException`으로 401을 명시한다.
 
 `request.user` 주입 → 핸들러에서 `@CurrentUser()` 같은 Param Decorator로 추출.
 
@@ -82,7 +85,7 @@ export class AdminController {
 
 `getAllAndOverride` vs `getAll`:
 - **getAllAndOverride**: 핸들러 메타데이터가 있으면 클래스 메타데이터 무시 (override).
-- **getAll**: 핸들러 + 클래스 메타데이터 모두 배열로 반환 (병합).
+- **getAll**: 핸들러와 클래스의 메타데이터 값을 배열로 반환. 배열이나 객체를 병합하려면 `getAllAndMerge`를 사용.
 
 ## 인증 우회 — `@Public()` 패턴
 
@@ -125,9 +128,9 @@ providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }]
 ```
 
 - **다중 스로틀러 정의** — name 붙인 배열로 초당/분당 한도를 동시에 걸고, `@Throttle({ short: { limit, ttl } })`로 라우트별 오버라이드, `@SkipThrottle()`(또는 `{ short: true }`처럼 스로틀러별)로 제외. 인자 없으면 `{ default: true }`.
-- **프록시 뒤에서는 trust proxy 필수** — 안 켜면 클라이언트 IP 대신 프록시 IP로 카운트되어 전체 사용자가 한 버킷에 묶인다 (`app.set('trust proxy', ...)`).
-- **스토리지** — 기본은 인메모리라 단일 인스턴스 전용. 분산 환경은 `storage` 옵션에 `ThrottlerStorage` 구현체(커뮤니티 Redis 스토리지)를 꽂아 single source of truth로.
-- WebSocket, GraphQL 컨텍스트도 가드 메서드 오버라이드로 지원.
+- **프록시 뒤에서는 HTTP 어댑터의 trust proxy 설정 확인** — 원본 IP를 쓰려면 Express는 `app.set('trust proxy', ...)`, Fastify는 해당 어댑터 옵션을 설정한다.
+- **스토리지** — 기본 인메모리 storage는 인스턴스별로 따로 계산한다. 여러 인스턴스가 하나의 전역 한도를 공유해야 하면 `storage` 옵션에 공유 `ThrottlerStorage` 구현체를 연결한다.
+- WebSocket은 `ThrottlerGuard`를 확장해 `handleRequest()`를 재정의하며, `APP_GUARD`나 `app.useGlobalGuards()`로 등록할 수 없다. GraphQL은 `getRequestResponse()`를 재정의해 요청과 응답을 추출한다.
 
 ## 인가 모델 스펙트럼 — RBAC, Claims, 정책 기반(CASL)
 
