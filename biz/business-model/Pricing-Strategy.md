@@ -1,7 +1,7 @@
 ---
 tags: [business, pricing]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-08-26
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Pricing Strategy", "가격 정책"]
 ---
@@ -31,8 +31,8 @@ Freemium 전환율은 활성 사용자 정의, 관찰 기간, 고객 규모, tri
 
 ## 가격 심리학
 
-- **앵커링 (Anchoring):** 높은 가격을 먼저 보여주면 다른 가격이 합리적으로 느껴짐
-- **디코이 효과 (Decoy):** 3개 옵션 중 중간을 선택하게 만드는 미끼 옵션
+- **앵커링 (Anchoring):** 먼저 제시된 수치가 뒤의 판단에 영향을 줄 수 있지만 효과 크기는 맥락과 사용자의 지식에 따라 달라진다
+- **디코이 효과 (Decoy):** 한 대안보다 명확히 열등한 선택지를 추가하면 그 대안의 선택 비율이 높아질 수 있다. 중간 요금제를 고르게 만드는 법칙은 아니다
 - **지불 의향 (WTP) 조사:** Van Westendorp 가격 민감도 분석, 컨조인트 분석
 
 ## 현장 적용: school-manage
@@ -48,6 +48,18 @@ Q. 가격 정책은 어떻게 설계했는가?
 - Free Core로 핵심 기능 접근을 유지하고, 소프트웨어 구독과 운영지원 상품을 분리
 - 가격 설문이 아니라 실제 선입금과 납품 시간으로 지불 의향과 손익을 검증
 - 90일 게이트를 통과하기 전에는 장기 Basic/Pro 가격을 현재 정책처럼 말하지 않음
+
+## 근거 범위
+
+가격 전략과 Freemium 설명은 아래 자료로 대조했다. `school-manage`의 금액, 일정과 진입 게이트는 2026-08-26 현재의 내부 실행 계획이며 외부 출처가 검증하는 시장 사실은 아니다. 설문 기반 지불 의향은 실제 구매와 다를 수 있으므로 이 문서는 선입금 행동을 별도 검증으로 둔다.
+
+## 출처
+
+- [OpenStax, 가격 정책 수립의 5단계](https://openstax.org/books/principles-marketing/pages/12-3-the-five-step-procedure-for-establishing-pricing-policy)
+- [OpenStax, 신제품 가격 전략](https://openstax.org/books/principles-marketing/pages/12-4-pricing-strategies-for-new-products)
+- [Stripe, 가격 모델과 Freemium](https://stripe.com/resources/more/pricing-models-explained-types-of-pricing-models-and-when-to-use-them)
+- [Judgment under Uncertainty: Heuristics and Biases — Tversky, Kahneman](https://pubmed.ncbi.nlm.nih.gov/17835457/)
+- [Adding Asymmetrically Dominated Alternatives — Huber, Payne, Puto](https://doi.org/10.1086/208899)
 
 ## 관련 문서
 - [[Business-Model|비즈니스 모델]]

@@ -14,8 +14,8 @@ aliases: ["Pagination", "Infinite Scroll", "Load More", "페이지네이션", "�
 | 패턴 | 인터랙션 | 전체 크기 인지 | 페이지 전환 | 대량 결과셋 |
 |---|---|---|---|---|
 | **Pagination** | '다음', '이전', 페이지 번호 | ✅ 명확 (N/M 페이지) | 새 페이지 로드 | ✅ OK |
-| **Load More** | 버튼 클릭 시 추가 로드 | ⚠️ 총 개수는 표시 가능 | 현재 페이지 유지 | ❌ 한계 |
-| **Infinite Scroll** | 스크롤 끝에서 자동 로드 | ❌ 불명확 | 현재 페이지 유지 | ❌ 한계 |
+| **Load More** | 버튼 클릭 시 추가 로드 | ⚠️ 총 개수는 표시 가능 | 현재 페이지 유지 | 누적 DOM 관리 필요 |
+| **Infinite Scroll** | 스크롤 끝에서 자동 로드 | ❌ 불명확 | 현재 페이지 유지 | 가상화와 상태 복원 필요 |
 
 ## 각 패턴의 특성
 
@@ -42,7 +42,7 @@ aliases: ["Pagination", "Infinite Scroll", "Load More", "페이지네이션", "�
 | **이커머스 카테고리 페이지**(SEO 중요) | Pagination | 각 페이지 고유 URL로 크롤링 |
 | 연속 탐색이 핵심인 **피드, 타임라인** | Infinite Scroll | 끝 없는 탐색 맥락 |
 | **중간 규모** 결과 + 사용자 통제감 우선 | Load More | 자동 로드 없음, 총 개수 명시 |
-| **대규모** 결과셋 | Pagination | Load More / Infinite Scroll은 DOM 한계 |
+| 대규모 결과셋에서 임의 위치 이동과 재현이 중요 | Pagination | 페이지 URL과 범위가 명확함 |
 | **모바일 우선** + 짧은 세션 | Infinite Scroll | 탭, 클릭 비용 최소화 |
 
 ## SEO 고려사항
@@ -52,7 +52,7 @@ aliases: ["Pagination", "Infinite Scroll", "Load More", "페이지네이션", "�
 - 각 페이지에 **고유 URL** 부여 (예: `?page=2`, `/category/books?p=2`)
 - URL 프래그먼트(`#page=2`) 금지 — 검색엔진이 무시
 - 첫 페이지를 다른 페이지의 canonical로 지정하지 말 것 — **각 페이지가 자기 자신을 canonical**로 가져야 함
-- 필터, 정렬 URL은 `noindex` 또는 `robots.txt`로 색인 제어 (동일 콘텐츠 중복 방지)
+- 필터, 정렬 URL을 검색결과에서 제외하려면 크롤링을 허용한 상태에서 `noindex` 메타 태그나 응답 헤더를 사용한다. `robots.txt`는 크롤링 트래픽 제어 수단이며 색인 제외를 보장하지 않는다. 크롤링을 막으면 크롤러가 페이지의 `noindex`도 읽을 수 없다
 
 ### 링크 구조
 
@@ -77,8 +77,8 @@ Load More, Infinite Scroll은 보통 JS로 구현되는데, **Google 크롤러�
 ## 구현 시 실전 체크
 
 - **스크롤 위치 복원**: 뒤로가기 시 원래 위치로 돌아가야 함. Load More, Infinite Scroll은 상태 관리 필수 (URL 쿼리 파라미터 또는 세션 스토리지)
-- **성능**: 결과셋이 수백 개 넘어가면 **virtualization** (react-virtualized, react-window) 필수. 안 하면 DOM 노드 급증
-- **프리페치**: 다음 페이지를 백그라운드로 미리 로드 (`<link rel="prefetch">`, 이미지 preload)
+- **성능**: 누적 DOM 크기와 렌더링 비용을 측정하고, 문제가 확인되면 오래된 항목 제거, 페이지 분할이나 virtualization을 적용
+- **프리페치**: 다음 이동 가능성이 높고 데이터 비용이 허용될 때만 백그라운드 로드를 검토 (`<link rel="prefetch">` 등)
 - **로딩 상태**: 스켈레톤 UI 또는 스피너로 "로드 중"임을 명확히 — 사용자가 끝에 도달했는지 혼란 방지
 
 ## 면접 체크포인트
@@ -91,6 +91,7 @@ Load More, Infinite Scroll은 보통 JS로 구현되는데, **Google 크롤러�
 ## 출처
 
 - [사이트에 가장 적합한 UX 패턴 선택 — Google Search Central](https://developers.google.com/search/docs/specialty/ecommerce/pagination-and-incremental-page-loading?hl=ko)
+- [Google Search Central, robots.txt 소개와 한계](https://developers.google.com/search/docs/crawling-indexing/robots/intro?hl=ko)
 
 ## 관련 문서
 
