@@ -1,5 +1,5 @@
-// 1번 방법
-// const solution = (num_list) => num_list.reverse();
+import assert from 'node:assert/strict';
 
-// 2번 방법
-const solution = (num_list) => num_list.sort((a, b) => -1);
+const solution = (numList) => numList.reverse();
+
+assert.deepEqual(solution([1, 2, 3]), [3, 2, 1]);
