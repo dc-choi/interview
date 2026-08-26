@@ -9,7 +9,7 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 
 > [[My-Tech-Cards|TOC]], [[My-Tech-Cards-Ops|관측, 인프라, 아키텍처 (카드 5, 6, 7, 8)]], [[My-Tech-Cards-Extended|심화 비교, 꼬리]]
 
-## 카드 1: IoT 수천 대 동시 정합성 — DB Lock 전략
+## 카드 1: 850대 IoT 환경의 동시 정합성 — DB Lock 전략
 
 **결론**: 같은 SKU, 창고에 동시 입출고 이벤트가 들어올 때 재고 카운트가 깨지는 문제를 **`SELECT … FOR UPDATE NOWAIT` (Exclusive Row Lock) + 트랜잭션 짧게 + 인덱스 키로 락 범위 좁히기 + 100ms 시작 지수 백오프 최대 3회 재시도**로 해결.
 
@@ -64,7 +64,7 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 
 ## 카드 3: 슬로우 쿼리 99.3% 개선 — 복합 인덱스 + 쿼리 재작성
 
-**결론**: 디바이스 최신 상태 조회 서브쿼리 **2000ms+** → 테이블 **100만 건, 850대 디바이스, 디바이스당 평균 1,240건**. EXPLAIN ANALYZE로 `ORDER BY created_at DESC, id DESC` 후 **전체 행 filesort** 확인 → **카디널리티 분석(디바이스 번호 선택도 약 0.12%)** → 복합 인덱스 `(device_number, created_at DESC, id DESC)` 설계 → 인덱스 스캔만으로 최상단 레코드 즉시 접근. **쿼리당 15.4ms → 0.1ms**. 3,000대 확장 시에도 equality prefix로 범위를 좁히고 상위 1건에서 스캔을 끝내 데이터 누적의 영향을 제한. 단, 실제 비용은 B-Tree 깊이, 캐시, I/O와 데이터 분포에 따라 달라짐.
+**결론**: 디바이스 최신 상태 조회 서브쿼리 **2000ms+** → 테이블 **100만 건, 850대 디바이스, 디바이스당 평균 1,240건**. EXPLAIN ANALYZE로 `ORDER BY created_at DESC, id DESC` 후 후보 행 filesort 확인 → **카디널리티 분석(디바이스 번호 선택도 약 0.12%)** → 복합 인덱스 `(device_number, created_at DESC, id DESC)` 설계 → index 순서로 최상단 레코드 접근. **쿼리당 15.4ms → 0.1ms**. 같은 equality 조건과 실행계획에서는 상위 1건에서 scan을 멈춰 후보 범위를 작게 유지한다. 단, 실제 비용은 B-Tree 깊이, cache, I/O와 데이터 분포에 따라 달라지므로 데이터가 늘면 다시 측정한다.
 
 **복합 인덱스 컬럼 순서 룰**: 이 쿼리는 equality 조건인 `device_number`를 앞에 두고 정렬 키를 방향까지 맞춤. 일반화할 때는 **equality, range, 정렬, 그룹화와 covering 요구를 실제 쿼리로 함께 판단**하며, 높은 카디널리티만으로 순서를 정하지 않음.
 

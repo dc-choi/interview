@@ -16,7 +16,7 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 > 관련: [[Transaction-Lock-Contention|트랜잭션, 락]], [[Transactions|트랜잭션]], [[Distributed-Lock|분산락]], [[Lock|DB Lock]]
 
 **문제 상황**
-- 수천 대 IoT 디바이스가 동시에 재고 데이터를 전송 → 같은 품목에 동시 갱신 시 Lost Update 발생
+- 850대 IoT 환경에서 여러 디바이스가 같은 품목 재고를 동시에 갱신 → Lost Update 발생
 - 예: 재고 100개인 품목에 디바이스 A(-5), B(-3)가 동시 도착 → 둘 다 100을 읽고 각각 95, 97로 갱신 → 최종 97 (정상: 92)
 
 **Pessimistic Lock 선택 이유**
@@ -26,27 +26,27 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 
 **Optimistic Lock을 선택하지 않은 이유**
 - Optimistic Lock은 version 컬럼 기반으로 UPDATE 시점에 충돌 감지 (`WHERE version = N` → 0 rows affected면 재시도)
-- IoT 특성상 **충돌 빈도가 높음** (수천 대가 주기적으로 동시 전송) → Optimistic은 재시도 비용이 과도
-- Pessimistic은 충돌 시 Lock 대기/즉시 실패로 **한 번만 수행** vs Optimistic은 충돌 시 **전체 로직 재실행**
+- 같은 품목 경합이 반복되는 구간에서는 Optimistic 재시도 비용이 커질 수 있어 비관적 잠금을 선택
+- Pessimistic은 변경 전에 충돌을 조정해 NOWAIT 실패 시 잠금 획득 단계부터 제한 재시도 vs Optimistic은 충돌을 늦게 감지해 **전체 트랜잭션을 재실행할 수 있음**
 - 재고 갱신은 짧은 트랜잭션(ms 단위)이므로 Pessimistic Lock의 대기 시간이 무시할 수준
 
 | 기준 | Optimistic | Pessimistic |
 |------|-----------|-------------|
 | 충돌 빈도 | 낮을 때 유리 (읽기 많은 서비스) | 높을 때 유리 (쓰기 경합 많은 서비스) |
 | 충돌 시 비용 | 전체 트랜잭션 재실행 | Lock 대기 (NOWAIT면 즉시 실패 후 재시도) |
-| Lock 보유 시간 | 없음 (커밋 시점에 검증) | 트랜잭션 동안 보유 |
-| 데드락 위험 | 없음 | 있음 (순서 통일로 예방) |
+| Lock 보유 시간 | 선점 없음. 조건부 UPDATE의 X Lock은 커밋까지 보유 | 트랜잭션 동안 보유 |
+| 데드락 위험 | 낮음. 여러 행이나 자원 갱신이 얽히면 가능 | 있음. 순서 통일로 발생 가능성을 낮춤 |
 | 구현 | version 컬럼 추가 | SELECT FOR UPDATE |
 
 **트랜잭션 범위 최소화**
 - 디바이스 정보 조회, 검증은 트랜잭션 **밖**에서 수행 (lock 보유 시간 줄이기)
 - 트랜잭션 안: `SELECT FOR UPDATE`(재고 읽기) → 재고 갱신 → 데이터 입력만 배치
-- Lock 순서 통일: 항상 **품목 ID 오름차순**으로 lock 획득 → 교차 대기(데드락) 방지
+- Lock 순서 통일: 항상 **품목 ID 오름차순**으로 lock 획득 → 교차 대기(데드락) 가능성을 낮춤
 
 **Redis 분산락을 선택하지 않은 이유**
 - 초기에 Redlock 검토 → 별도 인프라 의존성 + 네트워크 레이턴시 + 클럭 동기화 문제
-- 단일 DB 환경에서 DB 자체 lock이면 충분 (인프라 단순성 우선)
-- 분산 DB/멀티 인스턴스 환경이 되면 그때 Redis 분산락 도입 검토
+- 보호할 재고가 같은 DB 트랜잭션 안에 있으면 DB row lock이면 충분하며, 앱 인스턴스 수는 이 판단을 바꾸지 않음
+- 여러 독립 DB, shard 또는 외부 시스템 경계를 하나의 트랜잭션으로 묶을 수 없을 때에만 분산 조정을 검토. Redis 락은 단순히 멀티 인스턴스라는 이유로 추가하지 않으며 TTL, fencing과 복구 설계가 함께 필요
 
 **InnoDB Lock 종류**
 
@@ -69,7 +69,7 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 **꼬리 질문 대비**
 - "NOWAIT 대신 SKIP LOCKED는?" → SKIP LOCKED는 잠긴 행을 건너뛰고 다음 행을 읽음. 큐 패턴(작업 분배)에 적합하지만, 재고 갱신처럼 **특정 행을 반드시 처리해야 하는** 경우에는 NOWAIT가 맞음
 - "FOR UPDATE와 FOR SHARE 차이?" → FOR UPDATE는 X Lock(배타적, 읽기/쓰기 모두 차단), FOR SHARE는 S Lock(공유, 읽기 허용, 쓰기 차단). 재고 갱신은 읽은 후 바로 쓰므로 X Lock 필요
-- "ECS 멀티 인스턴스에서도 DB Lock으로 충분한가?" → 같은 DB를 바라보는 한 충분. DB가 분리되면(샤딩 등) 분산 락 필요
+- "ECS 멀티 인스턴스에서도 DB Lock으로 충분한가?" → 보호할 재고가 같은 DB에 있으면 충분. 여러 DB, shard나 외부 자원을 하나의 트랜잭션으로 묶을 수 없을 때 분산 조정을 검토하며, 샤딩이나 인스턴스 수만으로 Redis 락을 자동 선택하지 않음
 - "Optimistic Lock이 나은 상황은?" → 읽기 중심 서비스, 충돌 빈도 낮은 경우 (예: 게시글 수정, 설정 변경). Lock 보유 없이 동시성 극대화
 - "Gap Lock이 성능에 미치는 영향?" → 범위 잠금이므로 INSERT를 차단할 수 있음. 높은 동시성이 필요하면 RC로 변경하여 Gap Lock 비활성화 고려 (단, Phantom Read 허용 필요)
 - "데드락 발생 시 애플리케이션 처리?" → InnoDB가 한쪽을 자동 rollback → `ER_LOCK_DEADLOCK` 에러 catch 후 재시도. 우리 시스템은 NOWAIT로 상호 대기 자체를 회피하여 발생 확률을 크게 낮춤
@@ -80,10 +80,10 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 
 - 디바이스 최신 상태 조회 서브쿼리 2000ms+ 소요
 - 테이블 100만 건, 850대 디바이스, 디바이스당 평균 1,240건 균등 분포
-- EXPLAIN ANALYZE로 `ORDER BY created_at DESC, id DESC` 후 전체 행 filesort 확인
-- 카디널리티 분석: 디바이스 번호 선택도 0.08% → 복합 인덱스 `(device_number, created_at DESC, id DESC)` 설계
+- EXPLAIN ANALYZE로 `ORDER BY created_at DESC, id DESC` 후 약 9,000행 filesort 확인
+- 카디널리티 분석: 디바이스 번호 선택도 약 0.12% → 복합 인덱스 `(device_number, created_at DESC, id DESC)` 설계
 - 인덱스 스캔만으로 최상단 레코드 즉시 접근. Prisma `@@index`로 선언
-- 결과: 쿼리당 15.4ms → 0.1ms. 3,000대 확장 시에도 인덱스 탐색 1건이라 데이터 양에 무관한 구조
+- 결과: 쿼리당 15.4ms → 0.1ms. 동등 조건 뒤 최신 1건을 읽어 스캔 범위를 좁혔지만, 데이터와 디바이스가 늘면 B-Tree 깊이, 캐시, I/O와 데이터 분포를 포함해 다시 측정
 - 꼬리:
   - "복합 인덱스 컬럼 순서 기준?" → 동등 조건(=) 컬럼을 앞에, 범위 조건(>, BETWEEN) 컬럼은 뒤에. 카디널리티가 높은 컬럼이 앞에 올수록 스캔 범위가 빨리 좁혀짐
   - "인덱스를 많이 만들면?" → SELECT는 빨라지지만 INSERT/UPDATE/DELETE 시 인덱스도 갱신해야 하므로 쓰기 성능 저하. 실제로 필요한 쿼리 패턴 기반으로 설계

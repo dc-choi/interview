@@ -10,7 +10,7 @@ aliases: ["Yunhoe 1st Tech 이력서 질문", "윤회 1차 이력서 기반 기�
 
 ## 1. 이력서 기반 기술 질문
 
-### Q1. IoT 수천 대 동시 재고 데이터 → DB Lock 정합성
+### Q1. 850대 IoT 환경의 동시 재고 갱신 → DB Lock 정합성
 
 > 마스터: [[My-Tech-Cards|카드 1]], [[My-Tech-Cards-Extended|심화]] (보강 vault는 마스터 끝 카테고리 인덱스)
 
@@ -29,9 +29,9 @@ aliases: ["Yunhoe 1st Tech 이력서 질문", "윤회 1차 이력서 기반 기�
 > ⚠️ **윤회 톤 가드**: 윤회 스택 = **RabbitMQ + AWS-SNS/SQS** (Kafka, EventBridge 명시 없음). MSK 비교 사례 강조 X (이직 사유에 한 줄만), 본 미팅 톤은 **SNS/SQS, RabbitMQ 비교**로.
 
 **★★★★ 오프닝 멘트 (윤회 핵심 카드 — 단순 EventBridge 자랑 X, EDA 프레임워크 사고)**:
-> "이벤트 기반 아키텍처는 단일 패턴이 아니라 **신뢰성, 결합도, 일관성 3축 트레이드오프 + 8개 결정 층** 프레임워크로 봅니다. 본업으로는 **층 2~5 + 7 중간 지점** (Outbox로 발행 신뢰성, Idempotency Key, DLQ로 소비 신뢰성, 사실 기반 이벤트, MessageGroupId, Event Store + 상태 혼합)까지 다뤘습니다. 본격 Event Sourcing, 다중 서비스 Saga 운영은 없습니다."
+> "이벤트 기반 아키텍처는 단일 패턴이 아니라 **신뢰성, 결합도, 일관성 3축 트레이드오프 + 8개 결정 층** 프레임워크로 봅니다. 본업에서는 Outbox로 발행 신뢰성을 높이고, Idempotency Key, DLQ, 사실 기반 이벤트, MessageGroupId까지 다뤘습니다. 본격 Event Sourcing과 다중 서비스 Saga 운영 경험은 없습니다."
 
-→ 면접관 깜짝 효과. 본인 깊이 정확히 빠짐 (운영 경험 X 영역 정직). **DPP는 층 7까지 적합한 도메인**이라는 매핑 자연스럽게 박힘.
+→ DPP에는 먼저 현재 상태와 append-only 전이 로그를 같은 트랜잭션으로 저장하고, replay와 여러 projection 요구가 확인될 때 Event Sourcing을 검토한다고 연결.
 
 - 구조: 도메인 이벤트(재고 임계치 도달) → EventBridge 규칙 → 채널별 SQS(카톡/이메일/내부 알림) → 워커(ECS Fargate) → 외부 API
 - 채널별 DLQ + 재시도 정책 차등: 잘못된 번호와 주소 같은 영구 오류는 재시도하지 않고, 네트워크와 공급자 서버 오류 같은 일시 오류만 제한 재시도. 예산 소진 뒤 긴급 알림 + 수동 처리 큐

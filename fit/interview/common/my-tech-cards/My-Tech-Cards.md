@@ -13,7 +13,7 @@ aliases: ["내 기술 답변 마스터", "My Tech Cards"]
 ## 카드 목차
 
 ### [[My-Tech-Cards-Data|데이터/메시징 — 카드 1, 2, 3, 4]]
-- **카드 1**: IoT 수천 대 동시 정합성 — DB Lock 전략 (SELECT FOR UPDATE NOWAIT)
+- **카드 1**: 850대 IoT 환경의 동시 정합성 — DB Lock 전략 (SELECT FOR UPDATE NOWAIT)
 - **카드 2**: EventBridge + SQS 이벤트 아키텍처 (발주 자동화, 당시 MSK 대비 비용/운영 조건 비교)
 - **카드 3**: 슬로우 쿼리 99.3% 개선 (복합 인덱스 + 카디널리티 분석, 15.4ms → 0.1ms)
 - **카드 4**: Prisma → MySQL SubQuery API 응답 90% 개선 (`relationLoadStrategy: 'join'`)

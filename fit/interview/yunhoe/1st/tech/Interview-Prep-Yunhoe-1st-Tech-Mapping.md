@@ -18,9 +18,9 @@ aliases: ["Yunhoe 1st Tech 매핑", "윤회 1차 주요 업무 매핑과 프론�
 - **QR 코드 API** → 발급/검증 stateless 설계 (서명, 키 회전, 캐싱) — Q6, Q10
 
 ### 제품 순환 추적
-- **상태 전이 설계** → 카드 2 EventBridge+SQS + Q8 생애주기 상태머신 (이벤트 소싱, SCD Type 2)
+- **상태 전이 설계** → 카드 2 EventBridge+SQS + Q8 생애주기 상태머신 (현재 상태 + append-only 전이 로그)
 - **역할 기반 접근제어(RBAC)** → 카드 7 클린 아키텍처 + 멀티테넌트 권한 가드 — Q5
-- **감사 추적** → 이벤트 스토어 + Snapshot 패턴 (불변 이력) — Q8
+- **감사 추적** → 현재 상태와 append-only 전이 로그를 같은 트랜잭션으로 저장, replay와 여러 projection 요구가 생기면 Event Sourcing 검토 — Q8
 - **EPR 지표 집계** → 카드 3 슬로우 쿼리 + 시계열 인덱스 + OLAP(ClickHouse, 집계 read model) 검토
 
 ### 인프라, 운영

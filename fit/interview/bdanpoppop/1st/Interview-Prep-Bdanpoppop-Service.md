@@ -21,7 +21,7 @@ aliases: ["Bdanpoppop 서비스 질문", "비단팝팝 서비스 맥락 컬처�
 - 잠금 실패 시 즉시 "이미 다른 거래 진행 중" 에러 반환
 - 트랜잭션 안: 상품권 status `AVAILABLE` 검증 → `PENDING_EXCHANGE`로 전환 → 거래 ID 발급 → 트랜잭션 안에서 두 상품권 모두 X Lock(작은 ID 먼저)
 
-**실무 연결**: 트라이포드랩 IoT 재고 갱신에서 동일 패턴 — 수천 대 동시 갱신을 row lock으로 직렬화. 데드락은 lock 순서 통일로 회피
+**실무 연결**: 트라이포드랩의 850대 IoT 환경에서 발생한 같은 품목 동시 갱신을 row lock으로 직렬화. 데드락은 lock 순서 통일로 회피
 **꼬리 대비**: "Optimistic도 가능하지 않나?" → 결제, 정산 후 롤백 비용이 크면 Pessimistic이 안전. 단순 status 변경이면 Optimistic도 OK
 
 ### Q2. 결제는 성공했는데 블록체인 기록이 실패하면?

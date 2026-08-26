@@ -17,7 +17,7 @@ aliases: ["윤회 1차 치트시트 어필 카드와 체크리스트", "Yunhoe 1
 
 | 카드 | 사용 시점 |
 |---|---|
-| **★★★★ EDA 결정 프레임워크 사고** (NEW — 윤회 핵심) | **이벤트 기반, DPP, 상태 전이, EPR 지표 질문 어디든 오프닝**: "EDA는 신뢰성, 결합도, 일관성 3축 트레이드오프 + 8개 결정 층 프레임워크로 봅니다. 본업으로는 **층 2~5 + 7 중간 지점** (Outbox, Idempotency, DLQ, MessageGroupId, Event Store + 상태 혼합)까지 다뤘고, **DPP는 층 7까지 들어가야 적합한 도메인**이라고 봤습니다." → 면접관 깜짝 효과 + 깊이 입증 |
+| **★★★★ EDA 결정 프레임워크 사고** (NEW — 윤회 핵심) | **이벤트 기반, DPP, 상태 전이, EPR 지표 질문 어디든 오프닝**: "EDA는 신뢰성, 결합도, 일관성 3축 트레이드오프 + 8개 결정 층 프레임워크로 봅니다. 본업에서는 Outbox, Idempotency Key, DLQ, MessageGroupId까지 다뤘고, 본격 Event Sourcing과 다중 서비스 Saga는 운영하지 않았습니다. DPP도 현재 상태와 append-only 전이 로그부터 시작하고, replay와 여러 projection 요구가 확인될 때만 Event Sourcing을 검토하겠습니다." |
 | **AI 워크플로우 (하네스, Subagent, Hook)** ★★★ | 5/15에 본인이 직접 언급 — 본 미팅 적극 어필. "기술 결정, 생산성, 개발 환경" 질문 → 6개월 도입 제안 |
 | **VMI/IoT 도메인 (식품→제약→부자재)** ★★★ | 5/15 언급 — "DPP, 이벤트, 정합성" 질문 → 동형성 매핑 |
 | **EventBridge+SQS / Grafana 관측 / Docker-ECS** ★★ | 본업 정량 카드 (기술 질문 메인) |
@@ -35,10 +35,10 @@ aliases: ["윤회 1차 치트시트 어필 카드와 체크리스트", "Yunhoe 1
 > "**재현 → 가설 → 분리 검증 → 해결 → 영향 점검 → 회고**. Prisma 1000ms 사례 — APM 로그 → EXPLAIN → 공식 문서 `relationLoadStrategy` → DB-level JOIN 90% 개선."
 
 ### Q5 멀티테넌트 받으면 (본업만)
-> "트라이포드랩에서 대형 PoC(제약바이오, F&B) 멀티테넌트 데이터 모델링 했습니다. 단계는 논리적(tenant_id 컬럼) → 스키마 분리 → 물리적. 현 단계는 **논리적 + 강제 가드**가 합리 — Prisma middleware로 tenant_id 자동 주입, RLS로 실수 방지, 인덱스 첫 컬럼 tenant_id 필수. 전환 임계는 컴플라이언스, noisy neighbor, 대형 고객 수 누적."
+> "트라이포드랩에서 대형 PoC(제약바이오, F&B) 멀티테넌트 데이터 모델링 했습니다. 단계는 논리적(tenant_id 컬럼) → 스키마 분리 → 물리적. 현 단계는 **논리적 + 앱 경계 + RLS**가 합리 — repository에서 tenant_id를 명시하고 Prisma extension은 보조로만 쓰며, non-owner 앱 role의 RLS와 실제 교차 테넌트 테스트로 막습니다. 인덱스 첫 컬럼은 tenant_id를 우선 검토합니다. 전환 임계는 컴플라이언스, noisy neighbor, 대형 고객 수 누적입니다."
 
 ### Q8 생애주기 상태머신 받으면 (본업만)
-> "이벤트 소싱 + read model 패턴. `events(aggregate_id, sequence, event_type, from_state, to_state, actor, evidence)` append-only, read model은 `product_state(current_state, last_event_id)` 비동기 프로젝션. 잘못된 전이 방어는 코드 enum + DB 트리거 이중, 위반 시 보상 워크플로(Saga). 이력은 SCD Type 2 유사 snapshot 테이블로 시점별 상태 보존."
+> "현재 상태 테이블과 append-only 전이 로그를 같은 트랜잭션으로 갱신합니다. `expected_version`이나 UNIQUE 제약으로 중복과 경합을 막고, 허용 전이는 한 곳에서 검사합니다. replay나 여러 projection 요구가 확인되기 전에는 Event Sourcing, CQRS, snapshot을 추가하지 않습니다."
 
 ### 취미, 사이드 (대표 직접 면접 변형 가능)
 > "**주일학교 출석부 멀티테넌트 SaaS**를 Express 5+tRPC 모노레포로 운영 중입니다. 2026-07-15 기준 보고서상 모임 레코드 108개, 랜딩 누적 본당 85곳, 학생 3,669명, 출석 약 22,051건, MAO 34곳입니다. 누적 본당과 모임 레코드는 활성 수치가 아닙니다. **Parish→Church→Organization 3단계 위계 테넌트 + 명시적 권한 가드 + Snapshot 패턴**을 직접 설계, 운영했습니다. 작은 트래픽이어도 **멀티테넌트 운영 문제를 직접 다뤄온 영역**입니다. 그 외 **하코 3000명 Prisma 발표, 카카오테크 캠퍼스 멘토링**으로 이해를 점검했습니다."

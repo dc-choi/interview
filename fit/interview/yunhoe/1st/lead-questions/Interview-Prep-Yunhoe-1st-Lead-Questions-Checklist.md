@@ -18,8 +18,8 @@ aliases: ["Yunhoe 1st Interview Checklist", "윤회 1차 면접 준비 체크리
 
 | 영역 | 흡수 위치 | 복습 |
 |---|---|---|
-| 멀티테넌트 SaaS 패턴 (Prisma middleware, RLS, 전환 임계) | Tech Q5 본문 (정량 흡수 완료) | [x] |
-| 생애주기 상태 머신, 이벤트 소싱 (스토어 스키마, read model, Saga) | Tech Q8 본문 (정량 흡수 완료) | [x] |
+| 멀티테넌트 SaaS 패턴 (명시 repository, Prisma extension, RLS, 전환 임계) | Tech Q5 본문 (정량 흡수 완료) | [x] |
+| 생애주기 상태 머신 (현재 상태, append-only 전이 로그, 동시성 제어) | Tech Q8 본문 (흡수 완료) | [x] |
 | 분산 ID (UUIDv7, ULID, ed25519 서명, QR 페이로드) | Tech Q6 본문 (정량 흡수 완료) | [x] |
 | PostgreSQL 차이점 (EXPLAIN ANALYZE, RLS, BRIN/GIN) | Tech-Extra 6 RDBMS 심화 | [ ] |
 | 복원성 패턴 (타임아웃, 재시도, Circuit Breaker opossum, DLQ) | Tech Q7 본문 | [ ] |

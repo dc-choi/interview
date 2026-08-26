@@ -18,7 +18,7 @@ aliases: ["Bdanpoppop 이력서 기술 질문", "비단팝팝 이력서 기반 �
 ## 1. DB Lock으로 동시성 제어 — 상품권 교환과 결제에 그대로 매핑
 
 **경험 요약**
-- 수천 대 IoT 디바이스가 동시에 같은 품목 재고를 갱신 → Lost Update 발생
+- 850대 IoT 환경에서 여러 디바이스가 같은 품목 재고를 동시에 갱신 → Lost Update 발생
 - `SELECT FOR UPDATE NOWAIT`로 품목 단위 Exclusive Row Lock + 100ms 간격 3회 재시도
 - Lock 순서를 품목 ID 오름차순으로 통일 → 데드락 회피
 - 트랜잭션 범위 최소화 (검증은 트랜잭션 밖, 갱신만 안)

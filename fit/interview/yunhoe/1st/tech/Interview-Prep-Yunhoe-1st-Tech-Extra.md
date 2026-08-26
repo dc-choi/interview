@@ -1,6 +1,7 @@
 ---
 tags: [fit, interview, yunhoe]
 status: done
+verified_at: 2026-08-26
 category: "Interview - Fit"
 company: "윤회주식회사 (CARE IDⓒ)"
 aliases: ["Yunhoe 1st Tech Extra", "윤회 1차 기술 질문 보강"]

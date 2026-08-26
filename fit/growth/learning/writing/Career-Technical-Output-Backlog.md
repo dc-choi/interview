@@ -1,6 +1,7 @@
 ---
 tags: [growth, learning, writing, blog, output]
 status: todo
+verified_at: 2026-08-26
 category: "Growth - 학습"
 aliases: ["커리어 기술 아웃풋 백로그", "Career Technical Output Backlog"]
 ---

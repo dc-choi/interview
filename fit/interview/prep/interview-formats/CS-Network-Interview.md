@@ -25,20 +25,21 @@ aliases: ["CS Network Interview", "CS 네트워크 면접", "네트워크편 CS 
 
 ### Q3. TCP 통신 과정을 한 요청 기준으로 풀어보라
 
-한 번의 HTTP 요청-응답에 필요한 통신 수:
-- **3-way handshake** (SYN / SYN-ACK / ACK) — 3번
-- **HTTP 요청 + 응답** — 2번(간단화)
-- **4-way handshake** (FIN / ACK / FIN / ACK) — 4번
-- **총 9번**의 편도 전송(왕복 4.5회분)
+패킷 수를 고정해 더하는 대신 **요청의 임계 경로에 몇 RTT가 필요한지**로 본다.
 
-지구 반대편 기준 편도 66ms면 **9 × 66ms ≈ 594ms**, 왕복 거리로 4바퀴 반. 단일 요청에 0.5초 이상 소요 가능.
+- 새 TCP 연결은 애플리케이션 데이터를 보내기 전에 일반적으로 3-way handshake 1 RTT가 필요하다. 마지막 ACK에는 HTTP 요청 데이터를 함께 실을 수 있다.
+- HTTPS라면 TLS handshake가 추가된다. TLS 1.3의 일반적인 새 연결은 1 RTT이며, 재개와 0-RTT는 조건과 replay 위험이 있는 별도 경로다.
+- 연결이 준비된 뒤 요청이 서버에 도달하고 응답 첫 바이트가 돌아오는 데 최소 약 1 RTT가 더 들며, 실제 지연에는 서버 처리, 혼잡, 손실, 응답 전송 시간이 붙는다.
+- FIN 기반 연결 종료는 보통 사용자가 응답을 기다리는 임계 경로에 넣지 않는다. HTTP 연결을 재사용하면 다음 요청은 TCP와 TLS 연결 수립 비용을 다시 내지 않는다.
+
+따라서 원거리 요청 지연을 `SYN`, `ACK`, `FIN` 패킷 개수에 편도 지연을 곱해 계산하면 안 된다. 새 연결인지, TLS를 쓰는지, 연결을 재사용하는지와 응답 크기를 먼저 확인한다.
 
 ### Q4. 이걸 줄이려면?
 
 - **Keep-Alive** — 매 요청마다 handshake 반복 안 함
 - **HTTP/2 멀티플렉싱** — 한 TCP 연결로 다중 스트림
-- **HTTP/3 (QUIC)** — UDP 기반, 0-RTT 재개
-- **TLS 1.3 0-RTT** — 재방문 시 handshake 단축
+- **HTTP/3 (QUIC)** — QUIC 연결 수립에 TLS 1.3을 통합하고 스트림 간 TCP 수준 Head-of-Line blocking을 피함
+- **TLS 1.3 0-RTT** — 재개 조건에서만 적용하며 replay 가능한 요청에 사용하지 않음
 - **CDN** — 물리적 거리 단축
 - **연결 풀링** — 앱/DB 간 영구 연결 재사용
 
@@ -51,12 +52,12 @@ aliases: ["CS Network Interview", "CS 네트워크 면접", "네트워크편 CS 
 - **서비스 간 호출**: MSA gRPC, Kafka, HTTP
 - **외부 API**: 결제, SMS, 인증
 
-### Q6. 대역폭보다 큰 데이터를 주고받으면 어떻게 되나?
+### Q6. 큰 데이터를 제한된 대역폭으로 보내면 어떻게 되나?
 
-- **지연 누적** — 패킷 큐잉, 혼잡 제어(CWND 감소)로 TCP 전송률 하락
-- **패킷 손실, 재전송** 증가 → 악순환
-- 특정 연결 하나가 대역폭을 독점하면 **이웃 요청도 지연** (혼잡)
-- 해결: 압축, 샘플링, 버킷팅, 페이지네이션
+- 대역폭은 데이터 크기가 아니라 초당 전송 가능한 양이다. 크기 `S`인 데이터를 병목 대역폭 `B`로 보내는 직렬화 시간은 최소 `S / B`이고, 여기에 RTT와 서버 처리 시간이 더해진다.
+- 큰 응답은 여러 TCP 세그먼트로 나뉘고 혼잡 윈도우만큼 전송되므로 느린 시작의 영향을 받을 수 있지만, 크다는 이유만으로 손실이 생기지는 않는다.
+- 송신률과 동시 요청을 합친 제공 부하가 경로 용량을 넘고 버퍼가 차면 큐잉 지연과 손실이 발생한다. TCP는 손실, ECN, RTT 신호에 따라 전송률을 조절하며 혼잡 윈도우가 줄 수 있다.
+- 압축과 페이지네이션은 `S`를 줄이고, rate limit, backpressure, 동시성 제한은 제공 부하를 줄인다.
 
 ## Part 2. 응용 시나리오
 
@@ -136,7 +137,7 @@ aliases: ["CS Network Interview", "CS 네트워크 면접", "네트워크편 CS 
 
 - "네트워크와 디스크 중 어느 게 더 느린가?" → 둘 다 느리지만 **디스크 랜덤 I/O**와 **원거리 네트워크**가 최악. SSD + 근거리는 네트워크가 더 예측 가능
 - "Connection Pool 크기를 늘리면 성능이 좋아지나?" → **아니다**. DB 하드웨어, 락 경합 한계 때문에 정점 후 하락. [[Connection-Pool|Little's Law]] 참조
-- "Blocking vs Non-Blocking 언제 뭘 쓰나?" → 요청당 스레드 모델이 단순하면 Blocking. C10K 이상은 Non-Blocking, 이벤트 루프. [[Sync-Async-Blocking]]
+- "Blocking vs Non-Blocking 언제 뭘 쓰나?" → 동시 연결 수만으로 결정하지 않는다. 처리 시간 대부분이 I/O 대기이고 많은 연결을 적은 스레드로 다중화해야 하면 Non-Blocking이 유리할 수 있다. 요청당 스레드나 가상 스레드는 흐름이 단순하지만 스레드, 메모리와 하위 자원 한도를 함께 측정한다. [[Sync-Async-Blocking]]
 - "Bulk Insert의 단점은?" → 한 트랜잭션의 크기가 커지면 **롤백 비용, 락 보유 시간** 증가. 배치 단위 타협
 - "JSON 압축으로 얻는 이득을 수치로?" → gzip으로 60~80% 축소 가능. 모바일, 해외 사용자에 특히 체감
 - "HTTP/2가 모든 상황에서 빠른가?" → Head-of-Line blocking은 TCP 레벨에 남음 → HTTP/3(QUIC)이 그것까지 해결
@@ -153,7 +154,7 @@ aliases: ["CS Network Interview", "CS 네트워크 면접", "네트워크편 CS 
 
 ## 면접 체크포인트
 
-- TCP 한 요청에 실제로 **몇 번 통신이 오가는지** 계산할 수 있는가
+- TCP 한 요청의 지연을 패킷 수가 아니라 **연결 수립, TLS, 요청-응답의 RTT 임계 경로**로 설명할 수 있는가
 - 네트워크, CPU, 메모리, 디스크를 **동시에 얹어 사고**하는가
 - 크롤링, 로딩, 트래픽 시나리오를 각각 2~3분으로 설명할 수 있는가
 - Connection Pool, Bulk Insert, Non-Blocking, 캐싱을 **조합**해서 답할 수 있는가
@@ -161,6 +162,10 @@ aliases: ["CS Network Interview", "CS 네트워크 면접", "네트워크편 CS 
 
 ## 출처
 - [F-Lab — CS 면접 대비: 네트워크편](https://f-lab.kr/blog/cs-interview-network)
+- [RFC Editor, RFC 9293: Transmission Control Protocol](https://www.rfc-editor.org/rfc/rfc9293.html)
+- [RFC Editor, RFC 5681: TCP Congestion Control](https://www.rfc-editor.org/rfc/rfc5681.html)
+- [RFC Editor, RFC 8446: The Transport Layer Security Protocol Version 1.3](https://www.rfc-editor.org/rfc/rfc8446.html)
+- [RFC Editor, RFC 9114: HTTP/3](https://www.rfc-editor.org/rfc/rfc9114.html)
 
 ## 관련 문서
 - [[Common-Interview-Questions|자주하는 면접 질문]]

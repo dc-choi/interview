@@ -107,7 +107,7 @@ aliases: ["Yunhoe 1st Retro", "윤회 1차 본 미팅 회고", "CARE ID 1st Retr
 - [x] **"좋은 소프트웨어란?"** → [[My-FIT-Answers#10. AI 도구 활용 깊이 ★ (자주 받음)|AI 도구 꼬리]]에 사람의 이해, 변경 안전성과 검증을 포함해 반영
 - [x] **"퀄리티 vs 속도"** → [[My-FIT-Answers#2. 갈등, 소통 (일정, 우선순위 조율 패턴)|갈등, 소통 공통 꼬리]]에 오류 비용과 되돌리기 가능성 기준으로 반영
 - [x] **"AI 시대 개발방식 변화 거부감"** → [[My-FIT-Answers#10. AI 도구 활용 깊이 ★ (자주 받음)|AI 도구 꼬리]]에 스펙, 컨텍스트와 사람의 판단 책임으로 반영
-- [x] **DB 트랜잭션 언제/FK 거는 기준/마이그레이션 전략** → [[My-Tech-Cards-Data#카드 1: IoT 수천 대 동시 정합성 — DB Lock 전략|데이터, 메시징 카드]]에 세 꼬리와 기술 정본 링크로 반영
+- [x] **DB 트랜잭션 언제/FK 거는 기준/마이그레이션 전략** → [[My-Tech-Cards-Data#카드 1: 850대 IoT 환경의 동시 정합성 — DB Lock 전략|데이터, 메시징 카드]]에 세 꼬리와 기술 정본 링크로 반영
 - [x] **ECS 스케일링 임계치 답변 정정** → [[My-Tech-Cards-Ops#카드 6: Docker 멀티스테이지 + ECS Fargate 전환 (3단계 점진)|운영 카드]]에 실제 임계와 개선 기준을 분리해 반영
 - [x] **AWS DR, 멀티리전 장애 대응** → [[My-Tech-Cards-Ops#카드 6: Docker 멀티스테이지 + ECS Fargate 전환 (3단계 점진)|운영 카드]]에 미구축 사실, RTO/RPO와 DR 단계로 반영
 - [x] **ESG, GS1/GTIN, LCA** → [[Interview-Prep-Yunhoe-Domain-Keywords#7. ESG, GS1/GTIN, LCA와 S-LCA|도메인 키워드]]에 공식 출처와 함께 반영
