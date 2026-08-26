@@ -1,12 +1,12 @@
 {
   "name": "ts-study",
   "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "description": "TypeScript study examples",
   "type": "module",
   "packageManager": "pnpm@10.12.2",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
