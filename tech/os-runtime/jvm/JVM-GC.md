@@ -1,7 +1,7 @@
 ---
 tags: [runtime, jvm, gc, java, young-gen, old-gen, g1gc, zgc]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-08-26
 category: "OS&런타임(OS&Runtime)"
 aliases: ["JVM GC", "JVM Garbage Collection", "Java GC"]
 ---
@@ -21,7 +21,7 @@ JVM의 GC는 **힙에서 더 이상 참조되지 않는 객체를 찾아 해제*
 - **Stack** — 스레드별 메서드 호출 프레임(GC 대상 아님)
 - **Code Cache** — JIT 컴파일된 네이티브 코드
 
-GC는 **Heap만** 대상으로 한다. Metaspace는 클래스 언로딩 시에만 정리.
+일반 객체 회수의 주 대상은 Heap이다. Metaspace는 힙 밖의 네이티브 메모리지만, GC로 클래스가 언로드되면 해당 클래스 메타데이터도 회수된다. Stack과 Code Cache는 힙 객체 수집 대상이 아니며 각각 별도 수명 주기로 관리된다.
 
 ## 세대 가설과 분리 설계
 
@@ -32,13 +32,15 @@ GC는 **Heap만** 대상으로 한다. Metaspace는 클래스 언로딩 시에�
 
 ## 객체의 수명 경로
 
+다음은 전통적인 세대형 수집기의 일반 경로다. G1은 Region을 사용하고, ZGC 같은 수집기는 버전과 모드에 따라 배치와 승격 방식이 다르다.
+
 1. 새 객체 → **Eden** 할당
 2. Eden이 차면 **Minor GC** 발생
    - 살아남은 객체는 Survivor(from)로 복사, Eden 비움
    - 다음 Minor GC에서는 Survivor(from) + Eden의 생존자를 Survivor(to)로 복사
    - from ↔ to 역할 교대
-3. Survivor에서 **특정 횟수(`-XX:MaxTenuringThreshold`, 기본 15) 이상 살아남으면** Old로 **승격(Promotion)**
-4. Old가 가득 차면 **Major/Full GC** 발생
+3. Survivor에서 JVM이 정한 tenuring threshold를 넘긴 객체는 Old로 **승격(Promotion)**. `-XX:MaxTenuringThreshold`는 그 임계값의 상한이며 실제 임계값은 실행 중 달라질 수 있다
+4. Old의 점유 압력이 높아지면 수집기별 Old 수집이나 동시 사이클이 시작되고, 회수나 할당에 실패하면 더 비싼 Full GC로 이어질 수 있다
 
 Survivor 두 개를 교대로 쓰는 이유는 **복사(copy) 방식으로 단편화를 자연스럽게 제거**하기 위함. 단일 Survivor로는 이동 대상과 여유 공간이 섞여 단편화.
 
@@ -46,19 +48,19 @@ Survivor 두 개를 교대로 쓰는 이유는 **복사(copy) 방식으로 단�
 
 | 구분 | 범위 | 빈도 | 지연 | 알고리즘 |
 |---|---|---|---|---|
-| **Minor GC** | Young | 잦음 | 수 ms | Copy (생존자만 복사) |
-| **Major GC** | Old | 드묾 | 수십~수백 ms | Mark-Sweep-Compact 또는 Region 기반 |
-| **Full GC** | Young + Old + Metaspace | 가장 드묾 | 수초 가능 | 전체 스캔, STW 긺 |
+| **Minor GC** | Young 중심 | 비교적 잦음 | 대체로 짧지만 워크로드 의존 | 생존자 이동 또는 복사 |
+| **Major GC** | Old 중심 | 수집기별 상이 | 수집기와 live set 의존 | 동시 마킹, Sweep, Compact 또는 Region 회수 |
+| **Full GC** | 전체 Heap 중심, 클래스 언로딩을 동반할 수 있음 | 장애나 압력 조건에서 발생 | 대체로 가장 비쌈 | 수집기별 전체 회수 경로 |
 
-"Full GC가 돈다" = **Stop-the-World가 길게 잡힌다** = 서비스 응답이 일시 정지. 운영에서 가장 피하고 싶은 이벤트.
+Minor, Major, Full이라는 용어와 실제 범위는 수집기마다 다르므로 GC 로그의 cause와 phase로 확인한다. Full GC는 대개 큰 STW를 동반해 서비스 지연 위험이 크지만 시간은 힙과 live set, 수집기, 머신과 워크로드에 따라 달라진다.
 
 ## Stop-the-World (STW)
 
 GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 구간. 루트 스캔, 객체 이동 시 일관성을 보장하기 위해 필요.
 
-- STW 길이 = **힙 크기, 살아있는 객체 수, 수집기 알고리즘**에 비례
+- STW 길이는 **루트 집합, 힙과 live set, 수집기 알고리즘, 머신과 워크로드**의 영향을 받는다. 동시 수집기는 pause와 전체 힙 크기의 상관을 줄이도록 설계된다
 - 지연 민감 서비스(결제, 트레이딩, 게임)에서 가장 큰 병목
-- 최신 GC(ZGC, Shenandoah)는 STW를 **밀리초 미만**으로 축소
+- ZGC와 Shenandoah는 무거운 작업을 애플리케이션과 동시에 수행해 짧은 pause를 목표로 한다. 실제 pause는 GC 로그와 부하 테스트로 확인한다
 
 ## GC 알고리즘 계보
 
@@ -66,9 +68,9 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 |---|---|---|---|
 | **Serial** | 전통 | 단일 스레드, Mark-Sweep-Compact | 소형 앱, 싱글 코어 |
 | **Parallel (Throughput)** | JDK 5 | 멀티 스레드 Young+Old | 배치, 처리량 중심 |
-| **CMS** (Concurrent Mark Sweep) | JDK 5~14 | Old를 **동시 마킹**으로 STW 축소 | 응답 지연 민감 앱(Deprecated) |
-| **G1** (Garbage-First) | JDK 7~, 기본(JDK 9+) | **Region 기반**, 예측 가능 pause, Old도 동시 처리 | 일반 대형 힙(4~32GB)의 표준 |
-| **ZGC** | 실험 JDK 11(JEP 333), Production JDK 15(JEP 377) | **서브 ms STW**, TB급 힙 지원, Colored Pointer | 초저지연, 초대형 힙 |
+| **CMS** (Concurrent Mark Sweep) | JDK 1.4.1~13, JDK 14에서 제거 | Old를 **동시 마킹**으로 STW 축소 | 과거 응답 지연 민감 앱 |
+| **G1** (Garbage-First) | JDK 7~, 기본(JDK 9+) | **Region 기반**, pause 목표, Old도 동시 처리 | 일반 서버 워크로드의 기본 선택 |
+| **ZGC** | 실험 JDK 11(JEP 333), Production JDK 15(JEP 377) | 짧은 pause 목표, TB급 힙 지원, Colored Pointer | 초저지연, 초대형 힙 |
 | **Shenandoah** | Production JDK 15(JEP 379) | Concurrent Compaction, ZGC와 유사한 저지연. **Oracle JDK 빌드에는 미포함(OpenJDK 계열만)** | 초저지연 대안 |
 | **Epsilon** | JDK 11~ | **아무것도 회수 안 함** | 단기 벤치마크, 메모리 분석 |
 
@@ -84,10 +86,10 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 
 ## ZGC, Shenandoah (초저지연)
 
-- **Colored Pointer / Load Barrier** — 포인터에 메타 비트를 심어 마킹, 이동을 **앱 스레드와 동시**에
-- **Concurrent Compaction** — 압축(이동)도 동시에 수행. 전통 GC는 STW 중에만 가능
-- 힙 **수 TB 규모**에서도 STW 수 ms 이하
-- CPU, 배리어 오버헤드가 있어 처리량은 G1보다 약간 낮을 수 있음
+- **ZGC**는 Colored Pointer와 Load Barrier를 사용해 마킹과 이동의 대부분을 애플리케이션 스레드와 동시에 처리한다
+- **Shenandoah**는 Load Barrier와 forwarding pointer를 이용해 객체 이동과 참조 갱신을 동시에 수행한다
+- 두 수집기 모두 pause가 전체 힙 크기에 따라 선형으로 늘지 않도록 설계됐지만, 루트 집합과 클래스 처리, 머신과 워크로드는 실제 pause에 영향을 준다
+- 동시 작업과 배리어에는 CPU와 메모리 여유가 필요하다. G1 대비 처리량 차이는 워크로드에서 측정한다
 
 **ZGC 버전별 caveat**: 초기 ZGC는 세대 구분이 없는 단일 힙(non-generational)이었다. **JDK 21에서 JEP 439로 Generational ZGC가 추가**돼 Young/Old를 분리하며 할당률 높은 워크로드의 효율이 크게 개선됐고, **JDK 23에서 JEP 474로 generational이 기본**이 됐다(`-XX:+ZGenerational`이 기본값). 이후 **JEP 490으로 non-generational 모드는 제거**됐다. 따라서 JDK 버전에 따라 ZGC가 세대형인지 여부가 다르다.
 
@@ -150,6 +152,12 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 - GC 튜닝이 만능이 아닌 이유(할당 패턴이 근원)
 
 ## 출처
+- [Oracle, JDK 1.4.1의 새 병렬, 동시 수집기](https://www.oracle.com/technical-resources/articles/javame/garbagecollection2.html)
+- [Oracle Java 25, HotSpot GC Tuning Guide, Class Metadata](https://docs.oracle.com/en/java/javase/25/gctuning/other-considerations.html#GUID-F4188072-92FA-4A7C-BF5A-9EF7D32BC82B)
+- [OpenJDK Wiki, Shenandoah Performance Guidelines and Diagnostics](https://wiki.openjdk.org/display/shenandoah/Main#Main-PerformanceGuidelinesandDiagnostics)
+- [JEP 363 — Remove Concurrent Mark Sweep (OpenJDK)](https://openjdk.org/jeps/363)
+- [JEP 333 — ZGC Experimental (OpenJDK)](https://openjdk.org/jeps/333)
+- [JEP 377 — ZGC Production (OpenJDK)](https://openjdk.org/jeps/377)
 - [JEP 379 — Shenandoah Production (OpenJDK)](https://openjdk.org/jeps/379)
 - [JEP 439 — Generational ZGC (OpenJDK)](https://openjdk.org/jeps/439)
 - [JEP 474 — Generational ZGC by Default (OpenJDK)](https://openjdk.org/jeps/474)

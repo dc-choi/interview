@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: note
-verified_at: 2026-08-04
+verified_at: 2026-08-26
 category: "OS & Runtime"
 aliases: ["파일 시스템"]
 ---
@@ -73,7 +73,7 @@ fs.writeFile('/path/to/file.txt', 'content', { flag: 'a+' }, err => {});
 | 플래그 | 설명 | 파일 생성 |
 |--------|------|---------|
 | `r+` | 읽기+쓰기 | No |
-| `w+` | 읽기+쓰기, 스트림을 파일 시작에 위치 | Yes |
+| `w+` | 읽기+쓰기, 기존 파일은 길이 0으로 잘라냄 | Yes |
 | `a` | 쓰기, 스트림을 파일 끝에 위치 | Yes |
 | `a+` | 읽기+쓰기, 스트림을 파일 끝에 위치 | Yes |
 

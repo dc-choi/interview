@@ -1,7 +1,7 @@
 ---
 tags: [messaging, aws, sqs, decoupling, saa-c03]
 status: index
-verified_at: 2026-08-21
+verified_at: 2026-08-26
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["SQS", "Amazon SQS", "Simple Queue Service"]
 ---
@@ -30,7 +30,7 @@ AWS 관리형 메시지 큐 서비스. 분산 시스템 간 비동기 통신의 
 | 처리량 | 거의 무제한 | 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지. High throughput FIFO는 리전별 API 할당량 적용 |
 | 순서 보장 | Best-effort (보장 안 됨) | MessageGroupId 단위 엄격한 FIFO |
 | 메시지 전달 | At-least-once (중복 가능) | 5분 deduplication window 안의 중복 enqueue 제거. 소비자 처리 자체는 실패, 재시도 때문에 멱등성이 필요 |
-| 큐 이름 | 제한 없음 | `.fifo` 접미사 필수 |
+| 큐 이름 | 최대 80자, 영숫자와 하이픈(`-`), 밑줄(`_`) 사용 | Standard와 같은 제한, `.fifo` 접미사 필수 |
 | 적합 | 대부분의 비동기 작업 | 순서가 중요한 작업 (결제, 상태 변경) |
 
 ## 메시지 생명주기
@@ -163,6 +163,7 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 - KMS로 저장 시 암호화, HTTPS로 전송 중 암호화, IAM Policy로 API 접근 통제
 
 ## 출처
+- [AWS SQS API Reference, CreateQueue](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html)
 - [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
 - [AWS 공식 문서, Amazon SQS FIFO queue quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-fifo.html)
 - [AWS 공식 문서, Amazon SQS visibility timeout](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html)

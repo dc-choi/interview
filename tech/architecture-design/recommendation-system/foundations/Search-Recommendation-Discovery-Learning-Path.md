@@ -1,7 +1,7 @@
 ---
 tags: [architecture, search, recommendation-system, discovery, learning-path]
 status: active
-verified_at: 2026-07-22
+verified_at: 2026-08-26
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습 경로", "디스커버리 시스템 학습 경로"]
 ---
@@ -182,6 +182,13 @@ aliases: ["Search Recommendation Discovery Learning Path", "검색 추천 학습
 - [ ] 최소 한 번의 품질 회귀, OPE 실패와 rollback 사례를 재현한다.
 
 완료 체크는 문서 작성자가 아니라 산출물과 실행 증거를 검토한 뒤 갱신한다.
+
+## 출처
+
+- [OpenSearch, Ranking Evaluation API](https://docs.opensearch.org/latest/api-reference/search-apis/rank-eval/)
+- [OpenSearch 3.6.0 release notes — OpenSearch Project](https://github.com/opensearch-project/opensearch-build/blob/main/release-notes/opensearch-release-notes-3.6.0.md)
+- [DiscountedCumulativeGain source at 3.6.0 — OpenSearch Project](https://github.com/opensearch-project/OpenSearch/blob/3.6.0/modules/rank-eval/src/main/java/org/opensearch/index/rankeval/DiscountedCumulativeGain.java)
+- [MeanReciprocalRank source at 3.6.0 — OpenSearch Project](https://github.com/opensearch-project/OpenSearch/blob/3.6.0/modules/rank-eval/src/main/java/org/opensearch/index/rankeval/MeanReciprocalRank.java)
 
 ## 관련 문서
 

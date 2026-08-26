@@ -121,6 +121,7 @@ CLI, migration, seeding, NestJS integration은 각각 별도 package다. core, d
 
 ### 영속화와 조회
 
+- [[MikroORM-Persistence|영속성, 조회와 트랜잭션 지도]]
 - [[MikroORM-Unit-of-Work|상태, changeset, batching과 flush]]
 - [[MikroORM-Querying|조건, filter, pagination과 streaming]]
 - [[MikroORM-SQL-QueryBuilder-Kysely|QueryBuilder, raw SQL과 Kysely]]
