@@ -17,6 +17,7 @@ aliases: ["Sazo Interview Prep 1st", "사줘 1차 핏 인터뷰 준비"]
 1. **본 문서** — 전략, JD 분석, FIT 답변, 예상 질문, 역질문, 체크리스트
 2. **[[Interview-Prep-Sazo-Domain|도메인 브리프]]** (회사 루트, 차수 공통) — 회사 사실, BM, 도메인 백엔드 문제 7개, 경험 매핑, 도메인 멘트
 3. **[[Interview-Prep-Sazo-1st-Tech|기술 갭 카드]]** — Kafka, ES, MSA, 스크래핑, Redis 정면 돌파
+4. **[[Interview-Prep-Sazo-1st-Cheatsheet|면접 직전 치트시트]]** — 핵심 답변, 기술 갭, 역질문 압축본
 
 ## 0. 핏 인터뷰 전략 (에고이즘 전화 회고 교훈 적용)
 

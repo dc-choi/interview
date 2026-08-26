@@ -162,5 +162,6 @@ aliases: ["Kinolights Interview Prep 2nd", "키노라이츠 2차 컬처 인터�
 ## 관련 문서
 
 - [[Interview-Prep-Kinolights-2nd-Cheatsheet|2차 치트시트]], [[Interview-Prep-Kinolights-2nd-Drill|2차 심화 드릴]], [[Interview-Prep-Kinolights-2nd-Culture-Map|회사 레퍼런스]], [[Interview-Prep-Kinolights-2nd-Domain-Pitch|도메인 피치]]
+- [[Interview-Retro-Kinolights-2nd|2차 컬처 인터뷰 회고]]
 - [[Interview-Retro-Kinolights-1st]], [[Interview-Prep-Kinolights-1st]], [[Interview-Prep-Kinolights-1st-FIT-QA]]
 - [[My-Motivation-Reasons]], [[My-Reverse-Questions]], [[My-FIT-Answers]], [[Self-Analysis]]

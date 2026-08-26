@@ -51,6 +51,7 @@ aliases: ["내 기술 답변 마스터 — 관측, 인프라, 아키텍처", "My
 
 **꼬리 (핵심)**:
 - **"오토스케일링 기준?"** → **실제 운영**은 API 서버 CPU 임계를 처음 60%에서 여유를 둔 50%로 내리고, 큐 워커는 `ApproximateNumberOfMessagesVisible`의 raw queue depth를 기준으로 삼았습니다. **지금 다시 설계한다면** raw depth는 task 수를 정규화하지 못하므로 `visible messages ÷ running tasks`인 backlog per task를 target tracking에 쓰고, 목표값은 `허용 지연 ÷ 평균 처리 시간`으로 역산합니다. `ApproximateAgeOfOldestMessage`는 처리 지연 경보로 별도 확인합니다.
+- **"리전 장애 DR은?"** → 당시에는 비용과 운영 여건 때문에 교차 리전 DR을 구축하지 못했습니다. 지금 설계한다면 먼저 RTO와 RPO를 정하고, 백업 복원, pilot light, warm standby와 active-active 중 비용에 맞는 수준을 고릅니다. Multi-AZ만으로는 리전 장애를 덮지 못하므로 데이터 복제와 정합성 확인, DNS 또는 클라이언트 재연결, 실제 전환과 복귀 훈련까지 성공 조건에 포함합니다. [[DR-Strategy|DR 전략 정본]]
 - **"Replication Lag?"** → 쓰기 직후 강한 일관성 필요한 조회는 **Primary 분기**, 대시보드/리포트 같은 약간 지연 허용은 Replica
 - **"Graceful Shutdown?"** → ECS SIGTERM → 진행 중 요청 완료 → 새 요청 거부 → 타임아웃 후 SIGKILL. NestJS `enableShutdownHooks()`. SQS 워커는 현재 메시지 완료 후 종료 — 미완료는 visibility timeout 만료 후 재전달
 - **"환경변수와 시크릿은 어떻게 관리?"** (키노 1차 실전, 현 답변 약했음) → 현재는 GitHub Actions Secrets에 두고 배포 시 주입. 다만 회전과 감사, 세분 권한이 약해 정공법은 **런타임 비밀은 AWS Secrets Manager(자동 회전)나 SSM Parameter Store(SecureString, KMS 암호화)**, 빌드타임 자격증명은 **OIDC로 장기 액세스 키 제거**. 비용이 우선이면 Parameter Store, 자동 회전이 필요하면 Secrets Manager. 코드와 이미지에 평문 금지, KMS 키 정책으로 접근 최소화

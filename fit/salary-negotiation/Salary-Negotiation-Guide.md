@@ -25,6 +25,8 @@ aliases: ["연봉 협상 가이드", "Salary Negotiation Guide"]
   - 9. 면접에서 연봉 질문 대응
   - 10. 처우협의 단계 메일 템플릿
 
+- [[Salary-Trajectory]] — **연봉 궤적과 시장가 해석**
+
 ## 출처
 
 - Career Repotting Project 연봉협상 가이드북 (정구철)
