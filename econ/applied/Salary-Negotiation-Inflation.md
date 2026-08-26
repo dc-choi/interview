@@ -61,6 +61,10 @@ aliases: ["연봉 협상에 인플레이션 적용하기", "Salary Negotiation a
 - **회사가 물가를 보전해줄 의무가 있다** → 의무가 아니라 협상 근거일 뿐이다. 들이밀되 기대지는 않는다.
 - **인플레이션만으로 협상한다** → 물가는 바닥선이고, 인상의 본체는 성과와 시장가치다.
 
+## 출처
+
+- [U.S. Bureau of Labor Statistics, Real Earnings](https://www.bls.gov/news.release/pdf/realer.pdf)
+
 ## 관련 문서
 
 - [[Inflation|인플레이션과 디플레이션]] — 실질임금의 뿌리

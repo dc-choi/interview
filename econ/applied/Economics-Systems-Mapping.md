@@ -17,7 +17,7 @@ aliases: ["경제와 분산시스템 매핑", "Economics and Distributed Systems
 
 | 경제 개념 | 시스템 대응 | 닮은 지점 |
 |---|---|---|
-| [[Interest-Rates-Monetary-Policy\|통화정책]] | 시차 있는 피드백 제어(PID) | 입력(금리)과 출력(물가) 사이 6~12개월 지연. 오버슈팅과 진동 |
+| [[Interest-Rates-Monetary-Policy\|통화정책]] | 시차 있는 피드백 제어(PID) | 정책금리와 물가, 실물경제 사이에는 조건에 따라 달라지는 시차. 오버슈팅과 진동 |
 | 뱅크런 | cascading failure, thundering herd | 한 곳의 인출이 신뢰 붕괴로 번져 멀쩡한 노드까지 무너뜨림 |
 | 신용창조 | 레버리지, 증폭 | 본원통화가 대출 연쇄로 몇 배가 됨. 되감기면 디레버리징 |
 | [[Asset-Allocation-Diversification\|분산투자]] | redundancy, bulkhead 격리 | 상관 낮은 자산에 분산해 단일 장애의 전체 전파를 막음 |
@@ -30,9 +30,9 @@ aliases: ["경제와 분산시스템 매핑", "Economics and Distributed Systems
 
 ## 3. 매핑이 통하는 대표 예
 
-**통화정책 = 지연된 제어 루프.** 금리를 올려도 효과가 반년에서 1년 뒤에 나온다. PID 튜닝을 해본 사람은 안다. 지연이 크면 현재가 아니라 미래를 보고 선제적으로 움직여야 하고, 그러지 않으면 오버슈팅과 진동이 난다. 중앙은행이 왜 데이터를 앞서 움직이고 왜 자주 과하게 조이거나 푸는지가 즉시 납득된다.
+**통화정책 = 지연된 제어 루프.** 금리를 올려도 효과는 여러 전달 경로를 거쳐 시차를 두고 나타나며, 그 길이와 크기는 금융계약, 기대와 경제 여건에 따라 달라진다. PID 튜닝을 해본 사람은 안다. 지연이 크면 현재가 아니라 미래를 보고 선제적으로 움직여야 하고, 그러지 않으면 오버슈팅과 진동이 난다. 이 비유는 중앙은행이 왜 전망과 데이터를 함께 보는지 이해하는 데 도움을 준다.
 
-**뱅크런 = retry storm.** 한 노드의 장애가 클라이언트의 동시 재시도를 부르고, 그 부하가 멀쩡한 노드까지 무너뜨리는 구조와 같다. 은행이 건전해도 모두가 동시에 인출하면 무너진다. 해법도 닮았다. 서킷 브레이커처럼 예금보험과 인출 중단이 전파를 끊는다.
+**뱅크런 = retry storm.** 한 노드의 장애가 클라이언트의 동시 재시도를 부르고, 그 부하가 멀쩡한 노드까지 무너뜨리는 구조와 닮았다. 은행이 건전해도 모두가 동시에 인출하면 유동성 압박을 받을 수 있다. 예금보험은 인출 유인을 낮춰 뱅크런 위험을 줄일 수 있지만, 보장 범위와 신뢰도, 유동성 규제와 감독이 함께 작동해야 한다.
 
 ## 4. 한계 — 비유는 비유다
 
@@ -48,6 +48,11 @@ aliases: ["경제와 분산시스템 매핑", "Economics and Distributed Systems
 
 - **경제는 시스템처럼 결정론적이다** → 기대와 반사성 때문에 같은 입력이 다른 출력을 낸다.
 - **매핑이 맞으면 예측도 된다** → 구조가 닮았어도 변수와 비선형성이 달라 예측력은 제한된다.
+
+## 출처
+
+- [Bank of England, About a rate of (general) interest: how monetary policy transmits](https://www.bankofengland.co.uk/-/media/boe/files/quarterly-bulletin/2024/about-a-rate-of-general-interest-how-monetary-policy-transmits.pdf)
+- [FDIC, Options for Deposit Insurance Reform, Section 1: Executive Summary](https://www.fdic.gov/analysis/options-deposit-insurance-reforms/report/options-deposit-insurance-reform-section-1.pdf)
 
 ## 관련 문서
 

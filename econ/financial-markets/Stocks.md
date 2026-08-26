@@ -64,6 +64,10 @@ aliases: ["주식", "Stocks"]
 - **배당을 안 주는 주식은 가치가 없다** → 번 돈을 재투자해 더 키우면 시세차익으로 돌아온다.
 - **주가가 오르면 그 돈이 기업에 들어간다** → 유통시장 거래라 기업이 아니라 파는 주주에게 간다 → [[Financial-System-Overview|발행시장과 유통시장]].
 
+## 출처
+
+- [Investor.gov, Stock](https://www.investor.gov/introduction-investing/investing-basics/glossary/stock)
+
 ## 관련 문서
 
 - [[Bonds|채권]] — 자본구조의 다른 한 축

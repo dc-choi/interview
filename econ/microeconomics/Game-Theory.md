@@ -58,7 +58,11 @@ aliases: ["게임이론", "Game Theory"]
 
 - **내쉬균형은 최선의 결과다** → 모두 합리적으로 움직여도 나쁜 균형에 갇힐 수 있다.
 - **합리적이면 늘 좋은 결과가 나온다** → 죄수의 딜레마가 정반대를 보여준다.
-- **담합은 안정적이다** → 각자 몰래 배신할 유인이 커서 깨지기 쉽다. 그래서 명시적 카르텔이 필요하고, 그것이 불법으로 막힌다.
+- **담합은 항상 안정적이거나 명시적 합의가 있어야만 가능하다** → 일회 게임에서는 몰래 이탈할 유인이 크지만, 반복 거래에서 감시와 보복이 가능하면 명시적 카르텔 없이도 암묵적 협조가 유지될 수 있다. 시장 조건과 반복 구조를 함께 봐야 한다.
+
+## 출처
+
+- [OpenStax, Principles of Economics 3e, Key Concepts and Summary, Oligopoly](https://openstax.org/books/principles-economics-3e/pages/10-key-concepts-and-summary)
 
 ## 관련 문서
 

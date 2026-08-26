@@ -77,6 +77,11 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 - **실업률이 모든 고용 상태를 보여준다** → 구직단념자와 원치 않는 단시간 취업(반실업)은 잡지 못한다.
 - **일자리는 정해진 파이라 나눠 가져야 한다** → 노동총량의 오류다. 경제가 커지면 일자리도 늘어난다. 자동화가 일자리를 없애기만 하는 게 아니라 새 일자리를 만들기도 하는 이유다.
 
+## 출처
+
+- [U.S. Bureau of Labor Statistics, Concepts and Definitions (CPS)](https://www.bls.gov/cps/definitions.htm)
+- [Federal Reserve, Speech by Governor Kugler on navigating inflation waves while riding on the Phillips curve](https://www.federalreserve.gov/newsevents/speech/kugler20250220a.htm)
+
 ## 관련 문서
 
 - [[Inflation|인플레이션과 디플레이션]] — 필립스 곡선의 다른 축

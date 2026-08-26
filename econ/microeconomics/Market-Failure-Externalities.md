@@ -59,6 +59,11 @@ aliases: ["시장 실패와 외부효과", "Market Failure and Externalities"]
 - **시장이 실패하면 정부가 답이다** → 정부 실패도 있다. 개입의 득과 실을 비교해야 한다.
 - **오염은 무조건 금지가 정답이다** → 오염을 0으로 만드는 비용이 편익을 넘을 수 있다. 경제학은 한계비용과 한계편익이 만나는 최적 수준을 찾는다.
 
+## 출처
+
+- [OpenStax, Principles of Economics 3e, Key Concepts and Summary, Externalities](https://openstax.org/books/principles-economics-3e/pages/12-key-concepts-and-summary)
+- [OpenStax, Principles of Economics 3e, Public Goods](https://openstax.org/books/principles-economics-3e/pages/13-3-public-goods)
+
 ## 관련 문서
 
 - [[Market-Structures|시장구조]] — 독과점도 시장 실패의 한 형태

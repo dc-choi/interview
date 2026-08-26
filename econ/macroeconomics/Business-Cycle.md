@@ -99,6 +99,11 @@ aliases: ["경기순환", "Business Cycle"]
 - **호황은 길수록 좋다** → 과열이 길면 그만큼 부채와 거품이 쌓여 조정이 가팔라진다. 부드러운 착륙(soft landing)이 이상적이다.
 - **정부가 경기를 정밀하게 조절할 수 있다** → 시차와 예측 오차 때문에 미세조정은 어렵다. 잘해야 진폭을 줄이는 정도이고, 과잉 대응이 다음 사이클의 불씨가 되기도 한다.
 
+## 출처
+
+- [NBER, Business Cycle Dating Procedure: Frequently Asked Questions](https://www.nber.org/research/business-cycle-dating/business-cycle-dating-procedure-frequently-asked-questions)
+- [Federal Reserve, How We Conduct Monetary Policy](https://www.federalreserve.gov/aboutthefed/fedexplained/monetary-policy.htm)
+
 ## 관련 문서
 
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 경기에 대응하는 핸들

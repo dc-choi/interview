@@ -79,6 +79,11 @@ aliases: ["수요와 공급", "Supply and Demand"]
 - **가격을 누르면 서민에게 좋다** → 초과수요와 부족, 암시장을 부른다. 균형의 힘은 없어지지 않는다.
 - **수요곡선은 늘 직선이다** → 편의상 직선으로 그릴 뿐, 실제 형태는 다양하다.
 
+## 출처
+
+- [OpenStax, Principles of Economics 3e, Demand, Supply, and Equilibrium in Markets for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services)
+- [OpenStax, Principles of Economics 3e, Shifts in Demand and Supply for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-2-shifts-in-demand-and-supply-for-goods-and-services)
+
 ## 관련 문서
 
 - [[Elasticity|탄력성]] — 가격 변화에 수요와 공급이 얼마나 민감한가

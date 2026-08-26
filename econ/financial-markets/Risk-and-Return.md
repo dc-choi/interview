@@ -53,6 +53,11 @@ aliases: ["위험과 수익", "Risk and Return"]
 - **변동성이 크면 무조건 나쁘다** → 장기 투자자에겐 변동성이 곧 위험은 아니다. 진짜 위험은 영구적 자본 손실이다.
 - **위험을 피하는 게 상책이다** → 현금만 들면 인플레이션에 실질가치가 깎인다. 위험 회피 자체가 또 다른 위험이다 → [[Inflation|인플레이션]].
 
+## 출처
+
+- [Investor.gov, Asset Allocation and Diversification](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
+- [OpenStax, Principles of Finance, The Capital Asset Pricing Model (CAPM)](https://openstax.org/books/principles-finance/pages/15-3-the-capital-asset-pricing-model-capm)
+
 ## 관련 문서
 
 - [[Stocks|주식]], [[Bonds|채권]] — 위험과 수익이 다른 두 자산
