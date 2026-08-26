@@ -29,7 +29,7 @@ aliases: ["내 기술 답변 마스터 — 관측, 인프라, 아키텍처", "My
 **꼬리 대비**:
 - **"RED vs USE?"** → RED(Rate/Errors/Duration, API 서비스) / USE(Utilization/Saturation/Errors, DB, 큐 리소스)
 - **"임계값을 어떻게 정하나?"** → 에러율과 레이턴시는 사용자 영향 SLI, 목표 기간과 SLO에서 burn rate를 역산. Event Loop Lag, CPU, Replica Lag 같은 원인 지표는 정상 구간의 baseline과 포화 지점을 바탕으로 별도 임계 설정
-- **"카디널리티 폭발은?"** → 실제 운영에서는 userId, traceId 같은 고카디널리티 값을 Prometheus label에 넣지 않고 request ID를 로그 본문으로 추적했습니다. 트레이싱까지 확장하면 메트릭은 exemplar, 로그는 본문 또는 structured metadata로 연결합니다.
+- **"카디널리티 폭발은?"** → 실제 운영에서는 userId, requestId 같은 고카디널리티 값을 Prometheus label에 넣지 않고 requestId를 로그 본문으로 추적했습니다. 트레이싱까지 확장하면 메트릭은 exemplar, 로그는 본문 또는 structured metadata로 traceId를 연결합니다.
 - **새벽에 장애가 나면 어떤 순서로 대응하나?**: 가장 먼저 상황을 팀에 전파합니다. 혼자 조용히 고치려다 영향 범위나 다른 작업과의 충돌을 놓치는 게 더 큰 리스크라, 무엇이 어디서 터졌는지 먼저 공유하고 대응을 시작합니다. 그다음 지표로 에러가 어디서 나는지 좁혀 우선 비즈니스를 정상으로 되돌리는 임시 조치나 버그 수정을 하고, 원인과 조치 내역은 급한 불을 끈 뒤 포스트모템으로 정리해 공유합니다. 전파를 먼저 두는 이유는 알림이 사람을 부르는 순간 가장 비싼 게 시간이라, 한 명이 더 빨리 붙거나 영향받는 쪽이 미리 대비하게 만드는 게 복구를 앞당기기 때문입니다.
 - **"포스트모템?"** → 타임라인(발생→감지→대응→복구) + 근본 원인 + 영향 범위 + 재발 방지 액션. blameless 원칙
 - **"통계 알림이 단발 크리티컬 에러를 가리지 않나?"** (키노 1차 실전) → 맞음. 비율 기반 경보는 모수가 크면 **단 한 건(결제나 발주 실패)을 평균에 묻음**. 당시에는 ① 에러율과 레이턴시의 지속 임계 경보 ② **크리티컬 건별** Slack 웹훅을 분리했고, SLO burn-rate는 지금 다시 설계할 때의 개선안으로 구분
@@ -64,7 +64,7 @@ aliases: ["내 기술 답변 마스터 — 관측, 인프라, 아키텍처", "My
 
 **왜 이렇게 분리**: 트라이포드랩 대형 고객사(제약바이오 280억, F&B 2000억) PoC에서 **고객사별 커스텀 요구를 UseCase 레벨에서만 분기** → 핵심 도메인은 공유. 도메인 로직 변경 시 영향 범위를 예측 가능하게 만들었습니다.
 
-**DI 원리**: NestJS IoC 컨테이너가 Provider의 생성, 주입, 생명주기를 관리. class provider는 `@Injectable` 등록 뒤 constructor 타입으로 자동 주입합니다. Repository interface는 런타임에 사라지므로 `@Inject(ORDER_REPOSITORY)` 같은 Symbol token 또는 abstract class로 명시 바인딩합니다.
+**DI 원리**: NestJS IoC 컨테이너가 Provider의 생성, 주입과 생명주기를 관리합니다. class provider는 `@Module({ providers: [...] })`에서 등록하고, `@Injectable()`은 컨테이너가 관리할 클래스임을 표시하고 생성자 주입에 필요한 메타데이터를 남깁니다. Repository interface는 런타임에 사라지므로 `@Inject(ORDER_REPOSITORY)` 같은 Symbol token 또는 abstract class로 명시 바인딩합니다.
 
 **순환 참조**: `forwardRef()`로 임시 해결 가능하지만 **근본은 모듈 의존 방향을 단방향으로 설계**. 순환이 자주 생기면 모듈 경계 재설계 신호.
 
@@ -96,7 +96,7 @@ src/orders/
 
 **결론**: **Cache-Aside를 기본으로 검토**합니다. 시솔지주에서 Google 번역 API 메타데이터를 매 요청마다 호출하던 것을 **서버 시작 시 1회 로드 + DB 캐시 전환** → API latency **3초 → 0.9초 (70% 개선)**. 이 경험의 서버 시작 적재는 Cache Warming이고, Cache-Aside는 요청 미스 시 원본을 읽어 적재하는 별도 패턴입니다.
 
-**무효화**: Cache-Aside는 TTL을 안전망으로 두고 DB 커밋 뒤 캐시를 evict합니다. Write-Through는 캐시와 DB를 함께 갱신해야 하는 별도 선택지입니다. 도메인별 무효화 전략은 명문화 필수.
+**무효화**: Cache-Aside는 TTL을 안전망으로 두고 DB 커밋 뒤 캐시를 evict합니다. Write-Through는 캐시와 DB를 함께 갱신하는 별도 선택지이지만, 두 저장소의 원자성을 자동 보장하지 않아 부분 실패와 순서 역전 복구가 필요합니다. 도메인별 무효화 전략은 명문화 필수.
 
 **캐시 스탬피드**: 인기 키 만료 직후 동시 미스 → DB 폭주. 해법: **TTL jitter(동시 만료 방지) + 만료 전 백그라운드 갱신 + mutex lock(한 요청만 DB 조회 후 캐시 갱신)**.
 

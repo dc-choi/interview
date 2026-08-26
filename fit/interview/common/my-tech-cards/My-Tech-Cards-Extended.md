@@ -91,7 +91,7 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 
 ### 심화 꼬리
 
-- **"SQS FIFO?"** → MessageGroupId 기반 순서 보장. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다
+- **"SQS FIFO?"** → MessageGroupId 기반 순서 보장. 일반 FIFO 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다
 - **"Pub/Sub vs SQS?"** → Pub/Sub은 topic 기반 팬아웃(1:N), SQS는 큐 기반 point-to-point(1:1)
 - **"이벤트 유실 — 생산자 측?"** → Dual Write 문제. Outbox 패턴으로 해결 (위)
 - **"이벤트 유실 — 소비자 측?"** → SQS at-least-once + 멱등성 키 + DLQ로 최종 실패 보관
@@ -138,7 +138,7 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 | 계층 | 구성 | 역할 |
 |---|---|---|
 | FE | Sentry SDK → Sentry 서버 | JS 에러, 퍼포먼스, 세션 리플레이 |
-| BE App | TraceIdMiddleware, HttpLoggingInterceptor, Winston JSON, MetricsInterceptor + prom-client, `/metrics` 엔드포인트 | 요청 단위 추적, 구조화 로깅, 메트릭 노출 |
+| BE App | TraceIdMiddleware(실제 값은 `x-request-id`), HttpLoggingInterceptor, Winston JSON, MetricsInterceptor + prom-client, `/metrics` 엔드포인트 | requestId 기반 로그 추적, 구조화 로깅, method, route, status 집계 메트릭 노출 |
 | Log Routing (당시) | ECS FireLens(Fluent Bit), 호스트 Promtail → Loki | stdout 수집, JSON 파싱과 정규화, 라벨 구성, 배치와 라우팅 |
 | Logs Plane | Loki, S3 (정확한 저장 경계 기록 없음) | 수집 검증, Ingester의 청크 압축과 flush, 청크/인덱스 저장과 조회, Compactor의 인덱스 압축과 설정된 경우의 보존 적용 |
 | Metrics Plane | Prometheus + Thanos Sidecar → S3, Querier + Store Gateway | Sidecar가 블록 업로드와 Store API를 제공하고, Querier가 현재 데이터와 Store Gateway의 과거 블록을 통합 조회 |
@@ -159,9 +159,9 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 
 ### 카디널리티 관리 룰
 
-- **userId/traceId 라벨 절대 금지** — 라벨 조합 폭증 → Prometheus OOM
+- **userId/requestId/traceId 라벨 절대 금지** — 라벨 조합 폭증 → Prometheus OOM
 - route/path 라벨 정규화 (`/users/:id` → `/users/{id}`)
-- traceId는 **로그 본문(flat JSON)에 기록** + LogQL로 검색
+- 당시 `requestId`는 **로그 본문(flat JSON)에 기록**하고 LogQL로 검색. 분산 추적을 추가하면 별도의 `traceId`를 로그에 싣고 메트릭은 고카디널리티 라벨 대신 exemplar로 연결
 
 ## 카드 6 아키텍처 전환 심화
 

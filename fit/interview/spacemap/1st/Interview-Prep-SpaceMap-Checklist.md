@@ -57,7 +57,7 @@ aliases: ["SpaceMap 면접 체크리스트", "스페이스맵 면접 준비 체�
 | DB Lock 동시성 (수집 정합성으로 번역) | `[[Lock]]` `[[Transaction-Lock-Contention]]` | [ ] |
 | 복합 인덱스, 실행계획 (시계열 대용량으로 번역) | `[[Index]]` `[[Execution-Plan]]` | [ ] |
 | 이벤트 아키텍처 (파이프라인 단계 분리로 번역) | `[[EventBridge]]` `[[SQS]]` `[[Messaging-Patterns]]` | [ ] |
-| 관측성 (데이터 엔진 신뢰성으로 번역) | `[[Observability]]` `[[Log-Pipeline]]` | [ ] |
+| 관측성 (데이터 엔진 신뢰성으로 번역) | `[[관측가능성(Observability)]]` `[[Log-Pipeline]]` | [ ] |
 | 대용량 수집 파이프라인 설계 | `[[Interview-Prep-SpaceMap-Tech-JD]]` #5 | [ ] |
 
 ## 강하게 어필할 포인트
@@ -66,7 +66,7 @@ aliases: ["SpaceMap 면접 체크리스트", "스페이스맵 면접 준비 체�
 
 1. **데이터 수집, 처리 파이프라인 전 구간 경험** — JD 주요 업무 첫 줄과 정확히 일치. 수천 대 IoT 디바이스 데이터를 수집(DB Lock 정합성)→분리(EventBridge/SQS)→저장(복합 인덱스)→노출(Read Replica)
 2. **데이터 규모와 무관한 성능 구조** — 1억 건에서도 인덱스 1탐색. 슬로우 쿼리 99.3% 개선, 3000대 확장 시 144분→7.2초
-3. **데이터 엔진 신뢰성** — Grafana/Prometheus/Loki 관측 인프라 0→1 구축, SLO 알림. B2G/방산의 신뢰성 요구와 직결
+3. **데이터 엔진 신뢰성** — Grafana/Prometheus/Loki 관측 인프라 0→1 구축, 정적 임계 알림 운영. B2G/방산의 신뢰성 요구와 직결하고 SLO burn-rate 경보는 후속 설계로 구분
 4. **빠른 스택 적응 이력** — Java→Node, JSP→Spring, MongoDB→MySQL. Python, Airflow, 우주 도메인 갭이 "닫히는 종류"임을 증명
 5. **보안 도메인 감각** — 정보관리보안학과 + FIDO 인증 서버 팀 리딩(공식 인증 통과). B2G/방산 환경 fit
 6. **교육 도메인 경험** — 출석부(주일학교 멀티테넌트 SaaS, 2026-07-15 보고서상 모임 레코드 108개, 학생 3,669명, 출석 약 22,051건, MAO 34곳) + 카카오테크 멘토

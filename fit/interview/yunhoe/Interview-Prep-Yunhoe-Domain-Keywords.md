@@ -26,7 +26,7 @@ aliases: ["윤회 도메인 키워드", "DPP ESPR 순환경제 키워드 정리"
 
 - EU의 **지속가능제품 에코디자인 규정**이다. 2024년 6월 13일 채택되고 6월 28일 관보에 게재되어 7월 18일 발효했다.
 - ESPR은 제품 또는 제품군별 위임법으로 내구성, 수리가능성, 재활용성, 제품 정보 등의 요건을 정하는 법적 틀이다. 모든 제품에 하나의 날짜로 DPP를 의무화한 규정은 아니며, 적용 위임법이 정한 정보 요건과 DPP를 따라야 한다.
-- **2026.7.19**는 집행위원회가 DPP 레지스트리를 개설해야 하는 법정 기한이다. 레지스트리는 최소한 고유 식별자와 배터리 식별자를 저장하며, 이 기한은 모든 제품군의 DPP 의무 적용일이 아니다.
+- **2026.7.19**는 집행위원회가 DPP 레지스트리를 개설해야 하는 법정 기한이었다. 집행위원회는 **2026.7.20** 레지스트리와 테스트 환경의 운영 시작을 발표했다. 레지스트리는 고유 식별자와 등록 메타데이터를 위한 공통 인프라이며, 운영 시작 자체가 모든 제품군의 DPP 의무를 발효시키지는 않는다. 실제 대상과 적용일은 제품별 위임법이나 다른 EU 법률을 따른다.
 - **2025~2030 작업계획**의 첫 새 우선순위는 섬유/의류, 가구, 타이어, 매트리스, 철강, 알루미늄과 전기전자제품의 수리성, 재활용성 및 재생원료 함량이다. 섬유/의류 위임법의 참고 채택 시점은 2027년이며, 신발은 이 첫 작업계획에서 별도 연구 대상으로 남았다.
 
 ### 3. 디지털 제품 여권 (DPP, Digital Product Passport) — 중점
@@ -85,6 +85,7 @@ aliases: ["윤회 도메인 키워드", "DPP ESPR 순환경제 키워드 정리"
 - [EUR-Lex, Regulation (EU) 2024/1781, Ecodesign for Sustainable Products Regulation](https://eur-lex.europa.eu/eli/reg/2024/1781/oj/eng)
 - [EUR-Lex, Regulation (EU) 2023/1542, Batteries Regulation, Article 77](https://eur-lex.europa.eu/eli/reg/2023/1542/oj/eng)
 - [European Commission, Ecodesign for Sustainable Products and Energy Labelling Working Plan 2025-2030](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A52025DC0187)
+- [European Commission, The Digital Product Passport Registry is now live](https://single-market-economy.ec.europa.eu/news/digital-product-passport-registry-now-live-2026-07-20_en)
 - [European Commission, About the EU Emissions Trading System](https://climate.ec.europa.eu/areas-action/carbon-markets/about-eu-ets_en)
 - [European Commission, Use of international credits in the EU ETS](https://climate.ec.europa.eu/eu-action/carbon-markets/eu-emissions-trading-system-eu-ets/use-international-credits_en)
 - [DPPs required by EU legislation across sectors — Circularise](https://www.circularise.com/blogs/dpps-required-by-eu-legislation-across-sectors)

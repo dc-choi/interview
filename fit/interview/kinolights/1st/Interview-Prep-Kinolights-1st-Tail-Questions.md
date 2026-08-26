@@ -67,12 +67,12 @@ aliases: ["Kinolights Tail Questions", "키노라이츠 꼬리질문 드릴"]
 - D2. 구체적으로? → userId나 traceId는 라벨 금지, route는 정규화해서 조합 수를 제한
 - D3. 그래도 터지면? → 라벨 드롭 스테이지, recording rule로 사전 집계, 고카디널리티는 트레이스로
 
-**Q. 메트릭과 로그, 트레이스를 어떻게 연결?** → 하나의 TraceId로 묶음
-- D2. TraceId는 어떻게 전파? → AsyncLocalStorage 미들웨어로 요청 단위 컨텍스트에 심어 로그와 메트릭에 주입
-- D3. 비동기 워커까지 전파는? → SQS 메시지 속성에 TraceId를 실어 워커가 이어받아 트레이스 연속성 유지
+**Q. 메트릭과 로그, 트레이스를 어떻게 연결?** → 실제 운영은 `x-request-id` 로그 추적과 시간대, method, route, status 집계 메트릭 대조까지였고 trace pipeline은 없었음
+- D2. 트레이싱을 추가한다면? → W3C trace context를 HTTP와 큐 경계에 전파하고 로그에는 traceId, 메트릭에는 고카디널리티 label 대신 exemplar를 남김
+- D3. 비동기 워커까지 전파는? → SQS 메시지 속성에 trace context를 실어 워커가 이어받되, 신뢰 경계에서 값을 검증하고 새 span을 시작
 
-**Q. SLO 임계(에러율 1퍼센트, 5분)의 근거는?** → SLO 역산과 단발 스파이크 필터
-- D2. 왜 1퍼센트, 왜 5분? → 99퍼센트 정상이라는 목표에서 역산, for 5m으로 일시 스파이크 제외
+**Q. 당시 에러율 1퍼센트, 5분 임계의 근거는?** → 운영 baseline과 알림 피로를 바탕으로 둔 정적 임계값이며 SLO에서 역산한 값은 아님
+- D2. SLO 경보로 개선한다면? → 사용자 영향 SLI와 목표 기간을 먼저 합의하고 multi-window, multi-burn-rate로 오류 예산 소진 속도를 감시
 - D3. 알림 피로는? → 지속 조건과 팀별 라우팅, 심각도 분리로 알림 폭주를 막음
 
 ## 5. 인프라 전환 (+ 동시성)
@@ -135,9 +135,9 @@ aliases: ["Kinolights Tail Questions", "키노라이츠 꼬리질문 드릴"]
 
 ## 8. 발주 자동화 (이벤트 아키텍처) — 클라이맥스
 
-**Q. 왜 Kafka가 아니라 EventBridge와 SQS?** → MSK 월 574달러 고정 대 SQS 0에서 18달러, 발주는 최종 일관성 우선
+**Q. 왜 Kafka가 아니라 EventBridge와 SQS?** → 당시 산정 조건에서 MSK 고정비와 EventBridge+SQS 사용량 과금을 비교했고, 발주는 최종 일관성 우선
 - D2. Kafka가 맞는 순간은? → 이벤트 리플레이, 파티션 내 순서 보장, 초당 수만 건 이상
-- D3. 나중에 순서 보장이 필요해지면? → SQS FIFO(MessageGroupId 기반. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다), 또는 그 도메인만 Kafka로 분리
+- D3. 나중에 순서 보장이 필요해지면? → SQS FIFO(MessageGroupId 기반. 일반 FIFO 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다), 또는 그 도메인만 Kafka로 분리
 
 **Q. DB 저장은 됐는데 이벤트 발행이 실패하면?** → 듀얼 라이트 문제, Transactional Outbox로 해결
 - D2. Outbox 구조는? → INSERT와 outbox INSERT를 같은 트랜잭션, 릴레이가 폴링해서 발행

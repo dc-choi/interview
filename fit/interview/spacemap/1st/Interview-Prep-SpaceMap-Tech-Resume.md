@@ -82,7 +82,8 @@ aliases: ["SpaceMap 이력서 기술 질문", "스페이스맵 이력서 기반 
 **경험 요약**
 - 발주(핵심 도메인) → SQS → 후속 처리(카톡, 이메일, 발주서) 병렬 분리
 - 채널별 DLQ, 멱등성 키(발주 ID) + status 머신(`PENDING/PROCESSING/COMPLETED/FAILED`) + `processing_started_at`으로 워커 crash 복구
-- 비용 비교: MSK $574/월 vs EventBridge+SQS $0~18/월 — 도메인 특성(실시간 불요, 최종 일관성 OK)으로 SQS 선택, Kafka 대비 99.99% 비용 절감
+- 당시 비용 비교: MSK Provisioned의 브로커와 스토리지 고정비를 EventBridge+SQS 사용량 과금과 비교했다. MSK 산정액은 브로커 유형과 수, 스토리지, 데이터 전송 가정이 남아 있지 않아 정확한 금액으로 인용하지 않는다. 월 10만 발주 × 5액션은 약 50만 메시지고, 비배치 성공 처리라면 Send, Receive, Delete로 약 150만 SQS API 요청이 발생한다. 2026-08-21 서울 리전 표준 큐의 월 100만 요청 Free Tier 기준 SQS 초과분은 약 $0.20이며 EventBridge는 별도 과금이다. 배치, 빈 폴링, 재시도, payload 크기, 리전과 기준일에 따라 총비용은 달라진다.
+- 도메인 특성(실시간 불요, 최종 일관성 OK)으로 SQS 선택
 
 **스페이스맵 데이터 파이프라인 맥락 연결**
 - 데이터 수집, 처리 파이프라인 = 수집 → 검증 → 가공 → 저장 → API 노출의 단계 분리. 각 단계를 이벤트로 느슨하게 연결하면 단계별 독립 확장, 재처리 가능
@@ -91,7 +92,7 @@ aliases: ["SpaceMap 이력서 기술 질문", "스페이스맵 이력서 기반 
 **꼬리 질문 대비**
 - "언제 Kafka가 필요?" → 이벤트 리플레이, 순서 보장, 초당 수만 건 이상, 스트림 처리. 우주 데이터가 고빈도 스트림이면 Kafka, Kinesis 검토 — 도메인 트래픽 특성에 따라 결정
 - "메시지 유실은?" → SQS at-least-once → 멱등성 키 필수. 워커는 처리 전 status 확인
-- "순서가 중요하면?" → SQS FIFO(MessageGroupId 단위 순서 보장. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다) 또는 표준 SQS + 시퀀스 ID. Kafka는 파티션 키 단위 순서 보장
+- "순서가 중요하면?" → SQS FIFO(MessageGroupId 단위 순서 보장. 일반 FIFO 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다) 또는 표준 SQS + 시퀀스 ID. Kafka는 파티션 키 단위 순서 보장
 
 ---
 
@@ -140,17 +141,17 @@ aliases: ["SpaceMap 이력서 기술 질문", "스페이스맵 이력서 기반 
 
 **경험 요약**
 - Prometheus + Thanos(메트릭, S3 장기보관) + Loki(로그) + Grafana — GPL 스택 자체 호스팅 (Datadog 대비 비용, 종속성 회피)
-- SLO 기반 Alerting: Error/Warn Rate(5분 1%↑), Slow SQL(≥500ms 3회↑), RDS CPU(75%↑), ReplicaLag(5초↑), Event Loop Lag(100ms↑) — `for: 5m`으로 단발 spike 필터링
-- 요청별 메트릭(method/route/status/duration) + TraceId 미들웨어로 요청 단위 추적
+- 당시 정적 임계 Alerting: Error/Warn Rate(5분 1%↑), Slow SQL(≥500ms 3회↑), RDS CPU(75%↑), ReplicaLag(5초↑), Event Loop Lag(100ms↑) — 지속 조건으로 단발 spike 필터링. SLO burn-rate 경보는 후속 개선안
+- method, route, status와 duration 집계 메트릭 + `x-request-id` 미들웨어로 JSON 로그를 요청 단위 추적. request ID를 Prometheus label로 쓰지는 않음
 
 **스페이스맵 맥락 연결**
 - 데이터 엔진은 "조용히 틀리는" 게 가장 위험 — 수집 누락, 연산 지연, Lag을 메트릭으로 조기 탐지하는 체계가 필수
-- 미 우주군, 우주청 과제 = 신뢰성이 곧 계약 조건. SLO 기반 운영 문화 경험이 직결
+- 미 우주군, 우주청 과제 = 신뢰성이 곧 계약 조건. 지표와 정적 임계 경보를 운영한 경험에서 출발해 사용자 영향 SLI와 SLO를 설계할 수 있음
 
 **꼬리 질문 대비**
 - "왜 직접 구축? Datadog 안 쓴 이유?" → 초기 트래픽에서 Datadog는 과다 비용 + AWS 종속. GPL 스택은 비용, 확장성, 자율 운영 균형이 우수
 - "트레이싱은?" → OpenTelemetry 분산 트레이싱. 수집→가공→저장 흐름 추적 시 필수 검토
-- "카디널리티 폭발은?" → userId, traceId 같은 고유 식별자는 라벨에서 제외, route 정규화, Drop stage로 불필요 필드 제거
+- "카디널리티 폭발은?" → userId, requestId 같은 고유 식별자는 라벨에서 제외, route 정규화, Drop stage로 불필요 필드 제거. 당시 requestId는 로그 상관관계용이고 분산 traceId는 아니었음
 
 ---
 

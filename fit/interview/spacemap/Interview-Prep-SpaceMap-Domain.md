@@ -50,7 +50,7 @@ aliases: ["SpaceMap STM Domain", "스페이스맵 STM, SSA 도메인 브리프"]
 | ephemeris 이력 | 대용량 시계열 | append-only + **BRIN 인덱스, 파티셔닝**(PostgreSQL). Tech-JD #3 |
 | Pc, conjunction 서빙 + 경보 | 읽기 최적화 + 알림 | Read Replica, REST + **임계 초과 시 알림**(트라이포드 IoT 이상징후 알림톡/이메일 = conjunction 경보와 동형) |
 | 42 Talks 실시간 협업 | 다자 실시간 | 이벤트 아키텍처로 연결 (실시간 pub/sub는 약점 — 솔직 인정 + 학습) |
-| 충돌 경보 신뢰성 | "조용히 틀리면 위성 손실" | **Grafana SLO 관측**, 정합성 우선. B2G/방산 신뢰성 직결 |
+| 충돌 경보 신뢰성 | "조용히 틀리면 위성 손실" | **Grafana 지표와 정적 임계 관측**, 정합성 우선. 사용자 영향 SLI와 SLO는 대상 서비스에 맞춰 별도 정의 |
 
 ## 5. 예상 질문 + 답변 골격
 

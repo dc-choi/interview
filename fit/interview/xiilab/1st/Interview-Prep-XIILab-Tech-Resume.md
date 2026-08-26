@@ -77,14 +77,14 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
 
 ### EventBridge+SQS 선택 이유? Kafka와 차이?
 
-- 실제 비용 비교: MSK $574/월 vs EventBridge+SQS $0~18/월
+- 당시 비용 비교: MSK Provisioned의 브로커와 스토리지 고정비를 EventBridge+SQS 사용량 과금과 비교했다. MSK 산정액은 브로커 유형과 수, 스토리지, 데이터 전송 가정이 남아 있지 않아 정확한 금액으로 인용하지 않는다. 월 10만 발주 × 5액션은 약 50만 메시지고, 비배치 성공 처리라면 Send, Receive, Delete로 약 150만 SQS API 요청이 발생한다. 2026-08-21 서울 리전 표준 큐의 월 100만 요청 Free Tier 기준 SQS 초과분은 약 $0.20이며 EventBridge는 별도 과금이다. 배치, 빈 폴링, 재시도, payload 크기, 리전과 기준일에 따라 총비용은 달라진다.
 - 발주라는 도메인 특성상 실시간 처리 불필요 + 최종 일관성이면 충분
 - 이벤트 플로우: 발주 → SQS → 수주처리 → SQS → 카톡/이메일/발주서 각각 병렬 처리
-- 채널별 DLQ 설정(카톡: 잘못된 번호 시 실패 처리, 이메일: 무조건 재시도)
+- 채널별 오류 분류와 DLQ 설정: 잘못된 번호와 주소 같은 영구 오류는 재시도하지 않고, 일시 오류만 제한 재시도한 뒤 긴급 알림과 수동 처리
 - Kafka가 필요한 시점: 이벤트 리플레이, 순서 보장, 초당 수만건 이상
 - 꼬리:
   - "SQS 메시지 유실 가능성은?" → at-least-once 보장. 소비자 측 멱등성 필수. 발주 ID 기반 상태 머신으로 중복 처리 방지
-  - "이벤트 순서 보장이 필요하면?" → SQS FIFO 큐(MessageGroupId 기반. 일반 FIFO는 파티션당 비배치 300 API TPS, 최대 10개 배치 시 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다) 또는 Kafka(파티션 내 순서 보장)
+  - "이벤트 순서 보장이 필요하면?" → SQS FIFO 큐(MessageGroupId 기반. 일반 FIFO 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다) 또는 Kafka(파티션 내 순서 보장)
 
 ### CloudFront+ECS 전환 — 왜? 어떤 문제?
 
@@ -108,15 +108,15 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
 ### Grafana/Prometheus/Loki — 무엇을 모니터링? 알림 기준?
 
 **왜 GPL 자체 호스팅?**
-- 기존 CloudWatch+SNS+Lambda 구조의 한계: AWS 리소스 메트릭은 충분했지만, 커스텀 비즈니스 메트릭 비용($0.30/metric/month)과 고카디널리티 제약, PromQL 수준의 다차원 쿼리 부재, Logs Insights UX 한계, SNS+Lambda로 알림 라우팅과 디듀프 수동 구현 부담
-- 가중치 기반 대안 비교 후 GPL 선택 (4.65점 / ELK 3.85 / Datadog 3.35 / CloudWatch 3.10)
+- 기존 CloudWatch+SNS+Lambda 구조의 한계: AWS 리소스 메트릭은 충분했지만, 커스텀 비즈니스 메트릭 비용과 고카디널리티 제약, PromQL 수준의 다차원 쿼리 부재, Logs Insights UX 한계, SNS+Lambda로 알림 라우팅과 디듀프 수동 구현 부담
+- 당시 TCO, 메트릭 생태계와 벤더 종속 회피를 비교해 GPL 선택. 일부 평가 축만 남아 총점은 재현하지 않음
 
 **아키텍처 구성**
 - Prometheus+Thanos(메트릭, S3 장기 보관) + Loki(로그, Promtail+FireLens) + Grafana(통합 시각화)
-- TraceIdMiddleware+HttpLoggingInterceptor로 요청 단위 추적
+- 이름은 TraceIdMiddleware였지만 실제 값은 `x-request-id`였고, HttpLoggingInterceptor와 함께 요청 단위 로그를 연결
 - 메트릭 카디널리티 관리: route 정규화, userId/traceId를 라벨에 절대 포함하지 않음
 
-**알림 기준 (SLO 기반)**
+**당시 정적 임계 알림**
 - Error rate 1% `for:5m`
 - Slow SQL 500ms+ 3회 지속
 - Event Loop Lag 100ms 3분 지속
@@ -125,8 +125,8 @@ aliases: ["XIILab 이력서 기반 기술 질문", "씨이랩 이력서 Tech"]
 
 **꼬리 질문 대비**
 - "ELK 대신 Loki인 이유?" → ELK는 운영 복잡도와 비용이 큼. Loki는 인덱스 최소화 설계라 저장 비용 낮음
-- "traceId를 라벨에 넣으면 왜 안 되나?" → 카디널리티 폭발 → Prometheus OOM. traceId는 로그 본문에 기록하고 LogQL로 검색
-- "Prometheus pull 방식의 한계?" → 짧은 수명 컨테이너는 스크래핑 전 사라질 수 있음 → Pushgateway로 보완
+- "고유 ID를 라벨에 넣으면 왜 안 되나?" → requestId나 traceId 같은 고유값은 카디널리티를 폭발시킬 수 있음. 당시 requestId는 로그 본문에 기록하고 LogQL로 검색했으며, 분산 추적을 추가하면 traceId는 로그와 exemplar로 연결
+- "Prometheus pull 방식의 한계?" → 짧은 수명 작업은 스크래핑 전 사라질 수 있음. 서비스 수준 batch job에는 Pushgateway를 제한적으로 검토하고, 일반 컨테이너는 service discovery와 수집 주기, 필요하면 remote write 또는 OpenTelemetry 경로를 설계
 
 ---
 

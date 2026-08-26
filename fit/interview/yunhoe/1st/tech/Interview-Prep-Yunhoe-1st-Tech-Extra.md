@@ -69,7 +69,7 @@ aliases: ["Yunhoe 1st Tech Extra", "윤회 1차 기술 질문 보강"]
 
 ## 8. Redis / 캐시
 
-- **Q. Cache-aside vs Write-through vs Write-behind?** → Cache-aside(app이 직접 read/write, 일관성 위험), Write-through(쓰기 시 캐시, DB 같이, 안전, 느림), Write-behind(쓰기 캐시 우선, 지연 동기화). 대부분 Cache-aside + TTL이 시작점
+- **Q. Cache-aside vs Write-through vs Write-behind?** → Cache-aside(app이 직접 read/write, 일관성 위험), Write-through(쓰기 경로에서 캐시와 DB를 함께 갱신, 직후 미스 감소, 쓰기 오버헤드와 부분 실패 복구 필요), Write-behind(캐시를 먼저 쓰고 DB에 지연 동기화, 데이터 유실 대비 필요). 대부분 Cache-aside + TTL이 시작점
 - **Q. 캐시 무효화 어떻게?** → ① TTL ② 명시적 invalidate (쓰기 후 키 삭제) ③ 버전 키 (`v:42:user:1`). **"캐시 무효화는 컴퓨터 과학에서 가장 어려운 2가지 중 하나"** — 도메인별 무효화 전략 명문화 필요
 - **Q. 캐시 스탬피드?** → 인기 키 만료 직후 동시 미스 → DB로 폭주. 해법: **싱글플라이트**(첫 요청만 DB, 나머지 대기), **확률적 조기 갱신**, 짧은 분산 락
 - **Q. Redis 자료구조 활용?** → String(카운터, 캐시), Hash(객체), Sorted Set(랭킹, 시간 기반 큐), Stream(이벤트), HyperLogLog(고유수 추정), Bitmap(출석/플래그)
@@ -80,7 +80,7 @@ aliases: ["Yunhoe 1st Tech Extra", "윤회 1차 기술 질문 보강"]
 - **Q. 테스트 피라미드?** → 단위(많이, 빠름) > 통합(DB, MQ 같이) > E2E(적게, 느림). 본인은 시솔지주에서 PR 게이트 커버리지 60%로 머지 차단 — **숫자보다 게이트가 정착이 어려운 부분**이라는 점 어필
 - **Q. 실 DB로 테스트?** → testcontainers(Postgres/MySQL/Redis 컨테이너) 또는 docker-compose. 트랜잭션 롤백 패턴(`BEGIN ... ROLLBACK`)으로 격리, 속도 동시 확보. **본인의 입사 후 6개월 도입 항목 중 하나**
 - **Q. 무중단 배포 방식?** → Rolling(ECS 기본, 단순), Blue-Green(두 환경 swap, 즉시 롤백), Canary(소수 트래픽 → 점진 확대). DB 마이그레이션은 backward-compatible 단계로 분해 (Expand-Migrate-Contract)
-- **Q. 관측성 3축?** → Metrics(집계, RED/USE) / Logs(이벤트, 구조화 JSON) / Traces(요청 흐름, OpenTelemetry). **TraceId로 3축 연결**이 핵심 — 트라이포드랩 Grafana/Prometheus/Loki 스택에서 실제 운영
+- **Q. 관측성 3축?** → Metrics(집계, RED/USE) / Logs(이벤트, 구조화 JSON) / Traces(요청 흐름, OpenTelemetry). 실제 운영은 `x-request-id` 기반 로그와 method, route, status 집계 메트릭까지였고 trace pipeline은 구축하지 않았음. 확장한다면 로그는 traceId, 메트릭은 고카디널리티 label 대신 exemplar로 트레이스와 연결
 - **꼬리**: "RED vs USE?" → RED(Rate/Errors/Duration, 요청 기반 서비스) / USE(Utilization/Saturation/Errors, 리소스 기반). API 서버는 RED, DB, 큐는 USE
 
 ## 10. 시스템 디자인 즉석 (대표가 던질 만한 화이트보드 질문)

@@ -31,11 +31,11 @@ aliases: ["ActionPower JD 기반 기술 질문", "액션파워 JD 기술 질문"
   - 자주 변경되지 않는 국가별 메타데이터를 매 요청마다 API 호출 → 서버 시작 시 1회 로드+DB 저장
   - API latency 3초→0.9초(70% 개선)
 - 트라이포드랩: Read Replica 도입 후 조회 빈도 높은 API에 Redis 캐시 계층 추가 예정이었음
-- 무효화: TTL 기반 + Write-through
+- 무효화: TTL을 안전망으로 두고 DB 커밋 뒤 캐시를 삭제하는 방식을 기본으로 검토. Write-Through는 쓰기 경로에서 캐시와 DB를 함께 갱신하는 별도 선택지
 - 주의: 캐시-DB 불일치, 캐시 스탬피드(동시 만료 시 DB 과부하)
 - 꼬리:
   - "캐시 스탬피드 해결법?" → TTL에 jitter 추가(동시 만료 방지) + 만료 전 백그라운드 갱신 + mutex lock으로 한 요청만 DB 조회 후 캐시 갱신
-  - "Cache-Aside vs Write-Through?" → Cache-Aside: 읽기 시 캐시 미스면 DB 조회 후 캐시 적재 (lazy). Write-Through: 쓰기 시 캐시+DB 동시 갱신 (캐시 항상 최신이지만 쓰기 오버헤드)
+  - "Cache-Aside vs Write-Through?" → Cache-Aside: 읽기 시 캐시 미스면 DB 조회 후 캐시 적재. Write-Through: 쓰기 경로에서 캐시와 DB를 함께 갱신해 직후 미스와 오래된 값을 줄이지만, 두 저장소가 원자적으로 묶이지 않으면 부분 실패, 재시도와 순서 역전을 복구해야 함
   - "Redis가 죽으면?" → 캐시는 보조 계층이므로 DB로 fallback. 다만 갑자기 전체 트래픽이 DB로 몰리면 DB도 죽을 수 있음(캐시 아발란체) → DB 커넥션 풀 제한 + rate limiting으로 보호
 
 ### 트랜잭션 격리 수준? 데드락 경험?
@@ -107,7 +107,7 @@ aliases: ["ActionPower JD 기반 기술 질문", "액션파워 JD 기술 질문"
 - 클린 아키텍처 참고하여 계층 분리:
   - Controller(Interface Adapters) → UseCase(Application Core) → DomainService(핵심 비즈니스) → Repository Interface → Prisma Client(External Infrastructure)
 - UseCase별로 사용자 의도 분리(JSON Response용 vs 엑셀 다운로드용), 핵심 비즈니스 변경되어도 UseCase별 영향 최소화
-- DI 원리: NestJS IoC 컨테이너가 Provider의 생성, 주입, 생명주기 관리, @Injectable 데코레이터로 등록 → constructor에서 타입 기반 자동 주입
+- DI 원리: NestJS IoC 컨테이너가 Provider의 생성, 주입과 생명주기를 관리. 실제 Provider 등록은 `@Module({ providers: [...] })`에서 하고, `@Injectable()`은 컨테이너가 관리할 클래스임을 표시하고 생성자 주입에 필요한 메타데이터를 남김
 - 순환 참조: forwardRef()로 해결하되 근본적으로는 모듈 의존 방향을 단방향으로 설계하는 것이 중요
 - 모듈 간 의존은 exports로 명시적 공개
 - 꼬리:

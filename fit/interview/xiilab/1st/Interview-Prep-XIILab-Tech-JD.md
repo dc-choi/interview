@@ -101,7 +101,7 @@ aliases: ["XIILab JD 기반 기술 질문", "씨이랩 서비스 맥락 질문",
 ### DRI로 일한 경험? 문제 정의부터 해결까지 주도한 사례?
 
 - **Prisma 성능 문제**: 로그 분석으로 4개 개별쿼리 직접 발견 → 공식 문서 검토 → relationLoadStrategy 적용 → 82~90% 성능 개선. 하코 3000명 커뮤니티에서 이 주제로 발표
-- **모니터링 인프라**: CloudWatch 한계(쿼리 성능, 비용) 직접 분석 → Datadog/NewRelic/ELK 대안 비교 → GPL 스택 자체 호스팅 결정 → 직접 구축. SLO 기반 경보 체계 정착
+- **모니터링 인프라**: CloudWatch 한계(쿼리 성능, 비용) 직접 분석 → Datadog/NewRelic/ELK 대안 비교 → GPL 스택 자체 호스팅 결정 → 직접 구축. 당시에는 정적 임계 경보를 운영했고 SLO burn-rate 경보는 후속 개선안
 - **FIDO 서버**: 담당 개발자 퇴사 후 팀 리드 직접 맡음 → 3개월 내 FIDO Spec 처음부터 학습 → 인증 통과. 오픈소스 라이브러리 규격 미준수 발견 → GitHub 이슈 생성으로 커뮤니티 기여
 
 ---
@@ -138,8 +138,8 @@ aliases: ["XIILab JD 기반 기술 질문", "씨이랩 서비스 맥락 질문",
 ### 서비스 장애 시 대응 프로세스?
 
 - 실제 경험 기반:
-  1. Grafana Alerting이 Slack/팀별 라우팅으로 자동 알림 (Error rate 1% `for:5m`, Event Loop Lag 100ms 3분 등 SLO 기반 임계값)
-  2. 대시보드에서 영향 범위 파악 — TraceId로 요청 단위 로그+메트릭 연계 조회
+  1. Grafana Alerting이 Slack/팀별 라우팅으로 자동 알림 (Error rate 1% `for:5m`, Event Loop Lag 100ms 3분 등 당시 운영한 정적 임계값)
+  2. 대시보드에서 영향 범위 파악 — `x-request-id`로 요청 로그를 추적하고 method, route와 status의 집계 메트릭을 같은 시간대에 대조. OpenTelemetry trace pipeline과 metric exemplar 운영 근거는 없음
   3. 롤백(ECS Rolling Update 이전 태스크로 복귀) or 핫픽스 판단
   4. 근본 원인 분석 — Loki 로그+Prometheus 메트릭 교차 분석
   5. 재발 방지 — 알림 임계값 조정, 테스트 케이스 추가, 포스트모템 공유

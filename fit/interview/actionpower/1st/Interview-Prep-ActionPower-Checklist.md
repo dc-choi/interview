@@ -55,7 +55,7 @@ aliases: ["ActionPower 1차 면접 체크리스트", "액션파워 1차 체크�
 |------|---------|----------|
 | GCP ↔ AWS 서비스 매핑 (6개 핵심 서비스) | (외부 자료) | [ ] |
 | Docker 멀티스테이지 빌드 / .dockerignore 최적화 | [[Multi-Stage-Build\|멀티스테이지빌드]] | [ ] |
-| 모니터링 (Prometheus+Thanos, Loki, Grafana Alerting, SLO 기반 경보) | [[Incident-Detection-Logging\|장애탐지, 로깅]], [[Structured-Logging\|구조화로깅]], [[Log-Pipeline\|로그파이프라인]] | [ ] |
+| 모니터링 (Prometheus+Thanos, Loki, Grafana Alerting, 정적 임계 경보와 SLO 개선안) | [[Incident-Detection-Logging\|장애탐지, 로깅]], [[Structured-Logging\|구조화로깅]], [[Log-Pipeline\|로그파이프라인]] | [ ] |
 | 장애 대응 프로세스 (알림→파악→롤백/핫픽스→원인분석→재발방지, P1~P4 등급) | [[Incident-Recovery-Prevention\|장애복구, 예방]] | [ ] |
 
 **테스트 / 품질**
@@ -67,9 +67,9 @@ aliases: ["ActionPower 1차 면접 체크리스트", "액션파워 1차 체크�
 ### 강하게 어필할 포인트
 1. **NestJS + TypeScript + MySQL** — JD 자격요건과 정확히 일치
 2. **수천 대 IoT 동시 요청 처리** — SELECT FOR UPDATE NOWAIT + 재시도 로직으로 동시 5대 경합에서도 Lost Update 방지 (다글로 180만 사용자와 연결)
-3. **이벤트 기반 발주 자동화** — MSK 대비 99.99% 비용 절감, 수기 재고관리 4시간→10분(95.8%), 수기 발주 1시간→완전 자동화. "엔지니어 개입 최소화를 위한 자동화" JD 문구와 직접 연결
+3. **이벤트 기반 발주 자동화** — 당시 산정 조건에서 MSK 고정비와 EventBridge+SQS 사용량 과금을 비교해 현재 규모에 맞는 쪽을 선택, 수기 재고관리 4시간→10분(95.8%), 수기 발주 1시간→완전 자동화. "엔지니어 개입 최소화를 위한 자동화" JD 문구와 직접 연결
 4. **슬로우 쿼리 99.3% 개선(15.4ms→0.1ms) + API 90% 향상** — 카디널리티 분석 기반 복합 인덱스 설계, 3,000대 확장에도 성능 무관한 구조
-5. **GPL 스택 모니터링 인프라 직접 구축** — SLO 기반 경보 정책, 요청 단위 추적(TraceId), 비정상 상태 감지 후 5분 내 대응률 향상
+5. **GPL 스택 모니터링 인프라 직접 구축** — 정적 임계 경보 정책과 `x-request-id` 기반 로그 추적. 감지와 대응이 빨라졌다는 당시 기록은 있으나 변경 전 baseline과 관찰 기간이 없어 정량 성과로 말하지 않음. SLO burn-rate 경보는 후속 개선안
 6. **단일 서버 → 스케일링 아키텍처 전환** — ALB+NLB 이중 구성(웹/IoT 분리), ECS Fargate 오토스케일링, Read Replica로 조회 40% 향상+DB CPU 30% 감소
 7. **대형 고객사 PoC 성공** — 연매출 280억 제약바이오사, 2000억 F&B 기내식 기업. 클린 아키텍처 기반 모듈 설계로 고객사별 요구사항 유연 대응
 8. **커뮤니티 기여** — 하코 3000명 규모 커뮤니티에서 Prisma 성능 90% 개선 주제 발표, 카카오테크 캠퍼스 백엔드 멘토

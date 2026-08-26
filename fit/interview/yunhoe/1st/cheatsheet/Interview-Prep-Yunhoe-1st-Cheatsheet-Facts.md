@@ -11,7 +11,8 @@ aliases: ["윤회 1차 치트시트 핵심 사실", "Yunhoe 1st Cheatsheet Facts
 
 ### 회사명, 핵심 멤버 정정
 - **회사 영문명**: **YUNE Inc.** (Yune) — 윤회 영문
-- **대표**: **빈티지(Blackout Secondhands 2005~) → 글로벌 커뮤니티(DIA Berlin 독일 25K 한인) → 문화, 예술(Atelier Flaneur) → 콴다(매스프레소) B2B 영업** = 14년 종합. 백엔드 비전공. 톤: "2027 EU ESPR 의무화 = 우리 시장" + 글로벌 커뮤니티 + B2B 영업 베이스
+- **대표**: **빈티지(Blackout Secondhands 2005~) → 글로벌 커뮤니티(DIA Berlin 독일 25K 한인) → 문화, 예술(Atelier Flaneur) → 콴다(매스프레소) B2B 영업** = 14년 종합. 백엔드 비전공. 당시 발화 요지: "2027 EU ESPR 의무화 = 우리 시장" + 글로벌 커뮤니티 + B2B 영업 베이스
+  - 후속 공식 검증: ESPR은 제품별 위임법의 법적 틀이고, 섬유/의류 DPP의 2027년은 위임법 참고 채택 시점이다. 실제 의무 적용일은 채택된 위임법이 정한다. [[Interview-Prep-Yunhoe-Domain-Keywords|도메인 키워드 정본]]
 - **CSO** (LCF MA, Canada Goose, DADA 창립, CIRPASS-2 EWG1, CARE ID DPP White Paper 리드 저자) ← **groupby 페이지 오류로 다른 인물 표기됨**
 - **CTO**: AI/ML, ESG CTO 5년 (LinkedIn 1촌 아님 — 확인 불가). 5/15 "별도 모실 계획" 발언과 결 다름 → 본 미팅 B2 확인
 - **백엔드 동료(합류 예정/사수)** (5/15 들음, LinkedIn 6명에 없음): 개발 리드, 백엔드 베이스 = **별도 인물, 비공개**. CTO와 같은 사람일지 본 미팅 확인

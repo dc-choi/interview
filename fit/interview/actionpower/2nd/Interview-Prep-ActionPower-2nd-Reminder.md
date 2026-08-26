@@ -26,15 +26,15 @@ aliases: ["ActionPower 2nd Reminder", "액션파워 2차 기술 리마인드, �
 | 수기 발주           | 1시간 → 완전 자동화           |
 | Read Replica 효과 | 조회 40%↑, DB CPU 30%↓   |
 | 테스트 커버리지        | 0% → 70%               |
-| MSK vs SQS 비용   | $574/월 → $0~18/월       |
+| 메시징 비용 모델 | 당시 산정 조건의 MSK 고정비와 EventBridge+SQS 사용량 과금 비교 |
 
 ### 기술 의사결정 핵심 (왜 그 선택?)
 
 | 의사결정 | 선택 | 이유 |
 |---------|------|------|
 | 동시성 제어 | Pessimistic Lock (FOR UPDATE NOWAIT) | IoT 충돌 빈도 높음 → Optimistic 재시도 비용 과도 |
-| 메시지 큐 | EventBridge+SQS (Kafka 아님) | 월 10만 발주 규모에서 MSK $574 vs SQS $0~18. 실시간 불필요 |
-| 모니터링 | GPL 자체 호스팅 (Datadog 아님) | 가중치 비교 4.65점 최고. TCO+벤더 독립+메트릭 생태계 |
+| 메시지 큐 | EventBridge+SQS (Kafka 아님) | 월 10만 발주 규모에서 고정비와 사용량 과금을 같은 조건으로 비교. 실시간 불필요 |
+| 모니터링 | GPL 자체 호스팅 (Datadog 아님) | 당시 TCO, 벤더 독립과 메트릭 생태계를 비교해 선택. 일부 축만 남아 총점은 재현하지 않음 |
 | 아키텍처 전환 | 3단계 점진적 (빅뱅 아님) | 서비스 운영 중 — 각 단계 안정화 확인 후 다음 진행 |
 | ORM | Prisma (TypeORM 아님) | 스키마 중심 설계+마이그레이션이 강점. 복잡 쿼리는 Raw/Kysely 보완 |
 
