@@ -22,12 +22,12 @@ aliases: ["수요와 공급", "Supply and Demand"]
 
 ## 3. 시장 균형
 
-수요곡선과 공급곡선이 만나는 점에서 **균형가격**과 **균형거래량**이 정해진다. 시장은 이 점으로 스스로 수렴한다.
+아래 균형 모형은 **경쟁자가 충분하고 가격을 조정할 수 있으며 다른 조건이 같다**는 전제에서 출발한다. 이때 수요곡선과 공급곡선이 만나는 점에서 **균형가격**과 **균형거래량**이 정해지고, 초과수요와 초과공급이 가격 조정을 유도한다.
 
 - 가격이 균형보다 **낮으면** 사려는 양이 팔려는 양보다 많다(초과수요). 사려는 사람들이 경쟁해 가격이 올라간다.
 - 가격이 균형보다 **높으면** 팔려는 양이 더 많다(초과공급). 재고가 쌓여 가격이 내려간다.
 
-누가 지시하지 않아도 가격이 신호가 되어 균형을 찾아가는 것, 이것이 보이지 않는 손이다.
+이 전제 안에서 가격이 분산된 정보를 전달하고 조정을 유도하는 것을 보이지 않는 손이라고 설명한다. 독점력, 정보 비대칭, 외부효과나 가격 경직성이 크면 같은 속도와 결과를 보장하지 않는다.
 
 ## 4. 가장 헷갈리는 핵심 — 수요량 변화 vs 수요 변화
 
@@ -59,12 +59,12 @@ aliases: ["수요와 공급", "Supply and Demand"]
 
 ## 6. 가격통제와 그 부작용
 
-정부가 가격을 균형에서 강제로 떼어 놓으면 부작용이 따른다.
+가격통제는 시장가격을 실제로 제약하는 **구속적(binding) 통제**일 때 수요량과 공급량의 차이를 만든다. 가격상한이 균형보다 높거나 가격하한이 균형보다 낮으면 비구속적이어서 현재 거래량을 바꾸지 않는다.
 
-- **가격상한(임대료 규제 등)**: 균형보다 낮게 묶으면 만성적 초과수요가 생긴다. 물량이 부족해지고 암시장, 품질 저하, 대기 줄이 나타난다.
-- **가격하한(최저임금 등)**: 균형보다 높게 묶으면 초과공급이 생긴다. 노동시장에선 이것이 일자리를 못 구한 사람(실업)으로 나타날 수 있다.
+- **가격상한(임대료 규제 등)**: 경쟁시장 균형보다 낮게 묶으면 초과수요가 생긴다. 배분 방식에 따라 물량 부족, 대기, 품질 저하나 암시장 같은 비용이 나타날 수 있다.
+- **가격하한(최저임금 등)**: 경쟁적 노동시장의 균형보다 높게 묶으면 노동 공급이 수요보다 많아져 고용량이나 근로시간이 줄 수 있다. 다만 실제 고용효과의 크기는 시장과 시점에 따라 다르고, 비구속적 최저임금은 고용량을 바꾸지 않는다.
 
-가격통제는 의도는 좋아도 수요와 공급의 힘을 없애지 못하고 다른 형태의 비용으로 새어 나온다.
+고용주가 임금 결정력을 가진 monopsony 노동시장에서는 경쟁시장 모형의 결론이 그대로 적용되지 않는다. 따라서 가격통제의 방향을 설명할 때는 통제가 구속적인지, 시장지배력과 조정 방식이 어떤지, 실증 결과가 어떤지를 함께 본다.
 
 ## 7. 핵심 개념과 지표
 
@@ -76,13 +76,15 @@ aliases: ["수요와 공급", "Supply and Demand"]
 ## 8. 흔한 오해
 
 - **수요와 수요량은 같은 말이다** → 가격 때문에 움직이면 수요량 변화(곡선 위 이동), 다른 요인이면 수요 변화(곡선 이동)다.
-- **가격을 누르면 서민에게 좋다** → 초과수요와 부족, 암시장을 부른다. 균형의 힘은 없어지지 않는다.
+- **가격통제는 언제나 같은 결과를 낸다** → 구속 여부, 경쟁 정도와 배분 방식에 따라 효과가 달라진다.
 - **수요곡선은 늘 직선이다** → 편의상 직선으로 그릴 뿐, 실제 형태는 다양하다.
 
 ## 출처
 
 - [OpenStax, Principles of Economics 3e, Demand, Supply, and Equilibrium in Markets for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services)
 - [OpenStax, Principles of Economics 3e, Shifts in Demand and Supply for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-2-shifts-in-demand-and-supply-for-goods-and-services)
+- [OpenStax, Principles of Microeconomics 3e, Demand and Supply at Work in Labor Markets](https://openstax.org/books/principles-microeconomics-3e/pages/4-1-demand-and-supply-at-work-in-labor-markets)
+- [OpenStax, Principles of Economics 3e, Wages and Employment in an Imperfectly Competitive Labor Market](https://openstax.org/books/principles-economics-3e/pages/14-2-wages-and-employment-in-an-imperfectly-competitive-labor-market)
 
 ## 관련 문서
 

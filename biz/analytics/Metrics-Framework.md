@@ -16,8 +16,8 @@ Dave McClure(500 Startups)가 제안한 스타트업 성장 지표 프레임워�
 | **Acquisition** | 사용자가 어떻게 오는가? | 채널별 유입, 가입 수 |
 | **Activation** | 핵심 가치를 경험했는가? | 온보딩 완료율, Aha moment 도달 |
 | **Retention** | 다시 오는가? | DAU/MAU, 주간 리텐션 |
+| **Referral** | 다른 사람에게 알리는가? | 초대 전환율, 바이럴 계수 |
 | **Revenue** | 돈을 내는가? | 유료 전환율, ARPU |
-| **Referral** | 다른 사람에게 알리는가? | 추천 전환율, NPS |
 
 ## North Star Metric (NSM)
 
@@ -28,21 +28,27 @@ Dave McClure(500 Startups)가 제안한 스타트업 성장 지표 프레임워�
 - 수익과 상관관계가 높음
 - 팀이 영향을 줄 수 있음
 
-**회사 유형별 예시:**
-- 마켓플레이스: 주간 거래 건수 (에어비앤비)
-- SaaS: 주간 활성 팀 수 (Slack)
-- 미디어: 총 시청 시간 (YouTube)
+**제품 유형별 후보 예시:**
+- 마켓플레이스: 주간 완료 거래 건수
+- SaaS: 주간 활성 팀 수
+- 미디어: 유효 시청 시간
 - 피트니스 앱: 완료된 운동 수
 
 ## Leading vs Lagging 지표
 
 | 구분 | Leading (선행) | Lagging (후행) |
 |---|---|---|
-| 시점 | 미래를 예측 | 과거를 측정 |
-| 용도 | 조기 개입 | 성과 평가 |
+| 시점 | 후행 성과보다 먼저 관찰되는 후보 신호 | 이미 발생한 성과를 측정 |
+| 용도 | 조기 개입 가설 설정 | 성과 평가 |
 | 예시 | 온보딩 완료율 | 월 매출 |
 
-**원칙:** Leading 지표를 움직이면 Lagging 지표가 따라온다.
+**원칙:** 선행 지표의 변화는 후행 지표를 움직일 수 있다는 가설일 뿐, 인과를 보장하지 않는다. 기능이 선행 지표를 올렸더라도 재배분, 계절성이나 계측 오류일 수 있다.
+
+선행 지표를 의사결정에 쓰려면 다음을 확인한다.
+
+1. 선행 지표가 어떤 사용자 행동을 거쳐 후행 성과로 이어지는지 인과 가설을 적는다.
+2. 같은 코호트의 후행 지표와 가드레일 지표를 함께 본다.
+3. 가능하면 대조군이 있는 실험으로 증분 효과를 검증하고, 불가능하면 관찰 연구의 한계를 명시한다.
 
 ## Vanity vs Actionable 지표
 
@@ -70,7 +76,7 @@ Dave McClure(500 Startups)가 제안한 스타트업 성장 지표 프레임워�
 ## 현장 적용: school-manage
 
 - **운영 기준:** 2026-07-15 MAO 34곳, 목표 50곳. 누적 본당 85곳과 보고서상 모임 레코드 108개는 활성 수치가 아님
-- **AARRR 적용:** Acquisition → Activation(첫 단체, 학생, 출석을 같은 코호트로 연결) → Retention → Revenue → Referral. 현재 Activation 전환율은 계측 미완료로 미측정
+- **AARRR 적용:** Acquisition → Activation(첫 단체, 학생, 출석을 같은 코호트로 연결) → Retention → Referral → Revenue. 현재 Activation 전환율은 계측 미완료로 미측정
 - **데이터 소스 분리:** DB는 운영 지표, GA4는 사용자 행동 신호로 사용하며 서로 다른 분모를 섞지 않음
 - **과거 코호트 수치:** 0%, 15%, 36% 스냅숏은 현재 코호트 정의로 재현되지 않아 제품 개선 증거로 사용하지 않음
 
@@ -82,7 +88,9 @@ Q. 어떤 지표를 추적하고 왜 그 지표를 선택했는가?
 - 온보딩 전환은 같은 코호트 계측을 완성한 뒤에만 계산
 
 ## 출처
+- [Startup Metrics for Pirates — SlideShare, Dave McClure](https://www.slideshare.net/slideshow/startup-metrics-for-pirates-long-version/89026)
 - [허수지표가 되기 쉬운 KPI — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/754)
+- [A Dirty Dozen: Twelve Common Metric Interpretation Pitfalls in Online Controlled Experiments — Microsoft Research](https://www.microsoft.com/en-us/research/publication/a-dirty-dozen-twelve-common-metric-interpretation-pitfalls-in-online-controlled-experiments/)
 
 ## 관련 문서
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
