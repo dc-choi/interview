@@ -1,7 +1,7 @@
 ---
 tags: [database, concurrency, race-condition, patterns]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-08-27
 category: "Data & Storage - RDB"
 aliases: ["DB 락과 분산 락 Race Condition", "단일 DB 다중 서버, 분산 환경 race"]
 ---
@@ -66,7 +66,7 @@ version 불일치면 rowsAffected=0 → 재시도. 경쟁 적을 때 효율적.
 주의:
 - **TTL보다 오래 걸리는 작업이면 위험** — TTL 만료 후 다른 서버가 락 획득
 - **fencing token** 없으면 "TTL 만료한 줄 모르고 쓰기" 발생. fencing token은 단순 삭제 토큰이 아니라, 보호 대상 저장소가 더 작은 token의 쓰기를 거부하도록 만드는 단조 증가 번호다.
-- **RedLock 자체의 안전성 논쟁** (Martin Kleppmann 비판) — 진짜 강한 보장이 필요하면 ZooKeeper, etcd
+- **Redlock 자체의 안전성 논쟁** (Martin Kleppmann 비판) — 강한 보장이 필요하면 합의 기반 coordinator와 fencing을 함께 검토하고, 보호 대상 저장소가 오래된 쓰기를 실제로 거부하는지 failure model로 검증
 
 **2. Saga + Compensating Transaction**:
 분산 트랜잭션 대신 각 단계가 성공, 실패 이벤트 발행, 실패 시 보상 동작. [[External-API-Integration-Patterns]] 참고.
@@ -77,15 +77,15 @@ version 불일치면 rowsAffected=0 → 재시도. 경쟁 적을 때 효율적.
 **4. 상태 키 + 분산 락 (실전 조합)**:
 우아한형제들 WMS 사례처럼 **상태 key로 유효 전이만 허용** + 분산 락으로 전이 순간 보호 → 병렬성과 정합성 양립.
 
-## 실무 사례: 층위 3 대신 층위 2로 내린 판단
+## 본인이 직접 수행한 경험을 공개 가능한 범위로 일반화한 사례: 층위 3 대신 층위 2로 내린 판단
 
-IoT 재고관리(VMI) 서비스에서 직접 처리한 문제다. 같은 품목을 최대 5대의 디바이스가 동시에 수정 요청하는데, 앱이 여러 인스턴스로 스케일 아웃돼 있어 프로세스 메모리 락으로는 막을 수 없는 Lost Update가 발생했다.
+여러 인스턴스가 같은 재고 행을 동시에 갱신하면서 Lost Update가 발생한 문제를 처리했다. 프로세스 메모리 락만으로는 막을 수 없었지만, 경쟁 대상이 단일 데이터베이스의 한 행이어서 먼저 DB 트랜잭션 경계에서 해결할 수 있는지 판단했다.
 
-**분산 락 기각**: Redis 분산 락을 먼저 검토했지만 인프라 의존성이 하나 늘고 락 획득과 해제에 네트워크 왕복이 추가된다. 디바이스의 HTTP 타임아웃이 1초라 왕복 지연과 TTL 만료 리스크를 떠안을 이유가 없었다. 경쟁 대상이 단일 DB의 한 행이므로 층위 3이 아니라 층위 2 문제로 다뤘다.
+**분산 락 기각**: Redis 분산 락은 인프라 의존성과 네트워크 왕복, TTL 만료 위험을 추가한다. 짧은 요청 시간 안에 판단해야 하고 경쟁 대상이 한 DB 행이라면, 이 문제를 분산 락보다 낮은 층위에서 풀 수 있다.
 
-**선택**: 품목 행에 `SELECT ... FOR UPDATE NOWAIT`를 걸어 대기 대신 즉시 실패시키고, 애플리케이션에서 100ms 시작 지수 백오프와 지터로 최대 3회 재시도했다 ([[Retry-Backoff-Jitter|지수 백오프와 지터]]). 재시도 대기 합(기본값 기준 최대 약 700ms)이 디바이스 타임아웃 1초 안에 들도록 상한을 3회로 잘라 그 안에 수락과 거절이 결정된다. 디바이스 조회와 요청 검증은 트랜잭션 밖으로 빼 트랜잭션 안에는 재고 행 잠금과 갱신만 남겼다.
+**선택**: 사용하는 DB와 버전이 `NOWAIT`를 지원하는지 먼저 확인한 뒤, 행에 `SELECT ... FOR UPDATE NOWAIT`를 걸어 해당 row lock 대기 대신 빠르게 실패하도록 했다. `NOWAIT`는 이 locking read의 row lock 대기를 제어할 뿐 metadata lock과 다른 I/O 대기까지 모든 query 지연을 제한하지 않으므로 transaction과 client timeout은 별도 경계로 둔다. 당시 애플리케이션에서는 DB별 잠금 충돌 오류와 트랜잭션 상태를 처리하고 짧은 고정 간격의 제한된 재시도를 사용했다. 현재 다시 설계한다면 동시 재시도 집중을 줄이기 위해 [[Retry-Backoff-Jitter|지수 백오프와 지터]]도 후보로 두되, 고정 간격보다 항상 낫다고 가정하지 않고 lock 보유 시간, 경쟁도, 재시도 증폭과 지연 예산을 같은 부하에서 비교한다. 잠금 대상과 독립적인 요청 검증만 트랜잭션 밖에서 하고, 변경 가능한 상태에 의존하는 불변식은 잠금을 얻은 뒤 다시 검증했다. 트랜잭션 안에는 이 검증과 필요한 갱신만 남겼고, 적용 전 실제 DB 버전에서 잠금 충돌, 재시도와 최종 실패 경로를 함께 시험했다.
 
-결과는 Lost Update 제거와 Redis 없는 구조 유지다. 대기(`FOR UPDATE`) 대신 즉시 실패(`NOWAIT`)를 고른 이유는, 타임아웃이 짧은 클라이언트에서는 무한 대기보다 실패 후 제한된 재시도가 지연 상한을 예측 가능하게 만들기 때문이다.
+그 결과 이 갱신 경로에서 Lost Update를 막고 분산 락 의존성을 추가하지 않았다. 다른 모든 쓰기 경로가 같은 잠금 규칙이나 조건부 갱신을 따르는지 회귀 테스트로 확인해야 이 보장을 넓힐 수 있다. 이 방식은 무한 대기보다 지연 상한을 예측 가능하게 하지만, 재시도 횟수와 대기 상한은 클라이언트 timeout, DB 부하와 사용자 경험을 함께 측정해 정해야 한다.
 
 ## 안티패턴 실제 사례 (카카오 메시징 사고)
 
@@ -104,8 +104,9 @@ IoT 재고관리(VMI) 서비스에서 직접 처리한 문제다. 같은 품목�
 
 ## 출처
 
-- [PostgreSQL 17 Documentation — Explicit Locking](https://www.postgresql.org/docs/17/explicit-locking.html)
+- [PostgreSQL 18 Documentation — SELECT](https://www.postgresql.org/docs/current/sql-select.html)
 - [MySQL 8.4 Reference Manual — Transaction Isolation Levels](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-isolation-levels.html)
+- [MySQL 8.4 Reference Manual — Locking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
 - [AWS Prescriptive Guidance — Transactional Outbox Pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
 
 ## 관련 문서

@@ -23,7 +23,6 @@ aliases: ["OKR", "Objectives and Key Results"]
 
 ## 출처
 
-- 키노라이츠 사내 OKR 교육 자료
 - 장영학, 유병은 — Why를 소통하는 도구, OKR (도서)
 - 존 도어 — OKR (도서)
 - 앤드루 S. 그로브 — 하이 아웃풋 매니지먼트 (도서)

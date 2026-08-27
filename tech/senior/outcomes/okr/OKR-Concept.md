@@ -23,7 +23,7 @@ OKR(Objectives & Key Results)은 목표와 자기 통제에 의한 성과관리,
 
 ## 나쁜 성과관리의 부작용 — 코브라 효과
 
-코브라 효과(Cobra effect)는 문제를 해결하려는 유인 설계가 오히려 문제를 악화시키는 현상이다. 영국 식민지 인도에서 코브라를 잡아오면 포상금을 줬더니 사람들이 포상금을 노리고 코브라를 사육한 데서 유래했다.
+코브라 효과(Cobra effect)는 문제를 해결하려는 유인 설계가 오히려 문제를 악화시키는 현상이다. 영국 식민지 인도의 코브라 포상금 이야기는 이 개념을 설명할 때 널리 쓰이는 일화지만, 이 문서는 그 역사적 사실성까지 확인한 자료로 사용하지 않는다.
 
 나쁜 성과관리는 같은 왜곡을 만든다. 자신이 맡은 일이 어떤 의미가 있는지, 어떤 가치를 주는지 잊은 채 주어진 지표 숫자만 달성하기 위해 꼼수를 부리게 된다. 지표가 목표가 되는 순간 좋은 지표이기를 멈춘다는 [[Software-Productivity-Measurement|Goodhart의 법칙]]과 같은 축이다.
 
@@ -65,7 +65,9 @@ Objective는 정성적인 문장이라 그것만 보고는 절반을 왔는지 �
 
 예를 들어 Objective가 "밀레니얼 고객이 우리 서비스를 더 많이 써보게 한다"라면, 더 많이가 무엇인지 애매하므로 "밀레니얼 회원 수를 MAU 10,000명으로 늘린다"로 구체화한다 — 이것이 KR이다.
 
-### KR의 3가지 종류
+### 이 자료에서 쓰는 KR 3분류
+
+아래 분류와 달성률은 모든 OKR 체계의 표준이 아니라 출처 도서와 강의에서 제안한 운영 휴리스틱이다. 조직은 평가 방식, 불확실성과 실패 비용에 맞춰 별도 기준을 명시한다.
 
 | 종류 | 달성 기준 | 용도 |
 |---|---|---|
@@ -95,7 +97,6 @@ Objective는 정성적인 문장이라 그것만 보고는 절반을 왔는지 �
 
 ## 출처
 
-- 키노라이츠 사내 OKR 교육 자료
 - 장영학, 유병은 — Why를 소통하는 도구, OKR (도서)
 - [OKR 강의 영상 플레이리스트 — YouTube](https://youtube.com/playlist?list=PLyAjRMJVCLLjtJPe7GX5AjncaaxU1L9a0)
 - [Performance Management: Concepts & Definitions — UC Berkeley People & Culture](https://hr.berkeley.edu/hr-network/central-guide-managing-hr/managing-hr/managing-successfully/performance-management/concepts) (성과관리 영문 정의 인용)

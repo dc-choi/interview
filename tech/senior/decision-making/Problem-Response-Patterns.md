@@ -81,7 +81,7 @@ aliases: ["Problem Response Patterns", "문제 대응 패턴", "문제 이동, �
 ## 관련 문서
 
 - [[Problem-Discovery|문제 발견 — 해결할 가치가 있는 문제를 찾는 법]]
-- [[Constructive-Skepticism|발전적 의심]]
+- [[Constructive-Skepticism|근거 기반 검증]]
 - [[Data-Driven-Decision|데이터 기반 의사결정]]
 - [[Feedback-Delay|피드백 지연]]
 - [[RCA-Postmortem|RCA와 포스트모템]]

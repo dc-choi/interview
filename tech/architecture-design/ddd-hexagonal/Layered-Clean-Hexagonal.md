@@ -7,17 +7,17 @@ aliases: ["Layered / Clean / Hexagonal", "클린 아키텍처", "계층 아키�
 
 # Layered / Clean / Hexagonal Architecture
 
-비즈니스 로직을 외부 기술(DB, 프레임워크, UI)로부터 분리하는 아키텍처 패턴들이다. 핵심 목표는 동일하다: **의존성이 안쪽(비즈니스)을 향하도록 만든다.**
+관심사를 경계로 나누는 아키텍처 패턴들이다. Clean과 Hexagonal은 의존성이 비즈니스 규칙을 향하게 하는 것이 핵심이고, Layered는 계층을 나누지만 구체적인 의존 방향은 변형과 경계 설계에 따라 달라진다.
 
 ## Layered Architecture (계층 아키텍처)
 
-가장 전통적인 구조. 상위 레이어가 하위 레이어에만 의존한다.
+흔한 형태에서는 상위 레이어가 바로 아래 레이어를 호출한다. 다만 포트와 의존성 역전을 적용한 도메인 중심 Layered 구조도 가능하므로 아래 구조를 유일한 정의로 보지는 않는다.
 
 **계층 구조:**
 - Presentation → Application → Domain → Infrastructure
 
 **문제점:**
-- Infrastructure가 최하단이라 Domain이 Infrastructure에 의존하게 되는 경향
+- Business나 Domain이 구체 Infrastructure 구현을 직접 참조하면 기술 세부사항에 묶일 수 있음
 - 레이어 간 순환 의존이 발생하기 쉬움
 - "모든 것이 서비스 레이어에 몰리는" 문제 (Fat Service)
 
@@ -62,16 +62,16 @@ UseCase    → [OutputPort] ← RepositoryAdapter (구현)
 - **구현 디테일 노출 금지**: 인터페이스 이름이 `JpaUserRepository`가 아니라 `UserRepository`. JPA는 구현의 선택
 - **파라미터 vs 전체 객체**: 단순 값이면 개별 파라미터, 속성 진화가 예상되면 객체로
 
-### DTO 중복은 "Accidental Duplication"
+### DTO 분리는 변화 이유가 다를 때
 
-계층마다 DTO/VO를 따로 두는 것은 **진짜 중복이 아니라 우연적 중복**. 같은 이름이어도:
+입력, 저장과 출력 계약은 변화 이유가 서로 다를 수 있어 필드가 우연히 같더라도 별도 모델이 필요할 수 있다. 예를 들면:
 
 - Create DTO: 사용자 입력 검증용 (필수, 선택 필드)
 - Update DTO: 부분 수정 (모두 nullable)
 - Entity: DB 제약, 관계
 - API Response: 외부 계약
 
-시간이 지나면 **각자 다르게 진화**한다. 하나로 묶으려 하면 모든 계층의 제약을 다 수용해야 해서 오염이 누적.
+이 계약들이 실제로 독립적으로 진화한다면 분리가 결합을 줄인다. 반대로 제약과 변화 이유가 같은데 계층마다 1:1 복사 DTO를 만들면 매핑 비용만 늘어난다. 경계별 독립 계약이 있는지 확인한 뒤 분리한다.
 
 ## Hexagonal Architecture (헥사고날, 포트와 어댑터)
 
@@ -82,19 +82,20 @@ Alistair Cockburn이 제안. 비즈니스 로직(핵심)과 외부 세계 사이
 - **Port** — 핵심이 외부와 소통하는 인터페이스 (입력 포트 / 출력 포트)
 - **Adapter** — 포트의 구현체 (HTTP 컨트롤러, DB 리포지토리 등)
 
-외부 기술을 교체할 때 어댑터만 바꾸면 된다.
+포트 계약이 유지되고 새 기술의 의미 차이를 어댑터 안에서 흡수할 수 있으면 핵심 로직 변경을 줄일 수 있다. 데이터 이관이나 일관성 의미까지 달라지면 어댑터 교체만으로 끝나지 않는다.
 
 ## 세 아키텍처의 공통점
 
 | 원칙 | 설명 |
 |---|---|
-| 의존성 역전 | 비즈니스 로직이 기술 세부사항에 의존하지 않음 |
-| 테스트 용이성 | 핵심 로직을 외부 의존 없이 단위 테스트 가능 |
-| 교체 용이성 | DB, 프레임워크 등을 핵심 로직 변경 없이 교체 가능 |
+| 관심사 분리 | UI, 업무 규칙과 데이터 접근의 책임을 경계로 나눔 |
+| 의존성 역전 | Clean과 Hexagonal은 핵심 규칙이며, Layered도 포트를 두면 적용 가능 |
+| 테스트 용이성 | 경계와 의존성 주입을 적용하면 핵심 로직의 단위 테스트가 쉬워짐 |
+| 교체 용이성 | 계약과 의미가 유지되는 범위에서 외부 기술 변경의 영향이 줄어듦 |
 
-## 실제 적용: 도메인 기반 구조
+## 적용 예: 도메인 기반 구조
 
-school-manage 프로젝트에서는 Clean Architecture를 도메인별 수직 슬라이싱과 결합했다.
+한 웹 애플리케이션에서 Clean Architecture를 도메인별 수직 슬라이싱과 결합할 수 있다.
 
 **디렉토리 구조:**
 - `domains/{도메인}/application/` — Use Case (비즈니스 로직)
@@ -116,11 +117,11 @@ school-manage 프로젝트에서는 Clean Architecture를 도메인별 수직 �
 
 Q. Clean Architecture를 어떻게 적용했는가?
 - 도메인별 수직 슬라이싱: 각 도메인 안에 application(use case)과 presentation(router)을 분리
-- Use Case 하나가 비즈니스 기능 하나를 담당 (예: CreateStudentUseCase)
+- Use Case 하나가 비즈니스 기능 하나를 담당 (예: CreateEntityUseCase)
 - Router는 입력 검증과 위임만 하고, 비즈니스 로직은 Use Case에 집중
 
 Q. Layered와 Clean Architecture의 차이는?
-- Layered: 위→아래 단방향 의존, Infrastructure가 최하단
+- Layered: 흔한 형태는 위→아래 호출이지만, 포트 적용 여부에 따라 의존 방향이 달라짐
 - Clean: 바깥→안쪽 의존, Domain이 중심이고 Infrastructure가 바깥
 
 ## 출처

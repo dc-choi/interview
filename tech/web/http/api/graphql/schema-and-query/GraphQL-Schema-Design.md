@@ -1,9 +1,9 @@
 ---
 tags: [web, graphql, api, schema, schema-design]
 status: done
-verified_at: 2026-07-20
+verified_at: 2026-08-27
 category: "웹&네트워크(Web&Network)"
-aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "schema versioning", "mutation payload"]
+aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "GraphQL schema versioning", "mutation payload"]
 ---
 
 # GraphQL 스키마 설계
@@ -23,11 +23,11 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "s
 
 ## 버전을 피한다
 
-- REST가 버전을 파는 이유는 반환 데이터를 클라이언트가 통제하지 못해 어떤 변경이든 breaking이 될 수 있어서다. 그 대가로 기능을 붙일 때마다 새 버전이 필요해져, 자주 릴리스하며 버전을 증식시킬지 API의 이해가능성과 유지보수성을 지킬지의 트레이드오프가 생긴다.
-- GraphQL은 요청한 필드만 반환하므로 새 타입이나 새 필드 추가는 breaking이 아니다. 그래서 관례가 breaking change를 피하고 버전 없는 API를 서빙하는 것이다.
-- breaking change로 치는 것(공식 스키마 리뷰 가이드 기준): 필드나 타입 제거, 인자 제거와 개명, 필수(기본값 없는 non-null) 인자 추가, enum 값 제거, 필드 타입 변경, 출력 필드를 non-null에서 nullable로 약화(약속 파기). 타입 개명이나 object에서 interface로의 전환처럼 런타임엔 호환일 수도 있는 변경도 확신할 수 없으므로 breaking으로 취급한다. 반대 방향(출력 nullable에서 non-null, 인자 required에서 optional, 새 필드 추가)은 안전하다.
-- 그 사이의 dangerous change: enum 값 추가, union이나 interface에 새 멤버 타입 추가, input 타입에 필드 추가. 스키마 계약상 breaking은 아니지만 enum이나 `__typename`을 exhaustive하게 매칭하거나 spread로 input을 조립하는 구식 클라이언트를 깰 수 있다. 클라이언트 쪽 대비는 아래 클라이언트도 진화를 견디게.
-- 제거 대신 `@deprecated`로 표시하고 스키마 diff 도구(Apollo, GraphQL Inspector)로 회귀를 잡는다. 버저닝을 피하는 대신 부담이 호환성 규율과 도구로 옮겨간다. 불가피한 breaking은 4단계로 굴린다: 대체 필드 추가 → 구 필드 `@deprecated`(대체 경로와 제거 시점 명시) → 필드 사용량 계측으로 이관 확인(예: 최근 30일 0건, 계절성 감안) → 사용이 0일 때 제거.
+- REST는 클라이언트가 서버가 정한 표현을 받으므로 필드 제거, 의미 변경 같은 비호환 변경을 격리하려 버전을 둘 수 있다. 필드 추가까지 언제나 breaking인 것은 아니며, 새 기능마다 버전을 올리는 대신 additive change와 deprecation으로 호환성을 유지할 수도 있다.
+- GraphQL은 요청한 출력 필드만 반환하므로 새 출력 타입이나 출력 필드 추가는 보통 breaking이 아니다. 반면 기본값 없는 required 인자나 required input field 추가는 기존 요청을 깨므로 같은 규칙을 적용할 수 없다. 그래서 관례가 breaking change를 피하고 버전 없는 API를 서빙하는 것이다.
+- breaking change로 치는 것(공식 스키마 리뷰 가이드 기준): 필드나 타입 제거, 인자 제거와 개명, 기본값 없는 non-null 인자나 input field 추가, enum 값 제거, 필드 타입 변경, 출력 필드를 non-null에서 nullable로 약화(약속 파기). 타입 개명이나 object에서 interface로의 전환처럼 런타임엔 호환일 수도 있는 변경도 확신할 수 없으므로 breaking으로 취급한다. 반대 방향(출력 nullable에서 non-null, 인자 required에서 optional, 출력 필드 추가)은 안전하다.
+- 그 사이의 dangerous change: enum 값 추가, union이나 interface에 새 멤버 타입 추가, input 타입에 optional field 추가. 스키마 계약상 breaking은 아니지만 enum이나 `__typename`을 exhaustive하게 매칭하거나 spread로 input을 조립하는 구식 클라이언트를 깰 수 있다. 클라이언트 쪽 대비는 아래 클라이언트도 진화를 견디게.
+- 제거 대신 `@deprecated`로 표시하고 스키마 diff 도구(Apollo, GraphQL Inspector)로 회귀를 잡는다. 버저닝을 피하는 대신 부담이 호환성 규율과 도구로 옮겨간다. 불가피한 breaking은 4단계로 굴린다: 대체 필드 추가 → 구 필드 `@deprecated`(대체 경로와 제거 시점 명시) → 필드 사용량 계측으로 이관 확인 → 관측 범위, 장수 클라이언트, 계절성과 계측 누락을 확인한 뒤 제거.
 
 ## 클라이언트도 진화를 견디게
 
@@ -45,7 +45,7 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "s
 - 삭제 반환: 스펙이 정하지 않아 삭제된 id나 payload 객체로 성공을 알린다.
 - payload 래퍼 패턴(errors-as-data): 엔티티 대신 `CreateReviewPayload { review, userErrors }` 같은 결과 타입으로 감싸, 예상되는 도메인 에러(userErrors)를 top-level `errors`가 아니라 데이터로 돌려준다. Relay, Apollo 관례로 출발했고 현재는 공식 에러 처리 가이드도 도메인 에러에 이 패턴을 권장한다. userError에 message, 대상 field 경로, code enum(USERNAME_TAKEN 같은)을 두면 에러 상태가 스키마에 드러나 introspection으로 발견되고 타입 안전해진다. 변형으로 payload들이 `MutationResponse { code, success, message }` 같은 공통 인터페이스를 구현해 상태 필드를 표준화하는 관례도 있다. 단일 `input` 인자 관례는 Relay식이다.
 - 에러 채널 선택 기준은 예외성이다: 인프라 장애(DB 타임아웃), 잘못된 GraphQL(문법 오류, 없는 필드), 인증 부재 같은 예외적 실패는 top-level `errors`로, 비즈니스 규칙 위반(사용자명 중복), 입력 검증 실패, 도메인 제약(재고 부족) 같은 예상되는 실패는 errors-as-data로 돌려준다. top-level error에는 `extensions`에 기계가 읽을 code(예: INTERNAL_SERVER_ERROR)를 싣는 관례가 있다.
-- 직렬이지 트랜잭션이 아니다: mutation 최상위 필드는 순차 실행된다 — 한 요청에 같은 자원을 건드리는 필드 둘을 보내도 앞 필드가 끝난 뒤 다음이 시작돼 자기 자신과의 race condition이 없다. 하지만 일부 성공 일부 실패 시 GraphQL은 성공분을 되돌리지 못한다. 원자성이 필요하면 비즈니스 로직 계층에서 직접 만든다. (스펙상 최상위 mutation 필드 외의 필드 resolution은 side-effect-free하고 idempotent해야 한다.)
+- 직렬이지 트랜잭션이 아니다: 한 mutation operation의 최상위 필드는 앞 필드 resolution이 끝난 뒤 다음 필드를 시작한다. 이 순서는 concurrent request, resolver가 외부에 넘긴 비동기 작업이나 여러 저장소의 원자성까지 보장하지 않는다. 일부 성공 일부 실패 시 GraphQL은 성공분을 되돌리지 못하므로 원자성과 동시성 제어는 비즈니스 로직 계층에서 직접 만든다. (스펙상 최상위 mutation 필드 외의 필드 resolution은 side-effect-free하고 idempotent해야 한다.)
 
 ## 네이밍 컨벤션
 
@@ -118,4 +118,5 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "s
 - [graphql.org — Robust Applications](https://graphql.org/learn/robust-applications/)
 - [graphql.org — Naming Conventions and Design Standards](https://graphql.org/learn/naming-design/)
 - [graphql.org — Review and validate schema changes](https://graphql.org/learn/schema-review/)
+- [GraphQL Specification — Normal and Serial Execution](https://spec.graphql.org/September2025/#sec-Normal-and-Serial-Execution)
 - [Apollo Server — Schema basics (MutationResponse 패턴)](https://www.apollographql.com/docs/apollo-server/schema/schema)

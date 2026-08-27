@@ -14,5 +14,5 @@ aliases: ["Communication"]
 - [x] [[culture|리더십과 조직 문화 (직군 간 협업, 디자인 핸드오프, 기여 문화, 실패 관대 문화, 팀워크, 비즈니스 align, 리더십 실천)]] — 서브폴더
 - [x] [[MOA-Study-Curriculum|MOA 백엔드 스터디 커리큘럼 (멘토링 사례)]]
 - [x] [[Negotiation-Tactics|협상 전략과 기대치 관리 (상대 선투자, 약자의 시간 주도권, 약간 손해 보는 5대5, 만족=결과-기대)]]
-- [x] [[Radical-Candor-Feedback|용기있는 솔직함과 피드백 (Radical Candor 2x2, 넷플릭스 4A, I-message 5단계, 지적 솔직함)]]
+- [x] [[Radical-Candor-Feedback|Radical Candor와 행동 기반 피드백 (2x2, 피드백 루프, CORE)]]
 - [x] [[Developer-Communication|개발자 커뮤니케이션 (정확성 화법의 간극, 메신저 응답 기대, 첫 질문은 왜, 기술 부채 번역, 갈등 다루기, 회의 침묵)]]

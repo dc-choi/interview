@@ -13,8 +13,8 @@ aliases: ["Execution Leadership", "실행 리더십"]
 
 - [[Own-Your-Core|코어는 직접 소유하라]] — 코어 위임 리스크, 역량 직접 습득, 즉시 실행
 - [[DRI-Delegation-Culture|DRI와 권한 위임 문화]] — 분산된 의사결정, 보고 제거로 얻는 실행 속도
-- [[Radical-Focus|파격적 집중]] — 임팩트 단일 기준, 필수적인 일 하나만 뽑는 포기
-- [[Execution-Mindset|불굴의 실행]] — 결과를 내는 마인드셋, 핑계 4종 이겨내기
+- [[Radical-Focus|우선순위 집중과 WIP 제한]] — 가치와 위험을 비교하고 동시에 시작하는 일 통제
+- [[Execution-Mindset|실행 결과를 닫는 루프]] — 목표, 제약, 실행과 결과 검증 연결
 
 ## 상위 문서
 

@@ -3,7 +3,7 @@ tags: [database, nosql, mongodb, schema-design, document-database]
 status: done
 category: "데이터&저장소(Data&Storage)"
 aliases: ["MongoDB Schema Design", "MongoDB 스키마 설계", "Embed vs Reference"]
-verified_at: 2026-08-05
+verified_at: 2026-08-27
 ---
 
 # MongoDB 스키마 설계
@@ -23,8 +23,8 @@ MongoDB는 **도큐먼트 지향 DB** — 정규화된 테이블, 조인이 아�
 
 가장 우선 고려 사항. "어떤 화면, API가 이 데이터를 읽는가"를 먼저 파악.
 
-- **같이 조회되는 데이터는 같은 문서로** — 한 번의 `findOne()`으로 필요한 정보가 나오도록
-- **읽기/쓰기 비율** — 읽기 많음 → embed, 쓰기 많음 → reference
+- **같이 조회되고 같은 생명주기를 가진 데이터는 같은 문서를 우선 검토** — 한 번의 `findOne()`으로 필요한 정보가 나오도록
+- **읽기/쓰기 모양** — 함께 읽고 한 문서로 원자 갱신할 데이터는 embed에 유리하고, 독립적으로 자주 바뀌거나 경계 없이 커지는 데이터는 reference에 유리
 - **빈도와 지연 요구** — 밀리초 내 응답이 필요한 경로와 백오피스 리포트 경로를 구분
 
 ### 2. Relation (관계)
@@ -36,21 +36,21 @@ RDB는 FK 조인이 기본, MongoDB는 선택지가 둘.
 
 ### 3. Cardinality (관계의 크기)
 
-- **One-to-One** — 거의 항상 embed (예: user ↔ profile)
+- **One-to-One** — 함께 읽고 같은 생명주기를 가지면 embed가 유리 (예: user ↔ profile)
 - **One-to-Few** (수십 이하, 크기 안정) — embed 유리 (예: user ↔ addresses)
 - **One-to-Many** (수백~수천) — 경우 따라. 배열이 무한 성장하면 reference
-- **One-to-Squillions** (수만~수백만) — 반드시 reference. 자식 쪽에 부모 ID를 저장(`comments.postId`)
+- **One-to-Squillions** (수만~수백만) — 상위 문서의 무제한 배열을 피하고 보통 자식 쪽에서 부모를 reference(`comments.postId`)
 - **Many-to-Many** — 한쪽에 ID 배열 두기, 양쪽 참조, 중간 컬렉션 중 선택
 
 ## Embed vs Reference 비교
 
 | 축 | Embed | Reference |
 |---|---|---|
-| 읽기 성능 | 빠름 — 한 번의 I/O로 완결 | 느림 — 추가 조회/`$lookup` 필요 |
-| 쓰기 비용 | 큰 문서 전체 재작성 경향 | 작은 문서 개별 업데이트 |
-| 일관성 | 원자성 보장(문서 단위 트랜잭션) | 여러 문서 갱신 시 멀티 문서 트랜잭션 필요 |
-| 크기 한도 | 16MB 문서, 무한 배열 위험 | 자유롭게 성장 |
-| 데이터 중복 | 있을 수 있음(수정 시 여러 곳 갱신 필요) | 없음 |
+| 읽기 경로 | 관련 데이터를 한 번의 문서 조회로 가져올 수 있음 | 관계 해석을 위한 추가 조회나 `$lookup`이 필요할 수 있음 |
+| 쓰기 비용 | 문서 크기와 배열 성장에 따라 이동, index와 write amplification 비용 증가 가능 | 작은 문서를 독립적으로 갱신할 수 있지만 여러 문서 조정 비용 발생 |
+| 일관성 | 한 문서 쓰기는 원자적 | 여러 문서에 걸친 불변식은 transaction이나 보상, 멱등 설계 필요 |
+| 크기 한도 | 16MB 문서, 무한 배열 위험 | 관계는 여러 문서로 성장 가능하지만 각 문서는 16MB 제한 |
+| 데이터 중복 | 있을 수 있음(수정 시 여러 곳 갱신 필요) | 정규화하면 줄지만 Extended Reference를 섞으면 생길 수 있음 |
 | 진화 | 필드 추가 쉬움 | 조인 스키마 변경 시 여러 컬렉션 동기 |
 
 ## 패턴 모음
@@ -120,22 +120,22 @@ MongoDB 문서는 최대 **16MB** (공식 규격 표기는 16 mebibytes, BSON �
 - **무한히 자라는 배열** → 문서가 16MB에 근접하며 장애
 - **ObjectId를 앱 외부에 노출** → 생성 시각 유추 가능, 보안, URL 미감
 - **인덱스 없이 `find` 남발** → collection scan
-- **모든 관계를 `$lookup`으로** — `$lookup`은 RDB의 인덱스 조인만큼 빠르지 않다. 같이 쓰면 embed, 분리되면 2-step read가 더 나을 때도
+- **모든 관계를 `$lookup`으로** — 비용은 join shape, foreign field index와 입력 문서 수에 따라 달라진다. 자주 함께 읽고 크기가 제한된 데이터는 embed를 검토하고, reference를 유지한다면 `explain()`으로 foreign index와 examined docs를 확인한다.
 
-## 실무 사례 — 문서 모델을 정규화 스키마로 되돌린 이관
+## 본인이 직접 수행한 경험을 공개 가능한 범위로 일반화한 사례 — 문서 모델을 정규화 스키마로 되돌린 이관
 
-재직 중 직접 수행한 사료 판매 중개 플랫폼의 MongoDB에서 MySQL로의 데이터 이관 사례다.
+스키마리스 문서 모델로 시작했지만, 정형 데이터와 관계 및 정합성 요구가 커져 관계형 DB로 이관한 사례다.
 
-- **상황**: 스키마리스 문서 모델로 시작했지만 정부 표준 DB의 정형 데이터를 함께 다뤄야 했고 관계와 정합성 요구가 커졌다. 스키마 없이 쌓인 데이터의 일관성 부채가 드러나면서 MongoDB에 쌓여 있던 약 100만 건을 MySQL로 옮기기로 했다.
+- **상황**: 스키마 없이 쌓인 데이터의 일관성 부채가 드러났고, 대량의 기존 문서를 관계형 모델로 옮길 필요가 생겼다.
 - **스키마 재설계**: 문서마다 필드 구성이 달라 그대로 컬럼으로 펼칠 수 없었다. 실제 적재된 문서에서 항상 존재하는 필드와 선택적으로만 나타나는 필드를 갈라내고, 배열로 중첩돼 있던 하위 항목은 별도 테이블과 외래 키로 분리해 정규화 스키마를 다시 정의했다. 스키마가 없었던 게 아니라 앱 코드가 암묵적으로 들고 있던 스키마를 문서에서 역으로 복원하는 작업이었다.
 - **이관 방식**: 한 번에 전량을 밀어 넣으면 실패 지점을 특정할 수 없어, 주기 배치로 구간을 끊어 순차 이관하는 도구를 직접 만들었다. 구간마다 원본 건수와 적재 건수, 키 매핑 결과를 대조하는 정합성 검증을 넣어 실패한 구간만 다시 처리할 수 있게 했다.
-- **결과**: 약 100만 건을 데이터 손실 없이 이관 완료했다. Embed로 한 문서에 묶여 있던 데이터를 조인으로 되돌리는 읽기 비용은 감수했고, 대신 관계와 무결성을 DB 제약으로 강제할 수 있게 됐다.
+- **결과와 한계**: 원본 건수, 적재 건수와 키 매핑을 구간마다 대조했고, 그 검증 범위에서 손실을 발견하지 않은 채 이관을 완료했다. Embed로 한 문서에 묶여 있던 데이터를 조인으로 되돌리는 읽기 비용은 감수했고, 대신 관계와 무결성을 DB 제약으로 강제할 수 있게 됐다.
 
 ## 선택 트리(간단판)
 
-1. **같이 읽히는가?** → embed
-2. **배열이 무한 성장?** → reference
-3. **원자 갱신이 필요?** → embed(단일 문서)
+1. **같이 읽히고 같은 생명주기인가?** → embed 우선 검토
+2. **배열이 경계 없이 성장하는가?** → reference나 subset, bucketing 검토
+3. **한 문서 원자 갱신으로 불변식을 지킬 수 있는가?** → embed 우선 검토
 4. **여러 부모와 공유?** → reference + (Extended Reference로 읽기 최적화)
 5. **16MB 근접 위험?** → bucketing 또는 subset
 
@@ -150,9 +150,13 @@ MongoDB 문서는 최대 **16MB** (공식 규격 표기는 16 mebibytes, BSON �
 
 ## 출처
 - [MongoDB Docs — MongoDB Limits and Thresholds (16 mebibytes, 중첩 100 레벨)](https://www.mongodb.com/docs/manual/reference/limits/)
+- [MongoDB Docs — $lookup (aggregation stage)](https://www.mongodb.com/docs/manual/reference/operator/aggregation/lookup/)
 - [MongoDB Docs — ESR (Equality, Sort, Range) Guideline](https://www.mongodb.com/docs/manual/tutorial/equality-sort-range-guideline/)
 - [MongoDB Docs — Transactions (레플리카셋 4.0, 샤드 클러스터 4.2)](https://www.mongodb.com/docs/manual/core/transactions/)
 - [MongoDB Docs — Specify Validation Level](https://www.mongodb.com/docs/manual/core/schema-validation/specify-validation-level/)
+- [MongoDB Docs — Embedded Data in Your MongoDB Schema](https://www.mongodb.com/docs/manual/data-modeling/embedding/)
+- [MongoDB Docs — Reference Data in Your MongoDB Schema](https://www.mongodb.com/docs/manual/data-modeling/referencing/)
+- [MongoDB Docs — Avoid Unbounded Arrays](https://www.mongodb.com/docs/manual/data-modeling/design-antipatterns/unbounded-arrays/)
 - [G마켓 기술블로그 — MongoDB 스키마 설계 가이드](https://dev.gmarket.com/32)
 
 ## 관련 문서

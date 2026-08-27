@@ -3,7 +3,7 @@ tags: [aws, elb, alb, nlb, gwlb, load-balancer, infrastructure]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["ELB", "AWS ELB", "Elastic Load Balancer", "ALB", "NLB", "GWLB"]
-verified_at: 2026-07-21
+verified_at: 2026-08-27
 ---
 
 # ELB, Elastic Load Balancer
@@ -51,20 +51,20 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 
 ## NLB — Network Load Balancer
 
-**Layer 4** (TCP/UDP/TLS) 로드밸런서. 초저지연, 고정 IP가 필요한 워크로드용.
+**Layer 4** (TCP, UDP, TLS, QUIC) 로드밸런서. 초저지연, 고정 IP가 필요한 워크로드용.
 
 | 속성 | 내용 |
 |---|---|
 | 계층 | L4 |
-| 프로토콜 | TCP, UDP, TCP_UDP, TLS |
+| 프로토콜 | TCP, UDP, TCP_UDP, TLS, QUIC, TCP_QUIC |
 | 라우팅 기준 | 프로토콜, 5-tuple(Src IP, Port, Dst IP, Port, Proto) + TCP 시퀀스 |
 | 동작 | 연결 또는 흐름 단위 해시로 대상을 선택하는 L4 부하분산 |
-| 클라이언트 IP | 대상 유형과 프로토콜에 따라 원본 IP 보존을 지원하며, 필요한 메타데이터는 Proxy Protocol v2로 전달 가능 |
+| 클라이언트 IP | 대상 유형과 프로토콜에 따라 원본 IP 보존을 지원하며, 지원되는 경로에서는 Proxy Protocol v2로 메타데이터 전달 가능 |
 | Public IP | **고정** — AZ별로 Elastic IP 할당 가능 |
 | Cross-Zone | 기본 비활성 (활성 시 AZ 간 데이터 처리 요금 부과) |
 | SSL Offload | TLS 리스너 사용 시 가능 |
 
-**선택 기준**: UDP 트래픽, AZ별 고정 IP 또는 Elastic IP 요구, 높은 처리량과 낮은 지연이 중요한 게임, IoT 등.
+**선택 기준**: UDP 또는 QUIC 트래픽, AZ별 고정 IP 또는 Elastic IP 요구, 높은 처리량과 낮은 지연이 중요한 게임, IoT 등.
 
 ## GWLB — Gateway Load Balancer
 
@@ -80,28 +80,26 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 | 항목 | ALB | NLB | GWLB |
 |---|---|---|---|
 | OSI 계층 | L7 | L4 | L3 |
-| 프로토콜 | HTTP/HTTPS/gRPC | TCP/UDP/TLS | IP (Geneve) |
+| 프로토콜 | HTTP/HTTPS/gRPC | TCP/UDP/TCP_UDP/TLS/QUIC/TCP_QUIC | IP (Geneve) |
 | 라우팅 룰 | Host, Path, Header 등 | 5-tuple | 패킷 단위 |
-| 클라이언트 IP 보존 | X-Forwarded-For | 원본 보존 | 원본 보존 |
-| Public IP | 유동 | **고정** | N/A |
+| 클라이언트 IP 보존 | `X-Forwarded-For` | 대상 유형과 프로토콜에 따라 기본값과 지원 조건이 다름 | 원본 보존 |
+| 고정 주소 | DNS endpoint, EIP 직접 연결 불가 | AZ별 고정 IP, 인터넷 연결형은 EIP 선택 가능 | N/A |
 | 주 용도 | 웹, API, MSA | 게임, IoT, 고정IP 요건 | 3rd-party 보안 어플라이언스 |
 
-## 실무 사례 — ALB와 NLB 병행 구성
+## 본인이 직접 수행한 경험을 공개 가능한 범위로 일반화한 사례 — ALB와 NLB 병행 구성
 
-실무에서 직접 설계한 IoT 재고관리(VMI) 서비스의 인프라 전환 사례다.
+정적 리소스와 API가 같은 실행 자원을 경쟁해 실시간 요청의 지연 위험이 커진 서비스에서, 정적 리소스를 CDN으로 분리하고 웹 경로를 ALB 뒤의 실행 환경으로 옮겼다. 필요한 운영 역량과 배포 복잡도를 비교해 실행 환경을 선택했다.
 
-- **상황**: 단일 EC2 한 대에서 Nginx와 애플리케이션 컨테이너를 함께 돌리다 트래픽이 늘면서 CPU와 메모리가 급등했다. 정적 리소스 응답과 API가 같은 호스트 자원을 경합해 IoT 디바이스의 실시간 요청이 타임아웃됐다.
-- **분리**: 정적 리소스는 [[CloudFront]]로 캐싱해 원본에서 걷어내고, 웹과 API 트래픽은 ALB로 분산한 뒤 [[ECS|ECS Fargate]]에서 실행하도록 옮겼다. 오케스트레이터로 EKS도 검토했지만 인원이 적은 조직에서 Kubernetes 운영 부담과 러닝커브를 감당할 근거가 없어 ECS로 결정했다.
-- **NLB를 따로 둔 이유**: 현장 IoT 디바이스는 펌웨어에 서버 IP가 하드코딩된 상태로 배포돼 있어 목적지가 고정 IP여야 했다. ALB는 공인 IP가 유동이라 이 요구를 만족할 수 없어, 디바이스 수집 경로만 Elastic IP를 붙인 NLB로 분리했다. 웹은 경로 기반 L7 라우팅이 필요해 ALB, 디바이스는 고정 IP가 필요해 NLB로, 성격이 다른 두 트래픽에 각각 다른 로드밸런서를 붙인 구성이다.
-- **대안 검토**: 펌웨어를 도메인 기반 통신으로 바꾸면 NLB 없이 ALB 하나로 끝나지만, 이미 배포된 디바이스의 OTA 업데이트 비용과 실패 리스크가 커서 인프라 쪽에서 흡수하는 편이 합리적이었다.
-- **결과**: ECS Service의 Rolling Update로 무중단 배포가 가능해졌고, 오토스케일링으로 트래픽 증가에 자동 대응하게 됐다.
+일부 클라이언트가 고정 Elastic IP를 직접 요구해 ALB만으로는 요구를 충족할 수 없었다. 고정 IP가 필요한 경로는 활성화한 각 가용 영역의 NLB 노드에 Elastic IP를 연결해 IP 집합을 제공하고, 경로 기반 L7 라우팅이 필요한 웹 경로는 ALB로 뒀다. 클라이언트가 장애 조치에 필요한 모든 고정 IP를 수용하는지도 함께 확인해야 한다. 클라이언트를 도메인 기반 통신으로 바꾸는 대안도 검토했지만, 이미 배포된 클라이언트의 변경 비용과 실패 위험을 고려해 인프라에서 요구를 흡수했다.
+
+그 결과 배포 중 중단 위험을 낮추고 트래픽 증가에 대응할 수 있는 실행 경로를 마련했다. 다만 rolling update와 autoscaling만으로 무중단을 보장하지 않으므로 readiness, connection draining, 오류율과 중단 요청으로 실제 동작을 계속 검증해야 한다.
 
 ## Sticky Session (스티키 세션)
 
 특정 클라이언트의 후속 요청을 **이전에 처리한 동일 EC2**로 다시 보내는 기능.
 
 - ALB: 쿠키 기반 (AWS 생성 쿠키 또는 애플리케이션 쿠키)
-- NLB: 소스 IP 기반
+- NLB: 활성화하면 소스 IP 기반. TLS와 QUIC 리스너에서는 지원하지 않음
 - 세션 상태를 서버 메모리에 두는 레거시 앱에 사용. 가능하면 **세션을 Redis, DynamoDB로 외부화**해 ELB는 무상태로 운영하는 게 모범 사례
 
 ## Cross-Zone Load Balancing (교차 영역 로드밸런싱)
@@ -124,7 +122,15 @@ L7(ALB)에서 클라이언트 원본 IP를 EC2가 알 수 있도록 ELB가 자�
 X-Forwarded-For: <client-ip>, <proxy1-ip>, <proxy2-ip>
 ```
 
-L4(NLB)는 헤더가 없는 대신 **Source IP 자체를 보존**하거나 Proxy Protocol v2로 전달.
+L4(NLB)는 HTTP 헤더를 주입하지 않는다. 원본 IP 보존 기본값은 대상 유형과 대상 그룹 프로토콜에 따라 다르다.
+
+| 대상 유형과 프로토콜 | 기본값과 변경 가능 여부 |
+|---|---|
+| `instance` 대상 | 기본 활성. UDP, TCP_UDP, QUIC, TCP_QUIC은 비활성화할 수 없음 |
+| `ip` 대상의 TCP, TLS | 기본 비활성. 대상이 같은 VPC 또는 같은 리전의 피어링 VPC에 있는 등 지원 조건을 만족하면 `preserve_client_ip.enabled`로 변경 가능 |
+| `ip` 대상의 UDP, TCP_UDP, QUIC, TCP_QUIC | 활성화되며 비활성화할 수 없음 |
+
+직접 보존할 수 없는 구성은 지원되는 TCP 계열 경로에서 Proxy Protocol v2를 검토할 수 있다. 애플리케이션이 이진 헤더를 해석해야 하며 QUIC 트래픽은 Proxy Protocol v2를 지원하지 않는다.
 
 ## Connection Draining (Deregistration Delay)
 
@@ -134,7 +140,7 @@ L4(NLB)는 헤더가 없는 대신 **Source IP 자체를 보존**하거나 Proxy
 
 - **ALB vs NLB vs GWLB** 선택 — L7 라우팅 = ALB, 고정 IP/UDP = NLB, 가상 어플라이언스 = GWLB
 - **Cross-Zone**: ALB는 기본 활성, **NLB는 기본 비활성** + 활성 시 AZ 간 데이터 요금
-- **클라이언트 IP**: ALB는 `X-Forwarded-For`, NLB는 원본 보존
+- **클라이언트 IP**: ALB는 `X-Forwarded-For`, NLB는 대상 유형과 프로토콜별 `preserve_client_ip.enabled` 기본값 및 Proxy Protocol v2 지원을 확인
 - **NLB만 고정 IP**(Elastic IP 할당 가능) — IP 화이트리스트 시나리오
 - **Sticky Session**: ALB는 쿠키, NLB는 소스 IP. 외부 세션 저장소 권장
 - **Connection Draining**은 진행 중 요청 종료를 돕지만 무중단을 단독 보장하지 않음
@@ -144,6 +150,7 @@ L4(NLB)는 헤더가 없는 대신 **Source IP 자체를 보존**하거나 Proxy
 ## 출처
 - [Elastic Load Balancing 작동 방식](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html)
 - [Classic Load Balancer 마이그레이션](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/migrate-classic-load-balancer.html)
+- [Network Load Balancer 리스너](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html)
 - [Network Load Balancer 대상 그룹 속성](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/edit-target-group-attributes.html)
 
 ## 관련 문서

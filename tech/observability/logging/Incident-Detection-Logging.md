@@ -19,7 +19,7 @@ aliases: ["장애 감지와 로깅"]
 
 ### 감지도구예시
 - **ES Watcher + Grafana**: 로그 기반 알림과 메트릭 시각화
-- **VivaSystem Fault Injection**: 장애 주입을 통한 사전 감지 테스트
+- **장애 주입 도구**: 장애 주입을 통한 사전 감지 테스트
 
 ## 로깅과메트릭
 
@@ -42,59 +42,47 @@ aliases: ["장애 감지와 로깅"]
 - 내가 배포한 작업의 임팩트를 측정하고 명확히 보여줄 수 있는가?
 - 어느 정도 개선되었는가?
 - 결과가 예상과 일치하는가?
-- **측정할 수 없으면 개선했다고 말할 수 없다**
+- 개선을 주장하려면 정량 지표, 사용자 피드백이나 재현 가능한 관찰처럼 판단 가능한 근거가 필요하다. 근거가 아직 없으면 구현 완료와 개선 검증을 구분한다.
 
 ## 모니터링 스택 선택
 
-> 아래 절부터는 세미나 내용이 아니라, 재직 중 IoT 재고관리(VMI) 서비스에 직접 구축한 관측 스택 기록이다.
+아래는 본인이 직접 수행한 경험을 공개 가능한 범위로 일반화한 사례다. 스택은 특정 서비스의 과거 점수표가 아니라 운영 인력, 예상 사용량, 데이터 보존, 검색 요구, 벤더 종속과 대응 속도를 함께 비교해 골랐다.
 
-### 핵심 축 비교 (당시 평가 일부)
-| 스택 | TCO (0.25) | 메트릭 생태계 (0.15) | 벤더 종속 (0.10) |
-|------|-----------|-------------------|----------------|
-| **GPL (Grafana+Prometheus+Loki)** | 5 | 5 | 5 |
-| ELK | 3 | 4 | 4 |
-| Datadog | 2 | 5 | 2 |
-| CloudWatch | 3 | 3 | 2 |
+- **Prometheus, Grafana, Loki 계열**: 유연한 메트릭과 로그 조합을 만들 수 있지만 수집, 보존과 고가용성을 직접 운영한다.
+- **ELK 계열**: 로그 검색과 집계에 강점이 있지만 데이터량에 따라 운영 복잡도와 비용을 검토한다.
+- **상용 APM**: 빠른 도입과 풍부한 기능이 장점이지만 사용량 과금과 데이터 경계를 확인한다.
+- **클라우드 기본 도구**: 리소스 메트릭과 서비스 통합에는 유리하지만 커스텀 지표, 고카디널리티와 알림 운영 요구를 함께 본다.
 
-당시 선택의 일부 평가 축만 남아 있어 위 가중치 합은 0.50이다. 누락 축을 복원할 근거가 없으므로 재현할 수 없는 총점은 사용하지 않고, 운영 인력과 예상 사용량을 포함한 당시 조건에서 GPL을 선택했다고 설명한다.
+## 참조 아키텍처
 
-- ELK: 로그 검색/집계는 강력하지만 동일 데이터량에서 운영 복잡도와 비용이 큼
-- Datadog, NewRelic: 기능은 최고지만 트래픽이 늘수록 사용량 단가가 그대로 비용 증가로 이어짐
-- CloudWatch: AWS 리소스 메트릭 자체는 충분하지만 당시 비교에서는 커스텀 메트릭 비용과 고카디널리티 제약, PromQL 수준의 레이블 기반 다차원 쿼리 부재, Logs Insights 쿼리 UX, 알림 라우팅과 억제의 추가 구성을 비용으로 봤다
-
-## 모니터링 아키텍처
+이 경험에서는 프런트 오류 추적, 요청 식별자와 구조화 로그, 메트릭 수집, 로그 라우팅과 알림을 연결해 고객 문의 외에도 시스템 신호로 이상을 확인하고 배포 전후의 가설을 비교할 수 있게 했다. 아래는 제품명, 보존 기간과 운영 토폴로지를 제외한 계층별 판단이다.
 
 | 계층 | 구성 요소 | 역할 |
 |------|---------|------|
-| **FE** | Sentry SDK → Sentry 서버 | 브라우저 JS 에러, 네트워크 지연, 퍼포먼스 트레이스 자동 수집 |
-| **BE (App)** | TraceIdMiddleware | 이름과 달리 분산 trace가 아니라 요청마다 고유 `x-request-id`를 생성해 응답과 JSON 로그를 요청 단위로 연결 |
-| | HttpLoggingInterceptor | 요청/응답/예외를 한 지점에서 구조적으로 로깅 |
-| | Winston JSON Logger | flat JSON line 포맷으로 기록 |
-| | MetricsInterceptor + prom-client | method, 정규화한 route, status label과 request-duration histogram을 Prometheus 형식으로 노출 |
-| **Log Routing (당시)** | FireLens(Fluent Bit) → Loki, 호스트 로그는 Promtail → Loki | stdout 수집, JSON 파싱과 정규화, 라벨 구성, 배치와 라우팅 |
-| **Metrics Plane** | Prometheus + Thanos Sidecar → S3, Querier + Store Gateway | Sidecar가 블록을 업로드하고 Querier가 현재 데이터와 Store Gateway의 과거 블록을 통합 조회 |
-| **Alerting** | Grafana Alerting → Slack | 서비스와 인프라의 정적 임계 경보 → 서비스/팀별 라우팅 |
+| **FE** | 오류 추적 SDK | 브라우저 오류, 네트워크 지연과 성능 trace 수집 |
+| **BE (App)** | request ID, 구조화 로거와 메트릭 미들웨어 | 요청과 로그 연결, 요청과 예외 기록, route와 status 기반 지표 노출 |
+| **Log Routing** | 지원되는 수집기와 로그 저장소 | stdout 수집, JSON 파싱, 라벨 정규화와 라우팅 |
+| **Metrics Plane** | Prometheus 호환 수집기와 장기 저장소 | 단기 조회, 장기 보존과 통합 질의 |
+| **Alerting** | 알림 엔진과 온콜 채널 | 사용자 영향과 인프라 신호의 라우팅, 억제와 중복 제거 |
 
-Promtail은 2026-03-02 EOL이다. 위 구성은 당시 경험이고, 신규 구성은 Grafana Alloy 또는 FireLens/Fluent Bit 같은 지원 클라이언트를 검토한다. 현재 운영 환경의 이전 완료 여부는 확인되지 않았다. [[Loki]]
+수집기와 저장소의 지원 수명, 보존 정책과 데이터 경계는 배포 전에 현재 공식 문서로 확인한다. [[Loki]]
 
-## 당시 운영한 정적 임계 경보
+## 정적 임계 경보 설계
 
-지속 조건(`for`)으로 단발성 스파이크를 걸렀고, 지속 시간은 메트릭마다 다르게 뒀다. 이는 정적 임계 경보이며 `for`를 붙였다는 이유만으로 SLO 경보가 되지는 않는다. Error rate와 latency는 사용자 영향 SLI 후보이고, Slow SQL, Event Loop Lag, CPU와 Replica Lag는 원인 또는 증상 지표다. SLO로 개선한다면 목표 기간과 에러 버짓을 정한 뒤 multi-window, multi-burn-rate를 별도로 적용한다. 각 임계값의 근거와 나머지 알람은 [[Alert-Fatigue|Alert fatigue 방지]], SLO 경계는 [[SLI-SLO|SLI, SLO, Error Budget]]에 정리했다.
+지속 조건(`for`)으로 단발성 스파이크를 걸러도 정적 임계 경보가 SLO 경보가 되는 것은 아니다. 실제 규칙을 만들 때 Error rate와 latency는 사용자 영향 SLI 후보로, slow query, event loop lag, CPU와 replica lag는 원인 또는 증상 지표로 나눴다. SLO로 개선한다면 목표 기간과 에러 버짓을 정한 뒤 multi-window, multi-burn-rate를 별도로 적용한다. 각 임계값은 서비스 baseline과 사용자 영향 근거를 함께 남긴다. [[Alert-Fatigue|Alert fatigue 방지]], [[SLI-SLO|SLI, SLO, Error Budget]]
 
-| 메트릭 | 임계값 | 지속 시간 |
-|--------|--------|----------|
-| Error rate | 1% | 5분 |
-| Slow SQL | 500ms+ | 3회 지속 |
-| Event Loop Lag (1단) | 100ms | 3분 |
-| Event Loop Lag (2단) | 250ms | 1분 |
-| RDS CPU | 75% | 5분 |
-| Replica Lag (주의) | 5초 | 3분 |
-| Replica Lag (경고) | 10초 | 1분 |
+| 메트릭 | 설계 기준 |
+|--------|----------|
+| Error rate, latency | 사용자 영향 baseline, 최소 트래픽과 지속 시간 |
+| Slow query | query class별 정상 범위, 반복 횟수와 조사 가능성 |
+| Event loop lag | 런타임 특성, backlog와 GC 영향 |
+| CPU, connection, memory | 포화 전 여유와 autoscaling 또는 완화 수단 |
+| Replica lag | read consistency 계약과 허용 가능한 freshness |
 
 ## 보존 전략
-- **메트릭**: Prometheus 단기 보존(15일) → Thanos Sidecar가 S3로 업로드하고 Store Gateway가 과거 블록을 제공하며 Querier가 통합 조회
-- **로그**: 당시 기록에는 Loki 30일 핫 보관과 S3 콜드 보관으로 남아 있지만 자동 전환 메커니즘과 정확한 저장 경계는 보존되지 않았다. S3가 Loki object store였다면 Ingester가 수집 시점부터 청크를 flush한다. 다만 당시 Loki 버전, index schema, `retention_enabled`, `retention_period` 설정이 남아 있지 않아 30일 보존을 Compactor가 적용했는지는 확인할 수 없다. 별도 archive였다면 export, lifecycle과 복원 경로가 추가로 필요하다
-- **로그 폭증 시**: 당시 Promtail의 `batchSize`/`batchWait`와 Loki ingestion rate limit 조정 + log sampling. 신규 수집기는 Alloy나 Fluent Bit의 대응 설정을 확인
+- **메트릭**: 단기 운영 조회와 장기 분석의 보존 목적을 분리하고, 장기 저장소와 통합 질의가 필요한지 결정한다.
+- **로그**: hot 보관, archive, lifecycle과 복원 경로를 함께 설계한다. 정확한 저장 경계와 보존 기간은 규정과 조사 요구에 맞춰 정한다.
+- **로그 폭증 시**: 수집기의 batch와 rate limit, log sampling, drop 정책을 조정하되 중요한 오류와 감사 로그를 잃지 않도록 검증한다.
 
 ## 카디널리티 관리
 - route/path 라벨 정규화 (URL 파라미터를 `:id`로 치환)
@@ -103,9 +91,9 @@ Promtail은 2026-03-02 EOL이다. 위 구성은 당시 경험이고, 신규 구�
 - 알람과 대시보드에서 쓰지 않는 라벨과 필드는 수집 단계에서 drop (`metric_relabel_configs`) — 저장 전에 잘라야 비용과 OOM을 동시에 막는다 ([[Cardinality]])
 
 ## 면접포인트
-- "장애를 어떻게 감지하나?" → 당시에는 Error rate, Slow SQL, Event Loop Lag 등의 정적 임계 경보와 `for` 지속 조건으로 시스템적으로 감지. SLO 경보는 사용자 영향 SLI와 burn rate를 별도로 설계
-- "로깅 전략?" → flat JSON line 포맷 + requestId 전파 + 구조적 필터링(requestId/route/level). 당시에는 분산 trace 파이프라인이 아니었음
-- "배포 후 무엇을 확인하나?" → 임팩트 측정, 예상 vs 실제 비교. Grafana 대시보드에서 배포 전후 메트릭 비교
+- "장애를 어떻게 감지하나?" → Error rate, Slow SQL, Event Loop Lag 등의 정적 임계 경보와 `for` 지속 조건을 조합한다. SLO 경보는 사용자 영향 SLI와 burn rate를 별도로 설계한다.
+- "로깅 전략?" → flat JSON line 포맷, requestId 전파와 구조적 필터링(requestId/route/level)을 사용한다. 분산 추적이 없을 때도 원인 예외와 요청 맥락을 남긴다.
+- "배포 후 무엇을 확인하나?" → 사전에 둔 가설과 실제 지표를 비교하고, 배포 전후 대시보드 변화를 확인한다.
 - "Prometheus pull 방식의 한계?" → 스크랩 전에 끝나는 서비스 수준 batch job은 Pushgateway를 검토. 일반적인 단명 컨테이너는 서비스 디스커버리나 지원되는 수집 에이전트로 관측하고 Pushgateway에 무차별 push하지 않음
 - "Thanos 없이 Prometheus만?" → Prometheus의 로컬 보존 기간은 설정할 수 있지만 단일 인스턴스 디스크와 조회 범위에 묶인다. Thanos로 object storage 장기 보관, 글로벌 조회와 HA 구성을 더함
 

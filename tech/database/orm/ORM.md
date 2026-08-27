@@ -1,7 +1,7 @@
 ---
 tags: [database, orm, typeorm, prisma, mikroorm, nestjs, comparison, adoption]
 status: done
-verified_at: 2026-08-13
+verified_at: 2026-08-27
 category: "Data & Storage"
 aliases: ["ORM", "TypeORM vs Prisma", "Prisma vs TypeORM vs MikroORM", "NestJS ORM"]
 ---
@@ -132,15 +132,13 @@ N+1은 부모 N건을 읽은 뒤 각 부모의 relation을 따로 읽어 query�
 - 복잡한 read model은 QueryBuilder, raw SQL 또는 별도 query service를 사용한다. raw SQL로 내려갈 때는 ORM이 대신 해주던 파라미터 바인딩이 사라지므로 값을 문자열로 이어붙이지 않는다([[SQL-Injection]]).
 - 실제 SQL 수, 실행 계획과 반환 row 수로 개선 여부를 검증한다.
 
-### 본인 실무 사례 — Prisma relationLoadStrategy
+### 본인이 직접 수행한 경험을 공개 가능한 범위로 일반화한 사례 — Prisma relationLoadStrategy
 
-실무에서 직접 겪은 사례다. IoT 재고관리(VMI) 서비스에서 relation join이 필요한 기능을 추가한 뒤 특정 목록 API가 평균 100ms에서 최대 약 1,000ms까지(약 10배) 느려졌다. query log를 보니 ORM이 join 하나를 만드는 대신 relation마다 별도 query를 순차 발행해 한 요청에 4개가 나가고 있었다.
+relation join이 필요한 기능을 추가한 뒤 한 목록 API의 지연이 커졌고, query log에서 relation을 순차 조회하는 query shape를 확인했다. raw SQL로 내려가는 선택지도 검토했지만 타입 안전성과 유지보수 비용을 잃는 대가가 커 보류하고, `relationLoadStrategy`를 적용하기 전에 실제 생성 SQL과 실행 계획을 비교했다.
 
-raw query로 내려가는 선택지를 먼저 검토했지만 type 안전성과 유지보수 비용을 잃는 대가가 커서 보류하고, 공식 문서에서 `relationLoadStrategy` 옵션을 찾았다. `join`으로 바꾸면 DB 수준 join이 될 것이라 예상했는데 실제 생성 SQL은 subquery와 JSON 함수로 relation을 묶는 형태였다. 예상과 달랐기 때문에 생성되는 SQL 형태를 먼저 확인하고, 두 형태의 실행 계획을 비교해 순차 4-query 방식보다 낫다는 것과 실측 응답 시간이 줄어드는 것을 확인한 뒤 적용했다.
+`join` 옵션은 당시 사용한 connector에서 correlated subquery와 JSON 집계를 이용해 relation을 묶는 SQL을 만들었다. Prisma의 SQL 형태는 connector에 따라 다르며, PostgreSQL에서는 `LATERAL JOIN`, MySQL에서는 correlated subquery를 사용한다. 당시 공식 문서에서는 이 기능이 Preview였고 `relationJoins` feature flag와 지원 connector 조건이 있었으므로 사용한 Prisma 버전의 계약을 함께 확인했다. 예상한 JOIN 모양과 다르더라도, 순차 조회보다 반환 row 수와 응답 시간이 나아지는지를 같은 조건에서 확인한 뒤 적용했다. 결과적으로 여러 relation query를 하나의 복합 query로 통합해 응답 지연을 유의미하게 줄였고, raw SQL로 내려가지 않고 ORM 경계 안에서 개선을 마쳤다.
 
-결과는 요청당 4개 query가 1개 복합 subquery로 통합되고, 적용 전 대비 실측 응답 시간이 82~90% 줄었다. raw query로 내려가지 않고 ORM 안에서 끝났다.
-
-배운 점은 옵션 이름이 생성 SQL의 형태를 보장하지 않는다는 것이다. `join`이라는 이름만 믿었다면 검증 없이 적용했을 것이고, 반대로 예상과 다르다는 이유로 되돌렸다면 더 나은 계획을 버릴 뻔했다. 판단 근거는 옵션 이름이 아니라 실행 계획이다.
+Prisma 버전, 데이터베이스 커넥터와 query shape에 따라 생성 SQL은 달라진다. 따라서 `join` 같은 옵션 이름이 아니라 실제 SQL, 실행 계획과 운영 데이터 분포의 회귀 관측을 판단 근거로 삼아야 한다.
 
 ## 관련 문서
 - [[Prisma-Query-Performance|Prisma 쿼리 계측과 relation 로딩 전략]]
@@ -169,6 +167,7 @@ raw query로 내려가는 선택지를 먼저 검토했지만 type 안전성과 
 - [TypeORM — Many-to-many relations](https://typeorm.io/docs/relations/many-to-many-relations/)
 - [TypeORM — Eager and Lazy Relations](https://typeorm.io/docs/relations/eager-and-lazy-relations/)
 - [Prisma — Introspection과 db pull](https://www.prisma.io/docs/orm/prisma-schema/introspection)
+- [Prisma — Relation queries](https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries)
 - [Prisma — Generating Prisma Client](https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/generating-prisma-client)
 - [Prisma — Databases supported by Prisma ORM](https://www.prisma.io/docs/orm/reference/supported-databases)
 - [Prisma — Type safety](https://docs.prisma.io/docs/orm/prisma-client/type-safety)

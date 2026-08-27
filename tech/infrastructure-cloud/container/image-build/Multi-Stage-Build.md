@@ -38,7 +38,7 @@ aliases: ["Multi-stage Build", "멀티스테이지 빌드"]
 
 Builder 단계:
 - 전체 workspace 의존성 설치 (`pnpm install --frozen-lockfile`)
-- 특정 앱만 빌드 (`pnpm turbo build --filter=@school/api`)
+- 특정 앱만 빌드 (`pnpm turbo build --filter=@workspace/api`)
 
 Runner 단계:
 - 프로덕션 의존성만 설치
@@ -58,14 +58,12 @@ Runner 단계:
 - production dependency 설치 옵션을 사용하고, 애플리케이션이나 라이브러리가 `NODE_ENV`를 해석할 때만 `NODE_ENV=production`을 명시. Node.js 자체가 이 값만으로 최적화되는 것은 아님
 - `.dockerignore`로 불필요한 파일(node_modules, .git 등) 제외
 
-## 실무 사례 — 909MB에서 513MB로
+## 본인이 직접 수행한 경험을 공개 가능한 범위로 일반화한 사례
 
-실무에서 직접 적용한 IoT 재고관리(VMI) 서비스의 NestJS 이미지 최적화 사례다.
-
-- **상황**: 단일 스테이지로 빌드한 이미지가 909MB였고, 빌드부터 ECS 배포 완료까지 3분 10초가 걸렸다. 배포가 잦은 시기에는 이 대기 시간이 그대로 개발 리드타임에 붙었다.
-- **조치**: `.dockerignore`로 `node_modules`, `.git`, 로컬 환경 파일을 빌드 컨텍스트에서 먼저 걷어내고, Dockerfile을 Builder와 Runner 두 스테이지로 나눠 Runner에는 빌드 산출물과 프로덕션 의존성만 남겼다.
-- **베이스 이미지 판단**: Alpine과 distroless도 후보였지만 bcrypt 같은 네이티브 모듈의 호환성 검증 비용이 커서 보류했다. 멀티스테이지만으로 목표한 크기에 도달해 베이스 교체까지 가지 않았다.
-- **결과**: 실측 기준 909MB에서 513MB로 43.6% 감소, 배포 3분 10초에서 2분 20초로 26.3% 단축. 이미지 리비전마다 용량이 줄어든 만큼 ECR 저장 비용도 함께 내려갔다.
+- **상황**: 단일 스테이지 이미지에 빌드 전용 파일과 의존성이 남아 이미지 전송과 배포 대기 시간이 길어졌다.
+- **조치**: `.dockerignore`로 불필요한 파일을 빌드 컨텍스트에서 제외하고, Dockerfile을 Builder와 Runner로 나눠 실행 이미지에는 빌드 산출물과 런타임 의존성만 남겼다.
+- **판단**: Alpine과 distroless도 검토했지만 네이티브 모듈과 운영 도구의 호환성을 추가 검증해야 했다. 멀티 스테이지만으로 목표를 충족해 베이스 이미지 교체는 보류했다.
+- **결과와 한계**: 실제 파이프라인에서 이미지 크기와 배포 대기 시간이 모두 줄었다. 다만 build cache, 네트워크, runner와 배포 방식에 따라 효과가 달라지므로 변경 전후 같은 CI/CD 조건에서 다시 측정한다.
 
 ## 면접 포인트
 
