@@ -17,4 +17,4 @@ aliases: ["비즈니스&제품(Business&Product)", "Business & Product"]
 - [[biz/analytics/분석(Analytics)|분석 & 관리 (Analytics)]] — North Star Metric, 리스크 관리, 콘텐츠 마케팅
 
 ## 현장사례
-- school-manage 프로젝트: 가톨릭 모임 운영 플랫폼 — 1인 개발 + 사업 기획 + PMF 검증. 2026-07-15 보고서상 모임 레코드 108개, 랜딩 누적 본당 85곳, 누적 학생 3,669명, 출석 약 22,051건, MAO 34곳
+- school-manage 개인 프로젝트: 소규모 커뮤니티 운영 도구를 통해 1인 개발, 사업 기획, PMF 검증의 판단 과정을 정리한다. 운영 수치, 가격과 세부 실행 계획은 비공개로 두고 지표 정의와 검증 상태를 기록한다.
