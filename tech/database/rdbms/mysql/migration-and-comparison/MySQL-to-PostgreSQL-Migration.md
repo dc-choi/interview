@@ -99,7 +99,7 @@ SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users));
 
 ## 스토리지 축소와의 차이
 
-- **스토리지 축소(동종)**: 네이티브 복제로 깔끔, 리스크 낮음, AUTO_INCREMENT 보정만 조심. 인프라 작업(→ [[RDS-Storage-Shrink-Runbook]]).
+- **스토리지 축소(동종)**: 데이터 변환 범위는 작지만 복제 토폴로지, 권한과 컷오버를 비운영 환경에서 먼저 검증해야 하는 후보 절차(→ [[RDS-Storage-Shrink-Runbook]]).
 - **MySQL→PG(이기종)**: DMS + 스키마 변환 + 앱 포팅이 진짜 일. 리스크 높고 롤백 어려움. 시퀀스 보정이 컷오버의 핵심. 사실상 앱 프로젝트로 일정 잡아야 함.
 
 둘 다 컷오버 사고는 결국 **시퀀스/AUTO_INCREMENT 보정 누락**과 **엔드포인트/커넥션 전환**에서 난다.

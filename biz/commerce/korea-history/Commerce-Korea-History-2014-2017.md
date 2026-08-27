@@ -1,6 +1,6 @@
 ---
 tags: [business, commerce, domain, history, mobile]
-status: done
+status: note
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Commerce Korea History 2014-2017", "한국 이커머스 역사 2014-2017", "배송혁명과 경계의 붕괴"]
 ---
@@ -8,6 +8,8 @@ aliases: ["Commerce Korea History 2014-2017", "한국 이커머스 역사 2014-2
 # 한국 이커머스 역사: 2014-2017
 
 [[Commerce-Korea-History|한국 이커머스 역사]]의 네 번째 시대 — 배송혁명과 핀테크, 이커머스 경계의 붕괴, 그리고 데이터 시대(이커머스 3.0)로의 과도기. 이전 시대는 [[Commerce-Korea-History-2010-2013|2010-2013]].
+
+> 출처 한계: 아래 사건과 수치의 현재 원천은 당시 시장을 정리한 개인 Brunch 연재다. 기업 공시, 국가통계와 법령 같은 1차 자료로 전수 대조하지 않았으므로 맥락 학습용으로만 사용하고, 면접이나 외부 글의 사실 근거로 직접 인용하지 않는다.
 
 ## 2014: 배송혁명과 핀테크의 도약
 

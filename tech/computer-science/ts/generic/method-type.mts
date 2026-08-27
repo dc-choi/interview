@@ -19,7 +19,7 @@ console.log(result2); // ['1.00', '2.00', '3.00']
 /**
  * myForEach()
  */
-const myForEach = <T>(arr: T[], fn: (item: T, index: number) => void): void => {
+const myForEach = <T,>(arr: T[], fn: (item: T, index: number) => void): void => {
     for (let index = 0; index < arr.length; index++) {
         fn(arr[index], index);
     }
@@ -48,7 +48,7 @@ console.log(sum); // 10
 /**
  * myFilter()
  */
-const myFilter = <T>(arr: T[], fn: (item: T) => boolean): T[] => {
+const myFilter = <T,>(arr: T[], fn: (item: T) => boolean): T[] => {
     const result: T[] = [];
 
     for (const element of arr) {
@@ -66,7 +66,7 @@ console.log(evens); // [2, 4, 6]
 /**
  * myFind()
  */
-const myFind = <T>(arr: T[], fn: (item: T) => boolean): T | undefined => {
+const myFind = <T,>(arr: T[], fn: (item: T) => boolean): T | undefined => {
     for (const element of arr) {
         if (fn(element)) {
             return element;
@@ -82,7 +82,7 @@ console.log(found); // 4
 /**
  * mySome()
  */
-const mySome = <T>(arr: T[], fn: (item: T) => boolean): boolean => {
+const mySome = <T,>(arr: T[], fn: (item: T) => boolean): boolean => {
     for (const element of arr) {
         if (fn(element)) {
             return true;
@@ -98,7 +98,7 @@ console.log(hasEven); // true
 /**
  * myEvery()
  */
-const myEvery = <T>(arr: T[], fn: (item: T) => boolean): boolean => {
+const myEvery = <T,>(arr: T[], fn: (item: T) => boolean): boolean => {
     for (const element of arr) {
         if (!fn(element)) {
             return false;

@@ -1,8 +1,8 @@
-const fibonacci = (n: number) => {
+const fibonacci = (n: number): number => {
     return n <= 1 ? n : fibonacci(n - 2) + fibonacci(n - 1);
 };
 
-const fibonacciWithMemo = (n: number, memo: object) => {
+const fibonacciWithMemo = (n: number, memo: Record<number, number>): number => {
     if (n <= 1) return n;
 
     if (memo[n] == null) {
@@ -12,7 +12,7 @@ const fibonacciWithMemo = (n: number, memo: object) => {
     return memo[n];
 };
 
-const fibonacciWithTable = (n: number) => {
+const fibonacciWithTable = (n: number): number => {
     if (n <= 1) return n;
 
     let table = [0, 1];

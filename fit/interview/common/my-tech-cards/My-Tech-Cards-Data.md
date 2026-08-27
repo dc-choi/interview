@@ -62,13 +62,17 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 
 > ⚠️ **상태 머신 8단계 흐름, visibility timeout, 알림 채널 중복 방지, SQS FIFO vs Pub/Sub, CDC vs Outbox**: [[My-Tech-Cards-Extended#카드 2 EventBridge+SQS 심화|Extended]]
 
-## 카드 3: 슬로우 쿼리 99.3% 개선 — 복합 인덱스 + 쿼리 재작성
+## 카드 3: 단일 쿼리 99.3% 개선 — 복합 인덱스 + 쿼리 재작성
 
-**결론**: 디바이스 최신 상태 조회 서브쿼리 **2000ms+** → 테이블 **100만 건, 850대 디바이스, 디바이스당 평균 1,240건**. EXPLAIN ANALYZE로 `ORDER BY created_at DESC, id DESC` 후 후보 행 filesort 확인 → **카디널리티 분석(디바이스 번호 선택도 약 0.12%)** → 복합 인덱스 `(device_number, created_at DESC, id DESC)` 설계 → index 순서로 최상단 레코드 접근. **쿼리당 15.4ms → 0.1ms**. 같은 equality 조건과 실행계획에서는 상위 1건에서 scan을 멈춰 후보 범위를 작게 유지한다. 단, 실제 비용은 B-Tree 깊이, cache, I/O와 데이터 분포에 따라 달라지므로 데이터가 늘면 다시 측정한다.
+**결론**: 테이블 **100만 건, 850대 디바이스, 디바이스당 평균 1,240건**에서 EXPLAIN ANALYZE로 `ORDER BY created_at DESC, id DESC` 후 후보 행 filesort를 확인했다. **카디널리티 분석(디바이스 번호 선택도 약 0.12%)** 뒤 복합 인덱스 `(device_number, created_at DESC, id DESC)`를 설계해 index 순서로 최상단 레코드에 접근했다.
+
+**측정 경계**: **2000ms+**는 특정 디바이스 최신 상태 조회에 포함된 서브쿼리의 관측값이고, **15.4ms → 0.1ms**는 쿼리 1건의 관측값이다. 같은 지표의 전후 비교로 제시하지 않는다. 850대를 순회한 배치 총시간 **5분 15초 → 약 2초**는 애플리케이션 처리와 네트워크 왕복을 포함한 별도 end-to-end 지표다.
+
+**쿼리 1건 결과**: 같은 equality 조건과 실행계획에서는 상위 1건에서 scan을 멈춰 후보 범위를 작게 유지했고, **15.4ms → 0.1ms**로 개선됐다. 실행 환경, cache 상태, 표본 수와 percentile은 기록되지 않아 이 수치를 다른 조건의 성능과 직접 비교할 수 없다. 데이터가 늘면 B-Tree 깊이, cache, I/O와 데이터 분포를 포함해 다시 측정한다.
 
 **복합 인덱스 컬럼 순서 룰**: 이 쿼리는 equality 조건인 `device_number`를 앞에 두고 정렬 키를 방향까지 맞춤. 일반화할 때는 **equality, range, 정렬, 그룹화와 covering 요구를 실제 쿼리로 함께 판단**하며, 높은 카디널리티만으로 순서를 정하지 않음.
 
-**검증**: Before/After P99, QPS 비교, 인덱스로 인한 쓰기 비용 모니터링.
+**추가 검증**: 같은 실행 환경과 cache 조건에서 Before/After P99, QPS를 비교하고, 인덱스로 인한 쓰기 비용을 모니터링한다.
 
 **도메인 매핑 placeholder**:
 - DPP → "제품 ID 단위 시계열 이벤트 조회가 핵심 — (tenant_id, product_id, event_time DESC) 복합 인덱스 1순위"
@@ -82,7 +86,7 @@ aliases: ["내 기술 답변 마스터 — 데이터/메시징", "My Tech Cards 
 
 ## 카드 4: Prisma → MySQL SubQuery API 응답 90% 개선
 
-**결론**: **Prisma는 lazy loading 없어서 전통적 N+1 아님**. 당시 사용한 Prisma 구성은 `relationJoins`를 활성화하지 않아 **app-level join 방식**으로 include 관계마다 별도 쿼리가 발생했고, 조인 엔티티가 늘며 **평균 100ms → 1000ms 저하**. 로그 분석으로 4개 개별 쿼리 확인 → 공식 문서에서 **`relationLoadStrategy: 'join'`** 발견 → 단일 correlated subquery + JSON 함수 형태로 통합해 **82~90% 성능 개선**. 현재 `relationJoins`를 활성화한 Prisma에서는 `join`이 기본이고 별도 쿼리는 `query` 전략이므로, 당시 버전과 설정에 한정한 경험이다. **옵션 이름이 생성 SQL 형태를 보장하지 않는다** — MySQL에선 DB-level JOIN이 아니라 subquery로 내려가는 것을 실행계획으로 확인하고 적용. (조건: `relationJoins`는 Preview 기능이라 `previewFeatures` 활성이 전제)
+**결론**: **Prisma는 lazy loading이 없어 전통적 N+1과는 다르다**. 당시 사용한 Prisma 버전과 설정에서는 `relationJoins` Preview 기능이 활성화되지 않아 include 관계를 여러 쿼리로 읽고 애플리케이션에서 결합했다. 조인 엔티티가 늘며 **평균 100ms → 1000ms 저하**했고, 로그 분석으로 4개 개별 쿼리를 확인했다. 이후 `relationJoins`를 활성화하고 **`relationLoadStrategy: 'join'`**을 적용해 단일 correlated subquery와 JSON 함수 형태로 통합했고 **82~90% 성능 개선**을 확인했다. 이 경험은 당시 버전과 설정에 한정한다. Prisma 공식 문서 기준 MySQL의 `join` 전략은 correlated subquery와 JSON aggregation을 사용한 단일 쿼리일 수 있으므로, 옵션 이름만으로 SQL `JOIN`을 가정하지 않고 생성 SQL과 실행계획을 확인한다. ([Prisma 관계 조회 공식 문서](https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries))
 
 **왜 ORM 안 버리고**: 타입 안정성, 마이그레이션 관리, 생산성. **성능 크리티컬한 부분만 Raw Query로 전환**. 대부분 CRUD는 ORM이 충분.
 

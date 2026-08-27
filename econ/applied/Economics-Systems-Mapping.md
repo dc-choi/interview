@@ -19,7 +19,7 @@ aliases: ["경제와 분산시스템 매핑", "Economics and Distributed Systems
 |---|---|---|
 | [[Interest-Rates-Monetary-Policy\|통화정책]] | 시차 있는 피드백 제어(PID) | 정책금리와 물가, 실물경제 사이에는 조건에 따라 달라지는 시차. 오버슈팅과 진동 |
 | 뱅크런 | cascading failure, thundering herd | 한 곳의 인출이 신뢰 붕괴로 번져 멀쩡한 노드까지 무너뜨림 |
-| 신용창조 | 레버리지, 증폭 | 본원통화가 대출 연쇄로 몇 배가 됨. 되감기면 디레버리징 |
+| 신용창조 | 레버리지, 증폭 | 은행 대출과 함께 예금이 만들어지고 상환하면 소멸한다. 자본, 유동성, 규제, 수익성과 차입 수요가 그 규모를 제약한다 |
 | [[Asset-Allocation-Diversification\|분산투자]] | redundancy, bulkhead 격리 | 상관 낮은 자산에 분산해 단일 장애의 전체 전파를 막음 |
 | 시장 가격발견 | 분산 합의, eventual consistency | 중앙 조정자 없이 수많은 참여자가 가격 하나로 수렴 |
 | [[Inflation\|기대인플레이션 앵커링]] | 제어 루프 안정 마진 | 기대가 풀리면(앵커 이탈) 시스템이 발산. 신뢰가 안정성 |
@@ -52,6 +52,7 @@ aliases: ["경제와 분산시스템 매핑", "Economics and Distributed Systems
 ## 출처
 
 - [Bank of England, About a rate of (general) interest: how monetary policy transmits](https://www.bankofengland.co.uk/-/media/boe/files/quarterly-bulletin/2024/about-a-rate-of-general-interest-how-monetary-policy-transmits.pdf)
+- [Bank of England, Money creation in the modern economy](https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy)
 - [FDIC, Options for Deposit Insurance Reform, Section 1: Executive Summary](https://www.fdic.gov/analysis/options-deposit-insurance-reforms/report/options-deposit-insurance-reform-section-1.pdf)
 
 ## 관련 문서

@@ -30,9 +30,9 @@ aliases: ["Content Marketing", "콘텐츠 마케팅"]
 콘텐츠가 검색엔진에서 발견되려면 SEO 전략이 필요하다.
 
 **Topic Cluster:**
-- **Pillar Page:** 핵심 주제의 종합 가이드 (3,000+ 단어)
+- **Pillar Page:** 검색 의도와 주요 하위 주제를 충분히 설명하는 핵심 주제의 종합 가이드. 정해진 최소 단어 수는 없다
 - **Cluster Content:** 하위 주제별 상세 콘텐츠
-- 내부 링크로 연결하여 검색 권위(authority) 구축
+- Pillar와 Cluster를 상호 링크해 사람과 검색엔진이 주제 관계를 이해하도록 돕는다
 
 **검색 의도(Search Intent) 4유형:**
 - Informational: "PMF란 무엇인가" (정보)
@@ -51,7 +51,7 @@ aliases: ["Content Marketing", "콘텐츠 마케팅"]
 | Linear | 모든 접점에 균등 배분 | 단순한 공정 평가 |
 | Time-decay | 전환에 가까울수록 높은 기여 | B2B 긴 세일즈 사이클 |
 
-**핵심:** 콘텐츠는 **복리(compound) 효과**가 있다. 좋은 글은 수년간 유기 트래픽을 생성하므로 6~12개월 단위로 평가한다.
+**핵심:** 콘텐츠는 게시 후에도 유기 트래픽을 만들 수 있지만 보편적인 평가 기간은 없다. 세일즈 사이클, 기존 트래픽과 표본 규모에 맞춰 관찰 기간과 성공 기준을 먼저 정한다.
 
 ## Community-Led Content
 
@@ -75,6 +75,11 @@ Q. 콘텐츠 마케팅은 어떻게 했는가?
 - 퍼널별 채널 배치: TOFU(인스타) / MOFU(입소문) / BOFU(사제 네트워크)
 - 데이터 기반 운영: 콘텐츠 15개 → 4개 축소 (ROI 측정 후)
 - 콘텐츠 성과와 Earned 채널의 단일 유입 사례를 분리하고, 전환 gate 후 반복성 계측을 거쳐 채널 투자를 결정
+
+## 출처
+
+- [Google Search Central, Creating helpful, reliable, people-first content](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)
+- [How to Create a Pillar Page — HubSpot](https://blog.hubspot.com/marketing/how-to-create-a-pillar-page)
 
 ## 관련 문서
 - [[GTM-Strategy|GTM 전략]]

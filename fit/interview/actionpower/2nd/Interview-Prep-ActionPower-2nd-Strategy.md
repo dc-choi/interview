@@ -113,7 +113,7 @@ aliases: ["ActionPower 2nd Strategy", "액션파워 2차 전략, 핵심가치"]
 1. **CloudWatch → GPL 전환**: "모니터링이 이게 최선인가?" 질문에서 시작. 기존 CloudWatch+SNS+Lambda 구조의 한계(커스텀 비즈니스 메트릭 비용, 고카디널리티 제약, PromQL 수준의 다차원 쿼리 부재, Logs Insights UX 한계, SNS+Lambda로 알림 라우팅, 디듀프 수동 구현 부담)를 직접 분석 → 당시 TCO, 메트릭 생태계와 벤더 종속 회피를 비교해 GPL 자체 호스팅 결정 → 직접 구축. 일부 평가 축만 남아 총점은 재현하지 않음
    - 핵심: "원래 쓰던 거니까"를 그냥 넘기지 않음
 
-2. **Prisma 성능 문제 발견**: "왜 API가 느리지?" → 로그에서 4개 개별쿼리 직접 발견 → Prisma가 app-level join을 한다는 사실 확인 → 공식 문서에서 relationLoadStrategy: 'join' 발견 → 82~90% 성능 개선 → 하코 3000명 커뮤니티에서 발표
+2. **Prisma 성능 문제 발견**: "왜 API가 느리지?" → 당시 `relationJoins`가 비활성인 구성에서 로그로 4개 개별 쿼리 확인 → `relationJoins` 활성화와 `relationLoadStrategy: 'join'` 적용 → MySQL 단일 correlated subquery 생성과 실행계획 확인 → 82~90% 성능 개선 → 하코 3000명 커뮤니티에서 발표
    - 핵심: ORM이 만들어주는 쿼리를 "당연한 것"으로 받아들이지 않고 의문을 품음
 
 3. **REST→tRPC 전환 (사이드 프로젝트)**: "프론트/백 간 타입 불일치가 런타임에서야 발견되는 게 정상인가?" → tRPC로 전환하여 E2E 타입 안전성 확보 → 운영 중 타입 관련 버그를 줄이는 구조 확립

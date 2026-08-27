@@ -6,6 +6,8 @@ aliases: ["SpaceMap 이력서 기술 질문", "스페이스맵 이력서 기반 
 ---
 # 스페이스맵 1차 — 이력서 기반 기술 질문
 
+> 역사적 스냅샷: 이 문서는 2026년 1차 면접 준비 당시 기록이다. 전형은 무응답으로 탈락 간주되어 종료됐으며 현재 할 일로 사용하지 않는다. 최종 상태는 [[Job-Search-Tracker-2024-2026-Kinolights|2024-2026 이직 트래커 아카이브]]를 따른다.
+
 > 상위 TOC: [[Interview-Prep-SpaceMap|스페이스맵 1차 면접 준비]]
 
 모든 답변을 **"데이터 수집, 처리 파이프라인"** 축으로 모을 것. 스페이스맵의 우주 데이터는 대용량, 시계열로 가정하고, IoT 디바이스 데이터 경험을 그 맥락으로 번역해 어필한다.
@@ -38,10 +40,12 @@ aliases: ["SpaceMap 이력서 기술 질문", "스페이스맵 이력서 기반 
 > 관련: [[Index|인덱스]], [[Covering-Index|커버링 인덱스]], [[Execution-Plan|실행계획]], [[B-Tree-Index-Depth|B-Tree 인덱스 깊이]], [[MySQL-Slow-Query-Diagnosis|슬로우 쿼리 진단]]
 
 **경험 요약 (포트폴리오 STAR)**
-- IoT 데이터 테이블 100만 건, 디바이스 850대, "특정 디바이스 최신 상태 조회" 서브쿼리가 2000ms+
+- IoT 데이터 테이블 100만 건, 디바이스 850대, 디바이스당 평균 1,240건
+- `2000ms+`는 "특정 디바이스 최신 상태 조회"에 포함된 서브쿼리의 관측값이다. 쿼리 1건 시간과 같은 지표로 비교하지 않는다.
 - `EXPLAIN ANALYZE`로 `ORDER BY created_at DESC` 후 9000행 filesort 확인
 - 카디널리티 분석 → 복합 인덱스 `(device_number, created_at DESC, id DESC)` — 필터+정렬을 인덱스 스캔 1탐색으로
-- 결과: 쿼리 1건 15.4ms → 0.1ms (154배), 850대를 순회하는 배치 총시간 5분 15초 → 약 2초. 배치에는 애플리케이션 처리와 네트워크 왕복도 포함된다. `device_number` 동등 조건 뒤 최신 1건을 읽어 스캔 범위를 좁혔지만, 데이터 증가 후 비용은 B-Tree 깊이, 캐시, I/O와 데이터 분포를 포함해 다시 측정해야 함
+- 쿼리 1건 결과: 15.4ms → 0.1ms (154배). 850대를 순회한 배치 총시간 5분 15초 → 약 2초는 애플리케이션 처리와 네트워크 왕복을 포함한 별도 end-to-end 지표다.
+- 실행 환경, cache 상태, 표본 수와 percentile은 기록되지 않았다. `device_number` 동등 조건 뒤 최신 1건을 읽어 스캔 범위를 좁혔지만, 데이터 증가 후 비용은 같은 조건에서 B-Tree 깊이, cache, I/O와 데이터 분포를 포함해 다시 측정해야 한다.
 
 **스페이스맵 우주 데이터 맥락 연결**
 - 우주 데이터는 시계열로 끝없이 쌓임 (관측 로그, 궤도 이력). "특정 객체의 최신/기간별 상태 조회"는 가장 흔한 패턴
@@ -55,14 +59,14 @@ aliases: ["SpaceMap 이력서 기술 질문", "스페이스맵 이력서 기반 
 
 ---
 
-## 3. Prisma N+1 → MySQL SubQuery 단일 쿼리로 API 90% 개선 — ORM 한계 인식
+## 3. Prisma 관계 다중 쿼리 → MySQL SubQuery 단일 쿼리로 API 90% 개선 — ORM 한계 인식
 
 > 관련: [[ORM-Impedance-Mismatch|ORM 임피던스 불일치]], [[ORM|ORM]], [[SQL-Joins|SQL 조인]], [[Execution-Plan|실행계획]]
 
 **경험 요약**
 - 테이블 JOIN이 필요한 기능에서 API 응답 100ms → 1000ms
-- Prisma가 JOIN 미지원 → 4개 개별 쿼리 순차 실행이 원인. HTTP Client로 지연 측정, 로그로 4쿼리 확인
-- 공식 문서에서 `relationLoadStrategy` 발견 → 적용 시 SubQuery + JSON 함수 방식으로 동작, 실행계획 비교 후 SubQuery가 우수함을 검증
+- 당시 Prisma 버전과 설정에서는 `relationJoins` Preview 기능이 활성화되지 않아 4개 개별 쿼리를 읽고 애플리케이션에서 결합했다. HTTP Client로 지연을 측정하고 로그로 4개 쿼리를 확인했다.
+- `relationJoins` 활성화 뒤 `relationLoadStrategy: 'join'`을 적용했다. MySQL에서는 correlated subquery와 JSON aggregation 형태의 단일 쿼리로 동작할 수 있으므로 SQL `JOIN` 키워드 사용 여부가 아니라 생성 SQL과 실행계획을 비교했다. ([Prisma 관계 조회 공식 문서](https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries))
 - 결과: 4개 개별 쿼리 → 1개 복합 SubQuery, 82~90% 개선
 
 **스페이스맵 맥락 연결**

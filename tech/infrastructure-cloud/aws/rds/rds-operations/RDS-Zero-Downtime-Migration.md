@@ -94,7 +94,7 @@ ALTER TABLE users AUTO_INCREMENT = <max(id)+1>;
 
 ## 구체적 런북
 
-- [[RDS-Storage-Shrink-Runbook|스토리지 축소 (동종 MySQL → 작은 MySQL, 네이티브 binlog 복제)]] — 리스크 낮은 인프라 작업
+- [[RDS-Storage-Shrink-Runbook|스토리지 축소 (동종 MySQL → 작은 MySQL, 네이티브 binlog 복제)]] — 실제 토폴로지와 권한을 비운영 환경에서 먼저 검증해야 하는 후보 절차
 - [[MySQL-to-PostgreSQL-Migration|MySQL → PostgreSQL (이기종, DMS + 스키마 변환 + 앱 포팅)]] — 사실상 앱 프로젝트
 
 ## 면접 체크포인트

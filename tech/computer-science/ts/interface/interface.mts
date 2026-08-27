@@ -31,7 +31,7 @@ const person2: Person = {
         console.log(`I am ${this.age} years old`);
     },
 };
-person2.greet();
-person2.say();
+person2.greet?.();
+person2.say?.();
 
 // person.name = "John";

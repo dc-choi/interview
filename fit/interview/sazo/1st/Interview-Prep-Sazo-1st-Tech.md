@@ -98,7 +98,7 @@ aliases: ["Sazo Interview Tech Cards", "사줘 기술 갭 카드"]
 
 **PG + TypeORM 돌파 멘트**:
 > 실무 최적화는 MySQL과 Prisma 위에서 했지만 방법론은 DB 중립입니다 — EXPLAIN으로 실행계획 확인, 카디널리티 기반 복합 인덱스 설계, 커버링 인덱스로 랜덤 I/O 제거. PG 차이는 정리해 뒀습니다: EXPLAIN (ANALYZE, BUFFERS)로 캐시 히트까지 보고, pg_stat_statements로 슬로우 쿼리 누적 통계를 잡고, 인덱스 타입이 B-Tree 외에 BRIN(시계열), GIN(JSONB, 풀텍스트)까지 있어 선택지가 넓습니다. MVCC가 undo log가 아니라 dead tuple + VACUUM 방식이라 대량 UPDATE 후 bloat 관리가 운영 포인트라는 것도 압니다.
-> TypeORM은 Prisma와 달리 Active Record와 Data Mapper를 둘 다 지원하고 QueryBuilder로 SQL 제어력이 높습니다. Prisma에서 relationLoadStrategy로 풀었던 app-level join 문제를 TypeORM에선 로딩 전략과 QueryBuilder로 다루는데, ORM이 만드는 쿼리를 EXPLAIN으로 검증하는 습관은 동일합니다.
+> TypeORM은 Prisma와 달리 Active Record와 Data Mapper를 둘 다 지원하고 QueryBuilder로 SQL 제어력이 높습니다. 당시 `relationJoins`가 비활성인 Prisma 구성에서 여러 관계 쿼리를 애플리케이션이 결합하던 문제를 `relationLoadStrategy`로 풀었습니다. TypeORM에서는 로딩 전략과 QueryBuilder로 다루되, ORM이 만드는 쿼리를 EXPLAIN으로 검증하는 습관은 동일합니다.
 
 **Go, gRPC**: 미경험 — 솔직하게. gRPC 개념(HTTP/2 멀티플렉싱, Protobuf 직렬화로 페이로드 절감, 내부 서비스 간 통신 적합, 브라우저 직접 호출 불가)은 설명 가능. 포지션 메인은 NestJS이므로 Go 비중은 역질문으로 확인 ([[Interview-Prep-Sazo-1st|메인 §4-4]]).
 

@@ -164,7 +164,7 @@ style: |
 | 영역 | 문제 | 해결 | 결과 |
 |---|---|---|---|
 | 인덱스 | 100만 건 테이블에서 약 9,000행 filesort | 복합 인덱스 설계 | 쿼리당 15.4ms → 0.1ms (**154배**) |
-| ORM | Prisma include N+1 | relationLoadStrategy join | **82~90%↑** |
+| ORM | Prisma 관계 다중 쿼리 | relationLoadStrategy join | **82~90%↑** |
 | ORM | 복잡 쿼리 한계 | prisma-kysely 도입 | 리포트 2400ms → 40ms (**60배**) |
 
 - **2단계 전략** — 단순 CRUD는 Prisma, 크리티컬 복잡 쿼리만 실행계획 보고 Kysely로

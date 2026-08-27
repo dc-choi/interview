@@ -113,7 +113,7 @@ verified_at: 2026-08-26
 > 단골 질문. 영웅담 X, **6단계 프로세스로 답변**.
 
 **다듬은 본문**:
-> **재현 → 원인 가설 → 분리, 검증 → 해결 → 영향 범위 점검 → 회고**. 트라이포드랩 Prisma API가 갑자기 1000ms로 튄 사례 — APM 로그로 재현 조건(특정 endpoint) 식별 → EXPLAIN으로 **N개 쿼리 발행 가설 검증** → 공식 문서에서 **`relationLoadStrategy: 'join'` 발견 → DB-level JOIN으로 해결 (90% 개선)** → Grafana로 다른 endpoint 영향 점검 → 회고 기록.
+> **재현 → 원인 가설 → 분리, 검증 → 해결 → 영향 범위 점검 → 회고**. 트라이포드랩 Prisma API가 갑자기 1000ms로 튄 사례 — APM 로그로 재현 조건(특정 endpoint) 식별 → 당시 `relationJoins`가 비활성인 구성에서 **N개 쿼리 발행 가설 검증** → `relationJoins` 활성화와 **`relationLoadStrategy: 'join'` 적용 → MySQL 단일 correlated subquery로 해결 (90% 개선)** → Grafana로 다른 endpoint 영향 점검 → 회고 기록.
 
 **도구 세트**: APM, DB slow log, EXPLAIN, `git bisect`, Chrome DevTools, 로컬 프로파일러
 

@@ -58,7 +58,7 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
   - [[RDS-Operational-Pitfalls-Rare|운영 함정 저빈도 (장기 트랜잭션, cross-AZ 비용, Aurora I/O, utf8mb4, CA 만료, 암호화 사후불가, 승격 비가역, XID wraparound)]]
   - [[RDS-Migration-Scenarios|데이터 마이그레이션이 필요한 상황 (제자리 불가 = 마이그레이션, 도구 선택 매트릭스)]]
     - [[RDS-Zero-Downtime-Migration|무중단(near-zero) 마이그레이션 (Full Load+CDC+Cutover, AUTO_INCREMENT 드리프트, 엔드포인트 전환)]]
-      - [[RDS-Storage-Shrink-Runbook|스토리지 축소 런북 (동종 MySQL, 네이티브 binlog 복제, rds_set_external_master)]]
+      - [[RDS-Storage-Shrink-Runbook|스토리지 축소 후보 절차 (동종 MySQL, 버전별 rds_set_external 프로시저)]]
   - [[RDS-Connection-Credentials|앱 연결과 자격증명 (ORM 연결, SSL, Secrets Manager, IAM DB 인증, 비용 과금 항목)]]
   - [[RDS-Security-Group|Security Group 구성 (SG 참조, 계층별 방화벽, IaC)]]
   - [[RDS-Monitoring|모니터링 (CloudWatch, Performance Insights, Slow Query → Slack 알람)]]

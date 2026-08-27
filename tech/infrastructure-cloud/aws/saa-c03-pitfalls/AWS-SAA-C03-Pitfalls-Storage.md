@@ -3,6 +3,7 @@ tags: [infrastructure, aws, saa-c03, certification, pitfalls, storage]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["스토리지 함정", "SAA-C03 Pitfalls Storage"]
+verified_at: 2026-08-27
 ---
 
 # AWS SAA-C03 빈출 함정 — 스토리지
@@ -25,15 +26,15 @@ aliases: ["스토리지 함정", "SAA-C03 Pitfalls Storage"]
   | Compliance | **root조차 삭제 불가** (시험 정답: 절대 변경 불가) |
 - **Vault Lock**(Glacier 전용 WORM) ≠ Object Lock
 - **암호화**: SSE-S3(AES-256, AWS 관리키), SSE-KMS(CloudTrail 추적, 키 회전), SSE-C(고객 제공키, AWS 저장 안 함), **DSSE-KMS**(이중 암호화). 클라이언트 측 암호화는 별개
-- **Pre-signed URL**: 임시 액세스. 서명자의 권한 + 만료 시각만 — 정책 변경해도 만료 전엔 유효
+- **Pre-signed URL**: 서명자의 현재 유효 자격 증명과 권한 범위를 넘지 않는 임시 접근 토큰. 요청 시점의 버킷 또는 IAM 정책 조건과 명시적 Deny가 적용되고, 지정 만료 시각 전이라도 임시 자격 증명이 만료되거나 서명 자격 증명이 폐기, 삭제, 비활성화되면 만료됨
 - **MFA Delete**: 루트 계정만 활성화. 버전 영구 삭제, 버킷 버저닝 변경 보호
 - **CORS**: 다른 오리진 정적 사이트가 S3 호스팅 콘텐츠 호출 시 — 자주 시험에 등장. 헤더 미설정 시 브라우저 차단
 - **Replication**(CRR/SRR): 버저닝 필수. 기본은 **신규 객체만** 복제(과거 객체는 Batch Replication)
 - **Transfer Acceleration**: CloudFront Edge 통해 업로드 가속. 리전 간 콘텐츠 다운로드 아님(그건 CloudFront)
-- **S3 Select / Glacier Select**: 기존 사용 고객에게 남아 있는 레거시 기능. 신규 설계나 최신 시험 대비는 Athena, S3 Object Lambda 같은 대안을 우선 확인
+- **S3 Select / Glacier Select**: 기존 사용 고객에게 남아 있는 레거시 기능. 신규 설계에서는 Athena나 애플리케이션 레벨 필터링을 우선 검토한다. S3 Object Lambda도 2025년 11월 7일부터 기존 고객과 일부 APN 파트너만 사용할 수 있으므로 신규 고객의 일반 대안이 아니다. 객체 변환이 필요하면 Lambda를 CloudFront, API Gateway 또는 Function URL로 호출하거나 클라이언트 처리를 비교한다
 - **Multipart Upload**: 100MB부터 권장, **5GB 이상 필수**. 실패 파트는 수명주기로 정리해야 청구 안 됨
-- **Requester Pays**: 데이터 전송 비용을 요청자(consumer)에게. 무료 계정에서 호출 불가
-- **S3 이벤트 알림**: SNS, SQS, Lambda, EventBridge. **버저닝 미사용 시 동일 키 동시 쓰기는 이벤트 누락 가능**
+- **Requester Pays**: 요청과 데이터 다운로드 전송 비용은 요청자가, 저장 비용은 버킷 소유자가 부담. 익명 요청은 불가하며 인증된 요청에 `x-amz-request-payer: requester` 또는 CLI `--request-payer requester`로 비용 부담을 명시해야 함
+- **S3 이벤트 알림**: SNS, SQS, Lambda, EventBridge. 알림은 최소 한 번 전달되므로 중복될 수 있고 순서를 보장하지 않는다. 동일 키의 이벤트 순서를 비교해야 하면 `sequencer`를 사용하고 소비자를 멱등하게 만든다. 버전 관리는 객체 버전을 보존하지만 이벤트 전달 보장을 바꾸지는 않는다
 
 ### EBS, EFS, FSx
 
@@ -56,7 +57,7 @@ aliases: ["스토리지 함정", "SAA-C03 Pitfalls Storage"]
   | 게이트웨이 | 프로토콜 | 용도 |
   |---|---|---|
   | S3 File Gateway | NFS/SMB | 온프레미스 NAS를 S3로 |
-  | FSx File Gateway | SMB | FSx 캐싱 |
+  | FSx File Gateway | SMB | 기존 고객의 FSx 캐싱. 신규 고객은 2024년 10월 28일부터 사용 불가 |
   | Volume Gateway (Stored/Cached) | iSCSI | 블록 디스크 ↔ S3 백업 |
   | Tape Gateway | iSCSI VTL | 기존 백업 SW의 가상 테이프 |
 - **DataSync**: 에이전트 기반. 온프레↔S3/EFS/FSx, AWS 내부도 가능. **TLS 암호화 자동, 체크섬 검증**
@@ -75,7 +76,13 @@ aliases: ["스토리지 함정", "SAA-C03 Pitfalls Storage"]
 
 - [How S3 Intelligent-Tiering works — AWS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html)
 - [Amazon S3 pricing — AWS](https://aws.amazon.com/s3/pricing/)
+- [Download and upload objects with presigned URLs — AWS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html)
+- [Using Requester Pays general purpose buckets for storage transfers and usage — AWS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html)
+- [Amazon S3 Object Lambda availability change — AWS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazons3-ol-change.html)
+- [Amazon S3 Event Notifications — AWS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html)
+- [Amazon S3 event notification content structure — AWS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-content-structure.html)
 - [Transitioning objects using Amazon S3 Lifecycle — AWS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html)
 - [Managing storage lifecycle — AWS](https://docs.aws.amazon.com/efs/latest/ug/lifecycle-management-efs.html)
+- [Amazon FSx File Gateway User Guide — AWS](https://docs.aws.amazon.com/filegateway/latest/filefsxw/storagegateway-fsxfile-ug.pdf)
 - [AWS Snowball Edge availability change — AWS](https://docs.aws.amazon.com/snowball/latest/developer-guide/snowball-edge-availability-change.html)
 - AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)

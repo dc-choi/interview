@@ -128,7 +128,7 @@ aliases: ["Bdanpoppop 체크리스트", "비단팝팝 면접 준비 체크리스
 
 - **DB 정합성과 동시성 제어 깊이**: Pessimistic Lock + NOWAIT, lock 순서 통일, 트랜잭션 범위 최소화. 상품권 교환과 결제 도메인의 핵심 — 메일에 없던 영역
 - **인덱스 설계 정량 분석**: 카디널리티와 선택도 분석 후 복합 인덱스 설계, 15.4ms → 0.1ms (99.3%)
-- **ORM 한계 진단과 대응**: Prisma include의 N+1 패턴 발견 → relationLoadStrategy 'join' 전환, 100ms → 10ms~18ms (82~90% 개선)
+- **ORM 한계 진단과 대응**: Prisma include의 관계 다중 쿼리 확인 → relationLoadStrategy 'join' 전환, 100ms → 10ms~18ms (82~90% 개선)
 - **아키텍처 전환 경험**: 단일 EC2 → ECS Fargate + ALB + Auto-scaling. 무중단 배포, 롤링, 모니터링 통합
 - **테스트 커버리지 게이트**: 시솔지주에서 0 → 70% + PR 머지 게이트 60% 미만 차단. 코드 품질 의사결정 권한 있는 위치에서 일해본 경험
 - **관찰 기반 의사결정 방식**: 직관 대신 메트릭, 로그, EXPLAIN으로 정량 근거 먼저 — Service의 컬처핏 답변과 일관

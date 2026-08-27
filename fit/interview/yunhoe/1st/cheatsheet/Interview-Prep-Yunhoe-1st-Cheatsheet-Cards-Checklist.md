@@ -32,7 +32,7 @@ aliases: ["윤회 1차 치트시트 어필 카드와 체크리스트", "Yunhoe 1
 → 자연스럽게 **3번 AI 도구 깊이 + 6개월 도입 4단계**로 흐름 연결
 
 ### 디버깅 프로세스 (단골 질문)
-> "**재현 → 가설 → 분리 검증 → 해결 → 영향 점검 → 회고**. Prisma 1000ms 사례 — APM 로그 → EXPLAIN → 공식 문서 `relationLoadStrategy` → DB-level JOIN 90% 개선."
+> "**재현 → 가설 → 분리 검증 → 해결 → 영향 점검 → 회고**. 당시 `relationJoins`가 비활성인 Prisma 1000ms 사례 — APM 로그 → EXPLAIN → `relationJoins` 활성화와 `relationLoadStrategy` 적용 → MySQL 단일 correlated subquery로 90% 개선."
 
 ### Q5 멀티테넌트 받으면 (본업만)
 > "트라이포드랩에서 대형 PoC(제약바이오, F&B) 멀티테넌트 데이터 모델링 했습니다. 단계는 논리적(tenant_id 컬럼) → 스키마 분리 → 물리적. 현 단계는 **논리적 + 앱 경계 + RLS**가 합리 — repository에서 tenant_id를 명시하고 Prisma extension은 보조로만 쓰며, non-owner 앱 role의 RLS와 실제 교차 테넌트 테스트로 막습니다. 인덱스 첫 컬럼은 tenant_id를 우선 검토합니다. 전환 임계는 컴플라이언스, noisy neighbor, 대형 고객 수 누적입니다."
