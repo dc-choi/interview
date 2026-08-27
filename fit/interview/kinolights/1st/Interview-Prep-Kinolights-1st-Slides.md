@@ -3,47 +3,21 @@ marp: true
 paginate: true
 tags: [fit, interview, kinolights, presentation, slides]
 status: done
-aliases: ["Kinolights Slides", "키노라이츠 발표 슬라이드"]
+aliases: ["Kinolights 1st Slides", "키노라이츠 1차 발표 슬라이드"]
 style: |
   section {
-    font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif;
     background: #FFFFFF;
     color: #1E293B;
     padding: 52px 64px;
     font-size: 23px;
     line-height: 1.5;
   }
-  h1 { color: #0F172A; font-size: 42px; letter-spacing: -0.5px; }
-  h2 { color: #0F172A; font-size: 32px; border-bottom: 3px solid #4F46E5; padding-bottom: 8px; margin-bottom: 18px; letter-spacing: -0.5px; }
-  h3 { color: #4F46E5; font-size: 20px; font-weight: 700; margin: 0 0 4px; }
+  h1 { color: #0F172A; font-size: 42px; }
+  h2 { color: #0F172A; font-size: 32px; border-bottom: 3px solid #4F46E5; padding-bottom: 8px; }
   strong { color: #4F46E5; }
-  ul { margin-top: 6px; }
-  li { margin: 4px 0; }
-  table { font-size: 19px; border-collapse: collapse; width: 100%; }
-  th { background: #4F46E5; color: #fff; padding: 8px 12px; text-align: left; }
-  td { padding: 8px 12px; border-bottom: 1px solid #E2E8F0; }
-  code { background: #F1F5F9; color: #0F172A; padding: 1px 6px; border-radius: 4px; font-size: 0.9em; }
-  pre { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 17px; }
-  .big { font-size: 52px; color: #4F46E5; font-weight: 800; letter-spacing: -1px; }
   .note { color: #64748B; font-size: 18px; }
-  .ph { background: #F1F5F9; border: 2px dashed #94A3B8; border-radius: 10px; color: #64748B; padding: 18px; text-align: center; }
   section.lead { justify-content: center; text-align: center; }
-  section.lead h1 { font-size: 46px; }
-  section.step::before { content: attr(data-step); color: #4F46E5; font-size: 18px; font-weight: 700; letter-spacing: 1px; display: block; margin-bottom: 6px; }
-  footer { color: #94A3B8; font-size: 15px; }
-  header { color: #CBD5E1; font-size: 15px; letter-spacing: 1px; }
-  .arch { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-  .arch.evt { margin-top: 18px; }
-  .lanes { display: flex; flex-direction: column; gap: 14px; }
-  .lane { display: flex; align-items: center; gap: 7px; }
-  figure.ic { display: flex; flex-direction: column; align-items: center; margin: 0; width: 84px; }
-  figure.ic img { width: 46px; height: 46px; }
-  figure.ic figcaption { font-size: 12px; color: #334155; text-align: center; line-height: 1.18; margin-top: 3px; }
-  .arch .a { color: #94A3B8; font-size: 18px; font-weight: 700; }
-  .arch .t { font-size: 11px; color: #64748B; white-space: nowrap; }
-  .ext { border: 1.5px solid #CBD5E1; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #475569; }
-  .acmline { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 18px; font-size: 14px; color: #475569; }
-  .acmline img { width: 26px; height: 26px; }
 ---
 
 <!-- _class: lead -->
@@ -51,194 +25,124 @@ style: |
 
 # 키노라이츠 1차 기술 발표
 
-### 작은 팀을 위한 850대 IoT 운영 자동화
-
-<br>
+### 작은 팀의 데이터 서비스 운영 자동화
 
 [이름], 4년차 백엔드 개발자
+
 2026.06.08
 
 ---
 
-<!-- _header: 약력 -->
+## 오늘의 흐름
 
-## 각 자리에서 부족한 한 축씩 채워온 4년
+1. 제품 규칙을 테스트로 정상화
+2. 운영을 관측 가능하게 전환
+3. 실행 환경과 데이터 정합성 설계
+4. 실행계획 기반 성능 개선
+5. 후속 처리의 이벤트 분리
 
-- **트라이포드랩** (IoT VMI) — 0에서 1, 백엔드를 사실상 단독으로 설계하고 운영
-- **시솔지주** (국제 배송) — 운영 품질을 처음으로 직접 책임 (환율 배치 안정화, 테스트 게이트, FIDO 인증)
-- **이썸테크** (SI) — Java, Spring으로 백엔드 기본기
-
-<span class="note">42서울, 멋쟁이사자처럼 부트캠프 수강생 100명 중 최우수 수료</span>
-
-> 오늘은 트라이포드랩에서 내린 기술 의사결정을 **실제로 겪은 순서대로** 풀어갑니다.
+<span class="note">기술 목록보다 문제, 선택, 검증과 남은 한계를 설명합니다.</span>
 
 ---
 
-<!-- _header: 출발점 → 목적지 -->
+## 각 자리에서 채운 네 가지 축
 
-## 한 번에 만든 그림이 아니라, 문제에 반응해 키운 그림
-
-**합류 시점** — 단일 EC2 한 대에 nginx와 NestJS, SSL은 Certbot 수동
-
-**현재**
-
-<div style="text-align:center; margin-top:6px;">
-  <img src="assets/arch.svg" style="width:1150px; max-width:100%;"/>
-</div>
-
-<div class="acmline">
-  인증서는 ACM으로 자동 발급과 갱신, CloudFront와 ALB에 연결
-</div>
+- **초기 경력**: Java와 Spring 기반 백엔드 기본기
+- **운영 품질**: 배치, 테스트와 인증 기능을 통해 실패를 줄이는 방식
+- **0→1 경험**: 현장 데이터 서비스의 백엔드와 운영 경계 설계
+- **다음 단계**: 동료와 설계를 검토하며 제품 데이터 도메인을 더 깊게 다루기
 
 ---
 
-<!-- _class: step -->
-<!-- _header: 1단계 -->
-<!-- _footer: 정상화 → 관측 → 인프라+동시성 → 정합성과 성능 → 발주 자동화 -->
+## 1. 제품 규칙을 테스트로 정상화
 
-## 깨진 프로덕트를 테스트로 정상화
+- 핵심 기능이 불안정한 상태에서 기획 의도와 화면 계약을 다시 확인
+- 백엔드 규칙을 테스트로 고정해 같은 해석을 재사용
+- 실제 DB 통합 테스트로 단위 테스트가 놓친 정합성 경계 검증
+- 규칙 변경은 테스트가 영향 범위를 먼저 보여 주도록 설계
 
-<p class="note">합류 직후 핵심 기능이 동작하지 않아 박람회 데모도 어려운 상태</p>
-
-- 저 혼자 풀 규모가 아니라 **팀 전체가 매달림**<br/>PM은 규칙 기준, 프론트는 화면, **저는 백엔드에서 비즈니스 규칙을 테스트로 못 박음**
-- 단위로 부족해 **컨테이너로 실제 DB에 붙는 통합 테스트** — 모킹이 아니라 진짜 DB에서 숨은 버그와 정합성 문제를 드러냄
-
-**성과** — 박람회 데모 가능 → 대형 제약바이오회사, F&B 2000억 규모 회사 PoC 수주, 정상화 기반 덕에 무사 완수
+<span class="note">테스트의 목적은 개수보다 합의와 회귀 방지입니다.</span>
 
 ---
 
-<!-- _class: step -->
-<!-- _header: 2단계 -->
-<!-- _footer: 정상화 → 관측 → 인프라+동시성 → 정합성과 성능 → 발주 자동화 -->
+## 2. 운영이 보이지 않는다
 
-## 운영이 안 보인다 → 관측 인프라 구축
+- 오류와 지연이 반복되지만 원인을 빠르게 좁히기 어려운 상태
+- 메트릭, 구조화 로그와 요청 문맥을 연결하는 관측 기반 구축
+- 탐색, 보존, 경보와 운영 부담을 비교해 도구 선택
+- 고유 식별자는 로그와 트레이스에 두고 메트릭 라벨의 카디널리티 제한
 
-<p class="note">오류는 반복되는데 원인을 빨리 짚을 수 없었다</p>
-
-- CloudWatch에서 시작 → 한계 → **Prometheus, Loki, Grafana 자체 호스팅**
-- **왜 오픈소스** — Datadog은 트래픽 따라 비용 급증, 작은 팀엔 비용 예측성이 더 중요
-- **3계층** — 메트릭(Prometheus + Thanos S3), 로그(Promtail/FireLens + Loki), 앱(`x-request-id` 기반 JSON 로그와 저카디널리티 메트릭)
-- **카디널리티**는 고유 값을 라벨에서 빼서 관리
-
-<span class="note">흑자 단계의 키노라이츠가 Datadog을 쓰는 건 합리적 — 직접 굴려본 경험이 그대로 전이</span>
+<span class="note">정적 임계에서 출발했고, 이후 사용자 영향 SLI와 SLO로 발전시킬 여지를 남겼습니다.</span>
 
 ---
 
-<!-- _class: step -->
-<!-- _header: 3단계 -->
-<!-- _footer: 정상화 → 관측 → 인프라+동시성 → 정합성과 성능 → 발주 자동화 -->
+## 3. 실행 환경의 확장과 배포
 
-## 관측이 드러낸 한계 ① 인프라 전환
-
-- **이중 로드밸런서** — IoT는 펌웨어 IP 하드코딩이라 고정 IP가 필요(NLB), 웹은 경로 라우팅(ALB)
-- **ECS Fargate vs EKS** — 운영 인력과 트래픽 규모에서 K8s 오버헤드가 가치보다 컸다. 기존 Docker를 그대로 확장
-- 이미지 **909MB → 513MB (43%↓)**, 배포 시간 **26%↓**, Read Replica로 조회 **40%↑** DB CPU **30%↓**
-
-> **동시성도 한 묶음의 결정** — 한 대에서 여러 인스턴스로 늘리면 인메모리 락이 무력화된다. 그래서 정합성을 같이 설계했다.
-
----
-
-<!-- _class: step -->
-<!-- _header: 3단계 -->
-<!-- _footer: 정상화 → 관측 → 인프라+동시성 → 정합성과 성능 → 발주 자동화 -->
-
-## 관측이 드러낸 한계 ② 데이터 정합성
-
-**동시성** — 같은 품목에 입출고가 동시에 (최대 5대)
-
-- `SELECT FOR UPDATE NOWAIT` 배타 락, 충돌 시 100ms 간격 3회 재시도 (디바이스 타임아웃 1초 안에 결정)
-- 낙관적 락은 충돌 잦아 재실행 비용 과도, Redis 분산 락은 **트랜잭션 밖이라 만료나 크래시 때 재고와 어긋날 위험에 인프라만 추가** (락 대상이 DB 행이라 SELECT FOR UPDATE가 적합)
-
-**정밀도** — 금액과 재고를 number로 하면 부동소수점 오류 → **Decimal 연산과 통화별 반올림**
-
-<span class="note">발주 금액과 거래명세서가 1원이라도 틀리면 신뢰가 깨지는 도메인</span>
-
----
-
-<!-- _class: step -->
-<!-- _header: 3단계 -->
-<!-- _footer: 정상화 → 관측 → 인프라+동시성 → 정합성과 성능 → 발주 자동화 -->
-
-## 관측이 드러낸 한계 ③ 성능
-
-| 영역 | 문제 | 해결 | 결과 |
-|---|---|---|---|
-| 인덱스 | 100만 건 테이블에서 약 9,000행 filesort | 복합 인덱스 설계 | 쿼리당 15.4ms → 0.1ms (**154배**) |
-| ORM | Prisma 관계 다중 쿼리 | relationLoadStrategy join | **82~90%↑** |
-| ORM | 복잡 쿼리 한계 | prisma-kysely 도입 | 리포트 2400ms → 40ms (**60배**) |
-
-- **2단계 전략** — 단순 CRUD는 Prisma, 크리티컬 복잡 쿼리만 실행계획 보고 Kysely로
-- **k6 성능 테스트 프레임워크** — 최적화 회귀 방지로 주요 엔드포인트마다 부하 테스트 작성
-  - 실제 트래픽이 오르내리는 패턴을 모사한 부하로, **리틀의 법칙으로 동시성을 역산해 SLA 임계 자동 생성**
-  - 발주는 장바구니부터 발주까지 전체를 추적하는 **E2E 트랜잭션 성능 테스트**
-
-<span class="note">TypeORM을 쓰셔도, 추상화 비용을 실행계획까지 내려가 검증하는 사고는 그대로 적용</span>
-
----
-
-<!-- _class: step -->
-<!-- _header: 클라이맥스 -->
-<!-- _footer: 정상화 → 관측 → 인프라+동시성 → 정합성과 성능 → 발주 자동화 -->
-
-## 발주 자동화 — 왜 이벤트 기반 아키텍처인가
-
-<p class="note">VMI 발주는 발주사, 수주사를 거쳐 발주와 수주 처리, 발주서, 거래명세서까지 여러 단계가 한 흐름에 묶인 복잡한 비즈니스 로직</p>
-
-- **문제** — 단계를 동기로 묶으면 강결합이라 확장이 어렵고, 한 단계 실패가 발주 전체를 막음
-- **해결** — 발주 이벤트 기준으로 각 단계를 **디커플링**, 액션마다 독립 처리 + 채널별 DLQ<br/>(월 10만 발주 × 5 액션 = 월 50만 메시지, 사용량 과금)
-
-```
-발주 이벤트 → EventBridge → SQS(발주처리, 수주처리, 발주 카톡, 발주서 메일, 거래명세서 메일) → ECS 워커 병렬
-```
-
-<div style="text-align:center; margin-top:8px;">
-<span class="big">고정비 제거</span> <span class="note">사용량 과금 선택, 비즈니스 로직 결합도 감소</span>
-</div>
-
----
-
-<!-- _header: 클라이맥스 -->
-
-## 가장 고민한 결정 — 메시징 인프라
-
-| 항목 | MSK (관리형 Kafka) | EventBridge + SQS (선택) |
+| 문제 | 판단 | 검증과 한계 |
 |---|---|---|
-| 비용 모델 | 클러스터 고정비 | 사용량 과금, EventBridge 별도 과금 |
-| 처리량 가정 | 리플레이, 순서 보장, 다중 소비가 필요할 때 | 월 10만 발주 × 5액션, 비배치 성공 처리 시 약 150만 SQS API 요청 |
-| 순서, 리플레이 | 강함 | 발주는 최종 일관성으로 충분 |
-| 운영 부담 | 클러스터 운영 | 관리형, 클러스터 운영 없음 |
-
-> 당시 MSK Provisioned 산정액은 브로커 유형과 수, 스토리지, 데이터 전송 가정이 남아 있지 않아 정확한 금액으로 인용하지 않는다. SQS는 2026-08-21 서울 리전 표준 큐의 월 100만 요청 Free Tier를 기준으로 초과분 약 $0.20이지만 EventBridge, 배치, 빈 폴링, 재시도, payload 크기, 리전과 기준일에 따라 총비용이 달라진다.
-
-**기술 결정을 사업 단계와 함께** — PMF 단계 스타트업에 Kafka는 과한 비용
-
-> 지금이라면 — **Transactional Outbox**를 적용했을 것 같습니다 (우리 규모엔 폴링으로 충분)
+| 요청과 배포 위험이 한 경로에 집중 | 요청 성격과 배포 경계를 분리 | 헬스체크와 점진 전환, 이전 버전 복귀 경로 |
+| 운영 부담이 커짐 | 컨테이너 실행 환경을 팀 역량과 워크로드로 비교 | 더 복잡한 오케스트레이션은 조건 변화 시 재검토 |
+| 읽기와 쓰기 성격이 다름 | 경로별 일관성 요구를 구분 | 지연 허용 범위와 관측 기준을 함께 관리 |
 
 ---
 
-<!-- _header: AI 워크플로우 -->
+## 4. 스케일아웃과 정합성은 한 묶음
 
-## 혼자여도 속도와 품질을 동시에
+- 여러 인스턴스가 같은 상태를 갱신하면 인메모리 제어만으로는 부족
+- 보호 대상이 DB 행이면 트랜잭션 안에서 락과 갱신을 함께 처리
+- 일관된 락 순서와 재시도로 데드락 회복 경계 설계
+- 금액과 수량은 정밀한 표현과 반올림 규칙으로 처리
 
-- 백엔드를 사실상 혼자 맡다 보니, **Claude Code를 개발 파이프라인 자체로 재설계**
-- 계층형 컨텍스트, MCP, 서브에이전트, 작업 종료 시 자가 리뷰 훅 → 코드 품질 회귀 통제
-- **원칙 — 설계와 의사결정은 사람, 반복 작업만 AI**
+<span class="note">락 방식은 충돌 빈도, 보호 대상과 복구 비용에 따라 다시 선택합니다.</span>
 
-<span class="note">EventBridge와 Kafka 비교 같은 판단은 직접, AI는 그 결정을 구현하고 테스트로 검증</span>
+---
+
+## 5. 성능은 실행계획으로 검증
+
+- 최신 상태 조회: 후보 행, 정렬과 데이터 분포를 실행계획으로 확인
+- 복합 인덱스: equality 조건과 정렬 순서에 맞춰 후보 범위 축소
+- ORM: 관계 다중 쿼리 여부를 실제 SQL로 확인하고 단순 CRUD와 복잡 조회의 경계를 분리
+- 회귀 방지: 주요 사용자 경로에 부하 테스트와 상대 성능 감시
+
+<span class="note">읽기 개선과 쓰기 비용을 같은 조건에서 비교합니다.</span>
+
+---
+
+## 6. 후속 처리는 이벤트로 분리
+
+핵심 상태 변경 → 도메인 이벤트 → 큐와 워커의 독립 처리 → 재시도, DLQ, 수동 복구
+
+- 동기 결합을 줄여 한 단계 실패가 전체 흐름을 막지 않게 함
+- 멱등성 키, 상태 전이와 유니크 제약으로 중복 처리 흡수
+- 리플레이, 순서, 처리량과 운영 부담에 따라 큐와 스트림을 비교
+- 지금이라면 발행 실패 구간을 Transactional Outbox로 더 일찍 보강
+
+---
+
+## 7. AI는 속도를, 사람은 책임을
+
+- AI는 조사와 반복 구현을 보조
+- 저장소 규칙, 공식 문서, 테스트와 코드 리뷰로 결과 검증
+- 요구사항 해석과 설계 선택은 사람이 직접 책임
+- 도구 사용이 깊어질수록 검증 기준과 의사결정 기록이 더 중요
 
 ---
 
 <!-- _class: lead -->
-<!-- _header: 마무리 -->
 
-## 작은 팀을 위한 850대 IoT 운영 자동화
+## 키노라이츠와의 연결
 
-정상화로 영업을 가능하게, 관측과 인프라로 운영을 안정화, 정합성과 성능을 잡고, 발주를 자동화
+공개 제품 표면에서 보이는 콘텐츠 탐색과 시청 가능 정보의 신뢰 문제는, 여러 입력의 최신성과 정합성을 사용자 결과로 연결하는 문제로 이해했습니다.
 
-<br>
+저는 제품 규칙, 관측, 정합성, 성능과 비동기 처리의 경험을 바탕으로 검색과 콘텐츠 데이터라는 새 도메인을 깊게 배우고 기여하고 싶습니다.
 
-키노라이츠 백엔드 팀이 서버, 인프라, CI/CD, 관측, 장애를 한 팀이 책임지는 구조가 제 경험과 맞닿아 있습니다.
+감사합니다.
 
-**여러 OTT에 흩어진 메타데이터를 정합성 있게 맞추고 최신으로 유지해 검색과 추천으로 연결하는 일**은,<br/>제가 850대 IoT 환경에서 들어오는 데이터의 정합성을 잡아 발주와 리포트로 연결해온 일과 본질이 같다고 느꼈습니다.
+---
 
-<span class="note">검색과 추천은 다음 단계로 가장 파고들고 싶은 영역입니다. 감사합니다.</span>
+## 리허설 체크
+
+- [ ] 28분 안팎으로 타이머 측정
+- [ ] 문제, 선택, 검증, 한계를 각 슬라이드에서 말할 수 있는지 확인
+- [ ] 공개 제품 사실과 회사 내부 가설을 구분
+- [ ] 수치는 원본 근거와 비교 조건을 확인할 수 있을 때만 사용

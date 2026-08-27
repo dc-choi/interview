@@ -13,7 +13,7 @@ aliases: ["Job Search"]
 
 - 현재 진행 중인 이직 활동 없음
 - [[Job-Search-Tracker|다음 이직 후보 풀]] — 다음 사이클을 실제로 시작할 때 재검증할 과거 후보
-- [[Job-Search-Tracker-2024-2026-Kinolights|트라이포드랩 → 키노라이츠 이직 기록]] — 2026-06-29 입사로 종료
+- [[Job-Search-Tracker-2024-2026-Kinolights|2024.11-2026.06 이직 활동 기록]]
 
 ## 목차
 

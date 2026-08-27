@@ -35,7 +35,7 @@ Behavioral, Tech-Basics, Tech-Scale은 `common/common-interview-questions/` 소�
 
 ## 회사별 폴더 작성 도구
 
-- [[Interview-Prep-Template|회사별 차수 문서 작성 템플릿]] (마스터 fork와 자기완결 구조 적용)
+- [[Interview-Prep-Template|회사와 차수 기반 준비 문서 템플릿]] (마스터 fork와 자기완결 구조 적용)
 
 ## 본인 답변 마스터
 

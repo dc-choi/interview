@@ -7,39 +7,39 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 # 다음 이직 후보 풀
 
-> 이직 목표는 키노라이츠 입사로 완료했고 현재 서류 지원은 하지 않는다. 이 문서는 다음 이직을 실제로 시작할 때 재검증할 과거 후보 풀이다. 이전 사이클 기록은 [[Job-Search-Tracker-2024-2026-Kinolights]]에 있다.
+> 이직 목표는 키노라이츠 입사로 완료했고 현재 진행 중인 지원은 없다. 이 문서는 다음 이직을 실제로 시작할 때 재검증할 후보 풀이며, 이전 이직 사이클의 회사, 전형 차수, 날짜, 결과와 상태는 [[Job-Search-Tracker-2024-2026-Kinolights]]에 보관한다.
 
-## 전형 진행중
+## 전형 진행 중
 
 | 기업 | 현재 단계 | 비고 |
 | --- | --- | --- |
 
 ## 지원할 기업
 
-> 트라이포드 사이클에서 검토했으나 미지원한 후보 풀(이관분). 키노 입사로 활동 중단 → 다음 이직 재개 시 공고 생존과 마감 재확인 필요. 아래 마감일은 2026년 6월 기준이라 재개 시점엔 대부분 만료 예상. 이관의 가치는 공고가 아니라 도메인/스택 매칭 타겟 풀.
+> 2026년 6월에 만든 과거 후보 풀이다. `링크` 열은 당시 JD 링크이며, 비고에 함께 적은 회사 규모, 투자, 재무, 급여와 리뷰 수치의 개별 근거 URL은 보존되지 않았다. 따라서 이 값들은 확인된 현재 사실이 아니라 **당시 메모, 근거 링크 미보존** 상태다. 다음 이직을 시작할 때 공식 채용 페이지, 공시, 회사 뉴스와 공개 리뷰에서 항목별로 다시 확인한다.
 
 ### S티어
 
-| 기업 | 링크 | 비고 |
+| 기업 | 당시 JD 링크 | 비고 |
 | --- | --- | --- |
-| 노타(Nota) | https://career.nota.ai/en/o/199925 | DevOps Engineer, 5년+, K8s+AWS+Terraform+PyPI — 코스닥 상장사(A486990), 삼성, LG, 네이버, 카카오 투자, Exynos 2600 공급, 블라 4.0 |
-| CLO 클로버추얼패션 | https://jobs.lever.co/clovirtualfashion/1fcfaf81-2258-409d-b0df-ff1a3d6f6235 | DevOps, 2-10년, K8s+Terraform+멀티클라우드(AWS+Azure+GCP) — 유니콘 시리즈C 500억, 매출 475억(3년 3배), 해외 90%, 아카데미 수상 |
-| 모레(MOREH) | https://moreh.career.greetinghr.com/ko/o/199470 | SRE/DevOps, 2년+, K8s+Terraform+Ansible — 시리즈B 300억(KT, AMD), Tenstorrent 파트너십. 사이닝 1000만 원은 2026-05-31 종료된 과거 프로모션으로 현재 혜택 아님. 매출 7.3억 작음은 런웨이 체크 필요 |
+| 노타(Nota) | https://career.nota.ai/en/o/199925 | 2026.06 당시 DevOps Engineer, 5년+, Kubernetes, AWS, Terraform, PyPI. 코스닥 상장(A486990), 삼성, LG, 네이버, 카카오 투자, Exynos 2600 공급과 공개 리뷰 4.0은 당시 메모이며 근거 링크가 남아 있지 않다. 지원 시 공고와 각 회사 사실을 재검증한다. |
+| CLO 클로버추얼패션 | https://jobs.lever.co/clovirtualfashion/1fcfaf81-2258-409d-b0df-ff1a3d6f6235 | 2026.06 당시 DevOps, 2~10년, Kubernetes, Terraform, AWS, Azure, GCP 멀티클라우드. 유니콘, 시리즈 C 500억 원, 매출 475억 원, 3년간 매출 3배 성장, 해외 매출 비중 90%와 아카데미 수상은 당시 메모이며 근거 링크가 남아 있지 않다. 재무 수치와 채용 요건은 재검증한다. |
+| 모레(MOREH) | https://moreh.career.greetinghr.com/ko/o/199470 | 2026.06 당시 SRE/DevOps, 2년+, Kubernetes, Terraform, Ansible. 시리즈 B 300억 원, KT와 AMD 투자, Tenstorrent 파트너십, 매출 7.3억 원과 2026.05.31 종료 사이닝 프로모션은 당시 메모이며 근거 링크가 남아 있지 않다. 런웨이와 채용 요건을 재검증한다. |
 
 ### A티어
 
-| 기업 | 링크 | 비고 |
+| 기업 | 당시 JD 링크 | 비고 |
 | --- | --- | --- |
-| 사각 (마이데이터, 헬스케어 B2C) | https://www.wanted.co.kr/wd/338042 | 백엔드 SW 엔지니어 1~8년(연차 통과), 백엔드 API 설계와 운영, Docker, **동적 크롤링 데이터 수집** 필수. 금융과 의료 마이데이터 B2B에 디지털 헬스케어 B2C, AI 플랫폼 — 마이데이터는 정합성이 생명이라 정합성과 스크래핑 강점 직격, B2C 경험 욕구도 충족. ⚠️ 공고에 기술 스택 미명시(NestJS/TS 여부 지원 전 확인 필요), 온사이트 영등포. 상시채용 |
-| 마이프랜차이즈 (마이프차, 창업/프랜차이즈 중개) | https://www.wanted.co.kr/wd/349093 | 백엔드 **5년+**(본인 4년 10개월 근접), **Node.js/NestJS/TS/MongoDB/Docker/Kubernetes/ECS/AWS/GraphQL/Redis/BullMQ — 스택 거의 완벽 매치**(BullMQ는 본인 메시지 브로커 비교 카드와 동형), 우대 LLM API 연동과 프롬프트 최적화. 빅데이터 상권분석 창업 플랫폼, 누적 투자 130억, 개발본부 12명(백5/프3/디1/기3), 업력 7년, 강남. **잡플래닛 3.5(경영진 3.2, 추천율 54%, CEO지지 69%로 무난)**. 리스크: 5년+ 컷(근접), 2024 영업이익 -21억이라 런웨이 확인. 마감 26.06.15 — 공고 만료 |
-| 중고나라 (국내 최대 중고거래, Node+Java) | https://www.wanted.co.kr/wd/356894 | 백엔드 **3년+(통과)**, **Node.js(JS/TS)/NestJS** 또는 Java/Kotlin/Spring(Node로 지원 가능), **MSA + AWS Serverless(Lambda/DynamoDB/API GW) + WebSocket/OpenSearch — 스택 매치 강**, 우대 AI 활용 자동화/신규 서비스. 2,500만 거래 국내 최대 중고거래 플랫폼(B2C 대규모 트래픽 = 본인 B2C 갈증 충족), 강남 테헤란로. **잡플래닛 워라밸 긍정(주 4.5일, 수평 문화)**, 2024 매출 118억 영업이익 -21억이나 2026 흑자 전환 + 유진자산운용 추가 투자. 리스크: 평균연봉 4,298만 낮은 편, 본인 과거 지원이 포지션 마감 통보(회사 탈락 아님, 재지원 가능). 상시 |
-| NE능률 (영어교육 EduTech, 코스닥) | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=54001288 | 백엔드 **3년+(통과)**, **Node.js/Express, Aurora PostgreSQL, AWS(ECS Fargate/RDS/S3/CloudFront) — Node 코어 정확 매치(단 NestJS 아닌 Express)**, 레거시(Classic ASP+MSSQL) 모던 스택 전환 + MSSQL→PostgreSQL 마이그레이션 미션, **우대에 Claude Code 명시 + AI Native, 오너십 인재상(본인 강점 직격)**. 회사: 코스닥 상장 영어교육 출판(1980 설립 업력 47년, 사원 460여 명, 매출 575억), 마포 상암 누리꿈스퀘어(수색역). 전형: 서류 → 인적성 → 실무/경영진 면접. **리스크: ① 잡플 평균연봉 3,609만 낮음(출판 직군 포함 수치, 개발직 밴드 지원 전 확인 — 쥬비스/러쉬에잇 처우 라인), ② 전통 출판 중견의 개발 조직 위상/문화 확인 필요, ③ 상암 통근(성남 기준 부담)**. 마감 26.06.26 — 공고 만료 |
-| 고래사 (고래사어묵, 식품 DX) | https://www.wanted.co.kr/wd/364872 | 백엔드 중심 풀스택, **3년+(통과)**, **Python 또는 Node.js 택1(Node 지원 가능)**, MySQL/PG 쿼리 최적화, AWS(RDS/S3/Lambda/EC2/QuickSight 중 2+), REST/외부 API 연동 — **발주/매출/재고/손익/ERP 데이터 파이프라인 + BI + 통합 어드민 = 트라이포드 VMI 발주 자동화 도메인 직격**, 엑셀/수기 업무 시스템화(토스플레이스 Operations 직무와 같은 결), Clean Data 정합성 체계 설계 명시(정합성 카드 직격). 부산 어묵 브랜드 전국 유통(50명 이하, 설립 10년+, 퇴사율 5% 이하), Agentic AI 업무 활용 지향, 송파(성남 통근 양호). **리스크: ① 사실상 1인 개발 가능성(혼자 시스템 전체 구축 우대 — 개발 조직 규모 지원 전 확인 필수), ② 비테크 식품 제조사의 개발 위상, ③ React/Vue 어드민 우대(풀스택 경향), ④ 처우 미기재**. 상시 |
-| 마인즈그라운드 (MICE, AI 플랫폼 신사업) | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=53996664 | AI 플랫폼(B2B SaaS) 백엔드, **3년+(통과)**, **Node.js/Python/Java 중 택1(Node 지원 가능)**, PG/MySQL 모델링과 쿼리 최적화, AWS(S3/RDS/ECS/Lambda/CloudWatch), 인증/인가와 관리자 등 SaaS 코어 — 우대 **AI/LLM API 연동(본인 AI 강점 직격), Vector DB/OpenSearch, 문서 파싱 파이프라인, 추천/매칭 시스템, 이벤트 로그 설계**. 회사: 2019 설립 글로벌 MICE(전시 컨벤션) 44명, CAGR 244%, DX KOREA 2026(국내 최대 방산전시) 공식 주관사, 서초 남부터미널(성남 통근 양호), 성과 인센티브제. **리스크: ① 본업이 전시 행사 대행(비테크) — AI 플랫폼은 신사업이라 개발 조직 규모와 위상 지원 전 확인 필수(고래사와 동일 패턴), ② 투자/매출 미공개, ③ 희망연봉 필수 기재**. 마감 26.06.26(조기 마감 가능) — 공고 만료 |
-| 유모스원 (UMOS ONE, 42dot 자회사 모빌리티) | https://www.wanted.co.kr/wd/364803 | Backend(Fleet Management System), **4년+(통과 — 언어 무관 이에 준하는 역량 인정 문구)**, 코어는 **Kotlin/Java + Spring Boot**, PostgreSQL/QueryDSL, **Kafka 이벤트 드리븐 + Redis 캐싱(본인 이벤트 아키텍처와 동형)**, AWS + K8s, 헥사고날/클린/DDD 이해 명시(장기 기술 축의 CS, OOP, 디자인 패턴과 아키텍처 범위와 일치) — 우대 **IoT/텔레매틱스 데이터 파이프라인, 모빌리티/물류/차량 관제 도메인(트라이포드 IoT VMI 직격, 에타일렉트로닉스급 도메인 매치), Resilience 패턴(서킷브레이커), WebSocket**. 회사: 42dot(현대차그룹 SDV) 자회사, 51~300명, 퇴사율 5% 이하, 차량 관제 Pleos Fleet + AI 운송 Capora, 신논현(통근 양호). **리스크: ① 실 코어 Kotlin/Java — 입사 후 스택 전환(지원은 언어 무관 문구로 가능), ② K8s 운영 경험 요구(본인 ECS, 갭), ③ AI 도구 언급 없음, ④ 같은 회사 WMS/TMS는 5년+, FMS-U는 7년+(Node 택1인데 연차 컷)라 이 FMS 공고가 유일 통과**. 상시 |
-| 더스윙 (SWING, 공유 모빌리티 1위) | https://www.wanted.co.kr/wd/364713 | 백엔드, **5~10년이나 이에 준하는 경험 인정 명시(본인 4년 10개월 근접 — 마이프차 라인)**, **Kotlin/Spring 메인인데 Kotlin 사용에 거부감 없음이면 OK라고 자격요건에 명시(비Kotlin 출신 수용 시그널)**, RDBMS/NoSQL, 우대 Redis/Kafka — **결제/구독/정산 등 복잡 비즈니스 도메인 요건(본인 발주 정산 결) + 우대 IoT 디바이스 연동, 위치 기반, 실시간 데이터(킥보드 15만대 운영 — 트라이포드 IoT 직격)**, **우대에 AI 도구(GPT, claude) 실무 적용 명시 + 복지에 AI 툴 구독비 지원**. 회사: 2024 매출 700억, **5년 연속 영업이익 흑자**, 공유 킥보드/자전거 업계 1위(디어 인수), SWING BIKE 라이더 리스 1위, 택시와 통학버스 확장, 광화문. **리스크: ① 입사 후 Kotlin 전환, ② 5년 컷 명목 미달(이에 준하는 경험으로 어필 필요)**. 마감 26.06.30 — 공고 만료 |
-| KG파이낸셜 (KG그룹 계열 핀테크, 스크래핑) | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=54149154 | IT본부 **스크래핑 개발자**, **3년+(통과)**, Python/Java + Spring + Oracle DB + AWS/Docker/REST — **스크래핑/데이터 수집 = 본인 강점 직격**(시솔지주 스크래핑, 사줘/사각과 같은 결) + 금융 데이터 연동 도메인. 코스닥 상장, 사원 149명, 2000년 설립, 서울 중구 케이지타워. **리스크: ① 주 언어 Python/Java(Node 아님 — 스크래핑 역량으로 어필), ② 공고 본문이 이미지라 상세 자격/우대 미확인(지원 전 확인), ③ 처우 면접 후 결정.** 마감 26.07.11 — 공고 만료 |
-| 하이스트레인저 (콘텐츠 테크, 영화 예측 CINEPICK) | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=54136124 | 백엔드, **경력 무관(신입 가능 — 시니어 처우 협의 필요)**, **언어 불문(하나 이상 프레임워크 경험 — Node 지원 가능)**, **캐시/메시지큐/비동기/컨테이너 + 대규모 트래픽 성능 튜닝/장애 대응 우대(본인 카드 동형)**, 콘텐츠 예측/추천 도메인(InsightFlow, Cinelab — 키노라이츠 결), 베를린영화제 EFM Startup 2025 선정. 종각역 300m, 유연근무(자율출근 8:30~10:00). **리스크: ① 경력 무관 혼합이라 시니어 포지션 아닐 수 있음(처우 협의), ② 3개월 수습(계약직)→정규직 전환, ③ 0→1 스타트업 운영 부담, ④ 처우 미기재.** 조기마감 가능, 마감 26.07.10 — 공고 만료 |
+| 사각 | https://www.wanted.co.kr/wd/338042 | 2026.06 당시 백엔드 SW 엔지니어 1~8년, 백엔드 API 설계와 운영, Docker, 동적 크롤링 데이터 수집을 요구했다. 금융, 의료 마이데이터 B2B, 디지털 헬스케어 B2C와 AI 플랫폼 맥락이 데이터 정합성과 스크래핑 경험, B2C 서비스 경험 관심에 맞는다고 판단했다. NestJS와 TypeScript 사용 여부가 공고에 없었고 영등포 온사이트, 상시채용 상태는 재확인한다. |
+| 마이프랜차이즈 | https://www.wanted.co.kr/wd/349093 | 2026.06 당시 백엔드 5년+, Node.js, NestJS, TypeScript, MongoDB, Docker, Kubernetes, ECS, AWS, GraphQL, Redis, BullMQ와 LLM API 연동 우대. 당시 경력 4년 10개월로 요건에 근접했고 메시지 브로커 경험을 포함해 스택 적합도가 높다고 판단했다. 빅데이터 상권분석 창업 플랫폼, 누적 투자 130억 원, 개발 조직 12명(백엔드 5, 프론트엔드 3, 디자인 1, 기획 3), 리뷰 3.5, 추천율 54%, CEO 지지 69%와 2024 영업손실 21억 원은 당시 메모이며 근거 링크가 남아 있지 않다. 5년 요건, 재무와 조직 상태를 재검증한다. 2026.06.15 마감 공고였다. |
+| 중고나라 | https://www.wanted.co.kr/wd/356894 | 2026.06 당시 백엔드 3년+, Node.js 또는 Java, NestJS, MSA, AWS Serverless(Lambda, DynamoDB, API Gateway), WebSocket, OpenSearch와 AI 활용 자동화 우대. 2,500만 거래 규모, 강남 근무, 리뷰의 주 4.5일과 수평 문화, 2024 매출 118억 원, 영업손실 21억 원, 공개 평균 급여 통계 4,298만 원, 2026년 흑자 전환과 추가 투자 보도는 당시 메모이며 근거 링크가 남아 있지 않다. 스택은 대규모 트래픽 경험 관심에 맞는다고 판단했다. 과거 지원은 포지션 마감으로 끝나 재지원 가능 대상으로 남겼고, 모든 회사 사실은 재검증한다. |
+| NE능률 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=54001288 | 2026.06 당시 백엔드 3년+, Node.js/Express, Aurora PostgreSQL, AWS(ECS Fargate, RDS, S3, CloudFront), Classic ASP와 MSSQL에서 PostgreSQL로의 전환 과제와 Claude Code 우대. Node 코어와 마이그레이션 경험에 맞는다고 판단했다. 1980년 설립, 약 460명, 매출 575억 원과 공개 평균 급여 통계 3,609만 원은 당시 메모이며 근거 링크가 남아 있지 않다. 전형은 서류, 인적성, 실무와 경영진 면접으로 적혀 있었다. 개발 조직의 위상, 직군 급여 밴드와 통근 부담은 재확인한다. 2026.06.26 마감 공고였다. |
+| 고래사 | https://www.wanted.co.kr/wd/364872 | 2026.06 당시 백엔드 중심 풀스택 3년+, Python 또는 Node.js, MySQL과 PostgreSQL 쿼리 최적화, AWS(RDS, S3, Lambda, EC2, QuickSight 중 2개 이상), REST와 외부 API 연동. 발주, 매출, 재고, 손익, ERP 데이터 파이프라인과 통합 어드민, Clean Data 정합성 설계가 데이터 정합성과 업무 자동화 경험에 맞는다고 판단했다. 전국 유통 식품 브랜드, 송파 근무, 50명 이하, 설립 10년+와 퇴사율 5% 이하는 당시 메모이며 근거 링크가 남아 있지 않다. 1인 개발 가능성은 가설이며 개발 조직 규모, 프론트엔드 비중, Agentic AI 활용 방식과 보상 정보는 지원 전 확인한다. |
+| 마인즈그라운드 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=53996664 | 2026.06 당시 AI 플랫폼 B2B SaaS 백엔드 3년+, Node.js/Python/Java, PostgreSQL과 MySQL, AWS, 인증과 인가, 관리자 기능. AI와 LLM API, Vector DB와 OpenSearch, 문서 파싱, 추천과 매칭, 이벤트 로그 우대가 강점과 맞는다고 판단했다. 2019년 설립, 44명, CAGR 244%, DX KOREA 2026 공식 주관사와 성과 인센티브제는 당시 메모이며 근거 링크가 남아 있지 않다. AI 플랫폼의 조직 우선순위와 개발 조직 위상은 신사업이라는 점에서 가설로 두고 확인한다. 2026.06.26 마감 공고였다. |
+| 유모스원 | https://www.wanted.co.kr/wd/364803 | 2026.06 당시 Fleet Management System 백엔드 4년+, 언어 무관, Kotlin/Java와 Spring Boot, PostgreSQL/QueryDSL, Kafka, Redis, AWS, Kubernetes, 헥사고날, 클린, DDD. IoT와 텔레매틱스 데이터, Resilience, WebSocket 우대가 이벤트 아키텍처 경험과 맞지만 Kotlin/Java와 Kubernetes 운영은 보완 과제로 판단했다. 42dot의 현대차그룹 SDV 계열, Pleos Fleet과 Capora, 51~300명과 퇴사율 5% 이하는 당시 메모이며 근거 링크가 남아 있지 않다. 같은 시기 다른 공고의 경력 요건도 당시 메모이므로 현재 공고와 함께 재확인한다. |
+| 더스윙 | https://www.wanted.co.kr/wd/364713 | 2026.06 당시 백엔드 5~10년이지만 이에 준하는 경험을 인정하고 Kotlin 사용에 거부감이 없으면 된다고 명시했다. RDBMS와 NoSQL, Redis와 Kafka, 결제, 구독, 정산, IoT 디바이스와 실시간 데이터, AI 도구 활용 우대가 경험에 맞는다고 판단했다. 2024 매출 700억 원, 5년 연속 영업이익 흑자, 공유 모빌리티 업계 1위, 디어 인수와 사업 확장은 당시 메모이며 근거 링크가 남아 있지 않다. Kotlin 전환과 경력 요건은 재검증한다. 2026.06.30 마감 공고였다. |
+| KG파이낸셜 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=54149154 | 2026.06 당시 IT본부 스크래핑 개발자 3년+, Python/Java, Spring, Oracle, AWS/Docker, REST. 데이터 수집과 스크래핑 경험이 직접 맞는다고 판단했다. 코스닥 상장, 2000년 설립, 약 149명과 서울 중구 소재는 당시 메모이며 근거 링크가 남아 있지 않다. 주 언어 전환과 이미지형 공고의 상세 자격 요건은 지원 전에 확인한다. 2026.07.11 마감 공고였다. |
+| 하이스트레인저 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=54136124 | 2026.06 당시 백엔드, 경력 무관, 언어와 프레임워크 경험, 캐시, 메시지 큐, 비동기, 컨테이너, 대규모 트래픽 성능과 장애 대응 우대. 콘텐츠 예측과 추천 도메인, 베를린영화제 EFM Startup 2025 선정, 종각역 인근과 자율출근 시간은 당시 메모이며 근거 링크가 남아 있지 않다. 경력 무관 공고가 시니어 역할에 맞는지, 계약직 수습 후 정규직 전환 조건과 0→1 운영 부담은 지원 전 확인한다. 2026.07.10 마감 공고였다. |
 
 ## 지원 완료 (응답 대기)
 
@@ -94,3 +94,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 | 기업 | 결과 | 사유 |
 |------|------|------|
+
+## 과거 이직 기록
+
+- [[Job-Search-Tracker-2024-2026-Kinolights|2024.11-2026.06 이직 활동 기록]]

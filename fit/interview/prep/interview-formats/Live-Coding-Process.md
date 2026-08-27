@@ -123,6 +123,6 @@ Q. 막혔을 때 어떻게 하는가?
 
 ## 관련 문서
 - [[System-Design-Practice-Topics|시스템 설계 연습 주제 카탈로그]]
-- [[Interview-Prep-Template|면접 준비 템플릿]]
+- [[Interview-Prep-Template|회사와 차수 기반 준비 문서 템플릿]]
 - [[Developer-Interview-Signals|개발자 면접 시그널]]
-- [[Interview-Analysis|면접 탈락 원인 분석]]
+- [[Interview-Analysis|공개 정보 기반 준비 자료 점검]]

@@ -5,86 +5,66 @@ category: "Interview - Fit"
 aliases: ["TossPlace Code Tour", "토스플레이스 코드 투어 동선"]
 ---
 
-# 토스플레이스 직무 면접 — 코드 투어 동선 (화면 공유)
+# 토스플레이스 1차 직무 면접 화면 공유 동선
 
-> 6/9(화) 11:00 화상. **과제를 화면 공유로 직접 보여주며 설명.** AI 도구 끄고 진행.
-> 이 문서는 *무슨 답*(디펜스 시트)이 아니라 *화면에서 어떻게 보여줄지*. 경로는 `packages/server/` 기준.
-> ⚠️ 토스 저작권. 공개 저장소 푸시 금지.
+> 2026-06-09 11:00 화상 면접에서 AI 도구를 끄고 화면 공유로 설명하기 위해 준비한 순서다. 사전 과제의 원문, 코드, 파일 경로와 비공개 요구사항은 제외하고, 화면에서 설명할 설계와 검증 흐름만 보존한다.
 
-## 0. 시작 전 세팅 (전날 + 5분 전)
+## 시작 전 준비
 
-- [ ] **코파일럿/커서 에이전트 끄기** (잊기 쉬움, 화면에 자동완성 뜨면 감점)
-- [ ] 프로젝트 열고 **파일 트리 펼쳐두기**, 에디터 폰트 키우기(화면 공유 가독성)
-- [ ] 터미널 준비 — `pnpm test`, `pnpm dev` 바로 칠 수 있게
-- [ ] `db.sqlite`는 seed 상태 확인(데모 시 로그인 정보: seed-data 참고)
-- [ ] 불필요한 탭/알림/메신저 닫기 (화면 공유에 다 보임)
-- [ ] Meet 링크 5분 전 접속, 마이크/화면 공유 권한 미리 테스트
+- 화면 공유 전 개인 알림과 불필요한 창을 닫고, 실행 가능한 환경과 테스트 결과를 확인한다.
+- 처음에는 전체 책임 경계와 핵심 불변식을 짧게 보여주고, 질문이 나온 영역만 깊게 연다.
+- 모르는 부분은 추측하지 않고 당시 구현에서 확인한 사실, 아직 검증할 방법, 개선안을 구분한다.
 
-## 1. 주도형 투어 동선 (플로어 잡으면 이 순서로)
+## 주도형 설명 순서
 
-> 면접관이 "과제 설명해주세요" 하면 끌려가지 말고 본인이 구조부터. "먼저 전체 구조를 보여드리고, 까다로웠던 부분 위주로 들어가겠습니다."
+1. **문제 경계와 책임 분리**
+   - HTTP 요청 처리, 유스케이스 조율, 상태 규칙, 외부 전송을 분리한 이유를 설명한다.
+   - 핵심 규칙은 프레임워크와 저장소에 덜 묶이도록 모델링했고, 변경 이유가 다른 책임을 한 객체에 쌓지 않으려 했다.
 
-**① 폴더 구조로 아키텍처 (2분)** — `src/` 트리
-- domain/{reservation, api-key, ...}/{application, presentation, core, dto} + infrastructure + common
-- 한 줄: "컨트롤러에 다 있던 걸 책임별로 분리. 컨트롤러는 HTTP 어댑터, 비즈니스는 use-case, 슬롯 룰은 1급 도메인 객체."
+2. **대기와 확정 상태 전이**
+   - 충돌한 요청을 대기 상태로 보관하고, 자원이 비면 생성 순서와 결정적인 동률 기준으로 검토했다.
+   - 확정된 항목 전체와 충돌하지 않는 후보만 올리고, 새 확정 항목도 즉시 검사 집합에 넣었다.
+   - 선두 후보가 막혀도 뒤 후보의 가능성을 검토하는 이유와, 끝 시각과 다음 시작 시각이 맞닿는 반열림 구간 규칙을 설명한다.
 
-**② ISSUE 예약 대기 — 핵심 (8분)**
-- `domain/reservation/core/reservation-slot.ts` → `promotePending()` 띄우고 FIFO + 단일 패스 + 가동률 우선 설명. 부분 충돌(C 09:30~10:30 vs D 09:00~10:00) 케이스
-- `domain/reservation/core/entities/reservation.entity.ts` → `overlapsWith`(반열림 구간), `confirm/markPending`
-- `domain/reservation/application/create-reservation.use-case.ts` → 확정 겹치면 PENDING, 비면 confirm
-- `domain/reservation/application/remove-reservation.use-case.ts` → 취소 시 flush 후 재조회 → promotePending
+3. **동시 요청 정합성**
+   - 확정 상태 조회, 상태 판단, 저장을 하나의 트랜잭션 경계로 잡은 이유를 설명한다.
+   - 과제의 SQLite 실행 환경에서 둔 전제와, 운영용 관계형 데이터베이스에서 자원 잠금, 충돌 제약, 데드락 재시도를 함께 설계해야 하는 점을 구분한다.
 
-**③ 동시성 — 강한 카드 (5분)**
-- `create-reservation.use-case.ts` **헤더 주석** 그대로 띄우기. 이게 곧 답변임 — SQLite 단일 writer / MySQL이면 PESSIMISTIC_WRITE(FOR UPDATE) / PG면 btree_gist EXCLUDE 제약 / 데드락은 room,date 사전순 락
-- 천천히 짚으며 읽어주기. "이 부분은 주석에 트레이드오프를 정리해뒀습니다."
+4. **알림과 후속 처리**
+   - 알림 타입, 메시지 구성, 실제 전송을 분리해 새 전송 수단이 상태 전이 규칙을 바꾸지 않게 했다.
+   - 이벤트와 리스너 분리는 했지만, 영속 Outbox나 큐 기반 전달 보장은 구현하지 않았다는 한계를 먼저 구분한다.
+   - 다중 인스턴스에서는 스케줄 중복, 발송 전 마킹에 따른 유실, 소비자 멱등성을 별도로 설계해야 한다.
 
-**④ ISSUE 알림 (5분)**
-- `infrastructure/notifications/senders/` → email/sms sender(전략), `notification-channel.ts`
-- `infrastructure/notifications/reservation-notification.listener.ts` → 이벤트 구독(결합 분리)
-- `domain/reservation/application/collect-due-reminders.use-case.ts` + `presentation/reservation-reminder.scheduler.ts` → 매분 크론 + reminderSentAt 멱등 가드
+5. **인증, 인가와 입력 검증**
+   - 무작위 비밀값은 해시 저장과 상수 시간 비교를 적용하고, 비밀번호와 같은 방식으로 다루지 않은 이유를 설명한다.
+   - 인증 실패와 권한 부족을 나눴고, 조회 권한은 데이터 접근 조건에서 제한했다.
+   - 형식 검증만으로 충분하지 않은 실제 참조 존재 여부, 시간 범위, 관계 무결성은 별도로 확인해야 했다는 보완점도 함께 말한다.
 
-**⑤ ISSUE API Key (5분)**
-- `domain/api-key/core/api-key.token.ts` → 형식, SHA-256 해시, 상수시간 비교
-- `domain/api-key/core/api-key.scopes.ts` → 정규화(미래 확장)
-- `domain/api-key/application/authenticate-api-key.use-case.ts` → prefix 조회 → 해시 검증 → 활성/만료
-- `common/guards/auth-or-api-key.guard.ts` → JWT 쿠키와 통합
+6. **테스트와 성능 검증**
+   - 대기 승격 규칙은 단위 테스트, 저장소와 요청 경계는 실제 SQLite 기반 통합 테스트로 나눴다.
+   - 시간과 외부 전송을 통제해 재현성을 만들고, 접두 검색은 인덱스와 실행 계획으로 검증했다.
+   - 경쟁 요청, 입력 길이와 결과 제한은 추가로 테스트해야 할 영역이었다.
 
-**⑥ ISSUE 검색 + 권한/검증 (4분)**
-- `domain/user/application/search-users-by-prefix.use-case.ts` → NOCASE 인덱스
-- `common/validators/is-calendar-date.validator.ts` → 그레고리력 실제 존재 검증
-- 권한: use-case의 `isOrganizedBy`(403) vs 가드(401)
+## 질문별 설명 지도
 
-**⑦ 테스트로 마무리 — 신뢰 카드 (3분)**
-- 터미널에서 `pnpm test` 라이브 실행 → 통과 보여주기
-- `test/integration/reservation/reservation-waiting.test.ts` 열어 대기 승격 시나리오 검증을 보여주기
-- "실 SQLite로 통합 테스트, 검색은 EXPLAIN QUERY PLAN으로 실행계획까지 고정했습니다."
+| 질문 주제 | 본인 설명의 핵심 | 바로 인정할 한계 |
+| --- | --- | --- |
+| 대기 처리 순서 | 대기 순서, 충돌 검사, 상태 불변식을 분리 | 정책이 늘면 상태 객체 밖으로 정책을 추출 |
+| 동시 요청 | 트랜잭션 경계와 데이터베이스별 직렬화 수단 | 테스트 환경의 전제를 운영 해법으로 일반화하지 않음 |
+| 알림 채널 추가 | 전송 인터페이스와 구현을 분리 | 영속 전달과 재시도는 별도 설계 필요 |
+| 인증 정보 보호 | 고엔트로피 비밀값, 해시 저장, 상수 시간 비교 | 허용 알고리즘 제한과 오류 일반화 필요 |
+| 검색 성능 | 접두 검색용 인덱스와 실행 계획 | 최소 길이, 결과 제한, 페이지 경계 필요 |
+| 권한 오류 | 인증과 인가의 책임 및 응답 범위를 구분 | 참조 존재와 데이터베이스 제약을 보완 |
+| 테스트 전략 | 단위와 통합 테스트의 검증 대상을 분리 | 경쟁 요청과 시간 경계 테스트 추가 |
 
-## 2. 리액티브 맵 (면접관이 물으면 → 즉시 이 파일)
+## 발표 원칙
 
-| 질문 | 열 파일 | 짚을 포인트 |
-|---|---|---|
-| 대기 확정 순서/알고리즘 | `reservation/core/reservation-slot.ts` | promotePending, FIFO+id, 단일 패스 |
-| 동시 예약 정합성 | `reservation/application/create-reservation.use-case.ts` 헤더 | 트랜잭션 경계, SQLite vs RDB 락 |
-| 취소 시 승격이 어떻게 | `reservation/application/remove-reservation.use-case.ts` | flush 후 재조회, wasConfirmed 가드 |
-| 겹침 판정/반열림 | `reservation/core/entities/reservation.entity.ts` | overlapsWith |
-| 알림 확장(카톡 추가) | `infrastructure/notifications/senders/` | NotificationSender 전략, 레지스트리 |
-| 리마인더 중복/누락 | `reservation/application/collect-due-reminders.use-case.ts` | reminderSentAt, 트랜잭션 원자성, 후보 범위 |
-| API Key 저장/검증 | `api-key/core/api-key.token.ts` | SHA-256, 상수시간 비교 |
-| scope 권한 | `api-key/core/api-key.scopes.ts` | 정규화, default 와일드카드(enforcement는 다음) |
-| 두 인증 통합 | `common/guards/auth-or-api-key.guard.ts` | Bearer면 키, 없으면 쿠키 |
-| 검색 최적화 | `user/application/search-users-by-prefix.use-case.ts` | NOCASE 인덱스, EXPLAIN 고정 |
-| 날짜 검증 | `common/validators/is-calendar-date.validator.ts` | 그레고리력 실제 존재 |
-| 권한 401 vs 403 | `reservation/application/remove-reservation.use-case.ts` | isOrganizedBy(403), 가드는 401 |
-| 테스트 전략 | `test/integration/`, `test/unit/` | 실 SQLite, EventEmitter spy, 드롭+시드 |
+- 구현 세부를 나열하기보다 선택한 이유, 전제, 대안을 먼저 말한다.
+- 의도적으로 뒤로 미룬 범위는 현재 전제와 다음 보완 방법을 함께 말한다.
+- 실제 누락은 변명하지 않고 영향, 수정 방향, 재발 방지 테스트를 함께 제시한다.
 
-## 3. 화면 공유 진행 팁
+## 관련 기록
 
-- **주도권**: "이 부분은 코드로 보여드릴게요" 하고 본인이 파일을 연다. 말로만 설명하다 막히면 바로 해당 코드를 띄워 짚기 — 화면 공유의 최대 장점
-- **주석 활용**: 본인이 단 설계 주석(동시성, ReservationSlot 헤더)이 곧 답변. 천천히 짚으며 읽어주기
-- **약점 질문**: 디펜스 시트 §7대로 — 의도적 미구현은 트레이드오프로 선긋고(scope, 분산 락), 진짜 누락은 인정(과거 시각, SMS 렌더링). 화면에서 "여기 보시면 이 부분은 일부러 비워뒀습니다"로 정직하게
-- **모르는 질문**: 추측 금지. "이 부분은 지금 확신이 없는데, 코드를 보면서 짚어보겠습니다" 하고 관련 파일 열어 같이 추론
-- **속도**: 면접관이 특정 이슈만 깊게 파면 동선을 버리고 따라가되, 안 본 강점(동시성, 테스트)은 끝에 "한 가지만 더 보여드려도 될까요"로 챙기기
-
-## 관련 문서
-- [[Interview-Prep-TossPlace-1st-Assignment-Defense|디펜스 시트 (3뎁스 드릴)]]
-- [[Interview-Prep-TossPlace-1st-Model-Answers|모범답변 스크립트]]
+- [[Interview-Prep-TossPlace-1st|1차 직무 면접 준비 기록]]
+- [[Interview-Prep-TossPlace-1st-Assignment-Defense|사전 과제 기반 설계 설명 기록]]
+- [[Interview-Retro-TossPlace-1st|1차 직무 면접 회고]]

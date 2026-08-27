@@ -5,64 +5,57 @@ category: "Interview - 내 답변 마스터"
 aliases: ["내 기술 답변 마스터", "My Tech Cards"]
 ---
 
-# 내 이력서 기반 기술 답변 카드 — TOC
+# 내 이력서 기반 기술 답변 카드
 
-> **8개 마스터 카드**. 회사 문서마다 다시 쓰지 말고 여기서 fork. 각 카드 끝에 **도메인 매핑 한 줄**만 회사 컨텍스트로 교체.
-> **답변 룰**: 결론 1줄 → 트레이드오프(왜 그 선택) → 도메인 매핑 1줄 → 꼬리 대비. 30~45초.
+> 회사별 문서는 이 카드에서 fork하고, 회사 컨텍스트는 공개 채용 정보만으로 한 줄 매핑한다. 내부 수치와 운영 임계값은 넣지 않는다. 특정 면접의 문답과 전형 기록은 회고에 보존하고, 이 카드에는 재사용 가능한 본인 설명만 둔다.
 
-## 카드 목차
+## 답변 구조
 
-### [[My-Tech-Cards-Data|데이터/메시징 — 카드 1, 2, 3, 4]]
-- **카드 1**: 850대 IoT 환경의 동시 정합성 — DB Lock 전략 (SELECT FOR UPDATE NOWAIT)
-- **카드 2**: EventBridge + SQS 이벤트 아키텍처 (발주 자동화, 당시 MSK 대비 비용/운영 조건 비교)
-- **카드 3**: 슬로우 쿼리 99.3% 개선 (복합 인덱스 + 카디널리티 분석, 15.4ms → 0.1ms)
-- **카드 4**: Prisma → MySQL SubQuery API 응답 90% 개선 (`relationLoadStrategy: 'join'`)
+결론을 먼저 말하고, 선택 이유와 트레이드오프를 설명한 뒤, 검증 방법과 지원 회사의 공개된 문제를 연결한다. 기억이 불확실한 수치는 말하지 않고 재현 가능한 검증으로 바꾼다.
 
-### [[My-Tech-Cards-Ops|관측, 인프라, 아키텍처 — 카드 5, 6, 7, 8]]
-- **카드 5**: Grafana/Prometheus/Loki 관측 인프라 (GPL 자체 호스팅, 정적 임계 경보와 SLO 개선 설계)
-- **카드 6**: Docker 멀티스테이지 + ECS Fargate 전환 (909MB → 513MB, 3분 → 2분)
-- **카드 7**: Clean Architecture 스타일 + NestJS 모듈 설계 (5계층)
-- **카드 8**: 캐시 전략 — Cache-Aside + 스탬피드 방어 (3초 → 0.9초)
+### [[My-Tech-Cards-Data|데이터와 메시징]]
 
-## 답변 룰 요약
+- **카드 1**: IoT 입력 동시 갱신, `NOWAIT` DB Lock과 제한 재시도
+- **카드 2**: EventBridge, SQS와 DLQ를 이용한 비동기 처리, 미적용 Outbox 개선안
+- **카드 3**: 최신 상태 조회의 실행 계획, 복합 인덱스, 쿼리 재검증
+- **카드 4**: Prisma 관계 로딩 전략, 생성 SQL, API 지연 분석
 
-1. **결론 먼저 한 줄** → 근거, 트레이드오프 → **도메인 매핑 한 줄** → 꼬리 대비
-2. **모르면 "모릅니다 + 인접 지식 + 어떻게 알아낼지"** — 추측 금지
-3. **"왜 그 선택?"이 항상 따라옴** — 대안과 트레이드오프 함께
-4. **도메인으로 끌어오기** — 마지막에 "{회사}에서는 ~로 매핑됩니다" 한 줄로 닫으면 가산점
+### [[My-Tech-Cards-Ops|관측, 인프라, 아키텍처]]
 
-## vault 카테고리 인덱스 — 답변 보강 시 어디 보면 되는지
+- **카드 5**: 구조화 로그, Prometheus 메트릭, Grafana와 Loki 관측 설계
+- **카드 6**: Docker 멀티스테이지와 관리형 컨테이너 배포 경로
+- **카드 7**: Clean Architecture 스타일, UseCase와 NestJS 모듈 경계
+- **카드 8**: Cache Warming, Cache-Aside, 스탬피드 방어
 
-> 마스터 카드 본문이 얕게 느껴지면 아래 vault 파일을 직접 읽고 **마스터 본문에 콘텐츠 흡수** (위키링크가 아니라 수치, 비교, 꼬리 자체). 회사별 면접 문서에 반영할 때는 `interview-prep` 스킬의 답변 생성 절차를 따른다.
+### [[My-Tech-Cards-Extended|심화 비교와 꼬리 질문]]
 
-### 카드별 매핑
+- 잠금, 전달 보장, 쿼리 계획, 관측성, 인프라 전환의 대안과 조건
+- 공식 문서에서 확인 가능한 서비스 한도와 버전 차이
 
-- **카드 1 DB Lock**: [[Lock]], [[Lock-Deadlock]], [[MySQL-InnoDB-Locking-and-Deadlocks]], [[DML-Conflict-and-Batch-Patterns]], [[Retry-Backoff-Jitter]], [[Lock-Wait-Convoy]], [[Isolation-Level]], [[Isolation-Level-Beyond-ANSI]], [[Race-Condition-Patterns]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]], [[MySQL-InnoDB-Tuning]], [[Transactions]]
-- **카드 2 EventBridge+SQS**: [[Event-Driven-Architecture]] (전체 그림 — 8개 결정 층), [[EventBridge]], [[EventBridge-SQS-Target]], [[SQS]], [[SQS-Consumer-Lambda-vs-ECS]], [[SNS]], [[브로커(Brokers)]], [[Messaging-Broker-Comparison]], [[Delivery-Semantics]], [[CDC&Outbox]], [[Transactional-Outbox]], [[Idempotency-Key]], [[Idempotent-Consumer]], [[SQS-Worker-Reliability]]
-- **카드 3 슬로우 쿼리**: [[Index]], [[Covering-Index]], [[B-Tree-Index-Depth]], [[MySQL-Slow-Query-Diagnosis]], [[MySQL-Query-Pipeline-and-Sorting]], [[Execution-Plan]], [[SQL-Tuning-Terminology]], [[Pagination-Optimization]], [[MySQL-Partitioning]], [[OLTP-vs-OLAP]]
-- **카드 4 Prisma/ORM**: [[Prisma-Query-Performance]], [[TypeORM-QueryBuilder]], [[TypeORM-Transactions-and-Replication]], [[ORM]], [[ORM-Impedance-Mismatch]], [[Domain-ORM-Mapper]], [[SQL-Joins]]
-- **카드 5 관측 인프라**: [[관측가능성(Observability)]], [[Logs-vs-Metrics]], [[Application-Performance-Monitoring]], [[Prometheus]], [[RED-USE-Method]], [[SLI-SLO]], [[Cardinality]], [[Container-Monitoring]], [[Correlation-ID]], [[OpenTelemetry]], [[Exemplars]], [[Loki]], [[Thanos]], [[Grafana-Alerting]], [[Alert-Fatigue]], [[Incident-Detection-Logging]], [[CloudWatch]]
-- **카드 6 Docker/ECS**: [[Docker]], [[Multi-Stage-Build]], [[Image-Size-Optimization]], [[Docker-Image-Pipeline]], [[ECS]], [[ELB]], [[ECS-Service-AutoScaling]], [[ECS-Rolling-Deployment]], [[ECS-Secrets-Injection]], [[Container-Entrypoint-Signals]], [[K8s-Resource-Right-Sizing]], [[Blue-Green]], [[Replication]], [[Read-Replica-Routing]]
-- **카드 7 Clean Architecture/NestJS**: [[DDD&Hexagonal]], [[DDD]], [[DDD-Hexagonal-In-Production]], [[Layered-Clean-Hexagonal]], [[Clean-Architecture-NestJS]], [[RxJS-Essentials]], [[NestJS]], [[Custom-Provider]], [[Request-Lifecycle]], [[NestJS-Middleware]], [[NestJS-Guards]], [[NestJS-AOP-Interceptor]], [[Injection-Scopes]], [[NestJS-Circular-Dependency]]
-- **카드 8 캐시/Redis**: [[Cache-Basics]], [[Cache-Decision]], [[Cache-Strategies]], [[Cache-Invalidation]], [[Cache-Stampede]], [[Redis-Architecture]], [[Redis-Data-Structures]], [[Redis-Streams-PubSub]], [[Redis-Cluster-Sharding]], [[Rate-Limiting]], [[External-Collection-Pipeline-Reliability]], [[NestJS-Caching-Integration]]
+## 말하기 원칙
 
-### 범용 백엔드 안전망 (마스터 카드 밖 질문 대비)
+- 내부 성과는 문제, 선택, 검증, 사용자 영향 순서로 설명한다.
+- 실제 운영 수치, 고객 정보, 배포 일정, 경보 기준은 공개하지 않는다.
+- 기술 선택은 제품 규모를 추측해 단정하지 않고, 데이터 특성, 실패 비용, 운영 능력을 기준으로 비교한다.
+- 모르는 범위는 아는 척하지 않고, 인접한 경험과 확인할 방법을 구분해 답한다.
 
-- **Node.js/V8/이벤트 루프**: [[Event-Loop]], [[Event-Loop-Phases]], [[Event-Loop-Microtask]], [[Single-vs-Multi-Thread]], [[Worker-Threads]], [[Nodejs-Clustering]], [[V8]], [[V8-Ignition-TurboFan]], [[OOM-Troubleshooting]], [[Debugging-Profiling-Memory]]
-- **NestJS 심화**: [[NestJS-Lifecycle]], [[Request-Lifecycle]], [[Custom-Provider]], [[NestJS-Pipes]], [[NestJS-Exception-Filter]], [[NestJS-Custom-Decorator]], [[NestJS-Microservices]], [[NestJS-vs-Spring]]
-- **TypeScript**: [[타입스크립트(TS)]], [[TS-Type-Narrowing]], [[TS-Type-vs-Interface]], [[TS-Pattern-Matching]], [[Runtime-Validation-Libraries]], [[TypeScript-Type-Level-Programming]]
-- **HTTP/REST/네트워크**: [[HTTP]], [[REST]], [[HTTP-Status-Code]], [[Idempotency]], [[Rate-Limiting]], [[API-Comparison]], [[GraphQL]], [[gRPC]], [[HTTPS-TLS]], [[TCP-Handshake]], [[OSI-7-Layer]], [[Cookie]]
-- **인증/보안**: [[인증(Auth)]], [[Auth-Method-Selection]], [[JWT]], [[Session]], [[OAuth2]], [[Refresh-Token-Rotation]], [[FIDO-WebAuthn]], [[FIDO-Seminar]], [[CSRF]], [[CORS]], [[XSS]]
-- **RDBMS 심화**: [[RDBMS]], [[Normalization]], [[Sharding]], [[MySQL-vs-PostgreSQL]], [[MySQL-Architecture]], [[Schema-Migration-Large-Table]]
-- **테스트/CI/CD**: [[Test-Pyramid]], [[TestContainers-Integration]], [[NestJS-Testing]], [[TDD-BDD]], [[CICD-Basics]], [[GitHub-Actions]]
-- **외부 API/시스템 디자인**: [[External-API-Integration-Patterns]], [[External-Service-Resilience]], [[System-Design-Practice-Topics]], [[OLTP-vs-OLAP]], [[SCD-Type2]]
-- **실시간 통신**: [[실시간(Realtime)]], [[Realtime-Communication-Comparison]], [[WebSocket]], [[STOMP-Protocol]], [[NestJS-WebSocket-Gateway]]
-- **AWS**: [[ECS]], [[EventBridge]], [[SQS]], [[SNS]], [[VPC]], [[IAM]], [[CloudWatch]]
+## vault 심화
 
-## 관련 문서
+- **카드 1**: [[Lock]], [[Lock-Deadlock]], [[Transactions]], [[Isolation-Level]], [[Race-Condition-Patterns]], [[Retry-Backoff-Jitter]], [[Lock-Wait-Convoy]], [[Transaction-Lock-Contention]], [[MySQL-Gap-Lock]]
+- **카드 2**: [[Event-Driven-Architecture]], [[EventBridge]], [[EventBridge-SQS-Target]], [[SQS]], [[Messaging-Broker-Comparison]], [[Delivery-Semantics]], [[Idempotency-Key]], [[Idempotent-Consumer]], [[SQS-Worker-Reliability]], 미적용 개선안 [[Transactional-Outbox]]과 [[CDC&Outbox]]
+- **카드 3**: [[Index]], [[Execution-Plan]], [[Covering-Index]], [[B-Tree-Index-Depth]], [[MySQL-Slow-Query-Diagnosis]], [[MySQL-Query-Pipeline-and-Sorting]], [[Pagination-Optimization]]
+- **카드 4**: [[Prisma-Query-Performance]], [[TypeORM-QueryBuilder]], [[TypeORM-Transactions-and-Replication]], [[ORM]], [[ORM-Impedance-Mismatch]], [[SQL-Joins]]
+- **카드 5**: [[관측가능성(Observability)]], [[Logs-vs-Metrics]], [[Prometheus]], [[RED-USE-Method]], [[SLI-SLO]], [[Cardinality]], [[Correlation-ID]], [[OpenTelemetry]], [[Exemplars]], [[Loki]], [[Alert-Fatigue]]
+- **카드 6**: [[Docker]], [[Multi-Stage-Build]], [[ECS]], [[ELB]], [[ECS-Service-AutoScaling]], [[ECS-Rolling-Deployment]], [[ECS-Secrets-Injection]], [[Container-Entrypoint-Signals]], [[Blue-Green]], [[Replication]], [[Read-Replica-Routing]]
+- **카드 7**: [[DDD&Hexagonal]], [[Clean-Architecture-NestJS]], [[NestJS]], [[Request-Lifecycle]], [[NestJS-Middleware]], [[NestJS-Guards]], [[NestJS-AOP-Interceptor]], [[Injection-Scopes]], [[NestJS-Circular-Dependency]]
+- **카드 8**: [[Cache-Basics]], [[Cache-Decision]], [[Cache-Strategies]], [[Cache-Invalidation]], [[Cache-Stampede]], [[Redis-Architecture]], [[Redis-Data-Structures]], [[Redis-Streams-PubSub]], [[Redis-Cluster-Sharding]], [[External-Collection-Pipeline-Reliability]]
 
-- [[My-Self-Intro|내 자기소개 마스터]]
-- [[My-Motivation-Reasons|내 이직 사유 마스터]]
-- [[My-FIT-Answers|내 FIT 답변 마스터]]
-- [[My-Tech-Cards-Extended|기술 답변 심화 — 비교 표, 꼬리 풀, 아키텍처 디테일]]
-- [[Interview-Prep-Yunhoe-1st-Tech-Extra|범용 백엔드 안전망 질문]]
+## 범용 기술 안전망
+
+- **Node.js와 런타임**: [[Event-Loop]], [[Event-Loop-Phases]], [[Single-vs-Multi-Thread]], [[Worker-Threads]], [[V8]], [[OOM-Troubleshooting]]
+- **TypeScript와 NestJS**: [[타입스크립트(TS)]], [[TS-Type-Narrowing]], [[Runtime-Validation-Libraries]], [[NestJS-Lifecycle]], [[Custom-Provider]], [[NestJS-Pipes]], [[NestJS-Exception-Filter]]
+- **HTTP와 API**: [[HTTP]], [[REST]], [[HTTP-Status-Code]], [[Idempotency]], [[Rate-Limiting]], [[GraphQL]], [[gRPC]], [[HTTPS-TLS]]
+- **인증과 보안**: [[인증(Auth)]], [[Auth-Method-Selection]], [[JWT]], [[Session]], [[OAuth2]], [[Refresh-Token-Rotation]], [[FIDO-WebAuthn]], [[CSRF]], [[CORS]], [[XSS]]
+- **데이터베이스**: [[RDBMS]], [[Normalization]], [[Sharding]], [[MySQL-vs-PostgreSQL]], [[Schema-Migration-Large-Table]]
+- **테스트와 전달**: [[Test-Pyramid]], [[TestContainers-Integration]], [[NestJS-Testing]], [[TDD-BDD]], [[CICD-Basics]], [[GitHub-Actions]]
+- **시스템 설계**: [[External-API-Integration-Patterns]], [[External-Service-Resilience]], [[System-Design-Practice-Topics]], [[OLTP-vs-OLAP]], [[SCD-Type2]]

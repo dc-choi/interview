@@ -4,7 +4,7 @@ status: done
 category: "Interview - Fit"
 aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질문"]
 ---
-# 액션파워 1차 — 이력서 기반 기술 질문 (1/2): DB, ORM, MQ, Docker
+# 액션파워 1차 — 이력서 기반 기술 질문 (1/4): DB, ORM, MQ, Docker
 
 > 상위 TOC: [[Interview-Prep-ActionPower|액션파워 1차 면접 준비]]
 
@@ -12,23 +12,23 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 
 ## 3. 예상 질문 — 이력서 기반 기술 질문
 
-### DB Lock으로 Race Condition 해결 — 어떤 Lock? 왜 그 방식? Optimistic vs Pessimistic?
+### 동시 갱신 정합성에서 DB Lock 선택 — Optimistic vs Pessimistic?
 > 관련: [[Transaction-Lock-Contention|트랜잭션, 락]], [[Transactions|트랜잭션]], [[Distributed-Lock|분산락]], [[Lock|DB Lock]]
 
 **문제 상황**
-- 850대 IoT 환경에서 여러 디바이스가 같은 품목 재고를 동시에 갱신 → Lost Update 발생
-- 예: 재고 100개인 품목에 디바이스 A(-5), B(-3)가 동시 도착 → 둘 다 100을 읽고 각각 95, 97로 갱신 → 최종 97 (정상: 92)
+- 여러 요청이 같은 상태를 동시에 갱신하면 Lost Update가 생길 수 있다.
+- 같은 값을 읽고 갱신하는 흐름은 잠금이나 조건부 갱신으로 읽기와 쓰기의 정합성을 보호한다.
 
 **Pessimistic Lock 선택 이유**
-- `SELECT FOR UPDATE NOWAIT`로 품목 단위 Exclusive Row Lock 획득
-- 재고 읽기+갱신을 원자적 처리 (읽은 값 기반으로 갱신하므로 Lost Update 원천 차단)
-- `NOWAIT` 옵션: lock 획득 실패 시 즉시 에러 반환 (대기하지 않음) → 100ms 간격 최대 3회 재시도 (최악 1초 이내 완료)
+- `SELECT FOR UPDATE NOWAIT`로 대상 행의 Exclusive Row Lock을 획득할 수 있다.
+- 읽기와 갱신을 하나의 트랜잭션으로 처리해 읽은 값 기반 갱신의 Lost Update를 막는다.
+- 실제 경험에서는 `NOWAIT` 실패를 짧은 고정 간격의 제한된 재시도로 처리했다. 현재 답변에서는 동시 재시도 집중을 줄이기 위한 지수 백오프와 지터를 개선안으로 구분하고, 간격과 횟수는 실제 충돌률과 허용 지연을 기준으로 정한다.
 
 **Optimistic Lock을 선택하지 않은 이유**
 - Optimistic Lock은 version 컬럼 기반으로 UPDATE 시점에 충돌 감지 (`WHERE version = N` → 0 rows affected면 재시도)
-- 같은 품목 경합이 반복되는 구간에서는 Optimistic 재시도 비용이 커질 수 있어 비관적 잠금을 선택
+- 같은 대상의 경합이 반복되는 구간에서는 Optimistic 재시도 비용이 커질 수 있어 비관적 잠금을 선택한다.
 - Pessimistic은 변경 전에 충돌을 조정해 NOWAIT 실패 시 잠금 획득 단계부터 제한 재시도 vs Optimistic은 충돌을 늦게 감지해 **전체 트랜잭션을 재실행할 수 있음**
-- 재고 갱신은 짧은 트랜잭션(ms 단위)이므로 Pessimistic Lock의 대기 시간이 무시할 수준
+- 짧은 트랜잭션이라면 Pessimistic Lock의 대기 비용도 함께 측정해 판단한다.
 
 | 기준 | Optimistic | Pessimistic |
 |------|-----------|-------------|
@@ -39,9 +39,9 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 | 구현 | version 컬럼 추가 | SELECT FOR UPDATE |
 
 **트랜잭션 범위 최소화**
-- 디바이스 정보 조회, 검증은 트랜잭션 **밖**에서 수행 (lock 보유 시간 줄이기)
-- 트랜잭션 안: `SELECT FOR UPDATE`(재고 읽기) → 재고 갱신 → 데이터 입력만 배치
-- Lock 순서 통일: 항상 **품목 ID 오름차순**으로 lock 획득 → 교차 대기(데드락) 가능성을 낮춤
+- 잠금 대상과 독립적인 형식, 인증 검증과 외부 호출만 트랜잭션 **밖**에서 수행해 lock 보유 시간을 줄인다.
+- 재고, 소유권과 상태 전이처럼 변경 가능한 상태의 불변식은 `SELECT FOR UPDATE`로 잠금을 얻은 뒤 다시 검증하고, 트랜잭션 안에는 이 검증, 상태 갱신과 필요한 기록만 둔다.
+- 여러 행을 잠글 때는 정렬된 순서로 획득해 교차 대기 가능성을 낮춘다.
 
 **Redis 분산락을 선택하지 않은 이유**
 - 초기에 Redlock 검토 → 별도 인프라 의존성 + 네트워크 레이턴시 + 클럭 동기화 문제
@@ -52,8 +52,8 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 
 | Lock 종류 | 설명 | 예시 |
 |-----------|------|------|
-| **Shared Lock (S)** | 읽기 잠금. 다른 S Lock 허용, X Lock 차단 | `SELECT ... FOR SHARE` |
-| **Exclusive Lock (X)** | 쓰기 잠금. S/X 모두 차단 | `SELECT ... FOR UPDATE`, `UPDATE`, `DELETE` |
+| **Shared Lock (S)** | 같은 레코드의 다른 S Lock과 호환되고 X Lock과 충돌 | `SELECT ... FOR SHARE` |
+| **Exclusive Lock (X)** | 같은 레코드의 다른 S/X Lock과 충돌. 일반 consistent read는 MVCC 버전을 읽을 수 있음 | `SELECT ... FOR UPDATE`, `UPDATE`, `DELETE` |
 | **Record Lock** | 인덱스 레코드 하나에 거는 Lock | PK/유니크 인덱스로 정확히 1행 조회 시 |
 | **Gap Lock** | 인덱스 레코드 사이의 간격을 잠금 (삽입 방지) | RR에서 범위 조건 `WHERE id BETWEEN 10 AND 20` |
 | **Next-Key Lock** | Record Lock + Gap Lock 결합 | InnoDB RR 기본 동작. Phantom Read 방지 |
@@ -68,37 +68,37 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 
 **꼬리 질문 대비**
 - "NOWAIT 대신 SKIP LOCKED는?" → SKIP LOCKED는 잠긴 행을 건너뛰고 다음 행을 읽음. 큐 패턴(작업 분배)에 적합하지만, 재고 갱신처럼 **특정 행을 반드시 처리해야 하는** 경우에는 NOWAIT가 맞음
-- "FOR UPDATE와 FOR SHARE 차이?" → FOR UPDATE는 X Lock(배타적, 읽기/쓰기 모두 차단), FOR SHARE는 S Lock(공유, 읽기 허용, 쓰기 차단). 재고 갱신은 읽은 후 바로 쓰므로 X Lock 필요
-- "ECS 멀티 인스턴스에서도 DB Lock으로 충분한가?" → 보호할 재고가 같은 DB에 있으면 충분. 여러 DB, shard나 외부 자원을 하나의 트랜잭션으로 묶을 수 없을 때 분산 조정을 검토하며, 샤딩이나 인스턴스 수만으로 Redis 락을 자동 선택하지 않음
+- "FOR UPDATE와 FOR SHARE 차이?" → FOR UPDATE의 X Lock은 같은 레코드에 대한 다른 locking read와 쓰기와 충돌하고, FOR SHARE의 S Lock은 다른 S Lock과 호환되지만 X Lock과 충돌한다. 일반 consistent read는 MVCC 버전을 읽을 수 있다. 재고 갱신은 읽은 뒤 바로 쓰므로 X Lock이 필요하다.
+- "여러 애플리케이션 인스턴스에서도 DB Lock으로 충분한가?" → 보호할 상태가 같은 DB에 있으면 충분하다. 여러 DB, shard나 외부 자원을 하나의 트랜잭션으로 묶을 수 없을 때 분산 조정을 검토하며, 인스턴스 수만으로 Redis 락을 자동 선택하지 않는다.
 - "Optimistic Lock이 나은 상황은?" → 읽기 중심 서비스, 충돌 빈도 낮은 경우 (예: 게시글 수정, 설정 변경). Lock 보유 없이 동시성 극대화
-- "Gap Lock이 성능에 미치는 영향?" → 범위 잠금이므로 INSERT를 차단할 수 있음. 높은 동시성이 필요하면 RC로 변경하여 Gap Lock 비활성화 고려 (단, Phantom Read 허용 필요)
-- "데드락 발생 시 애플리케이션 처리?" → InnoDB가 한쪽을 자동 rollback → `ER_LOCK_DEADLOCK` 에러 catch 후 재시도. 우리 시스템은 NOWAIT로 상호 대기 자체를 회피하여 발생 확률을 크게 낮춤
-- "테이블 락은 언제 발생?" → DDL(ALTER TABLE), LOCK TABLES 명시 사용, 인덱스 없는 UPDATE/DELETE(풀스캔 시 모든 행에 lock → 사실상 테이블 락)
+- "Gap Lock이 성능에 미치는 영향?" → 범위 잠금이므로 INSERT를 차단할 수 있다. RC에서는 일반 검색과 인덱스 스캔의 Gap Lock이 줄지만 외래 키와 중복 키 검사에는 남는다. 동시성과 범위 재조회 일관성 요구를 함께 비교한다.
+- "데드락 발생 시 애플리케이션 처리?" → InnoDB가 한쪽을 자동 rollback하므로 `ER_LOCK_DEADLOCK`을 구분해 재시도한다. NOWAIT를 쓰면 상호 대기 대신 실패 경로를 명시적으로 처리할 수 있다.
+- "테이블 수준 대기는 언제 커지나?" → `LOCK TABLES`의 명시적 잠금이나 DDL의 메타데이터 잠금 경로를 구분한다. 적절한 인덱스가 없는 UPDATE/DELETE는 넓은 범위의 행과 인덱스 레코드를 잠가 동시성을 크게 제한하지만 테이블 락으로 바뀌는 것은 아니다.
 
-### 단일 쿼리 99.3% 개선 — 측정 기준? EXPLAIN 분석 방법?
+### 단일 쿼리 개선 — 측정 기준과 EXPLAIN 분석 방법
 > 관련: [[Index|인덱스]], [[Execution-Plan|실행계획]]
 
-- 테이블 100만 건, 850대 디바이스, 디바이스당 평균 1,240건
-- `2000ms+`는 특정 디바이스 최신 상태 조회에 포함된 서브쿼리의 관측값이다. 쿼리 1건 시간과 같은 지표로 비교하지 않는다.
-- EXPLAIN ANALYZE로 `ORDER BY created_at DESC, id DESC` 후 약 9,000행 filesort 확인
-- 카디널리티 분석: 디바이스 번호 선택도 약 0.12% → 복합 인덱스 `(device_number, created_at DESC, id DESC)` 설계
+- 특정 대상의 최신 상태 조회에 포함된 서브쿼리 지연과 쿼리 1건 지연은 같은 지표가 아니므로 직접 비교하지 않는다.
+- 최신 상태 조회는 실행계획에서 병목을 확인하고 equality 조건과 정렬 순서를 맞춘 복합 인덱스로 후보 범위를 줄인다.
+- 상태 이력 테이블에서는 최신 상태 조회의 후보 범위를 작게 유지하도록 인덱스와 쿼리 순서를 함께 설계한다.
+- EXPLAIN ANALYZE로 정렬과 후보 행 스캔을 확인해 병목 위치를 검증한다.
+- 식별자의 선택도와 정렬 조건을 확인해 복합 인덱스 순서를 설계한다.
 - 인덱스 스캔만으로 최상단 레코드 즉시 접근. Prisma `@@index`로 선언
-- 쿼리 1건 결과: 15.4ms → 0.1ms. 850대를 순회한 배치 총시간 5분 15초 → 약 2초는 애플리케이션 처리와 네트워크 왕복을 포함한 별도 end-to-end 지표다.
-- 실행 환경, cache 상태, 표본 수와 percentile은 기록되지 않았다. 동등 조건 뒤 최신 1건을 읽어 스캔 범위를 좁혔지만, 데이터와 디바이스가 늘면 같은 조건에서 B-Tree 깊이, cache, I/O와 데이터 분포를 포함해 다시 측정한다.
+- 전후 실행계획과 지연을 비교해 쿼리 전략을 조정했고, 쿼리 1건 지연과 여러 대상을 순회한 배치 end-to-end 시간은 애플리케이션 처리와 네트워크 왕복 범위가 다르므로 분리한다. 내부 전후 수치는 공개하지 않는다.
+- 실행 환경, cache 상태, 표본 수와 percentile이 기록되지 않아 성과의 재현성에 한계가 있다. 데이터가 늘면 같은 조건에서 B-Tree 깊이, cache, I/O와 데이터 분포를 포함해 다시 측정한다.
 - 꼬리:
   - "복합 인덱스 컬럼 순서 기준?" → 동등 조건(=) 컬럼을 앞에, 범위 조건(>, BETWEEN) 컬럼은 뒤에. 카디널리티가 높은 컬럼이 앞에 올수록 스캔 범위가 빨리 좁혀짐
   - "인덱스를 많이 만들면?" → SELECT는 빨라지지만 INSERT/UPDATE/DELETE 시 인덱스도 갱신해야 하므로 쓰기 성능 저하. 실제로 필요한 쿼리 패턴 기반으로 설계
   - "커버링 인덱스란?" → 쿼리에 필요한 모든 컬럼이 인덱스에 포함되어 테이블 접근(랜덤 I/O) 없이 인덱스만으로 결과 반환
 
-### Prisma 쿼리 증가 문제 — 구체적으로? ORM vs Raw Query 전환 기준?
+### ORM 관계 조회의 쿼리 수 증가 — Prisma와 Raw Query 전환 기준
 > 관련: [[Execution-Plan|실행계획]], [[SQL|SQL]]
 
-- Prisma는 lazy loading이 없어 전통적 N+1은 아님
-- 당시 Prisma 버전과 설정에서는 `relationJoins` Preview 기능이 활성화되지 않아 include 관계를 여러 쿼리로 읽고 애플리케이션에서 결합했다. 조인 엔티티가 늘수록 쿼리가 증가했다.
-- 기존 평균 100ms → 1000ms까지 저하
-- 로그 분석으로 4개 개별 쿼리 확인 → `relationJoins` 활성화 뒤 `relationLoadStrategy: 'join'` 적용
-- MySQL에서는 correlated subquery와 JSON aggregation 형태의 단일 쿼리로 통합해 82~90% 성능 개선. SQL `JOIN` 키워드 사용 여부는 생성 SQL과 실행계획으로 확인. ([Prisma 관계 조회 공식 문서](https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries))
-- 이후에도 문제가 생기면 실행 계획 확인 후 SQL 튜닝 단계로 넘어가야 함
+- Prisma의 관계 로딩 형태는 버전, 설정과 쿼리 모양에 따라 달라지므로 생성 SQL과 공식 문서로 먼저 확인한다.
+- 당시 Prisma 버전과 설정에서는 `relationJoins` Preview 기능이 활성화되지 않아 include 관계를 여러 쿼리로 읽고 애플리케이션에서 결합했다. 관계가 늘수록 호출 수와 왕복 비용이 커지는 경로를 로그로 확인했다.
+- 공식 문서와 대조해 `relationJoins`를 활성화하고 `relationLoadStrategy: 'join'`을 적용했다. 당시 MySQL에서는 correlated subquery와 JSON aggregation 형태의 단일 쿼리가 생성됐으며, SQL `JOIN` 키워드 사용 여부는 생성 SQL과 실행계획으로 확인한다. ([Prisma 관계 조회 공식 문서](https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries))
+- 응답 지연, SQL 로그와 실행계획을 같은 조건에서 비교한 뒤 관계 로딩 설정이나 쿼리 구조를 선택한다.
+- 성능 경로에서 ORM 생성 쿼리가 요구를 충족하지 않을 때만 명시적 SQL을 검토한다.
 - 꼬리:
   - "ORM을 왜 쓰나? Raw Query가 항상 빠르지 않나?" → 타입 안전성, 마이그레이션 관리, 생산성. 성능 크리티컬한 부분만 Raw Query로 전환. 대부분의 CRUD는 ORM이 충분
   - "Raw Query 전환 기준은?" → EXPLAIN으로 실행 계획 확인 후 ORM 생성 쿼리가 비효율적일 때. 복잡한 서브쿼리, 윈도우 함수, 벌크 연산 등

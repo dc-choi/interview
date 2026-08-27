@@ -136,7 +136,7 @@ aliases: ["시스템 설계 연습 주제", "System Design Practice Topics"]
 
 ## 관련 문서
 - [[Live-Coding-Process|라이브 코딩 면접 프로세스 5단계]]
-- [[Interview-Prep-Template|면접 준비 템플릿]]
+- [[Interview-Prep-Template|회사와 차수 기반 준비 문서 템플릿]]
 - [[Common-Interview-Questions-Tech-Scale|단골 질문 - 규모, 성능]]
 
 ## 출처

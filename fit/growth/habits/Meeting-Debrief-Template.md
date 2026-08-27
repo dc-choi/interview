@@ -56,5 +56,5 @@ aliases: ["Meeting Debrief Template", "면담 복기 템플릿", "1:1 복기 템
 
 ## 관련 문서
 
-- [[Kinolights-Engineer-Growth-Direction|키노라이츠에서의 엔지니어 성장 방향]]
+- [[Engineer-Work-Loop|엔지니어 업무 성장 루프]]
 - [[Retrospective-Methods|회고 기법]]

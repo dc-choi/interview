@@ -25,8 +25,8 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 
 | Lock 종류 | 설명 | 예시 |
 |---|---|---|
-| **Shared Lock (S)** | 읽기 잠금. 다른 S 허용, X 차단 | `SELECT ... FOR SHARE` |
-| **Exclusive Lock (X)** | 쓰기 잠금. S/X 모두 차단 | `SELECT ... FOR UPDATE`, `UPDATE`, `DELETE` |
+| **Shared Lock (S)** | 같은 레코드의 다른 S Lock과 호환되고 X Lock과 충돌 | `SELECT ... FOR SHARE` |
+| **Exclusive Lock (X)** | 같은 레코드의 다른 S/X Lock과 충돌. 일반 consistent read는 MVCC 버전을 읽을 수 있음 | `SELECT ... FOR UPDATE`, `UPDATE`, `DELETE` |
 | **Record Lock** | 인덱스 레코드 하나에 거는 Lock | PK/유니크 인덱스로 정확히 1행 |
 | **Gap Lock** | 인덱스 레코드 사이 간격 잠금 (삽입 방지) | RR에서 범위 조건 |
 | **Next-Key Lock** | Record + Gap. InnoDB RR 기본 | Phantom Read 방지 |
@@ -34,7 +34,7 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 ### 심화 꼬리
 
 - **"NOWAIT vs SKIP LOCKED?"** → SKIP LOCKED는 잠긴 행 건너뛰고 다음 행 읽음 (큐 패턴 적합). 재고처럼 특정 행 반드시 처리해야 하면 NOWAIT가 맞음. 둘 다 row lock 대기에만 적용(MDL 등은 남음)이고 statement 기반 replication엔 안전하지 않음
-- **"FOR UPDATE vs FOR SHARE?"** → FOR UPDATE는 X Lock (배타적, 읽기/쓰기 차단). FOR SHARE는 S Lock (공유, 읽기 허용, 쓰기 차단). 읽은 후 바로 쓰면 X Lock 필요
+- **"FOR UPDATE vs FOR SHARE?"** → FOR UPDATE의 X Lock은 같은 레코드의 다른 locking read와 쓰기와 충돌한다. FOR SHARE의 S Lock은 다른 S Lock과 호환되지만 X Lock과 충돌한다. 일반 consistent read는 MVCC 버전을 읽을 수 있고, 읽은 뒤 바로 쓰는 경로에는 X Lock이 필요하다.
 - **"멀티 인스턴스에서도 DB Lock 충분?"** → 같은 DB를 바라보는 한 충분. 샤딩됐다는 이유만으로 분산 락이 필요한 것은 아니고, 보호할 자원이 여러 DB, shard나 외부 시스템 경계를 실제로 넘어 단일 트랜잭션으로 묶이지 않을 때 검토
 - **"Gap Lock 성능 영향?"** → 범위 잠금이라 INSERT 차단 가능. 동시성 필요하면 RC 검토 — 단 RC는 gap lock 제거 스위치가 아니라 격리 계약이 바뀌는 선택. 일반 잠금 읽기의 Gap Lock은 대부분 사라지지만 FK와 중복 키 검사에는 남고, Non-Repeatable Read와 Phantom Read를 허용하게 됨
 - **"테이블 락은 언제?"** → 명시적 `LOCK TABLES`와 일부 DDL에서 발생. 인덱스 없는 UPDATE/DELETE는 명시적 테이블 락이 아니라 스캔한 인덱스 레코드 다수를 잠가 테이블 전체가 막힌 것처럼 보이는 경우이며, 객체 정의를 보호하는 MDL은 별도
@@ -54,13 +54,15 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 7. 실패 시 메시지를 삭제하지 않아 visibility 만료 후 재전달
 8. SQS `maxReceiveCount`는 실제 실패뿐 아니라 `BUSY` 재수신도 세므로 처리시간과 lease를 반영해 정하고, DLQ 유입 원인을 구분해 알림과 수동 확인
 
-> **실제 구현 경계**: 당시에는 `processing_started_at` 임계로 crash를 추정했지만 느린 워커와 죽은 워커를 구별하지 못한다. 위 lease, heartbeat, owner token 흐름은 지금 다시 설계할 때의 개선안이며 실제 운영 완료로 말하지 않는다.
+> **구현 경계**: 단순 시작 시각만으로는 느린 워커와 죽은 워커를 구별할 수 없다. lease, heartbeat, owner token을 함께 사용하고, 실제 적용 전에는 장애와 재시작 시나리오로 검증한다.
 
 **visibility timeout 설정**: 일반 ECS 소비자는 관측한 최대 또는 p99 처리시간에 여유를 두고, 길어질 수 있는 작업은 heartbeat로 연장한다. 함수 timeout의 6배 권고는 SQS의 Lambda 이벤트 소스 매핑에만 적용한다.
 
-**알림 채널 로컬 중복 방지**: **실제 구현**은 알림 로그 테이블의 `(order_id, channel)` UNIQUE 제약으로 주문과 채널 단위 로컬 중복 처리를 차단했다. 이는 주문당 채널별 알림이 하나라는 전제이고, 외부 provider가 수락한 뒤 Relay가 응답 전에 죽는 중복까지 막지 못한다. **지금 개선한다면** 알림 사건마다 안정적인 `event_id`를 만들고 `(event_id, channel)`로 로컬 멱등성을 잡은 뒤 provider가 지원하는 idempotency key로 같은 값을 전달하며, 수락 여부가 불명확한 건은 상태 조회나 수동 대사로 닫는다.
+**알림 채널 로컬 중복 방지**: 알림 사건의 안정적인 `event_id`와 대상 채널을 함께 유일하게 만들면 로컬 중복 처리를 막을 수 있다. 다만 외부 provider가 수락한 뒤 응답 전에 relay가 중단되는 중복까지는 막지 못하므로, provider가 지원하면 같은 idempotency key를 전달하고 수락 여부가 불명확한 건은 상태 조회나 수동 대사로 닫는다.
 
 ### Outbox 패턴 디테일
+
+> 실제 경력 사례에는 적용하지 못한 개선 패턴이다. 아래는 DB 커밋과 이벤트 발행 사이의 유실 가능성을 보완할 때 설명할 설계 원리다.
 
 ```sql
 outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at, processed_at)
@@ -76,8 +78,8 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 | 축 | Outbox (폴링) | CDC (Debezium) |
 |---|---|---|
 | 인프라 | 단순 (앱+DB) | Debezium+Kafka Connect 등 별도 |
-| 지연 | 폴링 간격 (5초) | 거의 실시간 |
-| 적합 규모 | 월 수십만~수백만 이벤트 | 초당 수천 건+ 대규모 |
+| 지연 | 폴링 주기에 좌우됨 | 변경 스트림 수준의 낮은 지연 |
+| 적합 규모 | 운영 단순성이 우선인 흐름 | 높은 처리량 또는 낮은 지연이 핵심인 흐름 |
 | 운영 부담 | 낮음 | 높음 |
 
 ### Lambda vs ECS 워커 결정 4축
@@ -91,7 +93,7 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 
 ### 심화 꼬리
 
-- **"SQS FIFO?"** → MessageGroupId 기반 순서 보장. 일반 FIFO 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지다. 고처리량은 리전별 서비스 할당량과 MessageGroupId 분산을 확인한다
+- **"SQS FIFO?"** → MessageGroupId 기반으로 그룹 안의 순서를 보장한다. 실제 처리량은 리전별 서비스 할당량, 배치와 그룹 분산에 따라 달라지므로 적용 시 공식 문서를 확인한다
 - **"Pub/Sub vs SQS?"** → Pub/Sub은 topic 기반 팬아웃(1:N), SQS는 큐 기반 point-to-point(1:1)
 - **"이벤트 유실 — 생산자 측?"** → Dual Write 문제. Outbox 패턴으로 해결 (위)
 - **"이벤트 유실 — 소비자 측?"** → SQS at-least-once + 멱등성 키 + DLQ로 최종 실패 보관
@@ -113,7 +115,7 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 - `pg_stat_statements` — 슬로우 쿼리 누적 통계
 - 인덱스 종류: B-Tree(기본), Hash(정확 매칭만), **BRIN(시계열, 범위 데이터 압축 인덱스)**, **GIN(JSONB, 배열, 풀텍스트)**, GiST(공간)
 - MVCC 구현 차이: PG는 dead tuple + VACUUM, MySQL은 undo log
-- JSONB는 PG가 강함, CTE/Window 함수도 PG 우위
+- PostgreSQL은 JSONB 연산자와 인덱스, BRIN, GIN, GiST 및 확장 기능 선택지가 풍부하다. CTE와 Window 함수는 MySQL 8도 지원하므로 필요한 기능, 버전과 실제 쿼리 계획으로 비교한다.
 
 ### 심화 꼬리
 
@@ -125,35 +127,30 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 
 ### CloudWatch vs ELK vs Datadog vs GPL 핵심 축 비교
 
-| 축 | GPL | ELK | Datadog | CloudWatch |
-|---|---|---|---|---|
-| TCO (당시 가중치 0.25) | 5 | 3 | 2 | 3 |
-| 메트릭 생태계 (당시 가중치 0.15) | 5 | 4 | 5 | 3 |
-| 벤더 종속 회피 (당시 가중치 0.10) | 5 | 4 | 2 | 2 |
+| 축 | 평가 기준 |
+|---|---|
+| 총소유비용 | 예상 사용량과 운영 인력을 포함해 비교 |
+| 메트릭 생태계 | 쿼리, 경보, 생태계 성숙도를 비교 |
+| 벤더 종속 | 이식성과 운영 도구 의존도를 비교 |
 
-> 당시 선택의 일부 평가 축만 남아 있어 위 가중치 합은 0.50이다. 누락 축을 복원할 근거가 없으므로 재현할 수 없는 총점은 사용하지 않고, 운영 인력과 예상 사용량을 포함한 당시 조건에서 GPL을 선택했다고 설명한다.
+> 도구 선택은 운영 인력, 예상 사용량, 쿼리와 경보 요구, 벤더 종속을 함께 비교한다. 재현할 수 없는 내부 가중치와 총점은 사용하지 않는다.
 
-### 아키텍처 5층
+### 관측 구성의 책임 분리
 
-| 계층 | 구성 | 역할 |
-|---|---|---|
-| FE | Sentry SDK → Sentry 서버 | JS 에러, 퍼포먼스, 세션 리플레이 |
-| BE App | TraceIdMiddleware(실제 값은 `x-request-id`), HttpLoggingInterceptor, Winston JSON, MetricsInterceptor + prom-client, `/metrics` 엔드포인트 | requestId 기반 로그 추적, 구조화 로깅, method, route, status 집계 메트릭 노출 |
-| Log Routing (당시) | ECS FireLens(Fluent Bit), 호스트 Promtail → Loki | stdout 수집, JSON 파싱과 정규화, 라벨 구성, 배치와 라우팅 |
-| Logs Plane | Loki, S3 (정확한 저장 경계 기록 없음) | 수집 검증, Ingester의 청크 압축과 flush, 청크/인덱스 저장과 조회, Compactor의 인덱스 압축과 설정된 경우의 보존 적용 |
-| Metrics Plane | Prometheus + Thanos Sidecar → S3, Querier + Store Gateway | Sidecar가 블록 업로드와 Store API를 제공하고, Querier가 현재 데이터와 Store Gateway의 과거 블록을 통합 조회 |
+> 다음은 특정 운영 환경을 재현한 구성이 아니라, 관측 체계를 설계할 때 책임을 나누는 일반 예시다.
 
-> **조건 표기**: Promtail은 2026-03-02 EOL이다. 위 구성은 당시 경험이고, 신규 구성은 Grafana Alloy 또는 이미 사용 중인 FireLens/Fluent Bit 같은 지원 클라이언트를 검토한다. 현재 운영 환경의 이전 완료 여부는 확인되지 않았다.
-> **운영 경계**: 위 당시 구성에는 OpenTelemetry trace pipeline과 exemplar 구축 근거가 없다. 둘은 3축 연결을 위한 후속 학습 설계다.
-> **저장 경계**: 당시 기록의 Loki 30일 핫 보관과 S3 콜드 보관만으로 자동 전환을 주장할 수 없다. S3가 Loki object store였는지 별도 archive였는지, lifecycle과 복원 경로는 현재 기록에 없다.
+- 애플리케이션은 요청 상관관계 ID, 구조화 로그와 사용자 영향에 연결되는 메트릭을 남긴다.
+- 수집 계층은 출력 형식을 정규화하고, 전송 실패가 애플리케이션 처리에 영향을 주지 않게 격리한다.
+- 로그와 메트릭 저장소는 탐색, 집계, 보존과 복원 요구를 충족하도록 선택한다.
+- 조회와 경보 계층은 현재 상태와 장기 추세를 함께 보며, 사용자 영향 SLI를 기준으로 알림을 만든다.
 
-### 당시 정적 임계 알림 5개 (지속 조건 상이)
+> 도구 선택, 배치 형태, 보존 기간과 저장 경계는 처리량, 보안과 복구 요구를 확인한 뒤 별도로 결정한다.
 
-- Error rate **1%** for 5m
-- Slow SQL **500ms+** 3회 지속
-- Event Loop Lag **100ms** 3분
-- RDS CPU **75%** 5분
-- Replica Lag **5초** 3분
+### 경보 설계 원칙
+
+- 에러율과 지연은 사용자 영향 SLI와 목표 기간에서 역산한다.
+- 데이터베이스와 런타임 포화 신호는 정상 구간과 사용자 영향이 나타나는 경계를 관측해 경보를 정한다.
+- 내부 임계값과 지속 시간은 공개하지 않는다.
 
 > Error rate와 latency는 SLI 후보지만, 위 `for` 기반 임계 경보 전체가 SLO burn-rate 경보는 아니다. SLO로 개선한다면 사용자 영향 SLI와 목표 기간을 정하고 multi-window, multi-burn-rate 조건을 별도로 둔다.
 
@@ -161,7 +158,7 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 
 - **userId/requestId/traceId 라벨 절대 금지** — 라벨 조합 폭증 → Prometheus OOM
 - route/path 라벨 정규화 (`/users/:id` → `/users/{id}`)
-- 당시 `requestId`는 **로그 본문(flat JSON)에 기록**하고 LogQL로 검색. 분산 추적을 추가하면 별도의 `traceId`를 로그에 싣고 메트릭은 고카디널리티 라벨 대신 exemplar로 연결
+- `requestId`는 **로그 본문(flat JSON)에 기록**하고 LogQL로 검색. 분산 추적을 추가하면 별도의 `traceId`를 로그에 싣고 메트릭은 고카디널리티 라벨 대신 exemplar로 연결
 
 ## 카드 6 아키텍처 전환 심화
 
@@ -179,12 +176,12 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 - 멀티 클러스터 운영
 - 복잡한 트래픽 라우팅 (Istio 등)
 - 다중 워크로드 동시 운영 (배치 + API + ML 등)
-- 위가 아니면 **ECS Fargate가 운영 비용, 관리 부담 모두 낮음**
+- 위가 아니면 관리형 태스크 환경이 운영 부담을 낮출 수 있다. 실제 비용과 관리 난이도는 팀의 워크로드와 운영 역량을 비교해 결정한다
 
 ## 관련 문서
 
 - [[My-Tech-Cards|기술 카드 마스터 8개 (메인) — vault 카테고리 인덱스도 여기]]
-- [[Interview-Prep-Yunhoe-1st-Tech-Extra|범용 백엔드 안전망 (CS 기초, NestJS 심화, HTTP, 인증, 시스템 디자인)]]
+- [[Common-Interview-Questions-Tech-Basics|범용 백엔드 기술 질문]]
 - [[Common-Interview-Questions-Tech-Scale|시스템 디자인 4개 (DAU 폭증, 기프티콘, 억 단위, 강결합)]]
 
 ### vault 심화 — 카드별 추가 자료 (본 Extended에서 더 깊게 보강 시)

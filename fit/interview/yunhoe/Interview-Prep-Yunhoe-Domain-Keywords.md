@@ -1,18 +1,18 @@
 ---
-tags: [career, interview, yunhoe, domain, dpp, circular-economy]
+tags: [knowledge, dpp, circular-economy]
 status: done
 verified_at: 2026-08-26
 verified_scope: "ESPR, DPP와 배터리 여권의 규제 일정과 범위, EU 2025-2030 작업계획, EU ETS 기본 개념"
-category: "면접 준비"
-company: "윤회주식회사 (CARE IDⓒ)"
-aliases: ["윤회 도메인 키워드", "DPP ESPR 순환경제 키워드 정리"]
+category: "도메인 조사"
+company: "Yune Inc. / CARE ID"
+aliases: ["CARE ID 도메인 키워드", "DPP ESPR 순환경제 키워드 정리"]
 ---
 
-# 윤회 도메인 키워드 정리 (DPP, ESPR, 순환경제)
+# CARE ID와 DPP 도메인 키워드 정리
 
 ## 한 줄로 꿰는 큰 그림
 
-**ESPR은 제품별 위임법으로 에코디자인 요건과 DPP 요건을 정하는 EU 프레임워크** → DPP는 제품의 **순환경제** 전환을 돕는 데이터 인프라 → 섬유 폐기물은 **EPR**로 생산자가 책임지고, 제품의 **탄소발자국**은 **탄소배출권**, CBAM과 연결 → 이 모든 게 **기후테크** 산업의 한 갈래. **윤회의 CARE ID는 섬유를 위한 DPP 솔루션**으로 이 흐름의 한가운데 있다.
+**ESPR은 제품별 위임법으로 에코디자인 요건과 DPP 요건을 정하는 EU 프레임워크** → DPP는 제품의 **순환경제** 전환을 돕는 데이터 인프라 → 섬유 폐기물은 **EPR**로 생산자가 책임지고, 제품의 **탄소발자국**은 **탄소배출권**, CBAM과 연결 → 이 모든 게 **기후테크** 산업의 한 갈래. CARE ID의 공식 사이트는 자사 서비스를 섬유 산업을 위한 DPP 솔루션으로 설명한다.
 
 ## 키워드 정리
 
@@ -37,7 +37,7 @@ aliases: ["윤회 도메인 키워드", "DPP ESPR 순환경제 키워드 정리"
 - **법적 일정은 규제별로 분리해 말한다.**
   - **배터리 여권**: ESPR과 별개인 배터리 규정 Regulation (EU) 2023/1542 제77조에 따른 의무다. 2027년 2월 18일부터 LMT(경량 운송수단) 배터리, 2 kWh 초과 산업용 배터리와 전기차 배터리에 적용된다. 2 kWh 기준은 산업용 배터리에만 적용된다.
   - **섬유/의류 DPP**: 작업계획의 2027년은 위임법의 참고 채택 시점일 뿐이다. 실제 적용일, 대상 제품과 DPP 데이터 항목은 채택된 제품별 위임법에서 정해지므로, 현재 섬유 DPP의 법적 의무화 시작 연도를 단정하면 안 된다.
-- **핵심 시사점**: 규제가 DPP 수요를 만들 수 있지만, 섬유의 법적 적용 범위와 시점은 위임법이 나온 뒤에 확정된다. 면접에서는 준비 시장이라는 해석과 확정된 법정 의무를 구분해 말한다.
+- **핵심 시사점**: 규제가 DPP 수요를 만들 수 있지만, 섬유의 법적 적용 범위와 시점은 위임법이 나온 뒤에 확정된다. 역할이나 제품을 설명할 때에는 준비 시장이라는 해석과 확정된 법정 의무를 구분한다.
 
 ### 4. EPR (Extended Producer Responsibility, 생산자책임재활용제도)
 
@@ -54,7 +54,7 @@ aliases: ["윤회 도메인 키워드", "DPP ESPR 순환경제 키워드 정리"
 ### 6. 기후테크 (Climate Tech)
 
 - 기후변화 **완화, 적응 기술 전반**(탄소 감축, 재생에너지, 탄소 포집, 순환경제 등).
-- 윤회의 위치: 기후테크 안에서도 규제 대응과 순환경제 데이터 인프라 SaaS 세부 분야다. 직접 탄소를 줄이는 것이 아니라, 감축과 순환을 지원하는 인프라 레이어다.
+- CARE ID의 공개 포지셔닝은 기후테크 안에서도 규제 대응과 순환경제 데이터 인프라 SaaS 세부 분야에 가깝다. 직접 탄소를 줄이는 것이 아니라, 감축과 순환을 지원하는 인프라 레이어다.
 
 ### 7. ESG, GS1/GTIN, LCA와 S-LCA
 
@@ -66,20 +66,6 @@ aliases: ["윤회 도메인 키워드", "DPP ESPR 순환경제 키워드 정리"
 - **LCA**는 정한 목적과 범위 안에서 제품, 공정이나 서비스의 생애주기 환경 영향을 평가한다. 목표와 범위, 목록 분석, 영향 평가와 해석을 포함하며, DPP 데이터가 있다고 LCA 결과가 자동으로 만들어지는 것은 아니다.
 - **S-LCA**는 제품이나 조직 생애주기의 사회적, 사회경제적 영향과 편익을 평가한다. 환경 LCA를 다른 이름으로 부르는 개념이 아니다.
 
-## 윤회 CARE ID와의 연결
-
-- **CARE ID = 섬유(옷)를 위한 DPP 솔루션**. 옷의 생산 → 유통 → 폐기 → 재활용 → SRF(고형연료) 전 단계 상태 추적.
-- **타이밍 전략**: 섬유/의류는 첫 작업계획의 우선순위이고 위임법 채택의 참고 시점은 2027년이다. 실제 적용 범위와 시점은 위임법에서 정해지므로, 표준 정렬과 상용 준비 기회라는 해석을 확정된 의무 일정과 구분한다.
-- **모트(moat)**: EU DPP 표준화 컨소시엄 MOU, UN/CEFACT 'Expert' 승인 + CIRPASS-2 EWG1, CoP 참여 = **표준이 만들어지는 테이블에 앉아 있다**는 것. B2B SaaS에서 표준 참여는 강력한 진입장벽.
-- **멀티테넌트 SaaS**: 여러 패션 브랜드사가 각자 테넌트로 CARE ID에서 DPP를 발급, 관리하는 구조이며 JD에 명시된 멀티테넌트 SaaS 아키텍처와 일치한다.
-- **글로벌**: 상해 법인 + JD.com 협력 + Fashion World Tokyo 2025 참가 = EU 규제 + 중국 + 일본 시장 노리는 포지셔닝.
-
-## 1차 전화에서 써먹을 한 줄 ("왜 관심?" 대응)
-
-> ESPR의 2025~2030 작업계획이 섬유/의류를 첫 우선순위로 두고 2027년을 위임법의 참고 채택 시점으로 제시한 흐름에서, 표준 형성에 직접 참여하는 회사라는 점이 인상적이었습니다. 백엔드 관점에서도 제품 ID 발행, 생애주기 상태 추적, 멀티테넌트 SaaS는 데이터 모델링과 아키텍처 난이도가 높은 영역이라, 제 NestJS/TypeScript 경험을 의미 있게 쓸 수 있겠다고 봤습니다.
-
-- 도메인 이해 + 기술 매치를 한 문장에 담는 게 핵심. 규제 연도, 키워드를 자연스럽게 흘리되 외운 티 내지 말 것.
-
 ## 출처
 
 - [EUR-Lex, Regulation (EU) 2024/1781, Ecodesign for Sustainable Products Regulation](https://eur-lex.europa.eu/eli/reg/2024/1781/oj/eng)
@@ -88,6 +74,7 @@ aliases: ["윤회 도메인 키워드", "DPP ESPR 순환경제 키워드 정리"
 - [European Commission, The Digital Product Passport Registry is now live](https://single-market-economy.ec.europa.eu/news/digital-product-passport-registry-now-live-2026-07-20_en)
 - [European Commission, About the EU Emissions Trading System](https://climate.ec.europa.eu/areas-action/carbon-markets/about-eu-ets_en)
 - [European Commission, Use of international credits in the EU ETS](https://climate.ec.europa.eu/eu-action/carbon-markets/eu-emissions-trading-system-eu-ets/use-international-credits_en)
+- [CARE ID DPP 솔루션](https://careid.center/dpp)
 - [DPPs required by EU legislation across sectors — Circularise](https://www.circularise.com/blogs/dpps-required-by-eu-legislation-across-sectors)
 - [DPP Timeline 2026-2030: Every Product, Every Deadline — PassportCraft](https://passportcraft.com/insights/dpp-timeline-2026-2030-every-deadline)
 - [EU ESPR Regulation Explained: Guide for 2026 — MyProductPassport](https://myproductpassport.co.uk/blog/eu-espr-regulation-explained-complete-guide-for-2026)

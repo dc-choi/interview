@@ -92,7 +92,7 @@ aliases: ["Kinolights OTT Business Models", "OTT 수익 모델"]
 - [[Content-Availability-Data-Contract|콘텐츠 가용성 데이터 계약]]
 - [[Recommendation-System-OTT-Discovery|OTT 추천과 통합 디스커버리]]
 - [[Recommendation-System-OTT-Aggregator-Design-Proposal|OTT 통합 서비스 초기 설계안]]
-- [[Interview-Prep-Kinolights-2nd-Domain-Pitch|키노라이츠 도메인 오너십 피치]]
+- [[Interview-Prep-Kinolights-2nd-Domain-Pitch|키노라이츠 2차 도메인 오너십 피치]]
 
 ## 출처
 
