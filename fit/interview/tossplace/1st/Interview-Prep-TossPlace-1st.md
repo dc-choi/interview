@@ -89,6 +89,7 @@ SQLite의 대소문자 구분 없는 `LIKE`가 일반 이진 콜레이션 인덱
 
 ## 관련 기록
 
+- [[Interview-Advice-Toss-Mentor|토스 계열 면접 조언과 적용 회고]]
 - [[Interview-Prep-TossPlace-1st-Code-Tour|화면 공유 동선]]
 - [[Interview-Prep-TossPlace-1st-FIT-QA|FIT 준비 기록]]
 - [[Interview-Prep-TossPlace-1st-Assignment-Defense|사전 과제 기반 설계 설명 기록]]

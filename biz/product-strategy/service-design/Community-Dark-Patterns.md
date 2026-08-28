@@ -13,9 +13,9 @@ aliases: ["Community Dark Patterns", "커뮤니티 다크 패턴", "리텐션 �
 
 리텐션은 좋은 지표다. 하지만 **사용자가 가치를 느껴서 남는 것**과 **빠져나가기 어려워 남는 것**은 다르다. 장기적으로 후자는 법적 규제(dark pattern 규제), 여론 역풍, 브랜드 붕괴로 돌아온다.
 
-## 4가지 다크 패턴 메커니즘
+## 4가지 윤리 점검 메커니즘
 
-종교 컬트 조직에서 가장 강하게 관찰되지만, 커뮤니티, SNS, MMO, 서브스크립션 서비스에 그대로 이식된다.
+아래 네 가지는 개인 글에서 가져온 윤리 점검 프레임이며 법령상 다크 패턴 분류가 아니다. 구체적인 UI가 사용자의 자유롭고 충분한 정보에 기반한 선택을 실질적으로 방해하는지는 별도로 판단한다.
 
 ### 1. 몰입형 온보딩 (Immersive Onboarding)
 
@@ -52,7 +52,7 @@ aliases: ["Community Dark Patterns", "커뮤니티 다크 패턴", "리텐션 �
 - 사회적 관계 (친구, 매칭된 사람들)
 - 이탈 절차의 의도적 복잡화
 
-이 영역이 가장 뚜렷한 **dark pattern**. EU DSA, FTC, 한국 공정위가 규제 대상으로 삼는 영역.
+이탈 절차를 의도적으로 복잡하게 만드는 설계는 FTC가 제시한 대표 사례와 직접 겹친다. 관계, 시간, 감정 자산까지 모두 EU DSA, FTC나 한국 공정위의 법적 분류라고 보지는 않는다.
 
 ## 건강한 리텐션 vs 다크 패턴 — 판별 체크리스트
 
@@ -124,7 +124,7 @@ aliases: ["Community Dark Patterns", "커뮤니티 다크 패턴", "리텐션 �
 ## 면접 체크포인트
 
 - **리텐션과 다크 패턴의 경계**를 설명할 수 있는가
-- 4가지 다크 패턴 메커니즘과 건강한 대응 설계
+- 4가지 윤리 점검 메커니즘과 건강한 대응 설계, 법적 다크 패턴 분류를 별도로 판단해야 하는 이유
 - **이탈 설계(churn UX)** 가 브랜드에 주는 장기 가치
 - 다크 패턴이 **단기 지표는 올리지만 장기 LTV를 해치는** 이유
 - 규제 동향(EU DSA, FTC, 공정위)이 프로덕트에 주는 제약
@@ -134,6 +134,8 @@ aliases: ["Community Dark Patterns", "커뮤니티 다크 패턴", "리텐션 �
 
 - [Bite (브런치) — 커뮤니티 다크 패턴 [신천지]](https://brunch.co.kr/@bite/21)
 - [제품에 철학을 담다 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-10-philosophy-in-product/)
+- [FTC, Bringing Dark Patterns to Light](https://www.ftc.gov/reports/bringing-dark-patterns-light)
+- [European Commission, Digital Services Act](https://digital-strategy.ec.europa.eu/en/policies/digital-services-act)
 
 ## 관련 문서
 - [[User-Feedback|사용자 피드백 관리]]
