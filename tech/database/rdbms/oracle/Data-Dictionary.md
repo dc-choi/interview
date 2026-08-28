@@ -19,7 +19,7 @@ aliases: ["데이터 딕셔너리"]
 
 - Oracle은 `USER_*`(본인 소유), `ALL_*`(접근 가능 전체), `DBA_*`(관리자 전용)로 범위를 구분함
 - MySQL은 `information_schema`에서 권한에 따라 보이는 범위가 자동으로 필터링됨
-- MySQL 8.0부터 데이터 딕셔너리가 InnoDB 트랜잭셔널 테이블로 저장되어, DDL이 원자적(atomic)으로 처리됨
+- MySQL 8.4 Reference Manual 기준, 8.0부터 데이터 딕셔너리는 InnoDB에 저장된다. 지원되는 InnoDB DDL은 atomic DDL로 처리되지만 transactional DDL은 아니며, DDL은 여전히 implicit commit을 일으킨다. non-InnoDB 테이블 관련 DDL은 atomic DDL 대상이 아니다.
 
 ## Oracle딕셔너리→MySQL매핑
 
@@ -46,7 +46,7 @@ aliases: ["데이터 딕셔너리"]
 | Oracle | MySQL | 비고 |
 |--------|-------|------|
 | USER_TRIGGERS | `information_schema.TRIGGERS` | 트리거 이벤트, 타이밍, 본문 등 |
-| USER_SOURCE | `information_schema.ROUTINES` | 프로시저, 함수의 정의 및 파라미터 |
+| USER_SOURCE | `information_schema.ROUTINES`, `PARAMETERS` | 프로시저, 함수 정의는 ROUTINES, 파라미터는 PARAMETERS에서 조회 |
 | USER_ERRORS | 직접 대응 없음 | MySQL은 컴파일 시점에 즉시 에러를 반환함 |
 
 ### 주석(Comment)
@@ -98,3 +98,9 @@ SELECT CONSTRAINT_NAME, CONSTRAINT_TYPE
 FROM information_schema.TABLE_CONSTRAINTS
 WHERE TABLE_SCHEMA = 'your_db' AND TABLE_NAME = 'your_table';
 ```
+
+## 출처
+
+- [MySQL 8.4 Reference Manual, Atomic Data Definition Statement Support](https://dev.mysql.com/doc/refman/8.4/en/atomic-ddl.html)
+- [MySQL 8.4 Reference Manual, The INFORMATION_SCHEMA ROUTINES Table](https://dev.mysql.com/doc/refman/8.4/en/information-schema-routines-table.html)
+- [MySQL 8.4 Reference Manual, The INFORMATION_SCHEMA PARAMETERS Table](https://dev.mysql.com/doc/refman/8.4/en/information-schema-parameters-table.html)

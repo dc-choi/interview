@@ -1,18 +1,19 @@
 ---
 tags: [database, rdbms, mysql, charset, utf8mb4, migration, ddl]
 status: done
+verified_at: 2026-08-28
 category: "Database - RDBMS"
 aliases: ["utf8mb4 마이그레이션", "MySQL Charset Migration", "utf8mb3 to utf8mb4", "문자셋 변환"]
 ---
 
 # utf8mb4 마이그레이션 — 운영 중 안전 절차
 
-운영 중인 MySQL을 `utf8`(=3바이트 `utf8mb3`)에서 `utf8mb4`로 바꿀 때 "ALTER 한 방"이면 끝일 것 같지만, 실제로는 **테이블 락, 인덱스 키 길이 초과, collation 충돌** 셋 때문에 사고가 난다. 절차를 밟는 이유가 이 세 가지다.
+운영 중인 MySQL을 `utf8`에서 `utf8mb4`로 바꿀 때 한 번의 `ALTER`로 끝날 것 같지만, 실제로는 **테이블 락, 인덱스 키 길이 초과, collation 충돌** 셋 때문에 사고가 난다. MySQL 8.4에서 `utf8`은 deprecated된 `utf8mb3` 별칭이므로 감사할 때는 `utf8mb3`와 `utf8mb4`를 명시적으로 구분한다.
 
 ## 왜 위험한가 (절차의 근거)
 
 - **테이블 락**: `CONVERT TO CHARACTER SET`은 데이터를 다시 쓰므로 보통 테이블 복사(`ALGORITHM=COPY`)가 강제된다. 큰 테이블이면 그동안 쓰기가 막힌다. 락 없이 가는 법은 [[Schema-Migration-Large-Table]].
-- **인덱스 키 길이 초과 (제일 흔한 실패)**: utf8mb3는 글자당 3바이트, utf8mb4는 4바이트. `VARCHAR(255)`에 인덱스가 걸려 있으면 utf8mb3에선 255×3=765바이트라 옛 767바이트 제한에 들어왔는데, utf8mb4로 바꾸면 255×4=1020바이트가 돼 인덱스 생성이 실패한다. **`VARCHAR(191)`이 마법의 숫자인 이유가 191×4=764**라서다.
+- **인덱스 키 길이 초과 (제일 흔한 실패)**: utf8mb3는 글자당 3바이트, utf8mb4는 4바이트다. `VARCHAR(191)`은 옛 InnoDB의 767바이트 한계에서 나온 우회책일 뿐이다. 실제 제한은 대상 MySQL 버전, row format, page size와 index 정의를 기준으로 확인하고, 길이를 기계적으로 191자로 줄이지 않는다.
 - **collation 충돌**: collation을 바꾸면 비교 규칙이 바뀌어, 예전엔 다른 값이던 게 같은 값으로 취급되면 유니크 인덱스에서 중복 에러가 나며 ALTER가 깨진다.
 
 **전제 — 데이터 자체는 안전하다.** utf8mb4는 utf8mb3의 상위 집합이라, 이미 제대로 저장된 글자는 재인코딩 없이 그대로 유지된다. (latin1에서 넘어오는 경우는 완전히 다르다. 맨 아래 별도.)
@@ -50,16 +51,25 @@ ORDER BY c.character_maximum_length DESC;
 
 ### 3. 사전 조건 정리
 
-- **row format을 DYNAMIC으로** (+ `innodb_large_prefix`) → 인덱스 한계가 767 → 3072바이트로 풀린다. MySQL 8.0은 기본, 5.7이면 확인.
+- **대상 버전의 row format과 index byte limit 확인** — `innodb_large_prefix`는 MySQL 8.0에서 제거됐으므로 현행 서버의 보편 설정으로 쓰지 않는다. 레거시 서버의 제한과 우회책은 그 서버 버전 문서로만 확인한다.
 - **인덱스 길이 초과 컬럼 처리** — 둘 중 하나:
   - 실제로 255자가 불필요하면 `VARCHAR(191)`로 축소
   - 길이가 필요하면 프리픽스 인덱스: `ALTER TABLE t ADD INDEX idx (col(191))`
 - **collation 결정** — 8.0이면 `utf8mb4_0900_ai_ci`(기본 권장), 5.7이면 `utf8mb4_unicode_ci`. 유니크 인덱스 있는 테이블은 변환 전에 새 collation에서 중복될 후보를 점검한다.
 
 ```sql
--- 새 collation에서 대소문자 무시로 중복될지 점검
-SELECT LOWER(email), COUNT(*) FROM users GROUP BY LOWER(email) HAVING COUNT(*) > 1;
+-- MySQL 8.0, 대상 collation에서 nullable UNIQUE(email)가 충돌할지 점검
+SELECT email_key, COUNT(*)
+FROM (
+  SELECT CONVERT(email USING utf8mb4) COLLATE utf8mb4_0900_ai_ci AS email_key
+  FROM users
+  WHERE email IS NOT NULL
+) AS candidates
+GROUP BY email_key
+HAVING COUNT(*) > 1;
 ```
+
+MySQL 5.7 대상이면 같은 derived-table 구조에서 실제 target인 `utf8mb4_unicode_ci`를 사용한다. 이 검사는 실제 UNIQUE key마다 수행한다. 복합 key는 NULL이 없는 행에서 모든 key part의 조합을 대상 charset/collation으로 비교하고, prefix 또는 expression index라면 실제 index 정의와 같은 표현을 사용한다.
 
 ### 4. 실제 변환 (테이블 크기로 분기)
 
@@ -69,7 +79,7 @@ SELECT LOWER(email), COUNT(*) FROM users GROUP BY LOWER(email) HAVING COUNT(*) >
 ALTER TABLE small_table CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 ```
 
-큰 테이블(수백만 행 이상)은 직접 ALTER의 락이 위험하니 **온라인 스키마 변경 도구**(pt-online-schema-change, gh-ost)를 쓴다. 그림자 테이블에 청크 복사 후 원자적 교체라 변환 내내 락이 거의 없다. 도구 메커니즘과 트리거 vs binlog 차이는 [[Schema-Migration-Large-Table]]. charset 변환용 호출만 옮기면 이렇다.
+큰 테이블(수백만 행 이상)은 직접 ALTER의 락이 위험하니 **온라인 스키마 변경 도구**(pt-online-schema-change, gh-ost)를 검토한다. 그림자 테이블 청크 복사와 cutover의 짧은 MDL 구간, 원본 읽기와 복제 부하는 별도로 관측한다. 도구 메커니즘과 트리거 vs binlog 차이는 [[Schema-Migration-Large-Table]]. charset 변환용 호출만 옮기면 이렇다.
 
 ```bash
 pt-online-schema-change \
@@ -78,7 +88,7 @@ pt-online-schema-change \
   --max-lag=5 --critical-load="Threads_running=50"
 ```
 
-`--max-lag`로 복제 지연을 보며 스로틀하므로 Multi-AZ나 Read Replica가 있어도 안전하다. 복제본 지연이 특히 걱정되면 트리거 없이 binlog로 따라잡는 gh-ost가 더 부드럽다(`binlog_format=ROW` 필요).
+`--max-lag`는 명시적으로 점검하는 복제본의 지연만 기준으로 스로틀한다. Multi-AZ, 모든 Read Replica의 안전을 보장하지 않으므로 writer와 reader 부하, replica lag, cutover MDL을 따로 관측한다. gh-ost도 트리거는 피하지만 원본 읽기와 ghost 테이블 쓰기 부하는 남으며 `binlog_format=ROW`가 필요하다.
 
 ### 5. DB 기본값 + 커넥션 charset
 
@@ -88,12 +98,12 @@ pt-online-schema-change \
 ALTER DATABASE mydb CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;  -- 이후 생성 테이블에 적용
 ```
 
-```
-# 앱 커넥션 charset — 빼먹으면 테이블 다 바꿔놓고도 글자가 깨진다
-DATABASE_URL="mysql://user:pw@host:3306/mydb?charset=utf8mb4"
+```sql
+SELECT @@character_set_client, @@character_set_connection,
+       @@character_set_results, @@collation_connection;
 ```
 
-Prisma는 마이그레이션 시 DB 기본 charset을 따라가므로, DB 기본값을 utf8mb4로 바꿔두면 이후 `prisma migrate`로 만드는 테이블도 utf8mb4로 생성된다. 서버 파라미터 그룹의 `character_set_server` / `collation_server`까지 맞추면 더 확실하다(정적 파라미터라 적용 시 재부팅이 필요할 수 있다 → [[RDS-Operational-Pitfalls]]).
+커넥션 charset은 드라이버와 연결 옵션의 계약이므로 URL 쿼리 문자열을 일반화하지 말고 실제 세션 값을 확인한다. 이 vault의 새 schema 변경 기준은 TypeORM migration이며, 테이블과 컬럼의 target charset/collation을 DDL에 명시하고 `SHOW CREATE TABLE`로 검증한다. 서버 기본값과 적용 방식은 관리형 서비스와 파라미터 그룹에 따라 확인한다.
 
 ### 6. 검증
 
@@ -124,15 +134,18 @@ ALTER TABLE t MODIFY col VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900
 ## 면접 체크포인트
 
 - charset 변환이 운영에서 위험한 3가지: 테이블 락(COPY 강제), 인덱스 키 길이 초과, collation 충돌
-- `VARCHAR(191)`이 마법의 숫자인 이유(191×4=764 ≤ 767), DYNAMIC row format으로 3072까지 푸는 법
+- `VARCHAR(191)`이 레거시 767바이트 한계에서 나온 이유와, 대상 버전의 실제 index byte limit을 먼저 확인해야 하는 이유
 - utf8mb3 → utf8mb4가 데이터 안전한 이유(상위 집합)와 latin1이 다른 이유
 - 큰 테이블에 온라인 스키마 변경 도구를 쓰는 이유와 복제 지연 스로틀링
-- 테이블만 바꾸면 안 되는 이유 — DB 기본값과 커넥션 charset 네 군데 일치
+- 테이블만 바꾸면 안 되는 이유 — DB 기본값, 테이블과 컬럼 정의, 실제 커넥션 세션 값을 함께 검증
 - latin1에 UTF-8이 잘못 담긴 경우의 바이너리 경유 복구
 
 ## 출처
 
 - [MySQL Reference — Converting between 3-byte and 4-byte Unicode](https://dev.mysql.com/doc/refman/8.0/en/charset-unicode-conversion.html)
+- [MySQL 8.4 Reference Manual, The utf8mb3 Character Set](https://dev.mysql.com/doc/refman/8.4/en/charset-unicode-utf8mb3.html)
+- [MySQL 8.4 Reference Manual, Connection Character Sets and Collations](https://dev.mysql.com/doc/refman/8.4/en/charset-connection.html)
+- [MySQL 8.4 Reference Manual, Collation Coercibility in Expressions](https://dev.mysql.com/doc/refman/8.4/en/charset-collation-coercibility.html)
 - [Percona — pt-online-schema-change](https://docs.percona.com/percona-toolkit/pt-online-schema-change.html)
 
 ## 관련 문서

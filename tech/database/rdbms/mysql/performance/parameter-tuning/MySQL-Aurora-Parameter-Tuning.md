@@ -1,6 +1,7 @@
 ---
 tags: [database, mysql, aurora, parameter-group, tuning, operations]
 status: done
+verified_at: 2026-08-28
 category: "Database - RDBMS"
 aliases: ["MySQL Aurora Parameter Tuning", "Aurora 파라미터 표준", "DB 파라미터 표준 튜닝", "max_connections", "ngram_token_size", "Aurora OOM Response"]
 ---
@@ -25,11 +26,11 @@ InnoDB Buffer Pool(MySQL)과 Shared Buffers(PostgreSQL)는 데이터/인덱스 �
 
 ## temptable_max_ram / temptable_max_mmap — 임시 테이블 한계
 
-MySQL 8.0의 **TempTable 엔진**은 내부 임시 테이블을 **메모리 → 로컬 스토리지 → 클러스터 스토리지** 순서로 처리한다.
+Aurora MySQL v3의 **TempTable 엔진**은 DB 인스턴스의 내부 임시 테이블이 공유하는 메모리 풀을 사용한다. `temptable_max_ram`을 넘은 데이터는 writer에서 local storage의 memory-mapped file 또는 on-disk InnoDB temporary table로 넘길 수 있다. Reader는 Aurora cluster volume에 쓸 수 없고 overflow가 local storage의 memory-mapped file에만 머문다.
 
-- 기본 `temptable_max_ram`과 `temptable_max_mmap`이 작아 복잡한 쿼리(큰 GROUP BY, DISTINCT, 정렬)에서 한계가 빨리 온다.
-- **Aurora Reader**에서는 로컬 스토리지 한계를 넘으면 에러가 날 수 있다(Reader는 쓰기 스토리지 제약이 다름).
-- **표준 접근**: 최소값을 높여 작은 인스턴스에서도 임시 테이블 쿼리가 지나치게 쉽게 실패하지 않게 한다.
+- `temptable_max_ram`은 쿼리별 한도가 아니라 공유 풀이다. 너무 크게 잡으면 인스턴스 여유 메모리를 줄여 OOM을 유발할 수 있다.
+- Reader는 global TempTable limit 또는 `temptable_max_mmap` 한계를 넘으면 쿼리가 `Table is full` 오류로 끝날 수 있다.
+- **표준 접근**: 값을 일괄 상향하지 말고 workload의 합산 임시 데이터, `FreeableMemory`, `FreeLocalStorage`를 기준으로 RAM과 mmap 예산을 함께 정한다. Aurora MySQL 3.04+에서 per-table limit을 켠 경우에는 `tmp_table_size`도 별도 검증한다.
 
 ## sysdate_is_now — 시간 함수의 예측 가능성
 
@@ -58,10 +59,11 @@ MySQL Fulltext의 **n-gram 파서**는 문장을 N글자 단위로 쪼개 인덱
 
 ## Aurora OOM Response — 인스턴스 재시작 방지
 
-메모리가 부족할 때 아무 대응이 없으면 OS의 **OOM Killer가 DB 프로세스를 종료** → 인스턴스 재시작 → 서비스 영향.
+메모리가 부족하면 OS가 DB 프로세스를 종료해 재시작될 수 있다. Aurora의 OOM 대응은 이를 줄일 수 있지만 엔진 버전과 인스턴스 유형에 따라 동작이 다르다.
 
-- Aurora MySQL의 **OOM Response**는 메모리 부족 상황에서 문제 쿼리를 **기록하거나 종료**하는 기능.
-- **표준 접근**: 문제 쿼리를 로그에 남기고(원인 추적), 위험한 쿼리는 종료해서 **기록은 남기고 인스턴스는 살리는** 방향. 프로세스 전체가 죽는 것보다 개별 쿼리를 희생하는 게 가용성에 낫다.
+- Aurora MySQL 8.4에서는 기본값인 `aurora_enable_memory_management=ON`일 때 Aurora가 복구 동작을 관리하며 `aurora_oom_response`는 무시된다.
+- `kill_query`는 메모리를 많이 쓰는 `SELECT`를 종료하지만 DDL, 다른 DML, 트랜잭션에는 적용되지 않는다. `kill_connect`는 연결을 종료하고 진행 중인 트랜잭션을 롤백하며 DDL도 종료할 수 있다.
+- **표준 접근**: 공통 문자열을 배포하지 말고 대상 엔진 버전, provisioned 또는 Serverless v2, 허용 가능한 롤백 범위를 확인한 뒤 복구 동작을 스테이징에서 검증한다. 로그와 CloudWatch OOM 지표도 함께 관측한다.
 
 ## 표준 파라미터 한눈에
 
@@ -69,11 +71,11 @@ MySQL Fulltext의 **n-gram 파서**는 문장을 N글자 단위로 쪼개 인덱
 |----------|-------------|-----------|------|
 | `max_connections` | 작은 인스턴스에서 너무 낮음 | 메모리에 로그 스케일링 | 연결 고갈 방지 |
 | Buffer Pool / Shared Buffers | 큰 비율 → 여유 메모리 부족 | 고정 차감(MySQL ~800MB, PG ~850MB) | 작은 인스턴스 안정 |
-| `temptable_max_ram/mmap` | 작아서 임시테이블 한계 | 최소값 상향 | 복잡 쿼리 실패 방지 |
+| `temptable_max_ram/mmap` | 공유 메모리와 local storage 한계 | workload 예산과 관측으로 조정 | 복잡 쿼리와 OOM 위험의 균형 |
 | `sysdate_is_now` | SYSDATE 비결정성 | ON | 복제 안정, 인덱스 활용 |
 | `cte_max_recursion_depth` | 폭주 가능 | 보수적 하향 | 재귀 쿼리 차단 |
 | `ngram_token_size` | 1이면 한 글자 후보 노이즈 | 2 | 한국어 검색 균형 |
-| Aurora OOM Response | 미설정 시 OOM Kill | 기록 + 위험 쿼리 종료 | 인스턴스 생존 |
+| Aurora OOM Response | 버전, 인스턴스별 동작 차이 | 지원 여부와 롤백 영향 확인 후 설정 | 재시작 위험 완화 |
 
 ## 면접 체크포인트
 
@@ -82,11 +84,13 @@ MySQL Fulltext의 **n-gram 파서**는 문장을 N글자 단위로 쪼개 인덱
 - 버퍼를 비율이 아니라 **고정 차감**하는 게 작은/큰 인스턴스 모두에 안전한 이유
 - `NOW()` vs `SYSDATE()` 차이가 복제와 인덱스에 미치는 영향
 - ngram_token_size 1 vs 2의 검색 품질, 부하 균형
-- OOM Response가 프로세스 종료 대신 쿼리 종료로 가용성을 지키는 메커니즘
+- 엔진 버전과 인스턴스 유형에 따라 자동 메모리 관리와 configured OOM action이 달라지는 이유, 종료 대상과 트랜잭션 롤백 범위
 
 ## 출처
 - [Aurora DB 생성 자동화와 표준 운영 — DB 밋업 (YouTube)](https://www.youtube.com/watch?v=NrPY9J1a2ag&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=4)
 - [MySQL 8.4 Reference Manual, ngram Full-Text Parser](https://dev.mysql.com/doc/refman/8.4/en/fulltext-search-ngram.html)
+- [Amazon Aurora, New temporary table behavior in Aurora MySQL version 3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/ams3-temptable-behavior.html)
+- [Amazon Aurora, Troubleshooting out-of-memory issues for Aurora MySQL databases](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQLOOM.html)
 
 ## 관련 문서
 - [[DB-Provisioning-Pipeline|DB 프로비저닝 파이프라인]] — 이 파라미터를 템플릿으로 복사해 적용

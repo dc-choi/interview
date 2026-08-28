@@ -1,14 +1,14 @@
 ---
 tags: [database, redis, cache]
 status: done
-verified_at: 2026-08-05
+verified_at: 2026-08-28
 category: "Data & Storage - Cache & KV"
 aliases: ["Persistence"]
 ---
 
 # Persistence
 
-인메모리 데이터 스토어라 서버 재시작시 모든 데이터가 유실됨. 복제 기능을 사용해도 데이터 유실에 대해 안전하지 않음.
+Redis는 working dataset을 메모리에 두므로 persistence를 끄면 프로세스 또는 서버 재시작 뒤 데이터가 사라진다. RDB/AOF는 재시작 복구 지점을 만들지만 설정별 손실 창이 있으며, 복제만으로는 백업이나 영속성 보장이 되지 않는다.
 
 따라서 redis를 캐시 이외의 용도로 사용한다면 적절한 데이터 백업이 필요함.
 
@@ -45,11 +45,11 @@ redis-check-rdb dump.rdb     # 파일 무결성 검증
 
 | 정책 | 동작 | 손실 가능 |
 |------|------|----------|
-| `always` | 매 명령마다 fsync | ~0 (가장 안전, 가장 느림) |
+| `always` | 응답 전 AOF append batch를 fsync | AOF 기준 유실 창 최소, 종단간 0 보장 아님 |
 | `everysec` (기본) | 1초마다 fsync | 최대 1초 |
 | `no` | OS에 맡김 | OS, 디스크 정책에 따름 |
 
-`everysec`이 운영 표준. 결제 등 손실 절대 금지면 `always`지만 처리량 크게 떨어짐.
+`everysec`이 권장 기본값이다. 손실 비용이 크면 `always`로 acknowledged write의 유실 창을 줄일 수 있지만, 호스트, 스토리지, 복구 실패까지 포함한 무손실을 보장하지는 않는다. 결제 원장은 durable transactional source of truth에 두고 Redis를 복제, 백업과 복구 검증으로 보완한다.
 
 ## AOF Rewrite
 

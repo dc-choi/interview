@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, docker, local-development, quickstart]
 status: done
-verified_at: 2026-08-08
+verified_at: 2026-08-28
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch Local Quickstart", "OpenSearch 로컬 설치", "OpenSearch Docker 시작"]
 ---
@@ -77,7 +77,7 @@ Root 응답의 `version.distribution`이 `opensearch`인지 확인한다. 단일
 
 ### 보안을 끈 개발 구성
 
-OpenSearch node에는 `DISABLE_INSTALL_DEMO_CONFIG=true`와 `DISABLE_SECURITY_PLUGIN=true`, Dashboards에는 `DISABLE_SECURITY_DASHBOARDS_PLUGIN=true`가 필요하다. 이 구성의 API와 Dashboards는 HTTP를 사용한다.
+Security plugin을 끄는 설정은 `DISABLE_SECURITY_PLUGIN=true`다. 공식 개발용 예시는 번들 demo installer도 건너뛰도록 `DISABLE_INSTALL_DEMO_CONFIG=true`를 함께 쓰지만, 두 변수의 역할은 다르다. Dashboards를 함께 쓸 때는 `DISABLE_SECURITY_DASHBOARDS_PLUGIN=true`도 설정한다. 이 구성의 API와 Dashboards는 HTTP를 사용한다.
 
 ```yaml
 # OpenSearch service
@@ -187,6 +187,7 @@ Demo security 구성이라면 URL을 HTTPS로 바꾸고 CA 검증과 인증 정�
 
 - [OpenSearch Documentation, Installation quickstart](https://docs.opensearch.org/latest/getting-started/quickstart/)
 - [OpenSearch Documentation, Docker installation](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/)
+- [OpenSearch Documentation, Demo security configuration](https://docs.opensearch.org/latest/security/configuration/demo-configuration/)
 - [OpenSearch Documentation, Installing OpenSearch](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/index/)
 - [OpenSearch Documentation, Communicate with OpenSearch](https://docs.opensearch.org/latest/getting-started/communicate/)
 - [OpenSearch Documentation, Best practices for OpenSearch security](https://docs.opensearch.org/latest/security/configuration/best-practices/)

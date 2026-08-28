@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, ddl, migration]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-08-28
 category: "Data & Storage - RDB"
 aliases: ["대용량 스키마 변경", "Schema Migration", "Online DDL"]
 ---
@@ -76,12 +76,12 @@ INSTANT 지원 범위는 마이너 버전마다 다르므로 실제 대상 버�
 
 ## 전략 3: gh-ost (GitHub)
 
-pt-osc와 비슷하지만 **트리거 대신 binlog**를 읽어 동기화. 트리거 부하 없음.
+pt-osc와 비슷하지만 **트리거 대신 binlog**를 읽어 변경을 반영한다. 애플리케이션 DML에 트리거를 추가하지 않지만, 원본 읽기, 청크 복사, ghost 테이블 쓰기와 복제 I/O 부하는 남는다.
 
 장점:
-- 원본 테이블에 추가 부하 없음 (트리거 미사용)
+- 애플리케이션 DML의 트리거 부하를 피함
 - 진행 상황 모니터링, 일시정지, 취소 가능
-- 부하에 따라 자동 throttle
+- `--max-load`, `--critical-load`, `--max-lag-millis` 같은 조건을 설정해 throttle 또는 중단 기준을 운영할 수 있음
 
 단점:
 - ROW 기반 복제(binlog_format=ROW) 필요
@@ -109,7 +109,7 @@ pt-osc와 비슷하지만 **트리거 대신 binlog**를 읽어 동기화. 트�
 | Online DDL (INSTANT) | 매우 짧음(MDL) | 없음 | 단순 | 컬럼 추가 |
 | Online DDL (INPLACE) | 짧음(시작, 종료 MDL) | 중간 | 단순 | 인덱스 추가 |
 | pt-osc | 거의 없음 | 트리거 부하 | 중간 | 구 버전 MySQL |
-| gh-ost | 거의 없음 | 작음 | 중간 | 운영 트래픽 큰 환경 |
+| gh-ost | 거의 없음 | 원본 읽기, ghost 쓰기와 복제 I/O, 설정한 throttle | 중간 | 운영 트래픽 큰 환경 |
 | 수동 복사 | 전체 다운 | 큼 | 단순 | 정기점검 |
 
 ## 사전 체크리스트
@@ -143,6 +143,7 @@ pt-osc와 비슷하지만 **트리거 대신 binlog**를 읽어 동기화. 트�
 - [MySQL 8.0 Reference Manual — Online DDL Limitations](https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-limitations.html)
 - [MySQL 8.0 Reference Manual — Monitoring ALTER TABLE Progress](https://dev.mysql.com/doc/refman/8.0/en/monitor-alter-table-performance-schema.html)
 - [jojoldu — MySQL 대용량 테이블 스키마 변경](https://jojoldu.tistory.com/244)
+- [gh-ost command-line flags — GitHub](https://github.com/github/gh-ost/blob/master/doc/command-line-flags.md)
 
 ## 관련 문서
 - [[Schema-Versioning|스키마 버전 관리]]

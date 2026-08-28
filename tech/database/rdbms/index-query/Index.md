@@ -3,7 +3,7 @@ tags: [database, rdbms]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["Index"]
-verified_at: 2026-07-21
+verified_at: 2026-08-28
 ---
 
 # Index
@@ -21,17 +21,18 @@ verified_at: 2026-07-21
 
 index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentation과 cache 상태에 영향을 받는다. 따라서 `full scan = 순차 I/O`, `index scan = 랜덤 I/O`로 일대일 대응시키지 않는다. covering index와 MRR은 추가 row lookup의 유무와 접근 순서를 바꾼다.
 
-## Primary Key VS Secondary Key
-- PK는 우리가 흔히 알고 있는 식별자를 의미한다. 테이블에서 PK를 생성하면 Index에 PK에 관한 인덱스가 생긴 것을 볼 수 있다. 즉 PK는 레코드를 대표하는 컬럼의 값으로 만들어진 인덱스를 의미한다. PK를 제외한 나머지 인덱스들을 SK라고 한다.
+## Primary Key와 InnoDB Secondary Index
+- PK는 행 식별자의 유일성과 `NOT NULL`을 강제하는 schema constraint이고, DBMS는 이를 검사하고 조회하기 위한 backing index를 만든다. constraint와 index는 역할이 같은 개념이 아니다.
+- MySQL InnoDB는 PK를 clustered index로 사용하고 clustered index가 아닌 index를 secondary index라고 부른다. 모든 DBMS에서 non-PK index를 secondary key라고 부르는 일반 규칙은 아니다.
 
 ## Unique VS Non-Unique
 - 데이터의 중복 허용 여부로 구분하면 유니크 인덱스와 유니크 하지 않은 인덱스로 나눌 수 있다. 인덱스가 유니크한지 아닌지는 DBMS의 쿼리를 실행해야 하는 옵티마이저한테 중요하다 값이 유니크하면 유니크 인덱스에 대해 동등 조건으로 검색한다는 것을 옵티마이저에게 알려줄 수 있다.
-- **고유 인덱스**: 인덱스 열들의 값이 유일. UNIQUE 제약을 만들면 자동으로 유니크 인덱스가 생성되고, 역도 성립.
+- **고유 인덱스**: key 조합의 중복을 막는다. UNIQUE 제약과 unique index의 관계는 DBMS마다 다르다. MySQL/InnoDB의 UNIQUE는 unique index로 구현되지만, PostgreSQL의 partial 또는 expression unique index는 일반적인 테이블 제약과 동일하지 않다.
 - **비고유 인덱스**: 중복 허용. INSERT 시 중복 체크 없이 단순 정렬 작업만 → 고유 인덱스보다 약간 가벼움.
 
 ### PK vs 유니크 인덱스 차이
 둘 다 데이터의 유일성을 보장하지만 결정적 차이 둘:
-- **PK는 NULL 불가**, 유니크 인덱스는 **NULL 허용** (여러 행에 NULL 가능)
+- **PK는 NULL 불가**, unique index와 UNIQUE 제약의 NULL 처리 방식은 DBMS마다 다름 (MySQL과 PostgreSQL 기본값은 여러 NULL 허용, PostgreSQL은 `NULLS NOT DISTINCT` 선택 가능)
 - **PK는 테이블당 1개**, 유니크 인덱스는 **여러 개 가능**
 
 이 때문에 "주민번호처럼 NULL일 수 있는 자연키"는 유니크 인덱스로 두고, 자체 인조키(`AUTO_INCREMENT` 등)를 PK로 두는 패턴이 흔하다.
@@ -191,6 +192,7 @@ DROP INDEX CONCURRENTLY idx_name;
 - [인프런, 클러스터드 인덱스 소개](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471887)
 - [인프런, 랜덤 I/O와 순차 I/O](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471893)
 - [MySQL 8.4 Reference Manual, Column Indexes](https://dev.mysql.com/doc/refman/8.4/en/column-indexes.html)
+- [PostgreSQL 18 Documentation, Unique Indexes](https://www.postgresql.org/docs/current/indexes-unique.html)
 - [인프런, Hong, 파티셔닝과 인덱스 설계](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338546)
 - Index 기초 강의: [Sample](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328787), [필요성](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328788), [소개](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328789), [Tree](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328790), [DDL/EXPLAIN](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328791), [Equality](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328792), [Range](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328793), [LIKE](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328794), [Sort](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328795), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328796)
 - Index 설계 강의: [Optimizer 선택](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328798), [Covering](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328799), [Composite 1](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328800), [2](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328801), [3](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328802), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328803), [Guide](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328804), [비용](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328805), [문제](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328806), [전체 정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328807)

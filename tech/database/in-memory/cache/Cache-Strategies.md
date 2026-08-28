@@ -1,6 +1,7 @@
 ---
 tags: [database, redis, cache, cache-strategy]
 status: done
+verified_at: 2026-08-28
 category: "Data & Storage - Cache & KV"
 aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 ---
@@ -16,7 +17,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 | **Cache-Aside (Look-Aside)** | 읽기 | 앱이 캐시, DB를 직접 조율 | 범용, 가장 흔함 |
 | **Read-Through** | 읽기 | 캐시가 미스 시 자동으로 DB 조회 | 캐시 라이브러리 제공 시 |
 | **Write-Through** | 쓰기 | 앱이 DB와 캐시 갱신을 조율 | 최신성 요구와 복구 경로가 명확한 데이터 |
-| **Write-Around** | 쓰기 | DB에만 쓰고 캐시는 건너뜀 | 쓰고 나서 거의 안 읽는 데이터 |
+| **Write-Around** | 쓰기 | DB에 쓰고 새 값을 캐시에 적재하지 않으며, 기존 키가 있으면 무효화 | 쓰고 나서 거의 안 읽는 데이터 |
 | **Write-Back (Write-Behind)** | 쓰기 | 캐시에 쓰고 DB는 비동기 | 쓰기 성능 최우선 |
 
 ## 읽기 전략
@@ -80,11 +81,11 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 - **재사용되지 않는 데이터도 캐시에 저장** → 리소스 낭비 (TTL 설계 필수)
 - 두 저장소에 공통 트랜잭션이 없으면 장애, 재시도, 순서 역전으로 stale 캐시가 남을 수 있음. 원본 저장소, 재시도, 재조정과 필요하면 버전 또는 조건부 갱신을 함께 설계해야 함
 
-### 4. Write-Around — DB에만 쓰고 캐시 건너뜀
+### 4. Write-Around — DB에 쓰고 새 값을 캐시에 적재하지 않음
 
 **흐름**
 1. 쓰기는 DB로만
-2. 캐시에는 아무것도 하지 않음
+2. 기존 캐시 키가 있으면 무효화 또는 버전 조건으로 차단
 3. 이후 읽기에서 Cache-Aside/Read-Through가 자연스럽게 캐시에 올림
 
 **장점**
@@ -119,7 +120,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 | 쓰고 나서 잘 안 읽히는 로그, 시계열 | **Write-Around** |
 | 쓰기 폭주 + 즉시 DB 반영 불필요 | **Write-Back** (단, 손실 허용) |
 | 사용자 프로필, 설정 (읽기 중심, 가끔 갱신) | **Cache-Aside + 쓰기 시 캐시 무효화** |
-| 인증 토큰, 세션 (재생성 가능) | **Cache-Aside** or **Write-Around** |
+| 인증 토큰, 세션 (재생성 가능) | **Cache-Aside + TTL**, 쓰기 뒤 해당 키 무효화 또는 명시적 갱신 |
 
 ## 실무 고려사항
 
@@ -134,7 +135,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 
 - **쓰기 후 캐시 무효화 누락** → TTL이 없으면 stale 값이 계속 남고, TTL이 있어도 만료 전까지 노출
 - **Write-Back에 중요 데이터 사용** → 장애 시 손실
-- **모든 쿼리에 캐시** → 재사용 없는 데이터까지 올려 메모리 낭비 (Write-Around 미사용)
+- **모든 쿼리에 캐시** → 재사용 없는 데이터까지 올려 메모리 낭비 (Write-Around 또는 bypass 경로 미검토)
 - **무한 TTL** → 잊혀진 데이터가 메모리 점유
 - **캐시를 "DB 보조"로만 생각** → Request Coalescing, Hot Key 같은 고유 패턴 놓침
 - **AWS DAX 같은 Write-Through 전용 도구에 쓰기 폭주 워크로드** → 비용 절감 효과 없음
@@ -155,6 +156,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 - [Inpa Dev — Redis 캐시 설계 전략 지침 총정리](https://inpa.tistory.com/entry/REDIS-%F0%9F%93%9A-%EC%BA%90%EC%8B%9CCache-%EC%84%A4%EA%B3%84-%EC%A0%84%EB%9E%B5-%EC%A7%80%EC%B9%A8-%EC%B4%9D%EC%A0%95%EB%A6%AC)
 - [Redis, Transactions](https://redis.io/docs/latest/develop/using-commands/transactions/)
 - [Redis, Client-side caching](https://redis.io/docs/latest/develop/clients/client-side-caching/)
+- [Cache Layer Architecture: A Practical Guide to Speed & Scale — Redis](https://redis.io/blog/cache-layer-architecture-guide/)
 
 ## 관련 문서
 - [[Cache-Basics|캐시 기초]]

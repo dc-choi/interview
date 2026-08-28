@@ -1,6 +1,7 @@
 ---
 tags: [database, redis, cache, distributed-cache, warming, tagging]
 status: done
+verified_at: 2026-08-28
 category: "Data & Storage - Cache & KV"
 aliases: ["Cache Advanced Operations", "분산 무효화", "캐시 워밍업", "캐시 태깅"]
 ---
@@ -22,7 +23,7 @@ if (keys.length > 0) await redis.del(...keys);
 
 `KEYS`는 **단일 스레드 Redis를 멈춰서** 전체 키스페이스를 스캔. 키 수가 많으면 수백 ms 블로킹 → 다른 모든 요청 대기. 운영급 데이터셋에선 사실상 장애.
 
-### 올바른 패턴 — `SCAN` + 배치 `DEL`
+### 올바른 패턴 — `SCAN` + 단일 키 `UNLINK`
 
 ```ts
 async function deletePattern(redis: Redis, pattern: string) {
@@ -30,7 +31,7 @@ async function deletePattern(redis: Redis, pattern: string) {
   do {
     const [next, keys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', 200);
     cursor = next;
-    if (keys.length) await redis.unlink(...keys);   // DEL보다 비동기 회수 — 블로킹 적음
+    await Promise.all(keys.map((key) => redis.unlink(key)));
   } while (cursor !== '0');
 }
 ```
@@ -41,7 +42,7 @@ async function deletePattern(redis: Redis, pattern: string) {
 
 ### Cluster 환경
 
-Redis Cluster에서는 `SCAN`이 단일 노드만 본다. **모든 노드에 SCAN 반복** 필요 — `redis.nodes('master')`로 순회.
+Redis Cluster에서는 `SCAN`이 단일 노드만 본다. **모든 노드에 SCAN 반복** 필요 — `redis.nodes('master')`로 순회. 여러 key를 한 `UNLINK`에 넣으면 같은 hash slot이어야 하므로 key별 command를 보내거나 slot별 pipeline으로 묶는다.
 
 ## 캐시 워밍업
 
@@ -91,35 +92,33 @@ async function setWithTags(redis: Redis, key: string, value: any, tags: string[]
   const pipeline = redis.pipeline();
   pipeline.setex(key, ttl, JSON.stringify(value));
   tags.forEach(tag => {
-    pipeline.sadd(`tag:${tag}`, key);
-    pipeline.expire(`tag:${tag}`, ttl);
+    const tagKey = `tag:${tag}`;
+    pipeline.sadd(tagKey, key);
+    pipeline.expire(tagKey, ttl, 'NX'); // 처음 등록할 때만 TTL 설정
+    pipeline.expire(tagKey, ttl, 'GT'); // 더 긴 TTL만 허용
   });
   await pipeline.exec();
 }
 ```
 
-각 태그를 Redis Set으로 — 그 Set 안에 해당 태그를 가진 모든 캐시 키.
+각 태그를 Redis Set으로 — 그 Set 안에 해당 태그를 가진 모든 캐시 키. 태그 Set의 남은 TTL은 활성 멤버 키 중 가장 긴 TTL보다 짧아지면 안 된다. `NX`와 `GT` 조합은 뒤늦게 등록한 짧은 TTL이 기존 태그 TTL을 줄이지 않게 한다. 키 TTL을 연장하는 경로가 있으면 태그 TTL도 함께 연장한다. `EXPIRE`의 `NX`와 `GT` 조건은 Redis 7.0+에서 지원한다.
 
 ### 무효화
 
 ```ts
 async function invalidateTag(redis: Redis, tag: string) {
   const keys = await redis.smembers(`tag:${tag}`);
-  if (keys.length) {
-    const pipeline = redis.pipeline();
-    pipeline.unlink(...keys);
-    pipeline.del(`tag:${tag}`);
-    await pipeline.exec();
-  }
+  for (const key of keys) await redis.unlink(key);
+  await redis.del(`tag:${tag}`);
 }
 ```
 
-태그에 속한 모든 키 한 번에 회수 + 태그 자체도 정리.
+태그에 속한 키를 회수한 뒤 태그 자체도 정리한다. Redis Open Source Cluster에서 여러 key를 한 `UNLINK`에 넣으면 같은 hash slot이어야 하므로, 예시는 single-key command로 보낸다. 대량 처리에서는 `SSCAN`으로 bounded batch를 만들고 slot별 pipeline을 사용한다.
 
 ### 한계
 
 - 태그 Set이 클수록 SMEMBERS 결과 크기 ↑ → SSCAN으로 분할.
-- 태그 TTL과 키 TTL 동기화 어려움 — 태그가 먼저 만료되면 무효화 누락. 보통 태그 TTL을 **가장 긴 키 TTL + 여유**로.
+- 태그 TTL과 키 TTL 동기화 어려움 — 태그가 먼저 만료되면 무효화 누락. 활성 멤버의 최대 TTL 이상으로만 연장하고, 운영 정책에 맞는 여유와 정리 경로를 둔다.
 - 키가 만료돼도 태그 Set엔 dangling 멤버가 남음. 주기 정리 또는 무효화 시 존재 확인.
 
 ## 흔한 실수
@@ -140,6 +139,11 @@ async function invalidateTag(redis: Redis, tag: string) {
 - 캐시 워밍업의 의의와 트레이드오프 (메모리, 부팅 시간 vs 콜드 스타트)
 - 태그 기반 무효화 — Set으로 매핑, 그룹 단위 회수
 - 태그 TTL과 키 TTL 동기화 문제
+
+## 출처
+
+- [Redis Docs, EXPIRE](https://redis.io/docs/latest/commands/expire/)
+- [Redis Docs, Multi-key operations](https://redis.io/docs/latest/develop/using-commands/multi-key-operations/)
 
 ## 관련 문서
 

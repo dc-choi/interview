@@ -1,6 +1,7 @@
 ---
 tags: [database, data-modeling, data-warehouse, history, slowly-changing-dimension]
 status: done
+verified_at: 2026-08-28
 category: "Data & Storage - RDB"
 aliases: ["SCD Type 2", "Slowly Changing Dimension Type 2", "차원 데이터 이력 관리"]
 ---
@@ -41,23 +42,41 @@ id              | name    | tier     | valid_from           | valid_to          
 
 새 변경이 들어오면 두 단계로 처리:
 
-1. **기존 현재 행을 종료** — `valid_to = NOW()`, `is_current = false`로 UPDATE
-2. **새 행 INSERT** — `valid_from = NOW()`, `valid_to = NULL`, `is_current = true`
+1. **기존 현재 행을 종료** — `valid_to = :effective_at`, `is_current = false`로 UPDATE
+2. **새 행 INSERT** — `valid_from = :effective_at`, `valid_to = NULL`, `is_current = true`
 
 ```sql
 BEGIN;
 
 UPDATE customer_scd
-SET valid_to = NOW(), is_current = false
+SET valid_to = :effective_at, is_current = false
 WHERE customer_id = 1 AND is_current = true;
 
 INSERT INTO customer_scd (customer_id, name, tier, valid_from, valid_to, is_current)
-VALUES (1, '홍길동', 'gold', NOW(), NULL, true);
+VALUES (1, '홍길동', 'gold', :effective_at, NULL, true);
 
 COMMIT;
 ```
 
-두 쿼리는 **반드시 같은 트랜잭션** 안에서. 중간에 실패하면 "현재 행 0개" 또는 "현재 행 2개" 상태가 됨.
+적재 작업에서 `effective_at`을 한 번만 계산해 두 쿼리에 같은 값으로 바인딩하고, 두 쿼리는 **반드시 같은 트랜잭션** 안에서 실행한다. 이렇게 해야 두 statement의 시각 함수 평가 차이로 구간이 벌어지지 않는다. 다만 같은 자연키를 동시에 적재하는 writer까지 트랜잭션만으로 직렬화되지는 않는다.
+
+## 동시 적재 제약
+
+같은 자연키의 변경은 순서가 정해져야 한다. 다음 중 하나로 writer를 직렬화하고, 기존 현재 행을 종료하는 경우 `UPDATE`의 영향 행 수가 정확히 1인지 확인한다.
+
+- 안정적으로 존재하는 부모 또는 자연키 행을 `SELECT ... FOR UPDATE`로 잠그고 같은 트랜잭션에서 종료와 INSERT를 수행
+- 자연키별 단일 consumer로 이벤트를 순서대로 처리
+- 더 강한 격리 수준을 선택했다면 serialization failure를 재시도
+
+동시에 현재 행이 둘 생기는 것을 저장소 차원에서도 막는다. `is_current`는 `NOT NULL`로 두고, PostgreSQL은 partial unique index를 쓸 수 있다.
+
+```sql
+CREATE UNIQUE INDEX customer_scd_one_current
+ON customer_scd (customer_id)
+WHERE is_current;
+```
+
+다른 DBMS에서는 동일한 불변식을 표현하는 제약 또는 generated column 기반 unique index를 설계한다.
 
 ## 조회 패턴
 
@@ -102,7 +121,7 @@ Type 2로 적재해두면 **"이벤트 발생 시점 = 그 시점 유효한 행"
 - `(natural_key, is_current)` — 현재 행 조회 최적화
 - `(natural_key, valid_from)` — 시점 기반 join 최적화
 - `valid_from`/`valid_to` 범위 조건이 많으면 **시간 컬럼을 파티션 키**로 (PostgreSQL declarative partitioning)
-- 카디널리티가 매우 높은 자연키는 BRIN 인덱스 검토(범위 스캔 최적화)
+- 자연키 동등 조회에는 보통 B-tree를 사용한다. BRIN은 대형 append-oriented 테이블에서 `valid_from`처럼 heap 물리 위치와 자연스럽게 상관된 컬럼의 범위 조건에 검토한다. 높은 카디널리티만으로는 선택 기준이 아니다.
 
 ## 트레이드오프
 
@@ -127,7 +146,7 @@ Type 2로 적재해두면 **"이벤트 발생 시점 = 그 시점 유효한 행"
 
 - OLTP는 단순한 현재 상태만 유지 → 운영 성능 영향 최소
 - 분석 DB(PostgreSQL, BigQuery, Snowflake)는 Type 2로 풍부한 시계열 분석 지원
-- Kafka 컨슈머가 `before`/`after`를 모두 받으므로 valid_to 종료, 신규 row 적재를 한 번에 처리 가능
+- Debezium의 `before`와 `after`는 nullable이므로 `op`별로 처리한다. `r`(snapshot read)과 `c`(create)는 `after`로 신규 row를 열고, `u`(update)는 `before`의 현재 row를 닫은 뒤 `after`로 신규 row를 열며, `d`(delete)는 `before`의 현재 row만 닫는다
 
 이벤트 페이로드 예시(Debezium):
 ```json
@@ -139,12 +158,12 @@ Type 2로 적재해두면 **"이벤트 발생 시점 = 그 시점 유효한 행"
 }
 ```
 
-`source.ts_ms`를 `valid_from`으로 쓰면 **운영 DB 커밋 시각과 분석 DB의 유효 시점이 일치** — 시점 일관성 확보.
+MySQL 커넥터의 `source.ts_ms`는 소스 DB에서 변경이 만들어진 시각이다. 다만 업무 유효 시점이나 고유한 순서 키는 아니다. 동일 timestamp의 순서는 transaction/binlog 메타데이터로 풀고, snapshot 이벤트로 과거의 업무 유효 시점이 복원된다고 간주하지 않는다. 도메인이 유효 시점을 제공하면 그 값을 우선하고, 소스 변경 시각을 선택했다면 같은 `effective_at`으로 기존 구간과 신규 구간을 연다.
 
 ## 면접 체크포인트
 
 - SCD Type 1과 Type 2의 차이, Type 2를 선택하는 상황
-- Type 2 적재 시 두 SQL을 같은 트랜잭션으로 묶어야 하는 이유 (현재 행 0개, 2개 문제)
+- Type 2의 두 SQL을 같은 transaction으로 묶어 부분 적용에 따른 current row 0개 상태를 막고, 자연키별 직렬화와 unique invariant로 current row 2개 상태를 막는 이유
 - `valid_to`를 `NULL` vs `9999-12-31`로 두는 트레이드오프 (인덱스, 범위 쿼리 단순성)
 - 운영 DB와 분석 DB의 역할 분리 — 왜 운영 DB를 직접 Type 2로 만들지 않는가
 - CDC + Type 2가 "이벤트 시점 사용자 속성" 분석을 가능하게 하는 이유
@@ -152,6 +171,9 @@ Type 2로 적재해두면 **"이벤트 발생 시점 = 그 시점 유효한 행"
 
 ## 출처
 - [Jochong — KPI를 위한 데이터 준비하기: Kafka + Debezium CDC 파이프라인 도입](https://jochong.tistory.com/26)
+- [Debezium, Debezium connector for MySQL](https://debezium.io/documentation/reference/stable/connectors/mysql.html)
+- [PostgreSQL 18 Documentation, BRIN Indexes](https://www.postgresql.org/docs/current/brin.html)
+- [PostgreSQL 18 Documentation, Partial Indexes](https://www.postgresql.org/docs/current/indexes-partial.html)
 
 ## 관련 문서
 - [[CDC-Debezium|CDC, Debezium]]

@@ -1,6 +1,7 @@
 ---
 tags: [database, business-logic, architecture, scalability, sql]
 status: done
+verified_at: 2026-08-28
 category: "Data & Storage - RDB"
 aliases: ["Business Logic App vs DB", "비즈니스 로직 위치", "DB 로직 vs 앱 로직"]
 ---
@@ -42,23 +43,23 @@ aliases: ["Business Logic App vs DB", "비즈니스 로직 위치", "DB 로직 v
 
 ```sql
 -- 복잡, 비효율
-SELECT * FROM orders
-WHERE status = 'PAID'
-  AND created_at BETWEEN ? AND ?
-  AND user_id IN (SELECT user_id FROM users WHERE tier = 'VIP')
-  AND amount > (SELECT AVG(amount) FROM orders WHERE user_id = orders.user_id)
+SELECT *
+FROM orders AS o
+WHERE o.status = 'PAID'
+  AND o.created_at BETWEEN ? AND ?
+  AND o.user_id IN (SELECT user_id FROM users WHERE tier = 'VIP')
+  AND o.amount > (
+    SELECT AVG(i.amount) FROM orders AS i WHERE i.user_id = o.user_id
+  )
 ```
 
-**개선**: 필터용 ID만 뽑은 뒤 앱 레벨에서 추가 조건 적용.
+다음처럼 단순화하면 원래 결과와 동등하지 않다.
 
 ```sql
--- 단순화: 필터 키만
 SELECT id FROM orders WHERE status = 'PAID' AND created_at BETWEEN ? AND ?;
 ```
 
-이후 앱에서:
-- VIP 여부를 in-memory 캐시에서 판단
-- 평균과의 비교는 컬렉션 연산으로
+VIP 조건과 사용자별 평균 조건이 사라지고, 전송량과 조회 시점도 달라진다. 원래 의미가 필요하면 선택도가 높은 조건과 집계는 DB에 남기거나 동등한 JOIN, CTE, 윈도 함수로 다시 쓴다. 앱으로 옮길 수 있는 것은 결과를 받은 뒤의 순수 표시와 계산처럼 행 단위로 의미가 보존되는 작업이다. 같은 snapshot에서 ID, 행 수, 값과 지연을 비교해 동등성을 확인한다.
 
 ### 2. 반환 결과 계산 분리
 
@@ -181,6 +182,7 @@ Stored Procedure는 데이터가 있는 DB 안에서 여러 연산을 한 번에
 ## 출처
 - [ORM vs Stored Procedure — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=B6GcNoZtkkk)
 - [ITWorld — 비즈니스 로직을 DB가 아닌 앱에 넣어야 하는 이유](https://www.itworld.co.kr/article/3566061/)
+- [MySQL 8.4 Reference Manual, Optimizing Subqueries](https://dev.mysql.com/doc/refman/8.4/en/subquery-optimization.html)
 
 ## 관련 문서
 - [[Database-Views-and-Programmability|View와 DB 저장 프로그램]]

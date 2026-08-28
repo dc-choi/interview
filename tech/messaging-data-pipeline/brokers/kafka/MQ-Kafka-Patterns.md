@@ -3,6 +3,7 @@ tags: [messaging, kafka, event-streaming, patterns]
 status: done
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Kafka Patterns", "카프카 실전 패턴"]
+verified_at: 2026-08-28
 ---
 
 # Kafka 실전 패턴
@@ -19,9 +20,10 @@ aliases: ["Kafka Patterns", "카프카 실전 패턴"]
 
 ## Transactional Outbox + Debezium
 
-DB 트랜잭션으로 Outbox 테이블에 이벤트를 기록하고, **Debezium MySQL Connector**가 binlog를 읽어 Kafka로 발행 (→ [[Transactional-Outbox]], [[CDC-Debezium]]).
-- DB 변경과 이벤트 발행의 **원자성**을 CDC로 보장
-- 부하가 높은 서비스는 Outbox 테이블을 **식별자 기준으로 샤딩**해 여러 Connector가 병렬 처리
+DB 트랜잭션으로 business row와 Outbox 테이블의 이벤트를 함께 기록하고, **Debezium MySQL Connector**가 committed binlog 변경을 읽어 Kafka로 발행 (→ [[Transactional-Outbox]], [[CDC-Debezium]]).
+- business row와 Outbox row의 원자성은 **DB 트랜잭션**이 보장한다. CDC 발행은 그 뒤 독립적으로 일어나므로, 기본 at-least-once delivery에서는 restart나 failure 뒤 같은 이벤트가 다시 전달될 수 있음
+- Outbox의 고유 event ID를 메시지에 보존하고, consumer는 그 ID로 멱등 처리 또는 중복 제거. Kafka Connect exactly-once 설정은 별도 지원 범위와 운영 조건을 확인
+- Debezium MySQL Connector는 source server의 binlog를 **단일 task**로 읽는다. 같은 DB의 Outbox 테이블만 나누거나 `tasks.max`를 늘려도 Connector 병렬화가 되지 않는다. DB가 이미 shard별 server로 분리된 경우에만 server별 Connector 구성을 검토
 
 ## Event Bus (Spring Cloud RemoteApplicationEvent)
 
@@ -37,13 +39,16 @@ DB 트랜잭션으로 Outbox 테이블에 이벤트를 기록하고, **Debezium 
 
 - 이벤트 리플레이가 필요 (장애 후 재처리, 새 소비자가 과거 이벤트 재생)
 - 파티션 내 순서 보장이 필수
-- 초당 수만 건 이상의 처리량
+- record 크기, durability, latency와 consumer 병렬성을 반영한 부하 시험에서 지속 처리량 요구가 다른 후보를 넘어설 때
 - 여러 소비자 그룹이 같은 이벤트를 독립적으로 소비
 
 다른 시스템(SQS, Pub/Sub 등)과의 상세 비교는 [[Messaging-Patterns|메시징 패턴]]과 [[Messaging-Broker-Comparison|브로커 비교]] 참고.
 
 ## 출처
 
+- [Debezium, Outbox Event Router](https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html)
+- [Debezium, Exactly once delivery](https://debezium.io/documentation/reference/configuration/eos.html)
+- [Debezium, MySQL connector](https://debezium.io/documentation/reference/stable/connectors/mysql.html)
 - [우아한형제들 — 우리팀은 카프카를 어떻게 사용하고 있을까](https://techblog.woowahan.com/17386/)
 
 ## 관련 문서

@@ -1,6 +1,7 @@
 ---
 tags: [database, redis, internal, encoding, sds, skiplist, ziplist]
 status: done
+verified_at: 2026-08-28
 category: "Data & Storage - Cache & KV"
 aliases: ["Redis Internal Encoding", "SDS", "skiplist", "ziplist", "quicklist"]
 ---
@@ -17,16 +18,16 @@ Redis는 같은 자료구조 타입에도 **데이터 크기, 내용에 따라 �
 | string | `embstr` | ≤44바이트 (3.x: 39바이트) |
 | string | `raw` | 그 외 |
 | list | `quicklist` | 7.x 표준 (linked list of listpacks) |
-| hash | `listpack` (구 ziplist) | entries ≤ `hash-max-listpack-entries` (128) + value ≤ 64B |
+| hash | `listpack` (구 ziplist) | entries ≤ `hash-max-listpack-entries` (기본 512) + 각 필드/값 ≤ 64B |
 | hash | `hashtable` | 그 외 |
 | set | `intset` | 모든 원소가 정수 + ≤ `set-max-intset-entries` (512) |
-| set | `listpack` (7.2+) | 모든 원소가 작은 문자열 |
+| set | `listpack` (7.2+) | 문자열 원소, entries ≤ `set-max-listpack-entries` (기본 128), 원소 ≤ 64B |
 | set | `hashtable` | 그 외 |
 | sorted set | `listpack` | entries ≤ `zset-max-listpack-entries` (128) + value ≤ 64B |
 | sorted set | `skiplist` + hashtable | 그 외 |
 | stream | `stream` | 라덱스 트리 + 압축 노드 |
 
-`listpack`은 7.0+ 기본 — 옛 `ziplist`의 보안, 확장 문제 해결 버전. 옛 설정명(`hash-max-ziplist-entries`)은 alias로 호환.
+Redis 7.0+는 Hash와 Sorted Set의 listpack 임계값을 제공하고, 7.2+는 Set에도 listpack 임계값을 제공한다. 임계값은 고정 상수가 아니라 설정값이므로 실제 `redis.conf`와 `OBJECT ENCODING`으로 확인한다.
 
 ## SDS — Simple Dynamic String
 
@@ -69,9 +70,9 @@ quicklist:  [listpack] ↔ [listpack] ↔ [listpack] ↔ ...
 | 설정 | 의미 |
 |------|------|
 | `list-max-listpack-size -2` | 노드당 8KB 권장 (음수 = KB 단위 음의 부호) |
-| `list-compress-depth 1` | 양 끝 N개 노드 빼고 LZF 압축. 0이면 압축 X |
+| `list-compress-depth 0` (기본) | 0은 압축 안 함. 양수 N은 양 끝 N개를 제외한 중간 노드를 LZF 압축 |
 
-push/pop은 양 끝만 자주 접근 → 끝 노드는 비압축, 중간만 압축이 표준.
+중간 노드 압축은 기본값이 아니다. 큰 list의 메모리 절감과 CPU, latency 비용을 측정한 뒤 양수 depth를 선택한다.
 
 ## Hash, Set, ZSet — listpack ↔ 큰 인코딩 변환
 
@@ -79,9 +80,9 @@ push/pop은 양 끝만 자주 접근 → 끝 노드는 비압축, 중간만 압�
 
 | 자료구조 | 작은 인코딩 | 큰 인코딩 | 변환 임계 |
 |----------|------------|-----------|----------|
-| Hash | listpack | hashtable | entries 128 또는 value 64B |
+| Hash | listpack | hashtable | entries 512 또는 필드/값 64B |
 | Set (정수만) | intset | hashtable | entries 512 |
-| Set (문자열) | listpack | hashtable | entries 128 |
+| Set (문자열) | listpack | hashtable | entries 128 또는 원소 64B |
 | Sorted Set | listpack | skiplist + hashtable | entries 128 또는 value 64B |
 
 작은 컬렉션은 listpack이 캐시 친화적, 메모리 ~50% 절감. 큰 컬렉션은 O(log N)/O(1) 보장 위해 큰 인코딩.
@@ -141,10 +142,10 @@ DEBUG OBJECT myhash
 
 ## 흔한 실수
 
-- **listpack 임계를 모르고 큰 hash 운용** → 메모리 폭증. `hash-max-listpack-entries` 모니터링.
+- **listpack 임계를 모르고 큰 hash 운용** → 메모리 폭증. 설정값과 `OBJECT ENCODING`을 함께 확인.
 - **`OBJECT ENCODING` 미사용** → 인코딩 불일치를 놓치고 메모리, CPU 추정 어려움.
 - **임계 넘긴 후 크기 줄여도 회수 안 됨** → 재생성 필요.
-- **list-compress-depth 0** → 큰 list의 메모리 절약 기회 상실.
+- **측정 없이 list-compress-depth를 올림** → 메모리는 줄어도 압축, 해제 CPU와 latency가 늘 수 있음.
 - **embstr 문자열에 SETRANGE/APPEND** → raw로 변환 + 재할당 비용. 변경 잦은 string은 처음부터 raw 의식.
 
 ## 면접 체크포인트
@@ -157,6 +158,11 @@ DEBUG OBJECT myhash
 - skiplist의 확률적 레벨 결정 — 1/4 확률
 - `span` 필드로 ZRANK O(log N) 구현
 - 인코딩 단방향 변환의 운영 함정
+
+## 출처
+
+- [Redis Docs, Memory optimization](https://redis.io/docs/latest/operate/oss_and_stack/management/optimization/memory-optimization/)
+- [Redis, redis.conf](https://github.com/redis/redis/blob/8.2/redis.conf)
 
 ## 관련 문서
 
