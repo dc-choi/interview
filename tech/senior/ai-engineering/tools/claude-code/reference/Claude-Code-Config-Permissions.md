@@ -1,6 +1,7 @@
 ---
 tags: [senior, ai, claude-code, settings, permissions, sandbox]
 status: done
+verified_at: 2026-08-28
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한", "권한 규칙 문법"]
 ---
@@ -13,20 +14,20 @@ aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한",
 
 우선순위(높은 순): 관리자(Managed) → CLI 인자 → `.claude/settings.local.json` → `.claude/settings.json` → `~/.claude/settings.json`.
 
-- 관리자 계층 내부는 서버 관리 > MDM/OS 정책 > 파일(`managed-settings.json`) 순인데, **비어 있지 않은 첫 소스 하나만 적용**되고 계층 간 병합은 없다
+- 관리자 계층 내부는 서버 관리 > MDM/OS 정책 > 파일(`managed-settings.json`) 순이다. 기본 `managedSourcesBehavior: first-wins`는 policy key가 있는 첫 소스를 선택하지만 일부 보안 키는 모든 admin source에서 읽는다. v2.1.242+의 `merge`를 선택하면 모든 admin source를 키 종류별 규칙으로 합친다
 - 병합 규칙: 배열 설정(`permissions.allow` 등)은 스코프 간 연결 + 중복 제거, 스칼라는 높은 우선순위가 승리
-- 핫 리로드: 대부분 키는 즉시 반영, `model`과 `outputStyle`만 다음 세션. 설정 파일 백업은 최근 5개 자동 유지, 활성 소스 확인은 `/status`
+- 핫 리로드: 대부분 키는 즉시 반영한다. `model`은 `/model`, `effortLevel`은 `/effort`로 실행 중 바꿀 수 있고, `outputStyle` 편집은 `/clear` 또는 restart 뒤 적용된다. Claude가 직접 쓰는 `~/.claude.json`만 write 전 최근 5개 backup을 남긴다고 명시돼 있으며 일반 settings file의 자동 backup으로 일반화하지 않는다. 활성 source는 `/status`로 확인
 - 스코프 용도: 프로젝트 `.claude/settings.json`(커밋, 팀 공유), 개인 로컬 `.claude/settings.local.json`(gitignore), 사용자 `~/.claude/settings.json`
 
 ## 컨텍스트 주입 3계층 — CLAUDE.md, rules, 스킬
 
 | 계층 | 로드 시점 | 용도 |
 |---|---|---|
-| CLAUDE.md | 매 세션 전체 (시스템 프롬프트) | 전 작업 공통 규칙, 파일당 200줄 이하 권장 |
+| CLAUDE.md | 시스템 프롬프트 뒤 user message로 전달 | 전 작업 공통 규칙, 파일당 200줄 이하 권장 |
 | `.claude/rules/` | 매칭 파일을 열 때 (경로 스코프) | 디렉토리별 규칙 |
 | 스킬 | 호출 시 (온디맨드) | 작업별 플레이북 |
 
-- `@`임포트는 조직화용일 뿐 토큰 절약이 아니다. cwd에서 위로 올라가며 로드하고, 하위 디렉토리 CLAUDE.md는 해당 파일을 읽을 때 온디맨드 로드. 서브에이전트는 CLAUDE.md를 상속하지 않는다
+- `@`임포트는 조직화용일 뿐 토큰 절약이 아니다. cwd에서 위로 올라가며 로드하고, 하위 디렉토리 CLAUDE.md는 해당 파일을 읽을 때 온디맨드 로드. 일반 built-in과 custom subagent는 메인 대화에 로드된 CLAUDE.md 계층을 받지만, built-in Explore와 Plan은 CLAUDE.md와 git status를 건너뛴다
 - 자동 메모리: MEMORY.md 인덱스는 시작 시 처음 200줄 또는 25KB만 로드, 토픽 파일은 온디맨드. 머신 로컬이며 worktree 간 공유
 - `~/.claude` 아래 트랜스크립트와 체크포인트 스냅샷은 **평문 저장** — 도구를 거친 모든 내용이 디스크에 남는다. `cleanupPeriodDays`(기본 30일)로 자동 정리
 
@@ -61,18 +62,29 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 
 ## 샌드박싱 — 승인 피로의 구조적 해결
 
-권한 프롬프트를 줄이려고 allow를 늘리는 대신, OS 수준 격리(macOS Seatbelt, Linux bubblewrap)로 쓰기는 작업 디렉토리 하위만, 네트워크는 차단을 강제하고 그 안에서 자유를 준다. 규칙 매칭의 함정(래퍼, 리터럴 우회)을 뚫을 수 없는 유일하게 확실한 차단층. 관리자는 managed 설정으로 `disableBypassPermissionsMode` 같은 잠금을 조직 전체에 강제할 수 있다.
+권한 프롬프트를 줄이려고 allow를 늘리는 대신, OS 수준 격리(macOS Seatbelt, Linux와 WSL2 bubblewrap)로 Bash command와 child process의 filesystem, network 접근을 제한한다. Built-in Read, Edit, Write와 computer use에는 같은 sandbox boundary가 적용되지 않는다. 기본 read policy는 credential file도 읽을 수 있고, broad domain allowlist, Unix socket, weaker nested mode와 unsandboxed retry는 격리를 약화할 수 있다. Hard gate가 필요하면 managed setting에서 sandbox를 켜고 실패 시 비격리 실행을 막는다.
+
+```json
+{"sandbox": {"enabled": true, "failIfUnavailable": true, "allowUnsandboxedCommands": false}}
+```
+
+`excludedCommands`는 비격리 예외이므로 hard gate에서 두지 않는다. filesystem/network 허용 범위와 credential deny, 권한 규칙도 managed scope에서 같이 고정한다.
 
 ## 체크포인트
 
-- 설정 병합에서 배열과 스칼라의 규칙 차이, 관리자 계층의 첫 소스만 적용 규칙
+- 관리자 소스의 기본 first-wins, merge 모드와 모든 admin source에서 읽는 보안 키 예외
 - 권한 평가 순서 (deny → ask → allow, first match wins, deny-at-any-level)
 - bare deny와 scoped deny의 차이 (컨텍스트 제거 vs 호출 차단)
-- Read deny가 Bash cat을 못 막는 이유와 확실한 차단층 (샌드박스)
+- Read deny가 Bash cat을 못 막는 이유와 Bash sandbox의 적용 범위, 예외
 - 와일드카드, 복합 명령, 심볼릭 링크 매칭의 경계 사례
 
 ## 출처
 
+- [Anthropic, Configure the sandboxed Bash tool](https://code.claude.com/docs/en/sandboxing)
+- [Anthropic, Claude Code settings](https://code.claude.com/docs/en/settings)
+- [Anthropic, Deploy managed settings](https://code.claude.com/docs/en/managed-settings)
+- [Anthropic, How Claude remembers your project](https://code.claude.com/docs/en/memory)
+- [Anthropic, Create custom subagents](https://code.claude.com/docs/en/sub-agents)
 - [클로드 코드 가이드 (레퍼런스 04 설정 시스템, 05 권한 시스템) — WikiDocs](https://wikidocs.net/book/19104)
 
 ## 관련 문서

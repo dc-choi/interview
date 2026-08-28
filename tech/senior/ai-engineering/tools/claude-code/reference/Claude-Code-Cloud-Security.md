@@ -1,6 +1,7 @@
 ---
 tags: [senior, ai, claude-code, cloud, security, privacy, sandbox]
 status: done
+verified_at: 2026-08-28
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Cloud Security", "클로드 코드 클라우드 실행", "클로드 코드 보안"]
 ---
@@ -11,30 +12,30 @@ AI 에이전트에게 자율을 줄수록 격리가 그 대가다. 클라우드 
 
 ## 클라우드 실행 아키텍처
 
-- 흐름: 태스크 제출 → 격리 VM에 저장소 클론 → 설정 스크립트 실행(캐시됨, 0이 아닌 종료 코드는 세션 시작 차단 — 비필수 명령은 실패 허용 처리) → 네트워크 정책 적용 → 작업 → 전용 접두사 브랜치로 푸시 → diff 검토 후 PR. 탭을 닫아도 계속 실행
-- 리소스: vCPU 4, RAM 16GB, 디스크 30GB. 주요 언어 런타임과 PostgreSQL, Redis 사전 설치
-- **자격 증명 설계가 핵심**: GitHub 토큰은 샌드박스 안에 들어가지 않는다 — VM에는 스코프 제한된 자격 증명만 주고, 보안 프록시가 실제 토큰으로 변환하며 push를 현재 작업 브랜치로 제한한다. 토큰 탈취를 정책이 아니라 구조로 차단
-- 네트워크 3단계: 차단 / 제한(기본, 패키지 레지스트리 등 허용 도메인만) / 전체. 단 차단해도 Anthropic API 통신은 열려 있으므로 데이터가 VM을 벗어날 수 있다는 전제로 민감도를 판단
-- 이동: 터미널에서 클라우드로 `--remote`, 클라우드에서 터미널로 teleport(브랜치 fetch + 대화 로드). 정기 실행 루틴의 트리거는 스케줄(최소 1시간), API 엔드포인트, GitHub 이벤트 3종
+- 흐름: Anthropic-hosted cloud session은 격리된 관리형 VM에서 저장소를 clone하거나 bundle로 받아 setup script와 network policy를 적용해 작업한다. 브라우저를 닫아도 session은 계속된다. Self-hosted environment의 격리는 조직이 책임진다.
+- 설치 도구와 VM resource는 바뀔 수 있으므로 현재 공식 installed-tools 문서를 기준으로 확인한다.
+- **자격 증명 설계가 핵심**: Anthropic-hosted environment에서는 Git credential과 signing key를 sandbox에 넣지 않고 scoped credential과 secure proxy로 처리한다. 연결 계정이 볼 수 있는 repository 범위는 GitHub 쪽 권한으로 제한해야 한다.
+- Network access는 cloud environment에서 관리하며 기본적으로 제한할 수 있고 끌 수도 있다. 차단해도 Anthropic API 통신은 가능하므로 data가 VM 밖으로 나갈 수 있다는 전제로 민감도를 판단한다.
+- 터미널에서 새 cloud session을 시작하는 현재 flag는 `--cloud`이고 `--remote`는 deprecated alias다. `--teleport`는 cloud session의 branch와 대화를 터미널로 가져온다.
 
 ## 로컬 보안 — 다층 방어 5겹
 
-1. **로컬 실행 모델**: 코드베이스를 통째로 업로드하지 않는다 — 프롬프트와 응답만 전송
+1. **로컬 실행 모델**: 실행은 로컬에서 하지만 model inference에 필요한 prompt, context와 tool output은 provider로 전송된다. 코드 전체가 항상 로컬에만 남는다고 가정하지 않는다.
 2. **권한 아키텍처**: 기본 읽기 전용, 묻고 행동 ([[Claude-Code-Config-Permissions|규칙 엔진]])
-3. **샌드박스**: macOS Seatbelt, Linux bubblewrap로 파일시스템과 네트워크를 OS 수준 격리
-4. **프롬프트 인젝션 방어**: curl, wget 기본 차단, 웹에서 가져온 콘텐츠는 격리된 컨텍스트에서 분석, 의심 명령은 허용 목록에 있어도 수동 승인, 매칭 실패는 차단으로 처리(fail-closed)
+3. **샌드박스**: macOS Seatbelt, Linux와 WSL2 bubblewrap로 Bash command와 child process의 filesystem, network 접근을 격리한다. Built-in Read, Edit, Write와 computer use에는 이 경계가 적용되지 않는다.
+4. **프롬프트 인젝션 방어**: 외부 content는 신뢰하지 않고 permission, 최소 domain allowlist와 변경 review를 함께 사용한다. Sandbox만으로 prompt injection을 제거했다고 보지 않는다.
 5. **관리 설정과 훅**: 조직 정책의 물리적 강제
 
 ## 데이터 보존과 텔레메트리
 
-- 보존 정량: 소비자 플랜은 학습 허용 시 5년, 비허용 30일. 상업(Team, Enterprise, API)은 30일이고 학습에 쓰지 않음. ZDR은 응답 후 즉시 삭제
-- 로컬에는 트랜스크립트가 `~/.claude`에 평문으로 기본 30일 — 도구를 거친 모든 내용이 남는다는 점이 로컬 쪽 프라이버시 포인트
-- 텔레메트리(메트릭, 에러)는 코드 내용을 포함하지 않으며 환경변수로 일괄 비활성화 가능. WebFetch는 가져오기 전에 호스트명만 서버로 보내 차단 목록과 대조한다(프리플라이트)
-- ZDR의 트레이드오프: 클라우드 실행 세션과 피드백 제출 같은 서버 보관이 필요한 기능이 차단된다. HIPAA 대응(BAA)은 ZDR 위에서 확장
+- 보존 정량: 소비자 플랜은 model 개선을 허용하면 5년, 허용하지 않으면 30일이다. 상업용 Team, Enterprise와 API의 표준은 30일이고 별도 opt-in이 없으면 model 학습에 쓰지 않는다. ZDR은 자격이 확인된 Enterprise 조직에 별도로 적용되며 모든 product와 data를 포괄하지 않는다.
+- 로컬에는 트랜스크립트가 `~/.claude/projects/` 아래 평문으로 기본 30일 저장된다. `cleanupPeriodDays`로 기간을 조정할 수 있다.
+- Usage metric은 code, prompt, file path를 포함하지 않는다. Error report는 stack trace를 전송하기 전에 알려진 secret과 개인 정보 pattern을 redact한다. 각각 끄거나 `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`으로 비필수 traffic을 함께 끌 수 있다.
+- ZDR에서는 Claude Code on the Web, cloud session, Claude Tag, Artifact, feedback 제출과 Remote Control처럼 server storage가 필요한 기능이 차단된다. 제3자 integration과 관리 metadata는 ZDR 범위 밖이며, 법적 의무나 Usage Policy 위반 대응을 위한 보존 예외와 사용할 수 없는 model이 있다.
 
-## 자기 리뷰 3계층 (security-guidance)
+## 보조 출처가 제안한 자기 리뷰 3계층
 
-에이전트가 만든 변경을 에이전트가 검사하는 계층 구조 — per-edit(정규식 패턴, 모델 비용 0) → end-of-turn(턴 diff를 별도 모델이 리뷰) → commit-push(에이전트형 심층 리뷰). 어떤 계층도 차단하지 않는 심층 방어의 한 겹이고, 차단이 필요한 규칙은 훅과 권한이 맡는다. 검사 빈도와 비용이 반비례하는 계단 설계.
+WikiDocs가 소개한 per-edit 정규식 검사, end-of-turn diff review, commit-push 심층 review는 방어 계층을 나누는 설계 예시다. 현재 Claude Code의 공식 built-in 보안 보장으로 보지는 않으며, 차단이 필요한 규칙은 permission과 hook 같은 결정론적 경계에서 강제한다.
 
 ## 체크포인트
 
@@ -46,6 +47,10 @@ AI 에이전트에게 자율을 줄수록 격리가 그 대가다. 클라우드 
 
 ## 출처
 
+- [Anthropic, Claude Code on the web](https://code.claude.com/docs/en/claude-code-on-the-web)
+- [Anthropic, Data usage](https://code.claude.com/docs/en/data-usage)
+- [Anthropic, Zero data retention](https://code.claude.com/docs/en/zero-data-retention)
+- [Anthropic, Configure the sandboxed Bash tool](https://code.claude.com/docs/en/sandboxing)
 - [클로드 코드 가이드 (레퍼런스 20 클라우드 실행, 21 보안과 프라이버시) — WikiDocs](https://wikidocs.net/book/19104)
 
 ## 관련 문서
