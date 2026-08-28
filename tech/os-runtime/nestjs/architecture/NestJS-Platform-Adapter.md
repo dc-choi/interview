@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, fastify, express, adapter, performance]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-08-28
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Platform Adapter", "FastifyAdapter", "Express vs Fastify"]
 ---
@@ -14,7 +14,7 @@ Nest의 프레임워크 독립성은 **어댑터가 미들웨어와 핸들러를
 
 - Express: 가장 널리 쓰이고, **호환 미들웨어 생태계가 거대** — out of the box 활용.
 - Fastify: Nest 공식 안내가 인용한 단순 benchmark에서는 Express보다 거의 두 배 빠른 결과를 보인다. 실제 서비스 처리량은 middleware, serialization과 downstream I/O에 따라 달라지므로 같은 workload로 측정한 뒤 선택한다. `new FastifyAdapter()`를 NestFactory.create 두 번째 인자로 전달한다.
-- 버전 기준: **Nest 11부터 Express v5가 기본** 통합이고 Fastify v5를 지원하며, 런타임은 **Node.js 20 이상**을 요구한다 (v16, v18 지원 종료).
+- 버전 기준: **Nest 11부터 Express v5가 기본** 통합이고 Fastify v5를 지원한다. 2026-08-28 공식 First Steps 기준 애플리케이션 runtime은 Node.js 20.19 이상이 필요하고 22.x에서는 22.12 이상이어야 한다.
 
 ## Fastify 전환 시 실전 차이
 
@@ -44,8 +44,9 @@ Nest의 프레임워크 독립성은 **어댑터가 미들웨어와 핸들러를
 - [[Hono|Hono (경량 대안 프레임워크 비교)]]
 
 ## 출처
+- [NestJS, First steps](https://docs.nestjs.com/first-steps)
 - [NestJS — Performance (Fastify)](https://docs.nestjs.com/techniques/performance)
 - [NestJS — CORS](https://docs.nestjs.com/security/cors)
 - [NestJS — HTTP adapter (FAQ)](https://docs.nestjs.com/faq/http-adapter)
 - [NestJS — HTTPS & multiple servers (FAQ)](https://docs.nestjs.com/faq/multiple-servers)
-- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)
+- [NestJS — Migration guide (v11)](https://docs.nestjs.com/v11/migration-guide)

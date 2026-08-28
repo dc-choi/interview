@@ -1,7 +1,7 @@
 ---
 tags: [cicd, github-actions]
 status: done
-verified_at: 2026-08-27
+verified_at: 2026-08-28
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["GitHub Actions", "깃헙 액션"]
 ---
@@ -53,8 +53,8 @@ main 브랜치에 push될 때 변경 감지 후 자동 배포한다.
 
 **API 배포 (Docker 기반):**
 1. Docker 이미지 빌드 (multi-stage)
-2. Docker Hub에 push (latest + commit SHA 태그)
-3. SSH로 서버 접속 → `docker compose pull && docker compose up -d`
+2. registry에 push하고 `build-push-action`의 `steps.push.outputs.digest`를 배포 기록으로 보관
+3. SSH로 서버 접속 → Compose manifest에서 `image@sha256:...`를 사용해 `docker compose pull && docker compose up -d`
 
 **Web 배포 (정적 파일):**
 1. `pnpm turbo build --filter=@workspace/web`으로 빌드
@@ -71,8 +71,9 @@ main 브랜치에 push될 때 변경 감지 후 자동 배포한다.
 **Turbo 활용:** `--filter` 옵션으로 특정 패키지만 빌드. Turbo의 캐시 시스템이 변경되지 않은 패키지의 빌드를 건너뛴다.
 
 **태그 전략:**
-- `latest` — 항상 최신 배포 버전을 가리킴
+- `latest` — 사람이 찾기 쉬운 mutable reference
 - `${{ github.sha }}` — 커밋 해시로 특정 빌드를 추적, 롤백 시 유용
+- 태그는 mutable reference이므로 배포 식별자로 사용하지 않는다. `image@sha256:...`를 배포 기록과 Compose manifest에 남긴다
 
 ## 속도 최적화 — 병목을 측정하고 줄이기
 
@@ -90,7 +91,7 @@ CI 시간이 길면 피드백이 늦어진다. 아래 기법의 효과는 설치
 
 Dockerfile 빌드가 매번 처음부터면 시간이 늘 수 있다. GitHub Actions cache backend는 선택지 중 하나이며 repository cache quota, eviction과 API throttling을 함께 본다.
 
-- `docker/build-push-action@v7`의 `cache-from: type=gha`, `cache-to: type=gha,mode=max`. 여러 image가 같은 기본 scope를 덮어쓰지 않도록 image별 scope를 분리한다
+- 검토한 full commit SHA로 고정한 `docker/build-push-action`의 `cache-from: type=gha`, `cache-to: type=gha,mode=max`. 여러 image가 같은 기본 scope를 덮어쓰지 않도록 image별 scope를 분리한다
 - **Dockerfile 계층 순서 최적화**: 자주 변하는 파일(소스 코드, 커밋 SHA)을 **뒤쪽 레이어**에 배치해 앞쪽 캐시 무효화 방지
 - **Git commit SHA 인자를 마지막에** — 매 커밋마다 앞 계층의 `assets:precompile` 같은 무거운 단계가 무효화되지 않도록
 
@@ -137,7 +138,7 @@ Q. CI/CD 파이프라인을 어떻게 설계했는가?
 - 모노레포에서 paths-filter로 변경된 앱만 선택적 배포
 
 Q. 배포 중 문제 발생 시 롤백은?
-- Docker Hub에 commit SHA 태그로 이미지가 보관되므로, 이전 SHA 태그의 이미지로 `docker compose up` 재실행
+- 이전에 승인, 검증한 image digest를 Compose manifest에 다시 지정하고 `docker compose up` 재실행. commit SHA 태그는 후보를 찾는 용도로만 사용
 
 Q. CI 시간을 단축하기 위해 어떤 전략을 쓰는가?
 - `actions/cache`로 lock 파일 기반 의존성 캐시
@@ -150,6 +151,7 @@ Q. CI 시간을 단축하기 위해 어떤 전략을 쓰는가?
 - [GitHub Docs, Understanding GitHub Actions](https://docs.github.com/en/actions/get-started/understand-github-actions)
 - [GitHub Docs, Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)
 - [GitHub Docs, OpenID Connect](https://docs.github.com/en/actions/concepts/security/openid-connect)
+- [GitHub Docs, Publishing Docker images](https://docs.github.com/en/actions/tutorials/publish-packages/publish-docker-images)
 - [GitHub Docs, GitHub Actions billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
 - [actions/setup-node, Caching global packages data](https://github.com/actions/setup-node#caching-global-packages-data)
 - [actions/checkout, Fetch only a single commit by default](https://github.com/actions/checkout)

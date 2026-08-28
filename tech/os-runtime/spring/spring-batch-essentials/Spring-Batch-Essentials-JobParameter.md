@@ -1,19 +1,20 @@
 ---
 tags: [spring-batch, batch, job-parameter, job-scope, step-scope, late-binding, idempotency]
 status: done
+verified_at: 2026-08-28
 category: "OS & Runtime"
 aliases: ["Spring Batch Job Parameter", "Late Binding", "배치 멱등성", "@JobScope"]
 ---
 
 # Spring Batch Job Parameter와 Late Binding, 멱등성
 
-배치의 재실행 가능성(멱등성)은 프레임워크 기능이 아니라 **파라미터 설계**에서 나온다. 바뀔 수 있는 값(날짜, 대상 타입, 범위)을 코드 안에 숨기지 않고 Job Parameter로 끌어올리는 것이 핵심.
+Job Parameter는 배치의 논리적 실행과 처리 대상을 재현하는 입력이다. 바뀔 수 있는 값(날짜, 대상 타입, 범위)을 코드 안에 숨기지 않고 끌어올리되, Parameter만으로 writer의 멱등성이 보장되지는 않는다.
 
 ## Job Parameter — 실행 시점 값 주입
 
 - 배치 실행 시 외부에서 넘기는 값. 예: `targetDate=2024-01-01`
 - 기본 지원 타입은 String, Long, Double, Date 중심 (Spring Batch 5부터는 컨버터 기반으로 임의 타입 지원이 넓어짐)
-- `job_name + JobParameters` 조합이 JobInstance의 유니크 키 — 같은 파라미터로 완료된 Job은 재실행이 거부된다 ([[Spring-Batch-Essentials-Structure|메타데이터 테이블]] 참조)
+- `job_name + identifying JobParameters` 조합이 JobInstance를 식별한다. Parameter는 기본적으로 identifying이지만 non-identifying으로 지정할 수 있다. 같은 identifying 조합으로 완료된 JobInstance의 재실행은 거부된다 ([[Spring-Batch-Essentials-Structure|메타데이터 테이블]] 참조)
 
 ## @JobScope, @StepScope와 Late Binding
 
@@ -44,7 +45,7 @@ Scope Bean은 실행 시점에 만들어지므로, **파라미터 값에 따라 
 멱등성 = 같은 작업을 여러 번 실행해도 결과가 달라지지 않는 성질. 운영에서는 어제 데이터 재처리, 일주일 전 데이터 재전송 같은 **재실행 요청이 일상**이라 배치의 필수 속성이다.
 
 - 안티패턴: 코드 안에서 `LocalDate.now()`로 처리 대상을 결정 — 오늘 돌리면 오늘 데이터, 내일 돌리면 내일 데이터를 처리해 **같은 작업의 재실행이 불가능**해진다
-- 원칙: 날짜, 타입, 대상 범위처럼 바뀔 수 있는 값은 전부 Job Parameter로 주입 → 같은 파라미터 = 같은 결과
+- 원칙: 날짜, 타입, 대상 범위처럼 실행을 재현하는 값은 Job Parameter로 주입한다. 논리적 실행을 구분하는 값은 identifying으로 두고, 같은 입력의 반복 결과는 writer의 upsert, 고유 제약과 외부 side effect 중복 방지로 보장한다
 - 매일 자동 실행과의 양립: 날짜 기본값은 실행 환경(Jenkins 날짜 파라미터 플러그인 등)에서 주입 → [[Spring-Batch-Essentials-Operations|운영]] 참조
 
 ## 흔한 실수
@@ -65,6 +66,7 @@ Scope Bean은 실행 시점에 만들어지므로, **파라미터 값에 따라 
 ## 출처
 
 - [Spring Batch 운영과 설계 — YouTube 강의](https://www.youtube.com/watch?v=_nkJkWVH-mo&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=41)
+- [Spring Batch Reference, JobParameters](https://docs.spring.io/spring-batch/reference/domain.html#jobparameters)
 
 ## 관련 문서
 

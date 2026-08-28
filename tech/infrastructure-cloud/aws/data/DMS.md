@@ -3,6 +3,7 @@ tags: [infrastructure, aws, dms, migration, database, cdc, sct]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["DMS", "AWS DMS", "Database Migration Service", "데이터 마이그레이션 서비스"]
+verified_at: 2026-08-28
 ---
 
 # AWS Database Migration Service (DMS)
@@ -13,7 +14,8 @@ aliases: ["DMS", "AWS DMS", "Database Migration Service", "데이터 마이그�
 
 | 구성요소 | 역할 |
 |---------|------|
-| **복제 인스턴스(Replication Instance)** | DMS 작업을 실행하는 EC2 — 소스에서 읽고 대상에 쓰는 워커 |
+| **복제 인스턴스(Replication Instance)** | DMS Standard에서 쓰는 EC2 기반 작업 실행 환경. 소스에서 읽고 대상에 쓰는 하나 이상의 replication task를 호스팅 |
+| **Serverless replication configuration** | endpoint, table mapping과 최소, 최대 DCU를 정의하면 DMS가 실행 capacity를 provision하고 조정. Standard보다 지원 endpoint와 기능 범위가 좁을 수 있음 |
 | **소스 엔드포인트(Source Endpoint)** | 원본 DB 연결 정보 (호스트, 포트, 자격증명) |
 | **대상 엔드포인트(Target Endpoint)** | 마이그레이션 대상 DB 연결 정보 |
 | **마이그레이션 작업(Task)** | "어떤 테이블을, 어떤 방식으로, 언제까지" 정의 — 매핑 규칙 포함 |
@@ -25,7 +27,9 @@ aliases: ["DMS", "AWS DMS", "Database Migration Service", "데이터 마이그�
 ### 1. Full Load (전체 로드)
 
 - 소스의 기존 데이터를 한 번에 대상으로 복사
-- 운영 중 데이터 변경은 반영 안 됨 → **다운타임 필요**
+- Full Load만으로는 로드 중 소스 변경을 계속 반영하지 않는다. 정합성을 맞추려면 소스를 멈춘 뒤 컷오버하거나 CDC 또는 별도 조정 절차를 함께 설계
+
+DMS Standard는 replication instance와 task를 만들고, DMS Serverless는 replication configuration을 만든다. Serverless도 Full Load, Full Load + CDC와 CDC를 지원하지만 endpoint와 기능 제한을 먼저 확인한다.
 
 ### 2. CDC (Change Data Capture) — 핵심
 
@@ -39,23 +43,22 @@ aliases: ["DMS", "AWS DMS", "Database Migration Service", "데이터 마이그�
 - **컷오버 직전까지 양쪽이 거의 동기화** → 짧은 점검 시간만으로 전환 가능
 - "운영 중단 없이 마이그레이션" 시나리오의 표준 패턴
 
-## 이기종 마이그레이션 — DMS + SCT 조합
+## 이기종 마이그레이션 — 데이터와 스키마를 분리
 
 다른 엔진 간 마이그레이션 (예: **SQL Server → Aurora PostgreSQL**, Oracle → MySQL).
 
 | 도구 | 역할 |
 |------|------|
 | **DMS** | **데이터** 전송 (행 단위) |
-| **AWS Schema Conversion Tool (SCT)** | **스키마, 저장 프로시저, 뷰, 트리거, 코드** 변환 |
+| **DMS Schema Conversion 또는 수동 DDL** | 스키마, 저장 프로시저, 뷰, 트리거와 코드 객체의 변환 및 검토 |
 
-- SCT는 데스크톱 앱 — 소스 스키마를 분석해 대상 엔진 호환 DDL 생성
-- 자동 변환 불가한 객체는 리포트로 표시 → 수동 수정
-- **시험 패턴**: "Oracle → Aurora" 같이 엔진이 다른 케이스 → **SCT(스키마) + DMS(데이터)** 함께
-- 같은 엔진 버전 업그레이드(예: MySQL 5.7 → 8.0)는 SCT 불필요
+- AWS DMS Schema Conversion은 소스 스키마와 코드 객체를 분석해 대상 호환 DDL을 생성할 수 있다. 자동 변환되지 않는 객체는 수동으로 검토, 수정한다.
+- 이기종 이전은 데이터 전송 외에 스키마와 애플리케이션 호환성 작업이 필요하다. 변환 도구를 쓸지 수동 DDL과 검증으로 할지는 객체 범위와 지원 수준에 따라 선택한다.
+- 같은 엔진 계열 이전도 대상 schema, 객체와 DDL 적용 방식을 명시한다.
 
-## 동종 마이그레이션 — DMS 단독
+## 동종 마이그레이션 — 스키마 준비와 데이터 전송
 
-같은 엔진 계열 간 마이그레이션은 **SCT 없이 DMS만으로** 가능.
+같은 엔진 계열 간에는 변환 도구가 필요하지 않을 수 있지만, 대상 schema와 객체 준비는 여전히 필요하다. DMS의 target table preparation은 테이블, primary key와 일부 unique index만 만들 수 있으므로, 그 밖의 객체와 운영 DDL은 별도 확인한다.
 
 - MySQL on-prem → **RDS MySQL** / Aurora MySQL
 - PostgreSQL on-prem → RDS PostgreSQL / Aurora PostgreSQL
@@ -89,10 +92,10 @@ aliases: ["DMS", "AWS DMS", "Database Migration Service", "데이터 마이그�
 
 ## 시험 체크포인트
 
-- **DMS = 데이터, SCT = 스키마/코드** — 가장 자주 나오는 분리 개념
+- **DMS = 데이터, schema conversion 또는 수동 DDL = 스키마/코드** — 가장 자주 나오는 분리 개념
 - **다운타임 최소화** → Full Load + **CDC**
-- **이기종 마이그레이션** (Oracle → Aurora, SQL Server → MySQL) → **SCT 필수**
-- **동종 마이그레이션** (MySQL → RDS MySQL) → DMS만으로 충분, SCT 불필요
+- **이기종 마이그레이션** (Oracle → Aurora, SQL Server → MySQL) → schema conversion 또는 수동 DDL과 호환성 검증을 데이터 이동과 함께 계획
+- **동종 마이그레이션** (MySQL → RDS MySQL) → 데이터 이동과 대상 schema 준비를 분리해 검증
 - **MongoDB → DocumentDB**: DMS 지원, 호환 API
 - **온프레미스 → AWS** 마이그레이션 시 운영 지속 필요 → DMS CDC
 - **DB → S3/Kinesis/Kafka** → DMS 대상으로 가능 (스트리밍/데이터 레이크 시나리오)
@@ -107,4 +110,8 @@ aliases: ["DMS", "AWS DMS", "Database Migration Service", "데이터 마이그�
 
 ## 출처
 
+- [AWS DMS, Components](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.Components.html)
+- [AWS DMS, High-level view](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.HighLevelView.html)
+- [AWS DMS, Schema conversion](https://docs.aws.amazon.com/dms/latest/userguide/schema-conversion.html)
+- [AWS DMS, Working with DMS Serverless](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Serverless.html)
 - AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)

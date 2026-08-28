@@ -3,6 +3,7 @@ tags: [infrastructure, network, dns]
 status: done
 category: "Infrastructure & Cloud"
 aliases: ["DNS", "DNS 구조", "도메인 네임 시스템"]
+verified_at: 2026-08-28
 ---
 
 # DNS (Domain Name System)
@@ -32,7 +33,7 @@ aliases: ["DNS", "DNS 구조", "도메인 네임 시스템"]
 |------|-----------|
 | A | 도메인 → IPv4 주소 |
 | AAAA | 도메인 → IPv6 주소 |
-| CNAME | 도메인 → 다른 도메인(별칭). 에이펙스 도메인에는 지정 불가 |
+| CNAME | 도메인 → 다른 도메인(별칭). 같은 이름에 다른 레코드와 공존할 수 없고, 에이펙스는 SOA와 NS가 필요하므로 표준 CNAME을 둘 수 없음 |
 | MX | 도메인 → 메일 서버 |
 | NS | 도메인 → 그 존을 관리하는 권한 네임서버 (위임의 핵심) |
 | SOA | 존의 시작 레코드(관리 정보, 시리얼, 갱신 주기) |
@@ -81,8 +82,8 @@ aliases: ["DNS", "DNS 구조", "도메인 네임 시스템"]
 같은 질의를 매번 루트부터 반복하지 않도록 각 계층이 결과를 캐싱한다: 브라우저 캐시 → OS 스텁 리졸버 캐시 → 리졸버 캐시. 캐시 유지 시간은 레코드의 **TTL**(Time To Live, 초)이 결정한다.
 
 - TTL이 길면 — 질의 부하/비용 절감, 변경 반영은 느림
-- TTL이 짧으면 — 변경 즉시 반영, 질의 부하 증가
-- 레코드 변경(서버 이전, 페일오버)을 앞두면 미리 TTL을 낮춰 전파 지연을 줄인다
+- TTL이 짧으면 — 새 응답을 받은 캐시의 만료가 빨라지지만, 이미 저장한 이전 응답을 즉시 무효화하지는 않음. 질의 부하는 증가
+- 레코드 변경(서버 이전, 페일오버)을 앞두면 기존 TTL보다 충분히 먼저 TTL을 낮추고, 이전 캐시가 만료된 뒤 변경해 전파 지연을 줄인다
 
 ## 도메인 등록과 위임
 
@@ -115,6 +116,8 @@ aliases: ["DNS", "DNS 구조", "도메인 네임 시스템"]
 
 ## 출처
 
+- [RFC 2181, Clarifications to the DNS Specification](https://www.rfc-editor.org/rfc/rfc2181)
+- [RFC 9499, DNS Terminology](https://www.rfc-editor.org/rfc/rfc9499)
 - [AWS Route 53 이해를 위한 DNS 기초 — YouTube](https://www.youtube.com/watch?v=pEtbC6dYaiA&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v&index=5)
 
 ## 관련 문서

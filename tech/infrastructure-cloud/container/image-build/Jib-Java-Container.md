@@ -147,7 +147,7 @@ Jib이 이미지를 만들어도 **JVM 자체의 컨테이너 대응**은 별도
 - [Jib 기반의 Java 애플리케이션 컨테이너 이미지 — jh-labs](https://jh-labs.tistory.com/509)
 
 ## 관련 문서
-- [[Docker|Docker 기본]]
+- [[Docker-Core|Docker 기본]]
 - [[Multi-Stage-Build|Multi-stage Build (Node.js 등)]]
 - [[Image-Size-Optimization|Image Size Optimization]]
 - [[Docker-Image-Pipeline|Docker Image Build Pipeline]]

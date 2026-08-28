@@ -36,7 +36,7 @@ mysqldump -h old-host -u admin -p --single-transaction --routines mydb \
 
 ### 2. 엔진/버전 차원의 큰 변경
 
-- **이기종 엔진 전환** (MySQL ↔ PostgreSQL, Oracle → PostgreSQL 등) — 제자리 개념이 아예 없다. **DMS + SCT**로 스키마를 변환하고 데이터를 옮긴다. 타입 매핑과 SQL 방언 차이로 손이 가장 많이 간다. 메커니즘은 [[DMS]].
+- **이기종 엔진 전환** (MySQL ↔ PostgreSQL, Oracle → PostgreSQL 등) — 제자리 개념이 아예 없다. DMS로 데이터를 옮기고 **DMS Schema Conversion 또는 수동 DDL**로 target schema를 준비한다. 타입 매핑과 SQL 방언 차이로 손이 가장 많이 간다. 메커니즘은 [[DMS]].
 - **일반 RDS ↔ Aurora** — Aurora 전환도 마이그레이션이지만, 호환 엔진(Aurora MySQL ← RDS MySQL)이면 스냅샷 복원이나 **Aurora 읽기 복제본을 만들어 승격**하는 쉬운 경로가 있다.
 - **메이저 버전 점프 / EOL 엔진** — 메이저 업그레이드는 제자리로 되는 경우가 많지만, 여러 버전을 건너뛰거나 제자리 업그레이드가 위험하면 새 버전 인스턴스로 옮기는 게 안전하다. 이때 **Blue/Green Deployment**로 green을 띄워 검증 후 빠르게 컷오버한다.
 
@@ -56,7 +56,7 @@ mysqldump -h old-host -u admin -p --single-transaction --routines mydb \
 |---|---|---|---|
 | **스냅샷 복원** | 동종, 암호화 켜기, 리전/계정 이동 | 중 | 가장 간단 |
 | **논리 덤프** (mysqldump/pg_dump) | 스토리지 축소, 소규모, 선택적 이전 | 큼 | 유연하지만 느림 |
-| **DMS (+SCT)** | 이기종, 대용량, 온프레미스 | 최소 (CDC) | 가장 무겁고 강력 (→ [[DMS]]) |
+| **DMS + schema 준비** | 이기종, 대용량, 온프레미스 | 최소 (CDC) | DMS Schema Conversion 또는 수동 DDL 병행 (→ [[DMS]]) |
 | **Read Replica 승격** | 동종, 저다운타임 컷오버, 크로스 리전 | 매우 적음 | 복제본을 독립 승격(비가역) |
 | **Blue/Green Deployment** | 업그레이드, 위험한 변경 | 매우 적음 | green 검증 후 컷오버 |
 
@@ -66,7 +66,7 @@ mysqldump -h old-host -u admin -p --single-transaction --routines mydb \
 
 - 제자리로 되는 변경과 마이그레이션이 강제되는 변경의 경계("제자리 불가 = 마이그레이션")
 - 생성 시 고정 속성 3가지: 암호화, 스토리지 축소 불가, lower_case_table_names
-- 이기종 전환에서 DMS(데이터)와 SCT(스키마)의 역할 분리
+- 이기종 전환에서 DMS(데이터)와 DMS Schema Conversion 또는 수동 DDL(스키마)의 역할 분리
 - 리전 이동에서 스냅샷 복사 vs 크로스 리전 Read Replica 승격의 다운타임 차이
 - 무중단에 가까운 두 경로: DMS Full Load + CDC, Read Replica 승격 컷오버
 - 암호화 스냅샷을 계정 간 공유할 때 KMS 키도 공유해야 하는 이유
@@ -75,11 +75,12 @@ mysqldump -h old-host -u admin -p --single-transaction --routines mydb \
 
 - [Amazon RDS — Backing up, restoring, and exporting data](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html)
 - [Amazon RDS Blue/Green Deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-overview.html)
+- [AWS DMS, Converting database schemas using DMS Schema Conversion](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html)
 
 ## 관련 문서
 
 - [[RDS-Aurora|RDS / Aurora 관리형 DB]]
-- [[DMS|AWS Database Migration Service (Full Load + CDC, SCT)]]
+- [[DMS|AWS Database Migration Service (Full Load + CDC, schema conversion)]]
 - [[MySQL-Charset-Migration|utf8mb4 마이그레이션 안전 절차]]
 - [[RDS-Operational-Pitfalls-Rare|RDS 운영 함정 (암호화 사후불가, 승격 비가역)]]
 - [[KMS|KMS (스냅샷 암호화 키)]]

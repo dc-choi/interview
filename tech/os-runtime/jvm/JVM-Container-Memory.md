@@ -3,7 +3,7 @@ tags: [runtime, jvm, memory, container, g1gc, tuning]
 status: done
 category: "OS&런타임(OS&Runtime)"
 aliases: ["JVM Container Memory", "JVM 컨테이너 메모리", "used vs committed", "RAMPercentage"]
-verified_at: 2026-07-21
+verified_at: 2026-08-28
 ---
 
 # JVM 컨테이너 메모리 — used vs committed와 RAMPercentage
@@ -34,10 +34,10 @@ verified_at: 2026-07-21
 | 구분 | OutOfMemoryError | OOMKilled |
 |---|---|---|
 | 발생 주체 | JVM 내부 (힙, metaspace 등 영역 고갈) | 커널 (cgroup limit 초과) |
-| 흔적 | 스택트레이스가 앱 로그에 남음 | 앱 로그 없이 SIGKILL — exit code 137 (128+9) |
+| 흔적 | 스택트레이스가 앱 로그에 남음 | 커널 OOM kill이면 termination reason이 `OOMKilled`이고 SIGKILL 결과로 exit code 137이 나타날 수 있음 |
 | 판정 기준 | JVM이 인식하는 각 영역의 상한 | 컨테이너에 계정된 메모리 총합 vs limit |
 
-- 반복 재시작에서 첫 갈림길은 exit code다. 137이면 JVM 로그를 아무리 뒤져도 원인이 없다 — `lastState.terminated.reason: OOMKilled`를 먼저 확인한다.
+- 반복 재시작에서는 container termination reason, runtime event와 memory 지표를 먼저 본다. exit code 137은 SIGKILL 결과일 뿐 OOM 증거가 아니며 grace timeout, 수동 kill 등도 가능하다. `lastState.terminated.reason: OOMKilled`와 cgroup memory event가 확인될 때 커널 OOM kill로 판단하고, 이 경우 JVM이 stacktrace를 남기지 못할 수 있다.
 - K8s 문서 기준으로 memory limit은 커널 OOM kill로 **반응적으로** 강제된다. limit을 넘는 순간 즉시 죽는 것이 아니라 커널이 메모리 압박을 감지하고 회수에 실패할 때 종료되므로, 잠깐 넘고도 살아 있는 구간이 있을 수 있다.
 
 ## 상한은 합산으로 설계한다
@@ -45,7 +45,7 @@ verified_at: 2026-07-21
 - 커널이 보는 것은 힙이 아니라 컨테이너에 계정된 총합이다. 성분 정의는 [[Container-Memory-Metrics]]에서 다루고, 여기서는 그 총합을 전제로 힙 상한을 역산하는 문제만 본다.
 - MaxRAMPercentage는 이 중 **힙 하나만** 정한다 (UseContainerSupport로 감지한 컨테이너 가용 메모리 대비 백분율). 힙 밖 소비가 수백 MB인 서비스에 높은 백분율을 주면 합산이 limit을 넘도록 설계된 셈이다 — JVM은 힙 상한까지 정상이라고 믿고, 커널은 총합으로 죽인다. 구체 수치는 아래 사례 절.
 - 실질 힙 허용량은 역산한다: limit − (metaspace + direct buffer + thread stack + native + page cache 여유분). 힙 백분율은 이 값 아래로 낮춘다.
-- 힙 밖 성분에도 상한을 명시한다. MaxMetaspaceSize와 MaxDirectMemorySize를 지정하지 않으면 해당 영역의 성장이 힙 상한과 무관하게 총합을 밀어 올린다 (MaxDirectMemorySize 미설정 시 JVM이 자동으로 정한다). 상한 3종을 함께 걸면 JVM이 직접 잡는 성분의 합은 고정되지만, page cache처럼 컨테이너에 계정되는 커널 성분은 별도 축으로 남는다 ([[Container-Memory-Metrics]]).
+- 힙 밖 성분에도 상한을 검토한다. MaxMetaspaceSize와 MaxDirectMemorySize는 각각 metaspace와 NIO direct buffer 용량만 제한한다. 힙, metaspace와 direct buffer 상한을 모두 지정해도 thread stack, code cache, GC 구조와 그 밖의 native allocation은 남으므로 JVM native memory 총합이 고정되지는 않는다. Native Memory Tracking과 container 지표로 나머지 성분을 측정한다 ([[Container-Memory-Metrics]]).
 
 ## 컨테이너 튜닝 접근
 
@@ -57,7 +57,7 @@ verified_at: 2026-07-21
 
 75/75 설정으로 돌던 JVM 계산 서비스: live heap이 약 1GiB 수준인데 committed는 약 2.45GiB로 유지됐다. Initial 40 / Max 60으로 조정하자 committed가 약 1.12GiB로 즉시 개선되고 working set 비율은 99%에서 61%로 하락했다. 최종 설정은 40/60에 MaxMetaspaceSize 512M, G1NewSizePercent 20 / G1MaxNewSizePercent 30, memory limit 3.5G. 다만 JVM 튜닝만으로 working set은 안정됐지만 usage는 파일 로그 page cache 때문에 다시 상승해, 두 축을 함께 조치해야 지표가 함께 내려왔다 ([[Container-Memory-Metrics]] 사례와 같은 시스템 — SSG 프로모션 서비스).
 
-합산 초과형 OOMKilled 사례 (Nextree 분석): memory limit 1Gi(= 1,024MiB, 이하 MiB 기준)에 MaxRAMPercentage 80이면 힙 상한이 약 819MiB다. 여기에 실측 non-heap 약 200MiB만 더해도 약 1,019MiB이고, off-heap과 thread stack이 그 위에 얹히면 limit을 넘는 구조였다. 힙 백분율을 60(약 614MiB)으로 낮추고 MaxMetaspaceSize 192m, MaxDirectMemorySize 140m을 명시해(각각 실측 사용량 122MiB, 108MiB에 여유를 둔 값) 합산을 limit 아래로 고정했다. 임계 백분율은 그 서비스의 힙 밖 실측에서 역산한 값이지 일반 권장치가 아니다.
+합산 초과형 OOMKilled 사례 (Nextree 분석): memory limit 1Gi(= 1,024MiB, 이하 MiB 기준)에 MaxRAMPercentage 80이면 힙 상한이 약 819MiB다. 여기에 실측 non-heap 약 200MiB만 더해도 약 1,019MiB이고, off-heap과 thread stack이 그 위에 얹히면 limit을 넘는 구조였다. 힙 백분율을 60(약 614MiB)으로 낮추고 MaxMetaspaceSize 192m, MaxDirectMemorySize 140m을 명시해(각각 실측 사용량 122MiB, 108MiB에 여유를 둔 값) 관측 기간의 총사용량을 limit 아래로 낮췄다. 제한하지 않은 thread stack, code cache, GC와 기타 native 증가를 계속 관측하고 headroom을 둔다. 임계 백분율은 그 서비스의 힙 밖 실측에서 역산한 값이지 일반 권장치가 아니다.
 
 ## 면접 체크포인트
 
@@ -66,7 +66,7 @@ verified_at: 2026-07-21
 - G1이 힙을 OS에 잘 반환하지 않는 이유 (반환 검토 시점의 희소성, Full GC 회피)
 - JEP 346이 해결한 문제와 도입 버전 (JDK 12), 기본 설정으로는 동작하지 않는다는 점
 - 컨테이너에서 힙 상한을 정할 때 고려할 힙 밖 소비 (metaspace, thread, native, page cache)
-- exit code 137과 OutOfMemoryError 로그의 구분 — 반복 재시작 진단의 첫 갈림길
+- exit code 137만으로 OOMKilled를 단정할 수 없는 이유와 JVM OutOfMemoryError의 구분
 - MaxRAMPercentage가 힙만 제한한다는 함정과 실질 힙 허용량 역산
 
 ## 출처
@@ -77,7 +77,9 @@ verified_at: 2026-07-21
 - [OpenJDK hotspot-gc-dev — committed memory and RSS are different quantities](https://mail.openjdk.org/pipermail/hotspot-gc-dev/2020-July/030387.html)
 - [Java MemoryUsage API](https://docs.oracle.com/en/java/javase/24/docs/api/java.management/java/lang/management/MemoryUsage.html)
 - [Kubernetes Docs, Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) (memory limit은 커널 OOM kill로 반응적 강제)
+- [Kubernetes Docs, Pod lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/)
 - [Oracle Java SE Docs, java Command Reference](https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html) (UseContainerSupport 컨테이너 감지, MaxDirectMemorySize는 NIO direct buffer 총량 상한이며 미설정 시 JVM 자동 결정)
+- [Oracle Java SE Docs, Native Memory Tracking](https://docs.oracle.com/en/java/javase/24/vm/native-memory-tracking.html)
 - [Kubernetes 환경 OOMKilled 원인 분석 — Nextree](https://www.nextree.io/kubernetes-hwangyeong-oomkilled-weonin-bunseog/)
 
 ## 관련 문서

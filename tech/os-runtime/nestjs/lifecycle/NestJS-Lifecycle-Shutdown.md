@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, lifecycle, graceful-shutdown]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-08-28
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Graceful Shutdown", "enableShutdownHooks", "종료와 리소스 정리"]
 ---
@@ -77,7 +77,7 @@ K8s/ECS 환경에서 **롤링 배포 중 in-flight 요청을 안전하게 마무
 - `enableShutdownHooks()`의 역할 — 시그널 → 종료 훅 트리거
 - Graceful Shutdown — 헬스체크 unhealthy 전환 → LB 트래픽 차단 → in-flight 요청 마무리
 - K8s `terminationGracePeriodSeconds`와 종료 훅의 관계
-- 종료는 init 역순 (v11부터 보장), 전역 모듈은 최후 destroy
+- 종료 단계와 Provider 간 세부 순서를 구분하고, 선후관계가 필요한 리소스 정리는 명시적으로 조정
 
 ## 관련 문서
 

@@ -1,9 +1,9 @@
 ---
 tags: [infrastructure, docker]
 status: done
-category: "인프라&클라우드(Infrastructure&Cloud)"
+category: "Infrastructure - Container"
 aliases: ["Docker Compose", "도커 컴포즈"]
-verified_at: 2026-08-04
+verified_at: 2026-08-28
 ---
 
 # Docker Compose
@@ -78,11 +78,11 @@ container가 update되면 IP는 바뀔 수 있으므로 IP를 고정 저장하�
 Q. Docker Compose를 왜 사용하는가?
 - 멀티 컨테이너 환경을 선언적으로 관리
 - 한 명령으로 전체 스택 시작/중지
-- 개발(로컬)과 배포(서버) 환경을 동일하게 재현
+- 개발과 배포에 같은 선언을 재사용하되 host, architecture와 runtime 차이는 별도 검증
 
 Q. Health check가 왜 중요한가?
 - 프로세스가 살아있어도 애플리케이션이 정상이 아닐 수 있음 (DB 연결 실패 등)
-- Health check으로 실제 서비스 가용성을 확인하고 자동 복구
+- 실제 서비스 가용성을 감지해 orchestrator나 watchdog 같은 별도 복구 정책의 입력으로 사용
 
 ## 관련 문서
 - [[Docker]]

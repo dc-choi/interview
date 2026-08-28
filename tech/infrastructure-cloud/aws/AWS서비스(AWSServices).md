@@ -70,7 +70,7 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 - [x] [[Lake-Formation|Lake Formation (데이터 레이크 통합 권한, 행/열 수준 보안, Blueprint)]]
 - [x] [[QuickSight|QuickSight (서버리스 BI, SPICE 인메모리 엔진, ML Insights, 임베디드 분석)]]
 - [x] [[OpenSearch-Service|OpenSearch (전문 검색, 로그 분석, DynamoDB 검색 보완, k-NN/Vector)]]
-- [x] [[DMS|Database Migration Service (Full Load + CDC, 이기종은 SCT 결합, 동종은 단독, DocumentDB 3접근)]]
+- [x] [[DMS|Database Migration Service (Full Load + CDC, schema는 DMS Schema Conversion 또는 수동 DDL, 동종도 target schema 준비)]]
 - [x] [[VPC|VPC, Subnet, Peering, Transit Gateway, CIDR 설계, NAT GW vs Instance, SG vs NACL, 온프레미스 연결]]
 - [x] [[ELB|ELB (ALB, NLB, GWLB, CLB, Sticky Session, Cross-Zone, SSL Termination, Connection Draining)]]
 - [x] [[Route53|Route 53 (Hosted Zone, 레코드 9종 + Alias, Routing Policy 8종, Alias vs CNAME, Health Check, DNSSEC)]]

@@ -1,13 +1,14 @@
 ---
 tags: [runtime, nestjs]
 status: index
+verified_at: 2026-08-28
 category: "OS & Runtime"
 aliases: ["NestJS"]
 ---
 
 # NestJS (nestjs 폴더 인덱스)
 
-효율적이고 확장 가능한 Node.js 서버 프레임워크. TypeScript로 만들어져 완전 지원하고(순수 JS도 가능), OOP, FP, FRP 요소를 결합한다. 내부적으로 Express(기본)를 쓰며 Fastify로 바꿀 수 있고, 이들 위의 추상층이면서 하부 API도 직접 노출해 플랫폼의 서드파티 모듈 생태계를 그대로 쓸 수 있다. 이 중립성은 코드 계약으로 드러난다 — `NestFactory.create()`는 기본으로 플랫폼 중립 INestApplication을 주고, NestExpressApplication 같은 플랫폼 타입을 제네릭으로 명시할 때만 하부 고유 API가 열린다 (MVC/SSR의 `useStaticAssets`, `setViewEngine`이 대표 사례 — 템플릿은 `@Render('view')` 데코레이터에 핸들러 반환 객체가 변수로 들어가는 구조). 어댑터만 만들면 어떤 Node HTTP 프레임워크와도 동작하는 구조다. 이 플랫폼 중립성은 HTTP를 넘어선다 — 같은 빌딩 블록(모듈, 프로바이더, 가드 등)이 마이크로서비스 전송층과 WebSocket 위에서도 재사용되고, application context 기능으로 HTTP 서버 없는 앱(CRON 작업, CLI)도 Nest DI 위에 세울 수 있다. 현행 문서 기준 Node.js 20 이상을 요구한다.
+효율적이고 확장 가능한 Node.js 서버 프레임워크. TypeScript로 만들어져 완전 지원하고(순수 JS도 가능), OOP, FP, FRP 요소를 결합한다. 내부적으로 Express(기본)를 쓰며 Fastify로 바꿀 수 있고, 이들 위의 추상층이면서 하부 API도 직접 노출해 플랫폼의 서드파티 모듈 생태계를 그대로 쓸 수 있다. 이 중립성은 코드 계약으로 드러난다 — `NestFactory.create()`는 기본으로 플랫폼 중립 INestApplication을 주고, NestExpressApplication 같은 플랫폼 타입을 제네릭으로 명시할 때만 하부 고유 API가 열린다 (MVC/SSR의 `useStaticAssets`, `setViewEngine`이 대표 사례 — 템플릿은 `@Render('view')` 데코레이터에 핸들러 반환 객체가 변수로 들어가는 구조). 어댑터만 만들면 어떤 Node HTTP 프레임워크와도 동작하는 구조다. 이 플랫폼 중립성은 HTTP를 넘어선다 — 같은 빌딩 블록(모듈, 프로바이더, 가드 등)이 마이크로서비스 전송층과 WebSocket 위에서도 재사용되고, application context 기능으로 HTTP 서버 없는 앱(CRON 작업, CLI)도 Nest DI 위에 세울 수 있다. 2026-08-28 공식 문서 기준 애플리케이션 runtime은 Node.js 20.19 이상이 필요하고 22.x에서는 22.12 이상이어야 한다. Nest CLI generator는 22.22.3 이상, 24.15 이상 또는 26 이상을 요구한다.
 
 출발점은 Node 생태계에 훌륭한 라이브러리는 많아도 아키텍처 문제를 푸는 것이 없었다는 것 — 테스트 가능하고 느슨하게 결합된, 유지보수 가능한 구조를 out of the box로 제공한다. 아키텍처는 Angular에서 강하게 영감을 받았다.
 

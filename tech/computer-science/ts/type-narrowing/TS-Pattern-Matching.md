@@ -1,6 +1,7 @@
 ---
 tags: [cs, typescript, pattern-matching, discriminated-union]
 status: done
+verified_at: 2026-08-28
 category: "CS - TypeScript"
 aliases: ["TS Pattern", "TS Pattern Matching"]
 ---
@@ -23,7 +24,7 @@ match(role)
 role === 'admin' ? '관리자' : '사용자';
 ```
 
-**벤치마크**: ts-pattern은 JS 네이티브 switch, if 대비 약 **99% 느림** (10억 ops/s vs 1.3억 ops/s). 핫 경로에서 단순 분기에 쓰면 성능 낭비.
+벤치마크 결과는 런타임, 버전과 입력에 따라 달라진다. 10억 대 1.3억 ops/s라면 약 7.7배 차이이므로 99% 느리다는 해석은 맞지 않는다. 핫 경로에서는 같은 workload로 직접 측정한다.
 
 ### 작은 switch
 ```ts
@@ -163,6 +164,7 @@ React 등에서 JSX 안 조건 렌더링은 자주 등장. 옵션:
 
 ## 출처
 - [Toss Tech — ts-pattern은 더 멋진 if문이 아니다](https://toss.tech/article/ts-pattern-usage)
+- [gvergnaud/ts-pattern — GitHub](https://github.com/gvergnaud/ts-pattern)
 
 ## 관련 문서
 - [[Types-As-Proofs|Types as Proofs (exhaustive check)]]

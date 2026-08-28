@@ -3,6 +3,7 @@ tags: [infrastructure, cloud, iaas, paas, saas, faas, serverless]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["Cloud Service Models", "IaaS PaaS SaaS", "클라우드 서비스 모델"]
+verified_at: 2026-08-28
 ---
 
 # 클라우드 서비스 모델
@@ -16,7 +17,7 @@ aliases: ["Cloud Service Models", "IaaS PaaS SaaS", "클라우드 서비스 모�
 | **On-Premise** | — | 전부(하드웨어~앱) | 자체 데이터센터 |
 | **IaaS**(Infra as a Service) | 물리 하드웨어, 네트워크, 가상화 | OS, 런타임, 앱, 데이터 | EC2, GCE, Azure VM |
 | **PaaS**(Platform as a Service) | + OS, 런타임, 미들웨어 | 앱, 데이터 | Heroku, Elastic Beanstalk, App Engine |
-| **FaaS**(Function as a Service) | + 앱 컨테이너 수명 | **함수 코드만** | AWS Lambda, Cloud Functions |
+| **FaaS**(Function as a Service) | + 앱 컨테이너 수명 | 함수 코드, 함수 설정, IAM, 이벤트 소스, 데이터 | AWS Lambda, Cloud Functions |
 | **SaaS**(Software as a Service) | 전부 | 계정, 설정, 데이터만 | Gmail, Slack, Notion, Zoom |
 
 일반적으로 "서버리스"는 FaaS, 관리형 서비스(DynamoDB, Aurora Serverless 등)를 포괄해 가리킨다.
@@ -45,11 +46,11 @@ aliases: ["Cloud Service Models", "IaaS PaaS SaaS", "클라우드 서비스 모�
 
 ## FaaS (서버리스 함수)
 
-이벤트 트리거로 **함수 단위**로 실행. 호출이 없으면 과금도 없음.
+이벤트 트리거로 **함수 단위**로 실행. On-demand 실행은 보통 요청 수와 실행 시간에 따라 과금되지만, 프로비저닝된 동시성처럼 유휴 상태에서도 비용이 생기는 옵션과 연결 서비스 비용이 있을 수 있다.
 
 - 사업자: 컨테이너 프로비저닝, 오토스케일, 장애 복구
-- 사용자: **함수 코드**
-- 장점: 자동 스케일, 유휴 비용 0
+- 사용자: **함수 코드, 함수 설정, IAM 권한, 이벤트 소스와 데이터**
+- 장점: 자동 스케일, on-demand의 낮은 유휴 실행 비용
 - 단점: [[AWS-Lambda|Cold Start]], 실행 시간 한도, 상태 비보유
 
 적합: 이벤트 처리, 스케줄 배치, 불규칙 트래픽 API 백엔드.
@@ -119,7 +120,12 @@ aliases: ["Cloud Service Models", "IaaS PaaS SaaS", "클라우드 서비스 모�
 - Lambda(FaaS)와 EC2(IaaS) 선택을 가르는 트래픽, 비용, 제약 기준
 - 하이브리드 아키텍처가 실무 기본인 이유
 
+## 출처
+
+- [AWS Lambda, Configuring provisioned concurrency](https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html)
+
 ## 관련 문서
+
 - [[AWS서비스(AWSServices)|AWS]]
 - [[AWS-Lambda|AWS Lambda, 서버리스 FaaS]]
 - [[Docker|Docker]]

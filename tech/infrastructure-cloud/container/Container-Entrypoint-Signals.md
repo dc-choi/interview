@@ -3,21 +3,22 @@ tags: [container, docker, entrypoint, signal, pid1, graceful-shutdown]
 status: done
 category: "Infrastructure - Container"
 aliases: ["Docker Entrypoint Exec", "PID 1 Signal", "컨테이너 시그널 처리"]
+verified_at: 2026-08-28
 ---
 
 # Container Entrypoint와 시그널 — exec, PID 1, Graceful Shutdown
 
-컨테이너에서 **PID 1이 받은 시그널을 실제 애플리케이션에 전달하는가**가 Graceful Shutdown의 핵심. 잘못 짜면 `docker stop`, K8s `SIGTERM` 이 애플리케이션까지 도달하지 않아 데이터가 손실되거나 10초 후 강제 종료(SIGKILL)로 중단된다.
+컨테이너에서 **PID 1이 받은 시그널을 실제 애플리케이션이 처리하는가**가 Graceful Shutdown의 핵심이다. 잘못 짜면 `docker stop` 또는 K8s의 종료 신호가 애플리케이션까지 도달하지 않아 정리 기회를 놓치고, 각 runtime의 grace period 뒤 SIGKILL로 중단될 수 있다.
 
 ## PID 1의 특수성
 
 Linux는 PID 1(init 프로세스)에 **특별한 규칙**을 적용한다.
 
-- PID 1은 모든 프로세스의 조상 — 종료되면 컨테이너가 종료됨
-- PID 1이 명시적으로 처리기를 등록하지 않은 시그널은 **기본 무시**
+- PID 1이 종료되면 컨테이너가 종료됨
+- PID 1은 애플리케이션 종료 신호 처리와 자식 프로세스 수확을 명시적으로 설계할 위치
 - PID 1이 좀비(zombie) 자식 프로세스를 `wait()`로 거두지 않으면 좀비가 누적됨
 
-컨테이너 내부에서 PID 1이 **셸(`sh`)이면 이 규칙이 말썽**이 된다. 셸은 기본적으로 SIGTERM 처리기를 등록하지 않아 무시하고, 자식 프로세스(애플리케이션)에게도 전달하지 않는다.
+컨테이너 내부에서 PID 1이 **셸(`sh`)이면 이 규칙이 말썽**이 될 수 있다. shell과 wrapper의 signal 처리 방식은 구현과 스크립트에 따라 다르므로, 자식 애플리케이션이 신호를 받는다고 가정하지 말고 `exec` 또는 명시적인 전달, 수확 로직을 둔다.
 
 ## exec form vs shell form
 
@@ -26,9 +27,9 @@ Dockerfile의 `CMD`, `ENTRYPOINT`는 두 가지 표기법이 있다.
 | 형식 | 예시 | PID 1 | 시그널 전달 |
 |---|---|---|---|
 | **exec form** | `CMD ["python", "main.py"]` | python 프로세스가 직접 PID 1 | 정상 |
-| **shell form** | `CMD python main.py` | `/bin/sh -c`가 PID 1, python은 자식 | **차단** |
+| **shell form** | `CMD python main.py` | `/bin/sh -c`가 PID 1, python은 자식 | 앱이 직접 받지 않음. shell 또는 wrapper 전달 동작을 검증해야 함 |
 
-shell form은 내부적으로 `/bin/sh -c "python main.py"`로 실행되어 셸이 PID 1이 된다. 결과: 컨테이너를 중지하면 셸이 SIGTERM을 받고 무시 → 10초 후 도커가 SIGKILL로 강제 종료 → 애플리케이션은 정리 기회를 얻지 못함.
+shell form은 내부적으로 `/bin/sh -c "python main.py"`로 실행되어 셸이 PID 1이 된다. Docker는 shell form `ENTRYPOINT`가 자식 실행 파일에 Unix signal을 전달하지 않는다고 문서화한다. Docker Linux 컨테이너의 기본 stop timeout은 10초지만 `--stop-timeout`으로 바꿀 수 있고, K8s 기본 `terminationGracePeriodSeconds`는 30초다. 두 환경의 timeout을 같은 값으로 가정하지 않는다.
 
 ## 왜 `exec`를 쓰는가
 
@@ -54,10 +55,10 @@ exec python main.py     # 셸을 python으로 치환 → python이 PID 1
 
 올바른 구성에서 SIGTERM 수신 시:
 
-1. K8s, Docker가 PID 1에 **SIGTERM** 전송 (`terminationGracePeriodSeconds` 시작)
+1. K8s와 Docker는 기본적으로 PID 1에 **SIGTERM**을 보내고 종료 유예 타이머를 시작한다. image `STOPSIGNAL`, Docker `--stop-signal` 또는 Kubernetes lifecycle `stopSignal` 설정이 있으면 종료 signal이 달라질 수 있다
 2. 애플리케이션이 SIGTERM 처리기 실행 — 새 요청 거부, 진행 중 요청 완료, 커넥션 정리
 3. 처리 완료 후 자발적 종료 → 컨테이너 정상 종료
-4. 타임아웃(기본 30초) 초과 시 SIGKILL 강제 종료
+4. 설정된 유예 시간 초과 시 SIGKILL 강제 종료. Kubernetes Pod의 기본은 30초이고, 별도 timeout이 없는 Docker daemon은 Linux container 10초, Windows container 30초다
 
 ## 좀비 프로세스 문제와 init
 
@@ -101,7 +102,7 @@ CMD ["python", "main.py"]
 
 애플리케이션 코드에도 **명시적인 SIGTERM 처리**가 필요하다. 컨테이너가 시그널을 전달해도 앱이 처리기를 등록하지 않으면 즉시 종료.
 
-- **Node.js**: `process.on('SIGTERM', () => { server.close() })` — 기본은 SIGTERM에 즉시 종료하지 않음
+- **Node.js**: `process.on('SIGTERM', () => { server.close() })` — handler가 없으면 프로세스가 종료될 수 있으므로, listener에서 새 요청 차단과 종료 완료를 직접 조정
 - **Java (Spring Boot)**: `server.shutdown=graceful`, `spring.lifecycle.timeout-per-shutdown-phase=30s`
 - **Python (Django/Flask)**: Gunicorn의 `--graceful-timeout` 활용, worker별 처리
 - **NestJS**: `enableShutdownHooks()` 호출 후 `onApplicationShutdown` 훅 구현
@@ -116,8 +117,8 @@ CMD ["python", "main.py"]
 
 ## 검증 방법
 
-- `docker stop` 시 종료 시간 측정 — 즉시(<1s) 내려가면 SIGTERM 무시 가능성
-- `docker inspect` `.State.ExitCode` = 137이면 SIGKILL로 강제 종료된 것
+- `docker stop` 시 종료 시간, 애플리케이션 종료 로그와 runtime event를 함께 확인. 즉시 종료만으로 SIGTERM 무시 여부를 판정하지 않음
+- `docker inspect` `.State.ExitCode` = 137이면 SIGKILL 뒤 종료된 흔적일 수 있다. timeout, OOM kill, 수동 kill 등 원인은 runtime event와 함께 확인
 - `ps -ef` (컨테이너 내부)로 PID 1이 무엇인지 확인
 - 애플리케이션 로그에 "Shutting down gracefully" 같은 메시지가 찍히는지
 
@@ -131,9 +132,13 @@ CMD ["python", "main.py"]
 - K8s `terminationGracePeriodSeconds`와 앱 shutdown 타임아웃의 관계
 
 ## 출처
+- [Docker Docs, Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
+- [Docker Docs, docker container run --init](https://docs.docker.com/reference/cli/docker/container/run/#init)
+- [Docker Docs, docker container stop](https://docs.docker.com/reference/cli/docker/container/stop/)
+- [Kubernetes Docs, Pod termination flow](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-termination-flow)
 - [Docker Entrypoint에서 exec를 사용하는 이유 — brunch @growthminder](https://brunch.co.kr/@growthminder/142)
 
 ## 관련 문서
-- [[Docker|Docker 기본]]
+- [[Docker-Core|Docker 기본]]
 - [[Graceful-Shutdown|Graceful Shutdown (앱 계층)]]
 - K8s Liveness/Readiness Probe (작성 예정: `K8s-Probes`)

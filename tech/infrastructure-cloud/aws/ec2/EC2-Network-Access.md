@@ -3,7 +3,7 @@ tags: [infrastructure, aws, ec2, compute]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["EC2 네트워크와 접근", "IMDS, EIP, ENA, Key Pair"]
-verified_at: 2026-07-21
+verified_at: 2026-08-28
 ---
 
 # AWS EC2 — 네트워크와 접근
@@ -18,7 +18,7 @@ verified_at: 2026-07-21
 | 요청 제어 | `HttpTokens=optional`일 때 사용 가능 | `HttpTokens=required`로 v2만 허용 가능 |
 | 위험 완화 | 요청 위조 시 메타데이터가 노출될 수 있음 | 세션 토큰과 PUT 응답 hop limit으로 일부 SSRF, 프록시 오용 위험을 줄임 |
 
-IMDSv2의 `HttpPutResponseHopLimit`은 1부터 64 사이에서 구성하며 계정 기본값, AMI의 `ImdsSupport`, launch 설정에 따라 실제 값이 달라진다. 컨테이너 환경은 hop limit 1이면 토큰 응답이 컨테이너에 도달하지 않아 v1로 fallback하거나 연결이 실패할 수 있으므로 AWS는 필요한 경우 2를 검토하도록 안내한다. 신규 인스턴스는 IMDSv2 강제(`HttpTokens=required`)를 우선하고, hop limit만 보안 경계로 의존하지 않는다.
+IMDSv2의 `HttpPutResponseHopLimit`은 1부터 64 사이에서 구성하며 계정 기본값, AMI의 `ImdsSupport`, launch 설정에 따라 실제 값이 달라진다. 컨테이너 환경에서 hop limit 1이면 토큰 응답이 컨테이너까지 도달하지 않을 수 있다. `HttpTokens=optional`이고 클라이언트가 IMDSv1 요청을 하면 v1은 동작할 수 있지만, `HttpTokens=required`이면 v1 fallback은 허용되지 않아 metadata 요청이 실패한다. AWS는 컨테이너 호스트에 hop limit 2를 안내한다. 신규 인스턴스는 IMDSv2 강제(`HttpTokens=required`)를 우선하고, hop limit만 보안 경계로 의존하지 않는다.
 
 ## Elastic IP (EIP)
 
@@ -60,6 +60,7 @@ EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를
 - [Amazon VPC 공식 문서, AWS charges for all public IPv4 addresses](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html)
 - [EC2 instance metadata options](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-options.html)
 - [IMDSv2 작동 방식](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html)
+- [EC2, Configure instance metadata options for new instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-IMDS-new-instances.html)
 - [New AWS Public IPv4 Address Charge — AWS News Blog](https://aws.amazon.com/blogs/aws/new-aws-public-ipv4-address-charge-public-ip-insights/)
 - [AWS 공식 문서, Amazon EC2 instance network bandwidth](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html)
 - [AWS 공식 문서, General purpose instance network specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html)

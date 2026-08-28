@@ -1,7 +1,7 @@
 ---
 tags: [web, http, http2, protocol, performance, multiplexing]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-08-28
 category: "Web - HTTP"
 aliases: ["HTTP/2", "HTTP2", "멀티플렉싱", "HPACK", "h2"]
 ---
@@ -14,7 +14,7 @@ HTTP/2는 HTTP/1.1의 의미(메소드, 상태 코드, URI, 헤더)는 그대로
 
 HTTP/1.1은 문서 전송용으로 설계돼, 무거운 페이로드와 빈번한 요청이 많은 현대 웹 앱에는 비효율적이다.
 
-- **연결당 직렬 처리**: 한 연결에서 응답이 끝나야 다음 요청을 보낸다 — Head-of-Line(HOL) 블로킹.
+- **응답 순서 고정**: HTTP/1.1 pipelining은 응답을 기다리지 않고 여러 요청을 보낼 수 있지만, 서버는 같은 연결의 응답을 요청 순서대로 보내야 한다. 독립 stream multiplexing이 없어 앞 응답이 느리면 뒤 응답도 막힌다.
 - **프로토콜 차원의 다중화 없음**: 병렬 처리를 브라우저가 책임지므로 출처(origin)당 동시 연결 수가 6개 안팎으로 제한된다(브라우저마다 다름).
 - **헤더 반복 전송**: 매 요청마다 비대한 헤더를 평문으로 반복한다.
 
@@ -26,20 +26,20 @@ HTTP/1.1은 문서 전송용으로 설계돼, 무거운 페이로드와 빈번�
 텍스트 대신 **바이너리 프레임**으로 메시지를 쪼개 전송한다. 모든 상위 기능의 토대다.
 
 ### 멀티플렉싱 (다중화)
-**하나의 TCP 연결로 여러 요청과 응답을 동시에** 주고받는다. 각 요청-응답이 독립된 스트림으로 인터리빙되어, HTTP/1.1의 연결당 직렬 처리와 출처당 연결 수 제한이 사라진다. 한 연결에서 많은 스트림을 병렬 처리할 수 있다.
+**하나의 TCP 연결로 여러 요청과 응답을 동시에** 주고받는다. 각 요청-응답이 독립된 stream으로 interleave되어 HTTP/1.1의 response-order HOL과 여러 연결에 의존하던 병목을 줄인다. 동시 stream 수는 peer의 `SETTINGS_MAX_CONCURRENT_STREAMS`와 구현 정책의 제한을 받는다.
 
 ### 헤더 압축 (HPACK)
 헤더를 **HPACK**으로 압축하고, 이전에 보낸 헤더는 인덱스로 참조해 반복 전송을 줄인다.
 
 ### 스트림 우선순위
-스트림에 우선순위와 의존성을 부여해 중요한 리소스를 먼저 받게 한다.
+RFC 7540의 stream dependency와 weight 기반 priority signaling은 RFC 9113에서 deprecated 됐다. 서버가 실제 전송 순서를 어떻게 정하는지는 구현에 달려 있으며, RFC 9218의 extensible prioritization 지원 여부도 client, server, CDN별로 확인한다.
 
 ### 서버 푸시
 클라이언트가 요청하기 전에 서버가 필요할 리소스를 미리 보낼 수 있다. 다만 실효성 논란으로 주요 브라우저에서 제거되어 사실상 폐기 수순이다.
 
 ## HTTP/1.1과의 호환
 
-핵심 의미(메소드, 상태 코드, URI, 헤더 필드)는 동일하고 바뀐 것은 전송 계층의 프레이밍과 연결 사용 방식뿐이라, 기존 앱을 수정하지 않고 적용할 수 있다. HTTP/2를 모르는 구형 클라이언트에는 HTTP/1.1로 폴백한다. HTTP/2는 보통 **TLS의 ALPN 협상** 위에서 선택되므로 HTTPS가 전제다.
+핵심 의미(메소드, 상태 코드, URI, 헤더 필드)는 동일하고 바뀐 것은 전송 계층의 프레이밍과 연결 사용 방식뿐이라, 기존 앱을 수정하지 않고 적용할 수 있다. HTTP/2를 모르는 구형 클라이언트에는 HTTP/1.1로 폴백한다. `https` URI의 HTTP/2는 TLS ALPN에서 `h2`로 협상한다. HTTP/2 자체는 prior knowledge를 가진 cleartext TCP 연결도 정의하지만, 브라우저 배포는 보통 TLS를 사용하므로 HTTPS가 실무 기본값이다.
 
 ## 프론트엔드 최적화의 역전
 
@@ -63,19 +63,21 @@ HTTP/2의 멀티플렉싱은 HTTP 계층에선 병렬이지만 단일 TCP 연결
 ## 면접 체크포인트
 
 - HTTP/2가 HTTP/1.1 대비 바꾼 것(전송, 프레이밍)과 유지한 것(의미)
-- 멀티플렉싱이 출처당 연결 수 제한과 HOL 블로킹을 어떻게 없애는가
+- 멀티플렉싱이 출처당 연결 수 제약과 HTTP/1.1 response-order HOL을 줄이지만 TCP-level HOL은 남기는 이유
 - HPACK이 무엇을 압축하는가
 - HTTP/2에서 번들링과 스프라이트가 왜 안티패턴이 되는가
 - HTTP/2의 HOL 블로킹이 TCP 계층에 남는 이유와 HTTP/3(QUIC)의 해법
 - LB, CDN이 HTTP/2를 종단하고 백엔드와 HTTP/1.1로 통신하는 구조
 
 ## 출처
+- [RFC 9112 — HTTP/1.1 (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9112)
 - [RFC 9113 — HTTP/2 (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9113)
+- [RFC 9218 — Extensible Prioritization Scheme for HTTP (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9218)
 - [RFC 7541 — HPACK (RFC Editor)](https://www.rfc-editor.org/rfc/rfc7541)
 - AWS 환경에서 HTTP/2 적용하기 (HTTP/2 프로토콜, CloudFront, ALB) — 개인 블로그
 
 ## 관련 문서
-- [[HTTP-3|HTTP/3, QUIC]] — TCP를 버리고 UDP로, HOL 블로킹 완전 해소
+- [[HTTP-3|HTTP/3, QUIC]] — QUIC stream으로 TCP 연결 단위 HOL을 stream별로 격리
 - [[HTTP-Seminar|HTTP 버전별 진화]] — HTTP/0.9~3 타임라인
 - [[gRPC|gRPC]] — HTTP/2 기반 RPC
 - [[ELB|AWS ELB/ALB]] — ALB가 HTTP/2를 L7에서 종단

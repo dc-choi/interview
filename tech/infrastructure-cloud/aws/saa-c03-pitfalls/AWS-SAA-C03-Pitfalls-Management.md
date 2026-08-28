@@ -68,8 +68,9 @@ verified_at: 2026-08-25
 
 ## 마이그레이션
 
-- **DMS**(Database Migration Service): RDB, NoSQL 마이그레이션. **소스 DB 운영 중에 가능**. **SCT**(Schema Conversion Tool)와 짝 — 이기종(Oracle→Aurora)
-- **DMS CDC**: 변경 데이터 캡처 — 1회성 + 지속 복제. 다중 마스터(역방향)
+- **DMS**(Database Migration Service): RDB, NoSQL의 full load와 CDC 데이터 이동. CDC를 구성하면 source write를 유지한 채 변경을 따라갈 수 있지만 target schema와 객체는 별도로 준비
+- **DMS Schema Conversion**: AWS SCT 엔진 기반 관리형 schema 평가, 변환 기능. 지원되지 않는 객체는 수동 DDL이 필요하며 다운로드형 AWS SCT는 별도 legacy 경로
+- **DMS CDC**: 변경 데이터 캡처와 지속 복제. 양방향은 방향별 CDC task와 loopback prevention이 필요하고 DMS가 conflict를 감지, 해결하지 않으므로 full multi-master로 보지 않는다
 - **Application Migration Service(MGN)**: 서버 리프트앤시프트. **에이전트 기반**으로 디스크 복제 (구 SMS, CloudEndure 통합)
 - **Elastic Disaster Recovery(DRS)**: MGN 기술로 DR — 저비용 대기 인스턴스, 페일오버 가능
 - **Database Migration vs Server Migration**: DB만 → DMS, 서버 통째 → MGN
@@ -157,4 +158,5 @@ verified_at: 2026-08-25
 - [Amazon Aurora, Using Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html)
 - [Amazon DynamoDB, Global tables](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html)
 - [Amazon QLDB, End of support notice](https://docs.aws.amazon.com/qldb/latest/developerguide/getting-started-step-7.html)
+- [AWS DMS, Converting database schemas using DMS Schema Conversion](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html)
 - AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)

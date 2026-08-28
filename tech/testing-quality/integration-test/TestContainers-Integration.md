@@ -3,6 +3,7 @@ tags: [testing, testcontainers, integration-test, docker, idempotent]
 status: done
 category: "테스트&품질(Testing&Quality)"
 aliases: ["TestContainers Integration", "Testcontainers 통합 테스트", "멱등성 있는 테스트"]
+verified_at: 2026-08-28
 ---
 
 # Testcontainers, 멱등성 있는 통합 테스트
@@ -73,15 +74,14 @@ class TestDataSource {
     @DependsOn("postgresqlTestContainer")
     fun dataSource(): DataSource =
         DataSourceBuilder.create()
-            .url("jdbc:postgresql://localhost:" +
-                 "${PostgresqlTestContainer.POSTGRES_CONTAINER.getMappedPort(5432)}")
+            .url(PostgresqlTestContainer.POSTGRES_CONTAINER.jdbcUrl)
             .username("root")
             .password("password")
             .build()
 }
 ```
 
-핵심: `getMappedPort(5432)`가 **Random 포트**를 반환. 매 실행마다 다른 포트라 병렬, 충돌 회피.
+핵심: `jdbcUrl`은 Testcontainers가 계산한 host, mapped port와 `withDatabaseName()`의 database 이름을 포함한다. URL을 직접 만들면 `container.host`, `getMappedPort(5432)`, database 이름을 모두 써야 하며 remote Docker 환경에서 `localhost`를 가정하지 않는다. mapped port가 매 실행마다 달라 포트 충돌을 줄인다.
 
 ## Kafka 예시
 
@@ -178,6 +178,7 @@ Testcontainers는 **통합 테스트** 영역. Unit Test까지 가져가면 속�
 - 단위/통합 경계에서 Testcontainers의 위치
 
 ## 출처
+- [Testcontainers for Java, JDBC support](https://java.testcontainers.org/modules/databases/jdbc/)
 - [Riiid Team Blog — Testcontainer로 멱등성 있는 Integration Test 환경 구축하기](https://medium.com/riiid-teamblog-kr/testcontainer-로-멱등성있는-integration-test-환경-구축하기-4a6287551a31)
 
 ## 관련 문서

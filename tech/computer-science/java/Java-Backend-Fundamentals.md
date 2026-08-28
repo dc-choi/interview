@@ -1,6 +1,7 @@
 ---
 tags: [cs, java, interview, equals, hashcode, string, synchronized, serialization]
 status: done
+verified_at: 2026-08-28
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Backend Fundamentals", "Java 백엔드 면접 기초"]
 ---
@@ -78,7 +79,7 @@ Java 백엔드 면접에서 언어, 런타임에 특화된 빈출 주제를 한�
 
 ### HashMap
 
-- 버킷 배열 + 체인(Java 8부터 버킷당 8개 초과 시 **Red-Black Tree**로 전환)
+- 버킷 배열 + 체인. OpenJDK 21 구현은 충돌 bin이 treeify threshold 8을 넘고 테이블 용량도 64 이상일 때 Red-Black Tree로 전환하며, 용량이 작으면 먼저 resize한다
 - 기본 load factor 0.75, 초과 시 2배 리사이즈
 - 키 `hashCode()` 품질이 성능을 좌우 — 나쁘면 핫 버킷에 몰려 O(n)
 
@@ -138,12 +139,12 @@ Java 백엔드 면접에서 언어, 런타임에 특화된 빈출 주제를 한�
 ## 10. 박싱 / 언박싱
 
 - `int`↔`Integer` 자동 변환. 컬렉션, 제네릭은 박싱 필수
-- 함정: `Integer a = 128; Integer b = 128; a == b` → `false` (Integer 캐시는 -128~127만). 값 비교는 항상 `equals`
+- Java 언어 명세는 -128부터 127까지의 상수 boxing에만 동일 참조를 보장한다. 범위 밖의 `==` 결과는 구현과 설정에 따라 달라질 수 있으므로 값 비교는 `equals`를 사용한다
 - 루프에서의 숨은 할당은 GC 부담 → 성능 민감 코드는 `int[]`, `IntStream`
 
 ## 11. Mutable vs Immutable
 
-- **Immutable**(`String`, `LocalDateTime`, `BigDecimal`, JDK 16+ `record`): Thread-safe 기본, 값 객체, DTO, VO 권장
+- **Immutable**(`String`, `LocalDateTime`, `BigDecimal`): Thread-safe 기본, 값 객체, DTO, VO 권장. `record`는 component field의 재할당만 막는 shallow immutability라서 참조한 mutable 객체는 바뀔 수 있다
 - **Mutable**(`ArrayList`, `HashMap`, 일반 POJO): 공유 시 동기화 필요
 - 설계 원칙: 기본은 Immutable, 필요할 때만 Mutable
 
@@ -186,6 +187,9 @@ void replace(User u) { u = new User("X"); }  // 원본 영향 X (복사본만 �
 ## 출처
 - [F-Lab — Java 백엔드 개발자 인터뷰 1편](https://f-lab.kr/blog/java-backend-interview-1)
 - [F-Lab — Java 백엔드 개발자 인터뷰 2편](https://f-lab.kr/blog/java-backend-interview-2)
+- [Java Language Specification 5.1.7, Boxing Conversion](https://docs.oracle.com/javase/specs/jls/se21/html/jls-5.html#jls-5.1.7)
+- [Java Language Specification 8.10, Record Classes](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10)
+- [OpenJDK 21 HashMap source](https://github.com/openjdk/jdk/blob/jdk-21%2B35/src/java.base/share/classes/java/util/HashMap.java)
 
 ## 관련 문서
 - [[GC-Algorithm|GC 알고리즘]]
@@ -194,4 +198,3 @@ void replace(User u) { u = new User("X"); }  // 원본 영향 X (복사본만 �
 - [[Async-vs-Threads|async/await vs 스레드]]
 - [[Sync-Async-Blocking|동기, 비동기, 블로킹, 논블로킹]]
 - [[OOM-Troubleshooting|Node.js OOM 트러블슈팅]]
-- [[SOLID-In-Practice|SOLID 원칙 실전 적용]]

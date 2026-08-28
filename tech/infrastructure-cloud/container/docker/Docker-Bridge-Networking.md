@@ -6,7 +6,7 @@ aliases: ["Docker Bridge Networking", "도커 브리지 네트워킹"]
 verified_at: 2026-08-04
 ---
 
-# Docker bridge networking
+# Docker Bridge Networking
 
 Linux의 Docker bridge network는 container마다 network namespace를 만들고 virtual Ethernet pair로 host bridge에 연결한다. Docker는 address, route, embedded DNS, forwarding과 firewall/NAT 규칙을 함께 관리한다.
 

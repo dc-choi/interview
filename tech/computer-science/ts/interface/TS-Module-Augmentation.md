@@ -1,6 +1,7 @@
 ---
 tags: [cs, typescript, declaration-merging, module-augmentation, dts]
 status: done
+verified_at: 2026-08-28
 category: "CS - TypeScript"
 aliases: ["TS Module Augmentation", "Declaration Merging", "declare global", "declare module"]
 ---
@@ -48,8 +49,8 @@ declare module 'lodash' {
 ```
 
 핵심 규칙:
-- **`import 'lodash'`** 같은 import문이 같은 파일에 있어야 모듈로 인식되어 augmentation이 적용.
-- **interface 멤버 추가만** 가능 — 새 export 추가는 불가.
+- augmentation 파일에는 최상위 import나 export가 있어야 한다. 반드시 `import 'lodash'`일 필요는 없고, 원본 모듈 import나 `export {}`도 파일을 외부 모듈로 만든다.
+- 기존 선언을 보강할 수 있지만 새 최상위 선언을 추가하거나 default export를 보강할 수는 없다.
 - 원본과 같은 모듈명을 그대로 사용.
 
 흔한 사례: `Express.Request`에 사용자 정의 필드, `axios`의 `AxiosRequestConfig`에 옵션, `vite`/`vue` 환경에 import.meta.env 확장.
@@ -150,7 +151,7 @@ declare module 'express' {
 ## 흔한 실수
 
 - **`declare global` 안에서 `export {}` 누락** → 스크립트 파일로 취급, augmentation 무효화.
-- **Module augmentation에 `import` 없음** → 모듈로 인식 안 돼 augmentation 무시.
+- **Module augmentation 파일에 최상위 import/export 없음** → 외부 모듈로 인식되지 않아 의도와 다르게 동작.
 - **`type` 별칭으로 augmentation 시도** → 병합 안 됨. interface로.
 - **새 export 추가하려고 augmentation 시도** → 멤버 추가만 가능, export는 불가.
 - **여러 곳에서 같은 모듈 augmentation 충돌** → 컴파일 에러. 한 곳에 집중.
@@ -169,6 +170,10 @@ declare module 'express' {
 - ProcessEnv augmentation으로 환경변수 타입 안전성 확보
 - Express Request 확장 패턴 (NestJS, 미들웨어)
 - 여러 위치 augmentation 충돌 시 동작
+
+## 출처
+
+- [TypeScript Handbook, Declaration Merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation)
 
 ## 관련 문서
 

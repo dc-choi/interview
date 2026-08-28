@@ -1,12 +1,12 @@
 ---
 tags: [infrastructure, docker, container]
 status: done
-category: "인프라&클라우드(Infrastructure&Cloud)"
-aliases: ["Docker", "도커"]
-verified_at: 2026-08-04
+category: "Infrastructure - Container"
+aliases: ["Docker 기본", "도커 기본"]
+verified_at: 2026-08-28
 ---
 
-# Docker
+# Docker 기본
 
 애플리케이션과 실행에 필요한 파일을 image로 묶고, 격리된 process인 container로 실행하는 platform이다. 환경 차이를 줄이지만 host kernel, CPU architecture, runtime configuration과 외부 dependency까지 같게 만드는 것은 아니다.
 
@@ -25,7 +25,7 @@ verified_at: 2026-08-04
 
 **컨테이너(Container):** image 위에 writable layer와 runtime configuration을 더해 실행한 격리 process. container 삭제 시 writable layer도 사라지므로 영속 데이터 저장소로 쓰지 않는다.
 
-**레이어(Layer):** Dockerfile의 각 명령어(FROM, RUN, COPY 등)가 하나의 레이어를 생성. 변경되지 않은 레이어는 캐시되어 빌드 속도를 높인다.
+**레이어(Layer):** `RUN`, `COPY`, `ADD`처럼 filesystem을 바꾸는 build step이 image layer를 만든다. `ENV`, `CMD`, `ENTRYPOINT` 등은 image metadata를 바꾸고, `FROM`은 base image와 새 stage를 선택한다. 변경되지 않은 build 결과는 cache로 재사용할 수 있다.
 
 **레지스트리(Registry):** image manifest와 blob을 저장하고 배포한다. tag는 다른 image를 가리키도록 바뀔 수 있지만 digest는 content를 고정한다. production release는 `latest`보다 immutable digest나 build ID tag로 추적한다.
 
@@ -86,7 +86,7 @@ base image는 작은 크기만으로 고르지 않는다. supported runtime vers
 ## 면접 포인트
 
 Q. Docker를 왜 사용하는가?
-- 환경 일관성 보장 (개발/스테이징/프로덕션 동일)
+- image로 애플리케이션 실행 환경의 차이를 줄임
 - 가볍고 빠른 배포 (VM 대비)
 - 이미지 기반 버전 관리와 롤백 용이
 

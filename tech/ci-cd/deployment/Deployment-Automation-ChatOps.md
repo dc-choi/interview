@@ -3,6 +3,7 @@ tags: [cicd, chatops, slack, deployment, automation, sre]
 status: done
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["배포 자동화", "ChatOps", "Slack Bot 배포", "Deployment Automation"]
+verified_at: 2026-08-28
 ---
 
 # 배포 자동화와 ChatOps
@@ -42,6 +43,7 @@ aliases: ["배포 자동화", "ChatOps", "Slack Bot 배포", "Deployment Automat
 Slash Command / Interactive Endpoint
     ↓
 Bot Backend (Lambda, 자체 서버)
+    ├─ 원문 body 서명, timestamp, 중복 요청 검증
     ├─ 권한 검증 (사용자, 채널 RBAC)
     ├─ CI/CD 트리거 (GitHub Actions, Jenkins, ArgoCD API)
     ├─ 상태 업데이트 (Slack 메시지 update)
@@ -74,7 +76,8 @@ Bot Backend (Lambda, 자체 서버)
 
 ### 보안
 
-- Slack App Signing Secret 검증 — 누구나 요청 위조 불가
+- Slack App Signing Secret으로 **역직렬화 전 raw body**와 `X-Slack-Signature`를 검증하고, `X-Slack-Request-Timestamp`가 현재 시각과 5분 이상 차이나면 거부
+- 서명 검증만으로는 유효 시간 안의 재전송을 막지 못한다. Events API는 전역적으로 고유한 `event_id`를 쓰고, 다른 request 유형은 문서화된 안정 식별자 또는 검증된 timestamp와 raw body의 결정적 digest를 사용한다. 배달마다 새 ID를 만들지 말고 배포 트리거 전 durable idempotency store에 기록한다
 - IAM 역할 최소 권한
 - 배포 명령은 **특정 채널, 그룹 사용자**만 허용
 - 감사 로그 불변 스토리지(예: S3 Object Lock)에 보관
@@ -95,9 +98,11 @@ Bot Backend (Lambda, 자체 서버)
 - 배포 봇의 **승인, 실행 분리** 구조
 - 자동화 확대 시 빠지기 쉬운 **감각 상실, 측정 공백** 함정
 - **자동화 이전 기준선 측정**의 중요성 (없으면 효과 주장 불가)
-- Slack App의 **서명 검증, RBAC**로 봇을 안전하게 운영하는 방법
+- Slack App의 **raw body 서명, timestamp, 중복 요청 검증과 RBAC**로 봇을 안전하게 운영하는 방법
 
 ## 출처
+- [Slack Developer Docs, Verifying requests from Slack](https://docs.slack.dev/authentication/verifying-requests-from-slack/)
+- [Slack Developer Docs, Events API](https://docs.slack.dev/apis/events-api/)
 - [카카오페이 — 배포 효율화 1년 회고: 자동화 도입과 팀 생산성 향상](https://tech.kakaopay.com/post/slack-bot-improving-operational-efficiency-2/)
 
 ## 관련 문서

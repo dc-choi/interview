@@ -3,7 +3,7 @@ tags: [infrastructure, aws, rds, aurora, managed-db, database, ncp, saa-c03]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Aurora 공유 스토리지", "Aurora 클러스터와 엔드포인트"]
-verified_at: 2026-07-21
+verified_at: 2026-08-28
 ---
 
 # Aurora — RDS와 무엇이 다른가
@@ -62,7 +62,7 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 |---|---|
 | **Replica 승격** | 공유 스토리지를 사용해 전체 데이터 복사 없이 replica를 승격할 수 있다. 실제 failover 시간은 topology, priority tier, cache와 애플리케이션 재연결에 따라 측정 |
 | **Replica Lag** | 전통적인 binlog 복제와 다른 shared-storage 경로를 사용하지만 lag이 0이라고 보장되지 않으므로 `AuroraReplicaLag`와 읽기 일관성 요구를 확인 |
-| **Aurora Global Database** | 1개 primary Region + **최대 10개 read-only secondary Region**. 전용 인프라로 storage-level 변경을 복제하며 AWS는 일반적으로 1초 미만 지연을 설명하지만 실제 RPO/RTO는 관측된 lag, switchover/failover 절차와 애플리케이션 전환에 좌우됨 |
+| **Aurora Global Database** | 1개 primary Region + **최대 10개 secondary Region**. secondary는 기본적으로 read-only이고 전용 인프라로 storage-level 변경을 복제한다. 지원 엔진, 버전과 설정에서 global write forwarding을 켜면 secondary가 받은 write SQL을 primary로 전달하며, 데이터 변경의 source of truth는 여전히 primary다. AWS는 일반적으로 1초 미만 지연을 설명하지만 실제 RPO/RTO는 관측된 lag, switchover/failover 절차와 애플리케이션 전환에 좌우됨 |
 | **Aurora Serverless v2** | 설정한 최소, 최대 ACU 범위에서 세밀하게 용량을 조정. 0 ACU auto-pause와 지원 범위는 엔진 버전과 설정별로 확인 |
 | **Backtrack** (MySQL) | 지원되는 Aurora MySQL 버전과 Region에서 구성한 window 안의 시점으로 되돌리는 기능. 최대 72시간이지만 제약, 비용과 변경 중단 영향을 확인 |
 | **Database Cloning** | 운영 DB의 특정 시점을 빠르게 복제 DB로. 전체 물리 복사 대신 **스토리지 페이지 공유(copy-on-write)** 라 빠르고 저렴 |
@@ -79,6 +79,7 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 
 - [Aurora Reader Endpoint](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Reader.html)
 - [Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html)
+- [Aurora Global Database write forwarding](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-write-forwarding.html)
 - [Aurora Auto Scaling](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html)
 - [Aurora PostgreSQL Limitless Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html)
 - [Amazon Aurora User Guide, Aurora MySQL isolation levels](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.IsolationLevels.html)
