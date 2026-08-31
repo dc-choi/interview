@@ -37,7 +37,7 @@ aliases: ["Running A Tech Blog", "기술 블로그 운영", "팀 블로그 운�
 | 플랫폼 | 장점 | 단점 |
 |---|---|---|
 | **Jekyll + GitHub Pages** | 무료, 버전 관리, 개발자 친화 | 빌드, 커스터마이즈 학습곡선 |
-| **Hugo + Netlify/Vercel** | 빠른 빌드, 테마 풍부 | 비슷한 장점 |
+| **Hugo + Netlify/Vercel** | 빠른 빌드, 테마 풍부 | Go 템플릿 문법 학습곡선 |
 | **Medium, Velog** | 즉시 쓰기 가능, 검색 노출 쉬움 | 플랫폼 종속 |
 | **Notion + 도메인** | 작성 편의 | SEO 약함 |
 | **워드프레스, Ghost** | 개인 운영 자유도 | 유지보수 |
@@ -150,7 +150,7 @@ Git 기반 버전 관리 / 글감→배포 프로세스 정의 / 템플릿, 문�
 - 팀 블로그 운영 경험이 있다면 **정량, 정성 성과**
 
 ## 출처
-- [기술 블로그 운영 방법 — 쏘카 기술 블로그](https://tech.socarcorp.kr/data/2023/02/15/how-to-organize-tech-blog.html)
+- [쏘카에서 기술 블로그를 운영하는 방법 — 쏘카 테크 블로그](https://tech.socar.kr/data/2023/02/13/how-to-organize-tech-blog)
 - [기술 블로그를 쓰지 않는 개발자에게 — Team Grit](https://teamgrit.co/article/285)
 
 ## 관련 문서

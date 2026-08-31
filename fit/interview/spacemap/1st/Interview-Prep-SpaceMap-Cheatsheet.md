@@ -46,7 +46,7 @@ aliases: ["스페이스맵 1차 치트시트", "SpaceMap 1st Cheatsheet"]
 
 | JD 스택               | 본인                    | 전이 근거                                                                    |
 | ------------------- | --------------------- | ------------------------------------------------------------------------ |
-| Python/FastAPI      | 없음                    | NestJS **데코레이터, DI** 깊이가 FastAPI 전이 토대 (ASGI 비동기 모델 공통)                   |
+| Python/FastAPI      | 없음                    | NestJS의 데코레이터, DI 경험이 라우팅과 의존성 선언의 전이 토대. Node 이벤트 루프와 FastAPI의 async/await 기반 비동기 I/O는 사고방식이 유사하지만, ASGI는 Python 전용 인터페이스라 별도 학습 |
 | Airflow             | batch, 스케줄 경험          | **DAG=의존 그래프, 스케줄, 재시도, 멱등성 개념 동일**. 사용한 스케줄러와 Airflow의 차이를 구분해 설명 |
 | PostgreSQL          | MySQL 깊음              | RDB 공통. MVCC 구현, 인덱스(GIN/GiST), 격리수준 차이만 학습                                |
 | NoSQL (Mongo/Redis) | Mongo→MySQL 마이그, Redis | 강함                                                                       |

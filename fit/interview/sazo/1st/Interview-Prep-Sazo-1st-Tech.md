@@ -90,7 +90,7 @@ aliases: ["Sazo Interview Tech Cards", "사줘 기술 갭 카드"]
 | 상품 상세, 환율 캐싱 | Cache-Aside + TTL Jitter | 인기 상품은 Hot Key가 될 수 있으므로 jitter, mutex와 백그라운드 갱신으로 스탬피드를 방어 |
 | 재고(1점물) | 캐싱 위험 | 재고는 stale 즉시 사고. 차감은 GET 후 SET이나 DECR 뒤 보상으로 나누지 않는다. 재고가 0보다 클 때만 차감하는 조건부 Lua를 원자 실행하거나 DB 조건부 UPDATE와 트랜잭션을 정합성 경계로 둔다. |
 | 쓰기 후 일관성 | 커밋 후 무효화와 stale window 관리 | 갱신과 삭제 모두 race가 있다. 삭제 직전 오래된 조회가 캐시를 다시 채우는 stale-fill까지 고려해 version key, double-delete, 직렬화나 더 강한 일관성 경계를 요구 수준에 맞춰 선택한다. |
-| 세션, rate limit | Session Store, INCR + TTL | 멀티 인스턴스 세션 공유, 외부 몰 요청 속도 제어(Token Bucket) |
+| 세션, rate limit | Session Store, `INCR` + 최초 TTL(고정 윈도우, Lua로 원자 처리) | 멀티 인스턴스 세션 공유, 외부 몰 요청 속도 제어. 고정 윈도우의 경계 버스트가 문제면 Token Bucket(토큰 잔량, 마지막 refill 시각)을 Lua로 원자 구현 |
 
 **꼬리**: Redis 죽으면? → Cache-Aside라 DB fallback으로 서비스 유지(아발란체 대비 커넥션 풀 제한). HA는 Sentinel(3대 홀수, 과반 동의), 샤딩 필요하면 Cluster(CRC16 mod 16384 슬롯). 복제는 비동기라 레플리카 read는 stale 가능.
 

@@ -143,7 +143,7 @@ Jump over an iteration.
 | `+` | plus | Two plus three is five. |
 | `-` | minus | Five minus three is two. |
 | `*` | times, multiplied by | Five multiplied by two is ten. |
-| `/` | divided by | Five divided by three is one. |
+| `/` | divided by | Six divided by three is two. |
 | `%` | mod, modulo | Ten mod three is one. |
 | `x²` | squared | Five squared is twenty-five. |
 | `x³` | cubed | Five cubed is one hundred twenty-five. |

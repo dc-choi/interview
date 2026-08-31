@@ -118,7 +118,7 @@ aliases: ["Great Developer Habits", "뛰어난 개발자의 행동 패턴", "시
 > "특히 **논리적 증명 습관**이 인상 깊었습니다. 같은 이슈를 봤을 때 주니어였던 저는 '이것 같은데요'로 말했는데, 그 동료는 로그 발췌, 재현 시나리오, 시퀀스 다이어그램까지 준비해서 근거로 제안했습니다. 그 이후로 저도 주장할 때는 근거를 먼저 준비하는 방식으로 바꿨습니다."
 
 ## 출처
-- [뛰어난 동료 개발자에게 배운 것 — F-Lab](https://f-lab.kr/blog/things-I-learned-from-great-fellow-developers)
+- [훌륭한 동료 개발자들에게 배운 것 — F-Lab](https://f-lab.kr/blog/things-I-learned-from-great-fellow-developers)
 - [개발자로 크게 성장한 계기와 노력 — F-Lab](https://f-lab.kr/blog/growth-developer)
 - [에러 로그를 보지 않는 개발자에게 — Team Grit](https://teamgrit.co/article/488)
 - [에러 메시지를 검색부터 하는 개발자에게 — Team Grit](https://teamgrit.co/article/504)

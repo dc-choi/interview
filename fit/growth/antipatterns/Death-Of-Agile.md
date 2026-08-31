@@ -89,7 +89,7 @@ aliases: ["애자일의 죽음", "Death of Agile", "애자일 종말", "방법�
 - **빅테크 따라하기 주의** — "Meta는 스크럼 안 쓴다던데요"는 **빅테크 생존자 편향**으로 들릴 수 있다. 본인 팀 성숙도, 조직 맥락에서 왜 그 선택이 맞는지 함께 말한다
 
 ## 출처
-- [박세호(브런치) — The Death of Agile (Sohail Saifi 번역)](https://brunch.co.kr/@tsp/78)
+- [Revisited The Death of Agile — 브런치, 박세호](https://brunch.co.kr/@tsp/78)
 
 ## 관련 문서
 - [[Startup-Is-Not-Kindergarten|스타트업은 유치원이 아니다]]

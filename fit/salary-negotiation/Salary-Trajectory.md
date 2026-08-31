@@ -112,7 +112,7 @@ aliases: ["Salary Trajectory", "연봉 궤적 전략", "연봉은 실력의 결�
 
 ### 오퍼 전
 
-- **현재 연봉 공개를 거부**하거나 TC로 말함 (국가, 주에 따라 공개 불법인 곳도)
+- **현재 연봉 공개는 거부하거나 TC로 말함** — 일부 관할에서는 고용주가 직전 연봉을 묻거나 그 정보에 의존해 보상을 정하는 행위를 금지한다. 적용 여부는 채용 지역의 현행 법령을 확인한다.
 - **다수 경쟁 오퍼**가 가장 강력한 레버
 - 리크루터와 친밀 유지 — 내부 밴드 정보 비공식 수집
 
@@ -152,9 +152,10 @@ aliases: ["Salary Trajectory", "연봉 궤적 전략", "연봉은 실력의 결�
 - 3년 루틴에서 본인이 **어느 단계**에 있는지 자각
 
 ## 출처
-- [요즘IT — 연봉은 실력의 결과가 아니다](https://yozm.wishket.com/magazine/detail/1740/)
-- [Venture Square — 개발자 연봉과 회사 궤적 (syndicated)](https://www.venturesquare.net/820855)
+- [개발자 비급(祕笈) - 1. 연봉은 실력의 결과가 아니다 — Channy's Blog, 윤석찬](https://channy.creation.net/blog/1186)
 - [연봉 협상을 못 하는 개발자에게 — Team Grit](https://teamgrit.co/article/303)
+- [California Department of Industrial Relations, California Equal Pay Act](https://www.dir.ca.gov/dlse/california_equal_pay_act.htm)
+- [NYC Commission on Human Rights, Salary History Frequently Asked Questions](https://www.nyc.gov/site/cchr/media/salary-history-frequently-asked-questions.page)
 
 ## 관련 문서
 - [[Salary-Negotiation-Guide|연봉 협상 가이드]]

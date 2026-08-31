@@ -64,7 +64,7 @@ aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질
 - **감지+복구**: InnoDB **Wait-for Graph**로 자동 탐지 → 비용 적은 트랜잭션을 자동 rollback → 앱에서 `ER_LOCK_DEADLOCK` catch 후 재시도가 정석
 - **확률 완화**: Lock 순서 통일 + 트랜잭션 범위 최소화 + NOWAIT로 대기 회피 + 트랜잭션 안 외부 API 호출 금지
 - 분석: `SHOW ENGINE INNODB STATUS` → LATEST DETECTED DEADLOCK 섹션 확인
-- 모니터링: Grafana에서 `mysql_global_status_innodb_deadlocks` 메트릭 추적
+- 모니터링: 순정 MySQL 8.0/8.4에서는 `information_schema.INNODB_METRICS`의 `lock_deadlocks` 누계를 수집해 증가율을 추적한다. `Innodb_deadlocks` global status 변수는 없으므로 이 값을 쓰는 배포판은 별도로 확인한다.
 
 **꼬리 질문 대비**
 - "NOWAIT 대신 SKIP LOCKED는?" → SKIP LOCKED는 잠긴 행을 건너뛰고 다음 행을 읽음. 큐 패턴(작업 분배)에 적합하지만, 재고 갱신처럼 **특정 행을 반드시 처리해야 하는** 경우에는 NOWAIT가 맞음

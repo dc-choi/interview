@@ -103,7 +103,7 @@ aliases: ["Developer Interview Signals", "개발자 면접 시그널", "채용 �
 - 마지막 질문 5개가 **회사별 맞춤**으로 준비되어 있는가
 
 ## 출처
-- [요즘IT — 개발자 면접에서 함께 일하고 싶은 지원자를 가려내는 질문](https://yozm.wishket.com/magazine/detail/700/)
+- [내가 개발 인터뷰에서 면접자에게 감동한 이유 — 요즘IT](https://yozm.wishket.com/magazine/detail/700/)
 - [실력이 전부라고 믿는 개발자에게 — Team Grit](https://teamgrit.co/article/391)
 - [지금 하는 공부가 면접에 나오지 않는 이유 — Team Grit](https://teamgrit.co/article/394)
 

@@ -2,7 +2,7 @@
 tags: [fit, interview, spacemap, retrospective]
 status: done
 category: "Interview - Fit"
-company: "스페이스맵 (SpaceMap / 아스트로원)"
+company: "스페이스맵 (SpaceMap)"
 aliases: ["SpaceMap 1st Retro", "스페이스맵 1차 회고"]
 ---
 

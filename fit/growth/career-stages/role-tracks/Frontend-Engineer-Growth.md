@@ -85,7 +85,7 @@ React, Vue, Angular는 강력하지만 내부 원리를 모르면 **단순 사�
 
 ## 출처
 
-- [드림코딩 — 주니어 개발자 성장, 프론트엔드 학습법](https://www.youtube.com/watch?v=Qtg5xe6B_vA)
+- [우아한테크 — 7월 우아한테크세미나, 주니어개발자로 성장하는 우아한 방법들](https://www.youtube.com/watch?v=Qtg5xe6B_vA)
 
 ## 관련 문서
 

@@ -76,7 +76,7 @@ aliases: ["Tech Trend Learning Strategy", "기술 변화와 학습 전략", "기
 
 ## 출처
 - 개발자가 공부로 살아남는 방법 (기술 변화와 학습 선택 기준) — 개인 블로그 에세이
-- [백엔드 개발, 변하는 것과 변하지 않는 것 — 코딩하는기술사](https://www.youtube.com/watch?v=GOZdNeI7YBo)
+- [AI시대, 백엔드 개발자가 나아가야 할 방향 #백엔드 #개발자 — 코딩하는기술사](https://www.youtube.com/watch?v=GOZdNeI7YBo)
 - [한 가지를 깊게 파지 못하는 개발자에게 — Team Grit](https://teamgrit.co/article/336)
 - [내 기술이 뒤처지는 것 같다는 개발자에게 — Team Grit](https://teamgrit.co/article/405)
 - [또 기술 스택을 바꾸고 있는 개발자에게 — Team Grit](https://teamgrit.co/article/407)

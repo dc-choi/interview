@@ -51,7 +51,6 @@ aliases: ["Junior to Mid Level Transition", "주니어 미드레벨 전환 7단�
 - 성숙도의 구체 신호는 **니즈 재정의** — 요청을 그대로 구현하지 않고 진짜 니즈를 파악해 더 싼 대안(신규 개발 대신 기존 기능 활용)을 제시하는 것. 직무 불문 공통 패턴으로, 기획자 성장 단계에서도 같은 분기점이 나타난다
 
 ## 출처
-- [주니어에서 미드레벨 개발자로 도약하기 위한 7단계 — 요즘IT](https://yozm.wishket.com/magazine/detail/1742/)
 - [UX기획자의 전문성 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/59)
 
 ## 관련 문서

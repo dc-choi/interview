@@ -180,7 +180,7 @@ aliases: ["채용 인사이트 성장", "Developer Hiring Insights Growth"]
 
 ## 출처
 - [F-Lab — LG전자, Intel 출신 멘토 인터뷰](https://f-lab.kr/blog/250408-devclub)
-- [F-Lab — 뛰어난 동료 개발자에게 배운 것](https://f-lab.kr/blog/things-I-learned-from-great-fellow-developers)
+- [F-Lab — 훌륭한 동료 개발자들에게 배운 것](https://f-lab.kr/blog/things-I-learned-from-great-fellow-developers)
 - [F-Lab — 회사가 뽑고 싶어하는 개발자 (developer-growth-strategy)](https://f-lab.kr/blog/developer-growth-strategy)
 - [F-Lab — 개발자로 크게 성장한 계기와 노력 (growth-developer)](https://f-lab.kr/blog/growth-developer)
 

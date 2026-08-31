@@ -131,7 +131,7 @@ aliases: ["Backend Developer Career Overview", "백엔드 개발자 진로 개�
 - **백엔드는 화려함이 없다** — 보이지 않는 기여가 본질. 드러남이 목적이 아님
 - **백엔드는 Java와 Spring만 사용한다** — 생태계가 다양. Node.js, Go, Python, Rust도 활발
 - **신기술은 곧 생산성이다** — 깊이 있는 이해가 먼저. 기존 도구의 내부 원리가 새 도구 적응의 지름길
-- **경력 20년이면 저절로 전문가가 된다** — 드레퓌스 모델상 Expert는 약 1%. 시간이 아닌 **성찰, 피드백, 학습**이 전문가를 만든다
+- **경력 20년이면 저절로 전문가가 된다** — 드레퓌스 모형은 경력 연수보다 역량 단계를 본다. **성찰, 피드백, 학습**이 성장을 돕는다
 
 ## 면접 체크포인트
 
@@ -143,7 +143,7 @@ aliases: ["Backend Developer Career Overview", "백엔드 개발자 진로 개�
 
 ## 출처
 - [네이버 D2 — 백엔드 개발자를 꿈꾸는 학생개발자에게](https://d2.naver.com/news/3435170)
-- [백엔드 개발, 변하는 것과 변하지 않는 것 — 코딩하는기술사](https://www.youtube.com/watch?v=GOZdNeI7YBo)
+- [AI시대, 백엔드 개발자가 나아가야 할 방향 #백엔드 #개발자 — 코딩하는기술사](https://www.youtube.com/watch?v=GOZdNeI7YBo)
 
 ## 관련 문서
 - [[Naver-D2-Backend-Mentoring|네이버 D2 밋업 원본]]

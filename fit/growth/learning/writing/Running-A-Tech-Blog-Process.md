@@ -41,7 +41,7 @@ aliases: ["Tech Blog Operating Process", "기술 블로그 운영 프로세스"]
 - 배포 후 공유
 
 ## 출처
-- [기술 블로그 운영 방법 — 쏘카 기술 블로그](https://tech.socarcorp.kr/data/2023/02/15/how-to-organize-tech-blog.html)
+- [쏘카에서 기술 블로그를 운영하는 방법 — 쏘카 테크 블로그](https://tech.socar.kr/data/2023/02/13/how-to-organize-tech-blog)
 
 ## 관련 문서
 - [[Running-A-Tech-Blog|기술 블로그 운영]]

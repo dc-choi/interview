@@ -272,7 +272,7 @@ aliases: ["트라이포드-키노 이직 트래커", "Job Search Tracker 2024-20
 | 코드잇 | 25.6.13 | 6.18 | https://recruit.codeit.com/job_posting/fGUNSp7p |
 | 뤼튼 | 25.6.27 | 7.3 | https://wrtn.career.greetinghr.com/ko/o/119686 |
 | 프렉탈테크놀로지 | 25.6.27 | 7.3 | https://fractal.career.greetinghr.com/ko/o/162875 |
-| KNIX | 25.7.2 | 7.3 | https://company.kinx.net/career |
+| KINX (케이아이엔엑스) | 25.7.2 | 7.3 | https://company.kinx.net/career |
 | 라포랩스 | 25.7.9 | 7.14 | https://www.rapportlabs.kr/ko/o/160712 |
 | 111% | 25.7.12 | 7.25 | https://111percent.career.greetinghr.com/ko/o/165266 |
 | 원셀프월드 | 25.8.25 | 8.26 | |
@@ -308,7 +308,7 @@ aliases: ["트라이포드-키노 이직 트래커", "Job Search Tracker 2024-20
 | 슈프리마 | 26.02.10 | 26.02.13 | https://hr-suprema.career.greetinghr.com/ko/o/199559 |
 | 알고케어 | 26.02.12 | 26.02.13 | https://algocare.notion.site/ |
 | 겟차 | 26.02.10 | 26.02.19 | https://recruit.getcha.kr/ |
-| 매라키플레이스 | 26.02.14 | 26.02.20 | https://merakiplace.ninehire.site/job_posting/dcUdXXPs |
+| 메라키플레이스 | 26.02.14 | 26.02.20 | https://merakiplace.ninehire.site/job_posting/dcUdXXPs — 재지원 (이전 25.03.11 지원) |
 | 뤼튼테크놀로지스 | 26.02.12 | 26.02.20 | https://wrtn.career.greetinghr.com/ko/o/119686 |
 | 스트리미(고팍스) | 26.02.10 | 26.02.24 | 링크드인 지원 |
 | 삼양식품 | 26.02.12 | 26.02.24 | https://samyangroundsquare.ninehire.site/job_posting/UXAUFF0c |
@@ -343,10 +343,10 @@ aliases: ["트라이포드-키노 이직 트래커", "Job Search Tracker 2024-20
 | 베슬에이아이(VESSL AI) | 26.05.04 | 26.05.12 | https://vessl.recruit.roundhr.com/c/uKCMrULfaT |
 | 딜라이트룸(Alarmy) | 26.05.07 | 26.05.20 | https://team.alar.my/job_posting/6BpuJhsW — 2회 탈락 (25.3.17, 26.05.20 재도전) |
 | 콕스웨이브 (Coxwave, AX Workflow Builder) | 26.05.27 | 26.05.28 | https://careers.coxwave.com/c/SnHVam6Hjd, 원티드 https://www.wanted.co.kr/wd/363962 — Backend[AX Workflow] 3-7년, TS, 워크플로우 실행 엔진, LLM 에이전트. 누적 ~125억, Align AI |
-| 아임웹 Core (Back-end Engineer, **재지원**) | 26.05.28 | 26.06.01 | https://team.imweb.me/career_detail?id=209669 — **2회 탈락** (25.4.29, 26.05.28 자기소개 fork 재지원). 서류 컷, 과제 진입 X. 5년+ hard cut(본인 4년차) 추정. 2024 매출 255억, ARR 1,400억 |
+| 아임웹 Core (Back-end Engineer, **재지원**) | 26.05.28 | 26.06.01 | https://team.imweb.me/career_detail?id=209669 — **2회 탈락** (25.4.29, 26.05.28 자기소개 fork 재지원). 서류 컷, 과제 진입 X. 5년+ hard cut(본인 4년차) 추정. 2024 매출 255억(근거 URL 미보존, 재검증 필요) |
 | 풀림 [신사업] (애드테크) | 26.05.27 | 26.06.01 | https://www.wanted.co.kr/wd/358135 — 백엔드 3년+, 0→1, Node, RDBMS 복잡 모델링, 결제/정산 |
 | 큐엠아이티 (PLCO, 스포츠 테크) | 26.05.27 | 26.06.01 | https://qmit.career.greetinghr.com/ko/o/214520 — 백엔드 3년+, TS/NestJS, DDD/Clean/TDD/MSA |
-| 111% (웹 서버 개발자, **재지원**) | 26.05.28 | 26.06.09 | https://111percent.career.greetinghr.com/ko/o/215338 — 두 번째 지원, 25.07.12와 26.05.28에 자기소개를 수정해 재지원. 웹 서버 개발자 3년+, TS/Node, 기술지원팀 |
+| 111% (웹 서버 개발자, **재지원**) | 26.05.28 | 26.06.09 | https://111percent.career.greetinghr.com/ko/o/215338 — 회사 기준 세 번째 지원(25.07.12, 25.09.25, 26.05.28). 25.07.12와 26.05.28에는 자기소개를 수정해 지원. 웹 서버 개발자 3년+, TS/Node, 기술지원팀 |
 
 ## 코테 및 과제
 

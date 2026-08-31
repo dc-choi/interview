@@ -121,7 +121,7 @@ AI가 처리하니 세부는 몰라도 된다는 착각이 가장 위험하다. 
 - [The GenAI Divide: State of AI in Business 2025 — MIT Project NANDA](https://nanda.media.mit.edu/ai_report_2025.pdf)
 - [Toss Tech — 개발자는 AI에게 대체될 것인가](https://toss.tech/article/will-ai-replace-developers)
 - [비개발자가 한 달 동안 풀스택으로 개발하면서 배운 것 — NAVER D2](https://d2.naver.com/helloworld/0107009)
-- [백엔드 개발, 변하는 것과 변하지 않는 것 — 코딩하는기술사](https://www.youtube.com/watch?v=GOZdNeI7YBo)
+- [AI시대, 백엔드 개발자가 나아가야 할 방향 #백엔드 #개발자 — 코딩하는기술사](https://www.youtube.com/watch?v=GOZdNeI7YBo)
 
 ## 관련 문서
 - [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 마찰과 판단 위임의 경계, 가드레일 RCT, 튜터형 활용

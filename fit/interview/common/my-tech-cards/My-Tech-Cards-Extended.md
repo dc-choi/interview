@@ -106,7 +106,7 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 |---|---|
 | **type** | ALL(풀스캔, 나쁨), range, ref, eq_ref, const, system(좋음) |
 | **rows** | 추정 검사 행 수. 실제와 큰 차이면 통계 갱신 |
-| **filtered** | 조건으로 걸러질 비율 (낮으면 인덱스 효율↓) |
+| **filtered** | 테이블 조건을 통과해 남을 것으로 추정한 비율. `rows × filtered / 100`이 다음 테이블과 조인될 행 수(100이면 필터링 없음, 낮을수록 더 많이 제거됨) |
 | **Extra** | Using filesort(정렬 비용), Using temporary(임시 테이블), Using index(커버링) |
 
 ### PostgreSQL 차이

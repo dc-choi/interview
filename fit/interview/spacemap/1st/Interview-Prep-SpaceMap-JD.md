@@ -70,7 +70,7 @@ aliases: ["SpaceMap JD 분석", "스페이스맵 JD 및 FIT 답변"]
 |---------|--------|--------|
 | JavaScript / TypeScript | JavaScript / TypeScript | 동일 |
 | NestJS | NestJS | 동일 |
-| Python / FastAPI | 없음 | **갭** — TS/NestJS 깊이로 전이. 데코레이터, DI, ASGI 비동기 모델 공통 |
+| Python / FastAPI | 없음 | **갭** — TS/NestJS 경험을 라우팅과 의존성 선언에 전이한다. Node 이벤트 루프와 FastAPI의 async/await 기반 비동기 I/O는 사고방식이 유사하지만, ASGI는 Python 전용 인터페이스라 별도 학습 |
 | Apache Airflow | 없음 (batch, 스케줄 파이프라인 경험 보유) | **갭** — DAG=의존 그래프, 스케줄, 재시도, 멱등성 개념은 동일 |
 | PostgreSQL | MySQL (깊음) | **유사** — RDB 공통. MVCC 구현, 인덱스 종류(GIN/GiST), 격리수준 차이 학습 필요 |
 | MySQL | MySQL | 동일 |

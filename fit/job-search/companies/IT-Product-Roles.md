@@ -14,7 +14,7 @@ aliases: ["IT Product Roles", "PM PO PMM 차이", "프로덕트 매니저/오너
 | 역할 | 한 문장 정의 | 비유 |
 |---|---|---|
 | **Product Manager (PM)** | 제품의 **방향**을 결정하고 로드맵 관리 | 감독 |
-| **Product Owner (PO)** | 제품 전략을 **백로그, 스프린트**로 실행 | 코치 |
+| **Product Owner (PO)** | 제품 목표와 **백로그 우선순위**를 관리 | 코치 |
 | **Project Manager** | 일정, 예산, 리스크 관리 | 팀 매니저 |
 | **Product Marketing Manager (PMM)** | 제품의 **가치를 시장에 전달** | 스포크스퍼슨 |
 | **Program Manager** | 여러 프로젝트, 팀을 **통합 조율** | 감독관 |
@@ -28,10 +28,10 @@ aliases: ["IT Product Roles", "PM PO PMM 차이", "프로덕트 매니저/오너
 
 ## 2. Product Owner (PO)
 
-- **책임**: PM 전략을 실행으로, 백로그, 우선순위, 스프린트 플래닝, 스토리, 인수 조건
+- **책임**: 제품 목표와 백로그의 가치, 순서에 책임, 스토리와 인수 조건 정리
 - **판단 기준**: 스프린트 내 가치 최대화, 블로커 제거, 요구사항 명확성
 - **파트너**: 개발팀, QA, 디자이너, PM
-- **PM vs PO**: PM이 "무엇을 왜", PO는 "언제 어떻게". 소규모는 겸직, 스크럼은 명시적 분리
+- **PM vs PO**: 역할 경계는 조직마다 다름. Scrum은 PO를 공식 책임으로 두고 PM을 정의하지 않으며, PO는 제품 목표와 백로그를 맡고 스프린트 실행 방식은 Developers가 정함. 소규모는 겸직, 규모가 커지면 조직 관행에 따라 분리
 
 ## 3. Project Manager
 
@@ -135,6 +135,7 @@ aliases: ["IT Product Roles", "PM PO PMM 차이", "프로덕트 매니저/오너
 
 ## 출처
 - [요즘IT — IT 직무 탐구: PM, PO, PMM, 프로젝트/프로그램 매니저](https://yozm.wishket.com/magazine/detail/905/)
+- [Scrum Guides, The Scrum Guide](https://scrumguides.org/scrum-guide.html)
 
 ## 관련 문서
 - [[Company-Selection-Criteria|회사 선택 기준]]

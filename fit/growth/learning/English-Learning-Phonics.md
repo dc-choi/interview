@@ -38,7 +38,7 @@ aliases: ["English Learning Phonics", "영어 발음 학습법", "개발자 영�
 ### 뇌의 음성 필터
 
 - 신생아의 뇌는 **말랑하고 비어 있음** — 모든 발음을 구분 가능
-- 4세 전후로 뇌는 **어떤 소리를 받아들이고 어떤 소리를 무시할지** 결정
+- 생후 6~12개월 사이에 모국어에 없는 소리 대립을 구별하는 능력이 약해짐
 - 모국어에 없는 변별(L vs R / ㅂ vs ㅃ)은 **뇌가 에너지 절약을 위해 삭제**
 - 성인이 되어 영어를 배울 때 이 필터가 **장벽**이 된다
 
@@ -67,7 +67,7 @@ aliases: ["English Learning Phonics", "영어 발음 학습법", "개발자 영�
 ### Phonics (파닉스)
 
 - 알파벳, 발음기호를 **하나하나 정확히 발음**하는 훈련
-- 영어권에서 어린이가 외국어를 처음 배울 때 **필수 과정**
+- 영어권에서 어린이가 모국어인 영어의 읽기를 처음 배울 때 거치는 기초 문해 과정
 - L/R, TH, V, F, short/long vowels 등 각각의 **혀, 입 위치**를 익힘
 - YouTube에 각 발음별 원어민 영상 다수 ("R phonics", "L phonics", "TH sound")
 
@@ -118,7 +118,7 @@ aliases: ["English Learning Phonics", "영어 발음 학습법", "개발자 영�
 ### 훈련 대상
 
 - **자음 쌍**: L/R, F/V, P/F, B/V, TH(θ/ð), W/V
-- **모음**: short i vs long ee, short a vs æ, ə(schwa), ɑ vs ʌ
+- **모음**: short i vs long ee, short a(æ) vs long a(eɪ), ə(schwa), ɑ vs ʌ
 - **조합**: R-colored vowels (ar/er/ir/or/ur)
 - **리에종**: 단어 연결 시 소리 변화 (want to → wanna)
 

@@ -24,6 +24,7 @@ aliases: ["TS 백엔드 밋업 2회"]
 
 **명령형 (CDK)**
 - 클라우드에서 직접 제공하는 CDK, Pulumi 등
+- 교정: AWS CDK는 AWS가 제공하며, Pulumi는 독립 회사가 제공하는 서드파티 멀티클라우드 IaC 도구다.
 - 애플리케이션에 의해 생명주기가 관리되어도 괜찮을 때
 - 클라우드 서비스, 미디어 프로세싱 시 일시적으로 띄울 때
 - 웬만하면 사용하지 않는 게 좋고, 굳이 쓸 거면 Pulumi 추천
@@ -42,6 +43,8 @@ aliases: ["TS 백엔드 밋업 2회"]
 
 ### 참고 자료
 - [발표 자료](https://github.com/drakejin/20250628-tbm)
+- [AWS Documentation, AWS CDK Developer Guide](https://docs.aws.amazon.com/cdk/v2/guide/home.html)
+- [Pulumi Documentation, What is Pulumi?](https://www.pulumi.com/docs/iac/concepts/)
 
 ---
 

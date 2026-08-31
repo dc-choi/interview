@@ -28,7 +28,7 @@ aliases: ["Kinolights OTT Business Models", "OTT 수익 모델"]
 
 - 시청자는 무료 또는 저가로 보고, 광고주가 비용을 낸다. 유튜브가 대표.
 - 광고 위치에 따라 프리롤(재생 전), 미드롤(재생 중), 포스트롤(재생 후)로 나뉜다.
-- 사업자 관점: 유료 전환 장벽 없이 넓은 이용자층에 도달한다. 과금은 CPM(노출당) 중심이고, 단가는 도달 규모와 시청 완료율 같은 지표에 좌우된다.
+- 사업자 관점: 유료 전환 장벽 없이 넓은 이용자층에 도달한다. 과금은 CPM(1,000회 노출당 단가) 중심이고, 단가는 도달 규모와 시청 완료율 같은 지표에 좌우된다.
 
 ### TVOD — 건별 결제형 (Transactional VOD)
 
@@ -70,7 +70,7 @@ aliases: ["Kinolights OTT Business Models", "OTT 수익 모델"]
 
 ## 한국 시장 맥락
 
-- 넷플릭스 국내 진출(2016) 이후에도 IPTV 가입자는 계속 늘었다 (2025년 하반기 기준 2,100만 명대). OTT가 유료방송을 즉시 대체하기보다 병행하는 구도다. 통신사들은 넷플릭스 진출 이전부터 IPTV와 모바일 OTT(올레tv모바일, U+비디오포털 등)를 함께 운영했고, SK는 넷플릭스 진출과 같은 시기인 2016년 초 호핀과 Btv모바일을 통합해 옥수수를 냈다.
+- 넷플릭스 국내 진출(2016) 이후에도 IPTV 가입자는 계속 늘어 2025년 하반기 6개월 평균 21,535,256명이었다. OTT가 유료방송을 즉시 대체하기보다 병행하는 구도다. 통신사들은 넷플릭스 진출 이전부터 IPTV와 모바일 OTT(올레tv모바일, U+비디오포털 등)를 함께 운영했고, SK는 넷플릭스 진출과 같은 시기인 2016년 초 호핀과 Btv모바일을 통합해 옥수수를 냈다.
 - 이 지형은 빠르게 재편된다. 옥수수는 지상파 POOQ과 합쳐져 웨이브(2019)가 됐고, 올레tv모바일 계열은 시즌(Seezn)을 거쳐 티빙에 흡수됐다(2022). 서비스 지형 자체가 유동적이라는 사실이 통합 검색 데이터의 최신성 문제로 직결된다.
 
 ## 키노라이츠 도메인 연결
@@ -100,6 +100,7 @@ aliases: ["Kinolights OTT Business Models", "OTT 수익 모델"]
 - [AVOD, SVOD, TVOD 가이드 — Amazon Ads](https://advertising.amazon.com/ko-kr/library/guides/avod-svod-tvod-video-on-demand)
 - [Prime Video 광고 도입 공지 — About Amazon](https://www.aboutamazon.com/news/entertainment/prime-video-update-announces-limited-ads)
 - [디즈니+ 국내 광고 요금제 미도입 보도 — 뉴시스](https://www.newsis.com/view/NISX20260713_0003706731)
+- [2025년 하반기 유료방송사업 가입자 수 및 시장점유율 공고 — 방송미디어통신위원회](https://www.kmcc.go.kr/user.do?boardId=1112&boardSeq=68824&cp=1&dc=K05020000&mode=view&nop=10&page=A05020000)
 - [키노라이츠 카카오톡과 포털 다음 OTT 검색 지원 — 전자신문](https://www.etnews.com/20230303000012)
 - [키노라이츠 OTT 통합 랭킹, U+tv 탑재 — 이데일리](https://m.edaily.co.kr/News/Read?mediaCodeNo=257&newsId=02591206635675504)
 - [대체 불가능한 데이터를 만든다 (키노라이츠 대표 인터뷰) — KOFIC 웹매거진 한국영화](https://magazine.kofic.or.kr/webzine/web2/2593/pdsView.do)

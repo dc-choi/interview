@@ -44,7 +44,7 @@ aliases: ["Inflearn Knowledge Import", "인프런 지식 문서화 트래커"]
 | 9 | 332466 | [빠르게 알아보는 Javascript V8엔진](https://www.inflearn.com/courses/lecture?courseId=332466) | 20 | 4 | 기존 문서 통합 완료, 자료 1건 본문 없음 |
 | 10 | 341151 | [10,000장의 이력서를 본 기술이사의 이력서 가이드](https://www.inflearn.com/courses/lecture?courseId=341151) | 59 | 5 | 기존 문서 통합 완료 |
 | 11 | 331036 | [그림으로 쉽게 배우는 네트워크](https://www.inflearn.com/courses/lecture?courseId=331036) | 56 | 6 | 기존 문서 통합 완료, 최신성 교정 |
-| 12 | 329927 | [그림으로 쉽게 배우는 자료구조와 알고리즘 (심화편)](https://www.inflearn.com/courses/lecture?courseId=329927) | 48 | 8 | 기존 문서 통합 완료 |
+| 12 | 329927 | [그림으로 쉽게 배우는 자료구조와 알고리즘 (심화편)](https://www.inflearn.com/courses/lecture?courseId=329927) | 48 | 8 | 기존 문서 통합 완료, 알고리즘 정의/복잡도 교정 |
 | 13 | 339423 | [10,000++억의 데이터를 다루는 카카오 면접관의 MySQL](https://www.inflearn.com/courses/lecture?courseId=339423) | 45 | 7 | 기존 문서 통합 완료, 첨부 자료 1건 본문 없음, 최신성 교정 |
 | 14 | 334899 | [시니어 면접관이 알려주는 개발자 취업과 이직 한방에 해결하기 [실전편]](https://www.inflearn.com/courses/lecture?courseId=334899) | 22 | 3 | 기존 문서 통합 완료 |
 | 15 | 334892 | [시니어 면접관이 알려주는 개발자 취업과 이직 한방에 해결하기 [이론편]](https://www.inflearn.com/courses/lecture?courseId=334892) | 23 | 4 | 기존 문서 통합 완료 |
@@ -52,7 +52,7 @@ aliases: ["Inflearn Knowledge Import", "인프런 지식 문서화 트래커"]
 | 17 | 336073 | [토비의 클린 스프링 - 도메인 모델 패턴과 헥사고날 아키텍처 Part 1](https://www.inflearn.com/courses/lecture?courseId=336073) | 43 | 7 | 기존 문서 통합 완료, 최신성 교정 |
 | 18 | 340204 | [제미니의 개발실무 - 커머스 백엔드 레거시와 AI 활용편](https://www.inflearn.com/courses/lecture?courseId=340204) | 37 | 8 | 기존 문서 통합 완료, AI/커머스 불변식 교정 |
 | 19 | 340524 | [김영한의 실전 데이터베이스 - 설계 2편, 실무에서 반드시 마주치는 9가지 설계 패턴](https://www.inflearn.com/courses/lecture?courseId=340524) | 87 | 9 | 기존 문서 통합 완료, 9개 설계 패턴/최신성 교정 |
-| 20 | 339108 | [제미니의 개발실무 - 커머스 백엔드 기본편](https://www.inflearn.com/courses/lecture?courseId=339108) | 44 | 13 | 기존 문서 통합 완료, PDF/프로젝트 자료 1건 본문 없음 |
+| 20 | 339108 | [제미니의 개발실무 - 커머스 백엔드 기본편](https://www.inflearn.com/courses/lecture?courseId=339108) | 44 | 13 | 기존 문서 통합 완료, PDF/프로젝트 자료 1건 본문 없음, 커머스/결제/정산 불변식 교정 |
 | 21 | 336089 | [빈둥대던 취준생의 취업 이야기와 서버 최적화 및 시스템 디자인](https://www.inflearn.com/courses/lecture?courseId=336089) | 20 | 4 | 기존 문서 통합 완료, 강의 자료 1건 본문 없음 |
 | 22 | 334085 | [비전공자도 이해할 수 있는 Docker 입문/실전](https://www.inflearn.com/courses/lecture?courseId=334085) | 82 | 9 | 기존 문서 통합 완료, 최신성 교정 |
 | 23 | 326598 | [AWS(Amazon Web Service) 중/상급자를 위한 강의](https://www.inflearn.com/courses/lecture?courseId=326598) | 57 | 11 | 기존 문서 통합 완료, AWS 공식 최신성 교정 |
@@ -168,6 +168,8 @@ aliases: ["Inflearn Knowledge Import", "인프런 지식 문서화 트래커"]
 - Course 334352, unit 232311 강의 소스 코드: 세 차례 조회에서 모두 `not_found`였다. 나머지 117개 lecture 본문은 thread lifecycle/JMM/monitor/lock/condition/BlockingQueue/atomic/concurrent collection/executor 정본에 연결했다.
 
 ## 최신성 교정 기록
+
+아래는 범주별 대표 기록이며, 개별 강의의 교정 여부와 상세는 강의 대기열 표를 정본으로 한다.
 
 - Cloud/container: Course 325381, 326598, 334085, 343428, 340962와 340716을 AWS/Docker/Kubernetes 공식 문서에 맞춰 교정했다. S3 일관성, Lambda 제한, Step Functions/X-Ray/Cognito/CloudFormation, container와 VM 경계, image digest, OCI, probe/Gateway API와 Istio 비용을 조건과 버전이 드러나게 정리했다.
 - Web/network/CS: Course 328275, 331070, 329605, 331036, 326277, 326485, 334352, 336749, 328188, 329927와 328971을 React/DOM/HTML/CSS, RFC, ISA, OS, C++/STL, Java concurrency, 언어 runtime과 알고리즘 정의에 맞췄다. function component/Hooks/Effect/key/state snapshot, CRA 종료와 Vite/framework, Router/Redux Toolkit/Recoil archive/SWR, node/attribute/property와 XSS sink, NodeList, event path/delegation/isTrusted, transition/vendor prefix, CIDR/HTTP, byte/문자, CPU/저장장치, process/VM/IPC, AOT/JIT, thread lifecycle/JMM/monitor/lock/BlockingQueue/atomic/executor, 동시성/병렬성, pointer/array decay/signed overflow/shift, 완전 탐색/누적 합/Fenwick tree/greedy/LIS/graph/DP와 점근 표기의 경계를 분리했다.
