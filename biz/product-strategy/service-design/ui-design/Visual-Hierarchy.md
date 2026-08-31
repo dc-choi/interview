@@ -36,6 +36,6 @@ aliases: ["Visual Hierarchy", "시각적 위계"]
 - [시각적 위계를 만드는 5가지 방법 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/49)
 
 ## 관련 문서
-- [[Service-Design-Principles|서비스 설계 10원칙 (GOV.UK)]] — 일관성, 디자인 시스템
+- [[Service-Design-Principles|서비스 설계 원칙 (GOV.UK)]] — 일관성, 디자인 시스템
 - [[Pagination-Patterns|페이지네이션 UX 패턴]]
 - [[UX-Laws|UX 심리학 10가지 법칙]] — 폰 레스토프 효과 포함 전체 법칙

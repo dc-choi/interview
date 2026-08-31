@@ -38,7 +38,7 @@ Noriaki Kano(1984)가 제안한 고객 만족도 분류 프레임워크이다.
 - **Must-have** / **Should-have** / **Could-have** / **Won't-have**
 - 범위(scope) 합의에 적합, 정량적이지 않음
 
-**실무:** RICE로 정량 점수, MoSCoW로 범위 합의, Kano로 고객 관점 확인을 조합할 수 있다. 사용 여정 순서로 MVP 범위를 정하는 Story Mapping은 [[Product-Roadmap|프로덕트 로드맵]] 참조.
+**실무:** RICE로 정량 점수, MoSCoW로 범위 합의, Kano로 고객 관점 확인을 조합할 수 있다. 사용 여정 전체를 얕게 가로지르는 슬라이스로 MVP 범위를 정하는 Story Mapping은 [[Product-Roadmap|프로덕트 로드맵]] 참조.
 
 ## Marty Cagan의 4가지 제품 리스크
 

@@ -16,5 +16,5 @@ aliases: ["Commerce", "커머스"]
 - [x] [[Commerce-Korea-Market|한국 시장]] — 온라인 갈라파고스, 동질화와 메타쇼핑몰, 이용자 행동 특성
 - [x] [[Commerce-Korea-History|한국 이커머스 역사]] — 시대별 흐름과 반복 패턴 (1996~2017, korea-history/ 폴더 인덱스)
 - [x] [[Commerce-Revenue-Formula|수익 공식]] — 방문수 × 전환율 × 객단가와 비용, 부가 수익원
-- [x] [[Payment-Service|결제 서비스]] — 카드 결제 4단계(인증, 승인, 매입), PG와 VAN, 간편결제 토큰, 페이 스펙트럼, 결제 데이터 시야
+- [x] [[Payment-Service|결제 서비스]] — 카드 결제 4단계(주문서, 인증, 승인, 매입), PG와 VAN, 간편결제 토큰, 페이 스펙트럼, 결제 데이터 시야
 - [x] [[In-App-Purchase|인앱결제]] — 결제수단 vs 결제시스템, 앱마켓 수수료의 가격 전가, 독점 규제

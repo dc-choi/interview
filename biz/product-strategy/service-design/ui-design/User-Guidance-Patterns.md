@@ -43,6 +43,6 @@ aliases: ["User Guidance Patterns", "사용자 가이드 패턴", "서비스 가
 - [서비스 가이드 제공 방법 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/12)
 
 ## 관련 문서
-- [[Service-Design-Principles|서비스 설계 10원칙 (GOV.UK)]]
+- [[Service-Design-Principles|서비스 설계 원칙 (GOV.UK)]]
 - [[Gamification|게이미피케이션]] — 리워드 설계의 효과와 한계
 - [[GTM-Strategy|GTM 전략]] — 온보딩 활성화 분기점
