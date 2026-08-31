@@ -83,8 +83,8 @@ aliases: ["Kinolights OTT Business Models", "OTT 수익 모델"]
 
 ## 이어서 정리할 것
 
-- [ ] 영화 산업 구조 — 홀드백과 유통 창구, 부가판권 시장 (작성 예정: `Kinolights-Domain-Film-Industry.md`)
-- [ ] OTT 소비자 심리 — 구독 피로, 콘텐츠 탐색 비용, 결정 회피 (작성 예정: `Kinolights-Domain-Consumer-Psychology.md`)
+- [x] [[Kinolights-Domain-Film-Industry|영화 산업 구조 — 홀드백과 유통 창구, 부가판권 시장]]
+- [x] [[Kinolights-Domain-Consumer-Psychology|OTT 소비자 심리 — 구독 피로, 콘텐츠 탐색 비용, 결정 회피]]
 
 ## 관련 문서
 
