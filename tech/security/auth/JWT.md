@@ -1,16 +1,16 @@
 ---
 tags: [security, auth, jwt, bearer-token]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-08-31
 category: "Security - 인증"
 aliases: ["JWT", "JSON Web Token", "JWT 탈취", "Bearer Token Replay"]
 ---
 
 # JWT
 
-JWT(JSON Web Token)는 클레임 집합을 URL-safe 형식으로 전달하는 토큰 규격이다. JWT 자체가 로그인 방식인 것은 아니며 access token, ID token과 다른 보안 메시지의 표현 형식으로 쓰인다.
+JWT(JSON Web Token)는 당사자 사이에서 전달할 클레임 집합을 compact, URL-safe 형식으로 표현하는 토큰 규격이다. JWT 자체가 로그인 방식인 것은 아니며 access token, ID token과 다른 보안 메시지의 표현 형식으로 쓰인다.
 
-JWT는 서명된 JWS 또는 암호화된 JWE 형태를 가질 수 있다. 웹 인증에서 흔히 보는 `header.payload.signature` 형태는 서명된 JWS다. 이 문서에서 별도 언급이 없으면 이 일반적인 서명 JWT를 뜻한다.
+JWT는 JWS로 서명 또는 MAC 보호하거나 JWE로 암호화할 수 있으며, 필요하면 둘을 중첩한다. 웹 인증에서 흔히 보는 `header.payload.signature` 형태는 JWS Compact Serialization이다. 이 문서에서 별도 언급이 없으면 JWS로 보호된 JWT를 뜻한다.
 
 ## 구조와 보장 범위
 
@@ -18,7 +18,7 @@ JWT는 서명된 JWS 또는 암호화된 JWE 형태를 가질 수 있다. 웹 �
 |---|---|---|
 | Header | 토큰 유형, 서명 알고리즘 같은 메타데이터 | 검증할 알고리즘을 애플리케이션 허용 목록과 대조 |
 | Payload | 사용자, 권한, issuer, audience와 만료 같은 claim | Base64URL 인코딩일 뿐 기밀성을 제공하지 않음 |
-| Signature | 인코딩한 Header와 Payload에 대한 서명 또는 MAC | 발급 주체 확인과 위변조 탐지 |
+| Signature | 인코딩한 Header와 Payload에 대한 서명 또는 MAC | 비대칭 서명은 개인키 보유자의 생성과 무결성을, 대칭 MAC은 공유키 보유자 중 하나의 생성과 무결성을 확인 |
 
 서명된 JWT는 **출처와 무결성**을 검증할 수 있지만 **기밀성**을 보장하지 않는다. 누구나 Header와 Payload를 디코딩할 수 있으므로 비밀번호, 주민등록번호와 원문 자격증명 같은 비밀을 넣지 않는다. 기밀성이 필요하면 별도 JWE 설계를 검토하더라도 전송 구간의 TLS는 유지한다.
 
@@ -26,9 +26,9 @@ JWT는 서명된 JWS 또는 암호화된 JWE 형태를 가질 수 있다. 웹 �
 
 1. 애플리케이션이 허용한 알고리즘과 키만 사용하고 토큰의 `alg` 값을 그대로 신뢰하지 않는다.
 2. 서명 또는 MAC 검증에 실패하면 토큰 전체를 거부한다.
-3. `exp`, `nbf` 같은 시간 조건을 검증하고 필요한 clock skew 범위를 제한한다.
-4. 신뢰하는 `iss`, 현재 리소스를 가리키는 `aud`, 유효한 `sub`를 검증한다.
-5. access token과 ID token처럼 용도가 다른 JWT는 `typ`, audience, 키와 필수 claim 규칙을 분리한다.
+3. 토큰 프로필이 요구한 `exp`, `nbf` 같은 시간 조건을 검증하고 필요한 clock skew 범위를 제한한다.
+4. 서비스 프로필이 요구한 `iss`, 현재 리소스를 가리키는 `aud`를 검증한다. `sub`를 신원 식별에 쓰는 프로필이라면 issuer와 함께 유효성을 확인한다.
+5. access token과 ID token처럼 용도가 다른 JWT에는 audience, 키와 필수 claim이 서로 겹치지 않는 검증 규칙을 둔다. `typ`를 프로필에서 정했다면 함께 검증한다.
 6. 인증 뒤에도 scope와 role로 요청한 행위의 인가를 별도로 판단한다.
 
 JWT가 자체 검증 가능하다는 말은 서명만 맞으면 충분하다는 뜻이 아니다. 애플리케이션이 기대하는 발급자, 대상과 용도까지 일치해야 한다.
@@ -100,7 +100,7 @@ JWT를 쓰면 서버 상태가 사라진다고 일반화하지 않는다. 즉시
 
 - Base64URL 인코딩을 암호화로 오해하고 민감 정보를 Payload에 넣음
 - 토큰 Header가 지정한 알고리즘을 그대로 받아들이고 허용 목록을 두지 않음
-- 서명만 검증하고 `iss`, `aud`, 만료와 token type을 확인하지 않음
+- 서명만 검증하고 서비스 프로필의 `iss`, `aud`, 만료와 token type 규칙을 확인하지 않음
 - access token과 refresh token을 모두 장기 보존 가능한 브라우저 저장소에 둠
 - 로그아웃 UI만 구현하고 서버의 폐기 또는 refresh family 정책을 정의하지 않음
 - 모든 서비스에 긴 수명과 넓은 scope의 토큰 하나를 재사용
@@ -116,6 +116,7 @@ JWT를 쓰면 서버 상태가 사라진다고 일반화하지 않는다. 즉시
 
 ## 출처
 
+- [IETF, RFC 7515: JSON Web Signature](https://www.rfc-editor.org/rfc/rfc7515)
 - [RFC 7519 — JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519)
 - [RFC 8725 — JSON Web Token Best Current Practices](https://www.rfc-editor.org/rfc/rfc8725)
 - [RFC 9700 — Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700)

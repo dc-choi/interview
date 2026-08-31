@@ -1,7 +1,7 @@
 ---
 tags: [database, orm, typeorm, transaction, replication]
 status: done
-verified_at: 2026-08-13
+verified_at: 2026-08-31
 category: "Database - ORM"
 aliases: ["TypeORM Transactions", "TypeORM Replication", "TypeORM 트랜잭션과 복제"]
 ---
@@ -12,7 +12,7 @@ TypeORM의 transaction과 replication은 저장소 메서드에 옵션 하나를
 
 ## TypeORM 1.1.0 기준과 이행 주의
 
-- 이 문서의 학습 기준은 TypeORM `1.1.0`이다. 2026-08-13에 공식 `1.1.0` tag의 `package.json`과 문서를 대조했다.
+- 이 문서의 학습 기준은 TypeORM `1.1.0`이다. 2026-08-31에 공식 `1.1.0` tag의 `package.json`과 문서를 대조했다.
 - 예시는 1.1.0의 `DataSource`, `EntityManager`, `QueryRunner` API를 사용한다. DB engine과 driver가 지원하는 범위는 integration test로 확인한다.
 - 0.3.x에서 올릴 때는 Node.js `^20.19.0 || ^22.13.0 || >=24.11.0`과 ES2023 요구, 제거된 legacy API, glob과 DB driver 차이를 공식 upgrade guide로 점검한다.
 
@@ -43,6 +43,8 @@ await dataSource.transaction("READ COMMITTED", async (manager) => {
 
 ```ts
 const runner = dataSource.createQueryRunner("master")
+let failure: unknown
+let failed = false
 
 try {
   await runner.connect()
@@ -53,16 +55,36 @@ try {
 
   await runner.commitTransaction()
 } catch (error) {
-  if (runner.isTransactionActive) await runner.rollbackTransaction()
-  throw error
+  failed = true
+  failure = error
+  try {
+    if (runner.isTransactionActive) await runner.rollbackTransaction()
+  } catch (rollbackError) {
+    failure = new AggregateError(
+      [error, rollbackError],
+      "Transaction and rollback failed",
+    )
+  }
+  throw failure
 } finally {
-  await runner.release()
+  try {
+    await runner.release()
+  } catch (releaseError) {
+    if (failed) {
+      throw new AggregateError(
+        [failure, releaseError],
+        "Transaction and cleanup failed",
+      )
+    }
+    throw releaseError
+  }
 }
 ```
 
 - lifecycle은 create, connect, start, 같은 `runner.manager`로 query, commit 또는 rollback, `finally` release 순서다.
 - `release()`를 빼면 pool connection이 계속 checkout되어 결국 요청이 대기한다. release 뒤 runner는 재사용하지 않는다.
-- 원래 오류를 caller에게 다시 던져 HTTP 응답, retry 분류와 관측이 가능해야 한다. rollback 실패도 별도 운영 오류로 기록한다.
+- rollback이나 release 실패가 원래 오류를 가리지 않도록 오류 계약에 둘 다 남긴다. 위 예시는 `AggregateError`로 묶으므로 caller의 분류와 로깅도 내부 `errors`를 확인해야 한다.
+- `commitTransaction()`의 reject만으로 rollback됐다고 판단하지 않는다. 연결이 끊겨 결과를 모를 수도 있고, DB commit 뒤 `afterTransactionCommit` subscriber가 throw했을 수도 있다. caller는 business key나 idempotency로 결과를 조회하고 비멱등 작업을 그대로 재시도하지 않는다.
 - `runner.manager`와 `dataSource.manager`는 교환할 수 없다. 전자는 runner connection에 묶이고 후자는 전역 manager다.
 - transaction에서 `master` runner를 명시하면 locking read와 write, 그 뒤 최신 read가 하나의 writer connection에 고정된다.
 
@@ -94,10 +116,10 @@ try {
 
 ## 긴 transaction, 외부 I/O와 subscriber
 
-- 입력 검증과 외부 API 응답 대기는 transaction 밖에서 끝낸다. transaction 안에는 필요한 DB read, write와 invariant 확인만 둔다.
+- 현재 DB 상태에 의존하지 않는 입력 검증과 외부 API 응답 대기는 가능한 transaction 밖에서 끝낸다. transaction 안에는 필요한 DB read, write와 invariant 확인만 둔다.
 - commit 전에 메시지 발행이나 결제를 하면 DB rollback 뒤 외부 효과가 남고, commit 뒤 직접 발행만 하면 process failure 때 누락될 수 있다. 그런 write path는 [[Transactional-Outbox|Transactional Outbox]]로 분리한다.
 - subscriber는 DataSource의 `subscribers` option으로 로드한다. event 안 DB 작업은 반드시 event의 `manager` 또는 `queryRunner`를 사용한다.
-- `afterTransactionCommit`은 DB rollback 이후에 되돌릴 수 없는 시점이다. 외부 전달 성공, 중복 제거와 재시도는 subscriber 하나가 자동 보장하지 않으므로 outbox consumer의 책임으로 둔다.
+- `afterTransactionCommit`은 이미 DB commit을 되돌릴 수 없는 시점이다. 여기서 throw해도 DB 변경은 취소되지 않으므로 외부 전달 실패를 transaction rollback처럼 노출하지 않는다. 전달, 중복 제거와 재시도는 outbox consumer의 책임으로 둔다.
 
 ## 여러 DataSource는 하나의 transaction이 아니다
 

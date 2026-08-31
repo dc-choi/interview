@@ -1,6 +1,7 @@
 ---
 tags: [security, secure-coding, owasp]
 status: done
+verified_at: 2026-08-31
 category: "보안(Security)"
 aliases: ["Application Security", "애플리케이션 보안", "시큐어코딩", "Secure Coding", "OWASP Top 10"]
 ---
@@ -36,12 +37,14 @@ aliases: ["Application Security", "애플리케이션 보안", "시큐어코딩"
 - **작동하는 방식**: 중요도 높은 항목부터 체크리스트화해 개발자가 직접 빠르게 확인
 - **협업 구조**: 배포 직전 검사 절차로만 두면 일정 압박과 위험 차단이 정면충돌. 설계 단계부터 보안팀이 참여하고, 보안팀은 "이 취약점이 왜 위험하고 어떤 공격으로 이어지나"를, 개발팀은 구현 제약과 운영 환경을 공유한다.
 
-## OWASP Top 10: 웹 보안의 위험 지도
+## OWASP Top 10:2025, 웹 보안의 위험 지도
 
 웹 애플리케이션에서 특히 위험한 취약점 10가지 목록. 우선순위를 잡는 지도로 쓴다.
 
-- **Broken Access Control (접근 제어 실패)** — 2021년 기준 1위. 권한 없는 사용자가 남의 정보에 접근하거나, 일반 사용자가 관리자 기능을 실행. [[IDOR]]가 대표 사례.
-- **Injection** — 과거보다 순위는 내려갔지만 여전히 중요. 프레임워크, ORM이 기본 방어(파라미터 바인딩)를 제공해 줄었으나, 설정 실수나 안전 기능 우회 시 여전히 발생. 대표 사례는 [[SQL-Injection]]과 [[XSS]].
+- **A01 Broken Access Control (접근 제어 실패)** — 2025년에도 1위. 권한 없는 사용자가 남의 정보에 접근하거나, 일반 사용자가 관리자 기능을 실행. [[IDOR]]가 대표 사례다.
+- **A02 Security Misconfiguration (보안 설정 오류)** — 불필요한 포트, 기능, 계정, 과도한 오류 정보와 안전하지 않은 클라우드 권한이 공격면을 만든다.
+- **A03 Software Supply Chain Failures (소프트웨어 공급망 실패)** — 직접, 전이 의존성과 빌드, 배포 경로의 취약점 또는 악성 변경을 함께 관리해야 한다.
+- **A05 Injection** — 2025년에는 5위다. 프레임워크와 ORM이 파라미터 바인딩 같은 기본 방어를 제공해도, 동적 쿼리와 안전 기능 우회에서 발생한다. 대표 사례는 [[SQL-Injection]]과 [[XSS]]다.
 
 ## 최근 개발 트렌드가 만드는 리스크
 
@@ -81,6 +84,7 @@ Q. 보안팀과 개발팀의 충돌은?
 
 ## 출처
 
+- [OWASP, Top 10:2025](https://owasp.org/Top10/2025/)
 - [애플리케이션 보안 핵심 — 시큐어코딩, IDOR, SSRF, JWT, Spring Actuator (YouTube)](https://www.youtube.com/watch?v=RQv86D0M5YY&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=19)
 
 ## 관련 문서
