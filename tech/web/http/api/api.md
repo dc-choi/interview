@@ -22,3 +22,4 @@ API 스타일 선택부터 실무 컨벤션, 문서화까지. 상위 인덱스�
 - [x] [[API-Conventions-Format|시간(UTC, ISO 8601), JSON 키 네이밍, URI 컨벤션]]
 - [x] [[API-Conventions-Response|에러 응답, 페이지네이션, 필터링과 정렬, Envelope 응답 구조]]
 - [x] [[API-Conventions-Operations|버저닝, HTTP 메서드, 인증 헤더, 헬스 체크, 흔한 실수, 면접 체크포인트]]
+- [x] [[API-Versioning|API 버저닝의 HTTP 표면 (URI, Header, Media Type, 폐기)]]

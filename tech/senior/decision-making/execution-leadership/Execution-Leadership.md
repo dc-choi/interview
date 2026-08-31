@@ -15,6 +15,7 @@ aliases: ["Execution Leadership", "실행 리더십"]
 - [[DRI-Delegation-Culture|DRI와 권한 위임 문화]] — 분산된 의사결정, 보고 제거로 얻는 실행 속도
 - [[Radical-Focus|우선순위 집중과 WIP 제한]] — 가치와 위험을 비교하고 동시에 시작하는 일 통제
 - [[Execution-Mindset|실행 결과를 닫는 루프]] — 목표, 제약, 실행과 결과 검증 연결
+- [[Incident-Commander|장애 대응 리딩 (Incident Commander)]] — 역할 분리, 의사결정 리듬과 복구 지휘
 
 ## 상위 문서
 

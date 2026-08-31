@@ -19,7 +19,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 
 ## 추가 주제
 - [x] [[tech/web/http/versions/versions|HTTP/1.1, HTTP/2, HTTP/3 (진화, 멀티플렉싱, HPACK, QUIC, HOL 차이)]]
-- [ ] Content Negotiation (작성 예정: `Content-Negotiation`) — 기존 보강: [[HTTP-Content-Type#요청 vs 응답|Accept와 Content-Type의 기본 관계]]
+- [x] [[Content-Negotiation|Content Negotiation]] — 기존 보강: [[HTTP-Content-Type#요청 vs 응답|Accept와 Content-Type의 기본 관계]]
 - [x] [[tech/web/http/Idempotency|Idempotent / Safe Method]]
-- [ ] API Versioning (작성 예정: `API-Versioning`) — 기존 보강: [[API-Conventions-Operations#Versioning|URL, Header, Query 버저닝]], [[Mobile-App-Architectures#백엔드 관점: 클라이언트 유형이 서버에 미치는 영향|다중 클라이언트 버전 공존]]
+- [x] [[API-Versioning|API Versioning]] — 기존 보강: [[API-Conventions-Operations#Versioning|URL, Header, Query 버저닝]], [[Mobile-App-Architectures#백엔드 관점: 클라이언트 유형이 서버에 미치는 영향|다중 클라이언트 버전 공존]]
 - [x] [[API-Conventions-Response#페이지네이션|Pagination]] / [[API-Conventions-Response#필터링, 정렬, 검색|Filtering, Sorting, Search]]

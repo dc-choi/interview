@@ -79,7 +79,7 @@ Q. Flaky test는 어떻게 해결하는가?
 ## 관련 문서
 - [[Test-Fixture|Test fixture 전략]]
 - [[HTTP-API-Integration-Testing|HTTP API 통합 테스트]]
-- Deterministic test (작성 예정: `Deterministic-Test`)
+- [[Deterministic-Test|Deterministic test]]
 
 ## 출처
 

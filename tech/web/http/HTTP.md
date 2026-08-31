@@ -17,6 +17,7 @@ HTTP 진화, 메서드 의미, 상태 코드, Content-Type, REST, GraphQL, gRPC,
 - [x] [[HTTP-Status-Code|Status Code / Header]]
 - [x] [[Cookie|Cookie]]
 - [x] [[HTTP-Content-Type|Content-Type, MIME Type, 표현 헤더 (JSON/form-urlencoded/multipart)]]
+- [x] [[Content-Negotiation|Content Negotiation (Accept, qvalue, Vary와 406)]]
 - [x] [[HTTP-Chunked-Transfer|HTTP 분할 전송 (Transfer-Encoding: chunked, 스트리밍, SSE/LLM 응답)]]
 - [x] [[URI-URL-URN|URI, URL, URN 차이]]
 - [x] [[Idempotency|HTTP 멱등성 (Idempotent Methods, Idempotency Key 패턴)]]

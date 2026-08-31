@@ -45,7 +45,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [x] [[Event-Driven-Patterns|Retry / Backoff (재시도 지연, 일시 오류와 영구 오류 분류)]] — 공식과 jitter 변형 비교는 [[Retry-Backoff-Jitter|지수 백오프와 지터]]
 - [x] [[Backfill-Resource-Isolation|Replay / Backfill (전용 토픽과 워커, 청크 처리, 자원 격리)]]
 - [x] [[Backpressure|Backpressure 제어 (pull, feedback, buffer, drop, BullMQ concurrency 경계)]]
-- [ ] Shadow Traffic (작성 예정: `Shadow-Traffic`) — 기존 보강: [[Blue-Green#관련 무중단 배포 전략|Blue-Green과 Shadow/Dark Launch]]
+- [x] [[Shadow-Traffic|Shadow Traffic]] — 기존 보강: [[Blue-Green#관련 무중단 배포 전략|Blue-Green과 Shadow/Dark Launch]]
 
 ## 현장사례
 - [[SSG-Ecommerce-Seminar#메시지브로커|SSG 메시지 브로커]] — Kafka 중심, 이벤트 드리븐, 트랜잭션 고려 필수

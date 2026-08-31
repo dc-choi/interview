@@ -33,9 +33,9 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 
 ## 데이터 모델링과 스키마 진화 보강 체크리스트
 - [x] [[Ecommerce-Shopping-Mall-ERD|ERD 패턴 (상품, 주문, 결제, 배송, 스냅샷, 관계 모델링)]]
-- [ ] Data consistency rule (작성 예정: `Data-Consistency-Rule`) — 기존 보강: [[Data-Integrity-Constraints|FK, UNIQUE, CHECK와 도메인 제약]], [[Transactions|원자성과 동시성]]
+- [x] [[Data-Integrity-Constraints#규칙을 어느 계층에 둘 것인가|Data consistency rule]] — [[Transactions|원자성과 동시성]]
 - [x] [[Schema-Versioning|Schema versioning (마이그레이션 히스토리 정본, 드리프트, roll-forward)]]
-- [ ] Backward compatibility (작성 예정: `Backward-Compatibility`) — 기존 보강: [[Blue-Green#DB 스키마, 공유 상태의 난제|DB 전후방 호환과 Expand-Contract]], [[Schema-Versioning|roll-forward와 전후방 호환]]
+- [x] [[Backward-Compatibility|Backward compatibility]] — 기존 보강: [[Blue-Green#DB 스키마, 공유 상태의 난제|DB 전후방 호환과 Expand-Contract]], [[Schema-Versioning|roll-forward와 전후방 호환]]
 
 ## 현장사례
 - [[SSG-Ecommerce-Seminar#데이터베이스|SSG DB 선택]] — MySQL vs PostgreSQL (UPDATE vs INSERT)

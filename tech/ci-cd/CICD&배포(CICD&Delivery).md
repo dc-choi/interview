@@ -15,7 +15,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 ### 버전 관리
 
 - [x] [[version-control|버전 관리 폴더 인덱스 (Git 도구, 개발 워크플로, Git 멘탈 모델/머지 전략/복구)]]
-- [ ] Git Flow / Trunk-Based (작성 예정: `Git-Flow`) — 기존 보강: [[Version-Control-Tooling#Branch 전략은 배포 모델의 결과다|GitHub Flow, Git Flow, Trunk-Based 개요]]
+- [x] [[Git-Flow|Git Flow / Trunk-Based]] — 기존 보강: [[Version-Control-Tooling#Branch 전략은 배포 모델의 결과다|GitHub Flow, Git Flow, Trunk-Based 개요]]
 
 ### 기초와 도구 선택
 
@@ -29,9 +29,9 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 ### 배포
 
 - [x] [[CICD-Deployment|배포 폴더 인덱스 (무중단 5계층, Blue-Green, 단일 서버 배포, ChatOps)]]
-- [ ] Helm (작성 예정: `Helm`)
-- [ ] ArgoCD (GitOps) (작성 예정: `ArgoCD`) — 기존 보강: [[CICD-Tool-Selection#CD 도구 비교 (GitOps 중심)|ArgoCD와 FluxCD 선택 기준]]
-- [ ] Canary (작성 예정: `Canary`) — 기존 보강: [[Blue-Green#관련 무중단 배포 전략|Blue-Green과 Canary 개념 비교]]
-- [ ] Feature flag 시스템 (작성 예정: `Feature-Flag`) — 기존 보강: [[One-Way-vs-Two-Way-Door#Two-Way Door 확장 기법|가역적 배포 수단으로서 Feature Flag]]
-- [ ] Rollback 전략 (작성 예정: `Rollback`) — 기존 보강: [[Blue-Green|Blue-Green 트래픽 롤백]], [[GitHub-Actions#면접 포인트|SHA 이미지 롤백]]
-- [ ] DB migration 전략 (작성 예정: `DB-Migration`) — 기존 보강: [[Blue-Green#DB 스키마, 공유 상태의 난제|Expand-Contract 개요]], [[Schema-Migration-Large-Table|대용량 테이블 Online DDL]], [[Schema-Versioning|스키마 버전 관리]]
+- [x] [[Helm]]
+- [x] [[ArgoCD|ArgoCD (GitOps)]] — 기존 보강: [[CICD-Tool-Selection#CD 도구 비교 (GitOps 중심)|ArgoCD와 FluxCD 선택 기준]]
+- [x] [[Canary]] — 기존 보강: [[Blue-Green#관련 무중단 배포 전략|Blue-Green과 Canary 개념 비교]]
+- [x] [[Feature-Flag|Feature flag 시스템]] — 기존 보강: [[One-Way-vs-Two-Way-Door#Two-Way Door 확장 기법|가역적 배포 수단으로서 Feature Flag]]
+- [x] [[Rollback|Rollback 전략]] — 기존 보강: [[Blue-Green|Blue-Green 트래픽 롤백]], [[GitHub-Actions#면접 포인트|SHA 이미지 롤백]]
+- [x] [[DB-Migration|DB migration 전략]] — 기존 보강: [[Blue-Green#DB 스키마, 공유 상태의 난제|Expand-Contract 개요]], [[Schema-Migration-Large-Table|대용량 테이블 Online DDL]], [[Schema-Versioning|스키마 버전 관리]]

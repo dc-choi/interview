@@ -72,7 +72,7 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 - **설치 스크립트 차단**: `npm install --ignore-scripts`로 postinstall 차단, 신뢰 패키지만 예외
 - **사설 레지스트리, 프록시**: 외부 레지스트리를 그대로 바라보지 않고 검증된 미러(Artifactory, Verdaccio)만 사용
 - **업데이트 지연 정책**: Renovate, Dependabot에 cooldown을 둬 갓 배포된 버전을 즉시 받지 않음 (악성 버전은 보통 빠르게 내려감)
-- **SCA, SBOM**: 의존성 취약점 스캐닝(Dependency vulnerability scanning (작성 예정: `Dependency-Vulnerability-Scanning`))과 SBOM으로 무엇이 깔렸는지 항상 파악
+- **SCA, SBOM**: [[Dependency-Vulnerability-Scanning|의존성 취약점 스캐닝]]과 SBOM으로 무엇이 깔렸는지 항상 파악
 - **provenance 검증**: Sigstore, npm provenance로 "이 아티팩트가 그 소스에서 그 CI로 빌드됐는가" 확인
 - **런타임 격리, 최소 권한**: 개발 환경의 egress 제한(C2 통신 탐지), 단기 토큰, 최소 권한 IAM, EDR
 
@@ -108,5 +108,5 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 
 ## 관련 문서
 - [[Secret-Management|시크릿 관리]] — 크레덴셜 로테이션, 동적 시크릿
-- 의존성 취약점 스캐닝 (작성 예정: `Dependency-Vulnerability-Scanning`) — SCA, SBOM
+- [[Dependency-Vulnerability-Scanning|의존성 취약점 스캐닝]] — SCA, SBOM
 - [[보안(Security)|보안 인덱스]]

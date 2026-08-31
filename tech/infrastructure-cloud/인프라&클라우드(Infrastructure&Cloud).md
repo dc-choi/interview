@@ -30,11 +30,11 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ### 기초와 운영 체크리스트
 - [x] [[K8s-Core-Workloads-and-Service|Pod / Deployment / Service]] / [[K8s-Traffic-Entry-Helm-and-GitOps|Ingress와 Gateway API]]
-- [ ] HPA / VPA (작성 예정: `K8s-HPA-VPA`) — 기존 보강: [[EKS#오토스케일링 — 3축|HPA와 VPA 개요]]
+- [x] [[K8s-HPA-VPA|HPA / VPA]] — 기존 보강: [[EKS#오토스케일링 — 3축|HPA와 VPA 개요]]
 - [x] [[K8s-Configuration-Storage-and-Probes|ConfigMap / Secret]] — 보안 심화: [[Secret-Management#두 가지 누출 지점|K8s Secret 위협 모델]]
 - [x] [[K8s-Resource-Right-Sizing|Resource request / limit (스케줄링, CPU 경합, throttling, OOM, 실측 기반 설정)]]
 - [x] [[K8s-Configuration-Storage-and-Probes|Startup / Liveness / Readiness probe]] — mesh 심화: [[Istio-Ambient-Partially-Enrolled-Pod|Kubernetes Ready와 mesh 준비의 차이]]
-- [ ] PodDisruptionBudget (작성 예정: `K8s-PDB`)
+- [x] [[K8s-PDB|PodDisruptionBudget]]
 - [x] [[EKS#Cluster Autoscaler vs Karpenter|Node autoscaling (Cluster Autoscaler와 Karpenter)]]
 
 ## 현장사례

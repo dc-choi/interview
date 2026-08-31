@@ -24,12 +24,12 @@ aliases: ["보안(Security)", "Security Index"]
 
 ## 보강 체크리스트
 - [x] [[SQL-Injection|SQL Injection (유형, prepared statement 원리, TypeORM 바인딩, 식별자 자리 한계)]] — 기존 보강: [[Security-Headers#정적 검사 + SQL Injection은 별개|보안 헤더 계층의 범위]], [[Prepared-Statement-Cache#서버 동작|Prepared Statement 기본]]
-- [ ] TLS config (작성 예정: `TLS-Config`) — 기존 보강: [[HTTPS-TLS|TLS 핸드셰이크와 버전]], [[Security-Headers#HSTS — HTTPS 강제|HSTS]]
+- [x] [[TLS-Config|TLS config]] — 기존 보강: [[HTTPS-TLS|TLS 핸드셰이크와 버전]], [[Security-Headers#HSTS — HTTPS 강제|HSTS]]
 - [x] [[Rate-Limiting|Rate limit 정책 설계 (알고리즘, 계층, 분산 환경, 429 응답)]]
 - [x] [[Shield-WAF-NetworkFirewall|WAF]]
-- [ ] Audit log (작성 예정: `Audit-Log`) — 기존 보강: [[CloudTrail-Config|AWS API 감사]], [[Secret-Management#운영 필수 항목|Vault Audit Log]], [[Deployment-Automation-ChatOps#보안|ChatOps 감사 로그]]
+- [x] [[Audit-Log|Audit log]] — 기존 보강: [[CloudTrail-Config|AWS API 감사]], [[Secret-Management#운영 필수 항목|Vault Audit Log]], [[Deployment-Automation-ChatOps#보안|ChatOps 감사 로그]]
 - [x] [[IAM-Best-Practices#모범 사례|Least privilege IAM]] / [[IAM-Policy|정책 평가와 권한 경계]]
-- [ ] Dependency vulnerability scanning (작성 예정: `Dependency-Vulnerability-Scanning`) — 기존 보강: [[Dependency-Management#취약점 스캔|Dependabot, Snyk와 언어별 도구]], [[DevOps-vs-DevSecOps#SCA (의존성)|SCA의 파이프라인 위치]], [[Supply-Chain-Security#방어|공급망 방어]]
+- [x] [[Dependency-Vulnerability-Scanning|Dependency vulnerability scanning]] — 기존 보강: [[Dependency-Management#취약점 스캔|Dependabot, Snyk와 언어별 도구]], [[DevOps-vs-DevSecOps#SCA (의존성)|SCA의 파이프라인 위치]], [[Supply-Chain-Security#방어|공급망 방어]]
 
 ## 현장사례
 - [[Kakao-Ent-Seminar#보안|카카오엔터 보안]] — 서비스 접근 권한, 네트워크 망 설정
