@@ -74,6 +74,7 @@ TypeORM transaction 안에서는 전역 manager나 평소 주입받은 repositor
 - [[ORM|ORM과 NestJS 영속성 선택]]
 - [[Transactions|트랜잭션]]
 - [[Schema-Migration-Large-Table|대용량 테이블 스키마 변경]]
+- [[Version-Upgrade-Difficulty|버전 업그레이드의 난이도 구조]]
 
 ## 출처
 
