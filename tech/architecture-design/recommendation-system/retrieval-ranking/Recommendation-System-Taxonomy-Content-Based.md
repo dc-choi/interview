@@ -1,7 +1,7 @@
 ---
 tags: [architecture, recommendation-system, taxonomy, content-based-filtering, metadata]
 status: done
-verified_at: 2026-07-22
+verified_at: 2026-09-03
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Recommendation Taxonomy and Content-Based Filtering", "추천 시스템 택소노미", "택소노미 기반 콘텐츠 추천"]
 ---
@@ -174,7 +174,7 @@ Taxonomy의 incremental Recall은 taxonomy source 단독 Recall이 아니다. �
 - [Candidate generation overview — Google for Developers](https://developers.google.com/machine-learning/recommendation/overview/candidate-generation)
 - [Supercharging Recommender Systems using Taxonomies for Learning User Purchase Behavior — Google Research](https://research.google/pubs/supercharging-recommender-systems-using-taxonomies-for-learning-user-purchase-behavior/)
 - [Expediting exploration by attribute-to-feature mapping for cold-start recommendations — Google Research](https://research.google/pubs/expediting-exploration-by-attribute-to-feature-mapping-for-cold-start-recommendations/)
-- [NewsML-G2 relevance and confidence — IPTC](https://www.iptc.org/std/NewsML-G2/guidelines/#aligning-descriptive-metadata-properties)
+- [NewsML-G2 relevance and confidence — IPTC](https://www.iptc.org/std/NewsML-G2/guidelines/#aligning-subject-and-keyword-properties)
 - [On Calibration of Modern Neural Networks — Guo et al.](https://proceedings.mlr.press/v70/guo17a.html)
 - [Grammar-Constrained Decoding for Structured NLP Tasks without Finetuning — Geng et al.](https://aclanthology.org/2023.emnlp-main.674/)
 - Korean Film Council: [아수라](https://www.koreanfilm.or.kr/eng/films/index/filmsView.jsp?movieCd=20153443), [다만 악에서 구하소서](https://www.koreanfilm.or.kr/eng/films/index/filmsView.jsp?movieCd=20197922)

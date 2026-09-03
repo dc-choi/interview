@@ -75,8 +75,8 @@ TypeORM도 `@ManyToOne` 쪽 FK, 1:1의 `@JoinColumn`, N:M의 `@JoinTable`처럼 
 
 ## 출처
 
-- [Jakarta Persistence 3.2, Relationships](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#relationships-between-entities)
-- [Jakarta Persistence 3.2, Relationship Mapping Defaults](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#relationship-mapping-defaults)
+- [Jakarta Persistence 3.2, Relationships](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a516)
+- [Jakarta Persistence 3.2, Relationship Mapping Defaults](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a538)
 - [Hibernate ORM current User Guide, Associations](https://docs.hibernate.org/stable/orm/userguide/html_single/#associations)
 - 강의: [단방향 연관관계](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21696), [양방향과 연관관계의 주인 1](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21697), [양방향과 연관관계의 주인 2](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21698), [실전 예제 2](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21699)
 - 강의: [다대일](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21700), [일대다](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21701), [일대일](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21702), [다대다](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21703), [실전 예제 3](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21704)

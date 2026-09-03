@@ -1,7 +1,7 @@
 ---
 tags: [web, graphql, api, query-language, introspection]
 status: done
-verified_at: 2026-07-20
+verified_at: 2026-09-03
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Query Language", "GraphQL 쿼리 언어", "fragment", "variable", "directive", "introspection"]
 ---
@@ -109,7 +109,7 @@ query { __type(name: "Droid") { name kind fields { name } } }
 - [graphql.org — Queries and Mutations](https://graphql.org/learn/queries/)
 - [graphql.org — Validation](https://graphql.org/learn/validation/)
 - [graphql.org — Introspection](https://graphql.org/learn/introspection/)
-- [GraphQL September 2025 Specification — Variables](https://spec.graphql.org/September2025/#sec-Variables)
+- [GraphQL September 2025 Specification — Variables](https://spec.graphql.org/September2025/#sec-Language.Variables)
 - [GraphQL September 2025 Specification — Variable usage validation](https://spec.graphql.org/September2025/#sec-All-Variable-Usages-Are-Allowed)
 - [GraphQL September 2025 Specification — Directives](https://spec.graphql.org/September2025/#sec-Type-System.Directives)
 - [얄팍한 코딩사전 강사 — Fragment 사용하기](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=65981)

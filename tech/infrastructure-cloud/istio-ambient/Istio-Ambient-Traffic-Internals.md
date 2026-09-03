@@ -7,7 +7,7 @@ aliases: ["Istio Ambient Traffic Internals", "HBONE 구현", "Envoy Internal Lis
 
 # Istio Ambient Mode 트래픽 내부 구현
 
-[[Istio-Ambient-Mode]]가 개념과 트레이드오프를 다룬다면, 이 문서는 Gateway에서 Pod까지 HTTP 요청이 실제로 어떻게 전달되는지를 Envoy 설정 수준에서 본다. HBONE, ztunnel, traffic redirection 같은 개념이 결국 Envoy의 기존 기능(internal listener, tunneling config, transport socket)과 iptables REDIRECT의 조합으로 구현되어 있다는 것이 핵심이다.
+[[Istio-Ambient-Mode]]가 개념과 트레이드오프를 다룬다면, 이 문서는 Gateway에서 Pod까지 HTTP 요청이 실제로 어떻게 전달되는지를 Envoy 설정 수준에서 본다. HBONE, ztunnel, traffic redirection 같은 개념이 결국 Envoy의 기존 기능(internal listener, tunneling config, transport socket)과 iptables 캡처 규칙(TPROXY, REDIRECT)의 조합으로 구현되어 있다는 것이 핵심이다.
 
 ## Envoy 요청 처리 기본 체인
 
@@ -41,13 +41,13 @@ HBONE은 새 프로토콜이 아니라 Envoy 기존 기능의 조합이다.
 
 ## ztunnel 트래픽 리다이렉션 내부
 
-- istio-cni가 Pod 생성 시점에 **Pod의 네트워크 네임스페이스 안에** iptables REDIRECT 규칙을 설치한다.
+- istio-cni가 Pod 생성 시점에 **Pod의 네트워크 네임스페이스 안에** 트래픽 캡처용 iptables 규칙을 설치한다. 인바운드는 mangle table의 TPROXY(`--on-port 15008/15006`, `--tproxy-mark 0x111/0xfff`), 이그레스는 nat table의 REDIRECT(`--to-ports 15001`)를 사용한다.
 - ztunnel은 노드에서 실행되지만 **크로스 네임스페이스 소켓**으로 각 Pod 네임스페이스 내부의 15001(egress), 15006(plaintext inbound), 15008(HBONE inbound) 포트에 직접 listening한다. 그래서 리다이렉트가 노드 네트워크를 거치지 않고 Pod 안에서 완결된다.
 - **packet mark로 무한루프 방지**: 리다이렉트 규칙이 ztunnel 자신이 보낸 패킷까지 다시 잡으면 루프가 생긴다. 이를 mark로 구분한다.
 
 | mark | 의미 | 효과 |
 | --- | --- | --- |
-| `0x539` | ztunnel이 보낸 패킷 | REDIRECT 규칙 우회 |
+| `0x539` | ztunnel이 보낸 패킷 | TPROXY와 REDIRECT 양쪽의 캡처 규칙에서 제외 |
 | `0x111` | ztunnel 커넥션의 응답 패킷 | 재리다이렉트 방지 |
 
 ## Gateway와 Waypoint의 역할 분리 설계
@@ -62,7 +62,7 @@ HBONE은 새 프로토콜이 아니라 Envoy 기존 기능의 조합이다.
 
 - HBONE은 어떻게 구현되나? → 새 프로토콜이 아니라 Envoy의 internal listener + HTTP/2 CONNECT(tunneling_config) + mTLS transport socket 조합. 터널 종착지는 상대 노드 ztunnel의 15008.
 - ztunnel은 노드에 하나인데 어떻게 Pod별 트래픽을 잡나? → istio-cni가 Pod 네임스페이스 안에 iptables 규칙을 깔고, ztunnel이 크로스 네임스페이스 소켓으로 Pod 내부 포트에 직접 listening.
-- 리다이렉트 무한루프는 왜 안 생기나? → ztunnel 발신 패킷에 packet mark를 찍어 REDIRECT 규칙에서 제외.
+- 리다이렉트 무한루프는 왜 안 생기나? → ztunnel 발신 패킷에 packet mark를 찍어 인바운드 TPROXY와 이그레스 REDIRECT 규칙 양쪽에서 제외.
 - north-south와 east-west 정책 중복은 어떻게 푸나? → Gateway는 호스트명 매칭만, 정책은 waypoint로 일원화. 대가는 waypoint hop 추가.
 
 ## 관련 문서
@@ -75,3 +75,4 @@ HBONE은 새 프로토콜이 아니라 Envoy 기존 기능의 조합이다.
 ## 출처
 
 - [Istio Ambient Mode 2편: Envoy Config 분석 — 채널톡 테크 블로그](https://tech.channel.io/kr/articles/c5193569)
+- [Istio 공식 문서, Ambient traffic redirection](https://istio.io/latest/docs/ambient/architecture/traffic-redirection/)

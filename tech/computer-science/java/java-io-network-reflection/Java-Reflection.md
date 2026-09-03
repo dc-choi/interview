@@ -1,7 +1,7 @@
 ---
 tags: [java, reflection, metadata, module, framework]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Reflection", "Java 리플렉션"]
 ---
@@ -31,12 +31,12 @@ declared member 조회가 곧 접근 권한 획득은 아니다. 탐색 범위�
 
 ## invocation failure를 unwrap한다
 
-`Method.invoke()`는 다음 실패를 구분한다.
+Reflection 호출 경로는 다음 실패를 구분한다.
 
-- method 이름 또는 parameter type을 잘못 찾음
-- target instance와 argument type 불일치
-- Java access 또는 module 경계 위반
-- 호출된 method 자체가 던진 exception, `InvocationTargetException`의 cause로 전달
+- method 이름 또는 parameter type 불일치: 조회 단계인 `getMethod`와 `getDeclaredMethod`가 `NoSuchMethodException`을 던짐
+- target instance와 argument type 또는 개수 불일치: `Method.invoke()`가 `IllegalArgumentException`을 던짐
+- Java access 또는 module 경계 위반: `Method.invoke()`가 `IllegalAccessException`을 던짐
+- 호출된 method 자체가 던진 exception: `InvocationTargetException`의 cause로 전달
 
 framework boundary에서 reflection exception을 그대로 business layer에 노출하지 말고 startup configuration error, client input error와 target execution error로 변환한다.
 
@@ -84,6 +84,7 @@ TypeScript type은 대부분 runtime에 지워지고 decorator metadata도 compi
 
 - [Java SE 26, java.lang.reflect](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/reflect/package-summary.html)
 - [Java SE 26, AccessibleObject](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/reflect/AccessibleObject.html)
+- [Java SE 26, Method](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/reflect/Method.html)
 - 김영한 강사, [reflection이 필요한 이유](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244495), [class와 metadata](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244496), [method 탐색과 호출](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244497), [field 탐색과 변경](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244498)
 - 김영한 강사, [reflection 활용](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244499), [constructor와 객체 생성](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244500), [reflection servlet](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244501), [정리](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244502)
 

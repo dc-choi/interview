@@ -43,7 +43,7 @@ mysqldump -h old-host -u admin -p --single-transaction --routines mydb \
 ### 3. 인프라/위치 변경
 
 - **리전 이동** — 스냅샷을 대상 리전으로 복사해 복원하거나, **크로스 리전 Read Replica를 만들어 승격**한다. 후자가 다운타임이 더 적다.
-- **계정 간 이동** — 스냅샷을 다른 계정에 공유해 거기서 복원한다. 암호화된 스냅샷이면 **KMS 키도 함께 공유**해야 복원된다.
+- **계정 간 이동** — 2026-09-03 AWS 문서 기준, 미암호화 스냅샷은 공유받은 계정이 바로 복원할 수 있다. 암호화된 스냅샷은 공유받은 계정에서 직접 복원할 수 없으므로, 고객 관리형 KMS 키로 암호화한 스냅샷과 키 사용 권한을 공유하고 대상 계정이 자기 KMS 키로 복사한 뒤 그 복사본에서 복원한다. 계정 기본 KMS 키로 암호화된 스냅샷은 공유 자체가 불가능해 먼저 고객 관리형 키로 복사해야 한다.
 
 ### 4. 데이터 자체를 고쳐야 할 때
 
@@ -69,13 +69,14 @@ mysqldump -h old-host -u admin -p --single-transaction --routines mydb \
 - 이기종 전환에서 DMS(데이터)와 DMS Schema Conversion 또는 수동 DDL(스키마)의 역할 분리
 - 리전 이동에서 스냅샷 복사 vs 크로스 리전 Read Replica 승격의 다운타임 차이
 - 무중단에 가까운 두 경로: DMS Full Load + CDC, Read Replica 승격 컷오버
-- 암호화 스냅샷을 계정 간 공유할 때 KMS 키도 공유해야 하는 이유
+- 암호화 스냅샷의 계정 간 이전 순서: 고객 관리형 KMS 키 권한 공유 → 스냅샷 공유 → 대상 계정 키로 복사 → 복사본 복원
 
 ## 출처
 
 - [Amazon RDS — Backing up, restoring, and exporting data](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html)
 - [Amazon RDS Blue/Green Deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-overview.html)
 - [AWS DMS, Converting database schemas using DMS Schema Conversion](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html)
+- [Amazon RDS, Sharing a DB snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ShareSnapshot.html)
 
 ## 관련 문서
 

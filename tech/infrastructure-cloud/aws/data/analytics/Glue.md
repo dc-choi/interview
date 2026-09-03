@@ -24,7 +24,7 @@ aliases: ["Glue", "AWS Glue", "Glue Data Catalog"]
 ## 부가 기능
 
 - **Glue Job Bookmarks**: 새 ETL 작업 실행 시 이전 데이터 재처리 방지 (incremental)
-- **Glue Elastic Views**: SQL로 여러 데이터 스토어를 결합/복제 → 가상 테이블 ("뷰")
+- **Glue Elastic Views**: 2020년 preview 발표 뒤 2026-09-03 현재 Glue 기능 문서에서는 제공 기능으로 확인되지 않는다. 여러 엔진에서 공유할 뷰는 Glue Data Catalog view를 검토
 - **Glue DataBrew**: 사전 빌드된 변환으로 GUI 기반 데이터 정리, 정규화
 - **Glue Studio**: ETL 작업 생성, 실행, 모니터링 GUI
 
@@ -43,3 +43,5 @@ aliases: ["Glue", "AWS Glue", "Glue Data Catalog"]
 ## 출처
 
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)
+- [AWS, Announcing AWS Glue Elastic Views preview](https://aws.amazon.com/about-aws/whats-new/2020/12/announcing-aws-glue-elastic-view-preview/)
+- [AWS Glue, Data Catalog views](https://docs.aws.amazon.com/glue/latest/dg/catalog-views.html)

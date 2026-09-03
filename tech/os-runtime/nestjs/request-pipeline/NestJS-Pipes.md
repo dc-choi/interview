@@ -89,7 +89,7 @@ class-validator 데코레이터 대신 Zod 같은 스키마 라이브러리로 �
 // main.ts
 app.useGlobalPipes(new ValidationPipe({
   transform: true,            // 평문 객체 → DTO 인스턴스 변환
-  whitelist: true,            // DTO에 없는 필드 자동 제거
+  whitelist: true,            // 검증 데코레이터 없는 필드 자동 제거
   forbidNonWhitelisted: true, // 모르는 필드 들어오면 throw
 }));
 ```
@@ -97,7 +97,7 @@ app.useGlobalPipes(new ValidationPipe({
 | 옵션 | 효과 |
 |------|------|
 | `transform: true` | request body를 DTO 클래스 인스턴스로 변환 (메서드 사용 가능) |
-| `whitelist: true` | DTO에 정의되지 않은 필드 자동 제거 |
+| `whitelist: true` | 검증 데코레이터가 없는 필드 자동 제거. DTO에 선언돼 있어도 validator가 없으면 제거되며 유지하려면 `@Allow()` 사용 |
 | `forbidNonWhitelisted` | whitelist 위반 시 400 throw |
 | `disableErrorMessages` | 운영 환경에서 검증 메시지 노출 차단 |
 
@@ -196,5 +196,5 @@ app.useGlobalPipes(new ValidationPipe());
 - [[NestJS-Custom-Decorator|커스텀 데코레이터]]
 
 ## 출처
-- [NestJS — Pipes](https://docs.nestjs.com/pipes)
+- [NestJS — Pipes](https://docs.nestjs.com/pipes), [Validation](https://docs.nestjs.com/techniques/validation)
 - [class-validator — `@IsOptional()`](https://github.com/typestack/class-validator#validation-decorators)

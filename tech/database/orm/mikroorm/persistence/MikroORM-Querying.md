@@ -56,7 +56,7 @@ PostgreSQL 전용 연산자와 driver별 full-text, regexp 동작은 portable AP
 
 ## Projection과 relation loading의 분리
 
-`fields`와 `exclude`는 필요한 column을 줄이고, `populate`는 relation을 어떤 전략으로 가져올지 정한다. 목록 API에서 모든 field와 relation을 자동으로 읽는 기본값을 만들지 않는다.
+`fields`와 `exclude`는 필요한 column을 줄이고, `populate`는 함께 읽을 relation을 정한다. 로딩 전략은 query의 `strategy`, 전역 config의 `loadStrategy`, 경로별 `populateHints`로 정하며 property-level decorator 설정이 우선한다. 목록 API에서 모든 field와 relation을 자동으로 읽는 기본값을 만들지 않는다.
 
 ```ts
 const orders = await em.find(Order, { customer: customerId }, {
@@ -165,3 +165,4 @@ em.clear(); // 이 EM에 load된 Invoice가 있었다면 stale 상태를 피한�
 - [Cursor API](https://mikro-orm.io/api/core/class/Cursor)
 - [EntityManager.findByCursor source, v7.1.11](https://github.com/mikro-orm/mikro-orm/blob/v7.1.11/packages/core/src/EntityManager.ts#L907-L932)
 - [MikroORM 7.1.11 release](https://github.com/mikro-orm/mikro-orm/releases/tag/v7.1.11)
+- [Relationship Loading Strategies](https://mikro-orm.io/docs/loading-strategies)

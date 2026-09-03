@@ -99,7 +99,7 @@ aliases: ["C++ Coding Test Workflow", "C++ 코딩 테스트 워크플로"]
 - 인프런, 큰돌 강사, [7-M](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100976), [7-O](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100978), [8-V](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=101075), [8-W](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=101076), [8-Z](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=101079)
 
 - [C++ working draft, integer conversions](https://eel.is/c++draft/conv.integral)
-- [C++ working draft, basic iostreams](https://eel.is/c++draft/iostreams)
+- [C++ working draft, Iostreams base classes](https://eel.is/c++draft/iostreams.base)
 - [cppreference, `std::getline`](https://en.cppreference.com/w/cpp/string/basic_string/getline)
 - [cppreference, `std::string::find`](https://en.cppreference.com/w/cpp/string/basic_string/find)
 

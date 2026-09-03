@@ -124,7 +124,7 @@ _transform(chunk, encoding, callback) 메서드를 구현한다.
 ### highWaterMark와 메모리 관리
 ```
 highWaterMark: 추가 읽기나 쓰기를 멈추라는 버퍼링 임계값. 엄격한 메모리 상한이 아니다.
-- Node.js 24 일반 바이트 스트림 기본값: 64KiB, objectMode: 16개. `fs.createReadStream()` 같은 일부 구현은 별도 기본값을 가진다.
+- Node.js 24 일반 바이트 스트림 highWaterMark 기본값은 non-Windows 64KiB, Windows 16KiB이고 objectMode는 16개다. `fs.createReadStream()` 같은 일부 구현은 별도 기본값을 가진다.
 - 배압 무시 시 메모리 영향: ~87MB (배압 준수) vs ~1.5GB (무시) → 약 17배 차이
 - GC 부담도 비례하여 증가 → 응답 시간 저하
 ```
@@ -177,3 +177,4 @@ pipeline(readable, transform, writable, (err) => {
 
 - [Node.js — Stream API](https://nodejs.org/api/stream.html)
 - [Node.js — DEP0106 crypto.createCipher and crypto.createDecipher](https://nodejs.org/api/deprecations.html#dep0106-cryptocreatecipher-and-cryptocreatedecipher)
+- [Node.js v24.20.0, internal stream state](https://github.com/nodejs/node/blob/v24.20.0/lib/internal/streams/state.js)

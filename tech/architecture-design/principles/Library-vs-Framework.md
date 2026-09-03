@@ -3,6 +3,7 @@ tags: [architecture, design, library, framework, ioc, hollywood-principle]
 status: done
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Library vs Framework", "라이브러리 vs 프레임워크", "제어의 역전"]
+verified_at: 2026-09-03
 ---
 
 # 라이브러리 vs 프레임워크
@@ -56,7 +57,7 @@ NestJS가 라우팅, 의존성 주입, 요청 수명주기를 **대신 돌린다
 
 어떤 코드가 "프레임워크"인지는 **흐름을 강제하는가**로 판별한다.
 
-- 반드시 지켜야 할 **진입점 규약**이 있는가 (`main()` 대신 `@SpringBootApplication`, Controller 스캔)
+- 반드시 지켜야 할 **진입점 규약**이 있는가 (`main()`과 `@SpringBootApplication`으로 부트스트랩, Controller 스캔)
 - **수명주기 콜백** 제공 (`init`/`destroy`, React 마운트/언마운트)
 - **확장 포인트**로만 커스터마이즈 허용 (Filter, Interceptor, Middleware)
 - **반전된 의존성** — 프레임워크 인터페이스를 개발자가 구현
@@ -118,6 +119,7 @@ NestJS가 라우팅, 의존성 주입, 요청 수명주기를 **대신 돌린다
 - Clean/Hexagonal 아키텍처가 프레임워크 종속을 낮추는 메커니즘
 
 ## 출처
+- [Spring Boot 공식 튜토리얼 — 첫 애플리케이션](https://docs.spring.io/spring-boot/tutorial/first-application/index.html)
 - [daddyprogrammer — 기술 용어 및 개념 정리](https://daddyprogrammer.org/post/2058/tech-terms-concept/)
 
 ## 관련 문서

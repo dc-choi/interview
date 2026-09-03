@@ -8,7 +8,7 @@ aliases: ["NestJS Middleware", "NestMiddleware"]
 
 # NestJS Middleware
 
-요청 파이프라인의 **가장 바깥쪽 단계**. Express 어댑터에서는 Express 미들웨어와 호환하며, Fastify의 helmet, cookie, compression은 어댑터용 플러그인으로 등록한다. 라우팅 매칭 직후, Guard 직전에 실행. 보통 로깅, CORS, 요청 ID 부착, 압축, 헬멧 같은 **HTTP 레벨 횡단 관심사**.
+요청 파이프라인의 **가장 바깥쪽 단계**. Express 어댑터에서는 Express 미들웨어와 호환하며, Fastify의 helmet, cookie, compression은 어댑터용 플러그인으로 등록한다. 라우트 핸들러가 선택되기 전, Guard 직전에 실행한다. 그래서 ExecutionContext와 핸들러, 클래스 메타데이터에는 접근할 수 없고, 여기서 던진 예외는 전역 예외 필터만 처리한다. 보통 로깅, CORS, 요청 ID 부착, 압축, 헬멧 같은 **HTTP 레벨 횡단 관심사**에 사용한다.
 
 ## 위치 — 요청 파이프라인에서
 
@@ -149,7 +149,7 @@ export class RateLimitMiddleware implements NestMiddleware {
 
 | 축 | Middleware | Guard | Interceptor |
 |---|---|---|---|
-| 위치 | 가장 바깥 (라우팅 직후) | Pipe 앞 | Pipe 앞, Handler 후 |
+| 위치 | 가장 바깥 (라우트 핸들러 선택 전) | Pipe 앞 | Pipe 앞, Handler 후 |
 | Nest 컨텍스트 | 제한적 (ExecutionContext 없음) | ✅ ExecutionContext | ✅ ExecutionContext |
 | DI | 클래스형이면 가능 | ✅ | ✅ |
 | 응답 변환 | 가능하지만 비표준 | ✗ | ✅ map/tap |
@@ -192,4 +192,4 @@ export class RateLimitMiddleware implements NestMiddleware {
 - [NestJS — Compression](https://docs.nestjs.com/techniques/compression)
 - [NestJS — Session](https://docs.nestjs.com/techniques/session)
 - [NestJS — Helmet](https://docs.nestjs.com/security/helmet)
-- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)
+- [NestJS — Migration guide (v11)](https://docs.nestjs.com/v11/migration-guide)

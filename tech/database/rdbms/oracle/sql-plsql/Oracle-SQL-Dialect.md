@@ -57,7 +57,7 @@ Oracle의 문자열 함수는 단위를 구분한다.
 - `LENGTH`와 `SUBSTR`은 character 기준이다.
 - `LENGTHB`와 `SUBSTRB`는 byte 기준이며 LOB와 multibyte character set에는 추가 제한이 있다.
 - `LPAD`의 길이는 표시 길이를 기준으로 하며 multibyte character set에서는 character 수와 다를 수 있다.
-- `CONCAT`은 두 값을 연결한다. 여러 값은 중첩하거나 `||` operator를 쓴다.
+- `CONCAT`은 23ai 이상에서 두 개 이상의 인자를 모두 연결한다. 21c 이하는 두 인자만 받으므로 버전 이식성이 필요하면 `||`나 중첩을 쓴다.
 
 한글 한 글자가 항상 2 byte라는 규칙은 없다. 실제 byte 수는 database character set과 값에 따라 달라진다. 저장 한도는 column 선언의 `BYTE`/`CHAR` semantics와 `MAX_STRING_SIZE`까지 함께 확인한다.
 
@@ -148,6 +148,7 @@ Oracle은 syntactically valid DDL 전에 implicit commit을 하고 성공한 DDL
 - [Oracle AI Database 26ai, COALESCE](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/COALESCE.html)
 - [Oracle AI Database 26ai, DECODE](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/DECODE.html)
 - [Oracle AI Database 26ai, LENGTH](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/LENGTH.html)
+- [Oracle AI Database 26ai, CONCAT](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/CONCAT.html)
 - [Oracle AI Database 26ai, Joins](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/Joins.html)
 - [Oracle AI Database 26ai, FIRST and LAST](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/FIRST.html)
 - [Oracle AI Database 26ai, COMMIT](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/COMMIT.html)

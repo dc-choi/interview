@@ -23,7 +23,7 @@ aliases: ["Resource Right-Sizing", "리소스 적정화", "right-sizing", "다�
 
 ## 도구 — Compute Optimizer
 
-- **AWS Compute Optimizer**: EC2, ASG, EBS, Lambda, ECS(Fargate)의 사용 지표를 분석해 **다운사이징/업사이징 추천**과 예상 절감액 제시.
+- **AWS Compute Optimizer**: EC2 인스턴스, EC2 Auto Scaling 그룹, EBS 볼륨, Lambda 함수와 Fargate 기반 ECS 서비스뿐 아니라 Aurora와 RDS 데이터베이스, NAT Gateway, DynamoDB, ElastiCache, MemoryDB, DocumentDB, WorkSpaces, SageMaker와 상용 소프트웨어 라이선스까지 분석해 추천을 생성한다.
 - **Cost Optimization Hub**: 전 계정의 추천을 한 화면에 집계. [[AWS-Cost-Optimization]]
 - 추천을 그대로 믿지 말고 피크/계절성을 함께 확인.
 

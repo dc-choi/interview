@@ -1,6 +1,7 @@
 ---
 tags: [architecture, design-pattern]
 status: done
+verified_at: 2026-09-03
 category: "Architecture & Design"
 aliases: ["Revealing Constructor 패턴이란?"]
 ---
@@ -16,8 +17,8 @@ aliases: ["Revealing Constructor 패턴이란?"]
 ### 불변성 보장
 외부에서 내부 상태를 변경할 수 없도록 구조적으로 보장한다.
 
-### Promise가 대표적 예시
-executor 함수에서만 resolve/reject를 호출할 수 있고, 외부에서는 .then()과 .catch()만 사용할 수 있다.
+### Promise는 capability 전달 예시
+Promise 인스턴스의 공개 메서드는 `then`, `catch`, `finally`지만, resolve와 reject는 executor 밖으로 유출하거나 `Promise.withResolvers()`로 얻을 수 있다. 따라서 생성자가 내부 기능을 전달하는 형태는 보여주지만, 생성 이후 접근을 구조적으로 차단하는 엄격한 사례는 아니다.
 
 ## 핵심 개념
 
@@ -29,13 +30,12 @@ executor 함수가 생성자에 전달되고, revealedMembers는 생성 시점�
 ### Promise 예시
 ```typescript
 const promise = new Promise((resolve, reject) => {
-  // resolve와 reject는 여기서만 접근 가능
-  // 외부에서는 .then()과 .catch()만 사용
+  // resolve와 reject를 이 클로저 안에만 두는 것은 작성자의 선택이다.
   resolve('done')
 })
 ```
 
-resolve와 reject는 executor 함수의 인자로만 전달된다. Promise 객체가 생성된 후에는 이 함수들에 접근할 방법이 없다.
+resolve와 reject는 executor의 인자로 전달되지만 바깥 변수에 저장할 수 있다. `Promise.withResolvers()`는 `promise`, `resolve`, `reject`를 함께 반환하므로, 접근 범위는 Promise가 아니라 코드를 작성한 쪽이 통제한다.
 
 ### ImmutableBuffer 예시
 ```typescript
@@ -64,6 +64,12 @@ buffer.getContent() // 복사본 반환, 원본은 변경 불가
 ```
 
 ## 실 사용 사례
-1. Promise: executor에서만 resolve/reject 가능
-2. Readable 스트림: 생성자에서만 _read 구현 가능
+1. Promise: 생성자가 resolve/reject capability를 전달하지만 외부 유출을 구조적으로 막지는 않음
+2. Readable 스트림: `Readable` 하위 클래스에서 `_read(size)`를 구현하거나 생성자에 `read` 옵션을 전달
 3. 불변 데이터 구조: 생성 시에만 데이터 주입
+
+## 출처
+
+- [ECMAScript Language Specification, Promise.withResolvers](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise.withresolvers)
+- [ECMAScript Language Specification, Promise.prototype.finally](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise.prototype.finally)
+- [Node.js, Implementing a readable stream](https://nodejs.org/api/stream.html#readable_readsize)

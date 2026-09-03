@@ -18,10 +18,11 @@ SCD(Slowly Changing Dimension)는 **시간이 지남에 따라 천천히 변하�
 | **Type 1** | 덮어쓰기 (UPDATE) | 불가 |
 | **Type 2** | **새 행 추가 + 유효 기간** | **가능 (모든 이력)** |
 | **Type 3** | 컬럼 추가 (이전값/현재값) | 일부 (직전 1회) |
-| **Type 4** | 별도 History 테이블 분리 | 가능 |
+| **Type 4** | 미니 차원 분리 (급변 속성 그룹을 별도 차원으로) | 가능 (팩트에 두 차원 키 적재) |
 | **Type 6** | 1+2+3 하이브리드 | 가능 + 현재값 빠른 조회 |
+| 별도 이력 테이블 | Kimball 번호 체계 밖의 현재, 이력 분리 모델 | 가능 |
 
-대다수 실무 분석 파이프라인에서 **Type 2가 기본**. 단순 마스터 테이블은 Type 1, 핫 데이터와 이력을 분리하고 싶으면 Type 4.
+대다수 실무 분석 파이프라인에서 **Type 2가 기본**. 단순 마스터 테이블은 Type 1, 핫 데이터와 이력을 물리적으로 나누고 싶으면 별도 이력 테이블을 검토한다. 급변 속성 묶음을 별도 차원으로 떼려면 Type 4를 쓴다.
 
 ## Type 2의 핵심 컬럼
 
@@ -174,6 +175,7 @@ MySQL 커넥터의 `source.ts_ms`는 소스 DB에서 변경이 만들어진 시�
 - [Debezium, Debezium connector for MySQL](https://debezium.io/documentation/reference/stable/connectors/mysql.html)
 - [PostgreSQL 18 Documentation, BRIN Indexes](https://www.postgresql.org/docs/current/brin.html)
 - [PostgreSQL 18 Documentation, Partial Indexes](https://www.postgresql.org/docs/current/indexes-partial.html)
+- [Kimball Group, Slowly Changing Dimension Type 4](https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/type-4-mini-dimension/)
 
 ## 관련 문서
 - [[CDC-Debezium|CDC, Debezium]]

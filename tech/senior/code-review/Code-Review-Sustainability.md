@@ -3,6 +3,7 @@ tags: [senior, code-review, sustainability, business, leadership, automation]
 status: done
 category: "Senior - 코드 리뷰"
 aliases: ["Code Review Sustainability", "코드 리뷰 정착", "코드 리뷰 비즈니스 정당화", "지속가능한 코드 리뷰"]
+verified_at: 2026-09-03
 ---
 
 # 코드 리뷰의 정당화와 지속 (Sustainability)
@@ -26,14 +27,15 @@ aliases: ["Code Review Sustainability", "코드 리뷰 정착", "코드 리뷰 �
 
 ## 비즈니스 언어로 품질을 설명한다
 
-"좋은 코드가 필요합니다"만으로는 경영진, 다른 직군을 설득하기 어렵다. 비즈니스가 이해하는 지표로 번역한다. 네 가지 배포 성과 지표(DORA)가 공통 언어다.
+"좋은 코드가 필요합니다"만으로는 경영진, 다른 직군을 설득하기 어렵다. 비즈니스가 이해하는 지표로 번역한다. 현재 DORA의 다섯 가지 소프트웨어 전달 성과 지표가 공통 언어다.
 
 | 지표 | 의미 |
 |---|---|
 | **변경 처리 시간 (Lead Time)** | 코드 변경이 배포되기까지 걸리는 시간 |
 | **배포 빈도 (Deployment Frequency)** | 얼마나 자주 배포하는가 |
-| **장애 복구 시간 (MTTR)** | 장애에서 복구하는 데 걸리는 시간 |
+| **실패 배포 복구 시간 (Failed Deployment Recovery Time)** | 즉시 개입이 필요한 실패 배포에서 복구하는 데 걸리는 시간 |
 | **배포 실패율 (Change Failure Rate)** | 배포가 장애로 이어지는 비율 |
+| **배포 재작업률 (Deployment Rework Rate)** | 계획되지 않은 수정 배포가 차지하는 비율 |
 
 코드 리뷰의 가치는 "개발자가 좋아해서"가 아니라 **"더 빠르고 안정적으로 변경하기 위해서"**다. 리뷰는 이 지표들을 개선하는 수단으로 설명해야 예산과 시간을 확보한다 → [[Software-Productivity-Measurement|소프트웨어 생산성 측정의 함정]].
 
@@ -63,7 +65,7 @@ aliases: ["Code Review Sustainability", "코드 리뷰 정착", "코드 리뷰 �
 ## 면접 포인트
 
 Q. 코드 리뷰의 가치를 비개발 직군에 어떻게 설득하나?
-- DORA 4지표(변경 처리 시간, 배포 빈도, MTTR, 배포 실패율)로 번역한다. 리뷰는 "더 빠르고 안정적으로 변경하기 위한 수단"이지 개발자 취향이 아니다.
+- DORA 5개 지표(변경 처리 시간, 배포 빈도, 실패 배포 복구 시간, 배포 실패율, 배포 재작업률)로 번역한다. 리뷰는 "더 빠르고 안정적으로 변경하기 위한 수단"이지 개발자 취향이 아니다.
 
 Q. 리뷰에서 갈등이 격해지면?
 - 위험 신호(공격적/반복 반박)를 감지하면 온라인 댓글을 멈추고 직접 대화로 옮긴다. 안 풀리면 리더 에스컬레이션. 완벽한 코드 하나보다 협업 관계가 우선이다.
@@ -76,6 +78,8 @@ Q. 리뷰 문화를 어떻게 정착시키나?
 
 ## 출처
 
+- [DORA Metrics — 지표 체계](https://dora.dev/guides/dora-metrics-four-keys/)
+- [DORA Metrics History — 명칭과 정의 변경 이력](https://dora.dev/insights/dora-metrics-history/)
 - [지속가능한 소프트웨어 개발을 위한 코드 리뷰 (YouTube)](https://www.youtube.com/watch?v=ssDMIcPBqUE&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=23)
 
 ## 관련 문서

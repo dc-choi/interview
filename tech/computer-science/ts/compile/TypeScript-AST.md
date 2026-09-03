@@ -1,13 +1,14 @@
 ---
 tags: [cs, typescript, compiler, ast, tooling]
 status: done
+verified_at: 2026-09-03
 category: "CS - TypeScript"
 aliases: ["TypeScript AST", "TypeScript 컴파일러", "AST"]
 ---
 
 # TypeScript와 AST
 
-TypeScript 컴파일러는 소스 코드를 **AST(Abstract Syntax Tree)** 로 변환한 뒤 타입을 검사하고 JavaScript로 변환한다. AST는 린터, 코드 변환기, 타입 체커 같은 모든 정적 분석 도구의 공통 기반이며, TS Compiler API로 직접 다룰 수 있다.
+TypeScript 컴파일러는 소스 코드를 **AST(Abstract Syntax Tree)** 로 변환한 뒤 타입을 검사하고 JavaScript로 변환한다. AST는 린터, 코드 변환기, 타입 체커 같은 모든 정적 분석 도구의 공통 기반이다. TypeScript 7.0의 `typescript` 패키지에는 stable compiler API가 없으므로, 현재 직접 다룰 때는 TypeScript 6 호환 패키지 또는 7.0의 비안정 API를 사용해야 한다.
 
 ## 핵심 명제
 
@@ -79,12 +80,16 @@ VariableStatement
 | **TypeScript** | AST → 타입 검사 → 변환 + emit |
 | **Vite/esbuild** | 빠른 파서로 AST → 번들링 |
 | **jscodeshift** | AST 변환으로 대규모 코드 리팩토링 |
-| **tRPC, Prisma** | AST 분석으로 타입 기반 API 생성 |
+| **ts-morph, Typia** | TypeScript AST 분석과 변환, 타입 기반 코드 생성 |
 
-## TS Compiler API — 직접 쓰는 방법
+tRPC는 코드 생성이나 AST 분석 없이 서버 라우터 타입을 클라이언트가 그대로 참조해 타입 안전성을 얻는다. Prisma는 TypeScript AST가 아니라 자체 스키마 언어인 PSL에서 클라이언트를 생성한다.
+
+## TypeScript 6 Compiler API — 직접 쓰는 방법
+
+다음 코드는 TypeScript 6까지의 compiler API 예제다. TypeScript 7.0의 `typescript` 패키지에는 stable API가 없으므로 같은 API가 필요하면 `@typescript/typescript6` 호환 패키지를 사용한다. 7.0에는 `typescript/unstable/ast` 같은 비안정 진입점도 있지만 이후 릴리스에서 바뀔 수 있다.
 
 ```ts
-import * as ts from 'typescript';
+import * as ts from '@typescript/typescript6';
 
 const source = `const x: number = 42;`;
 const sourceFile = ts.createSourceFile(
@@ -123,7 +128,7 @@ visit(sourceFile);
 - **Babel의 AST와 TS의 AST는 다름** — 호환 안 됨. Babel-TS 플러그인이 있긴 하지만 기능 제한
 - **ESLint의 AST는 ESTree 스펙** — TS AST와는 별도. `@typescript-eslint/parser`로 연결
 - **컴파일 시간이 긴 이유** — Type Checker가 프로젝트 전체 심볼을 분석. `tsc --noEmit`으로도 시간이 상당
-- **incremental 빌드의 의미** — `tsBuildInfo`에 AST, 타입 정보를 저장해 재컴파일 시간 단축
+- **incremental 빌드의 의미** — 직전 컴파일의 project graph 정보(파일 목록, 버전과 시그니처, 옵션, 참조 관계, 캐시된 진단)를 `.tsbuildinfo`에 저장해 다음 실행에서 다시 검사하고 emit할 최소 파일 집합을 계산. AST나 타입 자체를 캐시하지는 않음
 
 ## 면접 체크포인트
 
@@ -137,7 +142,9 @@ visit(sourceFile);
 
 ## 출처
 - [velog @chltjdrhd777 — Typescript와 AST](https://velog.io/@chltjdrhd777/Typescript%EC%99%80-AST)
-- [TS AST Viewer](https://ts-ast-viewer.com)
+- [Announcing TypeScript 7.0 — Microsoft](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)
+- [TypeScript TSConfig, incremental](https://www.typescriptlang.org/tsconfig/incremental.html)
+- [tRPC](https://trpc.io/)
 
 ## 관련 문서
 - [[tech/computer-science/ts/타입스크립트(TS)|타입스크립트]]

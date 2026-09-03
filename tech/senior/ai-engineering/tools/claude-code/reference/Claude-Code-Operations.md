@@ -1,7 +1,7 @@
 ---
 tags: [senior, ai, claude-code, cli, ci-cd, cost, troubleshooting]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-09-03
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드 트러블슈팅", "클로드 코드 비용"]
 ---
@@ -29,7 +29,7 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 ## 비용 관리 — 정량 감각
 
 - 활성 사용일 기준 개발자당 평균 약 $13/일, 90%가 $30 이하. 유휴 백그라운드 세션은 세션당 약 $0.04
-- 사고(thinking) 토큰은 화면에 안 보여도 과금된다 (기본 예산 31,999). 에이전트 팀은 팀원이 plan 모드로 돌 때 일반 세션의 약 7배, Fast Mode는 2.5배 속도에 2배 요금 — 세션 도중 켜면 기존 컨텍스트 전체가 비캐시 입력 요금이 되므로 세션 시작 시 켠다
+- 사고(thinking) 토큰은 화면에 안 보여도 출력 토큰으로 과금된다. adaptive reasoning 모델은 effort level로 조절하고, 고정 예산 모델은 `MAX_THINKING_TOKENS`로 상한을 낮출 수 있다. 공식 비용 가이드는 팀원이 plan 모드로 도는 에이전트 팀을 일반 세션 대비 약 7배 토큰으로 안내하며, 실제 사용량은 활성 팀원 수와 실행 시간에 따라 달라진다. Fast Mode는 최대 2.5배 빠른 대신 토큰당 요금이 더 높고, 대화 중 처음 켜면 기존 컨텍스트 전체에 비캐시 입력 요금이 한 번 적용되므로 비용이 중요하면 세션 시작 시 켠다
 - 절감 순서: /clear와 /compact 습관 → 기본 모델 한 단계 낮추고 서브에이전트는 저비용 모델 → 무거운 MCP 대신 gh, aws 같은 CLI → 훅으로 대용량 로그 전처리 → CLAUDE.md 슬림화 + 스킬 분리 ([[LLM-Model-Tiers|티어 라우팅]]과 같은 논리)
 - 팀 관측: OpenTelemetry 메트릭(비용, 토큰, 코드 라인 수)을 팀 속성으로 분해해 대시보드화
 
@@ -59,7 +59,10 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 ## 출처
 
 - [Claude Code 공식 문서, CLI reference](https://code.claude.com/docs/en/cli-usage)
+- [Claude Code 공식 문서, Environment variables](https://code.claude.com/docs/en/env-vars)
 - [Run Claude Code programmatically — bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
+- [Claude Code 공식 문서, Fast mode](https://code.claude.com/docs/en/fast-mode)
+- [Claude Code 공식 문서, Manage costs](https://code.claude.com/docs/en/costs)
 - [클로드 코드 가이드 (레퍼런스 03 기본 사용법, 13 CI/CD, 14 CLI, 16 베스트 프랙티스, 17 트러블슈팅) — WikiDocs](https://wikidocs.net/book/19104)
 
 ## 관련 문서

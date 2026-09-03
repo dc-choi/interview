@@ -1,7 +1,7 @@
 ---
 tags: [testing, load-test, ci, performance]
 status: done
-verified_at: 2026-08-31
+verified_at: 2026-09-03
 category: "테스트&품질(Testing&Quality)"
 aliases: ["Load Test Automation", "부하 테스트 자동화"]
 ---
@@ -20,7 +20,7 @@ k6 공식 자동화 가이드는 실행 지점을 세 갈래로 나눈다.
 | 스케줄 (야간, 정기) | baseline, average-load, stress, spike | 회귀 감지와 추세 기록 |
 | 수동 트리거 | heavy stress, soak | 감독이 필요한 장시간 검증 |
 
-가이드가 제시하는 빈도 예시는 staging 주 2~3회, 릴리스 직전 기간 하루 3회, 프로덕션 주 1회, soak는 분기 1회나 대형 이벤트 전이다.
+가이드가 제시하는 자동 실행 빈도 예시는 staging 주 2~3회, 릴리스 직전 기간 하루 3회, production 주 1회다. 수동 QA 절차 예시는 soak test 분기 1회, heavy stress test는 중요한 계절 이벤트 2개월 전, heavy load test는 주요 release의 pre-release 환경 실행이다.
 
 모든 PR에 전체 부하 시나리오를 거는 구성이 실패하는 지점은 세 가지다.
 

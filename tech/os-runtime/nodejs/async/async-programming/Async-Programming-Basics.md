@@ -39,7 +39,7 @@ window.addEventListener('load', () => {
 ```
 Promise는 비동기 작업의 최종 완료(또는 실패)와 결과값을 나타내는 특수 객체이다.
 
-상태: Pending(대기) → Fulfilled(이행) 또는 Rejected(거부) → Settled(완료)
+상태: Pending(대기) → Fulfilled(이행) 또는 Rejected(거부). Fulfilled와 Rejected를 묶어 Settled라고 부르며 별도의 상태는 아니다.
 ```
 
 ```js
@@ -122,6 +122,10 @@ Promise.resolve().then(() => console.log('Promise'));
 console.log('끝');
 // 출력: 시작 → 끝 → Promise → setTimeout
 ```
+
+## 출처
+
+- [ECMAScript, Properties of Promise Instances](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-properties-of-promise-instances)
 
 ## 관련 문서
 - [[Async-Programming-Patterns|비동기 프로그래밍 — 패턴]]

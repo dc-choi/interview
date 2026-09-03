@@ -61,7 +61,7 @@ container가 update되면 IP는 바뀔 수 있으므로 IP를 고정 저장하�
 
 - `env_file`은 값을 repository 밖으로 분리할 뿐 secret 보호 기능은 아니다. process environment와 inspect 권한에서 보일 수 있다.
 - 이미지 태그 등에 `${TAG:-latest}` 형태의 변수 치환 사용
-- `:-`는 기본값 설정 (변수가 없으면 `latest` 사용)
+- `${TAG:-latest}`의 `:-`는 변수가 없거나 빈 값일 때 기본값을 쓴다. 변수가 설정되지 않았을 때만 기본값을 쓰려면 콜론 없는 `${TAG-latest}`를 사용한다
 - password와 private key는 Compose `secrets`로 필요한 service에만 file mount하고, production에서는 외부 secret manager와 rotation을 연결한다.
 
 ## 배포 패턴
@@ -95,5 +95,6 @@ Q. Health check가 왜 중요한가?
 - [Docker Docs — Control startup order](https://docs.docker.com/compose/how-tos/startup-order/)
 - [Docker Docs — Use secrets in Compose](https://docs.docker.com/compose/how-tos/use-secrets/)
 - [Docker Docs — Restart policies](https://docs.docker.com/engine/containers/start-containers-automatically/)
+- [Docker Docs — Compose interpolation](https://docs.docker.com/reference/compose-file/interpolation/)
 - [비전공자도 이해할 수 있는 Docker 입문/실전 — Compose, JSCODE 박재성 강사](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=227926)
 - [비전공자도 이해할 수 있는 Docker 입문/실전 — Container 간 통신, JSCODE 박재성 강사](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=227941)

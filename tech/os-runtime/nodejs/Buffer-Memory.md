@@ -3,17 +3,19 @@ tags: [runtime, nodejs, buffer, memory]
 status: done
 category: "OS & Runtime"
 aliases: ["Node.js Buffer", "Buffer Memory Management", "Buffer.alloc"]
+verified_at: 2026-09-03
 ---
 
 # Node.js Buffer, Memory Management
 
-`Buffer`는 V8 힙 밖의 **고정 크기 raw 메모리 영역**을 다루는 클래스. 네트워크 소켓, 파일 I/O, 암호화처럼 바이트 단위 데이터를 처리할 때 사용. JS 문자열은 UTF-16/UCS-2 인코딩이라 바이트 정확히 다루기 어려운데, Buffer는 **임의 인코딩의 바이트 시퀀스**를 그대로 표현.
+`Buffer`는 고정 길이 바이트 시퀀스를 다루는 Node.js 클래스다. 네트워크 소켓, 파일 I/O, 암호화처럼 바이트 단위 데이터를 처리할 때 사용한다. Buffer의 backing store는 `process.memoryUsage().arrayBuffers`에 집계되고 그 값은 `external`에도 포함된다. Buffer 객체와 수명 자체는 V8이 관리한다.
 
-## 왜 V8 힙 밖인가
+## 힙과 외부 메모리의 구분
 
-- V8 GC 비용을 피해 **대용량, 고빈도 I/O 처리에 유리**.
-- 대신 **OS 메모리 압박을 직접 받는다** — 누수 시 GC가 도와주지 않음.
-- ES2017+ `ArrayBuffer`/`Uint8Array`와 같은 메모리 모델 — `Buffer`는 `Uint8Array`의 서브클래스.
+- `heapUsed`만 보면 Buffer backing store를 놓칠 수 있다. `arrayBuffers`, `external`, RSS를 함께 보되, `arrayBuffers`를 `external`에 더해 이중 계산하지 않는다.
+- JS 객체가 더 이상 참조되지 않으면 V8 GC가 수명을 관리하지만, 외부 메모리가 큰 워크로드는 프로세스 RSS와 GC 압박을 함께 관찰해야 한다.
+- 작은 할당에는 공유 풀이 사용될 수 있어 개별 `ArrayBuffer`를 많이 추적하는 비용을 줄인다.
+- ES2015에 표준화된 `ArrayBuffer`/`Uint8Array`와 같은 메모리 모델 — `Buffer`는 `Uint8Array`의 서브클래스.
 
 ## 생성 방법
 
@@ -37,20 +39,20 @@ const d = Buffer.from([1, 2, 3, 4]);     // [0x01, 0x02, 0x03, 0x04]
 
 ## 메모리 풀 (`Buffer.poolSize`)
 
-Node.js는 작은 Buffer 할당을 빠르게 하기 위해 **8KB(`Buffer.poolSize` 기본값) 메모리 풀**을 유지. `allocUnsafe`로 풀 크기 절반(4KB) 미만을 요청하면 풀에서 잘라 반환.
+Node.js는 작은 Buffer 할당을 빠르게 하기 위해 메모리 풀을 유지한다. 2026-09-03에 확인한 Node.js v26.8.1 문서는 기본 `Buffer.poolSize`를 65,536바이트(64KiB)로 설명하며, 변경 이력은 Node.js v26.3.0에서 기본값이 8,192에서 65,536바이트로 바뀌었다고 기록한다. 실행 중인 Node 버전의 `Buffer.poolSize`를 확인하고, `allocUnsafe` 요청이 그 절반보다 작을 때 풀 슬라이스가 사용된다고 본다.
 
 ```ts
-console.log(Buffer.poolSize);              // 8192
+console.log(Buffer.poolSize);              // Node.js v26.8.1 문서 기준 65536
 const small = Buffer.allocUnsafe(100);     // 풀에서 슬라이스
-const large = Buffer.allocUnsafe(9000);    // 별도 할당
+const large = Buffer.allocUnsafe(40000);   // 별도 할당
 ```
 
 | 크기 | 동작 | 비용 |
 |------|------|------|
-| ≤ poolSize/2 (4KB) | 풀 슬라이스 | 매우 저렴 |
-| > poolSize/2 | malloc 직접 | 비싸지만 단편화 X |
+| < poolSize/2 (현재 문서 기준 32KiB) | 풀 슬라이스 가능 | 작은 할당의 오버헤드 감소 |
+| ≥ poolSize/2 | 별도 할당 | 풀을 장기 점유하지 않음 |
 
-`alloc` 또는 `allocUnsafeSlow`는 **풀을 쓰지 않음** — 영속성 길게 갈 Buffer는 풀 슬라이스를 들고 있으면 풀 전체가 GC 안 됨 → 메모리 잔존. 장기 보관 Buffer는 `allocUnsafeSlow`로.
+`Buffer.allocUnsafe()`, `Buffer.from(string|array)`, `Buffer.concat()`은 작은 요청에서 풀을 사용할 수 있다. `alloc`과 `allocUnsafeSlow`는 풀을 쓰지 않는다. 장기 보관하는 작은 Buffer가 풀 슬라이스를 계속 참조하면 풀 전체가 오래 남을 수 있으므로, 실제 보관 패턴을 측정한 뒤 `allocUnsafeSlow`와 복사본을 검토한다.
 
 ## 조작
 
@@ -80,7 +82,7 @@ const slice = buf.subarray(0, 3);   // 같은 메모리 공유 (zero-copy)
 slice[0] = 0xff;                    // 원본도 변경됨
 ```
 
-Node.js v17+에서 `Buffer.prototype.slice`는 **deprecated** — `subarray` 사용. 둘 다 zero-copy지만 slice는 의미가 헷갈림(다른 언어에서는 복사인 경우 많음).
+`Buffer.prototype.slice`는 Node.js v17.5.0, v16.15.0부터 deprecated다. `subarray`를 사용한다. 둘 다 zero-copy지만 `slice`는 `TypedArray.prototype.slice()`의 복사 의미와 달라 혼동하기 쉽다.
 
 ## 메모리 누수 패턴 — Buffer 특화
 
@@ -94,13 +96,13 @@ Node.js v17+에서 `Buffer.prototype.slice`는 **deprecated** — `subarray` 사
 - **`Buffer.from(string)`에 인코딩 누락** → 기본 `utf8` 가정. 멀티바이트 텍스트 길이 헷갈림 (`length`는 바이트, 문자 수 아님).
 - **`buf.length`를 문자 수로 착각** → 바이트 수. 문자열로 변환 후 `.length`.
 - **Buffer 비교에 `==`** → 객체 동등성 X. `Buffer.compare(a, b)` 또는 `a.equals(b)`.
-- **TypeScript에서 `Buffer | Uint8Array` 혼용** → API에 따라 동작 다를 수 있음. v8+ 표준은 `Uint8Array` 우선.
+- **TypeScript에서 `Buffer | Uint8Array` 혼용** → API별로 Buffer 전용 동작이 다를 수 있다. Buffer 전용 기능이 필요 없으면 `Uint8Array` 기준 API를 우선 검토.
 
 ## 면접 체크포인트
 
-- Buffer가 V8 힙 밖에 있는 이유 — GC 회피, 대용량 I/O 효율
+- Buffer의 외부 backing store와 JS 객체 수명, 메모리 지표의 차이
 - `alloc` vs `allocUnsafe` 차이와 보안 함정
-- `Buffer.poolSize` (기본 8KB)와 풀 슬라이스 동작 — 장기 보관 시 함정
+- `Buffer.poolSize`의 버전별 기본값과 풀 슬라이스 동작 — 장기 보관 시 함정
 - `subarray`의 zero-copy 의미 — 같은 메모리 공유
 - `Buffer`가 `Uint8Array`의 서브클래스라는 점
 - 인코딩(utf8, hex, base64) 선택 기준
@@ -113,3 +115,9 @@ Node.js v17+에서 `Buffer.prototype.slice`는 **deprecated** — `subarray` 사
 - [[V8-Array-Internals|V8 배열 내부 구현 (ArrayBuffer, Typed Array)]]
 - [[Stream-Types|Stream Types (Buffer chunk)]]
 - [[Debugging-Profiling-Memory|메모리 진단, 프로파일링]]
+
+## 출처
+
+- [ECMAScript 2015, ArrayBuffer Objects](https://262.ecma-international.org/6.0/#sec-arraybuffer-objects)
+- [Node.js, Buffer](https://nodejs.org/api/buffer.html)
+- [Node.js, Process memoryUsage](https://nodejs.org/api/process.html#processmemoryusage)

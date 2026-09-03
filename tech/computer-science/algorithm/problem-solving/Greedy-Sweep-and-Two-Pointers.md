@@ -69,8 +69,8 @@ deadline과 reward 문제는 event를 deadline 순으로 훑으며 지금까지 
 - 인프런, 큰돌 강사, [5-J](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100405), [5-Q](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100412), [5-Z](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100421), [6-F 그리디를 이용한 풀이](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=152628), [6-L](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100958)
 - 인프런, 큰돌 강사, [7-Y 최대값풀이](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100988), [8-T](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=101073)
 
-- [Princeton Algorithms, greedy algorithms](https://algs4.cs.princeton.edu/lectures/keynote/64GreedyAlgorithms.pdf)
-- [NIST DADS, sweep line](https://xlinux.nist.gov/dads/HTML/sweepline.html)
+- [Princeton Algorithms, minimum spanning trees](https://algs4.cs.princeton.edu/lectures/keynote/43MinimumSpanningTrees-2x2.pdf)
+- [Princeton Algorithms, geometric search](https://algs4.cs.princeton.edu/lectures/keynote/99GeometricSearch-2x2.pdf)
 
 ## 관련 문서
 

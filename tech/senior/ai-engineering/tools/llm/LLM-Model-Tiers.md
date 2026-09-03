@@ -1,7 +1,7 @@
 ---
 tags: [senior, ai, llm, cost, model-selection]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-03
 category: "Senior - AI 엔지니어링"
 aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model Routing"]
 ---
@@ -60,12 +60,12 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 
 ## 사례
 
-2026년 6월 OpenAI는 GPT-5.6 세대를 Sol(플래그십, 최상위 추론, ultra 모드), Terra(균형형, 직전 세대 수준 성능을 약 2배 싸게), Luna(저비용형)의 3티어로 공개했다. 출시 초기에는 미국 정부와 계획을 공유한 뒤 약 20곳의 신뢰 파트너에게만 API, 코딩 도구로 한정 개방하고, 출시 전 70만 A100 시간 이상의 자동 레드팀 테스트를 거쳤다고 밝혔다. 3단 티어 구조와 프런티어 단계적 출시가 함께 나타난 사례다.
+2026년 6월 OpenAI는 GPT-5.6 세대를 Sol(플래그십), Terra(균형형, 직전 세대 수준 성능을 약 2배 싸게), Luna(저비용형)의 3티어로 공개했다. 출시 초기에는 미국 정부와 계획을 공유한 뒤 약 20곳의 신뢰 파트너에게만 API, 코딩 도구로 한정 개방하고, 출시 전 70만 A100 시간 이상의 자동 레드팀 테스트를 거쳤다고 밝혔다. 3단 티어 구조와 프런티어 단계적 출시가 함께 나타난 사례다. 세 모델 모두 `none`부터 `max`까지 같은 추론 수준을 지원하므로 Sol을 구분하는 것은 추론 강도 게이팅이 아니라 성능과 단가다. `ultra`는 GPT-5.6 API 기능이 아니라 Codex 실행 모드다.
 
 - **명명 체계 명시화**: 숫자 = 모델 세대, Sol/Terra/Luna = 독립 개발 주기를 갖는 지속적 성능 등급 — 티어 구조가 브랜드 규칙으로 고정됨
 - **출시 당시 가격 (2026-06, 1M 토큰)**: Sol 입력 $5 / 출력 $30, Terra $2.50 / $15, Luna $1 / $6. 이후 가격은 바뀔 수 있는 출시 스냅샷이다.
 - **현재 공식 가격 (2026-08-26 확인, 1M 토큰)**: Sol 입력 $4 / 출력 $20, Terra $2 / $12, Luna $0.20 / $1.20. Luna처럼 티어 간 차이가 절반보다 훨씬 큰 경우도 있으므로 공식 가격을 다시 확인한다.
-- **추론 모드 게이팅**: 더 깊은 max 추론 수준, 하위 에이전트 병렬로 단일 에이전트 한계를 넘는 ultra 모드 도입
+- **추론과 실행 모드**: `max` 추론과 Responses API의 Multi-agent 베타는 Sol, Terra와 Luna 모두 지원한다. 품질 우선의 별도 API 실행 모드는 `reasoning.mode: "pro"`이고, Codex의 `ultra`와 구분한다
 - **캐싱 요금 구조 변화**: 명시적 캐시 중단 지점 + 최소 30분 유지, **캐시 쓰기가 기본 입력의 1.25배 과금**(읽기는 90% 할인 유지) — 캐시를 쓸수록 무조건 이득이 아니라 재사용률이 손익분기를 정하는 구조로
 - **서드파티 고속 서빙**: 전용 하드웨어 사업자(Cerebras)를 통한 초당 750토큰 제공 — 서빙 속도가 별도 경쟁 축으로 분리
 
@@ -82,4 +82,6 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - [Previewing GPT-5.6 Sol: a next-generation model — OpenAI](https://openai.com/index/previewing-gpt-5-6-sol/)
 - [차세대 모델 GPT-5.6 Sol 미리 살펴보기 (한국어판) — OpenAI](https://openai.com/ko-KR/index/previewing-gpt-5-6-sol/)
 - [OpenAI API, Compare models](https://developers.openai.com/api/docs/models/compare) (2026-08-26 가격 확인)
+- [OpenAI API, GPT-5.6 모델 가이드](https://developers.openai.com/api/docs/guides/latest-model)
+- [OpenAI API, GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna)
 - [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격)

@@ -29,7 +29,7 @@ AWS 거버넌스, 감사의 두 축. **CloudTrail**은 "**누가** 무엇을 했
 
 1. **이벤트 기록(Event History)**: 각 리전에서 조회하는 **최근 90일의 관리 이벤트**. Trail 생성 여부와 무관하게 제공.
 2. **Trail(추적)**: S3, CloudWatch Logs로 이벤트를 **장기 보관**. 리전 단위 또는 멀티 리전.
-3. **Insights 이벤트**: 활성화한 Trail이나 event data store에서 관리 이벤트의 비정상 활동을 분석하는 선택 기능. 분석 범위와 추가 비용을 확인.
+3. **Insights 이벤트**: 2026-09-03 AWS 문서 기준, 활성화한 Trail이나 event data store에서 관리 이벤트와 데이터 이벤트의 비정상 호출률, 오류율을 분석하는 선택 기능. 관리 이벤트 Insights는 두 저장 방식 모두 지원하지만 데이터 이벤트 Insights는 Trail에서만 지원한다. 추가 비용을 확인.
 4. **Lake**: CloudTrail 이벤트를 SQL로 질의하는 매니지드 데이터 레이크.
 
 ### 이벤트 유형
@@ -38,7 +38,7 @@ AWS 거버넌스, 감사의 두 축. **CloudTrail**은 "**누가** 무엇을 했
 |------|------|------|
 | **Management Event** | 리소스 생성, 삭제, 설정 변경 (제어 평면) | 활성 |
 | **Data Event** | S3 객체 GetObject, Lambda Invoke 등 (데이터 평면) | **비활성** (양, 비용 큼) |
-| **Insights Event** | Write API 이상 호출 | 별도 활성 |
+| **Insights Event** | 관리, 데이터 이벤트의 호출률과 오류율 이상. 관리 이벤트의 call rate는 write 호출, error rate는 read와 write 호출을 분석 | 별도 활성 |
 
 데이터 이벤트는 양이 폭주하므로 **꼭 필요한 버킷, 함수만** 선택 활성화.
 
@@ -122,7 +122,7 @@ Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 - CloudTrail = **API/활동 로그** (누가) / Config = **리소스 구성 상태** (무엇이)
 - CloudTrail 이벤트 기록은 자동, 보존 **90일** — 장기 보관은 **Trail → S3**
 - **Management Event vs Data Event** 구분과 Data Event가 기본 비활성인 이유
-- **Insights Event**는 Write API의 비정상 호출 탐지
+- **Insights Event**는 관리, 데이터 이벤트의 호출률과 오류율 이상 탐지. 관리 이벤트의 call rate는 write, error rate는 read/write 호출을 분석하며 데이터 이벤트 Insights는 Trail에서만 지원
 - **Organization Trail**: 조직 내 모든 계정 단일 수집
 - **Config Rule**: 변경 트리거 vs 주기 트리거, Managed vs Custom
 - **Conformance Pack**: 컴플라이언스 묶음 배포
@@ -136,6 +136,7 @@ Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 - [CloudTrail 요금 이해](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-costs.html)
 - [AWS Config 작동 방식](https://docs.aws.amazon.com/config/latest/developerguide/how-does-config-work.html)
 - [AWS Config Managed Rules 목록](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html)
+- [CloudTrail Insights 이벤트 로깅](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-insights-events-with-cloudtrail.html)
 
 ## 관련 문서
 

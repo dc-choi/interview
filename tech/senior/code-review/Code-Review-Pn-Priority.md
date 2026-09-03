@@ -3,6 +3,7 @@ tags: [senior, code-review, priority, communication, pn-rule]
 status: done
 category: "시니어역량(SeniorEngineer)"
 aliases: ["Code Review Pn Priority", "Pn 룰", "코드 리뷰 우선순위 체계"]
+verified_at: 2026-09-03
 ---
 
 # Pn 룰, 코드 리뷰 우선순위 체계
@@ -79,9 +80,10 @@ P5: 이 리팩터링 정말 좋네요 👍
 
 ### `nit:`, `MUST:` 태그
 
-- Google, Meta에서 사용하는 2단계 축약
-- `nit:` = 사소, `MUST:` = 필수 반영
-- Pn은 **5단계로 더 세밀**
+- 팀에 따라 쓰는 2단계 축약 관행
+- `nit:` = 사소, `MUST:` = 필수 반영으로 팀이 정의할 수 있음
+- Google 공식 리뷰 가이드는 `Nit:`, `Optional:` 또는 `Consider:`, `FYI:`의 3종 라벨을 제시하며 `MUST:`를 정의하지 않는다
+- Pn은 이보다 **5단계로 더 세밀**
 
 ### 이모지 기반
 
@@ -133,6 +135,7 @@ P5: 이 리팩터링 정말 좋네요 👍
 
 ## 출처
 - [뱅크샐러드 기술 블로그 — 코드 리뷰 문화, Pn 룰](https://blog.banksalad.com/tech/banksalad-code-review-culture/#커뮤니케이션-비용을-줄이기-위한-pn-룰)
+- [Google Engineering Practices — 코드 리뷰 코멘트 작성](https://google.github.io/eng-practices/review/reviewer/comments.html)
 
 ## 관련 문서
 - [[Code-Review-Culture|생산적 코드 리뷰 문화]]

@@ -91,7 +91,7 @@ catch-up 배수 5와 egress 0.1MB/s를 기본값으로 잡으면, egress 0.1MB/s
 ## 출처
 
 - [채널톡 — 카프카 파티션 개수, 어떻게 정할까](https://tech.channel.io/ko/articles/17439f55)
-- [Apache Kafka Documentation — Modifying topics](https://kafka.apache.org/documentation/#basic_ops_modify_topic)
+- [Apache Kafka 4.3 Documentation, Modifying topics](https://kafka.apache.org/43/operations/basic-kafka-operations/#modifying-topics)
 
 ## 관련 문서
 

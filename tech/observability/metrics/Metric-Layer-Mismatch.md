@@ -21,7 +21,7 @@ aliases: ["Metric Layer Mismatch", "메트릭 측정 레이어", "CloudWatch vs 
 | 보는 것 | vCPU가 **실제 실행된 시간** | idle이 아닌 모든 시간 |
 | iowait 포함? | **아니오** (CPU 실행 아님) | **예** (non-idle로 분류) |
 | user / system / irq | 포함 | 포함 |
-| 기본 수집 주기 | 1분 | 5~15초 (설정값) |
+| 기본 수집 주기 | 2026-09-03 AWS 문서 기준 5분, detailed monitoring을 활성화하면 1분 | 5~15초 (설정값) |
 
 핵심: **iowait를 CPU로 보느냐 마느냐.** CPU 코어는 실제로 일을 안 하고 디스크 응답만 기다리고 있는 상태가 iowait인데, 정의가 갈린다.
 
@@ -91,7 +91,7 @@ CPU만의 문제가 아니다. **모든 메트릭은 측정 레이어를 함께 
 | **메모리** | CloudWatch(외부에서 못 봄, 미공개) vs node_exporter(`MemAvailable` 정확) — CloudWatch는 기본 메모리 메트릭이 없어 CWAgent 별도 필요 |
 | **디스크** | CloudWatch(EBS volume 단위) vs OS(파일시스템, 마운트 단위) — 볼륨이 100% 차도 마운트는 정상일 수 있음 |
 | **네트워크** | ENI 통계 vs OS `/proc/net/dev` — TCP 재전송, 드롭은 OS 레벨에서만 보임 |
-| **컨테이너 CPU** | ECS/Fargate Service Insights vs cgroup — Throttle 횟수는 cgroup에만 |
+| **컨테이너 CPU** | ECS/Fargate CloudWatch Container Insights vs cgroup — Throttle 횟수는 cgroup에만 |
 | **JVM 메모리** | OS RSS vs JMX heap — heap이 여유 있어도 OS는 OOM kill 가능 |
 
 ## 두 수치를 비교하기 전에 맞출 것
@@ -130,6 +130,8 @@ CPU만의 문제가 아니다. **모든 메트릭은 측정 레이어를 함께 
 
 ## 출처
 - [딤섬뮨 — 같은 CPU, 다른 값: CloudWatch는 0%, Grafana는 100%였던 이유](https://sienna1022.tistory.com/entry/%EA%B0%99%EC%9D%80-CPU-%EB%8B%A4%EB%A5%B8-%EA%B0%92-CloudWatch%EB%8A%94-0-Grafana%EB%8A%94-100%EC%98%80%EB%8D%98-%EC%9D%B4%EC%9C%A0)
+- [Amazon EC2, View metrics](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html)
+- [Amazon CloudWatch, Container Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html)
 
 ## 관련 문서
 - [[Incident-Detection-Logging|장애 감지와 로깅/메트릭 (GPL 스택 비교, 정적 임계 경보와 SLO 개선)]]

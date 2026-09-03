@@ -1,7 +1,7 @@
 ---
 tags: [senior, ai, claude-code, hooks, subagent, skills, plugin, mcp]
 status: done
-verified_at: 2026-08-25
+verified_at: 2026-09-03
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Extension Reference", "클로드 코드 확장 메커니즘", "훅 레퍼런스", "스킬 레퍼런스"]
 ---
@@ -27,7 +27,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - 매처: `*`는 전체, 영숫자와 `|`는 정확 문자열 목록, 그 외 문자가 섞이면 unanchored 정규식 — `Edit.*`가 NotebookEdit에도 매칭되는 함정이 있어 `^...$` 앵커 권장. MCP 도구는 `mcp__server__.*` 형식
 - 타입 5종: command(셸 없이 spawn하는 exec form 권장), prompt(단일 턴 LLM 판단, 기본 Haiku 30초), agent(도구를 쓰는 다중 턴 검증, 60초), http(웹훅), mcp_tool
 - **exit code는 2만 차단한다** — 1은 비차단 에러로 그냥 진행된다 (가장 흔한 실수). PreToolUse의 2는 차단 + stderr가 Claude에 피드백되고, Stop의 2는 종료를 되돌린다(un-stop)
-- JSON 출력: permissionDecision(우선순위 deny > defer > ask > allow), updatedInput(도구 인자 교체), updatedToolOutput(결과 교체), additionalContext(컨텍스트 주입 — 명령형이 아니라 사실 진술체로 써야 한다, 명령형은 인젝션 방어에 걸린다). exit 2와 JSON 동시 사용 금지(JSON 무시됨)
+- JSON 출력: permissionDecision(우선순위 deny > defer > ask > allow), updatedInput(도구 인자 교체), updatedToolOutput(결과 교체), additionalContext(컨텍스트 주입 — 명령형이 아니라 사실 진술체로 써야 한다, 명령형은 인젝션 방어에 걸린다). 한 훅에는 exit code 방식이나 exit 0과 JSON 방식 중 하나만 쓰는 편이 안전하다. Exit 2와 JSON을 섞어도 유효한 stdout JSON은 읽히지만 JSON의 `allow`로 차단을 되돌릴 수 없고, `Elicitation`과 `ElicitationResult`의 `hookSpecificOutput`은 예외다
 - 기본 타임아웃: command 600초, prompt 30초, agent 60초. `@` 파일 참조는 PreToolUse를 발화시키지 않는다 — 파일 차단은 권한 규칙으로
 
 ## 서브에이전트 — 컨텍스트 격리 위임
@@ -35,7 +35,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - 정의: `.claude/agents/*.md` 프론트매터 — name, description(위임 판단 기준, "use proactively"로 능동 위임 유도), tools, model(기본 inherit), permissionMode, maxTurns, memory, isolation: worktree 등. 본문이 시스템 프롬프트
 - 스코프 우선순위: Managed > CLI > 프로젝트 > 사용자 > 플러그인. 플러그인 에이전트는 hooks, mcpServers, permissionMode가 보안상 무시된다
 - 호출: description 기반 자동 위임, `@agent-이름` 강제 지정, `claude --agent`로 메인 스레드 자체를 에이전트화
-- 제약: 중첩 최대 5단계, 부모가 bypassPermissions면 프론트매터 permissionMode 무시, 기본 백그라운드 실행. 영구 메모리는 스코프별 agent-memory (첫 200줄/25KB만 로드)
+- 제약: 중첩 기본 한도는 메인 대화 아래 3계층이다. `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`로 조정하고 `1`이면 중첩을 끈다. 부모가 `bypassPermissions`면 프론트매터 `permissionMode`는 무시된다. 영구 메모리는 스코프별 agent-memory를 사용하고 첫 200줄 또는 25KB만 로드한다
 - 포크 서브에이전트(실험적): 대화 전체와 도구를 상속하고 프롬프트 캐시를 공유해 저렴 — 빈 컨텍스트에서 시작하는 격리 서브에이전트와 정반대 트레이드오프
 - 에이전트 팀(실험적): 리드 에이전트가 피어 세션을 감독하며 팀원 간 메시징 + 공유 태스크로 조율. 팀원이 plan 모드로 돌면 일반 세션 대비 약 7배 토큰이고, 토큰은 활성 팀원 수와 각 팀원의 실행 시간에 비례해 증가. 팀원끼리 같은 파일을 편집하면 덮어쓰기가 나므로 파일 영역 분담이 필수 (워크트리 격리는 별도 수동 방식). 대화가 조율할 규모를 넘는 대량 fan-out은 [[Claude-Code-Dynamic-Workflows|동적 워크플로우]]
 
@@ -74,6 +74,8 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 - [클로드 코드 가이드 (레퍼런스 08 MCP, 09 훅, 10 서브에이전트, 11 스킬, 18 플러그인) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code Docs, Orchestrate teams of Claude Code sessions](https://code.claude.com/docs/en/agent-teams)
+- [Claude Code Docs, Hooks](https://code.claude.com/docs/en/hooks)
+- [Claude Code Docs, Create custom subagents](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code Docs, Manage costs (agent team token costs)](https://code.claude.com/docs/en/costs)
 - [Claude Code Docs, Extend Claude with skills](https://code.claude.com/docs/en/skills)
 - [Agent Skills, Specification](https://agentskills.io/specification)

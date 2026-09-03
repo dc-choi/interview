@@ -64,7 +64,7 @@ Docker 지원 플랫폼에 `Dockerfile` 또는 플랫폼이 요구하는 구성�
 ## 선택 기준
 
 - 전통적인 웹 애플리케이션을 AWS 인프라 제어권을 유지하며 빠르게 배포하면 Beanstalk가 맞을 수 있다.
-- 소스나 단일 컨테이너에서 더 높은 추상화가 필요하면 [[App-Runner|App Runner]], 컨테이너 오케스트레이션 제어가 필요하면 [[ECS]]를 비교한다.
+- 소스나 단일 컨테이너에서 더 높은 추상화가 필요하면 Amazon ECS Express Mode를, 컨테이너 오케스트레이션 제어가 필요하면 [[ECS]]를 비교한다. [[App-Runner|App Runner]]는 신규 고객 온보딩이 종료돼 기존 고객만 사용할 수 있다.
 - 플랫폼 커스터마이징이 계속 늘어 Beanstalk 동작을 우회하는 스크립트가 중심이 되면 직접 관리형 컨테이너나 IaC 구성이 더 명확할 수 있다.
 
 ## 출처
@@ -74,6 +74,7 @@ Docker 지원 플랫폼에 `Dockerfile` 또는 플랫폼이 요구하는 구성�
 - [AWS Elastic Beanstalk — Configuration files](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/ebextensions.html)
 - [AWS Elastic Beanstalk — Platform hooks](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/platforms-linux-extend.hooks.html)
 - [AWS Elastic Beanstalk — Pricing](https://aws.amazon.com/elasticbeanstalk/pricing/)
+- [AWS App Runner Developer Guide, Availability change](https://docs.aws.amazon.com/apprunner/latest/dg/apprunner-availability-change.html)
 - [Sungmin Kim 강사 — Elastic Beanstalk란?](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=81291)
 - [Sungmin Kim 강사 — Elastic Beanstalk 웹 애플리케이션 배포](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=81292)
 - [Sungmin Kim 강사 — Web Application Update](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=81293)

@@ -1,7 +1,7 @@
 ---
 tags: [java, syntax, primitive-type, array, control-flow, jvm]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Syntax and Types", "Java 문법과 타입"]
 ---
@@ -74,7 +74,7 @@ Java 언어 명세가 보장하는 기본 타입은 다음과 같다.
 ## 타입 변환
 
 - 확대 기본 변환은 보통 더 넓은 범위로 이동하며 암시적으로 허용되지만, `int`에서 `float`처럼 정밀도가 일부 손실될 수도 있다.
-- 축소 기본 변환은 명시적 캐스트가 필요하며 값이 잘리거나 반올림될 수 있다.
+- 축소 기본 변환은 보통 명시적 캐스트가 필요하며 값이 잘리거나 반올림될 수 있다. 다만 대입 문맥에서 대상이 `byte`, `short`, `char` 또는 대응 wrapper이고 우변이 해당 타입으로 표현 가능한 constant expression이면 캐스트 없이 허용된다. 예를 들어 `byte theAnswer = 42;`는 유효하다.
 - 형변환 가능 여부는 메모리 크기 비교가 아니라 Java 언어의 변환 규칙으로 판단한다.
 
 ```java
@@ -145,6 +145,7 @@ int length = scores.length;
 
 - [Java SE 26 Language Specification](https://docs.oracle.com/javase/specs/jls/se26/html/)
 - [JLS 4, Types, Values, and Variables](https://docs.oracle.com/javase/specs/jls/se26/html/jls-4.html)
+- [JLS 5.2, Assignment Contexts](https://docs.oracle.com/javase/specs/jls/se26/html/jls-5.html#jls-5.2)
 - [JLS 10, Arrays](https://docs.oracle.com/javase/specs/jls/se26/html/jls-10.html)
 - [Oracle, JDK 26 Release Notes](https://www.oracle.com/java/technologies/javase/26all-relnotes.html)
 - [jlink, Java SE 26 Tool Specifications](https://docs.oracle.com/en/java/javase/26/docs/specs/man/jlink.html)

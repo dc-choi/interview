@@ -3,6 +3,7 @@ tags: [senior, ai, claude-code, cli, context, permissions]
 status: done
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Fundamentals", "클로드 코드 기초", "권한 모드", "Effort"]
+verified_at: 2026-09-03
 ---
 
 # Claude Code 기초 — 설치, 세션, 모델, 권한, 컨텍스트
@@ -33,7 +34,7 @@ Desktop 앱의 3탭 구분이 핵심: **Chat**(파일 접근 없음, 첨부만),
 
 ## 자율권과 안전 — 단계적 권한
 
-권한 모드를 신뢰 수준에 따라 올린다: **plan → default(매번 승인) → acceptEdits → auto(분류기 백그라운드 검사) → bypassPermissions(위험)**. `Shift+Tab`으로 Normal→Plan→Auto-accept 순환.
+권한 모드를 신뢰 수준에 따라 올린다: **plan → default(매번 승인) → acceptEdits → auto(분류기 백그라운드 검사) → bypassPermissions(위험)**. `Shift+Tab`은 Manual(`default`) → Auto-accept(`acceptEdits`) → Plan → Manual 순으로 순환한다. `auto`에서 시작하면 첫 입력은 `default`로 가고, `bypassPermissions` 같은 선택 모드는 Plan 뒤에 들어간다.
 
 - **Plan Mode 워크플로우**: Plan 전환 → 계획 요청 → 피드백 → 확정 → Normal/Auto-accept 전환 → "계획대로 실행". 실체는 컨텍스트에 "아직 코딩하지 마" 한 줄. **AI 작업의 최대 비용은 코딩 시간이 아니라 방향 수정 시간** — 10분 계획이 2시간 삽질을 막는다
 - `/permissions` 규칙(`Bash(npm run *)` 형식), 우선순위 **Deny > Ask > Allow**
@@ -66,6 +67,7 @@ Desktop 앱의 3탭 구분이 핵심: **Chat**(파일 접근 없음, 첨부만),
 
 ## 출처
 
+- [Claude Code — Permission modes](https://code.claude.com/docs/en/permission-modes)
 - [클로드 코드 가이드 (클래스 101 기초 트랙) — WikiDocs](https://wikidocs.net/book/19104)
 
 ## 관련 문서

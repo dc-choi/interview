@@ -82,15 +82,16 @@ sortedHashes = [h1, h2, h3, ..., hM]   (M = N × V)
 
 | 시스템 | 적용 |
 |--------|------|
-| **Memcached client (libmemcached)** | Consistent Hashing 기본 |
-| **DynamoDB** | Virtual Node 기반 파티셔닝 |
+| **Memcached client (libmemcached-awesome v1.x)** | 기본은 `MEMCACHED_DISTRIBUTION_MODULA`. Consistent Hashing은 별도 설정 |
+| **Dynamo (2007 논문)** | Virtual Node 기반 Consistent Hashing 링 |
+| **DynamoDB (AWS 서비스)** | 파티션 키 해시로 연속 key-range 파티션을 정하고 필요할 때 분할. Consistent Hashing 아님 |
 | **Cassandra** | Token Ring (Consistent Hashing 변형) |
 | **Riak** | Consistent Hashing |
-| **Redis Cluster** | Hash Slot 16384개로 단순화 ([[Redis-Cluster-Sharding]]) |
+| **Redis Cluster** | 고정 16384 Hash Slot 사용. Consistent Hashing 아님 ([[Redis-Cluster-Sharding]]) |
 
 ### Redis Cluster vs Consistent Hashing
 
-Redis Cluster는 **고정 16384 슬롯**을 노드들이 나눠 가짐 — Consistent Hashing의 Virtual Node 개념이지만 슬롯 수가 고정.
+Redis Cluster는 Consistent Hashing 링 대신 `CRC16(key) mod 16384`로 고정 슬롯을 정하고, 각 슬롯을 특정 노드에 명시적으로 할당한다. 노드가 바뀌면 링을 다시 계산하는 것이 아니라 슬롯을 대상 노드로 이동한다.
 
 | 측면 | Consistent Hashing | Redis Cluster Hash Slot |
 |------|-------------------|------------------------|
@@ -99,13 +100,13 @@ Redis Cluster는 **고정 16384 슬롯**을 노드들이 나눠 가짐 — Consi
 | 키 라우팅 | hash → 시계방향 노드 | hash → 슬롯 → 노드 |
 | 운영 단순성 | 복잡 (V 튜닝) | 단순 (고정 슬롯) |
 
-대규모 일반 분산 캐시는 Consistent Hashing, Redis 자체는 Cluster Slot을 쓴다.
+두 방식 모두 노드 변경 시 전체 키를 다시 매핑하지 않도록 설계할 수 있지만 매핑 알고리즘은 다르다. 대규모 일반 분산 캐시는 Consistent Hashing을 쓸 수 있고, Redis Cluster는 고정 Hash Slot을 쓴다.
 
 ## Bounded-Load Consistent Hashing
 
 표준 Consistent Hashing의 약점: **분포 균등** ≠ **부하 균등**. hot 키가 한 노드에 몰리면 그 노드만 과부하.
 
-Bounded-Load는 노드별 **최대 부하 한도** 설정 — 한도 초과 시 다음 노드로 fallback. Google Maglev, HAProxy 등이 채택.
+Bounded-Load는 노드별 **최대 부하 한도** 설정 — 한도 초과 시 다음 노드로 fallback. Google Cloud Pub/Sub과 HAProxy(`hash-balance-factor`) 등이 채택한다. Google Maglev는 룩업 테이블 기반의 별도 알고리즘이다.
 
 ## 흔한 실수
 
@@ -122,12 +123,16 @@ Bounded-Load는 노드별 **최대 부하 한도** 설정 — 한도 초과 시 
 - Hash Ring과 시계방향 매핑 원리
 - Virtual Node가 분포 균등화에 기여하는 방식 (V 값과 표준편차 관계)
 - 키 조회의 시간복잡도 (이진 탐색 O(log M))
-- Redis Cluster의 16384 Hash Slot이 Consistent Hashing의 단순화 변형인 이유
+- Redis Cluster의 16384 Hash Slot과 Consistent Hashing 링의 차이
 - Bounded-Load — 분포 균등 ≠ 부하 균등
-- DynamoDB, Cassandra×Memcached client 사례
+- Dynamo(2007 논문), Cassandra, libmemcached 설정 사례와 DynamoDB 반례
 
 ## 출처
 - [TS Backend Meetup — NestJS 캐싱 전략 정리]
+- [libmemcached-awesome source, default distribution](https://github.com/awesomized/libmemcached/blob/v1.x/src/libmemcached/memcached.cc)
+- [DynamoDB at Amazon — USENIX ATC 2022](https://www.usenix.org/system/files/atc22-elhemali.pdf)
+- [Maglev: A Fast and Reliable Software Network Load Balancer — Google](https://www.usenix.org/system/files/conference/nsdi16/nsdi16-paper-eisenbud.pdf)
+- [Redis Cluster specification](https://redis.io/docs/latest/operate/oss_and_stack/reference/cluster-spec/)
 
 ## 관련 문서
 - [[Cache-Strategies|Cache 전략]]

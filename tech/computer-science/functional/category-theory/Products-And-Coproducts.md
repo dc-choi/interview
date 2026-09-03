@@ -118,7 +118,7 @@ const factorizer = <A, B, C>(
 
 - FP에서 "결제 결과는 성공이거나 실패"는 자연스럽게 `Result<Success, Failure>`
 - OOP에서 같은 것은 보통 `PaymentResult` 추상 클래스 + `Success`/`Failure` 서브클래스 (Visitor 패턴)
-- 후자는 새 case 추가 시 모든 visitor 수정 필요. 전자는 `match`/`switch` 한 곳만 수정 (Expression Problem의 한 면)
+- 후자는 새 case 추가 시 모든 visitor 수정이 필요하다. 전자도 새 case를 추가하면 그 타입을 다루는 모든 `match`와 `switch`를 수정해야 하므로 비용은 대칭이다. FP에서 쉬운 쪽은 case가 아니라 연산 추가이며, sum type의 실익은 exhaustive 검사로 컴파일러가 수정 지점을 모두 잡아준다는 점이다 (Expression Problem의 한 면).
 
 TypeScript 같이 두 패러다임을 다 지원하는 언어는 둘 다 자연스럽게 표현 가능. **discriminated union + exhaustive switch**는 sum type을 안전하게 다루는 핵심 기법 ([[Types-As-Proofs]]).
 
@@ -137,10 +137,11 @@ TypeScript 같이 두 패러다임을 다 지원하는 언어는 둘 다 자연�
 - **Duality**가 한 번의 정의로 두 개념을 만드는 메커니즘 (Initial↔Terminal, Product↔Coproduct)
 - **FP vs OOP**의 비대칭성 — Coproduct 친화 vs Product 친화
 - **Discriminated union vs raw union**의 차이 (진짜 coproduct가 되려면 tag 필요)
-- **Expression Problem**: sum type은 case 추가가 쉬움/연산 추가가 어려움 / 클래스 계층은 그 반대
+- **Expression Problem**: sum type은 연산(함수) 추가가 쉽고 case 추가가 어렵다. 클래스 계층은 서브클래스 추가가 쉽고 연산 추가가 어렵다
 
 ## 출처
 - [evan-moon — 프로그래머를 위한 카테고리 이론 5. Products and Coproducts](https://evan-moon.github.io/2024/02/27/category-theory-for-programmers-5-products-and-coproducts/)
+- [The Expression Problem — Philip Wadler](https://homepages.inf.ed.ac.uk/wadler/papers/expression/expression.txt)
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 일반 개념]]

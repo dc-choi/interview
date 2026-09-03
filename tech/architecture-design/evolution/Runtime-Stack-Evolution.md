@@ -14,10 +14,12 @@ aliases: ["Runtime Stack Evolution", "Netflix Java 진화", "런타임 스택 �
 - 아키텍처 진화는 **문제 해결의 연속** — 각 전환은 이전 방식의 한계를 뚫기 위함
 - **복잡성 관리**가 기술 선택의 일관된 축 (리액티브의 난이도 → GraphQL의 단순성)
 - **표준화**는 자체 프레임워크의 유지 비용을 피하는 전략 (Spring Boot 같은 업계 표준 채택)
-- **언어/런타임 업그레이드만으로도 실질적 성능 개선** 가능 (Java 8→17에서 ~20% CPU 효율 개선)
+- **언어/런타임 업그레이드**는 워크로드에 따라 성능 개선 기회가 될 수 있음 (이 문서의 Java 8→17 약 20% 수치는 2024년 Netflix 자료의 측정치)
 - **개발자 경험(DX)** 이 장기 생산성의 결정 변수
 
 ## Netflix 사례 — 5단계 진화
+
+아래 Netflix 사례와 수치는 2024년 4월 공개된 2차 정리 자료의 당시 스냅샷이다. 2026년 현재의 전사 운영 현황으로 해석하지 않는다.
 
 ### 1단계: BFF with Groovy
 
@@ -45,8 +47,8 @@ aliases: ["Runtime Stack Evolution", "Netflix Java 진화", "런타임 스택 �
 ### 4단계: Java 버전 업그레이드
 
 - Java 8 → 17: **코드 변경 없이 ~20% CPU 효율 개선** (G1 GC 개선)
-- Netflix 규모 = 막대한 비용 절감
-- Java 21 추진: **가상 스레드**(thread-per-request 하드웨어 활용), **ZGC**(짧은 pause), **Record, Pattern Matching**
+- 해당 자료는 Netflix 규모에서 비용 절감 기회가 크다고 설명
+- Java 21 추진: **가상 스레드**, Record와 Pattern Matching 같은 언어 기능, GC 선택지 검토
 
 JVM은 자체 빌드 없이 **Azul Zulu(OpenJDK 빌드)** 사용.
 
@@ -54,9 +56,9 @@ JVM은 자체 빌드 없이 **Azul Zulu(OpenJDK 빌드)** 사용.
 
 - 1년에 걸쳐 **Guice 기반 자체 스택 → Spring Boot로 완전 이전**
 - 선택 이유: 커뮤니티, 문서, 교육 자료, "highly aligned, loosely coupled" 원칙 부합
-- Netflix 인프라 통합을 위한 **Spring Cloud Netflix 모듈**(gRPC, SSO, 분산추적, Eureka, AWS/Titus, Kafka, Cassandra, mTLS)
+- Netflix 사내 인프라 통합용 Spring Boot 확장 묶음과 OSS 프로젝트 **Spring Cloud Netflix**를 구분한다. 2026-09-03에 확인한 Spring Cloud Netflix 공식 문서는 Eureka 기반 서비스 디스커버리를 기능으로 제시한다.
 
-### 현재 스택
+### 2024년 공개 자료 기준 스택
 
 | 항목 | 사양 |
 |---|---|
@@ -102,7 +104,7 @@ JVM은 자체 빌드 없이 **Azul Zulu(OpenJDK 빌드)** 사용.
 
 - **BFF → RxJava → GraphQL Federation** 진화의 각 단계가 해결한 문제
 - **GraphQL Federation**이 BFF를 대체하는 메커니즘 (DGS, 스키마 중심 협업)
-- **Java 버전 업그레이드만으로 20% CPU 절감** 가능한 이유 (GC 개선)
+- **2024년 Netflix 자료에서 제시한 Java 8→17 CPU 효율 개선**을 일반화할 때 워크로드별 측정이 필요한 이유
 - **가상 스레드(Project Loom)** 가 thread-per-request 구조에 주는 의미 ([[Async-vs-Threads]])
 - **자체 프레임워크 → 표준 프레임워크 전환** 의 장기 가치
 - 런타임 전환 결정의 **5가지 공통 기준**
@@ -110,6 +112,10 @@ JVM은 자체 빌드 없이 **Azul Zulu(OpenJDK 빌드)** 사용.
 
 ## 출처
 - [integer.blog — Evolution of Java Usage at Netflix](https://www.integer.blog/evolution-of-java-usage-at-netflix/)
+- [Spring Cloud Netflix, README](https://github.com/spring-cloud/spring-cloud-netflix/blob/main/README.adoc)
+- [Spring Cloud Netflix, Features](https://docs.spring.io/spring-cloud-netflix/reference/spring-cloud-netflix.html)
+- [OpenJDK, JEP 444: Virtual Threads](https://openjdk.org/jeps/444)
+- [Oracle, Java Language Changes in Java SE 21](https://docs.oracle.com/en/java/javase/21/language/java-language-changes-release.html)
 
 ## 관련 문서
 - [[Legacy-Modernization-Strategies|레거시 현대화 전략]]

@@ -1,7 +1,7 @@
 ---
 tags: [architecture, recommendation-system, industry-case-study, media, personalization]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-09-03
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Recommendation System Media Cases", "추천 시스템 미디어 사례"]
 ---
@@ -176,7 +176,7 @@ OTT에 적용할 때 법적, 연령과 안전 제약은 모든 후보 경로에�
 - [Recommending What Video to Watch Next: A Multitask Ranking System — Google Research](https://research.google/pubs/recommending-what-video-to-watch-next-a-multitask-ranking-system/)
 - [YouTube Now: Why We Focus on Watch Time — YouTube Blog](https://blog.youtube/news-and-events/youtube-now-why-we-focus-on-watch-time/)
 - [YouTube 추천 시스템이 콘텐츠를 평가하는 방식 — YouTube 고객 센터](https://support.google.com/youtube/answer/16533387?hl=en-GB)
-- [YouTube 검색 및 탐색 시스템이 동영상을 평가하는 방식 — YouTube 고객 센터](https://support.google.com/youtube/answer/16559650?hl=en)
+- [YouTube 추천 시스템에서의 콘텐츠 실적 이해 — YouTube 고객 센터](https://support.google.com/youtube/answer/16559650?hl=en)
 - [유튜브, 시청시간 긴 영상 우선 노출 — 전자신문, 2020년 역사적 개요](https://www.etnews.com/20201005000062)
 - [Contextual and Sequential User Embeddings for Music Recommendation — ACM](https://doi.org/10.1145/3383313.3412248)
 - [Contextual and Sequential User Embeddings for Music Recommendation — Spotify Research](https://research.atspotify.com/2021/04/contextual-and-sequential-user-embeddings-for-music-recommendation)

@@ -1,7 +1,7 @@
 ---
 tags: [observability, metrics, tracing, exemplar, prometheus, grafana, correlation]
 status: done
-verified_at: 2026-08-21
+verified_at: 2026-09-03
 category: "관측가능성(Observability)"
 aliases: ["Exemplars", "Exemplar", "메트릭-트레이스 연결"]
 ---
@@ -21,7 +21,7 @@ aliases: ["Exemplars", "Exemplar", "메트릭-트레이스 연결"]
 
 이것이 **traceId를 메트릭 라벨에 넣지 않는다**와 **3축을 traceId로 연결한다**가 동시에 성립하는 이유다. 연결의 매개는 라벨이 아니다. 메트릭은 exemplar, 로그는 본문 또는 structured metadata, 트레이스는 자기 자신이 traceId를 들고 있다. [[Cardinality]]
 
-## 노출 형식 — OpenMetrics
+## 노출 형식 — OpenMetrics와 Prometheus Proto
 
 Exemplar는 OpenMetrics 텍스트 형식에서 도입됐다. 스펙상 카운터의 total과 히스토그램, gauge histogram의 버킷 값에 붙을 수 있다. 문법은 값 뒤에 `#`을 두고 라벨셋, 값, 선택적 타임스탬프를 잇는다.
 
@@ -31,7 +31,7 @@ http_request_duration_seconds_bucket{le="0.1"} 8 # {trace_id="a1b2c3"} 0.054 152
 
 - 붙일 수 있는 타입이 제한적이다. Counter total과 Histogram, GaugeHistogram의 버킷이 대상이고 Gauge는 아니다.
 - **exemplar 라벨셋의 라벨 이름과 값 길이 합은 128 UTF-8자를 넘을 수 없다.** traceId와 spanId 정도만 담으라는 제약이다.
-- 노출 자체가 OpenMetrics 형식을 타야 하므로, 클라이언트 라이브러리와 스크레이프 양쪽이 지원해야 한다.
+- exemplar를 실을 수 있는 노출 형식은 OpenMetrics text와 Prometheus Proto 두 가지다. 둘 다 Counter, Histogram, GaugeHistogram의 exemplar를 지원한다. 옛 Prometheus text 0.0.4에는 exemplar가 없고 Prometheus 3.0의 기본 협상은 text protocol을 우선하므로 실무에서는 대개 OpenMetrics로 노출한다. 어느 쪽이든 client library와 scrape 양쪽이 해당 형식을 지원해야 한다.
 
 ## Prometheus에서 켜기
 
@@ -102,7 +102,7 @@ Loki 데이터소스의 **Derived fields**가 같은 역할을 한다. 로그에
 - [Prometheus — Feature flags (exemplar-storage)](https://prometheus.io/docs/prometheus/latest/feature_flags/)
 - [Prometheus — Exposition formats](https://prometheus.io/docs/instrumenting/exposition_formats/)
 - [Grafana — Introduction to exemplars](https://grafana.com/docs/grafana/latest/fundamentals/exemplars/)
-- [Grafana — Configure the Loki data source (Derived fields)](https://grafana.com/docs/grafana/latest/datasources/loki/configure-loki-data-source/)
+- [Grafana — Configure the Loki data source (Derived fields)](https://grafana.com/docs/grafana/latest/datasources/loki/configure/)
 
 ## 관련 문서
 

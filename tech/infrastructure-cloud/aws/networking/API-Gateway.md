@@ -57,12 +57,12 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 - **HTTP / HTTP Proxy** — 외부/내부 HTTP 엔드포인트로 프록시
 - **AWS Service** — DynamoDB, SQS, SNS 등 AWS 서비스 직접 호출 (Lambda 없이도 간단한 PUT/Query 가능)
 - **Mock** — 백엔드 없이 정적 응답. CORS preflight 처리에 활용
-- **VPC Link** — REST API는 NLB를 통해, HTTP API는 ALB, NLB 또는 Cloud Map 서비스를 통해 VPC 내부 리소스에 비공개로 통합한다
+- **VPC Link** — 2026-09-03 AWS 문서 기준, REST API는 VPC link V2로 ALB에 직접 비공개 통합할 수 있다. NLB 전용 VPC link V1은 레거시이며, REST API의 비공개 통합은 Cloud Map을 지원하지 않는다. HTTP API는 ALB, NLB 또는 Cloud Map 서비스를 지원한다
 
 ## 트래픽 제어
 
 - **Throttling** — 계정/스테이지/메서드별로 **rate(rps) + burst bucket** 한도. burst는 token bucket의 순간 요청 흡수 용량이지 동시 실행 수가 아니다. 계정, 리전 기본값은 보통 10,000 rps와 최대 bucket 5,000이지만, 일부 리전은 2,500 rps와 1,250 burst이며 최신 quota는 공식 표를 확인한다.
-- **Usage Plan + API Key (REST API 전용)** — API 키별 분기와 요청 한도를 설정한다. API 키는 인증이나 인가 수단이 아니며 quota와 throttling은 best effort이므로 비용 통제나 접근 차단의 유일한 장치로 쓰면 안 된다
+- **Usage Plan + API Key (REST API와 WebSocket API 지원, HTTP API 미지원)** — API 키별 분기와 요청 한도를 설정한다. WebSocket API는 `$connect` 라우트에서 API 키를 요구하도록 설정해 usage plan과 함께 쓴다. API 키는 인증이나 인가 수단이 아니며 quota와 throttling은 best effort이므로 비용 통제나 접근 차단의 유일한 장치로 쓰면 안 된다
 - **Caching** — 스테이지별로 0.5~237GB 캐시. TTL, 쿼리 파라미터 기반 캐시 키. **REST API 전용** (HTTP API는 미지원)
 - **CORS** — 콘솔에서 활성화 시 OPTIONS 메서드와 헤더 자동 설정
 - **WAF (REST API 전용)** — REST API stage에 Regional WAFv2 Web ACL을 연결해 SQLi, XSS, IP 기반 요청을 필터링한다
@@ -95,7 +95,7 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 - **Authorizer 3가지**(IAM, Lambda, Cognito)와 각 사용처
 - Stage, Deployment, **Canary 배포** 동작 방식
 - **Throttling, Caching, Usage Plan**으로 트래픽/비용 통제
-- **VPC Link** — Gateway에서 사설 NLB로 연결
+- **VPC Link** — Gateway에서 사설 ALB 또는 NLB로 연결. REST API는 VPC link V2로 ALB에 직접 연결하고, HTTP API는 ALB, NLB, Cloud Map을 지원
 - **Mapping Template / VTL** — 요청/응답 변환 (REST API만)
 - API Gateway + CloudFront + WAF + Lambda 조합의 역할 분담
 
@@ -108,6 +108,8 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 - [AWS 공식 문서, Canary release deployments for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/create-canary-deployment.html)
 - [AWS 공식 문서, Usage plans and API keys for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html)
 - [AWS 공식 문서, AWS WAF for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-aws-waf.html)
+- [AWS 공식 문서, API Gateway private integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/private-integration.html)
+- [AWS 공식 문서, WebSocket API routes](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-routes.html)
 
 ## 관련 문서
 - [[AWS-Lambda|AWS Lambda]]

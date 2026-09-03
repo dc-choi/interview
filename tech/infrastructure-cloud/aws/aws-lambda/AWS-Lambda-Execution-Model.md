@@ -60,7 +60,7 @@ Managed Instances는 고객 계정의 EC2 인스턴스에서 실행되며 실행
 
 함수(Function)는 코드 실행을 위해 호출되는 최소 단위 리소스. 다음 4가지로 구성된다.
 
-- **함수 코드** — 실제 실행되는 핸들러. Runtime(Node.js, Python, Java, Go, Ruby, .NET, Custom), IAM 실행 역할, VPC 설정, 메모리 등을 함께 지정
+- **함수 코드** — 실제 실행되는 핸들러. 관리형 Runtime은 Node.js, Python, Java, Ruby, .NET 등을 지원한다. Go와 Rust는 관리형 런타임이 없어 OS-only `provided.al2023` 또는 custom runtime으로 실행한다. IAM 실행 역할, VPC 설정, 메모리 등을 함께 지정한다
 - **계층 (Layer)** — 의존성, 공통 라이브러리, 런타임 확장을 별도 zip으로 분리. 함수당 최대 5개. 패키지 크기 압박 완화, 버전 공유
 - **트리거** — 함수를 발동시키는 이벤트 소스. 종류와 호출 모델은 [[AWS-Lambda-Invocation-Concurrency|트리거 종류와 호출 모델]] 참고
 - **전달 대상 (Destinations)** — 비동기 호출 결과를 후속 서비스로 전달
@@ -73,3 +73,4 @@ Managed Instances는 고객 계정의 EC2 인스턴스에서 실행되며 실행
 - [AWS, Understanding the Lambda Managed Instances execution environment](https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances-execution-environment.html)
 - [AWS, Improving startup performance with Lambda SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html)
 - [AWS, Lambda quotas](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
+- [AWS Lambda Developer Guide, Lambda runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html)

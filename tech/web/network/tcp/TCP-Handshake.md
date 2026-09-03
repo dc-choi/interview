@@ -7,7 +7,7 @@ aliases: ["TCP Handshake", "3-way Handshake", "4-way Handshake"]
 
 # TCP Handshake (3-way, 4-way)
 
-TCP가 **신뢰성 있는 연결**을 만들고 끊는 의식. 연결 시 **3-way**, 종료 시 **4-way**. 면접 단골이자 네트워크 최적화의 기초. 헤더 필드(시퀀스/승인 번호, 플래그)의 의미는 [[TCP-Header]].
+TCP가 **신뢰성 있는 연결**을 만들고 끊는 의식. 연결 수립은 보통 **3-way**, 정상 종료는 보통 4개 세그먼트지만 ACK와 FIN을 합치면 3개가 될 수도 있다. 면접 단골이자 네트워크 최적화의 기초. 헤더 필드(시퀀스/승인 번호, 플래그)의 의미는 [[TCP-Header]].
 
 ## 연결 지향 (Connection Oriented)
 
@@ -52,7 +52,7 @@ Client                           Server
 |---|---|---|
 | 시작 전 | CLOSED | LISTEN |
 | SYN 전송 후 | SYN_SENT | LISTEN |
-| SYN-ACK 수신 후 | SYN_SENT | SYN_RCVD |
+| SYN-ACK 수신 후 | ESTABLISHED | SYN_RCVD |
 | ACK 전송 후 | ESTABLISHED | SYN_RCVD |
 | ACK 수신 후 | ESTABLISHED | ESTABLISHED |
 
@@ -83,7 +83,7 @@ Client                           Server
 4. **ACK**: 클라이언트 "확인"
 
 ### 왜 4번인가
-3-way와 달리 **(2)와 (3)을 합칠 수 없음** — 서버가 받은 FIN 즉시 자기도 끝낼 준비가 안 됐을 수 있으므로 2단계 분리.
+서버가 FIN을 받은 즉시 자기 전송까지 끝낼 준비가 안 됐으면 (2) ACK와 (3) FIN을 분리하므로 보통 4개 세그먼트가 필요하다. 이미 끝낼 준비가 됐다면 ACK와 FIN을 한 FIN+ACK 세그먼트로 합칠 수 있어 3개로 끝날 수도 있다.
 
 ### Half-Close (우아한 종료)
 
@@ -93,10 +93,10 @@ Client                           Server
 
 먼저 닫는 쪽(Active Closer)은 "나는 더 보낼 게 없지만 받는 귀는 열어둔다. 여기까지 받았으니 남은 것 있으면 마저 보내라"는 뜻으로 FIN을 보낸다(이 FIN 역시 위 이유로 ACK 비트가 함께 켜진다). 상대(Passive Closer)는 남은 데이터를 마저 전송한 뒤 자신의 FIN을 보낸다. 덕분에 종료 중에도 미전송 데이터가 유실되지 않는다.
 
-소켓 API에서 `shutdown(fd, SHUT_WR)`은 전송 스트림만 닫아 Half-Close를 쓰고, `close()`는 즉시 모든 스트림을 파기한다 — `close()`로 닫으면 상대가 뒤늦게 보낸 데이터를 처리할 수 없다. 이것이 4-way가 (2)ACK와 (3)FIN을 분리하는 실질적 이유다.
+소켓 API에서 `shutdown(fd, SHUT_WR)`은 전송만 닫고 애플리케이션이 상대 FIN 전까지 계속 수신하게 한다. `close()`는 애플리케이션의 해당 파일 디스크립터에 대한 송수신 접근을 끝내지만, 기본 TCP 종료 자체는 전송 큐의 데이터를 보낸 뒤 FIN으로 닫는 graceful close다. 연결을 즉시 파기하는 ABORT/RST와는 다르다. 수신을 계속 처리해야 할 때 `shutdown(fd, SHUT_WR)`을 명시적으로 쓰는 이유다.
 
 ### TIME_WAIT 상태
-마지막 ACK 전송 후 클라이언트는 **2 MSL(Maximum Segment Lifetime)** 동안 `TIME_WAIT` 유지. 이유:
+마지막 ACK를 보낸 능동 종료 측은 **2 MSL(Maximum Segment Lifetime)** 동안 `TIME_WAIT` 유지. 이유:
 - 마지막 ACK가 유실됐을 때 서버가 FIN 재전송 → 응답 가능
 - 지연 중인 패킷이 **다음 연결에 잘못 섞이지 않도록** 대기
 
@@ -163,6 +163,7 @@ HTTPS는 3-way handshake **+ TLS handshake** (TLS 1.2: 2 RTT, TLS 1.3: 1 RTT) �
 - [매일메일 — 3-way handshake](https://www.maeil-mail.kr/question/76)
 - [F-Lab — CS 면접: 네트워크](https://f-lab.kr/blog/cs-interview-network)
 - [RFC 9293 — TCP, Header Format](https://www.rfc-editor.org/rfc/rfc9293.html#name-header-format)
+- [RFC 9293 — SEGMENT ARRIVES in SYN-SENT state](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.10.7.3)
 
 ## 관련 문서
 - [[TCP-Header|TCP 헤더 구조 (시퀀스/승인 번호, 플래그, 윈도우, 체크섬)]]

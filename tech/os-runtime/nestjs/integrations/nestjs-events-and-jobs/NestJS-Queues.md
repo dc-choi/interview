@@ -24,10 +24,10 @@ await this.audioQueue.add('transcode', { foo: 'bar' }, { delay: 3000 });
 
 | 옵션 | 의미 |
 |------|------|
-| `priority` | 1(최고)~MAX_INT(최저). 사용 시 약간의 성능 비용 |
+| `priority` | 0은 우선순위 없음으로 우선순위 잡보다 먼저 처리. 1~2,097,151은 값이 낮을수록 높은 우선순위이고 상한을 넘으면 잡 추가가 실패. 사용 시 약간의 성능 비용 |
 | `delay` | ms 지연 — 정확한 지연은 서버/클라이언트 시계 동기화 전제 |
 | `attempts` + `backoff` | 실패 시 총 시도 횟수와 재시도 백오프 |
-| `repeat` | cron 스펙 반복 |
+| `repeat` | cron 스펙 반복. BullMQ v5까지의 API이며 v6부터 Job Scheduler API(`upsertJobScheduler` 등)로 대체 |
 | `lifo` | 큐 오른쪽(뒤)에 추가 — 스택처럼 |
 | `jobId` | 기본 자동 유니크 정수를 오버라이드. **유일성은 사용자 책임 — 중복 id 잡은 추가되지 않음** |
 | `removeOnComplete` / `removeOnFail` | true 또는 보관 개수. **기본은 완료/실패 셋에 계속 보관** — 정리 설정 안 하면 Redis에 누적 |
@@ -67,3 +67,5 @@ export class AudioConsumer extends WorkerHost {
 
 ## 출처
 - [NestJS — Queues](https://docs.nestjs.com/techniques/queues)
+- [BullMQ, Prioritized](https://docs.bullmq.io/guide/jobs/prioritized)
+- [BullMQ, Repeatable](https://docs.bullmq.io/guide/jobs/repeatable)

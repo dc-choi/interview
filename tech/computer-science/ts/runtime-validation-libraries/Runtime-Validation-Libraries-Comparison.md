@@ -56,16 +56,22 @@ type User = {
 const result = typia.assert<User>(input);  // 컴파일 시 검증 함수 생성
 ```
 
-타입 선언이 곧 스키마. `transform`, `refine`은 미지원.
+2026-09-03 공식 문서 기준, 타입 선언이 곧 스키마이다. 값 변환(`transform`)은 없지만 `.refine()`에 해당하는 임의 조건 검증은 `tags.TagBase`의 `validate` 표현식으로 custom tag를 정의해 처리할 수 있다. 이 표현식 문자열은 컴파일 타임에 validator 안으로 inline된다.
 
 ### Ajv — JSON Schema
 
 ```ts
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+
+const ajv = new Ajv();
+addFormats(ajv);
+
 const schema = {
   type: 'object',
   properties: {
     name: { type: 'string', minLength: 1, maxLength: 100 },
-    email: { type: 'string', format: 'email' },
+    email: { format: 'email', type: 'string' },
     role: { type: 'string', enum: ['admin', 'editor'] },
   },
   required: ['name', 'email', 'role'],
@@ -75,3 +81,11 @@ validate(input);                            // boolean 반환, 에러는 validat
 ```
 
 선언형 JSON. 조합성은 낮지만 **표준 JSON Schema 생태계**와 연동.
+
+2026-09-03 공식 문서 기준, `format: 'email'` 같은 표준 format은 `ajv-formats`를 설치하고 `addFormats(ajv)`를 적용해야 한다. 기본 설정에서 알 수 없는 format은 schema compile 중 예외를 낸다.
+
+## 출처
+
+- [Typia, TagBase](https://typia.io/docs/validators/tags/)
+- [Ajv, Strict mode](https://github.com/ajv-validator/ajv/blob/master/docs/strict-mode.md)
+- [Ajv, Formats](https://ajv.js.org/guide/formats.html)

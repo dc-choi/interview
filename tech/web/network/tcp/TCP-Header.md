@@ -1,6 +1,7 @@
 ---
 tags: [web, network, tcp, header, segment, l4]
 status: done
+verified_at: 2026-09-03
 category: "Web - 네트워크"
 aliases: ["TCP Header", "TCP 헤더", "TCP 세그먼트 헤더", "Sequence Number", "Acknowledgment Number"]
 ---
@@ -56,11 +57,11 @@ TCP 헤더는 신뢰성, 흐름 제어, 혼잡 제어를 굴리는 데 필요한
 | URG | Urgent Pointer 필드가 유효함. 가리키는 데이터를 우선 처리 (요즘 거의 안 씀) |
 | ACK | 승인 번호 필드가 유효함. 0이면 승인 번호 무시 |
 | PSH | 버퍼를 기다리지 말고 데이터를 즉시 애플리케이션에 올리라는 요청 |
-| RST | ESTABLISHED 상대에게 연결을 강제로 리셋 |
+| RST | 연결을 강제로 리셋. 수립된 연결을 즉시 종료하거나 존재하지 않는 연결로 온 세그먼트를 거절하고, 비동기화 상태의 부적합한 ACK에 응답할 때 사용 |
 | SYN | 연결 수립 시 시퀀스 번호 동기화 |
 | FIN | 연결 종료 요청 |
 
-ECN(명시적 혼잡 통보)용 추가 플래그는 혼잡을 타임아웃으로 감지하던 방식 대신, 혼잡을 **명시적으로 통보**한다. `ECE`는 SYN과 함께면 ECN 사용 협상, SYN 없이 1이면 혼잡하니 윈도우를 줄이라는 신호. `CWR`은 그 신호를 받아 윈도우를 줄였다는 응답. `NS`는 ECE/CWR 은폐를 막기 위한 보호 비트. (NS 플래그는 이후 RFC 9293에서 폐기되어, 최신 표현은 제어 플래그 8개 + 예약 4비트로 보기도 한다.)
+ECN(명시적 혼잡 통보)은 혼잡을 손실과 타임아웃만으로 추정하지 않고 명시적으로 알린다. 고전 ECN에서 `ECE`는 협상과 혼잡 경험 통보, `CWR`은 송신자가 혼잡 반응을 수행했다는 응답에 쓰인다. 과거 bit 7의 `NS`는 RFC 8311이 관련 실험을 Historic으로 돌리면서 예약 비트가 됐고, RFC 9768이 2026년 이를 Accurate ECN의 `AE`로 다시 할당했다. 현재 IANA 레지스트리 기준 레이아웃은 예약 3비트와 제어 플래그 9개(`AE`, `CWR`, `ECE`, `URG`, `ACK`, `PSH`, `RST`, `SYN`, `FIN`)다.
 
 ### Window Size — 흐름 제어
 
@@ -85,7 +86,8 @@ ECN(명시적 혼잡 통보)용 추가 플래그는 혼잡을 타임아웃으로
 
 ## 출처
 - TCP 헤더에는 어떤 정보들이 담겨있는걸까? — 개인 블로그
-- RFC 9293 (Transmission Control Protocol)
+- [RFC 9293, TCP Reset Generation](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.5.2)
+- [IANA, TCP Header Flags](https://www.iana.org/assignments/tcp-parameters/tcp-parameters.xhtml#tcp-header-flags)
 
 ## 관련 문서
 - [[TCP-Handshake|TCP Handshake (3-way/4-way, SYN/ACK/FIN, TIME_WAIT)]]

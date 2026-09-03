@@ -1,7 +1,7 @@
 ---
 tags: [security, auth, selection]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-09-03
 category: "Security - 인증"
 aliases: ["Auth Method Selection", "인증 방식 선택"]
 ---
@@ -35,7 +35,7 @@ HTTP는 Stateless. **매 요청마다 자격증명을 함께 보내야** 서버�
 
 | 위치 | 특징 |
 |---|---|
-| **Authorization 헤더** | **권장 기본값** — 메타데이터라는 의미 명확, 캐시에 영향 없음, 표준 스키마(Bearer, Basic) |
+| **Authorization 헤더** | **권장 기본값** — 메타데이터라는 의미가 명확하고 URL 캐시 키를 오염시키지 않음. 단, 공유 캐시는 `Authorization`이 있는 요청의 응답을 기본적으로 재사용할 수 없고 `public`, `s-maxage`, `must-revalidate` 같은 명시적 응답 지시자가 필요 |
 | **Cookie** | 브라우저가 자동 첨부 → CSRF 위험 (SameSite로 완화), 동일 도메인 제약 |
 | **쿼리스트링** | **금지에 가까움** — URL이 로그, 리퍼러, 히스토리에 남음 |
 | **Request Body** | POST만 가능, 일관성 없음, 비권장 |
@@ -169,6 +169,7 @@ Access Token(짧은 수명) + Refresh Token(긴 수명) 조합. Refresh 시 **�
 - [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
 - [RFC 6749 — The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749)
 - [RFC 9700 — Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700)
+- [RFC 9111 — HTTP Caching, Authorization](https://www.rfc-editor.org/rfc/rfc9111.txt)
 - [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
 - [쿠키, 세션, JWT HTTP 상태관리 변천사 — 코딩하는기술사](https://www.youtube.com/watch?v=lggnXKm-RyY)
 - [velog @city7310 — 백엔드가 이정도는 해줘야 함 5. 사용자 인증 방식 결정](https://velog.io/@city7310/%EB%B0%B1%EC%97%94%EB%93%9C%EA%B0%80-%EC%9D%B4%EC%A0%95%EB%8F%84%EB%8A%94-%ED%95%B4%EC%A4%98%EC%95%BC-%ED%95%A8-5.-%EC%82%AC%EC%9A%A9%EC%9E%90-%EC%9D%B8%EC%A6%9D-%EB%B0%A9%EC%8B%9D-%EA%B2%B0%EC%A0%95)

@@ -3,6 +3,7 @@ tags: [senior, ai, geopolitics, infrastructure, strategy, korea]
 status: done
 category: "Senior - AI 엔지니어링"
 aliases: ["AI Infra Geopolitics", "기업 단위 국제질서", "AI 인프라 권력 재편", "Project Glasswing"]
+verified_at: 2026-09-03
 ---
 
 # AI 인프라 지정학 — 국제질서의 단위가 국가에서 기업으로
@@ -11,7 +12,7 @@ aliases: ["AI Infra Geopolitics", "기업 단위 국제질서", "AI 인프라 �
 
 ## 사례 — Mythos 제한 공개와 Glasswing 명단
 
-Anthropic이 최상위 모델 Mythos를 일반 공개 없이 Project Glasswing으로 12개 기업에만 개방한 사건이 이 구조를 드러냈다. 명단: AWS, Google, Microsoft, Apple, NVIDIA, Broadcom, Cisco, CrowdStrike, Palo Alto Networks, Linux Foundation, JPMorgan Chase, Anthropic.
+Anthropic이 최상위 모델 Mythos를 일반 공개 없이 Project Glasswing으로 제한 개방한 사건이 이 구조를 드러냈다. 공개된 launch partner는 AWS, Google, Microsoft, Apple, NVIDIA, Broadcom, Cisco, CrowdStrike, Palo Alto Networks, Linux Foundation, JPMorgan Chase와 Anthropic까지 12곳이다. 이 밖에도 핵심 소프트웨어 인프라를 만들거나 유지하는 40곳 이상의 조직에 비공개 접근이 확대돼 실제 접근 조직은 50곳을 넘는다. 아래의 부재 분석은 공개된 12곳 명단만을 대상으로 한 관찰이다.
 
 - **부재가 더 많은 것을 말한다** — OpenAI, Meta, Oracle 없음. 중국, 유럽, 한국, 일본, 인도 기업 전무. 미국 정부조차 대기 상태
 - 국가나 정부가 아니라 **기업이 협상 테이블의 단위**로 앉는 구조
@@ -68,6 +69,7 @@ Anthropic이 최상위 모델 Mythos를 일반 공개 없이 Project Glasswing�
 
 ## 출처
 
+- [Project Glasswing — Anthropic](https://www.anthropic.com/glasswing)
 - [신화가 도착하면 죽는 것들 — ethancho, Substack](https://ethancho12.substack.com/p/43f)
 - [차세대 모델 GPT-5.6 Sol 미리 살펴보기 — OpenAI](https://openai.com/ko-KR/index/previewing-gpt-5-6-sol/) (제한 프리뷰 관행 확산 사례)
 

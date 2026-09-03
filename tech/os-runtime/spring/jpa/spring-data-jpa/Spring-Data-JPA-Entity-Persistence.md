@@ -29,11 +29,12 @@ public <S extends T> S save(S entity) {
 
 transaction 안에서 이미 조회한 managed entity를 수정할 때는 `save()`를 반복 호출하지 않아도 dirty checking이 반영한다. 명시적 save가 domain 의도를 더 잘 드러내는지는 팀 규칙으로 정하되, 생명주기를 먼저 이해한다.
 
-## 기본 `isNew()` 판별 순서
+## `isNew()` 판별 전략
+
+Entity가 `Persistable`을 구현하면 version과 ID를 검사하지 않고 그 `isNew()` 결과에 위임한다. 구현하지 않은 entity에만 기본 전략을 적용한다.
 
 1. non-primitive `@Version` property가 있으면 `null`인지 검사한다.
 2. 그런 version property가 없으면 ID가 `null`인지 검사한다.
-3. entity가 `Persistable`을 구현하면 그 `isNew()` 결과에 위임한다.
 
 primitive version의 `0`은 JPA에서 첫 version으로 유효하므로 신규 판별에 쓸 수 없다. generated ID는 nullable wrapper type으로 두는 편이 신규 상태를 가장 분명하게 표현한다.
 

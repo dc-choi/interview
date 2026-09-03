@@ -121,7 +121,7 @@ const some   = [1,2,3].some(n => n > 2);        // 하나라도?
 const flat   = [[1,2],[3]].flatMap(xs => xs);   // [1,2,3]
 ```
 
-이들은 **새 배열을 반환**하고 원본을 변경하지 않아 불변성이 유지된다. `forEach`는 부수효과 전용이라 `map`, `filter`, `reduce`와 용도가 다름.
+`filter`, `map`, `flatMap`은 새 배열을 반환하고 `every`와 `some`은 Boolean, `reduce`는 누적 결과값을 반환한다. 공통점은 원본 배열을 변경하지 않는다는 점이며, 그래서 불변성이 유지된다. `forEach`는 부수효과 전용이라 이 연산들과 용도가 다르다.
 
 ### 함수 합성
 
@@ -187,6 +187,7 @@ c(); c(); // 2
 ## 출처
 
 - [SK DEVOCEAN — 함수형 프로그래밍 (Java, JavaScript)](https://devocean.sk.com/blog/techBoardDetail.do?ID=165705)
+- [ECMAScript Language Specification, Array.prototype.every](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.every)
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory 기초]]

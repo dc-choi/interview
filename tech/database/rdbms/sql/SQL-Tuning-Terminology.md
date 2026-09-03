@@ -24,7 +24,7 @@ SQL 문을 받아 **여러 실행 계획 중 가장 비용이 낮은 것을 선�
 컬럼 값의 **분포**를 표현한 통계. 단순 카디널리티만으론 알 수 없는 편향(skew)을 잡아내 옵티마이저가 더 정확한 행 추정.
 
 ### 힌트 (Hint)
-옵티마이저가 고려할 계획이나 join 순서에 제약을 준다. MySQL은 `JOIN_ORDER`, `USE_INDEX`, `NO_INDEX` 같은 optimizer hint와 index hint를 제공한다. 문법상 허용돼도 충돌하거나 적용할 수 없으면 무시될 수 있으므로 통계와 schema를 먼저 점검하고 실제 계획을 확인한다.
+옵티마이저가 고려할 계획이나 join 순서에 제약을 준다. MySQL은 `JOIN_ORDER`, `INDEX`, `NO_INDEX` 같은 optimizer hint(`/*+ INDEX(t idx) */`)와 테이블명 뒤에 붙이는 index hint(`tbl USE INDEX (idx)`, `FORCE INDEX`, `IGNORE INDEX`)를 제공한다. 문법상 허용돼도 충돌하거나 적용할 수 없으면 무시될 수 있으므로 통계와 schema를 먼저 점검하고 실제 계획을 확인한다.
 
 ## 접근 방식 (Scan)
 
@@ -128,7 +128,7 @@ EXPLAIN의 `Extra`. index 순서만으로 결과를 만들지 못해 **추가 �
 |---|---|---|
 | `utf8mb4_bin` | 바이트 단위 비교 (대소문자 구분) | A → B → a → b |
 | `utf8mb4_general_ci` | case-insensitive | A = a → B = b |
-| `utf8mb4_0900_ai_ci` | 8.0+ 기본, accent-insensitive + case-insensitive | é = e → á = a |
+| `utf8mb4_0900_ai_ci` | 8.0+ 기본, accent-insensitive + case-insensitive | á = a → é = e |
 
 `_ci` = case-insensitive, `_cs` = case-sensitive, `_bin` = binary.
 
@@ -166,6 +166,8 @@ ALTER TABLE products MODIFY name VARCHAR(100) COLLATE utf8mb4_bin;
 - [MySQL 8.4 Reference Manual, EXPLAIN Output](https://dev.mysql.com/doc/refman/8.4/en/explain-output.html)
 - [MySQL 8.4 Reference Manual, Range Optimization](https://dev.mysql.com/doc/refman/8.4/en/range-optimization.html)
 - [MySQL 8.4 Reference Manual, Optimizer Statistics](https://dev.mysql.com/doc/refman/8.4/en/optimizer-statistics.html)
+- [MySQL 8.4 Reference Manual, Index Hints](https://dev.mysql.com/doc/refman/8.4/en/index-hints.html)
+- [Unicode Collation Algorithm 9.0.0, Default Unicode Collation Element Table](https://www.unicode.org/Public/UCA/9.0.0/allkeys.txt)
 
 ## 관련 문서
 - [[Index|Index]]

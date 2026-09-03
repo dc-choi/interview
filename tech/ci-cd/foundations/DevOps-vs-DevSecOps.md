@@ -85,7 +85,7 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 
 ### DAST (동적 분석)
 
-- OWASP ZAP, Burp Suite, Netsparker
+- OWASP ZAP, Burp Suite, Invicti(구 Netsparker)
 
 ### Secret Scanning
 
@@ -97,7 +97,8 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 
 ### IaC Security
 
-- Checkov, tfsec, Terrascan
+- Checkov, Trivy
+- 2026-09-03 공식 저장소 기준, tfsec의 IaC 스캔 기능은 Trivy에 통합됐고 Terrascan은 유지보수가 종료돼 저장소가 archive됐다.
 
 ### Policy as Code
 
@@ -166,6 +167,9 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 ## 출처
 - [요즘IT — 데브옵스 vs 데브섹옵스](https://yozm.wishket.com/magazine/detail/1553/) — 문서의 뼈대. 다만 이 기사에 100배 수치는 없고, 운영 환경에서 발견된 결함은 수정 비용이 크다는 서술만 있다
 - [The Register (2021-07-22) — Everyone cites that 'bugs are 100x more expensive to fix in production' research, but the study might not even exist](https://www.theregister.com/2021/07/22/bugs_expense_bs/) — Laurent Bossavit, Hillel Wayne의 추적. IBM Systems Sciences Institute는 사내 교육 프로그램이었고 차트를 뒷받침하는 데이터가 확인되지 않는다
+- [Netsparker is now Invicti — Invicti](https://www.invicti.com/blog/news/netsparker-is-now-invicti-signaling-a-new-era-for-modern-appsec/)
+- [Terrascan — Tenable](https://github.com/tenable/terrascan)
+- [tfsec — Aqua Security](https://github.com/aquasecurity/tfsec)
 
 ## 관련 문서
 - [[CICD-Basics|CI/CD 기초]]

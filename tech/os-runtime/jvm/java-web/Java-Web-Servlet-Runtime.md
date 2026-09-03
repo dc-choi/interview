@@ -35,13 +35,13 @@ Reverse proxy/web server와 WAS를 분리하면 TLS, cache, static asset, load b
 | 설정 | `web.xml` 중심 | annotation과 programmatic 설정, 필요할 때 deployment descriptor |
 | Java 기준 | 강의와 서버 버전에 따라 다름 | Servlet 6.1은 Java SE 17 이상 |
 
-Jakarta EE 9에서 `javax.*`가 `jakarta.*`로 바뀌었고 이 이동은 source와 binary 호환 변경이다. 오래된 예제를 현재 프로젝트에 옮길 때 import만이 아니라 Container, dependency와 descriptor 버전을 함께 맞춘다.
+Jakarta EE 9의 `javax.*`에서 `jakarta.*`로의 namespace 이동은 이전 릴리스와 source, binary 양쪽 모두 호환되지 않는다. 다만 대응하는 API의 method signature와 동작은 유지된다. 오래된 예제를 현재 프로젝트에 옮길 때 import만이 아니라 Container, dependency와 descriptor 버전을 함께 맞춘다.
 
 개발 환경의 본질은 JDK, build, runtime과 배포 artifact의 버전 정합성이다. 특정 IDE의 project layout이나 운영체제의 수동 `PATH` 설정은 한 가지 도구 사용법이지 Servlet 명세의 요구사항이 아니다.
 
 ## URL mapping은 보안 경계가 아니다
 
-Servlet은 `@WebServlet` 또는 `web.xml`의 mapping으로 요청 경로와 연결할 수 있다. exact path, path prefix, extension, default mapping의 우선순위는 Container가 결정한다.
+Servlet은 `@WebServlet` 또는 `web.xml`의 mapping으로 요청 경로와 연결할 수 있다. Jakarta Servlet 명세는 exact path, 최장 path prefix, extension, default servlet 순으로 매핑을 검사하고 첫 일치에서 탐색을 멈추도록 규정한다. Container가 이 우선순위를 임의로 바꾸지는 않는다.
 
 package와 class 이름을 URL에서 숨기는 것은 내부 구조를 캡슐화하지만 인증과 인가를 제공하지 않는다. 보호가 필요한 경로는 Filter, Spring Security 같은 보안 계층에서 사용자 신원과 권한을 검증해야 한다.
 
@@ -124,8 +124,8 @@ Container는 같은 Servlet instance의 `service`를 여러 thread에서 동시�
 ## 출처
 
 - [Jakarta Servlet 6.1](https://jakarta.ee/specifications/servlet/6.1/)
-- [Jakarta Servlet 6.1 Specification](https://jakarta.ee/specifications/servlet/6.1/jakarta-servlet-spec-6.1.pdf)
-- [Jakarta EE 9 Platform Specification, namespace change](https://jakarta.ee/specifications/platform/9/jakarta-platform-spec-9)
+- [Jakarta Servlet 6.1 Specification](https://jakarta.ee/specifications/servlet/6.1/jakarta-servlet-spec-6.1.html)
+- [Jakarta EE 9 Platform Specification, namespace change](https://jakarta.ee/specifications/platform/9/jakarta-platform-spec-9.html)
 - [Spring Framework, Spring Web MVC](https://docs.spring.io/spring-framework/reference/web/webmvc.html)
 - [Spring Boot, Servlet Web Applications](https://docs.spring.io/spring-boot/reference/web/servlet.html)
 - [NestJS, Controllers](https://docs.nestjs.com/controllers)

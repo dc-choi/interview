@@ -55,7 +55,7 @@ Application 설정은 보통 `@ConfigurationProperties`를 우선한다.
 @Validated
 @ConfigurationProperties("client.payment")
 public record PaymentClientProperties(
-    @NotBlank URI baseUrl,
+    @NotNull URI baseUrl,
     @DurationMin(seconds = 1) Duration timeout
 ) {}
 ```
@@ -108,6 +108,8 @@ Profile을 `dev`, `prod`라는 거대한 mode switch로 남용하면 조합 테�
 - [Spring Boot 4.1, Externalized Configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html)
 - [Spring Boot 4.1, Profiles](https://docs.spring.io/spring-boot/reference/features/profiles.html)
 - [Spring Boot 4.1 API, ConfigurationProperties](https://docs.spring.io/spring-boot/4.1/api/java/org/springframework/boot/context/properties/ConfigurationProperties.html)
+- [Jakarta Bean Validation 3.0, `@NotBlank`](https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/notblank)
+- [Jakarta Bean Validation 3.0, `@NotNull`](https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/notnull)
 - 설정 source: [project](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148111), [외부 설정](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148112), [OS environment](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148113), [JVM property](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148114), [argument](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148115), [option argument](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148116), [Boot option](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148117), [Spring 통합](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148118)
 - config data: [외부 file](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148119), [내부 file 분리](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148120), [multi-document](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148121), [config data 우선순위](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148122), [전체 우선순위](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148123), [정리](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148124)
 - binding/profile: [project](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148126), [`Environment`](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148127), [`@Value`](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148128), [`@ConfigurationProperties`](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148129), [constructor binding](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148130), [validation](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148131), [YAML](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148132), [`@Profile`](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148133), [정리](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148134)

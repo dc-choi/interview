@@ -148,13 +148,14 @@ UV_READABLE_PIPE / UV_WRITABLE_PIPE: 파이프 방향 설정 (자식 관점)
 3. 워커는 uv_pipe_pending_count()로 대기 핸들을 확인하고
 4. uv_accept()로 소켓을 꺼내 직접 처리
 
-전송 가능한 핸들: TCP 소켓, 파이프만 가능.
+전송 가능한 핸들: Unix에서는 TCP, pipe와 UDP handle, Windows에서는 TCP handle. Listening 또는 connected 상태여야 하며 bind된 socket과 pipe는 server로 간주된다.
 파이프 초기화 시 ipc=1 필수: uv_pipe_init(loop, &pipe, 1)
 ```
 
 ## 출처
 
 - [libuv process guide](https://docs.libuv.org/en/latest/guide/processes.html)
+- [libuv, Stream handle](https://docs.libuv.org/en/v1.x/stream.html)
 
 ### 시그널 처리 (`uv_signal_t`)
 ```

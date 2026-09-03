@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
+verified_at: 2026-09-03
 category: "OS & Runtime"
 aliases: ["Test Runner Basics", "테스트 러너 기본"]
 ---
@@ -21,13 +22,15 @@ node --test --watch                 # 파일 변경 시 자동 재실행
 ### 테스트 파일 탐색 규칙
 ```
 자동 탐색 대상:
-- **/*.test.{js,mjs,cjs}
-- **/*-test.{js,mjs,cjs}
-- **/*_test.{js,mjs,cjs}
-- **/test-*.{js,mjs,cjs}
-- **/test.{js,mjs,cjs}
-- **/test/**/*.{js,mjs,cjs}
+- **/*.test.{js,mjs,cjs,ts,mts,cts}
+- **/*-test.{js,mjs,cjs,ts,mts,cts}
+- **/*_test.{js,mjs,cjs,ts,mts,cts}
+- **/test-*.{js,mjs,cjs,ts,mts,cts}
+- **/test.{js,mjs,cjs,ts,mts,cts}
+- **/test/**/*.{js,mjs,cjs,ts,mts,cts}
 ```
+
+TypeScript 확장자는 type stripping을 비활성화하는 `--no-strip-types`를 주면 기본 탐색에서 제외된다. Node.js v22에서는 flag 이름이 `--no-experimental-strip-types`다.
 
 ### describe/it (BDD 스타일)
 ```js
@@ -62,7 +65,7 @@ test('async operation', async () => {
 
 ## 테스트 작성 패턴
 
-### 동적 테스트 케이스 (v23.8.0+)
+### 동적 테스트 케이스 (v18+)
 ```js
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -72,19 +75,21 @@ const userAgents = [
   { os: 'Mac', ua: 'Mozilla/5.0 (Macintosh; Intel Mac OS X)' },
 ];
 
-test('Detect OS via user-agent', { concurrency: true }, t => {
+test('Detect OS via user-agent', async t => {
   for (const { os, ua } of userAgents) {
-    t.test(ua, () => {
+    await t.test(ua, () => {
       assert.equal(detectOsInUserAgent(ua), os);
     });
   }
 });
 ```
 
-### 스냅샷 테스팅 (v22.3.0+)
+suite 밖의 parent test는 끝나지 않은 subtest를 기다리지 않으므로 `t.test()`가 반환한 Promise를 반드시 기다린다.
+
+### 스냅샷 테스팅 (v22.13.0+/v23.4.0+)
 ```bash
-node --experimental-test-snapshots --test           # 스냅샷 비교 실행
-node --experimental-test-snapshots --test-update-snapshots --test  # 스냅샷 갱신
+node --test                          # 스냅샷 비교 실행
+node --test --test-update-snapshots  # 스냅샷 갱신
 ```
 ```js
 import { test, snapshot } from 'node:test';
@@ -125,6 +130,12 @@ const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
 globalThis.document = dom.window.document;
 globalThis.window = dom.window;
 ```
+
+## 출처
+
+- [Node.js, Running tests from the command line](https://nodejs.org/api/test.html#running-tests-from-the-command-line)
+- [Node.js, Test context subtests](https://nodejs.org/api/test.html#contexttestname-options-fn)
+- [Node.js, Snapshot testing](https://nodejs.org/api/test.html#snapshot-testing)
 
 ## 관련 문서
 - [[Test-Runner-Mocking|테스트 러너 모킹/커버리지]]

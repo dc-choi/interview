@@ -68,9 +68,9 @@ Hibernate가 추적하는 내부 컬렉션은 변경 가능한 상태로 유지�
 
 ## 출처
 
-- [Jakarta Persistence 3.2 명세 — orphanRemoval](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#relationship-mapping-defaults)
+- [Jakarta Persistence 3.2, Entity Relationships and orphanRemoval](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a516)
 - [Jakarta Persistence 3.2 API — OneToMany](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/onetomany)
-- [Hibernate ORM current User Guide, Ordered Lists](https://docs.hibernate.org/stable/orm/userguide/html_single/#collections-ordered)
+- [Hibernate ORM current User Guide, Ordered Lists](https://docs.hibernate.org/stable/orm/userguide/html_single/#collections-unidirectional-ordered-list)
 - [토비 강사 — 애그리거트와 JPA](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=313420)
 - [토비 강사 — 커리큘럼 도메인 개발, 제거와 orphanRemoval](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=470529)
 - [토비 강사 — 커리큘럼 애플리케이션 서비스, OrderColumn과 조회](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=471509)

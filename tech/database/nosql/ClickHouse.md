@@ -24,7 +24,7 @@ ClickHouse는 **대량 데이터의 빠른 분석 조회**를 목적으로 설�
 
 ## MergeTree 엔진
 
-ClickHouse 테이블 엔진의 기본, 표준 패밀리. 데이터를 **파트(part)** 단위로 디스크에 쓰고, 백그라운드에서 파트를 머지하면서 정렬, 중복 제거, 압축을 최적화한다.
+ClickHouse 테이블 엔진의 기본, 표준 패밀리. 데이터를 **파트(part)** 단위로 디스크에 쓰고, 백그라운드에서 정렬된 파트를 병합하고 압축하며 파트 수를 줄인다. 기본 MergeTree는 같은 정렬 키의 중복 행을 제거하지 않으며, 중복 제거가 필요하면 ReplacingMergeTree를 쓴다.
 
 ```
 CREATE TABLE events (
@@ -149,6 +149,7 @@ ORDER BY (created_at, service_id, event_type);
 - [NHN Cloud Meetup — MySQL 3분 vs ClickHouse 0.3초, 같은 쿼리입니다](https://meetup.nhncloud.com/posts/414)
 - [ClickHouse 공식 문서 — Intro](https://clickhouse.com/docs/intro)
 - [ClickHouse 공식 문서 — Transactional (ACID) support](https://clickhouse.com/docs/guides/developer/transactional)
+- [ClickHouse Documentation, ReplacingMergeTree](https://clickhouse.com/docs/engines/table-engines/mergetree-family/replacingmergetree)
 
 ## 관련 문서
 - [[OLTP-vs-OLAP|OLTP vs OLAP]]

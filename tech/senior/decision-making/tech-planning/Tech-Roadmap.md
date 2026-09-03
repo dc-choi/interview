@@ -44,7 +44,7 @@ aliases: ["Tech Roadmap", "기술 로드맵"]
 | 심각도 | 예시 | 대응 |
 |---|---|---|
 | Critical (빨강) | 보안 취약점(IDOR, RTR 미구현) | 즉시 대응, 기능 개발 중단 |
-| Warning (노랑) | 성능(ErrorBoundary, 번들 최적화) | 다음 스프린트 포함 |
+| Warning (노랑) | 안정성(ErrorBoundary 미구현), 성능(번들 최적화) | 다음 스프린트 포함 |
 | Low (초록) | DX 개선(컴포넌트 분리) | 여유 있을 때 |
 
 ## 로드맵 관리
@@ -76,6 +76,10 @@ Q. 로드맵은 어떻게 관리하는가?
 - 재직 중에는 school-manage의 선택지 보존에 필요한 운영 사건과 비용 변경만 확인하고, 전환 gate 뒤 기준일과 단위가 있는 스냅숏으로 핵심 지표 추적
 - 데이터 기반으로 유연하게 조정 (포지셔닝 전환, 우선순위 변경)
 - 기술 부채를 심각도별로 분류하여 로드맵에 명시적 포함
+
+## 출처
+
+- [React — Error Boundary로 렌더링 오류 처리](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)
 
 ## 관련 문서
 - [[Tech-Decision|기술 의사결정]]

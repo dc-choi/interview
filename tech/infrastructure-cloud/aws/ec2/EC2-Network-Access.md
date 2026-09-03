@@ -50,7 +50,7 @@ EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를
   - Amazon Linux: `ec2-user`
   - Ubuntu: `ubuntu`
   - CentOS: `centos`
-  - Debian: `admin` 또는 `debian`
+  - Debian: `admin`
 - **보관 원칙**: 개인키 외부 유출 금지, Git 커밋 금지, 권한 `chmod 400`
 
 현업 권장: SSH Key Pair 의존을 줄이고 **AWS Systems Manager Session Manager**로 대체 (IAM 권한 기반, 포트 22 개방 불필요, 세션 로깅).
@@ -67,3 +67,4 @@ EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를
 - [AWS 공식 문서, Amazon EC2 key pairs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html)
 - [EC2 연결 옵션](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect.html)
 - [EC2 network interface 생성과 이동 제한](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-network-interface.html)
+- [AWS 공식 문서, EC2 인스턴스의 기본 사용자 이름](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connection-prereqs-general.html)

@@ -10,7 +10,7 @@ aliases: ["Harness Engineering", "하네스 엔지니어링"]
 
 ## 정의
 
-OpenAI가 2026년 2월 블로그 [Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/)에서 제시한 개념(공식 원문 재확인 2026-08-27). **AI 에이전트가 코드를 올바르게 작성할 수 있는 환경을 설계하는 것.**
+OpenAI가 2026년 2월 블로그 Harness engineering: leveraging Codex in an agent-first world에서 제시한 개념(공식 원문 재확인 2026-08-27). **AI 에이전트가 코드를 올바르게 작성할 수 있는 환경을 설계하는 것.**
 
 OpenAI 사례의 핵심은 에이전트 자체보다 에이전트가 읽을 수 있는 환경, 의도, 도구와 피드백 루프를 설계하는 데 있다. 아래 단계와 5대 원칙은 공식 글의 고정 분류가 아니라 이 vault에서 실무 적용을 위해 재구성한 점검 프레임이다.
 
@@ -144,7 +144,7 @@ Q. 멀티 에이전트로 나누면 뭐가 좋고, 검증은 왜 별도 에이�
 
 ## 참고 자료
 - [Harness engineering: leveraging Codex in an agent-first world — OpenAI (2026년 2월)](https://openai.com/index/harness-engineering/)
-- Harness Engineering (Martin Fowler, 2026)
+- [Harness engineering for coding agent users — Birgitta Böckeler, martinfowler.com (2026-04-02)](https://martinfowler.com/articles/harness-engineering.html)
 - Software 3.0 시대, Harness를 통한 조직 생산성 저점 높이기 (Toss Tech, 2026)
 - [Claude Code Harness와 멀티 에이전트 오케스트레이션 강연 — YouTube](https://www.youtube.com/live/iqoPgoYBVaM)
 

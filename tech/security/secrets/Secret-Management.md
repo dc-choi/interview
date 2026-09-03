@@ -1,7 +1,7 @@
 ---
 tags: [security, secrets, vault, kubernetes]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-09-03
 category: "보안(Security)"
 aliases: ["Secret Management", "시크릿 관리", "Vault", "HashiCorp Vault"]
 ---
@@ -39,9 +39,9 @@ Sealed Secrets 컨트롤러는 최종적으로 K8s Secret을 만든다. SOPS는 
 | CSI Provider | 선택(기본 미생성) | Pod 기동 시 | 제한적 | 볼륨 직접 마운트, SecretProviderClass CRD로 GitOps |
 | Agent Injector | 미생성 | Pod 기동 시 | O(사이드카 지속) | Mutating Webhook으로 사이드카 자동 주입 |
 | AVP(Argo CD Vault Plugin) | 입력 manifest에 따름 | Argo CD 렌더링 시 | 재동기화 필요 | manifest의 플레이스홀더를 치환하며 출력 리소스 종류는 입력 manifest가 결정 |
-| ESO(External Secrets Operator) | 항상 생성 | 주기 동기화 | O | ExternalSecret으로 K8s Secret 자동 동기화 |
+| ESO(External Secrets Operator) | 기본 생성(`creationPolicy` 의존) | 주기 동기화 | O | 기본 `Owner`는 생성, `Merge`는 기존 Secret에 병합, `None`은 생성하지 않음 |
 
-핵심 분기는 K8s Secret 오브젝트를 만드느냐다. CSI Provider와 Agent Injector는 볼륨이나 파일에 직접 주입할 수 있고, ESO는 K8s Secret을 동기화한다. AVP는 입력 manifest의 플레이스홀더를 치환할 뿐 리소스 종류를 강제하지 않는다. 입력이 `Secret`이면 K8s Secret이 생성되고, `Deployment`의 환경 변수나 다른 리소스면 그 형태로 출력된다. GitOps 렌더링 로그와 Argo CD 접근 권한도 별도 위협 모델에 포함한다.
+핵심 분기는 K8s Secret 오브젝트를 만드느냐다. CSI Provider와 Agent Injector는 볼륨이나 파일에 직접 주입할 수 있다. ESO의 기본 `Owner` 정책은 K8s Secret을 생성하고 동기화하지만, `Merge`는 기존 Secret에만 병합하고 `None`은 Secret을 생성하지 않는다. AVP는 입력 manifest의 플레이스홀더를 치환할 뿐 리소스 종류를 강제하지 않는다. 입력이 `Secret`이면 K8s Secret이 생성되고, `Deployment`의 환경 변수나 다른 리소스면 그 형태로 출력된다. GitOps 렌더링 로그와 Argo CD 접근 권한도 별도 위협 모델에 포함한다.
 
 ## 단계적 도입
 
@@ -98,3 +98,4 @@ Q. Vault 도입 시 가장 먼저 설계할 것은?
 - [도입전략 Git 시크릿 관리와 Vault 도입으로 보안 강화하기 — KT Cloud Tech](https://tech.ktcloud.com/entry/2026-06-ktcloud-git-vault-secrets-%EB%B3%B4%EC%95%88-%EA%B0%95%ED%99%94)
 - [Kubernetes Encrypting Confidential Data at Rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/)
 - [Argo CD Vault Plugin documentation](https://argocd-vault-plugin.readthedocs.io/en/stable/)
+- [External Secrets Operator API Specification](https://external-secrets.io/latest/api/spec/)

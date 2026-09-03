@@ -80,9 +80,9 @@ Detached 객체에서 이미 로드된 state는 읽을 수 있지만 초기화�
 
 ## 출처
 
-- [Jakarta Persistence 3.2, Entity Operations](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#entity-operations)
-- [Jakarta Persistence 3.2, Queries and Flush Mode](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#queries-and-flush-mode)
-- [Hibernate ORM current User Guide, Persistence Context](https://docs.hibernate.org/stable/orm/userguide/html_single/#chapters/pc/PersistenceContext)
+- [Jakarta Persistence 3.2, Entity Operations](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a1060)
+- [Jakarta Persistence 3.2, Queries and Flush Mode](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a4374)
+- [Hibernate ORM current User Guide, Persistence Context](https://docs.hibernate.org/stable/orm/userguide/html_single/#pc)
 - 강의: [영속성 컨텍스트 1](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21686), [영속성 컨텍스트 2](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21687)
 - 강의: [플러시](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21688), [준영속 상태](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21689), [정리](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21690)
 

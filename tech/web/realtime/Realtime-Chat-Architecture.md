@@ -1,7 +1,7 @@
 ---
 tags: [web, websocket, redis, pubsub, chat, realtime, reactive, webflux]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-03
 category: "웹&네트워크(Web&Network)"
 aliases: ["Realtime Chat Architecture", "실시간 채팅 아키텍처", "WebSocket + Redis Pub/Sub"]
 ---
@@ -70,9 +70,9 @@ aliases: ["Realtime Chat Architecture", "실시간 채팅 아키텍처", "WebSoc
 ```java
 // WebFlux 예시
 public Mono<Void> handle(WebSocketSession session) {
-  Mono<Void> input  = session.receive().concatMap(msg ->
+  Mono<Void> input = session.receive().concatMap(msg ->
       messageStore.append(roomId, msg) // durable write returns messageId and roomSequence
-          .flatMap(saved -> pubSub.publish(roomId, saved)));
+          .flatMap(saved -> pubSub.publish(roomId, saved))).then();
   Flux<WebSocketMessage> output = pubSub.subscribe(roomId).map(session::textMessage);
   return session.send(output).and(input);
 }
@@ -93,7 +93,7 @@ public Mono<Void> handle(WebSocketSession session) {
 
 ### 1. WebSocket 세션 누수 (Max sessions 초과)
 
-WebFlux에서 핸들러가 `ServerWebExchange.getSession()`을 호출하면 `InMemoryWebSessionStore`에 HTTP 세션이 등록되고, 만료시키지 않으면 계속 누적되어 "Max sessions: 10000" 도달로 신규 연결 거부. 해결은 **`WebSocketHandler` 데코레이터 패턴**으로 HTTP 세션 생성 자체를 회피하고 `WebSocketSession.getAttributes()`에만 저장.
+WebFlux에서 `ServerWebExchange.getSession()`을 호출하는 것만으로 세션이 store에 등록되지는 않는다. 세션에 attribute를 넣거나 `start()`를 호출해 started 상태로 만든 뒤 응답이 커밋될 때 `InMemoryWebSessionStore`에 저장된다. 아래 나쁜 예처럼 핸드셰이크마다 토큰을 넣고 만료시키지 않으면 누적되어 `Max sessions limit reached`로 신규 연결이 거부될 수 있다. 해결은 **`WebSocketHandler` 데코레이터 패턴**으로 HTTP 세션 생성을 피하고 `WebSocketSession.getAttributes()`에만 저장하는 것이다.
 
 ```java
 // 나쁜 예: HTTP 세션 생성
@@ -181,6 +181,8 @@ const flush = () => {
 - [Firebase, FCM Throttling and Quotas](https://firebase.google.com/docs/cloud-messaging/throttling-and-quotas) (2026-08-26 확인)
 - [Redis, Redis Pub/sub](https://redis.io/docs/latest/develop/pubsub/) (2026-08-26 확인)
 - [Apache Kafka, Introduction](https://kafka.apache.org/documentation/) (2026-08-26 확인)
+- [Reactor Core, Flux.concatMap](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html)
+- [Spring Framework, InMemoryWebSessionStore](https://raw.githubusercontent.com/spring-projects/spring-framework/main/spring-web/src/main/java/org/springframework/web/server/session/InMemoryWebSessionStore.java)
 - [우아한형제들 기술블로그 — 배민쇼핑라이브를 만드는 기술: 채팅 편](https://techblog.woowahan.com/5268/)
 
 ## 관련 문서

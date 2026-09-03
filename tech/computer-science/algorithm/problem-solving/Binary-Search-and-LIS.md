@@ -65,7 +65,6 @@ loop invariant는 `[0, lo)`는 거짓이고 `[hi, n)`은 참이라는 식으로 
 - 인프런, 큰돌 강사, [6-O](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100961)
 
 - [NIST DADS, binary search](https://xlinux.nist.gov/dads/HTML/binarySearch.html)
-- [NIST DADS, longest increasing subsequence](https://xlinux.nist.gov/dads/HTML/longestIncreasingSubseq.html)
 - [C++ working draft, binary search algorithms](https://eel.is/c++draft/alg.binary.search)
 
 ## 관련 문서

@@ -103,7 +103,7 @@ StringExpression normalized = Expressions.stringTemplate(
 
 ## 출처
 
-- [Jakarta Persistence 3.2, Query Language](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#query-language)
+- [Jakarta Persistence 3.2, Subqueries](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a5196)
 - [Hibernate ORM 7.4, HQL guide](https://docs.hibernate.org/stable/orm/querylanguage/html_single/)
 - [Hibernate ORM 7.4, Limits and Fetch Joins](https://docs.hibernate.org/orm/7.4/whats-new/)
 - [Hibernate ORM 7.4, FunctionContributor](https://docs.hibernate.org/orm/7.4/javadocs/org/hibernate/boot/model/FunctionContributor.html)

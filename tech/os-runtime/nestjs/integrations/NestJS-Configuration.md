@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, config, env, dotenv, validation]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-03
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Configuration", "@nestjs/config", "ConfigModule"]
 ---
@@ -37,7 +37,7 @@ aliases: ["NestJS Configuration", "@nestjs/config", "ConfigModule"]
 
 필수 환경변수 누락, 형식 위반을 **앱 시작 시점에 예외로** 끊는 것이 표준. 두 방식:
 
-1. **Joi 스키마** — `validationSchema: Joi.object({ PORT: Joi.number().port().default(3000), ... })`. 기본 동작: 모든 키 optional(필수는 `.required()`), **스키마에 없는 변수 허용(allowUnknown: true)**, 모든 검증 에러 한 번에 보고(abortEarly: false). `validationOptions`로 변경.
+1. **Standard Schema 호환 스키마** — @nestjs/config 12.0.0부터 `validationSchema`에 Zod, Valibot, ArkType 같은 Standard Schema 구현을 사용할 수 있다. 스키마에 없는 변수는 허용하고 실패한 변수는 모두 모아 보고하며, 라이브러리별 옵션은 `validationOptions.libraryOptions`에 둔다. Joi는 Standard Schema를 구현한 v18 이상에서 동작하고, 이 경우 `allowUnknown: true`, `abortEarly: false`가 기본이다. @nestjs/config 4.x 이하의 Joi 전용 API에서는 옵션을 `validationOptions` 바로 아래에 뒀다.
 2. **커스텀 validate 함수** — `validate(config)`가 환경변수 객체를 받아 검증. class-validator + plainToInstance 조합이 공식 예시.
 
 - `validatePredefined: false` — 모듈 import 전에 이미 설정된 process.env 변수(`PORT=3000 node main.js`의 PORT 같은)는 검증에서 제외.
@@ -57,3 +57,4 @@ aliases: ["NestJS Configuration", "@nestjs/config", "ConfigModule"]
 
 ## 출처
 - [NestJS — Configuration](https://docs.nestjs.com/techniques/configuration)
+- [NestJS — Configuration source](https://raw.githubusercontent.com/nestjs/docs.nestjs.com/master/content/techniques/configuration.md)

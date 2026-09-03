@@ -3,6 +3,7 @@ tags: [performance, scalability, monitoring, case-study]
 status: done
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
+verified_at: 2026-09-03
 ---
 
 # 서버 증설 없이 트래픽 스케일링
@@ -58,7 +59,7 @@ aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
 - **데이터 구분**: Universal(모든 사용자 공통) vs User-Specific(사용자별) — 전자는 로컬 캐시가 강함
 - **DTO 압축**: 자주 읽는 user-specific 데이터는 gzip, protobuf로 용량 축소
 - **Pipeline, MGET**: 다중 key 조회 시 round-trip 감소
-- **Read Replica**: Redis 6+에서 read 분산
+- **Read Replica**: 복제본으로 read를 분산한다. Read-only 복제본은 Redis 2.6부터 기본값이고, Redis Cluster에서는 3.0부터 `READONLY` 명령으로 복제본 읽기를 허용한다.
 
 ### 2. DB 병목 (쓰기 경합)
 
@@ -71,7 +72,8 @@ aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
 - 커넥션 풀 사이즈 ≠ DB 처리 용량
 
 **처방**:
-- **분산 락 + Redis 1차 처리**: RedLock으로 중복 방지, 결과는 Redis에 즉시 반환(사용자 빠른 피드백), DB 영속은 Kafka 비동기로
+- **정본 DB에서 원자적 갱신**: 포인트, 잔액과 재고는 조건부 UPDATE나 낙관적 잠금으로 불변식을 지킨다. Redis 잠금만으로 정합성을 맡기지 않는다
+- **안전한 비동기 평탄화**: DB transaction에서 정본 변경과 outbox 기록을 함께 커밋한 뒤 Kafka로 전달한다. consumer는 멱등 처리하고 누락을 찾는 reconciliation을 둔다 ([[Transactional-Outbox]])
 - **Consumer Throttling**: Kafka 컨슈머가 DB 쓰기 속도 조절 → QPS 스파이크 평탄화
 - **Batch INSERT**: 초당 1만 건을 1초에 한 번 10000건 묶어서 쓰기
 - **N+1 제거**: Fetch Join, DataLoader
@@ -155,6 +157,7 @@ aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
 - "서버 증설은 마지막 수단"이라는 주장의 근거
 
 ## 출처
+- [Redis 공식 문서 — 복제](https://redis.io/docs/latest/operate/oss_and_stack/management/replication/)
 - [Toss Tech — 서버 증설 없이 처리하는 대규모 트래픽](https://toss.tech/article/monitoring-traffic)
 - [Toss Tech — 대규모 트래픽 처리 (27600)](https://toss.tech/article/27600)
 - [F-Lab — 대용량 트래픽 처리를 위한 개발자 가이드](https://f-lab.kr/insight/handling-high-traffic)

@@ -79,10 +79,12 @@ class Timer {
   constructor() {
     this.count = 0;
     setInterval(() => this.count++, 1000);  // 화살표: this = Timer 인스턴스
-    // setInterval(function() { this.count++ }, 1000); ← this = global, 에러
+    // setInterval(function() { this.count++ }, 1000); // 에러가 아니라 this가 인스턴스가 아님
   }
 }
 ```
+
+일반 함수 callback의 `this`는 브라우저에서는 전역 객체이고 Node.js에서는 `Timeout` 객체다. 따라서 위 주석의 일반 함수 버전은 예외 대신 `this.count`를 `NaN`으로 만들며 조용히 잘못 동작한다.
 
 ## JS 함수의 핵심 특성
 
@@ -184,6 +186,8 @@ ES6 이전엔 모듈 격리용. 요즘은 ESM, 블록 스코프로 대체.
 ## 출처
 - [매일메일 — JavaScript 함수](https://www.maeil-mail.kr/question/33)
 - [매일메일 — 함수 선언식과 함수 표현식](https://www.maeil-mail.kr/question/68)
+- [HTML Standard, Timers](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timer-initialisation-steps)
+- [Node.js, Timers](https://nodejs.org/api/timers.html)
 
 ## 관련 문서
 - [[Hoisting|호이스팅]]

@@ -3,7 +3,7 @@ tags: [cs, typescript, array, tuple, mapped-type]
 status: done
 category: "CS - TypeScript"
 aliases: ["TypeScript 컬렉션 타입", "인덱스 시그니처와 readonly"]
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 ---
 
 # TypeScript 컬렉션 타입 설계
@@ -97,7 +97,7 @@ total(mutable); // 읽기만 하므로 전달 가능
 - [TypeScript Handbook, Object Types](https://www.typescriptlang.org/docs/handbook/2/objects.html)
 - [TypeScript Handbook, Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html)
 - [TypeScript TSConfig, noUncheckedIndexedAccess](https://www.typescriptlang.org/tsconfig/noUncheckedIndexedAccess.html)
-- [TypeScript lib.es5.d.ts, ArrayLike](https://github.com/microsoft/TypeScript/blob/main/src/lib/es5.d.ts)
+- [TypeScript 5.9 lib.es5.d.ts, ArrayLike](https://github.com/microsoft/TypeScript/blob/release-5.9/src/lib/es5.d.ts)
 - yongsoocho, [배열과 tuple](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=138449)
 - [이펙티브 타입스크립트 스터디 3-3회차, 정재남](https://www.inflearn.com/courses/lecture?courseId=327754&unitId=91632)
 - [이펙티브 타입스크립트 스터디 4-1회차, 정재남](https://www.inflearn.com/courses/lecture?courseId=327754&unitId=91633)

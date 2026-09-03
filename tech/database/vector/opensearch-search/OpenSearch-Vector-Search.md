@@ -188,7 +188,7 @@ Java에서는 ONNX Runtime을 직접 사용하거나 LangChain4j 같은 wrapper�
 - [OpenSearch Documentation, Vector search techniques](https://docs.opensearch.org/latest/vector-search/vector-search-techniques/index/)
 - [OpenSearch Documentation, Filtering vector search](https://docs.opensearch.org/latest/vector-search/filter-search-knn/index/)
 - [OpenSearch Documentation, k-NN API and stats](https://docs.opensearch.org/latest/vector-search/api/knn/)
-- [OpenSearch Documentation, Methods and engines](https://docs.opensearch.org/latest/mappings/supported-field-types/knn-methods-engines/), [OpenSearch Documentation, Vector spaces](https://docs.opensearch.org/latest/mappings/supported-field-types/knn-spaces/), [OpenSearch Documentation, Native library indexes](https://docs.opensearch.org/latest/search-plugins/knn/jni-libraries/)
+- [OpenSearch Documentation, Methods and engines](https://docs.opensearch.org/latest/mappings/supported-field-types/knn-methods-engines/), [OpenSearch Documentation, Vector spaces](https://docs.opensearch.org/latest/mappings/supported-field-types/knn-spaces/), [OpenSearch Documentation, Vector search settings](https://docs.opensearch.org/latest/vector-search/settings/)
 - [OpenSearch Documentation, Disk-based vector search](https://docs.opensearch.org/latest/vector-search/optimizing-storage/disk-based-vector-search/)
 - [OpenSearch Documentation, Delete document](https://docs.opensearch.org/latest/api-reference/document-apis/delete-document/)
 - [RabbitMQ Documentation, Reliability guide](https://www.rabbitmq.com/docs/reliability)

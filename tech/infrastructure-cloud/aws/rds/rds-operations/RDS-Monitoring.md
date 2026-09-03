@@ -72,7 +72,7 @@ RDS는 Slow Query Log, Error Log, General Log를 CloudWatch Logs로 내보낼 �
 
 ### RDS for MySQL 로그 유형
 
-RDS MySQL이 지원하는 5가지 로그:
+RDS for MySQL에서 모니터링할 수 있는 6가지 로그:
 
 | 로그 | 활성화 조건 | 기본 |
 |---|---|---|
@@ -80,6 +80,7 @@ RDS MySQL이 지원하는 5가지 로그:
 | **Slow Query Log** | `slow_query_log=1`, `long_query_time` 설정 | `log_output=FILE` 권장 |
 | **General Log** | `general_log=1` | 모든 쿼리 기록 (운영 환경에서 비활성 권장) |
 | **Audit Log** | `MARIADB_AUDIT_PLUGIN` 옵션 그룹 | 보안, 감사 요건 |
+| **Instance Log** | 인스턴스 운영 이벤트 기록 | 엔진과 버전에 따라 제공 |
 | **IAM DB Auth Error Log** | DB 인스턴스 생성/수정 시 활성화 | IAM 인증 실패 추적 |
 
 #### 로그 출력 방식
@@ -90,14 +91,13 @@ RDS MySQL이 지원하는 5가지 로그:
 - **CloudWatch Logs 연동에는 `log_output=FILE` 필수**
 
 #### 수동 로그 순환
+
 ```sql
 CALL mysql.rds_rotate_general_log;
 CALL mysql.rds_rotate_slow_log;
 ```
 
 ### CloudWatch Logs 게시 설정
-
-로그 데이터를 CloudWatch Logs로 보내 실시간 분석, 알람, 장기 보관.
 
 **콘솔**: RDS → DB 인스턴스 수정 → "로그 내보내기" 섹션에서 게시할 로그 유형 체크
 
@@ -184,7 +184,7 @@ AWS 기본 도구만으로 부족하거나 멀티클라우드, 온프렘 환경�
 - [CloudWatch Database Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html)
 - [jojoldu — AWS RDS PostgreSQL Slack 알람 구현](https://jojoldu.tistory.com/711)
 - [proimaginer — Amazon RDS, CloudWatch로 모니터링하기](https://proimaginer.tistory.com/56)
-- [AWS Docs — RDS for MySQL 데이터베이스 로그 개요](https://docs.aws.amazon.com/ko_kr/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQL.LogFileSize.html)
+- [AWS Docs — RDS for MySQL 데이터베이스 로그 개요](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQL.LogFileSize.html)
 - [AWS Docs — Enhanced Monitoring 활성화](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.Enabling.html)
 - [AWS Docs — RDS 스토리지](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
 - [AWS Docs — CloudWatch Logs에 MySQL 로그 게시](https://docs.aws.amazon.com/ko_kr/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQLDB.PublishtoCloudWatchLogs.html)

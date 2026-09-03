@@ -78,9 +78,10 @@ Business key가 변경될 수 있으면 immutable surrogate key를 entity identi
 
 ## 출처
 
-- [Jakarta Persistence 3.2, Entity Classes](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#the-entity-class)
-- [Jakarta Persistence 3.2, Basic Types and Primary Keys](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#basic-types)
-- [Jakarta Persistence 3.2, Inheritance Mapping](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#inheritance-mapping-strategies)
+- [Jakarta Persistence 3.2, Entity Classes](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a18)
+- [Jakarta Persistence 3.2, Basic Types](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a486)
+- [Jakarta Persistence 3.2, Primary Keys](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a132)
+- [Jakarta Persistence 3.2, Inheritance Mapping](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a966)
 - [Hibernate ORM current User Guide, Domain Model](https://docs.hibernate.org/stable/orm/userguide/html_single/#domain-model)
 - 강의: [객체와 테이블 매핑](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21691), [스키마 자동 생성](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21692), [필드와 컬럼 매핑](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21693), [기본 키 매핑](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21694), [실전 예제 1](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21695)
 - 강의: [상속관계 매핑](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21705), [Mapped Superclass](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21706), [실전 예제 4](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21707)

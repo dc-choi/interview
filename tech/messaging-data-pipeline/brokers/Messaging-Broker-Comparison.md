@@ -1,7 +1,7 @@
 ---
 tags: [messaging, rabbitmq, bullmq, sqs, kafka, broker]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-03
 category: "Messaging - 브로커"
 aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 ---
@@ -154,7 +154,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 | 운영 부담 | 중~높 | 중 | **낮음** (quota, consumer, DLQ와 비용 감시) | **높음** |
 | 관측성 도구 | Management UI | Bull Board | CloudWatch | Prometheus, Grafana, Confluent |
 | 확장성 | 클러스터링 | Redis Cluster | 자동 | 파티션 확장 |
-| 메시지 보관 | ACK까지 보관, TTL과 queue limit 설정 가능. ACK 뒤 Kafka식 replay는 불가 | Redis 설정 | 최대 14일 | retention 설정 범위에서 replay 가능 |
+| 메시지 보관 | Classic과 quorum queue는 기본적으로 ACK 시 제거되지만, message TTL, queue length와 overflow 정책 등에 따라 그 전에 만료되거나 제거될 수 있다. ACK 뒤 재읽기는 불가. Stream은 `max-age`, `max-length-bytes` 범위에서 보관하고 `x-stream-offset`으로 replay 가능 | Redis 설정 | 최대 14일 | retention 설정 범위에서 replay 가능 |
 
 ## 흔한 실수
 
@@ -183,6 +183,8 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 - [NestJS 공식 문서, Queues (BullMQ consumers)](https://docs.nestjs.com/techniques/queues)
 - [BullMQ 공식 문서, Architecture와 job lifecycle](https://docs.bullmq.io/guide/architecture)
 - [RabbitMQ 공식 문서, Time-To-Live and Expiration](https://www.rabbitmq.com/docs/ttl)
+- [RabbitMQ 공식 문서, Queue Length Limit](https://www.rabbitmq.com/docs/maxlength)
+- [RabbitMQ 공식 문서, Streams](https://www.rabbitmq.com/docs/streams)
 - [Apache Kafka Documentation — Message Delivery Semantics](https://kafka.apache.org/documentation/#semantics)
 - [Apache Kafka 4.0 Release Announcement — KRaft only](https://kafka.apache.org/blog/2025/03/18/apache-kafka-4.0.0-release-announcement/)
 - [마이프차 기술 블로그 (Medium) — RabbitMQ vs BullMQ (+SQS) 실사용 후 솔직 후기 (30만 건 실험, RabbitMQ와 BullMQ만 실측)](https://medium.com/@myfranchise/rabbitmq-vs-bullmq-sqs-%EC%8B%A4%EC%82%AC%EC%9A%A9-%ED%9B%84-%EC%86%94%EC%A7%81-%ED%9B%84%EA%B8%B0-c74c1a485143)

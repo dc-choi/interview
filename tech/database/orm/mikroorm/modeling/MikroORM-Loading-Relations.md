@@ -152,7 +152,7 @@ partial entity를 도메인 변경용으로 재사용하지 않는다. 필요한
 
 ## 실무 함정
 
-- populate: all 또는 무제한 깊이 populate는 API 계약이 아니라 accidental graph가 되기 쉽다.
+- `populate: ['*']` 또는 무제한 깊이 populate는 API 계약이 아니라 accidental graph가 되기 쉽다. `all`은 `populate` 값이 아니라 `populateWhere`의 값(`PopulateHint.ALL`)이므로 구분한다.
 - joined의 query 수가 하나여도 row 수와 hydrate 비용이 더 나쁠 수 있다.
 - select-in의 query 수가 늘어도 root마다 한 번씩 읽는 N+1보다 낫다.
 - partial fields로 얻은 엔티티를 수정하고 flush하면 누락 field를 전제로 한 로직이 깨질 수 있다.

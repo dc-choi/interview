@@ -73,7 +73,7 @@ Reverse:   [Client] → Internet → [Reverse Proxy] → [Server 1, 2, 3]
 
 ## X-Forwarded-For 헤더
 
-Reverse Proxy가 클라이언트 IP를 내부 서버에 전달하는 표준 헤더.
+Reverse Proxy가 클라이언트 IP를 내부 서버에 전달할 때 널리 쓰는 비표준 de facto 헤더다. 같은 목적의 IETF 표준은 RFC 7239의 `Forwarded` 헤더다.
 
 ```
 X-Forwarded-For: 203.0.113.1, 198.51.100.2
@@ -128,6 +128,7 @@ NAT는 L3 수준 주소 변환이라 엄밀히 다름. 프록시는 L7(또는 L4
 
 ## 출처
 - [매일메일 — 포워드 프록시와 리버스 프록시](https://www.maeil-mail.kr/question/97)
+- [RFC 7239, Forwarded HTTP Extension](https://www.rfc-editor.org/rfc/rfc7239)
 
 ## 관련 문서
 - [[Load-Balancer|Load Balancer]]

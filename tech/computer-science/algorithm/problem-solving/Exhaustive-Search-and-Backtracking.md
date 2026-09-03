@@ -92,7 +92,7 @@ pruning은 빠를 것 같다는 추측이 아니라 버린 subtree에 최적해�
 - 인프런, 큰돌 강사, [7-N](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100977), [7-U meet in the middle](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100984)
 
 - [NIST DADS, backtracking](https://xlinux.nist.gov/dads/HTML/backtrack.html)
-- [NIST DADS, brute force](https://xlinux.nist.gov/dads/HTML/bruteForce.html)
+- [NIST DADS, brute force](https://xlinux.nist.gov/dads/HTML/bruteforce.html)
 
 ## 관련 문서
 

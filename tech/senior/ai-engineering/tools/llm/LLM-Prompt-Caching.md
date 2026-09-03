@@ -3,7 +3,7 @@ tags: [senior, ai, llm, prompt-caching, cost, bedrock]
 status: done
 category: "Senior - AI 엔지니어링"
 aliases: ["LLM Prompt Caching", "프롬프트 캐싱", "Prompt Caching"]
-verified_at: 2026-07-16
+verified_at: 2026-09-03
 ---
 
 # LLM 프롬프트 캐싱 (Prompt Caching)
@@ -14,7 +14,7 @@ verified_at: 2026-07-16
 
 - 요청 앞부분부터 해시를 계산해 **일치하는 구간까지만** 재사용한다. 캐시 포인트(마커) 위치까지의 KV(attention Key/Value) 상태가 저장 단위다. 내부 구현은 Paged Attention 계열의 GPU 메모리 블록 해싱 방식으로 설명된다(프로바이더가 내부를 공식 문서화하지는 않는다).
 - 앞부분이 조금이라도 바뀌면 그 뒤 전체가 무효화된다. 배치 원칙은 하나 — **변경 빈도가 낮은 것을 앞에, 높은 것을 뒤에**.
-- 과금은 세 종류 토큰으로 나뉜다: 일반 input, cache_write(최초 적재, 기본 입력보다 프리미엄), cache_read(히트, 대폭 할인). Anthropic 기준 5분 TTL 쓰기 1.25배, 1시간 TTL 쓰기 2배, 읽기 0.1배이고, Bedrock도 읽기를 대폭 할인하는 같은 구조다(쓰기 프리미엄은 모델별 상이). 손익은 write 프리미엄을 상회하는 재사용 빈도가 전제다.
+- 과금은 세 종류 토큰으로 나뉜다: 일반 input, cache_write(최초 적재, 기본 입력보다 프리미엄), cache_read(히트, 대폭 할인). Anthropic 기준 5분 TTL 쓰기 1.25배, 1시간 TTL 쓰기 2배다. 읽기는 일반적으로 0.1배지만 Fable 5.1과 Mythos 5.1은 0.025배다. Bedrock도 읽기를 대폭 할인하는 같은 구조이며 쓰기 프리미엄은 모델별로 다를 수 있다. 손익은 write 프리미엄을 상회하는 재사용 빈도가 전제다.
 - 캐시는 계정(조직) 내부에서만 재사용되고 다른 고객과 공유되지 않는다. 시스템 프롬프트에 민감정보가 없다면 노출 우려 없이 켤 수 있다.
 
 ## 적용 절차 — 캐시 포인트는 마지막 한 줄일 뿐
@@ -27,7 +27,7 @@ verified_at: 2026-07-16
 
 - TTL은 **히트마다 재갱신**된다. 1시간 TTL이면 1시간 안에 같은 prefix 호출이 이어지는 한 캐시가 유지되고, 1시간 동안 히트가 없을 때만 만료된다 (AWS Bedrock 문서 기준, Anthropic도 같은 갱신 방식).
 - 기본 TTL은 짧고(5분), 긴 TTL(1시간)은 쓰기 단가가 높다. 배치가 연속 실행되는 워크로드라면 긴 TTL이 워밍 상태를 유지시켜 유리하다.
-- 모델별 최소 캐시 가능 토큰이 있다(Claude 계열 기준 512~4,096 토큰으로 모델별 상이 — Opus 5/Fable 5는 512, Opus 4.8은 1,024, Opus 4.5/4.6과 Sonnet/Haiku 4.5는 4,096). 미달하면 에러 없이 조용히 캐시되지 않는다.
+- 모델별 최소 캐시 가능 토큰이 있다(Claude 계열 기준 512~4,096 토큰으로 모델별 상이 — Opus 5, Fable 5와 Fable 5.1은 512, Opus 4.8과 Sonnet 5, 4.6, 4.5는 1,024, Opus 4.7은 2,048, Opus 4.5, 4.6과 Haiku 4.5는 4,096). 미달하면 에러 없이 조용히 캐시되지 않는다.
 
 ## 활용 패턴 6가지
 
@@ -74,7 +74,7 @@ verified_at: 2026-07-16
 ## 출처
 
 - [LLM 비용 64% 절감, 캐시 히트율 98% 달성기 — 무신사 테크블로그 (29CM)](https://techblog.musinsa.com/llm-%EB%B9%84%EC%9A%A9-64-%EC%A0%88%EA%B0%90-%EC%BA%90%EC%8B%9C-%ED%9E%88%ED%8A%B8%EC%9C%A8-98-%EB%8B%AC%EC%84%B1%EA%B8%B0-d568135bd40e)
-- [Anthropic Docs, Prompt caching](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching) (가격 배율, 최소 토큰, TTL 갱신, 조직 간 격리)
+- [Anthropic Docs, Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) (가격 배율, 최소 토큰, TTL 갱신, 조직 간 격리)
 - [AWS Bedrock User Guide, Prompt caching](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html) (TTL 리셋, 모델별 최소 토큰, 읽기/쓰기 과금)
 - [Prompt Caching: The Secret to 60% Cost Reduction in LLM Applications — Thomson Reuters Labs](https://medium.com/tr-labs-ml-engineering-blog/prompt-caching-the-secret-to-60-cost-reduction-in-llm-applications-6c792a0ac29b)
 - [How we cut LLM costs with prompt caching — ProjectDiscovery](https://projectdiscovery.io/blog/how-we-cut-llm-cost-with-prompt-caching)

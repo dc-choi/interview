@@ -51,7 +51,7 @@ verified_at: 2026-08-27
 
 ### Snow, Storage Gateway, DataSync
 
-- **Snow Family**: 기존 고객은 계속 사용할 수 있지만 신규 고객은 Snowball Edge를 주문할 수 없음. Snowcone은 2024-11부터 기존 고객 포함 주문 불가, Snowmobile은 2024-04 종료, 상용 리전의 Snowball 디바이스 지원은 2026-12-31 종료 예정 — 상세는 [[Snow-Family]]
+- **Snow Family**: 기존 고객은 계속 사용할 수 있지만 신규 고객은 Snowball Edge를 주문할 수 없음. Snowcone은 2024-11부터 기존 고객 포함 주문 불가, Snowmobile은 2024-03-14 지원 종료, 상용 리전의 Snowball 디바이스 지원은 2026-12-31 종료 예정 — 상세는 [[Snow-Family]]
 - **데이터 전송 결정 기준**: 온라인 전송은 DataSync, 물리 전송은 AWS Data Transfer Terminal이나 파트너, 엣지 컴퓨팅은 Outposts를 검토. 기존 Snow 고객만 Snow Family를 선택지에 포함
 - **Storage Gateway 종류**
   | 게이트웨이 | 프로토콜 | 용도 |
@@ -85,4 +85,5 @@ verified_at: 2026-08-27
 - [Managing storage lifecycle — AWS](https://docs.aws.amazon.com/efs/latest/ug/lifecycle-management-efs.html)
 - [Amazon FSx File Gateway User Guide — AWS](https://docs.aws.amazon.com/filegateway/latest/filefsxw/storagegateway-fsxfile-ug.pdf)
 - [AWS Snowball Edge availability change — AWS](https://docs.aws.amazon.com/snowball/latest/developer-guide/snowball-edge-availability-change.html)
+- [AWS General Reference, Services in Full Shutdown](https://docs.aws.amazon.com/general/latest/gr/full_shutdown_services.html)
 - AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)

@@ -18,7 +18,7 @@ aliases: ["Lake Formation", "AWS Lake Formation", "Data Lake"]
 
 - **데이터 수집, 정제, 카탈로깅, 복제** 같은 복잡한 수작업을 자동화
 - **기계 학습 변환** 기능으로 중복 제거 수행
-- **블루프린트**: 데이터를 데이터 레이크로 이전 — S3, RDS, 온프레미스 관계형 DB, NoSQL DB 등에서 지원
+- **블루프린트**: 2026-09-03 AWS 문서 기준, JDBC 관계형 DB(RDS, EC2 호스팅, 온프레미스)의 snapshot, incremental load와 CloudTrail, Classic/Application Load Balancer 로그 파일 bulk load를 지원한다. DynamoDB 같은 NoSQL은 대상이 아니다
 - **세분화된 액세스 제어**: 행, 열 수준까지 권한 관리 (S3 객체 정책으로는 어려운 영역)
 - Lake Formation에 주입된 모든 데이터에 대해 **중앙 권한 관리**
 
@@ -39,3 +39,4 @@ aliases: ["Lake Formation", "AWS Lake Formation", "Data Lake"]
 ## 출처
 
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)
+- [AWS Lake Formation Developer Guide, Blueprints and workflows](https://docs.aws.amazon.com/lake-formation/latest/dg/workflows-about.html)

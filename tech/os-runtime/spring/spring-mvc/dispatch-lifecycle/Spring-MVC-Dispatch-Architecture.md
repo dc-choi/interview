@@ -70,7 +70,7 @@ Custom `HandlerMethodArgumentResolver`, `HttpMessageConverter`, interceptor와 V
 
 ## 출처
 
-- [Spring Framework, DispatcherServlet](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet.html), [Handler mappings](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/handlermapping.html), [View resolution](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/viewresolver.html)
+- [Spring Framework, DispatcherServlet](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet.html), [Handler mappings](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/special-bean-types.html), [View resolution](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/viewresolver.html)
 - Spring MVC 구조: [전체 구조](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71202), [mapping/adapter](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71203), [ViewResolver](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71204), [annotation Controller](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71205), [mapping 통합](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71206), [실용적인 handler](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71207), [구조 정리](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71208)
 
 ## 관련 문서

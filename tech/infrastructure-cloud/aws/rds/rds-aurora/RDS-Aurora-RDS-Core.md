@@ -31,7 +31,7 @@ verified_at: 2026-08-25
 - **스토리지 유형**
   - 범용 SSD(gp2/gp3) — 대부분 워크로드의 기본 선택
   - 프로비저닝 IOPS(io1/io2) — 일관적 저지연, 고 I/O 요구
-  - 마그네틱 — 접속 빈도 낮은 워크로드용 레거시
+  - 마그네틱(standard) — deprecated. 신규 DB 인스턴스에는 제공되지 않고 기존 볼륨은 gp3로 마이그레이션됐다. 2026-07-01부터 스냅샷을 마그네틱 스토리지로 복원하는 것도 불가능하므로 새 스토리지 수요에는 쓰지 않는다
 
 ### 지원 엔진과 Read Replica 한계
 
@@ -80,6 +80,7 @@ Read Replica 수는 엔진별로 다르다. MySQL, MariaDB, PostgreSQL과 SQL Se
 
 ## 출처
 
+- [Amazon RDS, DB instance storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
 - [Amazon RDS, Amazon RDS DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.DBInstance.html)
 - [Amazon RDS, Multi-AZ DB instance deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html)
 - [Amazon RDS, Working with DB instance read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html)

@@ -19,7 +19,7 @@ verified_at: 2026-07-21
   - **Cluster** — 같은 AZ의 가까운 네트워크 배치로 낮은 지연과 높은 처리량을 노림. AZ 장애에 대한 별도 복원력은 제공하지 않음
   - **Spread** — 서로 다른 하드웨어. AZ당 최대 **7개 인스턴스** 제한 (자주 묻는 숫자)
   - **Partition** — AZ당 최대 7파티션. Hadoop/Cassandra/Kafka 같은 분산 시나리오
-- **EFA**(Elastic Fabric Adapter)는 **HPC/MPI 전용** — Linux만 지원, Windows X
+- **EFA**(Elastic Fabric Adapter)는 2026-09-03 AWS 문서 기준 HPC/MPI뿐 아니라 NCCL, NIXL 기반 AI/ML 통신에도 쓴다. 지원 OS 표는 Linux 배포판을 나열하지만 AWS CDI SDK 기반 애플리케이션은 Windows 인스턴스에서도 EFA 디바이스를 사용할 수 있다. 그 밖의 Windows 애플리케이션은 ENA 디바이스를 사용한다
 - **ENA**(보통 가상 NIC)와 **EFA**(HPC OS 우회) 구분
 - **인스턴스 스토어**: EC2 종료/중지 시 **휘발** — 영구 저장 필요하면 EBS. 종료 후 보존 묻는 문제는 EBS 정답
 - **Hibernate**(최대 60일): RAM 상태를 EBS 루트에 저장. 인스턴스 스토어 루트는 hibernate 불가
@@ -72,3 +72,4 @@ verified_at: 2026-07-21
 - [Lambda 할당량](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
 - [ECS에서 Network Load Balancer 사용](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/nlb.html)
 - [EKS access entries](https://docs.aws.amazon.com/eks/latest/userguide/access-entries.html)
+- [Amazon EC2, Elastic Fabric Adapter](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html)

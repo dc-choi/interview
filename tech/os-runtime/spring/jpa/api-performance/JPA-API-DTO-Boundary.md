@@ -74,7 +74,7 @@ HTTP method는 controller annotation 이름이 아니라 resource semantics로 �
 
 - [RFC 9110, PUT](https://www.rfc-editor.org/rfc/rfc9110.html#name-put)
 - [RFC 5789, PATCH](https://www.rfc-editor.org/rfc/rfc5789.html)
-- [Jakarta Persistence 3.2, Entity Operations](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#entity-operations)
+- [Jakarta Persistence 3.2, Entity Operations](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a1060)
 - 강의: [회원 등록 API](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24318), [회원 수정 API](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24319), [회원 조회 API](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24320)
 
 ## 관련 문서

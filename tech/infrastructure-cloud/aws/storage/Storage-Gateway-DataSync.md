@@ -3,7 +3,7 @@ tags: [infrastructure, aws, storage-gateway, datasync, hybrid-cloud]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Storage Gateway", "AWS Storage Gateway", "DataSync", "AWS DataSync"]
-verified_at: 2026-08-25
+verified_at: 2026-09-03
 ---
 
 # Storage Gateway & DataSync
@@ -71,7 +71,8 @@ verified_at: 2026-08-25
 
 - 온프레미스 ↔ AWS, 또는 AWS 서비스 간 **대량 데이터 이전, 동기화 자동화** 서비스
 - 전송 채널 — **AWS Direct Connect, VPN, 인터넷**
-- 온프레미스 또는 다른 클라우드의 스토리지와 전송할 때는 **DataSync Agent**를 배포한다. 지원되는 AWS 스토리지 서비스 간 전송은 agent 없이 구성할 수 있다.
+- 온프레미스와 AWS 사이에는 **DataSync Agent**가 필요하다. 다른 클라우드의 파일 스토리지와 EFS / FSx 사이에도 agent가 필요하다. 다른 클라우드의 객체 스토리지와 S3 사이는 Basic 모드에서 agent가 필요하지만 Enhanced 모드는 agent 없이 전송할 수 있다.
+- 같은 계정의 지원되는 AWS 스토리지 서비스 사이는 보통 agent가 필요 없다. 다만 S3 on Outposts가 포함되거나, S3가 포함되지 않은 일부 교차 계정 전송처럼 agent가 필요한 예외가 있다.
 - 전송 작업의 스케줄링, 증분 동기화, 검증, 암호화, 압축 자동 처리
 - TLS 전송 중 암호화 기본 활성화
 
@@ -98,7 +99,7 @@ verified_at: 2026-08-25
 - **iSCSI 블록 스토리지 + EBS Snapshot 백업**이면 → **Volume Gateway** (Cached/Stored 구분 주의)
 - **VTL, 가상 테이프 라이브러리, 기존 백업 SW 유지**가 보이면 → **Tape Gateway**
 - **온프레미스 → S3 일회성 페타바이트 이전**은 → **DataSync** (혹은 더 크면 Snowball Family — 기존 Snow 고객 한정, 신규는 Data Transfer Terminal이나 파트너, [[Snow-Family]])
-- **AWS 스토리지 서비스 간 동기화** (S3 ↔ EFS, EFS ↔ FSx) → **DataSync**
+- **같은 계정의 지원되는 AWS 스토리지 서비스 간 동기화** (S3 ↔ EFS, EFS ↔ FSx) → **DataSync**, 일반적으로 agent 불필요
 - **상시 마운트해서 사용**할 거면 Storage Gateway, **이전, 복제 자동화**면 DataSync
 - File Gateway는 **S3 콘솔에서 객체 직접 확인 가능**, Volume Gateway는 **불가** (스냅샷 형식)
 - Volume Gateway 데이터 암호화 — 전송 SSL, 저장 **SSE-S3**
@@ -109,6 +110,7 @@ verified_at: 2026-08-25
 - [AWS Storage Gateway, Hardware Appliance end of availability](https://docs.aws.amazon.com/storagegateway/latest/vgw/appliance-launch-gateway.html)
 - [AWS Storage Gateway API, GatewayInfo](https://docs.aws.amazon.com/storagegateway/latest/APIReference/API_GatewayInfo.html)
 - [AWS DataSync, Where can I transfer my data?](https://docs.aws.amazon.com/datasync/latest/userguide/working-with-locations.html)
+- [AWS DataSync, Do I need an agent?](https://docs.aws.amazon.com/datasync/latest/userguide/do-i-need-datasync-agent.html)
 - AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서

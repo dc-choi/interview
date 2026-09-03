@@ -22,7 +22,7 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 
 ## 작동 방식
 
-- **Monitor 정의**: 무엇을 감시할지 — 전체 서비스, 특정 서비스(예: EC2만), 계정(Organizations), 비용 카테고리, 태그(Cost Allocation Tag) 단위.
+- **Monitor 정의**: 2026-09-03 AWS 문서 기준, 감시 차원은 AWS services, 연결 계정, 비용 카테고리, 태그 네 가지다. AWS services 차원은 계정에서 사용하는 전체 서비스를 자동 평가하는 AWS managed monitor만 지원한다. Customer managed monitor는 연결 계정, 태그 값, 비용 카테고리 값으로 범위를 정하며 특정 서비스 하나만 고르는 monitor는 만들 수 없다. 서비스별 기여는 탐지 후 근본 원인 분해나 AWS User Notifications 필터로 확인한다.
 - **ML 베이스라인**: 과거 사용 패턴을 학습해 정상 범위를 만들고, 벗어나면 이상으로 표시.
 - **근본 원인 분해**: 이상 발생 시 어느 서비스/사용 유형/리전이 기여했는지 자동 분석.
 - **Alert Subscription**: 임계 금액 이상의 이상에 대해 이메일/SNS로 알림(개별 또는 일/주 요약).
@@ -50,14 +50,14 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 ## 면접 체크포인트
 
 - 이상 탐지(추세 급변) vs 예산 알람(임계)의 역할 분담
-- ML 베이스라인과 Monitor 범위(서비스/계정/태그) 설계
+- ML 베이스라인과 Monitor 범위(AWS services/연결 계정/비용 카테고리/태그) 설계
 - 자동 근본 원인 분해의 가치
 - 폭증의 흔한 원인(미삭제 리소스, 재시도, 전송, 침해)
 - 탐지 + 알람 + 액션을 층으로 두는 운영
 
 ## 출처
 
-- [AWS — Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/getting-started-ad.html)
+- [AWS Cost Management, Getting started with AWS Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/getting-started-ad.html)
 
 ## 관련 문서
 

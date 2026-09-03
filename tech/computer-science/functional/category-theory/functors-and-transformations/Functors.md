@@ -94,7 +94,7 @@ const mapMaybe = <A, B>(m: Maybe<A>, f: (a: A) => B): Maybe<B> =>
 
 ### List, Promise, Either — 익숙한 컨테이너
 
-`Array.prototype.map`이 정확히 List Functor의 `fmap`. `Promise.then`도 Functor `fmap` 역할(반환이 Promise가 아닐 때). `Either<L, R>`은 R에 대한 Functor.
+`Array.prototype.map`이 정확히 List Functor의 `fmap`. `Promise.then`도 callback 반환값이 thenable, 즉 callable한 `then` 프로퍼티를 가진 값이 아닐 때 Functor의 `fmap` 역할을 한다. Thenable이면 Promise resolution 절차가 이를 동화해 flatten하므로 일반적인 `fmap`과 다르다. `Either<L, R>`은 R에 대한 Functor다.
 
 ### Reader — 함수도 Functor
 
@@ -151,7 +151,7 @@ const g = (x: number): number => { effects.push(`g${x}`); return x * 2; };
 |---|---|
 | **Bifunctor** | 두 인자에 모두 functorial. `Either`, `Tuple`이 대표 |
 | **Profunctor** | 첫 인자는 contravariant, 둘째는 covariant. 함수 타입 `a → b`가 대표 |
-| **Contravariant Functor** | 화살표 방향이 뒤집힘. `fmap :: (b → a) → f a → f b` |
+| **Contravariant Functor** | 화살표 방향이 뒤집힘. `contramap :: (b → a) → f a → f b` |
 | **Applicative Functor** | Functor + 두 효과 결합 (`<*>`) |
 | **Monad** | Functor + flatten (`>>=` / `flatMap`) |
 
@@ -179,6 +179,8 @@ const g = (x: number): number => { effects.push(`g${x}`); return x * 2; };
 
 ## 출처
 - [evan-moon — 프로그래머를 위한 카테고리 이론 7. Functors](https://evan-moon.github.io/2024/03/15/category-theory-for-programmers-7-functors/)
+- [ECMAScript Language Specification, Promise Resolve Functions](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-createresolvingfunctions)
+- [GHC, Data.Functor.Contravariant](https://gitlab.haskell.org/ghc/ghc/-/blob/master/libraries/base/src/Data/Functor/Contravariant.hs)
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 일반 개념]]

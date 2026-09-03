@@ -182,5 +182,7 @@ PhotoModule을 루트 AppModule에 import하는 것까지가 배선.
 - [[ORM|ORM (Sequelize, TypeORM, Prisma 비교)]]
 
 ## 출처
-- [NestJS — SQL (TypeORM) recipe](https://docs.nestjs.com/recipes/sql-typeorm)
+- [NestJS — Asynchronous providers](https://docs.nestjs.com/fundamentals/async-providers)
+- [NestJS — Database](https://docs.nestjs.com/techniques/database)
+- [NestJS docs — SQL TypeORM recipe removal](https://github.com/nestjs/docs.nestjs.com/commit/44cf255075ade9d7c3b92e35cdd2f0205583b9a6)
 - [TypeORM — DataSource source](https://github.com/typeorm/typeorm/blob/master/src/data-source/DataSource.ts)

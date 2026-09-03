@@ -64,7 +64,7 @@ NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인
 `OnModuleInit`에서 `redis.duplicate()`로 별도 connection을 만들고 `cache:invalidation` 채널을 구독한다. 쓰기는 **DB commit → 공유 L2 삭제 또는 갱신 → writer의 L1 삭제 또는 갱신 → `{ key, instanceId, op }` publish → 다른 인스턴스의 L1 삭제** 순서로 처리한다. L2를 먼저 처리해야 다른 인스턴스가 L1을 비운 직후 stale L2로 다시 채우지 않는다. 자기 메시지를 무시해도 안전한 이유는 publish 전에 writer가 L2와 자기 L1을 이미 처리했기 때문이다.
 
 핵심 디테일:
-- **별도 Redis 커넥션** — `duplicate()`. Pub/Sub 모드에선 일반 명령 못 씀
+- **별도 Redis 커넥션** — `duplicate()`. RESP2 연결은 구독 상태에서 구독 제어와 `PING`, `QUIT`, `RESET`만 허용하고, RESP3는 임의 명령도 허용한다. 프로토콜과 무관하게 구독 전용 연결을 분리하는 편이 안전
 - **L2 우선 무효화** — 공유 L2를 먼저 삭제하거나 갱신한 뒤 각 인스턴스의 L1을 비움
 - **writer L1 직접 처리** — L2 처리 뒤 writer의 L1을 삭제하거나 새 값으로 갱신하고 publish
 - **자기 메시지 무시** — 로컬 무효화가 끝난 뒤 instanceId 필터로 echo 방지
@@ -117,6 +117,7 @@ NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인
 - [NestJS — Caching](https://docs.nestjs.com/techniques/caching)
 - [NestJS — Lifecycle events](https://docs.nestjs.com/fundamentals/lifecycle-events)
 - [Node.js — Process](https://nodejs.org/api/process.html)
+- [Redis, Pub/Sub](https://redis.io/docs/latest/develop/pubsub/)
 
 ## 관련 문서
 - [[NestJS|NestJS 개관]]

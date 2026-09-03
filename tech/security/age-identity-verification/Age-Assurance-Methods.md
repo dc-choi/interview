@@ -29,7 +29,7 @@ aliases: ["Age Assurance Methods", "연령 검증 방법론", "Facial Age Estima
 
 ## 제공업체 지형
 
-연령 추정 진영(Yoti, Unissey, Privately)과 신원 검증 진영(iProov, IDVerse, GBG)으로 갈리고, OCR과 라이브니스를 묶은 IDV(Onfido, Veriff, Incode)가 그 사이를 메운다. 영국 2025년 시험에서 검증 29곳, 추정 13곳이 평가됐다.
+연령 추정 진영(Yoti, Unissey, Privately)과 신원 검증 진영(iProov, IDVerse, GBG)으로 갈리고, OCR과 라이브니스를 묶은 IDV(Onfido, Veriff, Incode)가 그 사이를 메운다. 호주 정부가 의뢰한 2025년 Age Assurance Technology Trial에는 48개 벤더의 60개가 넘는 기술이 참여했고, 이 가운데 연령 검증 24개와 연령 추정 13개가 평가됐다.
 
 ## 프라이버시 보존 검증 (PET)
 
@@ -52,7 +52,7 @@ aliases: ["Age Assurance Methods", "연령 검증 방법론", "Facial Age Estima
 ## 출처
 
 - [Age verification methods — AVPA](https://avpassociation.com/avmethods/)
-- [Age assurance tech trial — Biometric Update](https://www.biometricupdate.com/202509/age-assurance-tech-trial-highlights-providers-for-verification-estimation)
+- [Age Assurance Technology Trial, Part A](https://ageassurance.com.au/wp-content/uploads/2025/08/AATT_Part_A_DIGITAL.pdf)
 - [Facial age estimation — Wikipedia](https://en.wikipedia.org/wiki/Facial_age_estimation)
 - [ID Document Liveness Detection — Regula](https://regulaforensics.com/blog/id-document-liveness-detection/)
 - [IEEE 2089.1-2024 Standard for Online Age Verification](https://ieeexplore.ieee.org/document/10542699)

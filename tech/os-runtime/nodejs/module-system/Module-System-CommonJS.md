@@ -73,7 +73,7 @@ require()는 블로킹 호출이다. 파일을 읽고, 파싱하고, 실행하�
 ### 모듈 Resolution 순서
 
 1. **파일 모듈**: `/`, `./`, `../`로 시작하면 파일 시스템 경로로 해석한다.
-2. **코어 모듈**: `fs`, `path`, `http` 등 Node.js 내장 모듈은 항상 우선한다.
+2. **코어 모듈**: Node.js v26.8.1 문서 기준, `fs`, `path`, `http`처럼 오래된 내장 모듈은 접두사 없이도 우선한다. `node:ffi`, `node:sea`, `node:sqlite`, `node:test`, `node:test/reporters`는 `node:` 접두사가 있어야 내장 모듈로 해석된다.
 3. **패키지 모듈**: 위 두 경우에 해당하지 않으면 현재 디렉토리의 node_modules부터 루트까지 순차적으로 탐색한다.
 
 ### 캐싱
@@ -114,6 +114,10 @@ module.exports = new Database();
 ```
 
 **Monkey-patching (비권장)**: 다른 모듈의 exports를 런타임에 수정한다. 테스트 목적으로 간혹 사용되지만, 예측 불가능한 부작용을 초래하므로 권장되지 않는다.
+
+## 출처
+
+- [Node.js, CommonJS modules](https://nodejs.org/api/modules.html)
 
 ## 관련 문서
 - [[Module-System-ESM|ESM 모듈 시스템]]

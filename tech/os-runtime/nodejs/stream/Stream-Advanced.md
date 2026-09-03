@@ -52,7 +52,7 @@ Callback은 특정 작업의 완료를 한 곳에서 받아야 할 때 적합하
 
 EventEmitter는 이벤트가 반복적으로 발생하거나, 발생 여부가 보장되지 않거나, 여러 구독자가 동일한 이벤트를 수신해야 할 때 적합하다. on()으로 여러 리스너를 등록할 수 있어 확장에 유리하다.
 
-두 방식을 결합할 수도 있다. 예를 들어 glob(pattern, callback) 함수는 최종 결과를 callback으로 반환하면서, 중간에 발견되는 각 파일을 EventEmitter의 'match' 이벤트로 알린다.
+두 방식을 결합한 과거 API도 있다. `glob` v7 이하는 최종 결과를 callback으로 반환하면서 중간 match 이벤트도 알렸지만, v9 이후 `glob()`은 Promise를 반환하고 `Glob`도 EventEmitter가 아니다. 현재 코드에 이 패턴을 그대로 적용하지 않는다.
 
 ## pipeline() vs pipe() 상세 비교
 
@@ -191,3 +191,4 @@ process.nextTick에서 uncork를 호출하는 것이 관용구:
 - [Node.js, Stream](https://nodejs.org/api/stream.html)
 - [Node.js — Web Streams API](https://nodejs.org/api/webstreams.html)
 - [We Ralph Wiggumed WebStreams to make them 10x faster — Vercel](https://vercel.com/blog/we-ralph-wiggumed-webstreams-to-make-them-10x-faster)
+- [node-glob changelog — isaacs](https://github.com/isaacs/node-glob/blob/main/changelog.md)

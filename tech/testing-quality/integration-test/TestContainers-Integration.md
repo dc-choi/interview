@@ -3,7 +3,7 @@ tags: [testing, testcontainers, integration-test, docker, idempotent]
 status: done
 category: "테스트&품질(Testing&Quality)"
 aliases: ["TestContainers Integration", "Testcontainers 통합 테스트", "멱등성 있는 테스트"]
-verified_at: 2026-08-28
+verified_at: 2026-09-03
 ---
 
 # Testcontainers, 멱등성 있는 통합 테스트
@@ -15,7 +15,7 @@ verified_at: 2026-08-28
 - **멱등성** = 여러 번 실행해도 같은 결과
 - 공유 DB, 외부 서비스에 의존하면 **타 팀 변경**으로 테스트가 깨진다
 - **Testcontainers**는 Docker 컨테이너를 **테스트 수명주기에 맞춰** 생성, 파괴
-- **Random 포트**, **병렬 테스트**, **코드로 관리** 가 차별점
+- **Random 포트**, **코드로 관리**, 직접 격리 설계 시 **병렬화 가능**이 차별점
 
 ## 통합 테스트 환경 비교
 
@@ -25,7 +25,7 @@ verified_at: 2026-08-28
 | **In-memory DB (H2 등)** | 빠름, 격리 | **DB 특화 기능 테스트 불가**(PostgreSQL JSONB, MySQL FullText 등) |
 | **Embedded Library** | 특화 기능 가능 | 일부 DB만 지원, OS/버전 제약 |
 | **Docker Compose** | 실 환경 재현 | 설정 파일 별도 관리, **포트 충돌**, 병렬 테스트 제약 |
-| **Testcontainers** | 코드로 관리, Random 포트, 병렬 가능 | Docker 필요 |
+| **Testcontainers** | 코드로 관리, Random 포트, 수명주기와 데이터 격리 설계 시 병렬화 가능 | Docker 필요 |
 
 Testcontainers의 우위는 **테스트 코드 안에 인프라 선언**이 들어가는 것.
 
@@ -41,22 +41,22 @@ Testcontainers의 우위는 **테스트 코드 안에 인프라 선언**이 들�
 ### 의존성
 
 ```kotlin
-testImplementation("org.testcontainers:junit-jupiter")
-testImplementation("org.testcontainers:postgresql")
+testImplementation(platform("org.testcontainers:testcontainers-bom:2.0.5"))
+testImplementation("org.testcontainers:testcontainers-junit-jupiter")
+testImplementation("org.testcontainers:testcontainers-postgresql")
+testImplementation("org.testcontainers:testcontainers-kafka")
 ```
 
 ### 컨테이너 선언
 
-```kotlin
-@Component
-class PostgresqlTestContainer {
-    @PreDestroy
-    fun stop() { POSTGRES_CONTAINER.stop() }
+아래 예시는 JUnit `@Container`나 Spring `ApplicationContext` 수명주기가 아닌 JVM singleton 패턴이다. 컨테이너는 처음 참조할 때 한 번 시작하고 명시적으로 `stop()`하지 않는다. JVM 종료 시 Testcontainers의 Ryuk이 정리한다.
 
+```kotlin
+import org.testcontainers.postgresql.PostgreSQLContainer
+class PostgresqlTestContainer private constructor() {
     companion object {
-        @Container @JvmStatic
-        val POSTGRES_CONTAINER: PostgreSQLContainer<*> =
-            PostgreSQLContainer<Nothing>("postgres:alpine")
+        @JvmField val POSTGRES_CONTAINER: PostgreSQLContainer =
+            PostgreSQLContainer("postgres:16-alpine")
                 .apply { withDatabaseName("database_name") }
                 .apply { withUsername("root") }
                 .apply { withPassword("password") }
@@ -71,7 +71,6 @@ class PostgresqlTestContainer {
 @Configuration
 class TestDataSource {
     @Bean
-    @DependsOn("postgresqlTestContainer")
     fun dataSource(): DataSource =
         DataSourceBuilder.create()
             .url(PostgresqlTestContainer.POSTGRES_CONTAINER.jdbcUrl)
@@ -86,12 +85,12 @@ class TestDataSource {
 ## Kafka 예시
 
 ```kotlin
-@Component
-class KafkaTestContainer {
+import org.testcontainers.kafka.ConfluentKafkaContainer
+import org.testcontainers.utility.DockerImageName
+class KafkaTestContainer private constructor() {
     companion object {
-        @Container @JvmStatic
-        val KAFKA_CONTAINER: KafkaContainer =
-            KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.4.3"))
+        @JvmField val KAFKA_CONTAINER: ConfluentKafkaContainer =
+            ConfluentKafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"))
                 .apply { start() }
     }
 }
@@ -123,7 +122,7 @@ class KafkaTestConfiguration {
 ### 기동 시간
 
 - 매 테스트마다 컨테이너 시작 → **테스트 속도** 저하
-- 해결: **클래스 레벨 공유** (`@Container` + `@TestInstance(PER_CLASS)`) 또는 **JVM 수명 주기 공유** (`@JvmStatic`)
+- 해결: **클래스 레벨 공유**는 `@Container`가 붙은 static field로 얻는다. Kotlin에서는 companion object property에 `@JvmField`를 붙여 static field로 노출하며, 범위는 해당 test class다. Suite 전역 공유가 필요하면 `@Testcontainers` extension 대신 singleton container를 직접 `start()`한다
 - Testcontainers의 **Reusable Containers** 모드도 옵션
 
 ### 재사용 전략
@@ -134,16 +133,18 @@ class KafkaTestConfiguration {
 
 대부분 프로젝트는 **JVM 전역 1개 + 테스트마다 Truncate/Reset** 패턴.
 
+JUnit 5의 `@Testcontainers` extension은 공식적으로 sequential execution만 검증됐고 parallel execution은 지원하지 않는다. 병렬화하려면 컨테이너 수명주기와 DB/schema/topic 같은 테스트 데이터를 직접 격리한다.
+
 ### CI 환경
 
-- GitHub Actions, CircleCI, GitLab 모두 **Docker-in-Docker** 지원
-- 빌드 머신에 Docker 설치 필수
+- GitHub Actions, CircleCI와 GitLab에서 사용할 수 있지만 runner별 Docker API 제공 방식과 설정이 다르다. CircleCI는 machine executor, GitLab은 socket 또는 DinD 등 공식 가이드를 확인한다
+- CI runner에서 Testcontainers가 접근할 수 있는 지원 Docker API와 실행 권한이 필요하다
 - 컨테이너 이미지 **캐싱**으로 CI 시간 단축
 
 ### Docker 없는 환경
 
-- M1/M2 Mac의 Docker Desktop 라이선스 이슈 → Colima, OrbStack, Podman으로 대체
-- CI에서는 문제 없음
+- Docker Desktop 라이선스는 CPU 종류가 아니라 조직 규모, 매출과 사용 목적 기준을 확인한다
+- macOS에서는 Colima, OrbStack, Podman 같은 대체 runtime의 Testcontainers 호환성을 검증한다. CI도 지원되는 Docker API 환경과 실행 권한을 별도로 확인한다
 
 ## 멱등성의 실전 사례
 
@@ -179,7 +180,14 @@ Testcontainers는 **통합 테스트** 영역. Unit Test까지 가져가면 속�
 
 ## 출처
 - [Testcontainers for Java, JDBC support](https://java.testcontainers.org/modules/databases/jdbc/)
-- [Riiid Team Blog — Testcontainer로 멱등성 있는 Integration Test 환경 구축하기](https://medium.com/riiid-teamblog-kr/testcontainer-로-멱등성있는-integration-test-환경-구축하기-4a6287551a31)
+- [Testcontainers for Java, JUnit 5 Quickstart](https://java.testcontainers.org/quickstart/junit_5_quickstart/)
+- [Testcontainers for Java, Kafka Module](https://java.testcontainers.org/modules/kafka/)
+- [Testcontainers for Java, JUnit 5 Integration](https://java.testcontainers.org/test_framework_integration/junit_5/)
+- [Testcontainers for Java, Singleton containers](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers)
+- [Testcontainers for Java 2.0.5 — GitHub Releases](https://github.com/testcontainers/testcontainers-java/releases/tag/2.0.5)
+- [Kotlin, Java interop — Static fields](https://kotlinlang.org/docs/java-to-kotlin-interop.html#static-fields)
+- [Docker Docs, Docker Desktop license agreement](https://docs.docker.com/subscription/desktop-license/)
+- Testcontainers CI 가이드: [CircleCI](https://java.testcontainers.org/supported_docker_environment/continuous_integration/circle_ci/), [GitLab CI](https://java.testcontainers.org/supported_docker_environment/continuous_integration/gitlab_ci/)
 
 ## 관련 문서
 - [[Test-Pyramid|Practical Test Pyramid]]

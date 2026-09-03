@@ -15,7 +15,7 @@ NestJS integration의 핵심은 DI 등록보다 request마다 Identity Map을 �
 PostgreSQL 예시다.
 
 ```bash
-npm install @mikro-orm/core@7.1.11 @mikro-orm/postgresql@7.1.11 @mikro-orm/nestjs
+npm install @mikro-orm/core@7.1.11 @mikro-orm/postgresql@7.1.11 @mikro-orm/decorators@7.1.11 @mikro-orm/nestjs
 ```
 
 core와 driver는 같은 version으로 맞춘다. `@mikro-orm/nestjs`는 별도 repository에서 배포되므로 package의 peer dependency와 release note로 core 호환성을 확인한다.
@@ -109,7 +109,8 @@ middleware ordering이 중요하다. request body parser 뒤, ORM을 쓰는 cust
 HTTP middleware가 실행되지 않는 top-level job method에는 새 context가 필요하다.
 
 ```ts
-import { CreateRequestContext, MikroORM } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
+import { CreateRequestContext } from '@mikro-orm/decorators/legacy';
 
 @Injectable()
 export class BillingJob {
@@ -123,7 +124,7 @@ export class BillingJob {
 ```
 
 - `@CreateRequestContext()`는 top-level에 한 번만 둔다. 중첩하지 않는다.
-- 기존 context가 있으면 재사용하고 없을 때만 만들려면 `@EnsureRequestContext()`를 쓴다.
+- 기존 context가 있으면 재사용하고 없을 때만 만들려면 같은 `@mikro-orm/decorators/legacy`의 `@EnsureRequestContext()`를 쓴다. ES decorator를 쓰는 프로젝트는 두 decorator를 `/es` subpath에서 가져온다.
 - Bull 같은 method decorator와 실행 순서가 충돌할 수 있으면 queue handler와 ORM 작업 method를 분리한다.
 - message 하나마다 context와 transaction의 성공, retry 경계를 맞춘다.
 

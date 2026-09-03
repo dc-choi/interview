@@ -27,7 +27,7 @@ ambient mode 업그레이드는 세 컴포넌트를 서로 다른 방식으로 �
 
 ## Step 2 — istio-cni: in-place
 
-- DaemonSet rollout으로 충분한 근거: 이미 실행 중인 Pod는 network namespace 안에 redirection rule과 ztunnel 경로가 완성돼 있어 CNI 교체의 영향을 받지 않는다. CNI는 Pod **생성 시점**에만 개입한다.
+- istio-cni 노드 에이전트는 신규 Pod 생성 시 chained CNI plugin 경로에 개입하고, Kubernetes API server를 watch해 이미 실행 중인 Pod나 namespace에 ambient label이 붙는 이벤트에도 반응한다. 이때 리다이렉션 규칙을 설치하고 ztunnel에 알린다. 편입이 끝난 Pod의 데이터 경로에는 상주하지 않으므로 DaemonSet in-place rollout이 가능하지만, rollout 중 영향 범위에는 신규 Pod 생성뿐 아니라 그 시점의 mesh 편입과 이탈 처리도 포함된다.
 - rollout 중 새 Pod 생성이 겹치면 FailedCreatePodSandBox가 날 수 있지만, CNI가 준비되면 재시도로 회복되는 일시 현상이다.
 - 확인: rollout 완료, redirection 누락 Pod 없음, `pending` annotation으로 남은 Pod 없음 ([[Istio-Ambient-Partially-Enrolled-Pod]]의 진단 포인트 재사용).
 
@@ -54,7 +54,7 @@ ambient mode 업그레이드는 세 컴포넌트를 서로 다른 방식으로 �
 ## 면접 체크포인트
 
 - ztunnel만 왜 blue-green인가? → 업그레이드의 안전한 단위는 컴포넌트의 장애 반경과 같다. ztunnel의 장애 반경이 노드 전체이므로 교체 단위도 노드여야 하고, 그것이 곧 node pool 교체다.
-- istio-cni는 왜 in-place로 안전한가? → CNI는 Pod 생성 시점에만 개입하고 기존 Pod의 데이터 경로에는 없다. 교체 중 리스크는 신규 Pod 생성뿐이고 그건 재시도로 회복된다. 컴포넌트가 데이터 경로에 상주하는지 여부가 업그레이드 전략을 가른다.
+- istio-cni는 왜 in-place로 안전한가? → 신규 Pod 생성과 기존 Pod/namespace의 ambient label 변경 때 개입하지만 편입이 끝난 Pod의 데이터 경로에는 상주하지 않는다. 교체 중에는 신규 Pod와 mesh 편입, 이탈 처리를 관찰하며, 컴포넌트가 데이터 경로에 상주하는지 여부가 업그레이드 전략을 가른다.
 - 업그레이드 순서의 근거는? → version skew 정책 (data plane v1.x ↔ control plane v1.x/v1.x+1). control plane을 먼저 올려도 구 data plane이 호환되므로 istiod → cni → ztunnel 순서가 성립.
 - blue-green node pool의 비용은? → 전환 기간 동안 노드 이중 운영 비용과, stateful workload 때문에 blue가 오래 남는 꼬리. 속도보다 안전을 사는 트레이드오프.
 
@@ -69,3 +69,4 @@ ambient mode 업그레이드는 세 컴포넌트를 서로 다른 방식으로 �
 ## 출처
 
 - [Istio Ambient Mode 3-3편: Ambient mode 안전하게 업그레이드하기 — 채널톡 테크 블로그](https://tech.channel.io/kr/articles/b004fdb9)
+- [Istio 공식 문서, Ambient traffic redirection](https://istio.io/latest/docs/ambient/architecture/traffic-redirection/)

@@ -1,7 +1,7 @@
 ---
 tags: [senior, ai, codex, cli, skills, agents-md, mcp]
 status: done
-verified_at: 2026-07-24
+verified_at: 2026-09-03
 category: "Senior - AI 엔지니어링"
 aliases: ["Codex CLI", "코덱스 CLI", "Codex 슬래시 명령", "AGENTS.md"]
 ---
@@ -42,8 +42,8 @@ Codex CLI는 터미널에서 동작하는 OpenAI의 AI 코딩 에이전트다. m
 
 - **발견 경로**: `.agents/skills`(레포, 여러 레벨), `$HOME/.agents/skills`(유저), `/etc/codex/skills`(admin), 번들 시스템 스킬
 - **호출**: 명시는 `/skills` 또는 `$스킬이름`, 암묵은 description 매칭 자동 트리거
-- **시스템 스킬**: openai-docs(공식 문서 참조), skill-creator(팀 전용 스킬 생성), skill-installer(추가 공식 스킬 설치)
-- **추천 스킬**: figma, figma-implement-design, playwright, playwright-interactive, gh-address-comments, gh-fix-ci, linear, pdf, spreadsheet, vercel-deploy
+- **시스템 스킬**: openai-docs(공식 문서 참조), skill-creator(자체 스킬 스캐폴딩), skill-installer(선별된 스킬 설치). 개인용은 `$HOME/.agents/skills`, 팀 공유용은 레포의 `.agents/skills`에 두고 널리 배포할 때는 plugin으로 패키징한다
+- **추천 스킬**: figma, figma-implement-design, playwright, playwright-interactive, gh-address-comments, gh-fix-ci, linear, pdf, vercel-deploy
 
 ## AGENTS.md
 
@@ -111,6 +111,8 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 ## 출처
 
 - [Codex 환경 변수와 스탠드얼론 설치 스크립트 — OpenAI](https://learn.chatgpt.com/docs/config-file/environment-variables.md)
+- [스킬 빌드하기 — OpenAI](https://learn.chatgpt.com/ko-KR/docs/build-skills)
+- [OpenAI Skills — 추천 스킬 목록 변경](https://github.com/openai/skills/commit/fdf90d652aea00d3fa57803a348744b1d7670fcb)
 - [Codex Manual — OpenAI](https://developers.openai.com/codex/codex-manual.md)
 - [Insane Codex Disk Usage from Subagents, Issue #34061 — openai/codex](https://github.com/openai/codex/issues/34061)
 - [Codex CLI의 Subagent 세션 로그가 수백 GB까지 증가해 디스크를 소진하는 문제 — GeekNews](https://news.hada.io/topic?id=31618)

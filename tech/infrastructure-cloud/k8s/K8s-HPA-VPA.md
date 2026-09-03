@@ -19,7 +19,7 @@ desiredReplicas = ceil[ currentReplicas × ( currentMetricValue / desiredMetricV
 - kube-controller-manager가 `--horizontal-pod-autoscaler-sync-period` 주기로 평가한다. 문서 기준 기본값은 15초다.
 - **tolerance**의 기본값은 0.1이다. 비율이 1.0에서 10% 이내면 replica를 건드리지 않아 잔진동을 흡수한다.
 - 계산 결과는 `minReplicas`와 `maxReplicas` 사이로 clamp된다.
-- 메트릭이 없는 Pod, 삭제 타임스탬프가 붙은 Pod, 아직 ready가 되지 않은 Pod는 계산에서 따로 떼어 두고 최종 replica 수를 보정하는 데 쓴다.
+- 삭제 타임스탬프가 붙은 Pod와 failed Pod는 per-pod resource 메트릭 계산에서 제외한다. 메트릭이 없는 Pod와 아직 ready가 아닌 Pod만 따로 두고 최종 스케일 폭을 보수적으로 보정한다. 결측치는 scale down에서 100%, scale up에서 0% 사용으로, not-yet-ready Pod는 scale up에서 0% 사용으로 가정한다.
 
 | Resource type target | 의미 | request 의존 |
 |---|---|---|
@@ -88,7 +88,7 @@ VPA는 Kubernetes 기본 탑재가 아니라 autoscaler 저장소에서 별도�
 | `Recreate` | 생성 시 할당 + 수명 중 Pod을 삭제하고 다시 만들어 갱신 | 재기동 동반 |
 | `Auto` | 사용 가능한 방법으로 갱신. VPA 문서 기준 현재는 `Recreate`와 동등하며 deprecated | 명시적 모드 사용 권장 |
 | `InPlaceOrRecreate` | 먼저 in-place 갱신을 시도하고 실패하면 `Recreate`로 폴백 | 클러스터의 `InPlacePodVerticalScaling` feature gate 필요 |
-| `InPlace` | in-place만 시도하고 eviction하지 않음 | 같은 feature gate 필요. VPA 문서 기준 도입 시점이 가장 늦은 모드라 성숙도를 별도로 확인한다 |
+| `InPlace` | in-place만 시도하고 eviction하지 않음 | 클러스터의 `InPlacePodVerticalScaling`과 VPA admission controller/updater의 `InPlace` feature gate를 모두 켜야 한다. `InPlaceOrRecreate`에는 클러스터 gate만 필요하다 |
 
 `Recreate` 계열은 Pod 재기동을 동반하므로 상태를 들고 있는 워크로드에서 비용이 크다. 공식 문서도 VPA가 evict한 Pod의 재생성 성공을 보장하지 않는다고 명시한다. 권장치가 노드 크기나 quota를 넘으면 Pod이 Pending으로 남을 수도 있다. in-place 갱신 계열은 feature gate와 VPA 버전 조합에 따라 가용 여부가 달라지므로 클러스터 버전 기준으로 확인하고 쓴다.
 

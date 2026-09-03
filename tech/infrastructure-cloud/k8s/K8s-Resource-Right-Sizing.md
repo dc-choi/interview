@@ -81,9 +81,9 @@ CPU는 사용률만 봐서는 안 된다. 사용률이 낮아도 **CPU limit 때
 
 | 출처 | 기준 | 버퍼 |
 |---|---|---|
-| Grafana Mimir | P90 활용률, 쓰기 경로 컴포넌트 | +50% |
-| AWS Compute Optimizer Balanced | P95 | 목표 ~57% |
-| GKE VPA | 최대값 | +25% (Stateless 수준) |
+| Grafana Mimir | 백분위 기준 없음, 배포 전반 | 트래픽 피크 대응을 위해 메모리와 디스크 +50% |
+| AWS Compute Optimizer Balanced | P95, CPU/메모리 headroom 30% | 목표 70% 미만. Default 프리셋은 P99.5와 headroom 20%로 목표 80% 미만 |
+| GKE VPA | 자체 recommender의 일반 기준 백분위와 마진은 공식 문서에 미공개 | OOMKilled 시 메모리 권장치를 약 +20% 또는 100MB 중 큰 값만 공개. 업스트림 VPA 기본 P90과 15% 마진을 GKE 값으로 간주하지 않음 |
 
 벤더 권장치를 그대로 일괄 적용하지 말고 컴포넌트 특성으로 차등.
 
@@ -195,3 +195,6 @@ CPU 사용률 + Throttling 두 쿼리 조합 → 조치 방향:
 
 - [옵저버빌리티 Right-Sizing: 여기어때에서 기준을 만드는 법 — 양현진(코플), 여기어때 기술블로그](https://techblog.gccompany.co.kr/%EC%98%B5%EC%A0%80%EB%B2%84%EB%B9%8C%EB%A6%AC%ED%8B%B0-right-sizing-%EC%97%AC%EA%B8%B0%EC%96%B4%EB%95%8C%EC%97%90%EC%84%9C-%EA%B8%B0%EC%A4%80%EC%9D%84-%EB%A7%8C%EB%93%9C%EB%8A%94-%EB%B2%95-8c9e1b3d3c97)
 - [Kubernetes — Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)
+- [Grafana Mimir, Planning capacity](https://grafana.com/docs/mimir/latest/manage/run-production-environment/planning-capacity/)
+- [AWS Compute Optimizer, Rightsizing recommendation preferences](https://docs.aws.amazon.com/compute-optimizer/latest/ug/rightsizing-preferences.html)
+- [Google Kubernetes Engine, Vertical Pod autoscaling](https://docs.cloud.google.com/kubernetes-engine/docs/concepts/verticalpodautoscaler)

@@ -92,11 +92,11 @@ Transaction 안에서 bulk DML 직전 flush가 필요한지와 실행 뒤 stale 
 
 ## 출처
 
-- [Jakarta Persistence 3.2, Query Language](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#query-language)
+- [Jakarta Persistence 3.2, Query Language](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a4665)
 - [Jakarta Persistence 3.2, Fetch Joins](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#fetch-joins)
-- [Jakarta Persistence 3.2, Bulk Update and Delete](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#bulk-update-and-delete-operations)
+- [Jakarta Persistence 3.2, Bulk Update and Delete](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a5636)
 - [Hibernate ORM current User Guide, HQL](https://docs.hibernate.org/stable/orm/userguide/html_single/#query-language)
-- [Hibernate ORM 7.4 Migration Guide, Limits and fetch joins](https://docs.hibernate.org/orm/current/migration-guide/#limits-and-fetch-joins)
+- [Hibernate ORM 7.4 Migration Guide, Limits and fetch joins](https://docs.hibernate.org/orm/current/migration-guide/#_limits_and_fetch_joins)
 - 강의: [소개](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21718), [기본 문법과 query API](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21719), [Projection](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21720), [Pagination](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21721)
 - 강의: [Join](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21722), [Subquery](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21723), [Type 표현](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21724), [CASE](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21725), [Function](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21726)
 - 강의: [Path expression](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21727), [Fetch join 1](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21742), [Fetch join 2](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21743)

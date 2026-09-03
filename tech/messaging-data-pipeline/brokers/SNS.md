@@ -3,7 +3,7 @@ tags: [messaging, aws, sns, pubsub, fanout, decoupling, saa-c03]
 status: done
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["SNS", "Amazon SNS", "Simple Notification Service"]
-verified_at: 2026-07-15
+verified_at: 2026-09-03
 ---
 
 # Amazon SNS (Simple Notification Service)
@@ -34,11 +34,11 @@ Publisher가 발행하면 모든 Subscription에 **자동 fan-out** — 1:N 메�
 | 처리량 | 리전별 계정 quota | 기본 FIFO Topic은 초당 최대 3,000개 메시지 또는 20MB. 고처리량은 리전별 quota이며 MessageGroup당 초당 최대 300개 메시지 |
 | 전달 보장 | At-least-once | 5분 deduplication window 안의 중복 게시 제거. 구독자 처리는 멱등성 필요 |
 | 순서 | Best-effort | MessageGroupId 단위 엄격 |
-| Subscriber | SQS, Lambda, HTTP, Email, SMS, Mobile | **SQS FIFO만** |
+| Subscriber | SQS, Lambda, HTTP, Email, SMS, Mobile | **SQS FIFO와 SQS Standard** |
 | 중복 제거 | — | Content-based 또는 explicit ID |
 | Topic 이름 | 자유 | `.fifo` 접미사 |
 
-FIFO Topic의 Subscriber는 SQS FIFO만 — 다른 프로토콜 미지원. 결제, 상태 변경처럼 순서, 중복 보장이 필수일 때.
+FIFO Topic은 SQS FIFO 큐와 SQS Standard 큐에 전달할 수 있다. 이메일, SMS, Mobile Push, HTTP(S) 같은 고객 관리형 endpoint는 지원하지 않고 Lambda는 SQS를 경유해야 한다. 결제나 상태 변경처럼 순서와 중복 제거가 필요하면 SQS FIFO를, best-effort 순서와 at-least-once로 충분하면 SQS Standard를 붙인다.
 
 고처리량 FIFO Topic을 SQS FIFO와 연결하면 큐에도 고처리량 모드를 활성화하는 것이 권장된다. 일반 SQS FIFO 큐의 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지다. 고처리량 큐는 리전별 API 할당량과 MessageGroupId 분산을 확인한다.
 
@@ -70,7 +70,7 @@ S3는 버킷당 동일 이벤트에 1개 알림 대상만 직접 지정 가능. 
 S3 Event (단일 규칙) → SNS Topic → 다수의 SQS Queue / Lambda
 ```
 
-이 패턴이 SAA에서 자주 나오는 fan-out 시나리오. SNS → SQS 쓰기를 허용하는 IAM Policy(Topic Subscription에 SQS 자동 권한 부여)도 필수 구성.
+이 패턴이 SAA에서 자주 나오는 fan-out 시나리오. SNS가 SQS에 쓰도록 queue policy에서 해당 topic의 `sqs:SendMessage`를 허용해야 한다. SQS 콘솔에서 queue의 **Subscribe to Amazon SNS topic** 흐름을 사용하면 SQS가 필요한 policy statement를 관리하지만, SNS 콘솔이나 API, IaC로 구독하면 queue policy를 별도로 구성한다.
 
 ## Message Filtering — Subscription 단위
 
@@ -83,7 +83,7 @@ JSON 정책으로 **Subscription에서 받을 메시지 필터링** — Topic은
 }
 ```
 
-Publisher가 `MessageAttributes`(또는 message body, 2023+)에 키-값을 붙이면 Subscription 필터가 매칭한 것만 전달.
+Publisher가 `MessageAttributes` 또는 message body에 키-값을 붙이면 Subscription 필터가 매칭한 것만 전달한다. Message body 기반 필터링(`FilterPolicyScope=MessageBody`)은 2022년 11월부터 지원한다.
 
 | 연산자 | 예 |
 |--------|-----|
@@ -106,8 +106,8 @@ Publisher가 `MessageAttributes`(또는 message body, 2023+)에 키-값을 붙�
 | 항목 | 값 |
 |------|-----|
 | 메시지 크기 | 최대 **256KB** (대용량은 SNS Extended Client + S3) |
-| Topic 수 | 계정, 리전당 100,000 |
-| Subscription/Topic | 12,500,000 |
+| Topic 수 | Standard는 계정당 100,000개, FIFO는 계정당 1,000개 |
+| Subscription/Topic | Standard는 토픽당 12,500,000개, FIFO는 토픽당 100개. Firehose는 구독 소유자별 토픽당 5개 |
 | 처리량 | Standard와 FIFO 모두 리전별 계정 quota. FIFO 세부 한도는 위 비교표 참고 |
 
 대용량은 S3에 페이로드 업로드 + SNS는 S3 키만 — Extended Client 라이브러리.
@@ -119,7 +119,7 @@ Publisher가 `MessageAttributes`(또는 message body, 2023+)에 키-값을 붙�
 | 라우팅 | 토픽 fanout | Rule 기반 콘텐츠 매칭 |
 | 필터 | Subscription 단위 (단순) | Rule 단위 (풍부) |
 | 스키마 | 없음 | Schema Registry |
-| 리플레이 | 불가 | Archive & Replay |
+| 리플레이 | A2A FIFO Topic만 Archive & Replay, 1~365일 보관. Standard Topic은 불가 | Archive & Replay |
 | SaaS 연동 | — | Partner Event Bus |
 | 처리량 | 매우 높음 | 리전 TPS 제한 |
 | 지연 | 더 낮음 | 약간 높음 |
@@ -152,7 +152,7 @@ SNS는 메시징 이외에:
 ## 면접 체크포인트
 
 - SNS의 Fan-out 패턴과 SQS 조합이 표준이 된 이유 (백프레셔, 격리)
-- Standard vs FIFO Topic 차이와 FIFO 한계 (SQS FIFO만 Subscriber)
+- Standard vs FIFO Topic 차이와 FIFO 구독 대상 (SQS FIFO와 SQS Standard)
 - Message Filtering으로 Subscription에서 거르는 메커니즘
 - At-least-once의 멱등성 요구사항
 - SNS vs EventBridge 선택 기준
@@ -163,9 +163,9 @@ SNS는 메시징 이외에:
 
 - AWS Decoupling 3종 = SQS / SNS / Kinesis 중 **Push 기반 Pub-Sub** 모델
 - Subscriber 프로토콜: HTTP(S), Email, SQS, Lambda, Amazon Data Firehose, Mobile Push, SMS
-- **FIFO Topic의 Subscriber는 SQS FIFO만** 가능 (다른 프로토콜 미지원)
+- **FIFO Topic의 Subscriber는 SQS FIFO와 SQS Standard** (다른 프로토콜 미지원)
 - Fan-out 표준 패턴: 1개 SNS Topic → N개 SQS Queue (S3 이벤트 다중 소비가 대표 시나리오)
-- SNS → SQS 쓰기에 필요한 IAM Policy 자동 부여 (콘솔 구독 시), 수동 구성 시 SQS Queue Policy 필요
+- SNS → SQS 쓰기에는 SQS queue policy가 필요. SQS 콘솔의 queue 기준 구독은 policy statement를 관리하지만 SNS 콘솔, API와 IaC에서는 별도 구성
 - KMS Key로 Topic 메시지 SSE 암호화, HTTPS API로 전송 중 암호화, IAM Policy로 API 접근 통제
 
 ## 출처
@@ -173,6 +173,11 @@ SNS는 메시징 이외에:
 - [AWS 공식 문서, High throughput FIFO topics](https://docs.aws.amazon.com/sns/latest/dg/fifo-high-throughput.html)
 - [AWS 공식 문서, Amazon SNS message delivery retries](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html)
 - [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+- [Amazon SNS, Message delivery for FIFO topics](https://docs.aws.amazon.com/sns/latest/dg/fifo-message-delivery.html)
+- [Amazon SNS, Message archiving and replay for FIFO topics](https://docs.aws.amazon.com/sns/latest/dg/message-archiving-and-replay-topic-owner.html)
+- [Amazon SQS, Subscribe a queue to an SNS topic using the SQS console](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-subscribe-queue-sns-topic.html)
+- [Amazon SNS, Subscribe an SQS queue to an SNS topic](https://docs.aws.amazon.com/sns/latest/dg/subscribe-sqs-queue-to-sns-topic.html)
+- [Amazon SNS payload-based message filtering — AWS](https://aws.amazon.com/about-aws/whats-new/2022/11/amazon-sns-payload-based-message-filtering/)
 - [AWS 핵심 서비스 정리 — 학습 메모]
 - AWS SAA C03 학습 자료 (로컬)
 

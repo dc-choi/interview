@@ -1,7 +1,7 @@
 ---
 tags: [architecture, data-model, content-metadata, entity-resolution]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-09-03
 category: "Architecture - 데이터 모델"
 aliases: ["Content Entity Resolution", "콘텐츠 식별과 중복 병합", "콘텐츠 정본 모델"]
 ---
@@ -189,7 +189,6 @@ Provider response
 ## 출처
 
 - [How We Work — EIDR](https://www.eidr.org/how-we-work)
-- [Introduction to the EIDR Data Model — EIDR](https://www.eidr.org/documents/Introduction%20to%20the%20EIDR%20Data%20Model.pdf)
-- [EIDR Data Fields Reference — EIDR](https://www.eidr.org/documents/EIDR%202.6%20Data%20Fields%20Reference.pdf)
+- [EIDR Knowledge Base — EIDR](https://eidrdotorg.atlassian.net/wiki/spaces/EKB)
 - [Creating a schema mapping — AWS Entity Resolution](https://docs.aws.amazon.com/entityresolution/latest/userguide/create-schema-mapping.html)
 - [Creating a rule-based matching workflow — AWS Entity Resolution](https://docs.aws.amazon.com/entityresolution/latest/userguide/creating-matching-workflow-rule-based.html)

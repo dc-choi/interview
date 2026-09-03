@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, testing, jest, integration-test, mock]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-03
 category: "테스트&품질(Testing&Quality)"
 aliases: ["NestJS Testing", "TestingModule", "Test.createTestingModule"]
 ---
@@ -74,7 +74,7 @@ beforeAll(async () => {
 - **트랜잭션 롤백** — 테스트마다 트랜잭션 시작 → 끝나면 롤백. fixture 누적 방지. 단, 테스트 대상 코드까지 하나의 트랜잭션으로 감싸므로 **커밋 시점 제약, 트랜잭션 전파를 실제로 검증하지 못한다**. 단순 Repository 격리에는 유효하지만, Service 레이어 통합 테스트에서는 마스킹 위험이 있어 TRUNCATE 기반 정리를 권장 (→ [[Transactional-Test-Antipattern|@Transactional 테스트 안티패턴]]).
 - **DB 클린업** — `beforeEach`에서 truncate.
 
-SQLite in-memory는 빠르지만 운영 DB와 SQL 방언 차이가 있어 **PostgreSQL/MySQL 특정 기능**(JSONB, CTE, 격리수준) 테스트엔 부적합.
+SQLite in-memory는 빠르지만 운영 DB와 SQL 방언 차이가 있어 **PostgreSQL/MySQL 특정 기능**(JSONB, 격리수준) 테스트엔 부적합하다. SQLite도 3.8.3부터 CTE를 지원하므로 CTE 자체를 미지원 예로 들지는 않는다.
 
 ## 트랜잭션 롤백 검증
 
@@ -187,5 +187,6 @@ v11부터 동적 모듈이 딥 해시로 중복 제거되지 않아(객체 참�
 
 ## 출처
 - [NestJS — Testing](https://docs.nestjs.com/fundamentals/testing)
-- [NestJS — Suites](https://docs.nestjs.com/recipes/suites)
-- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)
+- [Suites — TestBed (sociable)](https://suites.dev/docs/api-reference/testbed-sociable/)
+- [NestJS — NestApplicationContextOptions](https://github.com/nestjs/nest/blob/master/packages/common/interfaces/nest-application-context-options.interface.ts)
+- [SQLite, Release History](https://sqlite.org/changes.html)

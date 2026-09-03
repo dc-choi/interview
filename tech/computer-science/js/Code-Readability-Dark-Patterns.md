@@ -7,7 +7,7 @@ aliases: ["Code Readability", "코드 가독성", "JS 다크패턴", "Dark Patte
 
 # 코드 가독성 — 영리한 코드는 리뷰를 통과하지 못한다
 
-Artem Sapegin의 글 *"Code Smells: Don't Make Me Think"* (지우초의 번역) 요약. **"짧은 코드 ≠ 명확한 코드"** 라는 원칙 아래, JS/CSS에서 자주 발견되는 "영리해 보이지만 읽기 어려운" 패턴을 대체 표현과 함께 정리한다.
+Artem Sapegin의 글 *Washing your code: don't make me think*를 요약한다. 이 글은 책 *Washing Your Code*의 한 장이다. **"짧은 코드 ≠ 명확한 코드"** 라는 원칙 아래, JS/CSS에서 자주 발견되는 "영리해 보이지만 읽기 어려운" 패턴을 대체 표현과 함께 정리한다.
 
 > "영리한 코드는 구직 면접 문제나 언어 퀴즈에서는 가끔 볼 수 있지만, 코드 리뷰를 통과하지 못한다."
 
@@ -32,7 +32,7 @@ Artem Sapegin의 글 *"Code Smells: Don't Make Me Think"* (지우초의 번역) 
 둘 다 의도가 "따옴표 사이의 값을 꺼낸다"는 것이 코드 자체에 드러나야 한다.
 
 ### 6. 조건부 스프레드 `...(condition && obj)`
-조건이 falsy일 때 AND의 결과가 boolean이 되어 스프레드가 이상해진다. **삼항 연산자** `...(cond ? obj : {})` 또는 **필드 내부로 조건 이동** `{ value: cond ? 42 : undefined }` 사용.
+조건이 falsy면 AND는 boolean이 아니라 왼쪽 피연산자 값을 그대로 반환한다(`0 && {}`는 `0`). 객체 스프레드는 `undefined`, `null`, `false` 같은 값을 조용히 무시하므로 오류 없이 빈 결과가 되고, 문제는 의도가 코드에 드러나지 않는다는 점이다. 배열 스프레드 `[...(false && arr)]`는 not iterable `TypeError`로 실제로 깨진다. 객체에는 **삼항 연산자** `...(cond ? obj : {})` 또는 **필드 내부로 조건 이동** `{ value: cond ? 42 : undefined }`을 사용한다.
 
 ### 7. `[...Array(10).keys()]` (0~9 배열)
 암호화된 관용구. **`Array.from({ length: 10 }, (_, i) => i)`** 로 의도를 드러낸다.
@@ -86,7 +86,7 @@ Platform.OS === "web" ? B : undefined
 **권장:**
 - 단일 값만 축약 사용: `margin: 1rem`, `border-radius: 0.5rem`
 - 방향이 필요하면 **논리 속성** 사용: `margin-block`, `margin-inline`
-- `border: 1px solid #c0ffee`처럼 **순서가 다르면 어차피 에러**인 것은 허용
+- `border: 1px solid #c0ffee`은 세 값의 타입이 서로 달라 어떤 순서로 써도 모호하지 않으므로 허용. `border` 문법의 `||` 결합자는 하나 이상의 구성 요소가 순서와 무관하게 올 수 있다는 뜻이다
 
 **피할 것:**
 - `margin: 1rem 2rem 3rem` (3-값, 위, 좌우, 아래)
@@ -117,6 +117,12 @@ Platform.OS === "web" ? B : undefined
 > "리뷰나 유지보수 중 **'잠깐, 이게 뭐하는 거지?'** 하고 멈추는 순간입니다. 그 멈춤이 인지적 비용이고, 리팩터링의 신호입니다. 특히 중첩 삼항, 복잡한 조건부 스프레드, 비트 연산 트릭 같은 패턴을 보면 즉시 대체 표현을 제안합니다. 한 번 읽고 이해되는 코드가 결국 팀의 속도를 결정한다고 생각합니다."
 
 ---
+
+## 출처
+
+- [Washing your code: don't make me think — Artem Sapegin](https://sapegin.me/blog/dont-make-me-think/)
+- [ECMAScript Language Specification, Binary Logical Operators](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-binary-logical-operators-runtime-semantics-evaluation)
+- [CSS Values and Units Level 4, Component value combinators](https://www.w3.org/TR/css-values-4/#component-combinators)
 
 ## 관련 문서
 - [[Readable-Code-Cognition|코드 가독성의 인지과학 (왜 어떤 코드는 읽기 쉬운가)]]

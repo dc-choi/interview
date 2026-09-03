@@ -12,7 +12,7 @@ aliases: ["WASM", "WebAssembly"]
 WebAssembly(WASM)는 C/C++, Rust, AssemblyScript 등에서 컴파일 가능한 고성능 어셈블리 언어.
 Chrome, Firefox, Safari, Edge, Node.js에서 지원.
 
-JS에서 호출 가능한 이진 포맷으로, 브라우저와 Node.js 모두 V8이 실행 엔진을 담당한다.
+JS에서 호출 가능한 이진 포맷이다. Chrome, Edge와 Node.js는 V8이 실행하지만 Firefox는 SpiderMonkey, Safari는 JavaScriptCore를 사용한다.
 정적 타입 기반이기 때문에 JS 대비 파싱/최적화 단계가 훨씬 짧고,
 SIMD 같은 저수준 명령을 직접 노출하여 수치 연산, 미디어 처리에서 큰 이점을 낸다.
 ```
@@ -59,8 +59,7 @@ TurboFan이 백그라운드 스레드에서 최적화 코드를 생성한다.
 
 - 핫 함수: Liftoff 코드 → TurboFan 최적화 코드로 교체
 - 콜드 함수: 끝까지 Liftoff 코드로 실행 (최적화 비용 절약)
-- JS의 Ignition → TurboFan 승격과 철학이 동일하지만, WASM은 타입이 정적이라
-  deoptimization이 필요 없음
+- JS의 Ignition → TurboFan 승격과 비슷한 tiering 구조다. WASM 1.0은 정적 타입 덕분에 오랫동안 speculative optimization과 deoptimization이 필요 없었지만, V8은 WasmGC용 speculative inlining을 위해 Chrome M137부터 WebAssembly deoptimization을 지원한다
 ```
 
 ### SIMD (Single Instruction Multiple Data)
@@ -75,12 +74,17 @@ JS 대비 2~4배 성능 향상이 흔하다.
 
 ### 코드 캐싱
 ```
-V8은 컴파일된 WASM 코드를 디스크에 캐싱하여, 동일 모듈을 재로드할 때
-Liftoff 컴파일 단계를 건너뛸 수 있다.
+브라우저 엔진은 구현에 따라 컴파일된 WASM 코드를 재사용할 수 있지만 이는 WebAssembly 표준 계약이 아니다. 애플리케이션은 응답 byte나 생성한 `WebAssembly.Module`을 재사용할 수 있다.
 
-- 브라우저: 서비스 워커 + Cache API로 .wasm 응답 캐싱, V8이 자동으로 컴파일 캐시 재사용
-- Node.js: V8의 compile cache가 .wasm 모듈에도 적용되어 재시작 시 시작 시간 단축
+- 브라우저: 서비스 워커와 Cache API로 `.wasm` 응답 byte를 캐시할 수 있고, compiled code 재사용 여부는 브라우저 engine이 결정한다
+- Node.js: `module.enableCompileCache()`와 `NODE_COMPILE_CACHE`는 CommonJS, ESM과 TypeScript 모듈용이며 `.wasm`에는 적용되지 않는다. 같은 프로세스에서는 생성한 `WebAssembly.Module`을 애플리케이션이 재사용한다
 ```
+
+## 출처
+
+- [SpiderMonkey — Firefox Source Docs](https://firefox-source-docs.mozilla.org/js/index.html)
+- [Speculative Optimizations for WebAssembly using Deopts and Inlining — V8](https://v8.dev/blog/wasm-speculative-optimizations)
+- [Node.js, Module compile cache](https://nodejs.org/docs/latest/api/module.html#module-compile-cache)
 
 ## 관련 문서
 - [[V8|V8 엔진]]

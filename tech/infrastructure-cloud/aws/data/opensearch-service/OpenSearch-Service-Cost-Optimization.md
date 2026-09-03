@@ -39,14 +39,14 @@ tier별 구조는 [[OpenSearch-Index-Lifecycle]]의 표를 따른다. 여기서�
 
 ## Serverless OCU 심화
 
-OCU는 6GiB RAM과 상응하는 vCPU 묶음이고 시간당 0.24 USD다. 함정은 최소 floor다.
+2026-09-03 AWS 문서와 요금표 기준, OCU는 6GiB RAM과 상응하는 vCPU 묶음이고 시간당 0.24 USD다. 최소 용량은 collection group 사용 여부에 따라 다르다.
 
-- Redundancy 기본 활성 상태에서 floor는 indexing 1 OCU(0.5 x 2)와 search 1 OCU(0.5 x 2), 합계 2 OCU다. 트래픽이 0이어도 월 약 350 USD가 나간다.
-- Dev/test에서 redundancy를 끄면 indexing 0.5와 search 0.5, 합계 1 OCU(월 약 175 USD)까지 내려간다.
-- floor는 계정(또는 collection group) 단위로 공유된다. 단 KMS key가 다른 collection은 자기 OCU 세트를 새로 만들고, vector search collection은 같은 key라도 search와 time series collection과 OCU를 공유하지 못한다. collection이 유형과 key별로 파편화되면 floor가 곱해진다. 다중 KMS key 구조는 collection group(2026.02+)으로 묶어 공유시킨다.
+- Collection group은 indexing과 search 최소값을 각각 0 OCU까지 설정할 수 있다. 그룹의 모든 collection에 10분간 요청이 없으면 0으로 축소돼 OCU 과금이 멈추며, 재개 첫 요청에는 약 10초에서 30초 지연이 생길 수 있다.
+- Collection group 없이 만든 Classic collection은 계정 단위 용량 설정을 공유한다. Redundancy 활성 시 indexing 1 OCU와 search 1 OCU, 합계 2 OCU가 최소이고, 끄면 각각 0.5 OCU로 합계 1 OCU가 최소다.
+- Collection group은 KMS key가 달라도 용량을 공유할 수 있다. 다만 vector collection과 search, time series collection은 같은 group에 넣을 수 없으므로 유형별로 최소 용량과 scale-to-zero 조건을 계산한다.
 - 3유형 제약: data lifecycle policy(retention 자동 삭제)는 time series만 지원하고, time series는 custom `_id`가 없어 upsert 기반 dedup이 안 되며([[OpenSearch-Service-Security-Observability#데이터 수집|데이터 수집 절]] 참조), vector는 in-memory 모드에서 RAM이 OCU 산정을 지배하므로 disk-optimized 모드(32x binary quantization, RAM 최대 97퍼센트 절감, P90 100에서 200ms)를 먼저 검토한다.
 - Time series의 OCU는 retention이 직접 결정한다. 공식 예시로 일 1TiB 수집에 30일 보존이면 indexing 20과 search 20 OCU, 7일로 줄이면 각각 약 4 OCU다.
-- 결론: 소규모라도 상시 켜져 있는 workload는 provisioned 소형 domain이 floor보다 싼 경우가 많다. Serverless가 이기는 조건은 간헐적이거나 변동이 큰 부하다. 어느 쪽이든 계정 max OCU cap을 걸어 폭주를 막되, cap에 닿으면 성능 저하로 나타나므로 원인(특히 vector 메모리)을 함께 본다.
+- 결론: scale to zero를 허용할 수 있는 간헐적 workload는 Serverless가 유리할 수 있다. Classic collection처럼 최소 OCU가 상시 필요한 소규모 workload는 provisioned 소형 domain과 비교한다. 어느 쪽이든 max OCU cap을 걸어 폭주를 막되, cap에 닿으면 성능 저하로 나타나므로 원인도 함께 본다.
 
 ## Blue-green 배포를 유발하는 설정 변경
 
@@ -78,7 +78,7 @@ Provisioned domain의 설정 변경은 두 부류다. Blue-green은 기존 clust
 - Blue-green 동안 두 배로 계속 과금된다? 아니다. 이중 과금은 최대 첫 1시간이고 실제 대가는 master 부하와 latency다.
 - Node 수를 늘리는 것도 blue-green이다? 아니다. data node 수 변경은 대체로 dynamic update고, type 변경이 trigger다.
 - UltraWarm은 옮기기만 하면 싸진다? 아니다. 최소 2대의 warm node 고정비(월 약 348 USD부터)를 storage 절감이 넘어야 한다.
-- Serverless는 안 쓰면 0원이다? 아니다. collection이 존재하는 한 OCU floor(redundancy 기준 2 OCU, 월 약 350 USD)가 상시 과금된다.
+- Serverless는 안 쓰면 0원이다? Collection group의 최소 OCU를 0으로 설정하면 10분 유휴 뒤 scale to zero가 가능하다. Classic collection은 설정한 최소 OCU가 상시 과금된다.
 - Auto-Tune이 알아서 노드를 늘려준다? 아니다. heap과 queue와 cache 같은 메모리 설정만 조정하며 용량 산정은 사용자 몫이다.
 
 ## 시나리오: 설정 하나 바꿨는데 클러스터가 왜 두 배가 됐나
@@ -102,6 +102,5 @@ Provisioned domain의 설정 변경은 두 부류다. Blue-green은 기존 clust
 - [AWS Documentation, Auto-Tune](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/auto-tune.html)
 - [AWS Documentation, Off-peak windows](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/off-peak.html)
 - [Amazon OpenSearch Service Pricing — AWS](https://aws.amazon.com/opensearch-service/pricing/)
-- [AWS Documentation, Extended Support](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/extended-support.html)
 - [Improved performance with AWS Graviton2 instances — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/improved-performance-with-aws-graviton2-instances-on-amazon-opensearch-service/)
 - [Database Savings Plans for OpenSearch Service and Neptune Analytics — AWS](https://aws.amazon.com/about-aws/whats-new/2026/03/dbsp-opensearch-service-neptune-analytics/)

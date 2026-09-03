@@ -102,7 +102,7 @@ Linux는 **최상위 루트(`/`)에서 뻗어나가는 단일 트리**로 구성
 - **`/var` 모니터링 누락** → 로그가 쌓여 파티션 가득 → 서비스 중단. `logrotate` 설정 필수
 - **`/tmp`에 영구 데이터 저장** → 재부팅 시 소실
 - **패키지 매니저와 `/usr/local` 혼용** → 버전 충돌. 수동 설치는 `/opt` 또는 컨테이너화
-- **`sudo rm -rf /` 또는 `/.`** → 시스템 파괴. 기본 쉘의 방어(`--preserve-root`)에 의존하지 말고 명령 앞에 `echo` 붙여 확인
+- **`sudo rm -rf /` 또는 `/.`** → 시스템 파괴. GNU coreutils `rm`은 기본적으로 `--preserve-root`를 적용하지만 이는 쉘 기능이 아니고 다른 `rm` 구현에서는 보장되지 않는다. 이 방어에 의존하지 말고 명령 앞에 `echo`를 붙여 확인
 
 ## 면접 체크포인트
 
@@ -114,6 +114,7 @@ Linux는 **최상위 루트(`/`)에서 뻗어나가는 단일 트리**로 구성
 
 ## 출처
 - [Tecoble — Linux 파일 디렉토리 시스템](https://tecoble.techcourse.co.kr/post/2021-10-18-linux-file-directory-system/)
+- [GNU coreutils, `rm` source](https://git.savannah.gnu.org/cgit/coreutils.git/plain/src/rm.c)
 
 ## 관련 문서
 - [[Storage-and-FileSystem|기억장치와 파일시스템]]

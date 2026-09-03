@@ -45,7 +45,7 @@ container는 독립된 작은 VM이 아니다. image의 main process가 끝나�
 
 - **Named volume**: Docker가 lifecycle과 위치를 관리한다. database data처럼 container와 분리할 상태에 적합하다.
 - **Bind mount**: host의 지정 path를 직접 mount한다. source code 공유와 host가 관리할 config에 유용하지만 host path와 OS에 결합된다.
-- mount target에 image 파일이 이미 있으면 mount가 그 내용을 가린다. 초기화 파일이 사라진 것처럼 보일 수 있어 target path를 확인한다.
+- 비어 있지 않은 volume과 bind mount는 mount target에 있던 image 파일을 가린다. 반면 빈 named volume이나 anonymous volume을 처음 mount하면 image의 해당 경로 파일이 volume으로 복사된다. 이 복사를 막으려면 `--mount`의 `volume-nocopy` 옵션을 사용한다.
 
 ## Dockerfile 기본 구조
 

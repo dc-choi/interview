@@ -55,7 +55,7 @@ aliases: ["Technical Terminology Precision", "기술 용어의 엄밀성", "REST
   - **값에 의해 동등성 판단**(equals/hashCode가 모든 필드로 구성)
   - **불변(Immutable)**
   - 예: Money, Address, DateRange
-- Java JEP 169 Value Objects도 getter/setter 덩어리가 아님
+- Java JEP 401 Value Objects(Preview, JDK 28 Integrated)도 불변이고 필드 값만으로 동등성이 결정되는 객체로, getter/setter 덩어리가 아니다. JEP 169는 Larval State for Value Objects라는 별개의 Draft JEP다
 - 혼동 회피:
   - 값 전달용 플랫 객체 → **DTO** (Request/Response DTO)
   - 값 동등성 기반 불변 도메인 객체 → **VO**
@@ -128,6 +128,7 @@ ORM, JPA 맥락은 혼동 용어가 많다.
 - [네이버 D2 — 백엔드 개발자를 꿈꾸는 학생개발자에게](https://d2.naver.com/news/3435170)
 - Martin Fowler — ValueObject, DataTransferObject
 - Kent Beck — *Test Driven Development: By Example*
+- [JEP 401: Value Objects](https://openjdk.org/jeps/401)
 
 ## 관련 문서
 - [[Technical-Debt|기술 부채 — Cunningham 원래 정의를 찾은 용어 엄밀성의 사례]]

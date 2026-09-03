@@ -68,8 +68,8 @@ V6는 parent와 child를 flat row 한 번으로 읽고 application에서 계층 
 
 ## 출처
 
-- [Hibernate ORM current HQL Guide, Association fetching](https://docs.hibernate.org/stable/orm/querylanguage/html_single/#explicit-association-joins-fetch)
-- [Hibernate ORM 7.4 Migration Guide, Limits and fetch joins](https://docs.hibernate.org/orm/current/migration-guide/#limits-and-fetch-joins)
+- [Hibernate ORM current HQL Guide, Association fetching](https://docs.hibernate.org/stable/orm/querylanguage/html_single/#explicit-fetch-join)
+- [Hibernate ORM 7.4 Migration Guide, Limits and fetch joins](https://docs.hibernate.org/orm/current/migration-guide/#_limits_and_fetch_joins)
 - [Hibernate ORM current FetchSettings](https://docs.hibernate.org/stable/orm/javadocs/org/hibernate/cfg/FetchSettings.html)
 - 강의: [주문 조회 V1](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24330), [V2, Entity를 DTO로 변환](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24331), [V3, Fetch join 최적화](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24332), [V3.1, Paging과 한계 돌파](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24333)
 - 강의: [V4, JPA에서 DTO 직접 조회](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24334), [V5, Collection 조회 최적화](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24335), [V6, Flat data 최적화](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24336), [API 개발 고급 정리](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24337)

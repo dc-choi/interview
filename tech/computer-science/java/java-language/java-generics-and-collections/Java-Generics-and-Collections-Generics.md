@@ -1,7 +1,7 @@
 ---
 tags: [java, generics, type-parameter, wildcard, type-erasure, type-safety]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Generics", "Java 제네릭"]
 ---
@@ -101,7 +101,7 @@ Java는 parameterized type을 erasure 기반으로 구현한다. type variable�
 
 - `new T()`와 `new T[]`는 일반적으로 허용되지 않는다.
 - `List<String>`과 `List<Integer>`는 같은 raw runtime class를 공유한다.
-- `instanceof List<String>`은 사용할 수 없지만 reifiable type인 `List<?>` 검사는 가능하다.
+- Java SE 16부터 `instanceof` 우변이 reifiable type이어야 한다는 제약은 제거됐다. 피연산자의 정적 타입과 checked cast compatible하면 `List<Integer> x`에 대한 `x instanceof ArrayList<Integer>`처럼 wildcard가 아닌 type argument도 검사할 수 있다. 반면 `Object o`에 대한 `o instanceof List<String>`은 여전히 컴파일 오류이며, 근거는 reifiability가 아니라 JLS 5.5의 checked cast compatible 요건이다.
 - primitive는 type argument로 쓸 수 없어 wrapper가 필요하다.
 - static member는 특정 parameterization의 `T`에 속하지 않으므로 class type parameter를 직접 사용할 수 없다.
 
@@ -128,6 +128,7 @@ array는 runtime component type을 검사하고 covariant지만 generic type은 
 - [JLS 5.1.10, Capture Conversion](https://docs.oracle.com/javase/specs/jls/se26/html/jls-5.html#jls-5.1.10)
 - [JLS 8.4.4, Generic Methods](https://docs.oracle.com/javase/specs/jls/se26/html/jls-8.html#jls-8.4.4)
 - [JLS 10.5, Array Store Exception](https://docs.oracle.com/javase/specs/jls/se26/html/jls-10.html#jls-10.5)
+- [JLS 15.20.2, Type Comparison Operator instanceof](https://docs.oracle.com/javase/specs/jls/se26/html/jls-15.html#jls-15.20.2)
 - 김영한 강사, [프로젝트 환경 구성](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=215933)
 - 김영한 강사, [제네릭이 필요한 이유](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=215934)
 - 김영한 강사, [다형성을 통한 중복 해결 시도](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=215935)

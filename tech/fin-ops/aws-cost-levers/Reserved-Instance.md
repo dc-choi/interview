@@ -28,13 +28,14 @@ aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Saving
 
 ### RDS, Aurora RI의 용량 정규화
 
-RDS, Aurora RI는 특정 인스턴스 크기, 대수가 아니라 **예약 용량(normalized capacity)** 기준으로 적용된다. 그래서 약정을 유지한 채 같은 용량 안에서 **인스턴스를 다운사이징**할 수 있다. 예: `r6i.4xlarge` 1대를 `r6i.2xlarge` 2대로 바꿔도(용량 동일) 기존 RI가 그대로 덮인다. RI 만료 시점에 맞춰 점진적으로 Scale-In을 계획하면 약정을 버리지 않고도 사이즈를 줄여 절감한다. 전환은 사용자가 적은 시간대에 rolling 방식으로 수행한다.
+2026-09-03 AWS 문서 기준, Size-flexible 예약 DB 인스턴스는 RDS for Db2, MariaDB, MySQL, Oracle BYOL, PostgreSQL과 Aurora에서만 지원한다. RDS for SQL Server와 RDS for Oracle License Included에는 적용되지 않는다. 같은 리전, DB 엔진과 인스턴스 클래스 타입 안에서 정규화 용량(normalized units) 기준으로 적용되므로, 조건을 충족하면 약정을 유지한 채 같은 용량 안에서 인스턴스 구성을 바꿀 수 있다. 예를 들어 같은 클래스 타입의 `4xlarge` 1대와 `2xlarge` 2대는 정규화 용량이 같다.
 
-## Savings Plans 종류
+## Savings Plans 네 종류 (2026-09-03 AWS 문서 기준)
 
 - **Compute SP**: 가장 유연. 인스턴스 패밀리/리전/OS/테넌시 무관, Fargate/Lambda까지 적용. 할인은 약간 작음.
+- **Database SP**: Aurora, RDS, DynamoDB, ElastiCache, DocumentDB 등 지원 데이터베이스 서비스에 적용.
 - **EC2 Instance SP**: 특정 패밀리+리전에 한정, 할인 더 큼.
-- **SageMaker SP**: ML 워크로드용.
+- **SageMaker AI SP**: ML 워크로드용.
 
 ## 커버리지와 활용률 — 두 지표
 
@@ -70,6 +71,8 @@ RDS, Aurora RI는 특정 인스턴스 크기, 대수가 아니라 **예약 용�
 
 - [AWS — Savings Plans vs Reserved Instances](https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html)
 - [AWS — Reserved Instances (Standard vs Convertible, Regional vs Zonal)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html)
+- [Amazon RDS, Reserved DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html)
+- [AWS Savings Plans, Plan types](https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html)
 
 ## 관련 문서
 

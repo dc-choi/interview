@@ -16,7 +16,7 @@ Worker Threads를 Cluster, child_process와 비교하고 어떤 상황에 무엇
 │ 프로세스 기반     │ 스레드 기반               │
 │ 메모리 공유 불가  │ SharedArrayBuffer로 공유   │
 │ IPC 통신         │ postMessage 통신          │
-│ 포트 공유 가능    │ 포트 공유 불가             │
+│ 포트 공유 가능    │ 수동 구성, 버전/플랫폼 제약 │
 │ 수평 확장 (서버)  │ 병렬 연산 (CPU 작업)       │
 └──────────────────┴──────────────────────────┘
 
@@ -52,7 +52,7 @@ Worker Threads는 같은 프로세스 내의 스레드이므로 SharedArrayBuffe
 | 메모리 사용 | 낮음 | 높음 (프로세스 통째) | 높음 (코어 수만큼) |
 | 에러 전파 | 부분적 (segfault 위험) | 메인 무관 | 메인 무관 |
 | 외부 언어 실행 | ✗ JS/TS만 | ✅ Python, Rust 등 | ✗ Node만 |
-| 포트 공유 | ✗ | ✗ | ✅ 자동 |
+| 포트 공유 | Node.js v26.8.1 기준 수동, handle 전달 또는 `reusePort` | 수동, `sendHandle` | ✅ 자동 |
 | 사용 케이스 | CPU 집약적 연산 | 외부 명령, 다른 언어, 안정성 | HTTP 서버 멀티코어 활용 |
 
 ## 선택 결정 기준
@@ -65,3 +65,8 @@ Worker Threads는 같은 프로세스 내의 스레드이므로 SharedArrayBuffe
 ```
 
 운영, 배포 관점 추가: **컨테이너 오케스트레이터(k8s)** 환경에선 Cluster보다 **인스턴스 N개 수평 확장**이 단순. 한 인스턴스가 한 코어 쓰고 k8s가 코어 수만큼 인스턴스를 띄우는 패턴이 표준 ([[Single-vs-Multi-Thread]] 사례 참조).
+
+## 출처
+
+- [Node.js, Transferring TCP handles to other threads](https://nodejs.org/api/net.html#transferring-tcp-handles-to-other-threads)
+- [Node.js, `subprocess.send()`](https://nodejs.org/api/child_process.html#subprocesssendmessage-sendhandle-options-callback)

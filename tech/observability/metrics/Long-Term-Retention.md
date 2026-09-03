@@ -21,7 +21,7 @@ aliases: ["Long-Term Retention", "장기 보존", "보존 정책", "downsampling
 
 ## 다운샘플링 — 해상도를 낮춰 보관
 
-장기 질의에는 초 단위가 불필요하다. 5분/1시간 단위로 미리 집계(min/max/avg/count)해 두면 **저장량과 질의 비용이 급감**하면서 추세는 그대로 보인다. [[Thanos]]의 Compactor가 이를 자동화한다.
+장기 질의에는 초 단위가 불필요하다. 5분/1시간 단위로 미리 집계해 두면 장기 구간 질의가 훨씬 싸고 빨라진다. 다만 [[Thanos]] Compactor의 downsampling은 원본을 대체하지 않고 5분, 1시간 block을 추가로 만들기 때문에 그 자체로는 저장량이 늘어난다. 저장량을 줄이려면 `--retention.resolution-raw` 같은 해상도별 보존 설정으로 원본을 만료시켜야 한다.
 
 ## 로그 보존 — 등급화 + 인덱싱 분리
 
@@ -47,14 +47,14 @@ aliases: ["Long-Term Retention", "장기 보존", "보존 정책", "downsampling
 ## 면접 체크포인트
 
 - 데이터 가치의 시간 감쇠와 hot/warm/cold 등급화
-- 다운샘플링이 추세를 유지하며 비용을 줄이는 원리
+- 다운샘플링이 장기 질의 비용을 줄이는 원리와 원본 retention을 함께 둬야 저장량이 줄어드는 이유
 - 로그 핫(짧게) + S3 아카이브 + Athena 종량 질의 패턴
 - 보존 기간을 정하는 기준(규정/디버깅/용량/비용)
 - 메트릭 보존과 [[Cardinality|카디널리티]]가 함께 비용을 키우는 점
 
 ## 출처
 
-- [Grafana Mimir — Configuring downsampling & retention](https://grafana.com/docs/mimir/latest/manage/run-production-environment/configuring-out-of-order-samples-ingestion/)
+- [Thanos, Compactor and Downsampling](https://thanos.io/tip/components/compact.md/)
 - [AWS — CloudWatch Logs retention & S3 export](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html)
 
 ## 관련 문서

@@ -7,7 +7,7 @@ aliases: ["Mock Testing Strategy", "Mock 테스트 설계 전략", "Black Box �
 
 # Mock 테스트 설계 전략, Black Box 격리
 
-외부 의존성이 있는 코드를 테스트할 때 **Mock의 위치, 범위, 성능, 구조**를 어떻게 잡느냐가 테스트 가독성과 실행 속도를 결정한다. 단순 `Mock Server` → `@MockBean` → `@TestConfiguration` → `java-test-fixtures` 로 이어지는 **진화 경로**를 이해하면 현재 조직의 적정 단계를 고를 수 있다. 중심 원칙은 **"테스트 불가능한 영역을 격리해 전이되지 않게"**.
+외부 의존성이 있는 코드를 테스트할 때 **Mock의 위치, 범위, 성능, 구조**를 어떻게 잡느냐가 테스트 가독성과 실행 속도를 결정한다. 단순 `Mock Server` → `@MockitoBean` → `@TestConfiguration` → `java-test-fixtures` 로 이어지는 **진화 경로**를 이해하면 현재 조직의 적정 단계를 고를 수 있다. 중심 원칙은 **"테스트 불가능한 영역을 격리해 전이되지 않게"**.
 
 ## 핵심 명제
 
@@ -60,10 +60,10 @@ mockServer.expect(requestTo("/api/v1/partner/$brn"))
 
 **적합**: 외부 통신의 직렬화, URL, 메서드까지 검증하고 싶을 때
 
-## 진화 2: @MockBean (Spring 수준)
+## 진화 2: @MockitoBean (Spring 수준)
 
 ```kotlin
-@MockBean
+@MockitoBean
 private lateinit var partnerClient: PartnerClient
 
 @Test
@@ -75,6 +75,8 @@ fun test() {
 
 - **장점**: HTTP 설정보다 간결, 여러 케이스 쉽게 작성
 - **단점**: 쓸 때마다 **Application Context가 재정의**됨 → 테스트 수가 많아질수록 속도 급감
+
+Spring Boot 4.x에서는 제거된 `@MockBean`, `@SpyBean` 대신 `org.springframework.test.context.bean.override.mockito`의 `@MockitoBean`, `@MockitoSpyBean`을 쓴다. Test class의 non-static field에 붙이거나 `types` 속성으로 type level에 선언할 수 있고 `@Configuration` class에는 사용할 수 없다.
 
 **적합**: 테스트 수가 적거나 특수 케이스에만 Mock이 필요할 때
 
@@ -123,7 +125,7 @@ dependencies {
 | 방식 | 셋업 난이도 | 실행 속도 | 멀티 모듈 | 적합 시점 |
 |---|---|---|---|---|
 | Mock Server | 높음 | 중간 | O | HTTP 세부까지 검증 필요 |
-| @MockBean | 낮음 | 낮음 | O | 테스트 수 적음 |
+| @MockitoBean | 낮음 | 낮음 | O | 테스트 수 적음 |
 | @TestConfiguration | 중간 | 높음 | 제한 | 단일 모듈, 대규모 테스트 |
 | java-test-fixtures | 높음 | 높음 | 최적 | 멀티 모듈 대형 프로젝트 |
 
@@ -170,7 +172,7 @@ Mock은 **가장 바깥쪽 얇은 어댑터**에서만. 안쪽은 실제 객체�
 
 ## 흔한 실수
 
-- **모든 Bean을 @MockBean** → Context 재정의 폭발, CI 속도 급감
+- **모든 Bean을 @MockitoBean** → Context 재정의 폭발, CI 속도 급감
 - **Mock 위치를 깊숙한 내부에** → Black Box가 안쪽으로 전이, 비즈니스 로직까지 격리됨
 - **Mock Server 코드 중복** → 테스트마다 동일 Mocking 반복
 - **외부 라이브러리 타입을 반환** — `ResponseEntity`, `Mono`를 그대로 → 의존성 전파
@@ -178,7 +180,7 @@ Mock은 **가장 바깥쪽 얇은 어댑터**에서만. 안쪽은 실제 객체�
 
 ## 면접 체크포인트
 
-- Mock Server, @MockBean, @TestConfiguration, java-test-fixtures의 **진화 경로**와 조건
+- Mock Server, @MockitoBean, @TestConfiguration, java-test-fixtures의 **진화 경로**와 조건
 - Black Box 전이 개념과 격리 원칙
 - 얇은 어댑터 + 비즈니스 로직 분리
 - 외부 라이브러리 의존성 전파 차단
@@ -188,11 +190,11 @@ Mock은 **가장 바깥쪽 얇은 어댑터**에서만. 안쪽은 실제 객체�
 - [카카오페이 — Mock 테스트 코드 Part 1](https://tech.kakaopay.com/post/mock-test-code/)
 - [카카오페이 — Mock 테스트 코드 Part 2](https://tech.kakaopay.com/post/mock-test-code-part-2)
 - [카카오페이 — 사내 공통 Mock 서버](https://tech.kakaopay.com/post/how-to-simplify-kakaopay-testing-using-a-common-mock-server)
+- [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide)
 
 ## 관련 문서
 - [[Classicist-vs-Mockist-Testing|Classicist vs Mockist, Test Double]]
 - [[TestContainers-Integration|Testcontainers 통합 테스트]]
 - [[Test-Pyramid|Practical Test Pyramid]]
 - [[Service-Layer-Testing|서비스 레이어와 테스트 경계]]
-- [[Test-Fixture|Test Fixture 전략]]
-- [[Test-Isolation|Test Isolation]]
+- [[Test-Fixture|Test Fixture 전략]], [[Test-Isolation|Test Isolation]]

@@ -23,7 +23,7 @@ aliases: ["Function Types and Currying", "Exponential Object", "Cartesian Closed
 | 카디널리티 | 의미 |
 |---|---|
 | `\|Bool → Int\| = Int^Bool` | Bool 두 값 각각에 Int를 할당 → `Int × Int` |
-| `\|Char → Bool\| = 2^256` | Char(256개)마다 True/False |
+| `\|char → Bool\| = 2^256` | C++ `char`(256개)마다 True/False. Haskell `Char`는 유니코드 code point를 표현하므로 `\|Char → Bool\| = 2^1114112` |
 | `\|A → Void\|` | `0^\|A\|` = 0 (A 비어있으면 1) |
 
 이 표기 덕에 함수 타입에 **지수 법칙**이 그대로 적용된다 (아래).
@@ -157,6 +157,7 @@ CCC는 **단순 타입 람다 계산법(simply typed λ-calculus)의 모델**. �
 
 ## 출처
 - [evan-moon — 프로그래머를 위한 카테고리 이론 9. Function Types](https://evan-moon.github.io/2024/04/18/category-theory-for-programmers-9-function-types/)
+- [Function Types — Bartosz Milewski](https://bartoszmilewski.com/2015/03/13/function-types/)
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 일반 개념]]

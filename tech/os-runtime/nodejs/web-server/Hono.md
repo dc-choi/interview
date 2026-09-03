@@ -90,7 +90,7 @@ app.get('/', (c) => c.text('Hello Node.js!'))
 serve(app)
 ```
 
-Cloudflare Workers/Deno/Bun은 런타임 자체가 Web 표준 `fetch` 핸들러를 받으므로 `export default app`만으로 동작한다. Node.js만 표준 인터페이스가 아니라 `@hono/node-server`가 `node:http`의 `req`/`res`를 표준 `Request`/`Response`로 변환해준다.
+Cloudflare Workers와 Bun은 런타임 자체가 Web 표준 `fetch` 핸들러를 받으므로 `export default app`으로 동작한다. Deno에서는 `Deno.serve(app.fetch)`를 호출하거나 `deno serve` 명령으로 모듈을 실행한다. Node.js에서는 `@hono/node-server`가 `node:http`의 `req`/`res`를 표준 `Request`/`Response`로 변환해준다.
 
 ## Validation (검증)
 
@@ -135,7 +135,7 @@ const client = hc<AppType>('http://localhost') // 엔드포인트/응답 타입 
 | import | 라우터 | 적합 환경 |
 |---|---|---|
 | `hono` (기본) | SmartRouter + RegExpRouter + TrieRouter | 대부분의 장기 실행 서버 |
-| `hono/quick` | SmartRouter + LinearRouter | 매 요청마다 앱이 초기화되는 환경(일부 서버리스/FaaS) |
+| `hono/quick` | 2026-09-03 main 소스 기준 SmartRouter + LinearRouter + TrieRouter | 매 요청마다 앱이 초기화되는 환경(일부 서버리스/FaaS) |
 | `hono/tiny` | PatternRouter | 번들 크기 극한 최소화 (14kB 미만) |
 
 ## Express / Fastify / NestJS 비교
@@ -167,3 +167,5 @@ const client = hc<AppType>('http://localhost') // 엔드포인트/응답 타입 
 ## 출처
 
 - [Hono 공식 문서 — hono.dev](https://hono.dev/docs)
+- [deno serve — Deno](https://docs.deno.com/runtime/reference/cli/serve/)
+- [Quick preset source — Hono](https://raw.githubusercontent.com/honojs/hono/main/src/preset/quick.ts)

@@ -11,7 +11,7 @@ aliases: ["Quad Remeshing", "쿼드 리메싱", "리토폴로지", "Retopology"]
 
 ## 문제 정의 — 왜 쿼드이고 왜 어려운가
 
-- 쿼드가 필요한 이유: 서브디비전 서페이스(Catmull-Clark)가 쿼드를 전제하고, 변형과 애니메이션에서 엣지 루프가 근육 흐름처럼 자연스럽게 접히며, UV 전개가 쉬워진다. 수작업 리토폴로지는 모델당 수 시간에서 수일 — 자동화의 가치가 크다
+- 쿼드가 필요한 이유: 서브디비전 서페이스(Catmull-Clark)가 쿼드 우세 메시에 맞춰져 있고, 변형과 애니메이션에서 엣지 루프가 근육 흐름처럼 자연스럽게 접히며, UV 전개가 쉬워진다. Catmull-Clark는 삼각형과 n각형 면도 처리하지만 특이 정점이 생겨 한계 곡면 품질이 떨어질 수 있다. 수작업 리토폴로지는 모델당 수 시간에서 수일이 걸려 자동화의 가치가 크다
 - 어려운 이유: 쿼드 배치는 이산 결정의 연쇄다 — 격자가 어느 방향으로 흐를지, 불규칙 정점을 어디에 둘지, 면들이 서로 정합하는지의 전역 제약이 걸린다. 순수 조합으로 탐색하면 폭발한다
 - 위상적 하한: 구 같은 닫힌 곡면은 오일러 지표 때문에 모든 정점이 밸런스 4인 완전 격자로 덮을 수 없다(구에 연속 방향장을 세울 수 없다는 털 뭉치 정리와 같은 계열). 불규칙 정점(밸런스 3, 5)은 **제거 대상이 아니라 개수와 배치를 최적화하는 대상**이다
 
@@ -46,6 +46,7 @@ aliases: ["Quad Remeshing", "쿼드 리메싱", "리토폴로지", "Retopology"]
 ## 출처
 
 - [AutoRemesher: Automatic quad remeshing tool — huxingyi (GitHub)](https://github.com/huxingyi/autoremesher)
+- [OpenSubdiv, Subdivision Surfaces](https://github.com/PixarAnimationStudios/OpenSubdiv/blob/release/documentation/subdivision_surfaces.rst)
 
 ## 관련 문서
 

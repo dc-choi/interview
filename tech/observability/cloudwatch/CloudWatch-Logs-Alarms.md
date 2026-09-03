@@ -1,7 +1,7 @@
 ---
 tags: [observability, aws, cloudwatch, monitoring, logs, metrics]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "Observability"
 aliases: ["CloudWatch Logs", "CloudWatch Alarms"]
 ---
@@ -48,7 +48,7 @@ fields @timestamp, @message
 | limit 100
 ```
 
-지원 연산: `filter`, `stats`, `sort`, `bin`, `parse` (정규식 추출), `display`. 인덱스 없음 — 스캔 기반이라 시간 범위 좁힐수록 빠름, 저렴.
+지원 연산에는 `filter`, `filterIndex`, `stats`, `sort`, `bin`, `parse`(정규식 추출), `display` 등이 있다. 스캔량 기반 과금이라 시간 범위를 좁힐수록 빠르고 저렴하지만 인덱스가 없는 것은 아니다. 구조화 로그에는 field index를 만들 수 있고 Standard 로그 클래스에는 `@logStream`, `traceId` 같은 기본 field index가 적용된다. 인덱싱된 필드를 `=` 또는 `IN`으로 조회하면 해당 필드가 없는 event를 건너뛰어 scan volume을 줄인다. Index는 정책 생성 이후 수집된 event에 적용되고 수집 시점부터 30일간 유지된다.
 
 ## Alarms
 
@@ -93,5 +93,6 @@ ML 기반 정상 범위 자동 학습 — 정적 임계값 대신 동적 밴드.
 
 - [Amazon CloudWatch — Configuring how alarms treat missing data](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarms-and-missing-data.html)
 - [Amazon CloudWatch — SetAlarmState API](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_SetAlarmState.html)
+- [Amazon CloudWatch Logs, Field indexes](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatchLogs-Field-Indexing.html)
 - [Sungmin Kim 강사 — CloudWatch란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=48604)
 - [Sungmin Kim 강사 — CloudWatch Alarm](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=49555)

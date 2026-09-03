@@ -129,4 +129,5 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 ## 출처
 
 - [NestJS — Exception filters](https://docs.nestjs.com/exception-filters)
-- [NestJS — Sentry](https://docs.nestjs.com/recipes/sentry)
+- [NestJS — Recipes route source](https://raw.githubusercontent.com/nestjs/docs.nestjs.com/master/src/app/homepage/pages/recipes/recipes.routes.ts)
+- [Sentry, NestJS](https://docs.sentry.io/platforms/javascript/guides/nestjs/)

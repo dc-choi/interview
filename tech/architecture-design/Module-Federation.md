@@ -1,13 +1,14 @@
 ---
 tags: [architecture, micro-frontend, module-federation, webpack, deployment]
 status: done
+verified_at: 2026-09-03
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Module Federation", "모듈 페더레이션", "Micro Frontend", "마이크로 프론트엔드", "Build-time Run-time Integration", "런타임 통합"]
 ---
 
 # Module Federation과 마이크로 프론트엔드 런타임 통합
 
-여러 독립 모듈을 하나의 사용자 경험으로 합치는 방식은 **결합 시점**에 따라 Build-time과 Run-time으로 갈린다. Module Federation은 브라우저에서 JavaScript 모듈을 런타임에 동적으로 공유하게 해주는 Webpack 5 기술로, Run-time 통합과 진정한 독립 배포를 가능하게 한다.
+여러 독립 모듈을 하나의 사용자 경험으로 합치는 방식은 **결합 시점**에 따라 Build-time과 Run-time으로 갈린다. Module Federation은 Webpack 5에서 시작했지만 현재는 Rspack, Vite, Rsbuild, Metro 등 여러 도구가 지원하는 런타임 모듈 공유 규약으로 확장됐으며, Run-time 통합과 독립 배포를 가능하게 한다.
 
 ## 모듈 통합 — Build-time vs Run-time
 
@@ -28,11 +29,11 @@ aliases: ["Module Federation", "모듈 페더레이션", "Micro Frontend", "마�
 | npm 패키지 | 약함 | build-time, 재배포 필요 | 런타임 공유 불가 |
 | iframe | 강함 | 독립 | 통신 번거로움, 성능, UX 제약 |
 | Web Component | 표준 기반 | 독립 | 공유 의존성, SSR 한계 |
-| Module Federation | 모듈 단위 | 런타임 독립 | 번들러(Webpack 5) 종속 |
+| Module Federation | 모듈 단위 | 런타임 독립 | 원격 모듈 노출에는 지원 빌드 플러그인이 필요하고, Runtime 전용 소비에는 불필요 |
 
 Module Federation은 런타임 동적 공유에 더해 **공유 의존성 협상**까지 제공해 앞선 방식들의 한계를 넘는다.
 
-## Module Federation 핵심 (Webpack 5)
+## Module Federation 핵심 (Webpack 5 구성 예시)
 
 ### Container — remoteEntry.js
 
@@ -60,6 +61,8 @@ Remote URL을 Host의 webpack 설정에 하드코딩하면, Fragment가 새 버�
 
 - 모노레포가 모놀리스가 되지 않으려면 (2편) — 미리캔버스 프론트엔드 팀(종현 김), Medium
 - [Micro Frontends — Cam Jackson, martinfowler.com](https://martinfowler.com/articles/micro-frontends.html)
+- [Module Federation, Integrations](https://module-federation.io/integrations)
+- [Module Federation, Runtime Access](https://module-federation.io/guide/runtime/)
 
 ## 관련 문서
 

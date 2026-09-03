@@ -3,7 +3,7 @@ tags: [architecture, hexagonal, port-adapter, ddd, nodejs, typescript]
 status: done
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Hexagonal In Practice", "헥사고날 실전 적용", "Port and Adapter Pattern", "Ports & Adapters"]
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 ---
 
 # Hexagonal Architecture 실전 적용
@@ -19,7 +19,7 @@ GUI, HTTP, 데이터베이스 같은 외부 기술을 비즈니스 로직과 분
 | 용어 | 정의 | 위치 |
 |---|---|---|
 | **Port** | 코어가 외부와 상호작용하는 목적과 규약 | 코어가 소유 |
-| **Adapter** | 포트를 구현하는 구체 클래스 (HTTP, DB, 파일 등 실제 기술) | application 계층 바깥 |
+| **Adapter** | 외부 기술과 포트 사이를 변환하는 구체 컴포넌트. Driving adapter는 제공 포트를 호출하고 Driven adapter는 요구 포트를 구현 | application 계층 바깥 |
 
 코드에서는 포트를 주로 인터페이스로 표현한다. 제공 포트는 코어가 외부에 제공하는 기능이고, 요구 포트는 코어가 외부에 요구하는 기능이다. 요구 포트를 코어가 정의하고 어댑터가 구현하면 의존성 역전이 성립한다.
 

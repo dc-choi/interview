@@ -3,6 +3,7 @@ tags: [senior, team, contribution, culture, platform-engineering]
 status: done
 category: "시니어역량(SeniorEngineer)"
 aliases: ["Team Contribution Culture", "엔지니어링 팀 기여", "기여 모델"]
+verified_at: 2026-09-03
 ---
 
 # 엔지니어링 팀 기여 문화
@@ -81,7 +82,7 @@ aliases: ["Team Contribution Culture", "엔지니어링 팀 기여", "기여 모
 | 시간 지평 | 현재 스프린트 | 6개월~2년 후 유지보수 |
 | 측정 | 완료 티켓 수 | "내 부재가 느껴지지 않을 정도로 문서, 자동화" |
 
-시니어가 "팀 기여가 많다"는 건 단순 친절함이 아니라 **팀 bus factor를 낮추고 온보딩 속도를 높이는 레버리지 활동**. 성과 평가에서 중요하게 다뤄지는 이유.
+시니어가 "팀 기여가 많다"는 건 단순 친절함이 아니라 **팀 bus factor를 높이고 온보딩 속도를 높이는 레버리지 활동**. 성과 평가에서 중요하게 다뤄지는 이유.
 
 ## 혼자가 편한 개발자 — 비효율인가 불편인가
 
@@ -135,6 +136,7 @@ aliases: ["Team Contribution Culture", "엔지니어링 팀 기여", "기여 모
 - **팀 기여가 없는 회사에서는 역효과** — 지원하는 회사 컬처를 보고 톤 조절
 
 ## 출처
+- [Software Engineering at Google — How to Work Well on Teams](https://abseil.io/resources/swe-book/html/ch02.html)
 - [maxkim-j — 엔지니어링 팀의 기여](https://maxkim-j.github.io/posts/engineering-team-contribution/)
 - [협업보다 혼자가 편한 개발자에게 — Team Grit](https://teamgrit.co/article/415)
 

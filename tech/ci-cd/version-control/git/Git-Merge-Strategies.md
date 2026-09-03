@@ -160,7 +160,7 @@ git rebase -i HEAD~5
 
 `git rebase -i HEAD~N`의 명령어: `pick`(그대로), `squash`(이전과 합침, 메시지 병합), `fixup`(합침, 메시지 무시), `reword`(메시지 수정), `edit`(해당 커밋 멈춤), `drop`(삭제). push 전 커밋 정리용.
 
-**Cherry-pick vs Rebase**: Cherry-pick은 특정 커밋 하나를 다른 브랜치로 복사(일회성 패치), Rebase는 연속된 여러 커밋을 다른 베이스 위로 이동(브랜치 재구성).
+**Cherry-pick vs Rebase**: Cherry-pick은 히스토리 위치와 무관하게 고른 커밋을 현재 브랜치 위에 각각 새 커밋으로 다시 적용하고 원본 브랜치는 그대로 둔다. 커밋 여러 개나 `A..B` 범위도 고를 수 있다. Rebase는 `<upstream>`에 없는 현재 브랜치 커밋 전체를 새 base 위에 다시 만들고 브랜치 포인터까지 옮긴다. 차이는 커밋 개수가 아니라 base와 브랜치 ref를 바꾸느냐에 있다.
 
 `git rebase --onto <newbase> <upstream> <branch>`는 `branch`에서 `upstream`에 포함되지 않은 커밋들을 골라 `newbase` 위에 다시 만든다. 잘못된 base에서 시작한 하위 branch를 떼어 옮길 때 유용하지만 대상 범위를 `git log <upstream>..<branch>`로 먼저 확인한다.
 
@@ -183,7 +183,7 @@ git rebase -i HEAD~5
 
 ## 출처
 
-- Git: [git merge](https://git-scm.com/docs/git-merge), [git rebase](https://git-scm.com/docs/git-rebase), [권장 workflow](https://git-scm.com/docs/gitworkflows)
+- Git: [git merge](https://git-scm.com/docs/git-merge), [git rebase](https://git-scm.com/docs/git-rebase), [git cherry-pick](https://git-scm.com/docs/git-cherry-pick), [권장 workflow](https://git-scm.com/docs/gitworkflows)
 - 얄팍한 코딩사전, [Fast-Forward vs 3-Way Merge](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401704), [체리픽, 잔가지 옮기기, 마디 묶어 가져오기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=402152)
 
 ## 관련 문서

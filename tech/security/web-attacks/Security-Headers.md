@@ -1,7 +1,7 @@
 ---
 tags: [security, http-header, csp, helmet]
 status: done
-verified_at: 2026-08-12
+verified_at: 2026-09-03
 category: "보안(Security)"
 aliases: ["Security Headers", "CSP", "HTTP Security Headers"]
 ---
@@ -43,7 +43,7 @@ Content-Security-Policy:
 
 | 디렉티브 | 통제 |
 |---------|------|
-| `default-src` | 기본 — 다른 디렉티브가 없을 때 적용 |
+| `default-src` | 명시되지 않은 fetch 디렉티브의 폴백. `frame-ancestors`, `form-action`, `base-uri`, `report-uri`에는 폴백하지 않으므로 별도 선언 필요 |
 | `script-src` | JS 출처 |
 | `style-src` | CSS 출처 |
 | `img-src` | 이미지 출처 |
@@ -99,7 +99,7 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
 }
 ```
 
-가능하면 Helmet — 새 헤더(`Permissions-Policy` 등) 추가될 때 자동 반영.
+Helmet은 지원하는 보안 헤더에 검증된 기본값을 일괄 적용하지만 `Permissions-Policy`는 설정하지 않는다. 이 정책은 `res.setHeader`나 별도 미들웨어로 명시해야 하며, Helmet이 새 표준 헤더를 자동으로 추가한다고 가정하지 않는다. `Cross-Origin-Embedder-Policy`도 기본 비활성이다.
 
 ## 정적 검사 + SQL Injection은 별개
 
@@ -123,7 +123,7 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
 - HSTS preload — 한번 등록되면 되돌리기 어려움
 - `X-Frame-Options` vs CSP `frame-ancestors`
 - `X-XSS-Protection`을 `1; mode=block`이 아니라 `0`으로 두는 이유 — 필터 자체가 취약점을 만들 수 있음
-- Helmet 같은 라이브러리를 쓰는 이유 — 새 헤더 자동 반영
+- Helmet 같은 라이브러리를 쓰는 이유 — 지원하는 헤더의 검증된 기본값과 중앙화된 설정 관리. `Permissions-Policy`처럼 지원하지 않는 헤더는 별도 설정
 - SQL Injection 정규식 차단의 한계
 
 ## 출처
@@ -131,6 +131,8 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
 - [X-XSS-Protection — MDN (deprecated, CSP 권고와 필터가 만드는 취약점 설명)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-XSS-Protection)
 - [OWASP Secure Headers Project — X-XSS-Protection (0 설정 권고)](https://github.com/OWASP/www-project-secure-headers/blob/master/mainsite/01_headers.md#x-xss-protection)
 - [OWASP HTTP Security Response Headers Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html)
+- [Helmet Reference](https://github.com/helmetjs/helmet/blob/main/README.md)
+- [Content Security Policy Level 3](https://www.w3.org/TR/CSP3/#directive-frame-ancestors)
 
 ## 관련 문서
 

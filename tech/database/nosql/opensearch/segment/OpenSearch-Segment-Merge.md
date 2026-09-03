@@ -29,7 +29,7 @@ Floor segment는 잦은 refresh가 만든 초소형 segment가 tier 계산을 �
 Update와 delete는 삭제 표시만 남기고, 공간 회수는 merge가 해당 segment를 재작성할 때만 일어난다.
 
 - `deletes_pct_allowed` 기본 20% (Lucene 기본, 허용 범위 5~50). 이 값은 `deleted / (active + deleted)`, 즉 doc ID space에서 삭제 문서가 차지하는 비율이며 disk byte 비율이 아니다. 낮추면 삭제 회수를 위한 merge가 늘어 write amplification과 CPU/I/O가 커진다.
-- `reclaim_deletes_weight` 기본 2.0. Deleted가 많은 segment를 merge 후보에서 우대하는 가중치다.
+- 2026-09-03 OpenSearch 소스 기준, `reclaim_deletes_weight` 기본값은 2.0이지만 deprecated 상태이며 값을 저장만 하고 merge policy에는 전달하지 않아 변경해도 효과가 없다. Deleted 문서 회수 시점은 `deletes_pct_allowed`로 제어한다.
 
 Update-heavy workload에서 디스크가 부푸는 메커니즘: 매 update가 새 문서 색인 + 이전 버전 tombstone이고, 공간은 해당 segment가 merge될 때 회수된다. 그러나 삭제 문서 20%가 disk byte 20%를 뜻하지는 않는다. 문서별 stored field와 vector 크기, segment 분포, codec에 따라 byte overhead가 달라지므로 고정 비율로 용량을 산정할 수 없다. `_cat/segments`의 `docs.deleted`, segment 크기와 node storage 추이를 함께 측정하고 성장률을 반영해 watermark 여유를 둔다. Deleted 비율이 계속 높으면 force merge보다 update 빈도와 문서 경계, rollover 정책을 먼저 재검토한다.
 

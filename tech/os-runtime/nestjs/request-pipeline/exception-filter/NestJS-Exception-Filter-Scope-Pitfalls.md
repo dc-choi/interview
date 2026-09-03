@@ -27,12 +27,12 @@ app.useGlobalFilters(new AllExceptionsFilter());
 
 DI가 필요한 Filter(Logger, ConfigService 주입)는 `APP_FILTER` 토큰.
 
-## 우선순위 — 적용 범위와 타입 구체성
+## 우선순위 — 적용 범위와 선언 순서
 
 여러 Filter가 적용된 경우:
-1. **타입이 더 구체적인 Filter 우선** — `@Catch(ValidationException)`이 `@Catch()`보다 먼저.
-2. **적용 범위가 좁은 것이 우선** — 메서드 > 컨트롤러 > 전역.
-3. **여러 Filter가 같은 예외를 잡으면 처음 매칭된 것이 처리**.
+1. **적용 범위가 좁은 것이 우선** — 메서드 > 컨트롤러 > 전역.
+2. **같은 범위에서는 나중에 선언한 Filter부터 검사**한다. 2026-09-03 NestJS 소스 기준, 예외 타입의 구체성을 비교해 재정렬하지 않는다.
+3. **여러 Filter가 같은 예외를 잡으면 처음 매칭된 것이 처리**한다. Catch-all과 타입별 Filter를 함께 전달할 때는 catch-all을 먼저 선언해야 reverse된 검사 순서에서 타입별 Filter가 먼저 처리할 수 있다.
 
 ## Pipe 검증 실패와의 관계
 
@@ -63,7 +63,12 @@ new ValidationPipe({
 - `@Catch()` 데코레이터 — 타입별 vs catch-all
 - `ArgumentsHost` vs `ExecutionContext` 차이 (전자가 부모)
 - 내장 HttpException 서브클래스의 자동 매핑 (별도 Filter 없이도 동작)
-- 적용 우선순위 — 타입 구체성 + 적용 범위
+- 적용 우선순위 — 적용 범위(메서드 > 컨트롤러 > 전역)와 같은 범위의 선언 순서
 - `APP_FILTER` 토큰 등록 vs `useGlobalFilters` (DI 가능/불가)
 - 운영/개발 환경 분기 — stack trace 노출 통제
 - `ValidationPipe`의 `exceptionFactory`로 검증 실패 응답 커스터마이징
+
+## 출처
+
+- [NestJS — Exception filters source](https://raw.githubusercontent.com/nestjs/docs.nestjs.com/master/content/exception-filters.md)
+- [NestJS — `selectExceptionFilterMetadata` source](https://github.com/nestjs/nest/blob/master/packages/common/utils/select-exception-filter-metadata.util.ts)

@@ -1,6 +1,7 @@
 ---
 tags: [airflow, data-pipeline, performance, observability]
 status: done
+verified_at: 2026-09-03
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Airflow DAG Parsing", "Airflow DAG 파싱 최적화"]
 ---
@@ -22,7 +23,7 @@ Airflow 3.x에서 dag-processor는 스케줄러와 분리된 **독립 서비스*
 | 메트릭 | 의미 |
 |---|---|
 | `dag_processing.total_parse_time` | 전체 파싱 사이클 소요 시간 |
-| `dag_processing.last_duration.<filename>` | **파일별** 파싱 시간 → 어떤 파일이 느린지 특정 |
+| `dag_processing.last_duration.{bundle_name}.{file_name}` | **파일별** 파싱 시간(ms) → 어떤 파일이 느린지 특정. 2.x는 `dag_processing.last_duration.<dag_file>` |
 
 목표 주기 대비 실측 사이클을 비교한다. 예: 설정 주기 30초인데 실측이 155초(약 5배)면 파싱이 밀리고 있다는 신호 — 튜닝으로 ~72초까지 줄일 수 있다.
 
@@ -34,8 +35,8 @@ Airflow 3.x에서 dag-processor는 스케줄러와 분리된 **독립 서비스*
 |---|---|---|
 | `parsing_processes` ↑ | 파일 병렬 파싱 | CPU/메모리 마진 내에서만 |
 | `min_file_process_interval` ↑ | 재파싱 빈도 ↓ | DAG 변경 반영이 늦어짐 |
-| `parsing_pre_import_modules` | 공통 무거운 모듈을 미리 한 번 import → 워커가 재사용 | 일회성 import 비용 vs N회 반복 비용 |
-| `file_parsing_sort_mode` | 파싱 순서 제어(modified_time / alphabetical / random) | — |
+| `parsing_pre_import_modules` | DAG에서 참조되는 Airflow 모듈을 선행 import해 parsing process별 재-import를 줄임 | Airflow 모듈을 process마다 새로 import해야 하면 `false` |
+| `file_parsing_sort_mode` | 파싱 순서 제어(`modified_time` 기본 / `random_seeded_by_host` / `alphabetical`) | `random_seeded_by_host`는 processor 간에는 무작위지만 같은 host에서는 같은 순서 |
 | `.airflowignore` | 파싱 대상에서 명시적 제외(DAG 아닌 `.py`, 테스트, 유틸) | 패턴 관리 필요 |
 | `dag_discovery_safe_mode` | `airflow`/`dag` 키워드 포함 파일만 스캔 | **이것만으론 불충분** → `.airflowignore` 병행 |
 
@@ -66,6 +67,9 @@ DAG 파일 최상위에서 실행되는 코드는 **매 파싱마다** 비용을
 ## 출처
 
 - [Apache Airflow 3.x DAG Parsing 최적화 체크리스트 — DEVOCEAN (SK)](https://devocean.sk.com/blog/techBoardDetail.do?id=168274&boardType=techBlog&isShared=Y)
+- [Apache Airflow, Metrics](https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/metrics.html)
+- [Apache Airflow, Configuration Reference](https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html)
+- [Apache Airflow 3.3.1, `parsing_pre_import_modules`](https://airflow.apache.org/docs/apache-airflow/3.3.1/configurations-ref.html#parsing-pre-import-modules)
 
 ## 관련 문서
 

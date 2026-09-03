@@ -78,8 +78,8 @@ obs.observe({ entryTypes: ['measure'] });
 
 | entryType | 내용 |
 |-----------|------|
-| `node` | 부팅, DNS, TCP 등 Node 기본 마일스톤 |
-| `gc` | GC 종류, 소요 시간 (`--perf-basic-prof` 등 옵션 필요) |
+| `node` | Node.js v26.8.1 문서 기준 `nodeStart`, `v8Start`, `bootstrapComplete`, `loopStart` 등 부팅과 이벤트 루프 마일스톤. DNS는 `dns`, TCP socket은 `net` entryType |
+| `gc` | GC 종류와 소요 시간. `PerformanceObserver` 등록만 필요하며 별도 실행 flag는 없음 |
 | `http` | HTTP 요청 라이프사이클 |
 | `function` | `performance.timerify(fn)`로 감싼 함수 호출 |
 
@@ -100,6 +100,10 @@ setInterval(() => {
 
 ## 다음 단계
 - [[Debugging-Profiling-Memory|프로파일링 & 메모리 진단]]
+
+## 출처
+
+- [Node.js, Performance measurement APIs](https://nodejs.org/api/perf_hooks.html)
 
 ## 관련 문서
 - [[Debugging-Profiling|디버깅 & 프로파일링 인덱스]]

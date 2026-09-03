@@ -37,7 +37,7 @@ Fast Elements는 다시 **두 축**으로 세분된다.
 
 ### 전이는 한 방향뿐
 
-elements kind는 **더 일반적인(느린) 쪽으로만** 바뀌고 되돌아오지 않는다. 정수 배열에 실수를 넣으면 Double로, 객체를 넣으면 Tagged로 내려가며, 다시 정수만 남겨도 SMI로 복귀하지 않는다. hole도 마찬가지여서 한 번 Holey가 되면 빈 칸을 메워도 Packed로 돌아오지 않는다. 그래서 hot한 배열일수록 처음 타입과 밀집도를 흐트러뜨리지 않는 게 중요하다.
+elements kind는 **더 일반적인(느린) 쪽으로만** 바뀌고 원칙적으로 되돌아오지 않는다. 정수 배열에 실수를 넣으면 Double로, 객체를 넣으면 Tagged로 내려가며, 다시 정수만 남겨도 SMI로 복귀하지 않는다. hole이 생긴 배열도 보통 Packed로 돌아오지 않지만, `Array.prototype.fill`로 hole을 모두 채우는 경우에는 HOLEY에서 PACKED로 전환될 수 있다. 그래서 hot한 배열일수록 처음 타입과 밀집도를 흐트러뜨리지 않는 게 중요하다.
 
 hole이 생기는 대표 동작: `delete arr[i]`, 인덱스를 건너뛴 할당(`arr[0]=1; arr[100]=1`), `arr.length`를 키워 빈 칸을 만드는 것, `new Array(n)`으로 비어 있는 슬롯을 미리 잡는 것.
 
@@ -58,18 +58,18 @@ hole이 생기는 대표 동작: `delete arr[i]`, 인덱스를 건너뛴 할당(
 
 ES2015는 일반 `Array`의 한계를 우회할 **타입이 고정된 연속 메모리**를 도입했다.
 
-- **ArrayBuffer**: 고정 길이의 연속 raw 바이트 블록. 그 자체로는 읽고 쓸 수 없다.
+- **ArrayBuffer**: 연속 raw 바이트 블록. 기본은 고정 길이지만 `maxByteLength`를 지정하면 `resize()`로 크기를 바꿀 수 있다. 그 자체로는 읽고 쓸 수 없다.
 - **View**: ArrayBuffer를 특정 타입으로 해석하는 창. `Int8Array`, `Uint8Array`, `Uint8ClampedArray`, `Int16Array`, `Uint16Array`, `Int32Array`, `Uint32Array`, `Float32Array`, `Float64Array` 등 타입별 뷰와, 임의 오프셋, 엔디언을 직접 다루는 `DataView`가 있다.
 - **SharedArrayBuffer**: 여러 [[Worker-Threads-Core|Web Worker/워커 스레드]]가 공유하는 ArrayBuffer. 복사 없이 메모리를 공유해 병렬 처리 성능을 끌어올린다(접근 동기화는 별도 필요).
 
-타입과 길이가 생성 시 고정되므로 타입 혼합이나 hole로 인한 역최적화 여지가 없고, 항상 연속 메모리라 인덱싱이 정적 언어 배열과 동일하다. WebGL처럼 바이너리 데이터를 대량 처리하는 영역에서 일반 배열의 성능 문제를 풀기 위해 도입됐다. Node.js의 `Buffer`도 `Uint8Array`의 서브클래스다([[Buffer-Memory|Buffer, 메모리 관리]]).
+원소 타입은 생성 시 고정되고 hole을 허용하지 않아 타입 혼합이나 hole로 인한 역최적화 여지가 없다. 기본 ArrayBuffer의 길이는 고정되지만, resizable ArrayBuffer의 길이 추적 뷰는 buffer가 resize될 때 보이는 길이도 바뀐다. 메모리는 연속적이어서 인덱싱이 정적 언어 배열과 유사하다. WebGL처럼 바이너리 데이터를 대량 처리하는 영역에서 일반 배열의 성능 문제를 풀기 위해 도입됐다. Node.js의 `Buffer`도 `Uint8Array`의 서브클래스다([[Buffer-Memory|Buffer, 메모리 관리]]).
 
 ### 일반 Array vs Typed Array
 
 | 축 | 일반 Array | Typed Array |
 |---|---|---|
 | 타입 | 혼합 허용 (섞이면 역최적화) | 단일 고정 |
-| 크기 | 동적 | 생성 시 고정 |
+| 크기 | 동적 | 기본 고정, 길이 추적 뷰는 buffer resize를 따름 |
 | 메모리 | 조건 만족 시에만 연속 | 항상 연속 (ArrayBuffer) |
 | 임의 접근 | Fast면 O(1), Dictionary면 해시 조회 | 항상 O(1) |
 | 용도 | 범용 | 바이너리, 수치 연산, WebGL, 워커 공유 |
@@ -80,13 +80,14 @@ ES2015는 일반 `Array`의 한계를 우회할 **타입이 고정된 연속 메
 - elements kinds 두 축(타입 SMI→Double→Tagged, 밀집도 Packed→Holey)과 전이가 일방향이라는 점
 - 단일 타입 배열에 다른 타입을 섞으면 더 일반적인 elements kind로 전이(SMI → Double → Tagged) + 타입 가정이 깨져 역최적화(출처 벤치마크 기준 약 20배 차이). dictionary 전락은 별개로 배열이 희소해지거나 매우 커질 때 발생 — [[V8-Ignition-TurboFan|Deopt]]의 한 사례
 - Fast 배열 유지 규칙 — 단일 타입, hole 금지(delete 대신 splice), 끝에서 조작
-- Typed Array가 항상 연속 메모리인 이유(타입, 길이 고정)와 ArrayBuffer/View/SharedArrayBuffer 역할
+- Typed Array가 연속 메모리를 쓰는 이유와 고정 길이, resizable ArrayBuffer의 차이, ArrayBuffer/View/SharedArrayBuffer 역할
 - `Buffer`가 `Uint8Array` 서브클래스라는 연결
 
 ## 출처
 
 - [Diving deep into JavaScript array - evolution & performance — Paul Shan (evan-moon 번역)](https://evan-moon.github.io/2019/06/15/diving-into-js-array/)
 - [Elements kinds in V8 — V8 공식 블로그](https://v8.dev/blog/elements-kinds)
+- [Fixed-length and Resizable ArrayBuffer Objects — ECMAScript](https://tc39.es/ecma262/multipage/structured-data.html#sec-fixed-length-and-resizable-arraybuffer-objects)
 
 ## 관련 문서
 

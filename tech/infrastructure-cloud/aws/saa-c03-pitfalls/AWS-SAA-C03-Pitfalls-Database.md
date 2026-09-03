@@ -82,7 +82,7 @@ verified_at: 2026-08-28
 - [DynamoDB TTL](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html)
 - [ElastiCache snapshot과 restore](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/backups.html)
 - [ElastiCache, Valkey와 Redis OSS AUTH](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/auth.html)
-- [QLDB 지원 종료 공지](https://docs.aws.amazon.com/qldb/latest/developerguide/getting-started-step-7.html)
+- [AWS General Reference, Services in Full Shutdown](https://docs.aws.amazon.com/general/latest/gr/full_shutdown_services.html)
 - [Amazon Neptune 소개](https://docs.aws.amazon.com/neptune/latest/userguide/intro.html)
 - [Redshift Spectrum 실행 모델](https://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-overview.html)
 - [Amazon Redshift, Multi-AZ deployment](https://docs.aws.amazon.com/redshift/latest/mgmt/overview-multi-az.html)

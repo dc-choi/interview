@@ -21,7 +21,7 @@ aliases: ["검증 라이브러리 성능 벤치마크", "Zod AOT Fast Path"]
 - 원시형은 AOT 계열이 V8 한계까지 수렴 (~10.5M)
 - 객체가 커질수록 AOT vs 런타임 해석형의 격차 급증 — 100항목 대형 객체에서 Zod AOT 627K는 v3 8.6K 대비 약 73배, v4 11.6K 대비 약 54배
 - Typia가 객체 검증에서 약간 앞섬
-- Zod AOT만 **Set/Map 네이티브 지원**
+- 2026-09-03 공식 API 기준, Set/Map 네이티브 검증은 Zod 본체의 `z.set`, `z.map`과 Typia도 지원한다. 이 벤치마크에서는 Zod AOT가 Set 검증을 가장 빠르게 수행했다
 - Ajv는 **무효 입력 처리**가 빠름 (간결한 에러 포맷)
 
 ## Zod AOT (Vite 플러그인)의 Fast Path
@@ -52,3 +52,5 @@ typeof input === 'object' && input !== null && typeof input.name === 'string'
 
 ## 출처
 - [dev.to @wakita181009 (Tetsuya Wakita) — Zod vs Typia vs Ajv, Vite 플러그인](https://dev.to/wakita181009/zod-vs-typia-vs-ajv-i-built-a-vite-plugin-that-makes-zod-60x-faster-with-zero-code-changes-1poc) — 위 벤치마크 표와 Fast/Slow Path 원리의 출처
+- [Zod, Maps and Sets](https://zod.dev/api#maps)
+- [Typia, assert](https://typia.io/docs/validators/assert/)

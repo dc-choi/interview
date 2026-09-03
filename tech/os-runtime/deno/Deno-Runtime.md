@@ -48,7 +48,7 @@ deno add npm:chalk
 deno install
 ```
 
-`deno install`은 현재 project dependencies를 설치하는 명령과 entrypoint를 실행 가능한 command로 설치하는 기능을 문맥에 따라 제공한다. 현재 CLI에서는 executable 설치 의도를 `deno install --entrypoint`로 명확히 할 수 있다. CI와 container에서는 lockfile 검증과 cache layer를 사용한다.
+`deno install`은 project dependencies를 설치하거나 script와 package를 전역 command로 설치한다. Executable 설치에는 `deno install --global`(`-g`)을 사용한다. `--entrypoint`(`-e`)는 지정한 entrypoint와 dependency를 미리 설치하고 cache하는 옵션이다. CI와 container에서는 lockfile 검증과 cache layer를 사용한다.
 
 ## Docker 배포
 
@@ -77,6 +77,7 @@ CMD ["run", "--allow-net=0.0.0.0:8000", "src/main.ts"]
 - [Deno, TypeScript](https://docs.deno.com/runtime/fundamentals/typescript/)
 - [Deno, deno.json and package.json](https://docs.deno.com/runtime/reference/deno_json/)
 - [Deno, Packages and dependencies](https://docs.deno.com/runtime/packages/)
+- [Deno, `deno install`](https://docs.deno.com/runtime/reference/cli/install/)
 - [Deno, Docker](https://docs.deno.com/runtime/reference/docker/)
 - yongsoocho, [Deno 개발 환경 구성](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=166731)
 - yongsoocho, [권한 flag](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=227030)

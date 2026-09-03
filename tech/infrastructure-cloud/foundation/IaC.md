@@ -3,6 +3,7 @@ tags: [infrastructure, iac, terraform, ansible, gitops, devops]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["IaC", "Infrastructure as Code", "테라폼", "코드형 인프라"]
+verified_at: 2026-09-03
 ---
 
 # IaC (Infrastructure as Code)
@@ -23,10 +24,10 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 |---|---|---|
 | 기술 대상 | **원하는 최종 상태(desired state)만** 기술 | 도달까지의 **명령과 순서**를 직접 기술 |
 | 도달 방법 | 도구가 현재 상태와 비교해 차이만 자동 적용 | 사람이 어떻게 바꿀지 단계로 명시 |
-| 제거, 변경 | 상태 추적으로 간편(코드에서 빼면 삭제됨) | 변경, 삭제 절차를 직접 작성 |
-| 예 | Terraform, Ansible 플레이북, Puppet, CloudFormation | 셸 스크립트, Chef 레시피(절차적) |
+| 제거, 변경 | 원하는 부재 상태도 선언. Terraform 같은 state-authoritative 도구는 구성을 제거하면 destroy를 계획할 수 있지만, Ansible/Chef는 `absent`, `remove` 같은 상태를 명시 | 변경, 삭제 절차를 직접 작성 |
+| 예 | Terraform, CloudFormation, Ansible과 Chef의 리소스 선언 | 셸 스크립트, 도구 안의 절차적 helper와 명시적 순서 제어 |
 
-선언형이 IaC의 주류다. 현재 상태를 몰라도 원하는 상태만 적으면 되니 멱등성과 드리프트 교정에 유리하다.
+선언형이 IaC의 주류다. 원하는 상태를 적으면 도구가 현재 상태와 비교하므로 멱등성과 드리프트 교정에 유리하다. 다만 도구 전체를 둘 중 하나로만 분류하면 안 된다. Terraform, Ansible과 Chef 모두 선언적 resource 모델을 중심으로 쓰면서 provisioner, task 순서, 조건문이나 Ruby helper 같은 절차적 제어를 섞을 수 있다.
 
 **CDK, Pulumi의 위치**: 범용 프로그래밍 언어(TS, Python 등)로 인프라를 작성해 절차적 작성 경험을 주지만, 내부적으로는 선언적 모델(CDK는 CloudFormation 템플릿)로 합성한다. 즉 **작성 패러다임과 실행 모델은 별개**다. 한 회사의 영속 리소스를 팀 단위로 관리한다면 선언형 도구(Terraform 등)가 무난하고, 애플리케이션 생명주기에 묶이는 일시적 리소스에는 CDK/Pulumi가 어울린다.
 
@@ -35,7 +36,8 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 구성을 대상 노드에 어떻게 전달하느냐의 구분.
 
 - **push**: 중앙 제어 노드가 대상 서버로 구성을 밀어 넣는다. 대상에 에이전트 설치가 필요 없을 수 있다(에이전트리스). 예: **Ansible**(SSH로 push).
-- **pull**: 대상 서버의 에이전트가 중앙 서버에서 원하는 상태를 주기적으로 당겨와 스스로 적용한다. 주기적 동기화라 드리프트를 지속 교정하는 데 강하다. 예: **Puppet, Chef, SaltStack**.
+- **pull**: 대상 서버의 에이전트가 중앙 서버에서 원하는 상태를 주기적으로 당겨와 스스로 적용한다. 주기적 동기화라 드리프트를 지속 교정하는 데 강하다. 예: **Puppet, Chef**.
+- **SaltStack**: 기본 원격 실행은 master가 minion에 job을 publish하는 방식이다. 상태 파일은 master fileserver에서 받아 로컬 적용하며, 주기적 동기화는 minion scheduler 같은 별도 설정으로 구성한다.
 
 ## 대표 도구 (두 갈래)
 
@@ -51,14 +53,14 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 - **상태(State)**: 코드가 관리하는 인프라의 현재 상태를 별도 파일로 추적. 원격 백엔드(S3 등)에 두고 공유.
 - **멱등성(Idempotency)**: 같은 코드를 여러 번 실행해도 결과가 같다. 이미 원하는 상태면 변경 없음.
 - **프로바이더(Provider)**: AWS, GCP 등 벤더별 플러그인. 같은 문법으로 멀티 클라우드.
-- **락킹(Locking)**: 동시에 여러 명이 상태를 바꾸지 못하게 잠금(DynamoDB 등으로).
+- **락킹(Locking)**: 동시에 여러 명이 상태를 바꾸지 못하게 잠근다. S3 backend의 state locking은 opt-in이며, 새 구성에서는 `use_lockfile = true`로 `.tflock` 파일을 사용한다. `dynamodb_table` 기반 잠금은 deprecated 상태다.
 - **Plan**: apply 전 변경 사항을 미리 계산, 검토. 실수 적용을 막는 안전장치.
 
 ## 가변 vs 불변 인프라, 구성 드리프트
 
 - **구성 드리프트(Configuration Drift)**: 코드가 정의한 원하는 상태와 실제 인프라가 어긋나는 현상. 주로 누군가 콘솔에서 수동으로 손대거나, 서버마다 패치가 제각각 쌓이며 발생(스노우플레이크 서버).
 - **가변(Mutable) 인프라**: 기존 서버를 in-place로 수정. 누적될수록 드리프트, 비재현성 위험.
-- **불변(Immutable) 인프라**: 변경 시 기존을 고치지 않고 **새 이미지/인스턴스로 통째 교체**(골든 이미지, 블루-그린). 드리프트를 원천 차단하고 롤백이 깨끗하다. IaC 모범 사례는 불변 지향.
+- **불변(Immutable) 인프라**: 변경 시 기존을 고치지 않고 **새 이미지/인스턴스로 통째 교체**(골든 이미지, 블루-그린). 서버 내부에 변경이 누적되는 드리프트를 줄이고 롤백을 단순하게 한다. 다만 콘솔의 수동 변경이나 외부 리소스 변화까지 막지는 않으므로 IaC의 탐지와 재수렴은 여전히 필요하다.
 
 ## CI/CD, DevOps, GitOps 연결
 
@@ -87,7 +89,7 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 
 ## 면접 체크포인트
 
-- 선언형 vs 명령형의 차이와 각 도구가 어디에 속하는지(Terraform, Ansible = 선언형 / 스크립트, Chef = 절차형)
+- 선언형 vs 명령형의 차이, 그리고 한 도구 안에서도 선언적 resource와 절차적 제어가 섞일 수 있는 이유
 - push(Ansible) vs pull(Puppet, Chef) 모델의 트레이드오프
 - 프로비저닝 도구 vs 구성 관리 도구의 역할 구분과 조합
 - 상태, 멱등성, 구성 드리프트, 불변 인프라가 왜 IaC의 핵심 가치인지
@@ -96,6 +98,12 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 ## 출처
 - [Infrastructure as Code(IaC)란? — Red Hat](https://www.redhat.com/ko/topics/automation/what-is-infrastructure-as-code-iac)
 - [AWSome IaC 발표 자료](https://github.com/drakejin/20250628-tbm)
+- [Salt Project, Architecture](https://docs.saltproject.io/en/latest/topics/development/architecture.html)
+- [Chef Infra Client Overview](https://docs.chef.io/chef_client_overview/)
+- [Ansible, package module](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/package_module.html)
+- [Chef, package resource](https://docs.chef.io/client/18/resources/bundled/package/)
+- [Terraform, What is Terraform](https://developer.hashicorp.com/terraform/intro)
+- [Terraform, S3 backend](https://developer.hashicorp.com/terraform/language/backend/s3)
 
 ## 관련 문서
 - [[CDK-vs-Terraform|CDK vs Terraform (IaC 도구 선택)]]

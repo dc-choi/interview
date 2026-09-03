@@ -1,7 +1,7 @@
 ---
 tags: [senior, ai, claude-code, settings, permissions, sandbox]
 status: done
-verified_at: 2026-08-28
+verified_at: 2026-09-03
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한", "권한 규칙 문법"]
 ---
@@ -42,7 +42,7 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 | default (=manual) | 매번 승인 |
 | acceptEdits | 파일 편집 + mkdir, rm, mv 등 자동 승인 (작업 디렉토리 내부만) |
 | plan | 읽기와 탐색만 |
-| auto | 백그라운드 AI 분류기가 액션 평가 (리서치 프리뷰) |
+| auto | 백그라운드 AI 분류기가 액션 평가. Pro, Max와 Team에서는 지원 모델 사용 시 세션 기본 모드이며, 조직이 끄거나 사용할 수 없으면 Manual로 시작 |
 | dontAsk | allow 규칙 + 읽기 전용만 실행, 나머지 자동 거부 (CI용) |
 | bypassPermissions | 전부 통과 — `rm -rf /` 급만 서킷브레이커, root에선 시작 거부 |
 
@@ -52,7 +52,7 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 - 와일드카드 경계: `Bash(ls *)`는 `lsof`에 매칭되지 않고 `Bash(ls*)`는 매칭된다. 단일 `*`는 여러 인자에 걸쳐 매칭 (`Bash(git * main)`이 `git push origin main`에 매칭)
 - 경로 접두사(gitignore 사양): `//` 절대 경로, `~/` 홈, `/` 프로젝트 루트, 무접두사는 현재 디렉토리. bare 파일명 `Read(.env)`는 `**/.env`처럼 전 깊이 매칭. `Edit` allow는 같은 경로의 Read도 함께 부여
 - 복합 명령(`&&`, `;`, `|`)은 각 하위 명령이 독립적으로 매칭돼야 하고, `timeout`, `nohup` 같은 래퍼는 자동 제거 후 매칭된다
-- **Read/Edit deny는 내장 도구만 차단** — Bash의 `cat .env`는 못 막는다. `.env` 봉쇄는 Read, Edit, Bash를 함께 deny하고, OS 수준 차단은 샌드박싱이 맡는다
+- **Read deny는 인식 가능한 Bash 파일 명령도 차단** — 내장 Read뿐 아니라 `cat`, `head`, `tail`, `sed` 같은 Bash 파일 읽기도 차단한다. Python이나 Node 스크립트처럼 파일을 직접 여는 임의의 서브프로세스는 막지 못하므로 그 영역은 OS 수준 샌드박싱이 맡는다
 - deny `Bash(rm *)`는 `/bin/rm`이나 `find -delete`를 못 막고(리터럴 매칭), allow `Bash(find *)`가 `-exec`를 자동 승인하지도 않는다
 - 심볼릭 링크는 비대칭: allow는 링크와 대상 둘 다 매칭돼야 하고, deny는 둘 중 하나만 매칭돼도 차단 (안전한 쪽으로 기움)
 
@@ -75,12 +75,14 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 - 관리자 소스의 기본 first-wins, merge 모드와 모든 admin source에서 읽는 보안 키 예외
 - 권한 평가 순서 (deny → ask → allow, first match wins, deny-at-any-level)
 - bare deny와 scoped deny의 차이 (컨텍스트 제거 vs 호출 차단)
-- Read deny가 Bash cat을 못 막는 이유와 Bash sandbox의 적용 범위, 예외
+- Read deny가 인식 가능한 Bash 파일 명령까지 막지만 임의 서브프로세스는 못 막는 경계와 샌드박스의 역할
 - 와일드카드, 복합 명령, 심볼릭 링크 매칭의 경계 사례
 
 ## 출처
 
 - [Anthropic, Configure the sandboxed Bash tool](https://code.claude.com/docs/en/sandboxing)
+- [Anthropic, Permissions](https://code.claude.com/docs/en/permissions)
+- [Anthropic, Permission modes](https://code.claude.com/docs/en/permission-modes)
 - [Anthropic, Claude Code settings](https://code.claude.com/docs/en/settings)
 - [Anthropic, Deploy managed settings](https://code.claude.com/docs/en/managed-settings)
 - [Anthropic, How Claude remembers your project](https://code.claude.com/docs/en/memory)

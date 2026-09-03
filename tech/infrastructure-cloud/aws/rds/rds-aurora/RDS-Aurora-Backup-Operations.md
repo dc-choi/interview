@@ -24,7 +24,7 @@ aliases: ["RDS 백업과 복구", "RDS Proxy와 Enhanced Monitoring"]
 - **Serverless**, Multi-AZ, Auto Scaling 내장
 - Failover 시 standby로 바로 라우팅 → 장애 조치 체감 시간 단축
 - **IAM 인증 강제** 가능, **퍼블릭 액세스 불가** (인터넷 직접 접근 차단)
-- 지원: MySQL, PostgreSQL, MariaDB, Aurora
+- 2026-09-03 기준 지원: MySQL, PostgreSQL, MariaDB, Microsoft SQL Server, Aurora. SQL Server는 2022와 2014 메이저 버전 미지원 등 엔진별 제약이 있으므로 지원 조합을 확인한다
 - Lambda 처럼 **연결이 빠르게 생성, 소멸**하는 워크로드에 특히 유효
 
 ## Enhanced Monitoring
@@ -37,3 +37,7 @@ aliases: ["RDS 백업과 복구", "RDS Proxy와 Enhanced Monitoring"]
 
 - EC2 설치형: `my.cnf`, OS 튜닝, 확장 설치 자유, SSH 접속 가능. 단 백업, 패치, HA, 모니터링 **전부 직접 운영**
 - RDS: 위 운영을 자동화하지만 SSH, OS 제어, 일부 확장 불가
+
+## 출처
+
+- [AWS 공식 문서, Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html)

@@ -3,7 +3,7 @@ tags: [aws, infrastructure, ebs, storage, block-storage]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["EBS", "Elastic Block Store", "AWS EBS", "EBS Snapshot"]
-verified_at: 2026-07-21
+verified_at: 2026-09-03
 ---
 
 # AWS EBS (Elastic Block Store)
@@ -22,6 +22,8 @@ EC2 인스턴스에 부착되는 **블록 수준 네트워크 스토리지**. �
 - 인스턴스 종료 시 삭제 여부는 각 block device mapping의 `DeleteOnTermination` 값으로 결정된다. 루트 볼륨은 일반적으로 삭제가 기본이지만 AMI와 실행 방식에 따라 바꿀 수 있고, 데이터 볼륨도 생성, 연결 방식에 따라 기본값이 다르므로 속성을 직접 확인한다.
 
 ## EBS 볼륨 유형
+
+현재 세대는 `gp3`, `gp2`, `io2 Block Express`, `io1`, `st1`, `sc1`의 6종이다. 부트 볼륨은 SSD 계열에서 지원하며, 이전 세대인 Magnetic(`standard`)도 부팅을 지원한다. 현재 세대 HDD인 `st1`, `sc1`은 부트 볼륨으로 사용할 수 없다.
 
 | 유형 | 분류 | 부트 가능 | 특징 | 적합 워크로드 |
 |------|------|----------|------|---------------|
@@ -107,7 +109,7 @@ EBS는 AZ 안에서 중복 저장되므로 단일 볼륨의 일반적인 내구�
 ## 시험 체크포인트 (SAA-C03)
 
 - EBS는 **AZ 종속** — 다른 AZ EC2 부착 불가, 스냅샷 경유
-- EBS 볼륨 유형 5종 (gp2, gp3, io1, io2, st1, sc1)과 **부트 가능 여부** (HDD 계열 불가)
+- 현재 세대 EBS 볼륨 유형 6종 (`gp3`, `gp2`, `io2 Block Express`, `io1`, `st1`, `sc1`)과 **부트 가능 여부**. SSD는 지원하고 현재 세대 HDD인 `st1`, `sc1`은 지원하지 않으며, 이전 세대 Magnetic은 지원
 - io2 Block Express의 **Multi-Attach** — 동일 AZ 내 다수 인스턴스 부착
 - 스냅샷은 **증분식**, S3에 저장 (사용자 버킷 X)
 - 스냅샷의 **Cross-Region, Cross-Account 공유** 가능
@@ -120,6 +122,7 @@ EBS는 AZ 안에서 중복 저장되므로 단일 볼륨의 일반적인 내구�
 ## 출처
 
 - [Amazon EBS 사용 설명서](https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html)
+- [Amazon EBS 볼륨 유형](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html)
 - [io2 Block Express 볼륨](https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html)
 - [EBS Multi-Attach](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html)
 

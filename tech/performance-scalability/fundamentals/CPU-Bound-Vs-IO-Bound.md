@@ -132,7 +132,7 @@ Node.js, Go, Python asyncio와 C++는 비동기 I/O를 처리하는 방식과 �
 
 ## 출처
 - [arca.live 프로그래머즈 — CPU-intensive vs I/O-intensive (모댕숲)](https://arca.live/b/programmers/62350982)
-- [Node.js — Don't Block the Event Loop](https://nodejs.org/ko/docs/guides/dont-block-the-event-loop/)
+- [Node.js — Don't Block the Event Loop](https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop)
 - [Node.js, Worker threads](https://nodejs.org/api/worker_threads.html)
 
 ## 관련 문서

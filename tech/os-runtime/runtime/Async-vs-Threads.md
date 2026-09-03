@@ -48,9 +48,9 @@ OS 스레드가 비싸서 못 만든다는 가정이 잘못됐다는 것. 런타
 - **Java Project Loom** (가상 스레드, JDK 21+)
 - **Go goroutine**
 - **Erlang/Elixir 프로세스**
-- **Kotlin 코루틴 + Dispatchers**
+- **Kotlin 코루틴 + Dispatchers** (`suspend` 함수 색깔은 남는다)
 
-특징: **블로킹처럼 보이는 코드**를 그대로 쓰되, 런타임이 await 지점을 자동으로 yield 처리. 함수 색깔도 없고 콜 스택도 살아있다.
+Java 가상 스레드, Go goroutine과 Erlang/Elixir 프로세스는 블로킹처럼 보이는 코드를 그대로 쓰면서 함수 색깔을 만들지 않는다. Kotlin 코루틴은 `suspend` 함수를 다른 suspending 함수에서만 호출할 수 있으므로 함수 색깔이 남는다.
 
 ### 구조적 동시성 (Structured Concurrency)
 
@@ -76,7 +76,7 @@ Node.js는 단일 스레드 + 이벤트 루프라 **async/await에서 벗어나�
 | 컬러 함수 | 회피 불가. 단, Top-level await로 진입점만이라도 단순화 |
 | 백프레셔 부재 | **Stream API + highWaterMark**, `p-limit`/`p-queue`로 동시성 제한 |
 | 정지 문제 | **`AbortSignal` + 타임아웃** 모든 외부 호출에 의무화, `Promise.race`로 deadline |
-| 콜 스택 손실 | **`--async-stack-traces`** 활성화 (V8), Sentry/OpenTelemetry로 비동기 컨텍스트 추적 |
+| 콜 스택 손실 | Node.js v26.8.1은 V8의 async stack trace가 기본 활성화돼 별도 flag가 필요 없다. `Error.stackTraceLimit` 조정, `AsyncLocalStorage`/`AsyncResource` 기반 컨텍스트 전파와 Sentry/OpenTelemetry로 보완 |
 
 CPU 바운드는 **Worker Threads**로, I/O 바운드는 **이벤트 루프**로 명확히 분리하는 것도 같은 맥락.
 
@@ -98,6 +98,8 @@ CPU 바운드는 **Worker Threads**로, I/O 바운드는 **이벤트 루프**로
 
 ## 출처
 - [요즘IT — 실전 교훈: 비동기/대기보다 스레드가 유리한 이유 (Armin Ronacher 번역)](https://yozm.wishket.com/magazine/detail/2918/)
+- [Kotlin Language Specification, Suspending functions](https://kotlinlang.org/spec/asynchronous-programming-with-coroutines.html#suspending-functions)
+- [Zero-cost async stack traces — V8](https://v8.dev/blog/fast-async)
 
 ## 관련 문서
 - [[Thread-vs-Event-Loop|Thread vs Event Loop]]

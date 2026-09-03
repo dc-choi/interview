@@ -1,7 +1,7 @@
 ---
 tags: [cdc, debezium, kafka, mysql, postgresql, binlog, wal]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-03
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["CDC DB 설정", "Debezium 활성화 전제와 스냅샷 모드"]
 ---
@@ -16,7 +16,7 @@ Debezium 설정명은 배포 버전에 따라 달라진다. 이 문서에서 수
 
 - `binlog_format = ROW` — STATEMENT/MIXED은 행 단위 변경 정보를 잃어 CDC 불가
 - `binlog_row_image = FULL` — UPDATE 시 변경 전후 전체 행 정보
-- binary log를 활성화하고 고유한 `server_id`를 부여한다. `binlog_expire_logs_seconds`는 connector의 최대 중단과 복구 시간을 넘도록 정하고 저장 공간을 감시한다. 오래된 MySQL의 `expire_logs_days`는 최신 버전에서 deprecated 됐다
+- binary log를 활성화하고 고유한 `server_id`를 부여한다. `binlog_expire_logs_seconds`는 connector의 최대 중단과 복구 시간을 넘도록 정하고 저장 공간을 감시한다. `expire_logs_days`는 MySQL 8.0에서 deprecated됐고 8.4에서 제거됐다. 8.4 이상에서는 runtime get/set과 `--expire-logs-days` 기동 옵션이 오류이므로 `binlog_expire_logs_seconds`만 사용한다
 - Debezium 전용 계정 + `REPLICATION SLAVE`, `REPLICATION CLIENT`, `SELECT`, `RELOAD`, `SHOW DATABASES` 권한. RDS/Aurora처럼 global read lock을 허용하지 않아 table-level snapshot을 쓰는 환경은 `LOCK TABLES`도 필요
 
 ### Aurora MySQL 특수사항
@@ -77,6 +77,7 @@ Debezium 커넥터는 두 단계로 진행.
 - [Amazon Aurora, IAM authentication for logical replication connections](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Replication.Logical.IAM-auth.html)
 - [PostgreSQL 17 공식 문서, Replication settings](https://www.postgresql.org/docs/17/runtime-config-replication.html)
 - [PostgreSQL 17 공식 문서, pg_replication_slots](https://www.postgresql.org/docs/17/view-pg-replication-slots.html)
+- [MySQL 8.4 Reference Manual, Features Removed in MySQL 8.4](https://dev.mysql.com/doc/refman/8.4/en/mysql-nutshell.html)
 - [m0rph2us — MySQL CDC with Debezium #1](https://m0rph2us.github.io/mysql/cdc/debezium/2020/05/23/mysql-cdc-with-debezium-1.html)
 - [rastalion.dev — Aurora for MySQL에서 CDC를 준비하는 과정](https://rastalion.dev/aurora-for-mysql%EC%97%90%EC%84%9C-cdc%EB%A5%BC-%EC%A4%80%EB%B9%84%ED%95%98%EB%8A%94-%EA%B3%BC%EC%A0%95/)
 - [mongsil-jeong — Debezium MySQL CDC Kafka Connect](https://mongsil-jeong.tistory.com/38)

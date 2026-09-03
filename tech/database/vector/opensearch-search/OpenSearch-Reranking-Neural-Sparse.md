@@ -74,7 +74,7 @@ Dense vector 대비 장점은 세 가지다.
 | 참고: BM25 | - | - | 0.419 | 18.9ms |
 | 참고: dense (TAS-B) | - | - | 0.410 | 86.8ms |
 
-Doc-only는 query 시점 model inference가 없어 latency가 BM25급이다. 공식 권장 조합은 bi-encoder면 `opensearch-neural-sparse-encoding-v2-distill` 단독, doc-only면 ingest에 `doc-v3-gte` + 검색에 `tokenizer-v1`이다. v3 계열은 prune ratio 0.1로 pruning돼 index 크기 대비 품질 trade-off가 개선됐다.
+Doc-only는 query 시점 model inference가 없어 latency가 BM25급이다. 공식 기본 권장은 doc-only와 DL model analyzer(`bert-uncased`) 조합이다. Custom tokenizer를 쓰면 ingest에 `opensearch-neural-sparse-encoding-doc-v3-distill`, 검색에 `opensearch-neural-sparse-tokenizer-v1`을 쓰고, bi-encoder는 `opensearch-neural-sparse-encoding-v2-distill` 단독으로 쓴다. `doc-v3-gte`는 벤치마크 선택지이지 공식 권장 조합은 아니다. v3 계열은 prune ratio 0.1로 pruning돼 index 크기 대비 품질 trade-off가 개선됐다.
 
 ### Two-phase processor (2.15+)
 
@@ -106,7 +106,7 @@ Doc-only는 query 시점 model inference가 없어 latency가 BM25급이다. 공
 - Neural sparse는 BM25의 튜닝판이 아니다. 색인 자료구조만 공유하고 weight는 학습 model이 만든다. Model 교체는 dense와 마찬가지로 재색인 사안이다.
 - Doc-only 모드도 ingest 시점에는 model inference가 필요하다. 비용이 사라진 게 아니라 query 시점에서 색인 시점으로 이동한 것이며, 색인 처리량과 [[OpenSearch-Indexing-Internals|ingest pipeline]] CPU에 반영된다.
 - Cross-encoder rerank와 hybrid fusion은 대체 관계가 아니다. Fusion은 회수 branch 결합, rerank는 결합된 상위 N의 재정렬로 층위가 다르다.
-- 벤치마크의 bi-encoder p99 383.5ms는 검색 노드에서 model을 함께 돌린 구성의 수치다. 외부 GPU endpoint로 빼면 다른 profile이 되므로 수치보다 doc-only 대비 규모 감각으로 쓴다.
+- 벤치마크의 bi-encoder p99 383.5ms는 data node 3대(r5.8xlarge)와 leader, ML node 1대(r5.12xlarge)로 구성한 cluster에서 전용 ML node가 query inference를 처리한 수치다. MS MARCO v2의 100만 문서 subset을 20 client로 측정했으며, 외부 GPU endpoint는 다른 profile이므로 수치보다 doc-only 대비 규모 감각으로 쓴다.
 
 ## 운영 체크포인트
 
@@ -134,6 +134,8 @@ Doc-only는 query 시점 model inference가 없어 latency가 BM25급이다. 공
 - [OpenSearch Documentation, Generating sparse vector embeddings automatically](https://docs.opensearch.org/latest/vector-search/ai-search/neural-sparse-with-pipelines/)
 - [OpenSearch Documentation, Neural sparse query two-phase processor](https://docs.opensearch.org/latest/search-plugins/search-pipelines/neural-sparse-query-two-phase-processor/)
 - [OpenSearch Documentation, Pretrained models](https://docs.opensearch.org/latest/ml-commons-plugin/pretrained-models/)
+- [OpenSearch Documentation, Neural sparse search with a custom model](https://docs.opensearch.org/latest/vector-search/ai-search/neural-sparse-custom/)
+- [OpenSearch Documentation, ML Commons cluster settings](https://docs.opensearch.org/latest/ml-commons-plugin/cluster-settings/)
 - [Improving document retrieval with sparse semantic encoders — OpenSearch Blog](https://opensearch.org/blog/improving-document-retrieval-with-sparse-semantic-encoders/)
 - [opensearch-neural-sparse-encoding-multilingual-v1 — Hugging Face](https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-multilingual-v1)
 - [AWS Documentation, Amazon OpenSearch Service ML connectors](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ml-amazon-connector.html)

@@ -118,7 +118,7 @@ Trigger는 table의 INSERT/UPDATE/DELETE에 결합된 암시적 write path다. D
 - [MySQL 8.4, Using Views](https://dev.mysql.com/doc/refman/8.4/en/views.html)
 - [MySQL 8.4, Using Stored Routines](https://dev.mysql.com/doc/refman/8.4/en/stored-routines.html)
 - [MySQL 8.4, Stored Objects](https://dev.mysql.com/doc/refman/8.4/en/stored-objects.html)
-- [MySQL 8.4, Using the Event Scheduler](https://dev.mysql.com/doc/refman/8.4/en/events.html)
+- [MySQL 8.4, Using the Event Scheduler](https://dev.mysql.com/doc/refman/8.4/en/event-scheduler.html)
 - [Oracle AI Database 26ai, CREATE VIEW](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/CREATE-VIEW.html)
 - [인프런, Hong, DB 설계 패턴](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338545)
 - [Oracle 11g 강의, View의 개념과 활용](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4667)

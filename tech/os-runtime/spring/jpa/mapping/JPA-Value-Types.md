@@ -78,9 +78,9 @@ private Set<Address> addresses = new HashSet<>();
 
 ## 출처
 
-- [Jakarta Persistence 3.2, Basic Types](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#basic-types)
-- [Jakarta Persistence 3.2, Embeddable Classes](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#embeddable-classes)
-- [Jakarta Persistence 3.2, Collections of Values](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#collections-of-entity-and-embeddable-types)
+- [Jakarta Persistence 3.2, Basic Types](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a486)
+- [Jakarta Persistence 3.2, Embeddable Classes](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a487)
+- [Jakarta Persistence 3.2, Collections of Values](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a494)
 - [Hibernate ORM current User Guide, Embeddables](https://docs.hibernate.org/stable/orm/userguide/html_single/#embeddables)
 - 강의: [기본값 타입](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21712), [임베디드 타입](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21713), [값 타입과 불변 객체](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21714)
 - 강의: [값 타입의 비교](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21715), [값 타입 컬렉션](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21716), [실전 예제 6](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21717)

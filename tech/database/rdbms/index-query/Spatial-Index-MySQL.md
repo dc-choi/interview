@@ -107,7 +107,7 @@ H3가 S2(구글) 대비 우위인 이유: 육각형은 인접 셀과의 거리�
 
 - SPATIAL INDEX는 어떤 자료구조인가 (R-Tree)
 - SRID 4326의 의미와 (위도, 경도) 순서 함정
-- `ST_Distance_Sphere`와 `ST_Distance`의 차이 (구면 vs 평면)
+- `ST_Distance_Sphere`와 `ST_Distance`의 차이: 전자는 Point, MultiPoint의 구면 근사 거리를 미터로 반환한다. 후자는 지리 SRS에서 타원체 위 측지 거리를, 데카르트나 투영 SRS에서 평면 거리를 SRS 단위로 반환한다
 - 공간 검색에서 R-Tree와 격자 기반(H3, S2)의 트레이드오프
 - "근처 N km 가게" 쿼리를 어떻게 작성할지
 
@@ -115,6 +115,7 @@ H3가 S2(구글) 대비 우위인 이유: 육각형은 인접 셀과의 거리�
 - [MySQL 8.0 — Geometry Property Functions](https://dev.mysql.com/doc/refman/8.0/en/gis-property-functions.html)
 - [MySQL 8.0 — Point Property Functions](https://dev.mysql.com/doc/refman/8.0/en/gis-point-property-functions.html)
 - [MySQL 8.0 — Polygon and MultiPolygon Property Functions](https://dev.mysql.com/doc/refman/8.0/en/gis-polygon-property-functions.html)
+- [MySQL 8.0 Reference Manual, Spatial Relation Functions That Use Object Shapes](https://dev.mysql.com/doc/refman/8.0/en/spatial-relation-functions-object-shapes.html)
 - [Coupang Engineering — 로켓배송 공간 색인 기반 배송 영역 관리 시스템](https://medium.com/coupang-engineering/쿠팡-로켓배송-공간-색인-기반의-배송-영역-관리-시스템-a59006bc4b6e)
 
 ## 관련 문서

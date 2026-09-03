@@ -61,11 +61,9 @@ export class CacheableExplorer implements OnModuleInit {
       if (!instance) return;
 
       const prototype = Object.getPrototypeOf(instance);
-      this.metadataScanner.scanFromPrototype(
-        instance,
-        prototype,
-        (methodName) => this.wrapIfCacheable(instance, methodName),
-      );
+      this.metadataScanner
+        .getAllMethodNames(prototype)
+        .forEach(methodName => this.wrapIfCacheable(instance, methodName));
     });
   }
 
@@ -138,3 +136,4 @@ Object.setPrototypeOf(instance[methodName], original);
 - [NestJS — Discovery service](https://docs.nestjs.com/fundamentals/discovery-service)
 - [NestJS — Caching](https://docs.nestjs.com/techniques/caching)
 - [NestJS — SetMetadata decorator source](https://github.com/nestjs/nest/blob/master/packages/common/decorators/core/set-metadata.decorator.ts)
+- [NestJS — MetadataScanner source](https://github.com/nestjs/nest/blob/master/packages/core/metadata-scanner.ts)

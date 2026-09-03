@@ -94,7 +94,7 @@ MySQL은 InnoDB JSON column을 `JSON_SET`, `JSON_REPLACE`, `JSON_REMOVE`로 갱�
 
 - **Hybrid**: 자주 쓰는 필드는 **정규 컬럼**, 가변, 예측 불가 속성은 JSON 하나에 — 스키마 유연성 + 인덱스 둘 다
 - **Snapshot + Live**: 감사용 원본은 TEXT로 불변, 조작용 현재 상태는 JSON
-- **가상 컬럼 인덱스(MySQL)**: `ALTER TABLE t ADD c VARCHAR(50) AS (data->>'$.id') STORED, ADD INDEX idx_c(c)`
+- **가상 컬럼 인덱스(MySQL)**: `ALTER TABLE t ADD c VARCHAR(50) AS (data->>'$.id'), ADD INDEX idx_c(c)`
 - **표현식 인덱스(PostgreSQL)**: 자주 조회하는 경로만 `CREATE INDEX ON t ((data->>'customer_id'))`
 - **크기 한도 관리**: 큰 문서 때문에 페이지 입출력, 복제 또는 백업 비용이 커지면 정규 테이블이나 외부 저장소로 분리
 
@@ -139,6 +139,7 @@ WHERE payload @> '{"type":"payment"}';
 ## 출처
 - [MySQL 8.4 Reference Manual, JSON Data Type](https://dev.mysql.com/doc/refman/8.4/en/json.html)
 - [MySQL 8.4 Reference Manual, Multi-Valued Indexes](https://dev.mysql.com/doc/refman/8.4/en/create-index.html#create-index-multi-valued)
+- [MySQL 8.4 Reference Manual, CREATE TABLE Generated Column Syntax](https://dev.mysql.com/doc/refman/8.4/en/create-table-generated-columns.html)
 - [MySQL 8.4 Reference Manual, Binary Logging Options](https://dev.mysql.com/doc/refman/8.4/en/replication-options-binary-log.html)
 - [PostgreSQL 18 Documentation, JSON Types and JSONB Indexing](https://www.postgresql.org/docs/18/datatype-json.html)
 - [PostgreSQL 18 Documentation, JSON Functions and Operators](https://www.postgresql.org/docs/18/functions-json.html)

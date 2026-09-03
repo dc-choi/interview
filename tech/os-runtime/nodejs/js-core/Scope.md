@@ -36,7 +36,7 @@ engine은 현재 Environment Record에서 binding을 찾고 없으면 outer refe
 - catch parameter와 `for`문의 lexical declaration도 별도 environment를 만들 수 있다.
 - ESM의 top-level declaration은 module scope이고 import/export binding과 연결된다.
 
-block이 있다고 항상 새 scope가 생기는 것은 아니고 그 block에 lexical declaration이 있는지와 명세 algorithm을 본다.
+명세상 비어 있지 않은 block은 lexical declaration 유무와 관계없이 새 Declarative Environment Record를 만든다. Lexical declaration이 없으면 관찰 가능한 차이가 없어 engine이 최적화로 environment 생성을 생략할 수 있을 뿐이다. 빈 block은 별도 environment를 만들지 않는다.
 
 ## global scope는 global object와 같지 않다
 
@@ -63,6 +63,7 @@ scope가 lexical하게 고정돼도 binding이 가리키는 value와 object prop
 
 - [ECMAScript Language Specification, Environment Records](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-environment-records)
 - [ECMAScript Language Specification, global Environment Records](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-global-environment-records)
+- [ECMAScript Language Specification, Block Runtime Semantics](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-block-runtime-semantics-evaluation)
 - [scope 목적/설정](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26685), [global object](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26686), [global scope](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26687), [lexical/dynamic binding](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26688)
 
 ## 관련 문서

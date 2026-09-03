@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
+verified_at: 2026-09-03
 category: "OS & Runtime"
 aliases: ["Test Runner Mocking", "테스트 러너 모킹"]
 ---
@@ -15,9 +16,9 @@ Node.js 내장 테스트 러너의 모듈/API/타이머 모킹, 그리고 코드
 
 | 대상 | 단위 테스트 | 통합 테스트 |
 |------|-----------|----------|
-| 자신의 코드 | 권장 | 선택적 |
-| 외부 코드 (npm) | 항상 | 상황에 따라 |
-| 외부 시스템 (DB, FS) | 항상 | 항상 |
+| 자신의 코드 | 실제 구현을 우선 사용 | 실제 구현 사용 |
+| 외부 코드 (npm) | 비결정적 동작이나 경계만 대체 | 통합 범위에 따라 실제 구현 또는 대체 |
+| 외부 시스템 (DB, FS) | 보통 대체 | 테스트 목적에 따라 격리된 실제 시스템 또는 대체 |
 
 ### 모듈 모킹
 ```bash
@@ -28,12 +29,13 @@ import { test, mock } from 'node:test';
 
 const barMock = mock.fn(() => 'mocked');
 mock.module('./bar.mjs', {
-  defaultExport: barMock,
-  namedExports: { helper: mock.fn() },
+  exports: { default: barMock, helper: mock.fn() },
 });
 
 const { foo } = await import('./foo.mjs');  // bar.mjs가 모킹된 상태로 로드
 ```
+
+모듈 모킹은 현재도 실험 기능이며 위 플래그가 필요하다. `exports` 옵션은 Node.js v24.15.0부터 제공되며 `defaultExport`/`namedExports`와 함께 쓸 수 없다. 그 이전 릴리스에서는 기존 두 옵션을 사용한다.
 
 ### API 모킹 (Fetch/HTTP with undici)
 ```js
@@ -41,6 +43,7 @@ import { MockAgent, setGlobalDispatcher } from 'undici';
 
 const agent = new MockAgent();
 setGlobalDispatcher(agent);
+agent.disableNetConnect();
 
 const pool = agent.get('https://api.example.com');
 pool.intercept({ path: '/users', method: 'GET' })
@@ -105,6 +108,11 @@ node --experimental-test-coverage \
   --test
 ```
 임계값 미달 시 비정상 종료 코드 반환 → CI 파이프라인에서 게이트로 활용 가능.
+
+## 출처
+
+- [Node.js, `mock.module()`](https://nodejs.org/api/test.html#mockmodulespecifier-options)
+- [Undici, `MockAgent`](https://github.com/nodejs/undici/blob/main/docs/docs/api/MockAgent.md)
 
 ## 관련 문서
 - [[Test-Runner-Basics|테스트 러너 기본]]

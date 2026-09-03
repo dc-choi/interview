@@ -66,7 +66,7 @@ const rows = await orders
   .getMany()
 ```
 `.where()`를 다시 호출하면 앞 조건을 교체한다. 이후에는 `.andWhere()` 또는 `.orWhere()`를 쓰고, 복합 OR는 `Brackets`, 그룹 부정은 `NotBrackets`로 precedence를 명시한다. 사용자 값을 SQL fragment에 이어 붙이지 않는다.
-`null`은 `= :value`에 넣지 않고 `IS NULL` 또는 `IsNull()`을 쓴다. 직접 object predicate를 넘기면 high-level null/undefined guard를 거치지 않는다. `null` 비교는 효과 없는 `= NULL` 형태가 되고, `undefined`는 parameter로 전달돼 driver에 따라 오류나 다른 동작이 날 수 있으므로 `.where()` 전에 값을 검증한다.
+`null`은 `= :value`에 넣지 않고 `IS NULL` 또는 `IsNull()`을 쓴다. 직접 object predicate를 넘기면 high-level null/undefined guard를 거치지 않는다. QueryBuilder에서 `null`과 `undefined`는 모두 `= NULL` 경로가 되어 오류 없이 0건을 돌려줄 수 있으므로 `.where()` 전에 값을 검증한다. `invalidWhereValuesBehavior`의 기본 `throw`는 high-level find, repository와 manager API에 적용된다.
 ## Join, mapping과 결과 grain
 
 | API | 결과와 용도 |

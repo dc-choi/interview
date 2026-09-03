@@ -64,7 +64,7 @@ DTO projection은 반환 field가 작고 변경 추적이 필요 없는 목록�
 
 ## 출처
 
-- [Hibernate ORM current User Guide, Fetching](https://docs.hibernate.org/stable/orm/userguide/html_single/#chapters/fetching/Fetching)
+- [Hibernate ORM current User Guide, Fetching](https://docs.hibernate.org/stable/orm/userguide/html_single/#fetching)
 - [Jakarta Persistence 3.2, Fetch Joins](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#fetch-joins)
 - 강의: [간단한 주문 조회 V1](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24325), [V2, Entity를 DTO로 변환](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24326), [V3, Fetch join 최적화](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24327), [V4, JPA에서 DTO 직접 조회](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24328)
 

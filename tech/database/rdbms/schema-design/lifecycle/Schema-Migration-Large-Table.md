@@ -41,6 +41,7 @@ INSTANT는 데이터를 복사하지 않을 뿐, 진행 중인 트랜잭션이 �
 ### INSTANT 가능 작업 (MySQL 8.0 계열, 마이너 버전에 따라 확대)
 - 컬럼 추가: 8.0.12부터 마지막 위치, 8.0.29부터 조건을 만족하면 임의 위치
 - 컬럼 삭제: 8.0.29부터 조건부 지원
+- 컬럼 이름 변경: 8.0.28부터 같은 데이터 타입과 NULL 속성을 유지하고 이름만 바꾸는 경우. 다른 테이블에서 참조하면 INPLACE만 가능하고, 같은 문장에서 virtual 컬럼을 추가하거나 삭제하면 COPY 필요
 - 컬럼 기본값 설정과 제거
 - 기존 저장 크기가 바뀌지 않는 ENUM, SET 정의 변경
 
@@ -48,8 +49,7 @@ INSTANT 지원 범위는 마이너 버전마다 다르므로 실제 대상 버�
 
 ### INPLACE만 가능
 - 인덱스 추가/삭제
-- 컬럼 이름 변경 (조건부)
-- 외래키 추가
+- 외래키 추가 (`foreign_key_checks=OFF`일 때. 켜져 있으면 COPY만 지원)
 
 ### 테이블 재구성이 필요한 대표 작업
 - 컬럼 타입 변경 (예: VARCHAR → TEXT)
@@ -150,4 +150,4 @@ pt-osc와 비슷하지만 **트리거 대신 binlog**를 읽어 변경을 반영
 - [[Index|Index 추가의 운영 리스크]]
 - [[Replication|Replication]]
 - [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL — Online DDL 차이]]
-- [[MySQL-Charset-Migration|utf8mb4 마이그레이션 (CONVERT는 COPY 강제 → OSC 도구)]]
+- [[MySQL-Charset-Migration|utf8mb4 마이그레이션 (CONVERT는 INPLACE 지원이지만 테이블 재구성 + 동시 DML 불가 → OSC 도구)]]

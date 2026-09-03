@@ -1,7 +1,7 @@
 ---
 tags: [web, http, content-type, mime, rest]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "웹&네트워크(Web&Network)"
 aliases: ["HTTP Content-Type", "Content-Type", "MIME Type"]
 ---
@@ -33,7 +33,7 @@ Content-Type: <type>/<subtype>; <parameter>=<value>
 
 - 예: `application/json`, `text/plain; charset=utf-8`, `multipart/form-data; boundary=----Web...`
 - 등록 기관: IANA가 공식 MIME Type 목록 관리(`type/subtype`)
-- `x-` prefix만 보고 현재 등록 여부를 판단하지 않는다. `application/x-www-form-urlencoded`는 이름에 `x-`가 남아 있지만 IANA에 등록됐고 HTML 표준이 form encoding 알고리즘을 정의한다.
+- `x-` prefix만 보고 현재 등록 여부를 판단하지 않는다. `application/x-www-form-urlencoded`는 이름에 `x-`가 남아 있지만 IANA에 등록됐고 serializer와 parser 알고리즘은 WHATWG URL Standard가 정의한다. HTML 표준은 form 제출 과정에서 이 serializer를 호출한다.
 
 ## 주요 타입 맵
 
@@ -70,7 +70,7 @@ Content-Type: application/json
 ```
 
 - 현대 HTTP API에서 흔한 선택이다. REST 제약이 JSON을 필수 형식으로 정하는 것은 아니다. 중첩, 배열, 숫자, 불리언과 null을 표현할 수 있다.
-- Spring `@RequestBody`, Express `express.json()`, NestJS `ValidationPipe` 등이 파싱
+- Spring `@RequestBody`, Express `express.json()`, NestJS 내장 body parser 미들웨어 등이 파싱한다. NestJS `ValidationPipe`는 파싱된 payload를 검증하고 설정에 따라 DTO로 변환하는 다음 단계다.
 
 ### `application/x-www-form-urlencoded`
 
@@ -131,6 +131,8 @@ hello
 - [RFC 8259, JSON](https://www.rfc-editor.org/rfc/rfc8259.html)
 - [IANA, application/x-www-form-urlencoded](https://www.iana.org/assignments/media-types/application/x-www-form-urlencoded)
 - [WHATWG HTML, URL-encoded form data](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#url-encoded-form-data)
+- [WHATWG URL, application/x-www-form-urlencoded](https://url.spec.whatwg.org/#application/x-www-form-urlencoded)
+- [NestJS, Validation](https://docs.nestjs.com/techniques/validation)
 - [6991httam — REST API Content-Type 설정](https://6991httam.medium.com/rest-api-content-type-%EC%84%A4%EC%A0%95-c903e06a9936)
 - [yunzema — HTTP Content-Type 정리](https://yunzema.tistory.com/186)
 

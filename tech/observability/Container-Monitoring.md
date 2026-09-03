@@ -42,7 +42,7 @@ aliases: ["Container Monitoring", "컨테이너 모니터링", "Docker 모니터
 ### Fluentd / Fluent Bit
 
 - 로그 수집 에이전트. 컨테이너 stdout을 수집 → Elasticsearch, S3, Loki로 전송
-- **Fluent Bit**는 C로 만든 경량판(메모리 수십 MB). 사이드카, 데몬셋으로 많이 사용
+- **Fluent Bit**는 C로 만든 경량 수집기다. 2026-09-03 공식 비교표의 기본 상주 메모리는 약 450KB지만, 실제 container 배포에서는 buffer가 추가된다. 예를 들어 `Mem_Buf_Limit` 10MB 구성은 36MB 이상의 메모리 할당을 권장한다. 사이드카, 데몬셋으로 많이 사용
 - 파서, 필터, 태그로 로그를 구조화
 
 ### Grafana
@@ -128,6 +128,8 @@ NAT나 방화벽 뒤 게이트웨이를 인바운드 개방 없이 중앙에서 
 
 ## 출처
 - [m0rph2us — 컨테이너 모니터링 구축기](https://m0rph2us.github.io/docker/monitoring/2020/10/08/container-monitoring.html)
+- [Fluent Bit, Fluentd and Fluent Bit](https://docs.fluentbit.io/manual/about/fluentd-and-fluent-bit)
+- [Fluent Bit, Memory management](https://docs.fluentbit.io/manual/administration/memory-management)
 
 ## 관련 문서
 - [[Incident-Detection-Logging|장애 감지와 로깅/메트릭]]

@@ -100,11 +100,12 @@ fn hello(name: String) -> String {
   "targets": [{
     "target_name": "addon",
     "sources": ["addon.cc"],
-    "include_dirs": ["<!@(node -p \"require('node-addon-api').include\")"],
-    "cflags": ["-fexceptions"], "cflags_cc": ["-fexceptions"]
+    "dependencies": ["<!(node -p \"require('node-addon-api').targets\"):node_addon_api"]
   }]
 }
 ```
+
+2026-09-03 `node-addon-api` 공식 소스 기준, `Napi::Error` 예외를 사용하면 target suffix를 `node_addon_api_except`, 모든 C++ 예외까지 처리하면 `node_addon_api_except_all`로 바꾼다. 이 target들이 필요한 예외 설정을 제공하므로 수동 `-fexceptions` flag는 필요 없다.
 
 ## 배포 — Prebuild 패턴
 
@@ -174,6 +175,8 @@ fn hello(name: String) -> String {
 
 ## 출처
 - [Node.js 아키텍처 학습 메모]
+- [node-addon-api setup — Node.js](https://github.com/nodejs/node-addon-api/blob/main/doc/setup.md)
+- [node-addon-api targets source — Node.js](https://github.com/nodejs/node-addon-api/blob/main/index.js)
 
 ## 관련 문서
 - [[Node.js|Node.js 개관]]

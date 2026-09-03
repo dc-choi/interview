@@ -165,7 +165,7 @@ await app.listen(3000);
 ## 흔한 실수
 
 - **Filter에서 ExecutionContext 사용**: Filter는 `ArgumentsHost`만 받음. 핸들러 메타데이터 필요하면 Filter 설계를 재고 (Interceptor에서 catchError로 처리).
-- **getType 체크 없이 switchToHttp**: WebSocket 컨텍스트에서 호출하면 undefined → 에러. 멀티 트랜스포트 코드는 반드시 분기.
+- **getType 체크 없이 switchToHttp**: WebSocket 컨텍스트에서는 `getRequest()`가 WebSocket client를, `getResponse()`가 message data를 그대로 반환한다. 즉시 예외가 아니라 잘못된 객체가 조용히 흘러가므로 멀티 트랜스포트 코드는 반드시 분기.
 - **getHandler vs getClass 혼동**: 메서드 메타데이터는 `getHandler`, 클래스 메타데이터는 `getClass`. 둘 다 보려면 `getAllAndOverride([getHandler, getClass])`.
 - **`get` vs `getAllAndOverride` 차이 무시**: 메서드/클래스 둘 다 메타데이터 가질 수 있는데 `get`만 쓰면 한쪽만 봄.
 - **request mutation 의존**: Guard에서 `request.user = ...` → 다른 Guard/Interceptor에서 그 의존 → 순서, 범위 헷갈림. Param Decorator로 명시 추출이 깔끔.
@@ -190,4 +190,5 @@ await app.listen(3000);
 
 ## 출처
 - [NestJS — Execution context](https://docs.nestjs.com/fundamentals/execution-context)
-- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)
+- [NestJS — ExecutionContextHost source](https://github.com/nestjs/nest/blob/master/packages/core/helpers/execution-context-host.ts)
+- [NestJS — Migration guide (v10 → v11)](https://docs.nestjs.com/v11/migration-guide)

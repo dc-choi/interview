@@ -3,6 +3,7 @@ tags: [senior, code-review, culture, process, team]
 status: done
 category: "시니어역량(SeniorEngineer)"
 aliases: ["Code Review Culture", "코드 리뷰 문화", "생산적 코드 리뷰"]
+verified_at: 2026-09-03
 ---
 
 # 생산적 코드 리뷰 문화
@@ -22,7 +23,7 @@ aliases: ["Code Review Culture", "코드 리뷰 문화", "생산적 코드 리�
 
 | 목적 | 설명 |
 |---|---|
-| **변경사항 공유** | 팀원이 비즈니스 로직, 아키텍처 변경을 인지. bus factor 감소 |
+| **변경사항 공유** | 팀원이 비즈니스 로직, 아키텍처 변경을 인지. bus factor 증가 |
 | **일관성 유지** | 코드 스타일, 패턴을 팀 전체로 정렬 |
 | **가독성 점검** | 작성자가 아닌 읽는 사람 관점에서 이해 가능한지 |
 | **설계 타당성** | 구현 접근이 문제에 맞는지, 더 단순한 방법이 있는지 |
@@ -134,6 +135,7 @@ PR 요청 시 리뷰어 부담을 표시:
 - 스타트업, 대기업 맥락 차이
 
 ## 출처
+- [CHAOSS — Contributor Absence Factor](https://github.com/chaoss/wg-risk/blob/main/focus-areas/business-risk/contributor-absence-factor.md)
 - [AB180 엔지니어링 블로그 — 생산적인 코드 리뷰 문화](https://engineering.ab180.co/stories/productive-review-culture)
 - [신입 개발자, 뭐부터 해야 하나요 — Team Grit](https://teamgrit.co/article/399)
 

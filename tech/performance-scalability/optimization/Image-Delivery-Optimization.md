@@ -3,6 +3,7 @@ tags: [performance, cdn, image, lambda-edge, avif, webp, lcp, egress]
 status: done
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["Image Delivery Optimization", "이미지 전송 최적화", "이미지 CDN 최적화", "Lambda@Edge 이미지 리사이저"]
+verified_at: 2026-09-03
 ---
 
 # 이미지 전송 최적화 (Edge 변환, 포맷, GIF→MP4)
@@ -36,7 +37,7 @@ aliases: ["Image Delivery Optimization", "이미지 전송 최적화", "이미�
 AVIF를 모든 브라우저가 지원하진 않으므로 폴백이 필요하다. 두 방식.
 
 - **`<picture>` + `<source type>`**: 브라우저가 지원하는 첫 포맷을 고르고, 안 되면 `<img>` 폴백.
-- **`Accept` 헤더 협상**: 요청의 `Accept`에 `image/avif`, `image/webp`가 있는지 보고 엣지에서 포맷 결정. 이때 `Vary: Accept`로 포맷별 캐시를 분리해야 한다.
+- **`Accept` 헤더 협상**: 요청의 `Accept`에 `image/avif`, `image/webp`가 있는지 보고 엣지에서 포맷을 결정한다. CloudFront에서는 cache policy의 캐시 키에 `Accept`를 포함해 포맷별 객체를 분리하고 오리진으로 전달해야 한다. `Vary: Accept`는 브라우저와 중간 캐시를 위한 HTTP 응답 신호이며 CloudFront의 캐시 키 설정을 대신하지 않는다.
 
 ```html
 <picture>
@@ -70,17 +71,19 @@ GIF→MP4는 FFmpeg가 필요한데 Lambda@Edge의 제약에 걸린다.
 
 - **비용 절감 vs 사용자 경험**의 균형 — 변환 품질(quality)을 너무 낮추면 바이트는 줄지만 화질이 깨진다.
 - **변환 부하의 위치 선택** — 가벼운 변형은 엣지(캐시 미스 1회), 무거운 트랜스코딩은 업로드 시점. 엣지에 무거운 작업을 올리면 제약과 비용에 막힌다.
-- **캐시 분리** — 포맷, 크기별로 Cache Key/`Vary`를 정확히 나눠야 엉뚱한 변형이 섞이지 않는다.
+- **캐시 분리** — CloudFront cache policy에서 포맷, 크기별 캐시 키를 정확히 나누고, `Accept` 협상을 쓰면 오리진 전달과 `Vary: Accept` 응답도 함께 설정해야 한다.
 
 ## 면접 체크포인트
 
 - 엣지 이미지 변환을 Origin Response에 붙여 캐시 미스 1회로 비용을 한정하는 설계
 - WebP/AVIF의 바이트 절감과 AVIF 인코딩 비용을 캐싱으로 상쇄하는 논리
-- AVIF 폴백 — `<picture>` vs `Accept` 헤더 협상과 `Vary` 캐시 분리
+- AVIF 폴백 — `<picture>`와 `Accept` 헤더 협상, CloudFront 캐시 키 및 `Vary`의 역할 구분
 - GIF→MP4를 엣지가 아니라 업로드 시점에 변환하는 이유(Lambda@Edge 패키지 50MB, 응답 1MB, 30초 제약)
 - 이미지 최적화가 egress 비용과 LCP를 동시에 움직이는 이유
 
 ## 출처
+- [CloudFront — 요청 헤더를 기준으로 콘텐츠 캐싱](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/header-caching.html)
+- [Amazon CloudFront — Lambda@Edge quotas](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html)
 - [S3와 이미지 CDN 비용 최적화 — 인프랩 기술블로그](https://tech.inflab.com/20251029-optimize-s3/)
 
 ## 관련 문서

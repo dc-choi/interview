@@ -1,7 +1,7 @@
 ---
 tags: [architecture, oop, solid, refactoring, value-object]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-03
 category: "Architecture - OOP"
 aliases: ["Object Design Principles", "객체 설계 원칙과 리팩터링"]
 ---
@@ -85,7 +85,7 @@ order.payWith(customerWallet)
 
 ### 명령과 조회를 구분한다
 
-- Command는 상태를 바꾸며 변경 결과를 관찰하는 책임을 가진다.
+- Command는 상태를 바꾸고 결과 값을 반환하지 않는다. 변경 결과는 별도의 Query로 관찰한다.
 - Query는 값을 반환하며 관찰 가능한 상태를 바꾸지 않는다.
 
 둘을 분리하면 호출자가 시그니처와 이름만으로 부수효과를 예상하기 쉽다. 다만 생성 명령이 ID를 반환하거나 실패 결과를 돌려주는 실용적 API까지 무조건 금지하는 법칙은 아니다. 숨은 변경과 조회를 한 메서드에 뒤섞지 않는 것이 핵심이다.
@@ -135,6 +135,7 @@ DIP와 DI도 구분한다. DIP는 의존 방향에 관한 설계 원칙이고, D
 - [NestJS 공식 문서, Custom providers](https://docs.nestjs.com/fundamentals/custom-providers)
 - [Northeastern Demeter Project, Law of Demeter](https://www2.ccs.neu.edu/research/demeter/demeter-method/LawOfDemeter/LawOfDemeter.htm)
 - [Liskov, Wing, A Behavioral Notion of Subtyping](https://www.cs.cmu.edu/~wing/publications/LiskovWing94.pdf)
+- [Eiffel, Classes](https://www.eiffel.org/doc/eiffel/I2E-_Classes)
 
 ## 관련 문서
 

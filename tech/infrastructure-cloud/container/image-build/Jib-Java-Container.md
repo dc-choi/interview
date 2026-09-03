@@ -17,7 +17,7 @@ Google이 만든 Java 전용 컨테이너 이미지 빌드 도구(Gradle, Maven 
 - **Docker CLI 의존**: CI 러너에 Docker 데몬, sudo 권한 필요 (보안, 운영 부담)
 - **JVM 특화 최적화 부재**: 의존성 Jar, 클래스, 리소스를 구분해 다루지 않음
 
-Jib은 JAR을 **압축하지 않고 분해**해 레이어로 나누므로, Java 빌드 특성에 맞게 캐시를 극대화한다.
+2026-09-03 Jib 문서 기준, 빌드 플러그인은 기본 `containerizingMode=exploded`에서 JAR 패키징 단계를 건너뛰고 개별 `.class` 파일, 리소스와 의존성 JAR을 별도 레이어에 넣어 캐시를 극대화한다. 기본 entrypoint도 `java -cp <runtime classpath> <main class>` 형태다. `containerizingMode=packaged`는 빌드된 JAR을 그대로 넣으며, 기존 JAR을 열어 최적 레이어로 재배치하는 기능은 Jib CLI의 `jar` 명령이다.
 
 ## 레이어 구성
 
@@ -145,6 +145,7 @@ Jib이 이미지를 만들어도 **JVM 자체의 컨테이너 대응**은 별도
 
 ## 출처
 - [Jib 기반의 Java 애플리케이션 컨테이너 이미지 — jh-labs](https://jh-labs.tistory.com/509)
+- [Jib FAQ, Containerizing a JAR](https://github.com/GoogleContainerTools/jib/blob/master/docs/faq.md#i-want-to-containerize-a-jar)
 
 ## 관련 문서
 - [[Docker-Core|Docker 기본]]

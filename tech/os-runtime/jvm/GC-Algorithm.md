@@ -7,7 +7,7 @@ aliases: ["GC Algorithm", "GC 알고리즘", "Orinoco"]
 
 # GC 알고리즘
 
-V8의 가비지 컬렉터는 2016년의 **Orinoco 프로젝트** 이후 "메인 스레드를 거의 멈추지 않는" 방향으로 발전해왔다. 초기 V8의 GC는 수십 밀리초 단위로 메인 스레드를 정지시켰지만, 현재는 대부분의 작업이 수 밀리초 이내에 끝나며 60FPS 애니메이션을 유지할 수 있는 수준이 되었다. 이 문서는 V8 구현을 중심으로 현대 GC의 핵심 알고리즘과 기법들을 정리한다.
+V8의 가비지 컬렉터는 **Orinoco 프로젝트** 이후 marking과 sweeping 작업 일부를 concurrent로 옮기고, 남은 작업을 parallel로 처리해 메인 스레드 pause를 줄이는 방향으로 발전했다. 실제 pause는 힙 크기, 생존 객체와 워크로드에 따라 달라지므로 고정 밀리초나 FPS로 일반화하지 않는다. 이 문서는 V8 구현을 중심으로 현대 GC의 핵심 알고리즘과 기법들을 정리한다.
 
 V8의 힙 구조와 Generational GC의 전체 흐름은 [[Call-Stack-Heap|콜 스택 과 힙]]에 있고, 여기서는 **알고리즘 이론과 동시성 기법**에 집중한다.
 
@@ -83,13 +83,13 @@ GC 작업을 **완전히 별도 스레드**에서 메인 스레드와 **동시�
 | Incremental | 아주 짧게 여러 번 | 중간 | 중간 |
 | Concurrent | 거의 없음 | 높음 | 높음 |
 
-V8은 이 기법들을 상황별로 조합한다. Young Gen(Scavenger)은 힙이 작고 회수율이 높아 Parallel STW가 효율적이고, Old Gen(Major GC)은 힙이 커 긴 정지를 감당하기 어려우므로 Concurrent Marking + Incremental Sweeping + Parallel Compaction을 조합한다.
+2026-09-03 V8 소스 기준, V8은 이 기법들을 상황별로 조합한다. Young Gen의 Scavenger 경로는 Parallel STW를 사용한다. Old Gen(Major GC)은 Concurrent Marking, Concurrent Sweeping, Parallel Compaction과 pointer updating을 조합하며, Incremental Marking은 concurrent marking이 끝나지 않았을 때의 fallback으로 사용한다.
 
 ## 성능 개선의 역사
 
 - 초기 V8: 수십 밀리초 단위의 정지 (애니메이션 끊김 체감)
 - Incremental Marking 도입: 한 번의 긴 정지를 여러 조각으로 분할
-- Orinoco (Concurrent Marking + Parallel + Work Stealing): 수 밀리초 수준으로 축소, 60FPS 유지 가능
+- Orinoco (Concurrent Marking + Parallel + Work Stealing): 메인 스레드에서 수행할 작업을 줄이고 병렬화해 pause를 단축
 - 이후에도 Pointer Compression, Sparkplug, Maglev 등 관련 최적화가 계속 추가되고 있음
 
 ## 관련 문서
@@ -97,3 +97,7 @@ V8은 이 기법들을 상황별로 조합한다. Young Gen(Scavenger)은 힙이
 - [[V8|V8 엔진]]
 - [[WebAssembly]]
 - [[OOM-Troubleshooting|Node.js OOM 트러블슈팅]]
+
+## 출처
+
+- [Trash talk: the Orinoco garbage collector — V8](https://v8.dev/blog/trash-talk)

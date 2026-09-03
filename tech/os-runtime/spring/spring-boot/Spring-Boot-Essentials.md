@@ -46,12 +46,14 @@ Spring Boot는 Spring을 대체하지 않는다. **Spring 위에 자동화 레�
 
 ### `@Conditional*` 애노테이션이 핵심
 
+다음은 조건부 자동 설정의 구조를 보여 주는 간소화된 예시다. 실제 Spring Boot의 `DataSourceAutoConfiguration` 선언과 같다는 뜻은 아니다.
+
 ```java
 @Configuration
 @ConditionalOnClass(DataSource.class)          // classpath에 JDBC가 있을 때만
 @ConditionalOnMissingBean(DataSource.class)    // 사용자가 정의 안 했을 때만
 @ConditionalOnProperty(prefix = "spring.datasource", name = "url")
-public class DataSourceAutoConfiguration { ... }
+public class MyDataSourceAutoConfiguration { ... }
 ```
 
 - **`@ConditionalOnClass`**: 특정 클래스가 classpath에 있을 때만
@@ -137,6 +139,7 @@ Spring Boot 4.1에서 HTTP/JMX 기본 노출은 `health` 하나다. 추가 endpo
 - [Spring Boot 4.1, Build Systems와 Starters](https://docs.spring.io/spring-boot/reference/using/build-systems.html)
 - [Spring Boot 4.1, System Requirements](https://docs.spring.io/spring-boot/system-requirements.html)
 - [Spring Boot 4.1, Servlet Web Applications](https://docs.spring.io/spring-boot/reference/web/servlet.html)
+- [Spring Boot 4.1, `DataSourceAutoConfiguration` source](https://raw.githubusercontent.com/spring-projects/spring-boot/v4.1.1/module/spring-boot-jdbc/src/main/java/org/springframework/boot/jdbc/autoconfigure/DataSourceAutoConfiguration.java)
 - [Spring Boot, Executable Jar Format](https://docs.spring.io/spring-boot/specification/executable-jar/)
 - [매일메일 — AutoConfiguration](https://www.maeil-mail.kr/question/23)
 - [매일메일 — Spring Boot vs Spring](https://www.maeil-mail.kr/question/24)

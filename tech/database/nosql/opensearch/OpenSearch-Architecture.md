@@ -50,7 +50,7 @@ Cluster
 | `coordinating_only` | shard fan-out과 결과 reduce | 큰 검색에서 heap 병목 가능 |
 | `search` | Search replica shard를 호스팅 | 색인과 검색 workload 분리 |
 
-모든 노드는 암묵적으로 coordinating 기능을 수행한다. 규모가 작으면 여러 역할을 겸할 수 있지만, 운영 규모에서는 전용 cluster manager를 두고 애플리케이션 트래픽을 직접 보내지 않는 편이 안전하다. `cluster_manager`는 Elasticsearch와 OpenSearch 1.x가 master라고 부르던 역할로, 2.x에서 비포용 용어 정리로 개명되어 3.0에서 기존 표기가 제거된다. 장애 영향도 역할마다 다르다. Data node 하나를 잃으면 replica가 있는 한 검색을 지속하면서 shard를 재배치하지만, elected cluster manager를 잃으면 새 선거가 끝날 때까지 cluster state 변경이 멈춘다. 상세 동작은 아래 Cluster state와 quorum 절 참고.
+모든 노드는 암묵적으로 coordinating 기능을 수행한다. 규모가 작으면 여러 역할을 겸할 수 있지만, 운영 규모에서는 전용 cluster manager를 두고 애플리케이션 트래픽을 직접 보내지 않는 편이 안전하다. `cluster_manager`는 Elasticsearch와 OpenSearch 1.x가 master라고 부르던 역할로, 2.x에서 비포용 용어 정리로 개명되고 `master` 표기는 deprecated 됐다. 제거 예고와 달리 실제 3.x에서도 `master` role과 `master_timeout`은 경고와 함께 계속 동작한다. 장애 영향도 역할마다 다르다. Data node 하나를 잃으면 replica가 있는 한 검색을 지속하면서 shard를 재배치하지만, elected cluster manager를 잃으면 새 선거가 끝날 때까지 cluster state 변경이 멈춘다. 상세 동작은 아래 Cluster state와 quorum 절 참고.
 
 ## 문서 라우팅
 
@@ -125,7 +125,7 @@ Quorum은 모든 data node가 아니라 voting configuration에 포함된 cluste
 
 문서 검색이나 일반 쓰기마다 manager quorum을 받는 구조가 아니다. 데이터 복제 acknowledgment와 control-plane quorum은 서로 다른 계층이다.
 
-Manager가 없을 때 기본 `cluster.no_cluster_manager_block=write`는 write를 막지만 마지막 local state 기반 read는 가능할 수 있다. 이 결과는 stale하거나 partition의 일부 데이터만 포함할 수 있으므로 정상 상태의 일관성으로 간주하지 않는다.
+Manager가 없을 때 기본값은 `cluster.no_cluster_manager_block=metadata_write`다. 이 상태에서는 mapping이나 routing table 같은 metadata 변경만 차단되고 일반 문서 색인과 read는 마지막 local cluster state 기준으로 계속 처리된다. 문서 쓰기까지 막으려면 `write`를, 읽기까지 막으려면 `all`을 명시한다. 어느 경우든 결과는 stale하거나 partition의 일부 데이터만 포함할 수 있으므로 정상 상태의 일관성으로 간주하지 않는다.
 
 ### 장애 허용 수
 
@@ -188,13 +188,13 @@ OpenSearch와 OpenSearch Dashboards는 각각 Elasticsearch와 Kibana의 마지�
 - [OpenSearch Documentation, Language clients](https://docs.opensearch.org/latest/clients/)
 - [OpenSearch란 무엇인가 — WikiDocs](https://wikidocs.net/280293)
 - [OpenSearch Documentation, OpenSearch concepts](https://docs.opensearch.org/latest/getting-started/concepts/)
-- [OpenSearch Documentation, Creating a cluster](https://docs.opensearch.org/latest/tuning-your-cluster/), [OpenSearch Documentation, Breaking changes](https://docs.opensearch.org/latest/breaking-changes/)
+- [OpenSearch Documentation, Creating a cluster](https://docs.opensearch.org/latest/tuning-your-cluster/), [OpenSearch Documentation, Breaking changes](https://docs.opensearch.org/latest/breaking-changes/), [OpenSearch source, DiscoveryNodeRole](https://github.com/opensearch-project/OpenSearch/blob/3.0.0/server/src/main/java/org/opensearch/cluster/node/DiscoveryNodeRole.java)
 - [OpenSearch Documentation, Index settings](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/index-settings/)
 - [OpenSearch Documentation, Document APIs](https://docs.opensearch.org/latest/api-reference/document-apis/)
 - [OpenSearch Documentation, Routing](https://docs.opensearch.org/latest/mappings/metadata-fields/routing/)
 - [OpenSearch Documentation, Get document](https://docs.opensearch.org/latest/api-reference/document-apis/get-documents/)
 - [OpenSearch Documentation, Search shard routing](https://docs.opensearch.org/latest/search-plugins/searching-data/search-shard-routing/)
 - [OpenSearch Documentation, Voting and quorum](https://docs.opensearch.org/latest/tuning-your-cluster/discovery-cluster-formation/voting-quorums/)
-- [OpenSearch Documentation, Cluster state API](https://docs.opensearch.org/latest/api-reference/cluster-api/cluster-state/)
+- [OpenSearch Documentation, Cluster state API](https://docs.opensearch.org/latest/api-reference/cluster-api/cluster-state/), [OpenSearch source, NoClusterManagerBlockService](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/cluster/coordination/NoClusterManagerBlockService.java)
 - [OpenSearch Documentation, Cluster bootstrapping](https://docs.opensearch.org/latest/tuning-your-cluster/discovery-cluster-formation/bootstrapping/)
 - [OpenSearch Documentation, Cluster health](https://docs.opensearch.org/latest/opensearch/rest-api/cluster-health/)

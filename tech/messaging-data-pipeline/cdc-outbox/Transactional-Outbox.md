@@ -1,7 +1,7 @@
 ---
 tags: [messaging, reliability, pattern]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-03
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Transactional Outbox", "Outbox Pattern", "트랜잭셔널 아웃박스"]
 ---
@@ -25,7 +25,7 @@ DB와 메시지 큐는 서로 다른 시스템이라 하나의 **로컬** 트랜
 - 1)은 성공했지만 2)가 실행되지 않음 → 이벤트 유실 → 후속 처리(수주, 알림)가 영원히 실행되지 않음
 - 반대로 2)를 먼저 하면, 이벤트는 발행됐는데 DB 저장이 실패할 수 있음
 
-Spring `TransactionSynchronizationManager.afterCommit`에서 메시지를 보내도 이 간극은 닫히지 않는다. DB rollback 뒤 이벤트를 보내는 경우는 피하지만, commit 직후 프로세스가 종료되거나 broker 전송이 실패하면 DB 변경만 남는다. callback 순서 제어와 원자성은 다른 문제다.
+Spring `TransactionSynchronization.afterCommit()` callback을 `TransactionSynchronizationManager.registerSynchronization(...)`으로 등록하거나 `@TransactionalEventListener(phase = AFTER_COMMIT)`에서 메시지를 보내도 이 간극은 닫히지 않는다. DB rollback 뒤 이벤트를 보내는 경우는 피하지만, commit 직후 프로세스가 종료되거나 broker 전송이 실패하면 DB 변경만 남는다. callback 순서 제어와 원자성은 다른 문제다.
 
 ## 해결: Outbox 테이블
 
@@ -168,6 +168,7 @@ Event Sourcing은 더 나아가 **상태 자체를 이벤트 스트림으로만 
 - [PostgreSQL 공식 문서, Explicit Locking — Advisory Locks](https://www.postgresql.org/docs/current/explicit-locking.html)
 - [MySQL 8.4 공식 문서, Locking Reads (SKIP LOCKED, NOWAIT)](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
 - [Apache Kafka Documentation, Introduction (topic partition ordering)](https://kafka.apache.org/documentation/)
+- [Spring Framework, TransactionSynchronization](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/support/TransactionSynchronization.html)
 - [Chris Richardson, Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html)
 - [Dowon Lee 강사, Dual Write, Outbox와 CDC](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289780)
 - [최상용 강사, 트랜잭션 이후 Kafka 이벤트 발행](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344376)

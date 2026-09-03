@@ -22,7 +22,7 @@ verified_at: 2026-07-15
 | `s3:LifecycleTransition` | Lifecycle 전환 |
 
 **시험 포인트 — SNS/SQS/Lambda 직결 vs EventBridge**:
-- 직결: 단순, 저지연, 타겟 종류 4개로 제한
+- 직결(SNS, SQS, Lambda): 단순, 저지연, 타겟 종류 3개로 제한
 - **EventBridge**: 패턴 매칭, 다중 타겟, 아카이브, 리플레이 등 고급 라우팅. AWS 200+ 서비스로 분기
 
 전형 패턴: **S3 업로드 → Lambda → 썸네일 생성 / 메타데이터 추출 → DynamoDB 인덱싱**.
@@ -100,3 +100,4 @@ S3 자체가 정적 페이지 서버 역할. `index.html`, `error.html` 지정�
 
 - [AWS 공식 문서, Querying data in place with Amazon S3 Select](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html)
 - [AWS 공식 문서, Amazon S3 Object Lambda availability change](https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazons3-ol-change.html)
+- [AWS 공식 문서, S3 Event Notification 대상](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-event-types-and-destinations.html)

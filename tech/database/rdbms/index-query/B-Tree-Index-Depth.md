@@ -20,7 +20,8 @@ InnoDB의 B+Tree 인덱스 깊이를 페이지 구조로 추정하는 방법을 
 ## 깊이 증가가 일어나는 시점
 
 - **리프 페이지가 가득 차면** → 페이지 분할 발생, 같은 레벨에 페이지가 늘어남
-- **넌 리프 페이지가 가득 차면** → 한 레벨 위에 새 노드가 생기면서 **깊이 +1**
+- **리프가 아닌 브랜치 페이지가 가득 차면** → 같은 레벨에서 분할되고 부모에 자식 포인터가 추가되므로 깊이는 그대로
+- **루트 페이지가 가득 차면** → 루트를 한 단계 올려 새 레벨을 만들며 이때만 **깊이 +1**
 - 전체 수용량은 대략 `리프당 레코드 수 × 내부 노드 fan-out^(리프 위 레벨 수)`로 생각할 수 있다. 실제 페이지 오버헤드와 채움률 때문에 이론 최대치와 운영값은 다르다.
 
 ## 깊이를 좌우하는 두 값
@@ -65,6 +66,7 @@ InnoDB의 B+Tree 인덱스 깊이를 페이지 구조로 추정하는 방법을 
 - [velog 480 — B-Tree 알고리즘 : DB 인덱스의 내부 알고리즘](https://velog.io/@480/B-Tree-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-DB-%EC%9D%B8%EB%8D%B1%EC%8A%A4%EC%9D%98-%EB%82%B4%EB%B6%80-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98)
 - [MySQL 8.4 — `innodb_page_size`](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_page_size)
 - [MySQL 8.4 — Clustered and Secondary Indexes](https://dev.mysql.com/doc/refman/8.4/en/innodb-index-types.html)
+- [MySQL source, `btr_root_raise_and_insert`](https://dev.mysql.com/doc/dev/mysql-server/latest/btr0btr_8cc.html)
 
 ## 관련 문서
 - [[Index|Index 기본 (B-Tree, 커버링, 카디널리티)]]

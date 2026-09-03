@@ -1,7 +1,7 @@
 ---
 tags: [aws, snow-family, snowball, snowcone, snowmobile, edge-computing, data-migration]
 status: done
-verified_at: 2026-08-12
+verified_at: 2026-09-03
 category: "Infrastructure - AWS"
 aliases: ["AWS Snow Family", "Snowball Edge", "Snowcone", "Snowmobile"]
 ---
@@ -10,7 +10,7 @@ aliases: ["AWS Snow Family", "Snowball Edge", "Snowcone", "Snowmobile"]
 
 AWS Snow Family는 **페타바이트~엑사바이트급 데이터를 물리 디바이스에 담아 오프라인으로 AWS에 옮기는** 휴대형 장비 세트. 인터넷 회선으로 옮기기엔 너무 크거나, 회선 자체가 부실/단절된 환경(원격 현장, 해상, 재난지역)을 메우기 위한 서비스. 데이터 이송과 별개로 **엣지 컴퓨팅 모드**가 있어 현장에서 EC2/Lambda를 돌릴 수도 있다.
 
-> **가용성 공지** — Snow Family는 신규 고객에게 제공되지 않는다. Snowmobile은 2024년 4월 제공이 중단됐고(AWS 공식 공지 없이 보도로 확인), Snowcone은 2024년 11월 12일자로 주문이 중단됐으며, Snowball Edge는 기존 사용 고객만 유지된다. AWS는 상용 리전의 Snowball 디바이스 지원을 2026년 12월 31일자로 종료할 예정이다 (GovCloud와 ADC 리전의 활성 작업 고객은 예외). 아래 내용은 기존 고객 운영과 시험 범위 이해를 위한 배경이다.
+> **가용성 공지** — Snow Family는 신규 고객에게 제공되지 않는다. Snowmobile의 공식 지원 종료일은 2024년 3월 14일이다. Snowcone은 2024년 11월 12일자로 주문이 중단됐으며, Snowball Edge는 기존 사용 고객만 유지된다. AWS는 상용 리전의 Snowball 디바이스 지원을 2026년 12월 31일자로 종료할 예정이다 (GovCloud와 ADC 리전의 활성 작업 고객은 예외). 아래 내용은 기존 고객 운영과 시험 범위 이해를 위한 배경이다.
 
 ## 구성 디바이스
 
@@ -18,7 +18,7 @@ AWS Snow Family는 **페타바이트~엑사바이트급 데이터를 물리 디�
 |---|---|---|---|
 | **Snowcone** (2024-11 주문 중단) | 한 손으로 드는 소형 (드론 배송 가능) | 8TB HDD / 14TB SSD | 소규모, 휴대용, 엣지, DataSync 온라인 전송 가능 |
 | **Snowball Edge** (기존 고객 전용) | 여행 가방 크기 | 80TB(구세대, 2024-11 단종) / 210TB(현행 Storage Optimized) | 페타바이트 이송, 엣지 컴퓨팅 |
-| **Snowmobile** (2024-04 종료) | 45ft 컨테이너 트럭 | 최대 100PB (1대 기준), 다수 투입 시 엑사바이트급 | 데이터센터 통째 이전, S3, Glacier 적재 |
+| **Snowmobile** (2024-03-14 지원 종료) | 45ft 컨테이너 트럭 | 최대 100PB (1대 기준), 다수 투입 시 엑사바이트급 | 데이터센터 통째 이전, S3, Glacier 적재 |
 
 ## Snowball Edge 세부 유형
 
@@ -57,7 +57,7 @@ AWS Snow Family는 **페타바이트~엑사바이트급 데이터를 물리 디�
 | ~수 TB, 회선 양호 | **DataSync** (지속 동기화) 또는 **Storage Gateway** |
 | 수 TB 이상, 회선 부실 | **AWS Data Transfer Terminal** 또는 AWS 파트너 물리 전송 (기존 Snow 고객은 **Snowball Edge**) |
 | 소형/엣지, 단절 환경 | **Outposts servers**(2U, 무연결 운영은 DDIL 환경 최대 7일 한정) — Snowcone은 2024-11 주문 중단 |
-| 수십~수백 PB | AWS 파트너 물리 전송 또는 **DataSync + Direct Connect** — Snowmobile은 2024-04 종료 |
+| 수십~수백 PB | AWS 파트너 물리 전송 또는 **DataSync + Direct Connect** — Snowmobile은 2024-03-14 지원 종료 |
 | 지속적 하이브리드 연계 | **Direct Connect + Storage Gateway/DataSync** |
 
 흔히 **"100TB를 인터넷으로 옮기는 데 걸리는 시간 vs Snowball 배송 시간(며칠)"** 비교가 시험 단골. 1Gbps 회선으로도 100TB는 10일 이상이라 Snowball이 빠르다.
@@ -88,7 +88,7 @@ Snow는 "옮기고 끝", DataSync는 "주기적으로 옮김", Storage Gateway�
 - [AWS Snow Family 공식 문서 (지원 종료 공지 포함)](https://aws.amazon.com/snow/)
 - [AWS Snowball Edge availability change — AWS](https://docs.aws.amazon.com/snowball/latest/developer-guide/snowball-edge-availability-change.html)
 - [AWS Snow device updates — AWS Storage Blog (Snowcone, 구세대 Snowball 단종 공지)](https://aws.amazon.com/blogs/storage/aws-snow-device-updates/)
-- [AWS stops selling Snowmobile truck — CNBC, 2024-04-17 (Snowmobile 중단 보도)](https://www.cnbc.com/2024/04/17/aws-stops-selling-snowmobile-truck-for-cloud-migrations.html)
+- [AWS General Reference, Services in Full Shutdown](https://docs.aws.amazon.com/general/latest/gr/full_shutdown_services.html)
 
 ## 관련 문서
 - [[S3|Amazon S3]]

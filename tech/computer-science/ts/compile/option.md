@@ -3,7 +3,7 @@ tags: [cs, typescript]
 status: done
 category: "CS - TypeScript"
 aliases: ["컴파일러 옵션", "option"]
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 ---
 
 # 컴파일러 옵션
@@ -142,7 +142,8 @@ TypeScript 파일이 모두 전역 스크립트가 되는 것은 아니다. `mod
 - [TypeScript TSConfig, allowJs](https://www.typescriptlang.org/tsconfig/allowJs.html)
 - [TypeScript TSConfig, checkJs](https://www.typescriptlang.org/tsconfig/checkJs.html)
 - [TypeScript TSConfig, sourceMap](https://www.typescriptlang.org/tsconfig/sourceMap.html)
-- [TypeScript TSConfig, include](https://www.typescriptlang.org/tsconfig/include.html)
+- [TypeScript TSConfig, include](https://www.typescriptlang.org/tsconfig/#include)
+- [TypeScript TSConfig, exclude](https://www.typescriptlang.org/tsconfig/#exclude)
 - [TypeScript TSConfig, rootDir](https://www.typescriptlang.org/tsconfig/rootDir.html)
 - [TypeScript TSConfig, target](https://www.typescriptlang.org/tsconfig/target.html)
 - [TypeScript TSConfig, lib](https://www.typescriptlang.org/tsconfig/lib.html)

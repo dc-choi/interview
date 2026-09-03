@@ -38,7 +38,7 @@ aliases: ["Servlet Container vs Spring Container", "서블릿 컨테이너 vs �
 
 ### 요청당 스레드 모델
 
-서블릿 컨테이너는 요청마다 스레드를 할당한다. 수천 동시 요청 = 수천 스레드 대기 가능. 스레드 풀 크기(`maxThreads`, `connectionTimeout`)가 병목의 축.
+서블릿 컨테이너는 요청마다 스레드를 할당한다. 수천 동시 요청은 수천 스레드 대기로 이어질 수 있다. 스레드 풀 크기(`maxThreads`, `minSpareThreads`)와 수용 한계(`maxConnections`, `acceptCount`)가 병목의 축이고, `connectionTimeout`은 요청 라인을 기다리는 별도 타임아웃이다.
 
 ### Bean은 기본 싱글톤
 
@@ -97,6 +97,7 @@ WebFlux는 **서블릿 컨테이너(Tomcat, Jetty)와 Netty 같은 non-서블릿
 - [sigridjin — ServletContainer와 SpringContainer는 무엇이 다른가](https://sigridjin.medium.com/servletcontainer%EC%99%80-springcontainer%EB%8A%94-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%A4%EB%A5%B8%EA%B0%80-626d27a80fe5)
 - [Spring Framework Reference — Reactive Spring Web (Server)](https://docs.spring.io/spring-framework/reference/web/webflux/reactive-spring.html)
 - [Spring Framework Reference — Spring WebFlux 개요](https://docs.spring.io/spring-framework/reference/web/webflux/new-framework.html)
+- [Apache Tomcat 11, HTTP Connector](https://tomcat.apache.org/tomcat-11.0-doc/config/http.html)
 
 ## 관련 문서
 - [[Spring|Spring 개요 (IoC, DI, AOP)]]

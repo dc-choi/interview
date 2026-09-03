@@ -24,7 +24,7 @@ Disk Access Time = Seek Time + Rotational Latency + Transfer Time
 - 15000 RPM 엔터프라이즈 HDD: ~2ms
 
 ### 3. Transfer Time (전송 시간)
-실제 데이터 **읽기, 쓰기**. 블록 크기, 회전 속도, 기록 밀도에 비례. 보통 ms 이하.
+실제 데이터 **읽기, 쓰기**. 전송 시간은 대략 블록 크기를 실제 전송률로 나눈 값이다. 블록 크기가 클수록 늘지만 RPM, 기록 밀도, zone과 channel 조건은 실제 전송률에 함께 반영되므로 단순 비례로 일반화하지 않는다.
 
 ### 총 시간 감각
 - HDD 랜덤 액세스: **~10ms/요청**
@@ -82,6 +82,7 @@ DB 튜닝, OS 캐시, CDN 설계는 이 속도 계층을 인지하고 **자주 �
 ## 출처
 - [매일메일 — 디스크 접근 시간](https://www.maeil-mail.kr/question/148)
 - [매일메일 — RAID](https://www.maeil-mail.kr/question/6)
+- [Overview of 9.1GB Ultra160 SCSI Hard Disk Drive — IBM](https://www.ibm.com/support/pages/overview-91gb-ultra160-scsi-hard-disk-drive)
 
 ## 관련 문서
 - [[Storage-and-FileSystem|기억장치와 파일시스템 (목차)]]

@@ -97,6 +97,6 @@ Spring은 **엔터프라이즈 기능이 프레임워크에 내장**되어 있�
 - [Spring Boot, Common Application Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
 - [Spring Framework, View Technologies](https://docs.spring.io/spring-framework/reference/web/webmvc-view.html)
 - [V8, Stack trace API](https://v8.dev/docs/stack-trace-api)
-- [Node.js, Diagnostics](https://nodejs.org/en/learn/diagnostics/overview)
+- [Node.js, Diagnostics user journey](https://nodejs.org/en/learn/diagnostics/user-journey)
 - [Java Language Specification, Chapter 4. Types, Values, and Variables](https://docs.oracle.com/javase/specs/jls/se20/html/jls-4.html)
 - [OpenJDK, JEP 444: Virtual Threads](https://openjdk.org/jeps/444)

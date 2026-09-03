@@ -1,7 +1,7 @@
 ---
 tags: [cdc, debezium, kafka, mysql, data-pipeline, monitoring]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["CDC 운영", "Debezium 대규모 운영과 장애 대응"]
 ---
@@ -84,7 +84,7 @@ CDC는 table의 모든 변경을 복제할 수 있어 PII blast radius를 넓힌
 
 - [Debezium Documentation, MySQL Connector](https://debezium.io/documentation/reference/stable/connectors/mysql.html)
 - [Debezium Documentation, Monitoring](https://debezium.io/documentation/reference/stable/connectors/mysql.html#mysql-monitoring)
-- [Debezium Documentation, Incremental Snapshots](https://debezium.io/documentation/reference/stable/connectors/mysql.html#mysql-incremental-snapshots)
+- [Debezium Documentation, Incremental Snapshots](https://debezium.io/documentation/reference/stable/connectors/mysql.html#debezium-mysql-incremental-snapshots)
 - [Toss Tech, 대규모 CDC Pipeline 운영을 위한 Debezium 개선 여정](https://toss.tech/article/cdc_pipeline)
 
 ## 관련 문서

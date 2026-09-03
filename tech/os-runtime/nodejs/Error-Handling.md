@@ -114,7 +114,8 @@ process.on('unhandledRejection', reason => {
 | `uncaughtException` | 동기 throw가 아무 try/catch도 못 잡음 |
 | `unhandledRejection` | Promise reject가 아무 .catch도 못 잡음 |
 | `uncaughtExceptionMonitor` | uncaughtException 직전, 종료 막지 않음 — 로그용 |
-| `multipleResolves` | Promise가 여러 번 resolve/reject (deprecated) |
+
+`multipleResolves` 이벤트는 Node.js 24 LTS까지 runtime deprecated이며 v25.0.0에서 제거됐다. 현재 릴리스의 전역 안전망으로 사용하지 않는다.
 
 **핵심**: 이 핸들러는 **로그, 정리 후 종료** 용도. 계속 실행하지 말 것 — 상태가 손상됐을 가능성 있음. PM2, Cluster, K8s가 재시작.
 
@@ -194,6 +195,6 @@ try {
 
 ## 출처
 
-- [Node.js Process API](https://nodejs.org/api/process.html)
-- [Node.js Stream API, `pipeline()`](https://nodejs.org/api/stream.html#streampipelinesource-transforms-destination-callback)
+- [Node.js Process API](https://nodejs.org/api/process.html), [Stream API, `pipeline()`](https://nodejs.org/api/stream.html#streampipelinesource-transforms-destination-callback)
 - [Node.js Globals API, `AbortSignal.timeout()`](https://nodejs.org/api/globals.html#static-method-abortsignaltimeoutdelay)
+- [Node.js, DEP0160: `process.on('multipleResolves', handler)`](https://nodejs.org/api/deprecations.html#DEP0160)

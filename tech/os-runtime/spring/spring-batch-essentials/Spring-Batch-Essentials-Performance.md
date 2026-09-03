@@ -17,8 +17,8 @@ verified_at: 2026-07-21
 ## 해법 — ZeroOffset, Cursor
 
 - **Keyset Reader** (커스텀): OFFSET 대신 **마지막 정렬 키 이후** (`WHERE id > :lastId`)를 조회한다. 적절한 인덱스와 단조롭고 고유한 정렬 키가 있으면 깊은 OFFSET 비용을 피할 수 있지만 쿼리가 항상 상수 시간인 것은 아니다.
-- **JdbcCursorItemReader / HibernateCursorItemReader**: DB cursor로 한 번 쿼리 후 스트리밍. 커넥션을 오래 점유하는 단점은 있지만 OFFSET 문제 없음
-- **Exposed Cursor** (Kotlin), **QuerydslPagingItemReader**: 타입 안전 + ZeroOffset 조합
+- **JdbcCursorItemReader / JpaCursorItemReader**: DB cursor로 한 번 쿼리 후 스트리밍. 커넥션을 오래 점유하는 단점은 있지만 OFFSET 문제 없음. Hibernate 기반 cursor reader는 5.2에서 제거됐고 공식 대체는 `JpaCursorItemReader`다
+- **Exposed Cursor** (Kotlin), **QuerydslNoOffsetPagingItemReader**: 타입 안전 + ZeroOffset 조합. `QuerydslPagingItemReader`는 offset과 limit을 쓰는 일반 페이징 reader다
 
 원리는 [[Pagination-Optimization|페이징 최적화]]와 동일 — **OFFSET 대신 커서로**.
 
@@ -95,7 +95,7 @@ Partitioning은 범위를 독립적으로 나눌 수 있을 때 프로세스와 
 - **Writer에 Dirty Checking 의존** — 개별 UPDATE 폭증, JDBC 배치로 이관 필요
 - **드라이버별 배치 옵션 미검증** — 재작성 가능 SQL, 생성 키, 패킷 크기와 실제 왕복 횟수 측정
 - **Chunk Size를 1로** — 트랜잭션 오버헤드가 전부
-- **같은 JobParameters로 재실행 시도** — `JobInstanceAlreadyCompleteException`. 파라미터에 `run.id=UUID` 추가하거나 `--incremental`
+- **같은 JobParameters로 재실행 시도** — `JobInstanceAlreadyCompleteException`. 파라미터에 `run.id=UUID`를 추가하거나 `JobParametersIncrementer`로 다음 인스턴스를 실행한다. CLI는 Spring Batch 5.x `CommandLineJobRunner`의 `-next`, 6.0 `CommandLineJobOperator`의 `startNextInstance`를 사용
 - **메타 테이블 없이 운영** — Spring Batch 기동 실패. 자동 생성 또는 `schema-*.sql` 적용
 
 ## 면접 체크포인트
@@ -115,3 +115,6 @@ Partitioning은 범위를 독립적으로 나눌 수 있을 때 프로세스와 
 - [Kakao Pay — Spring Batch 증분 성능 개선](https://tech.kakaopay.com/post/spring-batch-performance)
 - [yoonseon — JdbcTemplate batchUpdate로 벌크 insert](https://yoonseon.tistory.com/146)
 - [Spring Batch 운영과 설계 — YouTube 강의](https://www.youtube.com/watch?v=_nkJkWVH-mo&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=41)
+- [Spring Batch 5.1, HibernateCursorItemReader](https://docs.spring.io/spring-batch/docs/5.1.x/api/org/springframework/batch/item/database/HibernateCursorItemReader.html)
+- [spring-batch-querydsl README — jojoldu](https://raw.githubusercontent.com/jojoldu/spring-batch-querydsl/master/README.md)
+- [Spring Batch, CommandLineJobRunner](https://docs.spring.io/spring-batch/apidocs/org/springframework/batch/core/launch/support/CommandLineJobRunner.html)

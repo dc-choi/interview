@@ -33,7 +33,7 @@ npx tsc --version
 
 - Node.js는 22.17 이상이어야 한다.
 - TypeScript는 5.8 이상이어야 한다.
-- TypeScript `moduleResolution`은 package exports map을 해석하는 `node20`, `nodenext`, `bundler` 중 하나여야 한다.
+- TypeScript `moduleResolution`은 package exports map을 해석하는 `node16`, `nodenext`, `bundler` 중 하나여야 한다. `node20`은 TypeScript 5.9 이상의 `module` 옵션 값이며 `moduleResolution: nodenext` 또는 `node16`과 짝지어 쓴다.
 - v7 core는 native ESM이다. package `type`, tsconfig module setting, compiled import extension과 test runner가 ESM을 해석하는지 확인한다.
 - core, 사용하는 driver, migrations, CLI는 같은 v7.1.11 line으로 정렬한다.
 - `@mikro-orm/nestjs`는 monorepo 외부 패키지다. version 숫자를 억지로 같게 맞추기보다 호환 peer dependency와 Nest boot test로 확인한다.
@@ -185,3 +185,4 @@ search 결과는 후보 목록이다. 각 호출의 transaction, error handling,
 - [MikroORM 7 released](https://mikro-orm.io/blog/mikro-orm-7-released)
 - [MikroORM v7.1.11 release](https://github.com/mikro-orm/mikro-orm/releases/tag/v7.1.11)
 - [Configuration — MikroORM v7.1](https://mikro-orm.io/docs/configuration)
+- [TypeScript Handbook, Modules reference](https://www.typescriptlang.org/docs/handbook/modules/reference.html)

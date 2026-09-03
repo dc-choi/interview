@@ -50,7 +50,7 @@ cp --remove-destination b c    # GNU cp: 복사 전 대상(심링크)을 제거
 rm c && cp b c
 ```
 
-반대로 busybox에서 GNU처럼 "링크를 따라가 쓰기"를 강제하려면 `-L`(dereference) 옵션을 고려한다. 다만 busybox는 옵션 지원 범위가 좁으므로 빌드 환경에서 실제 동작을 검증해야 한다.
+2026-09-03 BusyBox 문서 기준, `cp`에는 대상 심링크를 따라가 쓰도록 강제하는 옵션이 없다. `-L`은 소스 심링크 처리에만 적용되고 BusyBox의 기본 동작이므로 대상 심링크 동작을 바꾸지 않는다. GNU와 같은 결과가 필요하면 `cp b "$(readlink -f c)"`처럼 링크가 가리키는 실제 경로에 복사하고 빌드 환경에서 결과를 검증한다.
 
 ## 그 외 흔한 Alpine 마이그레이션 함정
 
@@ -67,6 +67,8 @@ rm c && cp b c
 ## 출처
 - [Alpine과 Debian Docker 이미지의 cp 동작 차이 — 인프랩 기술블로그](https://tech.inflab.com/202205-cp-behavior-difference-between-alpine-and-debian-docker-image/)
 - [cp invocation — GNU Coreutils](https://www.gnu.org/software/coreutils/cp)
+- [POSIX cp specification](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/cp.html)
+- [BusyBox, `cp` usage](https://busybox.net/downloads/BusyBox.html#cp)
 
 ## 관련 문서
 - [[Image-Size-Optimization|Image Size Optimization (Alpine 크기 트레이드오프)]]

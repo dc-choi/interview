@@ -50,7 +50,7 @@ location / {
 
 ### proxy_set_header
 
-업스트림으로 보낼 요청 헤더 수정. **Nginx는 기본으로 `Host`와 `Connection`만 보낸다** → 실제 클라이언트 IP, 원본 Host를 내부에 전달하려면 명시 필요.
+업스트림으로 보낼 요청 헤더를 수정한다. Nginx는 기본적으로 원본 요청 헤더를 전달하지만 `Host`는 `$proxy_host`, `Connection`은 `close`로 재정의하고 값이 빈 헤더는 보내지 않는다. 캐시 사용 시 일부 조건부 헤더도 제외된다. 따라서 `proxy_set_header`가 필요한 이유는 다른 헤더가 모두 누락돼서가 아니라 원본 Host가 덮이고 `X-Real-IP`, `X-Forwarded-For` 같은 클라이언트 IP 헤더를 Nginx가 자동 생성하지 않기 때문이다.
 
 ```nginx
 proxy_set_header Host $host;
@@ -103,7 +103,7 @@ WebSocket은 HTTP Upgrade이므로 명시적 설정 필요.
 ```nginx
 location /ws {
     proxy_pass http://ws_backend;
-    proxy_http_version 1.1;
+    proxy_http_version 1.1;  # nginx 1.29.7 미만에서 필요, 이후 기본값
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
     proxy_read_timeout 3600s;   # 장기 연결 유지
@@ -125,7 +125,8 @@ upstream app {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name example.com;
 
     ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
@@ -154,7 +155,7 @@ server {
 - **`proxy_set_header Host` 누락** — 업스트림 앱이 가상 호스트 라우팅을 못 함
 - **`X-Forwarded-For` 신뢰** — 클라이언트가 헤더를 위조할 수 있음. **신뢰된 프록시 IP에서 온 요청에서만** 사용
 - **SSL 종료 후 앱이 `http`로 인식** — `X-Forwarded-Proto` 필수
-- **WebSocket에 `proxy_http_version 1.1`과 Upgrade 헤더 미설정** → 핸드셰이크 실패
+- **WebSocket에 Upgrade와 Connection 헤더 미설정** → 두 헤더는 hop-by-hop이라 업스트림에 자동 전달되지 않아 핸드셰이크가 실패한다. `proxy_http_version 1.1`은 Nginx 1.29.7부터 기본값이므로 그보다 이전 버전에서만 명시가 필요하다
 - **업스트림 keep-alive 미설정** — 매 요청마다 새 TCP 연결 → 지연, CPU 증가
 - **모든 SSE에 `proxy_buffering off` 적용** — 기본 버퍼링에서도 이벤트가 순차 전달될 수 있다. 장기 스트림의 자원 특성과 실제 도착 지연을 측정해 결정
 
@@ -170,6 +171,8 @@ server {
 ## 출처
 - [Nginx Docs — NGINX Reverse Proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
 - [Nginx Docs — ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering)
+- [Nginx Docs — ngx_http_core_module](https://nginx.org/en/docs/http/ngx_http_core_module.html)
+- [Nginx Docs — WebSocket proxying](https://nginx.org/en/docs/http/websocket.html)
 
 ## 관련 문서
 - [[Load-Balancer|Load Balancer]]

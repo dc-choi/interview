@@ -50,7 +50,7 @@ public ResponseEntity<BoardResponse> create(
 
 ### 필수 조건
 
-- **`value` 파라미터 명시** (`@RequestPart("dto")`) — 파트 이름을 정확히 지정해야 "Required request part 'dto' is not present" 방지
+- **파트 이름 일치** — `value` 또는 `name`을 생략하면 method parameter 이름을 사용하므로 client key와 일치해야 한다. `-parameters` 미적용 등으로 이름을 얻을 수 없으면 실패하므로 공개 API에서는 `@RequestPart("dto")`처럼 명시하는 편이 안전하다
 - **파트의 Content-Type**: JSON DTO 파트는 `application/json`으로, 파일 파트는 파일 고유 타입
 - **컨트롤러 `consumes` 명시**: `MediaType.MULTIPART_FORM_DATA_VALUE`로 선언하면 디스패처가 정확히 매칭
 
@@ -171,6 +171,7 @@ multipart 한 번에 수 GB를 올리는 건 메모리, 네트워크 모두 부�
 - [seop-official — Spring Boot REST API에서 json dto, multipart 동시처리](https://seop-official.tistory.com/entry/SpringBoot-Rest-API에서-jsondto과-multipart-동시처리)
 
 - [Spring Framework, multipart](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/multipart.html), [OWASP File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html)
+- [Spring Framework, `RequestPartMethodArgumentResolver` source](https://github.com/spring-projects/spring-framework/blob/main/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/RequestPartMethodArgumentResolver.java)
 - 파일 업로드: [multipart 개요](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83380), [프로젝트](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83381), [Servlet Part 1](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83382), [Servlet Part 2](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83383), [MultipartFile](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83384), [upload/download 예제](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83385), [정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83386)
 
 ## 관련 문서

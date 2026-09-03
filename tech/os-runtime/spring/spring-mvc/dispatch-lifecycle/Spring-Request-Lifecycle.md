@@ -85,7 +85,7 @@ Spring Boot에서는 대부분 단일 컨텍스트로 통합되어 이 구분이
 
 | 축 | Spring MVC (전통) | Spring Boot |
 |---|---|---|
-| 기동 주체 | **Tomcat이 먼저** 실행 → `ContextLoaderListener`가 ApplicationContext 생성 → `DispatcherServlet` 생성 | **애플리케이션이 먼저** 실행 → `TomcatStarter.onStartup()`으로 내장 Tomcat 기동 → `DispatcherServlet` 등록 |
+| 기동 주체 | **Tomcat이 먼저** 실행 → `ContextLoaderListener`가 ApplicationContext 생성 → `DispatcherServlet` 생성 | **애플리케이션이 먼저** 실행 → `TomcatServletWebServerFactory`가 내장 Tomcat을 생성, 기동 → Tomcat이 `TomcatStarter.onStartup()`을 호출해 `ServletContextInitializer` 실행 → `DispatcherServlet` 등록 |
 | 배포 단위 | WAR를 외부 Tomcat에 배포 | 실행 가능 JAR가 내장 Tomcat 포함 |
 | 진입점 | Tomcat의 `web.xml`/`ServletContainerInitializer` | `public static void main()` + `SpringApplication.run()` |
 
@@ -151,5 +151,6 @@ Loom(가상 스레드), WebFlux는 이 한계를 다른 방식으로 넘는다. 
 ## 출처
 
 - [Spring Framework, DispatcherServlet](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet.html)
+- [Spring Boot, `TomcatStarter` source](https://raw.githubusercontent.com/spring-projects/spring-boot/3.4.x/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/web/embedded/tomcat/TomcatStarter.java)
 - [인프런, 웹 프로그래밍 설계 모델](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13726)
 - [인프런, Spring MVC 구조](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13728)

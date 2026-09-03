@@ -141,8 +141,8 @@ aliases: ["OS 개요와 동시성", "Concurrency Overview"]
 | 외부단편화 | 할당/해제를 반복하면 메모리 사이에 사용할 수 없는 작은 빈 공간이 생김 |
 | 내부단편화 | 할당된 블록이 요청보다 커서 블록 내부에 사용되지 않는 공간이 생김 |
 
-- 외부 단편화 해결: 압축(Compaction), 페이징
-- 내부 단편화 해결: 적절한 블록 크기 선택, 버디 시스템
+- 외부 단편화 해결: 압축(Compaction), 페이징, 버디 시스템의 인접 free block 병합
+- 내부 단편화 해결: 적절한 블록 크기와 slab(SLUB) 같은 소형 객체 할당기. 버디 시스템은 요청을 2의 거듭제곱 블록으로 올림 할당하므로 내부 단편화를 유발할 수 있다
 
 ### 메모리지역성(Locality)
 | 종류 | 설명 |
@@ -166,4 +166,5 @@ aliases: ["OS 개요와 동시성", "Concurrency Overview"]
 - 인프런, 감자 강사, [컴퓨터의 부팅과정](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100756), [인터럽트](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100757)
 - [UEFI 2.11, Boot Manager](https://uefi.org/specs/UEFI/2.11/03_Boot_Manager.html)
 - [RISC-V ISA, Exceptions, Traps, and Interrupts](https://docs.riscv.org/reference/isa/unpriv/intro.html)
+- [Linux Kernel, Physical Page Allocation](https://www.kernel.org/doc/gorman/html/understand/understand009.html)
 - [메모리 구조 관점에서 프로세스와 쓰레드 비교 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=gQ4c6IzhU9Q)

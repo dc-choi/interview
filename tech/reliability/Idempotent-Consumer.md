@@ -3,6 +3,7 @@ tags: [reliability, messaging, idempotency, consumer, exactly-once]
 status: done
 category: "안정성엔지니어링(Reliability)"
 aliases: ["Idempotent Consumer", "멱등 컨슈머", "멱등 소비 처리", "exactly-once 처리", "effectively-once"]
+verified_at: 2026-09-03
 ---
 
 # 멱등 컨슈머 (Idempotent Consumer)
@@ -98,7 +99,8 @@ if (!acquired) throw new RetryableError(); // 다른 owner가 처리 중, ACK하
 
 ## 출처
 
-- [Microsoft — Idempotent Consumer / message deduplication](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mqtt)
+- [Microsoft — Service Bus duplicate detection](https://learn.microsoft.com/en-us/azure/service-bus-messaging/duplicate-detection)
+- [AWS — SQS FIFO exactly-once processing](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html)
 - [microservices.io — Idempotent Consumer pattern](https://microservices.io/patterns/communication-style/idempotent-consumer.html)
 
 ## 관련 문서

@@ -12,7 +12,7 @@ aliases: ["utf8mb4 마이그레이션", "MySQL Charset Migration", "utf8mb3 to u
 
 ## 왜 위험한가 (절차의 근거)
 
-- **테이블 락**: `CONVERT TO CHARACTER SET`은 데이터를 다시 쓰므로 보통 테이블 복사(`ALGORITHM=COPY`)가 강제된다. 큰 테이블이면 그동안 쓰기가 막힌다. 락 없이 가는 법은 [[Schema-Migration-Large-Table]].
+- **테이블 락**: `CONVERT TO CHARACTER SET`은 MySQL 8.4에서 `ALGORITHM=INPLACE`를 지원하지만 인코딩이 달라지면 테이블을 재구축하고 변환 중 동시 DML을 허용하지 않는다. 큰 테이블이면 그동안 쓰기가 막힌다. 락 없이 가는 법은 [[Schema-Migration-Large-Table]].
 - **인덱스 키 길이 초과 (제일 흔한 실패)**: utf8mb3는 글자당 3바이트, utf8mb4는 4바이트다. `VARCHAR(191)`은 옛 InnoDB의 767바이트 한계에서 나온 우회책일 뿐이다. 실제 제한은 대상 MySQL 버전, row format, page size와 index 정의를 기준으로 확인하고, 길이를 기계적으로 191자로 줄이지 않는다.
 - **collation 충돌**: collation을 바꾸면 비교 규칙이 바뀌어, 예전엔 다른 값이던 게 같은 값으로 취급되면 유니크 인덱스에서 중복 에러가 나며 ALTER가 깨진다.
 
@@ -133,7 +133,7 @@ ALTER TABLE t MODIFY col VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900
 
 ## 면접 체크포인트
 
-- charset 변환이 운영에서 위험한 3가지: 테이블 락(COPY 강제), 인덱스 키 길이 초과, collation 충돌
+- charset 변환이 운영에서 위험한 3가지: 테이블 재구축과 동시 DML 불허, 인덱스 키 길이 초과, collation 충돌
 - `VARCHAR(191)`이 레거시 767바이트 한계에서 나온 이유와, 대상 버전의 실제 index byte limit을 먼저 확인해야 하는 이유
 - utf8mb3 → utf8mb4가 데이터 안전한 이유(상위 집합)와 latin1이 다른 이유
 - 큰 테이블에 온라인 스키마 변경 도구를 쓰는 이유와 복제 지연 스로틀링
@@ -146,6 +146,7 @@ ALTER TABLE t MODIFY col VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900
 - [MySQL 8.4 Reference Manual, The utf8mb3 Character Set](https://dev.mysql.com/doc/refman/8.4/en/charset-unicode-utf8mb3.html)
 - [MySQL 8.4 Reference Manual, Connection Character Sets and Collations](https://dev.mysql.com/doc/refman/8.4/en/charset-connection.html)
 - [MySQL 8.4 Reference Manual, Collation Coercibility in Expressions](https://dev.mysql.com/doc/refman/8.4/en/charset-collation-coercibility.html)
+- [MySQL 8.4 Reference Manual, Online DDL Operations](https://dev.mysql.com/doc/refman/8.4/en/innodb-online-ddl-operations.html)
 - [Percona — pt-online-schema-change](https://docs.percona.com/percona-toolkit/pt-online-schema-change.html)
 
 ## 관련 문서

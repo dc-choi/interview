@@ -93,7 +93,7 @@ function* cancelableTask() {
 // runner가 각 yield에서 자동으로 취소 체크
 ```
 
-추천 라이브러리로 caf(Cancellation-Aware async Functions)가 있다. 제너레이터 기반 취소 패턴을 정제된 API로 제공하며, AbortController와도 통합된다.
+추천 라이브러리로 caf(Cancelable Async Flows)가 있다. 제너레이터 기반 취소 패턴을 정제된 API로 제공하며, AbortController와도 통합된다.
 
 ## CPU 바운드 작업 실행 전략
 
@@ -102,18 +102,24 @@ CPU 집약적인 작업을 처리하는 세 가지 접근법이 있다.
 | 접근법 | 오버헤드 | 멀티코어 | 이벤트 루프 | 용도 |
 |--------|----------|----------|-------------|------|
 | setImmediate 인터리빙 | 낮음 | 불가 | 공유 | 단순 CPU 작업 |
-| child_process.fork | 높음 | 가능 | 격리 | 외부 언어/충돌 격리 |
-| Worker Threads | 중간 | 가능 | 공유 | CPU 집약 Node 연산 |
+| child_process.fork | 높음 | 가능 | 격리 | 충돌 격리, 별도 Node.js 프로세스 |
+| Worker Threads | 중간 | 가능 | 격리 | CPU 집약 Node 연산 |
 
 setImmediate 인터리빙은 CPU 작업을 작은 청크로 나누고 각 청크 사이에 setImmediate()를 호출하여 이벤트 루프에 제어권을 반환하는 방식이다. 멀티코어를 활용할 수 없지만 오버헤드가 가장 낮다.
 
-child_process.fork는 별도의 프로세스를 생성하므로 프로세스 생성 비용이 크지만, 완전한 격리를 제공한다. Python이나 Rust 같은 외부 언어로 작성된 스크립트를 실행하거나, 워커의 충돌이 메인 프로세스에 영향을 주지 않아야 할 때 적합하다.
+`child_process.fork()`는 IPC channel이 연결된 별도 Node.js 프로세스를 생성한다. Python이나 Rust 실행에는 `spawn()`, `execFile()` 또는 `exec()`를 사용한다. 프로세스 생성 비용이 크지만 워커 충돌을 부모와 격리해야 할 때 적합하다.
 
-Worker Threads는 같은 프로세스 내에서 별도의 스레드로 실행되어 중간 수준의 오버헤드를 가진다. SharedArrayBuffer를 통한 메모리 공유가 가능하며, CPU 집약적인 Node.js 연산에 가장 적합하다.
+Worker Threads는 같은 프로세스 안에서 각자 별도의 이벤트 루프를 실행해 중간 수준의 오버헤드를 가진다. 프로세스 자원과 `SharedArrayBuffer`를 통한 메모리 공유가 가능하며, CPU 집약적인 Node.js 연산에 가장 적합하다.
 
 추천 라이브러리:
 - **piscina**: Worker Threads 풀 관리. 작업 큐, 자동 스케줄링, 메모리 제한을 지원한다.
 - **workerpool**: 프로세스와 스레드 풀을 추상화한다. child_process와 Worker Threads를 모두 지원하여 전환이 용이하다.
+
+## 출처
+
+- [CAF, Cancelable Async Flows — getify](https://github.com/getify/CAF)
+- [Node.js, Worker threads](https://nodejs.org/api/worker_threads.html#performanceeventlooputilizationutilization1-utilization2)
+- [Node.js, `child_process.fork()`](https://nodejs.org/api/child_process.html#child_processforkmodulepath-args-options)
 
 ## 관련 문서
 - [[Async-Internals|비동기 내부 동작]]

@@ -11,7 +11,7 @@ aliases: ["Identity Verification Processor Risk", "제3자 검증 리스크", "V
 
 ## 외주 검증이 별도 breach 클래스인 이유
 
-검증 벤더는 다수 다운스트림 클라이언트의 신분 데이터를 한곳에 모으는 honeypot이고, 단일 실패점이 되며, 규제 압박으로 보안 성숙 전에 급히 도입된다. 사용자는 자기 데이터가 어느 하위처리자까지 흘러가는지 가시성이 없다. 한 사례에서는 서비스에서 외주 CS 벤더로, 다시 티켓 SW로 이어지는 체인 끝의 티켓 시스템이 뚫려, 사용자와 직접 관계도 없는 벤더에서 수백만 장의 연령검증 사진(운전면허, 여권 포함)이 노출됐다.
+검증 벤더는 다수 다운스트림 클라이언트의 신분 데이터를 한곳에 모으는 honeypot이고, 단일 실패점이 되며, 규제 압박으로 보안 성숙 전에 급히 도입된다. 사용자는 자기 데이터가 어느 하위처리자까지 흘러가는지 가시성이 없다. 한 사례에서는 외주 CS 벤더가 침해돼, 연령 관련 이의 제기에 사용된 운전면허와 여권 등 정부 발급 신분증 사진이 약 7만 명 규모로 노출됐을 가능성이 확인됐다.
 
 ## 핵심 실패 모드
 
@@ -34,7 +34,7 @@ aliases: ["Identity Verification Processor Risk", "제3자 검증 리스크", "V
 
 - Claude 신원검증 — Anthropic이 2026-07-08 발효로 개인정보처리방침에 검증 데이터(Verification Data) 카테고리를 신설했다. Free, Pro, Max 개인 이용자가 대상이고 팀, 엔터프라이즈, 개발자 플랫폼은 별도 약관으로 제외된다. 전원 강제가 아니라 18세 미만 의심, 특정 고급 기능 접근, 정기 무결성 점검 같은 트리거로 발동한다. 연령 추정은 Yoti, 신원 확인은 Persona가 처리하고, 신분증과 셀카는 Anthropic 서버가 아니라 위탁사가 보관하며 Anthropic은 필요 시 위탁 플랫폼을 통해서만 접근한다. 검증 데이터는 모델 학습과 광고에 쓰지 않는다고 명시해 검증과 학습 경계를 통제로 내세웠다. 다만 구체적 보관 기간과 삭제 시점은 공개되지 않아 제3자 위탁의 사각지대가 남는다. 같은 흐름의 모델 접근 제한은 [[Claude-Fable-5-Mythos-5]].
 - 외주 검증 벤더 유출 — 신분증 검증 벤더의 관리자 자격증명이 1년 넘게 공개 노출돼 신분 문서와 라이브니스 결과에 접근 가능했던 사례, 검증 사진이 하위처리자 체인 끝에서 대량 유출된 사례가 같은 해 연쇄로 발생했다.
-- 목적 제한 위반 — 데이팅 서비스가 약 300만 사용자 사진을 동의 없이 안면인식 모델 학습용으로 이전해 FTC 제재를 받고, 사진과 그로 학습된 모델까지 삭제(disgorgement)한 사례.
+- 목적 제한 위반 — 데이팅 서비스가 약 300만 사용자 사진을 동의 없이 안면인식 기술 업체에 이전해 FTC 제재를 받은 사례. 이 사건의 합의명령은 프라이버시 관련 허위표시 금지와 통지, 보고, 기록 보관 의무를 부과했지만 사진이나 학습 모델 삭제는 요구하지 않았다. 알고리즘 삭제(disgorgement)는 Everalbum 등 별도 사건의 선례다.
 
 ## 면접 체크포인트
 
@@ -55,9 +55,10 @@ aliases: ["Identity Verification Processor Risk", "제3자 검증 리스크", "V
 
 - [10 (Not So) Hidden Dangers of Age Verification — EFF](https://www.eff.org/deeplinks/2025/12/10-not-so-hidden-dangers-age-verification)
 - [The Breachies 2025 — EFF](https://www.eff.org/deeplinks/2025/12/breachies-2025-worst-weirdest-most-impactful-data-breaches-year)
-- [Discord partner's age verification data breach includes selfies — Biometric Update](https://www.biometricupdate.com/202510/discord-partners-manual-age-verification-data-breach-includes-selfies)
+- [Update on Security Incident Involving Third-Party Customer Service — Discord](https://discord.com/press-releases/update-on-security-incident-involving-third-party-customer-service)
 - [Major Identity Verification Firm AU10TIX Exposes User Data — CloudDefense.AI](https://www.clouddefense.ai/major-identity-verification-firm-au10tix-exposes-user-data/)
-- [FTC's OkCupid Action Reframes AI Training Data as a Consumer Protection Issue — ComplexDiscovery](https://complexdiscovery.com/ftcs-okcupid-action-reframes-ai-training-data-as-a-consumer-protection-issue/)
+- [Match Group Americas and Humor Rainbow Stipulated Order — FTC](https://www.ftc.gov/system/files/ftc_gov/pdf/MatchGroupAmericasandHumorRainbowStipulatedOrder.pdf)
+- [FTC Requires Everalbum to Delete Improperly Obtained Photos and Derived Models — FTC](https://www.ftc.gov/news-events/news/press-releases/2021/01/ftc-requires-photo-app-developer-delete-users-photos-videos-it-improperly-used-develop-facial)
 - [Mitigating Risk to Rights with Age Verification — CDT](https://cdt.org/insights/mitigating-risk-to-rights-with-age-verification-privacy-preserving-guardrails-that-should-accompany-deployments-of-age-verification-approaches/)
 - [Anthropic Privacy Policy (Verification Data, 2026-07-08 발효)](https://www.anthropic.com/legal/privacy)
 - [Identity verification on Claude — Claude Help Center](https://support.claude.com/en/articles/14328960-identity-verification-on-claude)

@@ -3,6 +3,7 @@ tags: [senior, ai, spec, agent]
 status: done
 category: "Senior - AI 엔지니어링"
 aliases: ["Agent Spec Writing", "에이전트 스펙 작성법"]
+verified_at: 2026-09-03
 ---
 
 # AI 에이전트 스펙 작성법
@@ -33,7 +34,7 @@ Software 3.0에서 **잘 쓴 스펙 = 잘 설계된 프로그램**. LLM이 구�
 
 ### 3. 태스크를 모듈화된 작은 단위로 분할
 - 대규모 작업을 한 번에 주지 말고 **필요한 컨텍스트만** 제공
-- 근거: LLM은 컨텍스트가 길어질수록 **앞부분 지시를 놓칠 확률** 증가 ("Lost in the middle")
+- 근거: 긴 컨텍스트에서는 앞이나 끝보다 **중간에 놓인 정보**를 놓치기 쉽다 ("Lost in the middle")
 - 방법: 상위 태스크 → 하위 단계로 쪼개서 각 단계별 스펙 생성
 
 ### 4. 자가 검사와 제약조건 내장
@@ -129,6 +130,7 @@ AI가 코드의 상당 부분을 작성하면 개발자의 통제 지점은 코�
 - LLM-as-a-Judge 패턴이 필요한 상황
 
 ## 출처
+- [Lost in the Middle: How Language Models Use Long Contexts — Liu et al.](https://arxiv.org/abs/2307.03172)
 - [뉴스 Hada — AI 에이전트를 위한 좋은 스펙 작성 방법](https://news.hada.io/topic?id=25949)
 - [AI와 개발하기: 숨은 결정을 드러내기 — NHN Cloud Meetup](https://meetup.nhncloud.com/posts/419)
 

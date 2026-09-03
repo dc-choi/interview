@@ -3,6 +3,7 @@ tags: [senior, ai, claude-code, domain, creator, research, finance, legal, medic
 status: done
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Domain Applications", "클로드 코드 도메인 응용", "전문 도구 위임"]
+verified_at: 2026-09-03
 ---
 
 # Claude Code 도메인 응용 — 크리에이터, 연구, 금융, 법무, 의료
@@ -33,9 +34,9 @@ aliases: ["Claude Code Domain Applications", "클로드 코드 도메인 응용"
 결과 품질은 도메인 기준을 얼마나 구체적으로 주는가로 갈린다.
 
 - **연구**: APA 7th 인용 규칙, 검정 자동 선택(Shapiro-Wilk 정규성 + Levene 등분산 선검정 → Student/Welch t-검정), 결과를 APA 형식으로("t(98)=4.21, p<.001, d=0.84"), 300 DPI 출판용 그래프. 랜덤 시드 고정이 재현성 기본
-- **금융**: 한국 세법 상각률(내용연수 5년 → 0.451), 월말 마감의 차대 균형 검증("자산총계 = 부채 + 자본"), DCF의 FCFF = 영업이익×(1-세율)+감가상각-설비투자-운전자본증감, WACC(CAPM), Gordon Growth 터미널 가치, WACC×영구성장률 민감도 매트릭스
+- **금융**: 한국 법인세상 내용연수 5년의 상각률은 정액법 0.200, 정률법 0.451이며 자산 종류에 허용되는 방법과 법인이 신고한 상각방법을 확인, 월말 마감의 차대 균형 검증("자산총계 = 부채 + 자본"), DCF의 FCFF = 영업이익×(1-세율)+감가상각-설비투자-운전자본증감, WACC(CAPM), Gordon Growth 터미널 가치, WACC×영구성장률 민감도 매트릭스
 - **법무**: 계약서 위험 6영역(손해배상 무제한, 일방 해지, IP 귀속 등)을 조항 번호 + 원문 인용 + 위험도 표로, NDA 체크리스트, 소송 문서 타임라인(날짜 불명은 [추정] 표시)
-- **의료**: SOAP 진료기록 구조, ICH-GCP E6 12섹션 임상 프로토콜, CMS-1500 청구서, PA 사전승인(NPI, CPT, ICD-10)
+- **의료**: SOAP 진료기록 구조, ICH-GCP E6의 16개 임상시험 프로토콜 구성 항목(E6(R3) Appendix B.1~B.16), CMS-1500 청구서, PA 사전승인(NPI, CPT, ICD-10)
 
 ## 검증을 워크플로우에 내장하고 전문 판단은 사람이
 
@@ -59,6 +60,9 @@ AI 산출물은 전 도메인에서 **초안**이다. 검증 스텝을 흐름에
 
 ## 출처
 
+- [ICH E6(R3) Good Clinical Practice Guideline](https://database.ich.org/sites/default/files/ICH_E6%28R3%29_Step4_FinalGuideline_2025_0106.pdf)
+- [국가법령정보센터, 법인세법 시행규칙 별표 4](https://www.law.go.kr/LSW/flDownload.do?bylClsCd=110201&flSeq=153978971&gubun=)
+- [국가법령정보센터, 법인세법 시행령 제26조](https://www.law.go.kr/LSW/lsLinkCommonInfo.do?lsJoLnkSeq=1032175685)
 - [클로드 코드 가이드 (크리에이터/연구/금융/법무HR/의료 파트) — WikiDocs](https://wikidocs.net/book/19104)
 
 ## 관련 문서

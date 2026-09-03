@@ -1,7 +1,7 @@
 ---
 tags: [senior, ai, claude-code, workflow, orchestration, subagent]
 status: done
-verified_at: 2026-08-24
+verified_at: 2026-09-03
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Dynamic Workflows", "동적 워크플로우", "Dynamic Workflows"]
 ---
@@ -35,9 +35,9 @@ Claude Code v2.1.154 이상에서, 유료 플랜과 Anthropic API 접근, Amazon
 
 ## 승인과 권한
 
-실행 전 승인 프롬프트는 권한 모드에 따라 다르다 (모드 정의는 [[Claude-Code-Config-Permissions|권한 모드 6종]], 공식 표는 아래 세 묶음만 다룬다). auto는 첫 실행만 묻고 (ultracode가 켜져 있으면 생략), default(=manual)와 acceptEdits는 매번 묻고 (워크플로우+프로젝트 단위 don't ask again 선택 가능), bypassPermissions와 `claude -p`와 Agent SDK는 묻지 않고 즉시 실행한다.
+실행 전 승인 프롬프트는 권한 모드에 따라 다르다 (모드 정의는 [[Claude-Code-Config-Permissions|권한 모드 6종]], 공식 표는 아래 세 묶음만 다룬다). auto는 첫 실행만 묻고 (ultracode가 켜져 있으면 생략), default(=manual)와 acceptEdits는 매번 묻고 (워크플로우+프로젝트 단위 don't ask again 선택 가능), bypassPermissions는 묻지 않고 즉시 실행한다. `claude -p`와 Agent SDK에는 전용 승인 UI가 없지만 Workflow 도구 자체는 일반 권한 평가를 거치므로 allow 규칙, auto classifier, bypass, hook 또는 호스트 승인 중 하나가 허용해야 시작된다.
 
-권한 모드가 통제하는 것은 실행 승인뿐이다. **워크플로우 런타임이 띄우는 서브에이전트는 세션 모드와 무관하게 항상 acceptEdits 모드로 실행되고 세션의 도구 allowlist를 상속한다** — 파일 편집은 자동 승인되고 (acceptEdits의 보호 경로와 작업 디렉토리 예외는 [[Claude-Code-Config-Permissions|설정과 권한]]이 정본), allowlist에 없는 셸 명령, 웹 fetch, MCP 도구는 실행 중에도 프롬프트를 띄울 수 있다. 긴 실행이 중간에 멈추지 않게 하려면 에이전트가 쓸 명령을 시작 전에 allowlist에 넣는다. 프론트매터 `permissionMode`로 정의하는 일반 서브에이전트의 모드 규칙은 별개다 ([[Claude-Code-Extension-Reference|확장 메커니즘]] 소관).
+권한 모드가 통제하는 것은 실행 승인뿐이다. 워크플로우 런타임이 띄우는 에이전트도 사용자의 권한 규칙을 그대로 쓰고 일반 서브에이전트의 모드 결정 규칙을 따른다. 에이전트 정의에 `permissionMode`가 없으면 메인 대화의 모드를 상속하며, 부모가 `bypassPermissions`나 `acceptEdits`면 부모 모드가 우선한다. 부모가 `auto`면 프론트매터 모드는 무시되고 `auto`를 상속한다. 따라서 파일 편집이 무조건 자동 승인되는 것은 아니고, allowlist에 없는 셸 명령, 웹 fetch와 MCP 도구는 실행 중에도 프롬프트를 띄울 수 있다. 긴 실행이 중간에 멈추지 않게 하려면 에이전트가 쓸 도구를 시작 전에 allow 규칙에 넣는다 ([[Claude-Code-Extension-Reference|확장 메커니즘]] 소관).
 
 ## 스크립트 구조
 
@@ -72,19 +72,19 @@ return audits.filter(Boolean)
 
 ## 재개(Resume) — 무엇이 살아남는가
 
-중단한 실행은 같은 세션 안에서 재개할 수 있다 (/workflows에서 p, 또는 같은 스크립트로 재실행 요청). Claude Code를 종료하면 다음 세션은 처음부터 다시 시작한다. 어떤 결과가 캐시로 살아남는지는 두 규칙이 결정한다.
+중단한 실행은 같은 세션 안에서 재개할 수 있다 (/workflows에서 p, 또는 같은 스크립트로 재실행 요청). Claude Code를 종료하면 실행은 세션과 함께 멈추지만, agent view가 켜져 있으면 종료 대화상자의 Move to background and exit로 이어갈 수 있다. 저장된 결과는 `~/.claude/projects/`의 해당 세션 디렉토리에 남으므로 `claude --resume`으로 같은 세션을 재개해 워크플로우를 다시 요청하면 재생된다. 새 세션에는 재생할 결과가 없어 처음부터 실행한다.
 
 1. 중단 시점에 실행 중이던 에이전트는 저장되지 않는다 — 재개하면 처음부터 다시 실행된다.
-2. 재생은 에이전트 시작 순서를 따른다. 캐시 반환은 첫 미완료 에이전트에서 멈추고, **그보다 늦게 시작한 에이전트는 완료됐더라도 다시 실행된다**.
+2. 완료된 에이전트는 프롬프트가 달라지지 않은 한 시작 순서와 무관하게 저장된 결과를 반환한다. 실패했거나 `/workflows`에서 개별 중단했거나, 스크립트와 앞선 결과 변경으로 프롬프트가 달라진 에이전트는 다시 실행된다.
 
-A, B, C, D 순서로 시작하고 B 실행 중에 멈추면 A만 캐시로 돌아오고, B는 미완료라서, C와 D는 완료됐어도 B보다 늦게 시작해서 다시 실행된다. 그래서 소수의 긴 에이전트보다 **다수의 작은 에이전트로 fan-out하는 쪽이 중단 시 진행을 더 보존한다**.
+A, B, C, D 순서로 시작하고 B 실행 중에 전체 실행을 멈추면 A, C와 D는 저장된 결과를 반환하고 B만 처음부터 다시 실행된다. 전체 중단은 다른 에이전트를 실패로 세지 않는다. B가 실패했거나 개별 중단됐거나 변경된 결과로 뒤 단계의 프롬프트가 달라졌다면 C와 D도 다시 실행될 수 있다. 그래도 소수의 긴 에이전트보다 **다수의 작은 에이전트로 fan-out하는 쪽이 재실행 범위를 줄인다**.
 
 ## 비용 통제
 
 - 큰 작업 전에 작은 슬라이스(전체 레포 대신 디렉토리 하나, 넓은 질문 대신 좁은 질문)로 먼저 돌려 지출을 가늠한다. /workflows가 에이전트별 토큰 사용량을 보여주고 언제든 중단할 수 있다.
 - **Large workflow 경고**: 스케줄된 에이전트가 25개를 넘거나 예상 토큰 총량이 150만을 넘으면 태스크 패널의 진행 줄에 경고가 뜬다. 자문 성격이라 실행을 막거나 멈추지는 않는다. size guideline을 직접 고르면 그 값의 에이전트 수가 25 임계값을 대체하고, ultracode 세션에서는 이미 대규모 실행에 opt-in한 것으로 보아 경고가 뜨지 않는다.
 - **Size guideline** (v2.1.202 이상): Claude가 워크플로우를 쓸 때 목표로 삼는 에이전트 수에 대한 조언이며 강제 상한이 아니다 — 다른 규모를 요구하는 프롬프트가 우선한다. unrestricted, small(5 미만), medium(15 미만), large(50 미만)이고 기본은 medium (v2.1.219 이상; 이전 버전 기본은 unrestricted). /config에서 고르거나 v2.1.219 이상에서는 settings 파일의 `workflowSizeGuideline` 키로 지정한다 (settings 값이 /config보다 우선). 어느 값을 골라도 런타임 에이전트 상한(동시 16, 실행당 1,000)은 그대로 적용된다.
-- 모델: 모든 에이전트가 세션 모델을 쓰되, 스크립트가 스테이지별로 다른 모델을 지정할 수 있고, `CLAUDE_CODE_SUBAGENT_MODEL` 환경 변수는 둘 다 오버라이드한다. 조직의 availableModels 허용 목록이 요청된 모델을 막으면 서브에이전트 대체 규칙에 따라 다른 모델로 실행되고 /workflows 진행 화면에 요청 모델과 대체 모델이 함께 표시된다.
+- 모델: 스크립트가 호출마다 지정한 모델이 1순위, 에이전트 정의의 `model`이 2순위, `CLAUDE_CODE_SUBAGENT_MODEL`이 3순위이며 모두 없으면 세션 모델을 쓴다. v2.1.251 이전에는 환경 변수가 앞의 두 설정도 덮었다. 정의와 호출을 무시하고 강제하려면 v2.1.257 이상의 `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`을 쓴다. 조직의 availableModels가 요청 모델을 막으면 대체 규칙에 따라 다른 모델로 실행되고 /workflows 화면에 요청 모델과 대체 모델이 함께 표시된다.
 
 ## 저장, 배포, 입력
 
@@ -101,14 +101,15 @@ A, B, C, D 순서로 시작하고 B 실행 중에 멈추면 A만 캐시로 돌�
 
 - 서브에이전트, 스킬, 에이전트 팀, 워크플로우를 가르는 축 — 누가 계획을 쥐고, 중간 결과가 어디에 남는가
 - 계획을 코드로 옮기면 규모 외에 무엇이 반복 가능해지는가 (적대적 상호 검증, 다각도 초안 같은 품질 패턴)
-- resume의 두 규칙과 fan-out 설계에 주는 함의 — 작은 에이전트 다수가 중단 시 진행을 보존
-- 서브에이전트가 항상 acceptEdits로 도는 것, allowlist 사전 등록이 필요한 이유
+- resume의 저장, 재생 규칙과 fan-out 설계에 주는 함의 — 작은 에이전트 다수가 재실행 범위를 줄임
+- 워크플로우 에이전트의 권한 모드 상속과 allow 규칙 사전 등록이 필요한 이유
 - 비용 가드 — 슬라이스 먼저, Large workflow 경고 임계값, size guideline
 - fan-out 캐시 공유가 성립하는 조건 (모델, effort, 에이전트 타입, 도구, 스키마, 작업 디렉토리 일치)
 
 ## 출처
 
 - [Claude Code Docs, Orchestrate subagents at scale with dynamic workflows](https://code.claude.com/docs/en/workflows)
+- [Claude Code Docs, Environment variables](https://code.claude.com/docs/en/env-vars)
 
 ## 관련 문서
 

@@ -46,7 +46,7 @@ type Build<N extends number, Acc extends any[] = []> =
 
 type X = Build<1000, []>   // "Type instantiation is excessively deep"
 ```
-100 근처가 실용 한계.
+재귀 한계는 타입 형태에 따라 다르다. 위 `Build`처럼 조건부 타입의 한 분기가 곧바로 자기 자신인 tail-recursive 형태는 TypeScript 4.5의 tail-recursion elimination 대상이라 999회까지 통과하고 1000회에서 `Type instantiation is excessively deep` 오류가 난다. 반면 결과를 union에 합치는 등 tail-recursive가 아닌 형태는 공식 4.5 릴리스 노트의 예처럼 50회 근처에서 이미 같은 오류가 날 수 있다.
 
 ### `any`와 동등성
 `Equal<T, U>`를 완벽히 구현하기 어려움. `any`가 모든 타입과 동시에 같고 다름 → 엣지 케이스.
@@ -70,3 +70,7 @@ type X = Build<1000, []>   // "Type instantiation is excessively deep"
 - Mapped Type으로 `Partial`, `Readonly`, `Pick` 구현
 - Template Literal Types의 실용 예
 - 재귀 조건부 타입의 한계 (깊이, 성능)
+
+## 출처
+
+- [TypeScript 4.5 Release Notes, Tail-Recursion Elimination on Conditional Types](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html#tail-recursion-elimination-on-conditional-types)

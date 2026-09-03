@@ -52,7 +52,7 @@ aliases: ["Cache Invalidation", "캐시 무효화"]
 
 | 측면 | 구현 디테일 |
 |------|------------|
-| **Subscriber 별도 connection** | Pub/Sub 모드는 일반 명령 사용 불가. `redis.duplicate()` |
+| **Subscriber 별도 connection** | RESP2 구독 연결은 SUBSCRIBE 계열, PING, QUIT, RESET만 가능하고 RESP3는 구독 중에도 임의 명령 가능. 실무에서는 연결 분리 권장: `redis.duplicate()` |
 | **메시지 형태** | `{ key, instanceId, op: 'invalidate'\|'update', data? }` |
 | **at-most-once 한계** | Pub/Sub은 영속성 없음 → 메시지 유실 가능 |
 | **TTL 백업** | L1 TTL을 짧게(예: 60초) 두어 메시지 유실 시 자동 복구 |
@@ -98,7 +98,7 @@ aliases: ["Cache Invalidation", "캐시 무효화"]
 Spring 기준 구현:
 
 - **`@TransactionalEventListener(phase = AFTER_COMMIT)`**: 도메인 이벤트를 발행하고 커밋 성공 이후에만 캐시 삭제 리스너가 실행
-- **`@EntityListener`** (JPA): 엔티티 변경 시점에 이벤트 발행, 실제 evict는 `AFTER_COMMIT` 핸들러에서
+- **`@EntityListeners`** (JPA): 리스너 클래스의 `@PostUpdate`, `@PostPersist` 콜백에서 이벤트 발행, 실제 evict는 `AFTER_COMMIT` 핸들러에서
 - 이 조합으로 "DB 커밋된 사실"만 캐시에 반영
 
 ### 커밋 후 Evict 실패 — Circuit Breaker 강제 개방
@@ -146,6 +146,7 @@ DB 변경 후 여러 후속 작업이 동시에 일어날 때 순서가 뒤섞�
 - [TS Backend Meetup — NestJS 캐싱 전략 정리]
 - [Redis, Pub/sub](https://redis.io/docs/latest/develop/pubsub/)
 - [Redis, Transactions](https://redis.io/docs/latest/develop/using-commands/transactions/)
+- [Jakarta Persistence API, EntityListeners](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/EntityListeners.html)
 
 ## 관련 문서
 - [[TTL|TTL 전략]]

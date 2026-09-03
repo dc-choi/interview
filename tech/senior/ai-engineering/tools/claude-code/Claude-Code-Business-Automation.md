@@ -3,6 +3,7 @@ tags: [senior, ai, claude-code, automation, business, connectors, mcp]
 status: done
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Business Automation", "클로드 코드 비즈니스 자동화", "Connectors", "스케줄 태스크"]
+verified_at: 2026-09-03
 ---
 
 # Claude Code 비즈니스 자동화 — 문서, 데이터, 연동, 반복
@@ -13,8 +14,8 @@ aliases: ["Claude Code Business Automation", "클로드 코드 비즈니스 자�
 
 같은 작업도 규모와 목적에 따라 진입점이 다르다.
 
-- **Connectors / Cowork (GUI)**: 간편함이 우선일 때. 서비스 OAuth 연결로 자연어 요청. 단 클라우드 원격 세션에서는 사용 불가(로컬/SSH만)
-- **Claude Code (터미널)**: 대량 처리, 파일 일괄, 자동화. 예로 영수증 20장 이상은 폴더 일괄 처리, 경쟁사 병렬 분석은 CLI 전용
+- **Connectors / Cowork (GUI)**: 간편함이 우선일 때. 서비스 OAuth 연결로 자연어 요청. claude.ai 구독 로그인이라면 커넥터를 클라우드 세션에도 원격 호스트가 전달한다. API 키, Bedrock, Vertex, 프로필이나 `CLAUDE_CODE_OAUTH_TOKEN` 인증에서는 claude.ai 커넥터가 로드되지 않는다
+- **Claude Code (터미널)**: 대량 처리, 파일 일괄, 자동화. 예로 영수증 20장 이상을 폴더 단위로 처리하거나 CLAUDE.md에 분석 기준을 고정한 반복 가능한 경쟁사 분석에 적합
 - **애드인 (Excel/PowerPoint)**: 기존 오피스 워크플로에 붙일 때, 앱 간 컨텍스트 공유
 
 ## 문서 자동화의 공통 골격
@@ -37,22 +38,22 @@ Excel/CSV는 진단 → 정제 → 통계 → 차트 체인: 구조 진단(타�
 Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 편의성뿐.
 
 - **Connectors(권장)**: GUI에서 Slack, Gmail, Notion, GitHub 등 OAuth 연결 → "Slack #general 최근 10개 요약" 자연어. 서비스 간 크로스 작업 가능
-- **수동 MCP**: `claude mcp add slack --scope user -- npx -y @anthropic/mcp-slack`, 확인 `claude mcp list` ([[MCP]])
+- **수동 MCP**: Slack의 원격 HTTP 서버를 `claude mcp add --transport http slack https://mcp.slack.com/mcp`로 등록하고 `claude mcp list`로 확인한다. 또는 claude.ai 커넥터를 사용한다 ([[MCP]])
 - 회사 워크스페이스 연결은 IT 승인 선행
 
 ## 반복 자동화 3계층
 
 | 계층 | 도구 | 특징 |
 |---|---|---|
-| Desktop 스케줄 태스크 | Cowork Schedule > New task | 최소 1분 간격, 컴퓨터+앱 켜짐 필요 |
-| 클라우드 스케줄 | claude.ai/code/scheduled, `/schedule` | 머신 꺼져도 실행, 최소 1시간, 로컬 파일 접근 X |
+| 로컬 스케줄 | Code 탭 > Routines > New routine > Local | 최소 1분 간격, 앱 실행과 컴퓨터가 깨어 있어야 함 |
+| 클라우드 스케줄 | claude.ai/code/routines, `/schedule` 또는 `/routines` | 머신이 꺼져도 실행. Cowork Scheduled 태스크도 클라우드에서 실행 |
 | `/loop` | `/loop 10m 이메일 확인` | 세션 열린 동안만, 7일 후 만료 |
 
 패턴: **형식을 수동으로 확정한 뒤 스케줄에 태운다** (일일 브리핑을 예시 데이터로 먼저 완성 → Connectors 실데이터 연결 → 스케줄 등록). 태스크는 5개 이내로 시작.
 
 ## 확장 — 병렬, 스킬, 브라우저, Vibe Coding
 
-- **경쟁사 병렬 분석**: CLAUDE.md에 분석 기준(비교 항목, 출력 표 형식) 고정 → "각 경쟁사를 **병렬로** 분석" ("병렬로"가 서브에이전트 트리거, CLI 전용). 공개 정보만
+- **경쟁사 병렬 분석**: CLAUDE.md에 분석 기준(비교 항목, 출력 표 형식) 고정 → "각 경쟁사를 **병렬로** 분석". Cowork도 작업을 하위 태스크로 나눠 서브에이전트를 병렬 조율할 수 있다. 공개 정보만 사용하며, CLAUDE.md로 기준을 고정하는 흐름은 CLI의 강점이다
 - **Skills/플러그인**: `/plugin`으로 마켓플레이스 설치, 커스텀은 `.claude/skills/<이름>/SKILL.md` + `$ARGUMENTS` ([[Claude-Code-Workflows|Skills 상세]])
 - **Chrome 자동화**: "Claude in Chrome" 확장 → "열린 탭 분석", "상품명/가격 표로 추출" → 스케줄과 결합해 정기 수집. **로그인 상태를 공유하므로 비밀번호 전달 금지**, 사이트 약관 확인
 - **Vibe Coding**: 빈 폴더에서 `claude` → 기능/동작/디자인을 구체 서술 → "브라우저에서 열어줘" → 자연어 수정. 결과는 프로토타입 수준, 실서비스는 보안/성능 검토 필요
@@ -67,6 +68,9 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 
 ## 출처
 
+- [Claude Code — MCP](https://code.claude.com/docs/en/mcp)
+- [Claude Code — Routines](https://code.claude.com/docs/en/routines)
+- [Claude Cowork 시작하기](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
 - [클로드 코드 가이드 (비즈니스 파트 15챕터) — WikiDocs](https://wikidocs.net/book/19104)
 
 ## 관련 문서

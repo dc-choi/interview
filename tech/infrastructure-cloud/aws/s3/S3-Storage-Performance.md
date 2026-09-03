@@ -3,7 +3,7 @@ tags: [infrastructure, aws, s3, object-storage]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["S3 스토리지 모델", "S3 성능 최적화"]
-verified_at: 2026-07-21
+verified_at: 2026-09-03
 ---
 
 # S3 스토리지 모델과 성능
@@ -13,7 +13,7 @@ verified_at: 2026-07-21
 | 개념 | 의미 |
 |------|------|
 | **Bucket** | 최상위 컨테이너. general purpose bucket 이름은 AWS partition 전체에서 고유하고, bucket 자체는 선택한 한 Region에 생성 |
-| **Object** | 저장 단위. 최대 50 TB, 단 AWS GovCloud (US) Regions는 5 TB |
+| **Object** | 저장 단위. 모든 리전에서 최대 50 TB, 멀티파트 상한 기준 실제 48.8 TiB |
 | **Key** | 객체 식별자 (파일 경로처럼 보이지만 실제론 단일 문자열) |
 | **Prefix** | Key의 앞부분, 가상 디렉토리, 성능 파티션 단위 |
 
@@ -34,8 +34,8 @@ S3는 **계층형 파일시스템이 아님** — `folder/file.txt`는 단일 �
 | **Standard-IA** | 가끔 | 30일 | 즉시 | 검색 시 GB당 요금 |
 | **One Zone-IA** | 가끔, 재생성 가능 | 30일 | 즉시 | 단일 AZ (가용성↓) |
 | **Glacier Instant Retrieval** | 분기 1회 미만 | 90일 | 즉시 | IA보다 저렴 |
-| **Glacier Flexible Retrieval** | 연 1-2회 | 90일 | 분~5시간 | 옛 Glacier |
-| **Glacier Deep Archive** | 연 1회 미만 | 180일 | 12시간 | 가장 저렴 |
+| **Glacier Flexible Retrieval** | 연 1-2회 | 90일 | 분~12시간. Expedited 1~5분, Standard 3~5시간, Bulk 5~12시간 | 옛 Glacier |
+| **Glacier Deep Archive** | 연 1회 미만 | 180일 | Standard 12시간 이내, Bulk 48시간 이내 (Expedited 미지원) | 가장 저렴 |
 
 **Lifecycle Rule**로 자동 전환 — 30일 후 IA, 90일 후 Glacier, 1년 후 Deep Archive 같은 식.
 
@@ -52,7 +52,7 @@ S3는 **계층형 파일시스템이 아님** — `folder/file.txt`는 단일 �
 | 완료 | `CompleteMultipartUpload`로 합침 |
 | 미완료 정리 | **Lifecycle Rule로 미완료 업로드 자동 abort** (안 두면 비용 누적) |
 
-단일 PUT은 최대 5 GB이므로 그보다 큰 객체는 Multipart Upload가 필요하다. 일반 AWS Regions의 객체 최대 크기는 50 TB이고 GovCloud (US)는 5 TB다.
+단일 PUT은 최대 5 GB이므로 그보다 큰 객체는 Multipart Upload가 필요하다. 객체 최대 크기는 모든 AWS 리전에서 50 TB, 멀티파트 상한 기준 실제 48.8 TiB다. 단일 GET도 최대 5 TB이므로 그보다 큰 객체는 byte-range 병렬 GET을 사용한다.
 
 ## 성능 최적화
 
@@ -81,3 +81,6 @@ AWS edge location을 통해 업로드한 뒤 AWS 네트워크로 S3에 전달한
 - [Amazon S3 User Guide — What's new](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WhatsNew.html)
 - [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html)
 - [Amazon S3 performance design patterns](https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-design-patterns.html)
+- [Amazon S3 User Guide, Amazon S3 objects overview](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingObjects.html)
+- [Amazon S3 User Guide, S3 Glacier storage classes](https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html)
+- [Amazon S3 User Guide, Archive retrieval options](https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html)

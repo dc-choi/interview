@@ -3,6 +3,7 @@ tags: [reliability, backup, restore, rto, rpo, pitr, disaster-recovery]
 status: done
 category: "안정성엔지니어링(Reliability)"
 aliases: ["Backup Restore", "백업 복원", "데이터 복구", "Data Recovery", "RTO RPO", "PITR"]
+verified_at: 2026-09-03
 ---
 
 # 백업과 복원 (Backup / Restore)
@@ -20,7 +21,7 @@ aliases: ["Backup Restore", "백업 복원", "데이터 복구", "Data Recovery"
 
 | 축 | 종류 | 특징 |
 |---|---|---|
-| 방식 | **논리(logical)** | `mysqldump`/`pg_dump` — 이식성 좋음, 느림, `--single-transaction`으로 일관성 |
+| 방식 | **논리(logical)** | `mysqldump`/`pg_dump` — 이식성 좋음, 느림. `pg_dump`는 별도 옵션 없이 일관된 덤프를 만들고, `mysqldump --single-transaction`은 InnoDB 같은 트랜잭션 엔진에서 일관성을 제공한다 |
 | | **물리(physical)** | 파일/블록 복사, 스냅샷 — 빠름, 동종 엔진 한정 |
 | 범위 | **전체(full)** | 매번 전체. 단순하지만 크고 느림 |
 | | **증분(incremental)** | 직전 이후 변경분만. 작고 빠름, 복원은 체인 필요 |
@@ -70,6 +71,8 @@ aliases: ["Backup Restore", "백업 복원", "데이터 복구", "Data Recovery"
 
 - [AWS — Backup and restore, RTO/RPO](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html)
 - [Amazon RDS — Point-in-time recovery](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html)
+- [PostgreSQL — pg_dump](https://www.postgresql.org/docs/current/app-pgdump.html)
+- [MySQL 8.4 — mysqldump](https://dev.mysql.com/doc/refman/8.4/en/mysqldump.html)
 
 ## 관련 문서
 

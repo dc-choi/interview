@@ -131,7 +131,7 @@ Node.js 특유:
 
 ### NestJS 배포 관행
 - **환경 모드 명시** — `NODE_ENV`는 Node.js 자체의 예약 동작이 아니라 애플리케이션과 라이브러리가 해석하는 관례다. 사용하는 의존성이 요구하면 `production`을 명시하고, 실제로 바뀌는 로깅, 캐시와 오류 노출 동작을 배포 전 검증한다.
-- 헬스체크는 **@nestjs/terminus**가 공식 경로 — readiness/liveness 프레임으로 HTTP ping, TypeORM DB, 디스크, 메모리 인디케이터를 내장하고 `HealthIndicatorService`로 커스텀 인디케이터를 만든다 (`check(key)`로 시작해 `indicator.up()`/`down(부가정보)`를 반환하는 v11+ API — 구 HealthIndicator 상속과 HealthCheckError throw 방식은 deprecated, 다음 메이저에서 제거 예정). 응답 status는 `ok`/`error`에 더해 **`shutting_down`**이 있다. `gracefulShutdownTimeoutMs`는 readiness 주기 하나가 아니라 `periodSeconds × failureThreshold`, probe 위상, EndpointSlice와 외부 LB 전파 시간을 함께 반영하고, 전체 drain과 리소스 정리는 `terminationGracePeriodSeconds` 안에 끝내야 한다. 무중단 여부는 실제 rollout의 오류율과 중단 요청으로 검증한다 (수동 HealthService 패턴은 [[NestJS-Lifecycle]]).
+- 헬스체크는 **@nestjs/terminus**가 공식 경로 — readiness/liveness 프레임으로 HTTP ping, TypeORM DB, 디스크, 메모리 인디케이터를 내장하고 `HealthIndicatorService`로 커스텀 인디케이터를 만든다 (`check(key)`로 시작해 `indicator.up()`/`down(부가정보)`를 반환). 구 `HealthIndicator` 상속, `getStatus()`와 `HealthCheckError`는 12.0.0에서 제거됐다. v12부터 인디케이터는 down 결과를 반환해야 503이 되고, 예외를 던지면 예상치 못한 실패로 처리돼 500이 된다. 응답 status는 `ok`/`error`에 더해 **`shutting_down`**이 있다. `gracefulShutdownTimeoutMs`는 readiness 주기 하나가 아니라 `periodSeconds × failureThreshold`, probe 위상, EndpointSlice와 외부 LB 전파 시간을 함께 반영하고, 전체 drain과 리소스 정리는 `terminationGracePeriodSeconds` 안에 끝내야 한다. 무중단 여부는 실제 rollout의 오류율과 중단 요청으로 검증한다 (수동 HealthService 패턴은 [[NestJS-Lifecycle]]).
 - `nest start`는 `node dist/main.js` 래퍼에 자동 `nest build`가 붙은 것 — 운영에선 빌드 산출물을 `node dist/main.js`로 직접 실행.
 
 ## 초기 스타트업 vs 운영 성숙
@@ -173,7 +173,8 @@ Node.js 특유:
 - [Node.js — Worker threads](https://nodejs.org/api/worker_threads.html)
 - [NestJS — Deployment](https://docs.nestjs.com/deployment)
 - [NestJS — Terminus (Healthchecks)](https://docs.nestjs.com/recipes/terminus)
-- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)
+- [Terminus 12.0.0 release — NestJS](https://github.com/nestjs/terminus/releases/tag/12.0.0)
+- [NestJS — Migration guide (v11)](https://docs.nestjs.com/v11/migration-guide)
 
 ## 관련 문서
 - [[Backend-Engineer-Baseline|백엔드 엔지니어 기본 역량 체크리스트]]

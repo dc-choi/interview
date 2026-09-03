@@ -3,7 +3,7 @@ tags: [security, crypto, tls, certificate, lets-encrypt, acme]
 status: done
 category: "Security - 암호"
 aliases: ["ACME", "ACME Protocol", "Let's Encrypt", "certbot", "인증서 자동화"]
-verified_at: 2026-07-21
+verified_at: 2026-09-03
 ---
 
 # ACME Protocol — 인증서 자동화
@@ -66,7 +66,7 @@ ACME는 이 수명주기를 **API로 자동화**한다. 무료 여부와 유효�
 | **Traefik** | 리버스 프록시가 ACME 내장, K8s Ingress와 결합 |
 | **cert-manager** | K8s용. Ingress, Certificate CRD 단위로 관리 |
 | **AWS ACM ACME endpoint** | AWS가 발급하는 최대 45일 Public 인증서를 표준 ACME 클라이언트로 발급. 설치와 갱신은 클라이언트 책임 |
-| **AWS Private CA Connector for SCEP/ACME** | 사설 PKI 워크로드에 ACM Private CA 인증서를 자동 발급하는 별도 경로 |
+| **AWS Private CA Connector for SCEP** | MDM 관리 단말과 네트워크 장비 같은 사설 PKI 워크로드에 ACM Private CA 인증서를 자동 발급. Active Directory용 커넥터도 별도 제공되며 ACME는 Private CA 커넥터가 아니라 ACM의 퍼블릭 인증서용 엔드포인트 |
 
 ## Let's Encrypt 인증서 체인 — Chains of Trust
 
@@ -85,8 +85,9 @@ ISRG(Internet Security Research Group)가 Let's Encrypt를 운영. X1이 원조,
 
 실제 subscriber 인증서를 발급하는 중간 CA. Root는 오프라인 보관, Intermediate만 온라인으로 서명 작업. 주기적으로 교체.
 
-- **RSA 계열**(R10, R11, R12, R13 등): 구형 클라이언트와 호환성 높음
-- **ECDSA 계열**(E5, E6, E7, E8 등): 체인 크기가 작아 핸드셰이크 빠름
+- **RSA 계열**(현재 YR1, YR2, Root YR 하위): 구형 클라이언트와 호환성 높음
+- **ECDSA 계열**(현재 YE1, YE2, Root YE 하위): 체인 크기가 작아 핸드셰이크 빠름
+- R10~R14와 E5~E9는 subscriber 인증서 발급을 중단한 retired Intermediate다.
 - 각 Intermediate는 대개 2~5년 유효
 
 ### Cross-Signing — 트러스트 스토어 커버리지 확장
@@ -151,6 +152,7 @@ ISRG(Internet Security Research Group)가 Let's Encrypt를 운영. X1이 원조,
 - [Let's Encrypt — Chains of Trust](https://letsencrypt.org/certificates/)
 - [AWS Certificate Manager now supports ACME](https://aws.amazon.com/about-aws/whats-new/2026/07/aws-certificate-manager-acme/)
 - [AWS Certificate Manager — Exportable public certificates](https://docs.aws.amazon.com/acm/latest/userguide/acm-exportable-certificates.html)
+- [AWS Private CA Connector for SCEP](https://docs.aws.amazon.com/privateca/latest/userguide/connector-for-scep.html)
 
 ## 관련 문서
 - [[HTTPS-TLS|HTTPS / TLS Handshake]]

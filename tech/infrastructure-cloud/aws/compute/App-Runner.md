@@ -1,13 +1,14 @@
 ---
 tags: [infrastructure, aws, app-runner, container, serverless, paas]
 status: done
+verified_at: 2026-09-03
 category: "Infrastructure - AWS"
 aliases: ["App Runner", "Amazon App Runner"]
 ---
 
 # Amazon App Runner
 
-완전 관리형 서비스. **웹 애플리케이션, API 빌드/배포**를 컨테이너 이미지나 소스 코드로부터 한번에.
+App Runner는 컨테이너 이미지나 소스 코드에서 웹 애플리케이션과 API를 빌드, 배포하는 완전 관리형 서비스다. 다만 신규 고객 온보딩이 종료돼 기존 고객만 새 리소스와 서비스를 만들 수 있고, AWS는 신규 기능을 추가하지 않는다. 신규 도입에는 Amazon ECS Express Mode를 우선 검토한다.
 
 ## 핵심
 
@@ -26,8 +27,8 @@ aliases: ["App Runner", "Amazon App Runner"]
 
 ## 시험 빈출 포인트
 
-- "**가장 빠르게 컨테이너 웹앱 배포**" → App Runner
-- "ECS, EKS는 오버킬, 그냥 코드 푸시" → App Runner
+- 시험 자료에서 "**가장 빠르게 컨테이너 웹앱 배포**"의 답이 App Runner일 수 있지만 현재 신규 고객은 사용할 수 없다
+- 신규 실무 설계에서 ECS, EKS가 과하다면 Amazon ECS Express Mode를 검토한다
 - 보다 복잡한 컨테이너 오케스트레이션 → ECS/EKS
 
 ## 관련 문서
@@ -37,3 +38,4 @@ aliases: ["App Runner", "Amazon App Runner"]
 ## 출처
 
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)
+- [AWS App Runner Developer Guide, Availability change](https://docs.aws.amazon.com/apprunner/latest/dg/apprunner-availability-change.html)

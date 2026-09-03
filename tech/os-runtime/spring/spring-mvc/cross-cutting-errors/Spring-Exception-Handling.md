@@ -103,7 +103,7 @@ API 전역에서 같은 응답 구조를 유지해야 클라이언트, 모니터
 
 - **code** — 애플리케이션 정의 에러 코드(HTTP 상태 코드와 별개)
 - **message** — 사람, 로그용. 클라이언트에 노출할지 여부는 도메인 판단
-- **traceId** — Sleuth, OpenTelemetry로 분산 추적 연계
+- **traceId** — Micrometer Tracing의 OpenTelemetry 또는 Brave bridge로 분산 추적 연계. Spring Cloud Sleuth는 Spring Boot 2.x까지만 지원한다
 - **fields** — 검증 실패 시 상세 위치
 
 ## 예외 분류 전략
@@ -138,6 +138,7 @@ RuntimeException 상속 커스텀 예외 계층을 만들어 도메인별로 구
 
 - [binghe819 TIL — 스프링 예외처리 개념 및 전략](https://github.com/binghe819/TIL/blob/master/Spring/%EA%B8%B0%ED%83%80/%EC%8A%A4%ED%94%84%EB%A7%81%20%EC%98%88%EC%99%B8%EC%B2%98%EB%A6%AC%20%EA%B0%9C%EB%85%90%20%EB%B0%8F%20%EC%A0%84%EB%9E%B5.md)
 - [Spring Framework 공식 문서 — Error Responses](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html)
+- [Spring Cloud Sleuth — Spring](https://spring.io/projects/spring-cloud-sleuth)
 - [토비 강사 — API 테스트와 ProblemDetail 예외 핸들러](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=314631)
 
 ## 관련 문서

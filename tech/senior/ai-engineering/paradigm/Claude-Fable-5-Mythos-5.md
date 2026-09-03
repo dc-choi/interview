@@ -3,7 +3,7 @@ tags: [senior, ai, llm, claude, api, availability]
 status: done
 category: "시니어역량(SeniorEngineer)"
 aliases: ["Claude Fable 5", "Claude Mythos 5", "Fable 5", "Mythos 5", "적응형 사고", "거부 폴백 과금", "모델 가용성 리스크", "defense in depth"]
-verified_at: 2026-07-21
+verified_at: 2026-09-03
 ---
 
 # Claude Fable 5, Mythos 5
@@ -47,7 +47,7 @@ Fable 5에는 특정 요청을 거부하는 안전 분류기가 들어 있다. M
 | 방식 | 동작 | 비고 |
 |---|---|---|
 | 서버 측 | `fallbacks` 파라미터를 넘기면 API가 대신 재시도 | Claude API 베타 (Bedrock, Vertex, Foundry 미지원) |
-| 클라이언트 측 | SDK 미들웨어로 클라이언트에서 재시도 | TypeScript, Python, Go, Java, C# |
+| 클라이언트 측 | SDK 미들웨어로 클라이언트에서 재시도 | 모든 Anthropic SDK. 공식 예제는 Python, TypeScript, C#, Go, Java, PHP와 Ruby |
 | 수동 | 직접 재시도 구현 | 모든 플랫폼, 모든 언어 |
 
 ### 과금 (billing)
@@ -120,5 +120,6 @@ Effort, 작업 예산(task budgets, 베타 헤더 `task-budgets-2026-03-13`), �
 ## 출처
 
 - [Claude Fable 5 및 Claude Mythos 5 소개 — Anthropic](https://platform.claude.com/docs/ko/about-claude/models/introducing-claude-fable-5-and-claude-mythos-5)
+- [Refusals and fallback — Anthropic](https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback)
 - [Fable 5와 Mythos 5 접근에 관하여 — Anthropic](https://www.anthropic.com/news/fable-mythos-access)
 - [Anthropic Is Still at Odds With the White House Over Claude Fable 5 — WIRED](https://www.wired.com/story/anthropic-is-still-at-odds-with-the-white-house-over-claude-fable-5/)

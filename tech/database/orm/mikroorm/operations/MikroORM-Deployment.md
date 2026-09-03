@@ -15,7 +15,7 @@ MikroORM v7 core는 native ESM이다. local TypeScript 실행이 된다는 사�
 | 표면 | release 전에 확인할 계약 |
 |---|---|
 | Runtime | Node.js 22.17 이상, TypeScript 5.8 이상, ESM entry와 import extension |
-| TypeScript resolver | `moduleResolution`은 `node20`, `nodenext`, `bundler` 중 하나 |
+| TypeScript resolver | `moduleResolution`은 `node16`, `nodenext`, `bundler` 중 하나. `node20`은 `module` 옵션 값 |
 | Dependencies | core, SQL driver, CLI, migrations가 같은 7.1.11 line |
 | Entity discovery | image 안의 compiled entity가 config에 명시되거나 탐색 경로에 존재 |
 | Migration | `dist/migrations`의 실제 파일과 CLI config가 일치 |
@@ -155,3 +155,4 @@ npx mikro-orm migration:pending
 - [Metadata Cache — MikroORM v7.1](https://mikro-orm.io/docs/metadata-cache)
 - [Configuration — MikroORM v7.1](https://mikro-orm.io/docs/configuration)
 - [Upgrading from v6 to v7 — MikroORM](https://mikro-orm.io/docs/upgrading-v6-to-v7)
+- [TypeScript TSConfig Reference, moduleResolution](https://www.typescriptlang.org/tsconfig/moduleResolution.html)

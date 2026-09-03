@@ -88,7 +88,7 @@ flag OFF는 **코드 경로만** 되돌린다. 되돌리지 못하는 것들이 
 - **소유자와 제거 기한을 flag 생성 시점에 필수로 받는다.** Fowler는 flag를 **carrying cost가 붙는 재고(inventory)** 로 보라고 하고, Unleash는 flag를 정적 설정과 구분되는 **단기 수명 객체**로 다루라는 원칙을 둔다.
 - 만료 flag 리포트, PR 린트 규칙, 기한 초과 시 티켓 자동 생성 중 하나는 있어야 실제로 제거된다. 리마인더 없는 정책은 지켜지지 않는다.
 - **stale flag의 비용**: 죽은 분기가 코드에 남아 리팩터링을 방해하고, 조합 폭발로 테스트 매트릭스를 키우며, 신규 입사자에게 어느 경로가 진짜인지 알 수 없게 만든다.
-- **flag 이름 재사용 금지**: Unleash가 조직 전체에서 flag 이름을 유일하게 유지하라는 원칙을 둔 이유는 과거 flag가 뜻하지 않게 되살아나는 사고 때문이다. 2012년 Knight Capital 사건에서 신규 RLP 코드가 8년간 쓰이지 않던 Power Peg 기능의 옛 플래그를 그대로 재사용했고, 8대 중 1대 서버에만 신규 코드 배포가 누락된 상태에서 그 플래그가 켜지자 죽은 코드가 깨어나 45분 만에 4억 6천만 달러대 손실이 났다. 낡은 flag는 지워야지 재사용할 대상이 아니다.
+- **flag 이름 재사용 금지**: Unleash가 조직 전체에서 flag 이름을 유일하게 유지하라는 원칙을 둔 이유는 과거 flag가 뜻하지 않게 되살아나는 사고 때문이다. 2012년 Knight Capital 사건에서 신규 RLP 코드가 2003년에 사용 중단된 뒤 9년 가까이 방치돼 있던 Power Peg 기능의 옛 플래그를 그대로 재사용했고, 8대 중 1대 서버에만 신규 코드 배포가 누락된 상태에서 그 플래그가 켜지자 죽은 코드가 깨어나 45분 만에 4억 6천만 달러대 손실이 났다. 낡은 flag는 지워야지 재사용할 대상이 아니다.
 - 오래된 flag 정리는 레거시 정리 작업의 일부이기도 하다([[Legacy-Modernization-Strategies|레거시 현대화 전략]]).
 
 ## 도구 선택
@@ -123,6 +123,7 @@ flag OFF는 **코드 경로만** 되돌린다. 되돌리지 못하는 것들이 
 ## 출처
 - [Feature Toggles (aka Feature Flags) — martinfowler.com, Pete Hodgson](https://martinfowler.com/articles/feature-toggles.html)
 - [Knightmare: A DevOps Cautionary Tale — dougseven.com](https://dougseven.com/2014/04/17/knightmare-a-devops-cautionary-tale/)
+- [SEC, In the Matter of Knight Capital Americas LLC](https://www.sec.gov/litigation/admin/2013/34-70694.pdf)
 - [Unleash Documentation, 11 principles for building and scaling feature flag systems](https://docs.getunleash.io/topics/feature-flags/feature-flag-best-practices)
 - [Unleash Documentation, Stickiness](https://docs.getunleash.io/reference/stickiness)
 - [OpenFeature Specification, Flag Evaluation API](https://openfeature.dev/specification/sections/flag-evaluation/)

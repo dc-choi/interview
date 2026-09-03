@@ -62,7 +62,7 @@ verified_at: 2026-07-21
 ### Shield, WAF, 기타
 
 - **Shield Standard**: 모든 AWS 고객에게 별도 구독 없이 제공되는 일반적인 네트워크, 전송 계층 DDoS 보호. 보호 범위와 자동 완화 수준은 리소스, 공격 유형에 따라 다름
-- **Shield Advanced**: 지원 리소스에 강화된 탐지, 완화, DDoS Response Team 지원과 조건부 비용 보호를 제공하는 유료 구독. 월 구독, 약정, 데이터 전송과 조직 적용 조건은 현재 요금과 서비스 약관 확인
+- **Shield Advanced**: 2026-09-03 AWS 문서 기준, 지원 리소스에 강화된 탐지, 완화, AWS Shield Response Team(SRT) 지원과 조건부 비용 보호를 제공하는 유료 구독. SRT를 이용하려면 Business 또는 Enterprise Support 구독이 필요하며 월 구독, 약정, 데이터 전송과 조직 적용 조건은 현재 요금과 서비스 약관에서 확인
 - **WAF**: L7. ALB, API Gateway, CloudFront, AppSync, Cognito User Pool, App Runner
 - **WAF 룰**: IP 매치, 문자열, 정규식, SQLi, XSS, 관리형 룰과 **Rate-based rule**. Rate-based rule은 source/forwarded IP, ASN, custom key 조합 또는 count-all 같은 aggregation key별로 1, 2, 5, 10분 evaluation window에서 요청률을 근사 평가하며 정확한 hard quota가 아님
 - **Network Firewall**: VPC 수준 stateful 방화벽 (Suricata 호환). FQDN 필터링 — SG로 못함
@@ -85,6 +85,7 @@ verified_at: 2026-07-21
 - [Systems Manager Parameter Store 요금](https://aws.amazon.com/systems-manager/pricing/)
 - [ACM managed renewal](https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html)
 - [AWS Shield 기능과 적용 범위](https://docs.aws.amazon.com/waf/latest/developerguide/ddos-overview.html)
+- [AWS Shield Advanced, DDoS 비용 보호와 SRT](https://docs.aws.amazon.com/waf/latest/developerguide/ddos-request-service-credit.html)
 - [GuardDuty 데이터 소스](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html)
 - [Macie 작동 방식](https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html)
 - [AWS WAF rate-based rule 설정](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based-high-level-settings.html)

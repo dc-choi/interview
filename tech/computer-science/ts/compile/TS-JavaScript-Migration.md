@@ -3,7 +3,7 @@ tags: [cs, typescript, migration, declaration-file]
 status: done
 category: "CS - TypeScript"
 aliases: ["JavaScript TypeScript 마이그레이션", "TypeScript 라이브러리 설계"]
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 ---
 
 # JavaScript에서 TypeScript로 점진적 마이그레이션
@@ -107,6 +107,6 @@ element.disabled = true;
 - [TypeScript TSConfig, erasableSyntaxOnly](https://www.typescriptlang.org/tsconfig/erasableSyntaxOnly.html)
 - [TypeScript Declaration Files, Publishing](https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html)
 - [TypeScript Handbook, DOM Manipulation](https://www.typescriptlang.org/docs/handbook/dom-manipulation.html)
-- [TSDoc, Doc Comment Syntax](https://tsdoc.org/pages/tags/doc_comment_syntax/)
+- [TSDoc Specification, Overview](https://tsdoc.org/pages/spec/overview/)
 - [이펙티브 타입스크립트 스터디 7-1회차, 정재남](https://www.inflearn.com/courses/lecture?courseId=327754&unitId=91644)
 - [이펙티브 타입스크립트 스터디 7-2회차, 정재남](https://www.inflearn.com/courses/lecture?courseId=327754&unitId=91646)

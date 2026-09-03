@@ -3,6 +3,7 @@ tags: [senior, hiring, startup, uncertainty, attitude, leadership]
 status: done
 category: "Senior - 커뮤니케이션"
 aliases: ["Hiring Under Uncertainty", "불확실성 속 채용", "스타트업 채용"]
+verified_at: 2026-09-03
 ---
 
 # 불확실성 속 스타트업 채용
@@ -85,6 +86,6 @@ aliases: ["Hiring Under Uncertainty", "불확실성 속 채용", "스타트업 �
 ## 출처
 
 - 스타트업 채용과 조직 운영에 관한 창업자 에세이
-- 애자일 사무라이 (오노 마사토시 외) — 변화 적응과 학습 마인드셋
+- [애자일 사무라이 (조너선 라스무손, Jonathan Rasmusson)](https://pragprog.com/titles/jtrap/the-agile-samurai/) — 변화 적응과 학습 마인드셋
 - 하드씽 (벤 호로위츠) — 불확실성 속 의사결정과 끝맺음의 책임
 - [누구와 함께할 것인가 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-03-who-to-work-with/)

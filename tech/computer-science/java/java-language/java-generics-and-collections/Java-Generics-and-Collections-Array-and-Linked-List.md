@@ -1,7 +1,7 @@
 ---
 tags: [java, arraylist, linkedlist, dynamic-array, linked-list, complexity]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Array and Linked List", "Java 배열 리스트와 연결 리스트"]
 ---
@@ -48,7 +48,7 @@ final class SimpleList<E> {
 }
 ```
 
-끝 append 한 번은 resize 때문에 O(n)일 수 있지만 기하급수적으로 capacity를 키우면 일련의 append는 amortized O(1)로 설계할 수 있다. Java SE `ArrayList` API는 exact growth factor와 기본 내부 capacity를 공개 계약으로 보장하지 않는다. 특정 JDK 구현의 1.5배 확장을 모든 Java 버전의 규칙으로 외우지 않는다.
+끝 append 한 번은 resize 때문에 O(n)일 수 있지만 기하급수적으로 capacity를 키우면 일련의 append는 amortized O(1)로 설계할 수 있다. Java SE `ArrayList` API는 growth policy의 세부를 명세하지 않고 add가 amortized 상수 시간이라는 사실만 보장한다. 다만 무인자 `new ArrayList<>()`의 초기 capacity 10과 `ArrayList(int initialCapacity)`의 지정 capacity는 javadoc이 명시한 공개 계약이다. 특정 JDK 구현의 1.5배 확장을 모든 Java 버전의 규칙으로 외우지 않는다.
 
 ## 삽입과 삭제
 

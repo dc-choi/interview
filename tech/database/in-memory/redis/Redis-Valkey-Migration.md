@@ -24,7 +24,7 @@ Valkey는 Redis 라이선스 변경(2024, BSD → SSPL/RSALv2 이중 라이선�
 |---|---|---|
 | **I/O 멀티스레딩** | 8.0 | 단일 스레드 제약 완화. 처리량이 크게 향상 (수십만 → 백만 QPS급) |
 | **메모리 효율** | 8.0, 8.1 | Key당 메타데이터 20~30바이트 절감 → 동일 메모리에 더 많은 데이터 |
-| **파이프라인 처리량** | 8.x | 최대 40% 향상 |
+| **파이프라인 처리량** | 9.0 | Pipeline Memory Prefetch로 최대 40% 향상 |
 | **클러스터 안정성** | 9.0 | Slot 마이그레이션 신뢰성, 다중 장애 복구, 재연결 폭증 제어 |
 
 Redis의 단일 스레드 명령 처리 모델(→ [[Redis-Architecture]])은 유지하되, **네트워크 I/O를 멀티스레드로 분리**해 병목을 완화하는 방향.
@@ -71,6 +71,7 @@ ElastiCache 인플레이스 업그레이드는 새 노드를 붙여 데이터를
 
 - [Valkey 공식 문서, Migration from Redis to Valkey](https://valkey.io/topics/migration/)
 - [Redis 공식 문서, Redis licensing overview](https://redis.io/legal/licenses/)
+- [Valkey, Introducing Valkey 9](https://valkey.io/blog/introducing-valkey-9/)
 - [Amazon ElastiCache pricing — AWS](https://aws.amazon.com/elasticache/pricing/)
 - [Redis 6.x에서 Valkey 9.0으로 — 아임웹 기술블로그](https://tech.imweb.me/posts/redis-oss-valkey-upgrade/)
 

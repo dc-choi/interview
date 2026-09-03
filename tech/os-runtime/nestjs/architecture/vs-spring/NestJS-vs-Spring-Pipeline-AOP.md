@@ -51,7 +51,7 @@ NestJS는 AOP의 여러 역할을 **Guard, Pipe, Interceptor, Filter로 쪼개**
 ### NestJS
 - **AOP 개념이 직접 있지 않고** Guard/Pipe/Interceptor/Filter로 대체
 - Interceptor의 `intercept()` = Spring의 `@Around`와 유사 (before + after + 반환값 변환)
-- 트랜잭션은 **ORM(Prisma, TypeORM) 레벨**에서 처리하거나 `cls-hooked` 기반 AsyncLocalStorage로 구현
+- 트랜잭션은 **ORM(Prisma, TypeORM) 레벨**에서 처리하거나 Node.js 내장 `AsyncLocalStorage` 기반으로 컨텍스트를 전파해 구현한다. NestJS 공식 레시피는 이 패턴의 래퍼로 `nestjs-cls`를 소개한다
 
 AOP의 "코드 분리" 가치는 NestJS에서도 **데코레이터 기반 가로채기**로 달성. 표현식 포인트컷이 없어서 **어디에 적용할지는 데코레이터로 명시**해야 함(예: `@UseGuards(AuthGuard)`).
 
@@ -59,7 +59,7 @@ AOP의 "코드 분리" 가치는 NestJS에서도 **데코레이터 기반 가로
 
 - **Spring**: `@Transactional` 애노테이션. 프록시 기반 AOP로 메서드 진입/종료 시 트랜잭션 시작, 커밋/롤백. **자기 호출 함정** 유명 ([[Spring-Transactional]])
 - **NestJS**: 프레임워크 표준 없음. ORM별로 다름:
-  - TypeORM: `QueryRunner` 수동 또는 `@Transaction` (deprecated)
+  - TypeORM: `DataSource.transaction()` 또는 `EntityManager.transaction()` 콜백, 세밀한 제어가 필요하면 `QueryRunner`. `@Transaction` 계열 데코레이터는 TypeORM 0.3.0에서 제거됐다
   - Prisma: `$transaction` API
   - typeorm-transactional (AsyncLocalStorage 기반 데코레이터 라이브러리)로 Spring-like 경험 가능
 
@@ -76,3 +76,8 @@ Spring의 `@Transactional`이 워낙 강력해서 **NestJS 도입 시 트랜잭�
 
 - **Spring**: `@ControllerAdvice` + `@ExceptionHandler(Class)`로 전역 예외 매핑
 - **NestJS**: `@Catch(ExceptionClass)` + `ExceptionFilter` 구현. 전역 적용은 `app.useGlobalFilters()` 또는 `APP_FILTER` 프로바이더
+
+## 출처
+
+- [NestJS, Async local storage source](https://github.com/nestjs/docs.nestjs.com/blob/master/content/recipes/async-local-storage.md)
+- [TypeORM CHANGELOG — TypeORM](https://github.com/typeorm/typeorm/blob/master/CHANGELOG.md)

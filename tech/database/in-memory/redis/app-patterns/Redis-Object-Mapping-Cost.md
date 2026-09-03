@@ -7,7 +7,7 @@ aliases: ["Redis Object Mapping Cost", "Redis OM 추상화 비용", "Repository 
 
 # Redis 객체 매핑 추상화의 비용 — Repository vs 단순 KV
 
-Redis 객체 매핑(OM) 추상화는 객체를 Hash 자료구조로 변환해 저장하고 Repository 인터페이스(CRUD, count, 파생 쿼리)를 제공하는 레이어다 — Spring Data Redis의 CrudRepository(@RedisHash)가 대표적이다. 모듈 없는 순정 Redis 위에서 인덱스를 흉내내야 하므로, 편의의 대가로 **저장 한 번에 다중 명령과 부가 자료구조**가 생긴다. 단순 캐싱에는 직렬화한 값을 SET 하나로 넣는 단순 KV 방식이 맞다. (참고: Node.js와 Python의 redis-om은 RedisJSON, RediSearch 모듈에 저장과 인덱싱을 위임해 명령 증폭 구조가 다르다 — 어떤 추상화든 실제로 발행하는 Redis 명령을 알고 써야 한다는 원칙은 동일.)
+Redis 객체 매핑(OM) 추상화는 객체를 Hash 자료구조로 변환해 저장하고 Repository 인터페이스(CRUD, count, 파생 쿼리)를 제공하는 레이어다 — Spring Data Redis의 CrudRepository(@RedisHash)가 대표적이다. 모듈 없는 순정 Redis 위에서 인덱스를 흉내내야 하므로, 편의의 대가로 **저장 한 번에 다중 명령과 부가 자료구조**가 생긴다. 단순 캐싱에는 직렬화한 값을 SET 하나로 넣는 단순 KV 방식이 맞다. Node.js redis-om은 기본적으로 RedisJSON 문서로 저장하고 `dataStructure: 'HASH'`로 Hash 저장을 선택할 수 있다. Python redis-om은 `HashModel`이 순정 Redis에서도 동작하고 RedisJSON은 `JsonModel`, `EmbeddedJsonModel`에만 필요하다. 두 구현 모두 인덱싱과 쿼리는 RediSearch에 맡기므로 라이브러리가 인덱스 Set을 직접 관리하는 구조와 다르다.
 
 ## 두 방식의 내부 동작 (Spring Data Redis @RedisHash 기준)
 
@@ -87,3 +87,4 @@ Redis는 기본적으로 키(PK)로만 접근 가능하고, 전체 개수나 특
 ## 출처
 
 - [Spring Data Redis: Repository vs RedisTemplate — 실전 성능 비교 — 여기어때 기술블로그](https://techblog.gccompany.co.kr/spring-data-redis-repository-vs-redistemplate-%EC%8B%A4%EC%A0%84-%EC%84%B1%EB%8A%A5-%EB%B9%84%EA%B5%90-3e1a6ab8bda3)
+- [redis-om-python repository, README](https://github.com/redis/redis-om-python/blob/main/README.md)

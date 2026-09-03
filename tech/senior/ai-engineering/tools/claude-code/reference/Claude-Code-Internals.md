@@ -7,13 +7,13 @@ aliases: ["Claude Code Internals", "클로드 코드 내부 구조", "에이전�
 
 # Claude Code 내부 구조 — 에이전트 루프, 도구 파이프라인, 설계 패턴
 
-프로덕션 코딩 에이전트가 실제로 어떻게 구현되는지의 레퍼런스 아키텍처 (약 1,884개 TypeScript 파일 분석 기준. TUI는 Ink 기반 React, 상태는 Zustand, 번들은 bun). 설계 3원칙은 안전성(위험 작업 차단), 성능(스트리밍, 병렬, 캐싱), 확장성(도구, 스킬, 플러그인, MCP).
+프로덕션 코딩 에이전트가 실제로 어떻게 구현되는지의 레퍼런스 아키텍처 (약 1,884개 TypeScript 파일 분석 기준. TUI는 Ink 기반 React, 상태는 Zustand, 번들은 bun). 아래 내부 구현 수치와 동작은 WikiDocs의 비공식 소스 코드 역분석 자료 기준이며, 공개 API 계약이 아니어서 Claude Code 버전에 따라 달라질 수 있다. 설계 3원칙은 안전성(위험 작업 차단), 성능(스트리밍, 병렬, 캐싱), 확장성(도구, 스킬, 플러그인, MCP).
 
 ## 쿼리 루프 — "버그 고쳐줘" 한 번의 실제
 
 전체 구조는 시작 → 쿼리 루프 → 도구 실행 → 렌더링 4단계이고 심장은 쿼리 루프다. 사용자 요청 하나에 Read → Edit → Bash(test) 같은 여러 API 턴이 자동 반복된다. 턴마다 5단계:
 
-1. **전처리 — 컴팩션 3종**: Snip(오래된 메시지 제거), Microcompact(tool_use 블록 축소), Auto-Compact(임계값 = 컨텍스트 윈도우 - 13,000토큰에서 서브에이전트가 요약. 요약 후 참조 상위 5개 파일을 50K 토큰 예산으로 복원하고 스킬을 25K 예산으로 재주입. 3연속 실패 시 서킷 브레이커)
+1. **전처리 — 컴팩션 3종**: Snip(오래된 메시지 제거), Microcompact(tool_use 블록 축소), Auto-Compact(모델과 설정에 따라 달라지는 임계값에 도달하면 서브에이전트가 요약. `/autocompact`, `autoCompactWindow`와 관련 환경 변수로 범위를 조정할 수 있어 남은 13,000토큰으로 고정되지 않는다. 압축 직후 세션에서 읽거나 편집한 파일을 최근 수정 순으로 최대 5개 다시 읽고 매칭되는 rules와 중첩 CLAUDE.md를 재로드한다. 5,000토큰을 넘는 파일은 내용 없이 `Referenced file` 경로만 복원한다. 스킬은 스킬당 5,000토큰, 총 25,000토큰 예산으로 오래된 것부터 제외하며 재주입한다. 3연속 실패 시 서킷 브레이커)
 2. **스트리밍 API 호출** (과부하 시 폴백 모델로 전환)
 3. **에러 보류와 복구**: 복구를 먼저 시도하고 실패할 때만 사용자에게 표면화. 출력 토큰 초과는 상한을 단계 확대하며 최대 3회 이어쓰기
 4. **도구 실행**
@@ -25,7 +25,7 @@ aliases: ["Claude Code Internals", "클로드 코드 내부 구조", "에이전�
 - **도구 등록 순서는 고정** — 순서가 바뀌면 시스템 프롬프트가 달라져 프롬프트 캐시가 무효화된다. 캐시 친화성이 코드 구조의 제약이 되는 사례
 - 실행 파이프라인 10단계: 이름 조회 → 중단 확인 → Zod 검증 → PreToolUse 훅 → 권한 → 실행 → API 형식 매핑 → **대용량 출력은 디스크에 영속하고 참조만 전달** → PostToolUse 훅 → 텔레메트리 ([[Tool-Output-Filtering|도구 출력 관리]]의 구현측)
 - 동시성 파티셔닝: 연속된 읽기 전용 도구(Read, Grep, Glob)는 최대 10개 병렬, 쓰기 도구(Edit, Bash, Write)는 단독 순차 배치. API 스트리밍 중 이미 도착한 tool_use를 먼저 실행하는 스트리밍 실행기로 지연을 숨긴다
-- BashTool: tree-sitter로 명령을 AST 분석해 **허용 목록 노드만 통과시키는 fail-closed** 설계 (Bash 보안 모듈만 888KB). 15초 초과 명령은 백그라운드 태스크로 자동 전환
+- BashTool: tree-sitter로 명령을 AST 분석해 **허용 목록 노드만 통과시키는 fail-closed** 설계 (Bash 보안 모듈만 888KB). 명령이 타임아웃에 도달하면 백그라운드 태스크로 자동 전환되며 기본 타임아웃은 2분(`BASH_DEFAULT_TIMEOUT_MS`), 기본 상한은 10분(`BASH_MAX_TIMEOUT_MS`)이다. 파싱할 수 없는 복합 명령 등 일부는 전환 없이 타임아웃에서 종료된다
 
 ## 신뢰성 계층
 
@@ -57,6 +57,8 @@ aliases: ["Claude Code Internals", "클로드 코드 내부 구조", "에이전�
 ## 출처
 
 - [클로드 코드 가이드 (별첨 91 소스 코드 분석서) — WikiDocs](https://wikidocs.net/book/19104)
+- [Claude Code Docs, Context window](https://code.claude.com/docs/en/context-window)
+- [Claude Code Docs, Tools reference](https://code.claude.com/docs/en/tools-reference)
 
 ## 관련 문서
 

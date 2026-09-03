@@ -1,7 +1,7 @@
 ---
 tags: [web, network, security]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "웹&네트워크(Web&Network)"
 aliases: ["Rate Limiting", "Rate Limit", "레이트 리밋"]
 ---
@@ -35,7 +35,7 @@ aliases: ["Rate Limiting", "Rate Limit", "레이트 리밋"]
 ### Token Bucket
 - 일정 속도로 토큰이 채워지고, 요청마다 토큰을 소비
 - 버스트 트래픽을 허용하면서 평균 속도를 제한
-- API Gateway(Kong, AWS API Gateway)에서 자주 사용
+- AWS API Gateway가 rate와 burst로 구성하는 Token Bucket을 사용한다. Kong Gateway의 Rate Limiting은 fixed window, Rate Limiting Advanced는 fixed window와 sliding window를 지원하므로 Token Bucket 사례로 묶지 않는다.
 
 ### Leaky Bucket
 - 요청이 큐에 쌓이고, 일정 속도로 처리
@@ -92,6 +92,8 @@ Q. 분산 환경에서는 어떻게 하는가?
 
 - [RFC 6585, 429 Too Many Requests](https://www.rfc-editor.org/rfc/rfc6585.html#section-4)
 - [Redis, Rate limiter pattern](https://redis.io/docs/latest/commands/incr/#pattern-rate-limiter)
+- [AWS API Gateway, Throttle API requests](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html)
+- [Kong, Rate Limiting Advanced](https://developer.konghq.com/plugins/rate-limiting-advanced/)
 - [OWASP API Security Top 10 2023, Release Notes](https://owasp.org/API-Security/editions/2023/en/0x04-release-notes/)
 - [Dowon Lee 강사, Rate Limiting Strategies](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289786)
 - [Dowon Lee 강사, API Rate Limiting 실습](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290752)

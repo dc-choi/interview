@@ -76,7 +76,7 @@ private int timeout;
 |---|---|---|
 | Content-Type | `application/json`, `application/xml` | `multipart/form-data`, `application/x-www-form-urlencoded` |
 | 바인딩 | HttpMessageConverter로 Body 역직렬화 | 필드별 Setter/Constructor 바인딩 |
-| 유효성 | `@Valid` + `MethodArgumentNotValidException` | `@Valid` + `BindException` |
+| 유효성 | `@Valid` + `MethodArgumentNotValidException` | Spring 6+는 `@Valid` + `MethodArgumentNotValidException`. 이 예외가 `BindException`을 상속하므로 상위 타입으로도 처리 가능 |
 | 중첩 객체 | 자연스럽게 지원 | 제한적 |
 
 `multipart` + JSON 같이 쓰는 경우는 [[Spring-Multipart-JSON]] 참고.
@@ -139,7 +139,7 @@ Tomcat은 **Servlet Container + Web Server** 기능을 겸하지만, 실무에�
 
 - **요청 수명주기**: Connector(HTTP/AJP) → Executor(Thread Pool) → Engine → Host → Context → Servlet
 - **기본 스레드 모델**: Thread-per-Request (`server.tomcat.threads.max`, `min-spare`)
-- **Connector**: NIO(기본), NIO2, APR 중 선택. NIO가 Async 지원으로 권장
+- **Connector**: NIO(`Http11NioProtocol`, 기본)와 NIO2(`Http11Nio2Protocol`) 중 선택. APR/native connector는 Tomcat 10.1에서 제거됐고 OpenSSL 기반 TLS 구현만 남았다
 - **Servlet 등록**: Spring Boot는 DispatcherServlet 하나를 `/`에 등록해 모든 요청을 Spring이 라우팅
 
 자세한 Servlet, DispatcherServlet 구조는 [[Servlet-vs-Spring-Container]], [[Spring-Request-Lifecycle]].
@@ -166,6 +166,8 @@ Tomcat은 **Servlet Container + Web Server** 기능을 겸하지만, 실무에�
 - [매일메일 — @Component, @Service, @Controller, @Repository](https://www.maeil-mail.kr/question/72)
 - [매일메일 — WAS와 Web Server의 차이점](https://www.maeil-mail.kr/question/105)
 - [Spring Framework, Controller Method Arguments](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/arguments.html)
+- [Spring Framework, Validation](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html)
+- [Apache Tomcat 10.1, Migration Guide](https://tomcat.apache.org/migration-10.1.html)
 - [Spring Framework, `@ResponseBody`](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/responsebody.html)
 - [Spring Framework, View Resolution](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/viewresolver.html)
 - [Spring Boot 4.1, Static Content와 Welcome Page](https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.spring-mvc.static-content)

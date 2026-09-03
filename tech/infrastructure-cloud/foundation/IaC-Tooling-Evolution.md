@@ -3,6 +3,7 @@ tags: [infrastructure, iac, terraform, terragrunt, terratest, pulumi, atlantis]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["Terragrunt", "Terratest", "Pulumi", "Atlantis", "IaC 도구 선택"]
+verified_at: 2026-09-03
 ---
 
 # IaC 도구 선택 사다리 (Terragrunt, Terratest, Pulumi)
@@ -19,14 +20,14 @@ aliases: ["Terragrunt", "Terratest", "Pulumi", "Atlantis", "IaC 도구 선택"]
 
 ## Terragrunt — Terraform의 DRY 래퍼
 
-순수 Terraform은 dev/staging/prod처럼 거의 같은 구성을 환경마다 복제하게 만든다. Terragrunt는 Terraform을 감싸는 **얇은 래퍼**로, remote backend, provider 설정, 변수 주입을 한 곳에 정의해 HCL 중복을 줄인다(래퍼 스택 패턴). `run-all`로 여러 스택을 한 번에 적용한다.
+순수 Terraform은 dev/staging/prod처럼 거의 같은 구성을 환경마다 복제하게 만든다. Terragrunt는 Terraform을 감싸는 **얇은 래퍼**로, remote backend, provider 설정, 변수 주입을 한 곳에 정의해 HCL 중복을 줄인다(래퍼 스택 패턴). 현행 `run --all apply`로 여러 스택에 apply를 실행할 수 있다. 예전 `run-all` 명령은 deprecated이며 strict mode에서는 거부된다.
 
 트레이드오프:
 
 - **IDE 지원 부족** — HCL 한계 그대로라 자동완성, 타입 힌팅, 안전한 리팩터링이 어렵다.
 - **표현력 한계** — 간단한 조건문, 반복도 코드 복잡도가 급격히 오른다.
 - **`.terragrunt-cache`** — 캐시 디렉토리가 `node_modules`급으로 무거워지고 꼬인다.
-- **`run-all` 출력 혼선** — 여러 스택의 출력이 섞여 가독성이 떨어진다.
+- **`run --all apply` 실행 위험** — 여러 스택의 출력이 섞이고 shared stdin 제약 때문에 `apply`와 `destroy`에는 `-auto-approve`가 자동 추가된다. 먼저 `plan`을 검토하고 filter나 CI approval로 범위를 제한한다.
 - **종속성 관리 비효율** — 스택 간 의존 처리로 느려진다.
 
 DRY는 얻지만 가독성, 표현력, 도구 경험은 HCL의 천장에 묶인다.
@@ -39,7 +40,7 @@ Go로 작성하는 테스트 라이브러리. `apply`로 실제 리소스를 띄
 
 ## Atlantis — PR 기반 plan/apply 협업
 
-`terraform plan` 결과를 **PR 코멘트로 자동 게시**하고, 리뷰 승인 후 `apply`까지 PR에서 수행하는 협업 워크플로우 도구. 인프라 변경을 코드 리뷰 흐름에 태워 [[IaC#CI/CD, DevOps, GitOps 연결|GitOps]]에 가깝게 만든다.
+PR 변경을 기준으로 `terraform plan`을 실행하고, PR 명령으로 해당 plan의 `apply`를 수행할 수 있는 협업 도구다. 승인 후 apply를 강제할지는 `apply_requirements` 설정에 달려 있다. 인프라 변경을 코드 리뷰 흐름에 태워 [[IaC#CI/CD, DevOps, GitOps 연결|GitOps]]에 가깝게 만든다.
 
 트레이드오프: 중앙 파이프라인 구축이 예상보다 손이 많이 간다(운영 복잡도).
 
@@ -51,25 +52,24 @@ HCL 대신 **TypeScript, Python, Go 등 범용 언어**로 인프라를 작성�
 
 - **범용 언어** 기반(익숙한 언어 + 타입 시스템)
 - IaC 외부에서 만든 리소스의 **import 용이성**
-- state를 **자체 저장**(예: S3) — 벤더 SaaS 강제 거부
+- state를 **자체 저장**(예: S3 DIY backend)할 수 있는가
 
 강점:
 
-- **타입 안전성, IDE** — 자동완성, 타입 힌팅, 리팩터링. (Pulumi Automation API + 제네릭으로 전 영역 타입 힌팅 확보 가능)
+- **타입 안전성, IDE** — 자동완성, 타입 힌팅, 리팩터링을 일반 언어 도구와 함께 활용
 - **테스트** — Pulumi Mock으로 **단위 테스트**가 되고, 픽스처로 최소 비용 통합 테스트. Terratest의 단위 테스트 한계를 넘음.
-- **State 자체 관리** — S3 백엔드로 SaaS 없이 운영. StackReference도 SaaS 없이 동작.
+- **State 자체 관리** — Pulumi Cloud가 기본 backend이지만, S3 등 DIY backend로 state를 직접 운영할 수 있다. 이 경우 백업, 접근 제어, 운영 책임도 팀에 있다.
 - **모노레포** — Nx 등으로 스택, 컴포넌트 간 종속성 관리.
-- **비밀 관리** — Secrets Manager에서 캐싱해 사용.
-- **라이선스 독립** — 아래 Terraform BUSL 전환의 영향을 받지 않는다.
+- **라이선스 경계** — Pulumi는 Terraform과 별도 프로젝트이고, OpenTofu는 BUSL 전환 전 Terraform을 기반으로 출범한 포크다. provider 호환성과 이주 비용은 별도로 검토한다.
 
 트레이드오프:
 
 - **자유도의 대가** — 범용 언어라 표현력이 큰 만큼 컨벤션 없이는 일관성이 흐트러진다.
-- **파이프라인 직접 구성** — 중앙 집중식 배포가 기본 제공되지 않아, 엔지니어 PC 실행 + 슬랙 알림 같은 보완이 필요할 수 있다.
+- **파이프라인 선택** — CI나 Automation API처럼 팀의 승인과 배포 흐름에 맞는 실행 경로를 정해야 한다.
 
 ## Terraform 라이선스 이슈 (BUSL)
 
-Terraform은 2023년 8월 오픈소스(MPL)에서 **BUSL(Business Source License)** 로 전환됐다. 경쟁 제품 제공을 제약하는 조항 탓에 일부 조직은 도구 선택을 재검토했고, 커뮤니티는 **OpenTofu**(Linux Foundation)로 포크했다. 범용 언어 기반 도구(Pulumi 등)나 OpenTofu는 이 변경의 직접 영향을 받지 않는다. 라이선스는 IaC 도구 선택의 실질 변수다.
+HashiCorp는 2023년 8월 이후 Terraform을 포함한 제품의 향후 릴리스 소스 코드를 MPL 2.0에서 BUSL 1.1로 바꾼다고 발표했다. 이 발표는 Terraform provider와 SDK 대부분에는 적용되지 않았다. 뒤이어 OpenTofu가 Terraform 포크로 출범했다. 라이선스와 배포 방식은 IaC 도구 선택의 실질 변수다.
 
 ## 도구 선택 원칙
 
@@ -79,7 +79,7 @@ Terraform은 2023년 8월 오픈소스(MPL)에서 **BUSL(Business Source License
 
 ## 면접 체크포인트
 
-- Terragrunt가 푸는 문제(HCL DRY)와 그 대가(IDE, 표현력, `.terragrunt-cache`, run-all 출력)
+- Terragrunt가 푸는 문제(HCL DRY)와 그 대가(IDE, 표현력, `.terragrunt-cache`, `run --all apply` 출력)
 - Terratest가 통합 테스트는 되지만 단위 테스트가 어려운 이유(실제 프로비저닝 의존)
 - Atlantis의 PR 기반 plan/apply 협업 모델과 GitOps 연결
 - Pulumi가 HCL 도구 대비 주는 것(타입 안전, 단위 테스트, 범용 언어 표현력)과 대가(일관성 부담, 파이프라인 직접 구성)
@@ -87,6 +87,15 @@ Terraform은 2023년 8월 오픈소스(MPL)에서 **BUSL(Business Source License
 
 ## 출처
 - [인프랩 IaC 구축기 — 인프랩 기술블로그](https://tech.inflab.com/20240201-inflab-iac/)
+- [Terragrunt, Strict controls](https://docs.terragrunt.com/reference/strict-controls/)
+- [Terragrunt, Implicit Stacks](https://docs.terragrunt.com/features/stacks/implicit/)
+- [Terragrunt, `run --all`](https://docs.terragrunt.com/reference/cli/commands/run/#all)
+- [Terratest, Terragrunt module](https://github.com/gruntwork-io/terratest/tree/main/modules/terragrunt)
+- [Atlantis, Using Atlantis](https://www.runatlantis.io/docs/using-atlantis)
+- [Pulumi, State and Backends](https://www.pulumi.com/docs/reference/state/)
+- [Pulumi, Unit Testing Pulumi Programs](https://www.pulumi.com/docs/iac/guides/testing/unit/)
+- [HashiCorp, Business Source License announcement](https://www.hashicorp.com/en/blog/hashicorp-adopts-business-source-license)
+- [OpenTofu, Fork announcement](https://opentofu.org/blog/opentofu-announces-fork-of-terraform/)
 
 ## 관련 문서
 - [[IaC|IaC (Infrastructure as Code)]]

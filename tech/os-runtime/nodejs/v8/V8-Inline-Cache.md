@@ -14,7 +14,7 @@ aliases: ["Inline Cache", "IC", "Monomorphic", "Polymorphic", "Megamorphic", "Tr
 
 1. V8이 프로퍼티 접근 같은 연산의 호출 지점에 feedback slot을 두고 실행 중 관찰값을 기록
 2. 피드백에는 구현 버전에 따라 다음 정보가 들어갈 수 있다:
-   - **IC 상태** (아래 5단계)
+   - **IC 상태** (아래 대표 상태)
    - 직전에 관찰한 **Hidden Class 주소**
    - 해당 프로퍼티의 **Offset**
 3. 다음 접근 시, 들어온 객체의 Hidden Class와 슬롯의 값을 비교 → 같으면 Offset으로 **바로 조회** (사전 탐색 생략)
@@ -27,7 +27,6 @@ aliases: ["Inline Cache", "IC", "Monomorphic", "Polymorphic", "Megamorphic", "Tr
 | 상태 | 표기 | 설명 |
 |---|---|---|
 | UNINITIALIZED | `0` | 최초 상태. 아직 접근이 한 번도 실행되지 않음 |
-| PREMONOMORPHIC | `.` | 일부 버전과 IC에서 보이는 준비 상태 |
 | MONOMORPHIC | `1` | 항상 **같은 Hidden Class**로 접근. **가장 빠름** (1회 비교 후 캐시 히트) |
 | POLYMORPHIC | `P` | 소수의 다른 Hidden Class를 관찰해 여러 handler를 보관 |
 | MEGAMORPHIC | `N` | 매우 다양한 Hidden Class를 관찰해 더 일반적인 조회 경로 사용 |
@@ -48,11 +47,11 @@ const b = { x: 3, y: 4 };           // a와 같은 Hidden Class
 const c = { y: 5, x: 6 };           // 순서 다름 → 다른 Hidden Class
 const d = { x: 7, y: 8, z: 9 };     // 프로퍼티 추가 → 다른 Hidden Class
 
-read(a);  // UNINIT → PREMONO → MONO (HC_ab 관찰)
+read(a);  // UNINIT → MONO (HC_ab 관찰)
 read(b);  // MONO 유지 (HC_ab 재사용)
 read(c);  // MONO → POLY (HC_ab + HC_c)
 read(d);  // POLY (HC_ab + HC_c + HC_d)
-// 5개 이상 누적되면 MEGA
+// 충분히 다양한 shape가 누적되면 MEGA
 ```
 
 ## 최적화 원칙
@@ -91,6 +90,7 @@ JS의 "어떤 모양의 객체든 받을 수 있다"는 유연성은 IC 관점�
 
 - [V8 — Maps (Hidden Classes) in V8](https://v8.dev/docs/hidden-classes)
 - [V8 — Fast properties in V8](https://v8.dev/blog/fast-properties)
+- [V8 — InlineCacheState source](https://raw.githubusercontent.com/v8/v8/main/src/common/globals.h)
 - [하정훈 강사 — 인라인 캐싱 동작방식](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196072)
 - [하정훈 강사 — 인라인 캐싱 상태](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196073)
 - [하정훈 강사 — 최적화 팁과 마무리](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196066)

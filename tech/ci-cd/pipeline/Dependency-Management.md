@@ -13,7 +13,7 @@ aliases: ["Dependency Management", "의존성 관리"]
 
 - 팀원마다 **같은 버전으로 설치**되어야 "내 환경에서는 되는데"를 방지
 - **추이적 의존성**(dep of dep) 해석을 자동화
-- CI, 프로덕션에서 **동일 바이너리 재현**
+- CI, 프로덕션에서 **같은 의존성 그래프를 설치할 기반**
 - 취약점 스캔, 업데이트, 롤백 자동화의 전제
 
 ## 3계층 개념
@@ -26,9 +26,11 @@ aliases: ["Dependency Management", "의존성 관리"]
 
 - 사람은 **직접 선언**만 수정
 - 도구가 **lock**을 생성, 갱신
-- CI, 프로덕션은 **lock 기반으로만 설치** → 재현 가능성 보장
+- CI, 프로덕션은 **lock 기반으로만 설치** → 해석된 의존성 그래프와 무결성의 재현 가능성을 높임
 
-Lock 파일은 **항상 커밋**한다. `.gitignore`에 넣으면 안 됨.
+애플리케이션과 배포 산출물의 재현성을 통제하는 lock 파일은 커밋한다. 라이브러리는 생태계별 배포 규칙과 지원할 버전 범위를 함께 고려해 정책을 정한다.
+
+Lock 파일만으로 bit-identical 바이너리가 보장되지는 않는다. OS와 CPU별 optional dependency, native build, install script 결과가 달라질 수 있으므로 런타임, 패키지 매니저, toolchain과 base image도 고정한다. 환경별 동일 배포물을 보장하려면 한 번 빌드한 artifact를 검증 후 승격한다.
 
 ## 언어별 도구
 
@@ -38,10 +40,10 @@ Lock 파일은 **항상 커밋**한다. `.gitignore`에 넣으면 안 됨.
 |---|---|---|
 | `pip` + `requirements.txt` | 표준, 단순, lock 불완전 | 학습, 단순 스크립트 |
 | `pipenv` | `Pipfile` + `Pipfile.lock` + venv 통합 | 중간 규모 프로젝트 |
-| **Poetry** | `pyproject.toml` (PEP 518) + `poetry.lock` + 빌드, 배포 통합 | **현대 표준**, 라이브러리, 앱 모두 적합 |
-| `uv` (Astral) | Rust 기반, 초고속 | 최신, 빠른 채택 중 |
+| **Poetry** | `pyproject.toml` + `poetry.lock` + 빌드, 배포 통합 | 의존성, 가상 환경과 패키징을 한 도구로 관리할 때 |
+| `uv` (Astral) | Rust 기반, pip 호환 설치 인터페이스와 lock 지원 | 빠른 설치와 통합 도구가 필요할 때 |
 
-**Poetry가 현재 권장 기본값**. `pip`만 쓰는 환경이면 최소한 `pip-tools`로 lock 생성 습관.
+프로젝트 요구와 팀 도구에 맞춰 선택한다. `pip` 중심 환경에서도 `pip-tools`나 `uv lock`처럼 해결된 버전을 재현할 방법을 둔다.
 
 ### JavaScript/TypeScript
 
@@ -49,9 +51,9 @@ Lock 파일은 **항상 커밋**한다. `.gitignore`에 넣으면 안 됨.
 |---|---|
 | `npm` | 기본 내장, `package-lock.json` |
 | `yarn` | workspaces, plug'n'play, Classic, Berry 두 라인 |
-| **pnpm** | **디스크 절약**(심링크 기반), 빠름, monorepo 강점 |
+| **pnpm** | **디스크 절약**(content-addressable store와 하드링크), 빠름, monorepo 강점 |
 
-**pnpm**이 대형 프로젝트, monorepo에서 우세. 작은 프로젝트는 `npm`으로 충분.
+pnpm은 저장 공간 절약과 workspace 구성이 중요한 monorepo의 선택지다. 단순한 프로젝트는 npm만으로도 충분하다.
 
 ### Java/Kotlin
 
@@ -88,7 +90,9 @@ Spring, Java 엔터프라이즈는 **Maven**이 여전히 많이 쓰이고, 멀�
 ### 취약점 스캔
 - **Dependabot** (GitHub 내장) — 취약한 의존성에 자동 PR
 - **Snyk**, **Renovate** — 정기 스캔 + 업데이트 제안
-- **npm audit**, `pip-audit`, `gradle dependencyCheckAnalyze` — CLI 내장
+- **npm audit** — npm 내장
+- `pip-audit` — PyPA가 별도로 배포하는 도구로, `pip install pip-audit` 등으로 설치
+- `gradle dependencyCheckAnalyze` — OWASP `org.owasp.dependencycheck` 플러그인을 적용한 뒤 실행하는 Gradle task
 
 ### 업데이트 전략
 - **주기적 소규모** 업데이트가 **드물고 대규모**보다 안전
@@ -112,18 +116,24 @@ Spring, Java 엔터프라이즈는 **Maven**이 여전히 많이 쓰이고, 멀�
 - **Dependencies** (prod): 런타임에 필요한 것 (express, pg, requests)
 - **DevDependencies**: 개발, 빌드, 테스트에만 필요 (jest, eslint, prettier, typescript)
 
-프로덕션 빌드는 `--production` 플래그로 dev 제외 설치 → 이미지 크기, 보안 표면 감소.
+빌드 단계에는 TypeScript 같은 dev 의존성이 필요할 수 있다. 실행용 이미지나 배포 단계에서는 필요하지 않은 dev 의존성을 제외한다. npm CLI v11은 `--omit=dev`, pnpm은 `--prod`, Yarn의 modern release는 `yarn workspaces focus --production`을 쓴다. npm v11의 `--production`은 `--omit=dev`의 deprecated alias다.
 
 ## 면접 체크포인트
 
 - Lock 파일을 커밋해야 하는 이유 (재현 가능성)
 - `^`와 `~`의 의미 차이
 - Poetry가 pip보다 나은 점
-- pnpm이 npm, yarn 대비 디스크를 절약하는 방법 (심링크)
+- pnpm이 npm, yarn 대비 디스크를 절약하는 방법 (content-addressable store와 하드링크, 심링크는 non-flat `node_modules` 구조에 사용)
 - Dependabot, Snyk 같은 취약점 스캔 자동화
 
 ## 출처
 - [velog @city7310 — 백엔드가 이정도는 해줘야 함 8. 의존성 관리 도구 결정](https://velog.io/@city7310/%EB%B0%B1%EC%97%94%EB%93%9C%EA%B0%80-%EC%9D%B4%EC%A0%95%EB%8F%84%EB%8A%94-%ED%95%B4%EC%A4%98%EC%95%BC-%ED%95%A8-8.-%EC%9D%98%EC%A1%B4%EC%84%B1-%EA%B4%80%EB%A6%AC-%EB%8F%84%EA%B5%AC-%EA%B2%B0%EC%A0%95)
+- [pnpm, Motivation](https://pnpm.io/motivation)
+- [uv, Projects](https://docs.astral.sh/uv/guides/projects/)
+- [Poetry, Managing dependencies](https://python-poetry.org/docs/managing-dependencies/)
+- [Yarn, `workspaces focus`](https://yarnpkg.com/cli/workspaces/focus)
+- [npm Docs, Config production](https://docs.npmjs.com/cli/v11/using-npm/config#production)
+- [OWASP Dependency-Check Gradle Plugin — OWASP](https://github.com/dependency-check/dependency-check-gradle)
 
 ## 관련 문서
 - [[Version-Control-Tooling|버전 관리 도구]]

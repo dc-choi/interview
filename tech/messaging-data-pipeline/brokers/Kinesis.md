@@ -1,6 +1,7 @@
 ---
 tags: [messaging, aws, kinesis, streaming, decoupling, saa-c03]
 status: done
+verified_at: 2026-09-03
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Kinesis", "Amazon Kinesis", "Kinesis Data Streams", "KDS", "Kinesis Firehose"]
 ---
@@ -76,18 +77,20 @@ KDS에 적재된 데이터를 다음에서 수집/처리:
 |------|------|
 | **변환** | Lambda를 끼워 레코드 변환, 필터링 가능 |
 | **전송 대상** | **S3, Redshift, OpenSearch, Splunk** + HTTP Endpoint, 서드파티(Datadog, New Relic) |
-| **버퍼링** | 시간(60s~) 또는 크기(1MB~) 기준으로 배치 후 flush — **near real-time** (보통 60초 지연) |
+| **버퍼링** | 간격 0~900초, 크기 1~128MB. S3, Iceberg, Redshift, OpenSearch 기본값은 300초, 5MB이고 HTTP endpoint와 서드파티 대상의 기본 간격은 60초 |
 | **샤드 관리** | 없음 (서버리스, 자동 스케일) |
 | **데이터 보존** | 없음 (전송만, 재읽기 불가) |
 
 KDS와 Firehose는 자주 함께 쓰인다: KDS로 수집, 재읽기 가능하게 보존 → Firehose로 S3 적재.
 
+버퍼 간격을 0초로 설정하면 데이터를 수 초 내 전달한다. 60초 미만으로 설정한 S3 전송은 멀티파트 업로드를 사용하므로 S3 PUT 비용이 늘 수 있다.
+
 ## Amazon Managed Service for Apache Flink
 
 실시간 스트림을 Apache Flink 기반으로 처리, 분석한다. 예전 Kinesis Data Analytics for SQL Applications는 중단되어 2026년 1월 27일부터 삭제 절차가 진행되므로 신규 설계에 쓰면 안 된다.
 
-- Source: KDS, Firehose
-- Sink: KDS, Firehose, Lambda 등 (다시 동일 소스로 보내 chain 가능)
+- Source: KDS, Amazon MSK 등 Flink source connector가 지원하는 스트림
+- Sink: KDS, Firehose, S3 등 Flink sink connector가 지원하는 대상
 - **Studio Notebook**으로 대화형 분석
 
 ## Kinesis vs Kafka vs SQS vs SNS
@@ -119,6 +122,12 @@ KDS와 Firehose는 자주 함께 쓰인다: KDS로 수집, 재읽기 가능하�
 
 ## 출처
 - [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+- [Amazon Kinesis Data Streams, Quotas and limits](https://docs.aws.amazon.com/streams/latest/dev/service-sizes-and-limits.html)
+- [Amazon Kinesis Data Streams, Change the data retention period](https://docs.aws.amazon.com/streams/latest/dev/kinesis-extended-retention.html)
+- [Amazon Data Firehose, Configure settings](https://docs.aws.amazon.com/firehose/latest/dev/create-configure-backup.html)
+- [Managed Service for Apache Flink, Add streaming data sources](https://docs.aws.amazon.com/managed-flink/latest/java/how-sources.html)
+- [Managed Service for Apache Flink, Java examples](https://docs.aws.amazon.com/managed-flink/latest/java/examples-new-java.html)
+- [Amazon Kinesis Data Analytics for SQL Applications, Discontinuation](https://docs.aws.amazon.com/kinesisanalytics/latest/dev/discontinuation.html)
 - AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서

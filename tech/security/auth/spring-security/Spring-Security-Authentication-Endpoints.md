@@ -1,7 +1,7 @@
 ---
 tags: [security, spring-security, authentication, api, form-login]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "Security - 인증"
 aliases: ["Spring Security Login Endpoint", "Spring Security API 인증"]
 ---
@@ -76,7 +76,7 @@ Spring의 Filter Hook을 Nest의 Middleware, Guard와 Interceptor에 이름만 �
 - 정수원 강사, [6) Ajax Custom DSL 구현](https://www.inflearn.com/courses/lecture?courseId=324591&unitId=29871)
 - [Spring Security 7.1, Form Login](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/form.html)
 - [Spring Security 7.1, Authentication Architecture](https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html)
-- [Spring Security 7.1, Request Cache](https://docs.spring.io/spring-security/reference/servlet/architecture.html#request-cache)
+- [Spring Security 7.1, Request Cache](https://docs.spring.io/spring-security/reference/servlet/architecture.html#requestcache)
 
 ## 관련 문서
 

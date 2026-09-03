@@ -106,7 +106,7 @@ Native SQL을 숨기기 위해 과도한 abstraction을 더하기보다 query �
 ## 출처
 
 - [Spring Data JPA 4.1, Projections](https://docs.spring.io/spring-data/jpa/reference/repositories/projections.html)
-- [Spring Data JPA 4.1, Native Query](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html#jpa.query-methods.native-queries)
+- [Spring Data JPA 4.1, Native Query](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html#jpa.query-methods.at-query.native)
 - [Projections](https://www.inflearn.com/courses/lecture?courseId=324474&unitId=28032)
 - [Native query](https://www.inflearn.com/courses/lecture?courseId=324474&unitId=28033)
 

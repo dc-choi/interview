@@ -99,7 +99,7 @@ Simple case와 searched case를 지원하고 `Expressions.constant()`로 project
 
 - [OpenFeign Querydsl JPA tutorial](https://openfeign.github.io/querydsl/tutorials/jpa/)
 - [OpenFeign Querydsl 7.5, AbstractJPAQuery](https://github.com/OpenFeign/querydsl/blob/7.5/querydsl-libraries/querydsl-jpa/src/main/java/com/querydsl/jpa/impl/AbstractJPAQuery.java)
-- [Jakarta Persistence 3.2, Query Language](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#query-language)
+- [Jakarta Persistence 3.2, Query Language](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a4665)
 - [JPQL과 Querydsl 시작](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30122)
 - [기본 Q type 활용](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30123)
 - [검색 조건 query](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30124)

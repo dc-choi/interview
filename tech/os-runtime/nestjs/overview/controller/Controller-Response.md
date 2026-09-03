@@ -11,7 +11,7 @@ aliases: ["Controller 응답 처리", "Controller Response"]
 HTTP 메서드 데코레이터, 상태 코드/헤더/리다이렉션, 비동기 처리, DTO와 요청 본문 등 Controller의 응답 제어 방식을 다룬다.
 
 ### 리소스
-Nest는 모든 표준 HTTP 메서드에 대한 데코레이터를 제공합니다: Get(), @Post(), @Put(), @Delete(), @Patch(), @Options(), @Head(). 또한 @All()은 이 모든 메서드를 처리하는 엔드포인트를 정의합니다.
+Nest는 표준 HTTP 메서드에 대응하는 @Get(), @Post(), @Put(), @Delete(), @Patch(), @Options(), @Head()를 제공하고, v11.2.0부터 HTTP QUERY 메서드용 @QueryMethod()도 제공한다. @All()은 모든 메서드를 처리하는 엔드포인트를 정의한다.
 
 ### 상태 코드
 앞서 언급했듯이 응답의 기본 상태 코드는 기본값이 201인 POST 요청을 제외하고 항상 200입니다.
@@ -98,7 +98,8 @@ Nest 11에서 Express v5를 쓰면 기본 쿼리 파서는 `simple`이라 중첩
 
 ## 출처
 
-- [NestJS, Migration guide (v11)](https://docs.nestjs.com/migration-guide)
+- [NestJS, Migration guide (v11)](https://docs.nestjs.com/v11/migration-guide)
+- [NestJS, Controllers source](https://github.com/nestjs/docs.nestjs.com/blob/master/content/controllers.md)
 - [NestJS, Injection scopes](https://docs.nestjs.com/fundamentals/injection-scopes)
 
 ## 관련 문서

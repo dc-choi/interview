@@ -57,7 +57,7 @@ Streams의 핵심 무기. 로컬 캐시이자 작은 로컬 DB로, 기본 구현
 |---|---|---|
 | **Tumbling** | 고정 크기, 겹치지 않게 딱딱 절단 | 구간이 정확히 1개, 구간별 집계 |
 | **Hopping** | 고정 크기 + 고정 advance로 밀며 **겹침 허용** | advance < size면 한 이벤트가 여러 창에 |
-| **Sliding** | 레코드 타임스탬프 차이로 창을 정의 | 집계 전용, 실제 데이터 밀도에 반응 |
+| **Sliding** | 레코드 타임스탬프 차이로 창을 정의 | `JoinWindows`의 조인과 `SlidingWindows`의 윈도우 집계 양쪽에 사용, 실제 데이터 밀도에 반응 |
 | **Session** | 활동 간격(gap)으로 구간 구분 | 유저 세션처럼 경계가 유동적 |
 
 - **grace period**: 늦게 도착한(out-of-order) 이벤트를 얼마나 기다렸다 창을 닫을지. 짧으면 지각 이벤트 유실, 길면 결과 확정이 늦어진다. event-time 기준 처리의 핵심 파라미터.
@@ -88,6 +88,7 @@ Streams의 핵심 무기. 로컬 캐시이자 작은 로컬 DB로, 기본 구현
 ## 출처
 
 - [카카오모빌리티 — 실시간 대규모 배차 시스템과 Kafka Streams](https://www.youtube.com/watch?v=PvAlbOm9WN8)
+- [Apache Kafka 4.1, Kafka Streams DSL](https://kafka.apache.org/41/streams/developer-guide/dsl-api/)
 
 ## 관련 문서
 

@@ -21,7 +21,7 @@ aliases: ["Deploy Observability", "배포 가시성", "배포 관측", "Unified 
 
 플랫폼은 제각각이어도 **모든 서비스가 APM 트레이스를 생성한다면** 그것이 플랫폼 중립적 신호다.
 
-- 전 서비스에 트레이서를 심고 Unified Tagging으로 `version`, `git.commit.sha`를 스팬에 태깅
+- 전 서비스에 tracer를 심고 Unified Service Tagging의 `env`, `service`, `version`을 span에 태깅한다. `git.commit.sha`는 빌드 artifact에 Git 정보를 심는 Source Code Integration으로 추가한다
 - `service + env + version + git_sha` 조합이 처음 관측되는 순간 = 새 배포
 - 배포 파이프라인 3종을 각각 후킹하는 대신, **이미 깔린 모니터링 토대 위에 배포 관측을 얹는** 구조
 
@@ -61,6 +61,8 @@ prod 서비스 247개(ECS, EC2, EKS 전체)를 통합, 장애 스레드 배포 �
 ## 출처
 
 - [세 개의 플랫폼, 하나의 배포 관측 — 아임웹 기술블로그](https://tech.imweb.me/posts/unified-deploy-visibility-apm/)
+- [Datadog, Unified Service Tagging](https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/)
+- [Datadog, Source Code Integration](https://docs.datadoghq.com/integrations/guide/source-code-integration/)
 
 ## 관련 문서
 

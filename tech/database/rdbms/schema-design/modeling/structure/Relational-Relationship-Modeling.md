@@ -32,6 +32,7 @@ aliases: ["Relational Relationship Modeling", "관계형 관계 모델링", "식
 CREATE TABLE orders (
   id BIGINT PRIMARY KEY,
   customer_id BIGINT NOT NULL,
+  created_at DATETIME NOT NULL,
   CONSTRAINT fk_orders_customer
     FOREIGN KEY (customer_id) REFERENCES customer(id),
   INDEX idx_orders_customer_created (customer_id, created_at)
@@ -125,6 +126,7 @@ CREATE TABLE order_item (
 ## 출처
 
 - [MySQL 8.4, FOREIGN KEY Constraints](https://dev.mysql.com/doc/refman/8.4/en/create-table-foreign-keys.html)
+- [MySQL 8.4 Error Message Reference](https://dev.mysql.com/doc/mysql-errors/8.4/en/server-error-reference.html)
 - [TypeORM, Relations](https://typeorm.io/docs/relations/relations/)
 - 관계/참여: [관계](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347634), [참여도](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347635), [1:N FK 1](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347636), [1:N FK 2](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347637), [Join fan-out](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347638), [정리](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347639)
 - 1:1: [시작](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347641), [FK 위치](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347642), [관계 확장](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347643), [주 table FK](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347644)

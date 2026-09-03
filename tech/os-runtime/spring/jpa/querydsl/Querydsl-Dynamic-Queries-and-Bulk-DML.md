@@ -120,7 +120,7 @@ Version, update timestamp와 audit actor가 필요하면 set expression에 명�
 ## 출처
 
 - [OpenFeign Querydsl JPA tutorial, update and delete clauses](https://openfeign.github.io/querydsl/tutorials/jpa/)
-- [Jakarta Persistence 3.2, Bulk Update and Delete](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#bulk-update-and-delete-operations)
+- [Jakarta Persistence 3.2, Bulk Update and Delete](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a5636)
 - [`BooleanBuilder` 동적 query](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30139)
 - [`where` 다중 parameter 동적 query](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30140)
 - [수정과 삭제 bulk operation](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30141)

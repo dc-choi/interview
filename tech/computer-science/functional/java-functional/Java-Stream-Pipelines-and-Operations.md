@@ -1,7 +1,7 @@
 ---
 tags: [java, stream, lazy-evaluation, pipeline, flatmap]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "CS - 함수형 프로그래밍"
 aliases: ["Java Stream Pipeline", "Java 스트림 파이프라인"]
 ---
@@ -31,7 +31,7 @@ Pipeline이 항상 element 하나를 모든 stage에 차례로 통과시키는 �
 | 종류 | 예 | 성질 |
 |---|---|---|
 | Stateless intermediate | `filter`, `map`, `flatMap`, `peek` | 다른 element의 상태 없이 변환 |
-| Stateful intermediate | `distinct`, `sorted`, 일부 `limit` | 앞선 element나 전체 상태가 필요할 수 있음 |
+| Stateful intermediate | `distinct`, `sorted`, `limit` | 앞선 element나 전체 상태가 필요할 수 있음 |
 | Short-circuit intermediate | `limit`, `takeWhile` | 유한 결과를 일찍 만들 수 있음 |
 | Terminal | `toList`, `collect`, `reduce`, `count`, `forEach` | Pipeline을 소비해 결과나 side effect 생성 |
 | Short-circuit terminal | `findFirst`, `anyMatch`, `allMatch` | 결과가 정해지면 탐색을 끝낼 수 있음 |
@@ -71,7 +71,7 @@ try (Stream<String> lines = Files.lines(path)) {
 
 `reduce`는 identity와 associative accumulator로 element를 하나의 결과로 접는다. Parallel execution까지 고려하면 identity, accumulator와 combiner의 법칙이 맞아야 한다. Mutable container에는 `collect`가 더 자연스럽다.
 
-`IntStream`, `LongStream`, `DoubleStream`은 boxing을 줄이고 `sum`, `average`, `summaryStatistics`, `range`를 제공한다. `mapToInt`와 `boxed`로 object stream과 오갈 수 있지만 가독성과 실제 allocation 측정을 함께 본다.
+`IntStream`, `LongStream`, `DoubleStream`은 boxing을 줄이고 `sum`, `average`, `summaryStatistics`를 제공한다. `range`와 `rangeClosed`는 `IntStream`, `LongStream`에만 있고 `DoubleStream`에는 없다. Double 값이 필요하면 `of`, `iterate`, `generate`나 `IntStream.range(...).asDoubleStream()`을 쓴다. `mapToInt`와 `boxed`로 object stream과 오갈 수 있지만 가독성과 실제 allocation 측정을 함께 본다.
 
 ## Behavioral parameter 규칙
 
@@ -91,6 +91,7 @@ Encounter order가 있어도 callback이 어느 thread에서 어떤 순서로 �
 - [Java SE 26, Stream](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Stream.html)
 - [Java SE 26, `java.util.stream` package](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/package-summary.html)
 - [Java SE 26, BaseStream](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/BaseStream.html)
+- [Java SE 26, DoubleStream](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/DoubleStream.html)
 - 김영한 강사, [필터 만들기1](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275349), [필터 만들기2](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275352), [맵 만들기1](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275353), [맵 만들기2](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275354), [필터와 맵 활용1](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275355), [필터와 맵 활용2](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275356), [스트림 만들기1](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275357), [스트림 만들기2](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275358), [스트림 만들기3](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275359), [스트림 만들기4](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275360), [정리](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275361)
 - 김영한 강사, [스트림 API 시작](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275373), [스트림 API란?](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275374), [파이프라인 구성](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275375), [지연 연산](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275376), [지연 연산과 최적화](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275377), [스트림 생성](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275379), [중간 연산](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275380), [FlatMap](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275381), [Optional 간단 설명](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275382), [최종 연산](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275383), [기본형 특화 스트림](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275384)
 

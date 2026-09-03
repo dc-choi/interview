@@ -82,9 +82,9 @@ JWT payload를 decode하는 것만으로 신뢰하면 안 된다. user pool의 J
 
 ### API Gateway Authorizer
 
-- REST/HTTP API에 **Cognito User Pool Authorizer** 설정 → 클라이언트가 보낸 **JWT를 자동 검증**.
-- 별도 Lambda 코드 없이 인증된 요청만 백엔드로 전달.
-- HTTP API는 추가로 **JWT Authorizer** (외부 OIDC 토큰도 검증)도 지원.
+- **REST API**는 `COGNITO_USER_POOLS` 타입의 **Cognito User Pool Authorizer**로 클라이언트 JWT를 검증한다.
+- **HTTP API**에는 Cognito User Pool Authorizer 타입이 없다. User Pool을 issuer로 지정한 **JWT Authorizer**로 Cognito 토큰을 검증하며 외부 OIDC 토큰도 같은 방식으로 처리한다. HTTP API의 인가 수단은 JWT Authorizer, Lambda Authorizer, IAM이다.
+- 두 방식 모두 별도 Lambda 검증 코드 없이 인증된 요청만 백엔드로 전달할 수 있다.
 
 ### ALB 인증
 
@@ -107,7 +107,7 @@ JWT payload를 decode하는 것만으로 신뢰하면 안 된다. user pool의 J
 
 - **앱 사용자 인증, 디렉터리** = **User Pool** (인증, JWT 발행).
 - **AWS 리소스 임시 자격 증명** = **Identity Pool** (STS 발급). 실제 인가는 IAM role과 policy가 결정.
-- **API Gateway에 사용자 인증 붙이기** → **Cognito User Pool Authorizer** (JWT 검증 자동화).
+- **API Gateway에 사용자 인증 붙이기** → REST API는 **Cognito User Pool Authorizer**, HTTP API는 Cognito User Pool을 issuer로 둔 **JWT Authorizer**로 JWT 검증 자동화.
 - **모바일 앱에서 S3에 직접 업로드** → 클라이언트가 **Identity Pool**로 임시 자격 증명 받고 S3 호출.
 - **익명/게스트 사용자에게도 제한된 AWS 접근 부여** → **Identity Pool의 Unauthenticated Role**.
 - **Google/Facebook/SAML 로그인** → **Federated Identity** (User Pool 또는 Identity Pool에 외부 IdP 등록).
@@ -123,6 +123,7 @@ JWT payload를 decode하는 것만으로 신뢰하면 안 된다. user pool의 J
 - [Amazon Cognito — Integrating user pools and identity pools](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-integrating-user-pools-with-identity-pools.html)
 - [Amazon Cognito — Verifying JWTs](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html)
 - [Amazon Cognito — Cognito Sync availability](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sync.html)
+- [Amazon API Gateway, HTTP API access control](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html)
 - [Sungmin Kim 강사 — Web Identity Federation](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=69307)
 - [Sungmin Kim 강사 — Cognito](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=70076)
 - [Sungmin Kim 강사 — Cognito User Pools](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=69308)

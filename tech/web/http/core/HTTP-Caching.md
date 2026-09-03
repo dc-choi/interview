@@ -1,7 +1,7 @@
 ---
 tags: [web, http, cache, conditional-request, etag]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "Web - HTTP"
 aliases: ["HTTP Caching", "HTTP 캐시", "조건부 요청"]
 ---
@@ -65,7 +65,7 @@ If-None-Match: "order-list-v7"
 - 버전이 있는 정적 Asset: 파일명에 content hash를 넣고 긴 `max-age`, `immutable`을 사용한다.
 - 변경 가능한 API: 짧은 freshness와 ETag 재검증을 조합한다.
 - 민감 정보: `no-store`를 우선 검토한다.
-- Cache는 non-error 응답을 받은 unsafe Method의 Target URI를 무효화하고, 같은 Origin을 가리키는 `Location`과 `Content-Location`도 무효화한다. 이것이 도메인상 연관된 모든 URI, 애플리케이션 Cache와 CDN purge까지 대신하지는 않는다.
+- Cache는 non-error 응답을 받은 unsafe Method의 Target URI를 반드시 무효화한다. `Location`과 `Content-Location`의 URI는 캐시가 선택적으로 무효화할 수 있는 후보이며, Target URI와 Origin이 다르면 무효화해서는 안 된다. 이것이 도메인상 연관된 모든 URI, 애플리케이션 Cache와 CDN purge까지 대신하지는 않는다.
 - 이미 긴 TTL로 배포된 응답은 새 응답 Header만으로 즉시 회수하기 어렵다. versioned URL이나 CDN purge 절차를 준비한다.
 
 ## 출처
@@ -77,7 +77,7 @@ If-None-Match: "order-list-v7"
 - 김영한 강사, [프록시 캐시](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61387)
 - 김영한 강사, [캐시 무효화](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=62171)
 - [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
-- [RFC 9111, HTTP Caching](https://www.rfc-editor.org/rfc/rfc9111.html)
+- [RFC 9111, HTTP Caching and invalidation](https://www.rfc-editor.org/rfc/rfc9111.html#section-4.4)
 - [RFC 8246, HTTP Immutable Responses](https://www.rfc-editor.org/rfc/rfc8246.html)
 
 ## 관련 문서

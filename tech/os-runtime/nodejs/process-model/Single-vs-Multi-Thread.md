@@ -92,7 +92,7 @@ Java Tomcat처럼 요청당 스레드를 쓰는 모델에서는, 한 스레드�
 
 **원인 분석**:
 - JSON.parse, stringify는 **메인 스레드에서** 실행 (CPU bound)
-- libuv 워커 풀은 파일 I/O, DNS에만 사용, JS 로직 실행 안 함
+- libuv worker pool은 파일 I/O와 DNS 외에도 `pbkdf2`, `scrypt`, `randomBytes` 같은 crypto, 비동기 zlib와 C++ addon 작업을 처리하지만 애플리케이션 JS 로직은 실행하지 않음
 - 한 인스턴스가 한 코어만 쓰므로 **서버의 나머지 코어는 놀고 있음**
 
 **해결 패턴** — 스레드 늘리기 대신 **수평 확장**:

@@ -59,7 +59,7 @@ healthy 판정은 Pod의 `Ready` condition이 `True`인지로만 한다. readine
 
 ```
 NAME     MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
-zk-pdb   2               <none>            1                     7d
+zk-pdb   2               N/A               1                     7d
 ```
 
 drain이 진행되지 않을 때 로그보다 먼저 `ALLOWED DISRUPTIONS` 값을 본다. 0이면 예산 문제, 1 이상인데도 멈춰 있으면 종료 지연이나 재스케줄 실패 쪽이다.

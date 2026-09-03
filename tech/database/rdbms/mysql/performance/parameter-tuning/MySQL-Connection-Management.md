@@ -18,7 +18,7 @@ MySQL Enterprise Edition에는 많은 connection의 statement execution thread�
 
 ## 용량 예산
 
-`max_connections`는 허용 상한이지 목표 동시성이다. 모든 application process와 worker의 pool 최대치를 합산한다.
+`max_connections`는 허용 상한이지 목표 동시성이 아니다. 모든 application process와 worker의 pool 최대치를 합산한다.
 
 ```text
 총 잠재 연결 수

@@ -99,7 +99,7 @@ await dataSource.transaction(async (manager) => {
 
 ## FindOptions의 읽기 계약
 
-`find`, `findBy`, `findOne`, `findOneBy`, `count` 계열은 간단한 entity 조회에 `FindOptions`를 받는다. option object의 key는 DB column명이 아니라 **Entity property 이름**이다.
+`find`, `findOne`, `findAndCount`, `count`, `exists`는 `FindManyOptions` 또는 `FindOneOptions` 형태의 `FindOptions`를 받는다. `findBy`, `findOneBy`, `findAndCountBy`, `countBy`, `existsBy`는 `FindOptionsWhere` 조건 객체나 그 배열만 받는다. option object의 key는 DB column명이 아니라 **Entity property 이름**이다.
 
 ```typescript
 const page = await orders.find({
@@ -124,7 +124,7 @@ const page = await orders.find({
 | `skip`, `take` | offset pagination이다. 함께 쓰고 `order`를 둔다. MSSQL은 `take`/`limit`에 order가 필요하다. |
 | `withDeleted` | `@DeleteDateColumn`이 채워진 soft-deleted row도 포함한다. 관리 기능처럼 권한이 확인된 경로에서만 켠다. |
 | `cache` | query result cache를 켠다. 권한, 최신성, 무효화 정책을 대신하지 않으며 쓰기 뒤 stale read를 허용할 때만 쓴다. |
-| `lock` | `findOne`/`findOneBy`에서만 쓴다. 비관적 lock은 같은 transaction manager와 driver 지원을 전제로 한다. |
+| `lock` | `findOne`/`findOneOrFail`에서만 쓴다. `findOneBy`에는 lock option을 넘길 수 없다. 비관적 lock은 같은 transaction manager와 driver 지원을 전제로 한다. |
 
 `relations`가 convenient하다고 목록 API의 기본값으로 두지 않는다. 반환 row의 grain, relation별 최대 건수, pagination과 count의 모양을 먼저 정한다. 대시보드나 집계처럼 entity graph가 아닌 결과가 필요하면 QueryBuilder 또는 SQL을 선택한다.
 

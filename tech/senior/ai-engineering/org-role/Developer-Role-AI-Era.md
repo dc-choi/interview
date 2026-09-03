@@ -1,7 +1,7 @@
 ---
 tags: [senior, ai, career, future]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-09-03
 category: "시니어역량(SeniorEngineer)"
 aliases: ["Developer Role AI Era", "AI 시대 개발자 역할"]
 ---
@@ -61,9 +61,9 @@ AI가 처리하니 세부는 몰라도 된다는 착각이 가장 위험하다. 
 
 주니어는 이 아래층을 아예 모르기 때문에 깨짐 신호를 인식하지 못한다. AI가 추상화를 더 쉽게 만들수록 이 격차는 **더 중요**해짐.
 
-## 견습 사다리의 붕괴
+## 견습 사다리에 생기는 압박
 
-스탠포드 연구: AI에 노출된 직종의 **22~25세 청년층 고용이 13% 하락**. 단순 일자리 감소가 아니라 **견습 체계 자체가 무너지는 문제**다.
+스탠포드 연구의 2026년 8월 개정판은 2026년 6월까지의 ADP 급여 데이터를 분석해, AI 노출 직종의 22~25세 고용이 저노출 동년배와 같은 속도로 늘었다는 반사실적 기준보다 **19% 낮았다**고 보고했다. 이는 절대 고용이 19% 감소했다는 뜻이 아니며, 경력자에게서는 같은 격차가 나타나지 않았다. 저자들도 경제 전반의 광범위한 일자리 대체를 입증한 인과 추정이 아니라 초기 서술적 지표라고 한정한다. 다만 진입 단계 업무가 자동화될 때 견습 기회를 어떻게 보존할지는 조직이 별도로 다뤄야 할 위험이다.
 
 ### 구조적 문제
 - 과거: 주니어가 CRUD, 보일러플레이트, 테스트 작성하며 **시스템을 몸으로 익힘**
@@ -118,7 +118,8 @@ AI가 처리하니 세부는 몰라도 된다는 착각이 가장 위험하다. 
 - AI 시대에 더 가치 있어지는 개발자 역량 4가지
 
 ## 출처
-- [The GenAI Divide: State of AI in Business 2025 — MIT Project NANDA](https://nanda.media.mit.edu/ai_report_2025.pdf)
+- [The GenAI Divide: State of AI in Business 2025 — MIT Project NANDA, 2025년 8월 보존본](https://web.archive.org/web/20250818145714/https://nanda.media.mit.edu/ai_report_2025.pdf)
+- [Canaries in the Coal Mine? Six Facts about the Recent Employment Effects of Artificial Intelligence — Stanford Digital Economy Lab, 2026-08-12 개정](https://digitaleconomy.stanford.edu/app/uploads/2026/08/Canaries_August2026.pdf)
 - [Toss Tech — 개발자는 AI에게 대체될 것인가](https://toss.tech/article/will-ai-replace-developers)
 - [비개발자가 한 달 동안 풀스택으로 개발하면서 배운 것 — NAVER D2](https://d2.naver.com/helloworld/0107009)
 - [AI시대, 백엔드 개발자가 나아가야 할 방향 #백엔드 #개발자 — 코딩하는기술사](https://www.youtube.com/watch?v=GOZdNeI7YBo)

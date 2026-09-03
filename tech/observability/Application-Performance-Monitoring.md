@@ -1,13 +1,14 @@
 ---
 tags: [observability, apm, performance, metric, slow-query]
 status: done
+verified_at: 2026-09-03
 category: "관측가능성(Observability)"
 aliases: ["APM", "Application Performance Monitoring", "성능 모니터링"]
 ---
 
 # Application Performance Monitoring (APM)
 
-요청 단위 지연, 처리량, 에러율을 코드 레벨로 추적하는 관측 계층. 로그, 메트릭, 트레이스를 **요청 흐름**으로 묶어서 보여주는 것이 핵심 차별점. NewRelic, DataDog, Elastic APM, Sentry Performance, Grafana Tempo 등이 대표.
+요청 단위 지연, 처리량, 에러율을 코드 레벨로 추적하는 관측 계층. 로그, 메트릭, 트레이스를 **요청 흐름**으로 묶어서 보여주는 것이 핵심 차별점. New Relic, Datadog, Elastic APM, Sentry Performance 등이 대표적인 제품이다. Grafana Tempo는 분산 트레이싱 백엔드다.
 
 ## 측정 기본기 — `process.hrtime.bigint()`
 
@@ -80,19 +81,17 @@ API 레벨은 RED, 인프라 레벨은 USE. APM은 보통 RED를 중심으로.
 
 ## APM 라이브러리 통합
 
-```ts
-@Injectable()
-export class APMService {
-  startTransaction(name: string) {
-    return apm.startTransaction(name);   // NewRelic, DataDog, Elastic API 동일 형태
-  }
-  recordCustomMetric(name: string, value: number) {
-    apm.recordMetric(name, value);
-  }
-}
-```
+벤더별 custom instrumentation API는 같은 형태가 아니다.
 
-대부분 **자동 계측**(HTTP, DB, Redis 클라이언트 자동 hook) + **커스텀 트랜잭션** API 제공. 자동 계측만으로도 80% 커버되고, 도메인 핵심 작업만 커스텀 추가.
+| 벤더 | Transaction 또는 span | Custom metric |
+|---|---|---|
+| Elastic APM | `apm.startTransaction(name)` | `apm.registerMetric(...)` (기술 프리뷰) |
+| New Relic | `startWebTransaction(url, handle)`, `startBackgroundTransaction(name, group, handle)` | `recordMetric(name, value)` |
+| Datadog `dd-trace` | `tracer.trace()`, `tracer.wrap()` | StatsD 등 별도 metric API |
+
+이 차이가 OpenTelemetry 같은 중립 계측층을 쓰는 근거다. OTel 연동 시에는 `startActiveSpan()` 같은 OTel API를 사용한다.
+
+지원되는 HTTP, DB와 Redis 클라이언트에는 **자동 계측**을 우선 적용하고, 자동 계측이 표현하지 못하는 도메인 핵심 작업에만 커스텀 span이나 transaction을 추가한다.
 
 ## OpenTelemetry — 벤더 중립
 
@@ -101,6 +100,7 @@ export class APMService {
 ```ts
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 
 const sdk = new NodeSDK({
   traceExporter: new OTLPTraceExporter({ url: 'http://otel-collector:4318/v1/traces' }),
@@ -149,3 +149,9 @@ APM은 데이터량이 비용에 직결. 카디널리티 폭발(예: `user_id`, 
 - [[Ops-Level-Indicator|운영 레벨 지표]]
 - [[SLI-SLO|SLI / SLO / Error budget]]
 - [[OpenTelemetry|OpenTelemetry와 분산 트레이싱]]
+
+## 출처
+
+- [Elastic APM Node.js Agent, Agent API](https://www.elastic.co/docs/reference/apm/agents/nodejs/agent-api)
+- [New Relic Node.js Agent API](https://newrelic.github.io/node-newrelic/API.html)
+- [Datadog, Node.js custom instrumentation](https://docs.datadoghq.com/tracing/trace_collection/custom_instrumentation/nodejs/dd-api/)

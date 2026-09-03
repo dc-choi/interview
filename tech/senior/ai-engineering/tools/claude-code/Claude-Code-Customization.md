@@ -3,6 +3,7 @@ tags: [senior, ai, claude-code, customization, voice, remote]
 status: done
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Customization", "클로드 코드 커스터마이즈", "Voice Mode", "원격 제어"]
+verified_at: 2026-09-03
 ---
 
 # Claude Code 커스터마이즈 — 환경 설정, 음성, 원격 제어
@@ -31,8 +32,8 @@ aliases: ["Claude Code Customization", "클로드 코드 커스터마이즈", "V
 |---|---|---|
 | `claude remote-control` (`/rc`) | QR/URL로 폰 접속해 로컬 세션 제어 | 터미널 닫으면 종료, 10분 단절 시 타임아웃, 인스턴스당 1개 |
 | Dispatch (Desktop, 터미널 불필요) | 폰 앱에서 데스크톱으로 작업 전송 | 데스크톱 켜짐 + 앱 실행 필수, 단일 스레드 |
-| Cowork 탭 | 클라우드 VM 실행, 컴퓨터 꺼도 진행 | 로컬 파일 접근 불가 |
-| `claude --remote` / `--teleport`(`/tp`) | 웹 세션 병렬 생성 후 로컬로 가져오기 | teleport는 단방향(웹→터미널) |
+| Cowork 탭 | 클라우드 VM 실행, 컴퓨터 꺼도 진행 | 로컬 파일, 브라우저와 컴퓨터 사용 기능은 데스크톱 앱이 열려 연결돼 있어야 함. 이때 승인한 로컬 폴더를 직접 읽고 쓸 수 있음 |
+| `claude --cloud` / `--teleport`(`/tp`) | 웹 세션 병렬 생성 후 로컬로 가져오기 | `--remote`는 폐기된 `--cloud` 별칭, teleport는 단방향(웹→터미널) |
 
 선택 기준: 로컬 파일이 필요하면 Desktop 계열, 무중단이 필요하면 클라우드 계열.
 
@@ -45,6 +46,8 @@ aliases: ["Claude Code Customization", "클로드 코드 커스터마이즈", "V
 
 ## 출처
 
+- [Claude Code — CLI reference](https://code.claude.com/docs/en/cli-reference)
+- [Claude Cowork 시작하기](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
 - [클로드 코드 가이드 (커스터마이즈 파트) — WikiDocs](https://wikidocs.net/book/19104)
 
 ## 관련 문서

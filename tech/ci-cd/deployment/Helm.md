@@ -58,7 +58,7 @@ Helm은 Kubernetes manifest를 **template으로 render**하고 그 결과를 **r
 | `--wait` | resource가 ready가 될 때까지 `--timeout`까지 대기. 전략은 `watcher`, `hookOnly`, `legacy` 중 선택 |
 | `--timeout` | 개별 Kubernetes 작업(hook Job 포함) 대기 시간, 기본 5m0s |
 | `--rollback-on-failure` | 실패 시 install은 uninstall, upgrade는 직전 성공 revision으로 rollback |
-| `--cleanup-on-fail` | upgrade 전용. 실패한 upgrade가 새로 만든 resource를 삭제 |
+| `--cleanup-on-fail` | install에는 없고 upgrade와 rollback에서 지원. 실패한 작업이 새로 만든 resource를 삭제 |
 
 Helm 4는 `--atomic`을 `--rollback-on-failure`로, `--force`를 `--force-replace`로 개명했다. 4.2.4에서 옛 이름은 deprecation 경고와 함께 동작하는 alias로 남아 있다. 새 스크립트는 바뀐 이름을 쓰고, Helm 3 스크립트를 옮길 때 경고와 동작을 확인한다.
 

@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, async, promise, iterable, concurrency]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "CS - JavaScript"
 aliases: ["JavaScript Async Iterable Pipelines", "JavaScript 동시성 파이프라인"]
 ---
@@ -34,7 +34,7 @@ async callback을 `setInterval`에 넘기면 이전 Promise가 끝나기 전에 
 const jobs = urls.map((url) => () => fetch(url));
 ```
 
-위 배열은 아직 요청을 시작하지 않은 thunk 목록이다. 반대로 `urls.map(fetch)`는 `Promise.all`을 호출하기 전에 요청이 시작될 수 있다. lazy container가 이미 시작된 Promise를 감싸면 시작 시점은 되돌릴 수 없다.
+위 배열은 아직 요청을 시작하지 않은 thunk 목록이다. 반대로 `urls.map((url) => fetch(url))`는 `Promise.all`을 호출하기 전에 요청을 시작한다. `urls.map(fetch)`는 `map`이 넘기는 index를 `RequestInit` 자리에 전달하고, 숫자를 Web IDL dictionary로 변환하는 과정에서 `TypeError`로 reject되므로 쓰면 안 된다. Lazy container가 이미 시작된 Promise를 감싸면 시작 시점은 되돌릴 수 없다.
 
 `Promise.all(iterable)`은 입력 순서로 결과를 모으고 첫 rejection으로 반환 Promise를 reject한다. 이미 시작된 나머지 작업을 취소하지는 않는다. 실패 뒤에도 외부 effect가 계속될 수 있으므로 `AbortSignal`, 개별 결과 수집과 보상 정책을 별도로 둔다.
 
@@ -150,6 +150,7 @@ NestJS에서는 controller가 받은 요청을 바로 거대한 `Promise.all`로
 
 - [ECMAScript Language Specification, Promise.all](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise.all)
 - [DOM Standard, aborting ongoing activities](https://dom.spec.whatwg.org/#aborting-ongoing-activities)
+- [Web IDL Standard, Dictionary types](https://webidl.spec.whatwg.org/#js-dictionary)
 - [Node.js, Timers Promises API](https://nodejs.org/api/timers.html#timers-promises-api)
 - [TypeORM, transactions](https://typeorm.io/docs/advanced-topics/transactions/)
 - async iteration: [async/await](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49884), [async iterator](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49911), [for await](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49932)

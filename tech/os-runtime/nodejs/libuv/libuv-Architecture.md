@@ -22,7 +22,7 @@ libuv의 역할, 역사, OS별 이벤트 디멀티플렉서, 이벤트 루프 �
 2009: Node.js 탄생. Google V8 + Marc Lehmann의 libev(Unix 전용) 조합으로 시작.
 문제: libev는 Unix 전용이라 Windows를 지원할 수 없었다.
 해결: Windows의 IOCP를 지원하는 새 라이브러리 libuv를 개발.
-node-v0.9.0: libev 완전 제거, libuv로 대체.
+node-v0.9.4: libev 완전 제거, libuv 자체 구현으로 대체.
 이후: libuv는 Node.js에서 독립하여 범용 시스템 프로그래밍 라이브러리로 발전.
       Mozilla Rust, Julia, Luvit 등 다양한 언어/프로젝트에서 채택.
 ```
@@ -153,6 +153,7 @@ Windows에서는 IOCP(Proactor)를 사용하여 내부적으로 Reactor 인터�
 - [libuv v1.45.0 릴리스 노트 — 타이머 실행 순서 변경](https://github.com/libuv/libuv/releases/tag/v1.45.0)
 - [Node.js 20.3.0 릴리스 공지 — libuv 1.45.0 반영](https://nodejs.org/en/blog/release/v20.3.0)
 - [libuv Design overview](https://docs.libuv.org/en/v1.x/design.html)
+- [unix: remove libev — libuv](https://github.com/libuv/libuv/commit/665a316aa9d5)
 
 ## 관련 문서
 - [[libuv|libuv (TOC)]]

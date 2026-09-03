@@ -81,9 +81,9 @@ metadata:
 
 | 종류 | CSI 드라이버 |
 |------|--------------|
-| **EBS** | `ebs-csi-driver` — 단일 AZ, 단일 Pod 마운트 (RWO) |
+| **EBS** | `ebs-csi-driver` — 단일 AZ, 단일 노드 마운트(RWO). 같은 노드의 여러 Pod는 접근 가능하며 한 Pod만 허용하려면 RWOP 사용 |
 | **EFS** | `efs-csi-driver` — Multi-AZ, 다중 Pod 동시 마운트 (RWX) |
-| **FSx** | `fsx-csi-driver` — Lustre, NetApp ONTAP, OpenZFS |
+| **FSx** | Lustre는 `aws-fsx-csi-driver`, NetApp ONTAP은 NetApp Trident, OpenZFS는 `aws-fsx-openzfs-csi-driver` |
 
 StatefulSet은 **EBS + PersistentVolumeClaim**이 표준.
 
@@ -159,6 +159,8 @@ Karpenter는 AWS가 만든 오픈소스로 **유연성, 비용 효율**이 압�
 - AWS SAA C03 학습 자료 (로컬)
 - [Understand the Kubernetes version lifecycle on EKS](https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html)
 - [Amazon EKS pricing](https://aws.amazon.com/eks/pricing/)
+- [Kubernetes Documentation, Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
+- [Amazon EKS User Guide, FSx for NetApp ONTAP CSI driver](https://docs.aws.amazon.com/eks/latest/userguide/fsx-ontap.html)
 - [What Is AWS App Mesh? — 2026-09-30 지원 종료 공지](https://docs.aws.amazon.com/app-mesh/latest/userguide/what-is-app-mesh.html)
 - [aws/aws-app-mesh-roadmap README — 2024-09-24 신규 고객 온보딩 중단](https://github.com/aws/aws-app-mesh-roadmap)
 - [Migrating from AWS App Mesh to Amazon VPC Lattice — EKS 이관 가이드](https://aws.amazon.com/blogs/containers/migrating-from-aws-app-mesh-to-amazon-vpc-lattice/)

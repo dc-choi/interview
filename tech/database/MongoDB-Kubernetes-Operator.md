@@ -31,12 +31,12 @@ Operator는 사람(DBA)이 하던 운영 절차를 코드로 옮긴 패턴이다
 
 ## Kubernetes에서 AWS 리소스까지 함께 움직이는 구조
 
-PSMDB Operator는 MongoDB 운영에 필요한 **Kubernetes 리소스(StatefulSet, Service, PersistentVolume, Secret)** 만 만든다. 그 뒤 실제 AWS 리소스는 각자의 컨트롤러가 자기 리소스를 보고 처리한다.
+PSMDB Operator는 MongoDB 운영에 필요한 **Kubernetes 리소스(StatefulSet, Service, PersistentVolumeClaim, Secret)** 만 만든다. 그 뒤 실제 AWS 리소스는 각자의 컨트롤러가 자기 리소스를 보고 처리한다.
 
 | 선언한 K8s 리소스 | 처리하는 컨트롤러 | 만들어지는 AWS 리소스 |
 |------------------|-----------------|---------------------|
 | Service (type LoadBalancer) | AWS Load Balancer Controller | NLB |
-| PersistentVolume | EBS CSI Driver | EBS 볼륨 |
+| PersistentVolumeClaim | EBS CSI Driver | EBS 볼륨과 PersistentVolume |
 | (인증 정보 동기화) | External Secrets Operator | Secrets Manager ↔ K8s Secret |
 
 즉 MongoDB 운영은 하나의 Operator가 아니라 **여러 Operator와 컨트롤러가 각자 리소스를 reconcile하며 협력**하는 구조다. 문제가 생겼을 때 원인이 MongoDB인지 Operator인지 Kubernetes인지 AWS 설정인지 구분하기 어려운 이유도 여기에 있다.
@@ -99,8 +99,8 @@ EBS Volume Clone은 스냅샷을 뜬 뒤 새 볼륨을 즉시 쓸 수 있게 하
 | 암호화 | 암호화된 볼륨이어야 함 |
 | AZ | 동일 Availability Zone 안에서만 복사 |
 | 동시성 | 동시 복사 개수 제한 |
-| 크기/IOPS | 대상 볼륨이 소스 이상의 크기, IOPS여야 함 |
-| **Initializing 성능** | 백그라운드 복사 중에는 설정 IOPS를 다 못 쓸 수 있음 — 기본 보장 IOPS는 쓰되, 추가 성능은 소스 여유와 복사 부하에 좌우 |
+| 크기 | 대상 볼륨이 소스 이상의 크기여야 함. IOPS와 throughput은 소스보다 낮게도 독립 설정 가능 |
+| **Initializing 성능** | 2026-09-03 AWS 문서 기준, 초기화 중 baseline은 3,000 IOPS/125 MiB/s, 소스 성능, 복제본 성능 중 최솟값 |
 
 즉시 투입은 되지만 고성능 트래픽을 바로 받게 하는 건 신중해야 한다. **적합한 상황**: 기본 IOPS로 충분한 멤버, 소스 볼륨에 여유 IOPS가 있을 때, Hidden Member나 Batch용 멤버를 빠르게 붙일 때, Initial Sync가 지나치게 오래 걸리는 대용량 환경. 운영 패턴은 "빠르게 붙이고, 안정화를 확인한 뒤, 트래픽 투입을 조절"이 안전하다.
 
@@ -120,6 +120,8 @@ EBS Volume Clone은 스냅샷을 뜬 뒤 새 볼륨을 즉시 쓸 수 있게 하
 
 ## 출처
 - [Kubernetes에서 MongoDB 운영 (PSMDB Operator, 외부 접속, 빠른 프로비저닝) — DB 밋업 (YouTube)](https://www.youtube.com/watch?v=8QUgXc-tfkI&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=6)
+- [Kubernetes Documentation, Dynamic Volume Provisioning](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/)
+- [Amazon EBS User Guide, Copy an Amazon EBS volume](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-copying-volume.html)
 
 ## 관련 문서
 - [[Database-Operations-Automation|DB 운영 자동화]] — 이 문서가 구현하는 상위 "K8s Operator" 도메인

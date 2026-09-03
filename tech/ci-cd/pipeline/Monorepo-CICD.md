@@ -25,10 +25,10 @@ Build-time 통합은 pnpm workspace의 `workspace:*` 참조로 성립한다. pnp
 
 ## 캐시 — 가장 조용한 성능 킬러
 
-거대한 모노레포의 CI는 방치하면 한 번에 터지지 않고 서서히 누적되며 느려져 병목 지점을 찾기 어렵다. Turborepo의 캐시 키는 `turbo.json`의 `inputs`에 지정된 파일들의 해시 합산이라, inputs를 느슨하게 잡으면 불필요한 무효화가 일어난다.
+거대한 모노레포의 CI는 방치하면 한 번에 터지지 않고 서서히 누적되며 느려져 병목 지점을 찾기 어렵다. 2026-09-03 Turborepo 문서와 소스 기준, Turborepo는 global hash와 task hash를 함께 계산하고 둘 중 하나만 바뀌어도 캐시가 빗나간다. Global hash에는 루트와 패키지 `turbo.json`에서 해석한 task 정의, lockfile, `globalDependencies`, `globalEnv`, 동작을 바꾸는 플래그와 passthrough 인자, 루트가 의존하는 내부 패키지 소스 등이 들어간다. Task hash에는 패키지의 `inputs` 파일 등이 들어가며, `inputs`를 지정하지 않으면 버전 관리되는 패키지 내 모든 파일이 기본 input이다.
 
 - **캐시 무효화 전파(Cache Invalidation Cascade)** — 하위 계층(entity) 패키지 하나가 바뀌면 이를 직접, 간접으로 의존하는 feature, service, fragment 계층 전체의 캐시가 무효화된다. 가장 조용하고 위험한 성능 저하 원인이다.
-- **inputs 정밀화** — `package.json` 전체를 inputs에 넣으면 description 필드 변경만으로도 캐시가 깨진다. 빌드 결과에 실제 영향을 주는 항목(dependencies, 소스, 설정)만 캐시 키에 반영하고, lint, typecheck, test, build마다 inputs, outputs, dependsOn을 분리해야 한다.
+- **inputs 정밀화** — `package.json`, `turbo.json`, package manager lockfile은 `inputs` 설정과 무관하게 항상 해시에 포함되므로 description 필드 변경에 따른 캐시 무효화는 피할 수 없다. 정밀화로 조절할 수 있는 것은 그 밖의 소스 파일 glob이며, `$TURBO_DEFAULT$`로 기본 input에 예외를 더할 수 있다. lint, typecheck, test, build마다 inputs, outputs, dependsOn을 분리한다.
 - **pnpm-lock.yaml 변경** — 외부 패키지 버전 업그레이드를 의미하므로 대부분의 도구가 전체 캐시를 무효화한다. 외부 패키지 업그레이드는 CI 부하가 크므로, 매번 조금씩보다 주기적으로 일괄 업그레이드하는 편이 CI 비용 면에서 효율적일 수 있다.
 
 ## 플랫폼 건강 지표 (의존성 관측)
@@ -52,6 +52,8 @@ Build-time 통합은 pnpm workspace의 `workspace:*` 참조로 성립한다. pnp
 ## 출처
 
 - 모노레포가 모놀리스가 되지 않으려면 (2편) — 미리캔버스 프론트엔드 팀(종현 김), Medium
+- [Turborepo, Caching](https://turborepo.com/docs/crafting-your-repository/caching)
+- [Turborepo, Configuring tasks](https://turborepo.com/docs/reference/configuration)
 
 ## 관련 문서
 

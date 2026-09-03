@@ -80,7 +80,7 @@ Node.js:  timers큐 [ setTimeout ]  /  poll큐 [ I/O 콜백 ]  /  check큐 [ set
 | | 브라우저 | Node.js |
 |---|---|---|
 | **구조** | task source와 하나 이상의 task queue | 페이즈별 분리된 큐 |
-| **Microtask 처리** | Macrotask 1개마다 비움 | 콜백 실행이 끝나는 경계마다 비움. `process.nextTick`이 Promise microtask보다 먼저 처리됨 |
+| **Microtask 처리** | Macrotask 1개마다 비움 | 콜백 실행이 끝나는 경계마다 비움. CommonJS에서는 `process.nextTick`이 Promise microtask보다 먼저지만 ESM 최상위는 이미 microtask queue 안이어서 Promise와 `queueMicrotask`가 먼저 실행. ESM의 callback 안에서는 CommonJS와 동일 |
 | **setImmediate** | 없음 | check 페이즈 전용 |
 
 ---
@@ -119,3 +119,4 @@ nextTick과 setImmediate의 이름은 사실 서로 뒤바뀌어야 맞다.
 
 - [HTML Standard, Event loops](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops)
 - [Node.js Event Loop, Timers, and nextTick](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick)
+- [Node.js, When to use `queueMicrotask()` vs. `process.nextTick()`](https://nodejs.org/api/process.html#when-to-use-queuemicrotask-vs-processnexttick)

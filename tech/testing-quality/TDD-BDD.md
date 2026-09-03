@@ -71,7 +71,7 @@ Feature: 쿠폰 발급
 | 관점 | 개발자(내부 구조) | 사용자/이해관계자(외부 행위) |
 | 단위 | 함수, 클래스 | 시나리오, 스토리 |
 | 서술 | 테스트 코드(assert) | Given-When-Then 자연어 |
-| 도구 | JUnit, Jest, Vitest, pytest | Cucumber, SpecFlow, Behave, Jest describe/it |
+| 도구 | JUnit, Jest, Vitest, pytest | Cucumber, Reqnroll(SpecFlow 후속), Behave, Jest describe/it |
 | 리팩터링 내성 | 약함(구현 결합 쉬움) | 강함(행위 결합) |
 | 비개발자 협업 | 어려움 | 용이 |
 
@@ -123,6 +123,8 @@ describe("주문 할인 정책", () => {
 ## 출처
 - [Popit — BDD(Behaviour-Driven Development)에 대한 간략한 정리](https://www.popit.kr/bdd-behaviour-driven-development%EC%97%90-%EB%8C%80%ED%95%9C-%EA%B0%84%EB%9E%B5%ED%95%9C-%EC%A0%95%EB%A6%AC/)
 - [mingule — TDD, BDD란?](https://mingule.tistory.com/43)
+- [Reqnroll](https://reqnroll.net/)
+- [SpecFlow — NuGet](https://www.nuget.org/packages/SpecFlow)
 
 ## 관련 문서
 - [[HTTP-API-Integration-Testing|HTTP API 통합 테스트]]

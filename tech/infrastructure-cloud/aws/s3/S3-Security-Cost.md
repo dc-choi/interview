@@ -59,7 +59,7 @@ verified_at: 2026-07-21
 - Strong Consistency (2020.12)와 그 이전 eventual 모델
 - 스토리지 클래스 선택 기준 — 접근 빈도, 최소 보관(IA 30, Glacier 90, Deep 180), 검색 시간
 - IA, Glacier → Standard로 **자동 승격 불가** (수동 copy)
-- Multipart Upload — 5MB-5GB part, **최대 10,000 part**, 일반 Regions 50 TB 객체, GovCloud (US) 5 TB, 미완료 abort
+- Multipart Upload — 2026-09-03 AWS 문서 기준 5MB-5GB part, **최대 10,000 part**, 모든 리전에서 최대 50 TB 객체(48.8 TiB), 미완료 abort
 - prefix당 최소 3.5K write, 5.5K read 요청률과 이를 넘는 high-rate workload의 다중 prefix, 점진적 확장, 503 retry
 - Bucket Policy 5요소(Principal, Action, Effect, Resource, Condition), 객체는 버킷 권한 비상속
 - at-rest 암호화(SSE-S3, SSE-KMS, DSSE-KMS, SSE-C, Client-Side)와 TLS in-transit 구분

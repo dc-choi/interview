@@ -43,11 +43,16 @@ await mutex.runExclusive(async () => {
   /* critical section */
 });
 
-// ③ tryAcquire (대기 없이 즉시 시도, 실패 시 에러)
+// ③ tryAcquire decorator (대기 없이 즉시 시도, 실패 시 E_ALREADY_LOCKED)
+import { E_ALREADY_LOCKED, tryAcquire } from 'async-mutex';
 try {
-  const release = await mutex.tryAcquire();
-  /* ... */
-} catch (e) { /* 락 점유 중 */ }
+  await tryAcquire(mutex).runExclusive(async () => {
+    /* critical section */
+  });
+} catch (e) {
+  if (e !== E_ALREADY_LOCKED) throw e;
+  /* 락 점유 중일 때의 응답 처리 */
+}
 
 // ④ waitForUnlock (락 해제 대기만, 획득 X)
 await mutex.waitForUnlock();
@@ -68,3 +73,7 @@ await mutex.waitForUnlock();
 **한계**: 앱 레벨 락이므로 **여러 서버로 확장하면 무효** → 분산 락 필요.
 
 **3. 큐 + 이벤트**: Bull, BullMQ 같은 큐에 작업 넣고 순차 처리. 응답은 이벤트로. 처리량 제한의 대가로 순서 보장.
+
+## 출처
+
+- [async-mutex repository, README](https://github.com/DirtyHairy/async-mutex/blob/master/README.md)

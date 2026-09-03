@@ -71,10 +71,11 @@ Entity를 HTTP response로 직접 직렬화하면 lazy loading, 순환 reference
 
 ## 출처
 
-- [Jakarta Persistence 3.2, Fetch Strategies](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#fetch-strategies)
-- [Jakarta Persistence 3.2, Cascade and orphanRemoval](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#relationship-mapping-defaults)
-- [Hibernate ORM current User Guide, Fetching](https://docs.hibernate.org/stable/orm/userguide/html_single/#chapters/fetching/Fetching)
-- [Hibernate ORM 7.4 Migration Guide, Limits and fetch joins](https://docs.hibernate.org/orm/current/migration-guide/#limits-and-fetch-joins)
+- [Jakarta Persistence 3.2, OneToMany Annotation](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#onetomany-annotation)
+- [Jakarta Persistence 3.2, ManyToOne Annotation](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#manytoone-annotation)
+- [Jakarta Persistence 3.2, Entity Relationships](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a516)
+- [Hibernate ORM current User Guide, Fetching](https://docs.hibernate.org/stable/orm/userguide/html_single/#fetching)
+- [Hibernate ORM 7.4 Migration Guide, Limits and fetch joins](https://docs.hibernate.org/orm/current/migration-guide/#_limits_and_fetch_joins)
 - [Spring Boot, Open EntityManager in View](https://docs.spring.io/spring-boot/reference/data/sql.html#data.sql.jpa-and-spring-data.open-entity-manager-in-view)
 - 강의: [프록시](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21708), [즉시 로딩과 지연 로딩](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21709), [CASCADE와 고아 객체](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21710), [실전 예제 5](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=21711)
 - 김영한 강사, 활용 1: [엔티티 설계시 주의점](https://www.inflearn.com/courses/lecture?courseId=324119&unitId=24284)

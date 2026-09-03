@@ -135,7 +135,7 @@ const rawRows = await qb.execute();
 
 - `getResult()`와 `getSingleResult()`는 entity hydration과 Identity Map merge를 수행한다.
 - `execute()`는 raw object를 반환한다. 그 값을 바꿔도 UoW가 entity 변경으로 추적하지 않는다.
-- `nativeInsert`, `nativeUpdate`, `nativeDelete`도 entity graph를 통한 쓰기와 부작용이 다르다.
+- `insert`, `nativeUpdate`, `nativeDelete`도 entity graph를 통한 쓰기와 부작용이 다르다. EM 수준 insert API는 `em.insert()`와 `em.insertMany()`이며 `nativeInsert` 계열은 driver interface에만 남아 있다.
 - raw write 뒤 현재 EM에 같은 row가 이미 있으면 in-memory state가 stale할 수 있다. 새 fork, refresh 또는 명시적 동기화 전략을 선택한다.
 
 read DTO, aggregation, 대량 projection은 raw result가 더 명확할 수 있다. domain entity를 수정하고 cascade, hook, optimistic version을 기대하면 managed path를 사용한다.
@@ -161,5 +161,6 @@ event callback이 외부 message를 바로 발행하면 DB rollback과 message �
 - [Unit of Work](https://mikro-orm.io/docs/unit-of-work)
 - [Entity Manager](https://mikro-orm.io/docs/entity-manager)
 - [Events and Lifecycle Hooks](https://mikro-orm.io/docs/events)
+- [Upgrading from v5 to v6](https://mikro-orm.io/docs/upgrading-v5-to-v6)
 - [UnitOfWork source, v7.1.11](https://github.com/mikro-orm/mikro-orm/blob/v7.1.11/packages/core/src/unit-of-work/UnitOfWork.ts)
 - [RequestContext source, v7.1.11](https://github.com/mikro-orm/mikro-orm/blob/v7.1.11/packages/core/src/utils/RequestContext.ts)

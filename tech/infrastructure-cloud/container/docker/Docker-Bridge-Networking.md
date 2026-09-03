@@ -47,7 +47,7 @@ netfilter는 Linux kernel의 packet 처리 hook framework다. 대표 hook은 pre
 
 `iptables`와 `nft`는 이 framework의 ruleset을 구성하는 user-space 도구다. iptables를 netfilter 자체와 같은 것으로 보거나 NAT table을 일반적인 연결 매핑 자료구조와 같은 것으로 보면 안 된다.
 
-Docker Engine은 전통적으로 iptables backend를 사용한다. Docker 29에서 nftables backend가 추가됐지만 2026-08-04 공식 문서 기준 experimental이며 Swarm overlay network에는 적용되지 않는다. 운영 중인 backend를 먼저 확인하고 ruleset을 조사한다.
+Docker Engine은 전통적으로 iptables backend를 사용한다. Docker 29에서 nftables backend가 추가됐지만 2026-08-04 공식 문서 기준 experimental이다. overlay network 규칙이 아직 iptables에서 이전되지 않아 daemon이 Swarm mode로 동작할 때는 nftables backend 자체를 활성화할 수 없다. 운영 중인 backend를 먼저 확인하고 ruleset을 조사한다.
 
 - iptables backend의 사용자 선행 정책은 `DOCKER-USER` chain을 활용한다.
 - nftables backend에는 동일한 `DOCKER-USER` chain이 없다. 별도 table/base chain과 hook priority로 정책 순서를 정한다.

@@ -24,7 +24,7 @@ NestJS는 Express, Fastify 자체 부팅에 **DI 컨테이너 구성**과 모듈
 
 전형적 안티패턴:
 - 하나의 거대 Controller가 **모든 도메인** Use Case를 주입 (User, Post, Comment, Follow 다)
-- 유틸, 라이브러리 모듈을 **모든 곳에 `imports`** → 중복 인스턴스, 순차 로딩
+- 쓰지 않는 유틸, 라이브러리 모듈까지 **모든 곳에 `imports`** → 의존 트리와 부팅 초기화 대상 확산. 정적 모듈은 여러 번 import해도 기본적으로 인스턴스를 공유하고, 중복 인스턴스는 같은 Provider를 여러 모듈에 재등록하거나 호출마다 새 DynamicModule을 import할 때 생긴다
 - Global Module 남발 → 암묵적 의존 추적 어려움
 
 ## 측정 방법
@@ -171,6 +171,7 @@ async rarelyUsedFeature() {
 ## 출처
 - [velog @miinhho — NestJS 의존성 최적화를 통한 Cold Start 성능 개선](https://velog.io/@miinhho/NestJS-%EC%9D%98%EC%A1%B4%EC%84%B1-%EC%B5%9C%EC%A0%81%ED%99%94%EB%A5%BC-%ED%86%B5%ED%95%9C-Cold-Start-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0)
 - [NestJS — Lazy loading modules](https://docs.nestjs.com/fundamentals/lazy-loading-modules)
+- [NestJS — Modules](https://docs.nestjs.com/modules)
 - [NestJS — CLI overview](https://docs.nestjs.com/cli/overview)
 - [NestJS — CLI and scripts](https://docs.nestjs.com/cli/scripts)
 - [NestJS — SWC](https://docs.nestjs.com/recipes/swc)

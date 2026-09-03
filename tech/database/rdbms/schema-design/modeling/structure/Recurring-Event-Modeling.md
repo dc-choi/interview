@@ -25,7 +25,7 @@ occurrence가 원본이면 반복 규칙 변경 때 어느 행이 사용자의 �
 RFC 5545의 recurrence는 `DTSTART`를 첫 회차로 보고 `FREQ`, `INTERVAL`, `BYDAY` 같은 rule part로 다음 회차를 계산한다. 종료는 `COUNT` 또는 `UNTIL` 중 하나를 사용하며 둘을 동시에 두지 않는다. 둘 다 없으면 무기한 반복이다.
 
 ```text
-DTSTART;TZID=Asia/Seoul:20260804T090000
+DTSTART;TZID=Asia/Seoul:20260803T090000
 RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,WE;COUNT=20
 ```
 
@@ -83,7 +83,7 @@ CREATE TABLE event_occurrence (
 
 ## 출처
 
-- [RFC 5545, Internet Calendaring and Scheduling Core Object Specification](https://www.rfc-editor.org/rfc/rfc5545.html)
+- [RFC 5545, Internet Calendaring and Scheduling Core Object Specification](https://www.rfc-editor.org/rfc/rfc5545.txt)
 - [MySQL 8.4 Reference Manual, DATE, DATETIME and TIMESTAMP](https://dev.mysql.com/doc/refman/8.4/en/datetime.html)
 - [인프런, Hong, 일정 데이터 모델의 시작](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367641)
 - [인프런, Hong, 종일 일정과 관계 모델](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367640)

@@ -58,10 +58,11 @@ aliases: ["LLM Market Landscape", "생성형 AI 시장 점유율", "AI 서비스
 ## 사례
 
 - 2026.04 웹 방문 기준 7대 생성형 AI 서비스 점유율 측정(마케팅 분석 업체가 시장조사 업체 자료로 분석): 챗GPT 54.7%, 제미나이 27.4%, 클로드 8.2% 순.
-- 2026.06 애플 개발자 회의: 차기 OS 음성 비서(시리)에 챗GPT, 클로드, 제미나이를 사용자가 골라 쓰도록 개방 — 단말 유통 경쟁의 신호.
+- 2026.06 애플 개발자 회의: 앱 개발자가 Foundation Models 프레임워크에서 `LanguageModel` 프로토콜을 따르는 애플 파운데이션 모델, Claude와 Gemini 같은 모델을 선택할 수 있게 개방했다. Siri 자체는 애플 파운데이션 모델로 구동되며 Apple은 Google, Gemini와 협업해 구축했다고 밝혔다. 사용자가 Siri 안에서 모델을 고르는 기능은 공식 발표에 없다. 이는 앱 개발 생태계에서 모델 유통 경쟁이 넓어지는 신호다.
 
 ## 출처
 
+- [WWDC26 Apple Intelligence 가이드 — Apple Developer](https://developer.apple.com/wwdc26/guides/apple-intelligence/)
 - [챗GPT 웹 점유율 급락… 생성형 AI 3강 구도로 — 조선일보](https://n.news.naver.com/mnews/article/023/0003981096)
 
 ## 관련 문서

@@ -36,7 +36,7 @@ verified_at: 2026-08-25
 - **CloudFormation**
   - JSON/YAML. **Drift Detection**으로 수동 변경 감지
   - **CreationPolicy**: 신호 대기 (cfn-signal). **WaitCondition**보다 권장
-  - **DeletionPolicy**: Retain, Delete, Snapshot
+  - **DeletionPolicy**: Delete, Retain, RetainExceptOnCreate, Snapshot. RetainExceptOnCreate는 최초 생성이 롤백될 때만 삭제하고 그 밖에는 Retain처럼 동작
   - **StackSet**: 멀티 계정, 멀티 리전 배포 (Organizations 권장)
   - **Change Set**: 사전 변경 확인
   - **Nested Stack**: 재사용 가능한 모듈
@@ -157,6 +157,7 @@ verified_at: 2026-08-25
 - [Amazon Data Firehose, BufferingHints](https://docs.aws.amazon.com/firehose/latest/APIReference/API_BufferingHints.html)
 - [Amazon Aurora, Using Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html)
 - [Amazon DynamoDB, Global tables](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html)
-- [Amazon QLDB, End of support notice](https://docs.aws.amazon.com/qldb/latest/developerguide/getting-started-step-7.html)
+- [AWS General Reference, Services in Full Shutdown](https://docs.aws.amazon.com/general/latest/gr/full_shutdown_services.html)
+- [AWS CloudFormation, DeletionPolicy attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html)
 - [AWS DMS, Converting database schemas using DMS Schema Conversion](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html)
 - AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)

@@ -56,7 +56,7 @@ CPU, 메모리, 디스크, 네트워크, 커넥션 풀 같은 **자원**은 다�
 
 ## 출처
 
-- [Tom Wilkie — The RED Method](https://www.weave.works/blog/the-red-method-key-metrics-for-microservices-architecture/)
+- [The RED Method: How to Instrument Your Services — Grafana Labs, Tom Wilkie](https://grafana.com/blog/the-red-method-how-to-instrument-your-services/)
 - [Brendan Gregg — The USE Method](https://www.brendangregg.com/usemethod.html)
 
 ## 관련 문서

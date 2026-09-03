@@ -57,7 +57,7 @@ A 다음 B 다음 C를 실행한다는 이유만으로 하나의 Job에 Step을 
 
 Spring 테스트는 ApplicationContext를 캐싱해 같은 구성이면 재사용한다. 이 캐시를 깨는 순간 배치 테스트 전체가 느려진다.
 
-- 캐시 무효화 조건: `@MockBean`/`@SpyBean` 조합 변화, 테스트 프로퍼티 차이, 조건부 Bean 로딩 차이
+- 캐시 무효화 조건: `@MockitoBean`/`@MockitoSpyBean` 조합 변화, 테스트 프로퍼티 차이, 조건부 Bean 로딩 차이. Spring Boot 3.4 이전의 `@MockBean`/`@SpyBean`은 3.4에서 deprecated됐고 4.0에서 제거됐다
 - 함정: 배치 설정마다 `@ConditionalOnProperty`를 붙이고 테스트마다 해당 Job만 로딩 → **테스트마다 다른 컨텍스트** → 매번 재기동
 - 대안: **모든 Job Bean을 한 번에 로딩**하고, 테스트에서는 실행할 Job만 이름으로 찾아 실행 — 컨텍스트 1회 기동으로 전체 배치 테스트 커버
 
@@ -73,6 +73,7 @@ Spring 테스트는 ApplicationContext를 캐싱해 같은 구성이면 재사�
 ## 출처
 
 - [Spring Batch 운영과 설계 — YouTube 강의](https://www.youtube.com/watch?v=_nkJkWVH-mo&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=41)
+- [Spring Boot 4.0 Migration Guide — Spring](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide)
 
 ## 관련 문서
 

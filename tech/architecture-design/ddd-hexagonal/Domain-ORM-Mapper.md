@@ -3,7 +3,7 @@ tags: [architecture, ddd, hexagonal, orm, persistence, jpa, typeorm]
 status: done
 category: "Architecture - DDD, Hexagonal"
 aliases: ["Domain ORM Mapper", "도메인 ORM 통합과 분리", "Persistence Mapper"]
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 ---
 
 # 도메인 모델과 ORM 모델, 통합할까 분리할까
@@ -131,7 +131,7 @@ Q. 도메인 모델과 ORM 엔티티를 분리해야 하는가?
 
 ## 출처
 
-- [Jakarta Persistence 3.2 명세 — Entity Class](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#the-entity-class)
+- [Jakarta Persistence 3.2 명세 — Entity Class](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a18)
 - [Spring Data JPA 공식 문서 — Persisting Entities](https://docs.spring.io/spring-data/jpa/reference/jpa/entity-persistence.html)
 - [NestJS 공식 문서 — TypeORM 통합](https://docs.nestjs.com/techniques/database)
 - [토비 강사 — 도메인 모델과 JPA 엔티티](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=312138)

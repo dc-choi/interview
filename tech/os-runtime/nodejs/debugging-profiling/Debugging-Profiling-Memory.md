@@ -73,7 +73,7 @@ Node.js는 가비지 컬렉션 언어이므로, 참조가 남아있는 객체는
 | **클로저가 큰 객체 캡처** | 핸들러 함수가 큰 변수를 참조해 GC 막음 | 필요한 필드만 추출, 핸들러 분리 |
 | **타이머 미정리** | `setInterval` 등록 후 해제 X | `clearInterval`, OnDestroy 정리 |
 | **HTTP 요청 미종료** | 응답 안 끝나서 socket, 헤더 잔존 | timeout, `req.destroy()` |
-| **Buffer 풀 슬라이스 장기 보관** | 8KB 풀 전체가 GC 안 됨 | `allocUnsafeSlow` 또는 복사본 |
+| **Buffer 풀 슬라이스 장기 보관** | 현행 v24.18.0+/v26.3.0+에서는 64KiB 풀 전체가 GC 안 됨. 이전 릴리스 기본값은 8KiB | `allocUnsafeSlow` 또는 복사본 |
 
 ```ts
 // ❌ 리스너 누적
@@ -144,8 +144,8 @@ console.log(stats.heap_size_limit);       // 힙 최대 크기
 ### 0x 패키지 (가장 간편)
 ```bash
 npm install -g 0x
-0x -- node app.js       # 프로파일링 후 flamegraph.html 생성
-# Ctrl+C로 종료하면 브라우저에서 flame graph 열림
+0x -- node app.js       # Ctrl+C 뒤 <pid>.0x/flamegraph.html 생성
+0x --open -- node app.js # 생성 뒤 브라우저에서 바로 열기
 ```
 
 ### Linux Perf 기반 (상세 분석)
@@ -172,6 +172,8 @@ cat perfs.out | stackcollapse-perf.pl | flamegraph.pl --colors=js > profile.svg
 - [Node.js 공식 문서, Profiling Node.js Applications](https://nodejs.org/en/learn/getting-started/profiling)
 - [Node.js, V8](https://nodejs.org/api/v8.html)
 - [Node.js, Events](https://nodejs.org/api/events.html)
+- [Node.js, Buffer](https://nodejs.org/api/buffer.html)
+- [0x README — davidmarkclements](https://github.com/davidmarkclements/0x)
 
 ## 관련 문서
 - [[Debugging-Profiling|디버깅 & 프로파일링 인덱스]]

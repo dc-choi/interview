@@ -9,7 +9,7 @@ aliases: ["Redis Architecture"]
 # Redis architecture
 
 ## replication
-마스터와 복제본을 따로 두는 방식. 레디스의 복제 메커니즘은 비동기로 동작. 마스터가 복제본에 데이터가 잘 전달되었는지 확인하지 않음.
+마스터와 복제본을 따로 두는 방식이다. 복제 메커니즘은 비동기로 동작해 마스터가 명령마다 복제본의 처리를 기다리지 않는다. 다만 복제본이 처리한 오프셋을 주기적으로 비동기 ACK하므로 마스터는 각 복제본의 처리 위치를 안다. `WAIT`와 `min-replicas-to-write`가 이 정보를 사용한다.
 
 HA 기능이 없어서 마스터 장애 시 수동 변경 필요. 복제본에 직접 접속해서 복제를 끊고 애플리케이션 연결 설정도 변경해서 배포해야 함.
 
@@ -18,7 +18,7 @@ HA 기능이 없어서 마스터 장애 시 수동 변경 필요. 복제본에 �
 
 - 마스터가 죽으면 자동 페일오버 발생 → 복제본이 마스터로 승격
 - 애플리케이션에서 연결 설정 변경 불필요 (센티넬이 변경된 마스터 정보로 매핑)
-- 센티넬은 항상 **3대 이상 홀수**로 동작, **과반수 이상 동의** 시 페일오버 진행
+- 센티넬은 견고한 배포를 위해 **최소 3대**를 권장한다. 홀수는 요구사항이 아니며 공식 문서에도 4대 구성이 있다. **과반수 이상 동의** 시 페일오버 진행
 
 ## cluster
 최소 3개의 마스터가 필요하며 샤딩 기능을 제공함. 모든 노드가 서로를 감시하다가 마스터가 비정상일 경우 자동으로 페일 오버를 진행함. 일반적으로 하나의 마스터에 하나의 복제본을 두는게 일반적이다.
@@ -163,6 +163,8 @@ WATCH + MULTI/EXEC = **낙관적 락(optimistic CAS)**. 위 트랜잭션 섹션 
 - [Redis serialization protocol (RESP) spec](https://redis.io/docs/latest/develop/reference/protocol-spec/)
 - [Redis Docs, HELLO 명령](https://redis.io/docs/latest/commands/hello/)
 - [Redis Docs 아카이브, Install Redis on Windows](https://redis.io/docs/latest/operate/oss_and_stack/install/archive/install-redis/install-redis-on-windows/) — 공식 네이티브 빌드 미제공, WSL2 안내
+- [Redis Documentation, Replication](https://redis.io/docs/latest/operate/oss_and_stack/management/replication/)
+- [Redis Documentation, High availability with Redis Sentinel](https://redis.io/docs/latest/operate/oss_and_stack/management/sentinel/)
 
 ## 관련 문서
 - [[Redis-Data-Structures|Redis 자료구조]]

@@ -49,7 +49,7 @@ DB에 읽기 복제본이 있으면 **"어떤 쿼리를 어디로 보낼지"** �
 | Prisma (`extension-read-replicas`) | `$primary()` | `$replica()` |
 | TypeORM | QueryRunner, DataSource replication 설정 | 기본 읽기 동작 |
 | Sequelize | `{ useMaster: true }` 옵션 | 기본 (`findAll` 등) |
-| Hibernate | `@Transactional(readOnly = false)` + 라우터 | `readOnly = true` |
+| Spring (Spring Data JPA) | `@Transactional(readOnly = false)` + `AbstractRoutingDataSource` 라우터 | `@Transactional(readOnly = true)` |
 
 ## Replication Lag와 Read-After-Write
 
@@ -184,6 +184,7 @@ Replica 죽으면 읽기 실패. **Replica 헬스체크 + primary fallback** 전
 - [Prisma Docs — Read Replicas](https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/read-replicas)
 - [GitHub — prisma/extension-read-replicas](https://github.com/prisma/extension-read-replicas)
 - [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
+- [Spring Framework Reference, Using `@Transactional`](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html)
 
 ## 관련 문서
 - [[Replication|Replication (sync / async)]]

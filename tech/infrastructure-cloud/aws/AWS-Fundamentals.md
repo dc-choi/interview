@@ -63,7 +63,7 @@ AWS가 운영하는 **IDC(데이터센터) 집합 단위**. 거의 모든 클라
 | 구분 | Elasticity (탄력성) | Scalability (확장성) |
 |------|--------------------|---------------------|
 | 시점 | **단기 / 즉각적** | **장기 / 아키텍처적** |
-| 방향 | Scale **out**, in (수평) | Scale **up**, down (수직) 또는 아키텍처적 수평 확장 |
+| 방향 | 수요에 따라 Scale out, in 또는 up, down하고 불필요한 자원을 반납 | Scale out, in과 Scale up, down 모두 가능 |
 | 트리거 | 갑작스러운 수요 변동 | 예측 가능한 성장 |
 | 대표 서비스 | Auto Scaling, Lambda 동시성 | 인스턴스 패밀리 변경, DB Read Replica 추가 |
 | 비유 | "필요할 때 늘렸다가 줄임" | "감당할 수 있는 그릇을 키움" |
@@ -94,7 +94,7 @@ Out/In은 **stateless 워크로드**에 적합 (웹, API). Up/Down은 **DB, 캐�
 - 보통 Region은 **3~4개 AZ**로 구성된다
 - VPC 서브넷은 **단일 AZ에 종속** (Multi-AZ를 위해 서브넷도 AZ별로 생성)
 - Edge Location은 **CloudFront 캐시 서버** — Region 수보다 훨씬 많음
-- **Elasticity(Scale Out)** vs **Scalability(Scale Up)** 정의 구분
+- **Elasticity** vs **Scalability** 정의 구분 — Elasticity는 필요할 때 자원을 확보하고 불필요해지면 반납하는 능력이며 수평, 수직 확장을 모두 포함한다. Scalability도 늘어난 수요를 수평 또는 수직으로 감당하는 성질이다
 - 일부 서비스는 글로벌(IAM, Route 53, CloudFront), 대부분은 리저널
 - 다중 AZ 설계는 가용성(HA) 패턴의 출발점 — RDS Multi-AZ, ELB Cross-AZ
 
@@ -103,6 +103,7 @@ Out/In은 **stateless 워크로드**에 적합 (웹, API). Up/Down은 **DB, 캐�
 - [AWS 글로벌 인프라](https://aws.amazon.com/about-aws/global-infrastructure/)
 - [AWS Pricing](https://aws.amazon.com/pricing/)
 - [AWS Free Tier](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier.html)
+- [AWS Well-Architected, Elasticity](https://wa.aws.amazon.com/wellarchitected/2020-07-02T19-33-23/wat.concept.elasticity.en.html)
 - [Sungmin Kim 강사 — AWS 입문과 클라우드 비용 모델](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43720)
 
 ## 관련 문서

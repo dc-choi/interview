@@ -197,4 +197,4 @@ export class BService implements OnModuleInit {
 
 ## 출처
 - [NestJS — Dynamic modules](https://docs.nestjs.com/fundamentals/dynamic-modules)
-- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)
+- [NestJS — Migration guide (v11)](https://docs.nestjs.com/v11/migration-guide)

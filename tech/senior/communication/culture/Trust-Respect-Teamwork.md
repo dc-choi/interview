@@ -3,6 +3,7 @@ tags: [senior, communication, culture, teamwork, trust, psychological-safety]
 status: done
 category: "Senior - 커뮤니케이션"
 aliases: ["Trust Respect Teamwork", "신뢰와 존중의 팀워크", "효과적인 팀의 조건"]
+verified_at: 2026-09-03
 ---
 
 # 신뢰와 존중의 팀워크
@@ -47,5 +48,5 @@ aliases: ["Trust Respect Teamwork", "신뢰와 존중의 팀워크", "효과적�
 ## 출처
 
 - [같이 일한다는 것 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-02-working-together/)
-- [Google re:Work, Understand team effectiveness](https://rework.withgoogle.com/en/guides/understanding-team-effectiveness)
+- [Google re:Work, Understand team effectiveness](https://rework.withgoogle.com/intl/en/guides/understand-team-effectiveness)
 - [Radical Candor, Frequently Asked Questions](https://www.radicalcandor.com/frequently-asked-questions)

@@ -1,7 +1,7 @@
 ---
 tags: [web, network, api, rest, graphql, grpc, trpc, ts-rest]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "웹&네트워크(Web&Network)"
 aliases: ["API Comparison", "REST vs GraphQL vs gRPC", "REST vs GraphQL vs gRPC vs tRPC vs ts-rest"]
 ---
@@ -30,7 +30,7 @@ API 스타일의 본질적 차이를 한눈에 비교하고, 언제 무엇을 �
 
 같은 화면에 user 정보 + posts 목록 + 각 post의 comments를 보여줘야 한다고 할 때.
 
-**REST**: 3번 호출
+**REST**: 2+N번 호출
 ```
 GET /users/1
 GET /users/1/posts
@@ -99,11 +99,11 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 | 축 | tRPC | ts-rest |
 |----|------|---------|
 | 패러다임 | RPC (함수 호출) | 계약 우선 REST |
-| 엔드포인트 | 단일 `/trpc/*` | RESTful path 다수 |
+| 엔드포인트 | 설정한 base path 아래 procedure별 path | RESTful path 다수 |
 | 클라이언트 | `trpc.user.getById.query({id})` 함수 호출 | `client.users.getById({params:{id}})` |
-| 검증 | Zod, Typia procedure 입력 | Zod, Typia path, body, response schema |
-| OpenAPI | 별도 어댑터 (`trpc-openapi`) | 내장 (`generateOpenApi`) |
-| 다국어 클라 | ✗ (TS 전용) | OpenAPI 경유 가능 |
+| 검증 | Zod, Typia 등 procedure 입출력 | 안정판은 Zod 3 중심, Standard Schema는 3.53.0-rc.1부터 |
+| OpenAPI | 별도 어댑터 (`trpc-to-openapi`, 구 `trpc-openapi`는 아카이브) | 별도 공식 `@ts-rest/open-api` 패키지 |
+| 다국어 클라 | HTTP 직접 호출 가능, 공식 타입 추론과 코드 생성 없음 | OpenAPI 경유 가능 |
 | 응답 분기 | throw → catch | status discriminated union |
 | 적합 | 풀스택 TS 모놀리스, Next.js | 외부 공개, Mobile, OpenAPI 필요 |
 
@@ -117,7 +117,7 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 | **GraphQL** | 클라이언트가 응답 모양 결정, N+1 주의, 복잡 중첩 적합 |
 | **gRPC** | Protobuf 바이너리, HTTP/2 양방향 스트리밍, 내부 마이크로서비스 |
 | **tRPC** | TS 함수 호출, DX 최강, 풀스택 TS 한정 |
-| **ts-rest** | 계약 우선 REST, OpenAPI 내장, TS 안전 + 표준 호환 |
+| **ts-rest** | 계약 우선 REST, 공식 OpenAPI 패키지, TS 안전 + 표준 호환 |
 
 ## 함께 쓰는 패턴
 
@@ -134,7 +134,7 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 - 세 스타일이 해결하는 문제와 트레이드오프를 한 문장으로 설명
 - GraphQL 캐싱이 어려운 이유 → 단일 엔드포인트에 POST를 주로 써서 자원 URL 기반 캐싱이 자연스럽지 않음. 조회 GET과 persisted document는 예외
 - "왜 gRPC가 브라우저에서 직접 호출 안 되나" → HTTP/2 트레일러, 바이너리
-- 같은 화면 데이터를 REST 3번 vs GraphQL 1번 vs gRPC 1번으로 가져오는 차이
+- 같은 화면 데이터를 REST 2+N번 vs GraphQL 1번 vs gRPC 1번으로 가져오는 차이
 - BFF 계층에서 외부는 REST/GraphQL, 내부는 gRPC를 쓰는 이유
 
 ## 출처
@@ -143,6 +143,10 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 - [GraphQL over HTTP Stage 2 Draft](https://graphql.github.io/graphql-over-http/draft/)
 - [AWS — gRPC와 REST의 차이](https://aws.amazon.com/ko/compare/the-difference-between-grpc-and-rest/)
 - [gRPC 공식 문서 — What is gRPC](https://grpc.io/docs/what-is-grpc/)
+- [trpc-openapi archive notice and successor](https://github.com/trpc/trpc-openapi)
+- [tRPC, HTTP RPC Specification](https://trpc.io/docs/rpc)
+- [ts-rest, Contract Overview](https://ts-rest.com/contract/overview)
+- [ts-rest, OpenAPI](https://ts-rest.com/openapi)
 - [Dowon Lee 강사 — Microservice Architecture의 통신 방법](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289771)
 - [Dowon Lee 강사 — REST, GraphQL, gRPC 비교](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289776)
 

@@ -3,6 +3,7 @@ tags: [architecture, design-pattern]
 status: done
 category: "Architecture & Design"
 aliases: ["State 패턴이란?"]
+verified_at: 2026-09-03
 ---
 
 # State 패턴이란?
@@ -61,7 +62,7 @@ class OnlineState {
 - FAILED → PROCESSING (재시도)
 
 ## 실 사용 사례
-1. TCP 연결: CLOSED → LISTEN → ESTABLISHED → CLOSE_WAIT
+1. TCP 연결(수동 개방): CLOSED → LISTEN → SYN_RECEIVED → ESTABLISHED → CLOSE_WAIT
 2. 주문 시스템: 대기 → 결제완료 → 배송중 → 완료
 3. 게임 캐릭터: 대기 → 이동 → 공격 → 피격
 4. 비동기 컴포넌트 초기화: QueuingState → InitializedState
@@ -70,6 +71,7 @@ class OnlineState {
 
 - 얄팍한 코딩사전, [State 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=242756)
 - Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- [RFC 9293 — Transmission Control Protocol](https://www.rfc-editor.org/rfc/rfc9293.txt)
 
 ## 관련 문서
 

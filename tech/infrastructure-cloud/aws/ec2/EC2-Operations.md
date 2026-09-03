@@ -24,8 +24,8 @@ systemctl start docker
 - **Launch Template** — AMI, 인스턴스 타입, User Data, SG, IAM 정의
 - **Desired/Min/Max** — 원하는, 최소, 최대 인스턴스 수
 - **Scaling Policy** — Target Tracking(CPU 70%, ALB Request Count), Step, Scheduled
-- **Health Check** — EC2 또는 ELB. 비정상은 종료 후 재기동
-- **Lifecycle Hook** — 종료 직전 grace 시간 (드레인, 로그 수집)
+- **Health Check** — 2026-09-03 AWS 문서 기준, 기본 EC2 상태 검사에 더해 ELB, VPC Lattice, EBS 손상 검사와 `SetInstanceHealth`로 알리는 커스텀 검사를 사용할 수 있다. 비정상 인스턴스는 종료 후 교체
+- **Lifecycle Hook** — 2026-09-03 AWS 문서 기준 시작(`EC2_INSTANCE_LAUNCHING`)과 종료(`EC2_INSTANCE_TERMINATING`) 전환을 wait 상태로 붙잡는 훅. 기본 제한 시간은 1시간이며, 시작 시 부트스트랩을 마치거나 종료 시 드레인과 로그 수집을 수행하는 데 쓴다
 
 ## EC2 인스턴스 상태(Lifecycle)
 
@@ -38,7 +38,7 @@ systemctl start docker
 | **Shutting-down** | 종료 준비 중 | 미청구 |
 | **Terminated** | 종료 완료 | 미청구 |
 
-핵심: **Stop은 EBS 기반 인스턴스만 가능**, Instance Store 기반은 Stop = Terminate. Stop된 인스턴스에 연결된 EIP는 추가 비용 발생.
+2026-09-03 AWS 문서 기준, **Stop/Start는 EBS 루트 볼륨 인스턴스만 가능**하다. Instance Store 루트 인스턴스는 Stop 기능 자체를 지원하지 않아 재부팅하거나 종료해야 한다. Stop된 인스턴스에 연결된 EIP에도 공인 IPv4 주소 요금이 발생한다.
 
 ## AMI (Amazon Machine Image)
 
@@ -55,3 +55,9 @@ systemctl start docker
   - 사용자 제작 (Packer로 베이크하여 ASG Launch Template 표준화)
 
 AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 패턴.
+
+## 출처
+
+- [AWS 공식 문서, EC2 Auto Scaling health checks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html)
+- [AWS 공식 문서, Amazon EC2 Auto Scaling lifecycle hooks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html)
+- [AWS 공식 문서, Stop and start Amazon EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html)

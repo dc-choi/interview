@@ -1,7 +1,7 @@
 ---
 tags: [cs, typescript, pattern-matching, discriminated-union]
 status: done
-verified_at: 2026-08-28
+verified_at: 2026-09-03
 category: "CS - TypeScript"
 aliases: ["TS Pattern", "TS Pattern Matching"]
 ---
@@ -150,7 +150,7 @@ React 등에서 JSX 안 조건 렌더링은 자주 등장. 옵션:
 
 - **모든 if/else를 ts-pattern으로** → 번들 크기, 학습 비용 폭증
 - **`.otherwise()` 남발** → 타입 안전성 포기. 가급적 `.exhaustive()`
-- **discriminator 없는 Union에 매칭 시도** → 컴파일러가 좁히기 못 함. 항상 `type`, `kind` 같은 판별자 필드
+- **discriminator 없는 Union을 판별자 기준으로만 매칭하려 함** → 좁히기 자체는 판별자 없이도 가능하다. `in`, `instanceof` 같은 내장 guard와 ts-pattern의 구조 패턴(`{ swim: P.any }`)으로도 좁혀지고 `.exhaustive()`가 동작한다. `type`, `kind` 판별자 필드는 필수 조건이 아니라 분기 의도를 드러내고 패턴을 단순하게 만드는 설계 권장 사항이다
 - **벤치마크만 보고 거부** → 렌더링 성능과 ops/sec는 다름. 실제 context 측정 후 판단
 
 ## 면접 체크포인트
@@ -164,7 +164,7 @@ React 등에서 JSX 안 조건 렌더링은 자주 등장. 옵션:
 
 ## 출처
 - [Toss Tech — ts-pattern은 더 멋진 if문이 아니다](https://toss.tech/article/ts-pattern-usage)
-- [gvergnaud/ts-pattern — GitHub](https://github.com/gvergnaud/ts-pattern)
+- [gvergnaud/ts-pattern — GitHub](https://github.com/gvergnaud/ts-pattern#type-inference)
 
 ## 관련 문서
 - [[Types-As-Proofs|Types as Proofs (exhaustive check)]]

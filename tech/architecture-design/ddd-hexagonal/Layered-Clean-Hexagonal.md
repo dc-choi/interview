@@ -3,6 +3,7 @@ tags: [architecture, clean-architecture]
 status: done
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Layered / Clean / Hexagonal", "클린 아키텍처", "계층 아키텍처"]
+verified_at: 2026-09-03
 ---
 
 # Layered / Clean / Hexagonal Architecture
@@ -80,7 +81,7 @@ Alistair Cockburn이 제안. 비즈니스 로직(핵심)과 외부 세계 사이
 **구성:**
 - **Core (Domain)** — 순수 비즈니스 로직
 - **Port** — 핵심이 외부와 소통하는 인터페이스 (입력 포트 / 출력 포트)
-- **Adapter** — 포트의 구현체 (HTTP 컨트롤러, DB 리포지토리 등)
+- **Adapter** — 외부 기술과 포트를 연결하는 변환 컴포넌트. 입력 어댑터인 HTTP 컨트롤러는 입력 포트나 유스케이스를 호출하고, 출력 어댑터인 DB 리포지토리는 출력 포트를 구현한다
 
 포트 계약이 유지되고 새 기술의 의미 차이를 어댑터 안에서 흡수할 수 있으면 핵심 로직 변경을 줄일 수 있다. 데이터 이관이나 일관성 의미까지 달라지면 어댑터 교체만으로 끝나지 않는다.
 
@@ -125,6 +126,7 @@ Q. Layered와 Clean Architecture의 차이는?
 - Clean: 바깥→안쪽 의존, Domain이 중심이고 Infrastructure가 바깥
 
 ## 출처
+- [Alistair Cockburn — Hexagonal Architecture 원문](https://alistair.cockburn.us/hexagonal-architecture/)
 - [우아한형제들 — 클린 아키텍처](https://techblog.woowahan.com/2647/)
 - [coldpresso — 클린 아키텍처 정리](https://coldpresso.tistory.com/24)
 - [당근 — 아키텍처에 대한 고민은 처음이라](https://medium.com/daangn/아키텍처에-대한-고민은-처음이라-b75dffd73eb0)

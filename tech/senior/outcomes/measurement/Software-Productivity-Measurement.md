@@ -3,6 +3,7 @@ tags: [senior, productivity, measurement, management, anti-pattern, time-trackin
 status: done
 category: "Senior - 성과"
 aliases: ["Software Productivity Measurement", "소프트웨어 생산성 측정", "타임 트래킹", "생산성 측정 안티패턴"]
+verified_at: 2026-09-03
 ---
 
 # 소프트웨어 생산성 측정의 함정
@@ -79,7 +80,7 @@ aliases: ["Software Productivity Measurement", "소프트웨어 생산성 측정
 ### 결과 지표 (Outcome)
 - 서비스 SLO 달성률, 사용자 영향 있는 장애 빈도
 - 비즈니스 KPI 기여 (전환율, 매출, 리텐션)
-- DORA 4 메트릭: 배포 빈도, 리드 타임, MTTR, 변경 실패율
+- DORA 5개 지표: 변경 처리 시간, 배포 빈도, 실패 배포 복구 시간, 변경 실패율, 배포 재작업률. 2023년에 MTTR이 실패 배포 복구 시간으로 개명, 재정의됐고 2024년에 배포 재작업률이 추가됐다
 
 ### 영향 지표 (Impact)
 - 팀 생산성의 복리 기여 (공통 모듈, 도구, 문서)
@@ -127,11 +128,13 @@ aliases: ["Software Productivity Measurement", "소프트웨어 생산성 측정
 - **제조업식 관리 vs 소프트웨어**의 본질 차이 (균질성, 반복성, 가시성)
 - **Goodhart's Law** — "지표가 목표가 되면 더 이상 좋은 지표가 아니다"
 - **Anti-Metrics 5가지 이상** (LOC, 커밋 수, 작업 시간 등)
-- **DORA 4 메트릭** (배포 빈도, 리드 타임, MTTR, 변경 실패율)
+- **DORA 지표** (변경 처리 시간, 배포 빈도, 실패 배포 복구 시간, 변경 실패율, 배포 재작업률)
 - 결과, 영향, 품질, 자기 보고의 **4축 대체 지표**
 - 시니어가 잘못된 측정에 **개별 설명으로 대응**하는 원칙
 
 ## 출처
+- [DORA Metrics — 현재 5개 지표](https://dora.dev/guides/dora-metrics-four-keys/)
+- [DORA Metrics History — 명칭과 정의 변경 이력](https://dora.dev/insights/dora-metrics-history/)
 - [ITWorld — 개발자와 소프트웨어 개발을 망치는 타임 트래킹 (Nick Hodges)](https://www.itworld.co.kr/article/3603145/)
 
 ## 관련 문서

@@ -81,7 +81,7 @@ Primary 장애 시 자동 승격 이후 새 replica 보충과 재동기화 부�
 - **메모리**: `used_memory`, `used_memory_rss`, `mem_fragmentation_ratio`, peak memory, fork COW
 - **연결**: `connected_clients`, 거부된 연결
 - **복제**: `master_link_status`, `master_last_io_seconds_ago`
-- **persistence**: `rdb_last_bgsave_status`, `aof_last_rewrite_status`
+- **persistence**: `rdb_last_bgsave_status`, `aof_last_bgrewrite_status`, `aof_last_write_status`
 - **슬로우 쿼리**: `slowlog`
 - **키 만료율, hit rate**
 

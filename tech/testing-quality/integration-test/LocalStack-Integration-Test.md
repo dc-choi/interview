@@ -39,7 +39,6 @@ LocalStack은 더미 자격증명(`accessKeyId: "test"`)만으로 동작하고, 
 ## Docker Compose 구성
 
 ```yaml
-version: "3.9"
 services:
   localstack:
     image: localstack/localstack
@@ -47,12 +46,12 @@ services:
     ports:
       - "4566:4566"
     environment:
-      - SERVICES=ses,s3      # 필요한 서비스만 (전체 기동은 느림)
+      - SERVICES=ses,s3      # 이 두 서비스만 사용하도록 제한
     volumes:
       - "./localstack-init:/etc/localstack/init/ready.d"
 ```
 
-- `SERVICES`로 띄울 서비스를 좁힌다. 전체 서비스 기동은 시작 시간을 늘린다.
+- `SERVICES`는 나열한 서비스만 load하고 나머지 서비스 사용을 막는 제한 옵션이다. 서비스는 기본적으로 첫 요청에 lazy load되므로 이 값을 생략해도 모든 서비스가 시작 시점에 뜨지는 않는다. `EAGER_SERVICE_LOADING=1`을 켜면 모든 서비스를 시작 시 load해 기동 시간이 늘어난다.
 - 볼륨 마운트한 초기화 스크립트를 LocalStack이 준비 완료 시점에 자동 실행한다.
 
 ### 초기화 스크립트 (init.sh)
@@ -154,6 +153,8 @@ done
 ## 출처
 - [LocalStack을 활용한 AWS 통합테스트 — 인프랩 기술블로그](https://tech.inflab.com/202202-integration-test-with-localstack/)
 - [LocalStack Docs, Initialization Hooks](https://docs.localstack.cloud/aws/capabilities/config/initialization-hooks/)
+- [LocalStack Docs, Configuration](https://docs.localstack.cloud/aws/capabilities/config/configuration/)
+- [Docker Docs, Compose version top-level element](https://docs.docker.com/reference/compose-file/version-and-name/)
 
 ## 관련 문서
 - [[TestContainers-Integration|Testcontainers 통합 테스트]]

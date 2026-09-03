@@ -82,7 +82,7 @@ systemd는 soft를 1024 위로 올릴 때 `select(2)`가 1023을 넘는 fd를 �
 ## Node.js 관점
 
 - `fs` 계열 작업은 libuv 스레드풀에 위임되지만, fd를 소비하는 주체는 스레드가 아니라 프로세스다. `UV_THREADPOOL_SIZE`를 줄여도 이미 열려 있는 fd 수는 줄지 않는다
-- `EMFILE`은 예외로 던져지지 않고 콜백이나 Promise rejection의 `SystemError`로 올라온다. `error.code`는 문자열, `error.errno`는 libuv 에러 코드에 대응하는 음수이며 `util.getSystemErrorName(error.errno)`로 문자열을 얻는다. libuv 에러 코드 표는 [[libuv-Threading#에러 처리|libuv 에러 처리]]가 정본이다
+- 비동기 API의 `EMFILE`은 콜백 첫 인자나 Promise rejection의 `SystemError`로 전달되지만, `fs.openSync`, `fs.readFileSync` 같은 동기 API에서는 예외로 던져진다. `error.code`는 문자열, `error.errno`는 libuv 에러 코드에 대응하는 음수이며 `util.getSystemErrorName(error.errno)`로 문자열을 얻는다. libuv 에러 코드 표는 [[libuv-Threading#에러 처리|libuv 에러 처리]]가 정본이다
 - 디렉토리 대량 순회나 요청 폭주에서는 한도를 올리기 전에 **동시 실행 상한**을 두는 것이 정석이다. 상한이 없으면 한도를 얼마로 올려도 트래픽이 그만큼 더 열어 버린다
 - macOS 개발 환경은 기본 한도가 낮아 로컬에서만 `EMFILE`이 재현되는 일이 잦다. 로컬 재현만으로 프로덕션 한도를 추정하지 않는다
 

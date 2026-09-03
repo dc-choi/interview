@@ -31,7 +31,7 @@ aliases: ["Autoscaling Cost", "Autoscaling 비용 최적화", "오토스케일�
 
 - **기저 부하 = On-Demand + Savings Plans**, 변동 피크 = **Spot**. [[Reserved-Instance]]
 - ASG **Mixed Instances Policy**로 On-Demand/Spot 비율과 인스턴스 타입 다양화 → 중단 위험 분산 + 단가↓. [[AWS-Cost-Optimization|Jenkins on Spot 사례]]
-- **Warm Pool**: 미리 초기화한 인스턴스를 정지 상태로 대기 → 스케일아웃 지연/콜드스타트 비용 절감(정지 인스턴스는 EBS만 과금).
+- **Warm Pool**: 미리 초기화한 인스턴스를 정지 상태로 대기해 스케일아웃 지연과 콜드스타트 비용을 줄인다. 2026-09-03 AWS 문서 기준, Stopped 인스턴스에는 인스턴스 사용 요금이 발생하지 않지만 사용하는 EBS 볼륨과 연결된 Elastic IP 주소에는 요금이 발생한다.
 
 ## 컨테이너/서버리스
 
@@ -59,6 +59,7 @@ aliases: ["Autoscaling Cost", "Autoscaling 비용 최적화", "오토스케일�
 
 - [AWS — EC2 Auto Scaling scaling policies](https://docs.aws.amazon.com/autoscaling/ec2/userguide/scaling-overview.html)
 - [AWS — ASG with Mixed Instances & Spot](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups.html)
+- [Amazon EC2 Auto Scaling, Warm pools](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html)
 
 ## 관련 문서
 

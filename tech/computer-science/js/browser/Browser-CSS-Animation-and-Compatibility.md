@@ -1,7 +1,7 @@
 ---
 tags: [browser, css, animation, transition, compatibility, accessibility]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-03
 category: "CS - JavaScript"
 aliases: ["Browser CSS Animation", "브라우저 CSS 애니메이션과 호환성"]
 ---
@@ -61,7 +61,7 @@ class를 토글해 state를 표현하고 `transitionend`/`animationend`는 event
 
 - [CSS Animations Level 1](https://www.w3.org/TR/css-animations-1/)
 - [CSS Transitions Level 2](https://www.w3.org/TR/css-transitions-2/)
-- [CSS Conditional Rules, prefers-reduced-motion](https://drafts.csswg.org/mediaqueries-5/#prefers-reduced-motion)
+- [Media Queries Level 5, prefers-reduced-motion](https://www.w3.org/TR/mediaqueries-5/#prefers-reduced-motion)
 - [transform/transition](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102186), [timing/delay](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102187), [vendor prefix](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102188)
 
 ## 관련 문서

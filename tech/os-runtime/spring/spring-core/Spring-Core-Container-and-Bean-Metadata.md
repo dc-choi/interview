@@ -85,7 +85,7 @@ class AppConfig {
 
 ## Spring singleton은 pattern과 경계가 다르다
 
-Spring의 기본 singleton scope는 **Bean definition 하나당 container 하나 안에 instance 하나**다. JVM 전체에 하나인 GoF singleton도 아니고, class의 constructor를 private으로 만드는 pattern도 아니다. 같은 class를 서로 다른 Bean name으로 두 번 정의하거나 별도 `ApplicationContext`를 만들면 instance도 둘일 수 있다.
+Spring의 기본 singleton scope는 **Bean definition 하나당 container 하나 안에 instance 하나**다. ClassLoader당 하나로 범위를 고정하는 GoF singleton도 아니고, class의 constructor를 private으로 만드는 pattern도 아니다. 같은 class를 서로 다른 Bean name으로 두 번 정의하거나 별도 `ApplicationContext`를 만들면 instance도 둘일 수 있다.
 
 container가 instance 개수를 관리해도 thread safety는 보장하지 않는다. singleton Bean은 request별 user ID, 계산 중간값 같은 mutable state를 field에 저장하지 않고 parameter, local variable이나 별도의 짧은 scope로 넘긴다. connection pool처럼 공유 상태가 필요한 객체는 자체 동시성 계약을 명시해야 한다.
 
@@ -109,6 +109,7 @@ NestJS에서 같은 class를 여러 feature module의 `providers`에 반복 등�
 
 - [Spring Framework, Container Overview](https://docs.spring.io/spring-framework/reference/core/beans/basics.html)
 - [Spring Framework, Bean Overview](https://docs.spring.io/spring-framework/reference/core/beans/definition.html)
+- [Spring Framework, Bean Scopes](https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html)
 - [Spring Framework, `@Bean` and `@Configuration`](https://docs.spring.io/spring-framework/reference/core/beans/java/basic-concepts.html)
 - [Spring Boot 4.1, `SpringApplication`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/SpringApplication.html)
 - 김영한 강사, [Spring container 생성](https://www.inflearn.com/courses/lecture?courseId=325969&unitId=55352)

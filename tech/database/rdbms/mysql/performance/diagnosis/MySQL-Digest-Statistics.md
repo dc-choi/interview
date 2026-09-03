@@ -12,9 +12,9 @@ Performance Insights와 `events_statements_summary_by_digest`는 **정규화된 
 
 ## max_digest_length — 긴 쿼리가 한 덩어리로 오묶임
 
-MySQL은 **전체 SQL이 아니라 `max_digest_length` 바이트만큼 앞부분만 잘라** 정규화해 digest를 만든다. 기본값은 **1024바이트**.
+MySQL은 SQL을 먼저 정규화해 리터럴을 `?`로 치환하고 주석과 공백을 정리한 뒤 `max_digest_length` 한도 안에서 digest를 만든다. 기본값 1024에서 실제 정규화 statement의 유효 경계는 960바이트다.
 
-- 앞 1024바이트가 같고 **뒤 조건만 다른** 긴 쿼리들은 서로 다른 쿼리인데도 **하나의 digest로 합쳐진다**.
+- 정규화 결과의 앞 960바이트가 같고 **뒤 조건만 다른** 긴 쿼리들은 서로 다른 쿼리인데도 **하나의 digest로 합쳐진다**. 원본 SQL이 길어도 정규화 뒤 960바이트 이하면 이 절단 문제는 없다.
 - 결과적으로 통계가 뭉뚱그려져 어떤 쿼리가 진짜 문제인지 구분이 안 된다.
 - **대응**: 관련 파라미터를 늘린다(예: **4096**). 메모리 사용량은 늘지만 실제 영향은 작다고 보고 적용 가능.
 
@@ -95,6 +95,7 @@ MySQL에서 Prepared Statement를 쓰면 Performance Insights에서 **쿼리 통
 - [MySQL 8.4 Reference Manual, Statement Histogram Summary Tables](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-statement-histogram-summary-tables.html)
 - [MySQL 8.4 Reference Manual, Performance Schema System Variables](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-system-variables.html)
 - [MySQL 8.4 Reference Manual, Server Status Variables](https://dev.mysql.com/doc/refman/8.4/en/server-status-variables.html)
+- [MySQL 8.4 Reference Manual, Server System Variables](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html)
 
 ## 관련 문서
 - [[MySQL-Slow-Query-Diagnosis|MySQL Slow Query 진단]] — events_statements_summary_by_digest 활용

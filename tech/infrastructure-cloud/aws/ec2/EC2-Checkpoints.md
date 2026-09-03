@@ -23,7 +23,7 @@ verified_at: 2026-07-15
 - Nitro System이 Xen에서 바뀐 이유 (성능 오버헤드, 베어메탈)
 - Instance Store vs EBS 트레이드오프
 - T 시리즈 CPU 크레딧 시스템 — Unlimited 모드의 비용 함정
-- Placement Group 3종 (Cluster, Spread, Partition) 차이
+- Placement Group 4종(Cluster, Spread, Partition, Precision time) 차이. Precision time은 고정밀 시간 소스에 직접 접근할 수 있는 하드웨어에 배치해 로컬 NTP와 PTP Hardware Clock(PHC)을 제공한다
 - IMDSv2가 SSRF 방어에 어떻게 기여하는가
 - Savings Plans, Reserved, Spot 비용 모델 선택 기준
 - ASG의 Launch Template, Scaling Policy, Lifecycle Hook 흐름
@@ -53,6 +53,7 @@ verified_at: 2026-07-15
 - [AWS 공식 문서, View Spot Instance pricing history](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances-history.html)
 - [AWS 공식 문서, Spot Instance interruption notices](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html)
 - [AWS 공식 문서, Savings Plans types](https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html)
+- [AWS 공식 문서, Placement groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html)
 
 ## 관련 문서
 - [[EC2|AWS EC2 (목차)]]

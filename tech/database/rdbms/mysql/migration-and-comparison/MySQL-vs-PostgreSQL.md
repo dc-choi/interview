@@ -90,7 +90,7 @@ MySQL의 커넥션당 스레드 모델은 기본값이다. 진짜 **스레드 �
 
 ## 이관(migration) 고려사항
 
-- **호환 확인**: 함수명 차이(`NOW()` 등), `ON CONFLICT`(PG) vs `INSERT ... ON DUPLICATE KEY UPDATE`(MySQL), 대소문자 구분(PG는 기본 lower)
+- **호환 확인**: 함수명 차이(`IFNULL` → `COALESCE`, `GROUP_CONCAT` → `string_agg`, `DATE_FORMAT` → `to_char`), 같은 이름이지만 동작이 다른 `NOW()`(PostgreSQL은 트랜잭션 시작 시각, MySQL은 문장 시작 시각), `ON CONFLICT`(PG) vs `INSERT ... ON DUPLICATE KEY UPDATE`(MySQL), 대소문자 구분(PG는 기본 lower)
 - **커넥션 모델**: PostgreSQL 전환 시 PgBouncer 등 커넥션 풀러 도입 거의 필수
 - **운영 도구 변화**: `pg_dump`/`pg_restore`, `pg_stat_statements`, VACUUM 정책
 - **드라이버, ORM**: Prisma, TypeORM, Hibernate 모두 지원하지만 기능 차이 존재
@@ -116,6 +116,7 @@ MySQL의 커넥션당 스레드 모델은 기본값이다. 진짜 **스레드 �
 - [MySQL 8.4 Reference Manual, MySQL Replication Formats](https://dev.mysql.com/doc/refman/8.4/en/replication-formats.html)
 - [PostgreSQL 공식 문서, JSON Types](https://www.postgresql.org/docs/current/datatype-json.html)
 - [PostgreSQL 공식 문서, bloom extension](https://www.postgresql.org/docs/current/bloom.html)
+- [PostgreSQL Documentation, Date and Time Functions](https://www.postgresql.org/docs/current/functions-datetime.html)
 - [AWS — MySQL vs PostgreSQL 비교](https://aws.amazon.com/ko/compare/the-difference-between-mysql-vs-postgresql/)
 - [minji.sql — PostgreSQL, MySQL 비교](https://medium.com/@minji.sql/postgresql-mysql-%EB%B9%84%EA%B5%90-4b32bedb187e)
 - [우아한형제들 — Aurora MySQL에서 Aurora PostgreSQL로 이관](https://techblog.woowahan.com/6550/)

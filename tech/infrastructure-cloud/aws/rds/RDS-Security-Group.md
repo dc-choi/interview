@@ -1,6 +1,7 @@
 ---
 tags: [infrastructure, aws, rds, security-group]
 status: done
+verified_at: 2026-09-03
 category: "Infrastructure - AWS"
 aliases: ["RDS Security Group", "보안 그룹"]
 ---
@@ -12,18 +13,18 @@ aliases: ["RDS Security Group", "보안 그룹"]
 ## Security Group 기초
 
 - **Stateful**: 인바운드 허용된 트래픽의 응답은 아웃바운드 규칙 무관하게 자동 허용
-- **기본 거부**: 명시적 allow 규칙이 없으면 모두 차단
+- **기본 인바운드 거부**: 명시적 인바운드 allow 규칙이 없으면 들어오는 트래픽을 차단한다. 새 SG에는 기본적으로 모든 IPv4와 IPv6 아웃바운드를 허용하는 규칙이 생기므로 필요에 맞게 줄인다
 - **리소스 단위**: 한 리소스에 여러 SG 적용 가능, 여러 리소스가 같은 SG 공유 가능
 - **Stateless 방화벽인 NACL**(서브넷 단위)과 다름
 
-## RDS 자동 생성 SG의 문제
+## RDS 자동 생성 SG 검토
 
-RDS 인스턴스 생성 마법사가 만들어주는 `rds-launch-wizard-N` SG:
-- **생성자 IP만 인바운드 허용** — 다른 위치에서 접속 안 됨
-- **Lambda, EC2 애플리케이션에서 접근 불가** (다른 IP에서 오니까)
+RDS 콘솔의 **Create new**로 만들어지는 `rds-launch-wizard-N` SG:
+- 기본 흐름은 **생성 시점의 로컬 IP를 인바운드에 허용**한다
+- Lambda, EC2 등 다른 source의 접근은 별도 규칙이 없으면 차단된다
 - 이름이 모호해 나중에 여러 개 쌓이면 관리 혼돈
 
-→ 대부분 **새로 만들어 붙이는** 게 정석.
+자동 생성 여부보다 실제 규칙을 확인하고, 운영에서는 용도가 드러나는 계층별 SG를 명시적으로 관리한다.
 
 ## 적용 패턴
 
@@ -32,7 +33,7 @@ RDS 인스턴스 생성 마법사가 만들어주는 `rds-launch-wizard-N` SG:
 RDS Security Group:
   Inbound: 0.0.0.0/0 port 3306  ← 전세계 공개
 ```
-즉시 Shodan에 검색되고 무차별 대입 공격 받음. 절대 금지.
+인터넷 전체에서 DB 포트에 접근할 수 있어 스캔과 무차별 대입 공격 표면이 커진다. 공개하지 않는다.
 
 ### 느슨한 패턴 (개발용)
 ```
@@ -108,7 +109,7 @@ DB-SG inbound:
   - Lambda-SG port 3306  ← 추가
 ```
 
-Lambda가 VPC 안에 있으면 Cold Start 약간 증가하지만 RDS 직접 접근 가능. 또는 **RDS Proxy**를 앞단에 두어 연결 풀 관리.
+Lambda를 RDS가 있는 VPC의 private resource에 연결하고 라우팅과 SG를 허용하면 접근할 수 있다. 연결 수를 관리하려면 **RDS Proxy**도 검토한다.
 
 ## SG vs NACL 차이
 
@@ -118,7 +119,7 @@ Lambda가 VPC 안에 있으면 Cold Start 약간 증가하지만 RDS 직접 접�
 | 상태 | **Stateful** | Stateless (응답도 명시 필요) |
 | 규칙 | Allow만 | Allow + Deny |
 | 평가 순서 | 모든 규칙 평가 | 번호순 첫 매칭 |
-| 기본값 | 전부 차단 | 전부 허용 (기본 NACL) |
+| 기본값 | 새 SG는 인바운드 규칙 없음, 아웃바운드 전체 허용. VPC default SG는 같은 SG 소속 리소스의 인바운드도 허용 | 전부 허용 (기본 NACL) |
 
 대부분 **SG만으로 충분**. NACL은 서브넷 수준의 추가 방어선.
 
@@ -166,6 +167,12 @@ resource "aws_security_group" "db" {
 
 ## 출처
 - [velog @city7310 — 백엔드가 이정도는 해줘야 함 17. DB에 Security Group 할당](https://velog.io/@city7310/%EB%B0%B1%EC%97%94%EB%93%9C%EA%B0%80-%EC%9D%B4%EC%A0%95%EB%8F%84%EB%8A%94-%ED%95%B4%EC%A4%98%EC%95%BC-%ED%95%A8-17.-DB%EC%97%90-Security-Group%EC%9D%84-%EB%A7%8C%EB%93%A4%EC%96%B4-%ED%95%A0%EB%8B%B9%ED%95%98%EA%B8%B0-cajtiqe36n)
+- [AWS 공식 문서, Security groups](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html)
+- [AWS 공식 문서, Security group rules](https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html)
+- [AWS 공식 문서, Default security groups](https://docs.aws.amazon.com/vpc/latest/userguide/default-security-group.html)
+- [AWS 공식 문서, Default network ACL](https://docs.aws.amazon.com/vpc/latest/userguide/default-network-acl.html)
+- [Amazon RDS, Creating a DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html)
+- [AWS Lambda, VPC access](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html)
 
 ## 관련 문서
 - [[EC2|AWS EC2, ALB]]

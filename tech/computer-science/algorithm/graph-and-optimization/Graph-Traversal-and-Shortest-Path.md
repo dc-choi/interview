@@ -26,8 +26,9 @@ Depth-First Search는 한 경로를 더 갈 수 없을 때까지 따라간 뒤 b
 stack에 start 추가
 stack이 빌 때까지:
   vertex 꺼내기
-  아직 방문하지 않았다면 표시하고 처리
-  neighbor를 stack에 추가
+  이미 방문했다면 건너뛰기
+  표시하고 처리
+  아직 방문하지 않은 neighbor를 stack에 추가
 ```
 
 cycle이 있는 graph에서는 visited가 없으면 끝나지 않는다. directed cycle 탐지처럼 현재 recursion path와 전체 방문 완료를 구분해야 하는 문제도 있다.
@@ -110,6 +111,7 @@ relaxation으로 `dist[v]`를 갱신할 때 `prev[v] = u`도 저장한다. targe
 - [NIST DADS, Dijkstra's algorithm](https://xlinux.nist.gov/dads/HTML/dijkstraalgo.html)
 - [NIST DADS, Bellman-Ford algorithm](https://xlinux.nist.gov/dads/HTML/bellmanford.html)
 - [NIST DADS, Floyd-Warshall algorithm](https://xlinux.nist.gov/dads/HTML/floydWarshall.html)
+- [Princeton Algorithms, NonrecursiveDFS.java](https://algs4.cs.princeton.edu/41graph/NonrecursiveDFS.java.html)
 - [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — DFS와 BFS, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135789)
 - [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — Dijkstra 개념, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135773)
 - [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — 경로 복원, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135790)

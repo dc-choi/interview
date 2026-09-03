@@ -3,6 +3,7 @@ tags: [senior, ai, claude-code, agent, workflow, automation, tooling]
 status: done
 category: "Senior - AI 엔지니어링"
 aliases: ["Claude Code Workflows", "클로드 코드 워크플로우", "Claude Code 실전"]
+verified_at: 2026-09-03
 ---
 
 # Claude Code 개발 워크플로우 — 지시, 강제, 확장, 팀 도입
@@ -61,7 +62,7 @@ CLAUDE.md는 무시될 수 있는 가이드라인이고, 반드시 지켜야 하
 
 ### Skills
 
-재사용 지시문. 프로젝트 `.claude/skills/`(Git 공유) > 개인 전역 > 플러그인 순으로 우선.
+재사용 지시문. 이름이 겹치면 엔터프라이즈 > 개인 전역(`~/.claude/skills/`) > 프로젝트(`.claude/skills/`) 순으로 우선한다. 플러그인 스킬은 `plugin-name:skill-name` 네임스페이스를 사용해 다른 레벨과 충돌하지 않는다.
 
 - SKILL.md: 프론트매터(name, description) + 지시문 + `$ARGUMENTS`/`$0` 인자 치환, 동적 컨텍스트(백틱 셸 실행 결과 삽입)
 - `context: fork`로 서브에이전트 실행 (메인 컨텍스트 오염 방지)
@@ -132,6 +133,7 @@ Claude Code를 만든 엔지니어의 실사용 패턴. 위 원칙들의 극단�
 
 ## 출처
 
+- [Claude Code — Skills](https://code.claude.com/docs/en/skills)
 - [클로드 코드 가이드 (개발 파트 17챕터, 별첨 1 창시자의 워크플로우) — WikiDocs](https://wikidocs.net/book/19104)
 - [개인 생산성에서 조직 생산성으로, Claude Code on Amazon Bedrock 학습 플랜 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/claude-code-on-amazon-bedrock-training/)
 - [Claude Code on Amazon Bedrock 온라인 교육 프로그램 — AWS](https://dtlpyb0rtvxql.cloudfront.net/)

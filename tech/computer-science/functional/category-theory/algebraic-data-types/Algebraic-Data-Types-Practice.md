@@ -67,7 +67,7 @@ type Good =
 - **모든 product가 튜플은 아니다** — record/struct/class도 모두 product. 이름 있는 product
 - **모든 sum이 Either는 아니다** — Maybe(`1 + a`), Bool(`1 + 1`), discriminated union 모두 sum
 - **타입의 원소 개수가 무한이라도 대수는 작동** — `String`은 무한 집합이지만 `String × Bool`은 여전히 곱
-- **JavaScript의 raw union (`A | B`)은 진짜 sum이 아니다** — 타입이 겹치면 구별 불가. tag 있어야 disjoint union → 진짜 sum
+- **TypeScript의 raw union (`A | B`)은 진짜 sum이 아니다** — 타입이 겹치면 구별 불가. tag 있어야 disjoint union → 진짜 sum
 - **`a × 0 = 0`의 의미** — `[A, never]`는 만들 수 없는 타입(never의 인스턴스가 없으니까). 이를 활용해 "이 분기는 도달 불가"를 타입으로 표현 가능
 - **카디널리티 일치 ≠ 동형** — `[A, B]`와 `[B, A]`는 카디널리티 같고 동형. 그러나 의미 다른 두 타입이 카디널리티만 같고 동형 아닌 경우도 있음 (구조적 일치 필요)
 
@@ -79,3 +79,7 @@ type Good =
 - **Make illegal states unrepresentable** — sum type으로 잘못된 상태를 타입에서 차단
 - `deriving Eq/Show/Ord`의 카테고리적 정당성 (합성성)
 - TS의 raw union vs discriminated union 차이 — 후자가 진짜 coproduct/sum
+
+## 출처
+
+- [TypeScript Handbook, TypeScript for JavaScript Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html)

@@ -1,7 +1,7 @@
 ---
 tags: [cs, java, interview, equals, hashcode, string, synchronized, serialization]
 status: done
-verified_at: 2026-08-28
+verified_at: 2026-09-03
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Backend Fundamentals", "Java 백엔드 면접 기초"]
 ---
@@ -39,7 +39,7 @@ Java 백엔드 면접에서 언어, 런타임에 특화된 빈출 주제를 한�
 
 - **루프에서 문자열 결합**은 반드시 `StringBuilder`. `+`는 내부적으로 `StringBuilder`를 매번 생성할 수 있음
 - 멀티스레드에서 공유 버퍼에 쓸 일은 실무에서 드묾 → **`StringBuffer`는 거의 쓸 일 없음**(레거시)
-- JDK 9+의 JIT이 `+` 연산을 `StringConcatFactory`로 최적화하지만, 동적 개수 결합은 여전히 `StringBuilder`가 안전
+- JDK 9부터 javac는 `+` 연산을 `StringBuilder` append 체인 대신 `java.lang.invoke.StringConcatFactory`를 부트스트랩하는 `invokedynamic`으로 컴파일한다. 런타임 JIT의 변경이 아니라 컴파일 시점의 바이트코드 변경이며, 동적 개수 결합에는 여전히 `StringBuilder`가 안전하다
 
 ## 3. `synchronized`, `volatile`
 
@@ -73,7 +73,7 @@ Java 백엔드 면접에서 언어, 런타임에 특화된 빈출 주제를 한�
 
 ### ArrayList
 
-- 내부는 **동적 배열** — 기본 용량 10, 가득 차면 **1.5배로 확장**(Java 기준; `Arrays.copyOf`)
+- 내부는 **동적 배열** — 무인자 생성자의 초기 capacity 10은 API 계약이지만 정확한 확장 배율은 명세하지 않는다. OpenJDK 구현의 1.5배 확장을 모든 Java 버전의 규칙으로 보지 않는다
 - 확장 시 O(n) 복사 발생 → 예상 크기가 크면 `new ArrayList<>(initialCapacity)`로 미리 할당
 - 중간 삽입, 삭제는 O(n). 끝 추가는 O(1) 상각
 
@@ -108,7 +108,7 @@ Java 백엔드 면접에서 언어, 런타임에 특화된 빈출 주제를 한�
 ### `Serializable`
 
 - 마커 인터페이스. 구현하면 `ObjectOutputStream`으로 바이트 스트림 변환 가능
-- **`serialVersionUID`** 명시 권장 — 없으면 컴파일러가 필드 구성으로 해시 생성 → 클래스 변경 시 역직렬화 실패
+- **`serialVersionUID`** 명시 권장 — 없으면 직렬화 런타임이 클래스 구성으로 기본값을 계산한다. 이 계산은 컴파일러 구현 차이에 민감하고 클래스가 바뀌면 `InvalidClassException`으로 역직렬화가 실패할 수 있다
 - 보안 위험: 역직렬화 가젯 체인 공격(Jackson/XStream CVE 다수) → **신뢰 없는 입력을 역직렬화하지 말 것**
 
 ### JSON, ProtoBuf, Avro
@@ -187,7 +187,7 @@ void replace(User u) { u = new User("X"); }  // 원본 영향 X (복사본만 �
 ## 출처
 - [F-Lab — Java 백엔드 개발자 인터뷰 1편](https://f-lab.kr/blog/java-backend-interview-1)
 - [F-Lab — Java 백엔드 개발자 인터뷰 2편](https://f-lab.kr/blog/java-backend-interview-2)
-- [Java Language Specification 5.1.7, Boxing Conversion](https://docs.oracle.com/javase/specs/jls/se21/html/jls-5.html#jls-5.1.7)
+- [Java Language Specification 5.1.7, Boxing Conversion](https://docs.oracle.com/javase/specs/jls/se21/html/jls-5.html#jls-5.1.7), [JEP 280: Indify String Concatenation](https://openjdk.org/jeps/280), [Java SE 26, Serializable](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/io/Serializable.html)
 - [Java Language Specification 8.10, Record Classes](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10)
 - [OpenJDK 21 HashMap source](https://github.com/openjdk/jdk/blob/jdk-21%2B35/src/java.base/share/classes/java/util/HashMap.java)
 
