@@ -1,7 +1,7 @@
 ---
 tags: [architecture, pattern, event-sourcing, ddd, cqrs]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-04
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Event Sourcing", "이벤트 소싱", "ES"]
 ---
@@ -71,20 +71,20 @@ N번째 이벤트 시점에 현재 상태 직렬화 → snapshot 저장
 
 ## CQRS와의 관계
 
-Event Sourcing은 거의 항상 CQRS(Command Query Responsibility Segregation)와 함께 쓰인다.
+Event Sourcing은 CQRS(Command Query Responsibility Segregation)와 자주 결합하지만 필수는 아니다.
 
 - **Command 쪽**: Event Store에 이벤트 append
 - **Query 쪽**: Projection이 만든 Read Model 조회
 - 두 모델이 분리되니 각자 다른 DB, 다른 스키마, 다른 인덱스 가능
-- 트레이드오프: **최종 일관성 (eventual consistency)** — 쓰기 직후 읽기에 즉시 반영되지 않음
+- 비동기 Projection을 쓰는 경우의 트레이드오프: **최종 일관성 (eventual consistency)** — 쓰기 직후 Read Model에 반영되지 않을 수 있음
 
-쓰기, 읽기 모델이 분리되지 않으면 Event Sourcing의 이점(이력, 복원, 시간 여행)을 누리면서 조회 성능까지 chasing 못한다.
+단순한 도메인은 현재 상태를 이벤트에서 동기적으로 복원하거나 같은 프로세스에서 Projection할 수도 있다. 조회 부하와 모델이 쓰기 모델과 달라질 때 별도 Read Model을 두는 CQRS의 이점이 커진다.
 
 ## 장점
 
-- **감사 추적**: 모든 상태 변화가 사건으로 영구 보존. 별도 audit log 불필요
+- **변경 이력**: 상태 변화가 사건으로 보존돼 감사 자료의 기반이 된다. 다만 접근 기록, 관리자 작업, 법적 증빙처럼 이벤트에 없는 요구사항은 별도 audit log와 통제가 필요하다
 - **시간 여행**: 특정 시점의 상태 조회, 재현 가능 (디버깅, 법적 증빙, 테스트)
-- **재해 복구**: Event Store만 살아있으면 read model을 통째 재구성
+- **재해 복구**: Event Store와 호환되는 Projection 코드, 스키마와 외부 참조가 보존돼 있으면 Read Model을 재구성할 수 있음
 - **비즈니스 규칙 변경 흡수**: 새 규칙으로 과거 이벤트를 replay해 재집계 가능
 - **새 Read Model 추가 비용 낮음**: Projection 하나 추가하면 기존 이벤트로부터 자동 구성
 - **분산, MSA 친화**: 이벤트가 자연스러운 통신 단위라 서비스 간 결합 낮음
@@ -92,11 +92,11 @@ Event Sourcing은 거의 항상 CQRS(Command Query Responsibility Segregation)�
 ## 단점, 트레이드오프
 
 - **읽기 성능**: replay 비용 (Snapshot으로 완화)
-- **저장 공간**: 모든 이벤트 영구 보관 → CRUD 대비 큰 스토리지
-- **최종 일관성**: 쓰기 직후 read model에 즉시 반영 안 됨. UI, UX 설계에 영향
+- **저장 공간**: 보존 정책에 따라 append-only 이벤트가 누적돼 CRUD보다 큰 스토리지가 필요할 수 있음
+- **최종 일관성**: 비동기 Read Model을 두면 쓰기 직후 즉시 반영되지 않을 수 있음. UI, UX 설계에 영향
 - **러닝 커브**: DDD, Aggregate, CQRS 개념 선행 필요
 - **인프라 복잡도**: Event Store, Projection, 구독, 복구 파이프라인 운영 부담
-- **이벤트 스키마 evolution**: 한 번 저장된 이벤트는 바꾸기 어렵다. **버전 필드, 업캐스터(upcaster) 패턴** 필수
+- **이벤트 스키마 evolution**: 한 번 저장된 이벤트는 바꾸기 어렵다. 버전별 핸들러나 업캐스터(upcaster) 같은 호환 전략이 필요
 - **동시 쓰기 충돌**: 같은 aggregate 동시 수정 시 `expected_version` 기반 optimistic concurrency 필요
 
 ## 이벤트 스키마 진화 — Upcaster 패턴
@@ -109,7 +109,7 @@ Event Sourcing은 거의 항상 CQRS(Command Query Responsibility Segregation)�
 Upcaster: v1 이벤트를 v2로 변환해서 Aggregate에 전달
 ```
 
-- 이벤트는 절대 수정하지 않고, 읽을 때 변환 레이어를 통과시킴
+- 일반적인 진화에서는 저장 이벤트를 덮어쓰지 않고 읽을 때 변환 레이어를 통과시킨다. 법적 삭제나 물리적 재작성은 백업, 감사 추적과 원자적 전환을 갖춘 별도 통제 절차로 다룬다
 - 신규 필드 default 값 또는 도메인 규칙으로 채움
 - v3, v4 누적되면 변환 체인 관리가 부담 → snapshot에 최신 형태로 저장하는 것이 보완책
 
@@ -129,23 +129,23 @@ Outbox는 **메시지 발행 신뢰성** 문제 해결이 목적이고, Event So
 - 재화, 자산의 흐름을 추적해야 하는 시스템 (거래, 결제, 재고)
 - **제품 생애주기, 상태 전이가 비즈니스 본질인 시스템** (DPP, 공급망 추적, 물류)
 - 과거 시점 상태 재현이 자주 필요한 시스템 (분석, 복기, 디버깅)
-- 마이크로서비스 환경에서 서비스 간 결합을 낮추고 싶을 때
+- 여러 조회 모델과 과거 상태를 같은 상태 전이 이력에서 재구성해야 할 때. 마이크로서비스라는 이유만으로 도입하지는 않음
 
 ## 부적합한 경우
 
 - 단순 CRUD로 충분한 도메인 — 과설계
 - 팀이 DDD, CQRS 경험 없는 초기 단계 — 러닝 커브 부담
-- 즉시 일관성이 강하게 요구되는 트랜잭션 코어 — 최종 일관성과 충돌
+- 비동기 Read Model을 채택했지만 쓰기 직후 최신 상태를 반드시 조회해야 하고, command 결과나 동기 Projection 또는 일관 읽기 경로를 제공할 수 없는 경우
 - 도메인이 자주 통째로 바뀌는 초기 PMF 탐색 단계 — 이벤트 스키마 evolution 비용
 
 ## 운영 시 주의점
 
 - **이벤트는 논리적으로 append-only** — 보정은 새 이벤트(`PaymentReversed`)로 표현하되, 개인정보 보존과 법적 삭제 요구는 storage 설계에서 별도로 처리
-- **이벤트 페이로드 최소화** — 변하지 않는 사실만. 외부 시스템 응답, 시간 의존 데이터는 별도 조회 (Zero Payload 전략과 결합)
+- **재생 가능한 이벤트 페이로드** — 상태를 다시 만들 때 필요한 불변 사실과 당시의 외부 결정 결과를 기록한다. replay 중 변할 수 있는 외부 시스템을 다시 조회하면 과거 상태를 재현할 수 없다. 큰 데이터나 개인정보를 분리할 때도 불변 버전 참조와 보존, 삭제 정책을 함께 설계한다
 - **Aggregate 경계 설계가 핵심** — 너무 크면 동시성 충돌, 이벤트 폭주, 너무 작으면 일관성 보장 깨짐
 - **버전 필드 처음부터** — `event_type` + `version` 으로 시작해야 후속 진화 가능
 - **재해 복구 시나리오 미리** — Read Model 전체 rebuild 비용, 시간을 사전 측정
-- **개인정보, 민감 데이터** — Event Store가 영구 저장이라 GDPR 삭제 요청 시 crypto-shredding(키 폐기) 같은 전략 필요
+- **개인정보, 민감 데이터** — 삭제와 보존 의무를 먼저 확인하고 이벤트에 불필요한 개인정보를 넣지 않는다. crypto-shredding은 주체별 키를 분리하고 백업을 포함한 모든 키 복제본을 폐기할 수 있을 때 검토할 수 있는 한 방법이지 자동으로 삭제 의무를 충족하지 않는다
 
 ## 관련 문서
 
@@ -157,6 +157,8 @@ Outbox는 **메시지 발행 신뢰성** 문제 해결이 목적이고, Event So
 ## 출처
 
 - [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html)
+- [Azure Architecture Center, Event Sourcing pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing)
+- [NIST, Cryptographic Erase](https://csrc.nist.gov/glossary/term/cryptographic_erase)
 - [Dowon Lee 강사 — Event Sourcing 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290726)
 - [Event Sourcing 패턴 — 매일메일](https://www.maeil-mail.kr/question/292)
 - [이벤트 소싱(Event Sourcing) 개념 — mjspring on Medium](https://mjspring.medium.com/%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EC%86%8C%EC%8B%B1-event-sourcing-%EA%B0%9C%EB%85%90-50029f50f78c)

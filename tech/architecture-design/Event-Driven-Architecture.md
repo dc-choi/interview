@@ -1,6 +1,7 @@
 ---
 tags: [architecture, messaging, event-driven, overview]
 status: done
+verified_at: 2026-09-04
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "EDA Overview", "Event-Driven", "이벤트 드리븐"]
 ---
@@ -19,8 +20,6 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
 - 더 느슨한 결합 = 새 구독자 추가 자유 + 즉시 일관성 포기
 - 더 강한 일관성 = 분산의 이점 일부 포기
 
-도메인이 셋 중 어디를 우선하는지가 EDA 깊이를 결정한다.
-
 ## 8개 결정 층
 
 ### 층 1: 이벤트 기반인가? (들어갈지 결정)
@@ -29,10 +28,10 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
 |---|---|
 | 호출자가 수신자 다 알아야 | 발행자는 수신자 모름 |
 | 한 곳 실패 = 전체 실패 | 한 곳 실패 격리 가능 |
-| 즉시 일관성 ✅ | **최종 일관성** |
+| 호출 완료 시점에 결과 확인 가능 | 비동기 처리라면 보통 **최종 일관성** |
 | 확장 어려움 | 새 구독자 추가 자유 |
 
-**결정 기준**: 도메인이 최종 일관성을 받아들일 수 있나? UI/UX가 방금 한 작업이 즉시 반영된다는 가정으로 설계되어 있나?
+**결정 기준**: 비동기 처리를 선택할 때 도메인이 최종 일관성을 받아들일 수 있나? UI/UX가 방금 한 작업이 즉시 반영된다는 가정으로 설계되어 있나?
 
 ### 층 2: 발행자 신뢰성 (Producer-Side Reliability)
 
@@ -44,7 +43,7 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
 - [[Transactional-Outbox]] — DB 트랜잭션 안에 outbox INSERT → Relay가 폴링/CDC로 발행
 - [[CDC&Outbox]] — Debezium이 WAL 읽어 발행 (대규모)
 
-**결과**: at-least-once 보장.
+**결과**: DB 변경과 발행 대상 기록 사이의 dual write 간극을 없앤다. Relay가 성공 확인 전 재시도하고 기록을 보존하면 중복 전달이 가능한 at-least-once를 구성할 수 있으므로 Consumer는 멱등해야 한다.
 
 ### 층 3: 소비자 신뢰성 (Consumer-Side Reliability)
 
@@ -65,7 +64,7 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
 
 **해결**:
 - **사실 기반 이벤트** — 동사 과거형 (`OrderPlaced`, `PaymentReceived`, `ProductRecycled`)
-- **Zero Payload 전략** — ID만 발행, Consumer가 Source of Truth 재조회
+- **Zero Payload 전략** — 현재 상태 알림이 목적일 때 ID만 발행하고 Consumer가 Source of Truth 재조회. Event Sourcing의 상태 복원 원본처럼 당시 사실을 보존해야 하는 이벤트에는 적용하지 않음
   - 트레이드오프: 조회 1회 추가
   - 이점: 오래된 payload 완화, 스키마 안정, 조회 시점의 최신 상태. 순서 자체는 보장하지 않음
 
@@ -91,7 +90,7 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
   - **Choreography**: 각 서비스가 이벤트 듣고 자기 단계 (단계 적을 때)
   - **Orchestration**: 중앙 코디네이터가 호출 순서 통제 (복잡할 때)
 
-**적용 결정**: 단일 서비스 안에서 풀 수 있으면 안 씀. 진짜 분산이면 Saga + 보상.
+**적용 결정**: 단일 서비스 안에서 풀 수 있으면 안 쓴다. 여러 서비스의 긴 비즈니스 흐름이고 각 단계에 보상 의미가 있으면 Saga를 검토한다. 참여 기술이 원자적 조정을 지원하고 짧은 블로킹과 복구 비용을 감당할 수 있으면 2PC도 선택지다.
 
 ### 층 7: 이벤트 보관, 재처리 (Persistence & Replay)
 
@@ -107,7 +106,7 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
 
 CQRS와의 결합:
 - **CQRS (Command Query Responsibility Segregation)** = 쓰기/읽기 모델 분리
-- Event Sourcing은 거의 항상 CQRS와 함께 — Command는 Event Store에 append, Query는 Projection이 만든 Read Model 조회
+- Event Sourcing은 CQRS와 자주 결합하지만 필수는 아니다. 비동기 Projection을 쓰는 구성에서는 Query용 Read Model이 최종 일관성을 갖는다
 
 ### 층 8: 운영, 관측 (Operations, Observability)
 
@@ -127,7 +126,7 @@ CQRS와의 결합:
 [층 1: 결정] 이벤트 기반? 최종 일관성 OK?
     ↓ YES
 [층 2: 발행 신뢰성]  Outbox or CDC
-    ↓ at-least-once
+    ↓ 재시도와 확인을 갖추면 at-least-once
 [브로커]  SNS, SQS, Kafka, RabbitMQ, EventBridge, Pub/Sub
     ↓
 [층 3: 소비 신뢰성]  Idempotency Key + DLQ + Visibility Timeout
@@ -140,7 +139,7 @@ CQRS와의 결합:
     ├─ 단순 알림 fan-out → 여기까지로 충분
     ├─ 분산 트랜잭션 필요? → 층 6: Saga (보상)
     ├─ 감사, 복구, 새 read model 자주? → 층 7: Event Store 확장
-    └─ 상태 자체가 본질? → 층 7: Event Sourcing + CQRS
+    └─ 상태 자체가 본질? → 층 7: Event Sourcing, CQRS 필요성 검토
     ↓
 [층 8: 운영]  DLQ, lag, Upcaster, 재해 복구, 분산 트레이싱
 ```
@@ -153,7 +152,7 @@ CQRS와의 결합:
 | 발주, 재고 같은 비즈니스 이벤트 | 층 1~5 | Outbox + SNS/SQS + Saga(필요시) |
 | 결제, 금융, 정산 | 층 1~6 + 8 | Outbox + Saga + 감사 로그 |
 | 제품 생애주기, 공급망, DPP | 층 1~7 + 8 | Event Store 확장 또는 Event Sourcing 검토 |
-| 감사, 규제, SOX, GDPR 강제 | 층 1~7 (ES 권장) | Event Sourcing + CQRS + crypto-shredding |
+| 감사, 규제 대응 | 요구사항별 결정 | 보존, 접근, 정정과 삭제 정책을 먼저 정하고 Event Sourcing은 적합할 때만 검토. crypto-shredding도 키 복제본과 백업까지 폐기 가능한 경우의 한 선택지 |
 
 ## 인접 패턴 분류 정리
 
@@ -196,3 +195,5 @@ CQRS와의 결합:
 ## 출처
 
 - [PostgreSQL, PREPARE TRANSACTION](https://www.postgresql.org/docs/current/sql-prepare-transaction.html)
+- [AWS Prescriptive Guidance, Transactional Outbox](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
+- [Azure Architecture Center, Event Sourcing pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing)
