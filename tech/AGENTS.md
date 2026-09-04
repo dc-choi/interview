@@ -2,7 +2,7 @@
 
 이 파일은 `tech/` 아래의 기술 지식 문서, 카테고리 인덱스와 기술 메모에 적용한다. 메모 입력을 문서화할 때는 `memo` 스킬도 함께 사용한다.
 
-`tech/senior/`에서 조직 문화, 의사결정, 피드백, 회고와 OKR을 다룰 때는 `fit/AGENTS.md`도 읽는다.
+`tech/senior/`에서 조직 문화, 의사결정, 피드백, 회고와 OKR을 다루거나 `tech/ai-engineering/org-role/`에서 조직과 역할 변화를 다룰 때는 `fit/AGENTS.md`도 읽는다.
 
 ## 현재 실무 기술 축
 

@@ -31,6 +31,9 @@
 - [[tech/testing-quality/테스트&품질(Testing&Quality)|테스트&품질(Testing&Quality)]]
 - [[tech/security/보안(Security)|보안(Security)]]
 
+### AI 엔지니어링(AI Engineering)
+- [[tech/ai-engineering/AI엔지니어링(AIEngineering)|AI엔지니어링(AIEngineering)]] — 모델과 패러다임, 에이전트와 하네스, 평가, 조직과 역할 변화
+
 ### 비즈니스&제품(Business&Product)
 - [[biz/비즈니스&제품(Business&Product)|비즈니스&제품(Business&Product)]]
 
