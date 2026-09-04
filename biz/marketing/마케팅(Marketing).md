@@ -1,7 +1,7 @@
 ---
 tags: [business, marketing]
 status: index
-category: "Business - 마케팅"
+category: "비즈니스&제품(Business&Product)"
 aliases: ["Marketing", "마케팅"]
 ---
 
@@ -12,4 +12,4 @@ aliases: ["Marketing", "마케팅"]
 ## 목차
 - [x] [[Marketing-Fundamentals|마케팅, 브랜딩, 광고 기초 (층위, STP, 4P, Customer Journey)]]
 - [x] [[GTM-Strategy|Go-to-Market 전략]] *(→ product-strategy/)*
-- [x] [[Content-Marketing|콘텐츠 마케팅]] *(→ analytics/)*
+- [x] [[Content-Marketing|콘텐츠 마케팅]]

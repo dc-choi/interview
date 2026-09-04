@@ -117,4 +117,5 @@ Q. GTM 전략을 어떻게 수립/실행했는가?
 - [[Marketing-Fundamentals|마케팅, 브랜딩, 광고 기초 (층위, STP, 4P, Customer Journey)]]
 - [[Market-Analysis|시장 분석]]
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
+- [[Scaling-and-Hiring|1인 제품 확장과 첫 채용]]
 - [[Content-Marketing|콘텐츠 마케팅]]

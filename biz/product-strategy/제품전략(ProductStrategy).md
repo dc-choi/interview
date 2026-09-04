@@ -1,19 +1,17 @@
 ---
 tags: [business, product]
 status: index
-category: "Business - 제품 전략"
-aliases: ["Product Strategy"]
+category: "비즈니스&제품(Business&Product)"
+aliases: ["Product Strategy", "제품 전략"]
 ---
 
 # 제품 전략(Product Strategy)
 
-GTM, PMF, 사용자 피드백, 로드맵, 확장 전략, 서비스 설계 — 제품을 시장에 안착시키는 방법.
+기회를 발견하고 시장 반응을 검증한 뒤, 제품을 전달하고 성장시키는 방법.
 
-## 목차
-- [x] [[GTM-Strategy|Go-to-Market 전략]]
-- [x] [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
-- [x] [[User-Feedback|사용자 피드백 관리]]
-- [x] [[PRD-Writing|PRD 작성법 (MoSCoW, 유저 시나리오/스토리/플로우, 화면 명세, Living Document)]]
-- [x] [[Product-Roadmap|프로덕트 로드맵 (Vision-Goal-Theme-우선순위, Story Mapping, Living Document)]]
-- [x] [[Expansion-Strategy|확장과 경쟁 전략 (expansion-strategy/ 폴더 인덱스)]] — 카테고리 확장, 커뮤니티, D2C, 미투, 플랫폼 파워
-- [x] [[Service-Design|서비스 설계와 UX 패턴 (service-design/ 폴더 인덱스)]] — GOV.UK 설계 원칙, 게이미피케이션, 다크 패턴, 페이지네이션
+## 운영 루프
+
+1. **발견:** [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]
+2. **검증과 진입:** [[Solo-Product-Market-Validation|1인 제품 시장 검증]], [[Business-Model|비즈니스 모델]], [[Pricing-Strategy|가격 정책]], [[GTM-Strategy|Go-to-Market 전략]]을 함께 반복
+3. **전달과 학습:** [[User-Feedback|사용자 피드백]], [[Product-Roadmap|프로덕트 로드맵]], [[PRD-Writing|PRD 작성법]], [[Service-Design|서비스 설계와 UX 패턴]], [[PMF-Funnel|PMF 신호와 전환 퍼널]]
+4. **성장:** [[Expansion-Strategy|성장과 확장 전략]] — 부트스트랩 운영, 경쟁 전략, 확장과 첫 채용

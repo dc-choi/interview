@@ -16,6 +16,7 @@ aliases: ["Service Design", "서비스 설계"]
 - [x] [[Pagination-Patterns|페이지네이션 UX 패턴]] — Pagination, Load More, Infinite Scroll, SEO, 접근성
 - [x] [[Cross-Device-UX|크로스 디바이스 심리스 UX와 QR]] — 포그 행동 모델, 기술 상용화 조건, QR 로그인 플로우
 - [x] [[Search-UX|검색 UX 설계]] — 탐색형 vs 목적형, 여정 4단계 불편, 정렬/필터의 인덱스 비용
+- [x] [[Personalization-Recommendation|개인화와 추천]] — 데이터 수준 5단계, 추천 3요소, 운영 함정, FAT 윤리
 - [x] [[UI-Screen-Design|화면 UI 설계 (ui-design/ 폴더 인덱스)]] — UI 용어, 시각적 위계, UX 법칙, 가이드 배치
 
 ## 관련 문서

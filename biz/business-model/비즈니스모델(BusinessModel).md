@@ -1,7 +1,7 @@
 ---
 tags: [business, model]
 status: index
-category: "Business - 모델"
+category: "비즈니스&제품(Business&Product)"
 aliases: ["Business Model Index"]
 ---
 

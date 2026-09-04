@@ -1,11 +1,13 @@
 ---
-tags: [business, product, feedback]
+tags: [business, product, feedback, discovery]
 status: done
 category: "비즈니스&제품(Business&Product)"
 aliases: ["User Feedback", "사용자 피드백", "Kano Model"]
 ---
 
 # 사용자 피드백 관리
+
+이 문서는 제품을 운영하며 들어오는 피드백을 수집하고 해석해 우선순위를 정하는 방법을 다룬다. 새로운 문제와 욕망에서 기회를 찾는 절차는 [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]에서 다룬다.
 
 ## Kano 모델
 
@@ -40,17 +42,6 @@ Noriaki Kano(1984)가 제안한 고객 만족도 분류 프레임워크이다.
 
 **실무:** RICE로 정량 점수, MoSCoW로 범위 합의, Kano로 고객 관점 확인을 조합할 수 있다. 사용 여정 전체를 얕게 가로지르는 슬라이스로 MVP 범위를 정하는 Story Mapping은 [[Product-Roadmap|프로덕트 로드맵]] 참조.
 
-## Marty Cagan의 4가지 제품 리스크
-
-구현 전에 검증해야 할 4가지 리스크이다 (INSPIRED, 2018). 역할은 함께 검토하되, 표는 각 리스크의 주 검토 책임을 설명하는 시작점이다.
-
-| 리스크 | 질문 | 주 검토 역할 예시 |
-|---|---|---|
-| **Value** | 고객이 사거나 쓸 것인가? | PM |
-| **Usability** | 사용법을 알아낼 수 있는가? | Designer |
-| **Feasibility** | 기술적으로 만들 수 있는가? | Engineer |
-| **Viability** | 비즈니스적으로 성립하는가? | PM |
-
 ## JTBD 인터뷰 기법
 
 Clayton Christensen과 Bob Moesta 등의 연구와 실무에서 널리 알려진 접근이다.
@@ -75,13 +66,17 @@ Clayton Christensen과 Bob Moesta 등의 연구와 실무에서 널리 알려진
 제품을 만드는 팀이 원하는 제품 결과를 향해 작은 연구 활동을 수행하고, 고객과 최소 주 1회 접점을 갖는 접근이다 (《Continuous Discovery Habits》, 2021). 최소 주 1회는 Teresa Torres가 제시한 정의의 기준이다. 현실 제약 때문에 더 느슨하게 운영한다면 점진적 도입 또는 로컬 적응으로 구분하고, 고객 수와 방식은 연구 질문과 위험에 맞춘다.
 
 **Opportunity Solution Tree:**
-- **Outcome** (비즈니스 목표) → **Opportunity** (고객 니즈/페인) → **Solution** (아이디어) → **Experiment** (가설 검증)
+- **Outcome** (비즈니스 목표) → **Opportunity** (고객 니즈/페인/욕망) → **Solution** (아이디어) → **Assumption Test** (가정 검증)
 
 **핵심 습관:**
 1. 제품을 만드는 팀이 고객 접점을 최소 주간 리듬으로 운영 — 매번 고객 한 명을 인터뷰한다는 뜻은 아니며 연구 질문에 맞는 방식과 표본을 명시
 2. 기회(Opportunity)와 솔루션(Solution)을 분리 — 솔루션으로 바로 뛰어가지 않음
 3. 가정을 식별하고 가장 위험한 것부터 테스트
 4. Outcome은 기능이 아니라 비교 가능한 결과로 정의 (예: 기준선, 목표, 대상 코호트와 관찰 기간을 정한 주간 활성률 변화)
+
+## 1인 제품 기회 발견
+
+제품 기회는 반복되는 불편뿐 아니라 사용자가 원하는 기능적, 감정적, 사회적 진전에서도 찾는다. 경험 도메인 인벤토리부터 행동 증거와 발견 단계 종료 조건까지의 절차는 [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]에서 다룬다.
 
 ## 현장 적용: school-manage
 
@@ -99,11 +94,13 @@ Q. 사용자 피드백을 어떻게 관리하는가?
 
 ## 출처
 - [Intercom, RICE: Simple prioritization for product managers](https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/)
-- [Silicon Valley Product Group, The Four Big Risks](https://www.svpg.com/four-big-risks/)
 - [Product Talk, Continuous Discovery Habits](https://www.producttalk.org/continuous-discovery-habits-book/)
+- [Product Talk, Opportunity Solution Trees](https://www.producttalk.org/opportunity-solution-trees/)
+- [Nielsen Norman Group, Interviewing Users](https://www.nngroup.com/articles/interviewing-users/)
 - [승무원을 위한 서비스 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/60)
 
 ## 관련 문서
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
+- [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]
 - [[Risk-Management|리스크 관리]]
 - [[GTM-Strategy|GTM 전략 (니치 버티컬의 사용자 기반 확장)]]

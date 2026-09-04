@@ -1,7 +1,7 @@
 ---
 tags: [business, product, ux, seo, web]
 status: done
-category: "Business - 제품 전략"
+category: "비즈니스&제품(Business&Product)"
 aliases: ["Pagination", "Infinite Scroll", "Load More", "페이지네이션", "무한 스크롤", "로드 더보기"]
 ---
 

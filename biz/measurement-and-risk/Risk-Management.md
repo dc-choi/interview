@@ -27,14 +27,9 @@ aliases: ["Risk Management", "리스크 관리"]
 3. **Feasibility Risk:** 기술적으로 불가능할 수 있다
 4. **Viability Risk:** 비즈니스적으로 성립하지 않을 수 있다
 
-## 가설 기반 검증 (Lean Validation)
+## 리스크를 검증 가능한 가정으로 바꾼다
 
-리스크를 가설로 전환하고, 최소 비용으로 검증한다.
-
-1. **가설 설정:** "사제가 추천하면 빠르게 확산될 것이다"
-2. **실험 설계:** MVP, 프로토타입, A/B 테스트
-3. **검증 기준:** 사전에 성공/실패 기준 정의
-4. **결과 반영:** 검증 결과와 한계를 보고 확대, 수정, 보류 또는 중단을 선택
+리스크를 반증 가능한 가정으로 적고 현재 근거를 분리한다. 어떤 가정을 먼저 다룰지는 아래 Assumption Mapping으로 정하고, 구체적인 테스트와 결과 판정은 [[Solo-Product-Market-Validation|1인 제품 시장 검증]]에서 다룬다.
 
 ## Assumption Mapping
 
@@ -101,4 +96,5 @@ Q. 리스크를 어떻게 관리하는가?
 
 ## 관련 문서
 - [[User-Feedback|사용자 피드백]]
+- [[Solo-Product-Market-Validation|1인 제품 시장 검증]]
 - [[GTM-Strategy|GTM 전략]]

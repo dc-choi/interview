@@ -1,7 +1,7 @@
 ---
 tags: [business, product, pm, documentation]
 status: done
-category: "Business - 제품 전략"
+category: "비즈니스&제품(Business&Product)"
 aliases: ["PRD", "Product Requirements Document", "제품 요구사항 정의서"]
 ---
 

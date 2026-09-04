@@ -1,7 +1,7 @@
 ---
 tags: [business, product, platform, super-app, diversification, strategy]
 status: done
-category: "Business - 제품 전략"
+category: "비즈니스&제품(Business&Product)"
 aliases: ["Platform Power", "플랫폼 파워", "슈퍼앱 전략", "DAU 함정"]
 verified_at: 2026-08-26
 ---

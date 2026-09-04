@@ -1,7 +1,7 @@
 ---
 tags: [business, market]
 status: index
-category: "Business - 시장"
+category: "비즈니스&제품(Business&Product)"
 aliases: ["Market"]
 ---
 

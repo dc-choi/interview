@@ -39,6 +39,8 @@ PMF가 강하면 유지, 추천과 판매 효율이 좋아질 수 있지만 제�
 
 ## Pre-PMF vs Post-PMF 전략
 
+발견한 기회가 실제 고객 행동과 1인 사업의 운영 가능성으로 이어지는지 판정하는 관문은 [[Solo-Product-Market-Validation|1인 제품 시장 검증]]에서 다룬다.
+
 | 영역 | Pre-PMF | Post-PMF |
 |---|---|---|
 | 목표 | PMF를 찾는 것 | PMF를 확장/방어하는 것 |
@@ -50,22 +52,13 @@ PMF가 강하면 유지, 추천과 판매 효율이 좋아질 수 있지만 제�
 
 이 표는 단계별 강조점의 차이다. Pre-PMF에도 안정성과 현금흐름이 필요하고, Post-PMF에도 고객 문제와 가치 가설을 계속 검증한다.
 
+Post-PMF의 확장은 인원 증가와 같은 뜻이 아니다. 확장 축과 실제 병목을 고른 뒤 어떤 역할을 언제 추가할지는 [[Scaling-and-Hiring|1인 제품 확장과 첫 채용]]에서 다룬다.
+
 **대표적 실패 패턴: PMF 전에 스케일링** — 제품과 채널 학습이 끝나기 전에 고정비와 획득비를 키우면 손실도 함께 확대된다.
 
-## MVP 검증 스펙트럼
+## 시장 검증과의 경계
 
-아래 순서는 흔한 상대 비용의 예시다. 구현 난이도, 규제, 접근 가능한 고객과 계측 조건에 따라 실제 비용과 위험 순서는 달라진다.
-
-| 방법 | 상대 비용 예시 | 설명 |
-|---|---|---|
-| **문제 인터뷰** | 최소 | 문제가 존재하는지 확인 |
-| **Fake Door** | 낮음 | 기능이 있는 것처럼 버튼을 만들고 클릭률 측정 |
-| **랜딩 페이지** | 낮음 | 가치 제안 + 이메일 수집으로 수요 측정 |
-| **Wizard of Oz** | 중간 | 자동화처럼 보이지만 실제로는 수동 처리 |
-| **Concierge** | 중간 | 수동으로 서비스를 제공하며 반응 관찰 |
-| **단일 기능 MVP** | 높음 | 핵심 한 가지만 구현한 실제 작동 제품 |
-
-**원칙:** 가장 위험한 가정을 먼저, 가장 싸게 테스트한다.
+가정별 최소 비용 테스트, 시장 증거의 관문과 성공 또는 중단 조건은 [[Solo-Product-Market-Validation|1인 제품 시장 검증]]에서 다룬다. 이 문서에서는 그 결과가 반복 가치와 PMF 신호로 이어지는지를 본다.
 
 ## 전환 퍼널
 
@@ -104,5 +97,8 @@ Q. PMF를 어떻게 검증했는가?
 - [First Round Review — How Superhuman Built an Engine to Find Product-Market Fit](https://review.firstround.com/how-to-measure-product-market-fit/)
 
 ## 관련 문서
+- [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]
+- [[Solo-Product-Market-Validation|1인 제품 시장 검증]]
+- [[Scaling-and-Hiring|1인 제품 확장과 첫 채용]]
 - [[Metrics-Framework|지표 설계]]
 - [[GTM-Strategy|GTM 전략]]

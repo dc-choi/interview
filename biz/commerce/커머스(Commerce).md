@@ -1,7 +1,7 @@
 ---
 tags: [business, commerce]
 status: index
-category: "Business - 커머스"
+category: "비즈니스&제품(Business&Product)"
 aliases: ["Commerce", "커머스"]
 ---
 
