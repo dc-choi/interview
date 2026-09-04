@@ -73,4 +73,5 @@ DAG 파일 최상위에서 실행되는 코드는 **매 파싱마다** 비용을
 
 ## 관련 문서
 
+- [[Airflow-Task-Process-Model|Airflow 태스크 프로세스 모델과 Python 멀티프로세싱]]
 - [[메시징&파이프라인(Messaging&Pipeline)]] — 카테고리 인덱스
