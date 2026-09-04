@@ -16,6 +16,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [[tech/web/network/네트워크(Network)|네트워크 (Network)]] — TLS, OSI, TCP(헤더, 핸드셰이크, 흐름/오류 제어), Loopback, Browser URL Flow
 - [[tech/web/realtime/실시간(Realtime)|실시간 (Realtime)]] — SSE, WebSocket, STOMP, 실시간 통신
 - [[Mobile-App-Architectures|모바일 앱 개발 방식 4유형]] — 네이티브, 모바일 웹, 웹 앱(SPA), 하이브리드(웹뷰), 다중 버전 공존과 API 호환
+- [[Expo|Expo]] — React Native 개발 환경, 네이티브 확장, 로컬/EAS 빌드와 배포 선택
 
 ## 추가 주제
 - [x] [[tech/web/http/versions/versions|HTTP/1.1, HTTP/2, HTTP/3 (진화, 멀티플렉싱, HPACK, QUIC, HOL 차이)]]
