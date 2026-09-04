@@ -49,12 +49,14 @@ Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. �
 
 연결을 표준화한 프로토콜 관점은 [[MCP|MCP]](모델-도구 연결 표준)이고, Function Calling은 그 위에서 모델이 실제로 함수를 고르고 호출하는 **모델 능력** 레이어다.
 
-### 스킬 시스템: Function Calling의 서비스화
+### HyperCLOVA X Skill Universe 사례의 스킬 시스템
 
-특정 API 묶음을 LLM에 연결해 에이전트를 만드는 구조다.
+이 절의 스킬과 스킬셋은 출처 발표에서 사용한 특정 플랫폼 용어다. 특정 API 묶음을 LLM에 연결해 에이전트를 만드는 구조를 가리킨다.
 
 - **스킬** = API 하나, **스킬셋** = 한 서비스를 위한 API 묶음
 - 여행 API 묶음을 붙이면 여행 에이전트, 쇼핑 API 묶음을 붙이면 쇼핑 에이전트 — **묶음을 바꾸면 에이전트의 성격이 바뀐다**
+
+플랫폼을 넘어 통용되는 정의로 일반화하면 안 된다. 예를 들어 2026-09-04 현재 OpenAI의 Agent Skills에서 스킬은 `SKILL.md`와 선택적 scripts, references를 담은 디렉터리이며, 하나의 API와 동의어가 아니다.
 
 처리 3단계:
 
@@ -105,7 +107,7 @@ Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. �
 - Plan-and-Execute(Planner, Executor, Replanner) — 구조는 절차를 미리 확정해 집행하는 쪽을 닮았는데 계획의 저자는 모델, 계획이 데이터로 외부화되어 검토, 승인, 진행률 표시 가능, 재계획이 잦아도 통제 이득은 남음
 - Plan-and-Execute와 되돌릴 수 없는 행동 직전 승인 — 서로 다른 두 절충, 굵은 계획(3~5단계)은 전자의 완화책
 - Function Calling 3단계(Detector → CoT → Answer)와 멀티턴/멀티쿼리, 멀티턴이 공통 과제인 이유
-- 스킬 vs 스킬셋, 묶음 교체로 에이전트 성격이 바뀌는 구조
+- HyperCLOVA X Skill Universe 사례의 스킬 vs 스킬셋, 그리고 다른 플랫폼의 skill 정의와 구분
 - 데이터 vs 모델 — 도메인 특화면 데이터, 실무자가 당장 손댈 수 있는 쪽도 데이터
 - 환각은 제거가 아니라 통제(근거 기반 + 기획 단계 영역 선택)
 - 시작은 검증 가능한 반복 업무부터, 사람이 최종 확인
@@ -118,6 +120,7 @@ Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. �
 ## 출처
 - [LLM 에이전트 실무 사례 (물어보세, 스마트 마이 노트, HyperCLOVA X Skill Universe) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)
 - [AI 에이전트, 자율에 맡길까 절차로 통제할까 — DEVOCEAN](https://devocean.sk.com/blog/techBoardDetail.do?id=168417&boardType=techBlog&isShared=Y)
+- [OpenAI, Build skills](https://learn.chatgpt.com/docs/build-skills)
 
 ## 관련 문서
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]] — 에이전트 위임의 신뢰 설계, 운영 루프

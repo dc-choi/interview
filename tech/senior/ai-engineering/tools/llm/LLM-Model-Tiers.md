@@ -1,7 +1,7 @@
 ---
 tags: [senior, ai, llm, cost, model-selection]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-09-04
 category: "Senior - AI 엔지니어링"
 aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model Routing"]
 ---
@@ -20,7 +20,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 | 균형형 | 일상 업무용, 플래그십 대비 큰 폭 저렴 | 대부분의 프로덕션 트래픽, 일반 생성, 요약 |
 | 저비용형 | 가장 빠르고 가장 싼 | 분류, 추출, 라우팅, 단순 변환, 대량 배치 |
 
-벤더별 매핑 예: OpenAI는 Sol(플래그십), Terra(균형형), Luna(저비용형). Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. Google은 Gemini Pro, Flash 계열. 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
+벤더별 매핑 예: 2026-09-04 현재 OpenAI는 GPT-6 Astra를 최상위 플래그십으로 안내하고, GPT-5.6 계열 안에는 Sol(고성능), Terra(균형형), Luna(저비용형)가 있다. Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. Google은 Gemini Pro, Flash 계열. 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
 
 ## 티어 간 트레이드오프
 
@@ -64,7 +64,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 
 - **명명 체계 명시화**: 숫자 = 모델 세대, Sol/Terra/Luna = 독립 개발 주기를 갖는 지속적 성능 등급 — 티어 구조가 브랜드 규칙으로 고정됨
 - **출시 당시 가격 (2026-06, 1M 토큰)**: Sol 입력 $5 / 출력 $30, Terra $2.50 / $15, Luna $1 / $6. 이후 가격은 바뀔 수 있는 출시 스냅샷이다.
-- **현재 공식 가격 (2026-08-26 확인, 1M 토큰)**: Sol 입력 $4 / 출력 $20, Terra $2 / $12, Luna $0.20 / $1.20. Luna처럼 티어 간 차이가 절반보다 훨씬 큰 경우도 있으므로 공식 가격을 다시 확인한다.
+- **현재 공식 가격 (2026-09-04 확인, 1M 토큰)**: Sol 입력 $4 / 출력 $20, Terra $2 / $12, Luna $0.20 / $1.20. Luna처럼 티어 간 차이가 절반보다 훨씬 큰 경우도 있으므로 공식 가격을 다시 확인한다.
 - **추론과 실행 모드**: `max` 추론과 Responses API의 Multi-agent 베타는 Sol, Terra와 Luna 모두 지원한다. 품질 우선의 별도 API 실행 모드는 `reasoning.mode: "pro"`이고, Codex의 `ultra`와 구분한다
 - **캐싱 요금 구조 변화**: 명시적 캐시 중단 지점 + 최소 30분 유지, **캐시 쓰기가 기본 입력의 1.25배 과금**(읽기는 90% 할인 유지) — 캐시를 쓸수록 무조건 이득이 아니라 재사용률이 손익분기를 정하는 구조로
 - **서드파티 고속 서빙**: 전용 하드웨어 사업자(Cerebras)를 통한 초당 750토큰 제공 — 서빙 속도가 별도 경쟁 축으로 분리
@@ -81,7 +81,8 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - [오픈AI, 차세대 AI 'GPT-5.6' 공개, 정부 승인 파트너만 우선 사용 — 리드경제](https://www.leadeconomy.co.kr/news/articleView.html?idxno=8339)
 - [Previewing GPT-5.6 Sol: a next-generation model — OpenAI](https://openai.com/index/previewing-gpt-5-6-sol/)
 - [차세대 모델 GPT-5.6 Sol 미리 살펴보기 (한국어판) — OpenAI](https://openai.com/ko-KR/index/previewing-gpt-5-6-sol/)
-- [OpenAI API, Compare models](https://developers.openai.com/api/docs/models/compare) (2026-08-26 가격 확인)
+- [OpenAI API, Compare models](https://developers.openai.com/api/docs/models/compare) (2026-09-04 가격 확인)
+- [OpenAI API, Models](https://developers.openai.com/api/docs/models) (2026-09-04 플래그십 확인)
 - [OpenAI API, GPT-5.6 모델 가이드](https://developers.openai.com/api/docs/guides/latest-model)
 - [OpenAI API, GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna)
 - [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격)
