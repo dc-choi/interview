@@ -1,5 +1,5 @@
 ---
-tags: [ai, agent, context, platform, provenance]
+tags: [ai, agent, context, platform, ontology, knowledge-graph, provenance]
 status: done
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Agentic Context Platform", "Context Provider", "컨텍스트 프로바이더", "에이전트 컨텍스트 플랫폼"]
@@ -9,7 +9,7 @@ aliases: ["Agentic Context Platform", "Context Provider", "컨텍스트 프로�
 
 ## 정의
 
-조직의 문서, 대화, 코드와 운영 자산을 수집해 AI 에이전트가 근거 있는 업무 판단에 사용할 수 있는 컨텍스트로 공급하는 계층이다. 단순 검색 결과가 아니라 원문 위치, 변경 시점, 충돌과 불확실성까지 함께 제공해야 한다.
+문서, 대화, 코드와 운영 자산을 수집해 AI 에이전트가 근거 있는 업무 판단에 사용할 수 있는 컨텍스트로 공급하는 계층이다. 단순 검색 결과가 아니라 원문 위치, 변경 시점, 충돌과 불확실성까지 함께 제공해야 한다.
 
 좋은 검색 결과와 신뢰할 수 있는 컨텍스트는 다르다. 검색 관련성이 높아도 오래됐거나, 비공식 복사본이거나, 다른 근거와 충돌할 수 있다. 따라서 플랫폼은 retrieval과 trust 판단을 분리한다.
 
@@ -23,6 +23,12 @@ aliases: ["Agentic Context Platform", "Context Provider", "컨텍스트 프로�
 | 산출물 | 선택, 압축, 격리된 작업 컨텍스트 | 검증 가능한 컨텍스트 단위와 관계 |
 
 플랫폼이 신뢰 가능한 후보 풀을 만들고, [[Context-Engineering]]이 현재 작업에 필요한 최소 근거를 선택한다.
+
+## 이 Vault에서의 적용
+
+이 저장소에서는 Markdown 문서를 지식 정본으로 사용한다. 온톨로지는 문서를 해석할 개념과 관계의 계약이고, 지식 그래프는 본문 복사본이 아니라 문서 구조에서 파생한 색인이다. AI는 색인으로 후보를 찾은 뒤 원문 section을 읽는다.
+
+파일과 heading은 문서 노드와 EvidenceUnit, `category`, `tags`, `aliases`, `status`는 속성이 된다. 해석 가능한 위키링크는 명시된 `links_to`, 선택적 `ontology_relations`는 검토된 typed relation, 본문과 출처는 claim의 원문 근거가 된다. 추출과 식별자 및 검증 순서는 [[Ontology-Context-Platform-Implementation|Markdown Vault 기반 온톨로지 구축 방법]], AI가 이를 조회해 쓰는 경로는 [[Ontology-Context-Platform-AI-Runtime|Markdown Vault를 읽는 AI 런타임]]에서 다룬다.
 
 ## 품질을 한 점수로 합치지 않는다
 
@@ -41,7 +47,7 @@ aliases: ["Agentic Context Platform", "Context Provider", "컨텍스트 프로�
 
 고정 토큰 길이만으로 자르면 출처의 구조와 판단 근거가 사라진다.
 
-- 문서는 heading section을 기본 단위로 삼고 상위 제목 경로를 보존한다.
+- Markdown 문서는 heading section을 기본 단위로 삼고 파일, 상위 제목 경로와 frontmatter를 보존한다.
 - 메신저는 개별 메시지보다 thread를 보존하고 질문, 선택지, 결정, 미해결 상태를 구분한다.
 - 코드는 parser가 찾은 symbol을 원자 단위로 삼는다. 여러 symbol에 걸친 동작은 별도의 behavior card로 연결한다.
 - 데이터와 API는 schema, owner, lineage, version 같은 운영 metadata를 원문과 함께 저장한다.
@@ -49,19 +55,19 @@ aliases: ["Agentic Context Platform", "Context Provider", "컨텍스트 프로�
 모든 단위는 최소한 다음 계약을 공유한다.
 
 ```yaml
-id: stable-source-scoped-id
-source_type: document | thread | code | schema
-unit_type: section | conversation | symbol | behavior
+id: source-scoped-id
+source_type: document | thread | code | config | test | schema
+unit_type: section | relation_assertion | conversation | symbol | behavior | setting | test_case | definition
 source_uri: canonical-location
-anchor: heading-or-line-span
+anchor: heading-path-occurrence-and-line-span
+source_revision: commit-or-version
 content_hash: hash-of-source-content
 source_updated_at: source-timestamp
-observed_at: ingestion-timestamp
 extraction_version: parser-or-prompt-version
 metadata: source-specific-fields
 ```
 
-요약이나 추출된 개념만 남기지 않는다. 항상 원문 anchor로 돌아갈 수 있어야 한다.
+요약이나 추출된 개념만 남기지 않는다. 항상 원문 anchor로 돌아갈 수 있어야 한다. 수집 실행 시각인 `observed_at`은 재현 가능한 EvidenceUnit이 아니라 snapshot 밖의 run log에 둔다.
 
 ## 개념과 근거 관계
 
@@ -73,14 +79,14 @@ claim -------supported_by---> evidence unit
 claim -------contradicted_by-> evidence unit
 ```
 
-관계에는 관계 유형, 양쪽 anchor, 검증 방식, confidence와 검증 시각을 붙인다. 검증 실패나 낮은 confidence는 관계 없음이 아니라 미확인 상태다. 근거가 부족하면 `insufficient_evidence`를 정상 결과로 반환한다.
+관계에는 관계 유형, 양쪽 anchor, 검증 방식과 명시된 경우 검증 시각을 붙인다. confidence는 모델이 제안한 후보에만 사용한다. 위키링크는 `source_confirmed`인 `links_to`, 모델이 제안한 관계는 검증 전 `candidate`, 승인된 typed relation은 canonical Markdown의 `ontology_relations`로 구분한다. 필드와 상태 어휘는 [[Ontology-Context-Platform-Implementation#사실과 근거 계약|구현 계약]]을 따른다.
 
 ## 변경 기반 검증 파이프라인
 
 ```text
 source discovery
-  -> source-aware extraction
-  -> stable ID와 content hash 비교
+  -> frontmatter 파싱과 위키링크 해석
+  -> source-scoped ID와 content hash 비교
   -> 변경 단위만 관계 후보 생성
   -> 결정론적 검사
   -> 필요한 후보만 의미 검증
@@ -88,34 +94,33 @@ source discovery
   -> serving index 반영
 ```
 
-- 문서는 stable ID와 content hash로 변경 구간을 찾는다.
+- 문서는 source-scoped ID와 content hash로 변경 구간을 찾고, rename 뒤에도 관계를 유지해야 할 때만 원문에 명시적 ID를 둔다.
 - 코드는 commit, file, symbol span hash를 조합해 이동과 수정을 구분한다.
 - 삭제된 원문에 매달린 관계는 함께 제거하거나 tombstone으로 표시한다.
 - URI 일치, schema 호환성, commit 존재 여부 같은 값싼 결정론적 검사를 먼저 수행한다.
 - 의미 판단이 필요한 변경분에만 LLM 검증을 사용한다.
 
-전체 지식 그래프를 매번 재계산하지 않으면 비용과 비결정성을 줄이면서 최신성을 유지할 수 있다.
+색인은 언제든 Markdown 원문에서 재구축할 수 있어야 한다. 변경 단위만 다시 계산하면 비용과 비결정성을 줄이면서 최신성을 유지할 수 있다.
 
 ## 충돌과 불확실성은 상태다
 
 충돌하는 정보를 조용히 덮어쓰거나 하나로 합치면 중요한 맥락이 사라진다.
 
-- `verified`: 현재 근거로 지지됨
-- `disputed`: 유효한 근거가 서로 충돌함
-- `stale_risk`: 원문 또는 의존 근거가 오래됐을 가능성이 큼
-- `insufficient_evidence`: 판단할 근거가 부족함
-- `superseded`: 더 최신의 canonical source가 대체함
+- 검증: `source_confirmed`, `candidate`, `insufficient_evidence`
+- 최신성: `not_checked`, `current`, `stale_risk`, `superseded`
+- 충돌: `not_checked`, `none`, `disputed`
+- 색인 동기화: `synced`, `revision_mismatch`, `unindexed_worktree`, `source_unavailable`
 
-충돌을 발견한 시각, 관련 owner와 근거를 보존한다. 정책상 우선순위가 명확할 때만 자동 선택하고, 그렇지 않으면 답변에 충돌을 노출하거나 보류한다.
+최신성은 지식의 검증 시각, 대체 관계와 관련 근거로 판단하고 checkout과 색인의 revision 차이는 색인 동기화로 따로 표시한다. 검증 시각이나 freshness policy가 없으면 `current` 대신 `not_checked`, 충돌 검사를 수행하지 않았으면 `none` 대신 `not_checked`를 사용한다. 충돌을 발견한 시각, 관련 owner와 근거를 보존한다. 정책상 우선순위가 명확할 때만 자동 선택하고, 그렇지 않으면 답변에 충돌을 노출하거나 보류한다.
 
 ## 에이전트에 공급하는 계약
 
 검색 API는 텍스트 묶음만 반환하지 않고 다음을 함께 제공한다.
 
-- 질문과 직접 관련된 claim
+- 질문과 직접 관련된 claim, 또는 claim 계층 이전 MVP의 원문 EvidenceUnit
 - claim별 evidence link와 원문 anchor
 - provenance와 canonical source 여부
-- freshness와 conflict 상태
+- verification, freshness, conflict와 index sync 상태
 - coverage gap과 사용상 제한
 
 이 계약이 있어야 에이전트가 근거를 인용하고, 불확실할 때 [[LLM-Abstention|답변을 보류]]하며, 사용자가 원문을 확인할 수 있다.
@@ -158,6 +163,7 @@ source discovery
 - 최신 문서가 발견되면 과거 충돌 근거를 삭제한다.
 - 근거 부족을 낮은 관련성으로 취급하고 그럴듯한 답을 만든다.
 - 원문 hash와 extraction version 없이 생성 결과만 저장한다.
+- 원문 본문을 그래프 저장소에 복제해 두 개의 정본을 만든다.
 - 전사 지식 그래프를 한 번에 완성하려 한다.
 
 ## 면접 체크포인트
@@ -177,6 +183,7 @@ source discovery
 ## 관련 문서
 
 - [[Context-Engineering|컨텍스트 엔지니어링]]
+- [[Ontology-Context-Platform-AI-Runtime|Markdown Vault를 읽는 AI 런타임]]
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]]
 - [[LLM-Abstention|LLM 답변 보류와 선택적 응답]]
 - [[Agent-Code-Search|에이전트 코드 검색]]
