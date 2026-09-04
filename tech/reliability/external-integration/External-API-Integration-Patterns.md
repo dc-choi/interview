@@ -121,8 +121,8 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 
 ### 이커머스 재고
 - 조회: 캐시 + 실시간 DB 병용
-- 차감: **분산 락** + 낙관적 락 + 보상 ([[Distributed-Lock]])
-- 동시성: 재고가 잔여 1개일 때가 가장 위험 → 락 필수
+- 차감: 정본이 하나의 DB면 `UPDATE inventory SET remaining = remaining - :qty WHERE id = :id AND remaining >= :qty` 같은 조건부 갱신과 영향 행 수 판정, 주문 멱등 키를 같은 트랜잭션에 둔다. 낙관적 락과 locking read는 충돌 형태에 따라 선택한다.
+- 여러 저장소 또는 DB 밖 자원을 함께 조율할 때만 [[Distributed-Lock|분산 락]]을 검토하고 lease와 fencing 조건을 둔다. 보상은 외부 효과가 이미 발생해 되돌려야 할 때 설계한다.
 
 ## 관찰 가능성 (Observability)
 
@@ -155,6 +155,7 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 - [G마켓 기술블로그 — 오픈마켓 여행 플랫폼의 실전 API 연동 노하우](https://ebay-korea.tistory.com/115)
 - [AI 논문 도구를 만들며 마주친 네 번의 갈림길 — 요즘IT](https://yozm.wishket.com/magazine/detail/3881/)
 - [예약 취소와 환불에서 REQUIRES_NEW만으로 정합성을 지킬 수 없었던 이유 — velog](https://velog.io/@khs0305/%EB%B0%A5%ED%92%80-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%98%88%EC%95%BD-%EC%B7%A8%EC%86%8C%ED%99%98%EB%B6%88%EC%97%90%EC%84%9C-REQUIRESNEW%EB%A7%8C%EC%9C%BC%EB%A1%9C-%EC%A0%95%ED%95%A9%EC%84%B1%EC%9D%84-%EC%A7%80%ED%82%AC-%EC%88%98-%EC%97%86%EC%97%88%EB%8D%98-%EC%9D%B4%EC%9C%A0)
+- [MySQL 8.4 Reference Manual, InnoDB Locking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
 
 ## 관련 문서
 - [[External-Service-Resilience|외부 서비스 장애 대응 (Timeout/Bulkhead/Circuit Breaker)]]

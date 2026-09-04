@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, postgresql, comparison]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-09-04
 category: "Database - RDBMS"
 aliases: ["MySQL vs PostgreSQL", "MySQL PostgreSQL 비교", "Aurora MySQL vs Aurora PostgreSQL"]
 ---
@@ -32,7 +32,7 @@ MySQL의 커넥션당 스레드 모델은 기본값이다. 진짜 **스레드 �
 
 | 기능 | MySQL | PostgreSQL |
 |---|---|---|
-| ACID | **InnoDB만** 완전 준수 | 모든 구성에서 준수 |
+| ACID, 내구성 범위 | InnoDB가 일반적인 OLTP 엔진이며 NDB도 ACID 트랜잭션 지원 | 일반 logged table은 WAL 기반, unlogged table은 crash-safe 아님 |
 | JOIN 알고리즘 | Nested Loop 중심(8.0부터 Hash Join) | Nested Loop / Hash / Merge 모두 성숙 |
 | 인덱스 타입 | B-Tree, Hash(MEMORY), R-Tree, Full-text, JSON 가상 컬럼 | **B-Tree, Hash, GiST, SP-GiST, GIN, BRIN** (BLOOM은 contrib `bloom` 확장 설치 시) |
 | 데이터 타입 | 기본 타입 + JSON | + 배열, 범위, 사용자 정의, UUID, JSONB |
@@ -41,6 +41,8 @@ MySQL의 커넥션당 스레드 모델은 기본값이다. 진짜 **스레드 �
 | Materialized View | ✗ (가상만) | ✓ |
 | Partial Index | ✗ | **✓** — 조건부 인덱스로 크기 크게 절약 |
 | INSTEAD OF Trigger | ✗ | ✓ |
+
+ACID 보장은 제품 이름만으로 나누지 않는다. MySQL은 스토리지 엔진을, PostgreSQL은 table 유형과 내구성 설정을 확인한다. 예를 들어 PostgreSQL unlogged table은 crash 뒤 비워지고, `synchronous_commit = off`에서는 최근에 완료를 알린 트랜잭션이 유실될 수 있다.
 
 ## 쿼리 옵티마이저 차이
 
@@ -114,9 +116,12 @@ MySQL의 커넥션당 스레드 모델은 기본값이다. 진짜 **스레드 �
 ## 출처
 - [MySQL 8.4 Reference Manual, MySQL Enterprise Thread Pool](https://dev.mysql.com/doc/refman/8.4/en/thread-pool.html)
 - [MySQL 8.4 Reference Manual, MySQL Replication Formats](https://dev.mysql.com/doc/refman/8.4/en/replication-formats.html)
+- [MySQL NDB Cluster API, NDB transactions](https://dev.mysql.com/doc/ndbapi/en/overview-ndb-api.html)
 - [PostgreSQL 공식 문서, JSON Types](https://www.postgresql.org/docs/current/datatype-json.html)
 - [PostgreSQL 공식 문서, bloom extension](https://www.postgresql.org/docs/current/bloom.html)
 - [PostgreSQL Documentation, Date and Time Functions](https://www.postgresql.org/docs/current/functions-datetime.html)
+- [PostgreSQL 공식 문서, CREATE TABLE](https://www.postgresql.org/docs/current/sql-createtable.html)
+- [PostgreSQL 공식 문서, WAL 설정](https://www.postgresql.org/docs/current/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT)
 - [AWS — MySQL vs PostgreSQL 비교](https://aws.amazon.com/ko/compare/the-difference-between-mysql-vs-postgresql/)
 - [minji.sql — PostgreSQL, MySQL 비교](https://medium.com/@minji.sql/postgresql-mysql-%EB%B9%84%EA%B5%90-4b32bedb187e)
 - [우아한형제들 — Aurora MySQL에서 Aurora PostgreSQL로 이관](https://techblog.woowahan.com/6550/)

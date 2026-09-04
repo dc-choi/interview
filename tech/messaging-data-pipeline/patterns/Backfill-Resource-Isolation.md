@@ -19,7 +19,7 @@ aliases: ["Backfill Resource Isolation", "백필 자원 격리", "데이터 백�
 
 ### 1. 메시징 토픽과 버퍼 큐 분리 (인프라, 자료구조 레이어)
 
-실시간 데이터 토픽과 **백필 전용 토픽을 브로커 레벨에서 분리**하고, 백필 수용용 **독립 인메모리 버퍼 큐**를 둔다. 버퍼 큐는 락 기반 큐 대신 **CAS 기반 lock-free 논블로킹 큐**(Java의 ConcurrentLinkedQueue류)를 쓰면 초당 수만 건 유입도 동시성 경쟁 없이 받는다. 조건: 극단적 동시성에서는 CAS 스핀 오버헤드가 커질 수 있다.
+실시간 데이터 토픽과 **백필 전용 토픽을 브로커 레벨에서 분리**하고, 백필 수용용 **독립 인메모리 버퍼 큐**를 둔다. 버퍼 큐에는 **CAS 기반 lock-free 논블로킹 큐**(Java의 ConcurrentLinkedQueue류)를 고려할 수 있다. 락 대기를 피하지만 CAS 재시도와 unbounded queue의 메모리 상한은 별도로 관리한다.
 
 ### 2. 전용 워커 풀 분리 (스레드 레이어) — 벌크헤드의 적용
 
@@ -37,9 +37,9 @@ aliases: ["Backfill Resource Isolation", "백필 자원 격리", "데이터 백�
 
 "백필이 다 끝났는가"를 블로킹 대기 없이 감지한다:
 
-- 스트림 종료 신호(End-of-Stream 플래그)가 오면 상태를 COMPLETING으로 전환
-- 워커는 잠들지 않고 큐의 `isEmpty()`를 논블로킹으로 확인, 비는 즉시 최종 집계를 비동기 트리거
-- 네트워크 지연으로 종료 신호가 데이터보다 먼저 오는 레이스는, 정상 응답 이벤트를 인메모리 화이트리스트에 먼저 등록해 두고 교차 검증하는 식으로 방어
+- 스트림 종료 신호(End-of-Stream)는 producer close와 source offset 또는 기대 건수를 담은 durable 완료 기록으로 남긴다.
+- 큐의 `isEmpty()`는 순간 상태일 뿐 producer의 후속 enqueue나 이미 poll한 worker의 처리 중 작업을 배제하지 못한다. 모든 producer가 닫히고, accepted/processed/failed 결과와 in-flight 수가 수렴한 뒤 coordinator가 최종 집계를 트리거한다.
+- 네트워크 지연과 재시작은 인메모리 화이트리스트가 아니라 source range 또는 manifest, 멱등 처리 기록으로 대조한다.
 
 ## 교훈 — 병목은 자리만 옮긴다
 
@@ -70,3 +70,4 @@ Node.js 환경 매핑: 단일 스레드 이벤트 루프라 스레드 풀 오염
 
 ## 출처
 - [데이터 Backfill을 위한 자원 격리 전략 — Nextree](https://www.nextree.io/deiteo-backfilleul-wihan-jaweon-gyeogri-jeonryag/)
+- [Java SE 25, ConcurrentLinkedQueue](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ConcurrentLinkedQueue.html)

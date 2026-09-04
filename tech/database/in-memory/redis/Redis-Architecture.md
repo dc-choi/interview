@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, cache]
 status: done
-verified_at: 2026-08-12
+verified_at: 2026-09-04
 category: "Data & Storage - Cache & KV"
 aliases: ["Redis Architecture"]
 ---
@@ -153,7 +153,7 @@ EXEC
 | 중간 실패 시 롤백 | — | **롤백 안 됨** (이미 실행된 명령 유지) |
 | 결과 의존 분기 | 불가 (Lua로) | 불가 (Lua로) |
 
-Redis Transaction은 RDBMS와 다름 — **EXEC 중 명령 실패해도 롤백 X**. 진짜 트랜잭션이 필요하면 [[Redis-Atomic-Operations|Lua 스크립트]] (스크립트 전체가 단일 명령처럼 원자 실행).
+Redis Transaction은 RDBMS와 다름 — **EXEC 중 명령 실패해도 롤백 X**. [[Redis-Atomic-Operations|Lua 스크립트]]는 조건부 여러 명령을 다른 클라이언트와 인터리빙 없이 실행하는 수단이지만 RDBMS식 rollback을 추가하지 않는다. 오류 가능성이 있으면 입력과 key type을 먼저 검증하고, 부분 변경 뒤의 복구 또는 대사 경로를 설계한다.
 
 WATCH + MULTI/EXEC = **낙관적 락(optimistic CAS)**. 위 트랜잭션 섹션 참조.
 
@@ -165,6 +165,8 @@ WATCH + MULTI/EXEC = **낙관적 락(optimistic CAS)**. 위 트랜잭션 섹션 
 - [Redis Docs 아카이브, Install Redis on Windows](https://redis.io/docs/latest/operate/oss_and_stack/install/archive/install-redis/install-redis-on-windows/) — 공식 네이티브 빌드 미제공, WSL2 안내
 - [Redis Documentation, Replication](https://redis.io/docs/latest/operate/oss_and_stack/management/replication/)
 - [Redis Documentation, High availability with Redis Sentinel](https://redis.io/docs/latest/operate/oss_and_stack/management/sentinel/)
+- [Redis Documentation, Scripting with Lua](https://redis.io/docs/latest/develop/programmability/eval-intro/)
+- [You Don't Need Transaction Rollbacks in Redis — Redis](https://redis.io/blog/you-dont-need-transaction-rollbacks-in-redis/)
 
 ## 관련 문서
 - [[Redis-Data-Structures|Redis 자료구조]]

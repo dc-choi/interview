@@ -3,7 +3,7 @@ tags: [reliability, messaging, idempotency, consumer, exactly-once]
 status: done
 category: "안정성엔지니어링(Reliability)"
 aliases: ["Idempotent Consumer", "멱등 컨슈머", "멱등 소비 처리", "exactly-once 처리", "effectively-once"]
-verified_at: 2026-09-03
+verified_at: 2026-09-04
 ---
 
 # 멱등 컨슈머 (Idempotent Consumer)
@@ -25,7 +25,7 @@ verified_at: 2026-09-03
 
 ### 1. 자연 멱등 설계 (가장 좋음)
 
-연산 자체가 멱등이면 중복 추적이 필요 없다. `SET status = 'PAID'`(절대값 대입), `UPSERT`, id 기준 `DELETE`처럼 **여러 번 실행해도 같은 결과**가 되게 설계한다. `balance = balance + 100`(증분) 같은 비멱등 연산을 피한다.
+연산 자체가 멱등이면 중복 추적이 필요 없다. 같은 상태를 반복 대입하는 `SET status = 'PAID'`와 id 기준 `DELETE`는 상태 전이 조건, trigger와 외부 부수효과까지 같은 결과를 낼 때 자연 멱등이다. `UPSERT`도 `DO NOTHING` 또는 같은 payload와 상태를 재대입하는 제한된 update일 때만 그렇다. conflict update가 카운터 증가, `updated_at` 변경이나 다른 부수효과를 만들면 멱등이 아니다. `balance = balance + 100`(증분) 같은 비멱등 연산을 피한다.
 
 ### 2. 멱등 키 + 상태 저장소
 
@@ -101,6 +101,7 @@ if (!acquired) throw new RetryableError(); // 다른 owner가 처리 중, ACK하
 
 - [Microsoft — Service Bus duplicate detection](https://learn.microsoft.com/en-us/azure/service-bus-messaging/duplicate-detection)
 - [AWS — SQS FIFO exactly-once processing](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html)
+- [PostgreSQL 공식 문서, INSERT와 ON CONFLICT](https://www.postgresql.org/docs/current/sql-insert.html)
 - [microservices.io — Idempotent Consumer pattern](https://microservices.io/patterns/communication-style/idempotent-consumer.html)
 
 ## 관련 문서
