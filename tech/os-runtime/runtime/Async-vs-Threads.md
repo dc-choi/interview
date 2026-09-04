@@ -7,7 +7,7 @@ aliases: ["Async vs Threads", "async/await vs 스레드", "가상 스레드", "F
 
 # async/await vs 스레드: 동시성 모델 비교
 
-async/await가 대부분의 언어에서 좋은 동시성 추상화인지에 대한 의문과, 그 대안인 **가상 스레드 + 구조적 동시성 + 채널** 모델 정리. 핵심 명제: **OS 스레드 비용이 과대평가되어 async/await가 기본 동시성으로 채택됐지만, 가상 스레드가 실용적이 된 지금은 다른 선택지가 더 낫다.**
+async/await의 비용과 **가상 스레드 + 구조적 동시성 + 채널** 모델을 비교한다. 어느 모델이 더 나은지는 런타임 지원, I/O API, 취소와 백프레셔 요구에 따라 달라진다. 가상 스레드는 일부 서버 워크로드에서 blocking style을 유지하면서 높은 동시성을 얻는 대안이지 async/await의 보편적 대체재는 아니다.
 
 ## 왜 async/await가 도입되었는가 (언어별 배경)
 
@@ -16,35 +16,35 @@ async/await가 대부분의 언어에서 좋은 동시성 추상화인지에 대
 | 언어 | 도입 배경 |
 |---|---|
 | **JavaScript** | 단일 스레드라 블로킹이 곧 UI 멈춤 → 콜백 지옥 해소가 목적 |
-| **Python** | GIL로 진짜 멀티코어 병렬이 어려워 I/O 동시성 대안이 필요 |
-| **C#** | UI 스레드 블로킹 방지 → `async`로 작업을 자동으로 디스패치 |
+| **Python** | 기본 CPython의 GIL 아래에서는 CPU-bound Python bytecode의 멀티코어 병렬성이 제한됨. async I/O는 많은 대기 작업을 스레드 점유 없이 처리하는 선택지 |
+| **C#** | UI 스레드 블로킹 방지 → I/O-bound 비동기 API 대기는 `async`/`await`로 호출자 블로킹을 피하고, CPU 작업은 `Task.Run` 등으로 명시적으로 이관 |
 | **Rust** | 런타임을 최소화하려는 설계 원칙 → OS 스레드보다 가벼운 스케줄링 추상화 필요 |
 
-**공통 패턴**: 진짜 OS 스레드를 쓸 수 없거나 비싸기 때문에 만들어진 우회 메커니즘.
+**공통 패턴**: I/O 대기마다 OS 스레드를 계속 점유하지 않고 많은 작업을 함께 진행하기 위한 추상화다. CPU 작업의 병렬 실행에는 여전히 스레드나 프로세스 같은 실행 자원이 필요하다.
 
-## async/await의 4대 문제
+## async/await에서 따져볼 4가지 비용
 
 ### 1. 컬러 함수 (Function Coloring)
 
-**비동기 함수는 비동기 함수에서만 호출할 수 있다.** 어떤 함수를 `async`로 만들면 그것을 호출하는 함수, 그것을 호출하는 함수… 모두 `async`가 된다 (전염). 라이브러리 하나만 비동기로 바뀌어도 호출 트리 전체가 `async`로 물든다. 동기/비동기 두 색깔의 함수는 **서로 자유롭게 섞을 수 없다.**
+비동기 함수를 호출하는 것 자체는 동기 함수에서도 가능하다. 다만 그 결과를 같은 호출 경로에서 `await`하려면 언어별 `async` 또는 `suspend` 문맥으로 전파되는 경우가 많다. 라이브러리 하나만 비동기로 바뀌어도 호출 트리 일부가 물들 수 있고, 이 제약이 함수 색깔 문제다.
 
 ### 2. 백프레셔 부재
 
-스레드는 작업이 너무 빠르게 들어오면 **자연스럽게 막힌다** (스레드 풀 큐가 차거나, blocking write가 막힘). 반면 async 코드는 한 줄로 수천 개의 Promise/Future를 만들 수 있고, **하부 스트림이 못 따라가도 위에서 막아주지 않는다.** 명시적인 세마포어, 채널, highWaterMark 같은 도구를 직접 끼워 넣어야 한다.
+용량이 제한된 스레드 풀 큐나 blocking write는 제출자를 막아 백프레셔를 만들 수 있다. 반면 unbounded 큐와 async task 생성은 둘 다 작업을 계속 쌓을 수 있다. 모델과 관계없이 세마포어, bounded channel, `highWaterMark` 같은 용량 제한과 포화 정책을 명시해야 한다.
 
-### 3. 정지 문제 (Halt Problem)
+### 3. 취소와 기한 전파
 
-스레드는 OS가 강제로 중단할 수 있다 (시그널, kill). **resolve되지 않는 Promise/Future는 영원히 대기한다.** await가 hang되는 순간 호출 트리 전체가 멈추고, 어느 await가 멈춘 건지 외부에서 식별하기 매우 어렵다.
+프로세스는 OS 신호로 종료할 수 있지만, 실행 중인 스레드 하나를 안전하게 강제 종료하는 것은 일반적인 취소 방법이 아니다. 스레드와 async 작업 모두 cooperative cancellation, deadline과 자원 정리가 필요하다. 완료 신호가 오지 않는 Promise/Future도 외부 timeout이나 취소 전파가 없으면 계속 대기할 수 있다.
 
 ### 4. 콜 스택 손실
 
-스레드는 멈춰도 **완전한 콜 스택**을 가진다 → core dump, gdb, perf로 어디서 멈췄는지 즉시 보임. async/await는 함수가 await 지점에서 잘리고 콜백으로 변환되기 때문에 **실제 멈춰있는 위치의 의미 있는 스택이 없다.** 디버깅, 프로파일링 난이도가 급격히 올라간다.
+스레드는 현재 물리 콜 스택을 남기므로 core dump, debugger와 profiler가 실행 위치를 추적하기 쉽다. async/await는 대기 지점에서 물리 스택이 풀려 비동기 호출 관계가 끊길 수 있지만, V8의 async stack trace나 런타임의 task introspection이 논리 프레임을 일부 복원한다. 도구가 지원하지 않는 경계와 컨텍스트 전파 누락은 여전히 디버깅과 프로파일링을 어렵게 만든다.
 
 ## 그래서 무엇이 대안인가
 
 ### 가상 스레드 (Virtual / Green Threads)
 
-OS 스레드가 비싸서 못 만든다는 가정이 잘못됐다는 것. 런타임이 가벼운 사용자 영역 스레드를 다중화해 OS 스레드 위에서 돌리면 된다.
+런타임이 가벼운 사용자 영역 스레드를 소수의 OS carrier thread에 다중화하면 작업당 스레드 비용을 낮추면서 blocking style을 유지할 수 있다. CPU 병렬성 자체가 늘어나는 것은 아니며, 런타임과 라이브러리가 blocking 지점을 제대로 지원해야 한다.
 - **Java Project Loom** (가상 스레드, JDK 21+)
 - **Go goroutine**
 - **Erlang/Elixir 프로세스**
@@ -54,12 +54,12 @@ Java 가상 스레드, Go goroutine과 Erlang/Elixir 프로세스는 블로킹�
 
 ### 구조적 동시성 (Structured Concurrency)
 
-작업의 수명을 코드 블록 단위로 묶는다. 블록을 벗어나기 전에 안에서 띄운 모든 작업이 끝나거나 취소되도록 보장.
-- 부모 스코프 종료 = 모든 자식 작업 종료
-- 에러 발생 시 형제 작업 자동 취소
-- 누수되는 작업이 원천적으로 사라짐
+작업의 수명을 코드 블록 단위로 묶는다. 구조적 스코프가 추적하는 자식은 스코프 완료 전에 join 또는 cancel되고, 실패 전파와 형제 취소 방식은 구현과 선택한 정책을 따른다.
+- 부모 스코프는 추적 중인 자식 작업이 정리될 때까지 완료되지 않음
+- 일부 정책은 자식 실패 시 형제 작업을 취소하고 실패를 부모로 전파
+- detached task나 스코프 밖 자원은 자동 관리 대상이 아니므로 작업 누수 가능성을 줄이지만 없애지는 않음
 
-대표 구현: Python `Trio`, Java `StructuredTaskScope`, Kotlin `coroutineScope`.
+대표 구현: Python `Trio`, Java 26의 preview API인 `StructuredTaskScope`, Kotlin `coroutineScope`. 구체적인 실패와 취소 정책, Java API 상태는 사용하는 버전에서 확인한다.
 
 ### 채널 (Channel) 기반 메시지 전달
 
@@ -75,17 +75,17 @@ Node.js는 단일 스레드 + 이벤트 루프라 **async/await에서 벗어나�
 |---|---|
 | 컬러 함수 | 회피 불가. 단, Top-level await로 진입점만이라도 단순화 |
 | 백프레셔 부재 | **Stream API + highWaterMark**, `p-limit`/`p-queue`로 동시성 제한 |
-| 정지 문제 | **`AbortSignal` + 타임아웃** 모든 외부 호출에 의무화, `Promise.race`로 deadline |
-| 콜 스택 손실 | Node.js v26.8.1은 V8의 async stack trace가 기본 활성화돼 별도 flag가 필요 없다. `Error.stackTraceLimit` 조정, `AsyncLocalStorage`/`AsyncResource` 기반 컨텍스트 전파와 Sentry/OpenTelemetry로 보완 |
+| 취소와 기한 전파 | 지원하는 API에는 **`AbortSignal` + 타임아웃** 적용. `Promise.race`는 기다리는 시간만 제한하므로 원래 작업의 취소와 정리를 별도로 연결 |
+| 콜 스택 손실 | V8은 지원하는 `await` 지점의 async stack frame을 복원한다. 실제 범위는 Node.js와 V8 버전에 따라 확인하고, `Error.stackTraceLimit`, `AsyncLocalStorage`/`AsyncResource`와 Sentry/OpenTelemetry로 경계 간 컨텍스트를 보완 |
 
 CPU 바운드는 **Worker Threads**로, I/O 바운드는 **이벤트 루프**로 명확히 분리하는 것도 같은 맥락.
 
 ## 주의: async가 항상 나쁘다는 아님
 
-**단일 스레드 환경(브라우저, Node.js, Python GIL 하)** 에서는 async가 여전히 합리적 선택이다. 비판의 핵심은 두 가지다.
+**브라우저와 Node.js의 JavaScript 메인 스레드**, 그리고 Python처럼 I/O 대기를 coroutine으로 다루는 환경에서는 async가 여전히 합리적 선택이다. CPython의 GIL이 Python bytecode의 동시 실행을 제한하더라도 Python 자체가 단일 스레드 환경이라는 뜻은 아니다. 비판의 핵심은 두 가지다.
 
-1. 언어 설계자가 **OS 스레드 비용을 과대평가**해서 async/await를 기본 동시성으로 채택했다
-2. **가상 스레드가 실용적이 된 지금**, 후속 언어들은 async 키워드 대신 가벼운 스레드를 1급 시민으로 두는 게 낫다
+1. async/await를 택하면 취소, 백프레셔와 관측 가능성을 런타임과 애플리케이션이 어디까지 제공하는지 확인한다
+2. 가상 스레드를 지원하는 런타임에서는 blocking style과 async style을 실제 처리량, 지연과 디버깅 비용으로 비교한다
 
 ## 면접 체크포인트
 
@@ -98,6 +98,11 @@ CPU 바운드는 **Worker Threads**로, I/O 바운드는 **이벤트 루프**로
 
 ## 출처
 - [요즘IT — 실전 교훈: 비동기/대기보다 스레드가 유리한 이유 (Armin Ronacher 번역)](https://yozm.wishket.com/magazine/detail/2918/)
+- [Microsoft Learn, Asynchronous programming scenarios](https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/async-scenarios)
+- [Microsoft Learn, Common async/await bugs](https://learn.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/common-async-bugs)
+- [Python Documentation, Global interpreter lock](https://docs.python.org/3/glossary.html#term-global-interpreter-lock)
+- [OpenJDK, JEP 444: Virtual Threads](https://openjdk.org/jeps/444)
+- [Oracle Java SE 26, Structured Concurrency](https://docs.oracle.com/en/java/javase/26/core/structured-concurrency.html)
 - [Kotlin Language Specification, Suspending functions](https://kotlinlang.org/spec/asynchronous-programming-with-coroutines.html#suspending-functions)
 - [Zero-cost async stack traces — V8](https://v8.dev/blog/fast-async)
 

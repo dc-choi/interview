@@ -1,6 +1,7 @@
 ---
 tags: [web, network, tcp, flow-control, error-control, arq, sliding-window]
 status: done
+verified_at: 2026-09-04
 category: "Web - 네트워크"
 aliases: ["TCP Flow Control", "TCP Error Control", "흐름 제어", "오류 제어", "Sliding Window", "ARQ", "Go-Back-N", "Selective Repeat"]
 ---
@@ -21,9 +22,9 @@ TCP는 신뢰성을 프로토콜 자체에 내장한다. 덕분에 애플리케�
 
 ## 흐름 제어 — 수신 측 속도에 맞추기
 
-송신 측과 수신 측은 각각 버퍼를 가진다. 수신 측이 버퍼에 쌓인 데이터를 처리하는 속도보다 송신 측이 보내는 속도가 빠르면 수신 버퍼가 가득 차고, 그 뒤 도착한 데이터는 담을 곳이 없어 폐기된다. 폐기된 만큼 재전송이 발생하는데, 네트워크 전송은 변수가 많아 비싼 작업이므로 애초에 줄이는 편이 낫다.
+송신 측과 수신 측은 각각 버퍼를 가진다. 수신 측 버퍼 여유가 줄면 수신 측은 광고 수신 윈도우(RWND)를 줄이고, 송신 측은 일반 데이터 전송량을 그 윈도우 안으로 제한한다. 정상 흐름에서는 버퍼가 넘치기 전에 전송량을 제한하는 것이 흐름 제어의 핵심이다. 수신 윈도우가 0이면 송신 측은 zero-window probe로 다시 열린 윈도우를 확인한다. 이미 네트워크에 있던 세그먼트처럼 윈도우 밖 데이터는 거절될 수 있지만, 이것이 정상 흐름 제어의 주된 방식은 아니다.
 
-그래서 수신 측은 자신이 받을 수 있는 양인 **Window Size**를 응답 헤더에 실어 알리고, 송신 측은 이 값과 현재 네트워크 상황을 함께 고려해 보낼 양을 정한다. 이것이 흐름 제어다.
+그래서 수신 측은 자신이 받을 수 있는 양인 **Window Size**를 TCP 세그먼트 헤더의 Window 필드에 광고하고, 송신 측은 이 값과 현재 네트워크 상황을 함께 고려해 보낼 양을 정한다. 이것이 흐름 제어다.
 
 ### Stop and Wait
 
@@ -72,7 +73,7 @@ TCP는 재전송 기반 오류 제어인 **ARQ(Automatic Repeat Request)**를 �
 
 ### Selective Repeat
 
-오류난 데이터만 골라 재전송한다. 정상 수신분을 버리지 않아 재전송 낭비가 없다. 대신 수신 버퍼에 쌓인 데이터가 **불연속**이 된다(폐기된 한 칸이 비어 0, 1, 2, 3, 5 식으로 들어옴). 빠진 조각이 재전송돼 오면 버퍼 중간에 끼워 재정렬해야 하므로 **별도 버퍼**가 필요하다. 결국 재전송 과정이 빠진 대신 재정렬 과정이 들어온 셈이라, 재전송이 더 비싸면 Go-Back-N, 재정렬이 더 싸면 Selective Repeat이 유리하다. 망을 다시 쓰는 것보다 수신 측 재정렬이 이득인 경우가 많아 TCP는 기본적으로 Selective Repeat을 쓰며, **SACK 옵션**으로 활성화한다(대개 기본 ON).
+오류난 데이터만 골라 재전송한다. 정상 수신분을 버리지 않아 재전송 낭비가 없다. 대신 수신 버퍼에 쌓인 데이터가 **불연속**이 된다(폐기된 한 칸이 비어 0, 1, 2, 3, 5 식으로 들어옴). 빠진 조각이 재전송돼 오면 버퍼 중간에 끼워 재정렬해야 하므로 **별도 버퍼**가 필요하다. 결국 재전송 과정이 빠진 대신 재정렬 과정이 들어온 셈이라, 재전송이 더 비싸면 Go-Back-N, 재정렬이 더 싸면 Selective Repeat이 유리하다. TCP를 둘 중 하나와 동일시하면 안 된다. 기본 ACK는 누적 ACK이고, SYN에서 SACK-Permitted가 협상된 경우 수신 측은 비연속 수신 블록을 SACK으로 알려 송신 측이 빠진 세그먼트만 재전송하도록 도울 수 있다. SACK 사용 여부는 양쪽의 협상과 구현, 설정에 따라 달라진다.
 
 ### Go-Back-N vs Selective Repeat
 
@@ -81,7 +82,7 @@ TCP는 재전송 기반 오류 제어인 **ARQ(Automatic Repeat Request)**를 �
 | 재전송 범위 | 오류 지점 이후 전부 | 오류난 것만 |
 | 수신 버퍼 | 연속 | 불연속 → 재정렬 버퍼 필요 |
 | 부담 위치 | 재전송 (망) | 재정렬 (수신 측) |
-| TCP 설정 | 기본 동작 | SACK 옵션 |
+| TCP와의 관계 | 누적 ACK가 기본 | SACK 협상 시 선택 재전송에 활용 가능 |
 
 ## 세 제어는 왜 깔끔히 안 나뉘나
 
@@ -102,8 +103,11 @@ TCP는 재전송 기반 오류 제어인 **ARQ(Automatic Repeat Request)**를 �
 
 ## 출처
 - TCP의 흐름 제어와 오류 제어 — 개인 블로그
+- [RFC 9293, TCP Header and Window Field](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.1)
+- [RFC 9293, Zero-Window Probing](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.8.6.1)
 - [RFC 9293, Managing the Send Window](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.8.6.2.1)
 - [RFC 7323, Window Scale Option](https://www.rfc-editor.org/rfc/rfc7323.html#section-2.1)
+- [RFC 2018, TCP Selective Acknowledgment Options](https://www.rfc-editor.org/rfc/rfc2018.html)
 
 ## 관련 문서
 - [[TCP-Congestion-Control|TCP 혼잡 제어 (CWND, AIMD, Slow Start, Tahoe/Reno)]]

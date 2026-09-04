@@ -1,6 +1,7 @@
 ---
 tags: [cs, typescript, functional, monad, functor, applicative, category-theory]
 status: done
+verified_at: 2026-09-04
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Monads in TypeScript", "모나드", "Functor Applicative Monad", "모나드 법칙"]
 ---
@@ -71,9 +72,9 @@ m.flatMap(pure)  ===  m
 ```
 m.flatMap(f).flatMap(g)  ===  m.flatMap(x => f(x).flatMap(g))
 ```
-"체인 그룹화 방식과 무관하게 동일 결과." → 어떤 순서로 합성해도 안전.
+같은 `f → g` 순서를 유지하면 체인의 괄호를 어느 쪽으로 묶어도 같은 결과다. `f`와 `g`의 순서를 바꿔도 된다는 교환법칙은 아니다.
 
-**실무적 의미**: 이 법칙을 만족하는 한, 체인 순서 변경, 헬퍼 추출, 합성 분해 같은 리팩토링이 동작 변경 없이 가능.
+**실무적 의미**: 평가 순서를 보존한 괄호 재결합, 헬퍼 추출과 합성 분해를 안전하게 할 수 있다. 효과가 있는 연산의 순서를 바꾸면 결과도 바뀔 수 있다.
 
 ## TypeScript에서 만나는 주요 모나드
 
@@ -81,7 +82,7 @@ m.flatMap(f).flatMap(g)  ===  m.flatMap(x => f(x).flatMap(g))
 |---|---|---|
 | **Maybe / Option** | 값이 없을 수 있음 | None이면 다음 단계 skip |
 | **Either / Result** | 실패할 수 있음 (에러 정보 포함) | Left(err)이면 skip하고 에러 전파 |
-| **Promise** | 비동기 (느슨한 모나드) | `.then(f)`로 체이닝 |
+| **Promise** | 비동기 | `.then(f)`로 체이닝, 반환 Promise/thenable 동화 |
 | **Array** | 비결정 / 다중 결과 | `flatMap`이 카르테시안 곱처럼 작동 |
 | **Reader** | 외부 환경에 의존 | 환경을 함께 끌고 다님 |
 | **State** | 상태를 동반 | 상태를 함께 변형 |
@@ -96,13 +97,11 @@ m.flatMap(f).flatMap(g)  ===  m.flatMap(x => f(x).flatMap(g))
 
 `flatMap`이 정확히 모나드의 `bind`. 그래서 자바스크립트의 모든 배열은 사실 모나드를 일상적으로 쓰고 있는 셈.
 
-## Promise는 진정한 모나드인가
+## Promise를 모나드로 볼 수 있는가
 
-**엄밀히는 아니다.**
+`Promise.resolve`를 `pure`, `.then`을 `flatMap`으로 보는 모델은 유용하다. 핸들러의 반환값이 Promise 또는 thenable이면 ECMAScript의 Promise resolution procedure가 이를 채택해 결과 Promise를 만든다. 따라서 중첩 Promise가 평탄화되는 현상은 `join: M<M<A>> → M<A>`에 해당하며, Promise를 모나드에서 제외하는 근거가 아니다.
 
-- 모나드는 `M<M<A>>`라는 중첩 상태를 **타입 수준에서** 명확히 가져야 한다
-- Promise는 `Promise<Promise<A>>`를 즉시 펼쳐서 `Promise<A>`로 만든다 → 자동 unwrap
-- `.then(f)`는 `f`의 반환이 Promise이면 flatMap, 아니면 map으로 동작 (다형 동작)
+다만 Promise의 rejection, 예외, thenable 동화와 microtask scheduling까지 관찰하면 순수하고 전체적인 모나드 법칙을 그대로 등식으로 적용할 수 있다고 단정하기 어렵다. 법칙을 논할 때는 최종 상태만 볼지, 값과 관찰 가능한 실행 순서까지 볼지 동치의 범위를 정해야 한다.
 
 **실용적 영향**: Promise를 모나드처럼 합성해도 보통 동작한다. 다만 **`Promise<Result<T, E>>`** 같은 합성에서 두 겹의 효과 채널이 생기면 직접 핸들링이 필요하다. 라이브러리(`fp-ts`, `effect-ts`)가 이를 위한 `TaskEither` 같은 구조를 제공한다.
 
@@ -116,7 +115,7 @@ m.flatMap(f).flatMap(g)  ===  m.flatMap(x => f(x).flatMap(g))
 
 ### 한계와 주의
 - **합성 폭발**: 두 종류 효과(예: 비동기 + 실패) 결합은 monad transformer 없이는 어렵다
-- **Promise는 진짜 모나드 아님**: `Promise<Promise<T>>`가 표현 불가
+- **Promise 법칙의 범위**: `pure`/`flatMap` 모델은 유용하지만, thenable 동화, rejection과 microtask scheduling을 포함한 관찰 가능 동치를 정해야 함
 - **팀 학습 비용**: Functor/Applicative/Monad 용어가 진입 장벽
 - **과도한 추상화 비용**: 단순 검증을 모나드로 감싸면 디버깅이 어려워짐
 - **JS/TS 생태계 마찰**: 외부 라이브러리는 throw/Promise 기반이라 경계에서 변환 필요
@@ -127,12 +126,13 @@ m.flatMap(f).flatMap(g)  ===  m.flatMap(x => f(x).flatMap(g))
 - **flatMap = map + join** 직관을 그릴 수 있는가
 - **모나드 3법칙**과 그 실무적 의미(리팩토링 안전성)
 - TypeScript에서 일상적으로 쓰는 **모나드 4가지**(Maybe, Either, Promise, Array)
-- **Promise가 엄밀한 모나드가 아닌 이유**
+- **Promise를 모나드로 모델링할 때의 주의** (thenable 동화, rejection, scheduling)
 - 모나드 합성의 한계 — **두 효과를 동시에** 다루기 어려움 (transformer 필요)
 - 어디서 모나드를 도입하고 어디서 도입하지 말아야 하는가 (경계의 판단)
 
 ## 출처
 - [evan-moon — 펑터를 넘어서, 모나드까지](https://evan-moon.github.io/2026/02/07/monads-in-typescript/)
+- [ECMAScript Language Specification, Promise Objects](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise-objects)
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 수학적 토대]]
