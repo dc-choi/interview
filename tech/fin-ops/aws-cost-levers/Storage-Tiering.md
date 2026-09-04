@@ -3,7 +3,7 @@ tags: [finops, aws, s3, storage, tiering, lifecycle, glacier, ebs]
 status: done
 category: "비용&운영(FinOps)"
 aliases: ["Storage Tiering", "스토리지 티어링", "S3 storage class", "스토리지 클래스"]
-verified_at: 2026-07-15
+verified_at: 2026-09-04
 ---
 
 # 스토리지 티어링 (Storage Tiering)
@@ -20,7 +20,7 @@ verified_at: 2026-07-15
 | **One Zone-IA** | 더 낮음 | 조회 요금 | 재생성 가능한 비핵심(단일 AZ) |
 | **Glacier Instant** | 낮음 | 조회 요금 + 즉시 | 분기 1회, 즉시 필요 |
 | **Glacier Flexible** | 더 낮음 | 분~시간 복원 | 아카이브 |
-| **Glacier Deep Archive** | 최저 | 12시간 복원 | 규정 보관, 거의 안 봄 |
+| **Glacier Deep Archive** | 최저 | Standard: 개별 복원 12시간 이내, Batch Operations 사용 시 9~12시간 / Bulk: 48시간 이내 | 규정 보관, 거의 안 봄 |
 
 **핵심 트레이드오프**: 저장 단가가 낮을수록 **조회 요금과 복원 지연이 커진다**. 자주 볼 데이터를 Glacier에 두면 조회 요금이 저장 절감을 넘어선다.
 
@@ -64,7 +64,7 @@ WHERE size > 128 * 1024;   -- Intelligent-Tiering 티어 이동 대상
 
 ## EBS / EFS 티어링
 
-- **EBS gp2 → gp3**: 같은 성능에 단가 ~20% 저렴 + IOPS/처리량 독립 설정. 대부분 전환 이득.
+- **EBS gp2 → gp3**: gp3는 IOPS와 처리량을 독립 설정한다. 전환 전 gp2의 크기, 관측 IOPS와 처리량, burst credit 의존성을 확인하고 동등한 gp3 설정의 리전별 비용을 비교한다.
 - **io2**: 고IOPS 전용(비쌈) — 정말 필요한 DB만.
 - **EBS 스냅샷**: 증분 저장이지만 누적됨 → 보존 정책 필요. [[ECR-Cost-Reduction|ECR lifecycle]]과 같은 발상.
 - **EFS Infrequent Access**: 자동으로 IA 클래스로 이동.
@@ -78,7 +78,7 @@ WHERE size > 128 * 1024;   -- Intelligent-Tiering 티어 이동 대상
 - 자주 보는 데이터를 Glacier에 → 조회 요금이 저장 절감 초과
 - 작은 객체 다량을 IA/Glacier에 → 최소 객체 크기/기간 과금으로 역효과
 - 128KB 미만 객체가 대부분인데 Intelligent-Tiering 절감을 기대 → 자동 티어링 대상이 아니라 효과가 제한적
-- gp2를 gp3로 안 바꿔 손쉬운 절감 방치
+- gp2의 성능 특성을 확인하지 않고 gp3 전환 후 동일 성능이나 절감을 가정
 - 스냅샷/이전 버전이 무한 누적 → lifecycle 미설정
 
 ## 면접 체크포인트
@@ -87,7 +87,7 @@ WHERE size > 128 * 1024;   -- Intelligent-Tiering 티어 이동 대상
 - S3 클래스 선택 기준(접근 빈도, 즉시성, 내구 AZ)
 - 접근 패턴 불명 시 Intelligent-Tiering이 기본인 이유 (복원 비용 0, 128KB 조건)
 - 전환 비용은 업로드, COPY, Lifecycle의 요청 단가와 retrieval, 최소 보관 기간을 함께 계산해야 하는 이유
-- gp2→gp3 전환 이득, io2를 아끼는 이유
+- gp2→gp3 전환 전 성능과 비용을 비교하는 이유, io2를 아끼는 이유
 - lifecycle 자동 전환/만료와 스냅샷 누적 관리
 - S3 Inventory + Athena로 전환 전 객체 분포를 분석하는 이유
 
@@ -96,6 +96,7 @@ WHERE size > 128 * 1024;   -- Intelligent-Tiering 티어 이동 대상
 - [AWS — S3 Storage Classes](https://aws.amazon.com/s3/storage-classes/)
 - [Amazon S3 pricing](https://aws.amazon.com/s3/pricing/)
 - [AWS 공식 문서, Understanding and managing Amazon S3 storage classes](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html)
+- [AWS 공식 문서, Understanding archive retrieval options](https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html)
 - [AWS — EBS volume types (gp3 vs gp2)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html)
 - [S3 비용 최적화 (Intelligent-Tiering, CopyObject 전환, S3 Inventory) — 인프랩 기술블로그](https://tech.inflab.com/20251029-optimize-s3/)
 

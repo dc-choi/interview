@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, opensearch, cost, serverless, blue-green]
 status: done
-verified_at: 2026-07-27
+verified_at: 2026-09-04
 category: "Infrastructure - AWS"
 aliases: ["OpenSearch Service Cost Optimization", "OpenSearch 비용 최적화", "OpenSearch 배포 함정"]
 ---
@@ -39,7 +39,7 @@ tier별 구조는 [[OpenSearch-Index-Lifecycle]]의 표를 따른다. 여기서�
 
 ## Serverless OCU 심화
 
-2026-09-03 AWS 문서와 요금표 기준, OCU는 6GiB RAM과 상응하는 vCPU 묶음이고 시간당 0.24 USD다. 최소 용량은 collection group 사용 여부에 따라 다르다.
+2026-09-04 AWS 문서와 요금표 기준, OCU는 6GiB RAM과 상응하는 vCPU 묶음이고 시간당 0.24 USD다. 최소 용량은 collection group 사용 여부에 따라 다르다.
 
 - Collection group은 indexing과 search 최소값을 각각 0 OCU까지 설정할 수 있다. 그룹의 모든 collection에 10분간 요청이 없으면 0으로 축소돼 OCU 과금이 멈추며, 재개 첫 요청에는 약 10초에서 30초 지연이 생길 수 있다.
 - Collection group 없이 만든 Classic collection은 계정 단위 용량 설정을 공유한다. Redundancy 활성 시 indexing 1 OCU와 search 1 OCU, 합계 2 OCU가 최소이고, 끄면 각각 0.5 OCU로 합계 1 OCU가 최소다.

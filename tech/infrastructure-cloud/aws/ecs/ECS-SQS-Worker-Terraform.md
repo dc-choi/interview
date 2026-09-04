@@ -1,6 +1,7 @@
 ---
 tags: [infrastructure, aws, ecs, terraform, iac, sqs, auto-scaling]
 status: done
+verified_at: 2026-09-04
 category: "Infrastructure - AWS"
 aliases: ["ECS SQS Worker Terraform", "SQS 워커 Terraform", "ECS backlog autoscaling Terraform"]
 ---
@@ -15,7 +16,6 @@ SQS를 소비하는 ECS 워커를 backlog-per-task로 오토스케일하는 IaC.
 
 ```hcl
 # variables.tf — region, cluster_name, service_name, queue_name, container_image(ECR URI), private_subnet_ids, vpc_id 입력
-
 # sqs.tf — DLQ(retention 14일) + 소스 큐
 resource "aws_sqs_queue" "orders" {
   name                       = var.queue_name
@@ -26,7 +26,6 @@ resource "aws_sqs_queue" "orders" {
     maxReceiveCount     = 5
   })
 }
-
 # iam.tf — 실행 역할(AmazonECSTaskExecutionRolePolicy 부착) + 태스크 역할
 #   태스크 역할 정책(aws_iam_role_policy) = 큐 ARN에 최소 권한 4개만:
 #   sqs:ReceiveMessage, DeleteMessage, GetQueueAttributes, ChangeMessageVisibility
@@ -103,6 +102,10 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
   capacity_providers = ["FARGATE", "FARGATE_SPOT"]
 }
 
+resource "aws_cloudwatch_log_group" "worker" {
+  name = "/ecs/${var.service_name}"
+}
+
 resource "aws_ecs_task_definition" "worker" {
   family                   = var.service_name
   requires_compatibilities = ["FARGATE"]
@@ -112,9 +115,8 @@ resource "aws_ecs_task_definition" "worker" {
   execution_role_arn       = aws_iam_role.ecs_execution.arn
   task_role_arn            = aws_iam_role.ecs_task.arn
   container_definitions    = jsonencode([{ name = "worker", image = var.container_image, essential = true,
-    environment = [{ name = "QUEUE_URL", value = aws_sqs_queue.orders.url }], logConfiguration = { logDriver = "awslogs", options = {} } }])
+    environment = [{ name = "QUEUE_URL", value = aws_sqs_queue.orders.url }], logConfiguration = { logDriver = "awslogs", options = { "awslogs-group" = aws_cloudwatch_log_group.worker.name, "awslogs-region" = var.region, "awslogs-stream-prefix" = var.service_name } } }])
 }
-
 resource "aws_ecs_service" "worker" {
   name            = var.service_name
   cluster         = aws_ecs_cluster.main.id
@@ -136,7 +138,6 @@ resource "aws_ecs_service" "worker" {
 
 ```hcl
 # ec2.tf — 인스턴스 역할/프로파일(AmazonEC2ContainerServiceforEC2Role), ECS 최적화 AMI 생략
-
 resource "aws_launch_template" "ecs" {
   image_id      = data.aws_ssm_parameter.ecs_ami.value
   instance_type = "t3.medium"
@@ -196,3 +197,4 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
 
 - [AWS 공식 문서, Amazon ECS service auto scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html)
 - [terraform-provider-aws — aws_ecs_capacity_provider, aws_appautoscaling_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+- [AWS 공식 문서, Send Amazon ECS logs to CloudWatch](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html)

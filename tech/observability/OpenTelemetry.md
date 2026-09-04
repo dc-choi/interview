@@ -1,7 +1,7 @@
 ---
 tags: [observability, opentelemetry, otel, distributed-tracing, trace-context]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-04
 category: "관측가능성(Observability)"
 aliases: ["OpenTelemetry", "OTel", "분산 트레이싱", "Distributed Tracing", "Trace Context Propagation", "W3C traceparent"]
 ---
@@ -38,11 +38,22 @@ traceparent: 00-<32hex trace-id>-<16hex span-id>-<2hex flags>
 ```typescript
 // SQS 메시지로 trace context 전파 — 프로듀서가 inject, 컨슈머가 extract
 import { propagation, context } from '@opentelemetry/api';
-const carrier: Record<string, string> = {};
-propagation.inject(context.active(), carrier);
-// carrier.traceparent 를 SQS MessageAttributes에 실어 보냄
-// 컨슈머: propagation.extract(context.active(), carrier) 로 같은 trace에 이어붙임
+const outboundCarrier: Record<string, string> = {};
+propagation.inject(context.active(), outboundCarrier);
+// Object.entries(outboundCarrier) 전체를 SQS MessageAttributes에 담아 전송한다.
+
+const inboundCarrier = Object.fromEntries(
+  Object.entries(message.MessageAttributes ?? {}).flatMap(([key, value]) =>
+    value.StringValue === undefined ? [] : [[key, value.StringValue]],
+  ),
+);
+const extractedContext = propagation.extract(context.active(), inboundCarrier);
+context.with(extractedContext, () => {
+  // 이 범위에서 consumer span을 만들고 메시지를 처리한다.
+});
 ```
+
+`traceparent`만 고정하지 말고 `inject`가 생성한 모든 필드(예: `tracestate`, baggage)를 전송한다. `extract`가 반환한 Context 안에서 consumer span과 처리를 실행해야 부모 관계가 이어진다.
 
 이 전파를 안 하면 프로듀서 → 큐 → 컨슈머가 **세 개의 끊긴 trace**로 보여 발주 자동화 같은 비동기 파이프라인을 추적할 수 없다. [[SQS]], [[MQ-Kafka-Consumer]]
 
@@ -84,6 +95,7 @@ sdk.start();
 
 - [OpenTelemetry 공식 문서 — Concepts, Instrumentation](https://opentelemetry.io/docs/)
 - [OpenTelemetry 공식 문서 — What is OpenTelemetry](https://opentelemetry.io/docs/what-is-opentelemetry/)
+- [OpenTelemetry, Context Propagators API](https://opentelemetry.io/docs/specs/otel/context/api-propagators/)
 - [W3C Trace Context 명세](https://www.w3.org/TR/trace-context/)
 - [Dowon Lee 강사 — Observability를 위한 기술 스택](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290736)
 
