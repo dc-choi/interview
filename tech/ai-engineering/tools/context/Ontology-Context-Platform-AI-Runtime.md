@@ -1,15 +1,15 @@
 ---
 tags: [ai, ontology, context, retrieval, mcp, runtime]
 status: done
-verified_at: 2026-09-04
+verified_at: 2026-09-05
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Ontology Context Runtime", "AI Context Runtime", "AI 컨텍스트 조회 실행 경로"]
 ---
 
 # Markdown Vault를 읽는 AI 런타임: 조회, Context Pack과 MCP
 
-> 유형: 감사/참고 (실행 설계, 구현 완료 기록 아님)
-> 현재 상태: 조회 계약 설계 완료, `context-build`, `context_lookup`과 MCP 서버는 미구현 (2026-09-04)
+> 유형: 조회 계약과 후속 확장 설계. 실제 구현 범위는 [[Ontology-Operations|루트 실행 절차]]에서 확인한다.
+> 현재 상태: 루트 `ontology/`에 build CLI, `context_lookup`과 MCP 서버 구현 (2026-09-05). 아래 `context-build`는 논리적 역할이며 실제 명령은 `npm run build`다.
 > 현재 범위: 이 Vault의 Markdown. 코드 저장소, 배포 상태와 실제 런타임은 아직 색인 대상이 아니다.
 
 ## 여기서 AI가 학습한다는 의미
@@ -68,7 +68,7 @@ flowchart LR
 4. LLM을 쓰더라도 비명시 관계는 별도 candidate queue에 두고 serving index와 재현성 비교에서 제외한다.
 5. 사람이 승인한 typed relation은 캐시가 아니라 Markdown의 `ontology_relations`에 기록하고 commit한 뒤 다시 색인한다.
 
-dirty worktree에서는 새 색인을 만들지 않고 `unindexed_worktree`를 보고한다. 실행 코드와 캐시는 분리하며 캐시를 지워도 지식이 유실되지 않아야 한다.
+기본 build는 dirty worktree를 거부한다. `--committed-only`를 명시하면 `HEAD`만 색인하고 `unindexed_worktree`를 보고한다. 실행 코드와 캐시는 분리하며 캐시를 지워도 지식이 유실되지 않아야 한다.
 
 ## Query-time: 질문을 Context Pack으로 바꾸기
 
@@ -105,7 +105,7 @@ MVP에는 `revision` 입력이 없다. 항상 활성 manifest revision을 읽으
 {
   "query": "이 이벤트를 바꾸면 무엇을 함께 확인해야 하는가?",
   "result_status": "ok",
-  "index_sync": [{"source_id": "interview-vault", "status": "synced", "revision": "<commit>", "fingerprint": "<hash>", "manifest_hash": "<hash>", "artifacts_verified": true, "requested_scope_indexed": true, "indexed_paths": ["tech/ai-engineering/**"], "excluded_paths": [], "schema_version": "<version>", "extractor_version": "<version>", "completed": true, "errors": []}],
+  "index_sync": [{"source_id": "interview-vault", "status": "synced", "revision": "<commit>", "fingerprint": "<hash>", "manifest_hash": "<hash>", "artifacts_verified": true, "requested_scope_indexed": true, "indexed_paths": ["tech/ai-engineering"], "excluded_paths": [], "schema_version": "<version>", "extractor_version": "<version>", "completed": true, "errors": []}],
   "entities": [{"id": "document:interview:tech/<source>.md", "label": "<source-title>", "aliases": []}, {"id": "document:interview:tech/<target>.md", "label": "<target-title>", "aliases": []}],
   "evidence_units": [
     {
@@ -187,6 +187,8 @@ MVP는 별도의 claim 문장을 생성하지 않는다. AI가 만드는 각 판
 - [Model Context Protocol, Tools](https://modelcontextprotocol.io/specification/2025-11-25/server/tools)
 
 ## 관련 문서
+
+- [[Development-Ontology|개발 판단 지도와 적용 절차]]
 
 - [[Ontology-Context-Platform-Implementation|Markdown Vault 기반 온톨로지 구축 방법]]
 - [[Agentic-Context-Platform|에이전트 컨텍스트 플랫폼]]

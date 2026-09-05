@@ -22,10 +22,12 @@
 
 ## 온톨로지 지식 원본
 
+- 이 저장소는 앞으로의 개발 판단에 계속 활용할 개인 지식 기반이다. 개인 지식과 온톨로지 구축 산출물은 이 저장소에서 관리한다. `kino-doc`은 회사에서 진행한 업무의 기록이며 개인 지식 작업의 기본 작성 위치나 모든 프로젝트에 적용할 규칙으로 취급하지 않는다.
 - 이 저장소의 Markdown 문서를 온톨로지 기반 지식 그래프의 지식 정본으로 사용한다. 온톨로지는 허용할 개념과 관계의 계약으로 두고, 별도 저장소에 본문을 복제하지 않은 채 frontmatter, heading, 위키링크와 명시된 관계를 그래프 색인으로 추출한다.
 - 그래프의 노드와 관계는 원문 파일과 heading으로 돌아갈 수 있어야 한다. 파일 경로와 이름은 이동될 수 있으므로 영구 식별자가 실제로 필요해질 때만 frontmatter schema에 추가한다.
 - AI가 추론한 개념과 관계는 원문에 명시된 사실과 구분하고, 검증 전까지 후보 상태로 둔다. 승인된 관계는 생성 색인을 직접 고치지 않고 canonical Markdown의 위키링크 또는 선택적 `ontology_relations`에 기록한다.
 - Markdown은 이 저장소에 기록된 지식의 정본이지 현재 코드 동작이나 배포 상태의 증거가 아니다. 구현 사실과 런타임 사실은 현재 소스, 설정, 테스트와 운영 근거로 다시 확인한다.
+- 기술 선택, 설계 변경과 신뢰성 검토에서는 사용자가 관련 지식을 지정하지 않아도 이 Vault의 원문과 현재 코드를 확인해 필요한 개선안을 제안한다. 학습 지식, 프로젝트 결정, 사용자 규칙과 AI 제안을 구분하고 프로젝트 결정은 명시된 범위에만 적용한다. 구축 코드와 문서는 루트 `ontology/`에서 관리하며 첫 진입점은 `ontology/Development-Ontology.md`다.
 
 ## 작업 중 불확실성 확인
 
@@ -99,6 +101,7 @@
 
 ## Workflow Skills
 
+- 개발 작업에서 Vault 지식을 연결해 기술 선택, 설계 변경과 신뢰성을 검토할 때는 Codex에서 `.agents/skills/development-context/SKILL.md`, Claude에서 `.claude/skills/development-context/SKILL.md`를 사용한다. 단순 편집이나 자료와 무관한 작업에는 적용하지 않는다.
 - 회사별 면접 준비에는 Codex에서 `.agents/skills/interview-prep/SKILL.md`, Claude에서 `.claude/skills/interview-prep/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
 - 메모, 강의, 세미나, 블로그와 아티클 정리에는 Codex에서 `.agents/skills/memo/SKILL.md`, Claude에서 `.claude/skills/memo/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
 - 데일리 회고와 TIL, 주간, 월간, 행사 및 프로젝트 회고에는 Codex에서 `.agents/skills/retro/SKILL.md`, Claude에서 `.claude/skills/retro/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
@@ -107,9 +110,10 @@
 ## Claude/Codex 공존
 
 - 이 레포는 **Claude와 Codex를 함께** 쓴다. 저장소 규칙과 사용자 컨텍스트의 정본은 루트와 대상 경로의 `AGENTS.md`다. Codex는 `AGENTS.md`를 직접 읽고, Claude는 같은 경로의 `CLAUDE.md`에 있는 `@AGENTS.md` import를 통해 동일한 규칙을 읽는다.
-- **스킬은 두 곳에 중복 존재**: `.claude/skills/{memo,interview-prep,retro}/`와 `.agents/skills/{memo,interview-prep,retro}/`. 한쪽 스킬을 수정하면 frontmatter와 위의 도구별 읽기 경로 차이를 제외한 워크플로우를 다른 쪽에도 반영한다. 불변 규칙이 바뀌면 해당 도메인 `AGENTS.md`를 먼저 고친 뒤 양쪽 스킬을 동기화한다.
+- **스킬은 두 곳에 중복 존재**: `.claude/skills/{memo,interview-prep,retro,development-context}/`와 `.agents/skills/{memo,interview-prep,retro,development-context}/`. 한쪽 스킬을 수정하면 frontmatter와 위의 도구별 읽기 경로 차이를 제외한 워크플로우를 다른 쪽에도 반영한다. 불변 규칙이 바뀌면 해당 도메인 `AGENTS.md`를 먼저 고친 뒤 양쪽 스킬을 동기화한다.
 - `CLAUDE.md`에는 같은 경로의 `@AGENTS.md` import만 두고 별도 규칙을 추가하지 않는다. `CLAUDE.md`, `.claude/`와 다른 Claude 파일은 사용자가 명시적으로 요청할 때만 삭제, 개명하거나 변환한다. `.agents/`는 호환 헬퍼일 뿐 Claude 설정을 대체하지 않는다.
 - MCP setup과 장비별 로컬 설정 규칙은 루트 `AGENTS.md`에서 관리한다. `.mcp.json`은 장비별 로컬 설정(gitignore)이라 커밋하지 않는다. Obsidian MCP는 저장소 안에서 아래 명령을 실행해 현재 장비의 저장소 루트를 계산해서 등록한다. Claude의 project scope는 로컬 `.mcp.json`을 만들고, Codex는 계산된 절대경로를 사용자 설정에 저장한다. `.mcp.json.example`은 수동 설정이 필요할 때만 사용한다.
+- 개발 지식 조회용 `development-context` MCP는 루트 `ontology/`의 서버를 각 장비의 사용자 설정에 등록한다. 다른 개발 프로젝트에서도 이 Vault를 조회하며, 실제 실행 경로와 등록 방법은 `ontology/Ontology-Operations.md`를 따른다. 도구가 현재 세션에 보이지 않으면 연결 완료를 가정하지 않고 CLI 또는 원문 조회로 보완한다.
 
 ```bash
 claude mcp add --scope project obsidian -- npx -y obsidian-mcp "$(git rev-parse --show-toplevel)"

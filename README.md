@@ -3,6 +3,8 @@
 
 이 저장소의 Markdown 문서가 지식 정본입니다. 온톨로지는 문서를 해석할 개념과 관계의 계약으로 두고, 지식 그래프는 frontmatter, heading과 위키링크에서 파생합니다. AI가 사용하는 컨텍스트는 항상 원문으로 돌아갈 수 있게 구성합니다.
 
+개발할 때 관련 지식과 적용 조건을 먼저 찾는 진입점은 [[Development-Ontology|개발 판단 온톨로지]]입니다. 루트 `ontology/`에서 Markdown 그래프 색인, CLI와 MCP 조회를 실행합니다. 설치와 사용 방법은 [[Ontology-Operations]]에서 관리합니다.
+
 ## 현재 상태
 - [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]] — 키노라이츠 적응과 학습 우선순위의 정본
 - [[Job-Search-Tracker-2024-2026-Kinolights|완료된 이직 기록]] — 2026-06-29 입사로 종료된 지원과 면접 기록

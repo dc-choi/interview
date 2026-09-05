@@ -1,0 +1,94 @@
+{
+  "observed_at": "2026-09-05T07:29:13.581Z",
+  "source_revision": "3c41985f38e6b8ea0b6cdde43daf54e862e34c5d",
+  "fingerprint": "108bc1e66394648c4e995bd8bc3e6a42caa81c4a325f4436e5646e98e2e47978",
+  "query_code_hash": "7dd089089488ad04668ea2d2c7838dbc02ff321bf3cefdabf218010dd4a92611",
+  "document_hits": 2,
+  "heading_hits": 1,
+  "cases": [
+    {
+      "id": "popular-value-expiry-surge",
+      "query": "인기 상품 조회 결과가 사라지는 순간 요청이 한꺼번에 몰려 저장소가 버티지 못한다. 무엇을 먼저 검토해야 할까?",
+      "expected_path": "tech/database/in-memory/cache/invalidation-refresh/Cache-Stampede.md",
+      "expected_heading": "해결 전략",
+      "gold_in_snapshot": true,
+      "document_hit": false,
+      "heading_hit": false,
+      "elapsed_ms": 968,
+      "bytes": 14663,
+      "result_status": "partial",
+      "index_status": "unindexed_worktree",
+      "returned_paths": [
+        "tech/reliability/external-integration/External-API-Integration-Patterns.md",
+        "tech/database/in-memory/cache/Cache-Strategies.md",
+        "tech/performance-scalability/optimization/Read-Write-Performance-Strategies.md",
+        "tech/database/rdbms/mysql/DML-Conflict-and-Batch-Patterns.md",
+        "tech/database/nosql/opensearch/search/OpenSearch-Search-API-Layer.md",
+        "tech/senior/design/Content-Availability-System-Design.md"
+      ]
+    },
+    {
+      "id": "deployment-drain-order",
+      "query": "배포할 때 처리 중인 요청이 끊기고 가끔 502가 난다. 종료 순서를 어떻게 잡아야 할까?",
+      "expected_path": "tech/reliability/Graceful-Shutdown.md",
+      "expected_heading": "Kubernetes에서의 종료 순서",
+      "gold_in_snapshot": true,
+      "document_hit": true,
+      "heading_hit": true,
+      "elapsed_ms": 788,
+      "bytes": 14972,
+      "result_status": "partial",
+      "index_status": "unindexed_worktree",
+      "returned_paths": [
+        "tech/os-runtime/nestjs/lifecycle/NestJS-Lifecycle-Shutdown.md",
+        "tech/reliability/Graceful-Shutdown.md",
+        "tech/database/rdbms/transactions-locks/Lock-Wait-Convoy.md",
+        "tech/infrastructure-cloud/aws/ecs/ECS-Rolling-Deployment.md",
+        "tech/messaging-data-pipeline/patterns/Shadow-Traffic.md",
+        "tech/testing-quality/Device-Farm.md"
+      ]
+    },
+    {
+      "id": "opposite-update-order",
+      "query": "두 작업이 같은 데이터를 반대 순서로 갱신할 때 가끔 한쪽이 실패한다. 서비스에서 어떻게 복구해야 할까?",
+      "expected_path": "tech/database/rdbms/transactions-locks/Lock-Deadlock.md",
+      "expected_heading": "감지 + 자동 복구 (InnoDB 기본 전략)",
+      "gold_in_snapshot": true,
+      "document_hit": true,
+      "heading_hit": false,
+      "elapsed_ms": 776,
+      "bytes": 13154,
+      "result_status": "partial",
+      "index_status": "unindexed_worktree",
+      "returned_paths": [
+        "tech/architecture-design/evolution/microservice/Monolith-vs-Microservice.md",
+        "tech/architecture-design/ddd-hexagonal/Domain-ORM-Mapper.md",
+        "tech/database/rdbms/transactions-locks/Lock-Deadlock.md",
+        "tech/infrastructure-cloud/aws/s3/S3-Storage-Performance.md",
+        "tech/observability/AWS-X-Ray.md",
+        "tech/architecture-design/oop/Responsibility-Driven-Design.md"
+      ]
+    },
+    {
+      "id": "long-calculation-delays-requests",
+      "query": "서버가 큰 계산을 처리하는 동안 다른 요청도 모두 늦어진다. 실행 방식을 어떻게 나눠야 할까?",
+      "expected_path": "tech/os-runtime/runtime/Thread-vs-Event-Loop.md",
+      "expected_heading": "Node.js 실행 모델",
+      "gold_in_snapshot": true,
+      "document_hit": false,
+      "heading_hit": false,
+      "elapsed_ms": 747,
+      "bytes": 15145,
+      "result_status": "partial",
+      "index_status": "unindexed_worktree",
+      "returned_paths": [
+        "tech/os-runtime/nodejs/process-model/Single-vs-Multi-Thread.md",
+        "tech/os-runtime/spring/spring-boot/Spring-Boot-Embedded-Server-and-Executable-Jar.md",
+        "tech/web/Mobile-App-Architectures.md",
+        "tech/os-runtime/nodejs/event-loop/Event-Loop-Phases.md",
+        "tech/os-runtime/nodejs/web-server/Apollo-Server.md",
+        "tech/architecture-design/evolution/microservice/Modular-Monolith.md"
+      ]
+    }
+  ]
+}

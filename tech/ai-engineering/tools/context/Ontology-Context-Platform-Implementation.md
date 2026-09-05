@@ -1,15 +1,15 @@
 ---
 tags: [ai, ontology, knowledge-graph, context, implementation]
 status: done
-verified_at: 2026-09-04
+verified_at: 2026-09-05
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Ontology Context Platform Implementation", "온톨로지 컨텍스트 플랫폼 구축"]
 ---
 
 # 온톨로지 기반 개발 컨텍스트 플랫폼: 구축 방법과 검증 기준
 
-> 유형: 감사/참고 (설계 탐색, 실행 트랙 아님)
-> 상태: 지식 원본은 학습 Vault의 Markdown으로 결정, 구현 범위와 운영 도입 여부는 미정 (2026-09-04)
+> 유형: 구축 계약과 후속 확장 설계. 이 문서의 모든 항목이 구현 완료된 것은 아니다.
+> 상태: 루트 `ontology/`에 Markdown 색인, CLI와 MCP 구현 (2026-09-05). 실제 지원 범위, 실행과 검증은 [[Ontology-Operations]]를 따른다.
 > 범위: [[Agentic-Context-Platform|에이전트 컨텍스트 플랫폼]]의 일반 계약을 기존 Markdown에 적용하는 구축 순서와 검증 기준
 
 ## 목표와 비목표
@@ -43,7 +43,7 @@ aliases: ["Ontology Context Platform Implementation", "온톨로지 컨텍스트
 - 이 데이터는 어디에서 생성되고 변환되어 조회되는가?
 - 이 불변 조건을 구현하고 검증하는 코드와 테스트는 어디인가?
 
-파일럿 범위는 질문 하나와 업무 도메인 하나로 제한한다. 검색 색인 흐름을 예로 들 수 있지만, 실제 착수 시점의 소스와 배포 상태를 다시 확인해야 하며 이 문서는 해당 작업의 승인이나 배정을 뜻하지 않는다.
+첫 적용 지도는 [[Development-Ontology-Event-Publishing|이벤트 발행]]이고, [[Development-Ontology|개발 판단 온톨로지]]에서 시작한다. 개별 판단의 파일럿 범위는 질문 하나와 업무 도메인 하나로 제한한다. 검색 색인 흐름을 예로 들 수 있지만, 실제 착수 시점의 소스와 배포 상태를 다시 확인해야 하며 이 문서는 해당 작업의 승인이나 배정을 뜻하지 않는다.
 
 ## 최소 온톨로지
 
@@ -70,7 +70,7 @@ ontology_relations:
     target: "unit:target-id"
 ```
 
-MVP의 `Document` ID는 `document:<repo-id>:<relative-path>`, Section EvidenceUnit ID는 `unit:<repo-id>:<relative-path>:<heading-path>#<occurrence>`, frontmatter assertion ID는 `unit:<repo-id>:<relative-path>:frontmatter.ontology_relations[<index>]`로 만든다. `entities.jsonl`의 Section과 relation assertion record가 공통 EvidenceUnit 계약의 source, anchor, revision과 hash를 함께 가지며 relation의 `evidence_unit_id`는 이 `unit:*` ID를 직접 참조한다. `content_hash`는 pinned Git blob에서 anchor가 가리키는 원문 byte의 SHA-256, `source_updated_at`은 filesystem mtime이 아니라 manifest revision에서 해당 path를 마지막으로 바꾼 commit 시각이다. edge ID는 `[subject, predicate, object, evidence_unit_id, assertion_occurrence]` canonical JSON의 SHA-256으로 만들고 occurrence는 해당 EvidenceUnit 안의 source 순서다. anchor에는 occurrence와 pinned revision의 line span도 보존한다. rename은 삭제와 신규 생성으로 처리하고, 외부 관계가 rename 뒤에도 같은 대상을 가리켜야 할 때만 canonical Markdown에 명시적 `id`나 block ID를 추가한다. `SystemEntity`는 `event:content-updated`처럼 표시 이름과 분리한 ID를 쓰고 한글명, 코드 symbol과 과거 명칭은 alias로 연결한다. 같은 triple도 source와 anchor가 다르면 별도 assertion edge로 보존하고, 하나의 `Claim`에 여러 EvidenceUnit을 연결한다. 이름 유사성만으로 엔터티나 assertion을 자동 병합하지 않는다.
+MVP의 `Document` ID는 `document:<repo-id>:<relative-path>`, Section EvidenceUnit ID는 `unit:<repo-id>:<relative-path>:<encoded-heading-path>#<occurrence>`, frontmatter assertion ID는 `unit:<repo-id>:<relative-path>:frontmatter.ontology_relations[<index>]`로 만든다. `entities.jsonl`의 Section과 relation assertion record가 공통 EvidenceUnit 계약의 source, anchor, revision과 hash를 함께 가지며 relation의 `evidence_unit_id`는 이 `unit:*` ID를 직접 참조한다. `content_hash`는 pinned Git blob에서 anchor가 가리키는 원문 byte의 SHA-256, `source_updated_at`은 filesystem mtime이 아니라 manifest revision에서 해당 path를 마지막으로 바꾼 commit 시각이다. edge ID는 `[subject, predicate, object, evidence_unit_id, assertion_occurrence]` canonical JSON의 SHA-256으로 만들고 occurrence는 해당 EvidenceUnit 안의 source 순서다. heading component는 `encodeURIComponent`로 인코딩한다. anchor에는 원래 heading, occurrence와 pinned revision의 line span도 보존한다. rename은 삭제와 신규 생성으로 처리하고, 외부 관계가 rename 뒤에도 같은 대상을 가리켜야 할 때만 canonical Markdown에 명시적 `id`나 block ID를 추가한다. `SystemEntity`는 `event:content-updated`처럼 표시 이름과 분리한 ID를 쓰고 한글명, 코드 symbol과 과거 명칭은 alias로 연결한다. 같은 triple도 source와 anchor가 다르면 별도 assertion edge로 보존하고, 하나의 `Claim`에 여러 EvidenceUnit을 연결한다. 이름 유사성만으로 엔터티나 assertion을 자동 병합하지 않는다.
 
 ## 사실과 근거 계약
 
@@ -104,7 +104,7 @@ MVP의 `Document` ID는 `document:<repo-id>:<relative-path>`, Section EvidenceUn
 
 값싼 결정론적 추출을 먼저 하고 의미 판단은 필요한 후보에만 사용한다.
 
-1. source manifest에는 source별 저장소 식별자, revision, 포함과 제외 경로, schema와 추출기 버전, 결정론적 build 설정 hash와 완료 여부를 기록한다. 재현성 fingerprint는 이 입력들로 만들고 실행 시각과 오류 코드는 snapshot 밖의 run log에만 기록하며, 완료되지 않은 build는 serving index로 사용하지 않는다. MVP는 clean commit 상태의 Vault만 색인하고 dirty working tree가 있으면 갱신을 중단한 뒤 `unindexed_worktree`로 보고한다. 코드 저장소를 추가할 때는 source별 항목으로 확장한다.
+1. source manifest에는 source별 저장소 식별자, revision, 포함과 제외 경로, schema와 추출기 버전, 결정론적 build 설정 hash와 완료 여부를 기록한다. 재현성 fingerprint는 이 입력들로 만들고 실행 시각과 오류 코드는 snapshot 밖의 run log에만 기록하며, 완료되지 않은 build는 serving index로 사용하지 않는다. 기본 build는 dirty working tree를 거부한다. `--committed-only`를 명시하면 `HEAD` blob만 색인하고 `unindexed_worktree`로 미반영 상태를 보고한다. 코드 저장소를 추가할 때는 source별 항목으로 확장한다.
 2. worktree를 순회하지 않고 manifest revision의 Git tree에서 tracked regular Markdown blob만 경로순으로 열거해 frontmatter, heading, 위키링크와 원문 anchor를 추출한다. untracked, ignored와 symlink entry는 읽지 않는다.
 3. 파일을 `Document`, heading section과 frontmatter relation assertion을 EvidenceUnit record, category와 alias를 속성으로 만든다. 실제 대상으로 해석된 위키링크는 `source_confirmed`인 `links_to`, 깨진 링크는 source, scope, anchor, reason과 unresolved target을 가진 manifest의 결정론적 `coverage_gaps`로 기록한다.
 4. LLM은 개념 정규화와 비명시 관계 후보를 별도 candidate queue에 제안하되 결정론적 serving index에 섞거나 자동 확정하지 않는다.
@@ -156,7 +156,7 @@ Git이 Markdown 변경 이력을 관리하고 작은 CLI가 저장소 밖의 로
 - 줄어든 탐색 비용보다 관계 유지비가 크거나 stale 정보가 판단을 더 자주 흐리면 범위를 넓히지 않는다.
 - 정적 그래프만으로 런타임 동작이나 배포 상태를 확정하지 않는다.
 
-측정 개선이 확인되지 않으면 자동 추출, MCP와 graph DB는 구축하지 않는다. 파일 기반 지도만으로 반복 질문의 원문을 빠르게 찾을 수 있다면 그것이 완료 상태다.
+현재 구현 이후의 범위 확대는 측정 개선이 확인될 때 진행한다. 자동 추론, 코드 저장소 색인과 graph DB는 실제 누락과 병목이 확인된 뒤 검토한다. 파일 기반 지도는 [[Development-Ontology]]에 유지한다.
 
 ## 출처
 
