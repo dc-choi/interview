@@ -1,9 +1,9 @@
 ---
 name: development-context
-description: Use the interview knowledge vault to inform development design, technical choices, reliability fixes and reviews. Find relevant source sections, check their applicability to current code, and propose grounded improvements without requiring the user to name the relevant pattern. Skip trivial edits and unrelated tasks.
+description: Retrieve source-backed personal knowledge for technical, business, economic and career decisions, learning and retrospectives. Check source roles and current conditions before applying the findings. Skip trivial edits and unrelated tasks.
 ---
 
-# 개발 맥락 조회
+# 개인 지식 맥락 조회
 
 사용자가 관련 개념을 말하지 않아도 현재 작업에 필요한 지식을 찾아 적용 조건과 대안을 검토한다. 이 스킬은 읽기와 판단을 돕고, 그 자체로 코드 변경이나 문서 기록을 허가하지 않는다.
 
@@ -11,18 +11,18 @@ description: Use the interview knowledge vault to inform development design, tec
 
 - 지식 Vault는 이 `SKILL.md`가 있는 디렉터리의 `../../..`다. 다른 프로젝트에서 명시적으로 호출해도 현재 작업 디렉터리를 Vault로 오인하지 않는다.
 - Vault의 루트 `AGENTS.md`와 읽을 원문의 도메인 `AGENTS.md`를 따른다. 실제 개발 저장소가 별도로 있으면 그 저장소의 적용 지침도 읽는다.
-- [개발 판단 지도](../../../ontology/Development-Ontology.md)에서 요청과 관련된 항목만 고른다.
+- [조회 범위와 개발 판단 지도](../../../ontology/Development-Ontology.md)에서 요청과 관련된 항목만 고른다. 개발 이외의 질문은 해당 도메인 원문으로 이동한다.
 - 자료 역할이나 적용 상태를 해석해야 할 때 [연결 계약](../../../ontology/Development-Ontology-Contract.md)을 읽는다. 평가 기록은 조회 실패 분석이나 평가 작업에서만 읽는다.
 
 ## 현재 작업에서 출발
 
-요청의 목표, 변경 대상과 이미 주어진 제약을 먼저 파악한다. 코드가 제공되면 소스, 호출부, 테스트와 설정에서 현재 동작을 확인한다. 기술 이름이 없어도 데이터 흐름, 시스템 경계, 실패와 재시도 같은 작업의 성질로 관련 지식을 찾는다.
+요청의 목표, 변경 대상과 이미 주어진 제약을 먼저 파악한다. 코드가 제공되면 소스, 호출부, 테스트와 설정에서 현재 동작을 확인한다. 개발 작업은 데이터 흐름, 시스템 경계, 실패와 재시도에서 관련 지식을 찾고, 다른 작업은 판단할 문제, 시점과 적용 범위에서 출발한다.
 
 실제 개발 저장소가 지정되지 않았으면 제공된 자료만으로 조건부 검토를 진행하고 코드 적합성은 미확인으로 둔다. 특정 회사 저장소를 임의의 대상 프로젝트로 선택하지 않는다.
 
 ## 원문 찾기
 
-1. `context_lookup` MCP 도구가 있으면 작업 상황과 핵심 용어를 `query`로 전달한다. 긴 설명에서 중요한 실패, 제약과 기술 용어 후보를 추려 조회하되, 검색용 가설을 현재 프로젝트의 사실로 취급하지 않는다. `scope`는 개발 프로젝트 경로가 아니라 Vault 내부 경로이며 기본 제공 범위는 `tech`다. 기본 요청 예산은 `max_bytes: 24000`으로 둔다. 근거가 부족하면 표현을 바꾸거나 반환된 문서 경로로 scope를 좁혀 제목과 heading을 다시 조회한다. 원문 제목과 별칭이 명확하면 정확한 용어를 사용한다.
+1. `context_lookup` MCP 도구가 있으면 작업 상황과 핵심 용어를 `query`로 전달한다. 긴 설명에서 중요한 실패, 제약과 기술 용어 후보를 추려 조회하되, 검색용 가설을 현재 프로젝트의 사실로 취급하지 않는다. `scope`는 Vault 내부 경로다. 기본 색인은 `tech`, `biz`, `econ`, `fit`, `ontology`와 루트 `README.md`를 포함한다. 기술 질문은 `tech`, 제품과 사업은 `biz`, 경제는 `econ`, 커리어와 회고는 `fit`, 이 시스템의 설계와 운영은 `ontology`를 우선한다. 여러 도메인에 걸치면 함께 지정하고, 범위를 아직 모르면 `scope`를 생략해 전체에서 후보를 찾는다. `tech`를 모든 질문의 고정 범위로 사용하지 않는다. 기본 요청 예산은 `max_bytes: 24000`으로 둔다. 근거가 부족하면 표현을 바꾸거나 반환된 문서 경로로 scope를 좁혀 제목과 heading을 다시 조회한다. 원문 제목과 별칭이 명확하면 정확한 용어를 사용한다.
 2. 결과의 `index_sync`, `coverage_gaps`, 예산과 검사하지 않은 항목을 먼저 확인한다. 근거는 반환된 커밋의 원문이다. dirty 또는 revision 불일치가 있으면 현재 작업 파일과 혼합하지 않고 커밋과 현재 파일의 차이를 확인한다.
 3. MCP가 연결되지 않았으면 [운영 절차](../../../ontology/Ontology-Operations.md)의 CLI를 사용하거나 파일을 직접 찾는다. 지도에 맞는 상황이면 고려사항과 원문 heading으로 이동한다. 이벤트 발행 지도 하나를 다른 주제에 억지로 적용하지 않는다.
 4. 근거가 부족하면 관련 카테고리를 검색한다. 행동과 구조로 후보를 찾을 때 Semble을 사용하고, 정확한 용어와 전체 참조는 `rg`로 확인한다. Semble이 없으면 `rg --files`와 본문 검색을 사용한다. 도구 결과가 없다는 이유만으로 지식이 없다고 결론짓지 않는다.
@@ -30,7 +30,8 @@ description: Use the interview knowledge vault to inform development design, tec
 
 ## 적용 여부 판단
 
-- 학습 지식, 프로젝트 결정, 사용자 규칙, 경험 기록과 AI 제안을 구분한다. 학습 문서의 존재는 사용자의 기술 선호나 도입 결정이 아니다.
+- 학습 지식, 프로젝트 결정, 사용자 규칙, 경험 기록과 AI 제안을 구분한다. 학습 문서의 존재는 사용자의 선호나 도입 결정이 아니다. 과거 커리어, 회고와 경제 기록의 시점도 확인한다.
+- `ontology/`의 설계, 운영 절차와 평가 기록은 이 시스템에 관한 자료다. 문서의 존재나 자기참조 링크를 구현 완료 또는 성공의 증거로 삼지 않고 현재 코드, 설정과 실행 결과로 대조한다. 캐시 색인을 지식 정본으로 재수집하지 않는다.
 - 후보 방법의 전제가 현재 코드와 요구에 맞는지 확인한다. 맞지 않으면 제외 이유나 대안을 제시한다. 판단을 바꿀 조건이 미확인이면 조건부 제안으로 둔다.
 - 위키링크는 원문 탐색에 사용한다. 검토 후보 관계를 확정 사실로 만들거나 `context_lookup`의 원문 확정 관계처럼 표현하지 않는다.
 - 현재 코드가 해당 패턴을 구현하는지와 그 패턴이 바람직한지는 따로 판단한다. 기술 문서로 배포 상태나 실제 장애를 확정하지 않는다.

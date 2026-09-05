@@ -22,6 +22,7 @@ aliases: ["개발 판단 지식 계약", "Development Context Contract"]
 | 프로젝트 결정 | 채택 사실, 대상 프로젝트와 이유가 명시된 기록 | 해당 프로젝트와 시점에 적용할 기준 |
 | 경험 기록 | 당시 상황, 관찰과 결과 | 현재 조건과 비교할 사례 |
 | AI 제안 | 아직 채택되지 않은 가설과 개선안 | 현재 근거로 검토할 후보 |
+| 온톨로지 기록 | `ontology/`의 설계, 운영과 평가 문서 | 조회 계약과 관찰의 근거, 학습 원리나 현재 구현, 실행 사실과는 별도 확인 |
 
 한 문서에 역할이 섞이면 section이나 주장 단위로 구분한다. `status: done`은 문서 작성 상태이며 기술 채택이나 현재 동작을 뜻하지 않는다. 프로젝트와 적용 시점이 없는 결정은 전역 규칙으로 해석하지 않는다.
 
@@ -66,6 +67,7 @@ aliases: ["개발 판단 지식 계약", "Development Context Contract"]
 - 이 지도에서 AI가 정리한 의미 관계는 검토 후보로 취급한다. 질문 시 원문을 읽어 확인한 지식과 현재 프로젝트에 대한 추론을 분리한다.
 - 후보 지도는 AI가 원문을 찾는 탐색 보조 자료다. `context_lookup`은 후보 의미 관계를 생성하거나 확정하지 않는다.
 - 확정 typed relation은 canonical Markdown의 `ontology_relations`에서만 읽는다. `predicate`, `target`과 선택적인 `subject`가 모두 schema와 현재 snapshot entity ID에 맞을 때만 serving relation으로 승격한다. 지원하지 않는 필드, 후보 상태와 YAML alias는 coverage gap으로 남기고 별도 assertion unit이나 edge로 승격하지 않는다. `contains`와 `links_to`는 parser 전용 관계이며 typed relation으로 직접 작성하지 않는다.
+- 순환 위키링크와 `links_to` 탐색은 pinned revision의 유한 snapshot에서 depth 1 또는 2까지만 따른다. 연결이 있다는 사실은 의미 관계, 인과관계나 기술 채택을 확정하지 않는다.
 - 학습 원문에 설명된 방법을 현재 요청에 제안할 수 있다. 사용자가 채택하거나 명시적인 프로젝트 결정 근거가 생기기 전까지 결정 기록으로 저장하지 않는다.
 - 원문과 현재 코드가 충돌하면 양쪽의 역할과 시점을 확인한다. 현재 구현 사실은 현재 코드에서 확인하고, 설계 의도는 문서에서 확인한다.
 

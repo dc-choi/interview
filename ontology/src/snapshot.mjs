@@ -2,7 +2,7 @@ import { homedir } from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { basename, dirname, join, posix, relative, resolve, sep } from 'node:path';
 import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync, appendFileSync } from 'node:fs';
-import { ASSERTION_PREDICATES, STRUCTURAL_PREDICATES, ContextError, normalizeScopes, sha256, stableJson } from './core.mjs';
+import { ASSERTION_PREDICATES, DEFAULT_SCOPES, STRUCTURAL_PREDICATES, ContextError, normalizeScopes, sha256, stableJson } from './core.mjs';
 import { getRepoState, git, listMarkdown, readBlobs, resolveRepo, sourceUpdatedTimes } from './repository.mjs';
 import { extractMarkdown, normalizeHeading } from './markdown.mjs';
 
@@ -193,7 +193,7 @@ export function loadSnapshot({ repo, cacheDir }) {
   }
 }
 
-export function buildSnapshot({ repo, cacheDir, scopes = ['tech'], committedOnly = false }) {
+export function buildSnapshot({ repo, cacheDir, scopes = DEFAULT_SCOPES, committedOnly = false }) {
   repo = resolveRepo(repo);
   scopes = normalizeScopes(scopes);
   const cache = cacheLocation(repo, cacheDir);

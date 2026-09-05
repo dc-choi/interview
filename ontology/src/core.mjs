@@ -11,6 +11,7 @@ export class ContextError extends Error {
 export const STRUCTURAL_PREDICATES = Object.freeze(['contains', 'links_to']);
 export const ASSERTION_PREDICATES = Object.freeze(['mentions', 'supported_by', 'contradicted_by',
   'calls', 'publishes', 'consumes', 'reads_from', 'writes_to', 'constrained_by', 'verified_by']);
+export const DEFAULT_SCOPES = Object.freeze(['README.md', 'biz', 'econ', 'fit', 'ontology', 'tech']);
 
 export const sha256 = (data) => createHash('sha256').update(data).digest('hex');
 

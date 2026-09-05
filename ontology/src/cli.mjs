@@ -108,8 +108,8 @@ export function parseArguments(argv) {
   if (options.command === 'serve' && (options.scopes.length || options.query !== undefined || options.depth !== undefined || options.maxBytes !== undefined)) {
     throw new ContextError('invalid_arguments', 'serve accepts --allow and --committed-only only.');
   }
-  options.scopes = options.scopes.length ? options.scopes : DEFAULT_SCOPES;
   options.allowlist = options.allowlist.length ? options.allowlist : DEFAULT_SCOPES;
+  options.scopes = options.scopes.length ? options.scopes : options.allowlist;
   options.cacheDir ??= defaultCacheDir(options.repo);
   return options;
 }
@@ -135,12 +135,10 @@ export async function execute(options) {
       allowlist: options.allowlist,
       committedOnly: options.committedOnly,
     });
-    return lookup({ repo: options.repo, cacheDir: options.cacheDir, allowlist: options.allowlist }, {
-      query: options.query,
-      scope: options.scopes,
-      depth: options.depth,
-      max_bytes: options.maxBytes,
-    });
+    const args = { query: options.query, scope: options.scopes };
+    if (options.depth !== undefined) args.depth = options.depth;
+    if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
+    return lookup({ repo: options.repo, cacheDir: options.cacheDir, allowlist: options.allowlist }, args);
   }
   if (options.command === 'status') return status(options);
   if (options.command === 'serve') {
@@ -193,8 +191,8 @@ export function usage() {
     'Usage: context-ontology <build|lookup|serve|status> [options]',
     '  --repo <absolute-path>       Vault repository, defaults to this repository',
     '  --cache <absolute-path>      Cache outside the repository',
-    '  --scope <path>               Repeatable build or lookup scope, defaults to tech',
-    '  --allow <path>               Repeatable lookup or server allowlist, defaults to tech',
+    `  --scope <path>               Repeatable build or lookup scope, defaults to ${DEFAULT_SCOPES.join(', ')}`,
+    `  --allow <path>               Repeatable lookup or server allowlist, defaults to ${DEFAULT_SCOPES.join(', ')}`,
     '  --committed-only              Build or serve the current HEAD when worktree is dirty',
     '  lookup requires --query <text>; accepts --depth <1|2> and --max-bytes <integer>',
   ].join('\n');

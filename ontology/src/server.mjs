@@ -2,12 +2,12 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import * as z from 'zod/v4';
 
-import { ContextError, normalizeScopes } from './core.mjs';
+import { ContextError, DEFAULT_SCOPES, normalizeScopes } from './core.mjs';
 import { lookup } from './query.mjs';
 import { getRepoState } from './repository.mjs';
 import { buildSnapshot, defaultCacheDir, loadSnapshot } from './snapshot.mjs';
 
-export const DEFAULT_SCOPES = ['tech'];
+export { DEFAULT_SCOPES } from './core.mjs';
 export const SERVER_LIMITS = Object.freeze({
   maxArgumentBytes: 8192,
   maxQueryBytes: 4096,
@@ -33,8 +33,8 @@ export function createContextServer(options) {
   const server = new McpServer({ name: 'interview-context-ontology', version: '0.1.0' });
 
   server.registerTool('context_lookup', {
-    title: 'Lookup development context',
-    description: 'Use for nontrivial technical design and reliability choices. Retrieves this personal knowledge vault; inspect source evidence and the current project before applying it. Indexed knowledge does not prove adoption or runtime behavior.',
+    title: 'Lookup personal knowledge',
+    description: 'Retrieves evidence from this personal knowledge vault. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. Inspect source evidence and current project materials before applying it. Ontology design and operations documents describe the retrieval system and do not prove current implementation, adoption, or runtime behavior.',
     inputSchema,
     annotations: {
       readOnlyHint: true,
