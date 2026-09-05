@@ -49,3 +49,4 @@ api.http
 
 # Machine-local MCP config. Register with the CLI from this repository; use .mcp.json.example only as a manual fallback.
 .mcp.json
+ontology/node_modules/

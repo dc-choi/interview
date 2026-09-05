@@ -1,0 +1,23 @@
+{
+  "name": "interview-context-ontology",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "build": "node src/cli.mjs build",
+    "lookup": "node src/cli.mjs lookup",
+    "status": "node src/cli.mjs status",
+    "evaluate": "node evaluation/run.mjs",
+    "serve": "node src/cli.mjs serve"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "mdast-util-from-markdown": "2.0.3",
+    "yaml": "2.9.0",
+    "zod": "4.5.4"
+  }
+}

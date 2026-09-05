@@ -1,0 +1,118 @@
+import assert from 'node:assert/strict';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { CallToolResultSchema, ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const cli = path.resolve(here, '../src/cli.mjs');
+
+async function fixture() {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'context-ontology-mcp-'));
+  const repo = path.join(root, 'repo');
+  const cache = path.join(root, 'cache');
+  await mkdir(path.join(repo, 'tech'), { recursive: true });
+  await writeFile(path.join(repo, 'tech', 'Transactional-Outbox.md'), [
+    '---', 'tags: [outbox, event]', 'aliases: [Transactional Outbox]', '---',
+    '# Transactional outbox',
+    'Store the domain change and event record in one database transaction. [[Idempotency]]', '',
+  ].join('\n'));
+  git(repo, ['init', '--quiet']);
+  git(repo, ['config', 'user.email', 'test@example.com']);
+  git(repo, ['config', 'user.name', 'Test']);
+  git(repo, ['add', '.']);
+  git(repo, ['commit', '--quiet', '-m', 'fixture']);
+  return { root, repo, cache };
+}
+
+function git(repo, args) {
+  return execFileSync('git', ['-C', repo, ...args], { encoding: 'utf8' });
+}
+
+async function connect(args) {
+  const transport = new StdioClientTransport({
+    command: process.execPath,
+    args: [cli, 'serve', ...args],
+    stderr: 'pipe',
+  });
+  const client = new Client({ name: 'context-ontology-test', version: '0.1.0' });
+  await client.connect(transport);
+  return { client, transport };
+}
+
+async function close(connection) {
+  await connection.transport.close();
+}
+
+test('MCP server lists one read-only tool and returns structured source-backed data', async (t) => {
+  const item = await fixture();
+  t.after(() => rm(item.root, { recursive: true, force: true }));
+  const connection = await connect(['--repo', item.repo, '--cache', item.cache, '--allow', 'tech']);
+  t.after(() => close(connection));
+
+  const listed = await connection.client.request({ method: 'tools/list', params: {} }, ListToolsResultSchema);
+  assert.equal(listed.tools.length, 1);
+  assert.equal(listed.tools[0].name, 'context_lookup');
+  assert.equal(listed.tools[0].annotations.readOnlyHint, true);
+  assert.equal(listed.tools[0].annotations.destructiveHint, false);
+  assert.equal(listed.tools[0].annotations.openWorldHint, false);
+  assert.equal(listed.tools[0].inputSchema.additionalProperties, false);
+
+  const result = await connection.client.request({
+    method: 'tools/call',
+    params: { name: 'context_lookup', arguments: { query: 'transactional outbox', scope: ['tech'], depth: 1, max_bytes: 8000 } },
+  }, CallToolResultSchema);
+  assert.equal(result.isError, undefined);
+  assert.deepEqual(JSON.parse(result.content[0].text), result.structuredContent);
+  assert.equal(result.structuredContent.result_status, 'ok');
+  assert.ok(result.structuredContent.evidence_units.length > 0);
+});
+
+test('MCP schema rejects unexpected tool arguments', async (t) => {
+  const item = await fixture();
+  t.after(() => rm(item.root, { recursive: true, force: true }));
+  const connection = await connect(['--repo', item.repo, '--cache', item.cache]);
+  t.after(() => close(connection));
+
+  const result = await connection.client.request({
+    method: 'tools/call',
+    params: { name: 'context_lookup', arguments: { query: 'outbox', repo: '/cannot-override' } },
+  }, CallToolResultSchema);
+  assert.equal(result.isError, true);
+});
+
+test('committed-only MCP server can build and serve HEAD from a dirty worktree', async (t) => {
+  const item = await fixture();
+  t.after(() => rm(item.root, { recursive: true, force: true }));
+  await writeFile(path.join(item.repo, 'tech', 'Uncommitted.md'), '# UNCOMMITTED PRIVATE TEXT\n');
+  const connection = await connect(['--repo', item.repo, '--cache', item.cache, '--committed-only']);
+  t.after(() => close(connection));
+
+  const result = await connection.client.request({
+    method: 'tools/call',
+    params: { name: 'context_lookup', arguments: { query: 'transactional outbox' } },
+  }, CallToolResultSchema);
+  assert.equal(result.isError, undefined);
+  assert.equal(result.structuredContent.index_sync[0].status, 'unindexed_worktree');
+  assert.equal(result.structuredContent.result_status, 'ok');
+  assert.ok(result.structuredContent.evidence_units.some((unit) => unit.source_uri === 'tech/Transactional-Outbox.md'));
+  assert.doesNotMatch(JSON.stringify(result.structuredContent), /UNCOMMITTED PRIVATE TEXT/);
+});
+
+test('serve exits cleanly on stdin EOF without emitting a JSON representation of the server', async (t) => {
+  const item = await fixture();
+  t.after(() => rm(item.root, { recursive: true, force: true }));
+  const result = spawnSync(process.execPath, [cli, 'serve', '--repo', item.repo, '--cache', item.cache], {
+    input: '', encoding: 'utf8', timeout: 10_000,
+  });
+  assert.equal(result.error, undefined);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout, '');
+  assert.doesNotMatch(result.stderr, /circular structure/i);
+});
