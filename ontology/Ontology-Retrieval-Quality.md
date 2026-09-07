@@ -85,7 +85,7 @@ aliases: ["온톨로지 검색 품질", "Ontology Retrieval Quality"]
 
 ## 실행과 남은 검증
 
-목차 기능을 구현한 시점의 Node suite는 100/100이었다. 당시 query의 어휘 겹침 metadata와 공백 입력 수정을 적용한 회귀 결과는 [final-regression-report-2026-09-08.json](evaluation/final-regression-report-2026-09-08.json)에 남겼다. 관계 탐색을 보강한 현재 suite는 103/103을 통과했다. 원래 실패한 질문을 성공으로 바꾸거나 과거 보고서의 코드 hash를 현재 코드로 덮지 않았다.
+목차 기능을 구현한 시점의 Node suite는 100/100이었다. 당시 query의 어휘 겹침 metadata와 공백 입력 수정을 적용한 회귀 결과는 [final-regression-report-2026-09-08.json](evaluation/final-regression-report-2026-09-08.json)에 남겼다. 관계 탐색을 보강한 당시 suite는 103/103을 통과했다. 문서 검색을 추가한 현재 suite는 112/112다. 원래 실패한 질문을 성공으로 바꾸거나 과거 보고서의 코드 hash를 현재 코드로 덮지 않았다.
 
 `ontology/`에서 저장소 밖 cache를 준비한 뒤 실행한다.
 
@@ -98,6 +98,29 @@ node evaluation/outline-navigation.mjs --cache <같은-cache> --check
 
 관계 탐색의 새 표본은 `node evaluation/run.mjs --cache <같은-cache> --cases evaluation/graph-ranking-cases-2026-09-08.json`으로 재실행한다. 남은 실패 때문에 `--check`를 붙이면 종료 코드 1이다. 보고서의 전후 비교는 위 `ce24717`의 query와 수정 query를 같은 snapshot 및 공통 runtime 모듈로 실행한 결과다.
 
-다음 검증은 문서 검색 누락과 한국어 상황 설명의 표현 차이, 모델의 관련 heading 선택, 필요한 본문과 예외의 후속 읽기, 최종 판단 정확도를 대상으로 한다. 모든 반환 문서의 목차를 여는 방식은 탐색 가능한 범위를 관찰하기 위한 것으로, 비용을 줄인 기본 사용 전략이 검증된 것은 아니다. 일반화 성능을 다시 판단할 때는 아직 코드 조정에 사용하지 않은 새 표본이 필요하다.
+## 문서 검색을 후속 탐색으로 추가
+
+2026-09-08에는 원문 revision `a179f4f55a805e2c2bcc734a7dfe988c4302f7be`에서 비교했다. snapshot은 1,873 Document, 21,488 unit, 35,501 relation, coverage gap 0이다. [[Ontology-Document-Search|context_search]]는 lookup의 root 6개 제한 전에 있는 후보를 페이지로 반환한다. 순위와 기존 lookup 결과는 유지하며 문서 metadata만 넓혀 본다. 기존 40개 질문은 같은 snapshot과 dirty 상태에서 전체 lookup JSON이 변경 전과 40/40 동일했고, 원래 본문 조건의 전체 통과는 22/40 그대로였다.
+
+평가 정책은 각 질문에서 lookup 한 번과 search 최대 두 페이지를 각각 실행하는 것이다. 페이지 예산은 사례에 정한 값을 유지하며 보통 24,000 byte다. 기대 경로를 보고 중간에 멈추지 않는다. lookup에서 이미 찾은 문서를 보존한 합집합도 별도로 계산한다. 이는 관련 문서를 고르는 모델의 사용 비용이 아니라 고정된 탐색 범위의 관찰이다.
+
+아래 문서 발견은 각 필수 근거 그룹의 허용 경로 중 하나가 Document metadata에 있는지 검사한다. 같은 문서의 heading 두 개를 요구해도 여기서는 그 문서 발견만 검사한다. 기존 `scoreResult`의 evidence unit 기반 문서 적중, heading, 본문 조건과는 별도 지표다.
+
+| 문서 발견 항목 | lookup | search 첫 페이지 | search 최대 두 페이지 | lookup과 search 합집합 |
+| --- | ---: | ---: | ---: | ---: |
+| 알려진 양성 질문 35개 | 28/35 | 29/35 | 31/35 | 31/35 |
+| 알려진 음성 질문의 빈 결과 | 2/5 | 2/5 | 2/5 | 2/5 |
+| 새 양성 질문 4개 | 3/4 | 3/4 | 3/4 | 3/4 |
+| 새 음성 질문의 빈 결과 | 0/2 | 0/2 | 0/2 | 0/2 |
+
+알려진 질문에서는 긴 계산으로 인한 요청 지연, 제품 인터뷰와 재시도 폭증 사례의 문서를 추가로 찾았다. 새 사례는 구현과 기존 평가를 보지 않은 별도 작업자가 원문에서 만든 합성 질문 6개다. query와 평가 정책을 고정한 뒤 처음 공개했다. tech 2개, biz/econ 각 1개와 날씨/가상 왕국 음성 2개이며 [사례 원본](evaluation/document-search-cases-2026-09-08.json)의 SHA-256은 `a45607c714de84af95890c6379dc828800ac478d032537f75cb660deef0f1d7b`다. 새 표본에서의 발견 개선은 관찰되지 않았고, 근거 부족 응답 처리 문서는 여전히 빠졌다. 이후 이 사례를 조정에 사용하면 회귀 표본으로 취급한다.
+
+알려진 40개에서 lookup은 40회/833,264 byte, search 최대 두 페이지는 73회/1,530,328 byte, 둘의 합계는 113회/2,363,592 byte였다. 새 6개에서는 각각 6회/140,475 byte, 12회/270,872 byte, 합계 18회/411,347 byte였다. 모든 개별 응답은 해당 예산 이내였으며 크기는 MCP envelope를 제외한 JSON payload다. 페이지를 늘리는 비용과 무관한 후보를 사람이 검토하는 비용이 있으므로 전부 수집하는 것을 기본 사용법으로 강제하지 않는다.
+
+본문을 자동으로 추가하는 후보와 관계 근거 재정렬 후보는 알려진 질문의 적중을 잃거나 전체 성공을 늘리지 못해 적용하지 않았다. 단어 시작 경계로 오탐을 줄이는 후보도 `OpenSearch`, `refreshToken`, `강제청산`, `2차원`의 부분어 검색을 잃어 폐기했다. 현재 `matched_terms`에는 internal ID 같은 metadata 겹침도 들어가며 `best_evidence_ref`의 본문에 검색어가 있다는 보장은 없다. 이들은 탐색 단서이지 의미 적합성이나 지식 부재의 판정이 아니다.
+
+재현은 `node evaluation/document-search.mjs --cache <같은-cache> --cases evaluation/document-search-cases-2026-09-08.json`으로 한다. byte, provenance와 페이지 계약 위반은 실행을 실패시키고 문서 누락은 별도 지표로 남긴다. 고정 시점, 코드 hash, 첫 관찰, lookup 동일성, 폐기 후보와 MCP 연결 검증은 [문서 검색 보고서](evaluation/document-search-report-2026-09-08.json)에 둔다.
+
+다음 검증은 남은 문서 누락과 한국어 표현 차이, 모델의 관련 heading 선택, 필요한 본문과 예외의 후속 읽기, 최종 판단 정확도를 대상으로 한다. 현재 평가만으로 검색이나 답변 품질이 완성됐다고 판단하지 않는다.
 
 상위: [[Development-Ontology]]. 이전 관찰: [[Development-Ontology-Evaluation]]. 운영: [[Ontology-Operations]].

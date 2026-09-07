@@ -57,7 +57,7 @@ test('MCP server lists read-only lookup and evidence tools and returns structure
   t.after(() => close(connection));
 
   const listed = await connection.client.request({ method: 'tools/list', params: {} }, ListToolsResultSchema);
-  assert.deepEqual(listed.tools.map((tool) => tool.name).sort(), ['context_lookup', 'context_outline', 'context_read']);
+  assert.deepEqual(listed.tools.map((tool) => tool.name).sort(), ['context_lookup', 'context_outline', 'context_read', 'context_search']);
   for (const tool of listed.tools) {
     assert.equal(tool.annotations.readOnlyHint, true);
     assert.equal(tool.annotations.destructiveHint, false);

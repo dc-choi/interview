@@ -4,7 +4,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 import { ContextError } from './core.mjs';
-import { lookup } from './query.mjs';
+import { lookup, search } from './query.mjs';
 import { readEvidence } from './read-evidence.mjs';
 import { outlineEvidence } from './outline.mjs';
 import { getRepoState } from './repository.mjs';
@@ -33,7 +33,7 @@ export async function main(argv = process.argv.slice(2)) {
 export function parseArguments(argv) {
   const [command, ...rest] = argv;
   if (!command || command === '--help' || command === '-h') return { help: true };
-  if (!['build', 'lookup', 'read', 'outline', 'serve', 'status'].includes(command)) {
+  if (!['build', 'lookup', 'search', 'read', 'outline', 'serve', 'status'].includes(command)) {
     throw new ContextError('invalid_command', `Unknown command: ${command}`);
   }
 
@@ -47,6 +47,7 @@ export function parseArguments(argv) {
     query: undefined,
     depth: undefined,
     maxBytes: undefined,
+    cursor: undefined,
     evidenceUnitId: undefined,
     sourceRevision: undefined,
     contentHash: undefined,
@@ -67,7 +68,7 @@ export function parseArguments(argv) {
       options.committedOnly = true;
       continue;
     }
-    if (!['--repo', '--cache', '--scope', '--allow', '--query', '--depth', '--max-bytes',
+    if (!['--repo', '--cache', '--scope', '--allow', '--query', '--depth', '--max-bytes', '--cursor',
       '--evidence-unit-id', '--source-revision', '--content-hash', '--offset-bytes', '--document-id', '--offset-sections'].includes(flag)) {
       throw new ContextError('invalid_arguments', `Unknown argument: ${flag}`);
     }
@@ -91,6 +92,7 @@ export function parseArguments(argv) {
     if (flag === '--query') options.query = value;
     if (flag === '--depth') options.depth = parseInteger('--depth', value);
     if (flag === '--max-bytes') options.maxBytes = parseInteger('--max-bytes', value);
+    if (flag === '--cursor') options.cursor = value;
     if (flag === '--evidence-unit-id') options.evidenceUnitId = value;
     if (flag === '--source-revision') options.sourceRevision = value;
     if (flag === '--content-hash') options.contentHash = value;
@@ -102,8 +104,8 @@ export function parseArguments(argv) {
   if (options.cacheDir && isWithin(options.repo, options.cacheDir)) {
     throw new ContextError('invalid_arguments', '--cache must be outside --repo.');
   }
-  if (options.command === 'lookup' && !options.query) {
-    throw new ContextError('invalid_arguments', 'lookup requires --query.');
+  if (['lookup', 'search'].includes(options.command) && !options.query) {
+    throw new ContextError('invalid_arguments', `${options.command} requires --query.`);
   }
   if (options.depth !== undefined && options.depth !== 1 && options.depth !== 2) {
     throw new ContextError('invalid_arguments', '--depth must be 1 or 2.');
@@ -111,11 +113,17 @@ export function parseArguments(argv) {
   if (options.maxBytes !== undefined && options.maxBytes <= 0) {
     throw new ContextError('invalid_arguments', '--max-bytes must be a positive integer.');
   }
-  if (options.command !== 'lookup' && (options.query !== undefined || options.depth !== undefined)) {
-    throw new ContextError('invalid_arguments', '--query and --depth are only valid for lookup.');
+  if (!['lookup', 'search'].includes(options.command) && options.query !== undefined) {
+    throw new ContextError('invalid_arguments', '--query is only valid for lookup or search.');
   }
-  if (!['lookup', 'read', 'outline'].includes(options.command) && options.maxBytes !== undefined) {
-    throw new ContextError('invalid_arguments', '--max-bytes is only valid for lookup, read, or outline.');
+  if (options.command !== 'lookup' && options.depth !== undefined) {
+    throw new ContextError('invalid_arguments', '--depth is only valid for lookup.');
+  }
+  if (!['lookup', 'search', 'read', 'outline'].includes(options.command) && options.maxBytes !== undefined) {
+    throw new ContextError('invalid_arguments', '--max-bytes is only valid for lookup, search, read, or outline.');
+  }
+  if (options.command !== 'search' && options.cursor !== undefined) {
+    throw new ContextError('invalid_arguments', '--cursor is only valid for search.');
   }
   if (options.command === 'read') {
     if (!options.evidenceUnitId || !options.sourceRevision || !options.contentHash) {
@@ -142,7 +150,7 @@ export function parseArguments(argv) {
   if (options.command === 'build' && options.allowlist.length) {
     throw new ContextError('invalid_arguments', 'build does not accept --allow.');
   }
-  if (options.command === 'serve' && (options.scopes.length || options.query !== undefined || options.depth !== undefined || options.maxBytes !== undefined)) {
+  if (options.command === 'serve' && (options.scopes.length || options.query !== undefined || options.depth !== undefined || options.maxBytes !== undefined || options.cursor !== undefined)) {
     throw new ContextError('invalid_arguments', 'serve accepts --allow and --committed-only only.');
   }
   options.allowlist = options.allowlist.length ? options.allowlist : DEFAULT_SCOPES;
@@ -165,7 +173,7 @@ export async function execute(options) {
     });
     return summary;
   }
-  if (['lookup', 'read', 'outline'].includes(options.command)) {
+  if (['lookup', 'search', 'read', 'outline'].includes(options.command)) {
     const { snapshot } = ensureFreshSnapshot({
       repo: options.repo,
       cacheDir: options.cacheDir,
@@ -191,6 +199,11 @@ export async function execute(options) {
       return readEvidence(readOptions, args, snapshot);
     }
     const args = { query: options.query, scope: options.scopes };
+    if (options.command === 'search') {
+      if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
+      if (options.cursor !== undefined) args.cursor = options.cursor;
+      return search(readOptions, args, snapshot);
+    }
     if (options.depth !== undefined) args.depth = options.depth;
     if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
     return lookup(readOptions, args, snapshot);
@@ -243,13 +256,14 @@ function isMissingSnapshot(error) {
 
 export function usage() {
   return [
-    'Usage: context-ontology <build|lookup|read|outline|serve|status> [options]',
+    'Usage: context-ontology <build|lookup|search|read|outline|serve|status> [options]',
     '  --repo <absolute-path>       Vault repository, defaults to this repository',
     '  --cache <absolute-path>      Cache outside the repository',
-    `  --scope <path>               Repeatable build or lookup scope, defaults to ${DEFAULT_SCOPES.join(', ')}`,
-    `  --allow <path>               Repeatable lookup, read, outline, or server allowlist, defaults to ${DEFAULT_SCOPES.join(', ')}`,
+    `  --scope <path>               Repeatable build, lookup, or search scope, defaults to ${DEFAULT_SCOPES.join(', ')}`,
+    `  --allow <path>               Repeatable lookup, search, read, outline, or server allowlist, defaults to ${DEFAULT_SCOPES.join(', ')}`,
     '  --committed-only              Build or serve the current HEAD when worktree is dirty',
     '  lookup requires --query <text>; accepts --depth <1|2> and --max-bytes <integer>',
+    '  search requires --query <text>; accepts --scope <path>, --max-bytes <integer>, and --cursor <opaque-token>',
     '  read requires --evidence-unit-id <id> --source-revision <commit> --content-hash <sha256:hash>',
     '  read accepts --offset-bytes <unit-relative-byte> and --max-bytes <integer>',
     '  outline requires --document-id <id> --source-revision <commit>',

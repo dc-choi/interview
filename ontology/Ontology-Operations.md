@@ -19,13 +19,15 @@ aliases: ["Ontology Operations", "온톨로지 실행 절차"]
 | 관계 | `contains`, 해석 가능한 `links_to`, schema와 entity ID가 맞는 명시 relation |
 | 근거 | 원문 path, pinned revision, UTF-8 byte anchor, 해당 byte SHA-256, 마지막 변경 commit 시각 |
 | 조회 | exact label, alias, tag, heading과 키워드, source-confirmed relation 1 또는 2 hop |
-| MCP | stdio 서버의 읽기 전용 `context_lookup`, `context_outline`, `context_read` |
+| MCP | stdio 서버의 읽기 전용 `context_search`, `context_lookup`, `context_outline`, `context_read` |
 
 관계 ID는 subject, predicate, object, evidence unit ID, occurrence의 안정 JSON SHA-256이다. section ID의 heading component는 `encodeURIComponent`로 인코딩하고 빈 heading은 `%`로 구분한다. 같은 heading path의 occurrence를 ID와 anchor에 보존한다. 이 때문에 `A/B` heading과 `A` 아래의 `B` heading이 다른 entity가 된다. 위키링크 대상은 파일 경로와 파일명으로 찾으며, 표 셀 안에서 파이프를 escape한 `[[대상\|별칭]]` 표기도 대상만 추출한다. H1 제목과 frontmatter alias는 검색에만 사용한다. Document의 `verified_at`은 조회 결과의 entity 속성으로 반환하지만 freshness 판정에는 아직 쓰지 않는다.
 
 `config.json`의 `repository_id`는 이 Vault의 고정 ID다. 장비나 checkout 경로가 바뀌어도 유지해야 Markdown에 기록한 typed relation이 보존된다. 이 runtime 설치는 Vault 하나를 대상으로 하며, 다른 독립 Vault를 구축할 때는 ID를 분리한다. cache와 snapshot fingerprint는 실제 checkout 경로도 구분한다.
 
 검색은 정확한 label과 alias를 우선하고, 문서당 최고점 section과 상위 root 6개를 선택한다. 정규화와 키워드 확장 뒤 2~3개 토큰인 짧은 질의는 문서 빈도를 이용해 구체 용어가 없는 일반어 후보를 제외한다. 더 긴 자연어 질의에는 이 제외 규칙을 적용하지 않는다. 직접 근거를 먼저 담은 뒤 관계, 양 끝 entity, 소유 문서와 원문 근거를 한 묶음으로 추가한다. 예산에 맞지 않는 묶음은 누락 수로 보고하며, 최종 축소에서도 남은 관계와 직접 근거에 필요한 문서를 보존한다. 작은 예산에서 모든 관계의 반환을 보장하지는 않는다.
+
+`search`와 `context_search`는 같은 root 순위를 상위 6개로 자르기 전에 사용해 Document 후보를 페이지로 반환한다. 페이지는 최대 20개 후보이며 body나 excerpt를 반환하지 않는다. 검색어, effective scope, snapshot과 query 코드가 바뀌지 않는 한 cursor로 이어 읽고, 다음 페이지에서 `max_bytes`는 바꿀 수 있다. 후보의 `matched_terms`는 metadata, internal ID와 여러 section의 어휘 겹침이므로 의미적 적합성 판정이 아니다. 계약과 후속 읽기 흐름은 [[Ontology-Document-Search]]를 따른다.
 
 관계 탐색에서는 근거 unit의 현재 질문 점수를 먼저 본다. Section은 metadata와 본문 점수, RelationAssertion은 predicate와 endpoint 등의 metadata 점수를 사용한다. 동점이면 상대 entity 소유 Document의 점수, relation ID 순으로 선택한다. `출처`, `관련 문서`, `관련문서` section에는 이 우선순위용 점수를 부여하지 않는다. 관계가 기록된 본문과 상대 문서의 다른 본문을 구분하기 위한 순서이며, 원문 확정 상태와 scope, hop, entity와 edge 상한은 그대로 검사한다.
 
@@ -42,11 +44,12 @@ npm ci --ignore-scripts
 npm test
 npm run build -- --committed-only
 npm run lookup -- --committed-only --query "transactional outbox"
+node src/cli.mjs search --committed-only --query "transactional outbox"
 npm run status
 npm run serve
 ```
 
-`build`와 `lookup`은 `--repo <absolute-path>`, `--cache <absolute-path>`, 반복 가능한 `--scope <repository-relative-prefix>`를 받는다. `lookup`은 `--allow`, `--depth 1|2`, `--max-bytes <positive-integer>`도 받는다. `--allow`를 생략하면 기본 범위 `README.md`, `biz/`, `econ/`, `fit/`, `ontology/`, `tech/`를 사용하며, 반복 지정하면 필요한 경로로 허용 범위를 제한한다. `lookup`의 snapshot 범위는 항상 allowlist이고 `--scope`는 요청 범위만 좁힌다. 요청 scope 때문에 활성 snapshot을 다시 만들지 않는다 (2026-09-07 수정. 이전에는 `--scope tech` 조회가 활성 snapshot을 `tech` 전용으로 교체했다). scope는 glob이 아닌 repository-relative prefix이며 상위 경로 이동과 wildcard를 거부한다.
+`build`, `lookup`, `search`는 `--repo <absolute-path>`, `--cache <absolute-path>`, 반복 가능한 `--scope <repository-relative-prefix>`를 받는다. `lookup`은 `--allow`, `--depth 1|2`, `--max-bytes <positive-integer>`를 받는다. `search`는 `--allow`, `--max-bytes <positive-integer>`, `--cursor <opaque-token>`을 받으며 `--depth`는 받지 않는다. `--allow`를 생략하면 기본 범위 `README.md`, `biz/`, `econ/`, `fit/`, `ontology/`, `tech/`를 사용하며, 반복 지정하면 필요한 경로로 허용 범위를 제한한다. `lookup`과 `search`의 snapshot 범위는 항상 allowlist이고 `--scope`는 요청 범위만 좁힌다. 요청 scope 때문에 활성 snapshot을 다시 만들지 않는다 (2026-09-07 수정. 이전에는 `--scope tech` 조회가 활성 snapshot을 `tech` 전용으로 교체했다). scope는 glob이 아닌 repository-relative prefix이며 상위 경로 이동과 wildcard를 거부한다.
 
 기본 cache는 `~/.cache/context-ontology/<checkout-hash>/`다. cache는 source repository 밖이어야 하고, `active.json`, `runs.jsonl`, `.context-ontology-cache` 소유권 표식과 활성 snapshot을 보관한다. 비어 있지 않은 사용자 지정 cache에 표식이 없으면 `invalid_cache_path`로 거부해 다른 데이터를 정리 대상으로 오인하지 않는다. 최초 표식의 내용이 아직 비어 있거나 정상 내용의 앞부분만 기록됐으면 50ms 간격으로 최대 20회 재확인한다. 총 대기 1초 뒤에도 불완전하거나 내용 또는 파일 형식이 잘못됐으면 계속 `invalid_cache_path`로 거부하며, 중단된 초기화를 자동 복구하지 않는다. build는 기존 snapshot 재사용 검증, 활성화와 삭제를 cache의 `.lock`으로 프로세스 간 직렬화한다. lock symlink 대상은 보유 프로세스 pid와 무작위 token을 함께 가지므로 종료 시 후속 보유자의 lock을 지우지 않는다. 살아 있는 보유자는 최대 10분 기다리며, 보유 프로세스가 사라진 lock은 `cache_lock_stale`, 형식이 잘못된 lock은 `snapshot_integrity_error`로 중단한다. 자동 stale-lock 회수는 원자적 소유권 교체를 보장할 수 없어 하지 않으며, 실행 중인 build가 없음을 확인한 뒤 해당 `.lock`만 수동 제거한다. 정상 활성화 뒤에는 활성 snapshot 외의 fingerprint 디렉터리와 10분이 지난 `.building-*`, `.active-*`, 이전 구현이 남긴 `.lock.dead-*` 임시 항목을 삭제해 `pruned_snapshots`, `pruned_temporaries`로 건수를 보고한다. 조회는 lock 없이 읽으므로 파일 존재 확인 뒤 실제 읽기 사이에 이전 snapshot이 삭제돼도 `snapshot_not_found`로 분류한다. CLI와 MCP 조회는 clean worktree이거나 `--committed-only`이면 같은 요청에서 필요한 범위로 다시 빌드한다. 이미 메모리에 읽은 snapshot은 요청이 끝날 때까지 유지한다. `snapshots` 경로가 symlink이거나 디렉터리가 아니면 `snapshot_integrity_error`로 거부한다. 같은 fingerprint 디렉터리에 artifact가 빠져 있으면 build가 방금 만든 snapshot으로 교체하고, snapshot 디렉터리 symlink이나 artifact hash 변조는 `snapshot_integrity_error`, 같은 fingerprint의 다른 manifest는 `non_deterministic_build`로 거부한다. build 실행 로그 기록이나 삭제가 실패하면 성공한 snapshot 활성화를 되돌리지 않고 `warnings: [run_log_unavailable]` 또는 `[prune_unavailable]`을 반환한다. snapshot에는 `schema.json`, `source-manifest.json`, `entities.jsonl`, `relations.jsonl`이 있으며 artifact와 manifest hash를 검증한 뒤에만 활성화한다. schema 또는 extractor 버전이 다른 활성 snapshot은 `snapshot_incompatible`, 디렉터리나 artifact 파일이 사라진 활성 snapshot은 `snapshot_not_found`로 판정하고, clean worktree이거나 `--committed-only`인 다음 build 또는 조회에서 다시 만든다. dirty worktree에서 `--committed-only` 없이 조회하면 `unindexed_worktree` 오류 메시지가 그 사유를 알린다. `status`는 snapshot을 제공하지 못하는 사유를 `snapshot_status`로 보고한다.
 
@@ -54,7 +57,7 @@ npm run serve
 
 기본 build는 dirty worktree를 거부한다. `--committed-only`를 명시하면 dirty 상태여도 `HEAD` blob만 읽어 snapshot을 만들 수 있다. 어느 경우도 working tree 파일이나 untracked 파일을 evidence로 읽지 않는다. 원문의 마지막 변경 시각을 재현하기 위해 shallow clone은 거부한다. UTF-8이 아닌 본문이나 Git 경로도 추정 변환하지 않고 오류로 중단하며 기존 snapshot을 보존한다.
 
-`lookup`과 `context_lookup`은 요청 시작에 active snapshot의 revision과 indexed scope를 현재 `HEAD`와 비교한다. clean worktree에서 다르면 새 snapshot을 만든다. dirty 상태에서 `--committed-only`가 없으면 기존 clean snapshot만 유지하고 query 결과는 `unindexed_worktree`로 표시한다. 기존 snapshot도 없으면 오류로 끝난다. `--committed-only`면 dirty 상태에서도 pinned `HEAD` snapshot을 만들고 결과에 `unindexed_worktree`를 표시한다.
+`lookup`, `search`, `context_lookup`, `context_search`는 요청 시작에 active snapshot의 revision과 indexed scope를 현재 `HEAD`와 비교한다. clean worktree에서 다르면 새 snapshot을 만든다. dirty 상태에서 `--committed-only`가 없으면 기존 clean snapshot만 유지하고 query 결과는 `unindexed_worktree`로 표시한다. 기존 snapshot도 없으면 오류로 끝난다. `--committed-only`면 dirty 상태에서도 pinned `HEAD` snapshot을 만들고 결과에 `unindexed_worktree`를 표시한다.
 
 `read`와 `context_read`도 같은 snapshot 확인 경로를 사용한다. 조회 결과의 ID, revision과 hash에 맞는 근거를 예산 안에서 페이지로 읽으며, revision이나 hash가 달라졌으면 재조회를 요구한다. 입력, 페이지 연결과 오류 처리의 정본은 [[Ontology-Evidence-Read]]다.
 
@@ -80,7 +83,7 @@ codex mcp get development-context
 claude mcp get development-context
 ```
 
-MCP host는 tool argument로 repository나 cache 경로를 바꿀 수 없다. `context_lookup`은 `query`, 선택 `scope`, `depth`, `max_bytes`만 받고 알 수 없는 field와 크기 제한 초과 입력을 거부한다. tool 결과는 JSON text와 동일한 structured content다. 스킬의 일반 요청 예산은 24KB, 서버 상한은 64KiB다. 특정 host를 제한해야 하면 등록 명령에 `--allow <repository-relative-prefix>`를 반복해 추가한다.
+MCP host는 tool argument로 repository나 cache 경로를 바꿀 수 없다. `context_lookup`은 `query`, 선택 `scope`, `depth`, `max_bytes`만 받고 알 수 없는 field와 크기 제한 초과 입력을 거부한다. `context_search`는 `query`, 선택 `scope`, `max_bytes`, `cursor`를 받고 document 후보만 페이지로 반환한다. cursor는 인증 정보가 아닌 consistency token이므로 query, scope, snapshot, query 코드가 바뀌면 재사용할 수 없다. tool 결과는 JSON text와 동일한 structured content다. 스킬의 일반 요청 예산은 24KB, 서버 상한은 64KiB다. 특정 host를 제한해야 하면 등록 명령에 `--allow <repository-relative-prefix>`를 반복해 추가한다.
 
 `context_read`는 `evidence_unit_id`, `source_revision`, `content_hash`, 선택 `offset_bytes`, `max_bytes`를 받는다. 근거 ID와 도구 입력 전체는 각각 최대 65,536 UTF-8 byte다. 긴 heading에서 생성돼 조회 응답에 담긴 ID도 그대로 읽을 수 있도록 읽기 입력 한도를 조회 출력 상한에 맞췄다. `context_lookup`의 입력 전체 제한은 8,192 byte다. 읽기 결과도 JSON text와 structured content가 일치하며 같은 host allowlist를 적용한다.
 
@@ -166,6 +169,7 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 - [[Ontology-Evidence-Lifecycle]]
 - [[Ontology-Evidence-Read]]
 - [[Ontology-Document-Outline]]
+- [[Ontology-Document-Search]]
 - [[Ontology-Retrieval-Quality]]
 - [[Ontology-Context-Platform-Implementation]]
 - [[Ontology-Context-Platform-AI-Runtime]]

@@ -9,7 +9,7 @@ aliases: ["개발 판단 온톨로지", "Development Knowledge Ontology"]
 
 이 Vault의 지식을 현재 개발, 커리어, 비즈니스와 경제 상황에 연결해 적용 조건, 대안과 놓치기 쉬운 고려사항을 먼저 찾는다. 사용자는 자료마다 맥락을 반복 설명하지 않고, AI는 원문과 현재 코드 또는 해당 판단의 근거를 확인해 개선안을 제안한다.
 
-현재 단계는 Markdown 원문을 Git `HEAD` blob으로 고정해 색인하고, `context_lookup`으로 검색한 뒤 `context_outline`으로 문서 목차를 탐색하고 `context_read`로 근거를 끝까지 읽는 구현이다. 개인 지식은 이 저장소에 유지하며, 조회 결과를 현재 프로젝트의 코드나 런타임 사실로 해석하지 않는다.
+현재 단계는 Markdown 원문을 Git `HEAD` blob으로 고정해 색인하고, `context_search`로 문서 후보를 찾거나 `context_lookup`으로 근거를 조회한 뒤 `context_outline`으로 문서 목차를 탐색하고 `context_read`로 근거를 끝까지 읽는 구현이다. 개인 지식은 이 저장소에 유지하며, 조회 결과를 현재 프로젝트의 코드나 런타임 사실로 해석하지 않는다.
 
 ## 사용 기준
 
@@ -28,6 +28,7 @@ aliases: ["개발 판단 온톨로지", "Development Knowledge Ontology"]
 - [[Ontology-Evidence-Lifecycle|근거의 시점과 예외 보존, 필수 근거 평가]]
 - [[Ontology-Evidence-Read|잘린 근거를 같은 원문에서 끝까지 읽는 MCP와 CLI]]
 - [[Ontology-Document-Outline|찾은 문서의 다른 section 탐색]]
+- [[Ontology-Document-Search|문서 후보를 페이지로 찾고 후속 근거를 고르는 API]]
 - [[Ontology-Retrieval-Quality|자연어 검색과 후속 탐색의 품질, 비용과 남은 한계]]
 
 ## 실행 경로

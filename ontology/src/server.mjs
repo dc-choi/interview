@@ -3,7 +3,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import * as z from 'zod/v4';
 
 import { ContextError, DEFAULT_SCOPES, normalizeScopes } from './core.mjs';
-import { lookup } from './query.mjs';
+import { lookup, search } from './query.mjs';
 import { readEvidence, READ_LIMITS } from './read-evidence.mjs';
 import { outlineEvidence, OUTLINE_LIMITS } from './outline.mjs';
 import { getRepoState } from './repository.mjs';
@@ -22,6 +22,15 @@ const inputSchema = z.object({
   scope: z.array(z.string().min(1).max(SERVER_LIMITS.maxScopePathBytes)).max(SERVER_LIMITS.maxScopeEntries).optional(),
   depth: z.union([z.literal(1), z.literal(2)]).optional(),
   max_bytes: z.number().int().positive().max(Number.MAX_SAFE_INTEGER).optional(),
+}).strict();
+
+const searchInputSchema = z.object({
+  query: z.string().min(1).max(SERVER_LIMITS.maxQueryBytes),
+  scope: z.array(z.string().min(1).max(SERVER_LIMITS.maxScopePathBytes)).max(SERVER_LIMITS.maxScopeEntries).optional(),
+  max_bytes: z.number().int().positive().max(Number.MAX_SAFE_INTEGER).optional(),
+  // The query layer validates opaque cursor syntax and emits invalid_cursor.
+  // Keeping this as a string lets MCP callers receive that stable error code.
+  cursor: z.string().optional(),
 }).strict();
 
 const readInputSchema = z.object({
@@ -49,7 +58,7 @@ export function createContextServer(options) {
 
   server.registerTool('context_lookup', {
     title: 'Lookup personal knowledge',
-    description: 'Retrieves evidence from this personal knowledge vault. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. A weak_lexical_overlap matching assessment requires checking whether the returned material addresses the question. Use context_outline to find other sections of a relevant Document and context_read to read their full evidence. Inspect current project materials before applying knowledge. Ontology documents do not prove current implementation, adoption, or runtime behavior.',
+    description: 'Retrieves evidence from this personal knowledge vault. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. A weak_lexical_overlap matching assessment requires checking whether the returned material addresses the question. Use context_outline to find other sections of a relevant Document and context_read to read their full evidence. If needed documents are not returned, use context_search. Inspect current project materials before applying knowledge. Ontology documents do not prove current implementation, adoption, or runtime behavior.',
     inputSchema,
     annotations: {
       readOnlyHint: true,
@@ -61,6 +70,30 @@ export function createContextServer(options) {
       assertArgumentSize(args);
       const { snapshot } = ensureFreshSnapshot(settings);
       const payload = lookup({
+        repo: settings.repo,
+        cacheDir: settings.cacheDir,
+        allowlist: settings.allowlist,
+      }, args, snapshot);
+      return payloadResult(payload);
+    } catch (error) {
+      return errorResult(error);
+    }
+  });
+
+  server.registerTool('context_search', {
+    title: 'Search personal knowledge documents',
+    description: 'Searches source-backed Documents in this personal knowledge vault without returning source text. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. When you find a relevant Document, use context_outline and context_read to inspect its evidence. Use pagination.next_cursor for limited additional exploration when needed. A Document match only establishes lexical overlap, so verify that its source addresses the question before applying it.',
+    inputSchema: searchInputSchema,
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      openWorldHint: false,
+    },
+  }, (args) => {
+    try {
+      assertSearchArgumentSize(args);
+      const { snapshot } = ensureFreshSnapshot(settings);
+      const payload = search({
         repo: settings.repo,
         cacheDir: settings.cacheDir,
         allowlist: settings.allowlist,
@@ -213,6 +246,11 @@ function assertArgumentSize(args, maximum = SERVER_LIMITS.maxArgumentBytes) {
       throw new ContextError('invalid_scope', `scope paths exceed ${SERVER_LIMITS.maxScopePathBytes} bytes.`);
     }
   }
+}
+
+function assertSearchArgumentSize(args) {
+  const { cursor: _cursor, ...request } = args;
+  assertArgumentSize(request);
 }
 
 function sameRevision(manifest, revision) {

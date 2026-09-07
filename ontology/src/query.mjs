@@ -20,6 +20,9 @@ const MAX_MATCHED_ENTITIES = 20;
 const MAX_ROOTS = 6;
 const MAX_EDGES_PER_ENTITY = 50;
 const MAX_EXCERPT_BYTES = 1400;
+const MAX_SEARCH_DOCUMENTS = 20;
+const MAX_CURSOR_BYTES = 2048;
+const QUERY_CODE_HASH = sha256(fs.readFileSync(new URL(import.meta.url)));
 const LIMITATIONS = [
   'freshness_not_checked',
   'semantic_conflict_not_checked',
@@ -80,6 +83,110 @@ function validateArgs(args) {
     depth: args.depth ?? 1,
     requestedMaxBytes: args.max_bytes ?? SERVER_MAX_BYTES,
   };
+}
+
+function validateSearchArgs(args) {
+  assertPlainObject(args, 'arguments');
+  for (const key of Object.keys(args)) {
+    if (!['query', 'scope', 'max_bytes', 'cursor'].includes(key)) fail('invalid_arguments', `unknown argument: ${key}`);
+  }
+  const { cursor, ...queryArgs } = args;
+  const request = validateArgs(queryArgs);
+  if (own(args, 'cursor') && (typeof cursor !== 'string' || cursor.length === 0
+    || Buffer.byteLength(cursor, 'utf8') > MAX_CURSOR_BYTES || !/^[A-Za-z0-9_-]+$/.test(cursor))) {
+    fail('invalid_cursor', 'cursor must be a bounded continuation token');
+  }
+  return { ...request, cursor };
+}
+
+function searchOffset(cursor, binding, total) {
+  if (cursor === undefined) return 0;
+  let value;
+  try {
+    const bytes = Buffer.from(cursor, 'base64url');
+    if (bytes.toString('base64url') !== cursor) throw new Error('noncanonical cursor');
+    value = JSON.parse(bytes.toString('utf8'));
+  } catch {
+    fail('invalid_cursor', 'cannot decode cursor');
+  }
+  if (!value || typeof value !== 'object' || Array.isArray(value)
+    || Object.keys(value).length !== 2 || !own(value, 'offset') || !own(value, 'binding')
+    || !Number.isSafeInteger(value.offset) || value.offset < 0
+    || typeof value.binding !== 'string' || !/^[a-f0-9]{64}$/.test(value.binding)) {
+    fail('invalid_cursor', 'invalid cursor fields');
+  }
+  if (value.binding !== binding) fail('cursor_mismatch', 'query, scope, snapshot or ranking code changed; restart the search');
+  if (value.offset >= total) fail('invalid_cursor', 'cursor is outside the candidate range');
+  return value.offset;
+}
+
+function documentSearchPage({ base, request, roots, byDocument, scopes, tokens = [] }) {
+  const source = base.index_sync[0];
+  const binding = sha256(stableJson({
+    query: request.query, scopes, fingerprint: source.fingerprint,
+    manifest_hash: source.manifest_hash, ranking_code: QUERY_CODE_HASH,
+  }));
+  const offset = searchOffset(request.cursor, binding, roots.length);
+  const payload = {
+    query: request.query,
+    result_status: 'insufficient_evidence',
+    index_sync: base.index_sync,
+    matching: { ...base.matching, query_terms: tokens },
+    candidates: [],
+    coverage_gaps: base.coverage_gaps,
+    limitations: base.limitations,
+    pagination: {},
+    budget: {
+      requested_max_bytes: base.budget.requested_max_bytes,
+      server_max_bytes: base.budget.server_max_bytes,
+      effective_max_bytes: base.budget.effective_max_bytes,
+      used_bytes: 0,
+      exhausted: false,
+    },
+  };
+  const updatePage = () => {
+    const next = offset + payload.candidates.length;
+    const complete = next === roots.length;
+    payload.pagination = {
+      offset_documents: offset,
+      returned_documents: payload.candidates.length,
+      total_candidates: roots.length,
+      complete,
+      next_cursor: complete ? null : Buffer.from(JSON.stringify({ offset: next, binding })).toString('base64url'),
+    };
+    payload.result_status = complete ? 'ok' : 'partial';
+    if (payload.candidates.length === 0) payload.result_status = 'insufficient_evidence';
+  };
+  for (const entry of roots.slice(offset, offset + MAX_SEARCH_DOCUMENTS)) {
+    const unit = entry.direct ?? preferredSection(byDocument.get(entry.doc.id));
+    const reference = unit ? {
+      id: unit.id, type: unit.type, label: unit.label,
+      source_uri: sourcePath(unit), source_revision: unit.source_revision,
+      content_hash: unit.content_hash, anchor: unit.anchor,
+    } : null;
+    payload.candidates.push({
+      document: publicEntity(entry.doc),
+      source_uri: sourcePath(entry.doc),
+      matched_terms: tokens.filter((token) => entry.matchedTokens.has(token)),
+      best_evidence_ref: reference,
+    });
+    updatePage();
+    if (outputBytes(payload) > payload.budget.effective_max_bytes) {
+      payload.candidates.pop();
+      payload.budget.exhausted = true;
+      break;
+    }
+  }
+  updatePage();
+  if (offset < roots.length && payload.candidates.length === 0) {
+    fail('budget_too_small', 'max_bytes cannot hold one document candidate');
+  }
+  payload.budget.used_bytes = outputBytes(payload);
+  if (payload.budget.used_bytes > payload.budget.effective_max_bytes
+    || Buffer.byteLength(JSON.stringify(payload), 'utf8') !== payload.budget.used_bytes) {
+    fail('budget_too_small', 'max_bytes cannot hold required search metadata');
+  }
+  return payload;
 }
 
 function isPrefix(prefix, target) {
@@ -453,8 +560,17 @@ function trimToBudget(payload, maximum, directEvidenceToDocument, ownerDocumentF
  * This intentionally does not infer claims or semantic relations.
  */
 export function lookup(options, args, snapshot) {
+  return retrieve(options, args, snapshot, 'lookup');
+}
+
+/** List ranked document candidates without treating metadata as body evidence. */
+export function search(options, args, snapshot) {
+  return retrieve(options, args, snapshot, 'search');
+}
+
+function retrieve(options, args, snapshot, mode) {
   const allowlist = validateOptions(options);
-  const request = validateArgs(args);
+  const request = mode === 'search' ? validateSearchArgs(args) : validateArgs(args);
   const effectiveMaxBytes = Math.min(request.requestedMaxBytes, SERVER_MAX_BYTES);
   snapshot ??= loadSnapshot({ repo: options.repo, cacheDir: options.cacheDir });
   const { manifest, entities, relations, fingerprint, manifest_hash: manifestHash } = snapshot;
@@ -504,7 +620,10 @@ export function lookup(options, args, snapshot) {
     if (actual !== base.budget.used_bytes || actual > effectiveMaxBytes) fail('budget_too_small', 'max_bytes cannot hold required result metadata');
     return base;
   };
-  if (scopes.length === 0) return finalize();
+  if (scopes.length === 0) {
+    if (mode === 'search') return documentSearchPage({ base, request, roots: [], byDocument: new Map(), scopes });
+    return finalize();
+  }
 
   const documents = entities.filter((entity) => entity.type === 'Document' && inScope(sourcePath(entity), scopes));
   const documentsByPath = new Map(documents.map((entity) => [sourcePath(entity), entity]));
@@ -624,6 +743,7 @@ export function lookup(options, args, snapshot) {
     base.matching.assessment = 'weak_lexical_overlap';
   }
   const roots = [...scored.values()].sort((a, b) => b.score - a.score || a.doc.id.localeCompare(b.doc.id));
+  if (mode === 'search') return documentSearchPage({ base, request, roots, byDocument, scopes, tokens });
   if (roots.length > MAX_ROOTS) {
     roots.length = MAX_ROOTS;
     base.traversal.limit_reached = true;
