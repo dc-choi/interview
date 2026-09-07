@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import test from 'node:test';
 
 import { ContextError } from '../src/core.mjs';
@@ -42,6 +42,24 @@ async function fixture(t) {
   return { repo, cacheDir };
 }
 
+async function fixtureWithFiles(t, files) {
+  const root = mkdtempSync(join(tmpdir(), 'context-query-'));
+  const repo = join(root, 'repo');
+  const cacheDir = join(root, 'cache');
+  git(root, ['init', '-q', repo]);
+  git(repo, ['config', 'user.name', 'Test User']);
+  git(repo, ['config', 'user.email', 'test@example.com']);
+  for (const [sourcePath, content] of files) {
+    mkdirSync(dirname(join(repo, sourcePath)), { recursive: true });
+    writeFileSync(join(repo, sourcePath), content);
+  }
+  git(repo, ['add', '.']);
+  git(repo, ['commit', '-qm', 'fixture']);
+  await buildSnapshot({ repo, cacheDir, scopes: ['tech'] });
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  return { repo, cacheDir };
+}
+
 test('lookup returns exact alias, source-backed sections, and an outgoing relation', async (t) => {
   const { repo, cacheDir } = await fixture(t);
   const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
@@ -74,6 +92,125 @@ test('a matching section seeds incoming graph edges with its owning document', a
   assert.ok(result.entities.some((entity) => entity.label === '이벤트 발행'));
   assert.ok(result.relations.some((relation) => relation.predicate === 'links_to'
     && relation.object.includes('%EC%86%8C%EB%B9%84%EC%9E%90')));
+});
+
+test('lookup excludes generic-token documents when a query has a more discriminative term', async (t) => {
+  const generic = Array.from({ length: 7 }, (_, index) => [
+    `tech/Pattern-${index}.md`,
+    `# Pattern ${index}\n\nThis pattern is useful in a generic product discussion.\n`,
+  ]);
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/Transactional-Outbox.md', '---\naliases: [outbox pattern]\n---\n# Transactional Outbox\n\nThe outbox pattern records an event in the same transaction.\n'],
+    ...generic,
+  ]);
+  const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
+    query: 'outbox pattern', scope: ['tech'], max_bytes: 65536,
+  });
+
+  assert.ok(result.evidence_units.length > 0);
+  assert.ok(result.evidence_units.every((unit) => unit.source_uri === 'tech/Transactional-Outbox.md'));
+  assert.ok(result.entities.some((entity) => entity.label === 'Transactional Outbox'));
+  assert.ok(result.entities.every((entity) => !entity.label.startsWith('Pattern ')));
+});
+
+test('lookup keeps body-relevant documents for a long multi-condition query', async (t) => {
+  const common = Array.from({ length: 6 }, (_, index) => [
+    `tech/Retry-${index}.md`,
+    `# Retry ${index}\n\nA retry handles a generic failure.\n`,
+  ]);
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/A-Related.md', '# Related Delivery\n\nA retry queue preserves delivery work after a failure.\n'],
+    ...common,
+    ['tech/Alert-Only.md', '# Alert\n\nAn alert reports an unrelated condition.\n'],
+  ]);
+  const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
+    query: 'retry queue alert workflow', scope: ['tech'], max_bytes: 65536,
+  });
+
+  assert.ok(result.evidence_units.some((unit) => unit.source_uri === 'tech/A-Related.md'));
+});
+
+test('a 24KB response keeps each returned graph edge with endpoints and evidence', async (t) => {
+  const longAlias = 'a'.repeat(900);
+  const noisyRoots = Array.from({ length: 6 }, (_, index) => [
+    `tech/Outbox-${index}.md`,
+    `---\naliases: [${longAlias}, outbox, pattern]\ntags: [outbox, pattern]\n---\n# Outbox ${index}\n\noutbox pattern${index === 0 ? ' [[Consumer]]' : ''} ${'x'.repeat(3000)}\n`,
+  ]);
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ...noisyRoots,
+    ['tech/Consumer.md', '# Consumer\n\nConsumes a committed event.\n'],
+  ]);
+  const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
+    query: 'outbox pattern', scope: ['tech'], depth: 1, max_bytes: 24 * 1024,
+  });
+
+  assert.ok(result.relations.length > 0);
+  const entities = new Set(result.entities.map((entity) => entity.id));
+  const evidence = new Set(result.evidence_units.map((unit) => unit.id));
+  for (const relation of result.relations) {
+    assert.ok(entities.has(relation.subject));
+    assert.ok(entities.has(relation.object));
+    assert.ok(evidence.has(relation.evidence_unit_id));
+  }
+  assert.ok(result.evidence_units.some((unit) => unit.excerpt.includes('[[Consumer]]')));
+  const serialized = Buffer.byteLength(JSON.stringify(result), 'utf8');
+  assert.equal(serialized, result.budget.used_bytes);
+  assert.ok(serialized <= 24 * 1024);
+});
+
+test('budget trimming keeps only complete direct and graph evidence bundles', async (t) => {
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/Needle.md', '---\naliases: [Needle]\n---\n# Needle\n\nDirect evidence. [[Link Alpha]] [[Link Beta]]\n'],
+    ['tech/Link-Alpha.md', '# Link Alpha\n\n[[Alpha]]\n'],
+    ['tech/Link-Beta.md', '# Link Beta\n\n[[Beta]]\n'],
+    ['tech/Alpha.md', '# Alpha\n\nTarget Alpha.\n'],
+    ['tech/Beta.md', '# Beta\n\nTarget Beta.\n'],
+  ]);
+  const snapshot = loadSnapshot({ repo, cacheDir });
+  const needle = snapshot.entities.find((entity) => entity.type === 'Document' && entity.source_uri === 'tech/Needle.md');
+  assert.ok(needle);
+  const snapshotEntities = new Map(snapshot.entities.map((entity) => [entity.id, entity]));
+  const documentsByPath = new Map(snapshot.entities
+    .filter((entity) => entity.type === 'Document')
+    .map((entity) => [entity.source_uri, entity.id]));
+  const directEvidence = new Set(snapshot.entities
+    .filter((entity) => entity.type === 'Section' && entity.source_uri === 'tech/Needle.md')
+    .map((entity) => entity.id));
+  let successfulBudgets = 0;
+  let limitedBudgets = 0;
+  for (const maxBytes of [1800, 2200, 2800, 3400, 4200]) {
+    let result;
+    try {
+      result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
+        query: 'Needle', scope: ['tech'], depth: 2, max_bytes: maxBytes,
+      });
+    } catch (error) {
+      assert.ok(error instanceof ContextError && error.code === 'budget_too_small');
+      continue;
+    }
+    successfulBudgets += 1;
+    if (result.budget.exhausted) limitedBudgets += 1;
+    const entities = new Set(result.entities.map((entity) => entity.id));
+    const relationEvidence = new Set(result.relations.map((relation) => relation.evidence_unit_id));
+    for (const relation of result.relations) {
+      assert.ok(entities.has(relation.subject));
+      assert.ok(entities.has(relation.object));
+      for (const endpoint of [relation.subject, relation.object]) {
+        const entity = snapshotEntities.get(endpoint);
+        const owner = entity.type === 'Document' ? entity.id : documentsByPath.get(entity.source_uri);
+        assert.ok(entities.has(owner));
+      }
+    }
+    for (const unit of result.evidence_units) {
+      assert.ok(directEvidence.has(unit.id) || relationEvidence.has(unit.id), unit.id);
+      if (directEvidence.has(unit.id)) assert.ok(entities.has(needle.id));
+    }
+    const serialized = Buffer.byteLength(JSON.stringify(result), 'utf8');
+    assert.equal(serialized, result.budget.used_bytes);
+    assert.ok(serialized <= maxBytes);
+  }
+  assert.ok(successfulBudgets >= 2);
+  assert.ok(limitedBudgets >= 1);
 });
 
 test('lookup rejects unknown arguments and serves only pinned evidence from a dirty worktree', async (t) => {

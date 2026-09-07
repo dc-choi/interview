@@ -150,9 +150,38 @@ function entityScore(entity, query, tokens) {
   const fields = [entity.id, entity.label, ...(entity.aliases ?? []), ...(entity.tags ?? []), entity.anchor?.heading_path?.join(' ')];
   const normalized = fields.map(exactText);
   if (normalized.includes(exact)) return 1000;
+  return matchingTokens(entity, tokens).length * 10;
+}
+
+function matchingTokens(entity, tokens) {
+  const fields = [entity.id, entity.label, ...(entity.aliases ?? []), ...(entity.tags ?? []), entity.anchor?.heading_path?.join(' ')];
+  const normalized = fields.map(exactText);
+  return tokens.filter((token) => normalized.some((field) => field.includes(token)));
+}
+
+function discriminativeTokens(tokens, weights, documentFrequency) {
+  const present = tokens.filter((token) => documentFrequency.get(token) > 0);
+  if (present.length < 2) return [];
+  const highestWeight = Math.max(...present.map((token) => weights.get(token)));
+  if (highestWeight <= 1.2) return [];
+  return present.filter((token) => weights.get(token) >= highestWeight * 0.8);
+}
+
+function hasDiscriminativeMatch(entry, tokens) {
+  return tokens.length === 0 || tokens.some((token) => entry.matchedTokens.has(token));
+}
+
+function scoreBodyMatch(body, tokens, weights) {
   let score = 0;
-  for (const token of tokens) if (normalized.some((field) => field.includes(token))) score += 10;
-  return score;
+  const matchedTokens = new Set();
+  for (const token of tokens) {
+    const count = body.split(token).length - 1;
+    if (count === 0) continue;
+    matchedTokens.add(token);
+    const translatedQueryTerm = ['reindex', 'alias', 'backfill', 'commit', 'publish', 'outbox', 'recovery', 'reconcile'].includes(token);
+    score += Math.min(count, 2) * 8 * weights.get(token) * (translatedQueryTerm ? 2 : 1);
+  }
+  return { score, matchedTokens };
 }
 
 function assertNoSymlink(repo, relativePath) {
@@ -280,6 +309,22 @@ function addEvidenceWithinBudget(payload, item, maximum, reservedBytes = 0) {
   return true;
 }
 
+function addRelationBundleWithinBudget(payload, relation, entities, item, maximum) {
+  const entityIds = new Set(payload.entities.map((entity) => entity.id));
+  const evidenceIds = new Set(payload.evidence_units.map((evidence) => evidence.id));
+  const additions = entities.filter((entity) => !entityIds.has(entity.id));
+  const entityLength = payload.entities.length;
+  const evidenceLength = payload.evidence_units.length;
+  payload.entities.push(...additions.map(publicEntity));
+  if (!evidenceIds.has(item.id)) payload.evidence_units.push(item);
+  payload.relations.push(relation);
+  if (outputBytes(payload) <= maximum) return true;
+  payload.entities.length = entityLength;
+  payload.evidence_units.length = evidenceLength;
+  payload.relations.pop();
+  return false;
+}
+
 function indexSync(manifest, current, scopes, errors, requestedScopeIndexed) {
   let status = 'synced';
   if (current.dirty) status = 'unindexed_worktree';
@@ -331,7 +376,29 @@ function queryRelevantGaps(allGaps, roots, sourceId, scopes) {
   return returned;
 }
 
-function trimToBudget(payload, maximum, directEvidenceToDocument) {
+function pruneOrphans(payload, directEvidenceToDocument, ownerDocumentForEntity) {
+  const entityIds = new Set(payload.entities.map((entity) => entity.id));
+  const referencedEvidence = new Set(payload.relations.map((relation) => relation.evidence_unit_id));
+  const directEvidence = payload.evidence_units.filter((item) => {
+    const documentId = directEvidenceToDocument.get(item.id);
+    return documentId && entityIds.has(documentId);
+  });
+  const keepEvidence = new Set([...referencedEvidence, ...directEvidence.map((item) => item.id)]);
+  const evidenceLength = payload.evidence_units.length;
+  payload.evidence_units = payload.evidence_units.filter((item) => keepEvidence.has(item.id));
+  const directDocuments = new Set(payload.evidence_units
+    .filter((item) => directEvidenceToDocument.has(item.id))
+    .map((item) => directEvidenceToDocument.get(item.id)));
+  const relationEntities = new Set(payload.relations.flatMap((relation) => [relation.subject, relation.object]));
+  const relationOwners = new Set([...relationEntities]
+    .map((entityId) => ownerDocumentForEntity.get(entityId))
+    .filter(Boolean));
+  payload.entities = payload.entities.filter((entity) => directDocuments.has(entity.id)
+    || relationEntities.has(entity.id) || relationOwners.has(entity.id));
+  return evidenceLength - payload.evidence_units.length;
+}
+
+function trimToBudget(payload, maximum, directEvidenceToDocument, ownerDocumentForEntity) {
   let changed = false;
   const directIds = new Set(directEvidenceToDocument.keys());
   const removeAt = (items, index) => {
@@ -344,6 +411,7 @@ function trimToBudget(payload, maximum, directEvidenceToDocument) {
     if (payload.relations.length > 0) {
       payload.relations.pop();
       payload.budget.omitted_relations += 1;
+      payload.budget.omitted_evidence_units += pruneOrphans(payload, directEvidenceToDocument, ownerDocumentForEntity);
       changed = true;
       continue;
     }
@@ -351,7 +419,10 @@ function trimToBudget(payload, maximum, directEvidenceToDocument) {
       .filter((item) => directIds.has(item.id))
       .map((item) => directEvidenceToDocument.get(item.id)));
     const unusedEntity = payload.entities.findLastIndex((entity) => !directDocuments.has(entity.id));
-    if (removeAt(payload.entities, unusedEntity)) continue;
+    if (removeAt(payload.entities, unusedEntity)) {
+      payload.budget.omitted_evidence_units += pruneOrphans(payload, directEvidenceToDocument, ownerDocumentForEntity);
+      continue;
+    }
     const relationEvidence = new Set(payload.relations.map((relation) => relation.evidence_unit_id));
     const indirectEvidence = payload.evidence_units.findLastIndex((item) => !directIds.has(item.id) && !relationEvidence.has(item.id));
     if (removeAt(payload.evidence_units, indirectEvidence)) {
@@ -363,8 +434,8 @@ function trimToBudget(payload, maximum, directEvidenceToDocument) {
       const item = directEvidence.at(-1);
       const index = payload.evidence_units.findLastIndex((candidate) => candidate.id === item.id);
       payload.evidence_units.splice(index, 1);
-      payload.entities = payload.entities.filter((entity) => entity.id !== directEvidenceToDocument.get(item.id));
       payload.budget.omitted_evidence_units += 1;
+      payload.budget.omitted_evidence_units += pruneOrphans(payload, directEvidenceToDocument, ownerDocumentForEntity);
       changed = true;
       continue;
     }
@@ -439,6 +510,9 @@ export function lookup(options, args, snapshot) {
   const searchableSections = sections.filter(isUsefulSection);
   const sectionsById = new Map(sections.map((entity) => [entity.id, entity]));
   const entitiesById = new Map([...documents, ...sections].map((entity) => [entity.id, entity]));
+  const ownerDocumentForEntity = new Map([...entitiesById.values()]
+    .map((entity) => [entity.id, documentIdFor(entity, documentsByPath)])
+    .filter(([, documentId]) => documentId));
   const byDocument = new Map();
   for (const section of searchableSections) {
     const id = documentIdFor(section, documentsByPath);
@@ -459,40 +533,66 @@ export function lookup(options, args, snapshot) {
   const scored = new Map();
   for (const doc of documents) {
     const score = entityScore(doc, request.query, tokens);
-    if (score > 0) scored.set(doc.id, { doc, score, direct: null, metadataMatch: true });
+    if (score > 0) scored.set(doc.id, {
+      doc,
+      score,
+      direct: null,
+      metadataMatch: score === 1000,
+      matchedTokens: new Set(matchingTokens(doc, tokens)),
+    });
   }
   for (const section of sections) {
     const docId = documentIdFor(section, documentsByPath);
     const doc = documentsByPath.get(sourcePath(section));
     if (!docId || !doc) continue;
     const score = entityScore(section, request.query, tokens);
-    if (score > 0 && (!scored.has(docId) || scored.get(docId).score < score)) {
-      scored.set(docId, { doc, score, direct: section, metadataMatch: scored.get(docId)?.metadataMatch ?? false });
+    const existing = scored.get(docId);
+    if (existing) for (const token of matchingTokens(section, tokens)) existing.matchedTokens.add(token);
+    if (score > 0 && (!existing || existing.score < score)) {
+      scored.set(docId, {
+        doc,
+        score,
+        direct: section,
+        metadataMatch: score === 1000 || existing?.metadataMatch === true,
+        matchedTokens: new Set([...(existing?.matchedTokens ?? []), ...matchingTokens(section, tokens)]),
+      });
     }
   }
   const hasExactMetadataHit = [...documents, ...searchableSections]
     .some((entity) => entityScore(entity, request.query, tokens) === 1000);
-  // An exact title or alias needs no broad scan. Natural-language questions use
-  // one pinned Git batch instead of one Git process per document or section.
-  if (!hasExactMetadataHit && tokens.length > 0) {
+  // A single exact title or alias needs no broad scan. Multi-term questions use
+  // one pinned Git batch to distinguish specific terms from generic ones.
+  if (tokens.length > 0 && (!hasExactMetadataHit || tokens.length > 1)) {
     for (const [uri, blob] of readPinnedBlobs(options.repo, manifest.revision, documents.map(sourcePath))) memo.set(uri, blob);
-    const weights = new Map(tokens.map((token) => {
-      const documentFrequency = [...memo.values()].reduce((count, blob) => count + Number(blob.toString('utf8').toLowerCase().includes(token)), 0);
-      return [token, 1 + Math.log((documents.length + 1) / (documentFrequency + 1))];
-    }));
+    const documentFrequency = new Map(tokens.map((token) => [token,
+      [...memo.values()].reduce((count, blob) => count + Number(blob.toString('utf8').toLowerCase().includes(token)), 0)]));
+    const weights = new Map(tokens.map((token) => [token,
+      1 + Math.log((documents.length + 1) / ((documentFrequency.get(token) ?? 0) + 1))]));
     for (const section of searchableSections) {
       const docId = documentIdFor(section, documentsByPath);
       const doc = documentsByPath.get(sourcePath(section));
       if (!docId || !doc) continue;
       const body = read(sourcePath(section)).subarray(section.anchor?.start_byte ?? 0, section.anchor?.end_byte ?? 0).toString('utf8').toLowerCase();
-      const score = entityScore(section, request.query, tokens)
-        + tokens.reduce((sum, token) => {
-          const count = body.split(token).length - 1;
-          const translatedQueryTerm = ['reindex', 'alias', 'backfill', 'commit', 'publish', 'outbox', 'recovery', 'reconcile'].includes(token);
-          return sum + Math.min(count, 2) * 8 * weights.get(token) * (translatedQueryTerm ? 2 : 1);
-        }, 0);
-      if (score > 0 && (!scored.has(docId) || scored.get(docId).score < score)) {
-        scored.set(docId, { doc, score, direct: section, metadataMatch: scored.get(docId)?.metadataMatch ?? false });
+      const bodyMatch = scoreBodyMatch(body, tokens, weights);
+      const score = entityScore(section, request.query, tokens) + bodyMatch.score;
+      const existing = scored.get(docId);
+      if (existing) for (const token of bodyMatch.matchedTokens) existing.matchedTokens.add(token);
+      if (score > 0 && (!existing || existing.score < score)) {
+        scored.set(docId, {
+          doc,
+          score,
+          direct: section,
+          metadataMatch: existing?.metadataMatch ?? false,
+          matchedTokens: new Set([...(existing?.matchedTokens ?? []), ...bodyMatch.matchedTokens]),
+        });
+      }
+    }
+    const discriminative = tokens.length >= 2 && tokens.length <= 3
+      ? discriminativeTokens(tokens, weights, documentFrequency)
+      : [];
+    if (discriminative.length > 0) {
+      for (const [id, entry] of scored) {
+        if (!hasDiscriminativeMatch(entry, discriminative)) scored.delete(id);
       }
     }
   }
@@ -561,13 +661,27 @@ export function lookup(options, args, snapshot) {
     if (!evidenceCache.has(id)) evidenceCache.set(id, evidenceFor(sectionsById.get(id), read, scopes));
     return evidenceCache.get(id);
   };
+  const markOutputLimit = () => {
+    base.budget.exhausted = true;
+    appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'output_limit_reached' });
+  };
+  const omittedEvidenceIds = new Set();
+  const omitEvidence = (id) => {
+    if (!omittedEvidenceIds.has(id) && !base.evidence_units.some((item) => item.id === id)) {
+      omittedEvidenceIds.add(id);
+      base.budget.omitted_evidence_units += 1;
+    }
+  };
+  const restoreEvidence = (id) => {
+    if (omittedEvidenceIds.delete(id)) base.budget.omitted_evidence_units -= 1;
+  };
   const includedRootIds = new Set();
   for (const root of roots) {
     const entity = publicEntity(root.doc);
     base.entities.push(entity);
     if (outputBytes(base) > effectiveMaxBytes) {
       base.entities.pop();
-      base.budget.exhausted = true;
+      markOutputLimit();
       continue;
     }
     includedRootIds.add(root.doc.id);
@@ -589,59 +703,42 @@ export function lookup(options, args, snapshot) {
       rootForEvidence.set(section.id, root.doc.id);
     }
   }
-  const relationEvidence = selectedRelations.map((relation) => relation.evidence_unit_id);
-  const order = [...new Set([...directEvidence, ...relationEvidence])];
-  for (const id of order) {
+  for (const id of new Set(directEvidence)) {
     const item = evidence(id);
     if (!item) {
       appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'source_unavailable', evidence_unit_id: id });
       continue;
     }
-    const isDirect = directEvidence.includes(id);
     if (!addEvidenceWithinBudget(base, item, effectiveMaxBytes)) {
-      base.budget.exhausted = true;
-      base.budget.omitted_evidence_units += 1;
+      markOutputLimit();
+      omitEvidence(id);
       continue;
     }
-    if (isDirect) base.result_status = 'ok';
+    restoreEvidence(id);
   }
   if (roots.length > 0 && base.evidence_units.length === 0) fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit');
-  const includedEvidence = new Set(base.evidence_units.map((item) => item.id));
-  const eligibleRelations = selectedRelations.filter((relation) => includedEvidence.has(relation.evidence_unit_id));
-  const relationEntityIds = new Set(eligibleRelations.flatMap((relation) => [relation.subject, relation.object]));
-  for (const id of [...relationEntityIds]) {
-    const ownerId = documentIdFor(entitiesById.get(id), documentsByPath);
-    if (ownerId) relationEntityIds.add(ownerId);
-  }
-  const selectedEntities = [...selected.values()].filter((entity) => relationEntityIds.has(entity.id) || roots.some((root) => root.doc.id === entity.id));
-  for (const entity of selectedEntities) {
-    if (base.entities.some((existing) => existing.id === entity.id)) continue;
-    base.entities.push(publicEntity(entity));
-    if (byteLength(base) > effectiveMaxBytes) {
-      base.entities.pop();
-      base.budget.exhausted = true;
+  for (const relation of selectedRelations) {
+    const item = evidence(relation.evidence_unit_id);
+    const endpoints = [entitiesById.get(relation.subject), entitiesById.get(relation.object)];
+    if (!item || endpoints.some((entity) => !entity)) {
+      appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'source_unavailable', evidence_unit_id: relation.evidence_unit_id });
+      base.budget.omitted_relations += 1;
       continue;
     }
-  }
-  const entityIds = new Set(base.entities.map((entity) => entity.id));
-  for (const relation of eligibleRelations) {
-    if (!entityIds.has(relation.subject) || !entityIds.has(relation.object)) {
+    const bundleEntities = new Map(endpoints.map((entity) => [entity.id, entity]));
+    for (const endpoint of endpoints) {
+      const ownerId = documentIdFor(endpoint, documentsByPath);
+      const owner = ownerId ? entitiesById.get(ownerId) : null;
+      if (owner) bundleEntities.set(owner.id, owner);
+    }
+    if (!addRelationBundleWithinBudget(base, relation, [...bundleEntities.values()], item, effectiveMaxBytes)) {
       base.budget.omitted_relations += 1;
-      base.budget.exhausted = true;
+      omitEvidence(relation.evidence_unit_id);
+      markOutputLimit();
       continue;
     }
-    base.relations.push(relation);
-    if (byteLength(base) > effectiveMaxBytes) {
-      base.relations.pop();
-      base.budget.omitted_relations += 1;
-      base.budget.exhausted = true;
-    }
+    restoreEvidence(relation.evidence_unit_id);
   }
-  const referenced = new Set(base.relations.map((relation) => relation.evidence_unit_id));
-  base.evidence_units = base.evidence_units.filter((item) => {
-    const rootId = rootForEvidence.get(item.id);
-    return referenced.has(item.id) || (rootId && entityIds.has(rootId));
-  });
   const survivingDirect = base.evidence_units.filter((item) => rootForEvidence.has(item.id));
   if (roots.length > 0 && survivingDirect.length === 0) {
     fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit with its document');
@@ -649,17 +746,16 @@ export function lookup(options, args, snapshot) {
   base.result_status = survivingDirect.length > 0 ? 'ok' : 'insufficient_evidence';
   if (base.budget.exhausted || base.traversal.limit_reached) {
     base.result_status = base.evidence_units.length > 0 ? 'partial' : 'insufficient_evidence';
-    appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: base.traversal.limit_reached ? 'retrieval_limit_reached' : 'output_limit_reached' });
+    if (base.traversal.limit_reached) appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'retrieval_limit_reached' });
   }
   const directEvidenceToDocument = new Map([...rootForEvidence.entries()]
     .filter(([id]) => base.evidence_units.some((item) => item.id === id)));
-  if (!trimToBudget(base, effectiveMaxBytes, directEvidenceToDocument)) {
+  if (!trimToBudget(base, effectiveMaxBytes, directEvidenceToDocument, ownerDocumentForEntity)) {
     fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit with required metadata');
   }
   if (base.budget.exhausted) {
     base.result_status = base.evidence_units.length > 0 ? 'partial' : 'insufficient_evidence';
-    appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'output_limit_reached' });
-    if (!trimToBudget(base, effectiveMaxBytes, directEvidenceToDocument)) {
+    if (!trimToBudget(base, effectiveMaxBytes, directEvidenceToDocument, ownerDocumentForEntity)) {
       fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit with required metadata');
     }
   }
