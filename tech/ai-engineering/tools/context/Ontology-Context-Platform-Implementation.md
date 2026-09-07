@@ -9,7 +9,7 @@ aliases: ["Ontology Context Platform Implementation", "온톨로지 컨텍스트
 # 온톨로지 기반 개발 컨텍스트 플랫폼: 구축 방법과 검증 기준
 
 > 유형: 구축 계약과 후속 확장 설계. 이 문서의 모든 항목이 구현 완료된 것은 아니다.
-> 상태: 루트 `ontology/`에 Markdown 색인, CLI와 MCP 구현 (2026-09-05). 실제 지원 범위, 실행과 검증은 [[Ontology-Operations]]를 따른다.
+> 상태: 루트 `ontology/`에 Markdown 색인, CLI와 MCP 구현 (2026-09-05, 본문의 현재 구현 서술은 2026-09-07 코드와 대조). 실제 지원 범위, 실행과 검증은 [[Ontology-Operations]]를 따른다.
 > 범위: [[Agentic-Context-Platform|에이전트 컨텍스트 플랫폼]]의 일반 계약을 기존 Markdown에 적용하는 구축 순서와 검증 기준
 
 ## 목표와 비목표
@@ -52,7 +52,7 @@ aliases: ["Ontology Context Platform Implementation", "온톨로지 컨텍스트
 | 엔터티 | 포함하는 대상 |
 |---|---|
 | `Document` | Markdown 파일 |
-| `Section` | heading으로 구분하며 MVP에서 EvidenceUnit 계약도 구현하는 원문 단위 |
+| `Section` | heading으로 구분하며 MVP에서 EvidenceUnit 계약도 구현하는 원문 단위. 첫 heading 앞의 root Section은 frontmatter를 포함하며 제목, alias, tag 일치의 provenance excerpt로 반환된다 |
 | `Concept` | MVP 뒤, canonical ID와 alias가 필요할 때 추가하는 정규화된 개념 |
 | `Claim` | MVP 뒤, 근거와 충돌을 독립적으로 추적할 때 추가하는 정규화된 주장 |
 | `Category` | frontmatter와 인덱스가 나타내는 분류 |
@@ -60,9 +60,9 @@ aliases: ["Ontology Context Platform Implementation", "온톨로지 컨텍스트
 | `Invariant` | 반드시 유지할 업무나 데이터 조건 |
 | `EvidenceUnit` | 문서 section과 frontmatter relation assertion, 확장 시 코드 symbol, 설정과 테스트 |
 
-MVP 관계는 `contains`, `links_to`로 시작하고 category는 Document 속성으로만 둔다. `mentions`는 Concept, `supported_by`와 `contradicted_by`는 Claim 계층을 실제로 추가할 때 사용한다. `calls`, `publishes`, `consumes`, `reads_from`, `writes_to`, `constrained_by`, `verified_by`는 개발 질문에 필요하고 원문 근거를 확인했을 때만 추가한다.
+MVP 관계는 `contains`, `links_to`로 시작하고 category는 Document 속성으로만 둔다. `mentions`는 Concept, `supported_by`와 `contradicted_by`는 Claim 계층을 실제로 추가할 때 사용한다. extractor는 `mentions`, `supported_by`, `contradicted_by`, `calls`, `publishes`, `consumes`, `reads_from`, `writes_to`, `constrained_by`, `verified_by` 10종을 `ontology_relations` predicate로 이미 허용하지만, 실제 작성은 개발 질문에 필요하고 원문 근거를 확인했을 때만 한다.
 
-본문에서 실제 파일과 section으로 해석되는 위키링크는 `links_to`로 확정한다. 검토자가 typed relation 후보를 승인할 때는 생성 색인을 고치지 않고 canonical Markdown의 선택적 frontmatter에 기록한다. `subject`를 생략하면 해당 Document ID를 사용하고, 다른 주체면 이미 존재하는 canonical entity ID를 명시해야 한다. `target`도 같은 snapshot의 canonical entity ID로 해석되어야 하며 실패하면 relation 대신 coverage gap으로 남긴다. extractor는 각 항목을 `frontmatter.ontology_relations[index]` anchor를 가진 `relation_assertion` EvidenceUnit으로 materialize하고 이 표기만 `source_confirmed`로 승격한다.
+본문에서 실제 파일과 section으로 해석되는 위키링크는 `links_to`로 확정한다. 검토자가 typed relation 후보를 승인할 때는 생성 색인을 고치지 않고 canonical Markdown의 선택적 frontmatter에 기록한다. `subject`를 생략하면 해당 Document ID를 사용하고, 다른 주체면 이미 존재하는 canonical entity ID를 명시해야 한다. `target`도 같은 snapshot의 canonical entity ID로 해석되어야 하며 실패하면 relation 대신 coverage gap으로 남긴다. extractor는 각 항목을 `frontmatter.ontology_relations[index]` anchor를 가진 `RelationAssertion` 타입 EvidenceUnit으로 materialize하고 이 표기만 `source_confirmed`로 승격한다.
 
 ```yaml
 ontology_relations:
@@ -79,10 +79,10 @@ MVP의 `Document` ID는 `document:<repo-id>:<relative-path>`, Section EvidenceUn
 ```json
 {
   "id": "edge:sha256:<canonical-tuple-hash>",
-  "subject": "document:interview:tech/ai-engineering/tools/context/Agentic-Context-Platform.md",
+  "subject": "document:interview-vault:tech/ai-engineering/tools/context/Agentic-Context-Platform.md",
   "predicate": "links_to",
-  "object": "document:interview:tech/ai-engineering/tools/context/Context-Engineering.md",
-  "evidence_unit_id": "unit:interview:tech/ai-engineering/tools/context/Agentic-Context-Platform.md:관련-문서#1",
+  "object": "document:interview-vault:tech/ai-engineering/tools/context/Context-Engineering.md",
+  "evidence_unit_id": "unit:interview-vault:tech/ai-engineering/tools/context/Agentic-Context-Platform.md:<encoded-heading-path>#1",
   "assertion_occurrence": 1,
   "extraction_method": "parser",
   "extraction_version": "EXTRACTOR_VERSION",
@@ -92,7 +92,7 @@ MVP의 `Document` ID는 `document:<repo-id>:<relative-path>`, Section EvidenceUn
 }
 ```
 
-`evidence_unit_id`는 [[Agentic-Context-Platform#출처별 의미 단위|공통 EvidenceUnit 계약]]의 source, anchor와 revision을 참조한다. 검증은 `source_confirmed`, `candidate`, `insufficient_evidence`, 최신성은 `not_checked`, `current`, `stale_risk`, `superseded`, 충돌은 `not_checked`, `none`, `disputed`로 분리한다. 의미 충돌 검사가 없는 MVP relation은 `not_checked`이고 실제 검사를 통과한 뒤에만 `none`이 된다. 수집 시각인 `observed_at`은 immutable snapshot 밖의 실행 로그에만 둔다. `verified_at`은 canonical Markdown의 원문이나 검토 metadata에 명시된 경우에만 relation에 복사하며 재현성 fingerprint에서 제외한다. confidence는 모델이 제안한 후보에만 기록한다. 최신성은 검증 시각, 대체 관계와 관련 근거로 판단하고 checkout과 manifest의 차이만으로 바꾸지 않는다. 검증 시각이나 freshness policy가 없으면 `current`로 추정하지 않고 `not_checked`로 둔다. 색인 동기화는 `synced`, `revision_mismatch`, `unindexed_worktree`, `source_unavailable` 중 하나로 조회 시 source별 계산하며 relation에 저장하지 않는다. MVP는 `document/section`과 `document/relation_assertion`만 사용한다. 코드 근거 확장 시 `code/symbol|behavior`, `config/setting`, `test/test_case|behavior`, `schema/definition`을 사용하고 런타임은 `runtime_not_checked`로 반환한다.
+`evidence_unit_id`는 [[Agentic-Context-Platform#출처별 의미 단위|공통 EvidenceUnit 계약]]의 source, anchor와 revision을 참조한다. 검증은 `source_confirmed`, `candidate`, `insufficient_evidence`, 최신성은 `not_checked`, `current`, `stale_risk`, `superseded`, 충돌은 `not_checked`, `none`, `disputed`로 분리한다. 의미 충돌 검사가 없는 MVP relation은 `not_checked`이고 실제 검사를 통과한 뒤에만 `none`이 된다. 수집 시각인 `observed_at`은 immutable snapshot 밖의 실행 로그에만 둔다. confidence는 모델이 제안한 후보에만 기록한다. 최신성은 검증 시각, 대체 관계와 관련 근거로 판단하고 checkout과 manifest의 차이만으로 바꾸지 않는다. 검증 시각이나 freshness policy가 없으면 `current`로 추정하지 않고 `not_checked`로 둔다. 색인 동기화는 `synced`, `revision_mismatch`, `unindexed_worktree`, `source_unavailable` 중 하나로 조회 시 source별 계산하며 relation에 저장하지 않는다. MVP의 EvidenceUnit 타입은 `Section`과 `RelationAssertion`뿐이며 source 종류 필드는 코드 근거를 추가할 때 도입한다. 공통 계약의 `unit_type` 값 `section`과 `relation_assertion`은 이 두 entity type에 대응하는 필드 어휘다. Document의 frontmatter `verified_at`은 entity 속성으로 보존하되 freshness 판정에는 아직 쓰지 않는다. relation의 `verified_at`은 아직 생성하지 않는다. 코드 근거 확장 시 `code/symbol|behavior`, `config/setting`, `test/test_case|behavior`, `schema/definition`을 사용하고 런타임은 `runtime_not_checked`로 반환한다.
 
 근거의 역할도 분리한다.
 
@@ -107,10 +107,10 @@ MVP의 `Document` ID는 `document:<repo-id>:<relative-path>`, Section EvidenceUn
 1. source manifest에는 source별 저장소 식별자, revision, 포함과 제외 경로, schema와 추출기 버전, 결정론적 build 설정 hash와 완료 여부를 기록한다. 재현성 fingerprint는 이 입력들로 만들고 실행 시각과 오류 코드는 snapshot 밖의 run log에만 기록하며, 완료되지 않은 build는 serving index로 사용하지 않는다. 기본 build는 dirty working tree를 거부한다. `--committed-only`를 명시하면 `HEAD` blob만 색인하고 `unindexed_worktree`로 미반영 상태를 보고한다. 코드 저장소를 추가할 때는 source별 항목으로 확장한다.
 2. worktree를 순회하지 않고 manifest revision의 Git tree에서 tracked regular Markdown blob만 경로순으로 열거해 frontmatter, heading, 위키링크와 원문 anchor를 추출한다. untracked, ignored와 symlink entry는 읽지 않는다.
 3. 파일을 `Document`, heading section과 frontmatter relation assertion을 EvidenceUnit record, category와 alias를 속성으로 만든다. 실제 대상으로 해석된 위키링크는 `source_confirmed`인 `links_to`, 깨진 링크는 source, scope, anchor, reason과 unresolved target을 가진 manifest의 결정론적 `coverage_gaps`로 기록한다.
-4. LLM은 개념 정규화와 비명시 관계 후보를 별도 candidate queue에 제안하되 결정론적 serving index에 섞거나 자동 확정하지 않는다.
+4. LLM은 개념 정규화와 비명시 관계 후보를 별도 candidate queue에 제안하되 결정론적 serving index에 섞거나 자동 확정하지 않는다. 후속 단계이며 현재 구현에는 LLM 경로와 queue가 없고, `verification: candidate`처럼 지원하지 않는 필드가 있는 항목은 coverage gap으로 남긴다.
 5. 개발 질문에 필요할 때만 코드 parser, framework 설정, schema와 migration에서 시스템 관계를 보충한다.
-6. commit과 content hash를 비교해 변경된 단위만 다시 추출한다.
-7. 삭제된 원문에 연결된 관계는 제거하거나 tombstone으로 남긴다.
+6. commit과 content hash를 비교해 변경된 단위만 다시 추출한다. 후속 단계이며 현재는 fingerprint가 바뀌면 전체를 다시 추출한다.
+7. 삭제된 원문에 연결된 관계는 제거하거나 tombstone으로 남긴다. 현재는 전체 재추출로 제거되며 tombstone은 없다.
 8. artifact는 UTF-8과 LF, 재귀적으로 정렬한 JSON object key, ID순 JSONL record와 schema가 정한 unordered array 순서로 직렬화하고 마지막 LF까지 SHA-256 hash에 포함한다.
 9. fingerprint별 임시 snapshot에 모든 artifact를 쓴 뒤 manifest의 artifact hash와 완료 상태를 검증한다. 같은 fingerprint가 이미 있으면 manifest hash 일치 시 재사용하고 다르면 `non_deterministic_build`로 실패한다. 새 snapshot을 불변 경로로 rename한 다음 `active.json` pointer만 원자적으로 교체한다.
 
@@ -122,11 +122,11 @@ manifest가 있어야 관계가 없다는 결과와 해당 범위를 수집하�
 
 ```text
 <vault-root>/                              # 기존 Markdown, 유일한 지식 편집 지점
-<local-cache>/context-ontology/<repo-id>/  # Git 저장소 밖의 파생 색인
+<local-cache>/context-ontology/<checkout-hash>/  # Git 저장소 밖의 파생 색인, checkout 경로 해시별
   active.json                              # fingerprint와 manifest hash만 가리킴
   runs.jsonl                               # fingerprint, observed_at과 오류 코드
   snapshots/
-    <fingerprint>/                         # 게시 뒤에는 수정하지 않음
+    <fingerprint>/                         # 게시 뒤에는 수정하지 않고, 새 snapshot 활성화 때 cache lock 안에서 비활성 snapshot 삭제
       schema.json
       source-manifest.json                 # artifact hash, coverage_gaps와 completed=true
       entities.jsonl

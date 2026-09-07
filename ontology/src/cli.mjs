@@ -120,25 +120,26 @@ export async function execute(options) {
     if (state.dirty && !options.committedOnly) {
       throw new ContextError('unindexed_worktree', 'Refusing to build a snapshot from a dirty worktree. Use --committed-only to index HEAD.');
     }
-    return buildSnapshot({
+    const { snapshot: _snapshot, ...summary } = buildSnapshot({
       repo: options.repo,
       cacheDir: options.cacheDir,
       scopes: options.scopes,
       committedOnly: options.committedOnly,
     });
+    return summary;
   }
   if (options.command === 'lookup') {
-    ensureFreshSnapshot({
+    const { snapshot } = ensureFreshSnapshot({
       repo: options.repo,
       cacheDir: options.cacheDir,
-      scopes: options.scopes,
+      scopes: options.allowlist,
       allowlist: options.allowlist,
       committedOnly: options.committedOnly,
     });
     const args = { query: options.query, scope: options.scopes };
     if (options.depth !== undefined) args.depth = options.depth;
     if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
-    return lookup({ repo: options.repo, cacheDir: options.cacheDir, allowlist: options.allowlist }, args);
+    return lookup({ repo: options.repo, cacheDir: options.cacheDir, allowlist: options.allowlist }, args, snapshot);
   }
   if (options.command === 'status') return status(options);
   if (options.command === 'serve') {
@@ -160,7 +161,7 @@ function status(options) {
     const snapshot = loadSnapshot({ repo: options.repo, cacheDir: options.cacheDir });
     return { repo, manifest: snapshot.manifest, fingerprint: snapshot.fingerprint };
   } catch (error) {
-    if (isMissingSnapshot(error)) return { repo, manifest: null, fingerprint: null };
+    if (isMissingSnapshot(error)) return { repo, manifest: null, fingerprint: null, snapshot_status: error.code };
     throw error;
   }
 }
@@ -183,7 +184,7 @@ function isWithin(parent, child) {
 }
 
 function isMissingSnapshot(error) {
-  return ['index_not_built', 'snapshot_not_found', 'not_found', 'ENOENT'].includes(error?.code);
+  return ['index_not_built', 'snapshot_incompatible', 'snapshot_not_found'].includes(error?.code);
 }
 
 export function usage() {

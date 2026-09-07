@@ -7,7 +7,7 @@ import test from 'node:test';
 
 import { ContextError } from '../src/core.mjs';
 import { lookup } from '../src/query.mjs';
-import { buildSnapshot } from '../src/snapshot.mjs';
+import { buildSnapshot, loadSnapshot } from '../src/snapshot.mjs';
 
 function git(repo, args) {
   return execFileSync('git', ['-C', repo, ...args], { encoding: 'utf8' });
@@ -25,6 +25,7 @@ async function fixture(t) {
     '---',
     'aliases: [이벤트 발행]',
     'tags: [messaging]',
+    'verified_at: 2026-09-01',
     '---',
     '# 이벤트 발행',
     '',
@@ -49,7 +50,7 @@ test('lookup returns exact alias, source-backed sections, and an outgoing relati
 
   assert.equal(result.result_status, 'ok');
   assert.equal(result.index_sync[0].status, 'synced');
-  assert.ok(result.entities.some((entity) => entity.label === '이벤트 발행'));
+  assert.equal(result.entities.find((entity) => entity.label === '이벤트 발행').verified_at, '2026-09-01');
   assert.ok(result.entities.some((entity) => entity.label === 'Target'));
   assert.equal(result.relations.length, 1);
   assert.equal(result.relations[0].predicate, 'links_to');
@@ -94,6 +95,22 @@ test('lookup rejects unknown arguments and serves only pinned evidence from a di
   const mismatch = lookup({ repo, cacheDir, allowlist: ['tech'] }, { query: '이벤트 발행' });
   assert.equal(mismatch.index_sync[0].status, 'revision_mismatch');
   assert.ok(mismatch.evidence_units.every((unit) => unit.source_uri !== 'uncommitted.md'));
+});
+
+test('lookup can finish from a pinned snapshot after another build replaces the active one', async (t) => {
+  const { repo, cacheDir } = await fixture(t);
+  const pinned = loadSnapshot({ repo, cacheDir });
+  writeFileSync(join(repo, 'tech', 'event.md'), '# Replacement\n\nold evidence removed\n');
+  git(repo, ['add', 'tech/event.md']);
+  git(repo, ['commit', '-qm', 'replace active snapshot']);
+  buildSnapshot({ repo, cacheDir, scopes: ['tech'] });
+
+  const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
+    query: '이벤트 발행', scope: ['tech'], max_bytes: 65536,
+  }, pinned);
+  assert.equal(result.index_sync[0].revision, pinned.manifest.revision);
+  assert.equal(result.index_sync[0].status, 'revision_mismatch');
+  assert.ok(result.evidence_units.some((unit) => unit.excerpt.includes('aliases: [이벤트 발행]')));
 });
 
 test('lookup rejects a budget that cannot carry required metadata', async (t) => {

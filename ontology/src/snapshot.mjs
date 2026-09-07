@@ -1,14 +1,17 @@
 import { homedir } from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { basename, dirname, join, posix, relative, resolve, sep } from 'node:path';
-import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync, appendFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, realpathSync, renameSync, rmSync, symlinkSync, writeFileSync, appendFileSync } from 'node:fs';
 import { ASSERTION_PREDICATES, DEFAULT_SCOPES, STRUCTURAL_PREDICATES, ContextError, normalizeScopes, sha256, stableJson } from './core.mjs';
 import { getRepoState, git, listMarkdown, readBlobs, resolveRepo, sourceUpdatedTimes } from './repository.mjs';
 import { extractMarkdown, normalizeHeading } from './markdown.mjs';
 
 const SCHEMA_VERSION = '1';
-const EXTRACTOR_VERSION = '9';
+const EXTRACTOR_VERSION = '10';
 const ARTIFACTS = ['schema.json', 'entities.jsonl', 'relations.jsonl'];
+const CACHE_MARKER = '.context-ontology-cache';
+const CACHE_MARKER_CONTENT = 'interview-context-ontology-v1\n';
+const LOCK_WAIT_MS = 10 * 60 * 1000;
 const PREDICATES = [...STRUCTURAL_PREDICATES, ...ASSERTION_PREDICATES];
 const key = (text) => text.normalize('NFC').toLowerCase();
 const jsonFile = (value) => `${stableJson(value)}\n`;
@@ -151,20 +154,70 @@ function graph(records) {
 }
 
 function readRegular(path) {
-  if (!lstatSync(path).isFile() || lstatSync(path).isSymbolicLink()) throw new ContextError('snapshot_integrity_error');
-  return readFileSync(path);
+  const info = lstatSync(path, { throwIfNoEntry: false });
+  if (!info) throw new ContextError('snapshot_not_found', `snapshot file is missing: ${basename(path)}`);
+  if (!info.isFile() || info.isSymbolicLink()) throw new ContextError('snapshot_integrity_error');
+  try { return readFileSync(path); }
+  catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    throw new ContextError('snapshot_not_found', `snapshot file is missing: ${basename(path)}`);
+  }
+}
+
+function prepareCache(repo, cache) {
+  mkdirSync(cache, { recursive: true, mode: 0o700 });
+  const marker = join(cache, CACHE_MARKER);
+  const info = lstatSync(marker, { throwIfNoEntry: false });
+  if (!info) {
+    const isLegacyDefault = cache === cacheLocation(repo);
+    const entries = readdirSync(cache);
+    if (entries.length > 0 && !entries.includes(CACHE_MARKER) && !isLegacyDefault) {
+      throw new ContextError('invalid_cache_path', 'a custom cache must be empty or already owned by context-ontology');
+    }
+    if (!entries.includes(CACHE_MARKER)) {
+      try { writeFileSync(marker, CACHE_MARKER_CONTENT, { flag: 'wx', mode: 0o600 }); }
+      catch (error) { if (error.code !== 'EEXIST') throw error; }
+    }
+  }
+  // ponytail: allow up to one second for a concurrent first write; a stalled
+  // or abandoned initializer still fails closed and requires an explicit retry.
+  for (let attempt = 0; attempt <= 20; attempt += 1) {
+    const current = lstatSync(marker, { throwIfNoEntry: false });
+    if (!current?.isFile() || current.isSymbolicLink()) break;
+    const content = readFileSync(marker, 'utf8');
+    if (content === CACHE_MARKER_CONTENT) return;
+    if (!CACHE_MARKER_CONTENT.startsWith(content) || attempt === 20) break;
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50);
+  }
+  throw new ContextError('invalid_cache_path', 'cache ownership marker is invalid');
+}
+
+function snapshotDirectory(cache, create = false) {
+  const directory = join(cache, 'snapshots');
+  if (create) {
+    try { mkdirSync(directory, { mode: 0o700 }); }
+    catch (error) { if (error.code !== 'EEXIST') throw error; }
+  }
+  const info = lstatSync(directory, { throwIfNoEntry: false });
+  if (!info) throw new ContextError('snapshot_not_found', 'snapshots path is missing');
+  if (!info.isDirectory() || info.isSymbolicLink()) {
+    throw new ContextError('snapshot_integrity_error', 'snapshots path must be a regular directory');
+  }
+  return directory;
 }
 
 function readSnapshotDirectory(directory, expectedHash, repo, fingerprint) {
-  if (!lstatSync(directory).isDirectory() || lstatSync(directory).isSymbolicLink()) {
-    throw new ContextError('snapshot_integrity_error');
-  }
+  const info = lstatSync(directory, { throwIfNoEntry: false });
+  if (!info) throw new ContextError('snapshot_not_found', 'active snapshot directory is missing');
+  if (!info.isDirectory() || info.isSymbolicLink()) throw new ContextError('snapshot_integrity_error');
   const bytes = readRegular(join(directory, 'source-manifest.json'));
   if (sha256(bytes) !== expectedHash) throw new ContextError('snapshot_integrity_error', 'manifest hash mismatch');
   const manifest = JSON.parse(bytes);
-  if (!manifest.completed || manifest.fingerprint !== fingerprint || manifest.source_root !== repo
-    || manifest.schema_version !== SCHEMA_VERSION || manifest.extractor_version !== EXTRACTOR_VERSION) {
+  if (!manifest.completed || manifest.fingerprint !== fingerprint || manifest.source_root !== repo) {
     throw new ContextError('snapshot_integrity_error', 'incompatible or incomplete snapshot');
+  }
+  if (manifest.schema_version !== SCHEMA_VERSION || manifest.extractor_version !== EXTRACTOR_VERSION) {
+    throw new ContextError('snapshot_incompatible', 'snapshot was built by another schema or extractor version');
   }
   const artifacts = {};
   for (const name of ARTIFACTS) {
@@ -182,11 +235,12 @@ export function loadSnapshot({ repo, cacheDir }) {
   const cache = cacheLocation(repo, cacheDir);
   if (!existsSync(join(cache, 'active.json'))) throw new ContextError('index_not_built');
   try {
+    const snapshots = snapshotDirectory(cache);
     const active = JSON.parse(readRegular(join(cache, 'active.json')));
     if (!/^[a-f0-9]{64}$/.test(active.fingerprint) || !/^[a-f0-9]{64}$/.test(active.manifest_hash)) {
       throw new ContextError('snapshot_integrity_error');
     }
-    return readSnapshotDirectory(join(cache, 'snapshots', active.fingerprint), active.manifest_hash, repo, active.fingerprint);
+    return readSnapshotDirectory(join(snapshots, active.fingerprint), active.manifest_hash, repo, active.fingerprint);
   } catch (error) {
     if (error instanceof ContextError) throw error;
     throw new ContextError('snapshot_integrity_error', 'cannot read a complete verified snapshot');
@@ -197,7 +251,7 @@ export function buildSnapshot({ repo, cacheDir, scopes = DEFAULT_SCOPES, committ
   repo = resolveRepo(repo);
   scopes = normalizeScopes(scopes);
   const cache = cacheLocation(repo, cacheDir);
-  mkdirSync(cache, { recursive: true, mode: 0o700 });
+  prepareCache(repo, cache);
   let temporary;
   let pointer;
   let fingerprint;
@@ -230,35 +284,51 @@ export function buildSnapshot({ repo, cacheDir, scopes = DEFAULT_SCOPES, committ
       coverage_gaps: gaps };
     const manifestBytes = jsonFile(manifest);
     const manifestHash = sha256(manifestBytes);
-    mkdirSync(join(cache, 'snapshots'), { recursive: true, mode: 0o700 });
+    const snapshots = snapshotDirectory(cache, true);
     temporary = mkdtempSync(join(cache, '.building-'));
     for (const [name, content] of Object.entries(artifacts)) writeFileSync(join(temporary, name), content, { mode: 0o600 });
     writeFileSync(join(temporary, 'source-manifest.json'), manifestBytes, { mode: 0o600 });
-    readSnapshotDirectory(temporary, manifestHash, repo, fingerprint);
-    const latest = getRepoState(repo);
-    if (latest.revision !== state.revision) throw new ContextError('source_changed_during_build');
-    if (latest.dirty && !committedOnly) throw new ContextError('unindexed_worktree');
-    const destination = join(cache, 'snapshots', fingerprint);
-    let reused = existsSync(destination);
-    if (!reused) {
-      try { renameSync(temporary, destination); temporary = undefined; }
-      catch (error) {
-        if (!['EEXIST', 'ENOTEMPTY'].includes(error.code)) throw error;
-        reused = true;
+    const snapshot = readSnapshotDirectory(temporary, manifestHash, repo, fingerprint);
+    const destination = join(snapshots, fingerprint);
+    const release = lockCache(cache);
+    try {
+      snapshotDirectory(cache);
+      const latest = getRepoState(repo);
+      if (latest.revision !== state.revision) throw new ContextError('source_changed_during_build');
+      if (latest.dirty && !committedOnly) throw new ContextError('unindexed_worktree');
+      // Under the lock the destination is ours: reuse it when it verifies,
+      // rebuild it from the snapshot just built when files are missing, and
+      // still refuse tampered or symlinked content loudly.
+      let reused = false;
+      const existing = lstatSync(destination, { throwIfNoEntry: false });
+      if (existing) {
+        if (!existing.isDirectory() || existing.isSymbolicLink()) throw new ContextError('snapshot_integrity_error');
+        try {
+          const previous = readRegular(join(destination, 'source-manifest.json'));
+          if (sha256(previous) !== manifestHash) throw new ContextError('non_deterministic_build');
+          readSnapshotDirectory(destination, manifestHash, repo, fingerprint);
+          reused = true;
+        } catch (error) {
+          if (error.code !== 'snapshot_not_found') throw error;
+          rmSync(destination, { recursive: true, force: true });
+        }
       }
+      if (!reused) {
+        renameSync(temporary, destination);
+        temporary = undefined;
+      }
+      pointer = join(cache, `.active-${process.pid}-${randomUUID()}.json`);
+      writeFileSync(pointer, jsonFile({ fingerprint, manifest_hash: manifestHash }), { mode: 0o600 });
+      renameSync(pointer, join(cache, 'active.json'));
+      pointer = undefined;
+      const warnings = recordRun(cache, { fingerprint,
+        status: 'completed', committed_only: committedOnly, worktree_dirty: latest.dirty });
+      const pruned = pruneCache(cache, fingerprint, warnings);
+      return { fingerprint, manifest, counts, reused, warnings, snapshot,
+        pruned_snapshots: pruned.snapshots, pruned_temporaries: pruned.temporaries };
+    } finally {
+      release();
     }
-    if (reused) {
-      const previous = readRegular(join(destination, 'source-manifest.json'));
-      if (sha256(previous) !== manifestHash) throw new ContextError('non_deterministic_build');
-      readSnapshotDirectory(destination, manifestHash, repo, fingerprint);
-    }
-    pointer = join(cache, `.active-${process.pid}-${randomUUID()}.json`);
-    writeFileSync(pointer, jsonFile({ fingerprint, manifest_hash: manifestHash }), { mode: 0o600 });
-    renameSync(pointer, join(cache, 'active.json'));
-    pointer = undefined;
-    const warnings = recordRun(cache, { fingerprint,
-      status: 'completed', committed_only: committedOnly, worktree_dirty: latest.dirty });
-    return { fingerprint, manifest, counts, reused, warnings };
   } catch (error) {
     recordRun(cache, { fingerprint: fingerprint ?? null, status: 'failed', error: error.code ?? 'build_failed' });
     throw error;
@@ -266,6 +336,77 @@ export function buildSnapshot({ repo, cacheDir, scopes = DEFAULT_SCOPES, committ
     if (temporary) rmSync(temporary, { recursive: true, force: true });
     if (pointer) rmSync(pointer, { force: true });
   }
+}
+
+// Serializes reuse verification, activation and pruning across processes. The
+// symlink target combines pid and a random token so release cannot remove a
+// successor's lock. Readers remain lock-free.
+function lockCache(cache) {
+  const lock = join(cache, '.lock');
+  const owner = `${process.pid}-${randomUUID()}`;
+  const started = Date.now();
+  for (;;) {
+    try {
+      symlinkSync(owner, lock);
+      return () => { if (readLockOwner(lock)?.token === owner) rmSync(lock, { force: true }); };
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+    }
+    const holder = readLockOwner(lock);
+    if (holder === null) continue;
+    if (!holder) throw new ContextError('snapshot_integrity_error', 'cache lock is not a valid owner symlink');
+    try { process.kill(holder.pid, 0); }
+    catch (error) {
+      if (error.code === 'ESRCH') {
+        if (readLockOwner(lock)?.token !== holder.token) continue;
+        // ponytail: require manual stale-lock removal; use a native advisory lock
+        // if unattended crash recovery becomes necessary.
+        throw new ContextError('cache_lock_stale', 'cache lock owner is gone; remove the lock only after confirming no build is running');
+      }
+      if (error.code !== 'EPERM') throw new ContextError('snapshot_integrity_error', 'cache lock owner pid is invalid');
+    }
+    if (Date.now() - started > LOCK_WAIT_MS) {
+      throw new ContextError('cache_lock_timeout', 'timed out waiting for the cache lock');
+    }
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50);
+  }
+}
+
+function readLockOwner(lock) {
+  try {
+    const token = readlinkSync(lock);
+    const match = /^([1-9]\d*)-[a-f0-9-]{36}$/.exec(token);
+    const pid = Number(match?.[1]);
+    return Number.isSafeInteger(pid) && pid <= 0x7fffffff ? { pid, token } : undefined;
+  } catch (error) {
+    if (error.code === 'ENOENT') return null;
+    return undefined;
+  }
+}
+
+// Runs under the cache lock. Removes every fingerprint-named snapshot except
+// the one just activated, plus temporary build, pointer and reclaimed-lock
+// entries older than LOCK_WAIT_MS (a live build's temporary work is seconds old).
+function pruneCache(cache, keep, warnings) {
+  const pruned = { snapshots: 0, temporaries: 0 };
+  try {
+    const snapshots = snapshotDirectory(cache);
+    for (const entry of readdirSync(snapshots)) {
+      if (entry === keep || !/^[a-f0-9]{64}$/.test(entry)) continue;
+      rmSync(join(snapshots, entry), { recursive: true, force: true });
+      pruned.snapshots += 1;
+    }
+    for (const entry of readdirSync(cache)) {
+      if (!entry.startsWith('.building-') && !entry.startsWith('.active-') && !entry.startsWith('.lock.dead-')) continue;
+      const path = join(cache, entry);
+      if (Date.now() - lstatSync(path).mtimeMs <= LOCK_WAIT_MS) continue;
+      rmSync(path, { recursive: true, force: true });
+      pruned.temporaries += 1;
+    }
+  } catch {
+    warnings.push('prune_unavailable');
+  }
+  return pruned;
 }
 
 function recordRun(cache, record) {

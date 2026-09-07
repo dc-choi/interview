@@ -147,3 +147,18 @@ test('YAML aliases cannot create claims whose anchor omits their predicate and t
     assert.equal(result.coverage_gaps.some((gap) => gap.type === 'UnsupportedOntologyAlias'), true);
   }
 });
+
+test('table cells escape the alias pipe without corrupting the link target', () => {
+  const result = extract('# Links\n| 도메인 | 설명 |\n|---|---|\n| [[Commerce-Pricing\\|가격 도메인]] | 가격 |\n[[Plain\\|별칭]] [[Heading#Sub\\|별칭]]\n');
+  assert.deepEqual(result.links.map((link) => link.target), ['Commerce-Pricing', 'Plain', 'Heading#Sub']);
+});
+
+test('keeps verified_at as a string and reports other shapes as coverage gaps', () => {
+  const dated = extract('---\nverified_at: 2026-09-05\n---\n# Body\n');
+  assert.equal(dated.document.verified_at, '2026-09-05');
+  const absent = extract('# Body\n');
+  assert.equal(absent.document.verified_at, null);
+  const invalid = extract('---\nverified_at: [2026-09-05]\n---\n# Body\n');
+  assert.equal(invalid.document.verified_at, null);
+  assert.equal(invalid.coverage_gaps.filter((gap) => gap.type === 'InvalidFrontmatterField').length, 1);
+});

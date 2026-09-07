@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { sha256 } from '../src/core.mjs';
 import { buildSnapshot, loadSnapshot } from '../src/snapshot.mjs';
 
 const sources = {
@@ -133,4 +134,36 @@ test('default MCP serves every domain while explicit scopes and allowlists stay 
   } finally {
     await restricted.close();
   }
+});
+
+test('CLI lookup with a request scope keeps the allowlist snapshot active', (t) => {
+  const options = fixture(t);
+  const cli = fileURLToPath(new URL('../src/cli.mjs', import.meta.url));
+  const run = (...args) => JSON.parse(execFileSync(process.execPath, [cli, ...args,
+    '--repo', options.repo, '--cache', options.cacheDir], { encoding: 'utf8' }));
+  const built = run('build');
+  assert.equal(built.snapshot, undefined);
+  const payload = run('lookup', '--scope', 'tech', '--query', 'Technical pattern');
+  assert.ok(payload.evidence_units.every((unit) => unit.source_uri.startsWith('tech/')));
+  assert.equal(payload.index_sync[0].fingerprint, built.fingerprint);
+  const status = run('status');
+  assert.equal(status.fingerprint, built.fingerprint);
+  assert.deepEqual(status.manifest.indexed_paths, ['README.md', 'biz', 'econ', 'fit', 'ontology', 'tech']);
+});
+
+test('CLI status reports why no snapshot is served', (t) => {
+  const options = fixture(t);
+  const cli = fileURLToPath(new URL('../src/cli.mjs', import.meta.url));
+  const run = (...args) => JSON.parse(execFileSync(process.execPath, [cli, ...args,
+    '--repo', options.repo, '--cache', options.cacheDir], { encoding: 'utf8' }));
+  assert.equal(run('status').snapshot_status, 'index_not_built');
+  const { fingerprint } = run('build');
+  const directory = join(options.cacheDir, 'snapshots', fingerprint);
+  const manifest = JSON.parse(readFileSync(join(directory, 'source-manifest.json')));
+  const stale = `${JSON.stringify({ ...manifest, extractor_version: '0' })}\n`;
+  writeFileSync(join(directory, 'source-manifest.json'), stale);
+  writeFileSync(join(options.cacheDir, 'active.json'), JSON.stringify({ fingerprint, manifest_hash: sha256(stale) }));
+  const status = run('status');
+  assert.equal(status.manifest, null);
+  assert.equal(status.snapshot_status, 'snapshot_incompatible');
 });

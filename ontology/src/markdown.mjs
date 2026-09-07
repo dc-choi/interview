@@ -4,7 +4,7 @@ import { fromMarkdown } from 'mdast-util-from-markdown';
 import { parseDocument, visit as visitYaml } from 'yaml';
 import { ASSERTION_PREDICATES, ContextError } from './core.mjs';
 
-const WIKILINK_PATTERN = /\[\[([^\]|\r\n]+)(?:\|[^\]\r\n]*)?\]\]/g;
+const WIKILINK_PATTERN = /\[\[([^\]|\r\n]+?)(?:\\?\|[^\]\r\n]*)?\]\]/g;
 
 export function normalizeHeading(text) {
   const tree = fromMarkdown(`# ${text.replace(/[\r\n]+/g, ' ')}`);
@@ -42,6 +42,7 @@ export function extractMarkdown({ path, content, repoId, revision, updatedAt }) 
       tags: metadata.value.tags,
       category: metadata.value.category,
       status: metadata.value.status,
+      verified_at: metadata.value.verified_at,
       source_uri: path,
       source_revision: revision,
       content_hash: hash(source),
@@ -103,7 +104,7 @@ function readMetadata(frontmatter, path) {
     }
     metadata[field] = value[field];
   }
-  for (const field of ['category', 'status']) {
+  for (const field of ['category', 'status', 'verified_at']) {
     if (value[field] === undefined || value[field] === null) continue;
     if (typeof value[field] !== 'string') {
       gaps.push(coverageGap(path, 'InvalidFrontmatterField', `${field} must be a string.`));
@@ -352,7 +353,7 @@ function stringField(value, field, path, index, gaps) {
 }
 
 function emptyMetadata() {
-  return { aliases: [], tags: [], category: null, status: null };
+  return { aliases: [], tags: [], category: null, status: null, verified_at: null };
 }
 
 function coverageGap(path, type, message) {

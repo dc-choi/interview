@@ -9,7 +9,7 @@ aliases: ["Ontology Context Runtime", "AI Context Runtime", "AI 컨텍스트 조
 # Markdown Vault를 읽는 AI 런타임: 조회, Context Pack과 MCP
 
 > 유형: 조회 계약과 후속 확장 설계. 실제 구현 범위는 [[Ontology-Operations|루트 실행 절차]]에서 확인한다.
-> 현재 상태: 루트 `ontology/`에 build CLI, `context_lookup`과 MCP 서버 구현 (2026-09-05). 아래 `context-build`는 논리적 역할이며 실제 명령은 `npm run build`다.
+> 현재 상태: 루트 `ontology/`에 build CLI, `context_lookup`과 MCP 서버 구현 (2026-09-05, 본문의 현재 구현 서술은 2026-09-07 코드와 대조). 아래 `context-build`는 논리적 역할이며 실제 명령은 `npm run build`다.
 > 현재 범위: 이 Vault의 Markdown. 코드 저장소, 배포 상태와 실제 런타임은 아직 색인 대상이 아니다.
 
 ## 여기서 AI가 학습한다는 의미
@@ -72,7 +72,7 @@ flowchart LR
 
 ## Query-time: 질문을 Context Pack으로 바꾸기
 
-1. 각 `context_lookup` 요청 시작에 active pointer를 한 번 읽고 그 요청 동안 고정한다. 해당 snapshot의 manifest와 artifact hash를 검증한 뒤 source별 index sync와 요청 scope의 수집 여부를 계산하고, 최신 run log의 오류 코드는 snapshot과 섞지 않고 `errors`에 요약한다.
+1. 각 `context_lookup` 요청 시작에 active pointer를 한 번 읽고 그 요청 동안 고정한다. 해당 snapshot의 manifest와 artifact hash를 검증한 뒤 source별 index sync와 요청 scope의 수집 여부를 계산하고, 최신 run log의 오류 코드는 snapshot과 섞지 않고 `errors`에 요약한다. run log 요약은 후속이며 현재 `errors`는 `unindexed_worktree`, `revision_mismatch`, `requested_scope_not_indexed`만 담는다.
 2. 제목, ID와 alias의 정확 일치를 먼저 찾는다.
 3. 없거나 부족할 때 entity의 heading metadata와 manifest revision의 tracked Markdown blob을 allowlist 안에서 literal 검색해 후보를 넓힌다. 본문은 캐시나 current worktree에서 읽지 않는다.
 4. 시작 엔터티가 subject나 object인 incident edge를 모두 탐색하되 반환 triple의 원래 방향은 보존한다. 기본 깊이는 1이고 연쇄 영향 질문만 2를 요청한다.
@@ -81,7 +81,7 @@ flowchart LR
 
 MVP의 본문 검색은 작은 Vault를 직접 훑는다. 측정된 병목이 생길 때만 snapshot에 hash로 보호된 lexical postings를 추가하고, 임베딩 검색은 정확 검색과 키워드 검색의 실제 누락 사례가 쌓였을 때만 fallback으로 검토한다. 벡터 DB는 그 전에는 필요 없다.
 
-MVP의 서버 상한은 `MAX_ARGUMENT_BYTES=8192`, `MAX_QUERY_BYTES=4096`, `MAX_SCOPE_ENTRIES=20`, `MAX_SCOPE_PATH_BYTES=512`, `SERVER_MAX_BYTES=65536`, `MAX_DEPTH=2`, `MAX_MATCHED_ENTITIES=20`, `MAX_EDGES_PER_ENTITY=50`으로 시작한다. depth는 1이나 2만 허용하고 `effective_max_bytes = min(request.max_bytes, SERVER_MAX_BYTES)`로 계산한다. 후보나 edge 상한에 닿으면 `partial`과 `retrieval_limit_reached` coverage gap을 반환한다.
+MVP의 서버 상한은 `MAX_ARGUMENT_BYTES=8192`, `MAX_QUERY_BYTES=4096`, `MAX_SCOPE_ENTRIES=20`, `MAX_SCOPE_PATH_BYTES=512`, `SERVER_MAX_BYTES=65536`, `MAX_MATCHED_ENTITIES=20`, `MAX_ROOTS=6`, `MAX_EDGES_PER_ENTITY=50`으로 시작한다. depth는 상수가 아니라 입력 검증으로 1이나 2만 허용하고 `effective_max_bytes = min(request.max_bytes, SERVER_MAX_BYTES)`로 계산한다. root, entity 또는 edge 상한에 닿으면 `partial`과 `retrieval_limit_reached` coverage gap을 반환한다.
 
 ## Context Pack과 MCP 계약
 
@@ -106,19 +106,19 @@ MVP에는 `revision` 입력이 없다. 항상 활성 manifest revision을 읽으
   "query": "이 이벤트를 바꾸면 무엇을 함께 확인해야 하는가?",
   "result_status": "ok",
   "index_sync": [{"source_id": "interview-vault", "status": "synced", "revision": "<commit>", "fingerprint": "<hash>", "manifest_hash": "<hash>", "artifacts_verified": true, "requested_scope_indexed": true, "indexed_paths": ["tech/ai-engineering"], "excluded_paths": [], "schema_version": "<version>", "extractor_version": "<version>", "completed": true, "errors": []}],
-  "entities": [{"id": "document:interview:tech/<source>.md", "label": "<source-title>", "aliases": []}, {"id": "document:interview:tech/<target>.md", "label": "<target-title>", "aliases": []}],
+  "entities": [{"id": "document:interview-vault:tech/<source>.md", "type": "Document", "label": "<source-title>", "aliases": [], "tags": [], "category": null, "status": null, "verified_at": null}, {"id": "document:interview-vault:tech/<target>.md", "type": "Document", "label": "<target-title>", "aliases": [], "tags": [], "category": null, "status": null, "verified_at": null}],
   "evidence_units": [
     {
-      "id": "unit:interview:tech/<source>.md:<heading-path>#1",
+      "id": "unit:interview-vault:tech/<source>.md:<heading-path>#1",
       "source_uri": "tech/<path>.md",
-      "anchor": "<heading-path-and-occurrence>",
+      "anchor": {"heading_path": ["<heading>"], "occurrence": 1, "start_line": 1, "end_line": 1, "start_byte": 0, "end_byte": 0},
       "source_revision": "<commit>",
       "content_hash": "sha256:<hash>",
       "excerpt": "<bounded-original-text>",
       "truncated": false
     }
   ],
-  "relations": [{"id": "edge:sha256:<canonical-tuple-hash>", "subject": "document:interview:tech/<source>.md", "predicate": "links_to", "object": "document:interview:tech/<target>.md", "verification": "source_confirmed", "freshness": "not_checked", "conflict": "not_checked", "evidence_unit_id": "unit:interview:tech/<source>.md:<heading-path>#1", "assertion_occurrence": 1}],
+  "relations": [{"id": "edge:sha256:<canonical-tuple-hash>", "subject": "document:interview-vault:tech/<source>.md", "predicate": "links_to", "object": "document:interview-vault:tech/<target>.md", "extraction_method": "parser", "extraction_version": "<version>", "verification": "source_confirmed", "freshness": "not_checked", "conflict": "not_checked", "evidence_unit_id": "unit:interview-vault:tech/<source>.md:<heading-path>#1", "assertion_occurrence": 1}],
   "conflict_check_status": "not_supported",
   "conflicts": null,
   "coverage_gaps": [],
@@ -155,7 +155,7 @@ MVP는 별도의 claim 문장을 생성하지 않는다. AI가 만드는 각 판
 
 깨진 위키링크, 삭제된 anchor와 hash 불일치도 조용히 무시하지 않고 source별 coverage gap으로 노출한다.
 
-한 source에서 조건이 겹치면 `source_unavailable`, `unindexed_worktree`, `revision_mismatch`, `synced` 순서로 대표 status를 정하고 나머지 사유는 `errors`에 보존한다.
+한 source에서 조건이 겹치면 `source_unavailable`, `unindexed_worktree`, `revision_mismatch`, `synced` 순서로 대표 status를 정하고 나머지 사유는 `errors`에 보존한다. 현재 구현의 index sync status는 `unindexed_worktree`, `revision_mismatch`, `synced`만 계산하며 `source_unavailable`은 Tool 오류나 근거별 coverage gap으로 반환한다.
 
 ## 최소 구현과 학습 순서
 
@@ -176,7 +176,7 @@ MVP는 별도의 claim 문장을 생성하지 않는다. AI가 만드는 각 판
 - 중복 heading의 occurrence 구분, rename과 삭제 전파
 - dirty worktree와 revision mismatch 표시
 - candidate queue가 조회 결과에 섞이지 않고 conflict와 coverage gap은 보존
-- 같은 fingerprint 재빌드의 artifact byte와 hash 동일성, 손상되거나 미완료인 snapshot의 활성화와 serving 금지, 요청 중 pointer 교체 시 현재 요청은 기존 snapshot을 유지하고 다음 요청은 새 snapshot 사용
+- 같은 fingerprint 재빌드의 artifact byte와 hash 동일성, 손상되거나 미완료인 snapshot의 활성화와 serving 금지, 요청 중 pointer 교체 시 이미 로드한 요청은 메모리의 기존 snapshot 유지, 읽는 도중 snapshot이 삭제되면 `loadSnapshot`은 `snapshot_not_found`를 반환하고 CLI와 MCP 조회는 clean worktree이거나 `--committed-only`이면 같은 요청에서 필요한 범위로 재빌드
 - arguments, query, scope와 depth 초과 입력 거부, 후보와 edge 상한의 `partial` 처리, byte 상한 안에서 원문 anchor와 잘림 상태 유지
 
 평가 세트와 확장 판단은 [[Ontology-Context-Platform-Implementation#단계별 구축 순서|단계별 구축 순서]]와 [[Ontology-Context-Platform-Implementation#성공 기준과 보류 기준|성공 기준]]을 따른다.

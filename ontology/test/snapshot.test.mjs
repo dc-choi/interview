@@ -1,12 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
+import { execFile, execFileSync, spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import { existsSync, lutimesSync, mkdtempSync, mkdirSync, utimesSync, writeFileSync, readFileSync, readlinkSync, readdirSync, realpathSync, renameSync, rmSync, symlinkSync } from 'node:fs';
+import { syncBuiltinESMExports } from 'node:module';
 import { homedir, tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { buildSnapshot, loadSnapshot } from '../src/snapshot.mjs';
+import { basename, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { buildSnapshot, defaultCacheDir, loadSnapshot } from '../src/snapshot.mjs';
 import { getRepoState, readBlob } from '../src/repository.mjs';
 import { sha256 } from '../src/core.mjs';
+import { ensureFreshSnapshot } from '../src/server.mjs';
 
 function fixture(t) {
   const root = mkdtempSync(join(tmpdir(), 'ontology-snapshot-'));
@@ -31,6 +35,7 @@ test('snapshots are deterministic, source-backed, and reproducible', (t) => {
   const first = buildSnapshot(options);
   const second = buildSnapshot(options);
   assert.equal(first.fingerprint, second.fingerprint);
+  assert.equal(first.snapshot.fingerprint, first.fingerprint);
   assert.equal(second.reused, true);
   const snapshot = loadSnapshot(options);
   assert.equal(snapshot.entities.filter((entity) => entity.type === 'Document').length, 2);
@@ -66,6 +71,84 @@ test('symlinks and instruction loaders are excluded; cache cannot be stored insi
   for (const cacheDir of ['/', homedir(), options.root]) {
     assert.throws(() => buildSnapshot({ ...options, cacheDir }), { code: 'invalid_cache_path' });
   }
+});
+
+test('a non-empty custom cache is refused until context-ontology owns it', (t) => {
+  const options = fixture(t);
+  mkdirSync(options.cacheDir);
+  writeFileSync(join(options.cacheDir, '.building-foreign-data'), 'keep');
+  assert.throws(() => buildSnapshot(options), { code: 'invalid_cache_path' });
+  assert.equal(readFileSync(join(options.cacheDir, '.building-foreign-data'), 'utf8'), 'keep');
+  const lookalike = join(options.root, 'context-ontology', basename(defaultCacheDir(options.repo)));
+  mkdirSync(lookalike, { recursive: true });
+  writeFileSync(join(lookalike, '.building-foreign-data'), 'keep');
+  assert.throws(() => buildSnapshot({ ...options, cacheDir: lookalike }), { code: 'invalid_cache_path' });
+  assert.equal(readFileSync(join(lookalike, '.building-foreign-data'), 'utf8'), 'keep');
+});
+
+test('a concurrent first build waits for the ownership marker write to finish', async (t) => {
+  const options = fixture(t);
+  mkdirSync(options.cacheDir);
+  const marker = join(realpathSync(options.cacheDir), '.context-ontology-cache');
+  const observed = join(options.root, 'marker-observed');
+  const content = 'interview-context-ontology-v1\n';
+  writeFileSync(marker, '');
+  const writer = execFile(process.execPath, ['--input-type=module', '-e', `
+    import { existsSync, writeFileSync } from 'node:fs';
+    while (!existsSync(${JSON.stringify(observed)})) {
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 10);
+    }
+    writeFileSync(${JSON.stringify(marker)}, ${JSON.stringify(content)});
+  `]);
+  const exited = new Promise((resolve) => writer.on('exit', resolve));
+  t.after(() => writer.kill());
+  const read = fs.readFileSync;
+  let sawIncompleteMarker = false;
+  t.mock.method(fs, 'readFileSync', (path, ...args) => {
+    const value = read(path, ...args);
+    if (path === marker && value.length === 0) {
+      sawIncompleteMarker = true;
+      writeFileSync(observed, '');
+    }
+    return value;
+  });
+  syncBuiltinESMExports();
+  t.after(() => { t.mock.restoreAll(); syncBuiltinESMExports(); });
+  assert.doesNotThrow(() => buildSnapshot(options));
+  assert.equal(sawIncompleteMarker, true);
+  assert.equal(await exited, 0);
+  assert.equal(readFileSync(marker, 'utf8'), content);
+});
+
+test('invalid or abandoned ownership markers are refused without deleting cache data', (t) => {
+  const options = fixture(t);
+  mkdirSync(options.cacheDir);
+  const marker = join(options.cacheDir, '.context-ontology-cache');
+  const unrelated = join(options.cacheDir, '.building-foreign-data');
+  writeFileSync(unrelated, 'keep');
+  for (const content of ['', 'interview-context-', 'invalid owner']) {
+    writeFileSync(marker, content);
+    assert.throws(() => buildSnapshot(options), { code: 'invalid_cache_path' });
+    assert.equal(readFileSync(marker, 'utf8'), content);
+    assert.equal(readFileSync(unrelated, 'utf8'), 'keep');
+  }
+  rmSync(marker);
+  symlinkSync(unrelated, marker);
+  assert.throws(() => buildSnapshot(options), { code: 'invalid_cache_path' });
+  assert.equal(readlinkSync(marker), unrelated);
+});
+
+test('a symlinked snapshots directory is refused without deleting its target', (t) => {
+  const options = fixture(t);
+  buildSnapshot(options);
+  const victim = join(options.root, 'victim');
+  mkdirSync(victim);
+  writeFileSync(join(victim, 'keep.txt'), 'keep');
+  rmSync(join(options.cacheDir, 'snapshots'), { recursive: true });
+  symlinkSync(victim, join(options.cacheDir, 'snapshots'));
+  assert.throws(() => loadSnapshot(options), { code: 'snapshot_integrity_error' });
+  assert.throws(() => buildSnapshot(options), { code: 'snapshot_integrity_error' });
+  assert.equal(readFileSync(join(victim, 'keep.txt'), 'utf8'), 'keep');
 });
 
 test('corrupt artifacts and unsafe active pointers are never served', (t) => {
@@ -202,4 +285,252 @@ test('failed extraction preserves the previous verified active snapshot', (t) =>
   options.commit();
   assert.throws(() => buildSnapshot(options), { code: 'invalid_source_encoding' });
   assert.equal(loadSnapshot(options).fingerprint, before.fingerprint);
+});
+
+test('a build waits for the cache lock held by a live process', async (t) => {
+  const options = fixture(t);
+  buildSnapshot(options);
+  const lock = join(options.cacheDir, '.lock');
+  symlinkSync(`${process.pid}-00000000-0000-4000-8000-000000000000`, lock);
+  const cli = fileURLToPath(new URL('../src/cli.mjs', import.meta.url));
+  const child = execFile(process.execPath, [cli, 'build', '--repo', options.repo, '--cache', options.cacheDir]);
+  let exited = false;
+  const exit = new Promise((resolve) => child.on('exit', (code) => { exited = true; resolve(code); }));
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  assert.equal(exited, false);
+  rmSync(lock);
+  assert.equal(await exit, 0);
+  assert.equal(existsSync(lock), false);
+});
+
+test('concurrent builds retry when the previous cache lock disappears', async (t) => {
+  const options = fixture(t);
+  buildSnapshot(options);
+  const cli = fileURLToPath(new URL('../src/cli.mjs', import.meta.url));
+  const build = (scope) => new Promise((resolve, reject) => {
+    execFile(process.execPath, [cli, 'build', '--repo', options.repo, '--cache', options.cacheDir, '--scope', scope],
+      (error, stdout, stderr) => error ? reject(new Error(stderr)) : resolve(JSON.parse(stdout)));
+  });
+  await Promise.all(Array.from({ length: 40 }, (_, index) => build(index % 2 ? 'tech' : 'tech/A.md')));
+  assert.equal(existsSync(join(options.cacheDir, '.lock')), false);
+  assert.doesNotThrow(() => loadSnapshot(options));
+});
+
+test('a lock owner that exits during its liveness check is retried', (t) => {
+  const options = fixture(t);
+  buildSnapshot(options);
+  const lock = join(options.cacheDir, '.lock');
+  symlinkSync(`${process.pid}-00000000-0000-4000-8000-000000000000`, lock);
+  const kill = process.kill;
+  process.kill = () => {
+    rmSync(lock);
+    throw Object.assign(new Error('gone'), { code: 'ESRCH' });
+  };
+  try {
+    assert.doesNotThrow(() => buildSnapshot(options));
+  } finally {
+    process.kill = kill;
+  }
+});
+
+test('a build rechecks the source revision after waiting for the cache lock', async (t) => {
+  const options = fixture(t);
+  const before = buildSnapshot(options);
+  const lock = join(options.cacheDir, '.lock');
+  symlinkSync(`${process.pid}-00000000-0000-4000-8000-000000000000`, lock);
+  const cli = fileURLToPath(new URL('../src/cli.mjs', import.meta.url));
+  const child = execFile(process.execPath, [cli, 'build', '--repo', options.repo, '--cache', options.cacheDir]);
+  let stderr = '';
+  child.stderr.on('data', (chunk) => { stderr += chunk; });
+  const exit = new Promise((resolve) => child.on('exit', resolve));
+  t.after(() => { rmSync(lock, { force: true }); child.kill(); });
+  let waiting = false;
+  for (let attempt = 0; attempt < 200 && !waiting; attempt += 1) {
+    waiting = readdirSync(options.cacheDir).some((entry) => entry.startsWith('.building-'));
+    if (!waiting) await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+  assert.equal(waiting, true);
+  options.write('tech/C.md', '# New revision\n');
+  options.commit();
+  rmSync(lock);
+  assert.equal(await exit, 1);
+  assert.match(stderr, /source_changed_during_build/);
+  assert.equal(loadSnapshot(options).manifest.revision, before.manifest.revision);
+});
+
+test('a cache lock left by a dead process requires explicit recovery', (t) => {
+  const options = fixture(t);
+  buildSnapshot(options);
+  const lock = join(options.cacheDir, '.lock');
+  symlinkSync(`${spawnSync('true').pid}-00000000-0000-4000-8000-000000000000`, lock);
+  assert.throws(() => buildSnapshot(options), { code: 'cache_lock_stale' });
+  assert.match(readlinkSync(lock), /-00000000-0000-4000-8000-000000000000$/);
+});
+
+test('a malformed cache lock is rejected without replacing it', (t) => {
+  const options = fixture(t);
+  buildSnapshot(options);
+  const lock = join(options.cacheDir, '.lock');
+  symlinkSync('garbage', lock);
+  assert.throws(() => buildSnapshot(options), { code: 'snapshot_integrity_error' });
+  assert.equal(readlinkSync(lock), 'garbage');
+  rmSync(lock);
+  symlinkSync('2147483648-00000000-0000-4000-8000-000000000000', lock);
+  assert.throws(() => buildSnapshot(options), { code: 'snapshot_integrity_error' });
+});
+
+test('a directory-shaped cache lock is rejected without deleting it', (t) => {
+  const options = fixture(t);
+  buildSnapshot(options);
+  const lock = join(options.cacheDir, '.lock');
+  mkdirSync(lock);
+  assert.throws(() => buildSnapshot(options), { code: 'snapshot_integrity_error' });
+  assert.equal(existsSync(lock), true);
+});
+
+test('a build repairs a partially deleted snapshot at its own fingerprint', (t) => {
+  const options = fixture(t);
+  const { fingerprint } = buildSnapshot(options);
+  rmSync(join(options.cacheDir, 'snapshots', fingerprint, 'entities.jsonl'));
+  const result = buildSnapshot(options);
+  assert.equal(result.reused, false);
+  assert.equal(loadSnapshot(options).fingerprint, fingerprint);
+});
+
+test('a build refuses a symlink at its own fingerprint with a coded error and never follows it', (t) => {
+  const options = fixture(t);
+  const { fingerprint } = buildSnapshot(options);
+  const directory = join(options.cacheDir, 'snapshots', fingerprint);
+  const victim = join(options.root, 'victim');
+  mkdirSync(victim);
+  writeFileSync(join(victim, 'keep.txt'), 'keep');
+  rmSync(directory, { recursive: true });
+  symlinkSync(victim, directory);
+  assert.throws(() => buildSnapshot(options), { code: 'snapshot_integrity_error' });
+  assert.equal(readFileSync(join(victim, 'keep.txt'), 'utf8'), 'keep');
+  assert.equal(existsSync(join(options.cacheDir, '.lock')), false);
+});
+
+test('stale build and reclaimed-lock temporaries are removed, live ones kept', (t) => {
+  const options = fixture(t);
+  buildSnapshot(options);
+  const stale = join(options.cacheDir, '.building-stale');
+  const live = join(options.cacheDir, '.building-live');
+  const reclaimed = join(options.cacheDir, '.lock.dead-stale');
+  mkdirSync(stale);
+  mkdirSync(live);
+  symlinkSync('garbage', reclaimed);
+  const old = new Date(Date.now() - 11 * 60 * 1000);
+  utimesSync(stale, old, old);
+  lutimesSync(reclaimed, old, old);
+  const result = buildSnapshot(options);
+  assert.equal(result.pruned_temporaries, 2);
+  assert.equal(existsSync(stale), false);
+  assert.equal(existsSync(reclaimed), false);
+  assert.equal(existsSync(live), true);
+});
+
+test('an artifact removed under a loading snapshot is reported as not found', (t) => {
+  const options = fixture(t);
+  const { fingerprint } = buildSnapshot(options);
+  rmSync(join(options.cacheDir, 'snapshots', fingerprint, 'entities.jsonl'));
+  assert.throws(() => loadSnapshot(options), { code: 'snapshot_not_found' });
+});
+
+test('a snapshot pruned between stat and read is rebuilt during the same request', (t) => {
+  const options = fixture(t);
+  const { fingerprint } = buildSnapshot(options);
+  const artifact = join(realpathSync(options.cacheDir), 'snapshots', fingerprint, 'source-manifest.json');
+  const cli = fileURLToPath(new URL('../src/cli.mjs', import.meta.url));
+  const read = fs.readFileSync;
+  let pruned = false;
+  t.mock.method(fs, 'readFileSync', (path, ...args) => {
+    if (path === artifact && !pruned) {
+      const result = JSON.parse(execFileSync(process.execPath, [cli, 'build', '--repo', options.repo,
+        '--cache', options.cacheDir, '--scope', 'tech/A.md'], { encoding: 'utf8' }));
+      assert.notEqual(result.fingerprint, fingerprint);
+      assert.equal(result.pruned_snapshots, 1);
+      pruned = true;
+    }
+    return read(path, ...args);
+  });
+  syncBuiltinESMExports();
+  t.after(() => { t.mock.restoreAll(); syncBuiltinESMExports(); });
+  const result = ensureFreshSnapshot(options);
+  assert.equal(pruned, true);
+  assert.equal(result.refreshed, true);
+  assert.equal(result.snapshot.fingerprint, fingerprint);
+  assert.equal(result.snapshot.entities.filter((entity) => entity.type === 'Document').length, 2);
+});
+
+test('a dangling symlink in place of the snapshot directory is refused, not rebuilt', (t) => {
+  const options = fixture(t);
+  const { fingerprint } = buildSnapshot(options);
+  const directory = join(options.cacheDir, 'snapshots', fingerprint);
+  rmSync(directory, { recursive: true });
+  symlinkSync(join(options.root, 'nowhere'), directory);
+  assert.throws(() => loadSnapshot(options), { code: 'snapshot_integrity_error' });
+});
+
+test('a missing active snapshot directory is rebuilt on the next request', (t) => {
+  const options = fixture(t);
+  const { fingerprint } = buildSnapshot(options);
+  rmSync(join(options.cacheDir, 'snapshots', fingerprint), { recursive: true });
+  assert.throws(() => loadSnapshot(options), { code: 'snapshot_not_found' });
+  const result = ensureFreshSnapshot(options);
+  assert.equal(result.refreshed, true);
+  assert.equal(result.summary.fingerprint, result.snapshot.fingerprint);
+  assert.equal(result.snapshot.fingerprint, fingerprint);
+  rmSync(join(options.cacheDir, 'snapshots'), { recursive: true });
+  assert.equal(ensureFreshSnapshot(options).snapshot.fingerprint, fingerprint);
+});
+
+test('a dirty worktree names a missing active snapshot instead of a missing clean one', (t) => {
+  const options = fixture(t);
+  const { fingerprint } = buildSnapshot(options);
+  rmSync(join(options.cacheDir, 'snapshots', fingerprint), { recursive: true });
+  options.write('tech/C.md', '# Uncommitted\n');
+  assert.throws(() => ensureFreshSnapshot(options), { code: 'unindexed_worktree', message: /active snapshot is missing/ });
+});
+
+test('a dirty worktree names the incompatible active snapshot instead of a missing one', (t) => {
+  const options = fixture(t);
+  const { fingerprint } = buildSnapshot(options);
+  const directory = join(options.cacheDir, 'snapshots', fingerprint);
+  const manifest = JSON.parse(readFileSync(join(directory, 'source-manifest.json')));
+  const stale = `${JSON.stringify({ ...manifest, extractor_version: '0' })}\n`;
+  writeFileSync(join(directory, 'source-manifest.json'), stale);
+  writeFileSync(join(options.cacheDir, 'active.json'), JSON.stringify({ fingerprint, manifest_hash: sha256(stale) }));
+  options.write('tech/C.md', '# Uncommitted\n');
+  assert.throws(() => ensureFreshSnapshot(options), { code: 'unindexed_worktree', message: /another schema or extractor version/ });
+});
+
+test('activating a new snapshot removes inactive snapshot directories', (t) => {
+  const options = fixture(t);
+  const before = buildSnapshot(options);
+  mkdirSync(join(options.cacheDir, 'snapshots', 'not-a-fingerprint'));
+  options.write('tech/C.md', '# New revision\n');
+  options.commit();
+  const after = buildSnapshot(options);
+  assert.notEqual(before.fingerprint, after.fingerprint);
+  assert.deepEqual(readdirSync(join(options.cacheDir, 'snapshots')).sort(), [after.fingerprint, 'not-a-fingerprint'].sort());
+  assert.equal(after.pruned_snapshots, 1);
+  assert.equal(buildSnapshot(options).reused, true);
+});
+
+test('an active snapshot from another extractor version is rebuilt instead of refused', (t) => {
+  const options = fixture(t);
+  const { fingerprint } = buildSnapshot(options);
+  const manifest = JSON.parse(readFileSync(join(options.cacheDir, 'snapshots', fingerprint, 'source-manifest.json')));
+  const staleFingerprint = 'f'.repeat(64);
+  const stale = `${JSON.stringify({ ...manifest, fingerprint: staleFingerprint, extractor_version: '0' })}\n`;
+  const directory = join(options.cacheDir, 'snapshots', staleFingerprint);
+  renameSync(join(options.cacheDir, 'snapshots', fingerprint), directory);
+  writeFileSync(join(directory, 'source-manifest.json'), stale);
+  writeFileSync(join(options.cacheDir, 'active.json'), JSON.stringify({ fingerprint: staleFingerprint, manifest_hash: sha256(stale) }));
+  assert.throws(() => loadSnapshot(options), { code: 'snapshot_incompatible' });
+  const result = ensureFreshSnapshot(options);
+  assert.equal(result.refreshed, true);
+  assert.equal(result.snapshot.fingerprint, fingerprint);
+  assert.deepEqual(readdirSync(join(options.cacheDir, 'snapshots')), [fingerprint]);
 });

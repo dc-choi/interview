@@ -380,11 +380,11 @@ function trimToBudget(payload, maximum, directEvidenceToDocument) {
  * Build an evidence-backed Context Pack from the active immutable snapshot.
  * This intentionally does not infer claims or semantic relations.
  */
-export function lookup(options, args) {
+export function lookup(options, args, snapshot) {
   const allowlist = validateOptions(options);
   const request = validateArgs(args);
   const effectiveMaxBytes = Math.min(request.requestedMaxBytes, SERVER_MAX_BYTES);
-  const snapshot = loadSnapshot({ repo: options.repo, cacheDir: options.cacheDir });
+  snapshot ??= loadSnapshot({ repo: options.repo, cacheDir: options.cacheDir });
   const { manifest, entities, relations, fingerprint, manifest_hash: manifestHash } = snapshot;
   const scopes = effectiveScopes(allowlist, manifest.indexed_paths, request.scope);
   const requestedScopeIndexed = request.scope.length === 0

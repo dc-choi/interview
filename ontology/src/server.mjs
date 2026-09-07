@@ -13,8 +13,6 @@ export const SERVER_LIMITS = Object.freeze({
   maxQueryBytes: 4096,
   maxScopeEntries: 20,
   maxScopePathBytes: 512,
-  maxDepth: 2,
-  maxBytes: 65536,
 });
 
 const inputSchema = z.object({
@@ -44,12 +42,12 @@ export function createContextServer(options) {
   }, (args) => {
     try {
       assertArgumentSize(args);
-      ensureFreshSnapshot(settings);
+      const { snapshot } = ensureFreshSnapshot(settings);
       const payload = lookup({
         repo: settings.repo,
         cacheDir: settings.cacheDir,
         allowlist: settings.allowlist,
-      }, args);
+      }, args, snapshot);
       return payloadResult(payload);
     } catch (error) {
       return errorResult(error);
@@ -77,11 +75,13 @@ export function ensureFreshSnapshot(options) {
   const settings = normalizeSettings(options);
   const state = getRepoState(settings.repo);
   let snapshot;
+  let missing;
 
   try {
     snapshot = loadSnapshot({ repo: settings.repo, cacheDir: settings.cacheDir });
   } catch (error) {
     if (!isMissingSnapshot(error)) throw error;
+    missing = error.code;
   }
 
   if (snapshot && ((sameRevision(snapshot.manifest, state.revision) && sameScopes(snapshot.manifest, settings.scopes))
@@ -94,17 +94,20 @@ export function ensureFreshSnapshot(options) {
       'unindexed_worktree',
       snapshot
         ? 'The worktree is dirty, so the existing clean snapshot remains active.'
-        : 'The worktree is dirty and no clean snapshot is available.',
+        : missing === 'snapshot_incompatible'
+          ? 'The worktree is dirty and the active snapshot was built by another schema or extractor version. Use --committed-only to rebuild from HEAD.'
+          : missing === 'snapshot_not_found'
+            ? 'The worktree is dirty and the active snapshot is missing. Retry, or use --committed-only to rebuild from HEAD.'
+            : 'The worktree is dirty and no clean snapshot is available.',
     );
   }
 
-  const summary = buildSnapshot({
+  const { snapshot: loaded, ...summary } = buildSnapshot({
     repo: settings.repo,
     cacheDir: settings.cacheDir,
     scopes: settings.scopes,
     committedOnly: settings.committedOnly,
   });
-  const loaded = loadSnapshot({ repo: settings.repo, cacheDir: settings.cacheDir });
   return { state, snapshot: loaded, summary, refreshed: true, dirty: Boolean(state.dirty) };
 }
 
@@ -171,5 +174,5 @@ function sameScopes(manifest, scopes) {
 
 function isMissingSnapshot(error) {
   const code = error?.code;
-  return code === 'index_not_built' || code === 'snapshot_not_found' || code === 'not_found' || code === 'ENOENT';
+  return code === 'index_not_built' || code === 'snapshot_incompatible' || code === 'snapshot_not_found';
 }
