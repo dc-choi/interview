@@ -107,6 +107,8 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 
 같은 날 검색과 응답 구성 보강 후 suite 78개 테스트를 통과했다. 추가 검증은 짧은 복합 질의의 일반어 잡음 제외, 긴 질문의 관련 문서 보존, 24KB 관계 묶음, 작은 예산에서 고아 근거 제거와 소유 문서 보존, 평가기의 본문 조건, 대안 근거, 금지 경로, 범위와 음성 사례다. 실제 Vault를 대상으로 새 MCP stdio 프로세스의 조회도 확인했다. 이미 실행 중인 MCP 프로세스는 재시작해야 수정한 query 모듈을 읽는다.
 
+이후 필수 근거 평가를 보강한 suite는 82개 테스트를 통과했다. 추가 검증은 모든 필수 그룹 충족과 그룹 내 대안, 같은 본문의 필수 문구와 잘린 예외, 본문 조건 없는 대안의 지표 분리, 그룹 입력과 pinned 원문의 검사다. 실제 필수 근거 진단에서 발견한 발췌 누락과 별도 원문 읽기 결과는 [[Development-Ontology-Evaluation#필수 근거와 잘린 예외의 진단]]에 기록한다.
+
 이 검증은 Markdown parser와 snapshot 조회의 계약을 확인한다. 실제 프로젝트 버그, 의미적으로 올바른 기술 추천, code repository index, deployment 또는 runtime behavior를 확인하지 않는다.
 
 ## 검색 품질 확인
@@ -115,9 +117,13 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 
 평가는 허용 원문과 heading의 일치, 선택적인 본문 문자열(`any_text`), 금지 경로, 최소 relation 수와 범위 밖 근거를 검사한다. 기대 원문, heading과 본문 문자열이 pinned snapshot에 실제로 있는지 먼저 확인하며, 없는 정답을 검색 실패로 세지 않고 실행 오류로 처리한다. `expected_evidence`의 항목은 허용 대안이며 그중 하나의 같은 section 안에서 조건을 충족해야 한다. `expected_empty` 사례는 정상 색인 범위에서 entity, evidence, relation이 없는 응답을 요구한다.
 
+여러 근거가 모두 필요한 사례는 `expected_evidence_groups`를 사용한다. 그룹은 모두 충족해야 하며 그룹 안의 `any_of`는 대안이다. 같은 본문의 조건과 예외를 함께 요구할 때는 target에 `all_text`를 지정한다. `any_text`와 함께 있으면 두 문구 조건을 모두 검사한다. 기존 기대 근거 형식과 그룹 형식은 한 사례에 혼용하지 않는다. 보고서의 `missing_evidence_groups`와 `evidence_recall`은 지정한 필수 그룹의 누락과 충족률이며, 반환/잘림 evidence 수도 함께 기록한다. 전체 검색 recall이나 최종 판단의 정확도를 뜻하지 않는다. 입력 예시와 근거 관리 절차는 [[Ontology-Evidence-Lifecycle]]을 따른다.
+
 보고서에는 문서와 heading 적중, 본문 검사 대상 수와 적중, 처리 시간, 응답 크기, relation 수, 예산과 탐색 상한, 사례와 코드 hash를 남긴다. 기존 4개 사례에는 본문 조건이 없으므로 `body_asserted_cases`는 0이며 heading 일치만 검증한다. `--check`를 추가하면 사례 조건을 충족하지 못할 때 종료 코드 1로 끝난다. 생략하면 품질 관찰 결과를 출력하고, 잘못된 사례나 예산 위반 같은 실행 오류만 실패한다.
 
 현재 진단 확인 명령은 `npm run evaluate -- --cases evaluation/diagnostic-cases.json --check`다. 다도메인 표본의 역할, 재사용 여부와 전후 결과는 [[Development-Ontology-Evaluation#검색 순위와 관계 응답 보강]]을 따른다. 부분 문자열 적중은 답변 전체의 정확성이나 적용 판단의 성공을 뜻하지 않는다.
+
+필수 조건과 예외의 누락은 `npm run evaluate -- --cases evaluation/context-integrity-cases.json`으로 관찰한다. 이 진단은 현 조회기의 한계를 드러내는 표본이며 `--check`를 붙이면 누락이 있는 동안 실패한다. 짧은 검색 진단과 필수 근거 진단의 통과 여부를 합쳐 모든 조회가 성공했다고 표시하지 않는다.
 
 최초 독립 표본은 기대 문서 2/4, 기대 heading 1/4였다. 자세한 입력, 실행 결과와 해석은 [[Development-Ontology-Evaluation]]에 남긴다. 검색 결과가 부족하면 기술 용어 후보로 다시 조회하고, 파일명과 heading으로 scope를 좁히거나 직접 원문 검색으로 보완한다.
 
@@ -137,5 +143,6 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 - [[Development-Ontology]]
 - [[Development-Ontology-Contract]]
 - [[Development-Ontology-Evaluation]]
+- [[Ontology-Evidence-Lifecycle]]
 - [[Ontology-Context-Platform-Implementation]]
 - [[Ontology-Context-Platform-AI-Runtime]]

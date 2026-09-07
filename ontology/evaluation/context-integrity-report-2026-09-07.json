@@ -1,0 +1,185 @@
+{
+  "observed_at": "2026-09-07T13:57:18.731Z",
+  "source_revision": "6f80dbe387b73a56e8642bf2824e27706abb0e2a",
+  "fingerprint": "80fb21d5546547fa5707144eac460275c52f27b9a6e568942dc4b0e91cae08c0",
+  "query_code_hash": "633c7a04df68dd22a4eba9cb3c16627f45a8779ae3b31800b06793ef2fe1cfa9",
+  "evaluator_hash": "19022dfac9a73434a9b3e1336f775789db84becbe89c6479a4abedb6f16dd2b4",
+  "cases_hash": "b9dd5a81fa7a0be654dffdde312930fb71e738e0c090333d2025c89eb92a2cae",
+  "positive_cases": 3,
+  "document_hits": 3,
+  "heading_hits": 3,
+  "evidence_hits": 1,
+  "evidence_groups_total": 4,
+  "evidence_groups_hit": 2,
+  "evidence_recall": 0.5,
+  "body_asserted_cases": 3,
+  "body_hits": 1,
+  "passed_cases": 1,
+  "failed_cases": [
+    "role-and-authoring-status",
+    "source-link-and-current-implementation"
+  ],
+  "cases": [
+    {
+      "id": "role-and-authoring-status",
+      "query": "목표와 자료의 역할",
+      "scope": [
+        "ontology/Development-Ontology-Contract.md"
+      ],
+      "expected_evidence_groups": [
+        {
+          "id": "role-and-adoption-boundary",
+          "any_of": [
+            {
+              "path": "ontology/Development-Ontology-Contract.md",
+              "heading": "목표와 자료의 역할",
+              "all_text": [
+                "자료가 저장되어 있다는 사실만으로",
+                "기술 채택이나 현재 동작을 뜻하지 않는다"
+              ]
+            }
+          ]
+        }
+      ],
+      "max_bytes": 24000,
+      "gold_in_snapshot": true,
+      "document_hit": true,
+      "heading_hit": true,
+      "evidence_hit": false,
+      "body_hit": false,
+      "evidence_groups_total": 1,
+      "evidence_groups_hit": 0,
+      "missing_evidence_groups": [
+        "role-and-adoption-boundary"
+      ],
+      "evidence_recall": 0,
+      "forbidden_hits": [],
+      "out_of_scope_paths": [],
+      "index_valid": true,
+      "passed": false,
+      "elapsed_ms": 121,
+      "bytes": 4322,
+      "result_status": "ok",
+      "index_status": "unindexed_worktree",
+      "relations_returned": 0,
+      "evidence_units_returned": 2,
+      "truncated_evidence_units": 1,
+      "budget_exhausted": false,
+      "traversal_limit_reached": false,
+      "returned_paths": [
+        "ontology/Development-Ontology-Contract.md"
+      ]
+    },
+    {
+      "id": "source-link-and-current-implementation",
+      "query": "근거 확인과 채택의 경계",
+      "scope": [
+        "ontology/Development-Ontology-Contract.md"
+      ],
+      "expected_evidence_groups": [
+        {
+          "id": "link-is-not-adoption",
+          "any_of": [
+            {
+              "path": "ontology/Development-Ontology-Contract.md",
+              "heading": "근거 확인과 채택의 경계",
+              "all_text": [
+                "원문 연결이 존재한다는 뜻이다",
+                "현재 코드의 적합성을 증명하지 않는다"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "current-implementation-check",
+          "any_of": [
+            {
+              "path": "ontology/Development-Ontology-Contract.md",
+              "heading": "근거 확인과 채택의 경계",
+              "all_text": [
+                "현재 구현 사실은 현재 코드에서 확인하고",
+                "설계 의도는 문서에서 확인한다"
+              ]
+            }
+          ]
+        }
+      ],
+      "max_bytes": 24000,
+      "gold_in_snapshot": true,
+      "document_hit": true,
+      "heading_hit": true,
+      "evidence_hit": false,
+      "body_hit": false,
+      "evidence_groups_total": 2,
+      "evidence_groups_hit": 1,
+      "missing_evidence_groups": [
+        "current-implementation-check"
+      ],
+      "evidence_recall": 0.5,
+      "forbidden_hits": [],
+      "out_of_scope_paths": [],
+      "index_valid": true,
+      "passed": false,
+      "elapsed_ms": 114,
+      "bytes": 4352,
+      "result_status": "ok",
+      "index_status": "unindexed_worktree",
+      "relations_returned": 0,
+      "evidence_units_returned": 2,
+      "truncated_evidence_units": 1,
+      "budget_exhausted": false,
+      "traversal_limit_reached": false,
+      "returned_paths": [
+        "ontology/Development-Ontology-Contract.md"
+      ]
+    },
+    {
+      "id": "proposal-includes-cost-and-unknowns",
+      "query": "제안의 결과물",
+      "scope": [
+        "ontology/Development-Ontology-Contract.md"
+      ],
+      "expected_evidence_groups": [
+        {
+          "id": "cost-and-unknowns",
+          "any_of": [
+            {
+              "path": "ontology/Development-Ontology-Contract.md",
+              "heading": "제안의 결과물",
+              "all_text": [
+                "원문 근거, 추가 비용과 아직 확인하지 못한 조건",
+                "코드 적합성은 미확인으로 남긴다"
+              ]
+            }
+          ]
+        }
+      ],
+      "max_bytes": 24000,
+      "gold_in_snapshot": true,
+      "document_hit": true,
+      "heading_hit": true,
+      "evidence_hit": true,
+      "body_hit": true,
+      "evidence_groups_total": 1,
+      "evidence_groups_hit": 1,
+      "missing_evidence_groups": [],
+      "evidence_recall": 1,
+      "forbidden_hits": [],
+      "out_of_scope_paths": [],
+      "index_valid": true,
+      "passed": true,
+      "elapsed_ms": 93,
+      "bytes": 3434,
+      "result_status": "ok",
+      "index_status": "unindexed_worktree",
+      "relations_returned": 0,
+      "evidence_units_returned": 2,
+      "truncated_evidence_units": 0,
+      "budget_exhausted": false,
+      "traversal_limit_reached": false,
+      "returned_paths": [
+        "ontology/Development-Ontology-Contract.md"
+      ]
+    }
+  ]
+}

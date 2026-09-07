@@ -25,6 +25,7 @@ aliases: ["개발 판단 온톨로지", "Development Knowledge Ontology"]
 - [[Development-Ontology-Event-Publishing|DB 저장 이후 이벤트 발행과 후속 처리의 신뢰성]]
 - [[Development-Ontology-Evaluation|첫 검색 관찰, 검증 범위와 남은 작업]]
 - [[Ontology-Operations|빌드, 조회, MCP 실행과 런타임 검증]]
+- [[Ontology-Evidence-Lifecycle|근거의 시점과 예외 보존, 필수 근거 평가]]
 
 ## 실행 경로
 
