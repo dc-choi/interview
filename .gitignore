@@ -47,6 +47,9 @@ api.http
 # Playwright MCP runtime artifacts
 .playwright-mcp/
 
+# Obsidian MCP runtime journal (locks, transactions, trash)
+.obsidian-mcp/
+
 # Machine-local MCP config. Register with the CLI from this repository; use .mcp.json.example only as a manual fallback.
 .mcp.json
 ontology/node_modules/
