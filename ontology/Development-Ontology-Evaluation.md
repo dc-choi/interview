@@ -161,10 +161,26 @@ Semble `search`를 저장소 루트 대상으로 `content=docs`, `top_k=6`, `max
 
 현재 조회기의 1,400 byte 발췌 상한은 유지된다. 중요한 잘린 근거를 전체 원문으로 보완하는 절차를 두 `development-context` 스킬에 반영했으며, 실제 과업에서의 자동 사용과 최종 판단 품질은 아직 별도 검증이 필요하다. 이 진단의 `--check` 실패를 숨기거나 검색 누락을 해결한 것으로 기록하지 않는다.
 
+## MCP 후속 읽기로 필수 근거 회수
+
+같은 날 [[Ontology-Evidence-Read]]의 `context_read`를 구현하고, 새 SDK stdio 연결에서 `tools/list`, `context_lookup`과 후속 읽기를 실행했다. 원문은 revision `19df3d8159689f41ab8d5a2b5def14c864016cf8`에 고정했다. `evaluation/read-followup.mjs`는 위 세 진단을 재사용하며, 정답을 보고 후속 대상을 고르지 않고 반환된 근거 중 `truncated: true`인 항목을 모두 읽는다. 결과와 실행 코드/사례 hash는 `evaluation/evidence-read-report-2026-09-07.json`에 보존한다. 코드와 문서 수정은 미커밋이라 `unindexed_worktree`를 유지했다.
+
+| 항목 | 첫 조회 | 후속 읽기 후 |
+| --- | ---: | ---: |
+| 모든 조건을 충족한 질문 | 1/3 | 3/3 |
+| 충족한 필수 근거 그룹 | 2/4 | 4/4 |
+| 잘린 채 남은 근거 | 2개 | 0개 |
+
+첫 조회 3회의 JSON payload는 합계 12,108 byte였고, 후속 읽기 2회는 합계 6,821 byte였다. 각 응답은 요청 예산 24,000 byte 이내였다. 이 수치는 MCP envelope를 제외한 payload 크기이며, 여러 호출의 근거를 합친 평가 본문을 단일 MCP 응답으로 계산하지 않는다. 각 후속 원문의 ID/revision/hash, byte 연속성, 전체 길이와 SHA-256을 대조했다. 근거당 32페이지와 전체 읽기 응답 1MiB의 중단 조건에 걸린 사례는 없었다. 이 두 section은 각각 한 페이지에 담겼으며, 여러 페이지 연결은 별도 runtime fixture로 검증했다.
+
+재실행은 `ontology/`에서 `node src/cli.mjs build --committed-only --cache <저장소-밖-cache>`로 snapshot을 준비한 뒤 `node evaluation/read-followup.mjs --cache <같은-cache> --check`로 한다. `--cases`로 다른 사례 파일을 지정할 수 있다. 실패한 첫 조회 보고서는 그대로 유지하며 후속 읽기 결과로 덮지 않는다. 이 결과는 이미 알려진 진단의 근거 회수 회귀 검사다. 모델이 스스로 도구를 선택하는지, 일반적인 검색 적중이나 실제 작업의 판단 품질이 개선되는지는 확인하지 않았다.
+
 ## 관련 문서
 
+- [[Ontology-Retrieval-Quality|후속 자연어 표본, 목차 탐색의 별도 평가와 남은 누락]]
 - [[Development-Ontology|개발 판단 온톨로지]]
 - [[Development-Ontology-Contract|지식과 적용 판단의 계약]]
 - [[Development-Ontology-Event-Publishing|이벤트 발행 파일럿]]
 - [[Ontology-Operations|실행 절차와 runtime 검증]]
 - [[Ontology-Evidence-Lifecycle|근거 관리 인사이트와 필수 근거 평가]]
+- [[Ontology-Evidence-Read|조회한 근거를 같은 원문에서 끝까지 읽기]]

@@ -4,6 +4,8 @@ import * as z from 'zod/v4';
 
 import { ContextError, DEFAULT_SCOPES, normalizeScopes } from './core.mjs';
 import { lookup } from './query.mjs';
+import { readEvidence, READ_LIMITS } from './read-evidence.mjs';
+import { outlineEvidence, OUTLINE_LIMITS } from './outline.mjs';
 import { getRepoState } from './repository.mjs';
 import { buildSnapshot, defaultCacheDir, loadSnapshot } from './snapshot.mjs';
 
@@ -22,6 +24,21 @@ const inputSchema = z.object({
   max_bytes: z.number().int().positive().max(Number.MAX_SAFE_INTEGER).optional(),
 }).strict();
 
+const readInputSchema = z.object({
+  evidence_unit_id: z.string().min(1).max(READ_LIMITS.maxEvidenceIdBytes),
+  source_revision: z.string().regex(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/),
+  content_hash: z.string().regex(/^sha256:[a-f0-9]{64}$/),
+  offset_bytes: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER).optional(),
+  max_bytes: z.number().int().positive().max(Number.MAX_SAFE_INTEGER).optional(),
+}).strict();
+
+const outlineInputSchema = z.object({
+  document_id: z.string().min(1).max(OUTLINE_LIMITS.maxDocumentIdBytes),
+  source_revision: z.string().regex(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/),
+  offset_sections: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER).optional(),
+  max_bytes: z.number().int().positive().max(Number.MAX_SAFE_INTEGER).optional(),
+}).strict();
+
 /**
  * Creates the read-only MCP server. Repository and cache locations are supplied
  * by the host process, never by tool arguments.
@@ -32,7 +49,7 @@ export function createContextServer(options) {
 
   server.registerTool('context_lookup', {
     title: 'Lookup personal knowledge',
-    description: 'Retrieves evidence from this personal knowledge vault. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. Inspect source evidence and current project materials before applying it. Ontology design and operations documents describe the retrieval system and do not prove current implementation, adoption, or runtime behavior.',
+    description: 'Retrieves evidence from this personal knowledge vault. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. A weak_lexical_overlap matching assessment requires checking whether the returned material addresses the question. Use context_outline to find other sections of a relevant Document and context_read to read their full evidence. Inspect current project materials before applying knowledge. Ontology documents do not prove current implementation, adoption, or runtime behavior.',
     inputSchema,
     annotations: {
       readOnlyHint: true,
@@ -49,6 +66,44 @@ export function createContextServer(options) {
         allowlist: settings.allowlist,
       }, args, snapshot);
       return payloadResult(payload);
+    } catch (error) {
+      return errorResult(error);
+    }
+  });
+
+  server.registerTool('context_read', {
+    title: 'Read complete source evidence',
+    description: 'Reads a pinned evidence unit beyond the excerpt returned by context_lookup. Copy its id as evidence_unit_id, source_revision, and content_hash. Continue with pagination.next_offset_bytes until pagination.complete is true. Re-run context_lookup if the source revision or evidence hash no longer matches. Reading source text does not verify its current applicability.',
+    inputSchema: readInputSchema,
+    annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+  }, (args) => {
+    try {
+      assertArgumentSize(args, READ_LIMITS.maxArgumentBytes);
+      const { snapshot } = ensureFreshSnapshot(settings);
+      return payloadResult(readEvidence({
+        repo: settings.repo,
+        cacheDir: settings.cacheDir,
+        allowlist: settings.allowlist,
+      }, args, snapshot));
+    } catch (error) {
+      return errorResult(error);
+    }
+  });
+
+  server.registerTool('context_outline', {
+    title: 'List pinned document sections',
+    description: 'Lists every source-backed Section of a retrieved Document, including headings missed by lookup. Copy a Document id and the lookup index_sync revision. Continue with pagination.next_offset_sections until complete, then pass a relevant section id, source_revision, and content_hash to context_read. An outline is source navigation, not evidence that its contents answer the question.',
+    inputSchema: outlineInputSchema,
+    annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+  }, (args) => {
+    try {
+      assertArgumentSize(args, OUTLINE_LIMITS.maxArgumentBytes);
+      const { snapshot } = ensureFreshSnapshot(settings);
+      return payloadResult(outlineEvidence({
+        repo: settings.repo,
+        cacheDir: settings.cacheDir,
+        allowlist: settings.allowlist,
+      }, args, snapshot));
     } catch (error) {
       return errorResult(error);
     }
@@ -145,12 +200,12 @@ function normalizeSettings(options = {}) {
   };
 }
 
-function assertArgumentSize(args) {
+function assertArgumentSize(args, maximum = SERVER_LIMITS.maxArgumentBytes) {
   const size = Buffer.byteLength(JSON.stringify(args), 'utf8');
-  if (size > SERVER_LIMITS.maxArgumentBytes) {
-    throw new ContextError('invalid_arguments', `Tool arguments exceed ${SERVER_LIMITS.maxArgumentBytes} bytes.`);
+  if (size > maximum) {
+    throw new ContextError('invalid_arguments', `Tool arguments exceed ${maximum} bytes.`);
   }
-  if (Buffer.byteLength(args.query, 'utf8') > SERVER_LIMITS.maxQueryBytes) {
+  if (args.query !== undefined && Buffer.byteLength(args.query, 'utf8') > SERVER_LIMITS.maxQueryBytes) {
     throw new ContextError('query_too_large', `query exceeds ${SERVER_LIMITS.maxQueryBytes} bytes.`);
   }
   for (const scope of args.scope ?? []) {

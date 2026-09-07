@@ -1,0 +1,259 @@
+{
+  "observed_at": "2026-09-07T14:32:22.546Z",
+  "source_revision": "19df3d8159689f41ab8d5a2b5def14c864016cf8",
+  "fingerprint": "8979cdf431b8188e39f9c05c0b9ee478577ae4007521b662c0f0ba10b6b9b5cf",
+  "hashes": {
+    "query_code_hash": "633c7a04df68dd22a4eba9cb3c16627f45a8779ae3b31800b06793ef2fe1cfa9",
+    "read_code_hash": "19787a44a39a54146c3c7dccd79a131b19e90f11cce5e8ca5fec43c07f2e4aea",
+    "server_code_hash": "47542d17c2bd9788a4c06d3d2dbbfe975ff8ddda60b45a7a88d5833eef90ef8a",
+    "cli_code_hash": "f2e88b96a6a0cc44a62281fe4a9a2d86c0843e5d7cb2f994e573f9c82ab05eba",
+    "score_code_hash": "16e9a66ab81a7794bb042bd470f669577bb49a854175f1d59f8717baf2361eba",
+    "harness_code_hash": "04cbef005f5b44a8592a74461bbdabb76094d629c50264398fac4de299289021",
+    "cases_hash": "b9dd5a81fa7a0be654dffdde312930fb71e738e0c090333d2025c89eb92a2cae"
+  },
+  "limits": {
+    "max_pages_per_unit": 32,
+    "total_read_bytes_cap": 1048576,
+    "read_page_max_bytes": 24000
+  },
+  "policy": {
+    "reads_all_truncated_lookup_units": true,
+    "assembled_scoring_is_not_one_mcp_response": true,
+    "byte_metrics_exclude_mcp_envelope": true
+  },
+  "mcp_tools": [
+    "context_lookup",
+    "context_read"
+  ],
+  "totals": {
+    "lookup_calls": 3,
+    "lookup_bytes": 12108,
+    "read_calls": 2,
+    "read_bytes": 6821,
+    "elapsed_ms": 2169,
+    "truncated_evidence_units": 2,
+    "incomplete_cases": []
+  },
+  "before": {
+    "cases": 3,
+    "passed_cases": 1,
+    "document_hits": 3,
+    "heading_hits": 3,
+    "evidence_hits": 1,
+    "body_asserted_cases": 3,
+    "body_hits": 1,
+    "evidence_groups_total": 4,
+    "evidence_groups_hit": 2,
+    "evidence_recall": 0.5
+  },
+  "after": {
+    "cases": 3,
+    "passed_cases": 3,
+    "document_hits": 3,
+    "heading_hits": 3,
+    "evidence_hits": 3,
+    "body_asserted_cases": 3,
+    "body_hits": 3,
+    "evidence_groups_total": 4,
+    "evidence_groups_hit": 4,
+    "evidence_recall": 1
+  },
+  "failed_followup_cases": [],
+  "cases": [
+    {
+      "id": "role-and-authoring-status",
+      "query": "목표와 자료의 역할",
+      "scope": [
+        "ontology/Development-Ontology-Contract.md"
+      ],
+      "max_bytes": 24000,
+      "lookup": {
+        "bytes": 4322,
+        "result_status": "ok",
+        "index_status": "unindexed_worktree",
+        "evidence_units_returned": 2,
+        "truncated_evidence_units": 1,
+        "relations_returned": 0,
+        "budget_exhausted": false,
+        "traversal_limit_reached": false
+      },
+      "reads": {
+        "units_requested": 1,
+        "units_complete": 1,
+        "calls": 1,
+        "total_read_bytes": 2795,
+        "units": [
+          {
+            "id": "unit:interview-vault:ontology/Development-Ontology-Contract.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%A7%80%EC%8B%9D%EC%9D%98%20%EC%97%B0%EA%B2%B0%20%EA%B3%84%EC%95%BD/%EB%AA%A9%ED%91%9C%EC%99%80%20%EC%9E%90%EB%A3%8C%EC%9D%98%20%EC%97%AD%ED%95%A0#1",
+            "complete": true,
+            "pages": 1,
+            "errors": []
+          }
+        ]
+      },
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "role-and-adoption-boundary"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true
+      },
+      "after_truncated_evidence_units": 0,
+      "incomplete": false,
+      "errors": [],
+      "elapsed_ms": 781
+    },
+    {
+      "id": "source-link-and-current-implementation",
+      "query": "근거 확인과 채택의 경계",
+      "scope": [
+        "ontology/Development-Ontology-Contract.md"
+      ],
+      "max_bytes": 24000,
+      "lookup": {
+        "bytes": 4352,
+        "result_status": "ok",
+        "index_status": "unindexed_worktree",
+        "evidence_units_returned": 2,
+        "truncated_evidence_units": 1,
+        "relations_returned": 0,
+        "budget_exhausted": false,
+        "traversal_limit_reached": false
+      },
+      "reads": {
+        "units_requested": 1,
+        "units_complete": 1,
+        "calls": 1,
+        "total_read_bytes": 4026,
+        "units": [
+          {
+            "id": "unit:interview-vault:ontology/Development-Ontology-Contract.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%A7%80%EC%8B%9D%EC%9D%98%20%EC%97%B0%EA%B2%B0%20%EA%B3%84%EC%95%BD/%EA%B7%BC%EA%B1%B0%20%ED%99%95%EC%9D%B8%EA%B3%BC%20%EC%B1%84%ED%83%9D%EC%9D%98%20%EA%B2%BD%EA%B3%84#1",
+            "complete": true,
+            "pages": 1,
+            "errors": []
+          }
+        ]
+      },
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "current-implementation-check"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 2,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true
+      },
+      "after_truncated_evidence_units": 0,
+      "incomplete": false,
+      "errors": [],
+      "elapsed_ms": 489
+    },
+    {
+      "id": "proposal-includes-cost-and-unknowns",
+      "query": "제안의 결과물",
+      "scope": [
+        "ontology/Development-Ontology-Contract.md"
+      ],
+      "max_bytes": 24000,
+      "lookup": {
+        "bytes": 3434,
+        "result_status": "ok",
+        "index_status": "unindexed_worktree",
+        "evidence_units_returned": 2,
+        "truncated_evidence_units": 0,
+        "relations_returned": 0,
+        "budget_exhausted": false,
+        "traversal_limit_reached": false
+      },
+      "reads": {
+        "units_requested": 0,
+        "units_complete": 0,
+        "calls": 0,
+        "total_read_bytes": 0,
+        "units": []
+      },
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true
+      },
+      "after_truncated_evidence_units": 0,
+      "incomplete": false,
+      "errors": [],
+      "elapsed_ms": 256
+    }
+  ]
+}

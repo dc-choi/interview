@@ -1,0 +1,248 @@
+[
+  {
+    "id": "generalization-tech-stable-cursor-contract",
+    "kind": "synthetic_generalization",
+    "query": "게시글 목록을 최신순으로 더 보기에 같은 작성 시각이 자주 겹칩니다. 다음 화면에서 글이 빠지거나 중복되지 않게 하고, 클라이언트가 보낸 커서를 임의로 바꾸지 못하게 하려면 정렬값과 커서 계약을 어떻게 잡아야 할까요?",
+    "scope": ["tech"],
+    "expected_evidence_groups": [
+      {
+        "id": "tie-breaker-in-cursor-order",
+        "any_of": [
+          {
+            "path": "tech/database/rdbms/index-query/Pagination-Optimization.md",
+            "heading": "Keyset 또는 cursor 페이징",
+            "all_text": [
+              "`created_at`이 중복될 수 있으므로 고유한 `id`까지 cursor와 정렬에 넣는다."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cursor-integrity-contract",
+        "any_of": [
+          {
+            "path": "tech/database/rdbms/index-query/Pagination-Optimization.md",
+            "heading": "Keyset 또는 cursor 페이징",
+            "all_text": [
+              "cursor는 정렬 값, 방향과 필터 identity를 서버가 검증할 수 있게 서명하거나 opaque token으로 만든다."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "generalization-tech-payment-retry-identity",
+    "kind": "synthetic_generalization",
+    "query": "결제 요청이 응답 시간 초과로 끝나 앱이 다시 보냅니다. 같은 구매 시도만 재처리로 묶고, 우연히 같은 키로 다른 주문 내용을 보낸 경우는 막으려면 어떤 식별자 규칙과 검증이 필요할까요?",
+    "scope": ["tech"],
+    "expected_evidence_groups": [
+      {
+        "id": "reuse-key-only-for-retry",
+        "any_of": [
+          {
+            "path": "tech/messaging-data-pipeline/delivery-guarantees/Idempotency-Key.md",
+            "heading": "고유 식별자 종류",
+            "all_text": [
+              "재시도할 때만 같은 키를 재사용"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "reject-different-payload-for-reused-key",
+        "any_of": [
+          {
+            "path": "tech/messaging-data-pipeline/delivery-guarantees/Idempotency-Key.md",
+            "heading": "데이터베이스 (UNIQUE 제약)",
+            "all_text": [
+              "같은 키를 다시 받으면 `request_hash`까지 비교해 payload가 다르면 거부한다."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "generalization-tech-retry-storm-discipline",
+    "kind": "synthetic_generalization",
+    "query": "장애 난 외부 API를 수백 대의 서버가 동시에 재시도하면서 회복 뒤에도 요청이 다시 몰립니다. 왜 대기 시간을 조금씩 달리해야 하고, 여러 서비스 계층이 각각 재시도하지 않게 하려면 어떤 원칙을 적용해야 할까요?",
+    "scope": ["tech"],
+    "expected_evidence_groups": [
+      {
+        "id": "randomize-correlated-retries",
+        "any_of": [
+          {
+            "path": "tech/reliability/external-integration/Retry-Backoff-Jitter.md",
+            "heading": "왜 지터 없이는 안 되나 — 상관관계",
+            "all_text": [
+              "같은 백오프 공식을 쓰면 같은 순간에 다시 몰린다.",
+              "지터는 대기 시간에 랜덤을 섞어 이 물결을 시간축에 흩는다."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "single-retry-layer",
+        "any_of": [
+          {
+            "path": "tech/reliability/external-integration/Retry-Backoff-Jitter.md",
+            "heading": "재시도 규율 — 언제, 어디서, 몇 번",
+            "all_text": [
+              "단일 계층에서만 재시도",
+              "3의 5제곱, 243배 부하"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "generalization-tech-scarce-stock-concurrency",
+    "kind": "synthetic_generalization",
+    "query": "한정 수량 쿠폰을 여러 서버가 동시에 발급하는데, 재고를 읽은 뒤 따로 줄이는 방식에서 초과 발급이 생깁니다. 분산 락부터 붙이기 전에 어떤 데이터베이스 연산 가능성을 먼저 확인해야 할까요?",
+    "scope": ["tech"],
+    "expected_evidence_groups": [
+      {
+        "id": "prefer-single-statement-atomic-update",
+        "any_of": [
+          {
+            "path": "tech/database/rdbms/race-condition-patterns/Race-Condition-Patterns-Toolbox.md",
+            "heading": "도구 선택 플로차트",
+            "all_text": [
+              "이 작업이 DB UPDATE 한 줄로 원자화 가능?",
+              "YES → UPDATE ... WHERE condition 활용"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "generalization-biz-switching-interview-history",
+    "kind": "synthetic_generalization",
+    "query": "고객이 기존 도구를 버리고 새 서비스를 선택한 이유를 알아보려 합니다. 막연히 선호를 묻는 대신, 실제 의사결정 과정에서 무엇을 시간 순서로 물어봐야 할까요?",
+    "scope": ["biz"],
+    "expected_evidence_groups": [
+      {
+        "id": "investigate-real-switching-timeline",
+        "any_of": [
+          {
+            "path": "biz/product-strategy/User-Feedback.md",
+            "heading": "JTBD 인터뷰 기법",
+            "all_text": [
+              "과거의 실제 전환(switching) 경험을 타임라인으로 파헤친다.",
+              "최초 인식 → 수동 탐색 → 능동 탐색 → 전환 결정"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "generalization-biz-click-growth-or-redistribution",
+    "kind": "synthetic_generalization",
+    "query": "새 탭을 열었더니 클릭 수가 크게 올랐고 팀은 성공이라고 말합니다. 이 수치가 실제 성장인지 기존 화면에서 옮겨 온 클릭인지 판단하고 다음 결정을 내리려면 무엇을 확인해야 할까요?",
+    "scope": ["biz"],
+    "expected_evidence_groups": [
+      {
+        "id": "define-actionable-measurement",
+        "any_of": [
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "heading": "Vanity vs Actionable 지표",
+            "all_text": [
+              "분모, 코호트, 관찰 기간이나 다음 결정 없이 제시돼 행동을 바꾸기 어려운 지표.",
+              "정의, 비교 기준과 다음 결정이 연결된 지표."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "separate-increment-from-redistribution",
+        "any_of": [
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "heading": "허수지표의 메커니즘: 재배분 vs 증분",
+            "all_text": [
+              "신규 영역의 클릭이 늘어도 전체가 그대로면 발전이 아니라 유지다."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "generalization-econ-concentrated-sector-diversification",
+    "kind": "synthetic_generalization",
+    "query": "서로 다른 회사 주식을 스무 종목 샀지만 모두 같은 업종입니다. 종목 수만으로 위험이 줄었다고 보기 어려운 이유와, 시장이 흔들릴 때 추가로 경계할 점은 무엇일까요?",
+    "scope": ["econ"],
+    "expected_evidence_groups": [
+      {
+        "id": "correlation-and-risk-weight-drive-diversification",
+        "any_of": [
+          {
+            "path": "econ/investing/Asset-Allocation-Diversification.md",
+            "heading": "3. 분산투자의 원리 — 상관관계",
+            "all_text": [
+              "상관관계와 각 자산의 위험 비중",
+              "위기 때 상관관계가 높아질 수 있고",
+              "같은 업종 주식 스무 개는 공통 요인 노출 때문에 분산 효과가 약할 수 있다"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "generalization-fit-repeated-mistakes-feedback-loop",
+    "kind": "synthetic_generalization",
+    "query": "동료와 비교하며 공부 시간만 늘렸는데 같은 실수가 반복되고, 혼자 과제를 푸는 능력도 제자리이며 피드백 뒤 변화가 없습니다. 단순한 불안과 실제 점검 신호를 어떻게 구분하고 무엇부터 바꿔야 할까요?",
+    "scope": ["fit"],
+    "expected_evidence_groups": [
+      {
+        "id": "recognize-concrete-stagnation-signals",
+        "any_of": [
+          {
+            "path": "fit/growth/career-stages/mindset/Peer-Comparison-Anxiety.md",
+            "heading": "뒤처짐이 진짜 신호일 때",
+            "all_text": [
+              "같은 실수를 반복할 때",
+              "독립적으로 과제를 해결하는 능력이 오래 제자리일 때",
+              "피드백을 받아도 개선이 없을 때"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "change-method-and-ask-with-specific-blocker",
+        "any_of": [
+          {
+            "path": "fit/growth/career-stages/mindset/Peer-Comparison-Anxiety.md",
+            "heading": "뒤처짐이 진짜 신호일 때",
+            "all_text": [
+              "더 많이 하라가 아니라",
+              "구체적으로 무엇이 막히는지 파악해 사수나 팀리드에게 묻는다."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "generalization-empty-gibberish",
+    "kind": "synthetic_generalization",
+    "query": "qzxvnmprtjwfkblsyh",
+    "scope": ["tech", "biz", "econ", "fit"],
+    "expected_evidence": [],
+    "expected_empty": true
+  },
+  {
+    "id": "generalization-empty-fictional-device",
+    "kind": "synthetic_generalization",
+    "query": "정원 요정의 수정 나침반을 보름달 아래에서 보정해 달빛 농도를 조절하는 방법은 무엇인가요?",
+    "scope": ["tech", "biz", "econ", "fit"],
+    "expected_evidence": [],
+    "expected_empty": true
+  }
+]

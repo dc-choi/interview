@@ -50,19 +50,20 @@ async function close(connection) {
   await connection.transport.close();
 }
 
-test('MCP server lists one read-only tool and returns structured source-backed data', async (t) => {
+test('MCP server lists read-only lookup and evidence tools and returns structured data', async (t) => {
   const item = await fixture();
   t.after(() => rm(item.root, { recursive: true, force: true }));
   const connection = await connect(['--repo', item.repo, '--cache', item.cache, '--allow', 'tech']);
   t.after(() => close(connection));
 
   const listed = await connection.client.request({ method: 'tools/list', params: {} }, ListToolsResultSchema);
-  assert.equal(listed.tools.length, 1);
-  assert.equal(listed.tools[0].name, 'context_lookup');
-  assert.equal(listed.tools[0].annotations.readOnlyHint, true);
-  assert.equal(listed.tools[0].annotations.destructiveHint, false);
-  assert.equal(listed.tools[0].annotations.openWorldHint, false);
-  assert.equal(listed.tools[0].inputSchema.additionalProperties, false);
+  assert.deepEqual(listed.tools.map((tool) => tool.name).sort(), ['context_lookup', 'context_outline', 'context_read']);
+  for (const tool of listed.tools) {
+    assert.equal(tool.annotations.readOnlyHint, true);
+    assert.equal(tool.annotations.destructiveHint, false);
+    assert.equal(tool.annotations.openWorldHint, false);
+    assert.equal(tool.inputSchema.additionalProperties, false);
+  }
 
   const result = await connection.client.request({
     method: 'tools/call',
@@ -74,17 +75,20 @@ test('MCP server lists one read-only tool and returns structured source-backed d
   assert.ok(result.structuredContent.evidence_units.length > 0);
 });
 
-test('MCP schema rejects unexpected tool arguments', async (t) => {
+test('MCP rejects unexpected arguments and blank lookup queries', async (t) => {
   const item = await fixture();
   t.after(() => rm(item.root, { recursive: true, force: true }));
   const connection = await connect(['--repo', item.repo, '--cache', item.cache]);
   t.after(() => close(connection));
 
-  const result = await connection.client.request({
-    method: 'tools/call',
-    params: { name: 'context_lookup', arguments: { query: 'outbox', repo: '/cannot-override' } },
-  }, CallToolResultSchema);
-  assert.equal(result.isError, true);
+  for (const args of [{ query: 'outbox', repo: '/cannot-override' }, { query: ' \t\n' }]) {
+    const result = await connection.client.request({
+      method: 'tools/call',
+      params: { name: 'context_lookup', arguments: args },
+    }, CallToolResultSchema);
+    assert.equal(result.isError, true);
+    if (!args.repo) assert.equal(result.structuredContent.error.code, 'invalid_query');
+  }
 });
 
 test('committed-only MCP server can build and serve HEAD from a dirty worktree', async (t) => {

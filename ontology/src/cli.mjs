@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 import { ContextError } from './core.mjs';
 import { lookup } from './query.mjs';
+import { readEvidence } from './read-evidence.mjs';
+import { outlineEvidence } from './outline.mjs';
 import { getRepoState } from './repository.mjs';
 import { buildSnapshot, defaultCacheDir, loadSnapshot } from './snapshot.mjs';
 import { DEFAULT_SCOPES, ensureFreshSnapshot, serveMcp, toErrorPayload } from './server.mjs';
@@ -31,7 +33,7 @@ export async function main(argv = process.argv.slice(2)) {
 export function parseArguments(argv) {
   const [command, ...rest] = argv;
   if (!command || command === '--help' || command === '-h') return { help: true };
-  if (!['build', 'lookup', 'serve', 'status'].includes(command)) {
+  if (!['build', 'lookup', 'read', 'outline', 'serve', 'status'].includes(command)) {
     throw new ContextError('invalid_command', `Unknown command: ${command}`);
   }
 
@@ -45,6 +47,12 @@ export function parseArguments(argv) {
     query: undefined,
     depth: undefined,
     maxBytes: undefined,
+    evidenceUnitId: undefined,
+    sourceRevision: undefined,
+    contentHash: undefined,
+    offsetBytes: undefined,
+    documentId: undefined,
+    offsetSections: undefined,
   };
   const seen = new Set();
   for (let index = 0; index < rest.length; index += 1) {
@@ -59,7 +67,8 @@ export function parseArguments(argv) {
       options.committedOnly = true;
       continue;
     }
-    if (!['--repo', '--cache', '--scope', '--allow', '--query', '--depth', '--max-bytes'].includes(flag)) {
+    if (!['--repo', '--cache', '--scope', '--allow', '--query', '--depth', '--max-bytes',
+      '--evidence-unit-id', '--source-revision', '--content-hash', '--offset-bytes', '--document-id', '--offset-sections'].includes(flag)) {
       throw new ContextError('invalid_arguments', `Unknown argument: ${flag}`);
     }
     const value = rest[index + 1];
@@ -82,6 +91,12 @@ export function parseArguments(argv) {
     if (flag === '--query') options.query = value;
     if (flag === '--depth') options.depth = parseInteger('--depth', value);
     if (flag === '--max-bytes') options.maxBytes = parseInteger('--max-bytes', value);
+    if (flag === '--evidence-unit-id') options.evidenceUnitId = value;
+    if (flag === '--source-revision') options.sourceRevision = value;
+    if (flag === '--content-hash') options.contentHash = value;
+    if (flag === '--offset-bytes') options.offsetBytes = parseInteger('--offset-bytes', value);
+    if (flag === '--document-id') options.documentId = value;
+    if (flag === '--offset-sections') options.offsetSections = parseInteger('--offset-sections', value);
   }
 
   if (options.cacheDir && isWithin(options.repo, options.cacheDir)) {
@@ -96,8 +111,30 @@ export function parseArguments(argv) {
   if (options.maxBytes !== undefined && options.maxBytes <= 0) {
     throw new ContextError('invalid_arguments', '--max-bytes must be a positive integer.');
   }
-  if (options.command !== 'lookup' && (options.query !== undefined || options.depth !== undefined || options.maxBytes !== undefined)) {
-    throw new ContextError('invalid_arguments', '--query, --depth, and --max-bytes are only valid for lookup.');
+  if (options.command !== 'lookup' && (options.query !== undefined || options.depth !== undefined)) {
+    throw new ContextError('invalid_arguments', '--query and --depth are only valid for lookup.');
+  }
+  if (!['lookup', 'read', 'outline'].includes(options.command) && options.maxBytes !== undefined) {
+    throw new ContextError('invalid_arguments', '--max-bytes is only valid for lookup, read, or outline.');
+  }
+  if (options.command === 'read') {
+    if (!options.evidenceUnitId || !options.sourceRevision || !options.contentHash) {
+      throw new ContextError('invalid_arguments', 'read requires --evidence-unit-id, --source-revision, and --content-hash.');
+    }
+    if (options.scopes.length) throw new ContextError('invalid_arguments', 'read uses --allow, not --scope.');
+  } else if (options.evidenceUnitId !== undefined || options.contentHash !== undefined || options.offsetBytes !== undefined) {
+    throw new ContextError('invalid_arguments', 'Evidence identity and --offset-bytes are only valid for read.');
+  }
+  if (options.command === 'outline') {
+    if (!options.documentId || !options.sourceRevision) {
+      throw new ContextError('invalid_arguments', 'outline requires --document-id and --source-revision.');
+    }
+    if (options.scopes.length) throw new ContextError('invalid_arguments', 'outline uses --allow, not --scope.');
+  } else if (options.documentId !== undefined || options.offsetSections !== undefined) {
+    throw new ContextError('invalid_arguments', '--document-id and --offset-sections are only valid for outline.');
+  }
+  if (!['read', 'outline'].includes(options.command) && options.sourceRevision !== undefined) {
+    throw new ContextError('invalid_arguments', '--source-revision is only valid for read or outline.');
   }
   if (options.command === 'status' && (options.scopes.length || options.allowlist.length || options.committedOnly)) {
     throw new ContextError('invalid_arguments', 'status does not accept --scope, --allow, or --committed-only.');
@@ -128,7 +165,7 @@ export async function execute(options) {
     });
     return summary;
   }
-  if (options.command === 'lookup') {
+  if (['lookup', 'read', 'outline'].includes(options.command)) {
     const { snapshot } = ensureFreshSnapshot({
       repo: options.repo,
       cacheDir: options.cacheDir,
@@ -136,10 +173,27 @@ export async function execute(options) {
       allowlist: options.allowlist,
       committedOnly: options.committedOnly,
     });
+    const readOptions = { repo: options.repo, cacheDir: options.cacheDir, allowlist: options.allowlist };
+    if (options.command === 'outline') {
+      const args = { document_id: options.documentId, source_revision: options.sourceRevision };
+      if (options.offsetSections !== undefined) args.offset_sections = options.offsetSections;
+      if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
+      return outlineEvidence(readOptions, args, snapshot);
+    }
+    if (options.command === 'read') {
+      const args = {
+        evidence_unit_id: options.evidenceUnitId,
+        source_revision: options.sourceRevision,
+        content_hash: options.contentHash,
+      };
+      if (options.offsetBytes !== undefined) args.offset_bytes = options.offsetBytes;
+      if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
+      return readEvidence(readOptions, args, snapshot);
+    }
     const args = { query: options.query, scope: options.scopes };
     if (options.depth !== undefined) args.depth = options.depth;
     if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
-    return lookup({ repo: options.repo, cacheDir: options.cacheDir, allowlist: options.allowlist }, args, snapshot);
+    return lookup(readOptions, args, snapshot);
   }
   if (options.command === 'status') return status(options);
   if (options.command === 'serve') {
@@ -189,13 +243,17 @@ function isMissingSnapshot(error) {
 
 export function usage() {
   return [
-    'Usage: context-ontology <build|lookup|serve|status> [options]',
+    'Usage: context-ontology <build|lookup|read|outline|serve|status> [options]',
     '  --repo <absolute-path>       Vault repository, defaults to this repository',
     '  --cache <absolute-path>      Cache outside the repository',
     `  --scope <path>               Repeatable build or lookup scope, defaults to ${DEFAULT_SCOPES.join(', ')}`,
-    `  --allow <path>               Repeatable lookup or server allowlist, defaults to ${DEFAULT_SCOPES.join(', ')}`,
+    `  --allow <path>               Repeatable lookup, read, outline, or server allowlist, defaults to ${DEFAULT_SCOPES.join(', ')}`,
     '  --committed-only              Build or serve the current HEAD when worktree is dirty',
     '  lookup requires --query <text>; accepts --depth <1|2> and --max-bytes <integer>',
+    '  read requires --evidence-unit-id <id> --source-revision <commit> --content-hash <sha256:hash>',
+    '  read accepts --offset-bytes <unit-relative-byte> and --max-bytes <integer>',
+    '  outline requires --document-id <id> --source-revision <commit>',
+    '  outline accepts --offset-sections <section-index> and --max-bytes <integer>',
   ].join('\n');
 }
 

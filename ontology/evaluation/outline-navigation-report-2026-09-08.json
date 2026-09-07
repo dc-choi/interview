@@ -1,0 +1,1181 @@
+{
+  "observed_at": "2026-09-07T15:10:48.732Z",
+  "source_revision": "19df3d8159689f41ab8d5a2b5def14c864016cf8",
+  "fingerprint": "8979cdf431b8188e39f9c05c0b9ee478577ae4007521b662c0f0ba10b6b9b5cf",
+  "hashes": {
+    "query_code_hash": "a39ed83d44d4b8e718943faf1ef07a7070b1e9f9d0d4833f90a966819c9d9628",
+    "outline_code_hash": "ca0ee33838a734aae42c76bc1acf98629e89f9059415cc3199f95d18c4601e4c",
+    "read_code_hash": "19787a44a39a54146c3c7dccd79a131b19e90f11cce5e8ca5fec43c07f2e4aea",
+    "server_code_hash": "6747021a56e267b0c5afec353a2277b9258347a483d2cb39d175af8f1ea02ff6",
+    "cli_code_hash": "2fa2cdb815d2c9df725ad8ec3fc8972f3c0c72cdb50b8459cf61ae3e4c08c521",
+    "score_code_hash": "16e9a66ab81a7794bb042bd470f669577bb49a854175f1d59f8717baf2361eba",
+    "harness_code_hash": "57abf00295fe3466e361ed1b4a618367f10a181ea3fe200cda372d7490c99a9e"
+  },
+  "cases_hash": "4e5761f129542615c9a0584d17194af31f3411df61c7e506401cae01dadd7a86",
+  "limits": {
+    "max_pages_per_document": 32,
+    "total_outline_response_bytes_cap": 2097152,
+    "page_max_bytes": 24000
+  },
+  "mcp_tools": [
+    "context_lookup",
+    "context_outline",
+    "context_read"
+  ],
+  "check_mode": "protocol_only",
+  "policy": {
+    "select_all_returned_documents": true,
+    "navigation_has_body_evidence": false,
+    "byte_metrics_exclude_mcp_envelope": true
+  },
+  "totals": {
+    "lookup_calls": 10,
+    "lookup_bytes": 212960,
+    "outline_calls": 77,
+    "outline_bytes": 766898,
+    "elapsed_ms": 23158,
+    "incomplete_cases": []
+  },
+  "before": {
+    "complete_case_passes": 2,
+    "body_hits": 1
+  },
+  "after_heading": {
+    "cases": 8,
+    "evaluated_cases": 8,
+    "document_hits": 5,
+    "heading_hits": 5,
+    "heading_groups_total": 13,
+    "heading_groups_hit": 9,
+    "heading_recall": 0.6923076923076923
+  },
+  "cases": [
+    {
+      "id": "generalization-tech-stable-cursor-contract",
+      "query": "게시글 목록을 최신순으로 더 보기에 같은 작성 시각이 자주 겹칩니다. 다음 화면에서 글이 빠지거나 중복되지 않게 하고, 클라이언트가 보낸 커서를 임의로 바꾸지 못하게 하려면 정렬값과 커서 계약을 어떻게 잡아야 할까요?",
+      "scope": [
+        "tech"
+      ],
+      "max_bytes": 24000,
+      "expected_empty": false,
+      "navigation": {
+        "documents": [
+          {
+            "id": "document:interview-vault:tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Ranking-Reranking.md",
+            "pages": 1,
+            "sections": 16,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/web/realtime/Server-Sent-Events.md",
+            "pages": 1,
+            "sections": 16,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/database/rdbms/index-query/Pagination-Optimization.md",
+            "pages": 1,
+            "sections": 11,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/senior/decision-making/execution-leadership/Incident-Commander.md",
+            "pages": 1,
+            "sections": 12,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/architecture-design/principles/Tidy-First.md",
+            "pages": 1,
+            "sections": 24,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Eligibility-Availability.md",
+            "pages": 1,
+            "sections": 10,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Feedback-Data.md",
+            "pages": 1,
+            "sections": 21,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/database/nosql/opensearch/query/OpenSearch-Relevance-Tuning.md",
+            "pages": 1,
+            "sections": 15,
+            "complete": true
+          }
+        ],
+        "skipped": false,
+        "skip_reason": null,
+        "sections": 125
+      },
+      "navigation_had_body_evidence": false,
+      "errors": [],
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "tie-breaker-in-cursor-order",
+          "cursor-integrity-contract"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false
+      },
+      "before_heading": {
+        "document_hit": true,
+        "heading_hit": false,
+        "heading_groups_total": 2,
+        "heading_groups_hit": 0,
+        "heading_recall": 0
+      },
+      "lookup": {
+        "matching": {
+          "query_term_count": 26,
+          "max_section_term_matches": 6,
+          "assessment": "lexical_overlap"
+        },
+        "index_status": "unindexed_worktree",
+        "budget_exhausted": true,
+        "traversal_limit_reached": true
+      },
+      "after_heading": {
+        "document_hit": true,
+        "heading_hit": true,
+        "heading_groups_total": 2,
+        "heading_groups_hit": 2,
+        "heading_recall": 1
+      },
+      "calls": {
+        "lookup": 1,
+        "outline": 8
+      },
+      "bytes": {
+        "lookup": 23451,
+        "outline": 91064
+      },
+      "incomplete": false,
+      "elapsed_ms": 2526
+    },
+    {
+      "id": "generalization-tech-payment-retry-identity",
+      "query": "결제 요청이 응답 시간 초과로 끝나 앱이 다시 보냅니다. 같은 구매 시도만 재처리로 묶고, 우연히 같은 키로 다른 주문 내용을 보낸 경우는 막으려면 어떤 식별자 규칙과 검증이 필요할까요?",
+      "scope": [
+        "tech"
+      ],
+      "max_bytes": 24000,
+      "expected_empty": false,
+      "navigation": {
+        "documents": [
+          {
+            "id": "document:interview-vault:tech/messaging-data-pipeline/delivery-guarantees/Idempotency-Key.md",
+            "pages": 1,
+            "sections": 11,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/architecture-design/data-model/Ecommerce-Shopping-Mall-ERD.md",
+            "pages": 1,
+            "sections": 18,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/observability/logging/Correlation-ID.md",
+            "pages": 1,
+            "sections": 7,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/reliability/external-integration/Payment-Reconciliation-Worker.md",
+            "pages": 1,
+            "sections": 13,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/security/auth/FIDO-WebAuthn.md",
+            "pages": 1,
+            "sections": 13,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/reliability/Graceful-Shutdown.md",
+            "pages": 1,
+            "sections": 14,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/messaging-data-pipeline/delivery-guarantees/At-Least-Once.md",
+            "pages": 1,
+            "sections": 10,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/architecture-design/ddd-hexagonal/Distributed-Transaction-Strategies.md",
+            "pages": 1,
+            "sections": 15,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/reliability/Idempotent-Consumer.md",
+            "pages": 1,
+            "sections": 17,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/messaging-data-pipeline/patterns/Event-Driven-Patterns.md",
+            "pages": 1,
+            "sections": 25,
+            "complete": true
+          }
+        ],
+        "skipped": false,
+        "skip_reason": null,
+        "sections": 143
+      },
+      "navigation_had_body_evidence": false,
+      "errors": [],
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "reject-different-payload-for-reused-key"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false
+      },
+      "before_heading": {
+        "document_hit": true,
+        "heading_hit": false,
+        "heading_groups_total": 2,
+        "heading_groups_hit": 1,
+        "heading_recall": 0.5
+      },
+      "lookup": {
+        "matching": {
+          "query_term_count": 26,
+          "max_section_term_matches": 8,
+          "assessment": "lexical_overlap"
+        },
+        "index_status": "unindexed_worktree",
+        "budget_exhausted": true,
+        "traversal_limit_reached": true
+      },
+      "after_heading": {
+        "document_hit": true,
+        "heading_hit": true,
+        "heading_groups_total": 2,
+        "heading_groups_hit": 2,
+        "heading_recall": 1
+      },
+      "calls": {
+        "lookup": 1,
+        "outline": 10
+      },
+      "bytes": {
+        "lookup": 23258,
+        "outline": 97898
+      },
+      "incomplete": false,
+      "elapsed_ms": 3158
+    },
+    {
+      "id": "generalization-tech-retry-storm-discipline",
+      "query": "장애 난 외부 API를 수백 대의 서버가 동시에 재시도하면서 회복 뒤에도 요청이 다시 몰립니다. 왜 대기 시간을 조금씩 달리해야 하고, 여러 서비스 계층이 각각 재시도하지 않게 하려면 어떤 원칙을 적용해야 할까요?",
+      "scope": [
+        "tech"
+      ],
+      "max_bytes": 24000,
+      "expected_empty": false,
+      "navigation": {
+        "documents": [
+          {
+            "id": "document:interview-vault:tech/reliability/external-integration/External-Service-Resilience.md",
+            "pages": 1,
+            "sections": 25,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/ai-engineering/tools/harness/Production-Agent-Architecture.md",
+            "pages": 1,
+            "sections": 18,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/messaging-data-pipeline/brokers/sqs/SQS-Worker-Reliability.md",
+            "pages": 1,
+            "sections": 12,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/performance-scalability/capacity/Thread-Pool-Sizing.md",
+            "pages": 1,
+            "sections": 16,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/reliability/external-integration/Payment-System-Principles.md",
+            "pages": 1,
+            "sections": 25,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/database/rdbms/race-condition-patterns/Race-Condition-Patterns-Process.md",
+            "pages": 1,
+            "sections": 5,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/architecture-design/evolution/microservice/Microservice-Edge-and-Composition-Patterns.md",
+            "pages": 1,
+            "sections": 11,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/messaging-data-pipeline/patterns/Backfill-Resource-Isolation.md",
+            "pages": 1,
+            "sections": 13,
+            "complete": true
+          }
+        ],
+        "skipped": false,
+        "skip_reason": null,
+        "sections": 125
+      },
+      "navigation_had_body_evidence": false,
+      "errors": [],
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "randomize-correlated-retries",
+          "single-retry-layer"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false
+      },
+      "before_heading": {
+        "document_hit": false,
+        "heading_hit": false,
+        "heading_groups_total": 2,
+        "heading_groups_hit": 0,
+        "heading_recall": 0
+      },
+      "lookup": {
+        "matching": {
+          "query_term_count": 28,
+          "max_section_term_matches": 10,
+          "assessment": "lexical_overlap"
+        },
+        "index_status": "unindexed_worktree",
+        "budget_exhausted": true,
+        "traversal_limit_reached": true
+      },
+      "after_heading": {
+        "document_hit": false,
+        "heading_hit": false,
+        "heading_groups_total": 2,
+        "heading_groups_hit": 0,
+        "heading_recall": 0
+      },
+      "calls": {
+        "lookup": 1,
+        "outline": 8
+      },
+      "bytes": {
+        "lookup": 23081,
+        "outline": 95471
+      },
+      "incomplete": false,
+      "elapsed_ms": 2624
+    },
+    {
+      "id": "generalization-tech-scarce-stock-concurrency",
+      "query": "한정 수량 쿠폰을 여러 서버가 동시에 발급하는데, 재고를 읽은 뒤 따로 줄이는 방식에서 초과 발급이 생깁니다. 분산 락부터 붙이기 전에 어떤 데이터베이스 연산 가능성을 먼저 확인해야 할까요?",
+      "scope": [
+        "tech"
+      ],
+      "max_bytes": 24000,
+      "expected_empty": false,
+      "navigation": {
+        "documents": [
+          {
+            "id": "document:interview-vault:tech/database/rdbms/race-condition-patterns/Race-Condition-Patterns-DB-Distributed.md",
+            "pages": 1,
+            "sections": 12,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/performance-scalability/traffic-patterns/First-Come-Coupon-Patterns.md",
+            "pages": 1,
+            "sections": 21,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/architecture-design/data-model/Ecommerce-Shopping-Mall-ERD.md",
+            "pages": 1,
+            "sections": 18,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/performance-scalability/traffic-patterns/Virtual-Waiting-Room-Architecture.md",
+            "pages": 1,
+            "sections": 15,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/database/in-memory/redis/app-patterns/Redis-Atomic-Operations.md",
+            "pages": 1,
+            "sections": 18,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/testing-quality/TDD-BDD.md",
+            "pages": 1,
+            "sections": 18,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/database/rdbms/transactions-locks/Lock.md",
+            "pages": 1,
+            "sections": 18,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/database/rdbms/mysql/MySQL-Gap-Lock.md",
+            "pages": 1,
+            "sections": 21,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/database/rdbms/transactions-locks/Isolation-Level.md",
+            "pages": 1,
+            "sections": 17,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/database/rdbms/race-condition-patterns/Race-Condition-Patterns.md",
+            "pages": 1,
+            "sections": 6,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/reliability/external-integration/Retry-Backoff-Jitter.md",
+            "pages": 1,
+            "sections": 11,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:tech/database/in-memory/Distributed-Lock.md",
+            "pages": 1,
+            "sections": 19,
+            "complete": true
+          }
+        ],
+        "skipped": false,
+        "skip_reason": null,
+        "sections": 194
+      },
+      "navigation_had_body_evidence": false,
+      "errors": [],
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "prefer-single-statement-atomic-update"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false
+      },
+      "before_heading": {
+        "document_hit": false,
+        "heading_hit": false,
+        "heading_groups_total": 1,
+        "heading_groups_hit": 0,
+        "heading_recall": 0
+      },
+      "lookup": {
+        "matching": {
+          "query_term_count": 26,
+          "max_section_term_matches": 11,
+          "assessment": "lexical_overlap"
+        },
+        "index_status": "unindexed_worktree",
+        "budget_exhausted": true,
+        "traversal_limit_reached": true
+      },
+      "after_heading": {
+        "document_hit": false,
+        "heading_hit": false,
+        "heading_groups_total": 1,
+        "heading_groups_hit": 0,
+        "heading_recall": 0
+      },
+      "calls": {
+        "lookup": 1,
+        "outline": 12
+      },
+      "bytes": {
+        "lookup": 23839,
+        "outline": 131486
+      },
+      "incomplete": false,
+      "elapsed_ms": 3425
+    },
+    {
+      "id": "generalization-biz-switching-interview-history",
+      "query": "고객이 기존 도구를 버리고 새 서비스를 선택한 이유를 알아보려 합니다. 막연히 선호를 묻는 대신, 실제 의사결정 과정에서 무엇을 시간 순서로 물어봐야 할까요?",
+      "scope": [
+        "biz"
+      ],
+      "max_bytes": 24000,
+      "expected_empty": false,
+      "navigation": {
+        "documents": [
+          {
+            "id": "document:interview-vault:biz/market/Competitive-Analysis.md",
+            "pages": 1,
+            "sections": 14,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/product-strategy/expansion-strategy/Bootstrapped-Single-Product-Growth.md",
+            "pages": 1,
+            "sections": 17,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/product-strategy/expansion-strategy/Scaling-and-Hiring.md",
+            "pages": 1,
+            "sections": 15,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/commerce/core-domains/Commerce-Pricing.md",
+            "pages": 1,
+            "sections": 20,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/product-strategy/Solo-Product-Market-Validation.md",
+            "pages": 1,
+            "sections": 14,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/product-strategy/expansion-strategy/Category-Expansion.md",
+            "pages": 1,
+            "sections": 14,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/product-strategy/service-design/Service-Design.md",
+            "pages": 1,
+            "sections": 4,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/market/Market-Analysis.md",
+            "pages": 1,
+            "sections": 13,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/commerce/Commerce-Revenue-Formula.md",
+            "pages": 1,
+            "sections": 9,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/product-strategy/expansion-strategy/Platform-Power.md",
+            "pages": 1,
+            "sections": 10,
+            "complete": true
+          }
+        ],
+        "skipped": false,
+        "skip_reason": null,
+        "sections": 130
+      },
+      "navigation_had_body_evidence": false,
+      "errors": [],
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "investigate-real-switching-timeline"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false
+      },
+      "before_heading": {
+        "document_hit": false,
+        "heading_hit": false,
+        "heading_groups_total": 1,
+        "heading_groups_hit": 0,
+        "heading_recall": 0
+      },
+      "lookup": {
+        "matching": {
+          "query_term_count": 20,
+          "max_section_term_matches": 6,
+          "assessment": "lexical_overlap"
+        },
+        "index_status": "unindexed_worktree",
+        "budget_exhausted": true,
+        "traversal_limit_reached": true
+      },
+      "after_heading": {
+        "document_hit": false,
+        "heading_hit": false,
+        "heading_groups_total": 1,
+        "heading_groups_hit": 0,
+        "heading_recall": 0
+      },
+      "calls": {
+        "lookup": 1,
+        "outline": 10
+      },
+      "bytes": {
+        "lookup": 23729,
+        "outline": 91922
+      },
+      "incomplete": false,
+      "elapsed_ms": 2434
+    },
+    {
+      "id": "generalization-biz-click-growth-or-redistribution",
+      "query": "새 탭을 열었더니 클릭 수가 크게 올랐고 팀은 성공이라고 말합니다. 이 수치가 실제 성장인지 기존 화면에서 옮겨 온 클릭인지 판단하고 다음 결정을 내리려면 무엇을 확인해야 할까요?",
+      "scope": [
+        "biz"
+      ],
+      "max_bytes": 24000,
+      "expected_empty": false,
+      "navigation": {
+        "documents": [
+          {
+            "id": "document:interview-vault:biz/measurement-and-risk/Metrics-Framework.md",
+            "pages": 1,
+            "sections": 12,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/product-strategy/PRD-Writing.md",
+            "pages": 1,
+            "sections": 19,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/product-strategy/expansion-strategy/Bootstrapped-Single-Product-Growth.md",
+            "pages": 1,
+            "sections": 17,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/product-strategy/service-design/Service-Design-Principles.md",
+            "pages": 1,
+            "sections": 12,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/product-strategy/expansion-strategy/Scaling-and-Hiring.md",
+            "pages": 1,
+            "sections": 15,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/commerce/core-domains/Commerce-Order.md",
+            "pages": 1,
+            "sections": 21,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/commerce/Commerce-Revenue-Formula.md",
+            "pages": 1,
+            "sections": 9,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/product-strategy/PMF-Funnel.md",
+            "pages": 1,
+            "sections": 14,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/measurement-and-risk/측정과리스크(MeasurementAndRisk).md",
+            "pages": 1,
+            "sections": 3,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:biz/business-model/Pricing-Strategy.md",
+            "pages": 1,
+            "sections": 10,
+            "complete": true
+          }
+        ],
+        "skipped": false,
+        "skip_reason": null,
+        "sections": 132
+      },
+      "navigation_had_body_evidence": false,
+      "errors": [],
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "define-actionable-measurement"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false
+      },
+      "before_heading": {
+        "document_hit": true,
+        "heading_hit": false,
+        "heading_groups_total": 2,
+        "heading_groups_hit": 1,
+        "heading_recall": 0.5
+      },
+      "lookup": {
+        "matching": {
+          "query_term_count": 22,
+          "max_section_term_matches": 5,
+          "assessment": "lexical_overlap"
+        },
+        "index_status": "unindexed_worktree",
+        "budget_exhausted": true,
+        "traversal_limit_reached": true
+      },
+      "after_heading": {
+        "document_hit": true,
+        "heading_hit": true,
+        "heading_groups_total": 2,
+        "heading_groups_hit": 2,
+        "heading_recall": 1
+      },
+      "calls": {
+        "lookup": 1,
+        "outline": 10
+      },
+      "bytes": {
+        "lookup": 23923,
+        "outline": 90964
+      },
+      "incomplete": false,
+      "elapsed_ms": 2438
+    },
+    {
+      "id": "generalization-econ-concentrated-sector-diversification",
+      "query": "서로 다른 회사 주식을 스무 종목 샀지만 모두 같은 업종입니다. 종목 수만으로 위험이 줄었다고 보기 어려운 이유와, 시장이 흔들릴 때 추가로 경계할 점은 무엇일까요?",
+      "scope": [
+        "econ"
+      ],
+      "max_bytes": 24000,
+      "expected_empty": false,
+      "navigation": {
+        "documents": [
+          {
+            "id": "document:interview-vault:econ/investing/Asset-Allocation-Diversification.md",
+            "pages": 1,
+            "sections": 12,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:econ/applied/Career-Company-Judgment.md",
+            "pages": 1,
+            "sections": 11,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:econ/financial-markets/Stocks.md",
+            "pages": 1,
+            "sections": 12,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:econ/financial-markets/Financial-System-Overview.md",
+            "pages": 1,
+            "sections": 11,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:econ/microeconomics/Market-Structures.md",
+            "pages": 1,
+            "sections": 12,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:econ/applied/News-Causal-Chain-Drill.md",
+            "pages": 1,
+            "sections": 9,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:econ/investing/Behavioral-Biases-Risk.md",
+            "pages": 1,
+            "sections": 11,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:econ/investing/Investing-Principles.md",
+            "pages": 1,
+            "sections": 11,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:econ/applied/Economics-Systems-Mapping.md",
+            "pages": 1,
+            "sections": 10,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:econ/financial-markets/Risk-and-Return.md",
+            "pages": 1,
+            "sections": 11,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:econ/investing/투자(Investing).md",
+            "pages": 1,
+            "sections": 9,
+            "complete": true
+          }
+        ],
+        "skipped": false,
+        "skip_reason": null,
+        "sections": 119
+      },
+      "navigation_had_body_evidence": false,
+      "errors": [],
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "correlation-and-risk-weight-drive-diversification"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false
+      },
+      "before_heading": {
+        "document_hit": true,
+        "heading_hit": false,
+        "heading_groups_total": 1,
+        "heading_groups_hit": 0,
+        "heading_recall": 0
+      },
+      "lookup": {
+        "matching": {
+          "query_term_count": 22,
+          "max_section_term_matches": 5,
+          "assessment": "lexical_overlap"
+        },
+        "index_status": "unindexed_worktree",
+        "budget_exhausted": true,
+        "traversal_limit_reached": true
+      },
+      "after_heading": {
+        "document_hit": true,
+        "heading_hit": true,
+        "heading_groups_total": 1,
+        "heading_groups_hit": 1,
+        "heading_recall": 1
+      },
+      "calls": {
+        "lookup": 1,
+        "outline": 11
+      },
+      "bytes": {
+        "lookup": 23854,
+        "outline": 75819
+      },
+      "incomplete": false,
+      "elapsed_ms": 2749
+    },
+    {
+      "id": "generalization-fit-repeated-mistakes-feedback-loop",
+      "query": "동료와 비교하며 공부 시간만 늘렸는데 같은 실수가 반복되고, 혼자 과제를 푸는 능력도 제자리이며 피드백 뒤 변화가 없습니다. 단순한 불안과 실제 점검 신호를 어떻게 구분하고 무엇부터 바꿔야 할까요?",
+      "scope": [
+        "fit"
+      ],
+      "max_bytes": 24000,
+      "expected_empty": false,
+      "navigation": {
+        "documents": [
+          {
+            "id": "document:interview-vault:fit/growth/career-stages/mindset/Peer-Comparison-Anxiety.md",
+            "pages": 1,
+            "sections": 9,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:fit/interview/kinolights/2nd/Interview-Retro-Kinolights-2nd.md",
+            "pages": 1,
+            "sections": 16,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:fit/growth/habits/Failure-Driven-Growth.md",
+            "pages": 1,
+            "sections": 11,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:fit/interview/actionpower/2nd/Interview-Prep-ActionPower-2nd-Personality1.md",
+            "pages": 1,
+            "sections": 16,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:fit/growth/career-stages/mindset/mindset.md",
+            "pages": 1,
+            "sections": 3,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:fit/interview/kinolights/1st/Interview-Retro-Kinolights-1st.md",
+            "pages": 1,
+            "sections": 15,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:fit/growth/career-stages/growth-model/Developer-Growth-Stages.md",
+            "pages": 1,
+            "sections": 25,
+            "complete": true
+          },
+          {
+            "id": "document:interview-vault:fit/growth/career-stages/First-90-Days.md",
+            "pages": 1,
+            "sections": 23,
+            "complete": true
+          }
+        ],
+        "skipped": false,
+        "skip_reason": null,
+        "sections": 118
+      },
+      "navigation_had_body_evidence": false,
+      "errors": [],
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 2,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true
+      },
+      "before_heading": {
+        "document_hit": true,
+        "heading_hit": true,
+        "heading_groups_total": 2,
+        "heading_groups_hit": 2,
+        "heading_recall": 1
+      },
+      "lookup": {
+        "matching": {
+          "query_term_count": 24,
+          "max_section_term_matches": 9,
+          "assessment": "lexical_overlap"
+        },
+        "index_status": "unindexed_worktree",
+        "budget_exhausted": true,
+        "traversal_limit_reached": true
+      },
+      "after_heading": {
+        "document_hit": true,
+        "heading_hit": true,
+        "heading_groups_total": 2,
+        "heading_groups_hit": 2,
+        "heading_recall": 1
+      },
+      "calls": {
+        "lookup": 1,
+        "outline": 8
+      },
+      "bytes": {
+        "lookup": 23963,
+        "outline": 92274
+      },
+      "incomplete": false,
+      "elapsed_ms": 2101
+    },
+    {
+      "id": "generalization-empty-gibberish",
+      "query": "qzxvnmprtjwfkblsyh",
+      "scope": [
+        "biz",
+        "econ",
+        "fit",
+        "tech"
+      ],
+      "max_bytes": 24000,
+      "expected_empty": true,
+      "navigation": {
+        "documents": [],
+        "skipped": false,
+        "skip_reason": null,
+        "sections": 0
+      },
+      "navigation_had_body_evidence": false,
+      "errors": [],
+      "before": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true
+      },
+      "before_heading": null,
+      "lookup": {
+        "matching": {
+          "query_term_count": 1,
+          "max_section_term_matches": 0,
+          "assessment": "no_lexical_overlap"
+        },
+        "index_status": "unindexed_worktree",
+        "budget_exhausted": false,
+        "traversal_limit_reached": false
+      },
+      "after_heading": null,
+      "calls": {
+        "lookup": 1,
+        "outline": 0
+      },
+      "bytes": {
+        "lookup": 1368,
+        "outline": 0
+      },
+      "incomplete": false,
+      "elapsed_ms": 643
+    },
+    {
+      "id": "generalization-empty-fictional-device",
+      "query": "정원 요정의 수정 나침반을 보름달 아래에서 보정해 달빛 농도를 조절하는 방법은 무엇인가요?",
+      "scope": [
+        "biz",
+        "econ",
+        "fit",
+        "tech"
+      ],
+      "max_bytes": 24000,
+      "expected_empty": true,
+      "navigation": {
+        "documents": [],
+        "skipped": true,
+        "skip_reason": "weak_lexical_overlap",
+        "sections": 0
+      },
+      "navigation_had_body_evidence": false,
+      "errors": [],
+      "before": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false
+      },
+      "before_heading": null,
+      "lookup": {
+        "matching": {
+          "query_term_count": 10,
+          "max_section_term_matches": 2,
+          "assessment": "weak_lexical_overlap"
+        },
+        "index_status": "unindexed_worktree",
+        "budget_exhausted": true,
+        "traversal_limit_reached": true
+      },
+      "calls": {
+        "lookup": 1,
+        "outline": 0
+      },
+      "bytes": {
+        "lookup": 22494,
+        "outline": 0
+      },
+      "incomplete": false,
+      "elapsed_ms": 730
+    }
+  ]
+}

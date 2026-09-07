@@ -1,0 +1,931 @@
+{
+  "observed_at": "2026-09-07T15:09:19.979Z",
+  "source_revision": "19df3d8159689f41ab8d5a2b5def14c864016cf8",
+  "fingerprint": "8979cdf431b8188e39f9c05c0b9ee478577ae4007521b662c0f0ba10b6b9b5cf",
+  "query_code_hash": "a39ed83d44d4b8e718943faf1ef07a7070b1e9f9d0d4833f90a966819c9d9628",
+  "evaluator_code_hash": "f32bb8e741d80fab4e71dfa1e7a2b2f1e2f2b7c11a0722ae341ae965d0650753",
+  "scorer_hash": "16e9a66ab81a7794bb042bd470f669577bb49a854175f1d59f8717baf2361eba",
+  "historical_report": {
+    "path": "ontology/evaluation/retrieval-quality-report-2026-09-07.json",
+    "revision": "19df3d8159689f41ab8d5a2b5def14c864016cf8",
+    "after_query_hash": "7c54a41213344a61ad4a22deda0cb8a7a6fe7f585baf4d2325fc3f726c1f6bea",
+    "hash": "a4dbb4d77eb6f072983e6e50a37f308070e632251b5db623d0b9ecf40865d4df"
+  },
+  "follow_up_read": {
+    "performed": false,
+    "reason": "This report compares direct lookup scoring only. context_read is navigation after retrieval and is recorded separately when needed."
+  },
+  "regression_policy": "A regression is a historical true hit becoming non-true, or a decrease in evidence_groups_hit for the same case and source revision.",
+  "total_regressions": 0,
+  "suites": [
+    {
+      "name": "cases.json",
+      "cases_hash": "8dacad23dbe4c8544a4b380849e4ba7f9f36decbd1cbf851028ea75daf5bf9f0",
+      "historical_cases_hash": "8dacad23dbe4c8544a4b380849e4ba7f9f36decbd1cbf851028ea75daf5bf9f0",
+      "cases_hash_matches": true,
+      "historical_after_summary": {
+        "total_cases": 4,
+        "positive_cases": 4,
+        "document_hits": 2,
+        "heading_hits": 1,
+        "evidence_hits": 1,
+        "body_asserted_cases": 0,
+        "body_hits": 0,
+        "evidence_groups_total": 4,
+        "evidence_groups_hit": 1,
+        "evidence_recall": 0.25,
+        "passed_cases": 1,
+        "budget_exhausted_cases": 4,
+        "traversal_limited_cases": 4,
+        "max_serialized_bytes": 23992
+      },
+      "current_summary": {
+        "total_cases": 4,
+        "positive_cases": 4,
+        "document_hits": 2,
+        "heading_hits": 1,
+        "evidence_hits": 1,
+        "body_asserted_cases": 0,
+        "body_hits": 0,
+        "evidence_groups_total": 4,
+        "evidence_groups_hit": 1,
+        "evidence_recall": 0.25,
+        "passed_cases": 1,
+        "budget_exhausted_cases": 4,
+        "traversal_limited_cases": 4,
+        "max_serialized_bytes": 23946
+      },
+      "regressions": [],
+      "cases": [
+        {
+          "id": "popular-value-expiry-surge",
+          "historical_after": {
+            "document_hit": false,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": null,
+            "passed": false,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 0,
+            "evidence_recall": 0
+          },
+          "current": {
+            "document_hit": false,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": null,
+            "passed": false,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 0,
+            "evidence_recall": 0
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23567,
+            "evidence_units_returned": 10,
+            "relations_returned": 6,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "deployment-drain-order",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": null,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": null,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23946,
+            "evidence_units_returned": 10,
+            "relations_returned": 6,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "opposite-update-order",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": null,
+            "passed": false,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 0,
+            "evidence_recall": 0
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": null,
+            "passed": false,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 0,
+            "evidence_recall": 0
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23399,
+            "evidence_units_returned": 10,
+            "relations_returned": 6,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "long-calculation-delays-requests",
+          "historical_after": {
+            "document_hit": false,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": null,
+            "passed": false,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 0,
+            "evidence_recall": 0
+          },
+          "current": {
+            "document_hit": false,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": null,
+            "passed": false,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 0,
+            "evidence_recall": 0
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23859,
+            "evidence_units_returned": 10,
+            "relations_returned": 5,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "diagnostic-cases.json",
+      "cases_hash": "dec7ddac06b02c71d9a97311d4272d096ec8b6675da8e58ee67a8ff3de86abea",
+      "historical_cases_hash": "dec7ddac06b02c71d9a97311d4272d096ec8b6675da8e58ee67a8ff3de86abea",
+      "cases_hash_matches": true,
+      "historical_after_summary": {
+        "total_cases": 2,
+        "positive_cases": 2,
+        "document_hits": 2,
+        "heading_hits": 2,
+        "evidence_hits": 2,
+        "body_asserted_cases": 2,
+        "body_hits": 2,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 2,
+        "evidence_recall": 1,
+        "passed_cases": 2,
+        "budget_exhausted_cases": 2,
+        "traversal_limited_cases": 2,
+        "max_serialized_bytes": 23930
+      },
+      "current_summary": {
+        "total_cases": 2,
+        "positive_cases": 2,
+        "document_hits": 2,
+        "heading_hits": 2,
+        "evidence_hits": 2,
+        "body_asserted_cases": 2,
+        "body_hits": 2,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 2,
+        "evidence_recall": 1,
+        "passed_cases": 2,
+        "budget_exhausted_cases": 2,
+        "traversal_limited_cases": 2,
+        "max_serialized_bytes": 23461
+      },
+      "regressions": [],
+      "cases": [
+        {
+          "id": "specific-pattern-with-generic-noise",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23461,
+            "evidence_units_returned": 11,
+            "relations_returned": 5,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "exact-korean-alias-with-relations",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 20196,
+            "evidence_units_returned": 9,
+            "relations_returned": 4,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "holdout-cases.json",
+      "cases_hash": "2694e6f4d771c3f121e4c028dde3b3c11dd07e118b624087d49c0420fe06c34a",
+      "historical_cases_hash": "2694e6f4d771c3f121e4c028dde3b3c11dd07e118b624087d49c0420fe06c34a",
+      "cases_hash_matches": true,
+      "historical_after_summary": {
+        "total_cases": 9,
+        "positive_cases": 8,
+        "document_hits": 8,
+        "heading_hits": 8,
+        "evidence_hits": 8,
+        "body_asserted_cases": 8,
+        "body_hits": 8,
+        "evidence_groups_total": 8,
+        "evidence_groups_hit": 8,
+        "evidence_recall": 1,
+        "passed_cases": 9,
+        "budget_exhausted_cases": 8,
+        "traversal_limited_cases": 8,
+        "max_serialized_bytes": 23920
+      },
+      "current_summary": {
+        "total_cases": 9,
+        "positive_cases": 8,
+        "document_hits": 8,
+        "heading_hits": 8,
+        "evidence_hits": 8,
+        "body_asserted_cases": 8,
+        "body_hits": 8,
+        "evidence_groups_total": 8,
+        "evidence_groups_hit": 8,
+        "evidence_recall": 1,
+        "passed_cases": 9,
+        "budget_exhausted_cases": 8,
+        "traversal_limited_cases": 8,
+        "max_serialized_bytes": 23956
+      },
+      "regressions": [],
+      "cases": [
+        {
+          "id": "synthetic-holdout-tech-01",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23576,
+            "evidence_units_returned": 11,
+            "relations_returned": 7,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "synthetic-holdout-tech-02",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23927,
+            "evidence_units_returned": 10,
+            "relations_returned": 7,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "synthetic-holdout-biz-01",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23956,
+            "evidence_units_returned": 10,
+            "relations_returned": 5,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "synthetic-holdout-biz-02",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23912,
+            "evidence_units_returned": 12,
+            "relations_returned": 7,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "synthetic-holdout-econ-01",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23627,
+            "evidence_units_returned": 12,
+            "relations_returned": 8,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "synthetic-holdout-econ-02",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23765,
+            "evidence_units_returned": 11,
+            "relations_returned": 9,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "synthetic-holdout-fit-01",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23681,
+            "evidence_units_returned": 8,
+            "relations_returned": 8,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "synthetic-holdout-fit-02",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 21955,
+            "evidence_units_returned": 8,
+            "relations_returned": 2,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "synthetic-holdout-empty-01",
+          "historical_after": {
+            "document_hit": null,
+            "heading_hit": null,
+            "evidence_hit": null,
+            "body_hit": null,
+            "passed": true,
+            "evidence_groups_total": null,
+            "evidence_groups_hit": null,
+            "evidence_recall": null
+          },
+          "current": {
+            "document_hit": null,
+            "heading_hit": null,
+            "evidence_hit": null,
+            "body_hit": null,
+            "passed": true,
+            "evidence_groups_total": null,
+            "evidence_groups_hit": null,
+            "evidence_recall": null
+          },
+          "current_execution": {
+            "result_status": "insufficient_evidence",
+            "bytes": 1368,
+            "evidence_units_returned": 0,
+            "relations_returned": 0,
+            "budget_exhausted": false,
+            "traversal_limit_reached": false
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "validation-cases.json",
+      "cases_hash": "2233c5b934b1ad334e589d4f43bca7c72019594d9001d059b618dd66e83039d7",
+      "historical_cases_hash": "2233c5b934b1ad334e589d4f43bca7c72019594d9001d059b618dd66e83039d7",
+      "cases_hash_matches": true,
+      "historical_after_summary": {
+        "total_cases": 4,
+        "positive_cases": 4,
+        "document_hits": 3,
+        "heading_hits": 3,
+        "evidence_hits": 3,
+        "body_asserted_cases": 4,
+        "body_hits": 3,
+        "evidence_groups_total": 4,
+        "evidence_groups_hit": 3,
+        "evidence_recall": 0.75,
+        "passed_cases": 3,
+        "budget_exhausted_cases": 4,
+        "traversal_limited_cases": 4,
+        "max_serialized_bytes": 23753
+      },
+      "current_summary": {
+        "total_cases": 4,
+        "positive_cases": 4,
+        "document_hits": 3,
+        "heading_hits": 3,
+        "evidence_hits": 3,
+        "body_asserted_cases": 4,
+        "body_hits": 3,
+        "evidence_groups_total": 4,
+        "evidence_groups_hit": 3,
+        "evidence_recall": 0.75,
+        "passed_cases": 3,
+        "budget_exhausted_cases": 4,
+        "traversal_limited_cases": 4,
+        "max_serialized_bytes": 23881
+      },
+      "regressions": [],
+      "cases": [
+        {
+          "id": "synthetic-holdout-v2-tech-01",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23881,
+            "evidence_units_returned": 10,
+            "relations_returned": 6,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "synthetic-holdout-v2-biz-01",
+          "historical_after": {
+            "document_hit": false,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": false,
+            "passed": false,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 0,
+            "evidence_recall": 0
+          },
+          "current": {
+            "document_hit": false,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": false,
+            "passed": false,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 0,
+            "evidence_recall": 0
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23792,
+            "evidence_units_returned": 8,
+            "relations_returned": 6,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "synthetic-holdout-v2-econ-01",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23848,
+            "evidence_units_returned": 11,
+            "relations_returned": 10,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        },
+        {
+          "id": "synthetic-holdout-v2-fit-01",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "partial",
+            "bytes": 23649,
+            "evidence_units_returned": 11,
+            "relations_returned": 6,
+            "budget_exhausted": true,
+            "traversal_limit_reached": true
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "context-integrity-cases.json",
+      "cases_hash": "b9dd5a81fa7a0be654dffdde312930fb71e738e0c090333d2025c89eb92a2cae",
+      "historical_cases_hash": "b9dd5a81fa7a0be654dffdde312930fb71e738e0c090333d2025c89eb92a2cae",
+      "cases_hash_matches": true,
+      "historical_after_summary": {
+        "total_cases": 3,
+        "positive_cases": 3,
+        "document_hits": 3,
+        "heading_hits": 3,
+        "evidence_hits": 1,
+        "body_asserted_cases": 3,
+        "body_hits": 1,
+        "evidence_groups_total": 4,
+        "evidence_groups_hit": 2,
+        "evidence_recall": 0.5,
+        "passed_cases": 1,
+        "budget_exhausted_cases": 0,
+        "traversal_limited_cases": 0,
+        "max_serialized_bytes": 4352
+      },
+      "current_summary": {
+        "total_cases": 3,
+        "positive_cases": 3,
+        "document_hits": 3,
+        "heading_hits": 3,
+        "evidence_hits": 1,
+        "body_asserted_cases": 3,
+        "body_hits": 1,
+        "evidence_groups_total": 4,
+        "evidence_groups_hit": 2,
+        "evidence_recall": 0.5,
+        "passed_cases": 1,
+        "budget_exhausted_cases": 0,
+        "traversal_limited_cases": 0,
+        "max_serialized_bytes": 4445
+      },
+      "regressions": [],
+      "cases": [
+        {
+          "id": "role-and-authoring-status",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": false,
+            "body_hit": false,
+            "passed": false,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 0,
+            "evidence_recall": 0
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": false,
+            "body_hit": false,
+            "passed": false,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 0,
+            "evidence_recall": 0
+          },
+          "current_execution": {
+            "result_status": "ok",
+            "bytes": 4415,
+            "evidence_units_returned": 2,
+            "relations_returned": 0,
+            "budget_exhausted": false,
+            "traversal_limit_reached": false
+          },
+          "regressions": []
+        },
+        {
+          "id": "source-link-and-current-implementation",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": false,
+            "body_hit": false,
+            "passed": false,
+            "evidence_groups_total": 2,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 0.5
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": false,
+            "body_hit": false,
+            "passed": false,
+            "evidence_groups_total": 2,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 0.5
+          },
+          "current_execution": {
+            "result_status": "ok",
+            "bytes": 4445,
+            "evidence_units_returned": 2,
+            "relations_returned": 0,
+            "budget_exhausted": false,
+            "traversal_limit_reached": false
+          },
+          "regressions": []
+        },
+        {
+          "id": "proposal-includes-cost-and-unknowns",
+          "historical_after": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current": {
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "passed": true,
+            "evidence_groups_total": 1,
+            "evidence_groups_hit": 1,
+            "evidence_recall": 1
+          },
+          "current_execution": {
+            "result_status": "ok",
+            "bytes": 3527,
+            "evidence_units_returned": 2,
+            "relations_returned": 0,
+            "budget_exhausted": false,
+            "traversal_limit_reached": false
+          },
+          "regressions": []
+        }
+      ]
+    }
+  ]
+}

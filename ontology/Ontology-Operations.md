@@ -19,13 +19,15 @@ aliases: ["Ontology Operations", "온톨로지 실행 절차"]
 | 관계 | `contains`, 해석 가능한 `links_to`, schema와 entity ID가 맞는 명시 relation |
 | 근거 | 원문 path, pinned revision, UTF-8 byte anchor, 해당 byte SHA-256, 마지막 변경 commit 시각 |
 | 조회 | exact label, alias, tag, heading과 키워드, source-confirmed relation 1 또는 2 hop |
-| MCP | stdio 서버의 읽기 전용 `context_lookup` 하나 |
+| MCP | stdio 서버의 읽기 전용 `context_lookup`, `context_outline`, `context_read` |
 
 관계 ID는 subject, predicate, object, evidence unit ID, occurrence의 안정 JSON SHA-256이다. section ID의 heading component는 `encodeURIComponent`로 인코딩하고 빈 heading은 `%`로 구분한다. 같은 heading path의 occurrence를 ID와 anchor에 보존한다. 이 때문에 `A/B` heading과 `A` 아래의 `B` heading이 다른 entity가 된다. 위키링크 대상은 파일 경로와 파일명으로 찾으며, 표 셀 안에서 파이프를 escape한 `[[대상\|별칭]]` 표기도 대상만 추출한다. H1 제목과 frontmatter alias는 검색에만 사용한다. Document의 `verified_at`은 조회 결과의 entity 속성으로 반환하지만 freshness 판정에는 아직 쓰지 않는다.
 
 `config.json`의 `repository_id`는 이 Vault의 고정 ID다. 장비나 checkout 경로가 바뀌어도 유지해야 Markdown에 기록한 typed relation이 보존된다. 이 runtime 설치는 Vault 하나를 대상으로 하며, 다른 독립 Vault를 구축할 때는 ID를 분리한다. cache와 snapshot fingerprint는 실제 checkout 경로도 구분한다.
 
 검색은 정확한 label과 alias를 우선하고, 문서당 최고점 section과 상위 root 6개를 선택한다. 정규화와 키워드 확장 뒤 2~3개 토큰인 짧은 질의는 문서 빈도를 이용해 구체 용어가 없는 일반어 후보를 제외한다. 더 긴 자연어 질의에는 이 제외 규칙을 적용하지 않는다. 직접 근거를 먼저 담은 뒤 관계, 양 끝 entity, 소유 문서와 원문 근거를 한 묶음으로 추가한다. 예산에 맞지 않는 묶음은 누락 수로 보고하며, 최종 축소에서도 남은 관계와 직접 근거에 필요한 문서를 보존한다. 작은 예산에서 모든 관계의 반환을 보장하지는 않는다.
+
+본문 점수에는 section 길이에 따른 완만한 감점을 적용하며 정확한 metadata 점수는 유지한다. `matching.query_term_count`는 정규화와 확장 후 검색어 수, `max_section_term_matches`는 같은 section의 metadata와 본문에 겹친 서로 다른 검색어 수의 최댓값이다. `assessment`는 `exact_metadata`, `lexical_overlap`, `no_lexical_overlap`, `weak_lexical_overlap`, `not_evaluated`를 구분한다. 검색어 8개 이상이면서 최대 겹침이 1~2개이면 `weak_lexical_overlap`이다. 후보를 삭제하는 규칙이나 의미적 적합성, 지식 부재의 확정 판정이 아니며, 관련성을 확인하고 재조회할 단서다.
 
 ## 설치와 명령
 
@@ -50,6 +52,10 @@ npm run serve
 
 `lookup`과 `context_lookup`은 요청 시작에 active snapshot의 revision과 indexed scope를 현재 `HEAD`와 비교한다. clean worktree에서 다르면 새 snapshot을 만든다. dirty 상태에서 `--committed-only`가 없으면 기존 clean snapshot만 유지하고 query 결과는 `unindexed_worktree`로 표시한다. 기존 snapshot도 없으면 오류로 끝난다. `--committed-only`면 dirty 상태에서도 pinned `HEAD` snapshot을 만들고 결과에 `unindexed_worktree`를 표시한다.
 
+`read`와 `context_read`도 같은 snapshot 확인 경로를 사용한다. 조회 결과의 ID, revision과 hash에 맞는 근거를 예산 안에서 페이지로 읽으며, revision이나 hash가 달라졌으면 재조회를 요구한다. 입력, 페이지 연결과 오류 처리의 정본은 [[Ontology-Evidence-Read]]다.
+
+`outline`과 `context_outline`도 같은 snapshot 확인 경로를 사용한다. 찾은 Document의 section 목록을 페이지로 반환하고, 선택한 section의 본문은 `context_read`로 읽는다. 입력, 목차 cursor와 원문 무결성 검사는 [[Ontology-Document-Outline]]을 따른다.
+
 조회는 evidence byte hash를 다시 확인하고 section excerpt, source revision, anchor를 함께 반환한다. allowlist, indexed path와 요청 scope의 교집합 밖 원문은 반환하지 않는다. 출력에는 `index_sync`, coverage gap, output byte budget과 제한으로 빠진 record를 보존한다.
 
 ## MCP 연결
@@ -71,6 +77,10 @@ claude mcp get development-context
 ```
 
 MCP host는 tool argument로 repository나 cache 경로를 바꿀 수 없다. `context_lookup`은 `query`, 선택 `scope`, `depth`, `max_bytes`만 받고 알 수 없는 field와 크기 제한 초과 입력을 거부한다. tool 결과는 JSON text와 동일한 structured content다. 스킬의 일반 요청 예산은 24KB, 서버 상한은 64KiB다. 특정 host를 제한해야 하면 등록 명령에 `--allow <repository-relative-prefix>`를 반복해 추가한다.
+
+`context_read`는 `evidence_unit_id`, `source_revision`, `content_hash`, 선택 `offset_bytes`, `max_bytes`를 받는다. 근거 ID와 도구 입력 전체는 각각 최대 65,536 UTF-8 byte다. 긴 heading에서 생성돼 조회 응답에 담긴 ID도 그대로 읽을 수 있도록 읽기 입력 한도를 조회 출력 상한에 맞췄다. `context_lookup`의 입력 전체 제한은 8,192 byte다. 읽기 결과도 JSON text와 structured content가 일치하며 같은 host allowlist를 적용한다.
+
+`context_outline`은 `document_id`, `source_revision`, 선택 `offset_sections`, `max_bytes`를 받는다. 문서 ID와 전체 입력 한도는 각각 65,536 UTF-8 byte이며, 목차 응답도 동일한 JSON 예산과 host allowlist를 따른다. 각 section의 ID/revision/hash는 `context_read` 입력으로 사용할 수 있다.
 
 2026-09-05 범위 확장 전 장비에서 Codex 사용자 등록 `enabled: true`, Claude 사용자 등록 `Connected`를 확인했다. 당시 `--allow tech` 등록과 같은 명령을 사용하는 SDK client로 `/private/tmp`에서 `tools/list`와 실제 조회를 검증했다. Outbox 원문 근거를 반환했고 `fit` 요청의 evidence는 0개였다. 이어 Codex 세션에 노출된 `context_lookup` 도구를 직접 호출해 원문 경로, heading, revision과 hash를 받았다. 이는 당시 연결과 호출 검증이며 전체 기본 범위의 현재 동작이나 모든 모델의 자동 도구 선택을 증명하지는 않는다. 새 세션에서 도구가 보이지 않으면 CLI와 원문 검색으로 보완한다.
 
@@ -109,7 +119,11 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 
 이후 필수 근거 평가를 보강한 suite는 82개 테스트를 통과했다. 추가 검증은 모든 필수 그룹 충족과 그룹 내 대안, 같은 본문의 필수 문구와 잘린 예외, 본문 조건 없는 대안의 지표 분리, 그룹 입력과 pinned 원문의 검사다. 실제 필수 근거 진단에서 발견한 발췌 누락과 별도 원문 읽기 결과는 [[Development-Ontology-Evaluation#필수 근거와 잘린 예외의 진단]]에 기록한다.
 
+같은 날 `context_read`와 CLI `read`를 추가한 suite는 91개 테스트를 통과했다. 추가 검증은 같은 ID/revision/hash의 전체 근거 읽기, UTF-8 페이지 연결과 마지막 페이지 예산, 잘못된 cursor와 작은 예산의 중단, 허용 범위와 symlink 거부, dirty 본문 제외, 원문 커밋 변경 뒤 재조회 요구, 긴 한글 heading의 ID 읽기, MCP 입력 계약과 CLI 인자 조합이다. 새 stdio 프로세스로 연결한 SDK client에서 실제 도구 호출을 검증했으며, 기존 연결에 새 도구가 자동 등록됐다는 의미는 아니다.
+
 이 검증은 Markdown parser와 snapshot 조회의 계약을 확인한다. 실제 프로젝트 버그, 의미적으로 올바른 기술 추천, code repository index, deployment 또는 runtime behavior를 확인하지 않는다.
+
+2026-09-08 suite는 100개 테스트를 통과했다. 추가 검증은 짧은 관련 section의 순위 보존, 긴 질문의 어휘 겹침 진단, 공백만 있는 질문의 거부, 문서 목차의 순서와 페이지 예산, ID/revision/허용 범위/원문 hash 검사, 목차에서 고른 section의 후속 읽기, 새 MCP stdio의 세 도구와 CLI 인자 조합이다. 실제 Vault의 검색 회귀와 목차 탐색 결과는 [[Ontology-Retrieval-Quality]]에 분리해 기록한다.
 
 ## 검색 품질 확인
 
@@ -126,6 +140,8 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 필수 조건과 예외의 누락은 `npm run evaluate -- --cases evaluation/context-integrity-cases.json`으로 관찰한다. 이 진단은 현 조회기의 한계를 드러내는 표본이며 `--check`를 붙이면 누락이 있는 동안 실패한다. 짧은 검색 진단과 필수 근거 진단의 통과 여부를 합쳐 모든 조회가 성공했다고 표시하지 않는다.
 
 최초 독립 표본은 기대 문서 2/4, 기대 heading 1/4였다. 자세한 입력, 실행 결과와 해석은 [[Development-Ontology-Evaluation]]에 남긴다. 검색 결과가 부족하면 기술 용어 후보로 다시 조회하고, 파일명과 heading으로 scope를 좁히거나 직접 원문 검색으로 보완한다.
+
+후속 자연어 표본과 목차 탐색은 [[Ontology-Retrieval-Quality]]를 따른다. `node evaluation/outline-navigation.mjs --cache <absolute-path> --check`는 실제 MCP 목차의 무결성, 페이지 완료와 응답 예산을 검사한다. 이 명령의 `--check`는 protocol 검사만 수행하며 알려진 검색 실패를 통과로 바꾸지 않는다. heading 회수와 본문 조건 충족은 별도 지표다.
 
 ## 후속 설계
 
@@ -144,5 +160,8 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 - [[Development-Ontology-Contract]]
 - [[Development-Ontology-Evaluation]]
 - [[Ontology-Evidence-Lifecycle]]
+- [[Ontology-Evidence-Read]]
+- [[Ontology-Document-Outline]]
+- [[Ontology-Retrieval-Quality]]
 - [[Ontology-Context-Platform-Implementation]]
 - [[Ontology-Context-Platform-AI-Runtime]]
