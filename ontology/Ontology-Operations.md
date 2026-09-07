@@ -25,6 +25,8 @@ aliases: ["Ontology Operations", "온톨로지 실행 절차"]
 
 `config.json`의 `repository_id`는 이 Vault의 고정 ID다. 장비나 checkout 경로가 바뀌어도 유지해야 Markdown에 기록한 typed relation이 보존된다. 이 runtime 설치는 Vault 하나를 대상으로 하며, 다른 독립 Vault를 구축할 때는 ID를 분리한다. cache와 snapshot fingerprint는 실제 checkout 경로도 구분한다.
 
+검색은 정확한 label과 alias를 우선하고, 문서당 최고점 section과 상위 root 6개를 선택한다. 정규화와 키워드 확장 뒤 2~3개 토큰인 짧은 질의는 문서 빈도를 이용해 구체 용어가 없는 일반어 후보를 제외한다. 더 긴 자연어 질의에는 이 제외 규칙을 적용하지 않는다. 직접 근거를 먼저 담은 뒤 관계, 양 끝 entity, 소유 문서와 원문 근거를 한 묶음으로 추가한다. 예산에 맞지 않는 묶음은 누락 수로 보고하며, 최종 축소에서도 남은 관계와 직접 근거에 필요한 문서를 보존한다. 작은 예산에서 모든 관계의 반환을 보장하지는 않는다.
+
 ## 설치와 명령
 
 Node.js 22 이상에서 실행한다. `ontology/`에서 의존성을 설치한다.
@@ -103,11 +105,19 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 
 같은 날 동시 실행 오류를 수정한 뒤 suite 70개 테스트를 통과했다. 추가한 3개 테스트는 최초 소유권 표식의 빈 내용을 읽은 뒤 다른 프로세스가 기록을 마치는 경우의 재확인, 중단되거나 잘못된 표식의 거부와 기존 데이터 보존, 파일 존재 확인과 읽기 사이에 다른 CLI build가 snapshot을 삭제했을 때 같은 요청에서 재빌드하는 동작을 검증한다. 이 중 두 동시 실행 테스트는 수정 전 실패하고 수정 후 통과했다.
 
+같은 날 검색과 응답 구성 보강 후 suite 78개 테스트를 통과했다. 추가 검증은 짧은 복합 질의의 일반어 잡음 제외, 긴 질문의 관련 문서 보존, 24KB 관계 묶음, 작은 예산에서 고아 근거 제거와 소유 문서 보존, 평가기의 본문 조건, 대안 근거, 금지 경로, 범위와 음성 사례다. 실제 Vault를 대상으로 새 MCP stdio 프로세스의 조회도 확인했다. 이미 실행 중인 MCP 프로세스는 재시작해야 수정한 query 모듈을 읽는다.
+
 이 검증은 Markdown parser와 snapshot 조회의 계약을 확인한다. 실제 프로젝트 버그, 의미적으로 올바른 기술 추천, code repository index, deployment 또는 runtime behavior를 확인하지 않는다.
 
 ## 검색 품질 확인
 
-`npm run evaluate`는 이미 생성한 snapshot에서 scope를 `tech`로 제한해 `evaluation/cases.json`의 기존 기술 질문 4개를 실행하고 문서와 heading 일치, 처리 시간, 응답 크기, 반환된 relation 수, 예산 소진과 탐색 상한 도달 여부를 JSON으로 출력한다. `-- --cache <absolute-path>`로 평가 cache를 지정할 수 있다. 단위 테스트와 달리 검색 품질을 관찰하는 명령이며 결과 건수만으로 전체 도메인의 성능을 일반화하지 않는다.
+`npm run evaluate`는 이미 생성한 snapshot에서 `evaluation/cases.json`의 기존 기술 질문 4개를 실행한다. `-- --cases evaluation/diagnostic-cases.json`처럼 사례 파일을 지정하면 각 사례의 scope와 예산으로 조회한다. `-- --cache <absolute-path>`로 평가 cache를 지정할 수 있다. 기본 예산은 24,000 byte다.
+
+평가는 허용 원문과 heading의 일치, 선택적인 본문 문자열(`any_text`), 금지 경로, 최소 relation 수와 범위 밖 근거를 검사한다. 기대 원문, heading과 본문 문자열이 pinned snapshot에 실제로 있는지 먼저 확인하며, 없는 정답을 검색 실패로 세지 않고 실행 오류로 처리한다. `expected_evidence`의 항목은 허용 대안이며 그중 하나의 같은 section 안에서 조건을 충족해야 한다. `expected_empty` 사례는 정상 색인 범위에서 entity, evidence, relation이 없는 응답을 요구한다.
+
+보고서에는 문서와 heading 적중, 본문 검사 대상 수와 적중, 처리 시간, 응답 크기, relation 수, 예산과 탐색 상한, 사례와 코드 hash를 남긴다. 기존 4개 사례에는 본문 조건이 없으므로 `body_asserted_cases`는 0이며 heading 일치만 검증한다. `--check`를 추가하면 사례 조건을 충족하지 못할 때 종료 코드 1로 끝난다. 생략하면 품질 관찰 결과를 출력하고, 잘못된 사례나 예산 위반 같은 실행 오류만 실패한다.
+
+현재 진단 확인 명령은 `npm run evaluate -- --cases evaluation/diagnostic-cases.json --check`다. 다도메인 표본의 역할, 재사용 여부와 전후 결과는 [[Development-Ontology-Evaluation#검색 순위와 관계 응답 보강]]을 따른다. 부분 문자열 적중은 답변 전체의 정확성이나 적용 판단의 성공을 뜻하지 않는다.
 
 최초 독립 표본은 기대 문서 2/4, 기대 heading 1/4였다. 자세한 입력, 실행 결과와 해석은 [[Development-Ontology-Evaluation]]에 남긴다. 검색 결과가 부족하면 기술 용어 후보로 다시 조회하고, 파일명과 heading으로 scope를 좁히거나 직접 원문 검색으로 보완한다.
 
@@ -118,7 +128,7 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 - 승인된 typed relation의 authoring UX와 stale, conflict 판정
 - holdout 기반 retrieval recall, 불필요한 근거, 탐색 시간과 사용자 재설명 감소 측정
 - JSONL 병목이 확인된 뒤 SQLite, graph DB 또는 RDF 검토
-- 토큰 부분 일치 랭킹과 root 상한 6개의 재검토. 예: `outbox pattern` 조회에서 `pattern`만 일치한 `biz` 문서 2개가 root 자리를 차지하고, 24,000 byte 예산에서는 관계가 응답에 남지 않는다
+- 긴 자연어 질문의 section 랭킹과 root 상한 6개, 관계 탐색 순위의 재검토. 짧은 용어 검색과 관계 응답의 개선 결과는 [[Development-Ontology-Evaluation#검색 순위와 관계 응답 보강]]을 따른다
 
 현재 검색은 label, alias, tag, heading, 제한된 한영 키워드 확장과 명시 관계 탐색을 사용한다. 일반적인 동의어, 문맥, 인과관계와 코드 호출 관계를 추론하지 않으며 LLM이 relation을 자동 확정하지 않는다.
 
