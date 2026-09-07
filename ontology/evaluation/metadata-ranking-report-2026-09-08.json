@@ -1,0 +1,2866 @@
+{
+  "observed_at": "2026-09-07T16:42:17.847036+00:00",
+  "scope": "Remove structural-ID lexical matches, separate exact matching from numeric score, and select reading evidence independently of Document score. Source-body evidence and Document metadata coverage are separate metrics.",
+  "freeze_before_first_observation": {
+    "frozen_at": "2026-09-07T16:37:59.076585+00:00",
+    "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+    "baseline_query_hash": "ea318e04f138b74e71df90add00d58ad02063d6f745bee3847b9c533c714008d",
+    "candidate_query_hash": "c67f375c3abcfb1aaebb8ef0fa7df798e0ca4da6825024f35529daff480e5278",
+    "cases_hash": "76b413409e9f442f0890078de2ae65b5e7cdf56aa1a200889230f1c4d116f103",
+    "evaluator_hash": "6e555c98b45d29726e1f0ec8eb198f2a2cec6b210309feafc47fcdc75febdb4a",
+    "policy": "Known 46 cases are regression only. Six independently prepared synthetic cases first opened after code freeze; at most two search pages at each case budget, no gold-based early stopping. Evaluate original body/evidence groups separately from Document metadata discovery."
+  },
+  "source_snapshot": {
+    "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+    "fingerprint": "717652160020cd55e4fb143b518c2c34852e516f3c74eb8f3603fa8711599071",
+    "counts": {
+      "coverage_gaps": 0,
+      "documents": 1874,
+      "relations": 35519,
+      "units": 21496
+    }
+  },
+  "known_regression": {
+    "role": "known regression",
+    "observed_at": {
+      "before": "2026-09-07T16:38:05.953Z",
+      "after": "2026-09-07T16:38:05.206Z"
+    },
+    "cases": {
+      "cases.json": "8dacad23dbe4c8544a4b380849e4ba7f9f36decbd1cbf851028ea75daf5bf9f0",
+      "diagnostic-cases.json": "dec7ddac06b02c71d9a97311d4272d096ec8b6675da8e58ee67a8ff3de86abea",
+      "holdout-cases.json": "2694e6f4d771c3f121e4c028dde3b3c11dd07e118b624087d49c0420fe06c34a",
+      "validation-cases.json": "2233c5b934b1ad334e589d4f43bca7c72019594d9001d059b618dd66e83039d7",
+      "context-integrity-cases.json": "b9dd5a81fa7a0be654dffdde312930fb71e738e0c090333d2025c89eb92a2cae",
+      "generalization-cases-2026-09-07.json": "4e5761f129542615c9a0584d17194af31f3411df61c7e506401cae01dadd7a86",
+      "graph-ranking-cases-2026-09-08.json": "6a9f93b2a7bd16a06e3ff3e49c87c6d8c093c2c16138eff63f375318e83b81c6",
+      "document-search-cases-2026-09-08.json": "a45607c714de84af95890c6379dc828800ac478d032537f75cb660deef0f1d7b"
+    },
+    "summary": {
+      "before": {
+        "cases": 46,
+        "positive_cases": 39,
+        "negative_cases": 7,
+        "full_passes": 23,
+        "evidence_document_hits": 30,
+        "heading_hits": 23,
+        "body_asserted_cases": 35,
+        "body_hits": 20,
+        "evidence_groups_total": 47,
+        "evidence_groups_hit": 27,
+        "document_metadata_coverage": {
+          "lookup_coverage": 31,
+          "search_first_coverage": 32,
+          "search_two_coverage": 34,
+          "union_coverage": 34
+        },
+        "empty_negative_results": 2,
+        "search_empty_negative_results": 2,
+        "lookup_calls": 46,
+        "lookup_bytes": 973739
+      },
+      "after": {
+        "cases": 46,
+        "positive_cases": 39,
+        "negative_cases": 7,
+        "full_passes": 23,
+        "evidence_document_hits": 30,
+        "heading_hits": 23,
+        "body_asserted_cases": 35,
+        "body_hits": 20,
+        "evidence_groups_total": 47,
+        "evidence_groups_hit": 27,
+        "document_metadata_coverage": {
+          "lookup_coverage": 31,
+          "search_first_coverage": 32,
+          "search_two_coverage": 34,
+          "union_coverage": 34
+        },
+        "empty_negative_results": 2,
+        "search_empty_negative_results": 2,
+        "lookup_calls": 46,
+        "lookup_bytes": 973739
+      }
+    },
+    "per_case": [
+      {
+        "id": "popular-value-expiry-surge",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "body_hit": null,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": false,
+          "search_first_coverage": false,
+          "search_two_coverage": false,
+          "union_coverage": false,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "deployment-drain-order",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": null,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "opposite-update-order",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": null,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "long-calculation-delays-requests",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "body_hit": null,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": false,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "specific-pattern-with-generic-noise",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "exact-korean-alias-with-relations",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-tech-01",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-tech-02",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-biz-01",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-biz-02",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-econ-01",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-econ-02",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-fit-01",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-fit-02",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-empty-01",
+        "negative": true,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_groups_total": null,
+          "evidence_groups_hit": null,
+          "lookup_coverage": null,
+          "search_first_coverage": null,
+          "search_two_coverage": null,
+          "union_coverage": null,
+          "search_empty": true
+        }
+      },
+      {
+        "id": "synthetic-holdout-v2-tech-01",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-v2-biz-01",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": false,
+          "search_first_coverage": false,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-v2-econ-01",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-holdout-v2-fit-01",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "role-and-authoring-status",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": false,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "source-link-and-current-implementation",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": false,
+          "evidence_groups_total": 2,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "proposal-includes-cost-and-unknowns",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "generalization-tech-stable-cursor-contract",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 2,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "generalization-tech-payment-retry-identity",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 2,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "generalization-tech-retry-storm-discipline",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 2,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": false,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "generalization-tech-scarce-stock-concurrency",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": false,
+          "search_first_coverage": false,
+          "search_two_coverage": false,
+          "union_coverage": false,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "generalization-biz-switching-interview-history",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": false,
+          "search_first_coverage": false,
+          "search_two_coverage": false,
+          "union_coverage": false,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "generalization-biz-click-growth-or-redistribution",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 2,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "generalization-econ-concentrated-sector-diversification",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "generalization-fit-repeated-mistakes-feedback-loop",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 2,
+          "evidence_groups_hit": 2,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "generalization-empty-gibberish",
+        "negative": true,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_groups_total": null,
+          "evidence_groups_hit": null,
+          "lookup_coverage": null,
+          "search_first_coverage": null,
+          "search_two_coverage": null,
+          "union_coverage": null,
+          "search_empty": true
+        }
+      },
+      {
+        "id": "generalization-empty-fictional-device",
+        "negative": true,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_groups_total": null,
+          "evidence_groups_hit": null,
+          "lookup_coverage": null,
+          "search_first_coverage": null,
+          "search_two_coverage": null,
+          "union_coverage": null,
+          "search_empty": false
+        }
+      },
+      {
+        "id": "fresh-tech-llm-grounding-decline",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": true,
+          "search_first_coverage": false,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "fresh-tech-single-feature-emergency-stop",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": false,
+          "search_first_coverage": false,
+          "search_two_coverage": false,
+          "union_coverage": false,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "fresh-tech-progressive-release-comparison-gate",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "fresh-biz-saas-value-pricing",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "fresh-econ-pay-raise-purchasing-power",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "fresh-fit-new-team-expectations",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "fresh-negative-unknown-token-string",
+        "negative": true,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_groups_total": null,
+          "evidence_groups_hit": null,
+          "lookup_coverage": null,
+          "search_first_coverage": null,
+          "search_two_coverage": null,
+          "union_coverage": null,
+          "search_empty": false
+        }
+      },
+      {
+        "id": "fresh-negative-unrelated-gardening-question",
+        "negative": true,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_groups_total": null,
+          "evidence_groups_hit": null,
+          "lookup_coverage": null,
+          "search_first_coverage": null,
+          "search_two_coverage": null,
+          "union_coverage": null,
+          "search_empty": false
+        }
+      },
+      {
+        "id": "synthetic-tech-rag-identifier-provenance",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 2,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-tech-weak-evidence-routing",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": false,
+          "search_first_coverage": false,
+          "search_two_coverage": false,
+          "union_coverage": false,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-biz-click-lift-validation",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 2,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-econ-correlation-diversification",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "synthetic-negative-weather-forecast",
+        "negative": true,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_groups_total": null,
+          "evidence_groups_hit": null,
+          "lookup_coverage": null,
+          "search_first_coverage": null,
+          "search_two_coverage": null,
+          "union_coverage": null,
+          "search_empty": false
+        }
+      },
+      {
+        "id": "synthetic-negative-fictional-kingdom-tax",
+        "negative": true,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_groups_total": null,
+          "evidence_groups_hit": null,
+          "lookup_coverage": null,
+          "search_first_coverage": null,
+          "search_two_coverage": null,
+          "union_coverage": null,
+          "search_empty": false
+        }
+      }
+    ]
+  },
+  "independent_first_observation": {
+    "role": "independently prepared synthetic first observation",
+    "observed_at": {
+      "before": "2026-09-07T16:38:05.471Z",
+      "after": "2026-09-07T16:38:05.218Z"
+    },
+    "cases": {
+      "metadata-ranking-cases-2026-09-08.json": "76b413409e9f442f0890078de2ae65b5e7cdf56aa1a200889230f1c4d116f103"
+    },
+    "summary": {
+      "before": {
+        "cases": 6,
+        "positive_cases": 4,
+        "negative_cases": 2,
+        "full_passes": 1,
+        "evidence_document_hits": 4,
+        "heading_hits": 2,
+        "body_asserted_cases": 4,
+        "body_hits": 1,
+        "evidence_groups_total": 4,
+        "evidence_groups_hit": 1,
+        "document_metadata_coverage": {
+          "lookup_coverage": 4,
+          "search_first_coverage": 4,
+          "search_two_coverage": 4,
+          "union_coverage": 4
+        },
+        "empty_negative_results": 0,
+        "search_empty_negative_results": 0,
+        "lookup_calls": 6,
+        "lookup_bytes": 132459
+      },
+      "after": {
+        "cases": 6,
+        "positive_cases": 4,
+        "negative_cases": 2,
+        "full_passes": 2,
+        "evidence_document_hits": 4,
+        "heading_hits": 3,
+        "body_asserted_cases": 4,
+        "body_hits": 2,
+        "evidence_groups_total": 4,
+        "evidence_groups_hit": 2,
+        "document_metadata_coverage": {
+          "lookup_coverage": 4,
+          "search_first_coverage": 4,
+          "search_two_coverage": 4,
+          "union_coverage": 4
+        },
+        "empty_negative_results": 0,
+        "search_empty_negative_results": 0,
+        "lookup_calls": 6,
+        "lookup_bytes": 132086
+      }
+    },
+    "per_case": [
+      {
+        "id": "unseen-tech-payment-retry-contract",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "unseen-tech-ott-unknown-subscription",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": false,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "unseen-biz-aarrr-alias",
+        "negative": false,
+        "metrics_unchanged": false,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        },
+        "after": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 1,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        },
+        "before_evidence": [
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "truncated": false
+          },
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "heading": "지표 설계 & North Star Metric",
+            "truncated": false
+          },
+          {
+            "path": "biz/measurement-and-risk/측정과리스크(MeasurementAndRisk).md",
+            "heading": "목차",
+            "truncated": false
+          },
+          {
+            "path": "biz/commerce/Commerce-Revenue-Formula.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/service-design/Personalization-Recommendation.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/business-model/Pricing-Strategy.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/expansion-strategy/Platform-Power.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/Solo-Product-Opportunity-Discovery.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/expansion-strategy/Platform-Power.md",
+            "heading": "DAU의 함정",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/PMF-Funnel.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/service-design/Community-Dark-Patterns.md",
+            "heading": "관련 문서",
+            "truncated": false
+          }
+        ],
+        "after_evidence": [
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "truncated": false
+          },
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "heading": "AARRR (Pirate Metrics)",
+            "truncated": false
+          },
+          {
+            "path": "biz/measurement-and-risk/측정과리스크(MeasurementAndRisk).md",
+            "heading": "목차",
+            "truncated": false
+          },
+          {
+            "path": "biz/commerce/Commerce-Revenue-Formula.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/service-design/Personalization-Recommendation.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/business-model/Pricing-Strategy.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/expansion-strategy/Platform-Power.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/Solo-Product-Opportunity-Discovery.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/expansion-strategy/Platform-Power.md",
+            "heading": "DAU의 함정",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/PMF-Funnel.md",
+            "heading": "관련 문서",
+            "truncated": false
+          },
+          {
+            "path": "biz/product-strategy/service-design/Community-Dark-Patterns.md",
+            "heading": "관련 문서",
+            "truncated": false
+          }
+        ]
+      },
+      {
+        "id": "unseen-econ-elasticity-title",
+        "negative": false,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_groups_total": 1,
+          "evidence_groups_hit": 0,
+          "lookup_coverage": true,
+          "search_first_coverage": true,
+          "search_two_coverage": true,
+          "union_coverage": true,
+          "search_empty": null
+        }
+      },
+      {
+        "id": "unseen-negative-tech-lunar-landing",
+        "negative": true,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_groups_total": null,
+          "evidence_groups_hit": null,
+          "lookup_coverage": null,
+          "search_first_coverage": null,
+          "search_two_coverage": null,
+          "union_coverage": null,
+          "search_empty": false
+        }
+      },
+      {
+        "id": "unseen-negative-biz-pet-food-market",
+        "negative": true,
+        "metrics_unchanged": true,
+        "before": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_groups_total": null,
+          "evidence_groups_hit": null,
+          "lookup_coverage": null,
+          "search_first_coverage": null,
+          "search_two_coverage": null,
+          "union_coverage": null,
+          "search_empty": false
+        }
+      }
+    ]
+  },
+  "diagnostic_lexical_candidates": {
+    "role": "Known implementation diagnostics, not a general relevance benchmark",
+    "scope": [
+      "tech"
+    ],
+    "rows": [
+      {
+        "query": "document",
+        "before_candidates": 1498,
+        "after_candidates": 82
+      },
+      {
+        "query": "unit",
+        "before_candidates": 1498,
+        "after_candidates": 124
+      },
+      {
+        "query": "95",
+        "before_candidates": 1274,
+        "after_candidates": 84
+      },
+      {
+        "query": "20",
+        "before_candidates": 1468,
+        "after_candidates": 1006
+      },
+      {
+        "query": "interview-vault",
+        "before_candidates": 1498,
+        "after_candidates": 2
+      }
+    ]
+  },
+  "discarded_candidate": {
+    "change": "Independently choose the highest-scoring unit including heading-less root Section.",
+    "reason": "Lost exact-korean-alias-with-relations on the known suite by replacing the readable heading with frontmatter provenance. The final candidate leaves root provenance in its existing separate path."
+  },
+  "runtime_validation": {
+    "tests": 116,
+    "passed": 116,
+    "failed": 0,
+    "command": "node --test test/*.test.mjs",
+    "baseline_tests": 112,
+    "pre_fix_diagnostic_failures": [
+      "structural source ID counted as lexical evidence",
+      "100 partial term matches reported as exact_metadata"
+    ],
+    "log_hash": "aa3ddbd559646b90006a16106808fc3c73982a65c2de76664886f676073270d6"
+  },
+  "mcp_smoke": {
+    "purpose": "Fresh SDK stdio MCP verification only. Candidate totals are observed transport output, not a source-selection or answer-quality evaluation.",
+    "snapshot_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+    "tools": [
+      "context_lookup",
+      "context_outline",
+      "context_read",
+      "context_search"
+    ],
+    "kano": {
+      "search_budget": {
+        "requested_max_bytes": 24000,
+        "server_max_bytes": 65536,
+        "effective_max_bytes": 24000,
+        "used_bytes": 3206,
+        "exhausted": false
+      },
+      "search_actual_json_bytes": 3206,
+      "candidate": {
+        "document_id": "document:interview-vault:biz/product-strategy/User-Feedback.md",
+        "source_uri": "biz/product-strategy/User-Feedback.md",
+        "best_evidence_ref": {
+          "id": "unit:interview-vault:biz/product-strategy/User-Feedback.md:%EC%82%AC%EC%9A%A9%EC%9E%90%20%ED%94%BC%EB%93%9C%EB%B0%B1%20%EA%B4%80%EB%A6%AC/Kano%20%EB%AA%A8%EB%8D%B8#1",
+          "type": "Section",
+          "label": "Kano 모델",
+          "source_uri": "biz/product-strategy/User-Feedback.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "anchor": {
+            "end_byte": 1232,
+            "end_line": 25,
+            "heading_path": [
+              "사용자 피드백 관리",
+              "Kano 모델"
+            ],
+            "occurrence": 1,
+            "start_byte": 489,
+            "start_line": 12
+          }
+        }
+      },
+      "read": {
+        "budget": {
+          "requested_max_bytes": 24000,
+          "server_max_bytes": 65536,
+          "effective_max_bytes": 24000,
+          "used_bytes": 1863
+        },
+        "actual_json_bytes": 1863,
+        "source_uri": "biz/product-strategy/User-Feedback.md",
+        "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+        "content_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+        "anchor": {
+          "end_byte": 1232,
+          "end_line": 25,
+          "heading_path": [
+            "사용자 피드백 관리",
+            "Kano 모델"
+          ],
+          "occurrence": 1,
+          "start_byte": 489,
+          "start_line": 12
+        },
+        "excerpt_bytes": 743,
+        "excerpt_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+        "contains_kano_body": true
+      },
+      "lookup": {
+        "budget": {
+          "requested_max_bytes": 24000,
+          "server_max_bytes": 65536,
+          "effective_max_bytes": 24000,
+          "used_bytes": 23522,
+          "exhausted": true,
+          "omitted_evidence_units": 12,
+          "omitted_relations": 18
+        },
+        "actual_json_bytes": 23522,
+        "contains_same_evidence": true,
+        "contains_kano_body": true
+      }
+    },
+    "document_search": {
+      "observed_total_candidates": 82,
+      "budget": {
+        "requested_max_bytes": 24000,
+        "server_max_bytes": 65536,
+        "effective_max_bytes": 24000,
+        "used_bytes": 23497,
+        "exhausted": true
+      },
+      "actual_json_bytes": 23497
+    },
+    "previous_module_cursor": {
+      "baseline_query_hash": "ea318e04f138b74e71df90add00d58ad02063d6f745bee3847b9c533c714008d",
+      "prior_observed_total_candidates": 1498,
+      "current_error": {
+        "code": "cursor_mismatch",
+        "message": "query, scope, snapshot or ranking code changed; restart the search"
+      }
+    },
+    "checks": {
+      "tools_listed": true,
+      "envelope_parity": true,
+      "actual_json_byte_budgets_match": true,
+      "user_feedback_kano_evidence_read": true,
+      "lookup_contains_kano_evidence": true,
+      "document_total_is_82": true,
+      "prior_cursor_rejected_by_current_code": true,
+      "stderr_noisy": false,
+      "stderr": ""
+    }
+  },
+  "reproduction": {
+    "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+    "commands": [
+      "node evaluation/run.mjs --cache <snapshot-cache> --cases evaluation/metadata-ranking-cases-2026-09-08.json",
+      "node evaluation/document-search.mjs --cache <snapshot-cache> --cases evaluation/metadata-ranking-cases-2026-09-08.json"
+    ],
+    "comparison_method": "Run pinned baseline query and current query with common unchanged runtime helpers, source snapshot, scopes, case budgets and dirty state. Search at most two pages, without gold-based stopping. Canonical query hashes are in the freeze record."
+  },
+  "limits": [
+    "Two new negative cases still return unrelated candidates.",
+    "Four positive first-observation cases are too few for a broad generalization claim.",
+    "matched_terms and candidate counts are lexical metadata, not semantic truth or answer correctness.",
+    "The host MCP connection was not restarted; runtime smoke uses a fresh SDK process."
+  ],
+  "post_review_regression": {
+    "observed_at": "2026-09-07T17:21:33.173117+00:00",
+    "query_hash": "138424d514426a9c4e01e9b653c21ee27b710838369851f4ba311c882633ffa6",
+    "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+    "fingerprint": "717652160020cd55e4fb143b518c2c34852e516f3c74eb8f3603fa8711599071",
+    "changes": [
+      "Remove an existing heading-less root reading selection unless the query equals the whole root entity ID; retain available provenance separately.",
+      "Rank actual exact field matches before partial numeric scores for both Document roots and reading units, including partial scores of 1000 or above.",
+      "Add selected direct evidence first, graph bundles second and optional root provenance last; optional provenance cannot be the only surviving required evidence.",
+      "Mark output exhaustion before shrinking an excerpt so limit metadata is included in the byte budget.",
+      "Score useful bodies within exact-match candidate documents for single-term reading selection while skipping the global body scan.",
+      "Add an optional output_limit_reached gap only at finalization if it fits; preserve the budget.exhausted flag and reserve the partial status while fitting positive evidence.",
+      "Update max_section_term_matches from local exact-candidate body matches as well as metadata matches.",
+      "Make bounded coverage-gap summaries idempotent, retaining hidden counts and the known total while emitting at most one omission summary."
+    ],
+    "first_observation_preserved": true,
+    "comparisons": {
+      "known": {
+        "role": "known regression; first-observation cases are now reused",
+        "observed_at": "2026-09-07T17:20:58.284Z",
+        "summary": {
+          "cases": 46,
+          "positive_cases": 39,
+          "negative_cases": 7,
+          "full_passes": 23,
+          "evidence_document_hits": 30,
+          "heading_hits": 23,
+          "body_asserted_cases": 35,
+          "body_hits": 20,
+          "evidence_groups_total": 47,
+          "evidence_groups_hit": 27,
+          "document_metadata_coverage": {
+            "lookup_coverage": 31,
+            "search_first_coverage": 32,
+            "search_two_coverage": 34,
+            "union_coverage": 34
+          },
+          "empty_negative_results": 2,
+          "search_empty_negative_results": 2,
+          "lookup_calls": 46,
+          "lookup_bytes": 979336
+        },
+        "metrics_unchanged_cases": 46,
+        "unchanged_case_ids": [
+          "popular-value-expiry-surge",
+          "deployment-drain-order",
+          "opposite-update-order",
+          "long-calculation-delays-requests",
+          "specific-pattern-with-generic-noise",
+          "exact-korean-alias-with-relations",
+          "synthetic-holdout-tech-01",
+          "synthetic-holdout-tech-02",
+          "synthetic-holdout-biz-01",
+          "synthetic-holdout-biz-02",
+          "synthetic-holdout-econ-01",
+          "synthetic-holdout-econ-02",
+          "synthetic-holdout-fit-01",
+          "synthetic-holdout-fit-02",
+          "synthetic-holdout-empty-01",
+          "synthetic-holdout-v2-tech-01",
+          "synthetic-holdout-v2-biz-01",
+          "synthetic-holdout-v2-econ-01",
+          "synthetic-holdout-v2-fit-01",
+          "role-and-authoring-status",
+          "source-link-and-current-implementation",
+          "proposal-includes-cost-and-unknowns",
+          "generalization-tech-stable-cursor-contract",
+          "generalization-tech-payment-retry-identity",
+          "generalization-tech-retry-storm-discipline",
+          "generalization-tech-scarce-stock-concurrency",
+          "generalization-biz-switching-interview-history",
+          "generalization-biz-click-growth-or-redistribution",
+          "generalization-econ-concentrated-sector-diversification",
+          "generalization-fit-repeated-mistakes-feedback-loop",
+          "generalization-empty-gibberish",
+          "generalization-empty-fictional-device",
+          "fresh-tech-llm-grounding-decline",
+          "fresh-tech-single-feature-emergency-stop",
+          "fresh-tech-progressive-release-comparison-gate",
+          "fresh-biz-saas-value-pricing",
+          "fresh-econ-pay-raise-purchasing-power",
+          "fresh-fit-new-team-expectations",
+          "fresh-negative-unknown-token-string",
+          "fresh-negative-unrelated-gardening-question",
+          "synthetic-tech-rag-identifier-provenance",
+          "synthetic-tech-weak-evidence-routing",
+          "synthetic-biz-click-lift-validation",
+          "synthetic-econ-correlation-diversification",
+          "synthetic-negative-weather-forecast",
+          "synthetic-negative-fictional-kingdom-tax"
+        ],
+        "changed_cases": [],
+        "raw_result_hash": "2b28192e03753a659ebcca2d4cad9284269aec6508b69d622b0e4a553e43f148"
+      },
+      "new": {
+        "role": "known regression; first-observation cases are now reused",
+        "observed_at": "2026-09-07T17:20:10.521Z",
+        "summary": {
+          "cases": 6,
+          "positive_cases": 4,
+          "negative_cases": 2,
+          "full_passes": 2,
+          "evidence_document_hits": 4,
+          "heading_hits": 3,
+          "body_asserted_cases": 4,
+          "body_hits": 2,
+          "evidence_groups_total": 4,
+          "evidence_groups_hit": 2,
+          "document_metadata_coverage": {
+            "lookup_coverage": 4,
+            "search_first_coverage": 4,
+            "search_two_coverage": 4,
+            "union_coverage": 4
+          },
+          "empty_negative_results": 0,
+          "search_empty_negative_results": 0,
+          "lookup_calls": 6,
+          "lookup_bytes": 133249
+        },
+        "metrics_unchanged_cases": 6,
+        "unchanged_case_ids": [
+          "unseen-tech-payment-retry-contract",
+          "unseen-tech-ott-unknown-subscription",
+          "unseen-biz-aarrr-alias",
+          "unseen-econ-elasticity-title",
+          "unseen-negative-tech-lunar-landing",
+          "unseen-negative-biz-pet-food-market"
+        ],
+        "changed_cases": [],
+        "raw_result_hash": "5ff83df760ac333a9a6d2025115f225c52c09459b64b36acea789342b6f697b7"
+      }
+    },
+    "runtime_validation": {
+      "tests": 124,
+      "passed": 124,
+      "failed": 0,
+      "command": "node --test test/*.test.mjs",
+      "log_hash": "4c30671f628331ff8b6a25d4b37ef9870a98b8cd3f4109a404b9c674145adaa5",
+      "additional_regressions_failed_on_first_candidate": 3,
+      "review2_regressions_failed_on_previous_candidate": 2,
+      "previous_candidate_query_hash": "840768633f1789d4114bdc80078513fbb417393e40f908dfcbadf1964808130c",
+      "review3_regressions_failed_on_previous_candidate": 2,
+      "review3_previous_candidate_query_hash": "0bc4879c5083cdca5fb636d6669b43820dca7b33fac19eefbbaa200487aeb44c",
+      "review4_regressions_failed_on_previous_candidate": 1,
+      "review4_previous_candidate_query_hash": "ad4a3bf20fc5fc0efbddd533da9476bdfe6ec3eed6cc0468747f2e5a1a948fb7",
+      "literal_root_id_lookup_verified": true,
+      "budget_fixture_resolved_links_verified": 2
+    },
+    "mcp_smoke": {
+      "purpose": "Review4 SDK stdio transport and pinned-evidence smoke test. It does not evaluate model tool choice or answer quality.",
+      "snapshot_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+      "current_query_hash": "138424d514426a9c4e01e9b653c21ee27b710838369851f4ba311c882633ffa6",
+      "tools": [
+        "context_lookup",
+        "context_outline",
+        "context_read",
+        "context_search"
+      ],
+      "kano": {
+        "reference": {
+          "id": "unit:interview-vault:biz/product-strategy/User-Feedback.md:%EC%82%AC%EC%9A%A9%EC%9E%90%20%ED%94%BC%EB%93%9C%EB%B0%B1%20%EA%B4%80%EB%A6%AC/Kano%20%EB%AA%A8%EB%8D%B8#1",
+          "type": "Section",
+          "label": "Kano 모델",
+          "source_uri": "biz/product-strategy/User-Feedback.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "anchor": {
+            "end_byte": 1232,
+            "end_line": 25,
+            "heading_path": [
+              "사용자 피드백 관리",
+              "Kano 모델"
+            ],
+            "occurrence": 1,
+            "start_byte": 489,
+            "start_line": 12
+          }
+        },
+        "read": {
+          "source_uri": "biz/product-strategy/User-Feedback.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "anchor": {
+            "end_byte": 1232,
+            "end_line": 25,
+            "heading_path": [
+              "사용자 피드백 관리",
+              "Kano 모델"
+            ],
+            "occurrence": 1,
+            "start_byte": 489,
+            "start_line": 12
+          },
+          "excerpt_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "contains_kano_body": true
+        },
+        "lookup_contains_same_body": true
+      },
+      "knowledge": {
+        "query": "Development Knowledge Ontology",
+        "source_uri": "ontology/Development-Ontology.md",
+        "best_evidence_ref": {
+          "id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+          "type": "Section",
+          "label": "실행 경로",
+          "source_uri": "ontology/Development-Ontology.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:51978d190e814b045a89335b103089181d69aea152c8fd1b179f2bb06cc33253",
+          "anchor": {
+            "end_byte": 3178,
+            "end_line": 38,
+            "heading_path": [
+              "개발 판단 온톨로지",
+              "실행 경로"
+            ],
+            "occurrence": 1,
+            "start_byte": 2800,
+            "start_line": 34
+          }
+        },
+        "best_evidence_is_non_root": true,
+        "lookup_budget_runs": [
+          {
+            "max_bytes": 2600,
+            "status": "budget_too_small",
+            "error": {
+              "code": "budget_too_small",
+              "message": "max_bytes cannot hold a direct evidence unit"
+            }
+          },
+          {
+            "max_bytes": 2630,
+            "status": "success",
+            "result_status": "partial",
+            "actual_json_bytes": 2337,
+            "budget": {
+              "requested_max_bytes": 2630,
+              "server_max_bytes": 65536,
+              "effective_max_bytes": 2630,
+              "used_bytes": 2337,
+              "exhausted": true,
+              "omitted_evidence_units": 14,
+              "omitted_relations": 24
+            },
+            "primary_evidence_id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+            "primary_anchor": {
+              "heading_path": [
+                "개발 판단 온톨로지",
+                "실행 경로"
+              ],
+              "occurrence": 1,
+              "start_line": 34,
+              "end_line": 38,
+              "start_byte": 2800,
+              "end_byte": 3178
+            }
+          },
+          {
+            "max_bytes": 3000,
+            "status": "success",
+            "result_status": "partial",
+            "actual_json_bytes": 2707,
+            "budget": {
+              "requested_max_bytes": 3000,
+              "server_max_bytes": 65536,
+              "effective_max_bytes": 3000,
+              "used_bytes": 2707,
+              "exhausted": true,
+              "omitted_evidence_units": 14,
+              "omitted_relations": 24
+            },
+            "primary_evidence_id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+            "primary_anchor": {
+              "heading_path": [
+                "개발 판단 온톨로지",
+                "실행 경로"
+              ],
+              "occurrence": 1,
+              "start_line": 34,
+              "end_line": 38,
+              "start_byte": 2800,
+              "end_byte": 3178
+            }
+          },
+          {
+            "max_bytes": 4000,
+            "status": "success",
+            "result_status": "partial",
+            "actual_json_bytes": 4000,
+            "budget": {
+              "requested_max_bytes": 4000,
+              "server_max_bytes": 65536,
+              "effective_max_bytes": 4000,
+              "used_bytes": 4000,
+              "exhausted": true,
+              "omitted_evidence_units": 13,
+              "omitted_relations": 24
+            },
+            "primary_evidence_id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+            "primary_anchor": {
+              "heading_path": [
+                "개발 판단 온톨로지",
+                "실행 경로"
+              ],
+              "occurrence": 1,
+              "start_line": 34,
+              "end_line": 38,
+              "start_byte": 2800,
+              "end_byte": 3178
+            }
+          }
+        ]
+      },
+      "partial_alias_search": {
+        "query": "Knowledge",
+        "source_uri": "ontology/Development-Ontology.md",
+        "best_evidence_ref": {
+          "id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80#1",
+          "type": "Section",
+          "label": "개발 판단 온톨로지",
+          "source_uri": "ontology/Development-Ontology.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:007c2472bb42342c8fc172886b51b5a6d0b5fdebb629155ae43a74b9daf382a2",
+          "anchor": {
+            "end_byte": 988,
+            "end_line": 13,
+            "heading_path": [
+              "개발 판단 온톨로지"
+            ],
+            "occurrence": 1,
+            "start_byte": 192,
+            "start_line": 8
+          }
+        },
+        "best_evidence_is_non_root": true,
+        "budget": {
+          "requested_max_bytes": 24000,
+          "server_max_bytes": 65536,
+          "effective_max_bytes": 24000,
+          "used_bytes": 3232,
+          "exhausted": false
+        },
+        "actual_json_bytes": 3232
+      },
+      "exact_body_queries": [
+        {
+          "query": "Dunbar",
+          "scope": [
+            "fit"
+          ],
+          "max_section_term_matches": 1,
+          "result_status": "ok",
+          "actual_json_bytes": 19297,
+          "budget": {
+            "requested_max_bytes": 24000,
+            "server_max_bytes": 65536,
+            "effective_max_bytes": 24000,
+            "used_bytes": 19297,
+            "exhausted": false,
+            "omitted_evidence_units": 0,
+            "omitted_relations": 0
+          }
+        },
+        {
+          "query": "Semble",
+          "scope": [
+            "tech"
+          ],
+          "max_section_term_matches": 1,
+          "result_status": "partial",
+          "actual_json_bytes": 23376,
+          "budget": {
+            "requested_max_bytes": 24000,
+            "server_max_bytes": 65536,
+            "effective_max_bytes": 24000,
+            "used_bytes": 23376,
+            "exhausted": true,
+            "omitted_evidence_units": 1,
+            "omitted_relations": 1
+          }
+        }
+      ],
+      "previous_raw_3134_cursor": {
+        "baseline_query_hash": "ea318e04f138b74e71df90add00d58ad02063d6f745bee3847b9c533c714008d",
+        "prior_total_candidates": 1498,
+        "current_error": {
+          "code": "cursor_mismatch",
+          "message": "query, scope, snapshot or ranking code changed; restart the search"
+        }
+      },
+      "checks": {
+        "tools_listed": true,
+        "envelope_parity": true,
+        "actual_json_byte_budgets_match": true,
+        "kano_read_hash_and_anchor_match": true,
+        "kano_lookup_contains_body": true,
+        "knowledge_best_evidence_non_root": true,
+        "partial_alias_best_evidence_non_root": true,
+        "knowledge_budget_has_non_root_primary_success": true,
+        "exact_body_max_section_matches_observed": true,
+        "raw_3134_cursor_rejected": true,
+        "stderr_noisy": false,
+        "stderr": ""
+      }
+    }
+  },
+  "previous_review_regression": {
+    "observed_at": "2026-09-07T16:56:08.436154+00:00",
+    "query_hash": "840768633f1789d4114bdc80078513fbb417393e40f908dfcbadf1964808130c",
+    "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+    "fingerprint": "717652160020cd55e4fb143b518c2c34852e516f3c74eb8f3603fa8711599071",
+    "changes": [
+      "Remove an existing heading-less root reading selection unless the query equals the whole root entity ID; retain available provenance separately.",
+      "Rank actual exact field matches before partial numeric scores for both Document roots and reading units, including partial scores of 1000 or above.",
+      "Add selected direct evidence first, graph bundles second and optional root provenance last; optional provenance cannot be the only surviving required evidence.",
+      "Mark output exhaustion before shrinking an excerpt so limit metadata is included in the byte budget."
+    ],
+    "first_observation_preserved": true,
+    "comparisons": {
+      "known": {
+        "role": "known regression; first-observation cases are now reused",
+        "observed_at": "2026-09-07T16:54:14.796Z",
+        "summary": {
+          "cases": 46,
+          "positive_cases": 39,
+          "negative_cases": 7,
+          "full_passes": 23,
+          "evidence_document_hits": 30,
+          "heading_hits": 23,
+          "body_asserted_cases": 35,
+          "body_hits": 20,
+          "evidence_groups_total": 47,
+          "evidence_groups_hit": 27,
+          "document_metadata_coverage": {
+            "lookup_coverage": 31,
+            "search_first_coverage": 32,
+            "search_two_coverage": 34,
+            "union_coverage": 34
+          },
+          "empty_negative_results": 2,
+          "search_empty_negative_results": 2,
+          "lookup_calls": 46,
+          "lookup_bytes": 977246
+        },
+        "metrics_unchanged_cases": 46,
+        "unchanged_case_ids": [
+          "popular-value-expiry-surge",
+          "deployment-drain-order",
+          "opposite-update-order",
+          "long-calculation-delays-requests",
+          "specific-pattern-with-generic-noise",
+          "exact-korean-alias-with-relations",
+          "synthetic-holdout-tech-01",
+          "synthetic-holdout-tech-02",
+          "synthetic-holdout-biz-01",
+          "synthetic-holdout-biz-02",
+          "synthetic-holdout-econ-01",
+          "synthetic-holdout-econ-02",
+          "synthetic-holdout-fit-01",
+          "synthetic-holdout-fit-02",
+          "synthetic-holdout-empty-01",
+          "synthetic-holdout-v2-tech-01",
+          "synthetic-holdout-v2-biz-01",
+          "synthetic-holdout-v2-econ-01",
+          "synthetic-holdout-v2-fit-01",
+          "role-and-authoring-status",
+          "source-link-and-current-implementation",
+          "proposal-includes-cost-and-unknowns",
+          "generalization-tech-stable-cursor-contract",
+          "generalization-tech-payment-retry-identity",
+          "generalization-tech-retry-storm-discipline",
+          "generalization-tech-scarce-stock-concurrency",
+          "generalization-biz-switching-interview-history",
+          "generalization-biz-click-growth-or-redistribution",
+          "generalization-econ-concentrated-sector-diversification",
+          "generalization-fit-repeated-mistakes-feedback-loop",
+          "generalization-empty-gibberish",
+          "generalization-empty-fictional-device",
+          "fresh-tech-llm-grounding-decline",
+          "fresh-tech-single-feature-emergency-stop",
+          "fresh-tech-progressive-release-comparison-gate",
+          "fresh-biz-saas-value-pricing",
+          "fresh-econ-pay-raise-purchasing-power",
+          "fresh-fit-new-team-expectations",
+          "fresh-negative-unknown-token-string",
+          "fresh-negative-unrelated-gardening-question",
+          "synthetic-tech-rag-identifier-provenance",
+          "synthetic-tech-weak-evidence-routing",
+          "synthetic-biz-click-lift-validation",
+          "synthetic-econ-correlation-diversification",
+          "synthetic-negative-weather-forecast",
+          "synthetic-negative-fictional-kingdom-tax"
+        ],
+        "changed_cases": [],
+        "raw_result_hash": "1af99b0a54b881c244164d746cf0e8dde39b70037c5698af91cabfd0bae3483f"
+      },
+      "new": {
+        "role": "known regression; first-observation cases are now reused",
+        "observed_at": "2026-09-07T16:53:40.017Z",
+        "summary": {
+          "cases": 6,
+          "positive_cases": 4,
+          "negative_cases": 2,
+          "full_passes": 2,
+          "evidence_document_hits": 4,
+          "heading_hits": 3,
+          "body_asserted_cases": 4,
+          "body_hits": 2,
+          "evidence_groups_total": 4,
+          "evidence_groups_hit": 2,
+          "document_metadata_coverage": {
+            "lookup_coverage": 4,
+            "search_first_coverage": 4,
+            "search_two_coverage": 4,
+            "union_coverage": 4
+          },
+          "empty_negative_results": 0,
+          "search_empty_negative_results": 0,
+          "lookup_calls": 6,
+          "lookup_bytes": 130686
+        },
+        "metrics_unchanged_cases": 6,
+        "unchanged_case_ids": [
+          "unseen-tech-payment-retry-contract",
+          "unseen-tech-ott-unknown-subscription",
+          "unseen-biz-aarrr-alias",
+          "unseen-econ-elasticity-title",
+          "unseen-negative-tech-lunar-landing",
+          "unseen-negative-biz-pet-food-market"
+        ],
+        "changed_cases": [],
+        "raw_result_hash": "8ea7283859d85f049e529cddfb9d8889cf1bac585b639cd1ff953a06f22b1c11"
+      }
+    },
+    "runtime_validation": {
+      "tests": 119,
+      "passed": 119,
+      "failed": 0,
+      "command": "node --test test/*.test.mjs",
+      "log_hash": "945aefc90b13979b721688717d2af8edc77dfe7c3b838a04b7de69466266b1f1",
+      "additional_regressions_failed_on_first_candidate": 3,
+      "literal_root_id_lookup_verified": true,
+      "budget_fixture_resolved_links_verified": 2
+    },
+    "mcp_smoke": {
+      "purpose": "Post-review SDK stdio transport and pinned-evidence smoke test. It does not evaluate model tool choice or answer quality.",
+      "snapshot_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+      "current_query_hash": "840768633f1789d4114bdc80078513fbb417393e40f908dfcbadf1964808130c",
+      "tools": [
+        "context_lookup",
+        "context_outline",
+        "context_read",
+        "context_search"
+      ],
+      "kano": {
+        "reference": {
+          "id": "unit:interview-vault:biz/product-strategy/User-Feedback.md:%EC%82%AC%EC%9A%A9%EC%9E%90%20%ED%94%BC%EB%93%9C%EB%B0%B1%20%EA%B4%80%EB%A6%AC/Kano%20%EB%AA%A8%EB%8D%B8#1",
+          "type": "Section",
+          "label": "Kano 모델",
+          "source_uri": "biz/product-strategy/User-Feedback.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "anchor": {
+            "end_byte": 1232,
+            "end_line": 25,
+            "heading_path": [
+              "사용자 피드백 관리",
+              "Kano 모델"
+            ],
+            "occurrence": 1,
+            "start_byte": 489,
+            "start_line": 12
+          }
+        },
+        "read": {
+          "source_uri": "biz/product-strategy/User-Feedback.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "anchor": {
+            "end_byte": 1232,
+            "end_line": 25,
+            "heading_path": [
+              "사용자 피드백 관리",
+              "Kano 모델"
+            ],
+            "occurrence": 1,
+            "start_byte": 489,
+            "start_line": 12
+          },
+          "excerpt_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "contains_kano_body": true
+        },
+        "lookup_contains_same_body": true
+      },
+      "knowledge": {
+        "query": "Development Knowledge Ontology",
+        "source_uri": "ontology/Development-Ontology.md",
+        "best_evidence_ref": {
+          "id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+          "type": "Section",
+          "label": "실행 경로",
+          "source_uri": "ontology/Development-Ontology.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:51978d190e814b045a89335b103089181d69aea152c8fd1b179f2bb06cc33253",
+          "anchor": {
+            "end_byte": 3178,
+            "end_line": 38,
+            "heading_path": [
+              "개발 판단 온톨로지",
+              "실행 경로"
+            ],
+            "occurrence": 1,
+            "start_byte": 2800,
+            "start_line": 34
+          }
+        },
+        "best_evidence_is_non_root": true,
+        "lookup_budget_runs": [
+          {
+            "max_bytes": 2600,
+            "status": "budget_too_small",
+            "error": {
+              "code": "budget_too_small",
+              "message": "max_bytes cannot hold a direct evidence unit"
+            }
+          },
+          {
+            "max_bytes": 3000,
+            "status": "success",
+            "result_status": "partial",
+            "actual_json_bytes": 2988,
+            "budget": {
+              "requested_max_bytes": 3000,
+              "server_max_bytes": 65536,
+              "effective_max_bytes": 3000,
+              "used_bytes": 2988,
+              "exhausted": true,
+              "omitted_evidence_units": 14,
+              "omitted_relations": 24
+            },
+            "primary_evidence_id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+            "primary_anchor": {
+              "heading_path": [
+                "개발 판단 온톨로지",
+                "실행 경로"
+              ],
+              "occurrence": 1,
+              "start_line": 34,
+              "end_line": 38,
+              "start_byte": 2800,
+              "end_byte": 3178
+            }
+          },
+          {
+            "max_bytes": 4000,
+            "status": "success",
+            "result_status": "partial",
+            "actual_json_bytes": 3986,
+            "budget": {
+              "requested_max_bytes": 4000,
+              "server_max_bytes": 65536,
+              "effective_max_bytes": 4000,
+              "used_bytes": 3986,
+              "exhausted": true,
+              "omitted_evidence_units": 13,
+              "omitted_relations": 24
+            },
+            "primary_evidence_id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+            "primary_anchor": {
+              "heading_path": [
+                "개발 판단 온톨로지",
+                "실행 경로"
+              ],
+              "occurrence": 1,
+              "start_line": 34,
+              "end_line": 38,
+              "start_byte": 2800,
+              "end_byte": 3178
+            }
+          }
+        ]
+      },
+      "partial_alias_search": {
+        "query": "Knowledge",
+        "source_uri": "ontology/Development-Ontology.md",
+        "best_evidence_ref": {
+          "id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80#1",
+          "type": "Section",
+          "label": "개발 판단 온톨로지",
+          "source_uri": "ontology/Development-Ontology.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:007c2472bb42342c8fc172886b51b5a6d0b5fdebb629155ae43a74b9daf382a2",
+          "anchor": {
+            "end_byte": 988,
+            "end_line": 13,
+            "heading_path": [
+              "개발 판단 온톨로지"
+            ],
+            "occurrence": 1,
+            "start_byte": 192,
+            "start_line": 8
+          }
+        },
+        "best_evidence_is_non_root": true,
+        "budget": {
+          "requested_max_bytes": 24000,
+          "server_max_bytes": 65536,
+          "effective_max_bytes": 24000,
+          "used_bytes": 3232,
+          "exhausted": false
+        },
+        "actual_json_bytes": 3232
+      },
+      "previous_raw_3134_cursor": {
+        "baseline_query_hash": "ea318e04f138b74e71df90add00d58ad02063d6f745bee3847b9c533c714008d",
+        "prior_total_candidates": 1498,
+        "current_error": {
+          "code": "cursor_mismatch",
+          "message": "query, scope, snapshot or ranking code changed; restart the search"
+        }
+      },
+      "checks": {
+        "tools_listed": true,
+        "envelope_parity": true,
+        "actual_json_byte_budgets_match": true,
+        "kano_read_hash_and_anchor_match": true,
+        "kano_lookup_contains_body": true,
+        "knowledge_best_evidence_non_root": true,
+        "partial_alias_best_evidence_non_root": true,
+        "knowledge_budget_has_non_root_primary_success": true,
+        "raw_3134_cursor_rejected": true,
+        "stderr_noisy": false,
+        "stderr": ""
+      }
+    }
+  },
+  "second_review_regression": {
+    "observed_at": "2026-09-07T17:06:15.216931+00:00",
+    "query_hash": "0bc4879c5083cdca5fb636d6669b43820dca7b33fac19eefbbaa200487aeb44c",
+    "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+    "fingerprint": "717652160020cd55e4fb143b518c2c34852e516f3c74eb8f3603fa8711599071",
+    "changes": [
+      "Remove an existing heading-less root reading selection unless the query equals the whole root entity ID; retain available provenance separately.",
+      "Rank actual exact field matches before partial numeric scores for both Document roots and reading units, including partial scores of 1000 or above.",
+      "Add selected direct evidence first, graph bundles second and optional root provenance last; optional provenance cannot be the only surviving required evidence.",
+      "Mark output exhaustion before shrinking an excerpt so limit metadata is included in the byte budget.",
+      "Score useful bodies within exact-match candidate documents for single-term reading selection while skipping the global body scan.",
+      "Remove a duplicate output_limit_reached gap before accepted graph bundles when budget.exhausted already reports exhaustion."
+    ],
+    "first_observation_preserved": true,
+    "comparisons": {
+      "known": {
+        "role": "known regression; first-observation cases are now reused",
+        "observed_at": "2026-09-07T17:01:53.447Z",
+        "summary": {
+          "cases": 46,
+          "positive_cases": 39,
+          "negative_cases": 7,
+          "full_passes": 23,
+          "evidence_document_hits": 30,
+          "heading_hits": 23,
+          "body_asserted_cases": 35,
+          "body_hits": 20,
+          "evidence_groups_total": 47,
+          "evidence_groups_hit": 27,
+          "document_metadata_coverage": {
+            "lookup_coverage": 31,
+            "search_first_coverage": 32,
+            "search_two_coverage": 34,
+            "union_coverage": 34
+          },
+          "empty_negative_results": 2,
+          "search_empty_negative_results": 2,
+          "lookup_calls": 46,
+          "lookup_bytes": 977246
+        },
+        "metrics_unchanged_cases": 46,
+        "unchanged_case_ids": [
+          "popular-value-expiry-surge",
+          "deployment-drain-order",
+          "opposite-update-order",
+          "long-calculation-delays-requests",
+          "specific-pattern-with-generic-noise",
+          "exact-korean-alias-with-relations",
+          "synthetic-holdout-tech-01",
+          "synthetic-holdout-tech-02",
+          "synthetic-holdout-biz-01",
+          "synthetic-holdout-biz-02",
+          "synthetic-holdout-econ-01",
+          "synthetic-holdout-econ-02",
+          "synthetic-holdout-fit-01",
+          "synthetic-holdout-fit-02",
+          "synthetic-holdout-empty-01",
+          "synthetic-holdout-v2-tech-01",
+          "synthetic-holdout-v2-biz-01",
+          "synthetic-holdout-v2-econ-01",
+          "synthetic-holdout-v2-fit-01",
+          "role-and-authoring-status",
+          "source-link-and-current-implementation",
+          "proposal-includes-cost-and-unknowns",
+          "generalization-tech-stable-cursor-contract",
+          "generalization-tech-payment-retry-identity",
+          "generalization-tech-retry-storm-discipline",
+          "generalization-tech-scarce-stock-concurrency",
+          "generalization-biz-switching-interview-history",
+          "generalization-biz-click-growth-or-redistribution",
+          "generalization-econ-concentrated-sector-diversification",
+          "generalization-fit-repeated-mistakes-feedback-loop",
+          "generalization-empty-gibberish",
+          "generalization-empty-fictional-device",
+          "fresh-tech-llm-grounding-decline",
+          "fresh-tech-single-feature-emergency-stop",
+          "fresh-tech-progressive-release-comparison-gate",
+          "fresh-biz-saas-value-pricing",
+          "fresh-econ-pay-raise-purchasing-power",
+          "fresh-fit-new-team-expectations",
+          "fresh-negative-unknown-token-string",
+          "fresh-negative-unrelated-gardening-question",
+          "synthetic-tech-rag-identifier-provenance",
+          "synthetic-tech-weak-evidence-routing",
+          "synthetic-biz-click-lift-validation",
+          "synthetic-econ-correlation-diversification",
+          "synthetic-negative-weather-forecast",
+          "synthetic-negative-fictional-kingdom-tax"
+        ],
+        "changed_cases": [],
+        "raw_result_hash": "1b8f6ab1f88286e5c210a507a8d0950d1dcba2ad090f5d36a94d13f74c2f87df"
+      },
+      "new": {
+        "role": "known regression; first-observation cases are now reused",
+        "observed_at": "2026-09-07T17:01:19.330Z",
+        "summary": {
+          "cases": 6,
+          "positive_cases": 4,
+          "negative_cases": 2,
+          "full_passes": 2,
+          "evidence_document_hits": 4,
+          "heading_hits": 3,
+          "body_asserted_cases": 4,
+          "body_hits": 2,
+          "evidence_groups_total": 4,
+          "evidence_groups_hit": 2,
+          "document_metadata_coverage": {
+            "lookup_coverage": 4,
+            "search_first_coverage": 4,
+            "search_two_coverage": 4,
+            "union_coverage": 4
+          },
+          "empty_negative_results": 0,
+          "search_empty_negative_results": 0,
+          "lookup_calls": 6,
+          "lookup_bytes": 132575
+        },
+        "metrics_unchanged_cases": 6,
+        "unchanged_case_ids": [
+          "unseen-tech-payment-retry-contract",
+          "unseen-tech-ott-unknown-subscription",
+          "unseen-biz-aarrr-alias",
+          "unseen-econ-elasticity-title",
+          "unseen-negative-tech-lunar-landing",
+          "unseen-negative-biz-pet-food-market"
+        ],
+        "changed_cases": [],
+        "raw_result_hash": "590d662d1541fe835da3a40fb6f32339e1d112823741216a1d1a75cd589711eb"
+      }
+    },
+    "runtime_validation": {
+      "tests": 121,
+      "passed": 121,
+      "failed": 0,
+      "command": "node --test test/*.test.mjs",
+      "log_hash": "b404867fb4e1bca34399e53a6aec62bca4adca0848ec65f35b01e3925a579f8f",
+      "additional_regressions_failed_on_first_candidate": 3,
+      "review2_regressions_failed_on_previous_candidate": 2,
+      "previous_candidate_query_hash": "840768633f1789d4114bdc80078513fbb417393e40f908dfcbadf1964808130c",
+      "literal_root_id_lookup_verified": true,
+      "budget_fixture_resolved_links_verified": 2
+    },
+    "mcp_smoke": {
+      "purpose": "Review2 SDK stdio transport and pinned-evidence smoke test. It does not evaluate model tool choice or answer quality.",
+      "snapshot_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+      "current_query_hash": "0bc4879c5083cdca5fb636d6669b43820dca7b33fac19eefbbaa200487aeb44c",
+      "tools": [
+        "context_lookup",
+        "context_outline",
+        "context_read",
+        "context_search"
+      ],
+      "kano": {
+        "reference": {
+          "id": "unit:interview-vault:biz/product-strategy/User-Feedback.md:%EC%82%AC%EC%9A%A9%EC%9E%90%20%ED%94%BC%EB%93%9C%EB%B0%B1%20%EA%B4%80%EB%A6%AC/Kano%20%EB%AA%A8%EB%8D%B8#1",
+          "type": "Section",
+          "label": "Kano 모델",
+          "source_uri": "biz/product-strategy/User-Feedback.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "anchor": {
+            "end_byte": 1232,
+            "end_line": 25,
+            "heading_path": [
+              "사용자 피드백 관리",
+              "Kano 모델"
+            ],
+            "occurrence": 1,
+            "start_byte": 489,
+            "start_line": 12
+          }
+        },
+        "read": {
+          "source_uri": "biz/product-strategy/User-Feedback.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "anchor": {
+            "end_byte": 1232,
+            "end_line": 25,
+            "heading_path": [
+              "사용자 피드백 관리",
+              "Kano 모델"
+            ],
+            "occurrence": 1,
+            "start_byte": 489,
+            "start_line": 12
+          },
+          "excerpt_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "contains_kano_body": true
+        },
+        "lookup_contains_same_body": true
+      },
+      "knowledge": {
+        "query": "Development Knowledge Ontology",
+        "source_uri": "ontology/Development-Ontology.md",
+        "best_evidence_ref": {
+          "id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+          "type": "Section",
+          "label": "실행 경로",
+          "source_uri": "ontology/Development-Ontology.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:51978d190e814b045a89335b103089181d69aea152c8fd1b179f2bb06cc33253",
+          "anchor": {
+            "end_byte": 3178,
+            "end_line": 38,
+            "heading_path": [
+              "개발 판단 온톨로지",
+              "실행 경로"
+            ],
+            "occurrence": 1,
+            "start_byte": 2800,
+            "start_line": 34
+          }
+        },
+        "best_evidence_is_non_root": true,
+        "lookup_budget_runs": [
+          {
+            "max_bytes": 2600,
+            "status": "budget_too_small",
+            "error": {
+              "code": "budget_too_small",
+              "message": "max_bytes cannot hold a direct evidence unit"
+            }
+          },
+          {
+            "max_bytes": 3000,
+            "status": "success",
+            "result_status": "partial",
+            "actual_json_bytes": 2988,
+            "budget": {
+              "requested_max_bytes": 3000,
+              "server_max_bytes": 65536,
+              "effective_max_bytes": 3000,
+              "used_bytes": 2988,
+              "exhausted": true,
+              "omitted_evidence_units": 14,
+              "omitted_relations": 24
+            },
+            "primary_evidence_id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+            "primary_anchor": {
+              "heading_path": [
+                "개발 판단 온톨로지",
+                "실행 경로"
+              ],
+              "occurrence": 1,
+              "start_line": 34,
+              "end_line": 38,
+              "start_byte": 2800,
+              "end_byte": 3178
+            }
+          },
+          {
+            "max_bytes": 4000,
+            "status": "success",
+            "result_status": "partial",
+            "actual_json_bytes": 3986,
+            "budget": {
+              "requested_max_bytes": 4000,
+              "server_max_bytes": 65536,
+              "effective_max_bytes": 4000,
+              "used_bytes": 3986,
+              "exhausted": true,
+              "omitted_evidence_units": 13,
+              "omitted_relations": 24
+            },
+            "primary_evidence_id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+            "primary_anchor": {
+              "heading_path": [
+                "개발 판단 온톨로지",
+                "실행 경로"
+              ],
+              "occurrence": 1,
+              "start_line": 34,
+              "end_line": 38,
+              "start_byte": 2800,
+              "end_byte": 3178
+            }
+          }
+        ]
+      },
+      "partial_alias_search": {
+        "query": "Knowledge",
+        "source_uri": "ontology/Development-Ontology.md",
+        "best_evidence_ref": {
+          "id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80#1",
+          "type": "Section",
+          "label": "개발 판단 온톨로지",
+          "source_uri": "ontology/Development-Ontology.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:007c2472bb42342c8fc172886b51b5a6d0b5fdebb629155ae43a74b9daf382a2",
+          "anchor": {
+            "end_byte": 988,
+            "end_line": 13,
+            "heading_path": [
+              "개발 판단 온톨로지"
+            ],
+            "occurrence": 1,
+            "start_byte": 192,
+            "start_line": 8
+          }
+        },
+        "best_evidence_is_non_root": true,
+        "budget": {
+          "requested_max_bytes": 24000,
+          "server_max_bytes": 65536,
+          "effective_max_bytes": 24000,
+          "used_bytes": 3232,
+          "exhausted": false
+        },
+        "actual_json_bytes": 3232
+      },
+      "previous_raw_3134_cursor": {
+        "baseline_query_hash": "ea318e04f138b74e71df90add00d58ad02063d6f745bee3847b9c533c714008d",
+        "prior_total_candidates": 1498,
+        "current_error": {
+          "code": "cursor_mismatch",
+          "message": "query, scope, snapshot or ranking code changed; restart the search"
+        }
+      },
+      "checks": {
+        "tools_listed": true,
+        "envelope_parity": true,
+        "actual_json_byte_budgets_match": true,
+        "kano_read_hash_and_anchor_match": true,
+        "kano_lookup_contains_body": true,
+        "knowledge_best_evidence_non_root": true,
+        "partial_alias_best_evidence_non_root": true,
+        "knowledge_budget_has_non_root_primary_success": true,
+        "raw_3134_cursor_rejected": true,
+        "stderr_noisy": false,
+        "stderr": ""
+      }
+    }
+  },
+  "third_review_regression": {
+    "observed_at": "2026-09-07T17:16:06.491786+00:00",
+    "query_hash": "ad4a3bf20fc5fc0efbddd533da9476bdfe6ec3eed6cc0468747f2e5a1a948fb7",
+    "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+    "fingerprint": "717652160020cd55e4fb143b518c2c34852e516f3c74eb8f3603fa8711599071",
+    "changes": [
+      "Remove an existing heading-less root reading selection unless the query equals the whole root entity ID; retain available provenance separately.",
+      "Rank actual exact field matches before partial numeric scores for both Document roots and reading units, including partial scores of 1000 or above.",
+      "Add selected direct evidence first, graph bundles second and optional root provenance last; optional provenance cannot be the only surviving required evidence.",
+      "Mark output exhaustion before shrinking an excerpt so limit metadata is included in the byte budget.",
+      "Score useful bodies within exact-match candidate documents for single-term reading selection while skipping the global body scan.",
+      "Add an optional output_limit_reached gap only at finalization if it fits; preserve the budget.exhausted flag and reserve the partial status while fitting positive evidence.",
+      "Update max_section_term_matches from local exact-candidate body matches as well as metadata matches."
+    ],
+    "first_observation_preserved": true,
+    "comparisons": {
+      "known": {
+        "role": "known regression; first-observation cases are now reused",
+        "observed_at": "2026-09-07T17:11:56.754Z",
+        "summary": {
+          "cases": 46,
+          "positive_cases": 39,
+          "negative_cases": 7,
+          "full_passes": 23,
+          "evidence_document_hits": 30,
+          "heading_hits": 23,
+          "body_asserted_cases": 35,
+          "body_hits": 20,
+          "evidence_groups_total": 47,
+          "evidence_groups_hit": 27,
+          "document_metadata_coverage": {
+            "lookup_coverage": 31,
+            "search_first_coverage": 32,
+            "search_two_coverage": 34,
+            "union_coverage": 34
+          },
+          "empty_negative_results": 2,
+          "search_empty_negative_results": 2,
+          "lookup_calls": 46,
+          "lookup_bytes": 979336
+        },
+        "metrics_unchanged_cases": 46,
+        "unchanged_case_ids": [
+          "popular-value-expiry-surge",
+          "deployment-drain-order",
+          "opposite-update-order",
+          "long-calculation-delays-requests",
+          "specific-pattern-with-generic-noise",
+          "exact-korean-alias-with-relations",
+          "synthetic-holdout-tech-01",
+          "synthetic-holdout-tech-02",
+          "synthetic-holdout-biz-01",
+          "synthetic-holdout-biz-02",
+          "synthetic-holdout-econ-01",
+          "synthetic-holdout-econ-02",
+          "synthetic-holdout-fit-01",
+          "synthetic-holdout-fit-02",
+          "synthetic-holdout-empty-01",
+          "synthetic-holdout-v2-tech-01",
+          "synthetic-holdout-v2-biz-01",
+          "synthetic-holdout-v2-econ-01",
+          "synthetic-holdout-v2-fit-01",
+          "role-and-authoring-status",
+          "source-link-and-current-implementation",
+          "proposal-includes-cost-and-unknowns",
+          "generalization-tech-stable-cursor-contract",
+          "generalization-tech-payment-retry-identity",
+          "generalization-tech-retry-storm-discipline",
+          "generalization-tech-scarce-stock-concurrency",
+          "generalization-biz-switching-interview-history",
+          "generalization-biz-click-growth-or-redistribution",
+          "generalization-econ-concentrated-sector-diversification",
+          "generalization-fit-repeated-mistakes-feedback-loop",
+          "generalization-empty-gibberish",
+          "generalization-empty-fictional-device",
+          "fresh-tech-llm-grounding-decline",
+          "fresh-tech-single-feature-emergency-stop",
+          "fresh-tech-progressive-release-comparison-gate",
+          "fresh-biz-saas-value-pricing",
+          "fresh-econ-pay-raise-purchasing-power",
+          "fresh-fit-new-team-expectations",
+          "fresh-negative-unknown-token-string",
+          "fresh-negative-unrelated-gardening-question",
+          "synthetic-tech-rag-identifier-provenance",
+          "synthetic-tech-weak-evidence-routing",
+          "synthetic-biz-click-lift-validation",
+          "synthetic-econ-correlation-diversification",
+          "synthetic-negative-weather-forecast",
+          "synthetic-negative-fictional-kingdom-tax"
+        ],
+        "changed_cases": [],
+        "raw_result_hash": "71caaf1d73900387253f3fc559f6819def7dc077c9334b4e2d8b69df37f3c2d9"
+      },
+      "new": {
+        "role": "known regression; first-observation cases are now reused",
+        "observed_at": "2026-09-07T17:11:22.057Z",
+        "summary": {
+          "cases": 6,
+          "positive_cases": 4,
+          "negative_cases": 2,
+          "full_passes": 2,
+          "evidence_document_hits": 4,
+          "heading_hits": 3,
+          "body_asserted_cases": 4,
+          "body_hits": 2,
+          "evidence_groups_total": 4,
+          "evidence_groups_hit": 2,
+          "document_metadata_coverage": {
+            "lookup_coverage": 4,
+            "search_first_coverage": 4,
+            "search_two_coverage": 4,
+            "union_coverage": 4
+          },
+          "empty_negative_results": 0,
+          "search_empty_negative_results": 0,
+          "lookup_calls": 6,
+          "lookup_bytes": 133249
+        },
+        "metrics_unchanged_cases": 6,
+        "unchanged_case_ids": [
+          "unseen-tech-payment-retry-contract",
+          "unseen-tech-ott-unknown-subscription",
+          "unseen-biz-aarrr-alias",
+          "unseen-econ-elasticity-title",
+          "unseen-negative-tech-lunar-landing",
+          "unseen-negative-biz-pet-food-market"
+        ],
+        "changed_cases": [],
+        "raw_result_hash": "1a5b7b83dc10f359eae778c26c26f6a9521208be41f67dddeeb60bea0a19afe5"
+      }
+    },
+    "runtime_validation": {
+      "tests": 123,
+      "passed": 123,
+      "failed": 0,
+      "command": "node --test test/*.test.mjs",
+      "log_hash": "3514ac7cb674808de78cebcd27876abc5e8c3a772e7bc59fb1b3cce617675679",
+      "additional_regressions_failed_on_first_candidate": 3,
+      "review2_regressions_failed_on_previous_candidate": 2,
+      "previous_candidate_query_hash": "840768633f1789d4114bdc80078513fbb417393e40f908dfcbadf1964808130c",
+      "review3_regressions_failed_on_previous_candidate": 2,
+      "review3_previous_candidate_query_hash": "0bc4879c5083cdca5fb636d6669b43820dca7b33fac19eefbbaa200487aeb44c",
+      "literal_root_id_lookup_verified": true,
+      "budget_fixture_resolved_links_verified": 2
+    },
+    "mcp_smoke": {
+      "purpose": "Review3 SDK stdio transport and pinned-evidence smoke test. It does not evaluate model tool choice or answer quality.",
+      "snapshot_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+      "current_query_hash": "ad4a3bf20fc5fc0efbddd533da9476bdfe6ec3eed6cc0468747f2e5a1a948fb7",
+      "tools": [
+        "context_lookup",
+        "context_outline",
+        "context_read",
+        "context_search"
+      ],
+      "kano": {
+        "reference": {
+          "id": "unit:interview-vault:biz/product-strategy/User-Feedback.md:%EC%82%AC%EC%9A%A9%EC%9E%90%20%ED%94%BC%EB%93%9C%EB%B0%B1%20%EA%B4%80%EB%A6%AC/Kano%20%EB%AA%A8%EB%8D%B8#1",
+          "type": "Section",
+          "label": "Kano 모델",
+          "source_uri": "biz/product-strategy/User-Feedback.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "anchor": {
+            "end_byte": 1232,
+            "end_line": 25,
+            "heading_path": [
+              "사용자 피드백 관리",
+              "Kano 모델"
+            ],
+            "occurrence": 1,
+            "start_byte": 489,
+            "start_line": 12
+          }
+        },
+        "read": {
+          "source_uri": "biz/product-strategy/User-Feedback.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "anchor": {
+            "end_byte": 1232,
+            "end_line": 25,
+            "heading_path": [
+              "사용자 피드백 관리",
+              "Kano 모델"
+            ],
+            "occurrence": 1,
+            "start_byte": 489,
+            "start_line": 12
+          },
+          "excerpt_hash": "sha256:7b7b5363201b447bc24c5ad537bbc954c652dde3f0c8cbf0ce125f5cd242685d",
+          "contains_kano_body": true
+        },
+        "lookup_contains_same_body": true
+      },
+      "knowledge": {
+        "query": "Development Knowledge Ontology",
+        "source_uri": "ontology/Development-Ontology.md",
+        "best_evidence_ref": {
+          "id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+          "type": "Section",
+          "label": "실행 경로",
+          "source_uri": "ontology/Development-Ontology.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:51978d190e814b045a89335b103089181d69aea152c8fd1b179f2bb06cc33253",
+          "anchor": {
+            "end_byte": 3178,
+            "end_line": 38,
+            "heading_path": [
+              "개발 판단 온톨로지",
+              "실행 경로"
+            ],
+            "occurrence": 1,
+            "start_byte": 2800,
+            "start_line": 34
+          }
+        },
+        "best_evidence_is_non_root": true,
+        "lookup_budget_runs": [
+          {
+            "max_bytes": 2600,
+            "status": "budget_too_small",
+            "error": {
+              "code": "budget_too_small",
+              "message": "max_bytes cannot hold a direct evidence unit"
+            }
+          },
+          {
+            "max_bytes": 2630,
+            "status": "success",
+            "result_status": "partial",
+            "actual_json_bytes": 2337,
+            "budget": {
+              "requested_max_bytes": 2630,
+              "server_max_bytes": 65536,
+              "effective_max_bytes": 2630,
+              "used_bytes": 2337,
+              "exhausted": true,
+              "omitted_evidence_units": 14,
+              "omitted_relations": 24
+            },
+            "primary_evidence_id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+            "primary_anchor": {
+              "heading_path": [
+                "개발 판단 온톨로지",
+                "실행 경로"
+              ],
+              "occurrence": 1,
+              "start_line": 34,
+              "end_line": 38,
+              "start_byte": 2800,
+              "end_byte": 3178
+            }
+          },
+          {
+            "max_bytes": 3000,
+            "status": "success",
+            "result_status": "partial",
+            "actual_json_bytes": 2707,
+            "budget": {
+              "requested_max_bytes": 3000,
+              "server_max_bytes": 65536,
+              "effective_max_bytes": 3000,
+              "used_bytes": 2707,
+              "exhausted": true,
+              "omitted_evidence_units": 14,
+              "omitted_relations": 24
+            },
+            "primary_evidence_id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+            "primary_anchor": {
+              "heading_path": [
+                "개발 판단 온톨로지",
+                "실행 경로"
+              ],
+              "occurrence": 1,
+              "start_line": 34,
+              "end_line": 38,
+              "start_byte": 2800,
+              "end_byte": 3178
+            }
+          },
+          {
+            "max_bytes": 4000,
+            "status": "success",
+            "result_status": "partial",
+            "actual_json_bytes": 4000,
+            "budget": {
+              "requested_max_bytes": 4000,
+              "server_max_bytes": 65536,
+              "effective_max_bytes": 4000,
+              "used_bytes": 4000,
+              "exhausted": true,
+              "omitted_evidence_units": 13,
+              "omitted_relations": 24
+            },
+            "primary_evidence_id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80/%EC%8B%A4%ED%96%89%20%EA%B2%BD%EB%A1%9C#1",
+            "primary_anchor": {
+              "heading_path": [
+                "개발 판단 온톨로지",
+                "실행 경로"
+              ],
+              "occurrence": 1,
+              "start_line": 34,
+              "end_line": 38,
+              "start_byte": 2800,
+              "end_byte": 3178
+            }
+          }
+        ]
+      },
+      "partial_alias_search": {
+        "query": "Knowledge",
+        "source_uri": "ontology/Development-Ontology.md",
+        "best_evidence_ref": {
+          "id": "unit:interview-vault:ontology/Development-Ontology.md:%EA%B0%9C%EB%B0%9C%20%ED%8C%90%EB%8B%A8%20%EC%98%A8%ED%86%A8%EB%A1%9C%EC%A7%80#1",
+          "type": "Section",
+          "label": "개발 판단 온톨로지",
+          "source_uri": "ontology/Development-Ontology.md",
+          "source_revision": "3134d051dd453eee173e0c94ea2cfc107748b710",
+          "content_hash": "sha256:007c2472bb42342c8fc172886b51b5a6d0b5fdebb629155ae43a74b9daf382a2",
+          "anchor": {
+            "end_byte": 988,
+            "end_line": 13,
+            "heading_path": [
+              "개발 판단 온톨로지"
+            ],
+            "occurrence": 1,
+            "start_byte": 192,
+            "start_line": 8
+          }
+        },
+        "best_evidence_is_non_root": true,
+        "budget": {
+          "requested_max_bytes": 24000,
+          "server_max_bytes": 65536,
+          "effective_max_bytes": 24000,
+          "used_bytes": 3232,
+          "exhausted": false
+        },
+        "actual_json_bytes": 3232
+      },
+      "exact_body_queries": [
+        {
+          "query": "Dunbar",
+          "scope": [
+            "fit"
+          ],
+          "max_section_term_matches": 1,
+          "result_status": "ok",
+          "actual_json_bytes": 19297,
+          "budget": {
+            "requested_max_bytes": 24000,
+            "server_max_bytes": 65536,
+            "effective_max_bytes": 24000,
+            "used_bytes": 19297,
+            "exhausted": false,
+            "omitted_evidence_units": 0,
+            "omitted_relations": 0
+          }
+        },
+        {
+          "query": "Semble",
+          "scope": [
+            "tech"
+          ],
+          "max_section_term_matches": 1,
+          "result_status": "partial",
+          "actual_json_bytes": 23376,
+          "budget": {
+            "requested_max_bytes": 24000,
+            "server_max_bytes": 65536,
+            "effective_max_bytes": 24000,
+            "used_bytes": 23376,
+            "exhausted": true,
+            "omitted_evidence_units": 1,
+            "omitted_relations": 1
+          }
+        }
+      ],
+      "previous_raw_3134_cursor": {
+        "baseline_query_hash": "ea318e04f138b74e71df90add00d58ad02063d6f745bee3847b9c533c714008d",
+        "prior_total_candidates": 1498,
+        "current_error": {
+          "code": "cursor_mismatch",
+          "message": "query, scope, snapshot or ranking code changed; restart the search"
+        }
+      },
+      "checks": {
+        "tools_listed": true,
+        "envelope_parity": true,
+        "actual_json_byte_budgets_match": true,
+        "kano_read_hash_and_anchor_match": true,
+        "kano_lookup_contains_body": true,
+        "knowledge_best_evidence_non_root": true,
+        "partial_alias_best_evidence_non_root": true,
+        "knowledge_budget_has_non_root_primary_success": true,
+        "exact_body_max_section_matches_observed": true,
+        "raw_3134_cursor_rejected": true,
+        "stderr_noisy": false,
+        "stderr": ""
+      }
+    }
+  }
+}

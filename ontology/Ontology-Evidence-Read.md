@@ -7,11 +7,11 @@ aliases: ["온톨로지 근거 이어 읽기", "Ontology Evidence Read"]
 
 # 조회한 근거를 같은 원문에서 끝까지 읽기
 
-`context_lookup`의 발췌는 section 앞부분을 최대 1,400 byte까지 반환한다. 중요한 조건이나 예외가 잘렸을 때 `context_read`로 해당 근거를 더 읽을 수 있다. 원문 탐색과 역할/적용 판단은 [[Development-Ontology-Contract]]를 따른다.
+`context_lookup`의 발췌는 section 앞부분을 최대 1,400 byte까지 반환한다. `context_search`는 본문 없이 `best_evidence_ref`만 반환한다. 정규화 후 한 토큰인 exact alias 또는 title 질의도 전체 색인 본문을 훑는 대신 그 후보 문서의 유용한 Section을 읽어 시작점을 고를 수 있다. 중요한 조건이나 예외가 잘렸거나 검색 후보의 원문을 확인해야 할 때 `context_read`로 해당 근거를 더 읽을 수 있다. `best_evidence_ref`가 fallback으로 선택됐을 때는 그 본문에 query 어휘가 있다는 보장이 없으므로 읽은 뒤에 확인한다. 원문 탐색과 역할/적용 판단은 [[Development-Ontology-Contract]]를 따른다.
 
 ## MCP 입력과 응답
 
-조회 결과의 evidence unit 또는 [[Ontology-Document-Outline|문서 목차]]의 section에서 다음 세 값을 그대로 복사한다.
+`context_lookup`의 evidence unit, [[Ontology-Document-Search|문서 검색]]의 `best_evidence_ref`, 또는 [[Ontology-Document-Outline|문서 목차]]의 section에서 다음 세 값을 그대로 복사한다.
 
 | 입력 | 의미 |
 | --- | --- |
@@ -31,7 +31,7 @@ aliases: ["온톨로지 근거 이어 읽기", "Ontology Evidence Read"]
 
 `evidence_unit.truncated`가 false인 경우는 offset 0에서 근거 전체를 한 번에 반환했을 때다. 여러 페이지로 읽은 마지막 페이지는 `pagination.complete: true`여도 그 페이지 단독으로 전체 근거가 아니므로 `truncated: true`다.
 
-페이지 경계는 UTF-8 문자를 자르지 않는다. 문자의 중간 byte를 시작 위치로 지정하면 거부한다. 남은 내용이 있는데 한 문자와 메타데이터도 예산에 담지 못하면 빈 페이지로 반복하지 않고 `budget_too_small`로 끝낸다. 상한은 본문뿐 아니라 JSON escape와 메타데이터를 포함하며 `budget.used_bytes`는 실제 JSON 직렬화 크기다.
+페이지 경계는 UTF-8 문자를 자르지 않는다. 문자의 중간 byte를 시작 위치로 지정하면 거부한다. 남은 내용이 있는데 한 문자와 메타데이터도 예산에 담지 못하면 빈 페이지로 반복하지 않고 `budget_too_small`로 끝낸다. 상한은 본문뿐 아니라 JSON escape와 메타데이터를 포함하며 `budget.used_bytes`는 실제 JSON 직렬화 크기다. 이 도구의 페이지 예산과 별개로 `context_lookup` 근거 pack은 `budget.exhausted`를 제한의 정본으로 보고, `output_limit_reached` coverage gap은 최종 응답에 여유가 있을 때만 붙인다.
 
 긴 ID나 anchor 때문에 `budget_too_small`이면 같은 시작 위치에서 `max_bytes`를 최대 65,536까지 늘려 다시 읽을 수 있다. 상한에서도 읽을 수 없으면 근거 부족으로 남긴다.
 
@@ -59,7 +59,7 @@ node src/cli.mjs read --committed-only \
 
 ## 적용 범위
 
-새 MCP 프로세스는 `context_lookup`, `context_outline`, `context_read` 세 도구를 노출한다. 이미 연결된 프로세스는 이전 코드를 유지하므로 새 도구의 사용 가능 여부를 실제 `tools/list`로 확인한다. 현재 세션에 도구가 없으면 CLI 또는 같은 revision의 Git 원문 읽기로 보완한다.
+새 MCP 프로세스는 `context_search`, `context_lookup`, `context_outline`, `context_read` 네 도구를 노출한다. `context_search`에서 Document 후보를 고른 뒤 `best_evidence_ref`를 바로 읽거나, 다른 heading도 확인해야 하면 `context_outline`으로 section receipt를 찾고 읽는다. 이미 연결된 프로세스는 이전 코드를 유지하므로 새 도구의 사용 가능 여부를 실제 `tools/list`로 확인한다. 현재 세션에 도구가 없으면 CLI 또는 같은 revision의 Git 원문 읽기로 보완한다.
 
 근거 이어 읽기는 이미 찾은 section의 누락된 뒷부분을 제공한다. 찾지 못한 문서의 검색 순위, 의미적 충돌 판정이나 모델의 자동 도구 선택을 해결했다는 뜻은 아니다. 검증 결과는 [[Development-Ontology-Evaluation]]에 기록한다.
 

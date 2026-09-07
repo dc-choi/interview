@@ -1,0 +1,64 @@
+[
+  {
+    "id": "unseen-tech-payment-retry-contract",
+    "query": "결제 POST를 처리한 뒤 응답을 받지 못했다. 같은 요청을 재시도해 중복 결제를 막으려면 API 계약에 무엇을 두어야 하나?",
+    "scope": ["tech"],
+    "expected_evidence": [
+      {
+        "path": "tech/web/http/Idempotency.md",
+        "heading": "Idempotency Key 헤더",
+        "all_text": ["Idempotency-Key", "같은 키와 같은 요청"]
+      }
+    ]
+  },
+  {
+    "id": "unseen-tech-ott-unknown-subscription",
+    "query": "OTT 홈에서 구독 일치 여부가 UNKNOWN이고 가용성 정보도 오래됐다. 직접 시청 버튼과 대체 화면은 어떻게 결정해야 하나?",
+    "scope": ["tech"],
+    "expected_evidence": [
+      {
+        "path": "tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Eligibility-Availability.md",
+        "heading": "상태 판정표",
+        "all_text": ["UNKNOWN", "직접 시청 약속을 제거"]
+      }
+    ]
+  },
+  {
+    "id": "unseen-biz-aarrr-alias",
+    "query": "AARRR",
+    "scope": ["biz"],
+    "expected_evidence": [
+      {
+        "path": "biz/measurement-and-risk/Metrics-Framework.md",
+        "heading": "AARRR (Pirate Metrics)",
+        "all_text": ["Dave McClure", "Acquisition"]
+      }
+    ]
+  },
+  {
+    "id": "unseen-econ-elasticity-title",
+    "query": "탄력성",
+    "scope": ["econ"],
+    "expected_evidence": [
+      {
+        "path": "econ/microeconomics/Elasticity.md",
+        "heading": "4. 총수입과의 관계 (실전에서 가장 중요)",
+        "all_text": ["비탄력적", "총수입이 늘어난다"]
+      }
+    ]
+  },
+  {
+    "id": "unseen-negative-tech-lunar-landing",
+    "query": "아폴로 11호가 달에 착륙한 해와 임무 지휘관은 누구인가?",
+    "scope": ["tech"],
+    "expected_empty": true,
+    "expected_evidence": []
+  },
+  {
+    "id": "unseen-negative-biz-pet-food-market",
+    "query": "국내 반려동물 사료 시장의 최근 점유율과 기업별 매출을 비교해줘.",
+    "scope": ["biz"],
+    "expected_empty": true,
+    "expected_evidence": []
+  }
+]

@@ -25,13 +25,17 @@ aliases: ["Ontology Operations", "온톨로지 실행 절차"]
 
 `config.json`의 `repository_id`는 이 Vault의 고정 ID다. 장비나 checkout 경로가 바뀌어도 유지해야 Markdown에 기록한 typed relation이 보존된다. 이 runtime 설치는 Vault 하나를 대상으로 하며, 다른 독립 Vault를 구축할 때는 ID를 분리한다. cache와 snapshot fingerprint는 실제 checkout 경로도 구분한다.
 
-검색은 정확한 label과 alias를 우선하고, 문서당 최고점 section과 상위 root 6개를 선택한다. 정규화와 키워드 확장 뒤 2~3개 토큰인 짧은 질의는 문서 빈도를 이용해 구체 용어가 없는 일반어 후보를 제외한다. 더 긴 자연어 질의에는 이 제외 규칙을 적용하지 않는다. 직접 근거를 먼저 담은 뒤 관계, 양 끝 entity, 소유 문서와 원문 근거를 한 묶음으로 추가한다. 예산에 맞지 않는 묶음은 누락 수로 보고하며, 최종 축소에서도 남은 관계와 직접 근거에 필요한 문서를 보존한다. 작은 예산에서 모든 관계의 반환을 보장하지는 않는다.
+검색은 실제 field equality가 있는 label, alias, tag, heading과 entity ID를 부분 어휘 점수보다 먼저 순위에 두고, 문서당 읽기 시작 Section과 상위 root 6개를 선택한다. 정규화와 키워드 확장 뒤 2~3개 토큰인 짧은 질의는 문서 빈도를 이용해 구체 용어가 없는 일반어 후보를 제외한다. 더 긴 자연어 질의에는 이 제외 규칙을 적용하지 않는다. 정규화 후 한 토큰인 exact alias 또는 title 질의는 전체 색인 본문 스캔을 생략하되, 정확히 찾은 후보 문서의 유용한 Section 본문은 읽어 시작점을 고른다. 점수 기반 읽기 시작점에서는 heading이 없는 기존 root Section을 제외하지만, query가 root ID 전체와 정확히 일치하면 이 조회는 보존한다.
 
-`search`와 `context_search`는 같은 root 순위를 상위 6개로 자르기 전에 사용해 Document 후보를 페이지로 반환한다. 페이지는 최대 20개 후보이며 body나 excerpt를 반환하지 않는다. 검색어, effective scope, snapshot과 query 코드가 바뀌지 않는 한 cursor로 이어 읽고, 다음 페이지에서 `max_bytes`는 바꿀 수 있다. 후보의 `matched_terms`는 metadata, internal ID와 여러 section의 어휘 겹침이므로 의미적 적합성 판정이 아니다. 계약과 후속 읽기 흐름은 [[Ontology-Document-Search]]를 따른다.
+응답 예산은 body direct 근거, graph bundle, 선택 frontmatter provenance 순으로 쓴다. 작은 예산에서 선택한 direct 근거 없이 선택 provenance만 남겨 성공으로 반환하지 않으며, direct 근거 하나와 필수 메타데이터도 담지 못하면 `budget_too_small`로 끝난다. 구성 중에는 `budget.exhausted`만 제한을 기록하고, 최종 응답에 여유가 있을 때만 `output_limit_reached` coverage gap을 보충한다. direct 근거가 남은 positive pack은 예산 제한으로 축소됐으면 `partial`로 반환한다. 예산에 맞지 않는 묶음은 누락 수로 보고하며, 최종 축소에서도 남은 직접 근거에 필요한 문서를 보존한다. 작은 예산에서 모든 관계의 반환을 보장하지는 않는다.
+
+부분 매칭은 source URI, label, alias, tag, heading, section 본문만 사용한다. internal ID prefix, source ID와 percent-encoded anchor는 storage 표현이라 부분 매칭에서 제외한다. query가 entity ID 전체와 정확히 같은 exact ID 검색은 유지한다. `exact_metadata`는 점수와 별도로 실제 필드의 완전 일치 여부로 판정한다.
+
+`search`와 `context_search`는 같은 root 순위를 상위 6개로 자르기 전에 사용해 Document 후보를 페이지로 반환한다. 페이지는 최대 20개 후보이며 body나 excerpt를 반환하지 않는다. 검색어, effective scope, snapshot과 query 코드가 바뀌지 않는 한 cursor로 이어 읽고, 다음 페이지에서 `max_bytes`는 바꿀 수 있다. 후보의 `matched_terms`는 실제 source 표현과 여러 section의 어휘 겹침이므로 의미적 적합성 판정이 아니다. `best_evidence_ref`는 문서 root 점수와 독립적으로 읽기 시작 section을 고르지만 fallback reference 자체에 query body가 있다는 보장은 없다. root frontmatter provenance는 lookup 근거로 별도 보존한다. 계약과 후속 읽기 흐름은 [[Ontology-Document-Search]]를 따른다.
 
 관계 탐색에서는 근거 unit의 현재 질문 점수를 먼저 본다. Section은 metadata와 본문 점수, RelationAssertion은 predicate와 endpoint 등의 metadata 점수를 사용한다. 동점이면 상대 entity 소유 Document의 점수, relation ID 순으로 선택한다. `출처`, `관련 문서`, `관련문서` section에는 이 우선순위용 점수를 부여하지 않는다. 관계가 기록된 본문과 상대 문서의 다른 본문을 구분하기 위한 순서이며, 원문 확정 상태와 scope, hop, entity와 edge 상한은 그대로 검사한다.
 
-정규화 후 한 토큰이며 정확한 metadata가 일치하면 root 선택을 위한 전체 본문 스캔은 생략한다. 이때 관계 순위에는 현재 탐색 중인 entity에 연결된 근거의 본문만 batch로 읽고 재사용한다. 검색어 가중치는 1이며 동일한 metadata 점수와 길이 감점을 적용한다. 이 추가 점수는 root 순위를 바꾸지 않는다.
+정규화 후 한 토큰이며 정확한 metadata가 일치하면 전체 색인 본문 스캔은 생략한다. 정확히 찾은 후보 문서의 유용한 Section 본문과, 관계 순위에 필요한 현재 탐색 entity의 연결 근거 본문만 batch로 읽고 재사용한다. 검색어 가중치는 1이며 동일한 metadata 점수와 길이 감점을 적용한다. 이 추가 점수는 root 순위를 바꾸지 않는다.
 
 본문 점수에는 section 길이에 따른 완만한 감점을 적용하며 정확한 metadata 점수는 유지한다. `matching.query_term_count`는 정규화와 확장 후 검색어 수, `max_section_term_matches`는 같은 section의 metadata와 본문에 겹친 서로 다른 검색어 수의 최댓값이다. `assessment`는 `exact_metadata`, `lexical_overlap`, `no_lexical_overlap`, `weak_lexical_overlap`, `not_evaluated`를 구분한다. 검색어 8개 이상이면서 최대 겹침이 1~2개이면 `weak_lexical_overlap`이다. 후보를 삭제하는 규칙이나 의미적 적합성, 지식 부재의 확정 판정이 아니며, 관련성을 확인하고 재조회할 단서다.
 

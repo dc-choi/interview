@@ -85,7 +85,7 @@ aliases: ["온톨로지 검색 품질", "Ontology Retrieval Quality"]
 
 ## 실행과 남은 검증
 
-목차 기능을 구현한 시점의 Node suite는 100/100이었다. 당시 query의 어휘 겹침 metadata와 공백 입력 수정을 적용한 회귀 결과는 [final-regression-report-2026-09-08.json](evaluation/final-regression-report-2026-09-08.json)에 남겼다. 관계 탐색을 보강한 당시 suite는 103/103을 통과했다. 문서 검색을 추가한 현재 suite는 112/112다. 원래 실패한 질문을 성공으로 바꾸거나 과거 보고서의 코드 hash를 현재 코드로 덮지 않았다.
+목차 기능을 구현한 시점의 Node suite는 100/100이었다. 당시 query의 어휘 겹침 metadata와 공백 입력 수정을 적용한 회귀 결과는 [final-regression-report-2026-09-08.json](evaluation/final-regression-report-2026-09-08.json)에 남겼다. 관계 탐색 당시 suite는 103/103, 문서 검색 추가 시점은 112/112였다. 아래 metadata와 본문 선택의 첫 보완 후 suite는 116/116, 첫 독립 검토 보완 후에는 119/119, 두 번째 보완 후에는 121/121, 예산/진단 보완 후에는 123/123, 누락 요약 보완까지 포함한 최종 결과는 124/124다. 원래 실패한 질문을 성공으로 바꾸거나 과거 보고서의 코드 hash를 현재 코드로 덮지 않았다.
 
 `ontology/`에서 저장소 밖 cache를 준비한 뒤 실행한다.
 
@@ -117,9 +117,48 @@ node evaluation/outline-navigation.mjs --cache <같은-cache> --check
 
 알려진 40개에서 lookup은 40회/833,264 byte, search 최대 두 페이지는 73회/1,530,328 byte, 둘의 합계는 113회/2,363,592 byte였다. 새 6개에서는 각각 6회/140,475 byte, 12회/270,872 byte, 합계 18회/411,347 byte였다. 모든 개별 응답은 해당 예산 이내였으며 크기는 MCP envelope를 제외한 JSON payload다. 페이지를 늘리는 비용과 무관한 후보를 사람이 검토하는 비용이 있으므로 전부 수집하는 것을 기본 사용법으로 강제하지 않는다.
 
-본문을 자동으로 추가하는 후보와 관계 근거 재정렬 후보는 알려진 질문의 적중을 잃거나 전체 성공을 늘리지 못해 적용하지 않았다. 단어 시작 경계로 오탐을 줄이는 후보도 `OpenSearch`, `refreshToken`, `강제청산`, `2차원`의 부분어 검색을 잃어 폐기했다. 현재 `matched_terms`에는 internal ID 같은 metadata 겹침도 들어가며 `best_evidence_ref`의 본문에 검색어가 있다는 보장은 없다. 이들은 탐색 단서이지 의미 적합성이나 지식 부재의 판정이 아니다.
+본문을 자동으로 추가하는 후보와 관계 근거 재정렬 후보는 알려진 질문의 적중을 잃거나 전체 성공을 늘리지 못해 적용하지 않았다. 단어 시작 경계로 오탐을 줄이는 후보도 `OpenSearch`, `refreshToken`, `강제청산`, `2차원`의 부분어 검색을 잃어 폐기했다. 이 시점의 `matched_terms`에는 internal ID 같은 metadata 겹침도 들어갔다. 그 문제는 아래 보완에서 수정했다. `best_evidence_ref`의 본문에 검색어가 있다는 보장은 없으며, 탐색 단서를 의미 적합성이나 지식 부재의 판정으로 사용하지 않는다.
 
 재현은 `node evaluation/document-search.mjs --cache <같은-cache> --cases evaluation/document-search-cases-2026-09-08.json`으로 한다. byte, provenance와 페이지 계약 위반은 실행을 실패시키고 문서 누락은 별도 지표로 남긴다. 고정 시점, 코드 hash, 첫 관찰, lookup 동일성, 폐기 후보와 MCP 연결 검증은 [문서 검색 보고서](evaluation/document-search-report-2026-09-08.json)에 둔다.
+
+## 내부 식별자 오탐과 본문 선택 보완
+
+원문 revision `3134d051dd453eee173e0c94ea2cfc107748b710`에서 1,874 Document, 21,496 unit, 35,519 relation, coverage gap 0인 snapshot을 고정했다. 내부 ID의 `document:`, `unit:`, source ID와 percent-encoded heading 조각까지 부분 매칭하는 오류를 제거했다. 실제 source URI, label, alias, tag, heading과 본문은 계속 검색하고, entity ID 전체를 지정하는 조회도 유지한다. 같은 문자열이 실제 원문에 있으면 검색 단서로 남는다.
+
+| 기술 문서 검색 진단 | 변경 전 후보 수 | 변경 후 후보 수 |
+| --- | ---: | ---: |
+| `document` | 1,498 | 82 |
+| `unit` | 1,498 | 124 |
+| `95` | 1,274 | 84 |
+| `interview-vault` | 1,498 | 2 |
+
+이 수치는 구조 ID로 추가되던 후보를 제외한 결과다. 감소분 전체를 의미적 오탐으로 검증한 수치나 최종 답변의 정확도로 해석하지 않는다. 실제 부분어 검색은 유지하므로 어휘가 우연히 겹치는 후보는 남는다.
+
+Document의 정확한 alias 점수 1,000이 실제 설명 section 점수보다 높으면, 이전에는 `direct`가 비어 기본 H1으로 돌아갔다. 문서 순위와 읽을 근거 선택을 분리해, 이미 계산한 section 점수로 읽기 시작점을 고른다. heading 없는 root는 새 선택 후보에서 제외하고 기존 provenance 경로로 보존한다. root까지 포함한 초기 후보는 알려진 alias 사례의 본문을 잃어 폐기했다. 현재는 `Kano Model`이 `사용자 피드백 관리` H1 대신 `Kano 모델` 설명을 반환한다. alias가 본문에 없는 경우의 fallback은 여전히 필요하다.
+
+또한 부분 매칭 100개가 점수 1,000을 만들어 `exact_metadata`로 오인되는 오류를 수정했다. 실제 필드 일치 여부를 점수와 별도로 검사한다. 이 오류와 구조 ID 오탐은 수정 전 실패하는 Markdown fixture로 재현했고, 정확한 ID/경로/heading과 alias provenance 보존을 함께 검사했다.
+
+기존 46개 질문은 같은 dirty 상태, snapshot과 byte 예산에서 전체 조건 충족 23/46, 본문 조건 20/35, 필수 그룹 27/47, Document metadata 발견 31/39와 후속 두 페이지 발견 34/39를 유지했다. 개별 적중 지표의 회귀도 없었다. lookup 46회는 양쪽 모두 973,739 byte였으며, 결과 전체 JSON이 동일하다는 검사는 아니다.
+
+별도 작업자가 구현과 기존 사례를 읽지 않고 만든 새 합성 질문 6개는 코드를 고정한 뒤 처음 실행했다. 양성은 tech 2개, biz/econ 각 1개이고 음성은 tech/biz 각 1개다. [사례 원본](evaluation/metadata-ranking-cases-2026-09-08.json)의 SHA-256은 `76b413409e9f442f0890078de2ae65b5e7cdf56aa1a200889230f1c4d116f103`이다. `AARRR`의 실제 설명을 추가로 반환해 전체 조건 충족은 1/6에서 2/6, 양성 본문 조건은 1/4에서 2/4로 늘었다. 문서 발견은 4/4로 같았고 음성의 빈 결과는 0/2 그대로다. lookup 6회 payload 합계는 132,459에서 132,086 byte로 바뀌었다. 작은 표본의 한 사례 개선을 일반적인 답변 정확도 향상으로 확대하지 않는다.
+
+새 SDK stdio 연결에서 `Kano Model`의 검색 참조, lookup 본문과 `context_read`의 revision/hash/anchor 일치를 검증했다. 실제 이전 코드 bytes로 발급한 cursor는 새 코드에서 `cursor_mismatch`로 거부했다. 이는 새 프로세스의 API 검증이며 기존 host 연결의 재시작이나 모델의 자동 도구 선택을 검증한 것은 아니다.
+
+고정 시점, 코드 hash, 전후 지표와 MCP 검증은 [metadata 검색 보완 보고서](evaluation/metadata-ranking-report-2026-09-08.json)에 보존한다. 새 사례는 `node evaluation/run.mjs --cache <위-snapshot-cache> --cases evaluation/metadata-ranking-cases-2026-09-08.json`으로 재실행할 수 있다. 기대 조건을 모두 충족하지 못하므로 `--check`는 종료 코드 1이다. 이후 이 사례를 조정에 쓰면 회귀 표본으로 취급한다.
+
+독립 검토에서는 부분 alias로 선택된 기존 root가 그대로 남는 경로, 100개 이상의 부분 일치 점수가 정확한 제목보다 앞서는 경로, 작은 응답 예산에서 본문 대신 frontmatter만 남는 경로를 확인했다. 정확한 필드 일치를 문서와 section의 별도 순위 기준으로 두고, root는 ID 전체를 직접 지정한 경우만 점수 기반 읽기 시작점으로 허용한다. 응답에는 선택한 직접 근거, 관계와 양 끝 entity 및 근거 묶음, 선택 frontmatter provenance 순서로 담는다. 선택 근거가 빠진 자리를 provenance만으로 채워 성공 처리하지 않는다. 예산으로 발췌를 더 줄일 때도 제한 도달을 표시한다.
+
+검토에서 추가한 fixture 세 개는 첫 고정 코드에서 모두 실패했고 수정 후 통과했다. root ID 전체 조회를 별도로 검사하고, 기존 예산 fixture의 연결 대상도 실제 파일명으로 고쳐 `links_to` 두 개가 존재함을 확인한다. 전체 suite는 119/119다. 최초 고정 코드 `c67f375c`의 관찰은 그대로 보존하고 최종 코드의 재실행을 보고서 `post_review_regression`에 분리했다. 46개와 재사용 6개 모두 개별 문서/heading/본문/필수 그룹 및 문서 발견 지표를 유지했다. 이 단계의 lookup payload는 각각 977,246 byte와 130,686 byte이며, 모든 응답은 각 예산 이내다. 이 재실행은 독립 표본 평가가 아니다. 새 SDK 연결에서도 부분 alias `Knowledge`의 읽기 시작점이 root를 벗어났고, 전체 alias 조회는 3,000/4,000 byte에서 선택한 heading 근거를 유지했다. 2,600 byte에서는 `budget_too_small`로 한계를 명시했다.
+
+다음 검토에서는 한 토큰의 정확한 alias와 파일명이 같으면 모든 section의 경로 점수가 같아 첫 H1에 머무는 사례를 재현했다. 전체 자료 스캔은 생략하되 정확히 찾은 후보 문서의 유용한 section 본문은 읽어 시작점을 비교한다. 또 선택 provenance 추가 실패 때 제한 안내가 이미 담은 관계를 밀어내는 경계를 수정했다. `budget.exhausted`와 중복되는 `output_limit_reached` gap을 관계보다 먼저 생략하므로 작은 예산에서도 허용된 근거 묶음을 우선 유지한다.
+
+두 번째 검토의 회귀 두 개도 이전 코드 `84076863`에서 각각 실패한 뒤 최종 코드에서 통과했다. 정확한 H1이 있는 독립 fixture의 2,440 byte 경계에서 관계와 양 끝 entity, 원문 근거가 남는 것을 직접 검사했다. 이 단계의 suite는 121/121이며, 52개 재실행의 기존 적중 지표는 유지했다. 이 단계의 lookup payload는 알려진 46개 977,246 byte, 재사용 6개 132,575 byte다. 새 SDK 검증도 같은 최종 코드로 통과했다. 보고서의 `previous_review_regression`과 `second_review_regression`에 앞선 검토 결과를 보존한다.
+
+마지막 예산 검토에서는 중복 제한 안내가 첫 직접 근거를 넣는 것까지 막는 경로를 확인했다. `budget.exhausted`를 먼저 기록하고, 패킹 중에는 근거가 있는 응답의 `partial` 상태 크기로 계산한다. `output_limit_reached`는 근거 구성 후 공간이 있을 때만 추가한다. 정확한 한 토큰 조회의 로컬 본문 일치도 `max_section_term_matches`에 반영한다. 실제 SDK에서 2,630 byte의 ontology alias 조회가 root가 아닌 근거를 반환하고, `Dunbar`와 `Semble`의 본문 일치 개수가 1임을 확인했다.
+
+마지막 회귀 두 개는 이전 코드 `0bc4879c`에서 실패하고 최종 코드에서 통과했다. 단위 fixture에서는 1,976 byte에서도 선택 본문을 담을 수 있음을 검증했다. 이 단계의 suite는 123/123이며, 52개 재실행에서 기존 문서/heading/본문/필수 그룹과 문서 발견 적중 지표를 유지했다. 최종 lookup payload는 알려진 46개 979,336 byte, 재사용 6개 133,249 byte다. 이 단계의 기록은 보고서 `third_review_regression`에 보존한다.
+
+누락 근거가 많은 응답에서는 목록 축소가 `coverage_gaps_omitted`를 일반 항목으로 다시 세어 요약을 중복하는 문제도 확인했다. 기존 요약을 일반 gap과 분리하고 이미 숨긴 수 및 알려진 전체 수를 보존해, 반복 축소 후에도 요약을 하나만 반환한다. 12개 원문 gap이 있는 예산 제한 조회와 검색 두 페이지의 회귀는 이전 코드 `ad4a3bf2`에서 실패하고 최종 코드에서 통과했다. 최종 suite는 124/124이며, 52개 사례의 적중과 위 payload 합계는 유지됐다. 최신 코드 hash, 테스트, SDK와 사례별 결과는 보고서 `post_review_regression`에 보존한다.
 
 다음 검증은 남은 문서 누락과 한국어 표현 차이, 모델의 관련 heading 선택, 필요한 본문과 예외의 후속 읽기, 최종 판단 정확도를 대상으로 한다. 현재 평가만으로 검색이나 답변 품질이 완성됐다고 판단하지 않는다.
 

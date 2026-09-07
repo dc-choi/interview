@@ -32,14 +32,16 @@ aliases: ["온톨로지 문서 검색", "Ontology Document Search"]
 | --- | --- |
 | `document` | 공개 Document metadata다. 원문 path, revision, hash와 body는 여기에 없다. |
 | `source_uri` | 후보 원문 경로다. |
-| `matched_terms` | 문서 metadata, internal ID, 여러 Section의 어휘 겹침을 합친 검색어다. 의미적 적합성 점수나 본문 주장 검증 결과가 아니다. |
-| `best_evidence_ref` | 순위를 만든 unit 또는 기본 Section의 ID, type, label, source URI, revision, hash, anchor다. 없으면 `null`이다. 본문은 포함하지 않는다. |
+| `matched_terms` | source URI, label, alias, tag, heading과 여러 Section 본문의 어휘 겹침을 합친 검색어다. 의미적 적합성 점수나 본문 주장 검증 결과가 아니다. |
+| `best_evidence_ref` | 문서 root 점수와 독립적으로 고른 근거 또는 기본 Section의 ID, type, label, source URI, revision, hash, anchor다. 없으면 `null`이다. 본문은 포함하지 않는다. |
 
-`best_evidence_ref`는 원문을 읽기 위한 시작점이다. 제목이나 alias로 찾은 문서는 기본 Section을 가리킬 수 있으며, 해당 본문에 검색어가 있다는 보장은 없다. `matched_terms`도 여러 Section의 겹침을 합치므로 이 참조의 본문에 모두 있다고 가정하지 않는다. `matching.assessment`와 후보 존재만으로 문서가 질문에 답한다고 판단하지 않는다.
+부분 매칭은 internal ID prefix, source ID, percent-encoded anchor 같은 storage 표현을 사용하지 않는다. 다만 query가 entity ID 전체와 정확히 같으면 exact ID 검색은 유지한다. partial score가 우연히 exact score와 같은 값이 되어도 `matching.assessment: exact_metadata`는 exact field equality가 있을 때만 설정된다. 실제 field equality가 있는 Document와 Section은 부분 어휘 점수보다 먼저 순위에 반영된다.
+
+정규화 후 한 토큰인 exact alias 또는 title 질의는 전체 색인 문서의 본문 스캔을 생략한다. 대신 정확히 찾은 후보 문서의 유용한 Section 본문만 읽어 `best_evidence_ref`의 읽기 시작점을 고른다. 점수 기반의 읽기 시작점 선택에서는 heading이 없는 기존 root Section을 제외한다. 다만 query가 그 root ID 전체와 정확히 일치하면 이 예외를 보존한다. 문서 root의 frontmatter provenance는 `context_lookup`의 근거 흐름에서 별도로 보존한다. `best_evidence_ref`는 원문을 읽기 위한 시작점이지만 fallback reference의 본문이 검색어를 포함한다고 보장하지 않는다. `matched_terms`도 여러 Section의 겹침을 합치므로 이 참조의 본문에 모두 있다고 가정하지 않는다. `matching.assessment`와 후보 존재만으로 문서가 질문에 답한다고 판단하지 않는다.
 
 ## 페이지와 cursor
 
-한 페이지는 후보를 최대 20개 담는다. 응답 예산이 먼저 차면 더 적게 담고 `budget.exhausted`를 `true`로 표시한다. 후보 하나도 넣을 수 없으면 반복되는 빈 페이지 대신 `budget_too_small`로 끝난다.
+한 페이지는 후보를 최대 20개 담는다. 응답 예산이 먼저 차면 더 적게 담고 `budget.exhausted`를 `true`로 표시한다. 후보 하나도 넣을 수 없으면 반복되는 빈 페이지 대신 `budget_too_small`로 끝난다. `context_lookup`의 근거 pack은 `budget.exhausted`를 제한의 정본으로 보고, `output_limit_reached` coverage gap은 최종 응답에 여유가 있을 때만 보충한다. gap이 없어도 예산 제한이 없었다는 뜻은 아니다.
 
 `pagination.offset_documents`는 현재 후보 인덱스, `returned_documents`는 이번 개수, `total_candidates`는 이 검색의 전체 후보 수다. `complete: false`면 `next_cursor`를 다음 요청으로 넘긴다. 마지막 페이지는 `complete: true`, `next_cursor: null`이다. 후보가 없으면 `result_status: insufficient_evidence`이며 완료된 빈 결과를 반환한다. 후보가 남으면 `partial`, 마지막 비어 있지 않은 페이지면 `ok`다.
 

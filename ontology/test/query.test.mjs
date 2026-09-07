@@ -205,7 +205,7 @@ test('a 24KB response keeps each returned graph edge with endpoints and evidence
 
 test('budget trimming keeps only complete direct and graph evidence bundles', async (t) => {
   const { repo, cacheDir } = await fixtureWithFiles(t, [
-    ['tech/Needle.md', '---\naliases: [Needle]\n---\n# Needle\n\nDirect evidence. [[Link Alpha]] [[Link Beta]]\n'],
+    ['tech/Needle.md', '---\naliases: [Needle]\n---\n# Needle\n\nDirect evidence. [[Link-Alpha]] [[Link-Beta]]\n'],
     ['tech/Link-Alpha.md', '# Link Alpha\n\n[[Alpha]]\n'],
     ['tech/Link-Beta.md', '# Link Beta\n\n[[Beta]]\n'],
     ['tech/Alpha.md', '# Alpha\n\nTarget Alpha.\n'],
@@ -214,6 +214,12 @@ test('budget trimming keeps only complete direct and graph evidence bundles', as
   const snapshot = loadSnapshot({ repo, cacheDir });
   const needle = snapshot.entities.find((entity) => entity.type === 'Document' && entity.source_uri === 'tech/Needle.md');
   assert.ok(needle);
+  const linkedDocuments = new Set(snapshot.entities
+    .filter((entity) => entity.type === 'Document' && ['tech/Link-Alpha.md', 'tech/Link-Beta.md'].includes(entity.source_uri))
+    .map((entity) => entity.id));
+  assert.equal(linkedDocuments.size, 2);
+  assert.equal(snapshot.relations.filter((relation) => relation.subject === needle.id
+    && relation.predicate === 'links_to' && linkedDocuments.has(relation.object)).length, 2);
   const snapshotEntities = new Map(snapshot.entities.map((entity) => [entity.id, entity]));
   const documentsByPath = new Map(snapshot.entities
     .filter((entity) => entity.type === 'Document')
