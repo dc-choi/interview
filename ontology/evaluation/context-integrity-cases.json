@@ -1,0 +1,35 @@
+[
+  {
+    "id": "role-and-authoring-status",
+    "query": "목표와 자료의 역할",
+    "scope": ["ontology/Development-Ontology-Contract.md"],
+    "expected_evidence_groups": [
+      {"id": "role-and-adoption-boundary", "any_of": [
+        {"path": "ontology/Development-Ontology-Contract.md", "heading": "목표와 자료의 역할", "all_text": ["자료가 저장되어 있다는 사실만으로", "기술 채택이나 현재 동작을 뜻하지 않는다"]}
+      ]}
+    ]
+  },
+  {
+    "id": "source-link-and-current-implementation",
+    "query": "근거 확인과 채택의 경계",
+    "scope": ["ontology/Development-Ontology-Contract.md"],
+    "expected_evidence_groups": [
+      {"id": "link-is-not-adoption", "any_of": [
+        {"path": "ontology/Development-Ontology-Contract.md", "heading": "근거 확인과 채택의 경계", "all_text": ["원문 연결이 존재한다는 뜻이다", "현재 코드의 적합성을 증명하지 않는다"]}
+      ]},
+      {"id": "current-implementation-check", "any_of": [
+        {"path": "ontology/Development-Ontology-Contract.md", "heading": "근거 확인과 채택의 경계", "all_text": ["현재 구현 사실은 현재 코드에서 확인하고", "설계 의도는 문서에서 확인한다"]}
+      ]}
+    ]
+  },
+  {
+    "id": "proposal-includes-cost-and-unknowns",
+    "query": "제안의 결과물",
+    "scope": ["ontology/Development-Ontology-Contract.md"],
+    "expected_evidence_groups": [
+      {"id": "cost-and-unknowns", "any_of": [
+        {"path": "ontology/Development-Ontology-Contract.md", "heading": "제안의 결과물", "all_text": ["원문 근거, 추가 비용과 아직 확인하지 못한 조건", "코드 적합성은 미확인으로 남긴다"]}
+      ]}
+    ]
+  }
+]

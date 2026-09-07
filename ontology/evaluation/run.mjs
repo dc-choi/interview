@@ -36,11 +36,16 @@ for (const sample of cases) {
     result_status: result.result_status,
     index_status: result.index_sync[0].status,
     relations_returned: result.relations.length,
+    evidence_units_returned: result.evidence_units.length,
+    truncated_evidence_units: result.evidence_units.filter((unit) => unit.truncated).length,
     budget_exhausted: result.budget.exhausted,
     traversal_limit_reached: result.traversal.limit_reached,
     returned_paths: [...new Set(result.evidence_units.map((unit) => unit.source_uri))],
   });
 }
+const groupResults = results.filter((result) => result.evidence_groups_total !== null);
+const evidenceGroupsTotal = groupResults.reduce((total, result) => total + result.evidence_groups_total, 0);
+const evidenceGroupsHit = groupResults.reduce((total, result) => total + result.evidence_groups_hit, 0);
 console.log(JSON.stringify({
   observed_at: new Date().toISOString(),
   source_revision: snapshot.manifest.revision,
@@ -55,6 +60,9 @@ console.log(JSON.stringify({
   document_hits: results.filter((result) => result.document_hit).length,
   heading_hits: results.filter((result) => result.heading_hit).length,
   evidence_hits: results.filter((result) => result.evidence_hit).length,
+  evidence_groups_total: evidenceGroupsTotal,
+  evidence_groups_hit: evidenceGroupsHit,
+  evidence_recall: groupResults.length > 0 ? evidenceGroupsHit / evidenceGroupsTotal : null,
   body_asserted_cases: results.filter((result) => result.body_hit !== null).length,
   body_hits: results.filter((result) => result.body_hit).length,
   passed_cases: results.filter((result) => result.passed).length,
