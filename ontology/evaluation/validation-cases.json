@@ -1,0 +1,39 @@
+[
+  {
+    "id": "synthetic-holdout-v2-tech-01",
+    "kind": "synthetic_holdout",
+    "query": "게시글을 작성 시각순으로 넘기는데 같은 시각의 글이 여러 개야. 다음 페이지에서 빠지거나 중복되지 않게 정렬 기준을 어떻게 잡아야 할까?",
+    "scope": ["tech"],
+    "expected_evidence": [
+      { "path": "tech/database/rdbms/index-query/Pagination-Optimization.md", "heading": "Keyset 또는 cursor 페이징", "any_text": ["고유한 `id`까지 cursor와 정렬에 넣는다."] }
+    ]
+  },
+  {
+    "id": "synthetic-holdout-v2-biz-01",
+    "kind": "synthetic_holdout",
+    "query": "고객이 기존 서비스에서 다른 서비스로 갈아탄 이유를 인터뷰하려 해. 막연한 선호 대신 어떤 경험을 물어야 할까?",
+    "scope": ["biz"],
+    "expected_evidence": [
+      { "path": "biz/product-strategy/User-Feedback.md", "heading": "JTBD 인터뷰 기법", "any_text": ["과거의 실제 전환(switching) 경험을 타임라인으로 파헤친다.", "최초 인식 → 수동 탐색 → 능동 탐색 → 전환 결정"] }
+    ]
+  },
+  {
+    "id": "synthetic-holdout-v2-econ-01",
+    "kind": "synthetic_holdout",
+    "query": "오른 주식은 금방 팔면서 손실 난 주식은 본전 생각 때문에 계속 붙잡는다. 이런 투자 행동을 설명하는 편향이 있을까?",
+    "scope": ["econ"],
+    "expected_evidence": [
+      { "path": "econ/investing/Behavioral-Biases-Risk.md", "heading": "2. 대표적인 행동 편향", "any_text": ["오른 건 빨리 팔아 이익을 확정하고, 빠진 건 본전 생각에 붙잡는다."] },
+      { "path": "econ/investing/Behavioral-Biases-Risk.md", "heading": "6. 핵심 개념", "any_text": ["손절을 막고 이익을 일찍 끊게 하는 함정"] }
+    ]
+  },
+  {
+    "id": "synthetic-holdout-v2-fit-01",
+    "kind": "synthetic_holdout",
+    "query": "새 팀에 합류했는데 매니저가 무엇을 잘한 일로 보는지 모르겠어. 첫 일대일 면담에서 어떤 기대와 소통 방식을 확인해야 할까?",
+    "scope": ["fit"],
+    "expected_evidence": [
+      { "path": "fit/growth/career-stages/First-90-Days.md", "heading": "원칙 1. 매니저의 스타일을 먼저 파악", "any_text": ["선호 커뮤니케이션, 기대치, 우선순위", "즉답 선호 vs 문서 선호", "성공의 지표"] }
+    ]
+  }
+]

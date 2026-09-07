@@ -1,0 +1,34 @@
+[
+  {
+    "id": "specific-pattern-with-generic-noise",
+    "kind": "diagnostic",
+    "query": "outbox pattern",
+    "scope": ["README.md", "tech", "biz", "econ", "fit", "ontology"],
+    "expected_evidence": [
+      {
+        "path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md",
+        "heading": "Transactional Outbox Pattern",
+        "any_text": ["DB 쓰기와 메시지 발행 사이의 유실을 막는 패턴."]
+      }
+    ],
+    "forbidden_paths": [
+      "biz/product-strategy/service-design/Community-Dark-Patterns.md",
+      "biz/product-strategy/service-design/Pagination-Patterns.md"
+    ],
+    "min_relations": 1
+  },
+  {
+    "id": "exact-korean-alias-with-relations",
+    "kind": "diagnostic",
+    "query": "트랜잭셔널 아웃박스",
+    "scope": ["tech"],
+    "expected_evidence": [
+      {
+        "path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md",
+        "heading": "Transactional Outbox Pattern",
+        "any_text": ["DB 쓰기와 메시지 발행 사이의 유실을 막는 패턴."]
+      }
+    ],
+    "min_relations": 1
+  }
+]

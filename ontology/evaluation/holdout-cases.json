@@ -1,0 +1,90 @@
+[
+  {
+    "id": "synthetic-holdout-tech-01",
+    "kind": "synthetic_holdout",
+    "query": "주문 테이블에 회원 등급을 같이 넣었는데 회원 ID가 등급을 결정한다. 이행 함수 종속을 없애려면 테이블을 어떻게 나눠야 할까?",
+    "scope": ["tech"],
+    "expected_evidence": [
+      { "path": "tech/database/rdbms/schema-design/modeling/Normalization.md", "heading": "3정규화", "any_text": ["회원 ID와 등급을 회원 테이블로 옮기고 주문은 회원 ID만 참조한다.", "비키 속성이 다른 비키 속성에 의존하는"] },
+      { "path": "tech/database/rdbms/schema-design/modeling/Normalization.md", "heading": "단계별 예시", "any_text": ["회원 등급이 주문 ID가 아니라 회원 ID에 의존"] }
+    ]
+  },
+  {
+    "id": "synthetic-holdout-tech-02",
+    "kind": "synthetic_holdout",
+    "query": "TypeScript 함수 오버로딩에서 구현부는 유니온 타입을 받는데 호출하면 오류가 난다. 실제 호출 가능한 타입은 어떤 시그니처가 정하는 걸까?",
+    "scope": ["tech"],
+    "expected_evidence": [
+      { "path": "tech/computer-science/ts/function/TS-Function-Overloading.md", "heading": "핵심 규칙", "any_text": ["구현 시그니처는 호출 후보에서 제외된다.", "구현부가 유니온을 받아도 사용자는 오버로드 목록에 선언된 형태로만 호출할 수 있다."] },
+      { "path": "tech/computer-science/ts/function/TS-Function-Overloading.md", "heading": "구조: 오버로드 시그니처 + 구현 시그니처", "any_text": ["외부에서는 보이지 않으며 직접 호출할 수 없다."] },
+      { "path": "tech/computer-science/ts/function/TS-Function-Overloading.md", "heading": "함정", "any_text": ["구현의 유니온 타입을 사용자가 그대로 호출할 수 있다고 기대하면 안 된다."] }
+    ]
+  },
+  {
+    "id": "synthetic-holdout-biz-01",
+    "kind": "synthetic_holdout",
+    "query": "Freemium 서비스의 무료 사용자를 유료로 전환시키려 한다. 다른 회사의 전환율을 목표로 가져오기 전에 분모와 관찰 기간에서 무엇을 맞춰야 할까?",
+    "scope": ["biz"],
+    "expected_evidence": [
+      { "path": "biz/business-model/Pricing-Strategy.md", "heading": "Freemium 전략", "any_text": ["활성 사용자 정의, 관찰 기간, 고객 규모, trial 포함 여부와 가격 단위", "자사 activation cohort의 무과금→유료 전환과 기여이익을 기준선으로 삼는다."] }
+    ]
+  },
+  {
+    "id": "synthetic-holdout-biz-02",
+    "kind": "synthetic_holdout",
+    "query": "코호트 리텐션 그래프가 수평으로 안정되면 PMF를 달성했다고 봐도 될까? 반복 가치 판단에서 함께 확인할 조건이 궁금해.",
+    "scope": ["biz"],
+    "expected_evidence": [
+      { "path": "biz/product-strategy/PMF-Funnel.md", "heading": "리텐션 커브", "any_text": ["어느 모양도 단독으로 PMF를 증명하지 않는다.", "코호트 정의, 관찰 기간, 정성 인터뷰와 사업 제약을 함께 본다."] }
+    ]
+  },
+  {
+    "id": "synthetic-holdout-econ-01",
+    "kind": "synthetic_holdout",
+    "query": "시장금리가 올라가면 이미 발행된 고정금리 채권의 가격은 왜 내려갈까?",
+    "scope": ["econ"],
+    "expected_evidence": [
+      { "path": "econ/financial-markets/Bonds.md", "heading": "2. 가장 중요한 한 가지 — 금리와 가격의 역관계", "any_text": ["시장 요구수익률이 오르면 고정 현금흐름 채권의 가격은 떨어진다.", "내 채권은 가격을 낮춰야 팔린다."] }
+    ]
+  },
+  {
+    "id": "synthetic-holdout-econ-02",
+    "kind": "synthetic_holdout",
+    "query": "주식을 여러 종목으로 나눠 사도 같은 업종이면 분산 효과가 약할 수 있나? 자산 개수보다 상관관계를 봐야 하는 이유가 궁금해.",
+    "scope": ["econ"],
+    "expected_evidence": [
+      { "path": "econ/investing/Asset-Allocation-Diversification.md", "heading": "3. 분산투자의 원리 — 상관관계", "any_text": ["같은 업종 주식 스무 개는 공통 요인 노출 때문에 분산 효과가 약할 수 있다", "상관관계와 각 자산의 위험 비중"] },
+      { "path": "econ/investing/Asset-Allocation-Diversification.md", "heading": "8. 흔한 오해", "any_text": ["같이 움직이는 자산은 아무리 많아도 분산이 약하다."] },
+      { "path": "econ/financial-markets/Risk-and-Return.md", "heading": "3. 분산투자와 상관관계", "any_text": ["불완전하게 상관된 자산을 섞으면", "상관관계는 시장 국면에 따라 바뀔 수 있다."] }
+    ]
+  },
+  {
+    "id": "synthetic-holdout-fit-01",
+    "kind": "synthetic_holdout",
+    "query": "개발자 경력 연수만 보고 숙련도를 판단해도 될까? 시간 기반 등급과 실제 역량을 기준으로 보는 성장 모형의 차이를 알고 싶어.",
+    "scope": ["fit"],
+    "expected_evidence": [
+      { "path": "fit/growth/career-stages/growth-model/Dreyfus-Skill-Model.md", "heading": "국내 초중고급 등급제의 부조화", "any_text": ["역량 단계로 판단하며, 단계별 인구 비율이나 연차 기준을 제시하지 않음", "직급, 직위, 경력 연수와 독립적으로"] },
+      { "path": "fit/growth/career-stages/growth-model/Dreyfus-Skill-Model.md", "heading": "흔한 오해", "any_text": ["실전 훈련, 피드백 없이는 햇수만 쌓임.", "1년의 경험을 세 번 반복한 것과 같다"] },
+      { "path": "fit/growth/career-stages/growth-model/Dreyfus-Skill-Model.md", "heading": "드레퓌스 기술 습득 모형", "any_text": ["\"경력 연수 = 실력\"이 아니라는 근거"] }
+    ]
+  },
+  {
+    "id": "synthetic-holdout-fit-02",
+    "kind": "synthetic_holdout",
+    "query": "팀원이 번아웃으로 고립되고 대화가 줄었다. 개인 의지 문제로 몰지 않고 팀이 회복을 돕기 위해 어떤 대화를 열어야 할까?",
+    "scope": ["fit"],
+    "expected_evidence": [
+      { "path": "fit/growth/career-stages/mindset/Burnout-Sustainable-Pace.md", "heading": "회복 — 개인의 문제가 아니라 팀의 문제로", "any_text": ["무엇 때문에 힘든지는 본인이 말해줘야 한다", "개인의 나약함이 아니라 팀이 함께 다룰 문제로 재정의"] },
+      { "path": "fit/growth/career-stages/mindset/Burnout-Sustainable-Pace.md", "heading": "리더, 팀 관점", "any_text": ["무엇이 힘든지 물을 안전한 채널을 연다.", "힘든 이유를 말해도 불이익이 없다는 신뢰"] }
+    ]
+  },
+  {
+    "id": "synthetic-holdout-empty-01",
+    "kind": "synthetic_holdout",
+    "query": "qzxvnmprtjwfkblsyh",
+    "scope": ["tech", "biz", "econ", "fit"],
+    "expected_evidence": [],
+    "expected_empty": true
+  }
+]
