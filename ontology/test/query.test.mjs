@@ -81,6 +81,18 @@ test('lookup returns exact alias, source-backed sections, and an outgoing relati
   assert.ok(provenance.excerpt.includes('aliases: [이벤트 발행]'));
 });
 
+test('lookup rejects blank queries instead of matching empty root metadata', async (t) => {
+  const { repo, cacheDir } = await fixture(t);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  for (const query of ['', ' ', '\t\n', '\u3000', '\u00a0']) {
+    assert.throws(() => lookup(options, { query }),
+      (error) => error instanceof ContextError && error.code === 'invalid_query');
+  }
+  const result = lookup(options, { query: '  이벤트 발행  ' });
+  assert.equal(result.matching.assessment, 'exact_metadata');
+  assert.ok(result.evidence_units.length > 0);
+});
+
 test('a matching section seeds incoming graph edges with its owning document', async (t) => {
   const { repo, cacheDir } = await fixture(t);
   const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
@@ -128,6 +140,39 @@ test('lookup keeps body-relevant documents for a long multi-condition query', as
   });
 
   assert.ok(result.evidence_units.some((unit) => unit.source_uri === 'tech/A-Related.md'));
+});
+
+test('concise matching evidence survives competition from long general notes', async (t) => {
+  const longNotes = Array.from({ length: 6 }, (_, index) => [
+    `tech/A-Notes-${index}.md`,
+    `# Notes ${index}\n\nThe archive mentions retry queue delivery.\n\n${'Unrelated historical observations. '.repeat(400)}\n`,
+  ]);
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ...longNotes,
+    ['tech/Z-Resolution.md', '# Resolution\n\nA retry queue preserves delivery after a failure.\n'],
+  ]);
+  const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
+    query: 'retry queue delivery workflow', scope: ['tech'], max_bytes: 24000,
+  });
+  assert.ok(result.evidence_units.some((unit) => unit.source_uri === 'tech/Z-Resolution.md'
+    && unit.excerpt.includes('preserves delivery after a failure')));
+});
+
+test('long questions expose weak overlap without claiming semantic relevance or knowledge absence', async (t) => {
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/Settings.md', '# Settings\n\nCalibration changes the local instrument settings. Calibration can be repeated.\n'],
+  ]);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const result = lookup(options, {
+    query: 'crystalline compass moonlight garden fairy concentration drift adjustment calibration procedure',
+    scope: ['tech'], max_bytes: 24000,
+  });
+  assert.equal(result.matching.assessment, 'weak_lexical_overlap');
+  assert.equal(result.matching.query_term_count, 10);
+  assert.equal(result.matching.max_section_term_matches, 1);
+  assert.ok(result.evidence_units.length > 0);
+  assert.equal(lookup(options, { query: 'Settings' }).matching.assessment, 'exact_metadata');
+  assert.equal(lookup(options, { query: 'qzxvnmprtjwfkblsyh' }).matching.assessment, 'no_lexical_overlap');
 });
 
 test('a 24KB response keeps each returned graph edge with endpoints and evidence', async (t) => {

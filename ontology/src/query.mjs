@@ -64,7 +64,7 @@ function validateArgs(args) {
   const allowed = new Set(['query', 'scope', 'depth', 'max_bytes']);
   for (const key of Object.keys(args)) if (!allowed.has(key)) fail('invalid_arguments', `unknown argument: ${key}`);
   if (byteLength(args) > MAX_ARGUMENT_BYTES) fail('arguments_too_large', `arguments exceed ${MAX_ARGUMENT_BYTES} bytes`);
-  if (typeof args.query !== 'string' || Buffer.byteLength(args.query, 'utf8') === 0) fail('invalid_query', 'query is required');
+  if (typeof args.query !== 'string' || args.query.trim().length === 0) fail('invalid_query', 'query must contain non-whitespace text');
   if (Buffer.byteLength(args.query, 'utf8') > MAX_QUERY_BYTES) fail('query_too_large', `query exceeds ${MAX_QUERY_BYTES} bytes`);
   if (own(args, 'scope')) {
     if (!Array.isArray(args.scope) || args.scope.length > MAX_SCOPE_ENTRIES) fail('invalid_scope', `scope has at most ${MAX_SCOPE_ENTRIES} entries`);
@@ -149,7 +149,7 @@ function entityScore(entity, query, tokens) {
   const exact = exactText(query);
   const fields = [entity.id, entity.label, ...(entity.aliases ?? []), ...(entity.tags ?? []), entity.anchor?.heading_path?.join(' ')];
   const normalized = fields.map(exactText);
-  if (normalized.includes(exact)) return 1000;
+  if (exact.length > 0 && normalized.includes(exact)) return 1000;
   return matchingTokens(entity, tokens).length * 10;
 }
 
@@ -175,11 +175,12 @@ function scoreBodyMatch(body, tokens, weights) {
   let score = 0;
   const matchedTokens = new Set();
   for (const token of tokens) {
-    const count = body.split(token).length - 1;
-    if (count === 0) continue;
+    const first = body.indexOf(token);
+    if (first === -1) continue;
+    const count = body.indexOf(token, first + token.length) === -1 ? 1 : 2;
     matchedTokens.add(token);
     const translatedQueryTerm = ['reindex', 'alias', 'backfill', 'commit', 'publish', 'outbox', 'recovery', 'reconcile'].includes(token);
-    score += Math.min(count, 2) * 8 * weights.get(token) * (translatedQueryTerm ? 2 : 1);
+    score += count * 8 * weights.get(token) * (translatedQueryTerm ? 2 : 1);
   }
   return { score, matchedTokens };
 }
@@ -483,6 +484,7 @@ export function lookup(options, args, snapshot) {
     conflicts: null,
     coverage_gaps: gaps,
     limitations: LIMITATIONS,
+    matching: { query_term_count: 0, max_section_term_matches: 0, assessment: 'not_evaluated' },
     traversal: { depth: request.depth, max_matched_entities: MAX_MATCHED_ENTITIES, max_edges_per_entity: MAX_EDGES_PER_ENTITY, limit_reached: false },
     budget: {
       requested_max_bytes: request.requestedMaxBytes,
@@ -530,6 +532,8 @@ export function lookup(options, args, snapshot) {
     return memo.get(uri);
   };
   const tokens = words(request.query);
+  base.matching.query_term_count = tokens.length;
+  let maxSectionTermMatches = 0;
   const scored = new Map();
   for (const doc of documents) {
     const score = entityScore(doc, request.query, tokens);
@@ -546,6 +550,9 @@ export function lookup(options, args, snapshot) {
     const doc = documentsByPath.get(sourcePath(section));
     if (!docId || !doc) continue;
     const score = entityScore(section, request.query, tokens);
+    if (isUsefulSection(section)) {
+      maxSectionTermMatches = Math.max(maxSectionTermMatches, matchingTokens(section, tokens).length);
+    }
     const existing = scored.get(docId);
     if (existing) for (const token of matchingTokens(section, tokens)) existing.matchedTokens.add(token);
     if (score > 0 && (!existing || existing.score < score)) {
@@ -564,8 +571,9 @@ export function lookup(options, args, snapshot) {
   // one pinned Git batch to distinguish specific terms from generic ones.
   if (tokens.length > 0 && (!hasExactMetadataHit || tokens.length > 1)) {
     for (const [uri, blob] of readPinnedBlobs(options.repo, manifest.revision, documents.map(sourcePath))) memo.set(uri, blob);
+    const documentBodies = [...memo.values()].map((blob) => blob.toString('utf8').toLowerCase());
     const documentFrequency = new Map(tokens.map((token) => [token,
-      [...memo.values()].reduce((count, blob) => count + Number(blob.toString('utf8').toLowerCase().includes(token)), 0)]));
+      documentBodies.reduce((count, body) => count + Number(body.includes(token)), 0)]));
     const weights = new Map(tokens.map((token) => [token,
       1 + Math.log((documents.length + 1) / ((documentFrequency.get(token) ?? 0) + 1))]));
     for (const section of searchableSections) {
@@ -574,7 +582,11 @@ export function lookup(options, args, snapshot) {
       if (!docId || !doc) continue;
       const body = read(sourcePath(section)).subarray(section.anchor?.start_byte ?? 0, section.anchor?.end_byte ?? 0).toString('utf8').toLowerCase();
       const bodyMatch = scoreBodyMatch(body, tokens, weights);
-      const score = entityScore(section, request.query, tokens) + bodyMatch.score;
+      maxSectionTermMatches = Math.max(maxSectionTermMatches,
+        new Set([...matchingTokens(section, tokens), ...bodyMatch.matchedTokens]).size);
+      // Long notes can repeat broad terms without answering the specific query.
+      const lengthPenalty = 1 + 0.2 * Math.log1p(body.length / 200);
+      const score = entityScore(section, request.query, tokens) + bodyMatch.score / lengthPenalty;
       const existing = scored.get(docId);
       if (existing) for (const token of bodyMatch.matchedTokens) existing.matchedTokens.add(token);
       if (score > 0 && (!existing || existing.score < score)) {
@@ -595,6 +607,12 @@ export function lookup(options, args, snapshot) {
         if (!hasDiscriminativeMatch(entry, discriminative)) scored.delete(id);
       }
     }
+  }
+  base.matching.max_section_term_matches = maxSectionTermMatches;
+  base.matching.assessment = maxSectionTermMatches > 0 ? 'lexical_overlap' : 'no_lexical_overlap';
+  if (hasExactMetadataHit) base.matching.assessment = 'exact_metadata';
+  else if (tokens.length >= 8 && maxSectionTermMatches > 0 && maxSectionTermMatches <= 2) {
+    base.matching.assessment = 'weak_lexical_overlap';
   }
   const roots = [...scored.values()].sort((a, b) => b.score - a.score || a.doc.id.localeCompare(b.doc.id));
   if (roots.length > MAX_ROOTS) {
