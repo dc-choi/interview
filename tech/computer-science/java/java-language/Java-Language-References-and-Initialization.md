@@ -1,5 +1,5 @@
 ---
-tags: [java, class, object, reference, array, null, initialization]
+tags: [java, class, object, reference, array, "null", initialization]
 status: done
 verified_at: 2026-08-04
 category: "CS&프로그래밍(CS&Programming)"

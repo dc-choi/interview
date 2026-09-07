@@ -1,5 +1,5 @@
 ---
-tags: [java, optional, null, lazy-evaluation, value-based-class]
+tags: [java, optional, "null", lazy-evaluation, value-based-class]
 status: done
 verified_at: 2026-08-04
 category: "CS - 함수형 프로그래밍"
