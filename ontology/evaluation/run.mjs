@@ -17,7 +17,7 @@ const snapshot = loadSnapshot(options);
 const results = [];
 for (const sample of cases) {
   const started = performance.now();
-  const result = await lookup(options, { query: sample.query, scope: ['tech'], max_bytes: 24000 });
+  const result = lookup(options, { query: sample.query, scope: ['tech'], max_bytes: 24000 }, snapshot);
   const bytes = Buffer.byteLength(JSON.stringify(result));
   if (bytes !== result.budget.used_bytes || bytes > result.budget.effective_max_bytes) {
     throw new Error(`Invalid output budget in ${sample.id}`);
@@ -33,6 +33,9 @@ for (const sample of cases) {
     bytes,
     result_status: result.result_status,
     index_status: result.index_sync[0].status,
+    relations_returned: result.relations.length,
+    budget_exhausted: result.budget.exhausted,
+    traversal_limit_reached: result.traversal.limit_reached,
     returned_paths: [...new Set(result.evidence_units.map((unit) => unit.source_uri))],
   });
 }

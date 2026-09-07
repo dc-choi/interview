@@ -107,6 +107,8 @@ Semble `search`를 저장소 루트 대상으로 `content=docs`, `top_k=6`, `max
 
 최종 extractor 9와 query 코드 `6e2bd9f82851e7749c0df234a23196523053a3a971dc24e88d1d1681729c0c49`의 재실행은 `evaluation/regression-report.json`에 보존했다. 기대 문서 2/4, 기대 heading 1/4로 같았으며 응답 13,945~18,236 byte, 실행 시간 706~844ms였다. 원문 근거와 예산 처리의 수정이 일반적인 의미 검색을 해결한 것은 아니다.
 
+2026-09-07에 extractor 10과 현재 query 코드로 revision `bf77c848` 색인에서 다시 실행했고 결과는 `evaluation/regression-report-2026-09-07.json`에 보존했다. 기대 문서 2/4, 기대 heading 1/4로 같았고 응답 14,148~18,122 byte, 실행 시간 660~975ms였다. 이번 실행부터 기록하는 `relations_returned`는 4건 모두 0, `budget_exhausted`와 `traversal_limit_reached`는 모두 true였다. 같은 snapshot과 query에서 예산을 65,536 byte로 올린 대조에서는 기대 문서와 heading 일치 수가 그대로였고, 관계는 11~22개가 남았으며 `budget_exhausted`는 모두 false였다. 따라서 24,000 byte 예산은 관계 누락을 설명하지만 문서와 heading 미일치의 원인으로 단정할 수 없다. candidate ranking, root 상한 6개와 traversal 제한은 미일치의 원인 후보이며 각각의 영향은 분리 검증하지 않았다. 같은 날 clean worktree에서의 별도 실행도 일치 수가 같았다.
+
 현재 스킬은 중요한 실패와 제약에서 검색 용어 후보를 추리고, 근거가 부족하면 표현을 바꾸거나 반환된 문서 경로와 heading으로 좁혀 다시 조회한다. 이는 재검색 절차이며 최초 일치율 개선을 검증한 결과는 아니다.
 
 ## 관련 문서
