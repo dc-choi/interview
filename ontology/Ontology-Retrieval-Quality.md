@@ -9,7 +9,7 @@ aliases: ["온톨로지 검색 품질", "Ontology Retrieval Quality"]
 
 2026-09-07~08에 검색 순위, 잘린 본문 읽기와 문서 목차 탐색을 각각 검증했다. 현재 구현은 원문을 보존하며 후속 탐색할 수 있지만, 자연어 질문에서 필요한 문서를 항상 찾지는 못한다. 테스트 통과, heading 발견과 본문 조건 충족을 같은 성공으로 합치지 않는다.
 
-모든 실제 Vault 비교의 원문은 revision `19df3d8159689f41ab8d5a2b5def14c864016cf8`에 고정했다. snapshot은 1,870 Document, 21,467 unit, 35,450 relation, coverage gap 0이다. 코드와 문서는 미커밋 상태라 `unindexed_worktree`를 유지했다. 원문 snapshot의 gap 0은 검색 누락이나 의미적 충돌이 없다는 뜻이 아니다.
+초기 검색과 목차 비교의 원문은 revision `19df3d8159689f41ab8d5a2b5def14c864016cf8`에 고정했다. snapshot은 1,870 Document, 21,467 unit, 35,450 relation, coverage gap 0이다. 코드와 문서는 미커밋 상태라 `unindexed_worktree`를 유지했다. 후속 관계 탐색 비교의 원문 revision은 아래에 별도로 기록한다. 원문 snapshot의 gap 0은 검색 누락이나 의미적 충돌이 없다는 뜻이 아니다.
 
 ## 순위 개선과 새 표본의 첫 관찰
 
@@ -59,9 +59,33 @@ aliases: ["온톨로지 검색 품질", "Ontology Retrieval Quality"]
 
 독립 검토에서는 공백만 있는 질문이 빈 root metadata와 정확히 일치해 임의의 문서를 반환하는 기존 오류도 확인했다. 공백만 있는 입력은 `invalid_query`로 거부하고 빈 문자열의 metadata 일치를 막았다. 회귀 테스트는 수정 전 실패를 재현했다.
 
+## 관계를 설명하는 본문을 먼저 탐색
+
+2026-09-08에 기존 작업을 커밋한 뒤, 원문 revision `ce2471718128cfe786335d2ef05b752d1826c677`에서 관계 탐색 순서를 비교했다. snapshot은 1,873 Document, 21,487 unit, 35,499 relation, coverage gap 0이다. 이전 구현은 각 entity의 관계를 ID 순으로 자르고 탐색했다. 현재는 관계 근거의 query 점수, 상대 entity 소유 Document의 query 점수, ID 순으로 고른다. root 순위와 개수, scope, hop, entity/edge 제한과 JSON 예산은 유지한다.
+
+상대 문서 점수만 우선하는 초기 후보는 기존 TypeScript 오버로딩 질문의 `함정` 근거를 잃었다. 관계가 기록된 본문을 우선하자 이 근거를 보존했다. 단순 문장 분해와 depth 2 확대도 별도 임시 비교에서 전체 조건 충족을 늘리지 못해 기본 동작에 추가하지 않았다. 적용 근거는 [[RAG-Retrieval-Engineering#품질을 분해하는 평가 모델|검색과 context 구성의 구분]]이며, 문서 연결 자체를 의미적 적합성의 증명으로 사용하지 않는다.
+
+후보 코드를 고정한 다음, 구현과 기존 평가를 보지 않은 별도 작업자가 준비한 새 질문 8개를 처음 실행했다. 양성은 tech 3개, biz/econ/fit 각 1개이고 음성은 가상 용어 질문과 원예 질문이다. 원문의 제한된 본문 조건을 검사하는 합성 자료이며 사용자의 실제 처우나 업무 기록이 아니다. 사례는 [graph-ranking-cases-2026-09-08.json](evaluation/graph-ranking-cases-2026-09-08.json)에 보존한다. 첫 실행 전 음성 사례의 필수 빈 배열 누락만 수정했고, query와 양성 정답은 바꾸지 않았다. 원본/수정본 hash와 고정 시점은 보고서에 남겼다.
+
+| 관계 탐색 비교 항목 | ID 순서 | 근거 우선순위 |
+| --- | ---: | ---: |
+| 알려진 10개 표본의 전체 조건 충족 | 2/10 | 3/10 |
+| 새 8개 표본의 전체 조건 충족 | 2/8 | 3/8 |
+| 새 양성 표본의 본문 조건 충족 | 2/6 | 3/6 |
+| 새 양성 표본의 기대 문서 발견 | 4/6 | 4/6 |
+| 새 음성 표본의 빈 결과 충족 | 0/2 | 0/2 |
+
+알려진 표본에서는 자산 분산의 상관관계, 새 표본에서는 Canary 배포의 판정 게이트를 추가로 반환했다. 기존 32개와 새 8개에서 문서/heading/본문/필수 그룹 적중의 회귀는 없었다. 문서 자체의 회수율과 음성 사례는 개선되지 않았으며, 적은 표본의 1건 증가를 일반적인 의미 검색 성능으로 확대하지 않는다. 새 8개도 이후 조정에 재사용하면 회귀 표본으로 전환한다.
+
+새 8개에서 단발 조회 payload 합계는 186,726 byte에서 186,074 byte로 바뀌었고 양쪽 모두 8회 호출이었다. 모든 응답은 24,000 byte 이내였다. 실행 시간은 코드와 함께 기록하되 단회 관측으로 속도 향상을 주장하지 않는다. 현재 수정 코드는 같은 committed snapshot을 읽으며 양쪽 결과에 `unindexed_worktree`를 보존했다.
+
+전후 결과, 사례/코드 hash, 폐기 후보와 새 MCP 검증은 [graph-ranking-report-2026-09-08.json](evaluation/graph-ranking-report-2026-09-08.json)에 둔다. 실제 새 SDK stdio 연결에서 TypeScript 오버로딩과 자산 분산 두 질문의 원문 조건 2/2, 응답 예산과 후속 읽기 무결성을 확인했다. 모델의 자동 도구 선택이나 최종 답변 품질을 평가한 것은 아니다.
+
+후속 독립 검토에서는 한 토큰의 정확한 제목 검색이 전체 본문 스캔을 생략하면서 관계의 본문 점수까지 빠뜨리는 경로를 발견했다. 또 RelationAssertion의 metadata 점수가 0으로 처리되어 명시적 typed relation이 일반 링크에 밀리는 오류를 확인했다. 연결된 Section 근거만 batch로 읽고, RelationAssertion의 metadata 점수를 보존하도록 보완했다. 위 표는 최초 고정 코드(`0b1cc1a6`)의 관측으로 보존하고, 보완 코드의 40개 재실행은 보고서의 `post_review_regression`에 기록했다. 전후 적중 지표와 반환 byte 수는 같았으며, 이 재실행을 새로운 독립 표본 결과로 계산하지 않는다.
+
 ## 실행과 남은 검증
 
-최종 Node suite는 100/100을 통과했다. 현재 query의 어휘 겹침 metadata와 공백 입력 수정을 적용한 뒤 기존 검색 4개 묶음과 필수 근거 진단을 다시 실행했고, 이전 길이 감점 후보 대비 문서/heading/본문/필수 그룹 적중의 회귀는 없었다. 보고서는 [final-regression-report-2026-09-08.json](evaluation/final-regression-report-2026-09-08.json)이다. 원래 실패한 질문을 성공으로 바꾸거나 과거 보고서의 코드 hash를 현재 코드로 덮지 않았다.
+목차 기능을 구현한 시점의 Node suite는 100/100이었다. 당시 query의 어휘 겹침 metadata와 공백 입력 수정을 적용한 회귀 결과는 [final-regression-report-2026-09-08.json](evaluation/final-regression-report-2026-09-08.json)에 남겼다. 관계 탐색을 보강한 현재 suite는 103/103을 통과했다. 원래 실패한 질문을 성공으로 바꾸거나 과거 보고서의 코드 hash를 현재 코드로 덮지 않았다.
 
 `ontology/`에서 저장소 밖 cache를 준비한 뒤 실행한다.
 
@@ -71,6 +95,8 @@ node evaluation/outline-navigation.mjs --cache <같은-cache> --check
 ```
 
 이 명령의 `--check`는 목차 API와 페이지 계약 검사다. 검색 실패는 보고서의 별도 품질 지표로 남기며 본문 조건을 통과시킨 것으로 바꾸지 않는다. 검색 조건 전체 검사는 `evaluation/run.mjs --cases <사례-json> --check`이며, 알려진 누락이 있으면 실패한다.
+
+관계 탐색의 새 표본은 `node evaluation/run.mjs --cache <같은-cache> --cases evaluation/graph-ranking-cases-2026-09-08.json`으로 재실행한다. 남은 실패 때문에 `--check`를 붙이면 종료 코드 1이다. 보고서의 전후 비교는 위 `ce24717`의 query와 수정 query를 같은 snapshot 및 공통 runtime 모듈로 실행한 결과다.
 
 다음 검증은 문서 검색 누락과 한국어 상황 설명의 표현 차이, 모델의 관련 heading 선택, 필요한 본문과 예외의 후속 읽기, 최종 판단 정확도를 대상으로 한다. 모든 반환 문서의 목차를 여는 방식은 탐색 가능한 범위를 관찰하기 위한 것으로, 비용을 줄인 기본 사용 전략이 검증된 것은 아니다. 일반화 성능을 다시 판단할 때는 아직 코드 조정에 사용하지 않은 새 표본이 필요하다.
 

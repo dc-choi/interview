@@ -1,0 +1,96 @@
+[
+  {
+    "id": "fresh-tech-llm-grounding-decline",
+    "query": "사내 규정 도우미가 관련 자료를 찾지 못했는데도 그럴듯한 답을 만들어 냅니다. 근거가 부족한 요청에서는 어떤 응답 흐름을 두어야 할까요?",
+    "scope": ["tech"],
+    "max_bytes": 24000,
+    "expected_evidence": [
+      {
+        "path": "tech/ai-engineering/eval/LLM-Abstention.md",
+        "heading": "2. RAG 기반 abstention 강화",
+        "all_text": ["검색된 문서 점수가 임계값 미만", "근거 없음"]
+      }
+    ]
+  },
+  {
+    "id": "fresh-tech-single-feature-emergency-stop",
+    "query": "새 추천 기능을 이미 운영에 올렸는데 오류가 납니다. 서비스 전체를 다시 배포하지 않고 그 기능만 바로 멈추려면 어떤 운영 장치를 준비해야 하나요?",
+    "scope": ["tech"],
+    "max_bytes": 24000,
+    "expected_evidence": [
+      {
+        "path": "tech/ci-cd/deployment/Feature-Flag.md",
+        "heading": "핵심 명제",
+        "all_text": ["flag OFF는 제어면에서 값 하나를 바꾸는 초 단위 작업", "기능 하나만 되돌린다"]
+      }
+    ]
+  },
+  {
+    "id": "fresh-tech-progressive-release-comparison-gate",
+    "query": "새 결제 경로를 소수 사용자에게 먼저 열어 보려 합니다. 비율을 올릴지 중단할지는 무엇과 비교하고 어떤 지표로 판단해야 할까요?",
+    "scope": ["tech"],
+    "max_bytes": 24000,
+    "expected_evidence": [
+      {
+        "path": "tech/ci-cd/deployment/Canary.md",
+        "heading": "판정 게이트",
+        "all_text": ["동시에 돌고 있는 baseline", "같은 시점의 control 집단", "오류율(5xx와 도메인 실패)"]
+      }
+    ]
+  },
+  {
+    "id": "fresh-biz-saas-value-pricing",
+    "query": "우리 SaaS가 고객의 비용과 시간을 크게 줄여 주는데, 제작 원가나 경쟁사 가격만 보고 요금을 정해도 될까요? 고객이 얻는 효익을 반영하려면 어떤 가격 접근이 맞나요?",
+    "scope": ["biz"],
+    "max_bytes": 24000,
+    "expected_evidence": [
+      {
+        "path": "biz/business-model/Pricing-Strategy.md",
+        "heading": "가격 전략 모델",
+        "all_text": ["가치 기반 (Value-based)", "고객이 느끼는 가치에 맞춤"]
+      }
+    ]
+  },
+  {
+    "id": "fresh-econ-pay-raise-purchasing-power",
+    "query": "월급은 2% 올랐지만 같은 기간 물가가 3% 올랐습니다. 실제 생활비를 감안하면 보상이 늘었다고 봐도 될까요? 계산할 때 무엇을 구분해야 하나요?",
+    "scope": ["econ"],
+    "max_bytes": 24000,
+    "expected_evidence": [
+      {
+        "path": "econ/applied/Salary-Negotiation-Inflation.md",
+        "heading": "1. 명목임금과 실질임금",
+        "all_text": ["명목임금", "실질임금", "(1 + 명목 인상률) / (1 + 물가상승률) - 1"]
+      }
+    ]
+  },
+  {
+    "id": "fresh-fit-new-team-expectations",
+    "query": "새 팀에 합류한 첫 주입니다. 빨리 성과를 내겠다는 마음에 일을 잡기 전에, 매니저와 어떤 내용을 먼저 확인하면 초반의 오해를 줄일 수 있을까요?",
+    "scope": ["fit"],
+    "max_bytes": 24000,
+    "expected_evidence": [
+      {
+        "path": "fit/growth/career-stages/First-90-Days.md",
+        "heading": "원칙 1. 매니저의 스타일을 먼저 파악",
+        "all_text": ["1주차에 1:1 요청", "선호 커뮤니케이션, 기대치, 우선순위"]
+      }
+    ]
+  },
+  {
+    "id": "fresh-negative-unknown-token-string",
+    "query": "드라코니스 벨루마 사르피온의 역위상 단서는 어떻게 보정하나요?",
+    "scope": ["tech"],
+    "max_bytes": 24000,
+    "expected_evidence": [],
+    "expected_empty": true
+  },
+  {
+    "id": "fresh-negative-unrelated-gardening-question",
+    "query": "베란다에서 방울토마토를 키울 때 물은 며칠 간격으로 주는 게 좋을까요?",
+    "scope": ["tech"],
+    "max_bytes": 24000,
+    "expected_evidence": [],
+    "expected_empty": true
+  }
+]

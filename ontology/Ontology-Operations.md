@@ -27,6 +27,10 @@ aliases: ["Ontology Operations", "온톨로지 실행 절차"]
 
 검색은 정확한 label과 alias를 우선하고, 문서당 최고점 section과 상위 root 6개를 선택한다. 정규화와 키워드 확장 뒤 2~3개 토큰인 짧은 질의는 문서 빈도를 이용해 구체 용어가 없는 일반어 후보를 제외한다. 더 긴 자연어 질의에는 이 제외 규칙을 적용하지 않는다. 직접 근거를 먼저 담은 뒤 관계, 양 끝 entity, 소유 문서와 원문 근거를 한 묶음으로 추가한다. 예산에 맞지 않는 묶음은 누락 수로 보고하며, 최종 축소에서도 남은 관계와 직접 근거에 필요한 문서를 보존한다. 작은 예산에서 모든 관계의 반환을 보장하지는 않는다.
 
+관계 탐색에서는 근거 unit의 현재 질문 점수를 먼저 본다. Section은 metadata와 본문 점수, RelationAssertion은 predicate와 endpoint 등의 metadata 점수를 사용한다. 동점이면 상대 entity 소유 Document의 점수, relation ID 순으로 선택한다. `출처`, `관련 문서`, `관련문서` section에는 이 우선순위용 점수를 부여하지 않는다. 관계가 기록된 본문과 상대 문서의 다른 본문을 구분하기 위한 순서이며, 원문 확정 상태와 scope, hop, entity와 edge 상한은 그대로 검사한다.
+
+정규화 후 한 토큰이며 정확한 metadata가 일치하면 root 선택을 위한 전체 본문 스캔은 생략한다. 이때 관계 순위에는 현재 탐색 중인 entity에 연결된 근거의 본문만 batch로 읽고 재사용한다. 검색어 가중치는 1이며 동일한 metadata 점수와 길이 감점을 적용한다. 이 추가 점수는 root 순위를 바꾸지 않는다.
+
 본문 점수에는 section 길이에 따른 완만한 감점을 적용하며 정확한 metadata 점수는 유지한다. `matching.query_term_count`는 정규화와 확장 후 검색어 수, `max_section_term_matches`는 같은 section의 metadata와 본문에 겹친 서로 다른 검색어 수의 최댓값이다. `assessment`는 `exact_metadata`, `lexical_overlap`, `no_lexical_overlap`, `weak_lexical_overlap`, `not_evaluated`를 구분한다. 검색어 8개 이상이면서 최대 겹침이 1~2개이면 `weak_lexical_overlap`이다. 후보를 삭제하는 규칙이나 의미적 적합성, 지식 부재의 확정 판정이 아니며, 관련성을 확인하고 재조회할 단서다.
 
 ## 설치와 명령
@@ -123,7 +127,7 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 
 이 검증은 Markdown parser와 snapshot 조회의 계약을 확인한다. 실제 프로젝트 버그, 의미적으로 올바른 기술 추천, code repository index, deployment 또는 runtime behavior를 확인하지 않는다.
 
-2026-09-08 suite는 100개 테스트를 통과했다. 추가 검증은 짧은 관련 section의 순위 보존, 긴 질문의 어휘 겹침 진단, 공백만 있는 질문의 거부, 문서 목차의 순서와 페이지 예산, ID/revision/허용 범위/원문 hash 검사, 목차에서 고른 section의 후속 읽기, 새 MCP stdio의 세 도구와 CLI 인자 조합이다. 실제 Vault의 검색 회귀와 목차 탐색 결과는 [[Ontology-Retrieval-Quality]]에 분리해 기록한다.
+2026-09-08 suite는 103개 테스트를 통과했다. 추가 검증은 짧은 관련 section의 순위 보존, 긴 질문의 어휘 겹침 진단, 공백만 있는 질문의 거부, 문서 목차의 순서와 페이지 예산, ID/revision/허용 범위/원문 hash 검사, 목차에서 고른 section의 후속 읽기, 새 MCP stdio의 세 도구와 CLI 인자 조합이다. 관계 우선순위 fixture 3개는 일반 본문 질의, 한 토큰의 정확한 제목 질의, 명시적 typed relation을 검사한다. 일반 링크 50개 이상에서 관련 근거가 밀리는 오류를 실제 Markdown으로 재현했으며 각각 수정 전 실패했다. 실제 Vault의 검색 회귀와 목차 탐색 결과는 [[Ontology-Retrieval-Quality]]에 분리해 기록한다.
 
 ## 검색 품질 확인
 

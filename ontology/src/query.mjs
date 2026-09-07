@@ -532,9 +532,17 @@ export function lookup(options, args, snapshot) {
     return memo.get(uri);
   };
   const tokens = words(request.query);
+  const scoreSection = (section, weights) => {
+    const body = read(sourcePath(section)).subarray(section.anchor?.start_byte ?? 0, section.anchor?.end_byte ?? 0).toString('utf8').toLowerCase();
+    const match = scoreBodyMatch(body, tokens, weights);
+    // Long notes can repeat broad terms without answering the specific query.
+    const lengthPenalty = 1 + 0.2 * Math.log1p(body.length / 200);
+    return { ...match, score: entityScore(section, request.query, tokens) + match.score / lengthPenalty };
+  };
   base.matching.query_term_count = tokens.length;
   let maxSectionTermMatches = 0;
   const scored = new Map();
+  const sectionScores = new Map();
   for (const doc of documents) {
     const score = entityScore(doc, request.query, tokens);
     if (score > 0) scored.set(doc.id, {
@@ -550,7 +558,9 @@ export function lookup(options, args, snapshot) {
     const doc = documentsByPath.get(sourcePath(section));
     if (!docId || !doc) continue;
     const score = entityScore(section, request.query, tokens);
-    if (isUsefulSection(section)) {
+    const useful = isUsefulSection(section);
+    sectionScores.set(section.id, useful || section.type === 'RelationAssertion' ? score : 0);
+    if (useful) {
       maxSectionTermMatches = Math.max(maxSectionTermMatches, matchingTokens(section, tokens).length);
     }
     const existing = scored.get(docId);
@@ -569,7 +579,8 @@ export function lookup(options, args, snapshot) {
     .some((entity) => entityScore(entity, request.query, tokens) === 1000);
   // A single exact title or alias needs no broad scan. Multi-term questions use
   // one pinned Git batch to distinguish specific terms from generic ones.
-  if (tokens.length > 0 && (!hasExactMetadataHit || tokens.length > 1)) {
+  const scanBodies = tokens.length > 0 && (!hasExactMetadataHit || tokens.length > 1);
+  if (scanBodies) {
     for (const [uri, blob] of readPinnedBlobs(options.repo, manifest.revision, documents.map(sourcePath))) memo.set(uri, blob);
     const documentBodies = [...memo.values()].map((blob) => blob.toString('utf8').toLowerCase());
     const documentFrequency = new Map(tokens.map((token) => [token,
@@ -580,13 +591,11 @@ export function lookup(options, args, snapshot) {
       const docId = documentIdFor(section, documentsByPath);
       const doc = documentsByPath.get(sourcePath(section));
       if (!docId || !doc) continue;
-      const body = read(sourcePath(section)).subarray(section.anchor?.start_byte ?? 0, section.anchor?.end_byte ?? 0).toString('utf8').toLowerCase();
-      const bodyMatch = scoreBodyMatch(body, tokens, weights);
+      const bodyMatch = scoreSection(section, weights);
       maxSectionTermMatches = Math.max(maxSectionTermMatches,
         new Set([...matchingTokens(section, tokens), ...bodyMatch.matchedTokens]).size);
-      // Long notes can repeat broad terms without answering the specific query.
-      const lengthPenalty = 1 + 0.2 * Math.log1p(body.length / 200);
-      const score = entityScore(section, request.query, tokens) + bodyMatch.score / lengthPenalty;
+      const score = bodyMatch.score;
+      sectionScores.set(section.id, score);
       const existing = scored.get(docId);
       if (existing) for (const token of bodyMatch.matchedTokens) existing.matchedTokens.add(token);
       if (score > 0 && (!existing || existing.score < score)) {
@@ -634,9 +643,19 @@ export function lookup(options, args, snapshot) {
   }
   const selectedRelations = [];
   const seenRelations = new Set();
+  const rankedEvidence = new Set();
+  // Exact single-term lookups only need local evidence bodies. A unit weight
+  // keeps their ranking independent of unrelated documents and root selection.
+  const localWeights = new Map(tokens.map((token) => [token, 1]));
   while (queue.length > 0) {
     const { id, hop } = queue.shift();
     if (hop >= request.depth) continue;
+    const relatedDocumentScore = (relation) => {
+      const peer = relation.subject === id ? relation.object : relation.subject;
+      return scored.get(ownerDocumentForEntity.get(peer))?.score ?? 0;
+    };
+    // The section explaining a link can be more useful than the peer's other text.
+    // Rank that evidence before spending the bounded graph and response budgets.
     const incident = relations.filter((relation) => {
       if ((relation.subject !== id && relation.object !== id) || relation.verification !== 'source_confirmed' || relation.predicate === 'contains') return false;
       const evidence = sectionsById.get(relation.evidence_unit_id);
@@ -644,7 +663,22 @@ export function lookup(options, args, snapshot) {
       const object = entitiesById.get(relation.object);
       return evidence && subject && object && inScope(sourcePath(evidence), scopes)
         && inScope(sourcePath(subject), scopes) && inScope(sourcePath(object), scopes);
-    }).sort((a, b) => a.id.localeCompare(b.id));
+    });
+    if (!scanBodies && tokens.length > 0) {
+      const pending = [...new Set(incident.map((relation) => relation.evidence_unit_id))]
+        .filter((evidenceId) => !rankedEvidence.has(evidenceId))
+        .map((evidenceId) => sectionsById.get(evidenceId)).filter(isUsefulSection);
+      const paths = [...new Set(pending.map(sourcePath))].filter((uri) => !memo.has(uri));
+      if (paths.length > 0) {
+        for (const [uri, blob] of readPinnedBlobs(options.repo, manifest.revision, paths)) memo.set(uri, blob);
+      }
+      for (const section of pending) {
+        sectionScores.set(section.id, scoreSection(section, localWeights).score);
+        rankedEvidence.add(section.id);
+      }
+    }
+    incident.sort((a, b) => (sectionScores.get(b.evidence_unit_id) ?? 0) - (sectionScores.get(a.evidence_unit_id) ?? 0)
+      || relatedDocumentScore(b) - relatedDocumentScore(a) || a.id.localeCompare(b.id));
     if (incident.length > MAX_EDGES_PER_ENTITY) {
       base.traversal.limit_reached = true;
       appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'retrieval_limit_reached' });
