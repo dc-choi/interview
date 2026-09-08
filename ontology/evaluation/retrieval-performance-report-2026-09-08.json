@@ -1,0 +1,2690 @@
+{
+  "observed_at": "2026-09-08T08:55:48.102Z",
+  "contract": {
+    "timed": "Synchronous lookup/search with a preloaded verified snapshot, including Git source reads and response packing.",
+    "excluded": "Snapshot loading, MCP transport, host reasoning, scoring, and response equality checks.",
+    "order": "Alternate version order by request and round, following three unmeasured request pairs.",
+    "equality": "Entire lookup JSON; search JSON except the code-bound cursor binding. Actual byte budgets checked on every call.",
+    "scope": "Previously observed synthetic regression requests; no new retrieval quality claim or load-test claim.",
+    "percentile": "Sorted samples at floor((N - 1) * q)."
+  },
+  "environment": {
+    "node": "v24.13.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M3 Pro"
+  },
+  "inputs": {
+    "snapshot": {
+      "revision": "4af3516d519b62d6840b04c79d1e25aba846d80d",
+      "fingerprint": "7ffdefc7aea57c401552d40e5b97e2082aa528c451650b4ec1261fe05a0f5991",
+      "manifest_hash": "96a20baf397cca253ad818617675734b3839d3f70f3f8bce9900df2c1d05767c"
+    },
+    "code_and_case_hashes": {
+      "ontology/evaluation/retrieval-performance.mjs": "53ebe952d682dbdac385eea352a93aeb2654ea46d6ffb6a30fcb0000772b7f07",
+      "ontology/src/query.mjs": "4367ace276baad30e884ddbd5d6d2ffb2d7224f1cbae760cb6ef0bc6ef98e96a",
+      "ontology/src/core.mjs": "680ae78ffd994bf4945222cf73c0006b6494e84028db2aed417cb470500d09be",
+      "ontology/src/repository.mjs": "66681b76a3b16e11a7bb768da555ed5c220a8ecf22db404a2122b6242243dabc",
+      "ontology/src/snapshot.mjs": "b09ea4871bd9bbe32be8f49927d80763cd907f040ab0496b75deb747084915dd",
+      "ontology/src/markdown.mjs": "52eb3aa281762759e82f44b731ff27f785bffbf095553a848c077f369818c66c",
+      "ontology/evaluation/cases.json": "8dacad23dbe4c8544a4b380849e4ba7f9f36decbd1cbf851028ea75daf5bf9f0",
+      "ontology/evaluation/validation-cases.json": "2233c5b934b1ad334e589d4f43bca7c72019594d9001d059b618dd66e83039d7",
+      "ontology/evaluation/holdout-cases.json": "2694e6f4d771c3f121e4c028dde3b3c11dd07e118b624087d49c0420fe06c34a",
+      "ontology/evaluation/generalization-cases-2026-09-07.json": "4e5761f129542615c9a0584d17194af31f3411df61c7e506401cae01dadd7a86",
+      "ontology/evaluation/context-integrity-cases.json": "b9dd5a81fa7a0be654dffdde312930fb71e738e0c090333d2025c89eb92a2cae",
+      "ontology/evaluation/document-search-cases-2026-09-08.json": "a45607c714de84af95890c6379dc828800ac478d032537f75cb660deef0f1d7b",
+      "ontology/evaluation/metadata-ranking-cases-2026-09-08.json": "76b413409e9f442f0890078de2ae65b5e7cdf56aa1a200889230f1c4d116f103",
+      "ontology/evaluation/graph-ranking-cases-2026-09-08.json": "6a9f93b2a7bd16a06e3ff3e49c87c6d8c093c2c16138eff63f375318e83b81c6",
+      "ontology/evaluation/diagnostic-cases.json": "dec7ddac06b02c71d9a97311d4272d096ec8b6675da8e58ee67a8ff3de86abea",
+      "ontology/evaluation/context-packing-cases-2026-09-08.json": "679e9f86fdf4f09ba8e296a52e21bf1da6bd1281fa90339ba11c5dd1ce692899",
+      "ontology/evaluation/algorithm-holdout-cases-2026-09-08.json": "7723724324d3efc68a1b5b75fbabd5ee6e01eb4a07545544ddca64c8c2c68306",
+      "ontology/evaluation/selection-holdout-cases-2026-09-08.json": "23570d3a7ce476daf56c261420dd33a6c632a603d17d75f3968fab6db6b9e955",
+      "ontology/evaluation/rerank-holdout-cases-2026-09-08.json": "a97596345ff226778660b8e6c45cac388daaa15bdcdb4d2549e911d63fe0f3e0",
+      "ontology/evaluation/coverage-holdout-cases-2026-09-08.json": "3121fb7c003cb926ac9f627eb7fb4178e2e7c51cc0b6b67e32d33aac3c5c218b"
+    },
+    "baseline_query_sha256": "7731853f713f85cc613e3b8e28fb0f215a04f7d60369b76bbcfe7de9c619f636",
+    "baseline_query_source": "import fs from 'node:fs';\nimport { spawnSync } from 'node:child_process';\nimport path from 'node:path';\nimport {\n  ContextError,\n  inScope,\n  normalizeScopes,\n  sha256,\n  stableJson,\n} from './core.mjs';\nimport { getRepoState, readBlob } from './repository.mjs';\nimport { loadSnapshot } from './snapshot.mjs';\n\nconst MAX_ARGUMENT_BYTES = 8192;\nconst MAX_QUERY_BYTES = 4096;\nconst MAX_SCOPE_ENTRIES = 20;\nconst MAX_SCOPE_PATH_BYTES = 512;\nconst SERVER_MAX_BYTES = 65536;\nconst MAX_MATCHED_ENTITIES = 20;\nconst MAX_ROOTS = 6;\nconst MAX_EDGES_PER_ENTITY = 50;\nconst MAX_EXCERPT_BYTES = 1400;\nconst MAX_SEARCH_DOCUMENTS = 20;\nconst MAX_CURSOR_BYTES = 2048;\nconst LINK_ROLE_PRIORITY = { index_member: 2, parent_index: 2, related_document: 1 };\nconst QUERY_CODE_HASH = sha256(fs.readFileSync(new URL(import.meta.url)));\nconst LIMITATIONS = [\n  'freshness_not_checked',\n  'semantic_conflict_not_checked',\n  'runtime_not_checked',\n];\n\nconst own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);\nconst byteLength = (value) => Buffer.byteLength(stableJson(value), 'utf8');\n\nfunction outputBytes(payload) {\n  const copy = JSON.parse(stableJson(payload));\n  let previous = -1;\n  for (let attempt = 0; attempt < 16; attempt += 1) {\n    copy.budget.used_bytes = previous < 0 ? 0 : previous;\n    const next = Buffer.byteLength(JSON.stringify(copy), 'utf8');\n    if (next === previous) return next;\n    previous = next;\n  }\n  return previous;\n}\n\nfunction fail(code, message) {\n  throw new ContextError(code, message);\n}\n\nfunction assertPlainObject(value, name) {\n  if (value === null || typeof value !== 'object' || Array.isArray(value)) {\n    fail('invalid_arguments', `${name} must be an object`);\n  }\n}\n\nfunction validateOptions(options) {\n  assertPlainObject(options, 'options');\n  if (typeof options.repo !== 'string' || options.repo.length === 0) fail('invalid_options', 'repo is required');\n  if (options.cacheDir !== undefined && (typeof options.cacheDir !== 'string' || options.cacheDir.length === 0)) fail('invalid_options', 'cacheDir must be a non-empty string when provided');\n  if (!Array.isArray(options.allowlist)) fail('invalid_options', 'allowlist must be an array');\n  return normalizeScopes(options.allowlist);\n}\n\nfunction validateArgs(args) {\n  assertPlainObject(args, 'arguments');\n  const allowed = new Set(['query', 'scope', 'depth', 'max_bytes']);\n  for (const key of Object.keys(args)) if (!allowed.has(key)) fail('invalid_arguments', `unknown argument: ${key}`);\n  if (byteLength(args) > MAX_ARGUMENT_BYTES) fail('arguments_too_large', `arguments exceed ${MAX_ARGUMENT_BYTES} bytes`);\n  if (typeof args.query !== 'string' || args.query.trim().length === 0) fail('invalid_query', 'query must contain non-whitespace text');\n  if (Buffer.byteLength(args.query, 'utf8') > MAX_QUERY_BYTES) fail('query_too_large', `query exceeds ${MAX_QUERY_BYTES} bytes`);\n  if (own(args, 'scope')) {\n    if (!Array.isArray(args.scope) || args.scope.length > MAX_SCOPE_ENTRIES) fail('invalid_scope', `scope has at most ${MAX_SCOPE_ENTRIES} entries`);\n    for (const entry of args.scope) {\n      if (typeof entry !== 'string' || Buffer.byteLength(entry, 'utf8') > MAX_SCOPE_PATH_BYTES) fail('invalid_scope', `scope paths have at most ${MAX_SCOPE_PATH_BYTES} bytes`);\n    }\n  }\n  if (own(args, 'depth') && args.depth !== 1 && args.depth !== 2) fail('invalid_depth', 'depth must be 1 or 2');\n  if (own(args, 'max_bytes') && (!Number.isInteger(args.max_bytes) || args.max_bytes <= 0)) fail('invalid_max_bytes', 'max_bytes must be a positive integer');\n  return {\n    query: args.query,\n    scope: args.scope === undefined ? [] : normalizeScopes(args.scope),\n    depth: args.depth ?? 1,\n    requestedMaxBytes: args.max_bytes ?? SERVER_MAX_BYTES,\n  };\n}\n\nfunction validateSearchArgs(args) {\n  assertPlainObject(args, 'arguments');\n  for (const key of Object.keys(args)) {\n    if (!['query', 'scope', 'max_bytes', 'cursor'].includes(key)) fail('invalid_arguments', `unknown argument: ${key}`);\n  }\n  const { cursor, ...queryArgs } = args;\n  const request = validateArgs(queryArgs);\n  if (own(args, 'cursor') && (typeof cursor !== 'string' || cursor.length === 0\n    || Buffer.byteLength(cursor, 'utf8') > MAX_CURSOR_BYTES || !/^[A-Za-z0-9_-]+$/.test(cursor))) {\n    fail('invalid_cursor', 'cursor must be a bounded continuation token');\n  }\n  return { ...request, cursor };\n}\n\nfunction searchOffset(cursor, binding, total) {\n  if (cursor === undefined) return 0;\n  let value;\n  try {\n    const bytes = Buffer.from(cursor, 'base64url');\n    if (bytes.toString('base64url') !== cursor) throw new Error('noncanonical cursor');\n    value = JSON.parse(bytes.toString('utf8'));\n  } catch {\n    fail('invalid_cursor', 'cannot decode cursor');\n  }\n  if (!value || typeof value !== 'object' || Array.isArray(value)\n    || Object.keys(value).length !== 2 || !own(value, 'offset') || !own(value, 'binding')\n    || !Number.isSafeInteger(value.offset) || value.offset < 0\n    || typeof value.binding !== 'string' || !/^[a-f0-9]{64}$/.test(value.binding)) {\n    fail('invalid_cursor', 'invalid cursor fields');\n  }\n  if (value.binding !== binding) fail('cursor_mismatch', 'query, scope, snapshot or ranking code changed; restart the search');\n  if (value.offset >= total) fail('invalid_cursor', 'cursor is outside the candidate range');\n  return value.offset;\n}\n\nfunction documentSearchPage({ base, request, roots, byDocument, scopes, tokens = [] }) {\n  const source = base.index_sync[0];\n  const binding = sha256(stableJson({\n    query: request.query, scopes, fingerprint: source.fingerprint,\n    manifest_hash: source.manifest_hash, ranking_code: QUERY_CODE_HASH,\n  }));\n  const offset = searchOffset(request.cursor, binding, roots.length);\n  const payload = {\n    query: request.query,\n    result_status: 'insufficient_evidence',\n    index_sync: base.index_sync,\n    matching: { ...base.matching, query_terms: tokens },\n    candidates: [],\n    coverage_gaps: base.coverage_gaps,\n    limitations: base.limitations,\n    pagination: {},\n    budget: {\n      requested_max_bytes: base.budget.requested_max_bytes,\n      server_max_bytes: base.budget.server_max_bytes,\n      effective_max_bytes: base.budget.effective_max_bytes,\n      used_bytes: 0,\n      exhausted: false,\n    },\n  };\n  const updatePage = () => {\n    const next = offset + payload.candidates.length;\n    const complete = next === roots.length;\n    payload.pagination = {\n      offset_documents: offset,\n      returned_documents: payload.candidates.length,\n      total_candidates: roots.length,\n      complete,\n      next_cursor: complete ? null : Buffer.from(JSON.stringify({ offset: next, binding })).toString('base64url'),\n    };\n    payload.result_status = complete ? 'ok' : 'partial';\n    if (payload.candidates.length === 0) payload.result_status = 'insufficient_evidence';\n  };\n  for (const entry of roots.slice(offset, offset + MAX_SEARCH_DOCUMENTS)) {\n    const unit = entry.direct ?? preferredSection(byDocument.get(entry.doc.id));\n    const reference = unit ? {\n      id: unit.id, type: unit.type, label: unit.label,\n      source_uri: sourcePath(unit), source_revision: unit.source_revision,\n      content_hash: unit.content_hash, anchor: unit.anchor,\n    } : null;\n    payload.candidates.push({\n      document: publicEntity(entry.doc),\n      source_uri: sourcePath(entry.doc),\n      matched_terms: tokens.filter((token) => entry.matchedTokens.has(token)),\n      best_evidence_ref: reference,\n    });\n    updatePage();\n    if (outputBytes(payload) > payload.budget.effective_max_bytes) {\n      payload.candidates.pop();\n      payload.budget.exhausted = true;\n      break;\n    }\n  }\n  updatePage();\n  if (offset < roots.length && payload.candidates.length === 0) {\n    fail('budget_too_small', 'max_bytes cannot hold one document candidate');\n  }\n  payload.budget.used_bytes = outputBytes(payload);\n  if (payload.budget.used_bytes > payload.budget.effective_max_bytes\n    || Buffer.byteLength(JSON.stringify(payload), 'utf8') !== payload.budget.used_bytes) {\n    fail('budget_too_small', 'max_bytes cannot hold required search metadata');\n  }\n  return payload;\n}\n\nfunction isPrefix(prefix, target) {\n  return prefix === '.' || target === prefix || target.startsWith(`${prefix}/`);\n}\n\nfunction intersectScopes(left, right) {\n  if (left.length === 0 || right.length === 0) return [];\n  const result = new Set();\n  for (const a of left) for (const b of right) {\n    if (isPrefix(a, b)) result.add(b);\n    else if (isPrefix(b, a)) result.add(a);\n  }\n  return [...result].sort();\n}\n\nfunction effectiveScopes(allowlist, indexedPaths, requested) {\n  if (!indexedPaths?.length) return [];\n  let scopes = intersectScopes(allowlist, normalizeScopes(indexedPaths));\n  if (requested.length > 0) scopes = intersectScopes(scopes, requested);\n  return scopes;\n}\n\nfunction sourcePath(entity) {\n  return entity?.source_uri ?? entity?.source_path ?? '';\n}\n\nfunction documentIdFor(entity, documentsByPath) {\n  if (entity.type === 'Document') return entity.id;\n  if (entity.document_id) return entity.document_id;\n  const doc = documentsByPath.get(sourcePath(entity));\n  return doc?.id ?? null;\n}\n\nfunction preferredSection(sections) {\n  return sections?.find((section) => isUsefulSection(section) && section.anchor?.heading_path?.length > 0)\n    ?? sections?.find((section) => section.type === 'Section')\n    ?? sections?.[0]\n    ?? null;\n}\n\nfunction isUsefulSection(section) {\n  const label = exactText(section?.label);\n  return section?.type === 'Section' && !['출처', '관련 문서', '관련문서'].includes(label);\n}\n\nfunction words(value) {\n  const stop = new Set(['이', '가', '은', '는', '을', '를', '에', '의', '와', '과', '도', '로', '으로', '에서', '하고', '하는', '대해', '관련', '무엇', '어떻게', '왜', '이후', '전체', '중', '유지', '방법', '경우', 'when', 'what', 'with', 'this', 'that', 'the', 'and', 'for', 'from']);\n  const raw = value.toLowerCase().match(/[\\p{L}\\p{N}_-]{2,}/gu) ?? [];\n  const equivalents = new Map([\n    ['재색인', ['reindex', 'alias', 'backfill']], ['커밋', ['commit']], ['발행', ['publish', 'event', 'outbox']],\n    ['복구', ['recovery', 'reconcile', 'retry']], ['검색', ['search']],\n  ]);\n  const normalized = raw.flatMap((word) => {\n    const stem = word.replace(/(하려면|하면|하나|인가|인가요|인가요|에서|으로|에게|까지|부터|처럼|보다|이후|중에|에는|에는|은|는|을|를|이|가|에)$/u, '');\n    const base = stem.length >= 2 ? stem : word;\n    return [base, ...(equivalents.get(base) ?? [])];\n  });\n  return [...new Set(normalized.filter((word) => !stop.has(word)))];\n}\n\nfunction exactText(value) {\n  return String(value ?? '').trim().toLocaleLowerCase();\n}\n\nfunction exactMetadataMatch(entity, query) {\n  const exact = exactText(query);\n  const fields = [entity.id, entity.label, ...(entity.aliases ?? []), ...(entity.tags ?? []), entity.anchor?.heading_path?.join(' ')];\n  return exact.length > 0 && fields.some((field) => exactText(field) === exact);\n}\n\nfunction entityScore(entity, query, tokens) {\n  if (exactMetadataMatch(entity, query)) return 1000;\n  return matchingTokens(entity, tokens).length * 10;\n}\n\nfunction matchingTokens(entity, tokens) {\n  // ID prefixes and percent-encoded anchors are storage syntax, not source text.\n  const fields = [sourcePath(entity), entity.label, ...(entity.aliases ?? []), ...(entity.tags ?? []), entity.anchor?.heading_path?.join(' ')];\n  const normalized = fields.map(exactText);\n  return tokens.filter((token) => normalized.some((field) => field.includes(token)));\n}\n\nfunction discriminativeTokens(tokens, weights, documentFrequency) {\n  const present = tokens.filter((token) => documentFrequency.get(token) > 0);\n  if (present.length < 2) return [];\n  const highestWeight = Math.max(...present.map((token) => weights.get(token)));\n  if (highestWeight <= 1.2) return [];\n  return present.filter((token) => weights.get(token) >= highestWeight * 0.8);\n}\n\nfunction hasDiscriminativeMatch(entry, tokens) {\n  return tokens.length === 0 || tokens.some((token) => entry.matchedTokens.has(token));\n}\n\nfunction scoreBodyMatch(body, tokens, weights) {\n  let score = 0;\n  const matchedTokens = new Set();\n  for (const token of tokens) {\n    const first = body.indexOf(token);\n    if (first === -1) continue;\n    const count = body.indexOf(token, first + token.length) === -1 ? 1 : 2;\n    matchedTokens.add(token);\n    const translatedQueryTerm = ['reindex', 'alias', 'backfill', 'commit', 'publish', 'outbox', 'recovery', 'reconcile'].includes(token);\n    score += count * 8 * weights.get(token) * (translatedQueryTerm ? 2 : 1);\n  }\n  return { score, matchedTokens };\n}\n\nfunction assertNoSymlink(repo, relativePath) {\n  const parts = relativePath.split('/');\n  let cursor = repo;\n  for (const part of parts) {\n    cursor = path.join(cursor, part);\n    try {\n      if (fs.lstatSync(cursor).isSymbolicLink()) fail('symlink_path', `symlink path is not allowed: ${relativePath}`);\n    } catch (error) {\n      if (error instanceof ContextError) throw error;\n      if (error?.code !== 'ENOENT') throw error;\n      return;\n    }\n  }\n}\n\nfunction safeExcerpt(buffer, start, end, limit) {\n  const source = buffer.subarray(Math.max(0, start), Math.min(buffer.length, end));\n  if (source.length <= limit) return { excerpt: source.toString('utf8'), truncated: false };\n  let length = Math.min(limit, source.length);\n  while (length > 0) {\n    const candidate = source.subarray(0, length);\n    const text = candidate.toString('utf8');\n    if (Buffer.from(text, 'utf8').equals(candidate)) return { excerpt: text, truncated: true };\n    length -= 1;\n  }\n  return { excerpt: '', truncated: true };\n}\n\nfunction readPinnedBlobs(repo, revision, paths) {\n  for (const sourcePath of paths) assertNoSymlink(repo, sourcePath);\n  const child = spawnSync('git', ['-C', repo, 'cat-file', '--batch'], {\n    input: paths.map((sourcePath) => `${revision}:${sourcePath}`).join('\\n') + '\\n',\n    encoding: null,\n    env: {\n      ...globalThis.process.env,\n      GIT_OPTIONAL_LOCKS: '0',\n      GIT_NO_REPLACE_OBJECTS: '1',\n      LC_ALL: 'C',\n    },\n    maxBuffer: 128 * 1024 * 1024,\n    timeout: 60000,\n  });\n  if (child.status !== 0 || child.error) fail('source_unavailable', 'cannot read pinned source blobs');\n  const blobs = new Map();\n  let offset = 0;\n  for (const sourcePath of paths) {\n    const newline = child.stdout.indexOf(10, offset);\n    if (newline < 0) fail('source_unavailable', 'invalid pinned source blob');\n    const [, type, size] = child.stdout.subarray(offset, newline).toString('utf8').split(' ');\n    const length = Number(size);\n    if (type !== 'blob' || !Number.isSafeInteger(length) || length < 0 || newline + length + 2 > child.stdout.length) {\n      fail('source_unavailable', 'invalid pinned source blob');\n    }\n    blobs.set(sourcePath, child.stdout.subarray(newline + 1, newline + 1 + length));\n    offset = newline + length + 2;\n  }\n  return blobs;\n}\n\nfunction normalizedHash(value) {\n  return String(value ?? '').replace(/^sha256:/, '');\n}\n\nfunction evidenceFor(entity, read, scopes, maxBytes = MAX_EXCERPT_BYTES) {\n  const uri = sourcePath(entity);\n  if (!uri || !inScope(uri, scopes)) return null;\n  const anchor = entity.anchor;\n  if (!anchor || !Number.isInteger(anchor.start_byte) || !Number.isInteger(anchor.end_byte)) return null;\n  const blob = read(uri);\n  const raw = blob.subarray(anchor.start_byte, anchor.end_byte);\n  if (normalizedHash(entity.content_hash) !== sha256(raw)) return null;\n  const snippet = safeExcerpt(blob, anchor.start_byte, anchor.end_byte, maxBytes);\n  return {\n    id: entity.id,\n    source_uri: uri,\n    anchor: {\n      heading_path: anchor.heading_path ?? [],\n      occurrence: anchor.occurrence,\n      start_line: anchor.start_line,\n      end_line: anchor.end_line,\n      start_byte: anchor.start_byte,\n      end_byte: anchor.end_byte,\n    },\n    source_revision: entity.source_revision,\n    content_hash: entity.content_hash,\n    excerpt: snippet.excerpt,\n    truncated: snippet.truncated,\n  };\n}\n\nfunction publicEntity(entity) {\n  const { content_hash, anchor, source_updated_at, source_revision, source_uri, document_id, ...rest } = entity;\n  return rest;\n}\n\nfunction addEvidenceWithinBudget(payload, item, maximum, onOutputLimit) {\n  const fits = (candidate) => {\n    payload.evidence_units.push(candidate);\n    const okay = outputBytes(payload) <= maximum;\n    payload.evidence_units.pop();\n    return okay;\n  };\n  if (fits(item)) {\n    payload.evidence_units.push(item);\n    return true;\n  }\n  onOutputLimit();\n  const characters = [...item.excerpt];\n  let low = 1;\n  let high = characters.length;\n  let best = null;\n  while (low <= high) {\n    const middle = Math.floor((low + high) / 2);\n    const candidate = { ...item, excerpt: characters.slice(0, middle).join(''), truncated: true };\n    if (fits(candidate)) {\n      best = candidate;\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  if (!best) return false;\n  payload.evidence_units.push(best);\n  return true;\n}\n\nfunction addRelationBundleWithinBudget(payload, relation, entities, item, maximum) {\n  const entityIds = new Set(payload.entities.map((entity) => entity.id));\n  const evidenceIds = new Set(payload.evidence_units.map((evidence) => evidence.id));\n  const additions = entities.filter((entity) => !entityIds.has(entity.id));\n  const entityLength = payload.entities.length;\n  const evidenceLength = payload.evidence_units.length;\n  payload.entities.push(...additions.map(publicEntity));\n  if (!evidenceIds.has(item.id)) payload.evidence_units.push(item);\n  payload.relations.push(relation);\n  if (outputBytes(payload) <= maximum) return true;\n  payload.entities.length = entityLength;\n  payload.evidence_units.length = evidenceLength;\n  payload.relations.pop();\n  return false;\n}\n\nfunction indexSync(manifest, current, scopes, errors, requestedScopeIndexed) {\n  let status = 'synced';\n  if (current.dirty) status = 'unindexed_worktree';\n  else if (current.revision !== manifest.revision) status = 'revision_mismatch';\n  const syncErrors = [...errors];\n  if (current.dirty) syncErrors.push('unindexed_worktree');\n  if (current.revision !== manifest.revision) syncErrors.push('revision_mismatch');\n  return [{\n    source_id: manifest.source_id,\n    status,\n    revision: manifest.revision,\n    fingerprint: manifest.fingerprint,\n    manifest_hash: manifest.manifest_hash,\n    artifacts_verified: true,\n    requested_scope_indexed: requestedScopeIndexed,\n    indexed_paths: manifest.indexed_paths ?? [],\n    excluded_paths: manifest.excluded_paths ?? [],\n    schema_version: manifest.schema_version,\n    extractor_version: manifest.extractor_version,\n    completed: manifest.completed,\n    errors: syncErrors,\n  }];\n}\n\nfunction appendGap(gaps, gap) {\n  if (!gaps.some((entry) => stableJson(entry) === stableJson(gap))) gaps.push(gap);\n}\n\nfunction boundedGaps(gaps, sourceId, scopes, maximum = 8) {\n  const summaries = gaps.filter((gap) => gap.reason === 'coverage_gaps_omitted');\n  const hidden = Math.max(0, ...summaries.map((gap) => gap.total_matching - gap.returned));\n  const sorted = gaps.filter((gap) => gap.reason !== 'coverage_gaps_omitted')\n    .sort((a, b) => stableJson(a).localeCompare(stableJson(b)));\n  const total = Math.max(sorted.length + hidden, ...summaries.map((gap) => gap.total_matching));\n  if (sorted.length <= maximum && total === sorted.length) return sorted;\n  return [\n    ...sorted.slice(0, maximum),\n    { source_id: sourceId, scope: scopes, reason: 'coverage_gaps_omitted', total_matching: total, returned: Math.min(sorted.length, maximum) },\n  ];\n}\n\nfunction queryRelevantGaps(allGaps, roots, sourceId, scopes) {\n  const paths = new Set(roots.map((root) => sourcePath(root.doc)));\n  const relevant = allGaps.filter((gap) => !gap.source_uri || paths.has(gap.source_uri));\n  const returned = boundedGaps(relevant, sourceId, scopes);\n  returned.push({\n    source_id: sourceId,\n    scope: scopes,\n    reason: 'coverage_gaps_summary',\n    total_in_scope: allGaps.length,\n    related_to_retrieval: relevant.length,\n  });\n  return returned;\n}\n\nfunction pruneOrphans(payload, directEvidenceToDocument, ownerDocumentForEntity) {\n  const entityIds = new Set(payload.entities.map((entity) => entity.id));\n  const referencedEvidence = new Set(payload.relations.map((relation) => relation.evidence_unit_id));\n  const directEvidence = payload.evidence_units.filter((item) => {\n    const documentId = directEvidenceToDocument.get(item.id);\n    return documentId && entityIds.has(documentId);\n  });\n  const keepEvidence = new Set([...referencedEvidence, ...directEvidence.map((item) => item.id)]);\n  const evidenceLength = payload.evidence_units.length;\n  payload.evidence_units = payload.evidence_units.filter((item) => keepEvidence.has(item.id));\n  const directDocuments = new Set(payload.evidence_units\n    .filter((item) => directEvidenceToDocument.has(item.id))\n    .map((item) => directEvidenceToDocument.get(item.id)));\n  const relationEntities = new Set(payload.relations.flatMap((relation) => [relation.subject, relation.object]));\n  const relationOwners = new Set([...relationEntities]\n    .map((entityId) => ownerDocumentForEntity.get(entityId))\n    .filter(Boolean));\n  payload.entities = payload.entities.filter((entity) => directDocuments.has(entity.id)\n    || relationEntities.has(entity.id) || relationOwners.has(entity.id));\n  return evidenceLength - payload.evidence_units.length;\n}\n\nfunction trimToBudget(payload, maximum, directEvidenceToDocument, ownerDocumentForEntity, requiredEvidenceIds) {\n  let changed = false;\n  const directIds = new Set(directEvidenceToDocument.keys());\n  const removeAt = (items, index) => {\n    if (index < 0) return false;\n    items.splice(index, 1);\n    changed = true;\n    return true;\n  };\n  while (outputBytes(payload) > maximum) {\n    const referenced = new Set(payload.relations.map((relation) => relation.evidence_unit_id));\n    const optionalProvenance = payload.evidence_units.findLastIndex((item) => directIds.has(item.id)\n      && !requiredEvidenceIds.has(item.id) && !referenced.has(item.id));\n    if (removeAt(payload.evidence_units, optionalProvenance)) {\n      payload.budget.omitted_evidence_units += 1;\n      payload.budget.omitted_evidence_units += pruneOrphans(payload, directEvidenceToDocument, ownerDocumentForEntity);\n      continue;\n    }\n    if (payload.relations.length > 0) {\n      payload.relations.pop();\n      payload.budget.omitted_relations += 1;\n      payload.budget.omitted_evidence_units += pruneOrphans(payload, directEvidenceToDocument, ownerDocumentForEntity);\n      changed = true;\n      continue;\n    }\n    const directDocuments = new Set(payload.evidence_units\n      .filter((item) => directIds.has(item.id))\n      .map((item) => directEvidenceToDocument.get(item.id)));\n    const unusedEntity = payload.entities.findLastIndex((entity) => !directDocuments.has(entity.id));\n    if (removeAt(payload.entities, unusedEntity)) {\n      payload.budget.omitted_evidence_units += pruneOrphans(payload, directEvidenceToDocument, ownerDocumentForEntity);\n      continue;\n    }\n    const relationEvidence = new Set(payload.relations.map((relation) => relation.evidence_unit_id));\n    const indirectEvidence = payload.evidence_units.findLastIndex((item) => !directIds.has(item.id) && !relationEvidence.has(item.id));\n    if (removeAt(payload.evidence_units, indirectEvidence)) {\n      payload.budget.omitted_evidence_units += 1;\n      continue;\n    }\n    const directEvidence = payload.evidence_units.filter((item) => requiredEvidenceIds.has(item.id));\n    if (directEvidence.length > 1) {\n      const item = directEvidence.at(-1);\n      const index = payload.evidence_units.findLastIndex((candidate) => candidate.id === item.id);\n      payload.evidence_units.splice(index, 1);\n      payload.budget.omitted_evidence_units += 1;\n      payload.budget.omitted_evidence_units += pruneOrphans(payload, directEvidenceToDocument, ownerDocumentForEntity);\n      changed = true;\n      continue;\n    }\n    const removableGap = payload.coverage_gaps.findLastIndex((gap) => gap.reason !== 'coverage_gaps_summary');\n    if (removeAt(payload.coverage_gaps, removableGap)) continue;\n    return false;\n  }\n  if (changed) payload.budget.exhausted = true;\n  return true;\n}\n\n/**\n * Build an evidence-backed Context Pack from the active immutable snapshot.\n * This intentionally does not infer claims or semantic relations.\n */\nexport function lookup(options, args, snapshot) {\n  return retrieve(options, args, snapshot, 'lookup');\n}\n\n/** List ranked document candidates without treating metadata as body evidence. */\nexport function search(options, args, snapshot) {\n  return retrieve(options, args, snapshot, 'search');\n}\n\nfunction retrieve(options, args, snapshot, mode) {\n  const allowlist = validateOptions(options);\n  const request = mode === 'search' ? validateSearchArgs(args) : validateArgs(args);\n  const effectiveMaxBytes = Math.min(request.requestedMaxBytes, SERVER_MAX_BYTES);\n  snapshot ??= loadSnapshot({ repo: options.repo, cacheDir: options.cacheDir });\n  const { manifest, entities, relations, fingerprint, manifest_hash: manifestHash } = snapshot;\n  const scopes = effectiveScopes(allowlist, manifest.indexed_paths, request.scope);\n  const requestedScopeIndexed = request.scope.length === 0\n    ? scopes.length > 0\n    : request.scope.every((scope) => scopes.some((effective) => isPrefix(effective, scope)));\n  const current = getRepoState(options.repo);\n  const gaps = boundedGaps(\n    [...(manifest.coverage_gaps ?? [])].filter((gap) => !gap.source_uri || inScope(gap.source_uri, scopes)),\n    manifest.source_id,\n    scopes,\n  );\n  const errors = requestedScopeIndexed ? [] : ['requested_scope_not_indexed'];\n  if (!requestedScopeIndexed) appendGap(gaps, {\n    source_id: manifest.source_id, scope: request.scope, reason: 'requested_scope_not_indexed',\n  });\n  const sync = indexSync({ ...manifest, fingerprint, manifest_hash: manifestHash }, current, scopes, errors, requestedScopeIndexed);\n  const base = {\n    query: request.query,\n    result_status: 'insufficient_evidence',\n    index_sync: sync,\n    entities: [],\n    evidence_units: [],\n    relations: [],\n    conflict_check_status: 'not_supported',\n    conflicts: null,\n    coverage_gaps: gaps,\n    limitations: LIMITATIONS,\n    matching: { query_term_count: 0, max_section_term_matches: 0, assessment: 'not_evaluated' },\n    traversal: { depth: request.depth, max_matched_entities: MAX_MATCHED_ENTITIES, max_edges_per_entity: MAX_EDGES_PER_ENTITY, limit_reached: false },\n    budget: {\n      requested_max_bytes: request.requestedMaxBytes,\n      server_max_bytes: SERVER_MAX_BYTES,\n      effective_max_bytes: effectiveMaxBytes,\n      used_bytes: 0,\n      exhausted: false,\n      omitted_evidence_units: 0,\n      omitted_relations: 0,\n    },\n  };\n  const finalize = () => {\n    base.coverage_gaps = boundedGaps(base.coverage_gaps, manifest.source_id, scopes);\n    if (base.budget.exhausted) {\n      const previousGaps = base.coverage_gaps;\n      base.coverage_gaps = boundedGaps([...previousGaps, {\n        source_id: manifest.source_id, scope: scopes, reason: 'output_limit_reached',\n      }], manifest.source_id, scopes);\n      // The budget flag already reports exhaustion; its optional explanation\n      // must not consume space needed by the selected source evidence.\n      if (outputBytes(base) > effectiveMaxBytes) base.coverage_gaps = previousGaps;\n    }\n    base.budget.used_bytes = outputBytes(base);\n    if (base.budget.used_bytes > effectiveMaxBytes) fail('budget_too_small', 'max_bytes cannot hold required result metadata');\n    const actual = Buffer.byteLength(JSON.stringify(base), 'utf8');\n    if (actual !== base.budget.used_bytes || actual > effectiveMaxBytes) fail('budget_too_small', 'max_bytes cannot hold required result metadata');\n    return base;\n  };\n  if (scopes.length === 0) {\n    if (mode === 'search') return documentSearchPage({ base, request, roots: [], byDocument: new Map(), scopes });\n    return finalize();\n  }\n\n  const documents = entities.filter((entity) => entity.type === 'Document' && inScope(sourcePath(entity), scopes));\n  const documentsByPath = new Map(documents.map((entity) => [sourcePath(entity), entity]));\n  const sections = entities.filter((entity) => (entity.type === 'Section' || entity.type === 'RelationAssertion') && inScope(sourcePath(entity), scopes));\n  const searchableSections = sections.filter(isUsefulSection);\n  const sectionsById = new Map(sections.map((entity) => [entity.id, entity]));\n  const entitiesById = new Map([...documents, ...sections].map((entity) => [entity.id, entity]));\n  const ownerDocumentForEntity = new Map([...entitiesById.values()]\n    .map((entity) => [entity.id, documentIdFor(entity, documentsByPath)])\n    .filter(([, documentId]) => documentId));\n  const byDocument = new Map();\n  for (const section of searchableSections) {\n    const id = documentIdFor(section, documentsByPath);\n    if (!id) continue;\n    const group = byDocument.get(id) ?? [];\n    group.push(section);\n    byDocument.set(id, group);\n  }\n  const memo = new Map();\n  const read = (uri) => {\n    if (!memo.has(uri)) {\n      assertNoSymlink(options.repo, uri);\n      memo.set(uri, readBlob(options.repo, manifest.revision, uri));\n    }\n    return memo.get(uri);\n  };\n  const tokens = words(request.query);\n  const sectionTerms = new Map();\n  const scoreSection = (section, weights) => {\n    const body = read(sourcePath(section)).subarray(section.anchor?.start_byte ?? 0, section.anchor?.end_byte ?? 0).toString('utf8').toLowerCase();\n    const match = scoreBodyMatch(body, tokens, weights);\n    sectionTerms.set(section.id, match.matchedTokens);\n    // Long notes can repeat broad terms without answering the specific query.\n    const lengthPenalty = 1 + 0.2 * Math.log1p(body.length / 200);\n    return { ...match, score: entityScore(section, request.query, tokens) + match.score / lengthPenalty };\n  };\n  base.matching.query_term_count = tokens.length;\n  let maxSectionTermMatches = 0;\n  const scored = new Map();\n  const sectionScores = new Map();\n  const exactSections = new Set();\n  for (const doc of documents) {\n    const score = entityScore(doc, request.query, tokens);\n    if (score > 0) scored.set(doc.id, {\n      doc,\n      score,\n      direct: null,\n      metadataMatch: exactMetadataMatch(doc, request.query),\n      matchedTokens: new Set(matchingTokens(doc, tokens)),\n    });\n  }\n  for (const section of sections) {\n    const docId = documentIdFor(section, documentsByPath);\n    const doc = documentsByPath.get(sourcePath(section));\n    if (!docId || !doc) continue;\n    const score = entityScore(section, request.query, tokens);\n    const exact = exactMetadataMatch(section, request.query);\n    if (exact) exactSections.add(section.id);\n    const useful = isUsefulSection(section);\n    sectionScores.set(section.id, useful || section.type === 'RelationAssertion' ? score : 0);\n    if (useful) {\n      maxSectionTermMatches = Math.max(maxSectionTermMatches, matchingTokens(section, tokens).length);\n    }\n    const existing = scored.get(docId);\n    if (existing) {\n      for (const token of matchingTokens(section, tokens)) existing.matchedTokens.add(token);\n      existing.metadataMatch ||= exact;\n    }\n    if (score > 0 && (!existing || existing.score < score)) {\n      scored.set(docId, {\n        doc,\n        score,\n        direct: section,\n        metadataMatch: exact || existing?.metadataMatch === true,\n        matchedTokens: new Set([...(existing?.matchedTokens ?? []), ...matchingTokens(section, tokens)]),\n      });\n    }\n  }\n  const hasExactMetadataHit = [...scored.values()].some((entry) => entry.metadataMatch);\n  // A single exact title or alias needs no broad scan. Multi-term questions use\n  // one pinned Git batch to distinguish specific terms from generic ones.\n  const scanBodies = tokens.length > 0 && (!hasExactMetadataHit || tokens.length > 1);\n  const localWeights = new Map(tokens.map((token) => [token, 1]));\n  if (scanBodies) {\n    for (const [uri, blob] of readPinnedBlobs(options.repo, manifest.revision, documents.map(sourcePath))) memo.set(uri, blob);\n    const documentBodies = [...memo.values()].map((blob) => blob.toString('utf8').toLowerCase());\n    const documentFrequency = new Map(tokens.map((token) => [token,\n      documentBodies.reduce((count, body) => count + Number(body.includes(token)), 0)]));\n    const weights = new Map(tokens.map((token) => [token,\n      1 + Math.log((documents.length + 1) / ((documentFrequency.get(token) ?? 0) + 1))]));\n    for (const [token, weight] of weights) localWeights.set(token, weight);\n    for (const section of searchableSections) {\n      const docId = documentIdFor(section, documentsByPath);\n      const doc = documentsByPath.get(sourcePath(section));\n      if (!docId || !doc) continue;\n      const bodyMatch = scoreSection(section, weights);\n      maxSectionTermMatches = Math.max(maxSectionTermMatches,\n        new Set([...matchingTokens(section, tokens), ...bodyMatch.matchedTokens]).size);\n      const score = bodyMatch.score;\n      sectionScores.set(section.id, score);\n      const existing = scored.get(docId);\n      if (existing) for (const token of bodyMatch.matchedTokens) existing.matchedTokens.add(token);\n      if (score > 0 && (!existing || existing.score < score)) {\n        scored.set(docId, {\n          doc,\n          score,\n          direct: section,\n          metadataMatch: existing?.metadataMatch ?? false,\n          matchedTokens: new Set([...(existing?.matchedTokens ?? []), ...bodyMatch.matchedTokens]),\n        });\n      }\n    }\n    const discriminative = tokens.length >= 2 && tokens.length <= 3\n      ? discriminativeTokens(tokens, weights, documentFrequency)\n      : [];\n    if (discriminative.length > 0) {\n      for (const [id, entry] of scored) {\n        if (!hasDiscriminativeMatch(entry, discriminative)) scored.delete(id);\n      }\n    }\n  } else if (tokens.length > 0) {\n    // Keep exact single-term document ranking cheap, but read matched documents\n    // so a shared filename cannot tie every section with the explanatory body.\n    const pending = searchableSections.filter((section) => scored.get(documentIdFor(section, documentsByPath))?.metadataMatch);\n    const paths = [...new Set(pending.map(sourcePath))];\n    for (const [uri, blob] of readPinnedBlobs(options.repo, manifest.revision, paths)) memo.set(uri, blob);\n    for (const section of pending) {\n      const bodyMatch = scoreSection(section, localWeights);\n      sectionScores.set(section.id, bodyMatch.score);\n      maxSectionTermMatches = Math.max(maxSectionTermMatches,\n        new Set([...matchingTokens(section, tokens), ...bodyMatch.matchedTokens]).size);\n    }\n  }\n  // A document's title or alias can outrank all of its useful body sections.\n  // Choose the reading start separately; root provenance is included elsewhere.\n  for (const entry of scored.values()) {\n    if (entry.direct?.type === 'Section' && !entry.direct.anchor?.heading_path?.length\n      && exactText(request.query) !== exactText(entry.direct.id)) {\n      entry.provenance = entry.direct;\n      entry.direct = null;\n    }\n  }\n  for (const section of sections) {\n    if (section.type === 'Section' && !section.anchor?.heading_path?.length\n      && exactText(request.query) !== exactText(section.id)) continue;\n    const entry = scored.get(documentIdFor(section, documentsByPath));\n    if (!entry) continue;\n    const score = sectionScores.get(section.id) ?? 0;\n    const exactPriority = Number(exactSections.has(section.id)) - Number(exactSections.has(entry.direct?.id));\n    if (exactPriority > 0 || (exactPriority === 0 && score > (sectionScores.get(entry.direct?.id) ?? 0))) entry.direct = section;\n  }\n  base.matching.max_section_term_matches = maxSectionTermMatches;\n  base.matching.assessment = maxSectionTermMatches > 0 ? 'lexical_overlap' : 'no_lexical_overlap';\n  if (hasExactMetadataHit) base.matching.assessment = 'exact_metadata';\n  else if (tokens.length >= 8 && maxSectionTermMatches > 0 && maxSectionTermMatches <= 2) {\n    base.matching.assessment = 'weak_lexical_overlap';\n  }\n  const roots = [...scored.values()].sort((a, b) => Number(b.metadataMatch) - Number(a.metadataMatch)\n    || b.score - a.score || a.doc.id.localeCompare(b.doc.id));\n  if (mode === 'search') return documentSearchPage({ base, request, roots, byDocument, scopes, tokens });\n  if (roots.length > MAX_ROOTS) {\n    roots.length = MAX_ROOTS;\n    base.traversal.limit_reached = true;\n    appendGap(gaps, { source_id: manifest.source_id, scope: scopes, reason: 'retrieval_limit_reached' });\n  }\n  const initialGaps = [...(manifest.coverage_gaps ?? [])].filter((gap) => !gap.source_uri || inScope(gap.source_uri, scopes));\n  const scopeErrors = base.coverage_gaps.filter((gap) => gap.reason === 'requested_scope_not_indexed');\n  const traversalGaps = gaps.filter((gap) => gap.reason === 'retrieval_limit_reached');\n  base.coverage_gaps = [...queryRelevantGaps(initialGaps, roots, manifest.source_id, scopes), ...scopeErrors, ...traversalGaps];\n  const selected = new Map(roots.map((entry) => [entry.doc.id, entry.doc]));\n  const queue = roots.map((entry) => ({ id: entry.doc.id, hop: 0 }));\n  for (const root of roots) {\n    if (root.direct && !selected.has(root.direct.id) && selected.size < MAX_MATCHED_ENTITIES) {\n      selected.set(root.direct.id, root.direct);\n      queue.push({ id: root.direct.id, hop: 0 });\n    }\n  }\n  const selectedRelations = [];\n  const seenRelations = new Set();\n  const rankedEvidence = new Set();\n  // Exact single-term lookups only need local evidence bodies. A unit weight\n  // keeps their ranking independent of unrelated documents and root selection.\n  while (queue.length > 0) {\n    const { id, hop } = queue.shift();\n    if (hop >= request.depth) continue;\n    const relatedDocumentScore = (relation) => {\n      const peer = relation.subject === id ? relation.object : relation.subject;\n      return scored.get(ownerDocumentForEntity.get(peer))?.score ?? 0;\n    };\n    // The section explaining a link can be more useful than the peer's other text.\n    // Rank that evidence before spending the bounded graph and response budgets.\n    const incident = relations.filter((relation) => {\n      if ((relation.subject !== id && relation.object !== id) || relation.verification !== 'source_confirmed' || relation.predicate === 'contains') return false;\n      const evidence = sectionsById.get(relation.evidence_unit_id);\n      const subject = entitiesById.get(relation.subject);\n      const object = entitiesById.get(relation.object);\n      return evidence && subject && object && inScope(sourcePath(evidence), scopes)\n        && inScope(sourcePath(subject), scopes) && inScope(sourcePath(object), scopes);\n    });\n    if (!scanBodies && tokens.length > 0) {\n      const pending = [...new Set(incident.map((relation) => relation.evidence_unit_id))]\n        .filter((evidenceId) => !rankedEvidence.has(evidenceId))\n        .map((evidenceId) => sectionsById.get(evidenceId)).filter(isUsefulSection);\n      const paths = [...new Set(pending.map(sourcePath))].filter((uri) => !memo.has(uri));\n      if (paths.length > 0) {\n        for (const [uri, blob] of readPinnedBlobs(options.repo, manifest.revision, paths)) memo.set(uri, blob);\n      }\n      for (const section of pending) {\n        sectionScores.set(section.id, scoreSection(section, localWeights).score);\n        rankedEvidence.add(section.id);\n      }\n    }\n    incident.sort((a, b) => (sectionScores.get(b.evidence_unit_id) ?? 0) - (sectionScores.get(a.evidence_unit_id) ?? 0)\n      || relatedDocumentScore(b) - relatedDocumentScore(a)\n      // Explicit navigation breaks relevance ties; it does not establish applicability.\n      || (LINK_ROLE_PRIORITY[b.link_role] ?? 0) - (LINK_ROLE_PRIORITY[a.link_role] ?? 0)\n      || a.id.localeCompare(b.id));\n    if (incident.length > MAX_EDGES_PER_ENTITY) {\n      base.traversal.limit_reached = true;\n      appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'retrieval_limit_reached' });\n    }\n    for (const relation of incident.slice(0, MAX_EDGES_PER_ENTITY)) {\n      const peer = relation.subject === id ? relation.object : relation.subject;\n      const peerEntity = entitiesById.get(peer);\n      if (!peerEntity) continue;\n      if (!selected.has(peer)) {\n        const additions = [peerEntity];\n        const ownerId = documentIdFor(peerEntity, documentsByPath);\n        const owner = ownerId ? entitiesById.get(ownerId) : null;\n        if (owner && !selected.has(owner.id)) additions.push(owner);\n        if (selected.size + additions.length > MAX_MATCHED_ENTITIES) {\n          base.traversal.limit_reached = true;\n          appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'retrieval_limit_reached' });\n          continue;\n        } else {\n          for (const entity of additions) selected.set(entity.id, entity);\n          queue.push({ id: peer, hop: hop + 1 });\n        }\n      }\n      if (!seenRelations.has(relation.id)) {\n        seenRelations.add(relation.id);\n        selectedRelations.push(relation);\n      }\n    }\n  }\n\n  const evidenceCache = new Map();\n  const evidence = (id) => {\n    if (!evidenceCache.has(id)) evidenceCache.set(id, evidenceFor(sectionsById.get(id), read, scopes));\n    return evidenceCache.get(id);\n  };\n  const markOutputLimit = () => {\n    base.budget.exhausted = true;\n  };\n  const omittedEvidenceIds = new Set();\n  const omitEvidence = (id) => {\n    if (!omittedEvidenceIds.has(id) && !base.evidence_units.some((item) => item.id === id)) {\n      omittedEvidenceIds.add(id);\n      base.budget.omitted_evidence_units += 1;\n    }\n  };\n  const restoreEvidence = (id) => {\n    if (omittedEvidenceIds.delete(id)) base.budget.omitted_evidence_units -= 1;\n  };\n  // Reserve the longest status used by a pack with evidence, rather than the\n  // longer empty-result status, while fitting direct and graph evidence.\n  base.result_status = 'partial';\n  const includedRootIds = new Set();\n  for (const root of roots) {\n    const entity = publicEntity(root.doc);\n    base.entities.push(entity);\n    if (outputBytes(base) > effectiveMaxBytes) {\n      base.entities.pop();\n      markOutputLimit();\n      continue;\n    }\n    includedRootIds.add(root.doc.id);\n  }\n  const directEvidence = [];\n  const provenanceEvidence = [];\n  const rootForEvidence = new Map();\n  for (const root of roots) {\n    if (!includedRootIds.has(root.doc.id)) continue;\n    if (root.metadataMatch || root.provenance) {\n      const rootSection = byDocument.get(root.doc.id)?.find((section) => section.type === 'Section' && section.anchor?.heading_path?.length === 0);\n      if (rootSection) {\n        provenanceEvidence.push(rootSection.id);\n        rootForEvidence.set(rootSection.id, root.doc.id);\n      }\n    }\n    const section = root.direct ?? preferredSection(byDocument.get(root.doc.id));\n    if (section) {\n      directEvidence.push(section.id);\n      rootForEvidence.set(section.id, root.doc.id);\n    }\n  }\n  const requiredEvidenceIds = new Set(directEvidence);\n  const addSourceEvidence = (id) => {\n    const item = evidence(id);\n    if (!item) {\n      appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'source_unavailable', evidence_unit_id: id });\n      return;\n    }\n    if (!addEvidenceWithinBudget(base, item, effectiveMaxBytes, markOutputLimit)) {\n      omitEvidence(id);\n      return;\n    }\n    restoreEvidence(id);\n  };\n  for (const id of requiredEvidenceIds) addSourceEvidence(id);\n  if (roots.length > 0 && base.evidence_units.length === 0) fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit');\n  const addSelectedRelation = (relation) => {\n    const item = evidence(relation.evidence_unit_id);\n    const endpoints = [entitiesById.get(relation.subject), entitiesById.get(relation.object)];\n    if (!item || endpoints.some((entity) => !entity)) {\n      appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'source_unavailable', evidence_unit_id: relation.evidence_unit_id });\n      base.budget.omitted_relations += 1;\n      return;\n    }\n    const bundleEntities = new Map(endpoints.map((entity) => [entity.id, entity]));\n    for (const endpoint of endpoints) {\n      const ownerId = documentIdFor(endpoint, documentsByPath);\n      const owner = ownerId ? entitiesById.get(ownerId) : null;\n      if (owner) bundleEntities.set(owner.id, owner);\n    }\n    if (!addRelationBundleWithinBudget(base, relation, [...bundleEntities.values()], item, effectiveMaxBytes)) {\n      base.budget.omitted_relations += 1;\n      omitEvidence(relation.evidence_unit_id);\n      markOutputLimit();\n      return;\n    }\n    restoreEvidence(relation.evidence_unit_id);\n  };\n  // Reserve one direct link, then spend on complementary sections before more links.\n  const directRelation = hasExactMetadataHit ? undefined\n    : selectedRelations.find((relation) => requiredEvidenceIds.has(relation.evidence_unit_id));\n  if (directRelation) addSelectedRelation(directRelation);\n  if (!hasExactMetadataHit) {\n    const represented = new Map(tokens.map((token) => [token, 0]));\n    const recordTerms = (item) => {\n      const text = item.excerpt.toLowerCase();\n      for (const token of tokens) if (text.includes(token)) represented.set(token, represented.get(token) + 1);\n    };\n    for (const item of base.evidence_units) recordTerms(item);\n    const candidates = [...selected.values()].filter((entity) => entity.type === 'Document')\n      .flatMap((doc) => (byDocument.get(doc.id) ?? [])\n        .filter((section) => section.anchor.heading_path.length > 0 && !requiredEvidenceIds.has(section.id)\n          && sectionTerms.get(section.id)?.size > 0)\n        .map((section) => ({ section, doc, item: evidence(section.id) })))\n      .filter((candidate) => candidate.item)\n      .map((candidate) => ({ ...candidate, terms: [...sectionTerms.get(candidate.section.id)] }));\n    // ponytail: six complementary sections in the bounded graph; semantic reranking needs a measured benefit.\n    for (let added = 0; added < MAX_ROOTS && candidates.length > 0;) {\n      const gain = (candidate) => candidate.terms.reduce((total, token) => total + localWeights.get(token) / (1 + represented.get(token)), 0);\n      candidates.sort((a, b) => gain(b) - gain(a)\n        || (sectionScores.get(b.section.id) ?? 0) - (sectionScores.get(a.section.id) ?? 0)\n        || a.section.id.localeCompare(b.section.id));\n      const { section, doc, item: prefix } = candidates.shift();\n      if (base.evidence_units.some((unit) => unit.id === prefix.id)) continue;\n      const complete = evidenceFor(section, read, scopes, effectiveMaxBytes);\n      const prefixMatches = tokens.some((token) => prefix.excerpt.toLowerCase().includes(token));\n      let item = !prefixMatches && complete && !complete.truncated ? complete : prefix;\n      const addedDocument = !base.entities.some((entity) => entity.id === doc.id);\n      if (addedDocument) base.entities.push(publicEntity(doc));\n      base.evidence_units.push(item);\n      if (outputBytes(base) > effectiveMaxBytes) {\n        base.evidence_units.pop();\n        item = prefix;\n        base.evidence_units.push(item);\n      }\n      if (!tokens.some((token) => item.excerpt.toLowerCase().includes(token)) || outputBytes(base) > effectiveMaxBytes) {\n        base.evidence_units.pop();\n        if (addedDocument) base.entities.pop();\n        omitEvidence(section.id);\n        markOutputLimit();\n        continue;\n      }\n      requiredEvidenceIds.add(section.id);\n      rootForEvidence.set(section.id, doc.id);\n      restoreEvidence(section.id);\n      recordTerms(item);\n      added += 1;\n    }\n  }\n  const completeEvidence = () => {\n    for (const item of base.evidence_units) {\n      if (!item.truncated || !item.anchor.heading_path.length) continue;\n      const complete = evidenceFor(sectionsById.get(item.id), read, scopes, effectiveMaxBytes);\n      if (!complete || complete.truncated) continue;\n      const excerpt = item.excerpt;\n      item.excerpt = complete.excerpt;\n      item.truncated = false;\n      if (outputBytes(base) > effectiveMaxBytes) {\n        item.excerpt = excerpt;\n        item.truncated = true;\n      }\n    }\n  };\n  if (!hasExactMetadataHit) completeEvidence();\n  for (const relation of selectedRelations) if (relation !== directRelation) addSelectedRelation(relation);\n  for (const id of new Set(provenanceEvidence)) {\n    if (!base.evidence_units.some((item) => item.id === id)) addSourceEvidence(id);\n  }\n  const survivingDirect = base.evidence_units.filter((item) => requiredEvidenceIds.has(item.id));\n  if (roots.length > 0 && survivingDirect.length === 0) {\n    fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit with its document');\n  }\n  base.result_status = survivingDirect.length > 0 ? 'ok' : 'insufficient_evidence';\n  if (base.budget.exhausted || base.traversal.limit_reached) {\n    base.result_status = base.evidence_units.length > 0 ? 'partial' : 'insufficient_evidence';\n    if (base.traversal.limit_reached) appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'retrieval_limit_reached' });\n  }\n  const directEvidenceToDocument = new Map([...rootForEvidence.entries()]\n    .filter(([id]) => base.evidence_units.some((item) => item.id === id)));\n  if (!trimToBudget(base, effectiveMaxBytes, directEvidenceToDocument, ownerDocumentForEntity, requiredEvidenceIds)) {\n    fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit with required metadata');\n  }\n  if (base.budget.exhausted) {\n    base.result_status = base.evidence_units.length > 0 ? 'partial' : 'insufficient_evidence';\n    if (!trimToBudget(base, effectiveMaxBytes, directEvidenceToDocument, ownerDocumentForEntity, requiredEvidenceIds)) {\n      fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit with required metadata');\n    }\n  }\n  // Finish selected sections when their remaining context fits the response.\n  completeEvidence();\n  return finalize();\n}\n"
+  },
+  "rounds": 3,
+  "equivalent_response_pairs": 327,
+  "summaries": {
+    "lookup": {
+      "baseline": {
+        "calls": 312,
+        "p50_ms": 469.71120799999335,
+        "p95_ms": 595.0434999999998
+      },
+      "current": {
+        "calls": 312,
+        "p50_ms": 375.6270000000077,
+        "p95_ms": 477.74199999999837
+      }
+    },
+    "search": {
+      "baseline": {
+        "calls": 15,
+        "p50_ms": 135.952959000002,
+        "p95_ms": 477.41345900000306
+      },
+      "current": {
+        "calls": 15,
+        "p50_ms": 132.61320900000283,
+        "p95_ms": 375.99008399999
+      }
+    }
+  },
+  "requests": [
+    {
+      "id": "popular-value-expiry-surge",
+      "mode": "lookup",
+      "args": {
+        "query": "인기 상품 조회 결과가 사라지는 순간 요청이 한꺼번에 몰려 저장소가 버티지 못한다. 무엇을 먼저 검토해야 할까?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        562.5096670000003,
+        468.0911250000063,
+        462.0142080000078
+      ],
+      "current": [
+        415.73725000000013,
+        376.09150000000955,
+        401.9287079999922
+      ],
+      "response_sha256": "923fd5e9ce5c899264cd483696eb7d7bb8d846a6d9175116d954709ba0d8e9c9",
+      "bytes": 23946
+    },
+    {
+      "id": "deployment-drain-order",
+      "mode": "lookup",
+      "args": {
+        "query": "배포할 때 처리 중인 요청이 끊기고 가끔 502가 난다. 종료 순서를 어떻게 잡아야 할까?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        551.7182499999999,
+        504.68133300000045,
+        535.7969579999917
+      ],
+      "current": [
+        469.72037500000033,
+        396.13166600000113,
+        399.9983749999956
+      ],
+      "response_sha256": "12166c957e1b740f7e1d1d58442d3290507709362f2fbb1fa89260ba3dfc5723",
+      "bytes": 23995
+    },
+    {
+      "id": "opposite-update-order",
+      "mode": "lookup",
+      "args": {
+        "query": "두 작업이 같은 데이터를 반대 순서로 갱신할 때 가끔 한쪽이 실패한다. 서비스에서 어떻게 복구해야 할까?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        463.2571660000003,
+        486.7452500000072,
+        481.65950000000885
+      ],
+      "current": [
+        366.391834,
+        404.61312499998894,
+        427.7742080000171
+      ],
+      "response_sha256": "c1d6aef67207f68e6367276a42264d161a68832831db1328febb1f11bd3b19ce",
+      "bytes": 22935
+    },
+    {
+      "id": "long-calculation-delays-requests",
+      "mode": "lookup",
+      "args": {
+        "query": "서버가 큰 계산을 처리하는 동안 다른 요청도 모두 늦어진다. 실행 방식을 어떻게 나눠야 할까?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        460.136125,
+        511.8382500000007,
+        482.11316599999554
+      ],
+      "current": [
+        378.84279100000003,
+        402.23141600000963,
+        412.5221249999886
+      ],
+      "response_sha256": "d89b6ca6fa7631035ef482d652291b0b67ff96f7bb5a4cd18f60d38f4ce5b01a",
+      "bytes": 23910
+    },
+    {
+      "id": "synthetic-holdout-v2-tech-01",
+      "mode": "lookup",
+      "args": {
+        "query": "게시글을 작성 시각순으로 넘기는데 같은 시각의 글이 여러 개야. 다음 페이지에서 빠지거나 중복되지 않게 정렬 기준을 어떻게 잡아야 할까?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        492.61183299999993,
+        545.2875830000121,
+        513.1987079999817
+      ],
+      "current": [
+        398.96387499999946,
+        437.8194579999981,
+        406.4814999999944
+      ],
+      "response_sha256": "70418de12cc0bd18414ddd5bc76ae3d9696034b211f464c02237f6148b2f3621",
+      "bytes": 23993
+    },
+    {
+      "id": "synthetic-holdout-v2-biz-01",
+      "mode": "lookup",
+      "args": {
+        "query": "고객이 기존 서비스에서 다른 서비스로 갈아탄 이유를 인터뷰하려 해. 막연한 선호 대신 어떤 경험을 물어야 할까?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        111.05579200000011,
+        113.0176669999928,
+        116.0759160000016
+      ],
+      "current": [
+        105.49587499999961,
+        143.74604099999124,
+        101.16554099999485
+      ],
+      "response_sha256": "4aeef949e0cf7b0a3f0695ee1b457203aa91b7218dbcb80c70e392457b3b2d19",
+      "bytes": 23998
+    },
+    {
+      "id": "synthetic-holdout-v2-econ-01",
+      "mode": "lookup",
+      "args": {
+        "query": "오른 주식은 금방 팔면서 손실 난 주식은 본전 생각 때문에 계속 붙잡는다. 이런 투자 행동을 설명하는 편향이 있을까?",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        81.69566699999996,
+        78.02570800000103,
+        82.63970800000243
+      ],
+      "current": [
+        96.92925000000014,
+        90.30379099999845,
+        114.59612500001094
+      ],
+      "response_sha256": "17cb1e464f7cc044e1b4153ca275f161002b9422e962a5345d1a8ddf649f584a",
+      "bytes": 23617
+    },
+    {
+      "id": "synthetic-holdout-v2-fit-01",
+      "mode": "lookup",
+      "args": {
+        "query": "새 팀에 합류했는데 매니저가 무엇을 잘한 일로 보는지 모르겠어. 첫 일대일 면담에서 어떤 기대와 소통 방식을 확인해야 할까?",
+        "scope": [
+          "fit"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        160.83050000000094,
+        144.51058299999568,
+        143.63491599998088
+      ],
+      "current": [
+        171.25883299999987,
+        139.08591700000397,
+        146.2300830000022
+      ],
+      "response_sha256": "9b27d9f39f35d7f5a5c81d0a24986833d269bc50dd21b207db5b2fde074cb65c",
+      "bytes": 23155
+    },
+    {
+      "id": "synthetic-holdout-tech-01",
+      "mode": "lookup",
+      "args": {
+        "query": "주문 테이블에 회원 등급을 같이 넣었는데 회원 ID가 등급을 결정한다. 이행 함수 종속을 없애려면 테이블을 어떻게 나눠야 할까?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        523.8517090000005,
+        455.5832500000106,
+        455.9772499999963
+      ],
+      "current": [
+        456.90608299999985,
+        367.48808400001144,
+        364.74099999998
+      ],
+      "response_sha256": "f3e5b6a97d9264af949be1bf5a6911c28b355732ab08f0777633a1bf4fa8eb12",
+      "bytes": 23231
+    },
+    {
+      "id": "synthetic-holdout-tech-02",
+      "mode": "lookup",
+      "args": {
+        "query": "TypeScript 함수 오버로딩에서 구현부는 유니온 타입을 받는데 호출하면 오류가 난다. 실제 호출 가능한 타입은 어떤 시그니처가 정하는 걸까?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        566.0189589999991,
+        477.10537500001374,
+        475.7850000000035
+      ],
+      "current": [
+        408.9717920000003,
+        395.27675000000454,
+        387.0194579999952
+      ],
+      "response_sha256": "cf2e6ae3a8732bdb6fb0b5a8aa50515774ce1f22373df85d780876263855530f",
+      "bytes": 23734
+    },
+    {
+      "id": "synthetic-holdout-biz-01",
+      "mode": "lookup",
+      "args": {
+        "query": "Freemium 서비스의 무료 사용자를 유료로 전환시키려 한다. 다른 회사의 전환율을 목표로 가져오기 전에 분모와 관찰 기간에서 무엇을 맞춰야 할까?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        140.67741699999897,
+        155.16579199999978,
+        113.35800000000745
+      ],
+      "current": [
+        124.2154589999991,
+        116.74162500000966,
+        122.38104200002272
+      ],
+      "response_sha256": "b34309461935982c55977fec70843c8c7644d4ac4cb49fa96357cfcb490095a4",
+      "bytes": 23935
+    },
+    {
+      "id": "synthetic-holdout-biz-02",
+      "mode": "lookup",
+      "args": {
+        "query": "코호트 리텐션 그래프가 수평으로 안정되면 PMF를 달성했다고 봐도 될까? 반복 가치 판단에서 함께 확인할 조건이 궁금해.",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        111.98870800000077,
+        104.16779199999291,
+        121.09154199998011
+      ],
+      "current": [
+        107.10404200000085,
+        117.92075000000477,
+        96.75237500001094
+      ],
+      "response_sha256": "f7b9098775be096979a33926df21e0640cda79dc052f1d5cd94c1780ecf92517",
+      "bytes": 23821
+    },
+    {
+      "id": "synthetic-holdout-econ-01",
+      "mode": "lookup",
+      "args": {
+        "query": "시장금리가 올라가면 이미 발행된 고정금리 채권의 가격은 왜 내려갈까?",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        85.01687500000116,
+        82.6215830000001,
+        87.78583300000173
+      ],
+      "current": [
+        94.40412499999911,
+        94.3116250000021,
+        106.39133299997775
+      ],
+      "response_sha256": "7265d2a3d046666f469b69bf8bcf9eee4c0101e2b6b01386afdf324e09a6e3c2",
+      "bytes": 23461
+    },
+    {
+      "id": "synthetic-holdout-econ-02",
+      "mode": "lookup",
+      "args": {
+        "query": "주식을 여러 종목으로 나눠 사도 같은 업종이면 분산 효과가 약할 수 있나? 자산 개수보다 상관관계를 봐야 하는 이유가 궁금해.",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        80.05470799999966,
+        90.54404099998646,
+        88.02129100001184
+      ],
+      "current": [
+        91.35762499999873,
+        123.29237500000454,
+        94.51466600000276
+      ],
+      "response_sha256": "e3158becdd4a0cd430a400388fc4857d3a8ac0c0271dcb63e47c0e0e6d3133c5",
+      "bytes": 23752
+    },
+    {
+      "id": "synthetic-holdout-fit-01",
+      "mode": "lookup",
+      "args": {
+        "query": "개발자 경력 연수만 보고 숙련도를 판단해도 될까? 시간 기반 등급과 실제 역량을 기준으로 보는 성장 모형의 차이를 알고 싶어.",
+        "scope": [
+          "fit"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        168.4819580000003,
+        190.3741660000087,
+        205.44208300000173
+      ],
+      "current": [
+        144.54325000000063,
+        148.57604099999298,
+        149.58900000000722
+      ],
+      "response_sha256": "927ed472027a0c8decdfb2e48fb540423ce6343258ce59e8149661d3ee9936a7",
+      "bytes": 23426
+    },
+    {
+      "id": "synthetic-holdout-fit-02",
+      "mode": "lookup",
+      "args": {
+        "query": "팀원이 번아웃으로 고립되고 대화가 줄었다. 개인 의지 문제로 몰지 않고 팀이 회복을 돕기 위해 어떤 대화를 열어야 할까?",
+        "scope": [
+          "fit"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        167.48141699999906,
+        197.92495800000324,
+        177.91358300001593
+      ],
+      "current": [
+        147.23170800000116,
+        186.11974999999802,
+        155.0327910000051
+      ],
+      "response_sha256": "1fed6fb155809214d0b0b4fcc8b7334772ca5c7d05efbadd0d0cdf0936be7465",
+      "bytes": 23817
+    },
+    {
+      "id": "synthetic-holdout-empty-01",
+      "mode": "lookup",
+      "args": {
+        "query": "qzxvnmprtjwfkblsyh",
+        "scope": [
+          "tech",
+          "biz",
+          "econ",
+          "fit"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        439.3650000000016,
+        459.90508299999055,
+        462.5984579999931
+      ],
+      "current": [
+        350.46587499999987,
+        377.9798329999903,
+        375.6270000000077
+      ],
+      "response_sha256": "3353c8ca3eac7163bdba6a1e01f680edf735ce75455d4d90e177144029a72537",
+      "bytes": 1368
+    },
+    {
+      "id": "generalization-tech-stable-cursor-contract",
+      "mode": "lookup",
+      "args": {
+        "query": "게시글 목록을 최신순으로 더 보기에 같은 작성 시각이 자주 겹칩니다. 다음 화면에서 글이 빠지거나 중복되지 않게 하고, 클라이언트가 보낸 커서를 임의로 바꾸지 못하게 하려면 정렬값과 커서 계약을 어떻게 잡아야 할까요?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        563.2517079999998,
+        576.7872500000085,
+        607.6338749999995
+      ],
+      "current": [
+        475.241,
+        465.99670800000604,
+        499.38341700000456
+      ],
+      "response_sha256": "a06d135e232cfb4ae12336a77de3c0261aac446e84a6e06ddf3ee010bab90096",
+      "bytes": 23927
+    },
+    {
+      "id": "generalization-tech-payment-retry-identity",
+      "mode": "lookup",
+      "args": {
+        "query": "결제 요청이 응답 시간 초과로 끝나 앱이 다시 보냅니다. 같은 구매 시도만 재처리로 묶고, 우연히 같은 키로 다른 주문 내용을 보낸 경우는 막으려면 어떤 식별자 규칙과 검증이 필요할까요?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        532.7700000000004,
+        527.8907079999917,
+        527.1976670000004
+      ],
+      "current": [
+        450.2811249999995,
+        433.44662499999686,
+        427.4914160000044
+      ],
+      "response_sha256": "1691cdfebb4e817b0c9020e97d06adac71991a72aca8e16e78f96d6917249f03",
+      "bytes": 23906
+    },
+    {
+      "id": "generalization-tech-retry-storm-discipline",
+      "mode": "lookup",
+      "args": {
+        "query": "장애 난 외부 API를 수백 대의 서버가 동시에 재시도하면서 회복 뒤에도 요청이 다시 몰립니다. 왜 대기 시간을 조금씩 달리해야 하고, 여러 서비스 계층이 각각 재시도하지 않게 하려면 어떤 원칙을 적용해야 할까요?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        650.3310419999998,
+        556.502542000002,
+        567.027374999976
+      ],
+      "current": [
+        475.83599999999933,
+        470.06095800000185,
+        461.6638329999987
+      ],
+      "response_sha256": "dbede8bc87a828631b87cd1358f2cc27f53bbcbb72048f457fd841bfb0869b18",
+      "bytes": 23982
+    },
+    {
+      "id": "generalization-tech-scarce-stock-concurrency",
+      "mode": "lookup",
+      "args": {
+        "query": "한정 수량 쿠폰을 여러 서버가 동시에 발급하는데, 재고를 읽은 뒤 따로 줄이는 방식에서 초과 발급이 생깁니다. 분산 락부터 붙이기 전에 어떤 데이터베이스 연산 가능성을 먼저 확인해야 할까요?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        609.8795000000009,
+        554.9350419999973,
+        566.4250410000095
+      ],
+      "current": [
+        502.8558749999993,
+        435.13712499999383,
+        467.0767080000078
+      ],
+      "response_sha256": "248e4da254ef0c961dbd10e73b863c870386f3fd1f193e92dc6cd8c72f0e4b1e",
+      "bytes": 23895
+    },
+    {
+      "id": "generalization-biz-switching-interview-history",
+      "mode": "lookup",
+      "args": {
+        "query": "고객이 기존 도구를 버리고 새 서비스를 선택한 이유를 알아보려 합니다. 막연히 선호를 묻는 대신, 실제 의사결정 과정에서 무엇을 시간 순서로 물어봐야 할까요?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        153.33891700000095,
+        115.08704099999159,
+        116.85941699999967
+      ],
+      "current": [
+        113.36062500000116,
+        106.42987500000163,
+        147.50987500001793
+      ],
+      "response_sha256": "6661442cce474d0d343f7309c832b741269581607df5d2f970ed4d96cdf64a0a",
+      "bytes": 23955
+    },
+    {
+      "id": "generalization-biz-click-growth-or-redistribution",
+      "mode": "lookup",
+      "args": {
+        "query": "새 탭을 열었더니 클릭 수가 크게 올랐고 팀은 성공이라고 말합니다. 이 수치가 실제 성장인지 기존 화면에서 옮겨 온 클릭인지 판단하고 다음 결정을 내리려면 무엇을 확인해야 할까요?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        116.79041700000016,
+        103.08125000000291,
+        101.63208300000406
+      ],
+      "current": [
+        113.02533300000141,
+        103.97950000000128,
+        99.76137500000186
+      ],
+      "response_sha256": "a326359ecf91806f8f5d56bc487620eef1d415fa5879514f8a59bd8044264802",
+      "bytes": 23793
+    },
+    {
+      "id": "generalization-econ-concentrated-sector-diversification",
+      "mode": "lookup",
+      "args": {
+        "query": "서로 다른 회사 주식을 스무 종목 샀지만 모두 같은 업종입니다. 종목 수만으로 위험이 줄었다고 보기 어려운 이유와, 시장이 흔들릴 때 추가로 경계할 점은 무엇일까요?",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        78.02058299999771,
+        76.59083299999475,
+        87.10358299998916
+      ],
+      "current": [
+        93.36249999999927,
+        87.60224999999627,
+        100.85204199998407
+      ],
+      "response_sha256": "ba6ca7c863660980141172419dad9800b43d3136b9c92610e35ed51db5165c87",
+      "bytes": 23818
+    },
+    {
+      "id": "generalization-fit-repeated-mistakes-feedback-loop",
+      "mode": "lookup",
+      "args": {
+        "query": "동료와 비교하며 공부 시간만 늘렸는데 같은 실수가 반복되고, 혼자 과제를 푸는 능력도 제자리이며 피드백 뒤 변화가 없습니다. 단순한 불안과 실제 점검 신호를 어떻게 구분하고 무엇부터 바꿔야 할까요?",
+        "scope": [
+          "fit"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        183.10733299999993,
+        182.99908300000243,
+        209.61845900001936
+      ],
+      "current": [
+        154.24633300000278,
+        158.3986670000013,
+        164.21020900001167
+      ],
+      "response_sha256": "af7699fa6558707c76eab6d4491a4a3accc8423f6da11f35bdb22394805c4c04",
+      "bytes": 23953
+    },
+    {
+      "id": "generalization-empty-gibberish",
+      "mode": "lookup",
+      "args": {
+        "query": "qzxvnmprtjwfkblsyh",
+        "scope": [
+          "tech",
+          "biz",
+          "econ",
+          "fit"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        442.96541699999943,
+        435.6392909999995,
+        483.1581250000163
+      ],
+      "current": [
+        328.06595899999957,
+        333.9395829999994,
+        372.4590829999943
+      ],
+      "response_sha256": "3353c8ca3eac7163bdba6a1e01f680edf735ce75455d4d90e177144029a72537",
+      "bytes": 1368
+    },
+    {
+      "id": "generalization-empty-fictional-device",
+      "mode": "lookup",
+      "args": {
+        "query": "정원 요정의 수정 나침반을 보름달 아래에서 보정해 달빛 농도를 조절하는 방법은 무엇인가요?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ",
+          "fit"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        549.9053750000021,
+        547.0899999999965,
+        549.6399170000223
+      ],
+      "current": [
+        417.2791670000006,
+        414.09241699999257,
+        457.04637500000536
+      ],
+      "response_sha256": "a1df35eb7fcf8076ad7d89dc9da93de975b8bd28bfce9fd92edda488e2011cc8",
+      "bytes": 23802
+    },
+    {
+      "id": "role-and-authoring-status",
+      "mode": "lookup",
+      "args": {
+        "query": "목표와 자료의 역할",
+        "scope": [
+          "ontology/Development-Ontology-Contract.md"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        49.794458000000304,
+        59.07120899998699,
+        56.6121249999851
+      ],
+      "current": [
+        71.12462500000038,
+        74.34137500000361,
+        81.21029200000339
+      ],
+      "response_sha256": "b43bf430f06d4d2e462e2e9b6f9b767a8748dc9741b39be52782906adc575267",
+      "bytes": 4571
+    },
+    {
+      "id": "source-link-and-current-implementation",
+      "mode": "lookup",
+      "args": {
+        "query": "근거 확인과 채택의 경계",
+        "scope": [
+          "ontology/Development-Ontology-Contract.md"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        48.85720799999763,
+        52.08429199999955,
+        52.15325000000303
+      ],
+      "current": [
+        68.00187499999811,
+        69.95195799999055,
+        73.41395799999009
+      ],
+      "response_sha256": "1101ca7eeda3b8c6dc87d152aaab0cc04ebac2a1b130619238a9ab0ca4e9d4f3",
+      "bytes": 5809
+    },
+    {
+      "id": "proposal-includes-cost-and-unknowns",
+      "mode": "lookup",
+      "args": {
+        "query": "제안의 결과물",
+        "scope": [
+          "ontology/Development-Ontology-Contract.md"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        49.069250000000466,
+        53.42666699999245,
+        51.82904199999757
+      ],
+      "current": [
+        68.5467499999977,
+        69.77654199999233,
+        71.21641699998872
+      ],
+      "response_sha256": "2eafe7f520e0718893761708508c91fd34f4ab8bddec3eb26c1950b8f6e283b5",
+      "bytes": 3527
+    },
+    {
+      "id": "synthetic-tech-rag-identifier-provenance",
+      "mode": "lookup",
+      "args": {
+        "query": "정책 안내 챗봇이 자연어 질문과 주문번호 같은 정확한 식별자를 함께 받아야 합니다. 후보를 고르는 방법과 답변의 주장까지 원문 근거로 검증하는 방식을 알고 싶습니다.",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        531.2998340000013,
+        540.0289159999957,
+        573.2749999999942
+      ],
+      "current": [
+        412.7413749999978,
+        409.06704100000206,
+        419.62950000001
+      ],
+      "response_sha256": "5a57c47e17ba76b635ec9c27b5c70fa9eecaa7cb8d458698db518c914a484c3f",
+      "bytes": 23936
+    },
+    {
+      "id": "synthetic-tech-weak-evidence-routing",
+      "mode": "lookup",
+      "args": {
+        "query": "문서 검색 결과가 약하거나 인용할 자료가 없을 때도 답을 만들어 내는 서비스가 있습니다. 불확실한 응답을 운영 흐름에서 어떻게 처리해야 하나요?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        595.0434999999998,
+        522.1831249999959,
+        527.6298339999921
+      ],
+      "current": [
+        417.10604199999943,
+        431.9494580000028,
+        431.8732080000045
+      ],
+      "response_sha256": "683fef797e0bee15a640869ccc93d36fe3a221936e84773b6b97f8c04ef2538f",
+      "bytes": 23982
+    },
+    {
+      "id": "synthetic-biz-click-lift-validation",
+      "mode": "lookup",
+      "args": {
+        "query": "새 탭을 출시한 뒤 클릭은 올랐는데 그것이 실제 성과인지 판단하기 어렵습니다. 먼저 움직이는 지표를 쓸 때 무엇과 비교하고, 기존 사용자의 이동만으로 생긴 착시는 어떻게 판별할까요?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        93.21787499999846,
+        102.39516600000206,
+        85.72720900000422
+      ],
+      "current": [
+        112.63016599999901,
+        102.84520799999882,
+        96.88141599998926
+      ],
+      "response_sha256": "40c529028b332362dbb3a469e49d777356f3b8a9eb7d33395850de02a7446347",
+      "bytes": 23997
+    },
+    {
+      "id": "synthetic-econ-correlation-diversification",
+      "mode": "lookup",
+      "args": {
+        "query": "서로 비슷한 업종의 주식만 여러 개 보유해도 위험이 잘 나뉘는지, 분산 효과를 판단할 때 무엇을 봐야 하는지 설명해줘.",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        85.19987499999843,
+        98.10216699999,
+        77.44312499999069
+      ],
+      "current": [
+        110.38891699999658,
+        104.56379200000083,
+        87.2647500000021
+      ],
+      "response_sha256": "983843179339276f5fb914b30581c306cc138b757e7c5182ff64cdfe6d0c1c7b",
+      "bytes": 23926
+    },
+    {
+      "id": "synthetic-negative-weather-forecast",
+      "mode": "lookup",
+      "args": {
+        "query": "내일 부산의 시간대별 강수 확률을 알려줘.",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        460.38479200000074,
+        453.5351660000015,
+        439.91795900001307
+      ],
+      "current": [
+        439.89216699999815,
+        376.49395899999945,
+        371.8295830000134
+      ],
+      "response_sha256": "91c40a2b8fa5dc9ba8132f658959200ce364dddb485f78afffcf36204dc97ff0",
+      "bytes": 23472
+    },
+    {
+      "id": "synthetic-negative-fictional-kingdom-tax",
+      "mode": "lookup",
+      "args": {
+        "query": "가상의 루미나 왕국에서 용의 비행세가 세 번 바뀌면 궁정 예산은 얼마가 되나요?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        480.04775000000154,
+        502.7233750000014,
+        469.98245800001314
+      ],
+      "current": [
+        440.5701670000017,
+        426.88666699999885,
+        415.4772499999963
+      ],
+      "response_sha256": "bac139675736efa890dffed831d0985efa5c2072c88ca4d26d45546fffdc71ab",
+      "bytes": 23987
+    },
+    {
+      "id": "unseen-tech-payment-retry-contract",
+      "mode": "lookup",
+      "args": {
+        "query": "결제 POST를 처리한 뒤 응답을 받지 못했다. 같은 요청을 재시도해 중복 결제를 막으려면 API 계약에 무엇을 두어야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        491.0197079999998,
+        494.95687499998894,
+        553.8686250000028
+      ],
+      "current": [
+        437.78350000000137,
+        420.7733750000043,
+        462.6161659999925
+      ],
+      "response_sha256": "353a985b0a79bf64c424147e2006e4ba2cab73c648874b5246357120ad80c2aa",
+      "bytes": 23986
+    },
+    {
+      "id": "unseen-tech-ott-unknown-subscription",
+      "mode": "lookup",
+      "args": {
+        "query": "OTT 홈에서 구독 일치 여부가 UNKNOWN이고 가용성 정보도 오래됐다. 직접 시청 버튼과 대체 화면은 어떻게 결정해야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        505.18841699999757,
+        520.551999999996,
+        518.7046670000127
+      ],
+      "current": [
+        389.00475000000006,
+        433.93762500000594,
+        406.1124580000178
+      ],
+      "response_sha256": "add8c540b09f59a794d6bd467b496c0949e722a8a5aa18b3ceb0784f2b45a555",
+      "bytes": 23858
+    },
+    {
+      "id": "unseen-biz-aarrr-alias",
+      "mode": "lookup",
+      "args": {
+        "query": "AARRR",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        158.10591699999713,
+        184.66012500000943,
+        171.56433300001663
+      ],
+      "current": [
+        159.92770799999926,
+        186.1030410000094,
+        167.77329099999042
+      ],
+      "response_sha256": "0199a9c683f504f514b3ace36756a02e106d3d1047ef46e6f2c4998f72f6578e",
+      "bytes": 23991
+    },
+    {
+      "id": "unseen-econ-elasticity-title",
+      "mode": "lookup",
+      "args": {
+        "query": "탄력성",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        92.17795900000056,
+        101.52041699999245,
+        126.8717089999991
+      ],
+      "current": [
+        95.33983300000182,
+        104.38991600000008,
+        107.87183299998287
+      ],
+      "response_sha256": "ffc74fb1118eb623559554986be8bec029101969eb32a13a734b08f5ab252efd",
+      "bytes": 13908
+    },
+    {
+      "id": "unseen-negative-tech-lunar-landing",
+      "mode": "lookup",
+      "args": {
+        "query": "아폴로 11호가 달에 착륙한 해와 임무 지휘관은 누구인가?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        411.21137499999895,
+        420.8989580000052,
+        426.3047919999808
+      ],
+      "current": [
+        331.48362500000076,
+        339.1435829999973,
+        334.64829199999804
+      ],
+      "response_sha256": "5929b511d130d3775f7643883490e7f4080268e47ff8ff34ed543a6a0cedb694",
+      "bytes": 23903
+    },
+    {
+      "id": "unseen-negative-biz-pet-food-market",
+      "mode": "lookup",
+      "args": {
+        "query": "국내 반려동물 사료 시장의 최근 점유율과 기업별 매출을 비교해줘.",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        120.72508399999788,
+        104.67512500000885,
+        98.2487919999985
+      ],
+      "current": [
+        123.91041600000244,
+        95.34220800000185,
+        94.20116700002109
+      ],
+      "response_sha256": "3688ab3a20aac16d5e5830fcc03ae840a430007e2a4b1a76961885f4c74f6929",
+      "bytes": 23922
+    },
+    {
+      "id": "fresh-tech-llm-grounding-decline",
+      "mode": "lookup",
+      "args": {
+        "query": "사내 규정 도우미가 관련 자료를 찾지 못했는데도 그럴듯한 답을 만들어 냅니다. 근거가 부족한 요청에서는 어떤 응답 흐름을 두어야 할까요?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        555.3756670000002,
+        506.67783300000883,
+        508.4951670000155
+      ],
+      "current": [
+        412.0329579999998,
+        386.1937500000058,
+        393.72145899999305
+      ],
+      "response_sha256": "b7bd0b86132e20c570f73b36383e3f79d6b914839b3e2dac089d76772a84b78c",
+      "bytes": 23867
+    },
+    {
+      "id": "fresh-tech-single-feature-emergency-stop",
+      "mode": "lookup",
+      "args": {
+        "query": "새 추천 기능을 이미 운영에 올렸는데 오류가 납니다. 서비스 전체를 다시 배포하지 않고 그 기능만 바로 멈추려면 어떤 운영 장치를 준비해야 하나요?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        540.541959000002,
+        532.0227500000037,
+        565.4474589999882
+      ],
+      "current": [
+        468.9201670000002,
+        425.78158299998904,
+        402.7298329999903
+      ],
+      "response_sha256": "3e88a3ce8a843d88e0ab3ee1a059288875241c4ae38a814928e7574ca6d67fad",
+      "bytes": 23991
+    },
+    {
+      "id": "fresh-tech-progressive-release-comparison-gate",
+      "mode": "lookup",
+      "args": {
+        "query": "새 결제 경로를 소수 사용자에게 먼저 열어 보려 합니다. 비율을 올릴지 중단할지는 무엇과 비교하고 어떤 지표로 판단해야 할까요?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        472.705750000001,
+        481.0268750000105,
+        537.090292000008
+      ],
+      "current": [
+        365.8128749999996,
+        403.8393339999893,
+        395.03912499998114
+      ],
+      "response_sha256": "2dc6a2d88b7c7e1f4af78558c66e7faeb8baf7e3af0532b51cfea14af63b6235",
+      "bytes": 23976
+    },
+    {
+      "id": "fresh-biz-saas-value-pricing",
+      "mode": "lookup",
+      "args": {
+        "query": "우리 SaaS가 고객의 비용과 시간을 크게 줄여 주는데, 제작 원가나 경쟁사 가격만 보고 요금을 정해도 될까요? 고객이 얻는 효익을 반영하려면 어떤 가격 접근이 맞나요?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        115.29241600000023,
+        112.85095799999544,
+        144.81604099998367
+      ],
+      "current": [
+        104.99908299999879,
+        103.403707999998,
+        109.39816700000665
+      ],
+      "response_sha256": "830973bdfbd62da44ad3694af1182396aa98902392013bad3f4f74f1c419cb5a",
+      "bytes": 23935
+    },
+    {
+      "id": "fresh-econ-pay-raise-purchasing-power",
+      "mode": "lookup",
+      "args": {
+        "query": "월급은 2% 올랐지만 같은 기간 물가가 3% 올랐습니다. 실제 생활비를 감안하면 보상이 늘었다고 봐도 될까요? 계산할 때 무엇을 구분해야 하나요?",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        77.42924999999741,
+        82.15025000000605,
+        82.99383400002262
+      ],
+      "current": [
+        84.7055419999997,
+        85.37591699999757,
+        158.81375000000116
+      ],
+      "response_sha256": "31fda89c8b9681f320a68fb54fc6b6f2deb0f3c06c953018deee5ed8292d7eab",
+      "bytes": 23154
+    },
+    {
+      "id": "fresh-fit-new-team-expectations",
+      "mode": "lookup",
+      "args": {
+        "query": "새 팀에 합류한 첫 주입니다. 빨리 성과를 내겠다는 마음에 일을 잡기 전에, 매니저와 어떤 내용을 먼저 확인하면 초반의 오해를 줄일 수 있을까요?",
+        "scope": [
+          "fit"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        150.95200000000114,
+        182.20679100000416,
+        185.59987499998533
+      ],
+      "current": [
+        143.42545800000153,
+        152.57958400000643,
+        197.14387500000885
+      ],
+      "response_sha256": "102d13b5e056657ff30f84c4039d8233d8392b7d0de06cd15aef2510a4b10e70",
+      "bytes": 23933
+    },
+    {
+      "id": "fresh-negative-unknown-token-string",
+      "mode": "lookup",
+      "args": {
+        "query": "드라코니스 벨루마 사르피온의 역위상 단서는 어떻게 보정하나요?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        414.32491700000173,
+        423.32370799999626,
+        445.95462500001304
+      ],
+      "current": [
+        307.69937500000015,
+        312.7007500000036,
+        317.34895800001686
+      ],
+      "response_sha256": "9add9eb81cccb8999f5eb6d073298bf6dae96515489b376aab483f66c449fa6e",
+      "bytes": 23829
+    },
+    {
+      "id": "fresh-negative-unrelated-gardening-question",
+      "mode": "lookup",
+      "args": {
+        "query": "베란다에서 방울토마토를 키울 때 물은 며칠 간격으로 주는 게 좋을까요?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        421.4590829999979,
+        426.2479170000006,
+        419.2535419999913
+      ],
+      "current": [
+        328.9985000000015,
+        321.50620800000615,
+        369.30166599998483
+      ],
+      "response_sha256": "b03738389aec9c4795953f6289745bb8bbfefca492709edffa059b4d5ea4e96c",
+      "bytes": 22674
+    },
+    {
+      "id": "specific-pattern-with-generic-noise",
+      "mode": "lookup",
+      "args": {
+        "query": "outbox pattern",
+        "scope": [
+          "README.md",
+          "tech",
+          "biz",
+          "econ",
+          "fit",
+          "ontology"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        481.1828339999993,
+        478.5303339999955,
+        471.79812500000116
+      ],
+      "current": [
+        356.4868750000023,
+        353.3932910000003,
+        360.27975000001607
+      ],
+      "response_sha256": "dc2466e7752759439dba05aeb32ef85d190698e4e4e74793c220058a6f278824",
+      "bytes": 23696
+    },
+    {
+      "id": "exact-korean-alias-with-relations",
+      "mode": "lookup",
+      "args": {
+        "query": "트랜잭셔널 아웃박스",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        397.35262499999953,
+        379.8470420000085,
+        374.87604100001045
+      ],
+      "current": [
+        292.5645000000004,
+        288.5830419999984,
+        287.5920000000042
+      ],
+      "response_sha256": "61596552e8fb13bab136a643969ea9576308d8cf2ca2edd3bff15e99211a5470",
+      "bytes": 24000
+    },
+    {
+      "id": "unseen-cache-multi-instance-guard",
+      "mode": "lookup",
+      "args": {
+        "query": "여러 서버에서 인기 키가 동시에 만료되어 원본 DB 조회가 폭주한다. 각 프로세스 안과 서버들 사이의 중복 요청을 함께 줄이려면 무엇을 조합해야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        618.2129999999961,
+        604.6037499999948,
+        567.5450420000125
+      ],
+      "current": [
+        439.2218339999963,
+        450.7557909999887,
+        493.04166700001224
+      ],
+      "response_sha256": "6e934865c95e9af0fb7b6c5334b491551a5c6538bc8eb070b79c02615aeaac3c",
+      "bytes": 23992
+    },
+    {
+      "id": "unseen-typeorm-runner-cleanup-boundary",
+      "mode": "lookup",
+      "args": {
+        "query": "TypeORM에서 직접 빌린 커넥션으로 트랜잭션을 처리하는데, 전역 repository를 섞지 말아야 하는 이유와 풀 고갈을 피하기 위한 끝 처리 순서는 무엇인가?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        564.8058330000058,
+        519.7637499999983,
+        581.4752079999889
+      ],
+      "current": [
+        428.7070420000018,
+        435.57862499999464,
+        418.5876660000067
+      ],
+      "response_sha256": "c0580e2b476902248143685c8da60dbd86d65dcc480033995a0590bdeca1cd6d",
+      "bytes": 23961
+    },
+    {
+      "id": "unseen-canary-baseline-version-split",
+      "mode": "lookup",
+      "args": {
+        "query": "카나리 배포에서 새 버전 5%가 오류를 내지만 전체 평균에는 묻힌다. 승격이나 중단 결정을 신뢰하려면 어떤 비교 대상과 어떤 계측 구분이 필요한가?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        500.9340000000011,
+        487.66875000001164,
+        548.1022079999966
+      ],
+      "current": [
+        411.0375409999979,
+        422.28800000000047,
+        415.85216700000456
+      ],
+      "response_sha256": "4f60af624e12ac4957cc5354a8d74272822a3ab9bc5b7a981d50bcf9d5949581",
+      "bytes": 23996
+    },
+    {
+      "id": "unseen-diversification-rebalancing",
+      "mode": "lookup",
+      "args": {
+        "query": "같은 업종 종목을 많이 담았는데도 포트폴리오 분산이 약할 수 있는 이유는 무엇이고, 시간이 지나 목표 위험 비중에서 벗어나면 어떤 절차를 써야 하나?",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        81.60733299999993,
+        83.09616700001061,
+        76.84920900000725
+      ],
+      "current": [
+        94.2880409999998,
+        103.20916700000816,
+        88.9409169999999
+      ],
+      "response_sha256": "166ceb7572de919d94dcf78170c33d19f6113ece8ac3f237b5701239eb8db91c",
+      "bytes": 23938
+    },
+    {
+      "id": "unseen-negative-gibberish",
+      "mode": "lookup",
+      "args": {
+        "query": "퍄쵸라 닐굼 세발선 알로코를 어떤 순서로 조율하나요?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ",
+          "fit"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        544.7407920000041,
+        533.3526249999995,
+        514.2616250000137
+      ],
+      "current": [
+        392.53462500000023,
+        403.9549160000024,
+        411.89737500000047
+      ],
+      "response_sha256": "92dbae009a595ac2b866f527dbdbb244edce5921fce9f33ea810d13d0437a8e3",
+      "bytes": 23652
+    },
+    {
+      "id": "unseen-negative-weather",
+      "mode": "lookup",
+      "args": {
+        "query": "내일 서울에 비가 올지와 우산이 필요한지 알려줘.",
+        "scope": [
+          "tech",
+          "biz",
+          "econ",
+          "fit"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        509.0082079999993,
+        539.2465839999932,
+        523.5244999999995
+      ],
+      "current": [
+        406.2479170000006,
+        407.3743749999994,
+        406.0087079999794
+      ],
+      "response_sha256": "c5bad4405d67f2dedb9e0850e72b912e4e3db6b0503feb3aa45bfa98d2d2464d",
+      "bytes": 22949
+    },
+    {
+      "id": "tech-distributed-workflow-recovery",
+      "mode": "lookup",
+      "args": {
+        "query": "주문, 결제, 재고가 여러 서비스에 나뉘어 있고 중간 실패 뒤에도 사용자가 납득할 상태로 수습해야 한다. 보상과 복구를 어떻게 설계해야 할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        548.884917000003,
+        545.6089999999967,
+        549.270749999996
+      ],
+      "current": [
+        481.9093750000029,
+        448.46733299999323,
+        449.51291600000695
+      ],
+      "response_sha256": "08261013c251541a3a19ba338ad20c965c61fdea4637d180737e84a317222c7e",
+      "bytes": 22602
+    },
+    {
+      "id": "tech-schema-change-rollback-window",
+      "mode": "lookup",
+      "args": {
+        "query": "테이블 구조를 바꾸면서 여러 인스턴스를 순차 배포하고, 장애가 나면 이전 앱으로 되돌려야 한다. 변경을 어떤 순서와 경계로 나누어야 할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        588.3358330000046,
+        570.7987920000014,
+        555.3710830000055
+      ],
+      "current": [
+        499.15837499999907,
+        480.64662499999395,
+        442.40641699999105
+      ],
+      "response_sha256": "c5c52586f5fbf37c295a1651b467d345e1f361bcc53d00fb0a8e1e75cdfad6ff",
+      "bytes": 23962
+    },
+    {
+      "id": "tech-agent-context-boundaries",
+      "mode": "lookup",
+      "args": {
+        "query": "작업 에이전트가 몇 턴 지나면 토큰을 다 써서 실행이 흔들린다. 대용량 도구 응답과 첨부 자료를 어떻게 다뤄야 할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        600.2209589999984,
+        532.2644169999985,
+        518.26112499999
+      ],
+      "current": [
+        449.64479199999914,
+        448.38700000000244,
+        391.1622080000234
+      ],
+      "response_sha256": "94d578882fcd9bf40bb189d4439d7f0385e355702642fb2c9ab92de6f8e0959d",
+      "bytes": 23919
+    },
+    {
+      "id": "tech-grounded-answer-abstention",
+      "mode": "lookup",
+      "args": {
+        "query": "문서 기반 답변기에 인용은 붙지만 엉뚱한 근거를 말하는 일이 있다. 검색, 문맥 구성, 생성 중 어디를 나눠 보고 어떤 경우 답변을 멈춰야 할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        621.122292,
+        588.4987919999985,
+        609.0907920000027
+      ],
+      "current": [
+        466.2262499999997,
+        470.7512080000015,
+        454.04079200001433
+      ],
+      "response_sha256": "dd420a25faa37ada894e0a3bae3c922bb6b1d133396820215aa2dafedb53ea46",
+      "bytes": 23543
+    },
+    {
+      "id": "tech-recommendation-availability",
+      "mode": "lookup",
+      "args": {
+        "query": "추천 화면에서 후보는 많이 나오는데 당장 볼 수 없는 작품이나 구독 밖 작품이 섞여 목록이 비고 있다. 후보 단계와 노출 직전에서 무엇을 확인해야 할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        534.7615000000005,
+        558.7863750000106,
+        546.1891670000041
+      ],
+      "current": [
+        409.64508399999613,
+        415.44720899999083,
+        420.0560000000114
+      ],
+      "response_sha256": "088b71b9a4aaa1e63f97a5b9702ae1a441ecd4080e8b237f80decce033c01dec",
+      "bytes": 23912
+    },
+    {
+      "id": "tech-cache-write-race-and-hot-key",
+      "mode": "lookup",
+      "args": {
+        "query": "상품 정보를 바꾼 직후 이전 값이 다시 캐시에 들어가고, 인기 키가 만료될 때 DB가 폭주한다. 쓰기 이후 처리와 읽기 쏠림을 어떻게 설계해야 할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        527.3840829999972,
+        562.6418330000015,
+        552.8107920000039
+      ],
+      "current": [
+        429.1757909999942,
+        440.9555420000106,
+        451.48708300001454
+      ],
+      "response_sha256": "a5287882325c0dbdefdacb19e503879c675348c7b029377068ef426f0e6696c1",
+      "bytes": 23925
+    },
+    {
+      "id": "tech-api-consumer-transition",
+      "mode": "lookup",
+      "args": {
+        "query": "외부 사용자가 여럿인 API에서 필드 의미와 응답 형식을 바꿔야 한다. 새 버전을 무조건 만들지 않으면서 기존 호출자를 안전하게 옮기고 제거하려면 어떻게 해야 할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        617.2719579999975,
+        566.7366670000047,
+        565.3052500000049
+      ],
+      "current": [
+        522.7473750000063,
+        447.953125,
+        453.8883339999884
+      ],
+      "response_sha256": "78fc1d393be4faed20d1ca1a8650e2088918658d85c048e6114f1341728d5cfe",
+      "bytes": 23988
+    },
+    {
+      "id": "tech-progressive-release-control",
+      "mode": "lookup",
+      "args": {
+        "query": "위험한 새 기능을 전면 공개하기 전에 일부 사용자부터 열고, 문제가 생기면 몇 초 안에 멈추되 이후 코드도 정리하려면 어떤 운영 규칙이 필요할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        582.0824160000047,
+        528.1664579999924,
+        529.7740840000042
+      ],
+      "current": [
+        450.76637499999924,
+        441.3731669999979,
+        412.1070420000178
+      ],
+      "response_sha256": "fae82f721464583cf87dd953a5fa66b1041d03da8b77773c085c579093b3f10d",
+      "bytes": 23986
+    },
+    {
+      "id": "biz-solo-product-evidence",
+      "mode": "lookup",
+      "args": {
+        "query": "혼자 운영할 작은 제품 아이디어가 있다. 반응 좋은 설문과 가입자 수가 늘어도 개발을 더 할지 판단하기 어렵다. 어떤 행동 증거와 고객 대화 방식을 써야 할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        635.292042000001,
+        639.6118750000023,
+        581.415875000006
+      ],
+      "current": [
+        465.0088340000002,
+        514.0676669999957,
+        464.4826250000042
+      ],
+      "response_sha256": "17430bfce3ed9511cecefe8821073c253f4d5782b47a305e471a2ab021532d80",
+      "bytes": 23547
+    },
+    {
+      "id": "biz-commerce-price-and-cancellation",
+      "mode": "lookup",
+      "args": {
+        "query": "커머스에서 가격 구조가 복잡해져 할인, 배송비, 쿠폰이 겹친다. 고객이 낼 금액을 명확하게 보이고 부분취소가 나와도 정산이 틀리지 않게 설계하려면 무엇을 정해야 할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        589.2452499999999,
+        656.2924169999897,
+        543.0163330000069
+      ],
+      "current": [
+        468.1130409999969,
+        480.48104199999943,
+        419.93887499999255
+      ],
+      "response_sha256": "47d53b9d0ba46d7277b26459798475e4180c7db5dbea32e852417c00532a5f75",
+      "bytes": 23923
+    },
+    {
+      "id": "econ-inflation-rate-transmission",
+      "mode": "lookup",
+      "args": {
+        "query": "물가 뉴스와 기준금리 인상이 동시에 나왔을 때, 가계 소비, 기업 투자, 실질 구매력의 변화를 한 가지 숫자로 단정하지 않고 설명하려면 무엇을 구분해야 할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        563.4855000000025,
+        553.1034169999912,
+        539.765625
+      ],
+      "current": [
+        430.58429199999955,
+        458.7534169999999,
+        439.210625000007
+      ],
+      "response_sha256": "81fa60b3664def66f52426f542f12b4d5372c9e15a8a25ad4621bc988521d03a",
+      "bytes": 23634
+    },
+    {
+      "id": "econ-panic-portfolio-discipline",
+      "mode": "lookup",
+      "args": {
+        "query": "시장 급락 뒤 한 종목을 더 사고 싶거나 전부 팔고 싶을 때, 감정 대신 포트폴리오를 어떻게 점검해야 할까?",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        462.68029099999694,
+        501.04379099998914,
+        465.18558299998404
+      ],
+      "current": [
+        368.33383299999696,
+        365.9968749999971,
+        375.7535419999913
+      ],
+      "response_sha256": "c7be453a1ffc8fd21974139678a09d0c137b37d486efb8fcd624bbae839edc86",
+      "bytes": 23989
+    },
+    {
+      "id": "negative-restaurant-reservation",
+      "mode": "lookup",
+      "args": {
+        "query": "오늘 저녁 강남역 근처에서 2명 예약 가능한 이탈리아 식당을 찾아 예약해 줘.",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        462.7703330000004,
+        467.94475000000966,
+        465.6936660000065
+      ],
+      "current": [
+        380.18070799999987,
+        365.8332500000106,
+        368.4523330000229
+      ],
+      "response_sha256": "c1096e759263fc56a4684636bb1c73fce8f49555a43f22b1db8b3491248741b9",
+      "bytes": 22961
+    },
+    {
+      "id": "negative-private-calendar",
+      "mode": "lookup",
+      "args": {
+        "query": "내일 오전에 내 캘린더에서 비어 있는 시간대를 알려 줘.",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        485.5832500000033,
+        430.08858399999735,
+        433.8314170000085
+      ],
+      "current": [
+        383.3444159999999,
+        338.65812500000175,
+        340.88616699998965
+      ],
+      "response_sha256": "1ab0fa9e98bf1e7931545b0597e81bc8c233f69a80e4b83365d0e10c676ae678",
+      "bytes": 23510
+    },
+    {
+      "id": "negative-private-bank-balance",
+      "mode": "lookup",
+      "args": {
+        "query": "내 통장 잔고와 이번 달 자동이체 예정 금액을 확인해 줘.",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        464.47308400000475,
+        474.49429200000304,
+        437.00412499997765
+      ],
+      "current": [
+        434.4484589999993,
+        346.1007499999978,
+        349.0145409999823
+      ],
+      "response_sha256": "bfcc7e0d234ac54c5f05401d7be60b70e6bfaced571d9250f99f82cd7d14f82d",
+      "bytes": 23882
+    },
+    {
+      "id": "negative-live-taxi-request",
+      "mode": "lookup",
+      "args": {
+        "query": "내 휴대폰 위치를 기준으로 가장 빨리 도착하는 택시를 불러 줘.",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        464.35949999999866,
+        494.2265000000043,
+        435.26258300000336
+      ],
+      "current": [
+        404.0622499999954,
+        379.80466599999636,
+        345.2734169999894
+      ],
+      "response_sha256": "36dbf6080482eb0368eb35014dd191f454c5ca5845575d3b243bedf219144b5d",
+      "bytes": 23986
+    },
+    {
+      "id": "selection-holdout-01",
+      "mode": "lookup",
+      "args": {
+        "query": "상품 코드처럼 정확히 일치해야 하는 표현과 자연어 설명형 질문이 함께 들어오는 지식 검색을 출시하려 한다. 어떤 검색 조합을 검토하고, 출시 전에 어떤 비교 기준으로 선택해야 할까?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        560.9328339999993,
+        625.213334,
+        550.9612500000221
+      ],
+      "current": [
+        453.43325000000186,
+        479.4181669999962,
+        444.0404170000111
+      ],
+      "response_sha256": "2c4195601597a9c6ef8045f4c02003258fd70e8354c321d145b75d197abdf272",
+      "bytes": 23993
+    },
+    {
+      "id": "selection-holdout-02",
+      "mode": "lookup",
+      "args": {
+        "query": "검색 결과가 관련 문서를 찾았더라도 답변이 틀리거나 근거 없는 주장을 할 수 있다. 품질 검토를 어떤 층으로 나누고, 답변의 근거 연결은 어떻게 확인해야 할까?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        563.0496669999993,
+        669.6597919999913,
+        526.5743749999965
+      ],
+      "current": [
+        417.2809999999954,
+        522.8659159999952,
+        416.17699999999604
+      ],
+      "response_sha256": "d8615a8a0722e24532c211c486b8cc0b3cb469aac4570e7fafd0420ba5be4a3f",
+      "bytes": 23863
+    },
+    {
+      "id": "selection-holdout-03",
+      "mode": "lookup",
+      "args": {
+        "query": "지식 베이스를 갱신하는 고객지원 에이전트가 여러 답안을 만든다. 잘못된 지식 유입을 막고 사용자에게 한 답만 보낼 때 후보 선택을 신뢰하려면 어떤 검증을 둬야 할까?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        524.1452500000014,
+        561.0643750000163,
+        525.8453750000044
+      ],
+      "current": [
+        415.6964999999982,
+        435.32704200000444,
+        406.1140000000014
+      ],
+      "response_sha256": "3ba07e892615908f5fa7eb40c02184abc79c8e660aaf2a543069eba08c498856",
+      "bytes": 23944
+    },
+    {
+      "id": "selection-holdout-04",
+      "mode": "lookup",
+      "args": {
+        "query": "모델 규모와 추론 시간을 늘렸는데도 근거가 약한 질문에 확신해서 답한다. 제품 수준에서 어떤 거부 경로를 넣고, 왜 성능 확장만으로 해결되지 않는지 설명해줘.",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        519.9967920000054,
+        518.2093749999767,
+        518.7712499999907
+      ],
+      "current": [
+        403.2337919999991,
+        404.76325000001816,
+        404.1857080000045
+      ],
+      "response_sha256": "ebde3b4ec4f558d6f586d1476fe113093be3f2a4c82cdb19794202082cfcd761",
+      "bytes": 23843
+    },
+    {
+      "id": "selection-holdout-05",
+      "mode": "lookup",
+      "args": {
+        "query": "화면을 고친 뒤 온보딩 완료율과 신규 탭 클릭이 올랐다. 이 변화를 사업 성과라고 판단하기 전에 어떤 인과 검토와 지표 비교가 필요할까?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        95.7712079999983,
+        84.97695899999235,
+        82.17554200001177
+      ],
+      "current": [
+        111.45716600000014,
+        94.81949999998324,
+        89.97587500000373
+      ],
+      "response_sha256": "1d3a69d6446cb2644747ec3c57c099d31590f4d6df9eef8fcbba0967605148e5",
+      "bytes": 23752
+    },
+    {
+      "id": "selection-holdout-06",
+      "mode": "lookup",
+      "args": {
+        "query": "초기 제품에서 설문 응답과 리텐션 커브가 좋아 보인다. 이 신호만으로 확장을 시작해도 되는지, 단계별로 어떤 우선순위를 두어야 할까?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        142.9318329999951,
+        113.14437500000349,
+        112.28099999998813
+      ],
+      "current": [
+        111.03312500000175,
+        97.62954099997296,
+        98.61137500000768
+      ],
+      "response_sha256": "42d8b2553922884419ce8b55a259bb8381319a648d9df97d144db37fba909cc7",
+      "bytes": 23855
+    },
+    {
+      "id": "selection-holdout-07",
+      "mode": "lookup",
+      "args": {
+        "query": "상승장에서 인기 종목을 따라 사느라 포트폴리오가 한 업종에 몰렸다. 감정에 흔들리는 매매를 줄이고 실제 분산이 되게 하려면 무엇을 점검해야 할까?",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        87.76766700000007,
+        74.5020829999994,
+        76.2400829999824
+      ],
+      "current": [
+        93.77924999999959,
+        85.18016700001317,
+        82.50195800000802
+      ],
+      "response_sha256": "4b6e885be08b807e3ef73479c32e2929785f7e638e0cba5f38796ea9d9f264c4",
+      "bytes": 23999
+    },
+    {
+      "id": "selection-holdout-08",
+      "mode": "lookup",
+      "args": {
+        "query": "중앙은행이 금리를 내렸는데도 가계 소비와 기업 투자가 기대만큼 살아나지 않는다. 일반적인 전달 경로와 효과가 약해질 수 있는 조건을 함께 설명해줘.",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        108.81966700000339,
+        77.01312499999767,
+        78.78633299999638
+      ],
+      "current": [
+        106.66979100000026,
+        85.16766700000153,
+        84.38470799999777
+      ],
+      "response_sha256": "63e46da430c6578f3d607a05291a335cd7a0c0a25dc4b1e32560ded9406bb9fd",
+      "bytes": 23891
+    },
+    {
+      "id": "selection-holdout-09",
+      "mode": "lookup",
+      "args": {
+        "query": "오늘 기준 내가 운영하는 서비스의 실제 일간 매출, 활성 사용자 수, 장애 현황을 알려줘.",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        513.4459580000039,
+        560.7462919999962,
+        494.18812499998603
+      ],
+      "current": [
+        703.4911659999998,
+        388.2431670000078,
+        392.27029100002255
+      ],
+      "response_sha256": "d55ad7936f7de20364db6a02ddddf306dfd8195b16d3428941799dafb2a9a7ac",
+      "bytes": 23992
+    },
+    {
+      "id": "selection-holdout-10",
+      "mode": "lookup",
+      "args": {
+        "query": "오늘 내 증권계좌의 잔액과 종목별 수익률을 알려줘.",
+        "scope": [
+          "tech",
+          "biz",
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        447.23225000000093,
+        468.1066250000149,
+        432.3522499999963
+      ],
+      "current": [
+        365.15495799999917,
+        369.2725419999915,
+        334.8051250000135
+      ],
+      "response_sha256": "737f05266586999fb410647e7fda6ccb6207c89bf4cb51647526da5df1792519",
+      "bytes": 23885
+    },
+    {
+      "id": "rerank-holdout-tech-event-outbox-idempotency",
+      "mode": "lookup",
+      "args": {
+        "query": "주문 생성 뒤 DB 변경은 성공했는데 메시지 발행이 실패할 수 있고, 재시도 때 외부 발주가 두 번 나가면 안 된다. 발행과 소비를 각각 어떻게 설계해야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        539.7867499999993,
+        579.5493750000023,
+        529.9881670000032
+      ],
+      "current": [
+        469.8509580000027,
+        477.74199999999837,
+        437.3233750000072
+      ],
+      "response_sha256": "884c4100a4ee266eb4fccbe2c9c6a3131f5dc2bbb355c5ddda48b4ac2aa70669",
+      "bytes": 23996
+    },
+    {
+      "id": "rerank-holdout-tech-migration-compatible-rollout",
+      "mode": "lookup",
+      "args": {
+        "query": "롤링 배포 중 구버전과 신버전이 동시에 돌아 컬럼 제거가 위험하다. 마이그레이션은 어디에서 실행하고, 스키마 변경은 어떤 순서로 나눠야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        515.544332999998,
+        545.4102499999863,
+        518.5489579999994
+      ],
+      "current": [
+        393.71608299999934,
+        417.658666000003,
+        388.0078330000106
+      ],
+      "response_sha256": "67ce63cbae502f72d62d34e175212c97a67a766b0a1ae352cc6d9fe305102b9c",
+      "bytes": 23995
+    },
+    {
+      "id": "rerank-holdout-tech-migration-test-isolation",
+      "mode": "lookup",
+      "args": {
+        "query": "마이그레이션을 바꾼 PR의 CI에서 운영과 같은 스키마를 검증하면서, 병렬 통합 테스트끼리 남긴 데이터가 충돌하지 않게 하려면 어떻게 구성해야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        519.9701249999998,
+        531.3287079999864,
+        516.9494999999879
+      ],
+      "current": [
+        405.91241699999955,
+        442.95858400000725,
+        415.5092080000031
+      ],
+      "response_sha256": "e9af8e6d081737533e031c2d99d54ccb9e7664a581b11121ddab104b5b1715ee",
+      "bytes": 23933
+    },
+    {
+      "id": "rerank-holdout-tech-refresh-token-compromise",
+      "mode": "lookup",
+      "args": {
+        "query": "리프레시 토큰을 탈취당했을 때 재사용을 감지하고, 이미 복사된 access token이 악용될 수 있는 시간도 줄이려면 로그인 세션을 어떻게 설계해야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        552.4996249999967,
+        505.5486249999958,
+        503.46112500000163
+      ],
+      "current": [
+        415.7569169999988,
+        410.5630840000231,
+        413.32870799998636
+      ],
+      "response_sha256": "3b22126407625591fdd1614140df3f6b8c60a80dde0ae0b9d6e5cc9b5381c237",
+      "bytes": 23995
+    },
+    {
+      "id": "rerank-holdout-tech-api-version-cache-retirement",
+      "mode": "lookup",
+      "args": {
+        "query": "헤더 기반 API 버저닝에서 v1과 v2 응답이 CDN 캐시에 섞이지 않게 하고, 이전 계약은 실제 사용자가 없다는 근거를 확인한 뒤 없애려면 무엇을 점검해야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        593.4812499999971,
+        582.9505000000063,
+        536.1777090000105
+      ],
+      "current": [
+        466.0580409999966,
+        419.25554199999897,
+        417.3140420000127
+      ],
+      "response_sha256": "19006524bf89c64733420fa82104c9d81fc94ce90dd8a7afefce948137deee9b",
+      "bytes": 23999
+    },
+    {
+      "id": "rerank-holdout-biz-gtm-before-pmf-scaling",
+      "mode": "lookup",
+      "args": {
+        "query": "초기 B2B SaaS를 출시하기 전에 어떤 고객군과 채널을 먼저 정해야 하며, PMF 확인 전 유료 획득비와 팀을 서둘러 키우면 왜 안 되나?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        146.41737500000454,
+        145.01537500001723,
+        113.21000000002095
+      ],
+      "current": [
+        107.60358300000371,
+        124.93966699999874,
+        101.77470800001174
+      ],
+      "response_sha256": "d320b3db20e147eea8f17819f4c1d75fe9dc48c27fcef77d4e47769c05381ba9",
+      "bytes": 23978
+    },
+    {
+      "id": "rerank-holdout-biz-freemium-experiment-guardrails",
+      "mode": "lookup",
+      "args": {
+        "query": "Freemium 제품의 paywall 실험이 실제 유료 전환과 손익을 개선했는지 판단하려면 어떤 코호트 기준과 후행, 가드레일 지표를 함께 봐야 하나?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        148.8802080000023,
+        146.61387500001,
+        110.1157499999972
+      ],
+      "current": [
+        128.83204100000148,
+        110.38470800002688,
+        98.5990419999871
+      ],
+      "response_sha256": "a2efd7431ad0381f92f1c64361efdcaf34d3e92695d1d71dd758b714e6b68d7e",
+      "bytes": 23838
+    },
+    {
+      "id": "rerank-holdout-econ-rate-hike-bond-duration",
+      "mode": "lookup",
+      "args": {
+        "query": "중앙은행의 기준금리 인상 뒤 장기 채권 비중을 검토할 때, 대출과 소비에 전달되는 경로와 듀레이션에 따른 가격 민감도를 어떻게 함께 설명해야 하나?",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        94.18637499999022,
+        83.52904200000921,
+        76.95891600000323
+      ],
+      "current": [
+        101.64033400001063,
+        89.75245800000266,
+        84.01179200000479
+      ],
+      "response_sha256": "cc75ee5fc870dfc785f1b79ac9a352a3c1a1474a16877fa7f4324b7e8946fa6d",
+      "bytes": 23529
+    },
+    {
+      "id": "rerank-holdout-negative-private-credential",
+      "mode": "lookup",
+      "args": {
+        "query": "내 개인 AWS 액세스 키와 현재 계정 비밀번호를 알려줘.",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        476.4435419999936,
+        496.8752500000119,
+        444.5677089999954
+      ],
+      "current": [
+        347.0784580000036,
+        361.080667000002,
+        355.7927909999853
+      ],
+      "response_sha256": "07fba13487b598884b11ffbf2cabdf546033098b6a01c9ced594f39a576d6726",
+      "bytes": 23904
+    },
+    {
+      "id": "rerank-holdout-negative-private-investment-account",
+      "mode": "lookup",
+      "args": {
+        "query": "이번 달 내 개인 투자 계좌의 실제 잔고와 아직 체결되지 않은 주문을 알려줘.",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        73.68812500000058,
+        96.4065830000036,
+        74.53416599999764
+      ],
+      "current": [
+        87.9237090000097,
+        132.96550000002026,
+        87.78154200001154
+      ],
+      "response_sha256": "831449155e7379122263efdc6afc9ce3a8920b6923b3394ec2e614d73f6ef0dd",
+      "bytes": 23570
+    },
+    {
+      "id": "coverage-tech-outbox-recovery",
+      "mode": "lookup",
+      "args": {
+        "query": "주문 저장과 후속 알림 사이에 프로세스가 죽어도 유실 없이 처리하고, 여러 relay가 돌 때 재발행도 안전하게 만들려면 어떤 경계를 둬야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        525.3505000000005,
+        590.0727079999924,
+        511.443666999985
+      ],
+      "current": [
+        513.1320830000041,
+        452.0562079999945,
+        408.1187499999942
+      ],
+      "response_sha256": "7df8e35e6083394eb72fbc711693df45da1c4bbcba6a573b565588241d986607",
+      "bytes": 23232
+    },
+    {
+      "id": "coverage-tech-locking-recovery",
+      "mode": "lookup",
+      "args": {
+        "query": "같은 주문 행을 갱신하는 작업에서 간헐적 교착이 생겼을 때, 락 범위를 줄이면서 안전하게 복구하려면 어떤 확인과 재시도 규칙이 필요한가?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        551.6035840000113,
+        539.244875000004,
+        533.855750000017
+      ],
+      "current": [
+        494.88595900000655,
+        426.1756250000035,
+        421.79912499999045
+      ],
+      "response_sha256": "cfdf7849d7e36a04269c21114628b1aed40deec4db19cd8b962cbcb0487eda0a",
+      "bytes": 23931
+    },
+    {
+      "id": "coverage-tech-spike-capacity",
+      "mode": "lookup",
+      "args": {
+        "query": "대규모 할인 행사에서 트래픽이 한순간에 몰릴 때, 검증과 장애 격리를 어떻게 준비해야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        456.90487500000745,
+        453.090709000011,
+        449.9211249999935
+      ],
+      "current": [
+        354.0403340000048,
+        363.60479199999827,
+        363.28779100000975
+      ],
+      "response_sha256": "3e691903607b9f20aa9c3adedca3a39e0ce302c546ed4cddfc89976638a0a326",
+      "bytes": 23878
+    },
+    {
+      "id": "coverage-tech-retry-overload",
+      "mode": "lookup",
+      "args": {
+        "query": "의존 서비스가 과부하로 429를 반환할 때, 호출자가 회복을 늦추지 않으면서 재시도를 설계하려면 어떻게 해야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        544.1509169999918,
+        500.856958999997,
+        488.92533299999195
+      ],
+      "current": [
+        383.0550829999993,
+        427.6647090000042,
+        369.8012909999816
+      ],
+      "response_sha256": "5497ed9137ab58ddf0c7012d88ea4716ef3d4a2de5cf2c345da7cd8fcab5f26e",
+      "bytes": 23858
+    },
+    {
+      "id": "coverage-tech-distributed-recovery",
+      "mode": "lookup",
+      "args": {
+        "query": "좌석 예약과 결제처럼 여러 서비스가 걸린 흐름에서 timeout 뒤에도 중복 확정이나 고아 예약을 막으려면 설계 전에 어떤 계약과 복구 상태를 정해야 하나?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        655.0963749999937,
+        597.7536669999827,
+        563.1745830000145
+      ],
+      "current": [
+        492.37466700001096,
+        535.5159590000112,
+        457.5608749999956
+      ],
+      "response_sha256": "b3c1d841b9ed331d9559bcaa4c503e6f5601b6aff2a612021dad4841c0491910",
+      "bytes": 23999
+    },
+    {
+      "id": "coverage-biz-pmf-scaling",
+      "mode": "lookup",
+      "args": {
+        "query": "초기 제품의 사용자 유입이 늘었지만 아직 성장 채널을 확대해도 되는지 판단하려면, 반복 사용 신호와 단계별 우선순위를 어떻게 봐야 하나?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        121.71970899999724,
+        117.74979100000928,
+        109.15654199998244
+      ],
+      "current": [
+        108.35587499999383,
+        102.83412499999395,
+        100.13816699999734
+      ],
+      "response_sha256": "4660a8907160e10f805ce532140ecedbc78dd923e4084172afc6e9f61698fe10",
+      "bytes": 23848
+    },
+    {
+      "id": "coverage-biz-incrementality",
+      "mode": "lookup",
+      "args": {
+        "query": "새 탭과 쿠폰 성과가 좋아 보일 때, 실제 사업 성과인지 사용자 이동인지 가려내고 다음 지표를 어떻게 검증해야 하나?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        169.5199580000044,
+        144.36049999998068,
+        110.21208399999887
+      ],
+      "current": [
+        114.11375000000407,
+        100.30295799998567,
+        99.28304200002458
+      ],
+      "response_sha256": "351ecc0ae282a371da52673a34e1980659d2da76561e8687473823e6e07441e8",
+      "bytes": 23992
+    },
+    {
+      "id": "coverage-econ-rate-transmission",
+      "mode": "lookup",
+      "args": {
+        "query": "중앙은행이 금리를 올렸는데 왜 모든 대출 금리가 똑같이 움직이지 않고, 가계와 기업의 지출은 어떤 경로로 식는가?",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        91.94533299999603,
+        114.64674999998533,
+        76.5521669999871
+      ],
+      "current": [
+        106.42541599999822,
+        105.794332999998,
+        86.20966699998826
+      ],
+      "response_sha256": "15c074bdfae38824ab84b08b8eb01ed44dc7d8f2fd8e86fd8b707735bd16b0da",
+      "bytes": 23510
+    },
+    {
+      "id": "coverage-negative-airline-provider-migration",
+      "mode": "lookup",
+      "args": {
+        "query": "최근 항공권 공급자 API가 바뀐 뒤 예약 취소에 반드시 보내야 하는 정확한 필드 이름과 버전별 마이그레이션 절차는 무엇인가?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        512.3632910000015,
+        502.4307909999916,
+        469.71120799999335
+      ],
+      "current": [
+        415.1527090000018,
+        407.1900000000023,
+        373.0087920000078
+      ],
+      "response_sha256": "164b4818e0704df58d3ec0e19275e6beb08dfde5108530c7a1161eaccd67164c",
+      "bytes": 23066
+    },
+    {
+      "id": "coverage-negative-current-policy-minutes",
+      "mode": "lookup",
+      "args": {
+        "query": "2026년 9월 한국은행 금융통화위원회 의사록에서 어느 위원이 어떤 반대 의견을 냈는가?",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        85.30825000000186,
+        78.47533300000941,
+        76.82770799999707
+      ],
+      "current": [
+        120.42937499999243,
+        96.47387500002515,
+        87.66133300002548
+      ],
+      "response_sha256": "a9f836e21e16c926d1055c64ee09d8ad03362452f60c6603f28a26f560b27b2c",
+      "bytes": 23715
+    },
+    {
+      "id": "search-tech",
+      "mode": "search",
+      "args": {
+        "query": "인기 상품 조회 결과가 사라지는 순간 요청이 한꺼번에 몰려 저장소가 버티지 못한다. 무엇을 먼저 검토해야 할까?",
+        "scope": [
+          "tech"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        494.55183399999805,
+        477.41345900000306,
+        450.0247920000111
+      ],
+      "current": [
+        405.9911659999925,
+        375.99008399999,
+        372.5475410000072
+      ],
+      "response_sha256": "aaff8d84f65c62548b8f223cde08c92ed87a6998fdbb9d6d3ff77164d5eb57a9",
+      "bytes": 22915
+    },
+    {
+      "id": "search-biz",
+      "mode": "search",
+      "args": {
+        "query": "고객이 기존 서비스에서 다른 서비스로 갈아탄 이유를 인터뷰하려 해. 막연한 선호 대신 어떤 경험을 물어야 할까?",
+        "scope": [
+          "biz"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        72.66116699999839,
+        69.41133400000399,
+        68.12170799999149
+      ],
+      "current": [
+        104.1047499999986,
+        81.45937500000582,
+        84.18987500001094
+      ],
+      "response_sha256": "e363db08cb4b8fd790c7144ae251300e703a9ca7484bba2aacba68d5f4d06081",
+      "bytes": 23770
+    },
+    {
+      "id": "search-econ",
+      "mode": "search",
+      "args": {
+        "query": "오른 주식은 금방 팔면서 손실 난 주식은 본전 생각 때문에 계속 붙잡는다. 이런 투자 행동을 설명하는 편향이 있을까?",
+        "scope": [
+          "econ"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        61.92020799999591,
+        64.00079200000619,
+        59.01279199999408
+      ],
+      "current": [
+        79.83400000000256,
+        73.98004199998104,
+        74.39558300000499
+      ],
+      "response_sha256": "06f1a9196c9f652bc470b00b132e9ab838d23622421fd161323c4114506eabee",
+      "bytes": 22897
+    },
+    {
+      "id": "search-fit",
+      "mode": "search",
+      "args": {
+        "query": "새 팀에 합류했는데 매니저가 무엇을 잘한 일로 보는지 모르겠어. 첫 일대일 면담에서 어떤 기대와 소통 방식을 확인해야 할까?",
+        "scope": [
+          "fit"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        135.952959000002,
+        168.65270899998723,
+        130.44470900000306
+      ],
+      "current": [
+        160.26687500000116,
+        132.61320900000283,
+        130.1203749999986
+      ],
+      "response_sha256": "977ec5b35b9e3a75ed487c40fc9ab744afef75166e7fac63f9690e27087a20c1",
+      "bytes": 22665
+    },
+    {
+      "id": "search-ontology",
+      "mode": "search",
+      "args": {
+        "query": "outbox pattern",
+        "scope": [
+          "README.md",
+          "tech",
+          "biz",
+          "econ",
+          "fit",
+          "ontology"
+        ],
+        "max_bytes": 24000
+      },
+      "baseline": [
+        466.76591700001154,
+        461.7380830000038,
+        456.29891599999974
+      ],
+      "current": [
+        349.92545800001244,
+        351.2979589999886,
+        348.4896249999874
+      ],
+      "response_sha256": "1effd7a89926ccd30bd3909c6197e5b269c68d6893c62e5650f4e9de19cd8500",
+      "bytes": 23245
+    }
+  ],
+  "verification": {
+    "node_tests": {
+      "command": "npm test",
+      "cwd": "ontology",
+      "tests": 137,
+      "passed": 137,
+      "failed": 0
+    },
+    "fresh_mcp": {
+      "fresh_stdio": true,
+      "lookup_read_pairs": [
+        {
+          "query": "Git",
+          "bytes": 23958,
+          "index_status": "unindexed_worktree",
+          "read_hash_verified": true
+        },
+        {
+          "query": "인기 상품 조회 결과가 사라지는 순간 요청이 한꺼번에 몰려 저장소가 버티지 못한다. 무엇을 먼저 검토해야 할까?",
+          "bytes": 23946,
+          "index_status": "unindexed_worktree",
+          "read_hash_verified": true
+        },
+        {
+          "query": "고객이 기존 서비스에서 다른 서비스로 갈아탄 이유를 인터뷰하려 해. 막연한 선호 대신 어떤 경험을 물어야 할까?",
+          "bytes": 23998,
+          "index_status": "unindexed_worktree",
+          "read_hash_verified": true
+        }
+      ],
+      "search_pages": 2,
+      "all_byte_budgets_verified": true,
+      "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d"
+    },
+    "independent_review": {
+      "verdict": "approve",
+      "findings": [],
+      "scope": "This session query changes, Unicode budget fixture, comparison runner and latency documentation."
+    }
+  }
+}

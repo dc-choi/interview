@@ -41,6 +41,8 @@ aliases: ["Ontology Operations", "온톨로지 실행 절차"]
 
 본문 점수에는 section 길이에 따른 완만한 감점을 적용하며 정확한 metadata 점수는 유지한다. `matching.query_term_count`는 정규화와 확장 후 검색어 수, `max_section_term_matches`는 같은 section의 metadata와 본문에 겹친 서로 다른 검색어 수의 최댓값이다. `assessment`는 `exact_metadata`, `lexical_overlap`, `no_lexical_overlap`, `weak_lexical_overlap`, `not_evaluated`를 구분한다. 검색어 8개 이상이면서 최대 겹침이 1~2개이면 `weak_lexical_overlap`이다. 후보를 삭제하는 규칙이나 의미적 적합성, 지식 부재의 확정 판정이 아니며, 관련성을 확인하고 재조회할 단서다.
 
+전체 본문 스캔은 고정 revision의 파일 목록을 한 번 해석해 조회 대상 Document의 OID를 얻고 기존 `readBlobs`로 읽는다. scope, 경로별 symlink 검사와 대상 문서 수를 확인하며, 반환 근거의 hash 검사는 그대로 수행한다. 좁은 exact/graph 읽기는 기존 batch 경로를 쓴다. 응답 byte 계산도 한 번의 직렬화로 줄였으며, 출력 동등성과 반복 시간 비교는 [[Ontology-Retrieval-Latency]]를 따른다.
+
 ## 기존 목차와 위키링크의 역할
 
 extractor 11은 Markdown에 이미 적힌 탐색 역할을 `links_to` 관계의 `link_role`로 보존한다. predicate, relation ID, 원문 section과 occurrence는 그대로 유지하며 새 의미 관계를 생성하지 않는다.

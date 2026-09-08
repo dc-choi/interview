@@ -8,7 +8,7 @@ import {
   sha256,
   stableJson,
 } from './core.mjs';
-import { getRepoState, readBlob } from './repository.mjs';
+import { getRepoState, listMarkdown, readBlob, readBlobs } from './repository.mjs';
 import { loadSnapshot } from './snapshot.mjs';
 
 const MAX_ARGUMENT_BYTES = 8192;
@@ -34,15 +34,15 @@ const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 const byteLength = (value) => Buffer.byteLength(stableJson(value), 'utf8');
 
 function outputBytes(payload) {
-  const copy = JSON.parse(stableJson(payload));
-  let previous = -1;
-  for (let attempt = 0; attempt < 16; attempt += 1) {
-    copy.budget.used_bytes = previous < 0 ? 0 : previous;
-    const next = Buffer.byteLength(JSON.stringify(copy), 'utf8');
-    if (next === previous) return next;
-    previous = next;
+  const copy = { ...payload, budget: { ...payload.budget, used_bytes: 0 } };
+  const fixedBytes = Buffer.byteLength(JSON.stringify(copy), 'utf8') - 1;
+  let size = fixedBytes + 1;
+  // Only the decimal width of used_bytes changes after this serialization.
+  for (;;) {
+    const next = fixedBytes + String(size).length;
+    if (next === size) return size;
+    size = next;
   }
-  return previous;
 }
 
 function fail(code, message) {
@@ -735,7 +735,12 @@ function retrieve(options, args, snapshot, mode) {
   const scanBodies = tokens.length > 0 && (!hasExactMetadataHit || tokens.length > 1);
   const localWeights = new Map(tokens.map((token) => [token, 1]));
   if (scanBodies) {
-    for (const [uri, blob] of readPinnedBlobs(options.repo, manifest.revision, documents.map(sourcePath))) memo.set(uri, blob);
+    for (const doc of documents) assertNoSymlink(options.repo, sourcePath(doc));
+    // Resolve the pinned tree once instead of resolving revision:path per blob.
+    const files = listMarkdown(options.repo, manifest.revision, scopes)
+      .filter((file) => documentsByPath.has(file.path));
+    if (files.length !== documents.length) fail('source_unavailable', 'cannot resolve every pinned document');
+    for (const [uri, blob] of readBlobs(options.repo, files)) memo.set(uri, blob);
     const documentBodies = [...memo.values()].map((blob) => blob.toString('utf8').toLowerCase());
     const documentFrequency = new Map(tokens.map((token) => [token,
       documentBodies.reduce((count, body) => count + Number(body.includes(token)), 0)]));

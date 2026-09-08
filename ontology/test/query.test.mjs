@@ -320,6 +320,21 @@ test('lookup reports a fixed-point used_bytes value within the serialized output
   assert.ok(serialized <= bounded.budget.effective_max_bytes);
 });
 
+test('lookup counts escaped Unicode JSON across four and five digit response sizes', async (t) => {
+  const content = '# Escaped\n\n' + '한😀 "quote" \\ tail\n'.repeat(700);
+  const { repo, cacheDir } = await fixtureWithFiles(t, [['tech/Escaped.md', content]]);
+  const sizes = [];
+  for (const max_bytes of [9999, 10000, 10001, 65536]) {
+    const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, { query: 'Escaped', max_bytes });
+    const bytes = Buffer.byteLength(JSON.stringify(result));
+    assert.equal(bytes, result.budget.used_bytes);
+    assert.ok(bytes <= max_bytes);
+    sizes.push(bytes);
+    if (max_bytes === 65536) assert.equal(result.evidence_units[0].excerpt, content);
+  }
+  assert.ok(Math.min(...sizes) < 10000 && Math.max(...sizes) >= 10000);
+});
+
 test('larger output budgets never turn a successful direct result into a failure', async (t) => {
   const { repo, cacheDir } = await fixture(t);
   let firstSuccess;
