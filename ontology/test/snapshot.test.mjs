@@ -180,12 +180,37 @@ test('a symlinked snapshots directory is refused without deleting its target', (
 test('corrupt artifacts and unsafe active pointers are never served', (t) => {
   const options = fixture(t);
   const { fingerprint } = buildSnapshot(options);
+  loadSnapshot(options);
   const artifact = join(options.cacheDir, 'snapshots', fingerprint, 'entities.jsonl');
   writeFileSync(artifact, readFileSync(artifact) + '{}\n');
   assert.throws(() => loadSnapshot(options), { code: 'snapshot_integrity_error' });
   assert.throws(() => buildSnapshot(options), { code: 'snapshot_integrity_error' });
   writeFileSync(join(options.cacheDir, 'active.json'), JSON.stringify({ fingerprint: '../../escape', manifest_hash: 'a'.repeat(64) }));
   assert.throws(() => loadSnapshot(options), { code: 'snapshot_integrity_error' });
+});
+
+test('verified parsed records are reused without leaking caller mutation', (t) => {
+  const options = fixture(t);
+  buildSnapshot(options);
+  const first = loadSnapshot(options);
+  const entity = first.entities[0];
+  const relation = first.relations[0];
+  const unit = first.entities.find((item) => item.anchor);
+  const counts = { entities: first.entities.length, relations: first.relations.length };
+  assert.equal(Object.isFrozen(entity), true);
+  assert.equal(Object.isFrozen(relation), true);
+  assert.equal(Object.isFrozen(unit.anchor), true);
+  assert.throws(() => { entity.label = 'changed'; }, TypeError);
+  assert.throws(() => { relation.predicate = 'changed'; }, TypeError);
+  assert.throws(() => { unit.anchor.start_byte = -1; }, TypeError);
+  first.entities.length = 0;
+  first.relations.length = 0;
+
+  const second = loadSnapshot(options);
+  assert.deepEqual({ entities: second.entities.length, relations: second.relations.length }, counts);
+  assert.strictEqual(second.entities[0], entity);
+  assert.strictEqual(second.relations[0], relation);
+  assert.equal(second.entities[0].label, entity.label);
 });
 
 test('rename and deletion replace source records instead of leaving stale edges', (t) => {

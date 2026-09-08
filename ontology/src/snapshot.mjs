@@ -15,6 +15,7 @@ const LOCK_WAIT_MS = 10 * 60 * 1000;
 const PREDICATES = [...STRUCTURAL_PREDICATES, ...ASSERTION_PREDICATES];
 const key = (text) => text.normalize('NFC').toLowerCase();
 const jsonFile = (value) => `${stableJson(value)}\n`;
+let parsedRecordsCache;
 
 function configuredRepoId() {
   const config = JSON.parse(readFileSync(new URL('../config.json', import.meta.url), 'utf8'));
@@ -208,6 +209,30 @@ function snapshotDirectory(cache, create = false) {
   return directory;
 }
 
+function freezeParsed(value) {
+  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+    for (const child of Object.values(value)) freezeParsed(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+function parsedRecords(repo, fingerprint, manifestHash, artifacts) {
+  const cached = parsedRecordsCache;
+  if (cached?.repo === repo && cached.fingerprint === fingerprint && cached.manifestHash === manifestHash) {
+    return cached;
+  }
+  const records = (name) => artifacts[name].toString().split('\n').filter(Boolean).map((line) => JSON.parse(line));
+  parsedRecordsCache = {
+    repo,
+    fingerprint,
+    manifestHash,
+    entities: freezeParsed(records('entities.jsonl')),
+    relations: freezeParsed(records('relations.jsonl')),
+  };
+  return parsedRecordsCache;
+}
+
 function readSnapshotDirectory(directory, expectedHash, repo, fingerprint) {
   const info = lstatSync(directory, { throwIfNoEntry: false });
   if (!info) throw new ContextError('snapshot_not_found', 'active snapshot directory is missing');
@@ -227,8 +252,8 @@ function readSnapshotDirectory(directory, expectedHash, repo, fingerprint) {
     if (sha256(content) !== manifest.artifact_hashes[name]) throw new ContextError('snapshot_integrity_error', `hash mismatch: ${name}`);
     artifacts[name] = content;
   }
-  const records = (name) => artifacts[name].toString().split('\n').filter(Boolean).map((line) => JSON.parse(line));
-  return { manifest, entities: records('entities.jsonl'), relations: records('relations.jsonl'),
+  const parsed = parsedRecords(repo, fingerprint, expectedHash, artifacts);
+  return { manifest, entities: [...parsed.entities], relations: [...parsed.relations],
     fingerprint, manifest_hash: expectedHash };
 }
 

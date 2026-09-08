@@ -12,12 +12,28 @@ category: "AI엔지니어링(AIEngineering)"
 
 - 전체 본문을 읽는 조회는 고정 revision의 파일 목록을 `listMarkdown`으로 한 번 해석하고, 조회 대상 Document의 OID만 `readBlobs`에 전달한다. 문서마다 `revision:path`를 해석하는 비용을 줄이며 기존 snapshot 빌드용 헬퍼를 재사용한다.
 - 파일 목록은 effective scope 안에서 가져오고 색인 Document 경로와 다시 대조한다. 요청 경로의 symlink 검사, 문서 수 일치 검사, Git replace 비활성화와 반환 근거의 SHA-256 검증을 유지한다.
-- 한 토큰의 정확한 metadata 조회와 graph에서 추가로 읽는 좁은 경로는 기존 batch 방식을 유지한다. snapshot 형식이나 원문, 별도 캐시는 추가하지 않는다.
+- 한 토큰의 정확한 metadata 조회와 graph에서 추가로 읽는 좁은 경로는 기존 batch 방식을 유지한다. snapshot 형식과 원문은 바꾸지 않는다.
 - `outputBytes`는 JSON을 한 번 직렬화하고 `used_bytes` 숫자의 자릿수만 다시 계산한다. 정렬된 깊은 복사와 반복 직렬화를 제거하며 실제 반환 JSON의 UTF-8 byte 검사를 유지한다.
 
 적용 근거는 [[Latency-Optimization#레이턴시 예산 분해]]의 구간별 측정과 [[RAG-Retrieval-Engineering#품질을 분해하는 평가 모델]]의 검색 품질, 처리 비용 분리다. 적용 범위는 온톨로지 조회 코드다.
 
-## 반복 측정 결과
+## 반복 snapshot 로드 최적화
+
+같은 프로세스의 반복 `loadSnapshot`은 검증된 `entities`와 `relations`의 파싱 결과 한 개만 재사용한다. 반환 배열과 manifest는 매번 새로 만들고 내부 record는 불변으로 두어 호출자가 이후 조회를 오염시키지 못하게 한다.
+
+`active.json`, manifest와 세 artifact는 매 호출에 다시 읽는다. regular file과 symlink 검사, manifest와 artifact의 SHA-256 검증, malformed JSON 오류, active pointer 변경과 pruned snapshot 검출을 건너뛰지 않는다. 따라서 이는 revision이나 pointer만 보고 신뢰하는 cache가 아니다.
+
+Apple M3 Pro, macOS arm64, Node.js v24.13.1에서 같은 active snapshot을 대상으로 warm `loadSnapshot`을 15회씩 번갈아 측정했다. baseline과 현재 결과는 전체 snapshot deep equality, JSON SHA-256, revision, fingerprint, manifest hash, entity와 relation 수가 모두 같았다.
+
+| 경로 | p50 전 → 후 | p95 전 → 후 |
+|---|---:|---:|
+| warm `loadSnapshot` | 139.9 → 51.8ms | 156.5 → 54.5ms |
+
+초기 파싱 cache 채움, `buildSnapshot`, Git freshness 검사, MCP 전송과 host 작업은 측정에서 제외했다. 따라서 이 결과는 lookup 측정값과 합산한 end-to-end 지연이나 cold start 성능이 아니다. 원시 표본, 기준과 현재 코드 hash는 [보고서](evaluation/retrieval-snapshot-cache-performance-report-2026-09-08.json)에 보존한다.
+
+별도로 새 SDK stdio 연결 두 개에서 snapshot 로더만 전후 코드로 바꾸어 비교했다. 선택한 조회 3개를 5회씩 번갈아 호출한 15쌍에서 p50은 474.1 → 367.6ms, p95는 487.0 → 387.4ms였고 반환 JSON 전체가 일치했다. 이 구간에는 Git 상태 확인, 검증된 snapshot 로드, 검색과 로컬 전송이 포함되며 서버 시작과 host 추론은 제외한다. 한 장비의 선택 표본이며 전체 사용자 작업 시간이나 모든 질의의 속도로 일반화하지 않는다. 요청, 코드 hash와 원시 시간은 [MCP 비교 보고서](evaluation/retrieval-snapshot-cache-mcp-performance-report-2026-09-08.json)에 보존한다.
+
+## 앞선 Git 읽기와 byte 계산 변경의 반복 측정
 
 Apple M3 Pro, macOS arm64, Node.js v24.13.1에서 아래와 같이 관측했다. 표는 세 회차의 측정값을 합친 결과다.
 

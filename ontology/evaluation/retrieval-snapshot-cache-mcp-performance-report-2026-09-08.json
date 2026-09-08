@@ -1,0 +1,268 @@
+{
+  "observed_at": "2026-09-08T09:30:24.221Z",
+  "environment": {
+    "node": "v24.13.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M3 Pro"
+  },
+  "scope": "Warm SDK stdio lookup, including freshness checks, verified snapshot loading, retrieval and local transport; excludes process startup and host reasoning. Three selected queries, five alternating rounds, one machine.",
+  "baseline_snapshot_revision": "55e30655a20d03e6d26fd941b8319a7b7d62788c",
+  "baseline_snapshot_sha256": "b09ea4871bd9bbe32be8f49927d80763cd907f040ab0496b75deb747084915dd",
+  "code_sha256": {
+    "cli.mjs": "e90ce039979d68a0427f37a34a019627804adc94146839502fc3f449ef7b8a03",
+    "core.mjs": "680ae78ffd994bf4945222cf73c0006b6494e84028db2aed417cb470500d09be",
+    "markdown.mjs": "52eb3aa281762759e82f44b731ff27f785bffbf095553a848c077f369818c66c",
+    "outline.mjs": "ca0ee33838a734aae42c76bc1acf98629e89f9059415cc3199f95d18c4601e4c",
+    "query.mjs": "0583c0ce78b623242a8aaa89b04f1260c1e364df55b876d8886ca84c47dbc4fc",
+    "read-evidence.mjs": "19787a44a39a54146c3c7dccd79a131b19e90f11cce5e8ca5fec43c07f2e4aea",
+    "repository.mjs": "66681b76a3b16e11a7bb768da555ed5c220a8ecf22db404a2122b6242243dabc",
+    "server.mjs": "f465375224f3be6ccc42648978277eff8ee4341a2f13a56c250eb2618f682ed5",
+    "snapshot.mjs": "d43deeefc55e50633abc5f783809d202fc561cc8b52b5598ba438181971df3da"
+  },
+  "snapshot": {
+    "source_id": "interview-vault",
+    "status": "unindexed_worktree",
+    "revision": "55e30655a20d03e6d26fd941b8319a7b7d62788c",
+    "fingerprint": "97373809e2f7b87859c49e86745ba5007b904371740909e5d75783df8e3bdff2",
+    "manifest_hash": "95690fb7292dd528949a6d7e12250401446e01821de721ed618d7d601faee33e",
+    "artifacts_verified": true,
+    "requested_scope_indexed": true,
+    "indexed_paths": [
+      "README.md",
+      "biz",
+      "econ",
+      "fit",
+      "ontology",
+      "tech"
+    ],
+    "excluded_paths": [
+      "**/AGENTS.md",
+      "**/CLAUDE.md"
+    ],
+    "schema_version": "1",
+    "extractor_version": "11",
+    "completed": true,
+    "errors": [
+      "unindexed_worktree"
+    ]
+  },
+  "requests": [
+    {
+      "query": "Transactional Outbox",
+      "scope": [
+        "tech"
+      ],
+      "max_bytes": 24000
+    },
+    {
+      "query": "재시도 실패 중복 처리",
+      "scope": [
+        "tech"
+      ],
+      "max_bytes": 24000
+    },
+    {
+      "query": "온톨로지 조회 성능",
+      "scope": [
+        "ontology"
+      ],
+      "max_bytes": 24000
+    }
+  ],
+  "pairs": 15,
+  "full_json_equivalence": true,
+  "summary": {
+    "baseline": {
+      "p50_ms": 474.0639170000013,
+      "p95_ms": 486.9747499999994
+    },
+    "current": {
+      "p50_ms": 367.6403329999994,
+      "p95_ms": 387.3910829999995
+    }
+  },
+  "rows": [
+    {
+      "round": 0,
+      "query": 0,
+      "order": [
+        0,
+        1
+      ],
+      "baseline_ms": 474.5647920000001,
+      "current_ms": 372.166166,
+      "response_sha256": "87c399fec3681b8aec2cb67640a652bbcda31274bb9ec4a21f7df5e9574a5e57",
+      "bytes": 24000
+    },
+    {
+      "round": 0,
+      "query": 1,
+      "order": [
+        1,
+        0
+      ],
+      "baseline_ms": 476.2077910000007,
+      "current_ms": 382.4186249999998,
+      "response_sha256": "60f6833ac7c78d753e910b6745ce7cf497b41f60eaf833184957192a4984b5f1",
+      "bytes": 23338
+    },
+    {
+      "round": 0,
+      "query": 2,
+      "order": [
+        0,
+        1
+      ],
+      "baseline_ms": 241.80825000000004,
+      "current_ms": 144.25020800000038,
+      "response_sha256": "5f8980865a1e92d69e2e3e4b051840b64f16e81ed95ebac1377a3c0c0cd9f68f",
+      "bytes": 23932
+    },
+    {
+      "round": 1,
+      "query": 0,
+      "order": [
+        1,
+        0
+      ],
+      "baseline_ms": 486.9747499999994,
+      "current_ms": 387.3910829999995,
+      "response_sha256": "87c399fec3681b8aec2cb67640a652bbcda31274bb9ec4a21f7df5e9574a5e57",
+      "bytes": 24000
+    },
+    {
+      "round": 1,
+      "query": 1,
+      "order": [
+        0,
+        1
+      ],
+      "baseline_ms": 490.37233299999934,
+      "current_ms": 380.3739169999999,
+      "response_sha256": "60f6833ac7c78d753e910b6745ce7cf497b41f60eaf833184957192a4984b5f1",
+      "bytes": 23338
+    },
+    {
+      "round": 1,
+      "query": 2,
+      "order": [
+        1,
+        0
+      ],
+      "baseline_ms": 241.43191699999988,
+      "current_ms": 148.72691699999996,
+      "response_sha256": "5f8980865a1e92d69e2e3e4b051840b64f16e81ed95ebac1377a3c0c0cd9f68f",
+      "bytes": 23932
+    },
+    {
+      "round": 2,
+      "query": 0,
+      "order": [
+        0,
+        1
+      ],
+      "baseline_ms": 481.30433300000004,
+      "current_ms": 367.51566600000024,
+      "response_sha256": "87c399fec3681b8aec2cb67640a652bbcda31274bb9ec4a21f7df5e9574a5e57",
+      "bytes": 24000
+    },
+    {
+      "round": 2,
+      "query": 1,
+      "order": [
+        1,
+        0
+      ],
+      "baseline_ms": 474.0639170000013,
+      "current_ms": 368.4293749999997,
+      "response_sha256": "60f6833ac7c78d753e910b6745ce7cf497b41f60eaf833184957192a4984b5f1",
+      "bytes": 23338
+    },
+    {
+      "round": 2,
+      "query": 2,
+      "order": [
+        0,
+        1
+      ],
+      "baseline_ms": 250.08291700000154,
+      "current_ms": 144.38154099999883,
+      "response_sha256": "5f8980865a1e92d69e2e3e4b051840b64f16e81ed95ebac1377a3c0c0cd9f68f",
+      "bytes": 23932
+    },
+    {
+      "round": 3,
+      "query": 0,
+      "order": [
+        1,
+        0
+      ],
+      "baseline_ms": 484.41908299999886,
+      "current_ms": 372.4240829999999,
+      "response_sha256": "87c399fec3681b8aec2cb67640a652bbcda31274bb9ec4a21f7df5e9574a5e57",
+      "bytes": 24000
+    },
+    {
+      "round": 3,
+      "query": 1,
+      "order": [
+        0,
+        1
+      ],
+      "baseline_ms": 472.45037500000035,
+      "current_ms": 387.5560000000005,
+      "response_sha256": "60f6833ac7c78d753e910b6745ce7cf497b41f60eaf833184957192a4984b5f1",
+      "bytes": 23338
+    },
+    {
+      "round": 3,
+      "query": 2,
+      "order": [
+        1,
+        0
+      ],
+      "baseline_ms": 244.56712499999958,
+      "current_ms": 150.85179100000096,
+      "response_sha256": "5f8980865a1e92d69e2e3e4b051840b64f16e81ed95ebac1377a3c0c0cd9f68f",
+      "bytes": 23932
+    },
+    {
+      "round": 4,
+      "query": 0,
+      "order": [
+        0,
+        1
+      ],
+      "baseline_ms": 475.5958750000009,
+      "current_ms": 359.6678329999995,
+      "response_sha256": "87c399fec3681b8aec2cb67640a652bbcda31274bb9ec4a21f7df5e9574a5e57",
+      "bytes": 24000
+    },
+    {
+      "round": 4,
+      "query": 1,
+      "order": [
+        1,
+        0
+      ],
+      "baseline_ms": 473.3956249999992,
+      "current_ms": 367.6403329999994,
+      "response_sha256": "60f6833ac7c78d753e910b6745ce7cf497b41f60eaf833184957192a4984b5f1",
+      "bytes": 23338
+    },
+    {
+      "round": 4,
+      "query": 2,
+      "order": [
+        0,
+        1
+      ],
+      "baseline_ms": 247.87262499999997,
+      "current_ms": 144.6548330000005,
+      "response_sha256": "5f8980865a1e92d69e2e3e4b051840b64f16e81ed95ebac1377a3c0c0cd9f68f",
+      "bytes": 23932
+    }
+  ],
+  "runner_source": "import assert from 'node:assert/strict';\nimport fs from 'node:fs';\nimport { execFileSync } from 'node:child_process';\nimport { createRequire } from 'node:module';\nimport { join } from 'node:path';\nimport { pathToFileURL } from 'node:url';\nimport { tmpdir, cpus } from 'node:os';\nimport { createHash } from 'node:crypto';\nconst repo = '/Users/mark/myown/interview';\nconst root = join(repo, 'ontology');\nconst require = createRequire(join(root, 'package.json'));\nconst { Client } = await import(pathToFileURL(require.resolve('@modelcontextprotocol/sdk/client/index.js')));\nconst { StdioClientTransport } = await import(pathToFileURL(require.resolve('@modelcontextprotocol/sdk/client/stdio.js')));\nconst { CallToolResultSchema } = await import(pathToFileURL(require.resolve('@modelcontextprotocol/sdk/types.js')));\nconst hash = bytes => createHash('sha256').update(bytes).digest('hex');\nconst sourceFiles = fs.readdirSync(join(root, 'src')).filter(file => file.endsWith('.mjs'));\nconst codeHashes = Object.fromEntries(sourceFiles.map(file => [file, hash(fs.readFileSync(join(root, 'src', file)))]));\nconst baselineSource = execFileSync('git', ['-C', repo, 'show', 'HEAD:ontology/src/snapshot.mjs']);\nconst baselineRevision = execFileSync('git', ['-C', repo, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();\nconst temporary = fs.realpathSync(fs.mkdtempSync(join(tmpdir(), 'ontology-mcp-before-')));\nconst connections = [];\ntry {\n  fs.mkdirSync(join(temporary, 'src'));\n  for (const file of sourceFiles) fs.copyFileSync(join(root, 'src', file), join(temporary, 'src', file));\n  fs.writeFileSync(join(temporary, 'src/snapshot.mjs'), baselineSource);\n  fs.copyFileSync(join(root, 'config.json'), join(temporary, 'config.json'));\n  fs.symlinkSync(join(root, 'node_modules'), join(temporary, 'node_modules'));\n  for (const cli of [join(temporary, 'src/cli.mjs'), join(root, 'src/cli.mjs')]) {\n    const transport = new StdioClientTransport({ command: process.execPath,\n      args: [cli, 'serve', '--repo', repo, '--committed-only'], stderr: 'pipe' });\n    transport.stderr.on('data', chunk => process.stderr.write(chunk));\n    const client = new Client({ name: 'snapshot-cache-benchmark', version: '1.0.0' });\n    connections.push({ client, transport });\n    await client.connect(transport);\n  }\n  const requests = [\n    { query: 'Transactional Outbox', scope: ['tech'], max_bytes: 24000 },\n    { query: '재시도 실패 중복 처리', scope: ['tech'], max_bytes: 24000 },\n    { query: '온톨로지 조회 성능', scope: ['ontology'], max_bytes: 24000 },\n  ];\n  const call = async (which, args) => {\n    const start = performance.now();\n    const result = await connections[which].client.request({ method: 'tools/call',\n      params: { name: 'context_lookup', arguments: args } }, CallToolResultSchema);\n    const elapsed_ms = performance.now() - start;\n    assert.ok(!result.isError, JSON.stringify(result.structuredContent));\n    const payload = result.structuredContent;\n    assert.equal(Buffer.byteLength(JSON.stringify(payload)), payload.budget.used_bytes);\n    return { elapsed_ms, payload };\n  };\n  for (const request of requests) assert.deepEqual((await call(0, request)).payload, (await call(1, request)).payload);\n  const rows = [];\n  for (let round = 0; round < 5; round++) {\n    for (let query = 0; query < requests.length; query++) {\n      const output = {};\n      const order = (round + query) % 2 ? [1, 0] : [0, 1];\n      for (const which of order) output[which] = await call(which, requests[query]);\n      assert.deepEqual(output[0].payload, output[1].payload);\n      rows.push({ round, query, order, baseline_ms: output[0].elapsed_ms, current_ms: output[1].elapsed_ms,\n        response_sha256: hash(JSON.stringify(output[0].payload)), bytes: output[0].payload.budget.used_bytes });\n    }\n  }\n  for (const [file, sha] of Object.entries(codeHashes)) assert.equal(hash(fs.readFileSync(join(root, 'src', file))), sha, file);\n  const quantile = (numbers, q) => numbers.toSorted((a,b)=>a-b)[Math.floor((numbers.length-1)*q)];\n  const summary = field => ({ p50_ms: quantile(rows.map(r=>r[field]),0.5), p95_ms: quantile(rows.map(r=>r[field]),0.95) });\n  const sample = (await call(1, requests[0])).payload;\n  const report = { observed_at: new Date().toISOString(), environment: { node: process.version, platform: process.platform, arch: process.arch, cpu: cpus()[0].model },\n    scope: 'Warm SDK stdio lookup, including freshness checks, verified snapshot loading, retrieval and local transport; excludes process startup and host reasoning. Three selected queries, five alternating rounds, one machine.',\n    baseline_snapshot_revision: baselineRevision, baseline_snapshot_sha256: hash(baselineSource), code_sha256: codeHashes,\n    snapshot: sample.index_sync[0], requests, pairs: rows.length, full_json_equivalence: true,\n    summary: { baseline: summary('baseline_ms'), current: summary('current_ms') }, rows };\n  fs.writeFileSync('/tmp/ontology-snapshot-mcp-performance-2026-09-08.json', JSON.stringify(report, null, 2) + '\\n');\n  console.log(JSON.stringify({ pairs: rows.length, summary: report.summary, full_json_equivalence: true }));\n} finally {\n  for (const connection of connections) await connection.transport.close();\n  fs.rmSync(temporary, { recursive: true, force: true });\n}\n"
+}

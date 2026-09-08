@@ -1,0 +1,92 @@
+{
+  "observed_at": "2026-09-08T09:22:00.115Z",
+  "contract": {
+    "timed": "Warm synchronous loadSnapshot calls against one existing active snapshot. Each call still reads active.json, validates regular non-symlink paths, reads the current manifest and all artifacts, and verifies every SHA-256 artifact hash.",
+    "excluded": "Initial parse-cache fill, buildSnapshot, Git freshness checks, MCP transport, and host work.",
+    "order": "Alternated baseline/current order by round after one initial equality call per version.",
+    "equality": "Each measured output deep-equals the baseline snapshot, has identical JSON SHA-256, and has the same revision, fingerprint, manifest hash, entity count, and relation count.",
+    "scope": "Single-machine warm-cache microbenchmark. It does not measure context_lookup, end-to-end MCP latency, concurrency, or cold-start performance.",
+    "percentile": "Sorted samples at floor((N - 1) * q)."
+  },
+  "environment": {
+    "node": "v24.13.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M3 Pro"
+  },
+  "inputs": {
+    "baseline": {
+      "source": "git 55e30655a20d03e6d26fd941b8319a7b7d62788c:ontology/src/snapshot.mjs",
+      "sha256": "b09ea4871bd9bbe32be8f49927d80763cd907f040ab0496b75deb747084915dd"
+    },
+    "current": {
+      "source": "worktree ontology/src/snapshot.mjs",
+      "sha256": "d43deeefc55e50633abc5f783809d202fc561cc8b52b5598ba438181971df3da"
+    },
+    "support_file_hashes": {
+      "ontology/src/core.mjs": "680ae78ffd994bf4945222cf73c0006b6494e84028db2aed417cb470500d09be",
+      "ontology/src/repository.mjs": "66681b76a3b16e11a7bb768da555ed5c220a8ecf22db404a2122b6242243dabc",
+      "ontology/src/markdown.mjs": "52eb3aa281762759e82f44b731ff27f785bffbf095553a848c077f369818c66c"
+    },
+    "snapshot": {
+      "revision": "55e30655a20d03e6d26fd941b8319a7b7d62788c",
+      "fingerprint": "97373809e2f7b87859c49e86745ba5007b904371740909e5d75783df8e3bdff2",
+      "manifest_hash": "95690fb7292dd528949a6d7e12250401446e01821de721ed618d7d601faee33e",
+      "entities": 23433,
+      "relations": 35621
+    }
+  },
+  "rounds": 15,
+  "rows": {
+    "baseline": [
+      133.719791,
+      136.6210000000001,
+      150.88708300000008,
+      136.36866599999985,
+      153.25066700000025,
+      177.85758299999998,
+      151.1334999999999,
+      139.8858340000006,
+      156.51516700000047,
+      130.90295799999967,
+      148.88966700000037,
+      133.31716700000015,
+      138.37012499999946,
+      136.2205840000006,
+      149.355458
+    ],
+    "current": [
+      56.01104200000009,
+      54.23770800000011,
+      51.70887500000026,
+      51.1301669999998,
+      51.76087499999994,
+      49.521792000000005,
+      52.10029100000065,
+      54.49266699999953,
+      51.46637499999997,
+      52.88029199999983,
+      51.75654200000008,
+      49.40079100000003,
+      51.992458000000624,
+      49.64775000000009,
+      49.55933300000015
+    ]
+  },
+  "summaries": {
+    "baseline": {
+      "calls": 15,
+      "p50_ms": 139.8858340000006,
+      "p95_ms": 156.51516700000047,
+      "min_ms": 130.90295799999967,
+      "max_ms": 177.85758299999998
+    },
+    "current": {
+      "calls": 15,
+      "p50_ms": 51.75654200000008,
+      "p95_ms": 54.49266699999953,
+      "min_ms": 49.40079100000003,
+      "max_ms": 56.01104200000009
+    }
+  }
+}
