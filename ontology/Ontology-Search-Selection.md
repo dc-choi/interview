@@ -76,6 +76,27 @@ heading 없는 root와 출처/관련 문서 절은 보충 후보에서 제외한
 
 Node 테스트 133/133을 통과했다. 추가한 여러 root의 링크 경쟁 fixture는 이전 코드에서 실패하고 수정 후 통과하며, 좁은 예산의 조건 근거와 관계 무결성, 넉넉한 예산의 모든 링크 반환을 검사한다. 전후 208개 응답의 byte 예산과 scope를 검증했고, 새 SDK stdio MCP 연결에서 개선된 두 질문을 조회해 `context_read` 본문과 revision/hash를 대조했다.
 
+## 조건별 선택 힌트
+
+`context_lookup`은 선택적으로 `conditions`에 최대 3개의 검색 문장을 받는다. 각 문장은 1,024 UTF-8 byte 이하이며 검색 가능한 용어가 있어야 한다. 원래 `query`는 유지하고, 사용자가 요구한 조건을 탐색할 표현만 전달한다. 새 표본에서 손실도 관측했으므로 host 스킬은 이를 기본으로 보내지 않는다. CLI에서는 `--condition`을 반복한다.
+
+```bash
+node ontology/src/cli.mjs lookup --scope tech \
+  --query '요청 재시도의 기한과 멱등 키의 충돌 처리를 함께 확인하고 싶다' \
+  --condition '재시도 기한 취소' --condition '멱등 키 요청 본문 충돌' \
+  --max-bytes 24000
+```
+
+조건이 있으면 원래 질의어와 조건의 질의어를 함께 검색한다. 보충 절을 선택할 때 각 조건의 가중 어휘가 이미 반환된 한 절에서 얼마나 겹치는지 확인하고, 덜 다룬 조건의 어휘를 보완하는 절을 먼저 담는다. 핵심 어휘가 발췌 뒤에 있으면 전체 절이 들어가는지도 먼저 확인한다. 조건이 없으면 기존 선택과 반환 형식을 유지한다. 조건의 희귀어가 원래 질문과 정확히 일치한 문서를 제거하지 않도록 metadata 일치 루트는 보존한다.
+
+이는 어휘 기반 선택이며 의미적 충족 판정이 아니다. 제목이나 일반어만 겹치거나 적용 환경과 예외가 다른 경우에도 힌트 점수가 생길 수 있다. 실제 원문에서 조건과 예외를 확인하지 못하면 [[Ontology-Condition-Retrieval]]의 `unresolved`로 남긴다. 후보 문서와 graph 범위 밖의 근거를 모두 발견한다는 보장은 없다.
+
+조건 힌트가 없는 기존 lookup 질문 104개는 변경 전후 반환 JSON 전체와 실제 byte가 같았다. [동등성 보고서](evaluation/condition-hints-default-regression-2026-09-08.json)에 질문과 코드 hash, 원문 revision과 응답 hash를 보존한다. 이 비교는 기존 lookup 경로의 회귀 검사이며 조건 힌트의 일반적인 품질 개선을 뜻하지 않는다. `context_search`의 cursor는 기존 계약대로 조회 코드 hash에 묶이므로 코드 변경 후 다시 조회한다.
+
+이미 실행 중인 MCP의 도구 schema에 `conditions`가 없으면 필드를 보내지 않고 기존 조건별 후속 탐색을 사용한다. 새 프로세스는 선택 입력을 지원한다.
+
+새 합성 질문 9개의 [첫 관측](evaluation/sufficiency/sufficiency.md)에서는 힌트가 outbox 복구와 rename 분류의 일부 근거를 늘렸지만 backfill 중단 조건의 본문은 줄였다. 첫 lookup의 전체 충분성 판정은 전후 같았다. 이 관측으로 기본 적용의 이득은 확인하지 못했으므로 힌트는 명시적으로 선택하는 입력으로 둔다.
+
 ## 재실행
 
 [1차 보고서](evaluation/selection-report-2026-09-08.json)는 앞선 절 선택 실험을 보존한다. 최신 [후속 보고서](evaluation/coverage-report-2026-09-08.json)에는 이전 query 원문, 질문/코드 hash와 104개 전후 결과가 있다. [실행기](evaluation/selection-compare.mjs)를 재사용하며, 원문 revision, snapshot fingerprint나 코드가 다르면 중단한다. Vault 루트에서 실행한다.

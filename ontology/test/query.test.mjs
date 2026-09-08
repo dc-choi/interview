@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import test from 'node:test';
 
 import { ContextError } from '../src/core.mjs';
-import { lookup } from '../src/query.mjs';
+import { lookup, search } from '../src/query.mjs';
 import { buildSnapshot, loadSnapshot } from '../src/snapshot.mjs';
 
 function git(repo, args) {
@@ -552,4 +552,74 @@ test('multiple root links leave space for a complementary condition', async (t) 
   assert.ok(result.budget.used_bytes <= 10000);
   const full = lookup(options, { query, max_bytes: 65536 });
   assert.equal(full.relations.length, 6, 'remaining direct links are retained when the budget allows');
+});
+
+test('condition hints prioritize an unrepresented requirement within the same byte budget', async (t) => {
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/Guide.md', [
+      '# Guide', '', '## Primary', '',
+      'alpha beta gamma delta alpha beta gamma delta.', '',
+      '## Background', '',
+      'epsilon zeta theta iota kappa. ' + 'Background explanation. '.repeat(55), '',
+      '## Boundary', '',
+      'recovery cancellation must preserve the pending identity.', '',
+    ].join('\n')],
+  ]);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const args = { query: 'alpha beta gamma delta epsilon zeta theta iota kappa recovery cancellation', max_bytes: 3900 };
+  const ordinary = lookup(options, args);
+  const focused = lookup(options, { ...args, conditions: [
+    'alpha beta gamma delta epsilon zeta theta iota kappa', 'recovery cancellation',
+  ] });
+  assert.ok(!ordinary.evidence_units.some((unit) => unit.excerpt.includes('preserve the pending identity')));
+  assert.ok(focused.evidence_units.some((unit) => unit.excerpt.includes('preserve the pending identity')));
+  assert.equal(focused.query, args.query);
+  assert.equal(Buffer.byteLength(JSON.stringify(focused)), focused.budget.used_bytes);
+  assert.ok(focused.budget.used_bytes <= args.max_bytes);
+});
+
+test('condition hints keep exact-title lookup useful and preserve pinned source receipts', async (t) => {
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/Guide.md', '# Guide\n\nRequest retries follow a deadline.\n\n## Identity\n\nAn idempotency key rejects changed payloads.\n'],
+  ]);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const focused = lookup(options, { query: 'Guide', conditions: ['idempotency key'], max_bytes: 5000 });
+  const unit = focused.evidence_units.find((item) => item.excerpt.includes('rejects changed payloads'));
+  assert.ok(unit);
+  const original = loadSnapshot({ repo, cacheDir }).entities.find((item) => item.id === unit.id);
+  assert.equal(unit.content_hash, original.content_hash);
+  assert.equal(unit.source_revision, original.source_revision);
+  assert.equal(Buffer.byteLength(JSON.stringify(focused)), focused.budget.used_bytes);
+});
+
+test('condition hints reject invalid input and cannot change search scope', async (t) => {
+  const { repo, cacheDir } = await fixture(t);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  for (const conditions of [null, [], [' '], ['the and'], ['x'], [3], ['a', 'b', 'c', 'd'], ['한'.repeat(342)]]) {
+    assert.throws(() => lookup(options, { query: 'event', conditions }), (error) => error.code === 'invalid_conditions');
+  }
+  assert.throws(() => search(options, { query: 'event', conditions: ['retry'] }),
+    (error) => error.code === 'invalid_arguments');
+  const absent = lookup(options, { query: 'event', conditions: ['consumer'], scope: ['biz'], max_bytes: 5000 });
+  assert.deepEqual(absent.evidence_units, []);
+  assert.equal(absent.index_sync[0].requested_scope_indexed, false);
+});
+
+test('condition hints retain an exact metadata root when their rare term is elsewhere', async (t) => {
+  const providerNotes = Array.from({ length: 6 }, (_, index) => [
+    `tech/Provider-Note-${index}.md`, `# Provider Note ${index}\n\nProvider integration notes.\n`,
+  ]);
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/Provider.md', '# Provider\n\nProvider configuration reference.\n'],
+    ['tech/Thanos.md', '# Thanos\n\nThanos is a separate condition reference.\n'],
+    ...providerNotes,
+  ]);
+  const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
+    query: 'Provider', conditions: ['Thanos'], scope: ['tech'], max_bytes: 65536,
+  });
+
+  assert.equal(result.matching.assessment, 'exact_metadata');
+  assert.ok(result.entities.some((entity) => entity.type === 'Document' && entity.label === 'Provider'));
+  assert.ok(result.evidence_units.some((unit) => unit.source_uri === 'tech/Provider.md'
+    && unit.excerpt.includes('Provider configuration reference')));
 });

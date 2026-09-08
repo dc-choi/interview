@@ -45,6 +45,7 @@ export function parseArguments(argv) {
     allowlist: [],
     committedOnly: false,
     query: undefined,
+    conditions: [],
     depth: undefined,
     maxBytes: undefined,
     cursor: undefined,
@@ -68,7 +69,7 @@ export function parseArguments(argv) {
       options.committedOnly = true;
       continue;
     }
-    if (!['--repo', '--cache', '--scope', '--allow', '--query', '--depth', '--max-bytes', '--cursor',
+    if (!['--repo', '--cache', '--scope', '--allow', '--query', '--condition', '--depth', '--max-bytes', '--cursor',
       '--evidence-unit-id', '--source-revision', '--content-hash', '--offset-bytes', '--document-id', '--offset-sections'].includes(flag)) {
       throw new ContextError('invalid_arguments', `Unknown argument: ${flag}`);
     }
@@ -83,6 +84,10 @@ export function parseArguments(argv) {
     }
     if (flag === '--allow') {
       options.allowlist.push(value);
+      continue;
+    }
+    if (flag === '--condition') {
+      options.conditions.push(value);
       continue;
     }
     if (seen.has(flag)) throw new ContextError('invalid_arguments', `${flag} was supplied more than once.`);
@@ -118,6 +123,9 @@ export function parseArguments(argv) {
   }
   if (options.command !== 'lookup' && options.depth !== undefined) {
     throw new ContextError('invalid_arguments', '--depth is only valid for lookup.');
+  }
+  if (options.command !== 'lookup' && options.conditions.length > 0) {
+    throw new ContextError('invalid_arguments', '--condition is only valid for lookup.');
   }
   if (!['lookup', 'search', 'read', 'outline'].includes(options.command) && options.maxBytes !== undefined) {
     throw new ContextError('invalid_arguments', '--max-bytes is only valid for lookup, search, read, or outline.');
@@ -205,6 +213,7 @@ export async function execute(options) {
       return search(readOptions, args, snapshot);
     }
     if (options.depth !== undefined) args.depth = options.depth;
+    if (options.conditions?.length) args.conditions = options.conditions;
     if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
     return lookup(readOptions, args, snapshot);
   }
@@ -262,7 +271,7 @@ export function usage() {
     `  --scope <path>               Repeatable build, lookup, or search scope, defaults to ${DEFAULT_SCOPES.join(', ')}`,
     `  --allow <path>               Repeatable lookup, search, read, outline, or server allowlist, defaults to ${DEFAULT_SCOPES.join(', ')}`,
     '  --committed-only              Build or serve the current HEAD when worktree is dirty',
-    '  lookup requires --query <text>; accepts --depth <1|2> and --max-bytes <integer>',
+    '  lookup requires --query <text>; accepts --condition <text> (up to 3), --depth <1|2> and --max-bytes <integer>',
     '  search requires --query <text>; accepts --scope <path>, --max-bytes <integer>, and --cursor <opaque-token>',
     '  read requires --evidence-unit-id <id> --source-revision <commit> --content-hash <sha256:hash>',
     '  read accepts --offset-bytes <unit-relative-byte> and --max-bytes <integer>',

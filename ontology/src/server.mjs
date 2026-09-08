@@ -19,6 +19,7 @@ export const SERVER_LIMITS = Object.freeze({
 
 const inputSchema = z.object({
   query: z.string().min(1).max(SERVER_LIMITS.maxQueryBytes),
+  conditions: z.array(z.string().min(1).max(1024)).min(1).max(3).optional(),
   scope: z.array(z.string().min(1).max(SERVER_LIMITS.maxScopePathBytes)).max(SERVER_LIMITS.maxScopeEntries).optional(),
   depth: z.union([z.literal(1), z.literal(2)]).optional(),
   max_bytes: z.number().int().positive().max(Number.MAX_SAFE_INTEGER).optional(),
@@ -58,7 +59,7 @@ export function createContextServer(options) {
 
   server.registerTool('context_lookup', {
     title: 'Lookup personal knowledge',
-    description: 'Retrieves evidence from this personal knowledge vault. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. Optional relation link_role describes source navigation: index_member, parent_index, or related_document; it does not establish applicability. A weak_lexical_overlap matching assessment requires checking whether the returned material addresses the question. Use context_outline to find other sections of a relevant Document and context_read to read their full evidence. If needed documents are not returned, use context_search. Inspect current project materials before applying knowledge. Ontology documents do not prove current implementation, adoption, or runtime behavior. For a multi-condition question, first use the original query with max_bytes 24000, then pursue only unresolved conditions. The host flow has a total cap of 8 calls and 64000 serialized structuredContent bytes; semantic condition judgments belong to the host.',
+    description: 'Retrieves evidence from this personal knowledge vault. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. Optional relation link_role describes source navigation: index_member, parent_index, or related_document; it does not establish applicability. A weak_lexical_overlap matching assessment requires checking whether the returned material addresses the question. Use context_outline to find other sections of a relevant Document and context_read to read their full evidence. If needed documents are not returned, use context_search. Inspect current project materials before applying knowledge. Ontology documents do not prove current implementation, adoption, or runtime behavior. For a multi-condition question, keep the original query and optionally pass up to three conditions as lexical selection hints with max_bytes 24000, then pursue only unresolved conditions. Conditions and result_status do not establish that the evidence supports an answer. The host flow has a total cap of 8 calls and 64000 serialized structuredContent bytes; semantic condition judgments belong to the host.',
     inputSchema,
     annotations: {
       readOnlyHint: true,

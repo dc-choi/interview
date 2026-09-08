@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { CallToolResultSchema, ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
+import { parseArguments } from '../src/cli.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const cli = path.resolve(here, '../src/cli.mjs');
@@ -81,14 +82,36 @@ test('MCP rejects unexpected arguments and blank lookup queries', async (t) => {
   const connection = await connect(['--repo', item.repo, '--cache', item.cache]);
   t.after(() => close(connection));
 
-  for (const args of [{ query: 'outbox', repo: '/cannot-override' }, { query: ' \t\n' }]) {
+  for (const args of [{ query: 'outbox', repo: '/cannot-override' }, { query: ' \t\n' },
+    { query: 'outbox', conditions: [' '] }, { query: 'outbox', conditions: ['한'.repeat(342)] }]) {
     const result = await connection.client.request({
       method: 'tools/call',
       params: { name: 'context_lookup', arguments: args },
     }, CallToolResultSchema);
     assert.equal(result.isError, true);
-    if (!args.repo) assert.equal(result.structuredContent.error.code, 'invalid_query');
+    if (args.conditions) assert.equal(result.structuredContent.error.code, 'invalid_conditions');
+    else if (!args.repo) assert.equal(result.structuredContent.error.code, 'invalid_query');
   }
+});
+
+test('MCP and CLI accept condition hints without replacing the original query', async (t) => {
+  const item = await fixture();
+  t.after(() => rm(item.root, { recursive: true, force: true }));
+  const connection = await connect(['--repo', item.repo, '--cache', item.cache, '--allow', 'tech']);
+  t.after(() => close(connection));
+  const args = { query: 'transactional outbox', conditions: ['database transaction'], scope: ['tech'], max_bytes: 8000 };
+  const response = await connection.client.request({ method: 'tools/call',
+    params: { name: 'context_lookup', arguments: args } }, CallToolResultSchema);
+  assert.equal(response.isError, undefined);
+  assert.equal(response.structuredContent.query, args.query);
+  assert.ok(response.structuredContent.evidence_units.some((unit) => unit.excerpt.includes('one database transaction')));
+  const result = JSON.parse(execFileSync(process.execPath, [cli, 'lookup', '--repo', item.repo,
+    '--cache', item.cache, '--allow', 'tech', '--query', args.query,
+    '--condition', args.conditions[0], '--max-bytes', '8000'], { encoding: 'utf8' }));
+  assert.deepEqual(result, response.structuredContent);
+  assert.deepEqual(parseArguments(['lookup', '--query', 'question', '--condition', 'first', '--condition', 'second']).conditions,
+    ['first', 'second']);
+  assert.throws(() => parseArguments(['search', '--query', 'question', '--condition', 'first']));
 });
 
 test('committed-only MCP server can build and serve HEAD from a dirty worktree', async (t) => {

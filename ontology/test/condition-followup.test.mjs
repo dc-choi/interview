@@ -25,6 +25,24 @@ const plan = () => ({ id: 'conditions', query: '재시도 중복 처리', scope:
   ], assessments: [{ condition_id: 'duplicates', status: 'supported', reason: '반환된 본문에서 조건 확인',
     evidence: [{ id: unit.id, source_revision: revision, content_hash: unit.content_hash,
       quote: '중복 처리는 멱등성을 확인한다.' }] }] });
+function v2Plan() {
+  const result = plan();
+  const assessment = result.assessments[0];
+  const [idempotencyEvidence] = assessment.evidence;
+  delete assessment.evidence;
+  result.conditions[0].requirements = [
+    { id: 'retry-duplicates', question: '재시도가 중복을 만들 수 있는가?' },
+    { id: 'idempotency', question: '중복 처리에 멱등성이 필요한가?' },
+  ];
+  assessment.requirements = [
+    { ...result.conditions[0].requirements[0], status: 'supported',
+      reason: '반환된 본문이 재시도로 생기는 중복을 직접 설명한다.', evidence: [{ ...idempotencyEvidence, quote: '재시도는 중복을 만들 수 있다.' }] },
+    { ...result.conditions[0].requirements[1], status: 'supported',
+      reason: '반환된 본문이 중복 처리의 멱등성을 직접 설명한다.', evidence: [idempotencyEvidence] },
+  ];
+  result.sufficiency = { status: 'sufficient', reason: '두 원자 요구가 직접 근거로 확인됐다.', unresolved_condition_ids: [] };
+  return result;
+}
 const call = async (name) => response(name === 'context_lookup'
   ? { index_sync: sync, evidence_units: [{ ...unit, excerpt: '# Rule\n', truncated: true }], entities: [], relations: [] }
   : { index_sync: sync, evidence_unit: { ...unit, excerpt: content, truncated: false },
@@ -37,6 +55,66 @@ test('host replay retains source receipts and reads a missing condition without 
   assert.equal(result.assembled.evidence_units[0].excerpt, content);
   assert.equal(result.assembled.evidence_units[0].truncated, false);
   assert.ok(result.used_bytes <= 64000);
+  assert.deepEqual(result.sufficiency, { status: 'not_assessed', reason: 'legacy trace has no atomic requirement coverage' });
+});
+
+test('v2 trace records atomic coverage and cannot call an unresolved condition sufficient', async () => {
+  const sufficient = await replayPlan(call, v2Plan());
+  assert.deepEqual(sufficient.sufficiency, { status: 'sufficient',
+    reason: '두 원자 요구가 직접 근거로 확인됐다.', unresolved_condition_ids: [], assessment_version: 2 });
+
+  const partial = v2Plan();
+  partial.assessments[0].requirements[1] = { ...partial.conditions[0].requirements[1], status: 'unresolved',
+    reason: '반환된 본문을 멱등성의 직접 근거로 쓰지 않는다.', evidence: [] };
+  partial.assessments[0].status = 'unresolved';
+  partial.sufficiency = { status: 'partial', reason: '중복 가능성은 확인됐지만 처리 조건이 남았다.', unresolved_condition_ids: ['duplicates'] };
+  assert.equal((await replayPlan(call, partial)).sufficiency.status, 'partial');
+
+  const insufficient = v2Plan();
+  insufficient.assessments[0].requirements = insufficient.conditions[0].requirements.map((requirement) => ({ ...requirement,
+    status: 'unresolved', reason: '반환된 본문을 이 원자 요구의 근거로 쓰지 않는다.', evidence: [] }));
+  insufficient.assessments[0].status = 'unresolved';
+  insufficient.sufficiency = { status: 'insufficient', reason: '직접 지지하는 원자 근거가 없다.', unresolved_condition_ids: ['duplicates'] };
+  assert.equal((await replayPlan(call, insufficient)).sufficiency.status, 'insufficient');
+
+  const falseComplete = structuredClone(partial);
+  falseComplete.sufficiency.status = 'sufficient';
+  falseComplete.sufficiency.unresolved_condition_ids = [];
+  await assert.rejects(replayPlan(call, falseComplete), /sufficiency unresolved conditions/);
+
+  const legacyComplete = plan();
+  legacyComplete.sufficiency = { status: 'sufficient', reason: '기존 인용만으로 충분하다고 판단했다.', unresolved_condition_ids: [] };
+  await assert.rejects(replayPlan(call, legacyComplete), /v2 atomic requirement inventory required/);
+
+  const unresolvedWithQuote = structuredClone(insufficient);
+  unresolvedWithQuote.assessments[0].requirements[0].evidence = structuredClone(plan().assessments[0].evidence);
+  await assert.rejects(replayPlan(call, unresolvedWithQuote), /unresolved atomic requirement/);
+});
+
+test('v2 freezes atomic inventory before retrieval and checks assessed coverage afterward', async () => {
+  const missingInventory = v2Plan();
+  delete missingInventory.conditions[0].requirements;
+  let calls = 0;
+  await assert.rejects(replayPlan(async (...args) => {
+    calls += 1;
+    return call(...args);
+  }, missingInventory), /v2 atomic requirement inventory required/);
+  assert.equal(calls, 0);
+
+  for (const change of [
+    (item) => { item.assessments[0].requirements.pop(); },
+    (item) => { item.assessments[0].requirements.push({ id: 'invented', question: '발견한 근거만 확인할까?' }); },
+    (item) => { item.assessments[0].requirements[0].question = '다른 질문으로 바꿀까?'; },
+  ]) {
+    const changed = v2Plan();
+    change(changed);
+    calls = 0;
+    await assert.rejects(replayPlan(async (...args) => {
+      calls += 1;
+      return call(...args);
+    }, changed), /assessment atomic requirements must match planned inventory/);
+    assert.equal(calls, 2);
+  }
 });
 
 test('host replay rejects invented evidence, scope changes, overspending and unsupported quotations', async () => {

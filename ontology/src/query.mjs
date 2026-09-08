@@ -65,11 +65,18 @@ function validateOptions(options) {
 
 function validateArgs(args) {
   assertPlainObject(args, 'arguments');
-  const allowed = new Set(['query', 'scope', 'depth', 'max_bytes']);
+  const allowed = new Set(['query', 'scope', 'depth', 'max_bytes', 'conditions']);
   for (const key of Object.keys(args)) if (!allowed.has(key)) fail('invalid_arguments', `unknown argument: ${key}`);
   if (byteLength(args) > MAX_ARGUMENT_BYTES) fail('arguments_too_large', `arguments exceed ${MAX_ARGUMENT_BYTES} bytes`);
   if (typeof args.query !== 'string' || args.query.trim().length === 0) fail('invalid_query', 'query must contain non-whitespace text');
   if (Buffer.byteLength(args.query, 'utf8') > MAX_QUERY_BYTES) fail('query_too_large', `query exceeds ${MAX_QUERY_BYTES} bytes`);
+  if (own(args, 'conditions')) {
+    if (!Array.isArray(args.conditions) || args.conditions.length < 1 || args.conditions.length > 3
+      || args.conditions.some((condition) => typeof condition !== 'string' || words(condition).length === 0
+        || Buffer.byteLength(condition, 'utf8') > 1024)) {
+      fail('invalid_conditions', 'conditions must contain 1 to 3 non-empty search queries of at most 1024 bytes each');
+    }
+  }
   if (own(args, 'scope')) {
     if (!Array.isArray(args.scope) || args.scope.length > MAX_SCOPE_ENTRIES) fail('invalid_scope', `scope has at most ${MAX_SCOPE_ENTRIES} entries`);
     for (const entry of args.scope) {
@@ -80,6 +87,7 @@ function validateArgs(args) {
   if (own(args, 'max_bytes') && (!Number.isInteger(args.max_bytes) || args.max_bytes <= 0)) fail('invalid_max_bytes', 'max_bytes must be a positive integer');
   return {
     query: args.query,
+    conditions: args.conditions ?? [],
     scope: args.scope === undefined ? [] : normalizeScopes(args.scope),
     depth: args.depth ?? 1,
     requestedMaxBytes: args.max_bytes ?? SERVER_MAX_BYTES,
@@ -677,7 +685,8 @@ function retrieve(options, args, snapshot, mode) {
     }
     return memo.get(uri);
   };
-  const tokens = words(request.query);
+  const conditionTerms = request.conditions.map(words);
+  const tokens = [...new Set([...words(request.query), ...conditionTerms.flat()])];
   const sectionTerms = new Map();
   const scoreSection = (section, weights) => {
     const body = read(sourcePath(section)).subarray(section.anchor?.start_byte ?? 0, section.anchor?.end_byte ?? 0).toString('utf8').toLowerCase();
@@ -773,7 +782,9 @@ function retrieve(options, args, snapshot, mode) {
       : [];
     if (discriminative.length > 0) {
       for (const [id, entry] of scored) {
-        if (!hasDiscriminativeMatch(entry, discriminative)) scored.delete(id);
+        // Hints expand retrieval, but must not displace an exact query metadata root.
+        if ((!entry.metadataMatch || conditionTerms.length === 0)
+          && !hasDiscriminativeMatch(entry, discriminative)) scored.delete(id);
       }
     }
   } else if (tokens.length > 0) {
@@ -993,11 +1004,21 @@ function retrieve(options, args, snapshot, mode) {
   const directRelation = hasExactMetadataHit ? undefined
     : selectedRelations.find((relation) => requiredEvidenceIds.has(relation.evidence_unit_id));
   if (directRelation) addSelectedRelation(directRelation);
-  if (!hasExactMetadataHit) {
+  if (!hasExactMetadataHit || conditionTerms.length > 0) {
     const represented = new Map(tokens.map((token) => [token, 0]));
+    const representedConditions = conditionTerms.map(() => 0);
+    // These are lexical coverage hints, never proof that a condition is supported.
+    const conditionCoverage = (terms) => conditionTerms.map((condition) => {
+      const total = condition.reduce((sum, token) => sum + localWeights.get(token), 0);
+      return condition.reduce((sum, token) => sum + (terms.has(token) ? localWeights.get(token) : 0), 0) / total;
+    });
     const recordTerms = (item) => {
       const text = item.excerpt.toLowerCase();
       for (const token of tokens) if (text.includes(token)) represented.set(token, represented.get(token) + 1);
+      const covered = conditionCoverage(new Set(tokens.filter((token) => text.includes(token))));
+      for (let index = 0; index < covered.length; index += 1) {
+        representedConditions[index] = Math.max(representedConditions[index], covered[index]);
+      }
     };
     for (const item of base.evidence_units) recordTerms(item);
     const candidates = [...selected.values()].filter((entity) => entity.type === 'Document')
@@ -1006,18 +1027,25 @@ function retrieve(options, args, snapshot, mode) {
           && sectionTerms.get(section.id)?.size > 0)
         .map((section) => ({ section, doc, item: evidence(section.id) })))
       .filter((candidate) => candidate.item)
-      .map((candidate) => ({ ...candidate, terms: [...sectionTerms.get(candidate.section.id)] }));
+      .map((candidate) => ({ ...candidate, terms: [...sectionTerms.get(candidate.section.id)],
+        coverage: conditionCoverage(sectionTerms.get(candidate.section.id)) }));
     // ponytail: six complementary sections in the bounded graph; semantic reranking needs a measured benefit.
     for (let added = 0; added < MAX_ROOTS && candidates.length > 0;) {
       const gain = (candidate) => candidate.terms.reduce((total, token) => total + localWeights.get(token) / (1 + represented.get(token)), 0);
-      candidates.sort((a, b) => gain(b) - gain(a)
+      const conditionGain = (candidate) => candidate.coverage.reduce((total, coverage, index) =>
+        total + Math.max(0, coverage - representedConditions[index]), 0);
+      candidates.sort((a, b) => conditionGain(b) - conditionGain(a) || gain(b) - gain(a)
         || (sectionScores.get(b.section.id) ?? 0) - (sectionScores.get(a.section.id) ?? 0)
         || a.section.id.localeCompare(b.section.id));
       const { section, doc, item: prefix } = candidates.shift();
       if (base.evidence_units.some((unit) => unit.id === prefix.id)) continue;
       const complete = evidenceFor(section, read, scopes, effectiveMaxBytes);
       const prefixMatches = tokens.some((token) => prefix.excerpt.toLowerCase().includes(token));
-      let item = !prefixMatches && complete && !complete.truncated ? complete : prefix;
+      const excerptGain = (item) => conditionGain({ coverage: conditionCoverage(new Set(
+        tokens.filter((token) => item.excerpt.toLowerCase().includes(token)))) });
+      const completesCondition = conditionTerms.length > 0 && complete && !complete.truncated
+        && excerptGain(complete) > excerptGain(prefix);
+      let item = (!prefixMatches || completesCondition) && complete && !complete.truncated ? complete : prefix;
       const addedDocument = !base.entities.some((entity) => entity.id === doc.id);
       if (addedDocument) base.entities.push(publicEntity(doc));
       base.evidence_units.push(item);

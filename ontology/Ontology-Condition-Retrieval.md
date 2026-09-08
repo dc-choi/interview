@@ -8,7 +8,7 @@ aliases: ["Condition Retrieval", "조건별 근거 탐색"]
 # 조건별 근거 탐색
 
 > 유형: 여러 근거가 필요한 질문을 위한 host 작업 계약
-> 현재 범위: 기존 `context_lookup`, `context_search`, `context_outline`, `context_read`의 호출 순서를 제한한다. 서버 검색 API나 의미 판정을 추가하지 않는다.
+> 현재 범위: 기존 `context_lookup`, `context_search`, `context_outline`, `context_read`의 호출 순서를 제한하고 첫 lookup의 선택적 lexical `conditions` 단서를 사용한다. 서버의 의미 판정은 추가하지 않는다.
 
 Codex와 Claude의 `development-context` 스킬에 같은 절차를 반영했다. 스킬은 다음 파일 로드부터, 상주 MCP의 갱신된 도구 설명은 재연결부터 읽힌다. 이미 연결된 서버의 설명이 자동으로 바뀌었다고 가정하지 않는다.
 
@@ -20,7 +20,7 @@ Codex와 Claude의 `development-context` 스킬에 같은 절차를 반영했다
 
 ## 조건을 적는 시점
 
-첫 도구 호출 전에 사용자 질문에서 필요한 근거 질문을 최대 3개 그룹으로 적되 필요한 조건을 누락하지 않는다. 예를 들어 한 설계 제안을 검토할 때 필요한 전제, 예외와 현재 적용 범위를 각각 조건으로 둘 수 있다.
+첫 도구 호출 전에 사용자 질문에서 필요한 근거 질문을 최대 3개 그룹으로 적되 필요한 조건을 누락하지 않는다. 한 그룹 안에서도 동작 원리, 실패 경계, 예외와 적용 맥락처럼 따로 설명해야 하는 원자 요구를 고정 `id`와 `question`으로 적어 `conditions[].requirements`에 남긴다. 이 inventory는 반환된 source를 읽기 전에 완성하며, 발견한 근거에 맞춰 추가, 삭제 또는 재서술하지 않는다. 예를 들어 한 설계 제안을 검토할 때 필요한 전제, 예외와 현재 적용 범위를 각각 조건 또는 한 조건의 원자 요구로 둘 수 있다.
 
 - `stated_requirement`: 사용자가 분명히 요청하거나 제약으로 적은 근거 질문
 - `assumption`: host가 질문을 해석하려고 둔 가정. 조건으로 몰래 추가하거나 충족된 것으로 취급하지 않는다.
@@ -29,7 +29,7 @@ Codex와 Claude의 `development-context` 스킬에 같은 절차를 반영했다
 
 ## 한 질문의 호출 순서
 
-1. 원래 질문과 선택한 scope로 `context_lookup`, `max_bytes: 24000`을 한 번 호출한다.
+1. 원래 질문과 선택한 scope로 `context_lookup`, `max_bytes: 24000`을 한 번 호출한다. 조건 힌트는 기본으로 생략한다. 사용자가 탐색 표현을 지정했거나 힌트 사용을 요청했고 도구가 지원하면 `stated_requirement` 그룹에서만 1~3개 `conditions` 탐색 표현을 함께 보낸다. 원래 질문을 바꾸지 않으며, 이 표현은 보충 절의 어휘 단서일 뿐 조건 충족 근거나 server의 의미 판정이 아니다. 이미 연결한 server가 이 필드를 받지 않으면 생략한다.
 2. 반환된 본문으로 조건을 확인한다. 중요한 receipt가 `truncated: true`이면 같은 receipt를 `context_read`로 읽는다.
 3. 반환된 Document가 관련 있지만 다른 조건이나 예외가 빠졌으면 `context_outline`으로 section receipt를 받고, 선택한 section을 `context_read`로 읽는다. 목차와 heading 자체는 근거가 아니다.
 4. 아직 `unresolved`이고 처음 결과에 Document 후보도 없을 때만 그 조건을 query로 `context_lookup` 또는 `context_search`한다. `context_search`의 `best_evidence_ref`는 읽기 시작점일 뿐 본문 적중 보장이 아니다.
@@ -55,28 +55,60 @@ Codex와 Claude의 `development-context` 스킬에 같은 절차를 반영했다
 
 ## 조건 판정과 기록
 
-각 조건은 다음 중 하나로만 기록한다.
+각 조건과 그 원자 요구는 다음 중 하나로만 기록한다.
 
 - `supported`: 실제 반환된 source body가 조건을 직접 지지한다.
 - `contradicted`: 실제 반환된 source body가 조건과 직접 충돌한다.
 - `unresolved`: 본문으로 판단하지 못했다. 이유는 `not_found`, `truncated`, `budget_limit`, `source_changed`처럼 남긴다.
 
-제목, heading, `matched_terms`, 위키링크, relation, `source_confirmed`, `context_outline`과 검색 점수는 탐색 단서다. 이들만으로 조건의 status를 정하지 않는다.
+제목, heading, `matched_terms`, 위키링크, relation, `source_confirmed`, `context_outline`과 검색 점수는 탐색 단서다. 이들만으로 조건의 status를 정하지 않는다. 일부 문장만 관련 있거나 예외 또는 적용 맥락이 빠진 source는 해당 원자 요구를 `unresolved`로 남긴다.
 
-일반 작업의 내부 메모에는 조건, 호출 이유, 실제 response byte, status와 아래 receipt를 남긴다. quote는 실제로 도구가 반환한 본문에서 그대로 옮긴 짧은 문장이다.
+일반 작업의 내부 메모에는 첫 호출 전에 고정한 조건과 원자 요구, 호출 이유, 실제 response byte, status와 아래 receipt를 남긴다. quote는 실제로 도구가 반환한 본문에서 그대로 옮긴 짧은 문장이다. 평가의 `requirements`는 사전 inventory의 `id`와 `question`을 순서까지 그대로 옮긴다. 조건의 `supported` 또는 `contradicted`는 그 조건의 모든 원자 요구가 각각 receipt를 가질 때만 쓴다.
 
 ```json
 {
-  "condition_id": "exception",
-  "status": "supported",
-  "evidence": [{
-    "id": "unit:...",
-    "source_revision": "<commit>",
-    "content_hash": "sha256:<hash>",
-    "quote": "<returned source body excerpt>"
+  "conditions": [{
+    "id": "exception",
+    "question": "예외와 적용 맥락은 무엇인가?",
+    "origin": "stated_requirement",
+    "requirements": [{
+      "id": "exception-context",
+      "question": "예외와 적용 맥락을 직접 설명하는가?"
+    }]
+  }],
+  "assessments": [{
+    "condition_id": "exception",
+    "status": "supported",
+    "reason": "예외를 포함한 원자 요구가 각각 본문으로 확인됐다.",
+    "requirements": [{
+    "id": "exception-context",
+    "question": "예외와 적용 맥락을 직접 설명하는가?",
+    "status": "supported",
+    "reason": "반환된 본문이 예외와 맥락을 함께 설명한다.",
+    "evidence": [{
+      "id": "unit:...",
+      "source_revision": "<commit>",
+      "content_hash": "sha256:<hash>",
+      "quote": "<returned source body excerpt>"
+    }]
+    }]
   }]
 }
 ```
+
+현재 trace는 아래 충분성도 함께 남긴다. `sufficient`는 사전 inventory의 모든 원자 요구가 해결됐을 때만 쓴다. 일부 원자 요구가 남고 다른 요구에는 직접 근거가 있으면 `partial`, 직접 근거가 하나도 없으면 `insufficient`다. 어휘 적중, 반환 문서 수와 heading은 이 status를 올리는 근거가 아니다. 이전 trace에 원자 요구가 없으면 재생기는 `not_assessed`로만 표시하며, 과거의 모든 `supported`를 충분한 답변으로 추론하지 않는다.
+
+```json
+{
+  "sufficiency": {
+    "status": "partial",
+    "reason": "예외의 본문 근거가 아직 없다.",
+    "unresolved_condition_ids": ["exception"]
+  }
+}
+```
+
+평가 trace의 각 호출은 실행 전에 `steps[]`에 `name`, `arguments`, `reason`, `condition_ids`를 기록한다. 답변 전에는 원 질문과 설명을 다시 대조한다. 패턴 이름의 언급만으로 동작 이유나 보장 경계를 설명했다고 판정하지 않는다.
 
 평가에서는 이 기록 형식의 trace를 별도 입력으로 보관한다. trace는 평가 gold와 분리하며, gold는 결과 검사에만 쓴다.
 
@@ -121,6 +153,14 @@ node ontology/evaluation/condition-followup.mjs \
 ```
 
 검증기는 정해진 실패를 포함한 호출, 총 byte, scope, revision, 인용 ID와 hash, 이전에 반환된 목차 위치와 검색 cursor, 연속 읽기와 완전한 본문의 hash를 검사한다. lookup/search의 fingerprint와 manifest hash 및 실행 전후 snapshot을 대조하며 정답은 전체 탐색 후에만 읽는다. 모델의 의미 판단은 자동 검증하지 않는다. 테스트 136개가 통과했고 실제 MCP 재실행에서도 상한과 receipt 검사가 통과했다.
+
+## 충분성과 음성 질문의 새 관측
+
+별도 작성자와 탐색 host를 분리한 새 합성 질문 9개에서 조회 21회를 기록했다. 양성 4개, 현재 운영 사실 3개와 혼합 2개이며 질문별 scope를 미리 지정했다. 첫 lookup의 조건 힌트 비교는 전체 충분성 개선 없이 일부 근거의 증가와 손실을 함께 보였다. 최종 host 스킬은 힌트를 기본으로 생략한다.
+
+host가 충분하다고 판정한 양성 4개 중 2개는 독립 검토에서 Relay 중복 발생 경계 또는 jitter가 재시도 파형을 분산하는 설명이 빠졌다. 운영 사실 3개를 미확인, 혼합 2개를 부분 근거로 남긴 판단에는 문제가 발견되지 않았다. 최종 스킬은 동작 원리와 보장 경계를 명시적으로 대조하지만 이 문구 보강의 효과를 새 표본에서 입증한 것은 아니다.
+
+원본 trace는 호출 전 `reason`과 `condition_ids`가 없어 검증기가 재생 전에 거부했다. 사후 inventory export를 호출 전 hash 고정으로 주장하지 않는다. 최종 규칙의 완전한 실행 평가가 아닌 첫 관측으로 [질문, 기준과 실제 응답](evaluation/sufficiency/sufficiency.md)을 보존한다. 현재 구현의 Node 테스트 145개는 통과했다.
 
 ## 경계
 

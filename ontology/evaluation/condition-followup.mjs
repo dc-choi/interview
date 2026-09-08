@@ -12,6 +12,102 @@ export const LIMITS = Object.freeze({ calls: 8, bytes: 64000, page: 24000, searc
 const bytes = (value) => Buffer.byteLength(JSON.stringify(value));
 const text = (value) => typeof value === 'string' && value.trim().length > 0;
 const names = ['context_lookup', 'context_search', 'context_outline', 'context_read'];
+const conditionStatuses = new Set(['supported', 'contradicted', 'unresolved']);
+const sufficiencyStatuses = new Set(['sufficient', 'partial', 'insufficient']);
+const hasOwn = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
+
+function validateLegacyAssessments(plan, conditions, units, receipts) {
+  assert.ok(Array.isArray(plan.assessments) && plan.assessments.length === conditions.size);
+  assert.deepEqual(new Set(plan.assessments.map((item) => item.condition_id)), conditions);
+  for (const assessment of plan.assessments) {
+    assert.ok(conditionStatuses.has(assessment.status));
+    assert.ok(text(assessment.reason));
+    assert.ok(Array.isArray(assessment.evidence));
+    if (assessment.status !== 'unresolved') assert.ok(assessment.evidence.length > 0);
+    for (const evidence of assessment.evidence) {
+      assert.ok(text(evidence.quote) && units.get(evidence.id)?.excerpt.includes(evidence.quote), 'quote not in returned text');
+      assert.equal(evidence.source_revision, receipts.get(evidence.id).source_revision, 'assessment revision mismatch');
+      assert.equal(evidence.content_hash, receipts.get(evidence.id).content_hash, 'assessment hash mismatch');
+    }
+  }
+  // Historic traces did not record atomic coverage, so all-supported legacy
+  // assessments must never be interpreted as a complete answer.
+  return { status: 'not_assessed', reason: 'legacy trace has no atomic requirement coverage' };
+}
+
+function conditionStatus(requirements) {
+  if (requirements.some((item) => item.status === 'unresolved')) return 'unresolved';
+  if (requirements.some((item) => item.status === 'contradicted')) return 'contradicted';
+  return 'supported';
+}
+
+function atomicRequirementInventory(plan) {
+  const v2 = hasOwn(plan, 'sufficiency')
+    || plan.conditions.some((condition) => hasOwn(condition, 'requirements'))
+    || (Array.isArray(plan.assessments) && plan.assessments.some((assessment) => hasOwn(assessment, 'requirements')));
+  if (!v2) return null;
+
+  assert.ok(plan.conditions.every((condition) => Array.isArray(condition.requirements)), 'v2 atomic requirement inventory required');
+  return new Map(plan.conditions.map((condition) => {
+    assert.ok(condition.requirements.length > 0, 'condition requires atomic requirement inventory');
+    const ids = new Set();
+    const requirements = condition.requirements.map((requirement) => {
+      assert.ok(text(requirement.id) && !ids.has(requirement.id), 'atomic requirement ID required');
+      ids.add(requirement.id);
+      assert.ok(text(requirement.question), 'atomic requirement question required');
+      return { id: requirement.id, question: requirement.question };
+    });
+    return [condition.id, requirements];
+  }));
+}
+
+function validateSufficiency(plan, conditions, inventory, units, receipts) {
+  assert.ok(Array.isArray(plan.assessments) && plan.assessments.length === conditions.size);
+  assert.deepEqual(new Set(plan.assessments.map((item) => item.condition_id)), conditions);
+  if (!inventory) return validateLegacyAssessments(plan, conditions, units, receipts);
+
+  assert.ok(plan.sufficiency && typeof plan.sufficiency === 'object' && !Array.isArray(plan.sufficiency), 'v2 sufficiency required');
+  assert.ok(plan.assessments.every((item) => Array.isArray(item.requirements)), 'v2 atomic requirements required');
+  const unresolvedConditionIds = [];
+  for (const assessment of plan.assessments) {
+    assert.ok(conditionStatuses.has(assessment.status));
+    assert.ok(text(assessment.reason));
+    assert.ok(!hasOwn(assessment, 'evidence'), 'v2 evidence belongs to an atomic requirement');
+    assert.ok(assessment.requirements.length > 0, 'condition requires atomic requirements');
+    assert.deepEqual(assessment.requirements.map(({ id, question }) => ({ id, question })), inventory.get(assessment.condition_id),
+      'assessment atomic requirements must match planned inventory');
+    const requirementIds = new Set();
+    for (const requirement of assessment.requirements) {
+      assert.ok(text(requirement.id) && !requirementIds.has(requirement.id), 'atomic requirement ID required');
+      requirementIds.add(requirement.id);
+      assert.ok(text(requirement.question) && text(requirement.reason));
+      assert.ok(conditionStatuses.has(requirement.status));
+      assert.ok(Array.isArray(requirement.evidence));
+      if (requirement.status === 'unresolved') {
+        assert.equal(requirement.evidence.length, 0, 'unresolved atomic requirement cannot claim evidence');
+        continue;
+      }
+      assert.ok(requirement.evidence.length > 0, 'resolved atomic requirement needs quoted evidence');
+      for (const evidence of requirement.evidence) {
+        assert.ok(text(evidence.quote) && units.get(evidence.id)?.excerpt.includes(evidence.quote), 'quote not in returned text');
+        assert.equal(evidence.source_revision, receipts.get(evidence.id).source_revision, 'requirement revision mismatch');
+        assert.equal(evidence.content_hash, receipts.get(evidence.id).content_hash, 'requirement hash mismatch');
+      }
+    }
+    assert.equal(assessment.status, conditionStatus(assessment.requirements), 'condition status must reflect atomic requirements');
+    if (assessment.status === 'unresolved') unresolvedConditionIds.push(assessment.condition_id);
+  }
+  const hasResolvedRequirement = plan.assessments.some((assessment) => assessment.requirements
+    .some((requirement) => requirement.status !== 'unresolved'));
+  const status = unresolvedConditionIds.length === 0 ? 'sufficient'
+    : hasResolvedRequirement ? 'partial' : 'insufficient';
+  assert.ok(sufficiencyStatuses.has(plan.sufficiency.status));
+  assert.ok(text(plan.sufficiency.reason));
+  assert.ok(Array.isArray(plan.sufficiency.unresolved_condition_ids));
+  assert.deepEqual(plan.sufficiency.unresolved_condition_ids, unresolvedConditionIds, 'sufficiency unresolved conditions changed');
+  assert.equal(plan.sufficiency.status, status, 'sufficiency status must reflect atomic requirements');
+  return { status, reason: plan.sufficiency.reason, unresolved_condition_ids: unresolvedConditionIds, assessment_version: 2 };
+}
 
 /** Replays decisions made by an AI host. It neither plans queries nor judges semantic support. */
 export async function replayPlan(call, plan) {
@@ -23,6 +119,9 @@ export async function replayPlan(call, plan) {
   assert.equal(conditions.size, plan.conditions.length);
   assert.ok(plan.conditions.every((condition) => text(condition.id) && text(condition.question)));
   assert.ok(plan.conditions.every((condition) => ['stated_requirement', 'assumption'].includes(condition.origin)), 'condition origin required');
+  // This runs before the first tool call so a host cannot narrow the answer
+  // requirements to only the evidence it happened to find.
+  const inventory = atomicRequirementInventory(plan);
   assert.ok(plan.steps.length > 0 && plan.steps.length <= LIMITS.calls, 'call limit');
   const first = plan.steps[0];
   assert.equal(first.name, 'context_lookup');
@@ -149,21 +248,9 @@ export async function replayPlan(call, plan) {
     }
   }
   assert.ok(initial?.evidence_units, 'initial lookup failed');
-  assert.equal(plan.assessments.length, conditions.size);
-  assert.deepEqual(new Set(plan.assessments.map((item) => item.condition_id)), conditions);
-  for (const assessment of plan.assessments) {
-    assert.ok(['supported', 'contradicted', 'unresolved'].includes(assessment.status));
-    assert.ok(text(assessment.reason));
-    assert.ok(Array.isArray(assessment.evidence));
-    if (assessment.status !== 'unresolved') assert.ok(assessment.evidence.length > 0);
-    for (const evidence of assessment.evidence) {
-      assert.ok(text(evidence.quote) && units.get(evidence.id)?.excerpt.includes(evidence.quote), 'quote not in returned text');
-      assert.equal(evidence.source_revision, receipts.get(evidence.id).source_revision, 'assessment revision mismatch');
-      assert.equal(evidence.content_hash, receipts.get(evidence.id).content_hash, 'assessment hash mismatch');
-    }
-  }
+  const sufficiency = validateSufficiency(plan, conditions, inventory, units, receipts);
   return { id: plan.id, initial, assembled: { ...initial, evidence_units: [...units.values()],
-    entities: [...entities.values()], relations: [...relations.values()] }, calls, used_bytes: used, revision };
+    entities: [...entities.values()], relations: [...relations.values()] }, calls, used_bytes: used, revision, sufficiency };
 }
 
 async function main() {
@@ -247,6 +334,7 @@ async function main() {
     assert.equal(sample?.query, plans[index].query);
     assert.deepEqual(sample.scope, normalizeScopes(plans[index].scope));
     return { ...result, host_conditions: plans[index].conditions, host_assessments: plans[index].assessments,
+      host_sufficiency: result.sufficiency,
       scores: { single_24000: scoreResult(sample, result.initial), single_64000: scoreResult(sample, result.control),
         followup_64000: scoreResult(sample, result.assembled) } };
   });

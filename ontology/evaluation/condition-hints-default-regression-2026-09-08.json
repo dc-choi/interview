@@ -1,0 +1,661 @@
+{
+  "kind": "existing-question-response-equivalence",
+  "source_revision": "55e30655a20d03e6d26fd941b8319a7b7d62788c",
+  "fingerprint": "97373809e2f7b87859c49e86745ba5007b904371740909e5d75783df8e3bdff2",
+  "manifest_hash": "95690fb7292dd528949a6d7e12250401446e01821de721ed618d7d601faee33e",
+  "baseline_query_sha256": "4367ace276baad30e884ddbd5d6d2ffb2d7224f1cbae760cb6ef0bc6ef98e96a",
+  "code_sha256": {
+    "query.mjs": "f157372ad9fa950660a514c67b3fb1ddb7d25f551a79fa7254227647afeb65d2",
+    "core.mjs": "680ae78ffd994bf4945222cf73c0006b6494e84028db2aed417cb470500d09be",
+    "repository.mjs": "66681b76a3b16e11a7bb768da555ed5c220a8ecf22db404a2122b6242243dabc",
+    "snapshot.mjs": "d43deeefc55e50633abc5f783809d202fc561cc8b52b5598ba438181971df3da",
+    "markdown.mjs": "52eb3aa281762759e82f44b731ff27f785bffbf095553a848c077f369818c66c"
+  },
+  "case_sha256": {
+    "ontology/evaluation/cases.json": "8dacad23dbe4c8544a4b380849e4ba7f9f36decbd1cbf851028ea75daf5bf9f0",
+    "ontology/evaluation/validation-cases.json": "2233c5b934b1ad334e589d4f43bca7c72019594d9001d059b618dd66e83039d7",
+    "ontology/evaluation/holdout-cases.json": "2694e6f4d771c3f121e4c028dde3b3c11dd07e118b624087d49c0420fe06c34a",
+    "ontology/evaluation/generalization-cases-2026-09-07.json": "4e5761f129542615c9a0584d17194af31f3411df61c7e506401cae01dadd7a86",
+    "ontology/evaluation/context-integrity-cases.json": "b9dd5a81fa7a0be654dffdde312930fb71e738e0c090333d2025c89eb92a2cae",
+    "ontology/evaluation/document-search-cases-2026-09-08.json": "a45607c714de84af95890c6379dc828800ac478d032537f75cb660deef0f1d7b",
+    "ontology/evaluation/metadata-ranking-cases-2026-09-08.json": "76b413409e9f442f0890078de2ae65b5e7cdf56aa1a200889230f1c4d116f103",
+    "ontology/evaluation/graph-ranking-cases-2026-09-08.json": "6a9f93b2a7bd16a06e3ff3e49c87c6d8c093c2c16138eff63f375318e83b81c6",
+    "ontology/evaluation/diagnostic-cases.json": "dec7ddac06b02c71d9a97311d4272d096ec8b6675da8e58ee67a8ff3de86abea",
+    "ontology/evaluation/context-packing-cases-2026-09-08.json": "679e9f86fdf4f09ba8e296a52e21bf1da6bd1281fa90339ba11c5dd1ce692899",
+    "ontology/evaluation/algorithm-holdout-cases-2026-09-08.json": "7723724324d3efc68a1b5b75fbabd5ee6e01eb4a07545544ddca64c8c2c68306",
+    "ontology/evaluation/selection-holdout-cases-2026-09-08.json": "23570d3a7ce476daf56c261420dd33a6c632a603d17d75f3968fab6db6b9e955",
+    "ontology/evaluation/rerank-holdout-cases-2026-09-08.json": "a97596345ff226778660b8e6c45cac388daaa15bdcdb4d2549e911d63fe0f3e0",
+    "ontology/evaluation/coverage-holdout-cases-2026-09-08.json": "3121fb7c003cb926ac9f627eb7fb4178e2e7c51cc0b6b67e32d33aac3c5c218b"
+  },
+  "cases": 104,
+  "exact_json_equivalence": true,
+  "results": [
+    {
+      "id": "popular-value-expiry-surge",
+      "equal": true,
+      "response_sha256": "f71f3980a2e90ed93496c07acc810dd6417d410c6284719e3a014cfad5e3a0dd",
+      "bytes": 23941
+    },
+    {
+      "id": "deployment-drain-order",
+      "equal": true,
+      "response_sha256": "a593bb83ea4c4a4130c0f90bd0b70b99109cb50aab01111a53bfd90fa6336337",
+      "bytes": 23897
+    },
+    {
+      "id": "opposite-update-order",
+      "equal": true,
+      "response_sha256": "68ad09286780e2db6e89a11b9684c88f8be72ec27deda87d8e3c254f6f4bd918",
+      "bytes": 23961
+    },
+    {
+      "id": "long-calculation-delays-requests",
+      "equal": true,
+      "response_sha256": "440fd2c9153bdc7518cd518c58267d06d9f770505087c901178275bf44b48c9d",
+      "bytes": 23665
+    },
+    {
+      "id": "synthetic-holdout-v2-tech-01",
+      "equal": true,
+      "response_sha256": "6bf44fd24622dc30ba70d922b1f42b70fb1ff1a1b883120fe780d2134933edbd",
+      "bytes": 23993
+    },
+    {
+      "id": "synthetic-holdout-v2-biz-01",
+      "equal": true,
+      "response_sha256": "ff3570c8acb7622ca967c7b65df7456369e6434286c45525c91208897923f685",
+      "bytes": 23971
+    },
+    {
+      "id": "synthetic-holdout-v2-econ-01",
+      "equal": true,
+      "response_sha256": "7183a893ee8512324bdc53b87976bfb045f6b640df4f139136a780a78cab3147",
+      "bytes": 23617
+    },
+    {
+      "id": "synthetic-holdout-v2-fit-01",
+      "equal": true,
+      "response_sha256": "562d172f6b00d9c1353a7907aa45cfd2da98f76577a1a4ba1b2e159593ec82a2",
+      "bytes": 23155
+    },
+    {
+      "id": "synthetic-holdout-tech-01",
+      "equal": true,
+      "response_sha256": "6af465a3e1cc3b05fb1bf9b3dba9f9ff92a6c229c27e095c9ec942992b1b8eae",
+      "bytes": 23231
+    },
+    {
+      "id": "synthetic-holdout-tech-02",
+      "equal": true,
+      "response_sha256": "ea36cf8ec99adc69b5ca472e62f03a1e6d0930774bcce83c118c403121896064",
+      "bytes": 23734
+    },
+    {
+      "id": "synthetic-holdout-biz-01",
+      "equal": true,
+      "response_sha256": "23d449d478f6561d1bc780ed72ad013b7234d325802fe2ca45f46ae9f1dfec9f",
+      "bytes": 23909
+    },
+    {
+      "id": "synthetic-holdout-biz-02",
+      "equal": true,
+      "response_sha256": "66da782fcd33d26b50c15f9d01ef2ec9d354610899d32eb50476119e23307067",
+      "bytes": 23934
+    },
+    {
+      "id": "synthetic-holdout-econ-01",
+      "equal": true,
+      "response_sha256": "415c36f2a3cceca2013aee59efc929c07a9678f52efe37019f73f7263838585c",
+      "bytes": 23461
+    },
+    {
+      "id": "synthetic-holdout-econ-02",
+      "equal": true,
+      "response_sha256": "65470ac57bbf953aa4526daee2ba294361010f686365b9edc3a32496de06d409",
+      "bytes": 23752
+    },
+    {
+      "id": "synthetic-holdout-fit-01",
+      "equal": true,
+      "response_sha256": "1f01a6b1c067fb9ff7bd0e8b149be7c42dd9c2f17745c5c13d26081a3978c5bb",
+      "bytes": 23426
+    },
+    {
+      "id": "synthetic-holdout-fit-02",
+      "equal": true,
+      "response_sha256": "cf81175411088cbab77a612f2e0c4296ac632509aa5b6790893679306a00362b",
+      "bytes": 23817
+    },
+    {
+      "id": "synthetic-holdout-empty-01",
+      "equal": true,
+      "response_sha256": "cf533f450c43561e237d0a31a2c67e4bb3e3bd36ea520cdf6193203d818af9aa",
+      "bytes": 1368
+    },
+    {
+      "id": "generalization-tech-stable-cursor-contract",
+      "equal": true,
+      "response_sha256": "2bae45b98e076ee1725d598cc5a9d4a1991da6d915bca68325c3ca377baa0b6c",
+      "bytes": 23927
+    },
+    {
+      "id": "generalization-tech-payment-retry-identity",
+      "equal": true,
+      "response_sha256": "3a9c06899df42e0087b0b3267593faea6107a9bdcf9565c69578d4371e51f4d2",
+      "bytes": 23906
+    },
+    {
+      "id": "generalization-tech-retry-storm-discipline",
+      "equal": true,
+      "response_sha256": "22d6778f4689d4d9ce85d03436cbec0696f202a8b36b8742f4ace832d64511c8",
+      "bytes": 23982
+    },
+    {
+      "id": "generalization-tech-scarce-stock-concurrency",
+      "equal": true,
+      "response_sha256": "7525b88d00efbe5bce35b297da130795140f7a73966b3a564c62a24577044665",
+      "bytes": 23895
+    },
+    {
+      "id": "generalization-biz-switching-interview-history",
+      "equal": true,
+      "response_sha256": "8f6833ef834439a25ba242544315d521d6775d05c1ea6f2a22302acf96f545e7",
+      "bytes": 23945
+    },
+    {
+      "id": "generalization-biz-click-growth-or-redistribution",
+      "equal": true,
+      "response_sha256": "64b7e4e4d516816b0903f72179eefce1a63a026eec91fd2a1d64c627f9ada6d6",
+      "bytes": 23993
+    },
+    {
+      "id": "generalization-econ-concentrated-sector-diversification",
+      "equal": true,
+      "response_sha256": "e03d5506a31ff7e1880dcd0bfdcf2c66af9a2333256ffc9a87368e8203fc8788",
+      "bytes": 23818
+    },
+    {
+      "id": "generalization-fit-repeated-mistakes-feedback-loop",
+      "equal": true,
+      "response_sha256": "25a8413e66dbc971aeaee580e43c5890fb175930189b177abb358609c5dca5ef",
+      "bytes": 23953
+    },
+    {
+      "id": "generalization-empty-gibberish",
+      "equal": true,
+      "response_sha256": "cf533f450c43561e237d0a31a2c67e4bb3e3bd36ea520cdf6193203d818af9aa",
+      "bytes": 1368
+    },
+    {
+      "id": "generalization-empty-fictional-device",
+      "equal": true,
+      "response_sha256": "ab93d54a2ace7d9efad700824e22803bb283af62f1bb6d25aefa93fd7f34c0ed",
+      "bytes": 23802
+    },
+    {
+      "id": "role-and-authoring-status",
+      "equal": true,
+      "response_sha256": "4e6051972f9f287256d52b4b55271e08f513086dc6e9ef5c65232c6570782e2f",
+      "bytes": 4571
+    },
+    {
+      "id": "source-link-and-current-implementation",
+      "equal": true,
+      "response_sha256": "9889a077c98ea72db25ce710a367d10c7ffb7d5af52a23a9f84a0370a33f13f0",
+      "bytes": 6131
+    },
+    {
+      "id": "proposal-includes-cost-and-unknowns",
+      "equal": true,
+      "response_sha256": "7f9f50efbf8ae02c04c66f9c71705a5e1110fe83daf28bc0b3eb9f70a31cb5c3",
+      "bytes": 3527
+    },
+    {
+      "id": "synthetic-tech-rag-identifier-provenance",
+      "equal": true,
+      "response_sha256": "c3aaa1ce6cc18167ee539bb2d1f07b052026296df98ab3f40feef0e39c07ade1",
+      "bytes": 23936
+    },
+    {
+      "id": "synthetic-tech-weak-evidence-routing",
+      "equal": true,
+      "response_sha256": "2ccd53d2a7f58253a67ee06af2e1e869101c0a1698bf7c2b03dd1d07188b807b",
+      "bytes": 23982
+    },
+    {
+      "id": "synthetic-biz-click-lift-validation",
+      "equal": true,
+      "response_sha256": "49dcbb1450149b290536d2fa907e1d89e671bef848a7f9780b859057c74b2cae",
+      "bytes": 23997
+    },
+    {
+      "id": "synthetic-econ-correlation-diversification",
+      "equal": true,
+      "response_sha256": "815eef133a598da71bcc9d4c81ee37b2e4701fde8a1db3f1bba93e29a1ec7689",
+      "bytes": 23926
+    },
+    {
+      "id": "synthetic-negative-weather-forecast",
+      "equal": true,
+      "response_sha256": "23dfbbd01219238e94d48cd7489aad6d86fa626700ef1c5a912a5ee41229495b",
+      "bytes": 23472
+    },
+    {
+      "id": "synthetic-negative-fictional-kingdom-tax",
+      "equal": true,
+      "response_sha256": "8a74f9b15ba0ad034811691403f9ce666042018824653c98725dde997297ce43",
+      "bytes": 23987
+    },
+    {
+      "id": "unseen-tech-payment-retry-contract",
+      "equal": true,
+      "response_sha256": "c012d7e2959ebc66a65a876b9c2b8d0829a0780a94cafb1aaf392aa9f7317712",
+      "bytes": 23986
+    },
+    {
+      "id": "unseen-tech-ott-unknown-subscription",
+      "equal": true,
+      "response_sha256": "68ab5a19e48e319602a850a19cfcad17fe9f651bfdc81b2e0e731cb93e3c42f3",
+      "bytes": 23858
+    },
+    {
+      "id": "unseen-biz-aarrr-alias",
+      "equal": true,
+      "response_sha256": "e914dc6164d79571b0b04c955d68b213c14839f50bfcf2a701f51f359b26107a",
+      "bytes": 23991
+    },
+    {
+      "id": "unseen-econ-elasticity-title",
+      "equal": true,
+      "response_sha256": "6cd685e452582a07f542a3216d43217db99efff9b07f71525d98d1b1b85349ae",
+      "bytes": 13908
+    },
+    {
+      "id": "unseen-negative-tech-lunar-landing",
+      "equal": true,
+      "response_sha256": "9fb6df2d1e3f605fe1d3b68311223b7f5e4bf6e7fea09241c22880b7dba41e09",
+      "bytes": 23903
+    },
+    {
+      "id": "unseen-negative-biz-pet-food-market",
+      "equal": true,
+      "response_sha256": "45b7c12153e7528cdb82770abfcf63be21054e7d6c51fc0c1e8e49504a21d4b1",
+      "bytes": 23922
+    },
+    {
+      "id": "fresh-tech-llm-grounding-decline",
+      "equal": true,
+      "response_sha256": "da177a0b9aab0dcb22ab6ec5fc4ddee6be3e9d92ee94c707a435b28daf57ba9d",
+      "bytes": 23867
+    },
+    {
+      "id": "fresh-tech-single-feature-emergency-stop",
+      "equal": true,
+      "response_sha256": "fe6b00a74a80418f5b5748a712401dd25d6b083e4793c590c4441c83cf12a41e",
+      "bytes": 23991
+    },
+    {
+      "id": "fresh-tech-progressive-release-comparison-gate",
+      "equal": true,
+      "response_sha256": "d4ce6ac34c41a1975fa16a275e2191a6edf25b8baf42e407d91a03763f9f21b7",
+      "bytes": 23976
+    },
+    {
+      "id": "fresh-biz-saas-value-pricing",
+      "equal": true,
+      "response_sha256": "e6d8cb70f504e4a26b1d6c6777be3a771557b0d5dd09570cb87e23c0a45aacfe",
+      "bytes": 23980
+    },
+    {
+      "id": "fresh-econ-pay-raise-purchasing-power",
+      "equal": true,
+      "response_sha256": "dc10538dbbc62b1aeb1ee4c8cc4bec9bdeb38e241e4140719cd248c757aeae0d",
+      "bytes": 23154
+    },
+    {
+      "id": "fresh-fit-new-team-expectations",
+      "equal": true,
+      "response_sha256": "dcae8adca3b0f73616424ea27fb39529819272105bbd676c73fffba79f282450",
+      "bytes": 23933
+    },
+    {
+      "id": "fresh-negative-unknown-token-string",
+      "equal": true,
+      "response_sha256": "6d7225e3fe3a50b8e0f67552ba6d053e9a36af4823e71647c4e4dee00c955427",
+      "bytes": 23829
+    },
+    {
+      "id": "fresh-negative-unrelated-gardening-question",
+      "equal": true,
+      "response_sha256": "c56e83e419769743be3219ac98cd7252179bcb26890b2eb3ca84b3bbb9ef0ce7",
+      "bytes": 22674
+    },
+    {
+      "id": "specific-pattern-with-generic-noise",
+      "equal": true,
+      "response_sha256": "a171169e2bb3bbd1be6608d271d82d97203663bb1bfa9e0e73f5b60fa0f2d924",
+      "bytes": 23696
+    },
+    {
+      "id": "exact-korean-alias-with-relations",
+      "equal": true,
+      "response_sha256": "6721b2e168c1d966d89b172cb06bf8730e0592987e12735e2a30e6ccec4f245b",
+      "bytes": 24000
+    },
+    {
+      "id": "unseen-cache-multi-instance-guard",
+      "equal": true,
+      "response_sha256": "6a2cf69d6bec8e57e453694d88aa349e953a11ae57a369a94d8f7ba7a57686ed",
+      "bytes": 23992
+    },
+    {
+      "id": "unseen-typeorm-runner-cleanup-boundary",
+      "equal": true,
+      "response_sha256": "e2738e532cdacbb55fd4ae497a23cc0f171a789a48e978f48a29acd5d32c0d72",
+      "bytes": 23961
+    },
+    {
+      "id": "unseen-canary-baseline-version-split",
+      "equal": true,
+      "response_sha256": "d0258baa5d69c1951bc89de8af94da19a27874e6861882d134b906929f799e39",
+      "bytes": 23996
+    },
+    {
+      "id": "unseen-diversification-rebalancing",
+      "equal": true,
+      "response_sha256": "c9792f0dd838298e6e1b188973932f66c747710c4c5b0b74f58cdddfeb0924b5",
+      "bytes": 23938
+    },
+    {
+      "id": "unseen-negative-gibberish",
+      "equal": true,
+      "response_sha256": "42b422798dd61b1c1af91f9554ac03e15406f563e40a479b2e2dd3dce5a70937",
+      "bytes": 23652
+    },
+    {
+      "id": "unseen-negative-weather",
+      "equal": true,
+      "response_sha256": "2477fddfe2f86a149278d02a912ac7327078187cec26476487ab5d33d0f6a4b2",
+      "bytes": 22949
+    },
+    {
+      "id": "tech-distributed-workflow-recovery",
+      "equal": true,
+      "response_sha256": "46d32017a1f2fb30c7348f2ece8d4b5ef34e2be94cf59c18ca811933ef0f7ec1",
+      "bytes": 22602
+    },
+    {
+      "id": "tech-schema-change-rollback-window",
+      "equal": true,
+      "response_sha256": "be8b738b710ae3d4bcaffc0efa2bdd74f40888f24276a4e63c0fb6963345ab31",
+      "bytes": 23962
+    },
+    {
+      "id": "tech-agent-context-boundaries",
+      "equal": true,
+      "response_sha256": "5b5d60ef2be3fce374db98b570ed8efcc39445d697f6144e229a15381a791487",
+      "bytes": 23919
+    },
+    {
+      "id": "tech-grounded-answer-abstention",
+      "equal": true,
+      "response_sha256": "33a6bedfab1898b83043556f5a2b16e8f4a1f824bc8db67b49548273db87ef2f",
+      "bytes": 23543
+    },
+    {
+      "id": "tech-recommendation-availability",
+      "equal": true,
+      "response_sha256": "903c11f3ee9e15850a6ffbfaedf62f6b983e8e8d9c6955a064bc264b32ea95c6",
+      "bytes": 23912
+    },
+    {
+      "id": "tech-cache-write-race-and-hot-key",
+      "equal": true,
+      "response_sha256": "1df2197ee686cfe6b877d69127ae1edee492ea946168465595d154c7c63e4761",
+      "bytes": 23925
+    },
+    {
+      "id": "tech-api-consumer-transition",
+      "equal": true,
+      "response_sha256": "2ba7e8e63a9ba729990520e39e93319961611007a1ae0f808deb3cc5496ffb44",
+      "bytes": 23988
+    },
+    {
+      "id": "tech-progressive-release-control",
+      "equal": true,
+      "response_sha256": "5825b070eb74f637aaf4126fcc2cc052a09bcc81436351c3de1192696103f489",
+      "bytes": 23986
+    },
+    {
+      "id": "biz-solo-product-evidence",
+      "equal": true,
+      "response_sha256": "d552169b61504f6296a79beec610c550715f30c2d3177fe20b2e0dc99e62c694",
+      "bytes": 23912
+    },
+    {
+      "id": "biz-commerce-price-and-cancellation",
+      "equal": true,
+      "response_sha256": "9bdfdeca1ba5414fb770c1ea03eb804def3899aaf940bf143d0a4fb2e2b10f4d",
+      "bytes": 23923
+    },
+    {
+      "id": "econ-inflation-rate-transmission",
+      "equal": true,
+      "response_sha256": "af3ed7b815879f3017ee3eb13b6990e567cda1a2d0a7c827ae1037626cf2fa5e",
+      "bytes": 23634
+    },
+    {
+      "id": "econ-panic-portfolio-discipline",
+      "equal": true,
+      "response_sha256": "290f9792e41a6085c0eda1a038cec22e377e700fbde9afebebb22d9acebd5afc",
+      "bytes": 23989
+    },
+    {
+      "id": "negative-restaurant-reservation",
+      "equal": true,
+      "response_sha256": "16f34a51f82e80ae6c6dc5f83a7444775b34271733a88e16fca306a591fc78f3",
+      "bytes": 22961
+    },
+    {
+      "id": "negative-private-calendar",
+      "equal": true,
+      "response_sha256": "fff6422e827e72981b9e8df2cceb5b94a888dea767786c4efef983b9dbd674ec",
+      "bytes": 23510
+    },
+    {
+      "id": "negative-private-bank-balance",
+      "equal": true,
+      "response_sha256": "03518183f62a1c0b461e5daabdaf9464809ad6727450cd505b408a2633c72ad3",
+      "bytes": 23843
+    },
+    {
+      "id": "negative-live-taxi-request",
+      "equal": true,
+      "response_sha256": "2aff066f9c828c3d8c66e949f74e558726c192eb16236ed254e65b95343cf5db",
+      "bytes": 23986
+    },
+    {
+      "id": "selection-holdout-01",
+      "equal": true,
+      "response_sha256": "4397580ebd5fe3d068be704091ba6bcb779b672b2fb5dfeac82ed8bc5c1da022",
+      "bytes": 23993
+    },
+    {
+      "id": "selection-holdout-02",
+      "equal": true,
+      "response_sha256": "020a3cab8724f80fcf4cea751bbe796c318f90ba3a83d0189b5ba273a43d2d70",
+      "bytes": 23863
+    },
+    {
+      "id": "selection-holdout-03",
+      "equal": true,
+      "response_sha256": "6367b4662b0fd0476bf753704c759a102955e0a300daed5defedc7d80f8a9016",
+      "bytes": 23944
+    },
+    {
+      "id": "selection-holdout-04",
+      "equal": true,
+      "response_sha256": "8087e512cd3fb10209a30b86a2ea6fdbd849651c2cf57edef51664b16b294ef3",
+      "bytes": 23843
+    },
+    {
+      "id": "selection-holdout-05",
+      "equal": true,
+      "response_sha256": "84658b5ffc4c6dc7e4fd7450d894d1947717eeba9cf23af12c3111f25da43c82",
+      "bytes": 23733
+    },
+    {
+      "id": "selection-holdout-06",
+      "equal": true,
+      "response_sha256": "d477352b5adc892afeaca614e28333c96ed193f63e028b34bef696c81228a67f",
+      "bytes": 23855
+    },
+    {
+      "id": "selection-holdout-07",
+      "equal": true,
+      "response_sha256": "df94bc9d7d33e03685325adf86932c70889408a10a53185fc7400c90bf692dcd",
+      "bytes": 23999
+    },
+    {
+      "id": "selection-holdout-08",
+      "equal": true,
+      "response_sha256": "9b01f35e36765c1619e24265e83deecb2c43daf7346959fcac36cb915e13fbe6",
+      "bytes": 23891
+    },
+    {
+      "id": "selection-holdout-09",
+      "equal": true,
+      "response_sha256": "092e10f8bcc0658298cfeb23c368bd083872a534c3eb1dd7a11ee824f21b6e2f",
+      "bytes": 23992
+    },
+    {
+      "id": "selection-holdout-10",
+      "equal": true,
+      "response_sha256": "25c93692b20268022bbd9d2f7f036fd7889de198459ad7ff4f2b9515ebc2fcfa",
+      "bytes": 23885
+    },
+    {
+      "id": "rerank-holdout-tech-event-outbox-idempotency",
+      "equal": true,
+      "response_sha256": "a5a3521055c37605fe3677dba926df11191bf1a870b99d7580da08471b68c11a",
+      "bytes": 23996
+    },
+    {
+      "id": "rerank-holdout-tech-migration-compatible-rollout",
+      "equal": true,
+      "response_sha256": "b0ca2dd377697a4ecc2d91219b22fa6e0166b067eb1356dcf9e7ea1d756c61f2",
+      "bytes": 23995
+    },
+    {
+      "id": "rerank-holdout-tech-migration-test-isolation",
+      "equal": true,
+      "response_sha256": "6fba3b441879daf0693ce430a0e7ec876432c37d647961b73a3394fbab74a396",
+      "bytes": 23933
+    },
+    {
+      "id": "rerank-holdout-tech-refresh-token-compromise",
+      "equal": true,
+      "response_sha256": "61ed4f9dc6bb86335d381dc40c39c5865a6c0d972194dbb1420f4527a85e0e48",
+      "bytes": 23995
+    },
+    {
+      "id": "rerank-holdout-tech-api-version-cache-retirement",
+      "equal": true,
+      "response_sha256": "b9d55b7ec4e38a1f8650e62ffa356eeca60c827b19ab2bd80d1bcdc34d7453bd",
+      "bytes": 23999
+    },
+    {
+      "id": "rerank-holdout-biz-gtm-before-pmf-scaling",
+      "equal": true,
+      "response_sha256": "878b9c9ccb0f2e4ec9a0bf9e2981f2aa45c500f75868bb9e5eacb2d6d54cb054",
+      "bytes": 23955
+    },
+    {
+      "id": "rerank-holdout-biz-freemium-experiment-guardrails",
+      "equal": true,
+      "response_sha256": "6301a1cf731e6a41192aa1f15d9f5397b8697cd50e4e6b77b16c4c45e4660e72",
+      "bytes": 23838
+    },
+    {
+      "id": "rerank-holdout-econ-rate-hike-bond-duration",
+      "equal": true,
+      "response_sha256": "0b207e03c7f7f332f22c90396edcfe55f89020620b150180f8960b4cdac77c91",
+      "bytes": 23529
+    },
+    {
+      "id": "rerank-holdout-negative-private-credential",
+      "equal": true,
+      "response_sha256": "37b7194dace7c1ec8734e28b27e591ca7a974acaa508f409d90d225fdee70584",
+      "bytes": 23904
+    },
+    {
+      "id": "rerank-holdout-negative-private-investment-account",
+      "equal": true,
+      "response_sha256": "fec81576ca95250e186486d6ea423d8cdf49aaa31b36ddebf56070e5c93d2c24",
+      "bytes": 23570
+    },
+    {
+      "id": "coverage-tech-outbox-recovery",
+      "equal": true,
+      "response_sha256": "b9eb3d5c7cd3107831dc0c7a52ae3f3e347017f765a0379948f2938ee6086c7c",
+      "bytes": 23232
+    },
+    {
+      "id": "coverage-tech-locking-recovery",
+      "equal": true,
+      "response_sha256": "b3378acfd273866e5f6a061c632f97ec1db4fdff67d75522dbcaad0558cc4561",
+      "bytes": 23931
+    },
+    {
+      "id": "coverage-tech-spike-capacity",
+      "equal": true,
+      "response_sha256": "27e7526bacb3cc9d5d44b6d7826c654f53af7478ff0c9f6ef4f1849445a9a6b6",
+      "bytes": 23878
+    },
+    {
+      "id": "coverage-tech-retry-overload",
+      "equal": true,
+      "response_sha256": "c47d9bbed232e728eea5606f7ebda5fde1e40c718f344205b126e4589b83da52",
+      "bytes": 23858
+    },
+    {
+      "id": "coverage-tech-distributed-recovery",
+      "equal": true,
+      "response_sha256": "ca3bdbee6218c2b8c809682015175103ec7d7da279c3dfa03532bc93a9eb249a",
+      "bytes": 23999
+    },
+    {
+      "id": "coverage-biz-pmf-scaling",
+      "equal": true,
+      "response_sha256": "52ecd2bd17b514e568b9f4eff6be38afc820ea2832bdf2dc88318aa2b803d119",
+      "bytes": 23848
+    },
+    {
+      "id": "coverage-biz-incrementality",
+      "equal": true,
+      "response_sha256": "97939f9eddf1e773873638d84924a87c1675d6d1d25fc58961ef216094a913e1",
+      "bytes": 23980
+    },
+    {
+      "id": "coverage-econ-rate-transmission",
+      "equal": true,
+      "response_sha256": "d54e98837e375a86588969e1e5e8a5c0768538e407c3f91c18e3052aee63bb4a",
+      "bytes": 23510
+    },
+    {
+      "id": "coverage-negative-airline-provider-migration",
+      "equal": true,
+      "response_sha256": "c752fb9532eabf6251e473e01983d530753a7dbea34bcec0d3f004a89e446acc",
+      "bytes": 23066
+    },
+    {
+      "id": "coverage-negative-current-policy-minutes",
+      "equal": true,
+      "response_sha256": "93f391587ef9f5afabe2000f64670cc32aecbe0ffe638bfd1fe974909e135121",
+      "bytes": 23715
+    }
+  ],
+  "baseline_query_revision": "55e30655a20d03e6d26fd941b8319a7b7d62788c",
+  "scope": "Default lookup requests without conditions; existing synthetic regression questions, not a new quality holdout.",
+  "runner_source": "import assert from 'node:assert/strict';\nimport fs from 'node:fs';\nimport { tmpdir } from 'node:os';\nimport { join } from 'node:path';\nimport { pathToFileURL } from 'node:url';\nimport { createHash } from 'node:crypto';\nconst repo = '/Users/mark/myown/interview';\nconst source = join(repo, 'ontology/src');\nconst hash = value => createHash('sha256').update(value).digest('hex');\nconst { lookup: current } = await import(pathToFileURL(join(source, 'query.mjs')));\nconst { loadSnapshot } = await import(pathToFileURL(join(source, 'snapshot.mjs')));\nconst { DEFAULT_SCOPES } = await import(pathToFileURL(join(source, 'core.mjs')));\nconst previous = JSON.parse(fs.readFileSync(join(repo, 'ontology/evaluation/coverage-report-2026-09-08.json')));\nconst caseFiles = Object.keys(previous.inputs.case_files);\nconst cases = caseFiles.flatMap(file => JSON.parse(fs.readFileSync(join(repo, file))));\nconst temporary = fs.mkdtempSync(join(tmpdir(), 'ontology-default-regression-'));\ntry {\n  const baseline = fs.readFileSync('/tmp/ontology-query-before-sufficiency-2026-09-08.mjs');\n  fs.writeFileSync(join(temporary, 'query.mjs'), baseline);\n  for (const file of ['core.mjs', 'repository.mjs', 'snapshot.mjs', 'markdown.mjs']) fs.symlinkSync(join(source, file), join(temporary, file));\n  const { lookup: before } = await import(pathToFileURL(join(temporary, 'query.mjs')));\n  const snapshot = loadSnapshot({ repo });\n  const codeHashes = Object.fromEntries(['query.mjs', 'core.mjs', 'repository.mjs', 'snapshot.mjs', 'markdown.mjs'].map(file => [file, hash(fs.readFileSync(join(source, file)))]));\n  const results = [];\n  for (const sample of cases) {\n    const args = { query: sample.query, scope: sample.scope ?? DEFAULT_SCOPES, max_bytes: sample.max_bytes ?? 24000 };\n    const options = { repo, allowlist: DEFAULT_SCOPES };\n    const a = before(options, args, snapshot);\n    const b = current(options, args, snapshot);\n    assert.deepEqual(b, a, sample.id);\n    assert.equal(Buffer.byteLength(JSON.stringify(b)), b.budget.used_bytes, sample.id);\n    results.push({ id: sample.id, equal: true, response_sha256: hash(JSON.stringify(b)), bytes: b.budget.used_bytes });\n  }\n  for (const [file, sha] of Object.entries(codeHashes)) assert.equal(hash(fs.readFileSync(join(source, file))), sha, file);\n  const report = { kind: 'existing-question-response-equivalence', source_revision: snapshot.manifest.revision,\n    fingerprint: snapshot.fingerprint, manifest_hash: snapshot.manifest_hash, baseline_query_sha256: hash(baseline),\n    code_sha256: codeHashes, case_sha256: Object.fromEntries(caseFiles.map(file => [file, hash(fs.readFileSync(join(repo, file)))])),\n    cases: results.length, exact_json_equivalence: true, results };\n  fs.writeFileSync('/tmp/ontology-default-regression-2026-09-08.json', JSON.stringify(report, null, 2) + '\\n');\n  console.log(JSON.stringify({ cases: results.length, exact_json_equivalence: true, report: '/tmp/ontology-default-regression-2026-09-08.json' }));\n} finally { fs.rmSync(temporary, { recursive: true, force: true }); }\n"
+}

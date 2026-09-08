@@ -1,0 +1,370 @@
+{
+  "schema_version": "host-evidence-sufficiency-v1",
+  "suite_id": "ontology-sufficiency-synthetic-2026-09-08",
+  "provenance": {
+    "created_at": "2026-09-08",
+    "source_revision": "55e30655a20d03e6d26fd941b8319a7b7d62788c",
+    "evidence_basis": "Canonical Markdown under tech and ontology. A heading is a retrieval receipt only when the returned source body directly supports the stated semantic criterion.",
+    "authoring_boundary": "Synthetic gold authored without reading query implementation or historical evaluation questions, cases, reports, traces, or results."
+  },
+  "labels": [
+    {
+      "question_id": "sufficiency-001",
+      "expected_answerability": "fully_answerable_from_vault",
+      "supported_conditions": [
+        {
+          "id": "atomic_business_write_and_event_record",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md",
+              "heading": "해결: Outbox 테이블"
+            },
+            {
+              "source_path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md",
+              "heading": "왜 되는가"
+            }
+          ],
+          "semantic_criteria": [
+            "States that the business write and the outbox event record commit in the same local database transaction.",
+            "States that the Relay publishes separately and retained outbox records permit later publication after a Relay failure.",
+            "Does not present the database transaction as atomic broker publication."
+          ]
+        },
+        {
+          "id": "duplicate_delivery_absorption",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md",
+              "heading": "어느 축도 중복을 없애지는 못한다"
+            },
+            {
+              "source_path": "tech/reliability/Idempotent-Consumer.md",
+              "heading": "멱등성 확보 전략"
+            },
+            {
+              "source_path": "tech/reliability/Idempotent-Consumer.md",
+              "heading": "원자성이 핵심 — check-then-act 레이스"
+            }
+          ],
+          "semantic_criteria": [
+            "Explains that at-least-once Relay publication can repeat after publication succeeds but marking does not complete.",
+            "Requires a consumer-side idempotency mechanism, such as a naturally idempotent state transition or atomic inbox and deduplication handling.",
+            "Does not claim end-to-end exactly-once delivery."
+          ]
+        }
+      ],
+      "unsupported_parts": [],
+      "response_requirements": [
+        "Both supported conditions must be answered and their boundary must be stated."
+      ]
+    },
+    {
+      "question_id": "sufficiency-002",
+      "expected_answerability": "fully_answerable_from_vault",
+      "supported_conditions": [
+        {
+          "id": "retry_eligibility",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/reliability/external-integration/Retry-Backoff-Jitter.md",
+              "heading": "재시도 규율 — 언제, 어디서, 몇 번"
+            }
+          ],
+          "semantic_criteria": [
+            "Restricts retries to idempotent requests or an API contract that safely provides equivalent idempotency.",
+            "Distinguishes deterministic failures from potentially recoverable failures instead of retrying every status code.",
+            "Honors Retry-After when the API supplies it."
+          ]
+        },
+        {
+          "id": "bounded_desynchronized_retry",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/reliability/external-integration/Retry-Backoff-Jitter.md",
+              "heading": "지수 백오프 (Exponential Backoff)"
+            },
+            {
+              "source_path": "tech/reliability/external-integration/Retry-Backoff-Jitter.md",
+              "heading": "왜 지터 없이는 안 되나 — 상관관계"
+            },
+            {
+              "source_path": "tech/reliability/external-integration/Retry-Backoff-Jitter.md",
+              "heading": "재시도 규율 — 언제, 어디서, 몇 번"
+            }
+          ],
+          "semantic_criteria": [
+            "Uses capped exponential backoff with jitter to spread correlated retry waves.",
+            "Bounds amplification with an attempt limit or retry budget and places retries at one layer of the stack.",
+            "Does not imply that jitter makes unsafe or permanently failing requests safe to retry."
+          ]
+        }
+      ],
+      "unsupported_parts": [],
+      "response_requirements": [
+        "Both eligibility and overload-control conditions must be answered."
+      ]
+    },
+    {
+      "question_id": "sufficiency-003",
+      "expected_answerability": "fully_answerable_from_vault",
+      "supported_conditions": [
+        {
+          "id": "compatible_rename_rollout",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/database/rdbms/schema-design/lifecycle/Backward-Compatibility.md",
+              "heading": "쪼개기 판단"
+            }
+          ],
+          "semantic_criteria": [
+            "Treats a rename as a breaking change rather than applying a direct rename during coexistence.",
+            "Describes an expand path: add a new compatible column, dual-write, backfill in batches, switch reads, then remove the old column.",
+            "Explains that batching limits long lock and log pressure and can be paused and resumed."
+          ]
+        },
+        {
+          "id": "contract_readiness",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/database/rdbms/schema-design/lifecycle/Backward-Compatibility.md",
+              "heading": "호환 창과 contract 시점"
+            }
+          ],
+          "semantic_criteria": [
+            "Requires all old application instances, workers, batches, cron jobs, and relevant external consumers to stop depending on the old column.",
+            "Requires the rollback window to be closed before contract removes forward compatibility.",
+            "Does not use elapsed time alone as the removal criterion."
+          ]
+        }
+      ],
+      "unsupported_parts": [],
+      "response_requirements": [
+        "Both rollout mechanics and contract gates must be answered."
+      ]
+    },
+    {
+      "question_id": "sufficiency-004",
+      "expected_answerability": "fully_answerable_from_vault",
+      "supported_conditions": [
+        {
+          "id": "in_process_request_coalescing",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/database/in-memory/cache/invalidation-refresh/Cache-Stampede.md",
+              "heading": "5. Single-Flight (프로세스 내 중복 합치기)"
+            }
+          ],
+          "semantic_criteria": [
+            "Uses a per-key in-flight operation so concurrent misses in the same process share one database load.",
+            "Removes the in-flight entry when the operation finishes so a failed request does not leave a permanent stale gate."
+          ]
+        },
+        {
+          "id": "cross_instance_duplicate_suppression",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/database/in-memory/cache/invalidation-refresh/Cache-Stampede.md",
+              "heading": "2. Mutex Lock (분산 잠금)"
+            },
+            {
+              "source_path": "tech/database/in-memory/cache/invalidation-refresh/Cache-Stampede.md",
+              "heading": "5. Single-Flight (프로세스 내 중복 합치기)"
+            }
+          ],
+          "semantic_criteria": [
+            "Uses a distributed mutex so only one instance loads the Hot Key while other instances wait, recheck, or use stale data.",
+            "Combines the distributed control with in-process coalescing for a multi-instance service.",
+            "Does not claim that in-process single-flight alone coordinates separate instances."
+          ]
+        }
+      ],
+      "unsupported_parts": [],
+      "response_requirements": [
+        "The answer must distinguish same-process and cross-instance controls."
+      ]
+    },
+    {
+      "question_id": "sufficiency-005",
+      "expected_answerability": "unanswerable_from_vault",
+      "supported_conditions": [],
+      "acceptable_boundary_receipts": [
+        {
+          "source_path": "ontology/Development-Ontology-Contract.md",
+          "heading": "근거 확인과 채택의 경계"
+        },
+        {
+          "source_path": "ontology/Development-Ontology-Contract.md",
+          "heading": "제안의 결과물"
+        }
+      ],
+      "semantic_criteria": [
+        "States that generic vault knowledge cannot identify a current API endpoint, a seven-day production count, or a deployment trend.",
+        "Requests time-bounded production telemetry and deployment evidence before answering the factual request.",
+        "Does not substitute generic deadlock guidance for the requested operational facts."
+      ],
+      "unsupported_parts": [
+        {
+          "asked_part": "API endpoint with the most InnoDB deadlocks in the past seven days",
+          "reason": "Requires current production telemetry and endpoint attribution."
+        },
+        {
+          "asked_part": "deadlock count and post-deployment trend",
+          "reason": "Requires a time-bounded metrics query and deployment timeline."
+        }
+      ]
+    },
+    {
+      "question_id": "sufficiency-006",
+      "expected_answerability": "unanswerable_from_vault",
+      "supported_conditions": [],
+      "acceptable_boundary_receipts": [
+        {
+          "source_path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md",
+          "heading": "행 단위 claim"
+        },
+        {
+          "source_path": "ontology/Development-Ontology-Contract.md",
+          "heading": "근거 확인과 채택의 경계"
+        }
+      ],
+      "semantic_criteria": [
+        "May use the technical source to explain what row-level claim and stale-claim recovery would entail, but does not treat it as evidence of a particular deployment.",
+        "States that current Relay behavior and settings require the actual source, deployment configuration, database state, or runtime evidence.",
+        "Does not assert that FOR UPDATE SKIP LOCKED or a recovery lease is presently configured."
+      ],
+      "unsupported_parts": [
+        {
+          "asked_part": "whether the current production Relay uses row-level claim",
+          "reason": "The vault source is a general pattern, not current implementation evidence."
+        },
+        {
+          "asked_part": "the configured stale-claim recovery values",
+          "reason": "Requires current configuration or runtime state."
+        }
+      ]
+    },
+    {
+      "question_id": "sufficiency-007",
+      "expected_answerability": "unanswerable_from_vault",
+      "supported_conditions": [],
+      "acceptable_boundary_receipts": [
+        {
+          "source_path": "ontology/Development-Ontology-Contract.md",
+          "heading": "근거 확인과 채택의 경계"
+        },
+        {
+          "source_path": "ontology/Development-Ontology-Contract.md",
+          "heading": "제안의 결과물"
+        }
+      ],
+      "semantic_criteria": [
+        "States that a current RDS topology and today's p99 metric cannot be established from general vault documentation.",
+        "Identifies the needed evidence as current AWS configuration plus time-bounded monitoring data.",
+        "Does not infer an Aurora or Multi-AZ choice from a documentation topic."
+      ],
+      "unsupported_parts": [
+        {
+          "asked_part": "current Multi-AZ or Aurora configuration",
+          "reason": "Requires current cloud configuration evidence."
+        },
+        {
+          "asked_part": "today's p99 CommitLatency",
+          "reason": "Requires live monitoring data for the requested time window."
+        }
+      ]
+    },
+    {
+      "question_id": "sufficiency-008",
+      "expected_answerability": "partially_answerable_from_vault",
+      "supported_conditions": [
+        {
+          "id": "safe_retry_rule",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/reliability/external-integration/Retry-Backoff-Jitter.md",
+              "heading": "재시도 규율 — 언제, 어디서, 몇 번"
+            },
+            {
+              "source_path": "tech/reliability/external-integration/Retry-Backoff-Jitter.md",
+              "heading": "왜 지터 없이는 안 되나 — 상관관계"
+            }
+          ],
+          "semantic_criteria": [
+            "Explains that retries need an idempotency or API-contract check, bounded exponential backoff with jitter, and a bounded retry location or budget.",
+            "Does not treat provider timeout alone as proof that repeating an external side effect is safe."
+          ]
+        },
+        {
+          "id": "external_effect_idempotency",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/reliability/Idempotent-Consumer.md",
+              "heading": "멱등 키 + 상태 저장소"
+            }
+          ],
+          "semantic_criteria": [
+            "Explains that an external provider call with an uncertain result needs a stable provider idempotency key and reconciliation or provider confirmation.",
+            "Does not claim that a local deduplication key alone proves the provider effect occurred exactly once."
+          ]
+        }
+      ],
+      "unsupported_parts": [
+        {
+          "asked_part": "whether the current production client uses the same Idempotency-Key",
+          "reason": "Requires current client source and provider integration evidence."
+        },
+        {
+          "asked_part": "whether the current production client uses full jitter and a retry budget",
+          "reason": "Requires current retry policy configuration or runtime evidence."
+        }
+      ],
+      "response_requirements": [
+        "Provide the general vault-backed rule, then explicitly keep the production-state confirmation unresolved."
+      ]
+    },
+    {
+      "question_id": "sufficiency-009",
+      "expected_answerability": "partially_answerable_from_vault",
+      "supported_conditions": [
+        {
+          "id": "compatible_rename_and_backfill",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/database/rdbms/schema-design/lifecycle/Backward-Compatibility.md",
+              "heading": "쪼개기 판단"
+            }
+          ],
+          "semantic_criteria": [
+            "Describes the additive, dual-write, batched backfill, read-cutover, and later contract sequence instead of a direct rename.",
+            "Explains that a batch backfill needs predeclared pause and resume conditions when replication lag or target-table write latency rises."
+          ]
+        },
+        {
+          "id": "contract_gate",
+          "acceptable_source_receipts": [
+            {
+              "source_path": "tech/database/rdbms/schema-design/lifecycle/Backward-Compatibility.md",
+              "heading": "호환 창과 contract 시점"
+            }
+          ],
+          "semantic_criteria": [
+            "States that old writers and other consumers must be gone and the rollback window closed before removing the old column."
+          ]
+        }
+      ],
+      "unsupported_parts": [
+        {
+          "asked_part": "current backfill completion percentage",
+          "reason": "Requires current batch progress or database evidence."
+        },
+        {
+          "asked_part": "current count of old writers",
+          "reason": "Requires current deployment inventory and writer or consumer evidence."
+        }
+      ],
+      "response_requirements": [
+        "Provide the general rollout and stop conditions, then explicitly keep the current-progress facts unresolved."
+      ]
+    }
+  ]
+}

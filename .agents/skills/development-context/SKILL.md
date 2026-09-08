@@ -26,13 +26,14 @@ description: Retrieve source-backed personal knowledge for technical, business, 
 
 한 답변에 여러 근거가 필요한 질문은 [조건별 근거 탐색](../../../ontology/Ontology-Condition-Retrieval.md)을 따른다. 이 흐름은 host의 작업 규칙이며 서버가 조건의 의미나 충족 여부를 자동 검증한다는 뜻은 아니다.
 
-1. 첫 조회 전에 사용자 질문에서 답변에 필요한 근거 질문을 최대 3개 그룹으로 적되 필요한 조건을 누락하지 않는다. 질문에 명시된 요구와 host가 해석을 위해 둔 가정은 구분한다. 가정은 검색 조건으로 몰래 추가하거나 충족으로 취급하지 않는다.
-2. 첫 호출은 원래 질문 그대로 `context_lookup`, `max_bytes: 24000`으로 한다. 이후 `context_lookup` 또는 `context_search`는 아직 `unresolved`인 조건을 찾을 때만 최대 2회 쓴다. `context_search` cursor의 다음 페이지도 한 회다.
+1. 첫 조회 전에 사용자 질문에서 답변에 필요한 근거 질문을 최대 3개 그룹으로 적되 필요한 조건을 누락하지 않는다. 한 그룹 안에서도 동작 원리, 실패 경계, 예외와 적용 맥락처럼 따로 설명할 원자 요구를 고정 `id`와 `question`으로 적는다. 이 inventory는 첫 호출 전에 trace의 condition에 남기며, 반환된 source에 맞춰 추가, 삭제 또는 재서술하지 않는다. 질문에 명시된 요구와 host가 해석을 위해 둔 가정은 구분한다. 가정은 검색 조건으로 몰래 추가하거나 충족으로 취급하지 않는다.
+2. 첫 호출은 원래 질문 그대로 `context_lookup`, `max_bytes: 24000`으로 한다. 조건 힌트는 기본으로 생략한다. 사용자가 탐색 표현을 지정했거나 힌트 사용을 요청했고 도구 schema가 `conditions`를 지원하면 `stated_requirement` 그룹에서만 1~3개의 짧은 탐색 표현을 넣는다. 이는 보충 절의 어휘 선택 단서일 뿐 근거 또는 조건 충족 판정이 아니며, 이미 연결한 server가 이 필드를 받지 않으면 생략한다. 이후 `context_lookup` 또는 `context_search`는 아직 `unresolved`인 조건을 찾을 때만 최대 2회 쓴다. `context_search` cursor의 다음 페이지도 한 회다.
 3. 반환된 중요한 절이 잘렸으면 `context_read`를, 같은 문서의 다른 조건이나 예외를 찾아야 하면 `context_outline` 뒤 선택한 receipt의 `context_read`를 쓴다. outline은 최대 2회, read 페이지는 최대 4회다.
-4. 모든 성공, 실패, cursor 재시작과 revision 재시작을 합쳐 최대 8회 호출한다. 한 질문의 실제 `structuredContent` 직렬화 byte 합계는 64,000 이하로 둔다. 요청마다 `max_bytes`는 남은 합계와 24,000 중 작은 값 이하로 둔다. 도구가 반환한 실제 byte를 기록하며, 오류 payload도 합계와 호출 수에 넣는다. 개별 도구 상한 65,536을 이 흐름에서 키우는 근거로 쓰지 않는다.
+4. 모든 성공, 실패, cursor 재시작과 revision 재시작을 합쳐 최대 8회 호출한다. 한 질문의 실제 `structuredContent` 직렬화 byte 합계는 64,000 이하로 둔다. 요청마다 `max_bytes`는 남은 합계와 24,000 중 작은 값 이하로 둔다. 평가 trace의 각 호출은 실행 전에 `steps[]`에 `name`, `arguments`, `reason`, `condition_ids`를 기록한다. 도구가 반환한 실제 byte를 기록하며, 오류 payload도 합계와 호출 수에 넣는다. 개별 도구 상한 65,536을 이 흐름에서 키우는 근거로 쓰지 않는다.
 5. 모든 lookup/search는 첫 요청과 같은 scope를 쓴다. outline에는 반환된 `document_id`와 `source_revision`을, read에는 반환된 `evidence_unit_id`, `source_revision`, `content_hash`를 전달한다. ID는 각각 Document 또는 section의 `id`에서 복사한다. 서로 다른 revision의 결과를 섞지 않는다. revision 또는 hash가 바뀌면 이전 탐색을 버리고, 남은 상한 안에서 처음부터 재조회하거나 해당 조건을 `unresolved: source_changed`로 남긴다.
-6. 조건의 status는 `supported`, `contradicted`, `unresolved`만 쓴다. 실제로 읽어 반환된 source body가 조건을 직접 지지하거나 충돌할 때만 앞의 두 상태를 쓴다. 제목, heading, matched term, link, relation, `source_confirmed`와 outline은 탐색 단서일 뿐 판정 근거가 아니다. `unresolved`에는 `not_found`, `truncated`, `budget_limit`, `source_changed`처럼 이유를 남긴다.
-7. 모든 조건이 `supported` 또는 `contradicted`가 되면 멈춘다. 그렇지 않으면 상한에 닿는 즉시 멈추고 누락을 숨기지 않는다. 조건은 사실 주장 자체가 아니라 답변에 필요한 근거 질문일 수 있다.
+6. 조건의 status는 `supported`, `contradicted`, `unresolved`만 쓴다. 실제로 읽어 반환된 source body가 각 원자 요구를 직접 지지하거나 충돌할 때만 앞의 두 상태를 쓴다. 제목, heading, matched term, link, relation, `source_confirmed`와 outline은 탐색 단서일 뿐 판정 근거가 아니다. 일부 문장만 관련 있거나 예외와 맥락이 빠졌다면 `unresolved`로 남긴다. `unresolved`에는 `not_found`, `truncated`, `budget_limit`, `source_changed`처럼 이유를 남긴다.
+7. 현재 trace에는 첫 호출 전에 고정한 조건별 원자 inventory와 같은 `id`와 `question`으로 평가한 각 요구의 status, receipt ID/revision/hash와 실제 본문 quote를 남긴다. 모든 원자 요구가 해결됐을 때만 답변 충분성을 `sufficient`로 쓴다. 일부만 해결되면 `partial`, 직접 근거가 없으면 `insufficient`이며, 어휘 적중이나 반환 문서 수로 충분성을 올리지 않는다. 답변 전 원 질문과 설명을 다시 대조하며, 패턴 이름만 언급하고 동작 이유나 보장 경계를 설명하지 못한 요구는 해결된 것으로 판정하지 않는다.
+8. 모든 조건이 `supported` 또는 `contradicted`가 되면 멈춘다. 그렇지 않으면 상한에 닿는 즉시 멈추고 누락을 숨기지 않는다. 조건은 사실 주장 자체가 아니라 답변에 필요한 근거 질문일 수 있다.
 
 일반 작업에서는 조건, 호출, 실제 byte와 `id`/`source_revision`/`content_hash`, 반환 본문에서 그대로 옮긴 짧은 quote를 내부 작업 메모에 남긴다. 평가 trace는 별도 입력으로 두고, `expected_evidence`나 정답 heading, 본문 문구를 탐색 계획이나 후속 대상 선택에 넣지 않는다.
 
