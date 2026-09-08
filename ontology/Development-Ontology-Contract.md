@@ -64,6 +64,7 @@ aliases: ["개발 판단 지식 계약", "Development Context Contract"]
 ## 근거 확인과 채택의 경계
 
 - 위키링크가 해석된다는 것은 원문 연결이 존재한다는 뜻이다. 그 자체로 의미 관계나 현재 코드의 적합성을 증명하지 않는다.
+- `links_to`의 선택적 `link_role`은 기존 목차 소속, 상위 문서, 관련 문서 표기를 구분하는 구조 정보다. 폴더 소속이나 링크 역할을 선행 조건, 인과관계 또는 기술 채택으로 승격하지 않는다. 원문 표기의 추출 규칙은 [[Ontology-Operations]]를 따른다.
 - 이 지도에서 AI가 정리한 의미 관계는 검토 후보로 취급한다. 질문 시 원문을 읽어 확인한 지식과 현재 프로젝트에 대한 추론을 분리한다.
 - 후보 지도는 AI가 원문을 찾는 탐색 보조 자료다. `context_lookup`은 후보 의미 관계를 생성하거나 확정하지 않는다.
 - 확정 typed relation은 canonical Markdown의 `ontology_relations`에서만 읽는다. `predicate`, `target`과 선택적인 `subject`가 모두 schema와 현재 snapshot entity ID에 맞을 때만 serving relation으로 승격한다. 지원하지 않는 필드, 후보 상태와 YAML alias는 coverage gap으로 남기고 별도 assertion unit이나 edge로 승격하지 않는다. `contains`와 `links_to`는 parser 전용 관계이며 typed relation으로 직접 작성하지 않는다.

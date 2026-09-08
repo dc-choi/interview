@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 
-import { lookup } from '../src/query.mjs';
+import { lookup, search } from '../src/query.mjs';
 import { buildSnapshot, loadSnapshot } from '../src/snapshot.mjs';
 
 const FIXTURE_GIT_ENV = {
@@ -222,4 +222,49 @@ test('typed relation assertion metadata outranks generic linked sections', (t) =
     'the exact title also retains the typed assertion metadata score');
   assert.equal(Buffer.byteLength(JSON.stringify(result), 'utf8'), result.budget.used_bytes);
   assert.ok(result.budget.used_bytes <= 24 * 1024);
+});
+
+test('an explicit parent link wins a relevance tie without changing document search', (t) => {
+  const root = mkdtempSync(join(tmpdir(), 'context-query-link-roles-'));
+  const repo = join(root, 'repo');
+  const cacheDir = join(root, 'cache');
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  git(root, ['init', '-q', repo]);
+  git(repo, ['config', 'user.name', 'Test User']);
+  git(repo, ['config', 'user.email', 'test@example.com']);
+  mkdirSync(join(repo, 'tech'));
+  const names = Array.from({ length: 55 }, (_, index) => `Entry-${index}`);
+  for (const name of names) {
+    writeFileSync(join(repo, 'tech', `${name}.md`), `---\nstatus: index\n---\n# ${name}\n`);
+  }
+  const body = `# Needle\n\n## Routes\n\n${names.map((name) => `[[${name}]]`).join('\n')}\n`;
+  writeFileSync(join(repo, 'tech', 'Needle.md'), body);
+  git(repo, ['add', 'tech']);
+  git(repo, ['commit', '-qm', 'unclassified links']);
+  const initial = buildSnapshot({ repo, cacheDir, scopes: ['tech'] }).snapshot;
+  const parent = initial.relations.filter((edge) => edge.predicate === 'links_to')
+    .sort((a, b) => a.id.localeCompare(b.id)).at(-1);
+  const parentName = initial.entities.find((entity) => entity.id === parent.object).label;
+  writeFileSync(join(repo, 'tech', 'Body-Match.md'), '# Evidence\n');
+  writeFileSync(join(repo, 'tech', 'Needle.md'), body.replace(`[[${parentName}]]`, `상위: [[${parentName}]]`)
+    + '\n## Explanation\n\nThe needle mechanism is explained by [[Body-Match]].\n');
+  git(repo, ['add', 'tech']);
+  git(repo, ['commit', '-qm', 'declare parent without changing link order']);
+  const snapshot = buildSnapshot({ repo, cacheDir, scopes: ['tech'] }).snapshot;
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const args = { query: 'Needle', max_bytes: 65536 };
+  const generic = { ...snapshot, relations: snapshot.relations.map(({ link_role, ...edge }) => edge) };
+  const before = lookup(options, args, generic);
+  assert.ok(!before.relations.some((edge) => edge.id === parent.id), 'ID order loses this parent at the graph cap');
+  const after = lookup(options, args, snapshot);
+  assert.ok(after.relations[0].object.endsWith('/Body-Match.md'), 'stronger body relevance wins over navigation');
+  const edge = after.relations.find((edge) => edge.id === parent.id);
+  assert.equal(edge?.link_role, 'parent_index');
+  const evidence = after.evidence_units.find((unit) => unit.id === edge.evidence_unit_id);
+  assert.ok(evidence.excerpt.includes(`상위: [[${parentName}]]`));
+  assert.equal(evidence.source_revision, snapshot.manifest.revision);
+  assert.equal(Buffer.byteLength(JSON.stringify(after)), after.budget.used_bytes);
+  assert.deepEqual(search(options, args, snapshot), search(options, args, generic));
+  const scoped = lookup(options, { ...args, scope: ['tech/Needle.md'] }, snapshot);
+  assert.equal(scoped.relations.length, 0, 'structural roles do not widen the requested scope');
 });

@@ -1,0 +1,2618 @@
+{
+  "observed_at": "2026-09-08T02:38:36.886999+00:00",
+  "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d",
+  "snapshot_fingerprint": "7ffdefc7aea57c401552d40e5b97e2082aa528c451650b4ec1261fe05a0f5991",
+  "worktree_state": "unindexed_worktree",
+  "extractor_version": "11",
+  "baseline_query_code_hash": "69296f3373a1c5ecb9b9523d2888a6ad266662aaba6c3d0b28a5e2233207c168",
+  "final_query_code_hash": "49588d4fd19247b58b7f7d428ec893286017b71c770e6a0b2a428a8e0738fb34",
+  "cases_hashes": {
+    "cases.json": "8dacad23dbe4c8544a4b380849e4ba7f9f36decbd1cbf851028ea75daf5bf9f0",
+    "validation-cases.json": "2233c5b934b1ad334e589d4f43bca7c72019594d9001d059b618dd66e83039d7",
+    "holdout-cases.json": "2694e6f4d771c3f121e4c028dde3b3c11dd07e118b624087d49c0420fe06c34a",
+    "generalization-cases-2026-09-07.json": "4e5761f129542615c9a0584d17194af31f3411df61c7e506401cae01dadd7a86",
+    "context-integrity-cases.json": "b9dd5a81fa7a0be654dffdde312930fb71e738e0c090333d2025c89eb92a2cae",
+    "document-search-cases-2026-09-08.json": "a45607c714de84af95890c6379dc828800ac478d032537f75cb660deef0f1d7b",
+    "metadata-ranking-cases-2026-09-08.json": "76b413409e9f442f0890078de2ae65b5e7cdf56aa1a200889230f1c4d116f103",
+    "graph-ranking-cases-2026-09-08.json": "6a9f93b2a7bd16a06e3ff3e49c87c6d8c093c2c16138eff63f375318e83b81c6",
+    "diagnostic-cases.json": "dec7ddac06b02c71d9a97311d4272d096ec8b6675da8e58ee67a8ff3de86abea"
+  },
+  "evaluation_scope": "Source/heading/body assertions for reused synthetic cases; not answer quality or real task success.",
+  "query_changes": [
+    "Supplement at most one scored section from the highest ranked document in spare space after preserving existing evidence and relation bundles, unless metadata matches exactly.",
+    "Complete an already selected non-root section only when its entire body fits the remaining total JSON budget; otherwise preserve its prefix and truncated flag."
+  ],
+  "known_cases": {
+    "summary": {
+      "cases": 52,
+      "positive_cases": 43,
+      "baseline_passed": 25,
+      "candidate_passed": 27,
+      "baseline_evidence_hits": 23,
+      "candidate_evidence_hits": 25,
+      "evidence_groups_total": 51,
+      "baseline_evidence_groups_hit": 29,
+      "candidate_evidence_groups_hit": 31,
+      "baseline_evidence_recall": 0.5686274509803921,
+      "candidate_evidence_recall": 0.6078431372549019
+    },
+    "metric_regressions": 0,
+    "cases": [
+      {
+        "id": "popular-value-expiry-surge",
+        "suite": "cases.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": null,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23920
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": null,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23920
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "deployment-drain-order",
+        "suite": "cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": null,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23941
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": null,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23963
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "opposite-update-order",
+        "suite": "cases.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": null,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23856
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": null,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23856
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "long-calculation-delays-requests",
+        "suite": "cases.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": null,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23338
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": null,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23878
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-v2-tech-01",
+        "suite": "validation-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23952
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23952
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-v2-biz-01",
+        "suite": "validation-cases.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23539
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23965
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-v2-econ-01",
+        "suite": "validation-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 9,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23769
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 9,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23769
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-v2-fit-01",
+        "suite": "validation-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 22773
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23871
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-tech-01",
+        "suite": "holdout-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23985
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23985
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-tech-02",
+        "suite": "holdout-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23735
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23735
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-biz-01",
+        "suite": "holdout-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23984
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23924
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-biz-02",
+        "suite": "holdout-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 8,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23465
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 8,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23465
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-econ-01",
+        "suite": "holdout-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 8,
+          "evidence_units_returned": 12,
+          "result_status": "partial",
+          "bytes": 23996
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 8,
+          "evidence_units_returned": 12,
+          "result_status": "partial",
+          "bytes": 23996
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-econ-02",
+        "suite": "holdout-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 8,
+          "evidence_units_returned": 12,
+          "result_status": "partial",
+          "bytes": 23666
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 8,
+          "evidence_units_returned": 12,
+          "result_status": "partial",
+          "bytes": 23910
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-fit-01",
+        "suite": "holdout-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 7,
+          "result_status": "partial",
+          "bytes": 23520
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 7,
+          "result_status": "partial",
+          "bytes": 23571
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-fit-02",
+        "suite": "holdout-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 22929
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23977
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-holdout-empty-01",
+        "suite": "holdout-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 0,
+          "evidence_units_returned": 0,
+          "result_status": "insufficient_evidence",
+          "bytes": 1368
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 0,
+          "evidence_units_returned": 0,
+          "result_status": "insufficient_evidence",
+          "bytes": 1368
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "generalization-tech-stable-cursor-contract",
+        "suite": "generalization-cases-2026-09-07.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "tie-breaker-in-cursor-order",
+            "cursor-integrity-contract"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23255
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "tie-breaker-in-cursor-order",
+            "cursor-integrity-contract"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23964
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "generalization-tech-payment-retry-identity",
+        "suite": "generalization-cases-2026-09-07.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "reject-different-payload-for-reused-key"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 22998
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "reject-different-payload-for-reused-key"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23834
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "generalization-tech-retry-storm-discipline",
+        "suite": "generalization-cases-2026-09-07.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "randomize-correlated-retries",
+            "single-retry-layer"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23231
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "randomize-correlated-retries",
+            "single-retry-layer"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23740
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "generalization-tech-scarce-stock-concurrency",
+        "suite": "generalization-cases-2026-09-07.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "prefer-single-statement-atomic-update"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23701
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "prefer-single-statement-atomic-update"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23701
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "generalization-biz-switching-interview-history",
+        "suite": "generalization-cases-2026-09-07.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "investigate-real-switching-timeline"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 22918
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "investigate-real-switching-timeline"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23975
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "generalization-biz-click-growth-or-redistribution",
+        "suite": "generalization-cases-2026-09-07.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "define-actionable-measurement"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23426
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "define-actionable-measurement"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23538
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "generalization-econ-concentrated-sector-diversification",
+        "suite": "generalization-cases-2026-09-07.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23973
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23973
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "generalization-fit-repeated-mistakes-feedback-loop",
+        "suite": "generalization-cases-2026-09-07.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 2,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23811
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 2,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23868
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "generalization-empty-gibberish",
+        "suite": "generalization-cases-2026-09-07.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 0,
+          "evidence_units_returned": 0,
+          "result_status": "insufficient_evidence",
+          "bytes": 1368
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 0,
+          "evidence_units_returned": 0,
+          "result_status": "insufficient_evidence",
+          "bytes": 1368
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "generalization-empty-fictional-device",
+        "suite": "generalization-cases-2026-09-07.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23951
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23951
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "role-and-authoring-status",
+        "suite": "context-integrity-cases.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "role-and-adoption-boundary"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 0,
+          "evidence_units_returned": 2,
+          "result_status": "ok",
+          "bytes": 4415
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 0,
+          "evidence_units_returned": 2,
+          "result_status": "ok",
+          "bytes": 4571
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "source-link-and-current-implementation",
+        "suite": "context-integrity-cases.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "current-implementation-check"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 0,
+          "evidence_units_returned": 2,
+          "result_status": "ok",
+          "bytes": 4445
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 2,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 0,
+          "evidence_units_returned": 2,
+          "result_status": "ok",
+          "bytes": 5809
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "proposal-includes-cost-and-unknowns",
+        "suite": "context-integrity-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 0,
+          "evidence_units_returned": 2,
+          "result_status": "ok",
+          "bytes": 3527
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 0,
+          "evidence_units_returned": 2,
+          "result_status": "ok",
+          "bytes": 3527
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-tech-rag-identifier-provenance",
+        "suite": "document-search-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "claim-provenance"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23046
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "claim-provenance"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23270
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-tech-weak-evidence-routing",
+        "suite": "document-search-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23463
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23531
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-biz-click-lift-validation",
+        "suite": "document-search-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "leading-signal-causality"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23987
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 2,
+          "missing_evidence_groups": [
+            "leading-signal-causality"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23987
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-econ-correlation-diversification",
+        "suite": "document-search-cases-2026-09-08.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 11,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23619
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 11,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23619
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-negative-weather-forecast",
+        "suite": "document-search-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23112
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23112
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "synthetic-negative-fictional-kingdom-tax",
+        "suite": "document-search-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23616
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 6,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23616
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "unseen-tech-payment-retry-contract",
+        "suite": "metadata-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23952
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23952
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "unseen-tech-ott-unknown-subscription",
+        "suite": "metadata-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23987
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23987
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "unseen-biz-aarrr-alias",
+        "suite": "metadata-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 11,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23991
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 11,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23991
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "unseen-econ-elasticity-title",
+        "suite": "metadata-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 8,
+          "evidence_units_returned": 8,
+          "result_status": "ok",
+          "bytes": 13908
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 8,
+          "evidence_units_returned": 8,
+          "result_status": "ok",
+          "bytes": 13908
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "unseen-negative-tech-lunar-landing",
+        "suite": "metadata-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23971
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23971
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "unseen-negative-biz-pet-food-market",
+        "suite": "metadata-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23735
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23853
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "fresh-tech-llm-grounding-decline",
+        "suite": "graph-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23584
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 3,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23584
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "fresh-tech-single-feature-emergency-stop",
+        "suite": "graph-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 2,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 22497
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": false,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 2,
+          "evidence_units_returned": 8,
+          "result_status": "partial",
+          "bytes": 23473
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "fresh-tech-progressive-release-comparison-gate",
+        "suite": "graph-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23499
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23754
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "fresh-biz-saas-value-pricing",
+        "suite": "graph-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23377
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23929
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "fresh-econ-pay-raise-purchasing-power",
+        "suite": "graph-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 8,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23928
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 8,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 23928
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "fresh-fit-new-team-expectations",
+        "suite": "graph-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23507
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": true,
+          "heading_hit": false,
+          "evidence_hit": false,
+          "body_hit": false,
+          "evidence_groups_hit": 0,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [
+            "legacy"
+          ],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 4,
+          "evidence_units_returned": 9,
+          "result_status": "partial",
+          "bytes": 23507
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "fresh-negative-unknown-token-string",
+        "suite": "graph-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 12,
+          "result_status": "partial",
+          "bytes": 23917
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 12,
+          "result_status": "partial",
+          "bytes": 23996
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "fresh-negative-unrelated-gardening-question",
+        "suite": "graph-ranking-cases-2026-09-08.json",
+        "baseline": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 22268
+        },
+        "candidate": {
+          "passed": false,
+          "document_hit": null,
+          "heading_hit": null,
+          "evidence_hit": null,
+          "body_hit": null,
+          "evidence_groups_hit": null,
+          "evidence_groups_total": null,
+          "missing_evidence_groups": null,
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 5,
+          "evidence_units_returned": 12,
+          "result_status": "partial",
+          "bytes": 23388
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "specific-pattern-with-generic-noise",
+        "suite": "diagnostic-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23696
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 10,
+          "result_status": "partial",
+          "bytes": 23696
+        },
+        "regression_fields": []
+      },
+      {
+        "id": "exact-korean-alias-with-relations",
+        "suite": "diagnostic-cases.json",
+        "baseline": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 24000
+        },
+        "candidate": {
+          "passed": true,
+          "document_hit": true,
+          "heading_hit": true,
+          "evidence_hit": true,
+          "body_hit": true,
+          "evidence_groups_hit": 1,
+          "evidence_groups_total": 1,
+          "missing_evidence_groups": [],
+          "forbidden_hits": [],
+          "out_of_scope_paths": [],
+          "relations_returned": 7,
+          "evidence_units_returned": 11,
+          "result_status": "partial",
+          "bytes": 24000
+        },
+        "regression_fields": []
+      }
+    ],
+    "payload_bytes": {
+      "baseline": 1113415,
+      "candidate": 1124976
+    }
+  },
+  "independent_cases": {
+    "path": "ontology/evaluation/context-packing-cases-2026-09-08.json",
+    "sha256": "679e9f86fdf4f09ba8e296a52e21bf1da6bd1281fa90339ba11c5dd1ce692899",
+    "independence": "A separate author read committed source Markdown without implementation or existing evaluations. Topic overlap is possible. First execution followed the initial code freeze. Review reruns are regression observations.",
+    "initial_freeze": {
+      "frozen_at": "2026-09-08T02:29:34.786Z",
+      "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d",
+      "baseline_hash": "69296f3373a1c5ecb9b9523d2888a6ad266662aaba6c3d0b28a5e2233207c168",
+      "candidate_hash": "3b45744ca725dffdc486fc4e58d8aa07d5d371d43c138ef0fdd01dad55ec747a",
+      "independent_cases_hash": "679e9f86fdf4f09ba8e296a52e21bf1da6bd1281fa90339ba11c5dd1ce692899"
+    },
+    "first_observation": {
+      "summary": {
+        "cases": 6,
+        "positive_cases": 4,
+        "baseline_passed": 3,
+        "candidate_passed": 3,
+        "baseline_evidence_hits": 3,
+        "candidate_evidence_hits": 3,
+        "evidence_groups_total": 8,
+        "baseline_evidence_groups_hit": 6,
+        "candidate_evidence_groups_hit": 6,
+        "baseline_evidence_recall": 0.75,
+        "candidate_evidence_recall": 0.75
+      },
+      "metric_regressions": 0,
+      "cases": [
+        {
+          "id": "unseen-cache-multi-instance-guard",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 5,
+            "evidence_units_returned": 9,
+            "result_status": "partial"
+          },
+          "candidate": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 5,
+            "evidence_units_returned": 9,
+            "result_status": "partial"
+          },
+          "regression_fields": []
+        },
+        {
+          "id": "unseen-typeorm-runner-cleanup-boundary",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": false,
+            "document_hit": true,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": false,
+            "evidence_groups_hit": 0,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [
+              "runner-manager-boundary",
+              "runner-release-lifecycle"
+            ],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 5,
+            "evidence_units_returned": 10,
+            "result_status": "partial"
+          },
+          "candidate": {
+            "passed": false,
+            "document_hit": true,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": false,
+            "evidence_groups_hit": 0,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [
+              "runner-manager-boundary",
+              "runner-release-lifecycle"
+            ],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 5,
+            "evidence_units_returned": 10,
+            "result_status": "partial"
+          },
+          "regression_fields": []
+        },
+        {
+          "id": "unseen-canary-baseline-version-split",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 7,
+            "evidence_units_returned": 9,
+            "result_status": "partial"
+          },
+          "candidate": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 7,
+            "evidence_units_returned": 9,
+            "result_status": "partial"
+          },
+          "regression_fields": []
+        },
+        {
+          "id": "unseen-diversification-rebalancing",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 7,
+            "evidence_units_returned": 12,
+            "result_status": "partial"
+          },
+          "candidate": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 7,
+            "evidence_units_returned": 12,
+            "result_status": "partial"
+          },
+          "regression_fields": []
+        },
+        {
+          "id": "unseen-negative-gibberish",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": false,
+            "document_hit": null,
+            "heading_hit": null,
+            "evidence_hit": null,
+            "body_hit": null,
+            "evidence_groups_hit": null,
+            "evidence_groups_total": null,
+            "missing_evidence_groups": null,
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 6,
+            "evidence_units_returned": 12,
+            "result_status": "partial"
+          },
+          "candidate": {
+            "passed": false,
+            "document_hit": null,
+            "heading_hit": null,
+            "evidence_hit": null,
+            "body_hit": null,
+            "evidence_groups_hit": null,
+            "evidence_groups_total": null,
+            "missing_evidence_groups": null,
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 6,
+            "evidence_units_returned": 12,
+            "result_status": "partial"
+          },
+          "regression_fields": []
+        },
+        {
+          "id": "unseen-negative-weather",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": false,
+            "document_hit": null,
+            "heading_hit": null,
+            "evidence_hit": null,
+            "body_hit": null,
+            "evidence_groups_hit": null,
+            "evidence_groups_total": null,
+            "missing_evidence_groups": null,
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 6,
+            "evidence_units_returned": 9,
+            "result_status": "partial"
+          },
+          "candidate": {
+            "passed": false,
+            "document_hit": null,
+            "heading_hit": null,
+            "evidence_hit": null,
+            "body_hit": null,
+            "evidence_groups_hit": null,
+            "evidence_groups_total": null,
+            "missing_evidence_groups": null,
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 6,
+            "evidence_units_returned": 9,
+            "result_status": "partial"
+          },
+          "regression_fields": []
+        }
+      ]
+    },
+    "post_review_regression": {
+      "summary": {
+        "cases": 6,
+        "positive_cases": 4,
+        "baseline_passed": 3,
+        "candidate_passed": 3,
+        "baseline_evidence_hits": 3,
+        "candidate_evidence_hits": 3,
+        "evidence_groups_total": 8,
+        "baseline_evidence_groups_hit": 6,
+        "candidate_evidence_groups_hit": 6,
+        "baseline_evidence_recall": 0.75,
+        "candidate_evidence_recall": 0.75
+      },
+      "metric_regressions": 0,
+      "cases": [
+        {
+          "id": "unseen-cache-multi-instance-guard",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 5,
+            "evidence_units_returned": 9,
+            "result_status": "partial",
+            "bytes": 23923
+          },
+          "candidate": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 5,
+            "evidence_units_returned": 9,
+            "result_status": "partial",
+            "bytes": 23923
+          },
+          "regression_fields": []
+        },
+        {
+          "id": "unseen-typeorm-runner-cleanup-boundary",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": false,
+            "document_hit": true,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": false,
+            "evidence_groups_hit": 0,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [
+              "runner-manager-boundary",
+              "runner-release-lifecycle"
+            ],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 5,
+            "evidence_units_returned": 10,
+            "result_status": "partial",
+            "bytes": 23973
+          },
+          "candidate": {
+            "passed": false,
+            "document_hit": true,
+            "heading_hit": false,
+            "evidence_hit": false,
+            "body_hit": false,
+            "evidence_groups_hit": 0,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [
+              "runner-manager-boundary",
+              "runner-release-lifecycle"
+            ],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 5,
+            "evidence_units_returned": 10,
+            "result_status": "partial",
+            "bytes": 23973
+          },
+          "regression_fields": []
+        },
+        {
+          "id": "unseen-canary-baseline-version-split",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 7,
+            "evidence_units_returned": 9,
+            "result_status": "partial",
+            "bytes": 23882
+          },
+          "candidate": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 7,
+            "evidence_units_returned": 9,
+            "result_status": "partial",
+            "bytes": 23962
+          },
+          "regression_fields": []
+        },
+        {
+          "id": "unseen-diversification-rebalancing",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 7,
+            "evidence_units_returned": 12,
+            "result_status": "partial",
+            "bytes": 23710
+          },
+          "candidate": {
+            "passed": true,
+            "document_hit": true,
+            "heading_hit": true,
+            "evidence_hit": true,
+            "body_hit": true,
+            "evidence_groups_hit": 2,
+            "evidence_groups_total": 2,
+            "missing_evidence_groups": [],
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 7,
+            "evidence_units_returned": 12,
+            "result_status": "partial",
+            "bytes": 23954
+          },
+          "regression_fields": []
+        },
+        {
+          "id": "unseen-negative-gibberish",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": false,
+            "document_hit": null,
+            "heading_hit": null,
+            "evidence_hit": null,
+            "body_hit": null,
+            "evidence_groups_hit": null,
+            "evidence_groups_total": null,
+            "missing_evidence_groups": null,
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 6,
+            "evidence_units_returned": 12,
+            "result_status": "partial",
+            "bytes": 23284
+          },
+          "candidate": {
+            "passed": false,
+            "document_hit": null,
+            "heading_hit": null,
+            "evidence_hit": null,
+            "body_hit": null,
+            "evidence_groups_hit": null,
+            "evidence_groups_total": null,
+            "missing_evidence_groups": null,
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 6,
+            "evidence_units_returned": 12,
+            "result_status": "partial",
+            "bytes": 23284
+          },
+          "regression_fields": []
+        },
+        {
+          "id": "unseen-negative-weather",
+          "suite": "ontology-retrieval-unseen-cases-20260908.json",
+          "baseline": {
+            "passed": false,
+            "document_hit": null,
+            "heading_hit": null,
+            "evidence_hit": null,
+            "body_hit": null,
+            "evidence_groups_hit": null,
+            "evidence_groups_total": null,
+            "missing_evidence_groups": null,
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 6,
+            "evidence_units_returned": 9,
+            "result_status": "partial",
+            "bytes": 23633
+          },
+          "candidate": {
+            "passed": false,
+            "document_hit": null,
+            "heading_hit": null,
+            "evidence_hit": null,
+            "body_hit": null,
+            "evidence_groups_hit": null,
+            "evidence_groups_total": null,
+            "missing_evidence_groups": null,
+            "forbidden_hits": [],
+            "out_of_scope_paths": [],
+            "relations_returned": 6,
+            "evidence_units_returned": 9,
+            "result_status": "partial",
+            "bytes": 23797
+          },
+          "regression_fields": []
+        }
+      ],
+      "payload_bytes": {
+        "baseline": 142405,
+        "candidate": 142893
+      }
+    }
+  },
+  "rejected_candidates": [
+    {
+      "change": "Extra section in every root before graph bundles",
+      "passed_cases": 29,
+      "total_cases": 52,
+      "reason": "Lost the Canary gate evidence."
+    },
+    {
+      "change": "Extra section in the top root before graph bundles",
+      "passed_cases": 29,
+      "total_cases": 52,
+      "reason": "Lost an existing graph bundle in the 2600-byte fixture. The new regression failed this frozen code and passed after enrichment moved behind existing bundles."
+    },
+    {
+      "change": "Document lexical coverage before best-section score",
+      "passed_cases": 23,
+      "total_cases": 52,
+      "regressions": [
+        "synthetic-holdout-v2-tech-01",
+        "synthetic-biz-click-lift-validation",
+        "fresh-econ-pay-raise-purchasing-power"
+      ]
+    }
+  ],
+  "tests": {
+    "command": "npm test",
+    "passed": 129,
+    "failed": 0,
+    "new_regressions": [
+      "lookup keeps a matching sibling condition and completes selected sections when budget permits",
+      "optional sibling context never evicts an already fitting graph bundle"
+    ],
+    "mcp_fixture_change": "Use genuinely constrained lookup budgets of 3000 and 20000 bytes to preserve truncated-read and long-ID pagination assertions.",
+    "earlier_failure": {
+      "test": "concurrent builds retry when the previous cache lock disappears",
+      "error": "snapshot_integrity_error: cache lock is not a valid owner symlink",
+      "isolated_reruns_passed": 5,
+      "final_full_suite_passed": true,
+      "status": "Unchanged lock logic; underlying errno not captured. No speculative locking change made."
+    },
+    "log_sha256": "8ab080f0f1b1abeb8b1b05b0c95f9544021c62d806119e6c684a979c534304ed"
+  },
+  "mcp_verification": {
+    "observed_at": "2026-09-08T02:36:57.581Z",
+    "fresh_stdio": true,
+    "query_code_hash": "49588d4fd19247b58b7f7d428ec893286017b71c770e6a0b2a428a8e0738fb34",
+    "checks": [
+      {
+        "query": "목표와 자료의 역할",
+        "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d",
+        "content_hash": "sha256:879be0aeb0d87e344a48e1cdcf15e340a594d746e00379b1ac82c6bdb45ef6d5",
+        "complete": true,
+        "lookup_bytes": 4571,
+        "read_matches_lookup": true
+      },
+      {
+        "query": "근거 확인과 채택의 경계",
+        "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d",
+        "content_hash": "sha256:1a58a3bc31beefc99ed06ae81f3e29b97c9437b5c61e9dffdc2099a80f3c728a",
+        "complete": true,
+        "lookup_bytes": 5809,
+        "read_matches_lookup": true
+      }
+    ]
+  },
+  "limits": [
+    "No improvement observed on the six new questions.",
+    "Long natural-language document recall and irrelevant lexical matches remain unresolved.",
+    "No semantic relation inference, freshness/conflict judgment, final-answer quality, or user time savings verified.",
+    "Existing host connections need reconnection to load the changed module."
+  ]
+}

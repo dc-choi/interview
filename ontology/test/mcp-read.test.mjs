@@ -48,7 +48,7 @@ const receipt = (unit) => ({ evidence_unit_id: unit.id, source_revision: unit.so
 test('MCP reads every UTF-8 page after a truncated lookup without changing the source receipt', async (t) => {
   const item = fixture(t);
   const call = await connect(t, item);
-  const found = await call('context_lookup', { query: 'Long Rule', scope: ['tech'], max_bytes: 24000 });
+  const found = await call('context_lookup', { query: 'Long Rule', scope: ['tech'], max_bytes: 3000 });
   const unit = found.structuredContent.evidence_units.find((entry) => entry.anchor.heading_path.at(-1) === 'Long Rule');
   assert.ok(unit.truncated);
   assert.doesNotMatch(unit.excerpt, /Exception:/);
@@ -86,11 +86,11 @@ test('MCP can read long encoded evidence IDs emitted within the lookup output bu
   item.git('add', '.');
   item.git('commit', '-qm', 'long heading');
   const call = await connect(t, item);
-  const found = await call('context_lookup', { query: 'Long Rule', max_bytes: 65536 });
+  const found = await call('context_lookup', { query: 'Long Rule', max_bytes: 20000 });
   assert.equal(found.isError, undefined);
   const unit = found.structuredContent.evidence_units.find((entry) => Buffer.byteLength(entry.id) > 8192);
   assert.ok(unit?.truncated);
-  assert.ok(found.structuredContent.budget.used_bytes <= 65536);
+  assert.ok(found.structuredContent.budget.used_bytes <= 20000);
   const response = await call('context_read', { ...receipt(unit), max_bytes: 65536 });
   assert.equal(response.isError, undefined);
   const page = response.structuredContent;

@@ -162,3 +162,87 @@ test('keeps verified_at as a string and reports other shapes as coverage gaps', 
   assert.equal(invalid.document.verified_at, null);
   assert.equal(invalid.coverage_gaps.filter((gap) => gap.type === 'InvalidFrontmatterField').length, 1);
 });
+
+test('classifies only explicit navigation wikilinks', () => {
+  const indexed = extract(`---
+status: index
+---
+# Index
+상위: [[Parent]]. 구현: [[Implementation]]
+[[Other]] 설명 뒤 상위: [[InlineParent]]
+> 상위: [[Quoted]]
+~~~md
+상위: [[Code]]
+~~~
+
+## 목차
+- [[Member]]
+- [[#Index]]
+
+## 목차 (메시징 인프라 — 어떻게 안전하게 전송)
+- [[DescribedMember]]
+
+## 하위 영역
+- [[Area]]
+
+## 하위 폴더 인덱스 (6개)
+- [[Folder]]
+
+## 하위 문서
+- [[Child]]
+
+## 관련 문서
+- [[Related]]
+
+## 목차 안내
+- [[NotMember]]
+`);
+  assert.deepEqual(indexed.links.map((link) => [link.target, link.link_role]), [
+    ['Parent', 'parent_index'],
+    ['Implementation', undefined],
+    ['Other', undefined],
+    ['InlineParent', 'parent_index'],
+    ['Quoted', 'parent_index'],
+    ['Member', 'index_member'],
+    ['#Index', undefined],
+    ['DescribedMember', 'index_member'],
+    ['Area', 'index_member'],
+    ['Folder', 'index_member'],
+    ['Child', 'index_member'],
+    ['Related', 'related_document'],
+    ['NotMember', undefined],
+  ]);
+  assert.equal(indexed.links.some((link) => link.target === 'Code'), false);
+
+  const ordinary = extract(`---
+status: done
+---
+## 관련문서
+[[RelatedWithoutIndex]]
+## 목차
+[[NotAnIndexMember]]
+`);
+  assert.deepEqual(ordinary.links.map((link) => [link.target, link.link_role]), [
+    ['RelatedWithoutIndex', 'related_document'],
+    ['NotAnIndexMember', undefined],
+  ]);
+
+  const quotedHeading = extract(`---
+status: index
+---
+> ## 관련 문서
+> [[Quoted]]
+
+[[Outside]]
+`);
+  assert.deepEqual(quotedHeading.links.map((link) => [link.target, link.link_role]), [
+    ['Quoted', undefined],
+    ['Outside', undefined],
+  ]);
+
+  const bareCr = extract('# Index\r상위:\r[[AcrossLine]]\r상위: [[SameLine]]\r');
+  assert.deepEqual(bareCr.links.map((link) => [link.target, link.link_role]), [
+    ['AcrossLine', undefined],
+    ['SameLine', 'parent_index'],
+  ]);
+});

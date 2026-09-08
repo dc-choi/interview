@@ -1,0 +1,51 @@
+{
+  "questions_frozen_at": "2026-09-08T08:13:42.474Z",
+  "questions_sha256": "a6ab3421f1495dc706081607486b16143b964a5b888f74c3980d10439cceda9c",
+  "labels_frozen_at": "2026-09-08T08:15:02.301Z",
+  "labels_sha256": "e5c0f3b5c2de12513c9444053492773ebb74eb546e92e79650cf1e25933076bf",
+  "host_plan_initial_frozen_at": "2026-09-08T08:27:44Z",
+  "host_plan_corrected_frozen_at": "2026-09-08T08:30:52Z",
+  "host_authorship": {
+    "role": "terra",
+    "model_and_effort_not_recorded_by_host": true,
+    "labels_and_control_outputs_hidden_from_host": true,
+    "limits_supplied_before_calls": {
+      "calls": 8,
+      "response_bytes": 64000,
+      "first_lookup_bytes": 24000,
+      "extra_searches": 2,
+      "outlines": 2,
+      "reads": 4
+    },
+    "instruction_file_hashes_frozen_before_calls": false,
+    "observation_under_draft_host_policy": true,
+    "final_skill_and_server_description_hashes_describe_replay_time_only": true
+  },
+  "correction": {
+    "reason": "Initial trace serialized a successful receipt instead of the mistyped ID in the original failed CLI call. Replay stopped before opening gold. Only the recorded failed ID was restored from the primary execution transcript.",
+    "initial_plans_sha256": "a5d71357d27b58310caf1978fb531d3c2e6402aa281481f44f316f125082c961",
+    "corrected_plans_sha256": "0cfeebf5b4b6c9d31dfba61fb008f3e9124e439ba3afc10a1d2b80e2e012da62",
+    "json_location": "[1].steps[2].arguments.evidence_unit_id",
+    "initial_recorded_id": "unit:interview-vault:tech/security/auth/Refresh-Token-Rotation.md:Refresh%20Token%20Rotation%20(RTR)/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C%20%EC%A4%91%EB%B3%B5%20%EC%9E%AC%EB%B0%9C%EA%B8%89%20%EC%9A%94%EC%B2%AD%20%EC%B2%98%EB%A6%AC/%ED%95%B4%EA%B2%B0%3A%20Single-flight%20%ED%8C%A8%ED%84%B4#1",
+    "original_cli_id": "unit:interview-vault:tech/security/auth/Refresh-Token-Rotation.md:Refresh%20Token%20Rotation%20(RTR)/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C%20%EC%A4%91%EB%B3%B5%20%EC%9E%AC%EB%B0%9C%EA%B8%89%20%EC%9A%94%EC%B2%98%EB%A6%AC/%ED%95%B4%EA%B2%B0%3A%20Single-flight%20%ED%8C%A8%ED%84%B4#1",
+    "original_cli_timestamp": "2026-09-08T08:18:27.070Z",
+    "original_cli_exit_code": 1,
+    "original_cli_output": "evidence_not_found: evidence_not_found\n",
+    "original_cli_output_bytes": 39,
+    "original_cli_elapsed_seconds": 0.153330375,
+    "first_replay_opened_gold": false,
+    "primary_execution_event": {
+      "timestamp": "2026-09-08T08:18:27.413Z",
+      "source_lines": [
+        287,
+        290
+      ],
+      "local_rollout_id": "01a08011-f316-7b00-a743-dfc7d05ba330"
+    }
+  },
+  "interpretation": {
+    "host_semantic_judgments_are_not_automatically_verified": true,
+    "all_six_cases_are_positive_source_authored_questions": true,
+    "no_negative_case_or_final_answer_accuracy_claim": true
+  }
+}

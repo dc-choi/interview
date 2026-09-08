@@ -1,0 +1,300 @@
+[
+  {
+    "id": "coverage-tech-outbox-recovery",
+    "query": "주문 저장과 후속 알림 사이에 프로세스가 죽어도 유실 없이 처리하고, 여러 relay가 돌 때 재발행도 안전하게 만들려면 어떤 경계를 둬야 하나?",
+    "scope": [
+      "tech"
+    ],
+    "expected_evidence_groups": [
+      {
+        "id": "atomic-recording",
+        "any_of": [
+          {
+            "path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md",
+            "heading": "왜 되는가",
+            "all_text": [
+              "같은 DB 트랜잭션",
+              "둘 다 성공하거나 둘 다 실패"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "duplicate-absorption",
+        "any_of": [
+          {
+            "path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md",
+            "heading": "어느 축도 중복을 없애지는 못한다",
+            "all_text": [
+              "유실을 중복으로 바꾼",
+              "멱등 처리"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "coverage-tech-locking-recovery",
+    "query": "같은 주문 행을 갱신하는 작업에서 간헐적 교착이 생겼을 때, 락 범위를 줄이면서 안전하게 복구하려면 어떤 확인과 재시도 규칙이 필요한가?",
+    "scope": [
+      "tech"
+    ],
+    "expected_evidence_groups": [
+      {
+        "id": "access-path-inspection",
+        "any_of": [
+          {
+            "path": "tech/database/rdbms/mysql/innodb/MySQL-InnoDB-Locking-and-Deadlocks.md",
+            "heading": "실행 계획이 잠금 범위를 만든다",
+            "all_text": [
+              "EXPLAIN",
+              "Performance Schema"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "transaction-retry",
+        "any_of": [
+          {
+            "path": "tech/database/rdbms/mysql/innodb/MySQL-InnoDB-Locking-and-Deadlocks.md",
+            "heading": "Deadlock과 lock wait",
+            "all_text": [
+              "새 transaction 전체를 재시도",
+              "jitter"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "coverage-tech-spike-capacity",
+    "query": "대규모 할인 행사에서 트래픽이 한순간에 몰릴 때, 검증과 장애 격리를 어떻게 준비해야 하나?",
+    "scope": [
+      "tech"
+    ],
+    "expected_evidence_groups": [
+      {
+        "id": "step-load-validation",
+        "any_of": [
+          {
+            "path": "tech/performance-scalability/capacity/Capacity-Planning.md",
+            "heading": "램프업의 함정 — 스파이크는 스텝으로 온다",
+            "all_text": [
+              "램프업만 테스트하면",
+              "스텝 시나리오가 본게임"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "failure-isolation",
+        "any_of": [
+          {
+            "path": "tech/performance-scalability/capacity/Capacity-Planning.md",
+            "heading": "안전장치 — 실패를 전제로 설계",
+            "all_text": [
+              "큐 역할별 분리",
+              "Circuit Breaker"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "coverage-tech-retry-overload",
+    "query": "의존 서비스가 과부하로 429를 반환할 때, 호출자가 회복을 늦추지 않으면서 재시도를 설계하려면 어떻게 해야 하나?",
+    "scope": [
+      "tech"
+    ],
+    "expected_evidence_groups": [
+      {
+        "id": "desynchronize-retries",
+        "any_of": [
+          {
+            "path": "tech/reliability/external-integration/Retry-Backoff-Jitter.md",
+            "heading": "왜 지터 없이는 안 되나 — 상관관계",
+            "all_text": [
+              "같은 순간에 다시 몰린다",
+              "시간축에 흩는다"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "retry-budget",
+        "any_of": [
+          {
+            "path": "tech/reliability/external-integration/Retry-Backoff-Jitter.md",
+            "heading": "재시도 규율 — 언제, 어디서, 몇 번",
+            "all_text": [
+              "단일 계층에서만 재시도",
+              "토큰 버킷 재시도 예산"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "coverage-tech-distributed-recovery",
+    "query": "좌석 예약과 결제처럼 여러 서비스가 걸린 흐름에서 timeout 뒤에도 중복 확정이나 고아 예약을 막으려면 설계 전에 어떤 계약과 복구 상태를 정해야 하나?",
+    "scope": [
+      "tech"
+    ],
+    "expected_evidence_groups": [
+      {
+        "id": "failure-contract",
+        "any_of": [
+          {
+            "path": "tech/architecture-design/ddd-hexagonal/Distributed-Transaction-Strategies.md",
+            "heading": "선택 전에 고정할 계약",
+            "all_text": [
+              "timeout을 실패로 볼지 결과 미확인으로 볼지",
+              "복구 주체"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "durable-recovery",
+        "any_of": [
+          {
+            "path": "tech/architecture-design/ddd-hexagonal/Distributed-Transaction-Strategies.md",
+            "heading": "Coordinator와 복구 경로",
+            "all_text": [
+              "durable state",
+              "next_attempt_at"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "coverage-biz-pmf-scaling",
+    "query": "초기 제품의 사용자 유입이 늘었지만 아직 성장 채널을 확대해도 되는지 판단하려면, 반복 사용 신호와 단계별 우선순위를 어떻게 봐야 하나?",
+    "scope": [
+      "biz"
+    ],
+    "expected_evidence_groups": [
+      {
+        "id": "retention-interpretation",
+        "any_of": [
+          {
+            "path": "biz/product-strategy/PMF-Funnel.md",
+            "heading": "리텐션 커브",
+            "all_text": [
+              "어느 모양도 단독으로 PMF를 증명하지 않는다",
+              "정성 인터뷰"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "stage-priorities",
+        "any_of": [
+          {
+            "path": "biz/product-strategy/PMF-Funnel.md",
+            "heading": "Pre-PMF vs Post-PMF 전략",
+            "all_text": [
+              "리텐션 > 성장률",
+              "PMF 전에 스케일링"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "coverage-biz-incrementality",
+    "query": "새 탭과 쿠폰 성과가 좋아 보일 때, 실제 사업 성과인지 사용자 이동인지 가려내고 다음 지표를 어떻게 검증해야 하나?",
+    "scope": [
+      "biz"
+    ],
+    "expected_evidence_groups": [
+      {
+        "id": "incrementality-check",
+        "any_of": [
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "heading": "허수지표의 메커니즘: 재배분 vs 증분",
+            "all_text": [
+              "기존 트래픽의 이동",
+              "증분 거래액"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "causal-metric-check",
+        "any_of": [
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "heading": "Leading vs Lagging 지표",
+            "all_text": [
+              "같은 코호트의 후행 지표",
+              "가드레일 지표"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "coverage-econ-rate-transmission",
+    "query": "중앙은행이 금리를 올렸는데 왜 모든 대출 금리가 똑같이 움직이지 않고, 가계와 기업의 지출은 어떤 경로로 식는가?",
+    "scope": [
+      "econ"
+    ],
+    "expected_evidence_groups": [
+      {
+        "id": "market-rate-transmission",
+        "any_of": [
+          {
+            "path": "econ/macroeconomics/Interest-Rates-Monetary-Policy.md",
+            "heading": "2. 기준금리 vs 시장금리",
+            "all_text": [
+              "만기와 신용위험",
+              "불완전하게 전달"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "demand-channel",
+        "any_of": [
+          {
+            "path": "econ/macroeconomics/Interest-Rates-Monetary-Policy.md",
+            "heading": "4. 통화정책의 메커니즘 — 금리를 올리면 무슨 일이",
+            "all_text": [
+              "기업의 설비투자",
+              "총수요 감소"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "coverage-negative-airline-provider-migration",
+    "query": "최근 항공권 공급자 API가 바뀐 뒤 예약 취소에 반드시 보내야 하는 정확한 필드 이름과 버전별 마이그레이션 절차는 무엇인가?",
+    "scope": [
+      "tech"
+    ],
+    "expected_empty": true,
+    "expected_evidence": []
+  },
+  {
+    "id": "coverage-negative-current-policy-minutes",
+    "query": "2026년 9월 한국은행 금융통화위원회 의사록에서 어느 위원이 어떤 반대 의견을 냈는가?",
+    "scope": [
+      "econ"
+    ],
+    "expected_empty": true,
+    "expected_evidence": []
+  }
+]

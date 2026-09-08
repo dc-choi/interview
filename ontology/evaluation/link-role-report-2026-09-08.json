@@ -1,0 +1,2481 @@
+{
+  "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d",
+  "baseline_code_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d",
+  "evaluation_kind": "regression on 52 previously used synthetic cases, not an independent holdout",
+  "scope": [
+    "README.md",
+    "biz",
+    "econ",
+    "fit",
+    "ontology",
+    "tech"
+  ],
+  "source_counts": {
+    "coverage_gaps": 0,
+    "documents": 1874,
+    "relations": 35521,
+    "units": 21497
+  },
+  "code_hashes": {
+    "before": {
+      "markdown": "108b37d94a7d3fe2b6f56c26b66dc068f7eceae4576e11ef84661c5b5ba53c33",
+      "snapshot": "71370240e341036806d18682b9c649ab470a94cf733832cd3e747383ee9d9cfd",
+      "query": "138424d514426a9c4e01e9b653c21ee27b710838369851f4ba311c882633ffa6"
+    },
+    "after": {
+      "markdown": "52eb3aa281762759e82f44b731ff27f785bffbf095553a848c077f369818c66c",
+      "snapshot": "b09ea4871bd9bbe32be8f49927d80763cd907f040ab0496b75deb747084915dd",
+      "query": "69296f3373a1c5ecb9b9523d2888a6ad266662aaba6c3d0b28a5e2233207c168"
+    }
+  },
+  "case_hashes": {
+    "cases.json": "8dacad23dbe4c8544a4b380849e4ba7f9f36decbd1cbf851028ea75daf5bf9f0",
+    "diagnostic-cases.json": "dec7ddac06b02c71d9a97311d4272d096ec8b6675da8e58ee67a8ff3de86abea",
+    "holdout-cases.json": "2694e6f4d771c3f121e4c028dde3b3c11dd07e118b624087d49c0420fe06c34a",
+    "validation-cases.json": "2233c5b934b1ad334e589d4f43bca7c72019594d9001d059b618dd66e83039d7",
+    "context-integrity-cases.json": "b9dd5a81fa7a0be654dffdde312930fb71e738e0c090333d2025c89eb92a2cae",
+    "generalization-cases-2026-09-07.json": "4e5761f129542615c9a0584d17194af31f3411df61c7e506401cae01dadd7a86",
+    "graph-ranking-cases-2026-09-08.json": "6a9f93b2a7bd16a06e3ff3e49c87c6d8c093c2c16138eff63f375318e83b81c6",
+    "document-search-cases-2026-09-08.json": "a45607c714de84af95890c6379dc828800ac478d032537f75cb660deef0f1d7b",
+    "metadata-ranking-cases-2026-09-08.json": "76b413409e9f442f0890078de2ae65b5e7cdf56aa1a200889230f1c4d116f103"
+  },
+  "summary": {
+    "before": {
+      "cases": 52,
+      "passed": 25,
+      "body_hits": 22,
+      "body_cases": 39,
+      "bytes": 1112585,
+      "elapsed_ms": 15383
+    },
+    "after": {
+      "cases": 52,
+      "passed": 25,
+      "body_hits": 22,
+      "body_cases": 39,
+      "bytes": 1113415,
+      "elapsed_ms": 19222
+    },
+    "changed_hit_cases": []
+  },
+  "link_roles": {
+    "related_document": 7628,
+    "index_member": 887,
+    "parent_index": 31
+  },
+  "preservation": {
+    "entities_byte_identical": true,
+    "relation_ids_identical": true,
+    "relation_fields_other_than_extraction_version_and_optional_link_role_identical": true,
+    "obsidian_settings_files": 4,
+    "obsidian_settings_hashes_unchanged": true
+  },
+  "runtime_validation": {
+    "command": "npm test",
+    "tests": 127,
+    "passed": 127,
+    "failed": 0
+  },
+  "mcp": [
+    {
+      "role": "index_member",
+      "source": "tech/os-runtime/nestjs/overview/controller/Controller.md",
+      "target": "tech/os-runtime/nestjs/overview/controller/Controller-Response.md",
+      "relation_id": "edge:sha256:6e5b01b87840b88026af8aebb6cc3c823954b83145672ab5308dee536a1db785",
+      "evidence_unit_id": "unit:interview-vault:tech/os-runtime/nestjs/overview/controller/Controller.md:%ED%95%98%EC%9C%84%20%EB%AC%B8%EC%84%9C#1",
+      "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d",
+      "content_hash": "sha256:d3ba371fed2710b544ecd6ed8bd21aed7c5b2d21a7956c52bf91d1a9a1501c06",
+      "index_status": "unindexed_worktree",
+      "lookup_bytes": 7701,
+      "full_source_read": true
+    },
+    {
+      "role": "related_document",
+      "source": "tech/os-runtime/nestjs/overview/controller/Controller.md",
+      "target": "tech/os-runtime/nestjs/overview/Provider.md",
+      "relation_id": "edge:sha256:3f92cd163f35fb6d4fa1c406d7c64156dbe9dede9ceb6c7aad6d9e582e2637f0",
+      "evidence_unit_id": "unit:interview-vault:tech/os-runtime/nestjs/overview/controller/Controller.md:%EA%B4%80%EB%A0%A8%20%EB%AC%B8%EC%84%9C#1",
+      "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d",
+      "content_hash": "sha256:3accf808e49c0cbea70d27e3ac32e9e0fef03bb2912e683c655280b3686c0ce1",
+      "index_status": "unindexed_worktree",
+      "lookup_bytes": 7051,
+      "full_source_read": true
+    },
+    {
+      "role": "parent_index",
+      "source": "tech/ai-engineering/tools/tools.md",
+      "target": "tech/ai-engineering/AI엔지니어링(AIEngineering).md",
+      "relation_id": "edge:sha256:f880ec08785689ab7229dce635f2d30abe557aa16163941c1e3ac4bc99d06997",
+      "evidence_unit_id": "unit:interview-vault:tech/ai-engineering/tools/tools.md:AI%20%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4%EB%A7%81%20%EC%8B%A4%EC%B2%9C%20%EB%8F%84%EA%B5%AC#1",
+      "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d",
+      "content_hash": "sha256:df8bcda378b929a3a393576586244a089e45cb2daf62dc12733a24f044aa8b59",
+      "index_status": "unindexed_worktree",
+      "lookup_bytes": 7915,
+      "full_source_read": true
+    }
+  ],
+  "limits": [
+    "navigation roles do not establish domain semantics or applicability",
+    "all comparison inputs are reused regression cases",
+    "single-run elapsed times do not establish a speed change",
+    "fresh MCP process verified; existing host processes still need reconnection",
+    "Markdown is pinned to HEAD; implementation and docs are uncommitted and reported as unindexed_worktree"
+  ],
+  "reproduction": {
+    "build": "node src/cli.mjs build --committed-only --cache <outside-repository-cache>",
+    "evaluate_each_cases_file": "node evaluation/run.mjs --cache <same-cache> --cases evaluation/<cases-file>",
+    "case_files": [
+      "cases.json",
+      "diagnostic-cases.json",
+      "holdout-cases.json",
+      "validation-cases.json",
+      "context-integrity-cases.json",
+      "generalization-cases-2026-09-07.json",
+      "graph-ranking-cases-2026-09-08.json",
+      "document-search-cases-2026-09-08.json",
+      "metadata-ranking-cases-2026-09-08.json"
+    ]
+  },
+  "cases": [
+    {
+      "file": "cases.json",
+      "id": "popular-value-expiry-surge",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": null,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23974,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": null,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23920,
+        "relations": 4,
+        "link_roles": {
+          "index_member": 1
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "cases.json",
+      "id": "deployment-drain-order",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": null,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23941,
+        "relations": 5,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": null,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23941,
+        "relations": 5,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "cases.json",
+      "id": "opposite-update-order",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": null,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23705,
+        "relations": 6,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": null,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23856,
+        "relations": 6,
+        "link_roles": {
+          "index_member": 1,
+          "related_document": 4
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "cases.json",
+      "id": "long-calculation-delays-requests",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": null,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23338,
+        "relations": 3,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": null,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23338,
+        "relations": 3,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "diagnostic-cases.json",
+      "id": "specific-pattern-with-generic-noise",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 24000,
+        "relations": 7,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23696,
+        "relations": 7,
+        "link_roles": {
+          "index_member": 1,
+          "related_document": 1
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "diagnostic-cases.json",
+      "id": "exact-korean-alias-with-relations",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23942,
+        "relations": 5,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 24000,
+        "relations": 7,
+        "link_roles": {
+          "index_member": 1,
+          "related_document": 6
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "holdout-cases.json",
+      "id": "synthetic-holdout-tech-01",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23830,
+        "relations": 7,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23985,
+        "relations": 7,
+        "link_roles": {
+          "related_document": 5
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "holdout-cases.json",
+      "id": "synthetic-holdout-tech-02",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23584,
+        "relations": 6,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23735,
+        "relations": 6,
+        "link_roles": {
+          "index_member": 1,
+          "related_document": 4
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "holdout-cases.json",
+      "id": "synthetic-holdout-biz-01",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23922,
+        "relations": 5,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23984,
+        "relations": 5,
+        "link_roles": {
+          "related_document": 2
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "holdout-cases.json",
+      "id": "synthetic-holdout-biz-02",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23465,
+        "relations": 8,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23465,
+        "relations": 8,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "holdout-cases.json",
+      "id": "synthetic-holdout-econ-01",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23984,
+        "relations": 8,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23996,
+        "relations": 8,
+        "link_roles": {
+          "related_document": 3
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "holdout-cases.json",
+      "id": "synthetic-holdout-econ-02",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23604,
+        "relations": 8,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23666,
+        "relations": 8,
+        "link_roles": {
+          "related_document": 2
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "holdout-cases.json",
+      "id": "synthetic-holdout-fit-01",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23965,
+        "relations": 7,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23520,
+        "relations": 7,
+        "link_roles": {
+          "index_member": 6
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "holdout-cases.json",
+      "id": "synthetic-holdout-fit-02",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 22929,
+        "relations": 3,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 22929,
+        "relations": 3,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "holdout-cases.json",
+      "id": "synthetic-holdout-empty-01",
+      "before": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 1368,
+        "relations": 0,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 1368,
+        "relations": 0,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "validation-cases.json",
+      "id": "synthetic-holdout-v2-tech-01",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23859,
+        "relations": 6,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23952,
+        "relations": 6,
+        "link_roles": {
+          "related_document": 3
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "validation-cases.json",
+      "id": "synthetic-holdout-v2-biz-01",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23508,
+        "relations": 3,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23539,
+        "relations": 3,
+        "link_roles": {
+          "related_document": 1
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "validation-cases.json",
+      "id": "synthetic-holdout-v2-econ-01",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23676,
+        "relations": 9,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23769,
+        "relations": 9,
+        "link_roles": {
+          "related_document": 3
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "validation-cases.json",
+      "id": "synthetic-holdout-v2-fit-01",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 22746,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 22773,
+        "relations": 4,
+        "link_roles": {
+          "index_member": 1
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "context-integrity-cases.json",
+      "id": "role-and-authoring-status",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "role-and-adoption-boundary"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 4415,
+        "relations": 0,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "role-and-adoption-boundary"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 4415,
+        "relations": 0,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "context-integrity-cases.json",
+      "id": "source-link-and-current-implementation",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "current-implementation-check"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 4445,
+        "relations": 0,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "current-implementation-check"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 4445,
+        "relations": 0,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "context-integrity-cases.json",
+      "id": "proposal-includes-cost-and-unknowns",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 3527,
+        "relations": 0,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 3527,
+        "relations": 0,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "generalization-cases-2026-09-07.json",
+      "id": "generalization-tech-stable-cursor-contract",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "tie-breaker-in-cursor-order",
+          "cursor-integrity-contract"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23255,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "tie-breaker-in-cursor-order",
+          "cursor-integrity-contract"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23255,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "generalization-cases-2026-09-07.json",
+      "id": "generalization-tech-payment-retry-identity",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "reject-different-payload-for-reused-key"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 22998,
+        "relations": 3,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "reject-different-payload-for-reused-key"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 22998,
+        "relations": 3,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "generalization-cases-2026-09-07.json",
+      "id": "generalization-tech-retry-storm-discipline",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "randomize-correlated-retries",
+          "single-retry-layer"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23177,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "randomize-correlated-retries",
+          "single-retry-layer"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23231,
+        "relations": 4,
+        "link_roles": {
+          "index_member": 2
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "generalization-cases-2026-09-07.json",
+      "id": "generalization-tech-scarce-stock-concurrency",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "prefer-single-statement-atomic-update"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23643,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "prefer-single-statement-atomic-update"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23701,
+        "relations": 4,
+        "link_roles": {
+          "index_member": 1,
+          "related_document": 1
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "generalization-cases-2026-09-07.json",
+      "id": "generalization-biz-switching-interview-history",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "investigate-real-switching-timeline"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 22918,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "investigate-real-switching-timeline"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 22918,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "generalization-cases-2026-09-07.json",
+      "id": "generalization-biz-click-growth-or-redistribution",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "define-actionable-measurement"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23985,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "define-actionable-measurement"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23426,
+        "relations": 3,
+        "link_roles": {
+          "related_document": 1
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "generalization-cases-2026-09-07.json",
+      "id": "generalization-econ-concentrated-sector-diversification",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23973,
+        "relations": 6,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23973,
+        "relations": 6,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "generalization-cases-2026-09-07.json",
+      "id": "generalization-fit-repeated-mistakes-feedback-loop",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 2,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23784,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 2,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23811,
+        "relations": 4,
+        "link_roles": {
+          "index_member": 1
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "generalization-cases-2026-09-07.json",
+      "id": "generalization-empty-gibberish",
+      "before": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 1368,
+        "relations": 0,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 1368,
+        "relations": 0,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "generalization-cases-2026-09-07.json",
+      "id": "generalization-empty-fictional-device",
+      "before": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23959,
+        "relations": 5,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23951,
+        "relations": 5,
+        "link_roles": {
+          "related_document": 3
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "graph-ranking-cases-2026-09-08.json",
+      "id": "fresh-tech-llm-grounding-decline",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23584,
+        "relations": 3,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23584,
+        "relations": 3,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "graph-ranking-cases-2026-09-08.json",
+      "id": "fresh-tech-single-feature-emergency-stop",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 22497,
+        "relations": 2,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 22497,
+        "relations": 2,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "graph-ranking-cases-2026-09-08.json",
+      "id": "fresh-tech-progressive-release-comparison-gate",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23499,
+        "relations": 5,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23499,
+        "relations": 5,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "graph-ranking-cases-2026-09-08.json",
+      "id": "fresh-biz-saas-value-pricing",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23350,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23377,
+        "relations": 4,
+        "link_roles": {
+          "index_member": 1
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "graph-ranking-cases-2026-09-08.json",
+      "id": "fresh-econ-pay-raise-purchasing-power",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23866,
+        "relations": 8,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23928,
+        "relations": 8,
+        "link_roles": {
+          "related_document": 2
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "graph-ranking-cases-2026-09-08.json",
+      "id": "fresh-fit-new-team-expectations",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23414,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23507,
+        "relations": 4,
+        "link_roles": {
+          "related_document": 3
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "graph-ranking-cases-2026-09-08.json",
+      "id": "fresh-negative-unknown-token-string",
+      "before": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23700,
+        "relations": 7,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23917,
+        "relations": 7,
+        "link_roles": {
+          "related_document": 7
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "graph-ranking-cases-2026-09-08.json",
+      "id": "fresh-negative-unrelated-gardening-question",
+      "before": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 22164,
+        "relations": 5,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 22268,
+        "relations": 5,
+        "link_roles": {
+          "related_document": 3,
+          "index_member": 1
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "document-search-cases-2026-09-08.json",
+      "id": "synthetic-tech-rag-identifier-provenance",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "claim-provenance"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23046,
+        "relations": 3,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "claim-provenance"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23046,
+        "relations": 3,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "document-search-cases-2026-09-08.json",
+      "id": "synthetic-tech-weak-evidence-routing",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23463,
+        "relations": 7,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": false,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23463,
+        "relations": 7,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "document-search-cases-2026-09-08.json",
+      "id": "synthetic-biz-click-lift-validation",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "leading-signal-causality"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23836,
+        "relations": 5,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 2,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [
+          "leading-signal-causality"
+        ],
+        "evidence_recall": 0.5,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23987,
+        "relations": 5,
+        "link_roles": {
+          "index_member": 1,
+          "related_document": 4
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "document-search-cases-2026-09-08.json",
+      "id": "synthetic-econ-correlation-diversification",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23619,
+        "relations": 11,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23619,
+        "relations": 11,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "document-search-cases-2026-09-08.json",
+      "id": "synthetic-negative-weather-forecast",
+      "before": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 22988,
+        "relations": 6,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23112,
+        "relations": 6,
+        "link_roles": {
+          "related_document": 4
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "document-search-cases-2026-09-08.json",
+      "id": "synthetic-negative-fictional-kingdom-tax",
+      "before": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23523,
+        "relations": 6,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23616,
+        "relations": 6,
+        "link_roles": {
+          "related_document": 3
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "metadata-ranking-cases-2026-09-08.json",
+      "id": "unseen-tech-payment-retry-contract",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23909,
+        "relations": 7,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23952,
+        "relations": 7,
+        "link_roles": {
+          "related_document": 4
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "metadata-ranking-cases-2026-09-08.json",
+      "id": "unseen-tech-ott-unknown-subscription",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23956,
+        "relations": 5,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23987,
+        "relations": 5,
+        "link_roles": {
+          "related_document": 1
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "metadata-ranking-cases-2026-09-08.json",
+      "id": "unseen-biz-aarrr-alias",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23957,
+        "relations": 11,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": true,
+        "evidence_hit": true,
+        "body_hit": true,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 1,
+        "missing_evidence_groups": [],
+        "evidence_recall": 1,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": true,
+        "bytes": 23991,
+        "relations": 11,
+        "link_roles": {
+          "index_member": 1,
+          "related_document": 10
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "metadata-ranking-cases-2026-09-08.json",
+      "id": "unseen-econ-elasticity-title",
+      "before": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 13722,
+        "relations": 8,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": true,
+        "document_hit": true,
+        "heading_hit": false,
+        "evidence_hit": false,
+        "body_hit": false,
+        "evidence_groups_total": 1,
+        "evidence_groups_hit": 0,
+        "missing_evidence_groups": [
+          "legacy"
+        ],
+        "evidence_recall": 0,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 13908,
+        "relations": 8,
+        "link_roles": {
+          "related_document": 6
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "metadata-ranking-cases-2026-09-08.json",
+      "id": "unseen-negative-tech-lunar-landing",
+      "before": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23970,
+        "relations": 6,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23971,
+        "relations": 7,
+        "link_roles": {
+          "related_document": 7
+        },
+        "index_status": "unindexed_worktree"
+      }
+    },
+    {
+      "file": "metadata-ranking-cases-2026-09-08.json",
+      "id": "unseen-negative-biz-pet-food-market",
+      "before": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23735,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      },
+      "after": {
+        "gold_in_snapshot": null,
+        "document_hit": null,
+        "heading_hit": null,
+        "evidence_hit": null,
+        "body_hit": null,
+        "evidence_groups_total": null,
+        "evidence_groups_hit": null,
+        "missing_evidence_groups": null,
+        "evidence_recall": null,
+        "forbidden_hits": [],
+        "out_of_scope_paths": [],
+        "index_valid": true,
+        "passed": false,
+        "bytes": 23735,
+        "relations": 4,
+        "link_roles": {},
+        "index_status": "unindexed_worktree"
+      }
+    }
+  ]
+}

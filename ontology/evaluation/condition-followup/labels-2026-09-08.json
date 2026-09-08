@@ -1,0 +1,228 @@
+[
+  {
+    "id": "fresh-tech-schema-rollout",
+    "expected_evidence_groups": [
+      {
+        "id": "compatibility-window",
+        "any_of": [
+          {
+            "source_uri": "tech/ci-cd/deployment/DB-Migration.md",
+            "heading_path": [
+              "배포 파이프라인의 DB Migration 전략",
+              "배포 전략별 실행 순서"
+            ],
+            "all_text": [
+              "준비 마이그레이션이 앱 배포보다 앞선다",
+              "Blue 유지 기간이 곧 contract 가능 시점의 하한"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rollback-path",
+        "any_of": [
+          {
+            "source_uri": "tech/ci-cd/deployment/DB-Migration.md",
+            "heading_path": [
+              "배포 파이프라인의 DB Migration 전략",
+              "스키마가 걸린 되돌리기"
+            ],
+            "all_text": [
+              "직전 버전이 현재 스키마 위에서 그대로 동작해야 한다",
+              "forward fix 마이그레이션"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fresh-tech-refresh-concurrency",
+    "expected_evidence_groups": [
+      {
+        "id": "reuse-detection",
+        "any_of": [
+          {
+            "source_uri": "tech/security/auth/Refresh-Token-Rotation.md",
+            "heading_path": [
+              "Refresh Token Rotation (RTR)",
+              "Family ID를 활용한 탈취 감지"
+            ],
+            "all_text": [
+              "해당 family의 활성 RT를 폐기하고 재인증 요구",
+              "tombstone으로 보존"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "client-single-flight",
+        "any_of": [
+          {
+            "source_uri": "tech/security/auth/Refresh-Token-Rotation.md",
+            "heading_path": [
+              "Refresh Token Rotation (RTR)",
+              "프론트엔드 중복 재발급 요청 처리",
+              "해결: Single-flight 패턴"
+            ],
+            "all_text": [
+              "같은 Promise를 공유한다",
+              "모든 대기 요청이 새 토큰을 받고"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fresh-tech-metric-cardinality",
+    "expected_evidence_groups": [
+      {
+        "id": "bounded-labels",
+        "any_of": [
+          {
+            "source_uri": "tech/observability/metrics/Cardinality.md",
+            "heading_path": [
+              "Cardinality 관리",
+              "무엇을 라벨로, 무엇을 라벨에서 빼나"
+            ],
+            "all_text": [
+              "user_id, request_id, trace_id",
+              "유한하고 미리 알 수 있는 값"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "signal-placement",
+        "any_of": [
+          {
+            "source_uri": "tech/observability/metrics/Cardinality.md",
+            "heading_path": [
+              "Cardinality 관리",
+              "신호별로 자리가 다르다"
+            ],
+            "all_text": [
+              "고카디널리티 상세",
+              "trace_id로 요청 단위 흐름"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fresh-tech-invariant-observability",
+    "expected_evidence_groups": [
+      {
+        "id": "concurrent-invariant",
+        "any_of": [
+          {
+            "source_uri": "tech/database/rdbms/schema-design/integrity/Data-Integrity-Constraints.md",
+            "heading_path": [
+              "데이터 무결성과 제약 조건",
+              "여러 row의 불변식"
+            ],
+            "all_text": [
+              "단순 read-then-write validation만으로 동시 요청을 막지 못한다",
+              "업무 key의 unique constraint/idempotency key"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "constraint-observation",
+        "any_of": [
+          {
+            "source_uri": "tech/database/rdbms/schema-design/integrity/Data-Integrity-Constraints.md",
+            "heading_path": [
+              "데이터 무결성과 제약 조건",
+              "규칙을 어느 계층에 둘 것인가",
+              "제약 위반의 관측"
+            ],
+            "all_text": [
+              "앱 검증에서 걸린 건수",
+              "DB 제약에서 걸린 건수"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fresh-biz-coupon-exit",
+    "expected_evidence_groups": [
+      {
+        "id": "incremental-value",
+        "any_of": [
+          {
+            "source_uri": "biz/commerce/core-domains/Commerce-Pricing.md",
+            "heading_path": [
+              "커머스 가격(Pricing) 도메인",
+              "쿠폰의 생애주기: 발행, 발급, 사용",
+              "쿠폰의 본질: 쓰게 하기 위해서가 아니라 사게 만들기 위해"
+            ],
+            "all_text": [
+              "사용률만 보면 과도한 할인도 성공으로 보일 수 있으므로",
+              "구매 전환, 기여이익, 재구매와 비구매 대조군을 함께 본다"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "discount-exit",
+        "any_of": [
+          {
+            "source_uri": "biz/commerce/core-domains/Commerce-Pricing.md",
+            "heading_path": [
+              "커머스 가격(Pricing) 도메인",
+              "쿠폰의 생애주기: 발행, 발급, 사용",
+              "쿠폰행사의 악순환과 탈출"
+            ],
+            "all_text": [
+              "행사 종료 후에도 재방문하는가",
+              "출구 전략을 함께 설계"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fresh-econ-price-revenue",
+    "expected_evidence_groups": [
+      {
+        "id": "elasticity-measure",
+        "any_of": [
+          {
+            "source_uri": "econ/microeconomics/Elasticity.md",
+            "heading_path": [
+              "탄력성",
+              "2. 가격탄력성 (수요)"
+            ],
+            "all_text": [
+              "수요량의 변화율(%)",
+              "가격의 변화율(%)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "revenue-direction",
+        "any_of": [
+          {
+            "source_uri": "econ/microeconomics/Elasticity.md",
+            "heading_path": [
+              "탄력성",
+              "4. 총수입과의 관계 (실전에서 가장 중요)"
+            ],
+            "all_text": [
+              "가격을 올릴 때 줄어드는 판매량보다",
+              "총수입이 늘어난다"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

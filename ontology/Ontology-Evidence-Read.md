@@ -7,7 +7,7 @@ aliases: ["온톨로지 근거 이어 읽기", "Ontology Evidence Read"]
 
 # 조회한 근거를 같은 원문에서 끝까지 읽기
 
-`context_lookup`의 발췌는 section 앞부분을 최대 1,400 byte까지 반환한다. `context_search`는 본문 없이 `best_evidence_ref`만 반환한다. 정규화 후 한 토큰인 exact alias 또는 title 질의도 전체 색인 본문을 훑는 대신 그 후보 문서의 유용한 Section을 읽어 시작점을 고를 수 있다. 중요한 조건이나 예외가 잘렸거나 검색 후보의 원문을 확인해야 할 때 `context_read`로 해당 근거를 더 읽을 수 있다. `best_evidence_ref`가 fallback으로 선택됐을 때는 그 본문에 query 어휘가 있다는 보장이 없으므로 읽은 뒤에 확인한다. 원문 탐색과 역할/적용 판단은 [[Development-Ontology-Contract]]를 따른다.
+`context_lookup`은 처음 section 앞부분을 최대 1,400 byte로 발췌한다. 직접 근거, 관계 묶음과 provenance를 먼저 담은 뒤, 이미 선택된 non-root section 전체가 남은 응답 JSON 예산에 모두 들어갈 때만 그 section을 완전한 본문으로 확장한다. 따라서 전체 section은 1,400 byte를 넘을 수 있다. 전체가 들어가지 않으면 기존 접두 발췌와 `truncated: true`를 유지하며 ID, revision, hash와 anchor receipt는 바뀌지 않는다. 클라이언트는 길이나 1,400 byte 상한을 추정하지 말고 반드시 `truncated`를 확인한다. `max_bytes`는 section 하나의 상한이 아니라 entities, evidence, relations와 메타데이터를 포함한 `context_lookup` 응답 JSON 전체의 상한이다. `context_search`는 본문 없이 `best_evidence_ref`만 반환한다. 정규화 후 한 토큰인 exact alias 또는 title 질의도 전체 색인 본문을 훑는 대신 그 후보 문서의 유용한 Section을 읽어 시작점을 고를 수 있다. 중요한 조건이나 예외가 잘렸거나 검색 후보의 원문을 확인해야 할 때 `context_read`로 해당 근거를 더 읽을 수 있다. `best_evidence_ref`가 fallback으로 선택됐을 때는 그 본문에 query 어휘가 있다는 보장이 없으므로 읽은 뒤에 확인한다. 원문 탐색과 역할/적용 판단은 [[Development-Ontology-Contract]]를 따른다.
 
 ## MCP 입력과 응답
 

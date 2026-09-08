@@ -5,6 +5,9 @@ import { parseDocument, visit as visitYaml } from 'yaml';
 import { ASSERTION_PREDICATES, ContextError } from './core.mjs';
 
 const WIKILINK_PATTERN = /\[\[([^\]|\r\n]+?)(?:\\?\|[^\]\r\n]*)?\]\]/g;
+const INDEX_MEMBER_HEADINGS = new Set(['목차', '하위 영역', '하위 폴더 인덱스', '하위 문서']);
+const RELATED_DOCUMENT_HEADINGS = new Set(['관련 문서', '관련문서']);
+const PARENT_INDEX_PREFIX = /(?:^|[\s([{"'“‘.!?。！？])상위\s*:\s*$/u;
 
 export function normalizeHeading(text) {
   const tree = fromMarkdown(`# ${text.replace(/[\r\n]+/g, ' ')}`);
@@ -31,7 +34,10 @@ export function extractMarkdown({ path, content, repoId, revision, updatedAt }) 
     source,
     text,
   });
-  const links = extractWikilinks(tree, bodyStart, sections, text);
+  const links = extractWikilinks(tree, bodyStart, sections, text, {
+    headings: headings.filter((heading) => !heading.quoted),
+    status: metadata.value.status,
+  });
 
   return {
     document: {
@@ -231,20 +237,24 @@ function createRelationAssertions({ frontmatter, path, repoId, revision, updated
 
 function findHeadings(tree, bodyStart) {
   const headings = [];
-  visit(tree, (node) => {
-    if (node.type !== 'heading') return;
-    headings.push({
-      depth: node.depth,
-      label: inlineText(node).replace(/\s+/g, ' ').trim(),
-      start: bodyStart + node.position.start.offset,
-    });
-  });
+  const walk = (node, quoted = false) => {
+    if (node.type === 'heading') {
+      headings.push({
+        depth: node.depth,
+        label: inlineText(node).replace(/\s+/g, ' ').trim(),
+        start: bodyStart + node.position.start.offset,
+        quoted,
+      });
+    }
+    for (const child of node.children ?? []) walk(child, quoted || node.type === 'blockquote');
+  };
+  walk(tree);
   return headings;
 }
 
-function extractWikilinks(tree, bodyStart, sections, text) {
+function extractWikilinks(tree, bodyStart, sections, text, { headings, status }) {
   const byteOffset = createByteOffset(text);
-  const excluded = findExcludedRanges(tree, bodyStart);
+  const { excluded, quoted } = findExcludedRanges(tree, bodyStart);
   const occurrences = new Map();
   const links = [];
   const source = text.slice(bodyStart);
@@ -263,22 +273,58 @@ function extractWikilinks(tree, bodyStart, sections, text) {
     if (!target) continue;
     const occurrence = (occurrences.get(unit.id) ?? 0) + 1;
     occurrences.set(unit.id, occurrence);
-    links.push({ target, evidence_unit_id: unit.id, assertion_occurrence: occurrence });
+    links.push(compact({
+      target,
+      link_role: classifyLinkRole({ target, status, headings, text, startChar,
+        quoted: quoted.some((range) => range.start <= startChar && startChar < range.end) }),
+      evidence_unit_id: unit.id,
+      assertion_occurrence: occurrence,
+    }));
   }
   return links;
 }
 
+function classifyLinkRole({ target, status, headings, text, startChar, quoted }) {
+  if (target.startsWith('#')) return undefined;
+  if (PARENT_INDEX_PREFIX.test(lineBefore(text, startChar))) return 'parent_index';
+  if (quoted) return undefined;
+  const active = activeHeadings(headings, startChar);
+  if (active.some((heading) => RELATED_DOCUMENT_HEADINGS.has(heading.label))) return 'related_document';
+  if (status === 'index' && active.some((heading) => isIndexMemberHeading(heading.label))) return 'index_member';
+  return undefined;
+}
+
+function isIndexMemberHeading(heading) {
+  return INDEX_MEMBER_HEADINGS.has(heading) || /^하위 폴더 인덱스 \(\d+개\)$/.test(heading)
+    || /^목차 \([^()\r\n]+\)$/.test(heading);
+}
+
+function activeHeadings(headings, offset) {
+  const active = [];
+  for (const heading of headings) {
+    if (heading.start > offset) break;
+    while (active.length && active.at(-1).depth >= heading.depth) active.pop();
+    active.push(heading);
+  }
+  return active;
+}
+
+function lineBefore(text, offset) {
+  return text.slice(Math.max(text.lastIndexOf('\n', offset - 1), text.lastIndexOf('\r', offset - 1)) + 1, offset);
+}
+
 function findExcludedRanges(tree, bodyStart) {
-  const ranges = [];
+  const excluded = [];
+  const quoted = [];
   visit(tree, (node) => {
-    if (!['code', 'html', 'inlineCode', 'link', 'image', 'definition', 'linkReference', 'imageReference'].includes(node.type)
-      || !node.position) return;
-    ranges.push({
-      start: bodyStart + node.position.start.offset,
-      end: bodyStart + node.position.end.offset,
-    });
+    if (!node.position) return;
+    const range = { start: bodyStart + node.position.start.offset, end: bodyStart + node.position.end.offset };
+    if (node.type === 'blockquote') quoted.push(range);
+    if (['code', 'html', 'inlineCode', 'link', 'image', 'definition', 'linkReference', 'imageReference'].includes(node.type)) {
+      excluded.push(range);
+    }
   });
-  return ranges;
+  return { excluded, quoted };
 }
 
 function section({ id, type = 'Section', label, headingPath, occurrence, start, end, path, revision, updatedAt, source, lineStarts }) {

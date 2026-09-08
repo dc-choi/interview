@@ -1,0 +1,147 @@
+[
+  {
+    "id": "unseen-cache-multi-instance-guard",
+    "kind": "synthetic_unseen",
+    "query": "여러 서버에서 인기 키가 동시에 만료되어 원본 DB 조회가 폭주한다. 각 프로세스 안과 서버들 사이의 중복 요청을 함께 줄이려면 무엇을 조합해야 하나?",
+    "scope": ["tech"],
+    "expected_evidence_groups": [
+      {
+        "id": "same-process-request-coalescing",
+        "any_of": [
+          {
+            "path": "tech/database/in-memory/cache/invalidation-refresh/Cache-Stampede.md",
+            "heading": "5. Single-Flight (프로세스 내 중복 합치기)",
+            "all_text": [
+              "같은 프로세스에서 **동일 키에 대한 동시 요청을 하나로 합쳐** 단일 DB 조회로 처리."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cross-instance-locking",
+        "any_of": [
+          {
+            "path": "tech/database/in-memory/cache/invalidation-refresh/Cache-Stampede.md",
+            "heading": "5. Single-Flight (프로세스 내 중복 합치기)",
+            "all_text": [
+              "멀티 인스턴스라면 Single-Flight + 분산 락 **조합**: 프로세스 내 합치기 + 인스턴스 간 락"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unseen-typeorm-runner-cleanup-boundary",
+    "kind": "synthetic_unseen",
+    "query": "TypeORM에서 직접 빌린 커넥션으로 트랜잭션을 처리하는데, 전역 repository를 섞지 말아야 하는 이유와 풀 고갈을 피하기 위한 끝 처리 순서는 무엇인가?",
+    "scope": ["tech"],
+    "expected_evidence_groups": [
+      {
+        "id": "runner-manager-boundary",
+        "any_of": [
+          {
+            "path": "tech/database/orm/typeorm/TypeORM-Transactions-and-Replication.md",
+            "heading": "QueryRunner: connection을 직접 소유할 때",
+            "all_text": [
+              "`runner.manager`와 `dataSource.manager`는 교환할 수 없다. 전자는 runner connection에 묶이고 후자는 전역 manager다."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "runner-release-lifecycle",
+        "any_of": [
+          {
+            "path": "tech/database/orm/typeorm/TypeORM-Transactions-and-Replication.md",
+            "heading": "QueryRunner: connection을 직접 소유할 때",
+            "all_text": [
+              "lifecycle은 create, connect, start, 같은 `runner.manager`로 query, commit 또는 rollback, `finally` release 순서다.",
+              "`release()`를 빼면 pool connection이 계속 checkout되어 결국 요청이 대기한다. release 뒤 runner는 재사용하지 않는다."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unseen-canary-baseline-version-split",
+    "kind": "synthetic_unseen",
+    "query": "카나리 배포에서 새 버전 5%가 오류를 내지만 전체 평균에는 묻힌다. 승격이나 중단 결정을 신뢰하려면 어떤 비교 대상과 어떤 계측 구분이 필요한가?",
+    "scope": ["tech"],
+    "expected_evidence_groups": [
+      {
+        "id": "concurrent-baseline",
+        "any_of": [
+          {
+            "path": "tech/ci-cd/deployment/Canary.md",
+            "heading": "판정 게이트",
+            "all_text": [
+              "**비교 대상은 동시에 돌고 있는 baseline이다**"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "version-labeled-metrics",
+        "any_of": [
+          {
+            "path": "tech/ci-cd/deployment/Canary.md",
+            "heading": "판정 게이트",
+            "all_text": [
+              "**버전 라벨 분리가 전제** — 전체 집계 오류율만 있으면 5% 노출의 이상은 평균에 묻힌다."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unseen-diversification-rebalancing",
+    "kind": "synthetic_unseen",
+    "query": "같은 업종 종목을 많이 담았는데도 포트폴리오 분산이 약할 수 있는 이유는 무엇이고, 시간이 지나 목표 위험 비중에서 벗어나면 어떤 절차를 써야 하나?",
+    "scope": ["econ"],
+    "expected_evidence_groups": [
+      {
+        "id": "common-factor-correlation",
+        "any_of": [
+          {
+            "path": "econ/investing/Asset-Allocation-Diversification.md",
+            "heading": "3. 분산투자의 원리 — 상관관계",
+            "all_text": [
+              "같은 업종 주식 스무 개는 공통 요인 노출 때문에 분산 효과가 약할 수 있다 → [[Risk-and-Return|위험과 수익]]."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "target-risk-rebalancing",
+        "any_of": [
+          {
+            "path": "econ/investing/Asset-Allocation-Diversification.md",
+            "heading": "4. 리밸런싱",
+            "all_text": [
+              "**리밸런싱**은 이를 목표 비율로 되돌려 위험 노출을 관리하는 절차다."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unseen-negative-gibberish",
+    "kind": "synthetic_unseen",
+    "query": "퍄쵸라 닐굼 세발선 알로코를 어떤 순서로 조율하나요?",
+    "scope": ["tech", "biz", "econ", "fit"],
+    "expected_evidence": [],
+    "expected_empty": true
+  },
+  {
+    "id": "unseen-negative-weather",
+    "kind": "synthetic_unseen",
+    "query": "내일 서울에 비가 올지와 우산이 필요한지 알려줘.",
+    "scope": ["tech", "biz", "econ", "fit"],
+    "expected_evidence": [],
+    "expected_empty": true
+  }
+]

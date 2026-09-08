@@ -48,6 +48,32 @@ test('snapshots are deterministic, source-backed, and reproducible', (t) => {
   }
 });
 
+test('preserves a parser link role without changing the generic edge ID', (t) => {
+  const options = fixture(t);
+  options.write('tech/A.md', '---\nstatus: index\n---\n# Source\n## 목차\n[[B]]\n');
+  options.write('tech/C.md', '---\nstatus: index\n---\n# Source\n## 목차\n[[./C.md#Source]] [[./C.md#%53ource]] [[./C.md%23Source]]\n');
+  options.commit();
+  buildSnapshot(options);
+  const snapshot = loadSnapshot(options);
+  const source = snapshot.entities.find((entity) => entity.type === 'Document' && entity.source_uri === 'tech/A.md');
+  const target = snapshot.entities.find((entity) => entity.type === 'Document' && entity.source_uri === 'tech/B.md');
+  const edge = snapshot.relations.find((relation) => relation.subject === source.id && relation.object === target.id);
+  assert.equal(edge.predicate, 'links_to');
+  assert.equal(edge.link_role, 'index_member');
+  assert.equal(edge.id, `edge:sha256:${sha256(JSON.stringify([
+    source.id, 'links_to', target.id, edge.evidence_unit_id, edge.assertion_occurrence,
+  ]))}`);
+  assert.equal(edge.verification, 'source_confirmed');
+
+  const self = snapshot.entities.find((entity) => entity.type === 'Document' && entity.source_uri === 'tech/C.md');
+  const selfSection = snapshot.entities.find((entity) => entity.type === 'Section'
+    && entity.source_uri === 'tech/C.md' && entity.anchor.heading_path.at(-1) === 'Source');
+  const selfLinks = snapshot.relations.filter((relation) => relation.subject === self.id
+    && relation.object === selfSection.id && relation.predicate === 'links_to');
+  assert.equal(selfLinks.length, 3);
+  assert.equal(selfLinks.every((relation) => !Object.hasOwn(relation, 'link_role')), true);
+});
+
 test('dirty builds require explicit committed-only mode and never read dirty or untracked text', (t) => {
   const options = fixture(t);
   options.write('tech/B.md', '# Dirty heading\nnot committed\n');

@@ -13,7 +13,7 @@ aliases: ["온톨로지 근거 관리", "Ontology Evidence Lifecycle"]
 
 | 인사이트 | 확인한 기존 동작 | 이번 적용 |
 | --- | --- | --- |
-| 맥락은 선택 이유, 적용 조건과 예외까지 함께 읽어야 한다 | 조회는 section 앞부분을 최대 1,400 byte로 발췌하고 추가 축소 시에도 `truncated`를 표시한다 | 중요한 잘린 근거는 pinned 원문의 전체 section을 읽는 절차를 명시 |
+| 맥락은 선택 이유, 적용 조건과 예외까지 함께 읽어야 한다 | 조회는 처음 section 앞부분을 최대 1,400 byte로 발췌한다. 이미 선택된 non-root section 전체가 남은 응답 JSON 예산에 모두 들어갈 때만 1,400 byte를 넘어 확장하고, 아니면 같은 receipt의 접두와 `truncated: true`를 유지한다 | 중요한 잘린 근거는 pinned 원문의 전체 section을 읽는 절차를 명시 |
 | 문서 연결과 원문 추출은 현재 적용의 증거와 다르다 | `source_confirmed`와 `freshness: not_checked`, `conflict: not_checked`가 함께 반환된다 | 추출 상태, 작성 상태와 검증 상태를 분리하는 계약 보강 |
 | 여러 조건이 필요한 질문은 조건을 모두 찾아야 한다 | `expected_evidence`와 `any_text`는 허용 대안 중 하나의 일치만 요구한다 | 필수 근거 그룹과 같은 본문의 필수 문구 검사를 추가 |
 | 근거의 부재와 조회 실패를 구분해야 한다 | scope, revision, coverage gap, 예산과 traversal 제한이 반환된다 | 누락한 필수 그룹과 잘린 evidence 수를 평가 보고서에 기록 |
@@ -25,7 +25,7 @@ aliases: ["온톨로지 근거 관리", "Ontology Evidence Lifecycle"]
 
 원문 수정 시각을 검증 시각으로 대신하지 않는다. `verified_at`도 그 날짜에 무엇을 어느 환경에서 확인했는지가 함께 있어야 해석할 수 있다. 최신 문서라는 이유로 적용 프로젝트와 환경이 다른 기록을 우선하지 않는다.
 
-`truncated: true`인 발췌를 중요한 판단에 사용한다면, `source_revision`에 고정된 `source_uri`의 전체 section과 예외를 읽는다. `anchor.heading_path`, `occurrence`와 byte anchor로 동명 절을 구분한다. 현재 파일을 읽어 보완할 때는 pinned 원문과 달라진 부분을 별도로 확인한다. 읽지 못한 조건은 미확인으로 남긴다.
+`context_lookup`에서 1,400 byte보다 긴 section도 전체 응답 JSON 예산에 모두 들어갈 때만 `truncated: false`로 반환될 수 있다. `truncated: true`인 발췌를 중요한 판단에 사용한다면, `source_revision`에 고정된 `source_uri`의 전체 section과 예외를 읽는다. `anchor.heading_path`, `occurrence`와 byte anchor로 동명 절을 구분한다. 현재 파일을 읽어 보완할 때는 pinned 원문과 달라진 부분을 별도로 확인한다. 읽지 못한 조건은 미확인으로 남긴다.
 
 현재는 [[Ontology-Evidence-Read|MCP와 CLI의 근거 이어 읽기]]로 같은 근거를 끝까지 읽을 수 있다. 조회 결과의 ID, revision과 hash를 보내고 마지막 페이지까지 이어 읽는다. revision이나 hash가 바뀌면 재조회하며, 서로 다른 조회의 페이지를 섞지 않는다.
 

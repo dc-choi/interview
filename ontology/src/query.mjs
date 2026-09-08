@@ -22,6 +22,7 @@ const MAX_EDGES_PER_ENTITY = 50;
 const MAX_EXCERPT_BYTES = 1400;
 const MAX_SEARCH_DOCUMENTS = 20;
 const MAX_CURSOR_BYTES = 2048;
+const LINK_ROLE_PRIORITY = { index_member: 2, parent_index: 2, related_document: 1 };
 const QUERY_CODE_HASH = sha256(fs.readFileSync(new URL(import.meta.url)));
 const LIMITATIONS = [
   'freshness_not_checked',
@@ -359,7 +360,7 @@ function normalizedHash(value) {
   return String(value ?? '').replace(/^sha256:/, '');
 }
 
-function evidenceFor(entity, read, scopes) {
+function evidenceFor(entity, read, scopes, maxBytes = MAX_EXCERPT_BYTES) {
   const uri = sourcePath(entity);
   if (!uri || !inScope(uri, scopes)) return null;
   const anchor = entity.anchor;
@@ -367,7 +368,7 @@ function evidenceFor(entity, read, scopes) {
   const blob = read(uri);
   const raw = blob.subarray(anchor.start_byte, anchor.end_byte);
   if (normalizedHash(entity.content_hash) !== sha256(raw)) return null;
-  const snippet = safeExcerpt(blob, anchor.start_byte, anchor.end_byte, MAX_EXCERPT_BYTES);
+  const snippet = safeExcerpt(blob, anchor.start_byte, anchor.end_byte, maxBytes);
   return {
     id: entity.id,
     source_uri: uri,
@@ -677,9 +678,11 @@ function retrieve(options, args, snapshot, mode) {
     return memo.get(uri);
   };
   const tokens = words(request.query);
+  const sectionTerms = new Map();
   const scoreSection = (section, weights) => {
     const body = read(sourcePath(section)).subarray(section.anchor?.start_byte ?? 0, section.anchor?.end_byte ?? 0).toString('utf8').toLowerCase();
     const match = scoreBodyMatch(body, tokens, weights);
+    sectionTerms.set(section.id, match.matchedTokens);
     // Long notes can repeat broad terms without answering the specific query.
     const lengthPenalty = 1 + 0.2 * Math.log1p(body.length / 200);
     return { ...match, score: entityScore(section, request.query, tokens) + match.score / lengthPenalty };
@@ -738,6 +741,7 @@ function retrieve(options, args, snapshot, mode) {
       documentBodies.reduce((count, body) => count + Number(body.includes(token)), 0)]));
     const weights = new Map(tokens.map((token) => [token,
       1 + Math.log((documents.length + 1) / ((documentFrequency.get(token) ?? 0) + 1))]));
+    for (const [token, weight] of weights) localWeights.set(token, weight);
     for (const section of searchableSections) {
       const docId = documentIdFor(section, documentsByPath);
       const doc = documentsByPath.get(sourcePath(section));
@@ -860,7 +864,10 @@ function retrieve(options, args, snapshot, mode) {
       }
     }
     incident.sort((a, b) => (sectionScores.get(b.evidence_unit_id) ?? 0) - (sectionScores.get(a.evidence_unit_id) ?? 0)
-      || relatedDocumentScore(b) - relatedDocumentScore(a) || a.id.localeCompare(b.id));
+      || relatedDocumentScore(b) - relatedDocumentScore(a)
+      // Explicit navigation breaks relevance ties; it does not establish applicability.
+      || (LINK_ROLE_PRIORITY[b.link_role] ?? 0) - (LINK_ROLE_PRIORITY[a.link_role] ?? 0)
+      || a.id.localeCompare(b.id));
     if (incident.length > MAX_EDGES_PER_ENTITY) {
       base.traversal.limit_reached = true;
       appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'retrieval_limit_reached' });
@@ -955,13 +962,13 @@ function retrieve(options, args, snapshot, mode) {
   };
   for (const id of requiredEvidenceIds) addSourceEvidence(id);
   if (roots.length > 0 && base.evidence_units.length === 0) fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit');
-  for (const relation of selectedRelations) {
+  const addSelectedRelation = (relation) => {
     const item = evidence(relation.evidence_unit_id);
     const endpoints = [entitiesById.get(relation.subject), entitiesById.get(relation.object)];
     if (!item || endpoints.some((entity) => !entity)) {
       appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'source_unavailable', evidence_unit_id: relation.evidence_unit_id });
       base.budget.omitted_relations += 1;
-      continue;
+      return;
     }
     const bundleEntities = new Map(endpoints.map((entity) => [entity.id, entity]));
     for (const endpoint of endpoints) {
@@ -973,10 +980,77 @@ function retrieve(options, args, snapshot, mode) {
       base.budget.omitted_relations += 1;
       omitEvidence(relation.evidence_unit_id);
       markOutputLimit();
-      continue;
+      return;
     }
     restoreEvidence(relation.evidence_unit_id);
+  };
+  // Reserve one direct link, then spend on complementary sections before more links.
+  const directRelation = hasExactMetadataHit ? undefined
+    : selectedRelations.find((relation) => requiredEvidenceIds.has(relation.evidence_unit_id));
+  if (directRelation) addSelectedRelation(directRelation);
+  if (!hasExactMetadataHit) {
+    const represented = new Map(tokens.map((token) => [token, 0]));
+    const recordTerms = (item) => {
+      const text = item.excerpt.toLowerCase();
+      for (const token of tokens) if (text.includes(token)) represented.set(token, represented.get(token) + 1);
+    };
+    for (const item of base.evidence_units) recordTerms(item);
+    const candidates = [...selected.values()].filter((entity) => entity.type === 'Document')
+      .flatMap((doc) => (byDocument.get(doc.id) ?? [])
+        .filter((section) => section.anchor.heading_path.length > 0 && !requiredEvidenceIds.has(section.id)
+          && sectionTerms.get(section.id)?.size > 0)
+        .map((section) => ({ section, doc, item: evidence(section.id) })))
+      .filter((candidate) => candidate.item)
+      .map((candidate) => ({ ...candidate, terms: [...sectionTerms.get(candidate.section.id)] }));
+    // ponytail: six complementary sections in the bounded graph; semantic reranking needs a measured benefit.
+    for (let added = 0; added < MAX_ROOTS && candidates.length > 0;) {
+      const gain = (candidate) => candidate.terms.reduce((total, token) => total + localWeights.get(token) / (1 + represented.get(token)), 0);
+      candidates.sort((a, b) => gain(b) - gain(a)
+        || (sectionScores.get(b.section.id) ?? 0) - (sectionScores.get(a.section.id) ?? 0)
+        || a.section.id.localeCompare(b.section.id));
+      const { section, doc, item: prefix } = candidates.shift();
+      if (base.evidence_units.some((unit) => unit.id === prefix.id)) continue;
+      const complete = evidenceFor(section, read, scopes, effectiveMaxBytes);
+      const prefixMatches = tokens.some((token) => prefix.excerpt.toLowerCase().includes(token));
+      let item = !prefixMatches && complete && !complete.truncated ? complete : prefix;
+      const addedDocument = !base.entities.some((entity) => entity.id === doc.id);
+      if (addedDocument) base.entities.push(publicEntity(doc));
+      base.evidence_units.push(item);
+      if (outputBytes(base) > effectiveMaxBytes) {
+        base.evidence_units.pop();
+        item = prefix;
+        base.evidence_units.push(item);
+      }
+      if (!tokens.some((token) => item.excerpt.toLowerCase().includes(token)) || outputBytes(base) > effectiveMaxBytes) {
+        base.evidence_units.pop();
+        if (addedDocument) base.entities.pop();
+        omitEvidence(section.id);
+        markOutputLimit();
+        continue;
+      }
+      requiredEvidenceIds.add(section.id);
+      rootForEvidence.set(section.id, doc.id);
+      restoreEvidence(section.id);
+      recordTerms(item);
+      added += 1;
+    }
   }
+  const completeEvidence = () => {
+    for (const item of base.evidence_units) {
+      if (!item.truncated || !item.anchor.heading_path.length) continue;
+      const complete = evidenceFor(sectionsById.get(item.id), read, scopes, effectiveMaxBytes);
+      if (!complete || complete.truncated) continue;
+      const excerpt = item.excerpt;
+      item.excerpt = complete.excerpt;
+      item.truncated = false;
+      if (outputBytes(base) > effectiveMaxBytes) {
+        item.excerpt = excerpt;
+        item.truncated = true;
+      }
+    }
+  };
+  if (!hasExactMetadataHit) completeEvidence();
+  for (const relation of selectedRelations) if (relation !== directRelation) addSelectedRelation(relation);
   for (const id of new Set(provenanceEvidence)) {
     if (!base.evidence_units.some((item) => item.id === id)) addSourceEvidence(id);
   }
@@ -1000,5 +1074,7 @@ function retrieve(options, args, snapshot, mode) {
       fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit with required metadata');
     }
   }
+  // Finish selected sections when their remaining context fits the response.
+  completeEvidence();
   return finalize();
 }

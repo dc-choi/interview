@@ -29,7 +29,11 @@ aliases: ["개발 판단 온톨로지", "Development Knowledge Ontology"]
 - [[Ontology-Evidence-Read|잘린 근거를 같은 원문에서 끝까지 읽는 MCP와 CLI]]
 - [[Ontology-Document-Outline|찾은 문서의 다른 section 탐색]]
 - [[Ontology-Document-Search|문서 후보를 페이지로 찾고 후속 근거를 고르는 API]]
+- [[Ontology-Condition-Retrieval|질문 조건을 나누고 빠진 근거만 제한적으로 다시 찾기]]
 - [[Ontology-Retrieval-Quality|자연어 검색과 후속 탐색의 품질, 비용과 남은 한계]]
+- [[Ontology-Search-Algorithms|BM25, 다국어 임베딩과 RRF의 고정 비교 실험]]
+- [[Ontology-Search-Selection|질문의 여러 조건을 담는 절 선택과 검증]]
+- [[Ontology-Search-Rerank|같은 후보의 다국어 재정렬 비교와 미채택 판단]]
 
 ## 실행 경로
 

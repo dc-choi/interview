@@ -1,0 +1,50 @@
+[
+  {
+    "id": "fresh-tech-schema-rollout",
+    "query": "Blue-Green 전환에 새 컬럼과 backfill이 필요한데, 장애가 나도 이전 버전으로 되돌릴 수 있도록 배포와 스키마 변경을 어떤 순서로 분리해야 하나?",
+    "scope": [
+      "tech"
+    ],
+    "max_bytes": 24000
+  },
+  {
+    "id": "fresh-tech-refresh-concurrency",
+    "query": "세션 갱신 토큰이 탈취됐을 가능성과 브라우저에서 여러 요청이 동시에 401을 받은 상황을 함께 다룰 때, 서버와 클라이언트는 무엇을 보존하고 어떻게 중복 갱신을 막아야 하나?",
+    "scope": [
+      "tech"
+    ],
+    "max_bytes": 24000
+  },
+  {
+    "id": "fresh-tech-metric-cardinality",
+    "query": "요청별 진단을 위해 모든 사용자와 요청 식별자를 Prometheus 라벨에 넣자는 제안이 나왔을 때, 비용 폭발을 피하면서 개별 지연 원인을 어떻게 추적해야 하나?",
+    "scope": [
+      "tech"
+    ],
+    "max_bytes": 24000
+  },
+  {
+    "id": "fresh-tech-invariant-observability",
+    "query": "재고가 하나 남은 상품에 같은 쿠폰을 동시에 쓰는 요청이 들어올 때, 단순 사전 검증을 넘어서 무결성을 지키고 방어선이 잘 작동하는지도 어떻게 확인해야 하나?",
+    "scope": [
+      "tech"
+    ],
+    "max_bytes": 24000
+  },
+  {
+    "id": "fresh-biz-coupon-exit",
+    "query": "할인 쿠폰 사용률이 올랐지만 장기 수익이 악화될 수 있을 때, 단기 행사 성과를 무엇과 비교하고 고객의 할인 의존을 끊을 방안을 어떻게 판단해야 하나?",
+    "scope": [
+      "biz"
+    ],
+    "max_bytes": 24000
+  },
+  {
+    "id": "fresh-econ-price-revenue",
+    "query": "한 상품의 가격 인상을 검토할 때, 수요 반응을 어떤 계산으로 분류하고 인상 후 매출이 늘지 줄지 어떻게 판단해야 하나?",
+    "scope": [
+      "econ"
+    ],
+    "max_bytes": 24000
+  }
+]

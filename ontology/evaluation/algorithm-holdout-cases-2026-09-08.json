@@ -1,0 +1,385 @@
+[
+  {
+    "id": "tech-distributed-workflow-recovery",
+    "query": "주문, 결제, 재고가 여러 서비스에 나뉘어 있고 중간 실패 뒤에도 사용자가 납득할 상태로 수습해야 한다. 보상과 복구를 어떻게 설계해야 할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "durable-recovery",
+        "any_of": [
+          {
+            "path": "tech/architecture-design/ddd-hexagonal/Distributed-Transaction-Strategies.md",
+            "heading": "Coordinator와 복구 경로",
+            "all_text": ["coordinator는 업무 흐름과 보상 작업을 durable state로 남겨야 한다."]
+          },
+          {
+            "path": "tech/architecture-design/ddd-hexagonal/Saga-Pattern.md",
+            "heading": "함정과 대응",
+            "all_text": ["실패한 보상은 durable registry에 목표 동작, 상태, 재시도 시각, 마지막 오류를 저장하고 worker가 이어서 처리한다."]
+          }
+        ]
+      },
+      {
+        "id": "compensation-ordering",
+        "any_of": [
+          {
+            "path": "tech/architecture-design/ddd-hexagonal/Saga-Pattern.md",
+            "heading": "보상 트랜잭션 원칙",
+            "all_text": ["Compensatable 단계를 먼저"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tech-schema-change-rollback-window",
+    "query": "테이블 구조를 바꾸면서 여러 인스턴스를 순차 배포하고, 장애가 나면 이전 앱으로 되돌려야 한다. 변경을 어떤 순서와 경계로 나누어야 할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "dual-contract-transition",
+        "any_of": [
+          {
+            "path": "tech/architecture-design/evolution/compatibility/Backward-Compatibility-Design.md",
+            "heading": "Expand-Contract를 계약 일반으로",
+            "all_text": ["신구 계약을 동시에 만족하는 상태를 먼저 만든다."]
+          }
+        ]
+      },
+      {
+        "id": "rollback-window",
+        "any_of": [
+          {
+            "path": "tech/ci-cd/deployment/DB-Migration.md",
+            "heading": "스키마가 걸린 되돌리기",
+            "all_text": ["contract 실행일이 롤백 창에 종속된다"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tech-agent-context-boundaries",
+    "query": "작업 에이전트가 몇 턴 지나면 토큰을 다 써서 실행이 흔들린다. 대용량 도구 응답과 첨부 자료를 어떻게 다뤄야 할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "lazy-file-access",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/tools/agent/Agent-Context-Budget.md",
+            "heading": "패턴 1 — 파일 첨부: Lazy Loading",
+            "all_text": ["파일 본문을 컨텍스트에 넣지 않고"]
+          }
+        ]
+      },
+      {
+        "id": "pre-context-filtering",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/tools/context/Tool-Output-Filtering.md",
+            "heading": "원칙 1 - 사전 필터링 (요약보다 먼저)",
+            "all_text": ["도구와 모델 사이의 코드 계층"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tech-grounded-answer-abstention",
+    "query": "문서 기반 답변기에 인용은 붙지만 엉뚱한 근거를 말하는 일이 있다. 검색, 문맥 구성, 생성 중 어디를 나눠 보고 어떤 경우 답변을 멈춰야 할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "layered-quality-diagnosis",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/tools/RAG-Retrieval-Engineering.md",
+            "heading": "품질을 분해하는 평가 모델",
+            "all_text": ["claim-level support"]
+          }
+        ]
+      },
+      {
+        "id": "insufficient-evidence-route",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/eval/LLM-Abstention.md",
+            "heading": "2. RAG 기반 abstention 강화",
+            "all_text": ["출처 인용 의무화: 인용 못 하면 거부"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tech-recommendation-availability",
+    "query": "추천 화면에서 후보는 많이 나오는데 당장 볼 수 없는 작품이나 구독 밖 작품이 섞여 목록이 비고 있다. 후보 단계와 노출 직전에서 무엇을 확인해야 할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "retrieve-before-underfill",
+        "any_of": [
+          {
+            "path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Candidate-Generation.md",
+            "heading": "Filter 순서와 underfill",
+            "all_text": ["적격 후보가 K 밖에 남아도 복구할 수 없다."]
+          }
+        ]
+      },
+      {
+        "id": "fresh-final-eligibility",
+        "any_of": [
+          {
+            "path": "tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Eligibility-Availability.md",
+            "heading": "Retrieval과 최종 재검사",
+            "all_text": ["최신 가용성, 구독과 안전 조건을 다시 검사"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tech-cache-write-race-and-hot-key",
+    "query": "상품 정보를 바꾼 직후 이전 값이 다시 캐시에 들어가고, 인기 키가 만료될 때 DB가 폭주한다. 쓰기 이후 처리와 읽기 쏠림을 어떻게 설계해야 할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "post-commit-invalidation",
+        "any_of": [
+          {
+            "path": "tech/database/in-memory/cache/invalidation-refresh/Cache-Invalidation.md",
+            "heading": "Pre-Commit 무효화의 문제",
+            "all_text": ["커밋 전에 evict하면"]
+          }
+        ]
+      },
+      {
+        "id": "single-request-refill",
+        "any_of": [
+          {
+            "path": "tech/database/in-memory/cache/invalidation-refresh/Cache-Stampede.md",
+            "heading": "2. Mutex Lock (분산 잠금)",
+            "all_text": ["한 요청만 DB를 조회"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tech-api-consumer-transition",
+    "query": "외부 사용자가 여럿인 API에서 필드 의미와 응답 형식을 바꿔야 한다. 새 버전을 무조건 만들지 않으면서 기존 호출자를 안전하게 옮기고 제거하려면 어떻게 해야 할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "additive-before-versioning",
+        "any_of": [
+          {
+            "path": "tech/architecture-design/evolution/compatibility/API-Versioning-Design.md",
+            "heading": "버전을 올리기 전에 묻는 것",
+            "all_text": ["additive change로 끝나는가"]
+          }
+        ]
+      },
+      {
+        "id": "evidence-based-removal",
+        "any_of": [
+          {
+            "path": "tech/architecture-design/evolution/compatibility/Backward-Compatibility-Design.md",
+            "heading": "Contract 단계는 시간이 아니라 증거로 넘어간다",
+            "all_text": ["옛 경로 제거는 유예 기간이 지났다는 이유로 하지 않는다."]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tech-progressive-release-control",
+    "query": "위험한 새 기능을 전면 공개하기 전에 일부 사용자부터 열고, 문제가 생기면 몇 초 안에 멈추되 이후 코드도 정리하려면 어떤 운영 규칙이 필요할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "fast-feature-disable",
+        "any_of": [
+          {
+            "path": "tech/ci-cd/deployment/Feature-Flag.md",
+            "heading": "핵심 명제",
+            "all_text": ["flag OFF는 제어면에서 값 하나를 바꾸는 초 단위 작업이다."]
+          },
+          {
+            "path": "tech/ci-cd/deployment/Rollback.md",
+            "heading": "롤백 수단의 비용 계층",
+            "all_text": ["feature flag off"]
+          }
+        ]
+      },
+      {
+        "id": "flag-retirement",
+        "any_of": [
+          {
+            "path": "tech/ci-cd/deployment/Feature-Flag.md",
+            "heading": "수명주기와 부채",
+            "all_text": ["소유자와 제거 기한을 flag 생성 시점에 필수로 받는다."]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "biz-solo-product-evidence",
+    "query": "혼자 운영할 작은 제품 아이디어가 있다. 반응 좋은 설문과 가입자 수가 늘어도 개발을 더 할지 판단하기 어렵다. 어떤 행동 증거와 고객 대화 방식을 써야 할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "costly-customer-commitment",
+        "any_of": [
+          {
+            "path": "biz/product-strategy/Solo-Product-Market-Validation.md",
+            "heading": "행동 증거의 강도",
+            "all_text": ["사용자나 구매자가 부담하는 비용이 클수록 일반적으로 증거가 강해진다."]
+          },
+          {
+            "path": "biz/product-strategy/Solo-Product-Market-Validation.md",
+            "heading": "시장 증거의 여섯 관문",
+            "all_text": ["지불 의향 설문, 희망 가격과 수익 연결 없는 사용자 증가"]
+          }
+        ]
+      },
+      {
+        "id": "switching-history-interview",
+        "any_of": [
+          {
+            "path": "biz/product-strategy/User-Feedback.md",
+            "heading": "JTBD 인터뷰 기법",
+            "all_text": ["과거의 실제 전환(switching) 경험을 타임라인으로 파헤친다."]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "biz-commerce-price-and-cancellation",
+    "query": "커머스에서 가격 구조가 복잡해져 할인, 배송비, 쿠폰이 겹친다. 고객이 낼 금액을 명확하게 보이고 부분취소가 나와도 정산이 틀리지 않게 설계하려면 무엇을 정해야 할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "customer-payable-composition",
+        "any_of": [
+          {
+            "path": "biz/commerce/core-domains/Commerce-Pricing.md",
+            "heading": "가격의 구성",
+            "all_text": ["상품 가격, 할인과 배송비 청구액의 조합이다."]
+          }
+        ]
+      },
+      {
+        "id": "discount-cancellation-policy",
+        "any_of": [
+          {
+            "path": "biz/commerce/core-domains/Commerce-Pricing.md",
+            "heading": "쿠폰, 할인 설계의 5가지 결정",
+            "all_text": ["부분취소 재계산이 불가능하다."]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "econ-inflation-rate-transmission",
+    "query": "물가 뉴스와 기준금리 인상이 동시에 나왔을 때, 가계 소비, 기업 투자, 실질 구매력의 변화를 한 가지 숫자로 단정하지 않고 설명하려면 무엇을 구분해야 할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "real-income-effect",
+        "any_of": [
+          {
+            "path": "econ/macroeconomics/Inflation.md",
+            "heading": "5. 인플레이션이 미치는 영향",
+            "all_text": ["명목임금이 물가만큼 못 오르면 실제 살림은 나빠진다."]
+          }
+        ]
+      },
+      {
+        "id": "policy-rate-demand-channel",
+        "any_of": [
+          {
+            "path": "econ/macroeconomics/Interest-Rates-Monetary-Policy.md",
+            "heading": "4. 통화정책의 메커니즘 — 금리를 올리면 무슨 일이",
+            "all_text": ["대출이 비싸짐 → 기업의 설비투자와 가계의 빚낸 소비(주택, 자동차)가 줄어듦"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "econ-panic-portfolio-discipline",
+    "query": "시장 급락 뒤 한 종목을 더 사고 싶거나 전부 팔고 싶을 때, 감정 대신 포트폴리오를 어떻게 점검해야 할까?",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_evidence_groups": [
+      {
+        "id": "rule-based-response",
+        "any_of": [
+          {
+            "path": "econ/investing/Behavioral-Biases-Risk.md",
+            "heading": "4. 리스크 관리 — 구조로 감정을 누르기",
+            "all_text": ["감정이 아니라 정해진 비율로 사고판다."]
+          }
+        ]
+      },
+      {
+        "id": "correlation-aware-diversification",
+        "any_of": [
+          {
+            "path": "econ/investing/Asset-Allocation-Diversification.md",
+            "heading": "3. 분산투자의 원리 — 상관관계",
+            "all_text": ["낮거나 불완전한 상관의 자산을 섞으면 전체 변동성을 줄일 수 있지만"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "negative-restaurant-reservation",
+    "query": "오늘 저녁 강남역 근처에서 2명 예약 가능한 이탈리아 식당을 찾아 예약해 줘.",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_empty": true,
+    "expected_evidence": []
+  },
+  {
+    "id": "negative-private-calendar",
+    "query": "내일 오전에 내 캘린더에서 비어 있는 시간대를 알려 줘.",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_empty": true,
+    "expected_evidence": []
+  },
+  {
+    "id": "negative-private-bank-balance",
+    "query": "내 통장 잔고와 이번 달 자동이체 예정 금액을 확인해 줘.",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_empty": true,
+    "expected_evidence": []
+  },
+  {
+    "id": "negative-live-taxi-request",
+    "query": "내 휴대폰 위치를 기준으로 가장 빨리 도착하는 택시를 불러 줘.",
+    "scope": ["tech", "biz", "econ"],
+    "max_bytes": 24000,
+    "expected_empty": true,
+    "expected_evidence": []
+  }
+]

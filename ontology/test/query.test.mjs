@@ -372,3 +372,169 @@ test('body retrieval ignores Git replace refs and reads the snapshot revision', 
   assert.ok(result.evidence_units.some((unit) => unit.excerpt.includes('멱등성 검토')));
   assert.ok(result.evidence_units.every((unit) => !unit.excerpt.includes('대체 본문')));
 });
+
+test('lookup keeps a matching sibling condition and completes selected sections when budget permits', async (t) => {
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/Guide.md', [
+      '# Transport guide', '',
+      '## Recovery', '',
+      'A retry needs a deadline. Retry work must respect the deadline. [[Peer]]',
+      '배경 설명입니다. '.repeat(200),
+      'Cancel pending work when the deadline expires.', '',
+      '## Identity', '',
+      'A retry must retain its identity and reject a changed payload.', '',
+      '## History', '',
+      'An unrelated archive entry.', '',
+    ].join('\n')],
+    ['tech/Peer.md', '# Peer\n\nLinked reference.\n'],
+  ]);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const result = lookup(options, { query: 'retry deadline identity', max_bytes: 24000 });
+  const recovery = result.evidence_units.find((unit) => unit.anchor.heading_path.at(-1) === 'Recovery');
+  assert.ok(recovery?.excerpt.includes('Cancel pending work when the deadline expires.'));
+  assert.equal(recovery.truncated, false);
+  assert.ok(result.evidence_units.some((unit) => unit.anchor.heading_path.at(-1) === 'Identity'
+    && unit.excerpt.includes('reject a changed payload')));
+  assert.ok(!result.evidence_units.some((unit) => unit.anchor.heading_path.at(-1) === 'History'));
+  assert.ok(result.relations.some((relation) => relation.predicate === 'links_to'));
+  assert.equal(Buffer.byteLength(JSON.stringify(result)), result.budget.used_bytes);
+  assert.ok(result.budget.used_bytes <= 24000);
+
+  const bounded = lookup(options, { query: 'Recovery', max_bytes: 5000 });
+  const partial = bounded.evidence_units.find((unit) => unit.id === recovery.id);
+  assert.ok(partial?.truncated);
+  assert.ok(recovery.excerpt.startsWith(partial.excerpt));
+  assert.equal(partial.content_hash, recovery.content_hash);
+  assert.equal(partial.source_revision, recovery.source_revision);
+  assert.deepEqual(partial.anchor, recovery.anchor);
+  assert.equal(Buffer.byteLength(JSON.stringify(bounded)), bounded.budget.used_bytes);
+  assert.ok(bounded.budget.used_bytes <= 5000);
+});
+
+test('optional sibling context never evicts an already fitting graph bundle', async (t) => {
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/Guide.md', '# Guide\n\n## Primary\n\nretry deadline [[Target]]\n\n## Sibling\n\nidentity ' + 'background '.repeat(200) + '\n'],
+    ['tech/Target.md', '# Target\n\nLinked evidence.\n'],
+  ]);
+  for (const max_bytes of [2600, 3200, 4000]) {
+    const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, { query: 'retry deadline identity', max_bytes });
+    assert.equal(result.relations.length, 1, `budget ${max_bytes}`);
+    const edge = result.relations[0];
+    assert.ok(result.entities.some((entity) => entity.id === edge.subject));
+    assert.ok(result.entities.some((entity) => entity.id === edge.object));
+    assert.ok(result.evidence_units.some((unit) => unit.id === edge.evidence_unit_id));
+    assert.equal(Buffer.byteLength(JSON.stringify(result)), result.budget.used_bytes);
+    assert.ok(result.budget.used_bytes <= max_bytes);
+  }
+});
+
+test('lookup selects complementary conditions before repetitive navigation consumes the budget', async (t) => {
+  const noise = Array.from({ length: 16 }, (_, index) => [
+    `tech/Archive-${index}.md`, `# Archive ${index}\n\nHistorical notes.\n`,
+  ]);
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/Guide.md', [
+      '# Guide', '',
+      '## Requests', '',
+      'A request lease has a deadline. Each request lease respects the deadline. [[Archive-0]]', '',
+      '## Identity', '',
+      'The request identity must survive retries. Reject a different payload for the same identity.', '',
+      '## Expiration', '',
+      'Cancellation must stop outstanding work at the lease deadline.', '',
+      ...noise.map((_, index) => `## Archive ${index}\n\nThe request lease has a deadline. ${'Historical background. '.repeat(35)} [[Archive-${index}]]\n`),
+    ].join('\n')],
+    ...noise,
+  ]);
+  const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
+    query: 'request lease deadline identity cancellation', scope: ['tech/Guide.md'], max_bytes: 8000,
+  });
+  assert.ok(result.evidence_units.some((unit) => unit.anchor.heading_path.at(-1) === 'Identity'
+    && unit.excerpt.includes('Reject a different payload')));
+  assert.ok(result.evidence_units.some((unit) => unit.anchor.heading_path.at(-1) === 'Expiration'
+    && unit.excerpt.includes('Cancellation must stop')));
+  const linked = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
+    query: 'request lease deadline identity cancellation', max_bytes: 8000,
+  });
+  assert.ok(linked.evidence_units.some((unit) => unit.anchor.heading_path.at(-1) === 'Identity'
+    && unit.excerpt.includes('Reject a different payload')));
+  assert.ok(linked.evidence_units.some((unit) => unit.anchor.heading_path.at(-1) === 'Expiration'
+    && unit.excerpt.includes('Cancellation must stop')));
+  const ids = new Set(linked.evidence_units.map((unit) => unit.id));
+  assert.equal(ids.size, linked.evidence_units.length);
+  for (const relation of linked.relations) {
+    assert.ok(ids.has(relation.evidence_unit_id));
+    assert.ok(linked.entities.some((entity) => entity.id === relation.subject));
+    assert.ok(linked.entities.some((entity) => entity.id === relation.object));
+  }
+  assert.equal(Buffer.byteLength(JSON.stringify(linked)), linked.budget.used_bytes);
+  assert.ok(linked.budget.used_bytes <= 8000);
+});
+
+test('a condition after the excerpt limit is returned whole or omitted when it cannot fit', async (t) => {
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/Guide.md', [
+      '# Guide', '', '## Main', '',
+      'A needle uses an alpha. The needle must retain its alpha.', '',
+      '## Additional condition', '',
+      'Background explanation. '.repeat(250),
+      'The omega condition must also hold.', '',
+    ].join('\n')],
+  ]);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const args = { query: 'needle alpha omega', scope: ['tech'] };
+  const full = lookup(options, { ...args, max_bytes: 16000 });
+  const condition = full.evidence_units.find((unit) => unit.anchor.heading_path.at(-1) === 'Additional condition');
+  assert.ok(condition?.excerpt.includes('omega condition must also hold'));
+  assert.equal(condition.truncated, false);
+  const bounded = lookup(options, { ...args, max_bytes: 5000 });
+  assert.ok(!bounded.evidence_units.some((unit) => unit.id === condition.id),
+    'a prefix containing none of the query terms must not use the remaining budget');
+  assert.equal(Buffer.byteLength(JSON.stringify(bounded)), bounded.budget.used_bytes);
+  assert.ok(bounded.budget.used_bytes <= 5000);
+});
+
+test('a complementary section in a graph-selected document keeps its owning document', async (t) => {
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/Needle-Alpha.md', '# Needle Alpha\n\nneedle needle alpha alpha request request [[Peer]]\n'],
+    ['tech/Peer.md', '# Peer\n\n## Boundary\n\nThe omega condition rejects expired ownership.\n'],
+    ...Array.from({ length: 5 }, (_, index) => [
+      `tech/Archive-${index}.md`, `# Archive ${index}\n\nneedle needle alpha alpha request request\n`,
+    ]),
+  ]);
+  const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
+    query: 'needle alpha request omega', max_bytes: 16000,
+  });
+  const condition = result.evidence_units.find((unit) => unit.source_uri === 'tech/Peer.md'
+    && unit.anchor.heading_path.at(-1) === 'Boundary');
+  assert.ok(condition?.excerpt.includes('rejects expired ownership'));
+  assert.ok(result.entities.some((entity) => entity.type === 'Document' && entity.label === 'Peer'));
+  assert.equal(Buffer.byteLength(JSON.stringify(result)), result.budget.used_bytes);
+  assert.ok(result.budget.used_bytes <= 16000);
+});
+
+test('multiple root links leave space for a complementary condition', async (t) => {
+  const { repo, cacheDir } = await fixtureWithFiles(t, Array.from({ length: 6 }, (_, index) => [
+    [`tech/Guide-${index}.md`, [
+      `# Guide ${index}`, '', '## Primary', '',
+      `needle alpha request retry deadline. needle alpha request retry deadline. [[Peer-${index}]]`, '',
+      ...(index === 0 ? ['## Boundary', '', 'The omega condition rejects expired ownership.',
+        'Check ownership before accepting the result. '.repeat(24), ''] : []),
+    ].join('\n')],
+    [`tech/Peer-${index}.md`, `# Peer ${index}\n\nHistorical reference.\n`],
+  ]).flat());
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const query = 'needle alpha request retry deadline omega';
+  const result = lookup(options, { query, max_bytes: 10000 });
+  assert.ok(result.evidence_units.some((unit) => unit.anchor.heading_path.at(-1) === 'Boundary'
+    && unit.excerpt.includes('rejects expired ownership')));
+  assert.ok(result.relations.length > 0, 'one direct link still precedes complementary evidence');
+  for (const relation of result.relations) {
+    assert.ok(result.evidence_units.some((unit) => unit.id === relation.evidence_unit_id));
+    assert.ok(result.entities.some((entity) => entity.id === relation.subject));
+    assert.ok(result.entities.some((entity) => entity.id === relation.object));
+  }
+  assert.equal(Buffer.byteLength(JSON.stringify(result)), result.budget.used_bytes);
+  assert.ok(result.budget.used_bytes <= 10000);
+  const full = lookup(options, { query, max_bytes: 65536 });
+  assert.equal(full.relations.length, 6, 'remaining direct links are retained when the budget allows');
+});

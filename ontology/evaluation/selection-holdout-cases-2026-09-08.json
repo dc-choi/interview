@@ -1,0 +1,232 @@
+[
+  {
+    "id": "selection-holdout-01",
+    "query": "상품 코드처럼 정확히 일치해야 하는 표현과 자연어 설명형 질문이 함께 들어오는 지식 검색을 출시하려 한다. 어떤 검색 조합을 검토하고, 출시 전에 어떤 비교 기준으로 선택해야 할까?",
+    "scope": ["tech"],
+    "expected_evidence_groups": [
+      {
+        "id": "evidence-a",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/tools/RAG-Retrieval-Engineering.md",
+            "heading": "하이브리드 검색: 벡터 + BM25",
+            "all_text": ["BM25를 병행해 정확 token match를 보완하고 RRF나 score normalization으로 후보를 합친다."]
+          }
+        ]
+      },
+      {
+        "id": "evidence-b",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/tools/RAG-Retrieval-Engineering.md",
+            "heading": "배포 전 평가 루프",
+            "all_text": ["Retrieval 설정별 Recall@k, nDCG@k와 latency를 비교한다."]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "selection-holdout-02",
+    "query": "검색 결과가 관련 문서를 찾았더라도 답변이 틀리거나 근거 없는 주장을 할 수 있다. 품질 검토를 어떤 층으로 나누고, 답변의 근거 연결은 어떻게 확인해야 할까?",
+    "scope": ["tech"],
+    "expected_evidence_groups": [
+      {
+        "id": "evidence-a",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/tools/RAG-Retrieval-Engineering.md",
+            "heading": "품질을 분해하는 평가 모델",
+            "all_text": ["retrieval context의 관련성, 답변 관련성, faithfulness를 서로 다른 차원으로 평가한다."]
+          }
+        ]
+      },
+      {
+        "id": "evidence-b",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/tools/RAG-Retrieval-Engineering.md",
+            "heading": "Context packing과 근거 추적",
+            "all_text": ["지지 근거가 없으면 claim을 제거하거나 거부한다"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "selection-holdout-03",
+    "query": "지식 베이스를 갱신하는 고객지원 에이전트가 여러 답안을 만든다. 잘못된 지식 유입을 막고 사용자에게 한 답만 보낼 때 후보 선택을 신뢰하려면 어떤 검증을 둬야 할까?",
+    "scope": ["tech"],
+    "expected_evidence_groups": [
+      {
+        "id": "evidence-a",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/eval/LLM-Eval-Strategy.md",
+            "heading": "Pass@k: k개 후보 안에 정답이 존재할 가능성",
+            "all_text": ["합격 후보를 찾는 검증기와 선택 절차가 없으면 사용자가 받는 답의 신뢰도를 뜻하지 않는다."]
+          }
+        ]
+      },
+      {
+        "id": "evidence-b",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/eval/LLM-Eval-Strategy.md",
+            "heading": "Multi-gate 데이터 품질",
+            "all_text": ["지식 수정, 추가 제안을 사람이 직접 검토하고 승인"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "selection-holdout-04",
+    "query": "모델 규모와 추론 시간을 늘렸는데도 근거가 약한 질문에 확신해서 답한다. 제품 수준에서 어떤 거부 경로를 넣고, 왜 성능 확장만으로 해결되지 않는지 설명해줘.",
+    "scope": ["tech"],
+    "expected_evidence_groups": [
+      {
+        "id": "evidence-a",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/eval/LLM-Abstention.md",
+            "heading": "1. 모델 스케일 ↑ ≠ Abstention ↑",
+            "all_text": ["스케일은 \"아는 것\"을 늘리지만 \"모르는 것을 인지하는 능력\"은 별도 학습 신호가 필요하다."]
+          }
+        ]
+      },
+      {
+        "id": "evidence-b",
+        "any_of": [
+          {
+            "path": "tech/ai-engineering/eval/LLM-Abstention.md",
+            "heading": "2. RAG 기반 abstention 강화",
+            "all_text": ["검색된 문서 점수가 임계값 미만 → 모델에게 \"근거 없음\" 응답을 강제"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "selection-holdout-05",
+    "query": "화면을 고친 뒤 온보딩 완료율과 신규 탭 클릭이 올랐다. 이 변화를 사업 성과라고 판단하기 전에 어떤 인과 검토와 지표 비교가 필요할까?",
+    "scope": ["biz"],
+    "expected_evidence_groups": [
+      {
+        "id": "evidence-a",
+        "any_of": [
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "heading": "Leading vs Lagging 지표",
+            "all_text": ["같은 코호트의 후행 지표와 가드레일 지표를 함께 본다."]
+          }
+        ]
+      },
+      {
+        "id": "evidence-b",
+        "any_of": [
+          {
+            "path": "biz/measurement-and-risk/Metrics-Framework.md",
+            "heading": "허수지표의 메커니즘: 재배분 vs 증분",
+            "all_text": ["부분 지표의 상승은 전체의 증가(증분)일 수도, 기존 트래픽의 이동(재배분)일 수도 있다"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "selection-holdout-06",
+    "query": "초기 제품에서 설문 응답과 리텐션 커브가 좋아 보인다. 이 신호만으로 확장을 시작해도 되는지, 단계별로 어떤 우선순위를 두어야 할까?",
+    "scope": ["biz"],
+    "expected_evidence_groups": [
+      {
+        "id": "evidence-a",
+        "any_of": [
+          {
+            "path": "biz/product-strategy/PMF-Funnel.md",
+            "heading": "리텐션 커브",
+            "all_text": ["어느 모양도 단독으로 PMF를 증명하지 않는다."]
+          }
+        ]
+      },
+      {
+        "id": "evidence-b",
+        "any_of": [
+          {
+            "path": "biz/product-strategy/PMF-Funnel.md",
+            "heading": "Pre-PMF vs Post-PMF 전략",
+            "all_text": ["제품과 채널 학습이 끝나기 전에 고정비와 획득비를 키우면 손실도 함께 확대된다."]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "selection-holdout-07",
+    "query": "상승장에서 인기 종목을 따라 사느라 포트폴리오가 한 업종에 몰렸다. 감정에 흔들리는 매매를 줄이고 실제 분산이 되게 하려면 무엇을 점검해야 할까?",
+    "scope": ["econ"],
+    "expected_evidence_groups": [
+      {
+        "id": "evidence-a",
+        "any_of": [
+          {
+            "path": "econ/investing/Behavioral-Biases-Risk.md",
+            "heading": "4. 리스크 관리 — 구조로 감정을 누르기",
+            "all_text": ["한 종목에 얼마까지 넣을지 미리 한도를 정한다. 과신을 제어한다."]
+          }
+        ]
+      },
+      {
+        "id": "evidence-b",
+        "any_of": [
+          {
+            "path": "econ/investing/Asset-Allocation-Diversification.md",
+            "heading": "3. 분산투자의 원리 — 상관관계",
+            "all_text": ["같은 업종 주식 스무 개는 공통 요인 노출 때문에 분산 효과가 약할 수 있다"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "selection-holdout-08",
+    "query": "중앙은행이 금리를 내렸는데도 가계 소비와 기업 투자가 기대만큼 살아나지 않는다. 일반적인 전달 경로와 효과가 약해질 수 있는 조건을 함께 설명해줘.",
+    "scope": ["econ"],
+    "expected_evidence_groups": [
+      {
+        "id": "evidence-a",
+        "any_of": [
+          {
+            "path": "econ/macroeconomics/Interest-Rates-Monetary-Policy.md",
+            "heading": "4. 통화정책의 메커니즘 — 금리를 올리면 무슨 일이",
+            "all_text": ["금리 인하는 다른 조건이 같을 때 조달비용을 낮추고 수요를 지지하는 반대 방향의 압력을 만든다."]
+          }
+        ]
+      },
+      {
+        "id": "evidence-b",
+        "any_of": [
+          {
+            "path": "econ/macroeconomics/Interest-Rates-Monetary-Policy.md",
+            "heading": "8. 통화정책의 한계",
+            "all_text": ["단기 명목금리가 낮고 현금, 안전자산 수요가 매우 탄력적이면 추가 금리 인하의 효과가 약해질 수 있다."]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "selection-holdout-09",
+    "query": "오늘 기준 내가 운영하는 서비스의 실제 일간 매출, 활성 사용자 수, 장애 현황을 알려줘.",
+    "scope": ["tech", "biz", "econ"],
+    "expected_empty": true,
+    "expected_evidence": []
+  },
+  {
+    "id": "selection-holdout-10",
+    "query": "오늘 내 증권계좌의 잔액과 종목별 수익률을 알려줘.",
+    "scope": ["tech", "biz", "econ"],
+    "expected_empty": true,
+    "expected_evidence": []
+  }
+]

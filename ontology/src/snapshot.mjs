@@ -7,7 +7,7 @@ import { getRepoState, git, listMarkdown, readBlobs, resolveRepo, sourceUpdatedT
 import { extractMarkdown, normalizeHeading } from './markdown.mjs';
 
 const SCHEMA_VERSION = '1';
-const EXTRACTOR_VERSION = '10';
+const EXTRACTOR_VERSION = '11';
 const ARTIFACTS = ['schema.json', 'entities.jsonl', 'relations.jsonl'];
 const CACHE_MARKER = '.context-ontology-cache';
 const CACHE_MARKER_CONTENT = 'interview-context-ontology-v1\n';
@@ -103,10 +103,11 @@ function linkResolver(documents, units) {
   };
 }
 
-function relation(subject, predicate, object, evidence, occurrence) {
+function relation(subject, predicate, object, evidence, occurrence, linkRole) {
   return {
     id: `edge:sha256:${sha256(stableJson([subject, predicate, object, evidence, occurrence]))}`,
     subject, predicate, object, evidence_unit_id: evidence, assertion_occurrence: occurrence,
+    ...(linkRole ? { link_role: linkRole } : {}),
     extraction_method: 'parser', extraction_version: EXTRACTOR_VERSION,
     verification: 'source_confirmed', freshness: 'not_checked', conflict: 'not_checked',
   };
@@ -131,7 +132,8 @@ function graph(records) {
       const match = resolveLink(link.target, source);
       if (match.entity) {
         relations.push(relation(record.document.id, 'links_to', match.entity.id,
-          link.evidence_unit_id, link.assertion_occurrence));
+          link.evidence_unit_id, link.assertion_occurrence,
+          match.entity.type === 'Section' && match.entity.source_uri === source ? undefined : link.link_role));
       } else {
         gaps.push({ source_uri: source, reason: match.reason, unresolved_target: link.target,
           evidence_unit_id: link.evidence_unit_id });

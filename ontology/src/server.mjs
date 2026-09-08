@@ -58,7 +58,7 @@ export function createContextServer(options) {
 
   server.registerTool('context_lookup', {
     title: 'Lookup personal knowledge',
-    description: 'Retrieves evidence from this personal knowledge vault. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. A weak_lexical_overlap matching assessment requires checking whether the returned material addresses the question. Use context_outline to find other sections of a relevant Document and context_read to read their full evidence. If needed documents are not returned, use context_search. Inspect current project materials before applying knowledge. Ontology documents do not prove current implementation, adoption, or runtime behavior.',
+    description: 'Retrieves evidence from this personal knowledge vault. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. Optional relation link_role describes source navigation: index_member, parent_index, or related_document; it does not establish applicability. A weak_lexical_overlap matching assessment requires checking whether the returned material addresses the question. Use context_outline to find other sections of a relevant Document and context_read to read their full evidence. If needed documents are not returned, use context_search. Inspect current project materials before applying knowledge. Ontology documents do not prove current implementation, adoption, or runtime behavior. For a multi-condition question, first use the original query with max_bytes 24000, then pursue only unresolved conditions. The host flow has a total cap of 8 calls and 64000 serialized structuredContent bytes; semantic condition judgments belong to the host.',
     inputSchema,
     annotations: {
       readOnlyHint: true,
@@ -82,7 +82,7 @@ export function createContextServer(options) {
 
   server.registerTool('context_search', {
     title: 'Search personal knowledge documents',
-    description: 'Searches source-backed Documents in this personal knowledge vault without returning source text. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. When you find a relevant Document, use context_outline and context_read to inspect its evidence. Use pagination.next_cursor for limited additional exploration when needed. A Document match only establishes lexical overlap, so verify that its source addresses the question before applying it.',
+    description: 'Searches source-backed Documents in this personal knowledge vault without returning source text. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. When you find a relevant Document, use context_outline and context_read to inspect its evidence. Use pagination.next_cursor for limited additional exploration when needed. A Document match only establishes lexical overlap, so verify that its source addresses the question before applying it. In the multi-condition host flow, keep the initial scope and use at most two additional lookup or search calls for unresolved conditions.',
     inputSchema: searchInputSchema,
     annotations: {
       readOnlyHint: true,
@@ -106,7 +106,7 @@ export function createContextServer(options) {
 
   server.registerTool('context_read', {
     title: 'Read complete source evidence',
-    description: 'Reads a pinned evidence unit beyond the excerpt returned by context_lookup. Copy its id as evidence_unit_id, source_revision, and content_hash. Continue with pagination.next_offset_bytes until pagination.complete is true. Re-run context_lookup if the source revision or evidence hash no longer matches. Reading source text does not verify its current applicability.',
+    description: 'Reads a pinned evidence unit beyond the excerpt returned by context_lookup. Copy its id as evidence_unit_id, source_revision, and content_hash. Continue with pagination.next_offset_bytes until pagination.complete is true. Re-run context_lookup if the source revision or evidence hash no longer matches. Reading source text does not verify its current applicability. In the multi-condition host flow, count every page within four read calls and the remaining total byte budget.',
     inputSchema: readInputSchema,
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
   }, (args) => {
@@ -125,7 +125,7 @@ export function createContextServer(options) {
 
   server.registerTool('context_outline', {
     title: 'List pinned document sections',
-    description: 'Lists every source-backed Section of a retrieved Document, including headings missed by lookup. Copy a Document id and the lookup index_sync revision. Continue with pagination.next_offset_sections until complete, then pass a relevant section id, source_revision, and content_hash to context_read. An outline is source navigation, not evidence that its contents answer the question.',
+    description: 'Lists every source-backed Section of a retrieved Document, including headings missed by lookup. Copy a Document id and the lookup index_sync revision. Continue with pagination.next_offset_sections until complete, then pass a relevant section id, source_revision, and content_hash to context_read. An outline is source navigation, not evidence that its contents answer the question. In the multi-condition host flow, count every page within two outline calls and the remaining total byte budget.',
     inputSchema: outlineInputSchema,
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
   }, (args) => {

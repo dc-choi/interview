@@ -1,0 +1,259 @@
+[
+  {
+    "id": "fresh-tech-schema-rollout",
+    "query": "Blue-Green 전환에 새 컬럼과 backfill이 필요한데, 장애가 나도 이전 버전으로 되돌릴 수 있도록 배포와 스키마 변경을 어떤 순서로 분리해야 하나?",
+    "scope": ["tech"],
+    "conditions": [
+      {"id": "rollout_order", "question": "배포와 스키마를 expand, backfill, contract 순서로 분리해 이전 버전과 공존할 수 있는가?", "origin": "stated_requirement"},
+      {"id": "backfill_safety", "question": "backfill을 중단과 재개를 제어할 수 있는 방식으로 수행하는가?", "origin": "assumption"},
+      {"id": "rollback_window", "question": "구버전을 되돌릴 창이 닫힌 뒤에만 contract를 하는가?", "origin": "stated_requirement"}
+    ],
+    "steps": [
+      {
+        "name": "context_lookup",
+        "arguments": {"query": "Blue-Green 전환에 새 컬럼과 backfill이 필요한데, 장애가 나도 이전 버전으로 되돌릴 수 있도록 배포와 스키마 변경을 어떤 순서로 분리해야 하나?", "scope": ["tech"], "max_bytes": 24000},
+        "condition_ids": ["rollout_order", "backfill_safety", "rollback_window"],
+        "reason": "원 질문으로 세 조건의 근거를 먼저 찾는다."
+      },
+      {
+        "name": "context_read",
+        "arguments": {"evidence_unit_id": "unit:interview-vault:tech/database/rdbms/schema-design/lifecycle/Backward-Compatibility.md:%EC%8A%A4%ED%82%A4%EB%A7%88%20%EC%A0%84%ED%9B%84%EB%B0%A9%20%ED%98%B8%ED%99%98%20(Backward%20Compatibility)/%EC%AA%BC%EA%B0%9C%EA%B8%B0%20%ED%8C%90%EB%8B%A8#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:e4f89f572a82839c56c112447a4b6792023d0b95fab186eedf66b15bebcdde0f", "offset_bytes": 0, "max_bytes": 24000},
+        "condition_ids": ["backfill_safety"],
+        "reason": "초기 결과의 excerpt만으로는 backfill 실행 단위를 확인할 수 없어 본문을 읽는다."
+      }
+    ],
+    "assessments": [
+      {
+        "condition_id": "rollout_order",
+        "status": "supported",
+        "reason": "초기 lookup의 본문 excerpt가 앱 배포 전 expand와 backfill을 배치한다고 명시한다.",
+        "evidence": [{"id": "unit:interview-vault:tech/ci-cd/deployment/DB-Migration.md:%EB%B0%B0%ED%8F%AC%20%ED%8C%8C%EC%9D%B4%ED%94%84%EB%9D%BC%EC%9D%B8%EC%9D%98%20DB%20Migration%20%EC%A0%84%EB%9E%B5/%EB%B0%B0%ED%8F%AC%20%EC%A0%84%EB%9E%B5%EB%B3%84%20%EC%8B%A4%ED%96%89%20%EC%88%9C%EC%84%9C#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:18bfeaac58ccab9de99ac3155e7a032b35885bdd6ffbc0d9e11b82cf87a4004d", "quote": "세 전략 모두 새 코드에 필요한 컬럼과 테이블을 추가하는 expand, 그리고 선행 backfill 같은 준비 마이그레이션이 앱 배포보다 앞선다."}]
+      },
+      {
+        "condition_id": "backfill_safety",
+        "status": "supported",
+        "reason": "read 본문이 트랜잭션 하나가 아닌 PK 범위 배치를 명시한다.",
+        "evidence": [{"id": "unit:interview-vault:tech/database/rdbms/schema-design/lifecycle/Backward-Compatibility.md:%EC%8A%A4%ED%82%A4%EB%A7%88%20%EC%A0%84%ED%9B%84%EB%B0%A9%20%ED%98%B8%ED%99%98%20(Backward%20Compatibility)/%EC%AA%BC%EA%B0%9C%EA%B8%B0%20%ED%8C%90%EB%8B%A8#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:e4f89f572a82839c56c112447a4b6792023d0b95fab186eedf66b15bebcdde0f", "quote": "backfill은 한 트랜잭션이 아니라 PK 범위로 끊은 배치로 돌린다."}]
+      },
+      {
+        "condition_id": "rollback_window",
+        "status": "supported",
+        "reason": "초기 lookup의 본문 excerpt가 contract의 실행 조건을 명시한다.",
+        "evidence": [{"id": "unit:interview-vault:tech/ci-cd/deployment/DB-Migration.md:%EB%B0%B0%ED%8F%AC%20%ED%8C%8C%EC%9D%B4%ED%94%84%EB%9D%BC%EC%9D%B8%EC%9D%98%20DB%20Migration%20%EC%A0%84%EB%9E%B5/%EB%B0%B0%ED%8F%AC%20%EC%A0%84%EB%9E%B5%EB%B3%84%20%EC%8B%A4%ED%96%89%20%EC%88%9C%EC%84%9C#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:18bfeaac58ccab9de99ac3155e7a032b35885bdd6ffbc0d9e11b82cf87a4004d", "quote": "반대로 옛 구조를 제거하는 contract는 모든 구버전 종료와 롤백 창 폐쇄를 확인한 뒤 별도 릴리스로 실행한다."}]
+      }
+    ]
+  },
+  {
+    "id": "fresh-tech-refresh-concurrency",
+    "query": "세션 갱신 토큰이 탈취됐을 가능성과 브라우저에서 여러 요청이 동시에 401을 받은 상황을 함께 다룰 때, 서버와 클라이언트는 무엇을 보존하고 어떻게 중복 갱신을 막아야 하나?",
+    "scope": ["tech"],
+    "conditions": [
+      {"id": "theft_state", "question": "탈취된 refresh token 재사용을 감지하기 위해 가족 상태와 폐기 기록을 보존하는가?", "origin": "stated_requirement"},
+      {"id": "client_singleflight", "question": "동시 401에서 하나의 refresh 작업을 공유하고 성공과 실패를 대기 요청에 일관되게 전파하는가?", "origin": "stated_requirement"}
+    ],
+    "steps": [
+      {
+        "name": "context_lookup",
+        "arguments": {"query": "세션 갱신 토큰이 탈취됐을 가능성과 브라우저에서 여러 요청이 동시에 401을 받은 상황을 함께 다룰 때, 서버와 클라이언트는 무엇을 보존하고 어떻게 중복 갱신을 막아야 하나?", "scope": ["tech"], "max_bytes": 24000},
+        "condition_ids": ["theft_state", "client_singleflight"],
+        "reason": "원 질문으로 보존 상태와 동시 갱신 처리의 근거를 먼저 찾는다."
+      },
+      {
+        "name": "context_outline",
+        "arguments": {"document_id": "document:interview-vault:tech/security/auth/Refresh-Token-Rotation.md", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "offset_sections": 0, "max_bytes": 24000},
+        "condition_ids": ["client_singleflight"],
+        "reason": "초기 결과에서 동시 401 처리의 본문 section을 찾는다."
+      },
+      {
+        "name": "context_read",
+        "arguments": {"evidence_unit_id": "unit:interview-vault:tech/security/auth/Refresh-Token-Rotation.md:Refresh%20Token%20Rotation%20(RTR)/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C%20%EC%A4%91%EB%B3%B5%20%EC%9E%AC%EB%B0%9C%EA%B8%89%20%EC%9A%94%EC%B2%AD%20%EC%B2%98%EB%A6%AC/%ED%95%B4%EA%B2%B0%3A%20Single-flight%20%ED%8C%A8%ED%84%B4#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:5cbd74e02a5dbe81c5675cd7d9361abd52645edaa6292eb516ad5708fec46f33", "offset_bytes": 0, "max_bytes": 24000},
+        "condition_ids": ["client_singleflight"],
+        "reason": "outline receipt를 옮기는 과정에서 ID가 손상되어 실패했으며, 이 단계에서는 근거를 사용하지 않는다.",
+        "expected_error": "evidence_not_found",
+        "stderr_bytes": 39
+      },
+      {
+        "name": "context_read",
+        "arguments": {"evidence_unit_id": "unit:interview-vault:tech/security/auth/Refresh-Token-Rotation.md:Refresh%20Token%20Rotation%20(RTR)/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C%20%EC%A4%91%EB%B3%B5%20%EC%9E%AC%EB%B0%9C%EA%B8%89%20%EC%9A%94%EC%B2%AD%20%EC%B2%98%EB%A6%AC/%ED%95%B4%EA%B2%B0%3A%20Single-flight%20%ED%8C%A8%ED%84%B4#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:5cbd74e02a5dbe81c5675cd7d9361abd52645edaa6292eb516ad5708fec46f33", "offset_bytes": 0, "max_bytes": 24000},
+        "condition_ids": ["client_singleflight"],
+        "reason": "outline에서 받은 정확한 receipt로 본문을 읽는다."
+      }
+    ],
+    "assessments": [
+      {
+        "condition_id": "theft_state",
+        "status": "supported",
+        "reason": "초기 lookup의 본문 excerpt가 family 만료까지 보존해야 하는 상태를 열거한다.",
+        "evidence": [{"id": "unit:interview-vault:tech/security/auth/Refresh-Token-Rotation.md:Refresh%20Token%20Rotation%20(RTR)/Family%20ID%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20%ED%83%88%EC%B7%A8%20%EA%B0%90%EC%A7%80#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:56f75ca521d14eb3f6c90a2f02aa539cd597892f56abcd633fb208666576a22e", "quote": "따라서 최소한 family 만료 시점까지 `tokenHash`, `familyId`, `status`, `usedAt` 또는 `revokedAt`, `replacedBy`를 tombstone으로 보존한다."}]
+      },
+      {
+        "condition_id": "client_singleflight",
+        "status": "supported",
+        "reason": "성공한 read 본문이 공유 Promise와 성공 및 실패 전파를 명시한다.",
+        "evidence": [{"id": "unit:interview-vault:tech/security/auth/Refresh-Token-Rotation.md:Refresh%20Token%20Rotation%20(RTR)/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C%20%EC%A4%91%EB%B3%B5%20%EC%9E%AC%EB%B0%9C%EA%B8%89%20%EC%9A%94%EC%B2%AD%20%EC%B2%98%EB%A6%AC/%ED%95%B4%EA%B2%B0%3A%20Single-flight%20%ED%8C%A8%ED%84%B4#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:5cbd74e02a5dbe81c5675cd7d9361abd52645edaa6292eb516ad5708fec46f33", "quote": "첫 401이 refresh를 시작하면 나머지는 같은 Promise를 공유한다. 성공하면 모든 대기 요청이 새 토큰을 받고, 실패하면 모두 같은 오류로 reject되어 로그인 화면 전환 같은 공통 실패 처리를 할 수 있어야 한다."}]
+      }
+    ]
+  },
+  {
+    "id": "fresh-tech-metric-cardinality",
+    "query": "요청별 진단을 위해 모든 사용자와 요청 식별자를 Prometheus 라벨에 넣자는 제안이 나왔을 때, 비용 폭발을 피하면서 개별 지연 원인을 어떻게 추적해야 하나?",
+    "scope": ["tech"],
+    "conditions": [
+      {"id": "label_cardinality", "question": "사용자와 요청 식별자를 Prometheus 라벨에 넣을 때의 cardinality 비용을 근거로 평가하는가?", "origin": "stated_requirement"},
+      {"id": "bounded_metrics", "question": "메트릭 라벨 값을 유한하게 제한하는 방어가 있는가?", "origin": "assumption"},
+      {"id": "request_diagnosis", "question": "라벨을 늘리지 않고 개별 느린 요청으로 내려가는 추적 경로가 있는가?", "origin": "stated_requirement"}
+    ],
+    "steps": [
+      {
+        "name": "context_lookup",
+        "arguments": {"query": "요청별 진단을 위해 모든 사용자와 요청 식별자를 Prometheus 라벨에 넣자는 제안이 나왔을 때, 비용 폭발을 피하면서 개별 지연 원인을 어떻게 추적해야 하나?", "scope": ["tech"], "max_bytes": 24000},
+        "condition_ids": ["label_cardinality", "bounded_metrics", "request_diagnosis"],
+        "reason": "원 질문으로 세 조건의 본문 excerpt를 먼저 찾는다."
+      }
+    ],
+    "assessments": [
+      {
+        "condition_id": "label_cardinality",
+        "status": "supported",
+        "reason": "초기 lookup의 본문 excerpt가 user_id 라벨의 cardinality 폭발과 비용 문제를 명시한다.",
+        "evidence": [{"id": "unit:interview-vault:tech/observability/Logs-vs-Metrics.md:%EB%A1%9C%EA%B7%B8%20vs%20%EB%A9%94%ED%8A%B8%EB%A6%AD/%EC%B9%B4%EB%94%94%EB%84%90%EB%A6%AC%ED%8B%B0%EC%9D%98%20%EC%B0%A8%EC%9D%B4#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:483df3c701858c354b9cd7abcb41099354a6997f559b196fa32a2cf78086419e", "quote": "여기에 user_id(수만~수백만)를 라벨로 추가하면 **카디널리티 폭발** → 저장 비용 급증, 쿼리 불가. Prometheus 운영 실패의 주 원인."}]
+      },
+      {
+        "condition_id": "bounded_metrics",
+        "status": "supported",
+        "reason": "초기 lookup의 본문 excerpt가 허용 라벨만 통과시키는 방어를 제시한다.",
+        "evidence": [{"id": "unit:interview-vault:tech/observability/metrics/Cardinality.md:Cardinality%20%EA%B4%80%EB%A6%AC/%ED%8F%AD%EB%B0%9C%EC%9D%84%20%EB%A7%89%EB%8A%94%20%EB%B2%95#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:124a90777ab31dec4968cf5ca39ada91c9cbc3cbbc2411bbdec06be120477d31", "quote": "- **라벨 허용목록**: 계측 라이브러리에서 허용 라벨만 통과."}]
+      },
+      {
+        "condition_id": "request_diagnosis",
+        "status": "supported",
+        "reason": "초기 lookup의 본문 excerpt가 라벨을 늘리지 않는 대표 샘플 추적을 설명한다.",
+        "evidence": [{"id": "unit:interview-vault:tech/observability/metrics/Exemplars.md:Exemplar%20%E2%80%94%20%EB%A9%94%ED%8A%B8%EB%A6%AD%EC%97%90%EC%84%9C%20%ED%8A%B8%EB%A0%88%EC%9D%B4%EC%8A%A4%EB%A1%9C#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:346fb6564926311ff3c555f66591d38dbbe67c5b6d32c560ba9686ffe05361a2", "quote": "집계 수치 옆에 개별 요청의 참조를 따로 매달아, 라벨을 늘리지 않고 대표 샘플로 내려갈 수 있게 한다."}]
+      }
+    ]
+  },
+  {
+    "id": "fresh-tech-invariant-observability",
+    "query": "재고가 하나 남은 상품에 같은 쿠폰을 동시에 쓰는 요청이 들어올 때, 단순 사전 검증을 넘어서 무결성을 지키고 방어선이 잘 작동하는지도 어떻게 확인해야 하나?",
+    "scope": ["tech"],
+    "conditions": [
+      {"id": "concurrent_invariant", "question": "중복 참여와 재고 수량 제한을 하나의 원자적 연산으로 함께 지키는가?", "origin": "stated_requirement"},
+      {"id": "defense_verification", "question": "카운터와 DB 기록의 정합성을 점검해 방어선의 누락이나 중복을 발견하는가?", "origin": "stated_requirement"}
+    ],
+    "steps": [
+      {
+        "name": "context_lookup",
+        "arguments": {"query": "재고가 하나 남은 상품에 같은 쿠폰을 동시에 쓰는 요청이 들어올 때, 단순 사전 검증을 넘어서 무결성을 지키고 방어선이 잘 작동하는지도 어떻게 확인해야 하나?", "scope": ["tech"], "max_bytes": 24000},
+        "condition_ids": ["concurrent_invariant", "defense_verification"],
+        "reason": "원 질문으로 원자성 및 관측 조건의 근거를 먼저 찾는다."
+      },
+      {
+        "name": "context_outline",
+        "arguments": {"document_id": "document:interview-vault:tech/performance-scalability/traffic-patterns/First-Come-Coupon-Patterns.md", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "offset_sections": 0, "max_bytes": 24000},
+        "condition_ids": ["defense_verification"],
+        "reason": "초기 결과에서 정합성 점검을 다루는 section을 찾는다."
+      },
+      {
+        "name": "context_read",
+        "arguments": {"evidence_unit_id": "unit:interview-vault:tech/performance-scalability/traffic-patterns/First-Come-Coupon-Patterns.md:%EC%84%A0%EC%B0%A9%EC%88%9C%20%EC%9D%B4%EB%B2%A4%ED%8A%B8(%EC%BF%A0%ED%8F%B0%2C%20%EC%9E%AC%EA%B3%A0%2C%20%ED%8B%B0%EC%BC%93)%20%ED%8C%A8%ED%84%B4/%EC%8B%A4%EC%A0%84%20%EA%B3%A0%EB%A0%A4%EC%82%AC%ED%95%AD#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:a82748c8f50f4746a94a8f1816e4ca326190cef5ebf5b352576012c166179f82", "offset_bytes": 0, "max_bytes": 22912},
+        "condition_ids": ["defense_verification"],
+        "reason": "outline은 탐색용이므로 정합성 점검 문장을 본문에서 확인한다."
+      }
+    ],
+    "assessments": [
+      {
+        "condition_id": "concurrent_invariant",
+        "status": "supported",
+        "reason": "초기 lookup의 본문 excerpt가 중복 참여와 수량 제한을 하나의 Lua 스크립트로 묶는다고 명시한다.",
+        "evidence": [{"id": "unit:interview-vault:tech/performance-scalability/traffic-patterns/First-Come-Coupon-Patterns.md:%EC%84%A0%EC%B0%A9%EC%88%9C%20%EC%9D%B4%EB%B2%A4%ED%8A%B8(%EC%BF%A0%ED%8F%B0%2C%20%EC%9E%AC%EA%B3%A0%2C%20%ED%8B%B0%EC%BC%93)%20%ED%8C%A8%ED%84%B4/%ED%95%B4%EA%B2%B0%20%EC%B6%95%201%3A%20%EC%9B%90%EC%9E%90%EC%A0%81%20%EA%B0%90%EC%86%8C(Atomicity)/4.%20Redis%20INCR%2FDECR#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:f991d1b711283255c49709a334f8e47ed93f6efd0298c7e624bf6783e983da92", "quote": "중복 참여 금지와 수량 제한을 함께 지켜야 하면 `SADD`, `INCR`, 초과 시 보상을 하나의 짧은 Lua 스크립트로 묶는다."}]
+      },
+      {
+        "condition_id": "defense_verification",
+        "status": "supported",
+        "reason": "read 본문이 Redis 카운터와 DB insert 수의 주기 점검을 명시한다.",
+        "evidence": [{"id": "unit:interview-vault:tech/performance-scalability/traffic-patterns/First-Come-Coupon-Patterns.md:%EC%84%A0%EC%B0%A9%EC%88%9C%20%EC%9D%B4%EB%B2%A4%ED%8A%B8(%EC%BF%A0%ED%8F%B0%2C%20%EC%9E%AC%EA%B3%A0%2C%20%ED%8B%B0%EC%BC%93)%20%ED%8C%A8%ED%84%B4/%EC%8B%A4%EC%A0%84%20%EA%B3%A0%EB%A0%A4%EC%82%AC%ED%95%AD#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:a82748c8f50f4746a94a8f1816e4ca326190cef5ebf5b352576012c166179f82", "quote": "- **정합성 모니터링** — Redis 카운터와 DB insert 수의 일치 여부를 주기 점검. 차이가 누적되면 유실, 중복 의심"}]
+      }
+    ]
+  },
+  {
+    "id": "fresh-biz-coupon-exit",
+    "query": "할인 쿠폰 사용률이 올랐지만 장기 수익이 악화될 수 있을 때, 단기 행사 성과를 무엇과 비교하고 고객의 할인 의존을 끊을 방안을 어떻게 판단해야 하나?",
+    "scope": ["biz"],
+    "conditions": [
+      {"id": "incrementality_comparison", "question": "쿠폰 사용률 외에 구매 전환, 기여이익, 재구매와 비구매 대조군을 함께 비교하는가?", "origin": "stated_requirement"},
+      {"id": "long_term_risk", "question": "반복 할인으로 가격 학습과 행사 후 매출 하락의 위험을 평가하는가?", "origin": "stated_requirement"},
+      {"id": "exit_strategy", "question": "가격 외의 가치 축으로 할인 의존을 낮출 방안을 평가하는가?", "origin": "stated_requirement"}
+    ],
+    "steps": [
+      {
+        "name": "context_lookup",
+        "arguments": {"query": "할인 쿠폰 사용률이 올랐지만 장기 수익이 악화될 수 있을 때, 단기 행사 성과를 무엇과 비교하고 고객의 할인 의존을 끊을 방안을 어떻게 판단해야 하나?", "scope": ["biz"], "max_bytes": 24000},
+        "condition_ids": ["incrementality_comparison", "long_term_risk", "exit_strategy"],
+        "reason": "원 질문으로 세 조건의 본문 excerpt를 먼저 찾는다."
+      }
+    ],
+    "assessments": [
+      {
+        "condition_id": "incrementality_comparison",
+        "status": "supported",
+        "reason": "초기 lookup의 본문 excerpt가 사용률 외 비교 지표와 비구매 대조군을 명시한다.",
+        "evidence": [{"id": "unit:interview-vault:biz/commerce/core-domains/Commerce-Pricing.md:%EC%BB%A4%EB%A8%B8%EC%8A%A4%20%EA%B0%80%EA%B2%A9(Pricing)%20%EB%8F%84%EB%A9%94%EC%9D%B8/%EC%BF%A0%ED%8F%B0%EC%9D%98%20%EC%83%9D%EC%95%A0%EC%A3%BC%EA%B8%B0%3A%20%EB%B0%9C%ED%96%89%2C%20%EB%B0%9C%EA%B8%89%2C%20%EC%82%AC%EC%9A%A9/%EC%BF%A0%ED%8F%B0%EC%9D%98%20%EB%B3%B8%EC%A7%88%3A%20%EC%93%B0%EA%B2%8C%20%ED%95%98%EA%B8%B0%20%EC%9C%84%ED%95%B4%EC%84%9C%EA%B0%80%20%EC%95%84%EB%8B%88%EB%9D%BC%20%EC%82%AC%EA%B2%8C%20%EB%A7%8C%EB%93%A4%EA%B8%B0%20%EC%9C%84%ED%95%B4#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:1dae35c49f0e7902767ca223f31ab5865a78103951dce872815cda65683ee96b", "quote": "사용률만 보면 과도한 할인도 성공으로 보일 수 있으므로 구매 전환, 기여이익, 재구매와 비구매 대조군을 함께 본다."}]
+      },
+      {
+        "condition_id": "long_term_risk",
+        "status": "supported",
+        "reason": "초기 lookup의 본문 excerpt가 반복 행사에 따른 가격 학습과 행사 후 매출 하락을 명시한다.",
+        "evidence": [{"id": "unit:interview-vault:biz/commerce/core-domains/Commerce-Pricing.md:%EC%BB%A4%EB%A8%B8%EC%8A%A4%20%EA%B0%80%EA%B2%A9(Pricing)%20%EB%8F%84%EB%A9%94%EC%9D%B8/%EC%BF%A0%ED%8F%B0%EC%9D%98%20%EC%83%9D%EC%95%A0%EC%A3%BC%EA%B8%B0%3A%20%EB%B0%9C%ED%96%89%2C%20%EB%B0%9C%EA%B8%89%2C%20%EC%82%AC%EC%9A%A9/%EC%BF%A0%ED%8F%B0%ED%96%89%EC%82%AC%EC%9D%98%20%EC%95%85%EC%88%9C%ED%99%98%EA%B3%BC%20%ED%83%88%EC%B6%9C#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:9b1c646d8fe889eddac3b4e7a3014fc61368cf62f479965d6ce40f5687ec793c", "quote": "쿠폰 행사에 반복 의존하면 행사 기간에 수요가 당겨지고, 고객은 할인가를 기준으로 학습하며, 행사가 끝난 뒤 매출이 내려가 다시 행사를 여는 악순환이 생길 수 있다."}]
+      },
+      {
+        "condition_id": "exit_strategy",
+        "status": "supported",
+        "reason": "초기 lookup의 본문 excerpt가 가격 비교가 어려운 가치 축을 제시한다.",
+        "evidence": [{"id": "unit:interview-vault:biz/commerce/core-domains/Commerce-Pricing.md:%EC%BB%A4%EB%A8%B8%EC%8A%A4%20%EA%B0%80%EA%B2%A9(Pricing)%20%EB%8F%84%EB%A9%94%EC%9D%B8/%EC%BF%A0%ED%8F%B0%EC%9D%98%20%EC%83%9D%EC%95%A0%EC%A3%BC%EA%B8%B0%3A%20%EB%B0%9C%ED%96%89%2C%20%EB%B0%9C%EA%B8%89%2C%20%EC%82%AC%EC%9A%A9/%EC%BF%A0%ED%8F%B0%ED%96%89%EC%82%AC%EC%9D%98%20%EC%95%85%EC%88%9C%ED%99%98%EA%B3%BC%20%ED%83%88%EC%B6%9C#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:9b1c646d8fe889eddac3b4e7a3014fc61368cf62f479965d6ce40f5687ec793c", "quote": "- **컨텍스트 차별화** — 커뮤니티, 콘텐츠, 큐레이션, 신뢰처럼 가격비교가 비교할 수 없는 가치 축을 만든다."}]
+      }
+    ]
+  },
+  {
+    "id": "fresh-econ-price-revenue",
+    "query": "한 상품의 가격 인상을 검토할 때, 수요 반응을 어떤 계산으로 분류하고 인상 후 매출이 늘지 줄지 어떻게 판단해야 하나?",
+    "scope": ["econ"],
+    "conditions": [
+      {"id": "elasticity_calculation", "question": "가격 변화율과 수요량 변화율의 비율로 가격탄력성을 계산하는가?", "origin": "stated_requirement"},
+      {"id": "revenue_direction", "question": "가격 인상 후 총수입 방향을 탄력성과 판매량 변화의 관계로 판단하는가?", "origin": "stated_requirement"}
+    ],
+    "steps": [
+      {
+        "name": "context_lookup",
+        "arguments": {"query": "한 상품의 가격 인상을 검토할 때, 수요 반응을 어떤 계산으로 분류하고 인상 후 매출이 늘지 줄지 어떻게 판단해야 하나?", "scope": ["econ"], "max_bytes": 24000},
+        "condition_ids": ["elasticity_calculation", "revenue_direction"],
+        "reason": "원 질문으로 계산과 총수입 조건의 근거를 먼저 찾는다."
+      },
+      {
+        "name": "context_outline",
+        "arguments": {"document_id": "document:interview-vault:econ/microeconomics/Elasticity.md", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "offset_sections": 0, "max_bytes": 24000},
+        "condition_ids": ["revenue_direction"],
+        "reason": "초기 결과에서 총수입을 다루는 section을 찾는다."
+      },
+      {
+        "name": "context_read",
+        "arguments": {"evidence_unit_id": "unit:interview-vault:econ/microeconomics/Elasticity.md:%ED%83%84%EB%A0%A5%EC%84%B1/4.%20%EC%B4%9D%EC%88%98%EC%9E%85%EA%B3%BC%EC%9D%98%20%EA%B4%80%EA%B3%84%20(%EC%8B%A4%EC%A0%84%EC%97%90%EC%84%9C%20%EA%B0%80%EC%9E%A5%20%EC%A4%91%EC%9A%94)#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:2420fbaefc1723ad7a39c497e0eebf256dcb9804203798045a69d3d40a0bc9b4", "offset_bytes": 0, "max_bytes": 24000},
+        "condition_ids": ["revenue_direction"],
+        "reason": "outline은 탐색용이므로 총수입 판단을 본문에서 확인한다."
+      }
+    ],
+    "assessments": [
+      {
+        "condition_id": "elasticity_calculation",
+        "status": "supported",
+        "reason": "초기 lookup의 본문 excerpt가 가격탄력성 공식을 명시한다.",
+        "evidence": [{"id": "unit:interview-vault:econ/microeconomics/Elasticity.md:%ED%83%84%EB%A0%A5%EC%84%B1/2.%20%EA%B0%80%EA%B2%A9%ED%83%84%EB%A0%A5%EC%84%B1%20(%EC%88%98%EC%9A%94)#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:f58c87e7f944ad1657e63b84136952096fe13dd04c0b0b5ad81ff67ef10f117d", "quote": "가격탄력성 = |수요량의 변화율(%) ÷ 가격의 변화율(%)|"}]
+      },
+      {
+        "condition_id": "revenue_direction",
+        "status": "supported",
+        "reason": "read 본문이 비탄력 수요에서 가격 인상 뒤 총수입이 늘어나는 조건을 명시한다.",
+        "evidence": [{"id": "unit:interview-vault:econ/microeconomics/Elasticity.md:%ED%83%84%EB%A0%A5%EC%84%B1/4.%20%EC%B4%9D%EC%88%98%EC%9E%85%EA%B3%BC%EC%9D%98%20%EA%B4%80%EA%B3%84%20(%EC%8B%A4%EC%A0%84%EC%97%90%EC%84%9C%20%EA%B0%80%EC%9E%A5%20%EC%A4%91%EC%9A%94)#1", "source_revision": "4af3516d519b62d6840b04c79d1e25aba846d80d", "content_hash": "sha256:2420fbaefc1723ad7a39c497e0eebf256dcb9804203798045a69d3d40a0bc9b4", "quote": "- **비탄력적**이면 가격을 올릴 때 줄어드는 판매량보다 오른 가격 효과가 커서 **총수입이 늘어난다**."}]
+      }
+    ]
+  }
+]
