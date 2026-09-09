@@ -1,7 +1,7 @@
 ---
 tags: [database, olap, columnar, clickhouse, analytics, mergetree]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-09-09
 category: "데이터&저장소(Data&Storage)"
 aliases: ["ClickHouse", "OLAP", "컬럼형 DB", "Column-oriented DB"]
 ---
@@ -45,6 +45,14 @@ ORDER BY (created_at, service_id, event_type);
 - 쿼리의 WHERE 조건과 정렬 키가 맞을수록 파트 스킵으로 I/O 최소화
 - 정렬 키 선정이 잘못되면 컬럼 지향의 장점이 사라짐
 
+### 희소 기본 인덱스 (sparse primary index)
+
+정렬 키가 탐색 범위를 줄이는 실제 메커니즘. 행마다 인덱스를 만드는 B-tree와 달리, 정렬된 데이터를 `index_granularity`(기본 8192행) 단위의 **그래뉼(granule)**로 나누고 그래뉼마다 인덱스 항목(mark) 하나만 둔다.
+
+- 인덱스 항목이 행 수의 약 1/8192로 작아 `primary.idx` 전체가 메모리에 상주
+- WHERE 조건이 정렬 키 선두 칼럼과 맞으면 mark를 이진 탐색(`O(log n)`)해 조건에 걸리는 그래뉼만 읽는다
+- 나머지 그래뉼은 디스크에서 아예 읽지 않음 → 파트 프루닝보다 더 촘촘한 단위의 스킵
+
 ### MergeTree 변종
 | 엔진 | 용도 |
 |---|---|
@@ -77,7 +85,7 @@ ORDER BY (created_at, service_id, event_type);
 1. **컬럼 I/O 최소화** — 필요한 칼럼만 디스크에서 읽음
 2. **LZ4/ZSTD 압축** — 디스크에서 읽는 바이트 자체가 적음 (테스트 기준 약 54% 절감)
 3. **벡터화 실행 엔진** — SIMD로 한 번에 수천 값 연산
-4. **파티션 + 정렬 키 프루닝** — WHERE 조건 밖 파트는 아예 스캔 안 함
+4. **파티션 + 정렬 키 프루닝** — WHERE 조건 밖 파트는 아예 스캔 안 함. 희소 기본 인덱스로 파트 안에서도 조건에 걸리는 그래뉼만 읽음
 5. **병렬 처리** — 파트별, 코어별 병렬 스캔, 쿼리 간 간섭 적음
 6. **배치 INSERT 최적화** — 메모리에 모았다가 열 단위 압축으로 한 번에 디스크
 
@@ -147,8 +155,10 @@ ORDER BY (created_at, service_id, event_type);
 
 ## 출처
 - [NHN Cloud Meetup — MySQL 3분 vs ClickHouse 0.3초, 같은 쿼리입니다](https://meetup.nhncloud.com/posts/414)
+- [클릭하우스(ClickHouse) — 기적의 데이터베이스 기술 — 조성문](https://sungmooncho.com/2026/08/29/clickhouse/)
 - [ClickHouse 공식 문서 — Intro](https://clickhouse.com/docs/intro)
 - [ClickHouse 공식 문서 — Transactional (ACID) support](https://clickhouse.com/docs/guides/developer/transactional)
+- [ClickHouse 공식 문서 — Sparse Primary Indexes](https://clickhouse.com/docs/optimize/sparse-primary-indexes)
 - [ClickHouse Documentation, ReplacingMergeTree](https://clickhouse.com/docs/engines/table-engines/mergetree-family/replacingmergetree)
 
 ## 관련 문서

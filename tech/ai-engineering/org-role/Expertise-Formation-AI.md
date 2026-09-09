@@ -31,6 +31,12 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성"]
 
 함의는 둘이다. 보조받는 동안의 성과는 학습량의 지표가 아니다. 그리고 가드레일 설계가 학습 손실을 대부분 상쇄한다 — GPT Tutor의 가드레일은 힌트 하나가 아니라, 정답을 프롬프트에 넣어 오답 생성을 줄이고 흔한 오개념 기반의 교사 설계 힌트를 주되 전체 풀이는 내주지 않는 조합이었다.
 
+## 도메인 확장 — 운영 자동화와 시스템 직관
+
+마찰 제거로 인한 침식은 코딩과 학습에만 국한되지 않는다. 운영에서도 같은 역설이 나타난다. AI SRE가 경보 분석, 가설 수립, 텔레메트리 조회, 배포 연계, 조치까지 사고 대응을 통째로 처리하면 일상적 장애의 복구 시간(MTTR)은 줄지만, 엔지니어가 정상과 비정상 상태를 몸으로 구분하는 직관을 쌓을 반복 기회도 함께 사라진다. AI가 풀지 못하는 낯설고 심각한 장애(SEV0)만 사람에게 넘어오는데, 정작 그 직관이 가장 필요한 순간에 약해져 있다. 온콜과 사고 대응의 기본 구조는 [[SRE|SRE]]가 다룬다.
+
+이것은 새 현상이 아니라 Lisanne Bainbridge가 자동화의 역설(Ironies of Automation, 1983)로 정리한 구조다. 자동화가 일상 운영을 가져가면 사람에게는 가장 높은 숙련을 요구하는 비정상 상황만 남는데, 그 숙련을 길러 주던 일상 연습은 자동화가 걷어간다. 시스템 실제와 운영자 이해 사이의 간극은 이해 부채(comprehension debt)로 쌓인다. 처방도 코딩의 경우와 같다 — 반복 기회를 의도적으로 보존한다. 사람을 에스컬레이션에만 부르지 말고 일상 장애 루프 안에 남겨, 어려운 사고에 필요한 직관이 쉬운 사고에서 형성되게 한다.
+
 ## 전문성 공급망 문제
 
 개인의 습관 문제를 넘어 세대 문제다 — [[Developer-Role-AI-Era|AI 시대 개발자 역할]]의 견습 사다리 붕괴와 같은 축이고, 그 순환 구조(검토가 주니어의 일이 되는데 검토 능력은 직접 해본 경험에서 나옴)는 그 문서가 다룬다. 이 관점이 더하는 것은 결말이 정해져 있지 않다는 점이다. 공급망이 무너질지 경로 이동에 그칠지는 AI 사용을 산출 우선에서 학습 우선으로 전환할 수 있느냐에 달려 있다.
@@ -53,6 +59,7 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성"]
 - [AI 의존이 코딩 전문성의 성장 경로를 무너뜨릴 수 있음 — GeekNews](https://news.hada.io/topic?id=32854)
 - [Generative AI without guardrails can harm learning: Evidence from high school mathematics — PNAS, Bastani et al.](https://www.pnas.org/doi/10.1073/pnas.2422633122)
 - [Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity — METR](https://arxiv.org/abs/2507.09089)
+- [AI Handles Incidents, Engineers Lose Touch With Their Systems — Sylvain Kalache](https://www.sylvainkalache.com/blog/ai-handles-incidents-engineers-lose-touch-with-their-systems)
 
 ## 관련 문서
 
@@ -60,3 +67,4 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성"]
 - [[Technical-Debt|기술 부채]] — 인지 부채 명명 비판, 위축과 탈숙련
 - [[AI-Handicap-Learning|AI 핸디캡 학습법]] — 튜터 모드의 구체 수칙 (초안 먼저, 힌트 요청, 교대 훈련)
 - [[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]] — 깊이 있는 학습과 이전 가능한 작동 모델
+- [[SRE|SRE]] — 온콜과 사고 대응 구조, 자동화가 걷어가는 일상 반복과 이해 부채

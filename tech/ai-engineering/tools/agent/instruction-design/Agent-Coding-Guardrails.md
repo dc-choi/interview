@@ -85,6 +85,7 @@ AI의 제안은 원인을 찾기보다 문제를 돌아가는 쪽으로 기울 �
 - **CLAUDE.md 병합**: 프로젝트 영속 컨텍스트에 append. 프로젝트 특화 규칙(테스트 규칙, 기존 에러 처리 패턴 준수 등)과 병합해 쓰는 전제
 - **스킬/플러그인**: SKILL.md의 description 트리거로 코드 작성, 리뷰, 리팩토링 시 로드. 마켓플레이스 플러그인으로 설치하면 전 프로젝트 공용 ([[Agent-Skills]])
 - **다른 호스트**: 같은 내용을 Cursor project rule(.mdc)로. 원칙을 도구별 주입 포맷으로 이식하는 패턴은 [[Agent-Overengineering-Guard]]의 다중 에이전트 이식성과 같은 축
+- **적시 주입 (Hook 패턴 트리거)**: 규칙을 상시 컨텍스트에 얹으면 앞부분 지시가 덜 반영되는 Lost-in-the-Middle에 취약하다. 대신 코드 생성 시점에 필요한 규칙만 골라 넣는다 — 파일을 쓴 직후 Hook이 파일명과 코드 패턴(regex)으로 해당 규칙 소수만 즉시 주입하고, 작업 종료 전 변경 전체(git diff)를 다중 파일 규칙(예: 서비스가 구현이 아니라 인터페이스에 의존하는지)으로 검토한다. 규칙은 중앙 저장소에 두고 세션 시작 시 최신본을 받아 프로젝트마다 복제, 갱신하는 드리프트를 없앤다. 어떤 규칙이 언제 발동했는지 로그로 남겨 과잉, 과소 규칙을 교정한다. Hook의 실행 시점 특성과 성공률 한계는 [[Context-Engineering|컨텍스트 엔지니어링]]이 다룬다
 - **트레이드오프**: 신중 편향 룰셋이라 사소한 작업(오타 수정, 자명한 한 줄)엔 과잉이다. 목적은 단순 작업의 감속이 아니라 비단순 작업의 비싼 실수 감축
 
 ## 작동 확인 신호
@@ -114,6 +115,7 @@ AI의 제안은 원인을 찾기보다 문제를 돌아가는 쪽으로 기울 �
 - [andrej-karpathy-skills — multica-ai (GitHub)](https://github.com/multica-ai/andrej-karpathy-skills)
 - [LLM 코딩 실패 패턴 관찰 — Andrej Karpathy (X)](https://x.com/karpathy/status/2015883857489522876)
 - [AI 논문 도구를 만들며 마주친 네 번의 갈림길 — 요즘IT](https://yozm.wishket.com/magazine/detail/3881/)
+- [AI가 팀 규칙을 지키도록 하는 방법 — 토스 테크](https://toss.tech/article/52631)
 
 ## 관련 문서
 

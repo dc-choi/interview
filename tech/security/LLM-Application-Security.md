@@ -1,6 +1,7 @@
 ---
 tags: [security, llm, ai, owasp, prompt-injection, rag]
 status: done
+verified_at: 2026-09-09
 category: "보안(Security)"
 aliases: ["LLM Application Security", "LLM 보안", "OWASP Top 10 LLM", "프롬프트 인젝션"]
 ---
@@ -17,6 +18,15 @@ LLM을 제품에 넣으면 기존 웹 취약점 위에 **모델 고유의 공격
 - **간접**: 웹페이지, 파일 등 외부 소스의 콘텐츠에 숨긴 지침이 실행 (RAG 소스 문서 변조 등)
 - **멀티모달**: 이미지에 지침을 숨겨 텍스트와의 상호작용을 악용 — 탐지가 특히 어려움
 - 완화: 시스템 프롬프트로 모델 역할과 제한 명시, 출력 형식 검증, 입출력 필터링, 최소 권한, 고위험 행위에 사람 승인(human-in-the-loop), 신뢰 못 하는 외부 콘텐츠 분리, 적대적 테스트. **확실한 예방법은 없고 영향 완화만 가능**
+
+### 듀얼 LLM 격리 (Dual-LLM 패턴)
+
+입출력 필터와 분류기 같은 가드레일만으로는 간접 인젝션을 확실히 막지 못한다. Microsoft 365 Copilot의 EchoLeak(CVE-2025-32711, 2025)은 크래프팅한 이메일에 숨긴 지침이 RAG 컨텍스트로 들어가 XPIA 분류기와 링크 차단, CSP를 우회하고 자동 로딩되는 이미지 URL로 내부 데이터를 유출한 제로클릭 사례다. 우회가 계속 나오는 구조적 한계 때문에, 권한과 비신뢰 콘텐츠를 아키텍처 수준에서 분리하는 방식이 근본 완화로 제시된다.
+
+- **Privileged LLM**: 신뢰 입력(주로 이용자)만 받고 도구(메일 전송, 상태 변경 등)에 접근한다. 비신뢰 콘텐츠에는 절대 노출되지 않는다
+- **Quarantined LLM**: 이메일, 웹페이지 같은 비신뢰 콘텐츠를 처리하되 도구 접근이 전혀 없다 (항상 오염 가능성 있는 것으로 취급)
+- **Controller**: 둘 사이를 중재한다. 오염 가능성 있는 텍스트를 변수 토큰(`$VAR1`)으로 대체해 전달하고, Privileged LLM은 실제 콘텐츠가 아니라 심볼 참조만 본다
+- 효과와 한계: 비신뢰 입력을 처리하는 모델에 도구가 없어 confused deputy 공격이 차단된다. 다만 사회공학과 구현 복잡도는 남으며, 권한 강제를 LLM 밖 결정적 시스템에 두는 LLM06(과도한 위임)의 완전 중재 원칙과 같은 계열이다
 
 ## LLM02 민감 정보 유출
 
@@ -97,6 +107,8 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 ## 출처
 
 - [OWASP Top 10 for LLM Applications 2025 (한국어판) — OWASP GenAI](https://genai.owasp.org/)
+- [The Dual LLM pattern for building AI assistants that can resist prompt injection — Simon Willison's Weblog](https://simonwillison.net/2023/Apr/25/dual-llm-pattern/)
+- [Zero-Click AI Vulnerability Exposes Microsoft 365 Copilot Data Without User Interaction — The Hacker News](https://thehackernews.com/2025/06/zero-click-ai-vulnerability-exposes.html)
 
 ## 관련 문서
 

@@ -42,6 +42,10 @@ aliases: ["Architecture Fitness Functions", "Architectural Fitness Function", "�
 
 자동화할 수 없는 기준도 버리지 않는다. 대신 실행 주기, 판정자와 증거를 명시해 잊히지 않게 한다.
 
+## 기존 부채 위에 도입하기 — 동결
+
+레거시 코드베이스에 규칙을 처음 걸면 기존 위반이 무더기로 잡혀 gate가 늘 빨간불이 된다. 도입을 막지 않는 방법이 동결(freeze)이다 — 지금 존재하는 위반을 버전 관리가 추적하는 violation store 파일에 기준선으로 얼려 통과시키고, 신규 위반만 빌드를 실패시킨다. 얼린 위반은 개발자가 고치면 자동으로 목록에서 사라져 진행이 diff에 드러난다. 대규모 선행 리팩토링 없이 규칙을 도입하고 기존 부채는 점진 상환할 수 있다. Java, Spring에서는 ArchUnit이 의존성 방향(도메인이 인프라, 웹에 의존하지 않기), 네이밍, 생성자 주입 같은 규칙을 테스트로 표현하고 이 동결(FreezingArchRule)을 지원해, 위반 시 CI 빌드를 실패시켜 머지 전에 막는다.
+
 ## 흔한 실패
 
 - 측정 가능한 것만 중요하다고 보고 사용자 가치와 사업 제약을 놓침
@@ -65,6 +69,7 @@ fitness function은 아키텍처 결정을 대신하지 않는다. [[Tech-Decisi
 
 - [Building Evolutionary Architectures, free chapter — Thoughtworks](https://www.thoughtworks.com/content/dam/thoughtworks/documents/books/bk_building_evolutionary_architectures_second_edition_free_chapter.pdf)
 - [Fitness function-driven development — Thoughtworks](https://www.thoughtworks.com/en-us/insights/articles/fitness-function-driven-development)
+- [문서로만 지키던 아키텍처 규칙, 테스트 코드로 강제하기 — 우아한형제들 기술블로그](https://techblog.woowahan.com/26835/)
 - [45권의 기술 서적에서 얻은 핵심 인사이트 — GeekNews](https://news.hada.io/topic?id=31718)
 - [Our biggest insights from 45 technical books! — Book Overflow](https://www.youtube.com/watch?v=k2ek5MsUEMo)
 
