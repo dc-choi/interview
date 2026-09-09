@@ -154,3 +154,4 @@ npm install my-native-addon@n-api
 ## 관련 문서
 - [[Module-System|모듈 시스템]]
 - [[Node.js]]
+- [[Dependency-Selection|의존성 선택]]

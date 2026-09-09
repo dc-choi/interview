@@ -94,3 +94,4 @@ Q. Docker 이미지 배포 파이프라인은 어떻게 구성했는가?
 - [[Multi-Stage-Build|Multi-stage build]]
 - [[Docker-Compose|Docker Compose]]
 - [[Image-Size-Optimization|Image selection, size와 cleanup]]
+- [[Dependency-Vulnerability-Scanning|의존성 취약점 스캐닝]]

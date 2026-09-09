@@ -250,8 +250,9 @@ NODE_ENV는 Node.js 자체의 예약된 동작이 아니라 애플리케이션, 
 - [[Advanced-Recipes|고급 레시피]]
 
 ### Node.js 실전
-- [[tooling|개발 도구 폴더 인덱스 (커맨드라인, 패키지 배포, TypeScript 연동)]]
+- [[tooling|개발 도구 폴더 인덱스 (커맨드라인, 의존성 선택, 패키지 배포, TypeScript 연동)]]
 - [[Command-Line|커맨드라인]]
+- [[Dependency-Selection|의존성 선택]]
 - [[Nodejs-Web-Server|웹 서버와 프레임워크 (http 모듈, Hono, Apollo Server)]]
 - [[File-System|파일 시스템]]
 - [[Async-Programming|비동기 프로그래밍]]

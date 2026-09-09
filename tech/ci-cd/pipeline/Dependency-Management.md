@@ -138,3 +138,6 @@ Spring, Java 엔터프라이즈는 **Maven**이 여전히 많이 쓰이고, 멀�
 ## 관련 문서
 - [[Version-Control-Tooling|버전 관리 도구]]
 - [[Development-Workflow|개발 워크플로]]
+- [[Dependency-Selection|의존성 선택]]
+- [[Dependency-Vulnerability-Scanning|의존성 취약점 스캔]]
+- [[Supply-Chain-Security|공급망 보안]]

@@ -168,3 +168,4 @@ Q. CI 시간을 단축하기 위해 어떤 전략을 쓰는가?
 - [[Docker|Docker]]
 - [[Multi-Stage-Build|Multi-stage build]]
 - [[AWS-Cost-Optimization|AWS 비용 최적화 (Self-hosted Runner Spot)]]
+- [[Dependency-Management|의존성 관리 (lock 파일 정책, frozen-lockfile의 근거)]]

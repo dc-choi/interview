@@ -142,3 +142,4 @@ Node.js 26까지는 짝수 메이저만 LTS로 승격됐고, 공식 릴리스 �
 - [[Backward-Compatibility-Design|하위 호환성 설계]] — 우리가 제공하는 계약의 breaking 판정
 - [[Runtime-Stack-Evolution|런타임 스택 진화]] — 언어 업그레이드 방치의 비용
 - [[Technical-Debt|기술 부채]] — 미룬 업그레이드는 이자가 붙는 부채
+- [[Dependency-Selection|의존성 선택]] — 도입 시점의 유지보수 활성도와 semver 준수 판단이 나중 업그레이드 비용을 정한다

@@ -109,4 +109,6 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 ## 관련 문서
 - [[Secret-Management|시크릿 관리]] — 크레덴셜 로테이션, 동적 시크릿
 - [[Dependency-Vulnerability-Scanning|의존성 취약점 스캐닝]] — SCA, SBOM
+- [[Dependency-Selection|의존성 선택]] — 도입 전 선별 단계의 공급망 신호 확인
+- [[Dependency-Management|의존성 관리]] — lock 파일 3계층, semver 범위, 언어별 패키지 매니저
 - [[보안(Security)|보안 인덱스]]
