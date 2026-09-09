@@ -133,5 +133,6 @@ AI가 처리하니 세부는 몰라도 된다는 착각이 가장 위험하다. 
 - [[Agent-Spec-Writing|AI 에이전트 스펙 작성법]]
 - [[Flow-Vs-Agent-Orchestration|몰입과 멀티 에이전트 오케스트레이션]] — 오케스트레이션의 주의력 비용
 - [[Technical-Debt|기술 부채 — 인지 부채=위축/탈숙련, 미검토 코드의 정확한 명명]]
+- [[Essential-vs-Accidental-Complexity|본질적 복잡성과 우발적 복잡성]] — 도구가 없애는 우발적 복잡성과 남는 본질적 복잡성, 비결정론적 LLM 코드
 - [[Backend-Developer-Career-Overview|백엔드 개발자 진로 개요]] — 변하는 구현 방식과 변하지 않는 책임
 - [[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]] — 깊이 있는 학습과 이전 가능한 작동 모델

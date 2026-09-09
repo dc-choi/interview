@@ -146,5 +146,6 @@ AI가 코드를 거의 공짜로 찍어내면서 부채 은유가 폭발했다. 
 - [[Legacy-Modernization-Strategies|레거시 현대화 전략]]
 - [[Code-Quality-Criteria|코드 품질의 기준 (코드 스멜)]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할 (이해 소유, 견습 사다리)]]
+- [[Essential-vs-Accidental-Complexity|본질적 복잡성과 우발적 복잡성]] — 도구로 못 없애는 본질적 복잡성, 생성 코드가 더하는 우발적 복잡성
 - [[Expertise-Formation-AI|AI 시대 전문성 형성 (마찰과 전문성 형성 경로)]]
 - [[AI-Native-System|AI 네이티브 시스템]]
