@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, testing, jest, integration-test, mock]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-09-12
 category: "테스트&품질(Testing&Quality)"
 aliases: ["NestJS Testing", "TestingModule", "Test.createTestingModule"]
 ---
@@ -48,7 +48,7 @@ const module = await Test.createTestingModule({
 
 **useMocker — 미지정 의존성 자동 mock**: 의존이 많으면 `.useMocker(token => ...)`를 체인해 providers에 안 넣은 의존성 전부에 mock 팩토리를 적용한다 (jest-mock의 ModuleMocker나 @golevelup/ts-jest의 createMock을 팩토리로). 만들어진 mock도 `moduleRef.get(Token)`으로 꺼낸다. 단 REQUEST, INQUIRER 프로바이더는 컨텍스트에 사전 정의돼 auto-mock 불가 — `overrideProvider`로 교체한다.
 
-**Suites — 컨테이너 없는 자동 mock 단위 테스트**: 오픈소스 Suites(구 Automock)는 TestingModule 없이 클래스 생성자 메타데이터를 읽어 **타입 있는 mock을 전 의존성에 자동 생성**한다 — `TestBed.solitary(UserService).compile()`이면 전부 mock(격리), `TestBed.sociable().expose(...)`면 지정한 의존만 실제 구현. DI 컨테이너를 안 띄우므로 useMocker 방식보다 셋업이 가볍고, 집중 단위 테스트에 적합하다.
+**Suites — 컨테이너 없는 자동 mock 단위 테스트**: 오픈소스 Suites(구 Automock)는 TestingModule 없이 클래스 생성자 메타데이터를 읽어 **타입 있는 mock을 전 의존성에 자동 생성**한다 — `TestBed.solitary(UserService).compile()`이면 전부 mock(격리), `TestBed.sociable(UserService).expose(UserValidator).compile()`이면 테스트 대상은 UserService이고 UserValidator 의존성은 실제 구현으로 유지한다. DI 컨테이너를 안 띄우므로 useMocker 방식보다 셋업이 가볍고, 집중 단위 테스트에 적합하다.
 
 ## 통합 테스트 — in-memory DB
 
@@ -78,14 +78,21 @@ SQLite in-memory는 빠르지만 운영 DB와 SQL 방언 차이가 있어 **Post
 
 ## 트랜잭션 롤백 검증
 
+아래 예제는 서비스가 같은 트랜잭션의 manager로 User를 저장한 뒤 `profileWriter.create(manager, user)`를 호출하는 구조다. 테스트 전에 두 테이블을 비우고, `userRepo`와 `profileRepo`는 서비스 트랜잭션 밖에서 조회한다.
+
 ```ts
-it('rolls back on validation failure', async () => {
-  await expect(userService.createUserWithProfile(invalidData)).rejects.toThrow();
-  expect(await userRepo.count()).toBe(0);
+it('rolls back a saved user when profile creation fails', async () => {
+  const writeProfile = jest.spyOn(profileWriter, 'create').mockImplementationOnce(async (manager, user) => {
+    expect(await manager.count(User, { where: { id: user.id } })).toBe(1);
+    throw new Error('profile write failed');
+  });
+  await expect(userService.createUserWithProfile(validData)).rejects.toThrow('profile write failed');
+  expect(writeProfile).toHaveBeenCalledTimes(1);
+  expect(await Promise.all([userRepo.count(), profileRepo.count()])).toEqual([0, 0]);
 });
 ```
 
-서비스가 프로젝트의 트랜잭션 경계(예: `EntityManager.transaction(...)`)를 제대로 적용했는지 검증. 트랜잭션이 없으면 부분 commit으로 count > 0이 되어 실패.
+첫 저장이 실제로 반영된 것을 트랜잭션 안에서 확인한 뒤 후속 작업에 지정한 오류를 발생시켜 롤백을 검증한다. 잘못된 입력으로 첫 저장 전에 실패하는 테스트는 트랜잭션 없이도 통과할 수 있다. 서비스의 모든 DB 작업은 전달받은 transactional manager로 실행하고, 테스트 자체를 별도 롤백 트랜잭션으로 감싸지 않는다. 스파이는 `afterEach`에서 `jest.restoreAllMocks()`로 복구한다.
 
 ## 외부 서비스 모킹, 스파이
 
@@ -151,7 +158,7 @@ catsService = await moduleRef.resolve(CatsService, contextId);
 v11부터 동적 모듈이 딥 해시로 중복 제거되지 않아(객체 참조 동일성), `forFeature([User])` 같은 호출을 여러 모듈에서 하면 TestingModule 안에 **같은 의존성 인스턴스가 여러 개** 생긴다. 스텁했는데 실제 코드가 다른 인스턴스를 쓰면 안 먹는다. 대응 4가지:
 
 - 프로덕션 코드에서 동적 모듈을 변수로 공유해 중복 자체를 제거
-- `module.select(ParentModule).get(Target)` — 특정 모듈 컨텍스트의 인스턴스를 지정
+- `module.select(TargetModule).get(Target, { strict: true })` — Target을 직접 등록한 모듈에서 조회. `get()`의 기본값은 `strict: false`이므로 `select()`만 호출하면 전역 조회가 유지된다. 동적 모듈이면 등록할 때 사용한 동일한 동적 모듈 객체를 `select()`에 전달한다.
 - `module.get(Target, { each: true })` — 모든 인스턴스를 배열로 받아 전부 스텁
 - `Test.createTestingModule({...}, { moduleIdGeneratorAlgorithm: 'deep-hash' })` — 그 테스트만 구(v10) 알고리즘으로 회귀
 
@@ -188,5 +195,6 @@ v11부터 동적 모듈이 딥 해시로 중복 제거되지 않아(객체 참�
 ## 출처
 - [NestJS — Testing](https://docs.nestjs.com/fundamentals/testing)
 - [Suites — TestBed (sociable)](https://suites.dev/docs/api-reference/testbed-sociable/)
+- [TypeORM, Transactions](https://typeorm.io/docs/transactions/)
 - [NestJS — NestApplicationContextOptions](https://github.com/nestjs/nest/blob/master/packages/common/interfaces/nest-application-context-options.interface.ts)
 - [SQLite, Release History](https://sqlite.org/changes.html)

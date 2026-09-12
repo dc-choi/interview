@@ -7,12 +7,12 @@ aliases: ["OOM Troubleshooting", "Node.js OOM", "메모리 부족"]
 
 # Node.js OOM 트러블슈팅
 
-Node.js의 OOM(Out Of Memory)은 **V8 엔진이 할당받은 힙 메모리가 한계치에 도달했을 때** 발생한다. 시스템 메모리가 남아 있어도 V8 힙 상한을 넘으면 프로세스가 즉시 죽는다.
+Node.js 프로세스의 메모리 실패는 하나가 아니다. V8 힙에서 회수할 공간이 없어 종료되는 경우, 네이티브 또는 외부 메모리 할당이 실패하는 경우, 컨테이너와 운영체제의 메모리 압박으로 프로세스가 종료되는 경우를 분리해 진단한다.
 
 ## 목차
 
-1. [[OOM-Troubleshooting-Cases|힙 이해와 발생 케이스]] — V8 힙 상한선, 4가지 대표 OOM 케이스 (일괄 로드, 누수, 스트림 미사용, 백프레셔)
-2. [[OOM-Troubleshooting-Response|대응 방법 & 면접 포인트]] — 스트림 전환, 힙 덤프, 외부 캐시, 인프라 정렬, 모니터링, 면접 Q&A
+1. [[OOM-Troubleshooting-Cases|힙 이해와 발생 케이스]] — V8 힙, 외부 메모리와 cgroup 종료의 구분, 대표 누수와 백프레셔 케이스
+2. [[OOM-Troubleshooting-Response|대응 방법 & 면접 포인트]] — 증거별 진단, 메모리 예산, 스트림 전환과 모니터링
 
 ## 관련 문서
 - [[V8|V8 엔진]]

@@ -3,7 +3,7 @@ tags: [security, cors, browser, web]
 status: done
 category: "Security"
 aliases: ["CORS", "Cross-Origin Resource Sharing"]
-verified_at: 2026-08-05
+verified_at: 2026-09-12
 ---
 
 # CORS (Cross-Origin Resource Sharing)
@@ -80,16 +80,16 @@ Preflight 응답:
 
 완화: `Access-Control-Max-Age`로 preflight 결과 캐시. 헤더가 없거나 파싱에 실패하면 5초가 기본이고, 브라우저가 자체 상한으로 잘라낸다 — Chromium은 2시간(7200초, v76 이전은 10분), Firefox는 24시간(86400초). 상한을 넘겨 보내도 상한까지만 적용되므로 86400을 박아도 Chromium에서는 2시간이다.
 
-### credentials 축 — 인증 정보 포함 요청
-쿠키, Authorization 헤더 같은 **인증 정보 포함** 여부는 앞의 둘과 배타적인 별개 타입이 아니라 두 경로 모두에 겹쳐 적용되는 축이다 — 인증 정보를 실은 요청도 조건에 따라 simple이거나 preflight를 탄다.
+### credentials 축 — 브라우저 관리 자격증명 요청
+쿠키, TLS 클라이언트 인증서, HTTP 인증 항목처럼 **브라우저가 관리하는 자격증명**의 포함 여부는 앞의 둘과 배타적인 별개 타입이 아니라 두 경로 모두에 겹쳐 적용되는 축이다. 자격증명을 실은 요청도 조건에 따라 simple이거나 preflight를 탄다.
 
-요청의 credentials 모드는 기본값이 `same-origin`이라 교차 출처에는 인증 정보가 실리지 않는다. `fetch`는 `credentials` 옵션으로, `XMLHttpRequest`는 `withCredentials` 불리언으로 제어한다(`true`가 `include`에 해당).
+요청의 credentials 모드는 기본값이 `same-origin`이라 교차 출처에는 브라우저 관리 자격증명이 실리지 않는다. `fetch`는 `credentials` 옵션으로, `XMLHttpRequest`는 `withCredentials` 불리언으로 제어한다(`true`가 `include`에 해당).
 
-| 값 | 동작 |
+| 값 | 브라우저 관리 자격증명 동작 |
 |---|---|
-| `same-origin` (기본값) | 같은 출처 요청에만 인증 정보 첨부 |
-| `include` | 모든 교차 출처 요청에도 인증 정보 첨부 |
-| `omit` | 어떤 요청에도 인증 정보 미첨부 |
+| `same-origin` (기본값) | 같은 출처 요청에만 첨부 |
+| `include` | 교차 출처 요청에도 첨부 |
+| `omit` | 어떤 요청에도 첨부하지 않음 |
 
 ```
 요청 (JS):
@@ -101,9 +101,19 @@ Preflight 응답:
   Access-Control-Allow-Credentials: true
 ```
 
-**인증 정보가 실린 요청에서는 `*`가 와일드카드로 동작하지 않는다.** `Access-Control-Allow-Origin`뿐 아니라 `Access-Control-Allow-Headers`, `Access-Control-Allow-Methods`, `Access-Control-Expose-Headers`까지 리터럴 `*`라는 이름으로 해석돼 매칭에 실패한다. 값을 하나하나 명시해야 한다.
+`credentials: 'include'`인 요청에서는 `*`가 와일드카드로 동작하지 않는다. `Access-Control-Allow-Origin`은 구체 Origin이어야 하고 `Access-Control-Allow-Credentials: true`가 필요하다. `Access-Control-Allow-Headers`, `Access-Control-Allow-Methods`, `Access-Control-Expose-Headers`의 `*`도 리터럴 이름으로 해석되므로 값을 명시해야 한다. 이 제약의 기준은 요청에 `Authorization` 헤더가 있는지가 아니라 credentials 모드가 `include`인지다.
 
-`Authorization`은 제약이 더 강하다. Fetch 스펙의 CORS non-wildcard request-header name이라 인증 정보 유무와 무관하게 `Access-Control-Allow-Headers: *`로는 허용되지 않고, 헤더 이름을 직접 나열해야 한다.
+`Authorization: Bearer ...`처럼 JavaScript가 직접 지정한 헤더는 credentials 모드가 `omit`이나 `same-origin`이어도 제거되지 않는다. 다만 CORS-safelisted 헤더가 아니므로 preflight가 발생하며, Fetch 스펙의 CORS non-wildcard request-header name이라 credentials 모드와 무관하게 `Access-Control-Allow-Headers: *`로는 허용되지 않는다. 서버는 `Authorization`을 직접 나열해야 한다.
+
+```js
+// Cookie는 보내지 않지만, 직접 지정한 Authorization은 preflight 성공 후 본 요청에 포함된다.
+fetch('https://api.example.test/me', {
+  credentials: 'omit',
+  headers: { Authorization: 'Bearer token' },
+})
+```
+
+이 예제의 preflight에는 `Access-Control-Allow-Origin: *`와 `Access-Control-Allow-Headers: Authorization`을, 본 응답에는 `Access-Control-Allow-Origin: *`를 보낼 수 있다. credentials 모드가 `omit`이므로 `Access-Control-Allow-Credentials`는 필요 없다.
 
 ## 응답 헤더 정리
 
@@ -112,20 +122,20 @@ Preflight 응답:
 | `Access-Control-Allow-Origin` | 허용할 Origin (`*` 또는 구체 Origin) |
 | `Access-Control-Allow-Methods` | 허용 메서드 (preflight 응답) |
 | `Access-Control-Allow-Headers` | 허용 요청 헤더 (preflight 응답) |
-| `Access-Control-Allow-Credentials` | 쿠키, 인증 정보 포함 허용 여부 |
+| `Access-Control-Allow-Credentials` | `credentials: 'include'` 요청의 응답 공유 허용 여부. 구체 `Access-Control-Allow-Origin`과 함께 필요 |
 | `Access-Control-Max-Age` | Preflight 결과 캐시 시간 |
 | `Access-Control-Expose-Headers` | JS에서 추가로 읽게 할 응답 헤더. 명시하지 않아도 노출되는 기본값은 `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, `Pragma` 7개 |
 
 ## 흔한 함정
 
 ### 서버 쪽 설정
-- `Access-Control-Allow-Origin: *`만 보내고 쿠키를 기대 → 크레덴셜 요청 실패
+- `credentials: 'include'` 요청에 `Access-Control-Allow-Origin: *`만 보내고 쿠키를 기대 → CORS 응답 공유 실패
 - OPTIONS 메서드를 404로 처리 → 모든 preflight 실패 → 본 요청도 실패
 - 특정 Origin 화이트리스트 — 정규표현식, 동적 매칭 시 **버그로 `null`, `*` 반환하면 대형 사고**
 
 ### 클라이언트 쪽
 - `credentials` 기본값(`same-origin`)은 교차 출처에 쿠키를 안 보내는데, 이를 모르고 로그인이 안 된다며 디버깅에 시간 낭비
-- 커스텀 헤더 추가했는데 preflight 허용 헤더에 없어서 실패
+- `Authorization` 같은 커스텀 헤더를 추가했는데 preflight의 허용 헤더에 명시하지 않아 실패
 
 ### Reverse Proxy 상황
 - Nginx, Spring Filter에서 CORS 헤더 **이중 설정** → 응답 헤더 중복 → 브라우저 거부
@@ -141,7 +151,8 @@ Preflight 응답:
 
 - **서버에서 `Access-Control-Allow-Origin` 명시** — 정석. 와일드카드 `*`는 정체 모를 출처까지 허용하므로 구체 Origin을 박는다. Nginx, Apache 설정보다 Spring, Express, Django 등의 **CORS 미들웨어**로 처리하는 편이 관리가 쉽다(이중 설정 주의는 위 함정 참고).
 - **로컬 개발 서버 리버스 프록싱** — 프론트 dev-server(webpack-dev-server, Vite 등)의 proxy 기능으로 `/api`를 실제 API 서버로 프록시하면 브라우저는 같은 출처 요청으로 인식해 CORS를 우회한다. 단 dev-server가 떠 있는 **로컬에서만** 통하고, 프로덕션에서 정적 자원 출처와 API 출처가 다르면 프록시가 없어 깨진다 — 정적 자원과 API를 같은 출처로 서빙할 때만 안전 ([[Reverse-Proxy|리버스 프록시]]).
-- **img/script 태그(no-cors)는 우회가 아니다** — SOP 예외(스크립트, 이미지, 스타일시트)라 요청 자체는 나가지만(`Sec-Fetch-Mode: no-cors`), 브라우저가 그 응답을 JS에 넘기지 않아 **코드 레벨에서 내용을 읽을 수 없다**. 데이터를 받아 쓰는 용도로는 못 쓴다.
+- **`fetch(url, { mode: 'no-cors' })`** — 교차 출처 응답은 opaque라 JavaScript에서 본문과 헤더를 읽을 수 없다. 일반 JSON API의 응답을 읽기 위한 CORS 우회 방법이 아니다.
+- **classic `<script src>`와 JSONP** — `crossorigin`을 지정하지 않은 classic script는 CORS 허용 헤더 없이도 교차 출처 JavaScript를 가져와 실행할 수 있다. 서버가 `callback({ ... })` 형태로 응답하는 JSONP라면 페이지가 콜백으로 데이터를 받는다. 서버의 협조가 필요한 스크립트 실행 방식이며, 임의의 응답 본문을 직접 읽는 방식과 구분한다. `type="module"`인 교차 출처 스크립트에는 CORS가 필요하다.
 
 ## 면접 체크포인트
 
@@ -150,9 +161,10 @@ Preflight 응답:
 - CORS가 브라우저 구현 스펙이라 서버 로그엔 정상 응답으로 남는 점(디버깅 함정), 서버 간 통신엔 미적용
 - Simple vs Preflight 구분 조건, 업로드 진행률 리스너와 `ReadableStream`도 preflight를 유발한다는 점
 - preflight 응답은 2xx여야 하지만 본 요청은 상태 코드와 무관하다는 차이
-- `Access-Control-Allow-Origin: *`이 인증 요청에서 안 되는 이유, `credentials` 기본값
+- `credentials: 'include'`에서 `Access-Control-Allow-Origin: *`이 안 되는 이유와 `Authorization`을 직접 지정했을 때의 차이
 - Preflight 성능 비용과 Max-Age로 줄이는 방법
 - 로컬 dev-server 프록시 우회가 프로덕션에서 깨지는 이유
+- opaque 응답의 본문 읽기 제한과 classic script 실행/JSONP의 차이
 - CORS가 CSRF를 막지 못하는 이유
 
 ## 출처
@@ -160,7 +172,12 @@ Preflight 응답:
 - [MDN — Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS)
 - [MDN — Access-Control-Max-Age](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Max-Age)
 - [MDN — Access-Control-Allow-Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Allow-Headers)
-- [WHATWG Fetch Standard — CORS protocol, CORS-preflight fetch, CORS check](https://fetch.spec.whatwg.org/#http-cors-protocol)
+- [WHATWG Fetch Standard — credentials](https://fetch.spec.whatwg.org/#credentials)
+- [WHATWG Fetch Standard — CORS protocol and credentials](https://fetch.spec.whatwg.org/#cors-protocol-and-credentials)
+- [WHATWG Fetch Standard — HTTP-network-or-cache fetch](https://fetch.spec.whatwg.org/#http-network-or-cache-fetch)
+- [WHATWG Fetch Standard — CORS check](https://fetch.spec.whatwg.org/#cors-check)
+- [WHATWG Fetch Standard — filtered response](https://fetch.spec.whatwg.org/#concept-filtered-response-opaque)
+- [WHATWG HTML Standard — Fetching scripts](https://html.spec.whatwg.org/multipage/webappapis.html#fetching-scripts)
 - [매일메일 — CORS 질문 78](https://www.maeil-mail.kr/question/78)
 - [매일메일 — CORS 심화 질문 96](https://www.maeil-mail.kr/question/96)
 

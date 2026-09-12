@@ -1,14 +1,14 @@
 ---
 tags: [architecture, ddd, distributed, saga, transaction]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-12
 category: "Architecture - DDD, Hexagonal"
 aliases: ["Saga Pattern", "사가 패턴", "분산 트랜잭션"]
 ---
 
 # Saga 패턴 — 분산 트랜잭션을 단계 분해로 다루기
 
-여러 Bounded Context(또는 마이크로서비스)에 걸친 비즈니스 프로세스를 **로컬 트랜잭션의 연속**으로 쪼개고, 각 단계 실패 시 **보상 트랜잭션(compensating transaction)**으로 수렴시키는 패턴이다. 모든 참여자를 하나의 prepare/commit으로 묶는 대신, 업무가 정의한 중간 상태와 복구 절차를 드러낸다.
+여러 Bounded Context(또는 마이크로서비스)에 걸친 비즈니스 프로세스를 **로컬 트랜잭션의 연속**으로 쪼개고, 각 단계 실패를 **재시도 또는 보상 트랜잭션(compensating transaction)**으로 수렴시키는 패턴이다. 모든 참여자를 하나의 prepare/commit으로 묶는 대신, 업무가 정의한 중간 상태와 복구 절차를 드러낸다.
 
 ## 왜 필요한가
 
@@ -17,7 +17,7 @@ aliases: ["Saga Pattern", "사가 패턴", "분산 트랜잭션"]
 - 한 participant의 지연이나 장애가 전체 완료 시간을 늘림
 - 이질적인 저장소와 외부 서비스는 같은 원자적 commit 프로토콜을 지원하지 않을 수 있음
 
-Saga는 단일 원자적 commit 대신 **단계별 로컬 트랜잭션 + 보상**을 선택한다. 그래서 중간 상태의 가시성, 동시 요청 격리, 보상 실패 복구를 애플리케이션이 책임져야 한다. 다른 전략과의 선택 기준은 [[Distributed-Transaction-Strategies|분산 트랜잭션 전략]]에서 비교한다.
+Saga는 단일 원자적 commit 대신 **단계별 로컬 트랜잭션 + 재시도 또는 보상**을 선택한다. 그래서 중간 상태의 가시성, 동시 요청 격리, 보상 실패 복구를 애플리케이션이 책임져야 한다. 다른 전략과의 선택 기준은 [[Distributed-Transaction-Strategies|분산 트랜잭션 전략]]에서 비교한다.
 
 ## 두 가지 조정 방식
 
@@ -66,13 +66,13 @@ Saga는 단일 원자적 commit 대신 **단계별 로컬 트랜잭션 + 보상*
 
 ## 보상 트랜잭션 원칙
 
-각 단계는 **취소 가능한(reversible) 액션**이거나 **취소 불가능한 시점 이전에** 배치되어야 한다.
+각 단계는 **보상 가능(Compensatable)**, **Pivot**, **재시도 가능(Retriable)**으로 분류한다. 흐름은 보상 가능 단계 → Pivot → 멱등적 재시도 가능 단계로 경계를 만든다.
 
-- **Compensatable**: 결제 인증, 재고 예약 (취소 가능)
-- **Pivot**: 결제 확정 (이 이후로는 보상이 비즈니스적으로 어색해짐 — 환불 처리로 처리)
-- **Retriable**: 알림 발송 (실패해도 재시도, 보상 불필요)
+- **Compensatable**: 결제 인증, 재고 예약처럼 반대 효과의 거래로 보상할 수 있는 단계다. Pivot 전 실패하면 이미 완료한 이 단계를 보상한다.
+- **Pivot**: 성공 뒤에는 앞선 단계의 보상으로 Saga를 취소하지 않고 후속 단계를 완료하기로 정하는 경계다. 마지막 보상 가능 단계 또는 첫 재시도 가능 단계에 놓일 수 있다. 후속 실패를 환불로 보상하는 흐름에서는 결제 확정도 Compensatable이다. 결제 후에는 취소 대신 배송 등 후속 단계를 완료하도록 업무 규칙과 재시도 경로를 마련한 경우에만 결제 확정을 Pivot으로 볼 수 있다.
+- **Retriable**: Pivot 뒤에서 멱등적으로 재시도해 최종 상태에 도달해야 하는 단계다. 알림 발송도 중복을 막을 수 있을 때 이 범주에 둔다.
 
-순서 설계 원칙: **Compensatable 단계를 먼저, Pivot은 가장 늦게**. 그래야 Pivot 이전 어디서 실패해도 깔끔하게 되돌릴 수 있다.
+Pivot은 Saga의 가장 늦은 단계가 아니라 보상과 재시도의 경계다. Pivot 전 실패는 보상으로 수렴하고, Pivot 뒤의 일시적 실패는 재시도로 처리한다.
 
 보상은 단순 "역연산"이 아닌 경우가 많다 — 결제 환불은 결제 취소가 아니라 **환불 거래를 추가**한다. 회계상 흔적이 남는 보상이 일반적.
 
@@ -108,11 +108,18 @@ export class OrderFulfillmentSaga {
 
 **부분 실패의 무한 루프** — 보상이 또 실패하면 오류 종류와 업무 기한에 맞춘 제한 재시도, backoff와 jitter, DLQ 또는 운영자 대기열을 둔다. terminal failure를 누가 판정하고 처리할지 정한다.
 
-**Pivot 이후 실패** — 결제는 확정됐는데 배송이 안 됨. 이건 사용자에게 보상(쿠폰, 환불)을 제공하는 비즈니스 결정. 시스템적 롤백이 아님.
+**Pivot 이후 실패** — 결제 확정을 Pivot으로 분류했다면 배송 같은 후속 단계는 멱등적으로 재시도해 완료 상태에 도달하도록 설계한다. 재시도로 해결할 수 없는 업무 실패가 발생하면 결제 확정을 자동으로 되돌리는 대신 환불, 쿠폰, 수동 처리 같은 비즈니스 복구를 정한다.
 
 **관찰성 부족** — Choreography에서는 주문이 어느 단계인지 알기 어렵다. **Saga 상태 테이블**에 `businessKey`, `currentStep`, `status`, `attempts`, `nextAttemptAt`, `lastError`를 기록한다.
 
-**이벤트 순서** — Kafka key로 같은 aggregate의 이벤트를 같은 partition에 배치할 수 있고, Kafka는 그 partition 안의 기록 순서를 보장한다. 이는 전역 순서나 consumer의 exactly-once 업무 처리를 뜻하지 않으므로 handler의 멱등성과 상태 전이 검증이 필요하다. 보상(취소) 이벤트가 원 작업 이벤트보다 먼저 도착하는 역전도 일어날 수 있다 — 취소할 대상 기록이 없으면 건너뛰도록 처리해 두면 순서 역전에도 안전하게 동작한다.
+**이벤트 순서** — Kafka key로 같은 aggregate의 이벤트를 같은 partition에 배치할 수 있고, Kafka는 그 partition 안의 기록 순서를 보장한다. 이는 전역 순서나 consumer의 exactly-once 업무 처리를 뜻하지 않으므로 handler의 멱등성과 상태 전이 검증이 필요하다.
+
+보상(취소)이 원 작업보다 먼저 도착했을 때 대상이 없다는 이유로 건너뛰면 `취소 무시 → 늦은 원 작업 실행`으로 취소가 유실된다. 업무 규칙에 따라 다음 중 하나로 처리한다.
+
+- **취소 의도 보존**: 같은 업무 키에 취소 상태를 영속화하고 늦은 원 작업이 이를 확인해 실행을 거부하게 한다. 취소 기록과 원 작업의 상태 전이는 같은 키에서 직렬화해야 하며, 이미 진행된 효과는 별도로 보상한다.
+- **보상 보류/재시도**: 원 작업의 결과가 확정될 때까지 보상을 미완료 상태로 보존하고 재시도한다. 복구 책임을 영속 저장소로 넘기기 전에는 메시지를 완료 처리하지 않고, 기한을 넘기면 DLQ나 운영자 복구로 연결한다.
+
+취소 완료 기록은 지연 도착과 재처리 가능 기간을 고려해 보존한다. 같은 취소가 반복된 경우와 원 작업이 아직 도착하지 않은 경우를 구분해야 한다.
 
 **보상 복구 유실** — 메모리에서만 보상 목록을 관리하면 coordinator 종료와 함께 복구 단서도 사라진다. 실패한 보상은 durable registry에 목표 동작, 상태, 재시도 시각, 마지막 오류를 저장하고 worker가 이어서 처리한다. 자동 판단이 안전하지 않은 항목만 운영자에게 올린다.
 
@@ -126,7 +133,7 @@ Saga + Outbox + 멱등성 처리는 단계 유실과 중복 위험을 줄이는 
 
 Q. Saga와 2PC의 차이?
 - 2PC: coordinator가 참여자의 prepare/commit을 조정하며 실패 시 block될 수 있음. 참여 시스템 지원과 긴 결합이 필요
-- Saga: 각 단계가 즉시 커밋 + 실패 시 보상 → 최종 일관성, 높은 가용성, 자율성
+- Saga: 각 단계가 즉시 커밋 + 실패 시 재시도 또는 보상 → 최종 일관성, 높은 가용성, 자율성
 - 2PC가 불가능한 것은 아니지만 독립 서비스와 이질 저장소에는 제약이 커서, 장기 business process에는 Saga를 자주 검토
 
 Q. Orchestration vs Choreography 어떻게 선택?
@@ -135,7 +142,8 @@ Q. Orchestration vs Choreography 어떻게 선택?
 - 두 방식을 한 시스템 안에서 혼용해도 됨 — 비즈니스 흐름 단위로 선택
 
 Q. 보상 트랜잭션 설계 시 주의점?
-- 모든 단계가 반드시 보상 가능해야 하는 건 아님 — Compensatable / Pivot / Retriable로 분류
+- 모든 단계가 반드시 보상 가능해야 하는 건 아님 — Compensatable → Pivot → 멱등적 Retriable의 경계로 분류
+- Pivot은 가장 늦은 단계가 아니라 보상과 재시도의 경계. Pivot 뒤의 일시적 실패는 재시도로 완료 상태에 도달
 - 보상은 역연산이 아니라 **추가 거래**인 경우가 많음 (환불, 취소 기록)
 - 멱등성, 재시도, DLQ 없이는 보상 자체가 또 다른 장애의 원인이 됨
 
@@ -143,6 +151,8 @@ Q. 보상 트랜잭션 설계 시 주의점?
 
 - [Chris Richardson, Saga pattern](https://microservices.io/patterns/data/saga.html)
 - [AWS Prescriptive Guidance, Saga patterns](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/saga-patterns.html)
+- [Microsoft Learn, Saga distributed transactions pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/saga)
+- [Particular, Sagas: Dealing with out-of-order delivery](https://docs.particular.net/nservicebus/sagas/#dealing-with-out-of-order-delivery)
 - [Dowon Lee 강사, 분산 트랜잭션 처리 방법](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289778)
 - [Dowon Lee 강사, Saga 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289779)
 - [Dowon Lee 강사, 보상 트랜잭션 작동 흐름](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290749)

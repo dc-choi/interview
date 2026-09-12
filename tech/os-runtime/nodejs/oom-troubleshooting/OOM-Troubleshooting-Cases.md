@@ -1,24 +1,30 @@
 ---
 tags: [runtime, nodejs, memory, troubleshooting]
 status: done
+verified_at: 2026-09-12
 category: "OS & Runtime"
 aliases: ["OOM Cases", "Node.js OOM 원인", "OOM 케이스"]
 ---
 
 # Node.js OOM — 힙 이해와 발생 케이스
 
-Node.js의 OOM(Out Of Memory)은 **V8 엔진이 할당받은 힙 메모리가 한계치에 도달했을 때** 발생한다. 단순히 "메모리가 부족"한 것이 아니라 **V8의 힙 상한선**을 넘었다는 의미이므로, 시스템 메모리가 남아 있어도 프로세스가 죽을 수 있다.
+Node.js 프로세스의 메모리 실패는 V8 heap fatal OOM만 뜻하지 않는다. 힙 회수 실패, 네이티브 또는 외부 메모리 할당 실패, 운영체제나 cgroup의 종료는 증거와 대응이 다르다.
+
+| 경로 | 먼저 볼 증거 | 우선 대응 |
+|---|---|---|
+| V8 heap fatal OOM | `JavaScript heap out of memory`와 GC 로그, `heapUsed`/heap snapshot | JS 객체 보관 경로와 작업 단위를 줄임 |
+| native 또는 external allocation failure | `rss`, `external`, `arrayBuffers`, native addon 또는 라이브러리 오류 | Buffer, addon, 연결과 라이브러리별 native 사용량을 분리 추적 |
+| OS/cgroup OOM kill | 컨테이너 종료 이유, Kubernetes `OOMKilled`, 커널 또는 런타임 이벤트 | process RSS와 컨테이너 메모리 사용량/limit, 동시성 및 headroom을 점검 |
 
 ## V8 힙 상한선 이해
 
 ### 시스템 메모리 ≠ Node.js 가용 메모리
 ```
-Node.js는 기본적으로 시스템 전체 메모리를 다 쓰지 않는다.
-V8 엔진의 기본 설정에 따라 가용 메모리가 제한된다.
+V8의 힙 설정과 process RSS, 컨테이너 limit은 서로 다른 경계다.
 
-- 최신 Node.js는 시스템 메모리에 맞춰 어느 정도 유연하게 조정됨
-- 컨테이너(K8s, Docker) 환경에서는 여전히 --max-old-space-size 제한이 결정적
-- 이 값을 넘으면 프로세스가 즉시 죽는다 (FATAL ERROR: Reached heap limit)
+- `--max-old-space-size`는 V8 Old Space의 상한이다. 전체 V8 heap, Buffer, native addon, thread stack과 process RSS의 상한이 아니다.
+- V8은 Old Space 한계에 가까워지면 먼저 GC로 회수하려 한다. 회수할 공간이 부족한 allocation이 계속되면 heap fatal OOM이 될 수 있다.
+- cgroup 메모리 사용량에는 소속 프로세스의 메모리 외에 파일 캐시와 커널 메모리 등도 포함되므로 개별 process RSS와 같지 않다. cgroup limit에 도달한 뒤 회수로 사용량을 줄이지 못하면 V8 heap에 여유가 있어도 OOM kill이 발생할 수 있다.
 ```
 
 ### 힙 사이즈 조정
@@ -26,16 +32,16 @@ V8 엔진의 기본 설정에 따라 가용 메모리가 제한된다.
 # Old Space 상한을 4GB로 설정 (기본값은 환경에 따라 다름)
 node --max-old-space-size=4096 app.js
 
-# 컨테이너 메모리 인식 확인
+# 현재 V8 heap 상한 확인 (컨테이너 memory limit과 다른 값)
 node -p "v8.getHeapStatistics().heap_size_limit"
 ```
 
-**원칙**: 컨테이너 메모리의 **약 75%** 정도로 힙 사이즈를 제한하는 것이 안전하다. 나머지 25%는 Buffer, 네이티브 모듈, 스택, 코드 페이지, OS 오버헤드를 위해 남겨둔다.
+**원칙**: `--max-old-space-size`는 고정 비율이 아니라 실측 메모리 예산으로 정한다. 부하 중 peak RSS, `external`/`arrayBuffers`, thread stack, native addon, 코드와 컨테이너 limit을 함께 보고 headroom을 남긴다.
 
 ```
-컨테이너 메모리: 4GB
-→ --max-old-space-size=3072 (3GB)
-→ 나머지 1GB는 Buffer + 네이티브 + OS용
+예시: 컨테이너 limit이 4GiB라도 Old Space를 3GiB로 정하는 것이 자동으로 안전하지는 않다.
+→ 실제 peak RSS와 힙 밖 사용량을 먼저 측정
+→ workload별 headroom을 남긴 뒤 Old Space 상한 결정
 ```
 
 ## OOM이 발생하는 4가지 대표 케이스
@@ -79,7 +85,7 @@ app.post('/event', (req, res) => {
 
 ### 3. 스트림 미사용 대용량 처리
 ```
-파일/네트워크로 대용량 데이터를 처리할 때 전체를 메모리에 올리면 OOM 확정.
+파일/네트워크로 대용량 데이터를 처리할 때 전체를 메모리에 올리면 V8 heap 상한이나 컨테이너 메모리 예산을 넘길 수 있다.
 스트림 기반 처리로 청크 단위로 흘려보내야 한다.
 ```
 ```js
@@ -111,7 +117,7 @@ Kafka에서 메시지를 읽어 MySQL에 벌크 INSERT하는 Node.js 서비스�
 - **증상:** EC2 메모리가 30분 내에 1.5GB까지 치솟고 프로세스 크래시
 - **원인:** Kafka 컨슈머가 `eachMessage`로 메시지를 받아 **전역 변수에 누적**, 주기적 flush 방식이었으나 쌓이는 속도 > 처리 속도
 - **진단:** `clinic doctor`로 메모리 그래프가 우상향하고 GC가 따라가지 못함을 확인
-- **해결:** `eachBatch`로 전환 + 배치 **지역 스코프**에 홀더를 두어 배치 종료 시 자동 GC
+- **해결:** `eachBatch`로 전환하고 배치 지역 범위에만 홀더를 둬 참조가 남지 않게 함. 배치가 끝났다고 즉시 GC되는 것은 아니며, 이후 GC에서 회수 대상이 된다.
 - **효과:** 100MB → 30MB로 안정화
 
 ### 2차 누수 (근본 원인): Prepared Statement 캐시 폭발
@@ -139,3 +145,10 @@ Kafka에서 메시지를 읽어 MySQL에 벌크 INSERT하는 Node.js 서비스�
 - [[Backpressure|배압]]
 - [[Prepared-Statement-Cache|Prepared Statement 캐시 폭발]]
 - [[MQ-Kafka|Kafka (eachBatch 패턴)]]
+
+## 출처
+
+- [Node.js, CLI `--max-old-space-size`](https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-mib)
+- [Node.js, `process.memoryUsage()`](https://nodejs.org/api/process.html#processmemoryusage)
+- [Kubernetes, Pod와 Container 리소스 관리](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)
+- [Linux Kernel, cgroup v2 Memory](https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html#memory)

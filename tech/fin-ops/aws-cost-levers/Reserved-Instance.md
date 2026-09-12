@@ -1,6 +1,7 @@
 ---
 tags: [finops, aws, reserved-instance, savings-plans, commitment, cost]
 status: done
+verified_at: 2026-09-12
 category: "비용&운영(FinOps)"
 aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Savings Plans", "약정 할인"]
 ---
@@ -14,7 +15,7 @@ aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Saving
 | | Reserved Instance | Savings Plans |
 |---|---|---|
 | 약정 대상 | 특정 인스턴스 속성 | **시간당 일정 금액($/h)** |
-| 유연성 | 낮음(Standard) ~ 중간(Convertible) | 높음(Compute SP는 타입/리전/서비스 무관) |
+| 유연성 | 낮음(Standard, 제한된 수정) ~ 중간(Convertible, 교환 가능) | 높음(Compute SP는 타입/리전/서비스 무관) |
 | 적용 범위 | EC2, RDS, ElastiCache, Redshift 등 | EC2, Fargate, Lambda(Compute SP) |
 | 대세 | 레거시 | **권장 (관리 단순)** |
 
@@ -22,7 +23,7 @@ aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Saving
 
 ## RI 세부 축
 
-- **Standard vs Convertible**: Standard는 할인 크지만 변경 불가, Convertible은 타입 변경 가능하나 할인 작음.
+- **Standard vs Convertible**: Standard는 교환은 불가하지만 AZ, scope, 같은 인스턴스 family와 generation 안의 size는 조건부로 수정할 수 있다. Convertible은 할인은 작지만 같은 Region에서 family, OS, tenancy까지 바꾸는 교환이 가능하며 새 예약의 가치가 같거나 더 높아야 한다.
 - **Regional vs Zonal**: Regional은 AZ 유연 + 적용 범위 넓음, Zonal은 **용량 예약**까지 보장(특정 AZ 자리 확보).
 - **결제 옵션**: All Upfront(최대 할인) > Partial > No Upfront(현금 흐름 유리, 할인 적음).
 
@@ -54,7 +55,8 @@ aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Saving
 ## 흔한 함정
 
 - 변동 큰 워크로드에 과약정 → 미사용 약정 = 손실
-- Standard RI로 묶고 인스턴스 타입 바꿔야 해 발 묶임 → Convertible/SP가 나음
+- Standard RI를 전혀 수정할 수 없다고 오해 → 가능한 AZ, scope, 같은 family와 generation 안의 size 변경을 놓침
+- Standard RI로 묶은 뒤 family, OS, tenancy를 바꿔야 함 → Standard는 교환 불가이므로 Convertible RI나 Savings Plans 검토
 - 커버리지만 높이고 활용률을 안 봐 약정이 놀고 있음
 - 3년 약정 후 아키텍처 변경(Graviton 이전 등)으로 무용지물
 - Spot으로 충분한 워크로드까지 약정
@@ -62,7 +64,7 @@ aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Saving
 ## 면접 체크포인트
 
 - RI와 Savings Plans의 차이, 왜 요즘 SP가 기본인지
-- Standard/Convertible, Regional/Zonal, 결제 옵션의 트레이드오프
+- Standard RI의 제한된 수정과 Convertible RI의 교환 범위, Regional/Zonal, 결제 옵션의 트레이드오프
 - Coverage와 Utilization 두 지표의 의미와 목표
 - 기저 부하는 약정, 피크는 On-Demand/Spot의 분리 전략
 - 과약정/과소약정 각각의 손실 형태
@@ -71,6 +73,8 @@ aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Saving
 
 - [AWS — Savings Plans vs Reserved Instances](https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html)
 - [AWS — Reserved Instances (Standard vs Convertible, Regional vs Zonal)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html)
+- [Amazon EC2, Modify Reserved Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-modifying.html)
+- [Amazon EC2, Exchange Convertible Reserved Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-convertible-exchange.html)
 - [Amazon RDS, Reserved DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html)
 - [AWS Savings Plans, Plan types](https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html)
 
