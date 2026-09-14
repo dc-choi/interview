@@ -9,8 +9,9 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 
 ## 목차
 
-- [[Internet-vs-Web|인터넷과 웹]] — 인터넷 인프라와 웹 응용 시스템의 차이, 웹의 탄생 배경과 개방 표준
+- [[Internet-vs-Web|인터넷과 웹]] — 인터넷 인프라와 웹 응용 시스템의 차이, 웹의 탄생 배경, 이름의 유래, 첫 구현의 세 요소, 초기 문서 뷰어 모델과 개방 표준
 - [[Web-Technology-Evolution|웹 기술의 진화와 퇴장 패턴]] — 플러그인, 브라우저 종속과 표준화가 기술 수명에 미치는 영향
+- [[Web-Service-Structure|웹 서비스의 구조]] — HTML, CSS, JavaScript 역할 분리, 정적과 동적 서버, 상태 저장 위치(DB, 세션, 쿠키), 브라우저 세 엔진, 정적 문서에서 SPA까지의 진화 단계
 - [[tech/web/frontend/프론트엔드(Frontend)|프론트엔드]] — React component, state, routing과 server state
 - [[tech/web/http/HTTP|HTTP & API]] — HTTP 진화, 메서드 의미, Status, Content-Type, REST, GraphQL, gRPC, Rate Limit, Cookie, 분할 전송
 - [[tech/web/network/네트워크(Network)|네트워크 (Network)]] — TLS, OSI, TCP(헤더, 핸드셰이크, 흐름/오류 제어), Loopback, Browser URL Flow

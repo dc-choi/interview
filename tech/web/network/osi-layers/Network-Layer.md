@@ -124,5 +124,7 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 - [[TCP-Handshake|TCP Handshake (L4 전송 신뢰성)]]
 - [[Browser-URL-Flow|브라우저 URL 입력 흐름 (DNS, ARP, 라우팅)]]
 - [[Routing-Protocols|정적 라우팅과 RIP, OSPF, BGP]]
+- [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택 (longest prefix match, 메트릭)]]
+- [[LAN-vs-WAN|LAN과 WAN 구분 기준 (MAC 직접 전달 vs IP 라우팅)]]
 - [[IPv4-NAT-and-Traversal|IPv4 NAT, NAPT와 NAT 통과]]
 - [[네트워크(Network)|카테고리 인덱스]]

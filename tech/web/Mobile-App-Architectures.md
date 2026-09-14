@@ -51,6 +51,7 @@ SPA, MPA와 SSR은 위 배포 형태와 다른 축이다. 모바일 브라우저
 - 기획, 클라이언트와의 협업에서 배포 비용(심사 대기와 사용자 업데이트 지연)을 알고 플랫폼별 실제 소요를 확인하는 것이 일정 합의의 기본기.
 
 ## 관련 문서
+- [[Web-Service-Structure|웹 서비스의 구조 (정적 문서에서 SPA까지)]]
 - [[API-Conventions-Response|API 컨벤션 — 에러 응답, 페이지네이션]]
 - [[REST|REST API]]
 - [[Project-Management|프로젝트 관리]] — 다중 API 버전 운영 부담의 회고 사례

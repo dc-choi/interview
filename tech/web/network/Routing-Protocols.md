@@ -81,6 +81,7 @@ BGP의 best path는 단순한 최단 hop 계산이 아니다. LOCAL_PREF, AS_PAT
 ## 관련 문서
 
 - [[Network-Layer|네트워크 계층, CIDR와 라우팅 테이블]]
+- [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택]]
 - [[Physical-DataLink-Layer|L2 switching과 Spanning Tree]]
 - [[IPv4-NAT-and-Traversal|IPv4 NAT와 NAT 통과]]
 - [[네트워크(Network)|네트워크 인덱스]]

@@ -14,6 +14,7 @@ OSI 7계층 전체 지도와 계층별 상세 문서를 모은다. 흐름 한 �
 - [x] [[Network-Layer|L3 네트워크 (IP, CIDR, 서브넷 마스크, 라우팅, ARP, 패킷 vs 프레임)]]
 - [x] [[Transport-Layer|L4 전송 (TCP, UDP, 포트, 세그먼트, 멀티플렉싱)]]
 - [x] [[Session-Presentation-Application-Layer|L5/6/7 세션, 프레젠테이션, 애플리케이션 (세션 유지, 인코딩, ALB L7)]]
+- [x] [[LAN-vs-WAN|LAN과 WAN (거리가 아닌 MAC 직접 전달과 IP 라우팅으로 구분, 물리와 논리 네트워크)]]
 
 ## OSI 7계층 한눈에
 
@@ -44,8 +45,10 @@ OSI 7계층 전체 지도와 계층별 상세 문서를 모은다. 흐름 한 �
 
 - Ethernet은 LAN 내 장비 간 통신 기술
 - Internet은 여러 LAN을 IP로 연결한 거대 네트워크
+- 거리 기준이 흔들리는 이유와 판별 예시는 [[LAN-vs-WAN]]
 
 ## 관련 문서
 
 - [[Physical-DataLink-Layer]] — L1/L2 상세 (허브, 스위치, 충돌 도메인, CSMA/CD, MAC, 프레임)
+- [[LAN-vs-WAN]] — LAN과 WAN 구분 기준
 - [[네트워크(Network)]] — 카테고리 인덱스

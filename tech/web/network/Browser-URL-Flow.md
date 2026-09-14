@@ -188,6 +188,7 @@ HTML 내 `<img>`, `<link>`, `<script>` 태그마다 **추가 HTTP 요청**이 �
 
 ## 관련 문서
 - [[OSI-7-Layer|OSI 7계층]]
+- [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택]]
 - [[HTTPS-TLS|HTTPS, TLS Handshake]]
 - [[HTTP-Seminar|HTTP 버전별 진화]]
 - [[DNS|DNS 구조]]

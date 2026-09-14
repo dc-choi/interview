@@ -68,6 +68,7 @@ jQuery는 브라우저 호환성 문제를 크게 줄였고 Flash는 초기 멀�
 ## 관련 문서
 
 - [[Internet-vs-Web|인터넷과 웹]]
+- [[Web-Service-Structure|웹 서비스의 구조]]
 - [[Mobile-App-Architectures|모바일 앱 아키텍처]]
 - [[HTTP-Seminar|HTTP 버전별 진화]]
 - [[REST|REST]]

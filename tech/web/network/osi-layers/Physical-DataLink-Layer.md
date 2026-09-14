@@ -120,6 +120,7 @@ L2는 같은 로컬 네트워크 안에서만 동작한다. 서로 다른 네트
 ## 관련 문서
 
 - [[OSI-7-Layer]] — 7계층 전체 지도와 Internet vs Ethernet
+- [[LAN-vs-WAN]] — LAN의 경계가 브로드캐스트 도메인인 이유와 WAN과의 구분
 - [[Browser-URL-Flow]] — DNS와 ARP, TCP/TLS 흐름에서 L2와 L3 연결
 - [[TCP-Handshake]] — 상위 L4 전송 신뢰성
 - [[네트워크(Network)]] — 카테고리 인덱스

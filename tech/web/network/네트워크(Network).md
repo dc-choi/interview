@@ -12,8 +12,10 @@ OSI 7계층, TLS, 브라우저 URL 입력부터 렌더링까지.
 ## 목차
 - [x] [[HTTPS-TLS|HTTPS / TLS Handshake]]
 - [x] [[OSI-7-Layer|OSI 7계층 (osi-layers/ 서브폴더) — L1/L2, L3, L4, L5/6/7 계층별 상세]]
+- [x] [[LAN-vs-WAN|LAN과 WAN (브로드캐스트 범위와 MAC vs IP 라우팅으로 구분, 물리와 논리 네트워크)]]
 - [x] [[TCP|TCP (tcp/ 서브폴더) — 헤더 구조, 핸드셰이크, 흐름/오류 제어]]
 - [x] [[Routing-Protocols|정적 라우팅과 RIP, OSPF, BGP]]
+- [x] [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택 (longest prefix match, 메트릭, OS별 확인 명령)]]
 - [x] [[IPv4-NAT-and-Traversal|IPv4 NAT, NAPT와 STUN/TURN/ICE 통과 전략]]
 - [x] [[Application-Layer-Protocols|DHCP, DNS, SSH, FTP, SMTP, POP3, IMAP 프로토콜 지도]]
 - [x] [[Loopback-And-Localhost|Loopback, Localhost 동작 원리 (127.0.0.1, ::1, loopback NIC, 커널 내 처리, 디버깅)]]
