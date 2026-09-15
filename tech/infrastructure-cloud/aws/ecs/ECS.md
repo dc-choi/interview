@@ -15,7 +15,9 @@ ecs 폴더 문서 구성:
 - [[ECS-Rolling-Deployment|ECS 롤링 배포 메커니즘 — 용량 산술, deployment circuit breaker, 드레이닝과 stopTimeout]]
 - [[ECS-Secrets-Injection|ECS 런타임 시크릿 주입 — secrets valueFrom, 역할 분리, 회전과 재기동]]
 - [[ECS-Service-AutoScaling|ECS Service Auto Scaling — Scalable Target, 정책 3종, backlog-per-task 패턴]]
-- [[ECS-SQS-Worker-Terraform|SQS 워커 ECS 오토스케일링 Terraform 구성 — Fargate vs EC2, Capacity Provider]]
+- [[ECS-SQS-Worker-Terraform|SQS 워커 ECS 오토스케일링 Terraform 구성 — ecs-sqs-worker-terraform 폴더 인덱스, 공통 리소스와 Fargate/EC2 옵션]]
+  - [[ECS-SQS-Worker-Terraform-Common|공통 리소스 — 큐와 DLQ, 최소 권한 IAM, Container Insights, backlog-per-task 정책]]
+  - [[ECS-SQS-Worker-Terraform-Launch-Types|옵션 A Fargate, 옵션 B EC2 — 캐파시티 프로바이더, task def, ASG + Managed Scaling]]
 
 ## 핵심 모델 — Task / Service / Cluster
 

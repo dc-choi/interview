@@ -7,8 +7,8 @@ aliases: ["OpenSearch Semantic Search Index", "OpenSearch 시맨틱 검색 목�
 
 # OpenSearch 시맨틱 검색
 
-- [[OpenSearch-Vector-Search|벡터 검색과 임베딩 파이프라인]]
-- [[OpenSearch-Hybrid-Search|하이브리드 검색과 점수 결합]]
+- [[OpenSearch-Vector-Search|벡터 검색 폴더 (projection과 index 배치, mapping과 query, embedding과 model 교체)]]
+- [[OpenSearch-Hybrid-Search|하이브리드 검색 폴더 (실행과 score 결합, RRF와 filter, 평가와 운영)]]
 - [[OpenSearch-Reranking-Neural-Sparse|Reranking과 Neural Sparse Search]]
 
 ## 관련 문서

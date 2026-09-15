@@ -24,7 +24,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] [[Cache-vs-Queue|캐시와 큐 (값 재사용 vs 작업 전달, 접수와 완료, 선택 기준)]]
 - [x] [[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound (병목 구분, 언어 선택, 최적화 전략 매트릭스)]]
 - [x] [[First-Come-Coupon-Patterns|선착순 이벤트(쿠폰, 재고, 티켓) 패턴 (Redis INCR 원자성 + Kafka 비동기 저장)]]
-- [x] [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처 (Redis Sorted Set, 입장 제어, adaptive polling, 원자적 예매)]]
+- [x] [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처 폴더 인덱스 (문제 정의와 대기 등록, 입장 제어와 예매 처리, 대기 상태 통신과 운영)]]
 - [x] Query optimization — [[tech/database/rdbms/index-query/index-query|인덱스와 쿼리 (실행 계획, 페이징, 정렬, Prepared Statement)]]와 [[MySQL-Slow-Query-Diagnosis|Slow Query 진단]]
 - [x] [[Index|Index tuning (B+Tree, 복합 인덱스, 선택도, 커버링, 운영 DDL 리스크)]]
 - [x] [[Connection-Pool|Connection Pool 사이징 (HikariCP 공식, Little's Law, 과대 풀의 역설)]]

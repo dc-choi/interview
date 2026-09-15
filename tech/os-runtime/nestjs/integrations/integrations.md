@@ -12,7 +12,7 @@ HTTP REST 바깥의 프로토콜, 외부 시스템과 NestJS를 연결하는 패
 ## 통합별 상세
 - [[NestJS-GraphQL|GraphQL — Resolver, DataLoader로 N+1 해결, Subscription]]
 - [[NestJS-Microservices|Microservices — Transport 추상화, ClientProxy, Message Pattern]]
-- [[NestJS-WebSocket-Gateway|WebSocket Gateway — SubscribeMessage, 실시간 통신]]
+- [[NestJS-WebSocket-Gateway|WebSocket Gateway — SubscribeMessage, 실시간 통신 (하위 인덱스)]]
 - [[NestJS-Caching-Integration|캐시 통합 — Interceptor, Decorator, Provider 지점별 매핑]]
 - [[NestJS-Configuration|Configuration — @nestjs/config, env 우선순위, 네임스페이스, 시작 시 검증]]
 - [[NestJS-Persistence|영속성 통합 — @nestjs/typeorm, TypeORM 수동 배선, @nestjs/mongoose]]

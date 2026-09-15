@@ -59,7 +59,7 @@ const client = new Client({
 
 ## 기본 호출 흐름
 
-문서 CRUD와 index 관리 메서드는 [[OpenSearch-Basics#인덱스 생성부터 검색까지|대응하는 REST API]]를 감싼다.
+문서 CRUD와 index 관리 메서드는 [[OpenSearch-Basics-REST-Walkthrough#인덱스 생성부터 검색까지|대응하는 REST API]]를 감싼다.
 
 ```javascript
 await client.indices.create({
@@ -116,7 +116,7 @@ const client = new Client({
 
 ## 관련 문서
 
-- [[OpenSearch-Basics#인덱스 생성부터 검색까지|REST API 기본 흐름]], [[OpenSearch-Search-API-Layer|검색 API 서비스 계층]]
+- [[OpenSearch-Basics-REST-Walkthrough#인덱스 생성부터 검색까지|REST API 기본 흐름]], [[OpenSearch-Search-API-Layer|검색 API 서비스 계층]]
 - [[OpenSearch-Service|Amazon OpenSearch Service]]
 - [[OpenSearch-Indexing-Internals|색인 내부 동작과 가시성]]
 - [[OpenSearch-Performance-Troubleshooting|성능 진단과 circuit breaker]]

@@ -12,7 +12,7 @@ Local 실행부터 Cluster의 용량 설계, 복구, 성능 진단과 프로덕�
 - [[OpenSearch-Local-Quickstart|Local Docker Quickstart]] — 단일 node와 Compose 실행, 보안 경계와 첫 검증
 - [[OpenSearch-Shard-Sizing|Shard 사이징]] — shard 수, 크기와 storage 산정
 - [[OpenSearch-Cluster-Reliability|Cluster 신뢰성]] — allocation, snapshot, 복구와 rolling upgrade
-- [[OpenSearch-Performance-Troubleshooting|성능 진단]] — 증상별 가설, circuit breaker와 장애 대응
+- [[OpenSearch-Performance-Troubleshooting|성능 진단]] — 기준선과 benchmark, 처리량과 latency, cache와 breaker, 증상별 가설
 - [[OpenSearch-Security-Production|보안과 프로덕션]] — 인증, 권한, DLS와 점검 목록
 
 ## 관련 문서

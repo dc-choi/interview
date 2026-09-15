@@ -7,7 +7,7 @@ aliases: ["OpenSearch Search Index", "OpenSearch 검색 기능 목차"]
 
 # OpenSearch 검색 기능
 
-- [[OpenSearch-Basics#4. 검색과 응답 읽기|검색 요청과 응답 입문]]
+- [[OpenSearch-Basics-REST-Walkthrough#4. 검색과 응답 읽기|검색 요청과 응답 입문]]
 - [[OpenSearch-Search-API-Layer|검색 API 계층]]
 - [[OpenSearch-Autocomplete|자동완성 설계]]
 - [[OpenSearch-Autocomplete-Operations|자동완성 운영과 검증]]

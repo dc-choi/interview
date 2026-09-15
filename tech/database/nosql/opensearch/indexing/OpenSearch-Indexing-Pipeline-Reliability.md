@@ -73,7 +73,7 @@ Exactly-once 실행을 먼저 만들 필요는 없다. 외부 ID와 version guar
 
 - 엔진이 밀리면(bulk 429, thread pool queue 포화) 소비자가 속도를 줄인다. Consumer pause, batch 크기 축소, backoff가 수단이다. 이 시간은 곧 색인 지연으로 전가되므로 지연 알람과 함께 해석한다.
 - OpenSearch의 shard indexing backpressure는 노드가 넘어지기 전에 요청을 거부하는 장치이지만 기본값이 꺼져 있다. `shard_indexing_pressure.enabled`가 false이고, 켜도 `enforced`가 false인 동안은 지표만 쌓고 거부하지 않는다. 켜져 있다고 가정하고 소비자를 설계하면 오지 않는 신호를 기다리게 된다.
-- 그렇다고 요청 거부가 사라지는 것은 아니다. 기본 cluster에도 write thread pool queue, node 수준 indexing pressure(`indexing_pressure.memory.limit`, 기본 heap의 10퍼센트)와 circuit breaker가 있다. 거부 응답은 속도를 줄이라는 신호이되, `_nodes/stats`의 `thread_pool.write.rejected`, `indexing_pressure.memory.total.*_rejections`, `breakers.*.tripped`로 어느 쪽인지 가른 뒤 대응한다. 분류 순서는 [[OpenSearch-Performance-Troubleshooting#Thread pool과 429|429 대응 순서]], 기본값 구분은 [[OpenSearch-Performance-Troubleshooting#Backpressure|backpressure]]가 정본이다.
+- 그렇다고 요청 거부가 사라지는 것은 아니다. 기본 cluster에도 write thread pool queue, node 수준 indexing pressure(`indexing_pressure.memory.limit`, 기본 heap의 10퍼센트)와 circuit breaker가 있다. 거부 응답은 속도를 줄이라는 신호이되, `_nodes/stats`의 `thread_pool.write.rejected`, `indexing_pressure.memory.total.*_rejections`, `breakers.*.tripped`로 어느 쪽인지 가른 뒤 대응한다. 분류 순서는 [[OpenSearch-Performance-Troubleshooting-Resource-Limits#Thread pool과 429|429 대응 순서]], 기본값 구분은 [[OpenSearch-Performance-Troubleshooting-Resource-Limits#Backpressure|backpressure]]가 정본이다.
 - Backfill과 서비스 증분 색인이 같은 cluster 자원을 두고 경쟁한다. 시간대 분리나 backfill 속도 상한을 두고, 적재 구간의 setting 조정은 [[OpenSearch-Data-Ingestion#대량 적재 구간의 setting 조정|정본]]을 따른다.
 
 ## 복구 우선순위

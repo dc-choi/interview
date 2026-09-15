@@ -48,7 +48,7 @@ Client
 - 검색 결과 캐시는 이벤트 기반 무효화가 사실상 안 된다. 문서 하나가 바뀔 때 그 문서를 포함했던 query 결과를 역추적할 수 없기 때문이다. TTL로 신선도와 부하를 교환하고, 가격과 재고처럼 신선도가 민감한 값은 캐시된 결과 위에 별도 조회로 덧씌우는 분리를 검토한다.
 - 캐시 키에 권한 컨텍스트를 포함한다. Tenant가 다른 사용자가 같은 키에 적중하면 그대로 유출이다.
 - 검색 트래픽은 소수 head query에 몰리므로 첫 페이지 캐시의 효율이 좋다. Top-k 추출 설계는 [[OpenSearch-Popular-Keywords-TopK|인기 검색어 top-k]]를 참고한다.
-- Request cache에서 제외되는 요청(profile, scroll, DFS, `now` 같은 상대 시간)과 나머지 cache 계층의 함정은 [[OpenSearch-Performance-Troubleshooting#Cache를 구분하기|cache 구분]]이 정본이다.
+- Request cache에서 제외되는 요청(profile, scroll, DFS, `now` 같은 상대 시간)과 나머지 cache 계층의 함정은 [[OpenSearch-Performance-Troubleshooting-Resource-Limits#Cache를 구분하기|cache 구분]]이 정본이다.
 
 ## 타임아웃 예산과 폴백
 

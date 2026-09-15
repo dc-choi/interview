@@ -11,5 +11,5 @@ Jest와 Express, NestJS, Spring — 프레임워크가 제공하는 테스트 �
 
 ## 목차
 - [x] [[Jest-Express-Testing|Jest와 Express 컨트롤러 테스트 (Jest mock, 비동기 오류, Supertest CRUD 계약)]]
-- [x] [[NestJS-Testing|NestJS Testing (TestingModule, in-memory DB, 트랜잭션 롤백, overrideGuard, Supertest E2E)]]
+- [x] [[NestJS-Testing|NestJS Testing (TestingModule, in-memory DB, 트랜잭션 롤백, overrideGuard, Supertest E2E, 하위 인덱스)]]
 - [x] [[Spring-Testing-Essentials|Spring Testing Essentials (단위, Spring context, test-managed transaction 경계)]]

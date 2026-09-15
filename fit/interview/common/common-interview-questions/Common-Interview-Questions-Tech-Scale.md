@@ -173,7 +173,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 - Replica가 snapshot을 대신할 수 없는 이유는 무엇인가?
 - Custom routing을 사용하면 검색 대상 logical shard 수는 어떻게 달라지는가?
 
-> 학습 정본: [[OpenSearch-Architecture#GET과 Search의 읽기 경로|OpenSearch GET과 Search의 읽기 경로]]
+> 학습 정본: [[OpenSearch-Architecture-Routing-Read-Write#GET과 Search의 읽기 경로|OpenSearch GET과 Search의 읽기 경로]]
 
 ---
 

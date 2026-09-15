@@ -11,7 +11,7 @@ DB 성능 장애 분석의 핵심 질문은 "지금 가장 무거운 쿼리가 �
 
 ## AAS — 부하 측정의 기본 단위, 그러나 범인은 아니다
 
-AAS(Average Active Sessions)는 일정 시간 동안 **평균적으로 동시에 실행 중이거나 기다리는 세션 수**다. 1분 동안 어떤 쿼리의 누적 활성 시간이 120초면 AAS는 2다. Database Insights의 상위 SQL은 이 AAS를 사용해 부하 기여도를 보여준다([[RDS-Monitoring#Database Insights와 Performance Insights 전환|Database Insights]]). 총 AAS가 vCPU 선을 넘었다고 곧 CPU 포화는 아니다. CPU 대기와 I/O, lock 등 wait event별 기여도를 나누고 CPU load가 vCPU 용량에 근접하는지 확인한다.
+AAS(Average Active Sessions)는 일정 시간 동안 **평균적으로 동시에 실행 중이거나 기다리는 세션 수**다. 1분 동안 어떤 쿼리의 누적 활성 시간이 120초면 AAS는 2다. Database Insights의 상위 SQL은 이 AAS를 사용해 부하 기여도를 보여준다([[RDS-Monitoring-Metrics#Database Insights와 Performance Insights 전환|Database Insights]]). 총 AAS가 vCPU 선을 넘었다고 곧 CPU 포화는 아니다. CPU 대기와 I/O, lock 등 wait event별 기여도를 나누고 CPU load가 vCPU 용량에 근접하는지 확인한다.
 
 **AAS가 높다고 곧 장애 원인은 아니다.** 가능성은 셋:
 - 원래 항상 무거운 쿼리 (평상시 부하 — 범인 아님)

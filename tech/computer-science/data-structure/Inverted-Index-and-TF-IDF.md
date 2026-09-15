@@ -157,7 +157,7 @@ Redis Search는 core Sorted Set을 조합하는 구현이 아니라 자체 최�
 - [[Redis-Data-Structures|Redis Set과 Sorted Set]]
 - [[Redis-Architecture#Pipeline vs Transaction|Pipeline과 Transaction의 경계]]
 - [[Redis-Cluster-Sharding|Redis Cluster hash slot]]
-- [[OpenSearch-Basics#역색인의 실물|OpenSearch 역색인 예시]]
+- [[OpenSearch-Basics-Concepts#역색인의 실물|OpenSearch 역색인 예시]]
 - [[OpenSearch-Query-Relevance#BM25 mental model|TF-IDF와 BM25]]
 - [[OpenSearch-Inverted-Index-Structures|Lucene 역색인 물리 구조]]
 - [[Trie-and-Autocomplete|Trie와 prefix 검색]]

@@ -21,7 +21,7 @@ OpenSearch는 Apache Lucene을 분산 실행 계층으로 감싼 검색 및 분�
 
 이 흐름의 다이어그램 버전은 [[OpenSearch-Architecture-Map|아키텍처 한 장 지도]]에 있다.
 
-`term`은 analyzer가 만든 검색 단위이고, postings는 해당 term을 가진 문서 ID 목록이다. 이 용어들의 실물 예시는 시작 전 단계의 [[OpenSearch-Basics|기초 문서]]에서 익힌다.
+`term`은 analyzer가 만든 검색 단위이고, postings는 해당 term을 가진 문서 ID 목록이다. 이 용어들의 실물 예시는 시작 전 단계의 [[OpenSearch-Basics-Concepts|기초 문서]]에서 익힌다.
 
 ## 핵심 개념과 구조
 
@@ -87,7 +87,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 ### 시작 전: 실물 익히기
 
 - 목표: 이후 문서 대부분이 전제하는 인덱스, 매핑, analyzer, term, 역색인, 검색 응답의 실물을 손에 익힌다.
-- 읽기: 실행 중인 cluster가 없으면 [[OpenSearch-Local-Quickstart|Local Docker Quickstart]], 이어서 [[OpenSearch-Basics|OpenSearch 기초 — 요청과 응답의 실물]] 전체
+- 읽기: 실행 중인 cluster가 없으면 [[OpenSearch-Local-Quickstart|Local Docker Quickstart]], 이어서 [[OpenSearch-Basics-Concepts|개념과 역색인의 실물]], [[OpenSearch-Basics-REST-Walkthrough|인덱스 생성부터 검색까지]], [[OpenSearch-Basics-Query-Vocabulary|쿼리의 최소 어휘와 통과 기준]] 순서대로 전체
 - 현재 진도:
   - [ ] 실행 미검증: local cluster 응답과 상태 확인
   - [ ] 실행 미검증: mapping을 포함한 index 생성
@@ -112,7 +112,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 
 - 목표: `문서 → analyzer → term → 역색인 → shard 검색 → top K 병합` 흐름과 검색 가시성 경계를 연결한다.
 - 자투리 읽기: [[OpenSearch-Mapping-Text-Analysis#필드 타입 선택|필드 타입]], [[OpenSearch-Mapping-Text-Analysis#저장 구조 세 가지|저장 구조]], [[OpenSearch-Mapping-Text-Analysis-Analyzer#Analyzer 파이프라인|Analyzer]], [[OpenSearch-Query-Relevance#Term-level과 Full-text|Term-level과 Full-text]], [[OpenSearch-Query-Relevance#Query context와 Filter context|Query와 Filter]], [[OpenSearch-Query-Relevance-Compound|bool과 dis_max]], [[OpenSearch-Query-Relevance#BM25 mental model|BM25]]
-- 이어서 읽기: [[OpenSearch-Architecture#계층 구조|계층 구조]], [[OpenSearch-Architecture#기본 DOCUMENT replication 쓰기 흐름|쓰기]], [[OpenSearch-Architecture#GET과 Search의 읽기 경로|읽기]], [[OpenSearch-Indexing-Internals#한 문서의 생명주기|문서 생명주기]]
+- 이어서 읽기: [[OpenSearch-Architecture-Topology#계층 구조|계층 구조]], [[OpenSearch-Architecture-Routing-Read-Write#기본 DOCUMENT replication 쓰기 흐름|쓰기]], [[OpenSearch-Architecture-Routing-Read-Write#GET과 Search의 읽기 경로|읽기]], [[OpenSearch-Indexing-Internals#한 문서의 생명주기|문서 생명주기]]
 - 퇴근 후 아웃풋: 한국어 콘텐츠의 `title`, `status`, `category`, `price` 매핑과 query를 설계하고 OpenSearch index 요청부터 검색 응답까지 한 장에 그린다.
 - 현재 진도:
   - [x] 매핑과 query 선택: `text`, `keyword`, `integer`와 `match`, `term`, `range`
@@ -127,7 +127,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 
 - 목표: analyzer와 ranking 변경을 감이 아니라 같은 query set과 지표로 비교한다.
 - 자투리 읽기: [[OpenSearch-Korean-Text-Analysis#Nori의 역할과 경계|Nori]], [[OpenSearch-Korean-Text-Analysis#사용자 사전, 동의어, 불용어는 목적이 다르다|사전과 동의어]], [[OpenSearch-Query-Understanding#오타 교정 계층|오타 교정]], [[OpenSearch-Query-Understanding#초성 검색과 자모 필드|초성 검색]], [[OpenSearch-Search-Quality-Evaluation#Judgment list 구축|Judgment]], [[OpenSearch-Search-Quality-Evaluation#rank_eval API|rank_eval]], [[OpenSearch-Search-Quality-Evaluation#온라인 지표|온라인 지표]]
-- 측정할 때 읽기: [[OpenSearch-Performance-Troubleshooting#운영과 닮은 benchmark|운영과 닮은 benchmark]], [[OpenSearch-Search-Quality-Evaluation#검색 로그에서 개선 백로그까지|로그 백로그]]
+- 측정할 때 읽기: [[OpenSearch-Performance-Troubleshooting-Baseline#운영과 닮은 benchmark|운영과 닮은 benchmark]], [[OpenSearch-Search-Quality-Evaluation#검색 로그에서 개선 백로그까지|로그 백로그]]
 - 필요할 때 읽기: [[OpenSearch-Relevance-Tuning#function_score 실전|function_score]], [[OpenSearch-Relevance-Tuning#rescore — top-N 2단계 재정렬|rescore]]
 - 퇴근 후 아웃풋: 문서 50개 이상, 대표 query 20개, 관련도 등급을 준비하고 nDCG@10, zero-result rate, p95 기준선을 만든다. 한 번에 한 변수만 바꿔 전후를 기록한다.
 - 현재 진도:
@@ -141,7 +141,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 ### 3단계: 운영
 
 - 목표: 검색 인덱스를 원본에서 다시 만들 수 있고 변경과 장애를 통제할 수 있게 한다.
-- 자투리 읽기: [[OpenSearch-Indexing-Internals#운영 DB와의 동기화|RDB 동기화]], [[OpenSearch-Indexing-Pipeline-Reliability#증상별 진단|동기화 증상 진단]], [[OpenSearch-Indexing-Pipeline-Reliability#Reconciliation 설계|정합성 검증]], [[OpenSearch-Index-Lifecycle#매핑 변경과 무중단 전환|무중단 전환]], [[OpenSearch-Cluster-Reliability#Unassigned shard 진단|Unassigned shard]], [[OpenSearch-Cluster-Reliability#Snapshot과 Restore|Snapshot과 Restore]], [[OpenSearch-Performance-Troubleshooting#증상별 가설|증상별 가설]]
+- 자투리 읽기: [[OpenSearch-Indexing-Internals#운영 DB와의 동기화|RDB 동기화]], [[OpenSearch-Indexing-Pipeline-Reliability#증상별 진단|동기화 증상 진단]], [[OpenSearch-Indexing-Pipeline-Reliability#Reconciliation 설계|정합성 검증]], [[OpenSearch-Index-Lifecycle#매핑 변경과 무중단 전환|무중단 전환]], [[OpenSearch-Cluster-Reliability#Unassigned shard 진단|Unassigned shard]], [[OpenSearch-Cluster-Reliability#Snapshot과 Restore|Snapshot과 Restore]], [[OpenSearch-Performance-Troubleshooting-Diagnostics#증상별 가설|증상별 가설]]
 - AWS를 쓸 때 읽기: [[OpenSearch-Service-Deployment#관리 책임 경계|관리 책임 경계]], [[OpenSearch-Service-Operations#가용성과 용량|가용성과 용량]], [[OpenSearch-Service-Operations#프로덕션 체크리스트|프로덕션 체크리스트]], [[OpenSearch-Service-Engine-Upgrade|Engine upgrade와 rollback 설계]]
 - 퇴근 후 아웃풋: `backfill → catch-up → 검증 → shadow read → canary → alias 전환 → rollback 또는 forward-fix` Runbook과 결과 누락, 429, 디스크 증가 진단표를 만든다.
 - 현재 진도:
@@ -169,7 +169,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 
 ## 레퍼런스 지도
 
-로드맵을 진행하다 특정 기능, 운영 문제, 내부 구조가 필요할 때 아래 분류에서 찾아본다. 폴더 단위 목차는 [[OpenSearch-Indexing|색인]], [[OpenSearch-Query|쿼리]], [[OpenSearch-Segment|세그먼트]], [[OpenSearch-Operations|운영]], [[OpenSearch-Search|검색 기능]], [[OpenSearch-Text-Analysis|매핑과 텍스트 분석]] 인덱스에 있다.
+로드맵을 진행하다 특정 기능, 운영 문제, 내부 구조가 필요할 때 아래 분류에서 찾아본다. 폴더 단위 목차는 [[OpenSearch-Basics|기초]], [[OpenSearch-Architecture|아키텍처]], [[OpenSearch-Indexing|색인]], [[OpenSearch-Query|쿼리]], [[OpenSearch-Segment|세그먼트]], [[OpenSearch-Operations|운영]], [[OpenSearch-Search|검색 기능]], [[OpenSearch-Text-Analysis|매핑과 텍스트 분석]] 인덱스에 있다.
 
 ### 기능과 사례
 
@@ -187,7 +187,7 @@ OpenSearch는 단일 node로도 실행할 수 있다. 현재 오픈소스 기본
 - [[OpenSearch-Indexing-Pipeline-Reliability|색인 파이프라인 정합성 검증과 장애 진단]]
 - [[OpenSearch-Shard-Sizing|Shard 수, 크기와 storage 사이징]]
 - [[OpenSearch-Cluster-Reliability|Allocation, snapshot과 복구]]
-- [[OpenSearch-Performance-Troubleshooting|성능 진단과 장애 대응]]
+- [[OpenSearch-Performance-Troubleshooting|성능 진단과 장애 대응]] — 기준선과 benchmark, 처리량과 latency, cache와 breaker, 진단 API와 증상별 가설
 - [[OpenSearch-Security-Production|보안과 프로덕션 체크리스트]]
 
 ### 특정 문제가 생겼을 때 보는 심화 주제

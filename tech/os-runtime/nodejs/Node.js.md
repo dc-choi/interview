@@ -258,7 +258,7 @@ NODE_ENV는 Node.js 자체의 예약된 동작이 아니라 애플리케이션, 
 - [[Async-Programming|비동기 프로그래밍]]
 - [[Buffer-Memory|Buffer, Memory Management (alloc, allocUnsafe, poolSize)]]
 - [[Process-Child-Process|Process, Child Process (spawn/exec/fork, IPC, 시그널)]]
-- [[Error-Handling|Error Handling (4가지 경로, 전역 핸들러, 운영 vs 프로그래밍 에러)]]
+- [[Error-Handling|Error Handling (4가지 경로, 전역 핸들러, 운영 vs 프로그래밍 에러, 하위 인덱스)]]
 - [[Debugging-Profiling|디버깅 & 프로파일링]]
 - [[Test-Runner|테스트 러너]]
 - [[Nodejs-Design-Patterns|Node.js 생성 패턴 (Singleton, Factory, Builder, Prototype)]]

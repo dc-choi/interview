@@ -141,7 +141,7 @@ Demo security 구성이라면 URL을 HTTPS로 바꾸고 CA 검증과 인증 정�
 1. Root endpoint에서 distribution과 version을 확인한다.
 2. Cluster health에서 primary와 replica allocation 상태를 구분한다.
 3. Nodes와 shards API로 실제 배치를 확인한다.
-4. [[OpenSearch-Basics#인덱스 생성부터 검색까지|인덱스 생성, 문서 색인, GET과 Search]]를 실행한다.
+4. [[OpenSearch-Basics-REST-Walkthrough#인덱스 생성부터 검색까지|인덱스 생성, 문서 색인, GET과 Search]]를 실행한다.
 5. 실습을 끝낸 뒤 container와 volume의 보존 여부를 확인한다.
 
 ## 자주 막히는 지점
