@@ -14,6 +14,7 @@ aliases: ["Tech Planning", "기술 기획"]
 - [[Tech-Decision|기술 의사결정]]
 - [[Tech-Roadmap|기술 로드맵 수립]]
 - [[Project-Management|프로젝트 관리]]
+- [[Tech-Spec-Writing|테크스펙 작성]]
 
 ## 상위 문서
 

@@ -22,3 +22,6 @@ aliases: ["Tech Spec Writing", "테크스펙 작성법"]
 - [[Architecture-Decision-Making|아키텍처 의사결정]]
 - [[One-Way-vs-Two-Way-Door|One-Way vs Two-Way Door]]
 - [[Tech-Decision|기술 의사결정]]
+
+## 상위 문서
+- [[Tech-Planning|기술 기획]]
