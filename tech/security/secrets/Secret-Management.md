@@ -93,6 +93,7 @@ Q. Vault 도입 시 가장 먼저 설계할 것은?
 - [[JWT|JWT (ServiceAccount, 서비스 간 신원 토큰)]]
 - [[EKS|EKS (Kubernetes 기반 주입 환경)]]
 - [[CICD-Tool-Selection|CI/CD 도구 선택 (ArgoCD GitOps, AVP)]]
+- [[Hardcoded-Credentials|하드코딩된 자격증명]] — 코드에 박힌 키가 만드는 폭발 반경과 증폭 요인
 
 ## 출처
 - [도입전략 Git 시크릿 관리와 Vault 도입으로 보안 강화하기 — KT Cloud Tech](https://tech.ktcloud.com/entry/2026-06-ktcloud-git-vault-secrets-%EB%B3%B4%EC%95%88-%EA%B0%95%ED%99%94)

@@ -26,6 +26,7 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 - [x] [[Test-Pyramid-Blind-Spots|초록불이 못 잡는 것 (배포/인프라 경계, 스모크 실행, 계약 부재의 죽은 코드)]]
 - [x] [[Integration-Test-Environment|통합 테스트 환경 (Testcontainers, LocalStack, 테스트 @Transactional 안티패턴)]]
 - [x] [[Test-Strategy-Layers|테스트 전략과 계층 폴더 인덱스 (피라미드 계층별 범위, 서비스 레이어 테스트 경계, 계층이 못 잡는 사각지대)]]
+- [x] [[Natural-Language-E2E-Agent|자연어 E2E 테스트 에이전트 (접근성 트리 우선과 비전 폴백, 반응형 vs 계획형 프로파일, 결정성과 검증 게이트, CI 비용, ARTEMIS)]]
 
 ## 현장사례
 - [[11st-Engineer-Seminar#테스트전략|11번가 테스트 전략]] — 컨트롤러→통합, 서비스→단위, Mock 최소화

@@ -63,3 +63,4 @@ Meta 사내 8년, 13,000+ 앱에서 쓰인 최대 디자인 시스템의 오픈�
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (Eval)]]
 - [[Harness-Engineering|하네스 엔지니어링 (Verify 단계)]]
 - [[Agent-Code-Search|에이전트 코드 검색 (탐색 비용 축소의 다른 축)]]
+- [[Agent-Ready-Data|에이전트용 데이터 준비]] — 인터페이스 뒤의 데이터 다섯 속성과 능력 선언

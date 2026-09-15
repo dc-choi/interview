@@ -148,3 +148,4 @@ Q. 테스트 격리와 결정성은 어떻게 다른가?
 - [[Transactional-Test-Antipattern|트랜잭션 테스트 안티패턴]]
 - [[Mock-Testing-Strategy|Mock 설계 전략]]
 - [[Device-Farm|Device Farm]]
+- [[Natural-Language-E2E-Agent|자연어 E2E 테스트 에이전트]]

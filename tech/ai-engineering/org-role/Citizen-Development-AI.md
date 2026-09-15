@@ -85,6 +85,7 @@ aliases: ["Citizen Development", "AI 시민 개발", "도메인 전문가 주도
 - [[AI-Leverage-Small-Teams|AI 시대 작은 팀의 구조적 레버리지]] — 구현보다 문제 정의가 병목이 되는 조건
 - [[AX-Transformation|AX(AI Transformation) 조직 전환]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
+- [[AI-Capability-Transfer|AI 역량 이전]] — 비개발 직군에게 역량이 퍼지게 하는 코치 양성 구조
 - [[Claude-Code-Business-Automation|Claude Code 비즈니스 자동화]]
 - [[Claude-Code-Domain-Applications|Claude Code 도메인 응용]]
 - [[AI-Native-Org|AI 네이티브 조직]]

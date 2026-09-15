@@ -8,7 +8,7 @@ aliases: ["ESM", "ES Modules"]
 
 # ESM 모듈 시스템
 
-ES Modules는 정적으로 분석 가능한 import/export 그래프와 live binding을 제공하는 JavaScript 표준 모듈 시스템이다. 동적 `import()`는 비동기이고 top-level `await`는 모듈 평가를 비동기로 만들 수 있지만, ESM 자체를 항상 비동기 로딩으로 단정하면 안 된다.
+ES Modules는 정적으로 분석 가능한 import/export 그래프와 live binding을 제공하는 JavaScript 표준 모듈 시스템이다. 동적 `import()`는 비동기이고 top-level `await`는 모듈 평가를 비동기로 만들 수 있지만, ESM 자체를 항상 비동기 로딩으로 단정하면 안 된다. 모듈 그래프의 1회 평가와 async 모듈의 평가 지연 같은 언어 의미론은 [[JavaScript-ES-Modules|JavaScript ES Modules]]가 정본이고, 이 문서는 Node.js의 로딩과 상호운용을 다룬다.
 
 ## ESM 3단계 로딩
 
@@ -139,6 +139,7 @@ Node-API의 핵심 가치:
 - [Node.js, Node-API](https://nodejs.org/api/n-api.html)
 
 ## 관련 문서
+- [[JavaScript-ES-Modules|JavaScript ES Modules]]
 - [[Module-System-CommonJS|CommonJS 모듈 시스템]]
 - [[Module-System|모듈 시스템 인덱스]]
 - [[Package-Publishing|패키지 배포]]

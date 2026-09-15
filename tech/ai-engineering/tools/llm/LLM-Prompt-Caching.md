@@ -86,3 +86,4 @@ verified_at: 2026-09-03
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산 (동적 정보를 시스템 프롬프트 밖으로)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (Write/Select/Compress/Isolate, Context Rot)]]
 - [[Claude-Code-Internals|Claude Code 내부 구조 (도구 순서 고정 = 캐시 친화 코드 제약)]]
+- [[LLM-Inference-Bottlenecks|LLM 추론 병목 (프리필과 디코드의 병목 차이)]]

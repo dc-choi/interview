@@ -68,3 +68,4 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성"]
 - [[AI-Handicap-Learning|AI 핸디캡 학습법]] — 튜터 모드의 구체 수칙 (초안 먼저, 힌트 요청, 교대 훈련)
 - [[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]] — 깊이 있는 학습과 이전 가능한 작동 모델
 - [[SRE|SRE]] — 온콜과 사고 대응 구조, 자동화가 걷어가는 일상 반복과 이해 부채
+- [[AI-Capability-Transfer|AI 역량 이전]] — 내부 코치 양성과 자립 역량 기준

@@ -180,5 +180,6 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 - [[Team-Contribution-Culture|엔지니어링 팀 기여 문화]]
 - [[Trust-Respect-Teamwork|신뢰와 존중의 팀워크]]
 - [[AI-Leverage-Small-Teams|AI 시대 작은 팀의 구조적 레버리지]]
+- [[AI-Capability-Transfer|AI 역량 이전]] — Enablement가 사람에게 닿게 하는 코치 양성 구조
 - [[Toxic-Org-Detection|독성 조직 판별 프레임]]
 - [[IT-Downturn-Career-Strategy-Market-Shift|AI 패러다임과 시장 구조 변화]]

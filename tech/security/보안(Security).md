@@ -18,6 +18,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Actuator-Exposure|Actuator 노출 (Security Misconfiguration)]] — 운영 엔드포인트 노출, 필요한 것만 열기
 - [[tech/security/secrets/Secret-Management|시크릿 관리 (Secret Management)]] — Vault, K8s Secret 제거, CSI/Injector/AVP/ESO 주입, Auto Unseal, 동적 시크릿
 - [[tech/security/secrets/API-Key-Exposure|API 연동 키 노출과 최소 권한 스코프]] — 자격증명 노출, 권한 범위가 곧 공격 표면, 클라이언트/서버 키 구분, 정상 요청 위장 탐지
+- [[tech/security/secrets/Hardcoded-Credentials|하드코딩된 자격증명]] — 소스 접근이 운영 접근이 되는 경로, 증폭 요인(장기 키, 전체 접근, 메신저 공유, 짧은 로그), 시크릿 스캐닝 한계와 임시 자격증명
 - [[Supply-Chain-Security|공급망 보안 (Supply Chain)]] — PyPI/npm 공급망 공격, postinstall/.pth, 전이 의존성, AI 네이티브 상방-하방 딜레마, lockfile 핀/대응 플레이북
 - [[Network-Perimeter-Security|네트워크 경계 보안]] — 공인 IP 배치 원칙, UTM, 보안 장비 배치 순서, 프록시 방식 WAF와 SSL 종료
 - [[LLM-Application-Security|LLM 애플리케이션 보안 (OWASP Top 10 2025)]] — 프롬프트 인젝션, 민감정보 유출, 공급망, 데이터 오염, 출력 처리, 과도한 위임, 시스템 프롬프트 유출, RAG 임베딩, 허위정보, 무제한 소비
@@ -35,6 +36,7 @@ aliases: ["보안(Security)", "Security Index"]
 ## 현장사례
 - [[IDOR#실제 사례 — 대규모 API 인가 유출|강남언니 API 인가 유출]] — 객체 수준 인가 부재, 과다 데이터 노출, 형제 엔드포인트 재접근
 - [[API-Key-Exposure#사례 — 결제 연동키 노출로 결제내역 조회|토스페이먼츠 결제내역 조회]] — 연동키 노출, 시스템 침입 없는 데이터 유출, 과도한 권한 스코프
+- [[Hardcoded-Credentials#사례 — 하드코딩된 운영 접속키로 3954만 계정 유출|티빙 계정 유출]] — 소스 코드 내 운영 접속키, 개발 환경에서 운영 인프라로 이동, 1차 차단 뒤 다른 키로 재반출
 - [[Kakao-Ent-Seminar#보안|카카오엔터 보안]] — 서비스 접근 권한, 네트워크 망 설정
 - [[Fintech-Seminar#망분리|금융 망분리]] — 법적 망분리 의무
 - [[TS-Backend-Meetup-1#Cryptographic Hash 101|패스워드 해싱]] — Argon2id 우선, scrypt 대안, bcrypt는 입력 길이와 work factor 관리가 필요한 레거시 선택지

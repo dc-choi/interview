@@ -54,6 +54,7 @@ aliases: ["API Key Exposure", "연동키 노출", "API 키 노출", "Integration
 ## 관련 문서
 
 - [[Secret-Management|시크릿 관리]] — 키를 코드, 설정과 분리해 저장, 주입, 회수
+- [[Hardcoded-Credentials|하드코딩된 자격증명]] — 키가 코드에 놓일 때 노출 확률 자체가 커지는 경로
 - [[Access-Control-Models|접근 제어 모델]] — 최소 권한과 스코프
 - [[IDOR|IDOR와 자원 단위 인가]] — 자격증명 이후의 객체 단위 인가
 - [[Rate-Limiting|Rate limit]] — 키별 호출 제한과 이상 조회 탐지

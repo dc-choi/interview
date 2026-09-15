@@ -66,6 +66,8 @@ aliases: ["Agent Coding Guardrails", "LLM 코딩 가드레일", "코딩 가드�
 | 버그 고쳐줘 | 재현 테스트를 먼저 쓰고 통과시킨다 |
 | X 리팩토링해줘 | 전후로 테스트 통과를 보장한다 |
 
+단, 에이전트가 스스로 쓴 재현 테스트는 대칭 입력이나 출력 박제로 버그를 놓칠 수 있으므로 성공 기준의 정답 정의는 사람이 쥔다 ([[Agent-Test-Verification-Behavior|에이전트 검증 행동]]).
+
 다단계 작업은 단계마다 verify를 붙인 계획을 먼저 선언한다 (단계, verify: 확인 방법). 강한 성공 기준은 에이전트의 독립 루프를 허용하고, 약한 기준은 상시 개입을 요구한다. 핵심 발상은 무엇을 할지 지시하는 대신 성공 기준을 주고 지켜보는 것.
 
 ## 우회 처방 경계 — AI의 답을 되돌려보내는 판단
@@ -129,6 +131,7 @@ AI의 제안은 원인을 찾기보다 문제를 돌아가는 쪽으로 기울 �
 
 - [[Agent-Overengineering-Guard|에이전트 과잉설계 방지 (YAGNI 사다리 7칸)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (경계, 성공 기준)]]
+- [[Agent-Test-Verification-Behavior|에이전트 검증 행동 (기법 이름 지시의 한계, 행동 교정 스킬)]]
 - [[Agent-Skills|에이전트 스킬 (SKILL.md, 점진적 공개)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (영속 컨텍스트, 권장 vs 강제)]]
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (CLAUDE.md 규칙 주입)]]

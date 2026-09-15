@@ -28,6 +28,17 @@ LLM을 제품에 넣으면 기존 웹 취약점 위에 **모델 고유의 공격
 - **Controller**: 둘 사이를 중재한다. 오염 가능성 있는 텍스트를 변수 토큰(`$VAR1`)으로 대체해 전달하고, Privileged LLM은 실제 콘텐츠가 아니라 심볼 참조만 본다
 - 효과와 한계: 비신뢰 입력을 처리하는 모델에 도구가 없어 confused deputy 공격이 차단된다. 다만 사회공학과 구현 복잡도는 남으며, 권한 강제를 LLM 밖 결정적 시스템에 두는 LLM06(과도한 위임)의 완전 중재 원칙과 같은 계열이다
 
+### 가드 모델 우회 — 능력 격차가 곧 취약점
+
+입력 단 가드 모델은 본 모델보다 작고 싼 분류기라는 전제 위에 서 있다. 그 격차 자체를 공격면으로 쓰는 기법이 있다. base64나 이모지 같은 인코딩 흔적 없이 평범한 산문 안에 정책 위반 명령을 언어적으로 분산 배치하면, 각 문장은 개별적으로 무해하고 숨긴 명령은 텍스트 전체를 대상으로 수량적이고 자기참조적인 계산을 해야만 복원된다. 표면 패턴 매칭으로는 걸리지 않고, 복원에는 긴 추론과 코드 실행이 필요하다. 가드는 그 연산을 지불할 수 없고 타깃인 고성능 추론 모델은 지불한다. 한 연구(PuzzleMask, 2026)에서 실험에 쓰인 소형 가드 모델 4종은 변형 프롬프트를 전부 무해로 통과시켰고, 타깃 추론 모델은 약 94%를 복원해 실행했다. 가드는 페이로드의 존재 자체를 인지하지 못한 채 무해하다는 근거를 제시했다.
+
+- 완화 1, 가드에 재작성을 시킨다: 입력을 의미가 보존되게 다시 쓰게 하면 정밀하게 배치된 구조가 깨진다.
+- 완화 2, 정책 문구를 구조 기준으로 보강한다: 수량적이면서 텍스트 전체에 자기참조적인 문장은 unsafe로 분류하라는 규칙 하나로 해당 연구의 변형 전부가 검출됐다. 다만 특정 기법에 맞춘 규칙이라 다음 변형에 그대로 통하지는 않는다.
+- 완화 3, 입력만 보지 않는다: 출력과 행동(도구 호출) 단계에서 다시 검사한다. 일부 모델 계열은 입력 필터가 아니라 출력 단 방어로 이 공격을 막았다.
+- 타깃과 동급 성능의 가드를 두는 것은 이론상 유효하지만 비용 때문에 비현실적이다.
+
+원칙은 듀얼 LLM 격리와 같다. 입력 분류기는 능력 격차가 있는 한 완전할 수 없으므로, 위험한 행위는 도구 실행 직전에 LLM 밖의 결정적 통제(LLM06의 완전 중재)로 막는 것이 근본 완화다.
+
 ## LLM02 민감 정보 유출
 
 PII, 재무, 건강, 기밀 데이터, 독점 알고리즘이 출력으로 새는 것. 이용자가 무심코 넣은 데이터가 학습에 포함돼 나중에 유출될 수도 있다.
@@ -109,6 +120,8 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 - [OWASP Top 10 for LLM Applications 2025 (한국어판) — OWASP GenAI](https://genai.owasp.org/)
 - [The Dual LLM pattern for building AI assistants that can resist prompt injection — Simon Willison's Weblog](https://simonwillison.net/2023/Apr/25/dual-llm-pattern/)
 - [Zero-Click AI Vulnerability Exposes Microsoft 365 Copilot Data Without User Interaction — The Hacker News](https://thehackernews.com/2025/06/zero-click-ai-vulnerability-exposes.html)
+- [PuzzleMask: Abusing Plain Prose as a Covert AI Attack Vector — Check Point Research](https://research.checkpoint.com/2026/puzzlemask-abusing-plain-prose-as-a-covert-ai-attack-vector/)
+- [PuzzleMask: 평범한 문장을 잠재적 AI 공격 수단으로 오용하기 — GeekNews](https://news.hada.io/topic?id=33622)
 
 ## 관련 문서
 

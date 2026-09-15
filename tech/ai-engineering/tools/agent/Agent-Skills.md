@@ -78,6 +78,10 @@ Claude Code와 Codex가 공유하는 구조.
 - 배포, 전송처럼 부작용이 있는 작업은 자동 호출을 끄고 수동 전용으로 (Claude disable-model-invocation, Codex 호출 정책)
 - 본문이 길어지면(대략 500줄 초과) 상세를 references로 분리해 온디맨드 로드 — 호출된 스킬 본문은 세션 내내 컨텍스트에 남기 때문
 
+### 사례 — 절차가 아니라 제약을 인코딩하는 스킬
+
+스킬에는 작업 절차만이 아니라 산출물의 품질 제약을 넣을 수 있다. 한 다이어그램 생성 스킬(diagram-design)은 accent 색 1개, 글꼴 3종, 1px hairline, 모든 좌표와 간격이 4의 배수라는 비협상 규칙과 그림자, 임의 팔레트, 자동 레이아웃 금지를 SKILL.md에 박아 생성물의 분산을 줄이고, 라벨과 노드의 겹침과 렌더 결과의 잘림을 검사하는 검증 스크립트를 함께 배포해 에이전트가 자기 산출물을 CI 게이트로 검사하게 한다. 언제 쓰지 말아야 하는지(목록, before와 after 비교, 도형 하나짜리 다이어그램)를 스킬 안에 명시해 무분별한 발동을 줄이고, 색을 값이 아니라 역할 토큰(paper, ink, accent)으로 참조하게 해 브랜드 온보딩 한 번으로 전체가 바뀐다. 일상 작업은 SKILL.md와 타입 레퍼런스 하나만 읽는 점진적 공개 구조다. 효과를 측정한 수치는 공개되지 않았다.
+
 ## 스킬 수명주기 — 카탈로그도 비용이다
 
 점진적 공개의 1단인 카탈로그 노출은 공짜가 아니다. 스킬이 많으면 예산에 맞추느라 설명이 단축되어 트리거에 필요한 키워드가 깎일 수 있고, 목록이 예산을 넘치면 호출 빈도가 낮은 스킬부터 설명이 제외된다(기본 예산과 조정 수단은 [[Claude-Code-Extension-Reference]]). 죽은 스킬은 Claude 기준 설명이 먼저 제외될 뿐 이름 줄은 남으므로, 승격만 있고 퇴역이 없으면 목록 비용은 스킬 수를 따라 자란다. 실제 사용 여부는 기억이 아니라 로컬 세션 로그(transcript) 집계로 판단한다. 관찰 기간을 정해 집계하면 스킬이 네 상태로 나뉜다.
@@ -106,6 +110,7 @@ Claude Code와 Codex가 공유하는 구조.
 
 - [Claude Code Skills vs Codex Skills: 구조와 차이 완전 정리 — AlienCoder](https://aliencoder.tistory.com/243)
 - [skill-graveyard — sfrangulov](https://github.com/sfrangulov/skill-graveyard)
+- [diagram-design — cathrynlavery](https://github.com/cathrynlavery/diagram-design)
 - [Claude Docs, Agent Skills](https://code.claude.com/docs/ko/skills)
 - [OpenAI Codex Docs, Skills](https://developers.openai.com/codex/skills)
 
@@ -118,3 +123,4 @@ Claude Code와 Codex가 공유하는 구조.
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산 (스킬 Catalog-First 로딩)]]
 - [[MCP|MCP (외부 경계 확장)]]
 - [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리 (로컬 세션 로그 집계와 신뢰 경계)]]
+- [[Agent-Test-Verification-Behavior|에이전트 검증 행동 (스킬 본문 길이의 재읽기 비용, 튜토리얼형 스킬의 한계)]]

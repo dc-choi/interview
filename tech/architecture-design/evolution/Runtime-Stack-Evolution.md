@@ -90,6 +90,7 @@ JVM은 자체 빌드 없이 **Azul Zulu(OpenJDK 빌드)** 사용.
 3. **팀 숙련도가 맞는가** — 러닝 커브 가파른 기술은 조직 성숙도 필수
 4. **5년 후에도 커뮤니티가 있을까** — 자체 개발보다 업계 표준이 유리한 이유
 5. **점진 이주 경로가 있는가** — 빅뱅 전환은 리스크 급증 ([[Legacy-Modernization-Strategies]])
+6. **플랫폼 계약을 감당할 수 있는가** — 언어 도입의 실제 비용은 컴파일러가 아니라 보안 툴체인 빌드, 개발 도구, 품질 워크플로, 플랫폼 통합, 보안 개발 수명주기 준수까지 조직이 책임지는 지원 수준에 있다. Microsoft가 Rust를 C++, C#, TypeScript와 같은 Tier-1로 둔 것도 언어 선호가 아니라 이 지원 계약의 선언이었고, 기존 MSVC 백엔드에 붙는 코드 생성 백엔드로 디버깅, 프로파일링, 하드닝 도구를 공유하게 한 뒤 자기 호스팅과 100개 이상 저장소 사용으로 성숙도를 검증했다 (2026년 9월 기준)
 
 ## 흔한 함정
 
@@ -116,6 +117,7 @@ JVM은 자체 빌드 없이 **Azul Zulu(OpenJDK 빌드)** 사용.
 - [Spring Cloud Netflix, Features](https://docs.spring.io/spring-cloud-netflix/reference/spring-cloud-netflix.html)
 - [OpenJDK, JEP 444: Virtual Threads](https://openjdk.org/jeps/444)
 - [Oracle, Java Language Changes in Java SE 21](https://docs.oracle.com/en/java/javase/21/language/java-language-changes-release.html)
+- [Guest Post: Rust Is Tier-1 Language at Microsoft — Rust Foundation](https://rustfoundation.org/media/guest-post-rust-is-tier-1-language-at-microsoft/)
 
 ## 관련 문서
 - [[Legacy-Modernization-Strategies|레거시 현대화 전략]]
