@@ -1,16 +1,16 @@
 ---
-tags: [web, network, osi, l3, ip, cidr, routing, arp]
+tags: [web, network, osi, l3, ip, cidr, routing, arp, mtu, dpi]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Network Layer", "네트워크 계층", "L3", "IP CIDR 라우터 ARP", "패킷 포워딩"]
-verified_at: 2026-08-04
+verified_at: 2026-09-15
 ---
 
 # 네트워크 계층 (Network Layer, L3)
 
 서로 다른 로컬 네트워크 사이에서 패킷이 목적지까지 갈 경로를 찾고 전달하는 계층. 전체 7계층 지도는 [[OSI-7-Layer]], 바로 아래 L1/L2는 [[Physical-DataLink-Layer]]. 한 줄 요약: **L2가 같은 동네 안 배달이면, L3는 다른 동네로 보내는 규칙**이다.
 
-핵심 개념은 IP 주소, CIDR, 서브넷 마스크, 라우터, ARP 다섯이며, 가장 중요한 통찰은 **패킷의 IP는 끝까지 유지되고 프레임의 MAC은 구간마다 바뀐다**는 점이다.
+핵심 개념은 IP 주소, CIDR, 서브넷 마스크, 라우터, ARP 다섯이다. 기본 전달 모델은 **IP 주소는 최종 목적지, 프레임의 MAC 주소는 현재 링크의 전달 대상**을 가리킨다는 것이다. NAT를 거치면 IP 주소도 바뀔 수 있다.
 
 ## L3가 푸는 문제 — 로컬 밖으로
 
@@ -24,15 +24,23 @@ L3가 데이터를 담아 옮기는 단위는 패킷이다(L2는 프레임). 패
 
 비유하면 패킷은 택배 상자, IP 주소는 보내는 사람과 받는 사람의 주소다.
 
+### MTU와 MSS — 서로 다른 크기 제한
+
+IP 관점에서 **MTU(Maximum Transmission Unit)**는 해당 링크에 실을 수 있는 IP 패킷의 최대 길이다. IP 헤더도 포함하며, Ethernet 헤더와 FCS는 포함하지 않는다. 일반적인 Ethernet MTU는 1500바이트지만 모든 링크와 터널에서 같은 값은 아니다. 경로 전체의 최소 링크 MTU가 Path MTU다.
+
+**MSS(Maximum Segment Size)** 옵션은 자신이 받을 수 있는 TCP 데이터 길이의 상한을 상대에게 알리며, TCP/IP 헤더는 제외한다. MTU 1500, IPv4 헤더 20, TCP 헤더 20바이트이며 옵션이 없는 예에서는 TCP 데이터가 최대 `1500 - 20 - 20 = 1460`바이트다. 실제 송신 크기는 상대의 MSS, 경로 제약과 추가 헤더 등에 따라 작아질 수 있다. 광고 MSS와 옵션 크기의 관계는 [[TCP-Congestion-Control#CWND 초기화 — MSS|MSS 계산]]을 참고한다.
+
+TCP의 세그먼트화와 IP 단편화는 별개다. 전자는 스트림을 TCP 전송 단위로 나누고, 후자는 IP 패킷을 더 작은 IP 단편으로 나눈다. MTU보다 큰 데이터를 애플리케이션이 썼다고 곧바로 IP 단편화가 일어나는 것은 아니다. TCP는 경로의 크기 제약에 맞게 분할해 IP 단편화를 피하도록 동작할 수 있다.
+
 ## IP 주소 — L3의 논리적 식별자
 
 | | MAC 주소 (L2) | IP 주소 (L3) |
 |---|---|---|
-| 성격 | 인터페이스 고유 물리 주소 | 네트워크 위치를 가리키는 논리 주소 |
-| 가변성 | 보통 고정 | 환경에 따라 바뀜 (집 vs 회사) |
-| 비유 | 주민등록번호 | 집주소 |
+| 성격 | L2에서 인터페이스를 식별하는 주소 | 네트워크 위치를 가리키는 논리 주소 |
+| 가변성 | 로컬 설정이나 비공개 주소 기능으로 변경 가능 | 환경에 따라 바뀜 (집 vs 회사) |
+| 전달 범위 | 같은 L2 구간 | 네트워크 사이 |
 
-같은 노트북이라도 집에서 쓰는 IP와 회사에서 쓰는 IP가 다를 수 있다.
+같은 노트북이라도 집에서 쓰는 IP와 회사에서 쓰는 IP가 다를 수 있다. MAC도 항상 고정되는 것은 아니다. 전역 할당과 로컬 관리 주소의 구분은 [[Physical-DataLink-Layer#MAC 주소|MAC 주소]]를 참고한다.
 
 ### IPv4 vs IPv6
 
@@ -80,11 +88,22 @@ ICMP는 IP 전달 중 생긴 오류와 진단 정보를 운반한다. `ping`의 
 | | 출발지/목적지 IP (패킷) | 출발지/목적지 MAC (프레임) |
 |---|---|---|
 | 범위 | end-to-end (최종 목적지) | hop-by-hop (다음 구간) |
-| 변화 | 전 구간 그대로 유지 | 라우터를 지날 때마다 교체 |
+| 변화 | NAT가 없는 일반 IP 전달에서는 유지 | 라우터를 지나 다음 링크로 보낼 때 교체 |
+
+패킷이 유지된다는 말은 IP 헤더의 모든 비트가 같다는 뜻이 아니다. IPv4 TTL과 헤더 체크섬은 라우터에서 바뀌고, NAT는 주소나 포트를 변환한다. 터널에서는 바깥 IP 헤더가 추가될 수도 있다. 스위치를 통과할 때마다 IP 패킷을 다시 만들거나 TCP로 재조립하는 것은 아니다.
 
 목적지 네트워크의 라우터에 닿으면, 그 IP가 자기 네트워크라고 판단하고 더는 밖으로 보내지 않는다. 해당 IP의 MAC을 ARP로 찾아 로컬에서 프레임을 전달하고, 최종 장비가 프레임에서 패킷을 꺼낸다.
 
 암기 포인트: **IP는 최종 목적지 주소, MAC은 다음 구간의 실제 전달 주소.**
+
+## 패킷 검사 — 헤더와 페이로드
+
+일반 IP 포워딩은 목적지 IP와 라우팅 정보를 사용한다. **DPI(Deep Packet Inspection)**는 포트와 주소를 확인하는 수준을 넘어 페이로드의 패턴이나 애플리케이션 프로토콜까지 분석한다. L3의 필수 전달 절차가 아니라 보안 장비나 트래픽 분석 시스템이 추가로 수행하는 기능이다.
+
+- 활용: 애플리케이션 식별, 공격 패턴 탐지, 콘텐츠 필터링과 트래픽 정책 적용.
+- 가시성: TLS로 암호화된 응용 데이터는 중간 장비가 패킷을 캡처했다는 이유만으로 평문이 되지 않는다. 평문 검사는 복호화 가능한 종단이나 TLS 종료 지점 등의 조건이 필요하다. [[HTTPS-TLS]]
+- 한계: 암호화돼도 관측 가능한 주소, 길이와 타이밍으로 일부 추론은 가능하지만, 본문을 읽는 것과는 다르다. 보이는 헤더의 범위도 암호화와 터널 구성에 따라 달라진다.
+- 비용: 검사 목적에 필요한 범위와 접근 권한, 보관 기간을 정한다. 내용을 볼 수 있는 지점은 민감정보도 노출될 수 있어 성능 비용과 프라이버시를 함께 고려한다.
 
 ## L3의 한계와 L4로의 확장
 
@@ -98,13 +117,15 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 ## 면접 체크포인트
 
 - L2(같은 LAN)와 L3(네트워크 간)의 경계, 인터넷 = internetwork
-- 패킷 vs 프레임, IP(논리, 가변) vs MAC(물리, 고정)의 역할 구분
+- 패킷 vs 프레임, IP와 MAC의 식별 범위와 역할 구분
 - CIDR `/24` 해석과 서브넷 마스크 AND 연산으로 같은 네트워크를 판단하는 원리
 - 라우팅 테이블의 longest prefix match와 `0.0.0.0/0` 기본 경로
 - 클래스풀 주소 체계는 역사적 배경이며 현재 대역 설계는 CIDR prefix를 기준으로 한다는 점
 - 정적 경로와 동적 라우팅 프로토콜이 라우팅 테이블을 만드는 방식의 차이
 - ARP가 IP를 MAC으로 해석하는 이유와 캐시
-- 패킷 IP는 end-to-end 유지, 프레임 MAC은 hop-by-hop 교체
+- 일반 IP 전달의 주소 유지와 TTL 변화, NAT 예외, 프레임의 링크별 교체
+- MTU와 TCP MSS의 범위 차이, TCP 세그먼트화와 IP 단편화의 구분
+- DPI가 보는 정보와 TLS 암호화가 제한하는 평문 가시성
 - L3가 못 하는 것(앱 구분, 순서/신뢰성) → L4 TCP/UDP로 넘어가는 지점
 
 ## 출처
@@ -114,12 +135,20 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 - [OSI 7 Layer 기초: Network Layer (IP, CIDR, 라우터, ARP) — YouTube](https://www.youtube.com/watch?v=ZnBskOsDuFY&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v&index=2)
 - [RFC 4632 — Classless Inter-domain Routing](https://www.rfc-editor.org/rfc/rfc4632.html)
 - [RFC 792 — Internet Control Message Protocol](https://www.rfc-editor.org/rfc/rfc792.html)
+- [RFC 9293 — Transmission Control Protocol, Segmentation](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.7)
+- [RFC 894 — IP Datagrams over Ethernet Networks](https://www.rfc-editor.org/rfc/rfc894.html)
+- [RFC 1812 — Requirements for IP Version 4 Routers](https://www.rfc-editor.org/rfc/rfc1812.html#section-5.2.1)
+- [RFC 8404 — Effects of Pervasive Encryption on Operators](https://www.rfc-editor.org/rfc/rfc8404.html#section-2.2.2)
+- [YouTube, 네트워크 데이터 흐름 강의](https://www.youtube.com/watch?v=Bz-K-DPfioE) — 사용자 제공 학습 메모를 바탕으로 정리. 영상 자막은 직접 대조하지 못했으며, 기술 설명은 위 공식 자료로 보완했다.
 - [그림으로 쉽게 배우는 네트워크 — IP 클래스와 서브넷 마스크, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160804)
 - [그림으로 쉽게 배우는 네트워크 — 라우팅 프로토콜, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160809)
 
 ## 관련 문서
 
 - [[Physical-DataLink-Layer|물리와 데이터링크 계층 (L1/L2, MAC, 프레임, ARP 연결 고리)]]
+- [[Transport-Layer#세그먼트와 캡슐화|소켓, 바이트 스트림과 패킷 생성 흐름]]
+- [[TCP-Congestion-Control|TCP MSS와 혼잡 제어]]
+- [[HTTPS-TLS|TLS 암호화와 종료 지점]]
 - [[OSI-7-Layer|OSI 7계층 전체 지도와 Internet vs Ethernet]]
 - [[TCP-Handshake|TCP Handshake (L4 전송 신뢰성)]]
 - [[Browser-URL-Flow|브라우저 URL 입력 흐름 (DNS, ARP, 라우팅)]]

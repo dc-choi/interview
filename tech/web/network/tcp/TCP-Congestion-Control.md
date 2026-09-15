@@ -28,7 +28,7 @@ aliases: ["TCP Congestion Control", "혼잡 제어", "AIMD", "Slow Start", "CWND
 
 신규 연결의 초기 `cwnd`는 하나의 고정값이 아니라 구현과 적용 RFC에 따라 정한다. RFC 5681은 MSS에 따라 2~4 SMSS의 상한을 제시했고, RFC 6928은 최대 `min(10*SMSS, max(2*SMSS, 14600))`까지 허용했다. **1 SMSS**는 재전송 timeout 뒤의 loss window에 해당하며, 일반적인 신규 연결 초기값과 같은 뜻이 아니다.
 
-**MSS(Maximum Segment Size)** option은 수신 측이 재조립할 수 있는 TCP payload 상한을 알린다. RFC 6691에 따라 광고할 MSS는 경로 MTU에서 고정 IP 헤더와 고정 TCP 헤더만 빼 계산하며, IP/TCP option 크기를 MSS 값에서 미리 빼지 않는다.
+**MSS(Maximum Segment Size)** option은 수신 측이 재조립할 수 있는 TCP payload 상한을 알린다. RFC 6691에 따라 광고할 MSS는 유효 MTU에서 고정 IP 헤더와 고정 TCP 헤더만 빼 계산하며, IP/TCP option 크기를 MSS 값에서 미리 빼지 않는다. 이 광고값과 송신 중 탐색하는 Path MTU는 구분한다. 상대의 MSS를 받았다고 전체 경로의 MTU를 알아낸 것은 아니다.
 
 > advertised MSS = effective MTU − fixed IP header − fixed TCP header
 
