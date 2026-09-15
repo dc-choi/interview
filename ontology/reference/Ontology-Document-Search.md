@@ -57,6 +57,8 @@ cursor는 서명이나 인증 수단이 아닌 unsigned consistency token이다.
 4. 같은 Document의 다른 조건, 예외 또는 관련 heading도 확인해야 하면 [[Ontology-Document-Outline|context_outline]]에 `document.id`와 `index_sync`의 revision을 전달한다. 필요한 section receipt를 골라 `context_read`로 읽는다.
 5. 읽은 원문과 현재 프로젝트의 코드, 설정, 운영 근거를 대조한 뒤에만 적용 판단을 한다.
 
+여러 조건 질문에서는 [[Ontology-Condition-Retrieval]]의 총 호출 예산과 처음 scope 유지 규칙을 함께 따른다.
+
 목차는 source navigation이며 본문 근거가 아니다. `context_read`는 pinned Git blob을 읽으므로 dirty worktree의 새 본문을 섞지 않고 `index_sync`에 `unindexed_worktree` 상태를 표시한다.
 
 ## CLI와 MCP
@@ -74,4 +76,4 @@ node src/cli.mjs search --committed-only \
 
 MCP는 `context_search`로 같은 `query`, 선택 `scope`, `max_bytes`, `cursor`를 받는다. 저장소나 cache 경로는 tool argument로 바꿀 수 없다. 새 MCP 프로세스를 연결한 뒤 `tools/list`에서 도구가 보이는지 확인한다.
 
-상위: [[Development-Ontology]]. 운영: [[Ontology-Operations]]. 후속 읽기: [[Ontology-Evidence-Read]], [[Ontology-Document-Outline]].
+상위: [[Ontology-Reference]]. 전체 지도: [[Development-Ontology]]. 운영: [[Ontology-Operations]]. 후속 읽기: [[Ontology-Evidence-Read]], [[Ontology-Document-Outline]].

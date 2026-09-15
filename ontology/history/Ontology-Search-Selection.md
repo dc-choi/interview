@@ -40,7 +40,7 @@ heading 없는 root와 출처/관련 문서 절은 보충 후보에서 제외한
 
 새 합성 질문 10개는 구현과 기존 사례/결과를 보지 않은 별도 작업자가 만들었다. 양성 8개는 각각 필수 근거 그룹 2개를 요구하고 음성은 2개다. 코드를 고정한 뒤 처음 실행했으며, 관측 후 정답이나 검색 파라미터를 조정하지 않았다.
 
-사례 원본은 [selection-holdout-cases-2026-09-08.json](evaluation/selection-holdout-cases-2026-09-08.json)이다. 첫 조회 전 원문 검사에서 H2가 H3 본문을 포함하지 않는 정의 오류를 발견해 정답 heading 4개와 음성 사례의 필수 빈 배열을 정정했다. 질문과 본문 조건은 유지했으며, 재고정 SHA-256은 `23570d3a7ce476daf56c261420dd33a6c632a603d17d75f3968fab6db6b9e955`이다.
+사례 원본은 [selection-holdout-cases-2026-09-08.json](../evaluation/selection-holdout-cases-2026-09-08.json)이다. 첫 조회 전 원문 검사에서 H2가 H3 본문을 포함하지 않는 정의 오류를 발견해 정답 heading 4개와 음성 사례의 필수 빈 배열을 정정했다. 질문과 본문 조건은 유지했으며, 재고정 SHA-256은 `23570d3a7ce476daf56c261420dd33a6c632a603d17d75f3968fab6db6b9e955`이다.
 
 | 새 표본의 첫 관측 | 변경 전 | 변경 후 |
 |---|---:|---:|
@@ -66,9 +66,9 @@ heading 없는 root와 출처/관련 문서 절은 보충 후보에서 제외한
 
 104개에서 기존 성공 질문과 개별 필수 근거 그룹의 손실은 없었다. OTT의 `UNKNOWN` 상태 판정표가 끝까지 반환되고, RAG 품질 검토 질문에 빠졌던 근거 추적 절이 추가되면서 두 질문이 개선됐다. 음성 질문은 기존 2/19, 새 0/2로 그대로다.
 
-새 합성 표본은 구현과 기존 사례/결과를 보지 않은 별도 작업자가 pinned 원문으로 만들었다. 양성 8개는 tech 5개, biz 2개, econ 1개이며 각각 두 필수 근거 그룹을 요구하고, 음성은 2개다. 조회 전에 원문 검사와 파일 hash 고정을 완료했다. [사례 원본](evaluation/coverage-holdout-cases-2026-09-08.json)의 SHA-256은 `3121fb7c003cb926ac9f627eb7fb4178e2e7c51cc0b6b67e32d33aac3c5c218b`다. 구현을 고정한 뒤 처음 조회했으며 관측 후 검색 규칙이나 정답을 조정하지 않았다. 새 질문에 대한 추가 개선은 확인하지 못했다.
+새 합성 표본은 구현과 기존 사례/결과를 보지 않은 별도 작업자가 pinned 원문으로 만들었다. 양성 8개는 tech 5개, biz 2개, econ 1개이며 각각 두 필수 근거 그룹을 요구하고, 음성은 2개다. 조회 전에 원문 검사와 파일 hash 고정을 완료했다. [사례 원본](../evaluation/coverage-holdout-cases-2026-09-08.json)의 SHA-256은 `3121fb7c003cb926ac9f627eb7fb4178e2e7c51cc0b6b67e32d33aac3c5c218b`다. 구현을 고정한 뒤 처음 조회했으며 관측 후 검색 규칙이나 정답을 조정하지 않았다. 새 질문에 대한 추가 개선은 확인하지 못했다.
 
-기존 94개에서 총 11개 후보를 비교했다. 접두 본문만으로 점수화하기, 새 검색어 우선, root 문서 우선과 조기 본문 확장은 기존 성공이나 개별 근거를 잃었다. 남는 공간에 절을 더 추가하는 구성은 점수가 같았다. 새 의존성 없이 기존 관계 추가 순서만 바꾼 구성을 채택했다. 상세 후보별 결과는 [후속 보고서](evaluation/coverage-report-2026-09-08.json)의 `candidate_comparisons`에 있다.
+기존 94개에서 총 11개 후보를 비교했다. 접두 본문만으로 점수화하기, 새 검색어 우선, root 문서 우선과 조기 본문 확장은 기존 성공이나 개별 근거를 잃었다. 남는 공간에 절을 더 추가하는 구성은 점수가 같았다. 새 의존성 없이 기존 관계 추가 순서만 바꾼 구성을 채택했다. 상세 후보별 결과는 [후속 보고서](../evaluation/coverage-report-2026-09-08.json)의 `candidate_comparisons`에 있다.
 
 본문에 공간을 배정한 만큼 반환 관계 수는 104개 합계 198개에서 152개로 줄었다. graph 탐색과 관계 후보 자체를 삭제한 것은 아니며, 충분한 예산에서는 뒤로 미룬 관계도 반환한다. 관계의 개수 보존이나 모든 종류의 질문 개선을 주장하지 않는다.
 
@@ -91,15 +91,15 @@ node ontology/src/cli.mjs lookup --scope tech \
 
 이는 어휘 기반 선택이며 의미적 충족 판정이 아니다. 제목이나 일반어만 겹치거나 적용 환경과 예외가 다른 경우에도 힌트 점수가 생길 수 있다. 실제 원문에서 조건과 예외를 확인하지 못하면 [[Ontology-Condition-Retrieval]]의 `unresolved`로 남긴다. 후보 문서와 graph 범위 밖의 근거를 모두 발견한다는 보장은 없다.
 
-조건 힌트가 없는 기존 lookup 질문 104개는 변경 전후 반환 JSON 전체와 실제 byte가 같았다. [동등성 보고서](evaluation/condition-hints-default-regression-2026-09-08.json)에 질문과 코드 hash, 원문 revision과 응답 hash를 보존한다. 이 비교는 기존 lookup 경로의 회귀 검사이며 조건 힌트의 일반적인 품질 개선을 뜻하지 않는다. `context_search`의 cursor는 기존 계약대로 조회 코드 hash에 묶이므로 코드 변경 후 다시 조회한다.
+조건 힌트가 없는 기존 lookup 질문 104개는 변경 전후 반환 JSON 전체와 실제 byte가 같았다. [동등성 보고서](../evaluation/condition-hints-default-regression-2026-09-08.json)에 질문과 코드 hash, 원문 revision과 응답 hash를 보존한다. 이 비교는 기존 lookup 경로의 회귀 검사이며 조건 힌트의 일반적인 품질 개선을 뜻하지 않는다. `context_search`의 cursor는 기존 계약대로 조회 코드 hash에 묶이므로 코드 변경 후 다시 조회한다.
 
 이미 실행 중인 MCP의 도구 schema에 `conditions`가 없으면 필드를 보내지 않고 기존 조건별 후속 탐색을 사용한다. 새 프로세스는 선택 입력을 지원한다.
 
-새 합성 질문 9개의 [첫 관측](evaluation/sufficiency/sufficiency.md)에서는 힌트가 outbox 복구와 rename 분류의 일부 근거를 늘렸지만 backfill 중단 조건의 본문은 줄였다. 첫 lookup의 전체 충분성 판정은 전후 같았다. 이 관측으로 기본 적용의 이득은 확인하지 못했으므로 힌트는 명시적으로 선택하는 입력으로 둔다.
+새 합성 질문 9개의 [첫 관측](../evaluation/sufficiency/sufficiency.md)에서는 힌트가 outbox 복구와 rename 분류의 일부 근거를 늘렸지만 backfill 중단 조건의 본문은 줄였다. 첫 lookup의 전체 충분성 판정은 전후 같았다. 이 관측으로 기본 적용의 이득은 확인하지 못했으므로 힌트는 명시적으로 선택하는 입력으로 둔다.
 
 ## 재실행
 
-[1차 보고서](evaluation/selection-report-2026-09-08.json)는 앞선 절 선택 실험을 보존한다. 최신 [후속 보고서](evaluation/coverage-report-2026-09-08.json)에는 이전 query 원문, 질문/코드 hash와 104개 전후 결과가 있다. [실행기](evaluation/selection-compare.mjs)를 재사용하며, 원문 revision, snapshot fingerprint나 코드가 다르면 중단한다. Vault 루트에서 실행한다.
+[1차 보고서](../evaluation/selection-report-2026-09-08.json)는 앞선 절 선택 실험을 보존한다. 최신 [후속 보고서](../evaluation/coverage-report-2026-09-08.json)에는 이전 query 원문, 질문/코드 hash와 104개 전후 결과가 있다. [실행기](../evaluation/selection-compare.mjs)를 재사용하며, 원문 revision, snapshot fingerprint나 코드가 다르면 중단한다. Vault 루트에서 실행한다.
 
 ```bash
 node --input-type=module <<'JS'
@@ -141,4 +141,4 @@ CLI와 새 MCP 프로세스는 수정된 `query.mjs`를 사용한다. 이미 실
 - [[Ontology-Retrieval-Quality|기존 검색과 응답 구성의 평가 이력]]
 - [[RAG-Retrieval-Engineering#Context packing과 근거 추적|적용한 지식과 근거 추적]]
 
-상위: [[Development-Ontology]].
+상위: [[Ontology-History]]. 전체 지도: [[Development-Ontology]].

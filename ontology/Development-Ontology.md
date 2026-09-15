@@ -21,20 +21,13 @@ aliases: ["개발 판단 온톨로지", "Development Knowledge Ontology"]
 
 ## 지도와 계약
 
-- [[Development-Ontology-Contract|문제, 방법, 조건, 비용과 근거의 연결 계약]]
-- [[Development-Ontology-Event-Publishing|DB 저장 이후 이벤트 발행과 후속 처리의 신뢰성]]
-- [[Development-Ontology-Evaluation|첫 검색 관찰, 검증 범위와 남은 작업]]
-- [[Ontology-Operations|빌드, 조회, MCP 실행과 런타임 검증]]
-- [[Ontology-Evidence-Lifecycle|근거의 시점과 예외 보존, 필수 근거 평가]]
-- [[Ontology-Evidence-Read|잘린 근거를 같은 원문에서 끝까지 읽는 MCP와 CLI]]
-- [[Ontology-Document-Outline|찾은 문서의 다른 section 탐색]]
-- [[Ontology-Document-Search|문서 후보를 페이지로 찾고 후속 근거를 고르는 API]]
-- [[Ontology-Condition-Retrieval|질문 조건을 나누고 빠진 근거만 제한적으로 다시 찾기]]
-- [[Ontology-Retrieval-Quality|자연어 검색과 후속 탐색의 품질, 비용과 남은 한계]]
-- [[Ontology-Retrieval-Latency|같은 검색 결과를 보존하는 조회 지연 개선과 반복 비교]]
-- [[Ontology-Search-Algorithms|BM25, 다국어 임베딩과 RRF의 고정 비교 실험]]
-- [[Ontology-Search-Selection|질문의 여러 조건을 담는 절 선택과 검증]]
-- [[Ontology-Search-Rerank|같은 후보의 다국어 재정렬 비교와 미채택 판단]]
+| 필요한 작업 | 시작 문서 |
+| --- | --- |
+| 원리 학습과 적용 예시 | [[Ontology-Guides]] |
+| 자료의 역할과 적용 판단 | [[Development-Ontology-Contract]] |
+| 설치, 실행과 MCP 등록 | [[Ontology-Operations]] |
+| 검색 도구와 근거 확인 절차 | [[Ontology-Reference]] |
+| 개선 결과와 실험의 한계 | [[Ontology-History]] |
 
 ## 실행 경로
 

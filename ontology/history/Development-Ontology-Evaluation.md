@@ -7,7 +7,7 @@ aliases: ["개발 판단 온톨로지 평가", "Development Ontology Evaluation"
 
 # 개발 판단 온톨로지의 첫 검증 기록
 
-> 기록일: 2026-09-05. 앞부분의 수동 관찰은 설계 조정용이다. 뒤의 상황 질문 4개는 별도로 준비한 최초 표본이며 실제 프로젝트 적용 검증은 아니다. 구현 runtime 검증은 [[Ontology-Operations#runtime 검증]]에 별도로 기록한다.
+> 기록일: 2026-09-05. 앞부분의 수동 관찰은 설계 조정용이다. 뒤의 상황 질문 4개는 별도로 준비한 최초 표본이며 실제 프로젝트 적용 검증은 아니다. 구현 runtime 검증은 [[Ontology-Runtime-Verification#runtime 검증]]에 별도로 기록한다.
 
 ## 입력 자료
 
@@ -86,7 +86,7 @@ Semble `search`를 저장소 루트 대상으로 `content=docs`, `top_k=6`, `max
 4. 사용자에게 이미 읽을 수 있는 사실을 재설명하도록 요구하지 않는다. 미기록 의도만 질문한다.
 5. 기록된 기술 지식을 사용자의 선호나 채택 결정으로 승격하지 않는다.
 
-실제 작업 사례가 생기면 필수 근거와 제외할 제안을 먼저 기록하고, 조정용 사례와 별도로 평가한다. 실행 구현의 parser, snapshot, query, MCP protocol 검증은 [[Ontology-Operations#runtime 검증]]을 따른다. 이 문서의 수동 관찰을 runtime 품질 또는 실제 버그 검출 결과로 해석하지 않는다.
+실제 작업 사례가 생기면 필수 근거와 제외할 제안을 먼저 기록하고, 조정용 사례와 별도로 평가한다. 실행 구현의 parser, snapshot, query, MCP protocol 검증은 [[Ontology-Runtime-Verification#runtime 검증]]을 따른다. 이 문서의 수동 관찰을 runtime 품질 또는 실제 버그 검출 결과로 해석하지 않는다.
 
 ## 상황 질문 4개로 조회기 확인
 
@@ -184,3 +184,5 @@ Semble `search`를 저장소 루트 대상으로 `content=docs`, `top_k=6`, `max
 - [[Ontology-Operations|실행 절차와 runtime 검증]]
 - [[Ontology-Evidence-Lifecycle|근거 관리 인사이트와 필수 근거 평가]]
 - [[Ontology-Evidence-Read|조회한 근거를 같은 원문에서 끝까지 읽기]]
+
+상위: [[Ontology-History]].

@@ -44,7 +44,7 @@ BM25는 기존 질문의 후보 근거를 45/59에서 51/59로 늘렸지만 최�
 
 로컬 MPS 단일 관측에서 기존 질문의 warm 후보 검색 p50/p95는 BM25 18.6/26.5 ms, dense 22.0/34.3 ms, 순차 hybrid 39.0/51.4 ms였다. 최초 문서 임베딩은 약 73.6초, 최종 실행의 BM25 색인 생성은 약 32.4초였다. 모델 로드, 서버 요청과 응답 구성까지 포함한 운영 지연이나 반복 성능 benchmark가 아니다.
 
-단위 검사 5개와 실제 생성물 변조 검사 4개가 통과했다. 74개 질문에서 current와 실제 lookup JSON 전체 일치, 5개 구성의 byte 상한 370건과 scope 이탈 0건을 확인했다. 원문/모델/코드 hash, 첫 새 표본 관측, 사례별 성공과 회귀는 [비교 보고서](evaluation/algorithm-search-report-2026-09-08.json), 질문은 [새 표본](evaluation/algorithm-holdout-cases-2026-09-08.json)에 보존한다.
+단위 검사 5개와 실제 생성물 변조 검사 4개가 통과했다. 74개 질문에서 current와 실제 lookup JSON 전체 일치, 5개 구성의 byte 상한 370건과 scope 이탈 0건을 확인했다. 원문/모델/코드 hash, 첫 새 표본 관측, 사례별 성공과 회귀는 [비교 보고서](../evaluation/algorithm-search-report-2026-09-08.json), 질문은 [새 표본](../evaluation/algorithm-holdout-cases-2026-09-08.json)에 보존한다.
 
 ## 평가 해석
 
@@ -57,7 +57,7 @@ BM25는 기존 질문의 후보 근거를 45/59에서 51/59로 늘렸지만 최�
 
 ## 실행
 
-Vault 루트에서 실행한다. 실제 검증 환경은 macOS arm64, Python 3.10이며 설치 패키지는 [requirements.txt](evaluation/algorithm-search/requirements.txt)에 고정했다. 모델과 생성 입력, 벡터는 저장소 밖에 둔다.
+Vault 루트에서 실행한다. 실제 검증 환경은 macOS arm64, Python 3.10이며 설치 패키지는 [requirements.txt](../evaluation/algorithm-search/requirements.txt)에 고정했다. 모델과 생성 입력, 벡터는 저장소 밖에 둔다.
 
 ```bash
 experiment_dir=/tmp/ontology-search-experiment
@@ -83,4 +83,6 @@ node ontology/evaluation/algorithm-search/run.mjs evaluate --data "$experiment_d
 - [RRF](https://www.elastic.co/docs/reference/elasticsearch/rest-apis/reciprocal-rank-fusion)
 - [[Ontology-Retrieval-Quality|기존 조회 품질과 응답 구성 평가]]
 - [[RAG-Retrieval-Engineering|검색과 context 구성의 평가 층]]
-- [실행 파일 목차](evaluation/algorithm-search/algorithm-search.md)
+- [실행 파일 목차](../evaluation/algorithm-search/algorithm-search.md)
+
+상위: [[Ontology-History]].

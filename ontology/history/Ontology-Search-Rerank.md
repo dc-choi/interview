@@ -35,7 +35,7 @@ category: "AI엔지니어링(AIEngineering)"
 
 어휘 대조군의 합계 42/94는 기준보다 1개 높지만 기존 성공 1개를 잃었다. 문서 후보 제한과 graph 관계의 서열 변경 중 어느 부분이 기여했는지도 분리하지 않았으므로, 이 대조군 역시 운영 변경으로 채택하지 않는다.
 
-모델의 기존 회귀는 종료 시 요청 처리 순서, 긴 계산의 요청 지연, 클릭률 개선 검증, 여러 인스턴스의 캐시 보호 질문이다. 이전 절 선택의 `selection-holdout-06`과 TypeORM 정리 경계 질문은 개선됐다. 사례별 반환 heading, 잘림 여부, excerpt hash와 회귀 목록은 [비교 보고서](evaluation/rerank-report-2026-09-08.json)에 있다.
+모델의 기존 회귀는 종료 시 요청 처리 순서, 긴 계산의 요청 지연, 클릭률 개선 검증, 여러 인스턴스의 캐시 보호 질문이다. 이전 절 선택의 `selection-holdout-06`과 TypeORM 정리 경계 질문은 개선됐다. 사례별 반환 heading, 잘림 여부, excerpt hash와 회귀 목록은 [비교 보고서](../evaluation/rerank-report-2026-09-08.json)에 있다.
 
 같은 후보의 어휘 순서와 비교하면 회귀 3개는 정답 문서는 남았지만 필요한 절이 빠졌고, 긴 계산 질문은 정답 문서가 최종 근거에서 사라졌다. TypeORM 개선은 같은 절의 전체 본문을 반환하면서, PMF 개선은 이미 선택된 문서의 두 번째 조건 절을 추가하면서 발생했다. 이는 최종 반환 기준의 진단이며 후보 회수의 증거로 대신하지 않는다.
 
@@ -58,7 +58,7 @@ Apple M3 Pro, 메모리 18GB, Python 3.10.20, 로컬 MPS의 단일 실행이다.
 
 ## 재현과 검증
 
-Vault 루트에서 실행한다. 기존 [Python 의존성 고정 파일](evaluation/algorithm-search/requirements.txt)을 재사용하고 모델과 생성물은 저장소 밖에 둔다.
+Vault 루트에서 실행한다. 기존 [Python 의존성 고정 파일](../evaluation/algorithm-search/requirements.txt)을 재사용하고 모델과 생성물은 저장소 밖에 둔다.
 
 Node 의존성과 활성 snapshot은 [[Ontology-Operations#설치와 명령]]에 따라 먼저 준비한다. 아래 명령은 실행 시점의 코드와 활성 snapshot으로 새 실험을 만든다. 이 기록과 직접 대조하려면 원문 revision, snapshot fingerprint와 코드 hash가 보고서와 일치해야 한다.
 
@@ -94,3 +94,5 @@ node ontology/evaluation/rerank/run.mjs evaluate --data "$experiment_dir/known" 
 - [Sentence Transformers, Retrieve and Re-Rank](https://www.sbert.net/examples/sentence_transformer/applications/retrieve_rerank/README.html)
 - [[Ontology-Search-Algorithms|BM25, 임베딩과 RRF 비교]]
 - [[RAG-Retrieval-Engineering#품질을 분해하는 평가 모델|검색과 근거 구성의 분리]]
+
+상위: [[Ontology-History]].

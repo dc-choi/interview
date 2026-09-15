@@ -25,7 +25,7 @@ aliases: ["온톨로지 검색 품질", "Ontology Retrieval Quality"]
 | 양성 사례의 본문 조건 충족 | 1/8 | 1/8 |
 | 음성 사례의 빈 결과 충족 | 1/2 | 1/2 |
 
-사례는 [generalization-cases-2026-09-07.json](evaluation/generalization-cases-2026-09-07.json), 첫 관찰과 전후 코드 hash는 [retrieval-quality-report-2026-09-07.json](evaluation/retrieval-quality-report-2026-09-07.json)에 보존한다. 사례 파일 SHA-256은 `4e5761f129542615c9a0584d17194af31f3411df61c7e506401cae01dadd7a86`이다. 첫 관찰 이후 원인 분석과 목차 기능 설계에 사용했으므로 이후 결과는 독립 holdout 성능으로 부르지 않는다. 누락에 맞춰 기대 경로나 본문 조건을 변경하지 않았다.
+사례는 [generalization-cases-2026-09-07.json](../evaluation/generalization-cases-2026-09-07.json), 첫 관찰과 전후 코드 hash는 [retrieval-quality-report-2026-09-07.json](../evaluation/retrieval-quality-report-2026-09-07.json)에 보존한다. 사례 파일 SHA-256은 `4e5761f129542615c9a0584d17194af31f3411df61c7e506401cae01dadd7a86`이다. 첫 관찰 이후 원인 분석과 목차 기능 설계에 사용했으므로 이후 결과는 독립 holdout 성능으로 부르지 않는다. 누락에 맞춰 기대 경로나 본문 조건을 변경하지 않았다.
 
 ## 빠진 근거의 두 종류
 
@@ -47,7 +47,7 @@ aliases: ["온톨로지 검색 품질", "Ontology Retrieval Quality"]
 
 목차 탐색 뒤 본문을 읽어 최종 답변까지 평가한 결과는 아니다. 양성 8개 전체를 분모로 유지했으며, 성공적으로 탐색한 질문만 추려 회수율을 높이지 않는다.
 
-평가기는 각 응답의 text/structured JSON 일치, 실제 byte 예산, source revision, 전체 Section ID 집합, heading 순서와 hash, 페이지 cursor 진행과 끝 도달을 대조한다. 페이지당 24,000 byte, 문서당 32페이지, 전체 목차 응답 2MiB로 제한한다. 보고서는 [outline-navigation-report-2026-09-08.json](evaluation/outline-navigation-report-2026-09-08.json)에 둔다.
+평가기는 각 응답의 text/structured JSON 일치, 실제 byte 예산, source revision, 전체 Section ID 집합, heading 순서와 hash, 페이지 cursor 진행과 끝 도달을 대조한다. 페이지당 24,000 byte, 문서당 32페이지, 전체 목차 응답 2MiB로 제한한다. 보고서는 [outline-navigation-report-2026-09-08.json](../evaluation/outline-navigation-report-2026-09-08.json)에 둔다.
 
 최종 실행은 조회 10회에 212,960 byte, 목차 77회에 766,898 byte, 합계 979,858 byte를 반환했다. 약 23.2초가 걸렸고 중단된 사례는 없었다. 크기는 MCP envelope를 제외한 각 JSON payload의 합계다. 목차 호출 77회 모두 한 페이지에서 완료됐으며, 여러 페이지 연결은 별도 runtime fixture에서 검증했다. 이 비용은 모든 반환 문서를 여는 검사 방식의 관찰값으로, 모델이 관련 문서를 골라 쓰는 실제 사용 비용을 뜻하지 않는다.
 
@@ -65,7 +65,7 @@ aliases: ["온톨로지 검색 품질", "Ontology Retrieval Quality"]
 
 상대 문서 점수만 우선하는 초기 후보는 기존 TypeScript 오버로딩 질문의 `함정` 근거를 잃었다. 관계가 기록된 본문을 우선하자 이 근거를 보존했다. 단순 문장 분해와 depth 2 확대도 별도 임시 비교에서 전체 조건 충족을 늘리지 못해 기본 동작에 추가하지 않았다. 적용 근거는 [[RAG-Retrieval-Engineering#품질을 분해하는 평가 모델|검색과 context 구성의 구분]]이며, 문서 연결 자체를 의미적 적합성의 증명으로 사용하지 않는다.
 
-후보 코드를 고정한 다음, 구현과 기존 평가를 보지 않은 별도 작업자가 준비한 새 질문 8개를 처음 실행했다. 양성은 tech 3개, biz/econ/fit 각 1개이고 음성은 가상 용어 질문과 원예 질문이다. 원문의 제한된 본문 조건을 검사하는 합성 자료이며 사용자의 실제 처우나 업무 기록이 아니다. 사례는 [graph-ranking-cases-2026-09-08.json](evaluation/graph-ranking-cases-2026-09-08.json)에 보존한다. 첫 실행 전 음성 사례의 필수 빈 배열 누락만 수정했고, query와 양성 정답은 바꾸지 않았다. 원본/수정본 hash와 고정 시점은 보고서에 남겼다.
+후보 코드를 고정한 다음, 구현과 기존 평가를 보지 않은 별도 작업자가 준비한 새 질문 8개를 처음 실행했다. 양성은 tech 3개, biz/econ/fit 각 1개이고 음성은 가상 용어 질문과 원예 질문이다. 원문의 제한된 본문 조건을 검사하는 합성 자료이며 사용자의 실제 처우나 업무 기록이 아니다. 사례는 [graph-ranking-cases-2026-09-08.json](../evaluation/graph-ranking-cases-2026-09-08.json)에 보존한다. 첫 실행 전 음성 사례의 필수 빈 배열 누락만 수정했고, query와 양성 정답은 바꾸지 않았다. 원본/수정본 hash와 고정 시점은 보고서에 남겼다.
 
 | 관계 탐색 비교 항목 | ID 순서 | 근거 우선순위 |
 | --- | ---: | ---: |
@@ -79,13 +79,13 @@ aliases: ["온톨로지 검색 품질", "Ontology Retrieval Quality"]
 
 새 8개에서 단발 조회 payload 합계는 186,726 byte에서 186,074 byte로 바뀌었고 양쪽 모두 8회 호출이었다. 모든 응답은 24,000 byte 이내였다. 실행 시간은 코드와 함께 기록하되 단회 관측으로 속도 향상을 주장하지 않는다. 현재 수정 코드는 같은 committed snapshot을 읽으며 양쪽 결과에 `unindexed_worktree`를 보존했다.
 
-전후 결과, 사례/코드 hash, 폐기 후보와 새 MCP 검증은 [graph-ranking-report-2026-09-08.json](evaluation/graph-ranking-report-2026-09-08.json)에 둔다. 실제 새 SDK stdio 연결에서 TypeScript 오버로딩과 자산 분산 두 질문의 원문 조건 2/2, 응답 예산과 후속 읽기 무결성을 확인했다. 모델의 자동 도구 선택이나 최종 답변 품질을 평가한 것은 아니다.
+전후 결과, 사례/코드 hash, 폐기 후보와 새 MCP 검증은 [graph-ranking-report-2026-09-08.json](../evaluation/graph-ranking-report-2026-09-08.json)에 둔다. 실제 새 SDK stdio 연결에서 TypeScript 오버로딩과 자산 분산 두 질문의 원문 조건 2/2, 응답 예산과 후속 읽기 무결성을 확인했다. 모델의 자동 도구 선택이나 최종 답변 품질을 평가한 것은 아니다.
 
 후속 독립 검토에서는 한 토큰의 정확한 제목 검색이 전체 본문 스캔을 생략하면서 관계의 본문 점수까지 빠뜨리는 경로를 발견했다. 또 RelationAssertion의 metadata 점수가 0으로 처리되어 명시적 typed relation이 일반 링크에 밀리는 오류를 확인했다. 연결된 Section 근거만 batch로 읽고, RelationAssertion의 metadata 점수를 보존하도록 보완했다. 위 표는 최초 고정 코드(`0b1cc1a6`)의 관측으로 보존하고, 보완 코드의 40개 재실행은 보고서의 `post_review_regression`에 기록했다. 전후 적중 지표와 반환 byte 수는 같았으며, 이 재실행을 새로운 독립 표본 결과로 계산하지 않는다.
 
 ## 실행과 남은 검증
 
-목차 기능을 구현한 시점의 Node suite는 100/100이었다. 당시 query의 어휘 겹침 metadata와 공백 입력 수정을 적용한 회귀 결과는 [final-regression-report-2026-09-08.json](evaluation/final-regression-report-2026-09-08.json)에 남겼다. 관계 탐색 당시 suite는 103/103, 문서 검색 추가 시점은 112/112였다. 아래 metadata와 본문 선택의 첫 보완 후 suite는 116/116, 첫 독립 검토 보완 후에는 119/119, 두 번째 보완 후에는 121/121, 예산/진단 보완 후에는 123/123, 누락 요약 보완까지 포함한 최종 결과는 124/124다. 원래 실패한 질문을 성공으로 바꾸거나 과거 보고서의 코드 hash를 현재 코드로 덮지 않았다.
+목차 기능을 구현한 시점의 Node suite는 100/100이었다. 당시 query의 어휘 겹침 metadata와 공백 입력 수정을 적용한 회귀 결과는 [final-regression-report-2026-09-08.json](../evaluation/final-regression-report-2026-09-08.json)에 남겼다. 관계 탐색 당시 suite는 103/103, 문서 검색 추가 시점은 112/112였다. 아래 metadata와 본문 선택의 첫 보완 후 suite는 116/116, 첫 독립 검토 보완 후에는 119/119, 두 번째 보완 후에는 121/121, 예산/진단 보완 후에는 123/123, 누락 요약 보완까지 포함한 최종 결과는 124/124다. 원래 실패한 질문을 성공으로 바꾸거나 과거 보고서의 코드 hash를 현재 코드로 덮지 않았다.
 
 `ontology/`에서 저장소 밖 cache를 준비한 뒤 실행한다.
 
@@ -113,13 +113,13 @@ node evaluation/outline-navigation.mjs --cache <같은-cache> --check
 | 새 양성 질문 4개 | 3/4 | 3/4 | 3/4 | 3/4 |
 | 새 음성 질문의 빈 결과 | 0/2 | 0/2 | 0/2 | 0/2 |
 
-알려진 질문에서는 긴 계산으로 인한 요청 지연, 제품 인터뷰와 재시도 폭증 사례의 문서를 추가로 찾았다. 새 사례는 구현과 기존 평가를 보지 않은 별도 작업자가 원문에서 만든 합성 질문 6개다. query와 평가 정책을 고정한 뒤 처음 공개했다. tech 2개, biz/econ 각 1개와 날씨/가상 왕국 음성 2개이며 [사례 원본](evaluation/document-search-cases-2026-09-08.json)의 SHA-256은 `a45607c714de84af95890c6379dc828800ac478d032537f75cb660deef0f1d7b`다. 새 표본에서의 발견 개선은 관찰되지 않았고, 근거 부족 응답 처리 문서는 여전히 빠졌다. 이후 이 사례를 조정에 사용하면 회귀 표본으로 취급한다.
+알려진 질문에서는 긴 계산으로 인한 요청 지연, 제품 인터뷰와 재시도 폭증 사례의 문서를 추가로 찾았다. 새 사례는 구현과 기존 평가를 보지 않은 별도 작업자가 원문에서 만든 합성 질문 6개다. query와 평가 정책을 고정한 뒤 처음 공개했다. tech 2개, biz/econ 각 1개와 날씨/가상 왕국 음성 2개이며 [사례 원본](../evaluation/document-search-cases-2026-09-08.json)의 SHA-256은 `a45607c714de84af95890c6379dc828800ac478d032537f75cb660deef0f1d7b`다. 새 표본에서의 발견 개선은 관찰되지 않았고, 근거 부족 응답 처리 문서는 여전히 빠졌다. 이후 이 사례를 조정에 사용하면 회귀 표본으로 취급한다.
 
 알려진 40개에서 lookup은 40회/833,264 byte, search 최대 두 페이지는 73회/1,530,328 byte, 둘의 합계는 113회/2,363,592 byte였다. 새 6개에서는 각각 6회/140,475 byte, 12회/270,872 byte, 합계 18회/411,347 byte였다. 모든 개별 응답은 해당 예산 이내였으며 크기는 MCP envelope를 제외한 JSON payload다. 페이지를 늘리는 비용과 무관한 후보를 사람이 검토하는 비용이 있으므로 전부 수집하는 것을 기본 사용법으로 강제하지 않는다.
 
 본문을 자동으로 추가하는 후보와 관계 근거 재정렬 후보는 알려진 질문의 적중을 잃거나 전체 성공을 늘리지 못해 적용하지 않았다. 단어 시작 경계로 오탐을 줄이는 후보도 `OpenSearch`, `refreshToken`, `강제청산`, `2차원`의 부분어 검색을 잃어 폐기했다. 이 시점의 `matched_terms`에는 internal ID 같은 metadata 겹침도 들어갔다. 그 문제는 아래 보완에서 수정했다. `best_evidence_ref`의 본문에 검색어가 있다는 보장은 없으며, 탐색 단서를 의미 적합성이나 지식 부재의 판정으로 사용하지 않는다.
 
-재현은 `node evaluation/document-search.mjs --cache <같은-cache> --cases evaluation/document-search-cases-2026-09-08.json`으로 한다. byte, provenance와 페이지 계약 위반은 실행을 실패시키고 문서 누락은 별도 지표로 남긴다. 고정 시점, 코드 hash, 첫 관찰, lookup 동일성, 폐기 후보와 MCP 연결 검증은 [문서 검색 보고서](evaluation/document-search-report-2026-09-08.json)에 둔다.
+재현은 `node evaluation/document-search.mjs --cache <같은-cache> --cases evaluation/document-search-cases-2026-09-08.json`으로 한다. byte, provenance와 페이지 계약 위반은 실행을 실패시키고 문서 누락은 별도 지표로 남긴다. 고정 시점, 코드 hash, 첫 관찰, lookup 동일성, 폐기 후보와 MCP 연결 검증은 [문서 검색 보고서](../evaluation/document-search-report-2026-09-08.json)에 둔다.
 
 ## 내부 식별자 오탐과 본문 선택 보완
 
@@ -140,11 +140,11 @@ Document의 정확한 alias 점수 1,000이 실제 설명 section 점수보다 �
 
 기존 46개 질문은 같은 dirty 상태, snapshot과 byte 예산에서 전체 조건 충족 23/46, 본문 조건 20/35, 필수 그룹 27/47, Document metadata 발견 31/39와 후속 두 페이지 발견 34/39를 유지했다. 개별 적중 지표의 회귀도 없었다. lookup 46회는 양쪽 모두 973,739 byte였으며, 결과 전체 JSON이 동일하다는 검사는 아니다.
 
-별도 작업자가 구현과 기존 사례를 읽지 않고 만든 새 합성 질문 6개는 코드를 고정한 뒤 처음 실행했다. 양성은 tech 2개, biz/econ 각 1개이고 음성은 tech/biz 각 1개다. [사례 원본](evaluation/metadata-ranking-cases-2026-09-08.json)의 SHA-256은 `76b413409e9f442f0890078de2ae65b5e7cdf56aa1a200889230f1c4d116f103`이다. `AARRR`의 실제 설명을 추가로 반환해 전체 조건 충족은 1/6에서 2/6, 양성 본문 조건은 1/4에서 2/4로 늘었다. 문서 발견은 4/4로 같았고 음성의 빈 결과는 0/2 그대로다. lookup 6회 payload 합계는 132,459에서 132,086 byte로 바뀌었다. 작은 표본의 한 사례 개선을 일반적인 답변 정확도 향상으로 확대하지 않는다.
+별도 작업자가 구현과 기존 사례를 읽지 않고 만든 새 합성 질문 6개는 코드를 고정한 뒤 처음 실행했다. 양성은 tech 2개, biz/econ 각 1개이고 음성은 tech/biz 각 1개다. [사례 원본](../evaluation/metadata-ranking-cases-2026-09-08.json)의 SHA-256은 `76b413409e9f442f0890078de2ae65b5e7cdf56aa1a200889230f1c4d116f103`이다. `AARRR`의 실제 설명을 추가로 반환해 전체 조건 충족은 1/6에서 2/6, 양성 본문 조건은 1/4에서 2/4로 늘었다. 문서 발견은 4/4로 같았고 음성의 빈 결과는 0/2 그대로다. lookup 6회 payload 합계는 132,459에서 132,086 byte로 바뀌었다. 작은 표본의 한 사례 개선을 일반적인 답변 정확도 향상으로 확대하지 않는다.
 
 새 SDK stdio 연결에서 `Kano Model`의 검색 참조, lookup 본문과 `context_read`의 revision/hash/anchor 일치를 검증했다. 실제 이전 코드 bytes로 발급한 cursor는 새 코드에서 `cursor_mismatch`로 거부했다. 이는 새 프로세스의 API 검증이며 기존 host 연결의 재시작이나 모델의 자동 도구 선택을 검증한 것은 아니다.
 
-고정 시점, 코드 hash, 전후 지표와 MCP 검증은 [metadata 검색 보완 보고서](evaluation/metadata-ranking-report-2026-09-08.json)에 보존한다. 새 사례는 `node evaluation/run.mjs --cache <위-snapshot-cache> --cases evaluation/metadata-ranking-cases-2026-09-08.json`으로 재실행할 수 있다. 기대 조건을 모두 충족하지 못하므로 `--check`는 종료 코드 1이다. 이후 이 사례를 조정에 쓰면 회귀 표본으로 취급한다.
+고정 시점, 코드 hash, 전후 지표와 MCP 검증은 [metadata 검색 보완 보고서](../evaluation/metadata-ranking-report-2026-09-08.json)에 보존한다. 새 사례는 `node evaluation/run.mjs --cache <위-snapshot-cache> --cases evaluation/metadata-ranking-cases-2026-09-08.json`으로 재실행할 수 있다. 기대 조건을 모두 충족하지 못하므로 `--check`는 종료 코드 1이다. 이후 이 사례를 조정에 쓰면 회귀 표본으로 취급한다.
 
 독립 검토에서는 부분 alias로 선택된 기존 root가 그대로 남는 경로, 100개 이상의 부분 일치 점수가 정확한 제목보다 앞서는 경로, 작은 응답 예산에서 본문 대신 frontmatter만 남는 경로를 확인했다. 정확한 필드 일치를 문서와 section의 별도 순위 기준으로 두고, root는 ID 전체를 직접 지정한 경우만 점수 기반 읽기 시작점으로 허용한다. 응답에는 선택한 직접 근거, 관계와 양 끝 entity 및 근거 묶음, 선택 frontmatter provenance 순서로 담는다. 선택 근거가 빠진 자리를 provenance만으로 채워 성공 처리하지 않는다. 예산으로 발췌를 더 줄일 때도 제한 도달을 표시한다.
 
@@ -172,7 +172,7 @@ lookup은 근거와 상대 문서의 질문 점수가 같을 때 구조 역할�
 
 새 SDK stdio 연결에서 Controller 목차의 하위/관련 링크와 AI 도구 목차의 상위 링크를 조회했다. 세 역할 모두 검색, lookup, 목차, 원문 읽기를 거쳐 revision과 hash를 검증했다. Obsidian 설정 파일 4개는 작업 전후 해시가 같았다. 기존 host 프로세스의 교체를 검증한 것은 아니므로 MCP 재연결 후 새 코드를 사용한다.
 
-코드와 사례 hash, 전후 결과, 보존 검사와 MCP 근거는 [구조 역할 검증 보고서](evaluation/link-role-report-2026-09-08.json)에 남긴다. 비교 중 코드와 문서는 미커밋 상태이며 양쪽 조회에 `unindexed_worktree`를 유지했다. 세부 추출 계약은 [[Ontology-Operations#기존 목차와 위키링크의 역할]]을 따른다.
+코드와 사례 hash, 전후 결과, 보존 검사와 MCP 근거는 [구조 역할 검증 보고서](../evaluation/link-role-report-2026-09-08.json)에 남긴다. 비교 중 코드와 문서는 미커밋 상태이며 양쪽 조회에 `unindexed_worktree`를 유지했다. 세부 추출 계약은 [[Ontology-Runtime-Contract#기존 목차와 위키링크의 역할]]을 따른다.
 
 ## 선택한 문서의 조건과 잘린 본문 보완
 
@@ -182,8 +182,16 @@ lookup은 근거와 상대 문서의 질문 점수가 같을 때 구조 역할�
 
 구현과 기존 평가를 보지 않은 별도 작업자가 만든 새 질문 6개는 초안 코드를 고정한 뒤 처음 실행했다. 전체 조건은 3/6, 양성 본문은 3/4, 음성 빈 결과는 0/2로 전후 같았다. 검토 수정 후의 회귀 재실행도 같은 결과였다. 새 표본에서 개선을 확인한 것은 아니며, 남은 표현 차이와 문서 누락, 무관한 결과의 문제는 계속 남는다. 실제 답변 정확도와 사용자 시간 절감도 미검증이다.
 
-새 SDK stdio 연결에서 이전에 잘리던 두 절의 전체 본문과 후속 `context_read`의 일치를 확인했다. 최종 suite는 129/129이며, 동시 색인 잠금 테스트가 한 차례 실패한 뒤 개별 5회와 전체 재실행에서 통과한 관찰도 보고서에 남겼다. 코드 hash, 사례별 전후 결과와 검증 범위는 [응답 구성 보고서](evaluation/context-packing-report-2026-09-08.json), 새 질문은 [사례 원본](evaluation/context-packing-cases-2026-09-08.json)에 보존한다. 재실행은 `node evaluation/run.mjs --cases evaluation/context-packing-cases-2026-09-08.json`이며, 남은 실패를 포함한 `--check`는 종료 코드 1이다. 기존 MCP 연결에는 재연결 후 새 코드를 적용한다.
+새 SDK stdio 연결에서 이전에 잘리던 두 절의 전체 본문과 후속 `context_read`의 일치를 확인했다. 최종 suite는 129/129이며, 동시 색인 잠금 테스트가 한 차례 실패한 뒤 개별 5회와 전체 재실행에서 통과한 관찰도 보고서에 남겼다. 코드 hash, 사례별 전후 결과와 검증 범위는 [응답 구성 보고서](../evaluation/context-packing-report-2026-09-08.json), 새 질문은 [사례 원본](../evaluation/context-packing-cases-2026-09-08.json)에 보존한다. 재실행은 `node evaluation/run.mjs --cases evaluation/context-packing-cases-2026-09-08.json`이며, 남은 실패를 포함한 `--check`는 종료 코드 1이다. 기존 MCP 연결에는 재연결 후 새 코드를 적용한다.
 
 후속 후보 검색 비교는 [[Ontology-Search-Algorithms]]에서 관리한다. BM25, 다국어 임베딩, RRF와 추가 절 구성을 같은 원문과 응답 예산으로 비교하며 새 합성 표본을 따로 고정한다. 같은 후보의 모델 재정렬은 전체 통과가 41/94에서 40/94로 줄어 미채택했고 [[Ontology-Search-Rerank]]에 기록했다. 이후 관계보다 보충 근거를 먼저 담는 수정으로 기존 94개는 41개에서 43개 통과로 늘고 새 10개는 1개 통과로 같았다. 현재 적용 구성과 최신 검증은 [[Ontology-Search-Selection#후속 개선: 관계보다 조건 근거를 먼저 확보]]를 따른다.
 
-상위: [[Development-Ontology]]. 이전 관찰: [[Development-Ontology-Evaluation]]. 운영: [[Ontology-Operations]].
+## 짧은 문장 속 주제명 검색
+
+2026-09-15에는 정규화와 확장 후 8개 미만인 질문에서 개별 토큰과 Document 제목 또는 alias 전체가 같으면 부분 어휘 적중보다 우선하도록 보강했다. `status: index`인 목차는 이 우선권에서 제외하되 목차를 정확히 지정한 조회는 보존한다. 질문 전체의 exact metadata 판정과 `OpenSearch/search`, `refreshToken/token`, `p95/95` 같은 부분 검색은 보존한다. 긴 질문에도 주제명을 우선한 후보는 API 개요가 장애 대응 근거를 밀어내 폐기했다. 8개 경계는 기존 긴 질문 진단과 맞춘 보수적 휴리스틱이며 의미 분석을 뜻하지 않는다.
+
+원문 revision `f929210a7ff8429650559acc5fa83f85d092950b`에 고정한 기존 103개는 전체 조건 43/103, 필수 그룹 78/129를 유지했고 개별 문서/heading/본문/그룹 회귀도 없었다. 원문에서 정답 문구가 사라진 기존 사례 1개는 비교 전에 제외하고 사유를 보고서에 남겼다. 추가 11개는 1/11에서 2/11, 필수 그룹은 6/16에서 7/16으로 늘었다. 사용자의 RAG 질문은 대상 문서가 9위에서 1위로 올라 원문 본문을 반환했다. 다른 10개 합성 질문은 기존 구현을 본 작업자가 만든 회귀 표본이며 독립 holdout이 아니다. 이 10개의 결과와 음성 사례 2개의 무관한 응답 문제는 그대로다.
+
+전체 suite 149/149와 새 MCP stdio의 검색, 조회, 원문 읽기를 통과했고 revision/hash, scope와 byte 예산을 검사했다. 기존 103개 비교의 p50은 384→394ms, p95는 489→476ms였다. 한 번의 로컬 비교이므로 속도 개선이나 일반적인 답변 정확도를 주장하지 않는다. 기존 MCP 연결은 재연결해야 수정 코드를 사용한다. 입력과 hash, 제외 사유, 사례별 결과와 재현 절차는 [검증 보고서](../evaluation/named-query-report-2026-09-15.json), 새 질문은 [회귀 사례](../evaluation/named-query-cases-2026-09-15.json)에 남긴다.
+
+상위: [[Ontology-History]]. 전체 지도: [[Development-Ontology]]. 이전 관찰: [[Development-Ontology-Evaluation]]. 운영: [[Ontology-Operations]].

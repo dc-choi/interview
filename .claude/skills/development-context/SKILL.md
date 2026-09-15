@@ -24,7 +24,7 @@ description: Retrieve source-backed personal knowledge for technical, business, 
 
 ## 여러 조건 질문의 한정 탐색
 
-한 답변에 여러 근거가 필요한 질문은 [조건별 근거 탐색](../../../ontology/Ontology-Condition-Retrieval.md)을 따른다. 이 흐름은 host의 작업 규칙이며 서버가 조건의 의미나 충족 여부를 자동 검증한다는 뜻은 아니다.
+한 답변에 여러 근거가 필요한 질문은 [조건별 근거 탐색](../../../ontology/reference/Ontology-Condition-Retrieval.md)을 따른다. 이 흐름은 host의 작업 규칙이며 서버가 조건의 의미나 충족 여부를 자동 검증한다는 뜻은 아니다.
 
 1. 첫 조회 전에 사용자 질문에서 답변에 필요한 근거 질문을 최대 3개 그룹으로 적되 필요한 조건을 누락하지 않는다. 한 그룹 안에서도 동작 원리, 실패 경계, 예외와 적용 맥락처럼 따로 설명할 원자 요구를 고정 `id`와 `question`으로 적는다. 이 inventory는 첫 호출 전에 trace의 condition에 남기며, 반환된 source에 맞춰 추가, 삭제 또는 재서술하지 않는다. 질문에 명시된 요구와 host가 해석을 위해 둔 가정은 구분한다. 가정은 검색 조건으로 몰래 추가하거나 충족으로 취급하지 않는다.
 2. 첫 호출은 원래 질문 그대로 `context_lookup`, `max_bytes: 24000`으로 한다. 조건 힌트는 기본으로 생략한다. 사용자가 탐색 표현을 지정했거나 힌트 사용을 요청했고 도구 schema가 `conditions`를 지원하면 `stated_requirement` 그룹에서만 1~3개의 짧은 탐색 표현을 넣는다. 이는 보충 절의 어휘 선택 단서일 뿐 근거 또는 조건 충족 판정이 아니며, 이미 연결한 server가 이 필드를 받지 않으면 생략한다. 이후 `context_lookup` 또는 `context_search`는 아직 `unresolved`인 조건을 찾을 때만 최대 2회 쓴다. `context_search` cursor의 다음 페이지도 한 회다.
@@ -43,9 +43,9 @@ description: Retrieve source-backed personal knowledge for technical, business, 
 2. 결과의 `index_sync`, `coverage_gaps`, 예산과 검사하지 않은 항목을 먼저 확인한다. `matching.assessment`가 `weak_lexical_overlap`이면 긴 질문과 같은 section에서 겹치는 단어가 매우 적다는 신호다. 반환된 자료가 질문을 실제로 다루는지 확인하고, 무관하면 표현이나 scope를 바꿔 다시 찾는다. 단, 여러 조건 질문의 한정 탐색에서는 처음 scope를 유지하고 빠진 조건의 표현만 바꾼다. 이 표시는 의미 적합성이나 지식 부재의 판정이 아니다. 근거는 반환된 커밋의 원문이다. dirty 또는 revision 불일치가 있으면 현재 작업 파일과 혼합하지 않고 커밋과 현재 파일의 차이를 확인한다.
 3. MCP가 연결되지 않았으면 [운영 절차](../../../ontology/Ontology-Operations.md)의 CLI를 사용하거나 파일을 직접 찾는다. 지도에 맞는 상황이면 고려사항과 원문 heading으로 이동한다. 이벤트 발행 지도 하나를 다른 주제에 억지로 적용하지 않는다.
 4. 근거가 부족하면 관련 카테고리를 검색한다. 행동과 구조로 후보를 찾을 때 Semble을 사용하고, 정확한 용어와 전체 참조는 `rg`로 확인한다. Semble이 없으면 `rg --files`와 본문 검색을 사용한다. 도구 결과가 없다는 이유만으로 지식이 없다고 결론짓지 않는다.
-5. 필요한 문서가 조회 결과에 없거나 root 제한으로 후보가 잘렸으면 `context_search`로 문서 후보를 찾는다. 여러 조건 질문에서는 아직 해결되지 않은 조건만 query로 쓰고, 첫 요청과 같은 scope를 유지한다. cursor의 다음 페이지도 추가 탐색 한 회로 센다. `candidates`와 `matched_terms`는 문서 metadata와 여러 section의 어휘 겹침이며 본문 근거나 의미적 적합성 점수가 아니다. `best_evidence_ref`도 원문 읽기의 시작점이므로 해당 본문에 모든 검색어가 있다고 가정하지 않는다. 도구가 없으면 [문서 검색 절차](../../../ontology/Ontology-Document-Search.md)의 CLI를 사용한다. 반환된 revision과 색인 상태를 확인하고 이전 revision의 페이지와 섞지 않는다.
-6. 관련 Document는 찾았지만 필요한 heading이나 다른 조건이 빠졌으면 `context_outline`로 목차를 확인한다. Document의 `id`를 `document_id`로, 같은 조회의 `index_sync` revision을 `source_revision`으로 전달한다. 이어진 목차 페이지도 한 호출로 세며, 조건 흐름의 outline 상한 안에서만 계속한다. 도구가 없으면 [목차 조회 절차](../../../ontology/Ontology-Document-Outline.md)의 CLI 또는 같은 revision의 원문을 읽는다. 목차는 본문 근거가 아니므로 질문에 필요한 section을 골라 본문을 확인한다.
-7. 검색 요약이나 지도에만 의존하지 않고 선택한 원문 section과 예외 조건을 읽는다. 목차에서 고른 section 또는 `truncated: true`인 중요한 발췌가 있고 `context_read`가 보이면 조회 결과의 `id`를 `evidence_unit_id`로, `source_revision`과 `content_hash`는 그대로 전달한다. `offset_bytes: 0`에서 시작하고 다음 페이지도 한 호출로 세며, 조건 흐름의 read 상한과 남은 byte 안에서만 계속한다. revision 또는 hash 불일치가 나면 이전 페이지와 섞지 않는다. 도구가 없으면 [근거 읽기 절차](../../../ontology/Ontology-Evidence-Read.md)의 CLI 또는 반환된 revision, path와 byte anchor의 Git 원문을 사용한다. 동명 heading은 전체 heading 경로, occurrence와 byte anchor로 구분한다. 현재 작업 파일로 보완했다면 pinned 원문과의 차이를 확인한다. 파일이나 heading이 사라졌거나 잘린 조건을 더 읽을 수 없으면 근거 부족으로 남긴다.
+5. 필요한 문서가 조회 결과에 없거나 root 제한으로 후보가 잘렸으면 `context_search`로 문서 후보를 찾는다. 여러 조건 질문에서는 아직 해결되지 않은 조건만 query로 쓰고, 첫 요청과 같은 scope를 유지한다. cursor의 다음 페이지도 추가 탐색 한 회로 센다. `candidates`와 `matched_terms`는 문서 metadata와 여러 section의 어휘 겹침이며 본문 근거나 의미적 적합성 점수가 아니다. `best_evidence_ref`도 원문 읽기의 시작점이므로 해당 본문에 모든 검색어가 있다고 가정하지 않는다. 도구가 없으면 [문서 검색 절차](../../../ontology/reference/Ontology-Document-Search.md)의 CLI를 사용한다. 반환된 revision과 색인 상태를 확인하고 이전 revision의 페이지와 섞지 않는다.
+6. 관련 Document는 찾았지만 필요한 heading이나 다른 조건이 빠졌으면 `context_outline`로 목차를 확인한다. Document의 `id`를 `document_id`로, 같은 조회의 `index_sync` revision을 `source_revision`으로 전달한다. 이어진 목차 페이지도 한 호출로 세며, 조건 흐름의 outline 상한 안에서만 계속한다. 도구가 없으면 [목차 조회 절차](../../../ontology/reference/Ontology-Document-Outline.md)의 CLI 또는 같은 revision의 원문을 읽는다. 목차는 본문 근거가 아니므로 질문에 필요한 section을 골라 본문을 확인한다.
+7. 검색 요약이나 지도에만 의존하지 않고 선택한 원문 section과 예외 조건을 읽는다. 목차에서 고른 section 또는 `truncated: true`인 중요한 발췌가 있고 `context_read`가 보이면 조회 결과의 `id`를 `evidence_unit_id`로, `source_revision`과 `content_hash`는 그대로 전달한다. `offset_bytes: 0`에서 시작하고 다음 페이지도 한 호출로 세며, 조건 흐름의 read 상한과 남은 byte 안에서만 계속한다. revision 또는 hash 불일치가 나면 이전 페이지와 섞지 않는다. 도구가 없으면 [근거 읽기 절차](../../../ontology/reference/Ontology-Evidence-Read.md)의 CLI 또는 반환된 revision, path와 byte anchor의 Git 원문을 사용한다. 동명 heading은 전체 heading 경로, occurrence와 byte anchor로 구분한다. 현재 작업 파일로 보완했다면 pinned 원문과의 차이를 확인한다. 파일이나 heading이 사라졌거나 잘린 조건을 더 읽을 수 없으면 근거 부족으로 남긴다.
 
 ## 적용 여부 판단
 
@@ -75,6 +75,6 @@ description: Retrieve source-backed personal knowledge for technical, business, 
 
 기록이 허용된 작업에서는 채택된 결정, 이유와 적용 범위를 해당 프로젝트의 정본에 남긴다. 관측 결과와 원인 가설을 구분하고, 결정이 바뀌면 이전의 적용 범위와 대체 이유도 기록한다. 기술 정정은 원문을 고치고, 조회 누락은 실제 사례를 근거로 지도를 보강한다. 미채택 제안은 결정으로 저장하지 않는다.
 
-조회의 효과를 평가하는 작업에서는 [근거 관리와 비교 조건](../../../ontology/Ontology-Evidence-Lifecycle.md)의 필수 근거와 비교 조건을 확인한다. 문서/관계 수와 원문 적중을 최종 판단의 정확도나 사용자 작업 시간의 절감으로 해석하지 않는다.
+조회의 효과를 평가하는 작업에서는 [근거 관리와 비교 조건](../../../ontology/reference/Ontology-Evidence-Lifecycle.md)의 필수 근거와 비교 조건을 확인한다. 문서/관계 수와 원문 적중을 최종 판단의 정확도나 사용자 작업 시간의 절감으로 해석하지 않는다.
 
 실행 코드는 Vault 루트 `ontology/`에 있다. MCP는 조회 시 Git 상태를 확인하고 필요하면 색인을 갱신한다. 상주 파일 감시, 자동 관계 추론, 현재 개발 코드의 자동 적합성 판정은 수행하지 않는다. 현재 세션에서 도구가 보이지 않으면 등록 상태와 실제 호출 가능 여부를 구분한다.

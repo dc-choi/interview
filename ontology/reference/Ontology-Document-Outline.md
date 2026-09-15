@@ -7,7 +7,7 @@ aliases: ["온톨로지 문서 목차 조회", "Ontology Document Outline"]
 
 # 찾은 문서에서 다른 근거 section 탐색하기
 
-`context_lookup`은 문서당 가장 높은 점수의 section 하나를 주로 반환한다. 관련 문서가 있어도 다른 조건이나 예외를 설명한 heading은 응답에서 빠질 수 있다. `context_outline`은 그 문서의 전체 section 목록을 제공하고, 필요한 본문은 [[Ontology-Evidence-Read|context_read]]로 읽는다.
+`context_lookup`은 문서마다 읽기 시작 section을 선택하고, 조건과 예산에 따라 다른 절을 보충한다. 관련 문서가 있어도 다른 조건이나 예외를 설명한 heading은 응답에서 빠질 수 있다. `context_outline`은 그 문서의 전체 section 목록을 제공하고, 필요한 본문은 [[Ontology-Evidence-Read|context_read]]로 읽는다.
 
 ## 입력
 
@@ -51,4 +51,4 @@ node src/cli.mjs outline --committed-only \
 
 목차는 이미 발견한 Document 안의 탐색을 돕는다. 검색에서 문서 자체가 빠진 경우는 표현과 scope를 바꾸거나 별도 원문 탐색이 필요하다. 모델이 자동으로 올바른 heading을 고르거나 불필요한 읽기를 줄이는지는 별도 평가 대상이다.
 
-상위: [[Development-Ontology]]. 운영: [[Ontology-Operations]]. 평가: [[Ontology-Retrieval-Quality]].
+상위: [[Ontology-Reference]]. 전체 지도: [[Development-Ontology]]. 운영: [[Ontology-Operations]]. 평가: [[Ontology-Retrieval-Quality]].

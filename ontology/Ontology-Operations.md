@@ -11,49 +11,11 @@ aliases: ["Ontology Operations", "온톨로지 실행 절차"]
 
 ## 구현 범위
 
-| 항목 | 현재 동작 |
-| --- | --- |
-| 입력 | Git `HEAD`의 tracked regular Markdown blob, 기본 범위 `README.md`, `biz/`, `econ/`, `fit/`, `ontology/`, `tech/` |
-| 제외 | `AGENTS.md`, `CLAUDE.md`, 비 Markdown, symlink, untracked와 dirty worktree 본문. `.agents/`, `.claude/`는 기본 범위 밖 |
-| 추출 | frontmatter의 `aliases`, `tags`, `category`, `status`, `verified_at`, heading section, 위키링크, 명시 `ontology_relations` |
-| 관계 | `contains`, 해석 가능한 `links_to`와 선택적 구조 역할 `link_role`, schema와 entity ID가 맞는 명시 relation |
-| 근거 | 원문 path, pinned revision, UTF-8 byte anchor, 해당 byte SHA-256, 마지막 변경 commit 시각 |
-| 조회 | exact label, alias, tag, heading과 키워드, source-confirmed relation 1 또는 2 hop |
-| MCP | stdio 서버의 읽기 전용 `context_search`, `context_lookup`, `context_outline`, `context_read` |
-
-관계 ID는 subject, predicate, object, evidence unit ID, occurrence의 안정 JSON SHA-256이다. section ID의 heading component는 `encodeURIComponent`로 인코딩하고 빈 heading은 `%`로 구분한다. 같은 heading path의 occurrence를 ID와 anchor에 보존한다. 이 때문에 `A/B` heading과 `A` 아래의 `B` heading이 다른 entity가 된다. 위키링크 대상은 파일 경로와 파일명으로 찾으며, 표 셀 안에서 파이프를 escape한 `[[대상\|별칭]]` 표기도 대상만 추출한다. H1 제목과 frontmatter alias는 검색에만 사용한다. Document의 `verified_at`은 조회 결과의 entity 속성으로 반환하지만 freshness 판정에는 아직 쓰지 않는다.
-
-`config.json`의 `repository_id`는 이 Vault의 고정 ID다. 장비나 checkout 경로가 바뀌어도 유지해야 Markdown에 기록한 typed relation이 보존된다. 이 runtime 설치는 Vault 하나를 대상으로 하며, 다른 독립 Vault를 구축할 때는 ID를 분리한다. cache와 snapshot fingerprint는 실제 checkout 경로도 구분한다.
-
-검색은 실제 field equality가 있는 label, alias, tag, heading과 entity ID를 부분 어휘 점수보다 먼저 순위에 두고, 문서당 읽기 시작 Section과 상위 root 6개를 선택한다. 정규화와 키워드 확장 뒤 2~3개 토큰인 짧은 질의는 문서 빈도를 이용해 구체 용어가 없는 일반어 후보를 제외한다. 더 긴 자연어 질의에는 이 제외 규칙을 적용하지 않는다. 정규화 후 한 토큰인 exact alias 또는 title 질의는 전체 색인 본문 스캔을 생략하되, 정확히 찾은 후보 문서의 유용한 Section 본문은 읽어 시작점을 고른다. 점수 기반 읽기 시작점에서는 heading이 없는 기존 root Section을 제외하지만, query가 root ID 전체와 정확히 일치하면 이 조회는 보존한다.
-
-정확한 metadata 조회의 응답 예산은 body direct 근거, graph bundle, 선택 frontmatter provenance 순으로 쓴다. 자연어 조회의 추가 절 선택 순서는 다음 문단을 따른다. 작은 예산에서 선택한 direct 근거 없이 선택 provenance만 남겨 성공으로 반환하지 않으며, direct 근거 하나와 필수 메타데이터도 담지 못하면 `budget_too_small`로 끝난다. 구성 중에는 `budget.exhausted`만 제한을 기록하고, 최종 응답에 여유가 있을 때만 `output_limit_reached` coverage gap을 보충한다. direct 근거가 남은 positive pack은 예산 제한으로 축소됐으면 `partial`로 반환한다. 예산에 맞지 않는 묶음은 누락 수로 보고하며, 최종 축소에서도 남은 직접 근거에 필요한 문서를 보존한다. 작은 예산에서 모든 관계의 반환을 보장하지는 않는다.
-
-정확한 metadata 일치가 없는 조회에서는 직접 근거를 담고 응답 전체에서 직접 관계 하나를 먼저 추가한 뒤, 선택된 root와 graph 문서에서 질의어가 겹치는 절을 최대 6개 보충한다. 이미 반환된 본문에 반복된 질의어의 가중치를 낮춰 다른 어휘를 다루는 절을 우선한다. heading 없는 root와 출처/관련 문서 절은 제외한다. 보충 절은 1,400 byte 접두를 먼저 담되 검색어가 뒤에만 있으면 전체 절이 예산에 맞을 때만 추가한다. 선택한 절의 전체 본문 확장, 나머지 graph 묶음과 provenance, 마지막 본문 확장 순으로 남은 예산을 사용한다. 문서 소유권과 ID/revision/hash/anchor는 보존하며, 상세 비교와 한계는 [[Ontology-Search-Selection]]을 따른다. 더 깊은 문맥은 `context_outline`과 `context_read`로 확인한다.
-
-부분 매칭은 source URI, label, alias, tag, heading, section 본문만 사용한다. internal ID prefix, source ID와 percent-encoded anchor는 storage 표현이라 부분 매칭에서 제외한다. query가 entity ID 전체와 정확히 같은 exact ID 검색은 유지한다. `exact_metadata`는 점수와 별도로 실제 필드의 완전 일치 여부로 판정한다.
-
-`search`와 `context_search`는 같은 root 순위를 상위 6개로 자르기 전에 사용해 Document 후보를 페이지로 반환한다. 페이지는 최대 20개 후보이며 body나 excerpt를 반환하지 않는다. 검색어, effective scope, snapshot과 query 코드가 바뀌지 않는 한 cursor로 이어 읽고, 다음 페이지에서 `max_bytes`는 바꿀 수 있다. 후보의 `matched_terms`는 실제 source 표현과 여러 section의 어휘 겹침이므로 의미적 적합성 판정이 아니다. `best_evidence_ref`는 문서 root 점수와 독립적으로 읽기 시작 section을 고르지만 fallback reference 자체에 query body가 있다는 보장은 없다. root frontmatter provenance는 lookup 근거로 별도 보존한다. 계약과 후속 읽기 흐름은 [[Ontology-Document-Search]]를 따른다.
-
-관계 탐색에서는 근거 unit의 현재 질문 점수를 먼저 본다. Section은 metadata와 본문 점수, RelationAssertion은 predicate와 endpoint 등의 metadata 점수를 사용한다. 동점이면 상대 entity 소유 Document의 점수, 구조 역할, relation ID 순으로 선택한다. 구조 역할은 `index_member`와 `parent_index`, `related_document`, 역할 없는 연결 순이며 두 질문 점수를 바꾸지 않는다. `출처`, `관련 문서`, `관련문서` section에는 이 우선순위용 점수를 부여하지 않는다. 관계가 기록된 본문과 상대 문서의 다른 본문을 구분하기 위한 순서이며, 원문 확정 상태와 scope, hop, entity와 edge 상한은 그대로 검사한다.
-
-정규화 후 한 토큰이며 정확한 metadata가 일치하면 전체 색인 본문 스캔은 생략한다. 정확히 찾은 후보 문서의 유용한 Section 본문과, 관계 순위에 필요한 현재 탐색 entity의 연결 근거 본문만 batch로 읽고 재사용한다. 검색어 가중치는 1이며 동일한 metadata 점수와 길이 감점을 적용한다. 이 추가 점수는 root 순위를 바꾸지 않는다.
-
-본문 점수에는 section 길이에 따른 완만한 감점을 적용하며 정확한 metadata 점수는 유지한다. `matching.query_term_count`는 정규화와 확장 후 검색어 수, `max_section_term_matches`는 같은 section의 metadata와 본문에 겹친 서로 다른 검색어 수의 최댓값이다. `assessment`는 `exact_metadata`, `lexical_overlap`, `no_lexical_overlap`, `weak_lexical_overlap`, `not_evaluated`를 구분한다. 검색어 8개 이상이면서 최대 겹침이 1~2개이면 `weak_lexical_overlap`이다. 후보를 삭제하는 규칙이나 의미적 적합성, 지식 부재의 확정 판정이 아니며, 관련성을 확인하고 재조회할 단서다.
-
-전체 본문 스캔은 고정 revision의 파일 목록을 한 번 해석해 조회 대상 Document의 OID를 얻고 기존 `readBlobs`로 읽는다. scope, 경로별 symlink 검사와 대상 문서 수를 확인하며, 반환 근거의 hash 검사는 그대로 수행한다. 좁은 exact/graph 읽기는 기존 batch 경로를 쓴다. 응답 byte 계산도 한 번의 직렬화로 줄였으며, 출력 동등성과 반복 시간 비교는 [[Ontology-Retrieval-Latency]]를 따른다.
+Git `HEAD`의 Markdown에서 문서, 절과 명시 관계를 추출하고, 질문에 맞는 원문을 revision, 위치와 hash와 함께 반환한다. 검색 순위, 근거 선택, scope와 예산의 상세 계약은 [[Ontology-Runtime-Contract#구현 범위]]를 따른다.
 
 ## 기존 목차와 위키링크의 역할
 
-extractor 11은 Markdown에 이미 적힌 탐색 역할을 `links_to` 관계의 `link_role`로 보존한다. predicate, relation ID, 원문 section과 occurrence는 그대로 유지하며 새 의미 관계를 생성하지 않는다.
-
-| 역할 | 원문 표기 |
-| --- | --- |
-| `index_member` | `status: index` 문서의 `목차`, `하위 영역`, `하위 폴더 인덱스`, `하위 문서` 아래 링크. `목차 (설명)`과 `하위 폴더 인덱스 (숫자개)`도 허용 |
-| `parent_index` | 같은 줄의 명시적인 `상위:` 바로 뒤 링크. `> 상위:` 같은 인용 블록 표기도 포함 |
-| `related_document` | `관련 문서` 또는 `관련문서` 아래 링크 |
-
-인용 블록 안의 heading은 블록 안팎의 목차/관련 역할을 결정하지 않으며, 자기 문서 section 링크에도 역할을 붙이지 않는다. 구체적인 인식 범위와 제외 사례는 `test/markdown.test.mjs`에서 검증한다. 역할이 불명확하면 기존 `links_to`만 유지한다. 폴더 위치 자체를 개념 계층으로 추론하거나 Obsidian 설정을 읽고 수정하지 않는다. 검색과 목차, 원문 읽기의 입력은 동일하며 `context_lookup`은 역할과 기존 근거를 함께 반환한다. extractor가 바뀌었으므로 새 CLI 또는 MCP 프로세스가 snapshot을 다시 만든다. 기존 MCP 프로세스는 재연결해야 변경된 코드를 읽는다.
+원문에 명시된 목차, 상위 문서와 관련 문서의 탐색 역할은 [[Ontology-Runtime-Contract#기존 목차와 위키링크의 역할]]에서 관리한다.
 
 ## 설치와 명령
 
@@ -69,9 +31,9 @@ npm run status
 npm run serve
 ```
 
-`build`, `lookup`, `search`는 `--repo <absolute-path>`, `--cache <absolute-path>`, 반복 가능한 `--scope <repository-relative-prefix>`를 받는다. `lookup`은 `--allow`, `--depth 1|2`, `--max-bytes <positive-integer>`를 받는다. `search`는 `--allow`, `--max-bytes <positive-integer>`, `--cursor <opaque-token>`을 받으며 `--depth`는 받지 않는다. `--allow`를 생략하면 기본 범위 `README.md`, `biz/`, `econ/`, `fit/`, `ontology/`, `tech/`를 사용하며, 반복 지정하면 필요한 경로로 허용 범위를 제한한다. `lookup`과 `search`의 snapshot 범위는 항상 allowlist이고 `--scope`는 요청 범위만 좁힌다. 요청 scope 때문에 활성 snapshot을 다시 만들지 않는다 (2026-09-07 수정. 이전에는 `--scope tech` 조회가 활성 snapshot을 `tech` 전용으로 교체했다). scope는 glob이 아닌 repository-relative prefix이며 상위 경로 이동과 wildcard를 거부한다.
+`build`, `lookup`, `search`는 `--repo <absolute-path>`, `--cache <absolute-path>`, 반복 가능한 `--scope <repository-relative-prefix>`를 받는다. `lookup`은 `--allow`, `--depth 1|2`, `--max-bytes <positive-integer>`와 반복 가능한 `--condition`을 받는다. `search`는 `--allow`, `--max-bytes <positive-integer>`, `--cursor <opaque-token>`을 받으며 `--depth`는 받지 않는다. `--allow`를 생략하면 기본 범위 `README.md`, `biz/`, `econ/`, `fit/`, `ontology/`, `tech/`를 사용하며, 반복 지정하면 필요한 경로로 허용 범위를 제한한다. `lookup`과 `search`의 snapshot 범위는 항상 allowlist이고 `--scope`는 요청 범위만 좁힌다. 요청 scope 때문에 활성 snapshot을 다시 만들지 않는다 (2026-09-07 수정. 이전에는 `--scope tech` 조회가 활성 snapshot을 `tech` 전용으로 교체했다). scope는 glob이 아닌 repository-relative prefix이며 상위 경로 이동과 wildcard를 거부한다.
 
-기본 cache는 `~/.cache/context-ontology/<checkout-hash>/`다. cache는 source repository 밖이어야 하고, `active.json`, `runs.jsonl`, `.context-ontology-cache` 소유권 표식과 활성 snapshot을 보관한다. 비어 있지 않은 사용자 지정 cache에 표식이 없으면 `invalid_cache_path`로 거부해 다른 데이터를 정리 대상으로 오인하지 않는다. 최초 표식의 내용이 아직 비어 있거나 정상 내용의 앞부분만 기록됐으면 50ms 간격으로 최대 20회 재확인한다. 총 대기 1초 뒤에도 불완전하거나 내용 또는 파일 형식이 잘못됐으면 계속 `invalid_cache_path`로 거부하며, 중단된 초기화를 자동 복구하지 않는다. build는 기존 snapshot 재사용 검증, 활성화와 삭제를 cache의 `.lock`으로 프로세스 간 직렬화한다. lock symlink 대상은 보유 프로세스 pid와 무작위 token을 함께 가지므로 종료 시 후속 보유자의 lock을 지우지 않는다. 살아 있는 보유자는 최대 10분 기다리며, 보유 프로세스가 사라진 lock은 `cache_lock_stale`, 형식이 잘못된 lock은 `snapshot_integrity_error`로 중단한다. 자동 stale-lock 회수는 원자적 소유권 교체를 보장할 수 없어 하지 않으며, 실행 중인 build가 없음을 확인한 뒤 해당 `.lock`만 수동 제거한다. 정상 활성화 뒤에는 활성 snapshot 외의 fingerprint 디렉터리와 10분이 지난 `.building-*`, `.active-*`, 이전 구현이 남긴 `.lock.dead-*` 임시 항목을 삭제해 `pruned_snapshots`, `pruned_temporaries`로 건수를 보고한다. 조회는 lock 없이 읽으므로 파일 존재 확인 뒤 실제 읽기 사이에 이전 snapshot이 삭제돼도 `snapshot_not_found`로 분류한다. CLI와 MCP 조회는 clean worktree이거나 `--committed-only`이면 같은 요청에서 필요한 범위로 다시 빌드한다. 이미 메모리에 읽은 snapshot은 요청이 끝날 때까지 유지한다. `snapshots` 경로가 symlink이거나 디렉터리가 아니면 `snapshot_integrity_error`로 거부한다. 같은 fingerprint 디렉터리에 artifact가 빠져 있으면 build가 방금 만든 snapshot으로 교체하고, snapshot 디렉터리 symlink이나 artifact hash 변조는 `snapshot_integrity_error`, 같은 fingerprint의 다른 manifest는 `non_deterministic_build`로 거부한다. build 실행 로그 기록이나 삭제가 실패하면 성공한 snapshot 활성화를 되돌리지 않고 `warnings: [run_log_unavailable]` 또는 `[prune_unavailable]`을 반환한다. snapshot에는 `schema.json`, `source-manifest.json`, `entities.jsonl`, `relations.jsonl`이 있으며 artifact와 manifest hash를 검증한 뒤에만 활성화한다. schema 또는 extractor 버전이 다른 활성 snapshot은 `snapshot_incompatible`, 디렉터리나 artifact 파일이 사라진 활성 snapshot은 `snapshot_not_found`로 판정하고, clean worktree이거나 `--committed-only`인 다음 build 또는 조회에서 다시 만든다. dirty worktree에서 `--committed-only` 없이 조회하면 `unindexed_worktree` 오류 메시지가 그 사유를 알린다. `status`는 snapshot을 제공하지 못하는 사유를 `snapshot_status`로 보고한다.
+기본 cache는 `~/.cache/context-ontology/<checkout-hash>/`에 둔다. 소유권 표식, 동시 build 잠금, snapshot 교체와 무결성 검사는 [[Ontology-Runtime-Contract#Snapshot 저장과 무결성]]을 따른다.
 
 ## Git 상태와 재생성
 
@@ -103,15 +65,13 @@ codex mcp get development-context
 claude mcp get development-context
 ```
 
-MCP host는 tool argument로 repository나 cache 경로를 바꿀 수 없다. `context_lookup`은 `query`, 선택 `scope`, `depth`, `max_bytes`만 받고 알 수 없는 field와 크기 제한 초과 입력을 거부한다. `context_search`는 `query`, 선택 `scope`, `max_bytes`, `cursor`를 받고 document 후보만 페이지로 반환한다. cursor는 인증 정보가 아닌 consistency token이므로 query, scope, snapshot, query 코드가 바뀌면 재사용할 수 없다. tool 결과는 JSON text와 동일한 structured content다. 스킬의 일반 요청 예산은 24KB, 서버 상한은 64KiB다. 특정 host를 제한해야 하면 등록 명령에 `--allow <repository-relative-prefix>`를 반복해 추가한다.
+MCP host는 tool argument로 repository나 cache 경로를 바꿀 수 없다. `context_lookup`은 `query`, 선택 `conditions`, `scope`, `depth`, `max_bytes`를 받고 알 수 없는 field와 크기 제한 초과 입력을 거부한다. `context_search`는 `query`, 선택 `scope`, `max_bytes`, `cursor`를 받고 document 후보만 페이지로 반환한다. cursor는 인증 정보가 아닌 consistency token이므로 query, scope, snapshot, query 코드가 바뀌면 재사용할 수 없다. tool 결과는 JSON text와 동일한 structured content다. 스킬의 일반 요청 예산은 24KB, 서버 상한은 64KiB다. 특정 host를 제한해야 하면 등록 명령에 `--allow <repository-relative-prefix>`를 반복해 추가한다.
 
 `context_read`는 `evidence_unit_id`, `source_revision`, `content_hash`, 선택 `offset_bytes`, `max_bytes`를 받는다. 근거 ID와 도구 입력 전체는 각각 최대 65,536 UTF-8 byte다. 긴 heading에서 생성돼 조회 응답에 담긴 ID도 그대로 읽을 수 있도록 읽기 입력 한도를 조회 출력 상한에 맞췄다. `context_lookup`의 입력 전체 제한은 8,192 byte다. 읽기 결과도 JSON text와 structured content가 일치하며 같은 host allowlist를 적용한다.
 
 `context_outline`은 `document_id`, `source_revision`, 선택 `offset_sections`, `max_bytes`를 받는다. 문서 ID와 전체 입력 한도는 각각 65,536 UTF-8 byte이며, 목차 응답도 동일한 JSON 예산과 host allowlist를 따른다. 각 section의 ID/revision/hash는 `context_read` 입력으로 사용할 수 있다.
 
-2026-09-05 범위 확장 전 장비에서 Codex 사용자 등록 `enabled: true`, Claude 사용자 등록 `Connected`를 확인했다. 당시 `--allow tech` 등록과 같은 명령을 사용하는 SDK client로 `/private/tmp`에서 `tools/list`와 실제 조회를 검증했다. Outbox 원문 근거를 반환했고 `fit` 요청의 evidence는 0개였다. 이어 Codex 세션에 노출된 `context_lookup` 도구를 직접 호출해 원문 경로, heading, revision과 hash를 받았다. 이는 당시 연결과 호출 검증이며 전체 기본 범위의 현재 동작이나 모든 모델의 자동 도구 선택을 증명하지는 않는다. 새 세션에서 도구가 보이지 않으면 CLI와 원문 검색으로 보완한다.
-
-같은 날 범위 확장 후 Codex와 Claude의 사용자 등록에서 `--allow tech`를 제거했다. 두 등록의 실행 파일과 인자가 동일함을 확인하고, 해당 명령으로 새 MCP 프로세스를 실행해 여섯 범위 각각의 원문 제목 조회와 scope 밖 근거 제외를 확인했다. scope 생략 조회도 `ontology/Ontology-Operations.md`를 반환했다. 이미 열린 MCP 연결은 이전 설정을 유지하므로 새 세션에서 확장된 등록과 도구 설명을 사용한다.
+이전 장비의 MCP 등록과 범위 확장 관측은 [[Ontology-Runtime-Verification#MCP 연결의 초기 검증]]에 보존한다. 현재 연결의 사용 가능 여부는 실제 도구 호출로 확인한다.
 
 Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.md`에 둔다. 상세 절차는 이 Vault의 `.agents/skills/development-context/SKILL.md`를 따른다.
 
@@ -119,38 +79,7 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 
 ## runtime 검증
 
-`ontology/`의 Node test suite는 parser, snapshot, query, MCP stdio를 검증한다. 2026-09-05 범위 확장 전 suite는 40개 테스트를 통과했다. 별도의 SDK 조회와 범위 제한도 검증했다. 검증한 경계는 다음과 같다.
-
-- UTF-8 byte anchor와 content hash, duplicate heading, `encodeURIComponent` ID component
-- malformed frontmatter, candidate relation 제외, broken link와 ambiguous anchor coverage gap
-- deterministic snapshot, artifact hash, corrupt snapshot 거부, rename과 deletion 전파
-- dirty와 untracked 본문 미색인, explicit committed-only build, cache source repository 분리
-- allowlist와 scope 교집합, output budget, dirty snapshot 상태
-- `context_lookup` tool schema, read-only annotation, stdio structured result
-
-2026-09-05 범위 확장 전에 revision `3c41985f38e6b8ea0b6cdde43daf54e862e34c5d`의 `tech` 범위를 임시 cache에 build해 1,498 Document, 16,848 unit, 27,422 relation, 166 coverage gap을 만들었다. build wall time은 약 2.9초였다. 이 수치는 해당 revision과 실행 환경의 build 관찰이며, query 품질이나 실제 개발 판단 정확도를 뜻하지 않는다.
-
-범위 확장 전 최종 extractor 9는 같은 revision에서 숫자로 시작하는 heading 링크 4개를 추가로 해석했다. 당시 설치된 `tech` snapshot은 1,498 Document, 16,848 unit, 27,426 relation, 162 coverage gap이다. 해결되지 않은 링크와 metadata 문제를 숨기지 않고 조회 결과의 gap과 요약에 남긴다.
-
-범위 확장 후 suite는 43개 테스트를 통과했다. 추가 검증은 전체 기본 범위의 문서 포함, 도메인 사이 링크와 자기참조 링크 해석, 깊이 2의 순환 탐색 종료, 요청 scope와 명시 allowlist 제한, CLI에서 `--allow`만 지정했을 때의 범위 판정이다. `ontology/`의 문서도 다른 Markdown과 같은 원문 근거 계약으로 조회하며 그 내용의 현재 정확성은 별도로 확인한다.
-
-실제 사용자 cache는 revision `6df8bb9965139dab76e9f5974c03c950c701b5d5`의 committed Markdown을 새 기본 범위로 색인했다. 결과는 1,869 Document(`README.md` 1, `biz` 59, `econ` 35, `fit` 271, `ontology` 5, `tech` 1,498), 21,458 unit, 35,315 relation, 114 coverage gap이다. `tech`에서 `ontology` 문서로 향하는 링크 7개도 해석했다. 검증 당시 코드와 문서 수정은 미커밋 상태라 `unindexed_worktree`가 표시됐고, 원문은 위 revision에 고정됐다. 각 범위의 대표 제목 조회는 원문을 반환했지만 일부 응답은 예산이나 탐색 제한에 따라 `partial`이었다. 이는 영역별 접근과 근거 반환 검증이며 모든 질문의 검색 품질을 보장하지 않는다.
-
-2026-09-07 회사 장비에서 suite 67개 테스트를 통과했다. 추가 검증은 표 셀의 escape된 파이프 위키링크 해석, 요청별 메모리 snapshot 고정, 요청 scope가 활성 snapshot을 바꾸지 않음, 비활성 snapshot과 오래된 임시 디렉터리 삭제, cache 소유권 표식, cache lock 대기와 정상 해제 순간 재시도, 보유자 확인 중 lock이 사라지는 handoff 재시도, 죽은 프로세스 lock의 `cache_lock_stale` 중단, malformed lock의 `snapshot_integrity_error` 중단, lock 대기 뒤 source revision 재확인, `snapshots` 상위 symlink 거부, 이전 구현이 남긴 `.lock.dead-*` 정리, 다른 extractor 버전이거나 디렉터리 또는 artifact가 사라진 활성 snapshot의 자동 재빌드, 같은 fingerprint의 불완전한 디렉터리 교체, symlink 거부, dirty worktree 오류의 사유 표시, `status`의 `snapshot_status`, `verified_at` 보존이다.
-검증 세션에서 lock 없이 직전 활성 snapshot만 지우던 중간 구현은 scope가 다른 build 두 개의 동시 실행 90회 중 4회에서 활성 포인터가 사라져 폐기됐고, 디렉터리 lock을 삭제로 회수하던 구현도 죽은 lock을 두 build가 동시에 회수할 때 40회 중 21회 실패했다. symlink lock 자동 회수 구현은 같은 fixture의 scope가 다른 build 2개 100회, 죽은 pid lock을 미리 둔 build 2개 100회와 3개 40회에서 관찰된 실패가 없었지만, 독립 검토에서 세 contender가 겹칠 때 후속 보유자의 lock을 옮길 수 있는 경쟁 조건이 확인되어 최종 구현에서는 자동 회수를 제거했다.
-같은 장비에서 revision `bf77c8484d7ecbdf5d02f828df89b504fef1952a`의 committed Markdown을 extractor 10으로 색인한 결과는 1,869 Document, 21,458 unit, 35,427 relation(`links_to` 13,969), coverage gap 2다. 이전 extractor 9의 gap 114건 중 112건은 표 안의 `[[대상\|별칭]]` 표기를 파서가 해석하지 못한 것이었고 수정 뒤 `links_to` 112개로 해석됐다. 남은 2건은 `tags`에 따옴표 없는 `null`이 있던 문서 2개이며 원문을 고쳤다. 검증 당시 코드와 문서 수정은 미커밋이라 `unindexed_worktree`가 표시됐다. Claude와 Codex 사용자 등록도 이 장비에서 절대경로 Node로 등록해 Claude `Connected`를 확인했다.
-
-같은 날 동시 실행 오류를 수정한 뒤 suite 70개 테스트를 통과했다. 추가한 3개 테스트는 최초 소유권 표식의 빈 내용을 읽은 뒤 다른 프로세스가 기록을 마치는 경우의 재확인, 중단되거나 잘못된 표식의 거부와 기존 데이터 보존, 파일 존재 확인과 읽기 사이에 다른 CLI build가 snapshot을 삭제했을 때 같은 요청에서 재빌드하는 동작을 검증한다. 이 중 두 동시 실행 테스트는 수정 전 실패하고 수정 후 통과했다.
-
-같은 날 검색과 응답 구성 보강 후 suite 78개 테스트를 통과했다. 추가 검증은 짧은 복합 질의의 일반어 잡음 제외, 긴 질문의 관련 문서 보존, 24KB 관계 묶음, 작은 예산에서 고아 근거 제거와 소유 문서 보존, 평가기의 본문 조건, 대안 근거, 금지 경로, 범위와 음성 사례다. 실제 Vault를 대상으로 새 MCP stdio 프로세스의 조회도 확인했다. 이미 실행 중인 MCP 프로세스는 재시작해야 수정한 query 모듈을 읽는다.
-
-이후 필수 근거 평가를 보강한 suite는 82개 테스트를 통과했다. 추가 검증은 모든 필수 그룹 충족과 그룹 내 대안, 같은 본문의 필수 문구와 잘린 예외, 본문 조건 없는 대안의 지표 분리, 그룹 입력과 pinned 원문의 검사다. 실제 필수 근거 진단에서 발견한 발췌 누락과 별도 원문 읽기 결과는 [[Development-Ontology-Evaluation#필수 근거와 잘린 예외의 진단]]에 기록한다.
-
-같은 날 `context_read`와 CLI `read`를 추가한 suite는 91개 테스트를 통과했다. 추가 검증은 같은 ID/revision/hash의 전체 근거 읽기, UTF-8 페이지 연결과 마지막 페이지 예산, 잘못된 cursor와 작은 예산의 중단, 허용 범위와 symlink 거부, dirty 본문 제외, 원문 커밋 변경 뒤 재조회 요구, 긴 한글 heading의 ID 읽기, MCP 입력 계약과 CLI 인자 조합이다. 새 stdio 프로세스로 연결한 SDK client에서 실제 도구 호출을 검증했으며, 기존 연결에 새 도구가 자동 등록됐다는 의미는 아니다.
-
-이 검증은 Markdown parser와 snapshot 조회의 계약을 확인한다. 실제 프로젝트 버그, 의미적으로 올바른 기술 추천, code repository index, deployment 또는 runtime behavior를 확인하지 않는다.
-
-2026-09-08 suite는 103개 테스트를 통과했다. 추가 검증은 짧은 관련 section의 순위 보존, 긴 질문의 어휘 겹침 진단, 공백만 있는 질문의 거부, 문서 목차의 순서와 페이지 예산, ID/revision/허용 범위/원문 hash 검사, 목차에서 고른 section의 후속 읽기, 새 MCP stdio의 세 도구와 CLI 인자 조합이다. 관계 우선순위 fixture 3개는 일반 본문 질의, 한 토큰의 정확한 제목 질의, 명시적 typed relation을 검사한다. 일반 링크 50개 이상에서 관련 근거가 밀리는 오류를 실제 Markdown으로 재현했으며 각각 수정 전 실패했다. 실제 Vault의 검색 회귀와 목차 탐색 결과는 [[Ontology-Retrieval-Quality]]에 분리해 기록한다.
+이전 테스트와 색인, 실제 MCP 호출 관측은 [[Ontology-Runtime-Verification]]에 보존한다. 검색 품질과 후속 실험은 [[Ontology-History]]에서 해당 기록을 찾는다. 현재 checkout의 검사는 `ontology/`에서 `npm test`로 실행한다.
 
 ## 검색 품질 확인
 
@@ -166,7 +95,7 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 
 필수 조건과 예외의 누락은 `npm run evaluate -- --cases evaluation/context-integrity-cases.json`으로 관찰한다. 이 진단은 현 조회기의 한계를 드러내는 표본이며 `--check`를 붙이면 누락이 있는 동안 실패한다. 짧은 검색 진단과 필수 근거 진단의 통과 여부를 합쳐 모든 조회가 성공했다고 표시하지 않는다.
 
-최초 독립 표본은 기대 문서 2/4, 기대 heading 1/4였다. 자세한 입력, 실행 결과와 해석은 [[Development-Ontology-Evaluation]]에 남긴다. 검색 결과가 부족하면 기술 용어 후보로 다시 조회하고, 파일명과 heading으로 scope를 좁히거나 직접 원문 검색으로 보완한다.
+초기 검색 관측은 [[Development-Ontology-Evaluation]], 이후 개선은 [[Ontology-History]]를 따른다. 검색 결과가 부족하면 기술 용어 후보로 다시 조회하고, 파일명과 heading으로 scope를 좁히거나 직접 원문 검색으로 보완한다.
 
 후속 자연어 표본과 목차 탐색은 [[Ontology-Retrieval-Quality]]를 따른다. `node evaluation/outline-navigation.mjs --cache <absolute-path> --check`는 실제 MCP 목차의 무결성, 페이지 완료와 응답 예산을 검사한다. 이 명령의 `--check`는 protocol 검사만 수행하며 알려진 검색 실패를 통과로 바꾸지 않는다. heading 회수와 본문 조건 충족은 별도 지표다.
 
@@ -183,6 +112,8 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 
 ## 관련 문서
 
+- [[Ontology-Reference]]
+- [[Ontology-History]]
 - [[Development-Ontology]]
 - [[Development-Ontology-Contract]]
 - [[Development-Ontology-Evaluation]]

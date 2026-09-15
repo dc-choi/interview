@@ -29,9 +29,9 @@ Apple M3 Pro, macOS arm64, Node.js v24.13.1에서 같은 active snapshot을 대�
 |---|---:|---:|
 | warm `loadSnapshot` | 139.9 → 51.8ms | 156.5 → 54.5ms |
 
-초기 파싱 cache 채움, `buildSnapshot`, Git freshness 검사, MCP 전송과 host 작업은 측정에서 제외했다. 따라서 이 결과는 lookup 측정값과 합산한 end-to-end 지연이나 cold start 성능이 아니다. 원시 표본, 기준과 현재 코드 hash는 [보고서](evaluation/retrieval-snapshot-cache-performance-report-2026-09-08.json)에 보존한다.
+초기 파싱 cache 채움, `buildSnapshot`, Git freshness 검사, MCP 전송과 host 작업은 측정에서 제외했다. 따라서 이 결과는 lookup 측정값과 합산한 end-to-end 지연이나 cold start 성능이 아니다. 원시 표본, 기준과 현재 코드 hash는 [보고서](../evaluation/retrieval-snapshot-cache-performance-report-2026-09-08.json)에 보존한다.
 
-별도로 새 SDK stdio 연결 두 개에서 snapshot 로더만 전후 코드로 바꾸어 비교했다. 선택한 조회 3개를 5회씩 번갈아 호출한 15쌍에서 p50은 474.1 → 367.6ms, p95는 487.0 → 387.4ms였고 반환 JSON 전체가 일치했다. 이 구간에는 Git 상태 확인, 검증된 snapshot 로드, 검색과 로컬 전송이 포함되며 서버 시작과 host 추론은 제외한다. 한 장비의 선택 표본이며 전체 사용자 작업 시간이나 모든 질의의 속도로 일반화하지 않는다. 요청, 코드 hash와 원시 시간은 [MCP 비교 보고서](evaluation/retrieval-snapshot-cache-mcp-performance-report-2026-09-08.json)에 보존한다.
+별도로 새 SDK stdio 연결 두 개에서 snapshot 로더만 전후 코드로 바꾸어 비교했다. 선택한 조회 3개를 5회씩 번갈아 호출한 15쌍에서 p50은 474.1 → 367.6ms, p95는 487.0 → 387.4ms였고 반환 JSON 전체가 일치했다. 이 구간에는 Git 상태 확인, 검증된 snapshot 로드, 검색과 로컬 전송이 포함되며 서버 시작과 host 추론은 제외한다. 한 장비의 선택 표본이며 전체 사용자 작업 시간이나 모든 질의의 속도로 일반화하지 않는다. 요청, 코드 hash와 원시 시간은 [MCP 비교 보고서](../evaluation/retrieval-snapshot-cache-mcp-performance-report-2026-09-08.json)에 보존한다.
 
 ## 앞선 Git 읽기와 byte 계산 변경의 반복 측정
 
@@ -56,7 +56,7 @@ lookup의 p50은 20.0%, p95는 19.7% 줄었다. 회차별 p50은 각각 464.5 �
 
 원문은 Git `4af3516d519b62d6840b04c79d1e25aba846d80d`, extractor 11 snapshot에 고정했다. 비교 기준은 작업 시작 시점의 미커밋 `query.mjs`이며 SHA-256은 `7731853f713f85cc613e3b8e28fb0f215a04f7d60369b76bbcfe7de9c619f636`이다. Git `HEAD`의 조회 코드와 비교한 것이 아니다.
 
-[실행기](evaluation/retrieval-performance.mjs)는 이전에 관측한 합성 질문 104개와 문서 검색 5개를 사용한다. 준비용 요청 세 쌍 뒤 같은 프로세스에서 전후 호출 순서를 질문과 회차별로 번갈아 3회 실행한다. 질문, 코드와 snapshot hash, 환경, 요청별 원시 시간은 [보고서](evaluation/retrieval-performance-report-2026-09-08.json)에 보존한다.
+[실행기](../evaluation/retrieval-performance.mjs)는 이전에 관측한 합성 질문 104개와 문서 검색 5개를 사용한다. 준비용 요청 세 쌍 뒤 같은 프로세스에서 전후 호출 순서를 질문과 회차별로 번갈아 3회 실행한다. 질문, 코드와 snapshot hash, 환경, 요청별 원시 시간은 [보고서](../evaluation/retrieval-performance-report-2026-09-08.json)에 보존한다.
 
 - lookup은 반환 JSON 전체가 일치해야 통과한다. 검색 점수나 근거 수만 같다고 통과시키지 않는다.
 - search는 코드 hash에 묶인 cursor의 binding 값만 제외하고 전체 JSON과 cursor offset을 비교한다. 실제 응답 byte 수와 예산 검사는 binding을 제외하기 전에 수행한다. 코드 변경 전 cursor는 기존 계약에 따라 재조회가 필요하다.
@@ -105,4 +105,4 @@ JS
 
 미커밋 Markdown은 계속 근거에 섞이지 않으며 `unindexed_worktree`로 표시된다. 이번 변경은 검색 품질 개선이나 무관한 질문 거절 문제의 해결을 주장하지 않는다.
 
-상위: [[Development-Ontology]]. 검색 품질: [[Ontology-Retrieval-Quality]]. 실행 계약: [[Ontology-Operations]].
+상위: [[Ontology-History]]. 전체 지도: [[Development-Ontology]]. 검색 품질: [[Ontology-Retrieval-Quality]]. 실행 계약: [[Ontology-Operations]].

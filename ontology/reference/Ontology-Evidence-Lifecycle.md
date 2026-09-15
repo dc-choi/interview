@@ -74,4 +74,4 @@ aliases: ["온톨로지 근거 관리", "Ontology Evidence Lifecycle"]
 - 확인한 업무 기록 revision: `6db90c45078fbc8bdd47980173838150face6b3c`. 위 문서의 설계 제안을 현재 개인 구현의 채택 사실과 구분했다.
 - 대조한 개인 구현 기준: `6f80dbe387b73a56e8642bf2824e27706abb0e2a`. 회사 기록을 자동 수집하거나 개인 snapshot에 편입한 것은 아니다.
 
-상위: [[Development-Ontology]]. 실행과 입력 제약: [[Ontology-Operations]]. 근거 계약: [[Development-Ontology-Contract]].
+상위: [[Ontology-Reference]]. 전체 지도: [[Development-Ontology]]. 실행과 입력 제약: [[Ontology-Operations]]. 근거 계약: [[Development-Ontology-Contract]].
