@@ -14,7 +14,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [[Web-Service-Structure|웹 서비스의 구조]] — HTML, CSS, JavaScript 역할 분리, 정적과 동적 서버, 상태 저장 위치(DB, 세션, 쿠키), 브라우저 세 엔진, 정적 문서에서 SPA까지의 진화 단계
 - [[tech/web/frontend/프론트엔드(Frontend)|프론트엔드]] — React component, state, routing과 server state
 - [[tech/web/http/HTTP|HTTP & API]] — HTTP 진화, 메서드 의미, Status, Content-Type, REST, GraphQL, gRPC, Rate Limit, Cookie, 분할 전송
-- [[tech/web/network/네트워크(Network)|네트워크 (Network)]] — TLS, OSI와 캡슐화(소켓, 스트림, MTU, DPI), L2 스위치와 업링크, TCP(헤더, 핸드셰이크, 흐름/오류 제어), Loopback, Browser URL Flow
+- [[tech/web/network/네트워크(Network)|네트워크 (Network)]] — TLS, OSI와 캡슐화(소켓, 스트림, MTU, DPI), L2 스위치와 업링크, Inline/Out-of-path와 미러링, IP 헤더, Wireshark 수집 구조와 패킷 분석, TCP(헤더, 핸드셰이크, 흐름/오류 제어), Loopback, Browser URL Flow
 - [[tech/web/realtime/실시간(Realtime)|실시간 (Realtime)]] — SSE, WebSocket, STOMP, 실시간 통신
 - [[Mobile-App-Architectures|모바일 앱 개발 방식 4유형]] — 네이티브, 모바일 웹, 웹 앱(SPA), 하이브리드(웹뷰), 다중 버전 공존과 API 호환, 코드 공유 전제의 재평가
 - [[Expo|Expo]] — React Native 개발 환경, 네이티브 확장, 로컬/EAS 빌드와 배포 선택

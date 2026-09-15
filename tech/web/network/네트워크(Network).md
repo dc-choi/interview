@@ -11,7 +11,10 @@ OSI 7계층, TLS, 브라우저 URL 입력부터 렌더링까지.
 
 ## 목차
 - [x] [[HTTPS-TLS|HTTPS / TLS Handshake]]
+- [x] [[Wireshark-Packet-Analysis|Wireshark 구조와 패킷 분석 (Npcap, dumpcap, 디코딩과 스트림, 수집 범위와 필터)]]
+- [x] [[Inline-and-Out-of-Path|Inline과 Out-of-path (직접 제어와 사본 관찰, SPAN 미러링의 정확도와 용량)]]
 - [x] [[OSI-7-Layer|OSI 7계층 (osi-layers/ 서브폴더) — 계층별 상세, L2 스위치 구성과 업링크, 소켓부터 프레임까지의 캡슐화, MTU와 DPI]]
+  - [x] [[IPv4-Header-and-Fragmentation|IPv4 헤더와 단편화, TTL과 Wireshark 패킷 분석]]
 - [x] [[LAN-vs-WAN|LAN과 WAN (브로드캐스트 범위와 MAC vs IP 라우팅으로 구분, 물리와 논리 네트워크)]]
 - [x] [[TCP|TCP (tcp/ 서브폴더) — 헤더 구조, 핸드셰이크, 흐름/오류 제어]]
 - [x] [[Routing-Protocols|정적 라우팅과 RIP, OSPF, BGP]]

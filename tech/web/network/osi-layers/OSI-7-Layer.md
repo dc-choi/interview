@@ -12,6 +12,7 @@ OSI 7계층 전체 지도와 계층별 상세 문서를 모은다. 흐름 한 �
 ## 계층별 상세
 - [x] [[Physical-DataLink-Layer|L1/L2 물리와 데이터링크 (MAC과 프레임, L2 스위칭, 액세스와 디스트리뷰션, 업링크와 링크 상태, 도메인과 STP)]]
 - [x] [[Network-Layer|L3 네트워크 (IP, CIDR, 라우팅, ARP, MTU, 패킷과 프레임, DPI의 가시성)]]
+  - [x] [[IPv4-Header-and-Fragmentation|IPv4 헤더와 단편화 (IHL, DF/MF, TTL, 16진수와 Wireshark 필터)]]
 - [x] [[Transport-Layer|L4 전송 (TCP, UDP, 소켓, 스트림, 세그먼트와 캡슐화, 포트)]]
 - [x] [[Session-Presentation-Application-Layer|L5/6/7 세션, 프레젠테이션, 애플리케이션 (세션 유지, 인코딩, ALB L7)]]
 - [x] [[LAN-vs-WAN|LAN과 WAN (거리가 아닌 MAC 직접 전달과 IP 라우팅으로 구분, 물리와 논리 네트워크)]]

@@ -20,9 +20,11 @@ L2는 같은 LAN 안에서만 동작한다([[Physical-DataLink-Layer|MAC, 프레
 
 L3가 데이터를 담아 옮기는 단위는 패킷이다(L2는 프레임). 패킷에는 출발지 IP, 목적지 IP, 실제 데이터, TTL 등이 들어간다.
 
-- **TTL(Time To Live)**: 패킷이 네트워크를 무한히 떠돌지 않도록 거칠 수 있는 홉(라우터) 수를 제한한다. 라우터를 지날 때마다 1씩 줄고 0이 되면 폐기된다.
+- **TTL(Time To Live)**: 패킷이 네트워크를 무한히 떠돌지 않도록 거칠 수 있는 홉(라우터) 수를 제한한다. 라우터가 다음 홉으로 전달할 때 최소 1씩 줄이고, 감소 결과가 0 이하이면 더 전달하지 않고 폐기한다.
 
 비유하면 패킷은 택배 상자, IP 주소는 보내는 사람과 받는 사람의 주소다.
+
+IPv4 헤더의 필드, DF에 따른 단편화 조건과 Wireshark 해석 예시는 [[IPv4-Header-and-Fragmentation]]을 참고한다.
 
 ### MTU와 MSS — 서로 다른 크기 제한
 
@@ -146,6 +148,7 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 ## 관련 문서
 
 - [[Physical-DataLink-Layer|물리와 데이터링크 계층 (L1/L2, MAC, 프레임, ARP 연결 고리)]]
+- [[IPv4-Header-and-Fragmentation|IPv4 헤더, 단편화와 Wireshark 패킷 해석]]
 - [[Transport-Layer#세그먼트와 캡슐화|소켓, 바이트 스트림과 패킷 생성 흐름]]
 - [[TCP-Congestion-Control|TCP MSS와 혼잡 제어]]
 - [[HTTPS-TLS|TLS 암호화와 종료 지점]]
