@@ -74,6 +74,7 @@ LAN(Local Area Network)과 WAN(Wide Area Network)을 좁으면 LAN, 넓으면 WA
 ## 관련 문서
 
 - [[Physical-DataLink-Layer|L1/L2 물리와 데이터링크 (MAC, 프레임, 브로드캐스트 도메인)]]
+- [[Switch-Hierarchy-and-Uplink|스위치 계층과 업링크 (액세스, 디스트리뷰션, 코어)]]
 - [[Network-Layer|L3 네트워크 계층 (IP, CIDR, 라우팅, ARP)]]
 - [[OSI-7-Layer|OSI 7계층과 Internet vs Ethernet]]
 - [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택]]

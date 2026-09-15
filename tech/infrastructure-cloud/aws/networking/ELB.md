@@ -161,3 +161,4 @@ L4(NLB)는 HTTP 헤더를 주입하지 않는다. 원본 IP 보존 기본값은 
 - [[CDN|CloudFront]]
 - [[AWS-Cost-Optimization|AWS 비용 최적화]]
 - [[RDS-Security-Group|RDS Security Group]]
+- [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치]] — GWLB는 보안 어플라이언스를 경로 위에 인라인으로 삽입

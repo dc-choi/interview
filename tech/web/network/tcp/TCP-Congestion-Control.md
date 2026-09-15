@@ -125,3 +125,4 @@ CWND는 커넥션에 종속된 값이다. 새 커넥션은 해당 구현의 초�
 - [[HTTP-3|HTTP/3, QUIC — TCP를 버린 이유]]
 - [[Latency-Optimization|레이턴시 최적화]] — 크기가 왕복 횟수로 바뀌는 실무 진단
 - [[Transport-Layer|전송 계층 (L4)]]
+- [[Network-Encapsulation|캡슐화와 데이터 단위 (MTU, MSS, 단편화, PMTUD)]]

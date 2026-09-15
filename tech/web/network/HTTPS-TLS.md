@@ -122,3 +122,4 @@ openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt -
 - [[KMS|AWS KMS (Encryption at Rest)]]
 - [[DNS|DNS]]
 - [[Browser-URL-Flow|브라우저 URL 입력 흐름]]
+- [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark (TLS 복호화, 키 로그 파일)]]

@@ -34,7 +34,7 @@ UTM(Unified Threat Management)은 방화벽, IPS, VPN, 안티바이러스, 웹 �
 
 인터넷 → UTM 또는 방화벽 → WAF 또는 SSL 처리 장비 → 로드밸런서 → 웹 서버
 
-이 구조에서 외부 사용자가 직접 만나는 장비는 UTM이므로 **공인 IP는 UTM에** 부여하는 것이 자연스럽다.
+이 구조에서 외부 사용자가 직접 만나는 장비는 UTM이므로 **공인 IP는 UTM에** 부여하는 것이 자연스럽다. 이 체인의 장비는 모두 트래픽이 통과하는 인라인 배치이며, 사본만 보는 아웃오브패스 센서와의 구분은 [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치]].
 
 ## 프록시 방식 WAF와 공인 IP
 
@@ -75,3 +75,5 @@ WAF가 프록시 방식으로 동작하면 클라이언트는 실제 웹 서버�
 - [[Browser-URL-Flow|브라우저 URL 입력 프로세스]]
 - [[DNS|DNS 구조]]
 - [[Session|Session (세션 유지)]]
+- [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치 (IDS와 IPS, 포트 미러링)]]
+- [[네트워크보안(NetworkSecurity)|네트워크 보안 인덱스]]

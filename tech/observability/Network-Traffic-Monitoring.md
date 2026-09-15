@@ -67,6 +67,8 @@ aliases: ["Network Traffic Monitoring", "네트워크 트래픽 모니터링"]
 - [[ClickHouse|ClickHouse]]
 - [[Long-Term-Retention|메트릭 장기 보존]]
 - [[Log-Pipeline|중앙 집중식 로그 파이프라인]]
+- [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark (패킷 단위 분석)]]
+- [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치 (아웃오브패스 센서)]]
 
 ## 출처
 

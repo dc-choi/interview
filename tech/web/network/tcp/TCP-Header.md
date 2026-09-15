@@ -94,5 +94,6 @@ ECN(명시적 혼잡 통보)은 혼잡을 손실과 타임아웃만으로 추정
 - [[TCP-Flow-Error-Control|TCP 흐름 제어와 오류 제어 (슬라이딩 윈도우, ARQ, SACK)]]
 - [[Transport-Layer|전송 계층 (L4, TCP/UDP, 포트, 세그먼트)]]
 - [[Network-Layer|네트워크 계층 (L3, IP 헤더)]]
+- [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기]]
 - [[HTTP-3|HTTP/3, QUIC — TCP를 버린 이유]]
 - [[OSI-7-Layer|OSI 7계층]]

@@ -130,3 +130,4 @@ SI 접두사와 이진 접두사를 구분한다.
 - [[CPU-and-Arithmetic|CPU와 산술논리연산]]
 - [[Sequential-Logic-and-Memory|순차 논리회로와 메모리]]
 - [[CPU-Datapath-Control-and-Instruction-Cycle|CPU 데이터패스와 명령어 사이클]]
+- [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기 (16진수 덤프 해석 예시)]]

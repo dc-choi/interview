@@ -147,5 +147,6 @@ $ ping 127.0.0.1           # loopback 인터페이스 자체 확인
 ## 관련 문서
 - [[OSI-7-Layer|OSI 7계층과 Internet vs Ethernet]]
 - [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택]]
+- [[Network-Encapsulation|캡슐화와 커널 송신 경로]]
 - [[HTTPS-TLS|HTTPS / TLS Handshake]]
 - [[HTTP-Status-Code|HTTP Status Code]]
