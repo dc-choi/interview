@@ -12,7 +12,7 @@ aliases: ["Network Security", "네트워크 보안"]
 ## 목차
 
 - [[Network-Perimeter-Security|네트워크 경계 보안]] — 공인 IP 배치 원칙, DNS 응답 IP와 실제 서버, UTM, 보안 장비가 로드밸런서보다 앞에 서는 순서, 프록시 방식 WAF와 SSL 종료, 클라우드의 퍼블릭/프라이빗 구분
-- [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치]] — 경로 위 제어 장비와 사본 관찰 센서, fail-open과 fail-close, 포트 미러링과 TAP의 한계, IDS와 IPS, 클라우드의 GWLB와 트래픽 미러링
+- [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치]] — 경로 위 제어 장비와 사본 관찰 센서, fail-open과 fail-closed, 소프트웨어와 하드웨어 bypass, 포트 미러링(SPAN)과 TAP, 미러 포트 대역폭 병목과 사본 유실, IDS와 IPS, 클라우드의 GWLB와 Traffic Mirroring
 
 ## 관련 문서
 

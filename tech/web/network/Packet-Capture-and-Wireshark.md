@@ -2,29 +2,48 @@
 tags: [web, network, packet-capture, wireshark, tcpdump, libpcap, npcap, troubleshooting, security]
 status: done
 category: "웹&네트워크(Web&Network)"
-aliases: ["Packet Capture and Wireshark", "패킷 캡처와 Wireshark", "Wireshark", "와이어샤크", "tcpdump", "libpcap", "Npcap", "Promiscuous Mode", "포트 미러링", "패킷 스니핑"]
+aliases: ["Packet Capture and Wireshark", "패킷 캡처와 Wireshark", "Wireshark", "와이어샤크", "Wireshark 구조와 패킷 분석", "패킷 수집기와 분석기", "tcpdump", "libpcap", "Npcap", "Promiscuous Mode", "포트 미러링", "패킷 스니핑"]
 verified_at: 2026-09-15
 ---
 
 # 패킷 캡처와 Wireshark: 센서, 분석기, 캡처 위치와 법적 범위
 
-패킷 캡처는 NIC를 지나는 프레임을 복제해 기록하는 일이다. Wireshark는 프레임을 복제하는 캡처 라이브러리(센서)와 복제된 바이트를 계층별 규칙으로 해석하는 분석기(analyzer)를 합친 도구다. 헤더를 읽는 법과 필터 문법은 [[IPv4-Header#캡처로 헤더 읽기|IPv4 헤더 구조와 패킷 읽기]], 캡처 단위가 프레임인 이유는 [[Network-Encapsulation]].
+패킷 캡처는 NIC를 지나는 프레임을 복제해 기록하는 일이다. Wireshark는 프레임을 복제하는 캡처 라이브러리(센서)와 복제된 바이트를 계층별 규칙으로 해석하는 분석기(analyzer)를 합친 도구다. 헤더를 읽는 법은 [[IPv4-Header#캡처로 헤더 읽기|IPv4 헤더 구조와 패킷 읽기]], 캡처 단위가 프레임인 이유는 [[Network-Encapsulation]].
 
-한 줄 요약: **센서는 흐름을 바꾸지 않고 복제만 하고, 분석기는 계층별 규칙을 대입해 바이트를 의미로 바꾼다. 무엇을 볼 수 있는지는 캡처 위치가, 무엇을 봐도 되는지는 법과 허가가 정한다.**
+한 줄 요약: **센서는 흐름을 바꾸지 않고 사본만 관찰하고, 분석기는 계층별 규칙을 대입해 바이트를 의미로 바꾼다. 무엇을 볼 수 있는지는 캡처 위치가, 무엇을 봐도 되는지는 법과 허가가 정한다.**
 
 ## 구조: 센서와 분석기
 
 | 구성 요소 | 역할 | 구현 |
 |---|---|---|
-| 캡처 라이브러리(센서) | NIC 드라이버와 프로토콜 스택 사이에서 프레임을 복제해 유저 공간으로 넘기고 캡처 필터를 적용 | Unix 계열 libpcap, Windows Npcap(WinPcap 후속) |
+| 캡처 라이브러리(센서) | NIC 드라이버와 프로토콜 스택 사이에서 프레임을 복제해 유저 공간으로 넘기고 캡처 필터를 적용 | Unix 계열 libpcap, Windows Npcap(커널 드라이버와 라이브러리로 구성, 단종된 WinPcap의 후속) |
 | 캡처 엔진 | 캡처 라이브러리를 호출해 파일이나 파이프로 기록. 권한 상승이 필요한 유일한 부분 | dumpcap |
 | 분석 엔진(analyzer) | 프레임을 계층별 dissector로 해석해 프로토콜 트리로 표시 | Epan (Wireshark GUI와 TShark가 공유) |
 
-- **센서의 본질은 bypass다.** 원래 프레임은 그대로 프로토콜 스택으로 흘러가고 사본만 분석기로 간다. 캡처는 통신을 차단하거나 변형하지 않는 관찰이다. 다만 트래픽이 많으면 복제와 기록에 CPU와 디스크가 들고, 캡처 엔진이 따라가지 못하면 캡처 통계에 dropped로 표시된다.
-- **캡처 필터는 센서 단계에서 적용된다.** BPF 문법의 조건에 맞지 않는 패킷은 기록 전에 버려지므로 트래픽이 많을 때 캡처 필터로 먼저 줄인다. 디스플레이 필터는 기록이 끝난 뒤 화면에서 거른다.
-- **분석기는 헤더의 다음 프로토콜 표시를 따라간다.** EtherType으로 IP dissector를, IP의 Protocol로 TCP dissector를, 포트로 HTTP dissector를 고른다. 표준 포트가 아닌 서비스는 Decode As로 dissector를 지정한다.
-- **권한은 캡처 엔진에만 준다.** Wireshark GUI 자체는 일반 권한으로 돌고 dumpcap만 캡처 권한을 갖는다. 해석기의 버그가 있어도 권한 상승된 코드의 범위를 줄이는 구조다.
+- **센서는 사본을 관찰할 뿐 흐름을 바꾸지 않는다.** 원래 프레임은 그대로 프로토콜 스택으로 흘러가고 사본만 분석기로 간다. `인터페이스 → dumpcap → 캡처 파일 → 분석기`라는 화살표는 관측 데이터의 흐름이지, 실제 통신이 분석기를 거쳐야 한다는 뜻이 아니다. 강의는 이 성질을 바이패스라고 부르지만, 벤더 용어의 bypass는 검사 경로를 건너뛰어 트래픽을 그대로 통과시키는 제어 개념이라 수집과 제어가 섞인다. 이 문서는 센서를 복제(사본) 관찰로 쓰고 bypass는 [[#방향과 처리 용어]]의 뜻으로만 쓴다.
+- **수동 관찰에도 비용은 있다.** 복제, 버퍼링, 기록과 해석에 CPU, 메모리와 디스크가 들고, 이름 해석 설정에 따라 DNS 조회 트래픽이 추가로 생길 수 있다. 캡처 엔진이 따라가지 못하면 캡처 통계에 dropped로 표시된다.
+- **캡처 필터는 센서 단계에서 적용된다.** 조건에 맞지 않는 패킷은 기록 전에 버려지므로 트래픽이 많을 때 캡처 필터로 먼저 줄인다. 디스플레이 필터는 기록이 끝난 뒤 화면에서 거른다. 문법 차이는 [[#캡처 필터와 디스플레이 필터]].
+- **분석기는 헤더의 다음 프로토콜 표시를 따라간다.** EtherType으로 IP dissector를, IP의 Protocol로 TCP dissector를, 포트로 HTTP dissector를 고른다. 표준 포트가 아닌 서비스는 Decode As로 dissector를 지정한다. 첫 dissector는 캡처 파일의 링크 유형이 정하므로 모든 캡처가 이더넷에서 시작하지는 않는다.
+- **디코딩과 복호화는 다르다.** 디코딩은 바이트 구조를 필드로 해석하는 일이고 복호화는 암호문을 평문으로 되돌리는 일이다. TLS 트래픽을 캡처하거나 TCP 스트림을 모았다는 이유만으로 본문이 평문으로 보이지는 않는다. [[#암호화된 트래픽]]
+- **권한은 캡처 엔진에만 준다.** 원시 인터페이스 접근에 필요한 권한은 dumpcap으로 분리하고 Wireshark GUI와 dissector는 일반 권한으로 돈다. 해석기에 버그가 있어도 권한 상승된 코드의 범위를 줄이는 구조다. 저장된 pcap/pcapng 파일을 여는 분석에는 캡처 권한이 필요 없다.
 - Npcap은 캡처뿐 아니라 패킷 주입도 지원하고 loopback 캡처도 제공한다. 이전 WinPcap용 프로그램을 위한 호환 모드도 있다.
+
+| 화면 | 확인하는 내용 |
+|---|---|
+| Packet List | 캡처된 패킷의 시간, 주소, 프로토콜과 요약 |
+| Packet Details | Ethernet, IP, TCP와 응용 프로토콜의 계층별 필드 |
+| Packet Bytes | 선택한 데이터의 실제 바이트를 16진수로 표시 |
+
+## 캡처 필터와 디스플레이 필터
+
+| 구분 | 적용 단계 | 예시 |
+|---|---|---|
+| 캡처 필터 | 센서 단계, BPF 문법. 제외된 패킷은 캡처 파일에 기록되지 않음 | `tcp port 80`, `host 10.0.0.5 and port 443` |
+| 디스플레이 필터 | 기록 뒤 화면 단계, 필드 비교 문법. 숨겨도 캡처 데이터는 유지 | `tcp.port == 80`, `ip.addr == 10.0.0.5 && tcp.flags.syn == 1` |
+
+- 두 필터는 문법이 다르다. 헤더 분석에는 필드 비교와 논리 연산으로 충분하고 정규표현식이 필수는 아니다. 문자열 필드의 패턴을 찾을 때만 디스플레이 필터의 `matches` 연산자를 선택적으로 쓴다.
+- 디스플레이 필터로 숨기는 것은 화면의 선택이지 네트워크의 drop이 아니고, 캡처 필터로 수집에서 빼는 것도 통신을 차단하는 것이 아니다.
+- 16진수 덤프와 헤더 읽기 실습은 [[IPv4-Header#캡처로 헤더 읽기|IPv4 헤더 구조와 패킷 읽기]].
 
 ## 무엇이 보이는가: 캡처 위치
 
@@ -37,12 +56,21 @@ verified_at: 2026-09-15
 
 | 방법 | 원리 | 특징 |
 |---|---|---|
-| 포트 미러링(SPAN) | 스위치가 감시 대상 포트의 트래픽을 미러 포트로 복제 | 스위치 설정만으로 가능, 스위치 부하와 미러 포트 대역폭 한계 |
-| 네트워크 TAP | 회선 사이에 끼우는 수동 장비가 양방향을 복제 | 트래픽에 영향 없음, 전이중 양방향 모두 확보 |
+| 포트 미러링(SPAN) | 스위치가 감시 대상 포트의 트래픽을 미러 포트로 복제 | 스위치 설정만으로 가능, 스위치 부하와 미러 포트 대역폭 한계로 고부하에서 캡처 유실 |
+| 네트워크 TAP | 회선 사이에 끼우는 전용 장비가 양방향을 복제 | 트래픽에 영향 없음. 브레이크아웃 TAP은 전이중의 양방향이 별도 출력으로 나오므로 둘 다 캡처해야 하고, 집선(aggregation) TAP은 양방향을 한 출력으로 합쳐 준다 |
 | 허브 | 모든 포트로 복제하는 구형 장비를 회선에 삽입 | 반이중으로 떨어지고 충돌 도메인이 생김 |
 | 대상 호스트에서 캡처 | 그 호스트의 NIC에서 직접 tcpdump | 가장 흔한 실무 방식, 그 호스트 트래픽만 보임 |
 
 클라우드에서는 물리 포트가 없으므로 VPC 수준의 트래픽 미러링 기능을 쓴다. loopback 트래픽은 Linux와 macOS에서 `lo` 인터페이스를 캡처하면 되고 Windows는 Npcap이 loopback 캡처를 지원한다. [[Loopback-And-Localhost|loopback 인터페이스]]
+
+### 캡처에서 빠지는 것
+
+- 인터페이스 선택: 유선, Wi-Fi, VPN, loopback 중 어느 지점을 보는지에 따라 보이는 데이터가 달라진다.
+- 필터와 길이 제한: 캡처 필터에서 제외되거나 snaplen(패킷별 최대 캡처 길이) 뒤로 잘린 데이터는 파일에 없다.
+- 처리 용량: 캡처 버퍼가 넘치면 수집 과정에서 사본이 누락된다. 캡처 누락(dropped)과 실제 네트워크의 패킷 유실은 구분한다.
+- 오프로딩: NIC와 커널의 처리 시점 때문에 캡처가 회선 위의 프레임 형태와 다르게 보일 수 있다.
+
+따라서 캡처 파일에 패킷이 없다는 사실만으로 상대가 보내지 않았거나 방화벽이 버렸다고 단정하지 않는다.
 
 ## 방향과 처리 용어
 
@@ -50,25 +78,30 @@ verified_at: 2026-09-15
 |---|---|
 | inbound | 기준점 밖에서 안으로 들어오는 트래픽 |
 | outbound | 기준점 안에서 밖으로 나가는 트래픽 |
-| drop | 필터나 정책에 걸려 버려짐. 캡처 필터의 drop은 기록만 안 하고, 방화벽의 drop은 전달 자체를 막는다 |
-| bypass, allow | 검사 지점을 통과. 센서의 bypass는 복제 뒤 원본이 그대로 지나가는 것, 방화벽에서는 정책이 통과시킨 것 |
+| drop | 패킷을 버림. 정책 차단 외에 큐 부족 같은 자원 고갈도 원인이 된다. 캡처 필터의 제외는 기록만 안 하는 것이고 방화벽의 drop은 전달 자체를 막는다 |
+| forward, allow | 다음 구간으로 전달, 정책상 통과를 허용. 허용이 종단 간 전달 성공까지 보장하지는 않는다 |
+| bypass | 특정 검사나 처리 경로를 건너뛰어 트래픽을 그대로 통과시킴. 인라인 IPS의 bypass는 분석 엔진을 거치지 않고 흘려보내는 상태로, 관리자가 켜는 bypass 모드도 있다. fail-open은 장애 시 검사 없이 통과시키겠다는 정책이고, 소프트웨어 bypass와 하드웨어 bypass 모듈은 이를 구현하는 수단이라 층위가 다르다. 무엇을 우회했는지 함께 말한다 |
 | stream, conversation | TCP 연결 하나의 양방향 바이트 흐름. Wireshark는 연결마다 stream 번호를 붙이고 Follow TCP Stream으로 재조립한 대화를 방향별 색으로 보여 준다 |
 
 inbound와 outbound는 기준점이 호스트인지, 서브넷인지, 방화벽인지에 따라 뒤집힌다. 같은 패킷이 서버 기준으로는 inbound, 클라이언트 기준으로는 outbound다. 방향을 말할 때는 기준점을 먼저 정한다. 경계 장비의 배치는 [[Network-Perimeter-Security|네트워크 경계 보안]].
 
+- TCP는 순서 있는 바이트 스트림을 제공할 뿐 메시지 경계를 보존하지 않는다. 한 응용 메시지가 여러 세그먼트에 걸칠 수도 있고 한 세그먼트에 여러 메시지의 데이터가 담길 수도 있다. [[Network-Encapsulation#소켓과 스트림: 유저 모드의 출발점|소켓과 바이트 스트림]]
+- 패킷별 헤더를 보는 것과 그 패킷들이 나른 바이트 흐름을 보는 것은 다른 관찰이다. 캡처 중간에 시작했거나 세그먼트를 놓쳤으면 Wireshark는 순서 뒤바뀜과 캡처 유실을 구분하지 못해 재조립이 실패할 수 있다.
+- TCP 바이트를 모으는 일과 HTTP 같은 상위 프로토콜의 메시지 경계를 해석하는 일은 별개다. Follow는 UDP, QUIC, HTTP/2 등에도 있지만 UI가 흐름을 모아 보여 준다고 UDP가 연결 지향 바이트 스트림이 되는 것은 아니다.
+
 ## 암호화된 트래픽
 
-TLS로 보호된 payload는 캡처해도 읽을 수 없다. IP와 TCP 헤더, TLS handshake의 일부 메타데이터만 보인다. 복호화가 필요하면 두 방법이 있다.
+TLS로 보호된 payload는 캡처해도 읽을 수 없다. 내용 대신 IP와 TCP 헤더, TLS handshake의 일부 메타데이터, 패킷 길이와 타이밍이 보이며, 이 관측값만으로도 트래픽 종류를 어느 정도 추정할 수 있다. [[Network-Encapsulation#DPI(Deep Packet Inspection): 내용물까지 검사|암호화 트래픽의 관측 한계]] 복호화가 필요하면 두 방법이 있다.
 
-- **키 로그 파일**: 애플리케이션이 `SSLKEYLOGFILE` 환경 변수가 가리키는 파일에 세션 비밀을 기록하고, Wireshark에 그 파일을 지정한다. Firefox, Chrome, curl과 OpenSSL 3.4 이상 기반 프로그램이 지원하며 Diffie-Hellman 키 교환이어도 동작한다.
-- **서버 RSA 개인키**: 키 교환이 RSA인 TLS 1.2 이하에서만 동작한다. (EC)DHE 스위트와 TLS 1.3에서는 세션 키가 개인키로 복원되지 않아 쓸 수 없다. 현대 트래픽에는 사실상 키 로그 방식만 남는다.
+- **키 로그 파일**: 애플리케이션이 `SSLKEYLOGFILE` 환경 변수가 가리키는 파일에 세션 비밀을 기록하고, Wireshark에 그 파일을 지정한다. Firefox, Chrome, curl이 지원하고, OpenSSL은 3.5.0부터 `enable-sslkeylog` 빌드 옵션을 켠 경우에만 이 환경 변수를 직접 읽는다 (OpenSSL CHANGES.md 3.5.0 항목 기준, 배포판 빌드마다 옵션 여부가 다를 수 있다). Diffie-Hellman 키 교환이어도 동작한다.
+- **서버 RSA 개인키**: 키 교환이 RSA인 TLS 1.2 이하에서만 동작한다. (EC)DHE 스위트와 TLS 1.3에서는 세션 키가 개인키로 복원되지 않아 쓸 수 없다. TLS 1.3과 (EC)DHE 스위트가 기본인 현대 트래픽에는 사실상 키 로그 방식만 남는다.
 
 키 로그는 세션 비밀 그 자체라 프로덕션에서 켜면 유출 경로가 된다. 개발과 테스트 환경에서만 쓰고 파일을 남기지 않는다. [[HTTPS-TLS|TLS handshake와 forward secrecy]]
 
 ## 캡처 운영 체크포인트
 
 - 목적과 범위를 먼저 정한다. 어느 호스트, 어느 포트, 얼마나 오래 캡처할지 정하고 그 범위만 캡처 필터로 수집한다.
-- 장시간 캡처는 ring buffer로 파일 수와 크기를 제한한다. 트래픽이 많으면 dropped 수치를 확인해 캡처가 완전한지 판단한다.
+- 장시간 캡처는 ring buffer로 파일 수와 크기를 제한한다. 트래픽이 많으면 dropped 수치를 확인해 캡처가 완전한지 판단하고, 본문까지 필요하면 snaplen이 패킷을 자르지 않는지 본다.
 - 서버에서 tcpdump로 pcap을 남기고 로컬 Wireshark로 여는 흐름이 실무 기본이다.
 
 ```bash
@@ -76,11 +109,11 @@ tcpdump -i eth0 -n -w capture.pcap 'host 10.0.0.5 and port 443'
 ```
 
 - 송신 호스트에서 캡처하면 NIC offload 때문에 체크섬과 세그먼트 크기가 실제 회선과 다르게 보일 수 있다. [[Network-Encapsulation#커널 안의 송신 경로|offload와 캡처 해석]]
-- 캡처 파일에는 자격 증명, 세션 토큰, 개인정보가 그대로 들어간다. 공유 전에 마스킹하고 보관 기간과 접근 권한을 정한다.
+- 캡처 파일에는 자격 증명, 세션 토큰, 개인정보가 그대로 들어간다. 공유 전에 마스킹하고 보관 기간과 접근 권한을 정한다. 수집할 권한과 원본 캡처를 다른 사람에게 공유할 권한은 따로 확인한다.
 
 ## 법과 윤리
 
-캡처 도구와 도청 도구는 같은 도구다. 차이는 누구의 트래픽을 어떤 권한으로 보느냐에 있다.
+캡처 도구와 도청 도구는 같은 도구다. 차이는 누구의 트래픽을 어떤 권한으로 보느냐에 있다. 진단이나 학습이라는 목적만으로 수집 권한이 생기지는 않는다.
 
 - 허용 범위는 자기 호스트, 자기가 운영하는 시스템과 네트워크, 소유자의 명시적 허가를 받은 범위다.
 - 타인 간 통신을 동의 없이 수집하고 해석하는 행위는 한국의 통신비밀보호법을 비롯한 각국 감청 관련 법의 처벌 대상이 될 수 있다. 공용 Wi-Fi에서 promiscuous 모드로 캡처하는 것이 대표적인 위험 사례다.
@@ -90,26 +123,33 @@ tcpdump -i eth0 -n -w capture.pcap 'host 10.0.0.5 and port 443'
 ## 면접 체크포인트
 
 - Wireshark를 이루는 캡처 라이브러리, dumpcap, dissector의 역할과 권한을 분리하는 이유
-- 캡처 필터와 디스플레이 필터가 적용되는 단계의 차이
+- 캡처 필터와 디스플레이 필터가 적용되는 단계와 문법의 차이, 필터로 숨긴 것이 네트워크 drop이 아닌 이유
 - promiscuous 모드로도 스위치 환경에서 다른 호스트 트래픽이 안 보이는 이유와 SPAN, TAP의 차이
-- inbound와 outbound가 기준점에 상대적이라는 점, drop과 bypass의 층위 구분
+- 캡처 누락(dropped)과 실제 패킷 유실을 구분해야 하는 이유
+- inbound와 outbound가 기준점에 상대적이라는 점, drop과 bypass의 층위 구분, 센서의 사본 관찰과 bypass의 차이
+- 패킷 디코딩, TCP 스트림 재조립과 TLS 복호화의 차이
 - TLS 복호화의 두 방법과 RSA 개인키 방식이 forward secrecy 환경에서 실패하는 이유
-- 캡처의 법적 허용 범위와 캡처 파일의 민감정보 취급
+- 캡처의 법적 허용 범위, 수집 권한과 공유 권한의 구분, 캡처 파일의 민감정보 취급
 
 ## 출처
 
 - [Wireshark의 내부구조와 작동원리 — 널널한 개발자 TV](https://www.youtube.com/watch?v=5Dku-vX3w-c&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=17)
 - [Wireshark, Developer's Guide: Overview](https://www.wireshark.org/docs/wsdg_html_chunked/ChWorksOverview.html)
-- [Wireshark, User's Guide: Prerequisites](https://www.wireshark.org/docs/wsug_html_chunked/ChCapPrerequisitesSection.html)
+- [Wireshark, Developer's Guide: Capturing packets](https://www.wireshark.org/docs/wsdg_html_chunked/ChWorksCapturePackets.html)
+- [Wireshark, Developer's Guide: libpcap or Npcap](https://www.wireshark.org/docs/wsdg_html_chunked/ChLibsPcap.html)
 - [Wireshark, User's Guide: Following Protocol Streams](https://www.wireshark.org/docs/wsug_html_chunked/ChAdvFollowStreamSection.html)
+- [Wireshark, User's Guide: Packet Reassembly](https://www.wireshark.org/docs/wsug_html_chunked/ChAdvReassemblySection.html)
 - [Wireshark, Wiki: CaptureSetup/Ethernet](https://wiki.wireshark.org/CaptureSetup/Ethernet)
 - [Wireshark, Wiki: TLS](https://wiki.wireshark.org/TLS)
 - [Npcap, User's Guide](https://npcap.com/guide/npcap-users-guide.html)
+- [Cisco, Security Manager 4.24 User Guide: Managing IPS Device Interface](https://www.cisco.com/c/en/us/td/docs/security/security_management/cisco_security_manager/security_manager/424/User/csm-user-guide-424/chapter37-managing-ips-device-interface.html)
+- [OpenSSL CHANGES.md — openssl/openssl](https://github.com/openssl/openssl/blob/master/CHANGES.md)
 
 ## 관련 문서
 
 - [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기 (16진수 덤프, 캡처 필터와 디스플레이 필터)]]
 - [[Network-Encapsulation|캡슐화와 데이터 단위 (프레임, 커널 송신 경로, offload)]]
+- [[Transport-Layer|전송 계층 (소켓, 바이트 스트림, 세그먼트)]]
 - [[Physical-DataLink-Layer|L1/L2 물리와 데이터링크 (스위치, promiscuous의 한계)]]
 - [[HTTPS-TLS|HTTPS와 TLS Handshake]]
 - [[Loopback-And-Localhost|Loopback 인터페이스 캡처]]

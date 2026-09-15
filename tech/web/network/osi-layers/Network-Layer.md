@@ -24,15 +24,11 @@ L3가 데이터를 담아 옮기는 단위는 패킷이다(L2는 프레임). 패
 
 비유하면 패킷은 택배 상자, IP 주소는 보내는 사람과 받는 사람의 주소다.
 
-IPv4 헤더의 필드, DF에 따른 단편화 조건과 Wireshark 해석 예시는 [[IPv4-Header-and-Fragmentation]]을 참고한다.
+헤더의 필드별 비트 구조, TTL과 단편화 필드, DF에 따른 처리, 체크섬과 캡처로 읽는 법은 [[IPv4-Header|IPv4 헤더 구조]]를 참고한다.
 
 ### MTU와 MSS — 서로 다른 크기 제한
 
-IP 관점에서 **MTU(Maximum Transmission Unit)**는 해당 링크에 실을 수 있는 IP 패킷의 최대 길이다. IP 헤더도 포함하며, Ethernet 헤더와 FCS는 포함하지 않는다. 일반적인 Ethernet MTU는 1500바이트지만 모든 링크와 터널에서 같은 값은 아니다. 경로 전체의 최소 링크 MTU가 Path MTU다.
-
-**MSS(Maximum Segment Size)** 옵션은 자신이 받을 수 있는 TCP 데이터 길이의 상한을 상대에게 알리며, TCP/IP 헤더는 제외한다. MTU 1500, IPv4 헤더 20, TCP 헤더 20바이트이며 옵션이 없는 예에서는 TCP 데이터가 최대 `1500 - 20 - 20 = 1460`바이트다. 실제 송신 크기는 상대의 MSS, 경로 제약과 추가 헤더 등에 따라 작아질 수 있다. 광고 MSS와 옵션 크기의 관계는 [[TCP-Congestion-Control#CWND 초기화 — MSS|MSS 계산]]을 참고한다.
-
-TCP의 세그먼트화와 IP 단편화는 별개다. 전자는 스트림을 TCP 전송 단위로 나누고, 후자는 IP 패킷을 더 작은 IP 단편으로 나눈다. MTU보다 큰 데이터를 애플리케이션이 썼다고 곧바로 IP 단편화가 일어나는 것은 아니다. TCP는 경로의 크기 제약에 맞게 분할해 IP 단편화를 피하도록 동작할 수 있다.
+IP 관점에서 **MTU(Maximum Transmission Unit)**는 해당 링크에 실을 수 있는 IP 패킷의 최대 길이다. IP 헤더는 포함하고 Ethernet 헤더와 FCS는 포함하지 않으며, 일반적인 Ethernet의 1500바이트가 모든 링크와 터널의 공통값은 아니다. **MSS(Maximum Segment Size)**는 TCP 데이터 길이의 상한이라 범위가 다르고, TCP 세그먼트화와 IP 단편화도 별개다. MSS 계산, Path MTU Discovery와 단편화 규칙은 [[Network-Encapsulation#크기 제한: MTU, MSS와 단편화|MTU, MSS와 단편화]].
 
 ## IP 주소 — L3의 논리적 식별자
 
@@ -100,12 +96,7 @@ ICMP는 IP 전달 중 생긴 오류와 진단 정보를 운반한다. `ping`의 
 
 ## 패킷 검사 — 헤더와 페이로드
 
-일반 IP 포워딩은 목적지 IP와 라우팅 정보를 사용한다. **DPI(Deep Packet Inspection)**는 포트와 주소를 확인하는 수준을 넘어 페이로드의 패턴이나 애플리케이션 프로토콜까지 분석한다. L3의 필수 전달 절차가 아니라 보안 장비나 트래픽 분석 시스템이 추가로 수행하는 기능이다.
-
-- 활용: 애플리케이션 식별, 공격 패턴 탐지, 콘텐츠 필터링과 트래픽 정책 적용.
-- 가시성: TLS로 암호화된 응용 데이터는 중간 장비가 패킷을 캡처했다는 이유만으로 평문이 되지 않는다. 평문 검사는 복호화 가능한 종단이나 TLS 종료 지점 등의 조건이 필요하다. [[HTTPS-TLS]]
-- 한계: 암호화돼도 관측 가능한 주소, 길이와 타이밍으로 일부 추론은 가능하지만, 본문을 읽는 것과는 다르다. 보이는 헤더의 범위도 암호화와 터널 구성에 따라 달라진다.
-- 비용: 검사 목적에 필요한 범위와 접근 권한, 보관 기간을 정한다. 내용을 볼 수 있는 지점은 민감정보도 노출될 수 있어 성능 비용과 프라이버시를 함께 고려한다.
+일반 IP 포워딩은 목적지 IP와 라우팅 정보만 쓰지만, 보안 장비는 페이로드까지 분석하는 DPI(Deep Packet Inspection)를 추가로 수행할 수 있다. DPI의 용도, TLS 암호화가 제한하는 가시성과 정책 트레이드오프는 [[Network-Encapsulation#DPI(Deep Packet Inspection): 내용물까지 검사|DPI]].
 
 ## L3의 한계와 L4로의 확장
 
@@ -139,16 +130,16 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 - [RFC 792 — Internet Control Message Protocol](https://www.rfc-editor.org/rfc/rfc792.html)
 - [RFC 9293 — Transmission Control Protocol, Segmentation](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.7)
 - [RFC 894 — IP Datagrams over Ethernet Networks](https://www.rfc-editor.org/rfc/rfc894.html)
-- [RFC 1812 — Requirements for IP Version 4 Routers](https://www.rfc-editor.org/rfc/rfc1812.html#section-5.2.1)
-- [RFC 8404 — Effects of Pervasive Encryption on Operators](https://www.rfc-editor.org/rfc/rfc8404.html#section-2.2.2)
-- [YouTube, 네트워크 데이터 흐름 강의](https://www.youtube.com/watch?v=Bz-K-DPfioE) — 사용자 제공 학습 메모를 바탕으로 정리. 영상 자막은 직접 대조하지 못했으며, 기술 설명은 위 공식 자료로 보완했다.
+- [RFC 1812 — Requirements for IP Version 4 Routers, 5.3.1 Time to Live](https://www.rfc-editor.org/rfc/rfc1812.html#section-5.3.1)
+- [패킷의 생성 원리와 캡슐화 — 널널한 개발자 TV](https://www.youtube.com/watch?v=Bz-K-DPfioE&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=14)
 - [그림으로 쉽게 배우는 네트워크 — IP 클래스와 서브넷 마스크, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160804)
 - [그림으로 쉽게 배우는 네트워크 — 라우팅 프로토콜, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160809)
 
 ## 관련 문서
 
 - [[Physical-DataLink-Layer|물리와 데이터링크 계층 (L1/L2, MAC, 프레임, ARP 연결 고리)]]
-- [[IPv4-Header-and-Fragmentation|IPv4 헤더, 단편화와 Wireshark 패킷 해석]]
+- [[Network-Encapsulation|캡슐화와 데이터 단위 (스트림에서 프레임까지, MTU/MSS, 단편화)]]
+- [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기 (TTL, 단편화 필드, 체크섬, Wireshark)]]
 - [[Transport-Layer#세그먼트와 캡슐화|소켓, 바이트 스트림과 패킷 생성 흐름]]
 - [[TCP-Congestion-Control|TCP MSS와 혼잡 제어]]
 - [[HTTPS-TLS|TLS 암호화와 종료 지점]]

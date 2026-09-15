@@ -22,37 +22,13 @@ L3의 IP 주소는 호스트(컴퓨터 한 대)까지만 가리킨다([[Network-
 
 ## 세그먼트와 캡슐화
 
-### 소켓과 바이트 스트림
+L4의 데이터 단위 세그먼트는 L3의 패킷 안에 담겨 이동한다. 계층마다 단위가 다르고 서로 감싼다. 프레임(L2) ⊃ 패킷(L3) ⊃ 세그먼트(L4) ⊃ 실제 데이터. 택배 상자 안에 작은 상자가 있고 그 안에 물건이 든 구조다.
 
-소켓은 애플리케이션이 통신 종단점에 접근하는 인터페이스다. Linux에서는 파일 디스크립터로 다루며 `read/write`나 `send/recv`로 입출력한다. 파일과 같은 입출력 인터페이스를 쓴다는 뜻이며, 디스크에 저장되는 일반 파일이라는 뜻은 아니다.
+애플리케이션은 소켓으로 L4에 접근한다. 소켓은 Linux에서 파일 디스크립터로 다루는 통신 종단점 인터페이스이지 디스크에 저장되는 파일이 아니다. TCP 소켓은 순서 있는 **바이트 스트림**을 제공하며 메시지 경계는 보존하지 않는다. `ABC`와 `DEF`를 순서대로 보내도 수신자는 `AB`, `CDEF`로 나눠 읽을 수 있으므로 경계는 애플리케이션 프로토콜이 정한다. UDP 소켓은 메시지 단위라 모든 소켓을 스트림으로 일반화하지 않는다.
 
-TCP 소켓은 순서 있는 **바이트 스트림**을 제공한다. 연결의 시작과 종료는 있지만, 그 안에서 애플리케이션이 쓴 메시지의 경계는 보존하지 않는다. `ABC`와 `DEF`를 순서대로 보내도 수신자는 `AB`, `CDEF`로 나눠 읽을 수 있다. 길이 필드나 구분자 같은 메시지 경계는 애플리케이션 프로토콜이 정한다. UDP 소켓은 메시지 단위이므로 모든 소켓을 스트림으로 일반화하지 않는다.
+`send()`의 성공 반환값은 로컬 송신 버퍼가 받아들인 바이트 수다. 상대가 받았다는 확인이 아니고, 요청한 길이보다 적을 수도 있으므로 반환값을 확인한다. 호출 한 번, 세그먼트 하나, 수신 측 `recv()` 한 번은 일대일이 아니다. 장애를 볼 때는 로컬 송신 버퍼가 막힌 것인지, 전송 중 손실과 재전송인지, 수신 애플리케이션이 늦게 읽는 것인지부터 구분한다.
 
-### 사용자 데이터가 프레임이 되는 순서
-
-일반적인 커널 TCP/IP 스택을 쓰는 Linux 애플리케이션이 Ethernet으로 보내는 경우다. 유저 모드에서 건넨 바이트를 커널이 처리하고 드라이버와 NIC가 실제 송신에 참여한다. 아래는 프로토콜의 논리적 구성 순서이며, 매 단계마다 전체 데이터를 새 메모리로 복사한다는 뜻은 아니다.
-
-| 단계 | 데이터 단위와 구성 | 붙는 정보의 역할 |
-|---|---|---|
-| 애플리케이션 | TCP에 넘길 바이트 스트림 | 애플리케이션 프로토콜의 메시지 |
-| TCP, L4 | TCP 헤더 + 바이트 조각 = TCP 세그먼트 | 포트, 순서, 수신 확인과 흐름 제어 |
-| IP, L3 | IP 헤더 + TCP 세그먼트 = IP 패킷 | 출발지와 목적지 IP, 전달 제어 |
-| Ethernet, L2 | Ethernet 헤더 + IP 패킷 + 필요시 패딩 + FCS = 프레임 | 현재 링크의 MAC 주소와 오류 검출 |
-| 물리 계층, L1 | 프레임의 비트를 물리 신호로 전달 | 케이블이나 무선 매체의 신호 표현 |
-
-TCP가 스트림을 나누는 것이 **세그먼트화**이고, 각 계층이 제어 정보를 붙여 상위 데이터를 감싸는 것이 **캡슐화**다. TCP 헤더가 포함된 단위가 세그먼트이며, 그 바깥에 IP 헤더를 붙이면 IP 패킷이 된다.
-
-**페이로드는 어느 계층에서 보느냐에 따라 달라진다.** TCP의 페이로드는 바이트 조각이고, IP의 페이로드에는 TCP 헤더까지 들어간다. Ethernet의 페이로드에는 IP 패킷이 들어간다. 수신 측은 바깥 계층부터 헤더와 제어 정보를 처리하고, TCP가 순서를 맞춘 바이트를 애플리케이션에 전달한다.
-
-택배 비유에서는 바이트 조각이 내용물, 헤더가 송장, IP 패킷이 상자다. 프레임을 운송 차량에 비유할 수 있지만, **일반적인 IP over Ethernet에서 한 프레임은 IP 패킷 하나를 담는다**. 여러 상자를 싣는 트럭과 정확히 대응하지 않는다. 프레임은 라우터에서 다음 링크에 맞게 새로 만들어지며, 모든 링크가 Ethernet인 것도 아니다. 프레임 필드는 [[Physical-DataLink-Layer#프레임 구조|L2 프레임 구조]], 구간별 변화는 [[Network-Layer#패킷은 유지되고 프레임은 구간마다 바뀐다 (핵심)|L3 전달 과정]]을 참고한다.
-
-### `send()` 반환과 실제 전송은 다르다
-
-- `send()`의 성공 반환값은 로컬 송신 처리에 받아들인 바이트 수다. 상대가 받았거나 애플리케이션 처리를 마쳤다는 확인이 아니다. 요청한 길이보다 적게 받아들일 수도 있으므로 반환값을 확인한다.
-- 애플리케이션 호출 한 번, TCP 세그먼트 하나와 수신 측 `recv()` 한 번은 서로 일대일 관계가 아니다. 버퍼링과 흐름 제어, 혼잡 제어 등이 실제 송신 시점과 크기에 영향을 준다.
-- Linux의 TSO(TCP Segmentation Offload)처럼 NIC가 최종 분할을 맡을 수도 있다. 따라서 이 논리적 계층 그림만으로 패킷이 `send()` 호출 순간 모두 만들어져 선로에 나갔다고 판단하지 않는다.
-
-장애를 볼 때는 로컬 송신 버퍼가 막힌 것인지, 전송 중 손실과 재전송인지, 수신 애플리케이션이 늦게 읽는 것인지부터 구분한다. 크기 제약은 [[Network-Layer#MTU와 MSS — 서로 다른 크기 제한|MTU와 MSS]], 전송량 제어는 [[TCP-Flow-Error-Control]], [[TCP-Congestion-Control]]로 이어진다.
+소켓 스트림이 커널을 거쳐 프레임으로 나가는 전 과정과 계층별 payload, MTU, MSS의 관계, NIC offload는 [[Network-Encapsulation|캡슐화와 데이터 단위]]. 크기 제약은 [[Network-Encapsulation#크기 제한: MTU, MSS와 단편화|MTU, MSS와 단편화]], 전송량 제어는 [[TCP-Flow-Error-Control]], [[TCP-Congestion-Control]]로 이어진다.
 
 ## 포트 — 호스트 안의 방 번호
 
@@ -144,16 +120,15 @@ VPC, 보안 그룹(SG), NACL은 포트와 프로토콜(TCP/UDP) 단위로 트래
 - [RFC 9114 — HTTP/3](https://www.rfc-editor.org/rfc/rfc9114.html)
 - [Linux man-pages — socket(2)](https://man7.org/linux/man-pages/man2/socket.2.html)
 - [Linux man-pages — send(2)](https://man7.org/linux/man-pages/man2/send.2.html)
-- [Linux Kernel Documentation — Segmentation Offloads](https://docs.kernel.org/networking/segmentation-offloads.html)
-- [RFC 894 — IP Datagrams over Ethernet Networks](https://www.rfc-editor.org/rfc/rfc894.html)
 - [AWS Documentation — What is a Network Load Balancer?](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html)
 - [AWS Documentation — What is an Application Load Balancer?](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html)
-- [YouTube, 네트워크 데이터 흐름 강의](https://www.youtube.com/watch?v=Bz-K-DPfioE) — 사용자 제공 학습 메모를 바탕으로 정리. 영상 자막은 직접 대조하지 못했으며, 기술 설명은 위 공식 자료로 보완했다.
+- [패킷의 생성 원리와 캡슐화 — 널널한 개발자 TV](https://www.youtube.com/watch?v=Bz-K-DPfioE&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=14)
 - [그림으로 쉽게 배우는 네트워크 — TCP와 UDP, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160826)
 
 ## 관련 문서
 
 - [[Network-Layer|네트워크 계층 (L3, IP, 라우팅, ARP)]]
+- [[Network-Encapsulation|캡슐화와 데이터 단위 (스트림, 세그먼트, 패킷, 프레임, MTU/MSS)]]
 - [[Physical-DataLink-Layer|물리 신호와 Ethernet 프레임]]
 - [[TCP-Handshake|TCP Handshake (3-way/4-way, TIME_WAIT, RTT 비용)]]
 - [[OSI-7-Layer|OSI 7계층 전체 지도]]
