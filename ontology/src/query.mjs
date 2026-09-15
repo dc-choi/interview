@@ -824,7 +824,13 @@ function retrieve(options, args, snapshot, mode) {
   else if (tokens.length >= 8 && maxSectionTermMatches > 0 && maxSectionTermMatches <= 2) {
     base.matching.assessment = 'weak_lexical_overlap';
   }
+  // ponytail: short topic queries use named concepts; long questions keep
+  // lexical ranking so a broad name cannot displace their specific conditions.
+  const namedQueryMatch = (doc) => tokens.length < 8 && doc.status !== 'index'
+    && [doc.label, ...(doc.aliases ?? [])]
+    .some((field) => tokens.includes(exactText(field)));
   const roots = [...scored.values()].sort((a, b) => Number(b.metadataMatch) - Number(a.metadataMatch)
+    || Number(namedQueryMatch(b.doc)) - Number(namedQueryMatch(a.doc))
     || b.score - a.score || a.doc.id.localeCompare(b.doc.id));
   if (mode === 'search') return documentSearchPage({ base, request, roots, byDocument, scopes, tokens });
   if (roots.length > MAX_ROOTS) {

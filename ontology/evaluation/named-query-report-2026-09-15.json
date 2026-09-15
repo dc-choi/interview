@@ -1,0 +1,440 @@
+{
+  "observed_at": "2026-09-15T06:13:24.688Z",
+  "decision": "Adopt named label/alias priority for non-index documents only when a query has fewer than eight normalized and expanded terms. Preserve full-query equality and existing substring/body scoring.",
+  "contract": {
+    "scorer": "ontology/evaluation/score.mjs",
+    "positive_pass": "Every required evidence group must match one allowed source, heading and body target in the returned response.",
+    "negative_pass": "The response must be insufficient_evidence with no entities, relations or evidence units.",
+    "budget": "Every baseline and current response is checked against its serialized byte budget."
+  },
+  "inputs": {
+    "source_revision": "f929210a7ff8429650559acc5fa83f85d092950b",
+    "fingerprint": "8fb47baeb1defe292a1e6aa7a1c536040d9c52684c4ab92017ec286f868226e8",
+    "code_hashes": {
+      "selection_compare": "e0814b3235d40d49e887ba220a542bbee3c3d5f6c2bc8d726d1afe5ab23d9672",
+      "score": "16e9a66ab81a7794bb042bd470f669577bb49a854175f1d59f8717baf2361eba",
+      "current_query": "e7aabc5b988bb9794e4dcf520d72aad6665cb5a0bbfe0575766520867d602bfa",
+      "core.mjs": "680ae78ffd994bf4945222cf73c0006b6494e84028db2aed417cb470500d09be",
+      "repository.mjs": "66681b76a3b16e11a7bb768da555ed5c220a8ecf22db404a2122b6242243dabc",
+      "snapshot.mjs": "d43deeefc55e50633abc5f783809d202fc561cc8b52b5598ba438181971df3da",
+      "markdown.mjs": "52eb3aa281762759e82f44b731ff27f785bffbf095553a848c077f369818c66c",
+      "baseline_query": "f157372ad9fa950660a514c67b3fb1ddb7d25f551a79fa7254227647afeb65d2"
+    },
+    "legacy": {
+      "source_case_files": {
+        "ontology/evaluation/cases.json": "8dacad23dbe4c8544a4b380849e4ba7f9f36decbd1cbf851028ea75daf5bf9f0",
+        "ontology/evaluation/validation-cases.json": "2233c5b934b1ad334e589d4f43bca7c72019594d9001d059b618dd66e83039d7",
+        "ontology/evaluation/holdout-cases.json": "2694e6f4d771c3f121e4c028dde3b3c11dd07e118b624087d49c0420fe06c34a",
+        "ontology/evaluation/generalization-cases-2026-09-07.json": "4e5761f129542615c9a0584d17194af31f3411df61c7e506401cae01dadd7a86",
+        "ontology/evaluation/context-integrity-cases.json": "b9dd5a81fa7a0be654dffdde312930fb71e738e0c090333d2025c89eb92a2cae",
+        "ontology/evaluation/document-search-cases-2026-09-08.json": "a45607c714de84af95890c6379dc828800ac478d032537f75cb660deef0f1d7b",
+        "ontology/evaluation/metadata-ranking-cases-2026-09-08.json": "76b413409e9f442f0890078de2ae65b5e7cdf56aa1a200889230f1c4d116f103",
+        "ontology/evaluation/graph-ranking-cases-2026-09-08.json": "6a9f93b2a7bd16a06e3ff3e49c87c6d8c093c2c16138eff63f375318e83b81c6",
+        "ontology/evaluation/diagnostic-cases.json": "dec7ddac06b02c71d9a97311d4272d096ec8b6675da8e58ee67a8ff3de86abea",
+        "ontology/evaluation/context-packing-cases-2026-09-08.json": "679e9f86fdf4f09ba8e296a52e21bf1da6bd1281fa90339ba11c5dd1ce692899",
+        "ontology/evaluation/algorithm-holdout-cases-2026-09-08.json": "7723724324d3efc68a1b5b75fbabd5ee6e01eb4a07545544ddca64c8c2c68306",
+        "ontology/evaluation/selection-holdout-cases-2026-09-08.json": "23570d3a7ce476daf56c261420dd33a6c632a603d17d75f3968fab6db6b9e955",
+        "ontology/evaluation/rerank-holdout-cases-2026-09-08.json": "a97596345ff226778660b8e6c45cac388daaa15bdcdb4d2549e911d63fe0f3e0",
+        "ontology/evaluation/coverage-holdout-cases-2026-09-08.json": "3121fb7c003cb926ac9f627eb7fb4178e2e7c51cc0b6b67e32d33aac3c5c218b"
+      },
+      "cases_sha256": "9fed64c2c1837ad0ef4bffa011860ca33626784fbff9408287e77d43cd6ae9f0",
+      "excluded_before_comparison": [
+        {
+          "id": "tech-distributed-workflow-recovery",
+          "file": "ontology/evaluation/algorithm-holdout-cases-2026-09-08.json",
+          "error": "Gold body text missing from pinned section: tech-distributed-workflow-recovery: tech/architecture-design/ddd-hexagonal/Saga-Pattern.md"
+        }
+      ]
+    },
+    "additional": {
+      "case_files": {
+        "ontology/evaluation/named-query-cases-2026-09-15.json": "e7311119e2d6893e9f4ebf1f24fc32327649933076407e895a64be55209e93cc"
+      },
+      "cases_sha256": "f16f223ec685d8b55b257433e2e261e922b4a387a50c25f1ccfaaf7205d5bd95",
+      "role": "Ten synthetic regression cases authored with prior implementation exposure, plus the original user RAG reproduction. Not a blind holdout."
+    }
+  },
+  "legacy": {
+    "baseline": {
+      "cases": 103,
+      "positive_cases": 82,
+      "passed_cases": 43,
+      "document_hits": 68,
+      "heading_hits": 43,
+      "evidence_hits": 41,
+      "evidence_groups_total": 129,
+      "evidence_groups_hit": 78,
+      "evidence_recall": 0.6046511627906976,
+      "body_asserted_cases": 78,
+      "body_hits": 39,
+      "latency_ms": {
+        "p50": 384,
+        "p95": 489
+      }
+    },
+    "current": {
+      "cases": 103,
+      "positive_cases": 82,
+      "passed_cases": 43,
+      "document_hits": 68,
+      "heading_hits": 43,
+      "evidence_hits": 41,
+      "evidence_groups_total": 129,
+      "evidence_groups_hit": 78,
+      "evidence_recall": 0.6046511627906976,
+      "body_asserted_cases": 78,
+      "body_hits": 39,
+      "latency_ms": {
+        "p50": 394,
+        "p95": 476
+      }
+    },
+    "changed_case_metrics": [],
+    "pass_regressions": [],
+    "evidence_group_regressions": []
+  },
+  "additional": {
+    "baseline": {
+      "cases": 11,
+      "positive_cases": 9,
+      "passed_cases": 1,
+      "document_hits": 8,
+      "heading_hits": 1,
+      "evidence_hits": 1,
+      "evidence_groups_total": 16,
+      "evidence_groups_hit": 6,
+      "evidence_recall": 0.375,
+      "body_asserted_cases": 9,
+      "body_hits": 1,
+      "latency_ms": {
+        "p50": 425,
+        "p95": 502
+      }
+    },
+    "current": {
+      "cases": 11,
+      "positive_cases": 9,
+      "passed_cases": 2,
+      "document_hits": 9,
+      "heading_hits": 2,
+      "evidence_hits": 2,
+      "evidence_groups_total": 16,
+      "evidence_groups_hit": 7,
+      "evidence_recall": 0.4375,
+      "body_asserted_cases": 9,
+      "body_hits": 2,
+      "latency_ms": {
+        "p50": 435,
+        "p95": 472
+      }
+    },
+    "gains": [
+      "user-rag-conversational-query"
+    ],
+    "pass_regressions": [],
+    "evidence_group_regressions": [],
+    "cases": [
+      {
+        "id": "regression-opensearch-nori-particle-dictionary-reindex",
+        "baseline": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 1,
+          "passed": false
+        },
+        "current": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 1,
+          "passed": false
+        }
+      },
+      {
+        "id": "regression-eventbridge-sqs-policy-partial-batch",
+        "baseline": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 0,
+          "passed": false
+        },
+        "current": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 0,
+          "passed": false
+        }
+      },
+      {
+        "id": "regression-opentelemetry-context-sampling",
+        "baseline": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 0,
+          "passed": false
+        },
+        "current": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 0,
+          "passed": false
+        }
+      },
+      {
+        "id": "regression-graphql-dataloader-korean-particle",
+        "baseline": {
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_hit": true,
+          "evidence_groups_hit": 1,
+          "passed": true
+        },
+        "current": {
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_hit": true,
+          "evidence_groups_hit": 1,
+          "passed": true
+        }
+      },
+      {
+        "id": "regression-redis-streams-ack-claim",
+        "baseline": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 1,
+          "passed": false
+        },
+        "current": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 1,
+          "passed": false
+        }
+      },
+      {
+        "id": "regression-transactional-outbox-korean-alias-claim",
+        "baseline": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 1,
+          "passed": false
+        },
+        "current": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 1,
+          "passed": false
+        }
+      },
+      {
+        "id": "regression-pmf-korean-alias-funnel-stage",
+        "baseline": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 1,
+          "passed": false
+        },
+        "current": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 1,
+          "passed": false
+        }
+      },
+      {
+        "id": "regression-elasticity-revenue-tax-incidence",
+        "baseline": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 1,
+          "passed": false
+        },
+        "current": {
+          "document_hit": true,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 1,
+          "passed": false
+        }
+      },
+      {
+        "id": "regression-negative-jeju-ferry-forecast",
+        "baseline": {
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_hit": null,
+          "evidence_groups_hit": null,
+          "passed": false
+        },
+        "current": {
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_hit": null,
+          "evidence_groups_hit": null,
+          "passed": false
+        }
+      },
+      {
+        "id": "regression-negative-artemis-contact-window",
+        "baseline": {
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_hit": null,
+          "evidence_groups_hit": null,
+          "passed": false
+        },
+        "current": {
+          "document_hit": null,
+          "heading_hit": null,
+          "body_hit": null,
+          "evidence_hit": null,
+          "evidence_groups_hit": null,
+          "passed": false
+        }
+      },
+      {
+        "id": "user-rag-conversational-query",
+        "baseline": {
+          "document_hit": false,
+          "heading_hit": false,
+          "body_hit": false,
+          "evidence_hit": false,
+          "evidence_groups_hit": 0,
+          "passed": false
+        },
+        "current": {
+          "document_hit": true,
+          "heading_hit": true,
+          "body_hit": true,
+          "evidence_hit": true,
+          "evidence_groups_hit": 1,
+          "passed": true
+        }
+      }
+    ]
+  },
+  "rejected_candidates": [
+    {
+      "change": "ASCII token boundaries for general metadata, body and document frequency",
+      "passed_cases": [
+        43,
+        40
+      ],
+      "evidence_groups_hit": [
+        78,
+        74
+      ],
+      "reason": "Breaks useful compound-name matches and amplifies rank changes through the bounded evidence budget."
+    },
+    {
+      "change": "Named label/alias priority for questions of any length",
+      "passed_cases": [
+        43,
+        44
+      ],
+      "evidence_groups_hit": [
+        78,
+        78
+      ],
+      "lost_evidence_groups": [
+        "generalization-tech-retry-storm-discipline"
+      ],
+      "reason": "General topic documents displace the specific conditions of long questions."
+    },
+    {
+      "change": "Short named-term priority including status:index navigation pages",
+      "examples": [
+        "API 재시도 폭주를 막는 방법",
+        "캐시 쓰기 경합과 핫키 대응"
+      ],
+      "reason": "General navigation pages outrank specific evidence. The final variant excludes index pages only from named-term priority; full-query exact index matches still win."
+    }
+  ],
+  "validation": {
+    "tests": {
+      "passed": 149,
+      "failed": 0
+    },
+    "regression_fixture_failed_on_baseline": true,
+    "scope_and_index_failures": [],
+    "mcp": {
+      "transport": "fresh_stdio_process",
+      "query": "만약 rag를 도입한다면 어떻게 생각해?",
+      "query_code_sha256": "e7aabc5b988bb9794e4dcf520d72aad6665cb5a0bbfe0575766520867d602bfa",
+      "search_rank": 1,
+      "source_uri": "tech/ai-engineering/tools/RAG-Retrieval-Engineering.md",
+      "source_revision": "f929210a7ff8429650559acc5fa83f85d092950b",
+      "heading": [
+        "RAG 검색 엔지니어링 (RAG Retrieval Engineering)"
+      ],
+      "content_hash": "sha256:1904c89533cabf1424191ef6554b29d52d93f8e905fe9ec333ffa31d942bfb7c",
+      "evidence_unit_id": "unit:interview-vault:tech/ai-engineering/tools/RAG-Retrieval-Engineering.md:RAG%20%EA%B2%80%EC%83%89%20%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4%EB%A7%81%20(RAG%20Retrieval%20Engineering)#1",
+      "source_hash_verified": true,
+      "structured_text_equal": true,
+      "scope_verified": true,
+      "budgets_verified": true,
+      "read_complete": true,
+      "index_status": "unindexed_worktree"
+    },
+    "regression_fixture_failed_without_index_guard": true,
+    "test_file_sha256": "3db24b8d9e8b1e601634169b9a1f03432c8e8a46f7cd09bdbca0a4b1e266289e",
+    "independent_review": {
+      "verdict": "approve",
+      "findings": [],
+      "reviewed_query_sha256": "e7aabc5b988bb9794e4dcf520d72aad6665cb5a0bbfe0575766520867d602bfa"
+    }
+  },
+  "limitations": [
+    "The eight-term cutoff is a conservative heuristic, not intent understanding.",
+    "Long multi-condition retrieval and unrelated negative responses remain imperfect.",
+    "Comparison cases were used during development and do not establish blind generalization or answer accuracy.",
+    "Latency is a single alternating local run, not a performance benchmark.",
+    "A fresh MCP process was checked; existing host connections need reconnection."
+  ],
+  "reproduction": {
+    "baseline_source": "git show f929210a7ff8429650559acc5fa83f85d092950b:ontology/src/query.mjs > /tmp/named-query-baseline.mjs",
+    "prepare_legacy": "Read inputs.legacy.source_case_files in order, concatenate their JSON arrays, exclude inputs.legacy.excluded_before_comparison IDs, and write the 103 cases to a temporary JSON file. Validate its stableJson SHA-256 against inputs.legacy.cases_sha256.",
+    "compare": "Use ontology/evaluation/selection-compare.mjs with --baseline-query, both expected query hashes, --expected-cases-hash, --expected-revision, --expected-fingerprint, --cases and --output. Run legacy and additional case sets separately on the same pinned snapshot.",
+    "snapshot": "The recorded fingerprint belongs to this checkout. For another checkout, build a separate snapshot from the recorded source revision and record its fingerprint for both variants. Do not evaluate newer Markdown as if it were this frozen corpus.",
+    "regression_only": "node ontology/evaluation/run.mjs --cases ontology/evaluation/named-query-cases-2026-09-15.json"
+  },
+  "user_reproduction": {
+    "query": "만약 rag를 도입한다면 어떻게 생각해?",
+    "baseline_search_rank": 9,
+    "current_search_rank": 1,
+    "baseline_required_body_returned": false,
+    "current_required_body_returned": true
+  }
+}

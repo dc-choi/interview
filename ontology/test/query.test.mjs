@@ -125,6 +125,55 @@ test('lookup excludes generic-token documents when a query has a more discrimina
   assert.ok(result.entities.every((entity) => !entity.label.startsWith('Pattern ')));
 });
 
+test('a named concept in a sentence survives stronger index and substring matches', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/Meaning.md', '---\naliases: [RAG]\n---\n# 검색 방식\n\nRAG는 검색한 근거로 답변을 구성한다.\n'],
+    ['tech/Index.md', '---\nstatus: index\naliases: [RAG]\n---\n# 문서 목록\n\n만약 RAG를 도입한다면 어떻게 생각해? 아래 목록을 참고한다.\n'],
+    ...Array.from({ length: 7 }, (_, index) => [
+      `tech/Storage-${index}.md`,
+      `# Storage ${index}\n\n만약 storage를 도입한다면 생각해 보자.\n`,
+    ]),
+  ]), allowlist: ['tech'] };
+  const args = { query: '만약 rag를 도입한다면 어떻게 생각해?', scope: ['tech'], max_bytes: 24000 };
+  assert.equal(search(options, args).candidates[0].source_uri, 'tech/Meaning.md');
+  const result = lookup(options, args);
+  assert.equal(result.matching.assessment, 'lexical_overlap');
+  assert.ok(result.evidence_units.some((unit) => unit.source_uri === 'tech/Meaning.md'
+    && unit.excerpt.includes('검색한 근거로 답변을 구성한다.')));
+});
+
+test('full query equality precedes a named token and a generic tag does not name a concept', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/Named.md', '# RAG\n\n검색 결과를 사용한다.\n'],
+    ['tech/Tagged.md', '---\ntags: [rag]\n---\n# Misc\n\nRAG 도입 검토 기준은 다양한 자료에서 찾아야 한다.\n'],
+    ['tech/Exact.md', '---\nstatus: index\naliases: [RAG 도입 검토 기준]\n---\n# 선택 기준\n\n검색 품질을 평가한다.\n'],
+  ]), allowlist: ['tech'] };
+  const args = { query: 'RAG 도입 검토 기준', scope: ['tech'], max_bytes: 24000 };
+  assert.deepEqual(search(options, args).candidates.map((item) => item.source_uri),
+    ['tech/Exact.md', 'tech/Named.md', 'tech/Tagged.md']);
+  assert.equal(lookup(options, args).matching.assessment, 'exact_metadata');
+});
+
+test('a general named concept does not displace the conditions in a long question', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/API.md', '# API\n\n인터페이스 개요.\n'],
+    ['tech/Retry.md', '# 재시도 규율\n\n외부 API 장애 복구 뒤 요청 폭주를 막으려면 재시도 간격과 운영 대응을 함께 정한다.\n'],
+  ]), allowlist: ['tech'] };
+  const args = { query: '외부 API 장애 복구 요청 폭주 재시도 간격 운영 대응', scope: ['tech'] };
+  assert.equal(search(options, args).candidates[0].source_uri, 'tech/Retry.md');
+  assert.equal(lookup(options, args).evidence_units[0].source_uri, 'tech/Retry.md');
+});
+
+test('compound code names and numeric suffixes remain searchable', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/Names.md', '# 구현 메모\n\nOpenSearch refreshToken p95 getRepository\n'],
+  ]), allowlist: ['tech'] };
+  for (const query of ['search', 'token', '95', 'repository']) {
+    assert.equal(search(options, { query }).candidates[0].source_uri, 'tech/Names.md');
+    assert.ok(lookup(options, { query }).evidence_units.some((unit) => unit.source_uri === 'tech/Names.md'));
+  }
+});
+
 test('lookup keeps body-relevant documents for a long multi-condition query', async (t) => {
   const common = Array.from({ length: 6 }, (_, index) => [
     `tech/Retry-${index}.md`,
