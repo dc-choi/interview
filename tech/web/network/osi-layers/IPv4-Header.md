@@ -3,7 +3,7 @@ tags: [web, network, osi, l3, ip, ipv4, header, ttl, fragmentation, wireshark]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["IPv4 Header", "IPv4 헤더", "IP 헤더", "IP Header", "IPv4 헤더와 단편화", "IP 패킷 헤더 분석"]
-verified_at: 2026-09-15
+verified_at: 2026-09-16
 ---
 
 # IPv4 헤더 구조와 패킷 읽기
@@ -49,7 +49,7 @@ RFC 791은 TTL을 초 단위의 최대 생존 시간으로 정의하지만, 패�
 
 TTL이 필요한 이유는 라우팅 루프다. 라우팅 테이블이 수렴하는 동안이나 설정 오류로 패킷이 라우터 사이를 맴돌 수 있는데, TTL이 없으면 그 패킷이 영원히 대역폭을 먹는다. [[Routing-Protocols|라우팅 프로토콜의 수렴과 루프]]
 
-이 동작을 역이용한 도구가 traceroute다. TTL을 1, 2, 3으로 늘리며 보내면 홉마다 다른 라우터가 Time Exceeded를 돌려주므로 경로를 그릴 수 있다. 초기 TTL은 OS마다 다르며 Linux는 `ip_default_ttl`의 기본값 64, Windows는 `DefaultTTL` 128을 흔히 쓰므로(Linux는 커널 문서, Windows는 Windows XP 매개변수 문서 기준이며 설정으로 바꿀 수 있다), 캡처된 TTL로 지나온 홉 수와 송신 OS를 추정하기도 한다.
+이 동작을 역이용한 도구가 traceroute다. TTL을 1, 2, 3으로 늘리며 보내면 홉마다 다른 라우터가 Time Exceeded를 돌려주므로 경로를 그릴 수 있다. 초기 TTL은 OS마다 다르며 Linux는 `ip_default_ttl`의 기본값 64, Windows는 IPv4 송신 패킷에 쓰는 홉 한도 기본값 128을 쓰므로(Linux는 커널 문서, Windows는 Windows Server 2025용 `Set-NetIPv4Protocol`의 `DefaultHopLimit` 문서 기준이며 양쪽 다 설정으로 바꿀 수 있다), 캡처된 TTL로 지나온 홉 수와 송신 OS를 추정하기도 한다.
 
 ### Identification, Flags, Fragment Offset: 단편화 필드
 
@@ -179,7 +179,7 @@ tcpdump -i en0 -n -v 'ip and host 192.168.0.1'
 - [Wireshark, Display Filter Reference: Internet Protocol Version 4](https://www.wireshark.org/docs/dfref/i/ip.html)
 - [Wireshark, User's Guide: Checksums](https://www.wireshark.org/docs/wsug_html_chunked/ChAdvChecksums.html)
 - [Linux Kernel, IP Sysctl: ip_default_ttl](https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt)
-- [Microsoft, TCP/IP and NBT configuration parameters for Windows XP: DefaultTTL](https://learn.microsoft.com/en-us/troubleshoot/windows-client/networking/tcpip-and-nbt-configuration-parameters)
+- [Microsoft, Set-NetIPv4Protocol (NetTCPIP): DefaultHopLimit](https://learn.microsoft.com/en-us/powershell/module/nettcpip/set-netipv4protocol?view=windowsserver2025-ps)
 
 ## 관련 문서
 

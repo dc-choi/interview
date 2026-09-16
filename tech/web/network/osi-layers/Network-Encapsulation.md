@@ -3,7 +3,7 @@ tags: [web, network, osi, encapsulation, socket, segment, packet, frame, mtu, ms
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Network Encapsulation", "네트워크 캡슐화", "패킷 캡슐화", "PDU", "세그먼트 패킷 프레임", "소켓 스트림", "MTU와 MSS", "Deep Packet Inspection"]
-verified_at: 2026-09-15
+verified_at: 2026-09-16
 ---
 
 # 네트워크 데이터 흐름과 캡슐화: 스트림, 세그먼트, 패킷, 프레임
@@ -21,7 +21,7 @@ verified_at: 2026-09-15
 
 스트림에는 메시지 경계가 없다. TCP는 애플리케이션이 `write()`한 단위와 실제 세그먼트 경계, 상대가 `read()`로 받는 단위 사이에 아무 상관관계도 보장하지 않는다. `ABC`와 `DEF`를 순서대로 보내도 수신자는 `AB`, `CDEF`로 나눠 읽을 수 있다. 한 번 보낸 메시지가 두 번에 나뉘어 읽히거나 두 메시지가 한 번에 붙어 읽힐 수 있으므로, 애플리케이션 프로토콜이 길이 필드나 구분자로 경계를 직접 정의한다. HTTP의 `Content-Length`와 chunked 전송이 그 예다.
 
-`send()`의 성공 반환값은 커널의 소켓 송신 버퍼가 받아들인 바이트 수이지 상대가 받았다는 뜻이 아니다. 요청한 길이보다 적게 받아들일 수도 있으므로 반환값을 확인해 남은 바이트를 다시 보낸다. 호출 한 번, TCP 세그먼트 하나, 수신 측 `recv()` 한 번은 서로 일대일이 아니며, 버퍼링과 흐름 제어, 혼잡 제어가 실제 송신 시점과 크기를 정한다. 이후의 분할, 캡슐화, 재전송은 모두 커널의 몫이며 애플리케이션은 관여하지 않는다. 시스템 콜을 경계로 유저 모드와 커널 모드가 나뉘는 구조는 [[Concurrency-and-Process-Overview#커널모드vs유저모드|커널 모드와 유저 모드]].
+`send()`는 성공하면 보낸 바이트 수를 반환하지만, send(2)는 전달 실패가 반환값에 암시되지 않고 지역에서 감지한 오류만 -1로 나타난다고 명시한다. 즉 성공 반환값은 상대가 받았다는 확인이 아니다. send(2)는 flags가 0인 `send()`가 write(2)와 같다고 설명하고, write(2)는 성공한 호출이 요청한 `count`보다 적게 전송할 수 있으며 이때 호출자가 다시 호출해 남은 바이트를 보낼 수 있다고 적는다. 그래서 반환값을 확인해 남은 바이트를 다시 보낸다. 호출 한 번, TCP 세그먼트 하나, 수신 측 `recv()` 한 번은 서로 일대일이 아니며, 버퍼링과 흐름 제어, 혼잡 제어가 실제 송신 시점과 크기를 정한다. 이후의 분할, 캡슐화, 재전송은 애플리케이션이 아니라 커널과 NIC offload가 처리한다. 시스템 콜을 경계로 유저 모드와 커널 모드가 나뉘는 구조는 [[Concurrency-and-Process-Overview#커널모드vs유저모드|커널 모드와 유저 모드]].
 
 ## 계층별 데이터 단위와 캡슐화
 
@@ -61,7 +61,7 @@ TCP 세그먼트화와 IP 단편화는 별개다. 전자는 스트림을 TCP 전
 
 VPN이나 터널은 원래 패킷을 다시 캡슐화해 헤더가 더 붙으므로 실질 MTU가 줄어든다. 특정 크기 이상의 요청만 실패한다면 MTU를 먼저 의심한다. [[Application-Layer-Protocols|VPN과 터널의 MTU 고려]]
 
-## 커널 안의 송신 경로
+## 커널 안의 송수신 경로
 
 Linux 계열을 기준으로 한 일반 모델이며 세부 단계는 OS와 드라이버에 따라 다르다.
 
@@ -71,7 +71,7 @@ Linux 계열을 기준으로 한 일반 모델이며 세부 단계는 OS와 드�
 4. **L2**: next hop의 MAC을 ARP 또는 Neighbor Discovery로 해석해 이더넷 헤더를 붙인다. 다른 네트워크로 가는 패킷의 목적지 MAC은 게이트웨이 라우터의 MAC이다.
 5. **큐잉과 전송**: 인터페이스 송신 큐를 거쳐 드라이버가 NIC의 링 버퍼로 넘기고, NIC가 FCS를 붙여 비트 신호로 내보낸다.
 
-수신은 정확히 역순이다. NIC가 프레임을 받으면 인터럽트로 드라이버가 깨어나고, IP와 TCP가 헤더를 벗기며 검증한 뒤 목적지 포트의 소켓 수신 버퍼에 넣고, 애플리케이션이 `recv()`로 꺼낸다. 목적지가 loopback이면 NIC 없이 커널 안에서 같은 경로를 돈다. [[Loopback-And-Localhost#패킷이 커널 내부에서 처리되는 경로|loopback의 커널 내부 처리]]
+수신 경로는 같은 계층들을 반대 순서로 지나지만 송신 단계의 거울상은 아니다. Linux 커널 문서 기준으로 장치는 새 이벤트를 인터럽트로 호스트에 알리고 호스트가 NAPI 인스턴스를 스케줄해 폴링으로 처리하며, 인터럽트 없이 폴링만 하는 busy polling도 선택할 수 있다. NAPI 자체는 기본적으로 이벤트를 합치지 않고, 배칭은 대개 장치의 IRQ coalescing에서 생긴다. GRO는 GSO의 짝으로 정의되며, GRO가 합친 프레임을 GSO로 다시 나누면 같은 프레임 열이 되는 것이 이상적 동작이다. 그 뒤 IP와 TCP가 헤더를 벗기며 검증하고 목적지 포트의 소켓 수신 버퍼에 넣는다. 애플리케이션은 그 버퍼에서 `recv()`로 꺼내므로 커널이 프레임을 처리한 시점과 애플리케이션이 읽는 시점이 반드시 일치하지는 않는다. 송신과 마찬가지로 세부 단계는 OS, 드라이버와 offload 설정에 따라 달라진다. 목적지가 loopback이면 NIC 없이 커널 안에서 같은 경로를 돈다. [[Loopback-And-Localhost#패킷이 커널 내부에서 처리되는 경로|loopback의 커널 내부 처리]]
 
 현대 NIC는 체크섬 계산이나 세그먼트 분할 같은 작업을 하드웨어로 넘겨받는 offload 기능을 갖는 경우가 많다. Linux의 TSO(TCP Segmentation Offload)가 켜져 있으면 커널은 MSS보다 큰 버퍼를 NIC에 넘기고 NIC가 최종 분할을 맡는다. 그래서 위의 논리적 그림만으로 `send()` 호출 순간 세그먼트가 모두 만들어져 선로에 나갔다고 판단하지 않는다. 송신 호스트에서 캡처한 패킷은 MSS보다 큰 세그먼트나 아직 계산되지 않은 체크섬으로 보일 수 있으므로, 캡처 결과를 해석할 때 offload 설정을 함께 확인한다.
 
@@ -81,7 +81,7 @@ Linux 계열을 기준으로 한 일반 모델이며 세부 단계는 OS와 드�
 
 - **용도**: IDS/IPS의 시그니처 탐지, 애플리케이션 식별 기반 방화벽 정책, 악성 코드와 데이터 유출 차단, 트래픽 분류와 QoS, 콘텐츠 필터링.
 - **한계**: TLS로 암호화된 payload는 중간 장비가 캡처했다는 이유만으로 평문이 되지 않는다. 평문 검사는 복호화 가능한 종단이나 TLS 종료 지점 같은 조건이 필요하다. 그래서 TLS handshake의 SNI 같은 평문 메타데이터와 트래픽 패턴에 의존하거나, 조직 내부에 자체 CA를 배포해 복호화 후 재암호화하는 TLS 가로채기를 쓴다.
-- **암호화돼도 남는 정보**: 주소, 포트, 패킷 길이와 타이밍은 여전히 관측되므로 트래픽 유형이나 애플리케이션을 어느 정도 추론할 수 있다(RFC 8404의 traffic-analysis fingerprinting). 다만 본문을 읽는 것과는 다르며 정확도는 떨어진다. 보이는 헤더의 범위도 암호화 계층과 터널 구성에 따라 달라진다.
+- **암호화돼도 남는 정보**: RFC 8404는 TLS 같은 애플리케이션 계층 암호화에서도 출발지와 목적지 IP, 프로토콜 번호, 출발지와 목적지 포트로 이루어진 5-tuple에 접근할 수 있다고 정리한다(Section 3.1.1). 또한 서비스 제공자 장비는 데이터링크, 네트워크, 전송 계층 헤더만 보도록 설계되지만 그 헤더 정보와 패킷 크기만으로도 대체로 높은 정확도를 얻는다고 적는다(Section 1.2). 패턴이 일치하는 트래픽 흐름을 식별하는 fingerprinting은 평문 세션과 암호화 세션 모두에 쓰인다(Section 2.1.3). 다만 본문을 읽는 것과는 다르고, RFC 8404는 애플리케이션과 전송 계층 암호화가 트래픽 유형 추정을 더 복잡하고 덜 정확하게 만든다고 본다(Section 2.2.2). 보이는 헤더의 범위도 암호화 계층과 터널 구성에 따라 달라져, IPsec 터널 모드는 원래 5-tuple 접근을 막는다(Section 3.1.1).
 - **트레이드오프**: 내용물 열람은 프라이버시와 법적 문제를 동반하고, 모든 payload를 검사하는 만큼 처리량이 줄며, 시그니처 오탐이 정상 트래픽을 막을 수 있다. 어떤 트래픽을 어디까지 볼지, 누가 접근하고 얼마나 보관할지를 정책으로 명시하고 기록을 남긴다.
 
 AWS에서는 이런 DPI 어플라이언스를 [[ELB|Gateway Load Balancer]] 뒤에 두고 트래픽을 통과시키는 구성이 대표적이다. TLS handshake 절차는 [[HTTPS-TLS|HTTPS와 TLS handshake]].
@@ -112,10 +112,12 @@ AWS에서는 이런 DPI 어플라이언스를 [[ELB|Gateway Load Balancer]] 뒤�
 - [IETF, RFC 9293: Transmission Control Protocol (TCP)](https://www.rfc-editor.org/rfc/rfc9293.html)
 - [IETF, RFC 8200: Internet Protocol, Version 6 (IPv6) Specification](https://www.rfc-editor.org/rfc/rfc8200.html)
 - [IETF, RFC 1191: Path MTU Discovery](https://www.rfc-editor.org/rfc/rfc1191.html)
-- [IETF, RFC 8404: Effects of Pervasive Encryption on Operators](https://www.rfc-editor.org/rfc/rfc8404.html#section-2.2.2)
+- [IETF, RFC 8404: Effects of Pervasive Encryption on Operators](https://www.rfc-editor.org/rfc/rfc8404.html)
 - [Linux man-pages, socket(2)](https://man7.org/linux/man-pages/man2/socket.2.html)
 - [Linux man-pages, send(2)](https://man7.org/linux/man-pages/man2/send.2.html)
+- [Linux man-pages, write(2)](https://man7.org/linux/man-pages/man2/write.2.html)
 - [Linux Kernel Documentation, Segmentation Offloads](https://docs.kernel.org/networking/segmentation-offloads.html)
+- [Linux Kernel Documentation, NAPI](https://docs.kernel.org/networking/napi.html)
 
 ## 관련 문서
 
