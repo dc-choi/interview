@@ -119,6 +119,7 @@ LLM은 명확한 전체 스펙을 먼저 받고 한 번에 구현하는 방식�
 
 - [[AI-Native-Org|AI 네이티브 조직 (자매 문서 — 레포에서 조직으로. 팀챗 위 전사 AI 실행 플랫폼)]]
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain/Inform/Verify/Correct/HITL 5원칙 — 이 문서의 상위 프레임)]]
+- [[Harness-Gate-Placement|게이트 배치 (강제를 어디에 걸고 어디에 걸지 않을 것인가, 위험 명령 A/B 실증)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (Hook vs Advisory, Context Rot)]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할 (타이핑자에서 의사결정자로)]]
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (멀티 에이전트 오케스트레이션)]]

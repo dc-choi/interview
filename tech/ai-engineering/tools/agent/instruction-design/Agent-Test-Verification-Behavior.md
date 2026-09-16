@@ -75,3 +75,5 @@ aliases: ["Agent Test Verification Behavior", "에이전트 검증 행동", "코
 - [[Test-Pyramid-Blind-Spots|초록불이 못 잡는 것]] — 통과하는 테스트의 사각지대
 - [[TDD-BDD|TDD, BDD]] — 사람이 쓰는 TDD 흐름
 - [[LLM-Eval-Strategy|LLM 평가 전략]] — 노이즈와 반복 횟수
+- [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트]] — 채점자와 수정자를 끝까지 분리하는 설계
+- [[Harness-Anatomy|하네스 구성도]] — 피드백 기둥에서 자기 리뷰가 가장 약한 이유

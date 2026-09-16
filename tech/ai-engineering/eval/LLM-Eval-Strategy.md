@@ -73,6 +73,9 @@ Q. 데이터 품질은 어떻게 지키나?
 - 다단계 게이트. 노이즈 제거 후 인간이 검토 승인하고, 재현율보다 Precision을 우선한다. 틀린 지식 한 줄이 전체를 오염시키기 때문이다.
 
 ## 관련 문서
+- [[Evaluation-Driven-Development|평가 주도 개발 (이 철학을 개발 프로세스로 내린 두 축과 성숙도 계단)]]
+- [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트 (채점기 3종, 3층 게이트, 합격선 설계)]]
+- [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문 (문제 집합 구축, 베이스라인, 카나리, promptfoo)]]
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (Eval 4축, 운영 루프, 고가용성)]]
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링 (검색 품질이 평가의 입력)]]
 - [[LLM-Abstention|LLM Abstention (모른다고 말하는 능력, 정확도와 독립)]]

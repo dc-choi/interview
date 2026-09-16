@@ -179,6 +179,8 @@ Q. 자동 메모리를 끄는 이유는?
 - [[Agent-Spec-Writing|에이전트 스펙 작성법]]
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링 (구조화 조회, Progressive Disclosure 탐색)]]
 - [[LLM-Eval-Strategy|LLM 평가 전략 (Pass@k, Multi-gate 품질, CSAT vs 정확도)]]
+- [[Evaluation-Driven-Development|평가 주도 개발 (여기의 Eval 4축을 개발 프로세스로 확장한 두 축과 성숙도)]]
+- [[Harness-Anatomy|하네스 구성도 (루프 가드레일이 앉는 블록 지도)]]
 - [[Software-3-0|Software 3.0]]
 - [[AX-Transformation|AX 조직 전환]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]

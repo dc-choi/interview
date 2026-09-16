@@ -33,6 +33,15 @@ Claude Code와 Codex가 공유하는 구조.
 - 프론트매터 최소 필드는 **name**과 **description**. description이 자동 트리거 판단의 기준이므로, 언제 이 스킬을 써야 하는지를 구체적으로 적는다.
 - 본문은 에이전트가 따를 지침(Markdown). 두 도구 모두 **지침 우선, 스크립트는 결정론이나 외부 도구가 필요할 때만** 권장한다.
 
+### 본문을 쓰는 네 가지 원칙
+
+1. description에는 무엇을 하는지가 아니라 **언제 발동해야 하는지**를 쓴다. 트리거 판단의 입력이기 때문이다.
+2. 당연한 것은 쓰지 않는다. 모델이 이미 하는 일을 반복하면 본문만 길어지고 트리거 신호는 묽어진다.
+3. 절차를 강요하는 대신 **목표와 제약**을 기술한다. 제약을 인코딩한 사례는 아래 diagram-design을 본다.
+4. **실패 이력(Gotchas)이 가장 값어치 있는 내용**이다. 이 스킬이 과거에 어떻게 틀렸는지가 다음 실행을 바꾼다.
+
+4번은 같은 실수를 시스템으로 흡수하는 루프의 스킬 판 적용이다 → [[Harness-Adoption-Ladder]].
+
 ## 동작 — 점진적 공개(Progressive Disclosure)
 
 컨텍스트 비용을 낮추려고 3단으로 나눠 로드한다.
@@ -58,6 +67,8 @@ Claude Code와 Codex가 공유하는 구조.
 | 명시 호출 | `/스킬이름` (슬래시 명령) | `/skills`, `$멘션` |
 | 추가 메타 | argument-hint, allowed-tools(사전승인), disable-model-invocation, user-invocable, context:fork, paths | agents/openai.yaml (UI, 호출 정책, 도구 의존성) |
 | 스크립트 | 본문 백틱 셸, 서포팅 스크립트 | scripts/ 디렉토리 |
+
+Claude 쪽에서는 커스텀 슬래시 커맨드도 스킬로 흡수됐다. 사람이 부르는 매크로와 모델이 꺼내 읽는 절차서의 구분은 별도 파일 종류가 아니라 `disable-model-invocation`과 `user-invocable` 플래그로 표현된다 → [[Claude-Code-Extension-Reference]].
 
 핵심은 두 도구가 Agent Skills라는 사실상 동일한 개방 포맷으로 수렴했다는 것이다. 폴더 + SKILL.md + description 자동 로드가 공통 뼈대이고, 나머지는 관례 차이다. Claude 쪽 세부 메커니즘(목록 표시용 설명의 when_to_use 합산 1,536자 절삭, allowed-tools가 제한이 아닌 사전 승인, 예산 초과 시 저빈도 스킬부터 설명 제외 등)은 [[Claude-Code-Extension-Reference]]에 있다.
 
@@ -113,6 +124,7 @@ Claude Code와 Codex가 공유하는 구조.
 - [diagram-design — cathrynlavery](https://github.com/cathrynlavery/diagram-design)
 - [Claude Docs, Agent Skills](https://code.claude.com/docs/ko/skills)
 - [OpenAI Codex Docs, Skills](https://developers.openai.com/codex/skills)
+- [Level 9 하네스 엔지니어링과 Evaluator 제어 — 클로드 코드 마스터 활용편 발표 자료(한빛미디어), 빌런 (2026-09)](https://run-ai.kr/learn/carve-harness)
 
 ## 관련 문서
 

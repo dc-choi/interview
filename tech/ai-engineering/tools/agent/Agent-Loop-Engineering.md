@@ -80,6 +80,8 @@ aliases: ["Loop Engineering", "루프 엔지니어링", "Agent Loops", "에이�
 ## 관련 문서
 
 - [[Harness-Engineering|하네스 엔지니어링 (프롬프트, 컨텍스트, 하네스, 루프 진화 사다리)]]
+- [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트 (verification loop의 채점표 실물, 완료 선언 차단)]]
+- [[Harness-Anatomy|하네스 구성도 (루프 가드가 앉는 자리와 확장 계층)]]
 - [[Agent-Coding-Guardrails|LLM 코딩 가드레일 (Goal-Driven Execution — 성공 기준과 검증 루프)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (검증 가능한 완료 기준, LLM-as-a-Judge)]]
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (스킬을 루프에 태우는 반복 업무 자동화)]]

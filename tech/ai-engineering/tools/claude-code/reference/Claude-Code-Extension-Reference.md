@@ -39,6 +39,13 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - 포크 서브에이전트(실험적): 대화 전체와 도구를 상속하고 프롬프트 캐시를 공유해 저렴 — 빈 컨텍스트에서 시작하는 격리 서브에이전트와 정반대 트레이드오프
 - 에이전트 팀(실험적): 리드 에이전트가 피어 세션을 감독하며 팀원 간 메시징 + 공유 태스크로 조율. 팀원이 plan 모드로 돌면 일반 세션 대비 약 7배 토큰이고, 토큰은 활성 팀원 수와 각 팀원의 실행 시간에 비례해 증가. 팀원끼리 같은 파일을 편집하면 덮어쓰기가 나므로 파일 영역 분담이 필수 (워크트리 격리는 별도 수동 방식). 대화가 조율할 규모를 넘는 대량 fan-out은 [[Claude-Code-Dynamic-Workflows|동적 워크플로우]]
 
+## 커맨드 — 슬래시 호출은 스킬로 흡수됐다
+
+- 2026-09-16 공식 문서 기준, 커스텀 슬래시 커맨드는 스킬로 만든다. 디렉터리 이름이 곧 명령어라 `.claude/skills/deploy/SKILL.md`가 `/deploy`가 되고, 개인 범위는 `~/.claude/skills/`다. 하위 디렉터리는 `frontend/component` → `/frontend:component`처럼 `:`로 네임스페이스가 된다
+- 레거시 `.claude/commands/deploy.md` → `/deploy`도 하위 호환으로 동작하지만, 공식 문서는 서포팅 파일과 프론트매터 제어를 이유로 새 작업에는 스킬을 권한다
+- 사람이 부르는 매크로와 모델이 꺼내 읽는 절차서라는 구분은 이제 별도 파일 종류가 아니라 **프론트매터 플래그**로 표현된다. `disable-model-invocation: true`면 사람만 `/이름`으로 호출하고(배포, 커밋처럼 부작용 있는 작업), `user-invocable: false`면 메뉴에서 감춰져 모델만 자동 호출한다(배경지식용). 기본값은 양쪽 다 가능
+- 인자 치환은 `$ARGUMENTS`(전체), `$ARGUMENTS[N]`과 `$N`(위치), 그리고 프론트매터 `arguments: [a, b]`로 선언한 이름 인자 `$a`를 지원한다. 자동완성 힌트는 `argument-hint`
+
 ## 스킬 — 온디맨드 플레이북
 
 - 프론트매터 핵심: description(자동 로드 판단 기준, 목록 표시는 when_to_use와 합산 1,536자에서 절삭 — `skillListingMaxDescChars`로 조정, name은 Agent Skills 스펙 기준 64자), disable-model-invocation(수동 전용 — 배포나 전송처럼 부작용 있는 스킬에 필수), user-invocable: false(메뉴 숨김, 배경지식용), allowed-tools(**사전 승인이지 제한이 아니다**), context: fork + agent(격리 실행), paths(파일 패턴 자동 활성)
@@ -78,6 +85,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - [Claude Code Docs, Create custom subagents](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code Docs, Manage costs (agent team token costs)](https://code.claude.com/docs/en/costs)
 - [Claude Code Docs, Extend Claude with skills](https://code.claude.com/docs/en/skills)
+- [Claude Code Docs, Slash commands](https://code.claude.com/docs/en/slash-commands)
 - [Agent Skills, Specification](https://agentskills.io/specification)
 
 ## 관련 문서
@@ -90,3 +98,5 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (경계 명세)]]
 - [[Tool-Output-Filtering|도구 출력 필터링]]
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain→Inform→Verify→Correct)]]
+- [[Harness-Gate-Placement|게이트 배치 (훅을 어디에 걸 것인가, exit 2가 아니면 경고로 끝나는 이유)]]
+- [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트 (Stop 훅으로 완료 선언을 막는 응용)]]

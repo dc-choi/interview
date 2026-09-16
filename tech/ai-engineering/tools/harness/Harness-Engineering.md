@@ -29,6 +29,14 @@ AI 활용 역량은 단계로 깊어진다.
 
 [[Agent-Loop-Engineering|루프 엔지니어링]]은 그다음 단계로, 하네스가 짜둔 구조 안에서 에이전트가 한 번에 끝내는 게 아니라 스스로 돌며 회복하게 만들고, 나아가 스케줄과 이벤트로 일감을 스스로 발견하는 바깥 루프까지 하네스를 확장하는 데 초점을 둔다. 한 번에 맞히게 만들기보다 틀려도 루프 안에서 다시 맞히게 설계하며, 이는 [[LLM-Eval-Strategy|Pass@k]] 사고, [[Production-Agent-Architecture|Closure-loop]]와 같은 결이다.
 
+## 왜 지금 이 층이 승부처가 되었나
+
+세 가지가 겹치면서 설계의 무게중심이 모델 선택에서 실행 환경으로 옮겨간다.
+
+- 상위 모델 사이의 실력 격차가 좁아졌다.
+- 에이전트가 실험이 아니라 실제 서비스 코드를 만드는 자리에 들어왔다.
+- 벤치마크는 한 문제를 재지만 실무는 수백 단계다. 점수 1%포인트 차이는 긴 작업에서 드러나지 않는 반면, 작업 중간에 방향이 틀어지는 사고는 점수가 아니라 실행 구조로 막힌다.
+
 ## 이 vault의 5대 점검 축
 
 | 원칙 | 설명 | 핵심 질문 |
@@ -147,8 +155,13 @@ Q. 멀티 에이전트로 나누면 뭐가 좋고, 검증은 왜 별도 에이�
 - [Harness engineering for coding agent users — Birgitta Böckeler, martinfowler.com (2026-04-02)](https://martinfowler.com/articles/harness-engineering.html)
 - Software 3.0 시대, Harness를 통한 조직 생산성 저점 높이기 (Toss Tech, 2026)
 - [Claude Code Harness와 멀티 에이전트 오케스트레이션 강연 — YouTube](https://www.youtube.com/live/iqoPgoYBVaM)
+- [Level 9 하네스 엔지니어링과 Evaluator 제어 — 클로드 코드 마스터 활용편 발표 자료(한빛미디어), 빌런 (2026-09)](https://run-ai.kr/learn/carve-harness)
 
 ## 관련 문서
+- [[Harness-Anatomy|하네스 구성도 (모델 + 하네스 분해, 런타임 블록 지도, 세 기둥)]]
+- [[Harness-Gate-Placement|게이트 배치 (게이트는 비용이다 — 걸 곳과 걸지 않을 곳, 여섯 방어 시점)]]
+- [[Harness-Adoption-Ladder|하네스 도입 계단 (Lv.0에서 Lv.5, 얹는 순서, 다섯 단계 파이프라인)]]
+- [[Evaluation-Driven-Development|평가 주도 개발 (Verify 축을 점수와 추이로 확장)]]
 - [[Agent-Loop-Engineering|루프 엔지니어링 (루프 4분류, ralph 계보, 3종 가드 — 하네스의 한 층 위)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (Inform 축의 토큰 경제학 — Context Rot, CLAUDE.md 200줄, Hook vs Advisory, 모델 세대와 지시 밀도)]]
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (분업, Lazy Load, Defense in Depth)]]

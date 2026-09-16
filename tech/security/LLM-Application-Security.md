@@ -125,6 +125,7 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 
 ## 관련 문서
 
+- [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문]] — 가드레일을 회귀 테스트 대상으로 두고 탐지율, 차단율, 과잉 차단을 따로 재는 법
 - [[Application-Security|애플리케이션 보안 / 시큐어코딩]]
 - [[Supply-Chain-Security|공급망 보안]]
 - [[Network-Perimeter-Security|네트워크 경계 보안]]
