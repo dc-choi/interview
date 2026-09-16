@@ -96,3 +96,4 @@ Q. 어떤 지표를 추적하고 왜 그 지표를 선택했는가?
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
 - [[Data-Driven-Decision|데이터 기반 의사결정]]
 - [[Commerce-Pricing|커머스 가격 도메인]] — 쿠폰의 비용 효과 측정
+- [[AI-Search-Visibility|AI 검색 가시성 측정]] — 재배분이 증분으로 읽히는 최신 사례

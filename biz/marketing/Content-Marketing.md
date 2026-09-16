@@ -84,3 +84,4 @@ Q. 콘텐츠 마케팅은 어떻게 했는가?
 ## 관련 문서
 - [[GTM-Strategy|GTM 전략]]
 - [[Market-Analysis|시장 분석]]
+- [[AI-Search-Visibility|AI 검색 가시성 측정]] — 검색 결과 목록이 아니라 생성 AI 답변 안에서의 가시성
