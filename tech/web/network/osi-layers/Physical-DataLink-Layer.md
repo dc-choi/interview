@@ -130,6 +130,7 @@ L2는 같은 로컬 네트워크 안에서만 동작한다. 서로 다른 네트
 
 - [[OSI-7-Layer]] — 7계층 전체 지도와 Internet vs Ethernet
 - [[LAN-vs-WAN]] — LAN의 경계가 브로드캐스트 도메인인 이유와 WAN과의 구분
+- [[Unicast-Broadcast-Multicast]] — 유니캐스트, 브로드캐스트, 멀티캐스트의 주소와 도달 범위, IGMP
 - [[Network-Layer]] — VLAN 사이와 외부망으로 나가는 IP 라우팅
 - [[Transport-Layer]] — 상위 L4 세그먼트와 포트 번호
 - [[Network-Encapsulation]] — 스트림에서 프레임까지의 캡슐화와 MTU

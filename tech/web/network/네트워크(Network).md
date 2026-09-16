@@ -14,6 +14,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[OSI-7-Layer|OSI 7계층 (osi-layers/ 서브폴더) — 계층별 상세 (L1/L2 MAC과 프레임, L2 스위칭, L3 IP와 라우팅, ARP, L4 TCP/UDP와 소켓, L5/6/7), Internet vs Ethernet]]
 - [x] [[Network-Encapsulation|캡슐화와 데이터 단위 (소켓 스트림, 세그먼트, 패킷, 프레임, MTU/MSS, 단편화, DPI)]]
 - [x] [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기 (필드별 의미, TTL과 traceroute, 단편화 필드, 체크섬, IPv6 대비, Wireshark 필터)]]
+- [x] [[Unicast-Broadcast-Multicast|유니캐스트, 브로드캐스트, 멀티캐스트 (수신 대상 범위, limited/directed broadcast, 브로드캐스트 비용, IGMP와 MAC 매핑, IPv6의 애니캐스트)]]
 - [x] [[LAN-vs-WAN|LAN과 WAN (브로드캐스트 범위와 MAC vs IP 라우팅으로 구분, 물리와 논리 네트워크)]]
 - [x] [[Switch-Hierarchy-and-Uplink|스위치 계층과 업링크 (엔드포인트, 액세스/디스트리뷰션/코어, collapsed core, 링크 업/다운, 포트 용량 설계)]]
 - [x] [[TCP|TCP (tcp/ 서브폴더) — 헤더 구조, 핸드셰이크, 흐름/오류 제어, 혼잡 제어]]
@@ -28,4 +29,5 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 ## 관련 문서
 
 - [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치 (fail-open과 fail-closed, 포트 미러링과 SPAN, TAP, IDS와 IPS, GWLB와 Traffic Mirroring)]] — 보안 카테고리의 [[네트워크보안(NetworkSecurity)|네트워크 보안]] 하위
+- [[Proxy-Internals|프락시 동작 구조 (패킷 vs 소켓 스트림, 두 연결 종단)]] — 인프라 카테고리의 [[인프라네트워크(InfraNetwork)|인프라 네트워크]] 하위
 - [[웹&네트워크(Web&Network)|웹&네트워크 인덱스]]

@@ -143,6 +143,8 @@ flowchart LR
 - [[Network-Perimeter-Security|네트워크 경계 보안 (보안 장비 배치 순서)]]
 - [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark (캡처 위치, SPAN/TAP, 캡처 누락)]]
 - [[Network-Encapsulation|캡슐화와 데이터 단위 (DPI)]]
+- [[Proxy-Internals|프락시 동작 구조 (경로 위 스트림 중계 장비)]]
+- [[Proxy-Trust-and-Anonymity|중계 경로의 신뢰 모델 (아웃바운드 프락시와 Tor 통제)]]
 - [[Physical-DataLink-Layer|L1/L2 물리와 데이터링크 (스위치 전달)]]
 - [[ELB|AWS ELB (Gateway Load Balancer)]]
 - [[Network-Traffic-Monitoring|네트워크 트래픽 모니터링]]

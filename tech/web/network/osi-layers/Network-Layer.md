@@ -150,4 +150,5 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 - [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택 (longest prefix match, 메트릭)]]
 - [[LAN-vs-WAN|LAN과 WAN 구분 기준 (MAC 직접 전달 vs IP 라우팅)]]
 - [[IPv4-NAT-and-Traversal|IPv4 NAT, NAPT와 NAT 통과]]
+- [[Unicast-Broadcast-Multicast|유니캐스트, 브로드캐스트, 멀티캐스트 (목적지 주소와 도달 범위)]]
 - [[네트워크(Network)|카테고리 인덱스]]

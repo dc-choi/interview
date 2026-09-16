@@ -50,6 +50,18 @@ TCP는 신뢰성을 프로토콜 자체에 내장한다. 덕분에 애플리케�
 
 **크기 상한**: 옵션 없는 기본 윈도우는 최대 64KB(65,535바이트)지만, 옵션의 **WSCALE**를 최대로 적용하면 약 1GB까지 표현할 수 있다. 실제 ACK 전 연속 전송량은 이 수신 한도뿐 아니라 혼잡 윈도우에도 제한된다.
 
+### 수신 애플리케이션이 병목일 때
+
+RWND는 수신 버퍼의 남은 공간에서 나오고, 그 공간은 애플리케이션이 `recv()`로 데이터를 꺼내야 비워진다. 커널이 세그먼트를 정상 수신해 버퍼에 넣어도 수신 프로세스가 읽지 않으면 여유가 줄어들고, 광고 윈도우가 함께 줄다가 0이 된다. 그러면 송신 측은 전송을 멈추고 zero-window probe로 다시 열릴 때까지 기다린다. 커널이 프레임을 처리한 시점과 애플리케이션이 읽는 시점이 다르다는 구조는 [[Network-Encapsulation#커널 안의 송수신 경로|커널 송수신 경로]].
+
+증상만 보면 네트워크 지연과 구분되지 않는다. 전송이 느리거나 멈춰 보이는데 링크에는 여유가 있고 손실도 없다. 원인을 가르는 순서는 다음과 같다.
+
+1. 캡처에 재전송과 중복 ACK가 있는지 본다. 있으면 손실과 혼잡 쪽이다. [[TCP-Congestion-Control|혼잡 제어]]
+2. 수신 측 광고 윈도우가 0으로 수렴하는지 본다. Wireshark는 이 상황을 `TCP ZeroWindow`로, 다시 열리는 시점을 `TCP Window Update`로 표시한다. [[Packet-Capture-and-Wireshark|패킷 캡처]]
+3. 그렇다면 수신 프로세스가 왜 읽지 못하는지 본다. 읽은 데이터를 같은 흐름에서 동기 처리하는 루프, 블로킹 I/O, 잠금 대기가 흔한 원인이다.
+
+대응은 수신 버퍼를 키우는 것이 아니라 읽기와 처리를 분리하는 것이다. 소켓에서 빠르게 읽어 내부 큐에 넘기고 처리는 별도 흐름에서 돌리면 광고 윈도우가 유지된다. 버퍼 확대는 일시적인 급증만 흡수할 뿐 소비가 생산보다 느린 구조를 바꾸지 못한다. 다만 읽기만 앞세우고 큐에 상한이 없으면 병목이 TCP 버퍼에서 애플리케이션 메모리로 옮겨갈 뿐이므로, 큐 상한과 배압을 함께 둔다.
+
 ## 오류 제어 — 유실, 손상 대응 (ARQ)
 
 TCP는 재전송 기반 오류 제어인 **ARQ(Automatic Repeat Request)**를 쓴다. 오류가 나면 해당 데이터를 다시 보낸다. 재전송은 한 일을 또 하는 비싼 작업이므로, 그 횟수를 줄이는 여러 기법을 둔다.
@@ -100,9 +112,11 @@ TCP는 재전송 기반 오류 제어인 **ARQ(Automatic Repeat Request)**를 �
 - 오류 감지: 타임아웃 vs 중복 ACK 3회(빠른 재전송), NACK를 잘 안 쓰는 이유
 - Go-Back-N vs Selective Repeat 트레이드오프(재전송 비용 vs 재정렬 비용), SACK
 - 송신 윈도우 = min(수신 윈도우, 혼잡 윈도우)
+- 수신 애플리케이션의 처리 지연이 광고 윈도우를 0으로 만드는 경로, 그 증상을 손실/혼잡과 구분하는 방법
 
 ## 출처
 - TCP의 흐름 제어와 오류 제어 — 개인 블로그
+- [이해하면 인생이 바뀌는 TCP 송/수신 원리 — 널널한 개발자 TV](https://www.youtube.com/watch?v=K9L9YZhEjC0&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=25)
 - [RFC 9293, TCP Header and Window Field](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.1)
 - [RFC 9293, Zero-Window Probing](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.8.6.1)
 - [RFC 9293, Managing the Send Window](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.8.6.2.1)
@@ -114,5 +128,7 @@ TCP는 재전송 기반 오류 제어인 **ARQ(Automatic Repeat Request)**를 �
 - [[TCP-Header|TCP 헤더 구조 (Window Size, WSCALE, SACK)]]
 - [[TCP-Handshake|TCP Handshake (3-way에서 윈도우 협상)]]
 - [[Transport-Layer|전송 계층 (L4, TCP/UDP, 포트)]]
+- [[Network-Encapsulation|캡슐화와 데이터 단위 (소켓 버퍼와 커널 송수신 경로)]]
+- [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark (ZeroWindow 확인)]]
 - [[HTTP-3|HTTP/3, QUIC — TCP를 버린 이유]]
 - [[OSI-7-Layer|OSI 7계층]]

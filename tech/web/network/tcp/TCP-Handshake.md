@@ -58,6 +58,24 @@ Client                           Server
 
 **능동 개방 vs 수동 개방**: 먼저 SYN을 보내 적극적으로 연결을 거는 쪽이 능동 개방(Active Open, 요청자), `listen()`으로 들어와 요청을 기다리는 쪽이 수동 개방(Passive Open, 수신자)이다. 클라이언트, 서버 중 어느 쪽이든 능동 개방을 할 수 있다(요청자/수신자로 부르는 이유).
 
+### 핸드셰이크가 실제로 합의하는 것
+
+3-way handshake는 인사 절차가 아니라 이 연결에서 쓸 규칙을 정하는 자리다. 여기서 정해진 값은 연결 내내 유지되고, SYN에서 빠진 옵션은 나중에 켤 수 없다.
+
+| 합의 항목 | 정하는 것 | 제약 |
+|---|---|---|
+| 초기 시퀀스 번호(ISN) | 재조립 기준점, 오래된 연결의 지연 세그먼트 구분 | 양쪽이 각자 정해 교환 |
+| MSS | 세그먼트 하나에 담을 payload 상한 | SYN 세그먼트에서만 보낼 수 있고 다른 세그먼트에서는 금지 |
+| Window Scale | 광고 윈도우의 64KB 한계를 넘기는 배율 | 초기 SYN에서만, shift count 상한 14(2^30 = 1 GiB) |
+| SACK-Permitted | 선택 재전송 사용 여부 | SYN에서 양쪽이 제시해야 발효 |
+| Timestamps | RTT 측정과 순환 시퀀스 번호 보호 | 상대의 초기 SYN에 있을 때만 SYN-ACK에 담을 수 있고, 협상되면 RST 외 모든 세그먼트에 실림 |
+
+공통 규칙이 하나 있다. **옵션은 제안이지 약속이 아니고, 양쪽이 모두 제시해야 발효된다.** RFC 7323의 표현으로 "This option is an offer, not a promise; both sides MUST send Window Scale options in their <SYN> segments to enable window scaling in either direction"다. 그래서 중간 장비가 SYN의 옵션을 지우면 연결은 정상 수립되지만 윈도우 스케일링이나 SACK 없이 동작해 처리량만 조용히 떨어진다. 필드 구조는 [[TCP-Header#Options — 기능 확장|TCP 옵션]], 협상된 값이 전송량으로 이어지는 과정은 [[TCP-Flow-Error-Control|흐름 제어]].
+
+### 연결 수립은 신원 확인이 아니다
+
+handshake가 증명하는 것은 상대가 그 주소에서 실제로 응답했고 양쪽이 서로의 시퀀스 번호를 확인했다는 사실뿐이다. 그 주소 뒤에 누가 있는지, 경로 중간에 무엇이 끼어 있는지는 검증하지 않는다. TCP는 그 자체로 기밀성도 상대 인증도 제공하지 않아서, 경로상의 관측자는 평문을 읽을 수 있고 ISN을 예측할 수 있는 off-path 공격자는 세그먼트를 끼워 넣을 수 있다. RFC 9293이 ISN 예측 위험을 별도로 지적하는 이유다. 상대의 신원과 내용 보호는 인증서로 서버를 검증하고 키를 합의하는 [[HTTPS-TLS|TLS handshake]]에서 따로 얻으며, 연결이 맺어졌다는 사실 자체는 신뢰의 근거가 되지 못한다.
+
 ## 4-way Handshake (연결 종료)
 
 ```
@@ -158,12 +176,17 @@ HTTPS는 3-way handshake **+ TLS handshake** (TLS 1.2: 2 RTT, TLS 1.3: 1 RTT) �
 - CLOSE_WAIT 누적의 원인(수동 종료 측이 close 미호출)과 증상(디스크립터 고갈)
 - HTTPS에서 handshake가 추가로 늘어나는 만큼의 비용
 - Connection Pooling, HTTP/2, HTTP/3가 handshake 비용을 줄이는 원리
+- handshake에서 협상되는 MSS, WSCALE, SACK, Timestamps와 옵션이 양쪽 제시로만 발효된다는 점
+- TCP 연결 수립이 신원 확인이 아닌 이유와 TLS가 별도로 필요한 이유
 
 ## 출처
 - [매일메일 — 3-way handshake](https://www.maeil-mail.kr/question/76)
 - [F-Lab — CS 면접: 네트워크](https://f-lab.kr/blog/cs-interview-network)
 - [RFC 9293 — TCP, Header Format](https://www.rfc-editor.org/rfc/rfc9293.html#name-header-format)
 - [RFC 9293 — SEGMENT ARRIVES in SYN-SENT state](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.10.7.3)
+- [RFC 9293 — Maximum Segment Size Option](https://www.rfc-editor.org/rfc/rfc9293.html#name-specific-option-definitions)
+- [RFC 7323 — TCP Extensions for High Performance](https://www.rfc-editor.org/rfc/rfc7323.html)
+- [TCP 연결이라는 착각에 대해 — 널널한 개발자 TV](https://www.youtube.com/watch?v=DC9FfKSgisg&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=26)
 
 ## 관련 문서
 - [[TCP-Header|TCP 헤더 구조 (시퀀스/승인 번호, 플래그, 윈도우, 체크섬)]]

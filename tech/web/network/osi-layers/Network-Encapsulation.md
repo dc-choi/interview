@@ -137,4 +137,6 @@ AWS에서는 이런 DPI 어플라이언스를 [[ELB|Gateway Load Balancer]] 뒤�
 - [[Linux-File-System|Linux 파일 시스템 (모든 것이 파일)]]
 - [[ELB|AWS ELB (Gateway Load Balancer와 보안 어플라이언스)]]
 - [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치 (IDS와 IPS)]]
+- [[Proxy-Internals|프락시 동작 구조 (유저 모드 소켓 스트림 중계)]]
+- [[Unicast-Broadcast-Multicast|유니캐스트, 브로드캐스트, 멀티캐스트]]
 - [[네트워크(Network)|네트워크 인덱스]]

@@ -175,6 +175,7 @@ server {
 - [Nginx Docs — WebSocket proxying](https://nginx.org/en/docs/http/websocket.html)
 
 ## 관련 문서
+- [[Proxy-Internals|프락시 동작 구조 (두 연결 종단, 버퍼링과 커넥션 재사용의 근거)]]
 - [[Load-Balancer|Load Balancer]]
 - [[HTTPS-TLS|HTTPS, TLS Handshake]]
 - [[Server-Sent-Events|Server-Sent Events (SSE)]]

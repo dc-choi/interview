@@ -131,5 +131,7 @@ NAT는 L3 수준 주소 변환이라 엄밀히 다름. 프록시는 L7(또는 L4
 - [RFC 7239, Forwarded HTTP Extension](https://www.rfc-editor.org/rfc/rfc7239)
 
 ## 관련 문서
+- [[Proxy-Internals|프락시 동작 구조 (패킷 vs 소켓 스트림, 두 연결 종단, L4/L7, 터널)]]
+- [[Proxy-Trust-and-Anonymity|중계 경로의 신뢰 모델 (익명화의 대가, Tor)]]
 - [[Load-Balancer|Load Balancer]]
 - [[Reverse-Proxy|Reverse Proxy 상세]]

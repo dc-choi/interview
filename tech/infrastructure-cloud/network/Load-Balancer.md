@@ -126,6 +126,7 @@ L4와 L7은 대상 선택에 어떤 정보를 쓰는지 설명하는 분류다. 
 ## 관련 문서
 - [[IaC|IaC]]
 - [[Reverse-Proxy|Reverse Proxy]]
+- [[Proxy-Internals|프락시 동작 구조 (L4와 L7의 처리 단위 차이)]]
 - [[Realtime-Chat-Architecture|실시간 채팅 아키텍처]]
 - [[Route53|Route 53 (라우팅 정책, 헬스 체크)]]
 - [[Browser-URL-Flow|브라우저 URL 입력 프로세스]]

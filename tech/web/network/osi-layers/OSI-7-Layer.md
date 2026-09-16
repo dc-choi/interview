@@ -17,6 +17,7 @@ OSI 7계층 전체 지도와 계층별 상세 문서를 모은다. 흐름 한 �
 - [x] [[LAN-vs-WAN|LAN과 WAN (거리가 아닌 MAC 직접 전달과 IP 라우팅으로 구분, 물리와 논리 네트워크)]]
 - [x] [[Network-Encapsulation|캡슐화와 데이터 단위 (소켓 스트림 → 세그먼트 → 패킷 → 프레임, MTU/MSS와 단편화, 커널 송수신 경로, DPI)]]
 - [x] [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기 (필드별 의미, TTL, 단편화 필드, 체크섬, IPv6 대비, Wireshark 필터)]]
+- [x] [[Unicast-Broadcast-Multicast|유니캐스트, 브로드캐스트, 멀티캐스트 (수신 대상 범위, limited/directed broadcast, IGMP와 MAC 매핑, IPv6의 애니캐스트)]]
 
 ## OSI 7계층 한눈에
 
@@ -56,4 +57,5 @@ OSI 7계층 전체 지도와 계층별 상세 문서를 모은다. 흐름 한 �
 - [[LAN-vs-WAN]] — LAN과 WAN 구분 기준
 - [[Network-Encapsulation]] — 스트림에서 프레임까지의 캡슐화, MTU/MSS, DPI
 - [[IPv4-Header]] — IPv4 헤더 필드, TTL, 단편화 필드, 캡처로 읽기
+- [[Unicast-Broadcast-Multicast]] — 전달 방식과 목적지 주소, 브로드캐스트 도메인의 비용, 멀티캐스트와 IGMP
 - [[네트워크(Network)]] — 카테고리 인덱스
