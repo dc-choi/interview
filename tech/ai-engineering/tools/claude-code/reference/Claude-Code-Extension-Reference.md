@@ -41,8 +41,9 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 ## 커맨드 — 슬래시 호출은 스킬로 흡수됐다
 
-- 2026-09-16 공식 문서 기준, 커스텀 슬래시 커맨드는 스킬로 만든다. 디렉터리 이름이 곧 명령어라 `.claude/skills/deploy/SKILL.md`가 `/deploy`가 되고, 개인 범위는 `~/.claude/skills/`다. 하위 디렉터리는 `frontend/component` → `/frontend:component`처럼 `:`로 네임스페이스가 된다
-- 레거시 `.claude/commands/deploy.md` → `/deploy`도 하위 호환으로 동작하지만, 공식 문서는 서포팅 파일과 프론트매터 제어를 이유로 새 작업에는 스킬을 권한다
+- 2026-09-16 공식 문서 기준, 커스텀 슬래시 커맨드는 스킬로 만든다. 디렉터리 이름이 곧 명령어라 `.claude/skills/deploy/SKILL.md`가 `/deploy`가 되고, 개인 범위는 `~/.claude/skills/`다
+- 스킬에 콜론이 붙는 경우는 둘뿐이다. 저장소 하위 경로의 `<subdir>/.claude/skills/` 스킬이 이름 충돌을 일으키면 `apps/web/.claude/skills/deploy/SKILL.md`가 `/apps/web:deploy`로 노출되고(경로의 슬래시는 그대로 남는다), 플러그인 스킬은 `/플러그인명:스킬명`이 된다
+- 레거시 `.claude/commands/deploy.md` → `/deploy`도 하위 호환으로 동작하지만, 공식 문서는 서포팅 파일과 프론트매터 제어를 이유로 새 작업에는 스킬을 권한다. 커맨드 쪽은 하위 디렉터리 경로의 `/`가 `:`로 바뀌어 `.claude/commands/frontend/component.md`가 `/frontend:component`가 된다 — 스킬 폴더를 중첩해도 같은 결과가 나오지는 않는다
 - 사람이 부르는 매크로와 모델이 꺼내 읽는 절차서라는 구분은 이제 별도 파일 종류가 아니라 **프론트매터 플래그**로 표현된다. `disable-model-invocation: true`면 사람만 `/이름`으로 호출하고(배포, 커밋처럼 부작용 있는 작업), `user-invocable: false`면 메뉴에서 감춰져 모델만 자동 호출한다(배경지식용). 기본값은 양쪽 다 가능
 - 인자 치환은 `$ARGUMENTS`(전체), `$ARGUMENTS[N]`과 `$N`(위치), 그리고 프론트매터 `arguments: [a, b]`로 선언한 이름 인자 `$a`를 지원한다. 자동완성 힌트는 `argument-hint`
 
