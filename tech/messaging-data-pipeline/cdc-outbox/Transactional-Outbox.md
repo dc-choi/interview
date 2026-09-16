@@ -176,6 +176,7 @@ Event Sourcing은 더 나아가 **상태 자체를 이벤트 스트림으로만 
 - [우아한형제들 — 배민스토어에 이벤트 기반 아키텍처를 곁들인](https://techblog.woowahan.com/13101/)
 
 ## 관련 문서
+- [[Spring-Transaction-Events|Spring 트랜잭션 이벤트]] — 프로세스 안에서 커밋 단계에 부수효과를 거는 쪽의 계약과 함정
 - [[Delivery-Semantics|전달 보장]]
 - [[Idempotency-Key|멱등성 키]]
 - [[Idempotent-Consumer|멱등 컨슈머]]

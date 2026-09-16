@@ -170,5 +170,6 @@ Spring Boot 4.1은 classpath, 단일 후보 `DataSource`, 기존 bean 여부 같
 - [[Isolation-Level|Isolation Level]]
 - [[Transactions|ACID 트랜잭션]]
 - [[Connection-Pool|DB 커넥션 풀]]
+- [[Spring-Transaction-Events|Spring 트랜잭션 이벤트]] — 커밋 단계에 부수효과를 거는 배선과 그 계약
 - [[Transactional-Outbox|Transactional Outbox 패턴]]
 - [[External-API-Integration-Patterns|외부 API 연동 패턴]] — 외부 호출의 3단계 분리, 대사

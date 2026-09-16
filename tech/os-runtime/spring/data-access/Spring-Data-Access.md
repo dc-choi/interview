@@ -18,4 +18,5 @@ SQL mapper, ORM, repository와 transaction을 use case에 맞게 선택하고 �
 - [[Spring-Data-JPA-Essentials|Spring Data JPA]]
 - [[Querydsl|Querydsl JPA]]
 - [[Spring-Transactional|Spring transaction]]
+- [[Spring-Transaction-Events|Spring 트랜잭션 이벤트 (@TransactionalEventListener 계약, fallbackExecution, 발행 지점 검사)]]
 - [[Transactional-Test-Antipattern|Spring database 통합 테스트]]
