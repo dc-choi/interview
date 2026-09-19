@@ -11,7 +11,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 
 ## 목차
 - [x] [[Harness-Systems|하네스 시스템 (harness/ 서브폴더) — 하네스 5원칙, 구성요소 비교 실험, 런타임 구성도, 게이트 배치, 도입 계단, AI 네이티브 시스템/조직, 프로덕션 에이전트 아키텍처, 에이전트 군집 격리]]
-- [x] [[claude-code|Claude Code 가이드 (claude-code/ 서브폴더) — 학습 트랙(기초, 개발, 비즈니스/도메인, 커스터마이즈) + 레퍼런스(설정/권한, 확장, 운영, 클라우드/보안, 내부 구조)]]
+- [x] [[claude-code|Claude Code 가이드 (claude-code/ 서브폴더) — 학습 트랙(기초, 개발, 비즈니스/도메인, 커스터마이즈) + 레퍼런스(설정/권한, CLAUDE.md와 AGENTS.md 지침 호환, 확장, 운영, 클라우드/보안, 내부 구조)]]
 - [x] [[agent|에이전트 심화 (agent/ 서브폴더) — 컨텍스트 예산, 코드 검색, 친화 API 설계, 데이터 준비, 이메일 인터페이스, 스킬, 루프 엔지니어링, 지시 설계(instruction-design/: 스펙 작성, 과잉설계 방지, 코딩 가드레일, 검증 행동)]]
 - [x] [[Context-Hub|컨텍스트 (context/ 서브폴더) — 수요 측 컨텍스트 엔지니어링, 도구 출력 필터링, 공급 측 Context Provider 플랫폼]]
 - [x] [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리 (공급자별 transcript 정규화, replay-safe 집계, 활동량과 비용/품질 분리, 개인정보와 보존 경계)]]

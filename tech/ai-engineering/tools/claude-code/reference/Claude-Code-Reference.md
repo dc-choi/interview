@@ -11,7 +11,7 @@ aliases: ["Claude Code Reference", "클로드 코드 레퍼런스"]
 
 ## 문서
 
-- [x] [[Claude-Code-Config-Permissions|설정과 권한 (캐스케이드 병합, first-match-wins, bare vs scoped deny, 보호 경로, 샌드박스)]]
+- [x] [[Claude-Code-Config-Permissions|설정과 권한 (캐스케이드 병합, 프로젝트 지침의 CLAUDE.md/AGENTS.md 모드, first-match-wins, 보호 경로, 샌드박스)]]
 - [x] [[Claude-Code-Extension-Reference|확장 메커니즘 (신호→메커니즘 매핑, 훅 exit 2, 서브에이전트 문법, 스킬 예산, 플러그인, MCP Tool Search)]]
 - [x] [[Claude-Code-Dynamic-Workflows|동적 워크플로우 (스크립트 오케스트레이션, ultracode, acceptEdits 함정, resume 규칙, 비용 가드)]]
 - [x] [[Claude-Code-Operations|운영 (헤드리스 --bare, CI 안전장치 4종, 비용 정량, 트러블슈팅 진단 순서, 안티패턴 5종)]]

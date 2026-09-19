@@ -1,7 +1,7 @@
 ---
 tags: [ai, claude-code, settings, permissions, sandbox]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-09-19
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한", "권한 규칙 문법"]
 ---
@@ -19,15 +19,18 @@ aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한",
 - 핫 리로드: 대부분 키는 즉시 반영한다. `model`은 `/model`, `effortLevel`은 `/effort`로 실행 중 바꿀 수 있고, `outputStyle` 편집은 `/clear` 또는 restart 뒤 적용된다. Claude가 직접 쓰는 `~/.claude.json`만 write 전 최근 5개 backup을 남긴다고 명시돼 있으며 일반 settings file의 자동 backup으로 일반화하지 않는다. 활성 source는 `/status`로 확인
 - 스코프 용도: 프로젝트 `.claude/settings.json`(커밋, 팀 공유), 개인 로컬 `.claude/settings.local.json`(gitignore), 사용자 `~/.claude/settings.json`
 
-## 컨텍스트 주입 3계층 — CLAUDE.md, rules, 스킬
+## 컨텍스트 주입 3계층 — 프로젝트 지침, rules, 스킬
 
 | 계층 | 로드 시점 | 용도 |
 |---|---|---|
-| CLAUDE.md | 시스템 프롬프트 뒤 user message로 전달 | 전 작업 공통 규칙, 파일당 200줄 이하 권장 |
+| 프로젝트 지침 | 시스템 프롬프트 뒤 user message로 전달 | `CLAUDE.md`와 설정에 따른 `AGENTS.md`, 전 작업 공통 규칙, 파일당 200줄 이하 권장 |
 | `.claude/rules/` | 매칭 파일을 열 때 (경로 스코프) | 디렉토리별 규칙 |
 | 스킬 | 호출 시 (온디맨드) | 작업별 플레이북 |
 
 - `@`임포트는 조직화용일 뿐 토큰 절약이 아니다. cwd에서 위로 올라가며 로드하고, 하위 디렉토리 CLAUDE.md는 해당 파일을 읽을 때 온디맨드 로드. 일반 built-in과 custom subagent는 메인 대화에 로드된 CLAUDE.md 계층을 받지만, built-in Explore와 Plan은 CLAUDE.md와 git status를 건너뛴다
+- Claude Code 2.1.277의 기본 Project instructions 모드(`claude-md-or-agents-md`)는 프로젝트 루트부터 cwd까지 자체 `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md`가 하나도 없을 때만 같은 경로의 `AGENTS.md`, `.claude/AGENTS.md`를 읽는다. 사용자 전역, 조직 managed, 추가 디렉토리의 `CLAUDE.md`와 `.claude/rules`는 이 fallback 판정에 포함하지 않는다
+- `/config`의 Project instructions는 네 모드다. `CLAUDE.md`만 사용(`claude-md`), 기본 fallback(`claude-md-or-agents-md`), 둘 다 사용(`claude-md-and-agents-md`), 시작 컨텍스트의 project/local/user 지침을 제외하는 `managed-only`다. `managed-only`에서도 managed 지침과 메모는 남고, 현재 mod가 가로채지 못하는 `Read` 기반 하위 `CLAUDE.md`는 계속 전달될 수 있다. 릴리스 기준 AGENTS.md 지원은 Bedrock, Vertex AI, Foundry에는 아직 제공되지 않는다
+- 두 파일을 함께 쓰는 모드는 경로를 먼저, 내용을 다음으로 비교해 `@` import나 심볼릭 링크가 같은 지침을 두 번 넣지 않게 한다. 하위 디렉토리 `AGENTS.md`는 그 아래 파일을 `Read`할 때 적용되지만, fallback 모드에서 같은 디렉토리의 `CLAUDE.md`가 있으면 그 경로에는 붙지 않는다
 - 자동 메모리: MEMORY.md 인덱스는 시작 시 처음 200줄 또는 25KB만 로드, 토픽 파일은 온디맨드. 머신 로컬이며 worktree 간 공유
 - `~/.claude` 아래 트랜스크립트와 체크포인트 스냅샷은 **평문 저장** — 도구를 거친 모든 내용이 디스크에 남는다. `cleanupPeriodDays`(기본 30일)로 자동 정리
 
@@ -87,6 +90,9 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 - [Anthropic, Deploy managed settings](https://code.claude.com/docs/en/managed-settings)
 - [Anthropic, How Claude remembers your project](https://code.claude.com/docs/en/memory)
 - [Anthropic, Create custom subagents](https://code.claude.com/docs/en/sub-agents)
+- [Claude Code v2.1.277 release — Anthropic](https://github.com/anthropics/claude-code/releases/tag/v2.1.277)
+- [agents-md built-in mod — Anthropic](https://github.com/anthropics/claude-code/tree/main/mods/agents-md)
+- [Claude Code, 이제 AGENTS.md도 지원 — GeekNews](https://news.hada.io/topic?id=33925)
 - [클로드 코드 가이드 (레퍼런스 04 설정 시스템, 05 권한 시스템) — WikiDocs](https://wikidocs.net/book/19104)
 
 ## 관련 문서

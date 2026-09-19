@@ -3,7 +3,7 @@ tags: [ai, claude-code, cli, context, permissions]
 status: done
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Claude Code Fundamentals", "클로드 코드 기초", "권한 모드", "Effort"]
-verified_at: 2026-09-03
+verified_at: 2026-09-19
 ---
 
 # Claude Code 기초 — 설치, 세션, 모델, 권한, 컨텍스트
@@ -49,7 +49,7 @@ Desktop 앱의 3탭 구분이 핵심: **Chat**(파일 접근 없음, 첨부만),
 - `/context`로 사용량 확인(70% 넘으면 compact 고려), `/mcp`로 서버별 토큰 비용 확인 후 안 쓰는 것 해제
 - 신호: 같은 문제를 두 번 이상 고치게 했다면 실패 시도가 컨텍스트를 오염시킨 것 → `/clear` 후 배운 것을 반영한 새 프롬프트가 낫다 (도구 출력이 컨텍스트를 채우는 원리는 [[Tool-Output-Filtering]])
 
-## CLAUDE.md — 작업 기억
+## 프로젝트 지침 파일 — CLAUDE.md와 AGENTS.md
 
 세션마다 자동 주입되는 규칙 파일.
 
@@ -57,6 +57,8 @@ Desktop 앱의 3탭 구분이 핵심: **Chat**(파일 접근 없음, 첨부만),
 - **실수 기반 운영**: Claude가 실수할 때마다 "CLAUDE.md에 이 규칙 추가". 판단 기준은 "이걸 빼면 Claude가 실수할까?" — 자명한 지시나 코드에서 추론 가능한 것은 뺀다
 - 넣을 것: 추측 불가한 빌드/테스트 명령, 비표준 스타일, 저장소 관례. 200줄 초과 시 `@import`나 `.claude/rules/`로 분리 (너무 길면 절반을 무시)
 - 3범위: 프로젝트(./CLAUDE.md, Git 공유 — **API 키 절대 금지**), 사용자(~/.claude/CLAUDE.md), 관리 정책. Auto Memory는 Claude가 스스로 적는 MEMORY.md (처음 200줄/25KB만 로드). 상세 원칙은 [[Context-Engineering]]
+- Claude Code 2.1.277부터 기본 설정은 프로젝트 경로에 자체 `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md`가 없을 때 해당 경로의 `AGENTS.md`를 프로젝트 지침으로 사용한다. 이미 `CLAUDE.md`를 쓴 프로젝트의 동작은 바뀌지 않는다
+- `/config`의 Project instructions에서 `CLAUDE.md`만 사용, 기본 fallback, 두 파일 함께 사용, managed-only를 선택할 수 있다. 두 파일을 함께 읽는 모드에서는 같은 파일 경로나 같은 내용의 import 또는 심볼릭 링크를 중복 주입하지 않는다. 정확한 범위와 지원 환경은 [[Claude-Code-Config-Permissions]]를 따른다
 
 ## 체크포인트
 
@@ -68,6 +70,7 @@ Desktop 앱의 3탭 구분이 핵심: **Chat**(파일 접근 없음, 첨부만),
 ## 출처
 
 - [Claude Code — Permission modes](https://code.claude.com/docs/en/permission-modes)
+- [Claude Code v2.1.277 release — Anthropic](https://github.com/anthropics/claude-code/releases/tag/v2.1.277)
 - [클로드 코드 가이드 (클래스 101 기초 트랙) — WikiDocs](https://wikidocs.net/book/19104)
 
 ## 관련 문서
