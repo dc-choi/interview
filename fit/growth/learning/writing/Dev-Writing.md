@@ -15,6 +15,7 @@ aliases: ["Dev Writing", "글쓰기와 기술 블로그"]
 - [x] [[Running-A-Tech-Blog|기술 블로그 운영 (왜 쓰는가, 플랫폼 선택, 성과 측정, 흔한 어려움)]]
 - [x] [[Running-A-Tech-Blog-Process|기술 블로그 운영 프로세스 (글감 등록부터 배포까지 5단계)]]
 - [x] [[Tech-Writing-Craft|개발자 글쓰기 (문서화 = 사고 정리, 메모에서 구조, 마감, 리뷰, 수정까지, 독자와 목적 좁히기, 전문용어 풀이, 블로그 글과 책 원고)]]
+- [x] [[LLM-Assisted-Editing|LLM을 활용한 글 교정 워크플로우 (직접 초안, 결함 탐지, 직접 수정, 맥락 없는 버전 비교와 최종 판단)]]
 - [x] [[First-Hand-Experience-AI-Era|AI 시대 직접 경험기와 작성자 신뢰 (콘텐츠 오염, E-E-A-T, 사고의 흔적, AI를 직접 경험 가속 도구로)]]
 
 ## 관련 문서
