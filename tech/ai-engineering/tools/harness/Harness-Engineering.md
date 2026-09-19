@@ -161,6 +161,7 @@ Q. 멀티 에이전트로 나누면 뭐가 좋고, 검증은 왜 별도 에이�
 - [[Harness-Anatomy|하네스 구성도 (모델 + 하네스 분해, 런타임 블록 지도, 세 기둥)]]
 - [[Harness-Gate-Placement|게이트 배치 (게이트는 비용이다 — 걸 곳과 걸지 않을 곳, 여섯 방어 시점)]]
 - [[Harness-Adoption-Ladder|하네스 도입 계단 (Lv.0에서 Lv.5, 얹는 순서, 다섯 단계 파이프라인)]]
+- [[Harness-Component-Evaluation|코딩 에이전트 하네스 구성요소 평가 (계획, 행동 인터페이스, 컨텍스트 관리의 조건부 실험과 선택 기준)]]
 - [[Evaluation-Driven-Development|평가 주도 개발 (Verify 축을 점수와 추이로 확장)]]
 - [[Agent-Loop-Engineering|루프 엔지니어링 (루프 4분류, ralph 계보, 3종 가드 — 하네스의 한 층 위)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (Inform 축의 토큰 경제학 — Context Rot, CLAUDE.md 200줄, Hook vs Advisory, 모델 세대와 지시 밀도)]]

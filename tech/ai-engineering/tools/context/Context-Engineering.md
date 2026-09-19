@@ -183,6 +183,7 @@ Q. 반드시 지켜야 할 규칙은 Hook에만 두면 되나?
 - [[Tool-Output-Filtering|도구 출력 필터링 (컨텍스트를 채우는 도구 출력을 사전 필터링, Select 전략의 도구 응답 적용판)]]
 - [[Agentic-Context-Platform|Context Provider / 에이전트 컨텍스트 플랫폼 (공급 측, 조직 자산을 모아 신뢰 가능한 맥락 풀로)]]
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain, Inform, Verify, Correct, HITL, 컨텍스트는 Inform 축)]]
+- [[Harness-Component-Evaluation|코딩 에이전트 하네스 구성요소 평가 (창 예산별 생략, 요약과 복구 기능의 조건부 비교)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (지시의 저주, 3단계 경계)]]
 - [[Agent-Skills|에이전트 스킬 (점진적 공개, 재사용 절차와 컨텍스트의 관계)]]
 - [[Claude-Opus-5|Claude Opus 5 (검증 스캐폴딩 제거 — 세대 갱신 시 프롬프트 부채 정리)]]
