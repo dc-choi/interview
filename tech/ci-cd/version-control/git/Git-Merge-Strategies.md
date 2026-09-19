@@ -178,7 +178,7 @@ git rebase -i HEAD~5
 - Squash의 롤백 이점과 정보 소실 트레이드오프
 - Rebase의 선형 히스토리 장점과 force-push 위험
 - 공유 브랜치 히스토리 재작성 위험과 필요한 협의 및 보존 조건
-- Trunk-based vs GitFlow에서의 선택 근거
+- Trunk-based vs GitFlow를 선택하는 근거
 - Interactive Rebase의 `pick`, `squash`, `fixup` 차이
 
 ## 출처

@@ -75,7 +75,7 @@ Logistic Regression은 강한 baseline이자 feature와 label 문제를 드러�
 
 ## Implicit Feedback와 미관측의 의미
 
-클릭, 조회, 찜과 시청은 사용자가 명시적 점수를 주지 않아도 생기는 implicit feedback이다. 핵심은 0의 의미가 하나가 아니라는 점이다.
+클릭, 조회, 찜과 시청은 사용자가 명시적 점수를 주지 않아도 생기는 implicit feedback이다. 0의 의미는 하나가 아니다.
 
 ```text
 응답에 없었음 != 응답에 있었지만 보이지 않음

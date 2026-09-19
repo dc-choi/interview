@@ -75,7 +75,7 @@ Nest는 기본 플랫폼(기본적으로 Express)에서 요청 객체에 대한 
 | @Ip()                   | 클라이언트 IP 주소 | req.ip                          |
 | @HostParam()            | 호스트 매개변수    | req.hosts                       |
 
-기본 HTTP 플랫폼에서의 타이핑과의 호환성을 위해 Nest는 @Res() 및 @Response() 데코레이터를 제공합니다. 
+기본 HTTP 플랫폼의 타이핑과 호환되도록 Nest는 @Res() 및 @Response() 데코레이터를 제공합니다.
 
 Res()는 @Response()의 별칭일 뿐입니다. 둘 다 기본 네이티브 플랫폼 응답 객체 인터페이스를 직접 노출합니다.
 

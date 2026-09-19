@@ -56,7 +56,7 @@ export class UserModule {}
 
 ### 대안: 추상 클래스를 토큰 대신 쓰기
 
-Interface는 **컴파일 후 사라져서** 런타임 DI에 쓸 수 없다. TS에서의 두 가지 우회:
+Interface는 **컴파일 후 사라져서** 런타임 DI에 쓸 수 없다. TS에서 쓰는 두 가지 우회 방법:
 
 **방식 A — Symbol 토큰 (위 예시)**: `interface IUserRepository` + `Symbol('USER_REPOSITORY')`로 바인딩. 전형적.
 

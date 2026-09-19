@@ -8,7 +8,7 @@ aliases: ["OpenSearch Observability", "Amazon OpenSearch 관측성", "OpenSearch
 
 # Amazon OpenSearch 기반 통합 관측성
 
-Amazon OpenSearch Service의 관측성 기능은 로그, trace, metric을 같은 운영 화면에서 탐색하고 서로 연결해 장애 원인을 좁히는 데 목적이 있다. 핵심은 세 신호를 한 저장소에 억지로 넣는 것이 아니라 **공통 context로 연결하고 신호마다 적합한 저장소와 query language를 쓰는 것**이다.
+Amazon OpenSearch Service의 관측성 기능은 로그, trace, metric을 같은 운영 화면에서 탐색하고 서로 연결해 장애 원인을 좁히는 데 목적이 있다. 세 신호를 한 저장소에 억지로 넣는 것이 아니라 **공통 context로 연결하고 신호마다 적합한 저장소와 query language를 쓰는 것**에 초점을 둔다.
 
 ## 전체 구조
 
@@ -49,7 +49,7 @@ Metric은 이상을 빠르게 찾고, trace는 blast radius와 병목 경로를 
 - HTTP route는 parameter가 치환된 template으로 기록해 cardinality를 제어한다.
 - 배포 version, feature flag, tenant 같은 장애 분할 기준을 resource attribute로 정한다.
 
-Correlation은 단지 같은 화면에 신호 세 개를 배치하는 기능이 아니다. Slow trace에서 같은 trace ID의 log로 이동하고, 다시 service metric의 정상 구간과 장애 구간을 비교할 수 있어야 한다. 전파와 계측은 [[OpenTelemetry]]를 따른다.
+Correlation은 단지 같은 화면에 신호 세 개를 배치하는 기능이 아니다. Slow trace에서 같은 trace ID의 log로 이동하고 다시 service metric의 정상 구간과 장애 구간을 비교할 수 있어야 한다. 전파와 계측은 [[OpenTelemetry]]를 따른다.
 
 ## OpenSearch Dashboards와 OpenSearch UI
 
@@ -80,7 +80,7 @@ OpenSearch UI application 하나는 여러 data source를 연결할 수 있고 O
 
 ## Discover와 PPL
 
-PPL은 Piped Processing Language의 약자로, Unix pipe처럼 앞 단계의 결과를 다음 단계에 넘겨 filter, transform, aggregate하는 언어다. OpenSearch UI의 Discover Logs와 Discover Traces에서 사용하고, metric에는 PromQL을 사용한다.
+PPL은 Piped Processing Language의 약자로, Unix pipe처럼 앞 단계의 결과를 다음 단계에 넘겨 filter, transform, aggregate하는 언어다. OpenSearch UI의 Discover Logs와 Discover Traces에서 사용하고 metric에는 PromQL을 사용한다.
 
 ```text
 source = app-logs
@@ -89,7 +89,7 @@ source = app-logs
 | sort -error_count
 ```
 
-Discover에서 query 결과를 table과 chart로 확인하고 그대로 dashboard panel로 저장할 수 있다. PPL 기반 visualization은 Discover에서 만들어야 하며, 일반 Visualizations 화면의 DQL과 DSL 경로가 PPL을 지원한다고 가정하면 안 된다.
+Discover에서 query 결과를 table과 chart로 확인하고 그대로 dashboard panel로 저장할 수 있다. PPL 기반 visualization은 Discover에서 만들어야 하며 일반 Visualizations 화면의 DQL과 DSL 경로가 PPL을 지원한다고 가정하면 안 된다.
 
 `join`, `lookup`, `timechart`, `eventstats`, `rex`, `spath` 같은 명령의 지원 범위는 OpenSearch index, S3 direct query, CloudWatch data source마다 다를 수 있다. 기능 이름만 보고 설계하지 말고 대상 data source와 engine version의 command matrix를 확인한다.
 

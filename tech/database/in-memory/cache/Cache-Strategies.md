@@ -136,7 +136,7 @@ aliases: ["Cache 전략", "Cache Strategies", "캐싱 전략"]
 - **쓰기 후 캐시 무효화 누락** → TTL이 없으면 stale 값이 계속 남고, TTL이 있어도 만료 전까지 노출
 - **Write-Back에 중요 데이터 사용** → 장애 시 손실
 - **모든 쿼리에 캐시** → 재사용 없는 데이터까지 올려 메모리 낭비 (Write-Around 또는 bypass 경로 미검토)
-- **무한 TTL** → 잊혀진 데이터가 메모리 점유
+- **무한 TTL** → 잊힌 데이터가 메모리 점유
 - **캐시를 "DB 보조"로만 생각** → Request Coalescing, Hot Key 같은 고유 패턴 놓침
 - **AWS DAX 같은 Write-Through 전용 도구에 쓰기 폭주 워크로드** → 비용 절감 효과 없음
 - **캐시 도입 자체가 정답이라는 가정** — 노출률, 히트율이 낮으면 제거가 답일 수 있음 ([[Cache-Decision|도입, 제거 의사결정]])

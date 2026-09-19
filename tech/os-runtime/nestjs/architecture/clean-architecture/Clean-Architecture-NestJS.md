@@ -7,7 +7,7 @@ aliases: ["Clean Architecture NestJS", "NestJS 클린 아키텍처"]
 
 # Clean Architecture with NestJS
 
-Clean Architecture의 4겹 동심원을 NestJS의 모듈, 프로바이더, 컨트롤러 구조에 매핑하는 실무 가이드. 핵심은 **의존성 방향을 안쪽으로 고정**하고, NestJS의 DI 컨테이너로 바깥 레이어의 구체 구현을 주입하여 **비즈니스 로직이 프레임워크를 모르게** 하는 것.
+Clean Architecture의 4겹 동심원을 NestJS의 모듈, 프로바이더, 컨트롤러 구조에 매핑하는 실무 가이드. **의존성 방향을 안쪽으로 고정**하고 NestJS의 DI 컨테이너로 바깥 레이어의 구체 구현을 주입하여 **비즈니스 로직이 프레임워크를 모르게** 한다.
 
 - [[Clean-Architecture-NestJS-Layers|4겹 레이어 매핑과 의존성 역전 (Symbol 토큰 vs 추상 클래스)]]
 - [[Clean-Architecture-NestJS-Structure|디렉토리 구조, 얇은 Controller, DI 테스트 전략, 흔한 실수]]

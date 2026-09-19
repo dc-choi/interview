@@ -8,7 +8,7 @@ aliases: ["Querydsl Setup", "Querydsl 설정", "Querydsl Q Type"]
 
 # Querydsl 설정과 버전 호환성
 
-Querydsl 설정의 핵심은 runtime library와 annotation processor를 같은 artifact 계열로 맞추고, 현재 `jakarta.persistence` entity에서 Q type을 재현 가능하게 생성하는 것이다. 오래된 Spring Boot 2와 `javax.persistence` 설정을 그대로 복사하면 compile classpath가 섞인다.
+Querydsl을 설정할 때는 runtime library와 annotation processor를 같은 artifact 계열로 맞추고 현재 `jakarta.persistence` entity에서 Q type을 재현 가능하게 생성한다. 오래된 Spring Boot 2와 `javax.persistence` 설정을 그대로 복사하면 compile classpath가 섞인다.
 
 ## Project 계보와 선택
 

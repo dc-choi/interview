@@ -58,7 +58,7 @@ TypeORM transaction 안에서는 전역 manager나 평소 주입받은 repositor
 - 애플리케이션 rollback과 schema rollback을 구분한다.
 - 새 코드가 이미 기록한 데이터를 이전 코드가 읽을 수 있는지 확인한다.
 - destructive migration은 단순 revert가 불가능할 수 있으므로 expand and contract를 우선한다.
-- rollback 명령의 존재가 아니라 격리 환경에서의 실제 성공과 소요 시간을 기록한다.
+- rollback 명령의 존재가 아니라 격리 환경에서 실제로 성공했는지와 소요 시간을 기록한다.
 
 ## 완료 체크리스트
 

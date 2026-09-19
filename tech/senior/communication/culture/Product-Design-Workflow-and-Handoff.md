@@ -32,7 +32,7 @@ aliases: ["Product Design Workflow", "Design Handoff", "프로덕트 디자인 �
 - 일관된 design system과 engineering standard를 유지할 장치
 - 팀을 자주 재편할 때 생기는 context 손실
 
-matrix나 chapter/guild를 섞는 hybrid 구조도 가능하다. 중요한 것은 보고선 이름이 아니라 **결정권, 의존성 조정, 품질 기준과 성과 책임이 명확한가**다.
+matrix나 chapter/guild를 섞는 hybrid 구조도 가능하다. 보고선 이름이 아니라 **결정권, 의존성 조정, 품질 기준과 성과 책임이 명확한가**가 중요하다.
 
 모두가 ownership을 가진다는 말도 최종 결정권자가 없다는 뜻은 아니다. 각 결과물마다 DRI, approver, consulted, informed를 구분하고 충돌 시 결정 시한과 escalation 경로를 둔다.
 

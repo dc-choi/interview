@@ -12,7 +12,7 @@ aliases: ["Airflow DAG Parsing", "Airflow DAG 파싱 최적화"]
 
 dag-processor가 `dags/` 폴더의 모든 `.py` 파일을 **import → DAG 객체 생성 → 직렬화(serialized_dag)** 하여 메타스토어에 저장하는 과정. 스케줄러는 이 직렬화본을 읽어 스케줄링한다.
 
-핵심은 **파싱이 일회성이 아니라 주기적으로 반복**된다는 점이다. `min_file_process_interval` 주기마다 모든 DAG 파일을 다시 import, 실행하므로, 파일이 많거나 top-level 코드가 무거우면 파싱 사이클이 길어지고 → 스케줄 지연, CPU 점유로 이어진다. DAG 파일의 **top-level 코드는 매 파싱마다 실행**되며, 이게 파싱 비용의 본질이다.
+**파싱은 일회성이 아니라 주기적으로 반복**된다. `min_file_process_interval` 주기마다 모든 DAG 파일을 다시 import, 실행하므로 파일이 많거나 top-level 코드가 무거우면 파싱 사이클이 길어지고 → 스케줄 지연, CPU 점유로 이어진다. DAG 파일의 **top-level 코드는 매 파싱마다 실행**되며 이게 파싱 비용의 본질이다.
 
 Airflow 3.x에서 dag-processor는 스케줄러와 분리된 **독립 서비스**다(2.x는 스케줄러 내부).
 

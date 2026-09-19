@@ -16,7 +16,7 @@ Canary는 새 버전을 전체가 아니라 트래픽의 일부에만 먼저 노
 - **배포 성공을 프로세스 기동이 아니라 지표로 판정** — Pod가 Running이 된 것은 성공의 근거가 아니다. 게이트 임계는 [[SLI-SLO|SLI, SLO]]에서 가져온다.
 - **관찰 램프가 길면 신구 공존 구간도 길어진다** — Canary 램프를 수십 분에서 수 시간 유지하면 그만큼 스키마, 캐시 포맷, 메시지 포맷의 전후방 호환 요구가 커진다. Blue-Green도 Blue 보존과 rollback window를 길게 잡으면 더 오래 공존할 수 있다 (Expand-Contract 패턴은 [[Blue-Green|Blue-Green 배포]]가 소유).
 - **표본이 안 나오면 Canary는 형식만 남는다** — 판정에 필요한 요청 수가 모이지 않으면 비율만 올리는 의식이 된다.
-- **롤백은 가중치 0 복귀** — 되돌아가는 것은 트래픽이고, 이미 발생한 쓰기와 외부 부작용은 되돌아가지 않는다.
+- **롤백은 가중치 0 복귀** — 되돌아가는 것은 트래픽이고 이미 발생한 쓰기와 외부 부작용은 되돌아가지 않는다.
 
 ## 트래픽 분할 메커니즘
 
@@ -38,13 +38,13 @@ ALB는 하나의 forward 규칙에 여러 target group을 두고 가중치 비�
 - 재는 지표는 오류율(5xx와 도메인 실패), 지연 백분위 P95와 P99, 포화(CPU, 메모리, 커넥션 풀, 큐 적체), 그리고 결제 성공률 같은 비즈니스 지표다.
 - 지표 수는 상위 5개에서 12개 정도로 줄인다. 늘릴수록 false positive가 늘어 게이트 신뢰가 먼저 무너진다.
 - **버전 라벨 분리가 전제** — 전체 집계 오류율만 있으면 5% 노출의 이상은 평균에 묻힌다. version과 커밋 SHA를 지표에 태깅하는 계측은 [[Deploy-Observability|배포 가시성]]이 소유한다.
-- **bake time과 최소 표본** — 관측 윈도우는 요청 처리 시간보다 길어야 하고, 지표 집계 주기보다 짧으면 안 된다. 5분짜리 canary를 1시간 집계 지표로 판정하면 신호가 흐려진다.
+- **bake time과 최소 표본** — 관측 윈도우는 요청 처리 시간보다 길어야 하고 지표 집계 주기보다 짧으면 안 된다. 5분짜리 canary를 1시간 집계 지표로 판정하면 신호가 흐려진다.
 
 ## 램프와 중단 루프
 
 단계별 비율, 각 단계의 hold window, 자동 promotion과 자동 abort 조건을 배포 전에 고정한다. 사람이 그래프를 보고 그때그때 정하면 배포마다 기준이 흔들리고, 기준은 야간 배포에서 가장 느슨해진다.
 
-- 전형적인 스케줄은 1% → 5% → 25% → 50% → 100%이고, 각 단계마다 분석 통과를 조건으로 hold한다.
+- 전형적인 스케줄은 1% → 5% → 25% → 50% → 100%이고 각 단계마다 분석 통과를 조건으로 hold한다.
 - Flagger는 promotion 소요를 `interval x (maxWeight / stepWeight)`, rollback 소요를 `interval x threshold`로 계산한다. 램프 시간이 파라미터의 산술로 결정된다는 뜻이다.
 - abort가 되돌리는 것은 트래픽 가중치뿐이다. canary가 이미 쓴 레코드, 발송한 알림, 호출한 외부 API는 별도 복구가 필요하다 ([[Rollback|롤백 전략]], [[DB-Migration|DB 마이그레이션]]).
 - 종료 측 드레이닝은 [[Graceful-Shutdown|Graceful Shutdown]], 무중단 성립 조건 전반은 [[Zero-Downtime-Deployment|무중단 배포]]가 소유한다. Canary도 그 다섯 계층 위에서만 성립한다.
@@ -73,7 +73,7 @@ Canary 통과는 터지지 않았다는 뜻이지 좋아졌다는 뜻이 아니�
 - service mesh나 gateway의 가중치 라우팅, ALB weighted target group, API Gateway 스테이지의 canary 설정 ([[API-Gateway|API Gateway]]).
 - ECS는 롤링 배포의 용량 산술로 점진 교체를 하지만 지표 판정은 별개 장치다 ([[ECS-Rolling-Deployment|ECS Rolling 배포]]).
 
-GitOps sync 자체는 Canary 판정을 만들지 않는다. ArgoCD가 매니페스트를 원하는 상태로 맞추는 것과 램프를 관리하는 컨트롤러는 다른 레이어이고, metric provider 연결은 또 별도다 ([[K8s-Traffic-Entry-Helm-and-GitOps|Kubernetes 트래픽 진입, Helm, GitOps]]).
+GitOps sync 자체는 Canary 판정을 만들지 않는다. ArgoCD가 매니페스트를 원하는 상태로 맞추는 것과 램프를 관리하는 컨트롤러는 다른 레이어이고 metric provider 연결은 또 별도다 ([[K8s-Traffic-Entry-Helm-and-GitOps|Kubernetes 트래픽 진입, Helm, GitOps]]).
 
 ### 애플리케이션 레벨
 

@@ -32,7 +32,7 @@ Artem Sapegin의 글 *Washing your code: don't make me think*를 요약한다. �
 둘 다 의도가 "따옴표 사이의 값을 꺼낸다"는 것이 코드 자체에 드러나야 한다.
 
 ### 6. 조건부 스프레드 `...(condition && obj)`
-조건이 falsy면 AND는 boolean이 아니라 왼쪽 피연산자 값을 그대로 반환한다(`0 && {}`는 `0`). 객체 스프레드는 `undefined`, `null`, `false` 같은 값을 조용히 무시하므로 오류 없이 빈 결과가 되고, 문제는 의도가 코드에 드러나지 않는다는 점이다. 배열 스프레드 `[...(false && arr)]`는 not iterable `TypeError`로 실제로 깨진다. 객체에는 **삼항 연산자** `...(cond ? obj : {})` 또는 **필드 내부로 조건 이동** `{ value: cond ? 42 : undefined }`을 사용한다.
+조건이 falsy면 AND는 boolean이 아니라 왼쪽 피연산자 값을 그대로 반환한다(`0 && {}`는 `0`). 객체 스프레드는 `undefined`, `null`, `false` 같은 값을 조용히 무시하므로 오류 없이 빈 결과가 되지만 의도가 코드에 드러나지 않는다. 배열 스프레드 `[...(false && arr)]`는 not iterable `TypeError`로 실제로 깨진다. 객체에는 **삼항 연산자** `...(cond ? obj : {})` 또는 **필드 내부로 조건 이동** `{ value: cond ? 42 : undefined }`을 사용한다.
 
 ### 7. `[...Array(10).keys()]` (0~9 배열)
 암호화된 관용구. **`Array.from({ length: 10 }, (_, i) => i)`** 로 의도를 드러낸다.

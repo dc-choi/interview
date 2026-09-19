@@ -31,7 +31,7 @@ OAuth 2.0은 **접근 권한 위임(access delegation)** 을 위한 개방형 �
 
 ## RFC 6749의 4가지 Grant Type과 현재 선택
 
-RFC 6749는 Authorization Code, Implicit, Resource Owner Password Credentials, Client Credentials의 네 grant를 정의한다. 새 사용자 위임 연동은 Authorization Code + PKCE를 기본으로 하고, 사용자 없는 서비스 자격은 Client Credentials를 쓴다.
+RFC 6749는 Authorization Code, Implicit, Resource Owner Password Credentials, Client Credentials의 네 grant를 정의한다. 새 사용자 위임 연동은 Authorization Code + PKCE를 기본으로 하고 사용자 없는 서비스 자격은 Client Credentials를 쓴다.
 
 ### 1. Authorization Code Grant (가장 보편적, 권장)
 
@@ -41,7 +41,7 @@ RFC 6749는 Authorization Code, Implicit, Resource Owner Password Credentials, C
 4. Client가 Token Endpoint에서 code를 교환. 새 구현은 `code_verifier`를 보내고, confidential client는 등록된 방식으로 자신도 인증
 5. Access Token으로 Resource Server 호출
 
-- 장점: 브라우저에는 `client_secret`을 두지 않아도 되고, Token Endpoint에서 code와 PKCE를 함께 검증할 수 있음
+- 장점: 브라우저에는 `client_secret`을 두지 않아도 되고 Token Endpoint에서 code와 PKCE를 함께 검증할 수 있음
 - 공개 클라이언트(모바일, SPA)는 PKCE가 필수다. confidential client에도 PKCE 사용이 권장된다
 
 ### 2. Implicit Grant (현재는 비권장)
@@ -106,9 +106,9 @@ Authorization Code 흐름은 브라우저를 거치는 front-channel과 Token En
 ## OAuth vs OIDC (OpenID Connect)
 
 - **OAuth 2.0** — 권한 위임 프로토콜. "이 앱에 내 캘린더 읽기 권한을 준다"
-- **OIDC** — OAuth 2.0 위에 얹힌 인증 레이어. `id_token`(JWT)으로 사용자 인증 사실을 전달하고, 요청 scope와 제공자 정책에 따라 profile, email 같은 claim을 제공한다
+- **OIDC** — OAuth 2.0 위에 얹힌 인증 레이어. `id_token`(JWT)으로 사용자 인증 사실을 전달하고 요청 scope와 제공자 정책에 따라 profile, email 같은 claim을 제공한다
 
-OIDC 기반 로그인에서는 access token만으로 로그인을 판단하지 않고 ID Token의 서명, issuer, audience와 시간 claim을 검증하며, 요청에 `nonce`를 보냈다면 같은 값인지 대조한다. OAuth 2.0만으로는 Client가 소비할 표준 인증 assertion인 ID Token을 정의하지 않는다.
+OIDC 기반 로그인에서는 access token만으로 로그인을 판단하지 않고 ID Token의 서명, issuer, audience와 시간 claim을 검증하며 요청에 `nonce`를 보냈다면 같은 값인지 대조한다. OAuth 2.0만으로는 Client가 소비할 표준 인증 assertion인 ID Token을 정의하지 않는다.
 
 ## 위임 범위 설계 — 조직 전체 위임 vs 사용자별 토큰
 
@@ -117,7 +117,7 @@ OIDC 기반 로그인에서는 access token만으로 로그인을 판단하지 �
 - **도메인 전체 위임(Domain-Wide Delegation)** — Google Workspace에서 관리자가 서비스 계정 Client ID에 허용 scope를 부여하면, 서비스 계정이 그 범위 안에서 지정한 도메인 사용자를 가장해 접근할 수 있다. 자격증명이 유출되면 허용 scope와 가장 가능한 사용자 범위가 곧 피해 범위가 된다
 - **사용자별 Authorization Code 플로우** — 각 사용자가 직접 동의하고 자신의 리소스에만 접근. 최소 권한 원칙에 부합하고 행위 주체가 실제 사용자로 기록
 
-사용자별 토큰을 쓸 때의 수명주기 설계: 스코프는 필요한 것만 요청하고, 토큰은 암호화해 보관하며, 퇴사와 오프보딩 시 제공자별 폐기 정책을 프로세스에 포함한다.
+사용자별 토큰을 쓸 때의 수명주기 설계: 스코프는 필요한 것만 요청하고 토큰은 암호화해 보관하며 퇴사와 오프보딩 시 제공자별 폐기 정책을 프로세스에 포함한다.
 
 ## 자주 하는 실수
 

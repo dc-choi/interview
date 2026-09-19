@@ -60,7 +60,7 @@ Semble `search`를 저장소 루트 대상으로 `content=docs`, `top_k=6`, `max
 - 완료: 두 스킬의 형식 검사와 읽기 지침 경로를 제외한 본문 동기화 확인.
 - 완료: 별도 에이전트에게 스킬을 명시적으로 읽게 한 합성 요청 3종과 마지막 사례 재점검, 총 4회 행동 관찰. 자동 선택 검증은 아니다.
 - 이 단계에서 미실시: 실제 프로젝트 코드와 결합한 적용 판단, 별도 세션의 자동 스킬 선택, Claude 실행 검증.
-- 이 단계에서 미실시: 독립 holdout, 탐색 시간과 사용자 재설명 감소 측정, 실제 개발 프로젝트에서의 판단 품질 평가. 이후 조회기 표본 평가는 뒤 절에 기록한다.
+- 이 단계에서 미실시: 독립 holdout, 탐색 시간과 사용자 재설명 감소 측정, 실제 개발 프로젝트에서 내린 판단의 품질 평가. 이후 조회기 표본 평가는 뒤 절에 기록한다.
 
 ## 스킬 행동 점검과 보완
 
@@ -81,12 +81,12 @@ Semble `search`를 저장소 루트 대상으로 `content=docs`, `top_k=6`, `max
 ## 다음 검증의 성공 기준
 
 1. 실패나 패턴명을 직접 언급하지 않은 개발 요청에서도 관련 조건을 찾아 원문으로 설명한다.
-2. 같은 DB 안에서 끝나는 작업과 외부 API 호출을 구분하며, 조건이 다른 방법을 기계적으로 추천하지 않는다.
+2. 같은 DB 안에서 끝나는 작업과 외부 API 호출을 구분하며 조건이 다른 방법을 기계적으로 추천하지 않는다.
 3. 현재 코드로 확인한 사실과 자료에서 가져온 지식을 구분한다. 코드가 없으면 미확인으로 표시한다.
 4. 사용자에게 이미 읽을 수 있는 사실을 재설명하도록 요구하지 않는다. 미기록 의도만 질문한다.
 5. 기록된 기술 지식을 사용자의 선호나 채택 결정으로 승격하지 않는다.
 
-실제 작업 사례가 생기면 필수 근거와 제외할 제안을 먼저 기록하고, 조정용 사례와 별도로 평가한다. 실행 구현의 parser, snapshot, query, MCP protocol 검증은 [[Ontology-Runtime-Verification#runtime 검증]]을 따른다. 이 문서의 수동 관찰을 runtime 품질 또는 실제 버그 검출 결과로 해석하지 않는다.
+실제 작업 사례가 생기면 필수 근거와 제외할 제안을 먼저 기록하고 조정용 사례와 별도로 평가한다. 실행 구현의 parser, snapshot, query, MCP protocol 검증은 [[Ontology-Runtime-Verification#runtime 검증]]을 따른다. 이 문서의 수동 관찰을 runtime 품질 또는 실제 버그 검출 결과로 해석하지 않는다.
 
 ## 상황 질문 4개로 조회기 확인
 
@@ -107,7 +107,7 @@ Semble `search`를 저장소 루트 대상으로 `content=docs`, `top_k=6`, `max
 
 최종 extractor 9와 query 코드 `6e2bd9f82851e7749c0df234a23196523053a3a971dc24e88d1d1681729c0c49`의 재실행은 `evaluation/regression-report.json`에 보존했다. 기대 문서 2/4, 기대 heading 1/4로 같았으며 응답 13,945~18,236 byte, 실행 시간 706~844ms였다. 원문 근거와 예산 처리의 수정이 일반적인 의미 검색을 해결한 것은 아니다.
 
-2026-09-07에 extractor 10과 현재 query 코드로 revision `bf77c848` 색인에서 다시 실행했고 결과는 `evaluation/regression-report-2026-09-07.json`에 보존했다. 기대 문서 2/4, 기대 heading 1/4로 같았고 응답 14,148~18,122 byte, 실행 시간 660~975ms였다. 이번 실행부터 기록하는 `relations_returned`는 4건 모두 0, `budget_exhausted`와 `traversal_limit_reached`는 모두 true였다. 같은 snapshot과 query에서 예산을 65,536 byte로 올린 대조에서는 기대 문서와 heading 일치 수가 그대로였고, 관계는 11~22개가 남았으며 `budget_exhausted`는 모두 false였다. 따라서 24,000 byte 예산은 관계 누락을 설명하지만 문서와 heading 미일치의 원인으로 단정할 수 없다. candidate ranking, root 상한 6개와 traversal 제한은 미일치의 원인 후보이며 각각의 영향은 분리 검증하지 않았다. 같은 날 clean worktree에서의 별도 실행도 일치 수가 같았다.
+2026-09-07에 extractor 10과 현재 query 코드로 revision `bf77c848` 색인에서 다시 실행했고 결과는 `evaluation/regression-report-2026-09-07.json`에 보존했다. 기대 문서 2/4, 기대 heading 1/4로 같았고 응답 14,148~18,122 byte, 실행 시간 660~975ms였다. 이번 실행부터 기록하는 `relations_returned`는 4건 모두 0, `budget_exhausted`와 `traversal_limit_reached`는 모두 true였다. 같은 snapshot과 query에서 예산을 65,536 byte로 올린 대조에서는 기대 문서와 heading 일치 수가 그대로였고, 관계는 11~22개가 남았으며 `budget_exhausted`는 모두 false였다. 따라서 24,000 byte 예산은 관계 누락을 설명하지만 문서와 heading 미일치의 원인으로 단정할 수 없다. candidate ranking, root 상한 6개와 traversal 제한은 미일치의 원인 후보이며 각각의 영향은 분리 검증하지 않았다. 같은 날 clean worktree에서 별도로 실행해도 일치 수가 같았다.
 
 현재 스킬은 중요한 실패와 제약에서 검색 용어 후보를 추리고, 근거가 부족하면 표현을 바꾸거나 반환된 문서 경로와 heading으로 좁혀 다시 조회한다. 이는 재검색 절차이며 최초 일치율 개선을 검증한 결과는 아니다.
 
@@ -145,7 +145,7 @@ Semble `search`를 저장소 루트 대상으로 `content=docs`, `top_k=6`, `max
 
 ## 필수 근거와 잘린 예외의 진단
 
-2026-09-07에 `kino-doc`의 일반화 가능한 설계 인사이트를 [[Ontology-Evidence-Lifecycle]]에 대조하고, 평가기에 모든 필수 그룹과 같은 본문의 필수 문구를 검사하는 기능을 추가했다. 단위 테스트는 82개 모두 통과했고 기존 짧은 검색 진단도 2/2를 유지했다. 이 테스트 통과와 아래 실제 조회의 근거 완전성은 서로 다른 검증이다.
+2026-09-07에 `kino-doc`의 일반화 가능한 설계 인사이트를 [[Ontology-Evidence-Lifecycle]]에 대조하고 평가기에 모든 필수 그룹과 같은 본문의 필수 문구를 검사하는 기능을 추가했다. 단위 테스트는 82개 모두 통과했고 기존 짧은 검색 진단도 2/2를 유지했다. 이 테스트 통과와 아래 실제 조회의 근거 완전성은 서로 다른 검증이다.
 
 `evaluation/context-integrity-cases.json`의 세 질문은 원문 경로와 heading을 알고 만든 합성 진단이다. 독립 holdout이나 일반적인 자연어 검색 평가는 아니다. 원문은 revision `6f80dbe387b73a56e8642bf2824e27706abb0e2a`에 고정했고, 결과와 코드/사례 hash는 `evaluation/context-integrity-report-2026-09-07.json`에 보존했다. 새 문서와 코드 변경은 미커밋이라 `unindexed_worktree`를 유지했다.
 
@@ -159,7 +159,7 @@ Semble `search`를 저장소 루트 대상으로 `content=docs`, `top_k=6`, `max
 
 누락한 두 section은 반환된 revision, path와 byte anchor로 Git blob을 별도로 읽고 `content_hash`를 대조했다. 같은 필수 근거 검사를 전체 section 본문으로 보완하면 3/3 질문과 4/4 그룹을 충족했다. 이는 사람이 정한 진단에 원문 읽기를 추가한 확인이며, MCP가 자동으로 전체 section을 반환하거나 모델이 자동으로 후속 읽기를 수행했다는 결과가 아니다. 원래 응답과 보고서는 수정하지 않았다.
 
-당시 조회기는 1,400 byte 발췌 상한을 유지했다. 중요한 잘린 근거를 전체 원문으로 보완하는 절차를 두 `development-context` 스킬에 반영했으며, 실제 과업에서의 자동 사용과 최종 판단 품질은 아직 별도 검증이 필요하다. 이 진단의 `--check` 실패를 숨기거나 검색 누락을 해결한 것으로 기록하지 않는다. 현재 `context_lookup`의 발췌와 예산 계약은 [[Ontology-Evidence-Read]]를 따른다.
+당시 조회기는 1,400 byte 발췌 상한을 유지했다. 중요한 잘린 근거를 전체 원문으로 보완하는 절차를 두 `development-context` 스킬에 반영했으며, 실제 과업에 자동으로 사용하는지와 최종 판단 품질은 아직 별도 검증이 필요하다. 이 진단의 `--check` 실패를 숨기거나 검색 누락을 해결한 것으로 기록하지 않는다. 현재 `context_lookup`의 발췌와 예산 계약은 [[Ontology-Evidence-Read]]를 따른다.
 
 ## MCP 후속 읽기로 필수 근거 회수
 

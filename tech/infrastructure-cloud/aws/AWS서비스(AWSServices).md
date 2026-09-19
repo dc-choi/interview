@@ -10,8 +10,8 @@ aliases: ["AWS Services"]
 EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 
 ## 시험 직전 종합
-- 📌 [[AWS-SAA-C03-Exam-Summary|AWS SAA-C03 시험 직전 종합 요약]] — 컴퓨팅, 스토리지, DB, 분석, 메시징, 네트워킹, 보안, 관측 한 페이지 + 시험장 직전 체크리스트
-- 🎯 [[AWS-SAA-C03-Pitfalls|AWS SAA-C03 시험 함정 모음]] — 빈출 함정, 헷갈리는 옵션, 서비스 비교표, 키워드 → 정답 매핑
+- [[AWS-SAA-C03-Exam-Summary|AWS SAA-C03 시험 직전 종합 요약]] — 컴퓨팅, 스토리지, DB, 분석, 메시징, 네트워킹, 보안, 관측 한 페이지 + 시험장 직전 체크리스트
+- [[AWS-SAA-C03-Pitfalls|AWS SAA-C03 시험 함정 모음]] — 빈출 함정, 헷갈리는 옵션, 서비스 비교표, 키워드 → 정답 매핑
 
 ## 목차
 

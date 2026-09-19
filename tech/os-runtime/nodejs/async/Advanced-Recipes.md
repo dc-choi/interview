@@ -11,7 +11,7 @@ aliases: ["Advanced Recipes", "고급 레시피"]
 
 데이터베이스 커넥션, 외부 서비스 클라이언트 등 초기화가 비동기인 컴포넌트는 생성자에서 async/await를 사용할 수 없다는 문제가 있다. 초기화가 완료되기 전에 메서드가 호출되면 에러가 발생한다.
 
-이 문제는 State 패턴으로 해결할 수 있다. 컴포넌트가 QueuingState와 InitializedState 두 상태를 가지도록 설계한다. 초기화가 완료되기 전에 들어오는 요청은 QueuingState에서 내부 큐에 버퍼링한다. 초기화가 완료되면 InitializedState로 전환하고, 큐에 쌓인 요청을 일괄 실행한다. 이후 들어오는 요청은 직접 실행된다.
+이 문제는 State 패턴으로 해결할 수 있다. 컴포넌트가 QueuingState와 InitializedState 두 상태를 가지도록 설계한다. 초기화가 완료되기 전에 들어오는 요청은 QueuingState에서 내부 큐에 버퍼링한다. 초기화가 완료되면 InitializedState로 전환하고 큐에 쌓인 요청을 일괄 실행한다. 이후 들어오는 요청은 직접 실행된다.
 
 이 패턴의 실전 사례로는 Mongoose가 있다. Mongoose는 MongoDB 연결이 완료되기 전에 호출된 쿼리를 내부적으로 큐잉했다가 연결 후 실행한다. pg 라이브러리의 Pool도 초기화 과정에서 유사한 패턴을 사용한다.
 
@@ -40,11 +40,11 @@ async function batchedFetch(url) {
 }
 ```
 
-성능 효과는 상당하다. N개의 동시 호출이 1개로 감소하며, 최대 3배의 오버헤드 감소를 달성할 수 있다.
+성능 효과는 상당하다. N개의 동시 호출이 1개로 감소하며 최대 3배의 오버헤드 감소를 달성할 수 있다.
 
 ## 요청 캐싱 (Request Caching)
 
-요청 배칭을 확장하여 결과를 일정 시간 동안 캐시하는 기법이다. TTL(Time-To-Live) 기반으로 캐시 만료를 관리하며, 보통 5초 정도의 짧은 TTL을 설정한다.
+요청 배칭을 확장하여 결과를 일정 시간 동안 캐시하는 기법이다. TTL(Time-To-Live) 기반으로 캐시 만료를 관리하며 보통 5초 정도의 짧은 TTL을 설정한다.
 
 요청 조회는 3단계로 이루어진다:
 
@@ -82,7 +82,7 @@ async function cancelable(cancelObj) {
 
 ### 3. 제너레이터 기반 (최선)
 
-yield를 자동 취소 체크포인트로 활용하는 방식이다. 제너레이터 함수로 비즈니스 로직을 작성하고, 실행기(runner)가 각 yield 지점에서 취소 여부를 자동으로 확인한다. 비즈니스 로직과 취소 로직이 완전히 분리되어 가장 깔끔하다.
+yield를 자동 취소 체크포인트로 활용하는 방식이다. 제너레이터 함수로 비즈니스 로직을 작성하고 실행기(runner)가 각 yield 지점에서 취소 여부를 자동으로 확인한다. 비즈니스 로직과 취소 로직이 완전히 분리되어 가장 깔끔하다.
 
 ```javascript
 function* cancelableTask() {
@@ -93,7 +93,7 @@ function* cancelableTask() {
 // runner가 각 yield에서 자동으로 취소 체크
 ```
 
-추천 라이브러리로 caf(Cancelable Async Flows)가 있다. 제너레이터 기반 취소 패턴을 정제된 API로 제공하며, AbortController와도 통합된다.
+추천 라이브러리로 caf(Cancelable Async Flows)가 있다. 제너레이터 기반 취소 패턴을 정제된 API로 제공하며 AbortController와도 통합된다.
 
 ## CPU 바운드 작업 실행 전략
 
@@ -109,7 +109,7 @@ setImmediate 인터리빙은 CPU 작업을 작은 청크로 나누고 각 청크
 
 `child_process.fork()`는 IPC channel이 연결된 별도 Node.js 프로세스를 생성한다. Python이나 Rust 실행에는 `spawn()`, `execFile()` 또는 `exec()`를 사용한다. 프로세스 생성 비용이 크지만 워커 충돌을 부모와 격리해야 할 때 적합하다.
 
-Worker Threads는 같은 프로세스 안에서 각자 별도의 이벤트 루프를 실행해 중간 수준의 오버헤드를 가진다. 프로세스 자원과 `SharedArrayBuffer`를 통한 메모리 공유가 가능하며, CPU 집약적인 Node.js 연산에 가장 적합하다.
+Worker Threads는 같은 프로세스 안에서 각자 별도의 이벤트 루프를 실행해 중간 수준의 오버헤드를 가진다. 프로세스 자원과 `SharedArrayBuffer`를 통한 메모리 공유가 가능하며 CPU 집약적인 Node.js 연산에 가장 적합하다.
 
 추천 라이브러리:
 - **piscina**: Worker Threads 풀 관리. 작업 큐, 자동 스케줄링, 메모리 제한을 지원한다.

@@ -102,7 +102,7 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 
 ## 면접 체크포인트
 
-- 작업 평가 3종(/plan, /review, /diff)의 역할과 개발 루프에서의 배치
+- 작업 평가 3종(/plan, /review, /diff)의 역할과 개발 루프 안의 배치
 - 반복 작업을 스킬로 캡슐화하는 이유, 시스템 스킬(skill-installer로 공식 스킬 확장)
 - AGENTS.md의 계층 적용과 CLAUDE.md 대응 관계 (권장 계층, 강제는 권한/훅)
 - 비대화형 `codex exec`로 CI 자동화가 가능한 점

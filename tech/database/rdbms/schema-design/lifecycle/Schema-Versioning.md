@@ -32,7 +32,7 @@ aliases: ["Schema Versioning", "스키마 버전 관리"]
 ## 배포와의 결합
 
 - 마이그레이션 실행은 앱 기동과 분리한 배포 전 단계로 둔다. TypeORM이면 `migrationsRun: false`로 두어 기동에 묶지 않는 것이 그 구체형이다. 여러 인스턴스가 동시에 기동하며 각자 마이그레이션을 실행하는 구조는 잠금 경합과 부분 적용을 만들 수 있다. TypeORM 기준 실행 시점 결정은 [[TypeORM-Migrations-and-Delivery|TypeORM 마이그레이션과 배포]]를 따른다.
-- 배포 중에는 구버전과 신버전 앱이 같은 스키마를 동시에 쓴다. 따라서 각 마이그레이션은 직전 앱 버전과 호환되어야 하고, 파괴적 변경은 확장(expand) 후 수축(contract)으로 쪼갠다. 개념은 [[Blue-Green|Blue-Green 배포]]의 DB 스키마 절, TypeORM에서의 실행 순서와 backfill은 [[TypeORM-Migrations-and-Delivery|TypeORM 마이그레이션과 배포]]가 소유한다.
+- 배포 중에는 구버전과 신버전 앱이 같은 스키마를 동시에 쓴다. 따라서 각 마이그레이션은 직전 앱 버전과 호환되어야 하고, 파괴적 변경은 확장(expand) 후 수축(contract)으로 쪼갠다. 개념은 [[Blue-Green|Blue-Green 배포]]의 DB 스키마 절, TypeORM의 실행 순서와 backfill은 [[TypeORM-Migrations-and-Delivery|TypeORM 마이그레이션과 배포]]가 소유한다.
 - 큰 테이블의 ALTER는 마이그레이션 파일에 넣기 전에 실행 전략부터 정한다. Online DDL과 OSC 도구 선택은 [[Schema-Migration-Large-Table|대용량 테이블 스키마 변경]]이 소유한다.
 
 ## 면접 체크포인트

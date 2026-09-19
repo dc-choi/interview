@@ -130,7 +130,7 @@ BacklogPerTask 알람에 단계별 조정을 직접 정의한다. 살짝 넘으�
 
 ## Fargate vs EC2 차이 — 스케일링 레이어 1개 vs 2개
 
-핵심은 **Fargate는 스케일링 레이어가 1개, EC2는 2개**라는 것.
+**Fargate는 스케일링 레이어가 1개, EC2는 2개**다.
 
 - **Fargate (레이어 1)**: 인스턴스 개념이 없어 AWS가 밑단 컴퓨팅을 댄다. 서비스의 task 수(backlog-per-task)만 조절하면 끝. 자리 걱정이 없다.
 - **EC2 (레이어 2)**:

@@ -12,7 +12,7 @@ Alistair Cockburn의 **Ports & Adapters 패턴**을 Node.js/TypeScript 환경에
 
 ## 핵심 명제
 
-GUI, HTTP, 데이터베이스 같은 외부 기술을 비즈니스 로직과 분리한다. **비즈니스 로직 = Application + Domain**, 그 외(HTTP, DB, 큐, 메일, CLI 등)는 어댑터로 본다. 핵심은 모든 클래스를 인터페이스로 감싸는 것이 아니라 **외부 기술을 향한 컴파일 의존성을 포트로 역전**하는 것이다.
+GUI, HTTP, 데이터베이스 같은 외부 기술을 비즈니스 로직과 분리한다. **비즈니스 로직 = Application + Domain**, 그 외(HTTP, DB, 큐, 메일, CLI 등)는 어댑터로 본다. 모든 클래스를 인터페이스로 감싸는 것이 아니라 **외부 기술을 향한 컴파일 의존성을 포트로 역전**하는 데 초점을 둔다.
 
 ## Port와 Adapter
 

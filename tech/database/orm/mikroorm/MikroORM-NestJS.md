@@ -8,7 +8,7 @@ aliases: ["NestJS MikroORM", "MikroORM NestJS 통합"]
 
 # MikroORM과 NestJS 통합
 
-NestJS integration의 핵심은 DI 등록보다 request마다 Identity Map을 격리하는 것이다. HTTP middleware는 module이 처리하지만 queue, cron, consumer와 multiple connection은 별도 경계를 설계해야 한다.
+NestJS integration에서는 DI 등록보다 request마다 Identity Map을 격리하는 게 중요하다. HTTP middleware는 module이 처리하지만 queue, cron, consumer와 multiple connection은 별도 경계를 설계해야 한다.
 
 ## 설치와 version 경계
 

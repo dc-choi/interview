@@ -13,7 +13,7 @@ GoF 생성(Creational) 패턴이 Node.js 환경에서 어떻게 적용되는지.
 
 **정의**: 애플리케이션 전역에서 **단 하나의 인스턴스**만 존재하도록 보장하는 패턴.
 
-**Node.js에서의 특수성**: CommonJS/ESM **모듈 캐싱**이 사실상 싱글톤을 기본 제공한다. `require()`로 같은 모듈을 여러 번 불러도 캐시된 동일 exports 객체가 반환된다.
+**Node.js의 특수성**: CommonJS/ESM **모듈 캐싱**이 사실상 싱글톤을 기본 제공한다. `require()`로 같은 모듈을 여러 번 불러도 캐시된 동일 exports 객체가 반환된다.
 
 ```js
 // db.js
@@ -87,7 +87,7 @@ const sql = new QueryBuilder().select('id, name').from('users').where('age >= 18
 - **불완전한 상태로 객체가 노출되지 않음** — `build()` 호출 전까지 미완성
 - TypeScript + fluent API와 궁합
 
-**Node.js/JS에서의 대안**: 옵션 객체 리터럴이 더 간단할 때가 많다.
+**Node.js/JS의 대안**: 옵션 객체 리터럴이 더 간단할 때가 많다.
 ```js
 new HttpClient({ baseUrl, timeout: 3000, retries: 3 });
 ```

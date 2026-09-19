@@ -8,7 +8,7 @@ aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한",
 
 # Claude Code 설정과 권한 — 캐스케이드, 규칙 문법, 샌드박스
 
-설정은 CSS처럼 캐스케이드되고, 권한은 first-match-wins 규칙 엔진이다. 병합 규칙, 와일드카드 경계, deny의 스코프 같은 정확한 동작을 모르면 막았다고 믿었는데 뚫리는 종류의 사고가 난다.
+설정은 CSS처럼 캐스케이드되고 권한은 first-match-wins 규칙 엔진이다. 병합 규칙, 와일드카드 경계, deny의 스코프 같은 정확한 동작을 모르면 막았다고 믿었는데 뚫리는 종류의 사고가 난다.
 
 ## 설정 캐스케이드 — 우선순위와 병합
 
@@ -27,7 +27,7 @@ aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한",
 | `.claude/rules/` | 매칭 파일을 열 때 (경로 스코프) | 디렉토리별 규칙 |
 | 스킬 | 호출 시 (온디맨드) | 작업별 플레이북 |
 
-- `@`임포트는 조직화용일 뿐 토큰 절약이 아니다. cwd에서 위로 올라가며 로드하고, 하위 디렉토리 CLAUDE.md는 해당 파일을 읽을 때 온디맨드 로드. 일반 built-in과 custom subagent는 메인 대화에 로드된 CLAUDE.md 계층을 받지만, built-in Explore와 Plan은 CLAUDE.md와 git status를 건너뛴다
+- `@`임포트는 조직화용일 뿐 토큰 절약이 아니다. cwd에서 위로 올라가며 로드하고 하위 디렉토리 CLAUDE.md는 해당 파일을 읽을 때 온디맨드 로드. 일반 built-in과 custom subagent는 메인 대화에 로드된 CLAUDE.md 계층을 받지만, built-in Explore와 Plan은 CLAUDE.md와 git status를 건너뛴다
 - Claude Code 2.1.277의 기본 Project instructions 모드(`claude-md-or-agents-md`)는 프로젝트 루트부터 cwd까지 자체 `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md`가 하나도 없을 때만 같은 경로의 `AGENTS.md`, `.claude/AGENTS.md`를 읽는다. 사용자 전역, 조직 managed, 추가 디렉토리의 `CLAUDE.md`와 `.claude/rules`는 이 fallback 판정에 포함하지 않는다
 - `/config`의 Project instructions는 네 모드다. `CLAUDE.md`만 사용(`claude-md`), 기본 fallback(`claude-md-or-agents-md`), 둘 다 사용(`claude-md-and-agents-md`), 시작 컨텍스트의 project/local/user 지침을 제외하는 `managed-only`다. `managed-only`에서도 managed 지침과 메모는 남고, 현재 mod가 가로채지 못하는 `Read` 기반 하위 `CLAUDE.md`는 계속 전달될 수 있다. 릴리스 기준 AGENTS.md 지원은 Bedrock, Vertex AI, Foundry에는 아직 제공되지 않는다
 - 두 파일을 함께 쓰는 모드는 경로를 먼저, 내용을 다음으로 비교해 `@` import나 심볼릭 링크가 같은 지침을 두 번 넣지 않게 한다. 하위 디렉토리 `AGENTS.md`는 그 아래 파일을 `Read`할 때 적용되지만, fallback 모드에서 같은 디렉토리의 `CLAUDE.md`가 있으면 그 경로에는 붙지 않는다
@@ -36,7 +36,7 @@ aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한",
 
 ## 권한 규칙 — 평가 순서가 곧 보안 모델
 
-Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 적용**(first match wins)되고, **deny는 어느 스코프에서 매칭되든 차단**(deny-at-any-level)된다. 매칭이 없으면 프롬프트. 읽기 전용 도구(Read, Grep, Glob)는 승인 불필요.
+Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 적용**(first match wins)되고 **deny는 어느 스코프에서 매칭되든 차단**(deny-at-any-level)된다. 매칭이 없으면 프롬프트. 읽기 전용 도구(Read, Grep, Glob)는 승인 불필요.
 
 ### 권한 모드 6종
 
@@ -45,19 +45,19 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 | default (=manual) | 매번 승인 |
 | acceptEdits | 파일 편집 + mkdir, rm, mv 등 자동 승인 (작업 디렉토리 내부만) |
 | plan | 읽기와 탐색만 |
-| auto | 백그라운드 AI 분류기가 액션 평가. Pro, Max와 Team에서는 지원 모델 사용 시 세션 기본 모드이며, 조직이 끄거나 사용할 수 없으면 Manual로 시작 |
+| auto | 백그라운드 AI 분류기가 액션 평가. Pro, Max와 Team에서는 지원 모델 사용 시 세션 기본 모드이며 조직이 끄거나 사용할 수 없으면 Manual로 시작 |
 | dontAsk | allow 규칙 + 읽기 전용만 실행, 나머지 자동 거부 (CI용) |
 | bypassPermissions | 전부 통과 — `rm -rf /` 급만 서킷브레이커, root에선 시작 거부 |
 
 ### 문법과 함정
 
-- **bare deny(`Bash`)는 도구를 컨텍스트에서 제거**해 모델이 존재 자체를 모르게 하고, scoped deny(`Bash(rm *)`)는 매칭 호출만 차단한다
+- **bare deny(`Bash`)는 도구를 컨텍스트에서 제거**해 모델이 존재 자체를 모르게 하고 scoped deny(`Bash(rm *)`)는 매칭 호출만 차단한다
 - 와일드카드 경계: `Bash(ls *)`는 `lsof`에 매칭되지 않고 `Bash(ls*)`는 매칭된다. 단일 `*`는 여러 인자에 걸쳐 매칭 (`Bash(git * main)`이 `git push origin main`에 매칭)
 - 경로 접두사(gitignore 사양): `//` 절대 경로, `~/` 홈, `/` 프로젝트 루트, 무접두사는 현재 디렉토리. bare 파일명 `Read(.env)`는 `**/.env`처럼 전 깊이 매칭. `Edit` allow는 같은 경로의 Read도 함께 부여
-- 복합 명령(`&&`, `;`, `|`)은 각 하위 명령이 독립적으로 매칭돼야 하고, `timeout`, `nohup` 같은 래퍼는 자동 제거 후 매칭된다
+- 복합 명령(`&&`, `;`, `|`)은 각 하위 명령이 독립적으로 매칭돼야 하고 `timeout`, `nohup` 같은 래퍼는 자동 제거 후 매칭된다
 - **Read deny는 인식 가능한 Bash 파일 명령도 차단** — 내장 Read뿐 아니라 `cat`, `head`, `tail`, `sed` 같은 Bash 파일 읽기도 차단한다. Python이나 Node 스크립트처럼 파일을 직접 여는 임의의 서브프로세스는 막지 못하므로 그 영역은 OS 수준 샌드박싱이 맡는다
 - deny `Bash(rm *)`는 `/bin/rm`이나 `find -delete`를 못 막고(리터럴 매칭), allow `Bash(find *)`가 `-exec`를 자동 승인하지도 않는다
-- 심볼릭 링크는 비대칭: allow는 링크와 대상 둘 다 매칭돼야 하고, deny는 둘 중 하나만 매칭돼도 차단 (안전한 쪽으로 기움)
+- 심볼릭 링크는 비대칭: allow는 링크와 대상 둘 다 매칭돼야 하고 deny는 둘 중 하나만 매칭돼도 차단 (안전한 쪽으로 기움)
 
 ### 보호 경로
 

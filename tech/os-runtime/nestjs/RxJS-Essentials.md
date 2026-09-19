@@ -36,7 +36,7 @@ Observer는 `next`, `error`, `complete` 세 채널을 받고, 알림 순서는 `
 일반 Observable은 unicast다. 구독자마다 별개의 실행이 생긴다. 흔히 cold라고 부르는 성질이 이것이다. 반대로 하나의 실행을 여러 관찰자가 공유하게 만들려면 Subject가 필요하다. 어떤 Observable 실행이든 여러 Observer가 나눠 보게 만드는 수단이 Subject라는 것이 공식 설명이다.
 
 - `Subject`: Observable이면서 동시에 Observer다. `next(v)`, `error(e)`, `complete()`를 직접 호출해 값을 밀어 넣고, 등록된 구독자 전체에 multicast한다. 구독 이전에 흘러간 값은 받지 못한다.
-- `BehaviorSubject`: 현재 값 개념을 갖는다. 초기값을 요구하고, 마지막으로 흘려보낸 값을 보관했다가 새 구독자가 붙는 즉시 그 값을 전달한다. 설정 값이나 연결 상태처럼 시점과 무관하게 지금 상태가 필요한 대상에 맞는다.
+- `BehaviorSubject`: 현재 값 개념을 갖는다. 초기값을 요구하고 마지막으로 흘려보낸 값을 보관했다가 새 구독자가 붙는 즉시 그 값을 전달한다. 설정 값이나 연결 상태처럼 시점과 무관하게 지금 상태가 필요한 대상에 맞는다.
 - `ReplaySubject`: 최근 N개를 기록했다가 새 구독자에게 재생한다. 보관 개수와 시간 창을 지정한다.
 - `AsyncSubject`: 완료 시점의 마지막 값 하나만 전달한다.
 
@@ -44,7 +44,7 @@ Observer는 `next`, `error`, `complete` 세 채널을 받고, 알림 순서는 `
 
 ## 평탄화 연산자 네 가지
 
-`map`은 값을 값으로 바꾸지만, 값을 다시 Observable로 바꾸는 함수를 쓰면 Observable의 Observable이 된다. 이걸 하나의 스트림으로 펴는 것이 평탄화 연산자이고, 차이는 전부 동시성 정책에 있다.
+`map`은 값을 값으로 바꾸지만, 값을 다시 Observable로 바꾸는 함수를 쓰면 Observable의 Observable이 된다. 이걸 하나의 스트림으로 펴는 것이 평탄화 연산자이고 차이는 전부 동시성 정책에 있다.
 
 | 연산자 | 새 값이 들어왔을 때 | 동시 실행 |
 | --- | --- | --- |
@@ -65,8 +65,8 @@ Observer는 `next`, `error`, `complete` 세 채널을 받고, 알림 순서는 `
 ## 에러와 시간 제어
 
 - `catchError(selector)`: 에러 채널만 가로챈다. selector가 반환한 Observable로 스트림을 이어가거나, 다시 throw해 상위로 넘긴다. 도메인 예외를 HTTP 예외로 바꾸는 자리로 쓴다.
-- `retry(count | config)`: 소스가 error를 내면 재구독한다. `count`를 생략하면 무한 재시도이고, `delay`로 재시도 간격이나 notifier 팩토리를 준다. `resetOnSuccess`는 성공 후 카운터를 초기화할지 정한다. 재시도는 재구독이므로 소스가 부수 효과를 가진 쓰기 작업이면 멱등성을 먼저 확인한다.
-- `timeout({ first, each, with })`: `each`는 값 사이의 제한이며, `first`를 주지 않으면 구독 시점부터 카운트하므로 첫 값에도 적용된다. `first`는 첫 값에만 별도 상한을 두고 싶을 때 쓴다. `with`를 주지 않으면 `TimeoutError`를 낸다. 숫자 하나만 넘기면 `each`로 동작한다.
+- `retry(count | config)`: 소스가 error를 내면 재구독한다. `count`를 생략하면 무한 재시도이고 `delay`로 재시도 간격이나 notifier 팩토리를 준다. `resetOnSuccess`는 성공 후 카운터를 초기화할지 정한다. 재시도는 재구독이므로 소스가 부수 효과를 가진 쓰기 작업이면 멱등성을 먼저 확인한다.
+- `timeout({ first, each, with })`: `each`는 값 사이의 제한이며 `first`를 주지 않으면 구독 시점부터 카운트하므로 첫 값에도 적용된다. `first`는 첫 값에만 별도 상한을 두고 싶을 때 쓴다. `with`를 주지 않으면 `TimeoutError`를 낸다. 숫자 하나만 넘기면 `each`로 동작한다.
 
 세 연산자를 조합할 때는 순서가 의미를 바꾼다. `retry` 앞에 `timeout`을 두면 시도마다 제한이 걸리고, 뒤에 두면 전체 재시도 예산에 제한이 걸린다.
 
@@ -112,11 +112,11 @@ Interceptor 밖에서 RxJS를 만나는 또 하나의 자리는 `HttpService`다
 ## 면접 체크포인트
 
 - Observable과 Promise의 차이를 lazy, 다중 값, 구독별 독립 실행, 취소 네 축으로 답한다. 비동기 여부는 차이가 아니라는 점까지 덧붙이면 깊이가 드러난다.
-- cold와 hot을 물으면 unicast와 multicast로 환원해 설명하고, 전환 수단이 Subject라고 이어 붙인다.
+- cold와 hot을 물으면 unicast와 multicast로 환원해 설명하고 전환 수단이 Subject라고 이어 붙인다.
 - `Subject`와 `BehaviorSubject`의 차이는 초기값과 현재 값 보관 여부다. 구독 시점 이전 값의 수신 여부로 답하면 정확하다.
-- 평탄화 연산자 네 개는 동시성 정책 하나로 묶어 설명하고, 자동완성은 `switchMap`, 순차 쓰기는 `concatMap`, 중복 제출 방지는 `exhaustMap`, 순서 무관 병렬은 `mergeMap`으로 사례를 붙인다.
+- 평탄화 연산자 네 개는 동시성 정책 하나로 묶어 설명하고 자동완성은 `switchMap`, 순차 쓰기는 `concatMap`, 중복 제출 방지는 `exhaustMap`, 순서 무관 병렬은 `mergeMap`으로 사례를 붙인다.
 - `concatMap`의 무제한 버퍼 위험과 `mergeMap`의 동시성 상한을 언급하면 운영 감각으로 읽힌다.
-- Interceptor가 Observable을 요구하는 이유를 개입 지점의 수로 설명하고, `next.handle()`이 Pointcut이라는 표현을 쓴다.
+- Interceptor가 Observable을 요구하는 이유를 개입 지점의 수로 설명하고 `next.handle()`이 Pointcut이라는 표현을 쓴다.
 - 누수 질문에는 `takeUntil` 종료 Subject 패턴과 `firstValueFrom`의 미완료 소스 위험을 함께 답한다.
 - RxJS가 부담스러운 팀에서는 `firstValueFrom`으로 Promise 경계를 만들 수 있지만, 재시도, 스트리밍, 취소, `finalize`는 Observable을 유지하는 편이 낫다는 트레이드오프를 제시한다.
 

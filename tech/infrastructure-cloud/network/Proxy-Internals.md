@@ -47,7 +47,7 @@ flowchart LR
 
 ## 유저 모드 프로세스라는 제약
 
-애플리케이션 프락시는 커널이 아니라 유저 모드에서 도는 평범한 프로그램이다. 소켓은 파일 디스크립터이고, 프락시는 `read()`와 `write()`로 데이터를 옮긴다. [[Network-Encapsulation#소켓과 스트림: 유저 모드의 출발점|소켓과 스트림]]
+애플리케이션 프락시는 커널이 아니라 유저 모드에서 도는 평범한 프로그램이다. 소켓은 파일 디스크립터이고 프락시는 `read()`와 `write()`로 데이터를 옮긴다. [[Network-Encapsulation#소켓과 스트림: 유저 모드의 출발점|소켓과 스트림]]
 
 여기서 두 가지 비용이 나온다. 첫째, 데이터가 커널 버퍼에서 유저 공간으로 복사됐다가 다시 커널로 돌아간다. 둘째, 연결마다 스레드를 두면 수만 연결에서 컨텍스트 스위치가 감당되지 않는다. 그래서 실무 프락시는 대체로 두 가지 대응을 쓴다.
 
@@ -83,7 +83,7 @@ L4와 L7은 제품의 등급이 아니라 그 구간에서 쓰는 처리 단위�
 | 방법 | 동작 계층 | 적용 범위 | 주의 |
 |---|---|---|---|
 | `X-Forwarded-For`, `Forwarded` | HTTP 헤더 | HTTP만 | 클라이언트가 위조할 수 있어 신뢰 가능한 프락시 체인에서만 유효 |
-| PROXY protocol | TCP 연결 시작 시 헤더 한 번 | 프로토콜 무관 (SMTP, SSH 등 포함) | 수신 측이 반드시 이 프로토콜만 받도록 설정해야 하고, 존재 여부를 추측하면 안 된다 |
+| PROXY protocol | TCP 연결 시작 시 헤더 한 번 | 프로토콜 무관 (SMTP, SSH 등 포함) | 수신 측이 반드시 이 프로토콜만 받도록 설정해야 하고 존재 여부를 추측하면 안 된다 |
 | Transparent proxy 바인딩 | 출발지 IP 위장 | L4 | Nginx `proxy_bind ... transparent` 같은 기능과 라우팅 설계가 함께 필요 |
 
 PROXY protocol 명세는 수신 측 설정을 강제한다. "The receiver MUST be configured to only receive the protocol described in this specification and MUST not try to guess whether the protocol header is present or not." 추측을 허용하면 신뢰되지 않은 클라이언트가 출발지 주소를 위조할 수 있기 때문이다. 헤더 표기의 상세는 [[Forward-vs-Reverse-Proxy#X-Forwarded-For 헤더|X-Forwarded-For]].

@@ -11,7 +11,7 @@ category: "CS&프로그래밍(CS&Programming)"
 
 - `int`↔`Integer` 자동 변환. 컬렉션, 제네릭은 박싱 필수
 - Java 언어 명세는 -128부터 127까지의 상수 boxing에만 동일 참조를 보장한다. 범위 밖의 `==` 결과는 구현과 설정에 따라 달라질 수 있으므로 값 비교는 `equals`를 사용한다
-- 루프에서의 숨은 할당은 GC 부담 → 성능 민감 코드는 `int[]`, `IntStream`
+- 루프에 숨은 할당은 GC 부담 → 성능 민감 코드는 `int[]`, `IntStream`
 
 ## 11. Mutable vs Immutable
 

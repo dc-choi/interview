@@ -108,8 +108,8 @@ Freshness는 정본 응답 필드가 아니라 consumer가 조회 시점에 `obs
 - Producer는 upstream I/O 전에 `projectionKey`별 단조 증가 `observationFence`를 원자 발급한다. Upstream이 단조 증가 cursor나 version을 주면 `sourceVersion`도 보존한다.
 - Commit transaction은 row lock 또는 CAS로 fence가 마지막 적용값보다 큰지, 비교 가능한 `sourceVersion`이 퇴행하지 않는지 검사한 뒤에만 revision을 발급한다. 실패한 오래된 writer는 snapshot과 Outbox를 쓰지 않는다.
 - Snapshot과 Outbox에는 `(projectionKey, projectionRevision)` unique constraint를 둔다. 충돌한 writer는 fence와 source version 검사부터 transaction을 재시도하며, stale이면 폐기하고 유효할 때만 새 revision을 받는다. Redis refresh lock은 이 정합성 규칙을 대신하지 않는다.
-- Event ID는 `availability:{projectionKey}:{projectionRevision}`처럼 결정적으로 만들 수 있다. 같은 key와 revision의 재전송은 동일 payload hash여야 하며, 다르면 정합성 위반으로 격리한다.
-- Consumer는 더 큰 `projectionRevision`만 적용하고, 같은 값은 중복, 작은 값은 늦게 도착한 event로 처리한다.
+- Event ID는 `availability:{projectionKey}:{projectionRevision}`처럼 결정적으로 만들 수 있다. 같은 key와 revision의 재전송은 동일 payload hash여야 하며 다르면 정합성 위반으로 격리한다.
+- Consumer는 더 큰 `projectionRevision`만 적용하고 같은 값은 중복, 작은 값은 늦게 도착한 event로 처리한다.
 
 Local fence는 동시 요청의 순서만 보장한다. Upstream 자체가 과거 상태를 새 응답으로 돌려줄 수 있다면 monotonic source version, cursor나 이에 준하는 조건부 요청 없이 payload recency를 증명할 수 없으므로 해당 source를 별도 격리하거나 검증해야 한다.
 

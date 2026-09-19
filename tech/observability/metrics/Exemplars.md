@@ -8,7 +8,7 @@ aliases: ["Exemplars", "Exemplar", "메트릭-트레이스 연결"]
 
 # Exemplar — 메트릭에서 트레이스로
 
-메트릭은 저카디널리티여야 하므로 `trace_id`를 라벨에 넣을 수 없다. 그런데 P99가 튀었을 때 정작 필요한 것은 **그 튄 요청 한 건의 트레이스**다. Exemplar가 이 모순을 푼다. 집계 수치 옆에 개별 요청의 참조를 따로 매달아, 라벨을 늘리지 않고 대표 샘플로 내려갈 수 있게 한다. Grafana 문서는 exemplar를 "a specific trace representative of measurement taken in a given time interval"로 정의한다.
+메트릭은 저카디널리티여야 하므로 `trace_id`를 라벨에 넣을 수 없다. 그런데 P99가 튀었을 때는 **그 튄 요청 한 건의 트레이스**가 필요하다. Exemplar가 이 모순을 푼다. 집계 수치 옆에 개별 요청의 참조를 따로 매달아, 라벨을 늘리지 않고 대표 샘플로 내려갈 수 있게 한다. Grafana 문서는 exemplar를 "a specific trace representative of measurement taken in a given time interval"로 정의한다.
 
 ## 라벨과 exemplar는 저장 위치가 다르다
 

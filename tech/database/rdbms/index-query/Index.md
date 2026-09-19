@@ -22,7 +22,7 @@ verified_at: 2026-08-28
 index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentation과 cache 상태에 영향을 받는다. 따라서 `full scan = 순차 I/O`, `index scan = 랜덤 I/O`로 일대일 대응시키지 않는다. covering index와 MRR은 추가 row lookup의 유무와 접근 순서를 바꾼다.
 
 ## Primary Key와 InnoDB Secondary Index
-- PK는 행 식별자의 유일성과 `NOT NULL`을 강제하는 schema constraint이고, DBMS는 이를 검사하고 조회하기 위한 backing index를 만든다. constraint와 index는 역할이 같은 개념이 아니다.
+- PK는 행 식별자의 유일성과 `NOT NULL`을 강제하는 schema constraint이고 DBMS는 이를 검사하고 조회하기 위한 backing index를 만든다. constraint와 index는 역할이 같은 개념이 아니다.
 - MySQL InnoDB는 PK를 clustered index로 사용하고 clustered index가 아닌 index를 secondary index라고 부른다. 모든 DBMS에서 non-PK index를 secondary key라고 부르는 일반 규칙은 아니다.
 
 ## Unique VS Non-Unique
@@ -42,9 +42,9 @@ index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentati
 - 데이터 접근 퍼포먼스가 데이터 증가량에 따라 선형적으로 증가하지 않는다.
 - 컬럼의 값을 변경하지 않고 원래의 값을 이용해 인덱싱하는 알고리즘.
 - **Root, Branch, Leaf Node**로 구성된다.
-- 각 노드는 페이지를 의미하며, InnoDB에서 페이지는 디스크에 데이터를 저장하는 기본 단위다. 블록이라고도 불리며 디스크의 모든 읽기, 쓰기 작업의 최소 단위가 된다.
+- 각 노드는 페이지를 의미하며 InnoDB에서 페이지는 디스크에 데이터를 저장하는 기본 단위다. 블록이라고도 불리며 디스크의 모든 읽기, 쓰기 작업의 최소 단위가 된다.
 - 인덱스도 페이지 단위로 관리된다. InnoDB 기본 페이지 크기는 16KiB지만 인스턴스 초기화 시 지원되는 다른 크기로 설정할 수 있다.
-- **루트와 브랜치 노드**는 separator key와 자식 페이지 참조를 가진다. **clustered index 리프**는 전체 row를 저장하고, **secondary index 리프**는 secondary key와 clustered primary key를 저장한다.
+- **루트와 브랜치 노드**는 separator key와 자식 페이지 참조를 가진다. **clustered index 리프**는 전체 row를 저장하고 **secondary index 리프**는 secondary key와 clustered primary key를 저장한다.
 
 ## MySQL에서 B+Tree 계열 인덱스를 사용하는 이유
 - 레드 블랙 트리와 B+Tree 모두 탐색 높이는 로그 규모지만, 디스크와 버퍼 풀은 페이지 단위로 접근한다.
@@ -65,7 +65,7 @@ index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentati
 
 - 인덱스의 처음부터 끝까지 스캔하는 방식.
 - 리프 노드의 시작 혹은 끝으로 이동한 뒤, 리프 노드를 연결하는 LinkedList를 따라 처음부터 끝까지 탐색한다.
-- secondary index가 clustered row보다 좁고 필요한 컬럼을 덮으면 table scan보다 유리할 수 있다. clustered index 전체를 읽는 경우는 사실상 InnoDB 테이블 전체 스캔이며, 항상 더 빠르다고 볼 수 없다.
+- secondary index가 clustered row보다 좁고 필요한 컬럼을 덮으면 table scan보다 유리할 수 있다. clustered index 전체를 읽는 경우는 사실상 InnoDB 테이블 전체 스캔이며 항상 더 빠르다고 볼 수 없다.
 
 ## 루스 인덱스 스캔 (Loose Index Scan)
 
@@ -77,8 +77,8 @@ index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentati
 ## 클러스터링 인덱스
 
 - row를 clustered key 순서의 B-tree leaf에 저장하는 방식. 논리적 key 순서가 물리적으로 항상 연속된 disk 위치를 보장하는 것은 아니다.
-- InnoDB는 PK가 있으면 이를 clustered index로 사용한다. PK가 없으면 모든 컬럼이 `NOT NULL`인 첫 번째 `UNIQUE` 인덱스를 사용하고, 그것도 없으면 숨은 clustered index를 생성한다.
-- **테이블당 하나만 생성 가능**하다. PK에 의해 레코드의 저장 위치가 결정되며, PK가 변경되면 저장 위치도 변경된다.
+- InnoDB는 PK가 있으면 이를 clustered index로 사용한다. PK가 없으면 모든 컬럼이 `NOT NULL`인 첫 번째 `UNIQUE` 인덱스를 사용하고 그것도 없으면 숨은 clustered index를 생성한다.
+- **테이블당 하나만 생성 가능**하다. PK에 의해 레코드의 저장 위치가 결정되며 PK가 변경되면 저장 위치도 변경된다.
 - InnoDB row는 항상 clustered index 리프에 저장된다. 정렬 기준은 위 규칙으로 선택된 clustered key다.
 - clustered key 기반 범위 검색은 leaf 순서를 활용하고 추가 secondary lookup이 없어 유리할 수 있다.
 - PK의 변경이 느리다. PK가 자주 변경되는 값으로 설정되면 매번 저장 위치가 조정되면서 성능 이슈가 발생한다. 따라서 자주 변경되는 값은 유니크 키로 잡고, PK는 `AUTO_INCREMENT` 같은 인조키를 사용한다.
@@ -88,7 +88,7 @@ index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentati
 - secondary index는 조건과 covering 여부에 따라 조회를 크게 줄일 수 있지만, 리프에 clustered key를 저장하므로 non-covering 조회에는 추가 clustered lookup이 생길 수 있다. 인덱스가 하나 늘 때마다 쓰기 유지 비용도 추가된다.
 - InnoDB secondary index 리프는 물리 row 주소가 아니라 secondary key와 clustered primary key를 저장한다. 찾은 PK로 clustered index를 다시 조회할 수 있다.
 - clustered key로 선택되지 않은 일반 인덱스와 유니크 인덱스가 secondary index에 해당한다.
-- 비유: 클러스터 인덱스는 페이지를 바로 펴는 것이고, 논 클러스터 인덱스는 책 뒤의 찾아보기에서 원하는 내용과 페이지를 찾아 이동하는 것이다. 테이블 풀 스캔은 책을 처음부터 한 장 한 장 넘기면서 찾는 것에 해당한다.
+- 비유: 클러스터 인덱스는 페이지를 바로 펴는 것이고 논 클러스터 인덱스는 책 뒤의 찾아보기에서 원하는 내용과 페이지를 찾아 이동하는 것이다. 테이블 풀 스캔은 책을 처음부터 한 장 한 장 넘기면서 찾는 것에 해당한다.
 
 ## 복합 인덱스 (Composite Index)
 - 두 개 이상의 컬럼을 조합하여 만든 인덱스이다.

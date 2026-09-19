@@ -36,14 +36,14 @@ https://a.com/page1   =  https://a.com/page2 (path는 상관없음)
 - 서버는 CORS 위반 요청에도 **정상적으로 응답**을 내려준다. 그 응답을 분석해 위반이라 판단하고 **버리는 주체는 브라우저**다. 콘솔엔 빨간 에러가 떠도 **서버 로그엔 정상 응답으로 남아** 에러 트레이싱이 헷갈릴 수 있다.
 - 브라우저를 거치지 않는 **서버 간 통신(server-to-server)에는 CORS가 적용되지 않는다**. 백엔드가 다른 API를 호출할 땐 출처 제약이 없다.
 - **본 요청**은 상태 코드가 404든 500이든 무관하다. 응답을 읽을 수 있는지는 **응답 헤더에 유효한 `Access-Control-Allow-Origin`이 있는가**로 갈린다.
-- 반면 **preflight 응답은 2xx여야 한다**. Fetch 스펙의 CORS-preflight fetch는 CORS check 성공과 `response's status is an ok status`를 함께 요구하고, 하나라도 어긋나면 network error를 반환한다. 200이나 204를 쓴다.
+- 반면 **preflight 응답은 2xx여야 한다**. Fetch 스펙의 CORS-preflight fetch는 CORS check 성공과 `response's status is an ok status`를 함께 요구하고 하나라도 어긋나면 network error를 반환한다. 200이나 204를 쓴다.
 
 ## Simple, Preflight와 credentials 축
 
 ### 1. Simple Request
 브라우저가 **Preflight 없이** 바로 요청 보냄. 조건:
 - 메서드: `GET`, `HEAD`, `POST`
-- 헤더: CORS-safelisted 요청 헤더인 `Accept`, `Accept-Language`, `Content-Language`, `Content-Type`, `Range`만 (사용자 정의 헤더 없음). `Range`는 `bytes=0-1023` 형태의 단일 바이트 범위여야 하고, 각 헤더 값 길이는 128자를 넘을 수 없다
+- 헤더: CORS-safelisted 요청 헤더인 `Accept`, `Accept-Language`, `Content-Language`, `Content-Type`, `Range`만 (사용자 정의 헤더 없음). `Range`는 `bytes=0-1023` 형태의 단일 바이트 범위여야 하고 각 헤더 값 길이는 128자를 넘을 수 없다
 - Content-Type이 `application/x-www-form-urlencoded`, `multipart/form-data`, `text/plain`만
 - `XMLHttpRequest.upload`에 이벤트 리스너가 등록돼 있지 않음 (업로드 진행률 추적을 붙이면 preflight가 붙는다)
 - 요청에 `ReadableStream`을 쓰지 않음
@@ -78,7 +78,7 @@ Preflight 응답:
 
 그 다음에 본 요청이 나감. **왕복 2번** 발생 → 성능 비용.
 
-완화: `Access-Control-Max-Age`로 preflight 결과 캐시. 헤더가 없거나 파싱에 실패하면 5초가 기본이고, 브라우저가 자체 상한으로 잘라낸다 — Chromium은 2시간(7200초, v76 이전은 10분), Firefox는 24시간(86400초). 상한을 넘겨 보내도 상한까지만 적용되므로 86400을 박아도 Chromium에서는 2시간이다.
+완화: `Access-Control-Max-Age`로 preflight 결과 캐시. 헤더가 없거나 파싱에 실패하면 5초가 기본이고 브라우저가 자체 상한으로 잘라낸다 — Chromium은 2시간(7200초, v76 이전은 10분), Firefox는 24시간(86400초). 상한을 넘겨 보내도 상한까지만 적용되므로 86400을 박아도 Chromium에서는 2시간이다.
 
 ### credentials 축 — 브라우저 관리 자격증명 요청
 쿠키, TLS 클라이언트 인증서, HTTP 인증 항목처럼 **브라우저가 관리하는 자격증명**의 포함 여부는 앞의 둘과 배타적인 별개 타입이 아니라 두 경로 모두에 겹쳐 적용되는 축이다. 자격증명을 실은 요청도 조건에 따라 simple이거나 preflight를 탄다.

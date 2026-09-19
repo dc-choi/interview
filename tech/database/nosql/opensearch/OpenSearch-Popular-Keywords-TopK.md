@@ -38,7 +38,7 @@ GET search-logs-*/_search
 
 - 집계 대상은 정규화된 `keyword` field여야 한다. 분석된 `text`는 `fielddata` 기본값이 false라 집계가 오류로 거부된다. `fielddata: true`를 켜야 형태소 token 단위 bucket이 나오지만 heap을 사용하므로 권장하지 않는다. field 설계는 [[OpenSearch-Mapping-Text-Analysis]].
 - 시간대별 추이가 필요하면 `date_histogram`을 상위에 두고 그 아래 `terms`를 중첩한다. 급상승 검색어는 이전 bucket 대비 증가율로 계산한다.
-- 분산 오차가 이 경로의 본질적 한계다. 각 shard가 지역 상위 후보만 coordinator에 보내므로 전역 상위가 누락될 수 있다. 기본 `size`는 10, `shard_size` 기본값은 `size * 1.5 + 10`이며, `doc_count_error_upper_bound`로 누락 term의 최대 count 상한을 확인한다. 이 오차 지표는 기본 정렬인 `_count` 내림차순에서만 의미가 있다. 상세 메커니즘은 [[OpenSearch-Aggregations-Pagination]]에 있고, 인기 검색어 맥락에서의 함의는 이것이다. 상위 10개를 노출하는데 shard 간 분포 왜곡이 의심되면 `shard_size`를 k보다 훨씬 크게 (예: 10k) 잡는 비용이 오차 감수보다 싸다.
+- 분산 오차가 이 경로의 본질적 한계다. 각 shard가 지역 상위 후보만 coordinator에 보내므로 전역 상위가 누락될 수 있다. 기본 `size`는 10, `shard_size` 기본값은 `size * 1.5 + 10`이며, `doc_count_error_upper_bound`로 누락 term의 최대 count 상한을 확인한다. 이 오차 지표는 기본 정렬인 `_count` 내림차순에서만 의미가 있다. 상세 메커니즘은 [[OpenSearch-Aggregations-Pagination]]에 있고, 인기 검색어에서는 이렇게 해석한다. 상위 10개를 노출하는데 shard 간 분포 왜곡이 의심되면 `shard_size`를 k보다 훨씬 크게 (예: 10k) 잡는 비용이 오차 감수보다 싸다.
 - 신선도의 하한은 두 개다. 색인 가시성 (refresh, 기본 1초, [[OpenSearch-Indexing-Internals]])과 집계 job 주기. 실질 지연은 job 주기가 지배하므로 1분 주기면 최악 1분 이상 늦다.
 - 비용: 매 실행이 window 전체를 스캔하는 집계 query다. 검색 본 트래픽과 같은 domain에서 돌면 SLO를 침식하므로, 결과를 반드시 캐시에 저장하고 사용자 요청이 OpenSearch를 직접 치지 않게 한다.
 

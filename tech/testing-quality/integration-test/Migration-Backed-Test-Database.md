@@ -12,7 +12,7 @@ aliases: ["Migration-backed Test Database", "Build-declared Test Database", "마
 
 운영 스키마가 Liquibase나 Flyway changelog에서 만들어진다면 테스트 데이터베이스도 같은 변경 이력을 실제 엔진에 적용해 구성해야 한다. ORM entity나 별도의 `schema.sql`을 스키마 원본으로 삼으면 운영과 테스트의 구조가 조용히 갈라질 수 있다.
 
-핵심은 테스트 DB 구성을 사람의 실행 순서가 아니라 빌드 입력으로 선언하는 것이다. 느린 초기화는 재현 가능한 dump cache로 줄이되, cache는 언제든 원본 migration에서 다시 만들 수 있는 파생 산출물이어야 한다.
+테스트 DB 구성을 사람의 실행 순서가 아니라 빌드 입력으로 선언한다. 느린 초기화는 재현 가능한 dump cache로 줄이되, cache는 언제든 원본 migration에서 다시 만들 수 있는 파생 산출물이어야 한다.
 
 ## 서로 다른 두 검증 목표
 

@@ -18,14 +18,14 @@ REST는 URL이 자원의 전역 유일 키라 HTTP 캐시가 그냥 된다. Grap
 ## 객체를 전역 유일 id로 식별
 
 - 권장 패턴은 `id` 필드를 전역 유일 식별자로 예약하는 것이다. REST URL이 하던 전역 유일 키 역할을 id가 한다.
-- 백엔드에 이미 전역 유일 id(UUID 등)가 있으면 그대로 노출하고, 없으면 GraphQL 계층이 만든다. 흔히 타입 이름을 id에 붙이고 base64로 인코딩해 불투명하게 만든다.
+- 백엔드에 이미 전역 유일 id(UUID 등)가 있으면 그대로 노출하고 없으면 GraphQL 계층이 만든다. 흔히 타입 이름을 id에 붙이고 base64로 인코딩해 불투명하게 만든다.
 - 이 id는 global object identification의 `node(id)` 패턴과 이어진다(Node 인터페이스와 단건 refetch는 [[GraphQL-Pagination|Global Object Identification]]).
 - 기존 API와 병행할 때: 기존 API가 타입별 id를 쓴다면 그 id를 별도 필드(예: previousApiId)로 함께 노출한다. GraphQL 클라이언트는 전역 유일 id를, 기존 API와 붙어야 하는 클라이언트는 그 필드를 쓴다. 반대로 기존 API를 GraphQL로 대체하는 상황에서 다른 필드는 다 같은데 id 의미만 바뀌어 혼란스럽다면, id를 전역 유일 필드로 쓰지 않고 클라이언트 유도 식별자(`__typename` 조합)로 가는 선택도 있다.
 
 ## 정규화 캐시 (클라이언트)
 
 - 서버가 안정적인 객체 id를 주면 클라이언트는 응답 그래프를 객체 단위로 펼쳐, id를 키로 하는 평면 저장소에 담을 수 있다. 같은 객체가 여러 쿼리에 나와도 한 곳에 병합된다.
-- 정규화 캐시와 `id`, `__typename` 조합 키는 Apollo Client, Relay, urql 같은 클라이언트 라이브러리 관례다. 공식이 권장하는 것은 단일 전역 유일 `id`이고, 서버가 id를 못 주면 클라이언트가 `__typename`과 타입 내 식별자로 직접 식별자를 만드는 대안을 든다.
+- 정규화 캐시와 `id`, `__typename` 조합 키는 Apollo Client, Relay, urql 같은 클라이언트 라이브러리 관례다. 공식이 권장하는 것은 단일 전역 유일 `id`이고 서버가 id를 못 주면 클라이언트가 `__typename`과 타입 내 식별자로 직접 식별자를 만드는 대안을 든다.
 
 ## Apollo Client에서 조회와 변경을 연결하는 법
 
@@ -45,7 +45,7 @@ const { loading, error, data, dataState } = useQuery(GET_TEAMS, {
 - `useQuery`는 렌더링과 함께 연산을 실행하고 `loading`, `error`, `data`, `dataState`를 UI에 연결한다. 기본 fetch policy는 `cache-first`라 요청 필드를 캐시가 모두 충족하면 네트워크 요청을 생략한다. 최신성이 더 중요할 때만 `network-only`, `cache-and-network` 같은 정책을 의도적으로 고른다.
 - `useMutation`은 실행 함수와 상태를 돌려준다. mutation 응답에 수정된 객체의 `__typename`과 식별 필드를 포함하면 정규화 캐시의 같은 객체 필드는 자동 병합된다.
 - 객체가 캐시에 들어오는 것과 목록이 바뀌는 것은 별개다. 새 `Todo` 객체가 저장돼도 `ROOT_QUERY.todos`의 멤버십은 자동으로 늘지 않는다. 생성, 삭제, 정렬 변경처럼 목록 구조가 바뀌면 `update`와 `cache.modify`로 정확히 고치거나 영향을 받은 활성 쿼리만 `refetchQueries`로 다시 가져온다.
-- refetch는 구현이 단순하고 서버를 진실의 원천으로 다시 확인하지만 네트워크 비용이 든다. 캐시 직접 갱신은 즉시 반영되지만 서버 mutation의 효과를 빠짐없이 재현해야 한다. 변경 범위와 일관성 요구에 맞춰 선택하고, 필요하면 optimistic update 뒤 선택적 refetch를 결합한다.
+- refetch는 구현이 단순하고 서버를 진실의 원천으로 다시 확인하지만 네트워크 비용이 든다. 캐시 직접 갱신은 즉시 반영되지만 서버 mutation의 효과를 빠짐없이 재현해야 한다. 변경 범위와 일관성 요구에 맞춰 선택하고 필요하면 optimistic update 뒤 선택적 refetch를 결합한다.
 - GraphQL fragment는 여러 연산에서 선택 필드를 재사용하고 컴포넌트의 데이터 요구를 가까이 두는 단위다([[GraphQL-Query-Language#fragment|fragment]]). fragment 자체가 요청을 일으키지는 않는다. Apollo Client의 `useFragment`도 캐시의 해당 조각을 구독할 뿐 네트워크 요청은 `useQuery` 같은 연산 훅이 담당한다.
 
 ## 서버 응답 캐시 (필드 단위 cache hint)
@@ -53,8 +53,8 @@ const { loading, error, data, dataState } = useQuery(GET_TEAMS, {
 - 응답 모양을 클라이언트가 정하므로 캐시 수명도 고정일 수 없다. 필드마다 maxAge와 scope(PUBLIC, PRIVATE) 힌트를 두고, 응답 전체는 포함된 필드 중 가장 제한적인 값으로 계산한다: maxAge는 최솟값, 하나라도 PRIVATE면 PRIVATE, 하나라도 0이면 응답을 캐시하지 않는다.
 - 기본값이 보수적이다: 루트 필드와 비스칼라 반환 필드는 0, 스칼라 필드는 부모를 상속한다. 힌트를 명시하지 않으면 아무것도 캐시되지 않는 구조다. 전역 기본 maxAge를 올려 전부 캐시 가능으로 만드는 옵션도 있지만, 부모 값을 물려받는 inheritMaxAge 인자가 생긴 뒤로는 필드 단위 상속과 명시가 권장 경로다.
 - 힌트는 스키마의 @cacheControl directive로 정적으로 주거나 resolver 런타임에 동적으로 준다(동적이 정적을 덮는다). Apollo 계열 관례이고 스펙이 아니다.
-- 계산된 정책은 Cache-Control 응답 헤더로 나간다(캐시 가능하면 max-age와 scope, 불가면 no-store). 조건은 단일 응답과 에러 없음이다. CDN이 이 헤더를 존중하게 구성하고, CDN은 GET만 캐시하므로 아래 persisted query GET과 결합한다.
-- 전체 응답 캐시 플러그인은 계산된 정책대로 응답을 인메모리, Redis 같은 백엔드에 통째로 저장한다. PRIVATE 응답은 세션 식별 함수가 있어야 캐시되며, 로그인과 비로그인 사용자의 캐시가 분리된다.
+- 계산된 정책은 Cache-Control 응답 헤더로 나간다(캐시 가능하면 max-age와 scope, 불가면 no-store). 조건은 단일 응답과 에러 없음이다. CDN이 이 헤더를 존중하게 구성하고 CDN은 GET만 캐시하므로 아래 persisted query GET과 결합한다.
+- 전체 응답 캐시 플러그인은 계산된 정책대로 응답을 인메모리, Redis 같은 백엔드에 통째로 저장한다. PRIVATE 응답은 세션 식별 함수가 있어야 캐시되며 로그인과 비로그인 사용자의 캐시가 분리된다.
 - 응답 단위 캐시의 약점은 무효화다: 세밀한 invalidation이 안 되므로 캐시 키에 연산 이름 같은 접두사를 설계해 두고, mutation 이벤트 때 접두사 패턴으로 배치 삭제한다(Redis에선 블로킹인 KEYS 대신 SCAN 순회). 안정적인 데이터는 긴 TTL로, 자주 변하는 데이터는 이벤트 기반 eviction으로 나눈다. 키가 연산별로 충분히 유일하지 않으면 다른 쿼리나 사용자의 응답이 새어 나갈 수 있다.
 
 ## persisted document로 GET 캐싱
@@ -67,10 +67,10 @@ const { loading, error, data, dataState } = useQuery(GET_TEAMS, {
 
 GraphQL-over-HTTP은 Stage 2 draft라 아직 최종 표준이 아니다. 구현할 때는 사용하는 draft revision과 server framework 동작을 함께 고정한다.
 
-- POST는 query와 mutation 둘 다 처리해야 하고, GET은 query 연산에만 쓸 수 있다. mutation은 POST 필수.
+- POST는 query와 mutation 둘 다 처리해야 하고 GET은 query 연산에만 쓸 수 있다. mutation은 POST 필수.
 - POST 본문은 `Content-Type: application/json`에 `{ query, operationName, variables, extensions }`. query는 필수이고(파라미터 이름과 달리 mutation을 포함한 모든 연산을 담는 GraphQL 문서 소스다), 문서에 연산이 여럿이면 operationName도 필수. `Content-Type` 헤더가 빠진 요청엔 서버가 4xx로 응답해야 한다.
 - GET은 query를 쿼리스트링 `query` 파라미터에, variables는 JSON 문자열 파라미터로 싣는다.
-- 응답은 `{ data, errors, extensions }`. 에러가 없으면 errors를 생략하고, 실행 전 에러면 data를 생략한다.
+- 응답은 `{ data, errors, extensions }`. 에러가 없으면 errors를 생략하고 실행 전 에러면 data를 생략한다.
 - 미디어 타입은 응답이 `application/graphql-response+json`(레거시는 `application/json`). 클라이언트는 `Accept` 헤더로 `application/graphql-response+json`을 보내고, 레거시 서버 호환이 필요하면 `application/json`을 함께 나열한다(`application/graphql-response+json, application/json;q=0.9`처럼 새 타입 우선). 인코딩 명시가 없으면 양방향 모두 utf-8로 가정한다.
 - 새 미디어 타입의 의의: 프록시, 게이트웨이 같은 중간자도 에러를 JSON으로 응답할 수 있지만 `application/graphql-response+json`으로 내지는 않는다. 이 타입이면 non-2xx 상태여도 GraphQL 응답으로 안전하게 파싱할 수 있다.
 - 응답이 대부분 텍스트(JSON)라 GZIP, deflate, brotli로 압축이 매우 잘 된다. 프로덕션 서비스는 압축을 켜고 클라이언트가 `Accept-Encoding: gzip`을 보내도록 권장한다.

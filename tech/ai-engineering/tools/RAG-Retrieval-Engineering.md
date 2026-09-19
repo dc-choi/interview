@@ -50,7 +50,7 @@ BM25를 병행해 정확 token match를 보완하고 RRF나 score normalization�
 
 ## 쿼리 재구성과 재탐색
 
-1차 검색이 부족하면 query를 분해하거나 표현을 바꿔 재탐색할 수 있다. 단 무제한 재시도는 latency와 비용을 키우고 처음 의도를 변형한다. 최대 횟수, 종료 조건, query rewrite 전후 결과와 선택 근거를 기록하고, 대표 query set에서 단발 검색보다 실제로 나은지 검증한다.
+1차 검색이 부족하면 query를 분해하거나 표현을 바꿔 재탐색할 수 있다. 단 무제한 재시도는 latency와 비용을 키우고 처음 의도를 변형한다. 최대 횟수, 종료 조건, query rewrite 전후 결과와 선택 근거를 기록하고 대표 query set에서 단발 검색보다 실제로 나은지 검증한다.
 
 ## Progressive Disclosure 탐색
 
@@ -76,7 +76,7 @@ BM25를 병행해 정확 token match를 보완하고 RRF나 score normalization�
 
 ## Context packing과 근거 추적
 
-Retriever의 top-k를 그대로 prompt에 붙이지 않는다. 중복 청크를 제거하고, 끊긴 정의나 표는 인접 span을 보강하며, token budget 안에서 relevance와 source 다양성을 고려해 context를 배치한다. Retrieval score는 생성 근거의 진실 확률이 아니라 후보 선택 신호다.
+Retriever의 top-k를 그대로 prompt에 붙이지 않는다. 중복 청크를 제거하고 끊긴 정의나 표는 인접 span을 보강하며 token budget 안에서 relevance와 source 다양성을 고려해 context를 배치한다. Retrieval score는 생성 근거의 진실 확률이 아니라 후보 선택 신호다.
 
 근거 추적은 답변 형식이 아니라 데이터 계약이다. Retrieval부터 `source_id`, `document_id`, `chunk_id`, 원문 span과 version을 보존하고, 생성된 각 핵심 claim을 citation에 연결한다. XML이나 JSON 태그는 이 연결을 직렬화할 뿐 근거 지지를 보장하지 않는다. 후처리에서 citation이 실제 span을 가리키는지, 그 span이 claim을 지지하는지 검사하고, 지지 근거가 없으면 claim을 제거하거나 거부한다([[LLM-Abstention]]).
 
@@ -102,7 +102,7 @@ Q. RAG를 더 고도화한다면?
 - 먼저 층별 평가와 provenance 계약을 세운다. 그다음 오류 유형에 따라 hybrid/rerank, 구조화 lookup, 계층 검색, citation validator를 선택한다.
 
 Q. 도메인 사전은 무조건 만드는 게 좋은가?
-- 아니다. 멀티테넌트에서 용어 다양성이 크면 관리 비용이 효과를 넘는다. 운영 복잡성 대비 효과로 판단하고, 안 만드는 선택도 설계다.
+- 아니다. 멀티테넌트에서 용어 다양성이 크면 관리 비용이 효과를 넘는다. 운영 복잡성 대비 효과로 판단하고 안 만드는 선택도 설계다.
 
 ## 관련 문서
 - [[Context-Engineering|컨텍스트 엔지니어링 (Select, Isolate — 검색 단계 토큰 경제학)]]

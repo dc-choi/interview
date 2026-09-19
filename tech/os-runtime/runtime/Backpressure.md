@@ -8,7 +8,7 @@ verified_at: 2026-07-21
 
 # Backpressure (배압)
 
-Consumer의 처리 속도가 Producer의 생성 속도보다 느릴 때 발생하는 **부하를 제어하는 메커니즘**. 단순한 "속도 조절"을 넘어 시스템의 **가용성(Availability)**과 **신뢰성(Reliability)**을 결정짓는 핵심 요소.
+Consumer의 처리 속도가 Producer의 생성 속도보다 느릴 때 발생하는 **부하를 제어하는 메커니즘**. 속도 조절뿐 아니라 시스템의 **가용성(Availability)**과 **신뢰성(Reliability)**을 결정짓는 핵심 요소.
 
 ## 왜 백프레셔가 필요한가
 

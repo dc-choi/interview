@@ -21,7 +21,7 @@ lint, type-check, test 세 검증을 서로 독립적으로 병렬 실행한다.
 
 ## pnpm workspace 빌드 메커니즘
 
-Build-time 통합은 pnpm workspace의 `workspace:*` 참조로 성립한다. pnpm은 모듈 해석 과정에서 파일을 content-addressable store에 저장하고, 프로젝트의 `node_modules/.pnpm` virtual store에는 이를 hardlink로 배치하며, 실제 의존성 그래프는 symlink로 구성한다(디스크 절약 + 엄격한 의존성 격리). `workspace:*` 프로토콜은 개발 중에는 workspace 패키지를 반드시 symlink로 참조하고, npm registry에 publish, pack 할 때는 실제 버전 번호로 자동 변환한다.
+Build-time 통합은 pnpm workspace의 `workspace:*` 참조로 성립한다. pnpm은 모듈 해석 과정에서 파일을 content-addressable store에 저장하고 프로젝트의 `node_modules/.pnpm` virtual store에는 이를 hardlink로 배치하며 실제 의존성 그래프는 symlink로 구성한다(디스크 절약 + 엄격한 의존성 격리). `workspace:*` 프로토콜은 개발 중에는 workspace 패키지를 반드시 symlink로 참조하고 npm registry에 publish, pack 할 때는 실제 버전 번호로 자동 변환한다.
 
 ## 캐시 — 가장 조용한 성능 킬러
 

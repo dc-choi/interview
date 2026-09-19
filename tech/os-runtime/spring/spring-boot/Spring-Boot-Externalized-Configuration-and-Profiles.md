@@ -21,7 +21,7 @@ default/config data/environment/system property/command line/test override
   -> binding or lookup
 ```
 
-현재 Spring Boot 4.1의 전체 우선순위는 단순히 OS 환경 변수, JVM property, command line 세 종류만 외우는 목록보다 길다. 핵심은 **나중 source가 앞 source를 override한다**는 것과 실제 source report를 진단할 수 있어야 한다는 점이다.
+현재 Spring Boot 4.1의 전체 우선순위는 단순히 OS 환경 변수, JVM property, command line 세 종류만 외우는 목록보다 길다. **나중 source가 앞 source를 override한다**는 규칙이 중요하며 실제 source report를 진단할 수 있어야 한다.
 
 - packaged config보다 외부 config가 우선한다.
 - profile-specific config가 같은 위치의 일반 config를 override한다.

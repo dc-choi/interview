@@ -24,7 +24,7 @@ verified_at: 2026-08-27
 2. **Invoke phase** — `handler(event, context)` 실행 → 응답 반환
 3. **Shutdown phase** — Lambda가 환경을 종료할 때 런타임과 확장을 정리
 
-호출이 끝나도 실행 환경은 freeze되어 일정 기간 재사용될 수 있다. 종료 시점과 다음 호출에서의 재사용은 보장되지 않는다. 새 실행 환경을 준비하는 호출은 **cold start**, 준비된 환경 재사용은 **warm start**다.
+호출이 끝나도 실행 환경은 freeze되어 일정 기간 재사용될 수 있다. 종료 시점과 다음 호출 때 재사용할지는 보장되지 않는다. 새 실행 환경을 준비하는 호출은 **cold start**, 준비된 환경 재사용은 **warm start**다.
 
 ### Durable Functions
 

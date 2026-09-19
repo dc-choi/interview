@@ -23,6 +23,6 @@ category: "AI엔지니어링(AIEngineering)"
 
 - 실행기와 원본 JSON은 `ontology/evaluation/`에 있다. 문서의 링크에서 해당 보고서로 이동한다.
 - 과거 보고서의 경로와 receipt는 기록된 Git revision 기준이다. 문서 이동을 이유로 원본 보고서의 경로나 hash를 바꾸지 않는다.
-- 같은 결과를 재현하려면 원문 revision, 코드, 입력과 예산을 함께 맞춘다. 현재 checkout에서의 새 관측과 구분한다.
+- 같은 결과를 재현하려면 원문 revision, 코드, 입력과 예산을 함께 맞춘다. 현재 checkout에서 새로 관측한 결과와 구분한다.
 
 상위: [[Development-Ontology]].

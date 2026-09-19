@@ -12,7 +12,7 @@ aliases: ["Video Streaming System Design", "VOD System Design", "주문형 비�
 
 ## 요구사항과 범위
 
-- 사용자는 작품을 탐색하고, 권한이 있는 콘텐츠를 여러 기기와 네트워크에서 끊김을 줄여 재생한다.
+- 사용자는 작품을 탐색하고 권한이 있는 콘텐츠를 여러 기기와 네트워크에서 끊김을 줄여 재생한다.
 - 운영자는 소스 자산을 검증, 인코딩, 패키징한 뒤 완전한 버전만 공개하고 실패한 작업을 재처리한다.
 - 이 문서는 VOD를 다룬다. 실시간 방송의 초저지연 ingest와 동기화는 별도 설계 문제다.
 
@@ -42,7 +42,7 @@ aliases: ["Video Streaming System Design", "VOD System Design", "주문형 비�
 - **manifest**: 클라이언트가 선택할 표현과 segment 위치, 시간축을 읽는 재생 목록이다. 배포 도구의 manifest와 구분한다.
 - **publish version**: manifest와 모든 참조 객체, 권한 정책의 호환성을 확인한 뒤 공개되는 불변 묶음이다.
 
-작품 ID가 최신 publish version을 가리키게 하고, 이전 version과 객체는 즉시 덮어쓰지 않는다. 이렇게 하면 재생 중인 클라이언트가 참조하던 segment를 잃지 않고, 공개 취소와 rollback도 포인터 전환으로 처리할 수 있다.
+작품 ID가 최신 publish version을 가리키게 하고 이전 version과 객체는 즉시 덮어쓰지 않는다. 이렇게 하면 재생 중인 클라이언트가 참조하던 segment를 잃지 않고, 공개 취소와 rollback도 포인터 전환으로 처리할 수 있다.
 
 ## ingest에서 공개까지
 
@@ -52,12 +52,12 @@ aliases: ["Video Streaming System Design", "VOD System Design", "주문형 비�
 4. package 단계가 segment와 manifest를 만들고, 품질 검사에서 A/V 동기, duration, codec 지원 범위, 누락 segment와 참조 무결성을 확인한다.
 5. 모든 필수 representation과 객체가 준비됐을 때만 publish version을 원자적으로 활성화한다. 카탈로그 노출, CDN warm-up과 공개 상태는 이 version에 연결한다.
 
-재시도는 임시 오류만 제한적으로 수행하고, 영구 오류와 반복 실패는 DLQ와 운영자 검토로 보낸다. out-of-order 완료가 최신 publish version을 덮지 않도록 asset version과 상태 전이 조건을 저장소에서 확인한다.
+재시도는 임시 오류만 제한적으로 수행하고 영구 오류와 반복 실패는 DLQ와 운영자 검토로 보낸다. out-of-order 완료가 최신 publish version을 덮지 않도록 asset version과 상태 전이 조건을 저장소에서 확인한다.
 
 ## 재생 경로와 ABR
 
 1. 클라이언트가 로그인, 작품 조회와 재생 시작을 요청한다.
-2. 제어 plane이 entitlement, 지역, 기기 capability와 동시 시청 정책을 확인하고, 재생 token 또는 signed URL/cookie와 manifest 위치를 반환한다. 접근 정보는 예상 재생 시간보다 길게 발급하거나 만료 전에 entitlement를 다시 확인해 갱신한다.
+2. 제어 plane이 entitlement, 지역, 기기 capability와 동시 시청 정책을 확인하고 재생 token 또는 signed URL/cookie와 manifest 위치를 반환한다. 접근 정보는 예상 재생 시간보다 길게 발급하거나 만료 전에 entitlement를 다시 확인해 갱신한다.
 3. DRM 콘텐츠는 manifest의 key ID와 재생 token으로 license service에 사용 권한을 요청한다. License service는 entitlement를 다시 확인하고 만료 정책이 있는 license를 반환한다.
 4. 클라이언트는 manifest를 읽어 지원 가능한 representation을 고르고 CDN edge에서 segment를 가져온다.
 5. 플레이어는 측정한 처리량, buffer, decode capability와 실패를 바탕으로 다음 segment의 bitrate를 바꾼다. 이 adaptive bitrate, ABR 선택은 서버가 모든 segment를 중계하지 않아도 네트워크 변화에 대응하게 한다.
@@ -72,7 +72,7 @@ representation 수를 많이 늘리면 네트워크 적응 선택지는 늘지�
 - cache miss와 origin 장애를 분리해 관찰한다. CDN은 origin 부하를 줄이지만 인기가 낮은 콘텐츠, 새 version과 특정 지역의 miss를 없애지 않는다.
 - origin, shield, 여러 edge 또는 CDN 경로의 failover는 media plane의 가용성을 높인다. 선택 전환이 재생 중 buffer를 고갈시키지 않는지 실제 플레이어로 시험한다.
 
-Netflix Open Connect는 ISP 안이나 인터넷 교환 지점에 배치한 appliance가 인코딩된 파일을 HTTP/HTTPS로 전달하는 공개 사례다. 이는 edge delivery의 한 구현이며, 모든 서비스가 자체 appliance를 운영해야 한다는 뜻은 아니다.
+Netflix Open Connect는 ISP 안이나 인터넷 교환 지점에 배치한 appliance가 인코딩된 파일을 HTTP/HTTPS로 전달하는 공개 사례다. 이는 edge delivery의 한 구현이며 모든 서비스가 자체 appliance를 운영해야 한다는 뜻은 아니다.
 
 공개된 Open Connect 제어 plane은 파일 보유 여부, appliance 상태와 네트워크 인접성을 함께 보고 전달 대상을 정하며 콘텐츠 fill도 관리한다. 모든 파일을 모든 appliance에 복제하고 물리적으로 가장 가까운 한 대만 고르는 모델로 단순화하지 않는다.
 
@@ -98,7 +98,7 @@ Netflix Open Connect는 ISP 안이나 인터넷 교환 지점에 배치한 appli
 | 일부 rendition 누락 | 정책이 허용하면 낮은 profile만 공개, 아니면 공개 보류 | manifest 참조 무결성, 지원 기기별 재생 성공 |
 | CDN miss 또는 edge 장애 | 다른 delivery 경로와 낮은 bitrate로 전환 가능한지 확인 | startup time, rebuffer ratio, edge hit, origin egress |
 | 제어 plane 장애 | 새 재생과 권한 갱신은 fail closed, 이미 발급된 token과 license는 만료 정책을 따른다 | entitlement 오류, 재생 시작과 갱신 성공률 |
-| 이벤트 유실 또는 지연 | 결제와 권한 원장은 이벤트 분석 경로와 분리하고, QoE 집계에는 late event와 중복을 허용한다 | event lag, dedup 비율, 집계 지연 |
+| 이벤트 유실 또는 지연 | 결제와 권한 원장은 이벤트 분석 경로와 분리하고 QoE 집계에는 late event와 중복을 허용한다 | event lag, dedup 비율, 집계 지연 |
 
 최소 검증 묶음은 다음과 같다.
 
@@ -112,7 +112,7 @@ Netflix Open Connect는 ISP 안이나 인터넷 교환 지점에 배치한 appli
 - 2024년 공개된 VES/Cosmos 사례는 비동기 workflow와 독립적인 media processing service, chunked encoding의 필요성을 보여 준다. 전체 내부 topology나 현재 운영 수치를 공개한 명세로 읽지 않는다.
 - 2015년 per-title encode optimization은 콘텐츠 복잡도에 따라 bitrate ladder를 다르게 고르는 역사적 사례다. 현재 모든 서비스의 필수 codec, ladder나 품질 지표를 뜻하지 않는다.
 - Hystrix 저장소는 maintenance mode임을 밝힌다. timeout, isolation, fallback, circuit breaker 원칙은 유효하지만 신규 설계에 특정 라이브러리를 기본값으로 두지 않는다.
-- 같은 원문의 번역이나 재게시는 독립 확인 근거가 아니다. 2차 자료의 제품 수치와 특정 내부 stack은 기준 연도가 있는 1차 자료와 대조하고, 확인되지 않으면 현재 설계의 전제로 쓰지 않는다.
+- 같은 원문의 번역이나 재게시는 독립 확인 근거가 아니다. 2차 자료의 제품 수치와 특정 내부 stack은 기준 연도가 있는 1차 자료와 대조하고 확인되지 않으면 현재 설계의 전제로 쓰지 않는다.
 
 ## 출처
 

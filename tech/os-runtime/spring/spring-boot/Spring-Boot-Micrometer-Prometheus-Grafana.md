@@ -8,7 +8,7 @@ aliases: ["Spring Boot Micrometer Prometheus Grafana", "Spring Boot Metrics Pipe
 
 # Spring Boot, Micrometer, Prometheus와 Grafana
 
-이 조합은 하나의 제품이 아니다. Micrometer가 application을 계측하고, Actuator가 registry data를 노출하며, Prometheus가 시계열을 수집/저장하고, Grafana가 query 결과를 시각화한다.
+이 조합은 하나의 제품이 아니다. Micrometer가 application을 계측하고 Actuator가 registry data를 노출하며 Prometheus가 시계열을 수집/저장하고 Grafana가 query 결과를 시각화한다.
 
 ```text
 application instrumentation

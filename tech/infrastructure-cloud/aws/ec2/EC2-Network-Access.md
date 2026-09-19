@@ -25,19 +25,19 @@ IMDSv2의 `HttpPutResponseHopLimit`은 1부터 64 사이에서 구성하며 계�
 EC2 네트워크 인터페이스에 부여하는 **정적 공인 IP**. 기본 Public IP는 Stop/Start 시 변경되지만, EIP는 명시적 해제 전까지 고정.
 
 - 계정, 리전당 **기본 5개까지** 보유 가능 (요청으로 증가)
-- **요금 기준 변경**: 2024년 2월 1일부터 AWS가 제공하는 공인 IPv4 주소는 연결 여부와 관계없이 시간당 과금된다. EC2 Free Tier의 무료 사용 시간과 BYOIP는 별도 조건이며, 예전의 실행 중 인스턴스 연결 1개 무료 규칙으로 판단하면 안 된다.
+- **요금 기준 변경**: 2024년 2월 1일부터 AWS가 제공하는 공인 IPv4 주소는 연결 여부와 관계없이 시간당 과금된다. EC2 Free Tier의 무료 사용 시간과 BYOIP는 별도 조건이며 예전의 실행 중 인스턴스 연결 1개 무료 규칙으로 판단하면 안 된다.
 - 과금 대상에는 EIP의 연결 여부와 관계없는 AWS 제공 공인 IPv4, 자동 할당 공인 IPv4가 포함된다. BYOIP와 Free Tier는 별도 조건을 확인한다
 - EIP는 ENI의 private IPv4에 연결할 수 있다. detach 가능한 **secondary ENI**는 같은 Availability Zone의 다른 인스턴스에 재부착할 수 있지만 primary ENI는 detach할 수 없고 AZ 경계를 넘겨 이동할 수도 없다. 따라서 ENI 이동은 같은 AZ의 제한된 복구 패턴이며, Multi-AZ 전환에는 EIP 재연결 가능 범위, load balancer, Global Accelerator 또는 DNS 경로를 별도로 설계
 
-권장 패턴: 고정 공인 IPv4가 실제로 필요한지 먼저 확인하고, 웹 서비스는 요구에 따라 ALB, NLB, Global Accelerator, CloudFront나 NAT 설계와 비교한다. Bastion도 Session Manager나 EC2 Instance Connect Endpoint로 대체 가능한지 검토한다.
+권장 패턴: 고정 공인 IPv4가 실제로 필요한지 먼저 확인하고 웹 서비스는 요구에 따라 ALB, NLB, Global Accelerator, CloudFront나 NAT 설계와 비교한다. Bastion도 Session Manager나 EC2 Instance Connect Endpoint로 대체 가능한지 검토한다.
 
 ## ENA (Elastic Network Adapter)
 
 **SR-IOV (Single Root I/O Virtualization)** 기반 고성능 네트워크 인터페이스.
 
-- 대역폭은 인스턴스 타입, 네트워크 카드 수, ENI 배치에 따라 다르다. 일부 최신 인스턴스는 여러 네트워크 카드와 ENI를 사용해 합산 **600 Gbps**까지 지원하며, 단일 ENI 한도는 별도로 확인해야 한다
+- 대역폭은 인스턴스 타입, 네트워크 카드 수, ENI 배치에 따라 다르다. 일부 최신 인스턴스는 여러 네트워크 카드와 ENI를 사용해 합산 **600 Gbps**까지 지원하며 단일 ENI 한도는 별도로 확인해야 한다
 - 인스턴스 간 **저지연**, 높은 PPS (Packets Per Second)
-- 많은 현행 Nitro 기반 인스턴스 타입이 ENA를 사용하며, 실제 지원 여부와 baseline, burst 대역폭은 타입별 네트워크 사양에서 확인
+- 많은 현행 Nitro 기반 인스턴스 타입이 ENA를 사용하며 실제 지원 여부와 baseline, burst 대역폭은 타입별 네트워크 사양에서 확인
 - 클러스터 컴퓨팅, 실시간 분석, 고성능 DB 통신에서 중요한 선택 요소지만 필요한 대역폭, PPS와 EFA 지원 여부를 워크로드별로 확인
 
 ## Key Pair

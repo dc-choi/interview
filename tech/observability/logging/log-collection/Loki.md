@@ -108,7 +108,7 @@ Promtail은 **2026-03-02부로 EOL**이며 상용 지원이 종료됐다. 이후
 
 - 어떻게 구축했나: 에이전트가 라벨을 붙여 push, Distributor가 해싱해 Ingester로, Ingester가 청크로 압축해 S3로 flush, TSDB 인덱스도 S3, Compactor가 인덱스 압축과 보존, Grafana가 LogQL로 조회
 - 왜 Loki였나: 라벨만 인덱싱하는 구조라 같은 로그량 대비 저장과 운영 비용이 낮고 Prometheus 라벨 모델과 쿼리 감각이 이어진다 ([[Incident-Detection-Logging|스택 비교]])
-- Loki에서의 카디널리티: 시계열이 아니라 스트림이 폭발하고, 증상은 인덱스 비대와 작은 청크 다발
+- Loki의 카디널리티: 시계열이 아니라 스트림이 폭발하고, 증상은 인덱스 비대와 작은 청크 다발
 - 라벨 vs structured metadata vs 본문의 자리 구분
 - LogQL 셀렉터, 라인 필터, 파서, unwrap의 역할과 비용 구조
 

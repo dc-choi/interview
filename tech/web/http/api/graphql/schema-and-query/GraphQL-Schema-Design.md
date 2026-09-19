@@ -19,7 +19,7 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "G
 ## non-null은 계약, 남용은 위험
 
 - non-null 출력은 서버 약속, non-null 인자는 검증 규칙이다(문법은 [[GraphQL-Schema-Types|타입 시스템]]).
-- 남용 위험: non-null 필드가 null이 되면 부모로 전파되고, 부모도 non-null이면 더 위로 올라가 최악엔 `data`가 통째로 null이 된다(null bubbling, 전파 단계는 [[GraphQL-Architecture-Map|지도]]). 작은 실패가 큰 구멍이 된다. null이 그 필드에 적절한 값인지 따져 정말 아닐 때만 non-null을 준다.
+- 남용 위험: non-null 필드가 null이 되면 부모로 전파되고 부모도 non-null이면 더 위로 올라가 최악엔 `data`가 통째로 null이 된다(null bubbling, 전파 단계는 [[GraphQL-Architecture-Map|지도]]). 작은 실패가 큰 구멍이 된다. null이 그 필드에 적절한 값인지 따져 정말 아닐 때만 non-null을 준다.
 
 ## 버전을 피한다
 
@@ -34,7 +34,7 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "G
 버전 없는 진화는 클라이언트가 추가 변경을 견딜 때만 성립한다. 스키마 인식 클라이언트(TypeScript codegen, Apollo iOS, Apollo Kotlin)는 일부를 빌드 타임에 잡아 주지만, 동적 언어나 스키마 비인식 환경에선 앱 코드가 직접 챙겨야 한다. 흔히 깨지는 세 곳:
 
 - **모르는 enum 값**: enum엔 언제든 값이 추가될 수 있다. fallback 없는 exhaustive switch는 새 값에서 크래시하거나 조용히 데이터를 버린다. 항상 default 분기를 두고, codegen이 catch-all 값(`__UNKNOWN`)을 생성해 주면 그걸 쓴다. JSON.parse 같은 내장 파서를 쓰는 환경에선 catch-all 매핑이 안 되므로 codegen이 합성 sentinel 값을 넣어 default 분기를 강제하기도 한다 — sentinel은 이름으로 매칭하지 말고 default로만 처리한다.
-- **모르는 union, interface 멤버**: union과 interface엔 새 멤버 타입이 추가될 수 있다. `__typename`을 항상 조회하고, 인식 못 하는 타입이면 크래시 대신 우아하게 강등한다(unknown 렌더링). 구버전 앱이 확장된 스키마를 만나는 장수 모바일 앱에서 특히 중요하다.
+- **모르는 union, interface 멤버**: union과 interface엔 새 멤버 타입이 추가될 수 있다. `__typename`을 항상 조회하고 인식 못 하는 타입이면 크래시 대신 우아하게 강등한다(unknown 렌더링). 구버전 앱이 확장된 스키마를 만나는 장수 모바일 앱에서 특히 중요하다.
 - **nullable 필드 강제 언랩 금지**: nullable은 값이 없을 수 있다는 스키마의 명시적 신호다(데이터가 선택적이거나, 그 필드만 에러가 나 응답 전체를 실패시키지 않았거나). Swift `!`, Kotlin `!!`, TypeScript non-null assertion으로 우회하면 우아한 부분 응답이 크래시로 바뀐다. optional chaining, guard let, null 병합으로 접근하고, 정말 항상 있어야 하는 필드라면 스키마 쪽을 non-null로 바꿔 보증을 스키마에 인코딩한다.
 
 ## mutation 설계
@@ -52,7 +52,7 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "G
 스펙은 네이밍을 정하지 않는다. 아래는 프로덕션에서 검증된 관례로, 벗어날 수 있지만 의도적으로 벗어나고 이유를 문서화한다.
 
 - 케이스: 필드, 인자, directive는 camelCase. 타입, enum, interface, union은 PascalCase. enum 값은 SCREAMING_SNAKE_CASE.
-- Boolean 필드는 is, has 접두사(스펙 introspection의 `isDeprecated`도 이 패턴). 리스트 필드는 복수 명사. query 필드엔 get, fetch 같은 동사 접두사를 붙이지 않는다 — 연산 타입이 이미 조회임을 말하고, 중첩 필드와도 어긋난다.
+- Boolean 필드는 is, has 접두사(스펙 introspection의 `isDeprecated`도 이 패턴). 리스트 필드는 복수 명사. query 필드엔 get, fetch 같은 동사 접두사를 붙이지 않는다 — 연산 타입이 이미 조회임을 말하고 중첩 필드와도 어긋난다.
 - mutation 네이밍은 두 전략이 있다: verb-first(`createUser` — 자연스럽고 비CRUD 동작에 강함) vs noun-first(`userCreate` — 엔티티별로 정렬돼 발견이 쉬움, 대형 CRUD 스키마에 유리, Shopify 관례). 어느 쪽이든 일관성이 선택 자체보다 중요하다.
 - 접미사 관례: input 타입은 Input(`CreateUserInput`), connection은 `{TypeName}Connection`과 `{TypeName}Edge`.
 - 리스트 필드는 관례상 `[Item!]!`로 선언해 클라이언트가 null 대신 빈 배열을 받게 한다.
@@ -61,17 +61,17 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "G
 
 ## input 부분 업데이트의 3상 문제
 
-- nullable input 필드는 기계적으로 세 상태를 구분한다: 필드 생략, 명시적 null, 값 전달. 무엇을 의미하는지는 API가 정하는 계약이고, 흔한 계약은 생략=변경 없음, null=값 지우기, 값=갱신이다. 부분 업데이트에서 지우기를 표현해야 할 때 이 구분이 핵심이 된다.
+- nullable input 필드는 기계적으로 세 상태를 구분한다: 필드 생략, 명시적 null, 값 전달. 무엇을 의미하는지는 API가 정하는 계약이고 흔한 계약은 생략=변경 없음, null=값 지우기, 값=갱신이다. 부분 업데이트에서 지우기를 표현해야 할 때 이 구분이 핵심이 된다.
 - 모호함을 피하려고 `clearBio: Boolean` 같은 명시 플래그를 두는 팀도 있다. 어느 쪽이든 동작을 필드 description에 문서화한다.
 
 ## custom scalar 사용 판단
 
-- DateTime, Date, Email, URL, UUID, JSON처럼 형식과 검증 규칙이 명확한 값은 String 대신 custom scalar로 만든다. 검증이 GraphQL 계층으로 당겨져 잘못된 값이 resolver에 닿기 전에 실패하고, 스키마가 자기 문서화된다(graphql-scalars 라이브러리, scalars.graphql.org 커뮤니티 명세).
+- DateTime, Date, Email, URL, UUID, JSON처럼 형식과 검증 규칙이 명확한 값은 String 대신 custom scalar로 만든다. 검증이 GraphQL 계층으로 당겨져 잘못된 값이 resolver에 닿기 전에 실패하고 스키마가 자기 문서화된다(graphql-scalars 라이브러리, scalars.graphql.org 커뮤니티 명세).
 - 비용도 있다: 클라이언트와 서버 양쪽에 구현이 필요하고 이식성이 준다. Username, ProductCode처럼 비즈니스 규칙 있는 문자열일 뿐인 값엔 만들지 말고 resolver가 부르는 로직에서 검증한다.
 
 ## 도메인을 그래프로
 
-- 비즈니스 도메인을 노드와 관계의 그래프로 모델링한다. 그래프가 자연스러운 멘탈 모델에 가깝다. 클라이언트 쪽에선 타입이 타입을 참조하는 OOP 비슷한 패턴이 되고, 서버 쪽에선 GraphQL이 인터페이스만 정의하므로 신규든 레거시든 어떤 백엔드와도 붙는다.
+- 비즈니스 도메인을 노드와 관계의 그래프로 모델링한다. 그래프가 자연스러운 멘탈 모델에 가깝다. 클라이언트 쪽에선 타입이 타입을 참조하는 OOP 비슷한 패턴이 되고 서버 쪽에선 GraphQL이 인터페이스만 정의하므로 신규든 레거시든 어떤 백엔드와도 붙는다.
 - DB를 그대로 비추지 말고 클라이언트가 데이터를 쓰는 방식을 표현한다. what이 아니라 how를 표현하면 인터페이스를 깨지 않고 구현을 바꿀 수 있다.
 - 한 번에 전 도메인을 모델링하지 말고 시나리오 하나씩 점진 확장해 피드백을 자주 받는다.
 - 스키마는 팀과 사용자의 공유 언어(공식 표현은 shared language)다. 일상 업무 언어에서 직관적이고 오래 가는 이름을 고른다. DDD의 유비쿼터스 언어와 같은 취지지만 공식 용어는 shared language다.

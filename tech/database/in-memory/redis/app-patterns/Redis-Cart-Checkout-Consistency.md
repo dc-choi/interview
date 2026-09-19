@@ -8,7 +8,7 @@ aliases: ["Redis Cart", "Redis 장바구니", "장바구니 주문 정합성"]
 
 # Redis 장바구니와 주문 정합성
 
-Redis 장바구니는 빠른 읽기와 짧은 수명에 잘 맞지만, 주문, 재고를 저장하는 RDB와 같은 트랜잭션에 참여하지 않는다. 핵심은 Redis 명령 사용법보다 **장바구니의 손실 허용 범위, checkout snapshot, RDB commit 이후 정리 실패를 어떻게 복구할지**를 먼저 정하는 것이다.
+Redis 장바구니는 빠른 읽기와 짧은 수명에 잘 맞지만, 주문, 재고를 저장하는 RDB와 같은 트랜잭션에 참여하지 않는다. Redis 명령 사용법보다 **장바구니의 손실 허용 범위, checkout snapshot, RDB commit 이후 정리 실패를 어떻게 복구할지**를 먼저 정하는 게 중요하다.
 
 ## 먼저 source of truth를 정한다
 

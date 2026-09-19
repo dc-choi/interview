@@ -22,7 +22,7 @@ GitOps의 pull 대 push 원리, auto-sync와 prune, selfHeal 옵션, sync wave�
 | **Redis** | manifest 렌더 결과와 리소스 상태 캐시 | 영속 정본은 etcd에 있어 재구축해도 상태가 사라지지는 않는다. 다만 cache miss와 재동기화 동안 UI, 비교와 reconcile이 일시적으로 느려질 수 있다 |
 | **Dex 또는 외부 OIDC** | SSO 연동 주체 | 로그인이 막힌다. admin local 계정과 배포 자체는 영향이 덜하다 |
 
-핵심은 **UI가 죽는 것과 배포가 죽는 것이 다른 사건**이라는 점이다. [[CICD-Tool-Selection|CI/CD 툴 선택]]이 요구하는 장애 시나리오 설계에서, Argo CD 전면 장애의 우회 경로는 결국 kubectl이나 Helm으로 직접 apply하는 수동 경로다. 그 경로를 열어 두려면 desired-state repo에서 렌더한 manifest가 사람 손으로도 적용 가능한 형태여야 한다.
+**UI가 죽는 것과 배포가 죽는 것은 다른 사건**이다. [[CICD-Tool-Selection|CI/CD 툴 선택]]이 요구하는 장애 시나리오 설계에서, Argo CD 전면 장애의 우회 경로는 결국 kubectl이나 Helm으로 직접 apply하는 수동 경로다. 그 경로를 열어 두려면 desired-state repo에서 렌더한 manifest가 사람 손으로도 적용 가능한 형태여야 한다.
 
 ## Application 리소스 — sync status와 health status는 다른 축
 

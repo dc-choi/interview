@@ -78,7 +78,7 @@ ERD는 비즈니스와 schema를 소통하는 지도다. 모든 column, framewor
 - optionality를 `NULL`/`NOT NULL`과 생성 순서로 구체화한다.
 - 함수 종속성을 분석해 정규화하고 이력 snapshot은 현재 사실과 구분한다.
 
-각 규칙에는 예외가 있다. 값 객체를 여러 column으로 펼칠 수 있고, 같은 aggregate의 논리 entity 여러 개가 한 table을 공유할 수도 있다. 중요한 것은 변환 규칙보다 의미와 무결성이 보존되는지다.
+각 규칙에는 예외가 있다. 값 객체를 여러 column으로 펼칠 수 있고, 같은 aggregate의 논리 entity 여러 개가 한 table을 공유할 수도 있다. 변환 규칙보다 의미와 무결성이 보존되는지가 중요하다.
 
 ## 5. 물리 모델을 결정한다
 

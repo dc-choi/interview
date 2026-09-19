@@ -19,7 +19,7 @@ MikroORM의 영속성 API는 `EntityManager` 하나에서 시작하지만, 실�
   → driver와 DB connection
 ```
 
-핵심은 객체 변경을 곧바로 SQL 한 문으로 생각하지 않는 것이다. 같은 `EntityManager` 안에서 엔티티를 읽거나 생성하면 Unit of Work가 상태와 원본 snapshot을 관리하고, `flush()`가 필요한 SQL을 계산해 DB에 반영한다. 반대로 bulk SQL, QueryBuilder와 Kysely는 이 관리 경계를 일부 또는 전부 벗어난다.
+객체 변경을 곧바로 SQL 한 문으로 생각하지 않는 게 중요하다. 같은 `EntityManager` 안에서 엔티티를 읽거나 생성하면 Unit of Work가 상태와 원본 snapshot을 관리하고, `flush()`가 필요한 SQL을 계산해 DB에 반영한다. 반대로 bulk SQL, QueryBuilder와 Kysely는 이 관리 경계를 일부 또는 전부 벗어난다.
 
 ## 먼저 정할 것
 

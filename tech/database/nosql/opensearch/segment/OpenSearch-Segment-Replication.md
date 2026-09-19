@@ -12,7 +12,7 @@ Replica가 무엇을 복제받는지가 색인 CPU 비용, 검색 가시성, fai
 
 ## DOCUMENT vs SEGMENT
 
-DOCUMENT replication은 primary가 operation을 replica에 전달하고 replica가 같은 문서를 다시 색인한다. SEGMENT replication(2.3 experimental, 2.7+ GA)은 primary만 색인하고, refresh로 만들어진 segment 파일을 checkpoint 기반으로 replica가 복사받는다.
+DOCUMENT replication은 primary가 operation을 replica에 전달하고 replica가 같은 문서를 다시 색인한다. SEGMENT replication(2.3 experimental, 2.7+ GA)은 primary만 색인하고 refresh로 만들어진 segment 파일을 checkpoint 기반으로 replica가 복사받는다.
 
 | 관점 | DOCUMENT | SEGMENT (node-to-node) |
 |---|---|---|
@@ -53,7 +53,7 @@ Backpressure는 기본 비활성(`segrep.pressure.enabled: false`)이며 켜면 
 - 기존 인덱스에 켜려면 reindex가 필요하다. 인덱스 생성 시 `index.replication.type: SEGMENT`.
 - Cross-cluster replication은 segment replication을 사용하지 않는다.
 
-한국어 콘텐츠 검색처럼 수정 직후 검색 반영을 사용자가 체감하는 서비스 인덱스는 DOCUMENT 유지가 무난하고, 같은 클러스터의 로그와 통계 인덱스만 인덱스 단위로 SEGMENT를 거는 식의 혼용이 실무적 선택지다.
+한국어 콘텐츠 검색처럼 수정 직후 검색 반영을 사용자가 체감하는 서비스 인덱스는 DOCUMENT 유지가 무난하고 같은 클러스터의 로그와 통계 인덱스만 인덱스 단위로 SEGMENT를 거는 식의 혼용이 실무적 선택지다.
 
 ## Remote-backed storage (2.10+)
 
@@ -77,12 +77,12 @@ Amazon OpenSearch Service의 OpenSearch optimized 인스턴스로, remote-backed
 - Primary만 색인하므로 색인 rate 지표가 실제의 절반으로 보일 수 있고, remote 업로드 전 버퍼링으로 ingestion latency가 높아진다. replica lag은 `ReplicationLagMaxTime` CloudWatch 지표로 본다.
 - Red index는 S3에서 자동 복원된다. UltraWarm과 달리 로컬과 원격 양쪽에 데이터를 두고 읽기와 쓰기를 모두 받는다.
 
-적합 workload는 log analytics, observability, security analytics 같은 색인 중심 대량 쓰기다. 검색 지연과 가시성에 민감한 콘텐츠 검색 도메인은 일반 인스턴스 + DOCUMENT가 여전히 기본 선택이고, 같은 계정의 로그 도메인을 OR1로 분리하는 구도가 자연스럽다.
+적합 workload는 log analytics, observability, security analytics 같은 색인 중심 대량 쓰기다. 검색 지연과 가시성에 민감한 콘텐츠 검색 도메인은 일반 인스턴스 + DOCUMENT가 여전히 기본 선택이고 같은 계정의 로그 도메인을 OR1로 분리하는 구도가 자연스럽다.
 
 ## SEGMENT 모드에서 달라지는 기존 문서의 서술
 
 - [[OpenSearch-Architecture|아키텍처]]의 쓰기 흐름 중 replica에 operation을 전달해 재실행하는 단계가 segment 파일 복사(또는 remote store 경유)로 바뀐다.
-- [[OpenSearch-Indexing-Internals|색인 내부 동작]]의 refresh가 만드는 검색 가시성은 primary 기준이 되고, replica 가시성은 copy 완료까지 추가로 늦는다. `refresh=wait_for` 권장도 SEGMENT에서는 성립하지 않는다.
+- [[OpenSearch-Indexing-Internals|색인 내부 동작]]의 refresh가 만드는 검색 가시성은 primary 기준이 되고 replica 가시성은 copy 완료까지 추가로 늦는다. `refresh=wait_for` 권장도 SEGMENT에서는 성립하지 않는다.
 - 기본 GET이 아무 copy에서나 real-time으로 읽는다는 서술은 SEGMENT에서 primary 라우팅으로 바뀐다.
 - Replica 수 증가가 색인 CPU를 배수로 늘린다는 비용 모델은 네트워크와 lag 비용 모델로 바뀐다.
 - Remote store에서는 replica translog 복제 자체가 사라지고 durability 논거가 remote store로 이동한다.
@@ -91,7 +91,7 @@ Amazon OpenSearch Service의 OpenSearch optimized 인스턴스로, remote-backed
 
 1. SEGMENT가 무조건 빠른 것이 아니다. replica가 많거나 primary shard가 많으면 이득이 줄고 lag과 거부가 늘 수 있다.
 2. SEGMENT에서 색인 응답 성공은 replica에서 검색 가능하다는 뜻이 아니다. 검색 가시성은 copy 완료에 종속된다.
-3. Replica의 translog가 사라지는 것은 remote store 모드이고, node-to-node SEGMENT에서는 replica도 translog는 기록한다.
+3. Replica의 translog가 사라지는 것은 remote store 모드이고 node-to-node SEGMENT에서는 replica도 translog는 기록한다.
 4. Remote-backed storage는 snapshot 대체가 아니라 복구 RPO를 좁히는 계층이다. 논리적 삭제, 오염 복구용 snapshot 정책은 여전히 필요하다.
 5. OR1은 인스턴스 스펙 업그레이드가 아니라 replication과 storage 구조가 다른 제품이다. 10초 refresh 하한과 비가역 전환이 따라온다.
 6. Backpressure는 켜야 동작한다. 기본값은 비활성이다.

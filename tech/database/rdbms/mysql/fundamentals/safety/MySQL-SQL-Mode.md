@@ -22,8 +22,8 @@ SELECT @@GLOBAL.sql_mode;
 SELECT @@SESSION.sql_mode;
 ```
 
-- GLOBAL 변경에는 `SYSTEM_VARIABLES_ADMIN` 권한(또는 deprecated된 `SUPER`)이 필요하고, 이미 맺어진 연결에는 영향이 없다.
-- `SET GLOBAL`은 재시작하면 사라진다. 영구 반영은 설정 파일, `SET PERSIST` 또는 관리형 DB의 parameter group으로 하고, 변경 절차는 [[MySQL-Configuration-Change-Management|MySQL 설정 변경 관리]]를 따른다.
+- GLOBAL 변경에는 `SYSTEM_VARIABLES_ADMIN` 권한(또는 deprecated된 `SUPER`)이 필요하고 이미 맺어진 연결에는 영향이 없다.
+- `SET GLOBAL`은 재시작하면 사라진다. 영구 반영은 설정 파일, `SET PERSIST` 또는 관리형 DB의 parameter group으로 하고 변경 절차는 [[MySQL-Configuration-Change-Management|MySQL 설정 변경 관리]]를 따른다.
 - 모드는 쉼표로 조합하며 `sql_mode = ''`로 전부 비울 수도 있다. 빈 값은 관대한(permissive) 동작을 뜻하지 검증이 좋아지는 것이 아니다.
 
 ## MySQL 8.4 기본값
@@ -39,13 +39,13 @@ SELECT @@SESSION.sql_mode;
 | `ERROR_FOR_DIVISION_BY_ZERO` | 데이터 변경문의 0으로 나누기에 NULL을 저장하되 경고, strict와 함께면 오류 (deprecated) |
 | `NO_ENGINE_SUBSTITUTION` | 요청한 스토리지 엔진이 없으면 기본 엔진으로 대체하지 않고 오류 |
 
-deprecated 표기된 3개는 단독 모드로는 폐기 예정이며 향후 strict mode에 흡수된다. 기본값을 유지하면 되고, 일부만 빼서 쓰는 조합은 만들지 않는 편이 안전하다.
+deprecated 표기된 3개는 단독 모드로는 폐기 예정이며 향후 strict mode에 흡수된다. 기본값을 유지하면 되고 일부만 빼서 쓰는 조합은 만들지 않는 편이 안전하다.
 
 ## Strict Mode 동작
 
 strict mode는 `STRICT_TRANS_TABLES`와 `STRICT_ALL_TABLES` 중 하나라도 켜져 있는 상태다. 범위 초과, 타입 불일치, 다중 행 문장의 NOT NULL 위반 같은 유효하지 않은 값을 경고 후 보정(가장 가까운 값으로 절단, 암묵 기본값 대입)하는 대신 오류로 문장을 중단시킨다. 적용 대상은 INSERT, UPDATE, DELETE, LOAD DATA 등의 변경문과 ALTER TABLE, CREATE TABLE 같은 DDL, 그리고 `SELECT SLEEP()`까지 포함한 정해진 문장 목록이다(strict에서 `SELECT SLEEP(-1)`은 오류). 데이터를 바꾸지 않는 일반 SELECT의 유효하지 않은 값은 strict에서도 경고에 그치고, SELECT의 0으로 나누기는 strict와 무관하게 NULL을 돌려준다(strict에서는 경고가 함께 붙는다).
 
-- `STRICT_TRANS_TABLES`: InnoDB 같은 트랜잭셔널 테이블에서는 오류를 내고 문장 전체를 롤백한다. 논트랜잭셔널 테이블에서는 첫 행 오류면 중단하고, 이미 일부 행이 들어간 뒤의 오류면 값을 보정하고 경고로 계속한다.
+- `STRICT_TRANS_TABLES`: InnoDB 같은 트랜잭셔널 테이블에서는 오류를 내고 문장 전체를 롤백한다. 논트랜잭셔널 테이블에서는 첫 행 오류면 중단하고 이미 일부 행이 들어간 뒤의 오류면 값을 보정하고 경고로 계속한다.
 - `STRICT_ALL_TABLES`: 엔진과 무관하게 오류 시점에 중단한다. 논트랜잭셔널 테이블에서는 이미 반영된 행이 되돌려지지 않아 부분 갱신이 남을 수 있다.
 - `IGNORE` 키워드는 strict mode보다 우선한다. strict를 켜 두어도 IGNORE를 쓰면 중복 키 같은 무시 가능한(ignorable) 오류가 경고로 강등되고, 무시 불가능한 오류는 그대로 오류로 남는다. IGNORE 자체의 동작과 사용 사례는 [[DML-Conflict-and-Batch-Patterns|MySQL DML 충돌 처리와 배치 패턴]]에 둔다.
 
@@ -62,7 +62,7 @@ InnoDB의 `innodb_strict_mode`(8.4 기본 ON)는 별개 변수다. 이는 CREATE
 
 ## 주요 개별 모드
 
-검증 계열은 위 기본값에 포함된 것이 핵심이고, 나머지는 대부분 문법 호환 계열이다.
+검증 계열은 위 기본값에 포함된 것이 핵심이고 나머지는 대부분 문법 호환 계열이다.
 
 - `ANSI_QUOTES`: 큰따옴표(`"`)를 문자열이 아니라 식별자 인용부호로 해석한다. 표준 SQL 문법과의 호환에 쓰이지만 켜는 순간 `"text"` 문자열 리터럴이 전부 깨지므로 기존 쿼리 자산과 함께 검토해야 한다. 백틱은 계속 식별자로 쓸 수 있다.
 - `PIPES_AS_CONCAT`: `||`를 OR가 아니라 표준 SQL의 문자열 연결로 해석한다.
@@ -86,12 +86,12 @@ InnoDB의 `innodb_strict_mode`(8.4 기본 ON)는 별개 변수다. 이는 CREATE
 - **replica에서 sql_mode를 로컬로 덮어쓰지 않는다.** sql_mode는 `NO_DIR_IN_CREATE`를 제외하면 복제 대상이라 보통은 양단이 같지만, replica 로컬 설정으로 갈라 두면 특히 파티션 테이블 복제에서 양단이 다른 데이터를 만들 수 있다.
 - **파티션 테이블에 데이터가 들어간 뒤에는 서버 sql_mode를 바꾸지 않는다.** 파티셔닝 함수의 결과가 달라져 데이터 손상이나 유실로 이어질 수 있다.
 - **애플리케이션 프레임워크가 세션 모드를 바꾸는지 확인한다.** 서버 기본값과 커넥션 풀의 세션 설정이 다르면 콘솔에서 재현되지 않는 동작 차이가 난다. 진단 시 `@@GLOBAL`과 `@@SESSION`을 모두 본다.
-- **`ONLY_FULL_GROUP_BY`나 strict를 끄는 것으로 오류를 해결하지 않는다.** 오류는 쿼리나 데이터의 문제를 드러낸 것이고, 모드를 끄면 문제가 비결정적 결과나 조용한 값 보정으로 바뀔 뿐이다.
+- **`ONLY_FULL_GROUP_BY`나 strict를 끄는 것으로 오류를 해결하지 않는다.** 오류는 쿼리나 데이터의 문제를 드러낸 것이고 모드를 끄면 문제가 비결정적 결과나 조용한 값 보정으로 바뀔 뿐이다.
 - **legacy 데이터 이관 시 모드 차이를 명시적으로 다룬다.** zero date나 잘린 값이 들어 있는 구버전 덤프는 기본 모드에서 복원이 실패할 수 있다. 임시로 세션 모드를 낮추더라도 범위와 기간을 정해 두고 되돌린다.
 
 ## 실서버 값 확인과 strict 전환
 
-8.4 기본값은 엔진이 컴파일해 둔 출발점일 뿐이고, 실서버의 실제 값은 위의 영구 반영 수단들이 덮는다. 현재 값과 그 출처부터 확인한다.
+8.4 기본값은 엔진이 컴파일해 둔 출발점일 뿐이고 실서버의 실제 값은 위의 영구 반영 수단들이 덮는다. 현재 값과 그 출처부터 확인한다.
 
 ```sql
 SELECT variable_source, variable_path
@@ -102,7 +102,7 @@ WHERE variable_name = 'sql_mode';
 
 - RDS와 Aurora에서는 파라미터 그룹이 정본이다. 파라미터 그룹이 주는 sql_mode는 엔진 기본값과 같다고 가정하지 말고 `aws rds describe-engine-default-parameters`(패밀리는 RDS `mysql8.4`, Aurora는 해당 버전의 `aurora-mysql*`)와 인스턴스에 붙은 그룹의 실제 값으로 확인한다. 수정은 커스텀 파라미터 그룹으로 하고(기본 그룹은 수정 불가), writer와 reader에 같은 그룹을 적용해 양단 모드를 맞춘다. 표준 파라미터 템플릿을 쓰는 조직이라면 템플릿의 sql_mode 항목부터 확인한다([[MySQL-Aurora-Parameter-Tuning|MySQL/Aurora 파라미터 표준 튜닝]]).
 - 관대한 모드로 운영되던 DB에 strict를 바로 켜지 않는다. 보정되어 저장된 데이터와 관대한 동작에 의존하는 쿼리가 있으면 잘 돌던 변경문이 그날부터 오류가 된다. 클라이언트 쪽에서 warning 카운트와 `SHOW WARNINGS`를 수집하거나 strict 세션의 스테이징에 워크로드를 재생해 걸리는 문장을 찾고, 데이터와 쿼리를 정리한 뒤에 전역으로 올린다. 데이터가 들어간 파티션 테이블이 있으면 위 체크포인트대로 서버 모드는 바꾸지 않는다.
-- 빈 sql_mode는 설계가 아니라 유산이다. strict 계열이 기본값이 된 것은 MySQL 5.7(5.7.5~5.7.8에 걸쳐 추가)부터이고, 그 전에 만들어진 데이터, 설정과 이관 호환 관행이 복사되며 살아남는다.
+- 빈 sql_mode는 설계가 아니라 유산이다. strict 계열이 기본값이 된 것은 MySQL 5.7(5.7.5~5.7.8에 걸쳐 추가)부터이고 그 전에 만들어진 데이터, 설정과 이관 호환 관행이 복사되며 살아남는다.
 
 ## 점검 질문
 

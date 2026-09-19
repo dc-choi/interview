@@ -18,11 +18,11 @@ ES Modules는 정적으로 분석 가능한 import/export 그래프와 live bind
 
 ### 2. Instantiation (인스턴스화)
 
-각 export에 대한 메모리 슬롯을 할당하고, import 측에 읽기 전용 바인딩(live binding)을 생성한다. 이 시점에서는 아직 값이 할당되지 않았지만, 메모리 구조가 준비된다.
+각 export에 대한 메모리 슬롯을 할당하고 import 측에 읽기 전용 바인딩(live binding)을 생성한다. 이 시점에서는 아직 값이 할당되지 않았지만, 메모리 구조가 준비된다.
 
 ### 3. Evaluation (실행)
 
-모듈 코드를 실행하여 export 슬롯에 실제 값을 할당한다. 의존성 그래프의 리프 노드부터 실행되며, 각 모듈은 한 번만 실행된다.
+모듈 코드를 실행하여 export 슬롯에 실제 값을 할당한다. 의존성 그래프의 리프 노드부터 실행되며 각 모듈은 한 번만 실행된다.
 
 ## Live Bindings
 
@@ -76,7 +76,7 @@ const dirname = import.meta.dirname;
 
 ## package.json exports 필드
 
-`exports` 필드는 패키지의 진입점을 정밀하게 제어한다. `main` 필드보다 우선하며, 조건부 exports로 CJS/ESM을 동시에 지원할 수 있다.
+`exports` 필드는 패키지의 진입점을 정밀하게 제어한다. `main` 필드보다 우선하며 조건부 exports로 CJS/ESM을 동시에 지원할 수 있다.
 
 ```json
 {
@@ -105,7 +105,7 @@ const dirname = import.meta.dirname;
 
 ## 듀얼 패키지 위험 (Dual-Package Hazard)
 
-동일한 패키지가 애플리케이션 내에서 CJS와 ESM 양쪽으로 로드되면, 두 개의 별도 인스턴스가 생성된다. 이 경우 `instanceof` 검사가 실패하고, 모듈 수준 상태가 분리된다.
+동일한 패키지가 애플리케이션 내에서 CJS와 ESM 양쪽으로 로드되면, 두 개의 별도 인스턴스가 생성된다. 이 경우 `instanceof` 검사가 실패하고 모듈 수준 상태가 분리된다.
 
 ```
 완화 방법:
@@ -118,7 +118,7 @@ const dirname = import.meta.dirname;
 
 ## Node-API와 ABI 안정성
 
-**Node-API**(구 N-API)는 네이티브 애드온을 위한 Node.js 메이저 버전 간 ABI 안정성을 제공한다. 다만 해당 애드온이 Node-API만 사용하고, 외부 네이티브 라이브러리와 대상 OS, 아키텍처가 호환될 때의 보장이다.
+**Node-API**(구 N-API)는 네이티브 애드온을 위한 Node.js 메이저 버전 간 ABI 안정성을 제공한다. 다만 해당 애드온이 Node-API만 사용하고 외부 네이티브 라이브러리와 대상 OS, 아키텍처가 호환될 때의 보장이다.
 
 ```
 ABI vs API:

@@ -14,7 +14,7 @@ retry topic은 실패한 메시지를 지연 뒤 다시 소비하기 위해 두�
 
 ## 문제 — 컨슈머 실패 처리의 표준화
 
-- 컨슈머 실패의 상당수는 일시적이다. 대표 사례가 이벤트 소비 순서 역전: 선행 데이터가 아직 만들어지지 않은 상태에서 후행 이벤트가 먼저 도착해 실패하고, 몇 분 뒤 다시 시도하면 성공하는 패턴이다.
+- 컨슈머 실패의 상당수는 일시적이다. 대표 사례가 이벤트 소비 순서 역전: 선행 데이터가 아직 만들어지지 않은 상태에서 후행 이벤트가 먼저 도착해 실패하고 몇 분 뒤 다시 시도하면 성공하는 패턴이다.
 - 유실이 허용되지 않는 도메인(정산, 결제, 재고)에서는 실패하면 로그 남기고 넘어가는 방식이 불가능하므로, 재시도 방식과 최종 실패의 보관 위치, 포맷을 표준화해야 한다. 표준화의 적용 비용이 크면 아무도 안 쓰므로, 어노테이션 한 줄 수준까지 낮추는 것 자체가 설계 목표가 된다.
 
 ## 결정 1 — 실패 상태는 Kafka 안에 둔다
@@ -75,7 +75,7 @@ public void consume(ConsumerRecord<String, OrderCompleted> record) {
 
 - 네이밍과 DLT payload는 서로 다른 확장 포인트에 있다. `RetryTopicConfigurationSupport`를 상속해 `RetryTopicComponentFactory`에서 네이밍 전략(RetryTopicNamesProviderFactory)과 DeadLetterPublishingRecovererFactory 두 곳만 교체한다.
 - 네이밍은 topic 이름만 바꾸면 안 된다. retry 컨슈머의 consumer group, client-id, endpoint id에도 일관된 suffix를 줘야 main 컨슈머와 그룹이 분리되고 모니터링에서 어느 컨슈머가 retry인지 식별된다.
-- `DeadLetterPublishingRecoverer`는 retry hop 발행과 DLT 발행이 같은 코드 경로다. `createProducerRecord`를 override해 목적지가 공통 DLT일 때만 envelope로 교체하고, retry hop은 기본 발행 흐름을 유지한다.
+- `DeadLetterPublishingRecoverer`는 retry hop 발행과 DLT 발행이 같은 코드 경로다. `createProducerRecord`를 override해 목적지가 공통 DLT일 때만 envelope로 교체하고 retry hop은 기본 발행 흐름을 유지한다.
 - 발행 경로 전체(ObjectMapper, ProducerFactory, KafkaTemplate)는 전용 빈으로 격리해 호스트 서비스의 직렬화 설정에 영향받지 않게 한다. 날짜 포맷처럼 소비 측이 의존하는 값은 라이브러리가 고정한다.
 
 ## 구현 함정 — 정상 메시지만 테스트하면 놓친다
@@ -95,7 +95,7 @@ public void consume(ConsumerRecord<String, OrderCompleted> record) {
 
 - 전용 ObjectMapper, Serializer, Template처럼 wiring을 갈아끼우는 작업은 잘못돼도 어디서도 예외가 나지 않는다. 깨진 포맷이 조용히 발행되고 한참 뒤 다른 서비스의 역직렬화 실패로 나타난다.
 - 빈 wiring이 아니라 직렬화된 바이트(wire format) 자체를 단언하는 회귀 테스트를 둔다. 날짜 포맷 하나만 틀어져도 이 테스트가 먼저 깨진다.
-- end-to-end는 @EmbeddedKafka 통합 테스트로 재시도 발행부터 DLT envelope의 origin 필드까지 검증하고, 분 단위 backoff는 테스트에서만 ms 단위로 override한다.
+- end-to-end는 @EmbeddedKafka 통합 테스트로 재시도 발행부터 DLT envelope의 origin 필드까지 검증하고 분 단위 backoff는 테스트에서만 ms 단위로 override한다.
 
 ## 체크포인트
 

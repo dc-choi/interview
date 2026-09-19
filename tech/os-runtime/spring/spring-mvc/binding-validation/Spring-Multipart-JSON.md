@@ -7,7 +7,7 @@ aliases: ["Spring Multipart JSON", "RequestPart vs RequestBody", "파일 업로�
 
 # Spring REST — Multipart 파일 + JSON DTO 동시 처리
 
-REST API에서 **파일 업로드와 JSON 메타데이터를 같은 요청으로** 받는 일은 흔하지만, Spring의 바인딩 어노테이션 선택을 잘못하면 `HttpMediaTypeNotSupportedException`, `Required request part ... is not present` 같은 오류로 자주 막힌다. 핵심은 **Content-Type이 `multipart/form-data`일 때 `@RequestBody`를 쓸 수 없다**는 것.
+REST API에서 **파일 업로드와 JSON 메타데이터를 같은 요청으로** 받는 일은 흔하지만, Spring의 바인딩 어노테이션 선택을 잘못하면 `HttpMediaTypeNotSupportedException`, `Required request part ... is not present` 같은 오류로 자주 막힌다. **Content-Type이 `multipart/form-data`일 때 `@RequestBody`를 쓸 수 없다**.
 
 ## 어노테이션 4종 비교
 

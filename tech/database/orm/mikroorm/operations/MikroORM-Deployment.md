@@ -129,7 +129,7 @@ npx mikro-orm debug
 npx mikro-orm migration:pending
 ```
 
-그 뒤 service의 실제 start command와 health check로 ORM 초기화, 대표 read와 shutdown을 확인한다. 핵심은 developer laptop의 `tsx`가 아니라 production module format, working directory, env injection, files와 driver로 검증하는 것이다.
+그 뒤 service의 실제 start command와 health check로 ORM 초기화, 대표 read와 shutdown을 확인한다. developer laptop의 `tsx`가 아니라 production module format, working directory, env injection, files와 driver로 검증한다.
 
 ## 배포 전 체크리스트
 

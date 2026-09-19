@@ -10,7 +10,7 @@ aliases: ["Expo", "Expo Framework", "엑스포"]
 
 Expo는 React Native 앱의 개발, 네이티브 설정, 빌드와 배포를 하나의 도구 체인으로 묶은 프레임워크다. 별도의 앱 기술이 아니라 React Native 위에서 동작하며, React Native 공식 문서도 새 앱에는 Expo 같은 프레임워크 사용을 권장한다.
 
-핵심은 Expo Framework와 Expo Application Services(EAS)를 구분하는 것이다. Expo SDK와 CLI는 무료 오픈 소스이고 로컬에서 사용할 수 있다. EAS는 빌드, 스토어 제출과 업데이트를 대신 처리하는 선택적 클라우드 서비스다.
+Expo Framework와 Expo Application Services(EAS)를 구분해서 본다. Expo SDK와 CLI는 무료 오픈 소스이고 로컬에서 사용할 수 있다. EAS는 빌드, 스토어 제출과 업데이트를 대신 처리하는 선택적 클라우드 서비스다.
 
 ## 구성 요소 구분
 

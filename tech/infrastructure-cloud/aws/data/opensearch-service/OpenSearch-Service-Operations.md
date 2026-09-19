@@ -38,7 +38,7 @@ Provisioned domain의 가용성 설계, service software update와 engine upgrad
 - OpenSearch와 Elasticsearch 5.3 이상 domain은 AWS 관리 저장소에 자동 snapshot을 매시간 만들고 최대 336개를 14일 보존한다.
 - 자동 snapshot은 해당 domain의 cluster 복구용이다. 장기 보존과 다른 domain 이관에는 자체 S3 repository의 manual snapshot을 사용한다.
 - Manual snapshot은 기본적으로 UltraWarm과 cold tier 데이터를 포함하지 않는다. 필요하면 snapshot 전에 hot tier로 옮기거나 원본 재생 경로를 유지한다.
-- Serverless는 매시간 자동 snapshot을 만들지만 manual snapshot과 다른 collection으로의 restore를 지원하지 않는다. 같은 이름의 열린 index를 restore하면 덮어쓸 수 있고 restore 중 해당 index 요청은 실패한다.
+- Serverless는 매시간 자동 snapshot을 만들지만 manual snapshot과 다른 collection으로 restore하는 것을 지원하지 않는다. 같은 이름의 열린 index를 restore하면 덮어쓸 수 있고 restore 중 해당 index 요청은 실패한다.
 - Red cluster가 지속되면 자동 snapshot도 실패할 수 있으므로 `AutomatedSnapshotFailure`를 감시한다.
 - Manual snapshot은 완벽한 단일 시점 복사본이 아니며 shard별 포함 시점이 다를 수 있다.
 - Backup 존재 여부가 아니라 실제 restore 시간과 RPO, RTO를 정기적으로 검증한다.

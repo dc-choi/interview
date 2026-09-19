@@ -7,7 +7,7 @@ aliases: ["NestJS Architecture", "NestJS 아키텍처"]
 
 # NestJS 아키텍처 (architecture 인덱스)
 
-NestJS 위에서의 설계 의사결정을 모은다. 클린 아키텍처 적용, 순환 의존성 해결, Spring과의 구조 비교, 모듈 시스템 확장.
+NestJS로 개발할 때의 설계 의사결정을 모은다. 클린 아키텍처 적용, 순환 의존성 해결, Spring과의 구조 비교, 모듈 시스템 확장.
 
 ## 설계 주제별 상세
 - [[Clean-Architecture-NestJS|클린 아키텍처 적용 — 레이어, 구조, CQRS (하위 인덱스)]]

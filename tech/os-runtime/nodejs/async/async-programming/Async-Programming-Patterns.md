@@ -112,7 +112,7 @@ someAsyncApiCall(() => { console.log('bar', bar); });    // bar 1
 bar = 1;
 ```
 
-**EventEmitter에서의 활용**
+**EventEmitter를 활용하는 방법**
 ```js
 class MyEmitter extends EventEmitter {
   constructor() { super(); process.nextTick(() => this.emit('event')); }

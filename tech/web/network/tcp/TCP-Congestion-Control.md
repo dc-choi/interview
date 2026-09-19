@@ -40,7 +40,7 @@ aliases: ["TCP Congestion Control", "혼잡 제어", "AIMD", "Slow Start", "CWND
 
 ### AIMD (Additive Increase / Multiplicative Decrease)
 
-합 증가, 곱 감소. Reno의 congestion avoidance에서는 문제가 없으면 CWND가 **RTT당 약 1 SMSS씩** 선형 증가하고, 혼잡이 감지되면 전통적으로 절반 수준으로 줄어든다. 완만히 오르다 급락하는 **톱니 모양** 그래프가 나온다.
+합 증가, 곱 감소. Reno의 congestion avoidance에서는 문제가 없으면 CWND가 **RTT당 약 1 SMSS씩** 선형 증가하고 혼잡이 감지되면 전통적으로 절반 수준으로 줄어든다. 완만히 오르다 급락하는 **톱니 모양** 그래프가 나온다.
 
 AIMD는 같은 병목을 공유하고 RTT와 알고리즘이 비슷한 연결이라는 이론 조건에서 대역을 공평하게 나누는 방향으로 수렴한다. 실제 환경에서는 RTT, 혼잡 제어 알고리즘과 경로 차이 때문에 공평성이 달라진다. 단점은 대역이 남아도 선형 증가 구간에서 최대 속도 도달이 느릴 수 있다는 점이다.
 
@@ -79,9 +79,9 @@ Fast Retransmit을 처음 도입한 초기 정책. 혼잡 감지 시 **두 신�
 Tahoe 이후 정책으로, **3 ACK Duplicated와 Timeout을 구분**한다.
 
 - **3 중복 ACK(가벼운 혼잡)**: `ssthresh`를 `max(FlightSize / 2, 2*SMSS)`로 낮춘 뒤 Fast Recovery에 들어간다. 전통적인 Reno는 recovery 중 `cwnd = ssthresh + 3*SMSS`로 두고, 새 데이터를 ACK하면 `cwnd`를 `ssthresh`로 되돌린다.
-- **Timeout(심각한 혼잡)**: 첫 재전송 timeout에서는 같은 식으로 `ssthresh`를 갱신하고, `cwnd`를 loss window로 낮춘 뒤 Slow Start를 재시작한다. 같은 세그먼트의 후속 timeout에서는 구현이 `ssthresh`를 유지할 수 있지만, 첫 timeout부터 항상 유지되는 것은 아니다.
+- **Timeout(심각한 혼잡)**: 첫 재전송 timeout에서는 같은 식으로 `ssthresh`를 갱신하고 `cwnd`를 loss window로 낮춘 뒤 Slow Start를 재시작한다. 같은 세그먼트의 후속 timeout에서는 구현이 `ssthresh`를 유지할 수 있지만, 첫 timeout부터 항상 유지되는 것은 아니다.
 
-혼잡의 경중을 따져 가벼우면 덜 줄이고, 심각하면 처음부터 다시 시작한다.
+혼잡의 경중을 따져 가벼우면 덜 줄이고 심각하면 처음부터 다시 시작한다.
 
 | | TCP Tahoe | TCP Reno |
 |---|---|---|
@@ -92,13 +92,13 @@ Tahoe 이후 정책으로, **3 ACK Duplicated와 Timeout을 구분**한다.
 
 ## 그 이후 — 현대 정책
 
-Tahoe와 Reno는 손실을 주 혼잡 신호로 삼는 고전 정책이다. 이후 정책은 대역폭 지연 곱과 지연 신호를 더 잘 활용하려 한다. CUBIC은 이전 최대 윈도우 근처에서 3차 함수로 성장하고, BBR은 다른 신호를 사용한다. 어느 알고리즘이 기본인지와 정확한 파라미터는 OS, 커널, 네트워크 설정에 따라 확인해야 한다.
+Tahoe와 Reno는 손실을 주 혼잡 신호로 삼는 고전 정책이다. 이후 정책은 대역폭 지연 곱과 지연 신호를 더 잘 활용하려 한다. CUBIC은 이전 최대 윈도우 근처에서 3차 함수로 성장하고 BBR은 다른 신호를 사용한다. 어느 알고리즘이 기본인지와 정확한 파라미터는 OS, 커널, 네트워크 설정에 따라 확인해야 한다.
 
 ## 응용 관점 — 고지연 링크에서 크기는 왕복 횟수다
 
 RTT가 큰 링크(위성망 등)에서 응답 크기가 레이턴시에 미치는 영향은 대역폭뿐 아니라 Slow Start의 왕복 횟수로 나타난다. RFC 6928은 IW10을 **허용 상한**으로 제안하지만 구현이 반드시 사용한다는 뜻은 아니다. 초기 윈도우를 넘는 payload는 ACK 왕복을 기다린 뒤 다음 데이터를 보낼 수 있어 여러 RTT를 소비할 수 있다. 압축과 전송량 축소의 효과는 실제 대상 OS와 연결 측정으로 확인한다.
 
-CWND는 커넥션에 종속된 값이다. 새 커넥션은 해당 구현의 초기 윈도우에서 시작하며, 재사용 커넥션은 유휴 시간과 restart window 규칙의 영향을 받는다. keep-alive와 커넥션 풀의 이득은 handshake 비용, 재사용 비율, 서버와 네트워크 정책을 함께 측정해 판단한다.
+CWND는 커넥션에 종속된 값이다. 새 커넥션은 해당 구현의 초기 윈도우에서 시작하며 재사용 커넥션은 유휴 시간과 restart window 규칙의 영향을 받는다. keep-alive와 커넥션 풀의 이득은 handshake 비용, 재사용 비율, 서버와 네트워크 정책을 함께 측정해 판단한다.
 
 ## 면접 체크포인트
 

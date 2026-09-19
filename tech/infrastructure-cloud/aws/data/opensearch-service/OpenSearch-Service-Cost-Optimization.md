@@ -83,7 +83,7 @@ Provisioned domain의 설정 변경은 두 부류다. Blue-green은 기존 clust
 
 ## 시나리오: 설정 하나 바꿨는데 클러스터가 왜 두 배가 됐나
 
-비용을 아끼려고 평일 낮에 EBS를 gp2에서 gp3로 바꿨다고 하자. volume type 변경은 blue-green trigger라서 CloudWatch의 `Nodes`가 11에서 22로 뛰고, shard 복사 트래픽 때문에 검색 p99가 오르고 bulk 429가 늘었다. 놀라서 지표를 보다가 두 배 과금을 걱정했지만 청구서 영향은 첫 1시간뿐이었고, 실제 문제는 headroom 없이 peak 시간에 배포를 시작한 판단이었다. 올바른 순서는 이렇다. dry run으로 `DeploymentType`을 확인하고, blue-green이면 off-peak window나 저트래픽 시간대로 스케줄하며, red index와 디스크 여유 같은 validation 항목을 미리 정리하고, 배포 중 master 부하와 latency를 감시한다. 같은 이유로 [[OpenSearch-Service-Operations|운영 문서]] 체크리스트의 blue-green 여유 용량 항목은 gp3 전환이나 Graviton 전환 같은 절감 작업 자체의 전제 조건이기도 하다.
+비용을 아끼려고 평일 낮에 EBS를 gp2에서 gp3로 바꿨다고 하자. volume type 변경은 blue-green trigger라서 CloudWatch의 `Nodes`가 11에서 22로 뛰고, shard 복사 트래픽 때문에 검색 p99가 오르고 bulk 429가 늘었다. 놀라서 지표를 보다가 두 배 과금을 걱정했지만 청구서 영향은 첫 1시간뿐이었고 실제 문제는 headroom 없이 peak 시간에 배포를 시작한 판단이었다. 올바른 순서는 이렇다. dry run으로 `DeploymentType`을 확인하고 blue-green이면 off-peak window나 저트래픽 시간대로 스케줄하며 red index와 디스크 여유 같은 validation 항목을 미리 정리하고 배포 중 master 부하와 latency를 감시한다. 같은 이유로 [[OpenSearch-Service-Operations|운영 문서]] 체크리스트의 blue-green 여유 용량 항목은 gp3 전환이나 Graviton 전환 같은 절감 작업 자체의 전제 조건이기도 하다.
 
 ## 관련 문서
 

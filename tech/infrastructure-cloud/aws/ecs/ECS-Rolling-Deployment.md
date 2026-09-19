@@ -75,7 +75,7 @@ DAEMON 스케줄링 전략의 `minimumHealthyPercent` 기본값은 CLI, SDK, API
 | `STOPPING` | `STOPSIGNAL`(기본 SIGTERM) 전달 후 `stopTimeout`만큼 기다렸다가 SIGKILL |
 | `DEPROVISIONING` | `awsvpc` ENI 분리와 삭제 |
 
-등록 해제 직후 타깃은 `draining`이 되고, Application Load Balancer 대상 그룹 기준 `deregistration_delay.timeout_seconds`(기본 300초)가 지나야 `unused`로 넘어간다. 진행 중 요청도 활성 커넥션도 없으면 등록 해제 자체는 즉시 끝나지만 표시 상태는 지연 시간이 다 흐를 때까지 `draining`으로 남는다. ECS는 로드밸런서가 keep-alive 커넥션이 닫혔다고 보고할 때까지 기다리므로, 이 값이 배포 소요 시간을 직접 좌우한다. 응답 시간이 1초 미만인 서비스는 5초까지 줄이라는 것이 공식 가이드이고, 대용량 업로드나 스트리밍처럼 장기 요청이 있으면 줄이면 안 된다.
+등록 해제 직후 타깃은 `draining`이 되고 Application Load Balancer 대상 그룹 기준 `deregistration_delay.timeout_seconds`(기본 300초)가 지나야 `unused`로 넘어간다. 진행 중 요청도 활성 커넥션도 없으면 등록 해제 자체는 즉시 끝나지만 표시 상태는 지연 시간이 다 흐를 때까지 `draining`으로 남는다. ECS는 로드밸런서가 keep-alive 커넥션이 닫혔다고 보고할 때까지 기다리므로 이 값이 배포 소요 시간을 직접 좌우한다. 응답 시간이 1초 미만인 서비스는 5초까지 줄이라는 것이 공식 가이드이고 대용량 업로드나 스트리밍처럼 장기 요청이 있으면 줄이면 안 된다.
 
 `stopTimeout`은 Fargate에서 미지정 시 30초, 유효 범위는 2~120초다. EC2에서는 미지정 시 에이전트 설정 `ECS_CONTAINER_STOP_TIMEOUT`(둘 다 미설정이면 30초)이 적용되고, 별도의 120초 상한은 문서화돼 있지 않다. 앱이 SIGTERM을 받아 리스닝을 멈추고 진행 중 요청만 마친 뒤 종료하면 타임아웃을 다 쓰지 않고 조기에 끝난다. 신호 처리 패턴은 [[Graceful-Shutdown|우아한 종료]] 참고.
 

@@ -11,7 +11,7 @@ aliases: ["Ontology Operations", "온톨로지 실행 절차"]
 
 ## 구현 범위
 
-Git `HEAD`의 Markdown에서 문서, 절과 명시 관계를 추출하고, 질문에 맞는 원문을 revision, 위치와 hash와 함께 반환한다. 검색 순위, 근거 선택, scope와 예산의 상세 계약은 [[Ontology-Runtime-Contract#구현 범위]]를 따른다.
+Git `HEAD`의 Markdown에서 문서, 절과 명시 관계를 추출하고 질문에 맞는 원문을 revision, 위치와 hash와 함께 반환한다. 검색 순위, 근거 선택, scope와 예산의 상세 계약은 [[Ontology-Runtime-Contract#구현 범위]]를 따른다.
 
 ## 기존 목차와 위키링크의 역할
 
@@ -43,7 +43,7 @@ npm run serve
 
 `read`와 `context_read`도 같은 snapshot 확인 경로를 사용한다. 조회 결과의 ID, revision과 hash에 맞는 근거를 예산 안에서 페이지로 읽으며, revision이나 hash가 달라졌으면 재조회를 요구한다. 입력, 페이지 연결과 오류 처리의 정본은 [[Ontology-Evidence-Read]]다.
 
-`outline`과 `context_outline`도 같은 snapshot 확인 경로를 사용한다. 찾은 Document의 section 목록을 페이지로 반환하고, 선택한 section의 본문은 `context_read`로 읽는다. 입력, 목차 cursor와 원문 무결성 검사는 [[Ontology-Document-Outline]]을 따른다.
+`outline`과 `context_outline`도 같은 snapshot 확인 경로를 사용한다. 찾은 Document의 section 목록을 페이지로 반환하고 선택한 section의 본문은 `context_read`로 읽는다. 입력, 목차 cursor와 원문 무결성 검사는 [[Ontology-Document-Outline]]을 따른다.
 
 조회는 evidence byte hash를 다시 확인하고 section excerpt, source revision, anchor를 함께 반환한다. allowlist, indexed path와 요청 scope의 교집합 밖 원문은 반환하지 않는다. 출력에는 `index_sync`, coverage gap, output byte budget과 제한으로 빠진 record를 보존한다.
 
@@ -95,7 +95,7 @@ Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.
 
 필수 조건과 예외의 누락은 `npm run evaluate -- --cases evaluation/context-integrity-cases.json`으로 관찰한다. 이 진단은 현 조회기의 한계를 드러내는 표본이며 `--check`를 붙이면 누락이 있는 동안 실패한다. 짧은 검색 진단과 필수 근거 진단의 통과 여부를 합쳐 모든 조회가 성공했다고 표시하지 않는다.
 
-초기 검색 관측은 [[Development-Ontology-Evaluation]], 이후 개선은 [[Ontology-History]]를 따른다. 검색 결과가 부족하면 기술 용어 후보로 다시 조회하고, 파일명과 heading으로 scope를 좁히거나 직접 원문 검색으로 보완한다.
+초기 검색 관측은 [[Development-Ontology-Evaluation]], 이후 개선은 [[Ontology-History]]를 따른다. 검색 결과가 부족하면 기술 용어 후보로 다시 조회하고 파일명과 heading으로 scope를 좁히거나 직접 원문 검색으로 보완한다.
 
 후속 자연어 표본과 목차 탐색은 [[Ontology-Retrieval-Quality]]를 따른다. `node evaluation/outline-navigation.mjs --cache <absolute-path> --check`는 실제 MCP 목차의 무결성, 페이지 완료와 응답 예산을 검사한다. 이 명령의 `--check`는 protocol 검사만 수행하며 알려진 검색 실패를 통과로 바꾸지 않는다. heading 회수와 본문 조건 충족은 별도 지표다.
 

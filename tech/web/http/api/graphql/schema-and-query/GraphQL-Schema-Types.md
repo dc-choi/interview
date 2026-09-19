@@ -29,7 +29,7 @@ Scalar를 반환하는 필드에도 인자를 줄 수 있다(서버측 변환 �
 
 ## Scalar (내장 5종 + custom)
 
-쿼리의 leaf 값이라 하위 선택이 없다. 내장 5종: Int(부호 있는 32비트 정수), Float(배정밀도), String(Unicode code point sequence), Boolean, ID(문자열로 직렬화되지만 human-readable이 아님을 의미, refetch나 캐시 키로 씀). UTF-8 같은 내부 인코딩은 서비스 구현의 선택이고, 와이어에서의 표현은 전송, 직렬화 포맷이 따로 정한다. custom scalar는 SDL에선 키워드만 두고 동작은 구현이 정의한다. graphql-js 계열의 계약은 함수 셋이다: serialize(백엔드 표현을 응답 JSON으로), parseValue(변수로 들어온 JSON을 백엔드 표현으로), parseLiteral(쿼리 문자열 안 인라인 리터럴의 AST 노드를 백엔드 표현으로). 입력이 변수와 인라인 리터럴 두 경로로 들어오므로 파서도 둘이고, 어느 함수에서든 던지면 검증 실패다.
+쿼리의 leaf 값이라 하위 선택이 없다. 내장 5종: Int(부호 있는 32비트 정수), Float(배정밀도), String(Unicode code point sequence), Boolean, ID(문자열로 직렬화되지만 human-readable이 아님을 의미, refetch나 캐시 키로 씀). UTF-8 같은 내부 인코딩은 서비스 구현의 선택이고, 와이어로 전달되는 표현은 전송, 직렬화 포맷이 따로 정한다. custom scalar는 SDL에선 키워드만 두고 동작은 구현이 정의한다. graphql-js 계열의 계약은 함수 셋이다: serialize(백엔드 표현을 응답 JSON으로), parseValue(변수로 들어온 JSON을 백엔드 표현으로), parseLiteral(쿼리 문자열 안 인라인 리터럴의 AST 노드를 백엔드 표현으로). 입력이 변수와 인라인 리터럴 두 경로로 들어오므로 파서도 둘이고, 어느 함수에서든 던지면 검증 실패다.
 
 ```graphql
 scalar Date
@@ -37,7 +37,7 @@ scalar Date
 
 ## Enum
 
-허용된 값 집합으로 제한된 특수 scalar. 인자가 그 집합 중 하나인지 검증하고, 필드가 유한 집합 중 하나임을 타입으로 알린다.
+허용된 값 집합으로 제한된 특수 scalar. 인자가 그 집합 중 하나인지 검증하고 필드가 유한 집합 중 하나임을 타입으로 알린다.
 
 ```graphql
 enum Episode { NEWHOPE EMPIRE JEDI }
@@ -61,7 +61,7 @@ enum Episode { NEWHOPE EMPIRE JEDI }
 
 ## Interface
 
-구현 타입이 반드시 포함해야 하는 필드 집합을 정의하는 추상 타입. Interface 필드와 인자는 같은 이름과 인자 타입으로 포함해야 하고, 반환 타입은 같거나 interface 반환 타입의 유효한 subtype이어야 한다. 구현체가 추가하는 인자는 optional이어야 한다.
+구현 타입이 반드시 포함해야 하는 필드 집합을 정의하는 추상 타입. Interface 필드와 인자는 같은 이름과 인자 타입으로 포함해야 하고 반환 타입은 같거나 interface 반환 타입의 유효한 subtype이어야 한다. 구현체가 추가하는 인자는 optional이어야 한다.
 
 ```graphql
 interface Character { id: ID! name: String! }
@@ -80,7 +80,7 @@ type Human implements Character { id: ID! name: String! totalCredits: Int }
 union SearchResult = Human | Droid | Starship
 ```
 
-- 공통 필드가 없어 모든 필드 접근에 타입 조건 fragment(보통 inline)가 필요하고, 타입 구분은 `__typename` 메타 필드로 한다.
+- 공통 필드가 없어 모든 필드 접근에 타입 조건 fragment(보통 inline)가 필요하고 타입 구분은 `__typename` 메타 필드로 한다.
 - 서버 구현 쪽에선 abstract 타입(union, interface 공통)이 반환한 값의 구체 타입을 알려줄 type resolver가 필요하다. graphql-tools, Apollo 계열 resolver 맵 관례는 `__resolveType(obj, context, info)` — 값의 필드 모양 등으로 판별해 타입 이름 문자열을 반환하고, null을 반환하면 실행 에러가 난다.
 - interface와 차이: interface는 공통 필드를 보장한다. union은 자체로는 공통 필드가 없어 멤버 필드를 inline fragment로 꺼내지만, 멤버들이 같은 interface를 구현하면 `... on Character` 한 fragment로 공통 필드를 모아 조회할 수 있다. `__typename`은 클라이언트가 응답에서 타입을 구분하는 메타 필드일 뿐 필드 선택의 전제가 아니다.
 

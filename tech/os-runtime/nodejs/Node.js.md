@@ -15,20 +15,20 @@ Node.js는 2009년 5월 27일 처음 공개됐고, Ryan Dahl은 같은 해 11월
 
 ### 핵심 설계 선택
 - **V8 엔진 채택**: 구글이 Chrome을 위해 만든 고성능 JS 엔진이 이미 오픈소스로 공개돼 있었다. JIT 컴파일로 인터프리터보다 훨씬 빠르고, JS라는 이미 널리 쓰이는 언어를 서버에 끌어올 수 있다는 장점이 컸다.
-- **이벤트 기반 비동기 I/O**: JavaScript callback을 이벤트 루프로 조정하고, OS의 readiness/completion 알림과 libuv worker pool을 함께 사용한다. 동시 I/O마다 JavaScript 스레드를 하나씩 둘 필요가 없다.
+- **이벤트 기반 비동기 I/O**: JavaScript callback을 이벤트 루프로 조정하고 OS의 readiness/completion 알림과 libuv worker pool을 함께 사용한다. 동시 I/O마다 JavaScript 스레드를 하나씩 둘 필요가 없다.
 - **JavaScript 실행 모델**: 기본 isolate의 JavaScript는 주로 한 메인 스레드에서 실행되지만 Node.js 런타임이 한 스레드뿐인 것은 아니다. worker pool과 `worker_threads`는 별도 스레드를 사용한다.
 
 ### 철학: Unix의 영향
-Node.js의 설계 철학은 Unix의 영향을 강하게 받았다. **"작고 단순한 것이 아름답다(Small is beautiful)"**, **"한 가지 일을 잘하는 프로그램"** 같은 Unix 격언이 Node.js의 모듈 생태계(npm)와 코어 모듈 설계에 그대로 녹아 있다. 코어는 최소한만 제공하고, 나머지는 작은 모듈을 조합해 해결하는 방식이다.
+Node.js의 설계 철학은 Unix의 영향을 강하게 받았다. **"작고 단순한 것이 아름답다(Small is beautiful)"**, **"한 가지 일을 잘하는 프로그램"** 같은 Unix 격언이 Node.js의 모듈 생태계(npm)와 코어 모듈 설계에 그대로 녹아 있다. 코어는 최소한만 제공하고 나머지는 작은 모듈을 조합해 해결하는 방식이다.
 
 ### 면접 포인트
 - "왜 Node.js가 등장했나?" → 당시 흔했던 연결별 프로세스나 스레드와 blocking I/O 모델의 동시성 비용을 줄이기 위해서다. 이벤트 루프와 비동기 I/O로 많은 대기 연결을 적은 JavaScript 스레드에서 다중화한다.
-- "왜 기본 JavaScript 실행을 한 메인 스레드에 뒀나?" → 한 isolate 안의 공유 메모리 스레드 동기화 부담을 줄이고 callback 실행 모델을 단순화한다. 비동기 상태의 논리적 race는 여전히 제어해야 하고, CPU 집약 작업에 Worker Threads를 쓰면 공유 메모리 동기화도 다시 필요하다.
+- "왜 기본 JavaScript 실행을 한 메인 스레드에 뒀나?" → 한 isolate 안의 공유 메모리 스레드 동기화 부담을 줄이고 callback 실행 모델을 단순화한다. 비동기 상태의 논리적 race는 여전히 제어해야 하고 CPU 집약 작업에 Worker Threads를 쓰면 공유 메모리 동기화도 다시 필요하다.
 
 ## 핵심 정의
 기본 Node.js 프로세스는 한 V8 isolate의 JavaScript를 메인 스레드와 이벤트 루프에서 실행한다. 하지만 프로세스 안에는 libuv thread pool과 런타임 보조 스레드가 있을 수 있고, 애플리케이션도 Worker Threads나 child process를 추가할 수 있다. 요청마다 JavaScript 스레드를 새로 만드는 모델은 아니다.
 
-네트워크 I/O는 OS의 비동기 알림을 주로 사용하고, 일부 파일시스템, DNS와 crypto 작업은 libuv thread pool을 사용한다. 완료 알림 뒤 JavaScript callback이나 Promise continuation은 이벤트 루프와 microtask 처리 규칙에 따라 메인 JavaScript 실행으로 돌아온다.
+네트워크 I/O는 OS의 비동기 알림을 주로 사용하고 일부 파일시스템, DNS와 crypto 작업은 libuv thread pool을 사용한다. 완료 알림 뒤 JavaScript callback이나 Promise continuation은 이벤트 루프와 microtask 처리 규칙에 따라 메인 JavaScript 실행으로 돌아온다.
 
 ## 아키텍처
 ```
@@ -47,7 +47,7 @@ Node.js의 설계 철학은 Unix의 영향을 강하게 받았다. **"작고 단
 ```
 
 - **V8 엔진**: Google이 개발한 C++ JS 엔진. JS를 머신코드로 컴파일하고 실행한다.
-- **libuv**: C 라이브러리. OS별 비동기 I/O API(epoll, kqueue, IOCP)를 추상화하고, 이벤트 루프와 스레드 풀을 구현한다.
+- **libuv**: C 라이브러리. OS별 비동기 I/O API(epoll, kqueue, IOCP)를 추상화하고 이벤트 루프와 스레드 풀을 구현한다.
 - **Node.js Bindings**: core JavaScript와 native 구현을 연결하는 내부 계층. 애플리케이션이 deprecated internal API인 `process.binding()`에 의존하는 구조로 설명하지 않으며, native addon의 안정된 공개 경계는 Node-API를 사용한다.
 
 ### 동작 흐름 예시: `fs.readFile()`
@@ -92,7 +92,7 @@ ECMAScript는 Promise, async function, job queue 같은 비동기 제어 의미�
 ```
 
 ## HTTP 서버 예제
-Node.js의 네트워킹 지원은 최고 수준이며, 표준 라이브러리의 `node:http` 모듈로 간단하게 HTTP 서버를 생성할 수 있다.
+Node.js의 네트워킹 지원은 최고 수준이며 표준 라이브러리의 `node:http` 모듈로 간단하게 HTTP 서버를 생성할 수 있다.
 
 ### CJS 버전 (server.js)
 ```js
@@ -220,7 +220,7 @@ Node.js 자체에는 개발과 프로덕션 간의 차이가 없다.
 NODE_ENV는 Node.js 자체의 예약된 동작이 아니라 애플리케이션, 프레임워크와 라이브러리가 해석하는 관례다.
 ```
 
-프로덕션 배포에서는 사용하는 프레임워크나 라이브러리가 요구하는 경우에만 `NODE_ENV=production`을 명시하고, 스테이징과 테스트는 목적에 맞는 값을 의도적으로 설정한다. 값의 의미와 배포 절차는 애플리케이션이 문서화해야 한다.
+프로덕션 배포에서는 사용하는 프레임워크나 라이브러리가 요구하는 경우에만 `NODE_ENV=production`을 명시하고 스테이징과 테스트는 목적에 맞는 값을 의도적으로 설정한다. 값의 의미와 배포 절차는 애플리케이션이 문서화해야 한다.
 
 **권장**: 최적화나 비즈니스 동작을 실행 환경과 무심코 결합하지 말고, 필요한 환경별 설정만 별도 환경 변수나 설정 파일로 관리한다. 프로덕션과 같은 경로가 필요한 검증은 별도 배포 설정으로 재현한다.
 

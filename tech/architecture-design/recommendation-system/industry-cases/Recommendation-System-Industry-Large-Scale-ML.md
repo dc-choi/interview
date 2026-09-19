@@ -47,7 +47,7 @@ DLRM의 가치는 특정 layer 조합을 정답으로 제시하는 데 있지 �
 - batch 크기는 throughput을 높이지만 online latency budget에 제한된다.
 - model마다 sparse/dense 비율이 달라 같은 hardware 최적화가 동일한 효과를 내지 않는다.
 
-2020년 Meta 연구는 production-scale DNN workload 사이의 다양성과 server 세대, batching, co-location에 따른 latency-bounded throughput 차이를 보고했다. 핵심은 모델 architecture와 serving hardware를 분리해 최적화하기 어렵다는 점이다.
+2020년 Meta 연구는 production-scale DNN workload 사이의 다양성과 server 세대, batching, co-location에 따른 latency-bounded throughput 차이를 보고했다. 모델 architecture와 serving hardware를 분리해 최적화하기는 어렵다.
 
 ### 근거 경계
 

@@ -10,13 +10,13 @@ aliases: ["Content Availability System Design", "콘텐츠 가용성 시스템 �
 
 콘텐츠 상세 API가 기본 정보, 평점, 국가별 OTT 제공처를 조합하고 일부 서비스가 실패해도 유용한 응답을 유지해야 한다. 이 사례는 그 문제를 Federation의 실행 경계, Redis 캐시, 장애 격리, OpenSearch read model의 수렴으로 푼다.
 
-GraphQL Federation은 여러 subgraph schema를 supergraph로 합치고 Router가 query plan을 실행하는 수단이다. 클라이언트 정규화 캐시와 HTTP 캐시는 [[GraphQL-Caching]]의 범위이며, 여기서는 Availability subgraph가 소유하는 서버 측 Cache-Aside를 다룬다.
+GraphQL Federation은 여러 subgraph schema를 supergraph로 합치고 Router가 query plan을 실행하는 수단이다. 클라이언트 정규화 캐시와 HTTP 캐시는 [[GraphQL-Caching]]의 범위이며 여기서는 Availability subgraph가 소유하는 서버 측 Cache-Aside를 다룬다.
 
 ## 요구사항과 선택
 
 - B2C 조회에서는 최신성보다 가용성을 우선하되, 오래된 데이터의 나이는 숨기지 않는다.
-- 제공처가 없다는 확인과 장애로 알 수 없다는 상태를 구분하고, 가용성 실패가 콘텐츠 전체로 번지지 않게 한다.
-- 멀티 인스턴스가 공용 Redis를 사용하며, 원본 보호를 위해 콘텐츠별로 갱신을 직렬화한다.
+- 제공처가 없다는 확인과 장애로 알 수 없다는 상태를 구분하고 가용성 실패가 콘텐츠 전체로 번지지 않게 한다.
+- 멀티 인스턴스가 공용 Redis를 사용하며 원본 보호를 위해 콘텐츠별로 갱신을 직렬화한다.
 - DB를 원본으로 두고 Redis와 OpenSearch를 파생 상태로 수렴시키며, 공용 가용성과 사용자 개인화는 분리한다.
 - 구현 전 peak QPS, hot key 비율, p95 latency, freshness SLO, 최대 stale 허용 시간과 market 수를 확정한다.
 
@@ -78,21 +78,21 @@ GraphQL 오류는 실패한 response position이 nullable이면 그 위치만 `n
 공용 Redis를 쓰는 멀티 인스턴스 구조에서는 다음 상태 머신을 기본으로 삼는다.
 
 1. `CACHE_FRESH`: `softExpiresAt` 전의 snapshot을 즉시 반환한다.
-2. `CACHE_STALE`: `softExpiresAt`이 지난 snapshot을 반환하고, 콘텐츠별 잠금을 얻은 한 요청만 백그라운드 갱신한다.
+2. `CACHE_STALE`: `softExpiresAt`이 지난 snapshot을 반환하고 콘텐츠별 잠금을 얻은 한 요청만 백그라운드 갱신한다.
 3. `MISS`: 잠금 획득자가 원본을 동기 조회한다. 나머지는 짧게 기다린 뒤 캐시를 재조회하거나 `UnavailableContentAvailability`를 반환한다.
 4. 원본 갱신 성공: `stateRevision`, `projectionRevision`, `observedAt`, `softExpiresAt`, 데이터를 함께 저장한다.
-5. 원본 갱신 실패: hard TTL 전이면 stale snapshot을 유지하고, snapshot이 없으면 `UnavailableContentAvailability`다.
+5. 원본 갱신 실패: hard TTL 전이면 stale snapshot을 유지하고 snapshot이 없으면 `UnavailableContentAvailability`다.
 
 ```text
 availability:{market}:{contentId}
 lock:availability:{market}:{contentId}
 ```
 
-- soft TTL은 애플리케이션이 freshness를 판단하는 시각이고, hard TTL은 Redis가 키를 제거하는 물리 만료다.
+- soft TTL은 애플리케이션이 freshness를 판단하는 시각이고 hard TTL은 Redis가 키를 제거하는 물리 만료다.
 - soft TTL에 jitter를 넣어 같은 시점에 저장된 키가 한꺼번에 갱신되는 cache avalanche를 줄인다.
 - 갱신 잠금은 전체 콘텐츠가 아니라 `{market}:{contentId}` 단위다. 서로 다른 콘텐츠 조회를 막지 않는다.
 - 잠금은 `SET key token NX PX ttl`로 얻고, 소유 token이 일치할 때만 해제한다. 잠금은 중복 갱신을 줄일 뿐 정합성을 보장하지 않으므로 모든 cache write에 `projectionRevision` guard를 적용한다.
-- not found를 원본에서 확인했을 때만 짧은 negative cache를 둔다. 생성 event는 marker를 제거하고, timeout과 5xx는 not found로 저장하지 않는다.
+- not found를 원본에서 확인했을 때만 짧은 negative cache를 둔다. 생성 event는 marker를 제거하고 timeout과 5xx는 not found로 저장하지 않는다.
 
 `softExpiresAt`은 원본 보호를 위한 공용 cache refresh 시각이며 surface별 `freshMaxAge`를 대신하지 않는다. Consumer가 snapshot age를 계산해 더 엄격한 freshness를 요구하면 내부 `refreshAvailability(projectionKey, minObservedAt, deadline, policyVersion)` command를 호출하고, 같은 lock과 fence 규칙으로 bounded refresh한 뒤 snapshot을 다시 평가한다. Command는 `REFRESHED`, `UNCHANGED`, `FAILED`를 구분하며 public client가 임의의 max age로 원본 호출을 증폭시키지 못하게 한다.
 
@@ -122,7 +122,7 @@ OTT 제공처 목록처럼 한 entity의 상태가 작고 정합성이 중요하
 
 ## 캐시 키와 개인화 분리
 
-`market`은 한국, 미국처럼 OTT 제공 결과가 달라지는 비즈니스 차원이다. AWS region과 같은 인프라 위치와 구분하며, 결과에 영향을 주는 모든 차원을 키에 포함한다.
+`market`은 한국, 미국처럼 OTT 제공 결과가 달라지는 비즈니스 차원이다. AWS region과 같은 인프라 위치와 구분하며 결과에 영향을 주는 모든 차원을 키에 포함한다.
 
 ```text
 availability:{market}:{contentId}  # 모든 사용자가 공유하는 제공처

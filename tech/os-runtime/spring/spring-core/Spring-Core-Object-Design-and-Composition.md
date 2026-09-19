@@ -54,7 +54,7 @@ final class AppConfig {
 
 ## 작은 회원 예제로 경계를 검증한다
 
-저장 기술이 정해지지 않은 회원 기능이라면 `MemberRepository` 역할과 memory 구현을 먼저 두고, service가 회원 등록과 중복 이름 검사 같은 use case를 담당하게 할 수 있다. 이 구조의 핵심은 memory repository 자체가 아니라 저장 기술을 바꿀 때 service의 업무 규칙이 함께 흔들리지 않는 경계다.
+저장 기술이 정해지지 않은 회원 기능이라면 `MemberRepository` 역할과 memory 구현을 먼저 두고, service가 회원 등록과 중복 이름 검사 같은 use case를 담당하게 할 수 있다. 이 구조에서는 memory repository 자체가 아니라 저장 기술을 바꿀 때 service의 업무 규칙이 함께 흔들리지 않는 경계가 중요하다.
 
 - `Map` 기반 구현은 빠른 학습용 fake이지만 process 재시작, 동시성, DB constraint를 대신하지 않는다.
 - `Optional`은 조회 결과 부재를 표현할 수 있지만 모든 `null` 문제를 자동 해결하지 않는다.

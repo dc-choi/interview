@@ -22,7 +22,7 @@ aliases: ["OpenSearch Search Quality Evaluation", "OpenSearch 검색 품질 평�
 
 Judgment는 query와 문서 쌍의 관련도 판정이다. 모든 오프라인 지표는 judgment 품질의 함수이므로, 지표 계산보다 judgment 구축이 먼저다.
 
-- 명시적 judgment: 사람이 query별 상위 문서에 등급(예: 0에서 3)을 매긴다. 정확하지만 비용이 커서 head query 위주로만 커버 가능하고, 콘텐츠와 query 분포가 바뀌면 낡는다.
+- 명시적 judgment: 사람이 query별 상위 문서에 등급(예: 0에서 3)을 매긴다. 정확하지만 비용이 커서 head query 위주로만 커버 가능하고 콘텐츠와 query 분포가 바뀌면 낡는다.
 - Implicit judgment: 클릭 로그에서 자동 유도한다. 저렴하고 규모가 나오지만 클릭은 관련성이 아니라 관련성과 노출 위치의 곱을 반영한다.
 
 Implicit judgment의 핵심 함정이 position bias다. 상위에 노출된 문서는 관련성과 무관하게 더 클릭된다. Search Relevance Workbench의 implicit judgment는 COEC(Clicks Over Expected Clicks) click model로 이를 보정한다. rank별 평균 CTR을 기대 클릭으로 삼고, 해당 query 문서 쌍의 실제 CTR을 기대치로 나눈다. 1보다 크면 그 rank의 평균보다 잘 클릭된 문서다. Workbench는 이 외에 LLM 기반 judgment 생성과 외부 judgment import도 지원한다.
@@ -69,7 +69,7 @@ OpenSearch 3.6.0 core의 normalized DCG는 IDCG 길이를 `k`가 아니라 실�
 
 - Fixed-K nDCG@10: OpenSearch 3.6.0과 같이 반환 상위 10개의 각 순위 기여도를 `(2^r-1)/log2(rank+1)`로 합산한다. `rank`는 1부터 10까지 세고 미반환 순위와 unknown rating은 `r=0`, IDCG는 반환 수와 무관하게 전체 judgment의 상위 10개 등급에 같은 식을 적용한다.
 - Recall@10: 반환 상위 10개 중 `rating >= 1`인 문서 수를 전체 judgment 중 `rating >= 1`인 문서 수로 나눈다.
-- Query별 `returned_count`를 저장하고, relevant query 중 반환 수가 10보다 작은 비율인 `underfill_query_rate@10`의 변경 전 허용선을 정한다.
+- Query별 `returned_count`를 저장하고 relevant query 중 반환 수가 10보다 작은 비율인 `underfill_query_rate@10`의 변경 전 허용선을 정한다.
 
 모든 평가 bundle은 품질 평균에서 제외한 두 calibration fixture를 먼저 실행한다. 아래 API 기대값은 OpenSearch 3.6.0 기준이다. `FORMULA_10`의 전체 judgment는 반환할 10개의 `(docId, rating)` 쌍으로만 구성하고 추가 judgment를 두지 않는다. 반환 rating `[3, 0, 2, 1, 0, 3, 2, 0, 1, 0]`에서 API와 독립 script가 모두 `DCG=12.725156863494`, `IDCG=14.951597943563`, `nDCG=0.851090091609`를 재현해야 한다. `UNDERFILL_1_OF_3`은 전체 judgment rating `[3, 2, 1]` 중 `[3]` 하나만 반환하고 `details.<queryId>.unrated_docs=[]`와 `details.<queryId>.metric_details.dcg.unrated_docs=0`으로 고정해 API의 `DCG=7`, `IDCG=7`, `nDCG=1`과 독립 fixed-K의 `DCG=7`, `IDCG=9.392789260714`, `nDCG=0.745252534226`, `Recall@10=1/3`이 명시적으로 갈라져야 한다. 모든 수치는 절대오차 `1e-9` 이내여야 하며 하나라도 실패하면 제품 query 평가를 중단한다. 변경 채택은 fixed-K nDCG를 primary로 두고 Recall, underfill과 query별 회귀를 guardrail로 사용한다.
 
@@ -92,7 +92,7 @@ Amazon OpenSearch Service에는 native UBI plugin이 포함되지 않는다. 관
 
 Workbench(3.1+)는 query set, search configuration, judgment list, experiment 네 가지 리소스로 평가를 자동화한다. AWS 관리형 OpenSearch Service도 engine 3.1부터 Workbench를 사용할 수 있지만, 행동 데이터는 앞 절의 별도 UBI 형식 수집 경로가 필요하다.
 
-Query set은 UBI 데이터가 있으면 sampling으로 만든다. `random`, `topn`(최빈 query), `pptss`(빈도 비례 확률 sampling), `manual` 네 방식이며, head query만 뽑는 topn보다 pptss가 실제 트래픽 분포를 대표한다.
+Query set은 UBI 데이터가 있으면 sampling으로 만든다. `random`, `topn`(최빈 query), `pptss`(빈도 비례 확률 sampling), `manual` 네 방식이며 head query만 뽑는 topn보다 pptss가 실제 트래픽 분포를 대표한다.
 
 Experiment는 세 종류다.
 
@@ -112,7 +112,7 @@ Pointwise metric 집합과 relevance threshold는 version에 종속된다. Workb
 - Click-MRR: 첫 클릭 결과의 역순위 평균. 사용자가 목록 상단에서 행동했는지를 보여주는 experience proxy지만, 위치가 올라갔다는 사실만으로 ranking 관련도나 인과 효과가 개선됐다고 결론내릴 수 없다.
 - Zero-result rate: 결과 0건 query 비율. Analyzer와 동의어 gap뿐 아니라 콘텐츠 부재, 과도한 filter, 권한과 재고 조건도 원인이므로 query 목록을 원인별로 분류한다.
 
-이 지표들은 UBI 인덱스에 대한 DSL 또는 SQL 집계로 뽑아 대시보드에 올린다. 추이 변화는 실험 후보를 찾는 신호이고, variant의 인과 효과는 randomization된 A/B나 interleaving으로 검증한다. [[OpenSearch-Observability|관측성]]의 latency, 오류율 대시보드와 별개로 품질 대시보드를 두는 것이 요점이다.
+이 지표들은 UBI 인덱스에 대한 DSL 또는 SQL 집계로 뽑아 대시보드에 올린다. 추이 변화는 실험 후보를 찾는 신호이고 variant의 인과 효과는 randomization된 A/B나 interleaving으로 검증한다. [[OpenSearch-Observability|관측성]]의 latency, 오류율 대시보드와 별개로 품질 대시보드를 두는 것이 요점이다.
 
 ## 검색 로그에서 개선 백로그까지
 
@@ -134,7 +134,7 @@ Pointwise metric 집합과 relevance threshold는 version에 종속된다. Workb
 
 사용자를 variant별로 나눠 일정 기간 지표를 비교한다. OpenSearch에서 variant 라우팅은 application 레이어에서 결정하고, variant별로 다른 search pipeline을 지정하거나(`search_pipeline` 요청 파라미터) search template의 버전을 나눠 query 구조를 분기한다. UBI에 variant 식별자를 함께 기록해야 사후 분석이 가능하다.
 
-- 최소 표본을 사전에 계산한다. 검출하려는 효과 크기가 작을수록 필요 표본이 급증하며, 표본이 차기 전에 지표를 보고 중단하는 peeking은 거짓 양성을 만든다.
+- 최소 표본을 사전에 계산한다. 검출하려는 효과 크기가 작을수록 필요 표본이 급증하며 표본이 차기 전에 지표를 보고 중단하는 peeking은 거짓 양성을 만든다.
 - Novelty effect를 감안한다. 결과가 달라진 것 자체가 초기 클릭을 끌어올릴 수 있으므로 초반 며칠의 상승은 할인해서 본다.
 
 ### Interleaving

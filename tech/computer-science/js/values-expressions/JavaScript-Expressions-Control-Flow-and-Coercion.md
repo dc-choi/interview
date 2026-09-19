@@ -8,7 +8,7 @@ aliases: ["JavaScript Expressions and Control Flow", "JavaScript 표현식 연�
 
 # JavaScript 표현식, 타입 변환과 제어 흐름
 
-JavaScript 문법을 외우는 것보다 중요한 것은 어떤 expression이 어떤 값을 만들고, 그 전에 어떤 type conversion이 일어나며, 어느 statement가 다음 실행 위치를 바꾸는지 추적하는 일이다. 브라우저 기능을 조합하는 언어라는 강점도 이 실행 규칙 위에서만 안전하게 쓸 수 있다.
+JavaScript 문법을 외우기보다 어떤 expression이 어떤 값을 만들고 그 전에 어떤 type conversion이 일어나며 어느 statement가 다음 실행 위치를 바꾸는지 추적하는 게 중요하다. 브라우저 기능을 조합하는 언어라는 강점도 이 실행 규칙 위에서만 안전하게 쓸 수 있다.
 
 ## 실행 환경과 코드 배치
 

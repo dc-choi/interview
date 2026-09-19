@@ -139,7 +139,7 @@ Git이 Markdown 변경 이력을 관리하고 작은 CLI가 저장소 밖의 로
 
 1. **평가 세트**: 초기에는 과거 작업 10건 안팎을 설계 조정용 calibration과 조정에 쓰지 않을 holdout으로 나눈다. 조회 입력은 변경 전 revision과 당시 manifest로 고정하고 이후 diff와 검토는 필수 edge와 anchor 정답표에만 쓴다. 삭제, rename, 중복 heading, stale, candidate 제외와 부분 수집 실패를 포함하고 대상 사용자, 반복 횟수, 관찰 기간, 누락과 무관 edge 허용치, 탐색 시간, 컨텍스트 크기와 리뷰 수정 목표를 구현 전에 정한다.
 2. **Markdown 추출기와 CLI**: frontmatter, heading과 위키링크에서 최소 엔터티와 관계를 생성한다. calibration에서 조회 계약을 조정한 뒤 스키마와 규칙을 고정하고 holdout을 한 번 평가한다.
-3. **변경분과 코드 근거 확장**: Git 변경분만 다시 색인하고, 실제 질문에 필요할 때 import, route, event와 schema를 보충한다. LLM 추출은 candidate queue만 만들며 삭제 전파, content hash와 commit별 snapshot을 검증한다.
+3. **변경분과 코드 근거 확장**: Git 변경분만 다시 색인하고 실제 질문에 필요할 때 import, route, event와 schema를 보충한다. LLM 추출은 candidate queue만 만들며 삭제 전파, content hash와 commit별 snapshot을 검증한다.
 4. **에이전트 연결**: [[Ontology-Context-Platform-AI-Runtime#최소 구현과 학습 순서|AI 런타임 순서]]에 따라 CLI 조회와 결과 계약이 안정된 뒤 읽기 전용 MCP Tool로 노출한다. 반환 크기, 권한, timeout과 감사 로그를 제한하고 EvidenceUnit 인용과 불확실성 보존을 확인한다.
 5. **저장소 확장**: JSONL 탐색이 실제 병목이면 SQLite로 옮긴다. 가변 길이 경로와 동시 질의가 반복 병목일 때만 graph DB를, 조직 간 ontology 교환이나 표준 추론이 필요할 때만 RDF와 OWL을 검토한다.
 

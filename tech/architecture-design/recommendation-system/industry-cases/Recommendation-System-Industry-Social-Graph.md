@@ -89,7 +89,7 @@ Pixie는 query에서 관련 Pin을 시작점으로 잡고 Pin-Board graph에서 
 
 PinSage는 random walk로 중요한 이웃을 샘플링한 뒤 graph convolution으로 Pin embedding을 만든다. graph 연결뿐 아니라 node의 시각, annotation feature를 함께 사용할 수 있어 interaction이 적은 item에도 표현을 전달할 수 있다.
 
-학습과 추론의 핵심은 GCN 이름보다 scale을 견디는 주변 구조다.
+학습과 추론에서는 GCN 이름보다 scale을 견디는 주변 구조가 중요하다.
 
 - 중요 이웃만 샘플링해 full-neighborhood aggregation을 피한다.
 - 점점 어려운 negative를 사용해 가까운 비관련 item을 구분한다.

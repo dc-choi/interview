@@ -44,8 +44,8 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 - `ngram_token_size`는 read-only 서버 변수라 변경에 재시작이 필요하고 기존 FULLTEXT 인덱스는 재생성해야 한다. 값은 검색할 가장 큰 단위에 맞추고 한 글자 검색이 필요할 때만 1로 둔다. 공식 문서 기준으로 작은 token size는 인덱스가 작고 검색이 빠르지만, 실무 사례에서는 한 글자 후보가 넓어져 부하와 노이즈가 커진다는 보고가 있다.
 - 모든 텍스트를 N글자 단위로 중첩 분해하므로 공백 기준 parser보다 인덱스가 크게 팽창한다.
 - 검색 mode에 따라 변환이 다르다. Natural language mode는 ngram term의 합집합이라 bigram에서 abc 검색이 `ab bc` OR 매칭이 되어 `ab`만 있는 문서도 잡힌다. Boolean mode는 ngram phrase로 변환되어 `ab`만 있는 문서가 제외된다. Phrase 검색도 ngram phrase로 변환되는데, `abc`뿐 아니라 같은 ngram 열을 만드는 `ab bc`가 든 문서도 함께 반환된다.
-- Wildcard 검색은 prefix가 token size보다 짧으면 그 prefix로 시작하는 ngram을 포함한 모든 행을 반환하고, token size보다 길면 wildcard가 무시된 ngram phrase 검색으로 동작한다(`abc*` → `ab bc`).
-- Stopword 처리가 다르다. 기본 parser는 stopword와 같은 token만 제외하지만 ngram parser는 stopword를 포함한 token을 통째로 제외한다. 기본 stopword 목록은 영어용이라 CJK에는 자체 목록을 만들어야 하고, `ngram_token_size`보다 긴 stopword는 무시된다.
+- Wildcard 검색은 prefix가 token size보다 짧으면 그 prefix로 시작하는 ngram을 포함한 모든 행을 반환하고 token size보다 길면 wildcard가 무시된 ngram phrase 검색으로 동작한다(`abc*` → `ab bc`).
+- Stopword 처리가 다르다. 기본 parser는 stopword와 같은 token만 제외하지만 ngram parser는 stopword를 포함한 token을 통째로 제외한다. 기본 stopword 목록은 영어용이라 CJK에는 자체 목록을 만들어야 하고 `ngram_token_size`보다 긴 stopword는 무시된다.
 - 공백은 파싱 시 제거되어 공백에 걸친 token은 만들어지지 않는다. `innodb_ft_min_token_size`, `innodb_ft_max_token_size`, `ft_min_word_len`, `ft_max_word_len`은 ngram 인덱스에 적용되지 않는다.
 - 형태소가 아니라 기계적 분해이므로 의미 없는 부분 일치가 관련도 노이즈로 올라온다.
 
@@ -59,7 +59,7 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 ## PostgreSQL의 커버 범위
 
 - tsvector와 tsquery, GIN 인덱스 조합은 stemming 기반 전문 검색을 내장한다. 다만 내장 text search configuration은 영어 등 유럽어 중심이고 한국어 형태소 사전이 없다(외부 dictionary 확장 필요).
-- 랭킹(ts_rank, ts_rank_cd)은 공식 문서가 명시하듯 global 정보를 사용하지 않는다. 문서 내 빈도와 근접도만 보고 corpus 전체의 term 희소성(IDF)을 반영하지 못하며, 매칭된 각 문서의 tsvector를 읽어야 해 I/O bound로 비싸질 수 있다.
+- 랭킹(ts_rank, ts_rank_cd)은 공식 문서가 명시하듯 global 정보를 사용하지 않는다. 문서 내 빈도와 근접도만 보고 corpus 전체의 term 희소성(IDF)을 반영하지 못하며 매칭된 각 문서의 tsvector를 읽어야 해 I/O bound로 비싸질 수 있다.
 - pg_trgm은 trigram으로 `LIKE`, `ILIKE`(9.1+), 정규식(9.3+) 검색을 GIN 또는 GiST 인덱스로 가속하고 similarity 연산(`%`, 기본 threshold 0.3)으로 오타 fuzzy 매칭을 준다. 중간 문자열 검색의 현실적 1차 해법이지만, 이것은 문자열 유사도이지 관련도 랭킹이 아니고 [[OpenSearch-Aggregations-Pagination#패싯 — 집계의 대표 사용처|패싯]]이나 자동완성의 답도 아니다.
 
 ## 검색엔진 도입의 대가
@@ -69,7 +69,7 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 - 동기화 파이프라인이 하나의 운영 시스템이 된다. dual-write gap, 이벤트 순서 역전, reconciliation, freshness SLO 전부 [[OpenSearch-Indexing-Internals|색인 내부]]의 동기화 섹션과 [[OpenSearch-Indexing-Pipeline-Reliability|파이프라인 신뢰성]]이 다루는 비용이다.
 - 다중 행 transaction과 foreign key가 없고, 검색 경로에 쓸 수 있는 범용 join도 없다. 역정규화로 join 비용을 쓰기로 옮기므로 원본 한 건 변경이 갱신할 검색 문서 수를 설계해야 한다. 관계를 어떤 문서 구조로 실체화할지는 [[OpenSearch-Entity-Relationship-Search|개체 관계 검색 모델링]]이 다룬다.
 - 기본 `refresh_interval` 1초의 near real-time이라 read-after-write가 필요한 화면은 검색엔진이 아니라 원본 DB를 읽게 경로를 나눠야 한다.
-- mapping 비호환 변경은 reindex와 alias 전환이 필요하고, 클러스터 자체가 관리 대상이다(관리형이어도 [[OpenSearch-Service-Deployment|책임 경계]]가 남는다).
+- mapping 비호환 변경은 reindex와 alias 전환이 필요하고 클러스터 자체가 관리 대상이다(관리형이어도 [[OpenSearch-Service-Deployment|책임 경계]]가 남는다).
 
 ## 도입 판단 사다리
 

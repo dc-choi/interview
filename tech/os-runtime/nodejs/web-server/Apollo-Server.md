@@ -55,7 +55,7 @@ GraphQL 특유의 회귀 항목:
 
 - 실행 전 오류는 `data` 없이 반환되고 resolver가 호출되지 않는가
 - 실행 오류는 가능한 형제 데이터를 살리며 `path`와 null bubbling 경계가 맞는가
-- N개의 parent 관계 조회가 DataLoader batch로 제한되고, batch 결과가 key 순서를 보존하는가
+- N개의 parent 관계 조회가 DataLoader batch로 제한되고 batch 결과가 key 순서를 보존하는가
 - 같은 요청의 중복 key는 캐시되지만 다음 요청과 다른 사용자에게 loader cache가 공유되지 않는가
 - cursor 첫 페이지, 마지막 페이지, 빈 결과, 중간 삽입 경계가 중복과 누락 없이 동작하는가
 - Subscription 연결 인증, filter, 구독 해제, 재연결과 외부 PubSub 전파가 맞는가
@@ -97,7 +97,7 @@ GraphQL 특유의 회귀 항목:
 
 ## 설계 지향
 
-- 빠른 셋업으로 바로 시작하고, 기능은 필요해질 때 점진적으로 얹는다(incremental adoption).
+- 빠른 셋업으로 바로 시작하고 기능은 필요해질 때 점진적으로 얹는다(incremental adoption).
 - 데이터 소스, 빌드 도구에 대한 범용 호환과 프로덕션 사용 전제의 안정성을 표방한다.
 
 ## 면접 체크포인트

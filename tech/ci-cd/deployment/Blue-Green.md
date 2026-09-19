@@ -103,7 +103,7 @@ Blue-Green은 "전환이 0-1 binary"인 반면 Canary는 "연속적". 둘은 결
 - Blue-Green과 Canary의 개념 차이와 결합 가능성
 - DB 스키마 변경 시 Expand-Contract가 필요한 이유
 - DNS 전환이 LB 전환보다 열악한 이유(TTL, 클라이언트 캐시)
-- WebSocket, sticky session에서의 전환 이슈
+- WebSocket, sticky session의 전환 이슈
 - Kubernetes에서 Service selector로 Blue-Green을 구현하는 방법
 
 ## 출처

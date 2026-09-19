@@ -11,7 +11,7 @@ aliases: ["Category Theory", "Category Theory for Programmers", "카테고리 �
 
 ## 한 줄 정의
 
-카테고리(Category, 범주)는 **객체(object)와 그 사이의 사상(morphism), 그리고 사상의 합성(composition) 규칙**으로 이루어진 구조다. 핵심은 "무엇으로 이루어졌나"가 아니라 **"어떻게 합성되는가"** 다.
+카테고리(Category, 범주)는 **객체(object)와 그 사이의 사상(morphism), 그리고 사상의 합성(composition) 규칙**으로 이루어진 구조다. "무엇으로 이루어졌나"가 아니라 **"어떻게 합성되는가"**에 초점을 둔다.
 
 ## 왜 프로그래머가 알아야 하는가
 

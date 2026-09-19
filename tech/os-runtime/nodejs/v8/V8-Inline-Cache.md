@@ -35,7 +35,7 @@ aliases: ["Inline Cache", "IC", "Monomorphic", "Polymorphic", "Megamorphic", "Tr
 
 ## 왜 MEGA에도 일반화된 cache가 필요한가
 
-MEGAMORPHIC은 call site에 몇 개의 Map과 handler를 직접 나열하는 전략을 포기한다. 그렇다고 모든 정보를 버리는 것은 아니다. 구현은 공유 stub이나 megamorphic cache 같은 일반화된 경로를 사용할 수 있다. 핵심은 MONO보다 확인할 가정이 약해져 최적화 여지가 줄어든다는 점이다.
+MEGAMORPHIC은 call site에 몇 개의 Map과 handler를 직접 나열하는 전략을 포기한다. 그렇다고 모든 정보를 버리는 것은 아니다. 구현은 공유 stub이나 megamorphic cache 같은 일반화된 경로를 사용할 수 있다. MONO보다 확인할 가정이 약해져 최적화 여지가 줄어든다.
 
 ## 예시: IC 상태 전이
 

@@ -129,7 +129,7 @@ Main Queue → Consumer
 
 ### 분산 추적과의 관계
 
-Correlation ID는 **분산 추적(distributed tracing)** 에서의 Trace ID와 개념이 겹치지만 용도가 다르다.
+Correlation ID는 **분산 추적(distributed tracing)**의 Trace ID와 개념이 겹치지만 용도가 다르다.
 
 | 구분 | 분산 추적 Trace ID | 비동기 Correlation ID |
 |---|---|---|

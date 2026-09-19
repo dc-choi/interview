@@ -14,7 +14,7 @@ aliases: ["Ontology Context Runtime", "AI Context Runtime", "AI 컨텍스트 조
 
 ## 여기서 AI가 학습한다는 의미
 
-이 설계는 모델의 파라미터를 다시 학습시키는 fine-tuning이 아니다. 지속할 지식은 Markdown에 기록하고, AI는 작업할 때마다 파생 색인으로 관련 원문을 찾아 컨텍스트로 받는다. 따라서 새 지식이 다음 작업에도 반영되는 경로는 `Markdown 수정 -> 검토와 commit -> 색인 재생성`이다.
+이 설계는 모델의 파라미터를 다시 학습시키는 fine-tuning이 아니다. 지속할 지식은 Markdown에 기록하고 AI는 작업할 때마다 파생 색인으로 관련 원문을 찾아 컨텍스트로 받는다. 따라서 새 지식이 다음 작업에도 반영되는 경로는 `Markdown 수정 -> 검토와 commit -> 색인 재생성`이다.
 
 완료 상태는 AI가 Vault 전체를 읽는 것이 아니라 질문과 관련된 문서와 관계를 찾고, manifest에 고정된 원문 section을 다시 읽고, 근거와 한계를 작은 Context Pack으로 받으며, 코드와 런타임 사실은 현재 환경에서 별도로 확인하는 것이다.
 
@@ -62,7 +62,7 @@ flowchart LR
 
 상세 schema와 추출 규칙은 [[Ontology-Context-Platform-Implementation#수집과 갱신 파이프라인|수집과 갱신 파이프라인]]을 따른다.
 
-1. clean checkout의 commit과 수집 범위를 source manifest에 고정하고, 그 revision의 Git tree에 있는 tracked regular Markdown blob만 읽는다.
+1. clean checkout의 commit과 수집 범위를 source manifest에 고정하고 그 revision의 Git tree에 있는 tracked regular Markdown blob만 읽는다.
 2. frontmatter, heading과 위키링크를 결정론적으로 추출한다.
 3. Document와 EvidenceUnit인 Section 및 relation assertion record, relation, 결정론적 coverage gap을 canonical byte 형식의 fingerprint별 불변 snapshot에 완성하고 artifact hash를 검증한 뒤 active pointer만 원자적으로 교체한다.
 4. LLM을 쓰더라도 비명시 관계는 별도 candidate queue에 두고 serving index와 재현성 비교에서 제외한다.
@@ -77,9 +77,9 @@ flowchart LR
 3. 없거나 부족할 때 entity의 heading metadata와 manifest revision의 tracked Markdown blob을 allowlist 안에서 literal 검색해 후보를 넓힌다. 본문은 캐시나 current worktree에서 읽지 않는다.
 4. 시작 엔터티가 subject나 object인 incident edge를 모두 탐색하되 반환 triple의 원래 방향은 보존한다. 기본 깊이는 1이고 연쇄 영향 질문만 2를 요청한다.
 5. 선택된 EvidenceUnit을 현재 worktree가 아니라 Git의 manifest revision에서 읽고 anchor와 content hash를 검증한다.
-6. index sync, 충돌, coverage gap과 limitations용 byte 예산을 먼저 예약하고, 남은 예산에서 직접 근거를 우선한다. 초과하면 excerpt와 보조 관계부터 줄인다.
+6. index sync, 충돌, coverage gap과 limitations용 byte 예산을 먼저 예약하고 남은 예산에서 직접 근거를 우선한다. 초과하면 excerpt와 보조 관계부터 줄인다.
 
-MVP의 본문 검색은 작은 Vault를 직접 훑는다. 측정된 병목이 생길 때만 snapshot에 hash로 보호된 lexical postings를 추가하고, 임베딩 검색은 정확 검색과 키워드 검색의 실제 누락 사례가 쌓였을 때만 fallback으로 검토한다. 벡터 DB는 그 전에는 필요 없다.
+MVP의 본문 검색은 작은 Vault를 직접 훑는다. 측정된 병목이 생길 때만 snapshot에 hash로 보호된 lexical postings를 추가하고 임베딩 검색은 정확 검색과 키워드 검색의 실제 누락 사례가 쌓였을 때만 fallback으로 검토한다. 벡터 DB는 그 전에는 필요 없다.
 
 MVP의 서버 상한은 `MAX_ARGUMENT_BYTES=8192`, `MAX_QUERY_BYTES=4096`, `MAX_SCOPE_ENTRIES=20`, `MAX_SCOPE_PATH_BYTES=512`, `SERVER_MAX_BYTES=65536`, `MAX_MATCHED_ENTITIES=20`, `MAX_ROOTS=6`, `MAX_EDGES_PER_ENTITY=50`으로 시작한다. depth는 상수가 아니라 입력 검증으로 1이나 2만 허용하고 `effective_max_bytes = min(request.max_bytes, SERVER_MAX_BYTES)`로 계산한다. root, entity 또는 edge 상한에 닿으면 `partial`과 `retrieval_limit_reached` coverage gap을 반환한다.
 

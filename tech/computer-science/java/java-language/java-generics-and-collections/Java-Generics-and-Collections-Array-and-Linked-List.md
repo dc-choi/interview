@@ -52,7 +52,7 @@ final class SimpleList<E> {
 
 ## 삽입과 삭제
 
-array 중간에 삽입하려면 뒤 원소를 한 칸씩 옮기고, 삭제하면 빈자리를 메워야 한다. 이동 원소 수에 비례하므로 O(n)이다. 끝에서의 추가와 제거는 capacity 확장이나 reference 정리를 제외하면 빠르다.
+array 중간에 삽입하려면 뒤 원소를 한 칸씩 옮기고, 삭제하면 빈자리를 메워야 한다. 이동 원소 수에 비례하므로 O(n)이다. 끝에 추가하거나 끝에서 제거하는 작업은 capacity 확장이나 reference 정리를 제외하면 빠르다.
 
 - index를 먼저 검증하고 size와 capacity를 구분한다.
 - 제거한 위치 이후의 사용하지 않는 reference를 null로 지워 객체가 불필요하게 reachable 상태로 남지 않게 한다.

@@ -8,7 +8,7 @@ aliases: ["CDC 운영", "Debezium 대규모 운영과 장애 대응"]
 
 # CDC와 Debezium 운영
 
-CDC 운영의 핵심은 connector process 생존 여부보다 source commit부터 sink 적용까지의 position, schema와 재구축 가능성을 관찰하는 것이다.
+CDC 운영에서는 connector process 생존 여부보다 source commit부터 sink 적용까지의 position, schema와 재구축 가능성을 관찰하는 게 중요하다.
 
 ## Source와 connector 전제
 

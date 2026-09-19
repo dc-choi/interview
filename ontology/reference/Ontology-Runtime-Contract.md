@@ -34,7 +34,7 @@ category: "AI엔지니어링(AIEngineering)"
 
 정확한 metadata 일치가 없는 조회에서는 직접 근거를 담고 응답 전체에서 직접 관계 하나를 먼저 추가한 뒤, 선택된 root와 graph 문서에서 질의어가 겹치는 절을 최대 6개 보충한다. 이미 반환된 본문에 반복된 질의어의 가중치를 낮춰 다른 어휘를 다루는 절을 우선한다. heading 없는 root와 출처/관련 문서 절은 제외한다. 보충 절은 1,400 byte 접두를 먼저 담되 검색어가 뒤에만 있으면 전체 절이 예산에 맞을 때만 추가한다. 선택한 절의 전체 본문 확장, 나머지 graph 묶음과 provenance, 마지막 본문 확장 순으로 남은 예산을 사용한다. 문서 소유권과 ID/revision/hash/anchor는 보존하며, 상세 비교와 한계는 [[Ontology-Search-Selection]]을 따른다. 더 깊은 문맥은 `context_outline`과 `context_read`로 확인한다.
 
-`conditions` 힌트를 전달하면 정확한 metadata 일치가 있어도 보충 절 선택을 수행한다. 각 조건의 어휘 겹침을 단서로 사용하며, 의미적 충족 판정과 호출 제한은 [[Ontology-Condition-Retrieval]]을 따른다.
+`conditions` 힌트를 전달하면 정확한 metadata 일치가 있어도 보충 절 선택을 수행한다. 각 조건의 어휘 겹침을 단서로 사용하며 의미적 충족 판정과 호출 제한은 [[Ontology-Condition-Retrieval]]을 따른다.
 
 ## 문서 검색과 원문 일치
 
@@ -68,11 +68,11 @@ extractor 11은 Markdown에 이미 적힌 탐색 역할을 `links_to` 관계의 
 
 ## Snapshot 저장과 무결성
 
-기본 cache는 `~/.cache/context-ontology/<checkout-hash>/`다. cache는 source repository 밖이어야 하고, `active.json`, `runs.jsonl`, `.context-ontology-cache` 소유권 표식과 활성 snapshot을 보관한다.
+기본 cache는 `~/.cache/context-ontology/<checkout-hash>/`다. cache는 source repository 밖이어야 하고 `active.json`, `runs.jsonl`, `.context-ontology-cache` 소유권 표식과 활성 snapshot을 보관한다.
 
 비어 있지 않은 사용자 지정 cache에 표식이 없으면 `invalid_cache_path`로 거부해 다른 데이터를 정리 대상으로 오인하지 않는다. 최초 표식의 내용이 아직 비어 있거나 정상 내용의 앞부분만 기록됐으면 50ms 간격으로 최대 20회 재확인한다.
 
-총 대기 1초 뒤에도 불완전하거나 내용 또는 파일 형식이 잘못됐으면 계속 `invalid_cache_path`로 거부하며, 중단된 초기화를 자동 복구하지 않는다. build는 기존 snapshot 재사용 검증, 활성화와 삭제를 cache의 `.lock`으로 프로세스 간 직렬화한다.
+총 대기 1초 뒤에도 불완전하거나 내용 또는 파일 형식이 잘못됐으면 계속 `invalid_cache_path`로 거부하며 중단된 초기화를 자동 복구하지 않는다. build는 기존 snapshot 재사용 검증, 활성화와 삭제를 cache의 `.lock`으로 프로세스 간 직렬화한다.
 
 lock symlink 대상은 보유 프로세스 pid와 무작위 token을 함께 가지므로 종료 시 후속 보유자의 lock을 지우지 않는다. 살아 있는 보유자는 최대 10분 기다리며, 보유 프로세스가 사라진 lock은 `cache_lock_stale`, 형식이 잘못된 lock은 `snapshot_integrity_error`로 중단한다.
 

@@ -91,7 +91,7 @@ GET products-edge-v1/_search
 
 ### 전체 위치 ngram
 
-네 가지 구현 방식의 다섯 번째가 아니라, 자동완성 범위를 벗어나는 부분일치 요구의 경계다. Prefix가 아니라 단어 중간까지 걸리는 부분일치가 필요하면 `ngram` tokenizer가 모든 위치의 substring을 색인한다. 기본값은 `min_gram` 1, `max_gram` 2이고, `token_chars` 기본은 빈 리스트라 공백과 문장부호까지 모든 문자가 token에 남는다. `ngram` tokenizer와 `ngram` token filter에서는 `min_gram`과 `max_gram`의 차이가 index 설정 `index.max_ngram_diff`(기본 1)로 제한되며, `edge_ngram` 계열에는 이 제한이 적용되지 않는다. Edge n-gram보다 생성 term이 훨씬 많아 index 크기와 색인 비용이 커지므로 도입 전에 측정하고, 점수 없는 패턴 매칭이 목적이면 `wildcard` field type을 먼저 검토한다. 적용 판단은 [[OpenSearch-Query-Requirement-Classification|검색 요구사항 분류]] 참고.
+네 가지 구현 방식의 다섯 번째가 아니라, 자동완성 범위를 벗어나는 부분일치 요구의 경계다. Prefix가 아니라 단어 중간까지 걸리는 부분일치가 필요하면 `ngram` tokenizer가 모든 위치의 substring을 색인한다. 기본값은 `min_gram` 1, `max_gram` 2이고 `token_chars` 기본은 빈 리스트라 공백과 문장부호까지 모든 문자가 token에 남는다. `ngram` tokenizer와 `ngram` token filter에서는 `min_gram`과 `max_gram`의 차이가 index 설정 `index.max_ngram_diff`(기본 1)로 제한되며 `edge_ngram` 계열에는 이 제한이 적용되지 않는다. Edge n-gram보다 생성 term이 훨씬 많아 index 크기와 색인 비용이 커지므로 도입 전에 측정하고 점수 없는 패턴 매칭이 목적이면 `wildcard` field type을 먼저 검토한다. 적용 판단은 [[OpenSearch-Query-Requirement-Classification|검색 요구사항 분류]] 참고.
 
 ## Search as you type
 

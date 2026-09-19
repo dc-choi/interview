@@ -12,7 +12,7 @@ GraphQL은 파일 업로드를 염두에 두고 설계되지 않았다. 스펙�
 
 ## multipart 관례와 그 위치
 
-- 바이너리 전송엔 multipart/form-data가 흔한 선택이고, GraphQL에서는 커뮤니티 관례인 **GraphQL multipart request specification**이 가장 널리 쓰인다. 여러 언어와 프레임워크에 구현체가 있다.
+- 바이너리 전송엔 multipart/form-data가 흔한 선택이고 GraphQL에서는 커뮤니티 관례인 **GraphQL multipart request specification**이 가장 널리 쓰인다. 여러 언어와 프레임워크에 구현체가 있다.
 - 스펙(언어 명세)의 일부가 아니라 커뮤니티 관례라서, 도입하는 쪽이 아래 리스크를 직접 막아야 한다.
 
 ## 리스크 5가지
@@ -30,7 +30,7 @@ multipart/form-data는 CORS 분류상 simple request라, 비허용 헤더가 따
 아주 큰 파일이나, 쓰이지 않는 변수 이름에 매달린 잉여 파일이 서버 버퍼를 채울 수 있다. 완화: 요청 크기 상한을 걸고, multipart payload의 map 필드에서 참조되지 않는 파일은 거부한다.
 
 ### 5. 신뢰할 수 없는 메타데이터
-파일명, MIME 타입, 내용 어느 것도 신뢰하지 않는다. 파일명은 path traversal, 주입 방지를 위해 sanitize하고, 선언된 MIME과 독립적으로 타입을 sniff해 불일치를 거부하며, 내용을 검증한다(zip bomb, 조작된 PDF 같은 포맷별 익스플로잇 존재).
+파일명, MIME 타입, 내용 어느 것도 신뢰하지 않는다. 파일명은 path traversal, 주입 방지를 위해 sanitize하고 선언된 MIME과 독립적으로 타입을 sniff해 불일치를 거부하며 내용을 검증한다(zip bomb, 조작된 PDF 같은 포맷별 익스플로잇 존재).
 
 ## 권장: signed URL 패턴
 
@@ -40,7 +40,7 @@ multipart/form-data는 CORS 분류상 simple request라, 비허용 헤더가 따
 2. 클라이언트가 그 URL로 파일을 직접 업로드한다.
 3. 두 번째 mutation으로 업로드된 파일을 앱 데이터와 연결한다 (또는 Lambda 같은 자동 트리거 프로세스가 대신 한다).
 
-1, 2단계만 수행하는 공격자가 스토리지를 채우지 못하게 업로드는 단기 보존만 하고, 3단계 처리 시점에 영구 저장소로 옮긴다. 서버가 바이너리를 만지지 않아 책임이 깨끗이 분리된다.
+1, 2단계만 수행하는 공격자가 스토리지를 채우지 못하게 업로드는 단기 보존만 하고 3단계 처리 시점에 영구 저장소로 옮긴다. 서버가 바이너리를 만지지 않아 책임이 깨끗이 분리된다.
 
 ## 그래도 GraphQL로 받아야 한다면
 

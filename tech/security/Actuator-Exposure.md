@@ -50,7 +50,7 @@ management.server.address=127.0.0.1
 | `web.exposure.include` 화이트리스트 | 불필요한 엔드포인트의 웹 노출 |
 | `jmx.exposure.exclude=*` | JMX 경로 노출 |
 | `management.server.port` 분리 | 운영 서비스 포트와 관리 포트 동시 노출 |
-| `management.server.address=127.0.0.1` | 외부에서의 직접 접근 |
+| `management.server.address=127.0.0.1` | 외부의 직접 접근 |
 
 여기에 방화벽/접근 가능 IP 제한, Spring Security authorization을 더하면 다층 방어가 된다. 경로를 `/actuator`에서 바꾸는 것은 충돌 회피나 routing 편의일 뿐 보안 경계가 아니다.
 
@@ -64,7 +64,7 @@ Q. Actuator를 왜 조심해야 하나?
 - `/actuator/env`, `/actuator/heapdump` 등으로 configuration 구조나 메모리 속 자격증명이 노출될 수 있다. 기본 sanitization이 있어도 endpoint 자체의 access를 최소화해야 한다.
 
 Q. 어떻게 안전하게 설정하나?
-- 기본 access 차단 후 필요한 읽기 endpoint만 화이트리스트한다. 관리 포트/망 분리, IP 제한과 endpoint별 authorization을 더한다. 핵심은 "필요한 것만 열기"다.
+- 기본 access 차단 후 필요한 읽기 endpoint만 화이트리스트한다. 관리 포트/망 분리, IP 제한과 endpoint별 authorization을 더한다. 필요한 것만 여는 데 초점을 둔다.
 
 ## 출처
 

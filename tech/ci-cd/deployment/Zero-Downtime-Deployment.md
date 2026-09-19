@@ -25,7 +25,7 @@ aliases: ["Zero-Downtime Deployment", "무중단 배포"]
 
 들어오는 인스턴스가 준비되기 전에 트래픽을 받으면 안 된다.
 
-- readiness 신호가 실제 준비 상태를 반영해야 한다. 프로세스 기동과 요청 처리 가능은 다르다 (DB 커넥션 풀, 캐시 예열, 의존 서비스 연결). Node.js에서의 readiness/liveness 구현과 종료 상태 연동은 [[Nodejs-Production-Readiness|Node.js 프로덕션 준비]]가 소유한다.
+- readiness 신호가 실제 준비 상태를 반영해야 한다. 프로세스 기동과 요청 처리 가능은 다르다 (DB 커넥션 풀, 캐시 예열, 의존 서비스 연결). Node.js의 readiness/liveness 구현과 종료 상태 연동은 [[Nodejs-Production-Readiness|Node.js 프로덕션 준비]]가 소유한다.
 - health check는 얕은 것(프로세스 생존)과 깊은 것(의존성 포함)을 구분해 목적에 맞게 쓴다. 깊은 체크를 생존 판정에 쓰면 의존 서비스 장애가 재시작 폭풍으로 번진다.
 
 ## 계층 4: 데이터

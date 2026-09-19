@@ -35,7 +35,7 @@ AWS API의 성공 응답은 즉시 사용 가능을 뜻하지 않을 수 있다.
 
 ## 네트워크 배치와 접근 제어를 분리
 
-DB subnet group은 Aurora가 배치될 subnet 집합을 정하고, security group은 실제 접근 규칙을 정한다. 같은 VPC와 네트워크 등급을 쓰는 클러스터는 표준 subnet group을 공유할 수 있고, 접근 권한의 영향 범위를 나누려면 클러스터별 security group을 둔다.
+DB subnet group은 Aurora가 배치될 subnet 집합을 정하고 security group은 실제 접근 규칙을 정한다. 같은 VPC와 네트워크 등급을 쓰는 클러스터는 표준 subnet group을 공유할 수 있고, 접근 권한의 영향 범위를 나누려면 클러스터별 security group을 둔다.
 
 - subnet group은 최소 2개 AZ의 subnet을 포함해야 한다. 서로 다른 public/private 배치, network type이나 라우팅 경계가 필요할 때 별도 그룹을 만든다.
 - subnet group 자체도 수정할 수 있지만 cluster의 연결 설정을 바꾸면 downtime이 생길 수 있어 배치 기준을 생성 전에 확정한다.
@@ -59,7 +59,7 @@ DB subnet group은 Aurora가 배치될 subnet 집합을 정하고, security grou
 | Error Log | 장애 원인 분석 |
 | Slow Query Log | 병목 쿼리 발굴, 튜닝의 1차 자료 ([[MySQL-Slow-Query-Diagnosis\|Slow Query 진단]]) |
 
-PostgreSQL은 하나의 로그 체계에서 감사, 에러, 슬로우 역할을 함께 관리하며, 감사 로그에는 `pgaudit` 확장이 필요하다. 로그 파이프라인 일반론은 [[Log-Pipeline|로그 파이프라인]], CloudWatch 연동은 [[CloudWatch-Logs-Alarms|CloudWatch Logs]] 참고.
+PostgreSQL은 하나의 로그 체계에서 감사, 에러, 슬로우 역할을 함께 관리하며 감사 로그에는 `pgaudit` 확장이 필요하다. 로그 파이프라인 일반론은 [[Log-Pipeline|로그 파이프라인]], CloudWatch 연동은 [[CloudWatch-Logs-Alarms|CloudWatch Logs]] 참고.
 
 ## 백업: 네이티브 PITR와 중앙 백업 정책의 역할
 
@@ -74,7 +74,7 @@ PostgreSQL은 하나의 로그 체계에서 감사, 에러, 슬로우 역할을 
 
 ## 유지보수 설정: 검증과 rollout 정책
 
-- **Auto Minor Version Upgrade는 일괄 고정하지 않는다.** 짧게 쓰는 비핵심 DB는 자동 적용을, 핵심 DB는 사전 복제 환경 검증과 단계별 rollout 또는 수동 일정을 선택할 수 있다. 끄는 경우에도 보안 수정과 지원 종료를 추적할 담당자와 적용 기한이 필요하며, 필수 업그레이드는 설정과 무관하게 적용될 수 있다.
+- **Auto Minor Version Upgrade는 일괄 고정하지 않는다.** 짧게 쓰는 비핵심 DB는 자동 적용을, 핵심 DB는 사전 복제 환경 검증과 단계별 rollout 또는 수동 일정을 선택할 수 있다. 끄는 경우에도 보안 수정과 지원 종료를 추적할 담당자와 적용 기한이 필요하며 필수 업그레이드는 설정과 무관하게 적용될 수 있다.
 - **Deletion Protection은 파이프라인 진행 중엔 꺼두고**(롤백을 위해), 모든 생성 절차가 성공한 뒤에 켠다. 생성 자동화와 삭제 보호가 충돌하지 않도록 순서를 분리한 것.
 
 ## 후처리: 엔드포인트, 계정, binlog
@@ -95,7 +95,7 @@ PostgreSQL은 하나의 로그 체계에서 감사, 에러, 슬로우 역할을 
 - Auto Minor Upgrade rollout과 Deletion Protection 타이밍 — 자동화와 통제의 균형
 
 ## 사례
-- 대규모 Aurora fleet을 운영하는 팀이 DB 생성을 Kafka 이벤트 파이프라인으로 자동화하고, 클러스터별 전용 서브넷/SG, 템플릿 복사 파라미터, 태그 기반 AWS Backup, CloudWatch 로그 Export를 표준으로 적용한 사례가 있다. 후처리로 커스텀 엔드포인트(서비스/배치 분리)와 목적별 공용 계정, binlog 보관 기간을 자동 설정한다.
+- 대규모 Aurora fleet을 운영하는 팀이 DB 생성을 Kafka 이벤트 파이프라인으로 자동화하고 클러스터별 전용 서브넷/SG, 템플릿 복사 파라미터, 태그 기반 AWS Backup, CloudWatch 로그 Export를 표준으로 적용한 사례가 있다. 후처리로 커스텀 엔드포인트(서비스/배치 분리)와 목적별 공용 계정, binlog 보관 기간을 자동 설정한다.
 
 ## 출처
 - [Making retries safe with idempotent APIs — AWS Builders' Library](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)
