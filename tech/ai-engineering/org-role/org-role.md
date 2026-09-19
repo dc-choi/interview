@@ -11,7 +11,7 @@ aliases: ["AI 시대 조직, 역할", "AI Org & Role"]
 
 ## 목차
 - [x] [[AX-Transformation|AX(AI Transformation) 조직 전환 (Usage/Enablement/Transformation, 5 변혁 축, Maker→Closer)]]
-- [x] [[Developer-Role-AI-Era|AI 시대 개발자 역할 (위임의 4분면, 추상화의 위험, 견습 사다리 붕괴)]]
+- [x] [[Developer-Role-AI-Era|AI 시대 개발자 역할 (위임의 4분면, 재시도 중계와 판단의 차이, 개인용과 제품의 성공 기준, 추상화의 위험, 견습 사다리 붕괴)]]
 - [x] [[Expertise-Formation-AI|AI 시대 전문성 형성 (마찰, 숙련자 역설, 판단 위임의 경계, 가드레일 RCT, 튜터형 활용, 운영 자동화와 시스템 직관)]]
 - [x] [[AI-Slop-Quality-Gate|AI 슬롭과 판단 관문 (비용 전가 정의, 원재료 우선, 단계 판단 관문, 절약분 재투자, 책임 구조, 코드 슬롭 측정의 지표와 한계)]]
 - [x] [[AI-Market-and-Moat|AI 시장 구도와 해자 (market-moat/ 서브폴더) — 생성형 AI 시장 경쟁 구도, AI 인프라 지정학, 규제 논쟁, 도달력이 새 해자, 데이터 플라이휠]]
