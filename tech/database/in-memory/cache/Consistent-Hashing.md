@@ -54,7 +54,25 @@ N1 → N1#1, N1#2, ..., N1#150 각각 다른 hash로 링에 배치
 N2 → N2#1, N2#2, ..., N2#150 ...
 ```
 
-V는 보통 100-200. 너무 작으면 분포 불균형, 너무 크면 메모리, 검색 비용↑.
+적절한 V는 노드 수와 트래픽에 따라 다르다. 분포 불균형과 메모리, 검색 비용을 함께 확인한다.
+
+## 링 크기, 메모리와 교체
+
+노드 i의 point 수를 `V_i`라 하면 전체 point 수는 `M = Σ_i V_i`이며 저장 공간은 `M`에 비례한다. point를 늘리면 분포 오차는 줄지만 개선 폭은 작아지고, 유한한 해시 공간에서는 충돌 영향이 커진다. point 수는 노드 수, 가중치, 해시 폭, 메모리와 허용 오차를 함께 측정해 정한다.
+
+### 모델, 시뮬레이션과 사례를 구분한다
+
+- **모델**: `CV = sqrt((N - 1) / (N*k + 1))`에서 CV는 노드 담당 범위의 변동계수(표준편차/평균)다. 동일 가중치의 `N`개 노드가 각각 `k = V`개의 무작위 point를 갖는 연속 링이며 충돌이 없다고 가정한다.
+- **시뮬레이션**: 가중 링은 위 식을 그대로 적용하지 않고 `V_i`, 유한한 해시 폭과 실제 가중치를 넣어 평가한다. 32비트, 2,048 노드의 한 실험에서는 노드당 10,000에서 100,000 point로 늘릴수록 충돌 영향이 커졌다.
+- **프로덕션 사례**: Cloudflare는 2026년 Pingora Backend Router(PBR)에서 point를 90% 줄였고, 이전 링 제거 뒤 전 세계 메모리가 100TB 감소했다고 보고했다. 해당 워크로드의 관측이다.
+
+### point 저장 형식
+
+`u32` 해시와 `u16` 노드 인덱스로 충분하고 노드 수가 `2^16` 미만이면 6바이트 point를 검토한다. Rust는 정렬 때문에 필드만 줄여도 8바이트일 수 있으므로 raw byte 배열이나 명시적 레이아웃을 벤치마크한다. Cloudflare의 8바이트에서 6바이트 전환에 따른 25% 절감은 그 저장 형식의 결과다.
+
+### 캐시 링의 점진적 교체
+
+링 교체는 캐시 미스와 origin 트래픽을 늘릴 수 있다. 이전과 새 링을 함께 두고 요청 해시로 안정적으로 선택하면 롤백할 수 있다. 작은 데이터센터부터 확대하며 트래픽 비율과 위치를 따로 제어하고, 링 버전별 선택, 캐시와 origin 트래픽, 오류, 메모리와 시작 시간을 관측한다. 이전 링은 전면 적용 뒤 제거한다.
 
 ## 키 → 노드 조회 — 이진 탐색 O(log N×V)
 
@@ -133,6 +151,8 @@ Bounded-Load는 노드별 **최대 부하 한도** 설정 — 한도 초과 시 
 - [DynamoDB at Amazon — USENIX ATC 2022](https://www.usenix.org/system/files/atc22-elhemali.pdf)
 - [Maglev: A Fast and Reliable Software Network Load Balancer — Google](https://www.usenix.org/system/files/conference/nsdi16/nsdi16-paper-eisenbud.pdf)
 - [Redis Cluster specification](https://redis.io/docs/latest/operate/oss_and_stack/reference/cluster-spec/)
+- [Saving another 100TB of RAM with math (and Rust) — Cloudflare](https://blog.cloudflare.com/saving-100-tb-of-ram-with-math/)
+- [Cloudflare, 수학과 Rust로 RAM 100TB 추가 절감 — GeekNews](https://news.hada.io/topic?id=33915)
 
 ## 관련 문서
 - [[Cache-Strategies|Cache 전략]]
