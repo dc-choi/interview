@@ -1,0 +1,165 @@
+{
+  "scope": "Common interview answer masters, second prose review",
+  "baseline": "Working tree after 2026-09-20-001, before this follow-up",
+  "reviewed": 9,
+  "modified": 4,
+  "validation": [
+    {
+      "path": "fit/interview/common/My-FIT-Answers-Extended.md",
+      "result": "modified",
+      "protected_checks": "passed",
+      "intentional_new_link": "Current-Goals-and-Roadmap"
+    },
+    {
+      "path": "fit/interview/common/My-FIT-Answers.md",
+      "result": "modified",
+      "protected_checks": "passed",
+      "intentional_new_link": null
+    },
+    {
+      "path": "fit/interview/common/My-Motivation-Reasons.md",
+      "result": "modified",
+      "protected_checks": "passed",
+      "intentional_new_link": null
+    },
+    {
+      "path": "fit/interview/common/My-Reverse-Questions.md",
+      "result": "unchanged"
+    },
+    {
+      "path": "fit/interview/common/My-Self-Intro.md",
+      "result": "modified",
+      "protected_checks": "passed",
+      "intentional_new_link": null
+    },
+    {
+      "path": "fit/interview/common/my-tech-cards/My-Tech-Cards-Data.md",
+      "result": "unchanged"
+    },
+    {
+      "path": "fit/interview/common/my-tech-cards/My-Tech-Cards-Extended.md",
+      "result": "unchanged"
+    },
+    {
+      "path": "fit/interview/common/my-tech-cards/My-Tech-Cards-Ops.md",
+      "result": "unchanged"
+    },
+    {
+      "path": "fit/interview/common/my-tech-cards/My-Tech-Cards.md",
+      "result": "unchanged"
+    }
+  ],
+  "rate_gate": [
+    {
+      "path": "fit/interview/common/My-FIT-Answers-Extended.md",
+      "exit_code": 0,
+      "result": "change_rate: 2.6%  [전문]\ngate: OK — 수렴  (경고 30% / 중단 50%)"
+    },
+    {
+      "path": "fit/interview/common/My-FIT-Answers.md",
+      "exit_code": 0,
+      "result": "change_rate: 1.8%  [전문]\ngate: OK — 수렴  (경고 30% / 중단 50%)"
+    },
+    {
+      "path": "fit/interview/common/My-Motivation-Reasons.md",
+      "exit_code": 0,
+      "result": "change_rate: 0.9%  [전문]\ngate: OK — 수렴  (경고 30% / 중단 50%)"
+    },
+    {
+      "path": "fit/interview/common/My-Self-Intro.md",
+      "exit_code": 0,
+      "result": "change_rate: 2.6%  [전문]\ngate: OK — 수렴  (경고 30% / 중단 50%)"
+    }
+  ],
+  "content_update": {
+    "path": "fit/interview/common/My-FIT-Answers-Extended.md",
+    "change": "Separated past search-learning choice from current paused status",
+    "sources": [
+      "fit/AGENTS.md",
+      "fit/growth/Current-Goals-and-Roadmap.md"
+    ]
+  },
+  "files": [
+    {
+      "path": "fit/interview/common/My-FIT-Answers-Extended.md",
+      "result": "modified",
+      "before_chars": 3637,
+      "after_chars": 3768,
+      "before_sha256": "2e544df622d6191a713330b6d5bb37dfafe31df2dc84d4eaf313731fc0bd2533",
+      "after_sha256": "2f29b65edf5a0a317b80ad4fc004d86fe65cfa42d6696e8a3b236f5d162bc695",
+      "change_rate_percent_rounded": 2.6
+    },
+    {
+      "path": "fit/interview/common/My-FIT-Answers.md",
+      "result": "modified",
+      "before_chars": 6333,
+      "after_chars": 6354,
+      "before_sha256": "80491ceff2de11c26108029ee2bee03eb6cfa8f66c58222df90920623be2d10a",
+      "after_sha256": "16948bc2abc2eb3d4b2ccd7862a4366006ec912d166213fc21ce0ddc9d6ac737",
+      "change_rate_percent_rounded": 1.8
+    },
+    {
+      "path": "fit/interview/common/My-Motivation-Reasons.md",
+      "result": "modified",
+      "before_chars": 4865,
+      "after_chars": 4866,
+      "before_sha256": "6b6a31f6778488ac5312d0ed8898cc5e9a3f1624260e043d1e0cc449c1c6d908",
+      "after_sha256": "af1a69f0fffcceda280bc5776e837339dad81ced6ea3751975332d3f6472faf5",
+      "change_rate_percent_rounded": 0.9
+    },
+    {
+      "path": "fit/interview/common/My-Reverse-Questions.md",
+      "result": "unchanged",
+      "before_chars": 4603,
+      "after_chars": 4603,
+      "before_sha256": "75b142ddc7e861ab3631cb8def793d6cd305398a441b9ed3d5be849a2f189749",
+      "after_sha256": "75b142ddc7e861ab3631cb8def793d6cd305398a441b9ed3d5be849a2f189749",
+      "change_rate_percent_rounded": 0
+    },
+    {
+      "path": "fit/interview/common/My-Self-Intro.md",
+      "result": "modified",
+      "before_chars": 2822,
+      "after_chars": 2827,
+      "before_sha256": "0384fe6b2f4f622c85f66a5c290e545f69f185937b94103570bfe81d47a72e53",
+      "after_sha256": "b57a42465cebcb6aaf9a6bae9404f4bb1c6e895f05e10da96ffc3b30cc47fc73",
+      "change_rate_percent_rounded": 2.6
+    },
+    {
+      "path": "fit/interview/common/my-tech-cards/My-Tech-Cards-Data.md",
+      "result": "unchanged",
+      "before_chars": 4809,
+      "after_chars": 4809,
+      "before_sha256": "f817b76571220a86ec2e1ca8a7aa3f5ce4b5443d1755a24f3e9511c4f2e1193c",
+      "after_sha256": "f817b76571220a86ec2e1ca8a7aa3f5ce4b5443d1755a24f3e9511c4f2e1193c",
+      "change_rate_percent_rounded": 0
+    },
+    {
+      "path": "fit/interview/common/my-tech-cards/My-Tech-Cards-Extended.md",
+      "result": "unchanged",
+      "before_chars": 10237,
+      "after_chars": 10237,
+      "before_sha256": "cfa2cb469156d1dd1f760babbe45301756923c31178f9452925d75e48babdffc",
+      "after_sha256": "cfa2cb469156d1dd1f760babbe45301756923c31178f9452925d75e48babdffc",
+      "change_rate_percent_rounded": 0
+    },
+    {
+      "path": "fit/interview/common/my-tech-cards/My-Tech-Cards-Ops.md",
+      "result": "unchanged",
+      "before_chars": 4174,
+      "after_chars": 4174,
+      "before_sha256": "77d31f9f20838ebe946d60bb1b6ac691c0a8b95ba5cea4418e8e1afe7ddbb7ca",
+      "after_sha256": "77d31f9f20838ebe946d60bb1b6ac691c0a8b95ba5cea4418e8e1afe7ddbb7ca",
+      "change_rate_percent_rounded": 0
+    },
+    {
+      "path": "fit/interview/common/my-tech-cards/My-Tech-Cards.md",
+      "result": "unchanged",
+      "before_chars": 4038,
+      "after_chars": 4038,
+      "before_sha256": "f0cc0cd5e783b4eb46f4bcf19a932af36b7c41eb007fa57a1f990c8122ad95f5",
+      "after_sha256": "f0cc0cd5e783b4eb46f4bcf19a932af36b7c41eb007fa57a1f990c8122ad95f5",
+      "change_rate_percent_rounded": 0
+    }
+  ]
+}
