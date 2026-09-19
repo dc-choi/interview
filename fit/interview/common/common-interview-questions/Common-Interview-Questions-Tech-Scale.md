@@ -24,7 +24,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 - **외부 API Rate Limit 초과**
 
 **조치 방법 (단기 → 장기)**
-1. **즉시**: 병목을 측정한 뒤 WAS를 스케일 아웃하고 CDN 캐시 TTL을 조정. DB가 읽기 병목이며 stale read를 허용할 때만 리드 레플리카를 추가하고, read-after-write는 primary로 고정
+1. **즉시**: 병목을 측정한 뒤 WAS를 스케일 아웃하고 CDN 캐시 TTL을 조정. DB가 읽기 병목이며 stale read를 허용할 때만 리드 레플리카를 추가하고 read-after-write는 primary로 고정
 2. **단기**: 측정된 핫 읽기 경로 중 stale read를 허용하는 곳에만 Cache Aside 적용, 캐시 무효화 설계, N+1 쿼리 제거, Connection Pool 튜닝
 3. **중기**: 비동기 처리 전환 (Kafka/SQS로 오프로딩), 핫 경로 프로파일링
 4. **장기**: 읽기/쓰기 분리, 샤딩, 도메인 분리(MSA), 오토스케일링 규칙 정교화
@@ -35,7 +35,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 - 장애 리허설 (Chaos Engineering)
 - 모니터링 경보 임계값 재조정
 
-**판단 기준**: 실제 RPS, p95/p99, 오류율, DB 대기와 외부 API quota를 먼저 측정해 병목을 특정하고, 데이터 신선도와 read-after-write 요구를 확인한 뒤 캐시나 리드 레플리카를 선택한다.
+**판단 기준**: 실제 RPS, p95/p99, 오류율, DB 대기와 외부 API quota를 먼저 측정해 병목을 특정하고 데이터 신선도와 read-after-write 요구를 확인한 뒤 캐시나 리드 레플리카를 선택한다.
 
 **대안과 트레이드오프**: 캐시와 리드 레플리카는 읽기 부하를 낮추지만 stale read를 허용하는 경로에만 쓴다.
 
@@ -58,9 +58,9 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 
 1. **기본 접수 경로**: 구매 이력을 확인한 뒤 하나의 DB transaction에서 조건부 재고 차감, 참여 행, outbox 행을 함께 확정
    - `UNIQUE(event_id, user_id)`와 안정적인 Idempotency Key(`event_id:user_id`)로 먼저 참여 행 insert를 시도. 중복이면 rollback하고 기존 결과를 반환
-   - 신규 참여에만 `UPDATE event_inventory ... SET remaining = remaining - 1 WHERE event_id = ? AND remaining > 0`을 실행하고, 한 행을 갱신한 경우에만 진행
+   - 신규 참여에만 `UPDATE event_inventory ... SET remaining = remaining - 1 WHERE event_id = ? AND remaining > 0`을 실행하고 한 행을 갱신한 경우에만 진행
    - 참여 상태를 `accepted`로 저장하고 같은 transaction에 지급 요청 outbox 행을 insert. 재고 부족이면 transaction 전체를 rollback
-2. **실제 지급 (비동기)**: Outbox publisher가 Kafka/SQS에 적어도 한 번 전달하고, provider가 지원하면 consumer는 같은 Idempotency Key로 외부 기프티콘 API를 호출. 지원하지 않으면 지급 상태 조회와 대사 절차로 중복과 불명확한 결과를 닫음
+2. **실제 지급 (비동기)**: Outbox publisher가 Kafka/SQS에 적어도 한 번 전달하고 provider가 지원하면 consumer는 같은 Idempotency Key로 외부 기프티콘 API를 호출. 지원하지 않으면 지급 상태 조회와 대사 절차로 중복과 불명확한 결과를 닫음
    - 성공하면 `issued`, 재시도 중이면 `retrying`, 최종 실패면 `failed` 상태를 남김
    - 재시도 횟수 제한과 DLQ를 두고, `accepted`인데 `issued`가 아닌 건을 주기적으로 대사해 재발행 또는 운영자 처리
 3. **진입 제어는 선택 사항**: peak RPS, DB lock wait, connection pool, 외부 API quota를 측정해 DB 접수 경로가 버티지 못할 때만 Redis 기반 대기열 또는 admission control을 추가. Redis는 도착을 평탄화할 뿐 DB 재고와 원자적으로 묶지 않으며, 최종 재고 정본은 DB transaction
@@ -121,7 +121,7 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 - **DB 락 경합** — 재고 업데이트 + 주문 저장이 한 트랜잭션 안에 있으면 락 지속 시간 증가
 
 **해결 방법**
-1. **이벤트 기반 아키텍처로 전환**: 요청 경로에서는 주문을 `PENDING`으로 저장하고, 결제와 재고를 비동기 처리해 둘 다 성공하면 `CONFIRMED`, 실패하면 `CANCELED`와 보상 처리. 배송과 메일은 확정 후 실행
+1. **이벤트 기반 아키텍처로 전환**: 요청 경로에서는 주문을 `PENDING`으로 저장하고 결제와 재고를 비동기 처리해 둘 다 성공하면 `CONFIRMED`, 실패하면 `CANCELED`와 보상 처리. 배송과 메일은 확정 후 실행
 2. **메시지 브로커 도입** (Kafka / RabbitMQ / SQS): 도메인 간 느슨한 결합 (Event-Driven)
 3. **Transactional Outbox 패턴**: 주문과 outbox 행을 한 DB 트랜잭션으로 저장. 별도 publisher는 재시도로 적어도 한 번 전달하며 중복 발행될 수 있으므로 consumer를 멱등하게 처리
 4. **SAGA 패턴**: 분산 트랜잭션 대신 보상 트랜잭션으로 일관성 확보
@@ -160,12 +160,12 @@ aliases: ["Common Interview Questions Tech Scale", "기술 질문 확장성"]
 **핵심 근거**
 
 - Primary와 replica는 같은 logical shard의 복사본이므로 둘 다 검색하면 동일한 데이터에 중복 작업을 하게 된다.
-- Replica는 서로 다른 검색 요청을 여러 shard copy에 분산하고, 장애 시 가용한 copy로 요청을 보낼 수 있게 한다.
+- Replica는 서로 다른 검색 요청을 여러 shard copy에 분산하고 장애 시 가용한 copy로 요청을 보낼 수 있게 한다.
 - 각 shard copy가 지역 top K를 반환하면 coordinator가 이를 전역 top K로 병합한다.
 
 **흔한 오답**
 
-- `6개를 모두 검색한다`: Replica가 검색 트래픽을 분산한다는 말을 요청 하나가 모든 copy를 검색한다는 뜻으로 오해한 답이다. Replica는 같은 logical shard의 중복 데이터이며, 일반적인 검색은 그중 한 copy만 선택한다.
+- `6개를 모두 검색한다`: Replica가 검색 트래픽을 분산한다는 말을 요청 하나가 모든 copy를 검색한다는 뜻으로 오해한 답이다. Replica는 같은 logical shard의 중복 데이터이며 일반적인 검색은 그중 한 copy만 선택한다.
 
 **꼬리질문**
 - Replica 수를 늘리면 검색 처리량과 색인 비용은 어떻게 달라지는가?

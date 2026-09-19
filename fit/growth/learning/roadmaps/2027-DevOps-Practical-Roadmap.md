@@ -36,7 +36,7 @@ aliases: ["2027 DevOps 실전 로드맵", "2027 데브옵스 학습 계획", "20
 
 ## 실행 체크
 
-- [ ] 준비 시작: 남은 업무와 인수인계, 공개 가능한 경력 증거, 회복과 가용 시간, 수락한 의무 및 다른 학습 후보를 비교하고, 직접 닫은 운영 증거와 다음에 채울 인프라 빈칸 하나를 구분해 DevOps를 유일한 트랙으로 선택했다.
+- [ ] 준비 시작: 남은 업무와 인수인계, 공개 가능한 경력 증거, 회복과 가용 시간, 수락한 의무 및 다른 학습 후보를 비교하고 직접 닫은 운영 증거와 다음에 채울 인프라 빈칸 하나를 구분해 DevOps를 유일한 트랙으로 선택했다.
 - [ ] 준비 시작과 재개: 현재 집중 자리를 닫거나 보류했고 새 준비 구간 ID, 시작일과 2회 상한을 기록했다.
 - [ ] 핵심 실습 시작과 재개: 0단계 gate를 모두 통과했고 새 핵심 실행 구간 ID, 시작일, 최대 24회 실습 세션과 별도 2주 버퍼 및 초기화한 단계 상한을 기록했다.
 - [ ] 핵심 3 시작: Terraform 최소 성공선을 닫고 통합 gate에서 Kubernetes 진행을 다시 선택했다.
@@ -69,7 +69,7 @@ flowchart LR
 - 학습용 VPC에서 public ALB와 public IP가 있는 Fargate task를 쓰고, task ingress는 ALB security group만 허용한다. NAT 구성을 생략하기 위한 학습용 선택이며 운영 표준으로 일반화하지 않는다.
 - 최소 resource contract는 서로 다른 AZ의 public subnet 2개, internet gateway/route table, ALB listener/target group, ALB/task security group, ECS task execution role과 task role이다.
 - 저장소는 DynamoDB on-demand 한 표로 고정한다. 기준 설정은 tags와 CloudWatch alarm이며 TTL, PITR, stream과 index는 제외하고 별도 표로 복원한다.
-- 별도 `bootstrap/` Terraform 구성과 gitignored local state로 S3 state bucket을 먼저 만든다. 이 bucket은 서비스 teardown 뒤에도 유지하고, 복구 증거를 남긴 다음 object version과 delete marker를 비운 뒤 bootstrap stack에서 마지막으로 삭제한다.
+- 별도 `bootstrap/` Terraform 구성과 gitignored local state로 S3 state bucket을 먼저 만든다. 이 bucket은 서비스 teardown 뒤에도 유지하고 복구 증거를 남긴 다음 object version과 delete marker를 비운 뒤 bootstrap stack에서 마지막으로 삭제한다.
 - 배포는 ECS rolling update와 deployment circuit breaker 자동 rollback 한 경로만 사용한다.
 - worker/SQS, RDS, blue/green, 다중 환경과 EKS는 핵심 1에서 4의 범위에서 제외한다. 로컬 Kubernetes는 핵심 3에서 같은 API image로 검증한다.
 - 요청 수, 오류율과 지연 시간을 같은 명령으로 다시 측정할 수 있는 요청 생성 절차를 저장한다.
@@ -79,14 +79,14 @@ flowchart LR
 1. 샘플 API와 인프라 저장소의 경계, 실행 명령과 삭제 순서를 정한다.
 2. 예산 알림, 리소스 태그, 실습 종료 시각과 비용 중단선을 만든다.
 3. 기준 요청을 보내 요청 수, 오류율과 지연 시간의 초기값을 기록한다.
-4. 기존 경험을 아래 skip gate로 한 번 검증하고, 직접 닫은 운영 증거와 아직 소유하지 못한 범위를 나눈다.
+4. 기존 경험을 아래 skip gate로 한 번 검증하고 직접 닫은 운영 증거와 아직 소유하지 못한 범위를 나눈다.
 
 ### 통과 gate
 
 - [ ] 샘플 API와 인프라 저장소의 경계, 기준 아키텍처와 제외 범위를 문서 없이 다시 그려 설명한다.
 - [ ] 미래 투자 선택 근거, 통합 선택 gate의 네 조건, 직접 닫은 운영 증거와 채울 인프라 빈칸, 준비 구간 ID와 시작일을 기록했다.
 - [ ] 최소 resource contract의 생성/삭제 순서, 예산 알림, 리소스 태그, 실습 종료 시각과 비용 중단선이 적혀 있다.
-- [ ] 샘플 API를 로컬에서 한 명령 흐름으로 실행하고 종료하며, 반복 가능한 요청 명령과 요청 수, 오류율, 지연 시간의 초기값을 저장한다.
+- [ ] 샘플 API를 로컬에서 한 명령 흐름으로 실행하고 종료하며 반복 가능한 요청 명령과 요청 수, 오류율, 지연 시간의 초기값을 저장한다.
 
 기존 문서는 통과 증거가 아니라 검증 대상이다. [[My-Tech-Cards-Ops]]의 ECS 경험을 문서 없이 재현하고 rolling 선택, autoscaling, graceful shutdown과 secret 경계를 설명하면 ECS 입문 읽기는 생략한다. 원시 지표로 SLI 분모, SLO와 통계형/건별 alert를 다시 정의하면 SLO 입문 읽기는 생략한다. Terraform state, OIDC, 복구와 실패 주입 gate는 생략하지 않는다. 모든 핵심 단계는 [[Engineer-Work-Loop|업무 성장 루프]]와 [[Performance-Evidence-Playbook|성과 증거 기준]]에 따라 문제와 책임, 선택지, 안전한 변경, 검증 결과와 한계를 남긴다. 개인 실습과 실패 주입은 재현 가능한 역량 증거지만 실제 운영 성과로 표현하지 않는다.
 
@@ -116,9 +116,9 @@ State와 saved plan에는 민감 정보가 들어갈 수 있다. 버전 관리 �
 - [ ] 빈 학습 환경에서 재사용 가능한 module과 data source를 포함한 `plan`을 검토한 뒤 기준 아키텍처를 재구축한다.
 - [ ] 의도적인 drift를 탐지하고 원복 또는 코드 반영 결정을 기록하며 리소스 하나를 import한다.
 - [ ] S3 backend의 `use_lockfile`을 켜고 동시에 실행한 두 번째 명령이 잠금으로 차단되는지 확인하며 지정된 role만 state와 lock object에 접근하는지 검증한다.
-- [ ] ECS task role에서 DynamoDB 작업 하나를 명시적으로 거부하고, IAM policy와 CloudWatch log에서 원인을 확인한 뒤 원복한다.
+- [ ] ECS task role에서 DynamoDB 작업 하나를 명시적으로 거부하고 IAM policy와 CloudWatch log에서 원인을 확인한 뒤 원복한다.
 - [ ] ALB에서 task까지의 security group 경로를 끊고, VPC route/security group과 CloudWatch metric/log로 실패 지점을 확인한다. 연결 실패 alarm이 `ALARM`에서 `OK`로 돌아온 뒤 통과한다.
-- [ ] 격리된 recovery key에서 S3의 이전 state object version을 실제로 복원하고, `plan`에 의도하지 않은 변경이 없는지 확인한다. 활성 state는 덮어쓰지 않는다.
+- [ ] 격리된 recovery key에서 S3의 이전 state object version을 실제로 복원하고 `plan`에 의도하지 않은 변경이 없는지 확인한다. 활성 state는 덮어쓰지 않는다.
 - [ ] 서비스 stack을 먼저 삭제하고 state 복구 증거를 보존한 뒤, 학습용 bucket의 object version과 delete marker를 비우고 bootstrap stack까지 마지막으로 삭제한다.
 
 ## 핵심 3: Kubernetes, CI/CD와 rollback, 최대 6회
@@ -136,7 +136,7 @@ State와 saved plan에는 민감 정보가 들어갈 수 있다. 버전 관리 �
 - [ ] kind에 같은 API image를 Deployment와 Service로 배포하고 요청 경로, desired/current/ready replica와 rollout 상태를 설명한다.
 - [ ] probe 오설정과 부족한 resource request/limit을 각각 재현해 이벤트와 상태로 원인을 찾고, 수정 뒤 rollout을 완료한 다음 이전 revision으로 rollback한다.
 - [ ] test, SBOM, dependency/image scan, build와 deploy를 분리하고 `terraform fmt`, `validate`, `plan`과 IaC security check를 통과하며 scan 또는 policy 위반이 배포를 막는지 확인한다. commit SHA로 tag한 image를 배포하고 실행 task의 image digest를 build artifact와 대조한다.
-- [ ] GitHub Actions가 장기 AWS key 없이 OIDC로 제한된 IAM role을 사용하고, workflow `permissions`와 IAM permission policy 증거를 남긴다.
+- [ ] GitHub Actions가 장기 AWS key 없이 OIDC로 제한된 IAM role을 사용하고 workflow `permissions`와 IAM permission policy 증거를 남긴다.
 - [ ] OIDC trust policy의 `aud=sts.amazonaws.com`와 실행 시점 형식에 맞는 repository/ref 또는 environment `sub` 제한을 증거로 남긴다. Environment 기반 `sub`를 쓰면 허용 branch/tag만 배포할 수 있는 environment protection rule도 함께 검증한다.
 - [ ] 허용/거부 시험은 같은 `id-token: write`, OIDC action과 role ARN을 사용한다. Ref 기반이면 허용하지 않은 ref가 STS trust 조건에서 거부되는지 확인한다. Environment 기반이면 허용하지 않은 branch/tag가 environment protection에서 차단되고, 허용하지 않은 repository 또는 environment가 STS trust 조건에서 거부되는지 실패 지점까지 기록한다.
 - [ ] 승인한 plan과 apply 대상 commit이 같고 적용 뒤 plan artifact가 삭제됐는지 확인한다.

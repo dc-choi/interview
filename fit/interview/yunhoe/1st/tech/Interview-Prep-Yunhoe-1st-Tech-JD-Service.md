@@ -20,7 +20,7 @@ verified_at: 2026-08-26
 - **단계**: 논리적 격리(tenant_id 컬럼), 스키마 분리, 물리적 분리를 비교한다. 초기 선택도 고객 수가 아니라 계약상 격리, 복구 단위, 측정된 부하와 운영 역량을 기준으로 정한다.
 - 강제 가드:
   - **Prisma v7 앱 경계** — `$use` middleware는 제거됐다. repository API가 `tenantId`를 명시적으로 받고, 필요한 공통 경로는 `$extends` query extension으로 보조한다. 이는 런타임 가드일 뿐 컴파일 시점 보장이나 보안 경계가 아니다. 범용 client와 raw query는 repository 밖으로 노출하지 않는다.
-  - **PostgreSQL RLS** — 앱 role은 table owner도 `BYPASSRLS` role도 아니어야 하며, tenant context는 커넥션 풀에 남지 않게 트랜잭션 안에서만 설정한다.
+  - **PostgreSQL RLS** — 앱 role은 table owner도 `BYPASSRLS` role도 아니어야 하며 tenant context는 커넥션 풀에 남지 않게 트랜잭션 안에서만 설정한다.
     ```sql
     ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 
@@ -34,14 +34,14 @@ verified_at: 2026-08-26
     -- tenant-bound queries
     COMMIT;
     ```
-    RLS는 non-owner 앱 role을 위한 DB 계층의 방어선이다. 인증 뒤 결정한 tenant context와 role 설정이 전제이며, tenant 미설정, 다른 tenant의 SELECT, INSERT, UPDATE, DELETE와 owner/BYPASSRLS 연결을 실제 PostgreSQL 통합 테스트로 확인한다.
-  - 테넌트 범위 조회에는 `(tenant_id, created_at DESC)` 같은 인덱스를 먼저 검토하고, 전체 테넌트 관리 쿼리는 별도 인덱스와 실행계획으로 판단한다.
+    RLS는 non-owner 앱 role을 위한 DB 계층의 방어선이다. 인증 뒤 결정한 tenant context와 role 설정이 전제이며 tenant 미설정, 다른 tenant의 SELECT, INSERT, UPDATE, DELETE와 owner/BYPASSRLS 연결을 실제 PostgreSQL 통합 테스트로 확인한다.
+  - 테넌트 범위 조회에는 `(tenant_id, created_at DESC)` 같은 인덱스를 먼저 검토하고 전체 테넌트 관리 쿼리는 별도 인덱스와 실행계획으로 판단한다.
 - 스키마나 물리 분리는 계약상 격리 요구, 측정된 noisy neighbor와 SLO 위반, 백업, 복구 단위와 비용을 기준으로 검토한다. 단일 테넌트 비중 같은 수치는 서비스별 경보 기준일 뿐 보편 임계값이 아니다.
 - 꼬리:
   - "noisy neighbor 대응?" → 테넌트별 rate limit (Redis token bucket) + 커넥션 풀 분리 + 임계 초과 알림
   - "공유 인프라 비용 배분?" → 테넌트별 사용량 메트릭(요청 수, DB 시간, 스토리지) 집계 → 빌링/내부 단가
   - "BMS/암호화 키 분리?" → 테넌트별 KMS 키 + envelope encryption. PII는 컬럼 레벨 암호화
-  - "Prisma extension vs 명시 repository?" → 명시 repository가 tenant 조건을 드러내고 테스트하기 쉽다. extension은 반복 경로의 실수를 줄이는 보조 수단이며, raw query까지 강제하지 못하므로 RLS와 통합 테스트를 함께 둔다
+  - "Prisma extension vs 명시 repository?" → 명시 repository가 tenant 조건을 드러내고 테스트하기 쉽다. extension은 반복 경로의 실수를 줄이는 보조 수단이며 raw query까지 강제하지 못하므로 RLS와 통합 테스트를 함께 둔다
 
 ### Q6. 물리, 디지털 식별이 필요한 서비스의 ID, 발급, QR 매핑
 
@@ -58,10 +58,10 @@ verified_at: 2026-08-26
 
 ### Q7. 외부 표준, 파트너 API 연동의 안정성
 
-- connect/read timeout을 분리하고, 재시도는 멱등한 요청과 명시적으로 재시도 가능한 응답에만 `Retry-After`와 jitter를 반영해 제한한다. Circuit breaker는 인스턴스별로 두며, 비동기 작업의 최종 실패는 DLQ와 수동 복구 경로로 격리한다.
+- connect/read timeout을 분리하고 재시도는 멱등한 요청과 명시적으로 재시도 가능한 응답에만 `Retry-After`와 jitter를 반영해 제한한다. Circuit breaker는 인스턴스별로 두며, 비동기 작업의 최종 실패는 DLQ와 수동 복구 경로로 격리한다.
 - 표준 데이터 모델은 자주 변하므로 어댑터 레이어로 격리: 도메인 모델 ↔ 외부 모델 매핑 한 곳에서만
 - 꼬리:
-  - "Circuit Breaker 상태 공유는?" → 기본은 인스턴스별 상태로 장애 상관관계를 줄인다. upstream 전체 예산을 보호해야 하면 중앙 rate limit이나 동시성 제한을 별도로 설계하며, 멀티 인스턴스라는 이유만으로 breaker 상태를 Redis에 공유하지 않는다.
+  - "Circuit Breaker 상태 공유는?" → 기본은 인스턴스별 상태로 장애 상관관계를 줄인다. upstream 전체 예산을 보호해야 하면 중앙 rate limit이나 동시성 제한을 별도로 설계하며 멀티 인스턴스라는 이유만으로 breaker 상태를 Redis에 공유하지 않는다.
   - "외부 API 비용 폭주 방어?" → 사용자/테넌트별 토큰 쿼터, 월간 예산 알림, 캐시 적극 활용
 
 ## 3. DPP 도메인 가정 질문
