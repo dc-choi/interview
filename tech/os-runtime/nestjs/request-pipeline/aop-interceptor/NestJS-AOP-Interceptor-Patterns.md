@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, aop, interceptor, observable, rxjs]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-22
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Interceptor 실전 패턴", "Prisma 에러 중앙 처리"]
 ---
@@ -32,31 +32,68 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
 
 전역 등록(`useGlobalInterceptors` 또는 `APP_INTERCEPTOR`)으로 일관성. 단 페이지네이션, SSE 같은 특수 응답은 별도 처리 필요.
 
-### 메서드별 캐싱
+### 공개 GET 응답만 opt-in 캐싱
 
-같은 request key에 대한 응답을 메모리 캐시. Reflector + 메타데이터로 메서드별 TTL 분기.
+응답 캐시는 공개적이고 동일한 응답을 주는 GET handler에만 명시적으로 붙인다. 인증 헤더, cookie, request user 중 하나라도 있으면 캐시를 우회한다. URL만 키로 쓰면 언어, 공개 tenant 같은 변형 응답도 섞이므로 실제 응답을 바꾸는 공개 variant는 allowlist에 넣어 키에 포함한다. 역할, 사용자 ID, session처럼 접근 권한에 연결된 값은 variant로 삼지 말고 캐시하지 않는다.
 
 ```ts
+export interface PublicCacheOptions {
+  readonly ttlSeconds: number;
+  readonly varyBy?: readonly ('accept-language' | 'x-public-tenant')[];
+}
+
+export const PUBLIC_CACHE_OPTIONS = 'public-cache-options';
+export const PublicCache = (options: PublicCacheOptions) =>
+  SetMetadata(PUBLIC_CACHE_OPTIONS, options);
+
 @Injectable()
 export class CacheInterceptor implements NestInterceptor {
-  constructor(private cacheService: CacheService) {}
+  constructor(
+    private readonly cacheService: CacheService,
+    private readonly reflector: Reflector,
+  ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
-    const key = `${request.method}:${request.url}`;
+    const options = this.reflector.getAllAndOverride<PublicCacheOptions>(
+      PUBLIC_CACHE_OPTIONS,
+      [context.getHandler(), context.getClass()],
+    );
+    const hasIdentity =
+      request.headers.authorization !== undefined ||
+      request.headers.cookie !== undefined ||
+      request.user !== undefined;
+
+    if (request.method !== 'GET' || options === undefined || hasIdentity) {
+      return next.handle();
+    }
+
+    const variants = (options.varyBy ?? []).map((header) => [
+      header,
+      request.headers[header] ?? '',
+    ]);
+    const key = JSON.stringify([
+      request.method,
+      request.originalUrl ?? request.url,
+      variants,
+    ]);
 
     const cached = this.cacheService.get(key);
     // 이 예제에서 cache miss는 undefined다. 0, false, 빈 문자열, null은 유효한 hit다.
     if (cached !== undefined) return of(cached);
 
     return next.handle().pipe(
-      tap(response => this.cacheService.set(key, response, 60)),
+      tap((response) => this.cacheService.set(key, response, options.ttlSeconds)),
     );
   }
 }
+
+@Get('catalog')
+@PublicCache({ ttlSeconds: 60, varyBy: ['accept-language'] })
+findCatalog() { /* 인증, cookie, 사용자별 내용이 없는 공개 응답 */ }
 ```
 
-다중 인스턴스가 같은 cache 결과를 봐야 한다면 Redis 같은 shared store를 사용한다. instance별 cache도 허용할 수 있지만 서로 다른 값을 잠시 반환할 수 있으므로 허용 가능한 stale 범위와 invalidation 방식을 먼저 정한다.
+`@PublicCache`는 공유해도 되는 응답이라는 계약이다. 예를 들어 locale, 공개 tenant host, 실험 variant처럼 응답을 바꾸는 값은 명시적으로 키에 포함하고, 개인화, 로그인 여부, 권한별 필드가 있는 route는 데코레이터를 붙이지 않는다. 이 예제의 `CacheService`는 동기 custom store다. `@nestjs/cache-manager`처럼 Promise를 반환하는 store는 `defer` 또는 `from`으로 Observable 안에서 `get`과 `set`을 호출한다. 다중 인스턴스가 같은 결과를 봐야 한다면 Redis 같은 shared store를 사용한다. instance별 cache도 허용할 수 있지만 서로 다른 값을 잠시 반환할 수 있으므로 허용 가능한 stale 범위와 invalidation 방식을 먼저 정한다.
 
 ### 타임아웃과 재시도 경계 분리
 
@@ -140,3 +177,4 @@ Service는 순수 비즈니스 로직만. 에러 매핑, 메서드별 메시지,
 ## 출처
 - [NestJS — Serialization](https://docs.nestjs.com/techniques/serialization)
 - [NestJS, Interceptors](https://docs.nestjs.com/interceptors)
+- [NestJS, Caching](https://docs.nestjs.com/techniques/caching)

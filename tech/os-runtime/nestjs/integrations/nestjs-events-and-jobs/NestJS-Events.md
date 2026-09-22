@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, event-emitter, event-driven, decoupling]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-22
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Events", "@nestjs/event-emitter", "OnEvent"]
 ---
@@ -28,18 +28,22 @@ handleOrderCreatedEvent(payload: OrderCreatedEvent) { ... }
 
 ## 함정 1 — 리스너 에러는 기본 억제
 
-`suppressErrors`의 **기본값이 true** — 리스너에서 던진 에러가 기본적으로 밖으로 전파되지 않는다. 이벤트 처리 실패를 감지하려면 리스너 안에서 자체 로깅/알림을 하거나 `suppressErrors: false`로 던지게 바꾼다.
+`suppressErrors`의 **기본값이 true** — 리스너에서 던진 에러가 기본적으로 밖으로 전파되지 않는다. 이벤트 처리 실패를 감지하려면 리스너 안에서 자체 로깅/알림을 한다. 기본 리스너 실행 설정에서 발행자가 실패를 받아야 한다면 `suppressErrors: false`로 바꾸고 `await eventEmitter.emitAsync(...)`로 처리 결과를 기다린다. `emit()`를 감싼 동기 `try/catch`만으로는 Promise rejection을 받지 못한다.
 
 ## 함정 2 — 부트스트랩 전 발행은 유실
 
-onApplicationBootstrap 완료 전(모듈 생성자, onModuleInit)에 emit하면 EventSubscribersLoader가 리스너 등록을 못 끝낸 상태라 이벤트가 유실될 수 있다. 그 시점에 발행해야 하면:
+onApplicationBootstrap 완료 전(모듈 생성자, onModuleInit)에 emit하면 EventSubscribersLoader가 리스너 등록을 못 끝낸 상태라 이벤트가 유실될 수 있다. 초기 이벤트는 bootstrap caller가 `app.init()`을 await하고 리스너 등록 성공까지 확인한 뒤 발행한다.
 
 ```ts
-await this.eventEmitterReadinessWatcher.waitUntilReady();
-this.eventEmitter.emit('order.created', ...);
+const app = await NestFactory.create(AppModule);
+await app.init();
+await app.get(EventEmitterReadinessWatcher).waitUntilReady();
+await app.listen(3000);
+
+app.get(EventEmitter2).emit('order.created', new OrderCreatedEvent({ orderId: 1 }));
 ```
 
-부트스트랩 완료 후 발행에는 불필요.
+`EventEmitterReadinessWatcher`는 `@nestjs/event-emitter`에서 가져온다. `onModuleInit` 안에서 `waitUntilReady()`를 await하면 이후 bootstrap hook이 시작하지 못해 교착된다. 위처럼 init이 끝난 뒤 기다리면 교착 없이 등록 실패도 받을 수 있다. loader가 등록 오류를 watcher에 기록하고 bootstrap 자체는 완료할 수 있으므로 init 성공만으로 등록 성공을 단정하지 않는다. watcher는 리스너 등록만 확인하며, `emit()`가 리스너 처리 완료나 오류 전파까지 기다려 주는 것은 아니다.
 
 ## 경계 — 인프로세스라는 것
 
@@ -54,3 +58,4 @@ this.eventEmitter.emit('order.created', ...);
 
 ## 출처
 - [NestJS — Events](https://docs.nestjs.com/techniques/events)
+- [nestjs/event-emitter, EventSubscribersLoader 3.0.1](https://github.com/nestjs/event-emitter/blob/3.0.1/lib/event-subscribers.loader.ts)

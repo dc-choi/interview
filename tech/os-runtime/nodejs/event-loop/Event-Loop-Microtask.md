@@ -80,7 +80,7 @@ Node.js:  timers큐 [ setTimeout ]  /  poll큐 [ I/O 콜백 ]  /  check큐 [ set
 | | 브라우저 | Node.js |
 |---|---|---|
 | **구조** | task source와 하나 이상의 task queue | 페이즈별 분리된 큐 |
-| **Microtask 처리** | Macrotask 1개마다 비움 | 콜백 실행이 끝나는 경계마다 비움. CommonJS에서는 `process.nextTick`이 Promise microtask보다 먼저지만 ESM 최상위는 이미 microtask queue 안이어서 Promise와 `queueMicrotask`가 먼저 실행. ESM의 callback 안에서는 CommonJS와 동일 |
+| **Microtask 처리** | task 종료 뒤 checkpoint에서 비움 | CommonJS 최상위와 timer/I/O 콜백 경계에서는 nextTick을 먼저 처리. ESM 최상위와 Promise/queueMicrotask 콜백 내부에서는 현재 microtask 대기열을 먼저 비움. 진행 중인 microtask 처리는 새 nextTick이 선점하지 않음 |
 | **setImmediate** | 없음 | check 페이즈 전용 |
 
 ---
@@ -96,13 +96,13 @@ Node.js:  timers큐 [ setTimeout ]  /  poll큐 [ I/O 콜백 ]  /  check큐 [ set
 추가로 자주 보이는 오해 세 가지:
 
 - **이벤트 루프가 JS 엔진(V8) 안에 있다** → ✗ V8은 JS를 실행만 한다. 이벤트 루프는 Node.js(libuv) 또는 브라우저가 가진 것으로, JS 엔진 외부다.
-- **setImmediate는 콜백을 큐 맨 앞에 끼워 넣는다** → ✗ setImmediate 전용 페이즈(check)와 큐가 따로 있을 뿐, 모든 큐는 FIFO다. 어떤 API도 큐 안 순서를 앞당기지 못한다.
-- **setTimeout 만료는 OS/커널의 비동기 API가 큐에 넣어 준다** → ✗ 타이머는 외부 요인 없이 JS 측 min-heap에 저장되고, Timer 페이즈가 매 순회마다 만료 여부를 직접 검사해 콜백을 큐에 넣는다.
+- **setImmediate는 콜백을 큐 맨 앞에 끼워 넣는다** → ✗ check 페이즈의 별도 큐에 등록 순서대로 들어간다. 타이머 전체까지 하나의 등록순 FIFO라고 일반화하면 안 된다.
+- **setTimeout 만료는 OS/커널이 JS 콜백을 큐에 넣어 준다** → ✗ Node.js v26.7.0 기준, JS Timeout은 지연 시간별 연결 리스트에 들어가고 리스트의 만료 순서는 우선순위 큐로 관리한다. libuv가 타이머 처리 함수를 호출하면 JS 측에서 만료된 Timeout의 콜백을 실행한다. libuv 자체의 타이머 핸들 heap과 구분한다.
 
 ## 이름 혼동 주의
 ```
 nextTick과 setImmediate의 이름은 사실 서로 뒤바뀌어야 맞다.
-- process.nextTick(): 실제로는 "즉시(immediate)" 실행됨 (현재 스택 클리어 직후)
+- process.nextTick(): 다음 반복을 기다리지 않고 nextTick 처리 경계에서 실행됨 (진행 중인 microtask는 선점하지 않음)
 - setImmediate(): poll 이후 check 페이즈에서 실행됨. 어디서 예약했는지에 따라 현재 반복의 check일 수도, 이후 반복일 수도 있음
 
 이는 역사적인 API 설계 실수이며, 호환성 때문에 변경되지 않았다.
@@ -120,3 +120,5 @@ nextTick과 setImmediate의 이름은 사실 서로 뒤바뀌어야 맞다.
 - [HTML Standard, Event loops](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops)
 - [Node.js Event Loop, Timers, and nextTick](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick)
 - [Node.js, When to use `queueMicrotask()` vs. `process.nextTick()`](https://nodejs.org/api/process.html#when-to-use-queuemicrotask-vs-processnexttick)
+- [Node.js v26.7.0 task_queues.js — Node.js](https://github.com/nodejs/node/blob/v26.7.0/lib/internal/process/task_queues.js)
+- [Node.js v26.7.0 timers.js — Node.js](https://github.com/nodejs/node/blob/v26.7.0/lib/internal/timers.js)

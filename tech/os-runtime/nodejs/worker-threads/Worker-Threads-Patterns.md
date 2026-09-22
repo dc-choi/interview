@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
+verified_at: 2026-09-22
 category: "OS & Runtime"
 aliases: ["setImmediate 인터리빙", "Worker Threads 라이브러리"]
 ---
@@ -16,28 +17,39 @@ CPU 집약적인 루프를 실행하면 이벤트 루프가 블로킹되어 다�
 
 ```javascript
 function processChunked(data, chunkSize = 1000) {
-    return new Promise((resolve) => {
-        let index = 0;
-        const results = [];
+  if (!Number.isInteger(chunkSize) || chunkSize <= 0) {
+    return Promise.reject(new RangeError('chunkSize must be a positive integer'));
+  }
 
-        function processChunk() {
-            const end = Math.min(index + chunkSize, data.length);
+  return new Promise((resolve, reject) => {
+    let index = 0;
+    const results = [];
 
-            for (; index < end; index++) {
-                results.push(heavyComputation(data[index]));
-            }
+    const processChunk = () => {
+      try {
+        const end = Math.min(index + chunkSize, data.length);
 
-            if (index < data.length) {
-                setImmediate(processChunk); // 이벤트 루프에 제어권 반환
-            } else {
-                resolve(results);
-            }
+        for (; index < end; index++) {
+          results.push(heavyComputation(data[index]));
         }
 
-        processChunk();
-    });
+        if (index < data.length) {
+          setImmediate(processChunk); // 이벤트 루프에 제어권 반환
+          return;
+        }
+
+        resolve(results);
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    processChunk();
+  });
 }
 ```
+
+`setImmediate`로 예약한 뒤 청크에서 던진 예외는 원래 Promise executor 밖에서 발생한다. 따라서 모든 청크를 `try/catch`로 감싸 `reject`해야 호출자의 `await`와 `catch`가 실패를 받는다. 양수가 아닌 chunk size는 진행하지 못하므로 처음에 거절한다.
 
 ## 추천 라이브러리
 
@@ -46,3 +58,7 @@ function processChunked(data, chunkSize = 1000) {
 **workerpool**: 프로세스와 스레드 풀을 추상화하는 라이브러리이다. child_process와 Worker Threads를 모두 지원하며, 설정 하나로 전환할 수 있다. 작업 타임아웃, 동적 워커 수 조절 등의 기능을 제공한다.
 
 **caf (Cancellation-Aware async Functions)**: 제너레이터 기반으로 취소 가능한 비동기 함수를 구현하는 라이브러리이다. yield를 취소 체크포인트로 활용하여 비즈니스 로직과 취소 로직을 완전히 분리한다. AbortController와 통합되며, 타임아웃 기반 자동 취소도 지원한다.
+
+## 출처
+
+- [Node.js, Errors](https://nodejs.org/api/errors.html)

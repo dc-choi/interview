@@ -37,12 +37,12 @@ while (r != 0 && loop->stop_flag == 0) {
 
 ## 페이즈 간 nextTickQueue & microTaskQueue
 ```
-Node.js는 JS 콜백 하나가 끝나는 경계마다 nextTickQueue와 microTaskQueue를 비운다. 그래서 같은 페이즈 안에서도 콜백 사이에 microtask가 끼어들 수 있다.
+Node.js는 timer/I/O 등 일반 콜백이 끝나 런타임으로 돌아오는 경계에서 nextTickQueue와 microTaskQueue를 처리한다. 같은 페이즈 안에서도 콜백 사이에 microtask가 끼어들 수 있다.
 
 [callback] → nextTick → microtask → [next callback] → nextTick → microtask → ...
 
-이것이 process.nextTick()이 어떤 페이즈에서든 "즉시" 실행되는 이유이다.
-nextTick은 현재 작업 완료 직후 콜 스택에 주입되며, CommonJS 모듈에서는 Promise microtask보다 먼저 실행된다 (ESM 최상위는 반대. 아래 ESM 절 참고).
+CommonJS 최상위와 timer/I/O 콜백 경계에서는 nextTick을 먼저 처리한다.
+이미 Promise/queueMicrotask 콜백을 처리 중이면 현재 microtask 대기열을 먼저 비운다. 그 안에서 예약한 nextTick은 이를 선점하지 않는다. ESM 최상위도 microtask 문맥이다.
 ```
 
 ---
@@ -55,7 +55,7 @@ nextTick은 현재 작업 완료 직후 콜 스택에 주입되며, CommonJS 모
     ```
     setTimeout() 및 setInterval()에 의해 예약된 콜백을 실행합니다.
     타이머는 사용자가 원하는 정확한 시간이 아니라 제공된 콜백이 실행될 수 있는 임계값입니다.
-    내부 구현: 타이머는 min-heap에 저장. 루트 최솟값 조회는 O(1), 삽입과 제거는 O(log N).
+    libuv의 타이머 핸들은 min-heap에 저장. 루트 최솟값 조회는 O(1), 삽입과 제거는 O(log N). JS Timeout 객체의 저장 구조와는 구분한다.
     uv__run_timers는 `heap_min()`으로 가장 이른 타이머의 미리 계산된 `timeout`을 보고 `loop->time`과 비교한 뒤 만료된 핸들을 힙에서 제거해 콜백을 실행.
     ```
 2. **Pending Callbacks**
@@ -100,6 +100,7 @@ nextTick은 현재 작업 완료 직후 콜 스택에 주입되며, CommonJS 모
 ```
 
 ## 전체 흐름 (Node.js)
+아래는 timer/I/O 등 일반 콜백 경계의 흐름이다. 이미 진행 중인 microtask 처리를 nextTick이 선점한다는 뜻은 아니다. microtask에서 새 nextTick이 생기면 다음 일반 콜백 전에 두 큐 처리를 반복한다.
 ```
 Call Stack 비움
     ↓
@@ -118,7 +119,7 @@ MicrotaskQueue 전부 비움 (Promise 콜백)
 다시 Pending Callbacks로 (루프. 최초 진입의 타이머 1회 처리는 루프 밖)
 ```
 
-**핵심**: 최초 스크립트 실행 이후 이벤트 루프는 페이즈별 큐를 순회한다. Node.js는 콜백 실행이 끝나는 지점마다 nextTick → microtask 순으로 큐를 비우므로, 단순히 페이즈 사이에서만 실행된다고 외우면 틀린다.
+**핵심**: 최초 스크립트 실행 이후 이벤트 루프는 페이즈별 큐를 순회한다. timer/I/O 등 일반 콜백이 끝나는 경계에서도 nextTick과 microtask를 처리하므로 페이즈 사이에서만 실행된다고 외우면 틀린다. Promise 콜백 내부의 예약 순서는 현재 microtask 처리가 끝나는 경계를 함께 봐야 한다.
 
 ## process.nextTick() vs setImmediate()
 
@@ -134,7 +135,7 @@ MicrotaskQueue 전부 비움 (Promise 콜백)
 ### James Snell의 네이밍 비판
 James Snell(Node.js Core Contributor)은 **"`nextTick`과 `Immediate`의 이름은 서로 바뀌어야 한다"** 고 지적한다. 이름과 실제 동작이 반대이기 때문이다.
 
-- `process.nextTick()` → 이름은 "다음 틱"이지만, **실제로는 콜 스택이 비워진 직후 즉시** 실행된다 (이벤트 루프의 다음 반복을 기다리지 않음).
+- `process.nextTick()` → 이름은 "다음 틱"이지만 이벤트 루프의 다음 반복보다 앞선 nextTick 처리 경계에서 실행된다. 이미 진행 중인 microtask 처리는 선점하지 않는다.
 - `setImmediate()` → 이름은 "즉시"지만 **poll 이후 check 단계**에서 실행된다. 예약 위치에 따라 같은 반복의 check에 도달할 수도 있으므로 무조건 다음 반복이라고 외우지 않는다.
 
 면접에서 "왜 둘 다 있는데 이름이 헷갈리는가?"라는 질문이 나오면, **"`nextTick`이 더 빠르다"** 는 한 줄 요약과 함께 이 네이밍 비판을 덧붙이면 이해도를 어필할 수 있다.
@@ -151,15 +152,15 @@ James Snell의 또 다른 핵심 발언:
 
 **실무 함의:** 메인 스레드의 **JS 함수를 작게 유지**하는 것이 성능의 핵심이다. 큰 함수는 이벤트 루프를 블로킹하여, 완료된 I/O 콜백이 실행 기회를 얻지 못하게 만든다.
 
-### 실행 우선순위 (CommonJS)
+### 실행 우선순위 (CommonJS 최상위와 일반 콜백 경계)
 1. process.nextTick 대기열
 2. promises microtask queue (Promise.then())
 3. macrotask queue (setTimeout, setImmediate)
 
 ### ESM에서의 차이
 - ES 모듈은 비동기 작업으로 래핑되어 전체 스크립트가 이미 microtask queue에 있음
-- 따라서 **모듈 최상위(top-level)에서는** Promise가 즉시 해결되면 해당 콜백이 microtask queue에 추가되어 process.nextTick보다 먼저 실행됨 (콜백 안에서 예약하면 CJS와 같이 nextTick이 먼저)
-- CommonJS와 실행 순서가 달라질 수 있음
+- 따라서 **모듈 최상위(top-level)에서는** 즉시 해결된 Promise의 콜백과 `queueMicrotask`가 `process.nextTick`보다 먼저 실행된다.
+- timer/I/O 콜백 경계에서는 CJS/ESM 모두 nextTick을 먼저 처리한다. Promise/`queueMicrotask` 콜백 내부에서는 둘 다 현재 microtask 대기열을 먼저 비운다(Node.js v26.7.0 소스와 실행으로 확인).
 
 ## 타이머 심화
 
@@ -185,6 +186,7 @@ James Snell의 또 다른 핵심 발언:
 - [libuv v1.45.0 릴리스 노트 — 타이머 실행 순서 변경](https://github.com/libuv/libuv/releases/tag/v1.45.0)
 - [Node.js 20.3.0 릴리스 공지 — libuv 1.45.0 반영](https://nodejs.org/en/blog/release/v20.3.0)
 - [queueMicrotask()와 process.nextTick() 사용 기준 — Node.js 공식 API 문서](https://nodejs.org/api/process.html#when-to-use-queuemicrotask-vs-processnexttick)
+- [Node.js v26.7.0 task_queues.js — Node.js](https://github.com/nodejs/node/blob/v26.7.0/lib/internal/process/task_queues.js)
 - [Deep Dive into Node.js with James Snell — This Dot Labs (네이밍 비판, 동시 진행 발언 출처)](https://www.thisdot.co/blog/deep-dive-into-node-js-with-james-snell)
 
 ## 관련 문서

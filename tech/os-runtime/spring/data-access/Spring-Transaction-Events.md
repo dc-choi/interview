@@ -1,7 +1,7 @@
 ---
 tags: [spring, transaction, event, data-access]
 status: done
-verified_at: 2026-09-16
+verified_at: 2026-09-22
 category: "OS & Runtime"
 aliases: ["Spring Transaction Events", "TransactionalEventListener", "트랜잭션 이벤트 리스너"]
 ---
@@ -46,7 +46,9 @@ javadoc이 덧붙이는 주의가 하나 더 있다. `AFTER_COMMIT`과 `AFTER_RO
 
 트랜잭션 단계를 신경 쓰지 않는 `@EventListener`로 받으면 누락은 사라진다. 대신 발행이 일어난 트랜잭션 안에서 동기로 실행되어 본 작업과 같은 트랜잭션에 합류한다.
 
-문제는 리스너가 실패할 수 있을 때다. 부수효과가 예외를 던지면 호출부에서 예외를 삼켜 로그만 남기더라도 참여 트랜잭션은 이미 롤백 전용으로 표시된 뒤다. 표시는 남으므로 바깥에서 커밋하려는 순간 `UnexpectedRollbackException`이 발생하고, 실패한 것은 부수효과 하나인데 본 작업 전체가 뒤집힌다. 같은 메커니즘의 일반 설명은 [[Spring-Transactional]]의 rollback rule에 있다.
+문제는 리스너가 실패할 수 있을 때다. 평범한 동기 `@EventListener`는 발행자 스레드에서 실행되지만, 그 사실만으로 rollback-only를 표시하지는 않는다. 바깥 `@Transactional` 메서드가 리스너 예외를 잡고 정상 반환하면, 리스너가 직접 resource를 rollback-only로 만들지 않은 한 커밋할 수 있다.
+
+`UnexpectedRollbackException`은 다른 경계가 있을 때 생긴다. 리스너가 호출한 별도 `@Transactional` bean의 프록시에서 예외가 빠져나와 참여 트랜잭션을 rollback-only로 표시했거나, JPA/JDBC resource가 실패를 이유로 표시한 뒤 발행자가 그 예외를 잡는 경우다. 이때는 바깥 메서드가 정상 반환해도 커밋 시점에 실패한다. 같은 메커니즘의 일반 설명은 [[Spring-Transactional]]의 rollback rule에 있다.
 
 ## 어느 쪽을 고를 것인가
 
@@ -54,7 +56,7 @@ javadoc이 덧붙이는 주의가 하나 더 있다. `AFTER_COMMIT`과 `AFTER_RO
 
 | 부수효과의 성격 | 선택 | 근거 |
 |---|---|---|
-| 실패하면 본 작업도 되돌려야 한다 | `@EventListener` | 같은 트랜잭션에 묶여 함께 롤백된다 |
+| 실패하면 본 작업도 되돌려야 한다 | `@EventListener` | 예외를 바깥 트랜잭션 프록시까지 전파해 rollback시키거나, 실패를 명시적으로 rollback-only로 표시한다 |
 | 본 작업은 이미 확정이고 되돌리면 안 된다 | `@TransactionalEventListener(AFTER_COMMIT)` | 커밋 이후로 미뤄 본 작업을 보호한다 |
 
 색인 갱신은 후자다. 저장은 이미 끝난 사실이고 색인이 한 박자 늦거나 재시도로 메워질지언정 저장 자체를 뒤집을 이유가 없다.
@@ -106,7 +108,7 @@ publisher.publishEvent(DocumentSaved(id))
 
 - `@TransactionalEventListener`의 계약을 커밋 이후 실행이 아니라 활성 트랜잭션이 있을 때만 등록으로 설명할 수 있는가
 - 같은 메서드가 두 경로로 불릴 때 왜 한쪽만 조용히 사라지는가
-- `@EventListener`로 바꿨을 때 롤백 전용 표시와 `UnexpectedRollbackException`이 생기는 경로
+- plain `@EventListener` 예외를 발행자가 잡았을 때 커밋 가능한 이유와, transactional proxy 또는 resource가 rollback-only를 표시하는 경로
 - `fallbackExecution = true`가 누락을 막는 대신 만들 수 있는 실행 순서 역전
 - 멱등 여부로 처방을 가르는 기준과, 규약 위반을 조기에 드러내는 발행 지점 검사
 - `AFTER_COMMIT` 리스너에서 기저 리소스 조작이 커밋되지 않는다는 점과 그 대응
@@ -116,6 +118,7 @@ publisher.publishEvent(DocumentSaved(id))
 - [Spring Framework, TransactionalEventListener](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/event/TransactionalEventListener.html)
 - [Spring Framework, TransactionPhase](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/event/TransactionPhase.html)
 - [Spring Framework, Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction.html)
+- [Spring Framework, SimpleApplicationEventMulticaster](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/event/SimpleApplicationEventMulticaster.html)
 - [@TransactionalEventListener는 왜 조용히 무시될까 — flex 기술 블로그 (2026-09-15)](https://flex.team/blog/2026/09/15/backend42)
 
 ## 관련 문서

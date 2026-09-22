@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, cache, distributed-cache, warming, tagging]
 status: done
-verified_at: 2026-08-28
+verified_at: 2026-09-22
 category: "Data & Storage - Cache & KV"
 aliases: ["Cache Advanced Operations", "분산 무효화", "캐시 워밍업", "캐시 태깅"]
 ---
@@ -83,50 +83,75 @@ export class CacheWarmer implements OnApplicationBootstrap {
 
 ## 캐시 태깅 — 그룹 단위 무효화
 
-키 자체로 prefix를 묶을 수 없는 케이스(예: 같은 상품이 여러 카테고리에 속함). **태그 → 키 집합** 매핑으로 그룹 무효화.
+여러 형태의 캐시 키를 한 그룹으로 무효화할 때 사용한다. 아래 예시는 값마다 태그 하나를 붙이고, 그 태그의 generation을 키에 포함한다. 무효화는 generation을 원자적으로 회전하는 짧은 명령이며 이전 generation의 값은 TTL까지 남아도 이후 read 경로에서는 도달하지 않는다. 같은 상품을 여러 카테고리 태그로 무효화하는 다중 태그 설계는 아래 한계에서 별도로 구분한다.
 
 ### 등록
 
 ```ts
-async function setWithTags(redis: Redis, key: string, value: any, tags: string[], ttl: number) {
-  const pipeline = redis.pipeline();
-  pipeline.setex(key, ttl, JSON.stringify(value));
-  tags.forEach(tag => {
-    const tagKey = `tag:${tag}`;
-    pipeline.sadd(tagKey, key);
-    pipeline.expire(tagKey, ttl, 'NX'); // 처음 등록할 때만 TTL 설정
-    pipeline.expire(tagKey, ttl, 'GT'); // 더 긴 TTL만 허용
-  });
-  await pipeline.exec();
+interface TaggedCacheEntry {
+  readonly tag: string;
+  readonly key: string;
+  readonly ttlSeconds: number;
+}
+
+const tagGenerationKey = (tag: string) => `cache-tag:{tag:${encodeURIComponent(tag)}}:generation`;
+const taggedValueKey = (entry: TaggedCacheEntry, generation: string) =>
+  `cache:{tag:${encodeURIComponent(entry.tag)}}:${generation}:${entry.key}`;
+
+async function getOrLoadWithTag(
+  redis: Redis,
+  entry: TaggedCacheEntry,
+  load: () => Promise<unknown>,
+) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const before = (await redis.get(tagGenerationKey(entry.tag))) ?? '0';
+    const cached = await redis.get(taggedValueKey(entry, before));
+    const afterRead = (await redis.get(tagGenerationKey(entry.tag))) ?? '0';
+
+    if (before !== afterRead) continue;
+    if (cached !== null) return JSON.parse(cached);
+
+    const value = await load();
+    const afterLoad = (await redis.get(tagGenerationKey(entry.tag))) ?? '0';
+
+    if (before !== afterLoad) continue;
+
+    await redis.set(
+      taggedValueKey(entry, before),
+      JSON.stringify(value),
+      'EX',
+      entry.ttlSeconds,
+    );
+    return value;
+  }
+
+  return load(); // 무효화가 연속으로 겹쳤다. 이번 값은 cache에 쓰지 않는다.
 }
 ```
 
-각 태그를 Redis Set으로 — 그 Set 안에 해당 태그를 가진 모든 캐시 키. 태그 Set의 남은 TTL은 활성 멤버 키 중 가장 긴 TTL보다 짧아지면 안 된다. `NX`와 `GT` 조합은 뒤늦게 등록한 짧은 TTL이 기존 태그 TTL을 줄이지 않게 한다. 키 TTL을 연장하는 경로가 있으면 태그 TTL도 함께 연장한다. `EXPIRE`의 `NX`와 `GT` 조건은 Redis 7.0+에서 지원한다.
+태그를 인코딩해 `{`, `}`와 `:`가 키의 경계를 바꾸지 못하게 한다. 원본 load 전에 generation을 먼저 잡고, load 뒤에도 같은 generation인지 확인한다. load와 무효화가 겹치면 이전 값은 새 generation에 쓰지 않고 다시 시도한다. `GET`과 `INCR`는 Redis primary에서 각각 원자적으로 순서가 정해진다. read도 generation 전후를 확인해 무효화와 겹친 cached 값을 재시도한다. 이전 generation 값의 물리 삭제는 TTL에 맡기므로 즉시 메모리를 회수해야 하는 요구에는 맞지 않는다.
 
 ### 무효화
 
 ```ts
 async function invalidateTag(redis: Redis, tag: string) {
-  const keys = await redis.smembers(`tag:${tag}`);
-  for (const key of keys) await redis.unlink(key);
-  await redis.del(`tag:${tag}`);
+  await redis.incr(tagGenerationKey(tag));
 }
 ```
 
-태그에 속한 키를 회수한 뒤 태그 자체도 정리한다. Redis Open Source Cluster에서 여러 key를 한 `UNLINK`에 넣으면 같은 hash slot이어야 하므로, 예시는 single-key command로 보낸다. 대량 처리에서는 `SSCAN`으로 bounded batch를 만들고 slot별 pipeline을 사용한다.
+`INCR`가 generation 회전의 선형화 지점이다. generation metadata는 이전 값의 TTL보다 길게 보존하고 eviction과 복원 시 reset에서 제외해야 한다. 그렇지 않으면 generation이 되돌아가 이전 값이 다시 보이는 ABA 문제가 생긴다. 예시는 값과 generation key에 같은 `{tag}` hash tag를 넣어 Redis Cluster에서도 같은 slot으로 보낸다. 한 값에는 한 태그만 붙일 수 있고, 태그별 slot 집중도도 관측해야 한다. 여러 태그가 필요한 값, 즉시 삭제, tag별 대량 정리에는 모든 참여 key를 같은 slot에 배치한 Lua script 또는 별도 coordination store가 필요하다. 비동기 replica를 읽으면 read-after-invalidate 보장이 약해지므로 이 계약의 read와 invalidate는 Redis primary로 보낸다.
 
 ### 한계
 
-- 태그 Set이 클수록 SMEMBERS 결과 크기 ↑ → SSCAN으로 분할.
-- 태그 TTL과 키 TTL 동기화 어려움 — 태그가 먼저 만료되면 무효화 누락. 활성 멤버의 최대 TTL 이상으로만 연장하고, 운영 정책에 맞는 여유와 정리 경로를 둔다.
-- 키가 만료돼도 태그 Set엔 dangling 멤버가 남음. 주기 정리 또는 무효화 시 존재 확인.
+- 이전 generation 값은 TTL 동안 남는다. 태그 무효화가 잦으면 TTL과 최대 generation 수를 기준으로 메모리 상한을 계산한다. generation metadata는 영속 저장하고 eviction 대상에서 제외하며, 복원 절차에서도 단조 증가를 지킨다.
+- 이 예시는 한 값당 한 태그다. 다중 태그를 단순히 여러 slot에 나눠 등록하면 atomic 무효화 계약을 잃는다.
 
 ## 흔한 실수
 
 - **운영 환경에서 `KEYS` 사용**: 단일 스레드 Redis 블로킹 → 장애. SCAN으로.
 - **`DEL`로 큰 키 또는 대량 키 한 번에 회수**: 블로킹. UNLINK + 배치.
 - **워밍업으로 모든 데이터 적재 시도**: 메모리, 부팅 시간 폭증. 인기 hot 데이터만.
-- **태그 Set TTL 안 둠**: 태그가 영구 누적 → 메모리 누수. TTL 또는 주기 GC.
+- **Set 기반 태그 membership 방치**: 만료된 값의 참조가 누적되므로 TTL과 안전한 GC가 필요하다. 위 예제의 generation metadata에는 같은 TTL 정리를 적용하면 안 된다.
 - **Cluster에서 SCAN 한 노드만**: 다른 노드 키 누락. 모든 마스터 노드 순회.
 - **무효화 후 즉시 같은 키 재조회 → 다시 캐시 채움 race**: 무효화 → 짧은 negative-cache(stale lock) 또는 ETag로 보정.
 
@@ -137,12 +162,13 @@ async function invalidateTag(redis: Redis, tag: string) {
 - `DEL` vs `UNLINK` — 동기 vs 백그라운드 회수
 - Redis Cluster에서 SCAN의 한계와 노드별 순회
 - 캐시 워밍업의 의의와 트레이드오프 (메모리, 부팅 시간 vs 콜드 스타트)
-- 태그 기반 무효화 — Set으로 매핑, 그룹 단위 회수
-- 태그 TTL과 키 TTL 동기화 문제
+- 태그 generation 회전, 원본 load 전 세대 확인, 이전 값의 TTL 회수
+- generation metadata의 단조 증가와 ABA 방지, Set membership TTL과의 차이
 
 ## 출처
 
 - [Redis Docs, EXPIRE](https://redis.io/docs/latest/commands/expire/)
+- [Redis Docs, INCR](https://redis.io/docs/latest/commands/incr/)
 - [Redis Docs, Multi-key operations](https://redis.io/docs/latest/develop/using-commands/multi-key-operations/)
 
 ## 관련 문서
