@@ -7,10 +7,18 @@ aliases: ["Condition Retrieval", "조건별 근거 탐색"]
 
 # 조건별 근거 탐색
 
-> 유형: 여러 근거가 필요한 질문을 위한 host 작업 계약
+> 유형: 여러 근거가 필요한 질문의 일반 조회 원칙과 상세 평가 절차
 > 현재 범위: 기존 `context_lookup`, `context_search`, `context_outline`, `context_read`의 호출 순서를 제한하고 첫 lookup의 선택적 lexical `conditions` 단서를 사용한다. 서버의 의미 판정은 추가하지 않는다.
 
-Codex와 Claude의 `development-context` 스킬에 같은 절차를 반영했다. 스킬은 다음 파일 로드부터, 상주 MCP의 갱신된 도구 설명은 재연결부터 읽힌다. 이미 연결된 서버의 설명이 자동으로 바뀌었다고 가정하지 않는다.
+Codex와 Claude의 `development-context` 스킬은 일반 조회 원칙을 적용하고, 조회 평가나 실패 원인 분석 때만 이 문서의 상세 절차를 읽는다. 스킬은 다음 파일 로드부터 읽히며, 이미 연결된 서버의 설명이 자동으로 바뀌었다고 가정하지 않는다.
+
+## 일반 조회와 상세 평가의 구분
+
+일반 조회는 필요한 근거와 미확인 조건을 짧게 정리하고, 원문 위치와 판단에 사용한 내용을 남긴다. 고정 ID 목록, 호출별 실제 byte 직렬화와 receipt를 복제한 trace는 요구하지 않는다. 후속 읽기의 ID, revision과 hash 전달, 원문 일관성 확인은 그대로 지킨다.
+
+일반 조회도 첫 lookup 이후 추가 lookup/search 2회, outline 2회, read 4회 및 전체 8회 상한을 따른다. 호출별 `max_bytes`는 24,000 이하, 누적 예산은 64,000 이하로 관리한다. 성공 응답은 요청 상한으로 보수적으로 차감하고, 요청 상한을 넘을 수 있는 오류 응답만 실제 byte로 보정한다. 남은 예산이 부족하면 중단한다. 같은 질문의 scope를 유지하고 확인하지 못한 조건은 한계로 밝힌다.
+
+아래 고정 조건 목록, 실제 응답 byte 집계와 trace 형식은 조회 평가와 실패 원인 분석에 적용한다. 평가에서는 재현 가능한 비교를 위해 실제 응답량을 집계한다.
 
 ## 목적
 
@@ -63,7 +71,7 @@ Codex와 Claude의 `development-context` 스킬에 같은 절차를 반영했다
 
 제목, heading, `matched_terms`, 위키링크, relation, `source_confirmed`, `context_outline`과 검색 점수는 탐색 단서다. 이들만으로 조건의 status를 정하지 않는다. 일부 문장만 관련 있거나 예외 또는 적용 맥락이 빠진 source는 해당 원자 요구를 `unresolved`로 남긴다.
 
-일반 작업의 내부 메모에는 첫 호출 전에 고정한 조건과 원자 요구, 호출 이유, 실제 response byte, status와 아래 receipt를 남긴다. quote는 실제로 도구가 반환한 본문에서 그대로 옮긴 짧은 문장이다. 평가의 `requirements`는 사전 inventory의 `id`와 `question`을 순서까지 그대로 옮긴다. 조건의 `supported` 또는 `contradicted`는 그 조건의 모든 원자 요구가 각각 receipt를 가질 때만 쓴다.
+평가 기록에는 첫 호출 전에 고정한 조건과 원자 요구, 호출 이유, 실제 response byte, status와 아래 receipt를 남긴다. quote는 실제로 도구가 반환한 본문에서 그대로 옮긴 짧은 문장이다. 평가의 `requirements`는 사전 inventory의 `id`와 `question`을 순서까지 그대로 옮긴다. 조건의 `supported` 또는 `contradicted`는 그 조건의 모든 원자 요구가 각각 receipt를 가질 때만 쓴다.
 
 ```json
 {
