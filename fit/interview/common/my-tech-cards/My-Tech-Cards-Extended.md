@@ -50,11 +50,11 @@ aliases: ["내 기술 답변 심화", "My Tech Cards Extended"]
 3. `COMPLETED` → 이미 처리됐으므로 메시지 삭제
 4. `PENDING`/`FAILED` 또는 heartbeat가 만료된 `PROCESSING` → 조건부 UPDATE로 새 owner가 lease를 획득한 경우에만 실행
 5. heartbeat가 신선한 `PROCESSING` → 다른 워커가 처리 중이므로 **현재 수신자는 실행하지 않고 메시지도 삭제하지 않음**. 남은 lease 또는 회수 시점에 jitter를 더한 만큼 visibility를 미뤄 불필요한 재수신을 줄임
-6. 처리 중 heartbeat와 visibility를 연장하고, 성공 시 `owner_token`이 같은 행만 `COMPLETED`로 바꾼 뒤 메시지 삭제
+6. 처리 중 heartbeat와 visibility를 연장한다. DB 업무 변경은 현재 owner와 lease가 유효한지 확인한 뒤, 재선점을 막는 행 잠금 아래 `COMPLETED` 전이와 같은 트랜잭션으로 커밋한다. 소유권 검증에 실패하면 업무 변경도 롤백하고 메시지를 삭제하지 않는다. 삭제는 커밋 성공 뒤에만 한다.
 7. 실패 시 메시지를 삭제하지 않아 visibility 만료 후 재전달
 8. SQS `maxReceiveCount`는 실제 실패뿐 아니라 `BUSY` 재수신도 세므로 처리시간과 lease를 반영해 정하고, DLQ 유입 원인을 구분해 알림과 수동 확인
 
-> **구현 경계**: 단순 시작 시각만으로는 느린 워커와 죽은 워커를 구별할 수 없다. lease, heartbeat, owner token을 함께 사용하고, 실제 적용 전에는 장애와 재시작 시나리오로 검증한다.
+> **구현 경계**: 이 절은 실제 적용 경험과 구분한 개선 기준이다. 완료 상태의 `owner_token`만 검사하면 이전 owner가 이미 만든 업무 부작용은 막지 못한다. DB 밖 호출은 같은 트랜잭션으로 롤백할 수 없으므로 같은 업무에 안정적인 멱등성 키를 전달하고 수신 시스템이 중복 효과를 막아야 한다. 오래된 owner의 쓰기도 거부해야 하면 수신 측 fencing 검증을 함께 둔다. 이를 지원하지 않는 외부 호출의 불명확한 결과는 조회와 대사로 확인한다. lease와 heartbeat만으로 충분하다고 보지 않으며 재선점, 지연 완료와 재시작 시나리오로 검증한다.
 
 **visibility timeout 설정**: 일반 ECS 소비자는 관측한 최대 또는 p99 처리시간에 여유를 두고, 길어질 수 있는 작업은 heartbeat로 연장한다. 함수 timeout의 6배 권고는 SQS의 Lambda 이벤트 소스 매핑에만 적용한다.
 
@@ -169,7 +169,9 @@ outbox: (id, aggregate_type, aggregate_id, event_type, payload JSON, created_at,
 | 멀티스테이지 빌드 | 빌드 산출물만 복사 | 가장 안전, 기본 적용 |
 | alpine 베이스 | 가장 작음 | musl libc vs glibc — native 모듈(bcrypt, sharp) 호환성 |
 | distroless | 셸 없음 → 보안 강화 | 디버깅 어려움. 프로덕션 적합 |
-| esbuild 번들 | node_modules 제거 | TS 빌드 파이프라인 수정 필요 |
+| esbuild 번들 | 번들 가능한 의존성과 배포 파일 축소 | TS 빌드 파이프라인 수정, external/native 의존성과 런타임 자산 확인 필요 |
+
+`node_modules` 전체 제거는 필요한 의존성이 모두 번들에 포함되고 별도 런타임 파일이 필요 없을 때만 가능하다. 외부화한 패키지와 네이티브 모듈은 필요한 파일을 유지하고 배포 이미지에서 실행을 검증한다. [esbuild 공식 Node 번들링 안내](https://esbuild.github.io/getting-started/#bundling-for-node)
 
 ### K8s 전환 검토 시점
 

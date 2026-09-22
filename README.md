@@ -6,7 +6,7 @@
 개발할 때 관련 지식과 적용 조건을 먼저 찾는 진입점은 [[Development-Ontology|개발 판단 온톨로지]]입니다. 루트 `ontology/`에서 Markdown 그래프 색인, CLI와 MCP 조회를 실행합니다. 설치와 사용 방법은 [[Ontology-Operations]]에서 관리합니다.
 
 ## 현재 상태
-- [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]] — 키노라이츠 적응과 학습 우선순위의 정본
+- [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]] — 퇴사 전환, 경력 정리와 학습 우선순위의 정본
 - [[Job-Search-Tracker-2024-2026-Kinolights|완료된 이직 기록]] — 2026-06-29 입사로 종료된 지원과 면접 기록
 - [[Interview-Analysis|완료된 면접 회고]] — 이전 이직 사이클의 결과, 질문과 개선 기록
 
