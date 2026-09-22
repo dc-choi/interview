@@ -21,7 +21,7 @@ aliases: ["미시경제(Microeconomics)", "Microeconomics Map"]
 
 ### 2. 선택의 이론
 - [[Consumer-Theory-Utility|소비자 이론과 효용]] — 한계효용 체감, 무차별곡선, 예산선, 효용극대화 ✅
-- [[Production-and-Cost|생산과 비용]] — 한계생산 체감, 고정비와 가변비, 한계비용, MR=MC, 규모의 경제 ✅
+- [[Production-and-Cost|생산과 비용]] — 한계생산 체감, 비용 구조, 추가 수주의 관련 비용, 병목 시간당 공헌이익 ✅
 
 ### 3. 경쟁과 시장
 - [[Market-Structures|시장구조]] — 완전경쟁, 독점적 경쟁, 과점, 독점, 진입장벽 ✅

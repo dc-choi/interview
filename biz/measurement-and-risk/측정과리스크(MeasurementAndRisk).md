@@ -10,5 +10,5 @@ aliases: ["Measurement and Risk", "측정과 리스크", "Analytics", "분석", 
 지표로 사업을 측정하고 리스크를 관리하는 프레임워크.
 
 ## 목차
-- [x] [[Metrics-Framework|지표 설계 & North Star Metric (AARRR, 허수지표와 증분 측정)]]
+- [x] [[Metrics-Framework|지표 설계 & North Star Metric (AARRR, 증분 측정, 업무 날짜와 제품 사용 시각)]]
 - [x] [[Risk-Management|리스크 관리]]

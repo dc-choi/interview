@@ -57,6 +57,23 @@ Clayton Christensen과 Bob Moesta 등의 연구와 실무에서 널리 알려진
 
 **Job Statement:** "When [상황], I want to [동기], so I can [기대 결과]"
 
+### 연구 참여자 모집과 고객 획득을 구분한다
+
+인터뷰 참여자를 모았다는 사실은 실제 고객을 반복해서 획득할 수 있다는 증거와 다르다. 연구 질문에 맞춰 최근의 실제 문제, 수행한 행동과 역할을 모집 기준으로 정한다.
+
+| 모집 조건 | 결과를 해석할 때 확인할 한계 |
+|---|---|
+| 해당 주제에 관심 많은 커뮤니티 | 이미 문제를 알고 탐색하는 사람에게 편중될 수 있음 |
+| 창업자의 지인 | 관계가 참여와 긍정적 반응에 영향을 줄 수 있음 |
+| 연구 보상을 받은 참여자 | 시간과 참여에 대한 보상이며 자발적 구매 행동과 구분해야 함 |
+| 기존 사용자 | 현재 사용 경험은 관찰할 수 있지만 처음 발견하는 과정은 별도 확인 필요 |
+
+이 표본도 사용성 문제와 실제 업무를 이해하는 데 쓸 수 있다. 결과 전체를 무효로 보거나, 반대로 전체 시장을 대표한다고 보지 않는다. 모집 경로와 대상 조건, 연구 보상 여부를 해석에 함께 남긴다.
+
+적합한 참여자를 구하지 못했다면 접근 채널, 모집 메시지, 참여 부담과 문제 발생 빈도를 나누어 확인한다. 모집 실패만으로 수요가 없다고 단정하지 않는다. 반대로 문제를 이미 아는 사람에게 해결책을 보여준 실험으로 무인지 고객의 발견 경로까지 검증했다고 주장하지 않는다.
+
+이 구분은 초기 정보 서비스의 실험 설계에서 얻은 점검 방법이다. 보상 없이 실제로 찾아와 가치를 경험하고 구매하는 경로의 반복성은 [[Solo-Product-Market-Validation|시장 검증]]과 [[GTM-Strategy|획득 채널]]에서 별도로 확인한다.
+
 ### 간접 관찰 (인터뷰가 어려울 때)
 
 접근하기 어려운 직군, 커뮤니티는 브이로그, SNS, 온라인 커뮤니티 같은 **공개된 일상 기록**을 관찰해 페인 포인트를 도출할 수 있다. 진행 순서: 일상 관찰 → 니즈 도출과 우선순위화(필수 vs Nice to Have) → 기존 서비스 검토 → 개선, 신규 기능 제안. 직군 고유 용어(전문 일정표, 수당 체계 등)가 보이면 그 용어를 중심으로 워크플로우를 재구성하는 것이 페인 발견의 지름길이다.
@@ -93,6 +110,7 @@ Q. 사용자 피드백을 어떻게 관리하는가?
 - 직접 피드백이 없는 사용자의 미활동 신호를 GA4로 확인하되, 후속 조사 전에는 이탈 원인으로 단정하지 않음
 
 ## 출처
+- [GOV.UK, Finding participants for user research](https://www.gov.uk/service-manual/user-research/find-user-research-participants) — 연구 목적에 맞춘 모집, 경로별 편향과 참여 보상
 - [Intercom, RICE: Simple prioritization for product managers](https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/)
 - [Product Talk, Continuous Discovery Habits](https://www.producttalk.org/continuous-discovery-habits-book/)
 - [Product Talk, Opportunity Solution Trees](https://www.producttalk.org/opportunity-solution-trees/)

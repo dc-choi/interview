@@ -73,6 +73,25 @@ Dave McClure(500 Startups)가 제안한 스타트업 성장 지표 프레임워�
 
 같은 시기에 가입한 사용자 그룹의 행동을 시간축으로 추적한다. 리텐션 커브가 수평으로 안정되면(flattening) 반복 가치와 유지 가설을 검토할 신호가 될 수 있지만, 단독으로 PMF를 판정하지는 않는다.
 
+### 업무 날짜와 제품 사용 시각을 구분한다
+
+과거 업무를 나중에 입력하거나 일괄 이관할 수 있는 제품에서는 데이터가 가리키는 날짜와 사용자가 제품을 이용한 시각이 다르다.
+
+| 기준 | 답하는 질문 | 해석 한계 |
+|---|---|---|
+| 업무 발생일 | 언제의 업무를 기록했는가 | 그날 제품에 접속하거나 입력했다는 증거는 아님 |
+| 생성 시각 | 언제 새 레코드를 저장했는가 | 수정, 조회와 자동 이관 여부는 별도 확인 필요 |
+| 수정 시각 | 기존 레코드를 마지막으로 언제 바꿨는가 | 덮어쓴 시각 하나로 과거 활동 전체를 복원할 수 없음 |
+| 사용자 행동 이벤트 시각 | 사용자가 언제 어떤 기능을 이용했는가 | 이벤트 정의, 누락과 자동 작업 제외 기준에 의존 |
+
+오늘 지난 여러 주의 업무를 몰아서 입력했다면 오늘의 입력 활동이다. 이를 업무 발생일로 나눠 과거 여러 주의 제품 리텐션으로 세면 안 된다. 반대로 업무 날짜만 보는 집계는 오늘의 복귀를 놓칠 수 있다. 오프라인에서 제품을 사용하고 나중에 동기화하는 경우에는 사용자 행동 시각과 서버 수신 시각도 나눠야 한다.
+
+활성 조직을 정의할 때는 조회, 신규 기록과 수정 중 무엇을 핵심 행동으로 볼지 정하고, 관찰 기간과 집계 단위를 고정한다. 자동 이관과 관리자 보정은 사용자 활동과 구별할 수 있게 기록한다. 지표 이름은 같은 MAO라도 기준이 바뀌면 이전 수치와 그대로 비교하지 않는다.
+
+업무 자체가 계속됐는지, 제품에 다시 들어왔는지, 제품에서 핵심 가치를 얻었는지는 서로 다른 질문이다. 휴면으로 분류한 계정에 접촉하기 전에 어떤 이벤트와 시각으로 휴면을 판정했는지부터 확인한다.
+
+2026-09-22 보강: 로컬 운영 지표 정의와 업무 기록의 생성/수정 경로를 대조했다. 활성과 휴면의 이벤트 기반 정의는 Amplitude 공식 문서로 확인했으며, 현재 제품의 리텐션 수치를 새로 계산한 결과는 아니다.
+
 ## 현장 적용: school-manage
 
 - **운영 스냅숏:** 2026-07-15 기준 MAO(월간 활성 조직), 누적 본당, 모임 레코드는 서로 다른 지표로 관리했으며 구체적 수치는 공개하지 않는다. 활성 목표는 프로젝트 재개 결정 뒤에만 다시 검토한다.
@@ -91,6 +110,7 @@ Q. 어떤 지표를 추적하고 왜 그 지표를 선택했는가?
 - [Startup Metrics for Pirates — SlideShare, Dave McClure](https://www.slideshare.net/slideshow/startup-metrics-for-pirates-long-version/89026)
 - [허수지표가 되기 쉬운 KPI — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/754)
 - [A Dirty Dozen: Twelve Common Metric Interpretation Pitfalls in Online Controlled Experiments — Microsoft Research](https://www.microsoft.com/en-us/research/publication/a-dirty-dozen-twelve-common-metric-interpretation-pitfalls-in-online-controlled-experiments/)
+- [Amplitude, Lifecycle: track the growth of your product's user base](https://www.amplitude.com/docs/analytics/charts/lifecycle/lifecycle-track-growth)
 
 ## 관련 문서
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]]

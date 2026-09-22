@@ -24,8 +24,8 @@ aliases: ["생산과 비용", "Production and Cost"]
 
 | 비용 | 뜻 |
 |---|---|
-| **고정비용(FC)** | 생산량과 무관하게 드는 비용. 임대료, 설비 |
-| **가변비용(VC)** | 생산량에 따라 변하는 비용. 원재료, 인건비 |
+| **고정비용(FC)** | 정한 기간과 생산량 범위 안에서 일정한 비용. 임대료, 정액 인건비 등 |
+| **가변비용(VC)** | 생산량에 따라 변하는 비용. 원재료, 건별 외주비 등 |
 | **총비용(TC)** | FC + VC |
 | **평균비용(ATC)** | 총비용 ÷ 생산량. 단위당 비용 |
 | **한계비용(MC)** | 한 단위 더 만들 때 늘어나는 비용 |
@@ -52,6 +52,32 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 - **매몰비용 무시 원칙**: 이미 써서 회수 못 하는 돈은 앞으로의 결정에서 빼야 한다. 과거 투자가 아까워 손해 나는 사업을 계속 끌고 가는 대표적 함정이 매몰비용 오류다.
 - **조업중단점**: 완전경쟁 기업은 시장가격이 최소 평균가변비용보다 낮으면 단기 생산을 멈추는 편이 손실을 줄인다. 더 일반적으로는 선택한 생산량의 총수입이 회피 가능한 가변비용보다 작은지 비교한다. 장기에는 고정비도 조정할 수 있으므로 총수입이 총비용을 지속적으로 충당하지 못하면 시장 퇴출을 검토한다.
 
+### 추가 수주에는 선택에 따라 달라지는 비용을 비교한다
+
+고정비와 가변비는 생산량에 따른 분류다. 추가 주문을 받을지 결정할 때는 **그 선택으로 앞으로 달라지는 수입과 비용**을 비교한다. 고정비도 새 작업을 위해 추가로 발생하거나 회피할 수 있다면 판단에 포함한다.
+
+| 항목 | 추가 수주 판단에서의 처리 |
+|---|---|
+| 이미 지출했고 회수할 수 없는 개발비 | 매몰비용이므로 미래 선택의 차이에서 제외 |
+| 수주 여부와 관계없이 같은 기간에 낼 임대료 | 그 선택의 증분 비용에는 제외하되 전체 사업 손익에는 포함 |
+| 수주해야 발생하는 외주비와 추가 도구 계약 | 생산량에 비례하는지와 별개로 추가 비용에 포함 |
+| 새 일을 받아 포기하는 다른 일의 이익 | 현실적으로 가능한 대안의 기회비용으로 비교 |
+
+정액 도구 비용을 고객별로 배분한 값과 고객 한 곳을 추가할 때 실제로 늘어나는 비용은 다를 수 있다. 반대로 일정 규모를 넘으면 상위 요금제나 별도 인력이 필요해 비용이 계단식으로 증가한다. 평균 원가만으로 단기 추가 수주를 거절하거나, 증분 이익이 양수라는 이유로 장기 가격에서 공통비를 빼지 않는다.
+
+### 대표 시간이 병목일 때
+
+직접 제공하는 서비스의 단기 수주 조합은 건당 매출뿐 아니라 병목 시간당 기여를 비교할 수 있다.
+
+```text
+병목 시간당 공헌이익
+= (추가 수입 - 해당 제공에 따라 늘어나는 변동비) / 필요한 병목 시간
+```
+
+가상의 작업 A가 4시간에 20만 원, B가 2시간에 12만 원의 공헌이익을 남기면 시간당 값은 각각 5만 원과 6만 원이다. 이는 인건비 등 포함한 비용 항목을 같은 기준으로 맞춘 비교이며 매출액이나 순이익의 비교가 아니다. 대표의 시간을 대안 작업의 기회비용으로 평가했다면 같은 포기 이익을 시간당 비용으로 다시 차감하지 않는다.
+
+이 비율은 단일 병목과 비교 가능한 작업을 가정한 출발점이다. 실제 수요 한도, 묶어서만 받을 수 있는 작업, 납기, 품질, 미수 위험과 기존 고객 약속도 확인한다. 장기적으로는 공통비와 필요한 보상까지 회수할 수 있는지를 [[Business-Model|사업 전체 손익]]에서 별도로 본다.
+
 ## 8. 핵심 개념
 
 - **한계비용(MC)**: 모든 생산 결정의 기준
@@ -61,16 +87,21 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 
 ## 9. 흔한 오해
 
-- **고정비가 크니 생산 결정에 넣어야 한다** → 단기 생산량 결정은 한계비용과 가변비용으로 한다. 고정비는 이미 정해졌다.
+- **고정비는 모든 의사결정에서 제외한다** → 현재 범위에서 바뀌지 않는 고정비와, 선택에 따라 추가되거나 회피할 수 있는 고정비를 구분한다.
 - **이미 많이 투자했으니 계속해야 한다** → 매몰비용 오류다. 앞으로의 비용과 편익만 본다.
 - **많이 만들수록 무조건 싸진다** → 일정 규모를 넘으면 규모의 불경제로 단가가 다시 오른다.
 
 ## 출처
 
+- [OpenStax, Identify Relevant Information for Decision-Making](https://openstax.org/books/principles-managerial-accounting/pages/10-1-identify-relevant-information-for-decision-making) — 선택 간 차이와 회피 가능한 비용
+- [OpenStax, Evaluate and Determine Whether to Accept or Reject a Special Order](https://openstax.org/books/principles-managerial-accounting/pages/10-2-evaluate-and-determine-whether-to-accept-or-reject-a-special-order) — 여유 용량과 추가 비용, 기존 고객에 미치는 영향
+- [OpenStax, Evaluate and Determine How to Make Decisions When Resources Are Constrained](https://openstax.org/books/principles-managerial-accounting/pages/10-6-evaluate-and-determine-how-to-make-decisions-when-resources-are-constrained) — 병목 자원당 공헌이익. 서비스 수주 예시는 이를 적용한 가정이다.
 - [OpenStax, Principles of Microeconomics 3e, How Perfectly Competitive Firms Make Output Decisions](https://openstax.org/books/principles-microeconomics-3e/pages/8-2-how-perfectly-competitive-firms-make-output-decisions)
 
 ## 관련 문서
 
+- [[Business-Model|비즈니스 모델과 실제 제공 비용]]
+- [[Solo-Product-Market-Validation|수익성과 운영 용량의 동시 검증]]
 - [[Supply-and-Demand|수요와 공급]] — 한계비용이 공급곡선의 뿌리
 - [[Market-Structures|시장구조]] — MR의 모습이 구조마다 다름
 - [[미시경제(Microeconomics)]] — 지도
