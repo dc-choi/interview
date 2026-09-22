@@ -56,7 +56,7 @@ FTP는 보통 하나의 control connection과 별도의 data connection을 사�
 
 proxy는 client 또는 server를 대신해 특정 application traffic을 전달한다. cache가 hit하면 latency와 origin 부하를 줄일 수 있지만 언제나 속도를 높이는 장치는 아니다. [[Forward-vs-Reverse-Proxy]]
 
-VPN은 공개 network 위에 인증되고 보호된 tunnel을 만들어 떨어진 private network나 host를 논리적으로 연결한다. 암호화와 encapsulation 비용, MTU, route와 split-tunnel 정책을 함께 검토해야 한다. VPN을 사용했다는 사실만으로 tunnel 양끝의 application 권한이 자동 보장되지는 않는다.
+VPN의 원격 접속과 사이트 간 연결, 터널의 보호 범위, MTU와 split-tunnel 정책은 [[VPN-and-Private-Network|VPN과 사설 네트워크]]에서 다룬다.
 
 ## 출처
 

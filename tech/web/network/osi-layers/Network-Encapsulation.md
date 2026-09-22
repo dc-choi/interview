@@ -3,12 +3,12 @@ tags: [web, network, osi, encapsulation, socket, segment, packet, frame, mtu, ms
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Network Encapsulation", "네트워크 캡슐화", "패킷 캡슐화", "PDU", "세그먼트 패킷 프레임", "소켓 스트림", "MTU와 MSS", "Deep Packet Inspection"]
-verified_at: 2026-09-16
+verified_at: 2026-09-22
 ---
 
 # 네트워크 데이터 흐름과 캡슐화: 스트림, 세그먼트, 패킷, 프레임
 
-애플리케이션이 소켓에 쓴 바이트 스트림은 커널의 프로토콜 스택을 내려가며 세그먼트, 패킷, 프레임으로 차례로 감싸진 뒤 NIC를 통해 나간다. 계층마다 자기 헤더를 붙여 상위 단위를 통째로 payload로 다루는 이 과정이 캡슐화(encapsulation)이고, 수신 측은 역순으로 벗겨낸다(decapsulation). 계층별 상세는 [[Transport-Layer|L4]], [[Network-Layer|L3]], [[Physical-DataLink-Layer|L1/L2]], 전체 지도는 [[OSI-7-Layer]].
+TCP 애플리케이션이 소켓에 쓴 바이트 스트림은 커널의 프로토콜 스택을 내려가며 세그먼트, 패킷, 프레임으로 차례로 감싸진 뒤 NIC를 통해 나간다. 계층마다 자기 헤더를 붙여 상위 단위를 통째로 payload로 다루는 이 과정이 캡슐화(encapsulation)이고, 수신 측은 역순으로 벗겨낸다(decapsulation). 계층별 상세는 [[Transport-Layer|L4]], [[Network-Layer|L3]], [[Physical-DataLink-Layer|L1/L2]], 전체 지도는 [[OSI-7-Layer]].
 
 한 줄 요약: **내용물(데이터)을 상자에 넣고 송장을 붙이면 패킷, 그 상자를 트럭에 실으면 프레임이다. 트럭은 구간마다 갈아타지만 송장은 목적지까지 그대로다.**
 
@@ -16,7 +16,7 @@ verified_at: 2026-09-16
 
 프로그램은 네트워크를 직접 만지지 않고 소켓(socket)이라는 커널 인터페이스를 쓴다. `socket()`은 파일 디스크립터를 반환하며, 연결된 `SOCK_STREAM` 소켓은 `read()`/`write()` 또는 `send()`/`recv()`로 다룬다. 파일, 장치, 소켓을 같은 디스크립터 API로 다루는 Unix 계열의 설계는 [[Linux-File-System|모든 것이 파일]] 원칙의 한 예다. 파일과 같은 입출력 인터페이스를 쓴다는 뜻이지, 소켓이 디스크에 저장되는 일반 파일이라는 뜻은 아니다.
 
-- `SOCK_STREAM`(TCP): 순서가 보장되는 신뢰성 있는 양방향 바이트 스트림. 시작과 끝의 경계가 없다.
+- `SOCK_STREAM`(TCP): 순서가 보장되는 신뢰성 있는 양방향 바이트 스트림. 애플리케이션 메시지의 경계를 보존하지 않는다. 무한한 데이터라는 뜻은 아니며 연결 종료와 EOF는 존재한다.
 - `SOCK_DGRAM`(UDP): 고정된 최대 길이를 가진 독립 메시지(datagram). 메시지 경계가 보존된다. 그래서 모든 소켓을 스트림으로 일반화하지 않는다.
 
 스트림에는 메시지 경계가 없다. TCP는 애플리케이션이 `write()`한 단위와 실제 세그먼트 경계, 상대가 `read()`로 받는 단위 사이에 아무 상관관계도 보장하지 않는다. `ABC`와 `DEF`를 순서대로 보내도 수신자는 `AB`, `CDEF`로 나눠 읽을 수 있다. 한 번 보낸 메시지가 두 번에 나뉘어 읽히거나 두 메시지가 한 번에 붙어 읽힐 수 있으므로, 애플리케이션 프로토콜이 길이 필드나 구분자로 경계를 직접 정의한다. HTTP의 `Content-Length`와 chunked 전송이 그 예다.
@@ -45,21 +45,29 @@ verified_at: 2026-09-16
 
 패킷의 IP 주소는 end-to-end로 유지되고 프레임의 MAC 주소는 hop-by-hop으로 바뀐다는 점이 가장 중요한 통찰이다. 다만 NAT가 없는 일반 전달을 전제로 한 말이며, TTL, 헤더 체크섬, NAT와 터널이 헤더를 바꾸는 예외는 [[Network-Layer#패킷은 유지되고 프레임은 구간마다 바뀐다 (핵심)|패킷은 유지되고 프레임은 구간마다 바뀐다]], NAT는 [[IPv4-NAT-and-Traversal]].
 
-일상 용어로 패킷은 모든 단위를 통칭하지만, 정확한 의미의 패킷은 L3 단위다. tcpdump나 Wireshark 같은 도구가 캡처하는 것은 프레임이고 도구가 그 안의 IP 헤더, TCP 헤더, payload를 계층별로 펼쳐 보여 준다. 캡처 도구의 구조와 캡처 위치는 [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark]].
+패킷은 문맥에 따라 네트워크 데이터 단위를 넓게 부르는 말이며, 이 문서에서는 L3의 IP 패킷을 뜻한다. 세그먼트는 여기서 TCP 단위지만 다른 분야에서도 쓰이는 용어다. TCP 세그먼트에는 데이터뿐 아니라 페이로드 없는 ACK 같은 제어 정보도 실린다. UDP 데이터그램은 애플리케이션의 독립 메시지이며 TCP처럼 스트림을 잘랐다는 뜻이 아니다. 데이터그램이라는 말은 IP에서도 사용한다. tcpdump나 Wireshark 같은 도구가 캡처하는 것은 프레임이고 도구가 그 안의 IP 헤더, TCP 헤더, payload를 계층별로 펼쳐 보여 준다. 캡처 도구의 구조와 캡처 위치는 [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark]].
 
 ## 크기 제한: MTU, MSS와 단편화
 
 **MTU(Maximum Transmission Unit)**는 한 링크에 실을 수 있는 IP 패킷의 최대 길이다. IP 헤더는 포함하고 이더넷 헤더와 FCS는 포함하지 않는다. 이더넷은 IP 데이터그램 최대 1500바이트, 데이터 필드 최소 46바이트를 규정하며, 최소에 못 미치면 0으로 채운 패딩을 붙인다. 이 패딩은 IP 헤더의 total length에 포함되지 않는다. 1500은 일반 이더넷의 예이지 모든 링크와 터널의 공통값이 아니며, 경로 위 링크 MTU의 최솟값이 **Path MTU**다.
 
-**MSS(Maximum Segment Size)**는 TCP 세그먼트 하나에 담을 수 있는 payload의 상한이다. MTU에서 IP 헤더와 TCP 헤더를 뺀 값으로, 옵션이 없는 이더넷 IPv4에서는 `1500 - 20 - 20 = 1460`바이트다. TCP는 스트림을 MSS 이하 조각으로 잘라 세그먼트를 만들므로, 경로의 모든 링크 MTU가 MSS 계산 기준 이상이면 IP 단편화가 일어나지 않는다. 경로 중간의 MTU가 더 작으면 PMTUD로 크기를 줄이거나 IPv4에서 단편화가 필요해진다. MSS 옵션을 받지 못하면 IPv4는 536, IPv6는 1220을 기본 송신 MSS로 가정한다. 혼잡 제어와 MSS 계산의 상세는 [[TCP-Congestion-Control#CWND 초기화 — MSS|TCP 혼잡 제어의 MSS]].
+**MSS(Maximum Segment Size)**는 TCP 세그먼트 하나에 담을 수 있는 payload의 상한이다. 수신자가 SYN에서 광고하는 MSS와 경로 MTU를 함께 고려해 실제 송신 데이터 크기를 제한한다. 광고 MSS는 기본 IP/TCP 헤더를 기준으로 산정하고, 송신 시 옵션 공간도 따로 반영한다. 옵션이 없는 MTU 1500의 이더넷 IPv4에서는 `1500 - 20 - 20 = 1460`바이트다. TCP는 수신 MSS와 경로 MTU, 실제 헤더 크기에 맞춰 데이터를 나눈다. 완성된 IP 패킷이 경로 MTU 이내이면 크기 초과에 따른 IP 단편화를 피할 수 있다. 경로 중간의 MTU가 더 작으면 PMTUD로 크기를 줄이거나 IPv4에서 단편화가 필요해진다. MSS 옵션을 받지 못하면 IPv4는 536, IPv6는 1220을 기본 송신 MSS로 가정한다. 혼잡 제어와 MSS 계산의 상세는 [[TCP-Congestion-Control#CWND 초기화 — MSS|TCP 혼잡 제어의 MSS]].
 
-TCP 세그먼트화와 IP 단편화는 별개다. 전자는 스트림을 TCP 전송 단위로 나누는 것이고 후자는 이미 만들어진 IP 패킷을 더 작은 IP 단편으로 나누는 것이다. 애플리케이션이 MTU보다 큰 데이터를 썼다고 곧바로 IP 단편화가 일어나지는 않는다. 경로 중간 링크의 MTU가 더 작을 때 단편화 문제가 생긴다.
+TCP 세그먼트화와 IP 단편화는 별개다. 전자는 스트림을 TCP 전송 단위로 나누는 것이고 후자는 이미 만들어진 IP 패킷을 더 작은 IP 단편으로 나누는 것이다. 애플리케이션이 MTU보다 큰 데이터를 썼다고 곧바로 IP 단편화가 일어나지는 않는다. 출발지 링크 또는 경로 중간 링크의 MTU보다 큰 IP 패킷을 보낼 때 단편화나 폐기 문제가 생긴다.
 
 - **IPv4**: 라우터가 패킷을 단편화할 수 있다. DF(Don't Fragment) 플래그가 설정된 패킷은 단편화 대신 폐기된다. 모든 호스트는 576바이트까지의 데이터그램을 받아들여야 한다.
 - **Path MTU Discovery**: 송신 호스트가 DF를 켜고 보내다가 라우터의 ICMP Destination Unreachable(code 4, fragmentation needed and DF set) 메시지에 담긴 next-hop MTU를 보고 경로 MTU 추정치를 줄인다. 방화벽이 ICMP를 전부 막으면 이 신호가 사라져 큰 패킷만 조용히 실패하는 black hole이 생긴다. ICMP의 역할은 [[Network-Layer#ARP — IP를 MAC으로 해석|ARP와 ICMP]] 절의 ICMP 문단 참고.
 - **IPv6**: 라우터는 단편화하지 않고 출발지 노드만 단편화한다. 모든 링크의 MTU는 1280바이트 이상이어야 한다.
 
-VPN이나 터널은 원래 패킷을 다시 캡슐화해 헤더가 더 붙으므로 실질 MTU가 줄어든다. 특정 크기 이상의 요청만 실패한다면 MTU를 먼저 의심한다. [[Application-Layer-Protocols|VPN과 터널의 MTU 고려]]
+### 단편화 비용과 터널의 유효 MTU
+
+IPv4 단편마다 IP 헤더가 붙고, 수신지는 출발지/목적지 주소, 프로토콜과 Identification으로 단편을 묶어 Offset과 MF를 보고 재조립한다. 일반 IP 전달에서 재조립은 최종 수신지가 담당한다. 필드와 계산 예는 [[IPv4-Header]].
+
+같은 데이터량이라도 단편화하면 패킷 수와 헤더 오버헤드가 늘고, 수신지의 재조립 버퍼와 타이머가 필요하다. 단편 하나를 잃으면 원래 IP 데이터그램을 완성할 수 없다. IP 자체는 재전송하지 않으며 TCP나 신뢰성을 구현한 상위 계층이 복구한다. 패킷 처리량(PPS) 부담과 중간 장비의 단편 폐기도 고려해야 한다.
+
+장비 성능이 좋아져도 MTU 제한은 사라지지 않는다. 특히 VPN/IPsec 터널에서는 바깥 IP 헤더와 보안 헤더, 인증 데이터, 패딩 등이 추가돼 내부 패킷에 쓸 수 있는 MTU가 줄어든다. 추가 크기는 모드와 알고리즘에 따라 달라 고정된 값으로 빼지 않는다.
+
+대응은 목적지 경로와 터널에 맞게 송신 크기를 조정하는 것이다. IPv4/IPv6 PMTUD에 필요한 ICMP를 전달하고, 지원되는 전송 계층에서는 탐색 패킷의 성공 여부를 이용하는 PLPMTUD도 활용한다. TCP의 MSS 조정은 TCP에만 적용되므로 UDP까지 해결하지 않는다. 전체 망의 MTU를 무작정 낮추기보다 터널 오버헤드, 큰 패킷 실패 여부와 양방향 경로를 확인한다. [[VPN-and-Private-Network|VPN 구성과 운영]]
 
 ## 커널 안의 송수신 경로
 
@@ -105,6 +113,16 @@ AWS에서는 이런 DPI 어플라이언스를 [[ELB|Gateway Load Balancer]] 뒤�
 - DPI의 정의와 용도, TLS 환경의 한계와 암호화돼도 남는 메타데이터, 프라이버시 트레이드오프
 
 ## 출처
+
+이번 참고 영상은 제공된 메모를 바탕으로 반영했으며 영상 본문과 자막은 직접 확인하지 못했다. 보완한 기술 설명은 아래 공식 자료와 대조했다.
+
+- [IP 단편화와 MTU — YouTube, 제공 메모의 참고 영상](https://www.youtube.com/watch?v=JYBRE_eD7a8&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=34)
+- [패킷, 세그먼트와 스트림 — YouTube, 제공 메모의 참고 영상](https://www.youtube.com/watch?v=SJOdlS1uDBg&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=35)
+- [IETF, RFC 768: User Datagram Protocol](https://www.rfc-editor.org/rfc/rfc768.html)
+- [IETF, RFC 6691: TCP Options and Maximum Segment Size](https://www.rfc-editor.org/rfc/rfc6691.html)
+- [IETF, RFC 8900: IP Fragmentation Considered Fragile](https://www.rfc-editor.org/rfc/rfc8900.html)
+- [IETF, RFC 8899: Packetization Layer Path MTU Discovery for Datagram Transports](https://www.rfc-editor.org/rfc/rfc8899.html)
+- [IETF, RFC 4301: Security Architecture for the Internet Protocol](https://www.rfc-editor.org/rfc/rfc4301.html)
 
 - [패킷의 생성 원리와 캡슐화 — 널널한 개발자 TV](https://www.youtube.com/watch?v=Bz-K-DPfioE&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=14)
 - [IETF, RFC 894: A Standard for the Transmission of IP Datagrams over Ethernet Networks](https://www.rfc-editor.org/rfc/rfc894.html)

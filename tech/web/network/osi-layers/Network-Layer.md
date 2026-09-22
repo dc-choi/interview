@@ -3,7 +3,7 @@ tags: [web, network, osi, l3, ip, cidr, routing, arp, mtu, dpi]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Network Layer", "네트워크 계층", "L3", "IP CIDR 라우터 ARP", "패킷 포워딩"]
-verified_at: 2026-09-15
+verified_at: 2026-09-22
 ---
 
 # 네트워크 계층 (Network Layer, L3)
@@ -48,6 +48,28 @@ IP 관점에서 **MTU(Maximum Transmission Unit)**는 해당 링크에 실을 �
 | 주소 공간 | 약 43억 개 | 사실상 고갈 걱정 없음 |
 | 부족 대응 | 공인 IP / 사설 IP, NAT로 보완 | 넓은 공간으로 근본 해결 |
 
+### 공인, 사설, 루프백 주소의 범위
+
+IPv4는 8비트 옥텟 네 개를 점으로 구분하며 각 값은 0~255다. 주소는 네트워크 인터페이스의 논리적 위치를 나타낸다. 기기 하나가 여러 주소를 가질 수 있으므로 영구적인 기기 식별자와는 다르다.
+
+| 구분 | 범위와 용도 | 주의점 |
+|---|---|---|
+| 공인(글로벌) IPv4 | 인터넷에서 전역적으로 식별하고 라우팅할 수 있도록 할당한 주소 | 공인 주소가 있어도 경로, 방화벽과 서비스 설정에 따라 접근이 차단될 수 있음 |
+| 사설 IPv4 | 조직 내부에서 재사용하는 RFC 1918 주소 | 내부 라우팅은 가능하지만 공용 인터넷에서 그대로 라우팅하지 않음 |
+| 루프백 | IPv4 `127.0.0.0/8`, 대표 주소 `127.0.0.1`. IPv6는 `::1` | 외부 링크로 보내지 않고 현재 호스트의 네트워크 스택 안에서 처리 |
+
+RFC 1918의 사설 대역은 다음과 같다. 클래스별 예시 몇 개가 아니라 아래 전체 범위가 예약돼 있다.
+
+| CIDR | 주소 범위 |
+|---|---|
+| `10.0.0.0/8` | `10.0.0.0`~`10.255.255.255` |
+| `172.16.0.0/12` | `172.16.0.0`~`172.31.255.255` |
+| `192.168.0.0/16` | `192.168.0.0`~`192.168.255.255` |
+
+사설 주소는 가정뿐 아니라 큰 기업망과 VPN에서도 라우팅한다. 서로 독립된 망에서는 같은 주소를 재사용할 수 있지만, 두 망을 연결할 때는 대역 중복을 해결해야 한다. 사설 주소 자체가 방화벽이나 접근 권한을 제공하지는 않는다. 이 세 구분 외에도 멀티캐스트, 링크 로컬 등 별도 목적의 주소가 있다.
+
+공유기의 주소와 포트 변환은 [[IPv4-NAT-and-Traversal]], 로컬 서버 테스트와 바인딩 범위는 [[Loopback-And-Localhost]]를 참고한다.
+
 ## CIDR와 서브넷 마스크 — 네트워크 부분 가려내기
 
 **CIDR**는 IP 하나가 아니라 IP 범위를 표현한다. `192.168.2.0/24`에서 `/24`는 앞 24비트가 네트워크 주소라는 뜻이고, IPv4 32비트 중 나머지 8비트가 호스트 주소다. 따라서 이 대역은 `192.168.2.0`부터 `192.168.2.255`까지 256개를 가리킨다.
@@ -57,6 +79,8 @@ IP 관점에서 **MTU(Maximum Transmission Unit)**는 해당 링크에 실을 �
 **서브넷 마스크**는 어디까지가 네트워크 부분인지 표시하는 값이다. `/24`는 `255.255.255.0`에 해당한다. 컴퓨터는 목적지 IP와 서브넷 마스크를 **AND 연산**(두 비트가 모두 1일 때만 1)해 네트워크 주소를 구하고, 자신의 네트워크 주소와 같은지로 같은 네트워크 여부를 판단한다.
 
 초기의 IPv4는 A/B/C 클래스마다 네트워크 비트 수를 고정했지만 주소 낭비와 라우팅 테이블 증가를 감당하지 못했다. 현재 설계 기준은 클래스가 아니라 명시적인 prefix length를 쓰는 **CIDR**다. A/B/C는 역사와 오래된 용어를 읽기 위한 배경이지 신규 대역을 설계하는 규칙이 아니다.
+
+`/24`를 두 `/25`로 나누는 계산, 게이트웨이 주소와 `/31`, `/32` 예외는 [[IPv4-Subnetting|서브넷팅과 주소 관리]]를 참고한다.
 
 ## 라우팅 — 같은 네트워크인가, 아닌가
 
@@ -123,6 +147,12 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 
 ## 출처
 
+이번 참고 영상은 제공된 메모를 바탕으로 반영했으며 영상 본문과 자막은 직접 확인하지 못했다. 보완한 기술 설명은 아래 공식 자료와 대조했다.
+
+- [RFC 1918 — Address Allocation for Private Internets](https://www.rfc-editor.org/rfc/rfc1918.html)
+- [IANA, IPv4 Special-Purpose Address Registry](https://www.iana.org/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.xhtml)
+- [IP 주소의 구조와 활용 — YouTube, 제공 메모의 참고 영상](https://www.youtube.com/watch?v=W0x88b_dYhw&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=29)
+
 - 김영한 강사, [인터넷 통신](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61344)
 - 김영한 강사, [IP, 인터넷 프로토콜](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61353)
 - [OSI 7 Layer 기초: Network Layer (IP, CIDR, 라우터, ARP) — YouTube](https://www.youtube.com/watch?v=ZnBskOsDuFY&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v&index=2)
@@ -150,5 +180,7 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 - [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택 (longest prefix match, 메트릭)]]
 - [[LAN-vs-WAN|LAN과 WAN 구분 기준 (MAC 직접 전달 vs IP 라우팅)]]
 - [[IPv4-NAT-and-Traversal|IPv4 NAT, NAPT와 NAT 통과]]
+- [[IPv4-Subnetting|서브넷팅과 주소 관리]]
+- [[Loopback-And-Localhost|루프백과 localhost]]
 - [[Unicast-Broadcast-Multicast|유니캐스트, 브로드캐스트, 멀티캐스트 (목적지 주소와 도달 범위)]]
 - [[네트워크(Network)|카테고리 인덱스]]

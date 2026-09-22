@@ -13,6 +13,8 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[HTTPS-TLS|HTTPS / TLS Handshake]]
 - [x] [[OSI-7-Layer|OSI 7계층 (osi-layers/ 서브폴더) — 계층별 상세 (L1/L2 MAC과 프레임, L2 스위칭, L3 IP와 라우팅, ARP, L4 TCP/UDP와 소켓, L5/6/7), Internet vs Ethernet]]
 - [x] [[Network-Encapsulation|캡슐화와 데이터 단위 (소켓 스트림, 세그먼트, 패킷, 프레임, MTU/MSS, 단편화, DPI)]]
+- [x] [[Network-Layer|IP 주소의 범위 (공인, 사설, 루프백), CIDR와 라우팅]]
+- [x] [[IPv4-Subnetting|서브넷팅과 주소 관리 (비트 계산, 게이트웨이, /31 예외, VLAN과 브로드캐스트)]]
 - [x] [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기 (필드별 의미, TTL과 traceroute, 단편화 필드, 체크섬, IPv6 대비, Wireshark 필터)]]
 - [x] [[Unicast-Broadcast-Multicast|유니캐스트, 브로드캐스트, 멀티캐스트 (수신 대상 범위, limited/directed broadcast, 브로드캐스트 비용, IGMP와 MAC 매핑, IPv6의 애니캐스트)]]
 - [x] [[LAN-vs-WAN|LAN과 WAN (브로드캐스트 범위와 MAC vs IP 라우팅으로 구분, 물리와 논리 네트워크)]]
@@ -20,13 +22,15 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[TCP|TCP (tcp/ 서브폴더) — 헤더 구조, 핸드셰이크, 흐름/오류 제어, 혼잡 제어]]
 - [x] [[Routing-Protocols|정적 라우팅과 RIP, OSPF, BGP]]
 - [x] [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택 (longest prefix match, 메트릭, OS별 확인 명령)]]
-- [x] [[IPv4-NAT-and-Traversal|IPv4 NAT, NAPT와 STUN/TURN/ICE 통과 전략]]
+- [x] [[IPv4-NAT-and-Traversal|공유기의 NAT/NAPT 매핑, 방화벽과의 차이, STUN/TURN/ICE 통과 전략]]
 - [x] [[Application-Layer-Protocols|DHCP, DNS, SSH, FTP, SMTP, POP3, IMAP 프로토콜 지도]]
 - [x] [[Loopback-And-Localhost|Loopback, Localhost 동작 원리 (127.0.0.1, ::1, loopback NIC, 커널 내 처리, 디버깅)]]
 - [x] [[Browser-URL-Flow|브라우저 URL 입력 프로세스 (DNS→ARP→TCP/TLS→HTTP→렌더링, Core Web Vitals)]]
 - [x] [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark (libpcap/Npcap, dumpcap, dissector, promiscuous 모드, 캡처 필터와 디스플레이 필터, TCP 스트림 재조립, SPAN/TAP, TLS 복호화, 법적 범위)]]
 
 ## 관련 문서
+
+- [[VPN-and-Private-Network|VPN과 사설 네트워크 (원격 접속, 사이트 간 연결, 경로와 권한)]]
 
 - [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치 (fail-open과 fail-closed, 포트 미러링과 SPAN, TAP, IDS와 IPS, GWLB와 Traffic Mirroring)]] — 보안 카테고리의 [[네트워크보안(NetworkSecurity)|네트워크 보안]] 하위
 - [[Proxy-Internals|프락시 동작 구조 (패킷 vs 소켓 스트림, 두 연결 종단)]] — 인프라 카테고리의 [[인프라네트워크(InfraNetwork)|인프라 네트워크]] 하위
