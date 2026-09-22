@@ -23,12 +23,17 @@ map/set 기반 adjacency list는 구현이 편하지만 object overhead와 itera
 Depth-First Search는 한 경로를 더 갈 수 없을 때까지 따라간 뒤 backtrack한다. recursion 또는 explicit stack으로 구현한다.
 
 ```text
-stack에 start 추가
+visited[start] = true
+start를 처리하고 stack에 (start, 다음 neighbor index 0) 추가
 stack이 빌 때까지:
-  vertex 꺼내기
-  이미 방문했다면 건너뛰기
-  표시하고 처리
-  아직 방문하지 않은 neighbor를 stack에 추가
+  (vertex, nextIndex) = stack 최상단
+  nextIndex가 vertex의 모든 neighbor를 가리켰다면 stack에서 제거하고 계속
+  stack 최상단의 nextIndex를 1 증가
+  neighbor = vertex의 원래 nextIndex번째 neighbor
+  아직 방문하지 않았다면:
+    visited[neighbor] = true
+    neighbor 처리
+    stack에 (neighbor, 다음 neighbor index 0) 추가
 ```
 
 cycle이 있는 graph에서는 visited가 없으면 끝나지 않는다. directed cycle 탐지처럼 현재 recursion path와 전체 방문 완료를 구분해야 하는 문제도 있다.
@@ -45,7 +50,7 @@ unweighted graph 또는 모든 edge cost가 같은 graph에서 처음 도달한 
 
 grid 탐색은 각 cell을 vertex, 이동 가능 관계를 edge로 본 graph 문제다. `(y, x)`와 방향 vector의 순서를 통일하고 범위 검사 뒤 방문 처리한다. connected component 수나 넓이는 아직 방문하지 않은 cell마다 DFS/BFS를 새로 시작해 계산한다.
 
-adjacency list를 쓰면 BFS와 DFS 모두 각 vertex와 edge를 상수 번 확인해 O(V+E), 추가 공간은 O(V)다. 전체 graph가 disconnected라면 모든 vertex에서 미방문 component를 다시 시작한다.
+adjacency list를 쓰고 위처럼 vertex별 다음 neighbor index를 frame에 보존하면 DFS는 재귀 구현과 같은 순서로 각 vertex와 edge를 상수 번 확인해 O(V+E), 추가 공간은 visited와 최대 V개의 stack frame으로 O(V)다. 전체 graph가 disconnected라면 모든 vertex에서 미방문 component를 다시 시작한다.
 
 ### 0-1 BFS
 
