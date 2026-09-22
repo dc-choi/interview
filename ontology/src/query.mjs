@@ -573,6 +573,18 @@ function trimToBudget(payload, maximum, directEvidenceToDocument, ownerDocumentF
       changed = true;
       continue;
     }
+    // Omission counters can grow after direct evidence was fitted. Preserve the
+    // final source bundle by shrinking its excerpt against the final metadata.
+    if (directEvidence.length === 1) {
+      const [item] = directEvidence;
+      const index = payload.evidence_units.indexOf(item);
+      payload.evidence_units.splice(index, 1);
+      if (addEvidenceWithinBudget(payload, item, maximum, () => { payload.budget.exhausted = true; })) {
+        changed = true;
+        continue;
+      }
+      payload.evidence_units.splice(index, 0, item);
+    }
     const removableGap = payload.coverage_gaps.findLastIndex((gap) => gap.reason !== 'coverage_gaps_summary');
     if (removeAt(payload.coverage_gaps, removableGap)) continue;
     return false;
@@ -940,29 +952,10 @@ function retrieve(options, args, snapshot, mode) {
   // Reserve the longest status used by a pack with evidence, rather than the
   // longer empty-result status, while fitting direct and graph evidence.
   base.result_status = 'partial';
-  const includedRootIds = new Set();
-  for (const root of roots) {
-    const entity = publicEntity(root.doc);
-    base.entities.push(entity);
-    if (outputBytes(base) > effectiveMaxBytes) {
-      base.entities.pop();
-      markOutputLimit();
-      continue;
-    }
-    includedRootIds.add(root.doc.id);
-  }
   const directEvidence = [];
   const provenanceEvidence = [];
   const rootForEvidence = new Map();
   for (const root of roots) {
-    if (!includedRootIds.has(root.doc.id)) continue;
-    if (root.metadataMatch || root.provenance) {
-      const rootSection = byDocument.get(root.doc.id)?.find((section) => section.type === 'Section' && section.anchor?.heading_path?.length === 0);
-      if (rootSection) {
-        provenanceEvidence.push(rootSection.id);
-        rootForEvidence.set(rootSection.id, root.doc.id);
-      }
-    }
     const section = root.direct ?? preferredSection(byDocument.get(root.doc.id));
     if (section) {
       directEvidence.push(section.id);
@@ -970,6 +963,33 @@ function retrieve(options, args, snapshot, mode) {
     }
   }
   const requiredEvidenceIds = new Set(directEvidence);
+  const addDirectBundle = (root, id) => {
+    const item = evidence(id);
+    if (!item) {
+      appendGap(base.coverage_gaps, { source_id: manifest.source_id, scope: scopes, reason: 'source_unavailable', evidence_unit_id: id });
+      return false;
+    }
+    base.entities.push(publicEntity(root.doc));
+    if (addEvidenceWithinBudget(base, item, effectiveMaxBytes, markOutputLimit)) {
+      restoreEvidence(id);
+      return true;
+    }
+    base.entities.pop();
+    omitEvidence(id);
+    return false;
+  };
+  for (const root of roots) {
+    const section = root.direct ?? preferredSection(byDocument.get(root.doc.id));
+    if (!section || !addDirectBundle(root, section.id)) continue;
+    if (root.metadataMatch || root.provenance) {
+      const rootSection = byDocument.get(root.doc.id)?.find((candidate) => candidate.type === 'Section'
+        && candidate.anchor?.heading_path?.length === 0);
+      if (rootSection) {
+        provenanceEvidence.push(rootSection.id);
+        rootForEvidence.set(rootSection.id, root.doc.id);
+      }
+    }
+  }
   const addSourceEvidence = (id) => {
     const item = evidence(id);
     if (!item) {
@@ -982,8 +1002,9 @@ function retrieve(options, args, snapshot, mode) {
     }
     restoreEvidence(id);
   };
-  for (const id of requiredEvidenceIds) addSourceEvidence(id);
-  if (roots.length > 0 && base.evidence_units.length === 0) fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit');
+  if (roots.length > 0 && base.evidence_units.length === 0) {
+    fail('budget_too_small', 'max_bytes cannot hold a direct evidence unit with its document');
+  }
   const addSelectedRelation = (relation) => {
     const item = evidence(relation.evidence_unit_id);
     const endpoints = [entitiesById.get(relation.subject), entitiesById.get(relation.object)];

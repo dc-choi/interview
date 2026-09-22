@@ -404,6 +404,47 @@ test('larger output budgets never turn a successful direct result into a failure
   }
 });
 
+test('생략 관계 수의 자릿수가 늘어도 마지막 직접 근거를 예산에 맞춘다', async (t) => {
+  const links = Array.from({ length: 11 }, (_, index) => [`tech/Other-${index}.md`, `# Other ${index}\nBody.\n`]);
+  const source = `# Needle\n${links.map(([file]) => `[[${file}]]`).join(' ')}\n${'한😀 "quote" \\ tail\n'.repeat(500)}`;
+  const { repo, cacheDir } = await fixtureWithFiles(t, [['tech/Needle.md', source], ...links]);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+
+  for (const max_bytes of [2500, 2750, 3000]) {
+    const result = lookup(options, { query: 'Needle', max_bytes });
+    assert.equal(result.result_status, 'partial');
+    assert.ok(result.budget.omitted_relations >= 10);
+    assert.equal(result.evidence_units.length, 1);
+    const [evidence] = result.evidence_units;
+    assert.ok(evidence.excerpt.length > 0);
+    assert.equal(evidence.truncated, true);
+    assert.ok(source.includes(evidence.excerpt));
+    assert.equal(Buffer.byteLength(JSON.stringify(result)), result.budget.used_bytes);
+    assert.ok(result.budget.used_bytes <= max_bytes);
+  }
+});
+
+test('long optional aliases cannot displace every fitting direct evidence bundle', async (t) => {
+  const longAlias = 'a'.repeat(3600);
+  const { repo, cacheDir } = await fixtureWithFiles(t, Array.from({ length: 6 }, (_, index) => [
+    `tech/Needle-${index}.md`,
+    `---\naliases: [${longAlias}]\n---\n# Needle\n\nNeedle has direct source evidence.\n`,
+  ]));
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const snapshot = loadSnapshot(options);
+  const documentsByPath = new Map(snapshot.entities.filter((entity) => entity.type === 'Document')
+    .map((entity) => [entity.source_uri, entity.id]));
+
+  const result = lookup(options, { query: 'Needle', max_bytes: 24000 });
+
+  assert.ok(result.evidence_units.length > 0);
+  for (const item of result.evidence_units) {
+    assert.ok(result.entities.some((entity) => entity.id === documentsByPath.get(item.source_uri)));
+  }
+  assert.equal(Buffer.byteLength(JSON.stringify(result)), result.budget.used_bytes);
+  assert.ok(result.budget.used_bytes <= 24000);
+});
+
 test('lookup keeps the allowlist, indexed paths, and requested scope intersected', async (t) => {
   const { repo, cacheDir } = await fixture(t);
   const blocked = lookup({ repo, cacheDir, allowlist: ['fit'] }, {

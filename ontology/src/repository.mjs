@@ -81,8 +81,8 @@ export function sourceUpdatedTimes(repo, revision, files) {
   checkRevision(revision);
   const wanted = new Set(files.map((file) => file.path));
   const times = new Map();
-  const parts = git(repo, ['log', '--topo-order', '--format=%x00COMMIT:%cI%x00',
-    '--name-only', '-z', '--no-renames', revision, '--']).toString().split('\0');
+  const parts = git(repo, ['log', '--topo-order', '--first-parent', '--format=%x00COMMIT:%cI%x00',
+    '--diff-merges=first-parent', '--name-only', '-z', '--no-renames', revision, '--']).toString().split('\0');
   let timestamp;
   for (let part of parts) {
     part = part.replace(/^\n+/, '');

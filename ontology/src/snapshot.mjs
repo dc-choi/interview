@@ -7,7 +7,7 @@ import { getRepoState, git, listMarkdown, readBlobs, resolveRepo, sourceUpdatedT
 import { extractMarkdown, normalizeHeading } from './markdown.mjs';
 
 const SCHEMA_VERSION = '1';
-const EXTRACTOR_VERSION = '11';
+const EXTRACTOR_VERSION = '12';
 const ARTIFACTS = ['schema.json', 'entities.jsonl', 'relations.jsonl'];
 const CACHE_MARKER = '.context-ontology-cache';
 const CACHE_MARKER_CONTENT = 'interview-context-ontology-v1\n';

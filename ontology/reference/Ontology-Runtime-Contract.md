@@ -16,7 +16,7 @@ category: "AI엔지니어링(AIEngineering)"
 | 제외 | `AGENTS.md`, `CLAUDE.md`, 비 Markdown, symlink, untracked와 dirty worktree 본문. `.agents/`, `.claude/`는 기본 범위 밖 |
 | 추출 | frontmatter의 `aliases`, `tags`, `category`, `status`, `verified_at`, heading section, 위키링크, 명시 `ontology_relations` |
 | 관계 | `contains`, 해석 가능한 `links_to`와 선택적 구조 역할 `link_role`, schema와 entity ID가 맞는 명시 relation |
-| 근거 | 원문 path, pinned revision, UTF-8 byte anchor, 해당 byte SHA-256, 마지막 변경 commit 시각 |
+| 근거 | 원문 path, pinned revision, UTF-8 byte anchor, 해당 byte SHA-256, 첫 부모와 비교한 마지막 변경 commit 시각 |
 | 조회 | exact label, alias, tag, heading과 키워드, source-confirmed relation 1 또는 2 hop |
 | MCP | stdio 서버의 읽기 전용 `context_search`, `context_lookup`, `context_outline`, `context_read` |
 
@@ -56,7 +56,7 @@ category: "AI엔지니어링(AIEngineering)"
 
 ## 기존 목차와 위키링크의 역할
 
-extractor 11은 Markdown에 이미 적힌 탐색 역할을 `links_to` 관계의 `link_role`로 보존한다. predicate, relation ID, 원문 section과 occurrence는 그대로 유지하며 새 의미 관계를 생성하지 않는다.
+extractor 12는 Markdown에 이미 적힌 탐색 역할을 `links_to` 관계의 `link_role`로 보존한다. `source_updated_at`은 first-parent diff로 파일을 바꾼 최신 commit의 committer 시각이다. 따라서 병합 충돌 해결로 바뀐 본문은 병합 commit 시각을 기록한다. predicate, relation ID, 원문 section과 occurrence는 그대로 유지하며 새 의미 관계를 생성하지 않는다.
 
 | 역할 | 원문 표기 |
 | --- | --- |

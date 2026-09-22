@@ -30,6 +30,13 @@ function fixture(t) {
   return { root, repo, cacheDir, git, write, commit };
 }
 
+function gitAt(repo, args, date) {
+  return execFileSync('git', ['-C', repo, ...args], {
+    encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'],
+    env: { ...process.env, GIT_AUTHOR_DATE: date, GIT_COMMITTER_DATE: date },
+  }).trim();
+}
+
 test('snapshots are deterministic, source-backed, and reproducible', (t) => {
   const options = fixture(t);
   const first = buildSnapshot(options);
@@ -291,6 +298,52 @@ test('shallow history is rejected before publishing misleading source update tim
   execFileSync('git', ['clone', '--quiet', '--depth', '1', `file://${options.repo}`, clone]);
   assert.throws(() => buildSnapshot({ repo: clone, cacheDir: join(options.root, 'shallow-cache') }),
     { code: 'shallow_history_unsupported' });
+});
+
+test('a merge resolution records the merge commit as the source update time', (t) => {
+  const options = fixture(t);
+  const commitAt = (text, date, message) => {
+    options.write('tech/A.md', text);
+    options.git('add', 'tech/A.md');
+    gitAt(options.repo, ['commit', '-m', message], date);
+  };
+  const main = options.git('branch', '--show-current');
+  options.git('branch', 'side');
+  commitAt('# Source\nmain version\n', '2026-01-03T00:00:00Z', 'main change');
+  options.git('checkout', '-q', 'side');
+  commitAt('# Source\nside version\n', '2026-01-02T00:00:00Z', 'side change');
+  options.git('checkout', '-q', main);
+  const merge = spawnSync('git', ['-C', options.repo, 'merge', '--no-commit', 'side'], { stdio: 'pipe' });
+  assert.equal(merge.status, 1);
+  commitAt('# Source\nuniquely resolved merged content\n', '2026-01-04T00:00:00Z', 'merge resolution');
+
+  buildSnapshot(options);
+  const snapshot = loadSnapshot(options);
+  const document = snapshot.entities.find((entity) => entity.type === 'Document' && entity.source_uri === 'tech/A.md');
+  assert.equal(document.source_updated_at, '2026-01-04T00:00:00Z');
+});
+
+test('a merge that keeps the first-parent file ignores an unadopted side edit', (t) => {
+  const options = fixture(t);
+  const commitAt = (text, date, message) => {
+    options.write('tech/A.md', text);
+    options.git('add', 'tech/A.md');
+    gitAt(options.repo, ['commit', '-m', message], date);
+  };
+  const main = options.git('branch', '--show-current');
+  options.git('branch', 'side');
+  commitAt('# Source\nmain version\n', '2026-01-03T00:00:00Z', 'main change');
+  options.git('checkout', '-q', 'side');
+  commitAt('# Source\nside version\n', '2026-01-04T00:00:00Z', 'side change');
+  options.git('checkout', '-q', main);
+  const merge = spawnSync('git', ['-C', options.repo, 'merge', '--no-commit', 'side'], { stdio: 'pipe' });
+  assert.equal(merge.status, 1);
+  commitAt('# Source\nmain version\n', '2026-01-05T00:00:00Z', 'keep main version');
+
+  buildSnapshot(options);
+  const snapshot = loadSnapshot(options);
+  const document = snapshot.entities.find((entity) => entity.type === 'Document' && entity.source_uri === 'tech/A.md');
+  assert.equal(document.source_updated_at, '2026-01-03T00:00:00Z');
 });
 
 test('wiki targets preserve literal percent headings and never treat H1 labels as filenames', (t) => {
