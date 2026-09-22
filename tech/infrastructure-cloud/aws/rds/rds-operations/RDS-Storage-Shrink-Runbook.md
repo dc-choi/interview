@@ -10,7 +10,9 @@ verified_at: 2026-08-27
 
 > 상위 문서: [[RDS-Zero-Downtime-Migration|무중단 RDS 마이그레이션]]
 
-RDS 스토리지는 늘리기만 되고 줄일 수 없다([[RDS-Migration-Scenarios]]). Read Replica나 Blue/Green은 소스를 복사하는 구조라 스토리지가 같거나 커져 축소가 안 된다. 후보 방식은 **작은 인스턴스를 새로 만들고 네이티브 binlog 복제로 동기화한 뒤 컷오버**하는 것이다. 동종 엔진이라 데이터 변환 범위는 작지만 복제 구성과 컷오버 리스크는 별도로 검증해야 한다. 컷오버 일반 기계는 [[RDS-Zero-Downtime-Migration]].
+기존 RDS 인스턴스의 할당 스토리지는 제자리에서 줄일 수 없다. 다만 2026-09-22 AWS 문서 기준, 지원되는 엔진과 버전에서는 **Blue/Green 생성 시 더 작은 green 스토리지를 지정한 뒤 전환**할 수 있다. 목표 용량은 현재 사용량보다 최소 20% 커야 하며, 엔진, 버전, 리전과 스토리지 조건을 확인한다([[RDS-Migration-Scenarios]]).
+
+이 문서는 Blue/Green을 적용하기 어려운 경우 검토할 **작은 인스턴스 생성, 네이티브 binlog 복제와 컷오버** 절차다. 동종 엔진이라 데이터 변환 범위는 작지만 복제 구성과 컷오버 리스크는 별도로 검증해야 한다. 공통 컷오버 절차는 [[RDS-Zero-Downtime-Migration]].
 
 > 실행 전 gate: AWS는 RDS 사이의 일반 복제에는 Read Replica를 우선 안내하고, 이 문서의 단일 `rds_set_external_*` 프로시저는 주로 RDS 외부 MySQL 소스를 대상으로 설명한다. 작은 RDS를 대상으로 한 이 토폴로지는 현재 저장소에서 실행 검증되지 않았다. 같은 엔진 버전의 비운영 환경에서 지원 여부와 권한을 먼저 재현하고, 통과하지 않으면 AWS DMS의 CDC 또는 쓰기 중단 후 dump/restore로 전환한다.
 
@@ -135,6 +137,7 @@ binlog ROW + 보존시간↑ / 복제 유저 / 일관 덤프(MySQL client 8.0.26
 
 ## 출처
 
+- [AWS, Creating a blue/green deployment — Modify storage and performance settings](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-creating.html#blue-green-deployments-creating-storage)
 - [AWS, Configuring binary log file position replication with an external source instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Procedural.Importing.External.Repl.html)
 - [AWS, Configuring, starting, and stopping binary log replication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/mysql-stored-proc-replicating.html)
 - [AWS, Configuring RDS for MySQL binary logging for instance deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQL.BinaryFormat.html)

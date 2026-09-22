@@ -3,7 +3,7 @@ tags: [security, crypto, tls, certificate, nginx]
 status: done
 category: "Security - 암호"
 aliases: ["TLS Config", "TLS 설정", "cipher suite 설정", "ssl_protocols"]
-verified_at: 2026-08-31
+verified_at: 2026-09-22
 ---
 
 # TLS Config — TLS 설정 실무
@@ -55,15 +55,17 @@ ssl_stapling on; ssl_stapling_verify on;      # issuer chain과 resolver가 함�
 Node.js는 `tls.DEFAULT_MIN_VERSION`이 TLSv1.2, `DEFAULT_MAX_VERSION`이 TLSv1.3이다(Node v24.13.1에서 확인). 문서상 TLS 1.3 스위트는 전체 이름으로만 켜고 끌 수 있고 `EECDH` 같은 레거시 표기로는 제어되지 않는다.
 
 ```ts
-// NestJS: main.ts 에서 httpsOptions 로 전달
+// NestJS 기본 Express adapter: main.ts 에서 httpsOptions 로 전달
 const httpsOptions = {
   key: readFileSync('privkey.pem'),
   cert: readFileSync('fullchain.pem'),
   minVersion: 'TLSv1.2' as const,  // 기본값이지만 명시해 회귀를 막는다
   ciphers: 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256',
-  ALPNProtocols: ['h2', 'http/1.1'],
+  ALPNProtocols: ['http/1.1'],
 };
 ```
+
+기본 Express adapter의 HTTPS 경로는 Node `https.createServer()`로 HTTP/1.1 요청을 처리한다. ALPN에 `h2`를 넣는 것은 HTTP/2 서버를 만드는 설정이 아니므로 이 경로에서는 `http/1.1`만 광고한다. HTTP/2가 필요하면 `http2.createSecureServer()` 또는 이를 지원하는 Nest adapter를 명시적으로 선택하고, 그 서버의 지원 설정과 HTTP/2 요청 처리를 함께 검증한다.
 
 AWS 관리형은 개별 스위트를 고르지 못하고 **보안 정책 이름으로만 선택**한다. ALB 문서는 사용자 정의 보안 정책을 지원하지 않는다고 명시한다.
 
@@ -130,6 +132,7 @@ CloudFront: TLSv1.2_2021 또는 TLSv1.3_2025 (정책별 스위트 목록 고정)
 - [nginx, Module ngx_http_ssl_module](https://nginx.org/en/docs/http/ngx_http_ssl_module.html)
 - [nginx, Controlling nginx](https://nginx.org/en/docs/control.html)
 - [Node.js, TLS (SSL)](https://nodejs.org/api/tls.html)
+- [Node.js, HTTP/2](https://nodejs.org/api/http2.html)
 - [OpenSSL, openssl-s_client](https://docs.openssl.org/master/man1/openssl-s_client/)
 - [AWS, Security policies for your Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html)
 - [AWS, Supported protocols and ciphers between viewers and CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html)

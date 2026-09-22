@@ -3,7 +3,7 @@ tags: [aws, elb, alb, nlb, gwlb, load-balancer, infrastructure]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["ELB", "AWS ELB", "Elastic Load Balancer", "ALB", "NLB", "GWLB"]
-verified_at: 2026-08-27
+verified_at: 2026-09-22
 ---
 
 # ELB, Elastic Load Balancer
@@ -18,7 +18,7 @@ AWS의 관리형 부하분산 서비스. 외부, 내부 클라이언트 요청�
   - **Internet-facing**: 공인 IP + 사설 IP 부여 — 외부 노출
   - **Internal**: 사설 IP만 — 내부 마이크로서비스용
 - **Listener**: 프로토콜과 포트 조합으로 수신 연결을 정의한다. 한 로드밸런서에 80, 443 같은 여러 리스너를 둘 수 있으며, 지원되는 유형에서는 규칙으로 대상 그룹을 선택한다.
-- **헬스 체크**: 정상 대상에만 요청 전달. 실패하면 자동 제외 후 복구되면 재투입
+- **헬스 체크**: 일반 상태에서는 정상 대상으로 요청을 보낸다. 다만 ALB는 등록된 대상이 모두 unhealthy이면 fail-open으로 그 대상 모두에 라우팅하고, target group health의 unhealthy-state routing threshold를 설정하면 충분한 정상 대상이 없을 때도 unhealthy 대상을 라우팅할 수 있다. NLB도 활성화된 모든 AZ에서 정상 대상이 없으면 fail-open한다. 따라서 health check 실패만으로 트래픽 격리를 보장하지 않으며, 종료와 배포에서는 deregistration/draining, target group health threshold와 정상 대체 용량을 함께 확인한다.
 - **TLS 종료** 지원: ACM 인증서로 로드밸런서가 TLS를 종료할 수 있다. 백엔드 구간을 HTTP로 둘지 다시 HTTPS로 암호화할지는 대상 그룹 구성과 보안 요구에 따라 정한다.
 
 ## Target Group (대상 그룹)
@@ -104,9 +104,9 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 
 ## Cross-Zone Load Balancing (교차 영역 로드밸런싱)
 
-교차 영역 부하분산을 끄면 각 로드밸런서 노드는 자기 AZ의 정상 대상에만 트래픽을 분배한다. AZ별 대상 수가 크게 다르면 DNS 응답과 클라이언트 연결 분포에 따라 대상별 부하가 불균형해질 수 있다.
+교차 영역 부하분산을 끄면 각 로드밸런서 노드는 자기 AZ의 정상 대상에 트래픽을 분배한다. AZ별 대상 수가 크게 다르면 DNS 응답과 클라이언트 연결 분포에 따라 대상별 부하가 불균형해질 수 있다. 단, 활성화된 모든 AZ에 정상 대상이 없을 때의 NLB fail-open은 이 일반 규칙의 예외다.
 
-활성화하면 각 노드가 활성화된 모든 AZ의 정상 대상을 선택할 수 있다. 실제 분포는 라우팅 알고리즘, 연결 지속 시간, 대상 상태에 영향을 받으므로 항상 정확히 같은 비율이라고 보장하지 않는다.
+활성화하면 각 노드가 활성화된 모든 AZ의 정상 대상을 선택할 수 있다. 실제 분포는 라우팅 알고리즘, 연결 지속 시간, 대상 상태에 영향을 받으므로 항상 정확히 같은 비율이라고 보장하지 않는다. ALB의 모든 등록 대상이 unhealthy인 경우에는 fail-open으로 이 선택 기준이 달라진다.
 
 | ELB | 기본값 | 활성 시 비용 |
 |---|---|---|
@@ -134,7 +134,7 @@ L4(NLB)는 HTTP 헤더를 주입하지 않는다. 원본 IP 보존 기본값은 
 
 ## Connection Draining (Deregistration Delay)
 
-대상을 등록 해제할 때 새 요청 전달을 중단하고 진행 중인 요청이나 연결이 끝날 시간을 주는 기능이다. 기본값과 허용 범위는 로드밸런서, 대상 그룹 유형의 `deregistration_delay` 속성을 확인해야 한다. 이 기능만으로 무중단이 보장되지는 않으며 애플리케이션 종료 유예, 연결 시간 제한, 배포 순서도 함께 맞춰야 한다.
+대상을 등록 해제할 때 새 요청 전달을 중단하고 진행 중인 요청이나 연결이 끝날 시간을 주는 기능이다. 기본값과 허용 범위는 로드밸런서, 대상 그룹 유형의 `deregistration_delay` 속성을 확인해야 한다. health check 실패와 달리 deregistration 상태를 확인해 새 요청 제거를 판단하며, 이 기능만으로 무중단이 보장되지는 않으므로 애플리케이션 종료 유예, 연결 시간 제한, 배포 순서도 함께 맞춰야 한다.
 
 ## 시험 체크포인트
 
@@ -152,6 +152,9 @@ L4(NLB)는 HTTP 헤더를 주입하지 않는다. 원본 IP 보존 기본값은 
 - [Classic Load Balancer 마이그레이션](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/migrate-classic-load-balancer.html)
 - [Network Load Balancer 리스너](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html)
 - [Network Load Balancer 대상 그룹 속성](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/edit-target-group-attributes.html)
+- [Application Load Balancer 대상 그룹 health check](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html)
+- [Application Load Balancer 대상 그룹 속성](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html)
+- [Network Load Balancer 대상 그룹 health check](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-health-checks.html)
 
 ## 관련 문서
 - [[Load-Balancer|Load Balancer 일반 개념]]

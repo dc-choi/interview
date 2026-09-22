@@ -25,7 +25,7 @@ aws rds restore-db-instance-from-db-snapshot \
   --db-instance-identifier mydb-encrypted --db-snapshot-identifier my-encrypted-snap
 ```
 
-- **스토리지 축소** — 스토리지는 늘리기만 되고 줄일 수 없다. 잘못 크게 잡았으면 작은 스토리지로 새 인스턴스를 만들고 덤프/복원이나 DMS로 옮긴다.
+- **스토리지 축소** — 기존 인스턴스의 할당 용량은 제자리에서 줄일 수 없다. 2026-09-22 AWS 문서 기준, 지원되는 엔진과 버전에서는 Blue/Green 생성 시 더 작은 green 스토리지를 지정할 수 있다. 목표 용량은 현재 사용량보다 최소 20% 커야 하며 리전과 스토리지 조건도 확인한다. 적용하기 어려우면 작은 인스턴스로 덤프/복원이나 DMS 이전을 검토한다.
 
 ```bash
 mysqldump -h old-host -u admin -p --single-transaction --routines mydb \
@@ -58,23 +58,24 @@ mysqldump -h old-host -u admin -p --single-transaction --routines mydb \
 | **논리 덤프** (mysqldump/pg_dump) | 스토리지 축소, 소규모, 선택적 이전 | 큼 | 유연하지만 느림 |
 | **DMS + schema 준비** | 이기종, 대용량, 온프레미스 | 최소 (CDC) | DMS Schema Conversion 또는 수동 DDL 병행 (→ [[DMS]]) |
 | **Read Replica 승격** | 동종, 저다운타임 컷오버, 크로스 리전 | 매우 적음 | 복제본을 독립 승격(비가역) |
-| **Blue/Green Deployment** | 업그레이드, 위험한 변경 | 매우 적음 | green 검증 후 컷오버 |
+| **Blue/Green Deployment** | 업그레이드, 지원 조건에 맞는 스토리지 축소 | 매우 적음 | green 검증 후 컷오버. 엔진과 버전별 제약 확인 |
 
-무중단(최소 다운타임)이 핵심이면 갈림길은 둘이다. **DMS의 Full Load + CDC**(소스를 계속 가동한 채 변경분을 따라잡아 컷오버 직전까지 동기화)와 **Read Replica 승격 컷오버**(동종 한정, 가장 빠름). 다운타임을 거의 0으로 만드는 게 보통 가장 까다롭다. 공통 골격, 컷오버 시퀀스, AUTO_INCREMENT 드리프트 같은 실전 함정은 → [[RDS-Zero-Downtime-Migration|무중단(near-zero) 마이그레이션]].
+다운타임을 줄이려면 **DMS의 Full Load + CDC**, **Read Replica 승격 컷오버**, **Blue/Green 전환**을 변경 목적과 지원 조건에 따라 비교한다. 소스를 계속 가동하며 변경분을 동기화해도 최종 쓰기 전환과 연결 재설정 시간은 남는다. 공통 골격, 컷오버 시퀀스, AUTO_INCREMENT 드리프트 같은 실전 함정은 → [[RDS-Zero-Downtime-Migration|무중단(near-zero) 마이그레이션]].
 
 ## 면접 체크포인트
 
 - 제자리로 되는 변경과 마이그레이션이 강제되는 변경의 경계("제자리 불가 = 마이그레이션")
-- 생성 시 고정 속성 3가지: 암호화, 스토리지 축소 불가, lower_case_table_names
+- 제자리 변경이 제한되는 항목: 암호화, 할당 스토리지 축소, lower_case_table_names. 스토리지 축소는 조건에 맞는 Blue/Green 전환도 검토
 - 이기종 전환에서 DMS(데이터)와 DMS Schema Conversion 또는 수동 DDL(스키마)의 역할 분리
 - 리전 이동에서 스냅샷 복사 vs 크로스 리전 Read Replica 승격의 다운타임 차이
-- 무중단에 가까운 두 경로: DMS Full Load + CDC, Read Replica 승격 컷오버
+- 저다운타임 경로 비교: DMS Full Load + CDC, Read Replica 승격, Blue/Green 전환
 - 암호화 스냅샷의 계정 간 이전 순서: 고객 관리형 KMS 키 권한 공유 → 스냅샷 공유 → 대상 계정 키로 복사 → 복사본 복원
 
 ## 출처
 
 - [Amazon RDS — Backing up, restoring, and exporting data](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html)
 - [Amazon RDS Blue/Green Deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-overview.html)
+- [Amazon RDS, Creating a blue/green deployment — Modify storage and performance settings](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-creating.html#blue-green-deployments-creating-storage)
 - [AWS DMS, Converting database schemas using DMS Schema Conversion](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html)
 - [Amazon RDS, Sharing a DB snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ShareSnapshot.html)
 

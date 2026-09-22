@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, ecs, terraform, iac, sqs, auto-scaling]
 status: done
-verified_at: 2026-09-04
+verified_at: 2026-09-22
 category: "Infrastructure - AWS"
 aliases: ["ECS SQS Worker Terraform 공통", "SQS 워커 Terraform 공통 리소스", "backlog-per-task Terraform 정책"]
 ---
@@ -17,8 +17,8 @@ aliases: ["ECS SQS Worker Terraform 공통", "SQS 워커 Terraform 공통 리소
 # sqs.tf — DLQ(retention 14일) + 소스 큐
 resource "aws_sqs_queue" "orders" {
   name                       = var.queue_name
-  visibility_timeout_seconds = 180  # 처리 시간 고려
-  receive_wait_time_seconds  = 20   # long polling
+  visibility_timeout_seconds = 180 # 처리 시간 고려
+  receive_wait_time_seconds  = 20  # long polling
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.orders_dlq.arn
     maxReceiveCount     = 5
@@ -35,7 +35,10 @@ resource "aws_sqs_queue" "orders" {
 # ecs-common.tf
 resource "aws_ecs_cluster" "main" {
   name = var.cluster_name
-  setting { name = "containerInsights"  value = "enabled" }
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 # 서비스 오토스케일링 (레이어 1, Fargate와 EC2 공통)
@@ -55,35 +58,50 @@ resource "aws_appautoscaling_policy" "backlog_per_task" {
   service_namespace  = aws_appautoscaling_target.worker.service_namespace
 
   target_tracking_scaling_policy_configuration {
-    target_value       = 1000  # 허용지연 ÷ 건당 처리시간
-    scale_in_cooldown  = 300   # 줄일 땐 보수적
-    scale_out_cooldown = 60    # 늘릴 땐 빠르게
+    target_value       = 1000 # 허용지연 ÷ 건당 처리시간
+    scale_in_cooldown  = 300  # 줄일 땐 보수적
+    scale_out_cooldown = 60   # 늘릴 땐 빠르게
 
-    customized_metric_specification {                 # metric math: visible / tasks
+    customized_metric_specification { # metric math: visible / tasks
       metrics {
-        id = "visible"  return_data = false
+        id          = "visible"
+        return_data = false
         metric_stat {
           metric {
             namespace   = "AWS/SQS"
             metric_name = "ApproximateNumberOfMessagesVisible"
-            dimensions { name = "QueueName"  value = aws_sqs_queue.orders.name }
+            dimensions {
+              name  = "QueueName"
+              value = aws_sqs_queue.orders.name
+            }
           }
           stat = "Average"
         }
       }
       metrics {
-        id = "tasks"  return_data = false
+        id          = "tasks"
+        return_data = false
         metric_stat {
           metric {
             namespace   = "ECS/ContainerInsights"
             metric_name = "RunningTaskCount"
-            dimensions { name = "ClusterName"  value = aws_ecs_cluster.main.name }
-            dimensions { name = "ServiceName"  value = aws_ecs_service.worker.name }
+            dimensions {
+              name  = "ClusterName"
+              value = aws_ecs_cluster.main.name
+            }
+            dimensions {
+              name  = "ServiceName"
+              value = aws_ecs_service.worker.name
+            }
           }
           stat = "Average"
         }
       }
-      metrics { id = "backlogPerTask"  expression = "visible / tasks"  return_data = true }
+      metrics {
+        id          = "backlogPerTask"
+        expression  = "visible / tasks"
+        return_data = true
+      }
     }
   }
 }

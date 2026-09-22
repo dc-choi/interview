@@ -1,7 +1,7 @@
 ---
 tags: [cicd, kubernetes, helm, deployment, gitops]
 status: done
-verified_at: 2026-08-31
+verified_at: 2026-09-22
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["Helm", "Helm Chart", "헬름"]
 ---
@@ -42,7 +42,7 @@ Helm은 Kubernetes manifest를 **template으로 render**하고 그 결과를 **r
 - `helm lint` — chart 구조와 template 문법 검증
 - `values.schema.json` — 값의 type과 필수 여부를 스키마로 강제
 - `helm template` — cluster 없이 render 결과만 출력. 문법과 값 병합까지만 본다
-- `--dry-run=server` — API server에 dry-run 요청을 보내 defaulting, schema validation과 admission chain을 검증한다. cluster 연결이 필요하며, side effect를 안전하게 억제하지 않는 admission webhook이 있으면 요청이 실패할 수 있다. 실제 적용의 대체는 아니다. `--dry-run=client`는 클라이언트 측 시뮬레이션만 수행
+- `--dry-run=server` — Helm이 cluster와 상호작용하는 dry run이다. discovery, `lookup`, 기존 resource 충돌 확인과 render 결과의 object build/OpenAPI validation을 수행하지만, Helm 4.2.4의 install/upgrade action은 resource Create/Update 전에 dry-run으로 반환한다. 따라서 API server의 defaulting, admission webhook과 그 side effect 여부를 이 명령만으로 검증했다고 볼 수 없다. 그 검증이 필요하면 CRD와 hook 순서, 실제 적용 방식을 고려해 render한 manifest에 `kubectl apply --dry-run=server -f ...`를 별도 실행한다. 이 검사도 전체 Helm release 리허설을 대체하지 않는다. `helm install --dry-run=client`는 cluster 없이 시뮬레이션하지만, `helm upgrade --dry-run=client`는 기존 release 조회 등 cluster 접근이 남는다
 - CI에서는 완성된 render 결과를 산출물로 남기고 이전 리비전과 diff를 붙여 review한다. 값 몇 줄 변경이 어떤 manifest를 바꾸는지 사람 눈으로 확인할 수 있어야 한다
 
 ## 릴리스와 리비전
@@ -119,6 +119,8 @@ Helm은 **render와 release 기록**을 담당하고, 승인된 상태로 cluste
 - Helm과 GitOps controller의 역할 구분
 
 ## 출처
+
+- [Helm v4.2.4 upgrade 구현 — GitHub](https://github.com/helm/helm/blob/v4.2.4/pkg/action/upgrade.go#L162-L165)
 - [Helm, Charts](https://helm.sh/docs/topics/charts/)
 - [Helm, Chart Hooks](https://helm.sh/docs/topics/charts_hooks/)
 - [Helm, Custom Resource Definitions](https://helm.sh/docs/chart_best_practices/custom_resource_definitions/)

@@ -3,7 +3,7 @@ tags: [kubernetes, pdb, availability, operations]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["PodDisruptionBudget", "K8s PDB", "Pod Disruption Budget"]
-verified_at: 2026-08-31
+verified_at: 2026-09-22
 ---
 
 # Kubernetes PodDisruptionBudget
@@ -52,7 +52,7 @@ spec:
 healthy 판정은 Pod의 `Ready` condition이 `True`인지로만 한다. readiness가 늦게 올라오는 워크로드는 그만큼 예산이 늦게 회복된다. [[K8s-Configuration-Storage-and-Probes|probe 설계]]
 
 - disruption controller가 `status.currentHealthy`, `status.desiredHealthy`, `status.expectedPods`를 갱신하고 그 차이로 `status.disruptionsAllowed`를 낸다.
-- `disruptionsAllowed`가 0이면 eviction 요청은 429 Too Many Requests로 거절된다. `kubectl drain`은 이 응답을 받고 재시도하며 대기하므로 멈춘 것처럼 보인다.
+- Ready Pod의 eviction은 `disruptionsAllowed`가 0이면 429 Too Many Requests로 거절된다. 기본 `IfHealthyBudget`에서 Running이지만 Ready가 아닌 Pod는 `desiredHealthy > 0`이고 `currentHealthy >= desiredHealthy`이면 이 값이 0이어도 evict할 수 있다. 예를 들어 replica 3, `minAvailable: 2`, Ready 2개와 Running이지만 Ready가 아닌 Pod 1개면 `disruptionsAllowed: 0`이어도 후자를 evict할 수 있다.
 - 같은 Pod를 여러 PDB가 가리키면 eviction은 500으로 실패한다. 설정 오류이지 일시적 대기가 아니다.
 - `status.conditions`의 `DisruptionAllowed` reason이 판단을 좁혀 준다. `InsufficientPods`는 예산 부족, `SyncFailed`는 controller 오류다.
 - `status.disruptedPods`는 eviction이 처리됐지만 controller가 아직 관측하지 못한 Pod다. 여기에 항목이 오래 쌓이면 Pod 삭제가 지연되고 있다는 신호다.
@@ -62,14 +62,14 @@ NAME     MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
 zk-pdb   2               N/A               1                     7d
 ```
 
-drain이 진행되지 않을 때 로그보다 먼저 `ALLOWED DISRUPTIONS` 값을 본다. 0이면 예산 문제, 1 이상인데도 멈춰 있으면 종료 지연이나 재스케줄 실패 쪽이다.
+drain이 진행되지 않을 때 `ALLOWED DISRUPTIONS`는 Ready Pod 예산의 출발점이다. 대상 Pod의 phase와 Ready 상태, `unhealthyPodEvictionPolicy`, `currentHealthy`와 `desiredHealthy`, 실제 eviction 응답을 함께 확인해야 원인을 좁힐 수 있다.
 
 ## 운영에서 실제로 터지는 함정
 
 - **replica 1에 `minAvailable: 1`**: 예산이 처음부터 0이라 해당 Pod가 있는 노드의 drain이 끝나지 않는다. 단일 인스턴스는 PDB를 걸지 않거나 replica를 늘리고 예산을 잡는다. 공식 문서도 `maxUnavailable: 0`이나 `minAvailable`을 replica 수로 두면 drain이 완료되지 않는다고 명시한다.
 - **PDB를 아예 안 건 워크로드**: 노드 업그레이드가 한 번에 여러 replica를 같은 시점에 evict해도 막을 근거가 없다. 노드 교체가 잦은 환경에서는 무예산이 곧 동시 전멸 위험이다.
 - **selector 오설정**: null selector는 아무 Pod도 고르지 않아 조용히 무력화되고 빈 selector `{}`는 namespace 전체를 고른다. 여러 워크로드에 겹치면 한쪽 장애가 다른 쪽 drain을 막는다.
-- **unhealthy Pod가 예산을 잡아먹는 경우**: 기본값 `unhealthyPodEvictionPolicy: IfHealthyBudget`에서는 아직 Ready가 아닌 Pod도 예산이 남아야 evict된다. 그래서 CrashLoop 중인 Pod가 노드 drain을 막는다. `AlwaysAllow`로 두면 Ready가 아닌 Pod는 예산과 무관하게 evict된다. 이 필드는 feature gate `PDBUnhealthyPodEvictionPolicy` 기준으로 v1.26 alpha, v1.27 beta 기본 활성, v1.31 stable이고 v1.33에서 gate가 제거됐다. 클러스터 버전을 확인한 뒤 적용한다.
+- **unhealthy Pod와 eviction 정책**: 기본값 `unhealthyPodEvictionPolicy: IfHealthyBudget`에서 Running이지만 Ready가 아닌 Pod는 `desiredHealthy > 0`이고 `currentHealthy >= desiredHealthy`일 때 예산을 차감하지 않고 evict할 수 있다. 이 조건을 만족하지 않으면 일반 예산 검사를 거치므로 무조건 차단되는 것은 아니다. 예를 들어 `minAvailable: 0`, Ready 2개와 Running이지만 Ready가 아닌 Pod 1개면 `desiredHealthy: 0`, `disruptionsAllowed: 2`로 일반 예산 경로에서 허용된다. 반면 정상 Pod 수가 필요한 수보다 적어 예산도 없으면 CrashLoop나 readiness 실패가 drain을 막을 수 있다. `AlwaysAllow`는 Running이지만 Ready가 아닌 Pod를 예산과 무관하게 evict한다. Pending, Succeeded, Failed Pod는 두 정책과 무관하게 eviction 대상이다. 이 기능은 v1.31부터 stable이고 feature gate는 v1.33에서 제거됐다.
 - **StatefulSet과 단일 리더 컴포넌트**: quorum 기반이면 `minAvailable`을 quorum 크기로 두고, leader가 하나뿐인 컴포넌트는 PDB로 리더 전환 시간을 벌기보다 리더 재선출이 빠른지를 먼저 확인한다. [[Istio-Ambient-Upgrade|노드 blue-green 업그레이드 사례]]
 
 ## 다른 무중단 장치와의 역할 분담
@@ -94,15 +94,17 @@ kubectl get pod -n NAMESPACE -l app=api -o wide
 kubectl drain NODE --ignore-daemonsets --delete-emptydir-data
 ```
 
-1. `ALLOWED DISRUPTIONS`가 0인지 본다. 0이면 예산 문제로 확정하고 아래로 내려간다.
+1. 대상 Pod의 phase와 Ready 상태, `unhealthyPodEvictionPolicy`, 실제 eviction 응답을 본다. `ALLOWED DISRUPTIONS: 0`만으로는 Running이지만 Ready가 아닌 Pod의 drain 차단을 확정할 수 없다.
 2. selector가 실제로 어떤 Pod를 고르는지 확인한다. 0개면 무력한 PDB, 여러 워크로드에 걸치면 설계 오류다.
-3. Ready가 아닌 Pod를 센다. unhealthy Pod가 예산을 잡고 있으면 그 Pod의 장애를 먼저 고치거나 `unhealthyPodEvictionPolicy`를 검토한다.
+3. Ready가 아닌 Pod를 세고 `currentHealthy`와 `desiredHealthy`를 비교한다. 이미 장애 상태인 애플리케이션에서는 해당 Pod를 먼저 복구할지 `unhealthyPodEvictionPolicy`를 바꿀지 결정한다.
 4. `status.expectedPods` 대비 `desiredHealthy`를 본다. replica 축소로 절대값 예산이 과도해진 경우가 여기서 드러난다.
 5. `status.disruptedPods`에 항목이 쌓여 있으면 종료가 지연되는 것이다. `terminationGracePeriodSeconds`와 preStop 쪽을 본다.
 
 노드를 병렬로 drain해도 PDB는 그대로 지켜지므로, 업그레이드 자동화는 예산을 우회하는 강제 삭제 대신 eviction 재시도로 기다리게 설계한다. 노드 축소와 버전 업그레이드가 자발적 중단의 주된 출처이므로 [[EKS|EKS]]처럼 관리형 노드 그룹을 쓰는 환경에서는 PDB와 노드 교체 정책을 한 세트로 본다.
 
 ## 출처
+
+- [Kubernetes v1.36.0 eviction 구현 — GitHub](https://github.com/kubernetes/kubernetes/blob/v1.36.0/pkg/registry/core/pod/storage/eviction.go#L219-L245)
 
 - [Kubernetes Docs, Disruptions](https://kubernetes.io/docs/concepts/workloads/pods/disruptions/)
 - [Kubernetes Docs, Specifying a Disruption Budget for your Application](https://kubernetes.io/docs/tasks/run-application/configure-pdb/)

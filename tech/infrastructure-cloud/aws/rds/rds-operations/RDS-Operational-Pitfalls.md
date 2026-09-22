@@ -63,7 +63,7 @@ Multi-AZ DB instance failover는 보통 **60~120초** 걸린다. Aurora는 일�
 gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **burst credit**으로 3000 IOPS까지 끌어쓰는데, 크레딧이 바닥나면 baseline으로 떨어진다. `BurstBalance`로 소진 여부를 확인한다. AWS가 권장하는 gp3는 IOPS와 용량을 독립적으로 조정할 수 있다. 작은 MySQL, MariaDB와 PostgreSQL 볼륨의 baseline은 3000 IOPS이고, 엔진과 용량에 따라 4개 볼륨 striping이 적용되면 12000 IOPS로 올라가므로 대상 표를 확인한다. (스토리지 타입 상세는 [[EBS]].)
 
 - **스토리지가 꽉 차면 DB가 멈춘다**. `storage-full`은 사실상 사용 불가. Storage Autoscaling을 켜되 쿨다운과 최대 한도가 있어 무한이 아니다.
-- **할당 스토리지는 줄일 수 없다**(늘리기만 가능). 크게 잘못 잡으면 덤프 떠서 새 인스턴스로 이전해야 한다. 초기 사이징을 신중히.
+- **기존 인스턴스의 할당 스토리지는 제자리에서 줄일 수 없다.** 2026-09-22 AWS 문서 기준, 지원 조건에 맞으면 Blue/Green 생성 시 더 작은 green 스토리지를 지정해 전환할 수 있다. 목표 용량은 현재 사용량보다 최소 20% 커야 한다. 지원되지 않는 경우에는 작은 인스턴스로 논리 덤프나 DMS 이전을 검토한다([[RDS-Migration-Scenarios]]).
 
 ## 5. 메이저 업그레이드와 파라미터 static/dynamic
 
@@ -89,7 +89,7 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 - RDS Proxy의 이득과 피닝(pinning) 함정, 무엇이 피닝을 유발하나
 - Multi-AZ가 무중단이 아닌 이유(60~120초), DNS CNAME과 죽은 소켓, 재시도와 지터
 - 복제 지연으로 인한 read-after-write 버그와 마스터 강제 라우팅
-- gp2 BurstBalance 소진과 gp3 전환 이유, storage-full과 스토리지 축소 불가
+- gp2 BurstBalance 소진과 gp3 전환 이유, storage-full과 제자리 축소 제한 및 Blue/Green 대안
 - 정적 파라미터(재부팅)와 메이저 업그레이드 다운타임
 - FreeableMemory가 낮은 게 정상일 수 있는 이유와 SwapUsage가 진짜 신호인 점
 - 스냅샷 복구의 lazy loading 워밍업을 RTO에 포함해야 하는 이유
@@ -106,6 +106,7 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 - [Amazon RDS, Multi-AZ DB instance failover](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Failover.html)
 - [Amazon Aurora, High availability](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html)
 - [Amazon RDS, Restoring from a DB snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html)
+- [Amazon RDS, Creating a blue/green deployment — Modify storage and performance settings](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-creating.html#blue-green-deployments-creating-storage)
 
 ## 관련 문서
 
