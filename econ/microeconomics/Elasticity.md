@@ -47,11 +47,11 @@ aliases: ["탄력성", "Elasticity"]
 
 - **소득탄력성**: 소득이 1% 늘 때 수요가 몇 % 느는가. 양수면 정상재, 음수면 열등재(소득이 늘면 오히려 덜 사는 것), 1보다 크면 사치재다.
 - **교차탄력성**: 다른 재화 가격이 바뀔 때의 반응. 양수면 대체재(콜라값 오르면 사이다 수요 증가), 음수면 보완재(프린터값 오르면 잉크 수요 감소)다.
-- **공급탄력성**: 가격 변화에 생산을 얼마나 빨리 늘릴 수 있는가. 생산 조절이 쉽고 시간이 길수록 탄력적이다.
+- **공급탄력성**: 공급량의 변화율을 가격의 변화율로 나눈 값으로, 가격이 1% 변할 때 공급량이 몇 % 변하는지를 나타낸다. 생산 조절 가능성과 조정 기간은 이 값에 영향을 주는 요인이다.
 
 ## 6. 조세의 귀착 (tax incidence)
 
-탄력성의 가장 멋진 응용이다. 세금을 누가 부과받느냐와 실제로 누가 부담하느냐는 다르다. **덜 탄력적인 쪽이 세금을 더 많이 떠안는다.** 담배처럼 수요가 비탄력적이면 기업이 세금을 가격에 거의 다 얹어도 소비자가 줄이지 못해 사실상 소비자가 부담한다. 반대로 수요가 탄력적이면 기업이 가격을 못 올려 부담이 기업 쪽으로 간다.
+세금을 누가 부과받느냐와 실제로 누가 부담하느냐는 다르다. 경쟁시장 모형에서는 **수요와 공급 중 상대적으로 덜 탄력적인 쪽이 세금을 더 많이 떠안는다.** 담배의 수요가 공급보다 덜 탄력적이라면 소비자의 부담 비중이 더 크다. 거의 전부를 소비자가 부담한다고 하려면 수요가 공급에 비해 거의 완전 비탄력적이라는 조건이 필요하다. 반대로 공급이 수요보다 덜 탄력적이면 판매자의 부담 비중이 더 크다.
 
 ## 7. 핵심 지표
 
@@ -68,6 +68,7 @@ aliases: ["탄력성", "Elasticity"]
 ## 출처
 
 - [OpenStax, Principles of Economics 3e, Price Elasticity of Demand and Price Elasticity of Supply](https://openstax.org/books/principles-economics-3e/pages/5-1-price-elasticity-of-demand-and-price-elasticity-of-supply)
+- [OpenStax, Principles of Economics 3e, Elasticity and Pricing](https://openstax.org/books/principles-economics-3e/pages/5-3-elasticity-and-pricing)
 
 ## 관련 문서
 

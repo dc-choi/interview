@@ -53,7 +53,7 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 |---|---|
 | **경제활동참가율** | 생산가능인구 중 일하거나 구직하는 비율. 구직단념을 잡아낸다 |
 | **고용률** | 생산가능인구 중 취업자 비율. 구직단념의 영향을 덜 받아 더 정직하다는 견해 |
-| **비농업 고용(미국)** | 매달 발표되는 신규 일자리 수. 시장이 가장 주목하는 지표 |
+| **비농업 고용(미국)** | 비농업 부문 급여 일자리 수와 그 전월 대비 순증감. 신규 채용 총량이나 취업자 인원수와 다르며, 여러 일자리를 가진 사람은 일자리별로 집계 |
 
 실업률이 낮아도 참가율이 같이 떨어졌다면 좋은 신호가 아니다. 그래서 실업률, 고용률, 참가율을 함께 본다.
 
@@ -80,6 +80,7 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 ## 출처
 
 - [U.S. Bureau of Labor Statistics, Concepts and Definitions (CPS)](https://www.bls.gov/cps/definitions.htm)
+- [U.S. Bureau of Labor Statistics, Comparing employment from the BLS household and payroll surveys](https://www.bls.gov/web/empsit/ces_cps_trends.htm)
 - [Federal Reserve, Speech by Governor Kugler on navigating inflation waves while riding on the Phillips curve](https://www.federalreserve.gov/newsevents/speech/kugler20250220a.htm)
 
 ## 관련 문서

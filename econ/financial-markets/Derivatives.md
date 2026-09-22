@@ -48,13 +48,16 @@ verified_at: 2026-07-21
 ## 7. 흔한 오해
 
 - **파생상품은 도박이다** → 본래는 위험을 넘기는 보험이다. 도박이 되는 건 투기와 과도한 레버리지를 얹을 때다.
-- **옵션은 사면 무조건 손해 볼 수 있다** → 옵션 매수자의 최대 손실은 낸 프리미엄으로 한정된다. 이론상 무제한 손실은 기초자산 가격 상한이 없는 **무담보 short call**에 해당한다. short put의 손실은 기초자산 가격이 0이 될 때까지로 제한되고, covered option이나 spread는 보유 자산과 다른 leg 때문에 손익 범위가 달라진다.
+- **옵션 매수와 매도의 손실 한도는 같다** → 옵션 계약 자체의 매수자 손실은 낸 프리미엄으로 한정된다. 기초자산 가격 상한이 없는 **무담보 short call**은 이론상 손실 상한이 없다. 기초가격 하한이 0인 주식 등의 short put은 만기 기준 `행사가 × 계약 수 × 계약 승수 - 총 수취 프리미엄`이 최대 손실이다(수수료 제외). 음수 가격이 가능한 선물 옵션에는 이 하한을 적용할 수 없다. covered option이나 spread는 보유 자산과 다른 leg까지 함께 봐야 한다.
 - **헤지하면 모든 불확실성이 사라지고 상승 여력도 포기한다** → 헤지는 특정 위험 노출을 줄이는 것이며 basis, 수량과 시점 불일치 때문에 잔여 위험이 남을 수 있다. 선도나 선물로 가격을 고정하면 유리한 움직임도 포기하지만, 보호적 옵션은 프리미엄을 내고 유리한 방향의 일부 상승 여력을 유지할 수 있다.
+
+예를 들어 행사가 10, 만기 기초선물 가격 -20이면 풋의 단위당 내재가치는 30으로, 기초가격 0일 때의 10을 넘는다. 실제 손익에는 계약 승수와 수취 프리미엄도 반영한다. CME는 2020년 에너지 선물의 음수 가격에 대응하는 옵션 가격모형을 공지했으며, 계약별 가격과 결제 조건을 확인해야 한다.
 
 ## 출처
 
 - [CFTC Glossary, basis risk](https://www.cftc.gov/LearnAndProtect/AdvisoriesAndArticles/CFTCGlossary/index.htm)
 - [CME Group, protective put example](https://www.cmegroup.com/education/articles-and-reports/trading-micro-e-mini-options)
+- [CME Group, Clearing Advisory 20-171 — Negative Futures Prices and Options Pricing Model](https://www.cmegroup.com/content/dam/cmegroup/notices/clearing/2020/04/Chadv20-171.pdf)
 
 ## 관련 문서
 

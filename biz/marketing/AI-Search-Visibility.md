@@ -1,7 +1,7 @@
 ---
 tags: [business, marketing, analytics, search]
 status: done
-verified_at: 2026-09-16
+verified_at: 2026-09-22
 category: "비즈니스&제품(Business&Product)"
 aliases: ["AI Search Visibility", "AI 검색 가시성", "GEO", "LLMO", "AIO"]
 ---
@@ -21,7 +21,7 @@ aliases: ["AI Search Visibility", "AI 검색 가시성", "GEO", "LLMO", "AIO"]
 | 3 클릭됨 | 그 노출이 실제 방문으로 이어졌는가 | 유입 경로를 오가닉과 구분하지 못한다 |
 | 4 답이었음 | 우리가 첫 선택이었는가, 경쟁사였는가, 답 자체가 없었는가 | 점유를 재지 못한 채 노출만 관리한다 |
 
-1층은 표시 기회, 4층은 실제 점유다. 의사결정은 대개 4층에서 나는데 공개된 데이터는 1층에 몰려 있다.
+1층은 표시 기회, 4층은 실제 점유다. 공식 도구도 표시와 인용의 일부를 제공하지만, 답변 안에서 어떤 역할을 맡았는지까지 보여주지는 않는다.
 
 ## 공식 데이터가 덮는 범위
 
@@ -40,9 +40,11 @@ Google Search Console의 생성 AI 성과 리포트는 AI Overviews와 AI Mode�
 
 클릭의 위치는 한 번 짚어야 한다. 공식 문서 기준으로 AI Overviews와 AI Mode 모두 표준 노출 규칙이 적용되고, 외부 페이지 링크를 누르면 클릭으로 집계된다. 다만 그 클릭은 전체 검색 성과 안에 들어가고 생성 AI 리포트에서 따로 떼어 볼 수 없다. AI Mode에서 후속 질문을 하면 새 쿼리로 계산된다. 정리하면 이 리포트가 답해 주는 것은 보였는가이고, 답이었는가는 여기서 나오지 않는다.
 
+Bing도 공식 데이터를 제공한다. 2026-02-10 공개 프리뷰로 발표한 Bing Webmaster Tools의 AI Performance는 Microsoft Copilot, Bing AI 요약과 일부 파트너에서의 인용 수, 인용된 페이지, URL별 인용과 grounding query 표본을 보여준다. 다만 개별 답변에서의 인용 위치, 페이지의 역할이나 순위를 뜻하지 않는다 (2026-09-22 공식 발표 확인).
+
 ## 노출이 오르는 것과 성과가 오르는 것은 다르다
 
-AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회는 늘어난다. 같은 이유로 기존 목록형 결과는 아래로 밀려 클릭 기회가 줄어든다. 공식 지표로 유일하게 주어진 숫자가 구조적으로 올라가기 쉬운 숫자라는 뜻이다. 노출 그래프의 우상향과 성과 개선은 다른 사건이므로 같이 보지 않으면 잘못 읽는다.
+AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회는 늘어난다. 같은 이유로 기존 목록형 결과는 아래로 밀려 클릭 기회가 줄어든다. Google 생성 AI 리포트의 노출 수는 이런 화면 변화만으로도 올라갈 수 있다. 노출 그래프의 우상향과 성과 개선은 다른 사건이므로 같이 보지 않으면 잘못 읽는다.
 
 이것은 새로운 함정이 아니라 재배분과 증분의 문제다. 신규 영역의 부분 지표가 올라도 전체가 그대로면 이동일 뿐 증가가 아니다 → [[Metrics-Framework]]의 허수지표 메커니즘. 판정 방법도 같다. AI 영역 노출과 함께 전체 클릭의 증감을 나란히 두고, 기간을 먼저 정한 뒤 본다.
 
@@ -69,15 +71,16 @@ AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회�
 
 ## 실무에서 쓰는 조합과 남는 공백
 
-공식 데이터 하나로는 부족하므로 현장에서는 셋을 이어 붙인다.
+공식 데이터 하나로는 부족하므로 엔진별 공식 지표와 유입, 전환 데이터를 함께 본다.
 
 | 조각 | 무엇을 채우나 | 한계 |
 |---|---|---|
 | Search Console 생성 AI 노출 | 1층, 구글 엔진 한정 | 쿼리와 인용 방식 구분 없음 |
+| Bing Webmaster AI Performance | 2층 일부, 지원되는 Microsoft AI 경험과 파트너의 인용 | grounding query는 표본이며 답변 내 위치, 역할과 순위는 제공하지 않음 |
 | GA4의 AI 레퍼러 | 3층 일부 | ChatGPT와 Perplexity는 레퍼러로 분리되지만 구글 AI 경로는 오가닉에 섞인다 |
 | 문의 폼 자기신고 | 3층 일부, 전환 근처 | 표본이 작고 응답 편향이 있다 |
 
-셋을 합쳐도 결과는 1층 일부와 3층 일부다. 2층과 4층은 그대로 비어 있고, 구글 외 엔진에는 1층조차 공식 데이터가 없다.
+이들을 합쳐도 엔진과 층별 범위가 다르다. Bing은 인용 횟수를 제공하지만 2층의 세부 인용 방식까지 분리하지 않으며, 위 도구만으로 4층의 답변 점유나 엔진 전체의 비교 가능한 CTR을 구할 수는 없다.
 
 ## 무엇을 성과로 정의할 것인가
 
@@ -93,6 +96,7 @@ AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회�
 - [구글이 모든 사이트에 공식 AI 가시성 리포트를 열었다. 담긴 숫자는 노출 수 하나뿐이다 — 뷰저블 (2026-09-16)](https://www.beusable.net/blog/?p=8637)
 - [Google, Generative AI performance report (Search)](https://support.google.com/webmasters/answer/16984139)
 - [Google, What are impressions, position, and clicks?](https://support.google.com/webmasters/answer/7042828)
+- [Introducing AI Performance in Bing Webmaster Tools Public Preview — Bing Webmaster Blog](https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview)
 - [Introducing Search Generative AI performance reports in Search Console — Google Search Central Blog](https://developers.google.com/search/blog/2026/06/gen-ai-performance-reports)
 
 ## 관련 문서
