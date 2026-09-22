@@ -113,6 +113,20 @@ CouponRedemption(entitlementId, paymentId, amount, status, idempotencyKey)
 
 금액 계산은 pure policy로 분리해 table test와 property test를 적용한다. 정상 case 외에 홀수 금액 반올림, 여러 차례 부분 취소, 마지막 잔여 취소, coupon/point 혼합, 동시 취소와 PG timeout을 검증한다.
 
+## Decimal과 반올림 정책은 별개다
+
+Decimal을 사용해도 반올림 단위와 시점이 다르면 상세 금액의 합과 문서 총액이 달라진다. 가상의 동일 통화 금액 `10.005`가 두 항목이고 HALF_UP으로 반올림해 소수 둘째 자리까지 남긴다고 하자. 항목별 확정 후 합은 `10.01 + 10.01 = 20.02`, 원값 합산 후 확정은 `20.010 → 20.01`이다. 이는 이진 부동소수점 오차가 없어도 생긴다.
+
+- 통화, 계산 중 정밀도, 확정 소수 자릿수, 반올림 방식과 확정 시점을 정책으로 함께 정한다.
+- 항목 금액의 합을 총액으로 삼는다면 저장한 확정 항목을 합산한다. 문서 총액을 먼저 확정하는 계약이라면 항목 배분에 잔여를 반영하고, 동률 배분 기준도 고정한다.
+- 공급액, 부가 항목과 합계를 각각 반올림하는 경우에도 `상세 합 = 문서 총액`과 구성 항목의 합산 관계를 동시에 검사한다. 어느 계산 단위를 따라야 하는지는 적용되는 업무 계약으로 확인한다.
+- 서로 다른 통화는 환산 기준 없이 더하지 않는다. 환산하는 경우 원금액, 원통화, 적용 환율과 기준 시점을 보존한다.
+- DB, API와 화면 사이에서 Decimal을 `number`로 바꾸는 경계도 확인한다. 이미 정밀도를 잃은 값을 나중에 Decimal로 감싸도 원래 값이 복원되지는 않는다.
+
+검증에는 반복 소액, 반올림 경계값, 음수 조정, 부분 취소와 최종 잔여를 포함한다. 조회 화면에서 현재 정책으로 다시 계산해 차이를 감추기보다 거래 당시 확정 금액과 계산 정책을 재현할 수 있어야 한다.
+
+2026-09-22 보강: 로컬 명세서 코드의 항목 저장과 총액 합산 경계를 대조해 일반화했다. 위 숫자는 계산 원리를 위한 가상 예시이며 실제 정산 오류를 재현한 결과가 아니다. Decimal 반올림 API는 공식 문서와 대조했다.
+
 ## 정산은 원천 거래를 재구성할 수 있어야 한다
 
 정산은 현재 payment row의 최종 상태만 읽기보다 승인, 환불과 조정 ledger에서 대상 금액을 만든다. 각 settlement target은 원천 transaction, merchant, order line, gross/discount/refund/fee와 policy version을 추적할 수 있어야 한다.
@@ -146,6 +160,7 @@ CouponRedemption(entitlementId, paymentId, amount, status, idempotencyKey)
 
 - [Stripe, Idempotent requests](https://docs.stripe.com/api/idempotent_requests)
 - [Stripe, Refunds API](https://docs.stripe.com/api/refunds)
+- [decimal.js, API](https://mikemcl.github.io/decimal.js/) — 정밀도, 반올림 방식과 소수 자릿수 확정
 - [TypeORM, Migration setup](https://typeorm.io/docs/migrations/setup/)
 - [제미니 강사, 상품 option과 migration](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392734)
 - [제미니 강사, 여러 종류의 찜과 migration](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392786)

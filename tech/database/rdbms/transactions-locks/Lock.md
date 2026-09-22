@@ -29,19 +29,27 @@ aliases: ["DB Lock", "Lock", "락"]
 ### Optimistic Lock (낙관적 잠금)
 - 충돌이 드물다고 보고 선행 조회와 작업 단계에서 lock을 선점하지 않은 뒤 쓰기 시점의 조건부 UPDATE로 충돌 감지
 - version 컬럼을 사용: `UPDATE ... SET version = version + 1 WHERE id = ? AND version = ?`
-- 0 rows affected → 충돌 발생, 애플리케이션에서 재시도
+- 0 rows affected → 갱신 조건 불충족. 버전 충돌, 대상 삭제와 다른 WHERE 조건을 구분해 처리
 - 읽기 중심, 충돌 빈도가 낮은 환경에 적합 (게시글 수정, 설정 변경, 프로필 업데이트)
 - 물리적인 행 잠금을 미리 보유하지 않는다는 뜻이지 DB를 사용하지 않는다는 뜻은 아니다. 애플리케이션이 이전 version을 조건에 넣고, DB가 조건부 UPDATE를 원자적으로 실행한다.
+
+### 사용자 편집 충돌은 무조건 재시도하지 않는다
+
+게시글 편집에서 최신 version만 다시 받아 오래된 입력을 자동 재전송하면 먼저 저장된 변경을 덮어쓸 수 있다. 사용자의 입력을 보존하고 최신본을 비교해 병합하거나 재확인을 받는다. 사용자 응답을 기다리는 동안 DB 트랜잭션과 잠금을 유지하지 않는다.
+
+재고 증감처럼 최신 상태에서 명령의 의미와 업무 조건을 다시 계산할 수 있는 작업은 제한된 재시도를 검토할 수 있다. 낙관적 잠금은 충돌을 찾는 수단이며 어떤 변경을 채택할지는 별도 정책이다. HTTP의 `If-Match`도 변경 전제조건을 검사하지만 병합 정책을 대신하지 않는다.
+
+CMS에서는 편집 충돌과 공개 상태도 구분한다. 저장된 초안을 수정해도 공개본은 유지하고, 공개 동작에서만 교체하는 설계가 가능하다. 이때 공개 중인 문서에 미게시 수정이 동시에 존재할 수 있다. 단순히 저장 즉시 공개하는 CRUD에 별도 공개본을 의무화하지 않는다.
 
 ### 선택 기준
 
 | 기준 | Optimistic | Pessimistic |
 |------|-----------|-------------|
 | 충돌 빈도 | 낮을 때 유리 | 높을 때 유리 |
-| 충돌 시 비용 | 전체 트랜잭션 재실행 | Lock 대기 or 즉시 실패 후 재시도 |
+| 충돌 시 비용 | 재계산, 병합 또는 재확인 | Lock 대기 or 즉시 실패 후 재시도 |
 | 동시성 | 선행 조회와 작업 중 선점 lock 없음. 조건부 UPDATE는 X lock을 잡아 transaction 종료까지 보유 | 읽기부터 lock을 보유해 충돌을 앞에서 직렬화 |
 | 데드락 위험 | 낮음. 여러 행, 여러 자원을 함께 갱신하면 DB 데드락은 여전히 가능 | 있음 (순서 통일로 완화, [[Lock-Deadlock|데드락]]) |
-| 구현 복잡도 | version 컬럼 + 재시도 로직 | SELECT FOR UPDATE |
+| 구현 복잡도 | version 컬럼 + 충돌 처리 정책 | SELECT FOR UPDATE |
 
 ### 잠금 읽기의 경계
 
@@ -52,6 +60,16 @@ aliases: ["DB Lock", "Lock", "락"]
 - 바깥 SELECT의 `FOR UPDATE`는 nested subquery의 테이블까지 자동으로 잠그지 않는다. 그 행도 잠가야 하면 subquery에도 locking clause를 둔다.
 - `NOWAIT`와 `SKIP LOCKED`는 대기 정책을 바꾸는 옵션이지 일관된 snapshot을 만드는 기능이 아니다. 특히 `SKIP LOCKED`는 queue 같은 패턴에 제한한다.
 - `NOWAIT`와 `SKIP LOCKED`는 row-level lock에만 영향을 주며 metadata lock 같은 대기까지 없애지 않는다. Statement-based replication에는 안전하지 않으므로 binlog format도 확인한다.
+
+### 계산에 쓰는 기준값도 잠금 경계 안에서 확인한다
+
+결과를 저장할 행에 `FOR UPDATE`를 걸어도, 계산에 쓰는 다른 값을 잠금 전에 읽었다면 정합성이 깨질 수 있다. 가상의 합계 100에 포함된 한 구성값이 50이고, 두 요청이 이를 60과 70으로 순서대로 교체한다고 하자. 둘 다 잠금 전에 기준값 50을 읽으면 첫 요청은 `100 + 60 - 50 = 110`, 다음은 잠긴 최신 합계를 읽고도 `110 + 70 - 50 = 130`을 만든다. 두 번째가 기준값 60을 읽었다면 결과는 120이다.
+
+보호할 대상은 쓰는 행뿐 아니라 불변식을 계산하는 데 필요한 가변 데이터다. 같은 자원의 변경 경로가 공통으로 따르는 잠금 순서를 정하고, 잠금을 얻은 뒤 기준값을 현재 읽기로 재확인한다. 합계와 기준값의 변경은 같은 transaction에서 확정한다. 공통 부모 행으로 직렬화할 때도 모든 writer가 그 규약을 따라야 한다.
+
+트랜잭션 안으로 SELECT를 옮기는 것만으로 충분하다고 단정하지 않는다. 기존 snapshot이나 ORM 캐시를 다시 읽지 않는지 확인하고, 낙관적 방식이면 계산에 필요한 변경을 함께 감지하는 version 조건을 둔다. 잠금 밖에서 구한 값은 불변이라는 근거가 있거나 잠금 후 유효성을 재검증할 때만 사용한다.
+
+2026-09-22 보강: 로컬 센서 집계 코드의 선행 조회와 잠금 후 델타 계산에서 도출한 조건부 사례다. 운영 장애를 재현한 기록은 아니다. 잠금 읽기의 범위와 현재 값 조회는 MySQL 8.4 공식 문서와 대조했다.
 
 ## NestJS, TypeORM에서의 적용
 
@@ -136,6 +154,8 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 발생 원인(ABBA, S → X 업그레이드), InnoDB의 감지와 자동 복구, 완화 전략과 락의 이유를 없애는 설계는 [[Lock-Deadlock|DB 데드락]]으로 분리했다.
 
 ## 출처
+- [RFC 9110, If-Match](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.1) — 변경 전제조건과 lost update 방지
+- [PostgreSQL 18, Explicit Locking](https://www.postgresql.org/docs/18/explicit-locking.html) — 사용자 입력을 기다리며 트랜잭션을 유지하지 않는 이유
 - [MySQL 8.4 Reference Manual — Locks Set by Different SQL Statements in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html)
 - [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
 - [MySQL 8.4 Reference Manual — Locking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)

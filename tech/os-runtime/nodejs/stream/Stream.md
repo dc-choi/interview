@@ -11,7 +11,7 @@ aliases: ["Stream", "스트림"]
 
 ## 하위 문서
 
-- [[Stream-Types|스트림 타입과 배압]] — Readable/Writable/Duplex/Transform 4가지 타입, 배압(Backpressure), highWaterMark, pipe() 기본
+- [[Stream-Types|스트림 타입과 배압]] — 4가지 타입, highWaterMark, pipe(), 비동기 소비자의 배압
 - [[Stream-Advanced|스트림 고급 패턴]] — EventEmitter 아키텍처, Web Streams vs Node Streams, pipeline() 에러 안전, cork/uncork 배칭
 
 ## 관련 문서

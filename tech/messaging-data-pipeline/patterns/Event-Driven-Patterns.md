@@ -82,8 +82,8 @@ Main Queue → Consumer
 
 | 오류 종류 | 처리 |
 |---|---|
-| **일시적 (Transient)** | 재시도 (네트워크, 타임아웃, 503 Rate Limit) |
-| **영구적 (Permanent)** | 즉시 DLQ (검증 오류, 401, 404, 데이터 스키마 불일치) |
+| **일시적 (Transient)** | 예산 안에서 재시도 (네트워크, 타임아웃, 503, 429 등. 응답 지침과 부작용 확인) |
+| **영구적 (Permanent)** | 수정이나 개입 전에는 DLQ (잘못된 입력, 지원하지 않는 스키마 등. 401, 404도 원인과 복구 가능성으로 분류) |
 | **독성 메시지 (Poison)** | 즉시 DLQ (반복 실패, 크기 초과, 악성 페이로드) |
 
 분류 없이 모든 실패를 재시도하면 **영구 오류가 무한 루프**를 만듦. 채널마다 이 분류를 다르게 적용한 실무 사례는 [[EventBridge-SQS-Target|EventBridge → SQS 타겟 패턴]].
@@ -94,6 +94,9 @@ Main Queue → Consumer
 - **메시지 TTL** — 오래된 메시지의 강제 만료 (1일, 7일 등)
 - **재시도 횟수 헤더** — 메시지에 재시도 카운트 실어 보내 관리
 - **DLQ 알람** — DLQ가 비어있지 않으면 알림. 방치되면 운영 공백
+- **수동 재처리 범위** — 대상 ID 또는 업무 범위와 상한, 실행 사유를 명시한다. 실패 원인을 고치고 부작용의 멱등성을 확인한 뒤 재처리한다.
+- **재처리 이력과 상태 전이** — DB Outbox라면 이전 오류와 시도 횟수 보존, 격리 상태 확인, 재시도 가능 상태로의 전환을 같은 트랜잭션으로 묶는다([[Audit-Log|감사 로그]]). 새 재시도 예산과 누적 실패 이력은 구분한다. 예산을 그대로 두면 즉시 재격리될 수 있고, 이력까지 초기화하면 원인을 잃는다.
+- **브로커 경계** — 위 원자성은 DB 안의 복구 명령에 대한 설계다. 관리형 큐의 redrive까지 같은 DB 트랜잭션으로 묶을 수 있다고 가정하지 않는다. 제공자의 작업 ID와 별도 실행 이력으로 추적한다.
 
 ### 플랫폼별 구현
 
@@ -189,6 +192,7 @@ API 서버 (요청자) ─┐
 - [[Correlation-ID|Correlation ID (분산 추적)]]
 
 ## 출처
+- [Amazon SQS, Configuring dead-letter queue redrive](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-dead-letter-queue-redrive.html) — 관리형 큐의 이동 작업과 상태 추적. DB Outbox 복구 규칙은 로컬 코드와 단위 테스트에서 추출한 설계다.
 - [DevPill — 이벤트 기반 시스템 설계 실전 패턴 3종](https://maily.so/devpill/posts/8do7q4pnrgq)
 - [F-Lab — 이벤트 소싱과 CQRS 패턴의 이해와 적용](https://f-lab.kr/insight/event-sourcing-cqrs-20240528)
 - [datamoney — 이벤트 기반 아키텍처 개념 정리](https://datamoney.tistory.com/376)

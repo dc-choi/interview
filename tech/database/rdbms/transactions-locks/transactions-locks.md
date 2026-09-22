@@ -14,6 +14,6 @@ ACID, MVCC, 격리 수준, Lock 메커니즘 문서 모음. Race Condition 패�
 - [[MySQL-InnoDB-Internals|MySQL 8.4 InnoDB 내부 구조]]
 - [[Isolation-Level|Isolation Level (Oracle에서 MySQL 이관 잔액 사례 포함)]]
 - [[Isolation-Level-Beyond-ANSI|ANSI 격리 수준의 한계, Strict Serializable (Snapshot Isolation, Linearizable, 분산 DB)]]
-- [[Lock|Lock (row / gap / next-key, Pessimistic vs Optimistic, 스냅샷 읽기 vs 현재 읽기)]]
+- [[Lock|Lock (row / gap / next-key, Pessimistic vs Optimistic, 사용자 편집 충돌, 계산 기준값의 잠금 경계)]]
 - [[Lock-Deadlock|DB 데드락 (ABBA, S → X 업그레이드, 감지와 복구, 락의 이유를 없애는 설계)]]
 - [[Lock-Wait-Convoy|락 대기 큐와 convoy (커넥션 풀 소진, NOWAIT의 등가 교환, 1213/1205/3572 분기)]]

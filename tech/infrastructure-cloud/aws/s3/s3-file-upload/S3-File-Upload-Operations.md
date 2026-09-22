@@ -30,6 +30,29 @@ verified_at: 2026-07-21
 - ETag는 Multipart의 경우 MD5가 아님 → 서버에서 별도 체크섬 로직 필요
 - 크기, MIME signature, checksum과 업무 규칙도 clean 승격 전에 서버 측에서 재검증
 
+## DB 참조와 객체의 생성, 교체, 삭제
+
+DB 트랜잭션은 S3 작업을 함께 롤백하지 않는다. 첨부파일 처리에서는 요청 성공, DB 참조 변경과 객체 작업 완료를 각각 확인해야 한다. 다음은 기존 파일 서비스의 실패 경로에서 도출한 설계이며 특정 운영 환경의 장애를 입증한 것은 아니다.
+
+| 실패 지점 | 남을 수 있는 상태 | 복구에 필요한 정보 |
+|---|---|---|
+| 업로드 성공 후 DB 저장 실패 | 참조 없는 객체 | 업로드 작업 ID, bucket과 key, 생성 시점 |
+| DB 참조 삭제 후 객체 삭제 실패 | 서비스에서는 사라졌지만 저장소에 남은 객체 | 삭제 대상과 재시도 상태 |
+| DB 변경 실패를 숨기고 객체 삭제 진행 | DB가 이미 사라진 객체를 계속 참조 | DB 실패 전파와 후속 작업 중단 |
+| callback 작업을 시작한 함수가 먼저 반환 | `await`했어도 객체 작업 결과는 미확인 | 실제 작업 완료를 나타내는 Promise 또는 callback 결과 |
+
+파일 교체에서는 새 객체의 업로드와 검증을 먼저 마치고, DB 참조 교체를 확정한 뒤 이전 객체를 정리하는 방식을 검토한다. 이전 파일부터 지우면 새 파일 저장 실패 시 복구할 원본까지 잃을 수 있다. 대신 준비 도중 남은 새 객체를 정리하는 경로가 필요하다.
+
+삭제 복구를 보장해야 한다면 참조 비활성화와 삭제 의도를 같은 DB 트랜잭션에 기록하고, commit 후 worker가 객체 삭제를 재시도하도록 만들 수 있다([[Transactional-Outbox|Transactional Outbox]]). 원자적으로 남는 것은 DB 상태와 작업 의도이며, S3 삭제 완료까지 한 트랜잭션이라는 뜻은 아니다.
+
+- 객체 작업이 성공하거나 정책상 이미 삭제된 상태임을 확인한 뒤 작업을 완료로 기록한다. 권한 오류와 타임아웃은 객체 부재로 처리하지 않는다.
+- 표시에 쓰는 URL의 파일명에서 key를 재조립하지 않고 저장한 bucket, key와 필요한 version ID를 사용한다.
+- 교체마다 고유 key를 사용하거나 정확한 version을 지정해 지연된 삭제가 새 객체를 지우지 않게 한다. 공유 첨부는 참조 해제와 객체 삭제를 구분하고, 삭제 예약 중 새 참조가 붙는 경쟁도 막는다.
+- 일반 버킷에서 Versioning이 활성화되면 version ID 없는 `DeleteObject`는 delete marker를 추가한다. 과거 버전의 물리 삭제와 보존 정책은 별도로 확인한다.
+- 업로드된 고아 객체 정리와 미완료 Multipart part 정리는 다른 작업이다. 정리 대상의 참조 상태, 진행 중 업로드와 유예 시간을 함께 확인한다.
+
+API 응답 형태만 검사한 테스트로 이 경계를 확인할 수는 없다. DB rollback, 객체 삭제 실패, 처리 중 종료와 재실행, 동시 교체를 따로 검증한다. 위 S3 삭제 의미와 Outbox 근거는 2026-09-22 공식 문서와 대조했다.
+
 ## CDN 연동
 
 업로드된 파일의 **서빙**은 CloudFront로.
@@ -68,12 +91,16 @@ verified_at: 2026-07-21
 
 ## 출처
 
+- [Amazon S3, DeleteObject](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html) — Versioning 상태별 삭제 의미와 version ID
+- [AWS Prescriptive Guidance, Transactional outbox pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html) — DB 변경과 후속 작업 의도의 원자적 기록
+- [AWS SDK for JavaScript v2, Using JavaScript Promises](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/using-promises.html) — 과거 callback 기반 코드의 완료 경계를 대조한 자료이며 v2 신규 채택 안내가 아니다
 - [GuardDuty Malware Protection for S3 동작](https://docs.aws.amazon.com/guardduty/latest/ug/how-malware-protection-for-s3-gdu-works.html)
 - [검사 결과 tag 기반 S3 접근 제어](https://docs.aws.amazon.com/guardduty/latest/ug/tag-based-access-s3-malware-protection.html)
 - [AWS 데이터 전송 비용 분류](https://docs.aws.amazon.com/cur/latest/userguide/cur-data-transfers-charges.html)
 
 ## 관련 문서
 
+- [[Transactional-Outbox|DB 변경과 후속 작업 전달]]
 - [[S3-File-Upload|S3 파일 업로드 (TOC)]]
 - [[S3-File-Upload-Server-Path|서버 경유 업로드 — Stream, MultipartFile]]
 - [[S3-File-Upload-Direct-Transfer|클라이언트 직접 전송 — Multipart Upload, Presigned URL]]

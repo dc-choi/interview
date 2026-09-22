@@ -52,6 +52,17 @@ keyset도 자동으로 snapshot을 제공하지 않는다. 페이지 사이에 �
 - mutable 정렬 컬럼은 중복과 누락 가능성을 문서화하거나 변경되지 않는 보조 키를 사용한다.
 - 전체 탐색을 한 시점으로 고정해야 하는 batch는 짧은 API 트랜잭션을 오래 유지하기보다 PK 범위, watermark나 별도 snapshot을 검토한다.
 
+### 키 탐색과 본문 조회를 나눴을 때
+
+첫 쿼리에서 ID와 정렬 키를 찾고 두 번째 쿼리에서 본문과 관계를 조회하는 배치는 **탐색한 좌표와 반환한 항목을 구분**한다. 두 쿼리 사이의 삭제나 JOIN 대상 변경으로 본문 결과가 비어도, 아직 탐색하지 않은 다음 구간이 남을 수 있다.
+
+- 다음 cursor는 첫 탐색에서 이번 페이지의 처리 대상으로 채택한 마지막 정렬 키를 기준으로 만든다. `page_size + 1`의 추가 행은 다음 페이지 확인용이므로 cursor에 포함하지 않는다. 본문 `items.length === 0`만으로 전체 탐색을 종료하지 않는다.
+- `(updated_at, id)`로 탐색했다면 본문을 읽을 때 더 최신으로 바뀐 `updated_at`을 그 페이지의 checkpoint로 쓰지 않는다. 그 사이의 아직 탐색하지 않은 항목을 건너뛸 수 있다.
+- 실패 항목의 재처리 보장이 없는 상태에서 성공 checkpoint를 앞으로 옮기지 않는다. 탐색 진행 위치와 처리 성공 범위가 다른 계약이면 별도로 저장한다.
+- 다음 cursor가 이전 값보다 진행하지 않으면 오류로 처리한다. 무한 반복을 성공으로 기록하지 않는다.
+
+이는 별도 statement가 서로 다른 상태를 볼 수 있는 경우의 설계다. 예를 들어 PostgreSQL의 Read Committed는 statement마다 snapshot을 얻는다. 같은 snapshot에서 읽는 경우와는 구분하며, 이 규칙만으로 hard delete 감지나 전체 배치의 snapshot 일관성이 해결되지는 않는다.
+
 ## 범위 기반 batch
 
 날짜 또는 PK 범위를 업무 단위로 나눌 수 있으면 페이지 크기 기반 cursor와 별도로 범위 경계를 둔다.
@@ -108,6 +119,7 @@ InnoDB는 MVCC 때문에 모든 트랜잭션에 공통인 정확한 행 수를 �
 
 ## 출처
 
+- [PostgreSQL 18, Transaction Isolation](https://www.postgresql.org/docs/18/transaction-iso.html) — Read Committed의 statement별 snapshot. 두 단계 cursor 규칙은 동기화 코드와 회귀 테스트에서 추출한 설계다.
 - [MySQL 8.4 Reference Manual, LIMIT Query Optimization](https://dev.mysql.com/doc/refman/8.4/en/limit-optimization.html)
 - [MySQL 8.4 Reference Manual, Aggregate Function Descriptions](https://dev.mysql.com/doc/refman/8.4/en/aggregate-functions.html)
 - [인프런, OFFSET 페이징의 함정](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471945)

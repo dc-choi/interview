@@ -56,6 +56,24 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 - **락킹(Locking)**: 동시에 여러 명이 상태를 바꾸지 못하게 잠근다. S3 backend의 state locking은 opt-in이며, 새 구성에서는 `use_lockfile = true`로 `.tflock` 파일을 사용한다. `dynamodb_table` 기반 잠금은 deprecated 상태다.
 - **Plan**: apply 전 변경 사항을 미리 계산, 검토. 실수 적용을 막는 안전장치.
 
+## 검사가 통과한 단계를 구분한다
+
+검사 스크립트가 정상 종료해도 필요한 모든 단계가 실행됐다는 뜻은 아니다. 단계별 결과를 통과, 실패, 생략으로 나누고 대상 환경과 생략 사유를 함께 남긴다.
+
+| 단계 | 확인하는 범위 | 이 결과만으로 알 수 없는 것 |
+|---|---|---|
+| `fmt -check` | 구성 파일의 표준 서식 | 설정의 의미와 배포 가능 여부 |
+| `validate` | 구성의 구문과 내부 일관성 | 원격 state, provider API와 실제 환경의 유효성 |
+| 환경별 `plan` | 선택한 workspace, 변수와 상태를 바탕으로 한 변경 계획 | 실제 적용 성공과 서비스 정상 동작 |
+| `apply` | 계획한 리소스 변경의 실행 결과 | 애플리케이션의 업무 기능, 데이터 보존과 사용자 영향 |
+| 배포 후 확인 | 미리 정한 기능과 운영 기준의 충족 여부 | 검사하지 않은 경로와 이후의 장애 가능성 |
+
+자격증명이 없는 PR 검사에서 `plan`을 생략할 수는 있다. 그 경우 `validate 통과, plan 생략: 자격증명 없음`처럼 표현하고 배포 준비 완료로 해석하지 않는다. 자격증명 탐지 로직이 지원하지 않는 인증 방식도 있을 수 있으므로, 탐지 실패를 실제 접근 권한이 없다는 증거로 쓰지 않는다.
+
+배포 단계에서는 필수 검사들이 실제 수행됐는지 확인한다. `plan -detailed-exitcode`를 쓰면 0은 변경 없음, 1은 오류, 2는 변경 있음이므로 2를 일반 실패로 취급하지 않는다. 옵션을 사용하지 않는 실행이나 wrapper 스크립트의 종료 코드와도 구분한다.
+
+2026-09-22 보강: 로컬 배포 검사 스크립트의 조건부 `plan` 생략 경로에서 일반화했다. 스크립트를 실행하거나 배포 준비 상태를 판정한 기록은 아니다. 단계별 의미는 Terraform 공식 명령 문서와 대조했다.
+
 ## 가변 vs 불변 인프라, 구성 드리프트
 
 - **구성 드리프트(Configuration Drift)**: 코드가 정의한 원하는 상태와 실제 인프라가 어긋나는 현상. 주로 누군가 콘솔에서 수동으로 손대거나, 서버마다 패치가 제각각 쌓이며 발생(스노우플레이크 서버).
@@ -104,6 +122,10 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 - [Chef, package resource](https://docs.chef.io/client/18/resources/bundled/package/)
 - [Terraform, What is Terraform](https://developer.hashicorp.com/terraform/intro)
 - [Terraform, S3 backend](https://developer.hashicorp.com/terraform/language/backend/s3)
+- [Terraform, fmt](https://developer.hashicorp.com/terraform/cli/commands/fmt)
+- [Terraform, validate](https://developer.hashicorp.com/terraform/cli/commands/validate)
+- [Terraform, plan](https://developer.hashicorp.com/terraform/cli/commands/plan)
+- [Terraform, apply](https://developer.hashicorp.com/terraform/cli/commands/apply)
 
 ## 관련 문서
 - [[CDK-vs-Terraform|CDK vs Terraform (IaC 도구 선택)]]

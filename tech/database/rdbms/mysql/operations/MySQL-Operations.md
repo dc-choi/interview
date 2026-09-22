@@ -13,7 +13,7 @@ MySQL 운영은 설정값 하나를 고르는 일이 아니라 변경 안전성,
 
 - [[MySQL-Configuration-Change-Management|MySQL 설정 변경 관리]]: scope, 동적 변경, 영속화, canary와 rollback
 - [[MySQL-Compression-and-Archiving|MySQL 압축과 아카이빙]]: 압축 벤치마크, 보존 정책, 복구 훈련과 안전한 삭제
-- [[MySQL-Job-Queue|MySQL Job Queue]]: `SKIP LOCKED`, lease, 멱등 처리와 재시도
+- [[MySQL-Job-Queue|MySQL Job Queue]]: `SKIP LOCKED`, lease, 획득 시도 토큰, 멱등 처리와 재시도
 
 ## 함께 볼 문서
 

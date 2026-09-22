@@ -30,7 +30,25 @@ aliases: ["Zero-Downtime Deployment", "무중단 배포"]
 
 ## 계층 4: 데이터
 
-배포 중에는 구버전과 신버전이 같은 DB, 캐시, 메시지를 동시에 쓴다.
+배포 중 신구 버전이 함께 사용할 데이터의 저장 위치, 수명과 공유 범위를 먼저 확인한다. 인스턴스 수를 늘린다고 데이터가 자동으로 공유되지는 않는다.
+
+### 교체 후에도 남아야 하는 상태
+
+| 상태 | 배포 전에 확인할 조건 |
+|---|---|
+| 주문, 게시물, 업로드 원본 등 업무 데이터 | 컨테이너 교체 후 보존되는지, 다른 복제본에서 같은 데이터를 읽는지 |
+| 재생성 가능한 캐시 | 유실 후 다시 만들 수 있는지, 복제본별 값 차이와 예열 비용을 허용하는지 |
+| 임시 파일, 계산 중간 결과 | 실행 중 교체되어도 복구하거나 재시도할 수 있는지 |
+
+예를 들어 각 컨테이너의 쓰기 계층에 파일 DB를 두면 복제본별 저장 내용이 갈리고 컨테이너 제거 시 데이터가 보존되지 않는다. 단일 인스턴스에서 적합한 영속 저장소를 쓰는 구성까지 배제할 이유는 없지만, 볼륨을 붙였다는 사실만으로 여러 복제본의 공유와 동시 쓰기 안전성을 보장할 수는 없다.
+
+고정된 정상 응답을 돌려주는 health endpoint는 데이터 보존과 공유를 입증하지 못한다. 이를 매 요청의 깊은 health check에 모두 넣기보다는 배포 리허설에서 한 복제본에 쓴 데이터를 다른 복제본에서 읽고, 교체 후에도 남는지 확인한다.
+
+2026-09-22 보강: 로컬 과제의 파일 DB, 복제본 수와 저장소 마운트 구성을 대조한 조건부 설계 검토다. 실제 배포나 유실을 확인한 기록은 아니다. 컨테이너 쓰기 계층의 수명은 Docker 공식 문서와 대조했다.
+
+### 신구 버전의 데이터 호환
+
+공유 DB, 캐시와 메시지를 함께 사용하는 구간에서는 형식도 호환되어야 한다.
 
 - 스키마는 직전 버전과 전후방 호환이어야 하고, 파괴적 변경은 Expand-Contract로 쪼갠다 ([[Blue-Green|Blue-Green 배포]]의 DB 스키마 절 소유). 마이그레이션의 버전 관리와 실행 시점은 [[Schema-Versioning|스키마 버전 관리]]에 둔다.
 - 같은 원리가 캐시 직렬화 포맷과 메시지 스키마에도 적용된다. 신버전이 쓴 것을 구버전이 읽는 구간이 반드시 생긴다.
@@ -75,5 +93,6 @@ aliases: ["Zero-Downtime Deployment", "무중단 배포"]
 ## 출처
 
 - [BlueGreenDeployment — Martin Fowler](https://martinfowler.com/bliki/BlueGreenDeployment.html)
+- [Docker, Storage](https://docs.docker.com/engine/storage/) — 컨테이너 쓰기 계층과 영속 저장소의 수명
 - [Kubernetes 공식 문서, Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 - [Kubernetes 공식 문서, Pod Lifecycle (Container probes)](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes)

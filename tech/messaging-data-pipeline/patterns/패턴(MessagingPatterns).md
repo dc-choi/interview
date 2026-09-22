@@ -12,7 +12,7 @@ Pub/Sub, Fan-out, 경쟁 소비자 — 메시징 실전 패턴.
 ## 목차
 - [x] [[Messaging-Patterns|메시징 패턴 (Pub/Sub, Task Distribution, Request/Reply, 기술 비교)]]
 - [x] [[Fan-Out-Architecture|Fan-out Architecture (1:N 분배, SNS+SQS, Kafka 그룹, in-flight 한계, warm-up, 멱등성)]]
-- [x] [[Event-Driven-Patterns|이벤트 드리븐 실전 패턴 3종 (경쟁 소비자, Retry+DLQ, Async Request-Response)]]
+- [x] [[Event-Driven-Patterns|이벤트 드리븐 실전 패턴 (경쟁 소비자, Retry+DLQ, 수동 재처리 이력, Async Request-Response)]]
 - [x] [[Backfill-Resource-Isolation|데이터 백필 자원 격리 (토픽 분리, 전용 풀 벌크헤드, 크기 기반 청크, 논블로킹 완료 검증)]]
 - [x] [[Distributed-Batch-Execution|분산 배치 실행 (트리거 외부화, 원자적 선점, 굳은 선점 문제, 외부 호출 일관성)]]
 - [x] [[Durable-Workflow|지속 실행 워크플로 (Temporal형 durable execution, 폴링 배치 대안, suspend/resume, 선언적 재시도, 멱등, replay, build vs buy)]]
