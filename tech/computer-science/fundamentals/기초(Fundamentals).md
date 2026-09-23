@@ -20,6 +20,7 @@ aliases: ["CS Fundamentals"]
 - [x] [[CPU-Datapath-Control-and-Instruction-Cycle|CPU 데이터패스와 명령어 사이클 (제어장치, ISA, 어셈블리)]]
 - [x] [[Compile-and-Runtime|컴파일과 런타임 (네이티브, 매니지드, 인터프리터)]]
 - [x] [[Math-Logic-For-Programming|프로그래밍에 필요한 수학과 논리 (명제, 집합, 드 모르간, 수학적 귀납법)]]
+- [x] [[Checksum-and-Hash|체크섬과 해시 (모듈러 합, 인터넷 체크섬, CRC, 일반 해시와 암호학적 해시, HMAC과 서명, 웹훅 서명 검증)]]
 
 ## 출처
 

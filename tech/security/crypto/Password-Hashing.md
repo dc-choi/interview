@@ -62,6 +62,7 @@ verified_at: 2026-07-15
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
 
 ## 관련 문서
+- [[Checksum-and-Hash|체크섬과 해시 (CRC, 암호학적 해시, HMAC과 서명의 구분)]]
 - [[CSRF|CSRF Protection]]
 - [[CORS|CORS]]
 - [[JWT]]

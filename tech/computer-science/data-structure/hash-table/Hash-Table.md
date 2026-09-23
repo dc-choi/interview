@@ -61,6 +61,7 @@ hash table은 더 작은 bucket array를 두고 hash function으로 넓은 key �
 ## 관련 문서
 
 - [[Hash-Collision|해시 충돌 (체이닝, 개방 주소법, 클러스터링, Load Factor, HashDoS)]]
+- [[Checksum-and-Hash|체크섬과 해시 (일반 해시와 암호학적 해시의 목적 차이)]]
 - [[자료구조(DataStructure)|자료구조 인덱스]]
 - [[Algorithm-Complexity|시간복잡도와 Big O]]
 
