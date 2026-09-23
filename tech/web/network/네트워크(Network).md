@@ -19,7 +19,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[Unicast-Broadcast-Multicast|유니캐스트, 브로드캐스트, 멀티캐스트 (수신 대상 범위, limited/directed broadcast, 브로드캐스트 비용, IGMP와 MAC 매핑, IPv6의 애니캐스트)]]
 - [x] [[LAN-vs-WAN|LAN과 WAN (브로드캐스트 범위와 MAC vs IP 라우팅으로 구분, 물리와 논리 네트워크)]]
 - [x] [[Switch-Hierarchy-and-Uplink|스위치 계층과 업링크 (엔드포인트, 액세스/디스트리뷰션/코어, collapsed core, 링크 업/다운, 포트 용량 설계)]]
-- [x] [[TCP|TCP (tcp/ 서브폴더) — 헤더 구조, 핸드셰이크, 흐름/오류 제어, 혼잡 제어]]
+- [x] [[TCP|TCP (tcp/ 서브폴더) — 헤더 구조, 핸드셰이크, 흐름/오류 제어, SACK, 혼잡 제어]]
 - [x] [[Routing-Protocols|정적 라우팅과 RIP, OSPF, BGP]]
 - [x] [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택 (longest prefix match, 메트릭, OS별 확인 명령)]]
 - [x] [[IPv4-NAT-and-Traversal|공유기의 NAT/NAPT 매핑, 방화벽과의 차이, STUN/TURN/ICE 통과 전략]]

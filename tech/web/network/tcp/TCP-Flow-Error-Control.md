@@ -98,7 +98,7 @@ ARQ 일반론에서는 ACK와 NACK를 구분하지만, 기본 TCP는 별도의 N
 
 SYN에서 SACK-Permitted를 협상한 경우, 수신 측은 누적 ACK 이후에 이미 받은 비연속 바이트 구간을 SACK 옵션으로 알릴 수 있다. 예를 들어 `ACK=1001`, `SACK=[2001,3001)`은 1000번 바이트까지 연속 수신했고 2001~3000번도 받았다는 뜻이다. 송신 측은 전송 이력과 이 정보를 함께 보고 1001~2000번의 공백을 복구할 수 있다.
 
-SACK은 누락 구간을 직접 요청하는 NACK가 아니며, 패킷 재정렬로 일시적인 공백이 생길 수도 있다. 누적 ACK를 대체하지 않고 선택적 재전송 판단을 돕는다.
+SACK은 누락 구간을 직접 요청하는 NACK가 아니며, 패킷 재정렬로 일시적인 공백이 생길 수도 있다. 누적 ACK를 대체하지 않고 선택적 재전송 판단을 돕는다. SACK가 실제로 효과를 내는 다중 손실 상황, 블록 형식과 개수 제한, reneging, D-SACK와 RACK-TLP, 서버 설정은 [[TCP-SACK|TCP SACK]].
 
 ### Go-Back-N vs Selective Repeat
 
@@ -141,6 +141,7 @@ SACK은 누락 구간을 직접 요청하는 NACK가 아니며, 패킷 재정렬
 
 ## 관련 문서
 - [[TCP-Congestion-Control|TCP 혼잡 제어 (CWND, AIMD, Slow Start, Tahoe/Reno)]]
+- [[TCP-SACK|TCP SACK (다중 손실 복구, reneging, D-SACK, RACK-TLP)]]
 - [[TCP-Header|TCP 헤더 구조 (Window Size, WSCALE, SACK)]]
 - [[TCP-Handshake|TCP Handshake (3-way에서 윈도우 협상)]]
 - [[Transport-Layer|전송 계층 (L4, TCP/UDP, 포트)]]
