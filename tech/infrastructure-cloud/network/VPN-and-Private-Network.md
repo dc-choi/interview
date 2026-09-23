@@ -65,4 +65,5 @@ VPN은 물리적으로 같은 LAN을 만드는 기술로 한정되지 않는다.
 - [[IPv4-NAT-and-Traversal|NAT와 통과 전략]]
 - [[Routing-Table-and-Interface-Selection|목적지별 경로 선택]]
 - [[DNS|이름 해석과 DNS 보안]]
+- [[Network-Separation|망분리와 망연계 (물리적, 논리적 분리)]]
 - [[인프라네트워크(InfraNetwork)|인프라 네트워크 인덱스]]

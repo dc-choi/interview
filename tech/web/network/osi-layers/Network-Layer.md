@@ -101,6 +101,8 @@ RFC 1918의 사설 대역은 다음과 같다. 클래스별 예시 몇 개가 �
 - 그 IP를 가진 장비가 자기 MAC으로 응답한다.
 - 보낸 쪽은 IP와 MAC 대응을 **ARP 테이블에 캐시**해 다음부터 재사용한다.
 
+ARP는 응답한 쪽이 그 IP의 주인인지 확인하지 않는다. 같은 LAN의 공격자가 위조 ARP로 캐시를 오염시켜 트래픽을 가로채는 흐름과 방어는 [[ARP-Spoofing|ARP 스푸핑]].
+
 ICMP는 IP 전달 중 생긴 오류와 진단 정보를 운반한다. `ping`의 echo request/reply가 대표적이지만 ICMP 전체가 ping 전용인 것은 아니다. destination unreachable과 time exceeded 같은 메시지는 장애 분석과 Path MTU 동작에도 관여하므로 방화벽에서 ICMP 전체를 무조건 막는 것은 부작용을 만든다.
 
 ## 패킷은 유지되고 프레임은 구간마다 바뀐다 (핵심)
@@ -168,6 +170,7 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 ## 관련 문서
 
 - [[Physical-DataLink-Layer|물리와 데이터링크 계층 (L1/L2, MAC, 프레임, ARP 연결 고리)]]
+- [[ARP-Spoofing|ARP 스푸핑 (검증 없는 캐시 갱신, DAI)]]
 - [[Network-Encapsulation|캡슐화와 데이터 단위 (스트림에서 프레임까지, MTU/MSS, 단편화)]]
 - [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기 (TTL, 단편화 필드, 체크섬, Wireshark)]]
 - [[Transport-Layer#세그먼트와 캡슐화|소켓, 바이트 스트림과 패킷 생성 흐름]]
