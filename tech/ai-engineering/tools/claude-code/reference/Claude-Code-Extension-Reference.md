@@ -1,7 +1,7 @@
 ---
 tags: [ai, claude-code, hooks, subagent, skills, plugin, mcp]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-09-23
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Claude Code Extension Reference", "클로드 코드 확장 메커니즘", "훅 레퍼런스", "스킬 레퍼런스"]
 ---
@@ -64,9 +64,9 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 ## MCP — 외부 경계 확장
 
-- 트랜스포트 4종: HTTP(권장, OAuth 지원), SSE(레거시), Stdio(로컬 프로세스), WebSocket. 스코프는 local > project(`.mcp.json`, 사용 전 승인 필요) > user — 동일 이름이면 상위 스코프 항목이 통째로 쓰이고 필드 병합은 없다
-- Tool Search: 기본으로 도구 이름만 로드하고 전체 스키마는 지연 로드 (MCP 도구가 많을 때의 컨텍스트 비용 방어)
-- 출력 제한: 10,000토큰 경고, 25,000토큰 잘림 — [[Tool-Output-Filtering|도구 출력이 컨텍스트를 채우는 문제]]에 대한 내장 방어선
+- 트랜스포트 4종: HTTP(권장, OAuth 지원), SSE(레거시), Stdio(로컬 프로세스), WebSocket. 스코프는 local > project(`.mcp.json`, 대화형 세션에서는 사용 전 승인 필요. `claude -p`, Agent SDK, 클라우드 세션과, `bypassPermissions` 모드로 시작하면서 사용자 설정이나 관리 설정에 `skipDangerousModePermissionPrompt`를 둔 세션에서는 묻지 않고 로드) > user — 동일 이름이면 상위 스코프 항목이 통째로 쓰이고 필드 병합은 없다. 예외로 조직이 `managedMcpServers`로 제공한 서버는 이 스코프들보다 우선하고(v2.1.259 이상), Desktop 앱 Code 탭의 로컬 세션은 같은 이름의 stdio 서버가 `~/.claude.json` 최상위(user)와 `.mcp.json`에 함께 있으면 `~/.claude.json` 정의를 쓴다
+- Tool Search: 기본 설정에서 도구 이름과 서버 `instructions`만 먼저 로드하고 도구 정의 전체는 필요할 때 불러온다 (MCP 도구가 많을 때의 컨텍스트 비용 방어). 서버 instructions는 Claude가 지연된 도구를 언제 검색할지 판단하는 단서가 된다. 환경 변수, 제공자와 모델에 따라 처음부터 로드하는 예외가 있고, 서버 설정의 `alwaysLoad: true`는 `ENABLE_TOOL_SEARCH` 값과 관계없이 그 서버의 도구를 처음부터 로드한다
+- 출력 제한: 10,000토큰을 넘으면 경고하고(경고 기준은 고정), 기본 상한은 25,000토큰이다. 상한은 `MAX_MCP_OUTPUT_TOKENS`로 올릴 수 있고, 도구가 `anthropic/maxResultSizeChars`를 선언하면 텍스트 결과는 그 값(최대 500,000자)을 따른다. 이미지가 없는 결과가 상한을 넘으면 잘라내지 않고 세션의 `tool-results` 디렉터리에 파일로 저장한 뒤 대화에는 파일 경로를 남긴다 — [[Tool-Output-Filtering|도구 출력이 컨텍스트를 채우는 문제]]에 대한 내장 방어선
 - 관리자 통제의 함정: serverName 허용 목록은 라벨일 뿐 보안 통제가 아니다 — 같은 이름으로 다른 서버를 등록할 수 있으므로 serverCommand(정확 일치)나 serverUrl로 잠가야 한다
 - `claude mcp serve`로 Claude Code 자체를 다른 클라이언트의 MCP 서버로 노출할 수 있다
 
@@ -87,6 +87,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - [Claude Code Docs, Manage costs (agent team token costs)](https://code.claude.com/docs/en/costs)
 - [Claude Code Docs, Extend Claude with skills](https://code.claude.com/docs/en/skills)
 - [Claude Code Docs, Slash commands](https://code.claude.com/docs/en/slash-commands)
+- [Claude Code Docs, Connect Claude Code to tools via MCP](https://code.claude.com/docs/en/mcp)
 - [Agent Skills, Specification](https://agentskills.io/specification)
 
 ## 관련 문서
