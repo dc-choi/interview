@@ -79,3 +79,4 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (Skills, 서브에이전트)]]
 - [[Claude-Code-Domain-Applications|Claude Code 도메인 응용]]
 - [[MCP|MCP (Model Context Protocol)]]
+- [[Local-Speech-to-Text|로컬 음성 인식으로 영상 전사하기]]
