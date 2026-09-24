@@ -1,6 +1,6 @@
 ---
 name: memo
-description: Organize pasted notes, lecture notes, seminar notes, learning notes, blog posts, article URLs, or rough study material into this interview vault. Use when the user asks for memo 정리, 강의 내용 정리, 세미나 내용 정리, 학습 내용 정리, 이거 정리해줘, 블로그 or 아티클 정리, or asks to turn a URL/text into structured project notes.
+description: Organize pasted notes, lecture notes, seminar notes, learning notes, blog posts, article URLs, YouTube videos, recordings, or rough study material into this interview vault. Use when the user asks for memo 정리, 강의 내용 정리, 세미나 내용 정리, 학습 내용 정리, 이거 정리해줘, 블로그 or 아티클 정리, 영상 or 유튜브 정리, or asks to turn a URL, video, or text into structured project notes.
 ---
 
 # 메모 정리
@@ -17,10 +17,23 @@ description: Organize pasted notes, lecture notes, seminar notes, learning notes
 
 ## 입력 판별
 
-- URL이면 원문을 가져온다. 추출이 부실하면 보조 검색을 하고, YouTube나 로그인 필요 페이지처럼 원문을 확인할 수 없으면 사용자에게 본문을 요청한다.
+- URL이면 원문을 가져온다. 추출이 부실하면 보조 검색을 하고, 로그인 필요 페이지처럼 원문을 확인할 수 없으면 사용자에게 본문을 요청한다. YouTube 영상과 녹음 파일은 `영상과 녹음` 절차를 따른다.
 - URL의 주제나 사용 목적이 근거 확인 뒤에도 불명확할 때만 추정한 주제를 한 문장으로 말하고 확인받는다.
 - 붙여 넣은 텍스트는 주제별로 분류한다. 서로 다른 주제가 섞였으면 문서를 나눈다.
 - 텍스트에 객체 대체 문자 `￼`가 있으면 파일 접근이 가능한 범위에서 `~/Desktop/`의 관련 이미지를 확인한다.
+
+### 영상과 녹음
+
+- YouTube 영상 URL이나 로컬 오디오, 영상 파일은 `.agents/skills/memo/scripts/yt_transcript.py <URL 또는 파일> --out <저장소 밖 출력 폴더>`로 전사한다. 성공하면 종료 코드 0과 함께 마지막 줄에 `<출력 폴더>/<작업 폴더>/transcript.md` 경로를 출력하며, 종료 코드가 0이 아니면 오류 메시지가 본문 전사 경로를 알려 준 경우 말고는 폴더에 남은 파일을 결과로 쓰지 않는다. 전사문은 문서 작성의 입력일 뿐 vault에 저장하지 않는다.
+- 스크립트는 음성 언어와 같은 언어의 사람이 단 자막이 있으면 그 자막을 쓰고, 자동 자막만 있거나 자막이 없거나 받지 못하면 로컬 whisper.cpp로 전사한다. YouTube 자동 자막은 기술 용어 오인식이 많아 쓰지 않는다. 다운로드를 포함해 20분 영상에 약 3분, 84분 영상에 약 17분이 걸리므로 긴 영상은 백그라운드로 실행한다.
+- 로컬 녹음의 음성 언어는 기본값이 ko다. 다른 언어면 `--lang`으로 주고, 모르면 `--lang auto`로 자동 감지한다. 사람이 단 자막을 두고 음성 인식을 쓰려면 `--force-stt`를 준다.
+- 같은 입력과 옵션이면 다운로드와 전사 결과를 재사용하고, 옵션이 바뀌면 필요한 단계만 다시 한다. 다운로드부터 다시 하려면 `--force`를 준다.
+- 필요한 도구나 모델이 없으면 설치 명령을 출력하고 종료 코드 3으로 끝난다. URL 입력은 uv와 음성 인식 도구를 단계별로 검사해 안내가 두 번 나올 수 있다. 설치는 사용자 확인 뒤 진행한다.
+- 전사문의 음차(퀵은 QUIC)와 오인식(사과 패턴은 사가 패턴)은 문맥과 공식 문서로 교정하고, 교정할 수 없는 내용은 문서에 넣지 않는다. `확인할 점`에 적힌 반복 축소(3회 이상)와 환각 의심 문장도 확인한다.
+- 핵심 용어가 계속 어긋나면 `--qwen3`로 다시 실행해 만든 2차 전사(`transcript.qwen3.md`, ko, en, ja, zh만 지원)와 대조한다. 2차 전사가 실패해도 오류 메시지에 본문 전사 경로가 있으면 본문은 쓸 수 있다. `--prompt` 용어 힌트는 첫 구간 발화를 제목 표기로 바꾼 사례가 있어 필요할 때만 쓴다.
+- 전사문에는 화면의 슬라이드와 코드가 없고 청중 소리와 겹친 발화가 빠질 수 있다. 핵심 내용이 화면에만 있는 것으로 보이면 사용자에게 알린다.
+- 로컬 녹음의 경로는 문서와 출처에 적지 않는다.
+- 로그인, 멤버십, 비공개 영상처럼 받을 수 없으면 사용자에게 본문을 요청한다. 영상 출처도 대상 도메인의 출처 표기 규칙을 따르고, tech 문서는 내용에 따라 발표나 강의 유형으로 적는다.
 
 ## 대상 결정
 
