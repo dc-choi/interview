@@ -11,7 +11,7 @@ aliases: ["Crypto", "Cryptography"]
 
 ## 목차
 - [x] [[Password-Hashing|패스워드 해싱 (저장/검증 흐름, argon2, Salt, TLS)]]
-- [x] [[Public-Key-Cryptography|공개키 암호, 비대칭키 (기초 용어, 단방향/양방향 분류, 대칭/비대칭 하이브리드, PKI, MITM)]]
+- [x] [[Public-Key-Cryptography|공개키 암호, 비대칭키 (기초 용어, 단방향/양방향 분류, 키 분배 문제, 대칭/비대칭 하이브리드, PKI, MITM, 암호화폐 개인키)]]
 - [x] [[RSA-Encryption|RSA 암호화 (소인수분해 난제, 키 생성, 암복호, 서명, OAEP/PSS 패딩)]]
 - [x] [[HSM-Key-Custody|HSM과 서명 키 관리 (비추출 키, 다계층 접근 제어, 고가용성, 키 수명 주기)]]
 - [x] [[HSM-Signing-Operations|HSM 서명 시스템 운영과 무중단 키 전환 (PKCS #11 세션, fallback, 관측, RS256에서 ES256, kid 전환)]]

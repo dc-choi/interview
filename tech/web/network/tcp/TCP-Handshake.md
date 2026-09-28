@@ -130,12 +130,12 @@ Client                           Server
 
 ## HTTPS는 더 많은 왕복
 
-HTTPS는 3-way handshake **+ TLS handshake** (TLS 1.2: 2 RTT, TLS 1.3: 1 RTT) 추가.
+HTTPS는 3-way handshake **+ TLS handshake** (전체 핸드셰이크 기준 TLS 1.2: 2 RTT, TLS 1.3: 1 RTT) 추가. TLS 1.3에서 서버가 클라이언트의 `key_share`를 받아들이지 못해 HelloRetryRequest를 보내면 1 RTT가 더 든다.
 
 대륙 간 통신 (왕복 100ms 가정):
 - 평문 HTTP: 3-way + 요청/응답 = 2 RTT = **200ms**
 - HTTPS (TLS 1.2): 3-way + TLS + 요청/응답 = 4 RTT = **400ms**
-- HTTPS (TLS 1.3): 3-way + TLS + 요청/응답 = 3 RTT = **300ms**
+- HTTPS (TLS 1.3, HelloRetryRequest 없음): 3-way + TLS + 요청/응답 = 3 RTT = **300ms**
 
 **Connection Keep-Alive**로 재사용하면 이후 요청은 handshake 생략 → 매우 효율.
 
@@ -186,6 +186,7 @@ HTTPS는 3-way handshake **+ TLS handshake** (TLS 1.2: 2 RTT, TLS 1.3: 1 RTT) �
 - [RFC 9293 — SEGMENT ARRIVES in SYN-SENT state](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.10.7.3)
 - [RFC 9293 — Maximum Segment Size Option](https://www.rfc-editor.org/rfc/rfc9293.html#name-specific-option-definitions)
 - [RFC 7323 — TCP Extensions for High Performance](https://www.rfc-editor.org/rfc/rfc7323.html)
+- [RFC 9846 — TLS 1.3, Incorrect DHE Share](https://www.rfc-editor.org/rfc/rfc9846.html#name-incorrect-dhe-share)
 - [TCP 연결이라는 착각에 대해 — 널널한 개발자 TV](https://www.youtube.com/watch?v=DC9FfKSgisg&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=26)
 
 ## 관련 문서

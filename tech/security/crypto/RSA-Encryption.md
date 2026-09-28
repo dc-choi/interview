@@ -1,7 +1,7 @@
 ---
 tags: [security, cryptography, rsa, public-key, asymmetric]
 status: done
-verified_at: 2026-08-05
+verified_at: 2026-09-28
 category: "보안(Security)"
 aliases: ["RSA", "RSA Encryption", "RSA 암호화"]
 ---
@@ -83,7 +83,7 @@ ECC 256비트 = RSA 3072비트 수준 보안(같은 표에서 128비트 강도�
 
 ## 실무 사용처
 
-- **TLS 인증서** — 서버 공개키 인증서로 사용(단, 세션 키 교환은 ECDHE로 이행 중)
+- **TLS 인증서** — 서버 공개키 인증서로 사용(단, 세션 키 교환은 ECDHE 같은 임시 키 교환으로 한다. RSA 키 전송은 TLS 1.3에서 제거됐고 TLS 1.2에서도 RFC 10015(2026-07)가 금지했다)
 - **JWT RS256 / PS256** — 발급자만 서명, 모든 검증자가 공개키로 확인
 - **SSH 키** — `ssh-keygen -t rsa -b 4096`. 최근은 Ed25519 권장
 - **코드 서명, 패키지 서명** — APT, RPM, npm 등
@@ -108,6 +108,8 @@ ECC 256비트 = RSA 3072비트 수준 보안(같은 표에서 128비트 강도�
 
 ## 출처
 - [RFC 8017 — PKCS #1: RSA Cryptography Specifications Version 2.2](https://www.rfc-editor.org/rfc/rfc8017)
+- [RFC 9846 — The Transport Layer Security (TLS) Protocol Version 1.3](https://www.rfc-editor.org/rfc/rfc9846)
+- [RFC 10015 — Deprecating Obsolete Key Exchange Methods in TLS 1.2 and DTLS 1.2](https://www.rfc-editor.org/rfc/rfc10015)
 - [NIST SP 800-57 Part 1 Rev. 5 — Recommendation for Key Management: General (Table 2)](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf)
 - [Handbook of Applied Cryptography, Chapter 14 (Note 14.75) — Menezes, van Oorschot, Vanstone](https://cacr.uwaterloo.ca/hac/about/chap14.pdf)
 - [charming-kyu — RSA 암호 체계](https://charming-kyu.tistory.com/9)

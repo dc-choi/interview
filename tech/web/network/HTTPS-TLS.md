@@ -3,7 +3,7 @@ tags: [web, https, tls, security, certificate]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["HTTPS와 TLS", "SSL/TLS", "TLS 인증서"]
-verified_at: 2026-07-16
+verified_at: 2026-09-28
 ---
 
 # HTTPS와TLS핸드셰이크
@@ -12,7 +12,7 @@ SSL/TLS는 클라이언트와 서버 사이의 통신을 안전하게 만드는 
 
 TLS의 핵심 설계는 비대칭키로 신뢰와 키 교환 문제를 풀고, 대칭키로 빠른 통신을 수행하는 하이브리드 구조다. 대칭, 비대칭 원리와 전자서명은 [[Public-Key-Cryptography]].
 
-명칭 정리: SSL은 Netscape가 만든 원조 프로토콜이고, IETF 표준화를 거치며 TLS로 이름이 바뀌었다(SSL 3.0의 후속이 TLS 1.0). SSL이라는 이름이 관용적으로 남아 있을 뿐, SSL 2.0/3.0은 취약점으로 폐기됐고(RFC 6176, RFC 7568) TLS 1.0/1.1도 폐기 권고되어(RFC 8996) 현재 표준은 TLS 1.2/1.3이다.
+명칭 정리: SSL은 Netscape가 만든 원조 프로토콜이고, IETF 표준화를 거치며 TLS로 이름이 바뀌었다(SSL 3.0의 후속이 TLS 1.0). SSL이라는 이름이 관용적으로 남아 있을 뿐, SSL 2.0/3.0은 취약점으로 폐기됐고(RFC 6176, RFC 7568) TLS 1.0/1.1도 폐기되어(RFC 8996) 현재 표준은 TLS 1.2/1.3이다.
 
 ## HTTPvsHTTPS
 
@@ -57,13 +57,13 @@ TLS의 핵심 설계는 비대칭키로 신뢰와 키 교환 문제를 풀고, �
 1. **Client Hello**: 클라이언트가 지원하는 cipher suite 목록과 랜덤 값 전송
 2. **Server Hello**: 서버가 cipher suite 선택, 자신의 랜덤 값과 인증서 전송
 3. **인증서 검증**: 클라이언트가 받은 서버 인증서를 신뢰하는 CA의 공개키로 검증해 서버 신원 확인. 실패하면 브라우저가 연결이 안전하지 않다는 경고를 띄운다
-4. **키 교환**: 클라이언트가 프리마스터 시크릿을 서버의 공개키로 암호화하여 전송 (TLS 1.2 이하 RSA 키 교환 기준)
+4. **키 교환**: 클라이언트가 프리마스터 시크릿을 서버의 공개키로 암호화하여 전송 (TLS 1.2 이하 RSA 키 교환 기준이며 현재 규격은 이 방식을 금지한다. 아래 참고)
 5. **세션 키 생성**: 클라이언트 랜덤 + 서버 랜덤 + 프리마스터 시크릿 → 마스터 시크릿 → **세션 키**
 6. **암호화 통신**: 세션 키(대칭키)로 실제 데이터를 암호화
 
 비대칭키는 서버 인증과 세션 키 교환에만 쓰이고, 실제 대량 데이터는 빠른 대칭키(세션 키)로 처리한다. 통신이 끝나면 핸드셰이크와 별개인 Alert 프로토콜(close_notify)로 연결을 닫고 그 연결의 세션 키를 폐기한다(세션 재개용 티켓/PSK는 별도 보관될 수 있음).
 
-위 그림의 키 교환(프리마스터 시크릿을 서버 공개키로 암호화)은 TLS 1.2까지의 RSA 키 교환 기준이다. TLS 1.3은 forward secrecy(순방향 비밀성)를 위해 RSA 키 전송을 제거했다. 인증서 기반 핸드셰이크에서는 (EC)DHE로 키를 합의하고(세션 재개는 PSK 또는 PSK+(EC)DHE — RFC 8446), 이때 서버 인증서의 키는 암호화가 아니라 서명(서버 인증)에 쓰인다. 아래 Cipher Suite 예시의 ECDHE가 그 방식이다.
+위 그림의 키 교환(프리마스터 시크릿을 서버 공개키로 암호화)은 TLS 1.2까지의 RSA 키 교환 기준이다. TLS 1.3은 forward secrecy(순방향 비밀성)를 위해 RSA 키 전송을 제거했다. 인증서 기반 핸드셰이크에서는 (EC)DHE로 키를 합의하고(세션 재개는 PSK 또는 PSK+(EC)DHE — RFC 8446과 이를 대체한 RFC 9846), 이때 서버 인증서의 키는 암호화가 아니라 서명(서버 인증)에 쓰인다. 아래 Cipher Suite 예시의 ECDHE가 그 방식이다. TLS 1.2에서도 RFC 10015(2026-07)가 RSA 키 교환과 유한체 DH(정적 DH와 DHE) 스위트를 금지해, forward secrecy를 주는 키 교환으로는 ECDHE가 남는다(정적 ECDH는 쓰지 않도록 권고).
 
 ## CipherSuite
 
@@ -82,7 +82,7 @@ TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 
 | 구성요소 | 역할 | 예시 |
 |---------|------|------|
-| 키 교환 | 세션 키를 안전하게 공유 | ECDHE, DHE, RSA |
+| 키 교환 | 세션 키를 안전하게 공유 | ECDHE (DHE와 RSA는 RFC 10015가 TLS 1.2에서 금지) |
 | 인증 | 서버(또는 클라이언트) 신원 확인 | RSA, ECDSA |
 | 대칭 암호화 | 실제 데이터 암호화 | AES-128, AES-256, ChaCha20 |
 | 해시 | 무결성 검증 | SHA-256, SHA-384 |
@@ -102,7 +102,7 @@ openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt -
 암호화 통신 자체는 성립하지만, 브라우저가 신뢰하는 CA 체인에 연결되지 않으므로 서버 신원이 보증되지 않는다. 그래서 브라우저는 안전하지 않은 연결 경고를 띄우고, curl은 `-k`(신뢰 검사 생략) 없이는 거부한다. 용도는 로컬과 내부 테스트까지. 공개 서비스는 CA 발급을 쓰고(자동 발급은 Let's Encrypt → [[ACME-Protocol]]), 로컬 개발에서 경고 없는 HTTPS가 필요하면 mkcert(로컬 CA를 OS 신뢰 저장소에 등록)를 쓴다.
 
 ## 면접포인트
-- "HTTPS가 느린 이유?" → 초기 TLS 핸드셰이크 오버헤드. TLS 1.3에서는 1-RTT로 개선
+- "HTTPS가 느린 이유?" → 초기 TLS 핸드셰이크 오버헤드. TLS 1.3에서는 전체 핸드셰이크가 1-RTT로 개선됐다. 서버가 클라이언트의 `key_share`를 받아들이지 못해 HelloRetryRequest를 보내면 1 RTT가 더 든다
 - "SSL과 TLS의 차이?" → 같은 계보의 프로토콜. Netscape의 SSL이 IETF 표준화로 TLS가 됐고, SSL 2.0/3.0과 TLS 1.0/1.1은 폐기되어 현재 표준은 TLS 1.2/1.3
 - "대칭키와 비대칭키를 왜 같이 쓰나?" → 비대칭키로 서버를 인증하고 세션 키(대칭키)를 안전하게 교환, 이후 빠른 대칭키로 통신
 - "인증서로 무엇을 검증하나?" → CA가 비밀키로 서명한 인증서를 CA 공개키로 검증해 서버 신원 확인 (도메인이 진짜 그 서버인지)
@@ -111,6 +111,8 @@ openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt -
 
 ## 출처
 - [RFC 8996 — Deprecating TLS 1.0 and TLS 1.1 (SSL 2.0/3.0 폐기 이력 포함) — IETF](https://datatracker.ietf.org/doc/html/rfc8996)
+- [RFC 9846 — The Transport Layer Security (TLS) Protocol Version 1.3 — IETF](https://www.rfc-editor.org/rfc/rfc9846.html)
+- [RFC 10015 — Deprecating Obsolete Key Exchange Methods in TLS 1.2 and DTLS 1.2 — IETF](https://www.rfc-editor.org/rfc/rfc10015.html)
 - [HTTPS 원리 이해하기 — brunch @growthminder](https://brunch.co.kr/@growthminder/79)
 - [AWS 기초 보안: 암호화, 대칭키/비대칭키, SSL/TLS 인증서 — YouTube](https://www.youtube.com/watch?v=VvacoRwYGZc&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v&index=7)
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)

@@ -3,7 +3,7 @@ tags: [security, crypto, tls, certificate, nginx]
 status: done
 category: "Security - 암호"
 aliases: ["TLS Config", "TLS 설정", "cipher suite 설정", "ssl_protocols"]
-verified_at: 2026-09-22
+verified_at: 2026-09-28
 ---
 
 # TLS Config — TLS 설정 실무
@@ -16,29 +16,29 @@ verified_at: 2026-09-22
 
 - **하한은 TLS 1.2, 우선은 TLS 1.3**이 현재 기본선이다. RFC 8996은 TLS 1.0과 TLS 1.1에 대해 MUST NOT을 규정하고, 어떤 버전에서든 이 둘로의 협상을 허용하지 말라고 못박았다. SSL 2.0은 RFC 6176, SSL 3.0은 RFC 7568에서 이미 폐기됐다.
 - 근거는 SHA-1 의존, AEAD 스위트 부재, 다운그레이드 공격 내성 부족이다. 취향 문제가 아니라 규격이 금지한 범위다.
-- Mozilla SSL Configuration 가이드라인 5.7 기준으로 Modern은 TLS 1.3만, Intermediate는 TLS 1.2와 1.3, Old는 TLS 1.0까지 내려간다. Old를 고르는 순간 3DES(DES-CBC3-SHA)까지 딸려 들어온다.
+- Mozilla SSL Configuration 가이드라인 6.0 기준으로 Modern은 TLS 1.3만, Intermediate는 TLS 1.2와 1.3을 허용한다. Intermediate의 TLS 1.2 목록은 ECDHE AEAD 스위트만 남았다. 키 교환 그룹은 두 프로필 모두 X25519MLKEM768, X25519, prime256v1, secp384r1 순이고 X25519MLKEM768은 TLS 1.3에서만 협상된다. 5.8에서 Intermediate와 Old의 DHE 스위트가 빠지고 X25519MLKEM768이 그룹 맨 앞에 들어갔으며, 6.0에서 TLS 1.0과 3DES(DES-CBC3-SHA)까지 허용하던 Old 프로필이 빠졌다. 5.7의 Intermediate나 Old 설정을 그대로 쓰면 RFC 10015가 금지한 DHE 스위트가 남는다.
 - 레거시 호환을 이유로 TLS 1.0을 켜 두는 판단의 실제 비용은 감사와 컴플라이언스 지적, 다운그레이드 표면 확대, 그리고 그 설정을 아무도 걷어내지 못하는 상태의 고착이다.
 - 하한을 올릴 때 먼저 관측할 것은 두 가지다. 액세스 로그나 커넥션 로그의 **협상 TLS 버전 분포**로 실제 구버전 클라이언트 비중을 재고, 변경 후 **핸드셰이크 실패율과 5xx가 아닌 연결 종료**를 본다. 실패는 애플리케이션 로그에 안 남고 LB 레벨에서만 보이는 경우가 많다.
 
 ## Cipher suite 선택
 
-TLS 1.3과 1.2는 관리 대상이 다르다. RFC 8446은 TLS 1.3 스위트 다섯 개를 정의하지만, 일반 서버 설정에서는 AES-GCM 두 개와 ChaCha20-Poly1305 하나가 주로 쓰인다. 실제 호환성 조정은 TLS 1.2 목록에서 더 많이 일어난다.
+TLS 1.3과 1.2는 관리 대상이 다르다. RFC 8446과 이를 대체한 RFC 9846은 TLS 1.3 스위트 다섯 개를 정의하지만, 일반 서버 설정에서는 AES-GCM 두 개와 ChaCha20-Poly1305 하나가 주로 쓰인다. 실제 호환성 조정은 TLS 1.2 목록에서 더 많이 일어난다.
 
 | 항목 | TLS 1.2 | TLS 1.3 |
 |---|---|---|
 | 스위트 구성 | 키 교환, 인증, 암호, 해시 4요소 결합 | AEAD와 HKDF 해시 쌍만 지정 |
 | 실무 후보 | ECDHE 기반 AEAD 스위트를 골라 나열 | 흔히 쓰는 후보는 TLS_AES_128_GCM_SHA256, TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256. RFC에는 AES-CCM 계열 두 개도 정의됨 |
-| forward secrecy | 스위트 선택에 달림 (정적 RSA 배제 필요) | 정적 RSA/DH 제거로 (EC)DHE 핸드셰이크는 forward secrecy 제공(RFC 8446), PSK-only 재개(psk_ke)는 제외 |
+| forward secrecy | ECDHE 스위트로 제한해야 얻음 (RFC 10015가 RSA 키 교환과 DHE를 포함한 유한체 DH 스위트를 금지) | 정적 RSA/DH 제거로 (EC)DHE 핸드셰이크는 forward secrecy 제공(RFC 8446, RFC 9846), PSK-only 재개(psk_ke)는 제외 |
 | 설정 인터페이스 | OpenSSL cipher list (`ssl_ciphers`) | 별도 ciphersuites 설정 (`ssl_conf_command Ciphersuites`) |
 
-- **(EC)DHE 고정**: TLS 1.2에서 forward secrecy를 얻으려면 키 교환을 ECDHE 또는 DHE로 제한한다. 정적 RSA 키 교환은 서버 개인키가 유출되면 과거 트래픽까지 복호된다. TLS 1.3은 이 방식을 규격에서 제거했다.
+- **ECDHE 고정**: TLS 1.2에서 forward secrecy를 얻으려면 키 교환을 ECDHE로 제한한다. 정적 RSA 키 교환은 서버 개인키가 유출되면 과거 트래픽까지 복호된다. TLS 1.3은 이 방식을 규격에서 제거했고, RFC 10015(2026-07)는 (D)TLS 1.2에서도 RSA 키 교환과 유한체 DH(정적 DH와 DHE) 스위트를 금지하고 정적 ECDH 스위트는 쓰지 않도록 권고한다.
 - **AEAD 우선**: AES-GCM과 ChaCha20-Poly1305만 남기고 CBC 계열은 뺀다. RC4, 3DES, NULL, EXPORT, 익명(anon) 스위트는 배제 대상이다.
-- **서버 우선순위**: Mozilla 5.7은 Modern과 Intermediate에서 server preferred order를 끄고 Old에서만 켠다. 남은 목록이 전부 AEAD면 클라이언트가 자기 하드웨어에 맞는 걸 고르게 두는 편이 낫기 때문이다.
+- **서버 우선순위**: Mozilla 6.0은 Modern과 Intermediate 모두 server preferred order를 끈다(5.7은 Old에서만 켰다). 남은 목록이 전부 AEAD면 클라이언트가 자기 하드웨어에 맞는 걸 고르게 두는 편이 낫기 때문이다.
 - **ChaCha20 배치**: AES-NI가 있는 서버는 AES-GCM이 빠르고, AES-NI가 없는 모바일이나 저사양 클라이언트는 ChaCha20이 빠르다. 서버 우선순위를 강제하면 이 판단을 서버가 대신 하게 되므로 두 계열을 모두 남기고 순서를 강제하지 않는 쪽이 무난하다.
 
 ## 설정 예시
 
-nginx는 문서 기준 기본값이 `ssl_protocols TLSv1.2 TLSv1.3`, `ssl_ciphers HIGH:!aNULL:!MD5`, `ssl_prefer_server_ciphers off`, `ssl_session_cache none`, `ssl_session_tickets on`, `ssl_stapling off`이다. 공유 세션 캐시는 기본으로 없지만 session ticket 재개는 별도로 켜져 있다. stapling은 기본이 꺼져 있으므로 필요한 신뢰 체인과 resolver까지 함께 명시한다.
+nginx는 문서 기준 기본값이 `ssl_protocols TLSv1.2 TLSv1.3`, `ssl_ciphers HIGH:!aNULL:!MD5`, `ssl_prefer_server_ciphers off`, `ssl_session_cache none`, `ssl_session_tickets on`, `ssl_stapling off`이다. 공유 세션 캐시는 기본으로 없지만 session ticket 재개는 별도로 켜져 있다. stapling은 기본이 꺼져 있으므로 필요한 신뢰 체인과 resolver까지 함께 명시한다. 다만 nginx는 `ssl_stapling_responder`나 `ssl_stapling_file`을 따로 지정하지 않으면 인증서 AIA의 OCSP 응답자 주소로 응답을 받아 오므로, 이 주소가 없는 인증서에는 경고를 남기고 stapling을 건너뛴다. 어느 경로든 CA가 그 인증서의 OCSP 응답을 만들어 줘야 한다. Let's Encrypt는 2025-05-07부터 인증서에 OCSP 주소를 넣지 않고 OCSP 응답자도 종료해 stapling할 응답이 없다([[ACME-Protocol|ACME 프로토콜]]).
 
 ```nginx
 ssl_certificate     /etc/ssl/fullchain.pem;   # leaf + intermediate 체인 전체
@@ -86,9 +86,9 @@ CloudFront: TLSv1.2_2021 또는 TLSv1.3_2025 (정책별 스위트 목록 고정)
 
 ## 세션 재개와 0-RTT
 
-- TLS 1.2는 session ID(서버 측 캐시)와 session ticket(RFC 5077, 클라이언트 보관)으로 재개했다. TLS 1.3은 둘을 **PSK 기반 재개 하나로 통합**했다(RFC 8446).
+- TLS 1.2는 session ID(서버 측 캐시)와 session ticket(RFC 5077, 클라이언트 보관)으로 재개했다. TLS 1.3은 둘을 **PSK 기반 재개 하나로 통합**했다(RFC 8446, RFC 9846). 두 RFC는 RFC 5077을 obsolete로 지정하며, 그 의미를 TLS 1.3에서 RFC 5077의 티켓 메커니즘을 PSK 방식으로 대체하는 것으로 설명한다.
 - **session ticket key 회전**은 키 유출의 영향 기간을 제한한다. TLS 1.2 ticket과 TLS 1.3의 PSK-only, 0-RTT 경로는 재개 비밀의 보호에 특히 의존한다. TLS 1.3의 PSK-DHE 재개는 새 ephemeral DH로 이후 application data의 forward secrecy를 유지하므로 모든 재개가 같은 방식으로 무력화된다고 보지는 않는다. 다중 서버 구성에서 티켓 키를 공유하면 수명과 회전, 배포 경로를 함께 설계한다.
-- **0-RTT(early data)**는 재개 시 첫 왕복을 아끼지만 RFC 8446이 두 가지 한계를 명시한다. 제공된 PSK로만 암호화되어 forward secrecy가 없고, 연결 간 재전송 방지가 보장되지 않는다. 같은 연결 안의 중복만 서버가 막아 준다. HTTP method만으로 허용하지 말고 replay돼도 부수효과가 없는 resource를 명시적 allowlist로 둔다. 서버가 early data를 받지 않기로 했다면 `425 Too Early`로 다시 보내게 한다.
+- **0-RTT(early data)**는 재개 시 첫 왕복을 아끼지만 RFC 8446과 RFC 9846이 두 가지 한계를 명시한다. 제공된 PSK로만 암호화되어 프로토콜이 forward secrecy를 보장하지 않고, 연결 간 재전송 방지가 보장되지 않는다. 같은 연결 안의 중복만 서버가 막아 준다. HTTP method만으로 허용하지 말고 replay돼도 부수효과가 없는 resource를 명시적 allowlist로 둔다. 서버가 early data를 받지 않기로 했다면 `425 Too Early`로 다시 보내게 한다.
 - **OCSP stapling**은 클라이언트가 CA의 OCSP 응답자에 직접 묻는 왕복과 그 과정의 프라이버시 노출을 없앤다. 서버가 미리 받아 둔 서명된 응답을 핸드셰이크에 첨부한다.
 - **ALPN**은 핸드셰이크 안에서 HTTP/2와 HTTP/1.1을 협상한다. h2를 목록에 넣지 않으면 TLS는 붙는데 HTTP/2로 못 올라간다.
 
@@ -102,7 +102,7 @@ CloudFront: TLSv1.2_2021 또는 TLSv1.3_2025 (정책별 스위트 목록 고정)
 
 - **협상 결과 확인**: `openssl s_client -connect example.com:443 -servername example.com` 출력에서 Protocol과 Cipher 줄을 본다. `-tls1_2`나 `-tls1_3`으로 특정 버전만 강제해 하한이 실제로 막혔는지 확인한다.
 - **체인 확인**: `-showcerts`로 서버가 보내는 인증서 목록을 그대로 보고, leaf만 나오면 체인 누락이다. `-CAfile`과 `-verify_return_error`를 함께 주면 검증 실패 시 핸드셰이크를 중단시켜 결과가 분명해진다.
-- **stapling과 ALPN**: `-status`로 OCSP 응답이 실제로 첨부되는지, `-alpn h2,http/1.1`로 h2가 협상되는지 본다.
+- **stapling과 ALPN**: `-status`로 OCSP 응답이 실제로 첨부되는지(기본 설정에서 OCSP 주소가 없는 인증서는 응답이 없는 것이 정상이다), `-alpn h2,http/1.1`로 h2가 협상되는지 본다.
 - **배포 전 문법 검사**: `nginx -t`를 파이프라인에 넣는다. 설정 반영 전에 실패해야 안전하다.
 - **외부 스캔**: testssl.sh나 SSL Labs로 지원 버전, 스위트, 체인, 취약점을 한 번에 훑는다. 등급 자체를 목표로 삼기보다 지적된 항목이 우리 클라이언트 분포에서 의미 있는지로 판단한다.
 
@@ -119,16 +119,20 @@ CloudFront: TLSv1.2_2021 또는 TLSv1.3_2025 (정책별 스위트 목록 고정)
 
 - "TLS 최소 버전을 뭘로 잡나?" → TLS 1.2 하한, 1.3 우선. RFC 8996이 TLS 1.0과 1.1에 MUST NOT을 규정했고 SSL 2.0과 3.0은 그 전에 폐기됐다.
 - "TLS 1.3에서 cipher suite를 어떻게 고르나?" → RFC에는 다섯 개가 정의돼 있고, 일반 서버에서는 AES-GCM 두 개와 ChaCha20-Poly1305가 주로 쓰인다. 설정 인터페이스는 TLS 1.2용 cipher list와 분리돼 있다.
-- "forward secrecy를 어떻게 보장하나?" → TLS 1.2는 키 교환을 (EC)DHE로 제한한다. TLS 1.3 full handshake와 PSK-DHE 재개는 ephemeral DH를 쓰지만 PSK-only와 0-RTT는 예외다. ticket key는 유출 영향 기간을 줄이도록 회전한다.
+- "forward secrecy를 어떻게 보장하나?" → TLS 1.2는 키 교환을 ECDHE로 제한한다(RFC 10015가 RSA 키 교환과 DHE를 금지). TLS 1.3 full handshake와 PSK-DHE 재개는 ephemeral DH를 쓰지만 PSK-only와 0-RTT는 예외다. ticket key는 유출 영향 기간을 줄이도록 회전한다.
 - "브라우저는 되는데 서버 간 호출만 TLS 검증에 실패한다면?" → 중간 인증서 누락. 브라우저는 캐시나 AIA로 보완하지만 서버 클라이언트는 안 한다. fullchain을 배포한다.
 - "0-RTT를 켜도 되나?" → 리플레이 방지가 연결 간에는 보장되지 않으므로 method 이름만 믿지 않고 replay-safe resource allowlist로 제한하며, 거부할 때는 425로 재시도시킨다.
 - "AWS ALB에서 특정 스위트만 빼려면?" → 못 뺀다. 사용자 정의 정책이 없어 이름 붙은 정책 중에서 고르고, 요구가 정책 경계와 안 맞으면 종료 지점을 옮기는 설계 판단이 된다.
 
 ## 출처
 - [IETF, RFC 8446 — The Transport Layer Security (TLS) Protocol Version 1.3](https://www.rfc-editor.org/rfc/rfc8446.html)
+- [IETF, RFC 9846 — The Transport Layer Security (TLS) Protocol Version 1.3](https://www.rfc-editor.org/rfc/rfc9846.html)
 - [IETF, RFC 8470 — Using Early Data in HTTP](https://www.rfc-editor.org/rfc/rfc8470.html)
 - [IETF, RFC 8996 — Deprecating TLS 1.0 and TLS 1.1](https://datatracker.ietf.org/doc/html/rfc8996)
+- [IETF, RFC 10015 — Deprecating Obsolete Key Exchange Methods in TLS 1.2 and DTLS 1.2](https://www.rfc-editor.org/rfc/rfc10015.html)
+- [Mozilla, SSL Configuration Guidelines 6.0](https://ssl-config.mozilla.org/guidelines/6.0.json)
 - [Mozilla, SSL Configuration Guidelines 5.7](https://ssl-config.mozilla.org/guidelines/5.7.json)
+- [TLSRef, Server-Side TLS](https://docs.tlsref.org/server-side-tls.html)
 - [nginx, Module ngx_http_ssl_module](https://nginx.org/en/docs/http/ngx_http_ssl_module.html)
 - [nginx, Controlling nginx](https://nginx.org/en/docs/control.html)
 - [Node.js, TLS (SSL)](https://nodejs.org/api/tls.html)

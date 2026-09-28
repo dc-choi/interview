@@ -3,7 +3,7 @@ tags: [security, crypto, tls, certificate, lets-encrypt, acme]
 status: done
 category: "Security - 암호"
 aliases: ["ACME", "ACME Protocol", "Let's Encrypt", "certbot", "인증서 자동화"]
-verified_at: 2026-09-03
+verified_at: 2026-09-28
 ---
 
 # ACME Protocol — 인증서 자동화
@@ -127,7 +127,7 @@ ISRG(Internet Security Research Group)가 Let's Encrypt를 운영. X1이 원조,
 - **계정 키 보호**: ACME 계정 키가 유출되면 해당 도메인의 인증서를 임의 발급당할 수 있음
 - **Rate Limit**: Let's Encrypt의 제한은 registered domain, 계정, 동일 인증서 집합 등 버킷별로 다르고 일부 ARI 기반 갱신은 예외가 적용된다. 고정 숫자를 외우기보다 운영 시 공식 제한 페이지를 확인하고 staging으로 자동화를 검증한다.
 - **CAA DNS 레코드**: 도메인에 `CAA` 레코드를 설정해 **지정한 CA만 발급 허용** → 탈취 방지
-- **OCSP Stapling**: 인증서 해지(Revocation) 확인 오버헤드를 줄임. ACME로 받은 인증서도 Stapling 설정 권장
+- **OCSP Stapling**: 인증서 해지(Revocation) 확인 오버헤드를 줄이지만, 발급 CA가 OCSP를 제공하는 인증서에만 쓸 수 있다. CA/Browser Forum Baseline Requirements에서 OCSP는 선택이고, Let's Encrypt는 2025-05-07부터 인증서에 OCSP URL을 넣지 않고 2025-08-06에 OCSP 응답자를 종료해 폐기 정보를 CRL로만 제공한다. 그 인증서에는 붙일 OCSP 응답이 없다
 
 ## 흔한 실수
 
@@ -150,6 +150,9 @@ ISRG(Internet Security Research Group)가 Let's Encrypt를 운영. X1이 원조,
 - [Let's Encrypt — Profiles](https://letsencrypt.org/ca/docs/profiles/)
 - [Let's Encrypt — Rate Limits](https://letsencrypt.org/docs/rate-limits/)
 - [Let's Encrypt — Chains of Trust](https://letsencrypt.org/certificates/)
+- [Ending OCSP Support in 2025](https://letsencrypt.org/2024/12/05/ending-ocsp/)
+- [OCSP Service Has Reached End of Life](https://letsencrypt.org/2025/08/06/ocsp-service-has-reached-end-of-life/)
+- [CA/Browser Forum — Baseline Requirements for TLS Server Certificates](https://cabforum.org/working-groups/server/baseline-requirements/requirements/)
 - [AWS Certificate Manager now supports ACME](https://aws.amazon.com/about-aws/whats-new/2026/07/aws-certificate-manager-acme/)
 - [AWS Certificate Manager — Exportable public certificates](https://docs.aws.amazon.com/acm/latest/userguide/acm-exportable-certificates.html)
 - [AWS Private CA Connector for SCEP](https://docs.aws.amazon.com/privateca/latest/userguide/connector-for-scep.html)
