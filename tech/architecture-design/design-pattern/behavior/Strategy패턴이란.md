@@ -1,6 +1,7 @@
 ---
 tags: [architecture, design-pattern]
 status: done
+verified_at: 2026-09-27
 category: "Architecture & Design"
 aliases: ["Strategy 패턴이란?"]
 ---
@@ -36,6 +37,54 @@ Context + Strategy Interface + Concrete Strategies
 | 관계 | has-a (합성) | is-a (상속) |
 | 변형 방식 | 전략 객체를 주입하거나 선택 | 하위 클래스가 단계 일부를 재정의 |
 | 결합 대상 | 역할의 구현 | 상위 클래스의 골격과 보호 메서드 |
+
+### 같은 행동, 다른 비용의 구현
+Strategy는 같은 행동을 시간과 공간 비용이 다른 알고리즘으로 구현해 두고 입력 규모나 실행 환경에 맞게 고르는 데도 쓴다. 1부터 n까지의 합을 반복문(O(n))과 가우스 공식(O(1))으로 따로 구현해 두면 Context 코드를 그대로 두고 더 빠른 구현으로 바꿀 수 있다. 대신 고르는 쪽은 전략 사이의 차이를 알아야 한다.
+
+교체할 수 있다는 것은 시그니처가 같다는 뜻이 아니라 같은 계약을 지킨다는 뜻이다. TypeScript의 `implements`는 클래스를 인터페이스 타입으로 다룰 수 있는지만 검사하므로([[TS-Class-Type-System|TypeScript 클래스 타입 시스템]]) 허용 입력 범위, 경계값의 결과와 오류 처리는 타입이 보장하지 않는다. 아래 두 구현은 계약 안의 입력, 즉 결과가 안전한 정수 범위에 드는 0 이상의 정수에서는 같은 값을 내지만 계약 밖에서는 갈라질 수 있다. n = -5 같은 음수에서 반복문은 0, 공식은 10을 반환하고, n = 0.5 같은 소수에서도 0과 0.375로 다르다. 결과가 `Number.MAX_SAFE_INTEGER`를 넘으면 반복문의 덧셈 반올림 때문에 값이 달라질 수 있다(예: n = 2 ** 28). 허용 입력을 인터페이스 계약에 적고 벗어난 입력은 Context 경계에서 한 번 거부하거나, 모든 구현에 같은 계약 테스트를 돌린다. 이는 LSP의 사전조건과 사후조건 보존을 전략에 적용한 것이다([[Object-Design-Principles|객체 설계 원칙과 리팩터링]]).
+
+```typescript
+/** 1부터 n까지의 합을 구한다. 계약: n은 결과가 안전한 정수 범위에 드는 0 이상의 정수다. */
+interface SumStrategy {
+  sum(n: number): number
+}
+
+/** 반복문으로 더한다. 시간 O(n). */
+class LoopSumStrategy implements SumStrategy {
+  sum(n: number): number {
+    let total = 0
+    for (let i = 1; i <= n; i += 1) {
+      total += i
+    }
+    return total
+  }
+}
+
+/** 가우스 공식 n(n + 1) / 2를 쓴다. 시간 O(1). */
+class GaussSumStrategy implements SumStrategy {
+  sum(n: number): number {
+    return (n * (n + 1)) / 2
+  }
+}
+
+/**
+ * 전략 간 결과가 하나라도 갈라지는 입력을 찾는다.
+ * 기대값과 비교하지 않아 모든 전략이 똑같이 틀리면 놓치므로 계약 테스트를 보조하는 도구다.
+ * @param strategies 서로 교체할 수 있어야 하는 전략 목록
+ * @param inputs 비교할 입력과 경계값
+ * @returns 전략 간 결과가 갈라진 입력 목록
+ */
+const findDivergentInputs = (
+  strategies: readonly SumStrategy[],
+  inputs: readonly number[],
+): number[] => {
+  return inputs.filter((n) => new Set(strategies.map((strategy) => strategy.sum(n))).size > 1)
+}
+
+const strategies = [new LoopSumStrategy(), new GaussSumStrategy()]
+findDivergentInputs(strategies, [0, 1, 100]) // []
+findDivergentInputs(strategies, [-5]) // [-5]: 반복문은 0, 공식은 10
+```
 
 ### 코드 예시: 멀티포맷 Config
 ```typescript
@@ -103,4 +152,12 @@ class Config {
 - [jminc00 — 전략 패턴 구현 예제 (WMS 피킹 리팩토링)](https://jminc00.tistory.com/100)
 - 조영호 강사, [유연한 설계, 다형성](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234577)
 - 얄팍한 코딩사전, [Strategy 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=242675)
+- GIS DEVELOPER, [TypeScript로 보는 GoF의 디자인 패턴: 4. Strategy](https://www.youtube.com/watch?v=TiHzYc8I3Kk)
 - Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- [TypeScript 공식 문서, Classes](https://www.typescriptlang.org/docs/handbook/2/classes.html)
+- [MDN, Number.MAX_SAFE_INTEGER](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
+
+## 관련 문서
+
+- [[State패턴이란#Strategy와의 차이|State 패턴과의 차이]]
+- [[TemplateMethod패턴이란|Template Method 패턴]]

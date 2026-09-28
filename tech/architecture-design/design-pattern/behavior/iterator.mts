@@ -1,7 +1,8 @@
-type MyIteratorResult<T> = {
-    value: T | undefined;
-    done: boolean;
-};
+// 표준 IteratorResult처럼 done으로 값과 종료를 구분하는 유니언이다.
+// 원소 자체가 undefined여도 done이 false면 값으로 취급한다.
+type MyIteratorResult<T> =
+    | { value: T; done: false }
+    | { value: undefined; done: true };
 
 abstract class MyIterator<T> {
     abstract next(): MyIteratorResult<T>;
@@ -20,9 +21,7 @@ abstract class MyIterator<T> {
         const result: T[] = [];
         let iterResult = this.next();
         while (!iterResult.done) {
-            if (iterResult.value !== undefined) {
-                result.push(iterResult.value);
-            }
+            result.push(iterResult.value);
             iterResult = this.next();
         }
         return result;
@@ -32,7 +31,7 @@ abstract class MyIterator<T> {
         const result: T[] = [];
         for (let i = 0; i < count && this.hasNext(); i++) {
             const iterResult = this.next();
-            if (iterResult.value !== undefined) {
+            if (!iterResult.done) {
                 result.push(iterResult.value);
             }
         }
@@ -43,9 +42,7 @@ abstract class MyIterator<T> {
         let index = 0;
         let result = this.next();
         while (!result.done) {
-            if (result.value !== undefined) {
-                callback(result.value, index++);
-            }
+            callback(result.value, index++);
             result = this.next();
         }
     }
@@ -54,9 +51,7 @@ abstract class MyIterator<T> {
         const result: U[] = [];
         let iterResult = this.next();
         while (!iterResult.done) {
-            if (iterResult.value !== undefined) {
-                result.push(callback(iterResult.value));
-            }
+            result.push(callback(iterResult.value));
             iterResult = this.next();
         }
         return result;
@@ -66,7 +61,7 @@ abstract class MyIterator<T> {
         const result: T[] = [];
         let iterResult = this.next();
         while (!iterResult.done) {
-            if (iterResult.value !== undefined && predicate(iterResult.value)) {
+            if (predicate(iterResult.value)) {
                 result.push(iterResult.value);
             }
             iterResult = this.next();
@@ -77,7 +72,7 @@ abstract class MyIterator<T> {
     find(predicate: (value: T) => boolean): T | undefined {
         let iterResult = this.next();
         while (!iterResult.done) {
-            if (iterResult.value !== undefined && predicate(iterResult.value)) {
+            if (predicate(iterResult.value)) {
                 return iterResult.value;
             }
             iterResult = this.next();
@@ -89,9 +84,7 @@ abstract class MyIterator<T> {
         let accumulator = initialValue;
         let iterResult = this.next();
         while (!iterResult.done) {
-            if (iterResult.value !== undefined) {
-                accumulator = callback(accumulator, iterResult.value);
-            }
+            accumulator = callback(accumulator, iterResult.value);
             iterResult = this.next();
         }
         return accumulator;
@@ -187,52 +180,55 @@ class StringIterator extends MyIterator<string> {
     }
 }
 
+// Aggregate 역할이다. Iterator 인스턴스 하나를 보관하면 첫 연산이 순회 위치를 옮겨
+// 다음 연산이 중간부터 이어지거나 빈 결과를 내므로, Iterator를 만드는 함수를 보관하고
+// 연산마다 처음부터 시작하는 새 Iterator를 만든다.
 class MyIterable<T> {
-    private iterator: MyIterator<T>;
+    private readonly createIterator: () => MyIterator<T>;
 
-    constructor(iterator: MyIterator<T>) {
-        this.iterator = iterator;
+    constructor(createIterator: () => MyIterator<T>) {
+        this.createIterator = createIterator;
     }
 
     static fromArray<T>(array: T[]): MyIterable<T> {
-        return new MyIterable(new ArrayIterator(array));
+        return new MyIterable(() => new ArrayIterator(array));
     }
 
     static fromRange(start: number, end: number, step?: number): MyIterable<number> {
-        return new MyIterable(new RangeIterator(start, end, step));
+        return new MyIterable(() => new RangeIterator(start, end, step));
     }
 
     static fromString(str: string): MyIterable<string> {
-        return new MyIterable(new StringIterator(str));
+        return new MyIterable(() => new StringIterator(str));
     }
 
-    // Iterator 메서드들 위임
+    // 연산마다 새 Iterator를 만들어 위임한다
     forEach(callback: (value: T, index: number) => void): void {
-        this.iterator.forEach(callback);
+        this.createIterator().forEach(callback);
     }
 
     map<U>(callback: (value: T) => U): U[] {
-        return this.iterator.map(callback);
+        return this.createIterator().map(callback);
     }
 
     filter(predicate: (value: T) => boolean): T[] {
-        return this.iterator.filter(predicate);
+        return this.createIterator().filter(predicate);
     }
 
     find(predicate: (value: T) => boolean): T | undefined {
-        return this.iterator.find(predicate);
+        return this.createIterator().find(predicate);
     }
 
     reduce<U>(callback: (acc: U, current: T) => U, initialValue: U): U {
-        return this.iterator.reduce(callback, initialValue);
+        return this.createIterator().reduce(callback, initialValue);
     }
 
     take(count: number): T[] {
-        return this.iterator.take(count);
+        return this.createIterator().take(count);
     }
 
     toArray(): T[] {
-        return this.iterator.toArray();
+        return this.createIterator().toArray();
     }
 }
 
@@ -246,6 +242,8 @@ console.log("과일들:");
 fruits.forEach((fruit, index) => {
     console.log(`${index}: ${fruit}`);
 });
+// 같은 MyIterable을 다시 순회해도 새 Iterator로 처음부터 순회한다
+console.log("다시 순회:", fruits.toArray()); // ['apple', 'banana', 'cherry']
 
 // 문자열
 const chars = MyIterable.fromString("Hello");
@@ -266,3 +264,7 @@ console.log("1부터 100까지의 합:", sum); // 5050
 // find 사용
 const firstEven = MyIterable.fromArray([1, 3, 5, 8, 9, 12]).find(n => n % 2 === 0);
 console.log("첫 번째 짝수:", firstEven); // 8
+
+// undefined 원소도 done으로 종료를 판단하므로 빠지지 않는다
+const withUndefined = MyIterable.fromArray([1, undefined, 3]).toArray();
+console.log("undefined 원소 보존:", withUndefined); // [1, undefined, 3]

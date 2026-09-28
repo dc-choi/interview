@@ -1,12 +1,13 @@
 ---
 tags: [architecture, design-pattern]
 status: done
+verified_at: 2026-09-28
 category: "Architecture & Design"
 aliases: ["Middleware 패턴이란?"]
 ---
 
 # Middleware 패턴이란?
-여러 개의 처리 함수를 체인 형태로 연결하여 요청을 순차적으로 처리하는 패턴. Chain of Responsibility의 Node.js 구현이다.
+여러 처리 함수를 순서대로 연결해 요청을 처리하는 파이프라인 패턴이다. 다음 처리자에게 제어를 넘긴다는 점은 Chain of Responsibility와 비슷하지만, 미들웨어는 요청과 응답을 가공한 뒤 다음 미들웨어로 계속 넘기는 흐름이 기본이고 Koa처럼 다음 미들웨어가 끝난 뒤 돌아와 후처리하기도 한다. 처리하거나 넘기는 둘 중 하나를 고르는 GoF [[ChainOfResponsibility패턴이란|Chain of Responsibility]]와 같은 것으로 보지 않는다.
 
 ## 왜 쓸까?
 
@@ -68,3 +69,9 @@ async function middleware(ctx: any, next: () => Promise<void>) {
 2. NestJS: Guards, Interceptors, Pipes, Filters
 3. Redux: 액션 처리 미들웨어 (thunk, saga)
 4. Axios: 요청/응답 인터셉터
+
+## 출처
+
+- Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- [Express 공식 문서, Writing middleware for use in Express apps](https://expressjs.com/en/guide/writing-middleware/)
+- [Koa 공식 문서, Cascading](https://koajs.com/#cascading)

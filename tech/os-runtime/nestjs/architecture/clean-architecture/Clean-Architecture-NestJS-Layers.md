@@ -81,7 +81,7 @@ providers: [
 ]
 ```
 
-추상 클래스는 **런타임 값**이라 `@Inject()` 데코레이터, Symbol 토큰 불필요. 구체 클래스는 `implements UserRepository`로 계약 명시 (extends보다 `implements`가 의도 명확).
+추상 클래스는 **런타임 값**이라 `@Inject()` 데코레이터, Symbol 토큰 불필요. 구체 클래스는 `implements UserRepository`로 계약 명시 (extends보다 `implements`가 의도 명확). 단, 추상 클래스에 `private`, `protected` 인스턴스 멤버나 `#` 비공개 인스턴스 멤버(필드, 메서드, 접근자)가 있으면 `implements`는 TS2720 오류로 실패하므로 `extends`한다([[Adapter패턴이란#객체 어댑터와 클래스 어댑터|Adapter 패턴]] 참고).
 
 **선택 가이드**:
 - **Symbol 토큰**: 순수 interface 철학 유지, TypeScript 스타일 선호

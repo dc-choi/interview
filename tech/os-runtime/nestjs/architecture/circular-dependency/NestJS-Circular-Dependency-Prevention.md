@@ -56,7 +56,7 @@ it('domain layer must not depend on infrastructure', () => {
 | 모듈 레벨 forwardRef 누락 | "circular dependency" 부팅 실패 | 양쪽 모듈 모두 forwardRef |
 | ModuleRef로 모든 의존 회피 | 정적 분석, 테스트 약화 | 마지막 수단 |
 | Event로 트랜잭션 통보 | in-process event만으로 원자성이 보장되지 않음 | 같은 트랜잭션이 필요하면 facade 또는 명시적 트랜잭션, outbox 설계 |
-| Facade가 Goddess 클래스로 비대 | 책임 경계 흐려짐 | use-case 단위로 분리 |
+| Facade가 God Object로 비대 | 책임 경계 흐려짐 | use-case 단위로 분리 |
 
 ## 면접 체크포인트
 

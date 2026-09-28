@@ -63,7 +63,7 @@ const transport = createTransport(process.env.TRANSPORT ?? 'http');
 
 ## 3. Builder
 
-**정의**: **여러 선택 파라미터를 가진 복잡한 객체**의 생성 과정을 메서드 체이닝으로 단계화.
+**정의**: 복잡한 객체의 생성 과정을 단계로 분리해 같은 과정으로 서로 다른 표현을 만들게 하는 패턴(GoF). JS에서는 **여러 선택 파라미터를 가진 복잡한 객체**의 값을 Builder에 누적한 뒤 `build()`로 한 번에 만드는 메서드 체이닝 형태가 흔하다. 이 형태는 Effective Java가 GoF Builder의 한 형태로 소개한 변형이며, Director와 여러 표현을 쓰는 GoF 원래 구조는 [[Builder패턴이란|Builder 패턴]]에서 다룬다.
 
 ```js
 class QueryBuilder {
@@ -142,6 +142,8 @@ const c2 = Object.create(Connection).init('b.example.com');
 
 ## 출처
 - [yceffort — Node.js의 4가지 디자인 패턴](https://yceffort.kr/2021/01/nodejs-4-design-pattern)
+- Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- [Joshua Bloch — Effective Java 2판 Item 2: Consider a builder when faced with many constructor parameters](https://web.archive.org/web/2016id_/http://www.informit.com/articles/article.aspx?p=1216151&seqNum=2)
 
 ## 관련 문서
 - [[tech/architecture-design/design-pattern/디자인패턴이란|디자인 패턴이란]]

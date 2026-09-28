@@ -1,6 +1,7 @@
 ---
 tags: [architecture, design-pattern]
 status: done
+verified_at: 2026-09-27
 category: "Architecture & Design"
 aliases: ["Template Method 패턴이란?"]
 ---
@@ -55,6 +56,20 @@ abstract class DataProcessor {
 }
 ```
 
+### TypeScript에서 골격 보호
+TypeScript 컴파일러가 보장하는 쪽은 단계다. `abstract` 단계를 하나라도 구현하지 않은 구체 하위 클래스는 컴파일 오류가 되고(TypeScript 6.0과 7.0의 클래스 선언 기준으로 하나가 빠지면 TS2515, 2~5개가 빠지면 TS2654, 6개 이상이 빠지면 앞의 4개와 남은 개수만 표시하는 TS2655), 추상 클래스는 `new`로 직접 만들 수 없다(TS2511). 골격의 재정의는 막지 못한다.
+
+골격을 `readonly process = () => { ... }` 같은 readonly 화살표 함수 필드로 바꿔도 막는 범위는 좁다(TypeScript 6.0과 7.0, `--strict` 기준).
+
+| 하위 클래스의 시도 | 결과 |
+|---|---|
+| 같은 이름을 메서드 문법으로 정의 | TS2425 오류. 필드와 메서드의 종류 불일치 검사라 `readonly`가 없어도 난다 |
+| 생성자에서 `this.process = ...` 대입 | TS2540 오류. `readonly`가 추가로 막는 것은 이 경우다 |
+| 같은 이름의 필드로 재선언 | 허용된다. `noImplicitOverride`에서도 `override`만 붙이면 통과해 골격이 교체된다 |
+| `super.process()` 호출 | TypeScript 5.3부터 TS2855 오류. 필드는 prototype에 없어 런타임 값이 `undefined`다 |
+
+화살표 함수 필드는 인스턴스마다 함수를 새로 만들고, 타입 검사 없는 JavaScript 하위 클래스가 같은 이름의 메서드를 정의하면 오류 없이 인스턴스 필드에 가려진다. 그래서 골격은 위 예시처럼 일반 메서드로 두고 `noImplicitOverride`(TypeScript 4.3부터)를 켠다. 이 옵션은 상위 클래스의 구현을 재정의할 때 `override`를 요구하므로(추상 단계 구현에는 요구하지 않는다) 골격 재정의가 리뷰에서 드러난다. 단계 호출 순서는 테스트로 확인한다. 골격 교체를 구조적으로 막아야 하면 단계를 주입받는 Strategy 구성으로 바꾼다.
+
 ## 실 사용 사례
 1. Node.js 스트림: _read, _write, _transform
 2. HTTP 프레임워크: 요청 처리 파이프라인
@@ -68,6 +83,12 @@ abstract class DataProcessor {
 - 얄팍한 코딩사전, [Template Method 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=242681)
 - Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
 - yongsoocho, [TypeScript로 구현하는 Template Method](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=227028)
+- GIS DEVELOPER, [TypeScript로 보는 GoF의 디자인 패턴: 5. Template Method](https://www.youtube.com/watch?v=vfo-L0q2k2w)
+- [TypeScript 공식 문서, Classes](https://www.typescriptlang.org/docs/handbook/2/classes.html)
+- [TypeScript 공식 문서, noImplicitOverride](https://www.typescriptlang.org/tsconfig/noImplicitOverride.html)
+- [TypeScript 5.3, Checks for super Property Accesses on Instance Fields — TypeScript 공식 문서](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-3.html#checks-for-super-property-accesses-on-instance-fields)
+- [TypeScript 4.3, override and the --noImplicitOverride Flag — TypeScript 공식 문서](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-3.html#override-and-the---noimplicitoverride-flag)
+- [Node.js 공식 문서, Stream](https://nodejs.org/api/stream.html)
 
 ## 관련 문서
 

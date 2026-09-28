@@ -51,6 +51,7 @@ static import는 source 위치에서 순차 실행되는 함수 호출이 아니
 - shared mutable singleton을 cycle 해결책으로 쓰지 않는다.
 - interface/port 추출, dependency inversion 또는 dynamic import로 cycle을 끊을지 검토한다.
 - top-level await가 포함되면 graph 평가가 async가 되어 downstream 시작 시점에 영향을 준다.
+- `class X extends Base`처럼 module 평가 중 cycle 상대의 binding을 읽어 시작 시점에 실패하는 사례는 [[State패턴이란#TypeScript 파일 분리와 순환 import|State 패턴 파일 분리 사례]]를 본다.
 
 ### top-level await와 비동기 평가
 

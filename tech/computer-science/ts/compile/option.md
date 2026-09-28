@@ -3,7 +3,7 @@ tags: [cs, typescript]
 status: done
 category: "CS - TypeScript"
 aliases: ["컴파일러 옵션", "option"]
-verified_at: 2026-09-03
+verified_at: 2026-09-27
 ---
 
 # 컴파일러 옵션
@@ -76,7 +76,7 @@ TypeScript 7.0에서는 `baseUrl`이 제거되어 `paths` 대상이 config 파�
 
 ## TypeScript 7.0 전환
 
-TypeScript 7.0은 Go로 다시 작성된 컴파일러이며 2026-07-08 공개됐다. 새 project 기본값에는 `strict: true`, `module: esnext`, `noUncheckedSideEffectImports: true`, `rootDir: "./"`, `types: []` 등이 포함된다. 기존 config를 업그레이드할 때 기본값 변화가 진단과 타입 로딩에 미치는 영향을 확인한다.
+TypeScript 7.0은 Go로 포팅한 네이티브 컴파일러이며 2026-07-08 공개됐다. 7.0은 6.0(2026-03-23)에서 바뀐 기본값을 그대로 따르므로 config에 적지 않은 옵션에는 `strict: true`, `module: esnext`, `noUncheckedSideEffectImports: true`, `rootDir: "./"`, `types: []` 등이 적용된다. 5.x config를 업그레이드할 때 기본값 변화가 진단, 타입 로딩과 출력 경로에 미치는 영향을 확인한다. 예를 들어 소스가 `src` 아래에만 있고 `outDir`만 둔 config는 5.x에서 `outDir/index.js`로 emit했지만, 6.0 이상에서는 `rootDir`를 명시하라는 TS5011 오류와 함께 `outDir/src/index.js`로 emit한다.
 
 다음 과거 옵션과 emit 경로는 7.0에서 무시되는 호환 설정이 아니라 오류가 된다.
 
@@ -87,7 +87,19 @@ TypeScript 7.0은 Go로 다시 작성된 컴파일러이며 2026-07-08 공개됐
 - `esModuleInterop: false`, `allowSyntheticDefaultImports: false`
 - `alwaysStrict: false`
 
-TypeScript compiler API를 직접 호출하는 도구는 7.0의 stable API가 아직 없으므로 TypeScript 6 호환 package가 필요할 수 있다. `tsc` 실행 가능 여부와 language server, linter, transformer 호환성을 별도로 점검한다.
+6.0은 이 설정을 deprecation 오류(TS5101, TS5107 등)로 보고하고 `ignoreDeprecations: "6.0"`으로 끌 수 있다. 7.0에서는 이 옵션으로도 끌 수 없는 제거 오류가 되므로(예: `target: es5`는 TS5108) `ignoreDeprecations`는 전환 유예로만 쓰고 설정을 먼저 고친다.
+
+7.0은 안정된 compiler API 없이 출시됐고(`typescript/unstable/*`에 실험 API만 있다), 새롭고 다른 API는 7.1에서 예고됐다. 7.0 `typescript` 패키지의 기본 진입점은 버전 정보만 내보내므로 ts-loader, typescript-eslint처럼 `typescript`를 import해 compiler API를 쓰는 도구는 `typescript`가 7.0으로 설치되면 동작하지 않는다(ts-loader 9.6.2는 `Cannot read properties of undefined` 오류로 실패). 2026-09 기준 7.1 nightly의 기본 진입점도 같다. 공식 안내대로 `"typescript": "npm:@typescript/typescript6@^6.0.2"` alias로 6.0 API를 제공하고, 7.0의 `tsc`는 `"@typescript/native": "npm:typescript@^7.0.2"` 같은 별도 alias로 함께 설치한다. language server, linter, transformer 호환성은 도구별로 점검한다.
+
+## webpack과 ts-loader
+
+ts-loader는 `tsconfig.json`에 따라 각 파일을 검사하고 변환한 JavaScript를 webpack에 넘긴다. 번들 위치는 webpack `output.path`가 정하므로 `outDir`를 바꿔도 번들 위치는 그대로다. ts-loader는 compiler API를 쓰므로 7.0에서는 위의 6.0 alias 구성이 필요하다. 6.0 이상에서 소스가 `src` 아래에만 있는 config에 `outDir`만 두면 위의 TS5011이 ts-loader 빌드 오류가 되어 production 모드는 번들을 쓰지 않으므로(`tsc --noEmit`은 통과한다), ts-loader용 config에서는 `outDir`를 지우거나 `rootDir`를 명시한다.
+
+- `module: esnext`(또는 `preserve`)와 `moduleResolution: bundler`를 함께 적는다. 5.x에서 `module: es2015`(`es6`)만 두면 `classic` 해석이 적용되어 webpack처럼 자체 타입을 포함한 패키지의 import가 TS2792로 실패하고(`@types/*`로 타입을 받는 패키지는 찾는다), `@types/node` 안의 `undici-types` import도 같은 오류를 낸다(`tsc` 기준. ts-loader는 tsconfig에 값이 없으면 `skipLibCheck: true`로 실행하므로 이 선언 파일 오류는 보이지 않는다). `skipLibCheck`는 선언 파일의 오류만 가리고 소스의 import 실패는 남기므로 해석 전략부터 고친다. 6.0 이상은 같은 config를 `bundler`로 해석하지만(TSConfig 레퍼런스의 `moduleResolution` 기본값 항목은 2026-09 기준 아직 5.x 규칙인 `Classic otherwise`로 남아 있다) 버전마다 결과가 달라지지 않도록 값을 적는다.
+- bundler 프로젝트에 권장되는 `noEmit`이나 `emitDeclarationOnly`는 bundler가 TypeScript를 직접 변환하고 `tsc`는 타입 검사와 선언 파일 출력만 맡는 구성을 전제로 한다. ts-loader가 `transpileOnly: false`(fork-ts-checker-webpack-plugin과 `happyPackMode`를 쓰지 않을 때의 기본값)로 동작하면 TypeScript의 JavaScript 출력을 받아 쓰므로 이 옵션을 켜면 `TypeScript emitted no output` 오류가 난다. `transpileOnly: true`에서는 파일별 `transpileModule`이 두 옵션을 무시하므로 오류 없이 번들링한다.
+- 원본 TypeScript 위치로 디버깅하려면 `sourceMap: true`와 webpack `devtool`을 함께 켠다. `devtool`만 켜면 map의 원본이 변환된 JavaScript가 된다.
+- `transpileOnly: true`는 빌드를 빠르게 하지만 타입 검사와 선언 파일 출력을 끈다. fork-ts-checker-webpack-plugin이나 별도 `tsc --noEmit`으로 검사를 되살린다.
+- webpack `optimization.emitOnErrors` 기본값은 `development`에서 `true`, `production`에서 `false`다. 개발 모드에서는 타입 오류가 있어도 번들이 갱신되므로 성공 여부는 파일 생성이 아니라 webpack 종료 코드와 `tsc --noEmit` 결과로 판단한다. webpack 문서의 CLI 종료 코드 경고와 달리 webpack-cli 7.2.3은 컴파일 오류가 있으면 이 옵션과 관계없이 종료 코드 1로 끝난다. `--watch`처럼 종료하지 않는 모드에서는 출력된 오류로 판단한다.
 
 ## 스크립트와 모듈 감지
 
@@ -108,13 +120,16 @@ TypeScript 파일이 모두 전역 스크립트가 되는 것은 아니다. `mod
 ### strict 계열 세부 옵션
 `strict: true` 하나가 아래 엄격 검사 묶음을 한 번에 켠다. 새 TypeScript 버전에서 `strict`가 활성화하는 검사가 늘 수 있으므로 업그레이드 시 릴리스 노트와 새 진단을 확인한다.
 
-- `noImplicitAny`: 타입을 추론하지 못해 암묵적으로 `any`가 되는 지점을 오류로 만든다. 단독 기본값은 `false`지만 `strict`가 켠다.
+`alwaysStrict`를 제외한 아래 옵션의 기본값은 `strict`를 따르고, `strict`의 기본값은 5.x까지 `false`, 6.0부터 `true`다. 그래서 `strict` 없이 `noImplicitAny`만 켠 과거 예제 config도 6.0 이상에서는 초기화하지 않은 클래스 필드(TS2564)와 `find` 결과를 `string`에 바로 대입한 코드(TS2322)가 오류가 된다. `strict: false`로 되돌리기보다 필드 초기화와 `undefined` 처리를 코드에 반영한다.
+
+- `noImplicitAny`: 타입을 추론하지 못해 암묵적으로 `any`가 되는 지점을 오류로 만든다.
 - `strictNullChecks`: `null`, `undefined`를 모든 타입에 암묵 포함하지 않는다. 꺼져 있으면 컴파일 타임 타입과 런타임 값이 어긋나기 쉽다. 켜면 옵셔널 체이닝이나 가드로 명시적으로 다뤄야 한다.
 - `strictPropertyInitialization`: 클래스 필드가 선언 시 또는 생성자에서 초기화되는지 검사한다(`strictNullChecks` 필요). 확정 할당 단언 `!`은 검사를 우회하므로 남발하지 않는다.
 - `strictFunctionTypes`: 함수 타입의 매개변수를 반공변으로 검사한다. 메서드 선언은 일반적인 클래스와 인터페이스 계층 호환성을 위해 예외로 남는다.
 - `strictBindCallApply`: `bind`, `call`, `apply` 인자 타입 검사.
 - `noImplicitThis`: `this`가 암묵적 `any`가 되는 것을 막는다.
-- `alwaysStrict`: 컴파일 결과에 `'use strict'`를 방출.
+- `alwaysStrict`: 컴파일 결과에 `'use strict'`를 방출. 6.0부터는 `strict: false`여도 켜지고, `false` 설정은 6.0에서 deprecation 오류(TS5107), 7.0에서 제거 오류(TS5108)가 된다.
+- `useUnknownInCatchVariables`, `strictBuiltinIteratorReturn`: `catch` 변수를 `unknown`으로, 내장 iterator의 반환 타입을 `any` 대신 `undefined`로 둔다.
 
 ### strict 묶음 밖이지만 함께 권장
 - `noImplicitReturns`: 함수의 모든 코드 경로가 값을 반환하는지 확인한다. 일부 분기에서 반환을 빠뜨리는 실수를 막는다.
@@ -138,6 +153,9 @@ TypeScript 파일이 모두 전역 스크립트가 되는 것은 아니다. `mod
 - [TypeScript TSConfig, moduleDetection](https://www.typescriptlang.org/tsconfig/moduleDetection.html)
 - [TypeScript TSConfig, skipLibCheck](https://www.typescriptlang.org/tsconfig/skipLibCheck.html)
 - [TypeScript TSConfig, strict](https://www.typescriptlang.org/tsconfig/strict.html)
+- [TypeScript TSConfig, noImplicitAny](https://www.typescriptlang.org/tsconfig/noImplicitAny.html)
+- [TypeScript TSConfig, moduleResolution](https://www.typescriptlang.org/tsconfig/#moduleResolution)
+- [TypeScript Handbook, Choosing Compiler Options](https://www.typescriptlang.org/docs/handbook/modules/guides/choosing-compiler-options.html)
 - [TypeScript TSConfig, noEmitOnError](https://www.typescriptlang.org/tsconfig/noEmitOnError.html)
 - [TypeScript TSConfig, allowJs](https://www.typescriptlang.org/tsconfig/allowJs.html)
 - [TypeScript TSConfig, checkJs](https://www.typescriptlang.org/tsconfig/checkJs.html)
@@ -149,7 +167,13 @@ TypeScript 파일이 모두 전역 스크립트가 되는 것은 아니다. `mod
 - [TypeScript TSConfig, lib](https://www.typescriptlang.org/tsconfig/lib.html)
 - [TypeScript TSConfig, paths](https://www.typescriptlang.org/tsconfig/paths.html)
 - [TypeScript TSConfig, extends](https://www.typescriptlang.org/tsconfig/extends.html)
+- [TypeScript 6.0 발표](https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/)
+- [TypeScript 6.0 기본값 변경 PR #62669](https://github.com/microsoft/TypeScript/pull/62669)
 - [TypeScript 7.0 발표](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)
+- [webpack, TypeScript guide](https://webpack.js.org/guides/typescript/)
+- [webpack, optimization.emitOnErrors](https://webpack.js.org/configuration/optimization/#optimizationemitonerrors)
+- [ts-loader README](https://github.com/TypeStrong/ts-loader/blob/main/README.md)
+- GIS DEVELOPER, [TypeScript로 보는 GoF의 디자인 패턴: 2. 실습환경 구성](https://www.youtube.com/watch?v=g5dRKsBmlpM)
 - yongsoocho, [include와 exclude](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=136792)
 - yongsoocho, [outDir와 rootDir](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=136793)
 - yongsoocho, [target과 lib](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=136794)

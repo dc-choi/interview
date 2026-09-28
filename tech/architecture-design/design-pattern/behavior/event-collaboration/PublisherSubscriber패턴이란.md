@@ -36,7 +36,7 @@ NestJS EventEmitter는 프로세스 내부의 느슨한 결합에는 유용하�
 
 - 얄팍한 코딩사전, [Publisher-Subscriber 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=246916)
 - [Enterprise Integration Patterns, Publish-Subscribe Channel](https://www.enterpriseintegrationpatterns.com/patterns/messaging/PublishSubscribeChannel.html)
-- [NestJS 공식 문서, Events](https://docs.nestjs.com/techniques/events)
+- [NestJS 공식 문서, Events](https://docs.nestjs.com/application/events)
 
 ## 관련 문서
 

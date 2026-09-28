@@ -57,5 +57,5 @@ app.get(EventEmitter2).emit('order.created', new OrderCreatedEvent({ orderId: 1 
 - [[NestJS-Lifecycle|Lifecycle (onApplicationBootstrap, 리스너 정리)]]
 
 ## 출처
-- [NestJS — Events](https://docs.nestjs.com/techniques/events)
+- [NestJS — Events](https://docs.nestjs.com/application/events)
 - [nestjs/event-emitter, EventSubscribersLoader 3.0.1](https://github.com/nestjs/event-emitter/blob/3.0.1/lib/event-subscribers.loader.ts)
