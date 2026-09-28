@@ -64,7 +64,7 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
 
 **해결**:
 - **사실 기반 이벤트** — 동사 과거형 (`OrderPlaced`, `PaymentReceived`, `ProductRecycled`)
-- **Zero Payload 전략** — 현재 상태 알림이 목적일 때 ID만 발행하고 Consumer가 Source of Truth 재조회. Event Sourcing의 상태 복원 원본처럼 당시 사실을 보존해야 하는 이벤트에는 적용하지 않음
+- **Zero Payload 전략** — 현재 상태 알림이 목적일 때 ID만 발행하고 Consumer가 Source of Truth 재조회. Event Sourcing의 상태 복원 원본처럼 당시 사실을 보존해야 하는 이벤트에는 적용하지 않음. payload 사본을 따로 저장하고 참조만 보내는 방식은 [[Claim-Check|Claim Check]]
   - 트레이드오프: 조회 1회 추가
   - 이점: 오래된 payload 완화, 스키마 안정, 조회 시점의 최신 상태. 순서 자체는 보장하지 않음
 

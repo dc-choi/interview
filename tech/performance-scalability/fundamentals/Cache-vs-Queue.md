@@ -1,6 +1,7 @@
 ---
 tags: [performance, cache, queue, messaging, architecture]
 status: done
+verified_at: 2026-09-28
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["Cache vs Queue", "캐시 vs 큐"]
 ---
@@ -43,6 +44,15 @@ aliases: ["Cache vs Queue", "캐시 vs 큐"]
 5. 일시 오류는 제한된 재시도와 backoff를 적용하고, 영구 오류는 DLQ로 격리한다.
 
 큐는 요청의 동기 지연을 줄이고 순간 유입을 완충하지만 consumer의 처리 능력을 자동으로 높이지 않는다. 유입률이 처리율보다 계속 높으면 backlog와 완료 지연이 커진다. [[Backpressure|배압]], admission control, worker 확장과 보존 한계를 함께 설계해야 한다.
+
+### burst 흡수와 backlog 소진 시간
+
+Azure Architecture Center는 이 구성을 Queue-Based Load Leveling 패턴으로 정리한다. 큐가 간헐적인 부하를 완충하므로 처리 인스턴스를 최대 부하가 아니라 평균 부하에 맞출 수 있다. 반대로 부하가 예측 가능하게 낮고 안정적이면 큐가 더하는 복잡도에 비해 이득이 작다. 그래서 부하 평탄화용 큐가 필요한지는 평균 유입량이 아니라 burst 크기를 처리율, 하류 용량과 완료 기한에 비교해 판단한다.
+
+- burst 동안 유입률 λ가 처리율 μ를 넘으면 backlog는 대략 `(λ - μ) × burst 지속 시간`까지 쌓이고, burst가 끝난 뒤에도 `backlog ÷ (μ - 평시 유입률)`만큼 더 지나야 비워진다(μ가 평시 유입률보다 클 때). μ가 평시 유입률 이하이면 backlog는 줄지 않는다. μ는 동시 처리 수를 건당 처리 시간으로 나눠 추정한다([[Throughput-vs-Latency|Little's Law]]).
+- 사례: 평소 초당 1건 미만이어도 특정 10분에 1만 건 이상이 몰린 사례를 1만 건으로 계산하면, 한 건씩 약 0.1초에 처리하는(초당 약 10건) 워커 한 대로는 burst 끝에 약 4,000건이 쌓이고 이를 비우는 데 7분 안팎이 더 걸린다. 워커 한 대가 한 건씩 처리해 하류 유입이 처리율 이하로 묶이므로 큐가 뒷단 과부하를 막고 메시지를 보관하지만, 마지막 건의 완료 지연은 분 단위로 남는다.
+- 이 소진 시간이 완료 기한(예: 알림 도착 허용 지연) 안에 들도록 consumer 수의 하한을 정하고, 상한은 파티션 수와 하류(예: 외부 발송 API)가 감당할 합산 처리율 안에서 정한다. 하류가 포화되면 건당 처리 시간이 늘어 consumer를 늘려도 μ가 비례해 늘지 않고 과부하만 하류로 옮겨 간다. [[Consumer-Group|Kafka consumer group]]은 한 시점에 파티션 하나를 그룹 안의 consumer 하나에만 배정하므로 파티션 수가 병렬 consumer 수의 상한이다. Kafka 4.3 문서 기준 share group은 consumer 수가 파티션 수를 넘을 수 있지만 레코드 순서를 포기하는 대가이므로, 순서 있는 스트림이 아니라 레코드를 한 건씩 독립적으로 처리하는 작업에 맞다.
+- backlog를 줄이는 것은 버퍼의 종류가 아니라 처리율이다. 테이블을 주기적으로 읽는 배치도 처리율이 같으면 비슷한 backlog가 생기고, 폴링 주기만큼 지연이 더해질 수 있다. 이런 배치도 producer와 consumer를 분리하고 미처리 건수로 backlog를 볼 수 있다. 브로커 큐가 더하는 것은 여러 consumer의 배타적 할당이나 경쟁 소비, 처리 위치 기록과 재처리, queue depth 같은 backlog 지표를 기본 기능으로 제공한다는 점이고, 테이블로 같은 일을 하려면 행 점유와 집계를 직접 구현하고 검증해야 한다.
 
 ## 접수와 완료를 구분한다
 
@@ -89,7 +99,17 @@ Redis는 cache, stream이나 작업 큐의 기반으로 모두 사용할 수 있
 - [[Messaging-Broker-Comparison|메시지 브로커 비교]]
 - [[Delivery-Semantics|메시지 전달 보장]]
 - [[Backpressure|배압]]
+- [[Throughput-vs-Latency|처리량과 지연시간]]
+- [[Consumer-Group|소비자 그룹]]
 
 ## 출처
 
 - [캐시 vs 큐 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=dVCB5jQAYMA)
+- [때로는 오버엔지니어링이 필요합니다 — 올리브영 테크블로그](https://oliveyoung.tech/2026-09-23/overengineering-message-system/)
+- [Azure Architecture Center, Queue-Based Load Leveling pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/queue-based-load-leveling)
+- [Apache Kafka 4.3, Design](https://kafka.apache.org/43/design/design/)
+- [Apache Kafka 4.3 Javadoc, KafkaShareConsumer](https://kafka.apache.org/43/javadoc/org/apache/kafka/clients/consumer/KafkaShareConsumer.html)
+- [Apache Kafka 4.3, Upgrading](https://kafka.apache.org/43/getting-started/upgrade/)
+- [Redis 공식 문서, Redis Streams](https://redis.io/docs/latest/develop/data-types/streams/)
+- [Redis 공식 문서, Redis lists](https://redis.io/docs/latest/develop/data-types/lists/)
+- [Redis 공식 문서, Key eviction](https://redis.io/docs/latest/develop/reference/eviction/)

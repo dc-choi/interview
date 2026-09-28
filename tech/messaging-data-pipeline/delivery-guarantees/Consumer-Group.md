@@ -1,7 +1,7 @@
 ---
 tags: [messaging]
 status: done
-verified_at: 2026-08-31
+verified_at: 2026-09-28
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Consumer Group", "소비자 그룹"]
 ---
@@ -82,6 +82,10 @@ Apache Kafka Java consumer 4.3 기준으로 heartbeat는 소비자의 생존을,
 
 한 운영 사례에서는 한 메시지가 약 46,000건의 MSSQL 쓰기를 유발해 10분으로 설정한 poll 제한을 넘었다. 제한을 30분으로 올려 반복 리밸런싱을 먼저 완화하고, 기존 JPA 저장 구간의 반복 DB 작업을 `JdbcTemplate.batchUpdate`로 바꿔 처리 시간을 줄였다. 다만 전후 지연, 처리량, lag가 공개되지 않아 개선 폭은 재현 가능한 성능 근거가 아니라 정성적 결과로만 해석해야 한다.
 
+### 파티션 배타성은 처리 배타성이 아니다
+
+그룹 안에서 파티션 하나는 한 소비자에게만 할당되므로, 중복을 피하려고 인스턴스를 하나만 띄우던 운영 규칙을 소비자 그룹으로 대체할 수 있다. 다만 소비자 그룹이 주는 것은 할당의 배타성이다. Apache Kafka 4.3 Javadoc 기준으로 `max.poll.interval.ms` 안에 `poll()`을 다시 호출하지 못한 소비자는 스스로 그룹을 떠나고(정적 멤버는 heartbeat를 멈추고 앞의 session timeout 뒤에 파티션이 재할당된다) 다른 소비자가 그 파티션을 넘겨받는다. Javadoc은 이때 떠난 소비자의 `commitSync()`가 `CommitFailedException`으로 실패할 수 있다고 설명한다. 이 장치는 offset 커밋만 막고, 예외도 부수효과가 끝난 뒤 커밋할 때에야 드러나며 나지 않을 수도 있으므로 이미 실행된 외부 호출의 중복을 막는 수단으로 기대지 않는다. 떠난 소비자는 다음 `poll()` 전까지 진행 중이던 호출과 이미 반환된 배치의 나머지 레코드를 계속 처리할 수 있고 새 소유자는 마지막 커밋 offset부터 다시 읽으므로, 두 소비자의 처리가 겹칠 수 있다. 되돌릴 수 없는 외부 부수효과는 파티션 배타성에 기대지 않는다. 호출 전에 원자적인 조건부 claim으로 한 소비자만 호출하게 하고, provider가 멱등 키를 지원하면 그 키로 호출하며, claim 뒤 결과가 불명확한 건은 같은 키로 재시도하거나 대사로 확정한다([[Idempotent-Consumer|멱등 컨슈머]], [[At-Least-Once]]).
+
 ## 출처
 - [Redis 공식 문서, Redis Streams](https://redis.io/docs/latest/develop/data-types/streams/)
 - [Redis 공식 문서, Redis persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)
@@ -89,6 +93,7 @@ Apache Kafka Java consumer 4.3 기준으로 heartbeat는 소비자의 생존을,
 - [Apache Kafka 4.3 공식 문서, Consumer and Share Consumer Configs](https://kafka.apache.org/43/configuration/consumer-configs/)
 - [Apache Kafka 4.3 Javadoc, KafkaConsumer](https://kafka.apache.org/43/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html)
 - [Kafka Rebalancing과 메시지 처리 병목 개선 — Nextree](https://www.nextree.io/kafka-rebalancinggwa-mesiji-ceori-byeongmog-gaeseon/)
+- [때로는 오버엔지니어링이 필요합니다 — 올리브영 테크블로그](https://oliveyoung.tech/2026-09-23/overengineering-message-system/)
 
 ## 관련 문서
 - [[MQ-Kafka|Kafka]]

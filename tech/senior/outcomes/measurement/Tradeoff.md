@@ -7,7 +7,7 @@ aliases: ["트레이드오프 & 사이드 이펙트", "Tradeoff"]
 
 # 트레이드오프 & 사이드 이펙트
 
-성과를 추구할 때 반드시 고려해야 하는 주의점들. 이 문서는 성과를 서술하는 프레임이고 실측 기록이 아니다. 아래 표와 예시의 수치는 표현 형식을 보여주는 플레이스홀더이므로 X, N, M 자리에 실제 측정값을 넣어 쓴다.
+성과를 추구할 때 반드시 고려해야 하는 주의점들. 이 문서는 성과를 서술하는 프레임이고 실측 기록이 아니다. 아래 표와 예시 표기의 X, N, M은 표현 형식을 보여주는 플레이스홀더이므로 그 자리에 실제 측정값을 넣어 쓴다. 외부 사례로 표시한 수치만 다른 시스템의 실제 값이며 본인 성과 서술에 옮겨 쓰지 않는다.
 
 ## 성과 측정의 핵심 프레임워크
 
@@ -51,6 +51,10 @@ aliases: ["트레이드오프 & 사이드 이펙트", "Tradeoff"]
 ## 오버 엔지니어링 (Over-engineering)
 - 트래픽이 적은 서비스에 복잡한 MSA나 Kafka 도입은 오히려 운영 비용 증가
 - 성과가 아니라 독이 될 수 있음
+- 다만 평균 트래픽만으로 과잉을 판정하지 않는다. 그 복잡도가 줄이는 위험(전환 중 조용한 누락, 순간 폭증 때의 장애 전파와 적체, 어디서 막혔는지 모르는 관측 공백)과 앞당기는 가치를, 그것을 만들고 운영하고 걷어내는 비용과 비교한다. 외부 사례: 평소 초당 1건 미만인 문자 발송 시스템에 특정 10분 동안 1만 건 넘게 몰린 적이 있었다. 평균은 부하의 모양을 가린다.
+- 전환을 위한 한시적 복잡도(과도기 아키텍처)는 되돌림 조건처럼 제거 조건도 만들 때 정한다. 사용량 기반 제거 조건과 관측 기간은 [[Legacy-Modernization-Strategies#점진 이동 전술 — Event Interception, 과도기 아키텍처, 전환 순서|과도기 아키텍처]]를 따른다.
+- 제값을 하는 복잡도와 형태만 남은 복잡도를 가른다. 지금 이미 있는 종류별 차이(예: 메시지 종류마다 조회 테이블, 요청 규격, 이력 테이블이 다름)가 여러 단계에 흩어져 조율 로직 곳곳에 분기를 만들 때, 그 변형을 공통 인터페이스 뒤에 가두는 추상화는 종류별 분기를 없애 제값을 한다([[Strategy패턴이란|Strategy 패턴]]). 반대로 종류별로 나눠 두었지만 한쪽을 바꿀 때 다른 쪽도 함께 바꿔야 하는, 같은 지식을 담은 설정은 분리된 것처럼 보이는 중복이라 유지보수 대상만 늘린다. 지금 값이 같아도 서로 다른 요구에서 온 값이면 우연의 일치이므로 합치지 않는다(DRY가 다루는 중복은 코드 모양이 아니라 지식의 중복이다). Fowler는 변경을 어렵게 하는 내부 품질 결함을 cruft라 부르고 기술 부채 은유로 다루지만, 이 경우는 [[Technical-Debt|기술 부채]]의 재명명 기준대로 중복이라는 코드 스멜로 보고 같은 지식인지 확인한 뒤 설정을 통합하는 편이 처방이 분명하다.
+- 아직 없는 변화에 대비한 추상화는 투자로 단정하지 않는다. YAGNI 관점에서 예상 기능을 미리 만들면 예상이 맞아도 다른 기능의 가치가 늦어지고 늘어난 복잡도를 계속 끌고 가는 유지 비용(cost of carry)이 들며, 예상이 틀리면 만든 노력이 버려진다. 현재 요구사항의 코드를 이해하기 어렵게 만드는 추상화는 필요가 입증되기 전까지 불필요한 것으로 추정한다. 복잡도를 늘리지 않는 대비와 코드를 바꾸기 쉽게 만드는 리팩터링은 이 판단의 대상이 아니다.
 
 ## 기술 중심적 사고
 - 비즈니스 우선순위를 무시하고 리팩토링에만 매몰되면 기회 비용 발생
@@ -59,6 +63,14 @@ aliases: ["트레이드오프 & 사이드 이펙트", "Tradeoff"]
 ## 단기적 최적화
 - 당장의 속도를 위해 코드 품질 포기(Hardcoding)하면 기술 부채로 돌아옴
 - 장기적 관점에서 균형을 잡을 필요
+
+## 출처
+- [때로는 오버엔지니어링이 필요합니다 — 올리브영 테크블로그](https://oliveyoung.tech/2026-09-23/overengineering-message-system/)
+- [Yagni — martinfowler.com, Martin Fowler](https://martinfowler.com/bliki/Yagni.html)
+- [Technical Debt — martinfowler.com, Martin Fowler](https://martinfowler.com/bliki/TechnicalDebt.html)
+- [Code Smell — martinfowler.com, Martin Fowler](https://martinfowler.com/bliki/CodeSmell.html)
+- [DRY—The Evils of Duplication — The Pragmatic Programmer 20th Anniversary Edition, Dave Thomas, Andy Hunt](https://media.pragprog.com/titles/tpp20/dry.pdf)
+- [Transitional Architecture — martinfowler.com, Ian Cartwright, Rob Horn, James Lewis](https://martinfowler.com/articles/patterns-legacy-displacement/transitional-architecture.html)
 
 ## 관련 문서
 - [[Business-Impact|비즈니스 임팩트 (Business Value)]]

@@ -12,7 +12,7 @@ aliases: ["Performance Fundamentals", "성능 기초 개념"]
 - [[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound]]: 병목 구분, 언어 선택, 최적화 전략 매트릭스
 - [[Throughput-vs-Latency|처리량과 지연시간]]: 부하 곡선, knee point, Little's Law, SLO 기준 처리량
 - [[Scale-Up-vs-Out|Scale Up vs Scale Out]]: 수직, 수평 확장 비교, 혼합 패턴
-- [[Cache-vs-Queue|캐시와 큐]]: 값 재사용 vs 작업 전달, 접수와 완료, 선택 기준
+- [[Cache-vs-Queue|캐시와 큐]]: 값 재사용 vs 작업 전달, 접수와 완료, 선택 기준, burst 흡수와 backlog 소진 시간
 
 ## 함께 볼 문서
 

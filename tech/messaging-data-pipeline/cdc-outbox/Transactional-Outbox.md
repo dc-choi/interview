@@ -150,7 +150,7 @@ claim을 걸어도 발행은 성공했는데 `processed_at` 마킹 직전에 프
 - Consumer는 식별자로 **Source of Truth를 다시 조회** → 오래된 상태 스냅샷을 적용하는 위험을 줄임
 - 스키마 변경에도 유연 (페이로드가 최소하므로 호환성 이슈 감소)
 
-트레이드오프는 조회 1회 추가와 source DB 부하다. **재조회는 순서를 보장하지 않는다.** 중간 상태 전이, 외부 부수효과, projection 갱신처럼 순서가 의미 있으면 원본의 단조 증가 version, change sequence 또는 LSN을 이벤트에 싣고 소비자가 더 오래된 값을 거부해야 한다. 브로커의 순서 보장도 key 또는 partition 범위를 확인하고, 처리 자체는 멱등이어야 한다 ([[OpenSearch-Indexing-Internals|색인 내부 구조]], [[Idempotent-Consumer|멱등 컨슈머]]).
+트레이드오프는 조회 1회 추가와 source DB 부하다. **재조회는 순서를 보장하지 않는다.** 중간 상태 전이, 외부 부수효과, projection 갱신처럼 순서가 의미 있으면 원본의 단조 증가 version, change sequence 또는 LSN을 이벤트에 싣고 소비자가 더 오래된 값을 거부해야 한다. 브로커의 순서 보장도 key 또는 partition 범위를 확인하고, 처리 자체는 멱등이어야 한다 ([[OpenSearch-Indexing-Internals|색인 내부 구조]], [[Idempotent-Consumer|멱등 컨슈머]]). payload 사본을 외부 저장소에 두고 참조만 보내는 방식과의 차이는 [[Claim-Check|Claim Check]]에서 다룬다.
 
 ## Event Store
 

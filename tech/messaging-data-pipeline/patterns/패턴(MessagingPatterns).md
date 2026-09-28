@@ -17,3 +17,4 @@ Pub/Sub, Fan-out, 경쟁 소비자 — 메시징 실전 패턴.
 - [x] [[Distributed-Batch-Execution|분산 배치 실행 (트리거 외부화, 원자적 선점, 굳은 선점 문제, 외부 호출 일관성)]]
 - [x] [[Durable-Workflow|지속 실행 워크플로 (Temporal형 durable execution, 폴링 배치 대안, suspend/resume, 선언적 재시도, 멱등, replay, build vs buy)]]
 - [x] [[Shadow-Traffic|Shadow Traffic (트래픽 미러링, 부작용 격리와 관측)]]
+- [x] [[Claim-Check|Claim Check (참조만 전달, 사본 참조와 기준 저장소 행 참조, 행 없음 판정의 함정)]]

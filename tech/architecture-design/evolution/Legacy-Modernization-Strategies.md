@@ -22,11 +22,17 @@ aliases: ["Legacy Modernization", "레거시 현대화", "레거시 개혁 전�
 
 ## 1. Strangler Fig Pattern
 
-Martin Fowler가 이름 붙인 고전 패턴. 레거시 외부에 **파사드(façade)** 를 두고, 기능 단위로 신규 구현으로 트래픽을 점진 이동. 옛 나무를 옥죄어 죽이는 교살 무화과(strangler fig)에서 유래.
+Martin Fowler가 이름 붙인 고전 패턴. 레거시에 **seam**을 끼워 넣거나(요청을 가로채는 파사드나 프록시) 메시지 소비와 DB 쓰기 같은 기존 통합 지점을 seam으로 삼고, 기능 단위로 신규 구현에 트래픽과 동작을 점진 이동. 옛 나무를 옥죄어 죽이는 교살 무화과(strangler fig)에서 유래.
 
 - **장점**: 리스크 분산, 라우팅과 데이터 호환성을 갖춘 구간의 롤백 용이, 일상 배포 지속 가능
 - **단점**: 매우 긴 기간 (수년), 두 시스템 운영 비용 중복, 중간 상태가 영구화될 위험
 - **언제**: 핵심 도메인 + 매출 중단 허용치가 낮을 때
+
+### 점진 이동 전술 — Event Interception, 과도기 아키텍처, 전환 순서
+
+- **Event Interception**: 레거시 호출부를 바꾸기 어렵거나 비쌀 때 레거시 구성 요소 사이의 기존 통합 지점(메시지 소비자, HTTP API, SQL 연결, 배치)을 seam으로 삼아 상태 변경을 가로채고 일부를 새 컴포넌트로 보낸다. 수십 개 호출부가 같은 테이블 INSERT나 저장 프로시저를 거친다면 호출부 대신 그 지점에서 변경을 잡는다. 트랜잭션 로그로 이벤트 스트림을 만드는 [[CDC-Debezium-Concept|CDC]]는 쓰기를 엄밀히 가로채지 않고 새 시스템이 커밋된 변경을 병행 소비하는 방식이라, 구 소비자를 끄는 시점을 따로 설계한다. 호출부가 많은 한 인터페이스의 제공자만 바꾼다면 새 구현이 레거시 인터페이스를 그대로 구현하는 Legacy Mimic이 가로채기 계층 없이 같은 역할을 할 수 있다.
+- **과도기 아키텍처(Transitional Architecture)**: 신구 공존을 위해 설치하고 교체가 끝나면 제거할 것을 전제로 한 요소다. 버릴 코드의 비용은 줄이는 위험과 앞당기는 가치로 정당화한다. 도입 전에 세 가지를 답한다. 줄이는 전환 위험(빅뱅 전환, 조용한 누락)이 구축과 운영 비용보다 큰가, 전환 중 조용히 실패하는 구간을 구간별 지표와 경보로 드러내는가, 관측 가능한 제거 조건과 제거를 쉽게 하는 장치가 있는가. 생산자별 전환 일정이 달라 기한을 예측하기 어렵다면 날짜 대신 모든 쓰기 경로에서 센 레거시 입력 건수 0을 제거 조건으로 두고, 월말이나 분기 배치처럼 드물게 도는 생산자까지 포함하는 관측 기간 동안 0이 유지되는지 확인한다. 정해진 주기 없이 사건이 날 때만 쓰는 생산자는 관측 기간에 드러나지 않을 수 있으므로 구 입구(예: 테이블 INSERT, 프로시저 호출)를 쓰는 코드와 작업 목록과도 대조한 뒤 걷어낸다. 제거 뒤 구 입구로 들어오는 쓰기는 조용히 쌓이지 않게 거부하거나 경보로 드러낸다.
+- **전환 순서**: CDC 병행 소비처럼 두 경로가 같은 입력을 각자 소비해 켜고 끄는 지점이 둘로 나뉘면, 신 경로를 먼저 켤 때 두 경로가 함께 처리하는 중첩 구간(중복 위험)이, 구 경로를 먼저 끌 때 아무도 처리하지 않는 공백 구간(누락이나 지연 위험)이 생기므로 둘 중 더 비싼 쪽을 피한다. 파사드나 라우터 한 곳이 건마다 목적지를 하나만 고르면 그 지점의 설정 변경으로 전환해 중첩 구간을 만들지 않을 수 있다(라우터가 재전달하면 같은 건이 전환 전후 양쪽으로 갈 수 있다). 되돌릴 수 없는 외부 효과에서 중첩을 택하면 저유량 시간대에 짧게 둔다. 두 경로가 같은 [[Idempotent-Consumer|멱등 키나 조건부 claim]]을 공유할 수 있으면 그것으로 두 경로의 중복을 거르고, 공유하지 못하면 남는 중복 가능성을 감수 범위로 명시한다. 새 경로를 [[Feature-Flag|기능 플래그]] OFF로 먼저 배포할 때 플래그는 외부 호출뿐 아니라 완료 이력 기록과 원본 행 삭제처럼 구 경로와 공유하는 상태 변경도 막아야 한다. OFF 상태의 새 경로가 행을 지우거나 완료로 표시하면 구 경로가 그 건을 건너뛰어 조용한 누락이 생긴다([[Shadow-Traffic#부수효과 차단이 전제조건|부수효과 차단]]). 이렇게 두면 수신, 원본 조회와 요청 구성은 운영 트래픽으로 검증되지만, 외부 호출과 완료 기록은 플래그를 켠 순간 운영 트래픽으로 처음 실행되고 그 뒤의 외부 효과는 플래그를 꺼도 되돌릴 수 없다.
 
 ## 2. 인프라 단절 (Infrastructure Disconnection)
 
@@ -148,7 +154,7 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 
 ## 흔한 실패 패턴
 
-- **데드라인 없는 Strangler Fig** — 중간 상태가 5년째 지속, 두 시스템 영구 병존
+- **종료 조건 없는 Strangler Fig** — 기한도 사용량 기준도 없어 중간 상태가 5년째 지속, 두 시스템과 과도기 구조가 영구 병존
 - **사양서 없는 Recode** — 기존 코드를 "사양"으로 삼아 버그까지 포팅
 - **경영진 지원 없는 사양 경량화** — 영업팀 반대에 무기한 지연
 - **팀 교체와 동시에 현대화** — 도메인 지식 손실로 요구사항 재발견 반복
@@ -157,7 +163,7 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 
 ## 면접 체크포인트
 
-- **Strangler Fig의 정의**와 고전적 한계 (중간 상태 영구화)
+- **Strangler Fig의 정의**와 고전적 한계 (중간 상태 영구화), 과도기 구조를 정당화하는 세 질문과 사용량 기반 제거 조건
 - **인프라 단절 vs Strangler Fig** 차이 (명시적 끝점, 새 스키마, 지역 롤아웃)
 - **Recode**가 필요한 조건 (사양서 유실, 스택 파편화)
 - **사양 경량화**의 거버넌스 (손실률 기준, 경영진 설득)
@@ -167,6 +173,10 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 
 ## 출처
 - [LY Corporation 테크블로그 — 레거시 시스템을 개혁하는 3가지 방법 (Demaecan 사례)](https://techblog.lycorp.co.jp/ko/three-ways-to-reform-legacy-systems)
+- [올리브영 테크블로그 — 때로는 오버엔지니어링이 필요합니다](https://oliveyoung.tech/2026-09-23/overengineering-message-system/)
+- [martinfowler.com — Strangler Fig](https://martinfowler.com/bliki/StranglerFigApplication.html)
+- [martinfowler.com — Event Interception (Patterns of Legacy Displacement)](https://martinfowler.com/articles/patterns-legacy-displacement/event-interception.html)
+- [martinfowler.com — Transitional Architecture (Patterns of Legacy Displacement)](https://martinfowler.com/articles/patterns-legacy-displacement/transitional-architecture.html)
 
 ## 관련 문서
 - [[AI-Assisted-Legacy-Onboarding|AI로 레거시 공략 (온보딩 역공학)]] — 점진 전환에 앞선 이해, 안전망 단계를 AI로 가속
