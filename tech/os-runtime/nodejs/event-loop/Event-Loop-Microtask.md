@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, event-loop, microtask, macrotask]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-09-28
 category: "OS & Runtime"
 aliases: ["Microtask Macrotask", "브라우저 vs Node 이벤트 루프"]
 ---
@@ -20,6 +20,8 @@ Microtask/Macrotask 큐 개념과 브라우저, Node.js의 이벤트 루프 차�
 - Promise 콜백 (`.then`, `.catch`, `.finally`), `queueMicrotask()`, `MutationObserver`
 - 현재 실행 중인 태스크가 끝나면 **즉시, 전부** 비워질 때까지 실행
 - Microtask 안에서 새 microtask를 추가하면 그것도 같은 사이클에서 처리됨 (무한루프 주의)
+- Promise 콜백은 `then` 호출만으로 큐에 들어가지 않고 콜백 등록과 settle이 모두 끝난 시점에 들어간다. 이미 settled된 Promise에 붙인 `then`은 곧바로 reaction job이 예약되지만 현재 실행 중인 코드가 끝난 뒤 실행되고, pending Promise에 붙인 콜백은 reaction 목록에 있다가 Promise가 fulfilled나 rejected로 settled될 때 예약된다. 다른 Promise나 thenable로 resolve하면 그 결과가 settled될 때까지 기다린다.
+- 따라서 microtask 우선은 이미 예약된 작업 사이의 순서다. 타이머로 20ms 뒤 settled되는 Promise의 `then`은 같은 시점에 예약한 `setTimeout(fn, 0)` 콜백보다 늦게 실행된다(Node.js v26.7.0에서 확인).
 
 ### Task queues, 흔히 말하는 Macrotask
 - `setTimeout`, `setInterval`, `setImmediate`(Node), I/O 콜백, UI 렌더링 이벤트
@@ -83,15 +85,32 @@ Node.js:  timers큐 [ setTimeout ]  /  poll큐 [ I/O 콜백 ]  /  check큐 [ set
 | **Microtask 처리** | task 종료 뒤 checkpoint에서 비움 | CommonJS 최상위와 timer/I/O 콜백 경계에서는 nextTick을 먼저 처리. ESM 최상위와 Promise/queueMicrotask 콜백 내부에서는 현재 microtask 대기열을 먼저 비움. 진행 중인 microtask 처리는 새 nextTick이 선점하지 않음 |
 | **setImmediate** | 없음 | check 페이즈 전용 |
 
+### 타이머 API 차이
+
+`setTimeout`과 `setInterval`은 ECMAScript built-in이 아니라 host가 정의하는 API라서 반환값과 delay 보정 규칙이 환경마다 다르다.
+
+| | 브라우저 (HTML 표준) | Node.js |
+|---|---|---|
+| **반환값** | 0보다 큰 정수 ID | `Timeout` 객체. `ref()`, `unref()`를 제공하고 `Symbol.toPrimitive`로 숫자 ID를 얻는다 |
+| **delay 생략 시** | 0 | 1 |
+| **delay 보정** | WebIDL `long` 변환이 NaN과 ±∞를 0으로 바꾸고 소수점 아래를 버리며, long 범위(-2147483648 이상 2147483647 이하)를 벗어나는 값은 32비트로 wrap한다(2^32 - 5000은 음수가 되어 0, 2^32 + 5000과 -2^32 + 5000은 5000). 그 뒤 음수는 0으로, timer nesting level이 5보다 크고 4ms 미만이면 4ms로 올린다 | 1 미만, 2147483647 초과, NaN이면 1로 바꾸고 그 사이의 정수가 아닌 값은 소수점 아래를 버린다([[Event-Loop-Phases-Timers\|타이머 심화]]) |
+
+- HTML 표준에서 4ms 하한은 처음부터 적용되지 않는다. 타이머 task 안에서 다시 타이머를 거는 중첩이 다섯 단계를 넘은 뒤 적용되고, `setInterval`의 반복도 같은 nesting level로 센다. 엔진마다 단계를 세는 방식과 임계값이 다를 수 있으며, WebKit은 `setTimeout` 중첩의 임계값을 10으로 둔다(2026-09-27 WebKit main 소스 기준).
+- 브라우저에서 조각 작업을 마친 뒤 다음 `setTimeout(fn, 0)`을 거는 연쇄는 몇 번 재예약한 뒤부터 조각 사이에 최소 4ms가 끼어든다. timeout은 `setTimeout` 호출 시점부터 세므로, 작업 전에 다음 타이머를 먼저 걸면 이 대기가 작업 시간과 겹친다.
+- Window의 타이머는 문서가 fully active인 시간만 센다. user agent는 전력 절약을 위해 구현 정의 시간만큼 더 늦출 수 있고, 비활성 탭에는 브라우저마다 기준이 다른 최소 지연이 적용될 수 있다.
+- 타이머는 `clearTimeout`, `clearInterval`로 취소한다. Node.js에서는 legacy `timeout.close()`와 `timeout[Symbol.dispose]()`도 취소한다. ID나 `Timeout`을 담은 변수에 `null`을 대입해도 콜백은 계속 실행되고, Node.js에서는 기본(ref) 상태의 활성 타이머가 이벤트 루프를 계속 유지한다. `unref()`한 타이머는 유지하지 않는다.
+
 ---
 
 ## 흔한 오해 정리
 ```
 1. 이벤트 루프는 별도 스레드다 → ✗ 메인 JS 스레드 내에서 실행된다.
 2. Worker Threads = libuv 스레드 풀이다 → ✗ 완전히 다른 개념이다. (Worker-Threads 참조)
-3. 타이머는 정확한 시간에 실행된다 → ✗ 최소 지연 시간 이후 "가능한 빨리" 실행된다.
+3. 타이머는 정확한 시간에 실행된다 → ✗ delay는 실행 가능해지는 임계값이다. Node.js는 libuv 루프 시각의 밀리초 정수로 판정해 실제 경과 시간이 요청보다 짧거나 길 수 있다.
 4. 실행 순서는 등록 순서만으로 결정된다 → ✗ 등록 타이밍과 현재 페이즈에 따라 달라진다.
 ```
+
+타이머 판정 단위는 [[Sleep-and-Timing#Node.js 타이머|Sleep과 타이밍]]을 참고한다.
 
 추가로 자주 보이는 오해 세 가지:
 
@@ -118,7 +137,18 @@ nextTick과 setImmediate의 이름은 사실 서로 뒤바뀌어야 맞다.
 ## 출처
 
 - [HTML Standard, Event loops](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops)
+- [HTML Standard, Timers](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers)
+- [HTML Standard, The WindowOrWorkerGlobalScope mixin](https://html.spec.whatwg.org/multipage/webappapis.html#windoworworkerglobalscope-mixin)
+- [Web IDL Standard, ConvertToInt](https://webidl.spec.whatwg.org/#abstract-opdef-converttoint)
+- [ECMAScript Language Specification, CreateResolvingFunctions](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-createresolvingfunctions)
+- [ECMAScript Language Specification, PerformPromiseThen](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-performpromisethen)
+- [MDN, Window: setTimeout() method](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout)
+- [Node.js, Timers](https://nodejs.org/api/timers.html)
 - [Node.js Event Loop, Timers, and nextTick](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick)
 - [Node.js, When to use `queueMicrotask()` vs. `process.nextTick()`](https://nodejs.org/api/process.html#when-to-use-queuemicrotask-vs-processnexttick)
 - [Node.js v26.7.0 task_queues.js — Node.js](https://github.com/nodejs/node/blob/v26.7.0/lib/internal/process/task_queues.js)
 - [Node.js v26.7.0 timers.js — Node.js](https://github.com/nodejs/node/blob/v26.7.0/lib/internal/timers.js)
+- [WebKit DOMTimer.cpp (main 73aa6c8) — WebKit](https://github.com/WebKit/WebKit/blob/73aa6c89e2cb77c46184a81aec944e4ab99d114d/Source/WebCore/page/DOMTimer.cpp)
+- [모던 자바스크립트 딥다이브 스터디 #9-2 (CH 37, 42) — FE재남](https://www.youtube.com/watch?v=DnsAOh_sw5o)
+- [모던 자바스크립트 딥다이브 스터디 #10-2 (CH 41 , 43) — FE재남](https://www.youtube.com/watch?v=8_2kse0fgMk)
+- [모던 자바스크립트 딥다이브 스터디 #10-3 (CH 45 프로미스) — FE재남](https://www.youtube.com/watch?v=VEux0lApQ4c)

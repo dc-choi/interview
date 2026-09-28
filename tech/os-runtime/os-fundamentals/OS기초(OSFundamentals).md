@@ -18,6 +18,7 @@ aliases: ["OS Fundamentals"]
 ## 프로세스 & 스케줄링
 - [x] [[Process-Lifecycle|Process lifecycle (PCB, 상태, fork/exec, 좀비, 쓰레드, 컴파일)]]
 - [x] [[Context-Switching|Context switching (CPU 스케줄링, FIFO, SJF, RR, MLFQ)]]
+- [x] [[Sleep-and-Timing|Sleep과 타이밍 (대기와 준비 전이, 타이머 해상도, 단조 증가 카운터, sleep 기반 동기화의 경쟁 상태, 지터와 난수)]]
 
 ## 메모리 & 스토리지
 - [x] [[Stack-vs-Heap|스택 vs 힙 (수명, LIFO 한계, 스레드 공유, 메모리 풀, 파편화, GC 컴팩션)]]

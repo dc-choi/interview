@@ -129,6 +129,7 @@ I/O 요청과 interrupt는 스케줄러 진입점이 될 수 있지만 실제 co
 - [[Process-Lifecycle|프로세스 생명주기]]
 - [[Concurrency-and-Process|동시성과 프로세스]]
 - [[Virtual-Memory|가상 메모리]]
+- [[Sleep-and-Timing|Sleep과 타이밍 (대기 후 준비 큐 복귀와 스케줄링 지연)]]
 
 ## 출처
 

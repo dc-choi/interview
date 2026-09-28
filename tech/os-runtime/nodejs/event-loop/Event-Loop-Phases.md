@@ -8,7 +8,7 @@ aliases: ["Event Loop Phases", "이벤트 루프 페이즈"]
 
 # 이벤트 루프 — 페이즈와 실행 순서
 
-libuv 소스 기반 페이즈 구조, nextTick, microtask 삽입 지점, 실행 순서 심화, 타이머 심화.
+libuv 소스 기반 페이즈 구조, nextTick, microtask 삽입 지점, 실행 순서 심화. 타이머 심화는 [[Event-Loop-Phases-Timers|별도 문서]]에서 다룬다.
 
 ## libuv `uv_run` 소스코드
 이벤트 루프의 실제 구현체. 각 페이즈를 순회하며 등록된 콜백을 처리한다.
@@ -163,22 +163,7 @@ James Snell의 또 다른 핵심 발언:
 - timer/I/O 콜백 경계에서는 CJS/ESM 모두 nextTick을 먼저 처리한다. Promise/`queueMicrotask` 콜백 내부에서는 둘 다 현재 microtask 대기열을 먼저 비운다(Node.js v26.7.0 소스와 실행으로 확인).
 
 ## 타이머 심화
-
-### setTimeout 타임아웃 0
-- 콜백은 현재 함수 실행 후 가능한 한 빨리 실행
-- 실행을 뒤로 미룰 수는 있지만 무거운 계산 자체가 이벤트 루프를 막는 문제는 해결하지 못함. 계산 분할이나 Worker Threads 검토
-- **실제 지연은 0이 아니라 1ms**: 딜레이가 1 미만이거나 2147483647(약 24.8일) 초과면 1로 클램프된다. `setTimeout(fn, 0)`은 내부적으로 `setTimeout(fn, 1)`이다.
-
-### setImmediate와 setTimeout(0) 선택
-둘의 상대 순서는 예약한 문맥과 이벤트 루프 상태에 달려 있어 일반적인 속도 순위를 만들 수 없다. I/O 콜백 안에서 다음 실행 기회로 미룰 때는 poll 뒤 check에 놓이는 `setImmediate()`의 순서가 예측 가능하다. 타이머 임계값 이후 실행이라는 의미가 필요하면 `setTimeout()`을 쓴다.
-
-### setInterval의 한계
-- 간격은 정확한 실행 시각이 아니라 실행 가능해지는 임계값이다.
-- 같은 JavaScript 이벤트 루프 스레드에서는 콜백 실행이 서로 겹치지 않는다. 긴 콜백 때문에 후속 실행이 지연되고 기대한 주기가 깨질 수 있다.
-- 완료 시점부터 일정 간격을 두려면 **재귀적 setTimeout**으로 콜백 완료 후 다음 실행을 예약한다.
-
-### setImmediate()
-- `setTimeout(() => {}, 0)`과 유사하지만 Node.js 이벤트 루프의 check 단계에서 실행
+setTimeout의 지연 값 보정, setImmediate와 setTimeout(0)의 선택, setInterval의 한계는 [[Event-Loop-Phases-Timers|이벤트 루프 — 타이머 심화]]에서 다룬다.
 
 ## 출처
 - [Node.js 공식 문서, The Node.js Event Loop](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)
