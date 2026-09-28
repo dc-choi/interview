@@ -67,7 +67,7 @@ HTTP는 각 요청을 다른 요청과 독립적으로 해석하는 무상태 �
 | 렌더링 엔진 | DOM과 CSSOM | 렌더 트리, 레이아웃, 페인트 |
 | 스크립트 엔진 | JavaScript | DOM 변경, 네트워크 요청, 이벤트 처리 |
 
-파서는 토큰화와 트리 구성으로 텍스트를 DOM으로 만들고, 렌더링 엔진은 DOM과 CSSOM을 합쳐 보이는 노드만으로 렌더 트리를 만든 뒤 위치를 계산하고 그린다. 스크립트 엔진은 JavaScript를 파싱, 컴파일, 실행하며, 스크립트가 DOM을 바꾸면 렌더링이 다시 일어난다. 실제 브라우저에서는 파서가 렌더링 엔진 안에 구현되는 경우가 많고 스크립트 엔진은 별도 구성 요소다. 세 작업이 한 메인 스레드를 나눠 쓰므로 긴 스크립트는 화면 갱신을 막는다 ([[Browser-Main-Thread]]). 엔진 내부 구조는 [[V8]], DOM 조작 API는 [[Browser-DOM-Manipulation-and-Safety]]에서 다룬다.
+파서는 토큰화와 트리 구성으로 텍스트를 DOM으로 만들고, 렌더링 엔진은 DOM과 CSSOM을 합쳐 `display: none`처럼 박스를 만들지 않는 노드를 뺀 렌더 트리를 만든 뒤 위치를 계산하고 그린다. `visibility: hidden` 노드는 보이지 않아도 공간을 차지하므로 렌더 트리에 남는다. 스크립트 엔진은 JavaScript를 파싱, 컴파일, 실행하며, 스크립트가 DOM을 바꾸면 렌더링이 다시 일어난다. 실제 브라우저에서는 파서가 렌더링 엔진 안에 구현되는 경우가 많고 스크립트 엔진은 별도 구성 요소다. 세 작업이 한 메인 스레드를 나눠 쓰므로 긴 스크립트는 화면 갱신을 막는다 ([[Browser-Main-Thread]]). 엔진 내부 구조는 [[V8]], DOM 조작 API는 [[Browser-DOM-Manipulation-and-Safety]]에서 다룬다.
 
 ## 트레이드오프
 
@@ -90,6 +90,8 @@ HTTP는 각 요청을 다른 요청과 독립적으로 해석하는 무상태 �
 - [웹 서비스 3대 요소 — 널널한 개발자 TV](https://www.youtube.com/watch?v=byR3BcrChT8&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=11)
 - [MDN, Client-Server overview](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/First_steps/Client-Server_overview)
 - [MDN, Populating the page: how browsers work](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work)
+- [W3C, CSS 2.2 Visual effects](https://www.w3.org/TR/CSS22/visufx.html)
+- [모던 자바스크립트 딥다이브 스터디 #8-1 (CH 38 브라우저의 렌더링 과정) — FE재남](https://www.youtube.com/watch?v=lO6gsAQWfjM)
 
 ## 관련 문서
 

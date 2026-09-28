@@ -3,7 +3,7 @@ tags: [runtime, nodejs]
 status: done
 category: "OS & Runtime"
 aliases: ["Async Internals Mechanism", "비동기 내부 메커니즘"]
-verified_at: 2026-07-21
+verified_at: 2026-09-27
 ---
 
 # 비동기 내부 동작 — 메커니즘
@@ -42,6 +42,8 @@ function fetchData() {
 }
 ```
 
+Babel v8.0.6의 `_asyncToGenerator` helper는 `yield`된 값을 `Promise.resolve`로 정규화한 뒤 fulfilled면 `next(value)`, rejected면 `throw(reason)`으로 generator를 재개한다. `throw()`는 멈춘 `yield` 위치에 예외를 주입하므로 generator 안의 `try/catch`가 그 rejection을 잡는다. 네이티브 `Await`도 fulfilled 값은 normal completion, rejection 이유는 throw completion으로 async 컨텍스트를 재개한다. 직접 만든 runner가 `then`으로 `next`만 연결하면 generator 안의 `try/catch`는 실행되지 않는다. rejection이 어디로 가는지는 runner 구조가 정한다. `return Promise.resolve(value).then(step)`처럼 `then` 체인을 반환하는 runner는 rejection을 자신이 반환한 Promise로 넘긴다. 위 helper에서 `_throw`만 뺀 형태처럼 `new Promise` executor 안에서 `Promise.resolve(value).then(_next)`만 호출하면 runner의 Promise는 settle되지 않고, `then`이 만든 Promise의 rejection은 처리되지 않은 채 unhandled rejection이 된다. 기본 설정의 Node.js v26.7.0에서는 이때 프로세스가 exit code 1로 종료됐다.
+
 ## Promise와 resolver capability
 
 JavaScript `Promise` 인스턴스의 공개 API는 `then`, `catch`, `finally`처럼 결과를 관찰하고 후속 작업을 연결하는 쪽이다. 인스턴스 자체에 공개 `resolve`나 `reject` 메서드가 있는 것이 아니다. `new Promise(executor)`가 executor에 전달하는 resolver 함수나 `Promise.withResolvers()`가 별도로 반환하는 `resolve`와 `reject`가 해당 Promise를 settle할 수 있다.
@@ -67,14 +69,14 @@ const a = await getA();
 const b = await getB();
 const c = await getC();
 
-// 독립 작업을 먼저 시작한다. 총 시간은 가장 느린 작업에 가까워질 수 있다.
-const promiseA = getA();  // 즉시 시작
-const promiseB = getB();  // 즉시 시작
-const promiseC = getC();  // 즉시 시작
-const a = await promiseA;
-const b = await promiseB;
-const c = await promiseC;
+// 독립 작업을 먼저 시작하고 하나의 집계 Promise로 결과와 오류를 함께 관찰한다.
+// 총 시간은 가장 느린 작업에 가까워질 수 있다.
+const [a, b, c] = await Promise.all([getA(), getB(), getC()]);
 ```
+
+이미 시작한 Promise를 변수에 담아 `await promiseA; await promiseB;`처럼 하나씩 기다리면 뒤쪽 Promise의 rejection 관찰이 늦어진다. `promiseA`를 기다리는 동안 `promiseB`가 reject되면 그 시점의 `promiseB`에는 rejection handler가 없다. Node.js는 handler 없이 reject된 Promise를 기록해 두고, 현재 콜백이 끝난 뒤 nextTick과 microtask 대기열을 비운 직후(v26.7.0 `processTicksAndRejections`)에도 handler가 없으면 `unhandledRejection`으로 처리한다. `process.nextTick`이나 microtask 안에서 붙인 handler는 이 확인 전에 붙으므로 unhandled로 처리되지 않지만, `setImmediate`나 `setTimeout` 콜백에서 붙인 handler는 같은 이벤트 루프 반복 안에서 실행되더라도 늦다(Node.js v26.7.0에서 확인). v15부터 기본값인 `--unhandled-rejections=throw` 모드에서는 listener가 없으면 이를 uncaught exception으로 올린다. 그래서 뒤의 `await`에 도달해 `catch`가 실행되기 전에 프로세스가 exit code 1로 종료된다. `uncaughtException` handler도 없는 기본 설정의 동작이다([[Error-Handling-Paths#Promise 에러|Promise 에러 경로]]).
+
+Node.js v26.7.0에서 100ms 뒤 fulfilled되는 A와 10ms 뒤 reject되는 B를 이 형태로 `try/catch` 안에서 기다리자 `catch`에 도달하지 못하고 exit code 1로 종료됐다. A가 먼저 reject되어 `catch`로 빠져나간 경우에도 나중에 reject된 B가 관찰되지 않아 같은 방식으로 종료됐다. `Promise.all`은 입력마다 `then`으로 handler를 등록하므로 뒤따르는 rejection도 unhandled로 남지 않는다. 실패한 결과까지 따로 다뤄야 하면 `Promise.allSettled`로 묶는다(아래 3번 예시).
 
 ### 2. Promise.all() — 배열 병렬 처리
 ```javascript
@@ -99,13 +101,13 @@ const results = await Promise.allSettled([
     fetch('/api/c'),
 ]);
 
-results.forEach(result => {
+for (const result of results) {
     if (result.status === 'fulfilled') {
         console.log('성공:', result.value);
     } else {
         console.log('실패:', result.reason);
     }
-});
+}
 ```
 
 ### 4. for await...of — 비동기 이터레이션
@@ -124,10 +126,20 @@ async function processSequentially(promises) {
 ## 출처
 
 - [ECMAScript, Await 추상 연산](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#await)
+- [ECMAScript, PerformPromiseAll](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-performpromiseall)
 - [Babel transform-async-to-generator](https://babeljs.io/docs/babel-plugin-transform-async-to-generator)
+- [Babel v8.0.6 asyncToGenerator helper — Babel](https://github.com/babel/babel/blob/v8.0.6/packages/babel-helpers/src/helpers/asyncToGenerator.ts)
+- [MDN, Generator.prototype.throw()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator/throw)
+- [Node.js, --unhandled-rejections=mode](https://nodejs.org/api/cli.html#--unhandled-rejectionsmode)
+- [Node.js, Event: 'unhandledRejection'](https://nodejs.org/api/process.html#event-unhandledrejection)
+- [Node.js, Event: 'uncaughtException'](https://nodejs.org/api/process.html#event-uncaughtexception)
+- [Node.js v26.7.0 task_queues.js — Node.js](https://github.com/nodejs/node/blob/v26.7.0/lib/internal/process/task_queues.js)
+- [Node.js v26.7.0 promises.js — Node.js](https://github.com/nodejs/node/blob/v26.7.0/lib/internal/process/promises.js)
+- [모던 자바스크립트 딥다이브 스터디 #11-1 (CH 46 제네레이터와 async/await) — FE재남](https://www.youtube.com/watch?v=IyLdUbzyqcs)
+- [모던 자바스크립트 딥다이브 스터디 #10-3 (CH 45 프로미스) — FE재남](https://www.youtube.com/watch?v=VEux0lApQ4c)
 
 ## 실행 큐 우선순위 & 실행 순서
-[[Event-Loop|이벤트 루프]] 문서의 "실행 순서 분석" 및 "페이즈 간 nextTickQueue & microTaskQueue" 섹션 참조.
+[[Event-Loop-Microtask#실행 순서|실행 순서]]와 [[Event-Loop-Phases#페이즈 간 nextTickQueue & microTaskQueue|페이즈 간 nextTickQueue와 microTaskQueue]] 참조.
 
 ## 관련 문서
 - [[Async-Internals-Patterns|비동기 내부 동작 — 패턴과 함정]]

@@ -129,3 +129,4 @@ Q. HttpOnly 쿠키를 쓰면 XSS로부터 안전한가?
 - [[CORS|CORS]]
 - [[Cookie|Cookie]]
 - [[Application-Security|애플리케이션 보안]]
+- [[Browser-DOM-Manipulation-and-Safety#id 조회와 window named access|DOM clobbering]]

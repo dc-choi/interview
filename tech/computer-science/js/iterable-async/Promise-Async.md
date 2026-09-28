@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, async, promise]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-27
 category: "CS - JavaScript"
 aliases: ["Promise와 Async", "JavaScript Promise"]
 ---
@@ -47,6 +47,27 @@ fetchUser()
 
 중첩 Promise가 평탄해 보이는 이유는 Promise resolution procedure가 thenable을 동화하기 때문이다. 이것을 일반적인 container의 `map`과 동일하다고 단정하면 Promise의 eager 실행과 rejection channel을 놓친다.
 
+`catch(onRejected)`는 `then(undefined, onRejected)`의 축약이다. 그러나 `then(onFulfilled, onRejected)`의 두 handler는 원본 Promise의 결과에만 반응하므로, 같은 `then`의 `onFulfilled`가 throw해도 옆의 `onRejected`는 호출되지 않는다. 그 오류는 `then`이 반환한 새 Promise를 reject해 다음 단계로 넘어간다.
+
+```ts
+loadUser()
+  .then(
+    (user) => render(user), // 여기서 throw하면
+    (error) => showLoadError(error), // 이 handler는 호출되지 않는다
+  )
+  .catch((error) => report(error)); // render의 오류는 여기서 받는다
+```
+
+성공 처리 중의 오류까지 한 경계에서 다루려면 `.then(onFulfilled).catch(onRejected)`로 나눈다. 두 인수 형태는 원본의 실패만 골라 처리하고 성공 handler의 오류는 다음 단계로 넘길 때 쓴다.
+
+`finally(onFinally)`는 fulfilled와 rejected 양쪽에서 실행되지만 `then(onFinally, onFinally)`와 다르다.
+
+- `onFinally`는 인수를 받지 않고, 반환한 일반 값은 무시된다. 결과 Promise는 원본의 값이나 rejection 이유를 이어받으므로 `finally`는 실패를 복구하지 않는다.
+- `onFinally`가 Promise를 반환하면 그 Promise가 settled될 때까지 다음 단계가 기다린다.
+- `onFinally`가 throw하거나 rejected Promise를 반환하면 결과 Promise는 그 이유로 reject되어 원래 값이나 오류를 덮는다.
+
+원본이 reject된 `.catch().finally().then()`에서 마지막 `then`이 실행되는 것은 `finally` 때문이 아니라 앞선 `catch`가 fulfilled로 복구했기 때문이다. 원본이 fulfilled면 `catch`를 건너뛰고 원래 값이 `then`에 전달된다. `finally`는 로딩 상태 해제, lock 반환처럼 결과와 무관한 정리에 쓰고, 정리 로직의 실패가 원래 오류를 가리지 않게 한다.
+
 ## async/await의 의미
 
 - async function은 호출 결과를 Promise로 반환한다.
@@ -77,7 +98,7 @@ const policyPromise = loadPolicy();
 const [user2, policy] = await Promise.all([userPromise, policyPromise]);
 ```
 
-`Promise.all`은 입력 순서로 성공 값을 반환하고 하나가 reject되면 결과 Promise를 reject한다. 다른 작업을 취소하지는 않는다. `Promise.allSettled`는 각 결과를 모두 수집하지만 실패를 성공으로 바꾸는 것은 아니므로 caller가 정책을 결정해야 한다. 큰 입력에는 [[JavaScript-Async-Iterable-Pipelines|bounded concurrency와 backpressure]]를 적용한다.
+`Promise.all`은 입력 순서로 성공 값을 반환하고 하나가 reject되면 결과 Promise를 reject한다. 다른 작업을 취소하지는 않는다. 먼저 시작한 Promise는 `Promise.all`에 곧바로 넘겨 모든 입력에 handler를 붙인다. 하나씩 `await`하면 앞의 대기 중에 reject된 뒤쪽 Promise가 unhandled rejection이 되어 Node.js 기본 설정에서 프로세스가 종료될 수 있다([[Async-Internals-Mechanism#Promise 최적화 패턴|Promise 최적화 패턴]]). `Promise.allSettled`는 각 결과를 모두 수집하지만 실패를 성공으로 바꾸는 것은 아니므로 caller가 정책을 결정해야 한다. 큰 입력에는 [[JavaScript-Async-Iterable-Pipelines|bounded concurrency와 backpressure]]를 적용한다.
 
 ## 오류 경계
 
@@ -123,6 +144,9 @@ Promise는 `.then`으로 비동기 계산을 합성할 수 있어 모나드와 �
 - [ECMAScript Language Specification, Promise objects](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise-objects)
 - [ECMAScript Language Specification, async function definitions](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-async-function-definitions)
 - [ESLint, no-return-await](https://eslint.org/docs/latest/rules/no-return-await)
+- [MDN, Promise.prototype.catch()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch)
+- [MDN, Promise.prototype.finally()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally)
+- [모던 자바스크립트 딥다이브 스터디 #10-3 (CH 45 프로미스) — FE재남](https://www.youtube.com/watch?v=VEux0lApQ4c)
 - Promise 심화: [Promise 구조](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49499), [resolve/reject](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49519), [then/catch](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49570), [chain](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49615), [all/race](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49769), [오류 흐름](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49862)
 - Promise 합성: [callback과 Promise](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16617), [비동기를 값으로](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16618), [Promise 값 활용](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16619), [Promise와 모나드](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16620), [Kleisli composition](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16621), [비동기 pipeline](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16622), [then 규칙](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16623)
 - async/await와 오류: [async/await](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16636), [Array map과 async map](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16637), [await와 pipeline](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16638), [함께 사용하기](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16639), [동기 오류](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16640), [비동기 오류](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16641), [pipeline 오류 경계](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16642), [마무리](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16643)

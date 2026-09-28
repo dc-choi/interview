@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, number, unicode, string, regexp]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-25
 category: "CS - JavaScript"
 aliases: ["JavaScript Numbers Strings RegExp", "JavaScript 숫자 문자열 정규표현식"]
 ---
@@ -38,13 +38,25 @@ const nearlyEqual = (a: number, b: number) =>
 
 `Number(value)`는 Number primitive로 변환하고 `new Number(value)`는 wrapper object를 만든다. wrapper는 내부 값이 0이나 `false`여도 object 자체가 truthy이므로 일반 application 값으로 만들지 않는다. `String`/`Boolean` wrapper도 같은 함정이 있다.
 
-- `parseInt(text, radix)`는 문자열 앞부분을 정수로 해석한다. radix를 명시하고 전체 문자열 검증이 필요하면 별도 grammar/schema를 사용한다.
+primitive에서 property나 method를 읽으면 명세상 `ToObject`로 만든 wrapper를 거쳐 조회하므로 `"abc".slice(1)`이 동작한다. 이 wrapper는 코드에서 참조할 수 없고 engine은 실제 객체 생성을 생략할 수 있다. 쓰기도 같은 경로를 거치지만 primitive에 남는 결과는 없다.
+
+```js
+"use strict";
+const text = "abc";
+text[0] = "x"; // TypeError: string index property는 writable이 false다
+text.meta = 1; // TypeError: primitive에는 property를 만들 수 없다
+```
+
+sloppy code에서는 두 대입이 오류 없이 무시되고 `text`는 `"abc"`로 남는다. 문자열을 바꾸려면 `slice`, `replace`, template literal로 새 문자열을 만든다.
+
+- `parseInt(text, radix)`는 첫 인자를 문자열로 바꾼 뒤 앞부분을 정수로 해석한다. radix를 생략하거나 0이면 10진수로 보되, 앞 공백과 부호를 뺀 문자열이 `0x`/`0X`로 시작하면 16진수로 읽어 `parseInt("0x1A")`는 26이다. `parseInt(0.0000001)`은 `"1e-7"`의 앞부분만 읽어 1이 된다. radix를 명시하고, 소수 버림에는 `Math.trunc`를 쓰며, 전체 문자열 검증이 필요하면 별도 grammar/schema를 사용한다.
 - `parseFloat`도 해석 가능한 prefix 뒤를 무시할 수 있다. strict numeric input에 그대로 쓰지 않는다.
 - `toString(radix)`, `toExponential`, `toFixed`는 문자열을 반환한다. 표시용 rounding과 회계 계산을 섞지 않는다.
-- `toLocaleString(locale, options)`은 국제화 표시 API다. machine-readable serialization이나 DB key로 쓰지 않는다.
+- `toFixed(digits)`는 소스에 적은 십진 소수가 아니라 binary64로 저장된 값을 기준으로 가장 가까운 자릿수를 고르고, 정확히 중간이면 절댓값이 큰 쪽을 택한다. 저장값이 조금 작은 `(2.55).toFixed(1)`은 `"2.5"`, `(1.005).toFixed(2)`는 `"1.00"`이고 `(-2.5).toFixed(0)`은 `"-3"`이다. 십진 반올림이 업무 규칙이면 위 금액 표현 원칙을 따른다.
+- `toLocaleString(locale, options)`은 국제화 표시 API다. machine-readable serialization이나 DB key로 쓰지 않는다. 일반 숫자의 소수 자릿수는 기본 최대 3자리로 반올림되어 천 단위 구분만 기대한 `(1234.5678).toLocaleString("ko-KR")`도 `"1,234.568"`이 되므로 `minimumFractionDigits`/`maximumFractionDigits`를 명시한다. 같은 locale과 옵션으로 반복 포맷하면 `Intl.NumberFormat` 인스턴스를 만들어 `format()`을 재사용한다.
 - Number 상수는 표현 범위를 설명하지만 `MIN_VALUE`는 가장 작은 양의 Number이지 가장 작은 음수가 아니다.
 
-`Math.floor`/`ceil`/`round`/`trunc`는 음수에서 서로 다른 결과를 낸다. `Math.random()`은 simulation/UI 용도의 의사 난수이며 token, password, nonce에는 Web Crypto/Node `crypto`의 CSPRNG를 쓴다.
+`Math.floor`/`ceil`/`round`/`trunc`는 음수에서 서로 다른 결과를 낸다. `Math.floor(-1.2)`는 -2, `Math.trunc(-1.2)`는 -1이다. `Math.round`는 소수부가 정확히 0.5이면 +∞ 방향을 택해 `Math.round(2.5)`는 3, `Math.round(-2.5)`는 -2이므로 0에서 먼 쪽을 택하는 다른 언어의 round나 `toFixed`와 음수에서 결과가 다르다. `Math.max()`와 `Math.min()`은 인자가 없으면 각각 `-Infinity`, `Infinity`를 반환해 빈 배열을 펼친 `Math.max(...values)`는 오류 없이 `-Infinity`가 되고 `JSON.stringify`에서는 `null`로 바뀐다. 빈 목록을 먼저 분기하고, 큰 배열의 spread 한계는 [[JavaScript-Function-Objects-and-Calls-Parameters#parameter 목록|argument 개수 한계]]를 따른다. `Math.random()`은 simulation/UI 용도의 의사 난수이며 token, password, nonce에는 Web Crypto/Node `crypto`의 CSPRNG를 쓴다.
 
 ## UTF-16, code point와 grapheme
 
@@ -58,11 +70,12 @@ text.length; // 2 code units
 
 - `codePointAt`/`fromCodePoint`는 code point를 다룬다.
 - `for...of`와 string iterator는 code point 단위로 전진하지만 grapheme 단위는 아니다.
+- `split("")`은 UTF-16 code unit 단위로 나눠 surrogate pair를 깨뜨린다. `"😀".split("")`은 원소 2개를 만들므로 code point 배열은 `[...text]`로 만든다.
 - 사용자 표시 단위 분할에는 `Intl.Segmenter` 같은 grapheme-aware API를 검토한다.
 - `normalize("NFC")`는 canonically equivalent한 표현을 통일한다. NFKC/NFKD는 compatibility character를 바꿀 수 있으므로 일반 기본값으로 단정하지 않는다.
 - normalization만으로 confusable, spoofing이나 identifier security가 해결되지는 않는다.
 
-`startsWith`, `endsWith`, `includes`, `repeat`, `padStart`/`padEnd`, `trimStart`/`trimEnd`는 편리하지만 index/length는 여전히 code unit 기준이다. padding은 화면 폭 정렬을 보장하지 않고 trim은 명세의 whitespace 집합만 제거한다.
+`startsWith`, `endsWith`, `includes`, `repeat`, `padStart`/`padEnd`, `trimStart`/`trimEnd`는 편리하지만 index/length는 여전히 code unit 기준이다. padding은 화면 폭 정렬을 보장하지 않고 trim은 명세의 whitespace 집합만 제거한다. `startsWith(search, position)`의 두 번째 인자는 검색 문자열이 시작할 index이고 `endsWith(search, endPosition)`의 두 번째 인자는 검색 문자열이 끝나는 위치(마지막 문자 index + 1)라 `"Hello".endsWith("l", 4)`는 `"Hell"`을 기준으로 true다. `startsWith`, `endsWith`, `includes`는 RegExp 인자를 받으면 `TypeError`를 던지므로 pattern 검색에는 `RegExp.prototype.test`나 `search`를 쓴다.
 
 ## 문자열 API 선택
 
@@ -72,6 +85,15 @@ text.length; // 2 code units
 - `slice`는 음수 index를 지원하고 시작/끝의 순서를 바꾸지 않는다. `substring`은 음수를 0처럼 처리하고 두 index 순서를 바꿀 수 있다. `substr`은 legacy 기능이므로 새 코드에서 사용하지 않는다.
 - `concat`보다 `+`나 template literal이 읽기 쉬운 경우가 많다. case conversion은 locale/언어 규칙과 identifier 보안 요구를 별도로 확인한다.
 - `match`, `replace`, `search`, `split`의 동작은 인자로 전달한 RegExp의 flag와 protocol method에 따라 달라진다.
+- `replace`에 문자열 pattern을 넘기면 첫 번째 일치만 바꾼다. 전체 치환에는 `replaceAll`을 쓰며 `g` flag 없는 RegExp를 넘기면 `TypeError`다. 외부 입력으로 `new RegExp(input, "g")`를 만들면 특수 문자가 pattern으로 해석되므로 문자열 그대로 `replaceAll`에 넘긴다.
+- replacement 문자열의 `$&`, `$$`, `` $` ``, `$'`는 특수 pattern이다(`$n`, `$<name>`은 RegExp pattern일 때만). 외부 입력을 치환 값으로 넣을 때는 반환값에 특수 pattern이 적용되지 않는 replacement 함수를 쓴다. 함수는 `(match, p1, ..., pN, offset, string, groups)`를 받아 일치마다 다른 값을 만들 수 있다.
+
+```ts
+const userInput = "$&!";
+"Hello, NAME".replace("NAME", userInput); // "Hello, NAME!"
+"Hello, NAME".replace("NAME", () => userInput); // "Hello, $&!"
+"createdAt".replace(/[A-Z]/g, (match) => `_${match.toLowerCase()}`); // "created_at"
+```
 
 Boolean conversion에서는 `undefined`, `null`, `false`, `+0`, `-0`, `0n`, `NaN`, 빈 문자열이 falsy이고 object는 모두 truthy다. 빈 배열, 빈 object와 `new Boolean(false)`도 truthy다.
 
@@ -84,8 +106,15 @@ Boolean conversion에서는 `undefined`, `null`, `false`, `+0`, `-0`, `0n`, `NaN
 - 실패하면 stateful regexp의 `lastIndex`가 0으로 reset될 수 있다.
 - `u`/`v`는 Unicode-aware pattern 의미를 제공하고 `s`는 dot이 line terminator도 match하게 한다.
 - `d`는 match indices를 요청한다. 지원 runtime과 필요한 semantics를 함께 확인한다.
+- `i`는 대소문자를 구분하지 않는다. `m`은 다음 줄까지 검색하게 하는 flag가 아니라 `^`와 `$`가 문자열 전체의 양끝뿐 아니라 각 줄의 시작과 끝에도 match하게 바꾸므로, pattern에 `^`/`$`가 없으면 결과가 달라지지 않는다.
 
-외부 입력으로 pattern을 직접 만들지 않고 catastrophic backtracking 가능성을 제한한다. validation regex가 Unicode normalization, 길이 제한과 domain parser를 대체하지 않게 한다.
+입력 전체를 검증하는 pattern은 `^`와 `$`로 양끝을 고정한다. 앵커가 없으면 `/\d{3}-\d{4}-\d{4}/.test("010-1234-56789")`처럼 일부만 맞아도 true이고, 검증 pattern에 `m`을 붙이면 `/^\d+$/m.test("abc\n123")`처럼 한 줄만 맞아도 통과한다.
+
+`\d`는 `[0-9]`, `\w`는 `[A-Za-z0-9_]`인 ASCII 집합이라 `u` flag를 붙여도 한글이나 다른 문자 체계의 숫자를 포함하지 않는다(`i`와 함께 `u`나 `v`를 쓰면 `\w`에 case folding으로 U+017F, U+212A 같은 문자가 더해진다). 완성형 한글 음절은 `[가-힣]`(U+AC00부터 U+D7A3)으로 거를 수 있지만 `ㄱ`, `ㅏ` 같은 호환 자모(U+3131부터)는 범위 밖이고 NFD로 분해된 한글도 맞지 않으므로 먼저 `normalize("NFC")`를 적용한다. 자모까지 허용하려면 `u` flag와 `\p{Script=Hangul}`을 검토한다.
+
+외부 입력으로 pattern을 직접 만들지 않고 catastrophic backtracking 가능성을 제한한다. 검색어처럼 사용자 입력을 literal로 찾아야 하면 `new RegExp(RegExp.escape(keyword), "i")`처럼 escape한 뒤 넣고, `replaceAll`로 backslash를 붙이는 escape를 직접 구현하지 않는다. `RegExp.escape`는 ES2025에 포함됐고 Node.js는 V8 13.6을 탑재한 24.0.0부터 제공하므로 더 낮은 runtime에서는 지원 여부를 확인한다. validation regex가 Unicode normalization, 길이 제한과 domain parser를 대체하지 않게 한다.
+
+이메일 형식은 RFC 5322 전체를 흉내 낸 긴 정규표현식보다 HTML `input type="email"`의 valid email address 정의를 기준으로 삼는 편이 실용적이다. 이 정의는 RFC 5322가 `@` 앞은 너무 엄격하고 뒤는 너무 모호하며 comment, 공백, quoted string을 허용할 만큼 느슨하다는 이유로 의도적으로 따르지 않고, 같은 정의의 JavaScript 호환 정규표현식을 함께 제공한다. 이 정규표현식은 ASCII 주소만 받으므로 국제화 도메인은 punycode로 바꿔 검사하고, 비ASCII local part를 받아야 하면 별도 정책을 둔다. 형식 검사는 수신 가능 여부를 확인하지 않으므로 소유 확인이 필요하면 확인 메일 같은 별도 절차를 둔다.
 
 ## 백엔드 적용
 
@@ -100,6 +129,25 @@ Boolean conversion에서는 `undefined`, `null`, `false`, `+0`, `-0`, `0n`, `NaN
 - [ECMAScript Language Specification, Number objects](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-number-objects)
 - [ECMAScript Language Specification, String objects](https://tc39.es/ecma262/multipage/text-processing.html#sec-string-objects)
 - [ECMAScript Language Specification, RegExp objects](https://tc39.es/ecma262/multipage/text-processing.html#sec-regexp-regular-expression-objects)
+- [ECMAScript Language Specification, parseInt](https://tc39.es/ecma262/multipage/global-object.html#sec-parseint-string-radix)
+- [ECMAScript Language Specification, GetValue](https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-getvalue)
+- [ECMAScript Language Specification, PutValue](https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-putvalue)
+- [ECMAScript Language Specification, StringGetOwnProperty](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-stringgetownproperty)
+- [MDN, parseInt()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt)
+- [MDN, Strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode)
+- [ECMAScript Language Specification, Number.prototype.toFixed](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-number.prototype.tofixed), [Math.round](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-math.round), [Math.max](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-math.max)
+- [MDN, Number.prototype.toFixed()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed), [Number.prototype.toLocaleString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toLocaleString), [Intl.NumberFormat() constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat), [Math.round()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round), [Math.max()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/max)
+- [MDN, String.prototype.split()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split), [String.prototype.endsWith()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith), [String.prototype.replace()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace), [String.prototype.replaceAll()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replaceAll)
+- [MDN, RegExp.prototype.multiline](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/multiline), [Character class escape](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Character_class_escape), [Unicode character class escape](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Unicode_character_class_escape), [RegExp.escape()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/escape)
+- [Unicode, Blocks.txt](https://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt), [UnicodeData.txt](https://www.unicode.org/Public/UCD/latest/ucd/UnicodeData.txt)
+- [ECMAScript Language Specification, WordCharacters](https://tc39.es/ecma262/multipage/text-processing.html#sec-wordcharacters)
+- [HTML Living Standard, Valid email address](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address)
+- [Node.js 24.0.0 (Current) — Node.js Blog](https://nodejs.org/en/blog/release/v24.0.0)
+- [Finished Proposals — TC39](https://github.com/tc39/proposals/blob/main/finished-proposals.md)
+- [모던 자바스크립트 딥다이브 스터디 #1-3 (CH8, 9) — FE재남](https://www.youtube.com/watch?v=JFJiz7cOF78)
+- [모던 자바스크립트 딥다이브 스터디 #2-1 (CH10, 11) — FE재남](https://www.youtube.com/watch?v=5b5km0pHoIs)
+- [모던 자바스크립트 딥다이브 스터디 #7-1 (CH 28 - 31) — FE재남](https://www.youtube.com/watch?v=fVj5q2IaeAY)
+- [모던 자바스크립트 딥다이브 스터디 #7-2 (CH 32 - 33) — FE재남](https://www.youtube.com/watch?v=poVRjQyhkM0)
 - Number: [binary64/상수](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30753), [EPSILON/진수](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30754), [검사 함수](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30755)
 - String: [Unicode/UTF-16](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30757), [code point/normalize](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30758), [검색/반복](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30759), [padding/trim](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30760)
 - [Math 함수](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30785)

@@ -38,7 +38,7 @@ Artem Sapegin의 글 *Washing your code: don't make me think*를 요약한다. �
 암호화된 관용구. **`Array.from({ length: 10 }, (_, i) => i)`** 로 의도를 드러낸다.
 
 ### 회색 지대: `.filter(Boolean)`
-간결하지만 **0과 빈 문자열도 제거**된다. null만 거르고 싶다면 명시적으로 `(item) => item != null`. 의도가 모호한 `Boolean` 축약은 버그의 근원이 될 수 있다.
+간결하지만 **0과 빈 문자열도 제거**된다. `null`과 `undefined`만 거르려면 `(item) => item != null`을 쓴다. 느슨한 동등 비교에서 `null`과 `undefined`는 서로 같으므로 `null`만 거를 때는 `(item) => item !== null`로 쓴다. 의도가 모호한 `Boolean` 축약은 버그의 근원이 될 수 있다.
 
 ---
 
@@ -122,10 +122,12 @@ Platform.OS === "web" ? B : undefined
 
 - [Washing your code: don't make me think — Artem Sapegin](https://sapegin.me/blog/dont-make-me-think/)
 - [ECMAScript Language Specification, Binary Logical Operators](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-binary-logical-operators-runtime-semantics-evaluation)
+- [ECMAScript Language Specification, IsLooselyEqual](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-islooselyequal)
 - [CSS Values and Units Level 4, Component value combinators](https://www.w3.org/TR/css-values-4/#component-combinators)
 
 ## 관련 문서
 - [[Readable-Code-Cognition|코드 가독성의 인지과학 (왜 어떤 코드는 읽기 쉬운가)]]
+- [[JavaScript-Expressions-Control-Flow-and-Coercion|JavaScript 표현식과 타입 변환]]
 - [[Promise-Async|Promise와 Async]]
 - [[SOLID-In-Practice|SOLID 원칙 실전 적용]]
 - [[Interview-Soft-Skills|면접 소프트 스킬]]

@@ -18,7 +18,7 @@ aliases: ["OpenSearch Autocomplete Operations", "OpenSearch 자동완성 운영"
 - 사용자 검색 로그는 최소 빈도, 최신성, 중복, 금칙어와 민감 정보 필터를 통과한 후보만 반영한다.
 - 문서 검색 방식은 본 검색과 같은 server-side 권한 filter를 적용한다.
 - Completion의 top-level `suggest`는 일반 query와 filter가 후보를 제한하지 않는다. 비공개 후보는 tenant나 접근 등급별 index로 분리하거나, 공식 DLS 문서가 suggester 동작을 명시하지 않으므로 target 환경에서 직접 검증한 DLS만 사용하고, 다른 권한의 후보가 나오지 않는 negative integration test를 둔다.
-- 입력마다 요청되므로 client debounce와 최소 글자 수, server rate limit을 함께 둔다.
+- 입력마다 요청되므로 client [[Browser-Main-Thread#debounce와 throttle|debounce]]와 최소 글자 수, server rate limit을 함께 둔다.
 - 실패해도 검색 입력 자체를 막지 말고 suggestion을 숨기거나 인기 검색어로 대체한다.
 
 ## 검증 체크리스트

@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, object, array, copy, prototype]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-27
 category: "CS - JavaScript"
 aliases: ["JavaScript Object Array Operations", "JavaScript 객체와 배열 연산"]
 ---
@@ -47,7 +47,15 @@ object spread도 얕은 복사지만 일반적으로 새 object에 data property
 - symbol/non-enumerable key까지 필요하면 `Reflect.ownKeys`를 쓴다.
 - `Object.getOwnPropertyDescriptors`와 `Object.defineProperties`를 조합하면 accessor/attribute를 보존할 수 있지만 prototype은 별도다.
 
-열거 순서는 명세 규칙이 있지만 이를 임의 정렬 규칙으로 사용하지 않는다. API canonicalization/signature에는 명시적 sort를 둔다.
+own key 순서는 `[[OwnPropertyKeys]]`가 정한다. ordinary object는 array index key(0부터 2^32 - 2까지 정수의 정규 문자열)를 숫자 오름차순으로 먼저 반환하고, 나머지 String key를 생성 순서로, 그 뒤에 Symbol key를 생성 순서로 반환한다. `Object.keys/values/entries`와 `JSON.stringify`의 순서를 명세가 보장한 것은 ES2020부터다. `for...in`도 ES2020부터 대상과 체인에 Proxy, TypedArray, module namespace object나 구현이 제공한 exotic object가 없고 순회 중 prototype 교체, property 삭제, prototype 쪽 property 추가, enumerable 변경이 없으면 객체마다 이 순서로 key를 방문한 뒤 prototype으로 올라간다. Array, String object, mapped arguments object처럼 목록에 없는 exotic object는 이 보장에 포함된다. ES2019까지는 명세가 `for...in` 순서를 정하지 않았고, 지금도 이 조건을 벗어나면 순서는 구현 의존이다.
+
+숫자 ID를 object key로 쓰면 이 규칙이 결과를 바꾼다. 정렬해 조회한 행을 ID key object로 모으면 열거 순서와 JSON 응답의 key 순서가 ID 오름차순으로 바뀐다. `"01"`처럼 정규 형식이 아니거나 2^32 - 1 이상인 숫자 문자열은 일반 String key라 생성 순서를 유지하므로 ID 범위에 따라 결과가 달라진다. 순서가 의미를 가지면 배열이나 삽입 순서를 보존하는 `Map`을 쓰고, API canonicalization/signature에는 명시적 sort를 둔다.
+
+```ts
+const rows = [{ id: 30 }, { id: 10 }]; // 정렬된 조회 결과
+Object.keys(Object.fromEntries(rows.map((row) => [row.id, row]))); // ["10", "30"]
+[...new Map(rows.map((row) => [row.id, row])).keys()]; // [30, 10]
+```
 
 ## prototype 변경
 
@@ -59,8 +67,8 @@ instance own function은 instance마다 새 identity/storage를 갖고 prototype
 
 ## Array 생성과 변환
 
-- `Array.from`은 iterable 또는 array-like에서 새 Array를 만들며 optional mapper를 생성 중 적용한다.
-- `Array.of(3)`은 `[3]`, `Array(3)`은 length 3의 sparse array다.
+- `Array.from`은 iterable 또는 array-like에서 새 Array를 만들며 optional mapper를 생성 중 적용한다. `Symbol.iterator`가 있으면 iterator를 먼저 쓰고 없을 때만 `length`와 index로 읽는다. 문자열은 code point 단위로 나뉘므로 UTF-16 code unit 단위인 `split('')`과 다를 수 있다. `'\u{1F600}a'.split('')`는 surrogate pair가 갈라져 3개, `Array.from('\u{1F600}a')`는 2개다.
+- `Array.of(3)`은 `[3]`, `Array(3)`은 length 3의 sparse array다. 인수가 하나이고 숫자가 아니면 `Array`는 그 값을 첫 요소로 넣으므로 쿼리 문자열의 `'5'`를 그대로 넘기면 `['5']`가 된다. 길이는 정수로 검증한 뒤 `Array.from({ length })`로 만들고 요소 목록은 `Array.of`나 literal로 만든다.
 - `Array.fromAsync`는 async/sync iterable과 array-like를 비동기로 수집하지만 전체 materialization 비용은 남는다.
 - 많은 `Array.prototype` method가 generic이라는 뜻은 `length`/indexed property contract로 다른 object에도 호출 가능하다는 뜻이지 모든 iterable에 자동 적용된다는 뜻이 아니다.
 
@@ -71,11 +79,14 @@ instance own function은 instance마다 새 identity/storage를 갖고 prototype
 | `copyWithin` | 같은 배열 범위를 겹침 안전하게 복사, 원본 mutation, 길이 유지 |
 | `fill` | 같은 value reference로 범위를 채움, 원본 mutation |
 | `find`/`findIndex` | 첫 predicate match의 값/index, 없으면 `undefined`/`-1` |
+| `findLast`/`findLastIndex` | 뒤에서부터 찾은 첫 match의 값/index, 없으면 `undefined`/`-1`, ES2023 |
 | `includes` | SameValueZero로 포함 확인 |
-| `flat` | 지정 depth만큼 새 배열로 평탄화 |
+| `flat` | 지정 depth만큼 새 배열로 평탄화, 생략하면 1, `Infinity`면 모든 중첩 해제 |
 | `flatMap` | map 뒤 depth 1만 평탄화 |
 
-`fill({})`은 각 칸에 새 object를 만드는 것이 아니라 같은 object reference를 넣는다. deep flatten, cycle 처리나 arbitrary iterable flatten은 별도 contract다.
+`fill({})`은 각 칸에 새 object를 만드는 것이 아니라 같은 object reference를 넣는다. cycle 처리나 arbitrary iterable flatten은 별도 contract다.
+
+마지막 match를 `array.reverse().find(fn)`로 찾으면 `reverse`가 원본 순서를 바꾸고 index도 `length - 1 - i`로 다시 계산해야 한다. 뒤에서부터 찾을 때는 `findLast`/`findLastIndex`를 쓴다.
 
 `entries`, `keys`, `values`는 stateful Array iterator를 반환한다. 원본 배열을 참조하므로 순회 중 mutation이 이후 관찰 결과에 영향을 줄 수 있다. 한 번 exhausted된 iterator가 reset되지는 않지만 object가 즉시 사라진다는 뜻도 아니다.
 
@@ -90,13 +101,25 @@ instance own function은 instance마다 새 identity/storage를 갖고 prototype
 
 - [ECMAScript Language Specification, Object constructor](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object-constructor)
 - [ECMAScript Language Specification, Array objects](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array-objects)
+- [ECMAScript Language Specification, String.prototype.split](https://tc39.es/ecma262/multipage/text-processing.html#sec-string.prototype.split)
+- [ECMAScript Language Specification, String iterator](https://tc39.es/ecma262/multipage/text-processing.html#sec-string.prototype-%symbol.iterator%)
+- [MDN, Array.prototype.flat()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat)
 - [HTML Standard, structured data](https://html.spec.whatwg.org/multipage/structured-data.html)
+- [ECMAScript Language Specification, OrdinaryOwnPropertyKeys](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ordinaryownpropertykeys)
+- [ECMAScript Language Specification, EnumerableOwnProperties](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-enumerableownproperties)
+- [ECMAScript Language Specification, EnumerateObjectProperties](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-enumerate-object-properties)
+- [Normative: make EnumerableOwnPropertyNames ordered — tc39/ecma262 #1793](https://github.com/tc39/ecma262/pull/1793)
+- [Normative: specify for-in enumeration order in more cases — tc39/ecma262 #1791](https://github.com/tc39/ecma262/pull/1791)
+- [Finished Proposals — tc39/proposals](https://github.com/tc39/proposals/blob/main/finished-proposals.md)
+- [모던 자바스크립트 딥다이브 스터디 #4-2 (CH 19 프로토타입) — FE재남](https://www.youtube.com/watch?v=IBUSatGNUzs)
+- [모던 자바스크립트 딥다이브 스터디 #6-2 (CH 27 배열) — FE재남](https://www.youtube.com/watch?v=bpvmUePh7ZM)
 - Object: [Object.is](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30762), [assign](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30763), [deep copy](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30764), [entries/descriptors](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30765), [prototype 호출](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30766), [instance function](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30767), [__proto__ 변경](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30768), [instance prototype 변경](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30769), [prototype 연결](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30770)
 - Array: [from/of](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30776), [copyWithin](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30777), [generic method](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30778), [find/findIndex](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30779), [fill/includes](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30780), [flat/flatMap](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30781), [entries](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30782), [keys/values](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30783)
 
 ## 관련 문서
 
 - [[JS-Value-vs-Reference|JavaScript 값과 참조]]
+- [[JavaScript-Array-Mutation-Iteration-and-Sorting|Array 변경, 순회와 빈 slot]]
 - [[Object-Property-Descriptor|property descriptor와 불변성]]
 - [[Prototype-Mechanism|Prototype 동작 원리]]
 - [[JavaScript-Iterable-Functional-Pipelines|JavaScript 이터러블 파이프라인]]

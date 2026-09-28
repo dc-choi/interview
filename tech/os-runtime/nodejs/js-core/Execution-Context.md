@@ -3,7 +3,7 @@ tags: [runtime, nodejs, javascript, execution-context, lexical-environment]
 status: done
 category: "OS & Runtime"
 aliases: ["Execution Context", "JavaScript 실행 컨텍스트"]
-verified_at: 2026-08-04
+verified_at: 2026-09-25
 ---
 
 # JavaScript 실행 컨텍스트와 환경 레코드
@@ -21,11 +21,13 @@ verified_at: 2026-08-04
 - `Function`: function code라면 실행 중인 function object
 - `Realm`: intrinsic/global environment를 소유한 Realm
 - `ScriptOrModule`: 어떤 script/module에서 시작했는지
-- `LexicalEnvironment`: 현재 lexical declaration을 찾는 Environment Record
+- `LexicalEnvironment`: 이 context의 code가 identifier reference를 해석할 때 탐색을 시작하는 Environment Record. `var` binding 조회도 여기서 시작해 outer로 올라가며, block 평가 중에는 block record로 바뀐다
 - `VariableEnvironment`: `var`/function declaration instantiation에 사용하는 Environment Record
 - `PrivateEnvironment`: class private name resolution 환경
 
-`this`는 과거 도식처럼 항상 독립적인 실행 컨텍스트 세 번째 상자에 저장된다고 보지 않는다. 현재 명세에서는 function/global/module Environment Record의 `HasThisBinding`/`GetThisBinding` 같은 operation과 function의 `[[ThisMode]]`가 의미를 결정한다.
+`VariableEnvironment`는 생성 시점의 값을 보관하는 스냅샷이 아니다. `var` initializer도 `ResolveBinding`으로 찾은 binding에 값을 쓰고, 그 binding은 보통 VariableEnvironment의 record에 있으므로 할당 결과가 바로 보인다. `ResolveBinding`이 `with` 객체 property를 먼저 찾으면 initializer는 그 property에 쓴다. Annex B의 VariableStatements in Catch Blocks를 지원하는 host(browser, Node.js)는 `catch (e)` block 안의 `var e`를 허용하고 그 initializer는 catch parameter `e`에 쓰며, 이 기능이 없는 host와 destructuring catch parameter에서는 같은 이름의 `var` 선언이 `SyntaxError`다. ES5의 VariableEnvironment 값이 바뀌지 않는다는 규정은 이 component가 가리키는 Lexical Environment(현재 명세의 Environment Record)가 교체되지 않는다는 뜻이지 binding 값이 고정된다는 뜻이 아니다. ES5의 block은 environment를 만들지 않아 두 component는 `with`와 catch에서만 갈라졌다. 현재 명세에서는 위의 block 평가가 대표 경우이고, non-strict function은 top-level lexical declaration용 record를 VariableEnvironment와 따로 만들므로 본문 시작부터 둘이 다르며 strict function은 같은 record로 시작한다.
+
+`this`는 과거 도식처럼 항상 독립적인 실행 컨텍스트 세 번째 상자에 저장된다고 보지 않는다. 현재 명세에서는 function/global/module Environment Record의 `HasThisBinding`/`GetThisBinding` 같은 operation과 function의 `[[ThisMode]]`가 의미를 결정한다. `this` 평가는 LexicalEnvironment에서 시작해 outer를 따라가며 `HasThisBinding`이 true인 첫 record의 `GetThisBinding` 결과를 쓴다. block, catch 등에 쓰는 일반 Declarative Environment Record와 Object Environment Record는 false이고, arrow function의 Function Environment Record도 `[[ThisBindingStatus]]`가 lexical이라 false다. 그래서 block이나 arrow function 안의 `this`는 가장 가까운 non-arrow function, module 또는 global record가 정하며 module record는 `undefined`를 돌려준다.
 
 ## Lexical Environment와 Environment Record
 
@@ -81,7 +83,17 @@ non-strict simple parameter list에서는 mapped arguments exotic object가 para
 
 - [ECMAScript Language Specification, execution contexts](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts)
 - [ECMAScript Language Specification, Environment Records](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-environment-records)
+- [ECMAScript Language Specification, GetThisEnvironment](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-getthisenvironment)
+- [ECMAScript Language Specification, Variable Statement](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-variable-statement)
+- [ECMAScript Language Specification, VariableStatements in Catch Blocks](https://tc39.es/ecma262/multipage/additional-ecmascript-features-for-web-browsers.html#sec-variablestatements-in-catch-blocks)
+- [ECMAScript Language Specification, try statement early errors](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-try-statement-static-semantics-early-errors)
+- [ECMAScript Language Specification, FunctionDeclarationInstantiation](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-functiondeclarationinstantiation)
+- [ECMAScript Language Specification 5.1, Execution Contexts](https://262.ecma-international.org/5.1/#sec-10.3)
+- [ECMAScript Language Specification 5.1, Block](https://262.ecma-international.org/5.1/#sec-12.1)
+- [ECMAScript Language Specification 5.1, The with Statement](https://262.ecma-international.org/5.1/#sec-12.10)
+- [ECMAScript Language Specification 5.1, The try Statement](https://262.ecma-international.org/5.1/#sec-12.14)
 - [Node.js CommonJS module wrapper](https://nodejs.org/api/modules.html#the-module-wrapper)
+- [모던 자바스크립트 딥다이브 스터디 #3-1 (CH 23, 13 - 실행컨텍스트, 스코프) — FE재남](https://www.youtube.com/watch?v=NKEOFnMtBh8)
 - 역사/범위: [ES3/ES5 model](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26661), [엔진 키워드](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26662), [context 도식](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26663), [identifier resolution](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26664), [scope chain](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26665), [lexical/dynamic environment](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26666), [Node.js 관점](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26667), [과정 범위](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26669)
 - execution context: [상태](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26690), [lexical/variable environment](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26691), [실행 과정](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26692), [Environment Record](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26693), [this binding](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26694), [call stack](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26695), [parameter mapping](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26696), [할당 규칙](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26697)
 

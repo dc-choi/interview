@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, functional, iterable, iterator, generator]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-28
 category: "CS - JavaScript"
 aliases: ["JavaScript Iterable Pipelines", "이터러블 함수형 파이프라인"]
 ---
@@ -44,7 +44,7 @@ for (const value of values({ a: 1, b: 2 })) {
 
 ```ts
 const total = numbers
-  .filter((n) => n % 2 === 1)
+  .filter((n) => Math.abs(n % 2) === 1) // -3 % 2는 -1이라 부호를 떼고 비교해야 음수 홀수가 남는다
   .map((n) => n * n)
   .slice(0, limit)
   .reduce((sum, n) => sum + n, 0);
@@ -91,7 +91,7 @@ const mapObject = <T, R>(
 
 ## flatten과 pipeline 재작성의 조건
 
-`flatMap`은 각 값을 iterable로 바꾼 뒤 한 단계 평탄화한다. 재귀적인 deep flatten은 별도 연산이며 문자열 같은 iterable까지 펼칠지, 순환 구조와 최대 깊이를 어떻게 처리할지 계약이 필요하다.
+`flatMap`은 각 값을 여러 값으로 바꾼 뒤 한 단계 평탄화하지만 무엇을 펼치는지는 API마다 다르다. ES2025의 `Iterator.prototype.flatMap`은 callback이 반환한 iterator나 iterable을 펼치고 문자열을 포함한 원시값은 `TypeError`로 거부한다. `Array.prototype.flatMap`은 반환값이 배열일 때만 펼치고 `Set`이나 문자열 같은 다른 iterable과 배열이 아닌 값은 요소 하나로 넣는다. generator로 직접 만든 `flatMap`은 구현에 따라 문자열까지 펼치거나, iterable이 아닌 값을 그대로 내보내거나 `TypeError`로 거부하므로 펼칠 대상을 계약으로 정한다(Node.js 26.7 확인). 재귀적인 deep flatten은 별도 연산이며 문자열 같은 iterable까지 펼칠지, 순환 구조와 최대 깊이를 어떻게 처리할지 계약이 필요하다.
 
 generator의 `yield* iterable`은 값 위임뿐 아니라 대상 iterator의 `next`, `throw`, `return` protocol과 연결된다. 단순 값 순회에서는 `for...of`와 비슷해 보여도 완전히 같은 문법적 치환으로 설명하면 예외/종료 전달을 놓친다.
 
@@ -127,6 +127,9 @@ return { ok: true, value: normalize(found) } as const;
 - [ECMAScript Language Specification, Object.entries](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.entries)
 - [ECMAScript Language Specification, Object.fromEntries](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.fromentries)
 - [ECMAScript Language Specification, yield star](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-generator-function-definitions-runtime-semantics-evaluation)
+- [ECMAScript Language Specification, Number::remainder](https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-numeric-types-number-remainder)
+- [ECMAScript Language Specification, Array.prototype.flatMap](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.flatmap)
+- [ECMAScript 2025 Language Specification, Iterator.prototype.flatMap](https://tc39.es/ecma262/2025/#sec-iterator.prototype.flatmap)
 - 이터러블 전환: [도입](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19648), [명령형 예제](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19650), [filter](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19651), [map](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19652), [take](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19653), [reduce](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19654), [range](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19655), [each](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19656), [별 그리기](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19657), [구구단](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19658)
 - reduce 경계: [map 후 reduce](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19660), [map/filter/reduce](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19661), [query 1/2](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19662), [query 3/4](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19666), [queryToObject](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19667)
 - 안전한 합성: [map 합성](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19664), [find와 lazy filter](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19665)

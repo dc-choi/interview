@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, react, state, localstorage, persistence]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-28
 category: "웹&네트워크(Web&Network)"
 aliases: ["React Local State", "React localStorage 영속화"]
 ---
@@ -56,7 +56,7 @@ const [memos, setMemos] = useState(() => {
 - schema version과 runtime validation을 두고 오래된 값의 migration 또는 폐기 정책을 정한다.
 - SSR 환경에서는 `window`와 `localStorage`가 없으므로 client boundary에서 접근한다.
 
-저장을 debounce한다면 timer를 cleanup하고 마지막 변경이 unmount나 page 종료 전에 사라질 수 있는 정책을 결정한다. `useCallback` 자체는 debounce가 아니다. 여러 tab 동기화가 필요하면 `storage` event를 처리하되 같은 document의 write에는 해당 event가 발생하지 않는다는 점을 고려한다.
+저장을 debounce한다면 unmount만으로는 대기 중인 timer가 취소되지 않으므로 Effect cleanup에서 timer를 정리한다. cleanup이 timer를 취소하거나 page가 닫히면 마지막 변경이 저장되지 않을 수 있으므로, 해제 시점에 바로 저장할지 버릴지 정한다([[Browser-Main-Thread#debounce와 throttle|debounce와 throttle]]). `useCallback` 자체는 debounce가 아니다. 여러 tab 동기화가 필요하면 `storage` event를 처리하되 같은 document의 write에는 해당 event가 발생하지 않는다는 점을 고려한다.
 
 IndexedDB, server 저장과 conflict resolution이 필요한 규모라면 localStorage를 임시 database처럼 확장하지 않는다.
 
@@ -70,6 +70,7 @@ IndexedDB, server 저장과 conflict resolution이 필요한 규모라면 localS
 
 - [React, Updating Arrays in State](https://react.dev/learn/updating-arrays-in-state)
 - [React, Extracting State Logic into a Reducer](https://react.dev/learn/extracting-state-logic-into-a-reducer)
+- [React, Synchronizing with Effects](https://react.dev/learn/synchronizing-with-effects#putting-it-all-together)
 - [WHATWG HTML, Web Storage](https://html.spec.whatwg.org/multipage/webstorage.html)
 - IT Share, [Memo project 설계](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161787)
 - IT Share, [기본 component 구현](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161788)

@@ -1,6 +1,7 @@
 ---
 tags: [cs, javascript, variable, scope]
 status: done
+verified_at: 2026-09-25
 category: "CS - JavaScript"
 aliases: ["Variable Declarations", "var let const", "변수 선언 키워드", "const 불변성", "암묵적 전역"]
 ---
@@ -11,10 +12,23 @@ ES6에서 `let`과 `const`가 추가된 건 `var`의 느슨한 재선언과 함�
 
 ## 재선언 (중복 선언)
 
-- **var**: 같은 이름을 다시 선언해도 조용히 덮어쓴다. 선언부가 수백 줄 떨어져 있으면 한쪽을 잊고 값을 깨뜨리기 쉽다.
+- **var**: 같은 이름을 다시 선언해도 에러 없이 통과하고, 초기화식이 있으면 그 자리에서 기존 값을 덮어쓴다. 선언부가 수백 줄 떨어져 있으면 한쪽을 잊고 값을 깨뜨리기 쉽다.
 - **let, const**: 같은 스코프에서 재선언하면 `SyntaxError: Identifier '...' has already been declared`로 즉시 막는다.
 
 실수로 같은 변수를 두 번 선언해 값이 바뀌는 사고를 컴파일 시점에 잡아 준다.
+
+`var` binding은 코드 실행 전에 한 번 만들어지므로 초기화식 없는 `var score;`는 실행 시점에 아무 일도 하지 않고 기존 값을 `undefined`로 되돌리지 않는다. strict mode와 ES module에서도 `var` 재선언은 에러가 아니고 결과도 같다.
+
+```javascript
+score = 80;         // 호이스팅된 var score binding에 할당
+var score;          // 초기화식이 없어 실행 시점에 아무 일도 하지 않는다
+console.log(score); // 80
+
+var score = 50;     // score = 50 할당과 같다
+console.log(score); // 50
+```
+
+같은 이유로 루프 본문의 `var flag;`는 반복마다 `undefined`로 돌아가지 않고 앞 반복의 값을 그대로 들고 있다. 반복마다 새 변수가 필요하면 `let`으로 선언한다.
 
 ## 스코프 — 함수 레벨 vs 블록 레벨
 
@@ -32,6 +46,8 @@ function f() {
   count = 1; // var/let/const 없이 대입 → 전역 count 생성
 }
 ```
+
+`const a = b = 0`처럼 연쇄 할당하면 `a`만 선언되고 `b`에는 할당만 일어나므로 같은 방식으로 전역이 생길 수 있다([[JavaScript-Expressions-Control-Flow-and-Coercion#expression과 연산 순서|연쇄 할당과 initializer]]).
 
 strict mode에서는 이런 unresolvable assignment가 `ReferenceError`로 막힌다. ESM은 자동 strict mode이고 classic script는 그렇지 않을 수 있으므로 module boundary와 lint rule을 함께 사용한다.
 
@@ -78,8 +94,9 @@ const b;     // SyntaxError
 
 ## 면접 체크포인트
 
-- `var`의 네 가지 함정 — 재선언 허용, 함수 레벨 스코프, 암묵적 전역, 호이스팅 후 undefined
-- `let`/`const`가 막는 것 — 재선언 SyntaxError, 블록 스코프, 키워드 생략 불가, TDZ
+- `var`의 세 가지 함정 — 재선언 허용, 함수 레벨 스코프, 호이스팅 후 undefined
+- `let`/`const`가 막는 것 — 같은 스코프 재선언(SyntaxError), 블록 밖 노출, 선언 전 접근(TDZ)
+- 암묵적 전역은 `var`의 함정이 아니라 sloppy mode에서 선언되지 않은 이름에 대입할 때 생긴다. `let`/`const`도 이를 막지 못해 `const a = b = 0`의 `b`가 전역이 될 수 있고, strict mode(ESM 포함)에서만 `ReferenceError`다
 - `const`는 바인딩 재할당만 막고 객체 내부 변경은 허용 — 불변(immutable)과 다름
 - `const`가 선언과 동시 초기화를 강제하는 이유
 - 기본 `const`, 필요 시 좁은 스코프 `let`, `var` 지양
@@ -87,6 +104,11 @@ const b;     // SyntaxError
 ## 출처
 
 - [JavaScript의 let과 const, 그리고 TDZ — evan-moon](https://evan-moon.github.io/2019/06/18/javascript-let-const/)
+- [모던 자바스크립트 딥다이브 스터디 #1-1 (CH4, 5) — FE재남](https://www.youtube.com/watch?v=3ZP3VPlrr0U)
+- [모던 자바스크립트 딥다이브 스터디 #3-2 (CH14, 15) — FE재남](https://www.youtube.com/watch?v=JheRt5mIZH8)
+- [MDN, var](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/var)
+- [MDN, Assignment (=)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Assignment)
+- [ECMAScript Language Specification, Variable Statement](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-variable-statement)
 
 ## 관련 문서
 

@@ -3,7 +3,7 @@ tags: [cs, javascript, prototype, oop]
 status: done
 category: "CS - JavaScript"
 aliases: ["Prototype Mechanism", "프로토타입 동작 원리", "프로토타입 객체", "Prototype Object", "constructor", "__proto__", "프로토타입 체인", "Prototype Chain"]
-verified_at: 2026-08-04
+verified_at: 2026-09-25
 ---
 
 # 프로토타입 동작 원리 (객체 생성과 체인)
@@ -34,6 +34,10 @@ GoF의 Prototype 생성 패턴은 원본 객체를 **복제**해 새 객체를 �
 - 인스턴스의 `[[Prototype]]`: **프로퍼티 조회를 위임할 객체**로 가는 링크
 
 `__proto__` accessor는 ECMAScript 명세 본문(20.1.3.8)에 Normative Optional, Legacy로 표준화돼 있는 웹 호환성용 기능이다. 일반 코드에서는 `Object.getPrototypeOf()`와 `Object.setPrototypeOf()`를 쓰고, prototype을 지정해 객체를 만들 때는 `Object.create(proto)`를 쓴다. 성능과 예측 가능성 때문에 생성 후 prototype 변경은 피하는 편이 좋다.
+
+prototype 교체의 순환 방지는 `__proto__` accessor만의 기능이 아니다. `__proto__` setter, `Object.setPrototypeOf`, `Reflect.setPrototypeOf`는 모두 대상의 `[[SetPrototypeOf]]`를 호출하고, ordinary object 구현은 새 prototype의 체인을 따라 올라가다 자기 자신을 만나면 교체를 거부한다(Node.js 26.7 메시지 `Cyclic __proto__ value`). 체인 중간에 Proxy처럼 ordinary가 아닌 `[[GetPrototypeOf]]`를 가진 object가 있으면 검사가 거기서 멈춘다. non-extensible object(`preventExtensions`, `seal`, `freeze` 이후)는 현재와 같은 값을 다시 지정하는 경우가 아니면 prototype을 바꿀 수 없고, `Object.prototype`은 immutable prototype exotic object라 자신의 prototype을 바꿀 수 없다.
+
+거부를 알리는 방식은 경로마다 다르다. `__proto__` setter와 `Object.setPrototypeOf`는 `TypeError`를 던지고 `Reflect.setPrototypeOf`는 `false`를 반환한다. object도 `null`도 아닌 값을 넘기면 `Object.setPrototypeOf`와 `Reflect.setPrototypeOf`는 `TypeError`를 던지지만 `__proto__` setter는 아무것도 바꾸지 않는다.
 
 ## 프로토타입 체인
 
@@ -72,8 +76,14 @@ ES6 `class`는 이 메커니즘 위에 얹은 문법이다. 문법 설탕에 재
 ## 출처
 
 - [자바스크립트의 프로토타입 훑어보기 — evan-moon](https://evan-moon.github.io/2019/10/23/js-prototype/)
+- [모던 자바스크립트 딥다이브 스터디 #4-2 (CH 19 프로토타입) — FE재남](https://www.youtube.com/watch?v=IBUSatGNUzs)
 - [ECMAScript Language Specification, ordinary object internal methods](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ordinary-object-internal-methods-and-internal-slots)
 - [ECMAScript — Object.prototype.__proto__ (20.1.3.8, Normative Optional)](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.prototype.__proto__)
+- [ECMAScript Language Specification, OrdinarySetPrototypeOf](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ordinarysetprototypeof)
+- [ECMAScript Language Specification, Object.setPrototypeOf](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.setprototypeof)
+- [ECMAScript Language Specification, Reflect.setPrototypeOf](https://tc39.es/ecma262/multipage/reflection.html#sec-reflect.setprototypeof)
+- [ECMAScript Language Specification, immutable prototype exotic objects](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-immutable-prototype-exotic-objects)
+- [MDN, Object.setPrototypeOf()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf)
 - 생성/instance: [function instance](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26699), [constructor/new](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26700), [constructor property](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26701)
 - prototype lookup: [목적/상속](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26702), [확장/constructor 연결](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26703), [this/직접 호출](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26704), [공유 시점](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26705), [own property 우선](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26706)
 

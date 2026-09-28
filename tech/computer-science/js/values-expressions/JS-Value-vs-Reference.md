@@ -1,13 +1,14 @@
 ---
 tags: [cs, javascript, primitives, reference]
 status: done
+verified_at: 2026-09-25
 category: "CS - JavaScript"
 aliases: ["JS Value vs Reference", "원시, 참조 타입", "Call By Value Reference"]
 ---
 
 # JS 원시 vs 참조, undefined vs null, Call by Value
 
-JS 면접 기초 트리오. 셋 다 **"값이냐 참조냐, 언제 복사되냐"** 라는 한 뿌리에서 나오는 주제.
+JS 면접 기초 트리오. 셋 다 값이냐 참조냐, 언제 복사되느냐라는 한 뿌리에서 나온다.
 
 ## 원시(Primitive) vs 참조(Reference) 타입
 
@@ -22,6 +23,8 @@ JS 면접 기초 트리오. 셋 다 **"값이냐 참조냐, 언제 복사되냐"
 - **객체**: 대입과 인자 전달에서 같은 object identity를 가리키는 reference value가 전달된다.
 
 ECMAScript 명세는 application에 raw memory address를 노출하지 않는다. heap/주소 설명은 구현 직관일 뿐 언어 계약으로 단정하지 않는다.
+
+원시 값은 변경할 수 없다(immutable). 재할당은 변수가 다른 값을 담게 할 뿐 기존 값을 바꾸지 않고, `toUpperCase`나 `slice` 같은 문자열 메서드는 새 문자열을 반환한다. `text[0] = "X"` 같은 index 대입은 sloppy mode에서 조용히 무시되고 strict mode(ES module과 class body 포함)에서는 `TypeError`다([[JavaScript-Numbers-Strings-and-Regular-Expressions#변환, wrapper와 숫자 표시|wrapper와 쓰기]]). 원시 값이 불변이고 `===`가 문자열을 길이와 code unit 내용으로 비교하므로, engine이 같은 값을 공유하든 복사하든 프로그램 결과는 달라지지 않는다.
 
 ### 비교
 ```
@@ -50,9 +53,9 @@ o1 === o3; // true — 같은 주소
 | JSON 직렬화 | 필드 생략 | `"field": null` |
 
 ### 언제 `null`을 쓰는가
-- **"이 필드가 있지만 값이 없다"** 를 외부에 알릴 때 (API 응답)
+- 필드는 있지만 값이 없다는 사실을 외부에 알릴 때 (API 응답)
 - 메모리 해제 힌트 — 객체 참조를 `null`로 덮어 GC 대상화
-- 외부 API schema에서 **"필드는 있지만 값이 없음"** 을 명시
+- 외부 API schema에서 필드는 있지만 값이 없는 상태를 명시
 
 ### 언제 `undefined`를 쓰는가 (권장되지 않음)
 - 보통 **자동으로 발생**하는 상태. 개발자가 명시적으로 할당하는 건 비권장
@@ -125,7 +128,7 @@ React, Redux 등 현대 상태 관리는 **불변성을 전제**로 동작. 원�
 - 객체 복사로 `=`만 쓰면 주소만 복사 → 한쪽 수정이 양쪽 반영
 - 깊은 복사가 필요한데 `{...obj}` 얕은 복사만 함 → 중첩 객체는 여전히 공유
 - `null`, `undefined` 판별을 `==`로 했다가 둘 다 true되어 의도와 다른 분기
-- 함수에서 객체 재할당하고 "외부 변경"을 기대함
+- 함수 안에서 파라미터에 새 객체를 재할당하고 외부 변수가 바뀌기를 기대함
 
 ## 깊은 복사
 
@@ -158,6 +161,12 @@ domainMapper(obj)                // class/invariant 보존이 필요하면 명�
 - [매일메일 — Call By Value, Call By Reference](https://www.maeil-mail.kr/question/152)
 - [매일메일 — JavaScript 배열](https://www.maeil-mail.kr/question/32)
 - [HTML Standard — StructuredSerializeInternal (structured clone)](https://html.spec.whatwg.org/multipage/structured-data.html#structuredserializeinternal)
+- [Node.js — Globals, structuredClone](https://nodejs.org/api/globals.html#structuredclonevalue-options)
+- [MDN — Primitive](https://developer.mozilla.org/en-US/docs/Glossary/Primitive)
+- [MDN — String, character access](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String#character_access)
+- [MDN — Strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode)
+- [ECMAScript Language Specification — SameValueNonNumber](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-samevaluenonnumber)
+- [FE재남 — 모던 자바스크립트 딥다이브 스터디 #1-2 (CH6, 7)](https://www.youtube.com/watch?v=rPVrtODy9P0)
 
 ## 관련 문서
 - [[Prototype-OOP|Prototype 기반 OOP]]

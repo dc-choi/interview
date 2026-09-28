@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, esm, module, browser]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-27
 category: "CS - JavaScript"
 aliases: ["JavaScript ES Modules", "ECMAScript Modules"]
 ---
@@ -39,6 +39,9 @@ export 값이 최초 import 때 복사되어 유지된다고 설명하면 live b
 - `import * as ns`는 module namespace object를 얻으며 일반 mutable plain object가 아니다.
 - re-export와 `export *`에서 이름 충돌/ambiguous export를 확인한다.
 - `as`는 local/export name을 바꾸며 원본 binding identity를 없애지 않는다.
+- `export default` 뒤에는 expression이나 function, class 선언만 올 수 있어 `export default const value = 1;`은 `SyntaxError`다. 선언한 뒤 `export default value;`로 내보낸다.
+- `export default expression`은 평가 시점의 값으로 내부 `*default*` binding을 한 번 초기화한다. 위 counter 예제에 `export default count;`를 더하면 `increment()` 뒤에도 default import는 `0`이므로, live binding이 필요하면 `export { count as default }`로 내보낸다. `export default function f() {}`와 `export default class C {}`는 local 이름 binding을 그대로 내보낸다.
+- named import의 `{ }`는 object destructuring이 아니라 import 목록 문법이다. default export object를 구조 분해한 것과 다르고 기본값이나 중첩 pattern을 쓸 수 없다.
 
 ## 순환 의존성과 평가 순서
 
@@ -64,8 +67,10 @@ static import는 source 위치에서 순차 실행되는 함수 호출이 아니
 ```
 
 - module script는 기본적으로 deferred하게 실행된다.
-- cross-origin module fetch에는 CORS와 올바른 JavaScript MIME type이 필요하다.
+- browser는 확장자(`.js`, `.mjs`)가 아니라 응답의 `Content-Type`으로 JavaScript module을 판단한다. 출처와 무관하게 JavaScript MIME type(`text/javascript` 권장)이 아니면 JavaScript module script로 만들지 않는다.
+- `<script type="module">`과 `import`가 여는 module fetch는 CORS mode라 cross-origin 응답에는 CORS 허용도 필요하다. module worker의 최상위 script는 same-origin mode로 가져오므로 다른 origin 서버의 script는 CORS를 허용해도 불러올 수 없다.
 - browser specifier는 URL resolution을 따르며 bare specifier는 import map/bundler 없이는 해석되지 않을 수 있다.
+- static import graph는 평가 전에 전부 fetch되고 link된다. import한 함수를 호출하는 시점에 파일을 가져오는 것이 아니다. 번들 없이 배포하면 module을 받아 parse해야 다음 의존성을 발견하므로 깊은 graph는 요청이 순차로 이어진다. `<link rel="modulepreload">`로 의존성을 미리 병렬로 가져오거나 bundler로 chunk를 묶는다.
 - 필요한 시점에 load하려면 `import(specifier)`를 사용하고 rejection을 처리한다.
 - code splitting은 syntax만으로 보장되지 않으며 bundler graph/chunk 정책을 확인한다.
 
@@ -78,7 +83,14 @@ Node.js는 `package.json`의 `type`, `.mjs/.cjs`, package `exports/imports`와 e
 - [ECMAScript Language Specification, scripts and modules](https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html)
 - [HTML Standard, JavaScript module scripts](https://html.spec.whatwg.org/multipage/webappapis.html#integration-with-the-javascript-module-system)
 - [Node.js, ECMAScript modules](https://nodejs.org/api/esm.html)
+- [ECMAScript Language Specification, exports](https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-exports)
+- [HTML Standard, fetch a single module script](https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-single-module-script)
+- [MDN, export](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export)
+- [MDN, import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
+- [MDN, JavaScript modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+- [MDN, rel=modulepreload](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/modulepreload)
 - [Fixing Top-Level Await in Safari — WebKit](https://webkit.org/blog/18227/fixing-top-level-await-in-safari/)
+- [모던 자바스크립트 딥다이브 스터디 #11-2 (CH 47, 48) (END) — FE재남](https://www.youtube.com/watch?v=FRLJdYtMNJU)
 - [실행 환경](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=48872), [module 개요](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=48873), [scope/live binding/this](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=48874), [export/import 형태](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49428)
 
 ## 관련 문서

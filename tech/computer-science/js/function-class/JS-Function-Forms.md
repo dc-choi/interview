@@ -3,6 +3,7 @@ tags: [cs, javascript, function, closure, first-class]
 status: done
 category: "CS - JavaScript"
 aliases: ["JS Function Forms", "함수 선언식 표현식 화살표"]
+verified_at: 2026-09-28
 ---
 
 # JS 함수 형태와 특성
@@ -37,7 +38,7 @@ const add = (a, b) => a + b;
 ```
 - 간결한 문법
 - **자체 `this` 없음** — 감싸는 스코프의 `this` 상속 (lexical this)
-- `arguments` 없음 (rest parameter 사용)
+- **자체 `arguments` 없음** — 감싸는 일반 함수의 `arguments`를 읽고 CommonJS 최상위에서는 module wrapper의 인자를 읽는다([[JavaScript-Lexical-Scope-and-Modern-Syntax#arrow function의 lexical binding|lexical binding]]). 가변 인자는 rest parameter 사용
 - `new`로 생성 불가
 - `prototype` 없음
 
@@ -65,14 +66,14 @@ const sayHello = () => console.log('hello');
 const obj = {
   name: 'dc',
   regular: function() { return this.name; },       // this = obj
-  arrow:   () => this.name,                         // this = 상위 (window/undefined)
+  arrow:   () => this.name,                         // this = 감싸는 스코프(최상위)의 this
 };
 
 obj.regular();  // 'dc'
-obj.arrow();    // undefined (또는 상위 this)
+obj.arrow();    // 브라우저 classic: window.name, CJS: undefined, ESM: TypeError
 ```
 
-화살표 함수는 **자체 this가 없으므로** 객체 메서드로 부적합. 반면 콜백에서 외부 `this` 유지에 유리.
+객체 리터럴은 `this` 스코프를 만들지 않으므로 위 `arrow`는 최상위 `this`를 읽는다. 최상위 `this`는 브라우저 classic script에서 `window`(`name` 기본값은 빈 문자열), CommonJS에서 `module.exports`, ESM에서 `undefined`다. 화살표 함수는 **자체 this가 없으므로** 객체 메서드로 부적합. 반면 콜백에서 외부 `this` 유지에 유리.
 
 ```
 class Timer {
@@ -188,6 +189,7 @@ ES6 이전엔 모듈 격리용. 요즘은 ESM, 블록 스코프로 대체.
 - [매일메일 — 함수 선언식과 함수 표현식](https://www.maeil-mail.kr/question/68)
 - [HTML Standard, Timers](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timer-initialisation-steps)
 - [Node.js, Timers](https://nodejs.org/api/timers.html)
+- [MDN, this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
 
 ## 관련 문서
 - [[Hoisting|호이스팅]]

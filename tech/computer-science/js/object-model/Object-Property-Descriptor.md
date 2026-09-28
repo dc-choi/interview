@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, object, property, descriptor, immutability]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-27
 category: "CS - JavaScript"
 aliases: ["프로퍼티 디스크립터", "JavaScript Object Property Descriptor"]
 ---
@@ -22,9 +22,9 @@ user[dynamicKey] = value;
 
 - dot syntax는 정적인 identifier-like key에, bracket syntax는 동적 String/Symbol key에 적합하다.
 - 없는 property 조회는 prototype chain까지 찾은 뒤 `undefined`를 반환한다. 값이 `undefined`인 own property와 property 부재는 다르다.
-- `Object.hasOwn(object, key)`로 own 여부를 검사한다. 대상이 override할 수 있는 `object.hasOwnProperty` 직접 호출보다 안전하다.
+- `Object.hasOwn(object, key)`로 own 여부를 검사한다. `object.hasOwnProperty(key)` 직접 호출은 대표적으로 두 경우에 깨진다. `Object.create(null)`이나 Node.js `querystring.parse()` 결과처럼 체인에 `Object.prototype`이 없는 object에는 상속 method가 없어 `TypeError`가 난다. `JSON.parse('{"hasOwnProperty":1}')`의 own key나 class가 재정의한 method처럼 같은 이름의 property가 `Object.prototype`의 method를 가리면 `TypeError`가 나거나 잘못된 값이 나온다. `Object.hasOwn`이 없는 runtime에서는 `Object.prototype.hasOwnProperty.call(object, key)`로 대신한다.
 - `for...in`은 enumerable string property를 own/inherited 모두 열거한다. own data만 필요하면 `Object.keys/values/entries`를 쓴다.
-- property 순서는 명세 규칙이 있지만 business 정렬이나 signature canonicalization으로 암묵 사용하지 않는다.
+- property 순서는 명세 규칙([[JavaScript-Object-and-Array-Operations#Object 변환과 descriptor|key 순서 규칙]])이 있지만 business 정렬이나 signature canonicalization으로 암묵 사용하지 않는다.
 
 Untrusted key를 그대로 merge하면 `__proto__`, `constructor`, `prototype`을 통한 prototype pollution이 생길 수 있다. schema allowlist와 null-prototype dictionary/Map을 검토한다.
 
@@ -55,9 +55,14 @@ Object.defineProperty(account, "balance", {
 ```
 
 - `writable: false`는 data value 재할당을 막는다. sloppy code에서는 무시될 수 있고 strict code에서는 `TypeError`다.
+- setter가 없는 accessor property에 대입해도 값은 바뀌지 않는다. sloppy code는 조용히 무시하고 strict code(ESM과 class body 포함)는 `TypeError`를 던진다. own property가 없으면 prototype chain에서 찾은 accessor를 따르므로 getter만 있는 `Set.prototype.size`, `Map.prototype.size`와, interface prototype에 setter 없는 accessor로 정의되는 DOM `parentNode`, `childNodes` 같은 WebIDL readonly attribute에 대입할 때도 같다. readonly attribute라도 `[PutForwards]`, `[Replaceable]`, `[LegacyLenientSetter]`가 붙으면 setter가 만들어진다.
 - `enumerable: false`는 `Object.keys`/`for...in` 등에서 제외하지만 property 자체를 숨기거나 비공개로 만들지는 않는다.
 - `configurable: false`는 삭제와 대부분의 descriptor 재정의를 막는다. 일부 one-way 변경만 허용된다.
 - getter/setter는 property access에 code를 실행하므로 side effect, 오류와 serialization 비용을 숨길 수 있다.
+
+`delete`는 own property만 제거한다. ordinary object에서 own property가 없거나 configurable이면 `true`를 반환하고, 같은 이름이 prototype chain에 있으면 삭제 뒤에는 inherited 값이 조회된다. non-configurable own property는 sloppy code에서 `false`를 반환하고 strict code(ESM과 class body 포함)에서는 `TypeError`를 던진다. strict code에서 `delete x`처럼 변수, parameter, 함수 이름을 직접 지정하면 early `SyntaxError`다.
+
+classic script의 top-level `var`와 function 선언이 global object에 새로 만든 property는 configurable `false`라 sloppy code에서는 `delete globalThis.x`가 `false`를 반환하고 strict code에서는 `TypeError`를 던진다. sloppy code의 선언 없는 대입이나 `globalThis.x = 1`로 새로 만든 property는 configurable이라 삭제된다. Node.js CommonJS 파일 module과 ESM의 top-level `var`와 function 선언은 global property를 만들지 않는다. `--input-type` 없이 준 `node -e` 입력은 ES module 문법(`import`, `export` 문, `import.meta`, top-level `await`)이 있으면 ES module로, 없으면 CommonJS로 실행된다. CommonJS로 실행된 `node -e` 입력과 REPL 입력은 파일 module과 달리 module wrapper 없이 script로 평가되므로(Node.js 26.7에서 확인) classic script 규칙을 따른다.
 
 `Object.getOwnPropertyDescriptor(s)`로 own descriptor를 읽고 `Object.defineProperty/defineProperties`로 정의한다. `Object.getOwnPropertyNames`는 non-enumerable string key도, `Object.getOwnPropertySymbols`는 Symbol key를, `Reflect.ownKeys`는 둘 다 반환한다.
 
@@ -69,7 +74,11 @@ Object.defineProperty(account, "balance", {
 | `seal` | 금지 | 금지 | 가능 |
 | `freeze` | 금지 | 금지 | 금지 |
 
-`Object.freeze`는 own property descriptor 수준의 얕은 동결이다. 중첩 object, private field가 가리키는 상태, 외부 resource까지 immutable하게 만들지 않는다. TypedArray view 등 일부 exotic object에는 추가 제약이 있다. deep freeze는 cycle/Symbol/prototype와 외부 identity를 포함한 별도 contract가 필요하다.
+`Object.freeze`는 own property descriptor 수준의 얕은 동결이다. 중첩 object, private field가 가리키는 상태, 외부 resource까지 immutable하게 만들지 않는다. TypedArray view 등 일부 exotic object에는 추가 제약이 있다. deep freeze는 cycle/Symbol/prototype와 외부 identity를 포함한 별도 contract가 필요하다. 재귀 동결을 직접 구현하면 key 수집과 종료 조건을 확인한다.
+
+- `Object.keys`는 enumerable own string key만 반환해 Symbol key와 non-enumerable property 아래의 object를 놓친다. key는 `Reflect.ownKeys`로 모은다.
+- `Object.isFrozen`은 대상 object 자신의 확장 가능 여부와 own property attribute만 판정한다. 이미 얕게 동결된 object를 `isFrozen`으로 건너뛰면 그 아래의 mutable object가 남는다.
+- 방문 기록 없이 재귀하면 순환 참조에서 재귀가 끝나지 않아 호출 스택 한도를 넘는다. 이때 V8 기반인 Node.js와 Chrome, 그리고 Safari는 `RangeError`(Maximum call stack size exceeded)를, Firefox는 `InternalError`(too much recursion)를 던진다. `function` 문법으로 만든 함수도 `prototype.constructor`가 자기 자신을 가리켜 순환을 가지므로 방문한 object를 `WeakSet`에 기록한다.
 
 `const`는 binding 재할당을 막고 `freeze`는 object의 표면 mutation을 제한한다. TypeScript `readonly`는 주로 compile-time 제약이다. 세 가지를 같은 보장으로 설명하지 않는다.
 
@@ -91,6 +100,16 @@ Object.defineProperty(account, "balance", {
 ## 출처
 
 - [ECMAScript Language Specification, Object constructor](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object-constructor), [property descriptor](https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-property-descriptor-specification-type)
+- [ECMAScript Language Specification, OrdinarySetWithOwnDescriptor](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ordinarysetwithowndescriptor), [PutValue](https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-putvalue), [Set.prototype.size](https://tc39.es/ecma262/multipage/keyed-collections.html#sec-get-set.prototype.size)
+- [Web IDL Standard, attribute setter](https://webidl.spec.whatwg.org/#dfn-attribute-setter), [DOM Standard, interface Node](https://dom.spec.whatwg.org/#interface-node)
+- [ECMAScript Language Specification, delete operator](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-delete-operator), [OrdinaryDelete](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ordinarydelete), [GlobalDeclarationInstantiation](https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-globaldeclarationinstantiation), [strict mode code](https://tc39.es/ecma262/multipage/ecmascript-language-source-code.html#sec-strict-mode-code), [Source Text Module Record InitializeEnvironment](https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-source-text-module-record-initialize-environment)
+- [MDN, delete](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete), [Object.hasOwn()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn), [Object.freeze()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze), [Object.isFrozen()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen), [InternalError: too much recursion](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion)
+- [Node.js, Modules: CommonJS modules](https://nodejs.org/api/modules.html#the-module-wrapper), [Query string](https://nodejs.org/api/querystring.html#querystringparsestr-sep-eq-options), [Command-line API, --input-type](https://nodejs.org/api/cli.html#--input-typetype), [Packages, Syntax detection](https://nodejs.org/api/packages.html#syntax-detection)
+- [모던 자바스크립트 딥다이브 스터디 #2-1 (CH10, 11) — FE재남](https://www.youtube.com/watch?v=5b5km0pHoIs)
+- [모던 자바스크립트 딥다이브 스터디 #3-3 (CH 16, 17) — FE재남](https://www.youtube.com/watch?v=SQAhFwxqlJY)
+- [모던 자바스크립트 딥다이브 스터디 #4-2 (CH 19 프로토타입) — FE재남](https://www.youtube.com/watch?v=IBUSatGNUzs)
+- [모던 자바스크립트 딥다이브 스터디 #8-2 (CH 39 DOM) — FE재남](https://www.youtube.com/watch?v=KfmXaEVbVJY)
+- [모던 자바스크립트 딥다이브 스터디 #9-2 (CH 37, 42) — FE재남](https://www.youtube.com/watch?v=DnsAOh_sw5o)
 - property 기초: [추가/변경](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24623), [조회/for-in](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24624)
 - Object 기초: [object 분류/instance](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24648), [공통 API](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24649), [생성/valueOf/instanceof](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24650), [prototype 구조](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24651), [function/method 호출](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24653), [소유/열거 검사](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24654), [Object.prototype](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24655)
 - prototype/OOP: [script/OOP](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24693), [prototype 기반 구현](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24694), [instance/instanceof](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24695), [method 호출 형태](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24696)
@@ -102,3 +121,4 @@ Object.defineProperty(account, "balance", {
 - [[JavaScript-Object-and-Array-Operations|Object와 Array 연산]]
 - [[JavaScript-Proxy-and-Reflect|Proxy와 Reflect]]
 - [[JS-Value-vs-Reference|값과 참조]]
+- [[JavaScript-Keyed-Collections-and-Weak-References|Map, Set과 약한 참조]]

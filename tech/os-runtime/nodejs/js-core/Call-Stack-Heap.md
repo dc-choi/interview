@@ -3,7 +3,7 @@ tags: [runtime, nodejs]
 status: done
 category: "OS & Runtime"
 aliases: ["Call Stack Heap"]
-verified_at: 2026-09-03
+verified_at: 2026-09-25
 ---
 
 ### 콜 스택과 힙
@@ -46,6 +46,8 @@ Node.js의 한 JavaScript 실행 스레드는 한 시점에 한 작업만 실행
 
 ## Garbage Collection (V8 GC)
 V8은 **Generational GC** 전략을 사용한다. 대부분의 객체는 금방 죽는다는 "세대 가설"에 기반한다.
+
+수거 대상은 참조 개수가 아니라 root set(실행 스택, 전역 객체 등)에서의 도달 가능성으로 정한다. 참조 카운트가 0이 되면 해제한다는 설명은 reference counting 방식이며, V8을 비롯해 브라우저와 Node.js에서 쓰는 주요 JavaScript engine은 이 방식으로 GC하지 않는다. 서로만 참조하는 순환 객체도 root에서 끊기면 수거 대상이 되고, 강한 참조가 하나뿐이어도 root에서 강한 참조로 이어진 경로가 남으면 수거되지 않는다. WeakRef나 WeakMap key처럼 약하게 잡힌 경로는 수거를 막지 않는다([[JavaScript-Keyed-Collections-and-Weak-References|약한 참조]]). leak 분석은 순환 여부나 참조 횟수보다 불필요하게 남은 retaining path를 찾는 일이다([[Closure#lifetime과 memory|closure의 lifetime과 memory]]).
 
 ### Scavenger (Minor GC) — Young Generation
 ```
@@ -92,4 +94,8 @@ GC에는 JavaScript 실행을 멈추는 단계가 있고, concurrent 또는 para
 - [V8 source, AllocationSpace](https://chromium.googlesource.com/v8/v8/+/refs/heads/main/src/common/globals.h)
 - [Orinoco: young generation garbage collection — V8](https://v8.dev/blog/orinoco-parallel-scavenger)
 - [Concurrent marking in V8](https://v8.dev/blog/concurrent-marking)
+- [Trash talk: the Orinoco garbage collector — V8](https://v8.dev/blog/trash-talk)
 - [Node.js, `--max-old-space-size`](https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-mib)
+- [MDN, Memory management](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Memory_management)
+- [모던 자바스크립트 딥다이브 스터디 #1-1 (CH4, 5) — FE재남](https://www.youtube.com/watch?v=3ZP3VPlrr0U)
+- [모던 자바스크립트 딥다이브 스터디 #2-1 (CH10, 11) — FE재남](https://www.youtube.com/watch?v=5b5km0pHoIs)

@@ -3,7 +3,7 @@ tags: [web, network, dns, tcp, http, rendering, browser]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Browser URL Flow", "브라우저 URL 입력 프로세스", "What happens when you type google.com"]
-verified_at: 2026-08-31
+verified_at: 2026-09-28
 ---
 
 # 브라우저 주소창에 URL을 입력하면
@@ -66,12 +66,12 @@ TTL은 레코드 변경과 페일오버를 감지할 수 있는 지연, 리졸�
 2. 서버 → 클라: **SYN-ACK**
 3. 클라 → 서버: **ACK** → 연결 수립
 
-클라이언트가 SYN을 보낸 뒤 연결 수립을 확인하는 데는 손실이 없을 때 보통 1 RTT가 걸린다. 서버가 최종 ACK를 받는 시점은 약 1.5 RTT다. 실제 지연은 경로, 혼잡, 재전송에 따라 달라진다.
+클라이언트가 SYN을 보낸 뒤 연결 수립을 확인하는 데는 손실이 없을 때 보통 1 RTT가 걸린다. 서버가 최종 ACK를 받는 시점은 약 1.5 RTT다. 실제 지연은 경로, 혼잡, 재전송에 따라 달라진다. 상태 전이와 연결 종료는 [[TCP-Handshake|TCP Handshake]] 참고.
 
 ### TLS (HTTPS일 때)
 
 - **TLS 1.2**: 전체 핸드셰이크는 보통 추가 2 RTT
-- **TLS 1.3**: 전체 핸드셰이크는 1 RTT. **0-RTT**는 PSK 기반 재개에서 일부 early data를 보내는 모드이며, 재생될 수 있어 재생에 안전한 요청에만 쓴다.
+- **TLS 1.3**: 전체 핸드셰이크는 보통 1 RTT. 서버가 클라이언트의 `key_share`를 받아들이지 못해 HelloRetryRequest를 보내면 1 RTT가 더 든다. **0-RTT**는 공유한 PSK(주로 이전 연결의 재개)로 첫 전송에 early data를 보내는 모드이며, 재생될 수 있어 재생에 안전한 요청에만 쓴다.
 - 인증서 체인 검증 + 세션 키 합의 → 이후는 대칭키 암호화
 - 자세한 설명: [[HTTPS-TLS|HTTPS, TLS Handshake]]
 
@@ -117,15 +117,15 @@ Cache-Control: max-age=3600
 
 1. **HTML 파싱** → DOM 트리 구축
 2. **CSS 파싱** → CSSOM 트리 구축
-3. **JS 실행** — `<script>` 만나면 파서 일시 정지(방어: `async`, `defer`, `type="module"`)
-4. **Render Tree** = DOM + CSSOM (화면에 보일 노드만)
+3. **JS 실행** — `<script>` 만나면 파서 일시 정지(방어: external classic script의 `async`, `defer`, 또는 `type="module"`. inline classic script에는 `async`, `defer`가 효과 없음)
+4. **Render Tree** = DOM + CSSOM (박스를 만드는 노드만. `display: none`은 빠지고 `visibility: hidden`은 공간을 차지하므로 포함. 스타일시트의 렌더링 차단과 변경 비용은 [[Browser-Main-Thread#렌더링 차단과 변경 비용|브라우저 메인 스레드]])
 5. **Layout(Reflow)** — 각 노드 기하 계산
 6. **Paint** — 픽셀 렌더링
-7. **Composite** — GPU가 레이어 합성
+7. **Composite** — 레이어로 나뉘어 그려진 결과를 순서에 맞게 합성해 화면에 표시. 별도 레이어 승격은 일부 요소에만 일어나고, 합성과 GPU 사용 방식은 엔진과 환경에 따라 다르다(Chromium은 합성한 compositor frame을 GPU로 그린다)
 
 ### 추가 요청 흐름
 
-HTML 내 `<img>`, `<link>`, `<script>` 태그마다 **추가 HTTP 요청**이 발생. 현대 브라우저는 **프리로드 스캐너**가 파싱과 병행해 미리 요청을 띄움.
+HTML에서 외부 자원을 참조하는 태그(`src`가 있는 `<script>`, `stylesheet`나 `preload` 같은 외부 자원 유형의 `<link>`, `<img>`)가 **추가 요청**을 만든다(`dns-prefetch`, `preconnect`는 DNS 조회나 연결만 미리 한다). 캐시로 처리되거나 `loading="lazy"`로 미뤄지면 네트워크 요청이 없거나 늦어질 수 있다. inline script 자체와 `canonical` 같은 하이퍼링크 유형의 `<link>`는 자동으로 가져오지 않는다(inline module script의 `import`는 의존 모듈을 가져온다). `next`는 하이퍼링크 유형이지만 브라우저가 prefetch 같은 리소스 힌트로 처리할 수 있다. 현대 브라우저는 **프리로드 스캐너**가 파싱과 병행해 미리 요청을 띄움.
 
 ### 주요 성능 지표
 
@@ -177,14 +177,14 @@ HTML 내 `<img>`, `<link>`, `<script>` 태그마다 **추가 HTTP 요청**이 �
 - 기본 흐름 다음에 **대규모 확장(CDN, GSLB, 헬스 체크, 세션 유지)** 으로 연결할 수 있는가
 
 ## 출처
-- [IETF, RFC 1034: Domain Names - Concepts and Facilities](https://www.rfc-editor.org/rfc/rfc1034.html)
+- [IETF, RFC 1034: Domain Names - Concepts and Facilities](https://www.rfc-editor.org/rfc/rfc1034.html), [IETF, RFC 4033: DNS Security Introduction and Requirements](https://www.rfc-editor.org/rfc/rfc4033.html)
 - [IETF, RFC 826: An Ethernet Address Resolution Protocol](https://www.rfc-editor.org/rfc/rfc826.html), [IETF, RFC 4861: Neighbor Discovery for IPv6](https://www.rfc-editor.org/rfc/rfc4861.html)
-- [IETF, RFC 9293: Transmission Control Protocol](https://www.rfc-editor.org/rfc/rfc9293.html), [IETF, RFC 5246: TLS 1.2](https://www.rfc-editor.org/rfc/rfc5246.html), [IETF, RFC 8446: TLS 1.3](https://www.rfc-editor.org/rfc/rfc8446.html)
-- [IETF, RFC 4033: DNS Security Introduction and Requirements](https://www.rfc-editor.org/rfc/rfc4033.html)
+- [IETF, RFC 9293: Transmission Control Protocol](https://www.rfc-editor.org/rfc/rfc9293.html), [IETF, RFC 5246: TLS 1.2](https://www.rfc-editor.org/rfc/rfc5246.html), [IETF, RFC 9846: TLS 1.3](https://www.rfc-editor.org/rfc/rfc9846.html)
 - [IETF, RFC 9000: QUIC](https://www.rfc-editor.org/rfc/rfc9000.html), [IETF, RFC 9113: HTTP/2](https://www.rfc-editor.org/rfc/rfc9113.html), [IETF, RFC 9114: HTTP/3](https://www.rfc-editor.org/rfc/rfc9114.html)
-- [AWS Route 53, Choosing TTL values for DNS records](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/best-practices-dns.html#best-practices-dns-choosing-ttl-values)
-- [IETF, RFC 6797: HTTP Strict Transport Security](https://www.rfc-editor.org/rfc/rfc6797.html), [WHATWG, Fetch Standard](https://fetch.spec.whatwg.org/), [WHATWG, HTML Standard](https://html.spec.whatwg.org/), [W3C, Service Workers](https://www.w3.org/TR/service-workers/)
+- [AWS Route 53, Best practices for Amazon Route 53 DNS](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/best-practices-dns.html)
+- [IETF, RFC 6797: HTTP Strict Transport Security](https://www.rfc-editor.org/rfc/rfc6797.html), [WHATWG, Fetch Standard](https://fetch.spec.whatwg.org/), [WHATWG, HTML Standard](https://html.spec.whatwg.org/), [W3C, Service Workers](https://www.w3.org/TR/service-workers/), [MDN, Populating the page: how browsers work](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work), [Chrome for Developers, RenderingNG architecture](https://developer.chrome.com/docs/chromium/renderingng-architecture)
 - [Web Vitals — web.dev](https://web.dev/articles/vitals)
+- [모던 자바스크립트 딥다이브 스터디 #8-1 (CH 38 브라우저의 렌더링 과정) — FE재남](https://www.youtube.com/watch?v=lO6gsAQWfjM)
 
 ## 관련 문서
 - [[OSI-7-Layer|OSI 7계층]]
