@@ -27,6 +27,7 @@ aliases: ["비즈니스&제품(Business&Product)", "Business & Product"]
 - [[biz/product-strategy/제품전략(ProductStrategy)|제품 전략 (Product Strategy)]] — 발견, 검증, 제품 전달, 성장과 확장
 - [[biz/measurement-and-risk/측정과리스크(MeasurementAndRisk)|측정과 리스크 (Measurement and Risk)]] — North Star Metric, 리스크 관리
 - [[biz/commerce/커머스(Commerce)|커머스 (Commerce)]] — 이커머스 거래 구조, 플랫폼 유형과 한국 시장 사례
+- [[biz/funding/자금조달(Funding)|자금 조달 (Funding)]] — 정부 지원사업과 정책자금, 사업계획서와 R&D 계획서, 공고 탐색
 
 ## 현장사례
 
