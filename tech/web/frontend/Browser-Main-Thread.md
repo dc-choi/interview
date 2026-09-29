@@ -1,6 +1,7 @@
 ---
 tags: [web, frontend, performance, browser]
 status: done
+verified_at: 2026-09-28
 category: "웹&네트워크(Web&Network)"
 aliases: ["Browser Main Thread", "브라우저 메인 스레드", "Long Task"]
 ---
@@ -9,7 +10,7 @@ aliases: ["Browser Main Thread", "브라우저 메인 스레드", "Long Task"]
 
 ## 정의
 
-브라우저의 메인 스레드는 한 페이지의 JavaScript 실행, 이벤트 처리, 스타일 계산, 레이아웃, 페인트, 다음 프레임 커밋을 모두 순차로 처리하는 단일 스레드다. 이 스레드가 한 작업에 오래 붙잡히면 그동안 들어온 입력 반응과 화면 갱신이 함께 멈춘다.
+브라우저의 메인 스레드는 한 페이지의 JavaScript 실행, 이벤트 처리, 스타일 계산, 레이아웃, 페인트, 다음 프레임 커밋을 모두 순차로 처리하는 단일 스레드다. 이 스레드가 한 작업에 오래 붙잡히면 그동안 이 스레드를 거쳐야 하는 입력 반응과 화면 갱신이 함께 멈춘다.
 
 ## 동작 원리 (mental model)
 
@@ -19,7 +20,7 @@ aliases: ["Browser Main Thread", "브라우저 메인 스레드", "Long Task"]
 
 ## 렌더링 차단과 변경 비용
 
-`<head>`에서 parser가 만난 스타일시트는 HTML parser를 멈추지 않고 첫 렌더링을 막는다. CSS는 뒤의 규칙이 앞의 규칙을 덮어쓸 수 있어 CSSOM이 완성될 때까지 그리지 않는다. `media`가 현재 환경과 맞지 않는 스타일시트는 렌더링도 script도 막지 않는다. 다만 script는 계산된 스타일을 읽을 수 있으므로, parser가 만든 스타일시트가 로드되는 동안 뒤따르는 inline classic script와 `async`, `defer` 없는 external classic script는 실행을 기다리고 그 사이 parser도 멈춘다. 느린 CSS가 script를 거쳐 DOM 생성까지 늦추는 경로다. inline classic script에는 `async`, `defer`가 효과가 없고, `defer`를 붙인 external classic script는 parser를 멈추지 않지만 실행 전에는 로드 중인 스타일시트를 기다린다.
+`<head>`에서 parser가 만난 스타일시트는 HTML parser를 멈추지 않고 첫 렌더링을 막는다. CSS는 뒤의 규칙이 앞의 규칙을 덮어쓸 수 있어 CSSOM이 완성될 때까지 그리지 않는다. `media`가 현재 환경과 맞지 않는 스타일시트는 렌더링도 script도 막지 않는다. 다만 script는 계산된 스타일을 읽을 수 있으므로, parser가 만든 스타일시트가 로드되는 동안 뒤따르는 inline classic script와 `async`, `defer` 없는 external classic script는 실행을 기다리고 그 사이 parser도 멈춘다. 느린 CSS가 script를 거쳐 DOM 생성까지 늦추는 경로다. inline classic script에는 `async`, `defer`가 효과가 없고, `async` 없이 `defer`를 붙인 external classic script는 parser를 멈추지 않지만 실행 전에는 로드 중인 스타일시트를 기다린다. 두 속성을 함께 붙이면 `async`가 우선해 스타일시트를 기다리지 않고 준비되는 대로 실행된다.
 
 렌더 트리에는 `<head>`, `display: none` 요소와 그 자손이 빠지고, `visibility: hidden` 요소는 그려지지 않지만 공간을 차지하므로 포함된다. 노드의 크기와 위치를 처음 계산하는 것을 layout, 이후의 재계산을 reflow로 나눠 부르기도 하고 두 말을 같은 뜻으로 쓰기도 한다. 스타일 변경의 비용은 다시 실행되는 단계로 갈린다.
 
@@ -90,7 +91,7 @@ const throttle = <A extends unknown[]>(fn: (...args: A) => void, intervalMs: num
 
 - 분할과 양보는 반응성을 얻는 대신 전체 완료 시간이 조금 늘고 코드가 복잡해진다.
 - Web Worker는 메인 스레드를 비우지만 직렬화와 메시지 비용, DOM 미접근 제약이 있어 크고 순수 계산인 작업에 유리하다.
-- 컴포지터 오프로딩은 transform, opacity로 표현 가능한 애니메이션에 한정된다.
+- 브라우저 공통으로 컴포지터 오프로딩을 기대할 수 있는 것은 transform, opacity로 표현 가능한 애니메이션이고, 그 밖의 속성은 브라우저와 버전마다 지원이 다르다.
 
 ## 체크포인트
 
