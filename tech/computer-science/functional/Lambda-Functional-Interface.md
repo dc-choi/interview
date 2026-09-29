@@ -108,7 +108,7 @@ const greet = name => ({ greeting: `Hi, ${name}` });  // 객체 반환은 괄호
 ```
 
 - 익명 함수 단축, `this` 바인딩이 둘러싼 스코프를 **렉시컬하게 캡처** — 콜백에서 `this` 문제 해결
-- `new` 불가, `arguments` 없음 (생성자, 가변 인자는 일반 함수)
+- `new` 불가, 자체 `arguments` 없음 — 감싸는 일반 함수의 `arguments`를 렉시컬하게 읽는다. 생성자는 일반 함수나 클래스로 작성하고, 가변 인자는 rest parameter(`(...args) =>`)로 받는다([[JS-Function-Forms|JavaScript 함수 형태]])
 
 ### 내장 고차함수
 
@@ -188,6 +188,7 @@ c(); c(); // 2
 
 - [SK DEVOCEAN — 함수형 프로그래밍 (Java, JavaScript)](https://devocean.sk.com/blog/techBoardDetail.do?ID=165705)
 - [ECMAScript Language Specification, Array.prototype.every](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.every)
+- [MDN, Arrow function expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory 기초]]
