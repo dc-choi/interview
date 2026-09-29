@@ -142,7 +142,7 @@ const c2 = Object.create(Connection).init('b.example.com');
 
 ## 출처
 - [yceffort — Node.js의 4가지 디자인 패턴](https://yceffort.kr/2021/01/nodejs-4-design-pattern)
-- Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- [Gamma, Helm, Johnson, Vlissides — Design Patterns: Elements of Reusable Object-Oriented Software (1994)](https://www.informit.com/store/design-patterns-elements-of-reusable-object-oriented-9780201633610)
 - [Joshua Bloch — Effective Java 2판 Item 2: Consider a builder when faced with many constructor parameters](https://web.archive.org/web/2016id_/http://www.informit.com/articles/article.aspx?p=1216151&seqNum=2)
 
 ## 관련 문서

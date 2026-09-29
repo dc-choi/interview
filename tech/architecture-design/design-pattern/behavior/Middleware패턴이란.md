@@ -72,6 +72,6 @@ async function middleware(ctx: any, next: () => Promise<void>) {
 
 ## 출처
 
-- Gamma, Helm, Johnson, Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, 1994
+- [Design Patterns: Elements of Reusable Object-Oriented Software (1994) — Gamma, Helm, Johnson, Vlissides](https://www.informit.com/store/design-patterns-elements-of-reusable-object-oriented-9780201633610)
 - [Express 공식 문서, Writing middleware for use in Express apps](https://expressjs.com/en/guide/writing-middleware/)
 - [Koa 공식 문서, Cascading](https://koajs.com/#cascading)
