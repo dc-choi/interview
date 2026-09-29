@@ -1,18 +1,19 @@
 ---
 tags: [career, job-search]
-status: done
+status: active
 category: "이직 준비"
 aliases: ["Job Search Tracker", "이직 준비 트래커"]
 ---
 
 # 다음 이직 후보 풀
 
-> 이직 목표는 키노라이츠 입사로 완료했고 현재 진행 중인 지원은 없다. 이 문서는 다음 이직을 실제로 시작할 때 재검증할 후보 풀이며, 이전 이직 사이클의 회사, 전형 차수, 날짜, 결과와 상태는 [[Job-Search-Tracker-2024-2026-Kinolights]]에 보관한다.
+> 2026-09-29 사용자가 사업 현금흐름이 아직 없다는 이유로 구직을 재개했다. 직장과 사업의 병행도 선택지로 둔다. 이 문서는 현재 사이클의 후보와 진행 상태를 관리하며, 이전 이직 사이클의 회사, 전형 차수, 날짜, 결과와 상태는 [[Job-Search-Tracker-2024-2026-Kinolights]]에 보관한다.
 
 ## 전형 진행 중
 
 | 기업 | 현재 단계 | 비고 |
 | --- | --- | --- |
+| 마이노멀컴퍼니 (인아웃) | 과제 진행 중(마감 2026-10-01) | [인아웃] 백엔드 개발자 3년 이상, https://www.wanted.co.kr/wd/387842 . 원티드 지원 제안 2026-09-18, 지원일은 2026-09-18~22 사이로 정확한 날짜 미확인. 서류 통과 안내 2026-09-22, 과제 제출 요청 메일 2026-09-28(RoundHR). 2026-09-29 사용자 확인으로 아직 최종 제출 전이며 내일모레까지 제출하면 된다. 제출 때 비공개 저장소에 검토 계정 초대가 필요하다. |
 
 ## 지원할 기업
 
@@ -41,6 +42,33 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | KG파이낸셜 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=54149154 | 2026.06 당시 IT본부 스크래핑 개발자 3년+, Python/Java, Spring, Oracle, AWS/Docker, REST. 데이터 수집과 스크래핑 경험이 직접 맞는다고 판단했다. 코스닥 상장, 2000년 설립, 약 149명과 서울 중구 소재는 당시 메모이며 근거 링크가 남아 있지 않다. 주 언어 전환과 이미지형 공고의 상세 자격 요건은 지원 전에 확인한다. 2026.07.11 마감 공고였다. |
 | 하이스트레인저 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=54136124 | 2026.06 당시 백엔드, 경력 무관, 언어와 프레임워크 경험, 캐시, 메시지 큐, 비동기, 컨테이너, 대규모 트래픽 성능과 장애 대응 우대. 콘텐츠 예측과 추천 도메인, 베를린영화제 EFM Startup 2025 선정, 종각역 인근과 자율출근 시간은 당시 메모이며 근거 링크가 남아 있지 않다. 경력 무관 공고가 시니어 역할에 맞는지, 계약직 수습 후 정규직 전환 조건과 0→1 운영 부담은 지원 전 확인한다. 2026.07.10 마감 공고였다. |
 
+### 2026-09-29 채용 알림 선별
+
+> 2026-09-23~29 채용 알림 약 150건 가운데 백엔드와 풀스택 40건의 원문을 2026-09-29에 확인하고, 적합도를 반박 관점에서 한 번 더 검증했다. 비고의 요건, 마감일, 근무지는 이날 공고 원문 기준이며 회사 재무와 규모는 적지 않았다. 등급은 A가 필수 요건 대부분 충족, B가 뚜렷한 갭 하나 이상이다.
+
+#### A
+
+| 기업 | JD 링크 | 비고 |
+| --- | --- | --- |
+| 한국모바일결제 | https://www.wanted.co.kr/wd/389052 | AI Product Engineer. 헤더 5~10년, 본문 실서비스 백엔드 3년 이상(결과물로 판단). Node.js, NestJS, TypeScript, React Native, Next.js. PG 결제, 취소, 정산, 멤버십 자동결제, 키오스크와 단말기 연동, 서버 운영. AI(Claude Code, Codex)로 만들고 사람은 검수와 배포 판단을 맡는 방식이며 대표 직속 상호 백업 구조. 유지보수와 운영 비중이 크다. 고용형태 미기재, 온콜 범위와 프론트 비중을 확인한다. 2026.10.31 마감, 강남 선릉로 428. |
+| 더블유클럽 | https://www.wanted.co.kr/wd/389048 | AI 프로덕트 엔지니어. 4~8년(본문 3년 이상). Node.js, NestJS, TypeScript, React Native, Next.js, Claude Code, Codex. API, 스키마와 마이그레이션, 인증과 인가, 결제 연동, 서류 인증 보안, 배포와 롤백과 장애 대응. 첫 자격요건이 AI로 만든 코드를 실서비스에 올린 결과물이나 PR 링크 제출이라 공개 가능한 링크 확보가 필수다. 고용형태 미기재. 2026.10.31 마감, 강남 선릉로 428. |
+| 피트릭스 | https://www.wanted.co.kr/wd/389038 | 알림 제목은 시니어 풀스택이었으나 원문 제목은 백엔드 서버 개발자(Node.js / Azure). 5~15년. Node.js, Koa, Express, FastAPI, MySQL, Azure(클라우드는 AWS, GCP도 인정). 체성분 데이터 DB 설계, 코드 리뷰 주도, 로깅과 모니터링, CI/CD. 리드급 기대치, FastAPI 담당 여부, 트래픽 규모를 확인한다. 고용형태 미기재, 상시채용, 강남 논현동. |
+| 그립랩스 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=55123215 | 백엔드. 4~10년, 대졸(4년) 이상, 정규직(수습 3개월). 필수 TypeScript, NestJS, MySQL/PostgreSQL, 테스트, 레이어드 아키텍처. Java/Kotlin은 강타입 언어 예시로 적혀 있다. AI 미디어 테크 신규 사업의 B2B/B2C 백엔드. 팀 규모, 트래픽, 초기 단독 개발 비중을 확인한다. 상시채용, 영등포 국회대로70길 23. |
+
+#### B
+
+| 기업 | JD 링크 | 비고 |
+| --- | --- | --- |
+| 트렉시 | https://www.wanted.co.kr/wd/389461 | Node.js 개발자. 3~7년. NestJS, Express, MySQL, Redis, AWS(ECS, Lambda, SQS, SES). 메일과 엑셀 AI 분석으로 상품 데이터화, 견적부터 정산까지 무역 거래 흐름, 시장 데이터 수집 파이프라인. Python은 예시라 Node.js로 충족하지만 React/Next.js 웹 개발 경험이 필수다. 트래픽 규모는 작을 가능성. 고용형태 미기재, 상시채용, 합정동. |
+| 문토 | https://www.wanted.co.kr/wd/388983 | 시니어 소프트웨어 엔지니어(신사업 팀). 5년 이상 또는 그에 준하는 역량. TypeScript, Node.js, NestJS, Prisma, PostgreSQL, Redis, MongoDB, AWS(ECS 등), Docker, React/Next.js, Flutter. 화면부터 인프라까지 혼자 완성하는 0에서 1 역할이라 React와 Flutter 공백이 갭이다. 같은 팀 일반 공고(https://www.wanted.co.kr/wd/388978, 신입~4년, 정규직)도 있다. 2026.10.06 마감, 강남 논현로87길 19. |
+| 티빙 | https://www.jobkorea.co.kr/Recruit/GI_Read/50032817 | Backend Engineer 집중채용(Service, Contents Meta, Media API, AI Ops 4개). 모두 3년 이상, Kotlin/Java와 Spring Boot 필수(Service만 Go 허용). 우대 Kafka, AWS, Kubernetes. 중복 지원 불가라 로그 스키마와 데이터 검증이 겹치는 Media API 하나를 우선 후보로 둔다. 상세 경력기술서 필수. 지원은 tving.ninehire.site. 정규직, 상시채용, 대치동, 주 2회 재택 권장. |
+| 크몽 | https://www.wanted.co.kr/wd/389136 | Product Engineer. 5~12년. Kotlin/Java Spring 설계와 운영 필수, MySQL/NoSQL 튜닝, Claude Code 일상 사용. PHP 서비스 운영과 Kotlin 마이크로서비스 전환, 대용량 API와 배치, 이벤트 파이프라인. Kotlin 실무 부재와 Java 공백이 갭이다. 고용형태 미기재. 2026.10.11 마감, 서초 사임당로 157. |
+| 라이브데이터 | https://www.wanted.co.kr/wd/388465 | 풀스택. 본문 4년 이상이나 원티드 경력 필터는 6~13년. NestJS, FastAPI, React, RDB, NoSQL, LLM Agent(관심 수준 요구). 자체 플랫폼과 고객사 PoC 프로젝트 병행, 기획과 eval 업무가 섞여 있다. 우대 Kubernetes. 정규직(메타데이터), 상시채용, 서초대로54길. |
+| 테크랩스 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=54866200 | 백엔드 팀원. 2~5년(상한 경계), 대졸(4년) 이상. Java, Spring Boot 등 MVC 기반 필수, 우대 AWS, Redis, Kafka, Docker, Kubernetes. 럭키버스와 애드테크 백엔드, 광고 트래킹과 정산. 정규직(수습 3개월). 2026-10-28 마감, 강남대로84길 13. |
+| 브랜뉴닷컴 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=55132071 | 백엔드. 경력 1년 이상. TypeScript/Node.js, React 화면 수정, MySQL, 외부 API 연동, 우대 NestJS, 배치, 스크래핑, 커머스 결제. 셀러 솔루션의 마켓, 결제, 배송 연동과 재시도, 중복 처리. 계약직으로 시작해 정규직 전환 가능이라 전환 조건을 확인한다. 학력 표기가 요약(대졸)과 본문(무관) 사이에 다르다. 채용시 마감, 금천구 시흥대로 193. |
+| 블리츠다이나믹스 | https://www.wanted.co.kr/wd/389415 | AX Problem Solver. 2~15년, 기술스택 미기재. 배달 F&B 브랜드 운영사의 사내 바이브코딩 도구와 공용 에이전트 인프라, 업무의 에이전트 전환. 업무 분해와 도입 성과 판단이 핵심이며 제품 백엔드와 트래픽 지향과는 거리가 있다. 고용형태 미기재, 상시채용, 관악구 인헌길 14. |
+| 올거나이즈코리아 | https://www.wanted.co.kr/wd/389120 | FDE(SW) Solutions Architect. 1~10년. Python 또는 그에 준하는 경험, Linux. 고객 현장에서 AI 솔루션 설계와 프로젝트 리드, 고객사 근무 가능 조건. 제품 백엔드가 아니라 고객 대응형 역할이라 우선순위는 낮다. 상주와 출장 빈도를 확인한다. 2026-10-19 마감, 테헤란로20길 5. |
+
 ## 지원 완료 (응답 대기)
 
 | 기업 | 지원일 | 링크 |
@@ -60,11 +88,14 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 | 기업 | 지원일 | 탈락일 | 링크 |
 |------|--------|--------|------|
+| 팀스파르타 | 미확인 | 2026-09-16 | Forward Deployed Engineer(3-7년), 그리팅 지원. 공고 링크는 메일에 없어 미확인. 사유는 포지션 방향과 경험의 차이라는 일반 안내뿐이며 개별 피드백은 없다. |
+| 한영회계법인 (EY한영) | 2026-09-08 리멤버 포지션 제안 수락, 수락일 미확인 | 2026-09-22 | 세무IT 백엔드 개발자, 리멤버 제안 경로. 공고 링크와 탈락 단계는 미확인이며 메일은 다음 전형 진행이 어렵다는 안내다. |
 
 ## 코테 및 과제
 
 | 기업 | 결과 | 비고 |
 |------|------|------|
+| 마이노멀컴퍼니 (인아웃) | 진행 중, 마감 2026-10-01 | 기능 구현 과제, 수령일 포함 4일. 과제 원문과 코드는 저장하지 않는다. |
 
 ## 커피챗
 
