@@ -90,6 +90,14 @@ Alexander Osterwalder와 Yves Pigneur가 체계화하고 널리 알린 비즈니
 - **LTV/CAC 비율:** 고객 생애 가치와 획득 비용의 관계. 산정 기간, gross margin, churn과 세그먼트 정의를 통일한 뒤 비교한다. 3:1 같은 숫자는 일부 SaaS 문맥의 출발점이지 보편 합격선이 아니다.
 - **Payback Period:** CAC를 회수하는 데 걸리는 기간. 12개월 같은 목표도 현금 여력, ACV, 계약 기간과 성장 단계에 따라 달라진다.
 
+### 공헌이익과 손익분기 고객 수
+
+단위당 공헌이익은 한 단위의 순매출에서 그 단위에 따라 늘어나는 변동비를 뺀 값이다. 순매출은 부가가치세를 제외하고 할인과 환불을 반영한 금액이며, 결제 수수료는 순매출에서 빼지 않고 변동비에만 넣는다. 변동비는 결제 수수료, 호출량에 비례하는 API 비용, 건당 수당처럼 판매량에 비례해 늘어나는 비용이고, 고정비는 월급과 임대료처럼 일정 범위의 판매량 안에서 총액이 변하지 않는 비용이다. 월 기본료에 사용량 요금이 붙는 서버 비용처럼 두 성격이 섞인 비용은 기본료를 고정비에, 사용량 요금을 고객당 변동비에 나눠 넣는다. 손익분기 고객 수는 같은 기간의 고정비를 단위당 공헌이익으로 나눈 값이다.
+
+- 예: 부가가치세를 뺀 월 구독료가 3만 원이고 고객당 결제 수수료와 API 비용이 월 6천 원이면 고객당 월 공헌이익은 2만 4천 원이다. 월 고정비가 180만 원이면 손익분기 고객 수는 75곳이다. 판매가격, 고객당 변동비와 고정비 총액이 일정하고 모든 비용을 고정비나 변동비로 나눌 수 있다는 가정에서 나온 값이다.
+- 반복 결제 모델은 매달 해지하는 고객이 있으므로 누적 가입 수가 아니라 해지를 뺀 유료 고객 수가 손익분기 고객 수에 닿는 시점을 본다.
+- 획득 비용 회수 개월 수는 CAC를 고객당 월 공헌이익으로 나눈 값이다. 같은 기간에 획득한 고객의 평균 유지 개월 수가 이보다 짧으면 그 기간의 획득 비용을 회수하지 못하므로 두 값을 함께 본다.
+
 ### 서비스와 AI의 실제 제공 비용
 
 상담 한 건, 고객 한 곳의 월간 지원처럼 먼저 계산 단위와 기간을 고른다. API와 인프라 청구액 외에 영업, 자료 확인, 결과 검토, 수정과 후속 응대 시간도 기록해야 제공 가능한 양과 수익성을 함께 판단할 수 있다. 실패한 영업과 무료 문의의 비용도 배분 기준을 정해 반영하며 고객 획득 비용과 중복 계산하지 않는다.
@@ -121,6 +129,10 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 
 ## 출처
 - [Principles of Accounting, Volume 1, Chapter 16: Why It Matters — OpenStax](https://openstax.org/books/principles-financial-accounting/pages/16-why-it-matters): 2026-09-22 확인, 발생주의 손익과 현금흐름의 구분.
+- [Principles of Accounting, Volume 2, 2.2 Identify and Apply Basic Cost Behavior Patterns — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/2-2-identify-and-apply-basic-cost-behavior-patterns)
+- [Principles of Accounting, Volume 2, 3.1 Explain Contribution Margin and Calculate Contribution Margin per Unit, Contribution Margin Ratio, and Total Contribution Margin — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/3-1-explain-contribution-margin-and-calculate-contribution-margin-per-unit-contribution-margin-ratio-and-total-contribution-margin)
+- [Principles of Accounting, Volume 2, 3.2 Calculate a Break-Even Point in Units and Dollars — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/3-2-calculate-a-break-even-point-in-units-and-dollars)
+- 초압축 5일 사업계획서 학습지 — 하우그로우 (2026, 배포 학습 자료)
 - [Strategyzer, The Business Model Canvas](https://www.strategyzer.com/library/the-business-model-canvas)
 - [서비스 기획자를 위한 시장 분석 실전 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/52)
 - [종료한 서비스 분석으로 생각하는 힘 기르기 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/55)
