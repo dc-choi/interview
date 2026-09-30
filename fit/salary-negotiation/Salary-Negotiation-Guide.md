@@ -26,6 +26,7 @@ aliases: ["연봉 협상 가이드", "Salary Negotiation Guide"]
   - 10. 처우협의 단계 메일 템플릿
 
 - [[Salary-Trajectory]] — **연봉 궤적과 시장가 해석**
+- [[Severance-Offer-Negotiation]] — **권고사직 위로금 제안 읽기와 협상** (퇴직금, 미사용 연차수당, 순수 위로금 분리, 실업급여와 세금)
 
 ## 출처
 

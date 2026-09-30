@@ -65,6 +65,8 @@ aliases: ["Self Development While Working", "일하면서 자기계발", "회사
 
 유튜브, 팟캐스트, 무료 강의, 도서관. 비싼 도구 = 동기부여가 아니다.
 
+공공 학습 플랫폼도 있다. [KOCW 대학공개강의](http://www.kocw.net), [서울시 평생학습포털](https://sll.seoul.go.kr), [경기도 평생학습포털 GSEEK](https://www.gseek.kr), [네이버 비즈니스 스쿨](https://bizschool.naver.com), [전 국민의 평생학교 EBS](https://home.ebs.co.kr/lifelong/main), 1인 사업자에게는 [서울특별시 소상공인아카데미](https://edu.seoulsbdc.or.kr)와 [소상공인시장진흥공단의 소상공인 지식배움터](https://edu.sbiz.or.kr)가 있다. 강좌별 비용과 수강 자격은 각 사이트에서 확인한다(2026-09-30 사이트 접속 확인). 사이트 목록보다 무엇을 어떤 순서로 배울지 스스로 커리큘럼을 짜는 일이 더 어렵고 중요하다.
+
 ## SI/레거시 환경에서 벗어나기
 
 성장이 막힌 환경에 장기 체류하면 **시장 가치가 자연 감가**한다. 몇 가지 조건을 동시에 충족한다면 빠른 탈출이 최선.
@@ -169,8 +171,11 @@ SI와 일반 소프트웨어 회사 간 채용 불일치의 큰 이유가 **코�
 - [회사가 나를 키워줄 거라 믿는 개발자에게 — Team Grit](https://teamgrit.co/article/341)
 - [취업 후 공부를 멈추는 개발자에게 — Team Grit](https://teamgrit.co/article/349)
 - [5년 후를 물으면 말문이 막히는 개발자에게 — Team Grit](https://teamgrit.co/article/386)
+- [무료 자기계발 사이트 Top5 — Threads, beyond.cho](https://www.threads.com/@beyond.cho/post/DSKTTyykW4U)
+- [무료 자기계발 사이트 5개 — Threads, yelo.cheeze](https://www.threads.com/@yelo.cheeze/post/DN1skqWZkBT)
 
 ## 관련 문서
+- [[Learning-Business-While-Employed|직장에서 사업을 배우는 열 가지 관점]]
 - [[Growth-Principles|성장의 7가지 원칙]]
 - [[Developer-Growth-Stages|개발자 성장 단계]]
 - [[Great-Developer-Habits|뛰어난 개발자의 행동 패턴]]
@@ -180,3 +185,4 @@ SI와 일반 소프트웨어 회사 간 채용 불일치의 큰 이유가 **코�
 - [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]] — 가늘고 길게의 지속 가능성 축
 - [[Software-Craftsmanship-Professionalism|소프트웨어 장인정신과 프로페셔널리즘]] — 커리어 오너십의 직업윤리 측면
 - [[Peer-Comparison-Anxiety|동료 비교 불안]] — 동료 비교 함정의 판별 프레임
+- [[Professional-Networking-and-Mentors|외부 네트워킹과 멘토 확보]] — 행사, 커피챗과 멘토 관계 만들기

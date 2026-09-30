@@ -135,6 +135,7 @@ aliases: ["Backend Engineer Baseline", "백엔드 엔지니어 기본 역량"]
 
 ## 출처
 - [velog @city7310 — 백엔드가 이정도는 해줘야 함 (17부작 시리즈 + 커리큘럼)](https://velog.io/@city7310/series/%EB%B0%B1%EC%97%94%EB%93%9C%EA%B0%80-%EC%9D%B4%EC%A0%95%EB%8F%84%EB%8A%94-%ED%95%B4%EC%A4%98%EC%95%BC-%ED%95%A8)
+- [API 개발 후 배포 전 점검 11가지 — Threads, richardlee0202](https://www.threads.com/@richardlee0202/post/DNUdQmIhZYh)
 
 ## 관련 문서
 - [[Backend-Developer-Career-Overview|백엔드 개발자 진로 개요]]

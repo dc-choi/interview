@@ -140,3 +140,4 @@ aliases: ["연봉 협상 원칙", "Salary Negotiation Principles"]
 
 - [[Salary-Negotiation-Guide]] — 목차 (인덱스)
 - [[Salary-Negotiation-Guide-Process]] — 협상 프로세스, 실전 사례, 메일 템플릿
+- [[Severance-Offer-Negotiation|권고사직 위로금 제안 읽기와 협상]]

@@ -26,6 +26,12 @@ aliases: ["채용 인사이트 시장", "Developer Hiring Insights Market"]
 - 기획 → 설계 → 구현 → 배포 → 운영까지 전과정을 경험한 프로젝트가 필요
 - 많은 트래픽, 보안, 안정성에 대한 고민이 담긴 경험이 중요
 
+### 고연봉 백엔드 공고의 성능과 비용 요구
+- 고연봉 백엔드 공고일수록 단순 CRUD 구현보다 대용량 트래픽 최적화와 인프라 비용 절감 경험을 요구하는 경향이 보인다는 관찰이 있다. 공고 400건을 분석했다는 증감 수치는 작성자 주장이며 표본과 방법을 확인할 수 없어 근거로 쓰지 않는다
+- 면접 답변에는 무엇을 만들었는지보다 성능 병목과 비용을 어떻게 셈했는지를 담는다. 예: 깊은 페이지 조회에서 Offset 대신 Keyset 페이지네이션을 고른 이유(건너뛴 행을 읽지 않고 인덱스 탐색으로 시작점을 찾는다), 복합 인덱스의 컬럼 순서를 조건과 정렬에 맞춘 이유 ([[Pagination-Optimization|페이징 성능 최적화]])
+- 반론도 유효하다. Keyset은 임의 페이지 이동이 어렵고 정렬 키 조합에 고유한 값(예: id)을 넣어야 하므로 데이터 크기보다 조회 패턴과 요구사항이 먼저다. 기법 이름보다 이 상황에서 왜 골랐는지를 말해야 한다
+- 트래픽 규모 자체보다 문제를 정의하고 측정한 방식을 보여 주는 관점은 [[Large-Scale-Traffic-Experience|대규모 트래픽 경험을 보는 법]]
+
 ## CS기초의중요성
 
 - 기초 지식이 없으면 금방 바닥이 드러남
@@ -126,9 +132,14 @@ aliases: ["채용 인사이트 시장", "Developer Hiring Insights Market"]
 - 컨테이너 플랫폼 환경의 이해 (Docker, K8s)
 - MSA
 
+## 출처
+- [고연봉 백엔드 공고가 요구하는 성능과 비용 감각 — Threads, querydaily.official](https://www.threads.com/@querydaily.official/post/DbcaVjEmsRg)
+
 ## 관련 문서
 - [[Developer-Hiring-Insights|채용 인사이트 (인덱스)]]
 - [[Developer-Hiring-Insights-Growth|면접 준비, 스터디, 시니어 로드맵]]
 - [[IT-Downturn-Career-Strategy|긴축기 IT 커리어 전략]]
 - [[Interview-Soft-Skills|인성면접 가이드]]
 - [[Effort-Value-In-Hiring|채용 시장에서 노력의 가치]] — AI 활용의 디폴트화
+- [[Pagination-Optimization|페이징 성능 최적화]] — Offset과 Keyset의 선택 조건
+- [[Large-Scale-Traffic-Experience|대규모 트래픽 경험을 보는 법]] — 규모보다 문제 정의와 측정

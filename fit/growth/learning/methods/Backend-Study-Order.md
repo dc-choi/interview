@@ -33,6 +33,24 @@ aliases: ["Backend Study Order", "백엔드 공부 순서", "요청 흐름 우�
 
 기술 스택을 나열형으로 수집하는 공부는 남는 것이 적다. 남는 것은 기본 흐름을 직접 제어해 본 경험이다. 포트폴리오와 면접에서 보여야 하는 것도 스택 목록이 아니라 왜 그 순서로, 왜 그 도구를 도입했고 무엇이 달라졌는지의 서사다. 면접 서사 프레임은 [[Experience-Value-Framing|경험 가치 프레이밍]].
 
+## 다음 층의 순서
+
+5단계 뒤에도 같은 원칙이 이어진다. 아래 층이 약한 채 위의 도구를 쌓으면 도구 설정과 싸우느라 원리를 놓친다.
+
+**DevOps로 넓힐 때**: 리눅스 핵심 원리, 네트워킹, Git을 먼저 익히고, 동작하는 MVP를 안전하게 반복 배포하는 자동화 루프(빌드, 배포, 롤백)를 만든다. 쿠버네티스 같은 오케스트레이션은 트래픽 확장과 장애 복구의 필요를 실제로 겪은 뒤에 도입해야 도구로서 의미가 생긴다. 오케스트레이션부터 배우면 YAML 설정에 시간을 쓰고 인프라 원리는 비어 있는 순서 오류가 된다. 1인 서비스에서도 먼저 필요한 것은 기본 배포 루프다. 개인 트랙의 실제 순서와 진행 판단은 [[2027-DevOps-Practical-Roadmap|2027 DevOps 실전 로드맵]]을 따른다.
+
+**데이터 계층을 깊게 팔 때**: DB 지식은 다섯 층으로 쌓는 편이 학습 순서를 잡기 쉽다.
+
+| 층 | 주제 | 이 층에서 답할 질문 |
+|---|---|---|
+| 1. 기초 | SQL과 NoSQL, ACID, 인덱스 | 이 쿼리는 어떤 인덱스를 왜 타는가 |
+| 2. 읽기 확장 | Read Replica, 캐시, CDN | 복제 지연과 캐시 불일치를 어디까지 허용하는가 |
+| 3. 쓰기 확장과 일관성 | 샤딩, CAP, 격리 수준 | 일관성을 어느 수준으로 선택하는가 |
+| 4. 스토리지 내부 | WAL, B-Tree와 LSM, Bloom Filter | 쓰기와 읽기 비용이 어디서 생기는가 |
+| 5. 분산 트랜잭션 | 2PC, Saga, Quorum | 여러 저장소에 걸친 변경을 어떻게 맞추는가 |
+
+아래 층이 약한데 Redis, Kafka, MSA를 먼저 올리면 장애 원인을 설명하지 못한다. 층별 정본은 [[Isolation-Level|격리 수준]], [[Replication|복제]], [[Sharding|샤딩]], [[CAP-Theorem|CAP 정리]], [[B-Tree-Index-Depth|B-Tree 인덱스 깊이]], [[Distributed-Transaction-Strategies|분산 트랜잭션 전략]].
+
 ## 사례
 
 - 한 멘토가 백엔드 멘티 200여 명을 만나며 가장 자주 본 패턴: Spring Boot나 Express로 3일 만에 게시판 API를 만들었지만, 4주 차에 데이터 10만 건이 쌓여 500 에러가 터지자 `@Transactional`이 실제 DB 커넥션과 어떻게 상호작용하는지 몰라 코드를 한 줄도 고치지 못했다.
@@ -45,10 +63,13 @@ aliases: ["Backend Study Order", "백엔드 공부 순서", "요청 흐름 우�
 - 트랜잭션 추상화([[NestJS-Database|QueryRunner]], [[Spring-Transactional|@Transactional]])가 실제 DB 커넥션과 어떻게 맞물리는지 설명할 수 있는가
 - 에러가 났을 때 어디서 터졌는지 추적할 수 있는 구조를 갖췄는가
 - 사용 기술마다 도입 순서와 이유, 결과 수치를 말할 수 있는가
+- 오케스트레이션 도구를 도입하기 전에 수동 배포와 자동 배포 루프의 한계를 직접 겪어 봤는가
 
 ## 출처
 
 - [백엔드 공부 순서, 무작정 프레임워크부터 켜면 망하는 이유 — Team Grit](https://teamgrit.co/article/500)
+- [DevOps는 쿠버네티스부터가 아니다 — Threads, mjlee445](https://www.threads.com/@mjlee445/post/DdFZH1FE6Xu)
+- [방금 본 영화 재추천과 DB 지식 피라미드 — Threads, rich_dev_siliconvalley](https://www.threads.com/@rich_dev_siliconvalley/post/DXuuNMcEpqc)
 
 ## 관련 문서
 
@@ -64,3 +85,5 @@ aliases: ["Backend Study Order", "백엔드 공부 순서", "요청 흐름 우�
 - [[Spring-Transactional|Spring @Transactional]] — 트랜잭션 추상화와 커넥션의 연결 구조
 - [[NestJS-Database|NestJS 데이터베이스]] — QueryRunner 트랜잭션과 커넥션 관리
 - [[Index|인덱스]] — 2단계 실험의 정본
+- [[2027-DevOps-Practical-Roadmap|2027 DevOps 실전 로드맵]] — DevOps 트랙의 실제 순서와 진행 판단
+- [[Distributed-Transaction-Strategies|분산 트랜잭션 전략]] — DB 피라미드 5층

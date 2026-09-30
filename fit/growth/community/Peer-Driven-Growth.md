@@ -82,3 +82,4 @@ Q. 스터디나 멘토링 운영 경험은?
 - [[Peer-Network-Rotation|동료 네트워크 전략]]
 - [[Developer-Community-Culture|개발자 커뮤니티 문화]]
 - [[Failure-Tolerant-Culture|실패에 관대한 문화와 심리적 안전]]
+- [[Professional-Networking-and-Mentors|외부 네트워킹과 멘토 확보]]

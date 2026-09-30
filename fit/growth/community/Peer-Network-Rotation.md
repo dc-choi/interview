@@ -145,3 +145,4 @@ aliases: ["Peer Network Rotation", "동료 네트워크 전략", "팀 로테이�
 - [[Global-IT-Interview|글로벌 IT 인터뷰 준비]]
 - [[Salary-Trajectory|연봉 궤적 전략]]
 - [[Growth-Principles|성장의 7가지 원칙]]
+- [[Professional-Networking-and-Mentors|외부 네트워킹과 멘토 확보]]

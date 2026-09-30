@@ -89,6 +89,9 @@ aliases: ["Tech Writing", "개발자 글쓰기", "기술 글쓰기", "Tech Writi
 | 3. 표현 | 문장 다듬기, 군더더기 제거 |
 | 4. 교정 | 오타, 문법, 사실관계 확인 |
 
+표현 단계에서는 불필요한 조사와 명사+하다 분리를 줄이면 문장이 짧아진다. 공부를 했다는 공부했다로, 생각이 났다는 생각났다로 붙인다. 다만 조사가 뜻을 싣는 경우는 남긴다. 공부만 했다처럼 보조사가 강조나 한정을 담으면 지우지 않는다.
+줄인 뒤에는 주어와 서술어가 맞는지 확인한다. 사람이 주어면 합의했다, 사안이 주어면 합의됐다처럼 붙이는 형태도 주어에 따라 달라진다.
+
 블로그 글 한 편을 제대로 완성하려면 며칠보다 **2~3주의 수정 시간**을 두는 게 현실적이다. 빠르게 쓰는 것보다 충분히 고치는 시간이 품질을 만든다.
 
 ## 마감이 글을 끝낸다
@@ -160,3 +163,4 @@ aliases: ["Tech Writing", "개발자 글쓰기", "기술 글쓰기", "Tech Writi
 - [개발자를 위한 기술 글쓰기 — 주제 찾기, 초안, 퇴고, 피드백 (YouTube)](https://www.youtube.com/watch?v=xu3XGEomRWI&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=20)
 - [기술 블로그를 쓰지 않는 개발자에게 — Team Grit](https://teamgrit.co/article/285)
 - [문서화를 안 하는 개발자에게 — Team Grit](https://teamgrit.co/article/387)
+- [조사를 줄여 간결하게 쓰기 — Threads, self_overcoming](https://www.threads.com/@self_overcoming/post/DMKlCtQRF3r)

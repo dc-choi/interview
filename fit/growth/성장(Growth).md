@@ -18,6 +18,7 @@ aliases: ["Growth"]
 - [[fit/growth/learning/학습(Learning)|학습 방법 (Learning)]] — CS 학습법, 소스 코드 분석, 영어, 블로그, 성장 원칙
 - [[Hiring-Market|채용 시장 (Hiring Market)]] — 기업 역량 요구, IT 긴축기, 대규모 트래픽 경험, 비전공 전략
 - [[fit/growth/soft-skills/interview-soft-skills/Interview-Soft-Skills|소프트 스킬 (Soft Skills)]] — 메타인지, STAR, 인성면접
+- [[Managing-Up|상사와 일하는 법 (Managing Up)]] — 기대치 싱크업, 우선순위 협상, 기록과 가시성, 상사 유형별 조정
 - [[fit/growth/antipatterns/안티패턴(Antipatterns)|안티패턴 (Antipatterns)]] — -10배 엔지니어, 애자일 죽음, 독성 조직
 - [[fit/growth/habits/습관(Habits)|습관, 회고 (Habits)]] — 좋은 개발자 행동 패턴, 회고 기법, 실패 다루기
 - [[fit/growth/community/커뮤니티(Community)|커뮤니티, 네트워크 (Community)]] — 커뮤니티 문화, 동료 네트워크
