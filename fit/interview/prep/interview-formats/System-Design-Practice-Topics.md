@@ -1,6 +1,7 @@
 ---
 tags: [interview, system-design, practice]
 status: done
+verified_at: 2026-09-30
 category: "Interview - 준비"
 aliases: ["시스템 설계 연습 주제", "System Design Practice Topics"]
 ---
@@ -87,19 +88,30 @@ aliases: ["시스템 설계 연습 주제", "System Design Practice Topics"]
 
 핵심 — 팔로우 그래프, Fan-out on write vs read, 무한 스크롤, 실시간 업데이트, 셀럽(팔로워 100만) 처리.
 
+### 13. 실시간 경매 입찰
+> "마감 시각이 있는 경매에서 입찰을 받고, 현재 최고가를 참가자 모두에게 실시간으로 보여 주라"
+
+핵심 — 동시 입찰 경합, 입찰 내구성, 최고가 푸시, 수평 확장, 마감 처리와 스나이핑 대응.
+
+- 동시 입찰은 좌석, 재고 차감과 같은 경쟁 조건이다. 현재가보다 높을 때만 갱신하는 조건부 UPDATE(`WHERE auction_id = ? AND current_price < ?`)나 version 기반 낙관적 동시성 제어는 충돌이 드문 경매에 맞는다. 인기 경매의 마감 직전처럼 충돌이 몰리면 재시도와 거절이 늘어나므로 행 잠금(`SELECT ... FOR UPDATE`)이나 경매별 직렬 처리와 비교한다([[Race-Condition-Patterns|Race Condition 패턴과 해결]], [[Lock|DB Lock]]).
+- 입찰 수락 응답은 입찰이 내구성 있게 기록된 뒤에 보낸다. DB 커밋과 복제된 로그나 큐 중 무엇을 수락 기준점으로 삼을지 정하고, 클라이언트 재전송에 대비해 입찰 ID로 멱등 처리한다.
+- 최고가 변경은 폴링 대신 서버 푸시로 전한다. 보기만 하는 참가자가 많으면 단방향 SSE, 입찰까지 같은 연결로 주고받으려면 WebSocket을 검토하고, 서버가 여러 대면 Pub/Sub으로 변경 이벤트를 퍼뜨린다([[Realtime-Chat-Architecture|실시간 채팅 시스템 아키텍처]]). SSE는 HTTP/2가 아니면 브라우저와 도메인 조합당 동시 연결이 6개로 제한된다. 푸시는 표시용이고 최고가의 정본은 저장소다.
+- 애플리케이션 서버는 상태를 두지 않게 해 수평 확장하고, 저장소는 auction_id로 파티셔닝해 경합을 경매 단위로 가둔다. 한 경매에 입찰이 몰리는 핫 파티션은 파티셔닝으로 풀리지 않으므로 경매별 단일 처리자나 큐 직렬화와 비교한다.
+- 마감은 서버 시각으로 판정하고 마감 뒤 도착한 입찰은 거절한다. 마감 직전 입찰(스나이핑)을 줄이려면 마감 직전 일정 구간의 입찰이 마감을 연장하는 소프트 클로즈를 쓴다. 연장 규칙은 정책 결정이므로 명확화 단계에서 확인한다.
+
 ## Level 4 — 물류 특화
 
-### 13. 실시간 재고 관리
+### 14. 실시간 재고 관리
 > "실시간 재고 관리"
 
 핵심 — 입출고, 재고 차감 동시성, 안전 재고, 이력 추적(이벤트 소싱), 멀티 창고 동기화.
 
-### 14. 주문 처리 (OMS)
+### 15. 주문 처리 (OMS)
 > "주문→배송 전체 플로우"
 
 핵심 — 주문 접수, 결제 연동, 재고 차감, 송장 생성, 배송 추적, 상태 변경 이벤트 발행, 주문 취소 가능 시점.
 
-### 15. 배송 추적
+### 16. 배송 추적
 > "택배사 연동 배송 추적"
 
 핵심 — 다중 택배사 API 통합, API 없는 곳 스크래핑, 상태 정규화, 실패, 재시도, 알림, 1시간 API 장애 대응.
@@ -108,10 +120,10 @@ aliases: ["시스템 설계 연습 주제", "System Design Practice Topics"]
 
 | 패턴 | 등장 주제 | 도구 |
 |---|---|---|
-| 동시성 제어 | 좋아요, 쿠폰, 재고, 좌석 | Redis 분산락, 낙관적 락, DB 원자 연산 |
+| 동시성 제어 | 좋아요, 쿠폰, 재고, 좌석, 입찰 | Redis 분산락, 낙관적 락, DB 원자 연산 |
 | 대규모 트래픽 | 쿠폰, 예약, 주문 | Queue, 캐싱, Rate Limiting, 큐 워커 분산 |
 | 상태 관리 | 주문, 배송, 예약 | State Machine, Event Sourcing, Outbox |
-| 실시간 | 채팅, 알림, 위치 | WebSocket, SSE, Pub/Sub |
+| 실시간 | 채팅, 알림, 위치, 경매 최고가 | WebSocket, SSE, Pub/Sub |
 | 검색, 추천 | 추천 피드, 검색, 타임라인 | Elastic, 벡터 검색, Fan-out |
 
 면접에서 등장한 주제를 위 패턴 매트릭스로 분해하면, 첫 5분 명확화 단계에서 어떤 축이 결정적인지 빠르게 잡힌다.
@@ -120,7 +132,7 @@ aliases: ["시스템 설계 연습 주제", "System Design Practice Topics"]
 
 **1주차 (기본 5개)** — 추천 피드, 알림, 좋아요, 검색, 장바구니
 **2주차 (중급+물류)** — 쿠폰, 댓글, 예약, 재고 관리, OMS
-**3주차 (고급+물류)** — 배송 추적, 채팅, 동영상, 배달 주문, 소셜 피드
+**3주차 (고급+물류)** — 배송 추적, 채팅, 동영상, 배달 주문, 소셜 피드, 경매 입찰
 
 각 회: 60분 타이머 + 말하면서 코딩 + 종료 후 5분 자기 회고.
 
@@ -134,11 +146,16 @@ aliases: ["시스템 설계 연습 주제", "System Design Practice Topics"]
 
 "이걸 어떻게 만들었을까"를 역으로 풀면 면접에서도 사례 인용이 자연스러워진다.
 
+## 출처
+
+- 성장랜턴, 시스템 디자인 첫걸음: 면접에서 돋보이는 백엔드 아키텍처 설계하기, [321520 면접에서 돋보이는 프로젝트를 하는 방법](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=321520)
+- [경매 시스템 설계 — Threads, rich_dev_siliconvalley](https://www.threads.com/@rich_dev_siliconvalley/post/DNolPEdyTtF)
+- [MDN, Using server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+
 ## 관련 문서
 - [[Live-Coding-Process|라이브 코딩 면접 프로세스 5단계]]
 - [[Interview-Prep-Template|회사와 차수 기반 준비 문서 템플릿]]
 - [[Common-Interview-Questions-Tech-Scale|단골 질문 - 규모, 성능]]
-
-## 출처
-
-- 성장랜턴, 시스템 디자인 첫걸음: 면접에서 돋보이는 백엔드 아키텍처 설계하기, [321520 면접에서 돋보이는 프로젝트를 하는 방법](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=321520)
+- [[Race-Condition-Patterns|Race Condition 패턴과 해결]]
+- [[Realtime-Chat-Architecture|실시간 채팅 시스템 아키텍처]]
+- [[Lock|DB Lock]]

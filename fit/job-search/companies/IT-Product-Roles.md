@@ -138,6 +138,7 @@ aliases: ["IT Product Roles", "PM PO PMM 차이", "프로덕트 매니저/오너
 - [Scrum Guides, The Scrum Guide](https://scrumguides.org/scrum-guide.html)
 
 ## 관련 문서
+- [[Product-Owner-Role|PO(Product Owner)의 역할과 책임]]
 - [[Company-Selection-Criteria|회사 선택 기준]]
 - [[IT-Company-Types|IT 기업 유형]]
 - [[Backend-Developer-Career-Overview|백엔드 개발자 진로 개요]]

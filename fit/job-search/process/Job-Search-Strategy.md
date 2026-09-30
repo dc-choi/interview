@@ -49,6 +49,18 @@ aliases: ["이직 전략", "Job Search Strategy"]
 | 뉴스레터 | 스타트업위클리, 긱뉴스, 서핏 |
 | 앱 기반 회사 | 플레이스토어 앱 순위 확인 |
 | VC 투자 활동 | 알토스벤처스 등 유명 VC 서칭 |
+| 공공데이터 기반 연봉, 인원 추정 | 크레딧잡(국민연금 가입 사업장 데이터를 바탕으로 한 추정으로 알려짐), 인크루트 연봉정보(국민연금 기준소득월액, DART, ALIO 기반 자체 산출). 기준소득월액에 상한이 있어 고연봉 회사는 실제보다 낮게 잡힐 수 있고, 성과급과 비과세 포함 여부도 다르다 |
+| 공공 채용, 고용 서비스 | 고용24(2024년 9월 워크넷 등 9개 고용서비스 전산망을 통합해 개통) |
+
+### 징검다리 회사 찾기
+
+목표가 빅테크여도 바로 가는 문은 좁다. 빅테크가 좋아할 만한 경험을 주는 탄탄한 중견, 성장 회사를 거쳐 점프업하는 경로를 함께 설계하고, 공고가 적은 시기에는 이런 회사를 직접 발굴해 두드린다.
+
+- **투자 흐름**: 주요 VC 포트폴리오 페이지, 혁신의숲, THE VC를 교차로 보면 돈이 흐르는 섹터와 최근 투자 받은 회사가 보인다. 투자 직후 합류는 성장 기회가 크지만 빠른 성장 압박을 원하지 않으면 맞지 않을 수 있다.
+- **재무 건전성**: 매출, 영업이익, 부채, 인원 추이를 공시로 확인한다. DART 읽는 절차는 [[Career-Company-Judgment|이직과 회사 판단 체크리스트]]의 공개 자료 절을 따른다.
+- **사람 신호**: 익명 리뷰에서 1년 내 이탈이 낮은지, 리더에 대한 긍정 평가가 반복되는지 본다. 1년 내 퇴사율 25% 미만이라는 기준은 한 채용 실무자의 경험칙일 뿐이다.
+- **시장 노출**: 경제지 언급과 3~6개월 꾸준히 이어지는 여러 직무 공고는 사업이 굴러간다는 신호다. 같은 단일 직무의 반복 공고와는 구분한다([[Company-Selection-Criteria|회사 선택 기준]]).
+- 세 신호 이상이 겹치는 회사를 리스트로 모은다. 알짜 회사는 인재 추천 입사가 많아 공고 플랫폼에 잘 안 뜨므로 자체 채용 페이지를 주기적으로 직접 확인한다.
 
 ## 유명한 회사들의 채용 프로세스
 
@@ -111,6 +123,9 @@ aliases: ["이직 전략", "Job Search Strategy"]
 - [첫 직장이 틀렸다는 걸 깨달은 개발자에게 — Team Grit](https://teamgrit.co/article/416)
 - [부트캠프 수료 후 방향이 안 잡힌다면 — Team Grit](https://teamgrit.co/article/467)
 - [주니어 개발자 이직 준비, 무엇부터 해야 하는가 — Team Grit](https://teamgrit.co/article/494)
+- [빅테크로 가는 징검다리 회사 찾기 — Threads, ancha_redi](https://www.threads.com/@ancha_redi/post/DZXZZ1UFBBi)
+- [취준생 저장 사이트 10곳 — Threads, jobgod.kr](https://www.threads.com/@jobgod.kr/post/DKtIauypQDR)
+- [개통 1년 맞은 고용24, 사용자 맞춤형 서비스 확대 개편 — 대한민국 정책브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=148947897)
 
 ## 관련 문서
 - [[Job-Search-Strategy-JD-Analysis|채용공고 분석]] — 사실/가설/검증, JD 증거 매트릭스, 주의 공고 신호
@@ -118,6 +133,7 @@ aliases: ["이직 전략", "Job Search Strategy"]
 - [[Resume-Portfolio-Guide|이력서 & 포트폴리오 가이드]]
 - [[Resume-15-Second-Rules|이력서 15초 승부 5원칙]]
 - [[Company-Selection-Criteria|회사 선택 기준]]
+- [[Career-Company-Judgment|이직과 회사 판단 체크리스트]] — DART로 회사 재무 읽기
 - [[Salary-Trajectory|연봉 궤적 전략]]
 - [[Developer-Hiring-Insights|채용 인사이트]]
 - [[Developer-Growth-Stages|개발자 성장 단계]] — 도망성 vs 성장형 이직 판단

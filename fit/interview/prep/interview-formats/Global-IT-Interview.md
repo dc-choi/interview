@@ -66,6 +66,8 @@ aliases: ["Global IT Interview", "글로벌 IT 인터뷰", "해외 IT 회사 인
 4. **전문가 리뷰** — 채용 경험 많은 사람의 피드백 (중요)
 5. **추천서, LinkedIn 최신화**
 
+북미 인더스트리 이력서의 실무 관행(절대 규칙은 아니므로 지역과 직군별로 확인): 경력 10년 미만이면 1장, 상단에 Professional Summary 한두 문장, 나머지는 숫자로 된 성과 불릿으로 채운다. 아카데믹 CV처럼 논문 제목을 나열하지 않고 편수로 요약하며, ATS 필터를 고려해 포지션 R&R의 키워드를 반영하고 사진은 넣지 않는다.
+
 ## 4. 인터뷰 실전: 방어 (Defense)
 
 점수를 잃지 않기 위한 답변 전략.
@@ -138,6 +140,15 @@ aliases: ["Global IT Interview", "글로벌 IT 인터뷰", "해외 IT 회사 인
 | 평가 기준 | 실무 적합도 중심 | STAR, Leadership Principles, Values 명시 |
 | 문화 적합성 | 암묵적 | 명시적 (Culture Fit 단계) |
 
+### 해외 현지 구직의 시간 변수 (캐나다 이직 경험 기준)
+
+통계가 아니라 한 구직자의 경험이므로 지역과 직군별로 다시 확인한다.
+
+- 연말과 연초(대략 11~2월)는 예산 확정과 파이프라인 정리로 채용이 멈춘 듯 보일 수 있다. 이 기간의 무응답을 곧바로 탈락 신호로 읽지 않는다.
+- 몇 달 조용하다가 연락이 한꺼번에 몰리기도 하므로, 일반 질문과 경험 시나리오 답변을 미리 준비해 초반 기회를 준비 부족으로 흘려보내지 않는다.
+- 연봉과 직급이 높을수록 맞는 자리가 적어 기간이 길어진다. 시니어는 수개월 단위로 잡는다.
+- 필수로 적힌 도구를 써 보지 않았어도 채용된 사례가 있어, JD가 100% 맞지 않아도 핵심 요건이 맞으면 지원한다.
+
 ## 한국 지원자가 자주 저지르는 실수
 
 - 답변이 **수동적**(질문만 답하고 끝) — 적극적 인터뷰 참여 기대치 충족 안 됨
@@ -160,6 +171,8 @@ aliases: ["Global IT Interview", "글로벌 IT 인터뷰", "해외 IT 회사 인
 - [brunch ywkim36 — 인터뷰 2편: 거짓말, 준비 부족 금지](https://brunch.co.kr/@ywkim36/5)
 - [brunch ywkim36 — 구직활동 전략(목표, SNS, 리쿠르터)](https://brunch.co.kr/@ywkim36/21)
 - [brunch ywkim36 — 평상시 준비: 자기인식, 학습, 네트워킹](https://brunch.co.kr/@ywkim36/22)
+- [Threads grace_zumba.canada — 캐나다 이직 현실 10가지](https://www.threads.com/@grace_zumba.canada/post/DWymnMKDXOe)
+- [북미 이력서는 1장으로 — Threads, henrykang227](https://www.threads.com/@henrykang227/post/DJs2ZJex9qF)
 
 ## 관련 문서
 - [[Common-Interview-Questions|자주하는 면접 질문]]

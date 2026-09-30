@@ -19,6 +19,7 @@ aliases: ["Interview Prep"]
 - [[Experience-Value-Framing|경험 가치 프레이밍 — 시장가치 전달, 의사결정 서사, 반대 분류(방향/부담/정보)]]
 - [[Experience-Narrative-Reframing|경험 서사 재해석 — 해석 vs 과장의 경계, 의미감(영웅의 여정, 세 벽돌공), 첫 직장 자책의 재해석]]
 - [[Sensitive-Question-Answers|민감 질문 — 사회인 언어 치환표 + 답변 공통 구조, 공백기는 소화가 먼저]]
+- [[JD-Rereading-Before-Interview|면접 전날 30분 공고 재독 — 주요 업무는 예상 질문, 자격요건은 갭 대체 경험, 우대사항은 선제 어필, 회사 소개는 지원동기]]
 
 ## 질문 풀
 

@@ -99,6 +99,11 @@ aliases: ["이력서 경험 서술", "Resume Experience Narrative"]
 
 꼬리 질문에 답할 수 없는 기술명이나 과장된 역할은 삭제하거나 범위를 정확히 고친다. 질문받고 싶은 강점을 앞에 두면 이력서가 면접의 방향도 설계한다.
 
+- **첫 질문 유도**: 상단 요약에 먼저 질문받고 싶은 기술이나 프로젝트를 한두 줄 구체적으로 적는다. 열정, 성실 같은 형용사나 활동량보다 검증 가능한 강점이 첫 질문을 만든다. 그 프로젝트를 물으면 아키텍처를 그려 설명해도 되는지 제안할 수 있게 준비한다([[Developer-Interview-Signals|면접관이 보는 시그널]]).
+- **JD의 언어 맞추기**: 같은 경험이라도 지원 회사 JD가 쓰는 용어로 표현한다. 검토자가 번역 없이 요건과 연결할 수 있어야 한다.
+- **이직 사유 한 줄**: 면접 답변과 어긋나지 않는 한 줄로 정리해 둔다. 이력서에 쓰지 않더라도 서류와 면접의 메시지가 같아야 한다.
+- **입사 후 1년 기여 계획**: 이력서 본문이 아니라 면접 재료로 준비한다. 과거 증거에서 이어지는 기여 가설이어야 설득력이 있다.
+
 ## AI 활용 경험을 쓰는 법
 
 AI 도구 이름이나 생성 결과만 나열하지 않는다. 개발자로서 내 판단과 품질 책임이 보이도록 다음 순서로 쓴다.
@@ -166,6 +171,9 @@ AI 도구 이름이나 생성 결과만 나열하지 않는다. 개발자로서 
 - [경력직 이직을 준비하는 개발자에게 — Team Grit](https://teamgrit.co/article/340)
 - [개발자의 "할 수 있다"는 말은 어디까지일까요? — 요즘IT](https://yozm.wishket.com/magazine/detail/3880/)
 - [개발자 이력서 프로젝트 서술 — Team Grit](https://teamgrit.co/article/485)
+- [개발자 취준생 이력서 무응답 체크리스트 — Threads, parkelo__](https://www.threads.com/@parkelo__/post/DdjZIqNlNYe)
+- [합격하는 경력직 지원 준비 7가지 특징 — Threads, allpass_everything](https://www.threads.com/@allpass_everything/post/DMLnpuHz3eh)
+- [개발자 면접 첫 질문을 유도하는 이력서 — Threads, think_lighthouse](https://www.threads.com/@think_lighthouse/post/DN29vUFZDbC)
 
 ## 관련 문서
 
