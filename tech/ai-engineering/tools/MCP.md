@@ -1,7 +1,7 @@
 ---
 tags: [ai, mcp, tool-use, protocol]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["MCP", "Model Context Protocol", "모델 컨텍스트 프로토콜"]
 ---
@@ -73,12 +73,26 @@ Tools는 근거를 가져오고 Prompts는 그 근거를 사용하는 학습 절
 
 MCP는 하네스의 Inform(맥락 주입)과 도구 실행 축을 표준화한 수단이다. 다만 서버가 너무 많은 도구와 리소스를 노출하면 선택 비용과 [[Context-Engineering|Context Rot]]가 늘어난다. 필요한 서버만 켜고, 도구 스키마를 필요할 때만 로드하는 JIT 원칙이 그대로 적용된다.
 
+## 거버넌스와 표준화 — 벤더 중립 재단으로
+
+2025-12-09 Anthropic은 MCP를 Linux Foundation 산하 directed fund인 Agentic AI Foundation(AAIF)에 기부했다. AAIF는 Anthropic, Block, OpenAI가 공동 설립했고 창립 프로젝트는 MCP, Block의 goose(MCP 기반 로컬 우선 에이전트 프레임워크), OpenAI의 AGENTS.md(코딩 에이전트용 저장소별 지침 파일) 세 가지다. 발표 당시 Platinum 회원은 AWS, Anthropic, Block, Bloomberg, Cloudflare, Google, Microsoft, OpenAI였다. Anthropic은 같은 발표에서 공개 MCP 서버 1만 개 이상, Python과 TypeScript SDK 합산 월 9,700만 회 이상 다운로드, Claude 디렉터리의 MCP 기반 커넥터 75개 이상을 제시했다(2025-12 발표 기준 수치).
+
+도입하는 쪽에서 벤더 중립 거버넌스가 뜻하는 것:
+
+- 표준의 소유와 상표가 한 회사의 제품 전략에서 분리된다. 경쟁 벤더도 같은 규격에 투자할 동기가 생겨 서버를 한 번 만들면 여러 Host에서 쓰는 N+M 이점이 커진다
+- 운영 방식은 그대로다. 발표는 기존 메인테이너 체계와 커뮤니티 의견 중심의 투명한 결정 방식을 유지한다고 밝혔고, 변경은 여전히 SEP(Specification Enhancement Proposal)와 버전별 명세로 들어온다
+- 중립이 하위 호환을 보장하지는 않는다. 현재 명세 `2026-07-28`은 `initialize` 핸드셰이크와 프로토콜 수준 세션(`Mcp-Session-Id`)을 제거해 요청마다 버전과 capability를 싣는 stateless 설계로 바꾸고, `server/discover`를 필수 RPC로 추가했다. 이전 명세 `2025-11-25`의 공식 changelog에는 stateless 항목이 없으므로, stateless는 2025-12 발표 시점의 방향 설명이었고 실제 명세 변경은 2026-07-28 개정이다
+- 명세에 12개월 이상 유예 기간을 두는 기능 수명 주기와 폐기 정책이 생겼다(Roots, Sampling, Logging은 Deprecated). 서버와 Client를 운영하면 지원하는 프로토콜 버전과 폐기 기능 레지스트리를 주기적으로 확인한다
+
+재단 이관은 규격의 신뢰성이나 개별 서버의 안전성을 보증하지 않는다. 위의 권한 최소화와 신뢰 경계 점검은 그대로 적용한다.
+
 ## 면접 체크포인트
 
 - MCP를 한 줄로: 모델을 외부 도구와 데이터에 연결하는 표준(USB-C 비유), tool-use를 N×M에서 N+M으로
 - Host/Client/Server 구조와 Tools/Resources/Prompts 원시 구분
 - 도구 권한 = 위험 → HITL, 권한 최소화, 프롬프트 인젝션 경계, 감사
 - 도구를 많이 붙일수록 컨텍스트 비용이 오른다 → 필요한 서버만(JIT, Select)
+- 재단 이관(AAIF)이 바꾸는 것과 바꾸지 않는 것, 명세 개정에 따른 버전 호환 확인
 
 ## 출처
 
@@ -89,6 +103,12 @@ MCP는 하네스의 Inform(맥락 주입)과 도구 실행 축을 표준화한 �
 - [Connectors overview — Anthropic](https://claude.com/docs/connectors/overview)
 - [Bring your app to ChatGPT — OpenAI](https://learn.chatgpt.com/use-cases/chatgpt-apps)
 - [비개발자가 한 달 동안 풀스택으로 개발하면서 배운 것 — NAVER D2](https://d2.naver.com/helloworld/0107009)
+- [Donating the Model Context Protocol and establishing the Agentic AI Foundation — Anthropic](https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation)
+- [Linux Foundation Announces the Formation of the Agentic AI Foundation (AAIF) — Linux Foundation](https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation)
+- [Key Changes (2026-07-28) — Model Context Protocol](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
+- [Key Changes (2025-11-25) — Model Context Protocol](https://modelcontextprotocol.io/specification/2025-11-25/changelog)
+- [Versioning — Model Context Protocol](https://modelcontextprotocol.io/specification/versioning)
+- [MCP 리눅스 재단 기부와 AAIF 출범 — Threads, hyle.ai.kr](https://www.threads.com/@hyle.ai.kr/post/DSD02cHk25B)
 
 ## 관련 문서
 
@@ -97,4 +117,5 @@ MCP는 하네스의 Inform(맥락 주입)과 도구 실행 축을 표준화한 �
 - [[Tool-Output-Filtering]] — MCP 응답이 컨텍스트를 채우는 주범, 프록시 계층에서 필드만 추출
 - [[Production-Agent-Architecture]] — 도구를 가진 에이전트의 Defense in Depth
 - [[AI-Handicap-Learning|AI를 학습 난이도 조절 도구로]] — 강의 근거를 활용하는 학습 루프
+- [[Codex-CLI]] — 같은 재단의 창립 프로젝트인 AGENTS.md 지침 파일
 - [[AI엔지니어링(AIEngineering)]] — 카테고리 인덱스

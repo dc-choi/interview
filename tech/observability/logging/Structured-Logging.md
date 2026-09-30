@@ -1,7 +1,7 @@
 ---
 tags: [observability, logging]
 status: done
-verified_at: 2026-08-05
+verified_at: 2026-09-29
 category: "관측가능성(Observability)"
 aliases: ["Structured Logging", "구조화된 로깅"]
 ---
@@ -83,6 +83,18 @@ Java, Spring 계열은 같은 역할을 MDC가 맡는다. 스레드 로컬 기�
 
 마스킹 대상, 기법 선택과 컴플라이언스 연계는 [[PII-Masking]]에 정리했다.
 
+## 라이브러리 로깅 설계
+
+애플리케이션이 아니라 여러 곳에서 가져다 쓰는 라이브러리가 로그를 남길 때는 원칙이 달라진다. 라이브러리는 로그를 기록만 하고, 출력 대상, 레벨과 형식은 그 라이브러리를 쓰는 애플리케이션이 전부 정한다(library-first). 라이브러리가 로거 설정을 강제하면 애플리케이션의 로그 파이프라인과 충돌하고, 설정이 없을 때 콘솔에 로그를 쏟아내면 사용자가 끌 방법이 없다.
+
+- **설정하지 않으면 조용하다.** 라이브러리는 로거 전역 설정을 호출하지 않는다. 애플리케이션이 설정하지 않으면 아무것도 출력되지 않는 것이 기본값이다.
+- **계층적 카테고리.** `["my-lib", "db"]`처럼 카테고리를 트리로 두면 애플리케이션이 라이브러리 전체 또는 하위 모듈 단위로 레벨을 켜고 끌 수 있고, 부모 설정이 자식에 상속된다.
+- **지연 평가.** 무거운 직렬화는 콜백으로 넘겨 해당 레벨이 실제로 출력될 때만 계산하게 한다. 꺼진 debug 로그가 운영 비용을 먹지 않는다.
+- **민감정보 마스킹.** 필드 이름이나 패턴 기준으로 값을 지우거나 가리는 처리를 출력 전 단계에 둔다([[PII-Masking]]).
+- **Sink로 연결.** 콘솔, 파일, OpenTelemetry, Sentry 같은 출력 대상은 애플리케이션이 sink로 붙인다.
+
+JS/TS의 LogTape가 이 설계를 따르는 예다. 공식 문서 기준(2026-09-29 확인)으로 의존성 0개, Node.js, Deno, Bun, 브라우저, 엣지 런타임을 지원하고, 라이브러리 작성자에게 `configure()`를 호출하지 말라고 안내한다. 공식 sink 패키지로 파일, OpenTelemetry, Sentry, CloudWatch Logs, Syslog 등이 있고, Express, Fastify, Hono, Koa, Drizzle ORM 통합과 `@logtape/redaction` 패키지를 제공한다. pino, winston 어댑터는 LogTape 로그 레코드를 기존 pino나 winston 로거로 전달하는 방향이다. 그래서 NestJS 앱이 이미 pino나 winston을 쓰고 있어도 LogTape로 로깅하는 라이브러리의 로그를 기존 파이프라인에 합칠 수 있다. 공식 NestJS 전용 통합은 확인하지 못했다.
+
 ## 사례
 
 이전 환경에서 겪은 문제와 대응이다.
@@ -101,11 +113,15 @@ Java, Spring 계열은 같은 역할을 MDC가 맡는다. 스레드 로컬 기�
 - 레벨을 반응 주체 기준으로 나누고 런타임에 조정 가능하게 두는 이유
 - AsyncLocalStorage로 요청 컨텍스트를 전파하는 구조와 컨텍스트가 없는 경로 처리
 - 구조화 로깅이 필드 단위 마스킹을 정확하게 만드는 이유
+- 라이브러리가 로거 설정을 강제하지 않고 애플리케이션에 출력 제어를 넘기는 이유
 
 ## 출처
 
 - [OpenTelemetry 공식 문서, Logs Data Model](https://opentelemetry.io/docs/specs/otel/logs/data-model/)
 - [Node.js 공식 문서, Asynchronous context tracking](https://nodejs.org/api/async_context.html)
+- [LogTape 공식 문서, Using in libraries](https://logtape.org/manual/library)
+- [LogTape 공식 문서, Adapters](https://logtape.org/manual/adaptors)
+- [JS/TS 로깅 라이브러리 LogTape 소개 — Threads, sdreamerh](https://www.threads.com/@sdreamerh/post/DYHJodMFLLT)
 
 ## 관련 문서
 

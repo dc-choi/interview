@@ -95,6 +95,7 @@ AI의 제안은 원인을 찾기보다 문제를 돌아가는 쪽으로 기울 �
 - **스킬/플러그인**: SKILL.md의 description 트리거로 코드 작성, 리뷰, 리팩토링 시 로드. 마켓플레이스 플러그인으로 설치하면 전 프로젝트 공용 ([[Agent-Skills]])
 - **다른 호스트**: 같은 내용을 Cursor project rule(.mdc)로. 원칙을 도구별 주입 포맷으로 이식하는 패턴은 [[Agent-Overengineering-Guard]]의 다중 에이전트 이식성과 같은 축
 - **적시 주입 (Hook 패턴 트리거)**: 규칙을 상시 컨텍스트에 얹으면 앞부분 지시가 덜 반영되는 Lost-in-the-Middle에 취약하다. 대신 코드 생성 시점에 필요한 규칙만 골라 넣는다 — 파일을 쓴 직후 Hook이 파일명과 코드 패턴(regex)으로 해당 규칙 소수만 즉시 주입하고, 작업 종료 전 변경 전체(git diff)를 다중 파일 규칙(예: 서비스가 구현이 아니라 인터페이스에 의존하는지)으로 검토한다. 규칙은 중앙 저장소에 두고 세션 시작 시 최신본을 받아 프로젝트마다 복제, 갱신하는 드리프트를 없앤다. 어떤 규칙이 언제 발동했는지 로그로 남겨 과잉, 과소 규칙을 교정한다. Hook의 실행 시점 특성과 성공률 한계는 [[Context-Engineering|컨텍스트 엔지니어링]]이 다룬다
+- **이름 있는 원칙을 리뷰 기준으로**: 행동 규칙 대신 검증된 공학 원칙의 출처를 CLAUDE.md에 적어 생성과 리뷰의 판정 기준으로 쓰는 방식이다. Martin Fowler의 Refactoring 카탈로그(코드 냄새와 리팩터링 기법), Robert C. Martin의 Clean Code와 TDD 연습용 Bowling Game Kata, Jorma Sajaniemi의 변수 역할(roles of variables, stepper, fixed value, most-recent holder처럼 변수의 쓰임을 분류), Olaf Zimmermann 외의 Patterns for API Design이 예다. 원칙 이름은 짧은 토큰으로 넓은 판단 기준을 불러오지만 이름을 적는 것만으로 행동이 바뀌지는 않는다. 테스트 먼저 같은 기법 이름을 지시해도 실제 절차가 따라오지 않는 한계는 [[Agent-Test-Verification-Behavior|에이전트 검증 행동]]이 다루며, 원칙마다 이 프로젝트에서 무엇을 위반으로 볼지 판정 예시를 붙여야 효과를 확인할 수 있다. 원칙 목록을 길게 쌓거나 원칙별 페르소나 에이전트를 여러 개 돌리면 매 턴 컨텍스트와 호출 수가 늘어 토큰 비용과 구독 사용량 한도를 빠르게 소모한다
 - **트레이드오프**: 신중 편향 룰셋이라 사소한 작업(오타 수정, 자명한 한 줄)엔 과잉이다. 목적은 단순 작업의 감속이 아니라 비단순 작업의 비싼 실수 감축
 
 ## 작동 확인 신호
@@ -126,6 +127,9 @@ AI의 제안은 원인을 찾기보다 문제를 돌아가는 쪽으로 기울 �
 - [AI 논문 도구를 만들며 마주친 네 번의 갈림길 — 요즘IT](https://yozm.wishket.com/magazine/detail/3881/)
 - [AI가 팀 규칙을 지키도록 하는 방법 — 토스 테크](https://toss.tech/article/52631)
 - [AI로 개발할 때 진짜 위험: 못 만드는 게 아니라, 잘못 생각한 걸 너무 잘 만들어준다 — GeekNews](https://news.hada.io/topic?id=33411)
+- [CLAUDE.md에 공학 원칙을 넣어 사수처럼 쓰기 — Threads, jaewan_sim](https://www.threads.com/@jaewan_sim/post/DMDE528SQos)
+- [Roles of Variables — Jorma Sajaniemi](http://www.cs.joensuu.fi/~saja/var_roles/)
+- [Patterns for API Design — Olaf Zimmermann, Mirko Stocker, Daniel Lübke, Uwe Zdun, Cesare Pautasso](https://api-patterns.org/book/)
 
 ## 관련 문서
 

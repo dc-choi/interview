@@ -3,6 +3,7 @@ tags: [workflow, orchestration, durable-execution, temporal, idempotency, reliab
 status: done
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Durable Workflow", "Durable Execution", "지속 실행 워크플로"]
+verified_at: 2026-09-30
 ---
 
 # 지속 실행 워크플로 (Durable Workflow)
@@ -58,6 +59,17 @@ aliases: ["Durable Workflow", "Durable Execution", "지속 실행 워크플로"]
 | 지속 실행 워크플로 | 엔티티별 장기 대기, 신호 구동, 정밀 타이머가 섞인 흐름 |
 | [[Saga-Pattern\|Saga]] | 분산 트랜잭션 보상. 오케스트레이션 Saga의 실행 기반으로 durable workflow를 쓰기도 한다 |
 | [[Airflow-DAG-Parsing\|Airflow]] | 스케줄된 태스크 그래프 배치 |
+| DB 내장 durable execution (Postgres 확장) | 상태가 이미 Postgres에 있고 단계를 SQL로 표현할 수 있는 데이터 근접 작업(임베딩 인제스트, 팬아웃 집계) |
+
+### DB 내장형의 조건과 한계
+
+별도 오케스트레이터 없이 DB 확장이 단계별 체크포인트와 재개를 맡는 선택지다. 워크플로 정의, 진행 상태와 재시도 기록이 데이터와 같은 저장소, 같은 권한과 백업 체계 안에 머문다. Postgres를 이미 운영하는 작은 팀이라면 cron, 상태 테이블, 폴링 워커를 엮던 구성을 확장 하나로 줄일 수 있다. 대신 다음을 감수한다.
+
+- 주 DB 부하: 워크플로 실행과 체크포인트 쓰기가 트랜잭션 워크로드와 같은 인스턴스의 CPU, WAL, 커넥션을 나눠 쓴다.
+- 확장 한계: 처리량이 DB 인스턴스에 묶이고, 여러 이기종 시스템을 넘나드는 흐름에는 맞지 않는다.
+- 표현력: 단계가 SQL, 분기, 루프, HTTP 호출로 표현돼야 한다. 임의의 애플리케이션 로직은 SQL 함수나 HTTP 엔드포인트로 감싸야 한다.
+- 관측과 운영: 전용 UI 대신 상태 테이블 조회가 기본이고, 확장 설치와 백그라운드 워커 실행이 허용되지 않는 환경에서는 쓸 수 없다.
+- 성숙도: 예시인 microsoft/pg_durable은 2026-09 기준 0.2.x 릴리스(PostgreSQL License, PostgreSQL 17과 18 대상)다. `~>`(순차), `|=>`(결과에 이름 붙이기), `&`(병렬 join) 같은 연산자로 단계를 조합해 `df.start()`로 실행하고, 공개 Docker 이미지는 평가용으로만 안내된다.
 
 ## Build vs Buy
 
@@ -77,6 +89,8 @@ aliases: ["Durable Workflow", "Durable Execution", "지속 실행 워크플로"]
 
 - [한꺼번에 짊어지던 배치를 내려놓고, 하나씩 흘려보내는 워크플로로 — 우아한형제들 기술블로그](https://techblog.woowahan.com/26832/)
 - [Temporal Documentation, Workflows](https://docs.temporal.io/workflows)
+- [pg_durable — GitHub, microsoft](https://github.com/microsoft/pg_durable)
+- [PostgreSQL로 Airflow와 Temporal 대체하기, pg_durable — Threads, think.5x](https://www.threads.com/@think.5x/post/DZW_w6pk4Z0)
 
 ## 관련 문서
 
@@ -85,3 +99,4 @@ aliases: ["Durable Workflow", "Durable Execution", "지속 실행 워크플로"]
 - [[Saga-Pattern|Saga Pattern]]
 - [[Idempotency-Key|멱등성 키]]
 - [[Backpressure|Backpressure]]
+- [[PostgreSQL-Extensions|PostgreSQL 확장]]

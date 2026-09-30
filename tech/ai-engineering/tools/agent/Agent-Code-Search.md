@@ -1,7 +1,7 @@
 ---
 tags: [ai, agent, code-search, code-intelligence, embeddings, lsp, knowledge-graph, mcp]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Agent Code Search", "에이전트 코드 검색", "Semantic Code Search", "Code Intelligence", "Semble", "Serena", "Graphify"]
 ---
@@ -74,6 +74,15 @@ Graphify는 tree-sitter AST에서 함수, class, import와 call 관계를 추출
           -> 최소 변경 -> 정적 검사와 테스트 -> index 갱신
 ```
 
+## 셸 검색 도구 유도 — find, grep 대신 fd, rg
+
+에이전트가 셸로 탐색할 때 기본으로 고르는 `find`, `grep`, `ls`는 `.gitignore`를 무시하고 빌드 산출물과 의존성 폴더까지 훑어 출력이 길어지기 쉽다. `fd`와 `rg`는 기본으로 ignore 파일을 존중하고 병렬로 탐색하므로 같은 질문에 더 적은 출력 토큰과 짧은 지연으로 답하는 경우가 많다. 효과 크기는 저장소 크기와 ignore 구성에 따라 다르므로 자기 저장소에서 측정한다.
+
+- 유도 방법: 지침 파일에 선호 도구를 적고, 강제가 필요하면 PreToolUse hook을 쓴다. Claude Code 공식 문서 기준(2026-09-30 확인) PreToolUse hook은 `Bash` matcher로 셸 호출을 받아 종료 코드 2나 `permissionDecision: "deny"`로 차단하거나 `updatedInput`으로 명령을 바꿔 실행할 수 있다
+- 강제의 한계: 명령 문자열을 정규식으로 바꿔 쓰는 방식은 파이프, 복합 명령과 옵션 조합에서 쉽게 어긋난다. 차단만 하면 에이전트가 우회 명령을 반복하며 턴을 소모할 수 있으므로 차단 사유에 대체 명령을 적어 돌려준다
+- 인터페이스 차이: `grep`과 `rg`, `find`와 `fd`는 플래그와 정규식 문법이 다르다. 단순 alias로 이름만 바꾸면 에이전트가 익숙한 플래그를 넘겨 실패하므로, 자주 쓰는 플래그만 번역하는 얇은 래퍼 함수를 두거나 새 이름을 그대로 쓰게 지시한다
+- 호스트 내장 도구 확인: Claude Code의 Grep 도구는 ripgrep 기반이다. 또 macOS, Linux와 WSL에서는 Glob과 Grep이 기본 도구 목록에서 빠지고 Bash의 `find`, `grep`이 내장된 `bfs`, `ugrep`으로 실행되며, 이 검색은 hook과 권한 규칙에 `Bash` 호출로 도달한다. 이런 호스트에서는 셸 도구를 바꾸는 이득이 작을 수 있으므로 먼저 현재 버전의 실제 실행 도구를 확인한다
+
 ## 실패를 줄이는 검증 경계
 
 | 위험 | 방어 |
@@ -102,6 +111,9 @@ Graphify는 tree-sitter AST에서 함수, class, import와 call 관계를 추출
 - [Serena 보안 경계](https://oraios.github.io/serena/02-usage/070_security.html)
 - [Graphify 공식 저장소](https://github.com/Graphify-Labs/graphify)
 - [Graphify와 Serena 조합 사례](https://blog.slpower.co.kr/ai/graphify-serena/)
+- [Claude Code Docs, Hooks reference](https://code.claude.com/docs/en/hooks)
+- [Claude Code Docs, Tools reference](https://code.claude.com/docs/en/tools-reference)
+- [에이전트에게 모던 CLI 쓰게 하기 — Threads, chiftkey](https://www.threads.com/@chiftkey/post/DWruy1pk-LW)
 
 ## 관련 문서
 

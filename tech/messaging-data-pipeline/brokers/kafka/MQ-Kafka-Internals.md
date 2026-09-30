@@ -1,7 +1,7 @@
 ---
 tags: [messaging, kafka, event-streaming]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-29
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Kafka Internals", "카프카 기본 구조와 내부"]
 ---
@@ -11,6 +11,22 @@ aliases: ["Kafka Internals", "카프카 기본 구조와 내부"]
 > 상위 인덱스: [[MQ-Kafka|Kafka]]
 
 Kafka는 event를 topic의 partition log에 append하고 여러 consumer group이 각자 offset으로 읽는 분산 event streaming platform이다. queue처럼 작업을 분산할 수 있지만, consume 뒤 record가 즉시 사라지는 전통적인 queue와 달리 retention 정책 동안 다시 읽을 수 있다.
+
+## 문제에서 출발한 mental model
+
+Kafka의 구성 요소는 각각 앞 단계가 남긴 문제를 푸는 장치로 이해하면 기억하기 쉽다.
+
+1. **직접 호출의 장애 전파**: 서비스 A가 B를 동기 호출하면 B의 장애와 지연이 A로 번진다. 사이에 큐를 두면 producer와 consumer가 분리되고, consumer가 멈춰도 메시지는 쌓였다가 나중에 처리된다.
+2. **처리량 부족**: consumer 하나로는 적체가 풀리지 않으면 consumer를 늘린다. Kafka에서는 [[Consumer-Group|consumer group]]이 partition을 나눠 맡아 처리량을 넓힌다.
+3. **순서 깨짐**: 여러 consumer가 한 흐름을 나눠 처리하면 같은 주문의 이벤트 순서가 뒤섞인다. topic을 partition으로 나누고 같은 key를 같은 partition에 보내면 key 단위 순서가 유지된다 ([[MQ-Kafka-Event-Ordering|Kafka 이벤트 순서 보장]]).
+4. **브로커 장애**: partition이 한 broker에만 있으면 그 broker와 함께 사라진다. 그래서 partition마다 replica를 여러 broker에 둔다.
+
+복제의 핵심 규칙은 다음과 같다.
+
+- partition마다 replica 하나가 **leader**, 나머지가 **follower**다. 쓰기는 leader로 가고 follower는 leader의 log를 복제한다.
+- **ISR**(in-sync replicas)은 controller와 세션을 유지하면서 leader에 크게 뒤처지지 않은 replica 집합이다. 쓰기는 ISR 전원이 받아야 committed가 되고, ISR이 하나라도 살아 있으면 committed 메시지는 유실되지 않는다.
+- producer `acks=all`은 현재 ISR 전원의 확인을 기다린다. ISR이 줄어 leader 혼자 남는 경우를 막으려면 `min.insync.replicas`로 최소 ISR 수를 강제한다.
+- leader가 죽으면 ISR에서 새 leader를 뽑는다. `unclean.leader.election.enable`로 ISR 밖 replica를 허용하면 가용성은 오르지만 committed 메시지를 잃을 수 있다.
 
 ## 기본 구조
 
@@ -81,6 +97,7 @@ Kafka의 처리량은 한 가지 기술이 아니라 다음 구조의 조합에�
 - [Apache Kafka, Design](https://kafka.apache.org/41/design/design/)
 - [NestJS, Microservices basics](https://docs.nestjs.com/microservices/basics)
 - [frogred8 — 카프카는 왜 빠를까?](https://frogred8.github.io/docs/034_why_is_kafka_fast/)
+- [메시지 큐에서 Kafka까지, 문제와 해결의 연쇄 — Threads, mangle_lab_official](https://www.threads.com/@mangle_lab_official/post/DcO4iXqDxeD)
 - 김빌 강사, [Kafka 이론](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273696), [Docker Compose 실습](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273697), [주문 로직 리팩터링](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273698)
 
 ## 관련 문서

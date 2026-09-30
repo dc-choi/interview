@@ -32,6 +32,14 @@ verified_at: 2026-09-03
 
 존중은 에둘러 말하는 것과 다르다. [[Radical-Candor-Feedback|Radical Candor]]가 설명하듯 상대를 사람으로 존중하면서도 필요한 문제는 직접 제기할 수 있다.
 
+### 기본이 무너지면 신뢰가 무너진다
+
+매출 목표와 제품 실험은 최선을 다해도 실패할 수 있다. 반면 보고하지 않기, 약속 어기기, 확인 생략, 문제 숨기기, 책임 흐리기는 외부 변수가 아니라 태도의 문제라서 한두 번만 반복돼도 신뢰가 깎인다. 이런 기본을 가볍게 넘기는 습관이 쌓이면 팀이 괜찮다고 여기는 기준 자체가 내려가고, 한번 내려간 기준은 다시 올리기 어렵다.
+
+- 리더의 일은 무엇이 괜찮고 무엇이 안 되는지 기준을 세우는 것이다. 리더 자신의 기본이 흔들리면 팀 전체의 기준이 함께 흔들린다.
+- 사람, 직군, 직급마다 상식이 다르므로 상식에 맡기지 않고 기준을 문장으로 명시한다.
+- 기준이 몸에 배도록 아침 할 일 공유, 퇴근 전 진척 보고 같은 짧은 정기 확인 루틴을 둔다. 루틴이 감시로 느껴지지 않게 목적과 범위를 먼저 합의한다.
+
 ## 면접 체크포인트
 
 - "협업에서 중요하게 생각하는 것은?" → 심리적 안전, 수행 신뢰와 목표 명료성을 실제 행동으로 설명한다.
@@ -50,3 +58,4 @@ verified_at: 2026-09-03
 - [같이 일한다는 것 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-02-working-together/)
 - [Google re:Work, Understand team effectiveness](https://rework.withgoogle.com/intl/en/guides/understand-team-effectiveness)
 - [Radical Candor, Frequently Asked Questions](https://www.radicalcandor.com/frequently-asked-questions)
+- [매출보다 기본, 대표의 조직 운영 원칙 — Threads, temaingz](https://www.threads.com/@temaingz/post/DZEzVFOlbfS)

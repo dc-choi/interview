@@ -101,6 +101,7 @@ registry의 health는 애플리케이션 요청이 반드시 성공한다는 보
 - [Dowon Lee 강사, API Gateway 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289999)
 - [Dowon Lee 강사, BFF 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290000)
 - [Dowon Lee 강사, Aggregator와 Service Discovery](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290001)
+- [현대적 아키텍처 설계 6단계 — Threads, richardlee0202](https://www.threads.com/@richardlee0202/post/DMWifLXT7CP)
 
 ## 관련 문서
 

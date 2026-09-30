@@ -44,6 +44,12 @@ aliases: ["Agent Overengineering Guard", "에이전트 과잉설계 방지", "YA
 - **다중 에이전트 이식성**: 플러그인/스킬을 지원하는 호스트(Claude Code, Codex 등)엔 커맨드까지, 지원 안 하는 호스트엔 AGENTS.md/규칙 파일로 상시 룰셋만. 같은 원칙을 여러 도구에 이식하는 패턴 ([[claude-code|Skills]], [[Agent-Spec-Writing]])
 - CLAUDE.md/AGENTS.md에 룰을 심는 것과 같은 계열 — 매 턴 주입되는 [[Context-Engineering|영속 컨텍스트]]로 에이전트 행동을 교정
 
+## 모델이 강해져도 가드가 필요한 이유 (사용 사례)
+
+- **과잉은 줄지 않는다**: 모델 성능이 오를수록 요청 밖의 구조를 더 적극적으로 만들어 넣어 최소 수정 가드가 계속 유용하다는 사용자 관찰이 있다. 측정 근거는 공개되지 않은 사례 주장이다
+- **국소 패치 경향**: 리뷰 지적을 고칠 때 근본 원인 대신 값 범위를 잘라 내는(clamp) 식의 국소 패치로 증상만 막는 경향도 보고된다. 코드를 적게 쓰라는 가드만으로는 이 경향이 오히려 강화될 수 있으므로, 버그 수정은 모든 호출 경로가 지나는 근본 원인에서 한다는 지시를 가드에 포함하거나 근본 원인 수정 스킬과 짝을 짓는다
+- **층이 다른 도구와 조합**: 최소 수정 가드는 장황한 답변을 줄이는 출력 스킬, 역할과 검토 루프를 거는 하네스와 층이 달라 함께 쓸 수 있다. 특정 모델용 하네스에 가드를 묶어 배포하는 조합 사례도 있지만 구성 설명 없이 저장소만 공개된 홍보 사례라 채택 전에 직접 확인한다. 1인 빌더가 함께 쓰는 워크트리 분리, 목표 정의 같은 스킬 구성은 [[Agent-Skills|에이전트 스킬]]에서 다룬다
+
 ## 체크포인트
 
 - 에이전트가 요청보다 많이 만드는 경향을 무엇으로 억제하는가 (결정 사다리 상시 주입)
@@ -52,10 +58,13 @@ aliases: ["Agent Overengineering Guard", "에이전트 과잉설계 방지", "YA
 - "짧게 써" 프롬프트가 안전 가드를 떨어뜨리는 이유와 사다리 방식이 안전을 유지하는 이유
 - 벤치마크에서 대화형 baseline이 감축 폭을 부풀리는 이유 (산문, 옵션 패딩)
 - 이 스킬이 역효과인 모델 (사다리를 숙고하며 사고 토큰을 태우는 추론 모델)
+- 최소 수정 가드가 리뷰 수정에서 국소 패치를 부추기지 않도록 근본 원인 원칙을 함께 두었는가
 
 ## 출처
 
 - [Ponytail: Makes your AI agent think like the laziest senior dev — DietrichGebert (GitHub)](https://github.com/DietrichGebert/ponytail)
+- [Codex를 종일 쓰는 1인 빌더의 스킬 구성 — Threads, jjlabsio](https://www.threads.com/@jjlabsio/post/Dc0dReJG_55)
+- [하네스와 Ponytail 조합 소개 — Threads, lean._.kim](https://www.threads.com/@lean._.kim/post/DdjLcCuk-v2)
 
 ## 관련 문서
 
@@ -64,3 +73,5 @@ aliases: ["Agent Overengineering Guard", "에이전트 과잉설계 방지", "YA
 - [[Context-Engineering|컨텍스트 엔지니어링 (영속 컨텍스트)]]
 - [[Code-Quality-Criteria|코드 품질의 기준 (응집, 책임 분리)]]
 - [[TDD-Refactoring-Practice|TDD 리팩토링 연습법 (과설계 경계, 작은 문제부터)]]
+- [[Agent-Skills|에이전트 스킬 (스킬 구성)]]
+- [[Harness-Engineering|하네스 엔지니어링]]

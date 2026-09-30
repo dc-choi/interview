@@ -90,6 +90,16 @@ CodeScene의 hotspot 분석도 같은 결론에 선다. 코드 건강이 나빠�
 - 전용 프로젝트 규모의 상환은 점진 전환 전략이 필요하다. Strangler Fig와 롤아웃 4축은 [[Legacy-Modernization-Strategies|레거시 현대화 전략]]으로 위임한다.
 - **상환 작업을 기능 작업과 같은 티켓 흐름에 태운다.** 별도 큐로 빼면 우선순위 비교 대상에서 빠져 대체로 뒤로 밀린다. 같은 백로그에 있어야 이 부채를 안 갚는 대신 무엇을 얻는가라는 질문이 성립한다.
 
+### 자본 배분 관점 — 차입처럼 다룬다
+
+의도적 부채는 출시 속도를 얻으려고 미래의 변경 비용을 담보로 잡은 차입 결정이다. 차입이라면 조건이 붙어야 한다.
+
+- **빌릴 때 상환 시점을 정한다** — 날짜나 트리거(두 번째 결제 수단 추가 전, 트래픽이 특정 규모에 도달할 때)를 부채 항목에 함께 적는다. 트리거가 없는 의도적 부채는 사실상 무기한 차입이다. 승인 절차는 아래 신규 유입 차단 절을 따른다.
+- **상환 재원을 먼저 떼어 둔다** — 스프린트 용량이나 예산의 고정 몫을 상환에 배정하고, 몫의 크기보다 반납을 막는 규칙을 먼저 정한다.
+- **두 극단이 모두 실패다** — 부채가 없는 척하면 이자가 일정 지연으로만 드러나 원인이 가려지고, 전부 갚으려 하면 기능 투자를 잠식한다. 부채 0은 목표가 아니며, 이자를 감당 가능한 수준에 묶어 두는 것이 목표다.
+
+이자의 규모를 가늠하는 참고치도 있다. Stripe의 2018년 설문(The Developer Coefficient)에서 개발자 응답의 평균은 주 41.1시간 중 약 13.5시간, 즉 약 3분의 1을 기술 부채 대응에 쓴다는 추정이었다. McKinsey가 2020년 CIO 50명을 설문한 결과에서는 신규 제품용 기술 예산의 10~20%가 부채 관련 문제 해결로 전용된다는 응답이 나왔다. 둘 다 자기 보고 추정치이므로 우리 조직의 수치로 옮기지 말고, 이자가 무시할 규모가 아니라는 근거로만 쓴다.
+
 ### 완료 판정
 
 깔끔해졌다는 감각으로 티켓을 닫지 않는다. 이자가 실제로 줄었다는 증거로 닫는다.
@@ -141,6 +151,9 @@ CodeScene의 hotspot 분석도 같은 결론에 선다. 코드 건강이 나빠�
 - [Manage technical debt by prioritizing issues based on impact — CodeScene](https://codescene.com/blog/prioritize-technical-debt-by-impact/)
 - [Got Technical Debt? Track Technical Debt to Improve Your Development Practices — SEI Blog](https://www.sei.cmu.edu/blog/got-technical-debt-track-technical-debt-to-improve-your-development-practices/)
 - [A Field Study of Technical Debt — SEI Blog](https://www.sei.cmu.edu/blog/a-field-study-of-technical-debt/)
+- [The Developer Coefficient — Stripe](https://stripe.com/files/reports/the-developer-coefficient.pdf)
+- [Tech debt: Reclaiming tech equity — McKinsey](https://www.mckinsey.com/capabilities/tech-and-ai/our-insights/tech-debt-reclaiming-tech-equity)
+- [기술 부채는 빚이다 — Threads, ahn_partners](https://www.threads.com/@ahn_partners/post/DZW04DPHzdV)
 
 ## 관련 문서
 

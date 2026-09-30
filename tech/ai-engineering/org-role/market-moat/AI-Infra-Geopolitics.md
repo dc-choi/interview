@@ -3,7 +3,7 @@ tags: [ai, geopolitics, infrastructure, strategy, korea]
 status: done
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["AI Infra Geopolitics", "기업 단위 국제질서", "AI 인프라 권력 재편", "Project Glasswing"]
-verified_at: 2026-09-03
+verified_at: 2026-09-30
 ---
 
 # AI 인프라 지정학 — 국제질서의 단위가 국가에서 기업으로
@@ -46,6 +46,13 @@ Anthropic이 최상위 모델 Mythos를 일반 공개 없이 Project Glasswing�
 - 채워진 곳 중 3곳이 정부 또는 정부 산하 (미국 명단은 정부 기관 0)
 - 채워진 곳도 글로벌 시스템층 기준으로는 가장자리 — Linux, 미국 EDA 툴, Cisco 장비에 의존하는 로컬 플레이어
 
+### 인프라 유치의 조건 — 일자리와 지역 수용성
+
+- **투자액 대비 상시 일자리는 적다**: Meta의 루이지애나 리치랜드 패리시 데이터센터 확대(500억 달러 이상, IT 용량 5GW) 주정부 발표(2026-07-13) 기준 공사 정점 인력은 7,500명, 직접 운영 일자리는 약 1,000명이다. 공사 인력은 한시적이고, 운영 인력 중 협력사 계약 비중은 발표에 없어 따로 확인해야 한다.
+- **수용성은 전력, 용수, 소음에서 갈린다**: 같은 발표에 신규 발전 설비 비용 부담, 전력회사 요금 지원 프로그램 출연, 사용 용수의 유역 환원 약속이 함께 들어갔다. 지역 반발(NIMBY)을 줄이는 조건이 투자 계약의 일부가 된다.
+- **연구 거점의 형태를 구분한다**: 공동 연구소나 기술센터는 소수 전문 인력의 프로젝트 협력이고, 수천 명 규모 R&D 센터와 파급 효과가 다르다. 발표 명칭보다 상주 인원, 투자 기간, 현지 채용 계획을 본다.
+- **판단 기준**: 전력, 부지, 용수를 제공하는 조건을 대기업 유치에서 끝내지 않고 협력사와 지역 기업이 공급망과 인력 수요에 들어갈 수 있게 설계해야 혜택이 퍼진다.
+
 ## 전략 — 전면 국산화가 아니라 두 갈래
 
 전면 국산화는 틀린 결론이다. 글로벌 단일 표준의 효율이 크고, 일본, 독일, 영국도 같은 의존 위치에 있다. 대신:
@@ -66,12 +73,15 @@ Anthropic이 최상위 모델 Mythos를 일반 공개 없이 Project Glasswing�
 - 국제질서 참가 단위의 국가 → 기업 전환과 그 역사적 유비
 - 전면 국산화 대신 로컬 레이어 + 글로벌 표준 진입의 두 갈래 논리
 - 정부 = 장기 LP 프레임과 산업 주도 시대의 차이
+- 데이터센터 유치에서 상시 일자리, 지역 수용성 조건, 혜택의 확산 설계를 따로 따지는 이유
 
 ## 출처
 
 - [Project Glasswing — Anthropic](https://www.anthropic.com/glasswing)
 - [신화가 도착하면 죽는 것들 — ethancho, Substack](https://ethancho12.substack.com/p/43f)
 - [차세대 모델 GPT-5.6 Sol 미리 살펴보기 — OpenAI](https://openai.com/ko-KR/index/previewing-gpt-5-6-sol/) (제한 프리뷰 관행 확산 사례)
+- [Meta Commits More Than $50 Billion for North Louisiana Project, Becoming One of the Largest Data Centers in History — Louisiana Economic Development](https://www.opportunitylouisiana.gov/news/meta-commits-more-than-50-billion-for-north-louisiana-project-becoming-one-of-the-largest-data-centers-in-history)
+- [젠슨 황의 치킨 회동과 AI 인프라 유치 — Threads, choi.openai](https://www.threads.com/@choi.openai/post/DZT9n52j248)
 
 ## 관련 문서
 

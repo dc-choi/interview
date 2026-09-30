@@ -1,7 +1,7 @@
 ---
 tags: [cicd, deployment, database, migration]
 status: done
-verified_at: 2026-08-31
+verified_at: 2026-09-29
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["DB Migration 전략", "DB 마이그레이션 배포"]
 ---
@@ -72,6 +72,28 @@ aliases: ["DB Migration 전략", "DB 마이그레이션 배포"]
 - **백업 복원**: 데이터가 이미 손상되거나 삭제됐을 때만 내려간다. 절차는 [[Backup-Restore|백업과 복원]]이 소유한다.
 - **contract 실행일이 롤백 창에 종속된다**는 점이 마이그레이션 쪽 특수성이다. 며칠 안에 앱을 되돌릴 수 있어야 한다면 그 기간 동안 옛 컬럼과 테이블은 살아 있어야 하고, contract를 expand와 같은 릴리스에 넣으면 되돌릴 구간이 남지 않는다.
 
+## 도구 선택: Flyway와 Liquibase
+
+두 도구 모두 적용 이력을 DB의 히스토리 테이블에 남겨 환경 간 드리프트를 막는다. 차이는 변경을 무엇으로 표현하고, 무엇을 실행할지 어떻게 고르느냐에 있다.
+
+| 축 | Flyway | Liquibase |
+| --- | --- | --- |
+| 변경 단위 | 버전이 붙은 SQL 파일(`V1__init.sql`) | changelog 안의 changeset(XML, YAML, JSON, formatted SQL) |
+| 이력 테이블 | `flyway_schema_history` | `DATABASECHANGELOG` |
+| 되돌리기 | undo 마이그레이션(`U` 접두사)은 Teams, Enterprise 기능 | changeset별 rollback 정의. 모델형 changelog는 일부 변경 유형의 rollback을 자동 생성하지만 formatted SQL은 직접 작성해야 한다 |
+| 실행 선택 | 대상 위치와 설정으로 구분 | context(환경 성격)와 label(기능, 버전)로 changeset을 거른다 |
+| 다중 DB | DB별 SQL 파일을 따로 관리 | 모델형 changelog로 엔진 차이를 일부 추상화 |
+
+- **Flyway 체크섬**: 적용할 때 각 마이그레이션의 체크섬을 기록하고, `validate`는 이름, 유형, 체크섬 차이와 적용됐지만 로컬에 없는 버전을 찾아 실패시킨다. `validateOnMigrate` 기본값이 true라 이미 적용된 파일을 고치면 다음 `migrate`가 멈춘다. `repair`는 실패한 이력 행을 지우고 체크섬과 설명을 현재 파일에 다시 맞추지만, 부분 적용된 DB 객체는 직접 정리해야 한다. 적용된 파일은 고치지 않고 새 버전 파일로 고치는 편이 이력과 실제 스키마를 일치시킨다.
+- **Liquibase 실행 선택**: 테스트 데이터나 환경 전용 changeset에 context를 붙이고 실행 시 `--context-filter`로 고른다. label은 배포 담당자가 `--label-filter`로 기능이나 릴리스 단위를 고를 때 쓴다. 통합 테스트 DB에서 이를 활용하는 방식은 [[Migration-Backed-Test-Database|마이그레이션 기반 테스트 DB]]에 있다.
+
+두 도구의 공통 경계도 분명하다.
+
+- rollback 정의가 있어도 DDL 되돌리기는 기본 복구 경로가 아니다. 컬럼 추가 뒤 데이터가 들어오면 되돌리는 순간 그 데이터가 사라지므로 앞 절의 스키마가 걸린 되돌리기처럼 forward fix를 기본으로 둔다.
+- 도구는 실행 순서와 이력을 관리할 뿐 대형 테이블 `ALTER`의 락과 metadata lock 대기를 줄여 주지 않는다. 그 영역은 gh-ost, pt-online-schema-change 같은 온라인 스키마 변경으로 분리한다([[Schema-Migration-Large-Table|대용량 테이블 스키마 변경]]).
+
+실무자 경험에 기댄 선택 기준은 다음과 같다. 엔진 하나를 소규모 팀이 운영하면 SQL을 그대로 리뷰할 수 있는 Flyway의 학습 비용이 낮다. 여러 DB 엔진, 환경별 선택 실행과 변경 감사가 필요한 조직이면 Liquibase의 changelog 문법 비용을 감수할 만하다. 기능 목록보다 팀이 리뷰하고 운영할 형식이 무엇인지로 정한다.
+
 ## CI 게이트
 
 - **생성 SQL 리뷰**: 마이그레이션 PR에는 실행될 SQL 자체를 붙인다. ORM이 생성한 파일은 리뷰 시작점이지 결론이 아니다.
@@ -111,6 +133,13 @@ aliases: ["DB Migration 전략", "DB 마이그레이션 배포"]
 - [Kubernetes 공식 문서, Init Containers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/)
 - [PostgreSQL Documentation, Explicit Locking](https://www.postgresql.org/docs/current/explicit-locking.html)
 - [Redgate Flyway Documentation, Frequently Asked Questions](https://documentation.red-gate.com/fd/frequently-asked-questions-277579363.html)
+- [Redgate Flyway Documentation, Validate](https://documentation.red-gate.com/fd/validate-277578898.html)
+- [Redgate Flyway Documentation, Repair](https://documentation.red-gate.com/fd/repair-277578892.html)
+- [Redgate Flyway Documentation, Validate On Migrate Setting](https://documentation.red-gate.com/fd/flyway-validate-on-migrate-setting-277579048.html)
+- [Redgate Flyway Documentation, Undo migrations](https://documentation.red-gate.com/fd/undo-migrations-273973334.html)
+- [Liquibase Documentation, rollback](https://docs.liquibase.com/reference-guide/init-update-and-rollback-commands/rollback)
+- [Liquibase Documentation, When should I use context and label attributes?](https://docs.liquibase.com/community/user-guide-5-0/when-should-i-use-context-and-label-attributes)
+- [Flyway vs Liquibase, DBA 관점 — Threads, bear_dba](https://www.threads.com/@bear_dba/post/DdXaoeQEybR)
 - [GitHub Docs, Managing environments for deployment](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments)
 
 ## 관련 문서

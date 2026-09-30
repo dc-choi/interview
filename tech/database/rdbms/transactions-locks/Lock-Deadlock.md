@@ -54,6 +54,7 @@ lock 보유 시간 단축(외부 호출과 긴 계산 제거), 잠금 범위를 
 - [Real MySQL 시즌 1 - Part 2, 데드락 — 인프런](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226583)
 - [DB Lock으로 동시성을 해결하려다 Deadlock을 만난 이야기 — velog](https://velog.io/@joona95/DB-Lock%EC%9C%BC%EB%A1%9C-%EB%8F%99%EC%8B%9C%EC%84%B1%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-Deadlock%EC%9D%84-%EB%A7%8C%EB%82%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0)
 - [데드락을 해결하려다, 락을 줄이게 된 이야기 — 여기어때 기술블로그](https://techblog.gccompany.co.kr/%EB%8D%B0%EB%93%9C%EB%9D%BD%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-%EB%9D%BD%EC%9D%84-%EC%A4%84%EC%9D%B4%EA%B2%8C-%EB%90%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0-97bf2b0c91b6)
+- [데드락과 락 순서 통일 — Threads, dev_coach_kr](https://www.threads.com/@dev_coach_kr/post/DRGENQikl7o)
 
 ## 관련 문서
 

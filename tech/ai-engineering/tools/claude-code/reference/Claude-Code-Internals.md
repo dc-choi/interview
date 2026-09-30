@@ -31,6 +31,15 @@ aliases: ["Claude Code Internals", "클로드 코드 내부 구조", "에이전�
 
 - API 클라이언트: 프롬프트 캐싱 1시간, 에러별 차등 재시도 — 레이트리밋은 대기 시간이 짧으면 캐시를 보존한 채 대기, 용량 초과 3연속이면 폴백 모델, 인증 만료는 토큰 강제 갱신, 무인 세션은 지수 백오프로 최대 6시간 재시도
 - 중단 내성: API 호출 전에 트랜스크립트를 디스크에 저장 — 크래시해도 대화가 유실되지 않는다
+- 복구 사다리: 컨텍스트 초과 같은 오류에서 바로 멈추지 않고 비용이 없는 로컬 압축, 모델을 호출하는 API 요약 압축 순으로 시도한 뒤에만 오류를 표면화한다. 싼 수단부터 비싼 수단으로 올라가는 순서 자체가 비용 설계다
+
+2026-03 말 유출된 소스를 분석한 커뮤니티 자료에서 추가로 거론된 안전장치다. 위와 마찬가지로 비공식 역분석이며 공개 API 계약이 아니다.
+
+- 원격 킬 스위치: 피처 플래그(GrowthBook)를 서버에서 평가해 배포된 클라이언트의 기능을 재배포 없이 끈다. 위의 빌드 타임 피처 게이트(데드 코드 제거)와 달리 런타임 차단 수단이다
+- 내부 전용 도구 게이팅: 사용자 유형 조건으로 사내 사용자에게만 노출되는 도구를 분리한다. 같은 바이너리 안에서도 도구 목록이 사용자 유형마다 다를 수 있다는 뜻이다
+- 도구 안전성 판정의 분리: 자동 실행 모드에서 도구 호출의 안전성을 에이전트 모델이 아니라 별도 모델 호출이 판정하고, 거부가 반복되면 자동 실행을 멈추고 사람에게 확인을 넘긴다. 공식 문서 기준(2026-09-30 확인)으로 auto mode의 분류기(classifier)가 실행 전 행동을 검토하며, 연속 3회 또는 세션 누적 20회 차단되면 auto mode가 일시 중지되고 권한 프롬프트로 돌아간다. 이 임계값은 설정할 수 없고, 프롬프트가 없는 `-p` 실행에서는 해당 행동만 실행하지 않고 작업을 이어간다
+- 설정 우선순위와 allow, ask, deny 규칙은 공식 문서가 정본이므로 [[Claude-Code-Config-Permissions|설정과 권한]]을 따른다
+- 유출 시점 미출시 기능으로 멀티 에이전트 조정(Coordinator), 저장소 감시 자율 작업(Kairos), 웹에서 로컬 세션 원격 제어(Bridge)가 거론됐다(출시 여부와 현재 동작은 별도 확인 필요)
 
 ## 시작과 UI 성능
 
@@ -53,12 +62,16 @@ aliases: ["Claude Code Internals", "클로드 코드 내부 구조", "에이전�
 - 읽기와 쓰기 도구의 동시성 파티셔닝 기준 (isConcurrencySafe)
 - BashTool이 차단 목록이 아니라 허용 목록 AST인 이유 (fail-closed)
 - 코디네이터에서 종합 단계만 위임을 금지하는 이유
+- 빌드 타임 피처 게이트와 런타임 킬 스위치의 차이, 안전성 판정을 별도 모델에 맡기고 반복 거부 시 사람에게 넘기는 이유
 
 ## 출처
 
 - [클로드 코드 가이드 (별첨 91 소스 코드 분석서) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code Docs, Context window](https://code.claude.com/docs/en/context-window)
 - [Claude Code Docs, Tools reference](https://code.claude.com/docs/en/tools-reference)
+- [Claude Code Docs, Choose a permission mode](https://code.claude.com/docs/en/permission-modes)
+- [Claude Code 소스 유출로 알게 된 핵심사항 8가지 — Threads, metallab.ai](https://www.threads.com/@metallab.ai/post/DWkmfsxAeCC)
+- [유출 직후 등장한 Claude Code 구조 분석 페이지 — Threads, choi.openai](https://www.threads.com/@choi.openai/post/DWjLsrLCsdg)
 
 ## 관련 문서
 
@@ -68,3 +81,4 @@ aliases: ["Claude Code Internals", "클로드 코드 내부 구조", "에이전�
 - [[Tool-Output-Filtering|도구 출력 필터링 (대용량 출력 디스크 영속)]]
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산 (Compaction 대신 사전 통제)]]
 - [[LLM-Model-Tiers|LLM 모델 티어 (폴백, 에스컬레이션)]]
+- [[Claude-Code-Config-Permissions|Claude Code 설정과 권한 (우선순위, auto mode)]]

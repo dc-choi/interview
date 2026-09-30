@@ -1,7 +1,7 @@
 ---
 tags: [ai, codex, cli, skills, agents-md, mcp]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-09-29
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Codex CLI", "코덱스 CLI", "Codex 슬래시 명령", "AGENTS.md"]
 ---
@@ -86,6 +86,16 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 - 필요할 때도 첫 `session_meta`의 CLI 버전, originator, source, history mode처럼 최소 metadata만 추출하고 사용자명과 경로는 가린다.
 - 전체 JSONL, 프롬프트, 도구 인자와 결과를 외부 이슈에 첨부하지 않는다. 공유 전에는 민감 정보와 재개에 필요한 이력을 분리해 검토한다.
 
+## Codex SDK와 구독 인증
+
+`@openai/codex-sdk`(TypeScript, Node.js 18 이상, 서버 측 사용)는 애플리케이션에서 로컬 Codex 스레드를 시작하고 이어 가거나 재개하게 해 준다. Python SDK(`openai-codex`)는 로컬 app-server를 JSON-RPC로 제어한다. SDK는 파일에 저장된 Codex 로그인을 재사용할 수 있어서, `codex login`으로 ChatGPT 계정에 로그인해 두면 API 키 없이 플랜 한도 안에서 호출하는 구성이 가능하다. API 키 인증은 표준 API 요금으로 과금된다(공식 문서 확인 2026-09-29).
+
+앱 백엔드의 LLM 호출을 이 방식으로 바꿔 종량제 비용을 없앴다는 사례가 있지만, 다음 이유로 서비스 백엔드에는 권장하지 않는다.
+
+- **공식 권장과 다르다**: 공식 문서는 자동화와 CI의 기본 인증을 API 키로 두고, ChatGPT 계정 인증은 그 계정으로 돌아야 하는 신뢰된 러너에 한정한 고급 경로로 안내한다. 신뢰할 수 없거나 공개된 환경에 Codex 실행을 노출하지 말라고도 한다
+- **자격 증명 관리 부담**: `~/.codex/auth.json`(또는 OS 자격 증명 저장소)은 access token이 든 비밀번호급 정보다. 사용 중에는 Codex가 토큰을 자동 갱신하지만, 갱신된 파일을 보존하지 못하거나 로그인이 끊기면 401과 재로그인이 필요해질 수 있다(사용자 보고)
+- **약관 적합성 미확인**: 개인 구독을 여러 사용자의 요청을 처리하는 서비스 백엔드에 연결해도 된다는 근거를 공식 문서에서 찾지 못했다. OpenAI가 이 사용을 허용했다는 주장은 확인되지 않았고, 정책이 바뀌면 차단될 수 있다. 서비스 트래픽에는 API 키를, ChatGPT Enterprise 워크스페이스의 신뢰된 자동화에는 관리자가 허용한 Codex access token처럼 문서화된 방식을 쓴다
+
 ## App vs CLI
 
 - **Codex App**: 병렬 작업 관리와 시각적 Git 워크플로우 조율에 강함
@@ -106,6 +116,7 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 - 반복 작업을 스킬로 캡슐화하는 이유, 시스템 스킬(skill-installer로 공식 스킬 확장)
 - AGENTS.md의 계층 적용과 CLAUDE.md 대응 관계 (권장 계층, 강제는 권한/훅)
 - 비대화형 `codex exec`로 CI 자동화가 가능한 점
+- Codex SDK를 서비스 백엔드에 붙일 때 ChatGPT 구독 인증 대신 API 키를 기본으로 두는 이유
 - App vs CLI 선택 기준 (병렬, 시각 vs 명령 정밀, 스킬)
 
 ## 출처
@@ -118,6 +129,10 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 - [Codex CLI의 Subagent 세션 로그가 수백 GB까지 증가해 디스크를 소진하는 문제 — GeekNews](https://news.hada.io/topic?id=31618)
 - [코덱스 Codex CLI 커맨드 스킬 완벽가이드 — Litmers](https://litmers.com/blog/%EC%BD%94%EB%8D%B1%EC%8A%A4-codex-cli-%EC%BB%A4%EB%A7%A8%EB%93%9C-%EC%8A%A4%ED%82%AC-%EC%99%84%EB%B2%BD%EA%B0%80%EC%9D%B4%EB%93%9C)
 - [Codex Docs — OpenAI](https://developers.openai.com/codex)
+- [Codex SDK — OpenAI](https://learn.chatgpt.com/docs/codex-sdk)
+- [Codex Authentication — OpenAI](https://learn.chatgpt.com/docs/auth)
+- [Codex Non-interactive mode, Use API key auth — OpenAI](https://learn.chatgpt.com/docs/non-interactive-mode#use-api-key-auth)
+- [Codex SDK로 구독 인증 연결 사례 — Threads, ssssssssoka](https://www.threads.com/@ssssssssoka/post/DYFceHHmF91)
 
 ## 관련 문서
 

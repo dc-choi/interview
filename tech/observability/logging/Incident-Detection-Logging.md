@@ -37,6 +37,15 @@ aliases: ["장애 감지와 로깅"]
 - 재시도 래퍼가 예외를 잡아 토픽과 시도 횟수 같은 요약만 남기면, 안전한 재시도 코드가 정작 원인 추적의 눈을 가린다
 - 스택트레이스 없는 에러 로그는 무언가 실패했다는 알림일 뿐이다 — 재시도하더라도 원인 예외의 메시지와 스택은 남긴다
 
+## 재현되지 않는 버그 다루기
+
+한 번 관측된 버그는 재현되지 않아도 신호로 다룬다. 목표는 당장 고치는 것이 아니라 다음에 발생했을 때 원인을 잡을 수 있는 상태를 만드는 것이다.
+
+- **닫지 않고 관찰 중으로 둔다.** 재현 불가로 닫으면 다음 발생이 새 이슈로 흩어진다. 같은 티켓에 발생 시각, 요청, 환경을 누적하면 부하, 시간대, 배포 같은 패턴이 보인다.
+- **해당 경로에 증거 장치를 심는다.** 의심 코드 경로 전체에 식별자가 붙은 로그와 trace를 추가해 다음 발생 때 입력과 호출 순서를 확보한다([[Correlation-ID|Correlation ID]], [[Application-Method-Trace-Design|method 호출 추적 설계]]).
+- **가설을 문서화한다.** race condition이라면 어떤 동시 요청과 부하에서 터질지처럼 검증 가능한 형태로 적고, 추가한 로그가 그 가설을 가를 수 있는지 확인한다.
+- 원인이 밝혀지면 누적된 발생 이력을 근거로 원인 분석을 남긴다([[RCA-Postmortem|RCA와 Postmortem]]).
+
 ## 배포임팩트측정
 
 - 내가 배포한 작업의 임팩트를 측정하고 명확히 보여줄 수 있는가?
@@ -103,3 +112,4 @@ aliases: ["장애 감지와 로깅"]
 - [Prometheus, Storage](https://prometheus.io/docs/prometheus/latest/storage/)
 - [Thanos, Getting Started](https://thanos.io/tip/thanos/getting-started.md/)
 - [유닛 테스트 209개를 통과한 PR인데, 실제로 돌려보니 저장이 한 건도 안 됐다 — velog](https://velog.io/@donghoong2/OCR-WORKER-%EC%9C%A0%EB%8B%9B-%ED%85%8C%EC%8A%A4%ED%8A%B8-209%EA%B0%9C%EB%A5%BC-%ED%86%B5%EA%B3%BC%ED%95%9C-PR%EC%9D%B8%EB%8D%B0-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%8F%8C%EB%A0%A4%EB%B3%B4%EB%8B%88-%EC%A0%80%EC%9E%A5%EC%9D%B4-%ED%95%9C-%EA%B1%B4%EB%8F%84-%EC%95%88-%EB%90%90%EB%8B%A4)
+- [재현 안 되는 버그를 대하는 습관 — Threads, querydaily.official](https://www.threads.com/@querydaily.official/post/DW08c-9GqQI)

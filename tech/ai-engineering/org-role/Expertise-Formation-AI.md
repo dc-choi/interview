@@ -46,6 +46,7 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성"]
 - 학습 국면과 산출 국면을 구분한다. 배우는 중인 영역에서는 답 생성이 아니라 힌트와 질문을 받는 튜터 모드(소크라테스식)로 쓴다 — 초안 먼저 쓰기, 답 대신 힌트 요청, AI 있는 작업과 없는 작업의 교대 같은 구체 수칙은 [[AI-Handicap-Learning|AI 핸디캡 학습법]]이 다룬다. 마찰 보존 구간을 의도적으로 남기는 데 초점을 둔다.
 - 위임 범위의 기준은 감사 가능성이다. 산출물을 스스로 감사할 수 있거나, 감사할 수 있는 사람이 리뷰 경로에 있는 영역까지만 판단을 위임한다.
 - 팀 차원의 육성 구조(검토와 직접 구현의 배합)는 [[Developer-Role-AI-Era|AI 시대 개발자 역할]]의 견습 사다리 재설계가 다룬다.
+- 반대 방향의 주장도 있다. AI를 튜터이자 스파링 상대로 쓰면 도제식으로 오래 쌓던 도메인 암묵지를 짧은 기간에 압축해 익힐 수 있고, 선배의 역할은 정답을 주는 사람에서 의도(해결할 비즈니스 문제)와 인지적 스캐폴딩(판단 기준, 검토 질문, 스스로 구조를 그리고 말로 설명하게 하는 과제)을 설계하는 사람으로 바뀐다는 것이다. 압축 학습의 속도는 근거가 제시되지 않은 주장이다. 위 RCT가 보여 주듯 가드레일 없는 보조는 시험 성적을 낮췄으므로, 이 주장이 성립하려면 스캐폴딩이 답 생성이 아니라 가드레일로 작동해야 한다. 역할 재정의는 받아들이되 학습 여부는 AI 없이 설명하고 재현하는 결과로 확인한다.
 
 ## 면접 체크포인트
 
@@ -60,6 +61,7 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성"]
 - [Generative AI without guardrails can harm learning: Evidence from high school mathematics — PNAS, Bastani et al.](https://www.pnas.org/doi/10.1073/pnas.2422633122)
 - [Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity — METR](https://arxiv.org/abs/2507.09089)
 - [AI Handles Incidents, Engineers Lose Touch With Their Systems — Sylvain Kalache](https://www.sylvainkalache.com/blog/ai-handles-incidents-engineers-lose-touch-with-their-systems)
+- [AI 시대 주니어 육성과 선배의 역할 — Threads, simula](https://www.threads.com/@simula/post/DdV6f9aGGjo)
 
 ## 관련 문서
 

@@ -36,7 +36,7 @@ aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한",
 
 ## 권한 규칙 — 평가 순서가 곧 보안 모델
 
-Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 적용**(first match wins)되고 **deny는 어느 스코프에서 매칭되든 차단**(deny-at-any-level)된다. 매칭이 없으면 프롬프트. 읽기 전용 도구(Read, Grep, Glob)는 승인 불필요.
+Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 적용**(first match wins)되고 **deny는 어느 스코프에서 매칭되든 차단**(deny-at-any-level)된다. 매칭이 없으면 프롬프트. 읽기 전용 도구(Read, Grep, Glob)는 작업 디렉터리와 추가 디렉터리 안에서는 승인이 필요 없고, 그 밖의 경로는 프롬프트를 띄운다. 2026-09-30 공식 도구 레퍼런스 기준 macOS, Linux와 WSL에서는 Glob과 Grep이 기본 도구 목록에서 빠지고 `find`, `grep`이 `Bash` 호출로 실행되므로, 이 검색에는 `Bash` 권한 규칙이 적용된다([[Agent-Code-Search|에이전트 코드 검색]]).
 
 ### 권한 모드 6종
 
@@ -85,6 +85,7 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 
 - [Anthropic, Configure the sandboxed Bash tool](https://code.claude.com/docs/en/sandboxing)
 - [Anthropic, Permissions](https://code.claude.com/docs/en/permissions)
+- [Anthropic, Tools reference](https://code.claude.com/docs/en/tools-reference)
 - [Anthropic, Permission modes](https://code.claude.com/docs/en/permission-modes)
 - [Anthropic, Claude Code settings](https://code.claude.com/docs/en/settings)
 - [Anthropic, Deploy managed settings](https://code.claude.com/docs/en/managed-settings)
@@ -94,6 +95,8 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 - [agents-md built-in mod — Anthropic](https://github.com/anthropics/claude-code/tree/main/mods/agents-md)
 - [Claude Code, 이제 AGENTS.md도 지원 — GeekNews](https://news.hada.io/topic?id=33925)
 - [클로드 코드 가이드 (레퍼런스 04 설정 시스템, 05 권한 시스템) — WikiDocs](https://wikidocs.net/book/19104)
+- [전역, 디렉터리별, 테스트용 CLAUDE.md 나누기 — Threads, think.5x](https://www.threads.com/@think.5x/post/DQ61BDsiR6O)
+- [CLAUDE.md 금지 지시와 @ 참조 규칙 파일 — Threads, catlovessubakba](https://www.threads.com/@catlovessubakba/post/DN1t6m6ZCfy)
 
 ## 관련 문서
 

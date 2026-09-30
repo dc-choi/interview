@@ -119,7 +119,7 @@ CA 대신 **개인 간 신뢰 링크**로 공개키 정당성을 검증. 대규�
 
 ## 실전 프로토콜에서의 조합
 
-- **TLS/HTTPS** — 서버 인증서(RSA/ECC)로 서버 인증 → ECDHE 등(하이브리드 KEM 포함)으로 세션 키 합의 → AES-GCM으로 본 데이터 암호화
+- **TLS/HTTPS** — 서버 인증서(RSA/ECC)로 서버 인증 → ECDHE 등(하이브리드 KEM 포함)으로 세션 키 합의 → AES-GCM으로 본 데이터 암호화. 브라우저 탐색에서 TLS 핸드셰이크는 DNS 조회와 TCP 연결 뒤, 첫 HTTP 요청 전에 온다(HTTP/3는 QUIC 핸드셰이크에 TLS 1.3이 통합된다). HTML을 안전하게 받는 네트워크 단계일 뿐 DOM, CSSOM, 레이아웃, 페인트로 이어지는 렌더링 방식은 바꾸지 않는다
 - **SSH** — 공개키 인증(`~/.ssh/authorized_keys`) + 세션 키 교환
 - **JWT (RS256/ES256)** — 서명에 비대칭키 사용 → 발급자만 서명 생성, 모든 서비스가 공개키로 검증
 - **암호화폐** — 개인키로 거래에 서명해 장부에 기록된 코인을 옮길 권한을 증명(아래)
@@ -139,6 +139,7 @@ CA 대신 **개인 간 신뢰 링크**로 공개키 정당성을 검증. 대규�
 
 - "공개키 암호가 대칭키보다 안전하다" — 동일 보안 수준을 위해 더 긴 키가 필요할 뿐, 본질적으로 우열 관계 아님
 - "공개키만 있으면 해독 가능" — 수학적으로 불가능한 것이 전제. 양자 컴퓨터가 현실화되면 RSA, ECC 대체 필요(Post-Quantum Crypto)
+- "요청마다 비대칭키와 대칭키를 번갈아 쓴다" — 비대칭 연산은 연결 수립 시 핸드셰이크(인증과 키 합의)에 쓰이고, 그 연결의 이후 요청과 응답은 합의한 대칭 세션 키로 암호화한다
 - "개인키가 노출되면 회수할 수 있다" — 사실상 불가능. **rotate 후 이전 키 폐기**가 유일한 대응
 
 ## 면접 체크포인트
@@ -157,9 +158,11 @@ CA 대신 **개인 간 신뢰 링크**로 공개키 정당성을 검증. 대규�
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
 - [비대칭키 작동구조와 코인의 실체 — 널널한 개발자 TV](https://www.youtube.com/watch?v=z5RN8XKLDd8)
 - [비대칭키가 인터넷 환경에서 사용되는 기본 원리 — 널널한 개발자 TV](https://www.youtube.com/watch?v=jyZ7TQaFy_o)
+- [브라우저 렌더링 파이프라인에서 HTTPS 위치 — Threads, 2weekhun](https://www.threads.com/@2weekhun/post/DbZPqiNCuv-)
 - [IETF, RFC 8017: PKCS #1: RSA Cryptography Specifications Version 2.2](https://www.rfc-editor.org/rfc/rfc8017.html)
 - [IETF, RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3](https://www.rfc-editor.org/rfc/rfc8446.html)
 - [IETF, RFC 9846: The Transport Layer Security (TLS) Protocol Version 1.3](https://www.rfc-editor.org/rfc/rfc9846.html)
+- [IETF, RFC 9001: Using TLS to Secure QUIC](https://www.rfc-editor.org/rfc/rfc9001.html)
 - [IETF, RFC 5246: The Transport Layer Security (TLS) Protocol Version 1.2](https://www.rfc-editor.org/rfc/rfc5246.html)
 - [IETF, RFC 10015: Deprecating Obsolete Key Exchange Methods in TLS 1.2 and DTLS 1.2](https://www.rfc-editor.org/rfc/rfc10015.html)
 - [CA/Browser Forum, Baseline Requirements for TLS Server Certificates](https://cabforum.org/working-groups/server/baseline-requirements/requirements/)

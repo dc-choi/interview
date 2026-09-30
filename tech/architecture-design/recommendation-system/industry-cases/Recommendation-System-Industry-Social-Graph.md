@@ -1,7 +1,7 @@
 ---
 tags: [architecture, recommendation-system, industry-case-study, graph, social-network]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-09-29
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Recommendation System Social Graph Cases", "추천 시스템 소셜 그래프 사례"]
 ---
@@ -107,6 +107,20 @@ PinSage = graph와 node feature로 재사용 가능한 embedding을 학습하는
 
 둘은 경쟁 모델 이름이 아니다. 한 시스템에서도 graph traversal source와 embedding ANN source를 함께 두고 union, dedup, calibration할 수 있다.
 
+## X For You 피드 공개 저장소
+
+X는 2023년 `twitter/the-algorithm`에 이어 2026년 `xai-org/x-algorithm` 저장소로 For You 피드의 핵심 코드를 공개했다. README 기준 요청 경로는 앞의 multi-stage ranking과 같은 funnel로 읽을 수 있다.
+
+| README 단계 | 대응하는 일반 단계 |
+|---|---|
+| Query Hydration | 시청자의 이력, 팔로우, 차단과 뮤트 정보 로드 |
+| Candidate Sources, Candidate Hydration | 후보 생성: 팔로우 계정 게시물(in-network)과 ML retrieval 기반 out-of-network 후보를 모으고 메타데이터를 붙임 |
+| Pre-Scoring Filters | 중복, 오래된 글, 본인 글, 이미 본 글, 뮤트 키워드와 차단 계정 제거 |
+| Scoring, Selection | transformer 모델이 행동별 반응 확률을 예측하고 가중합으로 점수화한 뒤 작성자 다양성, out-of-network 할인, 신규 작성자 보정 적용 |
+| Post-Selection Filters | 안전 라벨에 따른 visibility filtering과 대화 중복 제거 |
+
+점수가 `Σ weight × P(action)` 형태라 부정적 반응에 음수 가중치를 주는 방식으로 engagement 편향을 제어한다는 점이 LinkedIn의 다중 event 결합과 같은 구조다. 공개 범위는 README가 밝힌 코드에 한정되며, 조작 방지를 위해 일부 분류 프롬프트와 규칙은 제외됐다.
+
 ## 전이 가능한 설계 질문
 
 1. 어떤 node와 edge가 실제 선호를 표현하는가?
@@ -121,6 +135,7 @@ PinSage = graph와 node feature로 재사용 가능한 embedding을 학습하는
 - LinkedIn PYMK 글은 2024년 연결 추천 표면의 공개 스냅샷이다.
 - Talent Search fairness 연구는 recruiter-side profile ranking 사례이며 PYMK나 Jobs 전체 구조가 아니다.
 - Pixie와 PinSage 수치와 구성은 각각 2017년과 2018년 공개 시점의 사례다.
+- X 저장소 내용은 README와 공개 코드 기준 개요이며, 학습 데이터, 가중치 값과 비공개 규칙을 포함한 운영 전체를 뜻하지 않는다.
 - 공개 논문은 2026년 현재 각 회사의 전체 graph, feature, 모델과 정책을 증명하지 않는다.
 
 ## 관련 문서
@@ -139,3 +154,6 @@ PinSage = graph와 node feature로 재사용 가능한 embedding을 학습하는
 - [Pixie: A System for Recommending Billions of Items in Real-Time — Pinterest 연구진](https://arxiv.org/abs/1711.07601)
 - [Introducing Pixie — Pinterest Engineering](https://medium.com/pinterest-engineering/introducing-pixie-an-advanced-graph-based-recommendation-system-e7b4229b664b)
 - [Graph Convolutional Neural Networks for Web-Scale Recommender Systems — Pinterest 연구진](https://arxiv.org/abs/1806.01973)
+- [xai-org/x-algorithm — GitHub](https://github.com/xai-org/x-algorithm)
+- [twitter/the-algorithm — GitHub](https://github.com/twitter/the-algorithm)
+- [X For You 피드 알고리즘 공개 소개 — Threads, sandpia_com](https://www.threads.com/@sandpia_com/post/DcAKjDzmttL)

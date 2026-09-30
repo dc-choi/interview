@@ -1,7 +1,7 @@
 ---
 tags: [database, olap, columnar, clickhouse, analytics, mergetree]
 status: done
-verified_at: 2026-09-09
+verified_at: 2026-09-29
 category: "데이터&저장소(Data&Storage)"
 aliases: ["ClickHouse", "OLAP", "컬럼형 DB", "Column-oriented DB"]
 ---
@@ -79,6 +79,13 @@ ORDER BY (created_at, service_id, event_type);
 - **단건 INSERT** — 매 INSERT마다 새 파트 생성 → 머지 부담 폭증. 배치로 묶는 것이 사실상 필수
 - **트랜잭션 중심 OLTP** — 단일 INSERT 원자성 등 제한적 보장은 있지만, 결제, 주문처럼 다중 행, 다중 테이블 ACID 트랜잭션이 핵심인 워크로드에는 부적합
 - **빈번한 UPDATE/DELETE** — `ALTER TABLE ... DELETE` Mutation은 파트를 통째 재작성. 비용 큼. UPDATE는 ReplacingMergeTree로 대체하지만 즉시 반영 아님(머지 시점)
+
+### 로그와 관측 데이터 저장소로 쓸 때
+로그, 트레이스와 시계열 관측 데이터를 ELK나 OpenSearch 대신 ClickHouse에 저장하는 구성이 늘고 있다. 공식 문서는 열 저장, 강한 압축과 벡터화 실행으로 비용을 낮추고 high-cardinality 데이터 집계가 빠르다는 점을 근거로 들며, ClickStack이라는 관측 스택도 제공한다.
+- **맞는 요구**: 열 단위 압축에 따른 저장 비용 절감, 표준 SQL로 하는 분석과 조인, 수십억 행 단위 집계와 대시보드
+- **경계**: 역색인 기반 전문 검색, 관련도 점수, 자유 텍스트 탐색이 중심이면 OpenSearch가 여전히 맞다 ([[Centralized-Logging-with-OpenSearch|OpenSearch 중앙 로깅]]). 라벨 기반 저비용 보관이 목적이면 [[Loki|Loki]]도 후보다
+- **절감률 주장**: 70~90% 인프라 비용 절감 같은 수치는 벤더나 사례 발표의 측정값이다. 데이터 형태, 보존 기간과 쿼리 패턴에 따라 달라지므로 자기 데이터로 PoC해 비교한다
+- **운영과 전환 비용**: 대규모에서는 두 진영 모두 샤드와 복제 배치, rack awareness 같은 장애 도메인 분산, 디스크와 머지 관리가 어렵다. 수집 파이프라인, 대시보드, 알림과 운영 지식까지 바뀌므로 조직의 전환 비용이 크며, [[Log-Pipeline|로그 파이프라인]]에서 저장소를 교체 가능하게 두면 일부 로그부터 이관할 수 있다
 
 ## 성능 차이의 구조적 원인
 
@@ -160,6 +167,8 @@ ORDER BY (created_at, service_id, event_type);
 - [ClickHouse 공식 문서 — Transactional (ACID) support](https://clickhouse.com/docs/guides/developer/transactional)
 - [ClickHouse 공식 문서 — Sparse Primary Indexes](https://clickhouse.com/docs/optimize/sparse-primary-indexes)
 - [ClickHouse Documentation, ReplacingMergeTree](https://clickhouse.com/docs/engines/table-engines/mergetree-family/replacingmergetree)
+- [ClickHouse 공식 문서 — Observability](https://clickhouse.com/docs/get-started/use-cases/observability)
+- [ELK 대신 ClickHouse로 전환하는 흐름 — Threads, nchime72](https://www.threads.com/@nchime72/post/Dc5ikTkGmAc)
 
 ## 관련 문서
 - [[OLTP-vs-OLAP|OLTP vs OLAP]]
@@ -168,3 +177,5 @@ ORDER BY (created_at, service_id, event_type);
 - [[MQ-Kafka|Kafka]]
 - [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL]]
 - [[Network-Traffic-Monitoring|네트워크 트래픽 모니터링 (SQLite와 이중 쓰기 도입 사례)]]
+- [[Centralized-Logging-with-OpenSearch|OpenSearch 중앙 로깅]]
+- [[Log-Pipeline|로그 파이프라인]]

@@ -142,6 +142,7 @@ Crash 실험은 disposable instance에서만 수행한다. commit된 marker와 �
 - [MySQL 8.4 Reference Manual, Binary Logging Options](https://dev.mysql.com/doc/refman/8.4/en/replication-options-binary-log.html)
 - [MySQL 8.4 Reference Manual, The innodb_redo_log_files Table](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-innodb-redo-log-files-table.html)
 - [MySQL 8.4 Reference Manual, InnoDB System Variables](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit)
+- [InnoDB Undo Log vs Redo Log — Threads, bear_dba](https://www.threads.com/@bear_dba/post/Db754E6mLlX)
 
 ## 관련 문서
 

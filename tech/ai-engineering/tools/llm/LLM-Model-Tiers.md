@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, cost, model-selection]
 status: done
-verified_at: 2026-09-04
+verified_at: 2026-09-29
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model Routing"]
 ---
@@ -20,7 +20,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 | 균형형 | 일상 업무용, 플래그십 대비 큰 폭 저렴 | 대부분의 프로덕션 트래픽, 일반 생성, 요약 |
 | 저비용형 | 가장 빠르고 가장 싼 | 분류, 추출, 라우팅, 단순 변환, 대량 배치 |
 
-벤더별 매핑 예: 2026-09-04 현재 OpenAI는 GPT-6 Astra를 최상위 플래그십으로 안내하고, GPT-5.6 계열 안에는 Sol(고성능), Terra(균형형), Luna(저비용형)가 있다. Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. Google은 Gemini Pro, Flash 계열. 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
+벤더별 매핑 예: 2026-09-29 Codex 모델 문서 기준 OpenAI는 GPT-6 Astra를 가장 강한 모델로, GPT-6 Sol(복잡한 코딩과 에이전트 작업)과 GPT-6 Luna(범위가 분명한 대량 반복 작업)를 권장 모델로 안내한다. 이전 세대 GPT-5.6 Sol, Terra, Luna는 롤아웃 기간 동안 유지된다. Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. Google은 Gemini Pro, Flash 계열. 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
 
 ## 티어 간 트레이드오프
 
@@ -50,6 +50,23 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 
 엔지니어 관점의 함의: 최신 플래그십은 발표 직후 곧바로 프로덕션에 못 쓸 수 있다(프리뷰 게이팅). 모델 가용성, 접근 등급을 의존성으로 보고, 미가용 시 직전 세대나 하위 티어로 돌아갈 폴백 경로를 미리 둔다. 보안 도메인 워크로드는 안전장치 오탐에 의한 차단과 지연도 가용성 변수로 계산에 넣는다.
 
+## 티어별 역할 분리와 상호 검토
+
+코딩 에이전트에서는 라우팅이 호출 단위가 아니라 역할 단위로 나타난다. 상위 티어가 요구사항 해석, 계획, 최종 리뷰와 통합을 맡고, 하위 티어가 코드 탐색, 구현, 테스트와 자료 조사처럼 범위가 좁고 반복적인 일을 맡는다. 질문이 어떤 모델이 가장 좋은가에서 어떤 일을 어떤 모델에 맡기는가로 바뀐다.
+
+- **구성 수단(Codex 기준)**: 커스텀 에이전트는 `~/.codex/agents/`(개인)나 `.codex/agents/`(프로젝트)에 TOML 파일 하나당 하나씩 정의하고, 파일 안에 `model`, `model_reasoning_effort`, `sandbox_mode`를 둘 수 있다. 전역 기본값은 `config.toml`의 `[agents]`(`default_subagent_model`, `default_subagent_reasoning_effort`)이고, 아무것도 지정하지 않으면 서브에이전트는 부모의 모델과 추론 수준을 상속한다. 언제 위임할지는 AGENTS.md나 SKILL.md에 적어 두면 Codex가 따른다. 공식 예시도 읽기 전용 탐색 에이전트에 `gpt-6-luna`, 리뷰 에이전트에 `gpt-6-sol`을 배정하며, 같은 문서는 GPT-6 Sol과 GPT-6 Luna를 기본 선택지로 안내하고 GPT-5.6 계열은 롤아웃 기간 동안 유지한다고 밝힌다(2026-09-29 공식 문서 확인)
+- **상위 지휘, 하위 실행**: 공개된 오케스트레이터 사례는 탐색, 구현, 조사, 테스트를 하위 티어 에이전트가 차례로 맡고, 독립 리뷰와 최종 통합을 상위 티어가 맡는 순서를 쓴다. 역할 파일, AGENTS.md와 호출용 스킬을 한 묶음으로 배포하는 형태다
+- **서로 다른 모델의 교차 검토**: 한 모델이 계획을 쓰면 다른 벤더 모델이 승인할 때까지 계획을 검토하고, 저가 모델이 구현한 뒤 계획 작성 모델이 변경분 전체를 읽고 고친다. 마지막에 검토 모델이 계획 대비 코드를 승인할 때까지 다시 본다. 프레임워크나 MCP 없이 CLI를 부르는 셸 스크립트 하나로 만든 사례가 있고, 효과의 원천은 도구 개수보다 서로 검토하게 만드는 구성이라는 주장이다. 구현과 리뷰를 서로 다른 에이전트 제품에 나눠 맡기는 경험칙도 같은 계열이다
+- **반대 방향 조합**: 최상위 모델의 사용량이 제한될 때 한 단계 아래 모델로 스펙, 구현 계획, 테스트 계획 문서까지 만들고, 그 문서를 상위 모델에 넣어 구현만 맡긴다. 비싼 토큰을 문서로 확정한 결정의 실행에만 쓰는 방식이다
+
+한계와 반론:
+
+- 서브에이전트는 각자 모델과 도구를 돌리므로 같은 작업의 단일 에이전트 실행보다 토큰을 더 쓴다(공식 문서). 병렬 쓰기 작업은 충돌과 조정 비용이 커서 공식 문서도 탐색, 테스트, 요약 같은 읽기 위주 작업부터 병렬화하도록 권한다
+- 모델이 바뀌는 경계마다 프롬프트 캐시를 이어 쓰기 어렵고, 하위 티어 결과를 상위 티어가 다시 정리하는 부담이 커서 단일 모델을 중간 추론 수준으로 쓰는 편이 실제로 빠르고 효율적이었다는 사용자 경험도 많다
+- 위 효과는 모두 개별 사례의 주장이고 측정 조건이 공개되지 않았다. 도입 전에 같은 과업에서 단일 모델 대비 품질, 시간과 비용을 [[LLM-Eval-Strategy|eval]]로 비교한다
+
+역할과 검토 루프를 모델 밖의 구조로 고정하는 관점은 [[Harness-Engineering|하네스 엔지니어링]], 서브에이전트가 도구 호출 루프 위에서 도는 방식은 [[Codex-Agent-Execution-Model|Codex 동작 원리]]에서 다룬다.
+
 ## 체크포인트
 
 - 모든 호출을 플래그십으로 보내고 있지 않은가. 작업 난이도별로 티어를 나눴는가.
@@ -57,6 +74,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - 사용자 대면 실시간 경로에서 지연 예산을 티어 선택에 반영했는가.
 - 상위 티어 미가용, 레이트리밋 시 강등, 폴백 경로가 있는가.
 - 쓰려는 최신 모델이 일반 공개됐는가, 아직 한정 프리뷰인가.
+- 역할별로 티어를 나눴다면 단일 모델 대비 이득을 같은 과업으로 측정했는가, 캐시 손실과 결과 정리 비용까지 셈했는가.
 
 ## 사례
 
@@ -75,6 +93,8 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]] — 단계별 모델 분기, 데이터 vs 모델
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]] — Lazy Load, 고가용성, 폴백
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]] — 벤더 구도, 가격 경쟁
+- [[Harness-Engineering|하네스 엔지니어링]] — 역할 분리와 검토 루프의 구조화
+- [[Codex-Agent-Execution-Model|Codex 동작 원리]] — 서브에이전트와 도구 호출 루프
 
 ## 출처
 
@@ -86,3 +106,8 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - [OpenAI API, GPT-5.6 모델 가이드](https://developers.openai.com/api/docs/guides/latest-model)
 - [OpenAI API, GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna)
 - [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격)
+- [OpenAI Codex, Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) (2026-09-29 커스텀 에이전트 설정 확인)
+- [OpenAI Codex, Models](https://learn.chatgpt.com/docs/models) (2026-09-29 GPT-6 Sol, Luna 확인)
+- [Codex 역할 분리 오케스트레이터 소개 — Threads, vibe.itji](https://www.threads.com/@vibe.itji/post/Dc-WSSBD9Os)
+- [서로 검토하는 멀티 모델 코딩 파이프라인 — Threads, claudical_official](https://www.threads.com/@claudical_official/post/Daw9YLkD3qu)
+- [기획은 하위 모델, 구현은 상위 모델 — Threads, dev.inniverse](https://www.threads.com/@dev.inniverse/post/Dac6StsCbgH)

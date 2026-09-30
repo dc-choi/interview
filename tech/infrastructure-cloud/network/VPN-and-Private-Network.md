@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, network, vpn, private-network, ipsec, security]
 status: done
-verified_at: 2026-09-22
+verified_at: 2026-09-29
 category: "Infrastructure - 네트워크"
 aliases: ["VPN", "Virtual Private Network", "가상 사설망", "프라이빗 네트워크"]
 ---
@@ -49,6 +49,27 @@ VPN이라는 이름 자체가 암호화를 보장하지도 않는다. 예를 들
 
 VPN은 물리적으로 같은 LAN을 만드는 기술로 한정되지 않는다. L3 VPN은 서로 다른 서브넷을 라우팅으로 연결할 수 있으며, 모든 브로드캐스트나 모든 내부 서비스가 원격 단말까지 확장되는 것은 아니다.
 
+## 메시 VPN (오버레이 네트워크)
+
+전통적인 원격 접속 VPN은 모든 단말이 중앙 게이트웨이를 거치는 hub-and-spoke 구조다. 메시 VPN은 단말끼리 직접 암호화 터널을 맺어, 폰, 태블릿, 노트북, 데스크톱, 홈랩 서버와 NAS를 하나의 사설 네트워크처럼 묶는다. 공유기에 포트를 열거나 공인 IP를 두지 않고도 밖에서 집의 장비에 접속할 수 있어 개인 인프라와 원격 개발에 많이 쓰인다. Tailscale이 대표적인 예다.
+
+Tailscale 공식 설명 기준 구조는 다음과 같다.
+
+1. **데이터 평면**: 단말 사이 트래픽은 WireGuard 암호화 터널로 흐른다. 각 단말이 자기 키 쌍을 만들고 공개 키만 공유하므로 개인 키는 단말을 떠나지 않는다.
+2. **제어 평면**: 중앙 코디네이션 서버는 공개 키, 주소와 정책 같은 메타데이터만 교환하고 실제 데이터 트래픽은 거의 받지 않는다. 정책은 중앙에서 정하고 적용은 각 단말이 한다.
+3. **NAT 통과와 relay**: 양쪽이 NAT나 방화벽 뒤에 있으면 STUN, ICE 방식으로 직접 경로를 찾는다 ([[IPv4-NAT-and-Traversal|NAT와 통과 전략]]). 직접 연결이 실패하면 DERP relay 서버가 이미 암호화된 패킷을 중계하므로 연결은 유지되지만 지연이 늘 수 있다.
+
+2026-09-29 요금 페이지 기준 개인용 무료 Personal 플랜은 사용자 6명까지, 사용자 단말 수 제한 없이 대부분의 기능을 제공하며 ACL 그룹 3개 등 일부 한도가 있다. 한도는 바뀔 수 있으므로 도입 시 다시 확인한다.
+
+활용 예로는 밖에서 폰의 SSH 터미널 앱으로 집 데스크톱에 접속해 코딩 에이전트 세션을 이어 가거나, NAS 파일을 운영체제와 무관하게 주고받는 구성이 있다.
+
+보안 점검은 기존 VPN과 같은 원칙을 따른다.
+
+- **접근 제어(ACL)**: 기본 정책이 모든 단말 간 통신을 허용하는지 확인하고, 단말과 태그별로 필요한 포트만 열어 둔다. 개인 기기가 뚫리면 메시 전체가 노출될 수 있다.
+- **키 만료**: 단말 키는 기본 180일 뒤 만료돼 재인증을 요구한다. 손대기 어려운 서버나 NAS만 만료를 끄고, 개인 단말은 만료를 유지한다.
+- **분실과 회수**: 잃어버린 기기와 쓰지 않는 단말은 관리 콘솔에서 즉시 제거한다.
+- **노출 범위**: 서브넷 라우터나 exit node로 LAN 전체나 인터넷 출구를 공유하면 위의 전체 터널, 대역 중복과 DNS 함정이 그대로 적용된다.
+
 ## 출처
 
 이번 참고 영상은 제공된 메모를 바탕으로 반영했으며 영상 본문과 자막은 직접 확인하지 못했다. 보완한 기술 설명은 아래 공식 자료와 대조했다.
@@ -57,6 +78,10 @@ VPN은 물리적으로 같은 LAN을 만드는 기술로 한정되지 않는다.
 - [IETF, RFC 4364: BGP/MPLS IP Virtual Private Networks](https://www.rfc-editor.org/rfc/rfc4364.html)
 - [NIST, SP 800-46 Rev. 2: Guide to Enterprise Telework, Remote Access, and BYOD Security](https://csrc.nist.gov/pubs/sp/800/46/r2/final)
 - [YouTube, VPN과 프라이빗 네트워크 (제공 메모의 참고 영상)](https://www.youtube.com/watch?v=6w1F6qnPQiE&list=PLXvgR_grOs1BkUIxKsLEUdefyMWMA0_U-&index=3)
+- [How Tailscale works — Tailscale Blog](https://tailscale.com/blog/how-tailscale-works)
+- [Tailscale, Pricing](https://tailscale.com/pricing)
+- [Tailscale Docs, Key expiry](https://tailscale.com/kb/1028/key-expiry)
+- [Tailscale 추천 — Threads, dinggiiiiillll](https://www.threads.com/@dinggiiiiillll/post/Db7gzt8jNdn)
 
 ## 관련 문서
 

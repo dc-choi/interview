@@ -3,7 +3,7 @@ tags: [architecture, distributed-systems, cap, consistency]
 status: done
 category: "Architecture - 원칙"
 aliases: ["CAP Theorem", "CAP 정리"]
-verified_at: 2026-09-04
+verified_at: 2026-09-29
 ---
 
 # CAP 정리 (CAP Theorem)
@@ -105,6 +105,27 @@ writeConcern, readConcern처럼 요청 단위로 일관성 강도를 바꾸는 �
 - **Read Your Own Writes**: 본인 쓰기는 바로 보여주되, 남 것은 최종 일관성
 - **Session Consistency**: 한 세션 내 일관성만 보장
 
+## 일관성을 제품 경험으로 설계한다
+
+최종 일관성 자체는 결함이 아니다. 문제는 불일치가 사용자에게 어떤 모습으로 드러나는지 정하지 않은 채 복제, 캐시와 이벤트를 쌓는 것이다. 방금 본 콘텐츠가 다시 추천되는 증상을 예로 들면, 시청 기록이라는 하나의 사실이 여러 저장소에 서로 다른 시점에 도착하면서 생기는 대표 원인은 네 가지다.
+
+| 원인 | 불일치가 생기는 지점 | 대표 대응 |
+|---|---|---|
+| Read Replica 복제 지연 | 쓰기는 primary에 끝났지만 추천 조회가 아직 따라잡지 못한 replica를 읽음 | 방금 쓴 사용자의 읽기를 primary나 충분히 따라잡은 replica로 보냄 ([[Read-Replica-Routing|Read Replica 라우팅]]) |
+| 캐시 무효화 지연 | 추천 결과 캐시가 TTL이나 무효화 전까지 이전 결과를 반환 | 쓰기 경로의 무효화, 짧은 TTL, 버전 키 ([[Cache-Invalidation|Cache invalidation]]) |
+| 이벤트 처리 지연 | 시청 이벤트를 소비해 제외 목록을 갱신하는 consumer가 밀림 | consumer lag 관측, 제외 필터를 요청 시점에 한 번 더 적용 |
+| 격리 수준 차이 | 같은 트랜잭션 안에서도 읽을 때마다 보이는 스냅샷이 다름 | 필요한 스냅샷 범위를 명시 ([[Isolation-Level-Beyond-ANSI|ANSI 격리 수준의 한계]]) |
+
+격리 수준 차이는 기본값에서도 드러난다. PostgreSQL 기본값인 Read Committed는 문장마다 새 스냅샷을 잡아 같은 트랜잭션의 연속된 SELECT가 다른 값을 볼 수 있고, MySQL InnoDB 기본값인 Repeatable Read는 첫 consistent read의 스냅샷을 트랜잭션 끝까지 유지한다.
+
+설계 질문은 기술보다 제품 요구에서 출발한다.
+
+1. 이 데이터의 진실은 어느 저장소에서 언제 확정되는가
+2. 누가 이 데이터를 읽고, 얼마나 늦게 보여도 되는가 (1초 뒤 재추천은 허용하는가, 이어보기 위치는 즉시 바뀌어야 하는가)
+3. 틀렸을 때 사용자 경험이 어떻게 깨지고, 그 비용이 지연이나 인프라 비용보다 큰가
+
+그 답에 따라 사용자에게 줄 보장을 고른다. **read-your-writes**는 같은 사용자가 쓴 값을 그 사용자의 다음 읽기가 반드시 보는 보장이고 다른 사용자에게는 적용되지 않는다. **monotonic read**는 한 사용자가 새 값을 본 뒤 다시 과거 값을 보지 않는 보장이다. 모든 데이터를 강한 일관성으로 올리는 대신, 사용자가 직접 바꾼 값처럼 틀리면 신뢰가 깨지는 경로에만 이런 보장을 두고 나머지는 지연을 허용한다. 빠른 오답과 늦은 정답 중 무엇이 나은지는 요구마다 다르며, 결제와 재고는 늦은 정답을, 피드 순서는 빠른 근사치를 택하는 식으로 경로별로 정한다.
+
 ## 면접 체크포인트
 
 - CAP의 세 속성 각각의 엄밀한 정의
@@ -113,6 +134,8 @@ writeConcern, readConcern처럼 요청 단위로 일관성 강도를 바꾸는 �
 - PACELC가 CAP를 어떻게 보강하는가
 - 마이크로서비스 간 통신에도 CAP가 적용되는 이유
 - Eventually Consistent의 정확한 의미
+- 방금 본 콘텐츠가 다시 보이는 증상을 복제 지연, 캐시, 이벤트 지연, 격리 수준으로 분해하는 방법
+- read-your-writes와 monotonic read를 어떤 사용자 경로에 둘지 정하는 기준
 
 ## 출처
 - [Gilbert, Lynch — Brewer's conjecture and the feasibility of consistent, available, partition-tolerant web services, ACM SIGACT News 33(2), 2002, pp.51-59](https://dl.acm.org/doi/10.1145/564585.564601)
@@ -124,9 +147,15 @@ writeConcern, readConcern처럼 요청 단위로 일관성 강도를 바꾸는 �
 - [MongoDB Manual — Read Concern linearizable](https://www.mongodb.com/docs/manual/reference/read-concern-linearizable/)
 - [MongoDB Manual — Read Concern majority](https://www.mongodb.com/docs/manual/reference/read-concern-majority/)
 - [MongoDB Manual — Replica Set Elections](https://www.mongodb.com/docs/manual/core/replica-set-elections/)
+- [Jepsen — Read Your Writes](https://jepsen.io/consistency/models/read-your-writes)
+- [PostgreSQL Documentation — Transaction Isolation](https://www.postgresql.org/docs/current/transaction-iso.html)
+- [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
+- [방금 본 영화 재추천과 DB 지식 피라미드 — Threads, rich_dev_siliconvalley](https://www.threads.com/@rich_dev_siliconvalley/post/DXuuNMcEpqc)
 
 ## 관련 문서
 - [[Monolith-vs-Microservice|Monolith vs Microservice]]
 - [[Isolation-Level-Beyond-ANSI|ANSI 격리 수준의 한계, Strict Serializable]]
+- [[Read-Replica-Routing|Read Replica 라우팅]]
+- [[Cache-Invalidation|Cache invalidation]]
 - [[Replication|Replication]]
 - [[Sharding|Sharding]]

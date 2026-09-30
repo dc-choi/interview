@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, foreign-key, referential-integrity]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-29
 category: "Data & Storage - RDB"
 aliases: ["외래 키 설계", "Foreign Key Integrity", "참조 무결성"]
 ---
@@ -59,6 +59,22 @@ CREATE TABLE orders (
 
 InnoDB의 `NO ACTION`은 deferred constraint가 아니라 `RESTRICT`와 같은 즉시 검사다. cascade는 편리하지만 데이터 보존 요구, 감사 로그와 최대 fan-out을 먼저 확인한다.
 
+## FK를 빼는 이유와 유지할 조건
+
+FK를 쓰지 않는 선택은 대개 다음 비용 중 하나에서 출발한다.
+
+- **쓰기 경로의 검증과 잠금**: InnoDB는 FK 조건을 검사하는 insert, update, delete가 확인한 레코드에 shared record lock을 건다. 인기 상품이나 큰 계정 같은 소수 부모에 자식 쓰기가 몰리면 잠금 경합과 데드락 경로가 늘고, 대량 적재와 삭제 배치는 행마다 참조 검사를 치른다.
+- **온라인 스키마 변경 도구와의 충돌**: gh-ost는 FK 제약을 지원하지 않는다. pt-online-schema-change는 참조되는 테이블을 바꿀 때 `--alter-foreign-keys-method`를 요구하고, `drop_swap`은 원본 테이블이 잠시 사라지는 구간이 생기는 등 방식마다 위험이 다르다. 절차는 [[Schema-Migration-Large-Table|대용량 스키마 변경]]에서 고른다.
+- **저장소 분리**: 서비스별 DB, 샤드, 아카이브 저장소로 부모와 자식이 갈라지면 물리 FK를 걸 수 없다. 분산 DB의 FK 지원 범위는 제품과 시점마다 다르므로 도입 시 공식 문서로 확인한다.
+
+반대로 다음 조건이면 FK를 기본값으로 유지한다.
+
+- 결제, 정산, 재고처럼 참조가 깨지면 곧 금전과 법적 문제가 되는 데이터
+- 여러 서비스, 배치와 운영 SQL이 같은 단일 DB에 직접 쓰는 모놀리식 구조
+- 트래픽이 낮아 검증 비용보다 사고 비용이 확실히 큰 시스템
+
+유행이 아니라 도메인의 정합성 요구와 쓰기 규모가 결정한다. 일시적으로 끄는 `foreign_key_checks = 0`은 FK를 쓰는 것도 빼는 것도 아닌 상태를 만들기 쉬우므로 아래 운영 주의점의 제한을 따른다.
+
 ## FK를 애플리케이션에서만 관리한다면
 
 샤딩으로 parent와 child가 다른 노드에 있거나, 대규모 적재와 스키마 전환에서 제약 비용을 통제해야 하는 경우 DB FK를 사용하지 않을 수 있다. 이 선택은 무결성이 필요 없다는 뜻이 아니라 보장 주체를 옮기는 것이다.
@@ -72,7 +88,26 @@ InnoDB의 `NO ACTION`은 deferred constraint가 아니라 `RESTRICT`와 같은 �
 - backfill과 장애 재시도가 멱등한지 확인하는 UNIQUE 제약
 - 데이터 이관 전후 고아 행 수 검증
 
+고아 행 탐지는 부모가 사라진 자식을 찾는 anti join으로 시작한다. 대상 행 수와 인덱스를 확인하고 범위를 나눠 실행한다.
+
+```sql
+SELECT c.id, c.order_id
+FROM order_items c
+LEFT JOIN orders p ON p.id = c.order_id
+WHERE c.order_id IS NOT NULL
+  AND p.id IS NULL
+LIMIT 1000;
+```
+
+DB 제약이 없는 참조는 스키마 어디에도 흔적이 남지 않는다. `<대상>_id` 명명 규칙, 논리 ERD와 스키마 문서에 참조 관계와 삭제 정책을 남기는 Soft FK 관례로 관계를 드러낸다. ORM의 `ManyToOne` 같은 관계 매핑은 FK 없이도 JOIN을 만들지만 무결성을 보장하지 않으므로, 팀이 이를 제약으로 오해하지 않게 문서에 명시한다.
+
 단일 DB 안에서 여러 서비스, 배치와 운영 SQL이 직접 쓰는 구조라면 FK가 제공하는 공통 방어선의 가치가 커진다. 반대로 분산 경계를 넘는 관계에는 DB FK를 걸 수 없으므로 보상 통제가 필수다.
+
+## 엔진별 참조 컬럼 인덱스
+
+- MySQL InnoDB는 child FK 컬럼을 선두로 하는 인덱스를 요구하고, 없으면 FK 생성 시 자동으로 만든다.
+- PostgreSQL은 FK를 선언해도 참조하는 쪽 컬럼에 인덱스를 만들지 않는다. 부모 행 `DELETE`나 참조 컬럼 `UPDATE`는 자식 테이블에서 옛 값을 찾아야 하므로, 인덱스가 없으면 큰 자식 테이블을 훑게 된다. 부모 삭제와 조인 경로가 있으면 참조 컬럼 인덱스를 직접 만든다.
+- MySQL에서 PostgreSQL로 옮길 때 이 차이로 인덱스가 빠지기 쉽다. 이관 체크리스트에 FK별 참조 컬럼 인덱스 존재 여부를 넣는다.
 
 ## 운영 주의점
 
@@ -85,10 +120,15 @@ InnoDB의 `NO ACTION`은 deferred constraint가 아니라 `RESTRICT`와 같은 �
 ## 출처
 
 - [MySQL 8.4 Reference Manual, FOREIGN KEY Constraints](https://dev.mysql.com/doc/refman/8.4/en/create-table-foreign-keys.html)
+- [MySQL 8.4 Reference Manual, Locks Set by Different SQL Statements in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html)
+- [PostgreSQL 18 Documentation, Constraints](https://www.postgresql.org/docs/18/ddl-constraints.html)
+- [gh-ost, Requirements and limitations](https://github.com/github/gh-ost/blob/master/doc/requirements-and-limitations.md)
+- [Percona Toolkit Documentation, pt-online-schema-change](https://docs.percona.com/percona-toolkit/pt-online-schema-change.html)
 - [인프런, Hong, 참조 무결성과 외래 키](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367636)
 - [인프런, Hong, 외래 키 동작](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367637)
 - [인프런, Hong, 외래 키가 막지 못하는 잘못된 JOIN](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367639)
 - [인프런, Hong, 외래 키의 운영 트레이드오프](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367638)
+- [FK 없이 사는 법 — Threads, bear_dba](https://www.threads.com/@bear_dba/post/DccLgcJEzbh)
 
 ## 관련 문서
 
@@ -96,3 +136,5 @@ InnoDB의 `NO ACTION`은 deferred constraint가 아니라 `RESTRICT`와 같은 �
 - [[Schema-Migration-Large-Table|대용량 스키마 변경]]
 - [[SQL-Joins|SQL 조인]]
 - [[MySQL-Partitioning|MySQL 파티셔닝]]
+- [[Lock-Deadlock|Lock과 Deadlock]]
+- [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL]]

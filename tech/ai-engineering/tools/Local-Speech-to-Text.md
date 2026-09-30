@@ -1,7 +1,7 @@
 ---
 tags: [ai, speech-to-text, whisper, youtube, tools]
 status: done
-verified_at: 2026-09-24
+verified_at: 2026-09-29
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Local Speech-to-Text", "로컬 음성 인식", "영상 전사", "STT"]
 ---
@@ -99,6 +99,14 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 | CLOVA Speech 장문 | 15초당 5원(15초 단위 올림), Free 플랜 월 20분 무료 | boostings |
 | 리턴제로 | 시간당 1,000원(VAT 별도), 가입 시 600분 무료 | keywords |
 
+### 받아쓰기 앱 계층
+
+에이전트에게 긴 지시를 말로 넣는 받아쓰기(dictation) 용도에서는 엔진보다 앱이 선택 단위다. 오픈소스 오프라인 받아쓰기 앱 Handy는 단축키로 녹음해 로컬 모델로 전사하고 현재 입력창에 붙여 넣는다. 저장소의 모델 카탈로그에는 Whisper, Parakeet V3와 함께 Qwen3-ASR 0.6B와 1.7B(GGUF, 한국어 포함 30개 언어)가 있고, 앱은 macOS, Windows, Linux를 지원한다(2026-09-29 저장소 확인).
+
+- Handy에서 Qwen3-ASR 1.7B를 고르면 한국어 받아쓰기가 상용 앱 Wispr Flow보다 빠르고 정확했다는 개인 비교 후기가 있다(Mac mini M2 Pro, 한영 혼용 인식, 측정 조건 미공개, 소음 환경 미검증). 한국어가 약하다는 반론도 있다. 위 실측의 Qwen3-ASR(mlx-audio 8bit, 영상 전사)과는 실행 경로, 양자화와 입력 성격이 달라 수치를 옮겨 비교하지 않는다
+- 휴대폰 입력은 데스크톱 앱이 대신하지 못하므로 모바일 받아쓰기 앱을 따로 고른다
+- 받아쓰기도 식별자와 경로를 잘못 적을 수 있으므로 긴 설명은 말로, 파일 경로와 명령은 타이핑으로 넣는다
+
 ## 운영 체크포인트
 
 - 전사문에는 화면의 슬라이드와 코드가 없다. 발표가 화면 위주면 핵심 내용이 빠진다.
@@ -134,9 +142,13 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 - [NAVER Cloud, CLOVA Speech](https://www.ncloud.com/product/aiService/clovaSpeech)
 - [NAVER Cloud, CLOVA Speech 장문 인식 API](https://api.ncloud-docs.com/docs/ai-application-service-clovaspeech-longsentence)
 - [RTZR, 요금 안내](https://developers.rtzr.ai/docs/pricing/)
+- [Handy — GitHub, cjpais](https://github.com/cjpais/Handy)
+- [음성 입력 앱은 Handy와 Qwen3-ASR로 — Threads, integer.han](https://www.threads.com/@integer.han/post/DbxoyZWm4mq)
+- [에이전트용 음성 입력 도구 질문 — Threads, integer.han](https://www.threads.com/@integer.han/post/DbwbdvMj2aO)
 
 ## 관련 문서
 
 - [[Video-Transcript-Pipeline|영상 전사 파이프라인 구현]]
 - [[Claude-Code-Business-Automation|Claude Code 비즈니스 자동화]]
 - [[LLM-Generation-Mechanics-Context-and-Agent|LLM Context와 환각과 에이전트]]
+- [[Claude-Code-Customization|Claude Code 커스터마이즈 (Voice Mode)]]

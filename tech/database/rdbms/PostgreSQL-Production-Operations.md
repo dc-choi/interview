@@ -77,6 +77,16 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 
 큐 설계에는 결정적인 정렬 기준, 상태 전이, lease 또는 timeout, retry, 독립적인 멱등 처리와 관측 지표가 함께 필요하다. row lock을 피하더라도 필요한 table-level lock은 별도로 획득될 수 있다.
 
+### PostgreSQL 기반 큐 라이브러리
+
+직접 만든 `SKIP LOCKED` 큐 대신 PgQ 계열 라이브러리를 쓸 수도 있다. Skype의 PgQ를 다시 포장한 PgQue는 C 확장 없이 SQL 파일 하나로 설치하고 pg_cron(또는 외부 스케줄러)이 주기적으로 tick 함수를 호출하는 구조라, 확장 설치가 제한된 관리형 PostgreSQL에서도 쓸 수 있다고 README가 밝힌다.
+
+- 별도 브로커 없이 업무 트랜잭션 안에서 이벤트를 넣을 수 있어 데이터 변경과 발행이 함께 커밋되거나 함께 롤백된다. 단 보내기, tick, 받기는 서로 다른 트랜잭션이어야 한다.
+- 행 단위 `DELETE` 대신 snapshot 기반 batch와 테이블 회전을 써서 큐 테이블의 dead tuple과 VACUUM 부담을 줄이는 설계다. 전달은 at-least-once라 소비자는 멱등해야 한다.
+- 지연은 tick 주기에 묶인다. README 기준 기본 tick은 100ms이고 한 자릿수 ms 전달이 최우선이면 맞지 않는 도구라고 적는다. 대규모 실시간 스트림과 여러 시스템의 이벤트 허브는 Kafka 같은 브로커의 영역이다.
+
+선택 조건은 이미 PostgreSQL을 운영 중이고, 브로커 운영 부담 없이 트랜잭션 원자성이 필요한 큐인가다. 브로커 비교는 [[Messaging-Broker-Comparison|메시징 브로커 비교]], MySQL에서 같은 문제를 푸는 방식은 [[MySQL-Job-Queue|MySQL Job Queue]]를 본다.
+
 ## 파티셔닝
 
 - partition key는 주된 `WHERE` 조건과 retention 정책을 기준으로 고른다. partition pruning은 인덱스 유무가 아니라 partition bound로 불필요한 partition을 제외한다.
@@ -129,6 +139,8 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - [[Backfill-Resource-Isolation|데이터 백필과 자원 격리 전략]]
 - [[Backup-Restore|백업과 복구 전략]]
 - [[DB-Incident-Triage|DB 장애 분석 방법론]]
+- [[Messaging-Broker-Comparison|메시징 브로커 비교]]
+- [[MySQL-Job-Queue|MySQL Job Queue]]
 - [[PII-Masking|로그의 민감정보 마스킹]] — 감사와 마스킹은 별개의 방어선
 
 ## 출처
@@ -146,4 +158,6 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - [The startup's Postgres survival guide, Hatchet](https://hatchet.run/blog/postgres-survival-guide)
 - [스타트업의 Postgres 생존 가이드 (토론) — GeekNews](https://news.hada.io/topic?id=31706)
 - [pgBackRest User Guide — pgBackRest](https://pgbackrest.org/user-guide.html)
+- [PgQue README — GitHub, NikolayS](https://github.com/NikolayS/pgque)
+- [PostgreSQL 기반 큐 라이브러리 pgque — Threads, minorabanggu](https://www.threads.com/@minorabanggu/post/DX_VPnTmYHQ)
 - [Amazon RDS User Guide, Multi-AZ DB instance deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html)
