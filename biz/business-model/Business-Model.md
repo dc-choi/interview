@@ -148,3 +148,5 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - [[Market-Analysis|시장 분석]]
 - [[Category-Expansion|카테고리 확장과 카니발리제이션]]
 - [[Kinolights-Domain-OTT-Business-Models|OTT 수익 모델 (SVOD, AVOD, TVOD)]]
+- [[Live-Ops-Service-Model|라이브옵스와 서비스형 제품 모델]]
+- [[Five-Parts-of-Business|비즈니스의 5요소와 제1원칙 진단]] — 사업의 고장 구간 진단과 원가 분해

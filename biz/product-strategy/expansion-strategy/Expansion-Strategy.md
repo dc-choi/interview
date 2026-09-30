@@ -17,6 +17,8 @@ aliases: ["Growth and Expansion Strategy", "Expansion Strategy", "성장과 확�
 - [x] [[D2C-Brand-Strategy|D2C와 브랜드 데이터 전략]] — 플랫폼 위협 4가지, 데이터 3축(상품, 주문, 사용)
 - [x] [[Metoo-Strategy|Me-too 서비스 기획]] — 멘탈모델 보존과 자산 기반 차별화, 프로세스 단계도
 - [x] [[Platform-Power|플랫폼 파워]] — DAU 함정, 슈퍼앱의 환경 의존, 생태계 리트머스 테스트, 구조조정 조건
+- [x] [[Business-Phone-Line|사업용 전화번호 분리]] — 클라우드 전화와 통신사 회선, 팀 공유와 CRM 연동, 문자 인증 한계, 통화 녹음 법규
+- [x] [[Corporate-New-Business-Pitfalls|기업 내 신사업 조직의 함정]] — 조직과 평가 체계 불일치, 기능 간 동시 가동, 조직 설계 선택지, 합류 전 체크리스트
 
 ## 관련 문서
 - [[제품전략(ProductStrategy)|제품 전략 (상위 인덱스)]]

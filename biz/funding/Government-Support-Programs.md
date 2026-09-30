@@ -158,5 +158,6 @@ aliases: ["Government Support Programs", "정부 지원사업", "정부지원금
 - [[Government-Grant-Business-Plan|정부 지원사업 사업계획서]]
 - [[Grant-Search-Channels|지원사업 공고 탐색 채널]]
 - [[Government-Support-Terms|지원사업 공고 용어]]
+- [[Startup-Tax-Reduction-Same-Business-Test|창업중소기업 세액감면의 같은 종류 사업 판단]]
 - [[Business-Model|비즈니스 모델과 현금흐름]]
 - [[Bootstrapped-Single-Product-Growth|현금에 맞춘 성장 속도]]

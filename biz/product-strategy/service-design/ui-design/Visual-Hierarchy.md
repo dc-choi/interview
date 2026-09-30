@@ -27,6 +27,20 @@ aliases: ["Visual Hierarchy", "시각적 위계"]
 - **정보 유형은 형태로 구분** — 같은 그리드 안에서 성격이 다른 항목(브랜드 vs 상품)은 도형 자체를 다르게 하면 라벨 없이도 계층이 읽힌다.
 - **커머스 상세 페이지의 정석** — 구매 결정 직결 정보(할인율, 가격)를 크기와 색으로 최상위 위계에 둔다.
 
+## 대시보드 정보 위계
+
+SaaS 대시보드처럼 정보가 빽빽한 화면은 위 5가지 중 크기와 색만 과하게 쓰기 쉽다. 생성 AI로 UI를 만들면 넉넉한 패딩, 강한 보더, 배경색 대비로 영역을 나누는 경향이 있어 모든 카드가 같은 무게로 보이고 위계가 흐려진다. 이때 AI에게 줄 디자인 지침은 다음 형태가 된다.
+
+- 영역 구분은 보더, 패딩, 배경색을 최소화하고 여백과 글자 크기, 굵기로 위계를 표현한다.
+- 강조색은 화면의 핵심 CTA에만 쓰고, 나머지 정보의 중요도는 그레이스케일 안의 명도 차이로 나눈다.
+- 한국어 텍스트는 영문 기준 행간과 자간을 그대로 쓰지 말고 조정한다. 이탤릭 글꼴이 없는 한글 글꼴에 이탤릭을 지정하면 브라우저가 글자를 기울여 합성할 수 있어 어색해지므로, 강조는 굵기로 대신한다.
+
+이 지침은 실무 휴리스틱이다. 결과 화면에서 사용자가 가장 먼저 봐야 할 숫자가 실제로 먼저 읽히는지 확인한다.
+
+### 타이포그래피
+
+무료 영문 서체 선택도 첫인상에 영향을 준다. Inter는 UI용으로 널리 쓰이며 SIL Open Font License 1.1로 배포된다. 다른 서체도 배포처(Google Fonts 또는 제작사 사이트)의 라이선스에서 상업 이용, 수정, 웹폰트 자체 호스팅 허용 여부를 먼저 확인한다.
+
 ## 면접 체크포인트
 
 - 어드민, 백오피스 화면 설계에도 그대로 적용된다 — 운영자가 가장 자주 확인하는 정보와 위험한 액션(삭제, 환불 승인)의 위계, 대비 설계.
@@ -34,6 +48,10 @@ aliases: ["Visual Hierarchy", "시각적 위계"]
 
 ## 출처
 - [시각적 위계를 만드는 5가지 방법 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/49)
+- [MDN, font-synthesis-style](https://developer.mozilla.org/en-US/docs/Web/CSS/font-synthesis-style)
+- [Inter, LICENSE.txt (SIL Open Font License 1.1)](https://github.com/rsms/inter/blob/master/LICENSE.txt)
+- [바이브코딩 대시보드 UI를 위한 디자인 지침 — Threads, inblogai](https://www.threads.com/@inblogai/post/DY4CATRk3I7)
+- [해외에서 쓰이는 무료 영문 폰트 5개 — Threads, pageone.designer](https://www.threads.com/@pageone.designer/post/DcPxsgNoNgS)
 
 ## 관련 문서
 - [[Service-Design-Principles|서비스 설계 원칙 (GOV.UK)]] — 일관성, 디자인 시스템

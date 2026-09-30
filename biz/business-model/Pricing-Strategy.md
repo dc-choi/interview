@@ -35,6 +35,20 @@ Freemium 전환율은 활성 사용자 정의, 관찰 기간, 고객 규모, tri
 - **디코이 효과 (Decoy):** 한 대안보다 명확히 열등한 선택지를 추가하면 그 대안의 선택 비율이 높아질 수 있다. 중간 요금제를 고르게 만드는 법칙은 아니다
 - **지불 의향 (WTP) 조사:** Van Westendorp 가격 민감도 분석, 컨조인트 분석
 
+### 끝자리 가격(9,900원과 10,000원)이 통하는 조건
+
+9로 끝나는 단수가격은 맨 앞자리가 바뀌는 경계($2.99와 $3.00)에서 더 싸게 인식될 수 있다(left-digit effect). 효과는 구매 동기에 따라 달라진다.
+
+| 구매 유형 | 끝자리 선택 | 이유 |
+|---|---|---|
+| 필요해서 사는 실용재 | 차이가 작다 | 가격보다 필요가 결정을 이끈다 |
+| 죄책감이 있는 충동 구매 | 9로 끝나는 가격 | 조금이라도 싸 보이는 가격이 살 핑계가 된다 |
+| 축하, 자기 보상 구매 | 딱 떨어지는 가격 | 구매가 이미 정당화돼 있으면 반올림 가격이 더 좋은 느낌을 준다 |
+
+국내 실험(박지혜, 양윤, 2017)에서 헤어드라이기(실용재)는 19,900원과 20,000원의 구매의도 차이가 작았고, 치킨세트(쾌락재)는 단수가격에서 구매의도가 더 높았으며 가격의식이 높은 사람에게서 효과가 컸다. 조각케이크 5,900원과 6,000원 비교에서는 정당화할 수 없는 충동 상황에서 단수가격이, 면접 합격을 자축하는 상황에서 라운드가격이 구매의도를 높였다. 20대 여대생 대상 설문 시나리오 실험이라 실제 매장 판매로 일반화하지 않는다. 해외 연구에서도 감정이 이끄는 구매에는 딱 떨어지는 가격, 이성적 구매에는 정밀한 가격이 유리하다는 결과가 있다(Wadhwa, Zhang, 2015).
+
+적용할 때는 상품이 필요, 핑계, 축하 중 어디에 가까운지로 표기를 고른다. 모든 가격을 9로 끝내면 오히려 역효과라는 실무 의견이 있고, 단수가격이 품질을 낮게 보이게 할 수 있다는 연구(Stiving, 2000, 위 국내 논문에서 재인용)도 있으므로, 자사 결제 데이터로 A/B 비교한다.
+
 ## 외주와 전문 서비스의 견적
 
 가격을 비교하려면 먼저 제공할 결과와 범위를 맞춘다. 같은 홈페이지라도 고객이 완성된 콘텐츠를 제공하는 경우와 제작자가 글과 이미지 정리까지 맡는 경우는 투입이 다르다. 다음은 원가, 고객 가치와 범위 관리 원칙을 서비스 견적에 적용한 판단 틀이다.
@@ -87,6 +101,10 @@ Q. 가격 정책은 어떻게 설계했는가?
 - [Stripe, 가격 모델과 Freemium](https://stripe.com/resources/more/pricing-models-explained-types-of-pricing-models-and-when-to-use-them)
 - [Judgment under Uncertainty: Heuristics and Biases — Tversky, Kahneman](https://pubmed.ncbi.nlm.nih.gov/17835457/)
 - [Adding Asymmetrically Dominated Alternatives — Huber, Payne, Puto](https://doi.org/10.1086/208899)
+- [단수가격, 쾌락재, 가격의식, 구매정당화에 따른 구매의도 — 박지혜, 양윤 (한국심리학회지: 소비자 광고, 2017)](https://doi.org/10.21074/kjlcap.2017.18.3.417)
+- [Penny Wise and Pound Foolish: The Left-Digit Effect in Price Cognition — Thomas, Morwitz](https://doi.org/10.1086/429600)
+- [This Number Just Feels Right: The Impact of Roundedness of Price Numbers on Product Evaluations — Wadhwa, Zhang](https://academic.oup.com/jcr/article-abstract/41/5/1172/2962090)
+- [9,900원과 10,000원, 끝자리 가격 효과의 조건 — Threads, groble.im](https://www.threads.com/@groble.im/post/DdbYC9cE9YS)
 
 ## 관련 문서
 - [[Business-Model|비즈니스 모델]]

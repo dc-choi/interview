@@ -147,6 +147,10 @@ aliases: ["Bootstrapped Single Product Growth", "한 제품 부트스트랩 성�
 - 성장 속도를 늦출 수 있는데 고객 경험을 훼손하면서 수요를 모두 받는다.
 - 한 고객, 채널, 플랫폼과 창업자에게 모든 위험을 집중한다.
 - 제품을 정체성과 동일시해 재포지셔닝이나 종료 신호를 무시한다.
+- 법률, 세무, 계약과 기술 한계를 혼자 판단한다. 실행은 혼자 하더라도 이런 판단은 전문가 비용을 내는 편이 시간과 되돌리는 비용을 아낀다.
+- 초기 자본을 사무실과 보여주기용 지출에 쓴다. 공간과 외관이 판매에 직접 작용하는 업이 아니라면 제품 개선과 고객 도달에 먼저 쓴다.
+- 머릿속 가설을 사실로 믿는다. 고객을 더 만나 가설이 틀렸다는 증거를 찾으러 간다([[Solo-Product-Market-Validation|1인 제품 시장 검증]]).
+- 건강과 생활을 소진해 번아웃에 이른다. 부트스트랩은 긴 기간을 버티는 경기라 창업자의 지속 가능한 작업량이 곧 사업의 운영 한도다.
 
 ## 근거 범위
 
@@ -167,6 +171,8 @@ aliases: ["Bootstrapped Single Product Growth", "한 제품 부트스트랩 성�
 - [Spolsky's four pillars of organic growth — Balsamiq](https://balsamiq.com/blog/four-pillars/)
 - [Set Boundaries — Basecamp, Shape Up](https://basecamp.com/shapeup/1.2-chapter-03)
 - [The SaaS business model — Stripe Atlas, Patrick McKenzie](https://stripe.com/guides/atlas/business-of-saas)
+- [1인 사업가의 실무 놓기 아이러니 — Threads, youngrich9909](https://www.threads.com/@youngrich9909/post/Dd3mmptlHjM)
+- [1인 창업자가 하지 말아야 할 5가지 — Threads, kimjinhan_jjin](https://www.threads.com/@kimjinhan_jjin/post/DWxlEJuEtIO)
 
 ## 관련 문서
 

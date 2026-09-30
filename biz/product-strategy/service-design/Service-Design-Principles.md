@@ -1,6 +1,7 @@
 ---
 tags: [business, product, design, ux, accessibility]
 status: done
+verified_at: 2026-09-30
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Service Design Principles", "서비스 설계 원칙", "GOV.UK Design Principles"]
 ---
@@ -43,6 +44,8 @@ aliases: ["Service Design Principles", "서비스 설계 원칙", "GOV.UK Design
 
 서비스가 커지면 담당자와 페이지가 늘며 일관성이 무너진다. 컴포넌트와 톤을 묶은 디자인 시스템이 해법이고, GOV.UK 디자인 시스템은 공개돼 있어 어드민, 백오피스 기획의 참고 자료로 바로 쓸 수 있다 — 검증된 공공 표준이라 개발자 설득도 쉽다.
 
+국내 공공 레퍼런스로는 행정안전부의 범정부 UI/UX 디자인시스템 KRDS(krds.go.kr)가 있다. 2025년 1월 정식 개시됐고 디자인 원칙, 스타일, 컴포넌트, 기본 패턴과 서비스 패턴을 디자인 토큰 기반으로 정리한다. 2026-09 확인 기준으로 디지털 정부서비스 UI/UX 가이드라인(2025년 8월판), Figma 라이브러리 v1.0.0, HTML Component Kit v1.1.0(2026-01 갱신)과 React, Vue Storybook을 제공한다. 한국어 공공 서비스의 컴포넌트와 서비스 패턴을 학습하는 교재와 어드민, 백오피스 기획의 참고 자료로 쓸 수 있다. 다만 공공 서비스 기준이라 브랜드 표현과 상업 서비스의 전환 설계는 따로 판단하고, 자체 점검표는 HWP로 배포된다.
+
 ### 적게 하라
 
 모든 것을 직접 만들지 않는다. 공통 기능은 재사용 가능한 플랫폼과 API로 제공하고 각 팀은 고유 문제에 집중한다 — 플랫폼 팀, 공통 컴포넌트 사고의 원형.
@@ -76,6 +79,10 @@ aliases: ["Service Design Principles", "서비스 설계 원칙", "GOV.UK Design
 - [GOV.UK, Manage existing content](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/plan-manage-content/manage-existing-govuk-content/) — 콘텐츠 검토와 갱신 책임의 참고 기준. 위 표는 정보 서비스에 적용한 설계 질문이다.
 - [영국 정부에게 배우는 서비스 기획 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/38)
 - [쌓아놓기에서 미니멀리스트 기획자되기 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/384)
+- [KRDS, KRDS 소개](https://www.krds.go.kr/html/site/utility/utility_01.html)
+- [KRDS, 리소스 다운로드](https://www.krds.go.kr/html/site/outline/outline_05.html)
+- [행정안전부, 범정부 UI/UX 디자인시스템(KRDS) 정식 개시 보도자료 (2025-01-15)](https://www.mois.go.kr/frt/bbs/type010/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000008&nttId=115144)
+- [한국 정부 디자인시스템 KRDS 소개 — Threads, vibematfia](https://www.threads.com/@vibematfia/post/DNMvGkCyNyo)
 
 ## 관련 문서
 - [[User-Feedback|사용자 피드백 관리]] — 사용자 니즈 우선, 데이터 기반의 실행 방법

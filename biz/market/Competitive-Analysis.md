@@ -78,6 +78,16 @@ Porter's Five Forces(외부)와 SWOT(내부+외부)는 서로 다른 관점을 �
 2. **질문을 먼저 정의한다** — 일기 기능이 필요하다(모호) 수준이 아니라, 사용자가 빠르게 감정 일기를 작성하려면?(구체) 수준으로 알고 싶은 것을 정하고 시작해야 조사에 방향이 생긴다.
 3. **표본 수를 질문에 맞춘다** — 4~5개는 초기 탐색을 시작하는 실무 휴리스틱일 뿐 충분성 기준이 아니다. 여러 서비스에서 반복된 패턴도 곧바로 업계 표준이 되지는 않으며, 사용자 조사와 성과 데이터로 가설을 검증한다.
 
+### 매일 볼 수 있는 공개 도구
+
+| 도구 | 보는 것 | 해석 한계 |
+|---|---|---|
+| Meta 광고 라이브러리 | 경쟁사가 Meta 제품에 집행 중인 광고 소재 | 유형과 무관하게 현재 게재 중인 광고만 검색된다. 종료된 광고는 이슈, 선거, 정치 광고(7년 보관)와 영국, EU에 게재된 광고 등 일부만 남는다. 성과와 집행비는 일반 광고에서 보이지 않는다 |
+| Google Trends | 검색 관심의 상대 추이 | 전체 검색 대비 비율을 0~100으로 정규화한 표본 값이라 절대 검색량이 아니다 |
+| SimilarWeb | 경쟁 사이트의 트래픽 규모와 유입 경로 | 외부 추정치다. 절대값보다 같은 도구 안의 상대 비교와 추세로 본다 |
+
+도구 자체보다 매일 짧게 보는 습관이 변화를 먼저 알아채게 한다. 다만 오래 집행된 광고가 곧 수익성 높은 광고라는 증거는 아니므로, 아래 공개 자료가 증명하는 범위의 원칙을 똑같이 적용한다. 광고 운영 구조는 [[Meta-Paid-Ads|Meta 유료 광고 실행 구조]] 참조.
+
 ### 역기획 (기능에서 사업 의도 역추론)
 
 벤치마킹의 심화 형태 — 공개된 기능 변화에서 그 뒤의 사업적 필요를 역으로 추론하는 훈련. 요령 두 가지:
@@ -122,6 +132,9 @@ Q. 경쟁사를 어떻게 분석했는가?
 - 인접 경쟁자(브랜치스) 벤치마크 + 대체재(엑셀) 위협 대응
 
 ## 출처
+- [Facebook Help Center, What is the Meta Ad Library and how do I search it?](https://www.facebook.com/help/259468828226154)
+- [Meta Business Help Center, About the Meta Ad Library](https://www.facebook.com/business/help/2405092116183307)
+- [Google Trends Help, FAQ about Google Trends data](https://support.google.com/trends/answer/4365533)
 - [SBA, Plan your business](https://www.sba.gov/counseling/plan-your-business/) — 기존 자료 조사와 직접 고객 조사를 함께 쓰는 시장조사 접근. 자료별 증거 범위 표는 조사 과정에서 정리한 해석 원칙이다.
 - [브랜치스 공식 페이지](https://branches.team/)
 - [서비스 기획자를 위한 시장 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/51)
@@ -129,9 +142,11 @@ Q. 경쟁사를 어떻게 분석했는가?
 - [사업적 필요성이 반영된 서비스 기획 역기획 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/29)
 - [넷플릭스의 경쟁사가 라면회사인 이유 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/31)
 - [뱅크샐러드는 왜 유전자 검사 키트를 제공할까 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/33)
+- [마케터가 매일 보는 사이트 5개 — Threads, gomjooi.master](https://www.threads.com/@gomjooi.master/post/DX9Bl2ymFOQ)
 
 ## 관련 문서
 - [[Market-Analysis|시장 분석]]
 - [[GTM-Strategy|GTM 전략]]
 - [[Commerce-Revenue-Formula|이커머스 수익 공식]]
 - [[Service-Design|서비스 설계와 UX 패턴]] — UX 벤치마킹으로 수집한 패턴의 정리처
+- [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]] — AI가 결과물을 범용화할 때 해자가 옮겨 가는 곳

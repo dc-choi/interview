@@ -94,6 +94,18 @@ Visa, Mastercard 같은 카드 네트워크는 발급사도 카드 제조사도 
 
 포인트 보상은 페이 재사용과 추가 거래 데이터를 유도할 수 있다. 회원정보, 구매 상품, 결제처와 결제 패턴을 결합하면 민감한 생활 프로파일이 될 수 있으므로 목적 제한, 최소 수집, 보유기간과 이용자 권리를 함께 설계해야 한다. 적법하게 사용할 수 있는 데이터만 개인화([[Personalization-Recommendation|개인화와 추천]])의 원료가 된다.
 
+## 디지털 상품 판매와 MoR
+
+Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주체다. PG나 결제 프로세서를 쓰면 판매자 자신이 판매 주체라 국가별 부가가치세와 판매세 등록, 신고, 환불과 차지백을 직접 떠안는다. MoR 플랫폼은 상품을 넘겨받아 구매자에게 파는 구조라 결제 처리, 세금 계산과 징수와 납부, 환불과 차지백, PCI 준수를 플랫폼이 맡고 판매자는 정산금을 받는다(2026-09-29 각 공식 문서 기준).
+
+- Paddle은 SaaS, 모바일 앱, AI와 디지털 상품 회사를 위한 MoR로, Lemon Squeezy도 MoR로 스스로를 정의한다. Gumroad는 2025-01-01부터 모든 판매에서 MoR로 판매세와 VAT를 징수하고 납부한다. 그래서 플랫폼을 고를 때는 MoR 여부보다 구독 결제, 라이선스 관리, 결제 API처럼 필요한 기능과 수수료를 비교한다.
+- 1인 기업이 해외 구매자에게 디지털 상품을 팔 때 국가별 세금 등록 부담을 줄이는 것이 MoR의 핵심 가치다. 판매자의 소득세 신고는 그대로 남는다.
+- 대가는 수수료와 통제권이다. 수수료에 세무와 분쟁 처리 비용이 들어 있으므로 PG 요율과 숫자만 비교하지 않고 각 가격 페이지로 확인한다. 결제 화면, 환불 판단, 구매자 데이터와 지원 결제수단은 플랫폼 정책을 따른다. 매출이 커지면 직접 결제와 세무 대응 비용과 다시 비교한다.
+
+### PG 없이 계좌이체 받기
+
+소액 판매나 사이드 프로젝트는 PG 계약 대신 무통장 입금을 받고, 입금 알림을 받아 주문과 자동으로 맞춰 주는 입금 확인 자동화 서비스(예: 페이액션, 2026-09-30 공식 사이트 기준 PG 가입, 심사와 결제 수수료 없음을 내세움)를 붙일 수 있다. 카드 결제를 원하는 구매자는 받을 수 없고, 입금자명과 금액으로 매칭하므로 동명이인과 금액 불일치는 수동 확인이 필요하다. 환불은 카드 취소가 아니라 계좌로 돌려보내는 별도 처리이고, 현금영수증 발급 요청 대응과 통신판매업자의 구매안전서비스(에스크로) 적용 여부도 판매자가 직접 확인한다.
+
 ## 면접 체크포인트
 
 - 결제 시스템 설계 질문에서 승인과 매입의 분리(취소 vs 환불 분기), PG 연동의 멱등성(중복 승인 방지)을 짚으면 도메인 이해가 드러난다.
@@ -109,6 +121,12 @@ Visa, Mastercard 같은 카드 네트워크는 발급사도 카드 제조사도 
 - [Visa와 Mastercard는 무슨 일을 할까? 카드 네트워크 입문 — GeekNews](https://news.hada.io/topic?id=33453)
 - [PCI Security Standards Council — PCI DSS](https://www.pcisecuritystandards.org/standards/pci-dss/)
 - [EMVCo — Payment Tokenisation](https://www.emvco.com/emv-technologies/payment-tokenisation/)
+- [Paddle — What is Paddle?](https://developer.paddle.com/get-started/how-paddle-works/)
+- [Lemon Squeezy — Merchant of Record](https://docs.lemonsqueezy.com/help/payments/merchant-of-record)
+- [Gumroad — Gumroad is becoming a Merchant of Record](https://gumroad.com/blog/p/gumroad-is-becoming-a-merchant-of-record-more-updates)
+- [글로벌 1인 기업 인프라 플랫폼 — binx_lab (Threads)](https://www.threads.com/@binx_lab/post/DZJ1-TzGFHI)
+- [사이드 프로젝트 무통장 입금 자동 확인 — classbinu (Threads)](https://www.threads.com/@classbinu/post/DNNf8XwpD1b)
+- [PayAction — 페이액션](https://payaction.app/)
 
 ## 관련 문서
 - [[Commerce-Order|커머스 주문 도메인]] — 결제 프로세스, 빌링키

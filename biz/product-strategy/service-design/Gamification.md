@@ -73,3 +73,4 @@ aliases: ["Gamification", "게이미피케이션"]
 - [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]]
 - [[Commerce-Member|커머스 회원 도메인]]
 - [[User-Feedback|사용자 피드백 관리]]
+- [[Live-Ops-Service-Model|라이브옵스와 서비스형 제품 모델]] — 게임 서비스 전체의 재접속, 지속, 결제 구조

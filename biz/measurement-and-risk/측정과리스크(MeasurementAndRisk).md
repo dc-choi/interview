@@ -11,4 +11,5 @@ aliases: ["Measurement and Risk", "측정과 리스크", "Analytics", "분석", 
 
 ## 목차
 - [x] [[Metrics-Framework|지표 설계 & North Star Metric (AARRR, 증분 측정, 업무 날짜와 제품 사용 시각)]]
+- [x] [[App-Analytics-Event-Tracking|앱 분석과 이벤트 설계 (GA4와 Firebase, 권장 이벤트, 퍼널과 코호트, 테스트 데이터 오염)]]
 - [x] [[Risk-Management|리스크 관리]]

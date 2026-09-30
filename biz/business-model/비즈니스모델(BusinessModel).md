@@ -14,3 +14,8 @@ aliases: ["Business Model Index"]
 - [x] [[Business-Model|비즈니스 모델 & 수익 구조]]
 - [x] [[Pricing-Strategy|가격 정책 설계]]
 - [x] [[Healthcare-B2B-Solutions|의료 B2B 솔루션의 사업 구조와 시장 진입]]
+- [x] [[Live-Ops-Service-Model|라이브옵스와 서비스형 제품 모델]] — 패키지형과 서비스형, 재접속, 지속, 결제 이유와 운영 조직
+- [x] [[Five-Parts-of-Business|사업의 다섯 부분]] — 가치 창출, 마케팅, 판매, 가치 전달, 재무로 막힌 곳 진단, 제1원칙 분해, 불완전한 첫 버전
+- [x] [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]] — 발주자 계약 전 점검표, 권리 귀속과 하자담보 확인, 제안서 구성, 첫 고객 확보 순서
+- [x] [[App-Monetization-Models|앱 수익 모델]] — 앱 수익 모델 10종 비교, 혼합 모델, 광고 회수 한계, 스토어 수수료 조건, 앱 매각 시장
+- [x] [[Low-Capital-Service-Business|소자본 생활 서비스 사업과 아이디어 검증]] — 귀찮음 대행의 정기 구독화, 예산 단계별 선택지, 아이디어 반론 체크리스트

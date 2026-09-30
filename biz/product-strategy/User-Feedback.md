@@ -23,6 +23,22 @@ Noriaki Kano(1984)가 제안한 고객 만족도 분류 프레임워크이다.
 
 기대치가 바뀌면 Attractive 기능이 One-dimensional 또는 Must-be로 이동할 수 있다. 모든 기능이 같은 순서로 이동하는 것은 아니다.
 
+## 요청을 다 반영하면 안 되는 이유
+
+사용자 요청은 해결책의 형태로 들어오지만 그 뒤의 문제는 따로 있다. 요청을 다루는 방식은 세 단계로 나눌 수 있다.
+
+| 방식 | 하는 일 | 한계 |
+|---|---|---|
+| Output-driven | 들어온 요청을 모두 만든다 | 기능은 늘지만 핵심 지표가 움직이지 않을 수 있다 |
+| Prioritization-driven | 요청 일부만 골라 만든다 | 효율은 좋아도 근본 원인은 남는다 |
+| Problem-driven | 문제를 재정의하고 흐름을 다시 짠다 | 문제 정의가 틀리면 전체가 빗나가므로 행동 데이터로 확인해야 한다 |
+
+온보딩 예시: 툴팁, 버튼 색, 진행 표시줄, 환영 모달 요청을 모두 반영해도 활성화가 거의 오르지 않는다면, 문제를 사용자가 가치를 이해하기 전에 이탈한다로 재정의한다. 그러면 해결책은 가입 전에 결과를 먼저 보여주기, 첫 1분 안에 핵심 기능을 쓰게 하기처럼 흐름 자체를 바꾸는 쪽으로 나온다.
+
+- 자잘한 요청 여러 개가 하나의 문제를 가리킬 수 있으므로 요청을 모아 공통 패턴을 찾는다. [[#JTBD 인터뷰 기법|JTBD]]로 요청 뒤의 진전을 묻는다.
+- 결제 제안의 타이밍도 같은 문제 안에 있다. 가치를 경험하기 전의 결제 요구는 이탈 원인이 될 수 있다.
+- 기회와 해결책을 분리하는 [[#Continuous Discovery (Teresa Torres)|Continuous Discovery]]의 기회 해결 트리와 같은 원리다.
+
 ## 기능 우선순위 프레임워크
 
 ### RICE
@@ -116,8 +132,10 @@ Q. 사용자 피드백을 어떻게 관리하는가?
 - [Product Talk, Opportunity Solution Trees](https://www.producttalk.org/opportunity-solution-trees/)
 - [Nielsen Norman Group, Interviewing Users](https://www.nngroup.com/articles/interviewing-users/)
 - [승무원을 위한 서비스 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/60)
+- [유저 말을 다 들으면 망하는 이유 — Threads, april__pm](https://www.threads.com/@april__pm/post/DW_XNu3mME0)
 
 ## 관련 문서
+- [[Product-Owner-Role|PO(Product Owner)의 역할과 책임]]
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
 - [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]
 - [[Risk-Management|리스크 관리]]

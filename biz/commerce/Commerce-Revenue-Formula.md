@@ -58,6 +58,21 @@ aliases: ["Commerce Revenue Formula", "이커머스 수익 공식"]
 
 주의 — 고단가 카테고리 확장이 곧 거래액 증가는 아니다. 기존 카테고리의 수요 환경(내식 수요 감소 등) 같은 거시 변수가 총 거래액과 매출을 흔든다. 커뮤니티가 여정 전체에서 작동하는 메커니즘은 [[Community-Strategy|커뮤니티 전략]] 참조.
 
+## 비수기 대응
+
+비수기는 손님이 없는 시기가 아니라 덜 오는 시기다. 방문수가 줄어든 상태에서 흔한 두 대응은 수익 공식의 다른 변수를 망가뜨린다.
+
+- **할인**: 줄어든 방문을 되살리려고 가격을 내리면 원래 오던 단골까지 싸게 사게 된다. 방문수는 조금 늘어도 객단가와 마진이 전체 고객에게서 함께 떨어진다.
+- **버티기**: 아무것도 바꾸지 않으면 고정비가 줄어든 매출을 그대로 깎아 현금만 빠져나간다.
+
+대신 변수를 나눠서 본다.
+
+- 방문수는 신규 유입보다 재방문으로 채운다. 새 손님 유치보다 이미 오는 손님이 다시 올 이유(얼굴을 기억하는 응대, 다음 방문에 쓸 작은 혜택)를 만드는 편이 비수기에 효율이 높다.
+- 전환과 객단가를 손보는 작업을 한다. 메뉴나 상품 구성 재편, 동선 개선, 미뤄 둔 수리와 정비는 성수기에 하기 어려운 일이다.
+- 현금 계획을 시즌 사이클에 맞춘다. 성수기 잉여 현금으로 비수기 고정비를 버티도록 연 단위로 자금을 배분한다.
+
+이 절은 오프라인 자영업 운영 경험에서 나온 경험칙이며 업종별 효과를 측정한 근거는 아니다.
+
 ## 면접 체크포인트
 
 - 기능이나 정책 제안을 말할 때 거래액, 매출과 비용 중 어느 변수를 움직이는지로 설명하면 비즈니스 언어가 된다 — 검색 개선은 전환율, 추천은 객단가(교차 구매), 멤버십은 방문수(재방문)와 전환율.
@@ -70,9 +85,11 @@ aliases: ["Commerce Revenue Formula", "이커머스 수익 공식"]
 - [Post-implementation Review of IFRS 15 Revenue from Contracts with Customers — IFRS Foundation](https://www.ifrs.org/content/dam/ifrs/project/pir-ifrs-15/rfi-iasb-2023-4-pir-ifrs-15.pdf)
 - [Shopify, Sales reports](https://help.shopify.com/en/manual/reports-and-analytics/shopify-reports/report-types/default-reports/sales-report)
 - [Compare and Contrast Variable and Absorption Costing — OpenStax, Principles of Accounting](https://openstax.org/books/principles-managerial-accounting/pages/6-5-compare-and-contrast-variable-and-absorption-costing)
+- [자영업 비수기 대응 — taek_ceo (Threads)](https://www.threads.com/@taek_ceo/post/DdTaBDhm9jo)
 
 ## 관련 문서
 - [[Commerce-Overview|커머스 도메인 개요]]
 - [[Commerce-Korea-History|한국 이커머스 역사]]
 - [[Commerce-Order|커머스 주문 도메인]]
 - [[Metrics-Framework|지표 설계]]
+- [[Marketplace-Seller-Launch|오픈마켓 셀러 첫 상품 출시 절차]]

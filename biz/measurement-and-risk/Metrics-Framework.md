@@ -113,6 +113,7 @@ Q. 어떤 지표를 추적하고 왜 그 지표를 선택했는가?
 - [Amplitude, Lifecycle: track the growth of your product's user base](https://www.amplitude.com/docs/analytics/charts/lifecycle/lifecycle-track-growth)
 
 ## 관련 문서
+- [[App-Analytics-Event-Tracking|앱 분석과 이벤트 설계 (GA4와 Firebase)]]
 - [[PMF-Funnel|PMF 검증 & 전환 퍼널]]
 - [[Data-Driven-Decision|데이터 기반 의사결정]]
 - [[Commerce-Pricing|커머스 가격 도메인]] — 쿠폰의 비용 효과 측정
