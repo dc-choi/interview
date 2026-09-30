@@ -25,6 +25,10 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 
 **72의 법칙**으로 직관을 잡을 수 있다. 일정한 양의 연 수익률을 가정하면 72를 수익률로 나눈 값이 원금이 두 배가 되는 햇수의 근사치다. 연 7%면 약 10년, 연 4%면 약 18년이다. 이 계산은 수익률, 세금, 비용이 일정하다는 단순화다. 일찍 시작하면 복리 기간은 길어지지만, 이후 납입액과 실제 수익률이 다르면 늦게 더 많이 넣은 투자보다 항상 커지는 것은 아니다.
 
+**종잣돈이 작을 때는 수익률보다 납입액이 결과를 가른다.** 원금 1천만원에서 수익률을 10%p 올려도 한 해 차이는 100만원이지만, 연봉 상승이나 부업으로 저축액을 연 수백만원 늘리면 첫해부터 그보다 크다. 초기에는 몸값(기술, 연봉)과 저축률을 높이는 일이 수익률을 몇 %p 올리는 일보다 영향이 크다.
+
+그렇다고 투자를 미룰 이유는 아니다. 적은 금액이라도 시장에 머문 기간이 복리 기간을 정하므로 소득을 키우는 일과 적립을 함께 한다. 연봉 상승이 물가를 넘는지는 [[Salary-Negotiation-Inflation|연봉 협상에 인플레이션 적용하기]]로 판단한다.
+
 ## 3. 인플레이션을 이겨야 한다
 
 현금은 안전해 보이지만 [[Inflation|인플레이션]]이 매년 그 실질가치를 깎는다. 물가가 연 3% 오르면 가만히 둔 현금의 구매력은 그만큼 줄어든다. 그래서 투자의 최소 목표선은 **인플레이션을 넘는 수익**이다. 위험을 피해 현금만 드는 것은 확실하게 조금씩 잃는 선택일 수 있다.
@@ -55,11 +59,13 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 ## 출처
 
 - [Investor.gov — Asset Allocation, Diversification, and Rebalancing](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
+- [Threads, worker_zetech — 종잣돈과 몸값이 먼저라는 재테크 순서](https://www.threads.com/@worker_zetech/post/DNPdt-GSw6n)
 
 ## 관련 문서
 
 - [[Risk-and-Return|위험과 수익]] — 투자 전반을 관통하는 트레이드오프
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 원칙을 포트폴리오로
+- [[Tax-Advantaged-Accounts|절세 계좌]] — 세금을 늦추고 줄이는 계좌 구조
 - [[투자(Investing)]] — 지도
 
 > 이 문서는 일반 학습 자료이며 개인의 목표, 재무상태, 세금과 위험 감내도를 반영한 투자 자문이 아니다.

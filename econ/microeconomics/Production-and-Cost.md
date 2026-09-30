@@ -49,7 +49,7 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 
 ## 7. 매몰비용과 조업중단
 
-- **매몰비용 무시 원칙**: 이미 써서 회수 못 하는 돈은 앞으로의 결정에서 빼야 한다. 과거 투자가 아까워 손해 나는 사업을 계속 끌고 가는 대표적 함정이 매몰비용 오류다.
+- **매몰비용 무시 원칙**: 이미 써서 회수 못 하는 돈은 앞으로의 결정에서 빼야 한다. 과거 투자가 아까워 손해 나는 사업을 계속 끌고 가는 대표적 함정이 매몰비용 오류(콩코드 오류라고도 한다)다.
 - **조업중단점**: 완전경쟁 기업은 시장가격이 최소 평균가변비용보다 낮으면 단기 생산을 멈추는 편이 손실을 줄인다. 더 일반적으로는 선택한 생산량의 총수입이 회피 가능한 가변비용보다 작은지 비교한다. 장기에는 고정비도 조정할 수 있으므로 총수입이 총비용을 지속적으로 충당하지 못하면 시장 퇴출을 검토한다.
 
 ### 추가 수주에는 선택에 따라 달라지는 비용을 비교한다
@@ -78,14 +78,31 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 
 이 비율은 단일 병목과 비교 가능한 작업을 가정한 출발점이다. 실제 수요 한도, 묶어서만 받을 수 있는 작업, 납기, 품질, 미수 위험과 기존 고객 약속도 확인한다. 장기적으로는 공통비와 필요한 보상까지 회수할 수 있는지를 [[Business-Model|사업 전체 손익]]에서 별도로 본다.
 
-## 8. 핵심 개념
+## 8. 회계의 원가 구성
+
+회계에서 제품 원가는 보통 다음처럼 쌓는다. 직접경비를 따로 떼는 분류도 있다.
+
+```text
+제조원가 = 직접재료비 + 직접노무비 + 제조간접비
+총원가   = 제조원가 + 판매비와관리비
+```
+
+재고자산 원가의 기준은 K-IFRS 1002(IAS 2)다.
+
+- **매입원가**: 매입가격에 수입관세와 제세금(추후 환급받을 금액 제외), 매입운임, 하역료처럼 취득에 직접 관련된 원가를 더하고 매입할인과 리베이트를 뺀다. 원재료를 수입하며 낸 관세는 그 원재료 원가에 들어간다.
+- **전환원가**: 직접노무원가와 체계적으로 배부한 제조간접원가다. 생산설비와 공장 건물의 감가상각, 유지비, 공장 관리비는 고정제조간접원가에 속한다.
+- **재고원가에서 빼는 것**: 비정상적인 낭비, 다음 생산 단계에 필요하지 않은 보관원가, 재고를 현재 상태로 만드는 데 기여하지 않은 관리간접원가, 판매원가는 발생한 기간의 비용이다. 판매를 위한 수출 운송과 영업 비용은 판매비로 간다.
+
+흔한 착각은 직접재료비를 제조원가 전체로 보는 것이다. 또 회계 원가의 간접비 배부는 재고 평가와 손익 보고를 위한 규칙이라, 추가 수주나 가격 결정에는 3절의 고정비와 변동비, 7절의 증분 비교, [[Business-Model#공헌이익과 손익분기 고객 수|공헌이익]] 관점이 따로 필요하다. 원가에 이익을 얹어 판매가를 정하는 계산도 출발점일 뿐, 실제 가격은 수요와 경쟁이 정한다([[Market-Structures|시장구조]]).
+
+## 9. 핵심 개념
 
 - **한계비용(MC)**: 모든 생산 결정의 기준
 - **MR = MC**: 내부해의 1차 조건. 교차 방향, 경계해와 조업중단 조건을 추가 확인
 - **규모의 경제**: 단가와 진입장벽
 - **매몰비용 무시**: 합리적 의사결정의 기본
 
-## 9. 흔한 오해
+## 10. 흔한 오해
 
 - **고정비는 모든 의사결정에서 제외한다** → 현재 범위에서 바뀌지 않는 고정비와, 선택에 따라 추가되거나 회피할 수 있는 고정비를 구분한다.
 - **이미 많이 투자했으니 계속해야 한다** → 매몰비용 오류다. 앞으로의 비용과 편익만 본다.
@@ -97,6 +114,10 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 - [OpenStax, Evaluate and Determine Whether to Accept or Reject a Special Order](https://openstax.org/books/principles-managerial-accounting/pages/10-2-evaluate-and-determine-whether-to-accept-or-reject-a-special-order) — 여유 용량과 추가 비용, 기존 고객에 미치는 영향
 - [OpenStax, Evaluate and Determine How to Make Decisions When Resources Are Constrained](https://openstax.org/books/principles-managerial-accounting/pages/10-6-evaluate-and-determine-how-to-make-decisions-when-resources-are-constrained) — 병목 자원당 공헌이익. 서비스 수주 예시는 이를 적용한 가정이다.
 - [OpenStax, Principles of Microeconomics 3e, How Perfectly Competitive Firms Make Output Decisions](https://openstax.org/books/principles-microeconomics-3e/pages/8-2-how-perfectly-competitive-firms-make-output-decisions)
+- [KIFRS.com, 기업회계기준서 제1002호 재고자산의 취득원가](https://www.kifrs.com/s/1002/a36dbb) — 매입원가, 전환원가와 제외 원가
+- [IFRS Foundation, IAS 2 Inventories](https://www.ifrs.org/issued-standards/list-of-standards/ias-2-inventories/) — 문단 11, 12, 16
+- [원가 구성 도식과 댓글 논의 — Threads, i.am_goldenhour](https://www.threads.com/@i.am_goldenhour/post/DdafhDikm86)
+- [매몰비용과 손절의 경제학 — Threads, vibebuild.dev](https://www.threads.com/@vibebuild.dev/post/DRBEktMk0aL)
 
 ## 관련 문서
 

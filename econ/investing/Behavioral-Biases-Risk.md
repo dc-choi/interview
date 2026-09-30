@@ -63,5 +63,6 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 ## 관련 문서
 
 - [[Investment-Strategies|투자 전략]] — 편향을 막는 규율적 전략
+- [[Backtesting-Pitfalls|백테스트의 함정]] — 좋은 과거 성과 숫자를 초과수익으로 착각하는 이유
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 리스크 관리의 토대
 - [[투자(Investing)]] — 지도

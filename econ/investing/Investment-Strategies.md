@@ -65,4 +65,5 @@ SPIVA scorecard에서는 여러 시장과 기간에 걸쳐 다수의 액티브 �
 
 - [[Valuation|밸류에이션]] — 가치투자의 도구
 - [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]] — 전략을 무너뜨리는 심리
+- [[Backtesting-Pitfalls|백테스트의 함정]] — 좋은 과거 성과 숫자를 초과수익으로 착각하는 이유
 - [[투자(Investing)]] — 지도

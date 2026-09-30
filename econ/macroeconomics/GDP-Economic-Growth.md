@@ -3,7 +3,7 @@ tags: [econ, macro]
 status: done
 category: "Economics"
 aliases: ["GDP와 경제성장", "GDP and Economic Growth"]
-verified_at: 2026-08-26
+verified_at: 2026-09-30
 ---
 
 # GDP와 경제성장
@@ -92,12 +92,25 @@ GDP는 강력하지만 모든 것을 담지는 못한다.
 - **GDP는 나라의 재산 총액이다** → 쌓인 재산(저량)이 아니라 한 해 생산(유량)이다.
 - **명목 GDP가 늘면 성장한 것이다** → 물가가 오른 착시일 수 있다. 성장은 실질로만 말한다.
 
+## 10. 사례: 시장 규모와 성장 전략 논쟁
+
+성장 둔화, 지정학 충격과 AI로 인한 일자리 변화가 겹치면 국내 시장 규모의 한계를 근거로 한 전략 제안이 나온다. 이런 제안은 대체로 두 갈래로 나뉜다.
+
+- **사실(규모 비교)**: IMF World Economic Outlook(2026년 4월 빈티지) 기준 2025년 명목 GDP는 한국 약 1.87조 달러, 일본 약 4.44조 달러, 중국 약 19.6조 달러, 미국 약 30.8조 달러다(2026-09-30 조회, 추정치 포함). 중국은 한국의 약 10배, 미국은 약 16배이고 한일 합산은 약 6.3조 달러다. 명목 달러 GDP는 환율에 따라 크게 변하므로 기준 연도와 통계 빈티지를 함께 적는다.
+- **주장 1(경제 통합)**: 규칙을 따르는 쪽이 아니라 만드는 쪽이 되려면 인접국과 경제를 통합해 큰 시장을 만들고, 첫 단계로 전력망 연결 같은 인프라 통합부터 추진하자는 구상.
+- **주장 2(사회적 가치 측정)**: 기업 산출을 이익뿐 아니라 일자리, 환경, 세금 같은 사회적 가치로 측정하고 시장 원리로 보상해, AI로 줄어드는 일자리를 사회 영역의 새 일자리로 상쇄하자는 구상.
+- **반론**: 사회적 가치를 수치화하면 무엇이 좋은 일인지에 대한 도덕 기준을 하나로 표준화하게 된다는 비판, 주변국을 차례로 편입하는 구상이 일대일로식 블록화와 닮았다는 비판이 있다.
+
+읽는 기준은 두 가지다. 시장 규모 논거는 무역과 투자 개방으로 이미 외부 수요에 접근하는 경로와 비교해야 하고, 사회적 가치 측정은 7절의 GDP 한계를 보완하려는 후생지표 논의와 같은 측정 문제(무엇을, 누가, 어떤 가중치로 셀지)를 안고 있다.
+
 ## 출처
 
 - [United Nations — System of National Accounts 2025, 7.90-7.92](https://unstats.un.org/unsd/nationalaccount/docs/2025_SNA_Pre-edit.pdf)
 - [Eurostat — Gross domestic product (GDP) and main components](https://ec.europa.eu/eurostat/cache/metadata/en/nama_10_gdp_esms.htm)
 - [한국은행 — 2024년도 연차보고서, 국민계정 2020년 기준년 개편 결과](https://www.bok.or.kr/portal/bbs/P0000596/view.do?menuNo=200071&nttId=10090587)
 - [한국은행 — 경제성장률과 GDP갭의 관계](https://www.bok.or.kr/portal/bbs/B0000218/view.do?menuNo=200&nttId=10017531)
+- [IMF — World Economic Outlook DataMapper, GDP current prices](https://www.imf.org/external/datamapper/NGDPD@WEO/KOR/JPN/CHN/USA)
+- [AI 폐해와 신자본주의 세미나 정리 — Threads, do_signer](https://www.threads.com/@do_signer/post/DXtxfSqk4LI)
 
 ## 관련 문서
 

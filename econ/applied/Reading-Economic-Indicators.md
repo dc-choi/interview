@@ -3,7 +3,7 @@ tags: [econ, applied, indicators]
 status: done
 category: "Economics"
 aliases: ["경제지표 캘린더 읽는 법", "Reading Economic Indicators"]
-verified_at: 2026-07-21
+verified_at: 2026-09-30
 ---
 
 # 경제지표 캘린더 읽는 법
@@ -46,13 +46,25 @@ verified_at: 2026-07-21
 - **원천 기관**: 한국은행, 통계청, 미국 노동통계국, 연준
 - **데이터베이스**: FRED 같은 공개 시계열로 직접 추세 확인
 
-## 6. 핵심
+## 6. 연습: 경기 판단 주장 반박 읽기
+
+경기가 좋다거나 나쁘다는 주장은 대개 지표 몇 개를 골라 붙인다. 읽을 때는 주장이 가리키는 경로와 지표의 기준부터 확인한다.
+
+- **환율에서 물가로 가는 경로**: 원화 약세는 수입물가를 먼저 올리고, 생산자물가를 거쳐 소비자물가로 옮겨 간다. 한국은행 수출입물가지수는 원화기준과 계약통화기준 등으로 따로 편제되므로 두 값의 차이로 환율 효과를 가늠한다. 전가 정도는 기업의 마진 흡수와 계약 주기에 따라 달라 시차를 두고 나타난다.
+- **어느 근원물가인가**: 국내 근원물가는 농산물 및 석유류 제외지수와 OECD 방식의 식료품 및 에너지 제외지수 두 가지다. 한국은행 물가안정목표 2%는 소비자물가 상승률(전년동기대비) 기준이므로 근원물가 수치를 목표선과 곧바로 겹쳐 읽지 않는다.
+- **실물 스트레스 지표를 함께 본다**: 법인파산과 개인회생 신청은 법원 사법통계(법원통계월보, 사법연감), 폐업자는 국세청 사업자 통계에서 확인한다. 폐업자 수는 연간 통계이고 사업부진 외에 양도, 법인 전환 같은 사유도 포함하므로 사유별로 나눠 본다.
+- **기준과 시차**: 물가는 전월비와 전년동월비가 다르고, 도산 건수는 접수 기준과 처리 기준이 다르다. 월별 건수는 영업일수와 계절성에 흔들리므로 전년 동월이나 누계와 비교하고, 10년 내 최대 같은 표현은 기준 월과 비교 구간을 확인한다.
+- **정책 조합**: 재정은 확장인데 통화는 긴축이면 두 효과가 서로 상쇄될 수 있다([[Fiscal-Policy|재정정책]], [[Interest-Rates-Monetary-Policy|금리]]).
+
+결론은 한 방향 지표만 모아서 내리지 않는다. 같은 기간의 수출, 고용, 성장률처럼 반대 방향을 가리킬 수 있는 지표도 함께 놓고 어느 쪽이 더 넓은 범위를 설명하는지 비교한다.
+
+## 7. 핵심
 
 - **서프라이즈**: 시장을 움직이는 건 예상과의 차이
 - **근원지표**: 추세를 보는 진짜 숫자
 - **선행과 후행**: 미래 예측과 현 상태 확인의 구분
 
-## 7. 흔한 오해
+## 8. 흔한 오해
 
 - **좋은 숫자가 나오면 시장이 오른다** → 예상 대비가 핵심이다. 좋아도 기대만 못하면 빠진다.
 - **한 지표로 판단한다** → 물가와 고용과 성장을 교차해서 본다. 단일 지표는 노이즈가 크다.
@@ -62,6 +74,12 @@ verified_at: 2026-07-21
 
 - [한국은행 — 금융통화위원회 의사일정](https://www.bok.or.kr/portal/singl/crncyPolicyDrcMtg/listYear.do?menuNo=200755&mtgSe=A)
 - [Federal Reserve — FOMC calendars and information](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm)
+- [한국은행 — 2025년 8월 수출입물가지수 및 무역지수(잠정)](https://www.bok.or.kr/portal/bbs/B0000501/view.do?menuNo=201264&nttId=10093558)
+- [한국은행 — 물가안정목표제](https://www.bok.or.kr/portal/main/contents.do?menuNo=200291)
+- [e-나라지표 — 소비자물가지수](https://www.index.go.kr/unity/potal/main/EachDtlPageDetail.do?idx_cd=1060)
+- [e-나라지표 — 연도별 사업자 현황](https://www.index.go.kr/unity/potal/main/EachDtlPageDetail.do?idx_cd=2825)
+- [대법원 — 사법통계, 법원통계월보](https://www.scourt.go.kr/portal/justicesta/JusticestaCodeAction.work?gubun_code=G01)
+- [한국경제 위험 신호 주장 — Threads, pangyobulpae](https://www.threads.com/@pangyobulpae/post/DZSNbJqmmSx)
 
 ## 관련 문서
 
