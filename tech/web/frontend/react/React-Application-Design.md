@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, react, architecture, component-design]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["React Application Design", "React 컴포넌트 설계"]
 ---
@@ -31,6 +31,70 @@ React 공식 Thinking in React 흐름은 다음 순서를 제안한다.
 - event callback으로 child의 의도를 owner에 전달한다.
 
 Derived value를 별도 state로 복제하지 않는다. 질문 목록이 있으면 질문 개수, 현재 질문과 progress는 render 중 계산할 수 있다. 같은 entity를 여러 state에 중복 저장하기보다 id로 연결한다.
+
+### 검색 가능한 목록으로 state ownership 확인하기
+
+목록과 검색 입력을 먼저 고정된 props로 렌더링해 component 구조를 확인한다. 단순한 화면은 상위부터, 작은 UI가 많은 화면은 재사용할 하위 component부터 만들 수 있다. 정적 버전에서 상호작용용 state를 미리 넣을 필요는 없다.
+
+검색 가능한 상품 목록에서는 아래처럼 값의 역할을 나눈다.
+
+| 값 | 현재 component에서의 역할 | 이유 |
+|---|---|---|
+| `products` | props | parent가 제공하는 원본 목록 |
+| `query` | state | 사용자가 바꾼 검색어를 기억 |
+| `inStockOnly` | state | 사용자가 바꾼 표시 조건을 기억 |
+| `visibleProducts` | render 중 계산 | 원본 목록과 두 조건에서 도출 |
+
+props로 받는다는 판단은 현재 component 기준이다. `products`가 상위의 state나 server cache에서 왔을 수 있으며, 전체 앱에서 state가 아니라는 뜻은 아니다.
+
+```jsx
+function ProductSearch({ products }) {
+  const [query, setQuery] = useState("");
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const visibleProducts = products.filter(product => {
+    const matchesQuery = product.name.toLowerCase().includes(query.toLowerCase());
+    return matchesQuery && (!inStockOnly || product.stocked);
+  });
+
+  return (
+    <>
+      <SearchBar query={query} inStockOnly={inStockOnly}
+        onQueryChange={setQuery} onStockChange={setInStockOnly} />
+      <ProductList products={visibleProducts} />
+    </>
+  );
+}
+```
+
+위 예시는 `useState`를 import하고 `SearchBar`, `ProductList`를 별도로 정의한 구성을 전제한다. 두 child가 같은 조건을 사용하므로 `ProductSearch`가 이를 소유한다. `SearchBar`는 text input의 `value={query}`와 `onChange={e => onQueryChange(e.target.value)}`를 연결하고, checkbox는 `checked`와 `e.target.checked`를 연결한다. 값만 고정해 전달하면 사용자가 입력해도 갱신되지 않는다.
+
+data는 props로 내려가고, 변경 의도는 callback으로 owner에 돌아간다. callback이 상위 state를 바꿔 다음 props를 만들며, child가 props를 직접 수정하는 양방향 binding은 아니다.
+
+### 이력 되돌리기로 state 모델 검증하기
+
+되돌리기가 있는 작은 보드 UI는 component 분해, callback, 불변성과 derived state를 함께 연습할 수 있다. 화면을 완성한 뒤 이전 시점으로 이동해도 규칙이 유지되는지 확인한다.
+
+| component | 책임과 계약 |
+|---|---|
+| `Square` | `value`를 표시하고 `onSquareClick`으로 클릭 의도를 전달 |
+| `Board` | `squares`, `xIsNext`를 받아 표시하고 새 배열을 `onPlay`로 전달 |
+| `Game` | 이력 `history`와 선택 시점 `currentMove`를 소유 |
+
+처음에는 칸마다 local state를 둘 수 있지만 승자 판단이 모든 칸을 필요로 하면 Board로 올린다. 보드와 이력 목록이 같은 시점을 표시해야 하면 다시 Game으로 올린다. 상태 owner는 요구하는 상호작용이 넓어질 때 조정한다.
+
+```js
+const currentSquares = history[currentMove];
+const xIsNext = currentMove % 2 === 0;
+const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+```
+
+현재 보드와 다음 차례를 별도 state로 복제하지 않는다. 한 수를 둘 때 보드를 `slice()`로 복사해 빈 칸만 바꾸고, 승자가 있거나 이미 찬 칸이면 변경하지 않는다. 새 이력을 저장한 뒤 `currentMove`는 `nextHistory.length - 1`로 옮긴다. 과거로 이동할 때는 index만 바꾸며, 과거에서 새 수를 두면 선택한 시점 뒤의 이력을 잘라 새 분기를 만든다.
+
+승자 판단은 보드를 받는 순수한 `calculateWinner` 함수로 분리한다. 세 행, 세 열과 두 대각선의 index 묶음을 검사해 같은 값이 세 칸을 채우면 `X`나 `O`, 아니면 `null`을 반환한다. 승자가 없고 모든 칸이 차 있으면 무승부다. winner와 status 문구도 보드에서 계산하며 별도 state로 저장할 필요가 없다.
+
+각 보드가 독립된 배열이어야 과거 snapshot이 유지된다. 칸이 문자열이나 `null`이면 얕은 복사로 충분하지만 객체를 저장한다면 변경하는 객체도 복사해야 한다. 이 예시의 수 번호는 이력 앞부분의 의미가 유지되고 중간 삽입이 없어 key로 쓸 수 있다. 일반적인 정렬 목록의 index key까지 안전하다는 뜻은 아니다.
+
+**이해 확인**: 빈 칸 클릭, 같은 칸 재클릭, 승리 뒤 클릭, 시작 시점으로 이동, 과거 시점에서 새 수 두기를 직접 확인한다. 이어서 현재 시점 표시, 두 반복문으로 보드 생성, 이력 정렬 전환, 승리한 세 칸 강조, 무승부 표시, `(행, 열)` 기록을 구현하면 어떤 값은 계산할 수 있고 어떤 값은 새 state가 필요한지 설명한다. 정렬한 이력을 표시할 때 key는 화면 index가 아닌 원래 수 번호를 유지한다.
 
 ## 재사용은 시각적 유사성보다 의미
 
@@ -97,10 +161,12 @@ UI library, state library와 data-fetching library는 서로 다른 문제를 �
 - [[React-Core-Mental-Model|React 핵심 mental model]]
 - [[React-State-Management|공유 state 선택]]
 - [[DTO-Layering|API DTO와 domain model 경계]]
+- [[React-Render-Purity-and-Trees|render tree와 module 의존 관계]]
 
 ## 출처
 
 - [React, Thinking in React](https://react.dev/learn/thinking-in-react)
+- [React, Tutorial: Tic-Tac-Toe](https://react.dev/learn/tutorial-tic-tac-toe)
 - [React, Choosing the State Structure](https://react.dev/learn/choosing-the-state-structure)
 - [React, Sharing State Between Components](https://react.dev/learn/sharing-state-between-components)
 - [Ant Design, Table](https://ant.design/components/table/)

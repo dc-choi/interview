@@ -10,6 +10,12 @@ aliases: ["React TypeScript", "React 타입 계약"]
 
 React의 TypeScript 타입은 component의 props, state, event와 context 경계를 표현한다. 타입은 React의 렌더링 동작을 바꾸지 않고 emit에서 사라지므로 사용자 입력과 서버 응답은 별도의 런타임 검증이 필요하다.
 
+## 설정과 타입 검사
+
+JSX가 들어 있는 TypeScript 파일은 `.tsx`를 사용한다. 웹 프로젝트에는 `@types/react`, `@types/react-dom`과 DOM 타입이 필요하다. `tsconfig`의 `lib`를 직접 지정했다면 `dom` 포함 여부를 확인하고, `jsx`는 framework와 build tool의 변환 방식에 맞춘다. `preserve`는 JSX 변환을 후속 도구에 넘기는 선택이고 다른 pipeline은 `react-jsx`를 사용할 수 있으므로 기존 설정을 우선 확인한다.
+
+문서의 TypeScript sandbox는 코드를 실행해도 타입 검사를 하지 않을 수 있다. 화면에 표시됐다는 사실과 타입 계약이 맞는지는 별개이며 TypeScript 검사기나 `tsc --noEmit`으로 확인한다.
+
 ## Component와 props
 
 함수 parameter에 props 타입을 붙이는 방식이면 충분하다. `React.FC`는 선택 사항이며 이를 사용하지 않아도 정상적인 component다. `children`이 계약의 일부라면 `ReactNode`로 명시한다.
@@ -122,6 +128,17 @@ const TodoDispatchContext = createContext<TodoDispatch | null>(null);
 기본값을 그럴듯한 빈 값으로 채워 `undefined` 오류를 없애면 Provider 누락이 조용한 오작동으로 숨는다. theme의 `"light"`처럼 의미 있는 기본값이 있을 때만 기본값을 쓴다. state와 dispatch context를 나눴을 때 value identity가 re-render에 주는 영향은 [[React-State-Management|공유 state 관리]]에 있다.
 
 React 19에서는 `<ThemeContext value={value}>`로 provider를 렌더링할 수 있다. React 18 이하에서는 `<ThemeContext.Provider>`를 사용하므로 지원할 React major에 맞춰 예제를 선택한다.
+
+## Children, style과 memoization 타입
+
+- `ReactNode`는 문자열, 숫자 등 JSX의 자식으로 표시할 수 있는 값도 포함한다. `ReactElement`는 React element로 범위를 좁힌다. 이 타입만으로 자식을 `<li>` 같은 특정 tag로 제한할 수는 없다.
+- `CSSProperties`는 inline `style` 객체의 속성과 값에 자동 완성과 타입 검사를 제공한다.
+- `useMemo`의 결과 타입은 계산 함수의 반환 타입에서 추론한다. `useCallback`은 전달한 함수의 매개변수와 반환 타입을 보존한다. 추론할 문맥이 없는 callback 매개변수는 직접 타입을 붙이거나 `ChangeEventHandler<HTMLInputElement>` 같은 함수 타입을 제공한다.
+- 타입 매개변수를 붙이는 것과 runtime memoization은 다른 일이다. Compiler를 사용해도 props와 event의 타입 계약은 필요하다([[React-Compiler|자동 memoization]]).
+
+## 이해 확인
+
+`children: ReactElement`로 바꾸면 문자열 자식을 받을 수 있는가? `useCallback`의 callback 매개변수 타입과 `useMemo`의 계산 결과 타입은 각각 어디에서 결정되는가?
 
 ## 관련 문서
 

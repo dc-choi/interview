@@ -23,33 +23,11 @@ setCount(current => current + 1);
 
 ## Effect는 외부 시스템 동기화
 
-`useEffect`는 component를 network, browser API, subscription, third-party widget 같은 외부 시스템과 동기화한다. class lifecycle 세 개를 하나로 줄인 문법이라고만 이해하면 불필요한 Effect가 늘어난다.
-
-```jsx
-useEffect(() => {
-  const connection = connect(roomId);
-  return () => connection.disconnect();
-}, [roomId]);
-```
-
-- dependency는 개발자가 임의로 선택하는 실행 조건이 아니라 Effect가 읽는 reactive value에서 도출된다.
-- cleanup은 unmount뿐 아니라 dependency가 바뀌어 다시 동기화하기 전에도 실행된다.
-- 개발 Strict Mode는 잘못된 cleanup을 찾기 위해 setup과 cleanup을 추가 실행할 수 있다.
-- props/state에서 계산 가능한 값은 render 중 계산하고 Effect로 복제 state를 만들지 않는다.
-- 사용자 action에 따른 저장은 Effect보다 해당 event handler에서 수행하는 편이 원인을 보존한다.
+`useEffect`는 network, browser API, subscription과 React 밖 widget을 현재 화면 조건에 맞춘다. props/state에서 계산 가능한 값은 render에서 만들고, 특정 action의 저장/전송은 해당 event handler에서 처리한다. 동기화 시작, cleanup, race condition과 불필요한 Effect의 대안은 [[React-Effects-and-Custom-Hooks|외부 시스템 동기화]]를 따른다.
 
 ### dependency 배열의 세 형태
 
-| 형태 | 실행 시점 | 주의 |
-|---|---|---|
-| 생략 | 매 commit 뒤 | Effect가 state를 바꾸면 그 render 뒤 다시 실행된다 |
-| `[]` | 첫 commit 뒤 한 번 | 개발 Strict Mode는 setup과 cleanup을 한 번 더 실행한다 |
-| `[a, b]` | 첫 commit 뒤, 그리고 `Object.is` 비교로 값이 바뀐 commit 뒤 | 이전 실행의 cleanup이 이전 값으로 먼저 돈 뒤 새 setup이 실행된다 |
-
-Effect는 render와 commit이 끝난 뒤 실행된다. click 같은 상호작용이 원인이 아니면 보통 browser가 화면을 그린 뒤 실행하고, 상호작용이 원인이면 paint 전에 실행될 수 있다.
-
-- 무한 반복은 Effect가 state를 바꾸고 그 state가 re-render를 거쳐 Effect의 dependency를 다시 바꿀 때 생긴다. API 응답을 `then`에서 setState하는 Effect에 배열을 빼거나, 응답으로 만든 object나 array state를 dependency에 넣는 경우가 전형이다. dependency는 요청 입력(id, 검색어)으로 두고 결과 state는 넣지 않는다.
-- `[value]` Effect에서 `addEventListener`만 하고 cleanup을 반환하지 않으면 value가 바뀔 때마다 listener가 쌓여 event 한 번에 handler가 여러 번 실행된다. cleanup은 등록한 것과 같은 함수 참조로 `removeEventListener`를 호출한다. 새로 만든 arrow를 넘기면 일치하는 listener가 없어 아무것도 해제되지 않는다.
+배열 생략은 매 commit 뒤, `[]`는 해당 mount에서 시작, `[a, b]`는 첫 실행과 dependency 변경 때 재동기화한다. 앱 전체에서 한 번이라는 보장은 아니며 개발 Strict Mode는 setup/cleanup을 추가 검사한다. [[React-Effects-and-Custom-Hooks#dependency 배열의 세 형태|실행 조건]]과 [[React-Effect-Dependencies-and-Events|dependency와 Effect Event]]에서 상세를 다룬다.
 
 ## Hook 호출 순서와 함수 identity
 
@@ -90,7 +68,24 @@ HTML은 소문자 `onclick` 속성에 실행할 code 문자열을 넣지만 Reac
 | `onFocus`, `onBlur` | focus 획득과 해제 | browser의 focus, blur와 달리 React에서는 bubble한다 |
 | input `onChange` | 사용자가 값을 바꿀 때마다(매 keystroke) | browser `input` event처럼 동작하며 값 확정 때 발생하는 DOM `change`와 다르다 |
 
-모든 element가 모든 event를 지원하지는 않으므로 필요한 event는 React DOM reference에서 확인한다.
+모든 element가 모든 event를 지원하지는 않으므로 필요한 event는 [[React-DOM-Events|event object와 handler 계약]]과 React DOM reference에서 확인한다.
+
+### 업무 event prop와 전파 순서
+
+custom component는 `onSave`, `onUploadImage`처럼 업무 action을 표현하는 callback prop을 받을 수 있다. 내부에서 browser element의 `onClick`에 연결하거나 keyboard 동작에서도 같은 callback을 사용할 수 있다. built-in element에는 지원하는 browser event 이름을 사용한다.
+
+click은 조상의 `onClickCapture`가 내려오는 capture, 대상 handler, 조상 `onClick`으로 올라가는 bubble 순서로 처리된다. 대상 handler의 `stopPropagation()`은 이후 bubble을 막지만 이미 실행된 조상 capture를 되돌리지는 않는다. 일반적인 React `onScroll`은 부모로 bubble하지 않으므로 scroll을 처리할 element에 직접 연결한다.
+
+자식 handler에서 로컬 작업을 한 뒤 부모의 callback을 명시적으로 호출하면 업무 실행 순서를 추적하기 쉽다. 자동 bubble과 같은 개념은 아니며 propagation을 막아도 직접 호출한 callback은 실행된다.
+
+```jsx
+const SaveButton = ({ onSave }) => (
+  <button onClick={event => {
+    event.stopPropagation();
+    onSave();
+  }}>저장</button>
+);
+```
 
 ## controlled와 uncontrolled form
 
@@ -107,6 +102,8 @@ uncontrolled input은 DOM이 현재 값을 보관하고 `ref`나 form submission
 - 같은 input을 lifecycle 중 controlled와 uncontrolled 사이에서 바꾸지 않는다.
 - label, error message 연결, focus와 keyboard 동작은 state 관리 방식과 별개의 접근성 계약이다.
 
+input/textarea/select의 props, 다중 제출 값과 caret/remount 진단은 [[React-DOM-Form-Controls]], function action과 제출 pending은 [[React-DOM-Form-Actions]]를 따른다.
+
 validation은 제출 가능 여부와 오류 표시 시점을 나눠 설계한다. render 과정에서 state를 다시 설정하는 loop를 만들지 않고, 가능한 값은 기존 field state에서 계산한다.
 
 ### controlled input이 깨지는 경우
@@ -120,25 +117,15 @@ validation은 제출 가능 여부와 오류 표시 시점을 나눠 설계한�
 
 ## useRef와 DOM 참조
 
-`useRef(initialValue)`는 `current` property 하나를 가진 object를 반환하고 다음 render에도 같은 object를 돌려준다. `current`를 바꿔도 re-render가 일어나지 않으므로 interval id나 이전 값처럼 화면 출력에 쓰지 않는 값을 담는다. 화면에 보여야 하는 값을 ref에 두면 바뀌어도 화면이 갱신되지 않으므로 state에 둔다.
-
-```jsx
-const inputRef = useRef(null);
-const handleSubmit = event => {
-  event.preventDefault();
-  save(inputRef.current.value);
-};
-// <form onSubmit={handleSubmit}><input ref={inputRef} /></form>
-```
-
-- JSX의 `ref`로 연결하면 React가 DOM node를 만들어 화면에 둔 뒤 `current`에 그 node를 넣고, node가 화면에서 제거되면 `null`로 되돌린다. 첫 render 중에는 아직 초기값이므로 DOM ref는 event handler나 Effect에서 읽는다.
-- 초기화를 제외하면 render 중에 `ref.current`를 읽거나 쓰지 않는다. render 결과가 ref 값에 따라 달라져 예측할 수 없게 된다.
-- uncontrolled input의 값을 `id`와 `document.querySelector`로 찾으면 같은 component가 여러 번 render될 때 id가 중복되어 다른 instance의 element를 잡을 수 있다. ref는 해당 instance의 node를 직접 가리킨다.
-- React 19 타입에서 `useRef`의 인수가 필수가 된 점과 ref 타입은 [[TS-React-Type-Contracts#useRef 타입|useRef 타입]]에 있다.
+`useRef`는 instance별로 render 사이에 같은 object를 유지하지만 `current` 변경은 render를 예약하지 않는다. 화면에 필요한 값은 state에 두고, DOM ref는 commit 이후 event handler나 Effect에서 읽는다. timeout 취소, 목록 callback ref, 자식 DOM 노출과 flushSync는 [[React-Refs-and-DOM|ref와 DOM]]을 따른다.
 
 ## 관련 문서
 
 - [[React-Core-Mental-Model|React 핵심 mental model]]
+- [[React-Effects-and-Custom-Hooks|외부 시스템 동기화]]
+- [[React-Effect-Dependencies-and-Events|dependency와 Effect Event]]
+- [[React-Refs-and-DOM|ref와 DOM]]
+- [[React-Custom-Hooks|custom Hook]]
 - [[React-Local-State-and-Persistence|지역 state와 영속화]]
 - [[TS-React-Type-Contracts|Event와 form 타입]]
 

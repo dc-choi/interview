@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, react, jsx, component]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["React Core Mental Model", "React JSX와 Component"]
 ---
@@ -11,6 +11,26 @@ aliases: ["React Core Mental Model", "React JSX와 Component"]
 React는 사용자 인터페이스를 component라는 JavaScript 함수의 조합으로 기술하는 library다. React 자체가 routing, data fetching과 배포 방식을 모두 정하지는 않는다. 새 production app은 React가 권장하는 framework를 먼저 검토하고, client-only SPA나 학습 환경에서는 Vite 같은 build tool을 선택할 수 있다.
 
 SPA는 문서 전체를 매번 다시 받지 않고 client routing과 state로 화면을 갱신하는 배포 형태다. React를 사용한다고 자동으로 SPA가 되거나, SPA가 모든 서비스에 더 효율적인 것은 아니다.
+
+## 일상적인 UI 갱신 흐름
+
+화면의 현재 모습은 props와 state로 계산한다. 사용자가 버튼을 누르면 event handler가 state 갱신을 요청하고, React가 component 함수를 다시 호출해 다음 모습을 계산한다. render가 다시 실행됐다는 사실과 실제 DOM이 바뀌었다는 사실은 구분한다.
+
+```jsx
+import { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  const handleClick = () => setCount(count + 1);
+  return <button onClick={handleClick}>{count}회</button>;
+}
+```
+
+`onClick={handleClick}`는 함수를 전달하고, `onClick={handleClick()}`는 render 도중 호출한다. 인자가 필요하면 `onClick={() => handleSelect(id)}`처럼 호출을 늦춘다. state를 바꾸는 handler를 render 중 호출하면 반복 render를 만들 수 있다.
+
+`<Counter />`를 두 번 배치하면 두 component 위치가 각각 state를 보존한다. 두 숫자가 함께 변해야 하면 가장 가까운 공통 parent가 count와 handler를 소유하고 둘에게 props로 전달한다. 코드 재사용과 state 공유는 별개의 결정이다.
+
+`useState`는 component나 custom Hook의 최상위에서 호출한다. 조건이나 반복문 안에서 필요해 보이면 별도 component를 추출한다. `use`로 시작하는 Hook 이름과 일반 함수 호출을 구분하고, 세부 호출 규칙은 사용하는 Hook의 계약을 따른다.
 
 ## JSX는 UI를 기술하는 JavaScript syntax
 
@@ -30,6 +50,8 @@ function Greeting({ name }) {
 - component 이름은 대문자로 시작한다. 소문자 tag(`<section>`)는 HTML element로, 대문자로 시작하는 tag(`<Profile />`)는 component로 해석되므로 `<hello />`라고 쓰면 같은 이름의 함수가 호출되지 않는다.
 
 `count && <Badge />`는 count가 0일 때 0을 렌더링할 수 있다. boolean 조건으로 만들거나 삼항 연산자를 사용한다. 조건이 복잡하면 render 전에 변수나 작은 component로 분리한다.
+
+component 선언, module 분리, JSX와 props의 자세한 계약은 [[React-Components-and-JSX]]에, 조건과 list 구성은 [[React-Conditional-and-List-Rendering]]에 정리한다. render를 순수하게 유지하는 이유와 두 종류의 tree는 [[React-Render-Purity-and-Trees]]에서 연결한다.
 
 ## 진입점: react와 react-dom
 
@@ -81,7 +103,7 @@ Hooks는 React 16.8에서 추가됐다. component 사이에서 stateful logic을
 | update | `static getDerivedStateFromProps`, `shouldComponentUpdate`, `render`, `getSnapshotBeforeUpdate`, `componentDidUpdate` |
 | unmount | `componentWillUnmount` |
 
-- `shouldComponentUpdate`가 `false`를 반환하면 그 update의 render를 건너뛴다. function component에서는 `memo`가 비슷한 최적화다.
+- `shouldComponentUpdate`가 `false`를 반환하면 React에 해당 update의 render를 건너뛰어도 된다고 알린다. 성능 최적화용 힌트이며 render 생략을 보장하지 않고 child 자신의 state 변경도 막지 않는다. function component에서는 `memo`가 비슷한 최적화다.
 - `getSnapshotBeforeUpdate`는 DOM이 바뀌기 직전 scroll 위치 같은 값을 읽는다. 현재 function component에는 대응 API가 없고, error boundary도 function component로 작성할 수 없다.
 - `getDerivedStateFromProps`로 props를 state에 복사하는 코드는 derived state 때문에 장황해지고 추론하기 어려워지기 쉽다. render 중 계산이나 key로 state를 reset하는 방식을 먼저 검토한다.
 - `componentDidMount`, `componentDidUpdate`, `componentWillUnmount` 조합은 많은 경우 `useEffect`에 대응한다. 다만 method를 옮겨 적지 말고 외부 시스템 동기화 단위로 다시 설계한다([[React-State-Effects-and-Events#Effect는 외부 시스템 동기화|Effect는 외부 시스템 동기화]]).
@@ -106,7 +128,9 @@ class Counter extends React.Component {
 }
 ```
 
-JSX의 `onClick={() => this.handleReset()}`도 동작하지만 render마다 새 callback을 만들므로 하위 component에 넘기면 추가 render를 일으킬 수 있다. react.dev 예시는 class field arrow(`handleClick = () => { ... }`)도 사용한다.
+JSX의 `onClick={() => this.handleReset()}`도 동작한다. render마다 새 callback을 만들므로 하위 component가 props의 참조를 비교해 render를 생략하는 경우 그 비교에 영향을 줄 수 있다. react.dev 예시는 class field arrow(`handleClick = () => { ... }`)도 사용한다. callback을 새로 만든다는 이유만으로 최적화하지 않고 실제 비용을 측정한다.
+
+class의 method 입력/반환, snapshot과 migration 계약은 [[React-Legacy]]에서 자세히 연결한다. 신규 function component의 호출 소유와 Hook 규칙은 [[React-Rules-and-Call-Ownership]]를 따른다.
 
 ## Virtual DOM 설명의 경계
 
@@ -117,9 +141,13 @@ React는 이전 render 결과와 새 결과를 비교해 필요한 host mutation
 - [[React-State-Effects-and-Events|State, Effect와 event]]
 - [[React-Application-Design|React application 설계]]
 - [[TS-React-Type-Contracts|React TypeScript 계약]]
+- [[React-UI|component와 UI 기술]]
+- [[React-Rendering|Suspense, Activity와 rendering 경계]]
+- [[React-APIs|react package API 선택]]
 
 ## 출처
 
+- [React, Quick Start](https://react.dev/learn)
 - [React, Describing the UI](https://react.dev/learn/describing-the-ui)
 - [React, Writing Markup with JSX](https://react.dev/learn/writing-markup-with-jsx)
 - [React, Rendering Lists](https://react.dev/learn/rendering-lists)

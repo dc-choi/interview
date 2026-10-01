@@ -21,6 +21,65 @@ aliases: ["React State Management", "React 전역 상태 관리"]
 
 State를 무조건 root나 store로 올리면 update 영향 범위와 결합이 커진다. Context도 value identity가 바뀌면 consumer가 update되므로 state와 dispatch context 분리, provider 범위와 selector 지원 여부를 검토한다. 분리해도 dispatch Provider에 render마다 새 object literal을 넘기면 `Object.is` 비교에서 새 값이 되어 dispatch만 쓰는 consumer도 다시 render되고, `memo`로 감싼 component도 새 context 값은 받는다. 함수는 `useCallback`, object는 `useMemo`로 안정화하거나 `useReducer`의 `dispatch`처럼 identity가 유지되는 값을 공급한다. Context의 TypeScript 경계는 [[TS-React-Type-Contracts#Context의 null 경계|Context 타입]]에 있다.
 
+## 공통 parent로 state 올리기
+
+sibling의 값을 함께 바꿔야 하면 각 child의 state를 제거하고 가장 가까운 공통 parent가 한 값을 소유하게 한다. 먼저 child가 고정 prop으로 동작하게 만든 뒤 parent state와 변경 handler를 연결한다. state마다 owner 하나를 정하는 것이며 application의 모든 state를 한곳에 모으라는 뜻은 아니다.
+
+예를 들어 accordion에서 panel별 `isActive`를 두면 둘 다 열릴 수 있다. parent가 `activeId` 하나를 소유하고 child에 `isActive={activeId === panel.id}`와 `onShow={() => setActiveId(panel.id)}`를 넘기면 하나만 열린다는 조건을 구조로 표현한다. 검색어도 SearchBar와 결과 List의 공통 parent가 소유하고 결과는 render에서 계산한다.
+
+중요한 값이 props로 결정되면 controlled, 자체 state로 결정되면 uncontrolled라고 부른다. 하나의 component 안에서도 값별로 두 방식을 섞을 수 있다. parent의 조율이 필요한 값만 props로 제어하고 leaf의 임시 UI state는 가까이 둔다.
+
+## reducer로 전이 규칙을 모은다
+
+initializer, dispatch의 snapshot/identity와 undefined 결과 진단은 [[React-State-Hook-Contracts#useReducer 계약|useReducer 계약]]을 따른다. 비동기 side effect와 앞 작업의 반환값에 의존하는 순차 전이는 [[React-Action-State#useActionState 계약|reducerAction]]의 다른 책임이다. 여러 handler의 state 갱신이 반복되거나 같은 invariant를 지켜야 하면 `useReducer`로 모은다. handler는 무슨 일이 일어났는지를 action으로 보내고 `(state, action) => nextState`가 변경 규칙을 결정한다.
+
+```jsx
+const tasksReducer = (tasks, action) => {
+  switch (action.type) {
+    case 'added': return [...tasks, action.task];
+    case 'changed': return tasks.map(task =>
+      task.id === action.task.id ? action.task : task);
+    case 'deleted': return tasks.filter(task => task.id !== action.id);
+    default: throw new Error(`Unknown action: ${action.type}`);
+  }
+};
+const [tasks, dispatch] = useReducer(tasksReducer, []);
+// event handler에서 dispatch({ type: 'deleted', id: taskId });
+```
+
+reducer도 queue를 거쳐 render에서 실행되므로 순수해야 한다. API 요청, timer, alert나 id 생성은 event/외부 계층에서 하고 결과를 action에 담는다. 기존 object/array는 immutable하게 바꾼다. 다섯 field의 reset도 사용자 interaction 하나라면 `formReset` action 하나로 표현한다.
+
+`useState`는 단순 변경에 코드가 적고, reducer는 action과 함수가 추가되는 대신 복잡한 전이를 독립적으로 검사하기 쉽다. action 순서로 결과를 추적하고, 고정 state/action에서 다음 state와 이전 state 미변경을 확인한다. Immer가 이미 있다면 draft 기반 reducer를 쓸 수 있지만 React reducer 자체가 mutation을 허용하는 것은 아니다.
+
+## Context로 먼 subtree에 전달한다
+
+Context는 `createContext(defaultValue)`로 만들고 필요한 child가 `useContext`로 읽는다. 가장 가까운 상위 provider의 값이 선택되며 provider가 없을 때 default를 사용한다. 중간 component는 해당 prop을 전달할 필요가 없다. 별도 Context들은 서로 독립이고 nested provider는 자기 subtree에서 같은 Context 값을 덮어쓴다.
+
+provider의 value가 undefined이면 default를 쓰지 않고 undefined를 읽는다. symlink/번들 중복으로 Context object가 다르면 provider와 consumer가 연결되지 않으므로 양쪽 object의 `===`를 확인한다([[React-State-Hook-Contracts#useContext 문제 진단|Context 진단]]).
+
+같은 component에서 Context를 읽고 provider를 반환하면 읽는 값은 자기 provider 위의 값이다. 예를 들어 Section이 상위 heading level을 읽고 `level + 1`을 child에 제공해 깊이를 누적할 수 있다. React 19에서는 `<TasksContext value={tasks}>`가 provider 문법이며 이전 버전의 `<TasksContext.Provider value={tasks}>`도 구분해 이해한다.
+
+Context에 넣기 전에 props 전달과 `<Layout><Posts posts={posts} /></Layout>` 같은 children 구성을 검토한다. Context는 theme, 현재 account나 먼 component들이 공유하는 state처럼 실제 subtree 공통값에 적합하다.
+
+## reducer와 Context 결합
+
+```jsx
+const TasksContext = createContext(null);
+const TasksDispatchContext = createContext(null);
+const TasksProvider = ({ children }) => {
+  const [tasks, dispatch] = useReducer(tasksReducer, []);
+  return (
+    <TasksContext value={tasks}>
+      <TasksDispatchContext value={dispatch}>
+        {children}
+      </TasksDispatchContext>
+    </TasksContext>
+  );
+};
+```
+
+state는 Provider component가 계속 소유한다. 읽는 child는 state Context, action만 보내는 child는 dispatch Context를 읽는다. 필요하면 `useTasks`, `useTasksDispatch`와 provider/reducer를 한 module로 모아 연결부를 숨긴다. 누락된 provider의 `null` 처리 계약은 [[TS-React-Type-Contracts#Context의 null 경계|Context 타입]]에서 정한다. state/dispatch 분리는 context 변경 구독을 나누지만 parent render 자체를 모두 막는 보장은 아니다.
+
 ## 구독 위치가 re-render 범위를 정한다
 
 React는 parent가 다시 render되면 기본적으로 child도 다시 render한다. props가 바뀌었는지와 무관하게 owner의 render가 subtree로 전파되므로, 최상위 component의 state를 바꾸면 그 값을 쓰지 않고 전달만 하는 중간 component까지 다시 실행된다. `memo`는 props가 같으면 건너뛰게 하는 성능 최적화일 뿐 보장이 아니다. 외부 store는 값을 component 밖에 두고 구독한 component와 그 subtree만 갱신하므로, 어느 component에서 store를 읽느냐가 update 범위를 정한다.
@@ -97,6 +156,8 @@ API data는 hand-written middleware부터 만들기보다 RTK Query를 먼저 �
 
 - [[React-Server-State-and-API|Server state와 API]]
 - [[React-Local-State-and-Persistence|지역 state]]
+- [[React-State-Structure|state 구조와 identity]]
+- [[React-State-Updates|snapshot과 immutable update]]
 - [[Event-Sourcing|Event와 state transition]]
 - [[React-Form-Builder-Practice|form builder의 store 적용]]
 - [[TS-React-Type-Contracts|Context와 reducer 타입]]
@@ -104,9 +165,13 @@ API data는 hand-written middleware부터 만들기보다 RTK Query를 먼저 �
 ## 출처
 
 - [React, Managing State](https://react.dev/learn/managing-state)
+- [React, Sharing State Between Components](https://react.dev/learn/sharing-state-between-components)
+- [React, Extracting State Logic into a Reducer](https://react.dev/learn/extracting-state-logic-into-a-reducer)
+- [React, Passing Data Deeply with Context](https://react.dev/learn/passing-data-deeply-with-context)
 - [React, Scaling Up with Reducer and Context](https://react.dev/learn/scaling-up-with-reducer-and-context)
 - [React, memo](https://react.dev/reference/react/memo)
 - [React, useContext](https://react.dev/reference/react/useContext)
+- [React, useReducer](https://react.dev/reference/react/useReducer)
 - [Redux, Style Guide](https://redux.js.org/style-guide/)
 - [Redux, Three Principles](https://redux.js.org/understanding/thinking-in-redux/three-principles)
 - [Redux, Redux Overview and Concepts](https://redux.js.org/tutorials/essentials/part-1-overview-concepts)

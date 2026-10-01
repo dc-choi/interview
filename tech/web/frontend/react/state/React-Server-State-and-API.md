@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, react, api, swr, axios, server-state]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["React Server State", "React API 연동"]
 ---
@@ -101,7 +101,9 @@ DevTools Network throttling으로 느린 network를 걸면 대기 중 빈 화면
 
 ## Suspense 경계
 
-`<Suspense fallback={...}>`는 안쪽 component가 준비되기를 기다리는 동안 fallback을 보여 준다. Suspense는 Effect나 event handler 안의 data fetch를 감지하지 않으므로 일반 Effect fetch를 감싸도 fallback이 나오지 않는다. data 쪽에서는 `use`로 Promise를 읽을 때 활성화된다. react.dev는 Suspense-enabled framework가 내부에서 Promise cache를 유지하고 `use`로 suspend한다고 설명하며, framework 없이 `use`를 쓰려면 render마다 같은 Promise instance를 재사용하도록 cache해야 한다. Relay와 Next.js처럼 Suspense를 지원하는 data layer는 각 문서가 정한 방식으로 읽는다. `lazy`로 component code를 불러올 때도 Suspense가 활성화된다(2026-09-30 react.dev 기준). Library의 Suspense mode는 해당 React major, SSR와 error boundary 지원을 확인한다. Archived Recoil async selector 예제를 신규 data layer 기본값으로 옮기지 않는다.
+`<Suspense fallback={...}>`는 안쪽 component가 준비되기를 기다리는 동안 fallback을 보여 준다. Suspense는 Effect나 event handler 안의 data fetch를 감지하지 않으므로 일반 Effect fetch를 감싸도 fallback이 나오지 않는다. data 쪽에서는 `use`로 Promise를 읽을 때 활성화된다. react.dev는 Suspense-enabled framework가 내부에서 Promise cache를 유지하고 `use`로 suspend한다고 설명하며, framework 없이 `use`를 쓰려면 render마다 같은 Promise instance를 재사용하도록 cache해야 한다. Relay와 Next.js처럼 Suspense를 지원하는 data layer는 각 문서가 정한 방식으로 읽는다. `lazy`로 component code를 불러올 때도 Suspense가 활성화된다(2026-10-01 react.dev 기준). Library의 Suspense mode는 해당 React major, SSR와 error boundary 지원을 확인한다. Archived Recoil async selector 예제를 신규 data layer 기본값으로 옮기지 않는다.
+
+Promise identity, invalidate/retry와 server가 전달한 resource는 [[React-Resources-and-Use]]에, fallback/reveal/이미 보이는 화면 유지와 lazy는 [[React-Suspense-and-Lazy]]에 연결한다. SWR 같은 browser cache와 React의 `cache(fn)`는 scope가 다르다. React cache는 Server Component render의 request cache이고 인증별 client cache나 장기 invalidation 정책을 대체하지 않는다([[React-Server-Cache-and-Taint]]).
 
 ## 관련 문서
 
@@ -126,6 +128,7 @@ DevTools Network throttling으로 느린 network를 걸면 대기 중 빈 화면
 - [Ant Design GitHub, Table Ajax demo](https://github.com/ant-design/ant-design/blob/master/components/table/demo/ajax.tsx)
 - [React, Suspense](https://react.dev/reference/react/Suspense)
 - [React, use](https://react.dev/reference/react/use)
+- [React, cache](https://react.dev/reference/react/cache)
 - IT Share, [Axios와 API client](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161817)
 - IT Share, [Async selector로 API 연동](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161818)
 - IT Share, [설문 응답 저장](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161819)

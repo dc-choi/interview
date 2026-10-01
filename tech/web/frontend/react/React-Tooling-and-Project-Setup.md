@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, react, vite, eslint, prettier]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["React Tooling", "React 프로젝트 설정"]
 ---
@@ -9,6 +9,38 @@ aliases: ["React Tooling", "React 프로젝트 설정"]
 # React project tooling과 설정
 
 새 React project의 도구 선택은 rendering 방식, routing과 data loading 요구에서 시작한다. React 공식 문서는 새 application에 framework를 먼저 검토하라고 권장한다. client-only SPA나 React 자체를 학습하려는 project는 Vite 같은 build tool로 시작할 수 있다.
+
+## 시작 방식과 도구의 책임
+
+간단한 개념 실습은 공식 문서의 sandbox로 시작할 수 있다. 로컬 앱을 만들 때는 다음 경계를 구분한다.
+
+| 상황 | 시작 방식 | 직접 책임질 부분 |
+|---|---|---|
+| 문법과 상태 실험 | 온라인 sandbox | 코드를 바꿔 결과 확인, 타입 검사 지원 여부 확인 |
+| 새 웹 서비스 | Next.js App Router, React Router framework 등 검토 | 배포 환경, route별 렌더링, 데이터 계약 |
+| 기본기 학습이나 framework가 맞지 않는 제약 | Vite, Parcel, Rsbuild | routing, fetching, cache, code splitting의 통합 |
+| 기존 사이트 일부 교체 | 특정 DOM 영역이나 하위 route에 도입 | 기존 페이지와의 소유 경계, 경로와 자산 배포 |
+| 네이티브 앱 | Expo와 React Native 검토 | 웹 DOM과 다른 native UI, 기기 기능과 배포 |
+
+Framework를 고른다고 반드시 요청마다 실행되는 서버가 필요한 것은 아니다. CSR이나 정적 출력이 가능한지와 기능 제한을 확인하면 정적 호스팅으로도 시작할 수 있다. SSR, SSG와 Server Components는 서로 다른 선택이며, 필요할 때 route별 전략과 router를 함께 맞춘다. React Native를 직접 구성할 때의 bundler는 Metro이며 웹용 Vite 설정을 그대로 사용하지 않는다.
+
+Build tool은 개발 서버와 번들 생성을 제공하지만 앱의 데이터 로딩 전략까지 완성하지 않는다. `코드 다운로드 → component render → fetch`가 route마다 이어지면 waterfall이 생긴다. route loader나 서버에서 데이터 요청을 앞당기고 code splitting과 함께 설계한다. `lazy`만 넣었다고 로딩이 빨라지는 것은 아니다.
+
+## 기존 페이지에 점진적으로 추가하기
+
+기존 프로젝트의 import/export와 JSX 변환 환경이 있으면 먼저 재사용한다. 없으면 기존 backend와 연결되는 build 환경을 구성하고 `react`, `react-dom`을 추가한다. React가 관리할 전용 DOM container만 root로 사용한다.
+
+```jsx
+import { createRoot } from "react-dom/client";
+
+const container = document.getElementById("account-menu");
+if (!container) throw new Error("account-menu container is missing");
+createRoot(container).render(<AccountMenu />);
+```
+
+이 코드는 기존 페이지에 빈 `account-menu` container가 있고 `AccountMenu`를 import한 진입점의 예시다. 주변 HTML을 지우거나 같은 container를 기존 코드와 React 양쪽에서 수정하지 않는다. 페이지의 독립된 여러 영역에 root를 둘 수도 있다.
+
+하위 URL 전체를 React로 옮기면 framework의 base path와 서버 또는 proxy의 route 전달을 함께 설정한다. 서버 실행이 필요 없는 구성은 해당 경로에 정적 산출물을 제공할 수 있다. React Native의 기존 Android/iOS 앱 통합은 웹 root API와 다른 절차다.
 
 ## CRA는 신규 app 기본값이 아니다
 
@@ -68,6 +100,20 @@ CRA의 `react-scripts`, `eject`, `REACT_APP_*` 규칙을 Vite에 그대로 옮�
 }
 ```
 
+## 개발 도구로 관찰하기
+
+Editor는 JSX/TSX 지원, 자동 완성, Hooks lint와 저장 시 formatting을 맞춘다. `eslint-plugin-react-hooks`로 호출 규칙과 의존성을 검사한다. 오래된 CRA preset 예시를 현재 프로젝트에 그대로 복사하지 않고 설치한 도구의 설정을 따른다.
+
+React Developer Tools의 Components에서는 component tree, props와 state를 확인하고 Profiler에서는 render 비용을 관찰한다. 브라우저의 Elements 탭은 DOM tree를 보여 주므로 두 트리가 같은 것으로 해석하지 않는다. Chrome, Firefox와 Edge 확장을 사용할 수 있고 Safari 등은 standalone `react-devtools`와 개발 페이지의 `http://localhost:8097` 연결 script를 사용한다. 이 script는 개발 중 연결용이다. React Native 0.76 이상은 통합 React Native DevTools를 확인하고 이전 버전은 standalone 구성을 확인한다.
+
+TypeScript 설정은 [[TS-React-Type-Contracts#설정과 타입 검사|타입 검사]], 자동 memoization 설정과 적용 확인은 [[React-Compiler|React Compiler]]에서 이어진다. 패키지가 설치됐다는 사실만으로 변환이나 최적화가 적용됐다고 판단하지 않는다.
+
+## 이해 확인
+
+- 학습용 Vite 앱에 페이지가 늘면 routing, fetching과 code splitting 중 무엇을 함께 설계해야 하는가?
+- 기존 서버 페이지에 React 메뉴 하나를 넣을 때 어떤 DOM 영역을 React에 넘겨야 하는가?
+- 개발 서버에서 화면이 보이는 것, 타입 검사 통과, production build 성공은 각각 무엇을 확인하는가?
+
 ## 관련 문서
 
 - [[Single-Host-SPA-API-Deployment|SPA build와 배포]]
@@ -75,6 +121,13 @@ CRA의 `react-scripts`, `eject`, `REACT_APP_*` 규칙을 Vite에 그대로 옮�
 - [[TypeScript-Node|Node.js와 TypeScript tooling]]
 
 ## 출처
+
+- [React, Installation](https://react.dev/learn/installation)
+- [React, Creating a React App](https://react.dev/learn/creating-a-react-app)
+- [React, Add React to an Existing Project](https://react.dev/learn/add-react-to-an-existing-project)
+- [React, Setup](https://react.dev/learn/setup)
+- [React, Editor Setup](https://react.dev/learn/editor-setup)
+- [React, React Developer Tools](https://react.dev/learn/react-developer-tools)
 
 - [React, Sunsetting Create React App](https://react.dev/blog/2025/02/14/sunsetting-create-react-app)
 - [React, Build a React App from Scratch](https://react.dev/learn/build-a-react-app-from-scratch)

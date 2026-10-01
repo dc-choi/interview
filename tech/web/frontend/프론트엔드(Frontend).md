@@ -9,7 +9,8 @@ aliases: ["Frontend", "프론트엔드"]
 
 ## 목차
 
-- [[React|React]] — component, state, rendering, routing, client state와 server state
+- [[React|React]] — UI/state, DOM, 서버 경계, Compiler와 lint
+- [[NextJS|Next.js]] — App/Pages Router, 캐시, API, 자산, 테스트와 배포
 - [[Browser-Main-Thread|브라우저 메인 스레드]] — 메인 스레드 독점과 long task, 분할과 양보, 배치, 우선순위, Web Workers 오프로딩으로 반응성 유지
   - [[Browser-Main-Thread-Scheduling|메인 스레드 스케줄링]] — 개수와 시간 기준 양보, 양보 도구별 재개 시점, 프레임당 한 번 그리기, 우선순위 큐와 idle-until-urgent, 화면 밖 렌더링 지연
   - [[Browser-Main-Thread-Offloading|메인 스레드 밖으로 보내기]] — 스레드 분담, transform과 FLIP, will-change, 레이아웃 스래싱, 워커와 transferable, 버리기, 합치기, 생략하기
