@@ -11,7 +11,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 
 - [[tech/os-runtime/os-fundamentals/OS기초(OSFundamentals)|OS 기초 (OS Fundamentals)]] — 동시성, 프로세스, 스케줄링, 가상 메모리, 파일시스템
 - [[tech/os-runtime/linux/Linux-File-System|Linux]] — 파일 시스템, 디렉토리 구조 (FHS), 실행 비트와 파일 시그니처, 로그와 디스크 진단 명령
-- [[tech/os-runtime/runtime/런타임(Runtime)|런타임 (Runtime)]] — Thread vs Event Loop, async/await, Backpressure
+- [[tech/os-runtime/runtime/런타임(Runtime)|런타임 (Runtime)]] — Thread vs Event Loop, I/O 동시성과 병목 관측, async/await, Backpressure
 - [[tech/os-runtime/jvm/JVM|JVM]] — 아키텍처, GC, 메모리 누수, 컨테이너 메모리
 - [[tech/os-runtime/nodejs/Node.js|Node.js]] — V8, libuv, Event Loop, Module System, Stream, Worker Threads
 - [[Deno-Runtime|Deno]] — Node와의 차이, TypeScript 실행, import map, 캐시와 lockfile, Docker 배포

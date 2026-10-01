@@ -23,6 +23,10 @@ aliases: ["Code Review Primary Purpose", "코드 리뷰 주 목적", "유지보�
 - 리뷰 승인을 무결함 보장으로 오해하면 테스트에서 다뤄야 할 조건을 놓칠 수 있다. 리뷰는 요구사항, 구현과 테스트의 빈틈을 확인하고 자동 검증을 보완한다.
 - 발견한 결함은 실패 조건과 함께 고친다. 설명 가능한 구조로 개선했는지와 중요한 결함을 막았는지는 모두 의미 있는 성과다.
 
+## 이해에서 정확성 검토로 이어가기
+
+코드가 이해된다는 사실만으로 동시성, 취소와 실제 환경에서도 요구를 지킨다는 결론이 나오지는 않는다. 보존할 불변조건을 적고 반례를 대입한 뒤 호출부, 테스트와 실행 설정에서 확인한다. 구체적인 추론 순서와 훈련 후보는 [[Code-Review-Reasoning-and-Practice|리뷰 추론과 훈련]]에서 다룬다.
+
 ## 실행 가능한 판정 기준 (operational test)
 
 리뷰어의 과제를 "버그를 찾아라"에서 **이 코드가 무엇을 어떻게 하는지 이해해보라, 이해가 안 되면 지적하라**로 바꾼다.
@@ -84,4 +88,5 @@ aliases: ["Code Review Primary Purpose", "코드 리뷰 주 목적", "유지보�
 - [[Code-Review-Reviewer-Guide|코드 리뷰어의 자세, 피드백 작성 가이드]]
 - [[Code-Review-Pn-Priority|코드 리뷰 Pn룰]]
 - [[Code-Review-Sustainability|코드 리뷰의 정당화와 지속]]
+- [[Code-Review-Reasoning-and-Practice|불변조건 검토와 리뷰 판단 훈련]]
 - [[Readable-Code-Cognition|읽기 좋은 코드와 인지 부하]]

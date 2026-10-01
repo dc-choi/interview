@@ -56,6 +56,8 @@ Lock 파일만으로 bit-identical 바이너리가 보장되지는 않는다. OS
 
 pnpm은 저장 공간 절약과 workspace 구성이 중요한 monorepo의 선택지다. 단순한 프로젝트는 npm만으로도 충분하다.
 
+여러 workspace의 선언 버전을 함께 관리하는 카탈로그와 발행, 전환 정책은 [[Dependency-Catalogs|의존성 카탈로그와 모노레포 운영 정책]]을 따른다.
+
 #### package.json의 특수 의존성 필드
 
 `dependencies`와 `devDependencies`는 아래 Dev vs Prod, `optionalDependencies`는 [[Node.js#의존성 설치|Node.js 의존성 표]]를 따른다.
@@ -187,5 +189,6 @@ Spring, Java 엔터프라이즈는 **Maven**이 여전히 많이 쓰이고, 멀�
 - [[Version-Control-Tooling|버전 관리 도구]]
 - [[Development-Workflow|개발 워크플로]]
 - [[Dependency-Selection|의존성 선택]]
+- [[Dependency-Catalogs|의존성 카탈로그와 모노레포 운영 정책]]
 - [[Dependency-Vulnerability-Scanning|의존성 취약점 스캔]]
 - [[Supply-Chain-Security|공급망 보안]]

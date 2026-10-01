@@ -1,7 +1,7 @@
 ---
 tags: [os, thread, concurrency, event-loop, nodejs]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Thread vs Event Loop", "멀티스레드 패턴"]
 ---
@@ -30,6 +30,29 @@ CPU 집약 JavaScript는 callback 하나가 이벤트 루프를 오래 점유하
 | CPU 집약 JS | Worker Threads pool | JavaScript를 실제 병렬 실행 |
 | 강한 실패 격리, 독립 배포 | 프로세스나 서비스 분리 | 주소 공간과 수명 분리 |
 | 작은 공유 상태의 병렬 계산 | Worker와 메시지 전달 우선 | 공유 메모리 동기화 복잡성 축소 |
+
+### 요청 시간과 이벤트 루프 점유 시간을 구분한다
+
+비동기 DB 응답을 기다리는 동안에는 다른 요청의 JavaScript가 실행될 수 있다. 반면 큰 JSON 파싱이나 긴 반복문은 같은 이벤트 루프의 후속 코드를 지연시킨다. 동기 I/O는 CPU 사용률이 낮아도 루프를 붙잡을 수 있다. I/O를 비동기로 바꾼 뒤에도 결과 가공이 길면 병목은 남는다.
+
+`Promise.all([calculate(), fetchData()])`에서는 배열 원소를 평가하면서 함수를 호출한다. `calculate`가 `async` 함수여도 첫 `await`로 양보하기 전까지 긴 계산을 수행하면 `fetchData()` 호출부터 밀린다. 타이머를 등록하고 기다리는 함수라면 다음 함수를 먼저 실행할 수 있다. `Promise.all`은 결과를 모으는 API이며 CPU 병렬 실행이나 동시 실행 수 제한을 제공하지 않는다.
+
+서로 독립적인 I/O는 함께 시작해 대기를 겹칠 수 있다. 앞선 결과가 필요한 작업은 순차 실행한다. 하나가 실패하면 `Promise.all`은 거부되지만 이미 시작한 나머지 작업의 취소는 별도 계약이다.
+
+### 병목별 제어와 관측
+
+| 병목 | 제어할 대상 | 관측할 값 |
+|---|---|---|
+| 긴 JavaScript 실행 | 입력 크기, 계산량, 분할 또는 Worker 분리 | 요청 p95/p99, 이벤트 루프 지연 |
+| libuv 풀 포화 | 풀을 공유하는 파일, DNS, 암호화 등의 작업량 | 해당 API 지연과 동시 작업 수 |
+| DB와 외부 서비스 대기 | 연결 풀, 실행 수와 대기열 상한, 타임아웃 | 연결 획득 대기, 외부 호출 시간, 거절 수 |
+| 느린 스트림 소비자 | 백프레셔, 버퍼와 입력 크기 | 버퍼 증가, 힙, 외부 메모리, RSS |
+
+요청 하나의 호출 수 제한과 인스턴스 전체의 실행 수 제한을 구분한다. 실행 수만 제한하고 대기열을 계속 늘리면 지연과 메모리 부담이 누적된다. 스트림의 구체적인 쓰기 중단과 재개 규칙은 [[Backpressure|백프레셔]]에서 다룬다.
+
+분할 가능한 계산은 작은 묶음 사이에 `setImmediate` 등으로 실행 기회를 양보한다. 이는 응답성을 위한 방법으로 총 계산량을 줄이지 않는다. `await Promise.resolve()`를 반복하면 마이크로태스크가 이어져 I/O 처리 기회가 밀릴 수 있다. 긴 계산 자체는 Worker 분리를 검토하며, 애플리케이션의 Worker 풀과 libuv 풀은 구분한다.
+
+`monitorEventLoopDelay()`의 히스토그램 값은 나노초이므로 밀리초 표시는 `1e6`으로 나눈다. `performance.eventLoopUtilization()`은 이벤트 루프의 활성/유휴 시간 비율이며 CPU 사용률과 다르다. 루프 지표가 낮더라도 연결 풀이나 외부 서비스에서 지연될 수 있으므로 요청 지표와 함께 본다.
 
 ## Blocking, Non-Blocking과 완료 통지
 
@@ -106,6 +129,12 @@ Java interrupt와 Node `AbortSignal` 모두 협력적 취소다. 신호를 확�
 
 ## 출처
 
+- [Node.js 이벤트 루프의 장단점: 많은 I/O를 처리하면서도 한 요청에 막히는 이유 — Eric's DevLog](https://kyungyeon.dev/posts/146/)
+- [Don't Block the Event Loop (or the Worker Pool) — Node.js](https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop)
+- [Understanding process.nextTick() — Node.js](https://nodejs.org/learn/asynchronous-work/understanding-processnexttick)
+- [Performance measurement APIs — Node.js API](https://nodejs.org/api/perf_hooks.html)
+- [async function — MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
+- [Promise.all() — MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
 - [The Node.js Event Loop — Node.js](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)
 - [Worker Threads — Node.js API](https://nodejs.org/api/worker_threads.html)
 - [AsyncLocalStorage — Node.js API](https://nodejs.org/api/async_context.html)

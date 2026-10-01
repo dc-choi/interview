@@ -24,6 +24,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 ### 파이프라인
 
 - [x] [[CICD-Pipeline|파이프라인 폴더 인덱스 (GitHub Actions, 모노레포, Docker 이미지, 의존성 관리)]]
+- [x] [[Dependency-Catalogs|모노레포 의존성 카탈로그 (버전 선언 통합, 발행과 전환 정책, pnpm/Yarn 기본 기능과 확장 구분)]]
 - [x] [[GitHub-Actions#속도 최적화 — 병목을 측정하고 줄이기|Build cache (의존성, Docker layer, GHA cache)]] / [[Monorepo-CICD#캐시 — 가장 조용한 성능 킬러|Turborepo 캐시와 무효화 전파]]
 
 ### 배포

@@ -182,6 +182,7 @@ source discovery
 
 ## 관련 문서
 
+- [[AI-Workflow-Knowledge-Loop|AI 업무와 지식 환류]]
 - [[Context-Engineering|컨텍스트 엔지니어링]]
 - [[Ontology-Context-Platform-AI-Runtime|Markdown Vault를 읽는 AI 런타임]]
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]]
