@@ -21,11 +21,9 @@ Java의 공통 객체 계약과 값 타입, 시간, 중첩 클래스, 예외 처
 7. [[Java-Standard-Library-Exception-Handling|예외 처리]]
    - [[Java-Standard-Library-Exception-Handling-Resource-Cleanup|자원 정리]]
 
-## 수집 범위
+## 출처
 
-인프런 `김영한의 실전 자바 - 중급 1편` 과정 `333308`의 강의 103개를 조회해 본문이 확인된 102개를 주제별 문서에 한 번씩 연결했다. 퀴즈 10개는 강의 본문 범위에서 제외했다. `강의 소스 코드` 단원 `212458`은 세 차례 조회했지만 `No content found for courseId=333308, unitId=212458` 응답으로 본문을 가져오지 못했다.
-
-## 과정 안내
+[강의 소스 코드](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212458)는 본문을 확인하지 못해 내용에 반영하지 않았다.
 
 - 김영한 강사, [강의 소개](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212184)
 - 김영한 강사, [수업 자료](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212457)

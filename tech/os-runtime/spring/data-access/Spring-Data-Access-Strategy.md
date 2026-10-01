@@ -88,16 +88,9 @@ Spring Boot 4.1은 classpath와 bean 조건에 따라 `DataSource`, `JdbcTemplat
 - JPA 변경은 flush 때 SQL이 된다. test가 rollback으로 끝나면 UPDATE가 log에 나오지 않을 수 있으므로 `flush()`를 호출하거나 commit하는 test로 확인한다([[Transactional-Test-Antipattern]]).
 - Bind 값과 결과 row log는 개인정보와 credential을 노출하므로 운영에서는 끄거나 대상을 제한한다. SQL 관찰 도구의 노출 주의는 [[Querydsl-Setup-and-Compatibility]]에도 있다.
 
-## 강의 접근 기록
-
-Curriculum의 lecture type 88개를 조회했고 86개 본문을 확인했다. 다음 resource unit 두 개는 재시도에서도 본문을 반환하지 않았다.
-
-- 김영한 강사, [강의 소스 코드](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114613): `No content found for courseId=328990, unitId=114613`
-- 김영한 강사, [PPT 자료](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114721): `No content found for courseId=328990, unitId=114721`
-
-구체적인 dependency와 설정은 추정하지 않고 현재 공식 문서로 보강했다. Quiz 11개는 lecture 본문 수집 대상이 아니다.
-
 ## 출처
+
+[강의 소스 코드](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114613)와 [PPT 자료](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114721)는 본문을 확인하지 못했다. 구체적인 dependency와 설정은 현재 공식 문서를 기준으로 보강했다.
 
 - [Spring Framework, Data Access with JDBC](https://docs.spring.io/spring-framework/reference/data-access/jdbc.html)
 - [Spring Boot 4.1, SQL Databases](https://docs.spring.io/spring-boot/reference/data/sql.html)

@@ -17,10 +17,8 @@ Java의 lambda target typing에서 시작해 Stream pipeline, Collector, Optiona
 - [[Java-Parallel-Streams-and-ForkJoin|병렬 Stream과 Fork/Join]]
 - [[Java-Functional-Programming-Principles|Java에서 함수형 원칙 적용]]
 
-## 강의 접근 기록
-
-인프런 과정 `336672`의 lecture 99개를 조회해 98개 본문을 확인했다. Quiz 13개는 lecture 본문 수집 대상에서 제외했다. `강의 소스 코드` unit `275318`은 세 차례 조회했지만 `No content found for courseId=336672, unitId=275318` 응답으로 본문을 가져오지 못했다.
-
 ## 출처
+
+[강의 소스 코드](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275318)는 본문을 확인하지 못해 내용에 반영하지 않았다.
 
 - 김영한 강사, [강의 소개](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275315), [수업 자료](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275317), [강의 소스 코드](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275318), [다음으로](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275429)

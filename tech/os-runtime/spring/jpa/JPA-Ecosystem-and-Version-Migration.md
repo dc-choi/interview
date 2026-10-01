@@ -106,18 +106,9 @@ Spring이 주입하는 shared `EntityManager` proxy는 현재 transaction에 연
 - 개발용 schema 자동 생성과 운영 migration을 분리한다.
 - dialect, driver, DB version 조합은 framework 지원표와 실제 통합 test로 검증한다.
 
-## 강의 접근 기록
-
-MCP에서 56개 lecture 중 54개 내용을 읽었다. 아래 두 resource unit은 목록에는 있으나 본문을 반환하지 않았다.
-
-- [2024 최신 버전으로 프로젝트 설정하기, 문서](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=203903): `No content found for courseId=324109, unitId=203903`
-- [2024 최신 버전으로 프로젝트 설정하기, 소스코드](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=203904): `No content found for courseId=324109, unitId=203904`
-
-따라서 두 unit의 구체적인 설정은 추정해 복원하지 않고, 현재 공식 문서로 별도 보강했다. quiz 9개는 lecture 본문 수집 대상이 아니었다.
-
-실전 활용 1 과정 `324119`는 lecture 36개 본문을 모두 확인했고 quiz 7개는 본문 수집 대상에서 제외했다. 최초 조회에서 unit `24300`, `24301`, `24303`, `24304`, `24305`, `24306`, `24308`이 `McpServerError: rate_limit_exceeded`를 반환했지만 소규모 재시도에서 모두 성공했다. 최종 미수집 unit은 없다.
-
 ## 출처
+
+강의의 2024 프로젝트 설정 [문서](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=203903)와 [소스코드](https://www.inflearn.com/courses/lecture?courseId=324109&unitId=203904)는 본문을 확인하지 못했다. 해당 설정을 추정해 복원하지 않고 현재 공식 문서를 기준으로 보강했다.
 
 - [Jakarta Persistence 3.2 release](https://jakarta.ee/specifications/persistence/3.2/)
 - [Jakarta Persistence 3.2 specification](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2)

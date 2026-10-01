@@ -20,11 +20,9 @@ aliases: ["Java Generics and Collections", "Java 제네릭과 컬렉션"]
 7. [[Java-Generics-and-Collections-Map-Stack-Queue|Map, Stack, Queue와 Deque]]
 8. [[Java-Generics-and-Collections-Iteration-and-Sorting|순회, 정렬과 컬렉션 유틸리티]]
 
-## 수집 범위
+## 출처
 
-인프런 `김영한의 실전 자바 - 중급 2편` 과정 `333482`의 강의 93개를 조회해 본문이 확인된 92개를 모두 주제별 문서에 연결했다. 여러 주제에 걸친 단원은 관련 문서마다 연결했다. 퀴즈 10개는 강의 본문 범위에서 제외했다. `강의 소스 코드` 단원 `216043`은 세 차례 조회했지만 `No content found for courseId=333482, unitId=216043` 응답으로 본문을 가져오지 못했다.
-
-## 과정 안내
+[강의 소스 코드](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216043)는 본문을 확인하지 못해 내용에 반영하지 않았다.
 
 - 김영한 강사, [강의 소개](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=215927)
 - 김영한 강사, [수업 자료](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216042)

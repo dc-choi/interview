@@ -26,11 +26,9 @@ Java 동시성은 스레드를 많이 만드는 기술이 아니라, 공유 상�
 3. 작업 실행은 직접 만든 platform thread보다 `ExecutorService` 또는 virtual-thread-per-task executor에 맡긴다.
 4. 모든 대기에는 취소, timeout, 종료와 과부하 정책을 함께 둔다.
 
-## 강의 접근 기록
-
-김영한 강사의 인프런 과정 `334352`, `김영한의 실전 자바 - 고급 1편, 멀티스레드와 동시성`에서 lecture 118개를 조회해 117개 본문을 확인했다. Quiz 13개는 lecture 본문 수집 대상에서 제외했다. [강의 소스 코드, unit 232311](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232311)는 세 차례 조회했지만 매번 `not_found` 응답이어서 본문을 가져오지 못했다.
-
 ## 출처
+
+[강의 소스 코드](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232311)는 본문을 확인하지 못해 내용에 반영하지 않았다.
 
 - 김영한 강사, [강의 소개](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232309), [수업 자료](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232310), [다음으로](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232440)
 - [Java Language Specification 17, Threads and Locks, Java SE 26](https://docs.oracle.com/javase/specs/jls/se26/html/jls-17.html)

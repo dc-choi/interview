@@ -171,58 +171,12 @@ aliases: ["Inflearn Knowledge Import", "인프런 지식 문서화 트래커"]
 - Course 334352, unit 232311 강의 소스 코드: 세 차례 조회에서 모두 `not_found`였다. 나머지 117개 lecture 본문은 thread lifecycle/JMM/monitor/lock/condition/BlockingQueue/atomic/concurrent collection/executor 정본에 연결했다.
 - Course 344484, unit 498602 강의자료: runtime 0인 자료 단원이며 세 차례 조회에서 모두 `not_found`였다. 나머지 12개 lecture 본문은 LLM, Claude 모델, MCP와 A2A, Claude Code 정본에 연결했다.
 
-## 최신성 교정 기록
+## 자료 해석의 한계
 
-아래는 범주별 대표 기록이며, 개별 강의의 교정 여부와 상세는 강의 대기열 표를 정본으로 한다.
-
-- Cloud/container: Course 325381, 326598, 334085, 343428, 340962와 340716을 AWS/Docker/Kubernetes 공식 문서에 맞춰 교정했다. S3 일관성, Lambda 제한, Step Functions/X-Ray/Cognito/CloudFormation, container와 VM 경계, image digest, OCI, probe/Gateway API와 Istio 비용을 조건과 버전이 드러나게 정리했다.
-- Web/network/CS: Course 328275, 331070, 329605, 331036, 326277, 326485, 334352, 336749, 328188, 329927와 328971을 React/DOM/HTML/CSS, RFC, ISA, OS, C++/STL, Java concurrency, 언어 runtime과 알고리즘 정의에 맞췄다. function component/Hooks/Effect/key/state snapshot, CRA 종료와 Vite/framework, Router/Redux Toolkit/Recoil archive/SWR, node/attribute/property와 XSS sink, NodeList, event path/delegation/isTrusted, transition/vendor prefix, CIDR/HTTP, byte/문자, CPU/저장장치, process/VM/IPC, AOT/JIT, thread lifecycle/JMM/monitor/lock/BlockingQueue/atomic/executor, 동시성/병렬성, pointer/array decay/signed overflow/shift, 완전 탐색/누적 합/Fenwick tree/greedy/LIS/graph/DP와 점근 표기의 경계를 분리했다.
-- Database: Course 34982, 36175, 338473, 339423, 327501, 333931, 343202, 340524와 338886을 Oracle 26ai/ISO SQL, MySQL 8.4, Spark/Debezium과 관계형 이론에 맞췄다. 11g 설치와 현재 환경, Oracle SQL/PL/SQL/cursor/trigger/tablespace/권한/index/window function, 설정 변경/buffer pool/change buffer, compression/job queue/polyglot, CDC ordering, DDL/FK/redo, 실행 계획/통계/join, soft delete/EAV/JSON과 key/관계 모델링의 과도한 일반화를 제거했다.
-- Architecture/distribution/commerce: Course 324109, 324119, 324214, 324474, 324476, 328990, 327273, 336073, 337730, 328412, 332731, 337778, 340204와 339108을 공식 Jakarta Persistence/Hibernate/Spring Data JPA/Querydsl/MyBatis/NestJS/TypeORM/Spring, Reactive Manifesto와 메시징/결제 자료로 검증했다. persistence context/mapping/association/cascade/JPQL, 관계 편의 method/변경 감지/web binding/order invariant/dynamic search, API DTO/fetch join/collection query/OSIV, repository/save/query method/paging/custom fragment/auditing/projection/Specification/QBE, Querydsl predicate/join/subquery/function/projection/dynamic query/bulk/custom repository, data access strategy/transaction test, file upload/S3, MongoDB populate/AdminJS, 포트/ORM 경계, MSA 준비도, Saga/TCC/Outbox, 상품/장바구니/주문/부분 취소/정산 불변식을 선택 조건과 실패 복구 중심으로 정리했다.
-- Language/OOP/tooling: Course 182835, 332506, 333308, 333482, 334977, 336672, 324235, 324398, 325633, 324642, 324019, 247815, 329966, 330452, 334416, 336658, 334495와 328284를 Java SE, ECMAScript/HTML/Fetch/TypeScript/Git 공식 문서와 GoF 개념 경계에 맞췄다. Java type/object/reference/initialization/construction/encapsulation/static/final/inheritance/polymorphism/OCP/Object contract/불변성/String/wrapper/enum/date-time/nested class/exception/generic/collection/lambda/Stream/Optional/charset/I/O/file/socket/HTTP/reflection/annotation, JS type/coercion/control flow/Array/JSON/Date/execution context/scope/function object/arguments/this/prototype/closure, Unicode/Object/iterator/Symbol/collection/Class/async, 함수 합성/concurrency, TypeScript 7.0 compiler/narrowing/decorator/Node/NestJS/React/Deno, 책임 주도 설계/SOLID, pattern/Git 운영을 분리했다.
-- Spring/testing/deployment: Course 182737, 326029, 326674, 327260, 327901, 328723, 330459, 325630, 325969, 182992, 40164와 328553을 현재 Jakarta Servlet/Pages, Spring MVC/Boot/JDBC/AOP, Jest/Express/NestJS, HTTP test와 배포/보안 문서에 맞췄다. Servlet/JSP/HTTP 상태/JDBC, Front Controller/DispatcherServlet/mapping/binding/message converter/SSR/PRG, Thymeleaf/form validation/session/error/conversion/upload, DataSource/connection pool/transaction/exception translation, embedded server/executable JAR/starter/auto-configuration/external config/profile/Actuator/metric, method trace/ThreadLocal/template/callback/proxy/BeanPostProcessor/advice/pointcut/self-invocation, 객체 설계/IoC/DI/Bean lifecycle, JPA, test double/HTTP/실제 DB 경계, transaction test의 false positive, CRA 종료, immutable artifact/rollback, Actions 공급망, Vite env와 CORS 경계를 보강했다.
-- Product collaboration: Course 338233의 workflow, artifact별 SSOT, handoff와 design system을 공식 Figma 문서로 확인하고 조직 규모별 고정 처방과 Dev Mode가 명세를 대체한다는 단정을 제거했다.
-
-## 초기 통합의 완료 판정
-
-- [x] 92개 강의의 커리큘럼 조회 또는 실패 원인 기록
-- [x] MCP가 제공한 모든 접근 가능한 lecture 본문 조회와 `not_found` 재시도
-- [x] 본문을 확보한 89개 강의의 기존 문서 커버리지 대조
-- [x] 확보한 본문의 누락 개념 반영과 출처 연결
-- [x] 기술 최신성, 위키링크, 200줄 제한, PII와 표기 규칙 검증
-- [x] 통합 결과에서 수강 진도와 지식 숙련을 분리해 보고
-- [ ] MCP 미제공 3개 강의의 전문 확보, 외부 접근 상태가 바뀌어야 진행 가능
-
-## 2026-10-01 전수 보강 재개
-
-2026-09-30 세션의 초기 통합 뒤 실행한 전수 대조 1차를 복구했다. 아래 수치는 초기 강의 대기열의 완료 수와 다른 단위다.
-
-- 대상 88개 강의를 123개 묶음으로 대조한 결과 1,467개 보강 후보가 보고됐다. 후보 수는 실제 수정 수나 새로운 지식 수가 아니며 중복과 기존 충족 항목을 포함한다.
-- 수집 단계는 123개 모두 결과가 있었지만 반영/검증 단계 일부가 사용량 제한으로 종료됐다. 빈 완료 보고만으로 미반영이라 판단하지 않고 현재 Markdown을 다시 읽었다.
-- 복구 대상으로 분류한 후보는 DB 189개, OS/runtime/Spring 180개, CS/Java/JavaScript 202개, 아키텍처 130개다. 기존 커리어 문서 검증에서 남은 15개 지적도 별도로 대조했다.
-- 복구 후보 701개를 중복 없는 처리 내역과 대조했다. 문서 보강 620개, 기존 충족 57개, 중복 병합 15개, 근거 부족이나 과도한 일반화로 제외한 항목 9개다. 이 수치는 후보 단위이며 수정 파일 수가 아니다.
-- 판정은 필요한 보강, 기존 충족, 중복 병합, 근거 부족/과도한 일반화 제외로 나눴다. 먼저 반영된 YouTube와 블로그 보강도 현재 문서의 일부로 보존했다.
-- 1차 조회에서 본문을 받지 못한 73개 단원을 재조회했다. 71개는 `not_found`, Course 326485의 100289와 237952는 제목과 강사 메타데이터만 반환하고 본문은 비어 있었다. 중간의 일시적 429는 저속 재시도로 해소했다. 두 교안의 전문을 확보한 것으로 세지 않는다.
-- 원래 접근 불가로 남긴 3개 강의의 전문 미확보 상태는 유지한다. 이번 73개 재조회는 그 3개 강의 전체를 다시 조회한 결과가 아니다.
-- 이번 작업의 근거는 복구한 MCP 강의 본문 기반 후보, 현재 문서와 필요한 공식 1차 자료다. 모든 원영상/첨부파일 재시청이나 예제 시스템의 운영 검증을 뜻하지 않는다.
-
-완료 상태: 복구 대상 701개의 처리를 마쳤고 기존 커리어 검토의 15개 지적도 해소했다. 초기 통합 완료와 이번 보강 완료는 별도 기록이다.
-
-- 독립 검토는 DB/runtime/CS/OOP, 웹/인프라, 아키텍처/커리어로 나눠 위험도가 높은 설명을 대조했다. S3 암호화 강제, Kubernetes 배포 자원과 probe 감지 시간, JavaScript Atomics 형 변환, Oracle KEEP의 NULL 정렬, MySQL EXPLAIN 문법, Stripe 멱등성의 적용 조건을 교정했다. TypeORM 버전 자동 증가와 충돌 검출도 구분했다.
-- 런타임 출처 감사에서 30개 문서에 누락 링크 81개를 보완했다. 채택하거나 이미 충족한 후보의 강의 참조 525개는 직접 출처 485개와 연결 문서 출처 40개로 추적 가능하며, 제외 후보의 참조 14개는 반영 출처로 세지 않았다.
-- 별도의 최종 검토에서 아키텍처 진화 후보 22개, 위 교정 사항과 출처 연결을 다시 대조했고 해당 범위의 추가 결함은 발견하지 못했다. Atomics 예제 3개는 Node v26.7.0에서 재현했다.
-- 변경 Markdown 837개의 위키링크 파일 대상, 코드 fence, frontmatter, 금지 표기와 지식 문서 파일명 중복 검사 및 `git diff --check`가 통과했다. 837개에는 세션 재개 전 변경도 포함되며 이번 수정 파일 수가 아니다.
-- 검토는 위험도 중심 표본 대조다. 전체 강의 원문 재검증, 모든 링크 heading 검증, DB/JVM/Spring/AWS/Kubernetes 실환경 실행이나 ArchUnit 컴파일을 완료했다는 뜻은 아니다. 본문 미확보 항목은 위의 접근 한계로 남긴다.
-
-## 2026-10-01 신규 강의 추가
-
-- Course 336905의 커리큘럼은 lecture 33개(영상 32개와 runtime 0인 인사말 1개), quiz 1개이며 표시된 영상 시간은 19시간 24분 13초다.
-- Inflearn MCP가 제공한 33개 본문을 모두 확보했다. 반환 내용은 단원별 구조화된 강의 설명이며 원영상 재시청이나 화면 코드, 첨부파일의 완전한 수집을 뜻하지 않는다. 퀴즈는 커리큘럼으로 존재만 확인했고 정답을 가져오거나 제출하지 않았다.
-- 인사말은 화질 개선과 글자 변형 가능성 안내이므로 지식 문서에서 제외했다. 나머지 기술 단원 32개는 기존 OOP/SOLID, 함수 구조, TDD, 레거시 테스트, 아키텍처, 리팩토링과 코드 리뷰 정본과 대조했다. 30개는 내용을 보강했고 2개는 기존 설명으로 충족되어 출처를 연결했다.
+- MCP가 제공한 본문과 공식 자료를 대조한 기록이다. 원영상 재시청, 첨부파일 전체 확보나 예제 시스템의 실행 검증을 뜻하지 않는다. 미확보 자료는 위 접근 한계 목록을 따른다.
+- 2026-10-01 재조회에서 Course 326485의 unit 100289와 237952는 제목과 강사 메타데이터만 반환하고 본문은 비어 있었다. 두 교안의 전문은 여전히 미확보다.
+- Course 336905의 MCP 본문은 단원별 구조화된 강의 설명이다. 화면 코드와 첨부파일 전체를 확보한 자료로 해석하지 않는다. 기술 내용은 OOP/SOLID, TDD, 아키텍처, 리팩토링과 코드 리뷰 정본에 통합했으며 [[Function-Structure-and-Contracts|함수 구조와 호출 계약]], [[Legacy-Code-Testing|레거시 코드 테스트]]에서 관련 개념을 확인할 수 있다.
 - 강의의 스타일 선호와 실험적 접근을 사용자 규칙으로 채택하지 않는다. 기존의 스펙 우선 개발과 필요에 따른 테스트 방식 선택을 유지한다.
-- 이번 변경은 기존 문서와 인덱스, 이 기록 23파일의 갱신과 [[Function-Structure-and-Contracts|함수 구조와 호출 계약]], [[Legacy-Code-Testing|레거시 코드 테스트]] 2파일 추가다. 앞선 통합의 변경은 보존했다.
-- 기술 단원 32개 모두 정본의 단원별 출처로 추적 가능하다. 독립 검토에서 레거시 테스트 seam과 기존 주의사항의 충돌을 교정했으며, 검토 범위에서 추가 실질 오류는 발견하지 못했다.
-- 이번 변경의 heading 링크 11개와 전체 변경 Markdown 849개의 위키링크 파일 대상, 코드 fence, frontmatter, 금지 표기, 파일명 중복 검사 및 `git diff --check`가 통과했다. 849개에는 이전 작업이 포함되며 이번 수정 파일 수는 25개다. 검증은 문서와 출처 대조이며 영상 재시청이나 예제 실행 검증은 포함하지 않는다.
 
 ## 관련 문서
 

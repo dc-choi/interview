@@ -25,6 +25,6 @@ Java 문법에서 객체 설계와 표준 라이브러리까지 현재 명세에
 10. [[Java-Generics-and-Collections|제네릭과 컬렉션]]
 11. [[Java-IO-Network-Reflection|I/O, network, HTTP와 runtime metadata]]
 
-## 자료 범위
+## 출처
 
-인프런 과정 `332506`의 강의 98개를 조회해 본문이 확인된 97개를 주제별 문서에 한 번씩 연결했다. 퀴즈 12개는 강의 본문 범위에서 제외했다. `강의 소스 코드` 단원 `194630`은 세 차례 조회했지만 `No content found for courseId=332506, unitId=194630` 응답으로 본문을 가져오지 못했다. 중급 과정 `333308`의 수집 범위는 [[Java-Standard-Library|표준 라이브러리 심화]], 중급 2편 `333482`의 수집 범위는 [[Java-Generics-and-Collections|제네릭과 컬렉션]]에 기록했다.
+[강의 소스 코드](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194630)는 본문을 확인하지 못해 내용에 반영하지 않았다.

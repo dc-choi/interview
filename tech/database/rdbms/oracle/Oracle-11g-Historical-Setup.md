@@ -63,11 +63,9 @@ SQL Developer는 database server와 별도 client다. 설치가 성공했다는 
 
 설치 화면의 클릭 순서보다 현재 공식 guide, 지원 platform, release note와 보안 정책을 먼저 확인한다.
 
-## 강의자료 접근 기록
-
-- `courseId=36175`, `unitId=5051`, 제목 `강의자료`: `not_found`, `No content found for courseId=36175, unitId=5051`. [강의자료 단원](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5051)
-
 ## 출처
+
+[강의자료 단원](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5051)은 본문을 확인하지 못해 내용에 반영하지 않았다.
 
 - [Oracle AI Database 26ai Free Installation Guide for Microsoft Windows](https://docs.oracle.com/en/database/oracle/oracle-database/26/xeinw/index.html)
 - [Oracle AI Database 26ai Free, Connecting](https://docs.oracle.com/en/database/oracle/oracle-database/26/xeinl/connecting-oracle-database-free.html)
