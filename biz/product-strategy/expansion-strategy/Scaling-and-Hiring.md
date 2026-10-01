@@ -133,6 +133,12 @@ PMF 신호가 생겼다는 이유만으로 인원을 늘리지는 않는다. 확
 
 이 카드로 하루와 한 주기의 일을 그렸을 때 한 사람이 수행할 수 없거나 회사 결과로 이어지지 않으면 여러 직무를 억지로 합친 역할일 수 있다.
 
+필수 역량을 입사 시 요건과 일하며 학습할 역량으로 나누는 기준은 직무 이름이 아니라 현재 팀이 무엇을 가르칠 수 있는지와 그 역량이 지금의 병목인지다. 제품 디자이너를 예로 든다.
+
+- 신입 디자이너에게 가장 중요한 역량으로 UI 기본기(타이포그래피, 컬러, 레이아웃)를 꼽는 실무 의견이 있다. 문제 해결은 입사 뒤 함께 일하며 키우면 되고 먼저 갖출 것은 기본기라는 이유이며, 시니어에게도 UI 기본기가 부족한 경우가 많다는 관찰을 덧붙인다. 한 실무자의 의견이므로 일반 법칙이 아닌 사례로 본다.
+- 이 분류는 문제 해결을 함께 키워 줄 동료와 프로세스가 있을 때 성립한다. 1인 제품의 첫 디자이너가 사용자가 핵심 가치를 경험하지 못하는 병목(4절)을 맡는다면 문제 정의, 사용성 조사와 흐름 설계가 곧 병목이므로 입사 시 요건이 된다. 창업자가 시각 품질을 검토하기 어렵다면 UI 기본기도 입사 시점에 확인한다.
+- 업무 표본에서도 두 역량을 나눠 본다. UI 기본기는 실제 화면의 타이포그래피, 컬러와 레이아웃이 정보 위계를 만드는지로([[Visual-Hierarchy|시각적 위계]]), 문제 해결은 한 사례의 문제, 기각한 대안, 선택 이유와 결과를 설명하게 해서 확인한다. 완성도 높은 화면만 보면 문제 해결을, 과정 설명만 들으면 결과물의 품질을 놓친다.
+
 ## 10. 기술 창업자의 첫 채용 예시
 
 기술 창업자가 B2B 제품의 유료 사용과 재사용을 확인했다고 가정한다.
@@ -161,6 +167,7 @@ PMF 신호가 생겼다는 이유만으로 인원을 늘리지는 않는다. 확
 - [Recruiting Outside of Your Personal Network — Stripe Atlas](https://stripe.com/guides/atlas/recruiting)
 - [Advice for First Time Founders — Y Combinator](https://www.ycombinator.com/blog/advice-for-first-time-founders)
 - [How to Hire the First Employees for Your Startup — Stripe Atlas](https://stripe.com/resources/more/how-to-hire-the-first-employees-for-your-startup-a-guide-for-founders)
+- [인프런, 디자인 프로세스 제로투원, Q&A 무엇이든 물어보세요](https://www.inflearn.com/courses/lecture?courseId=338233&unitId=329390)
 
 ## 관련 문서
 

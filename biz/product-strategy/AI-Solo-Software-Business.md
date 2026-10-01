@@ -40,6 +40,16 @@ AI 코딩 도구가 서버, 데이터베이스, 인증과 외부 연동까지 �
 4. **남의 플랫폼에만 짓지 않는다.** 한 플랫폼의 정책 변경으로 제품이 한순간에 사라진 사례가 있다. 고객 연락처, 결제, 데이터를 자기 쪽에 두는 구조로 설계한다.
 5. **인원이 아니라 자동화로 확장한다.** 반복 작업은 먼저 자동화하고, 필요하면 프리랜서를 쓰고, 채용은 가장 늦게 한다([[Scaling-and-Hiring|1인 제품 확장과 첫 채용]]).
 
+### 개인용에서 보편적 소프트웨어로
+
+같은 기능이라도 나만 쓰는 프로그램은 복잡할 이유가 없다. 몇 줄짜리 스크립트를 저장해 두고 필요할 때 돌리면 된다. 남에게 건네는 순간 복잡성이 빠르게 늘어난다.
+
+- **사용성**: 사용법을 모르는 사람이 핵심 작업을 끝낼 수 있어야 하므로 화면, 안내, 실패 경로가 생긴다.
+- **보안**: 나는 나를 공격하지 않지만, 사용자가 수천, 수만 명으로 늘면 그중 악의를 가진 사람이 확률적으로 섞인다. 입력 검증, 권한, 남용 방지가 필요해진다.
+- **규모**: 동시 사용자가 늘면 같은 기능도 전혀 다른 설계가 필요하다.
+
+그래서 처음부터 모두를 위한 제품을 목표로 하면 이 복잡성을 한꺼번에 떠안고, 사용자 중에 자기 자신이 빠지기 쉽다. 자신이 즐기지 않는 활동을 하는 사람들이 필요로 할 것이라는 추측만으로 만든 제품은 필요를 관념으로 짐작하게 된다. 첫 사용자는 자기 자신, 그다음은 가족과 친구처럼 가까운 사람으로 두면 실제 필요를 확인하며 만들 수 있고, 사용자가 없어도 스스로 쓰기 때문에 오래 지속할 수 있다. 혼자 감당하기 어려울 만큼 커졌을 때가 개인용에 머물지 보편적 제품으로 키울지(투자, 동료, 전업) 결정할 시점이다. 그때까지 실제로 쓰였다는 사실이 자신과 동료, 투자자를 설득하는 근거가 된다. 작성자는 우회 방법을 알지만 일반 사용자는 모른다는 차이는 [[Developer-Role-AI-Era#개인용 도구와 제품의 성공 기준|개인용 도구와 제품의 성공 기준]]에 있다.
+
 ### 1인 조직도로 일을 나눈다
 
 혼자 하는 사업도 회사의 역할은 그대로 있다. PM, 개발, 디자인, 마케팅, 고객 응대(CS), 재무와 세무를 한 장의 조직도로 그리고, 지금 하는 일을 역할별로 적는다.
@@ -114,6 +124,7 @@ AI 코딩 도구가 서버, 데이터베이스, 인증과 외부 연동까지 �
 - [2인 팀 영상 AI 스타트업 창업자 인터뷰 정리 — Threads, bearkim.advisory](https://www.threads.com/@bearkim.advisory/post/DdVK_gJo6bX)
 - [퇴사 후 한 달간 앱 30개 배포 실험 — Threads, limsangjin12](https://www.threads.com/@limsangjin12/post/DZ6WqOxlC-t)
 - [바이브코딩 SaaS에 백엔드 지식이 필요한 이유 — Threads, dalgom.bami](https://www.threads.com/@dalgom.bami/post/DXNlorHkgTB)
+- [deepsleep - 보편적인 프로그램과 개인적인 프로그램 — YouTube, 생활코딩](https://www.youtube.com/watch?v=go81Mu7FXKI)
 - [1인 개발자의 조직도 — Threads, side_lab_](https://www.threads.com/@side_lab_/post/DMMZZYrSO6c)
 - [1인 개발용 무료 서비스 목록 — Threads, vibematfia](https://www.threads.com/@vibematfia/post/DKylAW_SUGg)
 - [Google Marketing Platform, Google Analytics](https://marketingplatform.google.com/about/analytics/)
