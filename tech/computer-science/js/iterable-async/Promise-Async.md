@@ -139,7 +139,19 @@ async function saveWithContext() {
 
 Promise는 `.then`으로 비동기 계산을 합성할 수 있어 모나드와 비슷한 실무 직관을 준다. 그러나 thenable assimilation으로 `Promise<Promise<T>>`를 그대로 관찰할 수 없고 실행 시점/오류 의미까지 포함하면 엄밀한 law 논의가 필요하다. `map`이라는 단어만으로 안전한 합성이 보장된다고 말하지 않는다. 자세한 구분은 [[Monads-In-TypeScript|TypeScript 모나드]] 참고.
 
+## 정적 생성과 연결된 pipeline
+
+Promise.resolve는 같은 constructor의 native Promise면 그 object를 그대로 반환하고 thenable이면 그 결과를 따른다. Promise.reject는 reason이 Promise여도 동화하지 않고 reason 자체를 담은 새 rejected Promise를 만든다. resolve/reject에 여러 인자를 넘겨도 첫 값만 쓰므로 여러 결과는 object로 묶는다.
+
+동기/비동기 겸용 helper는 일반 값이면 즉시 변환하고 Promise이면 then으로 이어 T 또는 Promise<T>를 반환할 수 있다. 결과 type과 오류 시점이 둘로 갈리므로 application 경계에서 항상 Promise로 통일할지 판단한다. instanceof Promise만으로 다른 realm과 thenable 전체를 판별하지 않는다. reduce를 겸용으로 만들 때도 accumulator가 Promise가 되는 순간 이후 결과를 연결해 누락된 await/return이 없게 한다.
+
+미리 시작한 작업을 순서대로 나중에 소비할 필요가 있으면 생성 직후 각 원본 Promise에 rejection 관찰을 붙인다. 원본에 `p.catch(() => {})`를 붙이고 원본 p를 보관하면 이후 rejection은 그대로 관찰할 수 있지만 catch가 반환한 Promise는 undefined로 복구된다. 서로 바꾸면 오류가 사라진다. 이는 관찰 시점 조정일 뿐 작업 실패/취소 정책이 아니며, 일반 집합에는 Promise.all/allSettled가 더 단순하다.
+
+Promise executor의 동기 throw도 constructor 밖으로 던지지 않고 rejection이 된다. Array map/filter/slice가 그 Promise를 값으로 다루면 predicate는 Promise를 truthy나 NaN으로 판단하고 실패는 연결되지 않는다. callback 결과를 합성한 최종 Promise를 try 안에서 await해야 각 단계 rejection이 같은 catch에 도달한다. lazy 소비는 아직 평가하지 않은 원소의 오류를 미룰 뿐 전체 원천이 성공했다는 증거가 아니다.
+
 ## 출처
+
+- 인프런 보충 강의: [지연 평가 + Promise - L.map, map, take](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16625), [reduce에서 nop 지원](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16627), [지연된 함수열을 병렬적으로 평가하기 - C.reduce, C.take (1)](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16629), [지연된 함수열을 병렬적으로 평가하기 - C.reduce, C.take (2)](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16630)
 
 - [ECMAScript Language Specification, Promise objects](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise-objects)
 - [ECMAScript Language Specification, async function definitions](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-async-function-definitions)
@@ -147,7 +159,7 @@ Promise는 `.then`으로 비동기 계산을 합성할 수 있어 모나드와 �
 - [MDN, Promise.prototype.catch()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch)
 - [MDN, Promise.prototype.finally()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally)
 - [모던 자바스크립트 딥다이브 스터디 #10-3 (CH 45 프로미스) — FE재남](https://www.youtube.com/watch?v=VEux0lApQ4c)
-- Promise 심화: [Promise 구조](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49499), [resolve/reject](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49519), [then/catch](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49570), [chain](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49615), [all/race](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49769), [오류 흐름](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49862)
+- Promise 심화: [Promise 구조](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49499), [인스턴스 생성](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49519), [then/catch](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49570), [resolve/thenable/reject](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49615), [all/race](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49769), [Promise 메커니즘](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49862)
 - Promise 합성: [callback과 Promise](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16617), [비동기를 값으로](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16618), [Promise 값 활용](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16619), [Promise와 모나드](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16620), [Kleisli composition](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16621), [비동기 pipeline](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16622), [then 규칙](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16623)
 - async/await와 오류: [async/await](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16636), [Array map과 async map](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16637), [await와 pipeline](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16638), [함께 사용하기](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16639), [동기 오류](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16640), [비동기 오류](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16641), [pipeline 오류 경계](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16642), [마무리](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16643)
 

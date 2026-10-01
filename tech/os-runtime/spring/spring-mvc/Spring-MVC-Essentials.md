@@ -77,7 +77,7 @@ private int timeout;
 | Content-Type | `application/json`, `application/xml` | `multipart/form-data`, `application/x-www-form-urlencoded` |
 | 바인딩 | HttpMessageConverter로 Body 역직렬화 | 필드별 Setter/Constructor 바인딩 |
 | 유효성 | `@Valid` + `MethodArgumentNotValidException` | Spring 6+는 `@Valid` + `MethodArgumentNotValidException`. 이 예외가 `BindException`을 상속하므로 상위 타입으로도 처리 가능 |
-| 중첩 객체 | 자연스럽게 지원 | 제한적 |
+| 중첩 객체 | serializer 계약으로 지원 | property 경로/constructor binding으로 지원, 허용 경로 제한 필요 |
 
 `multipart` + JSON 같이 쓰는 경우는 [[Spring-Multipart-JSON]] 참고.
 
@@ -104,7 +104,7 @@ HTML controller의 `Model`은 view에 전달할 attribute 모음이고, `ModelAn
 | 구분 | Filter | Interceptor |
 |---|---|---|
 | 계층 | **Servlet Container** (Tomcat) | **Spring MVC** (DispatcherServlet 이후) |
-| 적용 범위 | 모든 요청 (정적 리소스 포함) | Spring이 처리하는 요청만 |
+| 적용 범위 | 등록 URL pattern/dispatcher type의 Servlet 요청 | MVC handler 요청, resource handler와 오류 경로도 포함 가능 |
 | 수명주기 | `doFilter` 단일 메서드 | `preHandle` → `postHandle` → `afterCompletion` 3단계 |
 | 핸들러 정보 | 없음 (Servlet 레벨) | **핸들러 메서드, 애노테이션 접근 가능** |
 | Spring Bean 주입 | 가능 (DelegatingFilterProxy) | 자연스러움 |
@@ -114,7 +114,7 @@ HTML controller의 `Model`은 view에 전달할 attribute 모음이고, `ModelAn
 ### 용도별 선택
 
 - **인코딩, CORS, 압축, 요청/응답 래핑**: Filter (더 낮은 계층, HTTP 수준 작업)
-- **인증, 인가 검사, 성능 로깅, 핸들러 메타 활용**: Interceptor (Spring 컨텍스트 필요)
+- **핸들러 메타 활용, MVC model/log 처리**: Interceptor. production 인증과 인가는 Spring Security의 filter/method 정책을 우선한다.
 - 둘 다 할 수 있는 경우가 많지만, **핸들러 정보가 필요하면 Interceptor**
 
 ## WAS vs Web Server
@@ -153,6 +153,10 @@ Tomcat은 **Servlet Container + Web Server** 기능을 겸하지만, 실무에�
 - **WAS와 Web Server 분리**가 주는 스케일, 보안 이점
 - `@RequestBody` vs `@ModelAttribute` 매핑 동작 차이
 
+앞단 Web Server가 별도로 살아 있고 오류 응답을 설정했다면 WAS/DB 실패 중에도 정적 오류 화면을 제공할 수 있다. 자동으로 보장되는 기능은 아니며 proxy와 WAS가 같은 장애 자원을 공유하는지도 확인한다. API만 제공하거나 부하가 작으면 WAS의 HTTP 기능만 사용하는 구성도 가능하다.
+
+정적 resource를 MVC가 처리하면 Interceptor가 실행될 수 있다. 앞단 서버가 직접 제공하면 application Filter/Interceptor를 모두 우회한다. 실행 범위는 파일 종류보다 실제 배포 경로로 판단한다.
+
 ## 출처
 - [매일메일 — @Value](https://www.maeil-mail.kr/question/7)
 - [매일메일 — @ExceptionHandler](https://www.maeil-mail.kr/question/8)
@@ -183,6 +187,10 @@ Tomcat은 **Servlet Container + Web Server** 기능을 겸하지만, 실무에�
 - 김영한 강사, [회원 웹 기능, 홈 화면 추가](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49589)
 - 김영한 강사, [회원 웹 기능, 등록](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49590)
 - 김영한 강사, [회원 웹 기능, 조회](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49591)
+- 김영한 강사, [웹 서버, 웹 애플리케이션 서버](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71160)
+- 김영한 강사, [스프링 인터셉터 - 요청 로그](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83343)
+- 김영한 강사, [스프링 인터셉터 - 인증 체크](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83344)
+- 김영한 강사, [서블릿 예외 처리 - 인터셉터](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83353)
 
 ## 관련 문서
 - [[Spring-Request-Lifecycle|Spring 요청 처리 흐름]]

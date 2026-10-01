@@ -3,7 +3,7 @@ tags: [messaging, aws, sns, pubsub, fanout, decoupling, saa-c03]
 status: done
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["SNS", "Amazon SNS", "Simple Notification Service"]
-verified_at: 2026-09-03
+verified_at: 2026-09-30
 ---
 
 # Amazon SNS (Simple Notification Service)
@@ -130,7 +130,7 @@ Publisher가 `MessageAttributes` 또는 message body에 키-값을 붙이면 Sub
 SNS는 메시징 이외에:
 - **Mobile Push** — APNs(iOS), FCM(Android), ADM, Baidu에 토큰 직접 발송
 - **SMS** — 전 세계 휴대폰 (지역별 가격 차이)
-- **Email/Email-JSON** — 단순 알림 (대량은 SES 권장)
+- **Email/Email-JSON** — 내부 시스템 경보용. 수신자가 구독을 확인해야 받고 본문을 꾸밀 수 없어 회원 대상 메일과 대량 발송은 SES가 맞다. 비교는 [[SNS-Email-SES|SNS 이메일 알림과 SES 선택]]
 
 ## 보안
 
@@ -178,10 +178,12 @@ SNS는 메시징 이외에:
 - [Amazon SQS, Subscribe a queue to an SNS topic using the SQS console](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-subscribe-queue-sns-topic.html)
 - [Amazon SNS, Subscribe an SQS queue to an SNS topic](https://docs.aws.amazon.com/sns/latest/dg/subscribe-sqs-queue-to-sns-topic.html)
 - [Amazon SNS payload-based message filtering — AWS](https://aws.amazon.com/about-aws/whats-new/2022/11/amazon-sns-payload-based-message-filtering/)
+- [Amazon SNS, Email subscription setup and management](https://docs.aws.amazon.com/sns/latest/dg/sns-email-notifications.html)
 - [AWS 핵심 서비스 정리 — 학습 메모]
 - AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서
+- [[SNS-Email-SES|SNS 이메일 알림과 SES 선택]]
 - [[SQS|SQS]]
 - [[EventBridge|EventBridge]]
 - [[Fan-Out-Architecture|Fan-out 아키텍처]]

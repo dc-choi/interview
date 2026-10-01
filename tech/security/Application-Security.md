@@ -3,7 +3,7 @@ tags: [security, secure-coding, owasp]
 status: done
 verified_at: 2026-09-30
 category: "보안(Security)"
-aliases: ["Application Security", "애플리케이션 보안", "시큐어코딩", "Secure Coding", "OWASP Top 10"]
+aliases: ["Application Security", "애플리케이션 보안", "시큐어코딩", "Secure Coding", "OWASP Top 10", "OWASP API Security Top 10"]
 ---
 
 # 애플리케이션 보안 (Application Security) / 시큐어코딩
@@ -45,6 +45,31 @@ aliases: ["Application Security", "애플리케이션 보안", "시큐어코딩"
 - **A02 Security Misconfiguration (보안 설정 오류)** — 불필요한 포트, 기능, 계정, 과도한 오류 정보와 안전하지 않은 클라우드 권한이 공격면을 만든다.
 - **A03 Software Supply Chain Failures (소프트웨어 공급망 실패)** — 직접, 전이 의존성과 빌드, 배포 경로의 취약점 또는 악성 변경을 함께 관리해야 한다.
 - **A05 Injection** — 2025년에는 5위다. 프레임워크와 ORM이 파라미터 바인딩 같은 기본 방어를 제공해도, 동적 쿼리와 안전 기능 우회에서 발생한다. 대표 사례는 [[SQL-Injection]]과 [[XSS]]다.
+
+## OWASP API Security Top 10:2023, API 전용 위험 지도
+
+API는 객체 식별자를 받는 Endpoint와 문서화되지 않은 Host가 많아 인가와 자산 관리 실패가 두드러진다. OWASP API Security Top 10은 API 고유 위험만 모은 목록이며 웹 Top 10 같은 다른 목록을 대체하지 않는다.
+
+| 항목 | 실패 지점 | 대응 출발점 |
+|---|---|---|
+| API1 Broken Object Level Authorization | 요청한 객체 ID의 소유권 미검증 | 객체마다 서버 인가, [[IDOR]] |
+| API2 Broken Authentication | Token 탈취, 인증 구현 결함 | [[Auth-Method-Selection\|인증 방식 선택]], [[JWT]] |
+| API3 Broken Object Property Level Authorization | 응답의 과다 속성 노출, 요청 속성의 무단 변경 | 반환 필드 선별, 변경 허용 필드만 바인딩, [[JPA-API-DTO-Boundary\|DTO 경계]] |
+| API4 Unrestricted Resource Consumption | 요청 수, Payload 크기와 비용이 큰 작업의 한도 부재 | [[Rate-Limiting\|Rate Limit]], 입력 크기 제한 |
+| API5 Broken Function Level Authorization | 관리자 기능과 일반 기능의 권한 경계 누락 | 기본 거부 집행점, [[Access-Control-Models\|접근 제어 모델]] |
+| API6 Unrestricted Access to Sensitive Business Flows | 구매, 예약, 가입 흐름의 자동화 남용 | 보호할 업무 흐름 식별, 자동화 탐지 |
+| API7 Server Side Request Forgery | 사용자가 준 URI를 검증 없이 호출 | [[SSRF]] |
+| API8 Security Misconfiguration | 불필요한 기능, 과한 오류 정보와 기본 설정 | [[Actuator-Exposure\|Actuator 노출]] |
+| API9 Improper Inventory Management | 구버전 API와 문서에 없는 Host 방치 | Host, Version과 연동 서비스 목록 관리 |
+| API10 Unsafe Consumption of APIs | 제3자 API 응답을 사용자 입력보다 느슨하게 신뢰 | 외부 응답 검증, Redirect 허용 목록 |
+
+2019판 대비 변화는 다음과 같다.
+
+- Excessive Data Exposure와 Mass Assignment가 객체 속성 수준 인가 실패라는 공통 원인으로 묶여 API3가 됐다. API6와 API10은 새로 만들어졌고, 2019판에 없던 SSRF가 API7로 들어왔다.
+- Injection과 Insufficient Logging & Monitoring은 빠졌다. OWASP는 Injection과 Vulnerable and Outdated Components 같은 일반 위험이 API에서 다르게 동작하거나 다르게 악용되지 않아 넣지 않았다고 설명한다. Security Misconfiguration으로 흡수됐다거나 프레임워크 덕분에 빈도가 줄어 뺐다는 해석은 공식 문서에 근거가 없다.
+- 빠졌다고 위험이 사라지지 않는다. Injection은 웹 Top 10:2025 A05로 계속 다루고, API10도 외부 API 데이터를 검증 없이 쓰면 Injection으로 이어질 수 있다고 본다.
+
+MSA에서는 공통 통제와 서비스별 통제를 나눈다. API Gateway는 Token 검증, Rate Limit과 Payload 크기 제한 같은 공통 Filter를 맡지만 객체 소유권과 속성 권한(API1, API3)은 알 수 없으므로 각 서비스가 집행한다. 기능 권한(API5)도 Gateway Route 규칙만 믿지 않고 서비스가 기본 거부로 다시 확인하며, 서비스별 인가 Test를 둔다([[Microservice-Edge-and-Composition-Patterns|API Gateway 패턴]]). Rate Limit은 API4의 기본 통제지만 API6의 업무 흐름 남용은 요청 빈도만으로 드러나지 않을 수 있다. OWASP는 보호할 흐름을 업무 관점에서 먼저 정하고 기기 지문, 사람 여부 확인과 비정상 흐름 탐지를 함께 고르라고 권한다.
 
 ## 최근 개발 트렌드가 만드는 리스크
 
@@ -122,6 +147,9 @@ Q. 보안팀과 개발팀의 충돌은?
 ## 출처
 
 - [OWASP, Top 10:2025](https://owasp.org/Top10/2025/)
+- [OWASP, API Security Top 10 2023](https://api-security.owasp.org/editions/2023/en/0x11-t10/)
+- [OWASP, API Security Top 10 2023 Release Notes](https://api-security.owasp.org/editions/2023/en/0x04-release-notes/)
+- [OWASP, API Security Top 10 2023 Methodology and Data](https://api-security.owasp.org/editions/2023/en/0xd0-about-data/)
 - [애플리케이션 보안 핵심 — 시큐어코딩, IDOR, SSRF, JWT, Spring Actuator (YouTube)](https://www.youtube.com/watch?v=RQv86D0M5YY&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=19)
 - [Android Developers, Shrink, obfuscate, and optimize your app](https://developer.android.com/build/shrink-code)
 - [Android Developers, Recover the original stack trace](https://developer.android.com/topic/performance/app-optimization/test-and-troubleshoot-the-optimization)
@@ -129,6 +157,7 @@ Q. 보안팀과 개발팀의 충돌은?
 - [Claude Code source leak — InfoQ](https://www.infoq.com/news/2026/04/claude-code-source-leak)
 - [웹 SaaS 바이브코딩 보안 프롬프트 체크리스트 — Threads, prompt.daily_](https://www.threads.com/@prompt.daily_/post/DWF07HqkX01)
 - [Claude Code 원본 노출과 map 파일 — Threads, lightsoft_crew](https://www.threads.com/@lightsoft_crew/post/DWjQE0ek6bX)
+- [인프런, Dowon Lee, OWASP API Top 10](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289785)
 
 ## 관련 문서
 

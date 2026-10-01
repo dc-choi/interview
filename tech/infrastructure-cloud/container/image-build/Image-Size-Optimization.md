@@ -3,7 +3,7 @@ tags: [infrastructure, docker]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["Image Size Optimization", "이미지 최적화"]
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 ---
 
 # Image Size Optimization
@@ -51,12 +51,15 @@ Alpine에서 빌드 시 필요한 패키지(`python3`, `make`, `gcc`)는 같은 
 
 ## 측정과 안전한 정리
 
-`docker system df -v`로 image, container, volume과 build cache 사용량을 보고 `docker history`나 `dive`로 큰 layer를 찾는다. image의 표시 크기를 단순 합산하면 공유 layer 때문에 실제 disk 사용량을 과대평가할 수 있다.
+`docker system df -v`로 image, container, volume과 build cache 사용량을 보고 `docker history`나 `dive`로 큰 layer를 찾는다. image의 표시 크기를 단순 합산하면 공유 layer 때문에 실제 disk 사용량을 과대평가할 수 있다. `-v`의 `SIZE`는 다른 image와 공유하는 `SHARED SIZE`와 그 image만 쓰는 `UNIQUE SIZE`의 합이라 image 하나를 지워 돌아오는 공간은 `UNIQUE SIZE`에 가깝다. 기본 출력의 `RECLAIMABLE`은 공식 문서에 정확한 정의가 없으므로 정리 전 `-v`로 대상을 확인한다.
 
-- dangling image는 tag가 없는 image다. unused image와 같은 집합은 아니다.
-- `docker image prune`은 기본적으로 container가 참조하지 않는 dangling image를 정리한다.
+layer는 content hash로 식별돼 한 번만 저장된다. pull할 때 local에 같은 layer가 있으면 내려받지 않고(진행 출력의 `Already exists`), push할 때 registry에 이미 있는 layer는 `Layer already exists`로 건너뛴다. `docker tag`는 image를 복사하지 않는 별칭이다([[Docker-Image-Pipeline]]).
+
+- dangling image는 tag가 없는 image다. unused image와 같은 집합은 아니다. 같은 이름과 tag로 다시 build하면 tag가 새 image로 옮겨 가고 이전 image가 `<none>:<none>`으로 남는다. tag를 생략하면 `latest`가 붙으므로 tag 없이 반복 build하는 개발 환경에서 주로 쌓인다([[Docker-Core#Image tag와 pull 정책|latest와 pull 정책]]).
+- `docker rmi`는 tag 참조를 지우면 `Untagged:`, 실제 image를 지우면 `Deleted:`를 출력한다. tag가 여러 개인 image를 tag로 지우면 그 tag만 떨어지고, 마지막 tag일 때 image가 함께 삭제된다.
+- `docker image prune`은 기본적으로 container가 참조하지 않는 dangling image를 정리한다. disk가 부족할 때 가장 먼저 해 볼 수 있는 정리다.
 - `docker image prune -a`는 어떤 container도 참조하지 않는 tagged image까지 대상으로 넓힌다.
-- `docker system prune`은 stopped container, unused network, dangling image와 build cache를 함께 정리한다. volume은 기본 대상이 아니지만 별도 option으로 포함될 수 있다.
+- `docker system prune`은 stopped container, unused network, dangling image와 build cache를 함께 정리한다. volume은 기본 대상이 아니고 `--volumes`도 anonymous volume만 지운다. 중지된 container를 먼저 지운 뒤 image를 정리하므로 `-a`를 붙이면 실행 중인 container가 쓰는 image만 남는다.
 - 자동 정리는 age/label filter, rollback 보존 기간과 disk alert를 결합한다. 배포 직후 무조건 prune하면 직전 image를 이용한 빠른 rollback이 사라질 수 있다.
 
 registry의 untagged manifest와 local dangling image는 다른 수명주기다. registry에는 별도 retention/lifecycle policy를 둔다.
@@ -73,12 +76,24 @@ Q. Docker 이미지 최적화 경험이 있는가?
 - [Docker Docs, trusted content](https://docs.docker.com/docker-hub/image-library/trusted-content/)
 - [Docker Docs, image digests](https://docs.docker.com/dhi/explore/security-concepts/digests/)
 - [Docker CLI, system prune](https://docs.docker.com/reference/cli/docker/system/prune/)
+- [Docker CLI, system df](https://docs.docker.com/reference/cli/docker/system/df/)
+- [Docker CLI, image ls](https://docs.docker.com/reference/cli/docker/image/ls/)
+- [Docker CLI, image rm](https://docs.docker.com/reference/cli/docker/image/rm/)
+- [Docker CLI, image prune](https://docs.docker.com/reference/cli/docker/image/prune/)
+- [Docker CLI, image pull](https://docs.docker.com/reference/cli/docker/image/pull/)
+- [Docker CLI, image push](https://docs.docker.com/reference/cli/docker/image/push/)
+- [system prune 실행 순서 — docker/cli](https://github.com/docker/cli/blob/master/cli/command/system/pruner/pruner.go)
 - [금융 인프라를 운영하는 Toss 개발자의 Docker, image 선택](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=414206)
 - [금융 인프라를 운영하는 Toss 개발자의 Docker, cache와 dangling image](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=414207)
 - [금융 인프라를 운영하는 Toss 개발자의 Docker, build cache와 multi-stage](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=416104)
+- [금융 인프라를 운영하는 Toss 개발자의 Docker, 기본 명령어 맛보기](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=414203)
+- [금융 인프라를 운영하는 Toss 개발자의 Docker, Image, Container, Layer](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=414204)
+- [금융 인프라를 운영하는 Toss 개발자의 Docker, Image 기본 명령어](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=414205)
+- [금융 인프라를 운영하는 Toss 개발자의 Docker, Docker Hub에 image 공개하기](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=416527)
 
 ## 관련 문서
 - [[Docker]]
+- [[Docker-Core|Docker 기본]]
 - [[Multi-Stage-Build|Multi-stage build]]
 - [[Alpine-vs-Debian-Image|Alpine vs Debian 동작 차이 (busybox vs GNU coreutils)]]
 - [[Docker-Image-Pipeline|Docker image build pipeline]]

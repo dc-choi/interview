@@ -51,12 +51,28 @@ cache.computeIfAbsent(key, this::load);
 
 `compute`, `merge`, `putIfAbsent` 같은 atomic compound method를 사용한다. Iterator는 concurrent modification을 반영할 수도 있는 weakly consistent view이며 transaction snapshot이 아니다. `CopyOnWriteArrayList`는 read-heavy, small-list workload에 적합하지만 매 write마다 backing array를 복사하므로 write-heavy 경로에는 부적합하다.
 
+## 컬렉션 선택과 보호 경계
+
+동기화 wrapper를 쓸 때는 backing collection의 모든 접근도 같은 wrapper를 거쳐야 한다. 원본 참조를 직접 쓰면 보호가 빠진다. `Vector`처럼 메서드별 동기화가 있는 구현도 복합 작업 전체를 자동 보호하지 않는다.
+
+| 요구 | 선택지 | 주의 |
+|---|---|---|
+| 키별 원자적 갱신 | `ConcurrentHashMap` | 여러 키의 트랜잭션은 별도 |
+| 정렬된 map/set | `ConcurrentSkipListMap/Set` | 삽입 순서와 다른 정렬 순서 |
+| 작은 읽기 중심 list/set | `CopyOnWriteArrayList/Set` | 변경 시 배열 복사 |
+| 논블로킹 queue/deque | `ConcurrentLinkedQueue/Deque` | 무제한 적재에 별도 생산 상한 필요 |
+| 기존 collection을 단일 lock으로 보호 | `Collections.synchronizedXxx` | 순회와 복합 연산의 외부 동기화 |
+
+자료구조의 thread safety는 같은 값을 여러 호출로 검사하고 변경하는 업무 규칙의 원자성을 보장하지 않는다.
+
 ## 강의 출처
 
 - CAS와 원자적 연산: [원자적 연산 - 소개](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232395), [원자적 연산 - 시작](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232396), [원자적 연산 - volatile, synchronized](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232397), [원자적 연산 - AtomicInteger](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232398), [원자적 연산 - 성능 테스트](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232399), [CAS 연산1](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232400), [CAS 연산2](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232401), [CAS 연산3](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232402), [CAS 락 구현1](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232403), [CAS 락 구현2](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232404), [정리](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232405)
 - 동시성 컬렉션: [동시성 컬렉션이 필요한 이유1 - 시작](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232407), [동시성 컬렉션이 필요한 이유2 - 동시성 문제](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232408), [동시성 컬렉션이 필요한 이유3 - 동기화](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232409), [동시성 컬렉션이 필요한 이유4 - 프록시 도입](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232410), [자바 동시성 컬렉션1 - synchronized](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232411), [자바 동시성 컬렉션2 - 동시성 컬렉션](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232412), [정리](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232413)
 
 ## 공식 문서
+
+- [Java SE 25, java.util.concurrent](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/package-summary.html)
 
 - [AtomicInteger, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/atomic/AtomicInteger.html)
 - [AtomicStampedReference, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/atomic/AtomicStampedReference.html)

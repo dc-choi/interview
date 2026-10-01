@@ -109,6 +109,8 @@ uv_ref():   핸들을 다시 참조 → 루프가 이 핸들 때문에도 계속
 활용: GC, 하트비트 타이머, 백그라운드 감시 등 프로그램 종료를 막지 않아야 하는 핸들에 uv_unref() 적용.
 ```
 
+Node.js의 서버, 타이머, `fs.watch`, readline, `MessagePort`, `Worker`가 이 참조 상태로 프로세스 종료를 막는 조건과 해제 방법, `process.getActiveResourcesInfo()` 진단은 [[Event-Loop-Microtask#루프를 붙잡는 리소스와 해제|루프를 붙잡는 리소스와 해제]]에서 다룬다.
+
 ## 스트림 (`uv_stream_t`)
 `uv_tcp_t`, `uv_pipe_t`, `uv_tty_t`의 추상 부모 타입. 양방향 통신 채널을 제공한다.
 
@@ -177,3 +179,4 @@ libuv 자체의 TCP/UDP에는 사용하지 않는다.
 - [[libuv-Threading|libuv 스레드 풀, 스레딩, 에러]]
 - [[Event-Loop|이벤트 루프]]
 - [[Stream|스트림]]
+- [[Event-Loop-Microtask|이벤트 루프 — 루프를 붙잡는 리소스]]

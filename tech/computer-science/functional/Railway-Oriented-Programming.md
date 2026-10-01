@@ -3,6 +3,7 @@ tags: [cs, functional, error-handling, monad, typescript, kotlin]
 status: done
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Railway Oriented Programming", "ROP", "철도지향 프로그래밍", "Result 모나드"]
+verified_at: 2026-10-01
 ---
 
 # Railway-Oriented Programming (ROP)
@@ -19,6 +20,7 @@ aliases: ["Railway Oriented Programming", "ROP", "철도지향 프로그래밍",
 - 구현 수단: **순수 함수 + Guard Clause** (early return)
 - 장점: 흐름이 명시적, 스택 비용 없음
 - 단점: 검사할 조건이 많아지면 **분기 폭발**, 도메인과 방어 로직이 섞임
+- 순수 함수가 보장하는 것은 같은 입력에 같은 출력이라는 **예측 가능성**이지 수학적 정확성이 아니다. `1/3`을 열 번 더한 값과 `1/3 * 10`은 부동소수점에서 서로 다르다. 필요한 정밀도를 스펙으로 정하고 반올림 단위를 두거나 십진 타입을 쓴다([[Measure-Modeling#구현 함정|십진 타입 함정]]).
 
 ### EAFP (Easier to Ask for Forgiveness than Permission) — "일단 시도하고 예외로 처리"
 
@@ -26,6 +28,8 @@ aliases: ["Railway Oriented Programming", "ROP", "철도지향 프로그래밍",
 - 구현 수단: **try-catch**, 또는 **Functor / Monad** 기반 타입 랩핑
 - 장점: 도메인 로직이 방어 로직에 오염되지 않음
 - 단점: try-catch는 **타입 시스템에서 보이지 않음**(Java checked exception 제외), 예외가 "제어 흐름 점프"라 추적 난이도 상승
+- 흐름이 순차적이지 않다. `finally`에 도달했을 때 try에서 왔는지 catch에서 왔는지에 따라 상태가 다르므로 어느 경로로 끝나도 일관되게 정리되도록 짜야 한다. 호출자는 어떤 예외가 올지 구현을 읽어야 안다.
+- 그래도 필요한 자리가 있다. 서버의 요청 처리 루프처럼 프로세스가 죽으면 안 되는 **최상위 경계**에서는 예외를 잡아 로그와 응답으로 바꾸는 try-catch가 맞다. ROP를 쓰더라도 외부 라이브러리와의 경계는 try-catch로 감싸 Result로 바꾼다.
 
 **ROP는 EAFP를 타입 시스템 위에 올린 것**이다. try-catch 대신 **`Result<T, E>`** 같은 타입으로 에러를 값처럼 다룬다.
 
@@ -74,6 +78,14 @@ sum(2, 3)
 
 포인트: `divide`가 실패해도 뒤의 `map`은 호출되지 않고, 마지막 `recover`가 실패를 성공(0)으로 되돌린다. **도메인 로직(.map)과 에러 처리(.recover)가 선로 분리로 깔끔하게 나뉜다.**
 
+### ROP의 전제
+
+- 모든 기능은 순서대로 실행된다.
+- 모든 기능의 결과는 성공 아니면 실패다.
+- 프로그램은 예상한 실패 때문에 중단(panic)되지 않는다.
+
+기능을 성공과 실패로 나눌 수 있는 크기로 자르게 되므로 단계가 작아지고, 순차 흐름이라 읽기와 리팩터링이 쉬워진다. 실패 타입을 봉인된 계층(Kotlin `sealed class`, TypeScript 판별 유니온)으로 제한하면 호출부가 처리해야 할 실패를 컴파일러가 알려 준다.
+
 ## TypeScript에서 실전 적용
 
 TS 표준 라이브러리에는 Result 타입이 없지만, 실전에서는 두 가지 패턴이 자주 쓰인다.
@@ -99,6 +111,21 @@ const flatMap = <T, U, E>(r: Result<T, E>, f: (t: T) => Result<U, E>): Result<U,
 
 `neverthrow`, `fp-ts` 같은 라이브러리가 Result/Either 타입을 제공한다. Rust의 `?` 연산자, Kotlin의 `runCatching`에 대응하는 API를 바로 쓸 수 있다.
 
+## 앞 단계 값이 필요할 때: 중첩과 컴프리헨션
+
+뒤 단계가 앞 단계의 결과 여러 개를 함께 써야 하면 `flatMap` 안에 `map`이 들어가며 다시 중첩된다. 사용자를 조회한 뒤 게시물 목록을 가져와 그 사용자의 것만 거르는 경우가 그렇다. 언어마다 이를 평평하게 쓰는 문법이 있다.
+
+- Scala: `for { user <- getUser(1); posts <- getPosts() } yield ...` 형태의 for comprehension. Haskell은 do 표기법이다.
+- Kotlin: Arrow의 `either { }` 블록 안에서 `.bind()`로 값을 꺼내고 실패는 즉시 반환된다. 현재 Arrow는 `Raise<E>`를 확장 리시버로 제공하고, context parameters는 향후 선택지로 언급된다.
+- TypeScript: neverthrow의 `safeTry`는 제너레이터 안에서 `yield*`로 Result를 풀고 `Err`이면 바로 반환한다. 라이브러리 없이도 `if (!r.ok) return r;` 식의 조기 반환으로 같은 효과를 낸다.
+
+## 중첩 컨테이너 문제
+
+`Result<Option<User>, E>`처럼 서로 다른 컨테이너가 겹치면 매 단계에서 안쪽 박스를 패턴 매칭으로 벗겨야 한다. Reactor의 `Mono`, `Flux`나 Rx 계열처럼 이미 다른 컨테이너를 주로 쓰는 환경에서 Result를 섞을 때도 같은 문제가 생긴다.
+
+- 이론적 해법은 모나드 트랜스포머(Scala cats의 `OptionT` 등)이고, 이를 일반적으로 구현하려면 타입 생성자를 타입 인자로 받는 고차 종류 타입(HKT)이 필요하다. Kotlin과 TypeScript는 HKT를 직접 지원하지 않는다(fp-ts는 흉내 낸다).
+- 실무 해법은 중첩을 만들지 않는 것이다. 없음을 에러 유니온의 한 변형(`NotFound`)으로 올리거나, Result 안에서는 `T | null`로 두고 한 컨테이너만 쓴다. 비동기는 `Promise<Result<T, E>>` 한 겹으로 통일한다(neverthrow의 `ResultAsync`가 이 조합을 감싼다).
+
 ## 실무에서 쓰는 가치
 
 - **타입으로 드러나는 에러**: 함수 시그니처만 봐도 실패 가능성을 알 수 있음. try-catch는 시그니처에 안 보임
@@ -122,10 +149,14 @@ const flatMap = <T, U, E>(r: Result<T, E>, f: (t: T) => Result<U, E>): Result<U,
 
 ## 출처
 - [kciter.so — Railway-Oriented Programming](https://kciter.so/posts/railway-oriented-programming/)
+- [neverthrow — GitHub](https://github.com/supermacro/neverthrow)
+- [Arrow, Working with typed errors](https://arrow-kt.io/learn/typed-errors/working-with-typed-errors/)
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 수학적 토대]]
 - [[Monads-In-TypeScript|Monads in TypeScript — Functor/Applicative/Monad 심화]]
+- [[Type-Driven-Development|타입 주도 개발 — 실패를 타입으로 드러내기]]
+- [[Functional-Data-Structures|함수형 자료구조]]
 - [[tech/computer-science/ts/타입스크립트(TS)|타입스크립트 (제네릭, 타입 조작)]]
 - [[Promise-Async|Promise와 Async]]
 - [[Incident-Recovery-Prevention|장애 복구와 재발 방지]]

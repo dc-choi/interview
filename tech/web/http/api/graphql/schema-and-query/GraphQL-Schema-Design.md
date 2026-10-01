@@ -1,7 +1,7 @@
 ---
 tags: [web, graphql, api, schema, schema-design]
 status: done
-verified_at: 2026-08-27
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "GraphQL schema versioning", "mutation payload"]
 ---
@@ -20,6 +20,15 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "G
 
 - non-null 출력은 서버 약속, non-null 인자는 검증 규칙이다(문법은 [[GraphQL-Schema-Types|타입 시스템]]).
 - 남용 위험: non-null 필드가 null이 되면 부모로 전파되고 부모도 non-null이면 더 위로 올라가 최악엔 `data`가 통째로 null이 된다(null bubbling, 전파 단계는 [[GraphQL-Architecture-Map|지도]]). 작은 실패가 큰 구멍이 된다. null이 그 필드에 적절한 값인지 따져 정말 아닐 때만 non-null을 준다.
+
+## 루트 필드 nullability
+
+루트 필드는 부모가 없어 Non-Null 실패가 곧장 `data`까지 올라간다. 그래서 단건 조회와 mutation 루트 필드는 nullable을 기본으로 둔다.
+
+- 단건 조회(`post(id: ID!): Post`)는 nullable로 두어 없는 id를 오류 없는 정상 결과 null로 표현한다. `Post!`로 두면 not found가 `Cannot return null for non-nullable field Query.post.` 실행 오류가 되고, `data` 전체가 null이 되어 같은 요청의 다른 루트 필드 결과까지 사라진다. 목록은 빈 배열이 정상 결과이므로 관례대로 `[Post!]!`를 쓴다.
+- mutation 루트 필드가 Non-Null이면 한 필드의 실패가 이미 실행된 형제 결과를 응답에서 지운다. `mutation { first failing third }`에서 `failing: Int`면 `data`에 `first`와 `third`가 남고 `path: ["failing"]` 오류 한 건이 붙는다. `failing: Int!`면 `data`가 null이 되어 이미 반영된 `first`의 결과를 클라이언트가 받지 못한다. 스펙은 아직 실행하지 않은 형제 필드를 취소할 수 있다고(may) 허용하며, graphql-js는 이후 직렬 필드 `third`를 실행하지 않는다(16.14.2, 17.0.2 재현).
+- payload 래퍼를 Non-Null로 선언하려면 resolver가 예상 실패를 모두 userErrors로 바꿔 반환해야 한다. 예상하지 못한 예외는 여전히 `data`를 null로 만든다.
+- 조회의 not found는 null로, 변경 대상의 부재는 오류나 userError로 나누는 계약이 흔하다. 어느 쪽이든 필드 description에 적는다.
 
 ## 버전을 피한다
 
@@ -46,6 +55,7 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "G
 - payload 래퍼 패턴(errors-as-data): 엔티티 대신 `CreateReviewPayload { review, userErrors }` 같은 결과 타입으로 감싸, 예상되는 도메인 에러(userErrors)를 top-level `errors`가 아니라 데이터로 돌려준다. Relay, Apollo 관례로 출발했고 현재는 공식 에러 처리 가이드도 도메인 에러에 이 패턴을 권장한다. userError에 message, 대상 field 경로, code enum(USERNAME_TAKEN 같은)을 두면 에러 상태가 스키마에 드러나 introspection으로 발견되고 타입 안전해진다. 변형으로 payload들이 `MutationResponse { code, success, message }` 같은 공통 인터페이스를 구현해 상태 필드를 표준화하는 관례도 있다. 단일 `input` 인자 관례는 Relay식이다.
 - 에러 채널 선택 기준은 예외성이다: 인프라 장애(DB 타임아웃), 잘못된 GraphQL(문법 오류, 없는 필드), 인증 부재 같은 예외적 실패는 top-level `errors`로, 비즈니스 규칙 위반(사용자명 중복), 입력 검증 실패, 도메인 제약(재고 부족) 같은 예상되는 실패는 errors-as-data로 돌려준다. top-level error에는 `extensions`에 기계가 읽을 code(예: INTERNAL_SERVER_ERROR)를 싣는 관례가 있다.
 - 직렬이지 트랜잭션이 아니다: 한 mutation operation의 최상위 필드는 앞 필드 resolution이 끝난 뒤 다음 필드를 시작한다. 이 순서는 concurrent request, resolver가 외부에 넘긴 비동기 작업이나 여러 저장소의 원자성까지 보장하지 않는다. 일부 성공 일부 실패 시 GraphQL은 성공분을 되돌리지 못하므로 원자성과 동시성 제어는 비즈니스 로직 계층에서 직접 만든다. (스펙상 최상위 mutation 필드 외의 필드 resolution은 side-effect-free하고 idempotent해야 한다.)
+- 역할 분담은 런타임이 강제하지 않는다. 어떤 필드 resolver도 쓰기를 할 수 있으므로 스펙을 따르는 스키마에서 side effect를 가질 수 있는 것은 최상위 mutation 필드뿐이라는 규칙은 리뷰로 지킨다. query에 쓰기를 넣으면 필드가 임의 순서로 실행되거나 병렬화될 수 있어 쓰기 순서가 정해지지 않는다. query는 GET으로 보낼 수 있어 HTTP 캐시, CDN, persisted query GET이나 서버 응답 캐시가 응답을 재사용하면 resolver가 실행되지 않고, Apollo Client 기본 `cache-first`는 캐시가 필드를 채우면 요청 자체를 생략한다([[GraphQL-Caching|캐싱과 HTTP 전송]]). Apollo Server는 GET으로 mutation을 실행하지 않으므로 side effect를 mutation에만 두면 CSRF 방지를 켜지 않아도 CSRF의 side effect 측면에서 어느 정도 보호된다고 설명한다. query에 쓰기가 있으면 이 전제가 무너져, CSRF 방지를 끈 서버나 그런 방어가 없는 서버에서 GET simple request로 쓰기가 일어날 수 있다(Apollo Server 4 이상은 CSRF 방지가 기본으로 켜져 있다). 반대로 조회를 mutation으로 만들면 최상위 필드가 직렬로 실행되고 GET, CDN 캐시와 클라이언트 캐시 재사용을 잃는다. Apollo Client mutation은 `network-only`와 `no-cache` fetch policy만 지원한다.
 
 ## 네이밍 컨벤션
 
@@ -63,11 +73,15 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "G
 
 - nullable input 필드는 기계적으로 세 상태를 구분한다: 필드 생략, 명시적 null, 값 전달. 무엇을 의미하는지는 API가 정하는 계약이고 흔한 계약은 생략=변경 없음, null=값 지우기, 값=갱신이다. 부분 업데이트에서 지우기를 표현해야 할 때 이 구분이 핵심이 된다.
 - 모호함을 피하려고 `clearBio: Boolean` 같은 명시 플래그를 두는 팀도 있다. 어느 쪽이든 동작을 필드 description에 문서화한다.
+- 도착 모양: 스펙상 생략한 필드는 coercion 결과에 항목이 없고 명시적 null은 null 값 항목으로 들어간다. graphql-js resolver에서는 생략이 키 없음(`undefined`), 명시적 null이 키 있는 `null`로 도착하며 인라인 리터럴과 변수 모두 같다(16.14.2, 17.0.2 재현).
+- 함정: `undefined`만 거르는 흔한 구현은 생략을 변경 없음으로 처리하지만 명시적 null은 저장소로 그대로 넘긴다. NOT NULL 컬럼이면 DB나 ORM 오류, nullable 컬럼이면 의도하지 않은 값 지우기가 된다. ORM도 둘을 구분한다. Prisma ORM 7은 `undefined`를 아무것도 하지 않음으로, `null`을 NULL 설정으로 처리하고(strictUndefinedChecks preview를 켜면 명시적 `undefined`가 오류라 `Prisma.skip`으로 생략한다), TypeORM 1.1의 `save`도 `undefined` 속성은 건너뛰고 `null`은 NULL로 쓴다. 그래서 input을 엔티티에 그대로 덮어 저장하면 명시적 null이 반영된다.
+- SDL 한계: 생략은 되지만 보내면 null이 금지되는 input 필드는 표현할 수 없다. nullable 필드는 생략과 null을 모두 받고, Non-Null 필드는 기본값이 없으면 생략할 수 없으며 기본값이 있으면 생략이 기본값으로 채워져 도착한다. September 2025 스펙의 `@oneOf` input은 정확히 한 필드만 non-null로 받는 특수형이라 여러 필드를 함께 고치는 부분 업데이트에는 맞지 않는다. 지울 수 없는 필드는 비즈니스 검증에서 null을 거부하거나 null을 변경 없음으로 매핑하고, 고른 계약을 description에 적는다.
 
 ## custom scalar 사용 판단
 
 - DateTime, Date, Email, URL, UUID, JSON처럼 형식과 검증 규칙이 명확한 값은 String 대신 custom scalar로 만든다. 검증이 GraphQL 계층으로 당겨져 잘못된 값이 resolver에 닿기 전에 실패하고 스키마가 자기 문서화된다(graphql-scalars 라이브러리, scalars.graphql.org 커뮤니티 명세).
 - 비용도 있다: 클라이언트와 서버 양쪽에 구현이 필요하고 이식성이 준다. Username, ProductCode처럼 비즈니스 규칙 있는 문자열일 뿐인 값엔 만들지 말고 resolver가 부르는 로직에서 검증한다.
+- 날짜를 String으로 두면 생기는 실패: ORM이 돌려준 `Date` 객체를 String 필드로 그대로 반환하면 ISO 문자열이 아니라 epoch 밀리초가 나간다. graphql-js 내장 scalar는 객체를 받으면 먼저 `valueOf()`를 호출하므로 `new Date('2026-09-30T00:00:00Z')`는 String과 ID에서 `"1790726400000"`, Float에서 `1790726400000`이 되고 Int에서는 32비트 범위를 넘어 실행 오류가 된다(graphql-js 16.14.2, 17.0.2와 Apollo Server 5.5.1 재현). `scalar DateTime`을 두어 serialize에서 ISO 8601 문자열로 바꾸거나 resolver에서 `toISOString()`으로 명시 변환한다. graphql-scalars 2.0.0의 `DateTime`은 `Date` 객체를 그대로 넘겨 HTTP 응답의 JSON 직렬화에서 문자열이 되므로, 실행 결과를 직접 보는 테스트에서도 문자열이 필요하면 `DateTimeISO`를 쓴다. NestJS code-first는 TS `Date`를 기본으로 `GraphQLISODateTime`에 매핑하므로 이 실패는 주로 schema-first와 plain Apollo에서 난다([[NestJS-GraphQL-Schema-Mapping|NestJS 스키마 매핑]]).
 
 ## 도메인을 그래프로
 
@@ -86,7 +100,9 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "G
 
 - DB 스키마를 그대로 GraphQL로 노출.
 - 관계를 객체 대신 외래키 id로 노출(`authorId: ID!`가 아니라 `author: User!` — 관계는 그래프의 간선으로).
-- non-null 남용으로 작은 실패가 큰 null 구멍이 됨.
+- non-null 남용으로 작은 실패가 큰 null 구멍이 됨. 단건 조회 루트 필드를 Non-Null로 두면 not found 하나가 `data` 전체를 지운다.
+- 부분 업데이트에서 `undefined`만 걸러 명시적 null을 저장소로 흘림.
+- 날짜를 String 필드로 두고 `Date` 객체를 그대로 반환해 epoch 밀리초가 나감.
 - mutation을 트랜잭션으로 착각(부분 성공 롤백 없음).
 - 범용 CRUD mutation 하나로 온갖 케이스를 떠안음.
 - 인가를 resolver마다 산발적으로 흩뿌림.
@@ -95,6 +111,7 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "G
 ## 면접 체크포인트
 
 - nullable 기본값이 왜 회복탄력성 설계인가, non-null 남용의 대가(부모 전파)
+- 단건 조회와 mutation 루트 필드를 nullable로 두는 이유(not found와 형제 결과 보존)
 - GraphQL이 버저닝을 피하는 법과 그 부담이 어디로 가나(호환성 도구, deprecation 규율)
 - 버전 없는 진화가 클라이언트에 요구하는 것(enum default 분기, unknown `__typename` 강등, nullable 안전 접근)
 - mutation이 직렬이지만 트랜잭션이 아니라는 것과 원자성 대응
@@ -119,4 +136,18 @@ aliases: ["GraphQL Schema Design", "GraphQL 스키마 설계", "nullability", "G
 - [graphql.org — Naming Conventions and Design Standards](https://graphql.org/learn/naming-design/)
 - [graphql.org — Review and validate schema changes](https://graphql.org/learn/schema-review/)
 - [GraphQL Specification — Normal and Serial Execution](https://spec.graphql.org/September2025/#sec-Normal-and-Serial-Execution)
+- [GraphQL Specification — Errors and Non-Null Types (형제 필드 취소)](https://spec.graphql.org/September2025/#sec-Executing-Collected-Fields.Errors-and-Non-Null-Types)
+- [GraphQL Specification — Input Object coercion (생략과 명시적 null)](https://spec.graphql.org/September2025/#sec-Input-Objects.Input-Coercion)
+- [GraphQL Specification — OneOf Input Objects](https://spec.graphql.org/September2025/#sec-OneOf-Input-Objects)
+- [Prisma ORM 7 — Null and undefined](https://www.prisma.io/docs/orm/v7/prisma-client/special-fields-and-types/null-and-undefined)
+- [TypeORM — EntityManager API (save의 undefined 처리)](https://typeorm.io/docs/working-with-entity-manager/entity-manager-api)
+- [GraphQL Scalars — DateTime](https://the-guild.dev/graphql/scalars/docs/scalars/date-time)
 - [Apollo Server — Schema basics (MutationResponse 패턴)](https://www.apollographql.com/docs/apollo-server/schema/schema)
+- [Apollo Server — Configuring CORS (GET mutation 차단, CSRF prevention)](https://www.apollographql.com/docs/apollo-server/security/cors)
+- [Apollo Client v4 — Mutations (fetchPolicy)](https://www.apollographql.com/docs/react/data/mutations)
+- [인프런, 얄팍한 코딩사전, GraphQL로 정보 주고받아보기](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=62913)
+- [인프런, 얄팍한 코딩사전, Mutation 구현하기](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=63154)
+- [인프런, Hong, 3가지 통신 패턴 및 횡단 관심사를 위한 Directive와 설계 원칙](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449777)
+- [인프런, Hong, GraphQL 확장자를 활용한 블로그 프로젝트 초기 셋팅](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449780)
+- [인프런, Hong, GraphQL에서의 타입간 관계 정의](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449781)
+- [인프런, Hong, Prisma 연동과 N+1 문제 및 Include 강제 패턴](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449783)

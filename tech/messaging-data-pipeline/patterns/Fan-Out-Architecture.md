@@ -54,7 +54,12 @@ Producer → Topic ─┬─ Consumer Group A (메일)
 
 - SNS+SQS와 비슷한 구조이지만 SQS+소비자 역할을 Subscription이 맡음
 
-### 4. 작업 분할형 Fan-out (단일 토픽/큐 → N 워커)
+### 4. RabbitMQ Fanout Exchange → 서비스별 Queue
+
+- Fanout exchange는 routing key를 무시하고 바인딩된 모든 queue에 사본을 넣는다. 서비스마다 전용 queue를 두면 SNS+SQS처럼 소비 속도와 장애가 queue 단위로 격리된다
+- 사본 전달일 뿐 서비스 간 처리 결과의 일관성은 보장하지 않으므로 멱등 소비와 DLX가 필요하다. 매칭 규칙과 dead letter 조건은 [[RabbitMQ-Exchange-Routing|RabbitMQ Exchange 라우팅]]
+
+### 5. 작업 분할형 Fan-out (단일 토픽/큐 → N 워커)
 
 ```
 Producer → Queue → Workers (N 동시 소비)
@@ -136,6 +141,7 @@ Producer → Queue → Workers (N 동시 소비)
 - [[SQS|SQS]]
 - [[EventBridge|EventBridge]]
 - [[MQ-Kafka|Kafka]]
+- [[RabbitMQ-Exchange-Routing|RabbitMQ Exchange 라우팅 (Fanout Exchange)]]
 - [[Idempotency-Key|Idempotency Key]]
 - [[At-Least-Once|At-Least-Once]]
 - [[Delivery-Semantics|Delivery Semantics]]

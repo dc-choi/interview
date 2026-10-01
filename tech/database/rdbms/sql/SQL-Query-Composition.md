@@ -71,7 +71,7 @@ Scalar subquery가 두 row 이상 반환하면 오류가 난다. `LIMIT 1`로 �
 - `ANY`/`ALL`은 비교 연산자가 일부/모든 값에 성립하는지 표현한다.
 - `NOT IN` 입력에 NULL이 있으면 3값 논리 때문에 기대와 달리 true가 나오지 않을 수 있다. NULL을 배제하거나 `NOT EXISTS`를 쓴다.
 
-Correlated subquery가 문법상 outer row마다 평가되는 것처럼 보여도 optimizer가 semi-join, materialization 등으로 변환할 수 있다. 반대로 변환되지 않으면 반복 비용이 클 수 있다. JOIN이 항상 빠르거나 subquery가 항상 읽기 쉽다는 규칙 대신 실제 plan과 grain을 비교한다.
+Correlated subquery가 문법상 outer row마다 평가되는 것처럼 보여도 optimizer가 semi-join, materialization 등으로 변환할 수 있다. 반대로 변환되지 않으면 반복 비용이 클 수 있다. MySQL에서 어떤 형태가 변환되고 SELECT 절 상관 스칼라 서브쿼리처럼 어떤 형태가 반복되는지는 [[MySQL-Query-Fundamentals-Subqueries|MySQL 서브쿼리 실행과 재작성]]에 둔다. JOIN이 항상 빠르거나 subquery가 항상 읽기 쉽다는 규칙 대신 실제 plan과 grain을 비교한다.
 
 ### Derived table과 CTE
 
@@ -109,6 +109,7 @@ GROUP BY category_id;
 ```
 
 - `SUM`에는 보통 `ELSE 0`, `COUNT(expression)`에는 NULL이 세지지 않는 성질을 의도적으로 쓴다.
+- UPDATE의 SET에 쓴 CASE에서 ELSE를 빼면 조건에 맞지 않는 행에 NULL이 대입된다. MySQL 동작은 [[DML-Conflict-and-Batch-Patterns-Update-Delete#CASE 조건부 UPDATE|CASE 조건부 UPDATE]]에 둔다.
 - label 분류와 핵심 business policy를 거대한 CASE 하나에 섞지 않는다.
 - CASE가 WHERE의 indexed column을 감싸면 sargability를 잃을 수 있어 predicate를 단순화하거나 expression index를 검토한다.
 - SELECT alias를 GROUP BY에서 허용하는지는 DBMS 동작에 의존하므로 이식성이 중요하면 expression/CTE를 명시한다.
@@ -130,6 +131,30 @@ GROUP BY category_id;
 - entity hydration이 1:N join 중복을 숨길 수 있으므로 pagination/count query는 별도로 검증한다.
 - query 결과 DTO에 의미와 nullability를 명시하고 DB alias와 TypeScript field mapping을 test한다.
 
+## ANY/ALL의 extrema와 예외
+
+NULL이 없고 비어 있지 않은 집합에서 `x > ANY`는 MIN, `x > ALL`은 MAX와 비교하는 의미다. `<`는 각각 MAX와 MIN에 대응한다. ANY는 빈 집합에서 FALSE, ALL은 TRUE이므로 빈 입력의 MIN/MAX가 NULL인 scalar 비교로 항상 치환할 수 없다. NULL 비교가 있고 확정 TRUE(ANY)/FALSE(ALL)가 없으면 UNKNOWN이 될 수 있다. `= ANY`는 IN과 같지만 `= ALL`은 모든 값과 같은지를 묻는다.
+
+## Groupwise max의 전체 row
+
+Group key와 MAX(value)를 구한 후 두 값을 원본과 함께 join하면 최댓값 row의 다른 column을 가져올 수 있다. 동률은 여러 row가 나오며 한 row만 필요하면 ROW_NUMBER에 고유 tie-breaker를 둔다. tuple IN도 NULL key/value와 optimizer의 지원을 확인한다.
+
+## 두 조회 사이의 변화
+
+먼저 최대값을 조회하고 나중에 row를 찾으면 사이에 insert/update가 들어와 결과가 엇갈릴 수 있다. 한 query로 묶으면 해당 statement의 관찰 경계에 계산을 둘 수 있다. 이것만으로 후속 write까지 원자적이거나 serializable해지지는 않으며 locking read와 isolation의 제품별 의미를 확인한다.
+
+## 업무 정렬과 pivot
+
+`ORDER BY CASE status WHEN 'URGENT' THEN 0 WHEN 'READY' THEN 1 ELSE 2 END, id`로 닫힌 업무 우선순위와 안정된 tie-breaker를 표현한다. 조건부 집계로 여러 status의 measure를 한 grain에 pivot할 수 있지만 변경되는 코드 정책과 fan-out은 별도로 관리한다.
+
+## 대칭 차집합의 중복 조건
+
+UNION ALL 후 GROUP BY key HAVING COUNT(*)=1은 각 입력에 key가 한 번만 있고 source별 집합인 경우에만 대칭 차집합을 표현한다. 한쪽 입력의 내부 중복은 결과를 잘못 제거한다. source를 표시하고 source별 deduplication 후 존재 여부를 집계하거나 양쪽 NOT EXISTS 결과를 UNION ALL로 합친다.
+
+## 인접 row는 id 차이가 아니다
+
+`a.id = b.id + 1`은 gapless 순번을 가정한다. 삭제와 sequence 결번이 있는 업무 순서는 timestamp와 tie-breaker 기준 LAG/LEAD로 표현한다. Self join과 다중 table query의 column은 alias로 한정해 같은 이름이 추가돼도 해석을 유지한다.
+
 ## 출처
 
 - [MySQL 8.4, JOIN Clause](https://dev.mysql.com/doc/refman/8.4/en/join.html)
@@ -148,6 +173,11 @@ GROUP BY category_id;
 - Subquery: [소개](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328755), [Scalar](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328756), [다중 row](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328757), [다중 column](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328758), [Correlated 1](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328759), [Correlated 2](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328760), [SELECT](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328761), [Derived table](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328762), [JOIN 비교](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328763), [문제](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328764), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328765)
 - UNION: [DISTINCT](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328767), [ALL](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328768), [정렬](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328769), [문제](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328770), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328771)
 - CASE: [기본 1](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328773), [기본 2](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328774), [Grouping](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328775), [조건부 집계 1](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328776), [조건부 집계 2](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328777), [문제](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328778), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328779)
+- [MySQL 8.4 Reference Manual, all subqueries](https://dev.mysql.com/doc/refman/8.4/en/all-subqueries.html)
+- [MySQL 8.4 Reference Manual, any in some subqueries](https://dev.mysql.com/doc/refman/8.4/en/any-in-some-subqueries.html)
+- [인프런, JOIN - 여러 테이블 조립하기](https://www.inflearn.com/courses/lecture?courseId=327501&unitId=86851)
+- [인프런, UNION - 집합으로 다루기](https://www.inflearn.com/courses/lecture?courseId=327501&unitId=86852)
+
 
 ## 관련 문서
 

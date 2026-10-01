@@ -7,10 +7,11 @@ aliases: ["Cloud Foundation"]
 
 # 클라우드 기초(Foundation)
 
-IaaS/PaaS/FaaS 구분, IaC — 클라우드 추상화 계층과 선언적 인프라.
+IaaS/PaaS/FaaS 구분, IaC, 클라우드 전환 전략 — 클라우드 추상화 계층, 선언적 인프라와 workload 이전 범위.
 
 ## 목차
 - [x] [[Cloud-Service-Models|IaaS/PaaS/FaaS/SaaS (추상화 계층, 책임 공유 모델, 서버리스 범위)]]
+- [x] [[Cloud-Migration-Strategies|클라우드 전환 전략 (AWS 7 Rs와 Microsoft CAF 용어 차이, 성숙 단계, 12 Factor 판정 질문, Assessment와 단계 이동)]]
 - [x] [[IaC|IaC (선언형 vs 명령형, 프로비저닝과 구성 관리, 검증 단계와 생략 결과, 드리프트/불변 인프라, GitOps)]]
 - [x] [[CDK-vs-Terraform|CDK vs Terraform (CloudFormation 경유 diff 신뢰성, 드리프트 대응, 투명성, 도구 선택 기준)]]
 - [x] [[IaC-Tooling-Evolution|IaC 도구 선택 사다리 (Terragrunt DRY, Terratest 테스트, Atlantis 협업, Pulumi 범용 언어, BUSL)]]

@@ -111,7 +111,23 @@ RAM은 주소로 여러 저장 위치 중 하나를 선택한다.
 - setup/hold 위반과 metastability의 관계를 설명할 수 있는가
 - 주소 폭, word 수, 데이터 폭, 총 바이트를 구분할 수 있는가
 
+## 저장 소자가 필요한 실패 경로
+
+조합회로는 경로마다 지연이 달라 입력 변경 뒤 최종값 전에 glitch가 생길 수 있다. enable 동안 투명한 latch는 이를 다음 경로로 흘릴 수 있고, A 출력이 ALU를 거쳐 다시 A에 들어오면 같은 enable 구간에 여러 번 갱신될 수 있다. edge 저장은 중간값 전달을 줄이지만 setup/hold와 clock 주기 조건을 없애지는 않는다.
+
+NOR 두 개를 교차 연결한 SR latch는 S=R=0이면 유지, S만 1이면 set, R만 1이면 reset이다. S=R=1이면 보수 출력 관계가 깨지고 동시 해제 뒤 값이 불확실하다. D latch는 S=D,R=NOT D로 금지 조합을 피한다. power-on 값은 별도 reset 계약이 없으면 가정하지 않는다. JK의 J=K=1 toggle을 level 동안 계속 되먹이면 race-around가 생기므로 edge 또는 master-slave 구조로 제어한다.
+
+동기 binary counter는 bit i를 enable과 하위 bit 모두 1인 조건에서 toggle한다. jump가 있으면 count를 막고 새 주소를 적재하는 우선순위를 둔다. PC는 명령 주소, step counter는 명령 내부 단계이며 서로 다른 상태다. control이 falling edge, data register가 rising edge인 교육 설계는 그 사이 안정 시간도 검증한다. decode 출력을 reset으로 되먹이는 counter는 glitch와 비동기 reset timing도 확인한다.
+
+## RAM 기술과 시스템 역할
+
+Random access는 원하는 주소에 직접 접근한다는 모델이지 실제 지연이 주소/row 상태와 무관하다는 보장이 아니다. SRAM은 전원 동안 쌍안정 상태를 유지하고 DRAM은 전하를 보존하기 위해 refresh한다. 전형적으로 cache는 SRAM, main memory는 DRAM, register는 flip-flop을 쓰지만 교육용 latch RAM도 시스템 역할은 main memory일 수 있다. 두 RAM 기술은 휘발성이다.
+
+ROM은 읽기 중심 비휘발성 저장이라는 이름이며 mask ROM, EEPROM, flash의 갱신 가능성이 다르다. firmware가 ROM 영역에 있다는 표현을 업데이트 불가능이라는 뜻으로 확대하지 않는다. memory 계층은 용량/지연/비용을, 기술 분류는 셀과 회수/유지 방식을 비교한다.
+
 ## 출처
+
+- 인프런 보충 강의: [프로그램 카운터](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=280866), [스텝 카운터](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=280946), [명령어 인출](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281027), [JK Latch](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=279636), [메모리](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=276828), [주변 장치](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=276829), [상용 컴퓨터](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281081)
 
 - 인프런, 널널한 개발자 강사, [컴퓨터가 기억공간을 관리하는 방법](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128249)
 - 인프런, 감자 강사, [조합 논리회로와 순차 논리회로](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=279248), [SR Latch](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=279634), [D Latch](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=279635)

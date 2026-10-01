@@ -12,10 +12,10 @@ TypeORM의 모델링, 조회, 트랜잭션과 운영을 한 흐름으로 읽기 
 ## 학습 순서
 
 1. [[TypeORM-Overview-and-DataSource|개요와 DataSource]]: 책임, 초기화, API 선택과 운영 기본값
-2. [[TypeORM-Entities-and-Columns|Entity와 Column]]: 테이블 매핑, 타입, 특수 컬럼과 모델 경계
+2. [[TypeORM-Entities-and-Columns|Entity와 Column]]: 테이블 매핑, 타입, 특수 컬럼과 모델 경계. 상속과 공통 감사 컬럼은 [[TypeORM-Entities-and-Columns-Inheritance|엔티티 상속과 공통 감사 컬럼]]
 3. [[TypeORM-Relations|Relation]]: FK 소유권, 로딩, cascade와 관계 변경
 4. [[TypeORM-Repository-and-Find-Options|Repository와 Find Options]]: 저장 API와 타입 기반 조회
-5. [[TypeORM-QueryBuilder|QueryBuilder]]: 동적 SQL, join, projection, pagination과 lock
+5. [[TypeORM-QueryBuilder|QueryBuilder]]: 동적 SQL, join, projection, pagination과 lock. join pagination과 count SQL은 [[TypeORM-QueryBuilder-Pagination-and-Count|take/skip과 count가 만드는 SQL]]
 6. [[TypeORM-Transactions-and-Replication|트랜잭션과 복제]]: manager 경계, QueryRunner와 read replica
 7. [[TypeORM-Delivery-and-Operations|배포와 운영]]: 마이그레이션 배포, 테스트와 운영 진단, 1.1.0 버전 가이드
 8. [[ORM|세 ORM 선택 기준]], [[MikroORM-vs-TypeORM|MikroORM 비교]]: TypeORM의 트레이드오프와 전환 조건

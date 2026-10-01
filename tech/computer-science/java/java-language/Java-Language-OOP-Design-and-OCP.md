@@ -58,6 +58,8 @@ final class PaymentService {
 
 `PaymentService`는 concrete payment type을 알지 않으므로 implementation을 constructor에서 교체할 수 있다. interface를 만들었다는 사실보다 client가 interface에만 의존하고 구현 선택 책임이 composition root로 이동했는지가 중요하다.
 
+협력에서 요청하는 object를 client, 요청을 받아 처리하는 object를 server라고 부른다. 물리 server가 아니라 object 사이의 역할이다. 역할과 구현을 나눠도 역할 자체가 바뀌면 이 이점이 사라진다. interface의 signature나 의미가 바뀌면 그 역할을 쓰는 모든 client와 모든 구현이 함께 바뀐다. 그래서 interface는 구현보다 안정적이어야 하고, client가 실제로 쓰는 behavior만 작게 담아 변경 파급을 줄인다([[OOP|객체 지향 프로그래밍]]의 ISP와 LSP).
+
 ## OCP를 변경 금지로 해석하지 않는다
 
 OCP는 예상한 variation point에서 새 구현을 추가할 때 안정적인 client의 수정을 피하도록 설계하라는 원칙이다. 어떤 요구 변경에도 기존 code를 한 줄도 바꾸지 않는다는 약속은 아니다.
@@ -96,6 +98,7 @@ Null Object는 역할을 구현하는 no-op 또는 명시적 실패 object로 `n
 - 절차적 코드와 객체 지향 코드의 선택 기준
 - data와 behavior를 묶는 것이 invariant 보호로 이어지는 과정
 - 역할과 구현 분리가 polymorphism을 만드는 방식
+- 역할(interface) 자체가 바뀔 때 client와 모든 구현에 미치는 파급
 - OCP가 모든 code의 무수정을 뜻하지 않는 이유
 - Strategy를 적용할 variation point
 - Null Object가 오류를 숨길 수 있는 조건

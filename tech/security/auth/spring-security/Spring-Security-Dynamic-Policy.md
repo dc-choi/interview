@@ -1,7 +1,7 @@
 ---
 tags: [security, spring-security, authorization, policy, typeorm]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "Security - 인증"
 aliases: ["Spring Security Dynamic Authorization", "DB 기반 동적 인가"]
 ---
@@ -12,16 +12,18 @@ DB 기반 인가는 정책을 Code 배포 없이 바꾸게 해주지만, DB 행�
 
 ## Legacy 구현을 현재 구조로 읽는다
 
-강의의 `FilterInvocationSecurityMetadataSource`, `MapBasedSecurityMetadataSource`, `AccessDecisionManager`와 Voter는 당시의 확장 지점이다. 현재는 Request와 Method 양쪽에 `AuthorizationManager`를 구현하고 안정적인 Filter/Advisor가 Versioned Policy Snapshot을 평가하도록 구성한다.
+강의의 `FilterInvocationSecurityMetadataSource`, `MapBasedMethodSecurityMetadataSource`(단원 제목의 `MapBasedSecurityMetadataSource`는 약칭), `AccessDecisionManager`와 Voter는 당시의 확장 지점이며 지금은 deprecated Legacy API다([[Spring-Security-Authorization#Legacy 결정 결합 읽기|Legacy Module 이전]]). 현재는 Request와 Method 양쪽에 `AuthorizationManager`를 구현하고 안정적인 Filter/Advisor가 Versioned Policy Snapshot을 평가하도록 구성한다.
+
+두 방식은 DB 변경의 반영 시점이 다르다. URL 규칙은 Filter가 요청마다 메모리 맵을 조회하므로 Runtime에 갱신할 수 있고, `reload()`가 맵을 다시 채우면 그 Instance는 다음 요청부터 바뀐 규칙을 적용한다. Method 규칙은 기동 때 Auto Proxy가 Advisor Pointcut으로 Proxy 대상을 확정하므로 같은 방식으로 갱신할 수 없고, DB에 규칙을 추가해도 Proxy되지 않은 Bean에는 집행 지점이 없다. 그래서 Runtime에 Bean을 바꾸려는 시도가 나온다.
 
 Runtime에 Singleton Bean을 제거하고 `ProxyFactory`로 다시 등록하는 방식은 다음 위험이 있다.
 
 - 이미 Bean Reference를 가진 Consumer와 새 Proxy가 달라질 수 있다.
 - 동시 요청 중 일부만 새 정책을 볼 수 있다.
 - AOP 적용, Cache, Transaction과 Lifecycle Callback이 누락될 수 있다.
-- 삭제와 Rollback 뒤 원래 Bean Graph 복원이 어렵다.
+- 삭제와 Rollback 뒤 원래 Bean Graph 복원이 어렵다. 강의 구현에서도 등록한 상태로 재기동한 뒤 삭제하면 보안이 제거되지 않는 결함이 미해결로 남았다.
 
-동적 정책은 Container 구조를 바꾸기보다 고정된 Enforcement Point가 최신 Policy Data를 읽게 한다.
+동적 정책은 Container 구조를 바꾸기보다 고정된 Enforcement Point가 최신 Policy Data를 읽게 한다. 미등록 URL의 기본 허용, 공개 자원 선처리, reload, IP Voter, Method Map과 Pointcut 원천, ProxyFactory 실험 같은 Legacy 구현의 구조와 실패 모드는 [[Spring-Security-Dynamic-Policy-Legacy|Legacy 동적 인가 구현]]에 둔다.
 
 ## 정책 모델
 
@@ -69,13 +71,13 @@ Policy와 Version, Outbox를 같은 Transaction에 저장해야 변경 Event만 
 
 DB를 매 요청 조회하면 지연과 장애 결합이 커진다. Snapshot Cache는 빠르지만 즉시 반영이라는 표현을 엄밀하게 정의해야 한다. Commit, Event 전달과 각 Instance 교체 사이에는 지연이 있고 In-flight 요청은 이전 Version을 사용할 수 있다.
 
-민감 Resource는 Policy Load 실패, Version 불일치와 평가 오류를 허용으로 바꾸지 않는다. Audit에는 Subject ID, Action, Resource ID, Policy Version, 결정과 이유 Code를 남기되 Credential과 불필요한 개인정보는 기록하지 않는다.
+민감 Resource는 Policy Load 실패, Version 불일치와 평가 오류를 허용으로 바꾸지 않는다. Legacy의 미등록 자원 공개 통과와 현재 `AuthorizationFilter`의 기권(null) 통과처럼 정책 없음이 허용으로 새는 기본값이 있으므로([[Spring-Security-Authorization|인가 문서]]) DB 정책 Manager는 정책 없음을 명시적 거부로 반환하고 마지막 규칙은 `anyRequest().denyAll()`이나 `authenticated()`로 둔다. Audit에는 Subject ID, Action, Resource ID, Policy Version, 결정과 이유 Code를 남기되 Credential과 불필요한 개인정보는 기록하지 않는다.
 
 ## IP 제한
 
 Application IP Allowlist는 보조 통제다. 직접 연결인지 신뢰한 Reverse Proxy를 거쳤는지에 따라 Client IP 추출 규칙이 달라지고, 무조건 `X-Forwarded-For` 첫 값을 믿으면 Spoofing된다. 가능하면 Network Layer에서 먼저 제한하고 Application은 Proxy Trust 설정, CIDR Parsing과 IPv4/IPv6 정규화를 검증한다.
 
-IP가 허용됐다는 이유만으로 인증이나 Resource 권한을 생략하지 않는다. 여러 조건을 조합할 때는 한 조건의 Grant가 전체 결정을 조기 허용하지 않도록 명시적인 결합 정책을 사용한다.
+IP가 허용됐다는 이유만으로 인증이나 Resource 권한을 생략하지 않는다. 여러 조건을 조합할 때는 한 조건의 Grant가 전체 결정을 조기 허용하지 않도록 명시적인 결합 정책을 사용한다. 반드시 만족해야 하는 IP 조건은 거부권으로 두고 `AuthorizationManagers.allOf(hasIpAddress(...), 역할 조건)`처럼 결합한다. Legacy Voter에서 이 원칙이 기권과 즉시 예외로 구현된 이유는 [[Spring-Security-Dynamic-Policy-Legacy|Legacy 동적 인가 구현]]에 있다.
 
 ## NestJS 집행 구조
 
@@ -93,6 +95,7 @@ APP_GUARD
 - `PolicyService`는 HTTP Guard, Service, Queue Consumer와 Scheduler가 공유한다.
 - TypeORM Repository는 Policy 판단에 필요한 Resource와 Tenant 속성을 Server에서 조회한다.
 - Global Guard만 믿지 않고 실제 상태 변경 Service 안에서 Resource 단위 검사를 반복한다.
+- Guard의 적용 범위는 기동 때 고정되므로 Action Metadata가 없는 Handler는 기본 거부한다. 새 Route를 보호 대상에 넣는 일은 배포 변경으로, 기존 Action의 허용 조건만 Runtime 정책으로 바꾼다.
 - Policy 변경 Endpoint 자체에는 더 강한 권한, 재인증, 직무 분리와 Audit를 적용한다.
 
 ## Test와 운영
@@ -102,6 +105,8 @@ APP_GUARD
 - Role Hierarchy와 Route Pattern의 Cycle, 중복과 우선순위를 검증한다.
 - 여러 Instance가 같은 Version으로 수렴했는지 Metric과 Health Signal로 확인한다.
 - Rollback이 Bean 재시작 없이 이전 Snapshot으로 복구되는지 연습한다.
+- 정책 등록, 재기동, 삭제, 재등록을 왕복해 집행 상태가 정책과 같은지 확인한다. 적용 경로가 둘이면 이 수렴 Test가 필수다.
+- 정책이 없는 URL과 Method, 기동 뒤 하나도 일치하지 않는 보호 규칙이 허용으로 새지 않는지 확인한다.
 
 ## 출처
 
@@ -120,10 +125,16 @@ APP_GUARD
 - [Spring Security 7.1, Authorization Architecture](https://docs.spring.io/spring-security/reference/servlet/authorization/architecture.html)
 - [Spring Security 7.1, Method Security](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html)
 - [Spring Security 7.1, Authorize HttpServletRequests](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html)
+- [Spring Security 7.1, Authorization](https://docs.spring.io/spring-security/reference/servlet/authorization/index.html)
+- [Spring Security 7.1 API, AuthorizationManagers](https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/authorization/AuthorizationManagers.html)
+- [Spring Security 7.1 API, MapBasedMethodSecurityMetadataSource](https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/access/method/MapBasedMethodSecurityMetadataSource.html)
+- [RequestMatcherDelegatingAuthorizationManager.java 7.1.1 — spring-security GitHub](https://github.com/spring-projects/spring-security/blob/7.1.1/web/src/main/java/org/springframework/security/web/access/intercept/RequestMatcherDelegatingAuthorizationManager.java)
+- [AuthorizationFilter.java 7.1.1 — spring-security GitHub](https://github.com/spring-projects/spring-security/blob/7.1.1/web/src/main/java/org/springframework/security/web/access/intercept/AuthorizationFilter.java)
 
 ## 관련 문서
 
 - [[Access-Control-Models|Policy 평가 Architecture]]
 - [[Spring-Security-Authorization|Spring Security 인가]]
+- [[Spring-Security-Dynamic-Policy-Legacy|Legacy 동적 인가 구현과 실패 모드]]
 - [[Transactional-Outbox|Transactional Outbox]]
 - [[NestJS-Guards-Patterns|NestJS Policy Guard]]

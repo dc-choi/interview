@@ -29,9 +29,9 @@ SCD(Slowly Changing Dimension)는 **시간이 지남에 따라 천천히 변하�
 ```
 id              | name    | tier     | valid_from           | valid_to             | is_current
 ----------------+---------+----------+----------------------+----------------------+-----------
-1               | 홍길동  | bronze   | 2024-01-01 00:00:00  | 2024-06-01 12:00:00  | false
-1               | 홍길동  | silver   | 2024-06-01 12:00:00  | 2024-12-01 09:00:00  | false
-1               | 홍길동  | gold     | 2024-12-01 09:00:00  | 9999-12-31 23:59:59  | true
+1               | 고객 A  | bronze   | 2024-01-01 00:00:00  | 2024-06-01 12:00:00  | false
+1               | 고객 A  | silver   | 2024-06-01 12:00:00  | 2024-12-01 09:00:00  | false
+1               | 고객 A  | gold     | 2024-12-01 09:00:00  | 9999-12-31 23:59:59  | true
 ```
 
 - **`valid_from`** — 이 행이 유효해진 시점 (필수)
@@ -54,7 +54,7 @@ SET valid_to = :effective_at, is_current = false
 WHERE customer_id = 1 AND is_current = true;
 
 INSERT INTO customer_scd (customer_id, name, tier, valid_from, valid_to, is_current)
-VALUES (1, '홍길동', 'gold', :effective_at, NULL, true);
+VALUES (1, '고객 A', 'gold', :effective_at, NULL, true);
 
 COMMIT;
 ```
@@ -96,7 +96,7 @@ WHERE customer_id = 1
   AND (valid_to IS NULL OR valid_to > '2024-08-15');
 ```
 
-분석 쿼리에서 자주 쓰이는 패턴: "주문이 발생한 그 시점의 고객 등급으로 매출을 집계".
+분석 쿼리에서 자주 쓰이는 패턴: 주문이 발생한 그 시점의 고객 등급으로 매출을 집계.
 
 ### 기간별 상태 변화
 
@@ -111,11 +111,11 @@ ORDER BY valid_from;
 
 운영 DB는 보통 **현재 상태만** 저장(Type 1). 등급이 bronze → gold로 바뀌면 row가 그대로 UPDATE된다. 이 상태로 매출 분석을 하면:
 
-- "지난달 gold 고객의 매출"을 뽑을 때, **지난달엔 silver였던 사용자가 오늘 gold라고 포함되어 버린다** → 분석 왜곡
+- 지난달 gold 고객의 매출을 뽑을 때, **지난달엔 silver였던 사용자가 오늘 gold라고 포함되어 버린다** → 분석 왜곡
 - 등급 변화 자체를 KPI로 잡을 수 없음 (얼마나 자주 승격되는가, 등급 체류 기간)
-- A/B 테스트의 "테스트 노출 시점 사용자 속성" 복원 불가
+- A/B 테스트의 테스트 노출 시점 사용자 속성 복원 불가
 
-Type 2로 적재해두면 **"이벤트 발생 시점 = 그 시점 유효한 행"**으로 join해 모든 분석이 시점 일관성을 갖는다.
+Type 2로 적재해두면 **이벤트 발생 시점 = 그 시점 유효한 행**으로 join해 모든 분석이 시점 일관성을 갖는다.
 
 ## 인덱스 전략
 
@@ -133,7 +133,7 @@ Type 2로 적재해두면 **"이벤트 발생 시점 = 그 시점 유효한 행"
 
 ### 단점
 - **저장 공간 증가** — 변경이 잦으면 row가 빠르게 늘어남. 1년에 평균 3회 변경되는 사용자 1000만 명 → 3000만 행/년
-- **쿼리 복잡도** — "현재" 조건을 매번 붙여야 함. View로 감싸는 게 일반적
+- **쿼리 복잡도** — 현재 조건을 매번 붙여야 함. View로 감싸는 게 일반적
 - **유니크 제약 깨짐** — 자연키만으로 UNIQUE 불가. 복합키로 재설계
 - **JOIN 비용** — 다른 팩트 테이블과 시점 조건으로 join하면 비용 큼 → 자주 쓰는 시점은 비정규화 검토
 
@@ -167,8 +167,12 @@ MySQL 커넥터의 `source.ts_ms`는 소스 DB에서 변경이 만들어진 시�
 - Type 2의 두 SQL을 같은 transaction으로 묶어 부분 적용에 따른 current row 0개 상태를 막고, 자연키별 직렬화와 unique invariant로 current row 2개 상태를 막는 이유
 - `valid_to`를 `NULL` vs `9999-12-31`로 두는 트레이드오프 (인덱스, 범위 쿼리 단순성)
 - 운영 DB와 분석 DB의 역할 분리 — 왜 운영 DB를 직접 Type 2로 만들지 않는가
-- CDC + Type 2가 "이벤트 시점 사용자 속성" 분석을 가능하게 하는 이유
+- CDC + Type 2가 이벤트 시점 사용자 속성 분석을 가능하게 하는 이유
 - 변경이 잦은 컬럼은 별도 차원으로 분리해야 하는 이유(미니 차원 패턴)
+
+## 특정 시점의 최신 version
+
+발생 시각만 있는 history는 entity별 `occurred_at <= :as_of` 중 최댓값을 구해 원본 row와 다시 조인한다. 같은 시각의 version이 여럿이면 version key로 tie-breaker를 둔다. 구간형 SCD는 `valid_from <= :as_of AND (:as_of < valid_to OR valid_to IS NULL)`의 반개구간으로 한 version을 고른다. 시간 중복/누락과 지연 정정은 별도 검증한다.
 
 ## 출처
 - [Jochong — KPI를 위한 데이터 준비하기: Kafka + Debezium CDC 파이프라인 도입](https://jochong.tistory.com/26)
@@ -176,6 +180,11 @@ MySQL 커넥터의 `source.ts_ms`는 소스 DB에서 변경이 만들어진 시�
 - [PostgreSQL 18 Documentation, BRIN Indexes](https://www.postgresql.org/docs/current/brin.html)
 - [PostgreSQL 18 Documentation, Partial Indexes](https://www.postgresql.org/docs/current/indexes-partial.html)
 - [Kimball Group, Slowly Changing Dimension Type 4](https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/type-4-mini-dimension/)
+- [인프런, 현재 테이블로 이력 관리 - 단점 1](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401971)
+- [인프런, 현재 테이블로 이력 관리 - 단점 2](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401972)
+- [인프런, 현재 테이블로 이력 관리 - 시작](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401970)
+- [인프런, 현재 테이블로 이력 관리 - 유효 기간](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401973)
+
 
 ## 관련 문서
 - [[CDC-Debezium|CDC, Debezium]]

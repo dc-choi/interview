@@ -1,7 +1,7 @@
 ---
 tags: [cs, typescript, declaration-merging, module-augmentation, dts]
 status: done
-verified_at: 2026-08-28
+verified_at: 2026-10-01
 category: "CS - TypeScript"
 aliases: ["TS Module Augmentation", "Declaration Merging", "declare global", "declare module"]
 ---
@@ -33,6 +33,8 @@ interface User { email: string; }
 const u: User = { name: 'dc', email: 'x@x' };   // 자동 병합
 ```
 
+비함수 멤버는 이름이 겹치지 않거나, 겹치면 타입이 같아야 한다. 서브타입으로 다시 선언해도(`name: string` 뒤 `name: "hello"`) TS2717(Subsequent property declarations must have the same type)이고, `?`, `readonly` 같은 수정자가 달라도 TS2687이다. 서브타입 재정의를 허용하는 `extends`와 다른 점이다([[TS-Type-vs-Interface|type vs interface]]). 같은 이름의 함수 멤버는 오버로드로 합쳐지며, 나중에 병합되는 interface의 오버로드가 앞에 온다. 단일 문자열 리터럴 타입 매개변수를 가진 시그니처는 예외로 목록 위쪽으로 올라간다.
+
 ## Module Augmentation — 외부 모듈 확장
 
 설치된 라이브러리의 타입에 멤버를 추가. 라이브러리 코드는 안 건드림.
@@ -52,6 +54,7 @@ declare module 'lodash' {
 - augmentation 파일에는 최상위 import나 export가 있어야 한다. 반드시 `import 'lodash'`일 필요는 없고, 원본 모듈 import나 `export {}`도 파일을 외부 모듈로 만든다.
 - 기존 선언을 보강할 수 있지만 새 최상위 선언을 추가하거나 default export를 보강할 수는 없다.
 - 원본과 같은 모듈명을 그대로 사용.
+- 보강 대상 모듈에 선언이 있어야 한다. 위 예시의 `LoDashStatic`은 `@types/lodash`가 선언한 interface라 이 패키지가 설치돼 있어야 한다. 선언 없는 JavaScript 모듈을 보강하면 `noImplicitAny`와 관계없이 TS2665(Invalid module name in augmentation ... resolves to an untyped module ..., which cannot be augmented)가 난다(6.0.3, 7.0.2에서 확인).
 
 흔한 사례: `Express.Request`에 사용자 정의 필드, `axios`의 `AxiosRequestConfig`에 옵션, `vite`/`vue` 환경에 import.meta.env 확장.
 
@@ -142,11 +145,11 @@ declare module 'express' {
 
 // libB.d.ts
 declare module 'express' {
-  interface Request { tenantId?: number; }   // ❌ 타입 충돌
+  interface Request { tenantId?: number; }   // 오류: 타입(TS2717)과 ? 수정자(TS2687)가 다름
 }
 ```
 
-타입 호환되지 않으면 컴파일 에러. **모노레포, 플러그인**에서 자주 발생 — augmentation은 한 곳에 모아 관리.
+같은 타입으로 다시 선언하는 것은 허용되지만, 타입이 다르면 서브타입처럼 호환되는 타입이라도 TS2717이고 수정자가 다르면 TS2687이다. **모노레포, 플러그인**에서 자주 발생 — augmentation은 한 곳에 모아 관리.
 
 ## 흔한 실수
 
@@ -174,6 +177,7 @@ declare module 'express' {
 ## 출처
 
 - [TypeScript Handbook, Declaration Merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation)
+- [인프런, 이정환 Winterlood, 인터페이스 합치기](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=157315)
 
 ## 관련 문서
 

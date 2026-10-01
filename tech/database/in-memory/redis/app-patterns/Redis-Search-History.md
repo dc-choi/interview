@@ -40,6 +40,8 @@ EXPIRE search:user:123 2592000    # 30일
 **장점**: 구현 단순, 메모리 효율.
 **단점**: `LREM`이 O(N) — 리스트가 커지면 느려짐 (10개 한정이면 무시 가능).
 
+최근 본 상품도 요구가 같다(최신순, 중복 제거, 상위 N개, 유실 허용). Set은 순서가 없고 Sorted Set은 점수와 순위 기능이 과해 List가 맞는다. List는 중복을 거르지 않으므로 `LREM`을 빠뜨리면 짧은 간격으로 같은 상품을 다시 본 사용자에게 같은 항목이 두 번 보인다. 세 명령 사이에 같은 사용자의 다른 요청이 끼어들면 순서나 개수가 어긋날 수 있으니, 조건 분기가 없는 이 묶음은 `EXPIRE`와 함께 `MULTI/EXEC`로 한 번에 실행한다.
+
 ## 방법 2: Sorted Set (ZADD + ZRANGE)
 
 시각 기반 정렬. 중복 자동 제거(score만 갱신).
@@ -142,6 +144,7 @@ RedisTimeSeries 모듈 또는 별도 TSDB (InfluxDB, Prometheus).
 
 ## 출처
 - [dgjinsu — Redis로 최근 검색 기록 관리하기](https://dgjinsu.tistory.com/35)
+- [인프런, Hong, 최근 본 상품 데이터는 어떻게 최적화할까?? & 카운팅을 위한 자료구조](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481448)
 
 ## 관련 문서
 - [[Redis-Data-Structures|Redis 자료구조]]

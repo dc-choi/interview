@@ -1,14 +1,39 @@
 ---
 tags: [database, orm, prisma, observability, tracing, performance]
 status: done
-verified_at: 2026-08-21
+verified_at: 2026-09-30
 category: "Database - ORM"
 aliases: ["Prisma Query Performance", "Prisma 쿼리 계측", "relationLoadStrategy"]
 ---
 
 # Prisma 쿼리 계측과 relation 로딩 전략
 
-Prisma에서 느린 API를 다룰 때 필요한 정보는 두 가지다. 하나는 쿼리 시간을 어느 경계에서 재는가이고, 다른 하나는 relation을 몇 개의 SQL로 가져오는가다. 두 축 모두 오래된 자료와 현재 client의 API가 어긋나 있어 먼저 현행 API를 확인한다.
+Prisma에서 느린 API를 다룰 때 필요한 정보는 두 가지다. 하나는 쿼리 시간을 어느 경계에서 재는가이고, 다른 하나는 relation을 몇 개의 SQL로 가져오는가다. 두 축 모두 오래된 자료와 현재 client의 API가 어긋나 있어 먼저 현행 API를 확인한다. 아래 예제는 Prisma ORM 7 문서 기준이다.
+
+## Prisma 7 client 생성 계약
+
+Prisma 7 문서 기준 `PrismaClient`는 driver adapter가 필요하고, adapter 없이 `new PrismaClient()`를 호출하면 오류다. Prisma Accelerate를 쓰면 adapter 대신 `accelerateUrl`을 넘긴다. 인자 없는 생성자로 된 강의나 블로그 예제는 v6 이전 코드로 읽는다.
+
+```prisma
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+```
+
+```ts
+import { PrismaClient } from "./generated/prisma/client"
+import { PrismaPg } from "@prisma/adapter-pg"
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+export const prisma = new PrismaClient({ adapter })
+```
+
+- 새 generator `prisma-client`는 `output`이 필수이고 client를 `node_modules`가 아니라 지정한 경로에 만든다. import도 그 경로에서 한다. 기존 `prisma-client-js`는 `node_modules`에 생성하지만 deprecated이며 향후 제거 예정이다.
+- datasource의 `url`, `directUrl`, `shadowDatabaseUrl`은 schema가 아니라 `prisma.config.ts`에서 설정한다. SQLite는 `@prisma/adapter-better-sqlite3`의 `PrismaBetterSqlite3`처럼 DB별 adapter 패키지를 설치한다.
+- PrismaClient를 찾을 수 없다는 오류는 대개 generator 종류와 import 경로의 불일치다. `prisma-client`를 쓰면서 `@prisma/client`에서 import했는지, schema를 바꾼 뒤 `prisma generate`를 다시 돌렸는지 먼저 본다. `output`을 지워 `node_modules`에 생성하는 우회는 deprecated `prisma-client-js`에서만 통한다.
+- 앱은 보통 `PrismaClient` 인스턴스를 하나만 만든다. 인스턴스마다 커넥션 풀이 생겨 DB 연결 한도를 소진할 수 있다.
+- v7은 ES module로 배포되며 Node.js 20.19.0, TypeScript 5.4.0 이상을 요구한다.
 
 ## middleware `$use`는 제거된 API다
 
@@ -26,10 +51,10 @@ Prisma에서 느린 API를 다룰 때 필요한 정보는 두 가지다. 하나�
 
 ### Client Extensions로 실행 시간 측정
 
-`$extends`의 `query` 컴포넌트가 middleware를 대체한다. `$allModels`와 `$allOperations`로 전 operation을 감싸면 middleware와 같은 범위를 덮으면서 `model`, `operation`, `args`가 타입으로 좁혀진다. 공식 문서의 성능 로깅 예제도 `performance.now()`로 앞뒤를 재는 형태다.
+`$extends`의 `query` 컴포넌트가 middleware를 대체한다. 예제의 `adapter`는 위 client 생성 계약에서 만든 driver adapter다. `$allModels`와 `$allOperations`로 전 operation을 감싸면 middleware와 같은 범위를 덮으면서 `model`, `operation`, `args`가 타입으로 좁혀진다. 공식 문서의 성능 로깅 예제도 `performance.now()`로 앞뒤를 재는 형태다.
 
 ```ts
-const prisma = new PrismaClient().$extends({
+const prisma = new PrismaClient({ adapter }).$extends({
   query: {
     $allModels: {
       async $allOperations({ model, operation, args, query }) {
@@ -61,9 +86,17 @@ const prisma = new PrismaClient().$extends({
 
 relation을 여러 query로 가져오는 호출에서는 extension 1건에 query 이벤트가 여러 건 대응한다. N+1 판단은 총 시간이 아니라 요청당 발행 query 수로 하고, 시간 배분은 span으로 확인한다.
 
+## `findUnique` 자동 batching과 명시적 DataLoader
+
+Prisma Client에는 내장 dataloader가 있어 같은 tick에 발생한 `findUnique()`를 자동으로 묶는다. 같은 파라미터와 selection set을 가진 호출끼리 묶어 `findMany()` 하나로 최적화한다. 그래서 공식 문서는 GraphQL 중첩 resolver에서 `prisma.user.findUnique({ where: { id: parent.id } }).posts()`처럼 fluent API로 relation을 따라가라고 권한다. dataloader가 `findUnique()`는 묶지만 `findMany()`는 묶지 않기 때문이다.
+
+자동 batching은 조건부다. 공식 문서 기준으로 `where`의 모든 조건이 같은 모델의 scalar 필드(unique 여부 무관)에 걸리고, 모두 equals 필터이며, boolean 연산자나 relation 필터가 없어야 한다. resolver가 `findFirst`나 `findMany`로 바뀌거나 relation 필터가 붙으면 코드에 티가 나지 않은 채 N+1로 돌아갈 수 있다.
+
+명시적 DataLoader는 배치 경계, 키 순서 계약과 요청 단위 캐시를 코드에 드러내고 쿼리 수 테스트로 고정할 수 있어 자동 기능에 대한 의존을 줄인다([[NestJS-GraphQL-DataLoader|NestJS GraphQL DataLoader]], [[Apollo-Server#테스트 전략|Apollo Server 테스트 전략]]). 어느 쪽이든 판단 기준은 요청당 발행 query 수다. log 이벤트로 query 수를 세어 자동 batching이 실제로 일어났는지 확인한다.
+
 ## relationLoadStrategy
 
-`include`나 `select`로 relation을 가져올 때 SQL 형태를 고르는 옵션이다. 2026-08-21 기준 공식 Preview 기능 문서에서 `relationJoins`는 5.7.0에 Preview로 들어온 뒤 여전히 Preview 상태로 표시된다. schema의 `previewFeatures`에 `relationJoins`를 넣어야 활성화된다.
+`include`나 `select`로 relation을 가져올 때 SQL 형태를 고르는 옵션이다. 2026-09-30 기준 공식 Preview 기능 문서에서 `relationJoins`는 5.7.0에 Preview로 들어온 뒤 여전히 Preview 상태로 표시된다. schema의 `previewFeatures`에 `relationJoins`를 넣어야 활성화된다.
 
 지원 커넥터는 PostgreSQL, CockroachDB, MySQL이다. 값은 두 개이고 기본값은 `join`이다.
 
@@ -82,7 +115,9 @@ fan-out이 큰 relation에서는 두 전략의 비용 구조가 반대로 움직
 
 ## 운영과 면접 체크포인트
 
+- [ ] v7 client를 driver adapter와 generator `output` 경로에 맞춰 만들고, 인스턴스를 하나로 유지하는가.
 - [ ] 계측 코드가 `$use`가 아니라 `$extends`의 `query` 컴포넌트를 쓰는가.
+- [ ] 자동 batching에 기대는 resolver가 `findUnique` 조건(scalar equals, relation 필터 없음)을 지키는지, 아니면 명시적 DataLoader로 고정했는가.
 - [ ] 느린 API를 볼 때 요청당 발행 query 수를 세었는가. 시간만 보면 N+1과 단일 무거운 query를 구분하지 못한다.
 - [ ] duration이 DB query에 있는지 커넥션 확보나 직렬화에 있는지 span으로 나눠 봤는가.
 - [ ] `relationLoadStrategy`를 바꾸기 전후로 생성 SQL과 실행 계획을 비교했는가.
@@ -98,11 +133,18 @@ fan-out이 큰 relation에서는 두 전략의 비용 구조가 반대로 움직
 - [Prisma — Relation queries와 relation load strategies](https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries)
 - [Prisma — Preview features](https://www.prisma.io/docs/orm/reference/preview-features/client-preview-features)
 - [Prisma — Upgrade to Prisma ORM 7](https://www.prisma.io/docs/guides/upgrade-prisma-orm/v7)
+- [Prisma — Prisma Client setup and configuration (v7)](https://www.prisma.io/docs/orm/v7/prisma-client/setup-and-configuration/introduction)
+- [Prisma — Generators](https://www.prisma.io/docs/orm/prisma-schema/overview/generators)
+- [Prisma — Query optimization (v7)](https://www.prisma.io/docs/orm/v7/prisma-client/queries/advanced/query-optimization-performance)
 - [Prisma ORM v6.14.0 릴리스 안내 — Prisma Blog](https://www.prisma.io/blog/prisma-orm-v6-14-0-relationships-for-sql-views-more-robust-management-api-and-more)
+- [인프런, Hong, Prisma를 활용한 데이터 마이그레이션 및 GUI 툴](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449782)
+- [인프런, Hong, Prisma 연동과 N+1 문제 및 Include 강제 패턴](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449783)
+- [인프런, Hong, Database의 가장 치명적인 문제 N+1 문제 방지를 위한 DataLoader 패턴](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449785)
 
 ## 관련 문서
 
 - [[ORM|ORM과 NestJS 영속성 선택]]
 - [[ORM-Upgrade-Verification|ORM 업그레이드 검증]]
 - [[OpenTelemetry|OpenTelemetry와 분산 트레이싱]]
+- [[NestJS-GraphQL-DataLoader|NestJS GraphQL DataLoader]]
 - [[Transactions|트랜잭션]]

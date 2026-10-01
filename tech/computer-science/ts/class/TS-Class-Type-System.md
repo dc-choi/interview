@@ -3,7 +3,7 @@ tags: [cs, typescript, class, type-system]
 status: done
 category: "CS - TypeScript"
 aliases: ["TypeScript Class", "TS 클래스 타입 시스템"]
-verified_at: 2026-09-27
+verified_at: 2026-10-01
 ---
 
 # TypeScript 클래스 타입 시스템
@@ -35,7 +35,7 @@ const PointConstructor: typeof Point = Point;
 | JavaScript `#field` | 런타임 | 클래스 외부 접근이 실제로 실패함 |
 | `readonly` | TypeScript 타입 검사 | 초기화 뒤 대입을 막지만 객체 자체를 freeze하지 않음 |
 
-보안 또는 캡슐화가 런타임에도 반드시 유지되어야 한다면 `#private` 필드를 사용한다.
+보안 또는 캡슐화가 런타임에도 반드시 유지되어야 한다면 `#private` 필드를 사용한다. 접근 제어자별 외부와 서브클래스 접근 범위는 [[JS-Access-Modifiers|JS, TS 접근 제어자]]에 정리했다.
 
 ## `implements`의 역할
 
@@ -52,6 +52,8 @@ class SystemClock implements Clock {
   }
 }
 ```
+
+interface 멤버는 공개 계약이라 클래스가 같은 멤버를 `private`이나 `protected`로 구현하면 TS2420으로 거부된다(위 예에서 `tick`을 `private`으로 선언하면 Property 'tick' is private in type 'SystemClock' but not in type 'Clock'이라는 사유가 붙는다). 내부 상태는 interface에 넣지 않고 클래스에만 선언한다. 구현이 하나뿐이고 교체 계획이 없으면 interface를 먼저 둘 필요가 없고, 여러 구현이 같은 계약을 따라야 하는 라이브러리나 교체할 어댑터 경계에서 쓸모가 크다.
 
 생성자 자체의 계약이 필요하면 `new (...args) => Instance` 형태의 별도 constructor interface를 사용한다.
 
@@ -97,11 +99,44 @@ interface와 달리 추상 클래스는 구현이 있는 메서드를 함께 가
 
 ## 초기화와 parameter property
 
-생성자 매개변수 앞에 `public`, `private`, `protected`, `readonly`를 붙이면 같은 이름의 필드 선언과 할당을 함께 만든다. 간결하지만 외부에 공개되는 API가 매개변수 목록에 숨지 않도록 의미가 분명한 경우에만 쓴다.
+생성자 매개변수 앞에 `public`, `private`, `protected`, `readonly`를 붙이면 같은 이름의 필드 선언과 할당을 함께 만든다. 간결하지만 외부에 공개되는 API가 매개변수 목록에 숨지 않도록 의미가 분명한 경우에만 쓴다. 필드 선언이 이미 생기므로 같은 이름 필드를 클래스 본문에 다시 선언하면 TS2300(Duplicate identifier)이 난다.
 
 parameter property는 타입만 지워서는 유효한 JavaScript가 되지 않는 TypeScript 전용 런타임 문법이다. Node의 type stripping 같은 실행 환경을 목표로 하거나 `erasableSyntaxOnly`를 켜면 일반 필드 선언과 생성자 할당을 사용한다.
 
 `strictPropertyInitialization`은 인스턴스 필드가 선언부 또는 생성자에서 초기화되는지 검사한다. 확정 할당 단언 `!`은 초기화하지 않고 검사만 생략하므로 외부 수명 주기로 초기화를 증명할 때만 사용한다.
+
+## 생성자 함수로 클래스를 대신할 때
+
+JavaScript 클래스는 prototype 위에 정의된 문법이라 interface와 생성자 함수만으로도 비슷한 런타임 구조를 만들 수 있다. TypeScript에서는 이 방식의 검사가 클래스보다 약하다(5.9.3, 6.0.3, 7.0.2에서 확인).
+
+- `this`: 함수 본문의 `this`는 `noImplicitThis`(strict 묶음)에서 TS2683 오류가 난다. 이 옵션을 끄면 프로젝트의 모든 함수에서 `this`가 암묵적 `any`가 되므로 끄지 않고 `this` 매개변수로 타입을 준다.
+- 생성: 함수 선언에는 construct signature가 없어 `new PersonFn("kim")`이 TS7009로 실패한다. 이 오류는 `noImplicitAny`에서 나므로 `noImplicitThis`를 꺼도 남는다.
+- 우회 비용: 이중 단언으로 생성자 타입을 붙여야 하고, 이 단언은 생성자와 prototype 구현이 interface를 만족하는지 검증하지 않는다. `greet`을 prototype에 넣지 않아도 컴파일된다.
+
+```typescript
+interface Person {
+  name: string;
+  greet(): string;
+}
+
+function PersonFn(this: Person, name: string) {
+  this.name = name;
+}
+PersonFn.prototype.greet = function (this: Person) {
+  return `hi ${this.name}`;
+};
+const PersonCtor = PersonFn as unknown as new (name: string) => Person;
+
+// 반환 타입이 계약을 검사하므로 greet을 빠뜨리면 오류가 난다.
+const createPerson = (name: string): Person => ({
+  name,
+  greet() {
+    return `hi ${this.name}`;
+  },
+});
+```
+
+클래스를 피하는 것이 목적이면 생성자 함수보다 객체를 반환하는 factory 함수가 맞다. 반환 타입을 interface로 명시해 구현 누락을 잡고, 비공개 상태는 클로저에 둔다. `instanceof`, 상속, decorator가 필요하거나 많은 인스턴스가 prototype 메서드를 공유해야 하면 class를 유지한다. prototype 공유와 인스턴스별 함수의 메모리, identity 차이는 [[JavaScript-Class-Semantics|JavaScript 클래스 의미론]]의 arrow field 설명과 같은 판단이다. React의 함수형 컴포넌트 전환 같은 클래스 지양 흐름은 컴포넌트 모델의 변화이지 생성자 함수 패턴을 권하는 것이 아니다.
 
 ## 관련 문서
 
@@ -116,9 +151,12 @@ parameter property는 타입만 지워서는 유효한 JavaScript가 되지 않�
 - [MDN, Private elements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_elements)
 - [TypeScript 4.5, Private Field Presence Checks — TypeScript 공식 문서](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html#private-field-presence-checks)
 - [TypeScript TSConfig, erasableSyntaxOnly](https://www.typescriptlang.org/tsconfig/erasableSyntaxOnly.html)
+- [TypeScript TSConfig, noImplicitThis](https://www.typescriptlang.org/tsconfig/noImplicitThis.html)
+- [TypeScript Handbook, More on Functions](https://www.typescriptlang.org/docs/handbook/2/functions.html)
 - [Java Language Specification SE 26, 8.1.5 Superinterfaces](https://docs.oracle.com/javase/specs/jls/se26/html/jls-8.html#jls-8.1.5)
 - [NestJS, Custom providers](https://docs.nestjs.com/fundamentals/custom-providers)
 - yongsoocho, [class 기초](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=138413)
+- [클래스 => 인터페이스 + 함수 ??, yongsoocho](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=162054)
 - [타입스크립트의 클래스, 이정환 Winterlood](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=157525)
 - [접근 제어자, 이정환 Winterlood](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=157526)
 - [인터페이스와 클래스, 이정환 Winterlood](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=157527)

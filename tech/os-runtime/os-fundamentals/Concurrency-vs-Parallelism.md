@@ -90,6 +90,12 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 - 공유 자원이 없으면 왜 안전한가(share nothing, 불변, 메시지)
 - Actor vs CSP 채널의 차이
 
+### 데이터 병렬성과 작업 병렬성
+
+데이터 병렬성은 같은 연산을 서로 다른 데이터 조각에 적용한다(SIMD, 픽셀 변환). 작업 병렬성은 서로 다른 작업을 실행 자원에 나누어 동시에 수행한다(요청별 워커, 파이프라인 단계). 병렬성을 같은 일을 나누는 경우로만 한정하지 않는다.
+
+여러 작업을 기준으로 보면 병렬 실행 중인 작업들은 실행 구간도 겹치므로 동시적이다. 위 표의 SIMD는 하나의 명령 흐름 안에서 데이터가 병렬 처리되는 경우를 따로 분류한 것이다. 포함 관계를 설명할 때 작업 구조와 명령/데이터 처리 중 어느 층위를 말하는지 먼저 정한다.
+
 ## 출처
 - 인프런, 널널한 개발자 강사, [동시성과 병렬성](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128252)
 - [Node.js, Worker threads](https://nodejs.org/api/worker_threads.html)

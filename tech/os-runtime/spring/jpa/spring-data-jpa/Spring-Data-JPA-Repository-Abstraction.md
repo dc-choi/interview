@@ -120,7 +120,15 @@ spring:
 - repository가 반환한 entity는 persistence context와 lazy loading 규칙을 따른다.
 - 어떤 API를 선택해도 index, 실행 계획, row 수와 transaction 경계는 별도로 검증한다.
 
+### 공통 계약과 SQL 진단
+
+Spring Data Commons는 Repository marker, CRUD, `Pageable`/`Sort`와 QBE 같은 공통 계약을 제공하고 JPA 모듈은 flush와 영속성 컨텍스트에 맞는 기능을 더한다. 같은 메서드 모양이 저장소별 쿼리 비용과 트랜잭션 의미까지 같게 만들지는 않는다.
+
+Hibernate `show_sql`은 직접 콘솔 출력 경로다. 운영 진단은 SQL logger를 사용하면 level과 appender, 환경별 on/off를 로깅 정책으로 관리하기 쉽다. Bind 값은 민감 정보가 될 수 있으므로 별도 활성화 여부와 보관 범위를 정한다. Logger category는 사용 중인 Hibernate 버전에서 확인한다.
+
 ## 출처
+
+- [Spring Data Commons, Core Concepts](https://docs.spring.io/spring-data/commons/reference/repositories/core-concepts.html)
 
 - [Spring Data JPA 4.1, Core Concepts](https://docs.spring.io/spring-data/jpa/reference/repositories/core-concepts.html)
 - [Spring Data JPA 4.1, JpaRepository API](https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/JpaRepository.html)
@@ -148,6 +156,8 @@ spring:
 - 김영한 강사, [스프링 데이터 JPA 적용 1](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114663)
 - 김영한 강사, [스프링 데이터 JPA 적용 2](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114664)
 - 김영한 강사, [스프링 데이터 JPA 정리](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114665)
+- [김영한 강사, 스프링 데이터 JPA 페이징과 정렬](https://www.inflearn.com/courses/lecture?courseId=324474&unitId=28017)
+- [김영한 강사, Query By Example](https://www.inflearn.com/courses/lecture?courseId=324474&unitId=28031)
 
 ## 관련 문서
 

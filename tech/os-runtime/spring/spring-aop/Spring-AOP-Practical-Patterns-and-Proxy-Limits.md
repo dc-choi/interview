@@ -88,7 +88,13 @@ assertThat(AopUtils.isJdkDynamicProxy(bean)
 - Advice order, retry 횟수와 transaction 경계를 통합 test한다.
 - final/private method가 Pointcut 대상이라고 오해하지 않게 architecture test를 둔다.
 
+Annotation 속성으로 최대 시도 수를 받는 Retry Advice는 값이 1 이상인지 검증한다. 마지막 예외를 보존하고 `proceed()` 재호출이 허용되는 업무만 재시도한다. 예제 수준의 즉시 반복을 운영에 쓰기 전에 위의 transient 분류, 멱등성, backoff와 deadline을 적용한다.
+
+Spring Boot AOP auto-configuration은 기본적으로 CGLIB를 선택한다. `spring.aop.proxy-target-class=false`면 interface 기반 proxy를 선택할 수 있으므로 구체 구현 type 주입이 실패하는 context test도 확인한다. 이 설정만으로 interface가 없는 Bean까지 JDK proxy로 바뀌지는 않는다.
+
 ## 출처
+
+- [Spring Boot, Aspect-Oriented Programming](https://docs.spring.io/spring-boot/reference/features/aop.html)
 
 - [Spring Framework 7.0, Proxying Mechanisms](https://docs.spring.io/spring-framework/reference/core/aop/proxying.html)
 - [Spring Retry](https://github.com/spring-projects/spring-retry)

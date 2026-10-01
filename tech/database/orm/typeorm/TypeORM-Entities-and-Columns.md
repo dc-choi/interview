@@ -137,7 +137,7 @@ name: string
 
 Embedded entity는 주소처럼 함께 저장되는 value object field를 여러 column으로 펼쳐 중복을 줄이는 기능이다. 별도 lifecycle과 FK가 필요하면 embedded가 아니라 Entity/relation으로 모델링한다.
 
-Entity inheritance는 공통 column을 재사용할 수 있지만 table 전략, nullable, discriminator와 migration diff가 복잡해진다. 공통 audit column 정도가 아닌 경우에는 먼저 생성 SQL과 query shape를 확인한다.
+Entity inheritance와 공통 감사 컬럼(`CommonEntity`) 상속, `BaseEntity` 이름 충돌, PostgreSQL 날짜 type 명시는 [[TypeORM-Entities-and-Columns-Inheritance|TypeORM 엔티티 상속과 공통 감사 컬럼]]에서 다룬다.
 
 TypeORM은 DB row를 읽으며 Entity instance를 만들지만 constructor 인자를 알지 못한다. constructor 인자는 optional로 두고, I/O, 요청 정보, 필수 command validation 또는 외부 의존 작업을 constructor에 넣지 않는다.
 

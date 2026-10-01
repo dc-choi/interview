@@ -11,7 +11,9 @@ aliases: ["Virtual Memory", "가상 메모리"]
 
 ## 하위 문서
 - [[Virtual-Memory-Allocation|메모리 개요와 할당 방식]] — 메모리 계층, 주소 공간, 가변/고정 분할, 버디 시스템, 단편화
-- [[Virtual-Memory-Paging|가상 메모리와 페이징]] — 세그멘테이션, 페이징, 페이지드 세그멘테이션, 디맨드 페이징, 페이지 교체 정책, 스레싱
+- [[Virtual-Memory-Paging|가상 메모리와 페이징]] — 세그멘테이션, 페이징, 페이지드 세그멘테이션, 디맨드 페이징
+- [[Virtual-Memory-Swap-and-File-Mapping|스왑과 파일 메모리 매핑]] — OOM과 지연의 교환, mmap, tmpfs
+- [[Virtual-Memory-Page-Replacement|페이지 교체와 워킹셋]] — FIFO, LRU, Clock, 스레싱과 계산 예
 
 ## 관련 문서
 - [[Concurrency-and-Process|동시성과 프로세스]]

@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, stored-function, optimizer]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "Database - RDBMS"
 aliases: ["MySQL Stored Functions", "MySQL 저장 함수"]
 ---
@@ -26,11 +26,24 @@ RETURN LEAST(100, GREATEST(0, score));
 이 선언은 MySQL이 함수 본문을 증명한 결과가 아니다. 작성자의 계약이며 서버는 진실성을 검사하지 않는다.
 
 - 실제 비결정 함수를 `DETERMINISTIC`으로 거짓 선언하면 옵티마이저가 잘못된 계획이나 결과를 만들 수 있다.
-- 실제 결정 함수를 `NOT DETERMINISTIC`으로 두면 상수화 같은 사용 가능한 최적화를 놓칠 수 있다.
+- 실제 결정 함수를 `NOT DETERMINISTIC`으로 두면 상수화 같은 사용 가능한 최적화를 놓칠 수 있다. 비교값으로 쓰면 PK 조건도 풀스캔이 된다([[#비교값으로 쓴 NOT DETERMINISTIC 함수|아래 재현]]).
 - 함수가 테이블을 읽는다면 인자만 같다고 결정적인 것이 아니다. 참조 데이터가 바뀌는지도 계약에 포함한다.
 - binary logging이 켜진 환경에서는 결정성 선언이 함수 생성 허용과 복제 안전성에도 영향을 준다.
 
-따라서 성능을 위해 모든 함수에 `DETERMINISTIC`을 붙이지 않는다. 의미가 참일 때만 선언하고, 대표 쿼리의 `EXPLAIN ANALYZE`와 호출 횟수를 확인한다.
+따라서 성능을 위해 모든 함수에 `DETERMINISTIC`을 붙이지 않는다. 결정성 선언을 빠뜨리지 말고 의미가 참일 때만 `DETERMINISTIC`으로 선언하며, 대표 쿼리의 `EXPLAIN ANALYZE`와 호출 횟수를 확인한다.
+
+## 비교값으로 쓴 NOT DETERMINISTIC 함수
+
+옵티마이저는 `NOT DETERMINISTIC` 함수의 결과를 상수로 취급하지 못하고 행마다 다시 호출한다. 그래서 `WHERE id = f()`처럼 PK와 비교해도 인덱스로 찾지 못하고 호출 비용과 풀스캔 비용이 겹친다. 8.4.6에서 본문이 같은 함수(호출 수를 세는 사용자 변수 증가 포함)를 10만 행 테이블의 PK와 비교한 결과는 다음과 같다.
+
+| 선언 | 실행 계획 | 함수 호출 | 실행 시간 |
+|---|---|---|---|
+| `DETERMINISTIC` | PRIMARY 단건 조회(`eq_ref`, TREE의 `<cache>(f_det())`) | 3회 | 약 0.01ms |
+| `NOT DETERMINISTIC` 또는 선언 생략 | 풀스캔(`type=ALL`) | 100,000회 | 약 122ms |
+
+- 선언을 생략한 함수도 `information_schema.ROUTINES.IS_DETERMINISTIC`이 `NO`이고 같은 계획이 나왔다. 결정적인 로직이어도 선언을 빠뜨리면 비교값으로 쓰는 순간 비용이 테이블 크기에 비례한다.
+- 비결정 내장 함수를 포함한 표현식도 상수가 아니다. 매뉴얼은 WHERE의 `RAND()`가 행마다 평가되어 인덱스 최적화에 쓸 수 없다고 적고, `SYSDATE()`도 아래처럼 같다.
+- 함수 비교 조건의 `EXPLAIN`이 `const`, `eq_ref`, `ref`가 아니라 `ALL`이면 함수의 결정성 선언과 표현식 안의 비결정 함수를 먼저 확인한다. 행마다 다른 값이 필요 없다면 값을 애플리케이션에서 먼저 계산해 바인딩한다.
 
 ## NOW와 SYSDATE
 
@@ -51,6 +64,7 @@ RETURN LEAST(100, GREATEST(0, score));
 - [MySQL 8.4 Reference Manual, CREATE PROCEDURE and CREATE FUNCTION](https://dev.mysql.com/doc/refman/8.4/en/create-procedure.html)
 - [MySQL 8.4 Reference Manual, Date and Time Functions](https://dev.mysql.com/doc/refman/8.4/en/date-and-time-functions.html)
 - [MySQL 8.4 Reference Manual, Stored Program Binary Logging](https://dev.mysql.com/doc/refman/8.4/en/stored-programs-logging.html)
+- [MySQL 8.4 Reference Manual, Mathematical Functions, RAND](https://dev.mysql.com/doc/refman/8.4/en/mathematical-functions.html#function_rand)
 - [인프런, Real MySQL 시즌 1 - Part 1, Stored Function](https://www.inflearn.com/courses/lecture?courseId=333931&unitId=226565)
 
 ## 관련 문서

@@ -3,7 +3,7 @@ tags: [security, hashing, cryptography]
 status: done
 category: "보안(Security)"
 aliases: ["Password Hashing", "패스워드 해싱"]
-verified_at: 2026-07-15
+verified_at: 2026-10-01
 ---
 
 # Password Hashing
@@ -56,9 +56,31 @@ verified_at: 2026-07-15
 | **scrypt** | Argon2id를 쓸 수 없을 때 권장되는 메모리 하드 대안 |
 | **bcrypt** | Argon2id와 scrypt를 쓸 수 없는 레거시 환경의 차선책. work factor 10 이상과 입력 길이 제한 처리가 필요 |
 
+## 오프라인 공격과 온라인 공격
+
+패스워드 해싱이 막는 것은 **오프라인 공격**이다. DB를 탈취한 공격자가 해시를 가져가 자기 장비에서 무한히 대입하는 상황으로, 미리 계산한 해시 표(레인보우 테이블)는 salt가, 대입 속도는 느리고 메모리를 많이 쓰는 해시 함수가 늦춘다.
+
+로그인 화면에 직접 비밀번호를 넣어 보는 **온라인 공격**은 해싱으로 막을 수 없다.
+
+| 공격 | 방식 |
+|---|---|
+| 사전 공격 | 흔한 단어와 비밀번호 목록을 한 계정에 차례로 대입한다. 무차별 대입의 한 형태다 |
+| 패스워드 스프레잉 | 흔한 비밀번호 하나를 많은 계정에 시도해 계정별 실패 횟수 제한을 피한다 |
+| 크리덴셜 스터핑 | 다른 서비스에서 유출된 아이디와 비밀번호 쌍을 그대로 시도한다. 비밀번호 재사용을 노린다 |
+
+- **다중 인증**이 가장 효과적인 방어다. 새 기기, 낯선 위치, 알려진 프록시처럼 의심스러운 로그인에만 조건부로 요구할 수도 있다. [[FIDO-WebAuthn]]
+- **유출된 비밀번호를 거부한다**: 가입과 변경 시 흔한 단어와 유출 데이터셋에 있는 비밀번호를 막는다.
+- **시도 속도를 늦춘다**: 계정과 출처 기준으로 속도를 제한하고, CAPTCHA는 자동화 비용을 올리는 보조 수단으로 쓴다. IP 차단은 우회가 쉬워 단독 방어가 되지 못한다. [[Rate-Limiting]]
+- **계정 잠금은 신중하게**: 고정 잠금은 공격자가 남의 계정을 일부러 잠가 서비스를 거부하게 만들 수 있다. 실패할수록 대기 시간을 두 배로 늘리는 방식이나 잠금 중에도 비밀번호 재설정 경로를 열어 두는 방식을 검토한다.
+- **계정 존재를 드러내지 않는다**: 아이디가 없든 비밀번호가 틀리든 같은 오류 메시지를 준다.
+- 정상 비밀번호로 로그인했는데 다중 인증에서 실패한 경우처럼 의심스러운 로그인은 사용자에게 알린다.
+
 ## 출처
 
 - [Password Storage Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
+- [OWASP Cheat Sheet Series, Credential Stuffing Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html)
+- [OWASP Cheat Sheet Series, Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
+- [웹 개발을 위해 꼭 알아야하는 보안 공격 — kciter.so, kciter](https://kciter.so/posts/basic-web-hacking/)
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
 
 ## 관련 문서
@@ -66,5 +88,6 @@ verified_at: 2026-07-15
 - [[CSRF|CSRF Protection]]
 - [[CORS|CORS]]
 - [[JWT]]
+- [[Rate-Limiting|Rate Limit 정책 설계]]
 - [[Session]]
 - [[Spring-Security-Authentication-Core|Spring Security 인증과 PasswordEncoder]]

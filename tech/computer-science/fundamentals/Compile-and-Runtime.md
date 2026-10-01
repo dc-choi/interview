@@ -79,7 +79,18 @@ API는 함수 하나에 한정되지 않고 SDK도 단순히 API 여러 개의 �
 - [[Process-Lifecycle|프로세스 생명주기]]
 - [[Digital-Fundamentals|디지털 기초]]
 
+## 실행 관리, 메모리 회수와 VM의 범위
+
+Managed code는 runtime이 실행과 memory/type safety 같은 서비스를 관리한다는 뜻이며 .NET에서는 CLR의 계약을 가리킨다. 이를 GC 유무, native 기계어 유무와 하나의 축으로 묶지 않는다. 실행 모델, 메모리 회수, 안전성, 배포 단위는 별개다. GC가 있어도 도달 가능한 참조를 계속 보유하면 memory leak이 생기며 native interop 경계에서는 별도 lifetime과 platform 계약을 확인한다.
+
+Bytecode와 source의 이식성은 runtime 자체가 모든 OS에서 같은 바이너리라는 뜻이 아니다. ISA/ABI별 runtime과 native library가 필요하다. 언어의 process VM은 한 프로그램에 실행 추상화와 서비스를 제공하고 system VM은 guest OS에 하드웨어 환경을 제공한다. Container는 host kernel을 공유하는 OS 격리이므로 두 VM과 구분한다.
+
 ## 출처
+
+- 인프런 보충 강의: [이제 무엇을 배워야 할까요?](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281082)
+- 인프런 보충 강의: [User mode와 Kernel mode 그리고 가상화까지!](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128256), [가상 메모리 소개](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128257)
+
+- [Microsoft Learn, What is managed code?](https://learn.microsoft.com/en-us/dotnet/standard/managed-code)
 
 - 인프런, 널널한 개발자 강사, [프로그래밍의 다른 이름 절차적 글쓰기](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128259), [컴파일과 고급어 저급어](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128264), [인터프리터](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128265), [API와 SDK](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128266)
 - [GCC, Options Controlling the Kind of Output](https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html)

@@ -62,10 +62,24 @@ final class Account {
 
 `synchronized` monitor 대기는 timeout이나 fairness를 선택할 수 없다. interruptible acquisition, timeout이나 여러 condition queue가 필요하면 [[Java-Locks-Monitors-and-Conditions|Lock과 Condition]]을 검토한다.
 
+## 재현과 안전한 공개
+
+동기화가 없는 field 읽기는 JIT가 재사용하거나 루프 밖으로 옮길 수 있다. 로그, 디버거와 sleep을 추가해 증상이 사라져도 happens-before가 생겼다는 증거는 아니다. 배포와 같은 최적화 조건에서 실행하고 공유 read/write마다 동기화 경계를 확인한다. 관찰된 반복 횟수나 시간 배율은 환경 의존이라 일반 보장으로 쓰지 않는다.
+
+초기화 후 읽기만 하는 `HashMap`도 공개 시점이 중요하다. 먼저 완성한 상태를 `Thread.start()`, volatile 참조나 lock 같은 경계로 넘기고 이후 변경하지 않는다. final field의 초기화 안전성은 생성 중 `this`가 새지 않은 올바른 생성에 대한 별도 규칙이며 모든 non-final field에 생성자 완료만으로 happens-before가 생기는 것은 아니다. 불변 map은 구조 변경을 막아도 담긴 값의 mutation까지 막지는 않는다.
+
+기존 경계 외에 같은 thread의 program order, interrupt와 그 감지 사이의 synchronizes-with, 관계의 전이성도 적용된다. 생성자 완료에서 finalizer 시작으로 가는 규칙을 일반적인 객체 공개 규칙과 혼동하지 않는다.
+
+잔액 1000에서 두 thread가 모두 800 출금 검사를 통과하면, 두 번 차감되어 -600이 되거나 같은 200을 덮어써 갱신이 유실될 수 있다. volatile read/write만으로 검사와 변경을 묶지 못하므로 예제처럼 전체 불변식을 동일 critical section에서 보호한다.
+
 ## 강의 출처
 
 - 메모리 가시성: [volatile, 메모리 가시성1](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232351), [volatile, 메모리 가시성2](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232352), [volatile, 메모리 가시성3](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232353), [volatile, 메모리 가시성4](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232354), [자바 메모리 모델(Java Memory Model)](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232355), [정리](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232356)
 - 동기화: [출금 예제 - 시작](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232358), [동시성 문제](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232359), [임계 영역](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232360), [synchronized 메서드](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232361), [synchronized 코드 블럭](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232362), [문제와 풀이](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232363), [정리](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232364)
+- 모영철 강사, [Thread 우아하게 종료하기](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178838)
+- 모영철 강사, [Future - 대신 처리해 줄게요. 예약하세요~](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178855)
+- 김영한 강사, [채팅 프로그램 - 서버3](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244479)
+- 김영한 강사, [채팅 프로그램 - 서버4](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244480)
 
 ## 공식 문서
 

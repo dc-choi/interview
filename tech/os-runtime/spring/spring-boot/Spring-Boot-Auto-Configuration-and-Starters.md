@@ -95,7 +95,17 @@ public class ClientAutoConfiguration {
 - 사용자 정의가 항상 자동 구성을 덮는다는 표현은 과하다. 각 auto-configuration의 실제 조건을 봐야 한다.
 - starter 편의성과 version 안정성은 Boot BOM 범위 안에서만 성립한다.
 
+## 구성 선택과 라이브러리 배포의 경계
+
+`Condition.matches(context, metadata)`는 Bean 정의를 등록할 조건을 판단한다. `@ConditionalOnClass` 같은 Boot 조건도 이 기제에 기반한다. `ImportSelector`는 가져올 configuration 이름을 반환하고 `DeferredImportSelector`는 일반 구성 처리 뒤 선택을 지연한다. 자동 구성은 일반 component scan으로 우연히 발견되도록 만들지 않고 imports metadata로 등록한다.
+
+외부 라이브러리는 application처럼 `main()`으로 기동하는 executable JAR보다 일반 JAR로 배포한다. 자동 구성 module에는 Bean 조건과 설정 계약을, starter에는 필요한 dependency 조합을 둔다. 소비자가 직접 만든 Bean으로 기본 구성을 교체할 수 있어야 한다.
+
+BOM은 버전 제약을 제공하며 라이브러리를 자동 추가하지 않는다. Maven parent, BOM import, Gradle dependency-management plugin과 native `platform()`은 override 방식이 같지 않다. 관리 property를 바꾼다는 예제를 도구 구분 없이 복사하지 말고 resolved dependency와 호환성 검사를 확인한다.
+
 ## 출처
+
+- [Spring Boot, Gradle dependency management](https://docs.spring.io/spring-boot/gradle-plugin/managing-dependencies.html)
 
 - [Spring Boot 4.1, Build Systems and Starters](https://docs.spring.io/spring-boot/reference/using/build-systems.html)
 - [Spring Boot, Creating Your Own Auto-configuration](https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html)

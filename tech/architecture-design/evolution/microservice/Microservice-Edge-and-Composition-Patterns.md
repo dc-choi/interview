@@ -32,6 +32,21 @@ aliases: ["Microservice Edge Patterns", "BFF and Gateway", "마이크로서비�
 
 도메인 권한과 상태 전이는 소유 서비스가 판단한다. 게이트웨이가 토큰을 검증했다고 해서 결제 취소 권한이나 주문 소유권까지 증명되는 것은 아니다. 내부 우회 경로와 service-to-service 호출도 별도 신뢰 경계가 필요하다.
 
+## 공통 관심사의 구현 위치
+
+| 위치 | 잘 맞는 관심사 | 남는 비용 |
+|---|---|---|
+| Gateway | 외부 진입 정책과 routing | 내부 우회 경로와 도메인 권한은 별도 검증 |
+| Microservice chassis | 공통 build, 설정, health와 instrumentation을 라이브러리로 제공 | 언어/프레임워크 결합, 서비스별 의존성 갱신과 재배포 |
+| Sidecar | 애플리케이션 옆에서 proxy나 로그 수집 실행 | 인스턴스별 자원 비용, 수명주기와 배포 결합 |
+| Service mesh | 서비스 간 통신 정책을 공통 data plane에 적용 | 운영 복잡도, control plane과 proxy 장애 영향 |
+
+chassis는 복사한 템플릿만을 뜻하지 않는다. 재사용 라이브러리와 build 규칙을 버전 관리해 서비스들이 갱신하도록 하는 방식이다. Sidecar는 배치 패턴이고 메시의 필수 구현은 아니다([[Istio-Ambient-Mode|사이드카 없는 메시]]).
+
+Kubernetes에서는 같은 Pod의 컨테이너가 네트워크를 공유하며, 명시적으로 공유한 volume을 함께 쓸 수 있다. 같은 Kubernetes namespace에 속했다는 이유만으로 파일 시스템을 공유하지는 않는다. Sidecar의 별도 프로세스는 어느 정도 격리를 주지만 Pod 단위 자원과 배포의 결합은 남는다([[Container-Monitoring|로그 수집 배치]]).
+
+프록시가 span을 만들어도 호출 관계를 잇는 trace context는 애플리케이션이 전파해야 한다. 공통 기능을 밖으로 옮겼다고 모든 서비스 코드 변경이 사라지는 것은 아니다. 같은 통신에 라이브러리와 메시의 retry를 중첩하면 호출 수가 증폭될 수 있어 책임을 한 번씩 배정한다.
+
 ## Gateway Aggregation
 
 ```text
@@ -102,6 +117,10 @@ registry의 health는 애플리케이션 요청이 반드시 성공한다는 보
 - [Dowon Lee 강사, BFF 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290000)
 - [Dowon Lee 강사, Aggregator와 Service Discovery](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290001)
 - [현대적 아키텍처 설계 6단계 — Threads, richardlee0202](https://www.threads.com/@richardlee0202/post/DMWifLXT7CP)
+- [Chris Richardson, Microservice chassis](https://microservices.io/patterns/microservice-chassis.html)
+- [Microsoft, Sidecar pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/sidecar)
+- [Istio, Distributed tracing overview](https://istio.io/latest/docs/tasks/observability/distributed-tracing/overview/)
+- [Dowon Lee 강사, Sidecar 패턴과 Service Mesh 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290739)
 
 ## 관련 문서
 

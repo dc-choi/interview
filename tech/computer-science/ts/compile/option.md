@@ -3,7 +3,7 @@ tags: [cs, typescript]
 status: done
 category: "CS - TypeScript"
 aliases: ["컴파일러 옵션", "option"]
-verified_at: 2026-09-27
+verified_at: 2026-10-01
 ---
 
 # 컴파일러 옵션
@@ -17,7 +17,7 @@ verified_at: 2026-09-27
 - `exclude`는 `include`가 찾는 결과만 거른다. import, `types`, `files`로 참조된 파일까지 프로젝트에서 차단하는 옵션은 아니다.
 - `extends`로 상속할 때 자식 config의 `files`, `include`, `exclude`는 base 값과 합쳐지지 않고 덮어쓴다.
 
-`rootDir`는 입력을 선택하지 않는다. emit 시 소스 디렉터리 구조를 `outDir` 아래에 어떻게 보존할지 정하고, emit 대상 파일이 `rootDir` 밖에 있으면 오류가 날 수 있다.
+`rootDir`는 입력을 선택하지 않는다. emit 시 소스 디렉터리 구조를 `outDir` 아래에 어떻게 보존할지 정하고, emit 대상 파일이 `rootDir` 밖에 있으면 오류가 날 수 있다. `outDir`에 남는 이전 산출물, incremental buildinfo와 outDir 삭제, `exclude`를 직접 적을 때의 outDir 입력 문제, `removeComments`의 범위는 [[option-Build-Output|빌드 산출물 관리]]에서 다룬다.
 
 ## 주요 `compilerOptions`
 
@@ -40,7 +40,11 @@ verified_at: 2026-09-27
 
 `target`은 어떤 JavaScript 문법 수준으로 emit할지를 정한다. `lib`는 타입 검사에서 사용할 런타임 API 선언 묶음을 정한다. `ES2023.Array` 선언을 추가한다고 오래된 런타임에 해당 API가 생기지는 않으므로 polyfill 또는 런타임 지원 여부를 별도로 확인한다.
 
-브라우저 전역이 없는 서버 프로젝트에서는 `DOM`을 관성적으로 포함하지 않는다. 반대로 브라우저 앱은 필요한 ECMAScript와 DOM 선언을 함께 고른다.
+`lib`를 생략하면 `target`에 맞는 ECMAScript 선언에 DOM 선언까지 기본으로 들어온다(6.0.3, 7.0.2에서 `lib` 없이 서버 코드의 `document`가 통과했다). 브라우저 전역이 없는 서버 프로젝트는 `lib`를 명시해 `DOM`을 관성적으로 포함하지 않고, 브라우저 앱은 필요한 ECMAScript와 DOM 선언을 함께 고른다.
+
+- `lib`를 적으면 기본 묶음을 통째로 대체한다. `lib: ["ES2022"]`만 두고 `@types/node`가 로드되지 않으면 `console`도 사라져 TS2584가 나고 메시지는 `dom`을 추가하라고 안내한다. `console`은 ECMAScript lib가 아니라 DOM lib와 `@types/node`가 선언하므로, Node 서버에서 메시지대로 DOM을 넣으면 `document`, `window`까지 열린다. `@types/node`와 `types`로 해결한다.
+- 6.0부터 `types` 기본값이 `[]`라 `@types/node`를 설치해도 전역 선언이 자동으로 들어오지 않는다. `process`와 `node:process` import가 TS2591(add 'node' to the types field)로 실패하므로 `types: ["node"]`처럼 전역 선언이 필요한 패키지를 적는다. jest 같은 테스트 전역도 같다. `types`는 전역 포함만 정하고 import하는 라이브러리의 `@types`는 이 값과 관계없이 해석된다. 5.x는 보이는 `@types`를 모두 자동으로 포함했다.
+- 필요한 선언의 위치는 오류 메시지와 로드된 파일로 찾는다. `lib: ["ES2021"]`에서 `[1, 2, 3].at(-1)`은 TS2550이 'es2022' or later를 안내하고, `tsc --listFiles`나 `--explainFiles`는 실제 lib 파일 경로를 보여 준다. 7.0은 lib 선언을 `typescript/lib`가 아니라 플랫폼 패키지의 `@typescript/typescript-<platform>-<arch>/lib`에 둔다(7.0.2에서 확인).
 
 ## `paths`와 실제 모듈 해석
 
@@ -73,6 +77,8 @@ TypeScript 7.0에서는 `baseUrl`이 제거되어 `paths` 대상이 config 파�
 ```
 
 상대 경로 옵션은 그 옵션이 처음 선언된 config 파일을 기준으로 해석된다. package의 공유 config를 상속할 수 있지만, 실행 도구가 다른 config를 자동 선택하거나 command-line option으로 덮어쓸 수 있으므로 실제 사용 config를 `tsc --showConfig`로 확인한다.
+
+5.0부터 `extends`에 배열을 줄 수 있다. `["./a.json", "./b.json"]`은 b가 a를 상속한 것과 같아 충돌하는 값은 뒤 파일이 이기고, 현재 파일의 값이 마지막에 모두를 덮는다. `compilerOptions`는 키 단위로 병합되어 앞 파일에만 있는 키도 남지만, `files`, `include`, `exclude`는 합쳐지지 않고 마지막으로 정의한 파일의 값으로 통째로 바뀐다(5.9.3, 6.0.3, 7.0.2의 `--showConfig`로 확인). `references`는 상속되지 않는다. ts-node, 테스트 러너, bundler loader가 배열 형태를 해석하는지는 도구와 버전별로 확인한다.
 
 ## TypeScript 7.0 전환
 
@@ -165,8 +171,10 @@ TypeScript 파일이 모두 전역 스크립트가 되는 것은 아니다. `mod
 - [TypeScript TSConfig, rootDir](https://www.typescriptlang.org/tsconfig/rootDir.html)
 - [TypeScript TSConfig, target](https://www.typescriptlang.org/tsconfig/target.html)
 - [TypeScript TSConfig, lib](https://www.typescriptlang.org/tsconfig/lib.html)
+- [TypeScript TSConfig, types](https://www.typescriptlang.org/tsconfig/types.html)
 - [TypeScript TSConfig, paths](https://www.typescriptlang.org/tsconfig/paths.html)
 - [TypeScript TSConfig, extends](https://www.typescriptlang.org/tsconfig/extends.html)
+- [TypeScript 5.0, Supporting Multiple Configuration Files in extends](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#supporting-multiple-configuration-files-in-extends)
 - [TypeScript 6.0 발표](https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/)
 - [TypeScript 6.0 기본값 변경 PR #62669](https://github.com/microsoft/TypeScript/pull/62669)
 - [TypeScript 7.0 발표](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)

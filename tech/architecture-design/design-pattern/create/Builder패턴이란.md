@@ -38,6 +38,8 @@ class ReportBuilder {
 
 `build()`가 필수 값과 조합 규칙을 검증하고 완성된 객체만 반환한다. Builder를 재사용한다면 `build()` 이후 상태 초기화 여부와 입력 배열의 방어적 복사를 정한다.
 
+Builder의 검증만으로 모든 제품의 유효성이 보장되려면 제품 생성 경로도 통제해야 한다. 공개 생성자로 Builder를 우회할 수 있다면 불변식 검증은 제품 생성자에도 있어야 한다. 대안은 생성자를 닫고 허용한 생성 경로로만 완성된 객체를 내놓는 것이다. 여러 단계에서 값이 준비되기를 기다릴 때 불완전한 상태로 존재하는 것은 제품이 아니라 Builder이며, 여러 호출자가 이를 함께 바꾸면 공유 가변 상태 관리가 추가로 필요하다.
+
 - 위 예시처럼 필수 값을 `withTitle()`로 받고 `build()`에서 확인하는 대신 `new ReportBuilder(title)`처럼 Builder 생성자 인자로 받으면 누락이 컴파일 오류가 된다. Bloch의 Builder도 필수 매개변수는 Builder 생성자로, 선택 매개변수만 setter 형태의 메서드로 받는다.
 - `build()`에서 boolean이나 number 필드를 확인할 때는 `!value` 대신 `value === undefined`로 미설정을 판별한다. falsy 검사는 명시적으로 지정한 `false`와 `0`도 미설정으로 본다.
 - 검증 실패는 `null` 반환보다 어떤 조건이 깨졌는지 담은 예외로 알린다. `null`을 반환하면 실패 이유가 사라지고, `strictNullChecks`에서는 반환 타입이 `Report | null`이 되어 모든 호출부가 null 분기를 떠안는다.

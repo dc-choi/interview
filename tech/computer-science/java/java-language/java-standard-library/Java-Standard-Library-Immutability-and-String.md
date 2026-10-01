@@ -1,7 +1,7 @@
 ---
 tags: [java, immutability, string, stringbuilder, value-object, method-chaining]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Immutability and String", "Java 불변 객체와 String"]
 ---
@@ -120,7 +120,17 @@ String label = new StringBuilder()
 - `length()`와 사용자가 보는 문자 수의 차이
 - `StringBuilder`를 선택할 조건과 thread-safe하지 않다는 의미
 
+## 값 교체와 문자열의 입력 계약
+
+가변 entity 안에 불변 Address를 담으면 다른 entity와 공유해도 한쪽 값 변경은 새 Address로 참조를 교체한다. `withCity` 같은 이름은 기존 instance를 바꾸지 않고 새 값을 만든다는 의도를 표현하며 반환값을 받아야 한다. 공유 값과 계산 결과는 불변으로, 식별자를 가진 entity의 상태 전이는 의미 있는 method로 다루는 선택을 구분한다. 잦은 조립은 builder와 allocation 비용을 함께 본다.
+
+같은 문자열 리터럴과 상수식 문자열은 intern된 instance를 공유한다(JLS 계약). method 인자가 리터럴인지 동적 결과인지 알 수 없으므로 내용 비교에는 equals를 쓴다. 불변성은 이 공유를 안전하게 하지만 풀의 위치, lookup 구현과 해석 시점은 JDK 세부사항이다.
+
+`replace(CharSequence,CharSequence)`는 literal 일치를 모두 바꾸고 replaceAll/replaceFirst/split/matches는 정규식을 받는다. `a.b`의 점이나 protocol 구분자 `|`를 그대로 pattern에 넣으면 뜻이 달라진다. literal pattern은 Pattern.quote, replacement의 dollar/backslash는 Matcher.quoteReplacement로 별도 escape한다. matches는 문자열 전체의 일치를 검사한다. 반복 indexOf는 -1에서 끝내고 다음 시작 위치를 전진시키며 빈 target의 정책도 정한다. malformed command는 입력 오류 응답으로 처리하고 곧바로 connection 장애로 취급하지 않는다.
+
 ## 출처
+
+- 인프런 보충 강의: [채팅 프로그램 - 서버2](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244478)
 
 - [String, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html)
 - [StringBuilder, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/StringBuilder.html)

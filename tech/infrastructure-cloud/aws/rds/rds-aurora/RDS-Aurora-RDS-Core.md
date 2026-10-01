@@ -3,7 +3,7 @@ tags: [infrastructure, aws, rds, aurora, managed-db, database, ncp, saa-c03]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["RDS 핵심 기능", "Multi-AZ vs Read Replica"]
-verified_at: 2026-08-25
+verified_at: 2026-09-30
 ---
 
 # 관리형 DB와 AWS RDS 핵심
@@ -78,6 +78,15 @@ verified_at: 2026-08-25
 
 Read Replica 수는 엔진별로 다르다. MySQL, MariaDB, PostgreSQL과 SQL Server는 소스당 최대 15개, Oracle은 5개, Db2는 read-only와 standby를 합쳐 소스당 최대 3개다. 엔진 버전과 에디션별 지원 범위도 함께 확인한다.
 
+### Read Replica 운영 규칙
+
+Read Replica는 읽기 전용 연결만 받는 별도 DB 인스턴스이고 고유 엔드포인트를 가진다. 앱이 어느 엔드포인트로 읽기를 보낼지 직접 정하므로 라우팅과 read-after-write 처리는 [[Read-Replica-Routing]]을 따른다. RDS for Db2의 standby replica와 RDS for Oracle의 mounted replica는 사용자 연결을 받지 않는 교차 리전 DR 용도다.
+
+- **replica의 replica**: 기존 replica에서 새 replica를 만드는 구성은 RDS for MySQL, MariaDB와 일부 PostgreSQL 버전만 지원한다. Db2, Oracle, SQL Server는 불가하고 순환 복제는 어느 엔진도 지원하지 않는다. 단계마다 비동기라 하위 replica의 지연은 상위 지연 위에 쌓이므로 계층마다 `ReplicaLag`를 본다. MySQL과 MariaDB는 다른 리전에 replica 하나만 원본에서 만들고 나머지를 그 replica에서 만들면 리전 간 전송 요금이 한 번만 발생한다.
+- **암호화**: 비암호화 원본의 암호화 replica와 암호화 원본의 비암호화 replica는 둘 다 만들 수 없다. 같은 리전 replica는 원본과 같은 KMS 키, 다른 리전 replica는 그 리전의 KMS 키로 암호화한다. 원본과 replica 사이 복제 트래픽은 인스턴스 암호화 여부와 관계없이 전송 중 암호화된다. 비암호화 인스턴스에 암호화를 적용하는 우회 절차는 [[RDS-Operational-Pitfalls-Rare]].
+- **원본 삭제**: 같은 리전 replica를 남긴 채 원본을 지우면 각 replica가 독립 인스턴스로 승격되어 복제는 끊기고 요금은 계속 나온다. 다른 리전 replica는 Db2, MariaDB, SQL Server, MySQL, Oracle이면 승격되지만 PostgreSQL은 복제 상태가 `terminated`로 바뀔 뿐 승격되지 않으므로 직접 승격하거나 삭제한다.
+- **확장과 비용**: RDS(Aurora 제외)는 replica 오토스케일링을 지원하지 않아 수요에 맞춰 직접 추가, 삭제한다. replica는 해당 인스턴스 클래스의 일반 요금으로 과금되고 같은 리전 안의 복제 데이터 전송은 과금되지 않는다. 스토리지 유형은 기본적으로 원본과 같지만 원본 유형과 할당량 조건에 따라 다르게 고를 수 있다.
+
 ## 출처
 
 - [Amazon RDS, DB instance storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
@@ -87,3 +96,7 @@ Read Replica 수는 엔진별로 다르다. MySQL, MariaDB, PostgreSQL과 SQL Se
 - [Amazon RDS for SQL Server, Working with read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.ReadReplicas.html)
 - [Amazon RDS for Db2, Working with replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/db2-replication.html)
 - [Amazon RDS, Overview of Blue/Green Deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-overview.html)
+- [Amazon RDS, Creating a read replica in a different AWS Region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.XRgn.html)
+- [Amazon RDS, Encrypting Amazon RDS resources](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html)
+- [인프런, Sungmin Kim, Multi AZ 그리고 Read Replicas](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43738)
+- [인프런, Sungmin Kim, RDS 실습 2부](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43741)

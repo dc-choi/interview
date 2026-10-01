@@ -134,6 +134,14 @@ CHECK가 감당하지 못하는 유형은 위 CHECK 절에 정리했다. 각 유
 - 여러 write는 transactional EntityManager 하나를 사용하고 외부 API는 local constraint만으로 원자화할 수 없음을 드러낸다.
 - test에서 validation decorator만이 아니라 실제 DB의 unique/FK/CHECK 위반과 rollback을 확인한다.
 
+## 이름 있는 제약과 NULL
+
+단일 컬럼 제약은 column 선언에 둘 수 있고 여러 컬럼 제약은 table 수준에서 전체 조합을 선언한다. 안정적인 CONSTRAINT 이름은 migration과 오류 mapping에 유용하다. Oracle은 빈 문자열을 NULL로 취급하며 nullable UNIQUE와 composite key의 세부 NULL 의미는 DBMS별로 다르므로 실제 제약으로 시험한다. NOT NULL과 DEFAULT를 같은 검증으로 해석하지 않는다.
+
+## 선택적 unique 값의 제거
+
+없어진 optional identifier를 빈 문자열로 바꾸면 빈 문자열끼리 충돌하거나 실제 값처럼 조회될 수 있다. 값 부재가 domain에서 허용된다면 NULL과 nullable UNIQUE의 의미를 사용한다. Oracle의 빈 문자열 처리와 PostgreSQL의 NULLS NOT DISTINCT처럼 제품별 의미는 별도로 확인한다.
+
 ## 출처
 
 - [MySQL 8.4, PRIMARY KEY and UNIQUE Constraints](https://dev.mysql.com/doc/refman/8.4/en/constraint-primary-key.html)
@@ -142,6 +150,9 @@ CHECK가 감당하지 못하는 유형은 위 CHECK 절에 정리했다. 각 유
 - [Oracle AI Database 26ai, Constraint](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/constraint.html)
 - Oracle 11g 강의: [무결성 제약 조건 1](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4665), [무결성 제약 조건 2](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4666)
 - 강의: [무결성이 중요한 이유](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328809), [기본 제약](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328810), [FK](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328811), [CHECK](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328812), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328813)
+- [PostgreSQL 18 Documentation, ddl constraints](https://www.postgresql.org/docs/18/ddl-constraints.html)
+- [인프런, Part 1 피드백 (2)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=443353)
+
 
 ## 관련 문서
 

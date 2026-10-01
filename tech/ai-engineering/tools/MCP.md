@@ -1,9 +1,9 @@
 ---
-tags: [ai, mcp, tool-use, protocol]
+tags: [ai, mcp, a2a, tool-use, protocol]
 status: done
 verified_at: 2026-09-30
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["MCP", "Model Context Protocol", "모델 컨텍스트 프로토콜"]
+aliases: ["MCP", "Model Context Protocol", "모델 컨텍스트 프로토콜", "A2A", "Agent2Agent"]
 ---
 
 # MCP (Model Context Protocol)
@@ -18,9 +18,11 @@ LLM이나 AI 에이전트를 외부 도구와 데이터 소스에 연결하는 �
 
 | 구성 | 역할 | 예시 |
 |---|---|---|
-| Host | 사용자가 쓰는 AI 애플리케이션 | IDE 확장, 채팅 클라이언트 |
+| Host | 사용자가 쓰는 AI 애플리케이션 | Claude Code, Claude Desktop, VS Code 같은 IDE와 채팅 클라이언트 |
 | Client | Host 안에서 특정 서버와 1:1 연결을 맺는 커넥터 | Host 내부 |
 | Server | 실제 기능을 노출하는 프로세스 | 파일시스템, GitHub, DB, 브라우저 자동화 |
+
+Gmail이나 Slack 같은 서비스 자체가 MCP 서버인 것은 아니다. 그 서비스의 기능을 Tools로 노출하는 프로그램이 서버이고, Host는 연결하는 서버마다 Client를 하나씩 만든다.
 
 서버가 노출하는 3종 원시(primitive):
 
@@ -67,6 +69,7 @@ Tools는 근거를 가져오고 Prompts는 그 근거를 사용하는 학습 절
 - 사람 승인(Human-in-the-loop): 위험한 도구 호출 전 사람이 확인 → [[Harness-Engineering|HITL]]
 - 권한 최소화: 서버가 접근할 수 있는 범위(디렉토리, 스코프)를 제한
 - 프롬프트 인젝션 경계: 서버가 반환한 데이터가 모델의 지시를 오염시킬 수 있으므로 신뢰 경계를 설정
+- 계정 위임의 범위: OAuth로 붙인 원격 서버는 사용자 계정으로 동작하므로 그 계정이 할 수 있는 삭제와 발송까지 에이전트가 쓸 수 있다. 쓰기 도구는 승인 필요나 차단으로 둔다 ([[Claude-Code-Business-Automation|커넥터 도구 권한]])
 - 감사: 어떤 도구가 무엇을 실행했는지 로깅
 
 ## 하네스와 컨텍스트에서의 위치
@@ -86,6 +89,23 @@ MCP는 하네스의 Inform(맥락 주입)과 도구 실행 축을 표준화한 �
 
 재단 이관은 규격의 신뢰성이나 개별 서버의 안전성을 보증하지 않는다. 위의 권한 최소화와 신뢰 경계 점검은 그대로 적용한다.
 
+## A2A와의 경계 — 도구 연결과 에이전트 협업
+
+A2A(Agent2Agent)는 서로 다른 조직과 프레임워크의 에이전트가 일을 맡기고 결과를 주고받게 하는 개방형 프로토콜이다. MCP가 에이전트와 도구를 잇는 수직 연결이라면 A2A는 에이전트끼리의 수평 연결이고, 공식 문서도 두 프로토콜을 경쟁이 아닌 보완 관계로 설명한다.
+
+| 구분 | MCP | A2A |
+|---|---|---|
+| 연결 대상 | 에이전트와 도구, 데이터 | 에이전트와 에이전트 |
+| 상대의 내부 | 도구 스키마를 드러내고 호출된다 | 내부 사고, 계획, 도구 구현을 공유하지 않는 불투명한 상대 |
+| 작업 단위 | 도구 호출과 결과 | 상태가 있는 Task와 결과물(Artifact) |
+| 발견 | Host 설정과 `server/discover` | 도메인의 `/.well-known/agent-card.json`에 둔 Agent Card, 레지스트리나 직접 설정 |
+
+- **이력**: Google이 2025-04-09 발표했고 2025-06-23 Linux Foundation 프로젝트가 됐다. 2026-08-27 MCP와 같은 AAIF의 Growth Stage 프로젝트로 채택됐으며 명세는 v1.0이 안정판이다(2026-09-30 공식 사이트 확인)
+- **구성**: Agent Card에 이름, 서비스 엔드포인트, 스트리밍과 푸시 알림 같은 capability, 인증 방식, 할 수 있는 일(skill)을 적는다. Task는 제출, 진행, 완료, 실패, 취소, 거절 상태와 입력 필요, 인증 필요 같은 중단 상태를 거친다. 메시지는 텍스트, 파일, 구조화 데이터 Part로 이루어지고 결과는 Artifact로 돌아온다. 전송 바인딩은 JSON-RPC 2.0, gRPC, HTTP+JSON이고 오래 걸리는 작업은 스트리밍이나 웹훅 푸시 알림으로 추적한다
+- **보안**: 민감한 내용이 든 Agent Card는 인증 뒤에 두고 자격 증명은 정적 비밀 대신 대역 밖에서 동적으로 받는다. 원격 에이전트의 응답도 도구 결과처럼 신뢰 경계 밖의 입력으로 다룬다
+- **제품 기능과 구분**: Claude Code의 서브에이전트, 에이전트 팀과 세션 간 메시징은 제품 안의 조정 기능이고, 2026-09-30 Claude Code 공식 문서 색인에는 A2A 항목이 없다. 로컬 코딩 에이전트 여러 개를 함께 돌리는 일이 곧 A2A는 아니므로 제품별 지원 여부는 각 공식 문서로 확인한다
+- **교차 검증은 프로토콜과 별개다**: 한 에이전트가 만든 보고서를 다른 에이전트가 원자료와 대조해 환각을 걸러내는 생성과 검증의 분리는 A2A 없이도 서브에이전트나 별도 세션으로 만들 수 있다 ([[Harness-Engineering|검증의 우선성]])
+
 ## 면접 체크포인트
 
 - MCP를 한 줄로: 모델을 외부 도구와 데이터에 연결하는 표준(USB-C 비유), tool-use를 N×M에서 N+M으로
@@ -93,6 +113,7 @@ MCP는 하네스의 Inform(맥락 주입)과 도구 실행 축을 표준화한 �
 - 도구 권한 = 위험 → HITL, 권한 최소화, 프롬프트 인젝션 경계, 감사
 - 도구를 많이 붙일수록 컨텍스트 비용이 오른다 → 필요한 서버만(JIT, Select)
 - 재단 이관(AAIF)이 바꾸는 것과 바꾸지 않는 것, 명세 개정에 따른 버전 호환 확인
+- MCP(에이전트와 도구)와 A2A(에이전트와 에이전트)의 경계, Agent Card와 Task 수명주기, 제품 내부 멀티 에이전트 기능과의 차이
 
 ## 출처
 
@@ -109,6 +130,14 @@ MCP는 하네스의 Inform(맥락 주입)과 도구 실행 축을 표준화한 �
 - [Key Changes (2025-11-25) — Model Context Protocol](https://modelcontextprotocol.io/specification/2025-11-25/changelog)
 - [Versioning — Model Context Protocol](https://modelcontextprotocol.io/specification/versioning)
 - [MCP 리눅스 재단 기부와 AAIF 출범 — Threads, hyle.ai.kr](https://www.threads.com/@hyle.ai.kr/post/DSD02cHk25B)
+- [Agent2Agent (A2A) Protocol — A2A Protocol](https://a2a-protocol.org/latest/)
+- [A2A Protocol Specification — A2A Protocol](https://a2a-protocol.org/latest/specification/)
+- [Agent Discovery — A2A Protocol](https://a2a-protocol.org/latest/topics/agent-discovery/)
+- [A New Chapter for A2A: Joining the Agentic AI Foundation — A2A Protocol](https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/)
+- [Announcing the Agent2Agent Protocol (A2A) — Google Developers Blog](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)
+- [Linux Foundation Launches the Agent2Agent Protocol Project — Linux Foundation](https://www.linuxfoundation.org/press/linux-foundation-launches-the-agent2agent-protocol-project-to-enable-secure-intelligent-communication-between-ai-agents)
+- [Claude Code documentation index — Anthropic](https://code.claude.com/docs/llms.txt)
+- [인프런, 널널한 개발자, MCP와 A2A](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498590)
 
 ## 관련 문서
 

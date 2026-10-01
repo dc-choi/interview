@@ -3,7 +3,7 @@ tags: [web, http, api, documentation]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["API Documentation", "API 문서화"]
-verified_at: 2026-07-21
+verified_at: 2026-10-01
 ---
 
 # API 문서화
@@ -39,7 +39,7 @@ API는 **서비스의 계약**. 문서화가 구린 API는 소비자(프론트, 
 예시:
 - Spring: **springdoc-openapi** (`@Operation`, `@Parameter`) 
 - NestJS: **`@nestjs/swagger`** (`@ApiOperation`, `@ApiProperty`) — `SwaggerModule.createDocument()`가 만드는 문서는 OpenAPI 스펙을 따르는 **직렬화 가능 객체**라, Swagger UI 서빙 외에 JSON/YAML 파일로 저장해 codegen이나 CI 산출물로 쓸 수 있다. `SwaggerModule.setup('api', ...)`처럼 UI path가 `/api`일 때 raw JSON 기본값은 `/api-json`이며, 실제 path에 따라 파생되거나 `jsonDocumentUrl`/`yamlDocumentUrl`로 변경할 수 있다.
-- Express: tsoa, express-openapi
+- Express: tsoa, express-openapi (`swagger-jsdoc`의 주석 YAML 수집은 route와 타입에서 생성하지 않으므로 아래 주석 YAML 절처럼 수기 명세로 분류한다)
 - FastAPI: 타입 힌트와 라우트 선언을 바탕으로 자동 생성
 - Django: drf-spectacular
 
@@ -58,6 +58,14 @@ GitBook, Slate, ReadMe, Confluence, 심지어 Excel.
 **장점**: 처음엔 빠름, UI 풍부.
 **단점**: 변경 책임자와 리뷰 절차가 없으면 코드 변경 뒤 쉽게 낡는다. 비개발자 설명과 사용 사례 문서에는 유용할 수 있지만 명세의 정본과 동기화 규칙이 필요하다.
 
+### 주석 YAML 수집은 코드 옆 수기 명세
+
+`swagger-jsdoc`은 지정한 파일에서 `@openapi`(또는 `@swagger`) JSDoc 주석의 YAML을 모아 한 문서로 합칠 뿐 route 선언이나 타입에서 명세를 만들지 않는다. route path, method, parameter 이름을 바꿔도 주석은 그대로 남으므로 위치만 코드 옆인 Manual 방식이고 Code-First의 구조적 drift 감소를 기대할 수 없다. 자동화되는 것은 UI 생성이지 코드와 명세의 일치가 아니다.
+
+- 조용한 누락: 6.3.0 소스와 실행으로 확인한 동작이다. YAML 파싱 오류가 난 주석 블록은 명세에서 빠지고, 콘솔에 `Not all input has been taken into account at your final specification.`과 오류 report를 남긴 채 계속 진행한다. `failOnErrors: true`일 때만 throw한다(기본 false). 파일 단위 추출 중 예외는 `failOnErrors`가 없으면 로그 없이 삼켜져 그 파일의 남은 주석이 빠질 수 있다.
+- 그래서 서버는 정상 기동하고 Swagger UI에서 해당 operation만 사라진다. 들여쓰기 실수가 문법상 유효한 다른 YAML 구조가 되면 `failOnErrors: true`에서도 오류 없이 엉뚱한 위치에 들어간다. `get` 아래에 둘 `responses`를 한 단계 덜 들여 쓰면 path 바로 아래 key가 되는 식이다.
+- 대응: 테스트나 CI에서 `failOnErrors: true`로 명세를 생성하고, 결과를 OpenAPI validator나 linter로 검사하고, 실제 route와의 대응은 contract test나 request/response validation으로 확인한다. NestJS의 `@nestjs/swagger`는 route metadata에서 명세를 만들어 route 불일치는 줄지만 설명과 예시의 정확성은 여전히 리뷰 대상이다.
+
 ## 실무 선택 가이드
 
 - **REST API + 내부, 외부 소비자** → OpenAPI Code-First가 유력한 선택지. 계약을 먼저 합의해야 하거나 SDK 생성이 중심이면 Spec-First도 비교
@@ -74,6 +82,20 @@ Code-First와 자동 생성 UI는 흔한 조합이지만 조직의 계약 소유
   - 배포 파이프라인에서 코드 어노테이션 분석 → 요청/응답 모델 순회 → 명세 생성이 자동으로 돌므로, 수기 문서 대비 누락과 최신화 지연이 줄어든다 (Code-First의 이점을 중앙 서빙과 결합).
   - 함정: 명세를 문자열 조립으로 생성하면 구조가 복잡해질수록 누락, 들여쓰기 오류가 난다. YAML 직렬화 라이브러리나 OpenAPI 모델 객체로 생성한다. 파일 위치는 환경별 절대 경로로 하드코딩하지 말고 설정값이나 알려진 workspace root를 기준으로 일관되게 resolve한다.
   - NestJS 대응: `SwaggerModule.createDocument()` 결과를 파일로 내보내면 같은 수집 구조에 태울 수 있다.
+
+## 문서 노출 통제
+
+운영에 노출된 Swagger UI와 원본 명세는 전체 endpoint와 schema를 드러내 공격 표면 탐색을 돕는다. 문서 경로를 환경 조건 없이 등록하면 배포 도메인에서도 try-out이 가능한 UI가 열린다. 통제 수단은 강한 순서로 고른다.
+
+1. 운영에서는 마운트하지 않는다([[NestJS-Lifecycle-Hooks#Bootstrap 코드 표준 형태|비운영 환경 조건]]).
+2. 내부망, VPN, IP allowlist로만 노출한다.
+3. 문서 경로 앞에 인증을 둔다(basic auth, SSO proxy).
+4. `include`로 공개 문서와 내부 문서를 분리하거나 인증된 중앙 문서 서버로 모은다.
+
+- UI 경로만 막으면 원본 명세가 그대로 열린다. `SwaggerModule.setup('api', ...)`이면 `/api-json`, `/api-yaml`도 원본을 내보내므로 인증을 거는 경로 목록에 모두 넣는다. 현행 `@nestjs/swagger` 문서 기준 필요 없는 형식은 `raw: ['json']`처럼 제한하고, UI가 필요 없으면 `ui: false`로 원본만 둔다.
+- Express 어댑터라면 `express-basic-auth`를 문서 경로에만 `app.use`로 건다. `challenge: true`가 있어야 `WWW-Authenticate` header를 보내 브라우저 로그인 창이 뜬다(기본은 보내지 않는다). 사용자와 비밀번호는 저장소가 아니라 환경 변수나 secret 저장소에서 읽는다. Fastify 어댑터에서는 Express middleware 대신 `@fastify/basic-auth` 같은 플랫폼 plugin이나 hook을 쓴다.
+- Basic 자격증명은 요청마다 Base64로 인코딩될 뿐 암호화되지 않으므로 HTTPS 뒤에서만 쓴다(RFC 7617).
+- 공개 API라면 문서 공개가 목적이므로 내부 전용 endpoint를 명세에서 빼는 일이 먼저다.
 
 ## 좋은 API 문서의 요건
 
@@ -131,6 +153,14 @@ API 소비자인 프론트, 모바일, QA가 리뷰에 참여해야 한다. 복�
 - [NestJS — OpenAPI CLI Plugin](https://docs.nestjs.com/openapi/cli-plugin)
 - [NestJS — OpenAPI Other features](https://docs.nestjs.com/openapi/other-features)
 - [Swagger 기반 API 명세 자동화 PoC — Nextree](https://www.nextree.io/swagger-giban-api-myeongse-jadonghwa-poc/)
+- [swagger-jsdoc — README, src/specification.js (failOnErrors)](https://github.com/Surnet/swagger-jsdoc)
+- [express-basic-auth — README (challenge)](https://github.com/LionC/express-basic-auth)
+- [Fastify — @fastify/basic-auth](https://github.com/fastify/fastify-basic-auth)
+- [RFC 7617 — The 'Basic' HTTP Authentication Scheme](https://www.rfc-editor.org/rfc/rfc7617.html)
+- [인프런, 윤상석, 프로젝트 설계](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=83827)
+- [인프런, 윤상석, Swagger API 보안 설정 & 로그인 API 프론트엔드와 연결](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=84078)
+- [인프런, Kenu 허광남, 02. SPA 개발 환경 구성 (1)](https://www.inflearn.com/courses/lecture?courseId=328553&unitId=106866)
+- [인프런, Kenu 허광남, 02. SPA 개발 환경 구성 (2)](https://www.inflearn.com/courses/lecture?courseId=328553&unitId=106867)
 
 ## 관련 문서
 - [[REST|REST API]]

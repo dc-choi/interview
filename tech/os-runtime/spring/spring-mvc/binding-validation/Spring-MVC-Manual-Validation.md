@@ -80,7 +80,19 @@ Validator를 service locator처럼 만들어 모든 domain query를 숨기지 �
 
 HTML form은 invalid input과 message를 다시 render할 수 있다. JSON API는 stable error code, field path와 HTTP status의 structured response가 필요하다. 같은 Validator를 재사용할 수 있어도 presentation 결과는 adapter별로 변환한다.
 
+## 중복 오류와 validator 등록 범위
+
+직접 검증은 `bindingResult.hasFieldErrors("price")` 등으로 변환 실패를 먼저 확인한 뒤 범위 규칙을 적용한다. `typeMismatch` 메시지를 bundle로 바꾸어 Java type이나 내부 exception을 사용자에게 그대로 보여주지 않는다.
+
+기본 field error code 순서는 `code.objectName.field`, `code.field`, `code.fieldType`, `code`다. type은 `java.lang.Integer` 같은 정규 이름이며 object error는 `code.objectName`, `code` 순이다. collection 경로에는 index 포함/제외 후보가 추가될 수 있다.
+
+`@InitBinder("item")`처럼 대상 이름을 좁혀 custom validator를 추가한다. `DataBinder.addValidators()`는 대상 type의 `supports()`를 등록 시 확인하므로 아무 객체에 등록한 뒤 매번 supports로 자동 필터링될 것이라 가정하지 않는다. `addValidators`는 기본 validator에 추가하는 의미이고 MVC 글로벌 validator 교체는 Bean Validation 통합을 바꿀 수 있다.
+
 ## 출처
+
+- [Spring 7.0.9, DataBinder source](https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/validation/DataBinder.java)
+
+- [Spring, DefaultMessageCodesResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/validation/DefaultMessageCodesResolver.html)
 
 - [Spring Framework, validation and data binding](https://docs.spring.io/spring-framework/reference/core/validation.html), [Spring Validator](https://docs.spring.io/spring-framework/reference/core/validation/validator.html)
 - 수동 검증: [요구사항](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83291), [프로젝트 v1](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83292), [직접 처리 개요](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83293), [직접 처리 구현](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83294), [프로젝트 v2](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83295), [BindingResult 1](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83296), [BindingResult 2](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83297), [FieldError/ObjectError](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83298), [message 1](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83299), [message 2](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83300), [message 3](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83301), [MessageCodesResolver](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83302), [message hierarchy](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83303), [type mismatch message](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83304), [Validator 분리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83305), [WebDataBinder 등록](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83306), [정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83307)

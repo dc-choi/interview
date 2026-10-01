@@ -81,11 +81,18 @@ Application code는 framework를 다시 만들기보다 이 경계를 이용한�
 
 NestJS도 platform adapter 위에서 route metadata로 handler를 찾고 pipe/guard/interceptor/filter를 거쳐 Controller method를 호출한다. DispatcherServlet component와 일대일 대응하지는 않지만 중앙 dispatch, handler metadata, argument 변환과 cross-cutting pipeline이라는 설계 원리는 같다.
 
+## Model 1과 Model 2의 역사적 구분
+
+Model 1은 JSP가 요청 처리와 화면 생성을 함께 맡는 구성을, Model 2는 별도 controller가 처리하고 JSP가 view를 맡는 구성을 가리킨다. 현재 설계의 우열을 이름만으로 판단하지 않고 책임과 의존 방향으로 확인한다.
+
+Servlet 인자를 제거한 controller 계약은 순수 입력/model로 단위 테스트하기 쉬워진다. front controller가 model map을 만들고 handler가 view name만 반환하는 편의 계약은 매번 결과 wrapper를 만드는 비용을 줄인다. 중앙 진입점에 공통 처리를 두면 개별 controller가 호출을 빠뜨리는 위험도 줄일 수 있다.
+
 ## 출처
 
 - [Spring Framework, DispatcherServlet](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet.html), [View technologies](https://docs.spring.io/spring-framework/reference/web/webmvc-view.html)
 - Servlet/JSP/MVC: [요구사항](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71180), [Servlet 화면](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71181), [JSP 화면](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71182), [MVC 개요](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71183), [MVC 적용](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71184), [MVC 한계](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71185), [정리](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71186)
 - Front Controller: [패턴](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71188), [진입점 v1](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71189), [View v2](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71190), [ModelAndView v3](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71191), [편의 contract v4](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71192), [Adapter v5-1](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71194), [Adapter v5-2](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71195), [설계 정리](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71196)
+- 인프런 강사, [스프링 MVC 웹서비스 - 1](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13727)
 
 ## 관련 문서
 

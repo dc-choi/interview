@@ -31,7 +31,7 @@ Claude Code v2.1.154 이상에서, 유료 플랜과 Anthropic API 접근, Amazon
 
 - **번들 워크플로우**: `/deep-research <질문>` — 여러 각도로 웹 검색을 fan-out하고 찾은 출처를 교차 검증해 주장마다 표결한 뒤, 통과하지 못한 주장은 걸러낸 인용 리포트를 만든다 (WebSearch 도구 필요). 검증 에이전트가 확인하지 못한 주장(레이트 리밋, API 에러 등)은 반박된 것으로 세지 않고 unverified로 표시한다.
 - **프롬프트 opt-in**: 프롬프트에 `ultracode` 키워드를 넣거나 자연어로 요청한다 ("use a workflow"). 키워드는 직접 타이핑한 프롬프트에서만 동작한다 — v2.1.210부터 `-p` 인자, 사람 입력으로 표시되지 않은 Agent SDK 프롬프트, 스케줄 태스크, webhook이나 PR 코멘트 경유로는 트리거되지 않는다. 잘못 트리거했으면 Option+W (macOS) / Alt+W로 해제한다. v2.1.160 이전의 키워드는 `workflow`였다.
-- **/effort ultracode**: xhigh 추론 강도와 자동 워크플로우 오케스트레이션을 묶은 설정. 켜면 Claude가 실질적인 작업마다 워크플로우를 스스로 계획한다 — 한 요청이 이해, 변경, 검증 워크플로우의 연쇄가 될 수 있다. 세션 한정이며 settings의 `ultracode`로 영구화한다. v2.1.203 이상, xhigh effort를 지원하는 모델에서만 제공된다.
+- **/effort ultracode**: 세션의 자동 워크플로우 오케스트레이션을 켜는 설정. 켜면 Claude가 실질적인 작업마다 워크플로우를 스스로 계획한다 — 한 요청이 이해, 변경, 검증 워크플로우의 연쇄가 될 수 있다. v2.1.284부터 `/effort`의 별도 토글(슬라이더에서 `Tab`, 또는 `/effort ultracode`와 `/effort ultracode off`)이라 xhigh를 강제하지 않고 어느 effort에서나 유지된다. 그 전에는 켜면 xhigh로 바뀌고 다른 effort를 고르면 꺼졌다. `claude --effort ultracode`로 시작하면 xhigh와 함께 켜진다. `/effort`로 켠 것은 세션 한정이고 대화형 토글은 settings에 저장되지 않으므로, 모든 세션을 켠 채 시작하려면 settings에 `"ultracode": true`를 둔다. v2.1.203 이상, xhigh effort를 지원하는 모델에서만 제공된다.
 
 ## 승인과 권한
 
@@ -95,7 +95,7 @@ A, B, C, D 순서로 시작하고 B 실행 중에 전체 실행을 멈추면 A, 
 
 ## 끄기
 
-/config의 Dynamic workflows 토글, `~/.claude/settings.json`의 `"disableWorkflows": true`, 또는 시작 시 읽는 `CLAUDE_CODE_DISABLE_WORKFLOWS=1`. 조직 단위로는 managed settings의 `disableWorkflows` 또는 Claude Code admin 설정 페이지. 끄면 번들 워크플로우 커맨드, ultracode 키워드 트리거, /effort 메뉴의 ultracode가 모두 비활성화된다.
+/config의 Dynamic workflows 토글, `~/.claude/settings.json`의 `"disableWorkflows": true`, 또는 시작 시 읽는 `CLAUDE_CODE_DISABLE_WORKFLOWS=1`. 조직 단위로는 managed settings의 `disableWorkflows` 또는 Claude Code admin 설정 페이지. 끄면 번들 워크플로우 커맨드, ultracode 키워드 트리거, /effort의 Ultracode 토글이 모두 비활성화된다.
 
 ## 체크포인트
 
@@ -110,6 +110,8 @@ A, B, C, D 순서로 시작하고 B 실행 중에 전체 실행을 멈추면 A, 
 
 - [Claude Code Docs, Orchestrate subagents at scale with dynamic workflows](https://code.claude.com/docs/en/workflows)
 - [Claude Code Docs, Environment variables](https://code.claude.com/docs/en/env-vars)
+- [Claude Code Docs, Model configuration](https://code.claude.com/docs/en/model-config)
+- [Claude Code CHANGELOG — Anthropic](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
 
 ## 관련 문서
 

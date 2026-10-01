@@ -72,7 +72,17 @@ Pointcut은 class filter와 method matcher로 구성된다.
 
 Method 이름 문자열 하나만으로 고르면 refactoring과 overload에 취약하다. package/type/annotation과 signature를 의도에 맞게 조합한다.
 
+### 호출 보존과 정적 매칭
+
+JDK InvocationHandler가 일부 method에 Advice를 적용하지 않기로 해도 target 호출과 반환값은 그대로 전달해야 한다. 필터 불일치에서 단순 return하면 업무 호출 자체가 사라진다. ProxyFactory의 AOP Alliance `MethodInterceptor`는 `MethodInvocation.proceed()`로 다음 Advice/target에 위임하며 CGLIB callback의 같은 이름과 package를 구분한다.
+
+`MethodMatcher.isRuntime()`이 false면 method/class 기준의 결과를 cache할 수 있다. True이면 정적 매칭을 통과한 호출마다 실제 인자의 3-argument 매칭을 수행한다. 가능하면 정적 조건으로 후보를 좁힌다.
+
+CGLIB `Enhancer.create()`를 직접 쓰는 생성 경로의 부모 생성자 호출 요구와 Spring의 Objenesis 기반 proxy 생성은 다르다. 두 경로의 제약을 섞어 현재 Spring Bean에 기본 생성자를 무조건 추가하지 않는다.
+
 ## 출처
+
+- [Spring Framework, Pointcut API in Spring](https://docs.spring.io/spring-framework/reference/core/aop-api/pointcuts.html)
 
 - [Spring Framework 7.0, Proxying Mechanisms](https://docs.spring.io/spring-framework/reference/core/aop/proxying.html)
 - [Spring Framework, ProxyFactory](https://docs.spring.io/spring-framework/reference/core/aop-api/pfb.html)

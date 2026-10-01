@@ -28,7 +28,7 @@ Domain/account layer는 web Cookie/Session API에 의존하지 않고 credential
 
 `memberId=1` 같은 Cookie만 보고 로그인 사용자를 정하면 client가 값을 바꿔 다른 사용자로 가장할 수 있다. Signed token을 쓴다고 모든 문제가 사라지는 것도 아니다. 만료, audience/issuer, key rotation, revocation과 browser 보관/CSRF를 설계해야 한다.
 
-Server-side session은 보통 opaque하고 충분히 예측 불가능한 session ID만 Cookie로 전달하고 실제 principal/state는 server store에 둔다. 그러나 ID를 훔치면 공격자가 같은 권한을 사용할 수 있으므로 탈취 문제를 “해결”한 것이 아니다.
+Server-side session은 보통 opaque하고 충분히 예측 불가능한 session ID만 Cookie로 전달하고 실제 principal/state는 server store에 둔다. 그러나 ID를 훔치면 공격자가 같은 권한을 사용할 수 있으므로 탈취 위험은 여전히 남는다.
 
 ## HttpSession 핵심
 
@@ -73,7 +73,17 @@ Spring Security는 authentication/session fixation/CSRF/security context/filter 
 
 여러 application instance에서는 sticky routing만 의존할지 Spring Session/Redis 같은 외부 store를 사용할지 장애/latency/일관성 기준으로 선택한다. Server session은 모든 request에 DB user query를 없애는 cache가 아니며 권한 변경 반영 전략을 둔다.
 
+## 조회 전용 handler와 만료
+
+`HttpSession` method argument는 session 존재를 강제하므로 anonymous 조회에도 session이 만들어질 수 있다. 생성 없이 attribute만 읽으려면 `getSession(false)` 또는 `@SessionAttribute(name = "principal", required = false)`를 사용한다. Cookie 조회는 `@CookieValue`의 required 계약을 명시한다.
+
+session idle timeout은 마지막 client 요청과의 간격이며 attribute를 읽거나 바꾼 것만으로 last-accessed time이 갱신되지는 않는다. `setMaxInactiveInterval`은 초 단위 API다. Boot 전역 timeout의 단위와 container의 변환/만료 점검 주기는 실제 사용 container에서 확인한다. absolute lifetime은 idle timeout과 별도로 강제한다.
+
+URL rewriting을 지원할 때 `encodeURL`/redirect 처리에 `;jsessionid`가 붙을 수 있다. Cookie만 지원한다면 `server.servlet.session.tracking-modes=cookie`를 설정하고 최초 응답과 다음 요청의 cookie 전달을 확인한다. session 수와 attribute 크기의 곱을 관리하고 session ID를 진단 log에 출력하지 않는다.
+
 ## 출처
+
+- [Spring MVC, SessionAttribute](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/sessionattribute.html)
 
 - [Jakarta Servlet 6.1, HttpSession](https://jakarta.ee/specifications/servlet/6.1/apidocs/jakarta.servlet/jakarta/servlet/http/httpsession), [OWASP Session Management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), [Spring Security, session management](https://docs.spring.io/spring-security/reference/servlet/authentication/session-management.html)
 - Login/session: [요구사항](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83324), [프로젝트/계층](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83325), [home](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83326), [회원 가입](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83327), [credential 확인](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83328), [Cookie login](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83329), [Cookie 보안](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83330), [Session 원리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83331), [SessionManager](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83332), [custom session 적용](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83333), [HttpSession 1](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83334), [HttpSession 2](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83335), [정보/timeout](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83336), [정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83337)

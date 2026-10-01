@@ -1,9 +1,9 @@
 ---
 tags: [runtime, nodejs, v8]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "OS & Runtime"
-aliases: ["V8 Pipeline", "Ignition", "TurboFan", "SparkPlug", "Maglev", "Crankshaft", "Full-codegen", "Bytecode", "Accumulator", "hot and stable"]
+aliases: ["V8 Pipeline", "Ignition", "TurboFan", "SparkPlug", "Maglev", "Crankshaft", "Full-codegen", "Bytecode", "Accumulator", "hot and stable", "Inlining"]
 ---
 
 # V8 컴파일 파이프라인 (Ignition, SparkPlug, TurboFan)
@@ -38,14 +38,14 @@ AST는 코드의 의미(변수, 함수, 조건문)를 구조화한 트리다. �
 
 ## Ignition (바이트코드 인터프리터)
 
-AST를 **바이트코드**로 변환한 뒤 한 줄씩 실행한다. 바이트코드는 기계어를 추상화한 IR(Intermediate Representation)로, JS라는 고수준 언어를 가상 머신이 이해하기 편한 형태로 번역한 것.
+AST를 **바이트코드**로 변환한 뒤 바이트코드 명령을 하나씩 실행한다. 바이트코드는 기계어를 추상화한 IR(Intermediate Representation)로, JS라는 고수준 언어를 가상 머신이 이해하기 편한 형태로 번역한 것.
 
 - **레지스터 기반** (스택 기반 아님)
 - **빠른 시작 시간**: 전체 코드를 미리 컴파일하지 않아 초기 메모리 효율적
 - 실행 중 **프로파일링, 피드백 데이터 수집**: 어떤 함수가 자주 호출되는지, 인자 타입이 뭔지, 어떤 Hidden Class가 관찰되는지
 - 실행 횟수는 상위 tier 전환 판단에 쓰인다. 타입과 map 피드백은 Maglev와 TurboFan의 최적화 근거가 되며, 비최적화 컴파일러인 Sparkplug는 bytecode를 machine code로 직접 변환한다.
 
-전체를 한 번에 기계어로 컴파일하던 옛 방식(Full-codegen) 대신 한 줄씩 바이트코드로 인터프리트하는 이유는 세 가지다. (1) 기계어보다 바이트코드 컴파일이 가벼워 **메모리 사용량이 준다**. (2) 바이트코드가 간결해 **재파싱 오버헤드가 작다**. (3) 최적화, 역최적화 모두 바이트코드 하나만 기준 삼으면 되어 **파이프라인 복잡도가 낮다**.
+실행 직전에 곧바로 비최적화 기계어를 만들던 옛 baseline 컴파일러(Full-codegen) 대신 간결한 바이트코드를 만들어 인터프리트하는 이유는 세 가지다. (1) 바이트코드는 같은 코드의 baseline 기계어의 25~50% 크기라 **메모리 사용량이 준다**. (2) TurboFan이 소스를 다시 컴파일하지 않고 바이트코드에서 바로 최적화 코드를 만들어 **재파싱이 필요 없다**(Crankshaft는 소스에서 다시 컴파일했다). (3) 최적화, 역최적화 모두 바이트코드 하나만 기준 삼으면 되어 **파이프라인 복잡도가 낮다**. 바이트코드 생성이 기계어 생성보다 빨라 스크립트 시작도 빨라졌다. 전환 배경과 수치는 [[V8-Ignition-TurboFan-History|V8 파이프라인의 변천]]에 있다.
 
 **바이트코드 실행 전에 실행 컨텍스트가 생성**된다. 호이스팅, `this` 바인딩 등이 이 단계에서 이뤄진다.
 
@@ -78,9 +78,10 @@ node --print-bytecode app.js
 
 Ignition과 TurboFan 사이에 위치한 **빠른 컴파일**에 초점을 둔 계층. 9.1에 도입됐다.
 
-- **AST가 아닌 Ignition의 바이트코드를 입력**으로 기계어 생성 → 변수 확인, 화살표 함수 확인, **디슈가링**(Syntax Sugar 제거) 같은 무거운 작업이 불필요
-- 디슈가링 예: 삼항 연산자, 구조분해할당 — 사람이 읽기 쉬운 문법을 내부 기본 형태로 되돌리는 작업
-- **과도한 최적화를 수행하지 않는다**. 뒤에 TurboFan이 있기 때문
+- **AST가 아닌 Ignition의 바이트코드를 입력**으로 기계어를 만든다. 변수 해석(variable resolution), 괄호가 실제로 화살표 함수의 매개변수 목록인지 판별, 구조 분해 할당의 **디슈가링** 같은 일은 바이트코드 생성 단계에서 이미 끝났으므로 Sparkplug는 반복하지 않는다
+- 디슈가링은 사람이 읽기 쉽게 만든 문법(syntax sugar)을 더 기본적인 연산으로 풀어 쓰는 작업이다. 구조 분해 할당이 대표 예다
+- IR을 만들지 않고 바이트코드를 순서대로 훑으며 바이트코드마다 정해진 기계어를 내보내고, 대부분의 동작은 인터프리터와 공유하는 builtin 호출로 처리한다. 이득은 인터프리터의 피연산자 디코딩과 다음 바이트코드 dispatch 비용을 없애는 데서 나온다
+- **과도한 최적화를 수행하지 않는다**. 뒤에 Maglev와 TurboFan이 있기 때문
 
 ### 왜 중간 계층이 필요한가
 
@@ -122,47 +123,33 @@ Chrome 117에서 Sparkplug와 TurboFan 사이에 추가된 **빠른 최적화 �
 
 ## 인라이닝 (Inlining)
 
-함수 호출은 본질적으로 비용이 있다:
+함수 호출에는 고정 비용이 있다:
 
 1. 반환 주소 Stack에 push
 2. 레지스터 상태 저장
 3. 함수 코드 위치로 jump
 
-인라이닝은 **작은 함수를 호출부에 직접 삽입**해 이 과정을 생략한다. 호출 빈도가 높고 몸집이 작은 함수일수록 효과가 크다.
+인라이닝은 **작은 함수를 호출부에 직접 삽입**해 이 과정을 생략한다. 다만 호출 비용 절감은 직접 효과일 뿐이다. 더 큰 이점은 호출 경계가 사라져 합쳐진 본문 전체가 한 최적화 단위가 된다는 점이다. 호출자가 아는 인자 타입과 상수를 피호출 본문에 적용할 수 있어 다른 최적화가 쉬워진다. V8 소스의 인라이닝 플래그 주석도 작은 함수의 인라이닝이 호출 오버헤드를 없애는 것 외에 load elimination과 escape analysis를 개선하고 HeapNumber 할당을 없앤다고 설명한다. 리팩터링에서 흩어진 함수를 합치면(Inline Function) 분석하고 더 나은 구조로 다시 나누기 쉬워지는 것과 같은 원리다.
 
-## 다른 엔진의 파이프라인
+### 인라이닝 판단 기준과 관찰
 
-| 엔진 | 인터프리터 | 기본 최적화 | 복잡한 최적화 |
-|---|---|---|---|
-| **V8** | Ignition | Sparkplug + Maglev | TurboFan |
-| **SpiderMonkey** | Interpreter | Baseline | IonMonkey |
-| **JSC** | LLInt | Baseline + DFG | FTL (Faster Than Light) |
+`node --trace-turbo-inlining app.js`로 TurboFan의 판단을 볼 수 있다. Node.js 26.7.0(V8 14.6.202.34)에서 크기가 다른 함수 세 개를 반복 호출했을 때의 로그(주소 생략):
 
-모든 주류 엔진이 공통적으로 **여러 계층**을 둔다. 이유는 실행 시간 vs 성능의 트레이드오프: Ignition만 쓰면 느리고, 너무 일찍 TurboFan을 태우면 hot이 아닌 코드까지 최적화하거나 Deopt가 잦아진다. 계층 사이의 간극을 줄이기 위해 중간 컴파일러가 추가된다.
+| 로그 | 의미 |
+|---|---|
+| `Considering <SharedFunctionInfo square> for inlining with <FeedbackVector[1]>` | feedback vector와 바이트코드가 있는 대상을 후보로 고려한다 |
+| `Inlining small function(s) at call site #35:JSCall` | 바이트코드 30바이트 이하(`--max-inlined-bytecode-size-small`)의 작은 함수는 바로 인라이닝한다 |
+| `Cannot consider <SharedFunctionInfo big> for inlining (reason: exceeds bytecode limit)` | 한 번에 인라이닝할 수 있는 크기 상한(`--max-inlined-bytecode-size`, 460)을 넘어 제외한다 |
+| `Budget used: 0/920 -- 1 candidate(s) for inlining:` 다음 `candidate: JSCall node #41 with frequency 98.4286` | 나머지 후보는 호출 지점 빈도를 크기로 나눈 점수 순으로 누적 예산(`--max-inlined-bytecode-size-cumulative`, 920) 안에서 인라이닝한다 |
 
-## 역사
+- 호출 지점 빈도가 `--min-inlining-frequency`보다 낮으면 후보에서 빠진다. 선언 기본값은 0.15지만 Maglev가 켜진 기본 구성에서는 0.05가 적용됐다. `node --v8-options`는 선언 기본값만 보여 주므로 실제 값은 `node --print-flag-values`로 확인한다.
+- 아직 실행되지 않아 feedback vector가 없는 함수는 고려 대상이 아니다. 호출 빈도가 높고 몸집이 작은 함수일수록 유리하다는 말은 엔진이 실제로 쓰는 두 축, 즉 바이트코드 크기와 호출 지점 빈도를 가리킨다.
+- Maglev도 자체 기준(`--max-maglev-inlined-bytecode-size` 100 등)으로 인라이닝한다.
+- 플래그 이름, 로그 형식과 기본값은 V8 내부 구현이라 버전마다 바뀐다. 학습과 진단에만 쓰고 코드를 이 숫자에 맞추지 않는다.
 
-### 5.9 이전 (Crankshaft + Full-codegen)
+## 역사와 다른 엔진
 
-- **Full-codegen**: 파싱 직후 전체 코드를 한 번에 기계어로 컴파일 (SparkPlug 역할)
-- **Crankshaft**: 별도 스레드에서 프로파일러가 수집한 hot 코드를 최적화 (TurboFan 역할)
-- 스레드 구성: 메인(컴파일+실행), 프로파일러(실행 시간 측정), 별도 컴파일 스레드
-
-### 5.9 이후 (2017 초, 완전 재설계)
-
-- **Ignition이 Full-codegen을 완전히 대체**: 전체 선(先)컴파일 → 한 줄씩 인터프리트. 메모리 사용량 대폭 감소
-- **TurboFan이 Crankshaft를 대체**: Crankshaft는 새 언어 기능 지원이 어려웠음. TurboFan은 ES6+ 표준을 처음부터 염두에 두고 설계
-- 이전 엔진의 한계: 메모리 과소비, `try-catch`, ES6 신규 기능 최적화 불가
-- **계층화로 확장성 확보**: Crankshaft는 아키텍처별 코드가 비대했지만(7개 아키텍처 지원에 13,000~16,000줄), 여러 레이어로 나눈 TurboFan은 3,000줄 미만으로 같은 범위를 커버
-- 초기엔 Ignition, TurboFan의 성능과 역최적화 시 바이트코드 복귀 문제로 Full-codegen, Crankshaft를 한동안 병존시켰다가 5.9에서 완전 전환
-
-### 9.1 (SparkPlug 도입)
-
-- Ignition↔TurboFan 간극을 메우는 **비최적화 중간 컴파일러** SparkPlug 추가
-
-### Chrome 117 (Maglev 추가)
-
-- SparkPlug↔TurboFan 사이에 **경량 최적화 컴파일러** Maglev 추가
+Full-codegen과 Crankshaft에서 Ignition과 TurboFan으로 바뀐 5.9 전환, 9.1의 Sparkplug와 Chrome 117의 Maglev 추가, SpiderMonkey와 JSC의 계층 비교는 [[V8-Ignition-TurboFan-History|V8 파이프라인의 변천과 다른 엔진 비교]]로 분리했다.
 
 ## 출처
 
@@ -171,13 +158,18 @@ Chrome 117에서 Sparkplug와 TurboFan 사이에 추가된 **빠른 최적화 �
 - [V8 — Sparkplug, a non-optimizing JavaScript compiler](https://v8.dev/blog/sparkplug)
 - [V8 — Maglev, V8's fastest optimizing JIT](https://v8.dev/blog/maglev)
 - [V8 — Tiering manager source](https://raw.githubusercontent.com/v8/v8/main/src/execution/tiering-manager.cc)
+- [V8 — Firing up the Ignition interpreter](https://v8.dev/blog/ignition-interpreter)
+- [V8 — Flag definitions source (14.6.202.34)](https://raw.githubusercontent.com/v8/v8/14.6.202.34/src/flags/flag-definitions.h)
+- [V8 — TurboFan inlining heuristic source (14.6.202.34)](https://raw.githubusercontent.com/v8/v8/14.6.202.34/src/compiler/js-inlining-heuristic.cc)
 - [하정훈 강사 — V8 엔진의 동작방식 (v9.1)](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196058)
 - [하정훈 강사 — V8 엔진의 역사](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196059)
+- [하정훈 강사 — 인라이닝 이란?](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196067)
 - [하정훈 강사 — 인라이닝 최적화 이점](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196068)
 
 ## 관련 문서
 
 - [[V8|V8 엔진]]
+- [[V8-Ignition-TurboFan-History|V8 파이프라인의 변천과 다른 엔진 비교]]
 - [[V8-Hidden-Class|V8 히든 클래스]]
 - [[V8-Inline-Cache|V8 인라인 캐시]]
 - [[V8-Array-Internals|V8 배열 내부 구현]]

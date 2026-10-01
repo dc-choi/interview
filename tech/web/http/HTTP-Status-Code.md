@@ -1,7 +1,7 @@
 ---
 tags: [web, http, status-code, api, error-handling]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "Web - HTTP"
 aliases: ["HTTP 상태 코드", "HTTP Status Code", "401 vs 403", "502 vs 504"]
 ---
@@ -42,6 +42,16 @@ POST 처리 후 303으로 결과 페이지를 GET하게 하는 PRG는 새로고�
 
 `304 Not Modified`는 3xx 부류지만 다른 URI로 이동시키는 Redirect가 아니다. 조건부 GET이나 HEAD의 Representation이 바뀌지 않았음을 알리고 저장된 content 재사용을 허용하며 응답 content를 포함하지 않는다.
 
+### Redirect 코드 고르기
+
+브라우저는 3xx 응답의 `Location`으로 자동 재요청한다. `GET /event`가 `301`과 `Location: /new-event`를 받으면 곧바로 `GET /new-event`를 보내므로 사용자는 거의 알아채지 못한다.
+
+- 영구(301, 308)와 일시(302, 303, 307)는 옛 URL을 대체할지를 가른다. Google 검색은 영구 redirect를 대상 URL을 대표로 삼는 신호로 쓰고 결과에 새 URL을 보이며, 일시 redirect는 그런 신호로 쓰지 않고 원래 페이지를 보인다.
+- 301과 308은 heuristically cacheable이라 명시적 캐시 지시어가 없어도 브라우저가 저장해 재사용할 수 있다. 잘못 배포한 영구 redirect는 되돌리기 어려우므로 일시적 이동에 301을 쓰지 않는다.
+- Fetch 표준 기준 브라우저는 301, 302를 받은 POST를 GET으로 바꾸고 본문을 버린다. 303은 GET과 HEAD 외의 Method를 GET으로 바꾸고, 307과 308은 Method와 본문을 유지한다. POST 등록 중 301을 받으면 입력이 사라지는 이유다.
+- POST 처리 뒤 결과 화면으로 보내는 것처럼 GET 전환이 목적이면 303을, Method와 본문을 유지해야 하면 307(영구 이동이면 308)을 명시한다. URL 자체가 바뀌는 상황에서 POST 본문을 유지할 일은 드물어 308의 쓰임은 적다.
+- 프레임워크 기본값은 대개 302다. Express `res.redirect()`, NestJS `@Redirect()`([[Controller-Response|NestJS 응답]]), Spring MVC `redirect:` 접두어가 만드는 RedirectView(`redirectHttp10Compatible`을 끄면 303)가 모두 302를 보낸다. 브라우저가 302 POST를 GET으로 바꿔 동작은 303과 비슷하지만 의도가 코드에 드러나도록 303이나 307을 명시하는 편이 낫다.
+
 ## 4xx Client 오류
 
 - `400 Bad Request`: 잘못된 구문, framing이나 deceptive routing 등 Client 오류로 요청을 처리하지 않는다.
@@ -76,6 +86,10 @@ POST 처리 후 303으로 결과 페이지를 GET하게 하는 PRG는 새로고�
 - [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
 - [RFC 6585, Additional HTTP Status Codes](https://www.rfc-editor.org/rfc/rfc6585.html)
 - [RFC 9457, Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457.html)
+- [WHATWG Fetch, HTTP-redirect fetch](https://fetch.spec.whatwg.org/#http-redirect-fetch)
+- [Express 5.x API, Response (res.redirect)](https://expressjs.com/en/5x/api/response/)
+- [Spring Framework API, UrlBasedViewResolver (setRedirectHttp10Compatible)](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/view/UrlBasedViewResolver.html)
+- [Google Search Central, Redirects and Google Search](https://developers.google.com/search/docs/crawling-indexing/301-redirects)
 
 ## 관련 문서
 

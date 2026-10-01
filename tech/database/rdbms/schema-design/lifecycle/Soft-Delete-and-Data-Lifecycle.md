@@ -116,6 +116,14 @@ ALTER TABLE account
 - retention, purge/anonymization과 관측 지표가 있다.
 - cache, search index와 event consumer도 삭제/복구를 반영한다.
 
+## 삭제 조건과 복합 index
+
+`(deleted_at, business_key)`와 `(business_key, deleted_at)`은 두 column을 equality로 지정하는 lookup에서 모두 좁은 구간을 만들 수 있다. 활성 row가 많다는 이유만으로 전자가 모두 scan한다고 단정하지 않는다. 한 column만 쓰는 query, range와 ORDER BY, covering, 활성/삭제 비율을 기준으로 prefix를 결정하고 실제 계획으로 비교한다.
+
+## 활성 데이터 전용 view
+
+`WHERE deleted_at IS NULL`을 명시한 view로 반복 조회의 누락 위험을 줄일 수 있다. base table 직접 접근과 관리/복구 query는 여전히 별도 권한과 API 경계가 필요하다. view가 row 보안이나 삭제 정책 전체를 자동 보장하지는 않는다.
+
 ## 출처
 
 - [TypeORM, DeleteDateColumn](https://typeorm.io/docs/help/decorator-reference/#deletedatecolumn)
@@ -131,6 +139,7 @@ ALTER TABLE account
 - [김영한 강사, soft delete와 history](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401988)
 - [김영한 강사, soft delete index](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401989)
 - [김영한 강사, soft delete 정리](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401990)
+
 
 ## 관련 문서
 

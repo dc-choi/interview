@@ -151,7 +151,15 @@ Order -> PaymentAttempt -> ProviderEvent
 - favorite, review 자격, point entry와 settlement target에 업무상 unique constraint를 둔다.
 - 상태 전이, 금액 배분, 만료와 복원 규칙은 순수 policy로 분리해 table/property test를 작성한다.
 
+## 정책 변경을 다루는 질문
+
+[[Commerce-Review-and-Benefit-Policy|정책별 판단과 실패 조건]]에서 상세히 다룬다.
+
 ## 출처
+
+- [리뷰 - 요구사항 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392782)
+- [리뷰 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392783)
+- [리뷰 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392784)
 
 - [Stripe, Idempotent requests](https://docs.stripe.com/api/idempotent_requests)
 - [Stripe, Webhook signature verification](https://docs.stripe.com/webhooks/signature)

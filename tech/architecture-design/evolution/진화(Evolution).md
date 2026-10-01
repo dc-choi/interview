@@ -15,7 +15,7 @@ aliases: ["Evolution"]
 - [x] [[Runtime-Stack-Evolution|런타임 스택 진화 (BFF→RxJava→GraphQL Federation, Java 21, Spring Boot 표준화, Netflix 사례)]]
 - [x] [[Compatibility-Design|호환성 설계 (API 버저닝, 전후방 호환과 스키마 진화, 버전 업그레이드 난이도)]] — 서브폴더 인덱스
 - [x] [[Fullstack-BaaS-Boundaries|풀스택 프레임워크와 BaaS 경계 (RSC 실행 위치 기본값, BaaS SDK 직접 호출의 비용 — RLS 디버깅 제어권, DB 강결합)]]
-- [x] [[Refactoring-In-Practice|실전 리팩토링 (레거시 두려움 다루기, 죽은 코드 삭제, 리팩토링은 이벤트가 아니라 습관, APM 분석 → 안전망 → 최적화 3단계, Hakuna 85% 감소 사례)]]
+- [x] [[Refactoring-In-Practice|실전 리팩토링 (레거시 변경의 안전망, 조건 모으기와 다형성, Split Phase, APM 분석과 최적화)]]
 - [x] [[Architecture-Fitness-Functions|아키텍처 fitness function (품질 속성을 측정 가능한 검증으로 변환, 지속적 거버넌스)]]
 - [x] [[Technical-Debt|기술 부채 (Cunningham 원래 의미=학습 잔여물, 원금/이자=변경비용/상환, Fowler 4분면, AI 시대 오용 재명명)]]
 - [x] [[Tech-Debt-Management|기술 부채 관리 (가시화, 우선순위와 상환 운영)]]

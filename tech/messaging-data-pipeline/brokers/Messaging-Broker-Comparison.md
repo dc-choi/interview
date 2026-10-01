@@ -34,7 +34,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 
 ### 강점
 - **성숙도**: 2007년부터 프로덕션 사용. 검증됨
-- **유연한 라우팅**: Direct, Fanout, Topic, Headers Exchange 4종으로 거의 모든 메시징 패턴 표현
+- **유연한 라우팅**: Direct, Fanout, Topic, Headers Exchange 4종으로 거의 모든 메시징 패턴 표현. 매칭 규칙과 dead letter 조건은 [[RabbitMQ-Exchange-Routing|RabbitMQ Exchange 라우팅]]
 - **지연 특성**: 장기 AMQP 연결로 메시지를 전달한다. 실제 지연은 publisher confirm, persistence, queue 종류와 복제 설정을 함께 측정
 - **프로토콜**: AMQP 0-9-1과 AMQP 1.0을 중심으로, plugin을 통해 MQTT와 STOMP 등을 지원. HTTP는 관리 API의 별도 경로
 - **복제 고가용성**: RabbitMQ 4.x에서는 Quorum Queue 또는 Stream을 사용. classic queue mirroring은 4.0에서 제거됐고, persistence만으로는 복제나 고가용성을 제공하지 않음
@@ -167,7 +167,7 @@ aliases: ["Messaging Broker Comparison", "메시지 브로커 비교"]
 ## 면접 체크포인트
 
 - 4가지 브로커 각각의 한 줄 성격
-- RabbitMQ가 AMQP 브로커라는 의미와 Exchange 4종
+- RabbitMQ가 AMQP 브로커라는 의미와 Exchange 4종 ([[RabbitMQ-Exchange-Routing|Exchange 라우팅]])
 - BullMQ가 "작업 큐"이지 "메시지 브로커"가 아닌 이유
 - SQS의 Polling 기반 한계와 장점
 - Kafka의 재생(Replay), 파티션이 제공하는 능력

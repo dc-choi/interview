@@ -11,7 +11,8 @@ aliases: ["동시성과 프로세스"]
 
 ## 하위 문서
 - [[Concurrency-and-Process-Overview|OS 개요와 동시성]] — 운영체제 개요, 커널/유저 모드, 프로세스 메모리 구조, 단편화, 지역성
-- [[Concurrency-and-Process-IPC|원자성, 동기화, IPC]] — 임계구역, 뮤텍스/세마포어/모니터, 교착상태, IPC, Node.js 동기화
+- [[Concurrency-and-Process-IPC|원자성, 동기화, IPC]] — 임계구역, 뮤텍스/세마포어/모니터와 오용 위험, 동기화 용어 구분, IPC 선택 기준, 파일 잠금, Node.js 동기화
+- [[Concurrency-and-Process-Deadlock|교착상태, 라이브락, 기아]] — 필요조건, 식사하는 철학자, 예방의 비용, 은행원 알고리즘, 검출 방식 비교
 
 ## 관련 문서
 - [[Process-Lifecycle|프로세스 생명주기]]

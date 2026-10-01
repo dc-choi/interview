@@ -1,7 +1,7 @@
 ---
 tags: [java, functional-interface, java-util-function, default-method, generics]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "CS - 함수형 프로그래밍"
 aliases: ["Java Functional Interfaces", "Java 함수형 인터페이스"]
 ---
@@ -60,7 +60,17 @@ Default method는 기존 구현 class에 abstract method 구현을 강제하지 
 - Binary compatibility가 개선돼도 semantic compatibility가 자동 보장되지는 않는다. 새 default 동작이 기존 구현의 불변식과 맞는지 검토한다.
 - 복잡한 workflow와 mutable state는 interface default에 숨기지 않는다.
 
+## 이름과 target type 읽기
+
+입력/반환의 유무로 Function, Consumer, Supplier, Runnable을 구분하되 Runnable은 java.lang에 속한다. Predicate는 boolean 판정, Operator는 입력과 반환이 같은 type이라는 의도를 드러낸다. 기본형 이름에서 `IntFunction<R>`은 int 입력, `ToIntFunction<T>`는 int 반환, `IntToLongFunction`은 int 입력과 long 반환이고 메서드는 각각 apply, applyAsInt, applyAsLong이다.
+
+같은 function type을 가진 A와 B라도 상속 관계가 없으면 A instance를 B에 직접 대입할 수 없다. 같은 lambda 식을 A와 B 각각에 대입할 수 있다는 것과 다르다. `B b = a::apply`처럼 기존 동작을 새 target type으로 적응시킬 수 있다. Generic interface는 Object 반환과 downcast보다 type 안전한 재사용을 제공한다.
+
+관련 없는 두 default가 충돌하면 override 안에서 직접 상위 interface의 `A.super.method()`로 위임 대상을 고를 수 있다. 이는 method를 복사하거나 instance 상태를 제공하는 장치가 아니다. 기존 구현을 호환시키거나 공통 편의를 제공할 필요가 분명할 때 사용하고, 모든 구현의 의미가 다른 새 동작은 abstract 계약으로 둔다.
+
 ## 출처
+
+- 인프런 보충 강의: [자바와 함수형 프로그래밍3](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275426)
 
 - [JLS 26, Functional Interfaces](https://docs.oracle.com/javase/specs/jls/se26/html/jls-9.html#jls-9.8)
 - [JLS 26, Interface Method Body and default methods](https://docs.oracle.com/javase/specs/jls/se26/html/jls-9.html#jls-9.4.3)

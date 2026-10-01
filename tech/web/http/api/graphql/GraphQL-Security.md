@@ -1,7 +1,7 @@
 ---
 tags: [web, graphql, api, security, authorization]
 status: done
-verified_at: 2026-07-20
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Security", "GraphQL 보안", "demand control", "depth limiting", "query complexity", "GraphQL authorization"]
 ---
@@ -41,6 +41,8 @@ complexity와 rate limit은 스펙이 가이드를 주지 않는다. 커뮤니�
 - resolver 내 인가는 학습이나 프로토타입엔 괜찮지만 프로덕션은 위임한다.
 - 인증 vs 인가: HTTP 파이프라인에서 GraphQL 핸들러는 모든 인증 미들웨어 뒤에 두어 다른 엔드포인트 핸들러와 같은 세션, 유저 정보를 받는다. 인증이 끝나도 실행이 시작되기 전까진 인가 판단을 하지 않는다 — 인가는 실행 중 필드 단위로 정해지므로, 인가 에러가 난 필드만 실패하는 partial response가 가능하다. 비즈니스 로직 계층엔 불투명 토큰이 아니라 완전히 하이드레이션된 user 객체를 넘긴다.
 - 타입 단위와 필드 단위 인가 모두 가능하다. 굳이 GraphQL 계층에서 하려면 `@auth` 같은 타입 시스템 directive가 대안이지만, 실제 인가 로직은 여전히 비즈니스 로직 계층에 위임한다.
+- 행위자 식별자는 input이 아니라 인증 context에서 파생한다. 작성자, 소유자처럼 누가 하는지를 나타내는 id(`authorId`)를 input type에 두면 로그인한 누구나 다른 사용자 명의로 생성할 수 있다. 읽기의 [[IDOR]]를 쓰기에서 저지르는 셈이고, 클라이언트가 바꾸면 안 되는 속성을 받아들이는 속성 수준 인가 실패(OWASP API3, [[Application-Security|애플리케이션 보안]])다. schema에서 그 field를 없애고 resolver는 `context.currentUser.id`를 비즈니스 로직 계층에 넘긴다.
+- 로그인 여부와 대상 소유는 다른 검사이고 다른 코드로 알린다. 사용자가 없으면 `UNAUTHENTICATED`, 있지만 대상의 소유자가 아니면 `FORBIDDEN`이다. update와 delete는 currentUser가 있는지만으로 부족하고 대상의 소유자와 비교해야 한다. 두 코드는 스펙이 아니라 Apollo 계열 관례의 custom `extensions.code`이고, 코드 없이 던진 오류는 Apollo Server가 `INTERNAL_SERVER_ERROR`로 내보내 클라이언트가 재로그인과 권한 없음을 구분하지 못한다([[GraphQL-Architecture-Map#request error와 execution error를 응답에서 구분하기|extensions.code 계약]]). 두 경로는 [[Apollo-Server#테스트 전략|테스트 전략]]대로 서비스 테스트와 실제 schema를 태우는 operation 테스트에서 각각 확인한다.
 
 ## 타이밍: demand control은 실행 전, 인가는 실행 중
 
@@ -52,6 +54,8 @@ demand control은 대체로 실행 전에 요청을 막고(depth limit은 명시
 - complexity나 rate limit이 스펙 기본이라고 가정(커뮤니티 드래프트, custom directive).
 - rate limit을 무조건 게이트웨이에서 처리(비용을 미리 모르니 비즈니스 로직 계층 권장).
 - 인가를 resolver마다 산발적으로(단일 진실 소스에 위임).
+- 작성자 id를 input으로 받음(다른 사용자 명의 생성, 인증 context에서 파생).
+- 인증 없음과 권한 없음을 같은 코드나 코드 없는 오류로 보냄(`UNAUTHENTICATED`와 `FORBIDDEN` 구분).
 - 최대 depth 같은 고정 수치가 공식에 있다고 가정(정성적 원칙만).
 - 에러 메시지로 스키마를 흘림.
 
@@ -70,9 +74,14 @@ demand control은 대체로 실행 전에 요청을 막고(depth limit은 명시
 - [[GraphQL-Pagination|paginated fields]]
 - [[GraphQL-Schema-Design|비즈니스 로직 계층]]
 - [[GraphQL-Architecture-Map|전체 그림 지도 (validate 단계 demand control)]]
+- [[IDOR|IDOR (인증과 인가 구분)]]
 
 ## 출처
 
 - [graphql.org — Security](https://graphql.org/learn/security/)
 - [graphql.org — Authorization](https://graphql.org/learn/authorization/)
 - [graphql.org — Serving over HTTP (Where auth happens)](https://graphql.org/learn/serving-over-http/)
+- [Apollo Server — Error handling (INTERNAL_SERVER_ERROR 기본 코드, custom code)](https://www.apollographql.com/docs/apollo-server/data/errors)
+- [OWASP API Security Top 10 2023 — API3 Broken Object Property Level Authorization](https://api-security.owasp.org/editions/2023/en/0xa3-broken-object-property-level-authorization)
+- [인프런, Hong, 범용 미들웨어 처리를 위한 Context를 활용한 인증 및 인가 패턴](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449784)
+- [인프런, Hong, 서비스 단위 테스트부터 통합 테스트 진행하기](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449789)

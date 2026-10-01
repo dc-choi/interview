@@ -124,6 +124,14 @@ TypeORM은 adjacency list와 closure table tree entity를 지원한다. decorato
 - 이동 command는 authorization, cycle 검증과 transaction을 application service에 둔다.
 - API 응답은 무제한 recursive serialization 대신 depth/page 제한을 둔다.
 
+## 재귀의 한 iteration
+
+Anchor 결과로 시작하고 각 recursive 단계는 직전 단계의 row에서 다음 단계로 확장한다. 예시의 `WHERE s.depth < :max_depth`는 부모 depth를 검사해 depth+1 자식을 만들므로 결과 최대 depth는 max_depth다. `<=`로 바꾸면 한 단계 더 나온다. 고정 self join, application 반복과 달리 가변 depth를 한 statement로 표현하지만 중간 row 폭과 cycle 비용은 남는다.
+
+## 조상 경로와 subtree 집계
+
+조상 조회는 child의 parent_id로 parent.id를 찾아 방향을 뒤집고 breadcrumb는 path를 단계마다 누적한다. root에서 내려간 subtree 결과를 주문/권한 같은 fact와 집계할 때 descendant별 중복과 root 포함 여부를 정의한다. cycle과 깊이 guard, path 타입 길이는 어느 방향에서도 필요하다.
+
 ## 출처
 
 - [MySQL 8.4, WITH Common Table Expressions](https://dev.mysql.com/doc/refman/8.4/en/with.html)
@@ -138,6 +146,7 @@ TypeORM은 adjacency list와 closure table tree entity를 지원한다. decorato
 - [김영한 강사, Closure table 1](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401959)
 - [김영한 강사, Closure table 2](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401960)
 - [김영한 강사, 계층 구조 설계 정리](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401961)
+
 
 ## 관련 문서
 

@@ -1,7 +1,7 @@
 ---
 tags: [runtime, jvm, java, classloader, bytecode, jit, runtime-data-area]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-09-30
 category: "OS&런타임(OS&Runtime)"
 aliases: ["JVM Architecture", "JVM 구조", "ClassLoader", "Runtime Data Area"]
 ---
@@ -33,7 +33,7 @@ Java 소스 → `.class` 바이트코드 → JVM이 **ClassLoader로 로드**, *
 
 ### 로딩 3단계
 
-1. **Loading** — `.class` 파일을 읽어 `Class<?>` 객체를 Method Area에 적재
+1. **Loading** — `.class` 바이트를 읽어 클래스의 내부 표현을 Method Area에 만들고, 이 클래스를 나타내는 `Class<?>` 객체를 만든다. `Class` 객체도 인스턴스이므로 Heap에 있다
 2. **Linking**
    - **Verify** — 바이트코드 검증(스택 오버/언더플로, 타입 규칙 등)
    - **Prepare** — static 필드를 **기본값**으로 초기화(0, null, false)
@@ -48,6 +48,8 @@ Java 소스 → `.class` 바이트코드 → JVM이 **ClassLoader로 로드**, *
 | **Platform ClassLoader**(Extension, JDK 8 이전) | `java.xml.*`, `java.sql.*` 등 | `jmods` (JDK 9+ 모듈) |
 | **Application ClassLoader** | 클래스패스, 모듈패스의 앱 클래스 | 사용자 코드 |
 | **Custom ClassLoader** | 플러그인, 핫리로딩, 격리 | 프레임워크(Tomcat, Spring, OSGi) |
+
+JDK 9의 JEP 220이 extension mechanism(`lib/ext` 디렉터리, `java.ext.dirs`)을 제거했다. JAR를 JRE의 `lib/ext`에 넣어 모든 애플리케이션에 보이게 하던 방식은 없어졌고 class path나 module path를 쓴다. Servlet Container에서 JDBC driver를 어디에 둘지는 [[Java-Web-State-and-Persistence-DataSource]]에서 다룬다.
 
 ### Delegation Model
 
@@ -67,9 +69,10 @@ JVM이 실행 중 사용하는 메모리 영역. GC 대상/비대상, 스레드 
 ### 스레드 공유 영역
 
 - **Heap** — 객체, 배열 인스턴스. **GC 대상**. Young/Old 세대 분리 → [[JVM-GC]]
-- **Method Area (Metaspace)** — 클래스 메타데이터, 메서드 바이트코드, static 변수, 런타임 상수 풀
-  - JDK 8+: PermGen 폐지, **Metaspace(네이티브 메모리)** 로 이동
-  - 힙과 별도라 `-XX:MaxMetaspaceSize`로 제한 안 걸면 네이티브 메모리 먹음
+- **Method Area** — 런타임 상수 풀, 필드와 메서드 데이터, 메서드와 생성자 코드 같은 클래스별 구조를 두는 JVMS의 논리 영역. 명세는 물리 위치를 정하지 않는다
+  - HotSpot JDK 8+: PermGen 폐지. 클래스 메타데이터는 **Metaspace(네이티브 메모리)** 에 두고, static 변수 값과 intern된 String(String pool)은 **Heap**에 둔다(JEP 122). intern된 String은 JDK 7에서 먼저 Heap으로 옮겨졌다
+  - static 변수와 문자열 상수를 Method Area 안에 그리는 흔한 그림은 논리 모델이다. static 필드가 참조하는 객체와 String pool의 String 객체는 다른 객체처럼 Heap에서 GC가 관리한다
+  - Metaspace는 힙과 별도라 `-XX:MaxMetaspaceSize`로 제한 안 걸면 네이티브 메모리 먹음
 
 ### 스레드별 영역
 
@@ -167,7 +170,16 @@ JVM은 **필요한 순간까지 로딩을 미룬다**.
 ## 출처
 - [JEP 410 — Remove the Experimental AOT and JIT Compiler (OpenJDK)](https://openjdk.org/jeps/410)
 - [JEP 454 — Foreign Function & Memory API (OpenJDK)](https://openjdk.org/jeps/454)
+- [JEP 122 — Remove the Permanent Generation (OpenJDK)](https://openjdk.org/jeps/122)
+- [JEP 220 — Modular Run-Time Images (OpenJDK)](https://openjdk.org/jeps/220)
+- [Java Virtual Machine Enhancements in JDK 7 (Oracle)](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/enhancements-7.html)
+- [The Java Virtual Machine Specification, Java SE 25 Edition — Chapter 2 (Oracle)](https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-2.html)
+- [The Java Virtual Machine Specification, Java SE 25 Edition — Chapter 5 (Oracle)](https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-5.html)
 - [daddyprogrammer — 기술 용어 및 개념 정리](https://daddyprogrammer.org/post/2058/tech-terms-concept/)
+- [인프런, 김영한, 자바 메모리 구조](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194688)
+- [인프런, 김영한, static 변수2](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194693)
+- [인프런, 김영한, 정리](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194699)
+- [인프런, 김영한, 수업 자료](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194629)
 
 ## 관련 문서
 - [[JVM-GC|JVM GC (Young/Old/Metaspace, Minor vs Full GC, G1, ZGC)]]

@@ -1,6 +1,7 @@
 ---
 tags: [architecture, evolution, fitness-function, governance, quality-attribute]
 status: done
+verified_at: 2026-10-01
 category: "Architecture - 진화"
 aliases: ["Architecture Fitness Functions", "Architectural Fitness Function", "아키텍처 피트니스 함수"]
 ---
@@ -42,6 +43,27 @@ aliases: ["Architecture Fitness Functions", "Architectural Fitness Function", "�
 
 자동화할 수 없는 기준도 버리지 않는다. 대신 실행 주기, 판정자와 증거를 명시해 잊히지 않게 한다.
 
+## ArchUnit으로 경계와 사용자 규칙 검사하기
+
+ArchUnit은 import한 Java bytecode의 의존 관계를 검사한다. 다음은 `com.example` 바로 아래 패키지를 slice로 묶어 순환을 찾는 규칙이다(ArchUnit 1.5.1 User Guide 기준).
+
+```java
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
+
+JavaClasses classes = new ClassFileImporter().importPackages("com.example");
+slices().matching("com.example.(*)..")
+    .should().beFreeOfCycles()
+    .check(classes);
+```
+
+package 패턴이 실제 도메인 경계를 반영하는지와 import 범위가 비어 있지 않은지 확인한다. 비순환 의존 그래프가 실행 시점의 DI 객체 순환까지 없다는 뜻은 아니다.
+
+`ArchCondition<JavaClass>`의 `check(item, events)`에서 method call을 검사하고 `ConditionEvents`에 위반을 기록해 팀 규칙을 표현할 수 있다. 예를 들어 조회/응답 조립 클래스가 entity의 상태 변경 메서드를 호출하지 못하게 할 수 있다. 단, `set` 접두사만 탐지하면 `approve()` 같은 변경은 놓치고 무해한 호출도 걸릴 수 있다. 명시적 mutator 목록, annotation이나 별도 command 경계를 쓰고 규칙의 탐지 한계를 남긴다.
+
+DTO 조립 과정의 entity 읽기를 허용하는 규칙과 entity를 외부 응답에 직접 직렬화하지 않는 규칙은 별개다. ArchUnit 검사만으로 함수의 순수성, SQL 수나 권한을 증명할 수 없으므로 동작 테스트와 리뷰를 함께 둔다.
+
 ## 기존 부채 위에 도입하기 — 동결
 
 레거시 코드베이스에 규칙을 처음 걸면 기존 위반이 무더기로 잡혀 gate가 늘 빨간불이 된다. 도입을 막지 않는 방법이 동결(freeze)이다 — 지금 존재하는 위반을 버전 관리가 추적하는 violation store 파일에 기준선으로 얼려 통과시키고, 신규 위반만 빌드를 실패시킨다. 얼린 위반은 개발자가 고치면 자동으로 목록에서 사라져 진행이 diff에 드러난다. 대규모 선행 리팩토링 없이 규칙을 도입하고 기존 부채는 점진 상환할 수 있다. Java, Spring에서는 ArchUnit이 의존성 방향(도메인이 인프라, 웹에 의존하지 않기), 네이밍, 생성자 주입 같은 규칙을 테스트로 표현하고 이 동결(FreezingArchRule)을 지원해, 위반 시 CI 빌드를 실패시켜 머지 전에 막는다.
@@ -72,6 +94,13 @@ fitness function은 아키텍처 결정을 대신하지 않는다. [[Tech-Decisi
 - [문서로만 지키던 아키텍처 규칙, 테스트 코드로 강제하기 — 우아한형제들 기술블로그](https://techblog.woowahan.com/26835/)
 - [45권의 기술 서적에서 얻은 핵심 인사이트 — GeekNews](https://news.hada.io/topic?id=31718)
 - [Our biggest insights from 45 technical books! — Book Overflow](https://www.youtube.com/watch?v=k2ek5MsUEMo)
+- [ArchUnit, User Guide](https://www.archunit.org/userguide/html/000_Index.html)
+- [토비 강사, ArchUnit을 이용한 슬라이스 의존 관계 검증](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=461995)
+- [토비 강사, 애그리거트와 애플리케이션 컴포넌트 의존 관계](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=458026)
+- [토비 강사, 강의 도메인 개발 (1)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=464142)
+- [토비 강사, 설계 리팩터링](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=443355)
+- [토비 강사, 개발 가이드 업데이트](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=453817)
+- [토비 강사, DIP를 이용한 양방향 의존관계 문제 해결](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=471511)
 
 ## 관련 문서
 

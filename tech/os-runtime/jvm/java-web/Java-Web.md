@@ -12,8 +12,10 @@ Java 웹 애플리케이션의 HTTP 진입점부터 서버 사이드 렌더링, 
 ## 학습 지도
 
 - [x] [[Java-Web-Servlet-Runtime|Servlet 런타임과 요청 처리]]
+  - [x] [[Java-Web-Servlet-Runtime-Deployment|Servlet 배포 설정, 매핑과 생명주기]] — context path, web.xml, 선언 병합, callback 순서, Spring Boot 등록
 - [x] [[Java-Web-JSP-and-SSR|JSP와 서버 사이드 렌더링]]
 - [x] [[Java-Web-State-and-Persistence|웹 상태와 JDBC 영속성]]
+  - [x] [[Java-Web-State-and-Persistence-DataSource|Servlet Container의 JDBC driver와 DataSource]] — driver 배치, JNDI DataSource, Tomcat 기본 pool 값
 
 ## 함께 볼 문서
 
@@ -26,7 +28,7 @@ Java 웹 애플리케이션의 HTTP 진입점부터 서버 사이드 렌더링, 
 
 ## 수집 범위
 
-인프런 `실전 JSP (renew ver.) - 신입 프로그래머를 위한 강좌` 과정 `182737`의 강의 단원 21개 중 본문을 확인할 수 있었던 20개를 세 문서에 한 번씩 반영했다. 퀴즈 2개는 강의 본문 범위에서 제외했다.
+인프런 `실전 JSP (renew ver.) - 신입 프로그래머를 위한 강좌` 과정 `182737`의 강의 단원 21개 중 본문을 확인할 수 있었던 20개를 이 폴더의 문서에 나눠 반영했다. 퀴즈 2개는 강의 본문 범위에서 제외했다.
 
 `강의자료` 단원 `13653`은 2026-08-04에 두 차례 재시도했지만 다음 응답으로 본문을 가져오지 못해 내용 통합에서 제외했다.
 

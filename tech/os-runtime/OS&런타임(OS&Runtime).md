@@ -10,11 +10,12 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 ## 목차
 
 - [[tech/os-runtime/os-fundamentals/OS기초(OSFundamentals)|OS 기초 (OS Fundamentals)]] — 동시성, 프로세스, 스케줄링, 가상 메모리, 파일시스템
-- [[tech/os-runtime/linux/Linux-File-System|Linux]] — 파일 시스템, 디렉토리 구조 (FHS)
+- [[tech/os-runtime/linux/Linux-File-System|Linux]] — 파일 시스템, 디렉토리 구조 (FHS), 실행 비트와 파일 시그니처, 로그와 디스크 진단 명령
 - [[tech/os-runtime/runtime/런타임(Runtime)|런타임 (Runtime)]] — Thread vs Event Loop, async/await, Backpressure
-- [[tech/os-runtime/jvm/JVM|JVM]] — 아키텍처, GC, 컨테이너 메모리
+- [[tech/os-runtime/jvm/JVM|JVM]] — 아키텍처, GC, 메모리 누수, 컨테이너 메모리
 - [[tech/os-runtime/nodejs/Node.js|Node.js]] — V8, libuv, Event Loop, Module System, Stream, Worker Threads
-- [[Deno-Runtime|Deno]] — TypeScript 실행, dependency, task와 권한 모델
+- [[Deno-Runtime|Deno]] — Node와의 차이, TypeScript 실행, import map, 캐시와 lockfile, Docker 배포
+  - [[Deno-Runtime-Permissions|Deno 권한 모델]] — 자원별 flag, NotCapable, sandbox를 벗어나는 flag, task별 권한 분리와 permission set
 - [[tech/os-runtime/nestjs/NestJS|NestJS]] — Clean Architecture, DI
 - [[tech/os-runtime/spring/Spring|Spring]] — Request Lifecycle, @Transactional, JPA 영속성
 
@@ -22,6 +23,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [x] [[Container-Memory-Metrics|Page cache와 컨테이너 메모리 지표 (RSS, file cache, working set, reclaim, cgroup 진단)]]
 - [x] [[File-Descriptor-Limit|File descriptor limit]] — 기존 보강: [[Storage-and-FileSystem-Files#파일 메타데이터와 파일 디스크립터|파일 디스크립터 구조]], [[libuv-Threading#에러 처리|UV_EMFILE]]
 - [x] [[Epoll-Kqueue|epoll / kqueue]] — 기존 보강: [[libuv-Architecture#이벤트 디멀티플렉서|libuv의 OS별 이벤트 디멀티플렉서]]
+- [x] [[Linux-Netfilter-and-iptables|netfilter와 iptables (hook, table, chain, conntrack, 규칙 운영, 컨테이너 경로)]] — 기존 보강: [[Docker-Bridge-Networking#netfilter, iptables와 nftables|Docker의 firewall backend]]
 
 ## Runtime 체크리스트
 - [x] [[Debugging-Profiling-Memory#Heap Snapshot|Heap Snapshot (생성, DevTools 로드, Comparison 분석)]]

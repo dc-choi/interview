@@ -11,8 +11,8 @@ aliases: ["Senior Design"]
 
 ## 목차
 - [x] [[System-Design-Interview|시스템 설계 인터뷰 대응 (Mony-Calendar 글로벌 인프라 설계 사례)]]
-- [x] [[System-Design-Quality-Attribute-Decision|시스템 설계 품질 속성과 의사결정 증거 (목표, 선택, 검증)]]
+- [x] [[System-Design-Quality-Attribute-Decision|시스템 설계 품질 속성과 의사결정 증거 (목표, 선택, 검증, 속성별 수단과 목표 예시, SNS 피드 쓰기 시점 fan-out)]]
 - [x] [[Content-Availability-System-Design|콘텐츠 가용성 조회 시스템 설계 (Federation, Redis, Outbox, OpenSearch)]]
 - [x] [[Content-Availability-Data-Contract|콘텐츠 가용성 데이터 계약 (Offer, 상태, Revision)]]
-- [x] [[Video-Streaming-System-Design|주문형 비디오 스트리밍 시스템 설계 (처리, 제어, 미디어 plane, ABR, CDN)]]
+- [x] [[Video-Streaming-System-Design|주문형 비디오 스트리밍 시스템 설계 (처리, 제어, 미디어 plane, ABR, CDN, 라이브 ingest 비교)]]
 - [x] [[Inclusive-Design-Principles|포용 디자인 원칙 (평균의 함정, Exclusion→Innovation, Persona 3축, Cultural Localization)]]

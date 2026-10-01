@@ -11,7 +11,7 @@ Node.js 애플리케이션의 문제 진단과 성능 분석을 위한 도구와
 
 ## 목차
 
-1. [[Debugging-Profiling-Tools|도구 선택과 디버깅]] — 진단 도구 선택 가이드, Inspector 기반 디버깅, 원격 디버깅, 라이브 디버깅 워크플로
+1. [[Debugging-Profiling-Tools|도구 선택과 디버깅]] — 진단 도구 선택 가이드, Inspector 기반 디버깅, 원격 디버깅, 라이브 디버깅 워크플로, debugger 문과 단계 실행 단축키
 2. [[Debugging-Profiling-Memory|프로파일링 & 메모리 진단]] — V8 프로파일러, Linux Perf, Heap Snapshot, GC 추적, Flame Graph
 
 ## 관련 문서

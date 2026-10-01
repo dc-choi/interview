@@ -146,14 +146,25 @@ NestJS에서는 controller가 받은 요청을 바로 거대한 `Promise.all`로
 
 금전 대사는 일반 동시성 helper만으로 안전해지지 않는다. 별도 불변식은 [[Payment-Reconciliation-Worker|결제 대사 worker]]에서 다룬다.
 
+## 주기, 묶음과 소비 경계
+
+완료 후 고정 지연은 시작 간격이 job 시간 + interval이다. job과 delay를 함께 시작해 둘 다 await하면 대략 max(job 시간, interval)이 되어 긴 job은 끝나자마자 다시 시작한다. setInterval의 async callback은 앞 작업을 기다리지 않아 overlap될 수 있다. 최소 주기 loop도 timer 오차, abort, 오류 뒤 재시작과 다중 instance 중복 실행을 별도로 처리한다.
+
+그룹마다 Promise.all을 기다리면 가장 느린 항목이 다음 그룹 전체를 막는다. sliding window는 slot 하나가 비면 다음 작업을 시작해 처리량에 유리하다. 그룹 결과를 한 번에 반영해야 하면 묶음, independent 작업을 계속 처리하려면 worker pool을 고른다. 두 방식 모두 이미 시작된 Promise 대신 thunk를 받아 시작 시점을 통제한다.
+
+range는 시도 예산, filter 뒤 take는 성공 결과 수 목표다. 실패/제외가 많으면 take 수보다 더 많은 원천 값을 읽으므로 원천 상한도 둔다. lazy map/filter는 원소 하나씩 아래 소비자에게 당겨지고 eager 수집은 전체를 먼저 모으는 경계다. 순차 lazy 소비와 전체 Promise를 먼저 시작하는 concurrent 소비는 결과 수가 같아도 부하와 effect가 다르다. take(2) 전에 전체 시작하면 나머지 작업도 계속될 수 있다. L./C. 접두사와 연산자 교체는 library 계약이지 ECMAScript 표준이 아니며 무제한 병렬성을 안전하게 만드는 장치가 아니다.
+
 ## 출처
+
+- 인프런 보충 강의: [아임포트 결제 누락 처리 스케쥴러 - 반복 실행하기](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19722), [축약 및 합산을 reduce로](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19654), [while을 range로](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19655)
+- 인프런 보충 강의: [Kleisli Composition 관점에서의 Promise](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16621)
 
 - [ECMAScript Language Specification, Promise.all](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise.all)
 - [DOM Standard, aborting ongoing activities](https://dom.spec.whatwg.org/#aborting-ongoing-activities)
 - [Web IDL Standard, Dictionary types](https://webidl.spec.whatwg.org/#js-dictionary)
 - [Node.js, Timers Promises API](https://nodejs.org/api/timers.html#timers-promises-api)
 - [TypeORM, transactions](https://typeorm.io/docs/advanced-topics/transactions/)
-- async iteration: [async/await](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49884), [async iterator](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49911), [for await](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49932)
+- async iteration: [async/await](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49884), [await와 for-await-of](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49911), [Symbol.asyncIterator](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=49932)
 - 작업 sequence: [range/take](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19715), [takeWhile/takeUntil](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19716), [작업을 iterable로 보기](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=19717)
 - frontend 구성: [template literal](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20518), [이미지 목록](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20519), [item 삭제](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20521), [custom confirm](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20522), [함수 abstraction](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20523), [이미지 concurrency](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20582), [부하 제한](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20583), [고차 함수 분리](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20584), [scope 의존 분리](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20585), [DOM 고차 함수](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20586)
 - lazy Promise pipeline: [lazy map/take](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16625), [async filter](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16626), [reduce sentinel](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16627), [lazy 효율](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16628), [concurrent reduce 1](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16629), [concurrent reduce 2](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16630), [concurrent map/filter](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16631), [평가 전략 조합](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16632), [정리](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16633), [Node.js SQL](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16634)

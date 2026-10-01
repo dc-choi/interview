@@ -23,6 +23,8 @@ aliases: ["Microservice Decomposition", "서비스 분해", "마이크로서비�
 
 서비스 크기는 결과다. 이름의 길이, 코드 줄 수, 테이블 개수나 팀 인원만으로 경계를 정하지 않는다.
 
+Amazon의 피자 두 판 팀은 작은 팀이 한 제품이나 서비스의 결과를 책임지도록 하는 운영 경험칙이다. AWS 설명은 이상적인 규모를 10명 미만으로 들지만, 인원수만으로 서비스 크기를 정하지 않는다. 개발, 테스트, 배포와 장애 대응을 한 팀이 감당할 수 있는지 확인하는 질문으로 쓴다. 몇 명이 몇 주에 만들 수 있어야 한다는 수치를 보편 경계 기준으로 쓰지 않는다.
+
 ## 네 가지 입력을 함께 본다
 
 ### 1. 비즈니스 역량
@@ -33,6 +35,8 @@ aliases: ["Microservice Decomposition", "서비스 분해", "마이크로서비�
 
 같은 단어가 다른 규칙과 모델을 갖는 지점을 찾는다. 상품이라는 말이 카탈로그에서는 설명과 탐색의 대상이고, 재고에서는 수량과 예약의 대상이라면 모델을 분리할 근거가 된다. [[DDD|DDD의 Bounded Context]]는 언어와 모델의 경계이며 서비스와 항상 1:1일 필요는 없다.
 
+도메인 전문가와 개발자가 EventStorming으로 업무 이벤트를 시간 흐름에 놓고, 그 이벤트를 일으킨 command, actor, 정책과 불명확한 지점을 함께 찾을 수 있다. 이 결과는 경계 후보를 발견하는 입력이며 워크숍 결과가 곧 서비스 목록은 아니다. 전략적 설계의 경계를 먼저 탐색하고 전술적 설계는 각 경계 안의 모델에 적용한다.
+
 ### 3. 변경과 런타임 증거
 
 - 같은 PR이나 릴리스에서 반복해 함께 바뀌는 파일과 테이블
@@ -42,6 +46,8 @@ aliases: ["Microservice Decomposition", "서비스 분해", "마이크로서비�
 - 한 트랜잭션에서 반드시 지켜야 하는 불변식
 
 추상적인 도메인 그림과 실제 변경 기록이 다르면 경계를 다시 검토한다.
+
+테이블의 FK, 함께 읽거나 갱신하는 테이블과 transaction 불변식을 분석해 소유권 후보를 확인한다. 테이블 묶음만 보고 엔티티당 서비스를 만들면 여러 객체를 가로지르는 업무 흐름을 놓친다. 데이터 경계를 자르기 전에 어떤 흐름이 [[Saga-Pattern|분산 상태 전이와 보상]]을 필요로 하는지 같이 표시한다.
 
 ### 4. 조직 경계
 
@@ -57,6 +63,10 @@ aliases: ["Microservice Decomposition", "서비스 분해", "마이크로서비�
 6. **모듈 경계로 검증한다**: 가능하면 [[Modular-Monolith|모듈러 모놀리스]]에서 의존성과 데이터 접근을 먼저 강제한다.
 7. **독립 가치가 큰 경계부터 추출한다**: 변화율, 부하, 규제나 팀 독립성이 실제로 다른 부분을 우선한다.
 8. **운영 결과로 재평가한다**: lead time과 복구 시간이 나빠지면 더 나누지 않고 경계를 이동하거나 합친다.
+
+### 구현 전에 최소 설계 결정을 만든다
+
+스프린트 계획과 회의 방식만으로 도메인 경계나 오류 처리가 정해지지는 않는다. 첫 구현 전에 서비스 후보, 공개 계약, 데이터 소유자와 [[Microservice-Outer-Architecture|운영 기반]]을 가설로 정하고 대표 업무 흐름으로 검증한다. 모든 설계를 확정하는 선행 단계가 아니라 구현 피드백으로 갱신하는 최소 결정이다. 단순 CRUD에는 단순한 내부 구조를, 복잡한 정책에는 [[Hexagonal-In-Practice|도메인을 보호하는 구조]]를 선택할 수 있다.
 
 ## 경계 검증 시나리오
 
@@ -97,6 +107,10 @@ aliases: ["Microservice Decomposition", "서비스 분해", "마이크로서비�
 - [Dowon Lee 강사, Decomposition 개요](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286782)
 - [Dowon Lee 강사, Service Decomposition 실습](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286783)
 - [Dowon Lee 강사, 서비스 분해 시 고려사항](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286784)
+- [Amazon’s Two Pizza Teams — AWS](https://aws.amazon.com/executive-insights/content/amazon-two-pizza-team/)
+- [Incremental notation — EventStorming](https://www.eventstorming.com/patterns/incremental-notation/)
+- [han jeong heon 강사, 애자일 적용 마이크로서비스 개발 프로세스](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104445)
+- [han jeong heon 강사, 헥사고날 아키텍처, 클린 아키텍처](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=105078)
 
 ## 관련 문서
 

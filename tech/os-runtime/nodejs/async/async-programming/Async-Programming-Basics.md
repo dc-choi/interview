@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["비동기 프로그래밍 기초"]
 ---
@@ -107,6 +108,33 @@ import { setTimeout as delay } from 'node:timers/promises';
 await delay(1000);
 ```
 
+## 콜백 API를 Promise로 바꾸기
+
+앞 단계 결과에 의존하는 콜백을 중첩하면 단계마다 들여쓰기와 오류 분기가 늘어난다. 콜백 API를 Promise 반환 함수로 바꾸면 위의 체이닝이나 `await`로 순서대로 읽힌다. 바꾸는 방법은 다음 순서로 고른다.
+
+1. 모듈이 Promise API를 제공하면 그것을 쓴다. `node:fs/promises`, `node:dns/promises`, `node:readline/promises`, `node:timers/promises`, `node:stream/promises`가 있다.
+2. 마지막 인자로 오류 우선 콜백 `(err, value) => ...`을 받는 함수는 `util.promisify`로 감싼다.
+3. 이 규약을 따르지 않는 콜백(성공과 실패 콜백이 따로 있는 API 등)은 `new Promise`로 직접 감싼다.
+
+```js
+import { promisify } from 'node:util';
+import { execFile } from 'node:child_process';
+
+const execFileAsync = promisify(execFile);
+const { stdout } = await execFileAsync('node', ['--version']);
+
+// 성공, 실패 콜백을 따로 받는 API는 직접 감싼다. resolve와 reject는 처음 한 번만 효력이 있다.
+const load = (id) => new Promise((resolve, reject) => {
+  legacyLoad(id, resolve, reject);
+});
+```
+
+- `util.promisify`는 원본에 `util.promisify.custom` 속성이 있으면 그 함수를 돌려준다. `child_process.exec`, `execFile`이 이 경우라 `{ stdout, stderr }` 객체로 resolve하고, 종료 코드가 0이 아니면 `stdout`, `stderr`를 덧붙인 오류로 reject하며, 반환된 Promise의 `child` 속성으로 `ChildProcess`에 접근한다. 콜백 값이 여러 개인 다른 API는 결과 모양을 해당 문서에서 확인한다.
+- `this`를 쓰는 메서드를 떼어 promisify하면 호출 때 `this`가 사라진다. `promisify(obj.method).bind(obj)`처럼 묶는다. Promise를 이미 반환하는 함수에 promisify를 쓰는 것은 v20.8.0부터 deprecated다.
+- executor 안에서 동기로 던진 예외는 reject로 바뀌지만, executor가 넘긴 비동기 콜백 안에서 던진 예외는 Promise와 무관한 uncaught exception이 된다. 콜백 안의 실패는 `reject(err)`로 넘긴다.
+- promisify해도 `exec`는 shell을 거치므로 명령 인젝션 주의는 [[Process-Child-Process#보안 — 명령 인젝션|Child Process 보안]]과 같다.
+- CommonJS도 `require('node:fs').promises`를 쓸 수 있지만 최상위 `await`가 없어 async 함수로 한 번 더 감싸야 한다.
+
 ## 이벤트 루프에서 작업 예약
 
 | 메서드 | 실행 시점 | 용도 |
@@ -126,9 +154,16 @@ console.log('끝');
 ## 출처
 
 - [ECMAScript, Properties of Promise Instances](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-properties-of-promise-instances)
+- [Node.js, util.promisify](https://nodejs.org/api/util.html#utilpromisifyoriginal)
+- [Node.js, child_process.exec](https://nodejs.org/api/child_process.html#child_processexeccommand-options-callback)
+- [인프런, 얄팍한 코딩사전, \[부록\] Promise와 async/await](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=279344)
+- [인프런, 얄팍한 코딩사전, url, dns, util, os 모듈](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=273476)
+- [인프런, 얄팍한 코딩사전, child_process와 cluster 모듈](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=275724)
+- [인프런, 얄팍한 코딩사전, 파일 시스템 2](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=270416)
 
 ## 관련 문서
 - [[Async-Programming-Patterns|비동기 프로그래밍 — 패턴]]
 - [[Async-Programming|비동기 프로그래밍 (TOC)]]
 - [[Event-Loop|이벤트 루프]]
 - [[Async-Internals|비동기 내부 동작]]
+- [[Process-Child-Process|Process, Child Process]]

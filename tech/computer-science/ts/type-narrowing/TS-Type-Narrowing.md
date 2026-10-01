@@ -10,8 +10,8 @@ aliases: ["TS Type Narrowing", "Type Guard", "Type Predicate", "Assertion Functi
 Union, `unknown`, `any` 같은 **넓은 타입**을 조건문 흐름으로 **구체 타입**으로 좁혀, 좁혀진 컨텍스트 안에서 안전하게 메서드, 속성에 접근하는 메커니즘. 컴파일러는 control flow analysis로 각 분기 안의 타입을 추적한다.
 
 - [[TS-Type-Narrowing-Builtin-Guards|타입 소거와 두 레이어, 6가지 도구 개요, typeof, instanceof, in, Discriminated Union과 exhaustive check]]
-- [[TS-Type-Narrowing-Custom-Guards|사용자 정의 Type Predicate(x is T)와 Assertion Function(asserts x is T), 둘의 비교]]
-- [[TS-Type-Narrowing-Pitfalls|control flow와 클로저 좁힘 해제, unknown vs any, 흔한 실수, 면접 체크포인트]]
+- [[TS-Type-Narrowing-Custom-Guards|사용자 정의 Type Predicate(x is T), boolean 헬퍼의 한계와 5.5 추론 predicate, Assertion Function(asserts x is T), 둘의 비교]]
+- [[TS-Type-Narrowing-Pitfalls|control flow와 클로저 좁힘 해제, unknown vs any, null이 섞인 유니온의 in과 instanceof, 흔한 실수, 면접 체크포인트]]
 - [[TS-Pattern-Matching|ts-pattern으로 Discriminated Union exhaustive 체크와 중첩 객체 구조 매칭, 도구 선택 기준]]
 
 ## 관련 문서

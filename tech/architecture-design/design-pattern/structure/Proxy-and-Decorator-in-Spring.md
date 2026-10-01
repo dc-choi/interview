@@ -72,6 +72,12 @@ client -> authorization -> timing -> cache -> target
 
 반복되는 forwarding을 줄이는 다음 단계가 JDK dynamic proxy/CGLIB이고, Spring은 `ProxyFactory`, Advisor와 auto-proxy creator로 이를 추상화한다.
 
+## Bean 조립에서 확인할 것
+
+수동 `@Bean` 팩토리가 Target을 만들고 Proxy를 반환하면 소비자에게 주입되는 Bean은 반환된 Proxy다. 메서드 안에서 `new`로 만든 Target은 별도로 Bean으로 등록하지 않는 한 독립된 컨테이너 관리 대상이 아니다. 그 Target의 주입과 생명주기 콜백까지 자동 적용된다고 가정하지 않는다.
+
+적용하지 않을 메서드는 그대로 Target에 위임한다. 클래스 상속 Proxy에서 부모 생성자를 통과하려고 필수 의존성에 `null`을 넣는 우회는 부모의 불변식을 깨뜨릴 수 있다. 생성자 계약을 충족시키거나 조합 가능한 별도 계약을 선택한다.
+
 ## 출처
 
 - [Spring Framework 7.0, AOP Proxies](https://docs.spring.io/spring-framework/reference/core/aop/introduction-proxies.html)

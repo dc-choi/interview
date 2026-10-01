@@ -56,12 +56,21 @@ CREATE TABLE cold_events (
 - `INFORMATION_SCHEMA.PARTITIONS.TABLE_ROWS`는 InnoDB에서 추정치일 수 있으므로 archive 검증의 유일한 count로 쓰지 않는다.
 - 성공한 export가 있다는 이유만으로 복구 가능하다고 보지 않는다. 정기 restore drill과 schema 호환성 검증이 필요하다.
 
+## 압축 page의 갱신 비용
+
+버퍼 풀에는 같은 page의 압축본과 비압축본이 함께 있을 수 있다. 작은 변경은 비압축 modification log에 모았다가 공간이 차면 page를 풀고 다시 압축한다. 목표 `KEY_BLOCK_SIZE`에 맞지 않으면 page split과 재압축이 추가된다. 더 작은 목표 크기가 CPU 비용과 쓰기 지연을 악화시킬 수 있는 이유다.
+
+`INFORMATION_SCHEMA.INNODB_CMP`의 `COMPRESS_OPS`와 `COMPRESS_OPS_OK` 차이로 실패를 관찰하고 읽기, 쓰기 지연과 함께 비교한다. 인덱스별 `INNODB_CMP_PER_INDEX` 수집은 별도 활성화와 overhead를 검토한다. 실패가 많으면 KEY_BLOCK_SIZE 확대, prefix 폭 축소 또는 비압축 DYNAMIC 전환을 시험한다.
+
 ## 출처
 
 - [MySQL 8.4 Reference Manual, InnoDB Table and Page Compression](https://dev.mysql.com/doc/refman/8.4/en/innodb-compression.html)
 - [MySQL 8.4 Reference Manual, Creating Compressed Tables](https://dev.mysql.com/doc/refman/8.4/en/innodb-compression-usage.html)
 - [MySQL 8.4 Reference Manual, RANGE and LIST Partition Management](https://dev.mysql.com/doc/refman/8.4/en/partitioning-management-range-list.html)
 - [인프런, Hong, 압축과 아카이빙](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338559)
+- [MySQL 8.4 Reference Manual, innodb compression internals](https://dev.mysql.com/doc/refman/8.4/en/innodb-compression-internals.html)
+- [MySQL 8.4 Reference Manual, innodb compression tuning monitoring](https://dev.mysql.com/doc/refman/8.4/en/innodb-compression-tuning-monitoring.html)
+
 
 ## 관련 문서
 

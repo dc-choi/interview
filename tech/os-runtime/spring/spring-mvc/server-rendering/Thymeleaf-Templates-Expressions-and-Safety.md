@@ -71,10 +71,32 @@ HTML comment는 client source에 남을 수 있다. Server-only 설명/임시 �
 
 Thymeleaf utility/expression object와 Spring conversion을 이용해 숫자/날짜를 표시할 수 있다. `Instant`, local date-time과 user timezone을 구분하고 locale-aware display를 machine-readable value/JSON과 섞지 않는다.
 
+## 표현식과 조각의 사용 예
+
+```html
+<a th:href="@{/items/{id}(id=${item.id},mode=${mode})}">상세</a>
+<span th:text="|상품: ${item.name}|">상품</span>
+<span th:text="${label} ?: _">기본 표시</span>
+<script th:inline="javascript">
+  const label = /*[[${label}]]*/ "sample";
+</script>
+```
+
+URL placeholder로 소비되지 않은 parameter는 query로 들어간다. 문자열 대체 `|...|`와 inline 출력 `[[...]]`를 구분하며 공백이 있는 문자 literal은 작은따옴표로 감싼다. `_`는 원래 HTML fallback을 남기는 No-Operation이다. JavaScript inline은 문자열/object를 literal로 serialize하므로 직접 문자열 결합으로 script를 만들지 않는다.
+
+일반 HTML 주석은 결과에 남을 수 있다. `<!--/* ... */-->`는 parser가 제거하고 `<!--/*/ ... /*/-->`는 렌더링 때 wrapper 주석을 벗겨 내부 markup을 처리한다. 반복 status는 `index`가 0부터, `count`가 1부터 시작하며 조건이 false면 element가 제거된다.
+
+fragment가 공통 조각을 가져오는 방향이라면 layout은 공통 shell에 페이지의 title/content 조각을 parameter로 전달하는 방향이다. 예: `~{layout :: shell(~{::title}, ~{::section})}`. 정해진 layout 단계별 숫자보다 최종 markup과 asset 순서를 확인한다.
+
+Thymeleaf 3.1에서는 `#request`, `#response`, `#session`, `#servletContext` expression object가 제거되었다. 필요한 값을 model로 제공한다. `param`, `session`, `application` namespace와 Spring Bean 표현식은 별도이며 직접 접근을 넓히지 않는다. `java.time` 표시용 `#temporals`는 3.1에 통합되어 과거 extras dependency 예제를 그대로 추가하지 않는다.
+
 ## 출처
+
+- [Thymeleaf 3.1, ChangeLog](https://github.com/thymeleaf/thymeleaf/blob/3.1-master/ChangeLog.txt)
 
 - [Thymeleaf 3.1, Using Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html), [Thymeleaf documentation](https://www.thymeleaf.org/documentation)
 - 기본 기능: [프로젝트](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83252), [소개](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83253), [text/utext](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83254), [SpringEL](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83255), [기본 object](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83256), [utility/date](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83257), [URL](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83258), [literal](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83259), [연산](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83260), [attribute](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83261), [반복](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83262), [조건](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83263), [주석](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83264), [block](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83265), [JavaScript inline](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83266), [fragment](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83267), [layout 1](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83268), [layout 2](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83269), [정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83270)
+- 김영한 강사, [수업 자료](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83249)
 
 ## 관련 문서
 

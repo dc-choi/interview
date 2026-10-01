@@ -7,7 +7,7 @@ aliases: ["Spring Multipart JSON", "RequestPart vs RequestBody", "파일 업로�
 
 # Spring REST — Multipart 파일 + JSON DTO 동시 처리
 
-REST API에서 **파일 업로드와 JSON 메타데이터를 같은 요청으로** 받는 일은 흔하지만, Spring의 바인딩 어노테이션 선택을 잘못하면 `HttpMediaTypeNotSupportedException`, `Required request part ... is not present` 같은 오류로 자주 막힌다. **Content-Type이 `multipart/form-data`일 때 `@RequestBody`를 쓸 수 없다**.
+REST API에서 **파일 업로드와 JSON 메타데이터를 같은 요청으로** 받는 일은 흔하지만, Spring의 바인딩 어노테이션 선택을 잘못하면 `HttpMediaTypeNotSupportedException`, `Required request part ... is not present` 같은 오류로 자주 막힌다. multipart 요청의 JSON DTO는 전체 body가 아니라 JSON part를 변환해야 하므로 보통 `@RequestPart`를 사용한다. raw byte/string처럼 body 전체를 읽는 converter 사용과는 구분한다.
 
 ## 어노테이션 4종 비교
 
@@ -22,9 +22,9 @@ REST API에서 **파일 업로드와 JSON 메타데이터를 같은 요청으로
 
 - **`@RequestBody` vs `@RequestPart`**: 둘 다 HttpMessageConverter 사용. `@RequestBody`는 요청 전체, `@RequestPart`는 파트별
 - **`@RequestPart` vs `@ModelAttribute`**: 둘 다 multipart 처리. `@RequestPart`는 **파트 내부 Content-Type**(보통 `application/json`)을 따라 역직렬화, `@ModelAttribute`는 Name-Value로 필드 하나씩 채움
-- **JSON 객체를 DTO로 받고 싶다면 `@RequestPart`**. `@ModelAttribute`는 중첩 객체, List, 커스텀 타입에서 한계
+- **JSON 객체를 DTO로 받고 싶다면 `@RequestPart`**. `@ModelAttribute`는 parameter 경로로 중첩 객체와 List도 bind할 수 있지만 JSON part를 역직렬화하는 경로는 아니다.
 
-## 핵심 원칙 — `@RequestBody`와 `@RequestPart` 혼용 금지
+## JSON DTO는 multipart part를 변환한다
 
 ```java
 // 잘못된 예 — HttpMediaTypeNotSupportedException 발생
@@ -124,7 +124,7 @@ spring:
 - **`max-file-size`**: 단일 파일 상한
 - **`max-request-size`**: 전체 요청 합 상한 (여러 파일, JSON 포함)
 - 초과 시 `MaxUploadSizeExceededException` — `@RestControllerAdvice`로 400/413 응답 매핑
-- `file-size-threshold`를 넘으면 메모리 대신 디스크에 임시 저장 → **대용량 업로드 시 OOM 방지**
+- `file-size-threshold`를 넘으면 메모리 대신 디스크에 임시 저장 → 임시 메모리 사용을 줄일 수 있지만 동시 업로드와 전체 buffer 사용의 상한은 별도다
 
 ## 흔한 오류와 원인
 
@@ -142,7 +142,7 @@ multipart 한 번에 수 GB를 올리는 건 메모리, 네트워크 모두 부�
 
 - **Presigned URL**: 클라이언트가 **S3에 직접 업로드** → 완료 후 메타데이터만 서버 API로 전송
 - **청크 업로드**: 파일을 N MB 단위로 쪼개 여러 번 POST → 서버가 조합
-- **스트리밍**: `InputStreamResource`로 서버가 파일을 **버퍼 없이** 디스크, S3로 흘려보냄
+- **스트리밍**: 업로드 입력 stream을 제한된 buffer로 복사하고 parser/container의 선행 buffering도 확인한다. `InputStreamResource`만으로 업로드가 무버퍼 처리되는 것은 아니다.
 - **멱등성 토큰**: 재시도 중복 업로드 방지
 
 파일이 작고(수 MB) 메타데이터와 같은 트랜잭션으로 처리하면 충분할 때만 multipart 1-shot.
@@ -163,6 +163,12 @@ multipart 한 번에 수 GB를 올리는 건 메모리, 네트워크 모두 부�
 - JSON DTO를 multipart 파트로 받을 때 **Content-Type 명시 필요성** (클라이언트, `@RequestPart`)
 - 대용량 파일 업로드에 **Presigned URL이나 청크 업로드**가 더 적합한 상황
 - `max-file-size`, `file-size-threshold`의 의미와 OOM 방지 효과
+
+## Servlet Part에서 MultipartFile까지
+
+Servlet의 `getParts()`/`getPart()`는 multipart 설정이 활성화된 container parser를 사용한다. `StandardServletMultipartResolver`는 이 parser를 이용해 요청을 `MultipartHttpServletRequest`로 감싸며 Spring의 `MultipartFile` 접근을 제공한다. Boot multipart 자동 구성과 Servlet 등록의 크기 제한을 함께 확인한다. resolver만 끄는 것과 container 자체의 multipart parsing을 끄는 일은 같지 않다.
+
+빈 파일은 `isEmpty()`로 판별한다. 원본 이름과 서버 저장 식별자를 분리하고 `transferTo()` 또는 stream 복사 뒤 metadata의 참조와 저장 실패를 함께 관리한다. 다운로드는 authorization 뒤 Resource를 반환하고 `ContentDisposition` builder 등으로 안전한 filename을 만든다. 이미지 inline 표시와 `attachment` 다운로드는 응답 계약이 다르며 사용자 업로드 HTML/SVG의 실행 위험도 별도로 통제한다.
 
 ## 출처
 - [middleearth — Spring 요청 바인딩 어노테이션 비교](https://middleearth.tistory.com/35)

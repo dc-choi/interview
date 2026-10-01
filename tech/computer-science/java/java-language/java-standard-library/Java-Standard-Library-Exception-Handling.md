@@ -1,7 +1,7 @@
 ---
-tags: [java, exception, checked-exception, runtime-exception, finally, try-with-resources]
+tags: [java, exception, checked-exception, runtime-exception, finally, try-with-resources, stack-trace]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Exception Handling", "Java 예외 처리"]
 ---
@@ -76,43 +76,35 @@ try {
 - 원본 exception을 cause로 연결한다.
 - 같은 실패를 여러 계층에서 반복 기록하지 않고 관측 책임이 있는 경계를 정한다.
 - `InterruptedException`을 잡고 작업을 끝내지 않을 경우 보통 `Thread.currentThread().interrupt()`로 interrupt 상태를 복원하거나 계약대로 전파한다.
+- 외부 입력을 숫자로 바꾸는 경계에서는 `NumberFormatException`을 잡아 입력 오류로 변환한다. `IllegalArgumentException` 하위의 unchecked 예외라 선언 없이 전파되며, `Integer.parseInt("12a")`의 메시지는 `For input string: "12a"`다.
 
 빈 catch, 오류를 정상값으로 위장하는 catch, 원인 없는 새 예외는 진단 정보를 잃는다. 예외 메시지를 사용자에게 그대로 노출하지 말고 외부 응답 코드와 내부 원인을 분리한다.
 
-## finally와 자원 반환
+## 진단 정보 남기기
 
-`finally`는 try나 catch의 정상 또는 예외 완료 뒤 실행되는 정리 지점이다. 하지만 JVM 강제 종료, process 중단처럼 실행되지 않을 수 있는 상황도 있으므로 절대 실행되는 hook으로 설명하지 않는다.
+| 수단 | 남는 정보 | 한계 |
+|---|---|---|
+| `getMessage()` | detail message | null일 수 있다(`new RuntimeException().getMessage()`). 타입, stack trace와 cause를 잃는다 |
+| `toString()` | `클래스명: 메시지` | stack trace와 cause가 없다 |
+| `printStackTrace()` | `toString()`, stack frame, `Caused by:` cause chain, `Suppressed:` 목록 | System.err에 직접 쓴다. level, timestamp, trace id와 수집 경로가 없고 여러 thread 출력이 섞인다 |
+| logger에 예외 객체 전달 | 메시지, 문맥 값, 전체 stack trace와 cause chain | logging 설정과 수집 파이프라인을 따른다 |
 
-```java
-Connection connection = open();
-try {
-    return query(connection);
-} finally {
-    connection.close();
-}
-```
+- `printStackTrace()`는 학습 예제의 즉석 진단용이다. 서비스 코드에서는 SLF4J 1.6.0 이후 `log.error("order save failed orderId={}", orderId, e)`처럼 예외를 placeholder 인자 뒤 마지막 인자로 넘기면 stack trace가 함께 남는다. 예외가 마지막 인자가 아니면 일반 객체로 취급돼 stack trace가 빠진다.
+- 예외를 전환할 때는 위 `OrderPersistenceException`처럼 `super(message, cause)`나 `super(cause)` 생성자로 원인을 연결한다. cause만 받는 생성자의 detail message는 `cause.toString()`이 된다. cause 생성자가 없는 예외는 `initCause()`로 한 번만 연결할 수 있다.
+- 출력에서는 감싼 예외의 stack 뒤에 `Caused by:` 구간이 이어지고, 여러 번 감쌌다면 마지막 `Caused by`가 root cause다. `... 6 more`는 바깥 예외와 겹치는 아래쪽 frame을 생략한 표시다. 원인 없이 새 예외를 던지면 `Caused by`가 사라져 DB가 반환한 오류 코드, SQL state와 메시지가 로그에 남지 않는다.
 
-`finally`에서 `return`하거나 새 exception을 던지면 앞선 결과나 원래 exception을 가릴 수 있으므로 피한다. 여러 자원을 직접 닫는 finally는 첫 close 실패 때문에 다음 close가 실행되지 않는 문제도 만든다.
+## 잡히지 않은 예외
 
-## try-with-resources
+잡히지 않은 예외는 호출 스택을 끝까지 거슬러 올라간 뒤 그 thread를 종료시킨다. 종료 직전 JVM은 thread의 `UncaughtExceptionHandler`를 호출한다. 따로 설정하지 않았으면 `ThreadGroup`이 처리를 맡고, default handler도 없으면 `Exception in thread "main" java.lang.ArithmeticException: / by zero`처럼 thread 이름과 stack trace를 System.err에 출력한다.
 
-`AutoCloseable` 자원은 try-with-resources로 관리한다.
+- 콘솔 예제에서 프로그램 전체가 끝나는 이유는 main이 유일한 non-daemon thread였기 때문이다. `System.exit` 같은 명시적 종료가 없으면 JVM은 non-daemon thread가 모두 끝날 때 종료하며(JLS 12.8), JDK 21 launcher에서 실측한 종료 코드는 1이었다.
+- 별도 thread의 예외는 그 thread만 `TERMINATED`로 만들고 main은 계속 실행된다. `ExecutorService.execute`로 실행한 작업의 예외도 worker thread의 handler가 출력한다.
+- `submit`으로 제출한 작업의 예외는 `Future`에 담겨 `get()`을 호출할 때 `ExecutionException`으로만 드러난다. 결과를 확인하지 않으면 아무 출력 없이 사라진다([[Java-Executors-Futures-and-Thread-Pools|Executor와 Future]]).
+- 웹 서버는 요청 경계에서 예외를 잡아 응답으로 바꾸므로 한 요청의 예외가 서버를 끝내지 않는다. 그 경계에서 기록과 알림이 빠지지 않게 한다([[Spring-Exception-Handling|Spring 예외 처리]]).
 
-```java
-try (InputStream input = Files.newInputStream(path);
-     BufferedInputStream buffered = new BufferedInputStream(input)) {
-    return buffered.readAllBytes();
-}
-```
+## finally와 try-with-resources
 
-- 성공과 실패 모두에서 자동으로 `close()`한다.
-- 자원은 초기화의 역순으로 닫힌다.
-- try body의 exception과 close exception이 함께 발생하면 body exception이 주 exception으로 전파되고 close exception은 suppressed 목록에 보존된다.
-- 이미 선언된 final 또는 effectively final 자원도 Java 9부터 resource specification에서 사용할 수 있다.
-- `AutoCloseable.close()`는 `Exception`을 선언할 수 있고 여러 번 호출해도 안전하다고 보장하지 않는다. 구체 자원의 계약을 확인한다.
-- `Closeable.close()`는 `IOException`을 선언하며 이미 닫힌 stream에 다시 호출해도 효과가 없도록 규정한다.
-
-transaction rollback처럼 자원 close 외의 업무 보상은 try-with-resources만으로 해결되지 않는다. transaction manager의 경계와 예외 변환 정책을 함께 설계한다.
+`finally`는 성공과 실패 모두에 필요한 정리 지점이고, `AutoCloseable` 자원은 try-with-resources로 관리한다. try-catch 뒤에 둔 정리 코드가 건너뛰어지는 경우, finally의 close 예외가 핵심 예외를 덮는 문제, close와 catch, finally의 실행 순서, suppressed exception과 `close()`의 throws 설계는 [[Java-Standard-Library-Exception-Handling-Resource-Cleanup|Java 자원 정리]]에서 다룬다.
 
 ## 예외 계층 설계
 
@@ -131,17 +123,32 @@ HTTP status와 Java exception을 일대일로 전역 결합하지 않는다. con
 - checked와 unchecked의 기준이 복구 가능성이 아니라 compiler 검사라는 점
 - `throw`와 `throws`의 차이
 - broad catch와 빈 catch가 위험한 이유
-- 예외 변환에서 cause를 보존해야 하는 이유
-- finally가 원래 exception을 가릴 수 있는 경우
-- try-with-resources의 close 순서와 suppressed exception
+- 예외 변환에서 cause를 보존해야 하는 이유와 `Caused by`로 root cause를 읽는 법
+- `printStackTrace()`와 `getMessage()`만 남기는 로그의 한계
+- 잡히지 않은 예외가 종료시키는 범위와 `submit`에서 예외가 사라지는 이유
+- finally와 try-with-resources의 실패 모드([[Java-Standard-Library-Exception-Handling-Resource-Cleanup|Java 자원 정리]])
+
+## 실패의 타입과 선택적 catch
+
+연결 실패와 전송 실패처럼 호출자 대응이 다르면 application 상위 exception 아래 하위 타입을 두고 안전한 문맥 필드를 담는다. 메시지와 cause를 보존하되 전송 payload 전체, token이나 개인정보를 무조건 기록하지 않는다. 내부에서는 타입을 기준으로 분기하고 외부 API에는 안정적인 오류 코드로 변환한다.
+
+`catch (ConnectFailure | SendFailure e)`는 같은 대응의 예외를 묶는다. 서로 상속 관계인 타입은 multi-catch 대안으로 함께 쓸 수 없고 e는 재대입할 수 없다. 대안의 공통 상위 type에 있는 member만 사용할 수 있으므로 하위 타입의 상세 처리가 필요하면 개별 catch를 둔다. 정상 업무를 계속할 수 있는 최상위 경계에서는 broad catch 뒤 내부 정보 없는 응답과 원인 기록을 제공하고, 복구할 수 없는 상태를 정상값으로 위장하지 않는다.
 
 ## 출처
 
 - [JLS 11, Exceptions](https://docs.oracle.com/javase/specs/jls/se26/html/jls-11.html)
+- [JLS 12.8, Program Exit](https://docs.oracle.com/javase/specs/jls/se26/html/jls-12.html#jls-12.8)
 - [JLS 14.20, The try statement](https://docs.oracle.com/javase/specs/jls/se26/html/jls-14.html#jls-14.20)
 - [Throwable, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html)
+- [Thread.UncaughtExceptionHandler, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.UncaughtExceptionHandler.html)
+- [ThreadGroup, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ThreadGroup.html)
+- [ExecutorService, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html)
+- [NumberFormatException, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NumberFormatException.html)
 - [AutoCloseable, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html)
 - [Closeable, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/io/Closeable.html)
+- [SLF4J, FAQ](https://www.slf4j.org/faq.html)
+- 인프런, [예외처리](https://www.inflearn.com/courses/lecture?courseId=182835&unitId=13705)
+- 김영한 강사, [예외 포함과 스택 트레이스](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110105)
 - 김영한 강사, [예외 처리가 필요한 이유1 - 시작](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212277)
 - 김영한 강사, [예외 처리가 필요한 이유2 - 오류 상황 만들기](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212278)
 - 김영한 강사, [예외 처리가 필요한 이유3 - 반환 값으로 예외 처리](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212279)
@@ -163,6 +170,7 @@ HTTP status와 Java exception을 일대일로 전역 결합하지 않는다. con
 
 ## 관련 문서
 
+- [[Java-Standard-Library-Exception-Handling-Resource-Cleanup|Java 자원 정리]]
 - [[Java-Exception-Record-Collection-Checked-Unchecked|Checked vs Unchecked Exception]]
 - [[Java-Language-Library-and-IO|Java 표준 라이브러리와 I/O]]
 - [[Java-Standard-Library-Date-and-Time|Java 날짜와 시간]]

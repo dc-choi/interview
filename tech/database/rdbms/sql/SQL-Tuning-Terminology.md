@@ -81,7 +81,7 @@ EXPLAIN의 **`filtered`** 컬럼. 해당 table에서 추정한 rows 중 table co
 - **동등 (`=`, `IN`, `IS NULL`)**: 연속된 key part의 범위를 좁히는 데 유리한 경우가 많다.
 - **범위 (`<`, `>`, `BETWEEN`, prefix `LIKE`)**: range interval을 만든 뒤 뒤 key part가 interval을 더 줄이지 못할 수 있다.
 
-복합 인덱스 `(A, B, C)`에서 `A = 1 AND B > 10 AND C = 5`라면 보통 `A, B`가 scan interval을 정한다. `C`도 ICP로 index entry에서 평가하거나 covering에 쓰일 수 있으므로 "인덱스에서 전혀 사용하지 않는다"고 단정하지 않는다.
+복합 인덱스 `(A, B, C)`에서 `A = 1 AND B > 10 AND C = 5`라면 보통 `A, B`가 scan interval을 정한다. `C`도 ICP로 index entry에서 평가하거나 covering에 쓰일 수 있으므로 인덱스에서 전혀 사용하지 않는다고 단정하지 않는다. 이 원리로 컬럼 순서를 정하는 방법은 [[Index-Composite-Design|복합 인덱스 설계]]에 있다.
 
 ## 조인
 
@@ -100,7 +100,7 @@ EXPLAIN의 **`filtered`** 컬럼. 해당 table에서 추정한 rows 중 table co
 
 ### 메인쿼리 관계성
 - **비상관 (Non-correlated)** — 외부 쿼리 컬럼을 참조하지 않는다. 물리적으로 한 번만 실행된다고 보장되지는 않으며 optimizer가 materialization, merge나 semijoin을 선택할 수 있다.
-- **상관 (Correlated)** — 외부 쿼리 컬럼을 참조한다. 논리적으로 외부 행에 의존하지만 optimizer가 decorrelation이나 semijoin으로 바꿀 수 있으므로 행마다 독립 실행된다고 단정하지 않는다.
+- **상관 (Correlated)** — 외부 쿼리 컬럼을 참조한다. 논리적으로 외부 행에 의존하지만 optimizer가 decorrelation이나 semijoin으로 바꿀 수 있으므로 행마다 독립 실행된다고 단정하지 않는다. 반대로 MySQL 기본 설정에서 SELECT 절 상관 스칼라 서브쿼리는 바깥 행마다 평가된다([[MySQL-Query-Fundamentals-Subqueries|MySQL 서브쿼리 실행과 재작성]]).
 
 ### 반환 결과별 분류
 - **단일행** — 결과 1건. `WHERE col = (SELECT MAX(...) ...)`
@@ -126,7 +126,7 @@ EXPLAIN의 `Extra`. index 순서만으로 결과를 만들지 못해 **추가 �
 ### MySQL 콜레이션 예시
 | 콜레이션 | 비교 규칙 | 정렬 결과 |
 |---|---|---|
-| `utf8mb4_bin` | 바이트 단위 비교 (대소문자 구분) | A → B → a → b |
+| `utf8mb4_bin` | Unicode character code 값 비교 (대소문자 구분) | A → B → a → b |
 | `utf8mb4_general_ci` | case-insensitive | A = a → B = b |
 | `utf8mb4_0900_ai_ci` | 8.0+ 기본, accent-insensitive + case-insensitive | á = a → é = e |
 
@@ -143,7 +143,7 @@ ALTER TABLE products MODIFY name VARCHAR(100) COLLATE utf8mb4_bin;
 테이블이 `utf8mb4_general_ci`라도 컬럼 단위로 `utf8mb4_bin`을 명시하면 그 컬럼만 바이너리 비교.
 
 ### 흔한 함정
-- **JOIN 시 콜레이션 불일치** → 인덱스 무력화 + 풀스캔. 두 테이블의 같은 컬럼 콜레이션은 반드시 일치
+- **JOIN 시 콜레이션 불일치**는 비교 의미와 변환, index 사용에 영향을 줄 수 있다. 양쪽 column의 charset/collation과 실행 계획을 확인한다
 - **대소문자 검색이 안 됨** — `WHERE name = 'Apple'`이 `'apple'`도 매칭 → CI 콜레이션 때문. 정확 매칭 필요하면 컬럼/쿼리 단위로 `_bin` 또는 `BINARY` 키워드 사용
 - **이모지 깨짐** — `utf8`(MySQL의 3바이트 UTF-8)은 4바이트 문자(이모지 등) 미지원. **`utf8mb4`** 사용 필수
 
@@ -158,6 +158,10 @@ ALTER TABLE products MODIFY name VARCHAR(100) COLLATE utf8mb4_bin;
 - 캐릭터셋과 콜레이션의 차이, JOIN 시 콜레이션 불일치가 일으키는 문제
 - `utf8` vs `utf8mb4` 차이 (이모지 지원)
 
+## Binary collation과 binary string
+
+utf8mb4_bin은 Unicode character code 값에 따른 비교이며 BINARY/VARBINARY의 raw byte string과 구분한다. utf8mb4_bin은 PAD SPACE, utf8mb4_0900_bin은 NO PAD라 trailing space의 동치도 다를 수 있다. case-sensitive만으로 같은 비교 계약이라고 보지 않는다. JOIN의 collation 차이는 coercion과 계획을 확인해야 하며 항상 full scan이라고 단정하지 않는다.
+
 ## 출처
 - [yoonseon — 논리적인 SQL 개념 용어](https://yoonseon.tistory.com/143)
 - [yoonseon — 개념적인 튜닝 용어](https://yoonseon.tistory.com/144)
@@ -168,6 +172,9 @@ ALTER TABLE products MODIFY name VARCHAR(100) COLLATE utf8mb4_bin;
 - [MySQL 8.4 Reference Manual, Optimizer Statistics](https://dev.mysql.com/doc/refman/8.4/en/optimizer-statistics.html)
 - [MySQL 8.4 Reference Manual, Index Hints](https://dev.mysql.com/doc/refman/8.4/en/index-hints.html)
 - [Unicode Collation Algorithm 9.0.0, Default Unicode Collation Element Table](https://www.unicode.org/Public/UCA/9.0.0/allkeys.txt)
+- [MySQL 8.4 Reference Manual, charset binary collations](https://dev.mysql.com/doc/refman/8.4/en/charset-binary-collations.html)
+- [인프런, Ep.13 콜레이션](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226573)
+
 
 ## 관련 문서
 - [[Index|Index]]

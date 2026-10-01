@@ -78,7 +78,17 @@ View formatting이 object의 `toString()`에 우연히 의존하지 않게 한�
 
 Custom Converter를 등록해도 Jackson JSON field가 자동으로 같은 규칙을 쓰지 않는다. 두 경계의 contract와 test를 따로 둔다.
 
+## 변환 선택과 등록 API
+
+Formatter는 parse/print를 converter로 연결해 같은 service에서 사용한다. Converter가 Formatter보다 언제나 우선하는 것이 아니라 source/target type의 구체성, conditional match와 같은 pair의 등록 순서를 확인해야 한다. `Integer` 전용 변환이 `Number` Formatter보다 먼저 선택되는 예를 종류 전체의 규칙으로 확대하지 않는다.
+
+사용 코드는 `ConversionService`, 등록 코드는 `ConverterRegistry`/`FormatterRegistry`에 의존한다. 이는 사용과 등록의 계약을 나누는 ISP 사례다. 조건부 type 변환에는 `ConditionalGenericConverter`를 사용할 수 있다.
+
+MVC `addFormatters` 등록과 Boot 설정 binding은 별도 경로일 수 있으므로 웹 converter가 `@ConfigurationProperties`에도 자동 적용된다고 가정하지 않는다. `PropertyEditor`는 mutable 상태를 갖는 legacy 방식이므로 공유 instance 사용을 피하고 새 변환 계약은 stateless converter를 우선한다.
+
 ## 출처
+
+- [Spring, GenericConversionService source (main)](https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/convert/support/GenericConversionService.java)
 
 - [Spring Framework, type conversion](https://docs.spring.io/spring-framework/reference/core/validation/convert.html), [Spring field formatting](https://docs.spring.io/spring-framework/reference/core/validation/format.html), [MVC type conversion](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/typeconversion.html)
 - 변환/format: [프로젝트](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83368), [개요](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83369), [Converter](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83370), [ConversionService](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83371), [MVC 등록](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83372), [View 적용](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83373), [Formatter](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83374), [FormattingConversionService](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83375), [Formatter 적용](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83376), [기본 annotation formatter](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83377), [정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83378)

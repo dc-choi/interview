@@ -13,7 +13,7 @@ DB 커넥션과 Repository, Model을 NestJS DI와 모듈 시스템에 얹는 문
 
 - [[NestJS-Database|Database — @nestjs/typeorm, forRoot 전용 옵션, forFeature, 트랜잭션, 다중 DB]]
 - [[NestJS-TypeORM-Manual-Wiring|TypeORM 수동 배선 — 커스텀 async provider로 DataSource, Repository 직접 구성]]
-- [[NestJS-MongoDB|MongoDB — @nestjs/mongoose, 스키마 데코레이터, 세션 트랜잭션, Discriminator]]
+- [[NestJS-MongoDB|MongoDB — @nestjs/mongoose, 스키마 데코레이터, CRUD 결과 계약, CastError와 unique 경쟁 조건, 세션 트랜잭션, Discriminator]]
 
 ## 관련 문서
 

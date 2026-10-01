@@ -44,6 +44,12 @@ diff[r] -= delta
 
 모든 update가 끝난 뒤 `diff`의 누적합을 한 번 계산하면 결과가 복원된다. 온라인으로 중간 값을 계속 물으면 이 방식만으로는 충분하지 않다.
 
+### 끝점만 기록하는 도형 카운팅
+
+축에 평행한 변으로만 된 다각형에서 수평선 하나가 변과 만나는 최대 횟수는 기하 문제처럼 보여도 축별 카운팅 배열로 푼다. 꼭짓점을 순서대로 이어(마지막 점과 첫 점도) 변을 만들고, 수평선과 만나는 수직 변마다 y 구간 `[low, high)`에 +1을 difference array로 기록한다. 수직선은 수평 변의 x 구간으로 같은 함수를 한 번 더 쓴다(두 끝점은 작은 쪽이 앞에 오도록 swap). 선이 꼭짓점을 지나지 않는다면 정수 좌표 k와 k + 1 사이를 지나는 선과 만나는 변은 `low <= k < high`인 변이라 half-open 갱신이 정확하다. 변이 지나는 칸을 하나씩 채우면 O(변 길이의 합)이지만, 끝점만 기록하면 O(꼭짓점 수 + 좌표 범위)다.
+
+좌표에 음수가 있으면 최솟값의 절댓값을 OFFSET으로 더해 index를 0 이상으로 옮긴다(`diff[low + OFFSET]++`, `diff[high + OFFSET]--`). 배열 크기는 좌표 범위에 여유 칸을 더해 잡고, 누적합을 한 번 계산한 뒤 두 축 최댓값 중 큰 값을 답한다. 좌표 범위가 배열로 담기 어려울 만큼 넓으면 offset 배열 대신 [[Cpp-Coding-Test-Workflow#계산량과 구현 비용|좌표 압축]]을 쓴다.
+
 ## Sliding window와의 차이
 
 고정 길이 연속 구간 하나를 순서대로 훑는다면 직전 합에서 빠지는 값과 새 값을 반영하는 sliding window가 O(1) 공간으로 충분하다. 임의 구간 query가 반복되면 prefix sum이 더 직접적이다.
@@ -68,10 +74,11 @@ diff[r] -= delta
 - 합의 type이 충분히 넓은가?
 - 원본 update가 있다면 rebuild 비용을 포함했는가?
 - 원형 구간을 중복 집계하지 않는가?
+- 음수 좌표를 index로 쓰기 전에 offset을 더했는가?
 
 ## 출처
 
-- 인프런, 큰돌 강사, [1주차 개념 #9. 누적합(prefix sum)](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=133248), [1-C](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100295), [1-H](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100300), [5-V](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100417)
+- 인프런, 큰돌 강사, [1주차 개념 #9. 누적합(prefix sum)](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=133248), [1-C](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100295), [1-H](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100300), [5-V](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100417), [8-Z](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=101079)
 
 ## 관련 문서
 

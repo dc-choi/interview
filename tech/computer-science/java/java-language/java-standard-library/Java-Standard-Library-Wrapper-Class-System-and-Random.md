@@ -1,7 +1,7 @@
 ---
 tags: [java, wrapper, boxing, reflection, class, system, math, random]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Wrapper Class System and Random", "Java 래퍼 Class System 난수"]
 ---
@@ -91,6 +91,10 @@ Class<?> loaded = Class.forName("com.example.Plugin");
 - `Class` 객체와 reflection의 역할 및 실패 경계
 - `currentTimeMillis`와 `nanoTime`의 목적 차이
 - 일반 난수와 보안 난수의 선택 기준
+
+## 자동 변환과 캐시의 경계
+
+javac는 Integer boxing/unboxing에 valueOf/intValue 호출을 사용할 수 있다. null unboxing이 NPE인 이유는 값 획득에 null reference를 사용할 수 없기 때문이다. Integer.valueOf는 -128~127을 캐시하며 JLS도 이 범위의 상수식 boxing에 identity 규칙을 둔다. 더 넓은 캐시와 compiler 전략은 구현에 달려 있으므로 128에서의 == 결과를 계약으로 삼지 않는다. String에서 Integer로의 parsing은 boxing이 아니며 parseInt/valueOf를 명시적으로 사용한다.
 
 ## 출처
 

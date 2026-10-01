@@ -9,8 +9,8 @@ aliases: ["MySQL Fundamentals", "MySQL 기본기"]
 
 MySQL을 안전하게 조회하고 변경하는 데 필요한 기본기를 모은다. 문법 암기보다 결과의 의미, 데이터 무결성, 애플리케이션 경계와 운영 안전성을 우선한다.
 
-- [[MySQL-Query|MySQL 조회와 SQL 기능]]: 조회 기본기, LATERAL 파생 테이블, 저장 함수
-- [[MySQL-Columns|MySQL 컬럼과 타입]]: 문자열 타입, Collation, 생성 컬럼과 함수 인덱스
+- [[MySQL-Query|MySQL 조회와 SQL 기능]]: 조회 기본기, 서브쿼리, 내장 함수와 암묵 변환, LATERAL 파생 테이블, 저장 함수
+- [[MySQL-Columns|MySQL 컬럼과 타입]]: 문자열 타입, 숫자와 날짜 시간 타입, Collation, 생성 컬럼과 함수 인덱스, JSON 함수
 - [[MySQL-Safety|MySQL 안전성과 서버 동작]]: 데이터와 접근 안전성, SQL Mode, 오류 처리, 장기 트랜잭션과 배치
 
 ## 함께 볼 문서

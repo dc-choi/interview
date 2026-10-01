@@ -12,8 +12,10 @@ Java 문법에서 객체 설계와 표준 라이브러리까지 현재 명세에
 ## 학습 순서
 
 1. [[Java-Language-Syntax-and-Types|문법과 타입]]
+   - [[Java-Language-Syntax-and-Types-Operators|연산자와 숫자 연산]]
 2. [[Java-Language-References-and-Initialization|참조와 초기화]]
 3. [[Java-Language-Construction-and-Encapsulation|생성과 캡슐화]]
+   - [[Java-Language-Construction-and-Encapsulation-Packages-and-Imports|package와 import]]
 4. [[Java-Language-Class-Members-and-Memory|클래스 멤버와 메모리 모델]]
 5. [[Java-Language-Object-Model|객체 모델]]
 6. [[Java-Language-Inheritance-and-Polymorphism|상속과 다형성]]

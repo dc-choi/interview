@@ -64,6 +64,12 @@ Exception도 control effect다. Recoverable business failure는 result type이�
 - 새로운 object 반환과 in-place mutation 중 어느 것이 aggregate invariant를 더 명확히 하는가?
 - IO와 policy가 분리되어 core logic을 빠르게 test할 수 있는가?
 
+## 새 container와 원소 공유
+
+`source.stream().map(p -> { p.setAge(p.getAge()+1); return p; }).toList()`는 새 List를 만들지만 같은 객체를 원소로 담는다. 원본 List 구조를 바꾸지 않아도 원본에서 관찰하는 나이는 바뀐다. 원소까지 보존하려면 불변 객체의 `withAge`처럼 변경값을 담은 새 객체를 반환하고 그 반환값을 사용한다. [[Java-Standard-Library-Immutability-and-String|참조 공유와 불변성]]에서 container와 원소의 경계를 함께 확인한다.
+
+절차지향은 데이터와 절차를 나누고 객체지향은 상태와 동작을 객체에 묶는 접근이다. 어느 쪽도 불변성이 자동 보장되지는 않는다. Java에서는 명령형 제어, 객체 모델과 선언형 pipeline을 함께 사용할 수 있다. 패러다임 이름보다 변경을 누가 소유하고 effect가 어디서 실행되는지를 판단한다.
+
 ## 출처
 
 - [JLS 26, Lambda Expressions](https://docs.oracle.com/javase/specs/jls/se26/html/jls-15.html#jls-15.27)

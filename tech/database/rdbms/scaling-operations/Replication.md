@@ -88,6 +88,18 @@ Replica read는 source보다 오래된 상태를 반환할 수 있다. 모든 `S
 
 Replication 도입은 read scale만의 선택이 아니다. RPO/RTO, failover ownership, lag SLO, DDL과 backup 운영까지 함께 준비한다.
 
+## Format과 격리 수준
+
+MySQL 8.4의 binlog_format 기본값은 ROW다. statement 기록은 비결정성뿐 아니라 READ COMMITTED/READ UNCOMMITTED와의 지원 조건도 확인한다. InnoDB에서 이 수준들은 row-based logging을 요구한다. MIXED가 보편 기본이라는 과거 설명을 현재 서버에 적용하지 않는다. 설정은 실제 global/session 값과 CDC 요구를 함께 확인한다.
+
+## 오래 멈춘 replica를 복구할 때
+
+Replica가 필요한 transaction의 binlog가 source에 남아 있는지 GTID set과 purge 상태를 먼저 확인한다. 남아 있으면 catch-up의 적용 시간과 snapshot 복사/복원 시간을 비교한다. 필요한 로그가 없어 정상 재생을 못 하면 일관된 snapshot과 정확한 GTID/position으로 재시드한다. 기다린 날짜만으로 선택하지 말고 적체 bytes, apply 처리량과 RTO를 기준으로 정한다.
+
+## 복제 구조의 경계
+
+이 문서의 MySQL source-replica는 leader-follower 구조다. Leaderless 저장소는 quorum, 충돌 해소와 read repair 같은 별도 일관성 계약을 가진다. 읽기/쓰기 node가 여러 개라는 사실만으로 자동 failover나 강한 일관성을 얻지 않는다. shard별 replica가 있어도 shard routing과 leader fencing은 별도 책임이다.
+
 ## 출처
 
 - [MySQL 8.4 Reference Manual, Replication](https://dev.mysql.com/doc/refman/8.4/en/replication.html)
@@ -96,6 +108,12 @@ Replication 도입은 read scale만의 선택이 아니다. RPO/RTO, failover ow
 - [MySQL 8.4 Reference Manual, GTID Replication](https://dev.mysql.com/doc/refman/8.4/en/replication-gtids.html)
 - [MySQL 8.4 Reference Manual, Semisynchronous Replication](https://dev.mysql.com/doc/refman/8.4/en/replication-semisync.html)
 - [인프런, Hong, Replication과 Distribution](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338557)
+- [MySQL 8.4 Reference Manual, innodb transaction isolation levels](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-isolation-levels.html)
+- [MySQL 8.4 Reference Manual, replication gtids auto positioning](https://dev.mysql.com/doc/refman/8.4/en/replication-gtids-auto-positioning.html)
+- [인프런, DB 핵심 개념 (확장성/일관성/가용성)](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278149)
+- [인프런, MySQL Transaction Deep Dive [ LifeCycle, Autocommit, Statement vs Row based ]](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=373900)
+- [인프런, MySql 파헤치기 - 어려운 부분만 부분 쉽게 설명해 줄게요](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178850)
+
 
 ## 관련 문서
 

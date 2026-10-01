@@ -8,13 +8,19 @@ aliases: ["Object Design Principles", "객체 설계 원칙과 리팩터링"]
 
 # 객체 설계 원칙과 리팩터링
 
-조영호 강사의 오브젝트 설계 원칙편을 바탕으로, 동작하는 코드를 변경하기 쉬운 구조로 다듬는 판단 기준을 정리한다. 원칙은 처음부터 완벽한 계층을 만드는 규칙이 아니라 테스트로 동작을 고정한 뒤 현재 코드의 문제와 리팩터링 방향을 찾는 도구다.
+동작하는 코드를 변경하기 쉬운 구조로 다듬는 판단 기준을 정리한다. 원칙은 처음부터 완벽한 계층을 만드는 규칙이 아니라 테스트로 동작을 고정한 뒤 현재 코드의 문제와 리팩터링 방향을 찾는 도구다.
 
 ## 테스트를 안전망으로 둔다
 
 리팩터링은 관찰 가능한 동작을 유지하면서 내부 구조를 바꾸는 일이다. 먼저 입력과 출력을 제어할 수 있는 테스트를 만들고 작은 단계로 구조를 바꾼다. 테스트하기 어려운 private 메서드를 공개하는 대신, 그 로직이 독립 책임인지 살펴 다른 객체로 이동한다.
 
 외부 입력, 시간, 파일, 네트워크처럼 제어하기 어려운 의존성이 핵심 로직 안에 숨어 있으면 테스트도 설계도 어려워진다. 역할을 추출하고 생성자 주입으로 드러내면 실제 구현과 fake를 같은 계약으로 바꿔 끼울 수 있다. 테스트 용이성은 유용한 설계 피드백이지만 그 자체가 품질의 유일한 기준은 아니다.
+
+테스트 입력은 메시지 인자, 초기 상태와 협력자의 반환값이고, 출력은 반환값, 관찰 가능한 상태와 외부로 보낸 명령이다. 구체 객체를 내부에서 생성하거나 전역 객체를 교체해야 입력을 통제할 수 있다면 의존성을 드러낼 후보다. 전역 교체는 테스트 간 간섭을 만들 수 있으므로 테스트마다 독립된 협력자를 전달한다.
+
+## 중복과 추상화의 비용을 함께 본다
+
+DRY는 같은 지식과 규칙의 중복을 줄이는 기준이다. 모양이 같은 코드라도 변경 이유가 다르면 성급히 합치지 않는다. KISS는 현재 문제를 설명하는 단순한 구조를, YAGNI는 아직 필요하지 않은 확장 지점을 만들지 않는 판단을 돕는다. Rule of Three는 반복을 관찰한 뒤 공통성을 확인하자는 휴리스틱이며 세 번째까지 반드시 기다려야 하는 규칙은 아니다.
 
 ## 메서드에는 한 추상화 수준을 둔다
 
@@ -54,6 +60,8 @@ class Position {
 
 TypeScript의 `readonly`는 타입 검사 중 재할당을 막을 뿐 런타임 불변성이나 중첩 객체의 깊은 불변성을 보장하지 않는다. 외부에 가변 컬렉션을 그대로 내보내지 않고, 변경 메서드가 새 객체를 반환하게 만들며, 필요하면 런타임 방어도 별도로 적용한다.
 
+식별성이 필요한 참조 객체를 모두 값 객체로 바꾸지는 않는다. 동일한 대상을 여러 협력자가 갱신해야 한다면 같은 식별자에 서로 다른 가변 사본이 생기지 않도록 조회와 소유 경계를 정한다. 금액, 위치, 기간처럼 속성의 동등성이 중요한 개념은 값 객체 후보이며, 관련 값이 함께 전달되거나 같은 계산과 검증이 여러 곳에서 반복될 때 추출 효과를 살핀다.
+
 ## 변경 이유로 클래스를 나눈다
 
 SRP의 책임은 막연한 기능 개수가 아니라 변경 이유다. 요구사항이 달라질 때 서로 다른 이유와 속도로 바뀌는 메서드 및 상태를 묶지 않는다.
@@ -90,6 +98,8 @@ order.payWith(customerWallet)
 
 둘을 분리하면 호출자가 시그니처와 이름만으로 부수효과를 예상하기 쉽다. 다만 생성 명령이 ID를 반환하거나 실패 결과를 돌려주는 실용적 API까지 무조건 금지하는 법칙은 아니다. 숨은 변경과 조회를 한 메서드에 뒤섞지 않는 것이 핵심이다.
 
+조회 결과는 다른 명령이나 외부 상태 변화 때문에 달라질 수 있다. CQS는 조회가 관찰 가능한 상태를 바꾸지 않는다는 계약이며 결정성을 뜻하지 않는다. 함수 추출, 실행 객체, 시간적 결합과 부재 처리는 [[Function-Structure-and-Contracts|함수 구조와 호출 계약]]에서 다룬다.
+
 ## SOLID를 변경 축으로 읽는다
 
 | 원칙 | 설계 질문 |
@@ -106,6 +116,8 @@ OCP는 모든 미래 변경을 막으라는 뜻이 아니다. 관찰된 변경 �
 
 DIP와 DI도 구분한다. DIP는 의존 방향에 관한 설계 원칙이고, DI는 의존 객체를 외부에서 전달하는 구성 기법이다. NestJS에서는 TypeScript `interface`가 런타임에 지워지므로 `Symbol` 토큰이나 abstract class를 역할의 런타임 식별자로 사용한다.
 
+SRP의 분리 징후, 명령 값으로 양방향 의존 끊기, 조회의 숨은 변경, DIP의 소스 의존 방향과 LSP/ISP 반례는 [[Object-Design-Principles-Change-and-Contracts|변경 사례와 행동 계약]]에서 구체적으로 다룬다.
+
 ## 리팩터링 순서
 
 1. 대표 동작을 테스트로 고정한다.
@@ -118,6 +130,8 @@ DIP와 DI도 구분한다. DIP는 의존 방향에 관한 설계 원칙이고, D
 
 ## 출처
 
+- 즐거운 학습, [클린 코더스 강의 5. Function Structure Part2](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279443)
+- [Command Query Separation — Martin Fowler](https://martinfowler.com/bliki/CommandQuerySeparation.html)
 - 얄팍한 코딩사전, [SOLID 원칙](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=236069)
 - 조영호 강사, [단일 추상화 수준 원칙과 조합 메서드](https://www.inflearn.com/courses/lecture?courseId=336658&unitId=276193)
 - 조영호 강사, [참조 객체와 별칭 문제](https://www.inflearn.com/courses/lecture?courseId=336658&unitId=280253)
@@ -136,6 +150,16 @@ DIP와 DI도 구분한다. DIP는 의존 방향에 관한 설계 원칙이고, D
 - [Northeastern Demeter Project, Law of Demeter](https://www2.ccs.neu.edu/research/demeter/demeter-method/LawOfDemeter/LawOfDemeter.htm)
 - [Liskov, Wing, A Behavioral Notion of Subtyping](https://www.cs.cmu.edu/~wing/publications/LiskovWing94.pdf)
 - [Eiffel, Classes](https://www.eiffel.org/doc/eiffel/I2E-_Classes)
+
+- Dowon Lee, [Monolithic Architecture  적용](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286768)
+- Dowon Lee, [Modular Monolithic Architecture 소개](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286770)
+- Dowon Lee, [Monolithic Architecture의 방법론과 패턴 소개](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286097)
+- 조영호, [4-3. 값 객체를 이용해서 Game 개선하기](https://www.inflearn.com/courses/lecture?courseId=336658&unitId=276243)
+- 조영호, [2-2. 테스트와 리팩터링](https://www.inflearn.com/courses/lecture?courseId=336658&unitId=275826)
+- 조영호, [7-1. 외부 의존성과 테스트](https://www.inflearn.com/courses/lecture?courseId=336658&unitId=283470)
+- 조영호, [7-4. 의존성 개선하기](https://www.inflearn.com/courses/lecture?courseId=336658&unitId=283692)
+- 조영호, [7-5. 테스트 개선하기](https://www.inflearn.com/courses/lecture?courseId=336658&unitId=283693)
+- 조영호, [5-4.테스트 관점에서 분리하기](https://www.inflearn.com/courses/lecture?courseId=336658&unitId=279249)
 
 ## 관련 문서
 

@@ -121,7 +121,13 @@ function add(a, b) { return `${a}${b}`; }
 - [[Execution-Context|실행 컨텍스트]]
 - [[자바스크립트(JS)|JavaScript 인덱스]]
 
+## parameter와 본문 선언의 같은 이름
+
+simple parameter list에서 본문 `var a;`는 parameter a의 값을 undefined로 초기화하지 않는다. `var a = 2`는 그 줄 실행 때 값을 덮고 같은 이름의 본문 function declaration은 선언 인스턴스화 때 함수 값으로 초기화한다. 본문 최상위 let/const가 parameter와 같은 이름이면 early SyntaxError지만 별도 안쪽 block의 lexical 선언은 새 binding이다. default/rest/destructuring parameter는 별도 environment 규칙이 있으므로 simple parameter 예제를 그대로 확대하지 않는다.
+
 ## 출처
+
+- 인프런 보충 강의: [7. 함수 코드 해석 순서](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26679), [8. 호이스팅, 함수 앞에서 호출, (코딩 시간)](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26680), [3. 실행 콘텍스트 실행 과정, (정리 시간)](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26692), [7. 파라미터 매핑, 함수 호출, 파라미터 값 매핑, 파라미터 이름에 값 매핑 방법](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26696), [8. 파라미터 값 할당 기준, (정리 시간)](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26697)
 
 - [ECMAScript Language Specification — Environment Records](https://tc39.es/ecma262/#sec-environment-records)
 - [ECMAScript Language Specification — GlobalDeclarationInstantiation](https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-globaldeclarationinstantiation)

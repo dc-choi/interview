@@ -113,6 +113,10 @@ Trigger는 table의 INSERT/UPDATE/DELETE에 결합된 암시적 write path다. D
 4. 권한, transaction, retry와 failure visibility가 명확한가?
 5. 다른 DBMS/서비스로 이동할 가능성과 vendor lock-in 비용은 허용되는가?
 
+## SELECT 별표의 생성 시점
+
+MySQL view의 `SELECT *`는 생성 시점 column 목록으로 고정된다. base table에 column을 추가해도 자동으로 view에 나타나지 않으며 참조 column 삭제는 view 사용 오류를 낼 수 있다. contract column을 명시하고 schema migration에서 view 재생성/소비자 호환성을 검토한다.
+
 ## 출처
 
 - [MySQL 8.4, Using Views](https://dev.mysql.com/doc/refman/8.4/en/views.html)
@@ -124,6 +128,9 @@ Trigger는 table의 INSERT/UPDATE/DELETE에 결합된 암시적 write path다. D
 - [Oracle 11g 강의, View의 개념과 활용](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4667)
 - View: [소개](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328781), [DDL](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328782), [장단점](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328783), [문제](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328784), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328785)
 - 저장 프로그램: [소개](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328821), [실습](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328822), [함정과 대안](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328823), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328824)
+- [MySQL 8.4 Reference Manual, create view](https://dev.mysql.com/doc/refman/8.4/en/create-view.html)
+- [인프런, SQL 안티 패턴 - 3 : View에서 SELECT ALL 사용의 문제와 해결](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367632)
+
 
 ## 관련 문서
 

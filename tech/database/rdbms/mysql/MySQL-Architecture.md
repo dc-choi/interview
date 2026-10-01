@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, innodb, architecture]
 status: done
-verified_at: 2026-08-11
+verified_at: 2026-09-30
 category: "Data & Storage - RDB"
 aliases: ["MySQL Architecture", "MySQL 엔진 구조"]
 ---
@@ -47,6 +47,15 @@ Buffer pool은 data와 index page를 cache한다. 새 page가 필요하면 free 
 
 `INFORMATION_SCHEMA.INNODB_BUFFER_PAGE`는 page 단위 조사에 유용하지만 큰 buffer pool에서 상당한 overhead를 만들 수 있다. 일반 monitoring query로 반복하지 말고 test instance나 제한된 진단 상황에서 사용한다.
 
+### Page, extent와 segment
+
+page는 InnoDB의 기본 I/O 단위라 한 행만 읽어도 그 page 전체를 buffer pool에 올린다. page header에는 page 번호와 타입, 같은 level의 이전과 다음 page 번호, 마지막 변경 LSN이 있다. B-tree의 같은 level page는 이 포인터로 정렬 순서의 이중 연결 리스트를 이루고, LSN은 crash recovery에서 redo 재적용 여부를 가른다([[MySQL-InnoDB-Redo-and-Crash-Recovery#Page를 쓰기 전의 WAL 규칙|WAL 규칙]]). 필드의 바이트 배치는 소스 수준의 구현이라 외우지 않는다.
+
+- extent는 연속한 page 묶음이다. page가 16KB 이하면 1MB(16KB page 64개, 8KB page 128개, 4KB page 256개), 32KB면 2MB, 64KB면 4MB다.
+- 인덱스마다 segment를 두 개 둔다. 하나는 non-leaf, 하나는 실제 데이터가 있는 leaf용이라 leaf를 디스크에 연속으로 모아 순차 I/O를 돕는다. segment가 커질 때 처음 32 page는 한 page씩, 그 뒤로는 extent 단위로 할당하고 큰 segment에는 한 번에 최대 4 extent를 붙인다.
+- 삭제한 행은 rollback과 consistent read에 더는 필요 없을 때 purge가 물리적으로 지운다. 비워진 공간은 page/extent 상태와 tablespace에 따라 재사용된다. DELETE만으로 filesystem에 공간이 반환된다고 보장하지 않는다. file-per-table의 DROP/TRUNCATE와 공유 tablespace의 내부 재사용을 구분한다.
+- 행 삭제만으로는 파일 크기가 줄지 않는다. file-per-table tablespace는 `TRUNCATE`나 `DROP` 때 OS에 공간을 돌려주고, 대량 삭제 뒤 파일을 줄이려면 `ALTER TABLE ... FORCE`로 매핑되는 `OPTIMIZE TABLE`로 재구성한다. system tablespace 같은 공유 tablespace 파일은 `TRUNCATE`나 `DROP` 뒤에도 줄지 않는다. 무작위 PK 삽입이 leaf 연속성을 깨는 과정은 [[B-Tree-Index-Depth#페이지 분할과 병합|페이지 분할과 병합]]에 있다.
+
 ## 쓰기, WAL과 crash recovery
 
 ```text
@@ -79,18 +88,31 @@ View, stored routine과 event scheduler는 server object다. View의 갱신 가�
 | lock wait | `performance_schema.data_locks`, `data_lock_waits`, transaction age |
 | commit 뒤 replica 지연 | binlog 생성량, receiver/applier 상태와 lag |
 
+## Tablespace까지 이어지는 저장 계층
+
+Page와 extent, 인덱스의 두 segment는 tablespace 안에 배치된다. 기본 file-per-table 환경은 테이블별 `.ibd`에 데이터와 인덱스를 담지만 system/general tablespace에는 여러 객체가 공간을 공유할 수 있다. extent가 연속 page를 할당하는 단위라는 사실은 전체 테이블의 물리적 연속 배치를 보장하지 않는다. PK 단건 조회도 B-tree의 root와 중간, leaf page를 탐색하며 버퍼 풀에 있는 page는 디스크 읽기를 생략한다.
+
 ## 출처
 
 - [MySQL 8.4 Reference Manual, MySQL Architecture](https://dev.mysql.com/doc/refman/8.4/en/pluggable-storage-overview.html)
 - [MySQL 8.4 Reference Manual, InnoDB Architecture](https://dev.mysql.com/doc/refman/8.4/en/innodb-architecture.html)
 - [MySQL 8.4 Reference Manual, InnoDB Page Size](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_page_size)
 - [MySQL 8.4 Reference Manual, InnoDB Buffer Pool](https://dev.mysql.com/doc/refman/8.4/en/innodb-buffer-pool.html)
+- [MySQL 8.4 Reference Manual, File Space Management](https://dev.mysql.com/doc/refman/8.4/en/innodb-file-space.html)
+- [MySQL 8.4 Reference Manual, File-Per-Table Tablespaces](https://dev.mysql.com/doc/refman/8.4/en/innodb-file-per-table-tablespaces.html)
+- [MySQL 8.4 Reference Manual, OPTIMIZE TABLE](https://dev.mysql.com/doc/refman/8.4/en/optimize-table.html)
 - [MySQL 8.4 Reference Manual, Redo Log](https://dev.mysql.com/doc/refman/8.4/en/innodb-redo-log.html)
 - [MySQL 8.4 Reference Manual, Doublewrite Buffer](https://dev.mysql.com/doc/refman/8.4/en/innodb-doublewrite-buffer.html)
 - [MySQL 8.4 Reference Manual, InnoDB Recovery](https://dev.mysql.com/doc/refman/8.4/en/innodb-recovery.html)
 - [MySQL 8.4 Reference Manual, Binary Log](https://dev.mysql.com/doc/refman/8.4/en/binary-log.html)
 - [인프런, Hong, 아키텍처와 스토리지 엔진](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338554)
 - [인프런, Hong, Doublewrite Buffer](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=374544)
+- [인프런, Hong, MySQL Storage Architecture InnoDB Page](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=373904)
+- [인프런, InnoDB 아키텍처](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471853)
+- [인프런, 데이터 저장 구조](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471854)
+- [인프런, 정리 (데이터베이스 성능과 MySQL 아키텍처 섹션)](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471856)
+- [인프런, 쿼리 실행 흐름](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471855)
+
 
 ## 관련 문서
 

@@ -1,14 +1,14 @@
 ---
-tags: [testing, pyramid, unit-test, integration-test, e2e, contract-test]
+tags: [testing, pyramid, unit-test, integration-test, e2e, contract-test, component-test]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "테스트&품질(Testing&Quality)"
 aliases: ["Test Pyramid", "테스트 피라미드", "Practical Test Pyramid"]
 ---
 
 # Practical Test Pyramid
 
-테스트의 **종류, 범위, 수량**을 시각화한 고전적 가이드. Mike Cohn이 제안한 3층(Unit, Service, UI)이 원형이며, 이후 Contract, Acceptance, Exploratory 같은 계층이 추가로 논의됐다. **원칙은 단순**: 하위로 갈수록 빠르고 많고, 상위로 갈수록 느리고 적게. 빠른 피드백과 신뢰성의 균형.
+테스트의 **종류, 범위, 수량**을 시각화한 고전적 가이드. Mike Cohn이 제안한 3층(Unit, Service, UI)이 원형이며, 이후 Component, Contract, Acceptance, Exploratory 같은 계층이 추가로 논의됐다. **원칙은 단순**: 하위로 갈수록 빠르고 많고, 상위로 갈수록 느리고 적게. 빠른 피드백과 신뢰성의 균형.
 
 ## 3층 원형
 
@@ -64,7 +64,7 @@ aliases: ["Test Pyramid", "테스트 피라미드", "Practical Test Pyramid"]
 - Repository, DAO, ORM의 실제 쿼리 검증
 - HTTP API의 전체 경로(Controller → Service → Repository)
 - 메시지 Publish/Consume 흐름
-- 외부 API 어댑터 (Wiremock, Mock Server로 감싸기도)
+- 외부 API 어댑터 (WireMock, Mock Server로 감싸기도)
 
 ## Contract Test
 
@@ -82,6 +82,10 @@ Unit과 Integration 사이의 **계약 검증**.
 - CI 시간 단축
 
 계약이 없을 때의 전형적 증상(폴백만 타는 죽은 코드, 아무도 읽지 않는 값)은 [[Test-Pyramid-Blind-Spots|초록불이 못 잡는 것]] 참조.
+
+## Component Test
+
+서비스 하나를 서비스 단위로 띄우고 다른 서비스는 대역으로 바꿔, 그 서비스가 소비자에게 약속한 동작을 검증한다. 정의와 경계, in-process와 out-of-process 선택, 서비스 가상화는 [[Test-Pyramid-Component-Test|컴포넌트 테스트와 서비스 가상화]]로 분리했다.
 
 ## UI / E2E Test
 
@@ -121,7 +125,8 @@ Unit과 Integration 사이의 **계약 검증**.
 | 층 | 상대 수량 | 실행 속도 | 주 도구 |
 |---|---|---|---|
 | Unit | 많음 | 빠름 | JUnit, Jest, pytest |
-| Integration | 중간 | 중간 | Testcontainers, Wiremock |
+| Integration | 중간 | 중간 | Testcontainers, WireMock |
+| Component | 서비스별 주요 시나리오 | 중간 | 프레임워크 테스트 모듈, WireMock |
 | Contract | 소비 계약별 | 중간 | Pact, Spring Cloud Contract |
 | E2E | 핵심 여정 소수 | 느림 | Cypress, Playwright |
 
@@ -134,6 +139,7 @@ Unit과 Integration 사이의 **계약 검증**.
 - **계층별 책임** 명확히:
   - Unit: 도메인 로직
   - Integration: 외부 상호작용
+  - Component: 서비스 하나가 소비자에게 약속한 동작
   - Contract: 서비스 간 계약
   - E2E: 핵심 사용자 여정
 
@@ -185,7 +191,7 @@ Staging → 위험 기반 E2E + 성능 → Production
 - [Dowon Lee 강사, Testing Pyramid](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290730)
 
 ## 관련 문서
-- [[Test-Pyramid-Blind-Spots|초록불이 못 잡는 것 — 테스트의 사각지대]]
+- [[Test-Pyramid-Blind-Spots|초록불이 못 잡는 것 — 테스트의 사각지대]], [[Test-Pyramid-Component-Test|컴포넌트 테스트와 서비스 가상화]]
 - [[Classicist-vs-Mockist-Testing|Classicist vs Mockist, Test Double]], [[Mock-Testing-Strategy|Mock 테스트 설계 전략]]
 - [[TestContainers-Integration|Testcontainers 통합 테스트]]
 - [[Migration-Backed-Test-Database|마이그레이션 기반 테스트 데이터베이스]]

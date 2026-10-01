@@ -98,7 +98,17 @@ Alert는 warning/critical label만 나누는 것으로 끝나지 않는다. 사�
 - cardinality와 scrape payload 증가를 배포 전후 비교한다.
 - dashboard panel과 alert가 같은 metric contract를 참조하는지 확인한다.
 
+## 측정 시점과 시계열 생성 시점
+
+Timer의 `max`는 보통 time window의 최대값이며 애플리케이션 시작 이후의 영구 최대값이 아니다. 기록이 없는 구간 뒤 0으로 돌아갈 수 있다. 구간 평균 지연은 같은 구간의 `_sum` 증가율을 `_count` 증가율로 나누고, 분모가 0인 경우도 처리한다.
+
+Gauge는 관측 시점에 함수를 평가하므로 scrape 사이의 순간 peak를 보존하지 않는다. 함수에서 느린 DB 조회나 상태 변경을 수행하지 않는다. 여러 meter를 함께 등록하는 `MeterBinder`는 등록 계약을 묶을 때 사용한다.
+
+meter는 이름과 tag 조합으로 등록된다. 코드 경로에서 처음 등록하는 meter나 AOP 계측은 해당 경로를 호출하기 전에는 시계열이 없을 수 있다. dashboard의 빈 panel을 0회 발생과 구분하고 annotation이 실제 proxy 경로에서 실행되는지 확인한다.
+
 ## 출처
+
+- [Micrometer, Gauges](https://docs.micrometer.io/micrometer/reference/concepts/gauges.html)
 
 - [Micrometer, Meters](https://docs.micrometer.io/micrometer/reference/concepts/meters.html)
 - [Micrometer, Counters](https://docs.micrometer.io/micrometer/reference/concepts/counters.html)

@@ -1,7 +1,7 @@
 ---
 tags: [java, lambda, target-typing, method-reference, higher-order-function]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "CS - 함수형 프로그래밍"
 aliases: ["Java Lambda and Method Reference", "Java 람다와 메서드 참조"]
 ---
@@ -73,6 +73,12 @@ Method reference도 target type이 필요한 poly expression이다. 호출을 �
 - Checked exception을 던지는 callback은 표준 interface와 맞지 않을 수 있다. Boundary에서 예외 contract를 명시하고 무분별한 runtime wrapping을 피한다.
 - Lambda body가 여러 분기와 side effect를 가지면 이름 있는 method로 추출한다.
 - 성능은 문법 모양으로 추정하지 않고 allocation, boxing과 hot path를 benchmark한다.
+
+## 소속과 생성 전략
+
+메서드는 class나 instance에 소속된 동작이고 lambda는 이름 없는 동작을 target interface에 맞춰 표현하는 식이다. Lambda를 만들었다는 사실만으로 본문이 실행되는 것은 아니며 interface의 function method를 호출할 때 실행된다. 독립 함수와 메서드의 언어별 문법 차이를 Java가 모든 동작을 동일한 방식으로 구현한다는 뜻으로 확대하지 않는다.
+
+JLS는 lambda instance의 생성과 재사용을 허용하되 class 파일 이름이나 생성 전략은 보장하지 않는다. javac의 invokedynamic과 LambdaMetafactory는 구현 전략이므로 `Outer$$Lambda...` 같은 이름에 의존하지 않는다. 익명 class의 field와 추가 method가 필요한지, lexical this를 유지하는 동작만 필요한지가 선택 기준이고 문법만으로 성능 우위를 단정하지 않는다.
 
 ## 출처
 

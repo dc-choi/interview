@@ -3,7 +3,7 @@ tags: [aws, s3, file-upload, multipart, presigned-url, spring]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["S3 업로드 보안", "S3 업로드 선택 가이드"]
-verified_at: 2026-07-21
+verified_at: 2026-09-30
 ---
 
 # S3 파일 업로드 — 보안, 운영과 선택 가이드
@@ -13,6 +13,9 @@ verified_at: 2026-07-21
 ### IAM, 버킷 정책
 - 서버는 **최소 권한 IAM** (특정 prefix에만 PutObject)
 - 버킷은 **Public Access Block 켜기**. 신뢰되지 않은 업로드는 `quarantine/` prefix 또는 별도 bucket에 저장하고 CloudFront OAC에는 검사 완료 영역만 읽도록 허용
+- **익명 쓰기를 여는 튜토리얼 정책 금지**: 퍼블릭 차단을 끄고 `Principal: "*"`에 `s3:GetObject`와 `s3:PutObject`를 함께 허용하면 인터넷의 누구나 자격 증명 없이 객체를 올리거나 같은 key를 덮어쓸 수 있다. 저장과 요청 비용 남용, 버킷을 통한 악성 파일이나 피싱 콘텐츠 배포, 서비스 이미지 바꿔치기로 이어지므로 AWS도 익명 쓰기 권한은 어떤 형태로도 주지 말라고 권고한다
+- 서버 업로드는 서버 주체의 자격 증명으로 서명하므로 공개 쓰기 권한이 필요 없다. 공개 PutObject를 지우고 서버 주체에만 필요한 prefix의 `s3:PutObject`, `s3:DeleteObject`를 준다. `.env`의 장기 액세스 키보다 실행 환경의 IAM Role을 우선한다([[S3-Security-Patterns]]의 Access Key 수명 주기)
+- 공개 읽기가 필요하면 버킷은 비공개로 두고 CloudFront OAC로 제공한다. 직접 공개 GetObject를 의도적으로 고르더라도 전용 공개 prefix나 버킷으로 범위를 좁힌다. Block Public Access의 `BlockPublicPolicy`가 켜져 있으면 공개 정책 저장 자체가 거부된다([[S3-Security-Cost]]의 접근 거부 진단)
 - GuardDuty Malware Protection for S3 또는 승인된 scanner로 검사하고 `GuardDutyMalwareScanStatus=NO_THREATS_FOUND` 같은 검증 결과가 확인된 객체만 clean prefix로 복사하거나 후속 처리를 허용. `THREATS_FOUND`, `FAILED`, `UNSUPPORTED`, `ACCESS_DENIED`와 결과 미확인은 fail-closed로 격리
 
 ### CORS
@@ -27,7 +30,7 @@ verified_at: 2026-07-21
 
 ### 검증, 후처리
 - quarantine 업로드 완료 **Event Notification** → SQS/Lambda 또는 GuardDuty scan → 성공 결과 확인 → clean 영역 승격 → 메타데이터 DB 기록, 섬네일 생성. 이벤트 중복과 순서 역전을 고려해 멱등 처리
-- ETag는 Multipart의 경우 MD5가 아님 → 서버에서 별도 체크섬 로직 필요
+- ETag는 multipart, SSE-KMS, SSE-C 객체에서 MD5가 아님 → 업로드 요청에 S3 checksum(CRC64NVME 등)을 함께 보내 검증하고 저장된 객체의 검증 방법은 [[S3-Storage-Performance]]의 메타데이터와 무결성 절
 - 크기, MIME signature, checksum과 업무 규칙도 clean 승격 전에 서버 측에서 재검증
 
 ## DB 참조와 객체의 생성, 교체, 삭제
@@ -97,6 +100,12 @@ API 응답 형태만 검사한 테스트로 이 경계를 확인할 수는 없�
 - [GuardDuty Malware Protection for S3 동작](https://docs.aws.amazon.com/guardduty/latest/ug/how-malware-protection-for-s3-gdu-works.html)
 - [검사 결과 tag 기반 S3 접근 제어](https://docs.aws.amazon.com/guardduty/latest/ug/tag-based-access-s3-malware-protection.html)
 - [AWS 데이터 전송 비용 분류](https://docs.aws.amazon.com/cur/latest/userguide/cur-data-transfers-charges.html)
+- [Amazon S3, How Amazon S3 works with IAM](https://docs.aws.amazon.com/AmazonS3/latest/userguide/security_iam_service-with-iam.html) — 익명 권한 경고와 버킷, 객체 ARN
+- [Amazon S3, Troubleshoot access denied (403 Forbidden) errors](https://docs.aws.amazon.com/AmazonS3/latest/userguide/troubleshoot-403-errors.html) — Block Public Access 설정별 거부 동작
+- [Amazon S3, Working with object metadata](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html) — ETag가 MD5인 조건
+- [인프런, 윤상석, AWS 클라우드 컴퓨팅 & S3 구축](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=84080)
+- [인프런, 윤상석, Multer + S3 연동](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=84082)
+- [인프런, 윤상석, AWS-SDK를 사용하여 S3에 업로드 보충강의](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=95255)
 
 ## 관련 문서
 

@@ -10,7 +10,7 @@ aliases: ["Cache", "캐시"]
 캐시 원리와 전략, 운영 패턴 문서 모음. Redis 제품 심화는 형제 폴더 [[redis-deep-dive|Redis 심화]] 참고.
 
 - [[Cache-Basics|캐시란?]]
-- [[Cache-Locality|Cache Locality 원리 (Temporal, Spatial, 80/20)]]
+- [[Cache-Locality|Cache Locality 원리 (Temporal, Spatial, 80/20, 암달의 법칙)]]
 - [[Cache-Strategies|Cache 전략 (Cache-Aside, Write-Through, Write-Behind)]]
 - [[Cache-Invalidation-and-Refresh|캐시 무효화와 갱신 (무효화 전략, stampede 방지, 분산 무효화와 워밍업)]]
 - [[Cache-Decision|Cache 도입, 제거 의사결정 (히트율, 노출률, Legacy)]]

@@ -2,8 +2,8 @@
 tags: [ai, claude-code, automation, business, connectors, mcp]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Claude Code Business Automation", "클로드 코드 비즈니스 자동화", "Connectors", "스케줄 태스크"]
-verified_at: 2026-09-29
+aliases: ["Claude Code Business Automation", "클로드 코드 비즈니스 자동화", "Connectors", "스케줄 태스크", "Cowork"]
+verified_at: 2026-09-30
 ---
 
 # Claude Code 비즈니스 자동화 — 문서, 데이터, 연동, 반복
@@ -29,6 +29,16 @@ verified_at: 2026-09-29
 
 음성-텍스트 변환(회의록)은 도구 선택이 갈린다: 플랫폼 자막(화자 자동), Clova Note(화자 분리), Whisper 로컬(`whisper 파일.m4a --language ko` — 화자 구분 없음). `--language ko` 누락이 대표 실수.
 
+## Cowork로 맡길 때 — 범위, 원본, 절차, 공유
+
+Cowork는 Claude Code와 같은 에이전트 구조를 터미널 없이 쓰는 작업 공간이다(Pro, Max, Team, Enterprise 플랜. Desktop 앱 외에 웹과 모바일은 플랜별로 제공). 작업은 Anthropic 서버의 격리 환경에서 돌고, 로컬 파일, 브라우저, 컴퓨터를 쓰는 동안에는 Desktop 앱이 열려 있어야 한다(2026-09-30 공식 문서 확인). 원본 자료를 읽고 결과물을 만드는 일이라면 일반 채팅보다 Cowork가 맞다.
+
+- **범위는 프로젝트 폴더로**: Cowork 프로젝트는 로컬 폴더, 상시 지시, 참고 링크, 프로젝트 메모리를 묶어 컴퓨터에만 저장하고, 세션은 붙인 폴더를 읽고 쓴다. 2026-09 Desktop 업데이트로 홈 폴더나 드라이브 전체도 붙일 수 있게 됐으므로(Claude 자체 설정, SSH 키, 클라우드 자격 증명, 셸 시작 파일은 제외) 범위를 좁히는 일은 사용자의 몫이다. 업무별 작은 폴더를 만들어 붙인다
+- **원본은 복사본으로 보호**: 승인 프롬프트를 줄여 쓰려면 원본 대신 복사본 폴더를 붙이고 지시에 원본 수정 금지를 적는다. 지시는 권고라서 실제 방어선은 복사본이다. 공식 도움말은 파일을 영구 삭제하기 전에는 명시적 허용을 받는다고 안내한다
+- **절차 순서로 지시**: 읽기, 분석, 산출물 생성처럼 앞 단계 결과가 다음 단계의 입력이 되는 순서대로 쓰고 산출물 형식과 파일명을 정한다. 이메일, 이미지, 문서, 메신저 대화 같은 비정형 원본을 표나 스프레드시트 같은 정형 데이터로 바꾸는 일이 잘 맞는다 ([[Agent-Spec-Writing|지시 작성]])
+- **결과는 폴더에서 확인**: 채팅에 보이는 표 요약은 보여 주기용이고 실제 산출물은 폴더의 파일이다. 회사 양식이 필요하면 PPT 테마나 템플릿 파일을 먼저 넣는다
+- **공유 범위 확인**: 아티팩트는 비공개로 시작한다. Pro와 Max는 나만 보기, 링크가 있는 누구나, 이메일 초대 중에서 고르고, Team과 Enterprise는 조직 안이 기본이며 소유자가 외부 공유를 통제한다. 현재 아티팩트는 링크가 있어도 Claude 계정이 있어야 열리지만 채팅에서 게시한 레거시 아티팩트는 계정 없이 열린다. 링크는 한번 전달되면 받는 사람을 통제할 수 없으므로 민감 자료는 특정인 초대나 조직 범위로 공유한다
+
 ## 시각 산출물 — HTML 먼저, PDF는 마지막
 
 보고서, 제안서, 발표 자료처럼 모양이 중요한 산출물은 처음부터 DOCX나 PPTX를 생성하게 하지 않고 HTML과 CSS로 만든 뒤 PDF로 변환한다. HTML과 CSS는 텍스트로 된 공개 표준이라 에이전트가 레이아웃, 색, 간격을 코드로 세밀하게 지정하고 부분만 고칠 수 있다. 오피스 파일은 내부가 XML 묶음이라 생성 뒤 깨진 레이아웃을 찾아 고치기가 상대적으로 어렵다(경험 기반 판단이며 품질을 측정한 비교는 아니다).
@@ -50,6 +60,7 @@ Excel/CSV는 진단 → 정제 → 통계 → 차트 체인: 구조 진단(타�
 Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 편의성뿐.
 
 - **Connectors(권장)**: GUI에서 Slack, Gmail, Notion, GitHub 등 OAuth 연결 → "Slack #general 최근 10개 요약" 자연어. 서비스 간 크로스 작업 가능
+- **커넥터는 내 계정 권한으로 움직인다**: 로그인한 계정이 할 수 있는 삭제와 발송도 할 수 있어서, 메일 정리를 맡겼다가 지우면 안 되는 메일까지 지우는 식의 사고가 생길 수 있다. 커넥터 설정의 도구별 권한(항상 허용, 승인 필요, 차단)에서 삭제와 발송 같은 쓰기 도구는 승인 필요나 차단으로 두고, 대화마다 채팅창 `+` 메뉴에서 필요한 커넥터만 켠다
 - **수동 MCP**: Slack의 원격 HTTP 서버를 `claude mcp add --transport http slack https://mcp.slack.com/mcp`로 등록하고 `claude mcp list`로 확인한다. 또는 claude.ai 커넥터를 사용한다 ([[MCP]])
 - 회사 워크스페이스 연결은 IT 승인 선행
 
@@ -98,6 +109,13 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 - [Playwright 대신 AI용 브라우저 Aside — Threads, kez_works](https://www.threads.com/@kez_works/post/DcCxUniD1at)
 - [Aside CLI의 openTab과 attach 활용 — Threads, yun_ja_dong](https://www.threads.com/@yun_ja_dong/post/DcfsU2QE2Om)
 - [업무 실행용 AI 도구 사용 빈도 평가 — Threads, thisnthatdev](https://www.threads.com/@thisnthatdev/post/DdTTIJdmK44)
+- [Claude — Cowork overview](https://claude.com/docs/cowork/overview)
+- [Claude — Organize work with projects](https://claude.com/docs/cowork/guide/projects)
+- [Claude — Claude Desktop changelog](https://claude.com/docs/cowork/changelog)
+- [Claude — Get started with connectors](https://claude.com/docs/connectors/overview)
+- [Claude Help Center — Share artifacts](https://support.claude.com/en/articles/9547008-publish-and-share-artifacts)
+- [인프런, 널널한 개발자, Claude for Desktop 주요기능 소개](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498592)
+- [인프런, 널널한 개발자, 대화를 넘어! 행동하는 Cowork](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498593)
 
 ## 관련 문서
 

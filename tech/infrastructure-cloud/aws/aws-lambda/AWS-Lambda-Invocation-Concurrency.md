@@ -3,7 +3,7 @@ tags: [aws, lambda, serverless, faas, cold-start, provisioned-concurrency]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Lambda 호출 모델", "Lambda 동시성 제어"]
-verified_at: 2026-07-21
+verified_at: 2026-09-30
 ---
 
 # Lambda 호출 모델과 동시성 — 트리거, Destinations, VPC, Edge
@@ -52,8 +52,22 @@ Throttle 발생 시: 동기 호출은 즉시 에러, 비동기는 자동 재시�
 
 ## VPC Lambda
 
-- Lambda 함수를 VPC 내부 리소스(RDS, ElastiCache, EC2)에 붙이려면 **VPC 구성** 필요
-- 함수에 ENI가 할당되고 지정 서브넷, 보안 그룹에서 동작
+- Lambda 함수를 VPC 내부 리소스(RDS, ElastiCache, EC2)에 붙이려면 **VPC 구성** 필요. 기본 함수는 Lambda가 관리하는 VPC에서 실행되어 고객 VPC의 private subnet 리소스에 닿지 않는다
+- 함수에 ENI가 할당되고 지정 서브넷, 보안 그룹에서 동작. 대상 리소스가 있는 VPC의 private subnet ID와 security group ID를 지정하며, Lambda는 subnet과 security group 조합마다 Hyperplane ENI를 만들고 같은 조합을 쓰는 함수끼리 공유한다
+- 고가용성을 위해 서로 다른 AZ의 subnet을 둘 이상 지정한다. ENI가 지정한 subnet에 만들어지므로 한 AZ의 subnet만 쓰면 그 AZ 장애가 곧 VPC 접근 장애가 된다
+- 대상 리소스 security group의 인바운드가 Lambda security group을 허용하고, Lambda security group의 아웃바운드가 대상 포트를 허용해야 한다
+
+### VPC 연결에 필요한 권한
+
+- 실행 역할에 ENI 생성, 조회, 삭제 권한이 필요하다. AWS 관리형 정책 `AWSLambdaVPCAccessExecutionRole`을 붙이거나 `ec2:CreateNetworkInterface`, `ec2:DescribeNetworkInterfaces`, `ec2:DescribeSubnets`, `ec2:DeleteNetworkInterface`, `ec2:AssignPrivateIpAddresses`, `ec2:UnassignPrivateIpAddresses`를 `Resource: "*"`로 준다
+- 콘솔에서 새 함수를 만들며 VPC를 붙이면 이 정책이 자동으로 붙는다. CLI, SAM, IaC나 기존 함수에 사용자 지정 실행 역할을 쓰면 직접 넣어야 하고, 빠지면 CreateNetworkInterface 권한이 없다는 오류로 VPC 설정이 실패한다. 설정하는 사용자에게도 `ec2:DescribeSecurityGroups`, `ec2:DescribeSubnets`, `ec2:DescribeVpcs` 조회 권한이 필요하다
+- 이 EC2 권한은 함수 코드에도 암묵적으로 주어진다. 최소 권한이 필요하면 `lambda:SourceFunctionArn` 조건으로 코드의 EC2 API 호출만 거부하는 Deny 정책을 실행 역할에 더한다
+- 이 권한은 ENI를 만들고 지울 때 쓰이므로 연결 뒤에 빼도 호출은 된다. 다만 VPC 구성을 제거하면 Lambda가 실행 역할 권한으로 Hyperplane ENI를 지우므로(최대 20분), 역할을 먼저 지우면 ENI가 남아 수동으로 삭제해야 한다
+
+### 인터넷과 ENI 지연
+
+- 새 함수는 Hyperplane ENI가 준비될 때까지 몇 분간 `Pending`이라 호출할 수 없다. 14일 동안 호출이 없으면 ENI가 회수되어 `Inactive`가 되고, 다음 호출은 실패한 뒤 다시 `Pending`을 거친다. ENI가 계속 유지된다고 가정하지 않는다
+
 - VPC에 연결한 함수가 IPv4 인터넷으로 나가려면 일반적으로 프라이빗 서브넷의 NAT 경로가 필요하다. AWS 서비스 접근은 VPC 엔드포인트를 쓸 수 있고, IPv6 경로는 별도 구성한다.
 - 과거엔 Cold Start 시 ENI 생성으로 지연 컸으나, **Hyperplane ENI(공유 ENI)** 도입 후 초기화 지연 대폭 감소
 
@@ -71,3 +85,6 @@ Provisioned Concurrency는 콜드 스타트를 절대 제거하지 않는다. �
 - [Provisioned Concurrency 문제 해결](https://docs.aws.amazon.com/lambda/latest/dg/troubleshooting-invocation.html)
 - [비동기 호출 기록과 Destinations](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async-retain-records.html)
 - [CloudFront Functions 청구와 사용량](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/billing-and-usage-interpreting.html)
+- [Lambda 함수의 Amazon VPC 리소스 접근](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html)
+- [Lambda 복원력과 다중 AZ](https://docs.aws.amazon.com/lambda/latest/dg/security-resilience.html)
+- [인프런, Sungmin Kim, Lambda - VPC Access](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=75666)

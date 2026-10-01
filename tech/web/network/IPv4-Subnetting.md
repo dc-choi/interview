@@ -1,7 +1,7 @@
 ---
 tags: [web, network, ipv4, subnet, cidr, vlan]
 status: done
-verified_at: 2026-09-22
+verified_at: 2026-09-30
 category: "Web - 네트워크"
 aliases: ["IPv4 Subnetting", "서브넷팅", "서브넷 주소 계산"]
 ---
@@ -45,6 +45,22 @@ IPv4는 32비트다. `/24`는 앞 24비트를 네트워크 프리픽스로, 뒤 
 
 `/24`의 일반 호스트 주소는 254개지만 두 `/25`에서는 합계 252개다. 네트워크/브로드캐스트 예약이 늘기 때문이다. 잘게 나누면 관리 단위를 맞추기 쉽지만 예약 주소, 경로와 정책 관리가 늘어나는 비용이 있다.
 
+## 클래스풀 주소 체계 (역사)
+
+CIDR 이전에는 첫 비트 패턴이 네트워크 크기를 정했다. 지금은 대역 설계 규칙이 아니지만 클래스 C 대역 같은 옛 표현과 기본 마스크를 읽는 데 필요하다.
+
+| 클래스 | 선두 비트 | 첫 옥텟 | 기본 프리픽스 | 네트워크당 호스트 할당 가능 수 |
+|---|---|---|---|---|
+| A | `0` | 0~127 | `/8` | 16,777,214 |
+| B | `10` | 128~191 | `/16` | 65,534 |
+| C | `110` | 192~223 | `/24` | 254 |
+| D | `1110` | 224~239 | 없음 | 멀티캐스트 그룹 주소라 호스트 구분이 없다 |
+| E | `1111` | 240~255 | 없음 | 예약(`240.0.0.0/4`). 이 안의 `255.255.255.255`는 limited broadcast |
+
+- `0.0.0.0/8`은 this network, `127.0.0.0/8`은 루프백이라 일반 네트워크로 쓰인 A 대역은 1~126이다.
+- 크기가 세 단계뿐이라 낭비가 컸다. 주소 300개가 필요한 조직은 254개인 C로는 부족해 B를 받았고, 65,534개 중 6만 5천 개 이상이 남았다. 중간 크기 클래스가 없어 B 대역이 먼저 고갈되고 라우팅 테이블이 커지자 CIDR가 도입됐다(RFC 4632). CIDR라면 `/23`(주소 512개, 호스트 510개) 하나로 충분하다.
+- 그 뒤에도 IPv4 전체가 부족해 사설 주소와 NAT로 버텼고, 근본 해결책인 IPv6와 함께 쓰는 단계에 있다([[IPv4-NAT-and-Traversal|IPv4 NAT]]).
+
 ## 브로드캐스트 통제와 보안의 조건
 
 주소 프리픽스를 나누는 L3 서브넷팅과 이더넷의 L2 브로드캐스트 도메인 분리는 다른 작업이다. 같은 VLAN에 서로 다른 IP 서브넷을 설정해도 이더넷 브로드캐스트의 전달 범위는 그대로다.
@@ -65,12 +81,15 @@ IPv4는 32비트다. `/24`는 앞 24비트를 네트워크 프리픽스로, 뒤 
 이번 참고 영상은 제공된 메모를 바탕으로 반영했으며 영상 본문과 자막은 직접 확인하지 못했다. 보완한 기술 설명은 아래 공식 자료와 대조했다.
 
 - [IETF, RFC 4632: Classless Inter-domain Routing](https://www.rfc-editor.org/rfc/rfc4632.html)
+- [IETF, RFC 791: Internet Protocol](https://www.rfc-editor.org/rfc/rfc791.html)
+- [IANA, IPv4 Special-Purpose Address Registry](https://www.iana.org/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.xhtml)
 - [IETF, RFC 3021: Using 31-Bit Prefixes on IPv4 Point-to-Point Links](https://www.rfc-editor.org/rfc/rfc3021.html)
 - [IETF, RFC 1812: Requirements for IP Version 4 Routers](https://www.rfc-editor.org/rfc/rfc1812.html)
 - [IETF, RFC 4291: IP Version 6 Addressing Architecture](https://www.rfc-editor.org/rfc/rfc4291.html)
 - [Cisco, Configuring Routing Between VLANs](https://www.cisco.com/c/en/us/td/docs/routers/ios-xe/lan-wan/lan-wan/m_lsw-conf-rout-vlan.html)
 - [YouTube, 서브넷팅 기초 (제공 메모의 참고 영상)](https://www.youtube.com/watch?v=px0HDON5Wa4&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=37)
 - [YouTube, 서브넷팅과 주소 관리 (제공 메모의 참고 영상)](https://www.youtube.com/watch?v=gh5bPxqwRFA&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=38)
+- [인프런, 감자, IP 클래스와 서브넷 마스크](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160804)
 
 ## 관련 문서
 

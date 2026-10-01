@@ -1,7 +1,7 @@
 ---
 tags: [java, collections, list, arraylist, linkedlist, abstraction]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java List Abstraction", "Java List 추상화"]
 ---
@@ -29,6 +29,7 @@ names.add("lee");
 - 모든 구현이 모든 선택적 연산을 지원하지는 않는다. 수정할 수 없는 리스트에 `add`, `set`, `remove`를 호출하면 `UnsupportedOperationException`이 발생할 수 있다.
 - 일부 구현은 `null`을 허용하지만 `List.of`와 `List.copyOf`로 만든 리스트는 `null`을 허용하지 않는다.
 - 리스트의 `equals`는 같은 순서로 같은 원소가 있는지를 비교한다. 같은 원소라도 순서가 다르면 같지 않다.
+- Java 21부터 `List`는 `SequencedCollection`을 상속해 `getFirst`, `getLast`, `addFirst`, `addLast`, `removeFirst`, `removeLast`, `reversed`를 제공한다(JEP 431). `remove(0)` 대신 `removeFirst()`를 쓰면 의도가 이름에 드러난다. 빈 리스트에서 `getFirst()`, `removeFirst()`는 `NoSuchElementException`이고 `get(0)`, `remove(0)`은 `IndexOutOfBoundsException`이다. `ArrayList.removeFirst()`도 뒤 원소를 당기므로 O(n)이다. 가독성 개선이지 성능 개선이 아니며, 앞에서 자주 꺼내면 `ArrayDeque`를 쓴다.
 
 ## ArrayList와 LinkedList
 
@@ -40,6 +41,22 @@ names.add("lee");
 | 메모리와 locality | 밀집 저장에 유리 | 노드와 참조 오버헤드 | 실제 JVM과 workload로 측정 |
 
 연결 리스트가 중간 삽입 자체는 빠르더라도 위치를 찾는 데 선형 시간이 들 수 있다. 반대로 배열 리스트는 원소를 이동하지만 cache locality가 좋아 실제로 더 빠른 경우가 많다. Big O는 입력 크기에 따른 성장률을 설명할 뿐이고, 최악, 평균, 기대, 상각 중 어떤 기준인지 함께 밝혀야 한다.
+
+## 이론과 실측
+
+강의의 성능 테스트는 같은 Big O 안에서도 상수 계수가 선택을 뒤집는다는 점을 보여준다. 수치는 강의 환경에서 5만 건으로 잰 값이므로 절대값보다 배율과 방향을 본다.
+
+| 비교 | 결과 | 원인 |
+|---|---|---|
+| 직접 만든 배열 리스트와 연결 리스트의 앞 추가 | 약 1.4초와 약 2ms, 약 700배 | 전체 shift와 참조 변경 |
+| 두 직접 구현의 값 검색(중간 값, 끝 값) | 배열 약 123ms, 232ms, 연결 약 499ms, 980ms | 둘 다 O(n)이지만 연속 메모리의 cache 효율 |
+| `java.util.ArrayList`와 직접 만든 배열 리스트의 앞 추가 | `ArrayList`가 약 10배 빠름 | 원소별 Java loop 대신 `System.arraycopy` 구간 복사 |
+| `ArrayList`와 `LinkedList`의 중간 삽입 | `ArrayList`가 약 50배 빠름 | 위치까지의 pointer 추적, node 할당, 낮은 cache 효율 |
+
+- 첫 비교는 `BatchProcessor`가 생성자로 받은 리스트 구현만 바꿔 얻은 결과다. 클라이언트 코드는 그대로 두고 조립 지점의 구현만 교체했다는 점이 추상화와 의존관계 주입의 실익이다.
+- 직접 만든 단방향 연결 리스트는 tail이 없어 뒤 추가가 O(n)이었지만, `LinkedList`는 last 참조로 O(1)이고 index 접근은 가까운 끝에서 출발한다.
+- `ArrayList` 확장에 따른 재할당과 복사는 전체 결과에 큰 영향을 주지 않았다.
+- `System.arraycopy`는 같은 배열의 겹치는 구간도 임시 배열을 거친 것처럼 복사한다고 Javadoc이 명시하며, 복잡도는 O(n) 그대로이고 상수만 작아진다. Java SE 26 `ArrayList` Javadoc도 상수 계수가 `LinkedList` 구현보다 낮다고 적는다. index 위치별 비용 모델은 [[Java-Generics-and-Collections-Array-and-Linked-List#index 위치별 삽입과 삭제 비용|배열 리스트와 연결 리스트]]에 있다.
 
 ## 자주 헷갈리는 팩터리와 뷰
 
@@ -56,13 +73,16 @@ List<String> immutable = List.of("a", "b");
 - `List.of`는 수정할 수 없고 `null`을 허용하지 않는다. 원소 객체 자체가 가변이면 그 내부 상태까지 불변이 되는 것은 아니다.
 - `List.copyOf`는 입력의 현재 원소를 가진 수정 불가 리스트를 만든다. 입력 컬렉션에 이후 구조 변경이 생겨도 따라가지 않는다.
 - `subList`는 원본의 범위를 보는 뷰다. 뷰 밖에서 원본을 구조 변경하면 이후 동작의 의미가 정의되지 않을 수 있다.
+- 고정된 작은 리스트는 Java 9 이상이면 `List.of`를 기본으로 쓴다. `Arrays.asList`는 크기만 고정되고 `set`은 되는 애매한 가변성이 있다. 대신 `Arrays.asList`는 배열을 감싸기만 해 복사가 없고, OpenJDK `List.of(array)`는 원소를 자체 저장소로 복사하며 null을 검사한다. JDK 21.0.3에서 원본 배열을 바꾸자 `Arrays.asList` 결과만 따라 바뀌었다. 매우 큰 배열을 읽기만 할 때는 이 복사 비용이 선택 기준이 될 수 있다.
+- 불변 리스트를 바꿔야 하면 `new ArrayList<>(List.of(...))`로 가변 복사본을 만든다. 가변 리스트를 읽기 전용으로 내보내는 view와 copy의 차이는 [[Java-Generics-and-Collections-Iteration-and-Sorting|순회, 정렬과 컬렉션 유틸리티]]에 있다.
+- 조회 결과가 없으면 null 대신 빈 리스트를 돌려준다. `Collections.emptyList()`(Java 5)와 `List.of()`(Java 9) 모두 빈 불변 리스트이며, Java 9 이상에서는 다른 팩터리와 일관된 `List.of()`가 간결하다. null 대신 빈 컬렉션을 쓰는 이유는 [[Java-Optional#API 경계|Optional의 API 경계]]에 있다.
 
 ## API 함정과 선택 기준
 
 - `List<Integer>`에서 `remove(1)`은 인덱스 1을 지운다. 값 `1`을 지우려면 `remove(Integer.valueOf(1))`처럼 의도를 분명히 한다.
 - 앞뒤 양끝 연산이 핵심이면 `LinkedList`만 보기보다 `Deque` 구현을 먼저 검토한다.
 - 읽기 위주, 인덱스 접근, 순차 순회가 일반적인 기본값이면 `ArrayList`가 적합한 경우가 많다.
-- 중간 변경이 많다는 이유만으로 `LinkedList`를 고르지 않는다. 위치 탐색 방식, iterator 보유 여부, 메모리와 실제 지연 시간을 함께 측정한다.
+- 중간 변경이 많다는 이유만으로 `LinkedList`를 고르지 않는다. 위치 탐색 방식, iterator 보유 여부, 메모리와 실제 지연 시간을 함께 측정한다. 데이터가 매우 크고(강의 예시로 수백만 건 이상) 앞쪽 추가와 삭제가 반복되는 경우처럼 연결 변경의 이득이 실제로 큰 경우에만 비교 대상으로 올린다. 수십 건 수준에서는 구현 간 차이를 체감하기 어렵다.
 
 ## 면접 체크포인트
 
@@ -70,6 +90,8 @@ List<String> immutable = List.of("a", "b");
 - `ArrayList` 확장 비용을 상각 시간으로 설명하는 방법
 - `LinkedList`의 연결 변경이 상수 시간이어도 전체 삽입이 선형일 수 있는 이유
 - `Arrays.asList`, `List.of`, `List.copyOf`, `subList`의 소유권 차이
+- 같은 O(n)인 `ArrayList`와 `LinkedList`의 실측 차이가 크게 나는 이유
+- `removeFirst()`가 `remove(0)`보다 나은 점과 나아지지 않는 점
 
 ## 김영한 강사 강의 단원
 
@@ -82,6 +104,8 @@ List<String> immutable = List.of("a", "b");
 - [문제와 풀이1](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=215978)
 - [문제와 풀이2](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=215979)
 - [정리](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=215980)
+- [컬렉션 유틸](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216027)
+- [문제와 풀이 (순회, 정렬 섹션)](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216029)
 
 ## Java SE 26 근거
 
@@ -89,6 +113,10 @@ List<String> immutable = List.of("a", "b");
 - [ArrayList](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/ArrayList.html)
 - [LinkedList](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/LinkedList.html)
 - [Arrays.asList](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Arrays.html#asList(T...))
+- [SequencedCollection](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/SequencedCollection.html)
+- [Collections.emptyList](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Collections.html#emptyList())
+- [System.arraycopy](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/System.html#arraycopy(java.lang.Object,int,java.lang.Object,int,int))
+- [JEP 431: Sequenced Collections](https://openjdk.org/jeps/431)
 
 ## 관련 문서
 

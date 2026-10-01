@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, event-loop, microtask, macrotask]
 status: done
-verified_at: 2026-09-28
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["Microtask Macrotask", "브라우저 vs Node 이벤트 루프"]
 ---
@@ -100,6 +100,22 @@ Node.js:  timers큐 [ setTimeout ]  /  poll큐 [ I/O 콜백 ]  /  check큐 [ set
 - Window의 타이머는 문서가 fully active인 시간만 센다. user agent는 전력 절약을 위해 구현 정의 시간만큼 더 늦출 수 있고, 비활성 탭에는 브라우저마다 기준이 다른 최소 지연이 적용될 수 있다.
 - 타이머는 `clearTimeout`, `clearInterval`로 취소한다. Node.js에서는 legacy `timeout.close()`와 `timeout[Symbol.dispose]()`도 취소한다. ID나 `Timeout`을 담은 변수에 `null`을 대입해도 콜백은 계속 실행되고, Node.js에서는 기본(ref) 상태의 활성 타이머가 이벤트 루프를 계속 유지한다. `unref()`한 타이머는 유지하지 않는다.
 
+### 루프를 붙잡는 리소스와 해제
+
+Node.js 프로세스는 참조된(ref) 활성 핸들이나 요청이 남아 있는 동안 끝나지 않는다([[libuv-Handles|libuv 핸들의 참조 카운팅]]). 아래 Node.js 객체는 기본으로 참조된 핸들 위에 있다. CLI 스크립트나 테스트가 끝나지 않고 멈추거나, graceful shutdown에서 서버는 닫았는데 남은 감시자, interval, readline 때문에 종료되지 않는 증상이 여기서 나온다.
+
+| 리소스 | 루프를 유지하는 조건 | 해제 |
+|---|---|---|
+| `net`, `http` 서버와 소켓 | `listen()` 뒤, 연결이 열려 있는 동안 | `server.close()`, TCP 소켓 `end()`, UDP 소켓 `close()` |
+| 타이머 | 기본 ref | `clearTimeout()`, `clearInterval()`, 보조 타이머는 `unref()` |
+| `fs.watch`, `fs.watchFile` | `persistent` 기본값 `true` | `close()`, `unwatchFile()`, `unref()` ([[File-System-Watch]]) |
+| stdin을 입력으로 쓰는 `readline` | EOF를 받을 때까지 | `rl.close()`, 입력을 기다리지 않으려면 `process.stdin.unref()` |
+| `MessagePort`(워커 안 `parentPort` 포함) | `.on('message')` 리스너가 있으면 자동 ref | 리스너 제거, `port.close()`, `port.unref()` |
+| `Worker` | 기본 ref | `worker.terminate()`, `worker.unref()` |
+
+- `process.getActiveResourcesInfo()`는 루프를 붙잡은 리소스의 타입 이름(예: `TCPServerWrap`, `FSEventWrap`, `Timeout`, `MessagePort`, `PipeWrap`)을 돌려준다. 실제 객체는 주지 않고 DEP0161은 비공개 API `process._getActiveHandles()`, `_getActiveRequests()` 대신 이것을 쓰라고 안내한다. Node.js 26.7에서 실행 중인 `Worker`는 이 목록에 나오지 않았으므로 빈 목록이어도 워커를 따로 확인한다.
+- 필요한 핸들을 `unref()`하면 작업이 끝나기 전에 프로세스가 끝날 수 있다. `process.exit()`로 강제 종료하면 정리 콜백을 건너뛰므로([[Process-Child-Process]]) 원인이 된 핸들을 찾아 닫는 쪽을 우선한다.
+
 ---
 
 ## 흔한 오해 정리
@@ -133,6 +149,8 @@ nextTick과 setImmediate의 이름은 사실 서로 뒤바뀌어야 맞다.
 - [[Event-Loop|이벤트 루프 (TOC)]]
 - [[Async-Internals|비동기 내부 동작]]
 - [[libuv]]
+- [[libuv-Handles|libuv 핸들과 참조 카운팅]]
+- [[File-System-Watch|파일 변경 감시]]
 
 ## 출처
 
@@ -144,6 +162,11 @@ nextTick과 setImmediate의 이름은 사실 서로 뒤바뀌어야 맞다.
 - [ECMAScript Language Specification, PerformPromiseThen](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-performpromisethen)
 - [MDN, Window: setTimeout() method](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout)
 - [Node.js, Timers](https://nodejs.org/api/timers.html)
+- [Node.js, process.getActiveResourcesInfo()](https://nodejs.org/api/process.html#processgetactiveresourcesinfo)
+- [Node.js, DEP0161](https://nodejs.org/api/deprecations.html#DEP0161)
+- [Node.js, Readline](https://nodejs.org/api/readline.html)
+- [Node.js, Worker threads, port.unref()](https://nodejs.org/api/worker_threads.html#portunref)
+- [Node.js, fs.watch](https://nodejs.org/api/fs.html#fswatchfilename-options-listener)
 - [Node.js Event Loop, Timers, and nextTick](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick)
 - [Node.js, When to use `queueMicrotask()` vs. `process.nextTick()`](https://nodejs.org/api/process.html#when-to-use-queuemicrotask-vs-processnexttick)
 - [Node.js v26.7.0 task_queues.js — Node.js](https://github.com/nodejs/node/blob/v26.7.0/lib/internal/process/task_queues.js)
@@ -152,3 +175,6 @@ nextTick과 setImmediate의 이름은 사실 서로 뒤바뀌어야 맞다.
 - [모던 자바스크립트 딥다이브 스터디 #9-2 (CH 37, 42) — FE재남](https://www.youtube.com/watch?v=DnsAOh_sw5o)
 - [모던 자바스크립트 딥다이브 스터디 #10-2 (CH 41 , 43) — FE재남](https://www.youtube.com/watch?v=8_2kse0fgMk)
 - [모던 자바스크립트 딥다이브 스터디 #10-3 (CH 45 프로미스) — FE재남](https://www.youtube.com/watch?v=VEux0lApQ4c)
+- [인프런, 얄팍한 코딩사전, TCP & UDP](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=271249)
+- [인프런, 얄팍한 코딩사전, worker_threads](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=276231)
+- [인프런, 얄팍한 코딩사전, 파일 시스템 이벤트 (+ 사용자 입력 받기)](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=270913)

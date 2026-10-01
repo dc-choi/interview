@@ -1,9 +1,9 @@
 ---
 tags: [data-pipeline, streaming, batch, flink, spark, mysql]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "메시징&파이프라인(Messaging&Pipeline)"
-aliases: ["Stream and Batch Processing", "스트림과 배치 처리"]
+aliases: ["Stream and Batch Processing", "스트림과 배치 처리", "Spark JDBC 병렬 추출"]
 ---
 
 # 스트림과 배치 처리
@@ -37,6 +37,16 @@ MySQL은 transactional source of record와 조회 serving에 적합하지만 unb
 
 반대로 일 마감과 backfill은 source snapshot, cutoff와 재시작 가능한 checkpoint를 먼저 정의한다. 운영 primary를 무제한 full scan하지 않고 read replica, export snapshot 또는 별도 analytics store를 검토한다.
 
+## 계산을 분산 처리기에 넘기는 시점
+
+스케줄러와 SQL로 MySQL 안에서 돌리던 일 마감 집계는 데이터가 수백만, 수천만 건으로 늘면 세 가지 한계에 부딪힌다.
+
+- 처리 시간이 허용된 실행 시간대(예: 새벽)를 넘는다. batch는 언제 시작해 언제까지 끝나야 하는지가 먼저 정해지는 작업이다.
+- 무거운 집계 query가 운영 DB의 부하가 되어 서비스 지연으로 번진다.
+- 중간에 실패하면 어디부터 다시 돌릴지 정하기 어렵다.
+
+Spark 같은 분산 처리기에 계산을 넘기면 DB는 행을 나눠 읽어 주기만 하고 집계는 cluster가 병렬로 한다. 큰 작업을 쪼개 여러 machine에서 처리하고 합치는 MapReduce식 분할 정복에, 중간 결과를 메모리에 두고 재사용하는 방식을 더한 엔진이다. 운영과 학습 비용이 크므로 index, 요약 table, 증분 집계로 DB 안에서 해결되지 않을 때 도입한다 ([[Aggregate-Summary-Table-Patterns|집계 테이블과 재계산 가능한 통계]]).
+
 ## Spark JDBC 병렬 추출
 
 ```text
@@ -53,6 +63,20 @@ numPartitions   = database capacity 안의 병렬도
 - 병렬 query가 서로 다른 시점의 row를 읽을 수 있으므로 snapshot consistency, cutoff와 변경 중인 row 처리 규칙을 둔다.
 - partition key 분포가 치우치면 같은 폭의 range가 같은 작업량을 뜻하지 않는다. key histogram과 task skew를 본다.
 
+### 생성되는 분할 query와 source 부하
+
+Spark 4.2 `JDBCRelation` 기준으로 Spark는 partition마다 `partitionColumn` 범위 조건을 붙인 SELECT를 따로 보낸다. 간격은 대략 `(upperBound - lowerBound) / numPartitions`이고, 첫 partition은 `col < 첫 경계 or col is null`, 중간은 `col >= a AND col < b`, 마지막은 `col >= 마지막 경계`다. 차이 `upperBound - lowerBound`가 `numPartitions`보다 작으면 partition 수가 그 차이로 줄어든다.
+
+- 첫 partition과 마지막 partition은 열린 구간이라 bounds 밖의 값과 NULL이 모두 그 둘로 간다. bounds를 실제 분포보다 좁게 잡으면 양 끝 task에 행이 몰린다.
+- `partitionColumn`에는 index가 있어야 한다. index가 없으면 range 조건마다 full table scan이 되어 `numPartitions`개의 full scan이 source에 동시에 걸린다. InnoDB는 midpoint insertion으로 scan 페이지가 buffer pool의 hot page를 밀어내는 것을 줄이지만, 동시 scan의 I/O와 CPU 경합은 막지 못해 같은 인스턴스의 OLTP 지연으로 번질 수 있다. 추출은 replica나 snapshot에서 한다.
+- `pushDownPredicate`(기본 true)는 가능한 filter를 source로 보내 Spark로 오는 행을 줄인다. 밀어 넣은 조건은 partition range 조건과 AND로 붙으므로 둘을 함께 받치는 index인지 실행 계획으로 확인한다.
+- `pushDownAggregate`, `pushDownLimit`(Spark 4.2 문서 기본 true)은 문서상 V2 JDBC data source 옵션이다. 적용되면 집계가 다시 source에서 실행될 수 있어 계산 위임이 목적이면 읽기 경로별로 실제 전송 SQL을 확인한다. Spark는 partition WHERE 절과 생성 query를 INFO 로그로 남긴다.
+- `fetchsize` 기본값 0은 driver 기본 동작을 따른다는 뜻이다. MySQL Connector/J는 기본으로 result set 전체를 메모리에 읽으므로 partition 하나가 크면 executor 메모리 부담이 된다. Connector/J 문서의 row 단위 streaming(`Integer.MIN_VALUE` fetch size)이나 `useCursorFetch=true`와 양수 fetch size 조합을 검토한다.
+
+### Shuffle 비용
+
+shuffle은 같은 key의 데이터를 partition 사이로 다시 모으는 과정이다. `GROUP BY`나 join처럼 key별로 모아야 하는 연산에서 executor와 machine 사이 복사가 일어나 disk I/O, 직렬화와 network I/O가 드는 비싼 연산이다. 그룹핑 전에 WHERE 조건과 필요한 column만 남겨 입력을 줄이는 것이 shuffle 양을 줄이는 첫 수단이다.
+
 ## 운영 체크리스트
 
 1. freshness와 completeness SLO를 분리한다.
@@ -66,6 +90,12 @@ numPartitions   = database capacity 안의 병렬도
 
 - [Apache Flink Documentation, Windows](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/datastream/operators/windows/)
 - [Apache Spark Documentation, JDBC Data Source](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
+- [Apache Spark Documentation, RDD Programming Guide (Shuffle operations)](https://spark.apache.org/docs/latest/rdd-programming-guide.html#shuffle-operations)
+- [JDBCRelation.scala v4.2.0 — Apache Spark GitHub](https://github.com/apache/spark/blob/v4.2.0/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JDBCRelation.scala)
+- [JDBCRDD.scala v4.2.0 — Apache Spark GitHub](https://github.com/apache/spark/blob/v4.2.0/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JDBCRDD.scala)
+- [MySQL 8.4 Reference Manual, Range Optimization](https://dev.mysql.com/doc/refman/8.4/en/range-optimization.html)
+- [MySQL 8.4 Reference Manual, Making the Buffer Pool Scan Resistant](https://dev.mysql.com/doc/refman/8.4/en/innodb-performance-midpoint_insertion.html)
+- [MySQL Connector/J Developer Guide, JDBC API Implementation Notes](https://dev.mysql.com/doc/connector-j/en/connector-j-reference-implementation-notes.html)
 - [Debezium Documentation, MySQL Connector](https://debezium.io/documentation/reference/stable/connectors/mysql.html)
 - [인프런, Hong, Streaming](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338561)
 - [인프런, Hong, 대용량 Batch와 Spark](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338562)

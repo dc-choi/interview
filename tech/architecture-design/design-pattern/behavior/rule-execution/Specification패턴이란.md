@@ -40,6 +40,12 @@ AND, OR, NOT을 Composite로 조합하면 정책의 이름과 구조를 코드�
 
 두 표현을 하나로 통합하면 재사용성이 좋아질 수 있지만 ORM 표현력, 조인, NULL 의미와 DB 함수에 강하게 결합한다. 번역 가능 범위를 테스트하고, 도메인 규칙과 조회 최적화의 책임을 명확히 한다.
 
+## 조합 연산의 확장과 빈 값
+
+AND, OR, NOT은 기존 조건을 바꾸지 않고 조합하는 별도 객체나 함수로 만들 수 있다. TypeScript interface에는 구현을 넣을 수 없으므로 편의를 위해 모든 조건에 상속 기반 fluent API를 강제할 필요는 없다. 독립 조합 함수는 기본 클래스가 구체 조합 클래스를 다시 import하는 순환도 피한다.
+
+부정 조건을 반대 비교식으로 무조건 바꾸면 안 된다. JavaScript에서 `!(price <= 100)`은 `price`가 `undefined`나 `NaN`일 때 참이지만 `price > 100`은 거짓이다. SQL의 NULL 비교는 UNKNOWN이 되어 WHERE에서 제외된다. 조건 조합 이전에 유효한 값인지 검사하고, 값이 없을 때 불충족인지 오류인지 계약으로 정한다.
+
 ## 출처
 
 - 얄팍한 코딩사전, [Specification 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=247243)
@@ -48,5 +54,6 @@ AND, OR, NOT을 Composite로 조합하면 정책의 이름과 구조를 코드�
 ## 관련 문서
 
 - [[Composite패턴이란|Composite 패턴]]
+- [[Condition-Tree|조건 트리 (규칙을 데이터로 저장하고 런타임에 평가)]]
 - [[Strategy패턴이란|Strategy 패턴]]
 - [[DDD|Domain-Driven Design]]

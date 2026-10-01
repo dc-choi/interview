@@ -86,6 +86,7 @@ GraphQL-over-HTTP은 Stage 2 draft라 아직 최종 표준이 아니다. 구현�
 - GraphQL도 URL HTTP 캐시가 그냥 된다고 가정.
 - HTTP 상태 코드만 보고 GraphQL `errors`를 무시.
 - 전역 유일 id 없이 클라이언트 정규화 캐시를 기대.
+- 합성 객체에 부모 id나 목록 인덱스를 id로 재사용해, 같은 타입과 id로 온 서로 다른 객체가 캐시에서 한 엔티티로 합쳐짐([[GraphQL-Schema-Types|ID는 약속이지 강제가 아님]]).
 - mutation 응답 객체가 정규화됐으니 목록의 추가, 삭제, 정렬까지 자동 반영됐다고 가정.
 - mutation을 GET으로 보냄.
 - 긴 쿼리를 GET에 그대로 실어 URL 한도 초과(persisted document로 해결).

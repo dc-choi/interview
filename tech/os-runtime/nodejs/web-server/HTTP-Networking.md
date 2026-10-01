@@ -34,6 +34,8 @@ http.createServer((request, response) => {
 }).listen(8080);
 ```
 
+chunk를 문자열로 바로 이어 붙이지 않고 Buffer 배열에 모았다가 `end`에서 한 번 디코딩하는 이유는 [[Buffer-Memory#흔한 실수|Buffer 흔한 실수]]의 청크 경계 멀티바이트 깨짐 참조.
+
 ### 파이핑을 활용한 에코 서버
 ```
 request는 ReadableStream이고 response는 WritableStream이므로 pipe를 사용할 수 있다.

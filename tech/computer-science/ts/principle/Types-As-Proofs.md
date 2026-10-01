@@ -160,6 +160,7 @@ Java/C#의 명목 클래스와 일부 타입 메타데이터는 런타임 reflec
 - [TypeScript TSConfig, exactOptionalPropertyTypes](https://www.typescriptlang.org/tsconfig/exactOptionalPropertyTypes.html)
 
 ## 관련 문서
+- [[Type-Driven-Development|타입 주도 개발]] — 타입을 먼저 정의하는 설계 절차
 - [[Math-Logic-For-Programming|프로그래밍에 필요한 수학과 논리]] — 명제, 집합, 귀납법의 기초 (커리-하워드의 전제)
 - [[Products-And-Coproducts|Products and Coproducts (Sum type의 카테고리적 의미)]]
 - [[Algebraic-Data-Types|Algebraic Data Types (타입 대수, 재귀 ADT 방정식)]]

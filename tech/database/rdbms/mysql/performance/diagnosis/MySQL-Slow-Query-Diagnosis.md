@@ -99,6 +99,27 @@ Deadlock은 wait timeout과 다르다. `SHOW ENGINE INNODB STATUS`의 최근 dea
 
 Hit ratio나 `long_query_time`에 보편적인 합격선은 없다. 사용자 SLO와 baseline 대비 변화가 판단 기준이다.
 
+## Index hint의 강도
+
+`USE INDEX (idx)`는 인덱스 후보를 제한하지만 table scan도 허용한다. `FORCE INDEX (idx)`는 table scan 비용을 매우 높게 취급하며 `IGNORE INDEX`는 후보를 제거한다. MySQL 8.4의 `/*+ INDEX(t idx) */`는 FORCE INDEX에 대응하므로 USE INDEX를 문법만 바꿔 교체하면 강도가 달라진다. `NO_INDEX`로 잘못된 후보만 배제하는 방법도 비교한다. 동일한 강도 설명은 [[MySQL-Advanced-Index-Access]]의 hint 판단과 연결한다.
+
+## 현재 session을 조회하는 경로
+
+MySQL 8.4에서는 deprecated인 `INFORMATION_SCHEMA.PROCESSLIST` 대신 Performance Schema 경로를 검토한다.
+
+```sql
+SELECT ID, USER, HOST, DB, COMMAND, TIME, STATE, INFO
+FROM performance_schema.processlist
+WHERE COMMAND <> 'Sleep'
+ORDER BY TIME DESC;
+```
+
+PROCESS 권한 유무에 따라 다른 사용자의 session 가시성이 달라진다. observer 권한과 수집 설정을 확인하고 순간 snapshot을 누적 이력으로 오해하지 않는다.
+
+## 튜닝 실험의 재현성
+
+균등 난수만으로는 인기 key, 최근 시각 밀집과 컬럼 상관관계에 따른 추정 오차를 재현하기 어렵다. 고정 기준 시각과 seed로 데이터를 만들고 실제 COUNT/GROUP BY로 분포를 확인한다. 같은 parameter, 결과 행 제한, warm/cold cache와 동시성을 기록하며 실행 시간과 scanned rows를 함께 비교한다. GUI의 자동 LIMIT와 결과 전송 시간이 서버 처리 측정을 바꾸는지도 점검한다. 로컬 측정에 보편적인 운영 지연 배수를 곱하지 않는다.
+
 ## 출처
 
 - [MySQL 8.4 Reference Manual, Slow Query Log](https://dev.mysql.com/doc/refman/8.4/en/slow-query-log.html)
@@ -107,6 +128,17 @@ Hit ratio나 `long_query_time`에 보편적인 합격선은 없다. 사용자 SL
 - [MySQL 8.4 Reference Manual, EXPLAIN](https://dev.mysql.com/doc/refman/8.4/en/explain.html)
 - [MySQL 8.4 Reference Manual, Optimizer Hints](https://dev.mysql.com/doc/refman/8.4/en/optimizer-hints.html)
 - [인프런, Hong, 성능지표 및 EXPLAIN](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338542)
+- [MySQL 8.4 Reference Manual, index hints](https://dev.mysql.com/doc/refman/8.4/en/index-hints.html)
+- [MySQL 8.4 Reference Manual, performance schema processlist table](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-processlist-table.html)
+- [인프런, MySQL의 내부 아키텍처와 스토리지 엔진](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338554)
+- [인프런, TYPE - 접근 유형 2](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471861)
+- [인프런, 대용량 성능 실측](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471906)
+- [인프런, 실습 데이터 분석](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471846)
+- [인프런, 실습 데이터 생성](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471848)
+- [인프런, 실습 데이터 확인 1](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471849)
+- [인프런, 실습 데이터 확인 2](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471847)
+- [인프런, 실전 진단 - 해결 방안 1 (실전 튜닝 2)](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471899)
+
 
 ## 관련 문서
 

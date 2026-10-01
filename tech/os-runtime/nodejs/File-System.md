@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: note
-verified_at: 2026-08-26
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["파일 시스템"]
 ---
@@ -21,22 +21,9 @@ stats.isSymbolicLink();  // false
 stats.size;              // 바이트 단위 파일 크기
 ```
 
-## 파일 경로 (Path)
-```js
-import * as path from 'node:path';
+## 파일 경로
 
-const notes = '/users/joe/notes.txt';
-
-path.dirname(notes);    // /users/joe
-path.basename(notes);   // notes.txt
-path.extname(notes);    // .txt
-path.basename(notes, path.extname(notes));  // notes (확장자 제외)
-
-path.join('/', 'users', 'joe', 'notes.txt');  // /users/joe/notes.txt
-path.resolve('joe.txt');                        // /현재경로/joe.txt (절대 경로 계산)
-path.normalize('/users/joe/..//test.txt');      // /users/test.txt
-```
-- `resolve`와 `normalize`는 경로의 존재 여부를 확인하지 않는다. 받은 정보를 바탕으로 경로를 계산할 뿐이다.
+`path` 모듈의 경로 계산, 상대 경로가 `process.cwd()` 기준이라 생기는 `ENOENT`와 모듈 기준 경로 만들기, 파일 시스템별 대소문자와 Unicode 처리는 [[File-System-Paths|파일 경로와 이름]]으로 분리했다.
 
 ## 파일 읽기
 ```js
@@ -61,6 +48,8 @@ for await (const chunk of readStream) {
   console.log(chunk);
 }
 ```
+- `encoding`을 생략하면 `readFile`, `readFileSync`, `fsPromises.readFile` 모두 문자열이 아니라 Buffer를 반환한다. 텍스트는 encoding을 명시하고, 이미지 같은 바이너리는 Buffer로 받아 필요할 때 `buf.toString('base64')`로 바꾼다([[Buffer-Memory|Buffer]]).
+- 동기 API는 작업이 끝날 때까지 이벤트 루프와 이후 JavaScript 실행을 막는다. 시작 시 설정 읽기나 CLI 스크립트에 한정하고 요청 처리 경로에서는 비동기 API를 쓴다.
 
 ## 파일 쓰기
 ```js
@@ -82,6 +71,27 @@ await writeFile('/path/to/file.txt', 'content', { flag: 'a+' });
 | `w+` | 읽기+쓰기, 기존 파일은 길이 0으로 잘라냄 | Yes |
 | `a` | 쓰기, 스트림을 파일 끝에 위치 | Yes |
 | `a+` | 읽기+쓰기, 스트림을 파일 끝에 위치 | Yes |
+| `wx` | 쓰기, 경로가 이미 있으면 `EEXIST`로 실패 | Yes |
+
+## 존재 확인, 삭제, 이동, 복사
+
+존재를 먼저 확인하고 그 결과로 열거나 읽고 쓰면 두 호출 사이에 다른 프로세스가 파일 상태를 바꿀 수 있는 경합이 생긴다. 파일을 직접 열거나 읽고 쓰면서 오류 code로 분기하고, 존재 확인은 다른 프로세스가 남긴 파일의 존재 자체가 신호일 때처럼 파일을 직접 쓰지 않을 때만 한다. `wx`처럼 `x`(open(2)의 `O_EXCL`)가 붙은 플래그는 확인과 생성을 한 번의 open으로 처리하지만 네트워크 파일 시스템에서는 동작하지 않을 수 있다.
+
+```js
+import { unlink, writeFile } from 'node:fs/promises';
+
+// 없을 때만 만들기: 확인 후 생성 대신 wx 플래그로 쓰고 EEXIST를 처리한다.
+await writeFile('/path/to/app.lock', String(process.pid), { flag: 'wx' })
+  .catch((err) => { if (err.code !== 'EEXIST') throw err; });
+
+// 있으면 지우기: 확인 없이 지우고 ENOENT만 무시한다. rm(path, { force: true })도 같은 의도다.
+await unlink('/path/to/file.txt').catch((err) => { if (err.code !== 'ENOENT') throw err; });
+```
+
+- `fs.exists()`는 deprecated다. 콜백에 `err` 인자가 없어 Node.js 콜백 규약과 맞지 않는 것이 `fs.access()`를 권하는 이유 중 하나이며, `fs.existsSync()`는 deprecated가 아니다. `access()`는 `mode`를 생략하면 `F_OK`로 존재만 확인하지만 확인 뒤 사용하는 경합은 똑같이 남는다.
+- `rename(old, new)`은 이름 변경이 아니라 경로 이동이다. `new`에 파일이 있으면 덮어쓰고 디렉터리가 있으면 오류가 난다. rename(2)는 다른 파일 시스템(마운트) 사이에서 `EXDEV`로 실패하므로 그때는 복사한 뒤 원본을 지운다.
+- `copyFile(src, dest)`는 원본을 남기고 기본으로 `dest`를 덮어쓴다. `fs.constants.COPYFILE_EXCL`을 주면 `dest`가 있을 때 실패하며, 복사의 원자성은 보장되지 않는다.
+- 오류 code 분기 기준은 [[Error-Handling-Paths|에러 처리 경로]]를 따른다.
 
 ## 파일 디스크립터
 ```
@@ -119,57 +129,27 @@ for (const file of paths) {
 // 폴더 이름 변경
 await rename('/old/path', '/new/path');
 
-// 폴더 제거 (내용 포함, 재귀적)
+// 폴더 제거 (내용 포함, 재귀적). fs.rmdir의 recursive 옵션은 v25.0.0에서 제거됐다(DEP0147).
 await rm('/path/to/folder', { recursive: true, force: true });
 ```
 
 ## 파일 변경 감시
 
-`fs.watch()`는 운영체제의 파일 변경 알림을 사용해 파일이나 디렉터리를 감시한다. 콜백의 `eventType`은 `rename` 또는 `change`이고, 반환된 `FSWatcher`를 닫아야 감시 자원이 해제된다.
-
-```js
-import { watch } from 'node:fs';
-
-const watcher = watch('./config', (eventType, filename) => {
-  console.log(eventType, filename ?? '(filename unavailable)');
-});
-
-process.once('SIGTERM', () => watcher.close());
-```
-
-| API | 방식 | 선택 기준 |
-|---|---|---|
-| `fs.watch()` | OS 이벤트 알림 | 더 효율적이므로 기본 선택 |
-| `fs.watchFile()` | stat 폴링 | OS 알림을 쓸 수 없는 환경의 제한적 대안 |
-
-`fs.watch()`의 세부 동작은 플랫폼마다 다르고 NFS, SMB, 가상화된 호스트 파일 시스템에서는 불안정하거나 사용할 수 없을 수 있다. `filename`도 모든 플랫폼에서 항상 제공된다고 가정하지 않는다. 폴링인 `fs.watchFile()` 역시 더 강한 정확성을 보장하지 않으므로, 빌드 도구처럼 여러 플랫폼과 대량 파일을 지원해야 하면 검증된 감시 라이브러리의 보정 로직을 사용한다.
-
-## 다양한 파일 시스템 호환성
-```
-모든 파일 시스템이 동일하게 작동하지는 않는다. 대소문자 구분, 유니코드 형식, 타임스탬프 해상도 등이 다르다.
-process.platform으로 파일 시스템 동작을 추론하지 말 것.
-```
-- **핵심 원칙**: 파일명과 타임스탬프를 있는 그대로 보존하고, 정규화는 비교 함수에서만 사용한다
-- **상위 집합 접근법**: 모든 기능의 상위 집합을 구현 (대소문자 보존, Unicode 형식 보존, 나노초 타임스탬프)
-
-```js
-// 잘못된 방법
-const filename = 'Report.txt';
-const normalized = filename.toUpperCase(); // 사용자 데이터 손상!
-
-// 보존할 값은 원문 그대로 둔다.
-const storedFilename = filename;
-```
-
-`toLowerCase()` 비교만으로 두 path가 같은 file을 가리키는지 판정할 수는 없다. case folding, Unicode normalization, mount option과 file system 규칙이 다르기 때문이다. application이 논리적 이름 중복을 막아야 한다면 canonicalization과 collision 정책을 별도 contract로 정하고, 실제 target 확인에는 file system operation 결과를 사용한다.
+`fs.watch()`와 `fs.watchFile()`의 선택 기준, 이벤트 해석, 폴링 옵션과 감시 라이브러리 선택은 [[File-System-Watch|파일 변경 감시]]로 분리했다.
 
 ## 관련 문서
 
 - [[Stream-Types|스트림 타입과 배압]]
 - [[Command-Line|커맨드라인과 readline]]
 - [[libuv-IO|libuv 파일 시스템 I/O]]
+- [[File-System-Paths|파일 경로와 이름]]
+- [[File-System-Watch|파일 변경 감시]]
 
 ## 출처
 
 - [Node.js File system API](https://nodejs.org/api/fs.html)
-- [얄팍한 코딩사전 강사 — 파일 시스템 이벤트 (+ 사용자 입력 받기)](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=270913)
+- [Node.js Deprecated APIs, DEP0147](https://nodejs.org/api/deprecations.html#DEP0147)
+- [얄팍한 코딩사전 강사 — 파일 시스템 1](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=270051)
+- [얄팍한 코딩사전 강사 — 파일 시스템 2](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=270416)
+- [김정환 강사 — 비동기 세계 1 - readFileSync](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6170)
+- [김정환 강사 — 비동기 세계 2 - readFile](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6171)

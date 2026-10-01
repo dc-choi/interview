@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, iam, security, identity]
 status: done
-verified_at: 2026-08-12
+verified_at: 2026-09-30
 category: "Infrastructure - AWS"
 aliases: ["IAM 정책", "IAM Policy 평가 로직"]
 ---
@@ -23,9 +23,14 @@ aliases: ["IAM 정책", "IAM Policy 평가 로직"]
 
 | 종류 | 정의 | 비고 |
 |------|------|------|
-| **AWS Managed Policy** | AWS가 사전 정의 (`AdministratorAccess`, `AmazonS3FullAccess`, `ReadOnlyAccess` 등) | 빠르게 시작, 재사용 |
-| **Customer Managed Policy** | 사용자가 만들어 재사용 (JSON 또는 비주얼 에디터) | 권장 — 버전 관리, 재사용 |
-| **Inline Policy** | User/Group/Role에 직접 박힘 | 추적, 재사용 어려움. 1:1 매핑 |
+| **AWS Managed Policy** | AWS가 사전 정의 (`AdministratorAccess`, `AmazonS3FullAccess`, `ReadOnlyAccess` 등) | 빠르게 시작, 재사용. 고객이 수정, 삭제할 수 없고 AWS가 새 서비스나 API에 맞춰 권한을 갱신하면 붙은 모든 주체에 반영됨 |
+| **Customer Managed Policy** | 사용자가 만들어 재사용 (JSON 또는 비주얼 에디터) | 권장 — 최대 5개 버전 보관, 기본 버전 전환으로 롤백, 재사용 |
+| **Inline Policy** | User/Group/Role에 직접 박힘 | 추적, 재사용 어려움. 1:1 매핑. 주체를 삭제하면 함께 삭제되고 버전 관리가 없음 |
+
+- AWS 관리형과 고객 관리형은 자체 ARN을 가진 독립 정책이라 정책 목록에서 찾아 여러 주체에 붙인다. inline은 주체의 일부라 그 주체의 권한 화면에서만 보고 고치며 다른 주체에 붙일 수 없다. 같은 inline 정책을 여러 주체에 넣었다면 주체마다 따로 고쳐야 한다
+- 대부분은 managed를 쓴다. AWS 관리형은 최소 권한이 아니므로 시작점으로 쓰고, 실제로 쓰는 권한을 확인해(Access Analyzer 정책 생성 등) 고객 관리형으로 좁힌다. 기존 AWS 관리형 정책을 복사해 고치면 출발점이 정확하다
+- AWS 관리형은 갱신 때 권한이 넓어질 수 있으므로(예: `ReadOnlyAccess`는 새 서비스의 읽기 권한이 추가됨) 민감한 경계에는 범위가 고정된 고객 관리형을 쓴다
+- inline은 권한이 의도한 주체 외에 실수로 붙으면 안 되는 엄격한 1:1 관계가 필요할 때 쓴다
 
 ## 정책 평가 로직
 
@@ -79,6 +84,8 @@ aliases: ["IAM 정책", "IAM Policy 평가 로직"]
 | `Principal` | (Resource 정책에서) 누가 접근하는지 |
 | `NotAction`/`NotResource` | 부정 표현, 신중히 사용 |
 
+위 예시처럼 Allow에 Condition을 붙이면 이 statement가 허용하는 범위만 좁아진다. 같은 주체에게 조건 없는 `s3:PutObject` Allow가 다른 정책에 있으면 합집합으로 허용되므로 강제 수단이 아니다. HTTPS나 암호화 방식처럼 반드시 지켜야 하는 조건은 명시적 Deny와 부정 연산자로 건다. 조건 키가 요청에 없으면 `StringNotEquals` 같은 부정 연산자는 true로 평가되어 Deny가 적용된다(S3 암호화 예시는 [[S3-Security-Cost]]).
+
 ## Condition Key — 강력한 fine-grained 제어
 
 | Condition | 용도 |
@@ -87,8 +94,8 @@ aliases: ["IAM 정책", "IAM Policy 평가 로직"]
 | `aws:MultiFactorAuthPresent` | MFA 인증된 세션만 |
 | `aws:RequestTag/*` | 태그 기반 권한 |
 | `aws:PrincipalOrgID` | 같은 Organization 멤버만 |
-| `aws:SecureTransport` | HTTPS 강제 |
-| `s3:x-amz-server-side-encryption` | 업로드(PUT) 요청의 암호화 강제 |
+| `aws:SecureTransport` | HTTPS 여부. 강제는 `"Bool": {"aws:SecureTransport": "false"}`인 Deny로 |
+| `s3:x-amz-server-side-encryption` | 업로드(PUT) 요청 헤더의 서버 측 암호화 방식. 강제는 부정 연산자를 쓴 Deny로 |
 | `kms:ViaService` | 특정 서비스 경유한 KMS 호출만 |
 
 ## IAM Policy Simulator로 사전 검증
@@ -105,8 +112,14 @@ Policy Simulator는 identity policy, permissions boundary, SCP와 직접 넣어 
 - [Amazon S3 — Bucket policy examples using condition keys](https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html)
 - [AWS IAM — Policy evaluation logic](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html)
 - [AWS IAM — Determining whether a request is allowed or denied within an account](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html)
+- [AWS IAM — Managed policies and inline policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html)
+- [AWS IAM — Choose between managed policies and inline policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-choosing-managed-or-inline.html)
+- [AWS IAM — Versioning IAM policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-versioning.html)
+- [AWS IAM — Condition operators](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html)
 - [Sungmin Kim 강사 — IAM이란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43727)
 - [Sungmin Kim 강사 — IAM 정책 시뮬레이터](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43728)
+- [Sungmin Kim 강사 — Inline Policies VS Managed Policies VS Custom Policies](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=69306)
+- [Sungmin Kim 강사 — Inline Policies VS Managed Policies VS Custom Policies 실습](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=70075)
 
 ## 관련 문서
 - [[IAM|IAM (인덱스)]]

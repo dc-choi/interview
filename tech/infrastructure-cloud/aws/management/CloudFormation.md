@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, cloudformation, iac, automation, devops]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "Infrastructure - AWS"
 aliases: ["CloudFormation", "AWS CloudFormation", "CFN"]
 ---
@@ -36,6 +36,8 @@ AWS의 **네이티브 IaC 서비스**. JSON, YAML 템플릿으로 AWS 리소스(
 | **Transform** | 선택 | SAM, Include 등 매크로 처리 |
 
 - **Outputs의 Export** 기능으로 다른 스택에서 `Fn::ImportValue`로 참조 → 스택 간 의존성 관리
+- 템플릿 안 참조: `!Ref`는 파라미터 이름이면 그 값을, 리소스 논리 ID면 리소스를 식별하는 값(보통 이름, EC2 인스턴스는 ID, EIP는 IP)을 돌려준다. ARN 같은 다른 속성은 `!GetAtt`로 읽는다
+- 생성 순서: `!Ref`, `!GetAtt`, `!Sub` 참조는 암묵적 의존성이 되어 참조 대상이 먼저 만들어지고 나중에 삭제된다. 의존성이 없는 리소스는 병렬로 만들며, 참조 없이 순서만 필요할 때(VPC gateway attachment 뒤에 만들 public IP 리소스, 역할 정책이 먼저 있어야 하는 리소스)는 `DependsOn`으로 명시한다
 
 ## Stack
 
@@ -72,6 +74,9 @@ AWS의 **네이티브 IaC 서비스**. JSON, YAML 템플릿으로 AWS 리소스(
 - 공통 컴포넌트(VPC, 보안 그룹 등)를 **재사용 가능한 모듈**로 분리
 - 거대한 단일 템플릿을 작은 단위로 쪼개 가독성, 재사용성 향상
 - StackSet(여러 계정, 리전 배포)과 다름 — Nested는 **한 스택 안의 계층 구조**
+- 주요 속성: `TemplateURL`(자식 템플릿 위치. `https://`로 시작하는 S3 객체 URL, 최대 1MB), `Parameters`(자식 템플릿 파라미터에 넘길 값), `TimeoutInMinutes`(자식이 `CREATE_COMPLETE`에 이를 때까지 기다리는 분 단위 시간. 기본값은 없고, 넘기면 자식과 부모를 함께 롤백), `NotificationARNs`(스택 이벤트를 받을 SNS topic, 최대 5개), `Tags`
+- 로컬 경로의 자식 템플릿은 `aws cloudformation package`가 S3에 올리고 `TemplateURL`을 S3 URL로 바꾼 템플릿을 만들어 준다. 콘솔이나 CLI로 직접 넣을 때는 S3 콘솔의 객체 URL을 쓴다
+- 부모는 자식 출력을 `!GetAtt 자식논리ID.Outputs.출력이름`으로 읽는다. 업데이트는 root 스택에서 실행하며 템플릿이 바뀐 자식만 갱신된다
 
 ## CloudFormation Helper Scripts
 
@@ -92,7 +97,21 @@ AWS SAM template specification은 CloudFormation을 확장한 서버리스 전�
 
 - SAM CLI는 프로젝트 초기화, 로컬 실행, build와 deploy 흐름을 제공한다.
 - 현재 기본 흐름은 `sam build`로 의존성과 artifact를 준비하고 `sam deploy`로 package upload와 CloudFormation 배포를 수행하는 방식이다.
-- SAM은 별도 상태 관리 엔진이 아니다. 최종 stack, change set, rollback과 IAM 권한은 CloudFormation 동작을 따른다.
+- `sam package`로 코드를 S3에 올리고 코드 위치를 S3로 바꾼 패키지 템플릿을 만든 뒤 `sam deploy --template-file`로 배포하던 두 단계 흐름은 이제 `sam deploy`가 암묵적으로 수행한다. 업로드 버킷은 `--s3-bucket` 또는 `--resolve-s3`로 정하고, 명령행 값은 `--save-params`로 `samconfig.toml`에 저장해 재사용한다.
+- SAM은 별도 상태 관리 엔진이 아니다. 최종 stack, change set, rollback과 IAM 권한은 CloudFormation 동작을 따른다. SAM이 만든 함수와 역할도 스택 리소스라 스택을 지우면 함께 삭제된다.
+
+## Capabilities 확인 — IAM 리소스와 매크로
+
+IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인해야 한다. 대상은 `AWS::IAM::Role`, `Policy`, `ManagedPolicy`, `InstanceProfile`, `User`, `Group`, `AccessKey`, `UserToGroupAddition`이며, 승인 없이 생성, 업데이트를 요청하면 `InsufficientCapabilities` 오류로 실패한다. 콘솔은 IAM 리소스 생성 확인 체크박스로 같은 승인을 받는다.
+
+| 값 | 필요한 경우 |
+|---|---|
+| `CAPABILITY_IAM` | IAM 리소스가 있을 때 |
+| `CAPABILITY_NAMED_IAM` | 사용자 지정 이름의 IAM 리소스가 있을 때(이때는 필수) |
+| `CAPABILITY_AUTO_EXPAND` | 매크로(`AWS::Serverless`, `AWS::Include` transform 포함)가 든 템플릿을 change set 검토 없이 바로 만들 때, 매크로와 nested stack이 함께 있을 때 |
+
+- SAM 함수는 실행 역할을 자동으로 만들기 때문에 `sam deploy`에도 `--capabilities CAPABILITY_IAM`이 필요하다. `sam deploy`는 change set으로 배포하므로 SAM transform만으로는 `CAPABILITY_AUTO_EXPAND`가 필요 없고, nested application이 있을 때 추가한다
+- 승인은 형식이 아니라 생성될 역할과 정책을 검토했다는 표시다. CI에서 capabilities를 고정해 넘길 때도 change set의 IAM 변경을 리뷰 대상으로 둔다
 
 ## Rollback 동작
 
@@ -129,6 +148,8 @@ AWS SAM template specification은 CloudFormation을 확장한 서버리스 전�
 - 조건에 따라 리소스 생성 여부 결정 → **Conditions**
 - 다른 스택에서 참조할 값 노출 → **Outputs + Export** → `Fn::ImportValue`
 - 서버리스 축약 문법과 CLI build/deploy → **AWS SAM**, 최종 프로비저닝은 CloudFormation
+- IAM 리소스를 만드는 스택이 `InsufficientCapabilities`로 실패 → `CAPABILITY_IAM`, 이름을 붙인 IAM 리소스면 `CAPABILITY_NAMED_IAM`
+- 리소스 생성 순서 제어 → `!Ref`, `!GetAtt`의 암묵적 의존성, 필요하면 `DependsOn`
 - `AWS::*`, `Alexa::*` provider는 추가 요금 없음. third-party/private extension과 custom hook handler는 과금 가능
 
 ## 출처
@@ -143,11 +164,19 @@ AWS SAM template specification은 CloudFormation을 확장한 서버리스 전�
 - [AWS CloudFormation — Pricing](https://aws.amazon.com/cloudformation/pricing/)
 - [AWS SAM — How SAM works](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam-overview.html)
 - [AWS SAM — Deploying applications](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-deploying.html)
+- [AWS SAM — sam deploy](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-deploy.html)
+- [AWS SAM — sam package](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-package.html)
+- [AWS CloudFormation — CreateStack Capabilities](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateStack.html)
+- [AWS CloudFormation — AWS::CloudFormation::Stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-cloudformation-stack.html)
+- [AWS CloudFormation — Nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html)
+- [AWS CloudFormation — Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-ref.html)
+- [AWS CloudFormation — DependsOn attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-dependson.html)
 - [Sungmin Kim 강사 — CloudFormation이란?](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=90165)
 - [Sungmin Kim 강사 — CloudFormation 실습](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=90166)
 - [Sungmin Kim 강사 — Serverless Application Model](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=90167)
 - [Sungmin Kim 강사 — CloudFormation Nested Stack](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=90170)
 - [Sungmin Kim 강사 — CloudFormation과 SAM 실습](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=90168)
+- [Sungmin Kim 강사 — Code Pipeline 실습 1부](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=75999)
 
 ## 관련 문서
 

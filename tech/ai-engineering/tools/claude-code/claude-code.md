@@ -11,11 +11,11 @@ AI 코딩 에이전트 Claude Code를 실무에 태우는 방법 — 기초 운�
 
 ## 학습 트랙 (따라하며 배우기)
 
-- [x] [[Claude-Code-Fundamentals|기초 (설치, 세션과 되돌리기, 모델/Effort, 권한 모드, 컨텍스트 관리, 프로젝트 지침)]]
+- [x] [[Claude-Code-Fundamentals|기초 (설치와 요금제, Windows 준비, 세션과 중단/되돌리기, 모델/Effort, 기본 auto 권한 모드, 컨텍스트 관리, 프로젝트 지침)]]
 - [x] [[Claude-Code-Workflows|개발 워크플로우 (단계 분리 지시, Hook 강제, Skills/MCP/서브에이전트/동적 워크플로우, Worktree 병렬, 개인에서 조직으로 확장하는 4단계)]]
-- [x] [[Claude-Code-Business-Automation|비즈니스 자동화 (도구 선택 매트릭스, 문서 골격, 시각 산출물은 HTML 먼저와 렌더링 캡처 검수, Connectors=MCP, 반복 3계층, 병렬/브라우저/Vibe Coding)]]
+- [x] [[Claude-Code-Business-Automation|비즈니스 자동화 (도구 선택 매트릭스, 문서 골격, Cowork 범위와 원본 보호와 공유 범위, 시각 산출물은 HTML 먼저와 렌더링 캡처 검수, Connectors=MCP와 도구별 권한, 반복 3계층, 병렬/브라우저/Vibe Coding)]]
 - [x] [[Claude-Code-Domain-Applications|도메인 응용 (전문 도구 위임, 설정 파일 파이프라인, 도메인 표준 명시, 검증 내장, 규제)]]
-- [x] [[Claude-Code-Customization|커스터마이즈 (환경 설정, Voice Mode, 원격 제어 Remote/Dispatch/Teleport)]]
+- [x] [[Claude-Code-Customization|커스터마이즈 (환경 설정, Voice Mode, 원격 제어 Remote/Dispatch/Teleport, 플러그인 탐색과 비용 측정, 표면별 동기화)]]
 
 ## 레퍼런스 (찾아보기)
 

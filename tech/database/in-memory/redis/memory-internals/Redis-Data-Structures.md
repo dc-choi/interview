@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, cache]
 status: done
-verified_at: 2026-08-10
+verified_at: 2026-09-30
 category: "Data & Storage - Cache & KV"
 aliases: ["Redis 자료구조", "Redis Data Structures"]
 ---
@@ -59,6 +59,29 @@ Sorted Set의 score는 정수처럼 보여도 내부적으로 IEEE 754 배정밀
 
 용도별 선택은 위 표가 담고 있다. 선택할 때는 명령의 시간복잡도가 중요하다. 데이터가 적을 때는 O(1)과 O(N) 차이가 안 보이지만, 수십만을 넘으면 O(N) 명령 하나가 명령을 직렬 처리하는 스레드를 오래 점유해 장애가 된다. 큰 컬렉션 전체 조회, 삭제, `KEYS` 회피 등 운영 주의는 [[Operations|운영 팁]] 참고.
 
+## String(JSON)과 Hash는 읽고 쓰는 단위로 고른다
+
+익숙함이 아니라 데이터를 어떤 단위로 읽고 쓰는지가 기준이다.
+
+| 접근 단위 | 선택 | 예 |
+|---|---|---|
+| 통째로 읽고 통째로 쓴다 | String에 JSON | 상품 상세 캐시. 가격이 바뀌면 원본 값을 다시 채울 뿐 필드 하나를 고치지 않는다 |
+| 필드 단위로 읽고 고친다 | Hash | 장바구니 수량 변경, 마지막 활동 시각만 갱신하는 다필드 세션 |
+| 중첩 구조가 있다 | String에 JSON 또는 JSON 타입 | 옵션 목록, 이미지 배열. Hash 값은 문자열이라 한 단계 평평한 구조만 담는다 |
+
+- JSON 문자열의 필드 하나를 바꾸려면 애플리케이션이 GET, 파싱, 수정, 직렬화, SET을 거치며 왕복 2회를 쓰고 동시 수정 하나가 사라질 수 있다. Hash는 `HINCRBY`, `HSET` 한 명령으로 서버가 해당 필드만 고친다 ([[Redis-Cart-Checkout-Consistency|장바구니 예시]])
+- 캐시 JSON에는 화면에 필요한 필드만 넣고 DB 컬럼 전체를 직렬화하지 않는다
+- TTL은 키 단위라 Hash 전체에 걸린다. 필드별 수명은 Redis 7.4+, Valkey 9.0+의 `HEXPIRE` 계열이 필요하다 ([[TTL|TTL 전략]])
+- 필드가 적고 값이 짧은 Hash는 압축 인코딩으로 저장된다. 옛 자료의 ziplist는 Redis 7.0부터 listpack으로 바뀌었고, 기준은 `hash-max-listpack-entries`(기본 512)와 `hash-max-listpack-value`(기본 64바이트)다 ([[Redis-Internal-Encoding|내부 인코딩]])
+
+## 키 이름 설계
+
+- `object-type:id`처럼 콜론으로 계층을 나누는 것이 공식 문서가 권하는 관례다(`user:1000`, `product:1001`, `cart:user:1001`). 실제 폴더 구조가 아니라 사람과 도구가 읽기 쉽게 하려는 약속이고, 여러 단어로 된 필드는 점이나 하이픈으로 잇는다
+- `u1000flw`처럼 너무 짧은 키는 읽기 어렵고, 1KB처럼 너무 긴 키는 메모리와 키 비교 비용이 든다. 허용 최대 크기는 512MB다
+- Hash 필드 이름은 파싱 대상으로 만들지 않는다. `product:1001:Size:M`처럼 옵션을 필드 이름에 넣으면 읽을 때마다 문자열을 쪼개야 하므로 옵션은 값에 두거나 SKU 같은 평평한 식별자를 필드로 쓴다
+- 캐시 값 구조를 바꿔 배포할 때는 키에 스키마 버전을 넣는다(`product:v2:1001`). 새 코드는 새 키만 읽고 옛 키는 TTL로 사라지게 두면, 옛 캐시와 새 코드가 섞이는 기간의 역직렬화 오류를 피한다
+- Cluster에서는 키 이름 전체가 slot을 정하므로 접두사가 같아도 다른 노드로 흩어진다. 같은 slot이 필요한 묶음에만 hash tag를 쓴다 ([[Redis-Cluster-Sharding|Cluster]])
+
 ## 면접 체크포인트
 
 - 요구를 듣고 타입을 고르는 문제가 기본형이다. 리더보드는 Sorted Set, 큐는 List나 Stream, 중복 제거는 Set, 부분 갱신하는 객체는 Hash로 답하고 명령 복잡도를 이유로 붙인다.
@@ -86,4 +109,10 @@ Sorted Set의 score는 정수처럼 보여도 내부적으로 IEEE 754 배정밀
 - [Redis Documentation, Redis 8.0 — What's new](https://redis.io/docs/latest/develop/whats-new/8-0/)
 - [Redis Documentation, Redis JSON](https://redis.io/docs/latest/develop/data-types/json/)
 - [우아한테크세미나 191121 우아한레디스 — 우아한테크](https://www.youtube.com/watch?v=mPB2CZiAkKM)
+- [Valkey Documentation, Keys and values](https://valkey.io/topics/keyspace/)
+- [valkey.conf 9.1 ADVANCED CONFIG — valkey-io/valkey](https://github.com/valkey-io/valkey/blob/9.1/valkey.conf)
+- [인프런, Hong, 간단한 Valkey 설치부터 단일 스레드의 특징 직접 손으로 확인하기](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481440)
+- [인프런, Hong, 키 수명을 관리하는 TTL의 모든 것 그리고 객체 캐싱과 Multi 처리](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481442)
+- [인프런, Hong, Hash 자료구조로 만드는 이커머스 장바구니 기능](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481444)
+- [인프런, Hong, String vs Hash 비교하기 & 캐시의 또다른 사용번 세션 스토어](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481445)
 - [엔지니어라면 반드시 알아야 할 Redis 자료구조 10가지 총정리 — CloudBro](https://www.cloudbro.ai/t/%F0%9F%9A%80-%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4%EB%9D%BC%EB%A9%B4-%EB%B0%98%EB%93%9C%EC%8B%9C-%EC%95%8C%EC%95%84%EC%95%BC-%ED%95%A0-redis-%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0-10%EA%B0%80%EC%A7%80-%EC%B4%9D%EC%A0%95%EB%A6%AC/4498)

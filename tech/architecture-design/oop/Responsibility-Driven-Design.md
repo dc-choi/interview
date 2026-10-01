@@ -8,7 +8,7 @@ aliases: ["Responsibility-Driven Design", "책임 주도 설계", "GRASP"]
 
 # 책임 주도 설계와 GRASP
 
-조영호 강사의 오브젝트 기초편을 바탕으로, 객체를 데이터 묶음이 아니라 협력 안에서 책임을 수행하는 존재로 설계하는 절차를 정리한다. 책임 주도 설계(Responsibility-Driven Design, RDD)는 클래스 목록보다 시스템이 주고받을 메시지에서 출발한다.
+객체를 협력 안에서 책임을 수행하는 존재로 설계하는 절차를 정리한다. 책임 주도 설계(Responsibility-Driven Design, RDD)는 클래스 목록보다 시스템이 주고받을 메시지에서 출발한다.
 
 ## 데이터보다 행동에서 시작한다
 
@@ -46,11 +46,17 @@ GRASP는 함께 고려할 설계 판단 기준이다. 어느 하나가 항상 �
 
 정보 전문가는 데이터를 밖으로 꺼내 계산하라는 뜻이 아니다. 정보를 가진 객체에게 계산을 요청해 상태와 규칙을 함께 캡슐화하라는 뜻이다. Creator도 단독 정답이 아니다. 생성 책임을 주면 결합도가 지나치게 커지는 경우 Factory나 애플리케이션 조립 객체가 더 나을 수 있다.
 
+정보 전문가는 모든 재료를 필드로 보유한 객체에만 한정되지 않는다. 책임 수행 중 필요한 정보를 협력자에게 얻을 수 있다. 먼저 해야 할 행동을 정하고 그 결과로 어떤 상태가 바뀌는지 살핀다. 상태를 바꾸는 책임은 그 상태의 소유 객체에 두는 것이 유력한 출발점이다.
+
+예매 생성은 초기화에 필요한 영화, 상영과 관객 정보를 아는 `Screening`에 둘 수 있다. `Movie`에 두면 영화가 상영과 예매까지 알아야 해서 결합이 늘 수 있다. 반면 가격 계산은 기본 요금과 정책을 가진 `Movie`에 두면 관련 규칙의 응집도가 높아진다. Creator와 Expert의 후보를 결합도, 응집도와 함께 비교한다.
+
+타입별 조건을 별도 클래스로 나눠도 호출자가 구체 클래스를 선택하고 분기하면 결합은 남는다. 공통 메시지를 발견하고 그 메시지를 안정된 역할로 정의한 뒤 호출자가 그 역할에 의존하도록 바꿔야 변경을 보호한다. 할인 없는 정책도 할인액 0을 반환하는 `NoDiscountPolicy`로 같은 협력을 유지할 수 있다. 공통 실행 흐름을 공유할 이유가 있으면 abstract class를, 역할 계약만 필요하면 interface를 검토한다.
+
 ## TypeScript 예시
 
 ```typescript
 interface DiscountPolicy {
-  discount(screening: Screening, audienceCount: number): Money
+  discount(screening: Screening): Money
 }
 
 class Movie {
@@ -59,10 +65,8 @@ class Movie {
     private readonly policy: DiscountPolicy,
   ) {}
 
-  calculateFee(screening: Screening, audienceCount: number): Money {
-    return this.fee
-      .times(audienceCount)
-      .minus(this.policy.discount(screening, audienceCount))
+  calculateFee(screening: Screening): Money {
+    return this.fee.minus(this.policy.discount(screening))
   }
 }
 
@@ -73,7 +77,7 @@ class Screening {
   ) {}
 
   reserve(customerId: string, audienceCount: number): Reservation {
-    const fee = this.movie.calculateFee(this, audienceCount)
+    const fee = this.movie.calculateFee(this).times(audienceCount)
     return new Reservation(customerId, this, audienceCount, fee)
   }
 }
@@ -85,11 +89,15 @@ class Screening {
 
 이 배치는 정답이 아니라 현재 변경 방향에 대한 선택이다. 예매 생성 규칙이 복잡해져 `Screening`의 응집도가 낮아지면 별도 Factory로 책임을 이동할 수 있다.
 
+이 예시는 정책의 할인액과 영화의 계산 결과를 모두 1인 기준으로 정의한다. 정가 10,000에서 1인 할인 1,000을 빼면 9,000이고, 관객 2명의 예매 총액은 18,000이다. `Movie`가 1인 요금을 계산하고 `Screening`이 인원수를 곱한다. 총 예매 단위 할인 정책이라면 계약과 계산 순서를 함께 바꿔야 한다.
+
 ## 애플리케이션 객체와 NestJS 경계
 
 Controller가 도메인 규칙까지 계산하면 다시 중앙 집중식 절차가 된다. 애플리케이션 서비스는 트랜잭션 경계를 열고 객체를 조회한 뒤 도메인 메시지를 보내고 저장하는 흐름을 조정한다. 할인 계산과 불변조건은 도메인 객체에 남긴다.
 
 TypeScript의 `interface`는 런타임에 사라지므로 NestJS DI 토큰으로 직접 쓸 수 없다. 역할을 주입하려면 `Symbol`이나 문자열 토큰, 또는 런타임에 남는 abstract class를 사용한다. 이는 역할과 구현을 분리하는 언어 및 프레임워크상의 구현 세부다.
+
+애플리케이션 서비스는 도메인 객체와 저장소 사이를 연결하는 Indirection이자, 도메인 개념 자체가 아닌 책임을 맡는 Pure Fabrication 후보이며 시스템 이벤트를 받는 GRASP Controller 역할도 할 수 있다. HTTP Controller와 이름이 같다고 동일한 배치를 강제하지 않는다. DAO/Repository는 저장 기술을 경계 뒤로 보내고, 서비스는 규칙 계산을 객체에 위임한다.
 
 ## 설계 검토 질문
 
@@ -111,6 +119,14 @@ TypeScript의 `interface`는 런타임에 사라지므로 NestJS DI 토큰으로
 - 조영호 강사, [결합도 낮추기, 변경 보호](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234578)
 - 조영호 강사, [애플리케이션 객체 추가하기](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234584)
 - [NestJS 공식 문서, Custom providers](https://docs.nestjs.com/fundamentals/custom-providers)
+
+- 조영호, [5-4-예제. 애플리케이션 객체 추가하기](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234585)
+- 조영호, [5-1. 객체 구현하기](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234580)
+- 조영호, [5-1-예제. 객체 구현하기](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234581)
+- 조영호, [5-3. 유연하고 일관적인 협력](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234583)
+- 조영호, [5-3-예제. 유연하고 일관적인 협력](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=235251)
+- 조영호, [1-1. 영화 예매 도메인](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234560)
+- 조영호, [2-1-예제. 절차적인 설계](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234565)
 
 ## 관련 문서
 

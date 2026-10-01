@@ -3,12 +3,12 @@ tags: [kubernetes, pod, deployment, service, namespace, orchestration]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["Kubernetes Core Workloads", "K8s Pod Deployment Service"]
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 ---
 
 # Kubernetes core workload와 Service
 
-Kubernetes의 핵심은 container 실행 명령을 여러 서버에 대신 내리는 것이 아니라 API에 기록된 desired state와 실제 상태의 차이를 controller가 계속 줄이는 reconciliation model이다. 자동 복구, rollout과 scaling은 이 control loop 위에서 동작한다.
+Kubernetes의 핵심은 container 실행 명령을 여러 서버에 대신 내리는 것이 아니라 API에 기록된 desired state와 실제 상태의 차이를 controller가 계속 줄이는 reconciliation model이다. 자동 복구, rollout과 scaling은 이 control loop 위에서 동작한다. control plane과 node component, `kubectl apply`가 Running Pod가 되기까지의 흐름은 [[K8s-Core-Workloads-and-Service-Architecture]]에 있다.
 
 ## object를 읽는 공통 문법
 
@@ -61,10 +61,27 @@ Deployment desired template
 ```
 
 - replica가 사라지면 controller가 새 Pod를 만든다. 같은 Pod를 치료하거나 application data를 복구하는 것은 아니다.
+- rollout은 Pod template(`.spec.template`)이 바뀔 때만 시작된다. `kubectl set image`가 template을 바꾸면 새 ReplicaSet을 만들어 점진 교체하고, replica 수 변경은 rollout이 아니다.
 - RollingUpdate의 `maxSurge`와 `maxUnavailable`은 capacity, rollout 속도와 자원 여유의 교환이다.
 - rollout 완료는 새 Pod 수만 맞는 것이 아니라 `progressDeadlineSeconds`, readiness와 application SLO로 판정한다.
-- `kubectl rollout undo`는 Deployment revision을 되돌리지만 database migration, ConfigMap과 외부 dependency를 함께 되돌리지 않는다.
+- `kubectl rollout undo`는 Deployment revision을 되돌리지만 database migration, ConfigMap과 외부 dependency를 함께 되돌리지 않는다. revision은 `kubectl rollout history`로 보고 `--to-revision=N`으로 특정 revision에 돌아간다.
 - mutable image tag는 같은 manifest가 다른 content를 실행하게 한다. release는 digest로 고정한다.
+
+### RollingUpdate 파라미터와 Recreate
+
+`.spec.strategy.type`은 `RollingUpdate`(기본)와 `Recreate` 둘뿐이다. Blue-Green과 canary는 Deployment 내장 전략이 아니라 복수 Deployment, Service selector 교체, mesh나 gateway weight, Argo Rollouts 같은 별도 수단으로 만든다([[Blue-Green]], [[Canary]]).
+
+| 파라미터 | 의미 | 기본값과 계산 |
+|---|---|---|
+| `maxSurge` | desired보다 더 만들 수 있는 Pod 수 | 25%, 백분율은 올림 |
+| `maxUnavailable` | update 중 사용 불가로 둘 수 있는 Pod 수 | 25%, 백분율은 내림 |
+
+- 둘 다 0일 수는 없다. replicas 10에 기본값이면 surge 3(2.5 올림), unavailable 2(2.5 내림)라 종료 중인 Pod를 제외한 rollout 계산상 최대 13개, 가용성 목표는 최소 8개다. replicas 4면 각각 5개, 3개다. 별도 장애까지 포함한 실제 가용 Pod 수를 보장하지는 않는다.
+- `maxSurge`를 키우면 병렬 교체 여지가 늘지만 request 기준 여유 node capacity가 있어야 한다. 종료 중인 Pod도 `terminationGracePeriodSeconds` 동안 자원을 소비하므로 실제 Pod 수와 자원 사용량은 replicas + maxSurge 계산을 넘을 수 있다. 없으면 새 Pod가 Pending에 머물고 `progressDeadlineSeconds`(기본 600) 뒤 `ProgressDeadlineExceeded` condition만 남으며 Kubernetes는 자동 rollback하지 않는다. 강의가 든 rolling의 자원 1.3~1.5배는 종료 중인 Pod를 제외한 surge 30~50%의 단순 예시다. Blue-Green도 두 환경의 용량과 종료 중첩을 따로 산정한다.
+- `maxSurge: 0`은 기존 Pod를 먼저 줄여 종료 중이 아닌 Pod의 추가 생성을 제한한다. 종료 중인 Pod와 새 Pod의 자원 사용은 겹칠 수 있다. 배포 동안 용량이 줄어 피크 시간에 과부하 위험이 있으므로 traffic이 많은 시간에는 `maxUnavailable`을 낮게 둔다.
+- `Recreate`는 기존 Pod를 모두 종료한 뒤 새 Pod를 만든다. 신구 version이 동시에 뜨지 않지만 배포 중 중단이 생기므로 개발 환경, 중단이 허용되는 batch나 두 version을 함께 실행할 수 없는 경우에 맞다. 이 선종료 보장은 upgrade에만 적용된다. Pod를 직접 지우면 ReplicaSet이 즉시 대체 Pod를 만들므로 at-most-one 보장이 필요하면 StatefulSet을 검토한다.
+- `kubectl get deploy`의 READY는 ready/desired, UP-TO-DATE는 최신 template으로 갱신된 replica, AVAILABLE은 사용 가능한 replica 수다.
+- rollout의 `maxUnavailable`은 배포 속도만 통제하고 node drain은 PDB가 통제한다([[K8s-PDB]]).
 
 상태 identity, 순서와 안정된 storage가 필요하면 StatefulSet, node마다 하나면 DaemonSet, 완료되는 작업이면 Job/CronJob을 검토한다.
 
@@ -81,6 +98,18 @@ Service selector가 일치하는 Pod를 EndpointSlice로 묶고 안정된 DNS �
 | headless | `clusterIP: None`, endpoint DNS | client-side discovery와 StatefulSet에 활용 |
 
 `port`는 Service가 받는 port, `targetPort`는 Pod로 전달할 port다. selector가 잘못되거나 Pod가 ready가 아니면 Service object는 있어도 endpoint가 비어 있다.
+
+### label과 selector가 어긋날 때
+
+| 대상 | selector와 Pod label이 다를 때 |
+|---|---|
+| Deployment | `.spec.selector`가 `.spec.template.metadata.labels`와 맞지 않으면 API가 거부한다. apps/v1에서는 template label로 기본값을 채우지도 않는다 |
+| Service | object는 생성되고 endpoint만 비어 조용히 실패한다 |
+
+- 같은 label 오타가 Deployment에서는 즉시 오류, Service에서는 무증상 장애로 나타난다. 연결점은 `kubectl get all --selector app=NAME`이나 `kubectl describe service`의 Endpoints로 확인한다.
+- Deployment selector는 apps/v1에서 생성 뒤 바꿀 수 없다. 바꾸려면 Deployment를 다시 만들어야 하고 기본 삭제는 Pod도 지워 중단이 생긴다(`--cascade=orphan`으로 Pod를 남길 수 있다). chart의 selector label 규칙을 바꾸는 변경은 upgrade로 적용되지 않는 변경으로 다룬다([[Helm]]).
+- Deployment controller는 ReplicaSet과 Pod에 `pod-template-hash` label을 붙인다. ReplicaSet 이름은 `<Deployment 이름>-<hash>`이고 Pod 이름은 그 뒤에 무작위 suffix가 붙는다. rollout 중 어느 Pod가 어느 revision인지 `kubectl get pods --show-labels`로 구분하고 이 label은 직접 바꾸지 않는다.
+- NodePort 기본 범위는 30000-32767이고 API server의 `--service-node-port-range`로 바꾼다. 범위 밖 값은 생성 단계에서 거부된다.
 
 ## Namespace의 실제 경계
 
@@ -109,19 +138,40 @@ kubectl get events -n NAMESPACE --sort-by=.lastTimestamp
 4. Service 장애면 selector, Pod label, readiness와 EndpointSlice를 잇는다.
 5. DNS, NetworkPolicy와 CNI 경로를 그 다음에 확인한다.
 
+cluster 안에서 경계를 넓혀 가며 호출하면 끊긴 층이 드러난다.
+
+```bash
+kubectl run tmp --rm -it --image=curlimages/curl -n NAMESPACE -- sh
+# curl POD_IP:PORT -> curl CLUSTER_IP:PORT -> curl SERVICE:PORT
+# -> curl SERVICE.OTHER_NS.svc.cluster.local:PORT -> Ingress/Gateway
+```
+
+- Pod IP는 되는데 ClusterIP가 안 되면 EndpointSlice와 kube-proxy 또는 CNI, ClusterIP는 되는데 이름이 안 되면 DNS를 본다. 응답에 Pod hostname을 넣으면 반복 호출로 분산을 눈으로 확인할 수 있다.
+- `kubectl port-forward service/NAME`은 selector에 맞는 Pod 하나를 골라 직접 연결하고 그 Pod가 끝나면 세션도 끝난다. Service VIP, kube-proxy 규칙과 load balancing을 거치지 않으므로 port-forward 성공은 Service 경로가 정상이라는 증거가 아니다.
+- 멈춘 단계별 담당 component는 [[K8s-Core-Workloads-and-Service-Architecture#멈춘 단계로 담당 component를 좁힌다|component 표]]로 좁힌다.
+
 ## 출처
 
 - [Kubernetes Docs, Pods](https://kubernetes.io/docs/concepts/workloads/pods/)
 - [Kubernetes Docs, Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 - [Kubernetes Docs, Service](https://kubernetes.io/docs/concepts/services-networking/service/)
+- [Kubernetes Docs, kubectl port-forward](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_port-forward/)
 - [금융 인프라를 운영하는 Toss 개발자의 Kubernetes, Kubernetes와 선언적 관리](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=409161)
 - [금융 인프라를 운영하는 Toss 개발자의 Kubernetes, Pod](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=409163)
 - [금융 인프라를 운영하는 Toss 개발자의 Kubernetes, Deployment](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=409164)
 - [금융 인프라를 운영하는 Toss 개발자의 Kubernetes, Service](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=410220)
 - [금융 인프라를 운영하는 Toss 개발자의 Kubernetes, Namespace](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=410222)
+- [금융 인프라를 운영하는 Toss 개발자의 Kubernetes, Production Level 종합 실습](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=410221)
+- [금융 인프라를 운영하는 Toss 개발자의 Kubernetes, 배포 전략](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=413047)
+- [금융 인프라를 운영하는 Toss 개발자의 Kubernetes, 대표 명령어](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=416707)
 
 ## 관련 문서
 
+- [[K8s-Core-Workloads-and-Service-Architecture|Kubernetes control plane과 node component]]
+- [[K8s-PDB|PodDisruptionBudget]]
+- [[Blue-Green|Blue-Green 배포]]
+- [[Canary|Canary 배포]]
+- [[Helm|Helm]]
 - [[K8s-Configuration-Storage-and-Probes|Kubernetes configuration, storage와 probe]]
 - [[K8s-Traffic-Entry-Helm-and-GitOps|Kubernetes traffic entry, Helm과 GitOps]]
 - [[K8s-Resource-Right-Sizing|Kubernetes resource right-sizing]]

@@ -143,7 +143,7 @@ Decimal을 사용해도 반올림 단위와 시점이 다르면 상세 금액의
 
 - `synchronize: false`와 versioned migration을 사용하고 expand/backfill/contract를 별도 release로 나눈다.
 - `QueryRunner` transaction은 local DB write만 보호한다. PG call은 transaction 밖의 상태 machine과 복구로 다룬다.
-- `@VersionColumn`, 조건부 `UPDATE`나 pessimistic lock 중 충돌 빈도와 실패 비용에 맞는 방식을 선택한다.
+- 낙관적 제어는 기대 version을 조건에 넣은 `UPDATE`와 영향 행 수 검사로 충돌을 판정한다. `@VersionColumn`의 자동 증가만을 충돌 거부와 같은 보장으로 보지 않는다. 충돌 빈도와 실패 비용에 따라 비관적 락과 비교한다.
 - unique constraint로 idempotency key, redemption과 settlement target의 중복을 마지막 방어선에서 막는다.
 - projection/batch loader로 component 분리가 N+1을 숨기지 않는지 실제 SQL을 확인한다.
 
@@ -156,7 +156,30 @@ Decimal을 사용해도 반올림 단위와 시점이 다르면 상세 금액의
 - 부분 취소의 coupon 복원은 boolean 하나로 모든 이력을 정확히 표현하기 어렵다.
 - 컴포넌트를 많이 나누어도 query와 transaction 경계가 좋아진다고 보장되지 않는다.
 
+## 환불과 정산 정책의 실패 조건
+
+재화별 환불과 중복 처리는 [[Commerce-Change-Propagation-and-Money-Invariants-Partial-Cancel]], 정산 기준과 정책 변경은 [[Commerce-Change-Propagation-and-Money-Invariants-Settlement]]에서 다룬다.
+
+대리 결제를 도입하면 기존 `currentUser` 기준 조회, 취소와 후처리를 함께 확인한다. 진입점은 역할별 권한을 검사하고 후처리는 확정된 Payment-Order 관계로 조회한다. 결제자 ID로 원 주문자의 의미를 덮어쓰지 않는다.
+
+공유 장바구니처럼 제거될 수 있는 기능은 권한과 처리 경계를 모아 내부 항목마다 분기가 퍼지지 않게 한다. 기능 삭제 가능성도 설계 입력이며, 옵션 전환과 공유 기능, 결제 후 삭제 정책은 독립적으로 검증 가능한 변경으로 나눈다.
+
 ## 출처
+
+- [TypeORM, VersionColumn의 자동 버전 증가](https://typeorm.io/docs/help/decorator-reference/#versioncolumn)
+
+- [취소 - 요구사항 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392802)
+- [취소 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392803)
+- [정산 - 요구사항 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392806)
+- [정산 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392809)
+- [장바구니 - 요구사항 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392791)
+- [장바구니 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392792)
+- [주문 - 요구사항 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392795)
+- [결제 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392799)
+- [쿠폰 - 요구사항 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392788)
+- [정산 - 요구사항 느끼기](https://www.inflearn.com/courses/lecture?courseId=339108&unitId=354109)
+- [정산 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=339108&unitId=354110)
+- [정산 - 개념 정리](https://www.inflearn.com/courses/lecture?courseId=339108&unitId=354131)
 
 - [Stripe, Idempotent requests](https://docs.stripe.com/api/idempotent_requests)
 - [Stripe, Refunds API](https://docs.stripe.com/api/refunds)
@@ -177,3 +200,4 @@ Decimal을 사용해도 반올림 단위와 시점이 다르면 상세 금액의
 - [[Payment-System-Principles|결제 시스템 원칙]]
 - [[Idempotency-Key|Idempotency Key]]
 - [[Isolation-Level|DB 격리 수준]]
+- [[Measure-Modeling|측도 모델링 (Money와 환율, 통화 최소 단위)]]

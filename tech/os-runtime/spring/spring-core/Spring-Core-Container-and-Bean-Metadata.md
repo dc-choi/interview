@@ -105,6 +105,14 @@ core Spring은 설정에 따라 기존 definition override를 허용할 수 있�
 
 NestJS에서 같은 class를 여러 feature module의 `providers`에 반복 등록하면 공유 의도와 달리 module context별 instance가 생길 수 있다. 소유 module에서 한 번 등록하고 `exports`/`imports`로 공개한다.
 
+## 조회 오류와 metadata로 범위를 좁힌다
+
+후보가 없으면 `NoSuchBeanDefinitionException`, 단일 type 조회가 모호하면 `NoUniqueBeanDefinitionException`을 확인한다. 주입 실패에서는 이 원인이 `UnsatisfiedDependencyException` 안에 감싸질 수 있으므로 원인 체인을 읽는다.
+
+`getBeanDefinitionNames()`와 definition의 `getRole()`로 application, support, infrastructure metadata를 구분할 수 있다. role은 등록자가 부여하는 분류이므로 application role이 곧 모든 사용자 코드의 완전한 목록이라는 뜻은 아니다. 등록 충돌과 단일 후보 선택 실패도 서로 다른 단계의 문제다.
+
+container의 singleton registry는 private constructor나 static 접근점 없이 instance 공유를 관리한다. 반복적인 생성 비용을 줄이면서 테스트에서는 대역을 직접 조립할 수 있다. 다만 공유 상태가 필요한 객체도 존재하므로 모든 singleton을 무상태로 만들라는 규칙보다 요청별 상태와 thread-safe 공유 상태의 소유권을 구분한다. 동일성 확인은 `equals`가 아니라 reference 비교를 사용한다.
+
 ## 출처
 
 - [Spring Framework, Container Overview](https://docs.spring.io/spring-framework/reference/core/beans/basics.html)

@@ -55,7 +55,7 @@ L4와 L7은 대상 선택에 어떤 정보를 쓰는지 설명하는 분류다. 
 | **Least Response Time** | 연결 수와 최근 응답 시간 등을 사용 | 지연을 반영할 수 있음 | 측정 기준과 비용이 제품별로 다름 |
 | **Power of Two Choices** | 무작위 두 대상 중 부하가 낮은 쪽 선택 | 적은 상태 정보로 분산 가능 | 부하 추정 방식에 따라 결과가 달라짐 |
 | **P2C + Peak EWMA** | 두 대상을 뽑고 최근 RTT와 미완료 요청 수로 계산한 점수가 낮은 쪽을 선택하는 Finagle 방식 | 느려진 대상의 최근 변화를 반영 | long polling 같은 부하와 decay 설정은 별도 검증 필요 |
-| **IP Hash / Consistent Hash** | 클라이언트 IP, 키 해시로 서버 고정 | 캐시 친화, 세션 sticky | 서버 추가/제거 시 재해싱 비용(Consistent Hash로 완화) |
+| **IP Hash / Consistent Hash** | 클라이언트 IP, 키 해시로 서버 고정 | 캐시 친화, 세션 sticky | 서버 추가/제거 시 재해싱 비용(Consistent Hash로 완화). 사용자 IP 분포가 고르지 않거나 특정 IP의 트래픽이 많으면 일부 서버로 부하가 쏠림 |
 
 ### 알고리즘 선택 가이드
 
@@ -79,7 +79,7 @@ L4와 L7은 대상 선택에 어떤 정보를 쓰는지 설명하는 분류다. 
 
 ### 세션 분산 문제
 - **로컬 세션 상태**: 웹 서버 메모리에만 로그인 세션을 두면 다른 서버로 간 요청이 세션을 찾지 못할 수 있음 → 공유 세션 저장소 또는 sticky session을 검토
-- **IP 기반 고정 분산**: 모바일 IP 변경, NAT 공유, 프록시 환경에서 안정적 식별자가 아닐 수 있음
+- **IP 기반 고정 분산**: 모바일 IP 변경, NAT 공유, 프록시 환경에서 안정적 식별자가 아닐 수 있음. 같은 원인으로 한 NAT나 프록시 뒤의 많은 사용자가 한 서버에 몰려 부하가 편중될 수 있으므로 대상별 요청 수와 지연 편차로 쏠림을 관찰
 - **쿠키나 키 기반 고정 분산**: 같은 대상을 고를 수 있지만 대상 장애와 재배치에서는 세션 복구 경로가 필요
 
 ## DNS
@@ -122,6 +122,7 @@ L4와 L7은 대상 선택에 어떤 정보를 쓰는지 설명하는 분류다. 
 - [AWS Route 53, Choosing TTL values for DNS records](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/best-practices-dns.html#best-practices-dns-choosing-ttl-values)
 - [HAProxy, Backend load balancing algorithms](https://www.haproxy.com/documentation/haproxy-configuration-tutorials/proxying-essentials/configuration-basics/backends/)
 - [Finagle, Clients: Load Balancing](https://twitter.github.io/finagle/guide/Clients.html#load-balancing)
+- [인프런, 성장랜턴, API 게이트웨이 & 로드밸런서 & 서비스 디스커버리](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278148)
 
 ## 관련 문서
 - [[IaC|IaC]]

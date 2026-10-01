@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, inference, rag, agent]
 status: done
-verified_at: 2026-08-22
+verified_at: 2026-09-30
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Generation Mechanics Context and Agent", "LLM Context와 환각", "LLM 에이전트 전환 지점"]
 ---
@@ -20,6 +20,16 @@ aliases: ["LLM Generation Mechanics Context and Agent", "LLM Context와 환각",
 | **Memory** | Host가 이후 호출에 다시 제공하도록 보존한 정보 | 제품과 설정의 저장, 선택 정책에 따라 다름 |
 
 모델 내부의 Token Embedding은 Token ID를 Transformer 공간에 넣는 표현이다. 검색용 Embedding은 query와 문서 chunk를 유사도 공간에 놓고 외부 자료를 찾는 표현이다. 둘 다 벡터지만 학습 목적, pooling, 공간과 소비자 계약을 확인하지 않고 직접 대체할 수 없다.
+
+## Context Window와 대화 누적
+
+Context Window는 모델이 한 번 응답할 때 참조하는 작업 기억이다. 학습 데이터와는 별개이고, 시스템 프롬프트, 도구 정의, 지금까지의 대화, 도구 결과, 이번 출력(사고 포함)이 모두 이 한도 안에 들어간다.
+
+- **대화는 매 턴 다시 들어간다**: Messages API 기준으로 각 턴의 입력은 이전 대화 전체와 새 메시지이고, 응답은 다음 턴 입력의 일부가 된다. 대화가 길수록 요청마다 처리하는 입력 토큰이 쌓인다. 프롬프트 캐싱은 반복되는 앞부분의 요금을 줄일 뿐 윈도를 차지하는 양은 줄이지 않는다 ([[LLM-Prompt-Caching|프롬프트 캐싱]])
+- **길수록 좋은 것은 아니다**: Anthropic 문서는 토큰이 늘수록 정확도와 회수가 떨어지는 context rot를 명시한다. 윈도 크기보다 무엇을 넣을지 고르는 일이 품질을 가른다 ([[Context-Engineering|컨텍스트 엔지니어링]])
+- **한도에서 일어나는 일**: 입력만으로 윈도를 넘으면 요청이 거부되고, Claude 4.5 이후 모델은 생성 중 한도에 닿으면 `model_context_window_exceeded`로 멈춘다. 긴 에이전트 작업은 이전 대화를 요약하는 압축(compaction)이나 오래된 도구 결과 정리로 이어 간다
+- **규모**: 2026-09-30 기준 Anthropic 현재 모델은 Fable 5.1, Opus 5.5, Sonnet 5.5가 1M, Haiku 4.5가 200K다. 1M 토큰은 현재 토크나이저에서 영어 약 55.5만 단어다 ([[LLM-Generation-Mechanics-Decoding|토크나이저 차이]])
+- **실무 함의**: 주제가 바뀌면 세션을 새로 열고, 이어 가야 할 결정과 상태는 파일로 남긴다. 새 세션도 지침 파일과 기록을 읽으면 같은 맥락에서 일을 이어 갈 수 있다 ([[Claude-Code-Fundamentals|Claude Code 컨텍스트 관리]])
 
 ## 왜 환각하는가
 
@@ -52,16 +62,22 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 - Context Window는 Weight나 장기 Memory와 같지 않다.
 - 유창한 문장, 긴 reasoning과 높은 모델 점수는 검증된 사실의 증거가 아니다.
 - RAG와 Tool Calling은 모델의 지식을 늘리는 학습이 아니라 외부 근거와 행동 수단을 연결한다.
+- 모델이 나를 이해하고 기억하는 것처럼 느껴지는 것은 대화 기록과 메모리가 매 요청 Context로 다시 들어가고 그 위에서 다음 토큰을 이어 가기 때문이다. 공감하는 말투는 이해의 증거가 아니고, 모델은 주어진 목표를 향해 사람이 예상하지 못한 경로를 택할 수 있으므로 행동 권한과 검증은 시스템으로 묶는다 ([[Agent-Coding-Guardrails|LLM 코딩 가드레일]]).
 
 ## 이해 점검
 
 1. 문서를 읽은 직후 달라지는 것은 Weight인가, Context인가?
 2. Token Embedding과 검색용 Embedding은 각각 누가 무엇을 위해 사용하는가?
+3. 대화가 길어질수록 요청당 비용과 품질이 함께 나빠질 수 있는 이유는 무엇인가?
 
 ## 출처
 
 - [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks — Lewis et al.](https://arxiv.org/abs/2005.11401)
 - [Function Calling — OpenAI API](https://developers.openai.com/api/docs/guides/function-calling)
+- [Context windows — Anthropic Platform Docs](https://platform.claude.com/docs/en/build-with-claude/context-windows)
+- [Models overview — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/models/overview)
+- [인프런, 널널한 개발자, LLM 서비스, 토큰, 컨텍스트](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498588)
+- [인프런, 널널한 개발자, AI도구 설치](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498586)
 
 ## 관련 문서
 

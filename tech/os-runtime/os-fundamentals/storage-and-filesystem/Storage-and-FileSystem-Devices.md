@@ -96,6 +96,19 @@ Linux의 character/block 구분은 kernel interface 분류다. 장치의 데이�
 5. 운영체제가 애플리케이션에 이벤트 전달
 6. 애플리케이션이 이벤트 처리
 
+### CPU 캐시의 쓰기 정책
+
+캐시 라인의 위치를 애플리케이션이 별도 주소로 선택하는 것이 아니라 하드웨어가 메모리 주소를 기준으로 관리한다. 데이터 배치와 접근 순서가 지역성에 영향을 주며, ISA의 prefetch나 cache 관리 명령은 별도 수단이다.
+
+| 정책 축 | 방식 | 의미 |
+|---|---|---|
+| 쓰기 적중 | Write-through | 캐시와 하위 계층에 쓰기를 전달 |
+| 쓰기 적중 | Write-back | 우선 캐시에 쓰고 dirty 상태를 추적해 나중에 하위 계층에 반영 |
+| 쓰기 미스 | Write-allocate | 라인을 가져온 뒤 캐시에 쓰기 |
+| 쓰기 미스 | No-write-allocate | 라인을 채우지 않고 하위 계층에 쓰기 |
+
+Write-back과 write-allocate는 같은 라인의 후속 쓰기를 합칠 수 있지만 dirty 관리와 교체 시 쓰기 비용이 필요하다. Write-through는 하위 계층으로 쓰기 트래픽을 늘릴 수 있다. 구체 정책은 캐시 계층과 구현마다 다르며, 이 구분만으로 언어의 스레드 간 가시성을 설명할 수는 없다. [[Java-Memory-Model-and-Monitors|언어 메모리 모델]]의 동기화 계약을 별도로 지킨다.
+
 ## 관련 문서
 - [[Storage-and-FileSystem|기억장치와 파일시스템 (목차)]]
 - [[Storage-and-FileSystem-Files|파일시스템 구조]]
@@ -103,7 +116,10 @@ Linux의 character/block 구분은 kernel interface 분류다. 장치의 데이�
 
 ## 출처
 
+- [인프런, 모영철, Guarded Suspension](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178840)
+
 - 인프런, 널널한 개발자 강사, [HDD, SSD와 파일 시스템](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128250)
 - 인프런, 감자 강사, [주변장치](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100851), [마우스/키보드](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100852), [하드디스크/Flash Memory](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100853)
 - [Linux kernel, Bus-Independent Device Accesses](https://docs.kernel.org/driver-api/device-io.html)
 - [Linux kernel, Dynamic DMA mapping Guide](https://docs.kernel.org/core-api/dma-api-howto.html)
+- 인프런, 널널한 개발자 강사, [컴퓨터가 기억공간을 관리하는 방법](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128249)

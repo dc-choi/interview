@@ -11,12 +11,12 @@ aliases: ["Kafka", "Message Queue: Kafka"]
 
 ## 목차
 
-- [[MQ-Kafka-Internals|기본 구조와 내부 (토픽, 파티션, 세그먼트, KRaft, 빠른 이유)]]
+- [[MQ-Kafka-Internals|기본 구조와 내부 (토픽, 파티션, 세그먼트, 복제와 follower fetching, KRaft, 빠른 이유)]]
 - [[MQ-Kafka-Patterns|실전 패턴 (키 기반 순서, Outbox+Debezium, Event Bus, Streams)]]
-- [[MQ-Kafka-Consumer|컨슈머 구현 (NestJS 마이크로서비스, eachMessage vs eachBatch)]]
+- [[MQ-Kafka-Consumer|컨슈머 구현 (NestJS 마이크로서비스, eachMessage vs eachBatch, 소비 누락 진단)]]
 - [[MQ-Kafka-Streams|Kafka Streams (상태 저장소, KStream/KTable, 윈도우, EOS, 운영)]]
 - [[MQ-Kafka-Event-Ordering|순서 보장 (파티션 순서의 한계, 소비자 체이닝, watermark식 제한적 비순서)]]
-- [[Kafka-Partition-Sizing|파티션 개수 산정 (산정식, per-partition 처리량, eCKU 한도)]]
+- [[Kafka-Partition-Sizing|파티션 개수 산정 (산정식, per-partition 처리량, eCKU 한도, 자동 토픽 생성)]]
 - [[MQ-Kafka-Retry-DLT|재시도와 DLT (non-blocking retry, opt-in 재시도, 공통 DLT envelope, 구현 함정)]]
 
 ## 핵심 한 줄

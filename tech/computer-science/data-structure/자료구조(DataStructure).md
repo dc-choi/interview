@@ -12,6 +12,7 @@ aliases: ["Data Structure"]
 ## 선형 구조
 
 - [x] [[Linear-Data-Structures|Array, Linked List, Stack, Queue, Deque, Set]]
+- [x] [[Stack-Pairing-and-Monotonic-Patterns|Stack 짝짓기, 최장 괄호와 단조 stack]]
 - [x] [[Hash-Table|Hash Table, 직접 주소화, 적재율과 resize]]
 - [x] [[Hash-Collision|Hash collision, chaining과 open addressing]]
 

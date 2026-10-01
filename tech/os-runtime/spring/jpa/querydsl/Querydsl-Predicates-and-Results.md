@@ -1,7 +1,7 @@
 ---
 tags: [querydsl, jpa, predicate, pagination, aggregation]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["Querydsl Predicates", "Querydsl 결과 조회", "Querydsl 기본 문법"]
 ---
@@ -95,11 +95,34 @@ StringExpression display = member.username
 
 Simple case와 searched case를 지원하고 `Expressions.constant()`로 projection 상수를 넣을 수 있다. Presentation label처럼 DB 밖에서 결정할 수 있는 값은 application mapping이 더 단순할 수 있다. Number나 enum의 문자열 변환은 provider와 dialect 표현을 확인한다.
 
+### CASE를 정렬 key로 쓰기
+
+CASE는 projection label뿐 아니라 정렬 key로도 쓴다. 상태 우선순위처럼 paging 전에 DB가 순서를 정해야 하는 정렬은 application mapping으로 옮길 수 없으므로 DB CASE를 쓸 이유가 된다.
+
+```java
+NumberExpression<Integer> rank = new CaseBuilder()
+    .when(member.age.between(0, 20)).then(2)
+    .when(member.age.between(21, 30)).then(1)
+    .otherwise(3);
+NumberPath<Integer> rankOrder = Expressions.numberPath(Integer.class, "rankOrder");
+
+List<Tuple> rows = queryFactory
+    .select(member.username, rank.as(rankOrder))
+    .from(member)
+    .orderBy(rankOrder.desc(), member.id.asc())
+    .offset(offset)
+    .limit(size)
+    .fetch();
+```
+
+Jakarta Persistence 3.2는 ORDER BY의 scalar expression을 허용하지만 DB에 따라 지원하지 않을 수 있으니 이식성이 필요하면 그 용법에 기대지 말라고 한다. Select 항목에 별칭을 주고 그 result variable로 정렬하는 위 형태는 명세가 따로 허용하는 방식이다. OpenFeign Querydsl 7.7과 Hibernate 7.4.11에서는 `orderBy(rank.desc())`처럼 식을 직접 써도, 별칭을 써도(SQL `order by 2 desc`로 번역) 실행됐다. 계산식 정렬은 index 순서를 쓰지 못해 별도 정렬 작업을 만들 수 있으므로 실행 계획으로 비용을 확인한다([[Sorting-Operations]]).
+
 ## 출처
 
 - [OpenFeign Querydsl JPA tutorial](https://openfeign.github.io/querydsl/tutorials/jpa/)
 - [OpenFeign Querydsl 7.5, AbstractJPAQuery](https://github.com/OpenFeign/querydsl/blob/7.5/querydsl-libraries/querydsl-jpa/src/main/java/com/querydsl/jpa/impl/AbstractJPAQuery.java)
 - [Jakarta Persistence 3.2, Query Language](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a4665)
+- [Jakarta Persistence 3.2, ORDER BY Clause](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a5587)
 - [JPQL과 Querydsl 시작](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30122)
 - [기본 Q type 활용](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30123)
 - [검색 조건 query](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30124)
@@ -108,6 +131,7 @@ Simple case와 searched case를 지원하고 `Expressions.constant()`로 project
 - [Paging](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30127)
 - [집합과 aggregation](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30128)
 - [CASE expression](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30133)
+- [강의 자료](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30112)
 - [상수와 문자열 연결](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30134)
 - [Querydsl 소개, 기존 방식의 문제점](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114667)
 - [Querydsl 소개, type-safe query](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114668)

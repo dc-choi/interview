@@ -45,6 +45,22 @@ aliases: ["System Design Quality Attribute Decision", "시스템 설계 품질 �
 
 네 속성은 독립 체크박스가 아니다. 재시도는 일시 오류를 줄일 수 있지만 지연과 부하를 키울 수 있고, 캐시는 읽기 성능을 높이지만 최신성 계약과 장애 경로를 추가한다. 우선순위와 허용할 대가를 함께 적는다.
 
+## 속성별 대표 수단과 목표 예시
+
+서비스 성격이 먼저 지킬 속성을 정한다. 결제는 신뢰성과 보안, 메신저는 실시간성과 확장성, 온라인 쇼핑은 가용성과 확장성이 먼저 걸린다. 처음부터 네 속성을 모두 목표로 삼지 말고 프로젝트마다 주 속성 하나를 정해 점진적으로 개선한다. 아래 목표는 외울 숫자가 아니라 목표를 쓰는 모양의 예시다.
+
+| 속성 | 대표 수단 | 프로젝트 목표 예시 |
+|---|---|---|
+| 신뢰성 | 기능 정확성(명확한 요구사항, 일관된 API 응답과 오류 코드, 단위와 통합 테스트), 데이터 정합성(트랜잭션, 저장소 사이 일관성 모델, 복제와 백업), 내결함성(입력 검증, 멱등 API, 롤백, 재시도, circuit breaker, 부분 기능 제공) | 포인트 적립: 멱등 적립 API, 주요 API의 5xx 비율, 장애 뒤 자동 복구 시간, 매일 잔여 포인트를 적립과 차감 내역으로 대사하는 배치 |
+| 성능 | 캐싱, 느린 작업의 비동기 처리, 쿼리 분석과 인덱스, 읽기 복제본과 샤딩, CQRS와 이벤트 기반으로 동기 호출 줄이기 | 위치 기반 조회: 같은 부하와 서버 사양에서 p95 지연, 처리량, 자원 사용의 전후 비교, 캐시 도입과 샤딩 키 변경의 시행착오 기록 |
+| 가용성 | SPOF 제거, 이중화와 자동 전환, health check, 로그와 지표 모니터링, 알림과 자동 복구, 부분 기능 유지 | 게시판: 글 작성과 조회 API의 하루 다운타임 1분 미만, 이미지 업로드가 실패해도 글 작성 가능, DB 장애 때 캐시 읽기 |
+| 확장성 | 수평 확장과 로드밸런서, 읽기 복제본, 샤딩, 큐로 무거운 작업 분리, CDN | 실시간 방송: 좋아요 API의 TPS, 스트리밍 지연, 스트리밍 연결 서버만 따로 늘리는 분리, 방송 종료 뒤 저장과 인코딩의 비동기화 |
+
+- 신뢰성은 장애 사이 간격(MTBF), 복구 시간(MTTR), 5xx 비율과 데이터 무결성 검사로 보인다. 지표 운영은 [[RCA-Postmortem|RCA와 포스트모템]], 사후 지표의 한계는 [[N-1-Capacity-Headroom|N-1 가용량 헤드룸]]을 따른다.
+- 가용성 목표는 시간 기반인지 요청 기반인지 함께 적는다([[SLI-SLO|SLI와 SLO]]). 하루 1분 다운타임은 시간 기준으로 약 99.93%다. 인프라 비용 때문에 서비스 전체보다 핵심 기능의 제공 시간, 장애 때 읽기 전용 유지, 자동 복구 시간 같은 목표를 먼저 잡는 편이 현실적이다.
+- 확장성은 자원을 늘린 만큼 처리량이 늘고 사용자가 늘어도 지연이 안정적인지로 본다. 부하 증가 중 CPU나 메모리가 먼저 포화되면 그 자원이 병목이다. 인스턴스를 키우는 수직 확장에는 사양과 비용의 상한이 있으므로 상한에 가까우면 수평 확장이나 병목 분리를 검토한다.
+- 모든 수단에는 대가가 따른다. 인덱스는 쓰기를 느리게 하고, 캐시와 비동기 처리의 대가는 아래 수단 표를 따른다.
+
 ## 목표에서 검증까지의 결정 루프
 
 1. **사용자 목표**: 가장 중요한 사용 흐름과 실패 시 영향을 정한다.
@@ -69,6 +85,18 @@ aliases: ["System Design Quality Attribute Decision", "시스템 설계 품질 �
 
 동일 키 요청 합치기와 캐시 miss 폭주는 [[Cache-Stampede|Cache Stampede 방지]], 접수와 완료 지표의 차이는 [[Cache-vs-Queue|캐시와 큐]]를 따른다.
 
+## 적용 예: SNS 피드의 읽기와 쓰기 비대칭
+
+요구사항을 게시물 업로드(쓰기)와 팔로우한 사람들의 게시물 보기(읽기) 두 기능으로 한정한다. 기능을 먼저 정해야 어떤 트래픽 성질이 지배적인지 알 수 있다.
+
+1. **워크로드**: 쓰기는 사용자 수에 비례해 늘지만 읽기는 보기만 하는 사용자까지 더해져 보통 훨씬 많다. 작성자별 팔로워 수 분포도 함께 가정한다.
+2. **쓰기 중심안**: 업로드는 게시물 테이블에 행 하나를 넣으면 끝난다. 대신 피드를 읽을 때마다 사용자, 팔로우 관계, 게시물 테이블을 join하고 정렬하는 비용이 반복된다.
+3. **읽기 중심안(쓰기 시점 fan-out)**: 업로드 뒤 작성자의 팔로워 목록을 조회해 각 팔로워의 피드 캐시에 새 게시물 ID를 넣는다. 키는 읽는 사람의 ID, 값은 게시물 ID 목록이다. 피드 조회는 자기 키 하나를 읽으므로 join이 없다. 목록형 값에는 Redis List나 Sorted Set이 맞는다([[Redis-Data-Structures|Redis 자료구조]]).
+4. **대가**: 글 하나가 팔로워 수만큼 캐시 쓰기를 만든다. 삭제와 공개 범위 변경도 모든 팔로워 피드에서 정리해야 하고, 캐시와 원본이 어긋나는 구간이 생긴다. 팔로워가 매우 많은 계정은 업로드 한 번이 쓰기 폭주를 만든다.
+5. **선택과 재검토 조건**: 읽기가 압도적이면 읽기 경로의 join 비용을 쓰기 경로로 옮기는 편이 유리하다. 팔로워 수의 꼬리 분포, 업로드에서 피드 반영까지의 지연과 fan-out backlog가 목표를 넘으면 다시 설계한다.
+
+대형 계정 문제의 후보는 팔로워가 많은 계정의 글을 쓰기 시점 fan-out에서 빼고 읽기 시점에 병합하는 혼합 방식, 피드 목록의 길이 상한, 오래 접속하지 않은 사용자의 피드는 미리 채우지 않는 선택([[Use-Cases|Redis 활용 사례]]), 캐시가 비었을 때 원본에서 피드를 다시 만드는 경로다. 혼합 방식에서는 대형 계정의 최근 글 목록을 많은 독자가 함께 읽어 [[Hot-Key|hot key]]가 되므로 그 대응도 따른다. 각 후보는 읽기 지연이나 구현 복잡도를 다시 늘리므로 같은 조건에서 비교한다. fan-out을 큐로 비동기 처리하면 업로드 응답은 빨라지지만 접수 지연과 반영 지연을 따로 관찰해야 한다.
+
 ## 설계 결과의 최소 증거 묶음
 
 - **재현 조건**: 데이터 크기, 요청 분포, 동시성, 실행 환경과 테스트 시간
@@ -83,9 +111,9 @@ aliases: ["System Design Quality Attribute Decision", "시스템 설계 품질 �
 
 - 성장랜턴, 시스템 디자인 첫걸음: 면접에서 돋보이는 백엔드 아키텍처 설계하기
   - 품질 목표: [277932 목표](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=277932), [277933 신뢰성](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=277933), [277934 성능](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=277934), [277935 가용성](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=277935), [277936 확장성](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=277936)
-  - 구성요소와 진화: [278143 구성요소](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278143), [278147 통신](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278147), [278148 게이트웨이와 디스커버리](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278148), [278149 DB 확장](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278149), [278151 캐시와 CDN](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278151), [278152 메시징](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278152), [278153 배치와 스트림](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278153), [278155 예시 설계](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278155)
+  - 구성요소와 진화: [284143 컴포넌트 구성](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=284143), [278147 통신](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278147), [278148 게이트웨이와 디스커버리](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278148), [278149 DB 확장](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278149), [278151 캐시와 CDN](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278151), [278152 메시징](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278152), [278153 배치와 스트림](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278153), [278155 예시 설계](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278155)
   - 프로젝트 방법: [321520 면접에서 돋보이는 프로젝트를 하는 방법](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=321520)
-- Hong, 빈둥대던 취준생의 취업 이야기와 서버 최적화 및 시스템 디자인: [272601 Singleflight](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272601), [272610 시스템 디자인 설계 개요](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272610)
+- Hong, 빈둥대던 취준생의 취업 이야기와 서버 최적화 및 시스템 디자인: [272601 Singleflight](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272601), [272610 시스템 디자인 설계 개요](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272610), [272611 SNS 시스템 디자인](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272611)
 
 ## 관련 문서
 
@@ -93,3 +121,5 @@ aliases: ["System Design Quality Attribute Decision", "시스템 설계 품질 �
 - [[Architecture-Decision-Making|아키텍처 의사결정과 경제적 관점]]
 - [[Traffic-Scaling-Playbook|트래픽 스케일링 실전]]
 - [[Tradeoff|트레이드오프와 성과 측정]]
+- [[SLI-SLO|SLI와 SLO (가용성 목표의 기준)]]
+- [[Fan-Out-Architecture|Fan-Out Architecture (메시징 1:N 분배)]]

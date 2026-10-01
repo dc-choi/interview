@@ -37,13 +37,19 @@ vault 다른 문서에서 전후방 호환이라고 부르는 상태는 full com
 
 마지막 행이 Expand-Contract가 필요한 근거다. 순서를 아무리 잘 잡아도 풀리지 않는 변경이 있고, 그때는 시간이 아니라 계약의 개수를 늘려서 푼다.
 
+## 선택 파라미터의 생략 의미
+
+선택 필드를 추가해도 옛 클라이언트가 필드를 생략했을 때 변경 전 동작이 유지되어야 한다. 상품 찜 API에 대상 `type`을 추가했다면 생략값은 기존의 상품으로 해석해야지 전체 타입 조회로 넓혀서는 안 된다. API 경계에서 생략과 명시적 `null`의 의미를 정하고 필요한 기본값을 적용해 하위 조회 계층까지 모호함을 전파하지 않는다.
+
+구 요청 형태의 응답, 권한과 부수효과를 계약 테스트로 비교한다. 새 ID 필드와 옛 ID 필드를 함께 받을 때는 필수 조건과 동시 입력의 우선순위도 명시한다. 의미를 보존할 수 없으면 별도 버전이나 명시적 전환을 선택한다.
+
 ## 어떤 변경이 계약을 깨는가
 
 같은 변경이라도 요청 방향과 응답 방향에서 안전성이 뒤집힌다. 이 비대칭이 호환성 판단의 핵심이다.
 
 | 변경 | 요청(소비자 → 생산자) | 응답(생산자 → 소비자) |
 |---|---|---|
-| 선택 필드 추가 | 안전 | 조건부 안전 (소비자가 모르는 필드를 무시할 때) |
+| 선택 필드 추가 | 조건부 안전 (생략 시 기존 의미 보존) | 조건부 안전 (소비자가 모르는 필드를 무시할 때) |
 | 필수 필드 추가 | 깨짐 (옛 소비자가 안 보냄) | 조건부 안전 (소비자가 모르는 필드를 무시할 때) |
 | 필드 제거 | 안전 (생산자가 무시) | 깨짐 (소비자가 참조) |
 | 제약 강화 (길이, 범위, 필수화) | 깨짐 | 소비자 검증이 있으면 깨짐 |
@@ -159,6 +165,8 @@ API 호환성 검사는 [[Architecture-Fitness-Functions|아키텍처 fitness fu
 - [Protocol Buffers, Language Guide (proto3)](https://protobuf.dev/programming-guides/proto3/)
 - [Pact Docs, Introduction](https://docs.pact.io/)
 - [Confluent Developer, Schema Registry 101, Testing Schema Compatibility](https://developer.confluent.io/courses/schema-registry/schema-compatibility/)
+- [제미니 강사, 찜하기 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392786)
+- [제미니 강사, 찜하기 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392787)
 
 ## 관련 문서
 

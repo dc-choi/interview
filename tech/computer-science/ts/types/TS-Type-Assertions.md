@@ -3,7 +3,7 @@ tags: [cs, typescript, type-system, assertion]
 status: done
 category: "CS - TypeScript"
 aliases: ["TypeScript Type Assertion", "타입 단언", "satisfies 연산자"]
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 ---
 
 # TypeScript 타입 단언과 `satisfies`
@@ -24,6 +24,29 @@ const input = document.querySelector("input") as HTMLInputElement;
 | `value!` | 타입에서 `null`, `undefined` 제거 | 없음 |
 | `expr as const` | 리터럴 넓힘 억제, 객체 속성과 배열을 readonly로 추론 | 없음 |
 | `expr satisfies T` | `expr`이 `T`와 호환되는지 검사하고 식 자체의 추론을 보존 | 없음 |
+
+꺾쇠 형태 `<T>value`는 `.ts` 파일에서 `value as T`와 같은 단언이다. `.tsx`에서는 JSX 요소로 파싱되어 TS17008 구문 오류가 나고, `erasableSyntaxOnly`(TypeScript 5.8+)에서는 TS1294로 거부되며, Node.js type stripping도 지원하지 않는다(26.7.0 재현). 새 코드는 `as`로 통일하고 기존 꺾쇠 단언은 `as`로 바꾼다.
+
+## 단언이 허용되는 조건
+
+`value as T`는 값의 타입과 `T`가 충분히 겹칠 때만 허용된다. 공식 핸드북은 이를 더 구체적이거나 덜 구체적인 타입으로의 변환만 허용한다고 설명하지만, 실제 검사는 유니온 구성원 하나만 겹쳐도 통과시킬 만큼 넓다. 겹치지 않으면 TS2352(neither type sufficiently overlaps with the other)로 거부한다.
+
+```typescript
+const a = 10 as never;             // 허용: never는 number의 하위 타입
+const b = 10 as unknown;           // 허용: unknown은 number의 상위 타입
+const c = 10 as string;            // 오류 TS2352
+const d = 10 as unknown as string; // 통과: 두 단계로 검사를 우회
+
+declare const id: string | number;
+const e = id as string | boolean;  // 허용: 구성원 string이 겹친다
+
+type A = { a: string; b: number };
+type B = { a: string; c: boolean };
+declare const x: A;
+const f = x as B;                  // 오류 TS2352: 서로의 필수 속성을 갖지 않는다
+```
+
+하위 타입이나 상위 타입 방향의 단언은 허용되므로 오히려 검사를 숨길 수 있다. `{} as Profile`은 초기화 누락을 숨기고([[TS-Declaration-Spaces-and-Inference|선언 공간과 추론]]), 새 객체 리터럴에 붙인 `as Dog`는 초과 속성 검사를 건너뛴다([[TypeScript-Type-Compatibility|초과 속성 검사]]). 아래의 `as unknown as T`는 이 허용 조건 자체를 무력화한다.
 
 ## 타입 주석과 `satisfies`
 
@@ -77,5 +100,6 @@ type State = (typeof states)[number];
 - [TypeScript Handbook, Type Assertions](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertions)
 - [TypeScript Handbook, Literal Inference](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#literal-inference)
 - [TypeScript 4.9 Release Notes, The satisfies Operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator)
+- [TypeScript TSConfig, erasableSyntaxOnly](https://www.typescriptlang.org/tsconfig/erasableSyntaxOnly.html)
 - yongsoocho, [type casting과 type assertion](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=149242)
 - [타입 단언, 이정환 Winterlood](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=156635)

@@ -3,7 +3,7 @@ tags: [security, crypto, tls, certificate, lets-encrypt, acme]
 status: done
 category: "Security - 암호"
 aliases: ["ACME", "ACME Protocol", "Let's Encrypt", "certbot", "인증서 자동화"]
-verified_at: 2026-09-28
+verified_at: 2026-10-01
 ---
 
 # ACME Protocol — 인증서 자동화
@@ -55,6 +55,7 @@ ACME는 이 수명주기를 **API로 자동화**한다. 무료 여부와 유효�
 - 고정된 60일 주기보다 ACME Renewal Information(ARI)을 지원하는 클라이언트는 CA가 제시하는 갱신 창을 따르는 편이 안전하다.
 - certbot, acme.sh, Caddy 등은 timer나 내장 스케줄러로 갱신하고, 성공 후 필요한 서비스 reload 또는 배포를 수행한다.
 - 만료 감시와 실패 알림을 자동화한다.
+- 등록 이메일을 만료 경보로 기대하지 않는다. Let's Encrypt는 만료 알림 메일을 2025-06-04에 종료했고, 이후 ACME API로 받은 이메일은 CA에 저장하지 않고 계정 데이터와 분리된 ISRG 메일링 시스템으로 넘긴다. Certbot 사용자 가이드(5.8.0)에 CA가 만료 임박 알림 메일을 보낸다는 일반 문장이 남아 있어도 Let's Encrypt에는 맞지 않는다. 갱신 실패와 인증서 잔여일은 직접 감시하거나 제3자 모니터링을 쓴다(공지는 Red Sift Certificates Lite를 예로 든다).
 
 ## 구현체
 
@@ -67,6 +68,18 @@ ACME는 이 수명주기를 **API로 자동화**한다. 무료 여부와 유효�
 | **cert-manager** | K8s용. Ingress, Certificate CRD 단위로 관리 |
 | **AWS ACM ACME endpoint** | AWS가 발급하는 최대 45일 Public 인증서를 표준 ACME 클라이언트로 발급. 설치와 갱신은 클라이언트 책임 |
 | **AWS Private CA Connector for SCEP** | MDM 관리 단말과 네트워크 장비 같은 사설 PKI 워크로드에 ACM Private CA 인증서를 자동 발급. Active Directory용 커넥터도 별도 제공되며 ACME는 Private CA 커넥터가 아니라 ACM의 퍼블릭 인증서용 엔드포인트 |
+
+## certbot Nginx 설치기
+
+`certbot --nginx`는 Nginx 플러그인으로 HTTP-01 인증을 하고 받은 인증서를 설치까지 하는 기본 `run` 명령이다. certbot 5.8.0 소스(`configurator.py`) 기준으로 설치할 server block은 다음 순서로 정한다.
+
+1. 요청 도메인과 맞는 `server_name`을 가진 block을 찾는다. 이미 SSL인 block을 먼저 보고, 그 안에서 정확한 이름, `*`로 시작하는 wildcard, `*`로 끝나는 wildcard, 정규식 순으로 고른다.
+2. 맞는 block이 없으면 `default_server` block을 복제하고 `server_name`을 요청 도메인으로 바꿔 새 block을 만든다. 443 포트의 `default_server` block이 정확히 하나면 그것을, 아니면 전체에서 `default_server` block이 하나뿐일 때 그것을 쓴다.
+3. 기준 block을 하나로 정하지 못하면 ``Could not automatically find a matching server block for <domain>. Set the `server_name` directive to use the Nginx installer.`` 오류로 멈춘다.
+
+고른 block이 SSL이 아니면 `listen 443 ssl`과 certbot의 SSL 옵션 include를 더하고, 어느 경우든 `ssl_certificate`와 `ssl_certificate_key`를 새 인증서 경로로 넣거나 바꾼다. 2번의 복제본은 기본 block의 `root`와 `location`까지 물려받으므로 HTTPS가 앱 대신 기본 페이지를 응답할 수 있다. 앱으로 proxy하는 block의 `server_name`에 도메인을 먼저 넣고 `nginx -t`로 검증한 뒤 실행해야 의도한 block에 인증서가 붙는다.
+
+Nginx 설정을 템플릿이나 배포 산출물로 덮어쓰는 구조라면 certbot이 넣은 줄이 다음 배포에서 사라진다. 이때는 `certbot certonly --nginx`로 인증서만 받고, 템플릿의 `ssl_certificate`와 `ssl_certificate_key`가 갱신 때 최신 파일로 바뀌는 `/etc/letsencrypt/live/<인증서 이름>/fullchain.pem`과 `privkey.pem`을 가리키게 한다. `certonly --nginx`는 SSL 설치 지시어를 남기지 않지만 설정을 건드리지 않는 것은 아니다. HTTP-01 검증 동안 `nginx.conf`의 `http` block에 challenge 설정 include를 넣고 도메인과 맞는 server block(없으면 임시 block)에 검증용 `location`을 더해 reload한 뒤, 검증이 끝나면 되돌리고 다시 reload한다. Nginx를 설치기로도 기록해 발급과 갱신 뒤 reload를 한다(5.8.0 소스 기준). 설정 파일이 읽기 전용이거나 검증 중 배포가 설정을 덮어쓸 수 있으면 `--webroot`나 DNS 방식으로 받고, 설치기가 없으므로 reload를 `--deploy-hook`이나 `/etc/letsencrypt/renewal-hooks/deploy/`로 건다.
 
 ## Let's Encrypt 인증서 체인 — Chains of Trust
 
@@ -156,6 +169,15 @@ ISRG(Internet Security Research Group)가 Let's Encrypt를 운영. X1이 원조,
 - [AWS Certificate Manager now supports ACME](https://aws.amazon.com/about-aws/whats-new/2026/07/aws-certificate-manager-acme/)
 - [AWS Certificate Manager — Exportable public certificates](https://docs.aws.amazon.com/acm/latest/userguide/acm-exportable-certificates.html)
 - [AWS Private CA Connector for SCEP](https://docs.aws.amazon.com/privateca/latest/userguide/connector-for-scep.html)
+- [Ending Support for Expiration Notification Emails](https://letsencrypt.org/2025/01/22/ending-expiration-emails/)
+- [Expiration Notification Service Has Ended](https://letsencrypt.org/2025/06/26/expiration-notification-service-has-ended/)
+- [Certbot — User Guide](https://eff-certbot.readthedocs.io/en/stable/using.html)
+- [Certbot — Nginx on Linux (pip) instructions](https://certbot.eff.org/instructions?ws=nginx&os=pip)
+- [Nginx configurator.py v5.8.0 — certbot GitHub](https://github.com/certbot/certbot/blob/v5.8.0/certbot/src/certbot/_internal/plugins/nginx/configurator.py)
+- [Nginx http_01.py v5.8.0 — certbot GitHub](https://github.com/certbot/certbot/blob/v5.8.0/certbot/src/certbot/_internal/plugins/nginx/http_01.py)
+- [plugins/selection.py v5.8.0 — certbot GitHub](https://github.com/certbot/certbot/blob/v5.8.0/certbot/src/certbot/_internal/plugins/selection.py)
+- [main.py v5.8.0 — certbot GitHub](https://github.com/certbot/certbot/blob/v5.8.0/certbot/src/certbot/_internal/main.py)
+- [인프런, Kenu 허광남, 04. 도메인 등록과 HTTPS 설정](https://www.inflearn.com/courses/lecture?courseId=328553&unitId=106870)
 
 ## 관련 문서
 - [[HTTPS-TLS|HTTPS / TLS Handshake]]

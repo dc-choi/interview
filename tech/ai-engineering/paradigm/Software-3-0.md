@@ -86,6 +86,7 @@ Software 1.0 부분은 여전히 결정론적이어야 함(런타임, 테스트)
 - [Toss Tech — 소프트웨어 3.0 시대를 맞이하며](https://toss.tech/article/software-3-0-era)
 
 ## 관련 문서
+- [[Agent-From-Scratch|에이전트 직접 만들기]]
 - [[Harness-Engineering|하네스 엔지니어링]]
 - [[Agent-Spec-Writing|AI 에이전트 스펙 작성법]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]

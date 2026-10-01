@@ -96,11 +96,20 @@ pgvector 공식 운영 가이드는 HNSW의 VACUUM이 오래 걸릴 때 concurre
 ## 사례
 - 대규모 서비스가 pgvector 0.8.0의 iterative index scan + `relaxed_order`를 기본으로 쓰고, 리더 분리와 `pg_prewarm`으로 읽기 부하와 콜드 캐시를 관리한 사례가 있다.
 
+## Lexical과 vector 순위의 결합
+
+FTS와 vector 점수는 scale이 달라 직접 합산보다 순위 기반 RRF를 비교할 수 있다. 각 branch에서 후보를 먼저 ORDER BY + LIMIT으로 구하고 그 결과에 ROW_NUMBER를 매긴 뒤 id로 FULL OUTER JOIN한다. 없는 branch의 기여는 0으로 하여 `1.0 / (k + lexical_rank) + 1.0 / (k + vector_rank)`를 계산한다.
+
+전체 table의 vector 순위를 window로 먼저 계산하면 ANN의 ORDER BY + LIMIT 경로를 잃을 수 있다. 후보 깊이, k, filter 손실과 동률 key를 명시하고 lexical/dense/hybrid를 같은 relevance judgment와 latency로 평가한다. RRF는 후보 밖 문서를 복원하지 못한다.
+
 ## 출처
 - [pgvector README — exact/approximate search, filtering, iterative scans, memory and operations](https://github.com/pgvector/pgvector)
 - [PostgreSQL Resource Consumption — shared_buffers와 OS cache](https://www.postgresql.org/docs/current/runtime-config-resource.html)
 - [PostgreSQL pg_prewarm](https://www.postgresql.org/docs/current/pgprewarm.html)
 - [pgvector 검색 최적화 — HNSW, halfvec, 쿼리 패턴, 운영 (YouTube)](https://www.youtube.com/watch?v=n3_LY7YFCwE&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=6)
+- [pgvector README, Hybrid search](https://github.com/pgvector/pgvector#hybrid-search)
+- [인프런, 벡터 인덱스 최적화와 벡터 검색과 전문 검색을 결합한 하이브리드 패턴](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440537)
+
 
 ## 관련 문서
 - [[pgvector|pgvector (타입, 인덱스, 테이블 설계)]]

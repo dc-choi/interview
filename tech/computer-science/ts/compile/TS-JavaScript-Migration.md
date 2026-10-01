@@ -3,7 +3,7 @@ tags: [cs, typescript, migration, declaration-file]
 status: done
 category: "CS - TypeScript"
 aliases: ["JavaScript TypeScript 마이그레이션", "TypeScript 라이브러리 설계"]
-verified_at: 2026-09-03
+verified_at: 2026-10-01
 ---
 
 # JavaScript에서 TypeScript로 점진적 마이그레이션
@@ -57,6 +57,15 @@ verified_at: 2026-09-03
 
 API 주석은 타입을 되풀이하지 않는다. TSDoc에는 단위, 전제 조건, 오류, 부작용과 예제를 남기고, 구조는 타입 선언을 단일 원천으로 둔다.
 
+## 외부 JavaScript 라이브러리의 타입 확보
+
+TypeScript는 실행 전에 타입을 검사하므로 선언이 없는 JavaScript 패키지는 설치만으로 안전하게 쓸 수 없다. 선언을 찾지 못하면 TS7016(Could not find a declaration file for module 'X'. '.../index.js' implicitly has an 'any' type)이 나고, `@types/X` 설치나 `declare module 'X';`를 담은 `.d.ts` 추가를 안내한다.
+
+- 이 오류는 `noImplicitAny`가 켜져 있을 때만 난다. 5.x는 `strict` 기본값이 `false`라 설정을 적지 않으면 오류 없이 그 모듈의 import 전체가 조용히 `any`가 되고, 6.0부터는 `strict` 기본값이 `true`라 같은 설정에서 TS7016이 난다(5.9.3, 6.0.3, 7.0.2에서 확인). 조용한 `any` 누수가 오류보다 나쁜 실패다.
+- 도입 전에 타입 제공 방식을 확인한다. npm 패키지 페이지의 TypeScript 아이콘은 `package.json`의 `types`, `typings`로 지정한 번들 선언을 표시하고(2020-12 도입), 2021-01부터 `main` 옆의 `.d.ts`와 `typesVersions`도 인식한다. `@types` 패키지가 있을 때 붙는 DT 아이콘의 기준은 npm 공식 문서로 확인하지 못했다. 아이콘은 1차 신호로만 쓰고 `package.json`의 `types`, `exports`와 실제 import 컴파일 결과로 최종 확인한다.
+- 타입이 전혀 없을 때 `declare module 'X';` shorthand 선언은 TS7016을 없애지만 그 모듈의 모든 import를 `any`로 만든다. 존재하지 않는 export를 import해 호출해도 컴파일되므로, 실제로 쓰는 API만 최소한으로 선언하거나 어댑터에서 `unknown`으로 받아 검증한다([[TS-Any-Boundaries|any 경계 설계]]).
+- 6.0부터 `types` 기본값이 `[]`지만 이 값은 전역 선언만 제어한다. import하는 라이브러리의 `@types`는 그대로 해석되고, `process`, `expect`처럼 전역을 주는 `@types/node`, `@types/jest`만 `types`에 적는다([[option|컴파일러 옵션]]의 `target`과 `lib` 절).
+
 ## 현재 런타임과 ECMAScript 우선 원칙
 
 `enum`, 런타임 `namespace`, parameter property와 `import =`는 TypeScript 컴파일러가 JavaScript 코드를 만들어야 하는 문법이다. 표준 JavaScript 모듈, 객체, `#private` 필드로 같은 목적을 달성할 수 있으면 상호 운용성과 실행 도구 선택 폭이 넓어진다.
@@ -106,7 +115,13 @@ element.disabled = true;
 - [TypeScript TSConfig, sourceMap](https://www.typescriptlang.org/tsconfig/sourceMap.html)
 - [TypeScript TSConfig, erasableSyntaxOnly](https://www.typescriptlang.org/tsconfig/erasableSyntaxOnly.html)
 - [TypeScript Declaration Files, Publishing](https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html)
+- [TypeScript Declaration Files, Consumption](https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html)
+- [TypeScript TSConfig, types](https://www.typescriptlang.org/tsconfig/types.html)
+- [Announcing TypeScript 6.0 — TypeScript DevBlog](https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/)
+- [npm displays packages with bundled TypeScript declarations — GitHub Changelog](https://github.blog/changelog/2020-12-16-npm-displays-packages-with-bundled-typescript-declarations/)
+- [TypeScript icon missing on packages which bundle declarations and do not need a types field — npm/feedback](https://github.com/npm/feedback/discussions/122)
 - [TypeScript Handbook, DOM Manipulation](https://www.typescriptlang.org/docs/handbook/dom-manipulation.html)
 - [TSDoc Specification, Overview](https://tsdoc.org/pages/spec/overview/)
 - [이펙티브 타입스크립트 스터디 7-1회차, 정재남](https://www.inflearn.com/courses/lecture?courseId=327754&unitId=91644)
 - [이펙티브 타입스크립트 스터디 7-2회차, 정재남](https://www.inflearn.com/courses/lecture?courseId=327754&unitId=91646)
+- [외부 라이브러리 사용하기, 이정환 Winterlood](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=160077)

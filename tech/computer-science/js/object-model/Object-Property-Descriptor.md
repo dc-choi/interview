@@ -97,6 +97,14 @@ classic script의 top-level `var`와 function 선언이 global object에 새로 
 - global singleton의 getter가 request별 mutable state를 숨기지 않게 한다.
 - configuration object를 freeze하더라도 nested secret/resource lifecycle은 별도로 보호한다.
 
+## generic descriptor와 비가역 상태
+
+get/set/value/writable이 모두 없는 descriptor는 generic이다. 새 property에 `{ enumerable: true }`만 주면 value undefined, writable/configurable false인 data property가 생긴다. 기존 property에는 종류를 바꾸지 않고 지정한 attribute만 갱신한다. Object.defineProperty의 생략값을 기존 property 변경에서도 모두 false로 덮는다고 해석하지 않는다.
+
+preventExtensions는 되돌릴 수 없다. 새 property 대입은 sloppy에서 무시, strict에서 TypeError지만 Object.defineProperty는 어느 mode에서도 TypeError, Reflect.defineProperty는 false다. 기존 configurable property 삭제는 가능하며 확장 제한과 삭제 제한은 별개다.
+
+Object(v)는 object면 같은 object, primitive면 wrapper, null/undefined면 새 빈 object를 반환한다. Object.prototype.toString의 tag는 Symbol.toStringTag로 바뀔 수 있으므로 Array.isArray 같은 목적별 brand 검사와 schema를 대신하지 못한다.
+
 ## 출처
 
 - [ECMAScript Language Specification, Object constructor](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object-constructor), [property descriptor](https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-property-descriptor-specification-type)

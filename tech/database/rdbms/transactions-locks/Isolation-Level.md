@@ -64,7 +64,7 @@ verified_at: 2026-08-11
 
 ### RC로 변경하면 위험한 점
 - Phantom Read 허용 → 범위 조건 결과가 트랜잭션 중 변할 수 있음
-- 트랜잭션 안에서 "읽은 데이터가 커밋 전에 바뀔 수 있다"는 것을 인지해야 함
+- 트랜잭션 안에서 읽은 데이터가 커밋 전에 바뀔 수 있다는 것을 인지해야 함
 
 ### 판단 기준
 - transaction 안의 consistent read가 같은 snapshot을 재사용해야 하면 **RR**을 검토한다. locking read와 DML은 그 snapshot 규칙을 따르지 않는다는 점까지 설계한다.
@@ -95,6 +95,14 @@ verified_at: 2026-08-11
 
 격리 수준은 절대적으로 좋고 나쁨이 없다. 비즈니스 요구사항(누적값 갱신, 재고, 잔액, 예약)과 동시성 요구사항(처리량, 응답시간) 사이의 트레이드오프이며, 이관 시점은 이 가정을 다시 검토할 좋은 기회다.
 
+## 이상 현상의 구분
+
+Dirty read는 아직 commit되지 않은 다른 transaction의 값을 읽은 뒤 그 변경이 rollback되는 상황이다. Non-repeatable read는 같은 key를 다시 읽을 때 다른 commit으로 값/존재가 달라지는 상황이다. Phantom은 같은 predicate로 재조회한 row 집합이 달라지는 상황으로 insert뿐 아니라 범위에 들어오거나 나가는 update/delete도 고려한다. 이 정의와 특정 DB의 snapshot/lock 구현은 구분한다.
+
+## 설정의 적용 범위
+
+Read Uncommitted는 나중에 사라질 중간 상태를 결제/정산 판단에 사용할 위험이 있다. 속도를 얻는 일반 튜닝으로 채택하지 않는다. MySQL `SET SESSION TRANSACTION ISOLATION LEVEL ...`은 session의 후속 transaction에, GLOBAL 변경은 새 연결의 기본값에 적용되며 기존 연결을 일괄 변경하지 않는다. scope 없는 SET TRANSACTION은 다음 transaction에만 적용한다. pool의 상태 복원과 `@@session.transaction_isolation`을 확인한다.
+
 ## 출처
 - [m0rph2us — MySQL Isolation Level 이해하기](https://m0rph2us.github.io/mysql/transaction/2020/07/06/understanding-mysql-isolation-level.html)
 - [네이버파이낸셜 — 실무에서 만나는 DB Isolation Level](https://medium.com/naverfinancial/실무에서-만나는-db-isolation-level-e94a904bbf9d)
@@ -102,6 +110,10 @@ verified_at: 2026-08-11
 - [MySQL 8.4 — Transaction Isolation Levels](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-isolation-levels.html)
 - [Oracle Database 19c — Data Concurrency and Consistency](https://docs.oracle.com/en/database/oracle/oracle-database/19/cncpt/data-concurrency-and-consistency.html)
 - [김영한 강사, 트랜잭션 격리 수준](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328818)
+- [MySQL 8.4 Reference Manual, set transaction](https://dev.mysql.com/doc/refman/8.4/en/set-transaction.html)
+- [인프런, 정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328819)
+- [인프런, 트랜잭션의 ACID 속성](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328817)
+
 
 ## 관련 문서
 - [[Isolation-Level-Beyond-ANSI|ANSI 격리의 한계, Strict Serializable, Snapshot Isolation]]

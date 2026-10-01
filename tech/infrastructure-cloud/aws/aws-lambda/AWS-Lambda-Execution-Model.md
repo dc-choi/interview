@@ -3,7 +3,7 @@ tags: [aws, lambda, serverless, faas, cold-start, provisioned-concurrency]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Lambda 실행 모델", "Lambda Cold Start"]
-verified_at: 2026-08-27
+verified_at: 2026-09-30
 ---
 
 # Lambda 실행 모델 — 표준 함수, Durable Functions, Cold Start
@@ -50,11 +50,17 @@ Managed Instances는 고객 계정의 EC2 인스턴스에서 실행되며 실행
 | 항목 | 한도 |
 |---|---|
 | 표준 함수 최대 실행 시간 | 15분 (900초) |
-| 메모리 | 128MB ~ 10,240MB (CPU는 메모리에 비례) |
-| 배포 패키지 | 압축 50MB, 비압축 250MB / 컨테이너 이미지 10GB |
+| 메모리 | 128MB ~ 10,240MB (CPU는 메모리에 비례). 신규 계정은 메모리 할당량이 낮게 시작할 수 있음 |
+| 배포 패키지 | zip 직접 업로드(API, SDK, 콘솔) 압축 50MB, 더 큰 zip은 S3 경유. layer와 custom runtime 포함 비압축 250MB / 컨테이너 이미지 비압축 10GB |
 | 임시 디스크 `/tmp` | 512MB~10,240MB 설정 |
 | 리전당 동시 실행 | 계정, 리전 합산 기본 1,000. 신규 계정은 더 낮을 수 있으며 증설 신청 가능 |
 | 환경변수 크기 | 4KB |
+
+### 배포 패키지가 커질 때
+
+- 50MB는 zip을 Lambda API, SDK, 콘솔로 직접 올릴 때의 압축 크기 한도다. 더 큰 zip은 S3에 올린 뒤 그 위치를 지정한다. 어느 경로든 함수 코드, layer, custom runtime을 합친 압축 해제 크기는 250MB를 넘을 수 없다
+- 선택: 50MB는 넘지만 250MB 안이면 S3 경유 zip, 여러 함수가 공유하는 의존성은 layer(함수당 5개, 250MB 합산에 포함), 250MB를 넘거나 네이티브 의존성과 빌드 환경을 이미지로 고정해야 하면 ECR에 저장하는 컨테이너 이미지를 쓴다. 패키지가 클수록 Cold Start의 코드 다운로드도 길어진다
+- zip 함수와 layer 코드를 담는 Lambda-managed storage는 리전당 300GB(비압축)이고 함수 버전과 layer 버전마다 소모되며 늘릴 수 없다. 쓰지 않는 버전을 정리하거나 self-managed S3 code storage(`S3ObjectStorageMode=REFERENCE`, 버킷 versioning 필요)로 S3 객체를 복사 없이 참조한다. 이 모드도 250MB 한도는 같고, Lambda가 원본 객체에 접근하지 못하면 함수가 `Inactive`가 된다
 
 ## Function 구성요소
 
@@ -73,4 +79,6 @@ Managed Instances는 고객 계정의 EC2 인스턴스에서 실행되며 실행
 - [AWS, Understanding the Lambda Managed Instances execution environment](https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances-execution-environment.html)
 - [AWS, Improving startup performance with Lambda SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html)
 - [AWS, Lambda quotas](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
+- [AWS, Self-managed S3 code storage](https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html)
 - [AWS Lambda Developer Guide, Lambda runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html)
+- [인프런, Sungmin Kim, Lambda란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=52051)

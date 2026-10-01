@@ -3,7 +3,7 @@ tags: [runtime, nodejs, buffer, memory]
 status: done
 category: "OS & Runtime"
 aliases: ["Node.js Buffer", "Buffer Memory Management", "Buffer.alloc"]
-verified_at: 2026-09-03
+verified_at: 2026-09-30
 ---
 
 # Node.js Buffer, Memory Management
@@ -39,10 +39,10 @@ const d = Buffer.from([1, 2, 3, 4]);     // [0x01, 0x02, 0x03, 0x04]
 
 ## 메모리 풀 (`Buffer.poolSize`)
 
-Node.js는 작은 Buffer 할당을 빠르게 하기 위해 메모리 풀을 유지한다. 2026-09-03에 확인한 Node.js v26.8.1 문서는 기본 `Buffer.poolSize`를 65,536바이트(64KiB)로 설명하며, 변경 이력은 Node.js v26.3.0에서 기본값이 8,192에서 65,536바이트로 바뀌었다고 기록한다. 실행 중인 Node 버전의 `Buffer.poolSize`를 확인하고, `allocUnsafe` 요청이 그 절반보다 작을 때 풀 슬라이스가 사용된다고 본다.
+Node.js는 작은 Buffer 할당을 빠르게 하기 위해 메모리 풀을 유지한다. 2026-09-30에 확인한 Node.js 문서는 기본 `Buffer.poolSize`를 65,536바이트(64KiB)로 설명하며, 변경 이력은 v26.3.0과 v24.18.0에서 기본값이 8,192에서 65,536바이트로 바뀌었다고 기록한다. 실행 중인 Node 버전의 `Buffer.poolSize`를 확인하고, `allocUnsafe` 요청이 그 절반보다 작을 때 풀 슬라이스가 사용된다고 본다.
 
 ```ts
-console.log(Buffer.poolSize);              // Node.js v26.8.1 문서 기준 65536
+console.log(Buffer.poolSize);              // v26.3.0, v24.18.0 이후 기본값 65536
 const small = Buffer.allocUnsafe(100);     // 풀에서 슬라이스
 const large = Buffer.allocUnsafe(40000);   // 별도 할당
 ```
@@ -62,6 +62,7 @@ buf[0] = 0x48;                  // 'h' → 'H'
 buf.toString('utf8');           // 'Hello'
 buf.toString('hex');            // '48656c6c6f'
 buf.toString('base64');         // 'SGVsbG8='
+Buffer.from('SGVsbG8=', 'base64');  // base64 텍스트를 다시 바이트로 복원
 
 // 연결
 const combined = Buffer.concat([buf, Buffer.from(' world')]);
@@ -97,6 +98,7 @@ slice[0] = 0xff;                    // 원본도 변경됨
 - **`buf.length`를 문자 수로 착각** → 바이트 수. 문자열로 변환 후 `.length`.
 - **Buffer 비교에 `==`** → 객체 동등성 X. `Buffer.compare(a, b)` 또는 `a.equals(b)`.
 - **TypeScript에서 `Buffer | Uint8Array` 혼용** → API별로 Buffer 전용 동작이 다를 수 있다. Buffer 전용 기능이 필요 없으면 `Uint8Array` 기준 API를 우선 검토.
+- **스트림 chunk를 문자열로 이어 붙이기** (`body += chunk`) → encoding을 지정하지 않은 스트림의 chunk는 Buffer이고 `+=`는 chunk마다 `toString()`을 호출한다. UTF-8 멀티바이트 문자(한글은 3바이트)가 청크 경계에서 잘리면 U+FFFD 대체 문자로 깨지고, 이미지 같은 바이너리는 데이터 자체가 손상된다(Node.js 26.7 확인). 전체 본문이 필요하면 chunk를 배열에 모았다가 `end`에서 `Buffer.concat(chunks)`로 합친 뒤 한 번 디코딩한다. 텍스트를 흘려 처리할 때는 `readable.setEncoding('utf8')`이나 `StringDecoder`가 경계의 미완성 바이트를 다음 chunk까지 보관한다. 문자열 연결의 성능 비용은 V8 최적화에 따라 달라 측정으로 판단하고, 이 패턴을 피하는 결정적인 이유는 정합성이다.
 
 ## 면접 체크포인트
 
@@ -106,6 +108,7 @@ slice[0] = 0xff;                    // 원본도 변경됨
 - `subarray`의 zero-copy 의미 — 같은 메모리 공유
 - `Buffer`가 `Uint8Array`의 서브클래스라는 점
 - 인코딩(utf8, hex, base64) 선택 기준
+- 청크 경계에서 멀티바이트 문자가 깨지는 이유와 `Buffer.concat`, `setEncoding`, `StringDecoder` 선택
 - Buffer 메모리 누수 패턴 (풀 슬라이스 잔존, ArrayBuffer view 잔존)
 
 ## 관련 문서
@@ -115,9 +118,15 @@ slice[0] = 0xff;                    // 원본도 변경됨
 - [[V8-Array-Internals|V8 배열 내부 구현 (ArrayBuffer, Typed Array)]]
 - [[Stream-Types|Stream Types (Buffer chunk)]]
 - [[Debugging-Profiling-Memory|메모리 진단, 프로파일링]]
+- [[HTTP-Networking|HTTP 네트워킹 (요청 본문 수집)]]
+- [[File-System|파일 시스템 (encoding 생략 시 Buffer 반환)]]
 
 ## 출처
 
 - [ECMAScript 2015, ArrayBuffer Objects](https://262.ecma-international.org/6.0/#sec-arraybuffer-objects)
 - [Node.js, Buffer](https://nodejs.org/api/buffer.html)
 - [Node.js, Process memoryUsage](https://nodejs.org/api/process.html#processmemoryusage)
+- [Node.js, readable.setEncoding](https://nodejs.org/api/stream.html#readablesetencodingencoding)
+- [Node.js, String decoder](https://nodejs.org/api/string_decoder.html)
+- [인프런, 얄팍한 코딩사전, 버퍼와 스트림](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=272657)
+- [인프런, 얄팍한 코딩사전, HTTP](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=271844)

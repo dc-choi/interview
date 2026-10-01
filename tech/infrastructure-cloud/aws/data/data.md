@@ -9,7 +9,9 @@ aliases: ["AWS 데이터 인덱스"]
 
 RDS 외의 데이터베이스와 분석 서비스 모음. RDS, Aurora는 [[rds|rds 폴더]] 참조.
 
-- [[DynamoDB|DynamoDB — 서버리스 NoSQL, DAX, Streams, Global Table]]
+- [[DynamoDB|DynamoDB — 서버리스 NoSQL, 키 규칙, Query와 Scan, API별 IAM action, DAX, Streams, Global Table]]
+  - [[DynamoDB-DAX|DAX — 적합성, write-through 범위, query cache 일관성, 운영 제약]]
+  - [[DynamoDB-Streams|Streams — StreamViewType, 아이템 단위 순서, Lambda 소비와 멱등, Kinesis Data Streams 비교]]
 - [[ElastiCache|ElastiCache — Redis, Valkey, Memcached 관리형 캐시, 사용 사례, 캐시 전략]]
 - [[AWS-Analytics|분석 서비스 폴더 — Redshift, Athena, Glue, EMR, Lake Formation, QuickSight]]
 - [[OpenSearch-Service|OpenSearch Service — 검색, 로그 분석]]

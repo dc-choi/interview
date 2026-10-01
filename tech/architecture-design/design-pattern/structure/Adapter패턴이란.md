@@ -86,6 +86,10 @@ Target을 `private`, `protected` 인스턴스 멤버나 `#` 비공개 인스턴�
 - Bridge는 설계 시점부터 독립적인 두 변화 축을 분리한다.
 - Decorator는 같은 Component 계약을 유지하면서 책임을 겹쳐 붙인다.
 
+## 여러 외부 구현을 함께 다루기
+
+서로 관련 없는 장치나 SDK도 각각 Adapter로 감싸면 클라이언트는 같은 Target의 목록으로 처리할 수 있다. Target을 첫 공급자의 메서드 모양에 맞추기보다 소비자가 필요한 행동으로 정의한다. 메서드 이름을 바꾸는 것만으로는 충분하지 않다. 단위, 오류, 취소와 응답 완료의 의미까지 맞아야 같은 목록에서 대체 가능하다.
+
 ## 출처
 
 - 얄팍한 코딩사전, [Adapter 패턴](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=242783)

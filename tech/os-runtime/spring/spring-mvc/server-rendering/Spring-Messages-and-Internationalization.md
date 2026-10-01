@@ -58,10 +58,19 @@ HTML을 message bundle에 넣고 `th:utext`로 출력하면 번역 과정이 XSS
 - 사용자에게 보여 줄 message와 log/metric label을 분리한다. 번역된 문자열을 metric cardinality key로 쓰지 않는다.
 - API는 stable error code와 structured field를 제공하고 localized message는 선택적인 presentation으로 둔다.
 
+## 조회와 fallback을 검증한다
+
+`getMessage(code, args, locale)`은 key가 없으면 `NoSuchMessageException`을 낼 수 있고 default message를 받는 overload는 명시한 기본값으로 돌릴 수 있다. `{0}` 같은 argument 치환은 message format의 규칙을 따른다.
+
+여러 basename에서 같은 key를 정의하면 앞 basename이 우선한다. locale별 후보 bundle, 시스템 locale fallback과 기본 bundle을 구분하고 `spring.messages.fallback-to-system-locale` 정책을 정한다. 한국어 배포 서버의 기본 locale을 영어 사용자 fallback으로 무심코 사용하지 않는다.
+
 ## 출처
+
+- [Spring, AbstractResourceBasedMessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/support/AbstractResourceBasedMessageSource.html)
 
 - [Spring Framework, context functions and MessageSource](https://docs.spring.io/spring-framework/reference/core/beans/context-introduction.html), [Spring MVC locale](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/localeresolver.html)
 - 메시지/i18n: [프로젝트](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83283), [개요](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83284), [MessageSource 설정](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83285), [MessageSource 사용](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83286), [화면 message](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83287), [locale 적용](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83288), [정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83289)
+- 김영한 강사, [수업 자료](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83249)
 
 ## 관련 문서
 

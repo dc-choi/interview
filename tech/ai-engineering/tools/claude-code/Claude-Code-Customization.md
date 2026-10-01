@@ -3,7 +3,7 @@ tags: [ai, claude-code, customization, voice, remote]
 status: done
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Claude Code Customization", "클로드 코드 커스터마이즈", "Voice Mode", "원격 제어"]
-verified_at: 2026-09-29
+verified_at: 2026-09-30
 ---
 
 # Claude Code 커스터마이즈 — 환경 설정, 음성, 원격 제어
@@ -42,7 +42,9 @@ verified_at: 2026-09-29
 플러그인은 스킬, 서브에이전트, 훅, MCP와 LSP 서버 같은 구성요소를 한 단위로 설치하고 불러오는 디렉터리다(매니페스트는 `.claude-plugin/plugin.json`). 마켓플레이스는 플러그인 카탈로그다. Anthropic 공식 마켓(`claude-plugins-official`)은 첫 인터랙티브 세션에서 자동 등록되고, 다른 마켓은 `/plugin marketplace add <owner>/<repo>`로 먼저 추가한 뒤 `/plugin install <이름>@<마켓>`으로 설치한다(공식 문서 확인 2026-09-29).
 
 - **보안 경계**: 플러그인의 훅과 MCP 서버 프로세스는 사용자 권한으로 샌드박스 밖에서 실행되고, 스킬, 명령과 에이전트는 지시로 컨텍스트에 들어간다. 마켓 이름은 카탈로그 발행자를 알려 줄 뿐 개별 플러그인을 보증하지 않으므로 설치 전에 구성요소를 읽는다. 자동 업데이트가 켜져 있으면 검토한 파일이 나중에 바뀔 수 있다
-- **컨텍스트 비용**: 공식 마켓 플러그인은 설치 패널에서 매 턴 추가되는 토큰과 호출 시 추가되는 토큰의 추정치를 보여 준다
+- **탐색**: 터미널에서 `/plugin`(v2.1.285 기준 별칭 `/plugins`, `/marketplace`)을 이름 없이 열면 추가한 모든 마켓의 플러그인을 보여 주는 Discover 탭이 뜨고, Installed, Marketplaces, Errors 탭이 이어진다(VS Code 확장에서는 `/plugins`가 Manage plugins 패널을 연다). 공식 마켓에는 `frontend-design`, `code-review`, `commit-commands` 같은 플러그인이 있다(2026-09-30 확인)
+- **컨텍스트 비용**: 공식 마켓 플러그인은 설치 패널에서 매 턴 추가되는 토큰과 호출 시 추가되는 토큰의 추정치를 보여 준다. 설치 뒤에는 `claude plugin details <이름>`의 Always-on 토큰, Installed 탭의 Not used recently 묶음, `/skill-doctor`(v2.1.252+)의 스킬별 비용과 호출 빈도로 안 쓰는 것을 걷어낸다
+- **설치 위치가 곧 사용 범위**: claude.ai 계정에서 켠 플러그인과 스킬은 claude.ai 계정으로 로그인한 터미널 세션에 한 방향으로 동기화된다(v2.1.273+, 플러그인은 `<이름>@synced`, 스킬은 `claude.ai sync`로 표시). `/plugin`으로 설치한 플러그인은 claude.ai 계정에 올라가지 않는다. 이 플러그인과 `~/.claude/skills/`의 스킬은 Cowork와 클라우드 세션에서 쓰이지 않고, Cowork는 계정에서 켠 플러그인과 스킬을 세션 시작 때 받으므로 Cowork에서 쓰려면 Customize에서 계정에 추가한다. 다만 데스크톱 Cowork도 일반 파일인 `~/.claude/CLAUDE.md`는 읽는다(파일 자체가 링크면 건너뛰고, 작업 디렉터리 밖을 가리키는 import는 빼고 읽는다). 같은 컴퓨터의 터미널, Desktop Code 탭 로컬 세션, VS Code 확장은 같은 설정 파일을 읽으므로 사용자 범위 설치가 셋에 공통으로 적용된다
 
 커뮤니티 워크플로 플러그인은 역할이 서로 겹친다. 아래는 공개 저장소 설명과 사용 후기를 요약한 것이며 기능과 효과는 각 저장소와 사용자의 주장이다(저장소 상태 2026-09-29 확인).
 
@@ -68,6 +70,8 @@ verified_at: 2026-09-29
 
 - [Claude Code — CLI reference](https://code.claude.com/docs/en/cli-reference)
 - [Claude Cowork 시작하기](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
+- [Claude — Cowork overview](https://claude.com/docs/cowork/overview)
+- [Claude Code — How Claude remembers your project](https://code.claude.com/docs/en/memory)
 - [클로드 코드 가이드 (커스터마이즈 파트) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code — Plugins overview](https://code.claude.com/docs/en/plugins)
 - [Claude Code — Discover and install plugins](https://code.claude.com/docs/en/discover-plugins)
@@ -79,6 +83,9 @@ verified_at: 2026-09-29
 - [Claude Code 플러그인 4대장 — Threads, elephant_coding](https://www.threads.com/@elephant_coding/post/DYRyBRdCWwf)
 - [디자인 시스템 조합 플러그인 소개 — Threads, jobs._._lab](https://www.threads.com/@jobs._._lab/post/DaoW3M_krGe)
 - [Claude Code와 superpowers로 스펙 작성 — Threads, sunghyoukbae](https://www.threads.com/@sunghyoukbae/post/DWEUHfJEnoY)
+- [Claude Code — Extend Claude with skills](https://code.claude.com/docs/en/skills)
+- [claude-plugins-official — GitHub, anthropics](https://github.com/anthropics/claude-plugins-official)
+- [인프런, 널널한 개발자, 스킬과 플러그인](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498598)
 
 ## 관련 문서
 

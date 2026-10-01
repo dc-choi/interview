@@ -62,12 +62,28 @@ Java 19부터 `ExecutorService`는 `AutoCloseable`이며 `close()`는 orderly sh
 
 관측 항목은 active worker, queue depth, rejection, enqueue delay, execution time, cancellation response와 shutdown duration이다.
 
+## Worker 생성과 회수
+
+기본적으로 core worker도 작업 제출 시 만들어진다. `prestartAllCoreThreads()`로 미리 시작할 수 있다. pool 크기가 core를 넘으면 유휴 worker를 `keepAliveTime` 뒤 회수하며 `allowCoreThreadTimeOut(true)`는 core 범위에도 timeout을 적용한다.
+
+core=2, max=4, queue=2이고 작업이 아직 끝나지 않았다면 첫 두 작업은 새 worker가, 다음 두 작업은 queue가 받고, 다음 두 작업은 추가 worker가 받는다. 그 뒤 작업은 기본 거절 정책으로 실패한다. 확장 시 새 worker가 방금 받은 작업을 먼저 처리할 수 있어 제출 순서가 시작 순서라는 보장은 없다. Active/완료 task 지표는 근사값이다.
+
+## Future 상태와 종료의 사각지대
+
+`isDone()`은 성공뿐 아니라 실패와 취소에도 true다. `Future.state()`(Java 19+)는 이를 구분한다. 취소가 성립한 뒤 `get()`은 `CancellationException`을 던지며, `cancel(false)`는 실행 중인 부작용을 중단시키지 않는다. 이미 완료된 작업의 취소 시도는 효과가 없을 수 있다.
+
+일반적인 `AbstractExecutorService.submit()`은 `RunnableFuture`로 감싸 실행을 위임한다. 실패가 Future에 저장되므로 결과를 관찰하지 않으면 실패를 놓칠 수 있다. `submit(Runnable)`의 성공 결과는 null이고 지정한 결과를 받는 overload는 별도다.
+
+`shutdownNow()`의 반환 목록은 시작하지 않은 작업이다. 반환된 Future가 자동으로 완료/취소됐다고 가정하지 말고 실제 executor 계약에 맞춰 취소하거나 결과 대기에 timeout을 둔다. `CallerRunsPolicy`도 executor가 종료된 뒤에는 작업을 실행하지 않으므로 조용한 유실을 허용하지 않는 경계는 명시적으로 거절을 보고한다. `close()`의 대기가 하루마다 자동으로 강제 종료로 바뀌는 것은 아니다.
+
 ## 강의 출처
 
 - Executor 프레임워크1: [스레드를 직접 사용할 때의 문제점](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232415), [Executor 프레임워크 소개](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232416), [ExecutorService 코드로 시작하기](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232417), [Runnable의 불편함](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232418), [Future1 - 소개](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232419), [Future2 - 분석](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232420), [Future3 - 활용](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232421), [Future4 - 이유](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232422), [Future5 - 정리](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232423), [Future6 - 취소](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232424), [Future7 - 예외](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232425), [ExecutorService - 작업 컬렉션 처리](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232426), [문제와 풀이](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232427), [정리](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232428)
 - Executor 프레임워크2: [ExecutorService 우아한 종료 - 소개](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232430), [ExecutorService 우아한 종료 - 구현](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232431), [Executor 스레드 풀 관리 - 코드](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232432), [Executor 스레드 풀 관리 - 분석](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232433), [Executor 전략 - 고정 풀 전략](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232434), [Executor 전략 - 캐시 풀 전략](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232435), [Executor 전략 - 사용자 정의 풀 전략](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232436), [Executor 예외 정책](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232437), [정리](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232438)
 
 ## 공식 문서
+
+- [Java SE 25, ThreadPoolExecutor](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html)
 
 - [ExecutorService, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html)
 - [Executors, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executors.html)

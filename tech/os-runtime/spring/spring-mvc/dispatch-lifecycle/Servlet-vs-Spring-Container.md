@@ -15,7 +15,7 @@ aliases: ["Servlet Container vs Spring Container", "서블릿 컨테이너 vs �
 |---|---|---|
 | 책임 | HTTP 파싱, 커넥터, 요청 스레드 할당 | Bean 등록, 의존성 주입, AOP |
 | 관리 대상 | `Servlet`, `Filter`, `Listener` 수명주기 | `@Component`/`@Service`/`@Repository` 등 POJO Bean |
-| 스코프 | 프로세스당 1개 | 웹앱 1개 + 하위 컨텍스트들 |
+| 경계 | container 안의 여러 web application/ServletContext | configuration별 ApplicationContext, 필요하면 부모/자식 구성 |
 | 주요 구성 | HTTP connector, 스레드 풀, 세션 관리 | `BeanFactory` → `ApplicationContext` |
 
 ## 요청 처리 흐름
@@ -42,7 +42,7 @@ aliases: ["Servlet Container vs Spring Container", "서블릿 컨테이너 vs �
 
 ### Bean은 기본 싱글톤
 
-Spring은 Bean을 기본 싱글톤으로 관리하므로 **여러 워커 스레드가 동일 Bean을 공유**한다. 그래서 Bean은 **무상태(stateless)** 여야 안전하다. 인스턴스 변수에 요청별 데이터를 넣으면 동시성 버그가 곧바로 터진다.
+Spring은 Bean을 기본 싱글톤으로 관리하므로 **여러 워커 스레드가 동일 Bean을 공유**한다. 그래서 Bean은 요청별 mutable state를 공유 field에 보관하지 않아야 한다. 공유 상태가 필요한 Bean에는 별도 thread-safety 계약이 필요하다. 인스턴스 변수에 요청별 데이터를 넣으면 동시성 버그가 곧바로 터진다.
 
 **요청별 상태를 다루는 방법**:
 - 메서드 파라미터, 지역 변수 사용
@@ -93,11 +93,20 @@ WebFlux는 **서블릿 컨테이너(Tomcat, Jetty)와 Netty 같은 non-서블릿
 - Root vs Servlet ApplicationContext 구분과 Boot에서의 단순화
 - WebFlux는 왜 이 구조에서 벗어나는가(Thread-per-Request 포기)
 
+## MVC와 WebFlux 선택 조건
+
+blocking JDBC/JPA와 명령형 library가 중심이면 MVC의 호출 모델이 자연스럽다. 원격 I/O, 장기 연결과 streaming이 중요하고 전체 경로를 non-blocking으로 유지할 수 있다면 WebFlux를 검토한다. reactive RDB 접근은 R2DBC와 Spring Data R2DBC가 지원하므로 과거의 RDB 지원 부족을 현재의 일반 제약으로 쓰지 않는다.
+
+MVC에서 WebClient를 사용할 수도 있고 virtual thread는 blocking 요청의 thread 비용을 줄이는 선택지다. 어느 선택도 downstream connection 상한이나 backpressure를 없애지 않는다. 팀의 디버깅 비용과 실제 부하 측정까지 함께 비교한다.
+
 ## 출처
+
+- [Spring Data R2DBC](https://docs.spring.io/spring-data/relational/reference/r2dbc.html)
 - [sigridjin — ServletContainer와 SpringContainer는 무엇이 다른가](https://sigridjin.medium.com/servletcontainer%EC%99%80-springcontainer%EB%8A%94-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%A4%EB%A5%B8%EA%B0%80-626d27a80fe5)
 - [Spring Framework Reference — Reactive Spring Web (Server)](https://docs.spring.io/spring-framework/reference/web/webflux/reactive-spring.html)
 - [Spring Framework Reference — Spring WebFlux 개요](https://docs.spring.io/spring-framework/reference/web/webflux/new-framework.html)
 - [Apache Tomcat 11, HTTP Connector](https://tomcat.apache.org/tomcat-11.0-doc/config/http.html)
+- [인프런, 김영한, 자바 백엔드 웹 기술 역사](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71164)
 
 ## 관련 문서
 - [[Spring|Spring 개요 (IoC, DI, AOP)]]

@@ -14,11 +14,11 @@ HTTP REST 바깥의 프로토콜, 외부 시스템과 NestJS를 연결하는 패
 - [[NestJS-Microservices|Microservices — Transport 추상화, ClientProxy, Message Pattern]]
 - [[NestJS-WebSocket-Gateway|WebSocket Gateway — SubscribeMessage, 실시간 통신 (하위 인덱스)]]
 - [[NestJS-Caching-Integration|캐시 통합 — Interceptor, Decorator, Provider 지점별 매핑]]
-- [[NestJS-Configuration|Configuration — @nestjs/config, env 우선순위, 네임스페이스, 시작 시 검증]]
+- [[NestJS-Configuration|Configuration — @nestjs/config, env 우선순위, process.env 평가 시점, 네임스페이스, 시작 시 검증]]
 - [[NestJS-Persistence|영속성 통합 — @nestjs/typeorm, TypeORM 수동 배선, @nestjs/mongoose]]
 - [[NestJS-Events-and-Jobs|이벤트와 잡 — @nestjs/event-emitter, @nestjs/bullmq, @nestjs/schedule]]
 - [[NestJS-HTTP-Module|HTTP Module — @nestjs/axios, Observable 반환과 firstValueFrom, axiosRef]]
-- [[NestJS-AdminJS|AdminJS — NestJS 관리자 UI 통합과 운영 경계]]
+- [[NestJS-AdminJS|AdminJS — NestJS 관리자 UI 통합, Model 배선과 커스터마이징, 운영 경계]]
 
 ## 관련 문서
 - [[NestJS|NestJS Overview]]

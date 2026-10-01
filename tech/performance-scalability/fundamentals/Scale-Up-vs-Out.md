@@ -60,7 +60,8 @@ aliases: ["Scale Up vs Scale Out", "수직 vs 수평 확장"]
 
 ### 전제 조건
 - **Stateless 애플리케이션** — 어느 서버가 요청을 받아도 동일 처리
-- **세션 외부화** — Redis, DB, JWT (Session.md 참고)
+- **세션 외부화** — Redis, DB, JWT ([[Session|세션]] 참고)
+- **파일 저장 외부화** — 업로드 파일을 서버 로컬 디스크에 두면 다른 인스턴스로 간 요청이 파일을 찾지 못한다. [[S3|Object Storage(S3)]] 같은 공유 저장소로 옮긴다
 - **로드 밸런서 설계** — L4/L7, 알고리즘, 헬스체크
 - **데이터 계층 대응** — DB 복제, 샤딩, 캐시 레이어
 
@@ -86,6 +87,38 @@ aliases: ["Scale Up vs Scale Out", "수직 vs 수평 확장"]
 - DB 읽기: Scale Out (Read Replica)
 - 캐시: Scale Out (Redis Cluster)
 
+## Scale Out의 세 방향: Scale Cube
+
+Up과 Out의 이분법은 같은 애플리케이션을 복제하는 방향만 다룬다. AKF Partners가 만들고 The Art of Scalability에 정리된 Scale Cube는 수평 확장을 세 축으로 나눈다.
+
+| 축 | 방법 | 얻는 것 | 대가 | 이어지는 문서 |
+|---|---|---|---|---|
+| X축, 복제 | 같은 애플리케이션의 복제본을 로드 밸런서 뒤에 여러 개 둔다 | 처리량, 가용성 | 복제본마다 전체 데이터를 캐시해 캐시 효율이 떨어진다. 코드베이스와 개발 복잡도는 그대로 | [[Load-Balancer]] |
+| Y축, 기능 분해 | 기능이나 책임 단위로 서비스를 나눈다. 동작(동사) 기준이나 대상(명사) 기준으로 자른다 | 기능별 독립 확장과 배포, 팀 단위 개발 | 네트워크 호출과 분산 운영으로 애플리케이션 전체의 복잡도가 늘어난다 | [[Microservice-Service-Decomposition]] |
+| Z축, 데이터 분할 | 같은 코드가 고객이나 키 범위별로 데이터의 일부만 맡는다 | 캐시 효율, 트랜잭션 확장성, 장애 격리 | 파티셔닝 설계와 재분배, 라우팅으로 애플리케이션 복잡도가 늘고 개발 복잡도는 줄지 않는다 | [[Sharding]] |
+
+- 세 축은 배타적이지 않다. Y축으로 나눈 주문 서비스를 X축으로 복제하고 주문 DB를 Z축으로 샤딩하는 식으로 조합한다. microservices.io가 드는 eBay 사례도 DB 계층에 X, Y, Z를 함께 적용한다.
+- 어느 축으로 늘릴지는 상태와 일관성 요구가 가른다. 상태 없는 서비스는 X축 복제가 쉽고, 상태를 가진 서비스는 데이터 분할(Z축)이나 복제(X축)를 그 일관성 비용과 함께 검토하며, 강한 일관성과 최종 일관성 중 무엇을 보장하느냐에 따라 쓸 수 있는 확장 기법이 달라진다 — [[CAP-Theorem|CAP 정리]].
+- 마이크로서비스에서 말하는 확장은 보통 Y축이다. 서비스 분해의 가장 중요한 목적이 독립적인 확장과 배포이기 때문이다.
+
+## 단계적 확장 경로
+
+확장은 한 번에 최종 구조로 가지 않고 측정된 병목을 따라 한 단계씩 간다. 아래 사용자 수는 설명용 예시이지 전환 규칙이 아니며, 3단계와 4단계는 어느 쪽이 먼저 병목이 되느냐에 따라 순서가 바뀔 수 있다.
+
+1. **단일 서버** — 애플리케이션, DB와 파일을 한 인스턴스에 둔다. 사용자가 적을 때는 가장 싸고 단순하다.
+2. **애플리케이션 수평 확장 (예: 사용자 1만 명)** — 로드 밸런서 뒤에 서버를 여러 대 둔다. 위 전제 조건대로 세션과 파일 저장을 서버 밖으로 뺀다.
+3. **데이터 계층과 작업 분리 (예: 사용자 100만 명)** — 서버만 늘려서는 DB 같은 공유 계층이 병목이 되기 쉽다. 읽기 복제본은 읽기를 나누지만 복제 지연 때문에 방금 쓴 값을 읽어야 하는 경로에는 맞지 않는다([[Read-Replica-Routing|읽기 복제본 라우팅]]). 쓰기 부하는 도메인별로 나뉘면 기능별 DB 분리(Y축)로도 나눌 수 있고, 같은 데이터셋의 쓰기가 한 노드를 넘으면 샤딩(Z축)이 필요하다. 오래 걸리는 작업은 메시지 큐로 넘겨 비동기로 처리하고([[Cache-vs-Queue|캐시와 큐]]), 자주 읽히는 파일은 [[CDN]]으로 전송한다.
+4. **기능 분해 (Y축)** — [[Modular-Monolith|모듈러 모놀리스]]로 경계를 먼저 세우고, 부하가 몰리는 기능은 별도 실행 단위나 마이크로서비스로 떼어 독립 확장한다.
+5. **지역 분산** — 글로벌 로드 밸런싱과 멀티 리전 배포로 사용자와의 거리와 장애 범위를 줄인다.
+
+다음 단계로 넘어갈 신호는 측정으로 확인한다.
+
+- 하드웨어를 늘려도 처리량이 비례해 늘지 않는다.
+- 사용자가 늘수록 응답 시간이 흔들린다.
+- 트래픽보다 CPU와 메모리 사용률이 가파르게 오른다. 인스턴스 크기의 한계에 가까워졌다는 신호이므로 병목을 확인한 뒤 수평 확장이나 최적화를 검토한다.
+
+대규모 트래픽을 실제로 겪기 전에는 부하 테스트로 현재 구조의 처리 한계를 재고 개선 전후를 비교하며, 설계 단계에서 가장 먼저 병목이 될 지점과 급증 시 대응을 정해 둔다. 판단 기록은 [[System-Design-Quality-Attribute-Decision|품질 속성 결정 루프]]를 따른다.
+
 ## 흔한 오해
 
 ### "Scale Out이 항상 낫다"
@@ -104,11 +137,23 @@ Auto Scaling은 **자동화된 Scale Out**. 수동으로 Out 할 수도 있고, 
 - DB를 Scale Out 하기 어려운 이유 (상태, 일관성, 샤딩 복잡도)
 - 웹 서버는 Out, DB는 Up이 일반적인 이유
 - Scale Up의 "비선형 비용 급증" 구체 예시
+- Scale Cube의 X, Y, Z축이 각각 무엇을 해결하고 무엇을 대가로 치르는지, 어떻게 조합하는지
+- 단계적 확장 경로에서 다음 단계로 넘어갈 신호를 무엇으로 확인하는지
 
 ## 출처
 - [매일메일 — 스케일 업과 스케일 아웃](https://www.maeil-mail.kr/question/128)
+- [microservices.io — The Scale Cube](https://microservices.io/articles/scalecube.html)
+- [microservices.io — Pattern: Microservice Architecture](https://microservices.io/patterns/microservices.html)
+- [AKF Partners — The Scale Cube](https://akfpartners.com/growth-blog/scale-cube)
+- [인프런, Dowon Lee, Decomposition 개요](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286782)
+- [인프런, Dowon Lee, Data Partitioning](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290722)
+- [인프런, Dowon Lee, Scalability 개요](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290731)
+- [인프런, 성장랜턴, 확장성](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=277936)
 
 ## 관련 문서
 - [[Load-Balancer|Load Balancer]]
 - [[Replication|Replication]]
 - [[Sharding|Sharding]]
+- [[Microservice-Service-Decomposition|마이크로서비스 분해]]
+- [[CAP-Theorem|CAP 정리]]
+- [[System-Design-Quality-Attribute-Decision|시스템 설계 품질 속성과 의사결정 증거]]

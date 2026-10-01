@@ -82,6 +82,20 @@ JDBC에서 하나의 local transaction은 한 `Connection`, 즉 DB의 한 sessio
 - [[SQL]]
 - [[NoSQL-Overview|NoSQL 개요, BASE 모델]] — ACID와 대비되는 최종적 일관성
 
+## InnoDB commit의 경로
+
+교과서의 active, partially committed와 committed 상태는 구현을 이해하는 모델이며 InnoDB 내부 상태명과 1:1 대응하지 않는다. 변경은 undo와 redo buffer, dirty page에 반영되고 commit durability는 redo flush 정책과 저장 장치에 의존한다. data page는 commit마다 모두 쓰지 않고 이후 checkpoint로 flush할 수 있다. group commit은 여러 commit의 flush를 묶을 수 있어 statement마다 반드시 fsync 한 번이라고 계산하지 않는다.
+
+Deadlock은 전체 transaction rollback을 낼 수 있지만 일반 제약 오류와 기본 lock timeout은 statement만 취소할 수 있다. 오류마다 전체 rollback 여부를 확인하고 실패한 업무 transaction을 명시적으로 종료한다.
+
+## START TRANSACTION과 mode 변경
+
+START TRANSACTION은 COMMIT/ROLLBACK까지 autocommit을 일시 해제한 뒤 이전 mode로 되돌린다. `SET autocommit=0`은 session mode 자체를 바꾸어 commit 뒤에도 다음 transaction이 이어질 수 있다. pooled connection을 반환할 때 열린 transaction과 mode를 복원한다. 비트랜잭션 table의 변경과 implicit-commit DDL은 일반 rollback 계약 밖이다.
+
+## Savepoint는 transaction 종료가 아니다
+
+`SAVEPOINT sp`, `ROLLBACK TO SAVEPOINT sp`로 이후 변경을 취소해도 transaction은 열린 채이며 마지막 COMMIT/ROLLBACK이 필요하다. InnoDB는 일반적으로 savepoint 뒤 메모리에 보유한 row lock을 해제하지 않는다. 새로 insert한 row의 undo에 따른 해제는 별도다. 부분 rollback을 lock 보유 시간을 줄이는 방법으로 쓰지 않는다. implicit commit DDL과 transaction 종료는 savepoint를 제거한다.
+
 ## 출처
 - [인프런, Hong, 메모리, 트랜잭션, 락](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338555)
 - [MySQL 8.4 Reference Manual, START TRANSACTION/COMMIT/ROLLBACK](https://dev.mysql.com/doc/refman/8.4/en/commit.html)
@@ -99,3 +113,7 @@ JDBC에서 하나의 local transaction은 한 `Connection`, 즉 DB의 한 sessio
 - 김영한 강사, [트랜잭션 적용 1](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110085)
 - 김영한 강사, [트랜잭션 적용 2](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110086)
 - 김영한 강사, [정리](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110087)
+- [MySQL 8.4 Reference Manual, innodb error handling](https://dev.mysql.com/doc/refman/8.4/en/innodb-error-handling.html)
+- [MySQL 8.4 Reference Manual, savepoint](https://dev.mysql.com/doc/refman/8.4/en/savepoint.html)
+- [인프런, MySQL Transaction Deep Dive [ LifeCycle, Autocommit, Statement vs Row based ]](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=373900)
+- [인프런, 트랜잭션 - 함께가 아니면 하지 않아!](https://www.inflearn.com/courses/lecture?courseId=327501&unitId=86863)

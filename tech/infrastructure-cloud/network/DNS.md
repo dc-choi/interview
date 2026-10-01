@@ -3,12 +3,18 @@ tags: [infrastructure, network, dns]
 status: done
 category: "Infrastructure & Cloud"
 aliases: ["DNS", "DNS 구조", "도메인 네임 시스템"]
-verified_at: 2026-09-22
+verified_at: 2026-09-30
 ---
 
 # DNS (Domain Name System)
 
 도메인 이름을 IP 주소를 비롯한 리소스 레코드로 해석하는 인터넷의 분산 디렉터리. 단순 변환기가 아니라 전 세계 수억 개의 도메인을 한 서버에 몰지 않고 루트 → TLD → 권한 네임서버로 이어지는 계층 구조로 나눠 관리하는 시스템이다. 사람은 `google.com`을 기억하고, DNS는 그 이름에 해당하는 `142.250.207.46` 같은 주소를 찾아 준다. AWS의 구현(호스팅 영역, 라우팅 정책, Alias)은 [[Route53]] 참고.
+
+## hosts 파일에서 DNS로
+
+초기 ARPANET에서는 NIC가 관리하는 단일 파일 `HOSTS.TXT`에 호스트 이름과 주소를 적고 모든 호스트가 FTP로 받아 갔다. RFC 1034는 이 방식의 한계를 셋으로 든다. 새 버전을 배포하는 데 드는 전체 네트워크 대역폭이 호스트 수의 제곱에 비례했고, 각 조직은 자기 이름과 주소를 바꾸고도 NIC가 파일을 고칠 때까지 기다려야 했으며, 조직 안의 구조를 이름에 담고 싶어 했다. 그래서 점(.)으로 계층을 나누고 계층마다 관리를 위임하는 분산 데이터베이스가 나왔다.
+
+로컬 `hosts` 파일은 지금도 남아 있다. IP와 이름을 한 줄에 적으면 그 단말에서만 이름이 그 IP로 해석되므로 DNS 전환 전 새 서버 확인이나 스테이징 검증에 쓴다. 단말 하나의 설정이라 운영 해법이 아니고, 변조되면 피싱 사이트로 유도하는 공격 경로가 된다(아래 DNS 보안 절). hosts와 DNS 중 무엇을 먼저 보는지는 아래 캐싱 절처럼 OS와 설정에 따라 다르다.
 
 ## 도메인 이름 구조
 
@@ -23,6 +29,8 @@ verified_at: 2026-09-22
 
 - **에이펙스 도메인**(zone apex, 루트 도메인) — 한 존의 최상위 이름. `example.com`뿐 아니라 별도 위임된 `dev.example.com`도 자기 존의 에이펙스가 될 수 있음
 - **서브도메인** — `www.example.com`, `mail.example.com`처럼 앞에 레이블이 붙은 형태
+- **호스트명과 도메인명** — `www.naver.com`의 `www`를 호스트명, `naver.com`을 도메인명이라 부르는 것은 FQDN의 첫 레이블을 호스트명으로 부르는 관용이다. RFC 9499는 호스트명이 핵심 DNS RFC에서 정의되지 않았고, 레이블이 문자, 숫자와 하이픈 규칙을 따르는 도메인 이름 전체나 기계를 가리키는 이름에도 쓰인다고 정리한다. DNS에서 도메인은 그 이름과 그 아래 이름 공간 전체이므로(RFC 1034) `naver.com` 도메인은 `www.naver.com`을 포함한다
+- **.kr의 중간 단계** — KISA는 `example.kr`처럼 `.kr` 바로 아래에 등록하는 형태를 2단계 .kr 도메인, `kisa.or.kr`처럼 co, or, go 같은 속성 구분(KISA 용어로 2단계 공공도메인) 아래에 등록하는 형태를 3단계 .kr 도메인이라 부른다. 속성 구분마다 등록 자격이 다르다(2026-09-30 KRNIC 기준 예: co는 법인 또는 개인, or는 비영리 법인과 단체, go는 행정기관과 입법기관, 사법기관, ac는 대학과 대학원). 이런 계층 덕분에 국제 관리 기구와 국가별 관리 기관이 역할을 나눈다
 - `example.com`, `example.org`은 RFC 2606에서 문서/예제용으로 예약된 도메인이라 실제 서비스에 쓰지 않는다
 
 ## DNS 레코드
@@ -154,7 +162,10 @@ nslookup -type=AAAA naver.com
 
 - [RFC 2181, Clarifications to the DNS Specification](https://www.rfc-editor.org/rfc/rfc2181)
 - [RFC 9499, DNS Terminology](https://www.rfc-editor.org/rfc/rfc9499)
+- [RFC 1034, Domain Names - Concepts and Facilities](https://www.rfc-editor.org/rfc/rfc1034)
+- [KRNIC, .kr 도메인](https://krnic.kisa.or.kr/jsp/resources/domainInfo/krDomainInfo.jsp)
 - [AWS Route 53 이해를 위한 DNS 기초 — YouTube](https://www.youtube.com/watch?v=pEtbC6dYaiA&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v&index=5)
+- [인프런, 감자, DNS](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160829)
 
 ## 관련 문서
 

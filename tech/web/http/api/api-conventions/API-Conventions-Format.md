@@ -77,3 +77,4 @@ PostgreSQL의 `timestamp with time zone`은 순간을 UTC로 저장하지만 입
 
 - [[API-Conventions|API 실무 컨벤션]]
 - [[Java-Standard-Library-Date-and-Time|순간, 현지 시각과 시간대]]
+- [[Temporal-Modeling|시간 모델링 (시점, 기간, 간격, 반복)]]

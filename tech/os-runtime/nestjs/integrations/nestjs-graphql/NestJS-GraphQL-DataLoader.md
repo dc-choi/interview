@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, graphql, dataloader, n+1, resolver]
 status: done
-verified_at: 2026-07-20
+verified_at: 2026-09-30
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS GraphQL Resolver", "DataLoader", "N+1 해결"]
 ---
@@ -87,6 +87,28 @@ async posts(@Parent() user: User, @Context() ctx: GqlContext) {
 - 배치 함수 결과는 **입력 키 순서와 정확히 일치**해야 함 — group + map으로 보정.
 - Request-local lifetime — 요청 끝나면 loader와 캐시를 버려 요청 간 데이터 누수를 막음.
 
+## ResolveField vs 부모 resolver에서 한 번에 조회
+
+관계를 어디서 채우느냐의 트레이드오프다.
+
+**부모 resolver에서 붙이기**: root resolver가 ORM의 eager 로딩(Prisma `include`, TypeORM `relations`나 `leftJoinAndSelect`)으로 관계까지 읽어 반환한다. query 수는 적지만 두 비용이 생긴다.
+
+- **선택과 무관한 조회**: 클라이언트가 관계 필드를 고르지 않아도 조회가 돈다. 실행기는 선택되지 않은 필드를 응답에서 뺄 뿐 이미 한 DB 읽기와 객체 생성을 되돌리지 않는다. 낭비가 응답 크기에 드러나지 않으므로 요청당 query 수와 query 로그로 판단한다.
+- **진입점마다 달라지는 완전성**: 관계는 그것을 붙인 resolver가 만든 객체에만 있다. `teams` resolver에서만 각 Team에 `supplies`를 붙였다면, `team(id)`나 다른 타입의 필드를 거쳐 같은 `Team`에 도달할 때 `supplies` 프로퍼티가 없어 기본 resolver가 `null`을 돌려주고, `[Supply!]!`로 선언했다면 non-null 오류가 부모 필드로 전파된다. 일관성을 맞추려면 진입점마다 로딩 코드를 복제해야 한다.
+
+**필드 resolver로 두기**: `@ResolveField`는 필드가 선택될 때만, 어느 경로로 도달하든 같은 방식으로 실행된다. 대가는 N+1이다. resolver는 필드 단위로 실행되고 자기가 처리하는 부모가 목록의 하나라는 사실을 모른다. 곱셈은 관계 단계마다 일어나서, Post 10개에 `author`, `comments`, 각 comment의 `author`를 필드 resolver로 두면 1 + 10 + 10 + 댓글 수만큼 query가 나간다.
+
+**DataLoader로 막기**: 필드 resolver를 유지하고 단계마다 loader를 둔다. `Post.author`와 `Comment.author`를 `userLoader.load(parent.authorId)`로 바꾸면 batch 함수가 개별 SELECT 대신 `WHERE id IN (...)` 한 번으로 읽는다. user loader만 두면 `Post.comments`는 여전히 Post마다 1회이므로 postId를 key로 하는 loader를 더해야 comments 단계도 상수가 된다. batch 함수는 입력 key 배열과 길이, 순서가 같은 배열을 돌려줘야 한다. DB 결과 순서는 보장되지 않으므로 id로 매핑하고, 없는 key 자리에는 `null`이나 `Error`를 넣는다.
+
+| 상황 | 선택 |
+|---|---|
+| 부모 행과 함께 이미 읽힌 값 | 부모 resolver가 채운다 |
+| 관계가 거의 항상 함께 요청되고 진입점이 하나 | eager 로딩이 단순하다 |
+| 관계가 선택적으로 요청되거나 여러 진입점에서 도달 | `@ResolveField`와 DataLoader |
+| 선택될 때만 join하고 싶다 | `@Info`의 selection set을 보고 요청된 관계만 부모 query에서 join |
+
+Prisma `include`가 실제로 join 한 번인지는 `relationLoadStrategy`와 preview 설정에 따라 다르다. 어느 쪽이든 부모 수에 비례하지 않으므로 N+1은 아니다([[Prisma-Query-Performance#relationLoadStrategy]]). [[GraphQL-Architecture-Map]]의 얕게 유지 원칙이 필요한 이유가 위의 두 비용이다.
+
 ## Auth — Guard 호환
 
 HTTP Guard와 GraphQL Guard는 ExecutionContext 추출이 다름. `GqlExecutionContext.create(context)`로 GraphQL 컨텍스트를 꺼내야 함.
@@ -130,4 +152,8 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
 
 - [NestJS — GraphQL Resolvers](https://docs.nestjs.com/graphql/resolvers)
 - [NestJS — GraphQL Other features](https://docs.nestjs.com/graphql/other-features)
-- [DataLoader — request-scoped caching](https://github.com/graphql/dataloader)
+- [DataLoader — request-scoped caching](https://github.com/graphql/dataloader) (batch 함수의 길이, 순서 계약과 없는 key의 `null`)
+- [GraphQL Specification, October 2021, Handling Field Errors](https://spec.graphql.org/October2021/#sec-Handling-Field-Errors) (non-null 필드의 null 전파)
+- [인프런, Hong, Prisma 연동과 N+1 문제 및 Include 강제 패턴](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449783)
+- [인프런, Hong, Database의 가장 치명적인 문제 N+1 문제 방지를 위한 DataLoader 패턴](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449785)
+- [인프런, 얄팍한 코딩사전, Query 구현하기](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=63139)

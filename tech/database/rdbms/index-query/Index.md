@@ -3,7 +3,7 @@ tags: [database, rdbms]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["Index"]
-verified_at: 2026-08-28
+verified_at: 2026-09-30
 ---
 
 # Index
@@ -13,6 +13,8 @@ verified_at: 2026-08-28
 책의 찾아보기처럼 검색 키를 정렬된 구조에 유지해 필요한 row를 찾는 범위를 줄인다. 구현은 DBMS와 인덱스 종류에 따라 B+Tree, hash 등으로 달라지며 단순한 SortedList라고 보면 안 된다.
 
 인덱스는 특정 조회와 정렬의 탐색 범위를 줄이는 대신 저장 공간과 쓰기 유지 비용을 추가한다. 모든 조회가 빨라지는 것은 아니므로 실행 계획과 실제 측정으로 판단한다.
+
+인덱스로 좁힐 수 없는 조건은 첫 행부터 마지막 행까지 읽는 풀 테이블 스캔이 된다. 비용이 행 수에 비례하므로 같은 SQL도 데이터가 늘수록 느려지지만, 정렬된 인덱스는 탐색 비용이 로그 규모로만 늘어 1억 건에서도 몇 단계의 페이지 이동으로 끝난다([[B-Tree-Index-Depth|B-Tree 인덱스 깊이]]). 강의는 행 1KB와 일반적인 기업용 서버를 전제로 100만 건 수 초, 1,000만 건 수 초에서 1분 내외, 1억 건 수십 초에서 5분을 대략치로 들지만 디스크, 서버 설정, 행 크기와 동시 부하에 따라 크게 달라지는 추정이다. 그래서 서비스 핵심 경로의 검색 조건에는 인덱스를 두고 배포 전에 실행 계획으로 의도하지 않은 풀 스캔을 확인하며, 통계와 배치처럼 전체 스캔이 불가피한 작업은 요청이 적은 시간대로 옮긴다. 반대로 많은 행을 읽는 조회는 풀 스캔이 더 쌀 수 있다([[#인덱스 레인지 스캔|손익분기점]]).
 
 ## 순차 I/O VS 랜덤 I/O
 
@@ -56,7 +58,7 @@ index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentati
 - 검색할 인덱스 범위가 결정됐을 때 사용하는 방식. 읽는 범위와 추가 row lookup 비용에 따라 index full scan이나 table scan보다 느릴 수도 있다.
 - 리프 노드에서 시작 지점을 찾으면 그 다음부터는 리프 노드의 레코드만 순서대로 읽는다. 리프 노드 끝까지 읽으면 리프 노드 간의 링크를 통해 다음 리프 노드를 찾아 스캔한다.
 - 스캔 종료 지점을 찾으면 지금까지 읽은 레코드를 사용자에게 반환하고 쿼리를 종료한다.
-- 인덱스와 table scan의 손익분기점은 row 폭, clustering, cache, 랜덤 I/O 비용, covering 여부와 통계에 따라 달라진다. **20~25% 같은 고정 임계값은 보편 규칙이 아니며** 실행 계획과 실제 측정으로 판단한다.
+- 인덱스와 table scan의 손익분기점은 row 폭, clustering, cache, 랜덤 I/O 비용, covering 여부와 통계에 따라 달라진다. **20~25% 같은 고정 임계값은 보편 규칙이 아니며** 실행 계획과 실제 측정으로 판단한다. MySQL 8.4 문서도 예전에는 최선 인덱스가 테이블의 30%를 넘게 걸치는지로 스캔을 정했지만 지금은 고정 비율 대신 테이블 크기, 행 수, I/O 블록 크기 같은 요소로 추정한다고 적는다. 20~25%는 인덱스 경유 랜덤 I/O가 행마다 쌓인다는 직관을 잡는 경험칙으로만 쓴다.
 - secondary index로 찾은 행을 clustered index에서 다시 읽을 때 페이지가 흩어져 있으면 랜덤 페이지 접근 비용이 커질 수 있다. 버퍼 풀 적중률, covering 여부와 Multi-Range Read 같은 최적화에 따라 실제 비용은 달라진다.
 - MySQL 실행 계획에서 `range`로 표시된다. const, ref, range 접근 방식을 묶어 통칭 "인덱스 레인지 스캔"으로 부르기도 한다.
 - `<`, `>`, `IS NULL`, `BETWEEN`, `IN`, prefix `LIKE` 등이 인덱스 선행 컬럼에 적용될 때 후보가 된다. 실제 접근 방식은 타입 변환, collation, 통계와 복합 조건에 따라 달라진다.
@@ -86,16 +88,13 @@ index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentati
 ## 논 클러스터링 인덱스
 
 - secondary index는 조건과 covering 여부에 따라 조회를 크게 줄일 수 있지만, 리프에 clustered key를 저장하므로 non-covering 조회에는 추가 clustered lookup이 생길 수 있다. 인덱스가 하나 늘 때마다 쓰기 유지 비용도 추가된다.
-- InnoDB secondary index 리프는 물리 row 주소가 아니라 secondary key와 clustered primary key를 저장한다. 찾은 PK로 clustered index를 다시 조회할 수 있다.
+- InnoDB secondary index 리프는 물리 row 주소가 아니라 secondary key와 clustered primary key를 저장한다. 찾은 PK로 clustered index를 다시 조회할 수 있다. 물리 주소 대신 PK를 두는 이유와 heap 테이블과의 접근 경로별 손익은 [[MySQL-vs-PostgreSQL-Storage-Structure|테이블 저장 구조]]에 있다.
 - clustered key로 선택되지 않은 일반 인덱스와 유니크 인덱스가 secondary index에 해당한다.
 - 비유: 클러스터 인덱스는 페이지를 바로 펴는 것이고 논 클러스터 인덱스는 책 뒤의 찾아보기에서 원하는 내용과 페이지를 찾아 이동하는 것이다. 테이블 풀 스캔은 책을 처음부터 한 장 한 장 넘기면서 찾는 것에 해당한다.
 
 ## 복합 인덱스 (Composite Index)
-- 두 개 이상의 컬럼을 조합하여 만든 인덱스이다.
-- 컬럼 순서가 중요하다. `(A, B, C)`의 정렬 순서를 그대로 활용하는 기본 범위는 `A`, `A,B`, `A,B,C` 같은 최좌선 접두사다. 다만 MySQL의 skip scan, index full scan, covering과 조건 pushdown 때문에 `B`나 `C`만 있는 쿼리도 해당 인덱스를 사용할 수 있으므로 `절대 사용하지 않는다`고 단정하면 안 된다.
-- 컬럼 순서는 실제 쿼리의 equality, range, 정렬, 그룹화와 covering 요구를 우선해 결정한다. 높은 카디널리티를 앞에 두라는 규칙만으로 정할 수 없다.
-- 커버링 인덱스를 만들기 위한 수단으로 자주 활용된다. SELECT에 필요한 컬럼까지 복합 인덱스에 포함시키면 테이블 접근 없이 결과를 반환할 수 있다.
-- 주의: 컬럼을 과도하게 추가하면 인덱스 크기 증가 + CUD 성능 저하로 이어지므로 쿼리 패턴에 맞게 설계해야 한다.
+
+두 개 이상의 컬럼을 조합한 인덱스다. 컬럼 순서가 정렬 구조를 정하므로 최좌선 접두사, 등호 앞과 범위 뒤, 정렬과 filesort, 범위 조건을 IN 목록으로 바꾸는 기법, 여러 쿼리를 최소 인덱스로 묶는 설계는 [[Index-Composite-Design|복합 인덱스 설계]]에서 다룬다.
 
 ### Prefix index
 
@@ -137,7 +136,7 @@ index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentati
 ### 사전 확인 체크리스트
 
 1. **해당 테이블의 쓰기 트래픽** — 평균 TPS, 피크 TPS
-2. **기존 인덱스 목록** — 정말 새 인덱스가 필요한지 (기존으로 커버 가능한지)
+2. **기존 인덱스 목록** — 정말 새 인덱스가 필요한지 (기존으로 커버 가능한지, [[Index-Composite-Design#추가 전 판단|추가 전 판단]])
 3. **예상 Query 개선 효과** — `EXPLAIN`으로 인덱스 사용 여부, 비용 추정
 4. **Online DDL 지원 여부** — 락 종류와 소요 시간
 5. **Replica 영향** — 복제 지연 예상
@@ -176,6 +175,7 @@ DROP INDEX CONCURRENTLY idx_name;
 
 ## 관련 문서
 - [[B-Tree-Index-Depth|B-Tree 인덱스 깊이 분석]] — 페이지 구조와 PK 사이즈로 본 깊이 산정
+- [[Index-Composite-Design|복합 인덱스 설계]]
 - [[MySQL-Advanced-Index-Access|MySQL 고급 인덱스 접근]]
 - [[MySQL-Optimizer-Statistics|MySQL 옵티마이저 통계]]
 - [[Transactions|트랜잭션]]
@@ -188,6 +188,7 @@ DROP INDEX CONCURRENTLY idx_name;
 - [MySQL 8.4 — `innodb_page_size`](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_page_size)
 - [MySQL 8.4 — Skip Scan Range Access Method](https://dev.mysql.com/doc/refman/8.4/en/range-optimization.html#range-access-skip-scan)
 - [MySQL 8.4 — Multi-Range Read Optimization](https://dev.mysql.com/doc/refman/8.4/en/mrr-optimization.html)
+- [MySQL 8.4 — WHERE Clause Optimization](https://dev.mysql.com/doc/refman/8.4/en/where-optimization.html)
 - [인프런, B+Tree 내부 구조](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471882)
 - [인프런, 클러스터드 인덱스 소개](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471887)
 - [인프런, 랜덤 I/O와 순차 I/O](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471893)

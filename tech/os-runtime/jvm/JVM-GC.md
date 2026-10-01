@@ -128,7 +128,7 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 
 ## OutOfMemoryError 패턴
 
-- **Java heap space** — Old Gen 가득. 누수 or 힙 부족
+- **Java heap space** — Old Gen 가득. 누수 or 힙 부족. 누수의 정의, 원인과 heap dump 진단은 [[JVM-GC-Memory-Leak]]
 - **GC overhead limit exceeded** — GC가 98% 시간을 차지하는데 2% 미만만 회수 → 사실상 메모리 부족
 - **Metaspace** — 클래스 무한 로딩(동적 프록시 과다, 리플렉션 생성)
 - **Direct buffer memory** — NIO off-heap 한도 초과(`-XX:MaxDirectMemorySize`)
@@ -140,6 +140,7 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 - **"Survivor는 한 개면 된다"** — 복사 알고리즘 특성상 **두 개 교대**가 핵심
 - **"CMS가 최신"** — JDK 14에서 제거됨. **G1이 현재 표준**
 - **"Stop-the-World는 없어졌다"** — ZGC도 루트 스캔 등 일부 STW는 존재. 다만 **ms 미만**으로 짧음
+- **"GC가 있으니 Java에는 메모리 누수가 없다"** — GC는 도달할 수 없는 객체만 회수한다. 더 쓰지 않는데 static, cache, listener 등에서 여전히 도달 가능한 객체는 남는다([[JVM-GC-Memory-Leak]])
 
 ## 면접 체크포인트
 
@@ -167,6 +168,7 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 ## 관련 문서
 - [[JVM-Architecture|JVM 아키텍처 (ClassLoader, Runtime Data Area, JIT)]]
 - [[JVM-Container-Memory|JVM 컨테이너 메모리 (used vs committed, RAMPercentage, G1 uncommit)]]
+- [[JVM-GC-Memory-Leak|JVM 메모리 누수 (도달 가능한 불필요 객체, heap dump 진단)]]
 - [[GC-Algorithm|GC 알고리즘 이론 (Tri-color Marking, Incremental, Concurrent, Work Stealing)]]
 - [[Java-Backend-Fundamentals|Java 백엔드 면접 기초]]
 - [[V8|V8 엔진 (JIT, Generational GC)]]

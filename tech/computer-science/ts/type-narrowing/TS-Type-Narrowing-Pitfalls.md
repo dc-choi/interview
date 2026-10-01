@@ -3,7 +3,7 @@ tags: [cs, typescript, type-narrowing, type-guard, type-predicate]
 status: done
 category: "CS - TypeScript"
 aliases: ["타입 좁히기 함정", "클로저 좁힘 해제"]
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 ---
 
 # TS Type Narrowing — control flow, 흔한 실수, 면접 체크포인트
@@ -57,12 +57,33 @@ function printLater(value: string | undefined) {
 
 `any`는 타입 시스템 우회 — 신뢰 X 데이터는 항상 `unknown`으로 받고 좁히기.
 
+## null이 섞인 유니온의 `in`과 `instanceof`
+
+여러 종류가 섞인 유니온은 원시 타입을 `typeof`, 내장 클래스 인스턴스를 `instanceof`, 남은 객체 타입을 `in`이나 판별 필드로 차례로 좁힌다.
+
+```ts
+type Person = { name: string; age: number };
+
+function describe(value: number | string | Date | null | Person) {
+  if (typeof value === "number") return value.toFixed();
+  if (typeof value === "string") return value.toUpperCase();
+  if (value instanceof Date) return value.toISOString();
+  // 남은 타입: Person | null
+  if (value !== null && "age" in value) return `${value.name} ${value.age}`;
+  return "none";
+}
+```
+
+- `in`의 오른쪽 피연산자가 객체가 아니면(`null`, `undefined`, 원시값) 실행 시 TypeError가 난다. `strictNullChecks`에서는 `'value' is possibly 'null'`(TS18047)로 막히지만, 옵션이 꺼져 있으면 컴파일을 통과하고 런타임에 실패한다. `in` 앞에서 `null`을 먼저 제외한다.
+- `instanceof`의 오른쪽에는 런타임 생성자 값이 와야 한다. type alias나 interface로 만든 `Person`은 값이 없어 `value instanceof Person`이 TS2693(only refers to a type)이다. 구조로 구분할 때는 `in`이나 판별 필드를 쓴다.
+
 ## 흔한 실수
 
 - **Type predicate가 거짓 약속** — 함수 본문이 검증을 안 하는데 `x is T` 선언. 컴파일러는 의심 X.
 - **`typeof null === 'object'`** 잊고 좁히기 후 `.length` 호출 → 런타임 오류.
 - **`instanceof` 다른 realm 함정** — 메시지 패싱, iframe, worker 경계에서 prototype 안 통함.
 - **`in` 연산자가 prototype 체인 포함** — 상속받은 속성도 true.
+- **`in` 앞에서 `null` 미제외** — 오른쪽 피연산자가 `null`, `undefined`, 원시값이면 런타임 TypeError. `value !== null &&`로 먼저 제외한다.
 - **클로저의 재할당 분석 무시** — 클로저 자체가 아니라 마지막 대입과 중첩 함수의 대입 여부가 좁힘 보존을 결정한다.
 - **exhaustive `default` 누락** — 새 variant 추가 시 컴파일러가 안 잡음. `assertNever` 패턴.
 - **Assertion function 시그니처 빠뜨림** — 일반 throw 함수와 구분 안 돼 좁히기 안 됨. `asserts x is T` 명시.
@@ -82,3 +103,5 @@ function printLater(value: string | undefined) {
 
 - [TypeScript Handbook, Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)
 - [TypeScript 5.4, Preserved Narrowing in Closures Following Last Assignments](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-4.html#preserved-narrowing-in-closures-following-last-assignments)
+- [MDN, in](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/in)
+- [인프런, 이정환 Winterlood, 타입 좁히기](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=156636)

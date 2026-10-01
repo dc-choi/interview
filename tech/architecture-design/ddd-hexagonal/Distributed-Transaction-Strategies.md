@@ -131,7 +131,28 @@ Kafka key는 같은 key를 같은 partition으로 보내는 기반이며, Kafka�
 - 분산 호출의 timeout은 실패가 아니라 결과 미확인이다.
 - 최종 일관성은 언젠가 알아서 맞는다는 뜻이 아니라 수렴시키는 복구 메커니즘과 기한이 있다는 뜻이다.
 
+## 예약 원장의 수량 표현과 확정 결정
+
+총량과 예약량을 저장한다면 가용량은 `총량 - 예약량`이다. Try는 예약량만 늘리고, Confirm은 총량과 예약량을 함께 줄이며, Cancel은 예약량만 줄인다. 가용량 자체를 저장하는 모델의 계산식과 섞으면 확정 시 이중 차감하거나 취소 때 복원하지 못한다. 예약 원장과 자원 카운터의 변경은 같은 로컬 트랜잭션으로 묶는다.
+
+같은 요청의 단계 중복과 서로 다른 요청의 자원 경쟁은 별도 문제다. 요청 ID 잠금만으로 다른 주문의 같은 재고 갱신을 막지 못한다. 영속적인 요청 키 제약과 상태 전이 가드, 자원 행의 조건부 갱신이나 version 검사를 함께 설계한다. 프로세스 외부 락의 만료만을 정합성의 최종 보장으로 삼지 않는다.
+
+Try가 실패하면 확보한 예약을 취소할 수 있지만, 최종 Confirm 결정을 내리고 일부 참여자가 확정한 뒤에는 무조건 Cancel로 되돌리면 안 된다. 결정과 결과 미확인 상태를 영속화하고 조회와 멱등 재시도로 수렴시킨다. 복구 불가능한 업무 충돌은 별도 보상과 운영 절차로 처리한다. 미확인 응답을 받은 사용자의 재주문도 업무 키로 연결해야 중복 확정을 피할 수 있다.
+
+MySQL XA에서는 `XA START`, 작업, `XA END`, `XA PREPARE` 뒤 최종 결정을 수행한다. `END`는 commit이 아니므로 충돌하는 갱신이 계속 기다릴 수 있다. `XA RECOVER`로 미결 prepared 거래를 찾고 코디네이터의 영속 결정과 대조한다. 응답을 받지 못했다는 이유만으로 임의의 rollback을 선택하지 않는다. 확인: 2026-10-01, [MySQL 8.4 XA 상태](https://dev.mysql.com/doc/refman/8.4/en/xa-states.html).
+
 ## 출처
+
+- [TCC 구현하기(1) - Product Try API 구현하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325064)
+- [TCC 구현하기(2) - 동시성문제 해결하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325074)
+- [TCC 구현하기(3) - Product Confirm API 구현하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325165)
+- [TCC 구현하기(4) - Product Cancel API 구현하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325166)
+- [TCC 구현하기(5) - Point Try API 구현하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325228)
+- [TCC 구현하기(6) - Point Confirm API 구현하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325229)
+- [TCC 구현하기(7) - Point Cancel API 구현하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325230)
+- [TCC 구현하기(8) - Order service 구현하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325609)
+- [TCC 구현하기(10) - Retry 를 활용하여 일시적인 오류에 대처하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325612)
+- [실무에서는 많이 사용하는것은 무엇인가요 ?](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325833)
 
 - [PostgreSQL, PREPARE TRANSACTION](https://www.postgresql.org/docs/current/sql-prepare-transaction.html)
 - [Apache Seata, TCC Mode](https://seata.apache.org/docs/v2.4/dev/mode/tcc-mode/)

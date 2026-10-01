@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, performance, browser]
 status: done
-verified_at: 2026-09-28
+verified_at: 2026-09-30
 category: "웹&네트워크(Web&Network)"
 aliases: ["Browser Main Thread", "브라우저 메인 스레드", "Long Task"]
 ---
@@ -14,8 +14,9 @@ aliases: ["Browser Main Thread", "브라우저 메인 스레드", "Long Task"]
 
 ## 동작 원리 (mental model)
 
-- 화면은 주기적으로(60Hz면 약 16.6ms마다) 한 프레임을 그린다. 그 예산 안에 JavaScript, 스타일과 레이아웃, 페인트가 끝나야 프레임을 놓치지 않는데, 브라우저 내부 처리가 시간을 먹으므로 코드에 실제로 쓸 수 있는 시간은 그보다 짧다.
-- 메인 스레드는 태스크 큐를 하나씩 실행하는 이벤트 루프로 돈다. 하나의 태스크가 길면(long task, 관례상 50ms 이상) 그 사이 들어온 클릭, 스크롤, 애니메이션 프레임이 뒤로 밀려 버벅임(jank)으로 나타난다.
+- 메인 스레드의 일은 두 종류다. 하나는 JavaScript 실행으로, 직접 짠 코드와 이벤트 핸들러, 타이머, 네트워크 응답 콜백, 프레임워크 내부 동작이 화면 갱신 주기와 무관하게 큐 순서대로 돈다. 다른 하나는 화면 그리기로, DOM이나 스타일이 바뀌면 `requestAnimationFrame` 콜백, 스타일 계산, 레이아웃, 페인트 명령 생성을 차례로 거친다. 바뀐 것이 없으면 이 단계는 건너뛰고, 결과 레이어를 합성하는 단계만 컴포지터 스레드가 맡는다. 두 종류의 일이 같은 스레드에서 한 줄로 선다.
+- 화면은 주기적으로(60Hz면 약 16.6ms마다) 한 프레임을 그린다. 그 예산 안에 JavaScript, 스타일과 레이아웃, 페인트가 끝나야 프레임을 놓치지 않는데, 브라우저 내부 처리가 시간을 먹으므로 코드에 실제로 쓸 수 있는 시간은 보통 10ms 남짓으로 본다. 120Hz 기기에서는 프레임 예산 자체가 절반(약 8.3ms)이다.
+- 메인 스레드는 태스크 큐를 하나씩 실행하는 이벤트 루프로 돈다. 렌더링은 태스크 도중에 끼어들지 못하고 태스크 사이에서만 돈다. 하나의 태스크가 길면(long task, 50ms 초과) 그 사이 들어온 클릭, 스크롤, 애니메이션 프레임이 뒤로 밀려 버벅임(jank)으로 나타난다.
 - 문제의 본질은 코드가 느린 것 자체가 아니라 긴 작업이 메인 스레드를 오래 독점하는 것이다. 같은 총량이라도 잘게 쪼개 사이사이 제어권을 넘기면 반응성은 유지된다.
 
 ## 렌더링 차단과 변경 비용
@@ -31,6 +32,8 @@ aliases: ["Browser Main Thread", "브라우저 메인 스레드", "Long Task"]
 `display: none` 전환은 박스를 만들거나 없애 주변 배치를 다시 계산하게 하고, `visibility: hidden` 전환은 공간을 유지하므로 배치를 바꾸지 않는다.
 
 ## 반응성을 지키는 패턴
+
+패턴은 두 갈래다. 메인 스레드를 쓰되 시간을 나눠 쓰는 1~4번은 [[Browser-Main-Thread-Scheduling|메인 스레드 스케줄링]]에, 일을 메인 스레드 밖으로 보내거나 없애는 5~7번은 [[Browser-Main-Thread-Offloading|메인 스레드 밖으로 보내기]]에 자세히 둔다.
 
 1. 분할과 양보(chunking, yielding): 큰 루프를 조각내고 사이에 제어권을 넘겨 입력과 렌더가 끼어들게 한다. `setTimeout(0)`, `MessageChannel`, 또는 `scheduler.yield`, `scheduler.postTask` 같은 스케줄링 API를 쓰되 지원 범위는 대상 브라우저에서 확인한다. 조각을 마친 뒤 다음 `setTimeout(fn, 0)`을 거는 연쇄는 몇 번 재예약한 뒤부터 조각 사이에 최소 4ms가 끼어든다. 작업 전에 다음 타이머를 먼저 걸면 이 대기가 작업 시간과 겹친다([[Event-Loop-Microtask#타이머 API 차이|타이머 API 차이]]).
 2. 배치(batching): 자주 발생하는 입력, 스크롤, resize는 debounce나 throttle로 묶고, DOM 변경과 상태 업데이트를 모아 한 번에 적용한다.
@@ -96,7 +99,7 @@ const throttle = <A extends unknown[]>(fn: (...args: A) => void, intervalMs: num
 ## 체크포인트
 
 - 버벅임의 원인은 대개 특정 long task다. 성능 패널이나 Long Tasks API로 50ms를 넘는 태스크를 먼저 찾는다.
-- INP(Interaction to Next Paint) 같은 반응성 지표는 결국 입력 후 메인 스레드가 얼마나 빨리 다음 프레임을 그리는지를 본다.
+- INP(Interaction to Next Paint) 같은 반응성 지표는 결국 입력 후 메인 스레드가 얼마나 빨리 다음 프레임을 그리는지를 본다. TBT(Total Blocking Time)는 로딩 구간의 long task마다 50ms를 넘긴 시간을 합한 값이라 메인 스레드가 막혀 있던 총량에 가깝다.
 - 브라우저 이벤트 루프는 렌더링 프레임을 끼워 도는 점에서 Node.js 이벤트 루프의 I/O 단계 구조와 목적이 다르다.
 
 ## 출처
@@ -104,6 +107,7 @@ const throttle = <A extends unknown[]>(fn: (...args: A) => void, intervalMs: num
 - [브라우저의 메인 스레드는 비싸다 — kciter.so](https://kciter.so/posts/the-expensive-main-thread/)
 - [MDN, Populating the page: how browsers work](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work)
 - [MDN, Critical rendering path](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Critical_rendering_path)
+- [Optimize long tasks — web.dev](https://web.dev/articles/optimize-long-tasks)
 - [MDN, Animation performance and frame rate](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Animation_performance_and_frame_rate)
 - [HTML Standard, Interactions of styling and scripting](https://html.spec.whatwg.org/multipage/semantics.html#interactions-of-styling-and-scripting), [HTML Standard, Link type "stylesheet"](https://html.spec.whatwg.org/multipage/links.html#link-type-stylesheet), [HTML Standard, Render-blocking mechanism](https://html.spec.whatwg.org/multipage/dom.html#render-blocking-mechanism), [HTML Standard, Prepare the script element](https://html.spec.whatwg.org/multipage/scripting.html#prepare-the-script-element), [HTML Standard, The end](https://html.spec.whatwg.org/multipage/parsing.html#the-end), [HTML Standard, Timer initialization steps](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timer-initialisation-steps)
 - [W3C, CSS 2.2 Visual effects](https://www.w3.org/TR/CSS22/visufx.html)
@@ -113,6 +117,8 @@ const throttle = <A extends unknown[]>(fn: (...args: A) => void, intervalMs: num
 
 ## 관련 문서
 
+- [[Browser-Main-Thread-Scheduling|메인 스레드 스케줄링]]
+- [[Browser-Main-Thread-Offloading|메인 스레드 밖으로 보내기]]
 - [[In-Browser-Build|브라우저 내 빌드 런타임]]
 - [[Browser-CSS-Animation-and-Compatibility|브라우저 CSS 애니메이션과 호환성]]
 - [[Thread-vs-Event-Loop|스레드와 이벤트 루프]]

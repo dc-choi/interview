@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, react, state, localstorage, persistence]
 status: done
-verified_at: 2026-09-28
+verified_at: 2026-09-30
 category: "웹&네트워크(Web&Network)"
 aliases: ["React Local State", "React localStorage 영속화"]
 ---
@@ -35,9 +35,20 @@ setMemos(current => current.map(memo =>
 
 Event propagation도 state 설계와 분리한다. 행 click은 선택, 내부 삭제 button은 삭제라면 button에서 propagation을 막을 수 있지만 keyboard와 accessible name도 함께 제공한다.
 
-## localStorage 경계
+## localStorage와 sessionStorage 경계
 
 `localStorage`는 origin별 string key/value 저장소이며 browser session을 넘어 남을 수 있다. JSON 직렬화가 Date, class, `undefined`와 cyclic object를 보존하지 않는다는 점을 고려한다.
+
+Web Storage는 cookie와 달리 요청마다 server로 전송되지 않는다([[Web-Service-Structure|cookie와 Web Storage]]). 두 저장소는 공유 범위와 수명이 다르다.
+
+| 저장소 | 공유 범위 | 수명 | 맞는 용도 |
+|---|---|---|---|
+| `localStorage` | 같은 origin의 모든 tab과 window | 만료 없음. private browsing에서는 마지막 private tab을 닫을 때 삭제 | 다음 방문에도 남길 memo와 설정 |
+| `sessionStorage` | origin과 tab(top-level browsing context) | reload와 복원에는 남고 tab을 닫으면 삭제 | tab별 임시 draft와 단계 진행 |
+
+새 tab이나 window에서 page를 열면 새 session이 시작된다. opener가 있으면 처음에는 opener의 `sessionStorage` 복사본을 받지만 이후 변경은 서로 독립이다.
+
+두 저장소 모두 key와 value를 문자열로 저장한다. object를 그대로 `setItem`하면 `"[object Object]"`만 남으므로 저장할 때 `JSON.stringify`, 읽을 때 `JSON.parse`를 쓰고 key가 없으면 `getItem`이 `null`을 반환하는 경우를 처리한다. 추가, 수정과 삭제마다 `setItem`을 반복하지 말고 직렬화, schema version과 validation을 storage module 한곳에 모은다.
 
 ```jsx
 const [memos, setMemos] = useState(() => {
@@ -55,8 +66,9 @@ const [memos, setMemos] = useState(() => {
 - client JavaScript가 읽을 수 있으므로 access token과 민감 정보 저장소로 사용하지 않는다.
 - schema version과 runtime validation을 두고 오래된 값의 migration 또는 폐기 정책을 정한다.
 - SSR 환경에서는 `window`와 `localStorage`가 없으므로 client boundary에서 접근한다.
+- Chrome DevTools의 Application > Storage > Local Storage에서 현재 origin의 값을 보고 편집, 삭제할 수 있다. 손상된 값이나 migration 상황을 재현할 때 쓴다.
 
-저장을 debounce한다면 unmount만으로는 대기 중인 timer가 취소되지 않으므로 Effect cleanup에서 timer를 정리한다. cleanup이 timer를 취소하거나 page가 닫히면 마지막 변경이 저장되지 않을 수 있으므로, 해제 시점에 바로 저장할지 버릴지 정한다([[Browser-Main-Thread#debounce와 throttle|debounce와 throttle]]). `useCallback` 자체는 debounce가 아니다. 여러 tab 동기화가 필요하면 `storage` event를 처리하되 같은 document의 write에는 해당 event가 발생하지 않는다는 점을 고려한다.
+저장을 debounce한다면 unmount만으로는 대기 중인 timer가 취소되지 않으므로 Effect cleanup에서 timer를 정리한다. cleanup이 timer를 취소하거나 page가 닫히면 마지막 변경이 저장되지 않을 수 있으므로, 해제 시점에 바로 저장할지 버릴지 정한다([[Browser-Main-Thread#debounce와 throttle|debounce와 throttle]]). `useCallback` 자체는 debounce가 아니다. debounce된 함수는 만들 때마다 자기 timer를 closure에 가지므로, component 본문에서 render마다 다시 만들면 호출마다 다른 timer가 생겨 호출이 묶이지 않는다. instance를 한 번만 만들어 `useRef` 등으로 유지하고 최신 값은 인자로 넘기거나, 값이 바뀔 때마다 Effect에서 `setTimeout`을 걸고 cleanup에서 지우는 방식으로 대신한다. 여러 tab 동기화가 필요하면 `storage` event를 처리하되 같은 document의 write에는 해당 event가 발생하지 않는다는 점을 고려한다.
 
 IndexedDB, server 저장과 conflict resolution이 필요한 규모라면 localStorage를 임시 database처럼 확장하지 않는다.
 
@@ -72,6 +84,10 @@ IndexedDB, server 저장과 conflict resolution이 필요한 규모라면 localS
 - [React, Extracting State Logic into a Reducer](https://react.dev/learn/extracting-state-logic-into-a-reducer)
 - [React, Synchronizing with Effects](https://react.dev/learn/synchronizing-with-effects#putting-it-all-together)
 - [WHATWG HTML, Web Storage](https://html.spec.whatwg.org/multipage/webstorage.html)
+- [MDN, Window.localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
+- [MDN, Window.sessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage)
+- [MDN, Storage.setItem()](https://developer.mozilla.org/en-US/docs/Web/API/Storage/setItem)
+- [Chrome DevTools, View and edit local storage](https://developer.chrome.com/docs/devtools/storage/localstorage)
 - IT Share, [Memo project 설계](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161787)
 - IT Share, [기본 component 구현](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161788)
 - IT Share, [Memo 수정과 선택](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161789)

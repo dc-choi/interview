@@ -1,7 +1,7 @@
 ---
 tags: [web, http, cookie, security, session]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "Web - HTTP"
 aliases: ["Cookie", "HTTP Cookie"]
 ---
@@ -44,11 +44,34 @@ User Agent는 메모리, 개인정보 정책과 저장 한도에 따라 만료 �
 
 Cookie에 표시 설정 같은 데이터를 직접 넣을 수는 있지만 무결성이 필요한 값은 Server 검증이나 서명이 필요하다. Session 방식에서는 Cookie에 opaque ID만 두고 중요한 상태를 Server 저장소에 둔다.
 
+## Cookie와 웹 스토리지의 역할 분담
+
+Cookie는 범위가 맞는 모든 요청에 실려 요청마다 전송 비용이 든다. 브라우저는 도메인당 Cookie 수와 Cookie당 크기(보통 4KB)도 제한한다. 그래서 Cookie에는 Server가 매 요청 알아야 하는 세션 ID나 인증 식별자처럼 최소한만 둔다.
+
+- Server가 몰라도 되는 비민감 데이터(표시 설정, UI 상태)는 웹 스토리지를 검토한다. Server로 전송되지 않고 필요할 때 JavaScript로 읽는다. `localStorage`는 origin 단위로 브라우저를 다시 열어도 남고, `sessionStorage`는 origin과 탭 단위로 탭을 닫으면 사라진다. 사생활 보호 모드의 `localStorage`는 창을 닫으면 지워진다.
+- 웹 스토리지는 같은 origin의 스크립트가 모두 읽을 수 있어 XSS에 노출된다. 토큰과 비밀값은 두지 않고 `HttpOnly`, `Secure`, `SameSite` Cookie로 보낸다([[JWT|JWT 유출 경로]], [[Auth-Method-Selection|인증 방식 선택]]).
+
+## Cookie 삭제와 로그아웃
+
+Cookie를 지우려면 같은 이름, Domain, Path로 `Max-Age=0`이나 지난 `Expires`를 담은 `Set-Cookie`를 다시 보낸다. User Agent는 이름, Domain, Path가 같은 Cookie를 같은 Cookie로 보고 교체하므로, 삭제 응답의 Domain이나 Path가 발급 때와 다르면 원래 Cookie가 남는다.
+
+```http
+Set-Cookie: session_id=; Path=/; Max-Age=0; Secure; HttpOnly; SameSite=Lax
+```
+
+- 프레임워크 삭제 함수도 같은 규칙을 따른다. Express `res.clearCookie()`는 만료일이 지난 `Set-Cookie`를 보내며, 발급 때 `res.cookie()`에 준 옵션과 같아야 브라우저가 지운다. Servlet API에서는 `setMaxAge(0)`인 Cookie를 응답에 추가한다.
+- Cookie 삭제는 Client에 지워 달라고 요청할 뿐이다. 이미 복사되거나 탈취된 값은 계속 쓸 수 있으므로 로그아웃의 기준은 Server 세션 무효화나 토큰 폐기다. Server 세션을 무효화하면 브라우저에 세션 ID Cookie가 남아도 대응하는 세션이 없어 인증되지 않는다([[Session|세션]]).
+
 ## 출처
 
 - 김영한 강사, [쿠키](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61382)
+- 김영한 강사, [로그인 처리하기 - 쿠키 사용](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83329)
+- 김영한 강사, [로그인 처리하기 - 서블릿 HTTP 세션1](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83334)
 - [RFC 6265, HTTP State Management Mechanism](https://www.rfc-editor.org/rfc/rfc6265.html)
 - [IETF HTTPbis, Cookies draft](https://datatracker.ietf.org/doc/draft-ietf-httpbis-rfc6265bis/)
+- [MDN, Using HTTP cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies)
+- [MDN, Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)
+- [Express 5.x API, Response (res.clearCookie)](https://expressjs.com/en/5x/api/response/)
 
 ## 관련 문서
 

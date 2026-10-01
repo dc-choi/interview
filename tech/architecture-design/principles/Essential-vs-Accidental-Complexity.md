@@ -21,6 +21,8 @@ aliases: ["Essential vs Accidental Complexity", "본질적 복잡성", "우발�
 
 그러나 무엇을 만들지, 규칙이 서로 어떻게 얽히는지 같은 본질적 복잡성은 그대로 남는다. 좋은 설계란 우발적 복잡성을 최소로 걷어내 본질적 복잡성만 드러난 상태에 가깝다. 반대로 나쁜 코드는 본질적 복잡성 위에 도구발 잡음을 잔뜩 얹어 둘을 구분하기 어렵게 만든다.
 
+복잡성을 줄이려고 들인 체계(프레임워크, 추상화 계층, 규칙)가 스스로 새 문제를 만들고, 그 문제를 풀려고 또 다른 체계를 들이는 순환도 흔하다. 이 순환이 반복되면 원래 문제가 아니라 수단의 문제를 푸는 데 시간을 쓰게 된다. 온갖 장비를 거친 오디오 애호가가 결국 평범한 스피커로 음악을 듣는 것처럼, 여러 체계를 거친 뒤에야 본래 문제로 돌아오기도 한다. 체계를 더하기 전에 그것이 줄이는 복잡성이 새로 만드는 복잡성보다 큰지 묻는다. [[Software-Boundaries]]
+
 ## 결정론적 도구 vs 비결정론적 생성기
 
 도구가 우발적 복잡성을 걷어낼 수 있었던 전제는 **예측 가능성**이다.
@@ -53,6 +55,7 @@ aliases: ["Essential vs Accidental Complexity", "본질적 복잡성", "우발�
 
 - [Yes, and... — htmx.org, Carson Gross](https://htmx.org/essays/yes-and/)
 - [AI 시대에도 프로그래밍을 배워야 하는가 — GeekNews](https://news.hada.io/topic?id=27550)
+- [deepsleep - 해볼건 다해봤고, 이제 일해야죠 — YouTube, 생활코딩](https://www.youtube.com/watch?v=35gDuKb04ew)
 - Fred Brooks, No Silver Bullet: Essence and Accident in Software Engineering (1986) — 본질적, 우발적 복잡성 구분의 기원
 
 ## 관련 문서

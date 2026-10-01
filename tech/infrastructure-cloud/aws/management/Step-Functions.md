@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, step-functions, workflow, orchestration, serverless]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "Infrastructure - AWS"
 aliases: ["AWS Step Functions", "Step Functions", "State Machine"]
 ---
@@ -47,6 +47,19 @@ AWS 서비스 호출과 애플리케이션 작업을 상태 머신으로 연결�
 
 지원 여부는 워크플로 유형과 대상 서비스에 따라 다르다. Lambda 호출뿐 아니라 AWS SDK 통합, 최적화 통합, HTTPS API 호출을 사용할 수 있으며, 가능하면 워크플로용 응답 처리가 적용된 최적화 통합을 먼저 검토한다.
 
+### 비동기 작업 폴링 루프
+
+`.sync`를 쓸 수 없을 때는 Task, Wait, Choice로 완료를 폴링한다. 콘솔 샘플 프로젝트인 작업 폴러(Lambda와 AWS Batch)가 이 구조다.
+
+1. Submit Job Task가 작업을 제출하고 job ID를 상태 데이터에 남긴다
+2. Wait가 정해진 시간만큼 기다린다
+3. Get Job Status Task가 상태를 조회한다
+4. Choice가 완료면 최종 결과 처리로, 실패면 `Fail`로, 진행 중이면 다시 Wait로 보낸다
+
+- 루프 상한은 `Retry`의 `MaxAttempts`가 아니다. `MaxAttempts`(기본 3)는 한 상태가 오류를 냈을 때의 재시도 횟수라 작업이 아직 진행 중이라는 정상 응답에는 적용되지 않는다. 시도 횟수를 상태 데이터나 변수에 누적해 Choice로 검사하거나 실행 전체 `TimeoutSeconds`를 둔다
+- Batch, ECS처럼 최적화 통합이 `.sync`를 지원하면(예: `arn:aws:states:::batch:submitJob.sync`) 루프보다 `.sync`가 단순하다. Express는 `.sync`를 지원하지 않아 폴링 루프가 대안이지만 실행이 최대 5분이라 짧은 작업에만 맞는다
+- Standard 실행 기록은 25,000 이벤트가 상한이라 짧은 간격으로 오래 도는 루프는 기록이 차서 실행이 실패한다. Standard는 상태 전이마다 과금되고 재시도도 전이로 계산되므로 대기 간격과 반복 상한을 함께 설계하고, 길어지면 새 실행으로 이어 처리한다
+
 ## 오류와 보상 설계
 
 - `Task`, `Parallel`, `Map`에 `Retry`를 두고 오류 이름별 `IntervalSeconds`, `BackoffRate`, `MaxAttempts`, `MaxDelaySeconds`, `JitterStrategy`를 설정한다.
@@ -75,6 +88,9 @@ AWS 서비스 호출과 애플리케이션 작업을 상태 머신으로 연결�
 - [AWS Step Functions — Choosing workflow type](https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html)
 - [AWS Step Functions — Service integrations](https://docs.aws.amazon.com/step-functions/latest/dg/integrate-services.html)
 - [AWS Step Functions — Error handling](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html)
+- [AWS Step Functions — Poll for job status with Lambda and AWS Batch](https://docs.aws.amazon.com/step-functions/latest/dg/sample-project-job-poller.html)
+- [AWS Step Functions — Run AWS Batch workloads](https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html)
+- [AWS Step Functions — Service quotas](https://docs.aws.amazon.com/step-functions/latest/dg/service-quotas.html)
 - [Sungmin Kim 강사 — Serverless란?](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=69321)
 - [Sungmin Kim 강사 — Step Function](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=69322)
 

@@ -1,7 +1,7 @@
 ---
 tags: [web, graphql, api, query-language, introspection]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Query Language", "GraphQL 쿼리 언어", "fragment", "variable", "directive", "introspection"]
 ---
@@ -17,6 +17,16 @@ aliases: ["GraphQL Query Language", "GraphQL 쿼리 언어", "fragment", "variab
 ## 인자
 
 REST가 엔드포인트에 인자 한 벌만 주는 것과 달리, 모든 필드와 중첩 객체가 각자 인자를 가질 수 있다. scalar 필드에도 인자를 줄 수 있는데, 예를 들어 길이 단위 변환을 클라이언트마다가 아니라 서버에서 한 번 구현하는 식이다(`height(unit: FOOT)`).
+
+인라인 리터럴은 타입마다 표기가 다르다. enum 값은 따옴표 없는 이름이고 String은 따옴표로 감싼다.
+
+```graphql
+query { peopleFiltered(sex: FEMALE, from: "California", page: 1, perPage: 10) { name } }
+```
+
+- 스펙은 문자열 리터럴을 enum 입력으로 받지 말고 request error를 내라고 정한다. 그래서 `sex: "FEMALE"`은 실행 전에 거부된다. 반대로 String 인자에 `from: California`처럼 따옴표 없는 이름을 넣으면 enum 리터럴로 파싱돼 역시 validation 오류다.
+- 변수는 다르다. JSON에는 enum 리터럴이 없어 `{ "sex": "FEMALE" }`처럼 같은 이름의 문자열로 보내고 서버가 그 이름의 enum 값으로 받는다. 따옴표 규칙은 문서 안 인라인 리터럴에만 적용되므로, 값을 변수로 보내라는 아래 권고를 따르면 이 실수가 사라진다.
+- 스키마가 인자의 관문이다. 필드에 선언되지 않은 인자 이름(Argument Names 규칙)과 기본값 없는 Non-Null 인자의 누락(Required Arguments 규칙)은 validation에서 거부되어 resolver까지 가지 않는다. 데이터 계층이 필터를 이미 지원해도 스키마에 인자를 선언해야 클라이언트가 쓸 수 있다(graphql-js 16.14.2, 17.0.2 재현).
 
 ## alias
 
@@ -62,6 +72,8 @@ query Hero($withFriends: Boolean!) {
 }
 ```
 
+조건 변수는 클라이언트가 정한다. Boolean 하나로 관리자 화면과 일반 화면을 같은 쿼리로 처리하는 것은 응답 모양 조절이지 접근 제어가 아니므로, 관리자 전용 필드에는 서버 인가가 따로 필요하다([[GraphQL-Security|인가]]).
+
 ## __typename
 
 어느 지점에서든 그 위치 Object 타입의 이름을 주는 메타 필드. union이나 interface에서 클라이언트가 타입을 구분하는 데 쓴다. `__`로 시작하는 이름은 전부 예약이고(다른 예약 필드로 `__schema`, `__type`), Object, Interface, Union 출력 타입에서 조회할 수 있다.
@@ -83,6 +95,8 @@ query { __type(name: "Droid") { name kind fields { name } } }
 ## 흔한 실수
 
 - 같은 필드를 다른 인자로 조회하며 alias를 안 씀. 결과 키가 충돌한다.
+- 인라인 enum 인자에 따옴표를 붙이거나 String 인자의 따옴표를 빠뜨림. 변수로 보내면 JSON 문자열 하나로 통일된다.
+- resolver만 고치고 스키마에 인자를 선언하지 않음. 선언되지 않은 인자는 validation에서 거부된다.
 - 사용자 입력으로 쿼리 문자열을 조립함. 변수를 써야 한다.
 - 변수 타입에 output Object를 지정. Scalar, Enum, Input Object만 된다.
 - non-null 인자에 nullable 변수를 무조건 금지하거나 허용함. 변수와 위치의 기본값 예외까지 확인해야 한다.
@@ -112,4 +126,9 @@ query { __type(name: "Droid") { name kind fields { name } } }
 - [GraphQL September 2025 Specification — Variables](https://spec.graphql.org/September2025/#sec-Language.Variables)
 - [GraphQL September 2025 Specification — Variable usage validation](https://spec.graphql.org/September2025/#sec-All-Variable-Usages-Are-Allowed)
 - [GraphQL September 2025 Specification — Directives](https://spec.graphql.org/September2025/#sec-Type-System.Directives)
+- [GraphQL September 2025 Specification — Enum input coercion](https://spec.graphql.org/September2025/#sec-Enums.Input-Coercion)
+- [GraphQL September 2025 Specification — Argument Names](https://spec.graphql.org/September2025/#sec-Argument-Names)
+- [GraphQL September 2025 Specification — Required Arguments](https://spec.graphql.org/September2025/#sec-Required-Arguments)
+- [얄팍한 코딩사전 강사 — 인자와 인풋 타입](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=65216)
 - [얄팍한 코딩사전 강사 — Fragment 사용하기](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=65981)
+- [Hong 강사 — 3가지 통신 패턴 및 횡단 관심사를 위한 Directive와 설계 원칙](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449777)

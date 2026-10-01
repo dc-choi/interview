@@ -158,7 +158,7 @@ git rebase -i HEAD~5
 
 ## Interactive Rebase, Cherry-pick
 
-`git rebase -i HEAD~N`의 명령어: `pick`(그대로), `squash`(이전과 합침, 메시지 병합), `fixup`(합침, 메시지 무시), `reword`(메시지 수정), `edit`(해당 커밋 멈춤), `drop`(삭제). push 전 커밋 정리용.
+`git rebase -i HEAD~N`의 명령어: `pick`(그대로), `squash`(이전과 합침, 메시지 병합), `fixup`(합침, 메시지 무시), `reword`(메시지 수정), `edit`(해당 커밋 멈춤), `drop`(삭제). push 전 커밋 정리용. 기준 커밋 선택, 목록 순서와 `edit`로 커밋을 나누는 절차는 [[Git-Working-Tree-and-Commits#amend와 interactive rebase|Git 작업 트리와 커밋 관리]]에 있다.
 
 **Cherry-pick vs Rebase**: Cherry-pick은 히스토리 위치와 무관하게 고른 커밋을 현재 브랜치 위에 각각 새 커밋으로 다시 적용하고 원본 브랜치는 그대로 둔다. 커밋 여러 개나 `A..B` 범위도 고를 수 있다. Rebase는 `<upstream>`에 없는 현재 브랜치 커밋 전체를 새 base 위에 다시 만들고 브랜치 포인터까지 옮긴다. 차이는 커밋 개수가 아니라 base와 브랜치 ref를 바꾸느냐에 있다.
 

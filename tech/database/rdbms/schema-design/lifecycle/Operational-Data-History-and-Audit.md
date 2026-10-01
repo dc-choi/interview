@@ -128,6 +128,26 @@ LIMIT 1;
 - JSON diff 하나로 모든 entity를 합치기보다 중요한 domain은 typed snapshot column을 우선한다.
 - migration에서 current/history schema를 함께 변경하고 old application과의 mixed-version 호환을 확인한다.
 
+## History 적재의 시작과 두 시각
+
+Full-row history는 최초 INSERT부터 after-image를 남겨야 첫 상태를 복원할 수 있다. 변경 시마다 새 상태와 operation, entity key를 함께 기록한다. 업무상 효력 발생 시각과 이력이 시스템에 기록된 시각을 분리하면 지연 입력, 과거 정정과 재처리를 구분할 수 있다.
+
+## 종료 시각과 append-only
+
+이전 version의 valid_to를 갱신하면 조회는 단순해지지만 이력은 엄밀한 append-only가 아니다. 변경이 드문 master 데이터에서는 같은 transaction으로 이전 구간 종료와 새 구간 시작을 처리할 수 있다. 변경이 잦거나 감사상 수정 금지라면 종료 event나 다음 version 시각으로 경계를 계산하는 대안과 비교한다. master라는 이름만으로 필수 규칙으로 삼지 않는다.
+
+## 공통 event와 전용 history
+
+공통 audit에는 누가 어떤 entity에 어떤 operation을 했는지 추적하고, 과거 상태 복원에는 typed 전용 history를 사용한다. 모든 request, debug와 infrastructure log를 운영 DB에 넣으면 write와 보존 부담이 커진다. 로그 저장소로 분리하되 업무 변경과 감사 event의 유실 경계, correlation key와 접근 통제는 유지한다.
+
+## 추적 수준을 선택하는 질문
+
+생성/수정 시각만으로 충분한지, 행위자와 변경 사유가 필요한지, 특정 컬럼의 이전 값이나 전체 과거 상태까지 복원해야 하는지 구분한다. 이력 조회 빈도, 증빙 책임, 보존/파기 기준과 변경량으로 전용 history 도입을 결정한다. 모든 table에 같은 감사 컬럼을 강제하지 않는다.
+
+## 자동 timestamp와 업무 시각
+
+DB 또는 ORM의 생성/수정 timestamp는 시스템 write 시각이다. 주문 완료, 계약 효력과 같은 업무 시각은 별도 field로 표현한다. bulk SQL과 우회 write도 같은 규칙을 따르는지 확인하고 clock/timezone, transaction 시각과 statement 시각의 제품별 차이를 명시한다.
+
 ## 출처
 
 - [김영한 강사, 변경 이력이 필요한 이유](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401963)
@@ -147,6 +167,11 @@ LIMIT 1;
 - [김영한 강사, field-level 변경 log](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401978)
 - [김영한 강사, 공통 이력 table](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401979)
 - [김영한 강사, 전체 변경 이력 정리](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401980)
+- [인프런, 데이터 타입2 - 날짜와 시간 타입](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347676)
+- [인프런, 쇼핑몰 테이블 정의서](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347684)
+- [인프런, 정리(물리적 모델링 실습)](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347689)
+- [인프런, 정리(물리적 모델링)](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347679)
+
 
 ## 관련 문서
 

@@ -143,6 +143,14 @@ private nested type도 책임이 커지면 별도 top-level type으로 분리한
 - `this`와 `Outer.this`의 차이
 - anonymous class와 lambda의 `this` 차이
 
+## 생성, capture와 캡슐화
+
+static nested는 `new Outer.Nested()`, member inner는 `outer.new Inner()`로 생성하며 바깥 instance method의 new Inner는 현재 enclosing instance를 사용한다. 익명 class의 생성식은 반복 평가될 때 서로 다른 instance를 만들 수 있어 객체가 단 한 번만 생성된다는 뜻이 아니다. 바깥과 중첩 타입의 private 접근은 같은 nest 범위에서 양방향이며 instance member에는 해당 instance가 필요하다.
+
+local class는 method가 끝난 뒤에도 captured 값을 이용할 수 있다. 참조를 capture하면 object를 복제하는 것이 아니라 같은 참조를 보존한다. javac의 val$...나 this$0 같은 synthetic field 이름과 생성 여부는 언어 계약이 아니므로 reflection이나 직렬화 규칙의 고정 근거로 쓰지 않는다. enclosing instance를 실제로 사용하는 callback이 오래 살아남으면 바깥 객체를 보유할 수 있어 생명주기를 확인한다.
+
+내부 전용 message/value는 private static nested로 공개 표면을 줄일 수 있다. 바깥 상태를 쓰는 inner는 전용 getter 노출을 줄이지만 결합을 강화한다. 여러 외부 caller가 Outer.Nested를 반복 사용하거나 책임이 커지면 top-level 분리를 검토한다. 중첩은 단순한 파일 수 절약이 아니라 공개 경계의 선택이다.
+
 ## 출처
 
 - [JLS 8.1.3, Inner Classes and Enclosing Instances](https://docs.oracle.com/javase/specs/jls/se26/html/jls-8.html#jls-8.1.3)

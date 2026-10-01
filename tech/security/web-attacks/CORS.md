@@ -3,7 +3,7 @@ tags: [security, cors, browser, web]
 status: done
 category: "Security"
 aliases: ["CORS", "Cross-Origin Resource Sharing"]
-verified_at: 2026-09-12
+verified_at: 2026-09-30
 ---
 
 # CORS (Cross-Origin Resource Sharing)
@@ -132,6 +132,8 @@ fetch('https://api.example.test/me', {
 - `credentials: 'include'` 요청에 `Access-Control-Allow-Origin: *`만 보내고 쿠키를 기대 → CORS 응답 공유 실패
 - OPTIONS 메서드를 404로 처리 → 모든 preflight 실패 → 본 요청도 실패
 - 특정 Origin 화이트리스트 — 정규표현식, 동적 매칭 시 **버그로 `null`, `*` 반환하면 대형 사고**
+- 개발용 Origin 반사를 운영에 남김 — Express `cors`와 `@fastify/cors`(NestJS `enableCors`가 플랫폼에 따라 사용)의 `origin: true`는 요청의 `Origin` 값을 그대로 `Access-Control-Allow-Origin`에 돌려주고 `null`도 반사한다. `credentials: true`까지 켜면 반사된 구체 Origin과 `Access-Control-Allow-Credentials: true`가 함께 나가, credentials 요청에 금지된 `*`를 쓰지 않고도 쿠키 인증 응답을 모든 출처에 여는 설정이 된다. 인증 쿠키가 `SameSite=None`이면 브라우저의 제3자 쿠키 정책이 허용하는 한 어느 사이트든, `Lax`나 `Strict`여도 같은 사이트의 다른 서브도메인 페이지가 사용자 세션으로 응답을 읽는다
+  - 허용 Origin은 환경별 설정의 명시 목록으로 읽고 값이 없으면 막는 쪽을 기본값으로 둔다. 배포 뒤 목록 밖 `Origin`과 `Origin: null`로 요청해 `Access-Control-Allow-Origin`이 돌아오지 않는지 확인한다
 
 ### 클라이언트 쪽
 - `credentials` 기본값(`same-origin`)은 교차 출처에 쿠키를 안 보내는데, 이를 모르고 로그인이 안 된다며 디버깅에 시간 낭비
@@ -161,7 +163,7 @@ fetch('https://api.example.test/me', {
 - CORS가 브라우저 구현 스펙이라 서버 로그엔 정상 응답으로 남는 점(디버깅 함정), 서버 간 통신엔 미적용
 - Simple vs Preflight 구분 조건, 업로드 진행률 리스너와 `ReadableStream`도 preflight를 유발한다는 점
 - preflight 응답은 2xx여야 하지만 본 요청은 상태 코드와 무관하다는 차이
-- `credentials: 'include'`에서 `Access-Control-Allow-Origin: *`이 안 되는 이유와 `Authorization`을 직접 지정했을 때의 차이
+- `credentials: 'include'`에서 `Access-Control-Allow-Origin: *`이 안 되는 이유, 이를 Origin 반사로 피할 때의 위험과 `Authorization`을 직접 지정했을 때의 차이
 - Preflight 성능 비용과 Max-Age로 줄이는 방법
 - 로컬 dev-server 프록시 우회가 프로덕션에서 깨지는 이유
 - opaque 응답의 본문 읽기 제한과 classic script 실행/JSONP의 차이
@@ -178,8 +180,13 @@ fetch('https://api.example.test/me', {
 - [WHATWG Fetch Standard — CORS check](https://fetch.spec.whatwg.org/#cors-check)
 - [WHATWG Fetch Standard — filtered response](https://fetch.spec.whatwg.org/#concept-filtered-response-opaque)
 - [WHATWG HTML Standard — Fetching scripts](https://html.spec.whatwg.org/multipage/webappapis.html#fetching-scripts)
+- [MDN — Set-Cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie)
+- [NestJS — CORS](https://docs.nestjs.com/security/cors)
+- [expressjs/cors — README, Configuration Options](https://github.com/expressjs/cors#configuration-options)
+- [fastify/fastify-cors — README, Options](https://github.com/fastify/fastify-cors#options)
 - [매일메일 — CORS 질문 78](https://www.maeil-mail.kr/question/78)
 - [매일메일 — CORS 심화 질문 96](https://www.maeil-mail.kr/question/96)
+- [인프런, 윤상석, NestJS와 fastify & 협업을 위한 API 문서 만들기, CORS 문제](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=83936)
 
 ## 관련 문서
 - [[Single-Host-SPA-API-Deployment|단일 서버 SPA/API 배포에서의 CORS와 공개 환경 변수]]

@@ -20,7 +20,7 @@ User A: INSERT reservation
 User B: INSERT reservation → 이중 예약
 ```
 
-단순 조회 후 삽입 패턴은 Read Committed, Repeatable Read만으로 안전하지 않을 수 있다. 빈 결과를 읽었을 때 아무 row도 잠기지 않거나, DB마다 phantom 방지 방식이 다르기 때문이다.
+단순 조회 후 삽입 패턴은 Read Committed, Repeatable Read만으로 안전하지 않을 수 있다. 빈 결과를 읽었을 때 아무 row도 잠기지 않거나, DB마다 phantom 방지 방식이 다르기 때문이다. 존재 확인을 `INSERT ... SELECT ... WHERE NOT EXISTS` 한 문장에 넣어도 같다. MySQL에서는 격리 수준에 따라 중복 삽입이나 deadlock으로 나타난다([[DML-Conflict-and-Batch-Patterns#조건부 INSERT는 중복 방지가 아니다|조건부 INSERT]]).
 
 ### 해결
 **1. Pessimistic Lock** (`SELECT ... FOR UPDATE`):

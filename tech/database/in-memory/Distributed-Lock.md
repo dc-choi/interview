@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, cache, concurrency]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-30
 category: "Data & Storage - Cache & KV"
 aliases: ["Distributed Lock", "분산 락"]
 ---
@@ -30,7 +30,12 @@ SET resource_name random_lock_value NX PX 30000
 ```
 - `NX`: 키가 없을 때만 설정 (lock 획득 시도)
 - `PX 30000`: 30초 lease. 보유자가 crash하면 만료 뒤 다시 획득할 수 있지만, 작업이 lease를 넘기면 이전 보유자가 stale해질 수 있음
-- 해제: `random_lock_value`를 비교 후 삭제 (다른 클라이언트의 lock을 삭제하지 않도록)
+- 해제: `random_lock_value`를 비교 후 삭제 (다른 클라이언트의 lock을 삭제하지 않도록). 한 명령으로 비교와 삭제를 원자적으로 하려면 Redis 8.4+는 `DELEX resource_name IFEQ random_lock_value`, Valkey 9.0+는 `DELIFEQ resource_name random_lock_value`를 쓰고, 그 이전 버전은 비교와 삭제를 Lua로 묶는다 ([[Redis-Atomic-Operations-Lua|Lua 스크립트]])
+- 여러 서버가 로드밸런서 뒤에서 요청을 나눠 받으면 각 프로세스의 로컬 mutex는 서버 간 동시 진입을 막지 못한다. 모든 서버가 보는 같은 키가 공용 자물쇠 역할을 한다
+
+### 복제와 failover가 만드는 빈틈
+
+primary 하나와 replica로 구성한 Sentinel이나 cluster에서 락을 얻으면, 쓰기가 replica로 복제되기 전에 primary가 죽고 replica가 승격되는 순간 다른 클라이언트가 같은 자원의 락을 다시 얻을 수 있다. 공식 문서가 safety violation으로 드는 경로이고, 복제가 비동기라 `WAIT`로도 강한 일관성이 되지 않는다 ([[Redis-Architecture-HA|복제와 Sentinel]]). 토큰 비교 해제는 남의 락을 지우는 2차 사고만 막을 뿐, lease 만료 뒤 이중 진입과 failover 뒤 중복 획득은 막지 못한다.
 
 ### Redlock 알고리즘
 - **N개의 독립 Redis master**에 짧은 timeout으로 lock 획득 시도. 공식 설명은 `N = 5`를 예로 듦
@@ -46,6 +51,7 @@ SET resource_name random_lock_value NX PX 30000
 | 인프라 | 추가 불필요 | Redis 인스턴스 필요 |
 | 적용 범위 | 같은 DB 내 레코드 | DB 외부 자원, 서비스 간 |
 | 성능 | 트랜잭션 범위에 의존 | 네트워크 레이턴시 |
+| 대기 비용 | 대기자도 트랜잭션과 DB 커넥션을 쥔 채 줄을 섬 | 트랜잭션 바깥에서, 요청이 커넥션을 쥐고 있지 않을 때 잡으면 DB 커넥션 없이 대기 (아래 선택 기준 4). 대기 방식에 따라 Redis 요청 증가 |
 | 안정성 | DB 트랜잭션 보장 | 클럭/네트워크 이슈 가능 |
 | 자동 해제 | 트랜잭션 종료 시 | TTL 만료 시 |
 
@@ -53,11 +59,17 @@ SET resource_name random_lock_value NX PX 30000
 1. **단일 DB 환경** → DB Lock 우선. 인프라 단순성이 최우선
 2. **분산 DB 또는 DB 외부 자원** → Redis 분산 Lock
 3. **강한 정합성 필수** → 합의 기반 coordination과 보호 대상의 fencing token 검증을 함께 설계
+4. **같은 DB라도 락 대기가 DB를 포화시킬 때** → 대기를 Redis로 옮기는 것을 검토한다
+   - DB 락은 대기자도 트랜잭션과 커넥션을 쥔 채 줄을 서므로 경합이 커지면 핫 로우 하나가 커넥션 풀을 말린다 ([[Lock-Wait-Convoy|락 대기 큐와 convoy]]). 조건부 UPDATE 한 문장처럼 잠금 읽기 없이 끝나 행 락 보유 시간을 줄이는 방법(행 X 락은 그대로 잡으므로 같은 행의 UPDATE끼리는 여전히 줄을 선다)과 임계 구역 축소를 먼저 본다
+   - 운영 중인 Redis가 없으면 구축과 운영 비용이 새로 든다. 옮긴 뒤에도 최종 차감은 DB 트랜잭션과 제약이 확정하므로, Redis 락이 줄이는 것은 DB 안의 대기다. 커넥션 점유까지 줄이려면 Redis 락을 기다리는 동안 요청이 커넥션을 쥐고 있지 않아야 한다. Spring Boot의 JPA 웹 요청은 OSIV 기본값(켜짐)에서 첫 DB 접근 뒤 요청이 끝날 때까지 커넥션을 보유한다 (Spring Boot 4.1 기준, [[JPA-API-OSIV|OSIV와 커넥션 보유]])
+   - 전환 여부는 락 대기 시간, 커넥션 풀의 대기와 점유, DB lock wait와 CPU를 측정해 정한다 ([[Connection-Pool|커넥션 풀]])
 
 ## 주의사항
 - Lock TTL은 작업 시간 상한과 장애 복구 시간을 기준으로 잡고, 긴 작업은 owner token을 확인하며 연장한다. 긴 TTL만으로 stale owner의 쓰기를 막을 수는 없다
-- Lock 해제 시 반드시 **본인의 lock인지 확인** 후 삭제 (Lua 스크립트로 원자적 비교+삭제)
-- Lock 획득 실패 시 재시도 전략: 고정 간격 또는 exponential backoff
+- Lock 해제 시 반드시 **본인의 lock인지 확인** 후 삭제 (Lua 스크립트, Redis 8.4+ `DELEX ... IFEQ` 또는 Valkey 9.0+ `DELIFEQ`로 원자적 비교+삭제)
+- Lock 획득 실패 뒤의 대기(즉시 포기, 폴링, 해제 알림), 대기 시간과 점유 시간의 구분, Lettuce와 Redisson 비교는 [[Distributed-Lock-Waiting|락 획득 대기 방식]]으로 나눴다. 폴링이면 고정 간격이나 exponential backoff에 jitter를 더하고 대기 상한을 둔다
+- lock 안의 작업은 짧게 유지해 lease 만료에 쫓기지 않게 한다. Redis lock은 중복 작업 대부분을 걸러 내는 빠르고 값싼 1차 필터로 쓰고, 결제와 포인트처럼 정합성이 중요한 데이터의 최종 방어는 DB 트랜잭션과 유니크 제약이 맡는다
+- 짧은 PX로 손으로 시연하면 명령 사이에 lease가 만료돼 두 번째 `SET ... NX`가 성공할 수 있다. 결과가 예상과 다르면 TTL 경과부터 확인한다
 
 ### Fencing token과 외부 효과
 
@@ -125,12 +137,22 @@ Lock → 짧은 의사결정(상태 전이) → Unlock
 
 ## 출처
 - [Redis 공식 문서, Distributed Locks with Redis](https://redis.io/docs/latest/develop/clients/patterns/distributed-locks/)
+- [Redis 공식 문서, DELEX](https://redis.io/docs/latest/commands/delex/)
+- [Valkey 공식 문서, Distributed Locks with Valkey](https://valkey.io/topics/distlock/)
+- [Valkey 공식 문서, DELIFEQ](https://valkey.io/commands/delifeq/)
+- [Valkey 공식 문서, Replication](https://valkey.io/topics/replication/)
+- [MySQL 공식 문서, Locks Set by Different SQL Statements in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html)
+- [인프런, Hong, MySQL에만 트랜잭션이 존재하나?? Valkey에서의 트랜잭션과 분산 락 실습하기](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481450)
+- [인프런, Hong, 다중 명령에 대한 원자성을 보장하는 Lua Script 그리고 Lock은 완전 무결할까?](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481451)
+- [인프런, 최상용, Mysql 과 Redis 비교하기](https://www.inflearn.com/courses/lecture?courseId=328995&unitId=114854)
 - [우아한형제들 기술블로그 — WMS 재고 이관을 위한 분산 락 사용기](https://techblog.woowahan.com/17416/)
 - [velog @imkkuk — Redis로 동시성 문제 해결하기](https://velog.io/@imkkuk/Redis%EB%A1%9C-%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0%ED%95%98%EA%B8%B0)
 - [4sii — Redis 분산 락](https://4sii.tistory.com/456)
 
 ## 관련 문서
+- [[Distributed-Lock-Waiting|락 획득 대기 방식 (폴링과 해제 알림, 대기 시간과 점유 시간)]]
 - [[Lock|DB Lock]]
+- [[Lock-Wait-Convoy|락 대기 큐와 convoy]]
 - [[Redis-Data-Structures|Redis 자료구조]]
 - [[Redis-Atomic-Operations|Redis 원자적 연산]]
 - [[Race-Condition-Patterns|Race Condition 패턴 (3계층 해결)]]

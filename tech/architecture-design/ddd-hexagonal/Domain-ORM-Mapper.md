@@ -129,7 +129,21 @@ Q. 도메인 모델과 ORM 엔티티를 분리해야 하는가?
 - 레거시 스키마, 복수 모델, 의미 있는 번역이 있으면 분리의 이점이 커진다.
 - 어떤 선택이든 애그리거트 불변식과 트랜잭션 경계를 먼저 지킨다.
 
+## XML로 옮길 때의 확인 순서
+
+`orm.xml`은 컬럼 길이, 제약, 연관 매핑 같은 메타데이터를 코드와 분리하는 선택지다. 도메인 의미를 드러내는 애노테이션을 남길지, 모든 매핑을 XML에 둘지는 팀이 정한다. 애노테이션을 남겼다면 해당 타입에 대한 컴파일 의존도 남는다. XML의 override와 `metadata-complete` 적용 범위를 확인하고 두 곳의 설정이 우연히 섞이지 않게 한다.
+
+이관 전후 생성 스키마의 FK, unique, nullable과 실제 저장/조회 결과를 비교한다. XML의 필드명은 Java rename만으로 안전하게 따라가지 않을 수 있으며, 애노테이션만 읽는 테스트 데이터 생성기도 XML 제약을 자동으로 알지 못한다. XML로 옮겼다는 이유로 ORM 런타임 제약이나 검증 책임이 사라지는 것은 아니다.
+
 ## 출처
+
+- [Member 애플리케이션 추가 기능 개발](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=313421)
+- [문서와 코드 다듬기](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=313422)
+- [엔티티 식별자와 JPA 엔티티](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=301462)
+- [강사 도메인 개발](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=454903)
+- [강의 도메인 개발 (2)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=464143)
+- [테스트 픽스처에 Instancio 적용](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=460612)
+- [코드 리뷰와 개선 리팩터링](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=471512)
 
 - [Jakarta Persistence 3.2 명세 — Entity Class](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a18)
 - [Spring Data JPA 공식 문서 — Persisting Entities](https://docs.spring.io/spring-data/jpa/reference/jpa/entity-persistence.html)

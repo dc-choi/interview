@@ -19,7 +19,7 @@ Nest의 프레임워크 독립성은 **어댑터가 미들웨어와 핸들러를
 ## Fastify 전환 시 실전 차이
 
 - **기본 리슨이 127.0.0.1 전용** — 도커, 외부 접속을 받으려면 `app.listen(3000, '0.0.0.0')`으로 호스트 명시 필수 (전환 후 컨테이너에서 접속 안 되는 단골 원인).
-- **Express 의존 레시피는 동작하지 않는다** — cookie-parser 대신 @fastify/cookie, compression 대신 @fastify/compress처럼 등가 패키지로 교체. multer 기반 파일 업로드는 비호환.
+- **Express 의존 레시피는 동작하지 않는다** — cookie-parser 대신 @fastify/cookie, compression 대신 @fastify/compress처럼 등가 패키지로 교체. multer 기반 `@nestjs/platform-express` 업로드 인터셉터는 비호환이고, NestJS 12.1부터는 `@nestjs/platform-fastify/multipart`가 `@fastify/multipart` 기반으로 같은 업로드 API를 제공한다([[NestJS-File-Upload]]).
 - **CORS 기본이 safelisted 메서드만** — @fastify/cors는 PUT/PATCH/DELETE를 기본 허용하지 않아 `enableCors({ methods: ['GET','POST','PUT','PATCH','DELETE'] })`처럼 명시해야 한다 (platform-fastify v11 기준).
 - **미들웨어 경로 매칭이 path-to-regexp 최신판** — `(.*)` 전체 매칭 문법 불가, `*splat` 네임드 와일드카드로 쓴다 (라우트 경로 자체는 Fastify v5에서도 기존 `*` 문법 유지).
 - **미들웨어는 raw req/res를 받는다** — Fastify 래퍼(FastifyRequest/Reply)가 아니라 `FastifyRequest['raw']` (내부 middie 패키지 동작 방식). NestMiddleware 시그니처 타입을 이에 맞춘다.
@@ -40,7 +40,7 @@ Nest의 프레임워크 독립성은 **어댑터가 미들웨어와 핸들러를
 
 - [[NestJS|NestJS 개요 (플랫폼 중립성 계약)]]
 - [[NestJS-Middleware|Middleware (Express 호환 계층)]]
-- [[NestJS-File-Upload|File Upload (multer — FastifyAdapter 비호환)]]
+- [[NestJS-File-Upload|File Upload (multer, 12.1부터 Fastify multipart 지원)]]
 - [[Hono|Hono (경량 대안 프레임워크 비교)]]
 
 ## 출처
@@ -48,5 +48,6 @@ Nest의 프레임워크 독립성은 **어댑터가 미들웨어와 핸들러를
 - [NestJS — Performance (Fastify)](https://docs.nestjs.com/techniques/performance)
 - [NestJS — CORS](https://docs.nestjs.com/security/cors)
 - [NestJS — HTTP adapter (FAQ)](https://docs.nestjs.com/faq/http-adapter)
+- [NestJS — File upload, Fastify](https://docs.nestjs.com/http/file-upload#fastify)
 - [NestJS — HTTPS & multiple servers (FAQ)](https://docs.nestjs.com/faq/multiple-servers)
 - [NestJS — Migration guide (v11)](https://docs.nestjs.com/v11/migration-guide)

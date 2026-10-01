@@ -3,7 +3,7 @@ tags: [observability, sre, sli, slo, error-budget, reliability]
 status: done
 category: "관측가능성(Observability)"
 aliases: ["SLI SLO", "SLI / SLO / Error budget", "에러 버짓", "Error Budget", "SLA"]
-verified_at: 2026-08-31
+verified_at: 2026-09-30
 ---
 
 # SLI / SLO / Error Budget
@@ -27,14 +27,28 @@ verified_at: 2026-08-31
 
 ## 9의 의미 — SLO를 시간으로
 
-| SLO | 30일 윈도 허용 다운타임 |
-|---|---|
-| 99% | 약 7.2시간 |
-| 99.9% | 약 43분 |
-| 99.95% | 약 21분 |
-| 99.99% | 약 4.3분 |
+허용 다운타임 = 기간 × (1 − SLO). 365일은 525,600분, 30일은 43,200분, 하루는 1,440분으로 계산한다.
+
+| SLO | 연간(365일) | 30일 윈도 | 하루 |
+|---|---|---|---|
+| 99% | 약 3.65일(87.6시간) | 7.2시간 | 14.4분 |
+| 99.9% | 약 8.76시간 | 43.2분 | 1.44분 |
+| 99.95% | 약 4.38시간 | 21.6분 | 43.2초 |
+| 99.99% | 약 52.6분 | 4.32분 | 8.64초 |
+| 99.999% | 약 5.26분 | 25.9초 | 0.86초 |
+
+목표를 하루 다운타임으로 말하면 비율로 바꿔 확인한다. 하루 1분 미만은 1 ÷ 1,440, 약 0.069%의 다운타임이라 약 99.93%다. 하루 1.44분을 허용하는 99.9%보다 조금 엄격하다.
 
 9를 하나 늘릴 때마다 비용과 난이도가 급격히 오른다. 일반적인 가용성 SLO는 100%를 목표로 삼지 않는다. 변경과 장애에 쓸 에러 버짓이 사라지고, 과도하게 보수적인 설계 비용이 생기기 때문이다.
+
+### 시간 기반과 요청 기반
+
+| 기준 | 계산 | 특징 |
+|---|---|---|
+| 시간 기반 | 가동 시간 ÷ (가동 시간 + 다운타임) | 위 표의 환산이 이 기준이다. 부분 장애를 어디부터 다운타임으로 셀지 정해야 한다 |
+| 요청 기반 | 성공 요청 ÷ 전체 요청 | 위의 가용성 SLI가 이 기준이다. 일부가 늘 살아 있는 분산 시스템에 맞는다 |
+
+Google SRE Book은 분산 시스템에서 가동 시간 대신 요청 성공률로 가용성을 정의한다. 하루 250만 요청에 하루 99.99% 목표라면 하루 250건 실패까지 허용된다. 트래픽이 적은 시간대의 장애는 시간 기반으로는 크게, 요청 기반으로는 작게 잡히므로 SLO를 적을 때 어느 기준인지 함께 적는다. MTBF와 MTTR로 계산하는 가용성의 사후 지표 한계는 [[N-1-Capacity-Headroom|N-1 가용량 헤드룸]]에서 다룬다.
 
 ## Error Budget — 안정성을 예산으로
 
@@ -74,14 +88,17 @@ raw 임계값(`에러율 > 1%`)만으로 알람하면 짧은 오류 급증과 �
 - SLI/SLO/SLA의 구분과 내부 SLO에 여유를 둘 수 있는 이유
 - RED/USE로 SLI를 고르는 법, 사용자 경험을 반영해야 하는 이유
 - 가용성 SLO의 에러 버짓 = 1 − SLO, 그것이 개발 속도와 안정성을 정렬하는 원리
+- 99.9%와 99.99%의 연간, 하루 허용 다운타임과 시간 기반, 요청 기반 가용성의 차이
 - burn rate 기반 multi-window 알람이 알람 피로를 줄이는 이유
 - 100% SLO가 안티패턴인 이유
 
 ## 출처
 
 - [Service Level Objectives — Google SRE Book](https://sre.google/sre-book/service-level-objectives/)
+- [Embracing Risk — Google SRE Book](https://sre.google/sre-book/embracing-risk/)
 - [Alerting on SLOs — Google SRE Workbook](https://sre.google/workbook/alerting-on-slos/)
 - [Error Budget Policy for Service Reliability — Google SRE Workbook](https://sre.google/workbook/error-budget-policy/)
+- [인프런, 성장랜턴, 가용성](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=277935)
 
 ## 관련 문서
 
@@ -90,3 +107,4 @@ raw 임계값(`에러율 > 1%`)만으로 알람하면 짧은 오류 급증과 �
 - [[Alert-Fatigue|Alert fatigue 방지]]
 - [[RDS-Monitoring|RDS 모니터링 (지표/알람 설계)]]
 - [[Ops-Level-Indicator|운영 레벨 지표]]
+- [[N-1-Capacity-Headroom|N-1 가용량 헤드룸 (고전적 가용성 공식의 한계)]]

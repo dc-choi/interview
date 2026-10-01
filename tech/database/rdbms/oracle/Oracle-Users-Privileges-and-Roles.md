@@ -98,12 +98,42 @@ Role을 받았다고 모든 PL/SQL unit에서 같은 방식으로 권한 검사�
 
 Dictionary snapshot만으로 실제 최소 권한을 증명할 수 없다. Runtime account로 허용해야 할 작업과 거부해야 할 작업을 모두 test하고 audit 결과를 검토한다.
 
+## Tablespace 선택 순서
+
+DDL의 `TABLESPACE` 지정이 우선이고 생략하면 schema owner의 default permanent tablespace를 쓴다. 사용자 기본값을 생략했을 때는 database/PDB의 default를 확인하므로 SYSTEM에 무조건 저장된다고 설명하지 않는다. `USER_TS_QUOTAS`의 BYTES와 MAX_BYTES(-1은 무제한)를 확인하고 default 지정과 quota를 분리한다.
+
+## Session 식별과 종료
+
+SID는 재사용될 수 있으므로 `V$SESSION`의 SID와 SERIAL#을 함께 확인한 뒤 `ALTER SYSTEM KILL SESSION 'sid,serial#'`으로 대상 연결을 지정한다. RAC에서는 instance도 구분한다. 실행 중 SQL, blocker와 rollback 규모를 먼저 수집하고 종료 뒤 KILLED 상태가 남으면 rollback 진행을 확인한다. 단일 SQL 취소와 session 종료, 계정 잠금은 서로 다른 작업이다.
+
+## 시간 단위와 service account
+
+Password 시간 parameter는 일 단위이며 시간 단위가 필요하면 분수로 지정한다. DBA_USERS의 ACCOUNT_STATUS에서 timed lock, 명시적 lock과 grace/expired 상태를 구분한다. service account가 DEFAULT profile의 만료와 잠금 정책을 그대로 받는다면 잘못된 client의 반복 인증과 만료가 장애가 될 수 있어 profile과 credential 회전 절차를 함께 검증한다.
+
+## 위임 권한의 감사
+
+System privilege와 role의 ADMIN OPTION 보유자는 자신이 부여한 대상에만 한정되지 않는 grant/revoke 권한을 가진다. 보유자 목록을 공동 관리 권한으로 검토한다. DBA_SYS_PRIVS에는 DBA_TAB_PRIVS의 GRANTOR와 같은 부여 경로 정보가 없으므로 필요한 grant/revoke 이력은 audit에서 확인한다.
+
+## ORA-00942 진단
+
+ORA-00942는 실제 object 부재뿐 아니라 runtime 계정의 권한이나 이름 해석 문제에서도 나타날 수 있다. schema/synonym, CURRENT_SCHEMA, PDB와 직접 object grant를 순서대로 확인한다. role로 받은 권한만으로 definer-rights PL/SQL 접근이 가능한 것으로 가정하지 않는다. 오류 코드만으로 object의 존재와 권한 상태를 확정하지 않는다.
+
+## 권한 변경과 기존 연결
+
+활성 role 안의 privilege 변경과 사용자에게 role 자체를 grant/revoke한 변경은 기존 session 반영 시점이 다르다. 후자는 새 session이나 SET ROLE 재활성화를 확인한다. 사고 대응에서 role 회수만으로 이미 연결된 session의 권한이 즉시 없어졌다고 가정하지 않는다. Password role을 켜기 위해 NOT IDENTIFIED로 바꾸는 우회는 보호 정책을 제거하므로 secure application role 등 요구에 맞는 활성화를 설계한다.
+
 ## 출처
 
 - [Oracle AI Database 26ai, Managing Security for Database Users](https://docs.oracle.com/en/database/oracle/oracle-database/26/dbseg/managing-security-for-oracle-database-users.html)
 - [Oracle AI Database 26ai, Configuring Password Protection](https://docs.oracle.com/en/database/oracle/oracle-database/26/dbseg/configuring-authentication.html)
 - [Oracle AI Database 26ai, Configuring Privilege and Role Authorization](https://docs.oracle.com/en/database/oracle/oracle-database/26/dbseg/configuring-privilege-and-role-authorization.html)
 - 강의: [User 관리](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5062), [Password 관리](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5063), [System privilege](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5064), [Object privilege](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5065), [Role](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5066)
+- [Oracle AI Database 26ai, CREATE PROFILE](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/CREATE-PROFILE.html)
+- [Oracle AI Database 26ai, CREATE USER](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/CREATE-USER.html)
+- [Oracle AI Database 26ai, terminating sessions](https://docs.oracle.com/en/database/oracle/oracle-database/26/admin/managing-processes.html)
+- [Oracle, ORA-00942](https://docs.oracle.com/error-help/db/ora-00942/)
+- [인프런, 테이블스페이스 이해](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5059)
+
 
 ## 관련 문서
 

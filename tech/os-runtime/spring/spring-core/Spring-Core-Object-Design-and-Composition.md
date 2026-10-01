@@ -118,6 +118,18 @@ NestJS의 composition root는 하나의 거대한 `AppConfig`라기보다 root m
 - 단위 테스트가 container 없이 핵심 객체를 만들 수 있는가?
 - NestJS token과 module 공개 범위가 역할의 소유권을 드러내는가?
 
+## 계약 변화와 설계 그림
+
+다형성은 안정된 역할의 구현 교체를 흡수한다. 역할의 method, 실패 의미나 부수효과 계약이 바뀌면 client와 구현을 함께 수정해야 한다.
+
+| 그림 | 확인하는 내용 |
+|---|---|
+| 도메인 협력 관계 | 누가 어떤 업무와 역할에 메시지를 보내는가 |
+| class diagram | type, 구현과 정적인 의존 방향 |
+| object diagram | 특정 실행 조건에서 연결된 실제 instance |
+
+service의 `join` 같은 업무 어휘와 repository의 `save` 같은 저장 어휘를 구분하면 use case가 읽히기 쉽다. 계층마다 이름을 반드시 다르게 붙이는 규칙은 아니며 도메인 용어와 저장 계약이 맞물리는 대응 관계를 드러내는 기준이다.
+
 ## 출처
 
 - [Spring Framework, IoC Container and Beans 소개](https://docs.spring.io/spring-framework/reference/core/beans/introduction.html)

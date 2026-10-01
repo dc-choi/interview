@@ -110,6 +110,12 @@ CodeScene의 hotspot 분석도 같은 결론에 선다. 코드 건강이 나빠�
 
 측정 없이 끝내면 다음 투자를 받지 못한다. 지표 설계와 해석의 한계는 [[Software-Productivity-Measurement|생산성 측정]]을 따른다.
 
+### 시간 제한을 둔 집중 정리와 회귀 게이트
+
+버그 bash는 팀이 정해진 기간 동안 사용 흐름을 함께 실행하며 결함을 찾는 활동이다. 발견한 결함 수정과 고빈도 변경 영역의 부채 상환을 묶어 집중 정리 기간을 운영할 수 있다. 기간 자체가 상환 성과를 보장하지 않으므로 시작 전에 대상, 우선순위, 담당자와 완료 지표를 정하고 종료 뒤 남은 항목은 다시 우선순위화한다. 연말이나 몇 주라는 일정은 팀의 운영 사례이지 보편 규칙이 아니다.
+
+집중 정리 뒤 같은 결함이 돌아오지 않도록 재현 테스트와 위험에 맞는 회귀 게이트를 남긴다. 결제나 상태 전이처럼 실패 비용이 큰 경로는 정상 동작뿐 아니라 실패, 중복과 복구를 확인한다. 모든 테스트의 존재를 일률적으로 요구하기보다 이번 상환이 보호할 동작과 검증 비용을 연결한다.
+
 ## 이해관계자 설득 — 부채를 일정의 언어로
 
 내부 품질은 사용자와 경영진에게 보이지 않는다. Fowler는 사용자가 외부 품질은 알아보지만 내부 품질의 높낮이는 구별하지 못하며, 따라서 논거는 도덕이 아니라 경제여야 한다고 말한다. 높은 내부 품질은 이후 기능의 비용을 낮추므로 비용 측면에서 이득이라는 것이다.
@@ -154,6 +160,8 @@ CodeScene의 hotspot 분석도 같은 결론에 선다. 코드 건강이 나빠�
 - [The Developer Coefficient — Stripe](https://stripe.com/files/reports/the-developer-coefficient.pdf)
 - [Tech debt: Reclaiming tech equity — McKinsey](https://www.mckinsey.com/capabilities/tech-and-ai/our-insights/tech-debt-reclaiming-tech-equity)
 - [기술 부채는 빚이다 — Threads, ahn_partners](https://www.threads.com/@ahn_partners/post/DZW04DPHzdV)
+- [코드빌런 강사, 소프트웨어 품질관리와 기술부채](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242766)
+- [코드빌런 강사, 시니어가 되는 길목에서 알아야 할 것들](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242768)
 
 ## 관련 문서
 

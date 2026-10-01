@@ -1,7 +1,7 @@
 ---
 tags: [ai, claude-code, settings, permissions, sandbox]
 status: done
-verified_at: 2026-09-19
+verified_at: 2026-09-30
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한", "권한 규칙 문법"]
 ---
@@ -29,7 +29,7 @@ aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한",
 
 - `@`임포트는 조직화용일 뿐 토큰 절약이 아니다. cwd에서 위로 올라가며 로드하고 하위 디렉토리 CLAUDE.md는 해당 파일을 읽을 때 온디맨드 로드. 일반 built-in과 custom subagent는 메인 대화에 로드된 CLAUDE.md 계층을 받지만, built-in Explore와 Plan은 CLAUDE.md와 git status를 건너뛴다
 - Claude Code 2.1.277의 기본 Project instructions 모드(`claude-md-or-agents-md`)는 프로젝트 루트부터 cwd까지 자체 `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md`가 하나도 없을 때만 같은 경로의 `AGENTS.md`, `.claude/AGENTS.md`를 읽는다. 사용자 전역, 조직 managed, 추가 디렉토리의 `CLAUDE.md`와 `.claude/rules`는 이 fallback 판정에 포함하지 않는다
-- `/config`의 Project instructions는 네 모드다. `CLAUDE.md`만 사용(`claude-md`), 기본 fallback(`claude-md-or-agents-md`), 둘 다 사용(`claude-md-and-agents-md`), 시작 컨텍스트의 project/local/user 지침을 제외하는 `managed-only`다. `managed-only`에서도 managed 지침과 메모는 남고, 현재 mod가 가로채지 못하는 `Read` 기반 하위 `CLAUDE.md`는 계속 전달될 수 있다. 릴리스 기준 AGENTS.md 지원은 Bedrock, Vertex AI, Foundry에는 아직 제공되지 않는다
+- `/config`의 Project instructions는 네 모드다. `CLAUDE.md`만 사용(`claude-md`), 기본 fallback(`claude-md-or-agents-md`), 둘 다 사용(`claude-md-and-agents-md`), 시작 컨텍스트의 project/local/user 지침을 제외하는 `managed-only`다. `managed-only`에서도 managed 지침과 메모는 남고, 현재 mod가 가로채지 못하는 `Read` 기반 하위 `CLAUDE.md`는 계속 전달될 수 있다. 2.1.277 릴리스 당시에는 Bedrock, Vertex AI, Foundry 세션이 제외됐지만, v2.1.281부터 Bedrock, Vertex AI, Foundry, LLM 게이트웨이와 텔레메트리를 끈 세션에서도 `AGENTS.md`를 읽는다(릴리스 노트와 공식 문서 기준, 2026-09-30 확인)
 - 두 파일을 함께 쓰는 모드는 경로를 먼저, 내용을 다음으로 비교해 `@` import나 심볼릭 링크가 같은 지침을 두 번 넣지 않게 한다. 하위 디렉토리 `AGENTS.md`는 그 아래 파일을 `Read`할 때 적용되지만, fallback 모드에서 같은 디렉토리의 `CLAUDE.md`가 있으면 그 경로에는 붙지 않는다
 - 자동 메모리: MEMORY.md 인덱스는 시작 시 처음 200줄 또는 25KB만 로드, 토픽 파일은 온디맨드. 머신 로컬이며 worktree 간 공유
 - `~/.claude` 아래 트랜스크립트와 체크포인트 스냅샷은 **평문 저장** — 도구를 거친 모든 내용이 디스크에 남는다. `cleanupPeriodDays`(기본 30일)로 자동 정리
@@ -44,8 +44,8 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 |---|---|
 | default (=manual) | 매번 승인 |
 | acceptEdits | 파일 편집 + mkdir, rm, mv 등 자동 승인 (작업 디렉토리 내부만) |
-| plan | 읽기와 탐색만 |
-| auto | 백그라운드 AI 분류기가 액션 평가. Pro, Max와 Team에서는 지원 모델 사용 시 세션 기본 모드이며 조직이 끄거나 사용할 수 없으면 Manual로 시작 |
+| plan | 읽기와 탐색만(auto를 쓸 수 있으면 탐색 명령은 분류기가 검토). 계획을 승인하기 전에는 소스 편집 차단(bypass 권한을 켠 인터랙티브 터미널은 차단 없이 지시로만 동작). `Shift+Tab`, 프롬프트 앞 `/plan`, `--permission-mode plan`으로 들어간다. 기본 설정에서는 Claude가 복잡한 구현 요청이라고 판단하면 `EnterPlanMode` 도구로 전환을 요청하고, 사용자가 승인하면 plan으로 바뀐다(v2.1.285 도구 설명 기준). auto 권한 모드가 요청의 읽기와 쓰기를 보고 plan을 골라 주지는 않는다 |
+| auto | 백그라운드 AI 분류기가 액션 평가. 권한 모드를 설정하지 않은 인터랙티브 터미널과 VS Code 세션의 기본 시작 모드다. 릴리스 노트 기준 v2.1.283에서 서드파티 제공자와 텔레메트리를 끈 세션으로, v2.1.284에서 모든 플랜과 제공자로 넓어졌다(v2.1.282 이하는 Pro, Max, Team 한정. 권한 모드 문서는 모든 플랜과 제공자 확대를 v2.1.283으로 적어 릴리스 노트와 다르다, 2026-09-30 확인). 지원 모델이 아니거나 조직이 끄거나 사용할 수 없으면 Manual로 시작. 확인 질문 없이 진행하도록 유도되므로 민감한 작업의 검토를 대신하지 않는다 |
 | dontAsk | allow 규칙 + 읽기 전용만 실행, 나머지 자동 거부 (CI용) |
 | bypassPermissions | 전부 통과 — `rm -rf /` 급만 서킷브레이커, root에선 시작 거부 |
 
@@ -92,6 +92,7 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 - [Anthropic, How Claude remembers your project](https://code.claude.com/docs/en/memory)
 - [Anthropic, Create custom subagents](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code v2.1.277 release — Anthropic](https://github.com/anthropics/claude-code/releases/tag/v2.1.277)
+- [Claude Code CHANGELOG — Anthropic](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
 - [agents-md built-in mod — Anthropic](https://github.com/anthropics/claude-code/tree/main/mods/agents-md)
 - [Claude Code, 이제 AGENTS.md도 지원 — GeekNews](https://news.hada.io/topic?id=33925)
 - [클로드 코드 가이드 (레퍼런스 04 설정 시스템, 05 권한 시스템) — WikiDocs](https://wikidocs.net/book/19104)

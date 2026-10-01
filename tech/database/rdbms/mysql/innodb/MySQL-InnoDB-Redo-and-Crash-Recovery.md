@@ -1,7 +1,7 @@
 ---
 tags: [database, mysql, innodb, redo, checkpoint, crash-recovery, binlog]
 status: done
-verified_at: 2026-08-11
+verified_at: 2026-09-30
 category: "Database - RDBMS"
 aliases: ["MySQL InnoDB Redo", "InnoDB Crash Recovery"]
 ---
@@ -63,9 +63,23 @@ Group commit은 여러 transaction의 binlog sync와 engine commit을 묶어 fsy
 
 파라미터 선택은 [[MySQL-InnoDB-Tuning|InnoDB 튜닝]]이 소유한다.
 
+## Page를 쓰기 전의 WAL 규칙
+
+WAL의 규칙은 두 가지다. data page를 data file에 쓰기 전에 그 page를 바꾼 redo가 먼저 디스크에 있어야 하고, commit은 그 transaction의 redo가 durability 설정이 정한 만큼 기록돼야 끝난다([[#Durability 설정의 실제 경계|Durability 설정]]).
+
+8.4 소스에서 page header의 `FIL_PAGE_LSN`은 그 page를 바꾼 마지막 redo record의 끝 LSN이다. dirty page를 쓰는 flush 경로는 redo가 이 LSN까지 디스크에 기록되지 않았으면 redo flush를 기다린 뒤 page를 쓴다. Recovery는 시작 LSN이 page LSN 이상인 redo record만 적용해 이미 반영된 변경을 건너뛴다. page LSN이 checkpoint LSN보다 작으면 재생한다는 설명은 이 비교를 단순화한 것이다. 필드 이름과 비교식은 공개 계약이 아니라 버전 고정 소스의 구현이므로 원리로만 기억한다.
+
 ## Doublewrite와 torn page
 
+16KB page는 storage가 원자적으로 쓰는 단위보다 커서 쓰기 도중 멈추면 일부만 기록된 torn page가 남을 수 있다. redo는 온전한 page에 변경을 다시 적용하는 기록이라 torn page 자체를 고치지 못한다.
+
 `innodb_doublewrite=ON` 또는 `DETECT_AND_RECOVER`이면 InnoDB는 page를 data file의 최종 위치에 쓰기 전에 doublewrite 영역에 기록한다. 재시작 때 최종 page write가 불완전하면 정상 copy를 이용해 복구한 뒤 redo를 적용할 수 있다. `DETECT_ONLY`는 metadata만 기록하므로 불완전 write를 탐지할 수 있지만 복구할 page 내용이 없고, `OFF`는 doublewrite를 비활성화한다.
+
+flush할 page를 doublewrite 영역에 큰 순차 청크로 쓰고 `fsync()`를 한 번 한 뒤에야 각 page를 tablespace의 원래 위치에 쓴다. 데이터는 두 번 쓰지만 I/O 양이나 I/O 호출이 두 배가 되지는 않는다(`innodb_flush_method=O_DIRECT_NO_FSYNC`는 이 단일 `fsync()`의 예외).
+
+- 8.0.20부터 doublewrite 영역은 system tablespace가 아니라 별도 doublewrite 파일에 있다. 위치는 `innodb_doublewrite_dir`이고 지정하지 않으면 `innodb_data_home_dir`(기본은 data directory)이다.
+- `innodb_doublewrite_files` 기본 2는 buffer pool instance마다 flush list용과 LRU list용 파일을 하나씩 둔다는 뜻이고, `innodb_doublewrite_pages`는 스레드당 최대 doublewrite page 수다. 8.4.6 기본 설정에서는 `innodb_doublewrite_pages`가 128이었고 data directory에 `#ib_16384_0.dblwr`, `#ib_16384_1.dblwr`가 있었다.
+- system tablespace 시절의 doublewrite batch 크기 설명은 8.4 문서에 대응 변수가 없으므로 현재 설정으로 옮기지 않는다.
 
 ## Crash recovery 단계
 
@@ -136,6 +150,7 @@ Crash 실험은 disposable instance에서만 수행한다. commit된 marker와 �
 - [MySQL 8.4 Reference Manual, Redo Log](https://dev.mysql.com/doc/refman/8.4/en/innodb-redo-log.html)
 - [MySQL 8.4 Reference Manual, Checkpoints](https://dev.mysql.com/doc/refman/8.4/en/innodb-checkpoints.html)
 - [MySQL 8.4 Reference Manual, Doublewrite Buffer](https://dev.mysql.com/doc/refman/8.4/en/innodb-doublewrite-buffer.html)
+- [MySQL 8.0 Reference Manual, Doublewrite Buffer](https://dev.mysql.com/doc/refman/8.0/en/innodb-doublewrite-buffer.html)
 - [MySQL 8.4 Reference Manual, InnoDB Recovery](https://dev.mysql.com/doc/refman/8.4/en/innodb-recovery.html)
 - [MySQL 8.4 Reference Manual, Binary Log](https://dev.mysql.com/doc/refman/8.4/en/binary-log.html)
 - [MySQL 8.4 Reference Manual, Restrictions on XA Transactions](https://dev.mysql.com/doc/refman/8.4/en/xa-restrictions.html)
@@ -143,6 +158,12 @@ Crash 실험은 disposable instance에서만 수행한다. commit된 marker와 �
 - [MySQL 8.4 Reference Manual, The innodb_redo_log_files Table](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-innodb-redo-log-files-table.html)
 - [MySQL 8.4 Reference Manual, InnoDB System Variables](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit)
 - [InnoDB Undo Log vs Redo Log — Threads, bear_dba](https://www.threads.com/@bear_dba/post/Db754E6mLlX)
+- [fil0types.h, FIL_PAGE_LSN — mysql-server 8.4 소스](https://github.com/mysql/mysql-server/blob/8.4/storage/innobase/include/fil0types.h)
+- [buf0flu.cc, buf_flush_write_block_low — mysql-server 8.4 소스](https://github.com/mysql/mysql-server/blob/8.4/storage/innobase/buf/buf0flu.cc)
+- [log0recv.cc, recv_recover_page_func — mysql-server 8.4 소스](https://github.com/mysql/mysql-server/blob/8.4/storage/innobase/log/log0recv.cc)
+- [인프런, Hong, Doublewrite Buffer, WAL과 FSync 관점의 성능](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=374544)
+- [인프런, Hong, MySQL Storage Architecture InnoDB Page](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=373904)
+- [인프런, Hong, MySQL InnoDB (Recovery, Log, MVCC)](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=373899)
 
 ## 관련 문서
 

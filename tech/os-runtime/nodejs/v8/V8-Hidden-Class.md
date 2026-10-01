@@ -3,7 +3,7 @@ tags: [runtime, nodejs, v8]
 status: done
 category: "OS & Runtime"
 aliases: ["Hidden Class", "V8 Maps", "JSC Structures", "SpiderMonkey Shapes", "Transition Chain"]
-verified_at: 2026-07-21
+verified_at: 2026-10-01
 ---
 
 # V8 히든 클래스 (Hidden Class)
@@ -85,28 +85,33 @@ Map은 **구조가 같은 객체들이 모양 정보를 공유**하게 하고, i
 
 ## 히든 클래스 공유 조건
 
-Map은 ECMAScript 계약이 아니라 V8 내부 구현이다. 아래는 객체 모양이 안정적인지 판단하는 실용적 기준이지, 모든 V8 버전에서 `%HaveSameMap` 결과를 보장하는 표가 아니다. 값의 표현이나 생성 위치 같은 내부 정보로 Map이 일반화되거나 달라질 수도 있다.
+Map은 ECMAScript 계약이 아니라 V8 내부 구현이다. 아래는 객체 모양이 안정적인지 판단하는 실용적 기준이지, 모든 V8 버전에서 `%HaveSameMap` 결과를 보장하는 표가 아니다. 값의 표현이나 생성 위치 같은 내부 정보로 Map이 일반화되거나 달라질 수도 있다. 한 버전에서 직접 확인한 결과는 아래 [[#내부 동작을 실험할 때|실험]]에 있다.
 
 | 사례 | 일반적인 결과 | 이유 |
 |---|---|---|
 | 같은 생성 경로, 같은 이름을 같은 순서로 추가 | 같은 Map을 공유하기 쉬움 | 같은 transition 경로를 재사용 |
+| 이름과 순서는 같지만 한쪽은 리터럴로 한 번에, 다른 쪽은 빈 객체에 하나씩 추가 | 최종 모양이 같아도 다른 Map이기 쉬움 | 초기 크기에 따라 in-object 슬롯 수가 정해져 시작 Map과 transition 경로가 다름 |
 | 프로퍼티를 다른 순서로 추가 | 다른 Map으로 갈라지기 쉬움 | transition tree의 분기가 달라짐 |
-| `class` 인스턴스와 object literal | 다른 초기 Map을 쓰기 쉬움 | 생성 경로와 초기 Map이 다름 |
-| 같은 모양이지만 값 타입만 변경 | 모양은 같아도 내부 표현은 일반화될 수 있음 | Map은 이름과 배치뿐 아니라 field representation 정보도 가질 수 있음 |
+| `class` 인스턴스와 object literal | 다른 초기 Map을 쓰기 쉬움 | 생성자 함수마다 initial map이 따로 붙는다. 같은 생성자로 만든 인스턴스끼리는 공유하기 쉬움 |
+| 같은 모양이지만 값 타입만 변경 | 대개 같은 Map을 유지하지만 정수(Smi)에서 소수(Double)로 바뀌면 갈라질 수 있음 | Map은 이름과 배치뿐 아니라 field representation도 가진다. Smi에서 Double로 가는 변경은 새 Map을 만들고 이전 Map을 deprecated로 표시한다 |
 | 생성 후 프로퍼티 추가, 삭제 반복 | Map 전환 또는 dictionary properties 가능 | 변경이 잦으면 공유 descriptor와 IC 이점을 잃기 쉬움 |
 
 ## 최적화 팁
+
+동적 추가와 `delete`는 금지 규칙이 아니라 비용을 알고 고르는 트레이드오프다. 한두 번의 모양 변경이 성능 문제를 만들지는 않고, 반복 접근되는 hot path 객체나 대량으로 만드는 객체에서 비용이 커진다. 적용 여부는 프로파일링으로 판단한다.
 
 ### 1. 가능한 한 히든 클래스 공유
 
 - **생성자에서 모든 속성 선언** (객체 생성 시점에 모양 확정)
 - **항상 같은 순서로 초기화**
-- 정적 언어의 클래스처럼 사용 권장
+- 같은 종류의 객체는 한 가지 생성 경로(리터럴, 같은 생성자나 팩토리)로 만든다. 리터럴과 빈 객체 후 동적 추가를 섞으면 최종 모양이 같아도 Map이 갈린다
+- hot path 객체는 정적 언어의 클래스처럼 모양을 고정해 쓰는 편이 유리하다. 동적 구조의 유연성이 더 중요한 곳에서는 그 이점을 우선할 수 있다
 
 ### 2. 객체 초기화 후 히든 클래스 전환 지양
 
-- 객체 생성 후 **프로퍼티 동적 추가 금지** (새 히든 클래스 생성됨)
-- **`delete` 연산자 사용 금지** (히든 클래스 변경됨, 최적화 무효)
+- 생성 뒤 프로퍼티를 추가하면 새 Map으로 전이한다. 추가 순서나 생성 경로가 다른 객체와 Map이 갈라져 같은 호출 지점의 inline cache가 polymorphic, megamorphic으로 밀리기 쉽다. `{ x, y }`에 `w`를 나중에 붙인 객체는 fast properties를 유지했지만 `{ x, y, w }` 리터럴과 다른 Map이었다(Node.js 26.7, V8 14.6 확인).
+- `delete`는 객체를 dictionary(slow) properties로 보낼 수 있다. V8 블로그(2017)는 프로퍼티가 많이 추가되고 삭제되면 descriptor array와 Map 유지 비용 때문에 dictionary 모드로 바꾸며, 이 모드는 추가와 삭제가 효율적인 대신 접근이 느리고 inline cache가 동작하지 않는다고 설명한다. 같은 환경에서 리터럴 `{ x, y, z }`의 마지막 속성 하나만 `delete`해도 dictionary 모드가 됐다(엔진 버전에 따라 다를 수 있음).
+- hot path에서 값만 비우려면 `undefined`나 `null`을 대입해 모양을 유지하는 방법이 있다. 키가 남으므로 `in`과 `Object.keys()` 결과가 `delete`와 다르다. 키 집합 자체가 자주 추가되고 삭제되는 데이터는 MDN이 그런 용도에 최적화됐다고 설명하는 `Map`을 검토한다.
 
 ### 3. 함수 호출 시 같은 객체 유형 사용
 
@@ -114,7 +119,29 @@ Map은 ECMAScript 계약이 아니라 V8 내부 구현이다. 아래는 객체 �
 
 ## 내부 동작을 실험할 때
 
-V8 intrinsic인 `%HaveSameMap(a, b)`를 쓰면 두 객체가 현재 같은 Map을 가리키는지 실험할 수 있다. Node.js에서는 `node --allow-natives-syntax file.js`처럼 V8 native syntax를 명시적으로 허용해야 한다. 이 intrinsic과 플래그는 표준 JavaScript API가 아니며 이름, 결과, 지원 여부가 바뀔 수 있으므로 학습과 진단에만 쓰고 애플리케이션 로직이나 테스트 계약으로 삼지 않는다.
+V8 intrinsic인 `%HaveSameMap(a, b)`를 쓰면 두 객체가 현재 같은 Map을 가리키는지 실험할 수 있다. Node.js에서는 `node --allow-natives-syntax file.js`처럼 V8 native syntax를 명시적으로 허용해야 하고, 플래그 없이 실행하면 `SyntaxError: Unexpected token '%'`가 난다. intrinsic 목록은 V8 소스 `src/runtime/runtime.h`에 있다. V8을 빌드해 개발자 셸 d8로 돌릴 수도 있지만 Node.js가 간편하다. 이 intrinsic과 플래그는 표준 JavaScript API가 아니며 이름, 결과, 지원 여부가 바뀔 수 있으므로 학습과 진단에만 쓰고 애플리케이션 로직이나 테스트 계약으로 삼지 않는다.
+
+```js
+const desk = { height: 1, width: 2 };
+const chair = {};
+chair.height = 3;
+chair.width = 4;
+console.log(%HaveSameMap(desk, chair)); // false
+```
+
+Node.js 26.7.0(V8 14.6.202.34)에서 확인한 결과:
+
+| 비교 | 결과 |
+|---|---|
+| 같은 속성을 같은 순서로 선언한 두 리터럴 | `true` |
+| 한 번에 초기화한 리터럴과 빈 객체에 같은 순서로 추가한 객체 | `false` |
+| 같은 속성을 다른 순서로 선언한 두 리터럴 | `false` |
+| 둘 다 빈 객체에 같은 순서로 추가 | `true` |
+| `class` 인스턴스와 리터럴, 같은 `class`의 두 인스턴스 | `false`, `true` |
+| 정수 값과 문자열, `null`, `undefined`, 객체, 배열, Symbol 값 (새 프로세스에서 한 쌍씩) | 모두 `true` |
+| 정수 `{ width: 100 }`과 소수 `{ width: 1.5 }` | `false` |
+
+마지막 결과는 실행 순서에 따라 바뀌었다. 소수 객체를 만든 뒤 새로 만든 `{ width: 7 }`은 소수 쪽과 `true`였고, 처음 정수 객체도 속성에 한 번 접근하자 `true`가 됐다. V8 블로그가 설명하는 Smi에서 Double로의 표현 변경과 같다. 새 Map을 만들고 이전 Map을 deprecated로 표시한 뒤, 이전 Map의 객체는 다음 속성 접근이나 대입 때 새 Map으로 옮긴다. 같은 프로세스에서 문자열 비교를 먼저 하면 필드가 이미 일반화돼 소수도 `true`였다. 따라서 값 타입은 Map에 영향을 주지 않는다는 일반 규칙으로 옮기지 않는다.
 
 ## 관련 문서
 
@@ -128,6 +155,16 @@ V8 intrinsic인 `%HaveSameMap(a, b)`를 쓰면 두 객체가 현재 같은 Map�
 - [V8 — Fast properties in V8](https://v8.dev/blog/fast-properties)
 - [V8 — Maps (Hidden Classes) in V8](https://v8.dev/docs/hidden-classes)
 - [ECMAScript 2024 — Property Descriptor Specification Type](https://tc39.es/ecma262/2024/multipage/ecmascript-data-types-and-values.html#sec-property-descriptor-specification-type)
+- [MDN — Map, Objects vs. Maps](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map#objects_vs._maps)
+- [V8 — The story of a V8 performance cliff in React](https://v8.dev/blog/react-cliff)
+- [V8 — Using d8](https://v8.dev/docs/d8)
+- [V8 — Runtime intrinsic list source (14.6.202.34)](https://raw.githubusercontent.com/v8/v8/14.6.202.34/src/runtime/runtime.h)
 - [하정훈 강사 — JavaScript 객체모델과 속성접근 방식](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196069)
+- [하정훈 강사 — 히든 클래스(Hidden Class) 기본구조](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196070)
+- [하정훈 강사 — 히든 클래스 비교 (OX 퀴즈)](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196075)
+- [하정훈 강사 — Node.js 설치](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196076)
 - [하정훈 강사 — Transition Chains](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196071)
 - [하정훈 강사 — V8 엔진 내장함수로 비교하기](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196077)
+- [하정훈 강사 — 왜 알아야 할까? (feat. 개인적인 의견)](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196056)
+- [하정훈 강사 — 정리](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196074)
+- [하정훈 강사 — 최적화 팁 & 마무리](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196066)

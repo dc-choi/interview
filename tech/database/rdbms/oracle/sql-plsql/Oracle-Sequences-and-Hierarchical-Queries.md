@@ -121,6 +121,10 @@ FROM org;
 
 선택은 팀의 운영 DB, 이식성, path와 sibling ordering 요구로 결정한다. 어느 문법을 써도 cycle 방지, depth 제한, subtree 크기와 `manager_id` index를 별도로 검토한다.
 
+## PRIOR의 방향과 필터 순서
+
+`PRIOR employee_id = manager_id`는 parent id에서 child manager_id로 내려가며 반대로 쓰면 조상 방향이 된다. Oracle은 join 처리 뒤 CONNECT BY로 hierarchy를 구성하고 나머지 WHERE를 row별로 평가할 수 있어 WHERE에 부적합 부모를 제거했다고 subtree 전체가 제거되는 것으로 가정하지 않는다. 구조를 제한할 조건은 START WITH/CONNECT BY의 의미와 구분한다.
+
 ## 출처
 
 - [Oracle AI Database 26ai, CREATE SEQUENCE](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/CREATE-SEQUENCE.html)
@@ -128,6 +132,7 @@ FROM org;
 - [Oracle AI Database 26ai, Hierarchical Queries](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/Hierarchical-Queries.html)
 - [Oracle AI Database 26ai, SELECT and Recursive Subquery Factoring](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/SELECT.html)
 - 강의: [Sequence 사용](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4668), [계층형 query](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4669)
+
 
 ## 관련 문서
 

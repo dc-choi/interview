@@ -88,12 +88,26 @@ DML이 있었다는 사실만으로 index를 주기적으로 rebuild하지 않�
 
 강의의 `USER_INDEX`, `USER_COLUMNS`, `INDEX_STATE` 표기는 일반적인 현재 dictionary 이름이 아니다. Index metadata는 `USER_INDEXES`, `USER_IND_COLUMNS`, `USER_IND_EXPRESSIONS`를 확인하고, `INDEX_STATS`는 마지막 `ANALYZE INDEX ... VALIDATE STRUCTURE` 결과라는 범위를 이해한다.
 
+## ROWID와 행 찾기
+
+일반 heap table의 extended ROWID는 data object, file, block과 block 안의 row 위치를 표현한다. Index에서 ROWID를 얻은 뒤 해당 block으로 접근하므로 business identity로 쓰지 않는다. row 이동과 table 재작성으로 바뀔 수 있으며 IOT의 logical rowid는 별도 구조다.
+
+## 생성 작업의 공간 예산
+
+B-tree index 생성은 key와 row 위치를 수집해 정렬하고 새 구조를 기록한다. PGA 정렬 예산을 넘으면 temporary 공간을 사용할 수 있으므로 새 index 크기뿐 아니라 TEMP, redo와 concurrent workload의 여유도 확인한다. 생성 시간을 table 크기 하나만으로 추정하지 않는다.
+
+## MIN/MAX와 top-N 계획
+
+단순 MIN/MAX는 `INDEX FULL SCAN (MIN/MAX)` 같은 제한된 index 접근으로 풀릴 수 있고 top-N은 ordered index와 STOPKEY 계열 계획으로 조기 종료할 수 있다. 조건과 expression, 동률 정책이 바뀌면 적용도 달라진다. ORDER BY 없는 ROWNUM + index hint는 결과 순서 계약을 대신하지 않는다.
+
 ## 출처
 
 - [Oracle AI Database 26ai, CREATE INDEX](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/CREATE-INDEX.html)
 - [Oracle AI Database 26ai, Managing Indexes](https://docs.oracle.com/en/database/oracle/oracle-database/26/admin/managing-indexes.html)
 - [Oracle AI Database 26ai, ALTER INDEX](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/ALTER-INDEX.html)
 - 강의: [Index 이해](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5068), [종류와 주의사항](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5069), [활용 예](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5070)
+- [Oracle AI Database 26ai, ROWID Pseudocolumn](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/ROWID-Pseudocolumn.html)
+
 
 ## 관련 문서
 

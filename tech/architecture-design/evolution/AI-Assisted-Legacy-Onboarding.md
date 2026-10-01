@@ -73,6 +73,18 @@ agent가 요구사항을 충족했는지뿐 아니라 삭제한 동작, 숨은 q
 
 새로 확인한 규칙만 repository instruction, ADR와 test에 남긴다. 특정 구현에서 우연히 발견한 패턴을 팀의 보편 규칙으로 승격하지 않는다.
 
+## 수정이 수렴하지 않을 때
+
+같은 오류를 고쳐도 다른 정책이 깨지거나 임시 분기가 계속 늘면 추가 지시만 누적하지 않는다. 요구사항에서 상태, 금액, 호환성의 결정이 빠졌는지 먼저 확인하고, 필요하면 이번 작업의 변경만 식별해 마지막 검증 상태로 되돌린 뒤 명세를 다시 쓴다. 다른 사람의 변경이 섞인 작업 트리는 전체 reset으로 지우지 않는다.
+
+금액 계산처럼 서로 의존하는 규칙은 한 번에 전부 맡기기보다 전체 취소, 부분 취소, 할인 배분, 반올림을 각각 검증 가능한 단계로 나눈다. 단계를 통과할 때 입력, 출력과 불변식을 남겨 다음 수정의 기준으로 쓴다.
+
+## 기존 조회 함수를 재사용할 때
+
+함수 이름과 반환 타입이 같아도 조회 의미가 같다는 보장은 없다. 현재 SQL과 caller에서 상태 필터, soft delete, 소유자, 대상 타입, 정렬과 잠금을 확인한다. 과거의 전체 조회 함수를 새 타입별 조회에 그대로 쓰거나, 생략값을 전체 타입으로 해석하면 구현은 재사용해도 계약은 바뀐다. [[Backward-Compatibility-Design|하위 호환성]]과 함께 구 요청과 새 요청의 결과를 비교한다.
+
+query 수는 요청 데이터 크기와 함께 측정한다. 단건 PK를 고정 횟수 조회하는 설계는 응답 시간과 책임 경계가 허용하면 유지할 수 있다. 목록 N개마다 조회가 늘어나는 경로는 N을 키워 부하와 지연을 확인하고 batch 조회, join 또는 projection을 검토한다. 쿼리 한 번을 줄이려고 계층 책임과 권한 검증을 흐리는 것도 비용이다.
+
 ## project guideline의 역할
 
 지속 instruction에는 agent가 추론하기 어려우면서 여러 작업에 반복되는 사실을 둔다.
@@ -122,6 +134,14 @@ agent가 요구사항을 충족했는지뿐 아니라 삭제한 동작, 숨은 q
 - [제미니 강사, 리뷰 기능의 AI 구현과 검토](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392783)
 - [제미니 강사, 취소 기능의 단계적 AI 구현](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392803)
 - [제미니 강사, 정산 기능의 AI 구현과 검토](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392808)
+- [제미니 강사, 장바구니 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392792)
+- [제미니 강사, 장바구니 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392794)
+- [제미니 강사, 결제 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392799)
+- [제미니 강사, 찜하기 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392786)
+- [제미니 강사, 찜하기 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392787)
+- [제미니 강사, 주문 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392796)
+- [제미니 강사, 주문 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392797)
+- [제미니 강사, 결제 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392800)
 
 ## 관련 문서
 

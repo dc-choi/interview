@@ -1,7 +1,7 @@
 ---
 tags: [java, parallel-stream, forkjoinpool, work-stealing, concurrency]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "CS - 함수형 프로그래밍"
 aliases: ["Java Parallel Streams", "Java 병렬 스트림과 ForkJoin"]
 ---
@@ -62,7 +62,19 @@ Thread-safe collection을 쓴다고 algorithm이 확장 가능한 것은 아니�
 5. Failure, interruption와 cancellation이 어느 task까지 전파되는지 확인한다.
 6. 작은 입력에서는 sequential로 전환할 threshold가 필요한지 측정한다.
 
+## 분할, 큐와 수명 관리
+
+RecursiveTask는 값을 돌려주고 RecursiveAction은 반환값이 없다. compute에서 작은 leaf는 직접 계산하고 큰 입력은 나눈다. `left.fork(); right.compute(); left.join()` 흐름은 한쪽을 제출하는 동안 현재 worker도 계산한다. 여러 task를 fork했다면 보통 가장 나중에 fork한 task부터 join해 local 작업을 먼저 끝낸다.
+
+기본 ForkJoinPool mode는 local 작업을 stack 순서로 처리하고 idle worker가 반대쪽에서 작업을 훔친다. asyncMode는 join하지 않는 event형 작업의 local FIFO에 맞춘 설정이다. 너무 작은 leaf는 관리 비용을, 너무 큰 leaf는 불균등한 부하를 늘린다. worker당 여러 leaf를 두는 것은 측정 전 출발점이며 고정된 최적 배수나 강의 실행 시간을 운영 목표로 쓰지 않는다.
+
+공용 pool은 shutdown/shutdownNow로 종료되지 않고 프로그램 종료와 수명을 함께한다. 비동기 작업이 종료 전에 완료되어야 하면 소유권과 대기를 명시한다. parallelism을 코어 수에서 1을 뺀 값으로 고정 가정하지 말고 getCommonPoolParallelism으로 확인한다. 호출 thread도 invoke와 join 경로에서 계산에 참여할 수 있다.
+
+Java SE 26 CompletableFuture의 executor 없는 async method는 common pool을 기본으로 사용하며 subclass의 defaultExecutor로 바뀔 수 있다. 모든 비동기 API가 같은 pool을 사용한다는 일반화는 하지 않는다. blocking DB/HTTP 작업은 용도별 executor, bounded queue, timeout과 취소를 설계한다. 강의의 큰 fixed pool 숫자는 사례일 뿐 권장값이 아니며 unbounded queue가 부하를 제한해 주지도 않는다.
+
 ## 출처
+
+- [Java SE 26, CompletableFuture](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html)
 
 - [Java SE 26, ForkJoinPool](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ForkJoinPool.html)
 - [Java SE 26, ForkJoinTask](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ForkJoinTask.html)

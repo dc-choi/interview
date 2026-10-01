@@ -77,6 +77,14 @@ CPU에 가까운 계층은 일반적으로 지연이 짧고 용량당 비용이 
 - 프로세스 종료 후 근접 공간을 합치기 쉬움 (조각모음보다 훨씬 간단)
 - buddy끼리 빠르게 병합해 외부 단편화를 줄이지만 모든 크기의 연속 할당 성공을 보장하지는 않음
 
+### 주소와 단편화 계산 예
+
+연속 할당의 교육용 base/limit 모델에서 base가 4000, limit이 1000이면 오프셋 100은 범위 안이고 물리 주소는 4100이다. 오프셋은 `0 <= offset < limit`을 만족해야 한다. 이 모델을 현대의 모든 주소 변환 방식으로 일반화하지 않는다.
+
+빈 구간이 5바이트와 20바이트로 흩어지면 총 25바이트가 비어도 23바이트 연속 요청은 실패한다(외부 단편화). 고정 파티션은 요청이 작으면 내부 단편화, 파티션보다 크면 할당 실패가 생긴다.
+
+32비트 주소의 4 GiB는 프로세스의 전체 가상 범위이며 사용자/커널 분할과 예약 영역이 실제 사용자 공간을 줄일 수 있다. 물리 주소 확장(PAE)이 가능한 시스템도 있어 32비트 OS가 4 GiB 이상의 RAM을 다룰 수 없다는 일반화는 틀리다. Linux x86-64의 5-level paging은 56비트 사용자 가상 주소를 지원하지만 호환성을 위해 기본 할당은 낮은 47비트 범위에서 한다. 하드웨어 지원, 커널 설정과 프로세스 ABI를 함께 확인한다.
+
 ## 관련 문서
 - [[Virtual-Memory-Paging|가상 메모리와 페이징]]
 - [[Virtual-Memory|가상 메모리 (인덱스)]]
@@ -86,5 +94,11 @@ CPU에 가까운 계층은 일반적으로 지연이 짧고 용량당 비용이 
 
 ## 출처
 
+- [Linux Kernel, 5-level paging](https://docs.kernel.org/arch/x86/x86_64/5level-paging.html)
+
 - 인프런, 감자 강사, [메모리 종류](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100828), [메모리와 주소](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100829), [메모리 할당방식](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100830)
 - [Linux kernel memory management concepts](https://docs.kernel.org/admin-guide/mm/concepts.html)
+- 인프런, 감자 강사, [운영체제의 역사](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100753)
+- 인프런, 널널한 개발자 강사, [컴퓨터가 연산하는 과정](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128248)
+- 인프런, 널널한 개발자 강사, [CPU의 연산흐름과 맥락](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476536)
+- 인프런, 널널한 개발자 강사, [가상 메모리 개요](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476544)

@@ -17,6 +17,7 @@ Spring Security의 Servlet 보안 구조를 현재 API 기준으로 정리한 �
 - [x] [[Spring-Security-Session-and-CSRF|Session, Logout, Remember Me와 CSRF]]
 - [x] [[Spring-Security-Authorization|Request와 Method 인가]]
 - [x] [[Spring-Security-Dynamic-Policy|DB 기반 동적 정책]]
+  - [x] [[Spring-Security-Dynamic-Policy-Legacy|Legacy 동적 인가 구현과 실패 모드]]
 
 ## 인접 문서
 

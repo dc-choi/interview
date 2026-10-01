@@ -3,6 +3,7 @@ tags: [web, internet, www, http, hypertext]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Internet vs Web", "인터넷과 웹", "World Wide Web", "월드 와이드 웹"]
+verified_at: 2026-09-30
 ---
 
 # 인터넷과 웹
@@ -21,6 +22,22 @@ aliases: ["Internet vs Web", "인터넷과 웹", "World Wide Web", "월드 와�
 인터넷에는 웹만 있는 것이 아니다. 이메일은 SMTP와 IMAP, 파일 전송은 FTP나 SFTP, 게임과 메신저는 각자의 응용 프로토콜을 사용할 수 있다. 반대로 웹은 브라우저에만 묶이지 않는다. `curl`, 모바일 앱, 서버 프로그램도 HTTP로 웹 리소스와 API를 사용할 수 있다.
 
 공개 웹은 보통 인터넷을 통해 접근하지만, 사내 인트라넷처럼 외부 인터넷과 분리된 IP 네트워크에서도 같은 웹 기술을 사용할 수 있다. 따라서 인터넷 선이 끊기면 모든 웹이 원리상 사라진다기보다, 공개 인터넷에 있는 웹 리소스로 가는 경로를 잃는다고 이해하는 편이 정확하다.
+
+## 인터넷의 물리 경로와 사업자 연결
+
+브라우저의 요청은 대략 다음 경로로 다른 사업자의 망에 있는 서버에 닿는다.
+
+1. 단말에서 유선이나 Wi-Fi로 공유기에 간다. 가정용 공유기는 라우터, 스위치, AP와 DHCP 서버를 겸한다([[IPv4-NAT-and-Traversal|공유기와 NAT]]).
+2. 공유기는 통신사의 모뎀이나 광 종단 장치(ONT)에 연결된다. 공동주택에서는 흔히 세대 단자함, 층별 중간 배선반과 건물 전체의 주 배선반을 거쳐 ISP의 접속망으로 나간다.
+3. ISP 안에서는 대용량 전송 전용 장비인 코어 라우터들을 광 회선으로 엮은 백본이 트래픽을 나른다.
+4. 목적지가 다른 사업자의 망에 있으면 사업자 간 연결로 넘어간다. 피어링은 두 망이 서로의 고객 트래픽만 주고받는 계약으로 보통 무정산이고, 트랜짓은 요금을 받고 인터넷 나머지로의 도달성을 제공하는 계약이다. 사업자는 둘을 섞어 쓴다. 여러 망이 한곳에서 트래픽을 교환하는 IX(인터넷 교환 지점)는 지역 트래픽을 국제 회선 대신 가까이에서 교환해 비용과 지연을 줄인다.
+5. 트랜짓을 사지 않고 피어링만으로 인터넷 전체에 닿는 망을 Tier 1, 일부를 트랜짓으로 사는 망을 Tier 2라 부르는 업계 관행이 있다. 표준이 정한 분류가 아니고 계약도 공개되지 않아 특정 사업자의 등급을 외부에서 단정하기 어렵다.
+
+### 캐시 서버의 경제성
+
+큰 콘텐츠를 매번 해외 원본에서 가져오면 느리고, 국제 구간의 트랜짓 비용이 사업자에게 쌓인다. 그래서 콘텐츠 사업자는 ISP 망 안이나 IX에 캐시를 둔다. 캐시에 있으면 바로 응답하고, 없으면 원본에서 가져와 저장한 뒤 전달한다. Google Global Cache는 ISP가 자기 망 안에서 구글 콘텐츠 일부를 직접 제공하게 해 피어링과 트랜짓 링크의 트래픽을 줄이고, Netflix Open Connect도 같은 접근이다([[Video-Streaming-System-Design|영상 스트리밍 설계]], [[CDN]]).
+
+망 비용을 누가 낼지는 나라마다 다르고 분쟁이 이어지는 쟁점이다. 한국은 2016년부터 ISP 사이에서 트래픽을 보내는 쪽이 비용을 내는 상호접속 기준을 시행했고, 2020년 법 개정으로 일정 규모 이상의 콘텐츠 사업자에게 서비스 안정성 조치 의무를 지웠다. Internet Society의 2022년 분석은 이 규칙이 비싼 트랜짓 의존을 키웠다고 보고, 서울의 트랜짓 비용을 프랑크푸르트, 런던 같은 유럽 거점의 약 10배로 제시하며, 콘텐츠를 해외에 두는 편이 유리해져 국내 사용자의 지연이 늘 수 있다고 평가한다. 이는 한 기관의 정책 분석이며 사업자별 계약과 비용은 공개 자료로 확인되지 않는다.
 
 ## 웹이 해결하려던 문제
 
@@ -91,6 +108,7 @@ aliases: ["Internet vs Web", "인터넷과 웹", "World Wide Web", "월드 와�
 ## 면접 체크포인트
 
 - 인터넷과 웹의 차이를 기반 인프라와 응용 시스템으로 구분할 수 있는가
+- 가정에서 ISP 백본과 다른 사업자 망까지 가는 경로, 피어링과 트랜짓의 차이, ISP 안의 캐시가 비용과 지연을 줄이는 이유를 설명할 수 있는가
 - 웹 외의 인터넷 서비스와 브라우저 외의 웹 클라이언트를 예로 들 수 있는가
 - 하이퍼텍스트, 주소와 HTTP가 정보 공유 문제를 어떻게 해결했는지 설명할 수 있는가
 - 개방 표준과 상호운용성이 웹 확산에 기여한 이유를 설명할 수 있는가
@@ -107,6 +125,13 @@ aliases: ["Internet vs Web", "인터넷과 웹", "World Wide Web", "월드 와�
 - [웹 서비스를 만드신 분에 대하여... — 널널한 개발자 TV](https://www.youtube.com/watch?v=mrNg1RnOGgU&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=9)
 - [Frequently asked questions by the Press — W3C, Tim Berners-Lee](https://www.w3.org/People/Berners-Lee/FAQ.html)
 - [초창기 웹 서비스 구조 — 널널한 개발자 TV](https://www.youtube.com/watch?v=4Sfned8HLzk&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=10)
+- [Policy Brief: Internet Interconnection — Internet Society](https://www.internetsociety.org/policybriefs/internetinterconnection/)
+- [Policy Brief: Internet Exchange Points (IXPs) — Internet Society](https://www.internetsociety.org/policybriefs/ixps/)
+- [Internet Impact Brief: South Korea's Interconnection Rules — Internet Society](https://www.internetsociety.org/resources/doc/2022/internet-impact-brief-south-koreas-interconnection-rules/)
+- [Google Global Cache (GGC) — Google Peering Help](https://support.google.com/interconnect/answer/9058809)
+- [인프런, 감자, 구글을 검색하면 어떤 일이 일어날까요?](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160781)
+- [인프런, 감자, 라우터](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160808)
+- [인프런, 감자, Proxy 서버](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160834)
 
 ## 관련 문서
 

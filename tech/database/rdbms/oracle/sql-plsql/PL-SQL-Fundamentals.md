@@ -149,6 +149,18 @@ Row마다 SQL을 호출하는 loop는 느린 context switch를 만들 수 있다
 - DDL을 dynamic SQL로 실행해도 Oracle의 implicit commit 경계는 사라지지 않는다.
 - stored program의 privilege model, definer/invoker rights, dependency와 edition/deployment 순서를 관리한다.
 
+## NULL과 반복 경계
+
+IF는 TRUE일 때만 branch를 실행하므로 NULL 검사는 `IS NULL`로 한다. ELSE 없는 PL/SQL CASE statement는 매칭이 없으면 CASE_NOT_FOUND지만 SQL CASE expression은 NULL을 반환할 수 있다. Numeric FOR는 경계를 시작 시 평가하며 작은 상한을 자동으로 역순 처리하지 않는다. 역순은 작은 값..큰 값에 REVERSE를 붙이고 빈 범위와 변하는 경계를 시험한다.
+
+## 출력 buffer와 context switch
+
+PL/SQL engine은 절차 흐름을 실행하고 SQL은 SQL engine에 전달한다. row마다 SQL을 보내는 구조는 context switch가 누적될 수 있다. DBMS_OUTPUT은 client가 나중에 읽는 buffer이며 실행 도중 실시간 log 전송이 아니다. SERVEROUTPUT 설정으로 표시될 뿐 운영 로그 수집과 장애 추적을 대신하지 않는다.
+
+## Sparse collection 순회
+
+DELETE 등으로 index에 빈칸이 있으면 COUNT는 마지막 index가 아니다. `i := collection.FIRST`로 시작해 `collection.NEXT(i)`가 NULL이 될 때까지 기존 element만 순회한다. EXISTS로 존재를 확인하고 VARRAY의 LIMIT, nested table/associative array의 sparse 의미를 구분한다. associative array에는 EXTEND를 적용하지 않는다.
+
 ## 출처
 
 - [Oracle AI Database 26ai, Overview of PL/SQL](https://docs.oracle.com/en/database/oracle/oracle-database/26/lnpls/overview.html)
@@ -158,6 +170,10 @@ Row마다 SQL을 호출하는 loop는 느린 context switch를 만들 수 있다
 - [Oracle AI Database 26ai, SQL*Plus Substitution and Bind Variables](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqpug/using-substitution-variables-sqlplus.html)
 - [Oracle AI Database 26ai, CONTINUE Statement](https://docs.oracle.com/en/database/oracle/oracle-database/26/lnpls/CONTINUE-statement.html)
 - 강의: [PL/SQL 개념](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4670), [변수와 type](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4671), [%ROWTYPE와 record](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4672), [Collection과 bind](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4673), [조건문](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4675), [반복문](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4676)
+- [Oracle AI Database 26ai, DBMS_OUTPUT](https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/DBMS_OUTPUT.html)
+- [Oracle AI Database 26ai, collection methods](https://docs.oracle.com/en/database/oracle/oracle-database/26/lnpls/collection-methods.html)
+- [Oracle AI Database 26ai, plsql control statements](https://docs.oracle.com/en/database/oracle/oracle-database/26/lnpls/plsql-control-statements.html)
+
 
 ## 관련 문서
 

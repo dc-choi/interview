@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, postgresql, migration, dms, runbook]
 status: done
-verified_at: 2026-08-28
+verified_at: 2026-09-30
 category: "Database - RDBMS"
 aliases: ["MySQL to PostgreSQL", "MySQL PostgreSQL 마이그레이션", "이기종 마이그레이션", "DMS 이기종"]
 ---
@@ -39,6 +39,14 @@ UPDATE orders SET delivered_at = NULL WHERE delivered_at = '0000-00-00 00:00:00'
 ```
 
 DMS full load를 쓴다면 변환, 수정한 스키마를 **타깃 PG에 먼저 생성**해 데이터 적재만 맡길 수 있다. 대상 테이블 생성 여부는 선택한 DMS target table preparation 모드에 따라 결정한다.
+
+### database와 schema 계층
+
+MySQL의 `CREATE SCHEMA`는 `CREATE DATABASE`의 동의어라 schema와 database가 같은 단위다. 한 서버의 여러 database를 `db1.orders JOIN db2.users`처럼 한 쿼리와 한 트랜잭션에서 함께 쓸 수 있다. PostgreSQL은 database 안에 schema가 있고, 연결은 접속할 때 지정한 database 하나의 데이터만 볼 수 있다. 같은 database의 schema끼리는 권한만 있으면 함께 조회할 수 있다.
+
+- MySQL database를 PostgreSQL의 별도 database로 옮기면 cross-database 조인과 여러 database를 묶은 트랜잭션이 깨진다. 다른 database를 읽으려면 `postgres_fdw`나 `dblink`가 필요하므로 한 PostgreSQL database 안의 schema로 옮기는 매핑을 기본 후보로 검토한다.
+- 인벤토리에 raw SQL의 `db.table` 한정자, 여러 database를 쓰는 트랜잭션, TypeORM DataSource와 `@Entity`의 `database`, `schema` 옵션을 넣는다([[TypeORM-Entities-and-Columns|TypeORM Entity와 Column]]).
+- DMS table mapping은 MySQL database 이름을 schema 자리에 지정한다. wildcard(`%`)를 쓰면 system database까지 포함되므로 옮길 database를 명시하고, target schema 이름과 대소문자는 rename 변환 규칙으로 정한 뒤 스테이징에서 확인한다.
 
 ## 2. 앱 코드 마이그레이션 (보통 제일 오래 걸림)
 
@@ -130,5 +138,9 @@ SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users));
 - [AWS DMS, Best practices](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html)
 - [AWS DMS, Data validation](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Validating.html)
 - [MySQL 8.4 Reference Manual, Numeric Data Type Syntax](https://dev.mysql.com/doc/refman/8.4/en/numeric-type-syntax.html)
+- [MySQL 8.4 Reference Manual, CREATE DATABASE Statement](https://dev.mysql.com/doc/refman/8.4/en/create-database.html)
+- [PostgreSQL 18 Documentation, Schemas](https://www.postgresql.org/docs/current/ddl-schemas.html)
+- [PostgreSQL 18 Documentation, postgres_fdw](https://www.postgresql.org/docs/current/postgres-fdw.html)
+- [인프런, 얄팍한 코딩사전, MySQL 설치하기](https://www.inflearn.com/courses/lecture?courseId=327501&unitId=86854)
 - [PostgreSQL 18 Documentation, Boolean Type](https://www.postgresql.org/docs/current/datatype-boolean.html)
 - [TypeORM, Migrations](https://typeorm.io/docs/advanced-topics/migrations/)

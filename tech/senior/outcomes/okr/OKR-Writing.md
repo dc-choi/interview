@@ -32,6 +32,7 @@ OKR을 실제로 만들 때의 가이드. Objective는 문장을 만드는 것 �
 ## Key Result 작성
 
 - 가능하면 **정량적으로 측정 가능한 상태**로 잡는다. 정성 기준이라면 판정자, acceptance criteria와 근거를 미리 정한다. 단순히 제도나 기능을 만든다는 산출물은 KR이 아니라 Initiative에 가깝다.
+- **KR에는 시작값과 목표값을 함께 쓴다.** 밀레니얼 회원 수를 MAU 10,000명으로 늘린다보다 밀레니얼 MAU를 6,000명에서 10,000명으로 늘린다처럼 X에서 Y로 쓰는 편이 낫다(수치는 예시). 목표값만 있으면 개선 폭과 도전 수준을 판단할 수 없고, 주간회의에서 진척도를 `(현재값 - 시작값) / (목표값 - 시작값)`으로 계산할 기준도 없다. 시작값을 채울 수 없다면 계측이 먼저 필요하다는 신호이므로 기준값 측정을 첫 Initiative로 둔다. 새 지표라 아직 값이 없으면 첫 측정 시점과 방법을 함께 적는다.
 - 도전 KR의 달성률 가이드는 [[OKR-Concept#이 자료에서 쓰는 KR 3분류|이 자료의 운영 휴리스틱]]이지 보편 표준이 아니다. 필수 신뢰성 목표와 탐색 목표를 같은 stretch 기준으로 평가하지 않는다.
 - **KR은 되고자 하는 상태이지, 해야 하는 행동이 아니다.** 건강해진다는 Objective에 헬스장 등록하기, 하루 30분 걷기, 매일 물 1리터 마시기를 KR로 떠올리기 쉽지만, 이들은 얼마나 건강해졌는지 측정하는 기준이 아니라 달성을 위한 행동, 즉 Initiative다.
 
@@ -65,7 +66,7 @@ Initiative는 Objective와 Key Results를 달성하기 위한 행동이다. 행�
 ## 면접 체크포인트
 
 - "KR과 할 일(태스크)의 차이는?" → 수행할 행동은 Initiative, 그 행동으로 달라져야 할 측정 가능한 상태는 KR. 구분해야 내 할 일은 했다는 함정을 막는다.
-- "목표를 어떻게 잡나?" → 정성적 Why(Objective)와 측정 가능한 기준(KR)을 분리하고, 필수 목표와 탐색 목표의 달성 기준을 다르게 둔다.
+- "목표를 어떻게 잡나?" → 정성적 Why(Objective)와 측정 가능한 기준(KR)을 분리하고, KR에는 시작값과 목표값을 함께 두며, 필수 목표와 탐색 목표의 달성 기준을 다르게 둔다.
 - "Initiative가 안 먹히면?" → Initiative를 먼저 교체하되, 전제나 지표가 깨졌다면 O와 KR도 변경 이유를 남기고 수정한다.
 
 ## 관련 문서
@@ -73,8 +74,11 @@ Initiative는 Objective와 Key Results를 달성하기 위한 행동이다. 행�
 - [[OKR-Concept|OKR 개념]]
 - [[OKR-Operations|OKR 운영]]
 - [[Output-vs-Outcome|산출물 vs 사용자 성과]]
+- [[RFC-Writing|RFC/PRD 작성 (성공 기준의 기준선)]]
+- [[Product-Design-Workflow-and-Handoff|프로덕트 디자인 워크플로 (project index의 KR과 Initiative)]]
 
 ## 출처
 
 - 장영학, 유병은 — Why를 소통하는 도구, OKR (도서)
 - [OKR 강의 영상 플레이리스트 — YouTube](https://youtube.com/playlist?list=PLyAjRMJVCLLjtJPe7GX5AjncaaxU1L9a0)
+- [업무 방식 세팅: SSOT와 Figma 중심의 구조 설계 (+Figma 샘플 템플릿) — 인프런](https://www.inflearn.com/courses/lecture?courseId=338233&unitId=329389)

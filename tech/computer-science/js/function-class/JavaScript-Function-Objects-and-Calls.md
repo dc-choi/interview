@@ -133,7 +133,13 @@ mapped와 unmapped `arguments` object, `arguments.callee`와 `fn.caller`, rest p
 - method reference를 callback으로 분리할 때 `this`와 DI instance context를 잃지 않는다.
 - dynamic Function/eval 대신 strategy map, parser 또는 sandboxed DSL을 사용한다.
 
+## 오래된 internal 표기 읽기
+
+ES5의 `[[Scope]]`, `[[Code]]`, `[[Class]]`, `[[Put]]`, `[[DefaultValue]]`를 현 engine property 이름으로 읽지 않는다. 현재 function은 `[[Environment]]`와 `[[ECMAScriptCode]]` 같은 slot으로 설명하고 쓰기는 `[[Set]]`, primitive 변환은 ToPrimitive와 Symbol.toPrimitive 규칙으로 설명한다. `[[Class]]` 대신 Object.prototype.toString의 tag 알고리즘과 Symbol.toStringTag를 확인한다. 시대별 명세의 설명 장치를 application reflection API나 고정 engine layout으로 취급하지 않는다.
+
 ## 출처
+
+- 인프런 보충 강의: [2. 생성자 함수, 생성자 함수 실행 과정, 인스턴스 생성 과정](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26700), [3. constructor 프로퍼티, constructor 비교](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26701), [7. this와 bind() 메소드, function 오브젝트 생성/호출, 파라미터 병합](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26714)
 
 - [ECMAScript Language Specification, ECMAScript Function Objects](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ecmascript-function-objects)
 - [ECMAScript Language Specification, Function Definitions](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html)

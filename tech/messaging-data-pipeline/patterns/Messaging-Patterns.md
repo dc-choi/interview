@@ -113,3 +113,4 @@ verified_at: 2026-08-26
 - [[SQS|SQS]]
 - [[EventBridge|EventBridge]]
 - [[Redis|Redis Messaging]]
+- [[RabbitMQ-Exchange-Routing|RabbitMQ Exchange 라우팅 (exchange 타입과 Pub/Sub, 작업 분배)]]

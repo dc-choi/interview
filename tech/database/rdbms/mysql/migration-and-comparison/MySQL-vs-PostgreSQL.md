@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, postgresql, comparison]
 status: done
-verified_at: 2026-09-29
+verified_at: 2026-09-30
 category: "Database - RDBMS"
 aliases: ["MySQL vs PostgreSQL", "MySQL PostgreSQL 비교", "Aurora MySQL vs Aurora PostgreSQL"]
 ---
@@ -22,11 +22,14 @@ aliases: ["MySQL vs PostgreSQL", "MySQL PostgreSQL 비교", "Aurora MySQL vs Aur
 | 프로세스 모델 | **멀티스레드**(커넥션당 스레드) | **멀티프로세스**(커넥션당 프로세스) |
 | 커넥션 비용 | 가벼움 | 무거움(프로세스 fork + 10MB 내외) → PgBouncer 권장 |
 | 스토리지 엔진 | 교체 가능(InnoDB, MyISAM, MEMORY) | 단일 엔진 |
+| 테이블 저장 구조 | InnoDB는 PK 순서의 clustered index leaf에 행 저장, secondary index는 PK를 가리킴 | heap에 입력 순서로 저장, 인덱스는 행 위치(CTID)를 가리킴 |
 | MVCC | InnoDB가 **언두 로그** 기반 | **튜플 버전**을 테이블에 남김 → VACUUM 필요 |
 | 복제 | 바이너리 로그 기반(row/statement/mixed), 그룹 복제 | 물리 스트리밍 복제 + 논리 복제 |
 | 확장성 | 내장 기능 중심 | **익스텐션**(PostGIS, TimescaleDB, pgvector) |
 
 MySQL의 커넥션당 스레드 모델은 기본값이다. 진짜 **스레드 풀**은 MySQL Enterprise Edition 플러그인 전용이고, 커뮤니티 에디션에서 스레드 풀이 필요하면 Percona Server나 MariaDB의 오픈소스 구현을 쓴다.
+
+저장 구조 차이가 PK 범위 조회와 secondary index 비용을 어떻게 가르는지는 [[MySQL-vs-PostgreSQL-Storage-Structure|테이블 저장 구조: Heap과 Clustered Index]]에 둔다.
 
 ## 기능 스펙트럼
 
@@ -116,9 +119,17 @@ MySQL에서 오래 걸리는 `UPDATE`, `DELETE`나 방치된 `BEGIN`은 `max_exe
 3. 경험자가 없고 요구가 단순하면 채용 풀과 참고 자료가 많은 MySQL이 무난하다는 실무 의견이 있다. 복잡한 도메인 모델, JSON과 배열 같은 타입, 트랜잭션 DB 위의 가벼운 분석 비중이 크면 PostgreSQL 쪽으로 기운다.
 4. 규모가 커지면 한 엔진으로 모든 접근 패턴을 풀기보다 용도별 저장소를 나누는 경우가 많다. 이때 늘어나는 동기화와 운영 비용은 [[Polyglot-Persistence|Polyglot Persistence]]에서 따진다.
 
+### 라이선스
+
+배포 형태가 바뀔 수 있으면 라이선스도 선택 축이다. 2026-09-30 공식 페이지 기준이며 계약상 판단은 법무 검토로 확정한다.
+
+- PostgreSQL은 BSD, MIT와 비슷한 허용형 PostgreSQL License다. 저작권 고지를 유지하면 비용이나 별도 계약 없이 사용, 수정, 배포할 수 있다.
+- MySQL server와 client library는 GPLv2(추가 허가 포함)와 Oracle 상용 라이선스의 이중 구조다. Oracle은 MySQL을 상용 애플리케이션에 내장하거나 함께 배포하면서 GPL을 따르거나 소스를 공개하지 않으려는 OEM, ISV에 상용 라이선스를 안내하고, client library에는 FOSS 애플리케이션용 예외를 둔다.
+- DB를 별도 서버로 두고 네트워크로 접속하는 일반 백엔드와 제품에 DB를 넣어 재배포하는 설치형, 임베디드 배포는 검토할 의무가 다르다. 관리형 서비스(RDS, Aurora)를 쓰면 서비스 약관과 요금이 비교 대상이 된다.
+
 ## 이관(migration) 고려사항
 
-- **호환 확인**: 함수명 차이(`IFNULL` → `COALESCE`, `GROUP_CONCAT` → `string_agg`, `DATE_FORMAT` → `to_char`), 같은 이름이지만 동작이 다른 `NOW()`(PostgreSQL은 트랜잭션 시작 시각, MySQL은 문장 시작 시각), `ON CONFLICT`(PG) vs `INSERT ... ON DUPLICATE KEY UPDATE`(MySQL), 대소문자 구분(PG는 기본 lower)
+- **호환 확인**: 함수명 차이(`IFNULL` → `COALESCE`, `GROUP_CONCAT` → `string_agg`, `DATE_FORMAT` → `to_char`), 같은 이름이지만 동작이 다른 `NOW()`(PostgreSQL은 트랜잭션 시작 시각, MySQL은 문장 시작 시각), `ON CONFLICT`(PG) vs `INSERT ... ON DUPLICATE KEY UPDATE`(MySQL), 대소문자 구분(PG는 기본 lower), 여러 컬럼을 대입하는 `UPDATE`(MySQL 단일 테이블은 왼쪽부터 앞에서 바뀐 값을 쓰고 PostgreSQL은 갱신 전 값을 쓴다. [[DML-Conflict-and-Batch-Patterns-Update-Delete#SET 대입은 왼쪽부터 평가된다|SET 대입 순서]])
 - **커넥션 모델**: PostgreSQL 전환 시 PgBouncer 등 커넥션 풀러 도입 거의 필수
 - **운영 도구 변화**: `pg_dump`/`pg_restore`, `pg_stat_statements`, VACUUM 정책
 - **드라이버, ORM**: Prisma, TypeORM, Hibernate 모두 지원하지만 기능 차이 존재
@@ -148,14 +159,20 @@ MySQL에서 오래 걸리는 `UPDATE`, `DELETE`나 방치된 `BEGIN`은 `max_exe
 - [MySQL 8.4 Reference Manual, Transaction Isolation Levels](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-isolation-levels.html)
 - [MySQL 8.4 Reference Manual, InnoDB Startup Options and System Variables](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_lock_wait_timeout)
 - [MySQL 8.4 Reference Manual, Binary Logging Options and Variables](https://dev.mysql.com/doc/refman/8.4/en/replication-options-binary-log.html#sysvar_binlog_format)
+- [MySQL 8.4 Reference Manual, UPDATE Statement](https://dev.mysql.com/doc/refman/8.4/en/update.html)
 - [MySQL NDB Cluster API, NDB transactions](https://dev.mysql.com/doc/ndbapi/en/overview-ndb-api.html)
 - [PostgreSQL 공식 문서, JSON Types](https://www.postgresql.org/docs/current/datatype-json.html)
 - [PostgreSQL 공식 문서, bloom extension](https://www.postgresql.org/docs/current/bloom.html)
 - [PostgreSQL Documentation, Date and Time Functions](https://www.postgresql.org/docs/current/functions-datetime.html)
+- [PostgreSQL 공식 문서, UPDATE](https://www.postgresql.org/docs/18/sql-update.html)
 - [PostgreSQL 공식 문서, CREATE TABLE](https://www.postgresql.org/docs/current/sql-createtable.html)
 - [PostgreSQL 공식 문서, WAL 설정](https://www.postgresql.org/docs/current/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT)
 - [PostgreSQL 공식 문서, Client Connection Defaults](https://www.postgresql.org/docs/current/runtime-config-client.html)
 - [PostgreSQL 17 Release Notes](https://www.postgresql.org/docs/release/17.0/)
+- [PostgreSQL, License](https://www.postgresql.org/about/licence/)
+- [MySQL, Commercial License for OEMs, ISVs and VARs](https://www.mysql.com/about/legal/licensing/oem/)
+- [인프런, 윤상석, PostgreSQL 셋업 (with docker) & TypeORM과 연결](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=95392)
+- [인프런, 김영한, MySQL, Oracle, PostgreSQL 설계 철학](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471895)
 - [AWS — MySQL vs PostgreSQL 비교](https://aws.amazon.com/ko/compare/the-difference-between-mysql-vs-postgresql/)
 - [minji.sql — PostgreSQL, MySQL 비교](https://medium.com/@minji.sql/postgresql-mysql-%EB%B9%84%EA%B5%90-4b32bedb187e)
 - [우아한형제들 — Aurora MySQL에서 Aurora PostgreSQL로 이관](https://techblog.woowahan.com/6550/)
@@ -172,3 +189,4 @@ MySQL에서 오래 걸리는 `UPDATE`, `DELETE`나 방치된 `BEGIN`은 `max_exe
 - [[Transaction-Logs-Replication-CDC|트랜잭션 로그와 복제, PITR, CDC]]
 - [[Polyglot-Persistence|Polyglot Persistence]]
 - [[MySQL-to-PostgreSQL-Migration|MySQL → PostgreSQL 이기종 마이그레이션 (타입 매핑, 함수 재작성, DMS)]]
+- [[MySQL-vs-PostgreSQL-Storage-Structure|테이블 저장 구조: Heap과 Clustered Index]]

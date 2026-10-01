@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, dom, event, delegation]
 status: done
-verified_at: 2026-09-27
+verified_at: 2026-10-01
 category: "CS - JavaScript"
 aliases: ["이벤트 버블링과 캡처링", "DOM Event Propagation"]
 ---
@@ -29,6 +29,10 @@ menu.addEventListener("click", onMenuClick, {
 - `removeEventListener`도 이 세 값만 비교한다. 셋째 인자 boolean은 `{ capture }`와 같고 `once`, `passive`, `signal`은 제거 대상 판별에 쓰이지 않으므로, capture로 등록한 listener는 capture를 `true`로 넘겨야 제거된다.
 - 인자 자리에서 바로 만든 익명 함수나 호출할 때마다 새로 만든 `bind` 결과는 등록한 것과 다른 function object라 제거되지 않는다. callback을 변수에 담아 두거나 AbortSignal로 해제한다.
 - inline HTML event handler는 markup/code/CSP를 섞으므로 사용하지 않는다.
+- 같은 EventTarget, 같은 phase의 listener는 등록 순서대로 호출된다. dispatch는 target마다 호출 직전에 listener 목록을 복제하므로, listener 안에서 같은 target에 새로 등록한 listener는 이번 dispatch에서 실행되지 않는다. 반대로 아직 호출되지 않은 listener를 제거하면 이번 dispatch에서도 실행되지 않는다.
+- `onclick` 같은 event handler도 처음 non-null 값을 대입할 때 listener 하나로 목록에 들어간다. 재대입은 그 자리를 유지한 채 함수만 바꾸므로 호출 순서는 첫 대입 전에 `addEventListener`로 등록한 listener, 현재 handler, 첫 대입 뒤 등록한 listener 순이다. `null` 대입은 그 listener를 제거하고, 다시 대입하면 목록 끝에 새로 붙는다.
+- 앞 listener가 만든 상태를 뒤 listener가 읽는 로직은 등록 코드의 위치에 암묵적으로 결합된다. 순서가 중요하면 한 listener 안에서 호출 순서를 드러낸다.
+- 구형 IE 호환성을 이유로 `onclick`을 고를 근거는 약하다. MDN compatibility data 기준 `addEventListener`는 IE 9부터 지원됐고, 지원 판단은 현재 대상 browser matrix로 한다.
 
 ## capture, target, bubble
 
@@ -63,7 +67,8 @@ function onMenuClick(event: MouseEvent) {
 }
 ```
 
-- icon/span처럼 nested element가 target일 수 있어 `closest`를 사용한다.
+- target은 icon/span처럼 의도보다 안쪽 element일 수도, 항목의 padding이나 항목 사이 간격을 눌렀을 때의 `li`, `ul`처럼 바깥 element일 수도 있다. `closest()`는 target 자신부터 조상 방향으로 selector를 검사하고 없으면 null을 반환해 두 경우를 모두 거른다.
+- event target은 pointer capture가 없으면 hit test 결과, 즉 그 위치에서 가장 위에 그려진 element다. block box는 기본적으로 부모 너비를 채우고 padding과 border 영역도 그 element에 속하므로, 글자 옆 빈 공간을 눌러도 그 element가 target이 된다. `event.target.src`를 바로 읽으면 바깥 element가 target일 때 undefined이고, 이 값을 `img.src`에 대입하면 문자열 `"undefined"`가 되어 문서 기준 상대 URL을 요청해 깨진 image가 된다. 값을 읽기 전에 `closest()` 결과의 null 여부와 필요한 attribute를 확인한다.
 - selector match 뒤 delegation root 안에 있는지도 검증한다.
 - focus처럼 bubble하지 않는 event는 `focusin` 또는 capture를 검토한다. `mouseenter`, `mouseleave`도 bubble하지 않아 위임에는 ancestor의 capture listener나 `mouseover`, `mouseout`을 쓴다. capture listener는 pointer가 들어가거나 나간 element마다 한 번씩 실행되므로 `event.target`으로 대상을 거르고, `mouseover`, `mouseout`은 pointer가 descendant 사이를 오갈 때도 발생한다는 점을 처리한다.
 - non-composed event는 Shadow DOM boundary를 넘지 않을 수 있다.
@@ -93,8 +98,9 @@ ordinary `addEventListener` callback의 `this`는 일반적으로 `currentTarget
 
 - [DOM Standard, Events](https://dom.spec.whatwg.org/#events)
 - [DOM Standard, EventTarget](https://dom.spec.whatwg.org/#interface-eventtarget)
-- [HTML Standard, Event handler IDL attributes](https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-idl-attributes), [CSSOM View Module, Scrolling events](https://drafts.csswg.org/cssom-view/#scrolling-events), [W3C, Pointer Events](https://w3c.github.io/pointerevents/)
-- [MDN, EventTarget: dispatchEvent() method](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent), [MDN, Element: mouseleave event](https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseleave_event)
+- [DOM Standard, invoke](https://dom.spec.whatwg.org/#concept-event-listener-invoke), [DOM Standard, closest()](https://dom.spec.whatwg.org/#dom-element-closest)
+- [HTML Standard, Event handler IDL attributes](https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-idl-attributes), [HTML Standard, activate an event handler](https://html.spec.whatwg.org/multipage/webappapis.html#activate-an-event-handler), [CSSOM View Module, Scrolling events](https://drafts.csswg.org/cssom-view/#scrolling-events), [W3C, Pointer Events](https://w3c.github.io/pointerevents/)
+- [MDN, EventTarget: dispatchEvent() method](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent), [MDN, Element: mouseleave event](https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseleave_event), [MDN browser-compat-data, EventTarget](https://github.com/mdn/browser-compat-data/blob/main/api/EventTarget.json)
 - [Node.js v26.10.0, Events: EventTarget and Event API](https://nodejs.org/docs/v26.10.0/api/events.html#eventtarget-and-event-api)
 - [EventTarget removeEventListener does not match all listeners, Issue #65244 — nodejs/node](https://github.com/nodejs/node/issues/65244), [Node.js v26 changelog — nodejs/node](https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V26.md)
 - [lib/internal/event_target.js v26.8.2 — nodejs/node](https://github.com/nodejs/node/blob/v26.8.2/lib/internal/event_target.js), [lib/internal/event_target.js v26.9.0 — nodejs/node](https://github.com/nodejs/node/blob/v26.9.0/lib/internal/event_target.js), [lib/internal/event_target.js v24.21.0 — nodejs/node](https://github.com/nodejs/node/blob/v24.21.0/lib/internal/event_target.js), [lib/internal/event_target.js v22.23.3 — nodejs/node](https://github.com/nodejs/node/blob/v22.23.3/lib/internal/event_target.js)

@@ -3,7 +3,7 @@ tags: [infrastructure, aws, kms, encryption, security]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["KMS", "AWS KMS", "Key Management Service", "Key Management System"]
-verified_at: 2026-07-21
+verified_at: 2026-09-30
 ---
 
 # AWS KMS (Key Management Service)
@@ -43,7 +43,7 @@ verified_at: 2026-07-21
 ### 고객 관리형 키 (CMK)
 
 - 고객이 직접 생성, 관리 → **세밀한 제어** 가능
-- 활성화, 비활성화, 삭제 예약(7~30일 대기), **키 정책, IAM**으로 접근 주체 지정
+- 활성화, 비활성화, 삭제 예약(7~30일 대기, 기본 30일), **키 정책, IAM**으로 접근 주체 지정. 대기 중인 키는 암호 연산에 쓸 수 없고 대기 기간 안에는 삭제를 취소할 수 있지만, 삭제된 뒤에는 그 키로 암호화한 데이터를 복호화할 수 없다. 확신이 없으면 삭제 대신 비활성화한다
 - 수동 로테이션 또는 자동 로테이션 선택. 지원되는 고객 관리형 키는 90~2560일 범위에서 주기를 지정할 수 있고 기본값은 365일이다.
 - 비대칭 키, 다중 리전 키, 키 머티리얼 가져오기 등 요구에 맞는 키 사양과 원본을 선택할 수 있다. 기능 조합마다 제약이 있다.
 
@@ -53,6 +53,15 @@ verified_at: 2026-07-21
 - CloudHSM에서 비대칭 서명을 직접 수행하려면 [[HSM-Key-Custody|HSM과 서명 키 관리]]처럼 Client SDK의 PKCS #11, JCE 등을 사용한다.
 - **외부 키 스토어(XKS)**는 AWS 외부의 키 관리 시스템에 외부 키를 두고 프록시를 통해 KMS와 연결한다.
 - 사용자 지정 키 스토어는 표준 KMS 키보다 자동 로테이션, 다중 리전, 키 사양 등에 제약이 있고 가용성, 성능, 비용 책임이 고객 쪽으로 이동한다. 규제 요구가 있을 때만 해당 서비스의 현재 인증 범위와 운영 부담을 함께 검토한다.
+
+## 키 정책의 관리자와 사용자, SSE-KMS 이중 권한
+
+콘솔로 만든 키의 기본 키 정책은 계정 principal에 `kms:*`를 주어 IAM 정책으로 권한을 위임할 수 있게 하는 문장, key administrators 문장, key users의 암호 연산 문장과 AWS 서비스용 grant 문장(대부분의 키 유형)으로 이뤄진다. API로 키 정책 없이 만들면 첫 문장만 들어간다.
+
+- **key administrators**: 활성화와 비활성화, 키 정책 변경, 태그와 별칭, 삭제 예약과 취소 같은 수명주기를 다루고 기본 문장에 `Encrypt`, `Decrypt` 같은 암호 연산은 없다. 다만 키 정책을 바꾸고 grant를 만들 수 있어 스스로 사용 권한을 줄 수 있으므로, 관리자와 사용자 분리는 CloudTrail 감사와 변경 통제로 뒷받침한다.
+- **key users**: 대칭 키 기준 `Encrypt`, `Decrypt`, `ReEncrypt*`, `GenerateDataKey*`, `DescribeKey`를 받고, `kms:GrantIsForAWSResource` 조건이 붙은 `CreateGrant`, `ListGrants`, `RevokeGrant`로 EBS 같은 통합 서비스가 키를 쓰게 할 수 있다.
+- **SSE-KMS 객체는 S3 권한만으로 열리지 않는다**: 다운로드에는 `kms:Decrypt`, SSE-KMS 업로드에는 `kms:GenerateDataKey`, multipart 업로드에는 둘 다 필요하다. S3 권한이 넉넉한데 특정 객체만 403이면 그 객체를 암호화한 KMS 키의 권한(키 정책, 또는 키 정책이 허용한 IAM 정책)부터 본다. `aws/s3` AWS 관리형 키로 암호화한 객체는 키를 가진 계정 안에서만 쓸 수 있어 교차 계정 공유에는 고객 관리형 키가 필요하다.
+- **S3 Bucket Key**: S3는 요청자마다 bucket-level key를 최소 한 번 KMS에서 가져와 그 접근을 CloudTrail에 남기고, 이후 그 key를 쓰는 요청은 KMS 호출과 키 정책 검증 없이 처리한다. encryption context가 객체 ARN에서 버킷 ARN으로 바뀌므로 객체 ARN context 조건을 쓴 정책은 버킷 ARN으로 고친다.
 
 ## 데이터 키 (Data Key)
 
@@ -138,6 +147,7 @@ KMS의 핵심 동작 방식. **데이터 키로 데이터를 암호화하고, �
 - **고객이 직접 키 활성화, 비활성화, 삭제 제어**가 필요하면 → 고객 관리형 키 (CMK)
 - 대칭 KMS 키의 `Encrypt` API는 최대 4,096바이트를 직접 암호화할 수 있다. 큰 데이터에는 봉투 암호화를 사용한다
 - 모든 KMS Key에는 key policy가 필요하다. 같은 계정에서는 key policy만으로 권한을 부여할 수 있고, IAM policy로 허용하려면 key policy가 IAM 사용을 활성화해야 한다. 교차 계정 사용은 key policy와 외부 계정 IAM policy 양쪽 허용이 필요하다
+- S3 권한이 있어도 SSE-KMS 객체만 403이면 → 키의 `kms:Decrypt`(업로드는 `kms:GenerateDataKey`) 권한 확인
 
 ## 출처
 
@@ -152,6 +162,13 @@ KMS의 핵심 동작 방식. **데이터 키로 데이터를 암호화하고, �
 - [AWS KMS 키 스토어](https://docs.aws.amazon.com/kms/latest/developerguide/key-store-overview.html)
 - [AWS KMS 키 로테이션](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html)
 - [AWS KMS 수동 로테이션](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys-manually.html)
+- [AWS KMS 기본 키 정책](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html)
+- [AWS KMS 키 삭제](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html)
+- [Amazon S3 SSE-KMS 권한과 encryption context](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html)
+- [Amazon S3 Bucket Key](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html)
+- [인프런, Sungmin Kim, KMS란?](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=79334)
+- [인프런, Sungmin Kim, KMS 실습 1부](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=79335)
+- [인프런, Sungmin Kim, KMS 실습 2부](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=79336)
 
 ## 관련 문서
 

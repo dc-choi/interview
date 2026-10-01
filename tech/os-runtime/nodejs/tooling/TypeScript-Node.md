@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, typescript, tooling]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["Node.js TypeScript", "Node TypeScript 실행"]
 ---
@@ -14,13 +14,29 @@ TypeScript는 Node.js의 별도 런타임이 아니다. 타입 검사는 실행 
 
 ```bash
 npm init -y
+npm pkg set type=module    # npm의 init-type 기본값이 commonjs라 ESM으로 쓸 때 바꾼다
 npm install --save-dev typescript @types/node tsx
 npx tsc --init
 ```
 
-전역 `typescript` 설치는 프로젝트마다 다른 컴파일러 버전을 숨길 수 있다. `package.json`과 lockfile에 버전을 고정하고 package script나 `npx tsc`로 실행한다. PATH 설정은 운영체제보다 설치 방식에 좌우된다. 공식 installer, Homebrew, `nvm` 같은 version manager가 PATH를 구성하는 방식이 다르므로 특정 shell 초기화 파일을 모든 환경의 정답으로 고정하지 않는다.
+TypeScript 6.0부터 `compilerOptions.types`의 기본값이 `[]`라 `node_modules/@types`의 패키지를 자동으로 전역에 넣지 않는다. 5.9 이하는 `types`를 생략하면 보이는 `@types` 패키지를 모두 포함했지만, `tsc --init`이 만든 설정은 5.9.3, 6.0.3, 7.0.2 모두 `"types": []`를 명시하고 Node.js용 `"types": ["node"]`와 `"lib": ["esnext"]`는 주석으로만 안내한다. 그래서 `@types/node`를 설치만 하면 `process`, `Buffer`와 `node:https` import가 TS2591(`Cannot find name 'process'. Do you need to install type definitions for node? ...`) 같은 오류로 실패한다. `types` 키를 생략한 기존 설정도 6.0 이상으로 올리면 같은 오류가 난다(`@types/node` 26.6으로 확인).
 
-2026-08-04 기준 Node.js 24는 LTS, 26은 Current이며 18과 20은 EOL이다. 새 프로젝트는 조직의 배포 환경과 라이브러리가 지원하는 LTS를 선택하고, 고정된 과거 major를 일반 권장 버전으로 남기지 않는다.
+```json
+{
+  "compilerOptions": {
+    "types": ["node"]
+  }
+}
+```
+
+- `types`에 없는 `@types` 패키지는 전역(`process`, 테스트 러너의 `describe`, `expect`)과 auto-import 후보를 추가하지 않는다. `import`하는 라이브러리의 `@types`는 영향을 받지 않는다. 테스트 러너 전역도 `["node", "jest"]`처럼 적고, `["*"]`는 5.9 이하의 생략 기본값처럼 전부 포함한다. 공식 릴리스 노트는 `types`를 적절히 지정해 빌드 시간이 20~50% 준 사례를 언급한다.
+- `lib`를 생략하면 기본 묶음의 DOM 선언 덕분에 `console`은 통과해 누락이 일부만 드러난다. `lib`를 명시한다면 Node.js 전용 프로젝트에는 DOM 없이 ECMAScript lib만 둔다.
+- `tsc --init`은 `module: nodenext`와 `verbatimModuleSyntax: true`를 켜므로 `"type": "commonjs"` 패키지의 `.ts` 파일에 `import` 문을 쓰면 TS1295로 실패한다(6.0.3 확인). 위의 `npm pkg set type=module`이 이 경우다.
+- tsx와 Node.js type stripping은 타입 검사를 하지 않으므로 이 누락은 `tsc --noEmit` typecheck에서 처음 드러난다. 6.0 기본값 변화 전체는 [[option|TypeScript 컴파일러 옵션]]을 따른다.
+
+전역 `typescript` 설치는 프로젝트마다 다른 컴파일러 버전을 숨길 수 있다. `package.json`과 lockfile에 버전을 고정하고 package script나 `npx tsc`로 실행한다. npm scripts가 로컬 `node_modules/.bin`을 먼저 찾는 방식은 [[Command-Line#재현 가능한 의존성 설치|커맨드라인]]을 따른다. PATH 설정은 운영체제보다 설치 방식에 좌우된다. 공식 installer, Homebrew, `nvm` 같은 version manager가 PATH를 구성하는 방식이 다르므로 특정 shell 초기화 파일을 모든 환경의 정답으로 고정하지 않는다.
+
+2026-09-30 기준 Node.js 24와 22는 LTS, 26은 Current이며 18, 20과 25는 EOL이다. 새 프로젝트는 조직의 배포 환경과 라이브러리가 지원하는 LTS를 선택하고, 고정된 과거 major를 일반 권장 버전으로 남기지 않는다.
 
 ## 실행 경로를 분리해서 선택하기
 
@@ -65,7 +81,12 @@ import { createServer } from "node:https";
 - [Node.js, Previous Releases](https://nodejs.org/en/about/previous-releases)
 - [Node.js, Modules: TypeScript](https://nodejs.org/api/typescript.html)
 - [TypeScript, Download](https://www.typescriptlang.org/download/)
+- [TypeScript, TSConfig Reference, types](https://www.typescriptlang.org/tsconfig/#types)
+- [TypeScript, TypeScript 6.0 Release Notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html)
+- [npm Docs, init-type](https://docs.npmjs.com/cli/v11/using-npm/config#init-type)
 - yongsoocho, [Node.js 설치](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=136785)
 - yongsoocho, [환경 변수 설정, Windows](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=136786)
 - yongsoocho, [환경 변수 설정, macOS와 Linux](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=136787)
 - yongsoocho, [TypeScript 프로젝트 생성](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=136788)
+- 이정환 Winterlood, [Hello TS World!](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=154361)
+- 이정환 Winterlood, [외부 라이브러리 사용하기](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=160077)

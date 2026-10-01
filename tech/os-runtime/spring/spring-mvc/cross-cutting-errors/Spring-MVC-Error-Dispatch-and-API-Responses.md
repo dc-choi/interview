@@ -80,7 +80,21 @@ Spring MVC는 RFC 9457 기반 `ProblemDetail`과 `ErrorResponse`를 지원한다
 - 이미 commit된 streaming response 실패는 일반 JSON error body로 되돌릴 수 없음을 처리한다.
 - Error code/status/exception class/trace를 metric과 log에 연결하되 PII cardinality를 제한한다.
 
+## Resolver 반환값과 오류 view 선택
+
+| 반환값 | 의미 |
+|---|---|
+| `null` | 처리하지 않음, 다음 resolver로 진행 |
+| 빈 `ModelAndView` | 처리 완료, 별도 view render 없음 |
+| view/model이 있는 `ModelAndView` | 해당 오류 view render |
+
+빈 결과라도 resolver가 `sendError()`를 호출했다면 container의 ERROR dispatch로 이어질 수 있다. status와 body를 직접 작성하는 경로와 구분한다. 기본 resolver를 유지하며 추가하려면 `extendHandlerExceptionResolvers`를 사용한다.
+
+Boot의 오류 view는 exact status와 `4xx`/`5xx` series resource, 기본 `error` view를 지원한다. template/static의 상세 선택 순서는 적용 버전과 등록 resolver에 따라 확인하며 모든 template가 모든 static exact-status보다 먼저라는 규칙으로 단순화하지 않는다. 내부 exception/message/trace 공개는 `server.error.*` 정책과 custom ErrorAttributes를 함께 검토한다.
+
 ## 출처
+
+- [Spring MVC, HandlerExceptionResolver contract](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/exceptionhandlers.html)
 
 - [Spring Framework, MVC exceptions](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html), [Spring MVC error responses](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html), [Spring Boot error handling](https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.spring-mvc.error-handling)
 - Servlet/HTML error: [프로젝트](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83348), [exception/sendError](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83349), [error page 등록](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83350), [ERROR dispatch](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83351), [Filter dispatcher type](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83352), [Interceptor 재호출](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83353), [Boot error page 1](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83354), [Boot error page 2](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83355), [정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83356)

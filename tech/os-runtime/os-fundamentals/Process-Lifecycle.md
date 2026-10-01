@@ -102,6 +102,12 @@ aliases: ["Process Lifecycle", "프로세스 생명주기"]
 
 언어 이름만으로 컴파일 언어와 인터프리터 언어를 고정 분류할 수 없다. 같은 언어도 구현체와 배포 방식에 따라 AOT, JIT, interpreter를 조합한다.
 
+## 프로세스 자격 증명과 권한 상속
+
+OS가 검사하는 주체는 사람이 아니라 요청한 프로세스다. Linux는 UID, GID, 보조 그룹과 capability 등으로 자격을 표현한다. `fork()`한 자식은 부모의 사용자와 그룹 ID를 복사하며, `execve()`는 real ID와 보조 그룹을 보존하지만 set-user-ID/set-group-ID 실행 파일과 capability 규칙에 따라 effective ID 등이 달라질 수 있다.
+
+관리자 셸에서 실행한 프로그램도 넓은 권한을 물려받을 수 있다. 서비스는 전용 계정과 필요한 권한으로 실행하고, 초기화에만 필요한 권한을 낮출 때는 보조 그룹과 capability까지 함께 검토한다. 파일 접근 권한과 다른 프로세스의 메모리를 읽을 권한은 별도 검사이며 [[Concurrency-and-Process-Overview#입출력 감시와 격리의 권한 경계|디버깅 접근]]도 그 예다.
+
 ## 관련 문서
 - [[Concurrency-and-Process|동시성과 프로세스]]
 - [[Context-Switching|컨텍스트 스위칭과 CPU 스케줄링]]
@@ -109,9 +115,14 @@ aliases: ["Process Lifecycle", "프로세스 생명주기"]
 
 ## 출처
 
+- [Linux, credentials(7)](https://man7.org/linux/man-pages/man7/credentials.7.html)
+
 - 인프런, 감자 강사, [프로그램과 프로세스](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100759), [멀티프로그래밍과 멀티프로세싱](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100760), [PCB](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100761), [프로세스 상태](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100762)
 - 인프런, 감자 강사, [프로세스 생성과 종료](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100764), [쓰레드](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100765), [컴파일과 프로세스](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100824)
 - [Linux execve(2)](https://man7.org/linux/man-pages/man2/execve.2.html)
 - [Linux fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html)
 - [Linux wait(2)](https://man7.org/linux/man-pages/man2/wait.2.html)
 - [Linux exit(3)](https://man7.org/linux/man-pages/man3/exit.3.html)
+- 인프런, 널널한 개발자 강사, [이해가 아닌 암기대상](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476534)
+- 인프런, 널널한 개발자 강사, [컴퓨터 세상속 행위의 주체와 대상체](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476538)
+- 인프런, 널널한 개발자 강사, [프로세스간 관계와 권한](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476541)

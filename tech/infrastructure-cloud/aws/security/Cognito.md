@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, cognito, auth, identity, oauth2, oidc, saa-c03]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "Infrastructure - AWS"
 aliases: ["Cognito", "Amazon Cognito", "AWS Cognito", "User Pool", "Identity Pool"]
 ---
@@ -43,6 +43,15 @@ Cognito가 관리하는 **앱 사용자 디렉터리**. 회원 정보 저장 + �
 ### JWT 검증
 
 JWT payload를 decode하는 것만으로 신뢰하면 안 된다. user pool의 JWKS에서 `kid`에 맞는 공개 키를 찾아 서명을 검증하고 `iss`, `exp`, `token_use`, ID token의 `aud` 또는 access token의 `client_id`를 확인한다. API에서는 필요한 OAuth scope도 검사한다. signing key 회전에 대비해 JWK를 `kid` 기준으로 cache하고 모르는 `kid`가 오면 JWKS를 갱신한다.
+
+### 운영 설정 — 가입 공개, 메일 발송, 앱 클라이언트
+
+- **셀프 가입**: 켜면 로그인 화면에 가입 링크가 생긴다. `SignUp`은 IAM 정책을 평가하지 않고 app client ID(secret이 있으면 `SECRET_HASH`)만으로 호출하는 API라 화면에서 링크를 숨겨도 막히지 않는다. 공개 전에는 셀프 가입을 꺼 두고 관리자만 사용자를 만들며, 연 뒤에는 Pre Sign-up 트리거, 연락처 확인과 WAF로 남용을 줄인다.
+- **속성 확인**: 이메일이나 전화 확인을 켜면 가입 때 24시간 유효한 코드를 보내고 확인 전에는 로그인할 수 없다. 비밀번호 찾기는 확인된 연락처가 있어야 동작한다. 로그인에 쓰는 이메일을 바꿀 때는 `AttributesRequireVerificationBeforeUpdate`(콘솔의 Keep original attribute value active when an update is pending)로 새 값을 확인하기 전까지 원래 값을 유지한다.
+- **메일 발송 경로**: 기본 구성(`COGNITO_DEFAULT`)은 user pool당 하루 발송 수가 제한되고 AWS는 이 한도가 일반 프로덕션 발송량보다 낮다고 명시한다. 운영에서는 SES 구성으로 바꾼다. SES 구성은 검증된 이메일이나 도메인이 필요하고, 계정이 그 리전의 SES sandbox에 있으면 사용자에게 메일을 보내지 못하므로 production access를 먼저 받는다.
+- **앱 클라이언트 유형**: public client는 브라우저나 모바일에서 실행되어 신뢰할 서버 측 자원이 없으므로 client secret을 두지 않는다. confidential client는 secret을 안전하게 둘 수 있는 서버 측 앱이다. secret 유무는 생성 뒤 바꿀 수 없어 새 앱 클라이언트를 만들어야 한다. 앱 코드에 넣은 secret은 추출될 수 있어 보호가 되지 않으므로 public client는 secret 없이 authorization code와 PKCE를 쓰고, secret이 꼭 필요하면 서버나 프록시가 `SECRET_HASH`를 붙이게 한다.
+- **인증 흐름**: 직접 만든 로그인에서 사용자 이름과 비밀번호 인증은 SRP 흐름(`ALLOW_USER_SRP_AUTH`)을 쓰라고 AWS가 권고한다. custom auth는 Define auth challenge, Create auth challenge, Verify auth challenge response 세 Lambda 트리거로 challenge를 구성한다. 쓰지 않는 흐름은 켜지 않는다.
+- **도메인과 callback**: Cognito prefix 도메인에는 `aws`, `amazon`, `cognito`를 넣을 수 없다. callback URL은 앱 클라이언트에 미리 등록한 절대 URI와 일치해야 하고 테스트용 `http://localhost` 외에는 HTTPS가 필요하다. `response_type=token`으로 URL에 토큰을 받는 흐름은 implicit grant라 refresh token이 없고 PKCE와 호환되지 않으므로 신규 구성은 `code`와 PKCE를 쓴다.
 
 ## Identity Pool (자격 증명 풀, Federated Identities)
 
@@ -113,6 +122,8 @@ JWT payload를 decode하는 것만으로 신뢰하면 안 된다. user pool의 J
 - **Google/Facebook/SAML 로그인** → **Federated Identity** (User Pool 또는 Identity Pool에 외부 IdP 등록).
 - **회원 가입, 로그인 UI를 직접 만들고 싶지 않다** → **Managed login**. Lite plan이나 기존 구성은 classic Hosted UI일 수 있음.
 - **회원 가입, 인증 흐름에 커스텀 로직 삽입** → **Lambda Trigger** (Pre Sign-up, Post Confirmation, Pre Token Generation 등).
+- **운영 환경의 가입, 인증 메일 발송량** → 기본 이메일 구성의 일일 한도 대신 **SES 구성**(sandbox 해제 필요).
+- **브라우저, 모바일 앱의 앱 클라이언트** → client secret 없는 public client + authorization code와 PKCE.
 - **IAM User**는 AWS 콘솔, CLI 사용자(직원)용이고, **Cognito는 앱 사용자(End User)용** — 둘은 다른 영역.
 
 ## 출처
@@ -124,6 +135,12 @@ JWT payload를 decode하는 것만으로 신뢰하면 안 된다. user pool의 J
 - [Amazon Cognito — Verifying JWTs](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html)
 - [Amazon Cognito — Cognito Sync availability](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sync.html)
 - [Amazon API Gateway, HTTP API access control](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html)
+- [Amazon Cognito — Email settings for user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html)
+- [Amazon Cognito — Application-specific settings with app clients](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html)
+- [Amazon Cognito — Signing up and confirming user accounts](https://docs.aws.amazon.com/cognito/latest/developerguide/signing-up-users-in-your-app.html)
+- [Amazon Cognito API Reference — SignUp](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_SignUp.html)
+- [Amazon Cognito — Custom authentication challenge Lambda triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-challenge.html)
+- [Amazon Cognito — Configuring a user pool domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html)
 - [Sungmin Kim 강사 — Web Identity Federation](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=69307)
 - [Sungmin Kim 강사 — Cognito](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=70076)
 - [Sungmin Kim 강사 — Cognito User Pools](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=69308)

@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
-verified_at: 2026-09-28
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["ESM", "ES Modules"]
 ---
@@ -54,6 +54,15 @@ console.log(count); // 1 (원본의 변경이 즉시 반영됨)
 | this | module.exports | undefined |
 
 CommonJS 파일은 module wrapper 함수 body로 실행되므로 top level의 `return`으로 나머지 코드를 건너뛸 수 있다. ECMAScript의 Script와 Module 문법은 top level에 `return`을 허용하지 않으므로 이런 파일을 ESM으로 옮기면 `SyntaxError: Illegal return statement`가 난다(Node.js 26.7 확인).
+
+## 모듈 캐시와 쿼리 스트링 재로딩
+
+ESM 로더는 모듈을 해석된 URL 단위로 캐시해 같은 모듈을 여러 번 import해도 처음 평가한 인스턴스를 재사용한다. 이 캐시는 CommonJS의 `require.cache`와 별개이고, Node.js 문서에는 `delete require.cache[...]`처럼 ESM 캐시 항목을 지우는 공개 API가 없다(2026-09-30 확인). 캐시 덕분에 모듈 수준 상태는 import한 모든 곳이 공유한다([[Module-System-CommonJS|CommonJS 캐싱]]도 같다).
+
+`file:` URL의 query나 fragment가 다르면 Node.js는 같은 파일을 별개 모듈로 다시 로드한다. ``await import(`./counter.mjs?v=${Date.now()}`)``처럼 캐시를 우회할 수 있지만 비용이 따른다.
+
+- 쿼리마다 새 인스턴스가 생겨 카운터, 싱글턴, 커넥션 같은 모듈 수준 상태가 따로 존재하고, 한 인스턴스의 클래스로 만든 객체는 다른 인스턴스의 클래스에 대한 `instanceof`가 `false`다. 아래 듀얼 패키지 위험과 같은 구조다.
+- 이전 인스턴스는 모듈 맵에 남는다. 약 0.8MB 배열을 가진 모듈을 쿼리를 바꿔 200번 import하자 GC 뒤에도 힙이 약 5MB에서 167MB로 늘었다(Node.js 26.7 확인). 장시간 실행 프로세스의 핫 리로드에 쓰면 메모리가 계속 쌓이므로 쿼리 재로딩은 개발과 테스트에 한정하고, 운영의 코드 교체는 프로세스 재시작(`node --watch`, 프로세스 매니저)으로 한다.
 
 ## 상호운용성
 
@@ -166,6 +175,10 @@ Node-API의 핵심 가치:
 - [Dual CommonJS/ESM package distributions — Node.js package-examples](https://github.com/nodejs/package-examples/blob/main/guide/07-dual-packages/README.md)
 - [Shipping ESM for CommonJS consumers — Node.js package-examples](https://github.com/nodejs/package-examples/blob/main/guide/04-cjs-esm-interop/shipping-esm-for-cjs/README.md)
 - [Node.js 22.10.0, New module-sync exports condition — Node.js Blog](https://nodejs.org/en/blog/release/v22.10.0#new-module-sync-exports-condition)
+- [Node.js, ECMAScript modules, URLs](https://nodejs.org/api/esm.html#urls)
+- [Node.js, ECMAScript modules, No require.cache](https://nodejs.org/api/esm.html#no-requirecache)
+- [인프런, 얄팍한 코딩사전, 모듈 1 - CommonJS](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=268910)
+- [인프런, 얄팍한 코딩사전, 모듈 2 - ES Module](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=268911)
 
 ## 관련 문서
 - [[JavaScript-ES-Modules|JavaScript ES Modules]]

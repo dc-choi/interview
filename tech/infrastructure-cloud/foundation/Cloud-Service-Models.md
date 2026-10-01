@@ -31,7 +31,7 @@ verified_at: 2026-08-28
 - 장점: 온프레미스에 가장 가까운 **통제권**, 어떤 워크로드도 수용
 - 단점: OS, 보안 패치, 모니터링까지 직접 책임
 
-적합: 특수 커널 모듈, GPU 드라이버 필요, 레거시 앱 리프트, 앤, 시프트, 규제 요구로 세밀 통제 필요.
+적합: 특수 커널 모듈, GPU 드라이버 필요, 레거시 앱의 lift and shift([[Cloud-Migration-Strategies|Rehost]]), 규제 요구로 세밀 통제 필요.
 
 ## PaaS
 
@@ -131,3 +131,4 @@ verified_at: 2026-08-28
 - [[Docker|Docker]]
 - [[IaC|IaC]]
 - [[Load-Balancer|Load Balancer]]
+- [[Cloud-Migration-Strategies|클라우드 전환 전략]]

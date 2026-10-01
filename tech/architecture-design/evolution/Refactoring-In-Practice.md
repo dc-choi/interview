@@ -7,7 +7,7 @@ aliases: ["Refactoring In Practice", "실전 리팩토링", "Monster Method"]
 
 # 실전 리팩토링 — 분석, 안전망, 최적화의 3단계
 
-리팩토링은 "코드를 예쁘게 만드는 취미 활동"이 아니라 **지연, 장애, 생산성 저하의 근본 원인을 제거**하는 공학 작업. 감으로 수정하면 회귀 버그를 만들기 쉽고, 성과도 증명하기 어렵다. 반복 적용 가능한 표준 절차가 있음.
+리팩토링은 코드를 예쁘게 만드는 취미 활동이 아니라 **지연, 장애, 생산성 저하의 근본 원인을 제거**하는 공학 작업. 감으로 수정하면 회귀 버그를 만들기 쉽고, 성과도 증명하기 어렵다. 반복 적용 가능한 표준 절차가 있음.
 
 ## 리팩토링이 필요한 신호
 
@@ -24,7 +24,7 @@ aliases: ["Refactoring In Practice", "실전 리팩토링", "Monster Method"]
 - **전체를 한 번에 이해하려 하지 않는다.** 전체 구조 파악 강박 대신, 필요한 기능이 어디서 시작하는지 그 흐름 하나만 추적한다 (아래 1단계의 Pseudo-Code가 그 도구다).
 - **두려워하면서도 건드린다.** 실행에 영향을 주지 않는 아주 작은 변경부터 시작한다 — 주석 하나, 문서 한 줄. 이름 변경 같은 코드 변경은 IDE의 기계적 리팩토링이 수동 치환보다 위험이 낮지만, 그것도 아래 2단계의 테스트 안전망을 갖춘 뒤에 한다. 레거시는 이해의 대상이기 전에 **익숙해짐의 대상**이라, 자주 보면 두려움이 줄어든다.
 - **작성자를 존중한다.** 그 코드를 쓴 사람도 당시 맥락에서 최선을 다했고, 지금까지 돌아갔다는 것 자체가 어떤 의미에서는 성공이다. 레거시는 과거 개발자의 실패가 아니다.
-- **옆에 새 길을 내지 않는다.** 기존 코드를 건드리기 무서워 옆에 비슷한 함수를 하나 더 만드는 회피가 반복되면 시스템이 누더기가 된다. 고치는 두려움을 피한 대가가 중복 경로의 누적이다.
+- **검증 없는 중복 경로를 남기지 않는다.** 기존 코드를 건드리기 무서워 옆에 비슷한 함수를 하나 더 만드는 회피가 반복되면 시스템이 누더기가 된다. 고치는 두려움을 피한 대가가 중복 경로의 누적이다. 아래의 계약 이관용 임시 호환 경로는 제거 계획과 검증을 가진다는 점에서 구분한다.
 - **커밋 히스토리를 읽는다.** 왜 이 위치에 조건문이 들어갔는지, 어떤 장애를 막으려던 구조인지는 이전 커밋 로그를 몇 분만 뒤져도 답이 나오는 경우가 많다. 맥락을 파악한 사람은 한 줄을 고쳐도 확신이 있다 — 코드를 무서워하는 습관의 상당 부분은 히스토리를 읽지 않는 습관이다.
 - **검증을 나눈다.** 내가 고친 코드의 문제가 전부 내 비난으로 돌아올 것 같은 두려움은, 실제로 그렇게 굴러가는 조직이라면 시스템과 검증 프로세스가 부실하다는 신호다. 혼자 떠안는 대신 동료에게 묻고 PR 리뷰로 검증을 나눈다.
 
@@ -48,23 +48,23 @@ aliases: ["Refactoring In Practice", "실전 리팩토링", "Monster Method"]
 
 ### 1단계 — 분석 (Profiling, Pseudo-Code)
 
-"어디가 느린지 추측하지 말고 측정한다."
+어디가 느린지 추측하지 말고 측정한다.
 
 - **APM 프로파일링**: OpenTelemetry, Datadog, Kibana로 병목 구간 시각화
   - 전체 요청 타임라인에서 **가장 긴 span**을 찾음 (쿼리, 외부 호출, 직렬화)
   - N+1 호출 패턴은 span 개수가 비정상적으로 많게 나타남
 - **Pseudo-Code 쓰기**: 기존 코드를 읽으며 **흐름을 자연어 의사코드**로 다시 씀
-  - 복잡한 조건문을 "if A and B then X"로 압축
+  - 복잡한 조건문을 if A and B then X로 압축
   - 이해한 것과 이해하지 못한 것의 경계가 드러남
   - 이 산출물이 동료 리뷰, 문서화의 기반이 됨
 
 ### 2단계 — 안전망 (테스트 → 기계적 리팩토링)
 
-"이해 없이 리팩토링하지 않고, 테스트 없이 손대지 않는다."
+이해 없이 리팩토링하지 않고, 테스트 없이 손대지 않는다.
 
 - **기존 동작을 고정하는 테스트 추가**
   - 현재 응답(비정상이라도 현행 동작)을 스냅샷으로 저장
-  - **Characterization Test** — "무엇이 옳은가"가 아니라 "지금 어떻게 동작하는가"를 기록
+  - **Characterization Test** — 무엇이 옳은가가 아니라 지금 어떻게 동작하는가를 기록
   - 통합 테스트, Testcontainers 활용
 - **IDE 자동 리팩토링 도구 사용**
   - IntelliJ, VS Code의 Extract Method, Rename, Inline, Move Class
@@ -73,7 +73,7 @@ aliases: ["Refactoring In Practice", "실전 리팩토링", "Monster Method"]
 
 ### 3단계 — 최적화 (N+1 제거, 비동기 분리)
 
-"구조가 정리된 후에 성능을 건드린다."
+구조가 정리된 후에 성능을 건드린다.
 
 - **논리적 N+1 제거** — 반복적 Redis, DB 호출을 **일괄 조회 + 메모리 매핑**으로 교체. 네트워크 전송을 수백 번(아래 예시 기준 N=100이면 200번) → 수 번으로 축소
 - **동기, 비동기 분리** — 응답에 필수가 아닌 작업(로그, 알림, 집계)을 이벤트로 분리해 **응답 경로에서 제거**
@@ -95,15 +95,21 @@ aliases: ["Refactoring In Practice", "실전 리팩토링", "Monster Method"]
 - 동작 변경과 구조 변경을 **같은 커밋에 섞지 않는다**
 - 구조만 바꿀 때 테스트는 통과해야 함
 
+### 계약 전환은 확장, 이관, 제거로 나눈다
+
+호출처가 많은 함수의 새 계약은 기존 함수를 즉시 고치기보다 새 overload나 명시적 새 함수를 추가할 수 있다. 구 함수는 기존 입력을 새 계약으로 변환해 위임하고, 호출처를 하나씩 옮겨 같은 동작인지 확인한 뒤 사용이 없어지면 구 함수를 제거한다([[Backward-Compatibility-Design|Parallel Change]]). 호환 경로에 서로 다른 정책이 영구히 남지 않도록 제거 조건과 owner를 둔다.
+
+동작을 보존하는 변경끼리도 수준을 나눈다. 반복문이나 변수 정리와, 모듈 책임이나 추상화 경계를 바꾸는 변경을 각각 검증하고 리뷰하면 어느 결정이 잘못됐는지 찾기 쉽다. 내부 구조 정리가 데이터나 업무 정책 변경을 감추지 않게 한다.
+
 ### 측정 가능한 목표
 
-- "깔끔하게" 같은 주관적 목표는 종결 어려움
+- 깔끔하게 같은 주관적 목표는 종결 어려움
 - **P50, P95, P99 지연, CPU, 메모리, 테스트 커버리지** 같은 측정 가능 지표 설정
 - Before/After 기록 → 리뷰, 보고 자료가 됨
 
 ## 사례 — Hot API 85% 지연 감소
 
-라이브 스트리밍 서비스의 핵심 API(룸 입장)가 평균 382ms, p95 702ms에 스파이크가 잦고, 복잡도 누적으로 손대기 어려운 "Monster Method" 상태였던 케이스. 위 3단계로 접근한 결과:
+라이브 스트리밍 서비스의 핵심 API(룸 입장)가 평균 382ms, p95 702ms에 스파이크가 잦고, 복잡도 누적으로 손대기 어려운 Monster Method 상태였던 케이스. 위 3단계로 접근한 결과:
 
 - **분석**: APM으로 지연, TPM과 실제 실행된 쿼리/명령(RDBMS, Redis)을 확인해 JPA N+1과 로직상의 N+1 발견 — 루프에서 Redis를 건건이 조회하면 N이 100일 때 네트워크 전송이 200번 발생한다. 이어서 API 전체 로직을 Pseudo-code로 단계별 재구성
 - **안전망**: 기존 응답을 스냅샷 테스트로 고정 후 IntelliJ로 Extract Method
@@ -114,7 +120,7 @@ aliases: ["Refactoring In Practice", "실전 리팩토링", "Monster Method"]
 ## 흔한 실수
 
 - **빅뱅 리팩토링** — 6개월 동안 브랜치 하나로 다 바꾸다 merge conflict로 좌절. 대안: [[Legacy-Modernization-Strategies|Strangler Fig]] 점진 접근
-- **테스트 없이 손대기** — 회귀 버그가 몇 주 뒤에 발견되어 "리팩토링 때문에 망가졌다"는 낙인
+- **테스트 없이 손대기** — 회귀 버그가 몇 주 뒤에 발견되어 리팩토링 때문에 망가졌다는 낙인
 - **성능 먼저, 구조 나중** — 최적화 코드를 다시 리팩토링하느라 두 번 일함. 구조 → 성능 순서
 - **자동 도구 무시** — 수동 복붙으로 오타, import 빠뜨림 발생
 - **측정 없이 완료** — 효과 증명 불가. 다음 리팩토링 투자 받기 어려움
@@ -122,14 +128,35 @@ aliases: ["Refactoring In Practice", "실전 리팩토링", "Monster Method"]
 ## 면접 체크포인트
 
 - 리팩토링의 정의 — 외부 동작 보존, 내부 구조 개선
-- **APM, 프로파일링**으로 "측정 먼저" 접근의 중요성
+- **APM, 프로파일링**으로 측정 먼저 접근의 중요성
 - **Characterization Test**의 의미 — 현행 동작 고정
 - **자동 리팩토링 도구**가 수동 수정보다 안전한 이유
 - **N+1 제거, 동기/비동기 분리** 같은 전형적 최적화 패턴
 - **구조 먼저, 성능 나중** 순서의 이유
 - Before/After **측정 지표**로 효과 증명
 
+## 조건을 모은 뒤 변화 축을 분리한다
+
+같은 타입을 여러 위치에서 검사한다면 먼저 타입별 실행 경로를 한곳에서 읽을 수 있게 모은다(Lift Up Conditionals). 현재 타입과 경계값의 결과를 고정한 뒤 메서드를 추출하고, 특정 분기 안에서 참/거짓이 확정되는 내부 조건을 제거한다. 조건 평가에 부작용이 있거나 앞선 처리로 상태가 바뀌면 평가 횟수와 순서도 보존해야 한다.
+
+타입마다 여러 행위가 함께 달라질 때는 다형성으로 옮겨 타입 추가의 영향 범위를 줄일 수 있다. 생성 분기는 팩토리에 남을 수 있으며, 단일하고 안정적인 분기라면 함수나 switch가 더 단순하다. 팩토리로 객체를 만든다는 이유만으로 GoF Factory Method 패턴인 것은 아니다. 테스트에서 실행되지 않았다는 사실만으로 죽은 코드를 판정하지 않고 호출부, 동적 등록과 운영 경로까지 확인한다.
+
+## Split Phase로 데이터 전달 단계를 분리한다
+
+입력 해석과 업무 계산처럼 서로 다른 일을 섞어 처리한다면 첫 단계의 결과를 중간 데이터로 전달한다. 예를 들어 `명령행 해석 → 주문 조건 → 집계 → 출력`으로 나누면 집계 규칙을 파일이나 콘솔 없이 검증할 수 있다.
+
+1. 뒷단 계산을 함수로 추출하고 현재 동작을 확인한다.
+2. 앞 단계에서 계산한 값 중 뒷단에 필요한 값만 중간 객체에 담는다.
+3. 중복 인자를 없앤 뒤 앞 단계를 별도 함수로 추출한다.
+4. 입력 오류, 경계값과 최종 출력의 계약을 다시 확인한다.
+
+중간 객체는 해당 단계의 결과이지 모든 계층이 공유할 범용 DTO가 아니다. 여러 단계를 나눠도 DB 조회나 파일 읽기를 계산 함수 안에 남기면 I/O가 분리된 것은 아니다. 테스트를 위해 private 메서드를 무조건 공개하기보다 공개 동작으로 검증하거나 독립 책임을 별도 컴포넌트로 추출한다.
+
 ## 출처
+- [즐거운 학습 강사, Refactoring - Lift up conditionals](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279464)
+- [즐거운 학습 강사, Refactoring - Split Phase](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279465)
+- [Split Phase — Martin Fowler](https://refactoring.com/catalog/splitPhase.html)
+- [Replace Conditional with Polymorphism — Martin Fowler](https://refactoring.com/catalog/replaceConditionalWithPolymorphism.html)
 - [Hyperconnect — Hakuna 라이브룸 입장 API 리팩토링 (85% 지연 감소)](https://hyperconnect.github.io/2022/03/14/develop-liveroom-entrance-on-hakuna.html)
 - [45권의 기술 서적에서 얻은 핵심 인사이트 — GeekNews](https://news.hada.io/topic?id=31718)
 - [Our biggest insights from 45 technical books! — Book Overflow](https://www.youtube.com/watch?v=k2ek5MsUEMo)
@@ -137,8 +164,13 @@ aliases: ["Refactoring In Practice", "실전 리팩토링", "Monster Method"]
 - [남의 코드를 고치기 무서운 개발자에게 — Team Grit](https://teamgrit.co/article/475)
 - [리팩토링할 시간이 없다는 개발자에게 — Team Grit](https://teamgrit.co/article/496)
 - [코드를 지우지 못하는 개발자에게 — Team Grit](https://teamgrit.co/article/499)
+- [Parallel Change — martinfowler.com](https://martinfowler.com/bliki/ParallelChange.html)
+- [토비 강사, 설계 리팩터링](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=443355)
+- [김영한 강사, 프론트 컨트롤러 도입 - v1](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71189)
+- [김영한 강사, 정리 (MVC 프레임워크 만들기)](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71196)
 
 ## 관련 문서
+- [[Abstraction-and-Structural-Thinking|추상화, 구조화, 일반화 수준 조정]]
 - [[Technical-Debt|기술 부채 — rewrite로 상환, 리팩터링은 학습 반영]]
 - [[AI-Assisted-Legacy-Onboarding|AI 레거시 온보딩]] — 작은 변경 loop의 절차화
 - [[Tidy-First|Tidy First — 구조와 동작 분리]]

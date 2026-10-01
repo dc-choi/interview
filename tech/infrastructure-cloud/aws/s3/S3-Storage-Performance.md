@@ -3,7 +3,7 @@ tags: [infrastructure, aws, s3, object-storage]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["S3 스토리지 모델", "S3 성능 최적화"]
-verified_at: 2026-09-03
+verified_at: 2026-09-30
 ---
 
 # S3 스토리지 모델과 성능
@@ -16,8 +16,18 @@ verified_at: 2026-09-03
 | **Object** | 저장 단위. 모든 리전에서 최대 50 TB, 멀티파트 상한 기준 실제 48.8 TiB |
 | **Key** | 객체 식별자 (파일 경로처럼 보이지만 실제론 단일 문자열) |
 | **Prefix** | Key의 앞부분, 가상 디렉토리, 성능 파티션 단위 |
+| **Version ID** | 버전 관리를 켠 버킷에서 같은 key의 버전마다 부여. 삭제는 delete marker로 처리([[S3-Features-Management]]) |
+| **Metadata** | S3가 관리하는 system-defined와 사용자가 붙이는 user-defined(`x-amz-meta-`). 아래 절 참고 |
 
 S3는 **계층형 파일시스템이 아님** — `folder/file.txt`는 단일 키. 리스트 시 prefix로 그룹화.
+
+## 메타데이터와 무결성
+
+- **system-defined**: `Content-Length`, `Last-Modified`, `ETag`, `x-amz-version-id`는 S3만 바꾼다. `Content-Type`, `Cache-Control`, storage class, 서버 측 암호화 같은 값은 사용자가 정한다.
+- **user-defined**: `x-amz-meta-` 접두사를 쓰고 키는 소문자로 저장되며 합계 2 KB(PUT 요청 헤더 전체 8 KB)까지다. 업로드 뒤에는 제자리에서 수정할 수 없어 객체를 복사하며 새 메타데이터를 지정한다. 콘솔의 메타데이터 편집도 Copy라 `Last-Modified`가 바뀌고, 버전 관리 버킷에서는 새 버전이 생겨 이전 버전의 저장 비용이 남는다.
+- **태그와 annotations**: 태그는 객체당 10개로 IAM과 버킷 정책, Lifecycle, 비용 할당에 쓴다. annotations는 업로드 뒤 객체를 바꾸지 않고 붙이는 이름 있는 데이터(각 최대 1 MB)다.
+- **ETag**: multipart가 아니면서 비암호화이거나 SSE-S3인 객체에서만 데이터의 MD5다. multipart, SSE-KMS, SSE-C 객체의 ETag를 MD5와 비교하면 틀린다.
+- **checksum**: CRC64NVME(기본), CRC32, CRC32C, SHA-1, SHA-256, SHA-512, MD5, XXHash64, XXHash3, XXHash128을 지원한다. AWS 클라이언트는 업로드 때 checksum을 계산해 보내고 S3가 서버에서 다시 계산해 일치할 때만 저장한다. `Content-MD5` 헤더는 SSE-S3 단일 파트 업로드용 레거시다. 이미 저장된 대량 객체는 S3 Batch Operations의 Compute checksum으로 내려받지 않고 검증한다.
 
 ## 내구성과 일관성
 
@@ -84,3 +94,8 @@ AWS edge location을 통해 업로드한 뒤 AWS 네트워크로 S3에 전달한
 - [Amazon S3 User Guide, Amazon S3 objects overview](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingObjects.html)
 - [Amazon S3 User Guide, S3 Glacier storage classes](https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html)
 - [Amazon S3 User Guide, Archive retrieval options](https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html)
+- [Amazon S3 User Guide, Working with object metadata](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html)
+- [Amazon S3 User Guide, Editing object metadata in the Amazon S3 console](https://docs.aws.amazon.com/AmazonS3/latest/userguide/add-object-metadata.html)
+- [Amazon S3 User Guide, Checking object integrity](https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html)
+- [인프런, Sungmin Kim, S3란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43742)
+- [인프런, Sungmin Kim, S3 실습 1부](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=45759)

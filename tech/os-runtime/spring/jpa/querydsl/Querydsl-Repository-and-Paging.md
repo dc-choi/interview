@@ -1,7 +1,7 @@
 ---
 tags: [querydsl, jpa, spring-data-jpa, repository, pagination]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["Querydsl Repository", "Querydsl Paging", "Querydsl Custom Repository"]
 ---
@@ -61,7 +61,7 @@ public interface MemberRepository
 }
 ```
 
-현재 방식은 fragment interface `MemberSearch`와 `MemberSearchImpl`의 조합이다. Repository 자체 이름에 붙인 `MemberRepositoryImpl` 하나를 자동 결합하는 과거 pattern은 deprecated다. CRUD와 복잡 query의 변경 이유가 다르거나 여러 aggregate를 함께 읽으면 독립 query repository가 더 명확할 수 있다.
+현재 방식은 fragment interface `MemberSearch`와 `MemberSearchImpl`의 조합이다. 오래된 예제가 필수 규칙처럼 쓰는 `MemberRepositoryCustom`과 `MemberRepositoryImpl` 조합, 즉 repository 자체 이름에 붙인 `Impl` 하나를 자동 결합하는 과거 pattern은 Spring Data 공식 문서가 deprecated로 보고 fragment model로 옮기라고 권한다. Spring Data Commons 4.1.1 runtime은 이 이름의 class를 여전히 찾아 등록하므로 기존 code는 동작하지만 새 code에는 쓰지 않는다([[Spring-Data-JPA-Custom-Repositories]]). CRUD와 복잡 query의 변경 이유가 다르거나 여러 aggregate를 함께 읽으면 독립 query repository가 더 명확할 수 있다.
 
 ## Content와 count 분리
 
@@ -98,6 +98,19 @@ To-many join은 root를 중복시킬 수 있으므로 `countDistinct` 필요 여
 
 이 최적화는 count 결과가 content query와 같은 root 집합을 센다는 전제 위에 있다. Supplier에 side effect를 두지 않고, 실행 여부에 의존하지 않는다. Total이 필요 없으면 `Page`를 만들기보다 `Slice`를 위해 한 건 더 조회하는 전략도 비교한다.
 
+## Count 최적화에 투자할 기준
+
+Data가 많지 않으면 content와 count를 단순하게 함께 다뤄도 비용 차이가 작다. Count가 content의 join과 조건을 그대로 끌고 와 느려지는 규모에서는 count query를 완전히 분리해야 불필요한 join 제거 같은 최적화가 가능하다. 수천만 건 같은 경험적 규모보다 count의 실행 계획과 latency 측정으로 기준을 정한다.
+
+반대 방향의 최적화도 있다. Count를 먼저 실행해 0건이면 content query를 생략한다.
+
+| 전략 | 생략하는 query | 유리한 조건 | 비용 |
+|---|---|---|---|
+| `PageableExecutionUtils` | content로 total을 추론할 수 있을 때의 count | 결과가 page 크기보다 작은 요청이 많을 때 | full page에서는 count도 실행 |
+| Count-first | count가 0일 때의 content | 0건 검색 비율이 높을 때 | 0건이 아닌 요청은 항상 count 비용을 먼저 치름 |
+
+두 전략은 서로 다른 query를 생략하므로 실제 검색 결과 분포를 보고 고른다.
+
 ## Sort 변환
 
 ```java
@@ -126,6 +139,7 @@ Client property를 `Expressions.path()`나 string template로 직접 만들지 �
 
 - [Spring Data JPA 4.1, Custom Repository Implementations](https://docs.spring.io/spring-data/jpa/reference/repositories/custom-implementations.html)
 - [Spring Data Commons 4.1, PageableExecutionUtils](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/support/PageableExecutionUtils.html)
+- [Spring Data Commons 4.1.1, `RepositoryBeanDefinitionBuilder` source](https://github.com/spring-projects/spring-data-commons/blob/4.1.1/src/main/java/org/springframework/data/repository/config/RepositoryBeanDefinitionBuilder.java)
 - [OpenFeign Querydsl 7.5, JPAQueryFactory](https://github.com/OpenFeign/querydsl/blob/7.5/querydsl-libraries/querydsl-jpa/src/main/java/com/querydsl/jpa/impl/JPAQueryFactory.java)
 - [순수 JPA repository와 Querydsl](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30144)
 - [`BooleanBuilder`를 사용한 search DTO 조회](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30145)
@@ -133,6 +147,7 @@ Client property를 `Expressions.path()`나 string template로 직접 만들지 �
 - [조회 API controller](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30147)
 - [Spring Data JPA repository로 전환](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30149)
 - [사용자 정의 repository](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30150)
+- [Paging](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30127)
 - [Querydsl paging 연동](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30151)
 - [Count query 최적화](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30152)
 - [Paging controller](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30153)

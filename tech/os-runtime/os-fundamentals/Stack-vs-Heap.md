@@ -60,9 +60,19 @@ Java, V8 같은 런타임의 GC는 참조되지 않는 객체를 회수하고, �
 - 메모리 풀이 유효한 조건 (크기, 개수 예측 가능)
 - GC 컴팩션의 효과와 비용 (외부 파편화 해소 vs STW, 참조 갱신)
 
+### 사용자 공간 할당기와 커널 할당
+
+`malloc()`은 시스템 콜이 아니라 C 라이브러리의 할당기다. 확보한 영역을 작은 요청들에 나누고 필요하면 `brk`/`mmap` 경로로 커널에 영역을 요청한다. 요청마다 시스템 콜을 하는 것은 아니다. Linux의 익명 매핑은 첫 접근 시 demand-zero 처리를 할 수 있어 예약한 가상 크기와 실제 RSS가 다르다.
+
+`free()`는 우선 할당기에 공간을 돌려준다. 할당기가 재사용을 위해 보관하는 공간은 OS로 즉시 반환되지 않을 수 있으므로 해제 직후 RSS가 줄지 않는다는 사실만으로 누수를 확정하지 않는다.
+
 ## 출처
 
+- [Linux, malloc(3)](https://man7.org/linux/man-pages/man3/malloc.3.html)
+
 - [스택이 커져도 힙이 필요한 이유와 메모리 파편화 — YouTube 강의](https://www.youtube.com/watch?v=9TSojdIr8Q0&list=PLXvgR_grOs1DEoZFABFCjo7dsXt1BhVih&index=38)
+- [인프런, 널널한 개발자, 가상 메모리 개요](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476544)
+- [인프런, 널널한 개발자, \[보강\] 가상 메모리 시스템에 대한 보충 설명 (Live 방송 중 편집)](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=479157)
 
 ## 관련 문서
 

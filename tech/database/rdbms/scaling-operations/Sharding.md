@@ -72,6 +72,22 @@ Citus가 extension으로 DB 안에서 분산을 처리한다면, MySQL의 Vitess
 
 2026년 9월 기준 이 패턴의 구현으로 오픈소스 Multigres(Vitess 공동 제작자가 이끄는 Vitess 아키텍처의 Postgres 적응, 2026년 6월 v0.1 alpha, 샤딩 미포함 단일 샤드 HA와 풀링)와 관리형 Neki(PlanetScale, 대규모 샤딩 MySQL 운영 경험을 근거로 내놓은 Platform Preview, 샤드 그룹 단위로 워크로드별 샤딩 설정 분리)가 있다. Neki는 프리뷰 기간에 프로덕션 워크로드를 올리지 말라고 명시하고, Multigres는 v0.1 alpha로 아직 실험과 피드백 단계다. 관리형은 제어 영역 운영, 리샤딩 워크플로와 장애 전환 검증을 벤더가 지는 대신 락인과 비용이 따르고, 오픈소스는 그 반대로 운영 인력을 요구한다.
 
+## 분산 실행의 증거
+
+Citus metadata의 shard와 placement 정보를 query의 distribution filter와 함께 확인한다. EXPLAIN의 task 수, worker 단계와 coordinator aggregation에서 single-shard routing인지 scatter/gather인지 판별한다. Colocation도 선언만으로 이득이 생기는 것이 아니라 join 조건에 distribution column이 포함되는지와 network 이동량으로 검증한다.
+
+## 분할 단위와 서버 분산
+
+수직 분할은 column을 나눠 좁은 조회와 접근 권한을 분리하며 다시 합칠 join 비용이 든다. 수평 분할은 row를 key로 나누고 한 서버의 partition과 여러 서버의 shard를 구분한다. 기능 분할은 업무 영역별 table/DB를 분리해 소유권과 장애 경계를 바꾼다. 어느 분할도 capacity와 가용성을 무제한으로 보장하지 않는다. 단일 DB의 query/index, 수명주기와 자원 조정 뒤 해결되지 않는 분산 요구를 확인한다.
+
+## 애플리케이션 routing의 수명
+
+Shard key와 mapping은 쓰기와 읽기, retry에서 같은 계약을 사용한다. ThreadLocal로 routing context를 넣으면 finally에서 제거하고 thread pool, async 전환과 transaction이 connection을 획득하는 시점까지 확인한다. shard별 connection을 얻은 뒤 key를 바꿔도 진행 중 transaction이 다른 shard로 옮겨지지 않는다. 한 MariaDB 안의 두 schema 실습은 물리 장애와 독립 확장을 검증하지 않는다.
+
+## Cross-shard 업무 계약
+
+User/tenant key는 관련 데이터를 함께 배치할 수 있지만 특정 대형 tenant가 hotspot을 만들 수 있다. key 없는 global 검색은 fan-out과 결과 병합 비용이 들고, 두 shard 쓰기는 단일 local transaction으로 원자화되지 않는다. 참조 데이터 복제, 전용 read model과 saga/outbox 등을 요구에 따라 선택하고 전역 UNIQUE와 ID 생성, 재배치 중 이중 쓰기/읽기 전환을 설계한다.
+
 ## 출처
 - [Citus 13.0 Documentation, Concepts](https://docs.citusdata.com/en/stable/get_started/concepts.html)
 - [Citus 13.0 Documentation, Query Performance Tuning](https://docs.citusdata.com/en/stable/performance/performance_tuning.html)
@@ -85,6 +101,10 @@ Citus가 extension으로 DB 안에서 분산을 처리한다면, MySQL의 Vitess
 - [Multigres v0.1 Alpha: an operating system for Postgres — Supabase](https://supabase.com/blog/multigres-v0-1-alpha)
 - [Neki - Postgres를 여러 서버로 확장하는 PlanetScale의 새 서비스 — GeekNews](https://news.hada.io/topic?id=33501)
 - [Introducing Neki — PlanetScale](https://planetscale.com/blog/introducing-neki)
+- [인프런, [실습 11] 2개의 MariaDB를 이용한 Sharding 처리 ①](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290747)
+- [인프런, [실습 12] 2개의 MariaDB를 이용한 Sharding 처리 ②](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=306268)
+- [인프런, 대용량 데이터 처리와 부하분산](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242779)
+
 
 ## 관련 문서
 - [[Clustering|Cluster]]

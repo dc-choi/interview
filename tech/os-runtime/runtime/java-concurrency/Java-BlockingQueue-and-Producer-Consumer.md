@@ -36,11 +36,23 @@ Queue에 object를 넣기 전의 작업은 다른 thread가 그 element를 꺼�
 
 관측 항목은 queue depth, offer timeout과 rejection 수, enqueue-to-start latency, processing time이다. Queue가 계속 차오르는 상황에서 consumer 수만 늘리기 전에 downstream capacity와 retry 증폭을 함께 확인한다.
 
+## 종료 조건도 대기 조건이다
+
+`while (!done) queue.take()`는 검사 직후 생산이 끝나거나 이미 빈 큐에서 대기 중이면 멈추지 못한다. Monitor 방식은 `while (jobs.isEmpty() && !stopping) wait()`처럼 종료 조건을 predicate에 넣고 같은 monitor 안에서 stop 상태를 바꾼 뒤 `notifyAll()`한다. 조건 변수를 쓴다면 `signalAll()`이 대응한다. 깨어난 뒤 남은 작업을 처리할지 폐기할지도 정한다.
+
+`ArrayBlockingQueue`의 고정 capacity 외에 우선순위 queue와 지연 queue도 있다. `PriorityBlockingQueue`와 `DelayQueue`는 용량으로 생산자를 막지 않으므로 별도 상한이 필요하다. `add`의 용량 초과는 `IllegalStateException`, 빈 큐의 `remove`/`element`는 `NoSuchElementException`이다. 직접 queue를 구현하는 학습과 검증된 API를 사용하는 운영 코드를 구분한다.
+
 ## 강의 출처
 
+- [인프런, 모영철, Guarded Suspension](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178840)
+
 - 김영한 강사, [BlockingQueue - 예제6](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232390), [BlockingQueue - 기능 설명](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232391), [BlockingQueue - 기능 확인](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232392), [정리](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232393)
+- [인프런, 모영철, Worker Thread - 일이 생기면 일하세요~](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178854)
+- [인프런, 김영한, 자바 동시성 컬렉션2 - 동시성 컬렉션](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232412)
 
 ## 공식 문서
+
+- [Java SE 25, java.util.concurrent](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/package-summary.html)
 
 - [BlockingQueue, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/BlockingQueue.html)
 - [ArrayBlockingQueue, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ArrayBlockingQueue.html)

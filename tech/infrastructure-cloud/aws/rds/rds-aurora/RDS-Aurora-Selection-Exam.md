@@ -35,7 +35,7 @@ verified_at: 2026-08-25
 - **자동 백업만 믿고 DR 리허설 안 함** — 복구 속도, 데이터 손실 허용량(RTO, RPO) 모름
 - **Maintenance Window를 프로덕션 피크 시간에 설정** — 의도치 않은 재시작
 - **Read Replica로 read-after-write 가정** — 비동기 복제 Lag 무시 (→ [[Read-Replica-Routing|Read Replica 라우팅]])
-- **파라미터 그룹 기본값 사용** — 기본값이 워크로드에 안 맞는 경우 많음
+- **파라미터 그룹 기본값 사용** — 기본값이 워크로드에 안 맞는 경우 많음 (→ [[RDS-Operational-Pitfalls|RDS 운영 함정]] 5절의 parameter group 적용 규칙)
 - **Security Group을 0.0.0.0/0에 노출** — 반드시 VPC, SG로 제한 (→ [[RDS-Security-Group|RDS Security Group]])
 - **Snapshot으로 기존 인스턴스 덮어쓰기 시도** — 복원은 항상 새 인스턴스 생성
 

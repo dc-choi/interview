@@ -43,11 +43,11 @@ DB 풀 스캔이 인덱스 레인지 스캔보다 빠를 수 있는 이유도 �
 - 여전히 **쓰기 증폭(Write Amplification)**, GC(Garbage Collection), 수명 제한 있음
 - 순차 > 랜덤 차이가 HDD보다 작지만 여전히 존재
 
-### 비휘발성 스토리지 계층
+### 메모리와 스토리지 지연 계층
 속도 순서 (대략):
 ```
-CPU 캐시 < 메모리(RAM) < NVMe SSD < SATA SSD < HDD < 네트워크 스토리지
- ~ns       ~100ns        ~10µs      ~100µs     ~10ms    ~수 ms 이상
+CPU 캐시 < 메모리(RAM) < 로컬 SSD/HDD
+ 휘발성      휘발성          비휘발성
 ```
 
 DB 튜닝, OS 캐시, CDN 설계는 이 속도 계층을 인지하고 **자주 쓰는 데이터를 위로** 끌어올리는 작업.
@@ -79,10 +79,13 @@ DB 튜닝, OS 캐시, CDN 설계는 이 속도 계층을 인지하고 **자주 �
 - SSD 기반 RAID 5/6은 쓰기 증폭이 쌓여 수명이 빨리 소진될 수 있음
 - 복구 중(Rebuild) 추가 장애가 나면 전체 손실 — 큰 디스크일수록 복구 시간이 길어 위험
 
+CPU 캐시와 RAM은 휘발성이며 저장소와 구분한다. 네트워크 스토리지 지연에는 네트워크, 서버 캐시와 매체가 함께 작용하므로 HDD 뒤에 고정 배치하지 않는다. 위의 수치는 제품 보장값이 아니라 대략적인 감각이며 실제 부하로 측정한다.
+
 ## 출처
 - [매일메일 — 디스크 접근 시간](https://www.maeil-mail.kr/question/148)
 - [매일메일 — RAID](https://www.maeil-mail.kr/question/6)
 - [Overview of 9.1GB Ultra160 SCSI Hard Disk Drive — IBM](https://www.ibm.com/support/pages/overview-91gb-ultra160-scsi-hard-disk-drive)
+- [인프런, 널널한 개발자, 컴퓨터가 기억공간을 관리하는 방법](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128249)
 
 ## 관련 문서
 - [[Storage-and-FileSystem|기억장치와 파일시스템 (목차)]]

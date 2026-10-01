@@ -85,6 +85,10 @@ binding이 lexical scope 종료와 함께 자동 해제되고 callee가 임의�
 - thread-local context를 업무 source of truth로 오해하지 않았는가?
 - user/auth context가 다른 request로 새지 않는 통합 test가 있는가?
 
+### 단일 요청 테스트가 놓치는 경쟁
+
+공유 field에 값을 쓴 뒤 처리하고 다시 읽는 사이에 다른 요청이 덮어쓰면 첫 요청도 두 번째 요청의 값을 읽는다. 요청이 겹치지 않는 테스트에서는 드러나지 않는다. 재현 시 대상 구간이 겹치도록 동시 요청을 보내고 요청 ID, thread 이름과 반환값을 함께 확인한다. 지역 변수의 참조가 공유 객체를 가리킬 수 있다는 점도 별도로 추적한다.
+
 ## 출처
 
 - [Java SE 26, ThreadLocal](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ThreadLocal.html)

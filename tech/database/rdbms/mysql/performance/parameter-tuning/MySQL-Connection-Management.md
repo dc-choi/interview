@@ -66,6 +66,12 @@ Connection 수만 높고 `Threads_running`이 낮다면 idle pool이 과한지 �
 5. 배포와 장애 복구 때 reconnect storm을 jitter와 점진적 ramp-up으로 제한하는가?
 6. 관리자 접속 경로와 최소 권한 계정을 application과 분리했는가?
 
+## 전역 메모리와 연산별 메모리
+
+버퍼 풀과 로그 버퍼는 서버 공유 영역이다. thread stack, 네트워크 buffer와 query의 sort/join/read buffer는 연결 또는 필요한 연산별로 소비된다. 복잡한 join에는 여러 buffer가 필요할 수 있어 `max_connections × buffer 하나`만으로 상한을 계산하지 않는다.
+
+전역 사용량에 동시 활성 query들의 연산별 소비와 운영 여유를 더한다. `sort_buffer_size`나 `join_buffer_size`의 global 값을 크게 올리기 전에 특정 session 변경과 Performance Schema memory instrumentation으로 실제 peak를 비교한다. TempTable 전역 예산도 별도로 구분한다.
+
 ## 출처
 
 - [MySQL 8.4 Reference Manual, Connection Interfaces](https://dev.mysql.com/doc/refman/8.4/en/connection-interfaces.html)
@@ -73,6 +79,9 @@ Connection 수만 높고 `Threads_running`이 낮다면 idle pool이 과한지 �
 - [MySQL 8.4 Reference Manual, Server Status Variables](https://dev.mysql.com/doc/refman/8.4/en/server-status-variables.html)
 - [MySQL 8.4 Reference Manual, MySQL Enterprise Thread Pool](https://dev.mysql.com/doc/refman/8.4/en/thread-pool.html)
 - [인프런, Real MySQL 시즌 1 - Part 2, 커넥션 관리](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226586)
+- [MySQL 8.4 Reference Manual, memory use](https://dev.mysql.com/doc/refman/8.4/en/memory-use.html)
+- [인프런, MySQL의 핵심!! 메모리와 트랜잭션 및 락 메커니즘](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338555)
+
 
 ## 관련 문서
 

@@ -3,7 +3,7 @@ tags: [aws, elb, alb, nlb, gwlb, load-balancer, infrastructure]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["ELB", "AWS ELB", "Elastic Load Balancer", "ALB", "NLB", "GWLB"]
-verified_at: 2026-09-22
+verified_at: 2026-09-30
 ---
 
 # ELB, Elastic Load Balancer
@@ -136,6 +136,10 @@ L4(NLB)는 HTTP 헤더를 주입하지 않는다. 원본 IP 보존 기본값은 
 
 대상을 등록 해제할 때 새 요청 전달을 중단하고 진행 중인 요청이나 연결이 끝날 시간을 주는 기능이다. 기본값과 허용 범위는 로드밸런서, 대상 그룹 유형의 `deregistration_delay` 속성을 확인해야 한다. health check 실패와 달리 deregistration 상태를 확인해 새 요청 제거를 판단하며, 이 기능만으로 무중단이 보장되지는 않으므로 애플리케이션 종료 유예, 연결 시간 제한, 배포 순서도 함께 맞춰야 한다.
 
+## 5XX 오류 진단
+
+ALB의 504는 대상이 연결 timeout이나 idle timeout(기본 60초) 안에 응답하지 못할 때, 502는 대상이 연결을 거부하거나 먼저 닫거나 잘못된 응답을 보낼 때 난다. 원인은 대개 웹 서버나 DB 계층에 있으며 대상의 keep-alive가 ALB idle timeout보다 짧은 설정이 흔한 502 원인이다. 지표로 ALB 생성 오류와 대상 오류를 가르는 방법과 원인 목록은 [[ELB-5XX-Troubleshooting|ALB 5XX 진단]].
+
 ## 시험 체크포인트
 
 - **ALB vs NLB vs GWLB** 선택 — L7 라우팅 = ALB, 고정 IP/UDP = NLB, 가상 어플라이언스 = GWLB
@@ -144,6 +148,7 @@ L4(NLB)는 HTTP 헤더를 주입하지 않는다. 원본 IP 보존 기본값은 
 - **NLB만 고정 IP**(Elastic IP 할당 가능) — IP 화이트리스트 시나리오
 - **Sticky Session**: ALB는 쿠키, NLB는 소스 IP. 외부 세션 저장소 권장
 - **Connection Draining**은 진행 중 요청 종료를 돕지만 무중단을 단독 보장하지 않음
+- **504**는 대상 응답 지연(느린 쿼리 등), **502**는 대상의 연결 종료나 잘못된 응답. `HTTPCode_ELB_5XX_Count`와 `HTTPCode_Target_5XX_Count`로 누가 만든 오류인지 먼저 가른다
 - **ACM + SSL Offload**: ALB, NLB(TLS 리스너)에서 인증서 관리 위임
 - **CLB는 이전 세대** — 기존 구성은 지원되지만 신규 설계는 ALB, NLB, GWLB의 기능을 우선 검토
 
@@ -155,9 +160,13 @@ L4(NLB)는 HTTP 헤더를 주입하지 않는다. 원본 IP 보존 기본값은 
 - [Application Load Balancer 대상 그룹 health check](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html)
 - [Application Load Balancer 대상 그룹 속성](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html)
 - [Network Load Balancer 대상 그룹 health check](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-health-checks.html)
+- [Application Load Balancer 문제 해결](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html)
+- [Application Load Balancer 속성 편집, connection idle timeout](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-load-balancer-attributes.html)
+- [인프런, Sungmin Kim, ELB](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43732)
 
 ## 관련 문서
 - [[Load-Balancer|Load Balancer 일반 개념]]
+- [[ELB-5XX-Troubleshooting|ALB 5XX 진단]] — 502와 504 원인 분리, keep-alive와 idle timeout
 - [[HTTP-2|HTTP/2]] — ALB가 L7에서 종단하는 프로토콜
 - [[VPC|AWS VPC]]
 - [[EC2|EC2, AWS 코어]]

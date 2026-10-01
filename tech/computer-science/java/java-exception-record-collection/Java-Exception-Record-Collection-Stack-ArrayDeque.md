@@ -8,7 +8,7 @@ aliases: ["Java Stack ArrayDeque", "Stack 대신 ArrayDeque"]
 
 # Stack, ArrayDeque
 
-Java SE API는 LIFO stack이 필요할 때 legacy `Stack`보다 `Deque` 구현을 우선 사용하라고 안내한다. 일반적인 단일 스레드 stack과 queue에는 `ArrayDeque`가 한 선택지다.
+Java SE API는 LIFO stack이 필요할 때 legacy `Stack`보다 `Deque` 구현을 우선 사용하라고 안내한다. 일반적인 단일 스레드 stack과 queue에는 `ArrayDeque`가 한 선택지다. 기본 구현으로 고르는 근거와 그 한계는 [[Java-Generics-and-Collections-Map-Stack-Queue#기본 구현으로 ArrayDeque를 고르는 근거|Map, Stack, Queue와 Deque]]에 있다.
 
 ## Stack을 기본 선택으로 삼지 않는 이유
 

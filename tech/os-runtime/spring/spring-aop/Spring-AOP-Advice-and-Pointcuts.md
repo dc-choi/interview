@@ -91,6 +91,14 @@ Proxy 기반 Spring AOP에서 `this`는 proxy, `target`은 뒤의 application ob
 - proxy strategy를 바꿔도 `this`/`target` 의미가 유지되는지 확인한다.
 - annotation retention/target과 bridge method/overload를 확인한다.
 
+## 범위와 순서의 실패 모드
+
+`args`나 runtime annotation 조건만으로 대상을 고르면 후보 class를 충분히 좁히지 못해 infrastructure Bean까지 proxy 대상이 될 수 있다. Package/type의 정적 조건과 결합하고 필요 없는 Bean은 제외한다. 모든 Bean이 반드시 proxy가 된다고 단정하지는 않는다.
+
+Aspect의 order 값이 작을수록 들어갈 때 먼저, 나올 때 마지막이다. Advice method마다 `@Order`를 붙여 같은 Aspect 안의 순서를 정하지 않는다. 같은 Aspect의 같은 종류 Advice 순서는 정의되지 않을 수 있어 합치거나 Aspect를 나눈다. `@After`는 finally 의미여서 정상 반환/예외 Advice 뒤에 실행되는 흐름을 구분한다.
+
+`returning`/`throwing` 이름은 Advice parameter binding과 맞아야 하며 parameter type도 적용 범위를 좁힌다. `@AfterReturning`으로 다른 반환 객체를 대체할 수는 없고, 변경이 필요하면 `@Around`의 return 계약을 쓴다. 매칭 예와 검증 분담은 [[Spring-AOP-Advice-and-Pointcuts-Matching|별도 문서]]에 둔다.
+
 ## 출처
 
 - [Spring Framework 7.0, AOP Concepts](https://docs.spring.io/spring-framework/reference/core/aop/introduction-defn.html)
@@ -99,6 +107,10 @@ Proxy 기반 Spring AOP에서 `this`는 proxy, `target`은 뒤의 application ob
 - 개념: [핵심/부가 기능](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94497), [Aspect](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94498), [적용 방식](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94499), [용어](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94500), [정리](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94501)
 - 구현: [project](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94503), [예제](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94504), [시작](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94505), [Pointcut 분리](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94506), [Advice 추가](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94507), [Pointcut 참조](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94508), [순서](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94509), [Advice 종류](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94510), [정리](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94511)
 - Pointcut: [designator](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94513), [예제](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94514), [`execution` 1](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94515), [`execution` 2](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94516), [`within`](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94517), [`args`](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94518), [`@target/@within`](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94525), [`@annotation/@args`](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94521), [`bean`](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94522), [parameter binding](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94523), [`this/target`](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94519), [정리](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94524)
+- 김영한 강사, [빈 후처리기 - 적용](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94486)
+- 김영한 강사, [빈 후처리기 - 정리](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94487)
+- 김영한 강사, [스프링이 제공하는 빈 후처리기2](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94489)
+- 김영한 강사, [@Aspect 프록시 - 적용](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94493)
 
 ## 관련 문서
 

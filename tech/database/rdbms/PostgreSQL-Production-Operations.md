@@ -143,6 +143,21 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - [[MySQL-Job-Queue|MySQL Job Queue]]
 - [[PII-Masking|로그의 민감정보 마스킹]] — 감사와 마스킹은 별개의 방어선
 
+## Access method의 역할
+
+B-tree는 equality/range와 정렬, Hash는 equality, GiST는 operator class에 따른 공간/KNN 등, GIN은 여러 항목을 포함하는 문서/배열 등의 역색인, BRIN은 물리적 block range와 값의 상관관계에 적합하다. BRIN은 값이 많다는 이유만으로 고르지 않는다. 데이터 타입이 아니라 query 연산자와 operator class, 갱신 비용을 함께 확인한다.
+
+## 선언적 partition과 미등록 범위
+
+```sql
+CREATE TABLE event_log (id bigint, occurred_at date)
+PARTITION BY RANGE (occurred_at);
+CREATE TABLE event_log_2026_10 PARTITION OF event_log
+FOR VALUES FROM ('2026-10-01') TO ('2026-11-01');
+```
+
+범위 하한은 포함하고 상한은 제외한다. 대응 partition도 DEFAULT partition도 없으면 새 row의 INSERT가 실패한다. DEFAULT가 누락을 흡수하더라도 적체와 후속 partition 추가의 검증 비용이 사라지지 않는다. 미래 범위 존재 여부를 감시한다.
+
 ## 출처
 
 - [PostgreSQL 18 Documentation, Using EXPLAIN](https://www.postgresql.org/docs/18/using-explain.html)
@@ -161,3 +176,8 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - [PgQue README — GitHub, NikolayS](https://github.com/NikolayS/pgque)
 - [PostgreSQL 기반 큐 라이브러리 pgque — Threads, minorabanggu](https://www.threads.com/@minorabanggu/post/DX_VPnTmYHQ)
 - [Amazon RDS User Guide, Multi-AZ DB instance deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html)
+- [PostgreSQL 18 Documentation, indexes types](https://www.postgresql.org/docs/18/indexes-types.html)
+- [인프런, Database Performance를 위한 최적화 패턴 및 전략 - 2](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439103)
+- [인프런, PostgreSQl의 JSONB 기초부터 역인덱싱 그리고 활용 패턴](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439099)
+- [인프런, [PostGIS] 비지니스 요구사항을 가정하며 배우는 공간 쿼리와 GiST 인덱스](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440541)
+- [인프런, 인덱스 기본 개념과 종류 그리고 상황별 사용되는 인덱스 정리](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439100)

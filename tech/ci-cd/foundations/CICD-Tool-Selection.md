@@ -82,12 +82,7 @@ CodeCommit의 신규 계정 제공 상태는 공식 페이지끼리도 어긋나
 
 ### CodeDeploy AppSpec와 lifecycle hook
 
-AppSpec file은 revision의 파일을 어디에 배치하고 배포 생명주기의 어느 시점에 검증, 전환 스크립트를 실행할지 정하는 배포 계약이다.
-
-- EC2와 on-premises 배포의 AppSpec은 YAML이며 `files`, `permissions`, `hooks`로 복사와 script 실행을 정의한다.
-- Lambda와 ECS 배포는 YAML 또는 JSON을 사용하고 traffic routing 구성과 validation Lambda hook을 연결한다.
-- 지원하는 hook 이름과 실행 순서는 EC2, Lambda, ECS마다 다르다. 하나의 공통 hook 순서를 암기하지 말고 compute platform별 공식 표를 기준으로 작성한다.
-- hook script는 timeout, 실행 사용자, 로그 위치와 재실행 안전성을 명시하고 실패 시 배포가 어느 상태에서 멈추는지 검증한다.
+AppSpec file은 revision의 파일 배치와 배포 생명주기별 검증, 전환 스크립트를 정하는 배포 계약이다. CodeDeploy의 전제(instance profile, service role, agent), 배포 구성별 성공 판정, EC2 in-place hook 순서와 load balancer 구간, CodePipeline S3 source와 CodeBuild의 Docker build 함정은 [[CICD-Tool-Selection-AWS-Code-Services|AWS Code 시리즈 운영]]에 정리한다.
 
 ## 의사결정 프레임워크
 
@@ -144,6 +139,7 @@ K8s 마이그레이션 시 작은 SRE 팀이 흔히 채택하는 조합: **GitHu
 - [Sungmin Kim 강사 — CodePipeline 실습 2부](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=76000)
 
 ## 관련 문서
+- [[CICD-Tool-Selection-AWS-Code-Services|AWS Code 시리즈 운영]]
 - [[GitHub-Actions|GitHub Actions]]
 - [[Docker-Image-Pipeline|Docker image build pipeline]]
 - [[Tech-Decision|기술 의사결정]]

@@ -85,6 +85,12 @@ Template/callback은 call site가 template을 명시적으로 호출하므로 co
 - metric/logging처럼 횡단적이며 적용 policy가 안정적이면 AOP가 적합할 수 있다.
 - pattern 도입 전 예외, return과 cancellation semantics가 보존되는지 test한다.
 
+## 호출별 상태를 공유하지 않는다
+
+생성자로 고정한 Strategy는 반복 사용하기 좋지만, 싱글턴 Context의 필드를 매 요청마다 바꾸면 다른 요청과 섞일 수 있다. 호출마다 달라지는 작업은 메서드 인자로 받고 지역 상태로 유지한다. Callback도 변경 가능한 외부 상태를 캡처하면 자동으로 스레드 안전해지는 것은 아니다.
+
+Template Callback은 Spring에서 자주 쓰는 조합을 부르는 말이며 별도의 GoF 패턴 이름은 아니다. Java에서 반환값이 없는 동작을 `T` 기반 계약에 넣으면 `Void`와 `null` 반환이 필요할 수 있다. 반환값이 없는 작업만 받는 API라면 `Runnable`처럼 의도가 명확한 계약도 검토한다.
+
 ## 출처
 
 - [Spring Framework, JdbcTemplate](https://docs.spring.io/spring-framework/reference/data-access/jdbc/core.html)

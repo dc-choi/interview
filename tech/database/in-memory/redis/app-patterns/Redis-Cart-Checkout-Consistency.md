@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, ecommerce, cart, consistency]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "Data & Storage - Cache & KV"
 aliases: ["Redis Cart", "Redis 장바구니", "장바구니 주문 정합성"]
 ---
@@ -9,6 +9,8 @@ aliases: ["Redis Cart", "Redis 장바구니", "장바구니 주문 정합성"]
 # Redis 장바구니와 주문 정합성
 
 Redis 장바구니는 빠른 읽기와 짧은 수명에 잘 맞지만, 주문, 재고를 저장하는 RDB와 같은 트랜잭션에 참여하지 않는다. Redis 명령 사용법보다 **장바구니의 손실 허용 범위, checkout snapshot, RDB commit 이후 정리 실패를 어떻게 복구할지**를 먼저 정하는 게 중요하다.
+
+장바구니를 인메모리에 두는 이유는 데이터 성격에 있다. 비로그인 사용자의 임시 담기가 많아 실제 고객이 아닐 수도 있는 데이터를 RDB 로우로 만들었다 지우는 비용이 크고, 수량 변경과 삭제가 초 단위로 잦아 매번 DB 트랜잭션으로 처리하면 비효율적이다. 그래서 휘발성에 가까운 담기 단계는 인메모리에서 처리하고, 실제 주문이 생기는 checkout에서만 RDB에 영속화한다.
 
 ## 먼저 source of truth를 정한다
 
@@ -31,9 +33,9 @@ value: quantity 또는 { quantity, selectedOption, itemVersion }
 ```
 
 - key에는 email, 전화번호 같은 직접 식별자를 넣지 않고 내부의 불투명 ID를 사용한다.
-- field는 상품 자체보다 실제 구매 단위인 SKU 또는 option ID를 가리킨다.
+- field는 상품 자체보다 실제 구매 단위인 SKU 또는 option ID를 가리킨다. `product:1001:Size:M`처럼 옵션을 필드 이름에 인코딩해 매번 파싱하게 만들지 않는다.
 - 장바구니에 보인 가격은 참고값이다. checkout에서는 판매 상태, 가격, 할인과 재고를 서버가 다시 검증한다.
-- `HGETALL`은 Hash 크기에 비례하므로 장바구니 item 수에 상한을 두고 응답 크기를 관측한다.
+- `HGETALL`은 Hash 크기에 비례하므로 장바구니 item 수에 상한을 두고 응답 크기를 관측한다. 결과 값은 문자열이라 수량은 호출부에서 숫자로 바꾼다. 아이콘 배지처럼 담긴 종류 수만 필요하면 전체를 가져오지 않고 `HLEN`을 쓴다.
 - value를 숫자 quantity로 두면 `HINCRBY`를 쓸 수 있다. JSON value는 여러 속성을 함께 보존하지만 수량 변경을 Lua/Function의 read-modify-write로 원자화해야 한다.
 - Redis Cluster에서 관련 key를 여러 개 쓴다면 같은 hash tag를 사용해야 multi-key 연산이 같은 slot에 머문다.
 
@@ -41,7 +43,7 @@ value: quantity 또는 { quantity, selectedOption, itemVersion }
 
 `EXPIRE`는 Hash 전체 key에 적용한다. 장바구니를 수정할 때마다 만료를 연장할지, 최초 생성 시각을 유지할지는 제품 정책이다. 쓰기와 `EXPIRE`를 별도 왕복으로 보내면 둘 사이의 crash로 만료 없는 key가 남을 수 있으므로, 조건이 단순하면 `MULTI/EXEC`, 조건 분기가 있으면 짧은 Lua script나 Redis Function으로 한 실행 경계를 만든다.
 
-Redis 7.4부터 `HEXPIRE`로 Hash field별 TTL을 설정할 수 있다. 이전 버전이나 이를 지원하지 않는 호환 서비스에서는 field별 TTL이 없으므로 key 분리 또는 만료 시각을 담은 별도 index가 필요하다. 운영 버전 지원 여부를 확인하지 않고 명령을 전제로 삼지 않는다.
+Redis 7.4와 Valkey 9.0부터 `HEXPIRE`로 Hash field별 TTL을 설정할 수 있다. 이전 버전이나 이를 지원하지 않는 호환 서비스에서는 field별 TTL이 없으므로 key 분리 또는 만료 시각을 담은 별도 index가 필요하다. 운영 버전 지원 여부를 확인하지 않고 명령을 전제로 삼지 않는다.
 
 Redis의 만료는 접근 시 passive expiration과 주기적인 active expiration으로 처리된다. TTL을 정확한 시각에 실행되는 업무 scheduler로 사용하지 않는다.
 
@@ -49,7 +51,19 @@ Redis의 만료는 접근 시 passive expiration과 주기적인 active expirati
 
 `HGET`으로 수량을 읽고 애플리케이션에서 더한 뒤 `HSET`하면 동시 요청의 변경 하나가 사라질 수 있다.
 
-- 단순 증감은 `HINCRBY` 같은 단일 원자 명령을 우선한다.
+- 단순 증감은 `HINCRBY` 같은 단일 원자 명령을 우선한다. 읽기, 파싱, 수정, 직렬화 없이 서버가 필드 하나를 바로 고치고 왕복도 1회다.
+- `HINCRBY`는 결과가 0 이하가 돼도 필드를 지우지 않는다. 그대로 두면 수량 0인 상품이 화면에 남으므로 결과가 0 이하이면 `HDEL`한다. 증감과 삭제를 두 명령으로 보내면 그 사이 다른 요청이 수량을 올린 필드를 지울 수 있으므로, 담기, 빼기, 지우기를 한 함수로 캡슐화하고 엄밀함이 필요하면 아래처럼 한 스크립트로 묶는다.
+
+```lua
+-- KEYS[1] = cart:{accountId}, ARGV[1] = sku, ARGV[2] = 증감량
+local qty = redis.call('HINCRBY', KEYS[1], ARGV[1], ARGV[2])
+if qty <= 0 then
+  redis.call('HDEL', KEYS[1], ARGV[1])
+  return 0
+end
+return qty
+```
+
 - 최대 수량, 음수 금지, item 생성과 TTL 갱신을 함께 검사해야 하면 Lua/Function 또는 `WATCH` 기반 CAS를 사용한다.
 - pipeline은 왕복 횟수만 줄이며 여러 명령을 원자화하지 않는다.
 - 수정 결과에 cart version을 증가시켜 checkout snapshot과 이후 변경을 구분한다.
@@ -114,6 +128,8 @@ Controller는 입력 검증과 HTTP 변환을 담당하고, checkout service가 
 ## 출처
 
 - [Redis Docs, Hashes](https://redis.io/docs/latest/develop/data-types/hashes/)
+- [Valkey Docs, HINCRBY](https://valkey.io/commands/hincrby/)
+- [Valkey Docs, HEXPIRE](https://valkey.io/commands/hexpire/)
 - [Redis Docs, HEXPIRE](https://redis.io/docs/latest/commands/hexpire/)
 - [Redis Docs, EXPIRE와 만료 처리](https://redis.io/docs/latest/commands/expire/)
 - [Redis Docs, Key eviction](https://redis.io/docs/latest/develop/reference/eviction/)
@@ -121,6 +137,7 @@ Controller는 입력 검증과 HTTP 변환을 담당하고, checkout service가 
 - [NestJS Docs, Database와 QueryRunner](https://docs.nestjs.com/techniques/database)
 - [TypeORM Docs, Transactions](https://typeorm.io/docs/transactions/)
 - 김빌 강사, [요구사항과 ERD](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=275733), [Redis 기본](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273690), [Redis 연동](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273691), [장바구니 리팩터링](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273692), [오류 수정](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273693), [결과 확인](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273694)
+- Hong 강사, [Hash 자료구조로 만드는 이커머스 장바구니 기능](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481444), [우리가 앞서 배웠던 기능들에 대한 프로그래밍 정적 구현하기](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481455)
 
 ## 관련 문서
 

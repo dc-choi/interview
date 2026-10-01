@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, cache]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-30
 category: "Data & Storage - Cache & KV"
 aliases: ["Session Store"]
 ---
@@ -19,6 +19,13 @@ aliases: ["Session Store"]
 - **폐기**: 로그아웃과 만료 시 서버 측 세션을 삭제한다. 로그인, 권한 상승과 비밀번호 변경 뒤에는 기존 ID를 폐기하고 새 ID를 발급한다.
 
 JWT 같은 self-contained token의 blacklist가 꼭 필요하면 원문 token 대신 `jti`나 token hash를 키로 저장하고, token의 남은 유효기간만큼 TTL을 둔다. 즉시 철회가 기본 요구라면 blacklist가 계속 커지는 구조보다 짧은 access token과 회전 가능한 refresh session을 우선 검토한다.
+
+## Redis 구현 패턴
+
+- 세션은 거의 모든 요청에서 조회되는 가장 잦은 읽기이고 만료 요구가 붙어 있다. DB에 두면 만료 컬럼과 정리 작업을 직접 운영해야 하지만 인메모리 저장소는 TTL이 정리를 대신한다.
+- 기본형은 `SET session:<id> <userId> EX 1800`이다. 조회 결과가 nil이면 만료된 세션으로 보고 재인증을 요구한다.
+- 로그인 시점부터 고정 TTL만 두면 활동 중인 사용자가 결제 직전에 끊긴다. 요청 처리 미들웨어에서 idle TTL을 다시 거는 슬라이딩 만료를 적용하고, `GETEX session:<id> EX 1800`(6.2+)으로 조회와 연장을 한 왕복에 처리한다. 연장과 별개로 값에 둔 생성 시각이 absolute timeout을 넘었으면 세션을 폐기한다.
+- 등급, 로그인 시각, 마지막 활동 시각처럼 필드가 늘고 일부만 읽거나 고치게 되면 Hash로 펼친다. TTL은 키에 한 번 걸고, `HSET` 같은 필드 수정은 기존 TTL을 유지한다. 반대로 String 세션을 `EX` 없이 `SET`으로 덮어쓰면 TTL이 사라져 만료되지 않는 세션이 남는다 ([[TTL|TTL 전략]]).
 
 ## 장애와 정합성
 
@@ -44,6 +51,9 @@ Redis는 낮은 지연, TTL과 수평 확장이 필요한 세션에 적합하지
 - [Redis Docs, EXPIRE](https://redis.io/docs/latest/commands/expire/)
 - [Redis Docs, Key eviction](https://redis.io/docs/latest/develop/reference/eviction/)
 - [Redis Docs, Redis persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)
+- [Valkey Docs, GETEX](https://valkey.io/commands/getex/)
+- [Valkey Docs, EXPIRE](https://valkey.io/commands/expire/)
+- [인프런, Hong, String vs Hash 비교하기 & 캐시의 또다른 사용번 세션 스토어](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481445)
 
 ## 관련 문서
 

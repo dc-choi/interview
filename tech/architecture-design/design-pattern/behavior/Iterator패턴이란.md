@@ -115,6 +115,12 @@ total([1000, 2000]) // 3000
 total(new LinkedList([1000, 2000])) // 3000
 ```
 
+## 트리의 순회 상태
+
+Composite 트리는 같은 루트에서 DFS와 BFS Iterator를 각각 만들 수 있다. 명시적 DFS Iterator는 아직 방문하지 않은 노드를 스택에 보관하고, 노드를 꺼낸 뒤 자식을 역순으로 넣어 원래의 형제 순서를 지킨다. BFS는 큐에 자식을 원래 순서대로 넣는다. `root(dir1(file1, file2), file3)`이라면 DFS는 `root, dir1, file1, file2, file3`, BFS는 `root, dir1, file3, file1, file2`다.
+
+이 스택이나 큐가 `next()` 호출 사이에 보존할 상태다. Generator는 재귀 호출의 중단 상태를 유지하는 구현도 가능하지만, 깊은 트리에서는 호출 스택 한계를 고려한다. 순회 중 구조 변경을 허용할지도 별도 계약으로 정한다.
+
 ## 적용 경계
 
 - 컬렉션 구조와 순회 알고리즘을 분리하고 싶다.

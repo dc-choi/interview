@@ -19,7 +19,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 
 ### 기초와 도구 선택
 
-- [x] [[CICD-Foundations|기초와 도구 선택 폴더 인덱스 (CI/CD 개념 구분, 툴 선택 기준, CI 도구 비교, DevSecOps)]]
+- [x] [[CICD-Foundations|기초와 도구 선택 폴더 인덱스 (CI/CD 개념 구분, 툴 선택 기준, AWS Code 시리즈 운영, CI 도구 비교, DevSecOps)]]
 
 ### 파이프라인
 
@@ -28,7 +28,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 
 ### 배포
 
-- [x] [[CICD-Deployment|배포 폴더 인덱스 (무중단 5계층, Blue-Green, 단일 서버 배포, ChatOps)]]
+- [x] [[CICD-Deployment|배포 폴더 인덱스 (무중단 5계층, Blue-Green, 단일 서버 배포와 SSH workflow, ChatOps)]]
 - [x] [[Helm]]
 - [x] [[ArgoCD|ArgoCD (GitOps)]] — 기존 보강: [[CICD-Tool-Selection#CD 도구 비교 (GitOps 중심)|ArgoCD와 FluxCD 선택 기준]]
 - [x] [[Canary]] — 기존 보강: [[Blue-Green#관련 무중단 배포 전략|Blue-Green과 Canary 개념 비교]]

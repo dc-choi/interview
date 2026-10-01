@@ -1,7 +1,7 @@
 ---
 tags: [ai, skills, claude-code, codex, hook]
 status: done
-verified_at: 2026-08-25
+verified_at: 2026-09-30
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Agent Skills", "에이전트 스킬", "스킬", "Claude vs Codex Skills"]
 ---
@@ -49,6 +49,8 @@ Claude Code와 Codex가 공유하는 구조.
 - **기본 로드**: 스킬별 이름 + description 카탈로그. 목록에 문자 예산이 있어 스킬이 많으면 설명부터 줄어든다
 - **매칭 시 로드**: 트리거된 스킬의 본문 지침
 - **필요 시 로드**: references, scripts 같은 서포팅 파일
+
+Anthropic 문서의 규모 감각은 1단 메타데이터가 스킬당 약 100토큰, 2단 본문이 5k 토큰 미만, 3단은 읽기 전까지 0토큰이다. 스크립트는 코드가 아니라 실행 출력만 컨텍스트에 들어간다(2026-09-30 확인). 그래서 스킬을 많이 설치했을 때의 상시 비용은 본문이 아니라 카탈로그에서 생긴다. Claude Code는 카탈로그 전체를 모델 컨텍스트 윈도의 1% 예산에 맞추고, 넘치면 스킬 본문을 줄이는 것이 아니라 호출이 드문 스킬의 설명부터 뺀다.
 
 트리거 방식은 두 가지다.
 
@@ -107,6 +109,13 @@ Claude 쪽에서는 커스텀 슬래시 커맨드도 스킬로 흡수됐다. 사
 - 죽은 스킬 판정은 관찰 창에 상대적이다. 분기에 한 번 쓰는 스킬이 30일 창에서 억울하게 죽지 않도록 창 크기를 용도에 맞춘다.
 - 감사는 관찰 창 기반 분류와 제거 계획을 산출물로 남긴다. 프로젝트 스코프 스킬은 의도적 산출물로 보고 정리 대상에서 제외하는 보수적 접근이 안전하다.
 - 세션 로그를 여는 파서는 프롬프트와 경로가 든 transcript를 읽고, 재개나 fork된 세션이 부모 기록을 replay하면 호출 수가 부풀 수 있다. 신뢰 경계와 집계 규칙은 [[AI-Coding-Agent-Usage-Telemetry]]를 따른다.
+- Claude Code는 v2.1.252부터 `/skill-doctor`로 스킬별 컨텍스트 비용과 호출 빈도를 보고하고 한 번도 호출되지 않은 스킬과 오래 안 쓴 플러그인을 표시한다(번들, 엔터프라이즈 스킬 제외). 관찰 창과 상태 분류를 직접 통제해야 할 때만 위의 세션 로그 집계를 따로 돌린다.
+
+## 설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저
+
+- **표면별 저장소**: claude.ai(Desktop 앱의 Chat, Cowork 포함)의 커스텀 스킬은 설정에서 zip으로 올리는 사용자 개인 자산이고, API 스킬은 워크스페이스 공유, Claude Code 스킬은 파일 시스템(`~/.claude/skills/`, `.claude/skills/`)에 있다. 올린 스킬은 표면 사이에 자동으로 동기화되지 않는다. 예외로 Claude Code는 claude.ai 계정으로 로그인한 터미널 세션에서 계정 스킬을 `~/.claude/skills/synced/`로 한 방향만 내려받고(v2.1.273+), Cowork와 클라우드 세션은 로컬 `~/.claude/skills/`를 읽지 않는다. 한 곳에 설치했다고 다른 곳에서 쓸 수 있다고 가정하지 않는다
+- **스킬 설치는 소프트웨어 설치와 같다**: 스킬은 지시와 코드로 도구 호출을 이끌 수 있어서, 공식 문서는 직접 만들었거나 Anthropic에서 받은 스킬만 쓰고 그 밖의 스킬은 SKILL.md, 스크립트, 리소스 전체를 감사하라고 권한다. 외부 URL에서 내용을 가져오는 스킬은 의존 대상이 바뀌면 믿었던 스킬도 오염될 수 있다
+- **스킬을 찾아 설치하는 스킬**: 필요한 스킬을 에이전트가 검색해 설치하게 하는 메타 스킬은 편하지만 공급망 경로를 에이전트에게 여는 셈이다. 추천까지만 자동으로 받고 설치는 사람이 출처와 파일을 확인한 뒤 승인한다. 전문가의 절차를 빌려 쓸 수 있다는 것이 스킬의 이점이지만 그 품질은 설치 전에 알 수 없으므로, 공식 문서가 권하는 대로 같은 프롬프트를 스킬을 켠 새 세션과 끈 새 세션에서 돌려 결과를 비교한다
 
 ## 면접 체크포인트
 
@@ -116,6 +125,7 @@ Claude 쪽에서는 커스텀 슬래시 커맨드도 스킬로 흡수됐다. 사
 - Claude와 Codex 스킬이 같은 파일 기반 포맷으로 수렴했다는 점 (파일 vs API 오해 교정)
 - 훅 vs 스킬 — 언제(강제) vs 무엇(작업)의 구분과 상보성
 - 카탈로그 비용의 실체(목록 문자 예산, 저빈도 설명부터 제외, 스킬이 많을수록 산 스킬 설명까지 단축)와 세션 로그 집계 기반 수명주기 감사를 설명할 수 있는가
+- 스킬이 어느 표면에 설치됐고 어느 방향으로 동기화되는지, 외부 스킬을 감사하고 켠 세션과 끈 세션으로 비교하는 이유를 설명할 수 있는가
 
 ## 출처
 
@@ -125,6 +135,10 @@ Claude 쪽에서는 커스텀 슬래시 커맨드도 스킬로 흡수됐다. 사
 - [Claude Docs, Agent Skills](https://code.claude.com/docs/ko/skills)
 - [OpenAI Codex Docs, Skills](https://developers.openai.com/codex/skills)
 - [Level 9 하네스 엔지니어링과 Evaluator 제어 — 클로드 코드 마스터 활용편 발표 자료(한빛미디어), 빌런 (2026-09)](https://run-ai.kr/learn/carve-harness)
+- [Claude Code Docs, Extend Claude with skills](https://code.claude.com/docs/en/skills)
+- [Claude Platform Docs, Agent Skills overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview)
+- [인프런, 널널한 개발자, Claude for Desktop 주요기능 소개](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498592)
+- [인프런, 널널한 개발자, 스킬과 플러그인](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498598)
 
 ## 관련 문서
 

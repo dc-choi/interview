@@ -74,7 +74,25 @@ verified_at: 2026-08-04
 - 일반 삭제는 디렉토리 엔트리, inode, 할당 메타데이터를 갱신해 공간을 재사용 가능 상태로 만든다.
 - 복원 가능성은 파일시스템, 저널링, TRIM, 이후 쓰기 여부에 따라 달라진다.
 
+### 바이트 위치, 블록과 내부 단편화
+
+파일시스템은 이름, 권한과 할당 메타데이터를 관리해 바이트 단위 파일 API를 블록 저장소로 연결한다. `lseek()`은 열린 파일의 현재 오프셋을 바꾸며 오프셋은 open file description에 속한다. `dup()`/`fork()`로 그 객체를 공유한 fd는 오프셋도 공유한다.
+
+클러스터는 FAT/NTFS 계열의 할당 단위 용어다. 섹터, 파일시스템 블록과 VM 페이지는 구분한다. 파일이 클러스터보다 작아도 별도 블록을 할당하는 단순 모델에서는 마지막 블록이 낭비된다. 12,456바이트를 4,096바이트 블록에 저장하면 4블록(16,384바이트)이 필요하고 3,928바이트가 남는다. 작은 파일의 inline 저장이나 압축 같은 기능은 이 단순 계산의 예외다.
+
+연속 할당은 파일 성장과 외부 단편화에 취약하다. 현대 파일시스템의 extent는 연속 구간을 묶어 표현하므로 연속 배치 자체를 사용하지 않는다는 뜻은 아니다. 연결 할당은 중간 블록으로 가려면 앞의 연결을 따라가야 하고, 인덱스 구조는 임의 접근과 메타데이터 관리 비용을 교환한다.
+
+### 동시 파일 접근과 영속화
+
+Linux 로컬 파일의 동시 `open()`은 사용 중이라는 이유만으로 자동 직렬화되지 않는다. `flock()`은 협력하는 프로세스 사이의 권고 잠금이며 블로킹 요청과 `LOCK_NB`를 구분한다. Windows 파일 공유 모드도 별도 계약이다. 여러 writer는 단일 writer나 일관된 잠금 규약을 정해야 한다.
+
+`write()`/`close()`의 성공과 저장 매체에 대한 영속화 완료는 다르다. Linux에서 필요한 내구성 경계에 `fsync()` 또는 `fdatasync()`를 호출하고 실패를 처리한다. 생성하거나 이름을 바꾼 파일의 디렉터리 엔트리까지 보존하려면 디렉터리 fd의 `fsync()`도 필요하다. 장치와 가상 저장소가 flush 계약을 지키는지도 확인한다.
+
 ## 출처
+
+- [Linux, flock(2)](https://man7.org/linux/man-pages/man2/flock.2.html)
+
+- [Linux, fsync(2)](https://man7.org/linux/man-pages/man2/fsync.2.html)
 
 - 인프런, 감자 강사, [파일과 파일시스템](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100855), [디렉토리](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100856), [파일과 디스크](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100857)
 - [exFAT File System Specification — Microsoft](https://learn.microsoft.com/en-us/windows/win32/fileio/exfat-specification)
@@ -82,6 +100,8 @@ verified_at: 2026-08-04
 - [UEFI Boot Manager — UEFI Specification](https://uefi.org/specs/UEFI/2.11/03_Boot_Manager.html)
 - [open(2) — Linux manual page](https://www.man7.org/linux/man-pages/man2/open.2.html)
 - [Linux Kernel 공식 문서, Overview of the Linux Virtual File System](https://docs.kernel.org/filesystems/vfs.html)
+- 인프런, 널널한 개발자 강사, [User mode와 Kernel mode 그리고 가상화까지!](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128256)
+- 인프런, 널널한 개발자 강사, [파일삭제 내부구조와 백신 실시간 감시 엔진](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476546)
 
 ## 관련 문서
 - [[Storage-and-FileSystem|기억장치와 파일시스템 (목차)]]

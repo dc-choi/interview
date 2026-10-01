@@ -33,6 +33,8 @@ aliases: ["Cache Invalidation", "캐시 무효화"]
 - Cache-Aside(Look-Aside) 패턴에서는 보통 **쓰기 시 캐시 값을 갱신하지 않고 삭제**한다.
 - 갱신보다 구현이 단순하고, 다음 읽기에서 원본 저장소로 다시 적재할 수 있다.
 - 다만 삭제만으로 stale 재적재 경합이 사라지지는 않는다. 동시 읽기가 커밋 전 값을 다시 채울 수 있으므로 아래 시나리오처럼 TTL, 버전 또는 재시도를 함께 설계한다.
+- 삭제의 대가는 직후 한 번의 캐시 미스다. 새 값을 곧바로 덮어쓰는 방식은 미스가 없지만 DB 트랜잭션과 캐시 갱신의 순서 역전, 한쪽 실패로 인한 불일치를 따로 다뤄야 하므로 미스 비용이 큰 초고트래픽 키에만 쓴다. 인기 키라면 삭제 직후 몰리는 재조회는 [[Cache-Stampede|stampede 방지]]로 막는다.
+- 어느 쪽이든 TTL을 건다. 무효화 코드에 버그가 있어도 수명이 끝나면 캐시가 사라지는 마지막 안전망이다.
 
 ### 이벤트 기반 무효화
 - 커밋된 DB 변경을 CDC나 durable outbox 이벤트로 전달해 관련 캐시를 무효화
@@ -147,6 +149,7 @@ DB 변경 후 여러 후속 작업이 동시에 일어날 때 순서가 뒤섞�
 - [Redis, Pub/sub](https://redis.io/docs/latest/develop/pubsub/)
 - [Redis, Transactions](https://redis.io/docs/latest/develop/using-commands/transactions/)
 - [Jakarta Persistence API, EntityListeners](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/EntityListeners.html)
+- [인프런, Hong, 캐시 무효화와 캐시 스탬피드 & 파이프라이닝과 운영관점의 팁](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481443)
 
 ## 관련 문서
 - [[TTL|TTL 전략]]

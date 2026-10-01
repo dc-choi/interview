@@ -1,7 +1,7 @@
 ---
 tags: [web, graphql, api, federation, microservices]
 status: done
-verified_at: 2026-07-20
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Federation", "GraphQL 페더레이션", "subgraph", "federated gateway", "schema composition"]
 ---
@@ -21,7 +21,7 @@ aliases: ["GraphQL Federation", "GraphQL 페더레이션", "subgraph", "federate
 
 ## 타입이 subgraph를 가로지르는 법
 
-한 엔티티를 여러 subgraph가 나눠 가진다. 소유 subgraph가 엔티티를 선언하고, 다른 subgraph는 스텁으로 참조한다 (아래는 Apollo Federation 문법).
+한 엔티티를 여러 subgraph가 나눠 가진다. 소유 subgraph가 엔티티를 선언하고, 다른 subgraph는 스텁으로 참조한다 (아래는 Apollo Federation 2 문법).
 
 ```graphql
 # Products subgraph — 소유자
@@ -36,10 +36,14 @@ type Order @key(fields: "id") {
   id: ID!
   products: [Product!]!
 }
-type Product {
+type Product @key(fields: "id", resolvable: false) {
   id: ID!
 }
 ```
+
+- 스텁은 `@key` 필드만 담는다. `resolvable: false`는 이 subgraph가 Product의 reference resolver를 정의하지 않는다는 뜻이다. `@key` 없이 `type Product { id: ID! }`만 두면 스텁이 아니라 같은 이름의 일반 object 정의가 되어, composition이 `INVALID_FIELD_SHARING`(두 subgraph가 `Product.id`를 해소하는데 Orders 쪽이 shareable이 아님)으로 거부한다(`@apollo/composition` 2.14.4 재현).
+- 참조하는 쪽 resolver(`Order.products`)는 키만 담은 객체(`{ id: productId }`)를 반환하면 된다. query plan은 Orders에서 `products { __typename id }`를 받고, 이 entity representation(`__typename`과 `@key` 필드)을 Products subgraph의 `_entities`로 보내 `title` 같은 나머지 필드를 채운다. 같은 흐름이 [[Content-Availability-System-Design|콘텐츠 가용성 사례]]의 Federation 실행 절에도 있다.
+- Federation 2 문법은 subgraph 스키마에 `extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])`처럼 사용하는 Federation 2 버전을 선언할 때 적용된다. 선언이 없으면 composition이 Federation 1 subgraph로 간주하며, Federation 1의 참조 문법은 `extend type Product @key(fields: "id") { id: ID! @external }`이다.
 
 합성된 통합 스키마에서 클라이언트는 경계를 모르고 쿼리한다. `user { orders { products { title } } }` 한 쿼리에서 user는 Users subgraph, orders는 Orders subgraph, products의 상세는 Products subgraph가 해소하고 gateway가 조립한다.
 
@@ -86,6 +90,7 @@ GraphQL을 만든 Meta는 2012년부터 모놀리식 GraphQL API를 유지한다
 
 - 필요 검증 없이 조기 도입 (전담 팀 없이 gateway, registry 운영 부담만 증가).
 - composition 검증 없이 subgraph 배포 (충돌이 합성 시점에 조기 차단되지 못하고 publish, 배포 시점에야 드러남).
+- `@key` 없는 동명 타입으로 엔티티를 참조 (composition의 `INVALID_FIELD_SHARING`, 스텁은 `@key(fields: ..., resolvable: false)`).
 - 페더레이션이 규모의 필수 조건이라는 가정 (모놀리식 GraphQL로 대규모를 운영하는 사례가 있다).
 
 ## 면접 체크포인트
@@ -111,3 +116,6 @@ GraphQL을 만든 Meta는 2012년부터 모놀리식 GraphQL API를 유지한다
 - [Apollo Server — Apollo subgraph setup (buildSubgraphSchema, _entities)](https://www.apollographql.com/docs/apollo-server/using-federation/apollo-subgraph-setup)
 - [Apollo Server — Apollo gateway setup (IntrospectAndCompose vs managed)](https://www.apollographql.com/docs/apollo-server/using-federation/apollo-gateway-setup)
 - [Apollo Server — Gateway performance (query plan, _entities DataLoader)](https://www.apollographql.com/docs/apollo-server/using-federation/gateway-performance)
+- [Apollo GraphOS — Contribute and Reference Entity Fields (entity stub, resolvable: false)](https://www.apollographql.com/docs/graphos/schema-design/federated-schemas/entities/contribute-fields)
+- [Apollo GraphOS — Introduction to Entities (entity representation)](https://www.apollographql.com/docs/graphos/schema-design/federated-schemas/entities/intro)
+- [인프런, Hong, 분산 환경을 대비하는 Federation 패턴을 활용한 GraphQL의 MSA](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449790)

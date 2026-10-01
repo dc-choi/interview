@@ -1,7 +1,7 @@
 ---
 tags: [performance, cpu-bound, io-bound, optimization, nodejs, language]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-30
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["CPU-Bound vs IO-Bound", "CPU-Intensive vs IO-Intensive", "CPU vs IO", "병목 구분"]
 ---
@@ -76,6 +76,18 @@ Node.js, Go, Python asyncio와 C++는 비동기 I/O를 처리하는 방식과 �
 
 대부분이 I/O 대기라면 언어 실행 비용의 비중은 작아질 수 있다. 다만 serialization, 메모리 관리와 런타임 overhead는 남으므로 같은 성능을 보장하지 않고 실제 workload로 측정한다.
 
+## 직렬화가 hot path일 때
+
+JSON 직렬화와 역직렬화는 거의 모든 요청에서 반복되는 CPU 작업이다. 기본 JSON 구현으로 대부분 충분하지만, 프로파일에서 직렬화가 상위 비용으로 확인되면 다음 순서로 다룬다.
+
+1. **호출 지점을 공통 래퍼로 모은다** — serialize와 deserialize를 한 모듈에 두면 뒤의 구현 교체가 한 곳에서 끝나고, 실패를 입력 식별자와 함께 한 곳에서 로깅한 뒤 다시 던질 수 있어 디버깅 시간이 줄어든다.
+2. **지원 환경과 출력 호환성을 확인한다** — 고성능 구현은 지원 환경과 기본 출력이 표준과 다를 수 있다. 예: Go의 Sonic은 README 기준 amd64와 arm64(Go 1.20 이상)에서 가속 경로를 쓰고 그 밖의 환경에서는 표준 `encoding/json`으로 돌아가며, 기본 설정은 HTML escape와 map key 정렬을 표준과 다르게 처리한다.
+3. **직접 구현하지 않고 검증된 구현으로 교체한다** — 예: Fastify는 route에 response schema가 있으면 `fast-json-stringify`로 직렬화하고, 처리량 향상과 민감 필드의 우발적 노출 방지를 함께 이점으로 든다 (Fastify 5.x 문서 기준). NestJS의 Fastify adapter에서 route schema를 연결하는 방법은 NestJS 공식 문서가 다루지 않으므로 적용 전에 동작을 확인한다.
+4. **같은 부하에서 전후를 비교한다** — CPU 프로파일과 힙 사용량을 교체 전후로 재고, 라이브러리 벤치마크나 다른 팀의 절감 수치를 그대로 기대하지 않는다.
+5. **형식 변경은 합의 문제다** — Protocol Buffers 같은 바이너리 형식은 크기와 파싱 비용을 줄일 수 있지만 schema 운영과 호환성 관리가 따라오고, 주고받는 쪽이 모두 합의해야 한다. 형식별 위험은 [[Java-IO-Serialization-and-Data-Formats|Java 직렬화와 데이터 형식]]을 따른다.
+
+Node.js에서는 큰 JSON의 `JSON.parse`와 `JSON.stringify`가 이벤트 루프를 막는다. 측정 예와 입력 크기 주의는 [[Async-IO#JSON DOS|Async I/O의 JSON DOS]]를 따른다. 공식 가이드는 대안으로 stream API를 제공하는 JSONStream과, stream API에 더해 이벤트 루프 파티셔닝 방식의 비동기 JSON API를 제공하는 bfj(Big-Friendly JSON)를 예로 든다.
+
 ## 대용량 서비스에서 CPU-Bound가 늘어난다
 
 트래픽이 커지고 기능이 복잡해지면 CPU 비중이 증가:
@@ -128,12 +140,16 @@ Node.js, Go, Python asyncio와 C++는 비동기 I/O를 처리하는 방식과 �
 - **Node.js 싱글 스레드**의 한계와 Worker Threads, C++ addon의 역할
 - CPU-Bound 작업을 **분리**하는 전략 (마이크로서비스, RPC, 전용 프로세스)
 - **프로파일링 없이 최적화 금지** 원칙
+- 직렬화가 hot path로 확인됐을 때 라이브러리 교체, 공통 래퍼, 형식 변경 중 무엇을 먼저 하는가
 - 하드웨어 vs 소프트웨어 최적화의 경계
 
 ## 출처
 - [arca.live 프로그래머즈 — CPU-intensive vs I/O-intensive (모댕숲)](https://arca.live/b/programmers/62350982)
 - [Node.js — Don't Block the Event Loop](https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop)
 - [Node.js, Worker threads](https://nodejs.org/api/worker_threads.html)
+- [Fastify, Validation and Serialization](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/)
+- [Sonic, Requirement](https://github.com/bytedance/sonic#requirement)
+- [인프런, Hong, 두번쨰 서버 최적화 방법](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272600)
 
 ## 관련 문서
 - [[Latency-Optimization|레이턴시 최적화 개관]]
@@ -141,3 +157,4 @@ Node.js, Go, Python asyncio와 C++는 비동기 I/O를 처리하는 방식과 �
 - [[Single-vs-Multi-Thread|Node.js 싱글 vs 멀티 스레드]]
 - [[Thread-vs-Event-Loop|Thread vs Event Loop]]
 - [[Worker-Threads|워커 스레드]]
+- [[NestJS-Serialization|NestJS 응답 직렬화]]

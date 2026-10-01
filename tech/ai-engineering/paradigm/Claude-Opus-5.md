@@ -10,6 +10,8 @@ aliases: ["Claude Opus 5", "Opus 5"]
 
 Claude Opus 5는 Opus 4.8의 후속으로 2026-07-24 출시된 Opus 라인 최상위 모델이다. 가격은 Opus 4.8과 같은 수준을 유지하면서, 상위 티어인 [[Claude-Fable-5-Mythos-5|Fable 5]]의 절반 가격으로 다수 에이전트, 코딩 평가에서 Fable 5에 근접하거나 능가하는 결과를 낸다. 같은 가격에 갈아 끼우는 drop-in 업그레이드로 포지셔닝되지만, 사고(thinking) 기본값과 검증 거동이 바뀌어 통합 코드와 프롬프트의 재조정 지점이 있다.
 
+2026-09-30 공식 모델 개요 기준 현재 Opus는 후속인 Opus 5.5(2026-09-22 출시, 100만 토큰당 입력 $4, 출력 $20, API 기본 effort medium)이고 Opus 5는 legacy로 계속 제공된다. 이 문서는 Opus 5 출시 시점 기록이다.
+
 ## 사양과 가격 (2026-07-24 출시 시점)
 
 | 항목 | 값 |
@@ -94,3 +96,4 @@ Claude Opus 5는 Opus 4.8의 후속으로 2026-07-24 출시된 Opus 라인 최�
 - [Anthropic Platform Docs, Model migration guide](https://platform.claude.com/docs/en/about-claude/models/migration-guide)
 - [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview)
 - [Anthropic Platform Docs, What's new in Claude Opus 5](https://platform.claude.com/docs/en/about-claude/models/whats-new-opus-5)
+- [Introducing Claude Opus 5.5 — Anthropic](https://www.anthropic.com/claude-opus-5-5)

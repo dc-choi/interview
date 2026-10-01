@@ -1,7 +1,7 @@
 ---
 tags: [os, concurrency, process, kernel]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "OS&런타임(OS&Runtime)"
 aliases: ["OS 개요와 동시성", "Concurrency Overview"]
 ---
@@ -43,8 +43,9 @@ aliases: ["OS 개요와 동시성", "Concurrency Overview"]
 - **인터럽트**: 장치, 타이머처럼 현재 명령과 독립적인 비동기 사건이 제어 흐름 전환을 요청한다.
 - **예외**: 잘못된 명령, 페이지 폴트, 0으로 나누기처럼 현재 명령 실행과 연관된 동기 사건이다.
 - **시스템 콜**: 프로그램이 의도적으로 커널 서비스를 요청하는 동기적 trap 경로를 사용할 수 있다.
-- CPU는 필요한 실행 문맥을 보존하고 등록된 handler로 이동한 뒤, 처리 결과에 따라 원래 흐름으로 복귀하거나 다른 task를 스케줄한다.
-- 인터럽트는 계속 상태를 확인하는 폴링을 줄일 수 있지만, 실제 I/O 경로는 부하와 장치 특성에 따라 인터럽트와 폴링을 함께 사용할 수 있다.
+- CPU는 필요한 실행 문맥을 보존하고 등록된 handler로 이동한 뒤, 처리 결과에 따라 원래 흐름으로 복귀하거나 다른 task를 스케줄한다. 특정 인터럽트를 처리하는 이 handler를 교재에서는 ISR(인터럽트 서비스 루틴)이라 부른다.
+- **폴링과 인터럽트**: 폴링은 CPU가 입출력 완료 시점을 몰라 장치 상태를 주기적으로 확인하는 방식이라 기다리는 동안에도 CPU를 쓴다. 인터럽트 방식은 CPU가 명령을 내린 뒤 다른 일을 하다가 장치의 완료 신호를 받아 처리한다. 다만 실제 I/O 경로는 부하와 장치 특성에 따라 인터럽트와 폴링을 함께 사용할 수 있다.
+- **교재 용어 대응**: 교재와 면접에서 말하는 하드웨어 인터럽트는 위의 인터럽트(장치 완료, 타이머 신호)이고, 소프트웨어 인터럽트는 0으로 나누기나 잘못된 메모리 접근 같은 예외와 시스템 콜 trap을 묶어 부르는 말이다. 이 용어의 범위는 문서마다 다르다. RISC-V privileged 명세의 machine-level software interrupt는 메모리 매핑 레지스터에 써서 다른 hart에 보내는 프로세서 간 인터럽트라 비동기 인터럽트에 속한다. 인용할 때는 그 문서의 정의를 확인한다.
 
 ### 컴퓨터 하드웨어 (폰 노이만 구조)
 - CPU와 메모리를 버스로 연결. 버스는 데이터를 전달하는 통로
@@ -68,7 +69,7 @@ aliases: ["OS 개요와 동시성", "Concurrency Overview"]
 | 정부 조직 | OS (시스템 소프트웨어) |
 | 국민 | 프로그램(프로세스) |
 | 국민의 공간 | 프로세스 메모리 (다른 프로세스 침범 불가) |
-| 경찰 | 디버거 (다른 프로세스 접근 가능) |
+| 경찰 | 디버거 (OS의 접근 검사를 통과한 대상에 접근 가능) |
 
 ### 커널(Kernel)
 - OS의 핵심, 컴퓨터의 법을 구현
@@ -153,6 +154,12 @@ aliases: ["OS 개요와 동시성", "Concurrency Overview"]
 - 캐시가 효율적으로 동작하는 근거
 - 배열 순차 접근이 연결 리스트보다 빠른 이유 (공간적 지역성)
 
+### 입출력 감시와 격리의 권한 경계
+
+파일 입출력 경로에 검사를 넣어 악성 동작을 차단할 수 있다. Windows 파일시스템 필터 드라이버가 그 예다. 검사가 빌드나 저장소 I/O 경로에 추가되면 지연도 생기므로 실제 작업 부하에서 확인한다. 커널 모드 구성요소의 메모리 오류는 사용자 프로세스의 오류보다 넓은 장애로 이어질 수 있다.
+
+주소 공간 격리는 접근 권한의 경계다. Linux의 `ptrace` 같은 디버깅 API는 별도의 접근 검사를 통과한 프로세스에 다른 프로세스 메모리 접근을 허용한다. 디버거라는 이름만으로 허용되는 것은 아니며, 같은 사용자 조건 외에 capability, dumpable 상태와 보안 정책도 적용된다. 메모리 안의 비밀도 호스트의 디버깅 권한을 가진 주체로부터 자동 보호되지는 않는다.
+
 ## 관련 문서
 - [[Concurrency-and-Process-IPC|원자성, 동기화, IPC]]
 - [[Concurrency-and-Process|동시성과 프로세스 (인덱스)]]
@@ -161,10 +168,16 @@ aliases: ["OS 개요와 동시성", "Concurrency Overview"]
 
 ## 출처
 
+- [Linux, ptrace(2)](https://man7.org/linux/man-pages/man2/ptrace.2.html)
+
+- [Microsoft, About File System Filter Drivers](https://learn.microsoft.com/en-us/windows-hardware/drivers/ifs/about-file-system-filter-drivers)
+
 - 인프런, 널널한 개발자 강사, [컴퓨터의 구성요소와 아바타](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128254), [국가와 국민으로 이해하는 컴퓨터 세상](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128255), [User mode와 Kernel mode 그리고 가상화까지](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128256)
 - 인프런, 감자 강사, [운영체제 개요](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100737), [운영체제의 역사](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100753), [운영체제의 구조](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100754), [컴퓨터 하드웨어와 구조](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100755)
 - 인프런, 감자 강사, [컴퓨터의 부팅과정](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100756), [인터럽트](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100757)
 - [UEFI 2.11, Boot Manager](https://uefi.org/specs/UEFI/2.11/03_Boot_Manager.html)
 - [RISC-V ISA, Exceptions, Traps, and Interrupts](https://docs.riscv.org/reference/isa/unpriv/intro.html)
+- [RISC-V ISA, Machine-Level ISA (Machine Interrupt Registers)](https://docs.riscv.org/reference/isa/priv/machine.html)
 - [Linux Kernel, Physical Page Allocation](https://www.kernel.org/doc/gorman/html/understand/understand009.html)
 - [메모리 구조 관점에서 프로세스와 쓰레드 비교 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=gQ4c6IzhU9Q)
+- 인프런, 널널한 개발자 강사, [프로세스 메모리 격리와 흔한 게임 해킹 기법](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476550)

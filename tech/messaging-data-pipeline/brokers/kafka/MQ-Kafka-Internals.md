@@ -1,9 +1,9 @@
 ---
 tags: [messaging, kafka, event-streaming]
 status: done
-verified_at: 2026-09-29
+verified_at: 2026-10-01
 category: "메시징&파이프라인(Messaging&Pipeline)"
-aliases: ["Kafka Internals", "카프카 기본 구조와 내부"]
+aliases: ["Kafka Internals", "카프카 기본 구조와 내부", "Follower Fetching", "KIP-392"]
 ---
 
 # Kafka 기본 구조와 내부
@@ -23,7 +23,10 @@ Kafka의 구성 요소는 각각 앞 단계가 남긴 문제를 푸는 장치로
 
 복제의 핵심 규칙은 다음과 같다.
 
-- partition마다 replica 하나가 **leader**, 나머지가 **follower**다. 쓰기는 leader로 가고 follower는 leader의 log를 복제한다.
+- partition마다 replica 하나가 **leader**, 나머지가 **follower**다. 쓰기는 leader로 간다. follower는 일반 consumer처럼 leader에 fetch 요청을 보내 log를 가져가는 pull 방식으로 복제하고, 덕분에 가져온 항목을 batch로 모아 자기 log에 적용한다. 최근 버전에서 바뀐 동작이 아니라 Kafka 복제 설계의 기본이다.
+- 읽기는 기본적으로 leader가 처리한다(broker `replica.selector.class`의 기본 구현이 leader를 고른다). Kafka 2.4.0(KIP-392)부터 broker에 `broker.rack`과 `replica.selector.class=org.apache.kafka.common.replica.RackAwareReplicaSelector`를, consumer에 `client.rack`(KafkaJS는 `rackId`)을 주면 같은 rack의 replica에서 읽는다. 클라우드에서는 rack을 AZ로 두어 AZ 간 전송 비용과 지연을 줄이는 용도다 ([[Egress-Cost|데이터 전송 비용]]). `broker.rack`은 토픽 생성 시 replica를 여러 rack에 흩는 배치 기준이기도 하다.
+- follower는 전파받은 high watermark까지의 committed 데이터만 돌려주므로 leader에서 읽을 때보다 새 데이터가 늦게 보일 수 있다. Kafka 4.3.1 소스 기준으로 follower의 high watermark 이상, log end offset 이하 offset을 요청하면 오류 없이 빈 응답이 와 consumer가 다시 fetch하고, log end offset을 넘는 offset이면 `OFFSET_OUT_OF_RANGE`를 받은 consumer가 preferred read replica를 지우고 leader로 돌아간다. KIP-392 설계 문서는 두 경우에 `OFFSET_NOT_AVAILABLE`을 돌려준다고 적었지만 구현은 다르다.
+- 관리형 서비스는 설정 경로가 다르다. Amazon MSK는 `broker.rack`을 AZ ID로 미리 설정하므로 `replica.selector.class`를 구성하고 consumer `client.rack`에 AZ 이름이 아니라 AZ ID(예: `use1-az1`)를 준다.
 - **ISR**(in-sync replicas)은 controller와 세션을 유지하면서 leader에 크게 뒤처지지 않은 replica 집합이다. 쓰기는 ISR 전원이 받아야 committed가 되고, ISR이 하나라도 살아 있으면 committed 메시지는 유실되지 않는다.
 - producer `acks=all`은 현재 ISR 전원의 확인을 기다린다. ISR이 줄어 leader 혼자 남는 경우를 막으려면 `min.insync.replicas`로 최소 ISR 수를 강제한다.
 - leader가 죽으면 ISR에서 새 leader를 뽑는다. `unclean.leader.election.enable`로 ISR 밖 replica를 허용하면 가용성은 오르지만 committed 메시지를 잃을 수 있다.
@@ -95,10 +98,20 @@ Kafka의 처리량은 한 가지 기술이 아니라 다음 구조의 조합에�
 - [Apache Kafka, Introduction](https://kafka.apache.org/documentation/)
 - [Apache Kafka 4.0 release announcement, KRaft only](https://kafka.apache.org/blog/2025/03/18/apache-kafka-4.0.0-release-announcement/)
 - [Apache Kafka, Design](https://kafka.apache.org/41/design/design/)
+- [Apache Kafka 4.3, Broker Configs (replica.selector.class, broker.rack)](https://kafka.apache.org/43/configuration/broker-configs/)
+- [Apache Kafka 4.3, Consumer Configs (client.rack)](https://kafka.apache.org/43/configuration/consumer-configs/)
+- [Apache Kafka 4.3, Basic Kafka Operations (Balancing replicas across racks)](https://kafka.apache.org/43/operations/basic-kafka-operations/)
+- [Apache Kafka, KIP-392 Allow consumers to fetch from closest replica](https://cwiki.apache.org/confluence/display/KAFKA/KIP-392%3A+Allow+consumers+to+fetch+from+closest+replica)
+- [Apache Kafka 4.3.1 LocalLog.java (fetch offset 경계 처리) — GitHub](https://github.com/apache/kafka/blob/4.3.1/storage/src/main/java/org/apache/kafka/storage/internals/log/LocalLog.java)
+- [Apache Kafka 4.3.1 FetchCollector.java (preferred read replica 해제) — GitHub](https://github.com/apache/kafka/blob/4.3.1/clients/src/main/java/org/apache/kafka/clients/consumer/internals/FetchCollector.java)
+- [Apache Kafka, 2.4.0 Release Notes (KAFKA-8443)](https://archive.apache.org/dist/kafka/2.4.0/RELEASE_NOTES.html)
+- [KafkaJS, Consuming Messages (rackId)](https://kafka.js.org/docs/consuming)
+- [Amazon MSK, Supported Apache Kafka versions (KIP-392 rack awareness)](https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html)
 - [NestJS, Microservices basics](https://docs.nestjs.com/microservices/basics)
 - [frogred8 — 카프카는 왜 빠를까?](https://frogred8.github.io/docs/034_why_is_kafka_fast/)
 - [메시지 큐에서 Kafka까지, 문제와 해결의 연쇄 — Threads, mangle_lab_official](https://www.threads.com/@mangle_lab_official/post/DcO4iXqDxeD)
 - 김빌 강사, [Kafka 이론](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273696), [Docker Compose 실습](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273697), [주문 로직 리팩터링](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273698)
+- 모영철 강사, [Kafka 파헤치기 - Multi Thread 지식이 있다면 분석 무섭지 않다](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178851)
 
 ## 관련 문서
 

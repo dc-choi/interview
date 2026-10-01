@@ -11,7 +11,7 @@ Node.js 비동기 프로그래밍 시리즈의 인덱스. 상위 async 폴더 �
 
 ## 목차
 
-- [[Async-Programming-Basics|비동기 프로그래밍 — 기초]] — 콜백, Promise(정적 메서드 포함), async/await, 작업 예약(queueMicrotask/nextTick/setImmediate)
+- [[Async-Programming-Basics|비동기 프로그래밍 — 기초]] — 콜백, Promise(정적 메서드 포함), async/await, 콜백 API의 Promise 변환(util.promisify), 작업 예약(queueMicrotask/nextTick/setImmediate)
 - [[Async-Programming-Patterns|비동기 프로그래밍 — 패턴]] — 흐름 제어(순차/제한/병렬), 타이머, 블로킹 vs 논블로킹, EventEmitter, nextTick vs setImmediate, 이벤트 루프 차단 방지(ReDoS/JSON DoS/분할/오프로드)
 - [[Async-Internals|비동기 내부 동작]] — 아래 두 문서의 개요
   - [[Async-Internals-Mechanism|비동기 내부 동작 — 메커니즘]] — async/await 트랜스파일, 컨텍스트 스위칭, Promise vs Future, await 비용, Promise 최적화 패턴(병렬화, allSettled, for await)

@@ -125,6 +125,10 @@ batch 주기는 UI 새로고침 요구, source load와 허용 지연을 측정�
 - 여러 worker가 같은 window를 처리하지 않도록 lease/lock을 사용하되 만료와 takeover를 설계한다.
 - source query와 summary write를 같은 entity model에 억지로 묶지 않고 read model을 별도 module로 둔다.
 
+## 집계 교체의 원자성
+
+동일 bucket을 다시 계산하는 값 교체는 재시도해도 같은 결과를 만들기 쉽다. DELETE 후 INSERT는 같은 transaction으로 묶고 gap, FK, trigger와 concurrent writer를 검증한다. UPSERT는 unique bucket key로 교체하며 높은 빈도의 동일 key 경합을 측정한다. MVCC 일반 조회가 모든 제품에서 이 작업 때문에 대기한다고 단정하지 않는다. 증가분을 더하는 방식은 event deduplication이나 처리 위치 없이는 재시도 때 중복된다.
+
 ## 출처
 
 - [MySQL 8.4, INSERT ON DUPLICATE KEY UPDATE](https://dev.mysql.com/doc/refman/8.4/en/insert-on-duplicate.html)
@@ -137,6 +141,7 @@ batch 주기는 UI 새로고침 요구, source load와 허용 지연을 측정�
 - [김영한 강사, upsert 최적화](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401998)
 - [김영한 강사, 통계 table 정리](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401999)
 - [인프런, Hong, DB 설계 패턴](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338545)
+
 
 ## 관련 문서
 

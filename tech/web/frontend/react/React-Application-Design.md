@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, react, architecture, component-design]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "웹&네트워크(Web&Network)"
 aliases: ["React Application Design", "React 컴포넌트 설계"]
 ---
@@ -50,6 +50,31 @@ const questionViews = {
 
 새 type 추가 시 data schema, rendering, validation, serialization을 함께 확장할 수 있어야 한다.
 
+## 반복 UI를 설정 data로 기술하기
+
+같은 구조가 반복되는 UI는 JSX를 복제하지 않고 설정 data와 하나의 renderer로 나눈다. 위 `questionViews`가 type에서 component로의 mapping이라면 table column과 form field 목록은 같은 발상을 field 단위로 적용한 것이다.
+
+- Table은 행 data 배열과 column 정의 배열을 받는다. Ant Design Table의 column은 header 문구 `title`, record에서 읽을 key `dataIndex`, column 식별자 `key`, 값을 가공하거나 삭제 button 같은 행 제어 UI를 그리는 `render`를 갖는다. 행 key는 기본으로 record의 `key`를 쓰므로 없으면 `rowKey`에 stable id를 지정한다. 둘 다 없으면 list key 경고가 난다.
+- 옵션 form은 구역 제목과 field 목록을 가진 group으로 기술하고, field마다 name, label, 입력 종류, required rule, placeholder, 최대값과 선택지 같은 설정을 둔다. question type별 세부 field를 공통 group에 병합한 뒤 `map`으로 `Form.Item`을 렌더링한다.
+
+field나 question type 추가가 JSX 수정이 아니라 data 추가가 되고 label, validation과 layout 규칙이 renderer 한곳에서 일관된다. 반대로 설정이 조건부 노출, field 간 validation과 비동기 option까지 떠안으면 읽고 디버깅하기 어려운 작은 DSL이 된다. 불규칙한 경우를 위해 `render` 같은 escape hatch를 남기고 type별 설정의 누락은 compile time에 잡는다.
+
+```tsx
+const detailFields = {
+  text: [
+    { name: "placeholder", label: "안내 문구", input: "text" },
+    { name: "max", label: "최대 글자 수", input: "number" },
+  ],
+  textarea: [{ name: "placeholder", label: "안내 문구", input: "text" }],
+  select: [
+    { name: "items", label: "선택지", input: "textarea" },
+    { name: "max", label: "최대 선택 수", input: "number" },
+  ],
+} satisfies Record<Question["type"], readonly FieldConfig[]>;
+```
+
+입력 표현과 저장 schema 사이의 변환(select 선택지의 textarea 문자열과 배열)은 renderer가 아니라 적용 boundary에 둔다([[React-Form-Builder-Practice#편집 form의 적용 시점 commit|편집 form의 적용 시점 commit]]).
+
 ## folder와 library 선택
 
 Feature와 use case 가까이에 component, state, API와 test를 둔다. `components`, `utils`, `constants`라는 전역 폴더는 실제 공유가 확인될 때만 키운다. library 선택은 popularity보다 다음 계약으로 평가한다.
@@ -68,6 +93,7 @@ UI library, state library와 data-fetching library는 서로 다른 문제를 �
 
 ## 관련 문서
 
+- [[Atomic-Design|Atomic Design과 컴포넌트 계층 규칙]]
 - [[React-Core-Mental-Model|React 핵심 mental model]]
 - [[React-State-Management|공유 state 선택]]
 - [[DTO-Layering|API DTO와 domain model 경계]]
@@ -77,6 +103,7 @@ UI library, state library와 data-fetching library는 서로 다른 문제를 �
 - [React, Thinking in React](https://react.dev/learn/thinking-in-react)
 - [React, Choosing the State Structure](https://react.dev/learn/choosing-the-state-structure)
 - [React, Sharing State Between Components](https://react.dev/learn/sharing-state-between-components)
+- [Ant Design, Table](https://ant.design/components/table/)
 - IT Share, [SurveyPie project 소개](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161794)
 - IT Share, [SurveyPie와 Admin 소개](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161795)
 - IT Share, [요구사항 분석](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161797)
@@ -84,4 +111,6 @@ UI library, state library와 data-fetching library는 서로 다른 문제를 �
 - IT Share, [Data 정의](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161799)
 - IT Share, [Project 설정](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161800)
 - IT Share, [기본 component 구현](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161801)
+- IT Share, [설문 list component](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161832)
+- IT Share, [Option editor](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161838)
 - IT Share, [SurveyPie service 회고](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161842)

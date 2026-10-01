@@ -12,6 +12,8 @@ Claude Fable 5는 가장 널리 출시된 라인 중 최상위 성능 모델로,
 
 2026-07-21 공식 문서 기준 Fable 5 접근은 복구돼 일반 제공 중이고, Mythos 5는 제한된 고객에게 제공된다. 아래 접근 중단 사례는 현재 상태가 아니라 2026-06의 일시적 사건 기록이다.
 
+2026-09-30 공식 모델 개요 기준 현재 최상위 모델은 후속인 Fable 5.1(2026-09-01 출시, 같은 입출력 가격, 캐시 읽기 단가 4분의 1)과 Project Glasswing 한정 Mythos 5.1이고, Fable 5는 legacy로 계속 제공된다. 이 문서는 Fable 5 기준 기록이며 5.1로 옮길 때의 변경점은 공식 마이그레이션 가이드를 따른다.
+
 ## 모델 라인업
 
 | 모델 | API ID | 위치 |
@@ -123,3 +125,5 @@ Effort, 작업 예산(task budgets, 베타 헤더 `task-budgets-2026-03-13`), �
 - [Refusals and fallback — Anthropic](https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback)
 - [Fable 5와 Mythos 5 접근에 관하여 — Anthropic](https://www.anthropic.com/news/fable-mythos-access)
 - [Anthropic Is Still at Odds With the White House Over Claude Fable 5 — WIRED](https://www.wired.com/story/anthropic-is-still-at-odds-with-the-white-house-over-claude-fable-5/)
+- [Claude Fable 5.1 — Anthropic](https://platform.claude.com/docs/en/models/fable-5-1/overview)
+- [Models overview — Anthropic](https://platform.claude.com/docs/en/about-claude/models/overview)

@@ -63,7 +63,7 @@ CREATE INDEX ON items USING hnsw (embedding vector_cosine_ops);
 
 파티셔닝은 partition pruning으로 탐색 범위를 줄이지만 partition 수, planning 비용, skew와 운영 복잡성을 만든다. 데이터 건수만으로 선택하지 말고 filter 분포와 query workload로 결정한다.
 
-## 벡터 테이블에는 "자주 안 바뀌는 컬럼"만
+## 벡터 테이블에는 자주 안 바뀌는 컬럼만
 
 벡터 테이블에는 **필터링에 자주 쓰이면서 변경이 적은 컬럼**만 함께 둔다(지역, 카테고리, 타입 등). 자주 바뀌는 컬럼은 별도 테이블로 분리한다.
 
@@ -78,7 +78,7 @@ CREATE INDEX ON items USING hnsw (embedding vector_cosine_ops);
 
 ## 면접 체크포인트
 
-- pgvector의 장점(기존 PG 인프라 재사용)과 "일반 인덱스처럼 생각하면 안 되는" 이유
+- pgvector의 장점(기존 PG 인프라 재사용)과 일반 인덱스처럼 생각하면 안 되는 이유
 - vector vs halfvec 트레이드오프, halfvec 도입 전 정밀도 검증
 - Exact search와 HNSW, IVFFlat의 recall, latency, build/insert 비용 비교
 - Scalar index exact search → 공용 ANN → partial index → partitioning 선택 사다리
@@ -88,10 +88,19 @@ CREATE INDEX ON items USING hnsw (embedding vector_cosine_ops);
 ## 사례
 - 대규모 중고거래 서비스가 리소스 효율을 위해 주로 `halfvec` + HNSW + 코사인 거리를 기본으로 쓰고, vector와 정확도를 비교했을 때 큰 차이가 없었던 사례가 있다. HNSW 튜닝 파라미터는 기본값을 사용한다.
 
+## 거리 operator와 index class
+
+`<->`는 L2, `<=>`는 cosine distance, `<#>`는 negative inner product다. cosine similarity 값은 `1 - distance`이며 metric은 embedding 모델의 계약을 따른다. HNSW/IVFFlat index의 vector_l2_ops, vector_cosine_ops, vector_ip_ops와 ORDER BY operator가 맞아야 해당 index 경로를 쓸 수 있다. 다른 operator면 다른 index나 exact 경로를 검토하며 반드시 Seq Scan이라고 단정하지 않는다.
+
+IVFFlat은 대표 데이터를 적재한 뒤 index를 만들고 소량 data의 planner 선택을 확인한다. enable_seqscan 변경은 session 한정 경로 진단이며 운영의 보편 설정이 아니다.
+
 ## 출처
 - [pgvector README — indexing, filtering, iterative scans and scaling](https://github.com/pgvector/pgvector)
 - [AWS Documentation, Aurora PostgreSQL extension versions](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Extensions.html)
 - [pgvector 검색 최적화 — HNSW, halfvec, 쿼리 패턴, 운영 (YouTube)](https://www.youtube.com/watch?v=n3_LY7YFCwE&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=6)
+- [인프런, pgvector와 벡터저장 그리고 유사도 검색 패턴](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439106)
+- [인프런, 벡터 인덱스 최적화와 벡터 검색과 전문 검색을 결합한 하이브리드 패턴](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440537)
+
 
 ## 관련 문서
 - [[Vector-Similarity-Search|벡터 유사도 검색]] — 개념, HNSW 원리, 거리 계산

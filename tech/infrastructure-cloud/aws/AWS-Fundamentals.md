@@ -1,7 +1,7 @@
 ---
 tags: [aws, infrastructure, fundamentals, region, az, cloud]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "Infrastructure - AWS"
 aliases: ["AWS Fundamentals", "AWS 기본 용어", "Region", "Availability Zone", "AZ", "Edge Location"]
 ---
@@ -26,7 +26,15 @@ AWS가 운영하는 **IDC(데이터센터) 집합 단위**. 거의 모든 클라
 - Region 간 데이터 전송은 별도 비용이 부과되며 지연 시간이 상대적으로 큼
 - 일부 서비스는 **글로벌**(IAM, Route 53, CloudFront)이고, 대부분은 **리저널** (EC2, S3, RDS 등)
 
-선택 기준: 사용자 지리적 위치, 데이터 주권 / 규정 준수, 서비스 가용 여부, 비용 차이.
+선택 기준: 개발자가 아니라 주 사용자의 지리적 위치(사용자와 서버가 멀수록 왕복 지연이 커짐), 데이터 주권 / 규정 준수, 서비스 가용 여부, 비용 차이.
+
+### 리소스가 사라진 것처럼 보이면 Region부터 확인
+
+콘솔과 CLI는 선택한 Region의 리소스만 조회하고 만든다. 서울에 만든 EC2 인스턴스는 콘솔 상단 Region을 미국 동부로 바꾸면 목록에서 보이지 않다가 서울로 돌아오면 다시 보인다. 삭제를 의심하기 전에 Region 선택부터 확인한다.
+
+- 같은 증상은 security group, key pair, Elastic IP, AMI, ECR repository처럼 Region에 속한 리소스 전반에서 난다. IAM, Route 53, CloudFront 같은 글로벌 서비스는 예외다
+- AWS CLI는 `--region` 옵션, `AWS_REGION`, `AWS_DEFAULT_REGION` 환경 변수, profile의 `region` 설정(`aws configure`로 저장) 순으로 대상 Region을 정한다. 콘솔과 CLI의 Region이 다르면 같은 혼란이 생기므로 스크립트와 IaC에는 Region을 명시한다
+- 여러 Region에 흩어진 리소스는 읽기 전용인 AWS Global View(EC2 Global View)의 전역 검색으로 한 번에 찾는다
 
 ## Availability Zone (AZ)
 
@@ -104,7 +112,13 @@ Out/In은 **stateless 워크로드**에 적합 (웹, API). Up/Down은 **DB, 캐�
 - [AWS Pricing](https://aws.amazon.com/pricing/)
 - [AWS Free Tier](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier.html)
 - [AWS Well-Architected, Elasticity](https://wa.aws.amazon.com/wellarchitected/2020-07-02T19-33-23/wat.concept.elasticity.en.html)
+- [Amazon EC2 User Guide, Manage your Amazon EC2 resources](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/resources.html)
+- [Amazon EC2 User Guide, Elastic IP addresses](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html)
+- [Amazon EC2 User Guide, View resources across Regions using AWS Global View](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/global-view.html)
+- [AWS CLI User Guide, Configuring environment variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html)
 - [Sungmin Kim 강사 — AWS 입문과 클라우드 비용 모델](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43720)
+- [JSCODE 박재성 강사 — EC2 셋팅하기, 리전 선택](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=227955)
+- [JSCODE 박재성 강사 — EC2 셋팅하기, 스토리지 구성](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=227958)
 
 ## 관련 문서
 

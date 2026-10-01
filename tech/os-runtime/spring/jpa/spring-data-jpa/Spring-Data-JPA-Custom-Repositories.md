@@ -1,7 +1,7 @@
 ---
 tags: [jpa, spring-data-jpa, repository-fragment, querydsl]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["Custom Repository", "Repository Fragment"]
 ---
@@ -46,7 +46,7 @@ Legacy: MemberRepository + MemberRepositoryImpl
 Current: MemberRepository + MemberSearch + MemberSearchImpl
 ```
 
-Repository 자체 이름에서 단일 custom 구현을 찾는 legacy pattern은 deprecated다. Fragment model은 여러 기능을 조합하고 다른 repository에서 재사용할 수 있으며, 선언 순서로 동일 signature 충돌의 우선순위도 정한다.
+Repository 자체 이름에서 단일 custom 구현을 찾는 legacy pattern은 deprecated다. Spring Data 공식 문서가 이 이름 규칙을 deprecated로 보고 쓰지 말고 fragment model로 옮기라고 명시한다. 다만 code에 `@Deprecated` 같은 표식이 붙은 것은 아니어서 Spring Data Commons 4.1.1의 `RepositoryBeanDefinitionBuilder`도 이 class를 여전히 찾아 custom 구현으로 등록한다. 그래서 기존 code는 동작하고, 반대로 repository와 같은 package에 `MemberRepositoryImpl` 이름의 class를 다른 목적으로 두면 의도와 무관하게 custom 구현으로 잡힌다. 문서도 이 이름이 예상치 못한 동작을 만들 수 있다고 경고한다. Fragment model은 여러 기능을 조합하고 다른 repository에서 재사용할 수 있으며, 선언 순서로 동일 signature 충돌의 우선순위도 정한다.
 
 ## 언제 fragment를 쓰는가
 
@@ -75,12 +75,13 @@ Cross-cutting validation, authorization, event 발행이 정말 repository 기�
 - query implementation을 통합 test로 실제 DB에서 검증했는가
 - service와 fragment의 transaction 책임이 중복되지 않는가
 - DTO mapping, count query와 fetch plan이 한 경계에서 보이는가
-- legacy repository-name `Impl` pattern을 새 코드에 추가하지 않았는가
+- legacy repository-name `Impl` pattern을 새 코드에 추가하지 않았고, 같은 package에 그 이름의 다른 class가 우연히 있지 않은가
 
 ## 출처
 
 - [Spring Data JPA 4.1, Custom Repository Implementations](https://docs.spring.io/spring-data/jpa/reference/repositories/custom-implementations.html)
 - [Spring Data JPA 4.1, Transactionality](https://docs.spring.io/spring-data/jpa/reference/jpa/transactions.html)
+- [Spring Data Commons 4.1.1, `RepositoryBeanDefinitionBuilder` source](https://github.com/spring-projects/spring-data-commons/blob/4.1.1/src/main/java/org/springframework/data/repository/config/RepositoryBeanDefinitionBuilder.java)
 - [사용자 정의 repository 구현](https://www.inflearn.com/courses/lecture?courseId=324474&unitId=28022)
 
 ## 관련 문서

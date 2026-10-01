@@ -66,3 +66,4 @@ CPU, 메모리, 디스크, 네트워크, 커넥션 풀 같은 **자원**은 다�
 - [[Logs-vs-Metrics|로그 vs 메트릭 vs 추적]]
 - [[Metric-Layer-Mismatch|메트릭 측정 레이어의 함정]]
 - [[Ops-Level-Indicator|운영 레벨 지표]]
+- [[Monitoring-Graph-Reading|모니터링 그래프 해석 (수집한 신호를 읽는 법)]]

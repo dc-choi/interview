@@ -107,6 +107,38 @@ PK/FK/UNIQUE/CHECK/NOT NULL로 가능한 불변식을 DB에 둔다. Index는 관
 5. table 정의서에는 column 의미, 단위, 민감도, default, owner와 보존 정책을 기록한다.
 6. ERD, DDL과 application mapping의 drift를 CI 또는 정기 점검으로 찾는다.
 
+## Anchor, attribute와 link
+
+독립적으로 식별되는 대상은 anchor, 그 대상을 설명하는 값은 attribute, 대상 사이의 사실은 link로 먼저 구분한다. 한 attribute가 다른 entity를 가리키거나 자체 생명주기와 반복 값을 가지면 tangled attribute 신호다. 다만 단순 value object도 무조건 table로 분리하지 않고 조회, 변경과 무결성 경계로 판단한다.
+
+## 단계와 용어의 대응
+
+개념 모델은 업무 대상과 관계, 논리 모델은 key/attribute와 종속성, 물리 모델은 DBMS 타입, 제약과 index를 정한다. relation은 관계형 모델의 tuple 집합이며 entity 간 relationship과 다른 뜻이다. 작은 프로젝트가 단계들을 함께 진행해도 업무 의미와 제품 구현 결정을 구분해 기록한다.
+
+## 행위가 entity가 되는 조건
+
+주문, 결제와 신청은 동사로 시작해도 지속적으로 식별하고 조회할 기록이 있으면 event entity가 된다. 독립 identifier, 여러 instance, 고유 속성과 관계, 보존/변경 책임을 확인한다. 단순 버튼 동작이나 계산 단계까지 모두 table로 만들지 않는다.
+
+## Entity 분류로 던질 질문
+
+기본 entity에는 독립 생성과 기준 식별자, 중심 entity에는 주요 업무 흐름과 상태 전이, 행위 entity에는 누가 언제 무엇을 했는지와 반복 발생을 묻는다. tangible/conceptual/event 분류와 업무 중요도 분류는 서로 다른 축이다. 분류 명칭보다 FK 방향과 생명주기를 결정하는 질문으로 활용한다.
+
+## ERD 기호의 계약
+
+까마귀발의 원은 최소 0, 막대는 1, 갈래는 many를 표현한다. 양끝의 최소/최대 cardinality를 함께 읽는다. Chen 표기의 사각형 entity, 마름모 relationship, 타원 attribute와 구분한다. 실선/점선의 identifying 의미는 사용 도구의 범례를 확인하고 단순히 필수/선택과 같다고 읽지 않는다.
+
+## 용어 사전의 단위
+
+업무 용어, 정의, 영문/약어와 허용 동의어를 함께 관리한다. 단일어를 조합해 이름을 일관되게 만들되 같은 단어가 고객 id와 고객 등급처럼 다른 의미를 갖는지 구분한다. 번역만 적지 말고 적용 범위, 타입/단위와 제외 의미를 둔다. spreadsheet든 catalog든 변경 이력과 검토 책임이 더 중요하다.
+
+## 물리 이름과 환경 차이
+
+Table/column의 단복수, snake_case, key/시간 suffix와 constraint 이름 규칙을 정한다. 예약어와 quoted identifier에 의존하는 이름을 피한다. MySQL의 table 이름 대소문자는 OS와 lower_case_table_names 영향을 받으므로 개발과 운영 환경을 대조하고 실행 중 임의 변경으로 해결하지 않는다.
+
+## Table 정의서의 검토 항목
+
+각 column의 업무 의미, 타입/길이, NULL, default와 key를 기록한다. 별도 표에는 unique/check/FK, 참조 동작과 index의 column 순서 및 목적 query를 둔다. DB 현재 구조와 다른 문서가 되지 않도록 migration review에서 함께 갱신한다.
+
 ## 출처
 
 - [MySQL 8.4, Data Types](https://dev.mysql.com/doc/refman/8.4/en/data-types.html)
@@ -120,6 +152,17 @@ PK/FK/UNIQUE/CHECK/NOT NULL로 가능한 불변식을 DB에 둔다. Index는 관
 - 물리 모델: [개요](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347672), [명명 1](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347673), [명명 2](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347674), [Type 1](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347675), [Type 2](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347676), [역정규화](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347677), [Table 정의서](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347678), [정리](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347679)
 - 물리 모델 실습: [시작](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347681), [Index](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347682), [역정규화](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347683), [정의서](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347684), [DDL](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347685), [ERD 자동 생성](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347686), [기능 확인 1](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347687), [기능 확인 2](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347688), [정리](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347689)
 - [강의 마무리](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347691)
+- [MySQL 8.4 Reference Manual, identifier case sensitivity](https://dev.mysql.com/doc/refman/8.4/en/identifier-case-sensitivity.html)
+- [인프런, Google Calendar Basic All-Day Events](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367640)
+- [인프런, Google Calendar 문제 정의와 논리 모델 이해](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367641)
+- [인프런, Google Calendar 반복 이벤트 모델링을 위한 Tangled Attribute](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367642)
+- [인프런, 데이터 모델링 : 수많은 yes or no 속성 디자인 정의와 논리 모델](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367644)
+- [인프런, 식별 관계 vs 비식별 관계 - 일대다(1:N)](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347652)
+- [인프런, 실전 논리적 모델링 - ERD 작성](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347662)
+- [인프런, 실전 논리적 모델링 - 시작](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347661)
+- [인프런, 정규화 - 시작](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347664)
+- [인프런, 참여도](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347635)
+
 
 ## 관련 문서
 

@@ -7,7 +7,7 @@ aliases: ["Heap", "힙", "Max Heap", "Min Heap", "완전 이진 트리", "Comple
 
 # Heap (힙)
 
-완전 이진 트리를 기반으로, 부모와 자식 노드 사이에 대소관계가 성립하도록 유지하는 자료구조다. 그 덕에 루트에는 항상 전체에서 가장 큰 값(Max Heap) 또는 가장 작은 값(Min Heap)이 놓여, 최댓값/최솟값을 비교 없이 O(1)로 꺼낼 수 있다. 우선순위 큐(Priority Queue)의 표준 구현이다.
+완전 이진 트리를 기반으로, 부모와 자식 노드 사이에 대소관계가 성립하도록 유지하는 자료구조다. 그 덕에 루트에는 항상 전체에서 가장 큰 값(Max Heap) 또는 가장 작은 값(Min Heap)이 놓여, 최댓값/최솟값을 비교 없이 O(1)로 조회할 수 있다. 우선순위 큐(Priority Queue)의 표준 구현이다.
 
 ## 왜 힙인가 — 정렬된 배열 대비
 
@@ -16,7 +16,7 @@ aliases: ["Heap", "힙", "Max Heap", "Min Heap", "완전 이진 트리", "Comple
 ## 완전 이진 트리 (Complete Binary Tree)
 
 - **이진 트리**: 한 노드가 자식을 최대 2개까지 가지는 트리. 레벨별 최대 노드 수가 정해져 노드에 고유 인덱스를 부여할 수 있다.
-- **완전 이진 트리**: 노드를 왼쪽부터 차곡차곡 채우고, 한 레벨이 꽉 차기 전에는 다음 레벨로 넘어가지 않는 트리. 마지막 레벨을 뺀 모든 레벨이 꽉 차 있다. 높이 h인 트리의 최대 노드 수는 2^h − 1.
+- **완전 이진 트리**: 노드를 왼쪽부터 차곡차곡 채우고, 한 레벨이 꽉 차기 전에는 다음 레벨로 넘어가지 않는 트리. 마지막 레벨을 뺀 모든 레벨이 꽉 차 있다. root를 level 1로 세는 높이 h에서 최대 노드 수는 2^h − 1이다. edge 수로 높이를 세면 2^(h+1) − 1이다.
 
 ### 배열로 구현하는 이유
 
@@ -51,6 +51,10 @@ aliases: ["Heap", "힙", "Max Heap", "Min Heap", "완전 이진 트리", "Comple
 
 루트가 아래로 떨어지는 모양이라 트릭클 다운이다. 마찬가지로 O(log n). 버블 업과 트릭클 다운 모두 한 갈래 경로만 따라가므로 재귀로 깔끔하게 구현된다.
 
+### 1-indexed 배열
+
+루트를 1번에 두면 부모는 `i / 2`, 자식은 `2i`, `2i + 1`로 식이 더 단순하다. 삽입은 맨 끝(`++sz`)에 두고 부모보다 우선순위가 높으면 교환하며 올라가고, 삭제는 루트를 마지막 원소로 덮은 뒤 두 자식 중 우선순위가 높은 쪽과 비교하며 내려간다. 자식이 하나만 있는 경우(`2i + 1 > sz`)의 처리를 빠뜨리기 쉽다.
+
 ## 복잡도
 
 | 연산 | 복잡도 |
@@ -64,9 +68,16 @@ aliases: ["Heap", "힙", "Max Heap", "Min Heap", "완전 이진 트리", "Comple
 
 ## 활용
 
-- **우선순위 큐**의 표준 구현 (작업 스케줄러, 다익스트라 최단 경로)
-- **힙 정렬(Heap Sort)**: 전체를 힙에 넣고 루트를 하나씩 추출하면 정렬된다. O(n log n). ([[Algorithm-Sorting|정렬]])
+- **우선순위 큐**의 표준 구현 (작업 스케줄러, 다익스트라 최단 경로, 누적 완료 시각을 key로 여러 창구에 배정하는 [[Greedy-Sweep-and-Two-Pointers#정렬과 Priority Queue|event 단위 시뮬레이션]])
+- **힙 정렬(Heap Sort)**: 전체를 힙에 넣고 루트를 하나씩 추출하면 정렬된다. O(n log n). 배열 안에서 heap을 만드는 in-place 구현, 최악 보장과 불안정성은 [[Algorithm-Sorting|정렬]]에서 다룬다.
 - **Top-K**, 스트림에서 중앙값 유지(최대 힙 + 최소 힙) 등
+
+## C++ priority_queue
+
+- `std::priority_queue<int>`는 기본이 최대 힙이다. 최소 힙은 `priority_queue<int, vector<int>, greater<int>>`로 선언한다. `push`, `pop`, `top`, `empty`, `size`를 쓰고, 빈 큐에서 `top`이나 `pop`을 부르면 안 된다.
+- 비교자 `comp(a, b)`가 true면 a가 b보다 우선순위가 낮다는 뜻이라 top에서 멀어진다. 정렬 비교 함수와 방향이 반대로 느껴지므로 기본이 최대 힙(`less`)이라는 점에서 출발해 생각한다. 사용자 비교자는 `operator()`를 가진 구조체로 넘기며, 같은 값에는 false를 반환해야 한다(strict weak ordering).
+- 최댓값이나 최솟값 삽입과 추출만 필요하면 `set`/`multiset`보다 `priority_queue`가 낫다. 둘 다 O(log n)이지만 힙은 연속 배열에서 교환만 하므로 노드 할당과 균형 유지를 하는 트리보다 상수가 작고 메모리도 적다. 임의 원소 삭제나 양쪽 끝 접근이 필요할 때만 `multiset`을 쓴다([[Trees-and-Balanced-Search-Trees#C++ set, multiset, map|C++ set, multiset, map]]).
+- 대표 예: 크기 a, b인 두 묶음을 합치는 비용이 a + b일 때 전체를 하나로 합치는 최소 비용은 매번 가장 작은 두 묶음을 합치는 greedy다. 최소 힙에서 두 개를 꺼내 합을 비용에 더하고 합을 다시 넣는다(Huffman 부호와 같은 구조).
 
 ## 면접 체크포인트
 
@@ -83,8 +94,20 @@ aliases: ["Heap", "힙", "Max Heap", "Min Heap", "완전 이진 트리", "Comple
 - [[Algorithm-Sorting|정렬 (힙 정렬, 분할 정복)]]
 - [[Algorithm-Complexity|시간복잡도와 Big O]]
 - [[Algorithm-Recursion|재귀 (버블 업/트릭클 다운 구현)]]
+- [[Trees-and-Balanced-Search-Trees|균형 탐색 트리와 C++ set]]
+
+## 배열과 연결 node, 제한된 Top-K
+
+연결 node로도 완전 이진 트리를 구현할 수 있지만 parent와 마지막 node를 관리해야 한다. 다음 삽입 부모와 삭제 뒤 마지막 node를 찾으려면 조상으로 올라갔다가 반대 subtree 끝으로 내려가 O(log n)이 든다. 배열에서는 다음 자리가 index n, 마지막 자리가 n-1이라 O(1)이다. sift-up/down에서는 node 연결 대신 값만 교환할 수 있고, 자식이 하나일 때도 우선순위 비교를 처리한다.
+
+N개 입력 중 가장 작은 K개만 보관하려면 크기를 K로 제한한 max heap을 쓴다. 새 값을 넣고 크기가 K를 넘으면 최댓값을 버린다. 결과를 꺼내면 큰 값부터 나오므로 오름차순 출력은 뒤집는다. 가장 큰 K개는 min heap으로 대칭이다. 비용은 O(N log K), 추가 공간 O(K)다(K가 1이면 상수 처리). 전체 정렬의 O(N log N), O(N) 저장과 비교해 K가 작거나 입력을 한 번만 읽을 때 적합하다.
 
 ## 출처
 
+- 인프런 보충 강의: [우선순위 큐와 힙 - 구현1(힙 삽입)](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135762), [우선순위 큐와 힙 - 구현2(힙 제거)](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135763), [우선순위 큐와 힙 - 구현3(우선순위 큐)](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135764)
+- 인프런 보충 강의: [5주차 개념 #5. 큰돌 교수님의 과제는 너무 어려워!!!](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=242051)
+
 - [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — 우선순위 큐와 힙, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135761)
 - [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — 힙 정렬, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135765)
+- [바킹독의 실전 알고리즘 0x17강, 우선순위 큐 — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=_9mbqoF9qzc)
+- [cppreference, std::priority_queue](https://en.cppreference.com/w/cpp/container/priority_queue)

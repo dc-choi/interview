@@ -28,7 +28,7 @@ Thymeleaf Spring integration은 form-backing object, `WebDataBinder`, conversion
 
 ## checkbox가 특별한 이유
 
-HTML checkbox는 선택되지 않으면 name/value 자체를 보내지 않는다. Spring/Thymeleaf integration은 field marker용 hidden input을 생성해 “화면에 field가 있었지만 선택되지 않음”을 binder가 구분하도록 돕는다.
+HTML checkbox는 선택되지 않으면 name/value 자체를 보내지 않는다. Spring/Thymeleaf integration은 field marker용 hidden input을 생성해 화면에 field가 있었지만 선택되지 않은 상황을 binder가 구분하도록 돕는다.
 
 - Marker의 구체 name과 앞/뒤 배치 설정은 framework version/configuration에 의존하므로 markup을 수작업 가정에 묶지 않는다.
 - 단일 Boolean과 multi-value collection을 구분한다.
@@ -57,7 +57,17 @@ Spring의 `RequestDataValueProcessor` integration은 form action/field를 처리
 - Error message에 rejected secret/password를 다시 노출하지 않는다.
 - 선택 UI를 숨긴 것만으로 authorization을 구현하지 않는다.
 
+## 처음 표시할 객체와 체크 해제
+
+등록 GET도 template가 기대하는 이름의 빈 form object를 model에 넣는다. 같은 이름을 실패한 POST에서도 유지하면 `th:field`가 현재 값과 rejected value를 복원할 수 있다.
+
+기본 field marker는 `_open`처럼 `_` prefix다. `open` 값과 marker가 함께 오면 값이 적용되고 marker만 오면 binder가 해당 field를 empty 값으로 reset한다. 이것이 checkbox 해제와 form 자체의 미제출을 구분하는 계약이다. 수정 mapping이 새 field를 복사하는지도 확인한다.
+
+radio/select의 제출 value와 사용자 label을 분리하고 `th:field`가 checked/selected를 결정하게 한다. enum을 `T(패키지.Type)`로 template에서 직접 참조하면 package 변경이 template 계약을 흔들 수 있으므로 option list를 model로 제공하는 방식을 우선한다.
+
 ## 출처
+
+- [Spring, WebDataBinder](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/WebDataBinder.html)
 
 - [Thymeleaf 3.1 + Spring tutorial](https://www.thymeleaf.org/doc/tutorials/3.1/thymeleafspring.pdf), [Spring Framework, `@ModelAttribute`](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html)
 - Spring form: [프로젝트](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83272), [통합](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83273), [입력 form](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83274), [선택 요구사항](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83275), [단일 checkbox 1](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83276), [단일 checkbox 2](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83277), [multi checkbox](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83278), [radio](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83279), [select](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83280), [정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83281)

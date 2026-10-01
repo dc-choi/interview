@@ -54,7 +54,13 @@ JavaScript의 객체 상속 기반은 내부 `[[Prototype]]` 체인이다. `clas
 - `call`/`apply`/`bind`로 `this`(실행 컨텍스트)를 바꾸는 의미, `super` 대응
 - `extends`/`super`가 이 레시피의 문법 캡슐화라는 점
 
+## prototype 연결 변경과 교체
+
+Object.setPrototypeOf(Child.prototype,Parent.prototype)은 기존 Child.prototype의 own method를 유지하고 그 아래 chain을 연결한다. Child.prototype을 Object.create(...)로 교체하는 방식은 기존 own method를 새 object로 옮겨야 하고 교체 전 instance는 옛 prototype에 남는다. 연결 변경만으로 parent constructor 실행이나 parent state 초기화가 이루어지지는 않는다. static 상속과 derived this 규칙까지 필요하면 class extends를 사용한다.
+
 ## 출처
+
+- 인프런 보충 강의: [9. setPrototypeOf(): prototype 사용](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30770)
 
 - [프로토타입을 사용하여 상속하기 — evan-moon](https://evan-moon.github.io/2019/10/27/inheritance-with-prototype/)
 - [ECMAScript Language Specification — TC39](https://tc39.es/ecma262/)

@@ -3,7 +3,7 @@ tags: [cs, typescript, type, interface]
 status: done
 category: "CS - TypeScript"
 aliases: ["Type vs Interface", "type alias vs interface"]
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 ---
 
 # TypeScript type vs interface
@@ -77,10 +77,12 @@ type Dog = Animal & { breed: string }
 ```
 
 동일해 보이지만 충돌 시 동작이 다르다.
-- `interface extends`: 같은 필드 다른 타입이면 **에러**
+- `interface extends`: 같은 필드를 원본과 호환되지 않는 타입으로 재정의하면 **에러**(TS2430). 원본의 서브타입으로 좁히는 재정의(`name: string`을 `name: "doggy"`로)는 허용
 - `type &`: 같은 필드는 **교집합** 취함 (`string & number = never`)
 
 확장 관계에서 충돌을 즉시 드러내고 싶다면 interface가 더 명확하다.
+
+`extends` 대상은 interface가 아니어도 정적으로 알려진 멤버를 가진 객체 타입이면 된다. `type Animal = { name: string }`을 `interface Dog extends Animal`로 확장할 수 있지만 유니온 타입 별칭은 TS2312로 확장할 수 없다. `interface DogCat extends Dog, Cat {}`처럼 여러 부모를 함께 확장할 수 있고, 부모끼리 같은 이름 속성의 타입이 다르면 서브타입 관계여도 TS2320이다. 자식에서 모든 부모의 서브타입이 되는 타입으로 그 속성을 다시 선언하면 해결된다. 같은 이름 interface의 선언 병합은 서브타입 재선언도 허용하지 않는다는 점이 다르다([[TS-Module-Augmentation|선언 병합]]). 6.0.3, 7.0.2에서 확인했다.
 
 ## 성능, 컴파일 속도
 
@@ -135,9 +137,11 @@ type UserWithRole = User & { role: UserRole };
 - [TypeScript Handbook, Object Types, Interface Extension vs Intersection](https://www.typescriptlang.org/docs/handbook/2/objects.html#interface-extension-vs-intersection)
 - [TypeScript Handbook, Declaration Merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html)
 - [TypeScript Wiki, Performance, Preferring Interfaces Over Intersections](https://github.com/microsoft/TypeScript/wiki/Performance#preferring-interfaces-over-intersections)
+- [TypeScript Language Specification (archived), 7.1 Interface Declarations](https://github.com/microsoft/TypeScript/blob/v4.2.4/doc/spec-ARCHIVED.md#7.1)
 - yongsoocho, [interface 기초](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=137137)
 - yongsoocho, [type과 interface 비교](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=137148)
 - yongsoocho, [type과 interface 비교 보충](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=156648)
+- 이정환 Winterlood, [인터페이스 확장하기](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=157314)
 - [이펙티브 타입스크립트 스터디 3-2회차, 정재남](https://www.inflearn.com/courses/lecture?courseId=327754&unitId=91631)
 
 ## 관련 문서

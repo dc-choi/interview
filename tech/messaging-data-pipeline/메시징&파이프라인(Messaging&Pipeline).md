@@ -13,14 +13,14 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 
 ## 목차 (메시징 인프라 — 어떻게 안전하게 전송)
 
-- [[tech/messaging-data-pipeline/brokers/브로커(Brokers)|브로커 (Brokers)]] — SQS, EventBridge, Kafka, Redis
+- [[tech/messaging-data-pipeline/brokers/브로커(Brokers)|브로커 (Brokers)]] — SQS, SNS, EventBridge, Kafka, RabbitMQ, Redis
 - [[tech/messaging-data-pipeline/delivery-guarantees/배달보장(DeliveryGuarantees)|배달 보장 (Delivery Guarantees)]] — Delivery semantics, At-Least-Once, Idempotency, Consumer Group
 - [[tech/messaging-data-pipeline/patterns/패턴(MessagingPatterns)|메시징 패턴 (Patterns)]] — Pub/Sub, Fan-out, 경쟁 소비자, 백필 자원 격리, 분산 배치 실행, 지속 실행 워크플로, Claim Check
 - [[tech/messaging-data-pipeline/cdc-outbox/CDC&Outbox|CDC, Outbox]] — Debezium, Transactional Outbox
 
 ## 파이프라인 실전 (설계와 오케스트레이션 — 어떻게 설계하고 돌리나)
 
-- [[Stream-and-Batch-Processing|스트림과 배치 처리]] — bounded/unbounded 입력, event time/window, Spark JDBC 병렬 추출
+- [[Stream-and-Batch-Processing|스트림과 배치 처리]] — bounded/unbounded 입력, event time/window, 계산 위임 시점, Spark JDBC 병렬 추출(분할 query와 source 부하, shuffle)
 - [[Airflow-DAG-Parsing|Airflow DAG 파싱 최적화]] — dag-processor 재파싱 비용, 메트릭 기반 진단, 인프라 튜닝, top-level 안티패턴, 2.x→3.x 변경점
 - [[Airflow-Task-Process-Model|Airflow 태스크 프로세스 모델]] — Python start method, COW, supervisor와 task runner, 메모리 측정
 - [[ELT-Platform|ELT 플랫폼 (셀프서비스 데이터 파이프라인)]] — 정의와 실행을 DSL로 분리, 동적 DAG 생성, DB→DWH 대량 복제(JDBC 파티셔닝), Build vs Buy
@@ -36,7 +36,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [[DDD&Hexagonal|DDD, Hexagonal]] — Aggregate, 경계 모델링 (이벤트 발행 단위)
 
 ## 추가 학습 체크리스트
-- [x] [[Messaging-Broker-Comparison|RabbitMQ (AMQP, Exchange 라우팅, 운영 부담, 선택 기준)]] — NestJS 전송 계약은 [[NestJS-Microservices|수동 ACK, prefetch, durable queue]]
+- [x] [[RabbitMQ-Exchange-Routing|RabbitMQ (AMQP 모델, Exchange 라우팅, DLX 조건)]] — 운영 부담과 선택 기준은 [[Messaging-Broker-Comparison|브로커 비교]], NestJS 전송 계약은 [[NestJS-Microservices|수동 ACK, prefetch, durable queue]]
 - [x] [[NestJS-Queues|BullMQ (잡 옵션, 재시도와 백오프, WorkerHost, 분리 프로세스)]]
 - [x] [[Delivery-Semantics|At-Most-Once (유실 가능, 중복 없음, 적용 범위)]]
 - [x] [[Idempotent-Consumer|Exactly-once와 effectively-once (브로커 경계, 외부 부수효과, Inbox)]]

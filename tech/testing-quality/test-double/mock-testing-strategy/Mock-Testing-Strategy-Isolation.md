@@ -31,7 +31,20 @@ Mock의 목적은 **Black Box 전이 차단**.
          ↑ Mock 지점
 ```
 
-Mock은 **가장 바깥쪽 얇은 어댑터**에서만. 안쪽은 실제 객체로.
+Mock은 외부 의존성을 다루는 얇은 어댑터를 우선 경계로 삼는다. 내부 협력 자체가 중요한 계약이면 선택적으로 호출을 검증한다.
+
+## 레거시 의존성의 Subclass and Override Method
+
+기존 객체가 파일 API나 외부 객체 생성 코드를 직접 호출해 테스트에서 제어하기 어려우면, 그 부분만 메서드로 추출하고 테스트용 하위 클래스에서 대체할 수 있다. **Seam**은 호출 흐름의 일부를 바꾸어 외부 의존성 대신 준비한 값을 넣을 수 있는 지점이다.
+
+1. 변경 대상의 공개 메서드와 그 결과를 관찰할 테스트를 정한다.
+2. 파일 목록 조회, 파일 읽기와 쓰기 같은 부작용 경계만 추출한다. 하위 클래스가 대체할 수 있도록 필요한 접근 범위만 연다.
+3. 테스트용 하위 클래스는 읽기에 정해진 데이터를 돌려주고, 쓰기는 받은 경로와 내용을 기록한다.
+4. 원래 공개 동작을 호출한 뒤 반환값과 기록된 쓰기를 검증한다. 도메인 판단까지 오버라이드하면 검증할 로직을 우회한다.
+
+정적 호출 자체를 상속으로 오버라이드하는 방식이 아니다. 정적 API 호출을 감싼 인스턴스 메서드를 대체한다. 상속 가능 여부, 메서드의 재정의 조건과 생성자 실행 중 부작용은 언어별로 확인한다. 2026-10-01 TypeScript 공식 Handbook 기준으로 `private`는 타입 검사 시의 제약이고 `#private`는 런타임에서도 접근이 제한된다. Java의 재정의 제약을 그대로 적용하지 않는다.
+
+이 기법은 큰 의존성 변경 전에 특성화 테스트를 확보하는 제한된 선택지다. 테스트를 위해 모든 private 메서드를 public으로 열지 않는다. 반복적으로 교체해야 하는 파일 시스템 같은 경계는 생성자에 협력 객체를 주입하는 구조가 더 적합할 수 있다. 서브클래스가 내부 구현에 결합되므로, 안전망을 만든 뒤 책임 분리와 주입으로 전환할지 검토한다([[Legacy-Code-Testing]]).
 
 ## 구현 코드의 피드백으로서의 테스트
 
@@ -54,7 +67,7 @@ Mock은 **가장 바깥쪽 얇은 어댑터**에서만. 안쪽은 실제 객체�
 - **Mock 위치를 깊숙한 내부에** → Black Box가 안쪽으로 전이, 비즈니스 로직까지 격리됨
 - **Mock Server 코드 중복** → 테스트마다 동일 Mocking 반복
 - **외부 라이브러리 타입을 반환** — `ResponseEntity`, `Mono`를 그대로 → 의존성 전파
-- **테스트 편의로 운영 코드 수정** — 올바른 순서는 운영 코드 설계 → 테스트 쉬워짐
+- **테스트 통과만을 위해 업무 동작을 바꾸거나 내부를 무분별하게 공개** — 동작을 보존하며 외부 의존성만 대체하는 최소 seam은 위의 레거시 테스트 기법으로 구분한다.
 
 ## 면접 체크포인트
 
@@ -69,10 +82,14 @@ Mock은 **가장 바깥쪽 얇은 어댑터**에서만. 안쪽은 실제 객체�
 - [카카오페이 — Mock 테스트 코드 Part 2](https://tech.kakaopay.com/post/mock-test-code-part-2)
 - [카카오페이 — 사내 공통 Mock 서버](https://tech.kakaopay.com/post/how-to-simplify-kakaopay-testing-using-a-common-mock-server)
 - [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide)
+- [Working Effectively with Legacy Code — Michael Feathers](https://www.objectmentor.com/resources/articles/WorkingEffectivelyWithLegacyCode.pdf)
+- [TypeScript, Classes](https://www.typescriptlang.org/docs/handbook/2/classes.html)
+- [인프런, 클린 코더스, 레거시코드에 테스트 추가하는 또 하나의 방법 - Subclass and Override Method](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279466)
 
 ## 관련 문서
 - [[Classicist-vs-Mockist-Testing|Classicist vs Mockist, Test Double]]
 - [[TestContainers-Integration|Testcontainers 통합 테스트]]
 - [[Test-Pyramid|Practical Test Pyramid]]
 - [[Service-Layer-Testing|서비스 레이어와 테스트 경계]]
+- [[Legacy-Code-Testing|레거시 코드의 특성화, 승인과 변이 테스트]]
 - [[Test-Fixture|Test Fixture 전략]], [[Test-Isolation|Test Isolation]]

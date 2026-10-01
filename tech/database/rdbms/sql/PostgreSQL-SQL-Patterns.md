@@ -110,6 +110,14 @@ last_value(status) OVER (
 - [[Pagination-Optimization|페이징 최적화]]
 - [[MySQL-to-PostgreSQL-Migration|MySQL에서 PostgreSQL로 마이그레이션]]
 
+## 시간 bucket과 NULL 정렬
+
+`date_trunc`는 시간값을 지정한 단위로 절삭하고 `extract`는 year/hour 같은 field를 숫자로 반환한다. timestamptz의 지역 일/월 bucket은 timezone을 명시해 경계와 DST를 정의한다. PostgreSQL은 기본 ASC에서 NULLS LAST, DESC에서 NULLS FIRST이며 업무 순서에는 명시적 NULLS FIRST/LAST를 둔다.
+
+## 문자 타입의 경계
+
+text와 길이 제한 없는 varchar는 가변 문자열에 적합하며 varchar(n)의 n은 문자 수 제한이다. char(n)은 blank padding과 trailing space 비교 의미가 다르고 속도가 더 빠른 일반 선택이 아니다. 길이 초과 입력은 오류지만 명시적인 char(n)/varchar(n) cast는 초과를 잘라낼 수 있으므로 cast를 검증 수단으로 쓰지 않는다.
+
 ## 출처
 
 - [PostgreSQL 18 Documentation, INSERT](https://www.postgresql.org/docs/18/sql-insert.html)
@@ -123,3 +131,9 @@ last_value(status) OVER (
 - [CTE를 활용한 서브쿼리 블록화 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=432805)
 - [윈도 함수를 사용한 집계 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=432806)
 - [윈도 frame 심화 패턴 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=432807)
+- [PostgreSQL 18 Documentation, datatype character](https://www.postgresql.org/docs/18/datatype-character.html)
+- [PostgreSQL 18 Documentation, functions datetime](https://www.postgresql.org/docs/18/functions-datetime.html)
+- [PostgreSQL 18 Documentation, queries order](https://www.postgresql.org/docs/18/queries-order.html)
+- [인프런, Database Performance를 위한 최적화 패턴 및 전략 - 1](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439102)
+- [인프런, PostgreSQL가 제공하는 다양한 데이터 타입](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=432793)
+- [인프런, 다음 강의 내용에 잘못된 부분 있어서 미리 공유 드립니다.](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=441939)

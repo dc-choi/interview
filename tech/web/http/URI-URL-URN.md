@@ -1,7 +1,7 @@
 ---
 tags: [web, http, uri, url, urn]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "Web - HTTP"
 aliases: ["URI URL URN", "URI/URL/URN 차이"]
 ---
@@ -47,6 +47,23 @@ https://api.example.com:443/orders/42?expand=items
 - percent-encoding은 octet을 URI 문자로 표현하는 방식이다. 같은 데이터를 무조건 decode하고 다시 encode하면 의미가 바뀔 수 있다.
 - `user:password@host` 형태는 phishing과 자격증명 노출 위험 때문에 HTTP(S) URI에서 사용하지 않는다.
 
+## percent-encoding과 비ASCII 문자
+
+URI는 종이에 적거나 다른 언어의 키보드로 다시 입력해도 같은 식별자가 되도록 기본 라틴 문자, 숫자와 몇 가지 기호의 제한된 집합으로 정의돼 있다(RFC 3986 1.2.1). 이 집합 밖의 문자나 구분자와 겹치는 문자를 데이터로 넣을 때는 octet마다 `%`와 16진수 두 자리로 쓴다.
+
+| 단계 | `가`의 예 |
+|---|---|
+| 문자를 UTF-8 octet으로 바꾼다 | `EA B0 80` (3 byte) |
+| octet마다 `%XX`로 쓴다 | `%EA%B0%80` (ASCII 9 byte) |
+| 수신 측이 되돌린다 | `%XX`를 octet으로 바꾼 뒤 UTF-8로 해석해 `가`를 복원 |
+
+- 새 URI scheme은 문자 데이터를 UTF-8로 octet화한 뒤 unreserved 집합 밖의 octet만 percent-encode하도록 권고한다(RFC 3986 2.5). 주소창에 한글이 보여도 요청에는 이 결과가 실린다. 유니코드 식별자(IRI)를 URI로 바꾸는 규칙도 같다(RFC 3987).
+- 비ASCII octet 하나가 3 byte가 되므로 UTF-8로 3 byte인 한글은 URL 안에서 9 byte가 된다. 많은 데이터는 query 대신 body로 보내고, body는 `Content-Type`의 charset으로 해석한다([[HTTP-Content-Type]]).
+- encode한 쪽과 decode하는 쪽의 문자 인코딩이 같아야 한다. 브라우저는 path를 항상 UTF-8로 인코딩하지만, 문서 안의 링크와 form이 만드는 http(s) URL의 query는 그 문서의 문자 인코딩을 따른다. EUC-KR로 제공되는 레거시 페이지는 `가`를 `%B0%A1`로 보내므로 서버가 UTF-8로 decode하면 글자가 깨진다.
+- 용도별 함수를 쓴다. JavaScript `encodeURIComponent`는 UTF-8로 encode하고 공백을 `%20`으로 만든다. `URLSearchParams`, HTML form 직렬화와 Java `URLEncoder`는 `application/x-www-form-urlencoded` 규칙이라 공백을 `+`로 만든다. path segment, query 값과 form field를 같은 함수로 처리하지 않는다([[Java-HTTP-Server-From-Socket-to-Routing#URL과 form decoding을 분리한다|URL과 form decoding 분리]]).
+
+HTTP header도 같은 제약을 받는다. field 이름은 token이라 ASCII이고, 새로 정의하는 field 값은 visible US-ASCII로 제한하도록 권고하며(SHOULD) 그 밖의 octet은 수신자가 해석하지 않는 opaque data로 다룬다(RFC 9110 5.1, 5.5). 비ASCII 값은 형식상 불가능하다기보다 해석을 기대할 수 없으므로, field가 정의한 인코딩을 쓴다. `Content-Disposition`의 `filename*=UTF-8''%EA%B0%80.txt`처럼 RFC 8187 형식은 UTF-8 값을 percent-encode한다.
+
 ## URN
 
 URN은 `urn:<namespace-id>:<namespace-specific-string>` 형태의 URI다.
@@ -65,10 +82,15 @@ API에서 Resource URI라고 할 때는 보통 HTTP(S) URL을 뜻한다. Path에
 ## 출처
 
 - 김영한 강사, [URI](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61357)
+- 김영한 강사, [URL 인코딩](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244489)
 - [RFC 3986, Uniform Resource Identifier Generic Syntax](https://www.rfc-editor.org/rfc/rfc3986.html)
+- [RFC 3987, Internationalized Resource Identifiers](https://www.rfc-editor.org/rfc/rfc3987.html)
 - [RFC 8141, Uniform Resource Names](https://www.rfc-editor.org/rfc/rfc8141.html)
 - [WHATWG URL Standard](https://url.spec.whatwg.org/)
+- [WHATWG HTML Standard, Encoding-parsing a URL](https://html.spec.whatwg.org/multipage/urls-and-fetching.html#encoding-parsing-a-url)
 - [RFC 9110, HTTP Semantics, HTTP-related URI Schemes](https://www.rfc-editor.org/rfc/rfc9110.html#name-http-related-uri-schemes)
+- [RFC 9110, HTTP Semantics, Field Values](https://www.rfc-editor.org/rfc/rfc9110.html#name-field-values)
+- [RFC 8187, Indicating Character Encoding and Language for HTTP Header Field Parameters](https://www.rfc-editor.org/rfc/rfc8187.html)
 
 ## 관련 문서
 

@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, cache, distributed-cache, warming, tagging]
 status: done
-verified_at: 2026-09-22
+verified_at: 2026-09-30
 category: "Data & Storage - Cache & KV"
 aliases: ["Cache Advanced Operations", "분산 무효화", "캐시 워밍업", "캐시 태깅"]
 ---
@@ -39,10 +39,11 @@ async function deletePattern(redis: Redis, pattern: string) {
 - `SCAN`은 **여러 호출에 걸쳐 부분 결과** 반환 → 단일 호출이 짧음.
 - `UNLINK`는 키 회수를 백그라운드로 — 큰 키 삭제 시 블로킹 회피.
 - `COUNT`는 힌트(보장 X). 너무 크면 한 번에 많은 키 → 너무 작으면 라운드트립 ↑.
+- 전체 순회는 시작부터 끝까지 있던 키를 모두 돌려주지만 같은 키를 여러 번 돌려줄 수 있고, 순회 중 추가, 삭제된 키는 나올 수도 안 나올 수도 있다. `MATCH`는 가져온 뒤 거르므로 빈 결과도 정상이며 커서가 0이 될 때까지 계속한다. 삭제처럼 멱등한 작업에 쓰고, 개수를 셀 때는 중복을 제거한다.
 
 ### Cluster 환경
 
-Redis Cluster에서는 `SCAN`이 단일 노드만 본다. **모든 노드에 SCAN 반복** 필요 — `redis.nodes('master')`로 순회. 여러 key를 한 `UNLINK`에 넣으면 같은 hash slot이어야 하므로 key별 command를 보내거나 slot별 pipeline으로 묶는다.
+Redis Cluster에서는 `SCAN`이 단일 노드만 본다. **모든 노드에 SCAN 반복** 필요 — `redis.nodes('master')`로 순회. 여러 key를 한 `UNLINK`에 넣으면 같은 hash slot이어야 하므로 key별 command를 보내거나 slot별 pipeline으로 묶는다. Valkey 9.1+의 `CLUSTERSCAN`은 슬롯을 하나씩 돌며 cluster 전체 키를 순회하고, 커서에 슬롯의 hash tag가 들어 있어 cluster 인식 클라이언트가 호출을 알맞은 노드로 보낸다. 토폴로지가 바뀌는 동안에는 중복이 나올 수 있다.
 
 ## 캐시 워밍업
 
@@ -64,7 +65,7 @@ export class CacheWarmer implements OnApplicationBootstrap {
 }
 ```
 
-`pipeline`으로 라운드트립 1회로 묶음 — 수천 키도 빠름.
+`pipeline`으로 라운드트립 1회로 묶음 — 수천 키도 빠름. 수십만 건 이상을 한 번에 넣을 때는 명령을 RESP 형식 파일로 만들어 `valkey-cli --pipe`로 밀어 넣는다 ([[Redis-Architecture#Pipeline vs Transaction|pipeline과 대량 적재]]).
 
 ### 주기 갱신
 
@@ -149,7 +150,7 @@ async function invalidateTag(redis: Redis, tag: string) {
 ## 흔한 실수
 
 - **운영 환경에서 `KEYS` 사용**: 단일 스레드 Redis 블로킹 → 장애. SCAN으로.
-- **`DEL`로 큰 키 또는 대량 키 한 번에 회수**: 블로킹. UNLINK + 배치.
+- **`DEL`로 큰 키 또는 대량 키 한 번에 회수**: 블로킹. UNLINK + 배치. Redis 기본값 기준이며, Valkey 8.0+는 `lazyfree-lazy-user-del`이 기본 `yes`라 `DEL`도 메모리 해제를 백그라운드로 넘긴다 ([[Operations|운영 팁]]).
 - **워밍업으로 모든 데이터 적재 시도**: 메모리, 부팅 시간 폭증. 인기 hot 데이터만.
 - **Set 기반 태그 membership 방치**: 만료된 값의 참조가 누적되므로 TTL과 안전한 GC가 필요하다. 위 예제의 generation metadata에는 같은 TTL 정리를 적용하면 안 된다.
 - **Cluster에서 SCAN 한 노드만**: 다른 노드 키 누락. 모든 마스터 노드 순회.
@@ -159,7 +160,7 @@ async function invalidateTag(redis: Redis, tag: string) {
 
 - 운영에서 `KEYS` 금지 이유 — 단일 스레드 블로킹
 - `SCAN`/`SSCAN`의 cursor 기반 점진 스캔 동작
-- `DEL` vs `UNLINK` — 동기 vs 백그라운드 회수
+- `DEL` vs `UNLINK` — 동기 vs 백그라운드 회수 (Valkey 8.0+ lazyfree 기본값에서는 차이가 줄어든다)
 - Redis Cluster에서 SCAN의 한계와 노드별 순회
 - 캐시 워밍업의 의의와 트레이드오프 (메모리, 부팅 시간 vs 콜드 스타트)
 - 태그 generation 회전, 원본 load 전 세대 확인, 이전 값의 TTL 회수
@@ -170,6 +171,10 @@ async function invalidateTag(redis: Redis, tag: string) {
 - [Redis Docs, EXPIRE](https://redis.io/docs/latest/commands/expire/)
 - [Redis Docs, INCR](https://redis.io/docs/latest/commands/incr/)
 - [Redis Docs, Multi-key operations](https://redis.io/docs/latest/develop/using-commands/multi-key-operations/)
+- [Valkey Docs, SCAN](https://valkey.io/commands/scan/)
+- [Valkey Docs, CLUSTERSCAN](https://valkey.io/commands/clusterscan/)
+- [Valkey Docs, Bulk loading](https://valkey.io/topics/mass-insertion/)
+- [인프런, Hong, 캐시 무효화와 캐시 스탬피드 & 파이프라이닝과 운영관점의 팁](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481443)
 
 ## 관련 문서
 

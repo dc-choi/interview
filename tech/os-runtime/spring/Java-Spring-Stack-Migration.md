@@ -1,7 +1,7 @@
 ---
 tags: [java, spring-boot, migration, modernization, compatibility, graalvm, spring-ai]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["Java Spring Stack Migration", "Java Spring 현대화", "Spring Boot 4 마이그레이션", "모던 백엔드 전환"]
 ---
@@ -48,6 +48,15 @@ Spring Framework 7은 null 계약에 JSpecify를 사용하며, `org.springframew
 
 JSpecify null 애노테이션은 IDE/정적 분석기가 읽는 **타입 계약**이다. Jakarta Validation의 `@NotNull`은 Validator가 실행될 때 검사하는 **런타임 제약**이다. 서비스 메서드 검증은 Spring의 `@Validated`와 method validation이 실제로 활성화되어야 하며, 어느 쪽도 생성자와 도메인 메서드의 불변식 검사를 자동으로 대신하지 않는다.
 
+### null 계약을 build 실패와 즉시 실패로 강제한다
+
+Java는 Kotlin처럼 parameter 선언만으로 null 전달을 compile 단계에서 막지 못하므로 두 겹으로 막는다.
+
+- 런타임 fail-fast: 버그를 만들지 않는 것 다음으로 중요한 것은 버그를 만나면 즉시 실패하는 것이다. 예외 없이 지나간 null은 필수 정보가 빠진 채 저장되는 논리 버그가 되어 늦게 발견된다. 생성자와 정적 factory뿐 아니라 `changeNickname` 같은 변경 method에서도 `Objects.requireNonNull(value, message)`로 검사한다. 상태 전제 조건 위반(PENDING일 때만 `activate`)은 `IllegalStateException`, 잘못된 인자 값은 `IllegalArgumentException`으로 구분한다. JDK `Objects`에는 상태 검사 method가 없으므로 Spring `Assert.state`나 명시적 조건 검사를 쓴다.
+- Build 게이트: IDE는 null 계약 위반을 경고만 하므로 그대로 build되고 배포된다. 운영에서 그 코드가 실행되어 `NullPointerException`이 나야 드러나는 버그를 앞당기려면 정적 분석을 build에 넣어 위반을 build 실패로 만든다. Package에 `@NullMarked`를 두어 기본값을 non-null로 하고, 저장 전 null인 `getId()` 같은 예외 지점에만 `@Nullable`을 붙인다. 주요 domain과 application package부터 적용한다.
+- 도구 선택: Spring Framework 7 문서는 NullAway 같은 build plugin으로 application의 null 안전성을 build 시점에 강제하는 방법을 안내하고, `@NullMarked` package만 검사하는 `NullAway:OnlyNullMarked=true` 설정을 권한다. Spring 6 시절 자료는 JSR-305 기반 `@NonNullApi`와 Gradle SpotBugs plugin(`spotbugsMain`, `spotbugsTest` task)을 쓴다. SpotBugs 4.10.0의 JSpecify 지원은 부분적이라 `@NullMarked`의 scope 기본값을 아직 해석하지 않으므로, JSpecify로 옮긴 뒤 package 기본값을 build 게이트로 쓰려면 분석기의 지원 범위부터 확인한다.
+- 오탐 관리: 분석기 기본 규칙이 모든 project에 맞지는 않는다. Hibernate proxy를 고려한 entity `equals`처럼 알려진 오탐은 exclude filter나 이유를 적은 suppression으로 좁게 제외하고, 남은 경고는 정리 단계에서 주기적으로 없앤다.
+
 ## 단계별 마이그레이션
 
 ### 1. JDK와 build chain
@@ -91,6 +100,32 @@ GraalVM Native Image는 startup과 memory 특성을 바꿀 수 있지만 closed-
 
 Spring AI 2 계열은 Spring Boot 4 line과 맞물리지만, model provider, vector store와 MCP를 붙이는 것은 플랫폼 upgrade와 다른 제품 변경이다. core migration을 안정화한 뒤 별도 module이나 service 경계에서 도입하면 장애 원인과 rollback을 분리하기 쉽다.
 
+## 레거시 Spring MVC XML 설정 해석
+
+`web.xml`과 Spring XML로 구성한 레거시 MVC 애플리케이션은 각 설정 요소가 Java config와 Spring Boot의 어디에 대응하는지 알아야 옮길 수 있다. 한 번에 Java config로 바꾸지 말고 위의 외부 동작 계약 test를 먼저 고정한다.
+
+| 레거시 설정 | 역할 | Java config | Spring Boot 4.1 |
+|---|---|---|---|
+| `web.xml`의 `DispatcherServlet`과 init-param `contextConfigLocation`(예: `servlet-context.xml`) | Servlet `WebApplicationContext` | `AbstractAnnotationConfigDispatcherServletInitializer`의 `getServletConfigClasses()` | `DispatcherServlet` 자동 등록, 기본 mapping `/` |
+| `web.xml`의 `ContextLoaderListener`와 context-param(예: `root-context.xml`) | Root `WebApplicationContext` | `getRootConfigClasses()` | 보통 단일 context |
+| `web.xml`의 `CharacterEncodingFilter` | 요청과 응답 charset | `getServletFilters()` | 자동 등록, `spring.servlet.encoding.*`(Boot 3.x까지 `server.servlet.encoding.*`) |
+| `<context:annotation-config/>` | `@Autowired`, `@PostConstruct` 등을 처리하는 post-processor 등록 | `AnnotationConfigApplicationContext`가 자동 등록 | 자동 |
+| `<context:component-scan>` | stereotype bean 자동 등록 | `@ComponentScan` | `@SpringBootApplication` |
+| `<mvc:annotation-driven/>` | annotation 기반 MVC의 infrastructure bean 등록 | `@EnableWebMvc`와 `WebMvcConfigurer` | MVC 자동 구성. `@EnableWebMvc`를 붙이면 자동 구성이 물러나므로 `WebMvcConfigurer`만 둔다 |
+| `<mvc:resources>` | 정적 resource handler | `addResourceHandlers` | classpath `/static`, `/public`, `/resources`, `/META-INF/resources` |
+| `InternalResourceViewResolver`(prefix `/WEB-INF/views/`, suffix `.jsp`) | view 이름을 JSP 경로로 변환 | `configureViewResolvers`의 `registry.jsp(prefix, suffix)` | `spring.mvc.view.prefix`, `spring.mvc.view.suffix`. 실행 JAR는 JSP를 지원하지 않아 WAR packaging 필요 |
+| `<mvc:interceptors>`의 `<mvc:mapping>`, `<mvc:exclude-mapping>` | interceptor 적용 범위 | `addInterceptors()`의 `addPathPatterns()`, `excludePathPatterns()` | 같음 |
+| `HandlerInterceptorAdapter` 상속 | interceptor 구현 | `HandlerInterceptor`의 default method 직접 구현 | 같음 |
+| `<import resource>`, `GenericXmlApplicationContext` | 설정 조합 | `@Import`, `AnnotationConfigApplicationContext` | component scan과 자동 구성 |
+
+- `HandlerInterceptorAdapter`는 Spring Framework 5.3에서 deprecated됐고 6.0부터 source에서 빠졌다. 이 class를 상속한 코드는 Spring 6 이상에서 compile되지 않으므로 `HandlerInterceptor`를 직접 구현한다.
+- Spring Framework 7.0부터 Spring MVC XML namespace 지원은 deprecated다. 제거 계획은 아직 없지만 Java config model에 맞춰 갱신되지 않는다.
+- `<context:annotation-config/>`는 선언한 context의 bean만 처리한다. Servlet context XML에만 두면 controller만 처리되고 root context의 service는 빠진다. Root와 Servlet context의 역할은 [[Spring-Request-Lifecycle|Spring 요청 처리 흐름]]의 4절에 있다.
+- XML로 선언한 interceptor는 `MappedInterceptor` bean이라 모든 `HandlerMapping`이 감지하지만, Java config는 자신이 관리하는 `HandlerMapping`에만 넘긴다. 다른 framework의 `HandlerMapping`에도 걸리던 interceptor는 옮긴 뒤 적용 범위를 test한다.
+- 레거시 자료에 `DispatcherServlet` mapping이 `/*`로 적혀 있어도 그대로 옮기지 않는다. `/*`는 JSP forward까지 가로챌 수 있어 보통 `/`를 쓴다.
+- Session을 검사해 redirect하던 login interceptor는 새 endpoint와 error dispatch 누락에 취약하므로 옮길 때 Spring Security로 대체할지 검토한다([[Spring-MVC-Filters-and-Interceptors|Spring MVC Filter와 Interceptor]]).
+- IDE template이 이 파일들을 자동 생성해도 한 번 직접 구성해 보면 container, context와 MVC 기반 bean이 어디서 생기는지 이해하기 쉽다.
+
 ## 검증 게이트
 
 | Gate | 통과 근거 | 실패 시 |
@@ -122,8 +157,31 @@ DB migration은 application rollback과 독립적으로 되돌릴 수 없을 수
 - [Oracle JDK 25 Migration Guide](https://docs.oracle.com/en/java/javase/25/migrate/)
 - [GraalVM Reachability Metadata](https://www.graalvm.org/latest/reference-manual/native-image/metadata/)
 - [Spring AI Getting Started](https://docs.spring.io/spring-ai/reference/getting-started.html)
+- [Spring Framework 공식 문서 — Annotation-based Container Configuration](https://docs.spring.io/spring-framework/reference/core/beans/annotation-config.html)
+- [Spring Framework 공식 문서 — Context Hierarchy](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/context-hierarchy.html)
+- [Spring Framework 공식 문서 — Servlet Config](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/container-config.html)
+- [Spring Framework 공식 문서 — Enable MVC Configuration](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/enable.html)
+- [Spring Framework 공식 문서 — MVC Interceptors](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html)
+- [Spring Framework 공식 문서 — MVC View Resolvers](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/view-resolvers.html)
+- [Spring Framework 5.3.39 — `HandlerInterceptorAdapter` source](https://github.com/spring-projects/spring-framework/blob/v5.3.39/spring-webmvc/src/main/java/org/springframework/web/servlet/handler/HandlerInterceptorAdapter.java)
+- [Spring Framework 7.0.9 — `Assert` source](https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-core/src/main/java/org/springframework/util/Assert.java)
+- [Spring Boot 공식 문서 — Servlet Web Applications](https://docs.spring.io/spring-boot/reference/web/servlet.html)
+- [Spring Boot 공식 문서 — Common Application Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
+- [Spring Boot 4.1.1 — `ServletEncodingProperties` source](https://github.com/spring-projects/spring-boot/blob/v4.1.1/module/spring-boot-servlet/src/main/java/org/springframework/boot/servlet/autoconfigure/ServletEncodingProperties.java)
+- [SpotBugs CHANGELOG — 4.10.0](https://github.com/spotbugs/spotbugs/blob/master/CHANGELOG.md)
 - [토비 강사 — Spring Null Safety](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=291135)
 - [토비 강사 — @NonNull과 @NotNull](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=468588)
+- [토비 강사 — Member 도메인 로직 개발](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=291132)
+- [토비 강사 — Member 도메인 코드 개선](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=291177)
+- [토비 강사 — 코드 다듬기](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=306805)
+- [토비 강사 — 엔티티의 equals()와 hashCode() 구현](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=312377)
+- [인프런 — 스프링 설정 파일 분리](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13719)
+- [인프런 — 의존객체 자동 주입](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13720)
+- [인프런 — 웹 프로그래밍 설계 모델](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13726)
+- [인프런 — 스프링 MVC 웹서비스 2](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13728)
+- [인프런 — STS를 이용하지 않은 웹 프로젝트](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13729)
+- [인프런 — Service & Dao 객체 구현](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13730)
+- [인프런 — 리다이렉트, 인터셉트](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13735)
 
 ## 관련 문서
 

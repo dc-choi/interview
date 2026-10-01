@@ -106,6 +106,26 @@ Citus는 coordinator가 distribution column을 기준으로 행을 shard에 배�
 - [[pgvector|pgvector]]
 - [[Spatial-Index-MySQL|MySQL 공간 인덱스]]
 
+## 반경 없는 최근접 N개
+
+`ORDER BY location <-> $1::geography LIMIT 20`은 GiST의 KNN 경로를 활용하는 후보다. 반경 filter용 ST_DWithin과 역할이 다르다. geography의 <->는 구면 거리를 쓰며 기본 ST_Distance의 타원체 거리와 같은 순위라고 가정하지 않는다. 엄밀한 재정렬이 필요하면 충분한 후보를 구한 뒤 타원체 거리로 재정렬하고 정확도 손실을 검증한다.
+
+## 주기적 rollup의 중복
+
+최근 1분 집계를 5초마다 계산하면 구간이 겹친다. 결과를 기존 값에 더하면 같은 거래를 반복 합산할 수 있다. 고정 bucket key의 값을 다시 계산해 교체하거나 이벤트의 처리 위치를 남긴 증분 갱신을 선택한다. 지연 도착과 실행 누락을 고려해 최근 여러 bucket 재계산, 멱등 UPSERT와 결과 시각을 둔다.
+
+## 공간 타입과 좌표 입력
+
+`geography(Point,4326)` 같은 typmod로 shape와 SRID를 명시하고 경도, 위도 순서로 좌표를 넣는다. ST_SetSRID는 좌표계 라벨을 지정하며 실제 변환은 ST_Transform이다. WKT/GeoJSON에 SRID와 입력 축 순서가 일치하는지 확인하고 문자열을 신뢰한 채 서로 다른 좌표계를 섞지 않는다.
+
+## 분산 DB의 scheduler 배치
+
+Coordinator에서 distributed table query를 예약하면 작업 자체는 worker로 분산될 수 있지만 같은 집계를 모든 worker에서 중복 예약하지 않는다. pg_cron은 hot standby에서 job을 실행하지 않고 promotion 후 시작하므로 failover 전후 실행 누락과 이미 실행된 구간의 재처리를 검증한다. 다른 시스템까지 조율하거나 중앙 재시도 이력이 필요하면 외부 scheduler와 비교한다.
+
+## 전문 검색의 분석 계약
+
+BM25 index와 query 양쪽 tokenizer가 같은 의미의 토큰을 만드는지 확인한다. 한국어에서 simple whitespace 분석, 형태소 분석과 ngram은 서로 다른 검색 의미와 index 비용을 만든다. ngram이라는 이유만으로 한국어 형태소 검색을 지원한다고 해석하지 않는다. pg_search의 고정 버전에 맞는 tokenizer 목록과 설정으로 실제 한국어 query와 EXPLAIN을 검증한다.
+
 ## 출처
 
 - [PostgreSQL 18 Documentation, Packaging Related Objects into an Extension](https://www.postgresql.org/docs/18/extend-extensions.html)
@@ -123,3 +143,8 @@ Citus는 coordinator가 distribution column을 기준으로 행을 shard에 배�
 - [Citus 분산 처리 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440746)
 - [pg_cron 스케줄링 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440747)
 - [스케줄러와 분산 집계 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440748)
+- [ParadeDB, Tokenizers](https://www.paradedb.com/blog/v2api)
+- [PostGIS, <->](https://postgis.net/docs/geometry_distance_knn.html)
+- [PostGIS, ST_SetSRID](https://postgis.net/docs/ST_SetSRID.html)
+- [PostGIS, ST_Transform](https://postgis.net/docs/ST_Transform.html)
+- [인프런, 단일 인스턴스의 한계를 극복하는 분산 패턴과 스케줄링 그리고 분산 환경 구축하기](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=440745)

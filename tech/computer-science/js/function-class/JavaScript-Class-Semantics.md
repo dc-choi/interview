@@ -130,6 +130,10 @@ arrow field의 `this`가 instance인 이유는 field initializer의 평가 방�
 - NestJS provider method를 callback으로 넘길 때 context binding을 잃지 않게 한다.
 - inheritance로 controller/service를 공통화하기보다 composition, interceptor와 guard가 책임 경계를 더 잘 보존하는지 비교한다.
 
+## static receiver
+
+`Child.create()`로 상속받은 static method를 호출하면 this는 Child여서 `return new this()` factory는 Child를 만든다. method를 떼어 일반 호출하면 class code는 strict라 this가 undefined다. static member는 instance에는 없고 `this.constructor.method()`는 교체 가능한 일반 constructor property를 읽는다. 생성 중 실제 class가 필요하면 new.target을 확인한다. class도 typeof 결과는 function이고 public static field는 ES2022 표준이다.
+
 ## 출처
 
 - [ECMAScript Language Specification, class definitions](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-class-definitions)

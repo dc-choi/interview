@@ -93,6 +93,34 @@ WHERE created_at >= '2026-06-01'
 
 단지 table이 크다는 이유만으로 도입하지 않는다. 먼저 query 의미, index와 통계를 고치고 대표 workload에서 scanned partitions, rows, latency와 운영 시간을 비교한다. 단일 server 용량을 넘어서는 문제가 목적이면 [[Sharding|sharding]]과 data lifecycle 분리를 검토한다.
 
+## 분포 관찰과 미등록 값
+
+```sql
+SELECT PARTITION_NAME, PARTITION_METHOD, PARTITION_DESCRIPTION,
+       TABLE_ROWS, DATA_LENGTH, INDEX_LENGTH
+FROM information_schema.partitions
+WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders'
+ORDER BY PARTITION_ORDINAL_POSITION;
+```
+
+InnoDB의 `TABLE_ROWS`는 추정치다. 정확한 분포 검증이 필요하면 `SELECT COUNT(*) FROM orders PARTITION (p2026)`처럼 대상 partition을 지정한다. LIST에는 RANGE의 MAXVALUE 같은 catch-all이 없어 미등록 값의 INSERT가 실패한다. `INSERT IGNORE`는 해당 행을 warning과 함께 버릴 수 있으므로 새 코드값을 배포하기 전에 partition을 추가한다. HASH/KEY의 pruning은 정수 key의 등호와 partition 수보다 작은 짧은 정수 범위 등에 한정되므로 균등 분산과 범위 조회 효율을 구분한다.
+
+## 미래 범위 유지보수의 실패 경로
+
+MAXVALUE partition이 있으면 그 앞의 새 범위는 `ADD PARTITION` 대신 `REORGANIZE PARTITION`으로 쪼갠다. 대상에 이미 쌓인 행도 재배치하므로 미래 partition을 미리 만들고 catch-all의 행 수를 감시한다. MAXVALUE가 없으면 준비하지 않은 범위 INSERT가 실패한다.
+
+Event로 자동화하면 `event_scheduler=OFF`, 실행 오류와 replica 승격을 감시한다. 복제된 event의 `REPLICA_SIDE_DISABLED` 상태는 승격 후에도 별도 활성화 절차가 필요하다. 다음 몇 개월의 partition 존재를 결과로 검사하고 멱등한 생성, 실행 기록과 실패 알림을 둔다. 앱 scheduler나 migration으로 운영해도 이 결과 검증은 같다.
+
+## 시간 타입과 partition 식
+
+MySQL 8.4의 일반 RANGE/LIST 식은 정수를 반환해야 한다. `RANGE COLUMNS`는 DATE와 DATETIME을 직접 사용하지만 TIMESTAMP는 허용하지 않는다. TIMESTAMP에는 `UNIX_TIMESTAMP(column)` 기반 RANGE를 검토하고 경계 문자열을 해석하는 DDL 세션의 `time_zone`을 고정한다. `UNIX_TIMESTAMP()`도 pruning 지원 함수다.
+
+소수 초 TIMESTAMP에 FLOOR를 덧씌운 식은 단순 함수와 같은 pruning을 가정하지 않는다. 정밀 시간 경계가 필요하면 DATETIME(6)의 RANGE COLUMNS와 비교하고 대표 쿼리에 `EXPLAIN FORMAT=TRADITIONAL SELECT ...`를 실행하고 출력의 `partitions` column으로 검증한다.
+
+## Key와 관리 작업의 제약
+
+값 변경이 잦은 partition key는 행을 다른 partition으로 이동시킬 수 있다. 관리 DDL은 metadata lock과 데이터 이동 비용을 확인하고 오래 열린 트랜잭션부터 점검한다. MySQL 8.4 partitioned table은 FULLTEXT와 spatial type 관련 제한이 있으므로 검색 요구와 함께 검토한다. LINEAR HASH/KEY는 partition 증감 재배치 비용과 분포 균형을 교환하므로 RANGE의 수명주기 관리 대안으로 바로 대체하지 않는다.
+
 ## 출처
 
 - [MySQL 8.4 Reference Manual, Partitioning Overview](https://dev.mysql.com/doc/refman/8.4/en/partitioning-overview.html)
@@ -103,6 +131,15 @@ WHERE created_at >= '2026-06-01'
 - [인프런, Real MySQL 시즌 1 - Part 2, 테이블 파티셔닝](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226587)
 - [인프런, Hong, 파티셔닝과 인덱스 설계](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338546)
 - [인프런, Hong, Partitioning과 Sharding](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338558)
+- [MySQL 8.4 Reference Manual, events and binary logging](https://dev.mysql.com/doc/refman/8.4/en/events-and-binary-logging.html)
+- [MySQL 8.4 Reference Manual, partitioning columns range](https://dev.mysql.com/doc/refman/8.4/en/partitioning-columns-range.html)
+- [MySQL 8.4 Reference Manual, partitioning limitations functions](https://dev.mysql.com/doc/refman/8.4/en/partitioning-limitations-functions.html)
+- [MySQL 8.4 Reference Manual, partitioning limitations](https://dev.mysql.com/doc/refman/8.4/en/partitioning-limitations.html)
+- [MySQL 8.4 Reference Manual, partitioning list](https://dev.mysql.com/doc/refman/8.4/en/partitioning-list.html)
+- [인프런, Ep.14 UUID 사용 주의사항](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226707)
+- [인프런, MySQL의 대표적인 성능지표 및 Explain 맛보기](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338542)
+- [인프런, 실무를 위한 Database 설계 패턴](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338545)
+
 
 ## 관련 문서
 

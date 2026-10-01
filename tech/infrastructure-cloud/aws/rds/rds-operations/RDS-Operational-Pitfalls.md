@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, rds, database, operations, troubleshooting, reliability]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-09-30
 category: "Infrastructure - AWS"
 aliases: ["RDS Operational Pitfalls", "RDS 운영 함정", "RDS 운영 장애", "RDS 프로덕션 문제"]
 ---
@@ -70,6 +70,10 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 - 마이너 패치는 비교적 안전하지만 **메이저 업그레이드(MySQL 5.7→8.0, PG 14→15)는 다운타임 + 어려운 롤백**이다. PostgreSQL은 extension 호환성과 `pg_upgrade` 이슈가 잦다. Blue/Green Deployment로 리스크를 줄일 수 있으나 논리 복제 기반이라 일부 기능 제한이 있다.
 - 표준 지원 종료 뒤 RDS Extended Support 대상 엔진 버전을 계속 쓰면 별도 비용이 발생할 수 있다. 엔진과 버전별 지원 일정을 확인한다.
 - 파라미터 그룹에는 **동적(즉시 적용)과 정적(재부팅 필요 = 다운타임)**이 섞이고 같은 이름도 엔진에 따라 다르다. `max_connections`는 RDS for MySQL/MariaDB에서는 동적이라 즉시 적용할 수 있지만 RDS for PostgreSQL에서는 서버 시작 시 적용되는 정적 파라미터다. 변경 전 대상 엔진에서 dynamic인지 static인지 확인한다.
+- **기본 parameter group은 값을 바꿀 수 없다.** 새 그룹을 만들거나 기존 그룹을 copy해 값을 바꾸고, 인스턴스를 수정해 그 그룹을 연결한다. 그룹 안에서도 모든 파라미터가 수정 가능한 것은 아니다.
+- 새 그룹 연결은 즉시 이뤄지지만 그 그룹의 static과 dynamic 파라미터는 **재부팅 뒤에** 적용된다. 연결한 뒤 그 그룹에서 바꾼 dynamic 파라미터는 즉시 적용된다. 최신 변경을 쓰지 않는 인스턴스는 `pending-reboot`로 표시되고 다음 유지보수 윈도에 자동 재부팅되지 않으므로 직접 재부팅한다.
+- 문자셋과 collation 파라미터는 인스턴스와 데이터베이스를 만들기 **전에** 그룹에 넣어야 기본 데이터베이스와 새 데이터베이스에 적용된다. 이미 만든 데이터베이스에는 반영되지 않으므로 생성 뒤 파라미터만 바꾸고 재부팅하면 서버 기본값은 바뀌어도 기존 데이터베이스의 문자셋은 그대로 남아 `ALTER DATABASE`와 테이블 변환이 따로 필요하다. 값은 `utf8`(utf8mb3)이 아니라 `utf8mb4`로 둔다([[RDS-Operational-Pitfalls-Rare|문자셋 절]]).
+- 한 그룹을 여러 인스턴스가 공유하면 변경이 모두에 적용되므로 환경별로 그룹을 나눈다. 변경은 테스트 인스턴스에서 먼저 검증하고 백업한 뒤 적용한다. 스냅샷에서 복원한 인스턴스에는 기본 그룹이 붙으므로 복원할 때 그룹을 지정한다([[RDS-Aurora-Backup-Operations]]).
 
 ## 6. 모니터링 사각지대 — FreeableMemory 함정
 
@@ -90,7 +94,7 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 - Multi-AZ가 무중단이 아닌 이유(60~120초), DNS CNAME과 죽은 소켓, 재시도와 지터
 - 복제 지연으로 인한 read-after-write 버그와 마스터 강제 라우팅
 - gp2 BurstBalance 소진과 gp3 전환 이유, storage-full과 제자리 축소 제한 및 Blue/Green 대안
-- 정적 파라미터(재부팅)와 메이저 업그레이드 다운타임
+- 정적 파라미터(재부팅)와 메이저 업그레이드 다운타임, 기본 parameter group 수정 불가와 새 그룹 연결 뒤 재부팅, 문자셋 파라미터가 기존 데이터베이스에 적용되지 않는 이유
 - FreeableMemory가 낮은 게 정상일 수 있는 이유와 SwapUsage가 진짜 신호인 점
 - 스냅샷 복구의 lazy loading 워밍업을 RTO에 포함해야 하는 이유
 
@@ -107,6 +111,8 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 - [Amazon Aurora, High availability](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html)
 - [Amazon RDS, Restoring from a DB snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html)
 - [Amazon RDS, Creating a blue/green deployment — Modify storage and performance settings](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-creating.html#blue-green-deployments-creating-storage)
+- [Amazon RDS, Overview of parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/parameter-groups-overview.html)
+- [인프런, Sungmin Kim, RDS 실습 1부](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43740)
 
 ## 관련 문서
 

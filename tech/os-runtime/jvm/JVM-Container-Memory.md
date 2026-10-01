@@ -3,7 +3,7 @@ tags: [runtime, jvm, memory, container, g1gc, tuning]
 status: done
 category: "OS&런타임(OS&Runtime)"
 aliases: ["JVM Container Memory", "JVM 컨테이너 메모리", "used vs committed", "RAMPercentage"]
-verified_at: 2026-08-28
+verified_at: 2026-09-30
 ---
 
 # JVM 컨테이너 메모리 — used vs committed와 RAMPercentage
@@ -16,6 +16,22 @@ verified_at: 2026-08-28
 - **committed**: JVM이 즉시 사용할 수 있도록 확보한 힙 용량. JVM 관점의 용량 지표이며 모든 페이지가 물리 RAM에 상주한다는 뜻은 아니다.
 - **RSS**: 현재 물리 메모리에 resident인 프로세스 페이지. 접근된 힙 페이지와 metaspace, thread stack, code cache, native allocation 일부를 포함하지만 committed와 일대일 대응하지 않는다.
 - 모니터링에서는 Heap Used, Heap Committed, Full GC 후 잔여 힙, 프로세스 RSS, 컨테이너 working set을 함께 본다. 어느 하나를 다른 지표의 대용으로 쓰지 않는다.
+
+### 애플리케이션 안에서 읽는 heap 값
+
+`Runtime.getRuntime()`의 세 값은 이 문서의 heap 축에 이렇게 대응한다.
+
+| API | Java SE 문서의 정의 | 대응 |
+|---|---|---|
+| `maxMemory()` | JVM이 사용을 시도할 최대 메모리. 고유한 상한이 없으면 `Long.MAX_VALUE` | heap max |
+| `totalMemory()` | JVM의 현재 총 메모리. 실행 환경에 따라 시간이 지나며 변함 | committed |
+| `freeMemory()` | 그중 아직 쓰지 않은 부분. GC 뒤 커질 수 있음 | committed - used |
+| `totalMemory() - freeMemory()` | 계산값 | used |
+
+- `totalMemory()`를 사용량이나 상한으로 읽지 않는다. committed라서 GC 뒤 used가 내려가도 그대로 유지될 수 있다. MemoryMXBean의 heap committed와 같은 축이지만 계산 경로가 달라 값이 조금 다를 수 있다(아래 JDK 21 G1 실행에서 66MiB와 64MiB).
+- `maxMemory()`는 `-Xmx`나 MaxRAMPercentage로 정한 최대 heap을 기준으로 하지만 수집기에 따라 작게 보고된다. JDK 21(Corretto 21.0.3)에서 `-Xmx512m`으로 실행하면 G1은 512MiB, Parallel은 455MiB, Serial은 494MiB를 반환했고 MemoryMXBean의 heap max도 같았다. HotSpot은 이 값을 heap의 `max_capacity()`에서 가져온다.
+- 세 값 모두 heap만 본다. container memory limit과 비교할 때는 metaspace, thread stack, direct memory 같은 non-heap을 더한다(아래 합산 설계 절).
+- 순간값이라 GC 시점에 따라 흔들린다. 판단은 Micrometer 기본 이름 기준 `jvm.memory.used`, `jvm.memory.committed`, `jvm.memory.max`의 추이와 GC 직후 잔여 heap으로 한다. 이런 값을 HTTP로 보여 주는 진단 endpoint는 운영에서 외부에 열지 않는다([[Spring-Boot-Actuator-Operations]]).
 
 ## RAMPercentage 설정의 함정
 
@@ -76,6 +92,11 @@ verified_at: 2026-08-28
 - [Oracle Java SE Docs, Garbage-First Garbage Collector Tuning](https://docs.oracle.com/en/java/javase/17/gctuning/garbage-first-garbage-collector-tuning.html) (G1NewSizePercent 등 튜닝 옵션, Xms=Xmx 리사이즈 제거)
 - [OpenJDK hotspot-gc-dev — committed memory and RSS are different quantities](https://mail.openjdk.org/pipermail/hotspot-gc-dev/2020-July/030387.html)
 - [Java MemoryUsage API](https://docs.oracle.com/en/java/javase/24/docs/api/java.management/java/lang/management/MemoryUsage.html)
+- [Oracle Java SE 25 Docs, Runtime](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Runtime.html) (`maxMemory`, `totalMemory`, `freeMemory` 정의)
+- [jvm.cpp — OpenJDK GitHub](https://github.com/openjdk/jdk/blob/master/src/hotspot/share/prims/jvm.cpp) (`JVM_TotalMemory`는 heap `capacity()`, `JVM_MaxMemory`는 `max_capacity()`)
+- [MicrometerJvmMemoryMeterConventions.java — Micrometer GitHub](https://github.com/micrometer-metrics/micrometer/blob/main/micrometer-core/src/main/java/io/micrometer/core/instrument/binder/jvm/convention/micrometer/MicrometerJvmMemoryMeterConventions.java) (`jvm.memory.used`, `committed`, `max`)
+- [인프런, 김영한, 자동 구성 직접 만들기 - 기반 예제](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148098)
+- [인프런, 김영한, @Conditional](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148099)
 - [Kubernetes Docs, Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) (memory limit은 커널 OOM kill로 반응적 강제)
 - [Kubernetes Docs, Pod lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/)
 - [Oracle Java SE Docs, java Command Reference](https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html) (UseContainerSupport 컨테이너 감지, MaxDirectMemorySize는 NIO direct buffer 총량 상한이며 미설정 시 JVM 자동 결정)

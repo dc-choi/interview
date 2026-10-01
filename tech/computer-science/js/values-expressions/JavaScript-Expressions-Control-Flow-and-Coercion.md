@@ -132,7 +132,19 @@ strict mode는 silent error 일부를 예외로 바꾸고 오래된 동작을 �
 - `catch`에서 모든 오류를 성공값으로 바꾸지 말고 변환 가능한 domain error와 재시도 불가능한 programmer error를 구분한다.
 - loop에서 외부 I/O를 무제한 병렬화하거나 영원히 재시도하지 않는다. timeout, cancellation, concurrency limit를 계약에 넣는다.
 
+## 연산과 반복의 경계값
+
+Number에서 1/0은 Infinity, 1/-0은 -Infinity, 0/0과 5%0은 NaN이다. Infinity-Infinity와 Infinity*0도 NaN이며 finite 입력에서 시작해도 결과를 검증해야 한다. BigInt의 0 나누기는 RangeError라 Number의 예외 없는 결과와 구분한다. 단순 비교 `n !== NaN`은 검사로 동작하지 않는다.
+
+결합 방향은 묶는 방법이고 side effect의 평가 순서와 다르다. 복합 할당은 왼쪽 reference를 먼저 구한 뒤 오른쪽을 평가하므로 setter/index 식을 두 번 실행하는 텍스트 치환이 아니다. postfix 증가도 문장 끝에 늦게 실행하지 않고 그 expression 평가 중 증가하며 이전 값을 결과로 낸다. comma 연산자는 왼쪽 effect 뒤 오른쪽 값을 반환하지만 선언 목록/인자 구분 comma는 이 연산자가 아니다.
+
+for의 continue는 update 식으로, while의 continue는 조건식으로 이동한다. for에서 조건 생략은 true로 취급한다. switch의 default는 일치하는 case가 없을 때 시작점이고, 뒤 case로 fall-through할 수 있다. 언어 값의 type과 명세의 Reference/Completion/Environment Record 같은 설명용 type을 구분하며 latter를 application 객체나 엔진 layout으로 취급하지 않는다.
+
+DOM 조작은 보통 DOMContentLoaded면 충분하며 image 같은 load 지연 자원까지 필요한 경우 window load를 쓴다. 늦게 등록하는 코드는 document.readyState가 loading일 때만 DOMContentLoaded를 기다리고 아니면 바로 초기화해 event를 놓치지 않는다. script loading의 defer/async/module 조건은 앞 절과 함께 판단한다.
+
 ## 출처
+
+- 인프런 보충 강의: [텍스트 노드](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102171), [이미지 노드](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102172), [innerHTML vs innerText](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102173), [실전예제 - 작은 이미지 클릭시 큰 이미지로 변경하기(1)](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102179), [실전예제 - 작은 이미지 클릭시 큰 이미지로 변경하기(3)](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102181), [이벤트 위임과 활용(2) - event.target vs event.currentTarget](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102192)
 
 - [ECMAScript Language Specification, types](https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html), [expressions](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html), [statements](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html)
 - [ECMAScript Language Specification, ToPrimitive](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-toprimitive), [ToNumber](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-tonumber), [IsLooselyEqual](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-islooselyequal), [IsStrictlyEqual](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-isstrictlyequal), [ToBoolean](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-toboolean), [Date toPrimitive](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date.prototype-%25symbol.toprimitive%25)

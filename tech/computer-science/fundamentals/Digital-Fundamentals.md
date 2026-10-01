@@ -116,7 +116,19 @@ SI 접두사와 이진 접두사를 구분한다.
 - 엔디언이 값의 의미가 아니라 바이트 배치 순서라는 점을 설명할 수 있는가
 - 문자 수, 코드 포인트 수, UTF-8 바이트 수를 구분할 수 있는가
 
+## 범위, 바이트와 실제 저장 크기
+
+정수 범위를 넘으면 조용한 wrap, exception, undefined behavior처럼 언어 계약에 따라 다른 결과가 생긴다. 작은 값 아래로 벗어남을 integer underflow로 부르는 경우와 floating-point 값이 0에 가까워지는 underflow는 구분한다. 비교자를 a-b로 구현하면 overflow로 순서가 뒤집힐 수 있어 관계 비교나 표준 comparator를 쓴다.
+
+2^8=256, 2^16=65,536, 2^24=16,777,216은 bit 폭의 기준값이다. TB/PB/EB는 각각 10^12/10^15/10^18 B, TiB/PiB/EiB는 2^40/2^50/2^60 B다. 1 TB를 GiB로 환산하면 약 931.3 GiB이며 디스크가 사라진 것이 아니라 단위가 다르다. 경보와 quota의 단위를 먼저 맞춘다.
+
+ASCII 문자 '1'은 0x31이고 수치 1을 한 byte 정수로 쓰면 0x01이다. 공백 0x20과 CR/LF도 저장 byte다. CRLF와 LF 차이는 shell 실행이나 protocol parsing에 영향을 주며 byte 수 제한과 문자 수 제한을 구분한다. 한글 byte 수는 인코딩과 실제 code point에 따라 달라져 한글은 항상 2 byte라는 규칙은 없다.
+
+RGB 8 bit 채널 세 개는 pixel당 3 B, RGBA는 4 B다. 디코딩 buffer 크기는 가로×세로×채널 byte로 산정한다. 1024×768 RGBA는 정확히 3 MiB이고 4000×3000은 약 45.8 MiB다. 압축 파일이 작아도 decode memory는 크므로 입력 pixel 수와 동시 처리량을 제한한다. 무손실은 원래 값을 복원하고 손실은 정보를 버려 크기를 줄이는 방식이다.
+
 ## 출처
+
+- 인프런 보충 강의: [컴퓨터가 연산하는 과정](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128248)
 
 - 인프런, 널널한 개발자 강사, [1비트와 디지털](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128238), [4비트와 16진수 그리고 진법변환](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128239), [16진수 표기가 사용되는 예](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128240), [외워야 할 단위 체계와 숫자](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128241), [컴퓨터가 글자를 다루는 방법](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128243), [컴퓨터가 사진을 다루는 방법](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128244)
 - 인프런, 감자 강사, [10진법과 2진법](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277215), [16진법](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277224)

@@ -51,9 +51,15 @@ aliases: ["Schema Versioning", "스키마 버전 관리"]
 - [[Schema-Design|스키마 설계]]
 - [[NestJS-Database|NestJS와 TypeORM 데이터베이스 통합]]
 
+## ERD 우선 개발의 변경 이력
+
+Introspection은 현재 DB 구조를 모델로 가져오지만 어떤 변경이 언제 왜 적용됐는지 복원하지 못한다. ERD나 SQL로 먼저 설계해도 결과 diff를 migration으로 남기고 적용 순서, checksum과 환경별 적용 상태를 관리한다. 화면의 최신 ERD와 실행 가능한 schema 변경 이력은 역할이 다르다.
+
 ## 출처
 
 - [Evolutionary Database Design — Martin Fowler, Pramod Sadalage](https://martinfowler.com/articles/evodb.html)
 - [TypeORM, How migrations work?](https://typeorm.io/docs/migrations/why/)
 - [TypeORM, Executing and reverting](https://typeorm.io/docs/migrations/executing/)
 - [TypeORM, Data Source Options](https://typeorm.io/docs/data-source/data-source-options/)
+- [인프런, prisma 기본](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273676)
+- [인프런, 요구사항 분석 및 ERD 설계](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=275733)

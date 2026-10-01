@@ -98,6 +98,12 @@ Java interrupt와 Node `AbortSignal` 모두 협력적 취소다. 신호를 확�
 - queue depth, 거절 수, event loop lag, Worker 사용률과 lock wait를 함께 관측한다.
 - timeout은 원자적 rollback이 아니다. 일부 성공이 가능한 작업에는 transaction이나 보상 동작이 필요하다.
 
+## I/O thread와 worker를 분리한 서버
+
+다른 서버 모델에서는 I/O thread가 소켓 이벤트와 짧은 디코딩을 처리하고 bounded 작업 큐에 넘기며 worker가 업무 처리를 수행한다. I/O thread의 blocking 호출은 그 thread가 맡은 다른 연결도 지연시킨다. Queue 상한, 포화 시 정책과 worker/downstream 예산을 함께 정하고 enqueue-to-start와 처리 시간을 분리해 계측한다.
+
+이 모델을 모든 런타임의 고정 구조로 일반화하지 않는다. Node.js는 JS callback도 event loop에서 실행한다. epoll의 readiness와 IOCP의 completion도 서로 다른 통지 계약이다.
+
 ## 출처
 
 - [The Node.js Event Loop — Node.js](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)

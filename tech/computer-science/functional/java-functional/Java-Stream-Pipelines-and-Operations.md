@@ -1,7 +1,7 @@
 ---
 tags: [java, stream, lazy-evaluation, pipeline, flatmap]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-10-01
 category: "CS - 함수형 프로그래밍"
 aliases: ["Java Stream Pipeline", "Java 스트림 파이프라인"]
 ---
@@ -85,6 +85,14 @@ Encounter order가 있어도 callback이 어느 thread에서 어떤 순서로 �
 - Pipeline이 길어지면 domain 이름을 가진 method로 stage를 나눈다.
 - Stream이 loop보다 빠르거나 느리다고 단정하지 않고 JMH와 production profile로 검증한다.
 - Query API, database stream과 Java Stream을 혼동하지 않는다. Java Stream filter는 이미 메모리로 읽은 data에 실행될 수 있다.
+
+## 단축 평가와 반환 계약
+
+순차 stateless filter/map pipeline에서 1~6 중 짝수를 10배 하고 findFirst하면 1과 2를 검사하고 2만 변환해 20을 얻을 수 있다. 단계마다 전체 List를 만들면 전체 filter와 map을 마친 뒤 첫 결과를 얻는다. 이 차이는 지연 평가와 원소 단위 전달의 조합에서 나오며 sorted 같은 stateful stage는 먼저 전체 입력이 필요할 수 있다. callback 로그나 effect 실행 횟수는 최적화 가능한 명세 계약과 분리한다.
+
+초기값 없는 reduce, min, max, findFirst/findAny는 부재를 Optional로 표현한다. 빈 stream의 anyMatch는 false, allMatch/noneMatch는 true다. reduce의 identity는 단순 시작값이 아니라 항등원이다. 합계에 100을 추가하려면 `100 + stream.reduce(0, Integer::sum)`처럼 밖에서 더한다. identity 100은 병렬 분할마다 중복 반영될 수 있다.
+
+ordered stream에서 takeWhile은 첫 실패 전의 prefix만 남기고 dropWhile은 그 prefix만 버린다. 입력 [1,2,3,6,4,7]에 n<5라면 각각 [1,2,3], [6,4,7]이며 filter는 [1,2,3,4]다. 정렬 자체가 필수는 아니고 encounter order에 의존한다. map으로 내부 stream을 만들면 중첩이 남고 flatMap은 내부 원소를 하나의 stream으로 펼친다.
 
 ## 출처
 

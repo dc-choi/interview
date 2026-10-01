@@ -3,7 +3,7 @@ tags: [web, network, ethernet, osi, l2, switch, mac]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Physical Data Link Layer", "물리 데이터링크 계층", "L1 L2", "허브 스위치 MAC 프레임", "L2 스위치"]
-verified_at: 2026-09-15
+verified_at: 2026-09-30
 ---
 
 # 물리 계층과 데이터링크 계층 (L1, L2)
@@ -15,9 +15,27 @@ OSI 하위 2계층은 같은 로컬 네트워크(LAN) 안에서 비트와 프레
 
 ## L1 Physical: 비트를 물리 신호로
 
-데이터의 의미는 해석하지 않고, 0과 1의 비트 스트림을 물리 매체로 전송하는 방법만 정의한다. 구리선은 전압의 높낮이로, 무선은 전파의 변화로 비트를 표현한다.
+데이터의 의미는 해석하지 않고, 0과 1의 비트 스트림을 물리 매체로 전송하는 방법만 정의한다. 구리선은 전압의 높낮이로, 광섬유는 빛으로, 무선은 전파의 변화로 비트를 표현한다. NIC(랜카드)는 프레임을 선로 신호로 바꿔 내보내고 받은 신호를 비트로 복원하면서 MAC 주소와 FCS도 처리하므로 L1과 L2에 걸쳐 있다.
 
 대표 장비와 매체: 케이블, 광섬유, 안테나와 RF, 리피터, 허브.
+
+### 통신 방향
+
+| 방식 | 동작 | 예 |
+|---|---|---|
+| 단방향(simplex) | 한쪽에서 다른 쪽으로만 보낸다. 송신자는 수신 측 문제를 알 수 없다 | TV, 라디오 방송 |
+| 반이중(half duplex) | 양방향이지만 한 번에 한쪽만 보낸다 | 무전기, 허브와 동축 버스 이더넷 |
+| 전이중(full duplex) | 양쪽이 동시에 보내고 받는다 | 전화, 스위치 포트에 직접 연결한 이더넷 |
+
+### 전송 매체와 거리 한계
+
+| 매체 | 신호 | 특징과 비용 | 주 용도 |
+|---|---|---|---|
+| UTP(비차폐 꼬임쌍선) | 전기 | 싸고 배선이 쉽다. 10BASE-T와 100BASE-TX는 4쌍 중 송신 1쌍, 수신 1쌍을 쓰고, 1000BASE-T는 4쌍 모두로 동시에 양방향 전송한다(쌍마다 250Mb/s, 에코 제거) | 건물 안 단말 연결 |
+| 동축 케이블 | 전기 | 중심 도체를 차폐로 감싸 간섭에 강하다. 10BASE2 같은 초기 이더넷은 동축 버스 하나를 여러 장치가 공유해 반이중만 썼다. 공유 버스 방식의 제약이지 동축 자체의 한계는 아니다 | 초기 LAN, 현재는 주로 방송과 케이블 인터넷 |
+| 광케이블 | 빛 | 전자기 간섭을 받지 않아 더 멀리, 더 빠르게 보낸다. 구부림에 약하고 양끝에서 전기와 빛을 바꾸는 트랜시버(SFP 같은 광 모듈)가 필요하다 | 백본, 건물 간, 장거리 |
+
+신호는 멀리 갈수록 약해지고(감쇠) 잡음이 섞여 왜곡되므로 매체마다 오류 없이 쓸 수 있는 길이가 있다. 10BASE-T, 100BASE-TX와 1000BASE-T의 트위스티드 페어 링크는 100m까지다. 리피터는 약해지고 일그러진 신호를 원래 모양으로 재생해 거리를 늘리는 L1 장비이고, 허브는 받은 신호를 나머지 모든 포트로 재생해 내보내는 멀티포트 리피터다. 오늘날에는 독립 리피터 대신 스위치가 프레임을 받아 새로 송신하고, 100m를 넘는 구간은 광 링크로 잇는다.
 
 ### 허브와 충돌 도메인
 
@@ -27,14 +45,18 @@ OSI 하위 2계층은 같은 로컬 네트워크(LAN) 안에서 비트와 프레
 
 ### CSMA/CD
 
-반이중(half-duplex) 공유 매체에서 충돌을 줄이는 규칙.
+반이중(half-duplex) 공유 매체에서 충돌을 줄이는 규칙. 여러 장치가 동축 케이블 하나에 버스로 붙던 초기 이더넷에서 나왔다.
 
-1. Carrier Sense: 보내기 전 매체가 비었는지 확인
-2. Multiple Access: 비었으면 전송
-3. Collision Detection: 그래도 두 장치가 동시에 보내 충돌하면 감지하고 전송 중단
-4. Backoff: 각자 랜덤한 시간을 기다렸다가 재시도 (회의실에서 말이 겹치면 멈췄다 서로 다른 타이밍에 다시 말하기)
+1. Carrier Sense: 보내기 전 매체에 신호가 흐르는지 확인
+2. Multiple Access: 비었으면 전송한다. 두 장치가 동시에 비었다고 판단할 수 있다
+3. Collision Detection: 충돌을 감지하면 곧바로 멈추지 않고 32비트 jam 신호를 더 보내 다른 송신자도 충돌을 확실히 알아채게 한 뒤 전송을 멈춘다
+4. Backoff: n번째 재시도 전에 0 이상 2^k 미만(k = min(n, 10))의 정수를 무작위로 골라 그만큼 slot time을 기다린다. 충돌이 반복될수록 대기 범위가 두 배씩 넓어져 혼잡한 매체에서 스스로 물러난다. 전송 시도 16번(attemptLimit)이 모두 충돌로 끝나면 프레임을 버리고 오류(excessive collision)로 보고한다 (회의실에서 말이 겹치면 멈췄다 서로 다른 타이밍에 다시 말하기)
 
-오늘날 스위치 기반 전이중(full-duplex) 링크에는 충돌 자체가 없어 CSMA/CD는 사실상 유물이다. WiFi는 충돌 감지가 불가능해 회피 방식인 CSMA/CA를 쓴다.
+**허브가 반이중에 머문 이유.** 1990년 10BASE-T(IEEE 802.3i)의 UTP는 송신 쌍과 수신 쌍이 따로 있지만, 802.3의 전이중은 링크에 장치가 정확히 둘인 점대점 연결에서만 쓸 수 있다. 허브에 셋 이상이 붙으면 두 장치가 동시에 보낸 신호를 허브가 둘 다 세 번째 장치의 수신 쌍으로 내보내 신호가 겹친다. 허브는 신호를 저장했다가 나중에 보낼 버퍼와 판단 장치가 없는 멀티포트 리피터라 공유 매체로 남고, 그래서 CSMA/CD가 필요하다.
+
+**브리지와 스위치가 연 전이중.** 브리지는 프레임을 버퍼에 받아 MAC 주소 테이블을 보고 목적지 포트로만 내보내므로 포트마다 충돌 도메인이 나뉜다. 포트에 장치 하나만 연결하면 그 링크는 두 장치만의 점대점이 되어 CSMA/CD 없이 전이중으로 쓸 수 있고, 802.3도 브리지(스위치)의 각 포트에 장치 하나를 잇는 구성을 전이중의 대표 구성으로 든다. 스위치는 같은 기능을 많은 포트와 전용 하드웨어로 빠르게 처리하는 브리지라 지금은 주로 스위치라 부른다. 전이중 동작은 1997년 IEEE 802.3x로 표준화됐다.
+
+오늘날 스위치 기반 전이중(full-duplex) 링크에는 충돌 자체가 없어 CSMA/CD는 사실상 유물이다. 전이중 MAC은 충돌 신호를 무시하고 jam이나 backoff를 하지 않는다. WiFi는 충돌 감지가 불가능해 회피 방식인 CSMA/CA를 쓴다.
 
 ## L2 Data Link: 프레임과 MAC
 
@@ -54,13 +76,16 @@ MAC은 같은 L2 구간에서 인터페이스를 식별하고, IP는 네트워�
 
 L2가 프레임을 만들고, L1이 이를 다시 비트 스트림으로 바꿔 전송한다. 이더넷 프레임의 핵심 필드:
 
-| 필드 | 역할 |
-|---|---|
-| 목적지 MAC | 받는 인터페이스 |
-| 출발지 MAC | 보내는 인터페이스 |
-| EtherType / Length | 상위 프로토콜 종류(예: IPv4, ARP) |
-| Payload | 실제 데이터(상위 계층 패킷) |
-| FCS (CRC) | 오류 검출용 체크값 |
+| 필드 | 크기 | 역할 |
+|---|---|---|
+| 프리앰블, SFD | 7바이트, 1바이트 | 수신 측 비트 동기와 프레임 시작 표시. 프레임 크기에 넣지 않는다 |
+| 목적지 MAC | 6바이트 | 받는 인터페이스. 모든 비트가 1이면 브로드캐스트 |
+| 출발지 MAC | 6바이트 | 보내는 인터페이스 |
+| EtherType / Length | 2바이트 | 1536(`0x0600`) 이상이면 상위 프로토콜 종류(`0x0800` IPv4, `0x0806` ARP, `0x86DD` IPv6), 1500(`0x05DC`) 이하면 데이터 길이. 그 사이 값은 쓰지 않는다 |
+| Payload | 46~1500바이트 | 실제 데이터(상위 계층 패킷). 46바이트보다 짧으면 패딩을 붙인다 |
+| FCS (CRC-32) | 4바이트 | 오류 검출용 체크값 |
+
+목적지 MAC부터 FCS까지의 프레임 크기는 64~1518바이트이고, 802.1Q VLAN 태그(4바이트)가 붙으면 최대 1522바이트다. 최소 64바이트(512비트)는 10/100Mb/s의 slot time과 같아서, 송신자가 프레임을 다 보내기 전에 반대편 끝에서 난 충돌을 감지할 수 있게 한다. 이보다 짧은 수신 프레임은 충돌 조각으로 보고 버린다. FCS가 맞지 않는 프레임도 손상 프레임으로 판정해 버리고 오류 카운터에 남길 뿐 재전송을 요청하지 않으므로, 복구는 TCP 같은 상위 계층의 몫이다. 계층별 헤더 크기 합산은 [[Network-Encapsulation]].
 
 택배 상자에 비유하면 겉면이 출발지와 목적지 MAC, 내용물이 Payload, 봉인 검사가 FCS다.
 
@@ -109,7 +134,9 @@ L2는 같은 로컬 네트워크 안에서만 동작한다. 서로 다른 네트
 - 충돌 도메인 vs 브로드캐스트 도메인: 포트별 충돌 도메인과 VLAN별 브로드캐스트 도메인의 차이
 - 스위치의 Learning, Forwarding, Filtering, Flooding, Aging과 unknown unicast 처리
 - 중복 L2 링크가 broadcast storm과 MAC table instability를 만들며 STP가 일부 경로를 차단하는 이유
-- CSMA/CD가 반이중 공유 매체용이고 현대 전이중 스위치 환경에선 불필요해진 이유
+- CSMA/CD가 반이중 공유 매체용이고 현대 전이중 스위치 환경에선 불필요해진 이유, jam과 지수 backoff, 허브가 반이중에 머문 이유
+- UTP, 동축, 광케이블의 거리와 비용 트레이드오프, 리피터와 허브가 L1 장비인 이유
+- 이더넷 프레임 크기(64~1518바이트), EtherType과 Length를 가르는 값, FCS 오류 프레임을 재전송 없이 버리는 이유
 - MAC과 IP의 식별 범위, 로컬 관리 주소와 비공개 Wi-Fi 주소가 영구 신원 가정을 깨는 이유
 - 액세스, 디스트리뷰션, 코어 계층과 업링크, 링크 업/다운의 구분은 [[Switch-Hierarchy-and-Uplink]]
 - L2의 로컬 한계 → L3(IP, 라우터)와 ARP로 넘어가는 지점
@@ -118,6 +145,21 @@ L2는 같은 로컬 네트워크 안에서만 동작한다. 서로 다른 네트
 
 - [OSI 7 Layer 기초: Physical Layer와 Data Link Layer — YouTube](https://www.youtube.com/watch?v=DufRXdDF9zI&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v)
 - [IEEE 802.1w — Rapid Reconfiguration of Spanning Tree](https://www.ieee802.org/1/pages/802.1w.html)
+- [IEEE P802.3as Draft 0.1, IEEE Std 802.3-2005 Clause 4 CSMA/CD MAC 개정안 — IEEE 802.3 Working Group](https://www.ieee802.org/3/as/public/0503/4d0_1_CMP.pdf)
+- [IEEE 802.3x-1997, Full Duplex Operation — IEEE SA](https://standards.ieee.org/standard/802_3x-1997.html)
+- [802.3ab A Tutorial Presentation — IEEE 802.3 Working Group](https://grouper.ieee.org/groups/802/3/tutorial/march98/mick_170398.pdf)
+- [Specifications for Ethernet 100BaseTX and 10BaseT Cables — Cisco](https://www.cisco.com/c/en/us/support/docs/routers/10000-series-routers/46792-ethbase.html)
+- [Troubleshooting Ethernet Collisions — Cisco](https://www.cisco.com/c/en/us/support/docs/interfaces-modules/port-adapters/12768-eth-collisions.html)
+- [IEEE 802 Numbers, EtherType — IANA](https://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xhtml)
+- [그림으로 쉽게 배우는 네트워크 — 단방향, 반이중, 전이중 통신, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160784)
+- [그림으로 쉽게 배우는 네트워크 — 물리 계층과 데이터링크 계층, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160786)
+- [그림으로 쉽게 배우는 네트워크 — 케이블, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160787)
+- [그림으로 쉽게 배우는 네트워크 — 랜카드, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160788)
+- [그림으로 쉽게 배우는 네트워크 — 리피터, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160791)
+- [그림으로 쉽게 배우는 네트워크 — 허브, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160792)
+- [그림으로 쉽게 배우는 네트워크 — 이더넷과 이더넷 헤더, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160794)
+- [그림으로 쉽게 배우는 네트워크 — CSMA/CD, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160795)
+- [그림으로 쉽게 배우는 네트워크 — 브리지, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160796)
 - [그림으로 쉽게 배우는 네트워크 — 스위치, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160797)
 - [그림으로 쉽게 배우는 네트워크 — 스패닝 트리 프로토콜, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160799)
 - [L2 스위치에 대해서 — 널널한 개발자 TV](https://www.youtube.com/watch?v=y8rPmcYRsrk&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=15)

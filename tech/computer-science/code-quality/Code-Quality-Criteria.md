@@ -186,6 +186,7 @@ class EasyMap {
 - 블로그 "really impressed with the quality" (능력있는 개발자와 코드 품질)
 
 ## 관련 문서
+- [[Beautiful-Code|아름다운 코드의 조건과 유지]]
 - [[Dreyfus-Skill-Model|드레퓌스 기술 습득 모형]]
 - [[Competence-Identification|능력있는 개발자 판별법]]
 - [[SOLID-In-Practice|SOLID 원칙 실전 적용]]

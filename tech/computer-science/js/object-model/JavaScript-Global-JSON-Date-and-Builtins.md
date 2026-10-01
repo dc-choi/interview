@@ -74,6 +74,16 @@ Date는 UTC 1970-01-01T00:00:00Z 기준 millisecond time value를 저장하고 g
 - query string은 `URLSearchParams` 또는 framework parser를 거친 뒤 allowlist/schema로 검증한다.
 - DB timestamp의 timezone, precision과 serialization format을 API contract에 포함한다.
 
+## 직렬화와 달력의 경계값
+
+JSON.parse의 reviver가 undefined를 반환하면 해당 property가 삭제되고 마지막 root 호출에서도 반환하지 않으면 parse 결과 전체가 undefined다. 변환하지 않는 경우 value를 그대로 반환한다. JSON은 trailing comma, single quote key, 앞자리 0과 16진수 숫자를 허용하지 않는다. 배열 원소 삭제는 hole을 남기고 순서를 당기지 않는다.
+
+JSON.stringify의 최상위 undefined/Function/Symbol 결과는 문자열이 아닌 undefined다. replacer 함수도 root를 빈 key로 먼저 받고 object에서 undefined를 반환하면 생략, array에서는 null로 표현한다. space 숫자는 최대 10칸, 문자열은 첫 10 code unit까지만 쓰므로 arbitrary 문자열을 넣으면 보기에는 들여쓰기여도 valid JSON이 아닐 수 있다. 반환 type과 round-trip을 확인한다.
+
+Date에 숫자 하나는 연도가 아닌 epoch millisecond다. component 생성의 0~99년은 1900~1999로 해석하며 월은 0부터, 날짜 기본은 1이다. getDay는 일요일 0인 요일이고 getDate는 날짜, getFullYear는 연도다. 범위 초과 component는 상위 단위로 보정되어 new Date(2026,0,32)는 local 2월 1일이고 날짜 0은 전달 말일이다. 이 편의는 검증이 아니므로 존재하지 않는 입력 날짜를 받을 때 component가 그대로 돌아오는지 확인한다. setDate로 달력상 다음날을 구하는 것과 millisecond에 24시간을 더하는 것은 DST에서 다르다.
+
+globalThis의 NaN, Infinity, undefined property는 writable/configurable/enumerable이 false다. sloppy 대입은 무시되고 strict 대입은 TypeError지만 local binding으로 이름을 가릴 수 있어 식별자 이름 자체가 예약어라는 뜻은 아니다.
+
 ## 출처
 
 - [ECMAScript Language Specification, global object](https://tc39.es/ecma262/multipage/global-object.html), [JSON](https://tc39.es/ecma262/multipage/structured-data.html#sec-json-object), [Date](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date-objects)

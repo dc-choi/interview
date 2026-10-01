@@ -117,6 +117,14 @@ FROM orders;
 4. 실제 DBMS version의 공식 문법과 실행 계획을 확인한다.
 5. 운영과 비슷한 cardinality에서 lock과 비용을 측정한다.
 
+## 마지막 날의 자정 함정
+
+DATETIME에 `BETWEEN '2026-10-01' AND '2026-10-31'`을 주면 상한은 31일 자정으로 해석되어 그 뒤의 시간이 빠진다. 월 조회는 `>= '2026-10-01' AND < '2026-11-01'`로 표현한다. 초의 최댓값으로 상한을 맞추면 fractional precision이나 timezone에서 경계가 깨질 수 있다.
+
+## 비집계 column의 값
+
+SELECT의 비집계 값은 group key 또는 제품이 인정하는 functional dependency로 결정되어야 한다. MySQL ONLY_FULL_GROUP_BY를 끄고 임의의 name을 선택하면 ORDER BY로 어떤 row의 값인지 정할 수 없다. group 최대값의 다른 column은 집계 후 재조인이나 tie-breaker 있는 window로 구한다.
+
 ## 출처
 
 - [ISO/IEC 9075-1:2023, SQL Framework](https://www.iso.org/standard/76583.html)
@@ -125,6 +133,9 @@ FROM orders;
 - 강의 도입: [데이터베이스 기본 개념](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4650), [SQL Developer와 SQL 분류](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4654)
 - 조회와 함수: [SELECT](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4656), [집계와 숫자 함수](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4657), [문자 함수](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4658), [날짜와 조건 함수](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4659), [GROUP BY와 HAVING](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4660)
 - 데이터 정의와 변경: [CREATE, ALTER, DROP, TRUNCATE](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4663), [INSERT, UPDATE, DELETE, COMMIT, ROLLBACK](https://www.inflearn.com/courses/lecture?courseId=34982&unitId=4664)
+- [MySQL 8.4 Reference Manual, group by handling](https://dev.mysql.com/doc/refman/8.4/en/group-by-handling.html)
+- [인프런, 조인 종합 실습](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328750)
+
 
 ## 관련 문서
 

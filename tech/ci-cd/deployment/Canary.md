@@ -1,7 +1,7 @@
 ---
 tags: [cicd, deployment, canary, progressive-delivery, rollback]
 status: done
-verified_at: 2026-08-31
+verified_at: 2026-09-30
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["Canary Deployment", "Canary 배포", "카나리 배포"]
 ---
@@ -63,6 +63,24 @@ Canary 통과는 터지지 않았다는 뜻이지 좋아졌다는 뜻이 아니�
 
 ## 구현 선택지
 
+### Kubernetes 기본 오브젝트만 쓰는 replica 비율 canary
+
+mesh나 progressive delivery controller가 없어도 Deployment 두 개와 Service 하나로 canary를 만들 수 있다. Kubernetes 공식 workload 관리 문서의 예시가 이 방식이다.
+
+- stable과 canary Deployment가 공통 label(`app: web`)을 공유하고 `track: stable`, `track: canary`처럼 한 label만 다르게 둔다.
+- Service selector에는 공통 label만 둬서 두 Deployment의 Pod를 한 endpoint 집합으로 묶는다.
+- 노출 비율은 canary replica를 전체 replica로 나눈 값에 근사한다. 공식 예시는 stable 3, canary 1로 3:1을 만들고, 확신이 서면 stable을 새 image로 갱신한 뒤 canary를 지운다.
+
+비율을 트래픽 계층이 아니라 Pod 수로 표현하기 때문에 한계가 분명하다.
+
+- 최소 단위가 1/전체 replica다. stable 9, canary 1이면 약 10%이고 1% 노출에는 Pod 100개가 필요하다.
+- Service 분산은 요청이 아니라 연결 단위다 ([[K8s-Core-Workloads-and-Service|Kubernetes Service]]). kube-proxy의 iptables, nftables 모드는 기본으로 backend Pod를 무작위로 고르고 그 선택이 연결에 묶이므로, keep-alive나 HTTP/2처럼 연결을 오래 재사용하면 실제 요청 비율이 replica 비율과 어긋난다.
+- 사용자, header, cookie 기준으로 대상을 고를 수 없다. 특정 사용자만 노출하려면 mesh의 header routing이나 [[Feature-Flag|Feature Flag]]가 필요하다.
+- 두 Deployment에 HPA를 각각 걸면 부하에 따라 replica가 따로 움직여 비율이 의도와 달라진다.
+- abort는 canary Deployment를 0으로 줄이는 것이고 이미 발생한 쓰기와 외부 부작용은 되돌리지 않는다 (위 램프와 중단 루프의 경계와 같다).
+
+mesh나 controller가 없는 작은 cluster에서 짧게 수동 검증할 때 쓴다. 정밀한 비율, 동시 baseline 비교와 자동 판정이 필요하면 아래 controller나 라우팅 계층의 가중치로 간다. Argo Rollouts도 `trafficRouting` 없이 쓰면 replica 수로 비율을 근사하므로 같은 한계를 공유하고, 공식 문서도 replica를 많이 두지 않고 비율을 세밀하게 제어하려면 traffic management 기능을 쓰라고 안내한다.
+
 ### Kubernetes 컨트롤러
 
 - **Argo Rollouts** — Rollout CRD의 canary 전략에 `setWeight`와 `pause`를 단계로 나열한다. `trafficRouting`이 없으면 replica 수로 비율을 근사하고, `analysis`는 배경으로 돌다가 실패하면 롤아웃을 abort한다. AnalysisTemplate에는 `successCondition`, `failureCondition`, `failureLimit`, `interval`, `count`를 둔다. baseline과 canary를 나란히 띄워 비교하는 Kayenta식 분석은 Experiment로 분리돼 있다.
@@ -113,6 +131,9 @@ GitOps sync 자체는 Canary 판정을 만들지 않는다. ArgoCD가 매니페�
 - [Flagger 공식 문서, Deployment Strategies](https://docs.flagger.app/usage/deployment-strategies)
 - [Canarying Releases — Google SRE Workbook](https://sre.google/workbook/canarying-releases/)
 - [New Application Load Balancer Simplifies Deployment with Weighted Target Groups — AWS News Blog](https://aws.amazon.com/blogs/aws/new-application-load-balancer-simplifies-deployment-with-weighted-target-groups/)
+- [Kubernetes 공식 문서, Managing Workloads — Canary deployments](https://kubernetes.io/docs/concepts/workloads/management/#canary-deployments)
+- [Kubernetes 공식 문서, Virtual IPs and Service Proxies](https://kubernetes.io/docs/reference/networking/virtual-ips/)
+- [인프런, 금융 인프라를 운영하는 Toss 개발자의 Kubernetes, 신규 버전 배포를 위한 인프라 배포 전략 가이드](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=413047)
 
 ## 관련 문서
 

@@ -21,9 +21,9 @@ JavaScript도 대규모 애플리케이션에 사용된다. TypeScript가 해결
 
 ## 목차
 
-- [[compile|동작원리 (컴파일 파이프라인, 컴파일러 옵션, AST, JavaScript 마이그레이션)]]
+- [[compile|동작원리 (컴파일 파이프라인, 컴파일러 옵션, 빌드 산출물 관리, AST, JavaScript 마이그레이션)]]
 - [[types|TS 타입 (타입 특징, 단언과 satisfies, 선언 공간과 추론, 컬렉션 설계, any 경계, enum 대안)]]
-- [[TS-Type-System-Principles|TS 타입 시스템 원리 (타입은 증명이다, 구조적 타이핑과 타입 호환성)]]
+- [[TS-Type-System-Principles|TS 타입 시스템 원리 (타입은 증명이다, 구조적 타이핑과 타입 호환성, 타입 주도 개발)]]
 - [[TS-Interface-Declarations|TS 인터페이스 선언과 병합 (type vs interface, Declaration Merging, Module Augmentation)]]
 - [[TS-Class-and-Decorators|TS 클래스와 데코레이터 (클래스 타입 시스템, proposal과 legacy 데코레이터)]]
 - [[TypeScript-Type-Level-Programming|타입 레벨 프로그래밍 (Conditional, Mapped, Infer, Recursive)]]
@@ -32,6 +32,7 @@ JavaScript도 대규모 애플리케이션에 사용된다. TypeScript가 해결
 - [[tech/computer-science/ts/ts-study/ts-study|실습 프로젝트]]
 - [[TS-Generics|제네릭 (타입 관계 보존, 제약과 기본 타입 인자)]]
 - [[TS-Function-Overloading|함수 오버로딩 (오버로드 vs 구현 시그니처, 조건부 타입 대비)]]
+- [[TS-Function-Types|함수 타입 정의 (매개변수 규칙, 함수 타입 표현식, 호출 시그니처, 하이브리드 타입)]]
 
 ## 출처
 

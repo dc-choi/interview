@@ -23,6 +23,24 @@ aliases: ["Microservice Readiness", "MSA 준비도", "마이크로서비스 성�
 
 목표는 오른쪽 끝에 도달하는 것이 아니다. 현재 문제를 가장 낮은 복잡도로 해결하는 지점을 고른다.
 
+## 품질 속성과 사업 조건으로 위치를 고른다
+
+독립 배포와 기능별 선택 확장은 서비스 분리의 이익이다. 반면 네트워크 지연, 분산 일관성, 관측과 운영 비용은 늘어난다. 장애 단위가 작아져도 timeout, 자원 제한과 복구 설계가 없으면 연쇄 장애가 더 쉬워진다. 품질 속성을 한 방향의 우열로 채점하지 않는다.
+
+B2B와 B2C라는 구분보다 변경 빈도, 트랜잭션 불변식, 부하 편차, 지연 예산과 운영 인력이 실제 판단 기준이다. 무상태 처리와 세션 외부화 같은 조건을 갖추면 모놀리스도 컨테이너 복제와 자동 확장을 쓸 수 있다([[Scale-Up-vs-Out]]). 컨테이너나 Kubernetes를 도입했다는 이유만으로 서비스 경계까지 나눌 필요는 없다.
+
+## 내부 설계와 외부 운영 역량
+
+서비스 내부의 도메인 모델과 의존 방향은 내부 아키텍처, 서비스를 연결하고 운영하는 기반은 [[Microservice-Outer-Architecture|외부 아키텍처]]로 구분해 볼 수 있다.
+
+| 외부 역량 | 아래 준비도 축 |
+|---|---|
+| 반복 가능한 provisioning, CI/CD와 점진 배포 | 독립 전달 |
+| discovery, 관측, 통신 제한과 복구 | 운영과 회복성 |
+| 인증 경계, 설정과 secret, 공통 정책 | 거버넌스와 보안 |
+
+CNCF Cloud Native Definition v1.1은 컨테이너, 메시, 마이크로서비스, 불변 인프라와 선언적 API 등을 조합 가능한 예로 든다. MSA, CI/CD, 컨테이너, DevOps 네 도구를 모두 갖춰야 한다는 필수 체크리스트가 아니다. 내부 구조도 [[Layered-Clean-Hexagonal]]처럼 업무 복잡도에 맞춰 선택한다.
+
 ## 준비도 7축
 
 ### 1. 사업 동기
@@ -125,6 +143,12 @@ DevOps는 별도 도구팀의 이름이 아니라 개발과 운영이 전달 결
 - [han jeong heon 강사, 마이크로서비스를 위한 조건 1](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104427)
 - [han jeong heon 강사, 마이크로서비스를 위한 조건 2](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=106669)
 - [han jeong heon 강사, 마이크로서비스의 성숙도](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104438)
+- [CNCF Cloud Native Definition v1.1 — CNCF TOC](https://github.com/cncf/toc/blob/main/DEFINITION.md)
+- [han jeong heon 강사, 성공사례: 성공한 인터넷 기업들과 비즈니스 민첩성](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=105064)
+- [Dowon Lee 강사, 이전 강의와의 비교 (vs Spring Cloud로 개발하는 마이크로서비스 애플리케이션)](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=312046)
+- [Dowon Lee 강사, Microservice Architecture 개요](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286778)
+- [Dowon Lee 강사, Microservice Architecture 장단점](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286779)
+- [Dowon Lee 강사, Microservice Architecture 적용](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286780)
 
 ## 관련 문서
 

@@ -83,6 +83,32 @@ BCNF는 모든 비자명 함수 종속 `X → Y`에서 X가 슈퍼키가 되도�
 - 2NF의 부분 종속과 3NF의 이행 종속을 하나의 예제로 설명할 수 있는가
 - 반정규화를 측정된 성능 문제와 이력 보존 요구에 연결할 수 있는가
 
+## 3NF와 BCNF의 차이를 보이는 예
+
+수강 관계 `(학생, 강의, 담당교수)`에서 `(학생, 강의) → 담당교수`, `담당교수 → 강의`를 가정한다. 한 교수가 한 강의만 맡지만 한 강의에 여러 교수가 있고 학생은 강의마다 한 교수에게 배정된다. 후보 키는 `(학생, 강의)`와 `(학생, 담당교수)`다.
+
+모든 attribute가 후보 키에 속하므로 3NF 조건을 만족할 수 있지만 `담당교수 → 강의`의 결정자는 superkey가 아니어서 BCNF를 위반한다. 교수-강의 배정과 학생-교수 수강으로 분해하면 해당 중복은 줄지만 원래 학생-강의의 단일 교수 제약은 별도 검증이 필요할 수 있다. 분해의 lossless join과 dependency preservation을 함께 평가한다.
+
+## 2NF는 복합키의 양쪽을 본다
+
+주문상세 키가 `(주문ID, 상품ID)`이고 주문일은 주문ID, 상품명은 상품ID에만 종속되면 둘 다 부분 종속이다. 주문 header와 상품을 분리하고 수량과 그 주문의 계약 단가는 상세에 남긴다. 주문 header의 고객명은 고객ID에 종속되는 별도 3NF 문제일 수 있으므로 2NF만으로 정규화가 끝나지 않는다.
+
+## Snapshot과 중복을 구분한다
+
+주문 당시 상품명과 계약 단가는 현재 상품의 이름/가격이 아니라 그 거래가 확정한 사실이다. 결정자가 현재 상품ID인지 주문상세ID인지 정의하면 의도적인 snapshot과 현재 값 복제를 구분할 수 있다. 모든 비슷한 column을 반정규화로 부르지 않는다.
+
+## Surrogate key와 적용 범위
+
+단일 surrogate PK를 추가해도 업무 후보 키 사이의 종속성은 사라지지 않는다. 정규형 판단은 선언한 PK뿐 아니라 모든 candidate key를 본다. 3NF를 실용적인 출발점으로 삼을 수 있지만 정확한 FD와 조회/변경 계약에 따라 BCNF 또는 측정된 read model을 선택한다.
+
+## 용어를 사용할 때
+
+반정규화/역정규화는 보통 정규화된 구조를 성능 등 목적에 맞게 의도적으로 조정하는 denormalization을 뜻한다. 처음부터 종속성과 무결성을 정리하지 않은 상태는 별개다. 한국어 번역 하나에 의존하지 말고 어떤 중복이나 파생 저장을 추가했는지 명시한다.
+
+## 중복을 도입한 뒤의 책임
+
+Column 복제, 계산값 저장과 read table 병합은 source of truth, 갱신 경로와 복구 방법을 필요로 한다. 같은 DB의 transaction, 비동기 CDC/이벤트와 주기적 재계산은 일관성 지연과 실패 경계가 다르다. 실제 병목과 허용 지연을 확인한 뒤 도입하고 drift 검출과 재구축 절차를 둔다.
+
 ## 출처
 
 - [이번에 확실히 정리하고 가시죠, RDB 정규화 — 코딩하는기술사](https://www.youtube.com/watch?v=KDkPizapEAA)
@@ -91,6 +117,15 @@ BCNF는 모든 비자명 함수 종속 `X → Y`에서 X가 슈퍼키가 되도�
 - 2NF/3NF/BCNF: [2NF](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347666), [3NF](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347667), [BCNF](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347668)
 - 실무 적용: [실무와 정규화](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347669), [정리](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347670)
 - [인프런, Hong, DB 설계](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338544)
+- [인프런, 13-01.다음으로](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347691)
+- [인프런, 쇼핑몰 DDL과 DB 만들기](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347685)
+- [인프런, 쇼핑몰 기능 확인1](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347687)
+- [인프런, 쇼핑몰 기능 확인2](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347688)
+- [인프런, 쇼핑몰 테이블 정의서](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347684)
+- [인프런, 역정규화 - 실습](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347683)
+- [인프런, 역정규화](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347677)
+- [인프런, 정리(물리적 모델링)](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347679)
+
 
 ## 관련 문서
 

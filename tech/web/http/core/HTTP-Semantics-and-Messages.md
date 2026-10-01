@@ -1,7 +1,7 @@
 ---
 tags: [web, http, semantics, message, stateless]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "Web - HTTP"
 aliases: ["HTTP Semantics and Messages", "HTTP 의미와 메시지"]
 ---
@@ -64,6 +64,19 @@ Content-Length: 25
 ```
 
 이 예시는 HTTP/1.1 wire format이다. HTTP/2와 HTTP/3에서는 같은 의미가 pseudo-header와 HEADERS/DATA frame으로 표현된다.
+
+## HTTP/1.1 시작 줄과 필드 줄
+
+```
+request-line = method SP request-target SP HTTP-version
+status-line  = HTTP-version SP status-code SP [ reason-phrase ]
+field-line   = field-name ":" OWS field-value OWS
+```
+
+- request-target은 보통 `/`로 시작하는 경로와 선택적 query(origin-form)다. 프록시에 보내는 absolute-form, CONNECT의 authority-form, `OPTIONS *`의 asterisk-form도 있다.
+- 필드 이름은 대소문자를 구분하지 않는다. HTTP/2와 HTTP/3는 이름을 소문자로 보내야 하고 대문자가 있으면 malformed로 처리하므로, 애플리케이션은 헤더를 대소문자 무관하게 조회하거나 소문자로 정규화해 다룬다.
+- 필드 이름과 콜론 사이에는 공백을 둘 수 없다. 과거 이 공백 처리 차이가 요청 라우팅과 응답 처리의 보안 취약점을 만들었기 때문에, 서버는 그런 요청을 400으로 거부해야 하고 프록시는 응답을 하위로 넘기기 전에 그 공백을 제거해야 한다. 아래 Request Smuggling과 같은 수신자 사이 파싱 불일치 계열이다. 값 앞뒤의 OWS(선택적 공백)는 허용되며 파서가 값에서 제외한다.
+- reason-phrase는 생략할 수 있고 클라이언트는 그 내용을 무시해야 한다(SHOULD). 번역되거나 중개자가 바꾸거나 다른 HTTP 버전으로 전달될 때 버려질 수 있고 HTTP/2와 HTTP/3에는 아예 없다. 분기는 상태 코드와 Problem Details 같은 content로 한다.
 
 ## 메시지 경계와 보안
 

@@ -1,7 +1,7 @@
 ---
 tags: [java, collections, map, stack, queue, deque]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Map Stack Queue", "Java Map Stack Queue Deque"]
 ---
@@ -15,12 +15,18 @@ aliases: ["Java Map Stack Queue", "Java Map Stack Queue Deque"]
 - `Map<K,V>`는 키 하나를 최대 한 값에 연결한다. 키는 중복될 수 없지만 값은 중복될 수 있다.
 - `Map`은 컬렉션 프레임워크에 속하지만 `Collection`을 상속하지 않고 그 자체로 `Iterable`도 아니다.
 - 순회는 `keySet()`, `values()`, `entrySet()` 뷰를 통해 한다. 키와 값이 함께 필요하면 `entrySet()`이 중복 조회를 피한다.
+- 세 뷰의 반환 타입에는 이유가 있다. 키는 중복될 수 없어 `keySet()`은 `Set`, 값은 중복될 수 있고 순서나 index도 없어 `values()`는 `Collection`, 키와 값을 묶은 단위인 `Map.Entry`는 키로 유일하므로 `entrySet()`은 `Set<Map.Entry<K,V>>`다.
+- Map의 키만 보면 Set과 같은 구조라 구현도 대응한다. API 문서 기준으로 `HashSet`은 `HashMap`을 배경으로 쓰고(OpenJDK는 값 자리에 공유 더미 객체를 둔다) `TreeSet`은 `TreeMap` 기반이다. `LinkedHashSet`이 `LinkedHashMap`으로 동작하는 것은 OpenJDK 구현 세부다.
+- 해시 index와 중복 판정에는 키만 쓰이므로 키 타입은 `hashCode`와 `equals`를 같은 기준으로 구현해야 한다. 값 타입은 저장과 키 조회만 하면 필요 없지만 `containsValue`나 map끼리의 `equals`처럼 값을 비교하면 `equals`가 필요하다.
+- `containsKey`는 해시로 찾아 기대 상수 시간이지만 `containsValue`는 대부분의 구현에서 map 크기에 선형이다(API 문서). 값으로 키를 찾으려면 `entrySet()`을 순회하며 값이 일치하는 entry의 키를 모아야 한다. 이런 조회가 잦으면 반대 방향 map을 함께 유지하는 방안을 검토한다.
 
 | 구현 | 순서 계약 | 선택 기준 |
 |---|---|---|
 | `HashMap` | 순회 순서 보장 없음 | 좋은 분산에서 빠른 일반 키 조회 |
 | `LinkedHashMap` | encounter order 유지, 설정에 따라 access order | 재현 가능한 순회, 간단한 접근 순서 정책 |
 | `TreeMap` | 자연 순서 또는 comparator로 키 정렬 | 범위 조회, 정렬된 키 |
+
+Java 21부터 `LinkedHashMap`과 `SortedMap` 구현은 `SequencedMap`이라 `firstEntry`, `lastEntry`, `pollFirstEntry`, `reversed` 같은 순서 연산을 공통 이름으로 제공한다(JEP 431).
 
 ## 삽입과 누적 API
 
@@ -37,7 +43,8 @@ groups.computeIfAbsent("backend", key -> new ArrayList<>()).add("java");
 - `put`은 이전 값을 반환한다. 기존 매핑을 덮어썼는지 알아야 하면 반환값과 `containsKey`를 함께 고려한다.
 - `putIfAbsent`는 매핑이 없거나 `null`에 연결된 경우 값을 넣는다.
 - `computeIfAbsent`의 mapping function은 호출되지 않을 수도 있고 `null`을 반환하면 매핑을 만들지 않는다. 함수 안에서 같은 map을 구조 변경하는 코드는 피한다.
-- `merge`는 빈도 집계처럼 기존 값과 새 값을 합치는 데 적합하다.
+- `merge`는 빈도 집계처럼 기존 값과 새 값을 합치는 데 적합하다. `map.put(word, map.getOrDefault(word, 0) + 1)`도 결과는 같지만 조회와 저장을 따로 호출한다.
+- 장바구니처럼 이름과 가격이 같은 상품을 한 키로 보고 수량만 늘리려면 상품 키에 `equals`와 `hashCode`가 필요하다. 없으면 같은 상품이 서로 다른 키로 두 번 들어가고 이후 제거와 수량 변경도 빗나간다.
 - `get`이 `null`을 반환하면 키가 없거나 값이 `null`일 수 있다. 둘을 구분하려면 `containsKey`가 필요하다.
 - `Map.of`와 `Map.copyOf`는 수정할 수 없고 `null` 키와 값을 허용하지 않는다.
 
@@ -74,6 +81,12 @@ int first = queue.pollFirst(); // 1
 - `ArrayDeque`는 `null`을 허용하지 않고 thread-safe하지 않다. 외부 동기화나 concurrent collection이 필요한지는 공유 방식에 따라 결정한다.
 - 대부분의 `Deque` 구현은 원소 기반 `equals`와 `hashCode` 대신 `Object`의 identity 기반 동작을 상속할 수 있다. 리스트처럼 값 동등성을 기대하지 않는다.
 
+### 기본 구현으로 ArrayDeque를 고르는 근거
+
+- 양끝 삽입과 삭제는 `LinkedList`도 O(1)이지만, API 문서는 `ArrayDeque`가 stack으로 쓸 때 `Stack`보다, queue로 쓸 때 `LinkedList`보다 빠를 가능성이 높다(likely)고 적는다. 보장이 아니라 경향이다. 배열 기반이라 원소마다 node를 할당하지 않고 cache 지역성이 좋다. 원형 배열 배치는 원리 설명으로만 쓰고 API 계약으로 가정하지 않는다([[Linear-Data-Structures|선형 자료구조]]의 circular buffer).
+- FIFO만 필요하면 `Queue<Integer> queue = new ArrayDeque<>()`처럼 `Queue` 타입으로 선언해 양끝 API를 쓰지 못하게 한다. `Deque`는 `Queue`를 상속하므로 양끝 기능까지 필요할 때 `Deque`로 선언한다. stack 전용 interface는 없어 `Deque`의 `push`, `pop`, `peek`을 쓰며, 이들은 각각 `addFirst`, `removeFirst`, `peekFirst`와 같다.
+- stack은 가장 나중에 넣은 것이 먼저 나오므로 브라우저 뒤로 가기(이동 전 현재 페이지를 push, 뒤로 가기에서 pop)와 undo 같은 이력에 맞다. queue는 프린터 대기열처럼 도착 순서대로 처리하거나, 사용자가 많은 시간에는 작업을 `offer`만 해 두고 한가한 시간에 `poll`해 실행하는 작업 예약에 쓴다. 작업을 공통 interface로 두면 압축, 백업, 정리 같은 서로 다른 작업을 같은 scheduler가 다룬다.
+
 ## 면접 체크포인트
 
 - `Map`이 `Collection`이나 `Iterable`이 아닌 이유와 순회 방법
@@ -81,6 +94,8 @@ int first = queue.pollFirst(); // 1
 - `Queue`의 예외형 메서드와 특별값형 메서드 차이
 - `Queue`가 항상 FIFO는 아닌 이유
 - `Stack` 대신 `Deque`를 권장하면서도 `Deque`가 엄격한 LIFO 타입은 아닌 이유
+- `values()`가 `Set`이 아니라 `Collection`인 이유와 `containsValue`의 비용
+- queue와 stack의 기본 구현으로 `ArrayDeque`를 고르는 근거와 그 근거의 한계
 
 ## 김영한 강사 강의 단원
 
@@ -107,6 +122,9 @@ int first = queue.pollFirst(); // 1
 - [Deque](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Deque.html)
 - [ArrayDeque](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/ArrayDeque.html)
 - [Stack](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Stack.html)
+- [HashSet](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/HashSet.html)
+- [TreeSet](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/TreeSet.html)
+- [JEP 431: Sequenced Collections](https://openjdk.org/jeps/431)
 
 ## 관련 문서
 

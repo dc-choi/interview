@@ -29,7 +29,7 @@ aliases: ["Spring Transaction Events", "TransactionalEventListener", "트랜잭�
 | `AFTER_ROLLBACK` | 롤백된 경우 처리 |
 | `AFTER_COMPLETION` | 완료 후 처리. 위 둘의 상위 개념 |
 
-javadoc이 덧붙이는 주의가 하나 더 있다. `AFTER_COMMIT`과 `AFTER_ROLLBACK`은 `AFTER_COMPLETION`의 특수화라 같은 순서대로 실행되며, 이 phase에서 기저 트랜잭션 리소스에 가한 조작은 커밋되지 않는다. 그러니 커밋 이후 리스너에서 DB에 쓰려면 새 트랜잭션을 여는 전파 설정을 따로 줘야 한다 → [[Spring-Transactional]]의 Propagation.
+javadoc이 덧붙이는 주의가 하나 더 있다. `AFTER_COMMIT`과 `AFTER_ROLLBACK`은 `AFTER_COMPLETION`의 특수화라 같은 순서대로 실행되며, 이 phase에서 기저 트랜잭션 리소스에 가한 조작은 커밋되지 않는다. 그러니 커밋 이후 리스너에서 DB에 쓰려면 새 트랜잭션을 여는 전파 설정을 따로 줘야 한다 → [[Spring-Transactional-Propagation|Spring transaction 전파]].
 
 ## 무증상 누락이 생기는 구조
 

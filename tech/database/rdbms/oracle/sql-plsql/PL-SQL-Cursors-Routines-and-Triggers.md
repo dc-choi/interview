@@ -93,6 +93,26 @@ END;
 4. Trigger의 statement/row 단위, bulk DML 비용과 rollback 결과를 regression test한다.
 5. DB CPU, lock, error와 호출량을 관측하고 application trace와 연결한다.
 
+## 수동 fetch 경계
+
+OPEN 직후 %ROWCOUNT는 0이며 첫 FETCH 전 %FOUND/%NOTFOUND는 NULL이다. `FETCH ...; EXIT WHEN c%NOTFOUND;` 순서로 종료를 먼저 확인한 뒤 값을 처리해야 마지막 값을 다시 처리하지 않는다. %ROWCOUNT는 성공한 fetch 누계이며 닫힌 cursor의 %FOUND/%NOTFOUND/%ROWCOUNT는 INVALID_CURSOR를 낼 수 있다. 예외 경로도 CLOSE하거나 cursor FOR LOOP에 lifecycle을 맡긴다.
+
+## 0건 DML은 성공할 수 있다
+
+UPDATE/DELETE가 0행이어도 NO_DATA_FOUND는 발생하지 않는다. 대상 존재가 contract이면 직후 SQL%ROWCOUNT를 확인하고 다른 SQL이 값을 바꾸기 전에 로컬 변수로 보관한다. `SELECT COUNT(*) INTO v_count`의 SQL%ROWCOUNT는 집계값이 아니라 반환한 결과 row 수인 1이다.
+
+## Parameter의 방향
+
+Mode를 생략하면 IN이다. IN은 caller의 값을 받고 OUT은 caller의 변수에 결과를 돌려주며 IN OUT은 입력과 출력 양쪽이다. OUT actual parameter는 값을 받을 변수여야 하며 driver bind, PL/SQL local 변수와 SQL*Plus VARIABLE을 호출 환경에 맞게 선택한다. reusable routine의 OUT 결과와 caller의 commit 책임은 별도다.
+
+## SELECT 목록의 함수 호출 비용
+
+내부 SELECT를 실행하는 PL/SQL 함수를 바깥 SELECT 목록에서 부르면 평가마다 SQL/PLSQL 전환과 추가 query가 발생할 수 있다. DISTINCT가 있다고 group 수만큼만 호출된다고 가정하지 않는다. 먼저 집계한 결과를 JOIN하는 set-based 대안과 실제 plan/호출량을 비교한다. optimizer와 cache에 따라 횟수가 달라질 수 있어 table row 수와 정확히 같다고 단정하지 않는다.
+
+## OLD와 NEW의 event 경계
+
+INSERT에는 새 값, DELETE에는 이전 값, UPDATE에는 두 값이 대응한다. 입고 수량 갱신을 재고에 반영하면 `기존 재고 - OLD 수량 + NEW 수량`이지만 item id까지 바뀌면 이전 item 차감과 새 item 증가를 분리해야 한다. 단순 NEW 수량 증가만으로 UPDATE를 처리하면 중복 집계가 된다. bulk DML, 잠금 순서와 rollback을 함께 검증한다.
+
 ## 출처
 
 - [Oracle AI Database 26ai, Cursors Overview](https://docs.oracle.com/en/database/oracle/oracle-database/26/lnpls/cursors-overview.html)
@@ -102,6 +122,8 @@ END;
 - [Oracle AI Database 26ai, PL/SQL Packages](https://docs.oracle.com/en/database/oracle/oracle-database/26/lnpls/plsql-packages.html)
 - [Oracle AI Database 26ai, PL/SQL Triggers](https://docs.oracle.com/en/database/oracle/oracle-database/26/lnpls/plsql-triggers.html)
 - 강의: [Cursor](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5052), [Exception](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5053), [Procedure](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5055), [Function](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5056), [Package](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5057), [Trigger](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5058)
+- [Oracle AI Database 26ai, plsql optimization and tuning](https://docs.oracle.com/en/database/oracle/oracle-database/26/lnpls/plsql-optimization-and-tuning.html)
+
 
 ## 관련 문서
 

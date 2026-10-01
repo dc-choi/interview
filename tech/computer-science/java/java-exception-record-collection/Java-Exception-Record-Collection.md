@@ -9,7 +9,7 @@ aliases: ["Java Exception Record Collection", "Checked Unchecked"]
 
 Java 백엔드 면접의 **타입 안전성, 예외 설계, 자료구조 선택** 주제들을 한데 모은 요약. 일반 백엔드 기초는 [[Java-Backend-Fundamentals]] 참조.
 
-- [[Java-Exception-Record-Collection-Checked-Unchecked|Checked vs Unchecked Exception — 계층, 차이, Error, Spring 관례]]
+- [[Java-Exception-Record-Collection-Checked-Unchecked|Checked vs Unchecked Exception — 계층, 차이, Error, 재정의 규칙과 throws 결합, Spring 관례]]
 - [[Java-Exception-Record-Collection-Record|Java Record — 자동 생성물, 제약, DTO와 VO 비교, Lombok 관계]]
 - [[Java-Exception-Record-Collection-First-Class-Collection|1급 컬렉션 — 불변성 보장, 도메인 규칙 캡슐화, 남용 주의]]
 - [[Java-Exception-Record-Collection-Stack-ArrayDeque|Stack 대신 ArrayDeque — Vector 상속 문제와 현대적 대안]]

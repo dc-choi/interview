@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, cost, model-selection]
 status: done
-verified_at: 2026-09-29
+verified_at: 2026-09-30
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model Routing"]
 ---
@@ -20,13 +20,15 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 | 균형형 | 일상 업무용, 플래그십 대비 큰 폭 저렴 | 대부분의 프로덕션 트래픽, 일반 생성, 요약 |
 | 저비용형 | 가장 빠르고 가장 싼 | 분류, 추출, 라우팅, 단순 변환, 대량 배치 |
 
-벤더별 매핑 예: 2026-09-29 Codex 모델 문서 기준 OpenAI는 GPT-6 Astra를 가장 강한 모델로, GPT-6 Sol(복잡한 코딩과 에이전트 작업)과 GPT-6 Luna(범위가 분명한 대량 반복 작업)를 권장 모델로 안내한다. 이전 세대 GPT-5.6 Sol, Terra, Luna는 롤아웃 기간 동안 유지된다. Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. Google은 Gemini Pro, Flash 계열. 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
+벤더별 매핑 예: 2026-09-29 Codex 모델 문서 기준 OpenAI는 GPT-6 Astra를 가장 강한 모델로, GPT-6 Sol(복잡한 코딩과 에이전트 작업)과 GPT-6 Luna(범위가 분명한 대량 반복 작업)를 권장 모델로 안내한다. 이전 세대 GPT-5.6 Sol, Terra, Luna는 롤아웃 기간 동안 유지된다. Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. 2026-09-30 공식 모델 개요 기준 현재 모델은 Fable 5.1(100만 토큰당 입력 $10, 출력 $50), Opus 5.5($4, $20), Sonnet 5.5($2, $10), Haiku 4.5($1, $5)이고 컨텍스트는 Haiku 4.5만 200K, 나머지는 1M이다. 공식 안내는 대부분의 작업을 Opus 5.5로 시작하고, 어려운 추론과 장기 에이전트 작업이나 Opus 5.5를 높은 effort로 돌려도 eval이 모자랄 때 Fable 5.1을 쓰라는 것이다. 대부분의 작업에서 Opus 5.5가 Fable 5.1 수준이라는 벤더 발표도 같은 패턴을 잇는다. Google은 Gemini Pro, Flash 계열. 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
 
 ## 티어 간 트레이드오프
 
 - **단가**: 상위 티어보다 하위 티어가 저렴하지만 가격 차이는 벤더와 세대마다 다르다. 티어 이름만 보고 절반이라고 가정하지 말고, 선택 시점의 공식 단가와 eval 결과를 함께 비교한다.
 - **지연**: 작은 티어일수록 빠르다. 사용자 대면 실시간 경로(자동완성, 채팅 첫 토큰)는 지연이 품질만큼 중요하다.
 - **능력 게이팅**: 최상위 추론 강도(max reasoning effort)나 특수 모드는 플래그십에서만 열리는 경우가 있다. 즉 일부 능력은 돈을 더 낸다고 아무 티어에서나 살 수 없고, 티어 자체를 올려야 한다.
+- **재작업 비용**: 호출 단가만 보면 하위 티어가 싸지만, 복잡한 작업에서는 근거 없는 내용을 사실처럼 쓰거나 스스로 점검하지 못하고 중간에 멈춰 사람이 뒷수습하는 비용이 붙는다. 반대로 스펙이 확정된 단순 반복 구현(CRUD, 정해진 양식의 보고서)에 상위 티어를 쓰면 비용만 늘고 결과가 더 좋지도 않다. 초기 오류를 막는 일이 중요하고 디버깅이 비싼 작업은 상위 티어와 높은 effort를, 스펙이 분명하고 속도가 중요한 작업은 하위 티어를 먼저 고른다. 경험칙이므로 같은 과업의 품질, 시간, 비용으로 확인한다.
+- **effort는 두 번째 손잡이**: 같은 모델 안에서도 effort가 사고뿐 아니라 텍스트와 도구 호출을 포함한 출력 토큰 전체의 성향을 바꾼다. 적응형 사고(adaptive thinking)는 모델이 요청마다 생각할지와 얼마나 생각할지를 스스로 정하는 방식이고 effort가 그 성향을 조절한다. 공식 문서는 낮은 effort를 서브에이전트처럼 단순하고 빠른 작업에 권하고, effort를 엄격한 예산이 아닌 행동 신호로 설명한다. 티어를 내리기 전에 effort를 먼저 조정해 볼 수 있다.
 
 ## 모델 라우팅 (티어 선택 패턴)
 
@@ -55,6 +57,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 코딩 에이전트에서는 라우팅이 호출 단위가 아니라 역할 단위로 나타난다. 상위 티어가 요구사항 해석, 계획, 최종 리뷰와 통합을 맡고, 하위 티어가 코드 탐색, 구현, 테스트와 자료 조사처럼 범위가 좁고 반복적인 일을 맡는다. 질문이 어떤 모델이 가장 좋은가에서 어떤 일을 어떤 모델에 맡기는가로 바뀐다.
 
 - **구성 수단(Codex 기준)**: 커스텀 에이전트는 `~/.codex/agents/`(개인)나 `.codex/agents/`(프로젝트)에 TOML 파일 하나당 하나씩 정의하고, 파일 안에 `model`, `model_reasoning_effort`, `sandbox_mode`를 둘 수 있다. 전역 기본값은 `config.toml`의 `[agents]`(`default_subagent_model`, `default_subagent_reasoning_effort`)이고, 아무것도 지정하지 않으면 서브에이전트는 부모의 모델과 추론 수준을 상속한다. 언제 위임할지는 AGENTS.md나 SKILL.md에 적어 두면 Codex가 따른다. 공식 예시도 읽기 전용 탐색 에이전트에 `gpt-6-luna`, 리뷰 에이전트에 `gpt-6-sol`을 배정하며, 같은 문서는 GPT-6 Sol과 GPT-6 Luna를 기본 선택지로 안내하고 GPT-5.6 계열은 롤아웃 기간 동안 유지한다고 밝힌다(2026-09-29 공식 문서 확인)
+- **구성 수단(Claude Code 기준)**: `opusplan` 별칭은 plan 모드에서 Opus, 실행에서 Sonnet으로 자동 전환해 계획과 구현의 모델을 나눈다. 공식 도움말은 Opus가 턴당 Sonnet의 몇 배를 쓰고 Sonnet은 Haiku보다 많이 쓴다며 계획은 Opus, 실행은 Sonnet을 권한다. 2026-09-30 API 단가로는 Opus 5.5가 Sonnet 5.5의 2배, Fable 5.1이 Opus 5.5의 2.5배이고, 실제 소비는 effort와 사고 토큰에 따라 달라진다. 서브에이전트는 정의 파일의 `model` 필드로 따로 고른다([[Claude-Code-Extension-Reference|확장 메커니즘]])
 - **상위 지휘, 하위 실행**: 공개된 오케스트레이터 사례는 탐색, 구현, 조사, 테스트를 하위 티어 에이전트가 차례로 맡고, 독립 리뷰와 최종 통합을 상위 티어가 맡는 순서를 쓴다. 역할 파일, AGENTS.md와 호출용 스킬을 한 묶음으로 배포하는 형태다
 - **서로 다른 모델의 교차 검토**: 한 모델이 계획을 쓰면 다른 벤더 모델이 승인할 때까지 계획을 검토하고, 저가 모델이 구현한 뒤 계획 작성 모델이 변경분 전체를 읽고 고친다. 마지막에 검토 모델이 계획 대비 코드를 승인할 때까지 다시 본다. 프레임워크나 MCP 없이 CLI를 부르는 셸 스크립트 하나로 만든 사례가 있고, 효과의 원천은 도구 개수보다 서로 검토하게 만드는 구성이라는 주장이다. 구현과 리뷰를 서로 다른 에이전트 제품에 나눠 맡기는 경험칙도 같은 계열이다
 - **반대 방향 조합**: 최상위 모델의 사용량이 제한될 때 한 단계 아래 모델로 스펙, 구현 계획, 테스트 계획 문서까지 만들고, 그 문서를 상위 모델에 넣어 구현만 맡긴다. 비싼 토큰을 문서로 확정한 결정의 실행에만 쓰는 방식이다
@@ -105,9 +108,15 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - [OpenAI API, Models](https://developers.openai.com/api/docs/models) (2026-09-04 플래그십 확인)
 - [OpenAI API, GPT-5.6 모델 가이드](https://developers.openai.com/api/docs/guides/latest-model)
 - [OpenAI API, GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna)
-- [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격)
+- [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격, 2026-09-30 현재 모델 확인)
+- [Anthropic Platform Docs, Effort](https://platform.claude.com/docs/en/build-with-claude/effort)
+- [Anthropic Platform Docs, Steering thinking](https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost)
+- [Introducing Claude Opus 5.5 — Anthropic](https://www.anthropic.com/claude-opus-5-5)
+- [Claude Code Docs, Model configuration](https://code.claude.com/docs/en/model-config) (opusplan 확인)
+- [Claude Help Center, Models, usage, and limits in Claude Code](https://support.claude.com/en/articles/14552983-models-usage-and-limits-in-claude-code)
 - [OpenAI Codex, Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) (2026-09-29 커스텀 에이전트 설정 확인)
 - [OpenAI Codex, Models](https://learn.chatgpt.com/docs/models) (2026-09-29 GPT-6 Sol, Luna 확인)
 - [Codex 역할 분리 오케스트레이터 소개 — Threads, vibe.itji](https://www.threads.com/@vibe.itji/post/Dc-WSSBD9Os)
 - [서로 검토하는 멀티 모델 코딩 파이프라인 — Threads, claudical_official](https://www.threads.com/@claudical_official/post/Daw9YLkD3qu)
 - [기획은 하위 모델, 구현은 상위 모델 — Threads, dev.inniverse](https://www.threads.com/@dev.inniverse/post/Dac6StsCbgH)
+- [인프런, 널널한 개발자, 앤트로픽 AI 모델별 특징](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498589)

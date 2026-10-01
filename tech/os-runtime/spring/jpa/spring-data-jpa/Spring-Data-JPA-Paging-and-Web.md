@@ -97,7 +97,13 @@ Controller argument를 `@PathVariable("id") Member member`처럼 선언하면 co
 - 큰 offset은 keyset 또는 cursor로 전환해야 하는가
 - `PageImpl`을 public JSON으로 직접 노출하지 않았는가
 
+### 요청 page 번호와 응답 번호
+
+`one-indexed-parameters: true`는 요청 해석을 1부터로 바꾸지만 내부 `Pageable`/`Page`의 번호는 0 기준으로 남는다. 1 기준 API를 제공한다면 응답 DTO 번호도 같은 계약으로 변환한다. `@PageableDefault`는 요청 값이 없을 때 endpoint 기본값을 정하며 size 상한을 대신하지 않는다. 복수 정렬은 `sort=username,desc&sort=id,asc`처럼 parameter를 반복한다.
+
 ## 출처
+
+- [Spring Data Commons, PageableHandlerMethodArgumentResolverSupport](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/web/PageableHandlerMethodArgumentResolverSupport.html)
 
 - [Spring Data JPA 4.1, Query Methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html)
 - [Spring Data Commons 4.1, Web Extensions](https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html)

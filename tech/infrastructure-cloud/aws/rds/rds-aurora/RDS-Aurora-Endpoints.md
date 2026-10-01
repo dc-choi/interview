@@ -22,11 +22,13 @@ Aurora Endpoint는 애플리케이션이 특정 DB 인스턴스를 직접 바라
 
 Aurora는 공유 스토리지라 Replica Lag가 보통 밀리초 수준이지만 0은 아니다. "방금 쓴 데이터를 반드시 즉시 읽어야 하는" 민감한 조회(read-your-own-writes)는 Reader가 아니라 **Writer Endpoint로 라우팅**하는 것을 검토해야 한다. 읽기 부하 분산보다 데이터 최신성이 더 중요한 경우의 선택이다. 라우팅 전략 일반론은 [[Read-Replica-Routing|Read Replica 라우팅]], 복제 지연 read-after-write 함정은 [[RDS-Operational-Pitfalls|RDS 운영 함정]] 참고.
 
-## Reader Endpoint의 두 가지 함정
+## Reader Endpoint의 세 가지 함정
 
 **1. 지능형 로드밸런서가 아니다.** Reader Endpoint는 연결 시점에 Reader 중 하나로 보내는 DNS 기반 분산이라, Reader가 여러 대여도 트래픽이 완벽히 균등하게 분산되지 않는다. "Reader Endpoint를 쓰는데 왜 한쪽만 바쁘지?"가 전형적 증상. 커넥션 풀이 기존 연결을 오래 유지하면 불균형이 더 굳어진다. 정교한 분산이 필요하면 ProxySQL 같은 별도 프록시 계층을 검토한다.
 
 **2. Reader가 없으면 Writer로 연결될 수 있다.** Reader 인스턴스가 하나도 없거나 정상 상태가 아니면 Reader Endpoint가 Writer로 폴백된다. 연결 자체는 유지되어 좋지만, 앱이 "Reader Endpoint = 무조건 읽기 전용"이라고 가정하면 위험하다 — 읽기 트래픽이 Writer로 몰려 Writer 부하가 커진다. Reader Endpoint의 장애 시 거동까지 운영 정책에 명시해야 한다.
+
+**3. 프록시를 넣어도 DNS 캐시가 분산을 무력화할 수 있다.** Reader Endpoint는 새 연결 단위로 Reader를 나눈다. ProxySQL 문서 기준으로 ProxySQL은 2.4.5부터 백엔드 호스트명의 DNS 조회 결과를 캐시하며 기본으로 켜져 있다(`mysql-monitor_local_dns_cache_ttl` 기본 300000ms, 갱신 주기 `mysql-monitor_local_dns_cache_refresh_interval` 기본 60000ms). Reader Endpoint를 ProxySQL 백엔드로 등록하면 캐시가 유지되는 동안 새 백엔드 연결이 같은 IP, 즉 같은 Reader로 몰릴 수 있다. 두 변수 중 하나를 0으로 두면 캐시가 꺼지지만 연결마다 DNS 조회 지연이 다시 생긴다. 각 Instance Endpoint를 백엔드로 등록하거나 ProxySQL의 `mysql_aws_aurora_hostgroups`로 Writer, Reader와 복제 지연을 자동 탐지해 분산하는 방식도 비교한다. 1번의 해법으로 프록시를 넣는 것만으로 균등 분산이 보장되지는 않는다.
 
 ## Custom Endpoint — 워크로드 격리
 
@@ -62,6 +64,7 @@ Endpoint 멤버십, 제외 대상, Auto Scaling 정책, 알람 연결은 CLI로 
 - Endpoint 4종(Writer/Reader/Custom/Instance)과 각각의 용도
 - Writer Endpoint를 읽기에 쓰는 경우(read-your-own-writes, Lag 민감)
 - Reader Endpoint가 지능형 LB가 아닌 점, Reader 부재 시 Writer 폴백의 위험
+- 프록시의 DNS 캐시가 Reader Endpoint의 연결 분산을 무력화하는 이유와 대안(캐시 끄기, Instance Endpoint 등록, Aurora 토폴로지 자동 탐지)
 - Custom Endpoint로 OLTP/배치를 격리하는 이유(캐시 밀림, CPU/I/O 경합)
 - Failover에서 연결 끊김 vs 역할만 바뀜의 차이와 read-only transaction 오류
 - AWS Advanced JDBC Wrapper의 목적과 도입 전 부하 테스트 필요성
@@ -69,6 +72,11 @@ Endpoint 멤버십, 제외 대상, Auto Scaling 정책, 알람 연결은 CLI로 
 ## 출처
 - [Aurora Endpoint와 Auto Scaling 운영 (YouTube)](https://www.youtube.com/watch?v=qzjx24vJ350&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=2)
 - [Amazon Aurora User Guide, Aurora MySQL isolation levels](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.IsolationLevels.html)
+- [Amazon Aurora User Guide, Reader endpoints](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Reader.html)
+- [ProxySQL Documentation, DNS Cache](https://proxysql.com/documentation/dns-cache/)
+- [ProxySQL Documentation, MySQL Monitor Variables](https://proxysql.com/documentation/global-variables/mysql-monitor-variables/)
+- [ProxySQL Documentation, AWS Aurora](https://proxysql.com/documentation/aws-aurora-configuration/)
+- [인프런, Real MySQL 시즌 1 - Part 2, 커넥션 관리](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226586)
 
 ## 관련 문서
 - [[RDS-Aurora-AutoScaling|Aurora Auto Scaling 운영]] — Reader 스케일링, Flapping, Cache Warming

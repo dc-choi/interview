@@ -86,7 +86,19 @@ Proxy는 모든 object에 완전히 투명한 wrapper가 아니다.
 
 Proxy를 authorization/security sandbox로 간주하지 않는다. validation, observation, virtualization처럼 명확한 경계에 사용하고 domain entity의 모든 접근을 마법처럼 가로채는 설계는 피한다.
 
+## receiver, 고정 target과 실패 신호
+
+Proxy를 prototype으로 두면 own property로 해결되지 않은 읽기/쓰기/has가 chain을 따라 trap에 도달한다. receiver는 처음 접근을 받은 child여서 Reflect.set(target,key,value,receiver)는 child에 own property를 만들 수 있지만 target[key] 대입은 target을 바꾼다. receiver를 생략하지 않는 이유다.
+
+ProxyCreate는 생성 때의 target object를 저장하므로 바깥 target 변수에 다른 object를 재할당해도 proxy의 대상은 바뀌지 않는다. closure로 다른 대상을 위임하더라도 invariant 검사는 처음 target 기준이다. target/handler는 object여야 하고 빈 trap은 {}로 표현한다. apply/construct trap만 추가해도 일반 object가 함수/생성자가 되지 않으며 proxy는 target의 Call/Construct 능력을 따른다.
+
+trap의 반환은 계약이 다르다. getPrototypeOf는 object/null, getOwnPropertyDescriptor는 descriptor/undefined, ownKeys는 중복 없는 String/Symbol 목록, construct는 object를 반환해야 한다. non-extensible target의 prototype과 key 목록을 거짓으로 보고할 수 없다. Array.isArray는 가짜 prototype을 돌려주는 trap이 아닌 실제 target의 배열 여부를 따른다.
+
+Object.defineProperty는 실패하면 mode와 관계없이 TypeError, Reflect.defineProperty는 false다. property 대입은 실패 시 sloppy에서 무시, strict에서 TypeError이고 Reflect.set은 false다. Object.setPrototypeOf는 거부 시 TypeError, Reflect.setPrototypeOf는 false다. Reflect도 잘못된 인자나 trap이 던진 예외는 전파하므로 모든 실패를 boolean으로 바꾸는 API라고 일반화하지 않는다.
+
 ## 출처
+
+- 인프런 보충 강의: [4. ArrayBuffer 인스턴스 생성: new ArrayBuffer(), byteLength, slice(), isView()](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=50311)
 
 - [ECMAScript Language Specification, Reflect](https://tc39.es/ecma262/multipage/reflection.html#sec-reflect-object)
 - [ECMAScript Language Specification, Proxy objects](https://tc39.es/ecma262/multipage/reflection.html#sec-proxy-objects)

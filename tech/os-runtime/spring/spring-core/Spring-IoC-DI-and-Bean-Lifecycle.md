@@ -64,7 +64,7 @@ class OrderService {
 |---|---|---|
 | `singleton` | Bean definition당 container 안에 하나 | JVM 전체 singleton이 아니며 thread safety를 자동 보장하지 않음 |
 | `prototype` | 요청할 때마다 새 instance | container는 생성 후 추적하지 않아 destruction callback을 호출하지 않음 |
-| `request` | HTTP request 하나 | 더 긴 scope에 주입할 때 proxy 또는 provider 필요 |
+| `request` | HTTP request 하나 | 요청 완료 시 destruction callback, 긴 scope에는 proxy/provider 필요 |
 | `session` | HTTP session 하나 | 메모리와 분산 session 일관성 비용 |
 | `application` | ServletContext 하나 | 여러 Spring context와 경계가 다를 수 있음 |
 | `websocket` | WebSocket session 하나 | web-aware context에서만 유효 |
@@ -128,7 +128,11 @@ Spring Boot에서는 package root 아래 component scan과 auto-configuration이
 - 같은 type 후보가 여러 개일 때 qualifier, primary, fallback의 의도를 구분한다.
 - lifecycle callback과 BeanPostProcessor/proxy 생성의 경계를 설명한다.
 
+여러 configuration을 한 context에 등록하거나 `@Import`로 조합하면 설정 source는 나뉘어도 Bean registry는 공유한다. 같은 이름의 정의 충돌도 이 경계에서 발생한다. configuration 객체에 field로 의존성을 주입하면 초기 처리 과정에서 의존성이 일찍 만들어질 수 있으므로 가능한 경우 `@Bean` method parameter로 연결한다. configuration 간 직접 `@Bean` 호출의 의미는 [[Spring-Core-Container-and-Bean-Metadata|full/lite mode 설명]]를 함께 확인한다.
+
 ## 출처
+
+- [Spring, Composing Java-based Configurations](https://docs.spring.io/spring-framework/reference/core/beans/java/composing-configuration-classes.html)
 
 - [Spring Framework, The IoC Container](https://docs.spring.io/spring-framework/reference/core/beans.html)
 - [Spring Framework, Bean Scopes](https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html)
@@ -140,6 +144,7 @@ Spring Boot에서는 package root 아래 component scan과 auto-configuration이
 - [인프런, 의존 객체 선택](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13721)
 - [인프런, Bean 생명주기](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13723)
 - [인프런, Java configuration](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13724)
+- [인프런, 인프런, 어노테이션을 이용한 스프링 설정 - 2](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13725)
 
 ## 관련 문서
 

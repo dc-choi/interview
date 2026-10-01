@@ -16,8 +16,10 @@ Java의 공통 객체 계약과 값 타입, 시간, 중첩 클래스, 예외 처
 3. [[Java-Standard-Library-Wrapper-Class-System-and-Random|래퍼, Class, System과 난수]]
 4. [[Java-Standard-Library-Enum|열거형]]
 5. [[Java-Standard-Library-Date-and-Time|날짜와 시간]]
+   - [[Java-Standard-Library-Date-and-Time-Calculation|날짜와 시간 계산]]
 6. [[Java-Standard-Library-Nested-and-Local-Classes|중첩 클래스와 지역 클래스]]
 7. [[Java-Standard-Library-Exception-Handling|예외 처리]]
+   - [[Java-Standard-Library-Exception-Handling-Resource-Cleanup|자원 정리]]
 
 ## 수집 범위
 

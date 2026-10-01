@@ -83,6 +83,17 @@ aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하
 
 도구를 쓰는 턴에서 제약과 검증이 끼어드는 주된 자리는 3번이다. 다만 3번 하나만 있는 것은 아니다. 도구 호출 없이 끝나는 2번에는 `Stop` 훅이 붙어 완료 선언 자체를 막을 수 있고(→ [[Eval-Rubric-and-Score-Gate]]), 턴 경계에는 위의 루프 가드가 따로 걸린다. 같은 규칙이라도 CLAUDE.md에 문장으로 두면 모델이 기억해야 하는 대상이지만, 3번의 훅에 두면 루프가 돌 때마다 코드가 검사한다. 이 차이가 요청과 강제를 가른다. 어느 규칙을 어느 층에 둘지의 판별 기준은 [[Harness-Gate-Placement]]가 정본이고, 배경 논의는 [[AI-Native-System]]의 부탁 대 강제와 [[Context-Engineering]]의 Advisory와 강제 검증에 있다.
 
+## 가이드와 센서
+
+하네스의 통제 장치는 행동 전과 후로 나뉜다.
+
+| 구분 | 역할 | 예 |
+|---|---|---|
+| 가이드(피드포워드) | 에이전트가 행동하기 전에 방향을 잡는다 | AGENTS.md와 CLAUDE.md의 규칙, 스킬, 아키텍처 문서, 타입 정의와 LSP, 구조 테스트 |
+| 센서(피드백) | 행동한 뒤 결과를 관찰해 스스로 고치게 한다 | 린터, 타입 검사, 테스트, 리뷰 에이전트, 의존성 스캐너 |
+
+가이드만 있으면 규칙은 알지만 제대로 했는지 확인할 수 없고, 센서만 있으면 같은 실수를 반복하며 매번 고쳐야 한다. 둘은 실행 방식으로도 나뉜다. 계산형 통제(린터, 타입 검사, 테스트)는 빠르고 결정적이라 개발 초기에 자주 돌리고, 추론형 통제(AI 리뷰, 의미 분석)는 느리고 비결정적이라 통합 단계처럼 판단이 필요한 곳에 둔다. 완료 기준을 못 채우면 같은 프롬프트를 다시 넣어 반복하는 ralph 루프는 센서를 루프 종료 조건으로 삼은 하나의 반복 전략이지 하네스 전체가 아니다. [[Agent-Loop-Engineering]]
+
 ## 세 기둥
 
 | 기둥 | 묻는 질문 | 수단 |
@@ -105,6 +116,7 @@ aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하
 
 ## 출처
 
+- [Harness engineering for coding agent users — martinfowler.com, Birgitta Böckeler](https://martinfowler.com/articles/harness-engineering.html)
 - [Level 9 하네스 엔지니어링과 Evaluator 제어 — 클로드 코드 마스터 활용편 발표 자료(한빛미디어), 빌런 (2026-09)](https://run-ai.kr/learn/carve-harness)
 - [코딩 에이전트 아키텍처 다이어그램 — claude-code-expert](https://claude-code-expert.github.io/diagrams/coding-agent-architecture.html)
 - [carve-harness — GitHub, claude-code-expert](https://github.com/claude-code-expert/carve-harness)

@@ -41,6 +41,8 @@ aliases: ["Cache Decision", "캐시 도입 의사결정", "캐시 제거"]
 4. 서버가 한두 대이고 데이터가 작으면 프로세스 로컬 캐시로 시작한다
 5. 여러 서버가 같은 값을 공유해야 하거나 로컬 캐시의 서버별 무효화가 어려워지면 분산 캐시를 붙인다 ([[Multi-Level-Cache|Multi-Level Cache]])
 
+강의는 응답 속도 개선도 중요하지만 실무에서는 공유 자원인 DB를 지키는 쪽에 더 무게를 두라고 강조한다. 이벤트 공지 뒤 특정 상품 페이지로 요청이 몰리면 같은 상품을 반복 조회하는 읽기가 DB를 느리게 만들고, 같은 DB를 쓰는 장바구니와 주문까지 함께 느려진다. 자주 읽히고 드물게 바뀌는 상품명 같은 데이터를 캐시에 두면 한 기능의 폭주가 다른 기능으로 번지는 것을 먼저 막는다. 강의는 가격도 이 예로 들지만, 가격은 위 표처럼 어긋나면 사고인 값이므로 목록과 상세 화면의 표시값만 짧은 TTL로 캐시하고 주문 시점에 원본에서 다시 검증한다([[TTL|TTL 전략]], [[Redis-Cart-Checkout-Consistency|장바구니와 주문 정합성]]). 주문마다 바뀌는 재고나 한 번도 틀리면 안 되는 결제 상태는 이 기준에서 벗어나므로 신중히 다룬다.
+
 ### 도입 신호와 정량 점검
 
 | 신호 | 확인할 것 |
@@ -81,7 +83,7 @@ aliases: ["Cache Decision", "캐시 도입 의사결정", "캐시 제거"]
 | Legacy 영향범위 | Write-Through로 갱신 경로를 모으려는데, 데이터 가공, 합성 흐름이 너무 깊어 테스트, 영향범위 추적 불가 |
 | 인기 상위 키마저 재방문 간격 > TTL | 대부분 만료 뒤 다시 읽혀 miss가 많음. TTL을 늘리면 허용할 stale 구간도 함께 늘어남 |
 
-**핵심 통찰**: 캐시 히트율은 캐시 조회 중 hit 비율이지 전체 트래픽에서 얻은 이득이 아니다. 노출이 적은 화면은 히트율이 높아도 절감한 원본 조회 수가 작을 수 있다. 반대로 낮은 히트율 영역을 집계에서 제거하면 평균 히트율만 오를 수 있으므로, 히트율보다 절감한 지연, 원본 부하와 비용을 함께 본다.
+**핵심 통찰**: 캐시 히트율은 캐시 조회 중 hit 비율이지 전체 트래픽에서 얻은 이득이 아니다. 노출이 적은 화면은 히트율이 높아도 절감한 원본 조회 수가 작을 수 있다. 반대로 낮은 히트율 영역을 집계에서 제거하면 평균 히트율만 오를 수 있으므로, 히트율보다 절감한 지연, 원본 부하와 비용을 함께 본다. 그 경로가 전체 부하에서 차지하는 비중으로 얻을 수 있는 이득의 상한은 [[Cache-Locality|암달의 법칙]]으로 계산한다.
 
 ## 제거 vs Write-Through 적용 — 의사결정 분기
 
@@ -149,6 +151,7 @@ Write-Through는 read-after-write freshness를 높이는 후보이지 정합성�
 - [TS Backend Meetup — 캐시 사용의 올바른 방법, 최원준]
 - [Microsoft Learn, Caching guidance](https://learn.microsoft.com/en-us/azure/architecture/best-practices/caching)
 - [캐시(Redis)는 언제 도입하나 — Threads, bear_dba](https://www.threads.com/@bear_dba/post/DaZGCIGmELs)
+- [인프런, Hong, 캐시는 왜 필요할까?? 그리고 SET 명령어 옵션으로 다루는 TTL](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481441)
 
 ## 관련 문서
 - [[Cache-Strategies|Cache 전략 (5가지)]]

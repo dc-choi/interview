@@ -19,13 +19,13 @@ Unicode text <-> Charset <-> byte stream
 
 ## 학습 지도
 
-- [[Java-Character-Encoding-and-Charset|문자 인코딩과 Charset]]: Unicode, UTF-8, 명시적 encoding contract
-- [[Java-Byte-and-Character-Streams|byte stream과 character stream]]: partial read, buffering, decorator, 자원 수명
-- [[Java-IO-Serialization-and-Data-Formats|직렬화와 데이터 형식]]: DataStream, Java serialization, JSON와 schema format
+- [[Java-Character-Encoding-and-Charset|문자 인코딩과 Charset]]: Unicode, UTF-8, 명시적 encoding contract, charset별 byte 수와 글자가 깨지는 두 지점
+- [[Java-Byte-and-Character-Streams|byte stream과 character stream]]: partial read, buffering과 호출 횟수, decorator, 자원 수명, Scanner와 System.in
+- [[Java-IO-Serialization-and-Data-Formats|직렬화와 데이터 형식]]: DataStream frame 원리, Java serialization, JSON와 schema format
 - [[Java-Path-Files-and-Copy|Path, Files와 file copy]]: file metadata, traversal, copy 전략
 - [[Java-Network-and-HTTP|Java 네트워크와 HTTP]]: socket 기초, timeout과 protocol, socket 위의 HTTP server
 - [[Java-Reflection|Java reflection]]: metadata 탐색, 동적 호출, module access 경계
-- [[Java-Annotations|Java annotation]]: retention, target, inheritance와 metadata 기반 검증
+- [[Java-Annotations|Java annotation]]: element 규칙, retention, target, inheritance, Java 기본 annotation과 metadata 기반 검증
 
 ## 현재 기준으로 바로잡을 것
 

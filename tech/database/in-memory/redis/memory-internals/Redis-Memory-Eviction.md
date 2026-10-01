@@ -3,7 +3,7 @@ tags: [database, redis, memory, eviction, lru, lfu]
 status: done
 category: "Data & Storage - Cache & KV"
 aliases: ["Redis Eviction", "maxmemory-policy", "LRU vs LFU"]
-verified_at: 2026-08-05
+verified_at: 2026-09-30
 ---
 
 # Redis Memory Eviction Policy
@@ -25,7 +25,9 @@ verified_at: 2026-08-05
 
 기본은 `noeviction`. 캐시 용도면 **`allkeys-lru` 또는 `allkeys-lfu`**가 표준.
 
-Redis 8.6부터 읽기가 아니라 **쓰기 시각만 갱신하는 LRM(Least Recently Modified)** 계열 `allkeys-lrm`, `volatile-lrm`이 추가돼 정책은 10종이다. 위 8종은 8.4 이하 기준이고, 8.6+에서 읽기는 잦지만 갱신이 멈춘 데이터를 걷어내려면 LRM을 검토한다.
+Redis 8.6부터 읽기가 아니라 **쓰기 시각만 갱신하는 LRM(Least Recently Modified)** 계열 `allkeys-lrm`, `volatile-lrm`이 추가돼 정책은 10종이다. 위 8종은 8.4 이하 기준이고, 8.6+에서 읽기는 잦지만 갱신이 멈춘 데이터를 걷어내려면 LRM을 검토한다. Valkey 문서는 위 8종만 제공하고 LRM 계열이 없으므로, 엔진을 바꿀 때는 정책 이름을 그대로 옮길 수 있는지 먼저 확인한다.
+
+maxmemory와 eviction은 일부 키를 잃더라도 서버를 멈추지 않게 하는 장치다. `maxmemory`가 없으면 주는 대로 받다가 호스트 메모리가 바닥나 swap이나 OOM Kill로 끝나고, 정책을 고르지 않은 캐시는 기본 `noeviction` 때문에 쓰기 오류를 받는다. 작은 `maxmemory`(예: 10MB)로 키를 대량 주입한 뒤 `DBSIZE`, `INFO stats`의 `evicted_keys`로 정책이 실제로 동작하는지 확인해 둔다.
 
 ## allkeys vs volatile 선택
 
@@ -114,7 +116,7 @@ MEMORY DOCTOR     # 권고 자동 출력
 핵심 지표:
 - `used_memory_rss` — OS가 실제 점유한 메모리 (단편화 포함)
 - `used_memory_human` — 논리적 사용량
-- `mem_fragmentation_ratio` — RSS / 논리 사용량. 1.0~1.5 정상, 1.5+면 단편화 의심
+- `mem_fragmentation_ratio` — RSS / 논리 사용량. 1.0~1.5 정상, 1.5+면 단편화 의심. 단 차이 바이트(`mem_fragmentation_bytes`)가 수 MB면 비율이 높아도 문제가 아니고, 1 미만이면 OS가 일부를 swap으로 내렸다는 신호다
 - `evicted_keys` — 누적 eviction 수, 폭증하면 maxmemory 부족 신호
 
 ## maxmemory 설정 권장
@@ -153,6 +155,8 @@ maxmemory-samples 10
 - [Redis Docs, OBJECT FREQ](https://redis.io/docs/latest/commands/object-freq/)
 - [redis.conf 8.0 (maxmemory-policy 기본값, maxmemory-samples)](https://github.com/redis/redis/blob/8.0/redis.conf)
 - [antirez, Random notes on improving the Redis LRU algorithm](http://antirez.com/news/109)
+- [Valkey Docs, Key eviction](https://valkey.io/topics/lru-cache/)
+- [인프런, Hong, RDB 스냅샷의 단점이 무엇이였을까?? 그걸 보완하기 위한 AOF 방식과 maxmemory 그리고 eviction 까지](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481457)
 
 ## 관련 문서
 

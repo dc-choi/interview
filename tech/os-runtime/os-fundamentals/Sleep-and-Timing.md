@@ -124,6 +124,7 @@ sleep 전후를 고해상도 카운터로 재면 매번 값이 달라지고, 그
 
 ## 관련 문서
 
+- [[System-Time-and-Clock-Sync|시스템 시간과 시계 동기화 (NTP 보정과 벽시계)]]
 - [[Process-Lifecycle|프로세스 상태 (대기, 준비, 실행)]]
 - [[Context-Switching|컨텍스트 스위칭과 CPU 스케줄링]]
 - [[Event-Loop-Phases|이벤트 루프 페이즈]]

@@ -1,9 +1,9 @@
 ---
 tags: [database, rdbms, mysql, dml, upsert, batch]
 status: done
-verified_at: 2026-08-21
+verified_at: 2026-09-30
 category: "Data & Storage - RDB"
-aliases: ["MySQL DML 패턴", "MySQL UPSERT", "MySQL 배치 갱신"]
+aliases: ["MySQL DML 패턴", "MySQL UPSERT", "MySQL 배치 삽입", "조건부 INSERT"]
 ---
 
 # MySQL DML 충돌 처리와 배치 패턴
@@ -33,66 +33,55 @@ ON DUPLICATE KEY UPDATE
 
 MySQL 8.4에서는 새 값을 가리킬 때 row alias를 사용할 수 있다. `VALUES(column)` 방식은 deprecated 상태다. 테이블에 여러 UNIQUE 인덱스가 있다면 입력 한 행이 서로 다른 기존 행과 각각 충돌할 수 있으므로, UPSERT의 식별 키를 하나로 설계하거나 사전 조회와 트랜잭션으로 의도를 분리한다.
 
+### UPSERT와 IGNORE가 소모하는 AUTO_INCREMENT
+
+MySQL 8.4 InnoDB의 기본 `innodb_autoinc_lock_mode`는 row-based replication과의 호환을 위한 2(interleaved)이며 동적 변수가 아니라 재시작해야 바꿀 수 있다. `INSERT ... ON DUPLICATE KEY UPDATE`는 mixed-mode insert로 분류되고, 매뉴얼은 최악의 경우 INSERT 뒤 UPDATE와 같아 할당된 값이 갱신 단계에서 쓰이지 않을 수 있다고 적는다. 한 번 생성된 값은 문장이 끝나지 않거나 트랜잭션이 롤백돼도 되돌려지지 않는다.
+
+- 8.4.6 기본 설정 재현에서 같은 키로 ODKU 갱신을 두 번 하자 다음 새 행의 id가 두 칸 건너뛰었고, UNIQUE 보조 키가 중복된 `INSERT IGNORE` 두 번도 값을 두 개 소모했다. IGNORE의 할당 시점은 매뉴얼에 명시가 없으므로 대상 버전에서 확인한다.
+- `MAX(id)`나 테이블의 AUTO_INCREMENT 값을 행 수, 주문 수 같은 업무 지표로 쓰지 않는다. 건수는 `COUNT`나 집계 테이블로 구한다. 롤백과 bulk insert의 과대 할당도 간격을 만든다([[Primary-Key-Strategy#Auto increment|Auto increment]]).
+- 카운터, 일별 통계처럼 UPSERT가 잦은 테이블은 실제 행 수보다 ID가 훨씬 빨리 는다. 정수 컬럼이 값을 다 쓰면 다음 INSERT는 중복 키 오류를 내므로 `BIGINT`를 쓰거나 타입 상한(`INT` 2,147,483,647, `INT UNSIGNED` 4,294,967,295) 대비 여유를 감시한다.
+- `(user_id, stat_date)`처럼 자연 키로 식별이 끝나는 UPSERT 테이블은 대리 AUTO_INCREMENT PK 대신 자연 복합 PK를 검토한다.
+- 간격 없는 연속 번호가 법적 요구라면 AUTO_INCREMENT가 아니라 별도 채번 행과 트랜잭션으로 발급한다. ULID, UUID로 바꾸면 ID를 순번으로 읽을 여지는 사라지지만 PK 폭과 삽입 지역성 비용이 있다([[Primary-Key-Strategy|Primary Key 전략]]).
+
 ## 배치 삽입
 
 - 여러 단건 요청 대신 multi-row `VALUES`로 네트워크 왕복과 문장 파싱 비용을 줄인다.
-- 테이블 간 이동은 `INSERT ... SELECT`로 서버 안에서 처리한다. 대상 컬럼을 명시하고 변환, 중복, NULL 정책을 검증한다.
+- 테이블 간 이동은 `INSERT ... SELECT`로 서버 안에서 처리한다. 대상 컬럼을 명시하고 변환, 중복, NULL 정책을 검증하며, 원본 테이블에 걸리는 잠금을 아래에서 확인한다.
 - 파일 적재는 `LOAD DATA`가 빠르지만 `LOCAL`, `IGNORE`, `REPLACE`에 따라 파일 위치, 권한과 오류 의미가 달라진다.
 - 한 번에 너무 많은 행을 묶으면 redo, binlog, lock 보유 시간과 재시도 비용이 커진다. 처리량과 tail latency를 함께 측정해 batch 크기를 정한다.
 - 재시도 가능한 작업은 비즈니스 멱등 키를 UNIQUE로 강제하고, 어떤 충돌 동작을 성공으로 볼지 API 계약에 포함한다.
 
-## 읽고 쓰는 틈을 없애는 UPDATE
+### INSERT ... SELECT가 원본에 거는 잠금
 
-현재 값을 애플리케이션으로 읽어 계산한 뒤 다시 저장하면 동시 갱신을 덮어쓸 수 있다. 가능한 불변식은 한 문장의 조건부 갱신으로 표현한다.
+InnoDB는 `INSERT INTO T SELECT ... FROM S WHERE ...`에서 T에 넣은 행마다 gap 없는 X record lock을 건다. S는 READ COMMITTED면 잠금 없는 consistent read로 읽고, 그 밖의 격리 수준(기본 REPEATABLE READ 포함)에서는 S의 행에 shared next-key lock을 건다. statement 기반 binlog로 roll-forward할 때 모든 문장이 원래와 똑같이 실행되어야 하기 때문이다. `CREATE TABLE ... SELECT`도 같은 방식으로 읽는다.
 
-```sql
-UPDATE inventory
-SET quantity = quantity - 3
-WHERE product_id = 42
-  AND quantity >= 3;
-```
+- RR에서 운영 테이블을 원본으로 한 큰 `INSERT ... SELECT`(아카이브, 백필, 요약 적재)는 읽은 범위의 행과 gap에 S lock을 트랜잭션 끝까지 쥐고 원본의 UPDATE, DELETE, INSERT를 기다리게 한다.
+- keyset 청크와 짧은 커밋으로 나누고([[MySQL-Long-Transactions-and-Batch|장기 트랜잭션과 배치]]), binlog가 row 형식이면 그 세션만 READ COMMITTED로 실행하거나 애플리케이션이 읽어 배치 삽입하는 방식을 비교한다.
 
-영향받은 행이 1개면 차감 성공, 0개면 재고 부족 또는 대상 없음으로 해석한다. MySQL 단일 테이블 `UPDATE`는 `ORDER BY`와 `LIMIT`를 지원하지만, multi-table `UPDATE`에는 둘을 사용할 수 없다.
-
-## JOIN UPDATE와 JOIN DELETE
-
-MySQL의 multi-table `UPDATE`, `DELETE`는 join으로 대상을 찾고 한 문장에서 변경할 수 있다.
+### 조건부 INSERT는 중복 방지가 아니다
 
 ```sql
-UPDATE inventory AS i
-JOIN stock_adjustment AS a ON a.product_id = i.product_id
-SET i.quantity = i.quantity + a.delta
-WHERE a.batch_id = :batch_id;
-
-DELETE s
-FROM session AS s
-JOIN expired_account AS e ON e.account_id = s.account_id;
+INSERT INTO coupon_issue (user_id, coupon_id)
+SELECT :user_id, :coupon_id FROM DUAL
+WHERE NOT EXISTS (
+  SELECT 1 FROM coupon_issue
+  WHERE user_id = :user_id AND coupon_id = :coupon_id
+);
 ```
 
-- 어떤 table을 읽고 어느 table을 변경하는지 alias로 명시한다.
-- Source 여러 행이 target 한 행에 매칭되더라도 target row는 한 번만 갱신된다. 적용할 값이 하나가 되도록 source를 UNIQUE로 제한하거나 먼저 집계한다.
-- Multi-table 형식에는 `ORDER BY`와 `LIMIT`를 사용할 수 없다. 큰 작업은 대상 PK를 먼저 제한한 뒤 작은 단일-table DML로 나눈다.
-- 읽는 table 전체에 포괄적인 read lock이 생긴다고 단정하지 않는다. 실제 plan, isolation level과 검색한 index record에 따라 lock 범위가 달라진다.
-- Foreign key가 얽힌 multi-table `DELETE`는 optimizer의 처리 순서 때문에 실패할 수 있다. 단일 parent delete와 `ON DELETE` 동작이 더 명확한지 비교한다.
+존재 확인을 애플리케이션의 별도 조회 대신 한 문장에 넣어도 동시 요청 사이의 경쟁은 남는다.
 
-실행 전 같은 join과 predicate의 `SELECT`로 대상 cardinality를 확인하고 `EXPLAIN`에서 scan 범위를 검증한다. 변경 뒤에는 matched row와 changed row 의미를 구분한다.
+- READ COMMITTED: 존재 검사가 잠금 없는 consistent read라 동시 요청이 함께 통과한다. UNIQUE가 없으면 중복 행이 생긴다.
+- REPEATABLE READ: 존재 검사가 빈 key 위치의 gap에 S lock을 잡는다(8.4.6 `performance_schema.data_locks`에서 `S,GAP`과 supremum의 `S` 확인). gap lock은 서로 공존하므로 두 세션이 S lock을 쥔 채 insert intention lock을 요청하면 서로 기다려 deadlock(1213)이 나고 한쪽이 롤백된다([[MySQL-Gap-Lock#INSERT Intention과 deadlock 경계|INSERT Intention과 deadlock]]).
+- 8.4.6에서 네 세션이 같은 키 3,000개를 동시에 넣은 1회 재현(UNIQUE 없음, autocommit)에서 RC는 중복 행 8,272건을 남겼고, RR은 중복 없이 세션마다 시도의 약 40~55%가 1213으로 롤백됐다. 롤백된 뒤 재시도하지 않은 466개 키는 행이 아예 남지 않았다.
+- 최종 방어선은 `(user_id, coupon_id)` UNIQUE 제약이다. 생성 의도는 `INSERT IGNORE`나 no-op ODKU로 표현하고 affected rows로 신규 여부를 판별하며, 1213은 멱등 재시도한다. `WHERE NOT EXISTS`는 중복 시도를 줄이는 보조 수단이다.
+- no-op ODKU의 affected rows는 신규 1, 기존 행 0이지만 `CLIENT_FOUND_ROWS`로 접속하면 기존 행도 1이다. Node.js mysql2는 이 flag를 기본으로 켜므로 8.4.6에서 신규와 중복이 모두 1이었다. flag를 끄면 같은 connection의 UPDATE 의미도 바뀌므로, 이 경로의 신규 판별은 신규 1, 중복 0을 돌려주는 `INSERT IGNORE`로 한다([[DML-Conflict-and-Batch-Patterns-Update-Delete#affected rows는 changed인가 matched인가|affected rows 기준]]).
+- 부모의 존재와 상태를 `WHERE EXISTS`로 확인하는 조건부 INSERT도 판단 시점의 문제가 같다. 8.4.6에서 REPEATABLE READ는 부모 PK 레코드에 S lock을 걸어 커밋 전 부모의 변경과 삭제를 막았지만, READ COMMITTED는 잠그지 않으므로 판단 직후 부모가 비활성화되거나 삭제될 수 있다. 부모 존재는 FK로 강제하고(FK 검사도 부모 레코드에 S lock을 건다), 상태 조건까지 묶어야 하면 부모 행을 `FOR SHARE`로 읽은 뒤 같은 트랜잭션에서 삽입한다.
+- 대상 테이블을 읽는 subquery를 `VALUES` 안에 두면 오류 1093이 나지만, 위처럼 `INSERT ... SELECT`의 WHERE에 두는 형태는 8.4.6에서 실행된다.
 
-## 큰 변경을 작은 트랜잭션으로 나눈다
+## UPDATE와 DELETE
 
-```sql
-DELETE FROM audit_log
-WHERE created_at < '2025-01-01'
-ORDER BY id
-LIMIT 5000;
-```
-
-영향받은 행이 batch 크기보다 작아질 때까지 반복하면 한 트랜잭션의 undo, redo와 lock 보유 시간을 제한할 수 있다. 다음을 함께 지킨다.
-
-- 조건과 순서를 재개 가능한 keyset으로 고정한다.
-- batch마다 commit하고 재시도 횟수, 처리 위치와 영향 행 수를 기록한다.
-- 삭제 조건을 받치는 인덱스를 준비하고 `EXPLAIN`으로 스캔 범위를 확인한다.
-- multi-table `DELETE`에는 `ORDER BY`와 `LIMIT`를 쓸 수 없다. 대상 PK를 먼저 제한해 단일 테이블 삭제로 넘기는 방식을 검토한다.
-- 소프트 삭제는 복구와 감사에는 유리하지만 모든 읽기, UNIQUE 제약, 보존 기간과 물리 삭제 작업까지 함께 설계해야 한다.
+기존 행을 바꾸는 패턴은 [[DML-Conflict-and-Batch-Patterns-Update-Delete|MySQL UPDATE와 DELETE 패턴]]으로 분리했다. 조건부 차감과 affected rows의 changed, matched 기준, SET 대입 순서, CASE 조건부 UPDATE, 같은 테이블을 읽는 서브쿼리 제한, JOIN UPDATE와 읽기 테이블 잠금, chunk 삭제와 저장 프로시저 반복을 다룬다.
 
 ## 선택 체크리스트
 
@@ -112,18 +101,16 @@ LIMIT 5000;
 - [선착순 수강신청 동시성 이슈 — Nextree 기술블로그](https://www.nextree.io/seoncagsun-sugang-sinceong-dongsiseong-isyu/)
 - [MySQL 8.4 Reference Manual, INSERT ON DUPLICATE KEY UPDATE](https://dev.mysql.com/doc/refman/8.4/en/insert-on-duplicate.html)
 - [MySQL 8.4 Reference Manual, REPLACE](https://dev.mysql.com/doc/refman/8.4/en/replace.html)
-- [MySQL 8.4 Reference Manual, UPDATE](https://dev.mysql.com/doc/refman/8.4/en/update.html)
-- [MySQL 8.4 Reference Manual, DELETE](https://dev.mysql.com/doc/refman/8.4/en/delete.html)
 - [MySQL 8.4 Reference Manual, LOAD DATA](https://dev.mysql.com/doc/refman/8.4/en/load-data.html)
+- [MySQL 8.4 Reference Manual, INSERT ... SELECT](https://dev.mysql.com/doc/refman/8.4/en/insert-select.html)
+- [MySQL 8.4 Reference Manual, AUTO_INCREMENT Handling in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-auto-increment-handling.html)
+- [MySQL 8.4 Reference Manual, InnoDB Startup Options and System Variables](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_autoinc_lock_mode)
+- [MySQL 8.4 Reference Manual, Information Functions](https://dev.mysql.com/doc/refman/8.4/en/information-functions.html)
+- [connection_config.js — node-mysql2 GitHub](https://github.com/sidorares/node-mysql2/blob/master/lib/connection_config.js)
 - [인프런, Hong, INSERT 기초](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367624)
 - [인프런, Hong, INSERT 응용](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367627)
-- [인프런, Hong, UPDATE 기초](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367623)
-- [인프런, Hong, UPDATE 응용](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367625)
-- [인프런, Hong, DELETE 기초](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367628)
-- [인프런, Hong, DELETE 응용](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367621)
-- [인프런, Real MySQL 시즌 1 - Part 2, JOIN UPDATE와 JOIN DELETE](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226585)
+- [인프런, Hong, MySQL Transaction Deep Dive (LifeCycle, Autocommit, Statement vs Row based)](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=373900)
 - [인프런, Hong, INSERT 최적화](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338549)
-- [인프런, Hong, UPDATE와 DELETE](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338552)
 
 ## 관련 문서
 
@@ -133,4 +120,5 @@ LIMIT 5000;
 - [[Lock-Deadlock|DB 데드락]]
 - [[Schema-Design|스키마 설계]]
 - [[Execution-Plan|실행 계획]]
+- [[DML-Conflict-and-Batch-Patterns-Update-Delete|MySQL UPDATE와 DELETE 패턴]]
 - [[MySQL-Long-Transactions-and-Batch|MySQL 장기 트랜잭션과 배치]]

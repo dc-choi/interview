@@ -116,12 +116,12 @@ API 전역에서 같은 응답 구조를 유지해야 클라이언트, 모니터
 | **외부 시스템 실패** | `ExternalApiException` | 502/503 + retryAfter | WARN + 알림 |
 | **예상치 못한 예외** | `NullPointerException` 등 | 500 | ERROR + 즉시 알림 |
 
-RuntimeException 상속 커스텀 예외 계층을 만들어 도메인별로 구분하면 `@ExceptionHandler` 매핑이 정돈된다.
+RuntimeException 상속 커스텀 예외 계층을 만들어 도메인별로 구분하면 `@ExceptionHandler` 매핑이 정돈된다. 이 계층의 업무 예외는 `@Transactional`의 기본 rollback rule상 rollback 대상이다. 실패를 알리면서 대기 주문 같은 상태를 commit해야 하는 use case는 `noRollbackFor`, 결과 값 반환, commit 뒤 별도 통지 중 하나를 명시한다([[Spring-Transactional-Rollback-and-ReadOnly|rollback rule과 업무 예외 설계]]).
 
 ## 흔한 실수
 
 - **`try { ... } catch (Exception e) {}`** → 예외가 삼켜져 복구 불가 + 로그 누락
-- **Checked Exception을 REST 계층까지 전파** → 컨트롤러 시그니처가 더러워짐. RuntimeException 계층으로 래핑
+- **Checked Exception을 REST 계층까지 전파** → 컨트롤러 시그니처가 더러워짐. RuntimeException 계층으로 래핑. 단, `@Transactional` 경계 안에서 감싸면 기본 규칙상 commit되던 실패가 rollback으로 바뀌므로 transaction 결과를 함께 정한다
 - **`ex.getMessage()`를 그대로 응답 본문에** → 내부 경로, SQL, 스택 정보 유출. 코드 + 사람 친화 메시지로 매핑
 - **`@ControllerAdvice`로 Filter 예외 잡으려 함** → 범위 밖. Filter 내부에서 처리
 - **500 응답에도 `@ControllerAdvice`가 로깅만 하고 알림 없음** → 옵저버빌리티 공백
@@ -134,15 +134,28 @@ RuntimeException 상속 커스텀 예외 계층을 만들어 도메인별로 구
 - 에러 응답 포맷에 traceId가 있어야 하는 이유
 - Filter 예외를 Resolver로 위임하는 패턴
 
+## Handler의 매칭과 status 계약
+
+`@ExceptionHandler({AException.class, BException.class})`의 exception argument는 두 type을 받을 수 있는 공통 상위 type이어야 한다. 한 type만 받는 signature로 annotation 목록만 넓히면 선택된 handler의 호출이 실패할 수 있다. 각 예외를 실제 발생시키는 web test로 response를 확인한다.
+
+일반 오류 DTO를 반환했다고 HTTP status가 자동으로 4xx가 되지는 않는다. `@ResponseStatus`, `ResponseEntity` 또는 status를 가진 `ProblemDetail`로 명시한다. 구체 예외와 cause 매칭은 같은 advice 안의 규칙이며 높은 우선순위 advice의 cause match가 낮은 advice의 root match보다 앞설 수 있다.
+
 ## 출처
+
+- [Spring MVC, Exceptions](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html)
 
 - [binghe819 TIL — 스프링 예외처리 개념 및 전략](https://github.com/binghe819/TIL/blob/master/Spring/%EA%B8%B0%ED%83%80/%EC%8A%A4%ED%94%84%EB%A7%81%20%EC%98%88%EC%99%B8%EC%B2%98%EB%A6%AC%20%EA%B0%9C%EB%85%90%20%EB%B0%8F%20%EC%A0%84%EB%9E%B5.md)
 - [Spring Framework 공식 문서 — Error Responses](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html)
 - [Spring Cloud Sleuth — Spring](https://spring.io/projects/spring-cloud-sleuth)
 - [토비 강사 — API 테스트와 ProblemDetail 예외 핸들러](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=314631)
+- [김영한 강사, @ExceptionHandler](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83364)
+- [김영한 강사, @ControllerAdvice](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83365)
+- [김영한 강사, 정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83366)
+- [토비 강사, Part 1 피드백 (2)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=443353)
 
 ## 관련 문서
 - [[Spring|Spring 개요 (IoC, DI, AOP)]]
 - [[Servlet-vs-Spring-Container|Servlet Container vs Spring Container]]
 - [[Railway-Oriented-Programming|Railway-Oriented Programming]]
 - [[HTTP-Status-Code|HTTP Status Code, Header]]
+- [[Spring-Transactional-Rollback-and-ReadOnly|Spring transaction rollback rule과 readOnly]] — 업무 예외 계층과 commit, rollback 결과

@@ -78,7 +78,19 @@ Well-known Symbol은 언어 operation이 object behavior를 조회하는 protoco
 - object를 JSON/DB row로 보낼 때 symbol-keyed state가 조용히 빠지는 것을 고려한다. Symbol 값도 `JSON.stringify`에서 object property면 생략되고 array 원소면 `null`이 된다(`JSON.stringify({ dir: Symbol("up") })`는 `"{}"`). Symbol 값을 `Object.freeze`한 object에 모은 상수 집합은 같은 agent(thread) 안의 비교에만 쓴다. worker `postMessage`와 `structuredClone`은 Symbol 값을 만나면 `DataCloneError`를 던지므로, 이런 structured clone 경로와 API 응답, queue message, DB column처럼 직렬화되는 상태 값에는 `as const` 문자열 값이나 문자열 enum을 쓴다.
 - custom iterator/disposable protocol은 resource owner와 failure propagation을 함께 정의한다.
 
+## tag 인자와 protocol 적용 범위
+
+expression이 n개면 tag의 첫 인자는 n+1개 문자열 조각이고 뒤 인자는 평가된 원래 값 n개다. `${a}${b}`처럼 인접하거나 끝에 expression이 있으면 빈 조각도 포함한다. strings.raw는 source escape 조각이며 String.raw는 `{ raw: [...] }` object와 값을 받는 일반 함수 호출도 가능하다. source의 들여쓰기와 줄바꿈은 그대로 데이터가 된다.
+
+species getter의 기본값은 호출 receiver인 constructor이고 subclass에서 `static get [Symbol.species]() { return Array; }`로 결과 type을 바꿀 수 있다. 이 hook은 사용하는 method에만 적용되므로 Map/Set에 getter가 있다는 사실이 모든 결과 생성에서 조회한다는 뜻은 아니다. Array의 최신 복사 method 같은 species를 사용하지 않는 API도 있다.
+
+String match는 인자의 Symbol.match method를 먼저 조회하고, startsWith/endsWith/includes의 RegExp 판별도 Symbol.match 값이 있으면 그 Boolean을 따른다. 실제 RegExp에 Symbol.match=false를 두면 문자열로 변환해 읽을 수 있지만 다른 protocol까지 제거하는 것은 아니다. hook에 callable이 아닌 값을 두면 호출이 필요한 API에서 TypeError가 날 수 있다.
+
+Symbol.unscopables는 sloppy code의 with environment에서 제외할 property 이름을 정한다. strict/ESM의 with는 SyntaxError이므로 새 code에는 쓰지 않는다. 과거 명세의 @@ 표기는 해당 well-known Symbol을 가리키는 설명 관례이며 실제 property 접근은 Symbol.xxx를 쓴다. toStringTag는 표시용이고 type 신뢰 기준이 아니라는 앞 절의 원칙을 유지한다.
+
 ## 출처
+
+- 인프런 보충 강의: [1. Set 오브젝트 개요, new Set(), Set과 Map 비교](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30827)
 
 - [ECMAScript Language Specification, template literals](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-template-literals)
 - [ECMAScript Language Specification, Symbol objects](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-symbol-objects)

@@ -1,7 +1,7 @@
 ---
 tags: [performance, database, connection-pool, hikari, scalability]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["Connection Pool", "Connection Pool Sizing", "DB 커넥션 풀", "HikariCP"]
 ---
@@ -33,6 +33,16 @@ Spring Boot 4.1은 pooling `DataSource`를 자동 구성할 때 classpath에서 
 - custom bean을 제공하면 해당 자동 구성이 물러난다. 현재 실제 bean type과 property binding 결과를 test로 확인한다.
 - Boot 4.1의 `spring.datasource.connection-fetch=lazy`는 auto-configured pooled `DataSource`를 `LazyConnectionDataSourceProxy`로 감싸 첫 JDBC statement까지 실제 대여를 늦출 수 있다.
 
+## Pool 시작과 채우기
+
+Connection 생성에는 TCP 연결, 인증과 session 생성이 들어가므로 pool이 다 찰 때까지 기동을 기다리게 하지 않는다. 아래는 HikariCP 7.1 README와 소스 기준이다.
+
+- `initializationFailTimeout`이 양수(기본 1)면 pool을 시작하는 스레드는 첫 connection을 확보할 때까지 막히고(이 값은 `connectionTimeout` 뒤에 더해진다), 확보하지 못하면 예외로 기동 실패를 알린다. 음수면 첫 확보 시도 없이 바로 시작하고 채우기를 모두 background로 넘긴다.
+- 나머지 connection은 pool 이름이 붙은 connection adder 스레드가 비동기로 `minimumIdle`까지 채운다. 다 차기 전에 대여 요청이 오면 connection이 만들어질 때까지 기다린다.
+- `HikariDataSource`를 기본 생성자로 만들면 pool은 첫 `getConnection()`에서 시작한다. Spring Boot의 `DataSourceBuilder`가 이 경로로 만들므로, 기동 중 connection을 쓰는 구성 요소가 없으면 첫 요청이 pool 시작 비용을 치른다.
+- 새 인스턴스가 막 떴을 때 p99가 튀는 현상([[Blue-Green|Blue-Green 배포]]의 연결 풀 워밍업)이 이 경로다. 트래픽을 넣기 전에 pool을 채우거나 트래픽을 점진적으로 옮긴다.
+- 재사용 여부는 로그로 확인한다. 대여마다 proxy 객체는 달라도 감싼 물리 connection 식별자가 같으면 재사용이고, `DriverManagerDataSource`는 호출마다 새 물리 connection을 만든다. pool 상태는 DEBUG 로그의 pool stats(total, idle, active, waiting)나 metric으로 본다.
+
 ## 주요 설정 축
 
 | 축 | 판단 기준 |
@@ -47,6 +57,18 @@ Spring Boot 4.1은 pooling `DataSource`를 자동 구성할 때 classpath에서 
 각 timeout은 독립된 숫자가 아니다. HTTP deadline보다 connection acquisition timeout이 길면 호출자가 포기한 뒤에도 server thread가 기다릴 수 있다. 반대로 너무 짧으면 정상적인 짧은 burst도 실패시킨다. 목표 SLO와 부하 test를 기준으로 정한다.
 
 JDBC 4 driver가 `Connection.isValid()`를 제대로 구현하면 HikariCP는 이를 사용할 수 있다. 임의의 validation query는 driver 지원이 없을 때만 검토한다. `maxLifetime`은 database나 network 장비가 정한 connection 제한보다 여유 있게 짧게 두되, 모든 connection이 동시에 교체되지 않도록 pool 구현의 분산 동작을 확인한다.
+
+## 설정값의 실패 경로
+
+설정 축마다 너무 작거나 너무 클 때 실패하는 방식이 다르다.
+
+- **시작 크기** — max를 처음부터 크게 잡으면 어디서 부족해지는지 관찰하기 어렵다. 작게 시작해 acquisition wait와 DB 지표를 보며 올리고, 경험적 출발점(예: 앱 서버당 20~30)도 아래 사이징 절차로 검증한다.
+- **min과 max** — HikariCP는 성능과 spike 대응을 위해 `minimumIdle`을 두지 않은 고정 크기 pool을 권한다. 다만 고정 크기에서는 pool이 min에서 max로 늘어나는 신호가 없어 부족을 예측하기 어려울 수 있으므로, active/max 비율(idle의 바닥 근접)을 조기 경보로, pending과 acquisition wait를 포화 확인 신호로 삼는다.
+- **acquisition timeout** — 너무 짧으면 connection 생성이 잠깐 늦어진 것만으로 실패하고, 호출자가 곧바로 다시 요청하면 대기와 생성 시도가 겹치는 악순환이 된다. 오류 응답이나 대체 로직 같은 fallback이 있을 때만 짧게 둔다.
+- **query timeout** — timeout 뒤 재실행하지 않는 경로라면 짧게 둘 수 있다. 같은 query를 재시도하는 구조에서 짧게 두면 느린 query가 재시도로 겹쳐 DB 부하를 키운다.
+- **idle timeout** — 앱 밖(DB, 중간 네트워크 장비)에서 끊긴 connection을 쓰다 나는 오류를 줄이려고 둔다. 너무 짧으면 connection별 [[Prepared-Statement-Cache|prepared statement cache]]가 connection과 함께 버려지므로 수십 분 단위가 권장되지만, 경로에서 가장 짧은 idle 절단(DB의 `wait_timeout`, NAT, LB, 방화벽)보다 오래 놀리려면 keepalive가 그 전에 connection을 깨워야 한다 — [[MySQL-Connection-Management|MySQL Connection 관리]]. HikariCP의 `idleTimeout`(기본 10분)은 `minimumIdle`이 `maximumPoolSize`보다 작을 때만 적용되므로, 고정 크기 pool에서는 `keepaliveTime`(기본 2분)과 `maxLifetime`(기본 30분)이 이 역할을 맡는다.
+- **대여 순서** — 최근 반환된 connection부터 다시 빌려주면(LIFO) 나머지는 오래 놀다가 외부에서 끊기기 쉽다. 모든 connection을 고르게 쓰거나 대여, 반환, 유휴 시점에 검증을 두는 이유다. mysql2 pool은 LIFO로 꺼내며, `maxIdle`을 `connectionLimit`보다 작게 둘 때만 가장 오래 논 connection부터 `idleTimeout`(기본 60초)을 넘기거나 `maxIdle`을 초과한 idle connection을 정리한다. 기본값(`maxIdle` = `connectionLimit`)에서는 idle 정리가 없고 꺼낼 때 검증도 하지 않으므로, `maxIdle`을 낮추고 `idleTimeout`을 경로에서 가장 짧은 idle 절단보다 짧게 두거나 대여 직전에 검증한다. HikariCP는 idle connection을 `keepaliveTime`마다 ping하고, 마지막 사용 뒤 500ms(기본값)가 지난 connection은 대여 직전에 살아 있는지 확인한다.
+- **끊긴 connection 재시도** — 중요한 읽기는 재시도하되, 쓰기는 commit 도중 connection이 끊기면 결과를 알 수 없으므로 멱등하게 만들거나 결과를 확인한 뒤 재시도한다. 이런 오류에 빠르게 대처하려면 사용하는 pool 구현의 내부 동작을 알아야 한다.
 
 ## 사이징 절차
 
@@ -99,6 +121,8 @@ Pool metric은 active, idle, pending, timeout을 함께 본다. Application metr
 - pool size가 너무 클 때 DB가 느려질 수 있는 이유를 말한다.
 - process별 pool을 전체 DB connection budget으로 환산한다.
 - acquisition wait와 slow query를 metric으로 구분한다.
+- 고정 크기 pool에서 부족 신호를 무엇으로 보는지, 짧은 acquisition timeout이 악순환이 되는 경로를 설명한다.
+- 새 인스턴스의 첫 요청이 느린 이유를 pool 시작과 비동기 채우기로 설명한다.
 
 ## 출처
 
@@ -108,6 +132,12 @@ Pool metric은 active, idle, pending, timeout을 함께 본다. Application metr
 - [HikariCP, About Pool Sizing](https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing)
 - [HikariCP, Configuration](https://github.com/brettwooldridge/HikariCP#configuration-knobs-baby)
 - [PgBouncer, Features](https://www.pgbouncer.org/features.html)
+- [HikariCP, HikariDataSource](https://github.com/brettwooldridge/HikariCP/blob/dev/src/main/java/com/zaxxer/hikari/HikariDataSource.java)
+- [HikariCP, HikariPool](https://github.com/brettwooldridge/HikariCP/blob/dev/src/main/java/com/zaxxer/hikari/pool/HikariPool.java)
+- [Spring Boot, DataSourceBuilder](https://github.com/spring-projects/spring-boot/blob/main/module/spring-boot-jdbc/src/main/java/org/springframework/boot/jdbc/DataSourceBuilder.java)
+- [MySQL2, Documentation](https://sidorares.github.io/node-mysql2/docs)
+- [MySQL2, Pool](https://github.com/sidorares/node-mysql2/blob/master/lib/base/pool.js)
+- 백은빈 강사, [Ep.22 커넥션 관리](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226586)
 - 김영한 강사, [커넥션 풀 이해](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110070)
 - 김영한 강사, [DataSource 이해](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110071)
 - 김영한 강사, [DataSource 예제 1, DriverManager](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110072)
@@ -123,3 +153,6 @@ Pool metric은 active, idle, pending, timeout을 함께 본다. Application metr
 - [[Transaction-Lock-Contention|트랜잭션 경합과 Lock 문제]]
 - [[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound]]
 - [[RDS-Connection-Credentials|RDS 앱 연결과 자격증명]]
+- [[MySQL-Connection-Management|MySQL Connection 관리]]
+- [[Prepared-Statement-Cache|Prepared Statement Cache]]
+- [[Blue-Green|Blue-Green 배포]]

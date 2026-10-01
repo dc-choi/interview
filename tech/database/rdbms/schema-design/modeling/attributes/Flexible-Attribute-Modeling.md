@@ -52,11 +52,11 @@ CREATE TABLE products (
   name VARCHAR(200) NOT NULL,
   price DECIMAL(12, 2) NOT NULL,
   attributes JSON NOT NULL,
-  INDEX idx_brand ((CAST(attributes->>'$.brand' AS CHAR(80))))
+  INDEX idx_brand ((CAST(attributes->>'$.brand' AS CHAR(80)) COLLATE utf8mb4_bin))
 );
 ```
 
-자주 검색하는 scalar path는 generated column 또는 functional index로 승격한다. query의 표현식, 반환 타입과 collation이 인덱스 표현식과 호환되는지 실행 계획으로 확인한다. JSON array 검색은 multi-valued index 후보지만 지원 연산과 제약을 대상 버전 문서로 검토한다.
+자주 검색하는 scalar path는 generated column 또는 functional index로 승격한다. query의 표현식, 반환 타입과 collation이 인덱스 표현식과 호환되는지 실행 계획으로 확인한다. JSON array 검색은 multi-valued index 후보지만 지원 연산과 제약을 대상 버전 문서로 검토한다([[MySQL-Generated-Columns-and-Functional-Indexes#배열 원소는 multi-valued index|multi-valued index]]). 경로 추출의 반환 타입과 비교 규칙은 [[MySQL-JSON-Functions|MySQL JSON 함수]]에 둔다.
 
 다음 신호가 보이면 JSON key를 일반 컬럼이나 관계 테이블로 옮긴다.
 
@@ -80,6 +80,18 @@ CREATE TABLE products (
 5. 속성 변경은 배포 주기인가, 런타임 사용자 동작인가?
 6. 현재 모델에서 일반 컬럼으로 승격하고 되돌리는 경로가 있는가?
 
+## EAV 읽기의 위임
+
+Entity별 한 행의 결과는 조건부 집계로 pivot하거나 application에서 entity key별로 접는다. 같은 attribute가 여러 값이면 MAX로 임의 선택하지 말고 다중 값 배열이나 version 선택을 정의한다. query 조건과 metadata 설계는 [[Flexible-Attribute-Modeling-EAV]]에 둔다.
+
+## 유연성의 선택 순서
+
+핵심 제약과 검색이 안정된 속성은 관계형 column을 우선한다. 드문 부가 속성은 JSON hybrid와 selected index를 비교하고, 사용자가 속성 정의 자체를 운영해야 할 때 EAV를 검토한다. subtype의 안정된 고유 속성은 [[Relational-Inheritance-Mapping]]의 상속 매핑 문제와 구분한다.
+
+## JSON 문자열 index의 collation
+
+MySQL JSON_UNQUOTE는 utf8mb4_bin을 반환하지만 CAST의 기본 collation은 다를 수 있다. function index의 CHAR 변환과 query expression에 같은 collation을 명시하고 추출 문자열의 길이 상한도 정한다. index 생성 성공과 optimizer의 expression match는 별도다.
+
 ## 출처
 
 - [MySQL 8.4 Reference Manual, JSON Data Type](https://dev.mysql.com/doc/refman/8.4/en/json.html)
@@ -98,10 +110,17 @@ CREATE TABLE products (
 - [인프런, Hong, EAV 모델](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367649)
 - [인프런, Hong, Online DDL](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367645)
 - [인프런, Hong, JSON 속성 모델](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367646)
+- [MySQL 8.4 Reference Manual, create index](https://dev.mysql.com/doc/refman/8.4/en/create-index.html)
+- [인프런, JSON 사용 가이드라인](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=402027)
+- [인프런, JSON 인덱스와 성능 최적화 2](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=402025)
+- [인프런, 관계형 데이터베이스 vs NoSQL](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=402028)
+- [인프런, 정리 (JSON 설계)](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=402029)
+
 
 ## 관련 문서
 
 - [[JSON-vs-Text-Column|JSON vs TEXT 컬럼]]
+- [[MySQL-JSON-Functions|MySQL JSON 함수]]
 - [[Schema-Migration-Large-Table|대용량 스키마 변경]]
 - [[Normalization|정규화]]
 - [[Business-Logic-App-vs-DB|비즈니스 로직 위치]]

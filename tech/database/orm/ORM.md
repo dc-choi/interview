@@ -97,7 +97,7 @@ prisma migrate   : versioned migration을 생성, 적용, 배포
 prisma db push   : migration history 없이 schema 상태를 DB에 push
 ```
 
-`db push`는 prototype과 local 개발에는 편하지만 변경 이력과 검토 가능한 SQL이 필요한 운영 배포에서는 migration이 기준이다. `generate`만 실행해도 DB table이 바뀌지는 않는다.
+`db push`는 prototype과 local 개발에는 편하지만 변경 이력과 검토 가능한 SQL이 필요한 운영 배포에서는 migration이 기준이다. `generate`만 실행해도 DB table이 바뀌지는 않는다. Prisma 7의 client 생성 계약(driver adapter, generator `output`, `prisma.config.ts`)은 [[Prisma-Query-Performance#Prisma 7 client 생성 계약|Prisma 7 client 생성 계약]]에 있다.
 
 ## Prisma 예제를 TypeORM으로 번역한다
 

@@ -61,13 +61,25 @@ try {
 
 `await()`도 loop에서 predicate를 재검사한다. `signal()`은 실행권이나 lock을 즉시 넘기는 명령이 아니라 대기 thread 하나를 lock 재획득 경쟁에 참여시킨다. 여러 lock을 잡는다면 전역 획득 순서를 정해 deadlock을 피하고, lock을 보유한 채 외부 I/O를 하지 않는다.
 
+## 획득 대기와 조건 대기를 구분하기
+
+Monitor 획득을 기다리는 단계와 `wait()`로 조건을 기다리는 단계는 다르다. 알림을 받은 thread도 monitor를 다시 얻어야 반환한다. Condition의 `signal()`도 대기자를 lock 재획득 경쟁에 옮기므로 알림 순서를 실행 순서로 해석하지 않는다. Condition 객체의 `wait()`/`notify()`는 연결된 Lock의 `await()`/`signal()`과 다른 체계다.
+
+`ReentrantLock.lock()`은 interruptible 획득이 아니다. 중단 가능한 대기는 `lockInterruptibly()` 또는 timed `tryLock`을 쓰고, 성공한 획득에 대해서만 소유한 thread가 `finally`에서 해제한다.
+
+`ReentrantReadWriteLock`은 write에서 read로의 downgrade는 가능하지만 read를 보유한 채 write로 승격할 수 없다. Read를 해제하고 write를 얻는다면 사이에 상태가 바뀔 수 있어 다시 검사해야 한다. 다른 언어의 upgradeable lock 계약을 Java에 그대로 이식하지 않는다.
+
 ## 강의 출처
 
 - 고급 동기화: [LockSupport1](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232366), [LockSupport2](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232367), [ReentrantLock - 이론](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232368), [ReentrantLock - 활용](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232369), [ReentrantLock - 대기 중단](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232370), [정리](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232371)
 - 생산자 소비자 문제1: [생산자 소비자 문제 - 소개](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232373), [생산자 소비자 문제 - 예제1 코드](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232374), [생산자 소비자 문제 - 예제1 분석 - 생산자 우선](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232375), [생산자 소비자 문제 - 예제1 분석 - 소비자 우선](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232376), [생산자 소비자 문제 - 예제2 코드](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232377), [생산자 소비자 문제 - 예제2 분석](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232378), [Object - wait, notify - 예제3 코드](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232379), [Object - wait, notify - 예제3 분석 - 생산자 우선](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232380), [Object - wait, notify - 예제3 분석 - 소비자 우선](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232381), [Object - wait, notify - 한계](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232382), [정리](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232383)
 - 생산자 소비자 문제2: [Lock Condition - 예제4](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232385), [생산자 소비자 대기 공간 분리 - 예제5 코드](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232386), [생산자 소비자 대기 공간 분리 - 예제5 분석](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232387), [스레드의 대기](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232388), [중간 정리 - 생산자 소비자 문제](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232389)
+- 모영철 강사, [Read-Write Lock - 다 같이 읽는 건 괜찮지만 읽을 때 쓰면 안돼요](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178843)
 
 ## 공식 문서
+
+- [Java SE 25, ReentrantLock](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/locks/ReentrantLock.html)
+- [Java SE 26, ReentrantReadWriteLock](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/locks/ReentrantReadWriteLock.html)
 
 - [Object, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html)
 - [LockSupport, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/locks/LockSupport.html)

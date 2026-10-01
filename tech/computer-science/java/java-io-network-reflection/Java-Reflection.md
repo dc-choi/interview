@@ -1,7 +1,7 @@
 ---
 tags: [java, reflection, metadata, module, framework]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-09-30
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Reflection", "Java 리플렉션"]
 ---
@@ -24,10 +24,22 @@ class literal, instance의 `getClass()`, `Class.forName()` 등으로 metadata에
 
 | API 계열 | 보는 범위 |
 |---|---|
-| `getMethods`, `getFields`, `getConstructors` | 접근 가능한 public member, inherited public member 포함 가능 |
-| `getDeclaredMethods`, `getDeclaredFields`, `getDeclaredConstructors` | 해당 class가 직접 선언한 member, 접근 수준 전체 |
+| `getMethods`, `getFields` | public member와 상위 class, interface에서 상속한 public member |
+| `getConstructors` | 해당 class의 public constructor만. constructor는 상속되지 않는다 |
+| `getDeclaredMethods`, `getDeclaredFields`, `getDeclaredConstructors` | 해당 class가 직접 선언한 member, 접근 수준 전체, 상속 member 제외 |
+
+constructor는 method와 달리 상속 개념이 없고 하위 class는 `super(...)`로 상위 constructor를 호출할 뿐이다. JDK 21.0.3에서 public constructor 2개를 가진 상위 class를 상속한 class의 `getConstructors()`는 자기 public constructor만, `getDeclaredConstructors()`는 자기 public과 private constructor만 반환했다.
 
 declared member 조회가 곧 접근 권한 획득은 아니다. 탐색 범위와 실제 access check를 분리한다.
+
+```java
+Class<?> type = Class.forName("hello.Member");
+Constructor<?> constructor = type.getDeclaredConstructor(String.class);
+constructor.setAccessible(true);
+Object member = constructor.newInstance("kim");
+```
+
+class 이름 문자열만으로 객체를 만들고 `getDeclaredMethod(...).invoke(member)`로 method를 호출할 수 있어, framework가 설정이나 scan 결과로 객체를 생성하는 기반이 된다. `Class.newInstance()`는 Java 9부터 deprecated이므로 `getDeclaredConstructor().newInstance()`를 쓴다. private constructor 접근도 아래 module 경계를 따른다.
 
 ## invocation failure를 unwrap한다
 
@@ -83,6 +95,7 @@ TypeScript type은 대부분 runtime에 지워지고 decorator metadata도 compi
 ## 출처
 
 - [Java SE 26, java.lang.reflect](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/reflect/package-summary.html)
+- [Java SE 26, Class](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Class.html)
 - [Java SE 26, AccessibleObject](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/reflect/AccessibleObject.html)
 - [Java SE 26, Method](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/reflect/Method.html)
 - 김영한 강사, [reflection이 필요한 이유](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244495), [class와 metadata](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244496), [method 탐색과 호출](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244497), [field 탐색과 변경](https://www.inflearn.com/courses/lecture?courseId=334977&unitId=244498)

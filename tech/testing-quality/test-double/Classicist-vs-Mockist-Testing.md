@@ -7,12 +7,12 @@ aliases: ["Classicist vs Mockist Testing", "Classic TDD vs Mockist TDD", "Test D
 
 # Classicist vs Mockist, Test Double
 
-TDD 진영이 두 학파로 나뉜다. **Classicist(고전파, Chicago, Detroit)** 는 실제 객체를 최대한 쓰고 상태로 검증하며 Inside-Out으로 설계한다. **Mockist(런던파)** 는 Test Double로 협력 객체를 분리하고 행위로 검증하며 Outside-In으로 설계한다. 두 접근이 만드는 테스트 특성이 다르고, 상황에 따라 선택이 달라진다.
+TDD의 대표 접근으로 **Classicist(고전파, Chicago, Detroit)** 와 **Mockist(런던파)** 가 있다. 고전파는 실제 객체와 상태 검증을 우선하고, 런던파는 협력 객체의 기대 호출을 대역으로 정의한다. Inside-Out과 Outside-In은 출발 방향이며 학파와 반드시 일치하지는 않는다. 사용자 관점의 인수 테스트부터 시작해 실제 도메인 객체를 만드는 조합도 가능하다.
 
 ## 핵심 명제
 
-- **Classicist = Sociable + 상태 검증 + Inside-Out**
-- **Mockist = Solitary + 행위 검증 + Outside-In**
+- **Classicist** — Sociable과 상태 검증을 선호하며 Inside-Out과 조합하기 쉽다
+- **Mockist** — Solitary와 협력 검증을 선호하며 Outside-In과 조합하기 쉽다
 - 한쪽이 절대 우위가 아님 — **협력 복잡도와 외부 의존성**이 선택 기준
 - Mock을 과도히 쓰면 **깨지기 쉬운 테스트**, 안 쓰면 **긴 셋업**
 
@@ -33,7 +33,16 @@ TDD 진영이 두 학파로 나뉜다. **Classicist(고전파, Chicago, Detroit)
 | **Spy** | Stub + 호출 정보 기록 |
 | **Mock** | 호출, 반환, 기대 행위를 사전 지정 |
 
-구분은 엄밀하지 않고 실무에서는 섞여 쓰이지만, **"검증 대상이 상태인가 호출인가"** 가 본질 축.
+실무에서는 같은 대역이 여러 역할을 맡기도 한다. 검증 대상이 상태인지 호출인지 구분하면 테스트 의도를 설명하기 쉽다.
+
+### 인메모리 저장소 Fake의 계약
+
+Fake는 조회와 저장을 실제로 수행하는 간소한 구현이며, TDD Green 단계의 상수 반환인 Fake It과 구분한다. 인메모리 저장소가 통과한 테스트는 실제 DB의 매핑, 제약, 쿼리와 트랜잭션을 검증하지 않는다.
+
+- 공유할 계약을 정한다: 없는 값 처리, 중복과 오류 정책, 저장 후 조회, 검색과 페이지 순서.
+- 도메인 테스트는 Fake로 빠르게 돌리고, 계약 중 두 구현이 공유해야 하는 사례는 실제 저장소에도 실행한다.
+- ORM 매핑과 트랜잭션 같은 실제 구현 고유 동작은 별도 통합 테스트로 남긴다.
+- Fake에 DB 전체를 재구현하지 않는다. 더 충실한 대역이 너무 복잡하면 실제 DB 테스트를 선택한다.
 
 ## Classicist (Chicago, Detroit)
 
@@ -158,6 +167,9 @@ fun shouldSendEmailOnRegistration() {
 ## 출처
 - [dev-monkey-dugi — Test Double vs Real Objects](https://dev-monkey-dugi.tistory.com/140)
 - [cl8d — Classic TDD vs Mockist TDD](https://cl8d.tistory.com/43)
+- [Mocks Aren't Stubs — Martin Fowler](https://martinfowler.com/articles/mocksArentStubs.html)
+- [인프런, 클린 코더스, Presenting TDD](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279467)
+- [인프런, 클린 코더스, Vertical Slice 방식으로 GraphQL 어플리케이션을 TDD로 구현하기](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279469)
 - [테스트는 다 초록불이었다 — 아무도 안 읽는 값이었고, 마스킹도 안 걸릴 뻔했다 — velog](https://velog.io/@donghoong2/OCR-WORKER-%ED%85%8C%EC%8A%A4%ED%8A%B8%EB%8A%94-%EB%8B%A4-%EC%B4%88%EB%A1%9D%EB%B6%88%EC%9D%B4%EC%97%88%EB%8B%A4-%EA%B7%BC%EB%8D%B0-%EC%95%84%EB%AC%B4%EB%8F%84-%EC%95%88-%EC%9D%BD%EB%8A%94-%EA%B0%92%EC%9D%B4%EC%97%88%EA%B3%A0-%EB%A7%88%EC%8A%A4%ED%82%B9%EB%8F%84-%EC%82%AC%EC%8B%A4-%EC%95%88-%EA%B1%B8%EB%A6%B4-%EB%BB%94%ED%96%88%EB%8B%A4)
 
 ## 관련 문서

@@ -2,7 +2,8 @@
 tags: [architecture, modular-monolith, monolith, msa, module]
 status: done
 category: "아키텍처&설계(Architecture&Design)"
-aliases: ["Modular Monolith", "모듈러 모노리스"]
+aliases: ["Modular Monolith", "모듈러 모노리스", "Separated Interface", "인터페이스 모듈 분리"]
+verified_at: 2026-10-01
 ---
 
 # Modular Monolith
@@ -53,6 +54,32 @@ controller, service, repository 같은 기술 계층으로만 나누면 기능 �
 - **계약을 도구 체인에 연결**: API 명세를 OpenAPI 계약으로 두고 PR로 검토하며 병합되면 서버 스텁과 클라이언트 코드를 생성하고 하위 호환을 깨는 변경은 CI에서 걸러낸다. 계약이 문서에 머물면 부채가 되기 쉽고, 코드 생성과 CI에 연결되면 구조를 지키는 장치가 된다.
 - 모든 원칙을 CI로 막지는 않는다. 인터페이스 이름이나 캐시 만료 시간처럼 설계 의도를 봐야 하는 규칙은 코드 작성 규칙과 리뷰로 지키고, 기계적으로 찾을 수 있는 위반만 CI가 차단한다.
 
+## 인터페이스 모듈로 모듈 순환을 끊는다
+
+도메인별로 모듈을 나누면 곧 양방향 의존이 생긴다. 게시물 상세 조회는 댓글 목록이 필요해 게시물 모듈이 댓글 모듈을 쓰고, 댓글 작성은 게시물이 존재하는지 확인해야 해 댓글 모듈이 게시물 모듈을 쓴다. 빌드 도구의 모듈 의존에 순환이 생기면 빌드가 되지 않는다.
+
+| 해법 | 한계 |
+|---|---|
+| 두 모듈을 합친다 | 모듈이 목적성을 잃고 응집도가 떨어진다 |
+| 둘 다 의존하는 제3 모듈을 만든다 | 특정 기능만을 위한, 도메인 정책과 맞지 않는 모듈이 생긴다 |
+| 메시지 큐로 비동기 통신한다 | 존재 확인처럼 동기 응답이 필요한 호출에는 쓸 수 없다 |
+| 인터페이스 모듈과 구현 모듈을 분리한다 | 모듈 수가 늘고 공개 계약을 관리해야 한다 |
+
+마지막 방법은 인터페이스를 구현과 다른 패키지에 두는 Separated Interface 패턴을 모듈 단위로 적용한 것이다.
+
+- 도메인마다 **인터페이스 모듈**(공개 모델, DTO, 제공 기능 인터페이스)과 **구현 모듈**(설정, 저장소, 서비스, 컨트롤러)을 둔다.
+- 구현 모듈은 자기 인터페이스 모듈과 필요한 다른 도메인의 인터페이스 모듈만 의존한다. 인터페이스 모듈은 아무것도 의존하지 않는다.
+- 애플리케이션 모듈만 모든 구현 모듈을 의존하고, DI 컨테이너가 실행 시점에 인터페이스에 맞는 구현을 주입한다. 댓글 구현 모듈은 게시물 인터페이스만 알고도 게시물 구현을 받아 쓴다.
+- 모듈 의존 그래프는 비순환이 되고, 제공 기능이 인터페이스로 문서화되며, 구현을 바꿔도 사용하는 모듈은 영향을 받지 않는다. 나중에 모듈을 서비스로 떼어낼 때도 인터페이스 뒤의 구현만 HTTP 클라이언트로 바꾸면 된다.
+
+### 모듈 순환을 끊어도 빈 순환은 남는다
+
+모듈 그래프가 비순환이어도 실행 시점의 객체 그래프에는 순환이 남을 수 있다. 게시물 서비스가 댓글 제공 인터페이스를 주입받고, 그 구현인 댓글 서비스가 다시 게시물 제공 인터페이스를 주입받으면 생성자 주입끼리 서로를 기다린다. Spring Boot 2.6부터는 빈 순환 참조가 기본으로 금지되어 애플리케이션이 시작되지 않는다.
+
+- `@Lazy`나 `spring.main.allow-circular-references=true`로 우회할 수 있지만, 순환 자체를 숨기고 초기화 순서 문제를 뒤로 미룬다.
+- 권장하는 해법은 다른 모듈에 제공하는 기능만 담은 별도 클래스(예: 댓글 제공 서비스)로 인터페이스를 구현해, 그 클래스는 상대 모듈을 의존하지 않게 만드는 것이다. 제공용 구현과 내부 유스케이스 구현을 나누면 순환이 사라진다.
+- 같은 원리가 NestJS의 모듈 순환과 `forwardRef`에도 적용된다. [[NestJS-Circular-Dependency|NestJS 순환 의존성 해결 전략]]
+
 ## 헥사고날과의 관계
 
 모듈 내부를 외부 기술로부터 보호하는 것은 [[DDD&Hexagonal|헥사고날 아키텍처]]의 원리와 같다. 도메인 로직을 중앙에, 데이터베이스, 메시징, 웹 API 같은 기술을 바깥에 두고 인터페이스로만 소통하면, 자주 바뀌는 바깥을 교체 가능한 부품으로 다룰 수 있어 DB나 외부 호출 방식을 바꿔도 핵심 로직은 덜 흔들린다. 각 모듈을 하나의 작은 헥사곤으로 구성한다고 보면 된다.
@@ -66,6 +93,21 @@ controller, service, repository 같은 기술 계층으로만 나누면 기능 �
 ## 콘웨이 법칙과 함께 설계한다
 
 시스템 구조는 조직의 의사소통 구조를 닮는다(콘웨이 법칙). 독립 팀이 명확한 비즈니스 책임을 가지면 서비스 분할이 효과적이지만, 작은 팀이 많은 서비스를 억지로 운영하면 혼란만 커진다. 조직이 아직 하나의 팀이라면 모듈러 모노리스가 조직 구조에 더 잘 맞는다. 아키텍처는 조직 구조와 함께 설계해야 한다.
+
+## 유지되는 한계
+
+- 같은 릴리스에 묶이면 모듈별 독립 출시와 기술 스택 변경은 제한된다.
+- in-process 호출은 원격 호출보다 통신 비용이 낮고 로컬 transaction은 단순하지만, 같은 프로세스의 치명적 오류와 자원 고갈은 다른 모듈에도 영향을 준다.
+- 같은 DB 자원을 공유하면 모듈별 스키마를 나눠도 연결, 잠금과 I/O 경쟁은 남는다.
+- api, worker와 batch를 나누면 실행 자원과 일부 장애는 격리할 수 있으나 위의 릴리스와 데이터 결합까지 사라지는 것은 아니다.
+
+강한 불변식을 로컬 transaction에 두어야 하거나 제품과 도메인을 학습하는 초기에는 이 단순함이 이익이다. 현대화의 중간 단계로도 쓸 수 있지만, 모든 모듈러 모놀리스가 MSA로 전환해야 하는 것은 아니다([[Microservice-Readiness-and-Maturity|선택 조건]]).
+
+## UI와 API를 분리하는 헤드리스 구조
+
+여기서 헤드리스는 UI 렌더링과 백엔드를 API 계약으로 분리하는 구조다. 웹, 모바일이나 다른 채널은 별도 프론트엔드로 개발하고 백엔드가 업무 API를 제공한다. 백엔드는 여전히 모놀리스일 수 있으며, UI 분리는 모듈화나 서비스 분리와 다른 축이다. 헤드리스 브라우저의 실행 모드와도 구분한다.
+
+프론트엔드가 기존 API만 사용하면 독립 배포할 수 있지만 새 채널이 요구하는 API 변경, 권한과 응답 모양은 여전히 조율해야 한다. 채널별 조합 요구가 다르면 [[Microservice-Edge-and-Composition-Patterns|BFF]]를 검토한다. UI를 떼었다고 백엔드의 독립 확장이나 DB 병목이 자동 해결되지는 않는다.
 
 ## 언제 무엇을
 
@@ -90,11 +132,20 @@ controller, service, repository 같은 기술 계층으로만 나누면 기능 �
 - 성급한 MSA의 함정과 Monolith First
 - 하나의 릴리스 안에서 실행 단위를 나누는 이유 (실패 방식, 권한, 확장 기준의 차이)와 그 트레이드오프 (릴리스 결합)
 - 기준선 동결이 필요한 이유 (규칙을 일괄 적용하면 변화가 멈춘다)
+- 모듈 순환을 인터페이스 모듈 분리로 끊는 방법과, 그 뒤에 남는 빈 순환을 제공용 구현 분리로 해결하는 방법
 
 ## 출처
 
 - [우아한테크 — 모듈러 모노리스와 마이크로서비스](https://www.youtube.com/watch?v=SrQeIz3gXZg)
+- [IoC와 DI를 이용한 Spring 멀티 모듈 아키텍처 — kciter.so, kciter](https://kciter.so/posts/spring-multi-module-architecture/)
+- [Separated Interface — martinfowler.com, Martin Fowler](https://martinfowler.com/eaaCatalog/separatedInterface.html)
+- [Spring Boot 2.6 Release Notes — GitHub](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.6-Release-Notes)
 - [천만 MAU를 지탱하는 커뮤니티 시스템을 소개해요 — 당근 기술 블로그](https://medium.com/daangn/%EC%B2%9C%EB%A7%8C-mau%EB%A5%BC-%EC%A7%80%ED%83%B1%ED%95%98%EB%8A%94-%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0-%EC%8B%9C%EC%8A%A4%ED%85%9C%EC%9D%84-%EC%86%8C%EA%B0%9C%ED%95%B4%EC%9A%94-090fb4021e20)
+- [Dowon Lee 강사, Modular Monolithic Architecture 개요](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286772)
+- [Dowon Lee 강사, Modular Monolithic Architecture 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286774)
+- [Dowon Lee 강사, Hexagonal Architecture](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286775)
+- [Dowon Lee 강사, [실습 2] Monolithic Application (Eshop)](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290743)
+- [Dowon Lee 강사, Microservice Architecture 개요](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286778)
 
 ## 관련 문서
 
@@ -103,6 +154,8 @@ controller, service, repository 같은 기술 계층으로만 나누면 기능 �
 - [[Elegant-OOP-Design|우아한 객체지향 (의존성, 도메인 패키지)]]
 - [[Why-Architecture-Matters|아키텍처의 중요성 (변경 대응, 결정 비가역성)]]
 - [[Monorepo-Architecture|모노레포 아키텍처]]
+- [[Library-vs-Framework|라이브러리 vs 프레임워크 (IoC, DI)]]
+- [[NestJS-Circular-Dependency|NestJS 순환 의존성 해결 전략]]
 - [[Legacy-Modernization-Strategies|레거시 현대화 (Strangler Fig)]]
 - [[Event-Driven-Architecture|Event-Driven Architecture (모듈 간 이벤트)]]
 - [[Failure-Evolution-Under-Load|부하에 따른 장애 진화 (같은 시스템의 운영 축 — 재시도 증폭, 운영 리듬)]]

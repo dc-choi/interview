@@ -3,7 +3,7 @@ tags: [container, docker, entrypoint, signal, pid1, graceful-shutdown]
 status: done
 category: "Infrastructure - Container"
 aliases: ["Docker Entrypoint Exec", "PID 1 Signal", "컨테이너 시그널 처리"]
-verified_at: 2026-08-28
+verified_at: 2026-09-30
 ---
 
 # Container Entrypoint와 시그널 — exec, PID 1, Graceful Shutdown
@@ -14,7 +14,7 @@ verified_at: 2026-08-28
 
 Linux는 PID 1(init 프로세스)에 **특별한 규칙**을 적용한다.
 
-- PID 1이 종료되면 컨테이너가 종료됨
+- PID 1이 종료되면 컨테이너가 종료됨. `docker run -it IMAGE sh`의 shell은 main process라 exit하면 container가 멈추지만, `docker exec -it C sh`로 띄운 shell은 추가 process라 종료해도 container는 계속 실행된다
 - PID 1은 애플리케이션 종료 신호 처리와 자식 프로세스 수확을 명시적으로 설계할 위치
 - PID 1이 좀비(zombie) 자식 프로세스를 `wait()`로 거두지 않으면 좀비가 누적됨
 
@@ -30,6 +30,20 @@ Dockerfile의 `CMD`, `ENTRYPOINT`는 두 가지 표기법이 있다.
 | **shell form** | `CMD python main.py` | `/bin/sh -c`가 PID 1, python은 자식 | 앱이 직접 받지 않음. shell 또는 wrapper 전달 동작을 검증해야 함 |
 
 shell form은 내부적으로 `/bin/sh -c "python main.py"`로 실행되어 셸이 PID 1이 된다. Docker는 shell form `ENTRYPOINT`가 자식 실행 파일에 Unix signal을 전달하지 않는다고 문서화한다. Docker Linux 컨테이너의 기본 stop timeout은 10초지만 `--stop-timeout`으로 바꿀 수 있고, K8s 기본 `terminationGracePeriodSeconds`는 30초다. 두 환경의 timeout을 같은 값으로 가정하지 않는다.
+
+## CMD와 ENTRYPOINT의 override 규칙
+
+| Dockerfile | `docker run IMAGE` | `docker run IMAGE ls /` |
+|---|---|---|
+| `CMD ["echo", "hi"]`만 | `echo hi` | `ls /` (CMD 대체) |
+| `ENTRYPOINT ["app"]`, `CMD ["--port", "80"]` | `app --port 80` | `app ls /` (CMD만 대체되고 인자로 붙음) |
+| shell form `ENTRYPOINT app` | `/bin/sh -c app` | `/bin/sh -c app` (CMD와 run 인자 무시) |
+
+- 고정 실행 파일은 exec form `ENTRYPOINT`, 운영자가 바꿀 기본 인자는 `CMD`에 둔다. shell form `ENTRYPOINT`는 signal 전달 문제에 더해 CMD와 run 인자까지 무시한다.
+- `ENTRYPOINT`는 `docker run --entrypoint`로만 바꾼다. 이때 image의 `CMD` 기본값도 지워지므로 필요한 인자는 image 이름 뒤에 다시 준다.
+- base image에서 물려받은 `CMD`는 현재 Dockerfile에서 `ENTRYPOINT`를 설정하면 빈 값이 된다. 기본 인자가 필요하면 현재 image에 `CMD`를 다시 쓴다. `ENTRYPOINT`와 `CMD`가 모두 없으면 실행할 명령이 없어 오류다.
+- override 전에 `docker image inspect --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}' IMAGE`로 image 기본값을 확인한다.
+- `CMD ["nginx", "-g", "daemon off;"]`처럼 서버를 foreground로 두는 이유도 PID 1 규칙이다. 서버가 스스로 background로 빠지면 main process가 바로 끝나 container가 종료된다.
 
 ## 왜 `exec`를 쓰는가
 
@@ -119,13 +133,15 @@ CMD ["python", "main.py"]
 
 - `docker stop` 시 종료 시간, 애플리케이션 종료 로그와 runtime event를 함께 확인. 즉시 종료만으로 SIGTERM 무시 여부를 판정하지 않음
 - `docker inspect` `.State.ExitCode` = 137이면 SIGKILL 뒤 종료된 흔적일 수 있다. timeout, OOM kill, 수동 kill 등 원인은 runtime event와 함께 확인
-- `ps -ef` (컨테이너 내부)로 PID 1이 무엇인지 확인
+- `ps -ef` (컨테이너 내부)로 PID 1이 무엇인지 확인. 경량 image에 `ps`가 없으면 `docker exec C cat /proc/1/cmdline | tr '\0' ' '`로 PID 1의 명령행을 본다. cmdline의 인자는 NUL 문자로 구분되므로 host 쪽 `tr`로 공백으로 바꾼다. shell form이면 `/bin/sh -c ...`가, exec form이면 애플리케이션이 보여야 한다
+- `cat`조차 없는 distroless 계열은 host에서 `docker top C` 또는 `docker inspect --format '{{.Path}} {{.Args}}' C`로 main process의 명령을 확인한다
 - 애플리케이션 로그에 "Shutting down gracefully" 같은 메시지가 찍히는지
 
 ## 면접 체크포인트
 
 - **PID 1의 특수성** (시그널 기본 무시, 좀비 수확 책임)
 - **exec form vs shell form** 차이와 왜 exec form이 안전한가
+- `docker run` 인자, `--entrypoint`가 CMD와 ENTRYPOINT를 각각 어떻게 바꾸는가
 - 엔트리포인트 스크립트에서 **`exec "$@"` 사용 이유**
 - **tini/dumb-init**이 해결하는 문제(시그널 전달 + 좀비 수확)
 - SIGTERM → Graceful Shutdown 흐름 (로드밸런서에서 제외, in-flight 완료, 종료)
@@ -137,6 +153,14 @@ CMD ["python", "main.py"]
 - [Docker Docs, docker container stop](https://docs.docker.com/reference/cli/docker/container/stop/)
 - [Kubernetes Docs, Pod termination flow](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-termination-flow)
 - [Docker Entrypoint에서 exec를 사용하는 이유 — brunch @growthminder](https://brunch.co.kr/@growthminder/142)
+- [Docker Docs, Running containers](https://docs.docker.com/engine/containers/run/)
+- [Docker Docs, docker container top](https://docs.docker.com/reference/cli/docker/container/top/)
+- [Docker Engine API reference](https://docs.docker.com/reference/api/engine/)
+- [Linux manual, proc_pid_cmdline(5)](https://man7.org/linux/man-pages/man5/proc_pid_cmdline.5.html)
+- [인프런, Hong, 나만의 이미지 작성을 위한 Dockerfile 기초부터 뜯어보기](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=416103)
+- [인프런, Hong, Docker Image 활용을 위한 기본 명령어](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=414205)
+- [인프런, Hong, Docker Container 생성과 실행 (백그라운드 vs 포그라운드)](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=414208)
+- [인프런, Hong, Docker Container와의 상호작용을 위한 필수 명령어](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=414210)
 
 ## 관련 문서
 - [[Docker-Core|Docker 기본]]

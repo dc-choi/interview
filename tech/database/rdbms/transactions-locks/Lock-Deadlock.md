@@ -42,6 +42,18 @@ lock 보유 시간 단축(외부 호출과 긴 계산 제거), 잠금 범위를 
 - **핫 로우 카운터를 계산으로 대체**: 이벤트 종류와 무관하게 모든 트랜잭션이 마지막에 같은 유저/계정 행의 카운터를 UPDATE하면 그 행이 Hot Row가 된다. 경합 자체는 데드락이 아니지만 락 대기와 보유 시간이 길어져 서로 다른 락이 얽힐 확률을 키운다. 카운터가 상세 행 조회로 계산 가능하고 행 수가 작으면(수백 건 수준) 저장 대신 조회 시 계산으로 바꾼다 — UPDATE가 사라지면 카운터 증가를 위해 `FOR UPDATE`를 걸 이유도 함께 사라진다. 집계 비용이 실제로 큰 경우의 판단은 [[Aggregate-Summary-Table-Patterns|집계 테이블]] 참고.
 - **생성은 짧은 별도 트랜잭션으로 분리**: get-or-create의 락(`INSERT IGNORE` 중복 확인의 S Lock 등)도 문장이 아니라 트랜잭션 종료까지 유지되므로, 메시지 처리 전체를 감싼 긴 트랜잭션 안에서 실행하면 잠깐 필요한 락이 처리 시간 내내 남는다. 생성 문장만 별도 짧은 트랜잭션으로 분리하면(TypeORM이면 바깥과 별개의 `dataSource.transaction` 호출, Spring이면 `REQUIRES_NEW`) 락 수명이 생성 작업 시간으로 줄어든다. REPEATABLE READ에서 그 새 트랜잭션은 새 Read View로 조회하므로 다른 트랜잭션이 방금 커밋한 행을 락 없는 일반 조회로도 본다 — 바깥 트랜잭션의 오래된 스냅샷이 새로워지는 것은 아니라서, 새 트랜잭션에서 읽은 결과를 사용하는 구조여야 한다. 대신 커넥션을 추가로 점유하고 바깥 트랜잭션과 롤백 경계가 분리되며([[Spring-Transactional|트랜잭션 전파]]), 영속성 컨텍스트를 쓰는 ORM(JPA류)에서는 내부 트랜잭션이 반환한 엔티티가 바깥 컨텍스트에 속하지 않으므로 존재와 식별 확인 용도로 제한한다.
 
+## 삭제한 key의 동시 재삽입
+
+한 transaction이 unique key를 DELETE한 뒤 commit하기 전 두 session이 같은 key를 INSERT하면 중복 key 검사와 S→X 요청이 얽혀 deadlock이 날 수 있다. 삭제 commit 후 두 waiter가 함께 공유 잠금을 얻는 경로를 두 session fixture로 재현하고 `data_locks`, deadlock log의 index/key를 확인한다. 자동 id를 쓴다는 이유만으로 다른 unique key의 이 경로가 없어지지 않는다.
+
+## Deadlock 감지 비용과 timeout
+
+많은 thread가 같은 lock에 대기하면 wait-for graph 검색 비용도 커질 수 있다. `innodb_deadlock_detect=OFF`는 deadlock을 예방하지 않고 lock wait timeout에 복구를 맡긴다. timeout의 statement/transaction rollback 설정과 앱의 전체 rollback, 새 transaction 재시도를 검증해야 한다. 감지 비용이 확인된 경우에만 wait duration과 실패율을 비교하며 deadlock 빈도 하나로 설정을 바꾸지 않는다.
+
+## SQL Server의 update lock
+
+SQL Server의 UPDLOCK은 읽을 때 update lock을 취해 공유 잠금끼리의 동시 upgrade 경로를 줄이는 선택지다. MySQL FOR UPDATE와 이름만 다른 완전 동치가 아니며 key/page 잠금, isolation과 hint 조합을 확인한다. Product별 lock contract를 섞어 적용하지 않는다.
+
 ## 출처
 
 - [MySQL 8.4 Reference Manual — Deadlocks in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-deadlocks.html)
@@ -55,6 +67,9 @@ lock 보유 시간 단축(외부 호출과 긴 계산 제거), 잠금 범위를 
 - [DB Lock으로 동시성을 해결하려다 Deadlock을 만난 이야기 — velog](https://velog.io/@joona95/DB-Lock%EC%9C%BC%EB%A1%9C-%EB%8F%99%EC%8B%9C%EC%84%B1%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-Deadlock%EC%9D%84-%EB%A7%8C%EB%82%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0)
 - [데드락을 해결하려다, 락을 줄이게 된 이야기 — 여기어때 기술블로그](https://techblog.gccompany.co.kr/%EB%8D%B0%EB%93%9C%EB%9D%BD%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-%EB%9D%BD%EC%9D%84-%EC%A4%84%EC%9D%B4%EA%B2%8C-%EB%90%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0-97bf2b0c91b6)
 - [데드락과 락 순서 통일 — Threads, dev_coach_kr](https://www.threads.com/@dev_coach_kr/post/DRGENQikl7o)
+- [Microsoft Learn, Table hints (Transact-SQL)](https://learn.microsoft.com/en-us/sql/t-sql/queries/hints-transact-sql-table?view=sql-server-ver17)
+- [인프런, 비관적락을 이용한 동시성 제어(with Prisma)](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273680)
+
 
 ## 관련 문서
 

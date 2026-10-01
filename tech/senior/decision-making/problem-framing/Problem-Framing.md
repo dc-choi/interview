@@ -13,6 +13,7 @@ aliases: ["Problem Framing", "문제 정의와 대응"]
 
 - [[Problem-Discovery|문제 발견]] — 마찰 흡수, 문제 축적과 공통 형태, 확신과 위험 기반 실행 강도, 신뢰 누적
 - [[Problem-Response-Patterns|문제 대응의 세 가지 패턴]] — 문제 이동, 보존, 새 문제 부상과 시스템 경계
+- [[Debugging-Principles|디버깅 원칙]] — 의심하기, 결함 층 분류, 지식 공백 학습, 가설과 실험의 피드백 루프, 디버깅을 위한 준비
 - [[Change-Pressure-Proportion|변경 압력과 비례 감각]] — 비가시 변경 비용, 완료 정의 부재, 그대로 두는 능력
 
 ## 상위 문서

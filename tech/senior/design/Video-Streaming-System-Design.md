@@ -1,9 +1,9 @@
 ---
-tags: [senior, system-design, video-streaming, vod, cdn, encoding]
+tags: [senior, system-design, video-streaming, vod, cdn, encoding, live-ingest]
 status: done
-verified_at: 2026-08-31
+verified_at: 2026-09-30
 category: "시니어역량(SeniorEngineer)"
-aliases: ["Video Streaming System Design", "VOD System Design", "주문형 비디오 스트리밍 설계"]
+aliases: ["Video Streaming System Design", "VOD System Design", "주문형 비디오 스트리밍 설계", "라이브 ingest"]
 ---
 
 # 주문형 비디오 스트리밍 시스템 설계
@@ -14,7 +14,7 @@ aliases: ["Video Streaming System Design", "VOD System Design", "주문형 비�
 
 - 사용자는 작품을 탐색하고 권한이 있는 콘텐츠를 여러 기기와 네트워크에서 끊김을 줄여 재생한다.
 - 운영자는 소스 자산을 검증, 인코딩, 패키징한 뒤 완전한 버전만 공개하고 실패한 작업을 재처리한다.
-- 이 문서는 VOD를 다룬다. 실시간 방송의 초저지연 ingest와 동기화는 별도 설계 문제다.
+- 이 문서는 VOD를 다룬다. 실시간 방송은 ingest 경로의 차이만 [[#라이브 ingest는 저장 뒤 공개가 아니라 실시간 중계다|아래 절]]에서 비교하고, 초저지연 재생과 동기화는 별도 설계 문제로 둔다.
 
 ## 세 개의 plane
 
@@ -107,6 +107,17 @@ Netflix Open Connect는 ISP 안이나 인터넷 교환 지점에 배치한 appli
 - 작품, 지역, 기기, codec, 앱 version별로 재생 성공률과 품질을 slice해 평균이 가리는 실패를 찾는다.
 - publish와 rollback을 staging에서 반복해 이전 version 재생과 새 version 공개가 섞일 때의 계약을 확인한다.
 
+## 라이브 ingest는 저장 뒤 공개가 아니라 실시간 중계다
+
+VOD는 자산을 저장하고 처리를 마친 뒤 공개하지만, 라이브는 방송자가 보내는 스트림을 받는 즉시 변환해 시청자에게 흘려보낸다. 그래서 가용성의 초점이 저장소보다 **스트림을 어느 처리 거점에 붙이고, 거점에 문제가 생기면 어디로 보내는가**로 옮겨 간다. 2022년 Twitch가 공개한 ingest 구조가 한 사례다.
+
+- **PoP**: 방송자는 RTMP나 WebRTC 같은 프로토콜로 가까운 PoP에 스트림을 보낸다. 공개 시점에 PoP는 전 세계 100곳 가까이였다. PoP의 media proxy가 스트림을 종단하고 속성을 뽑은 뒤 어느 origin으로 보낼지 라우팅 서비스에 묻는다.
+- **origin**: PoP에서 받은 스트림은 자체 backbone을 타고 origin data center로 가고, origin이 transcoding 같은 계산 집약 변환과 시청자 쪽 배포를 맡는다. 공용 인터넷 구간을 줄여 시간에 민감한 영상 전송의 불안정을 피하고, 무거운 계산 자원은 origin에 모으는 역할 분담이다.
+- **라우팅 서비스**: 각 origin의 compute 용량 변화(유지보수로 빠진 자원 포함)와 backbone link의 사용률, 가용성을 실시간 입력으로 받아 randomized greedy 알고리즘으로 경로를 정한다. origin에 문제가 생기면 새 스트림을 영향 없는 origin으로 자동 배정한다.
+- **정적 설정의 한계**: 이전의 정적 proxy 설정에서는 각 origin을 지역 피크에 맞춰 키워야 했다. 전체 용량을 전역 피크 하나에 맞추는 편이 지역 피크의 합보다 작은데도 그렇게 할 수 없었고, 예상 못 한 급증과 장애 origin에도 대응하기 어려웠다. 동적 라우팅이 필요한 이유다.
+
+공개 글은 새 스트림의 배정만 설명하고, 진행 중인 스트림을 다른 origin으로 옮기는 방식이나 시청자 쪽 edge가 같은 라우팅을 쓰는지는 밝히지 않는다. 설계에 옮길 때는 이 둘을 따로 정한다. 네트워크 상태에 따른 재생 화질 적응과 코덱 변환 세부는 이 절의 범위 밖이다.
+
 ## Netflix 공개 사례를 읽는 경계
 
 - 2024년 공개된 VES/Cosmos 사례는 비동기 workflow와 독립적인 media processing service, chunked encoding의 필요성을 보여 준다. 전체 내부 topology나 현재 운영 수치를 공개한 명세로 읽지 않는다.
@@ -121,8 +132,10 @@ Netflix Open Connect는 ISP 안이나 인터넷 교환 지점에 배치한 appli
 - [The Making of VES: the Cosmos Microservice for Netflix Video Encoding — Netflix TechBlog](https://netflixtechblog.com/the-making-of-ves-the-cosmos-microservice-for-netflix-video-encoding-946b9b3cd300)
 - [Per-Title Encode Optimization — Netflix TechBlog](https://netflixtechblog.com/per-title-encode-optimization-7e99442b62a2)
 - [Netflix/Hystrix — GitHub](https://github.com/netflix/hystrix)
+- [Ingesting Live Video Streams at Global Scale — Twitch Blog](https://blog.twitch.tv/en/2022/04/26/ingesting-live-video-streams-at-global-scale/)
 - [Netflix 시스템 디자인, 한국어 번역 — Steemit, kormanocorp](https://steemit.com/krdev/@kormanocorp/43rbe8-netflix)
 - [Understanding System Design of Netflix: Backend Architecture and Cloud Services — Medium, Nidhi Upreti](https://medium.com/@nidhiupreti99/understanding-system-design-of-netflix-backend-architecture-and-cloud-services-b077162e45bc)
+- [인프런, Hong, CDN 서비스에 대한 시스템 디자인](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272613)
 
 ## 관련 문서
 

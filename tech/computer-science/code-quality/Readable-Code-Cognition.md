@@ -115,6 +115,7 @@ async function fetchUserProfile(userId: string) {
 - [evan-moon — 우리는 왜 어떤 코드를 읽기 쉽다고 느낄까](https://evan-moon.github.io/2026/01/30/developer-intuition-readable-code-and-neuroscience/)
 
 ## 관련 문서
+- [[Beautiful-Code|아름다운 코드의 조건과 유지 (선형적, 선언적 코드)]]
 - [[Code-Readability-Dark-Patterns|코드 가독성 — JS 다크패턴 7종 (구체 사례)]]
 - [[Types-As-Proofs|Types as Proofs (커리-하워드 대응)]]
 - [[SOLID-In-Practice|SOLID 원칙 실전 적용]]

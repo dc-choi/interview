@@ -3,7 +3,7 @@ tags: [database, rdbms, mysql, index, optimizer, performance]
 status: done
 category: "Database - RDBMS"
 aliases: ["MySQL Advanced Index Access", "MySQL 고급 인덱스 접근"]
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 ---
 
 # MySQL 고급 인덱스 접근
@@ -63,9 +63,31 @@ invisible index는 기본적으로 optimizer 후보에서 제외되지만 계속
 
 MySQL 8.4는 key part별 `ASC`와 `DESC`를 저장해 혼합 방향 정렬을 지원한다. 동일 방향 정렬은 기존 ascending index의 forward/backward scan으로도 처리할 수 있지만, `(a DESC, b ASC)` 같은 순서에는 방향이 맞는 인덱스가 필요할 수 있다. `Backward index scan`과 TREE 형식의 reverse scan 표시를 확인한다.
 
+문서는 역방향 스캔에는 성능 비용이 따르고 descending index를 정방향으로 스캔하는 편이 더 효율적이라고 설명한다. 자주 쓰는 DESC 정렬이 인덱스 방향과 반대라면 방향을 맞춘 인덱스를 검토한다([[Index-Composite-Design|복합 인덱스 설계]]). descending index는 InnoDB의 B-tree 인덱스에서만 쓸 수 있고, `GROUP BY` 없는 `MIN()`/`MAX()` 최적화에는 쓰이지 않는다.
+
 ### Optimizer hint
 
 index와 join-order hint는 최후의 통제 수단이다. 문법상 허용되어도 서로 충돌하거나 적용할 수 없으면 무시될 수 있다. 통계, query shape, schema를 먼저 고치고 version과 데이터 분포가 바뀔 때마다 강제 계획을 재검증한다.
+
+## ICP가 줄이는 범위
+
+ICP는 선택된 secondary index의 entry를 읽은 뒤 조건을 검사하므로 index 탐색 구간 자체는 줄이지 않는다. 다른 index의 컬럼을 끌어와 검사하지도 못한다. virtual generated column의 secondary index 등 pushdown 제약을 확인한다. `Using index condition` 표시는 효과의 크기가 아니라 적용 신호이며 covering으로 base lookup을 제거한 계획과 비교한다.
+
+## OR를 재작성할 때의 중복
+
+Index Merge의 union은 row ID 순서가 맞는 입력을 병합하지만 sort_union은 ID들을 먼저 모아 정렬하므로 첫 행 반환도 지연될 수 있다. OR를 UNION으로 나누면 각 분기가 자기 접근 경로를 쓸 수 있지만 projection의 같은 값이 별개 행인지와 중복 제거 비용을 확인한다. AND에서 여러 단일 index를 교차하는 계획은 query에 맞는 복합 index와 비교하고, index 제거 전 OR의 병합 사용처도 조사한다.
+
+## Skip 위치와 값 종류
+
+Skip 대상은 맨 앞 컬럼만이 아니다. 상수 equality prefix 뒤의 빠진 key part를 distinct 값별로 순회하고 그 다음 range를 탐색할 수도 있다. 자료형보다 실제 distinct 수가 중요하며 시각이 날짜 단위로만 저장된 DATETIME과 초 단위로 퍼진 DATETIME은 비용이 다르다. SELECT에 index 밖 컬럼을 더하면 MySQL 8.4의 covering 요구를 벗어나 다른 계획으로 회귀할 수 있다.
+
+## Hint를 바꿀 때
+
+`USE INDEX`는 table scan을 허용하며 `INDEX` optimizer hint는 `FORCE INDEX`에 대응한다. 두 문법을 기계적으로 교체하지 않는다. 잘못 선택되는 한 index만 `NO_INDEX`로 제외하면 다른 경로의 비용 비교를 남길 수 있다. 자세한 강도 비교는 [[MySQL-Slow-Query-Diagnosis#Index hint의 강도]]를 따른다.
+
+## MRR 스위치 오해
+
+`mrr_cost_based=off`는 MRR 비활성화가 아니라 적용 가능하면 비용 비교 없이 사용하도록 하는 설정이다. 끄려면 `mrr=off`로 구분한다. row key 수집과 정렬에도 CPU, memory가 들므로 warm cache에서는 이득이 작거나 회귀할 수 있다. MySQL의 관련 buffer 기준은 `read_rnd_buffer_size`이며 실험 뒤 session 설정을 원복한다.
 
 ## 출처
 
@@ -80,6 +102,19 @@ index와 join-order hint는 최후의 통제 수단이다. 문법상 허용되�
 - [인프런, 인덱스 머지](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471911)
 - [인프런, MRR](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471913)
 - [인프런, 인덱스 숨기기](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471915)
+- [MySQL 8.4 Reference Manual, index hints](https://dev.mysql.com/doc/refman/8.4/en/index-hints.html)
+- [인프런, ICP 2 - 도입](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471903)
+- [인프런, ICP 적용 예제 - 실전 튜닝 2에 ICP 적용](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471904)
+- [인프런, 대용량 성능 실측](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471906)
+- [인프런, 드라이빙 테이블은 누가 정하는가](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471934)
+- [인프런, 옵티마이저 힌트](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471917)
+- [인프런, 인덱스 머지 2 - 사용](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471912)
+- [인프런, 인덱스 스킵 스캔 - 소개](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471907)
+- [인프런, 인덱스 스킵 스캔 - 적용](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471908)
+- [인프런, 인덱스를 만들었는데 왜 안 탈까](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471922)
+- [인프런, 정리](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471909)
+- [인프런, 정리](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471920)
+
 
 ## 관련 문서
 
@@ -87,3 +122,4 @@ index와 join-order hint는 최후의 통제 수단이다. 문법상 허용되�
 - [[Covering-Index|커버링 인덱스]]
 - [[MySQL-Optimizer-Statistics|MySQL 옵티마이저 통계]]
 - [[MySQL-Join-Optimization|MySQL 조인 최적화]]
+- [[Index-Composite-Design|복합 인덱스 설계]]

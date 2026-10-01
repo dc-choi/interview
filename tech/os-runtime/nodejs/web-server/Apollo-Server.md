@@ -1,7 +1,7 @@
 ---
 tags: [nodejs, graphql, apollo-server, api]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["Apollo Server", "아폴로 서버", "@apollo/server"]
 ---
@@ -13,10 +13,11 @@ aliases: ["Apollo Server", "아폴로 서버", "@apollo/server"]
 ## 버전 지형
 
 - v5가 현행 안정 버전. v4 대비 동작 변경보다 의존성과 지원 버전 갱신이 중심이라, 공식 문서가 v4와 v5를 함께 다룬다. Node.js는 v20.0.0 이상을 요구한다.
-- v3는 2024년 10월 EOL. v3에서 v5로 곧장 올라가는 마이그레이션 가이드가 제공된다.
+- v3는 2024년 10월 EOL, v4는 2026-01-26 EOL이다. v3에서 v5로 곧장 올라가는 마이그레이션 가이드가 제공된다.
 - v3 → v4의 구조 재편: apollo-server, apollo-server-express, apollo-server-core 같은 패키지 무리가 단일 코어 `@apollo/server`로 통합됐고, 자체 유지하던 프레임워크 통합(fastify, hapi, koa, lambda 등)은 중단되어 커뮤니티 유지의 `@as-integrations/*` 네임스페이스로 넘어갔다. 현재 공식 유지 통합은 Express(v4, v5)뿐이고 나머지는 커뮤니티 유지라 공식 지원이 없다. 플러그인은 `@apollo/server/plugin/*` deep import로 쓴다.
 - 에러 모델도 v4에서 정리됐다: ApolloError와 내장 에러 클래스(AuthenticationError 등)가 제거되고, graphql 패키지의 GraphQLError에 코드 문자열을 `extensions.code`로 싣는 방식이 됐다 — top-level error의 extensions code 관례([[GraphQL-Schema-Design|에러 채널]])의 구현이다. Apollo가 자체 인식하는 코드는 `ApolloServerErrorCode` enum으로 제공되고, 그 밖의 UNAUTHENTICATED 같은 값은 임의 custom 문자열이다.
 - 프로덕션 지향 기본값 전환(v4 이후): CSRF 방지 기본 활성(simple request CSRF 표면 대응, [[GraphQL-File-Uploads|CSRF 리스크]]), HTTP batching 기본 비활성(옵트인), 인메모리 캐시가 unbounded에서 bounded로, 로컬 landing page는 내장 Apollo Sandbox, subgraph에서 usage reporting 기본 비활성.
+- landing page 이력: v2는 개발 환경 기본값이 GraphQL Playground였다(`playground` 생성자 옵션). v3는 Playground와 그 옵션을 없애고, 호스팅된 Apollo Sandbox(studio.apollographql.com) 링크를 담은 splash page를 기본으로 했다. 이 Sandbox는 서버 CORS가 그 origin을 허용해야 동작했고, `ApolloServerPluginLandingPageLocalDefault`에 `embed: true`를 주면 Sandbox가 서버 페이지에 임베드돼 same-origin으로 요청하므로 CORS 설정이 필요 없었다. v4 이후 개발 환경 기본값이 이 임베드된 Sandbox다. Playground 플러그인은 v2 호환용 별도 패키지(`@apollo/server-plugin-landing-page-graphql-playground`)로 한 번만 배포됐고 문서와 보안 업데이트를 지원하지 않는다. GraphQL Playground 프로젝트 자체가 공식 retired 상태다([[GraphQL]]). 구 강의와 예제의 `apollo-server` 패키지와 Playground는 `@apollo/server`의 `startStandaloneServer`와 Sandbox(또는 GraphiQL)로 바꿔 읽는다.
 - usage reporting 텔레메트리는 APOLLO_KEY와 graph ref 환경변수가 있으면 자동 활성화된다(subgraph 제외). 프라이버시 기본값도 보수적이다: 변수와 헤더는 기본 미전송이고 authorization, cookie, set-cookie 헤더는 설정과 무관하게 항상 차단되며, 에러 상세는 기본 마스킹된다. 필드 단위 계측은 확률 샘플링(예: 1%)으로 수집하고 보고 수치를 역수 배로 보정해 전량을 추정한다.
 - 스키마 등록은 두 경로다: 런타임 자동 보고(명시 옵트인, 기동 시 스키마 해시를 heartbeat로 등록, 다중 인스턴스의 동시 보고를 피하려 0에서 10초 랜덤 지연)와 CI에서 Rover CLI로 publish. federation을 쓰는 그래프는 런타임 보고가 지원되지 않아 publish 경로를 쓴다.
 - v4 → v5의 실질 변경: Express 통합(`expressMiddleware`)이 코어에서 분리되어 별도 패키지 `@as-integrations/express4`(Express 5용은 `@as-integrations/express5`)로 나갔고, `startStandaloneServer`는 내부 Express 의존을 버리고 Node 내장 HTTP 서버로 직접 돈다. graphql.js 최소 버전은 16.11.0. 플러그인의 HTTP 클라이언트가 node-fetch에서 Node 내장 fetch로 바뀌어 프록시 환경 설정 경로도 달라졌다 — 대상은 usage와 schema reporting, subscription callback처럼 서버가 GraphOS 쪽으로 내보내는 요청들이다.
@@ -25,13 +26,24 @@ aliases: ["Apollo Server", "아폴로 서버", "@apollo/server"]
 ## 최소 구성
 
 - 필요한 패키지는 둘이다: `graphql`(GraphQL 코어 알고리즘 구현)과 `@apollo/server`(HTTP 요청을 GraphQL 연산으로 바꿔 실행하는 서버 본체).
-- 부팅 흐름: SDL 문자열 typeDefs와 resolver 맵을 `ApolloServer` 생성자에 넘기고, `startStandaloneServer`로 리슨한다. 서버 URL로 접속하면 Apollo Sandbox(GraphOS Explorer 웹 IDE의 계정 불필요 모드)가 떠서 바로 쿼리를 실행해 볼 수 있다.
+- 부팅 흐름: SDL typeDefs와 resolver 맵을 `ApolloServer` 생성자에 넘기고(둘 다 배열 가능, 아래 [[#스키마와 resolver 모듈화|모듈화]]), `startStandaloneServer`로 리슨한다. 서버 URL로 접속하면 Apollo Sandbox(GraphOS Explorer 웹 IDE의 계정 불필요 모드)가 떠서 바로 쿼리를 실행해 볼 수 있다.
 - 프로덕션 환경에선 introspection이 기본으로 꺼진다 — 그래서 introspection에 의존하는 Sandbox 같은 도구도 프로덕션 landing page에선 동작하지 않는다 ([[GraphQL-Security|보안]]).
 - helmet과 함께 쓰면 Apollo Sandbox가 CSP에 걸려 깨질 수 있다 — `crossOriginEmbedderPolicy: false` + CSP 지시어에 Apollo landing page CDN, sandbox embed 도메인 허용으로 해결 (NestJS 공식 가이드의 조정 예시).
 - 스키마 기반 모킹은 @graphql-tools/mock의 addMocksToSchema로 스키마를 감싸 켠다. 기본은 mock이 resolver를 덮고, preserveResolvers를 켜면 실제 resolver를 살린 채 빈 곳만 모킹한다. custom scalar는 기본 mock 값이 없어 명시적으로 정의해야 한다.
 - 확장은 플러그인으로 한다: 이벤트가 두 갈래다. 서버 수명 이벤트(serverWillStart 등)는 기동 시 한 번, 요청 수명 이벤트는 요청마다 돈다. 후자는 중첩 패턴이다 — requestDidStart가 요청 시작 시 불리고 그 안에서 parsingDidStart, validationDidStart, executionDidStart 같은 하위 단계 핸들러를 반환해 요청 로직을 한 곳에 캡슐화한다. 훅 이름이 parse, validate, execute 단계([[GraphQL-Architecture-Map|지도]])와 그대로 대응해 로깅, 메트릭 계측을 꽂는 자리다. 각 단계엔 end 훅이 있어 그 단계 종료 후 에러를 받는다(validate의 end 훅은 그 단계의 모든 에러 배열을 받는다). NestJS에서는 ApolloServerPlugin 구현 클래스에 `@Plugin()`(@nestjs/apollo)을 붙여 providers로 등록만 하면 자동 적용된다 — DI를 받는 플러그인이 가능해진다.
 - 전용 헬스체크 엔드포인트는 없다. GraphQL 수준 체크는 `{__typename}` 같은 trivial 쿼리를 GET으로 날린다 — 프로세스 생존만이 아니라 GraphQL 실행 능력까지 확인된다. 이 GET은 Content-Type이 없어 CSRF 방지에 걸리므로 `apollo-require-preflight: true` 헤더를 동봉한다. HTTP 수준 체크만 필요하면 프레임워크에 항상 성공하는 별도 GET 핸들러를 둔다.
 - 통합 테스트는 `executeOperation`으로 HTTP 없이 요청 파이프라인을 태울 수 있다. 검증 범위와 E2E와의 경계는 아래 [[#테스트 전략|테스트 전략]]에서 다룬다.
+
+## 스키마와 resolver 모듈화
+
+한 파일에 typeDefs와 resolver를 모두 두는 구성은 기능이 적을 때만 편하다. 도메인이 늘면 도메인별 모듈이 자기 타입과 resolver를 내보내고 진입점에서 모은다.
+
+- 생성자는 배열을 받는다. `typeDefs`는 SDL 문자열, `DocumentNode` 또는 `DocumentNode` 배열이고, `resolvers`는 맵 하나 또는 병합될 맵의 배열이다. v3의 `modules` 옵션(`{ typeDefs, resolvers }` 객체 배열)은 v4에서 제거됐으므로 `typeDefs: modules.map(({ typeDefs }) => typeDefs)`, `resolvers: modules.map(({ resolvers }) => resolvers)`로 바꾼다.
+- 도메인 모듈은 자기 타입 정의와 그 도메인의 `Query`, `Mutation` resolver를 함께 내보낸다. resolver는 얇게 두고 데이터 접근은 아래 계층 함수로 넘긴다(아래 테스트 전략과 같은 원칙).
+- 루트 타입을 누가 소유할지 정한다. 루트 `Query`, `Mutation` 선언을 공용 파일에 모으면 API 표면이 한눈에 보이지만, 도메인을 더할 때마다 공용 파일과 진입점 배열을 함께 고쳐야 해서 충돌 지점이 된다. 각 모듈이 `extend type Query { supplies: [Supply] }`처럼 자기 루트 필드를 선언하면 이 결합이 줄어든다. GraphQL 명세상 확장 대상 타입은 먼저 정의돼 있어야 하고 이미 있는 필드를 다시 선언할 수 없으므로, 기본 `type Query` 선언 하나는 공용 위치에 둔다.
+- 병합 동작은 명세가 아니라 구현에 달려 있다. Apollo Server는 내부에서 `@graphql-tools/schema`의 `makeExecutableSchema`로 스키마를 만든다. 5.5.1에서 같은 이름의 `type Query`를 두 문서에 선언하자 필드가 합쳐졌고, 명세상 무효인 같은 필드의 `extend` 재선언도 오류 없이 합쳐졌다. graphql-js의 `buildSchema`는 앞의 SDL을 `There can be only one type named "Query".`로, 뒤의 SDL을 `Field "Query.a" can only be defined once.` 같은 오류로 거부했다. 기본 선언 없는 `extend type Query`는 두 경로 모두 `Cannot extend type "Query" because it is not defined.`로 실패했다. 도구를 바꾸면 깨질 수 있으므로 명세대로 쓴다.
+- resolver 배열은 타입 이름 키로 깊게 병합된다. 두 모듈이 같은 필드를 정의하자 오류 없이 뒤 모듈이 이겼다(5.5.1). 필드마다 소유 모듈을 하나로 정한다.
+- NestJS에서는 schema-first면 `typePaths` 글롭이 SDL 파일을 병합하고, code-first면 모듈별 resolver 클래스가 스키마를 조립해 루트 선언 파일을 손으로 관리하지 않는다([[NestJS-GraphQL-Schema-Mapping|NestJS GraphQL 스키마 접근]]).
 
 ## 테스트 전략
 
@@ -111,6 +123,8 @@ GraphQL 특유의 회귀 항목:
 - [[GraphQL|GraphQL 개념]]
 - [[GraphQL-Architecture-Map|GraphQL 요청 라이프사이클과 partial response]]
 - [[NestJS-GraphQL|NestJS GraphQL (Apollo 드라이버 통합)]]
+- [[NestJS-GraphQL-Schema-Mapping|NestJS GraphQL 스키마 접근과 타입 매핑]]
+- [[GraphQL-Schema-Types|GraphQL 스키마 타입]]
 - [[GraphQL-Federation|Federation (subgraph, gateway)]]
 - [[Hono|Hono (다른 Node.js 웹 프레임워크)]]
 
@@ -145,4 +159,13 @@ GraphQL 특유의 회귀 항목:
 - [Apollo Server — Drain HTTP server plugin](https://www.apollographql.com/docs/apollo-server/api/plugin/drain-http-server)
 - [Apollo Server — Subscription callback plugin](https://www.apollographql.com/docs/apollo-server/api/plugin/subscription-callback)
 - [Apollo Server — Building plugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins)
+- [Apollo Server — Landing page plugins](https://www.apollographql.com/docs/apollo-server/api/plugin/landing-pages)
+- [Apollo Server — Previous versions](https://www.apollographql.com/docs/apollo-server/previous-versions)
+- [Apollo Server 3 — Migrating to Apollo Server 3 (GraphQL Playground)](https://www.apollographql.com/docs/apollo-server/v3/migration)
+- [Apollo Server — ApolloServer constructSchema source](https://github.com/apollographql/apollo-server/blob/main/packages/server/src/ApolloServer.ts)
+- [GraphQL Tools — mergeResolvers source](https://github.com/ardatan/graphql-tools/blob/master/packages/merge/src/merge-resolvers.ts)
+- [GraphQL Specification September 2025 — Object Extensions](https://spec.graphql.org/September2025/#sec-Object-Extensions)
 - [NestJS — GraphQL Plugins](https://docs.nestjs.com/graphql/plugins)
+- [얄팍한 코딩사전 강사 — GraphQL로 정보 주고받아보기](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=62913)
+- [얄팍한 코딩사전 강사 — Apollo 서버 구축하기](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=62918)
+- [얄팍한 코딩사전 강사 — 서버 구성요소 모듈화](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=63714)

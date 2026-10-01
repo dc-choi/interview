@@ -2,8 +2,8 @@
 tags: [infrastructure, aws, dynamodb, nosql, serverless, database]
 status: done
 category: "Infrastructure - AWS"
-aliases: ["DynamoDB", "Amazon DynamoDB", "DAX"]
-verified_at: 2026-08-04
+aliases: ["DynamoDB", "Amazon DynamoDB"]
+verified_at: 2026-09-30
 ---
 
 # Amazon DynamoDB
@@ -20,9 +20,11 @@ AWS 완전관리형 **서버리스 NoSQL** 키-값/문서 데이터베이스. �
 
 ## 키 구조
 
-- **Partition Key (PK)** 단독 또는 **PK + Sort Key (SK)** 복합
-- 같은 PK = 같은 파티션 = 같이 정렬 저장 (SK 순)
+- **Simple primary key**: partition key(PK) 하나. 같은 PK 값을 가진 아이템은 둘일 수 없다
+- **Composite primary key**: PK + sort key(SK). 여러 아이템이 같은 PK를 가질 수 있고 (PK, SK) 조합이 유일해야 한다. 고객 ID를 PK, 구매 시각을 SK로 두면 한 고객의 여러 구매를 저장할 수 있는 이유다. 같은 PK를 공유하는 아이템 묶음을 item collection이라 부른다
+- PK 값은 내부 hash 함수를 거쳐 물리 파티션을 정하고, 같은 PK의 아이템은 SK 순으로 함께 저장된다. 그래서 PK 선택이 트래픽 분산(hot partition, 아래 스로틀링 절)과 한 번의 Query로 가져올 범위를 함께 정한다. 키 속성 타입은 String, Number, Binary만 된다
 - 쿼리는 PK 일치 + SK 조건이 기본. 비키 필드 검색은 **Scan** 또는 **GSI/LSI** 필요
+- `PutItem`은 같은 primary key의 아이템이 있으면 오류 없이 통째로 교체한다. 새 아이템만 만들려면 `ConditionExpression`에 `attribute_not_exists(<PK 속성명>)`을 넣고, 덮어썼는지 확인하려면 `ReturnValues=ALL_OLD`로 이전 아이템을 받는다. 키 중복을 insert 실패로 기대하면 조용한 덮어쓰기 사고가 난다
 
 ## 보조 인덱스, LSI와 GSI
 
@@ -41,10 +43,23 @@ AWS 완전관리형 **서버리스 NoSQL** 키-값/문서 데이터베이스. �
 - `Query`는 partition key equality가 필수이고 sort key 조건으로 범위를 좁힌다. 필요한 access pattern이 현재 key로 표현되지 않으면 GSI나 LSI를 설계한다.
 - `Scan`은 table 또는 index의 모든 item을 읽은 뒤 filter를 적용한다. `FilterExpression`은 반환량만 줄이고 이미 읽은 데이터의 read capacity는 줄이지 않는다.
 - 한 요청은 최대 1MB까지 처리하고 `LastEvaluatedKey`가 있으면 pagination을 이어간다. 대형 table의 online request path에서는 Scan을 피하고, 불가피한 관리 작업은 rate limit, projection, 별도 table 또는 off-peak 실행으로 production traffic을 보호한다.
+- `ProjectionExpression`은 반환 속성만 줄이고 소비 RCU는 줄이지 않는다. RCU는 읽은 아이템 수와 크기로 계산된다.
+- `Limit`과 1MB 한도는 필터 적용 전에 걸린다. `Limit=10`에 필터를 붙이면 10개보다 적게 오거나 빈 결과와 `LastEvaluatedKey`가 함께 올 수 있다. `ScannedCount`가 크고 `Count`가 작으면 비효율적인 요청이라는 신호이며, 보통 key나 index가 access pattern과 맞지 않는 경우다.
+- 최신 N건은 시간 값을 sort key로 두고 `ScanIndexForward=false`, `Limit=N`으로 Query한다. `ConsistentRead=true` Scan은 기본보다 RCU를 두 배 쓴다.
+- **Parallel Scan**: 순차 Scan은 한 번에 한 파티션만 읽어 단일 파티션 처리량에 묶인다. `Segment`와 `TotalSegments`로 table이나 index를 논리 분할해 worker마다 요청한다. 세그먼트는 PK hash로 배정되어 불균등할 수 있으므로 세그먼트 수를 늘린다고 빨라진다는 보장이 없다. worker가 많으면 provisioned throughput을 모두 소진할 수 있어 다른 트래픽이 많은 시간을 피하고 요청별 `Limit`으로 worker당 소비를 제한한다.
+- Scan이 무난한 곳은 작은 테이블이나 자주 바뀌지 않는 참조용 룩업 테이블 정도다. 대형 테이블 전체 분석은 Scan보다 아래 Export to S3와 Athena를 먼저 비교한다.
 
 ## 항목 단위 접근 제어
 
 IAM condition의 `dynamodb:LeadingKeys`로 요청의 partition key가 사용자나 tenant 식별자와 일치할 때만 항목 작업을 허용할 수 있다. 실제 권한은 허용한 API, table과 index ARN, condition을 모두 만족해야 한다. `Scan`은 전체 항목을 읽는 작업이라 이 방식의 partition key 격리 정책과 양립하지 않으므로 허용하지 않는다. 멀티테넌트 경계는 key 설계, 인증된 principal tag와 정책 테스트까지 함께 검증한다.
+
+### IAM action은 API 단위다
+
+IAM action은 DynamoDB API 작업마다 따로 평가된다. `dynamodb:PutItem`은 `dynamodb:BatchWriteItem`을, `dynamodb:GetItem`은 `dynamodb:BatchGetItem`을 포함하지 않는다. 단건 `put_item`은 되는데 boto3 `Table.batch_writer()`(내부적으로 `BatchWriteItem` 호출)로 대량 적재하면 `AccessDeniedException`이 나는 이유다.
+
+- SDK 고수준 helper가 실제로 호출하는 API를 확인해 최소 권한 목록을 만든다. NestJS 서비스에서 AWS SDK for JavaScript v3를 쓸 때도 `BatchWriteCommand`는 `BatchWriteItem` 호출이라 같은 권한이 필요하다. index를 Query하면 `table/<테이블>/index/<인덱스>` 형태의 index ARN도 Resource에 넣는다
+- 거부 메시지에 나온 action만 추가하고 `dynamodb:*`로 넓히지 않는다. 배포 전 [[IAM-Policy|IAM Policy Simulator]]로 필요한 action 조합을 확인한다
+- 미처리 항목 재시도는 아래 스로틀링 절을 따른다
 
 ## 테이블 클래스
 
@@ -86,14 +101,16 @@ TTL 속성에는 Unix epoch seconds의 Number 값을 저장한다. 만료는 정
 
 - **DynamoDB 호환 인메모리 캐시**. eventually consistent read의 cache hit에서 마이크로초 단위 응답을 목표로 하며 strongly consistent read는 DynamoDB로 통과시킴
 - 애플리케이션에 AWS 제공 DAX client를 사용하고 DAX cluster endpoint를 지정해야 한다. DynamoDB API와 호환돼 기능 변경은 작을 수 있지만 연결, consistency, cluster 용량과 장애 동작을 검증해야 함
-- 개별 객체 캐시 + 쿼리/스캔 캐시 처리
+- 개별 객체 캐시 + 쿼리/스캔 캐시 처리. 쓰기는 빨라지지 않고, DAX를 거치지 않은 쓰기와 Query 결과는 TTL 전까지 옛 값을 줄 수 있음
 - cf. **ElastiCache**는 일반적 인메모리 캐시 — **집계 결과 저장**에 적합
+- 적합성, write-through 범위, query cache, 운영 제약은 [[DynamoDB-DAX|DynamoDB DAX]]
 
 ## DynamoDB Streams
 
-- 테이블 수정사항을 실시간 스트림으로 노출
+- 테이블 수정사항을 near-real-time 변경 로그로 노출. 같은 아이템의 변경 순서를 보장하고 레코드는 스트림에 한 번만 나타남
 - 보관 24시간. 소비자는 무제한이 아니며 shard당 동시 읽기 제한이 있다. Lambda, Kinesis Client Library, EventBridge Pipes 등 소비 방식별 한도를 함께 봐야 한다.
 - Lambda 트리거로 후속 작업 가능 (이벤트 소싱, CQRS 패턴)
+- StreamViewType, 전용 endpoint, 소비 구조와 팬아웃, Kinesis Data Streams 비교는 [[DynamoDB-Streams|DynamoDB Streams]]
 
 ## Global Table
 
@@ -134,6 +151,15 @@ TTL 속성에는 Unix epoch seconds의 Number 값을 저장한다. 만료는 정
 - [AWS DynamoDB — Time to Live](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html)
 - [AWS DynamoDB — Error handling and exponential backoff](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html)
 - [AWS DynamoDB — Troubleshooting throttling](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TroubleshootingThrottling.html)
+- [AWS DynamoDB — PutItem API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html)
+- [AWS DynamoDB — Query API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html)
+- [AWS DynamoDB — Scanning tables](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html)
+- [AWS DynamoDB — API permissions reference](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/api-permissions-reference.html)
+- [AWS Service Authorization Reference — Actions, resources, and condition keys for Amazon DynamoDB](https://docs.aws.amazon.com/service-authorization/latest/reference/list_dynamodb.html)
+- [Boto3 — DynamoDB Table.batch_writer](https://docs.aws.amazon.com/boto3/latest/reference/services/dynamodb/table/batch_writer.html)
+- [Sungmin Kim 강사 — DynamoDB란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=58198)
+- [Sungmin Kim 강사 — DynamoDB 실습 1부](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=60033)
+- [Sungmin Kim 강사 — DynamoDB 실습 2부](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=60038)
 - [Sungmin Kim 강사 — DynamoDB Index](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=58839)
 - [Sungmin Kim 강사 — Query VS Scan](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=59591)
 - [Sungmin Kim 강사 — DAX](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=60469)

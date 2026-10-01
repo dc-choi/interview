@@ -1,7 +1,7 @@
 ---
 tags: [web, graphql, api, schema, type-system]
 status: done
-verified_at: 2026-07-20
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL Schema Types", "GraphQL 타입 시스템", "GraphQL 스키마 타입", "interface union input scalar enum"]
 ---
@@ -35,6 +35,13 @@ Scalar를 반환하는 필드에도 인자를 줄 수 있다(서버측 변환 �
 scalar Date
 ```
 
+ID는 고유 식별자라는 약속이지 강제가 아니다.
+
+- 스펙은 ID를 refetch와 캐시 키에 흔히 쓰는 고유 식별자로 정의하고, 숫자처럼 보여도 항상 String으로 직렬화한다. 입력으로는 문자열과 정수를 ID로 받고(`4`와 `"4"`), float를 포함한 그 밖의 값은 request error로 거부한다. graphql-js는 정수 4를 resolver에 문자열 `"4"`로 넘긴다(16.14.2, 17.0.2 재현).
+- 유일성을 검사하는 validation이나 실행 규칙은 없다. 유일성은 서버 데이터(PK, UUID)와 구현이 지킨다.
+- 약속이 깨지면 정규화 캐시가 오염된다. Apollo InMemoryCache는 기본으로 `__typename`과 `id`(또는 `_id`)를 이어 캐시 ID를 만들고, 같은 캐시 ID로 들어온 객체는 필드를 병합하며 겹치는 필드는 나중 값이 덮는다. 부모 id를 재사용한 집계 행이나 인덱스로 만든 목록 항목처럼 서로 다른 객체가 같은 타입과 id로 오면 한 엔티티로 합쳐져 목록의 여러 칸이 같은 데이터로 보인다.
+- 진짜 식별자만 ID로 노출한다. 합성 객체에는 안정적인 복합 id를 주거나 id 필드를 두지 않는다. id가 없는 객체는 정규화되지 않고 부모 객체 안에 저장된다. 필요하면 클라이언트 `keyFields`로 키를 지정한다. 전역 유일 id 설계는 [[GraphQL-Caching|캐싱]], 타입을 넘는 전역 유일성을 요구하는 Relay식 `node(id:)`는 [[GraphQL-Pagination|페이지네이션]]에 있다.
+
 ## Enum
 
 허용된 값 집합으로 제한된 특수 scalar. 인자가 그 집합 중 하나인지 검증하고 필드가 유한 집합 중 하나임을 타입으로 알린다.
@@ -43,7 +50,7 @@ scalar Date
 enum Episode { NEWHOPE EMPIRE JEDI }
 ```
 
-구현이 내부에서 값을 뭘로 표현하든(첫 클래스 enum, 정수 매핑 등) 클라이언트에는 새지 않는다. 클라이언트는 값의 이름 문자열로만 다룬다.
+구현이 내부에서 값을 뭘로 표현하든(첫 클래스 enum, 정수 매핑 등) 클라이언트에는 새지 않는다. 클라이언트는 응답과 변수(JSON)에서 값의 이름 문자열로만 다룬다. 연산 문서 안의 인라인 리터럴은 따옴표 없는 이름(`episode: JEDI`)이어야 하고 `"JEDI"`는 거부된다([[GraphQL-Query-Language#인자|인자 리터럴 표기]]).
 
 ## List와 Non-Null 수식자
 
@@ -107,6 +114,18 @@ Input Object의 필드는 다른 Input Object를 참조할 수 있지만(중첩 
 type User { name: String @deprecated(reason: "Use `fullName`.") }
 ```
 
+custom directive는 SDL에 이름, 인자와 붙일 수 있는 위치를 선언한다. 한 위치에 여러 번 붙이려면 `repeatable`을 선언한다.
+
+```graphql
+directive @auth(requires: Role = USER) on OBJECT | FIELD_DEFINITION
+directive @length(max: Int!) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+directive @tag(name: String!) repeatable on FIELD_DEFINITION
+```
+
+- 위치는 실행 위치(QUERY, MUTATION, SUBSCRIPTION, FIELD, FRAGMENT_DEFINITION, FRAGMENT_SPREAD, INLINE_FRAGMENT, VARIABLE_DEFINITION)와 타입 시스템 위치(SCHEMA, SCALAR, OBJECT, FIELD_DEFINITION, ARGUMENT_DEFINITION, INTERFACE, UNION, ENUM, ENUM_VALUE, INPUT_OBJECT, INPUT_FIELD_DEFINITION)로 나뉜다.
+- 선언을 어기면 실행 전에 막힌다. 위의 `@length`를 type에 붙이면 스키마 생성이 `Directive "@length" may not be used on OBJECT.`로 실패하고, 쿼리 필드에 쓰면 validation이 `... may not be used on FIELD.`를 낸다. 선언 없는 이름은 `Unknown directive "@foo".`, repeatable이 아닌 directive를 한 위치에 두 번 붙이면 `can only be used once at this location` 오류다(graphql-js 16.14.2, 17.0.2 재현).
+- 선언은 위치와 인자만 정한다. `@length(max: 3)`을 선언하고 붙여도 transformer가 없으면 긴 문자열이 그대로 통과한다. 인증, 인가, 길이 제한 같은 횡단 관심사는 위의 transformer 패턴으로 resolver를 감싸 구현하고, `@auth`도 실제 인가 판단은 비즈니스 로직 계층에 위임한다([[GraphQL-Security|인가]]).
+
 문서화도 구분된다: `"""triple quote"""` description은 Markdown으로 쓰는, introspection으로 노출되는 사람이 읽는 문서화다(GraphiQL 등 도구에 표시, 이름이 자명하지 않은 모든 요소에 권장). `#` 주석은 무시된다.
 
 ## 흔한 실수
@@ -115,6 +134,8 @@ type User { name: String @deprecated(reason: "Use `fullName`.") }
 - union에서 `__typename`을 빠뜨려 멤버 구분 불가.
 - `[T!]!`가 빈 리스트를 막는다고 오해. `[]`는 valid다.
 - Object나 Input Object 하나를 input과 output에 겸용으로 씀. 구조가 같아도 각각 `type`과 `input`으로 정의한다. Scalar와 Enum은 양쪽에 쓸 수 있다.
+- 합성 객체에 부모 id나 목록 인덱스를 ID로 재사용해 정규화 캐시가 서로 다른 객체를 합침.
+- custom directive를 선언만 하고 transformer를 붙이지 않아 검증이나 인가가 동작한다고 착각함.
 
 ## 면접 체크포인트
 
@@ -122,7 +143,8 @@ type User { name: String @deprecated(reason: "Use `fullName`.") }
 - interface vs union (공통 필드 보장 유무, `__typename` 분기), interface는 의미 있는 공유 추상일 때만 도입
 - Non-Null이 출력에선 약속, 입력에선 검증 규칙인 이유
 - Object 계열과 Input Object의 입력, 출력 위치가 왜 분리되는가
-- ID scalar가 문자열이지만 human-readable이 아님을 의미하는 것
+- ID scalar가 문자열로 직렬화되는 불투명 식별자이고, 유일성은 스펙이 강제하지 않는 약속이라는 것
+- custom directive 선언이 정하는 것(위치, 인자)과 정하지 않는 것(동작)
 
 ## 관련 문서
 
@@ -140,3 +162,10 @@ type User { name: String @deprecated(reason: "Use `fullName`.") }
 - [Apollo Server — Unions and interfaces (__resolveType)](https://www.apollographql.com/docs/apollo-server/schema/unions-interfaces)
 - [Apollo Server — Custom scalars (serialize, parseValue, parseLiteral)](https://www.apollographql.com/docs/apollo-server/schema/custom-scalars)
 - [Apollo Server — Directives (custom directive transformer)](https://www.apollographql.com/docs/apollo-server/schema/directives)
+- [GraphQL September 2025 Specification — ID](https://spec.graphql.org/September2025/#sec-ID)
+- [GraphQL September 2025 Specification — Enum input coercion](https://spec.graphql.org/September2025/#sec-Enums.Input-Coercion)
+- [GraphQL September 2025 Specification — Directives Are in Valid Locations](https://spec.graphql.org/September2025/#sec-Directives-Are-in-Valid-Locations)
+- [Apollo Client — Caching overview (캐시 ID와 병합)](https://www.apollographql.com/docs/react/caching/overview)
+- [Apollo Client — Configuring the cache (keyFields)](https://www.apollographql.com/docs/react/caching/cache-configuration)
+- [인프런, 얄팍한 코딩사전, GraphQL의 기본 타입들](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=64524)
+- [인프런, Hong, 3가지 통신 패턴 및 횡단 관심사를 위한 Directive와 설계 원칙](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449777)

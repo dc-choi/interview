@@ -88,7 +88,7 @@ const page = await dataSource
   .take(limit)
   .getMany()
 ```
-join 또는 subquery가 있으면 raw `limit`/`offset`보다 `take`/`skip`을 우선한다. 그래도 generated SQL, parent 수, 중복, `getCount()` 의미를 실제 DB data로 검증한다. 큰 offset은 [[Pagination-Optimization|pagination 최적화]]를 따른다.
+join 또는 subquery가 있으면 raw `limit`/`offset`보다 `take`/`skip`을 우선한다. 그래도 generated SQL, parent 수, 중복, `getCount()` 의미를 실제 DB data로 검증한다. 큰 offset은 [[Pagination-Optimization|pagination 최적화]]를 따른다. `take`/`skip`이 만드는 두 단계 query, PK `ASC` 자동 추가와 `getCount()`의 `COUNT(DISTINCT)` 분기는 [[TypeORM-QueryBuilder-Pagination-and-Count|take/skip과 count가 만드는 SQL]]에서 다룬다.
 ## Entity 결과, raw 결과와 projection
 
 `getOne`/`getMany`는 Entity metadata로 hydrate하고, `getRawOne`/`getRawMany`는 select alias를 key로 하는 raw shape를 돌려준다. 집계, window function, DTO projection은 raw 결과가 더 명확하다.
@@ -172,6 +172,7 @@ relation id만 바꿀 때는 graph 전체를 읽고 `save`하는 대신 Relation
 - [[SQL-Query-Composition]]
 - [[Execution-Plan]]
 - [[Pagination-Optimization|pagination 최적화]]
+- [[TypeORM-QueryBuilder-Pagination-and-Count|take/skip과 count가 만드는 SQL]]
 - [[Lock]]
 - [[Transactions|트랜잭션]]
 ## 출처

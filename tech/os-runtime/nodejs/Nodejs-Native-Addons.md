@@ -184,5 +184,6 @@ fn hello(name: String) -> String {
 - [[libuv|libuv]]
 - [[Module-System|모듈 시스템]]
 - [[Package-Publishing|npm 패키지 배포]]
+- [[Package-Publishing-Workflow|npm 배포 워크플로 (Node-API 버전 dist-tag)]]
 - [[WebAssembly|WebAssembly]]
 - [[Worker-Threads|Worker Threads]]

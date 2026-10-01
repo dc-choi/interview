@@ -8,7 +8,7 @@ aliases: ["DTO Layering", "DTO 레이어 스코프", "DTO Entity 변환 위치"]
 
 # DTO 레이어 스코프, Entity 변환 위치
 
-DTO(Data Transfer Object)를 어느 레이어까지 내리고, Entity로의 변환을 어디서 수행할지는 레이어드 아키텍처의 반복되는 논쟁이다. 정답은 없지만 **"DTO는 경계에서 도메인을 보호하는 장치"** 라는 원칙에서 트레이드오프가 나온다.
+DTO(Data Transfer Object)를 어느 레이어까지 내리고, Entity로의 변환을 어디서 수행할지는 레이어드 아키텍처의 반복되는 논쟁이다. 정답은 없지만 **DTO는 경계에서 도메인을 보호하는 장치** 라는 원칙에서 트레이드오프가 나온다.
 
 ## 핵심 명제
 
@@ -16,7 +16,7 @@ DTO(Data Transfer Object)를 어느 레이어까지 내리고, Entity로의 변�
 - **Entity = 불변조건, 행위를 가진 도메인 모델** — 생명주기, 영속성, 비즈니스 규칙의 주체
 - **Entity를 그대로 응답하면 안 된다** — 스키마 유출, 민감 필드 노출, 테이블 결합도 문제
 - **변환 위치는 Controller vs Service vs 별도 Mapper** 중 선택이며, 규모에 따라 다르다
-- **Repository에는 DTO를 내리지 않는다** — Repository는 Entity 영속성만 책임진다
+- **외부 요청 DTO를 Repository에 그대로 전파하지 않는다** — 검색 조건, 수정 입력과 조회 프로젝션은 Repository 계약의 일부로 둘 수 있다
 
 ## Entity 직접 반환의 문제
 
@@ -43,7 +43,7 @@ DTO(Data Transfer Object)를 어느 레이어까지 내리고, Entity로의 변�
 
 - **구조**: `Request DTO(외부) → Command/Query DTO(내부) → Entity`. 매퍼가 경계 변환, Service는 내부 DTO로만 통신
 - **장점**: Controller, Service가 서로 다른 DTO에 의존 → 진정한 분리. Command/Query 모델 도입(CQRS)과 궁합 좋음
-- **단점**: 클래스 수 증가(최소 Request/Response/Command/Query 4종), 보일러플레이트. MapStruct 같은 자동 매퍼 필요
+- **단점**: 계약과 매핑 코드가 늘어남. 실제로 다른 계약만 나누며, 작은 변환에는 수동 매핑으로 충분
 - **어울리는 경우**: 여러 진입점, 여러 바운디드 컨텍스트, 헥사고날/DDD 적용
 
 ## 레이어별 책임 표
@@ -53,7 +53,7 @@ DTO(Data Transfer Object)를 어느 레이어까지 내리고, Entity로의 변�
 | Controller | Request DTO ↔ Response DTO | 직렬화, 입력 검증, 인증, HTTP 계약 |
 | Application/Service | Command/Query(내부 DTO), Entity | 유즈케이스 오케스트레이션, 트랜잭션 경계 |
 | Domain | Entity, VO | 불변조건, 비즈니스 규칙 |
-| Repository | Entity | 영속성, 쿼리. DTO 변환 금지 |
+| Repository | Entity, 검색 조건, Projection | 영속성, 쿼리. 외부 API 응답 계약과 독립적으로 소유 |
 
 ## 선택 가이드
 
@@ -86,7 +86,7 @@ public class User {
 
 - **장점**: 도메인 응집도↑, 파일 수 감소, 클래스명 충돌 회피(`Create`가 도메인별로 중복 가능)
 - **단점**: 한 파일이 비대해지면 IDE 탐색이 느려짐 → 도메인별 디렉토리 분리로 절충
-- **권장 규모**: 한 도메인 DTO가 10개 이하면 Inner Class, 그 이상이면 패키지 분리
+- **선택 기준**: 함께 찾고 수정하는 정도와 파일 가독성을 보고 중첩 클래스 또는 패키지로 묶음
 
 ### Static Factory Method로 변환 로직 캡슐화
 
@@ -107,7 +107,7 @@ public class UserDto {
 ```
 
 - **장점**: Mapper 파일 폭증 방지, 호출부가 `UserDto.of(user)`로 읽힘
-- **단점**: DTO가 Entity를 알게 됨 → 두 방향 결합. 도메인 보호가 최우선이라면 외부 Mapper 유지
+- **단점**: DTO가 Entity를 알게 됨. Entity가 DTO까지 참조하지 않으면 이것만으로 양방향 의존은 아니다. 변환이 복잡하거나 여러 표현에서 공유되면 별도 Mapper 검토
 - **선택 기준**: 단일 진입점, 단일 표현이면 정적 팩토리 OK. 여러 표현, 진입점이면 별도 Mapper
 
 ## 응답 필드 설계: 명확성 > 중복 회피
@@ -122,7 +122,7 @@ public class UserDto {
 
 ## 흔한 실수
 
-- Repository에서 Entity 대신 Response DTO를 반환 → 도메인 보호 막이 사라짐
+- Repository가 웹의 Response DTO에 의존 → 계층 의존이 역전됨. 조회 전용 Projection은 별도 계약으로 허용
 - Entity에 `@JsonIgnore`로 민감 필드 숨기기 → 도메인이 직렬화 포맷을 알게 되는 역전된 의존성
 - DTO에 비즈니스 로직(계산, 분기) 추가 → DTO가 앱 서비스화. 변환은 단순 매핑만
 - 하나의 DTO를 Request와 Response에 재사용 → 입력 검증, 응답 필드가 뒤섞임. Request/Response 분리 권장
@@ -133,10 +133,27 @@ public class UserDto {
 - Entity를 그대로 반환할 때 생기는 문제 3가지 이상
 - 변환 위치 3안의 트레이드오프
 - CQRS/헥사고날에서 Command, Query DTO를 따로 두는 이유
-- Repository가 DTO를 반환하면 안 되는 이유(Projection DTO는 예외)
+- 외부 DTO와 Repository 소유의 입력/Projection을 구분하는 이유
 - Request DTO와 Response DTO를 분리해야 하는 이유
 
+## 반환 경계와 타입의 소유권
+
+애플리케이션 서비스가 내부 소비자에게 Aggregate를 반환하는 것과 이를 HTTP JSON으로 직렬화하는 것은 다르다. 컨트롤러가 필요한 필드만 응답 DTO로 바꾸는 설계도 가능하다. 다만 서비스 종료 뒤 사용할 연관은 미리 조회하거나 OSIV의 비용과 일관성 범위를 고려해야 한다. OSIV는 읽기 전용 방화벽이 아니므로 관리 객체를 수정한 뒤 같은 컨텍스트의 후속 트랜잭션에서 flush되는 경로도 경계해야 한다([[JPA-API-OSIV]]).
+
+검색 조건과 수정 입력은 이를 소비하는 Repository 계약 쪽이 소유할 수 있다. 서비스 패키지 타입을 Repository가 다시 참조해 순환을 만들지 않는다. 애플리케이션 Request와 도메인 생성 정보가 지금 같아도 IP 주소 같은 외부 정보가 추가되면 변경 이유가 갈라진다. 그때 필요한 정보만 도메인 값으로 변환한다. 필드가 같다는 이유로 무조건 공유하거나 계층 수만큼 무조건 복제하지 않는다.
+
 ## 출처
+
+- [Spring, OpenEntityManagerInViewInterceptor](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/orm/jpa/support/OpenEntityManagerInViewInterceptor.html)
+
+- [Entity vs DTO](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=264324)
+- [회원 애플리케이션의 포트 정의](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=301409)
+- [MemberApi와 웹 단위 테스트](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=314630)
+- [02 설계 트레이드 오프](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=443354)
+- [설계 리팩터링](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=443355)
+- [개발 가이드 업데이트](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=453817)
+- [프로젝트 구조 설명1 - 기본](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114617)
+- [정리](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114621)
 - [MapStruct FAQ](https://mapstruct.org/faq/)
 - [ModelMapper API](https://modelmapper.org/javadoc/org/modelmapper/ModelMapper.html)
 - [Tecoble — DTO의 사용 범위에 대하여](https://tecoble.techcourse.co.kr/post/2021-04-25-dto-layer-scope/)
@@ -147,6 +164,7 @@ public class UserDto {
 
 ## 관련 문서
 - [[VO-DTO|VO와 DTO]]
+- [[View-Model-Design|뷰모델 설계와 Server Driven UI]]
 - [[Layered-Clean-Hexagonal|Layered / Clean / Hexagonal]]
 - [[Hexagonal-In-Practice|Hexagonal 실전 적용]]
 - [[DDD|DDD (Aggregate, CQRS)]]

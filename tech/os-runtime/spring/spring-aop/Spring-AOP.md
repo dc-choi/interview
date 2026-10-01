@@ -16,6 +16,7 @@ Spring AOP는 Spring Bean의 method 실행을 runtime proxy로 가로채 횡단 
 - [[Spring-AOP-Auto-Proxy-and-BeanPostProcessor|BeanPostProcessor와 auto-proxy creator]]
 - [[Spring-AOP-Advice-and-Pointcuts|Advice와 AspectJ pointcut 표현식]]
 - [[Spring-AOP-Practical-Patterns-and-Proxy-Limits|Trace/retry와 proxy 실무 한계]]
+- [[Spring-AOP-Advice-and-Pointcuts-Matching|Pointcut 매칭 예와 검증 분담]]
 
 ## 함께 볼 개념
 

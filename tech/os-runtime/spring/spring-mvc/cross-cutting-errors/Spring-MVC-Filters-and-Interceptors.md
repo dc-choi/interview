@@ -76,10 +76,20 @@ String home(@CurrentUser AuthenticatedUser user) { ... }
 | Authentication/authorization | Spring Security filter/method policy |
 | Controller 예외 response | HandlerExceptionResolver/Advice |
 
+## 공유 instance와 요청별 저장
+
+Filter/Interceptor instance의 field에 요청 UUID나 timing 시작값을 보관하면 동시 요청이 덮어쓸 수 있다. Filter의 지역 변수와 finally, Interceptor의 request attribute를 사용한다. handler는 `HandlerMethod` 외 정적 resource handler일 수 있으므로 type을 확인한다.
+
+Filter registration은 order, URL pattern과 dispatcher type을, Interceptor는 order와 include/exclude path를 명시한다. `preHandle`이 false인 interceptor 자체에는 완료 callback을 기대하지 않고 이미 성공한 앞 interceptor의 정리 경로를 고려한다.
+
+서비스 method의 transaction, audit, method metric은 AOP가 적합할 수 있다. URL 차단과 request/header/session 처리는 Filter/Interceptor가 직접 다루는 경계이며 production 인증은 Security 정책과 연결한다.
+
 ## 출처
 
 - [Jakarta Servlet 6.1, Filter](https://jakarta.ee/specifications/servlet/6.1/apidocs/jakarta.servlet/jakarta/servlet/filter), [Spring MVC interceptors](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html), [Spring MVC argument resolvers](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/arguments.html)
 - Filter/Interceptor: [Filter 개요](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83339), [Filter logging](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83340), [Filter 인증](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83341), [Interceptor 개요](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83342), [Interceptor logging](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83343), [Interceptor 인증](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83344), [ArgumentResolver](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83345), [정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83346)
+- 김영한 강사, [서블릿 예외 처리 - 필터](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83352)
+- 김영한 강사, [서블릿 예외 처리 - 인터셉터](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83353)
 
 ## 관련 문서
 

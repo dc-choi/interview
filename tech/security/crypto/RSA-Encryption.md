@@ -73,6 +73,12 @@ RSA(Rivest–Shamir–Adleman)는 **큰 정수의 소인수분해가 어렵다**
 
 ECC 256비트 = RSA 3072비트 수준 보안(같은 표에서 128비트 강도의 ECC는 f = 256-383) → 모바일, IoT는 ECC가 유리.
 
+### 알고리즘과 키 길이는 권고안으로 고른다
+
+키나 해시 출력을 길게 하면 강도가 오르지만 연산 비용도 늘어, 적정 수준을 직접 정하기는 어렵다. 그래서 공인 기관의 권고안을 기준으로 삼는다. NIST SP 800-57은 알고리즘별 보안 강도 대응을, SP 800-131A는 시점별 사용 허용과 폐기 일정을 정리하고, 국내에서는 한국인터넷진흥원(KISA)의 암호 알고리즘 및 키 길이 이용 안내서가 국산 알고리즘(ARIA, SEED, LEA 등)과 해외 권고를 함께 비교한다. 권고는 발간 시점 기준이다. 수학적 공격 기법과 계산 성능이 발전하면 안전한 선택이 바뀌므로 도입이나 교체 시점에 최신판을 확인한다(SP 800-131A도 Rev. 2가 2019년판이고 Rev. 3 초안이 2024년에 공개됐다).
+
+암호 알고리즘이 안전해도 키가 새면 끝이다. 키를 보관하는 시스템과 그 시스템에 접근하는 경로가 안전해야 하므로, 암호화는 보안을 이루는 수단이면서 동시에 보안으로 지켜야 하는 대상이다([[HSM-Key-Custody|HSM과 서명 키 관리]]).
+
 ## 공격 벡터
 
 - **소인수분해 발전** — NFS(General Number Field Sieve) 등 알고리즘 개선 + 하드웨어 → 1024비트는 이미 위험
@@ -111,6 +117,8 @@ ECC 256비트 = RSA 3072비트 수준 보안(같은 표에서 128비트 강도�
 - [RFC 9846 — The Transport Layer Security (TLS) Protocol Version 1.3](https://www.rfc-editor.org/rfc/rfc9846)
 - [RFC 10015 — Deprecating Obsolete Key Exchange Methods in TLS 1.2 and DTLS 1.2](https://www.rfc-editor.org/rfc/rfc10015)
 - [NIST SP 800-57 Part 1 Rev. 5 — Recommendation for Key Management: General (Table 2)](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf)
+- [NIST SP 800-131A Rev. 2 — Transitioning the Use of Cryptographic Algorithms and Key Lengths](https://csrc.nist.gov/pubs/sp/800/131/a/r2/final)
+- [암호학1 - 수업을 마치며 — 생활코딩](https://www.youtube.com/watch?v=AJjOJdJjLzg)
 - [Handbook of Applied Cryptography, Chapter 14 (Note 14.75) — Menezes, van Oorschot, Vanstone](https://cacr.uwaterloo.ca/hac/about/chap14.pdf)
 - [charming-kyu — RSA 암호 체계](https://charming-kyu.tistory.com/9)
 - [velog 480 — RSA 암호화 3분 만에 이해하기](https://velog.io/@480/RSA-%EC%95%94%ED%98%B8%ED%99%94-3%EB%B6%84-%EB%A7%8C%EC%97%90-%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0)
@@ -120,3 +128,4 @@ ECC 256비트 = RSA 3072비트 수준 보안(같은 표에서 128비트 강도�
 - [[HTTPS-TLS|HTTPS, TLS Handshake]]
 - [[JWT|JWT]]
 - [[Password-Hashing|패스워드 해싱]]
+- [[HSM-Key-Custody|HSM과 서명 키 관리]]

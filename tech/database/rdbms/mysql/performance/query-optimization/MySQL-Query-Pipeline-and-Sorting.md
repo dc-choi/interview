@@ -3,7 +3,7 @@ tags: [database, rdbms, mysql, iterator, sorting, group-by, performance]
 status: done
 category: "Database - RDBMS"
 aliases: ["MySQL Query Pipeline and Sorting", "MySQL 파이프라인과 정렬"]
-verified_at: 2026-08-26
+verified_at: 2026-09-30
 ---
 
 # MySQL 쿼리 파이프라인과 정렬
@@ -26,6 +26,15 @@ LIMIT 20;
 ```
 
 반대로 정렬이 필요하면 matching rows를 수집하고 정렬한 뒤에야 첫 row를 내보내는 blocking 구간이 생길 수 있다. `LIMIT`가 있어도 조건을 만족하는 후보 탐색 비용이 자동으로 20행이 되는 것은 아니다.
+
+## 파이프라인과 애플리케이션 소비
+
+iterator가 row를 흘려보내 첫 행을 빨리 내도 애플리케이션까지 한 행씩 전달된다는 뜻은 아니다. MySQL Connector/J는 기본적으로 결과 집합 전체를 받아 메모리에 두고, forward-only와 read-only 결과에 fetch size `Integer.MIN_VALUE`를 주거나 `useCursorFetch`를 켜야 스트리밍한다. 스트리밍 중에는 결과를 끝까지 읽거나 닫기 전까지 같은 connection에 다른 쿼리를 보낼 수 없고, 문장이 끝나야 그 문장이 잡은 잠금도 풀린다.
+
+- 결과를 소비하는 동안 connection을 붙잡아 pool이 마를 수 있고, 스트림과 리소스 해제를 직접 관리해야 한다. 해제를 빠뜨리면 누수가 생긴다. ORM의 엔티티 변환과 캐시도 거치지 않는다. TypeORM `stream()`은 엔티티가 아닌 raw data를 돌려준다.
+- 사용자 화면의 목록은 페이징으로 나눠 조회하고([[Pagination-Optimization|페이징 성능 최적화]]), 스트리밍은 수백만 건 배치나 엑셀 내보내기처럼 한 흐름으로 끝까지 소비하는 작업에 한정한다. Node.js 메모리 대책으로서의 cursor 스트리밍은 [[OOM-Troubleshooting-Response|OOM 대응]]과 함께 본다.
+- 행 단위 전달이 행마다 디스크 I/O를 한다는 뜻은 아니다. 내부 읽기는 페이지 단위다.
+- 기본 버퍼링과 스트리밍 옵션은 드라이버마다 다르므로 사용하는 드라이버 문서로 확인한다.
 
 ## `Using filesort` 해석
 
@@ -85,6 +94,26 @@ range를 만족하는 index key를 모두 읽되, key 순서를 활용해 groupi
 4. 첫 페이지와 깊은 페이지, 작은 group과 skew가 큰 group을 각각 측정한다.
 5. index 추가 전 쓰기 비용과 기존 index 중복을 확인한다.
 
+## Top-N 정렬의 비용
+
+적용 가능한 ORDER BY + LIMIT는 우선순위 큐로 상위 N개만 유지해 정렬 메모리와 비교 비용을 줄일 수 있다. 그러나 어떤 행이 상위인지 알려면 후보 입력을 끝까지 읽어야 하므로 정렬에 앞선 scan 비용이 N개로 줄지는 않는다. `LIMIT N OFFSET M`이면 유지해야 할 후보도 N보다 커질 수 있다.
+
+## 동등 조건, 정렬과 범위
+
+복합 index의 equality prefix 뒤에 정렬 컬럼을 놓으면 ordered scan을 제공할 수 있다. 그 앞 key가 range라면 후행 정렬 key는 range 전체에서 하나의 정렬 순서를 보장하지 못할 수 있다. 필터 범위를 좁히는 index와 정렬을 유지해 LIMIT에서 멈추는 index를 실제 분포로 비교한다.
+
+## 조기 종료와 일치 밀도
+
+정렬 index를 따라 읽다가 20개를 채우는 query도 추가 filter의 일치 밀도가 낮으면 많은 entry를 훑는다. 일치 row가 index 앞에 몰린 경우와 뒤에 몰린 경우를 따로 측정하고 scanned rows와 base lookup을 기록한다. LIMIT가 작다는 사실만으로 일정 지연을 보장하지 않는다.
+
+## Sort buffer와 spill
+
+정렬 대상이 memory에 맞지 않으면 정렬 run을 임시 파일로 내보내 병합할 수 있다. `Using filesort`만으로 disk spill을 확정하지 말고 실제 입력 row 폭, 정렬 merge와 temporary I/O를 비교한다. sort buffer의 global 증가는 동시 sort 수만큼 메모리를 늘릴 수 있어 session 실험부터 한다.
+
+## GROUP BY 계획 신호
+
+Loose scan은 group 안의 모든 entry를 읽지 않을 수 있지만 tight/streaming grouping은 정렬된 입력을 읽으며 group별 상태를 유지한다. 지원되지 않는 shape는 temporary aggregation을 사용할 수 있다. GROUP BY 자체의 결과 순서를 기대하지 말고 TREE iterator와 `Using index for group-by`, temporary 신호를 함께 확인한다.
+
 ## 출처
 
 - [MySQL 8.4, EXPLAIN](https://dev.mysql.com/doc/refman/8.4/en/explain.html)
@@ -92,10 +121,29 @@ range를 만족하는 index key를 모두 읽되, key 순서를 활용해 groupi
 - [MySQL 8.4, LIMIT Query Optimization](https://dev.mysql.com/doc/refman/8.4/en/limit-optimization.html)
 - [MySQL 8.4, GROUP BY Optimization](https://dev.mysql.com/doc/refman/8.4/en/group-by-optimization.html)
 - [MySQL 8.4, Internal Temporary Table Use](https://dev.mysql.com/doc/refman/8.4/en/internal-temporary-tables.html)
+- [MySQL Connector/J Developer Guide, JDBC API Implementation Notes](https://dev.mysql.com/doc/connector-j/en/connector-j-reference-implementation-notes.html)
+- [TypeORM, Select using Query Builder](https://typeorm.io/docs/query-builder/select-query-builder/)
 - [인프런, Top-N 최적화](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471871)
 - [인프런, 파이프라인 모델 최적화](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471872)
+- [인프런, 정리 (실행 계획 2 - ANALYZE 섹션)](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471874)
 - [인프런, filesort, 메모리와 디스크](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471942)
 - [인프런, GROUP BY 최적화](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471948)
+- [인프런, Filesort, Temporary Table과 Partitioning](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=373901)
+- [인프런, GROUP BY 최적화 2](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471949)
+- [인프런, GROUP BY 최적화 3](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471950)
+- [인프런, ICP 적용 예제 - 실전 튜닝 2에 ICP 적용](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471904)
+- [인프런, 남은 문제 - GROUP BY가 만든 임시 테이블](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471953)
+- [인프런, 누구나 다 알게 해주는 MySQL SELECT 고급 가이드](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367622)
+- [인프런, 실전 진단 - 관리자 대시보드 주문 조회](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471876)
+- [인프런, 실전 진단 - 상품 검색](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471898)
+- [인프런, 실전 진단 - 해결 방안 1 (실전 튜닝 1)](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471877)
+- [인프런, 실전 진단 - 해결 방안 1 (실전 튜닝 2)](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471899)
+- [인프런, 실전 진단 - 해결 방안 2 (실전 튜닝 1)](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471878)
+- [인프런, 실전 진단 - 해결 방안 2 (실전 튜닝 2)](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471900)
+- [인프런, 정렬과 페이징의 함정](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471941)
+- [인프런, 정리](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471951)
+- [인프런, 해결 - 인덱스 정렬을 바꿔 스트리밍 집계로](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471954)
+
 
 ## 관련 문서
 

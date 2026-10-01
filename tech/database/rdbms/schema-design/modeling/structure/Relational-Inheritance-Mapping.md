@@ -133,6 +133,10 @@ TypeScript class inheritance는 code column을 재사용하는 기능이고, DB 
 - joined table은 정규화됐다는 이유만으로 항상 무결성을 자동 완성하지 않는다.
 - ORM의 inheritance decorator가 domain의 is-a 관계를 증명하지 않는다.
 
+## Single table의 subtype 유지 비용
+
+Discriminator별 조회가 빈번하면 dtype을 포함한 index를 실제 selectivity로 비교한다. subtype별 필수 속성 CHECK는 새 subtype과 attribute가 추가될 때 함께 수정한다. NULL이 많은 column이 있다는 사실만으로 비효율이라고 단정하지 말고 row 폭, sparse 데이터와 변경량을 측정한다.
+
 ## 출처
 
 - [TypeORM, Entity inheritance](https://typeorm.io/docs/entity/entities/#entity-inheritance)
@@ -144,6 +148,7 @@ TypeScript class inheritance는 code column을 재사용하는 기능이고, DB 
 - [김영한 강사, joined table 전략](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=402006)
 - [김영한 강사, joined table 장단점](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=402007)
 - [김영한 강사, 관계형 상속 mapping 정리](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=402008)
+
 
 ## 관련 문서
 

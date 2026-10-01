@@ -13,8 +13,8 @@ aliases: ["NestJS GraphQL", "NestJS GraphQL 통합"]
 ## 하위 문서
 
 - [[NestJS-GraphQL-Schema-Mapping|스키마 접근과 타입 매핑 — code-first vs schema-first, @Field/@InputType 계약, 스칼라, 디렉티브]]
-- [[NestJS-GraphQL-DataLoader|Resolver와 DataLoader — ResolveField, N+1 해결, GqlExecutionContext Guard]]
-- [[NestJS-GraphQL-Subscription|Subscription — PubSub, graphql-ws 전송, connectionParams 인증, 수평 확장]]
+- [[NestJS-GraphQL-DataLoader|Resolver와 DataLoader — ResolveField, N+1 해결, 부모 resolver eager 로딩과의 트레이드오프, GqlExecutionContext Guard]]
+- [[NestJS-GraphQL-Subscription|Subscription — PubSub, 발행 시점과 trigger 계약, graphql-ws 전송, connectionParams 인증, 수평 확장]]
 
 ## 관련 문서
 

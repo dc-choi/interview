@@ -94,6 +94,18 @@ MySQL 8.4에서는 redo 용량을 `innodb_redo_log_capacity`로 관리한다. �
 4. canary에서 throughput뿐 아니라 P95/P99, error, recovery와 replica lag를 비교한다.
 5. 한 번에 한 변경을 적용하고 원복 조건과 이전 값을 기록한다.
 
+## Buffer pool의 세 목록
+
+Free list는 즉시 재사용 가능한 page, LRU list는 캐시된 page의 교체 후보, flush list는 수정된 page를 오래된 수정 LSN 순으로 관리한다. Dirty page는 LRU와 flush 목록에 함께 속할 수 있다. LRU flush는 재사용 page를 확보하고 flush-list flush는 checkpoint를 전진시킨다. page cleaner가 늦으면 foreground가 page 확보를 기다릴 수 있어 `Innodb_buffer_pool_wait_free`와 pending flush, storage latency를 함께 본다.
+
+## Log buffer와 redo 용량을 구분한다
+
+`innodb_log_buffer_size`는 메모리의 변경 기록 buffer이며 `innodb_redo_log_capacity`는 디스크 redo의 보존 용량이다. 큰 transaction은 commit 전에도 buffer가 차면 redo를 write할 수 있어 commit 전 flush가 없다고 가정하지 않는다. `Innodb_log_waits`가 증가하면 log buffer 부족과 flush 처리량을 함께 조사한다. buffer 확대는 큰 transaction의 중간 write를 줄일 수 있지만 commit durability의 fsync 비용을 없애지 않는다.
+
+## 상태 snapshot의 해석
+
+`INFORMATION_SCHEMA.INNODB_BUFFER_POOL_STATS`의 FREE_BUFFERS, DATABASE_PAGES, OLD_DATABASE_PAGES, MODIFIED_DATABASE_PAGES와 read-ahead eviction을 같은 시간 범위로 읽는다. FREE_BUFFERS가 작다는 사실만으로 부족하지는 않다. 정상 캐시는 메모리를 채우며, wait_free 증가와 hot page churn, 물리 read 증가가 동반되는지가 문제다. old 영역 조정은 scan 뒤 hot page가 밀려나는 재현 근거가 있을 때 비교한다.
+
 ## 출처
 
 - [MySQL 8.4 Reference Manual, Configuring Buffer Pool Size](https://dev.mysql.com/doc/refman/8.4/en/innodb-buffer-pool-resize.html)
@@ -103,6 +115,12 @@ MySQL 8.4에서는 redo 용량을 `innodb_redo_log_capacity`로 관리한다. �
 - [MySQL 8.4 Reference Manual, Read-Ahead](https://dev.mysql.com/doc/refman/8.4/en/innodb-performance-read_ahead.html)
 - [MySQL 8.4 Reference Manual, InnoDB Startup Options and System Variables](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html)
 - [인프런, Hong, 메모리, 트랜잭션, 락](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338555)
+- [MySQL 8.4 Reference Manual, information schema innodb buffer pool stats table](https://dev.mysql.com/doc/refman/8.4/en/information-schema-innodb-buffer-pool-stats-table.html)
+- [MySQL 8.4 Reference Manual, innodb buffer pool](https://dev.mysql.com/doc/refman/8.4/en/innodb-buffer-pool.html)
+- [MySQL 8.4 Reference Manual, innodb redo log buffer](https://dev.mysql.com/doc/refman/8.4/en/innodb-redo-log-buffer.html)
+- [인프런, MySQL Page Management Buffer Pool [ LRU ]](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=374543)
+- [인프런, MySQL의 내부 아키텍처와 스토리지 엔진](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338554)
+
 
 ## 관련 문서
 

@@ -1,7 +1,7 @@
 ---
 tags: [java, web, cookie, session, jdbc, dao, connection-pool]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["Java 웹 상태와 영속성", "Servlet JDBC"]
 ---
@@ -21,6 +21,17 @@ aliases: ["Java 웹 상태와 영속성", "Servlet JDBC"]
 | scale | 매 요청에 자동 전송 | 여러 instance가 공유할 store 또는 routing 전략 필요 |
 
 Session이 Cookie보다 자동으로 안전한 것은 아니다. 상태를 server에 두더라도 session ID는 bearer credential처럼 보호한다.
+
+### Servlet Cookie API
+
+| 동작 | API와 규칙 |
+|---|---|
+| 발급 | `new Cookie(name, value)`로 만들고 `setPath`, `setMaxAge`를 정한 뒤 `response.addCookie`로 보낸다. |
+| 수명 | `maxAge` 기본값 -1은 영구 저장하지 않고 브라우저가 종료될 때 지운다. 0은 즉시 삭제, 양수는 그 초만큼 유지한다. |
+| 삭제 | 저장소를 직접 지우는 API는 없다. 같은 name, domain, path로 `maxAge`가 0인 cookie를 다시 보낸다. |
+| 조회 | `request.getCookies()`는 cookie가 하나도 없으면 `null`이다. 이름으로 꺼내는 method가 없어 배열을 돌며 name을 비교한다. |
+
+user agent는 name, domain과 path가 모두 같은 cookie만 교체하고, `Max-Age`가 0 이하이면 즉시 만료시킨다. Path를 생략하면 발급한 요청 URI의 디렉터리가 기본 path가 되므로, 발급과 삭제에서 path와 domain을 명시적으로 같게 두지 않으면 원래 cookie가 남는다. 첫 방문 요청에서 `getCookies()` 결과를 확인 없이 순회하면 `NullPointerException`이 난다. cookie가 있으면 로그인 상태로 보는 판정은 client가 값을 만들 수 있어 인증이 될 수 없다([[Spring-MVC-Session-Authentication]]).
 
 ### 안전한 Session 체크리스트
 
@@ -59,7 +70,7 @@ DataSource.getConnection()
   -> ResultSet, Statement, Connection close
 ```
 
-JDBC 4 호환 driver는 일반적으로 service provider로 자동 등록되므로 애플리케이션이 매번 `Class.forName`을 호출하지 않는다. 오래된 driver나 특수한 classloader 환경은 예외다.
+JDBC 4 호환 driver는 일반적으로 service provider로 자동 등록되므로 애플리케이션이 매번 `Class.forName`을 호출하지 않는다. 오래된 driver나 특수한 classloader 환경은 예외다. 외부 Tomcat에 배포한 WAR가 `WEB-INF/lib`의 driver로 `DriverManager`를 직접 쓰는 경우가 대표 예외이며, driver 배치 위치와 함께 [[Java-Web-State-and-Persistence-DataSource|Servlet Container의 JDBC driver와 DataSource]]에서 다룬다.
 
 ```java
 String sql = "select id, name from member where id = ?";
@@ -93,7 +104,7 @@ try (Connection connection = dataSource.getConnection();
 
 ## DataSource와 connection pool
 
-`DataSource`는 connection을 얻는 표준 계약이며 모든 구현이 pool인 것은 아니다. pooled DataSource에서는 `Connection.close()`가 보통 물리 연결 종료가 아니라 logical connection을 pool로 반환한다. JNDI와 Tomcat `context.xml`은 Container가 DataSource를 관리하는 한 가지 배포 방식이지 유일한 방식은 아니다.
+`DataSource`는 connection을 얻는 표준 계약이며 모든 구현이 pool인 것은 아니다. pooled DataSource에서는 `Connection.close()`가 보통 물리 연결 종료가 아니라 logical connection을 pool로 반환한다. JNDI와 Tomcat `context.xml`은 Container가 DataSource를 관리하는 한 가지 배포 방식이지 유일한 방식은 아니다. `Resource` 선언, `java:/comp/env` lookup과 Tomcat 기본 pool의 기본값은 [[Java-Web-State-and-Persistence-DataSource#Container-managed DataSource와 JNDI|Container-managed DataSource와 JNDI]]에서 다룬다.
 
 운영 pool은 다음을 함께 조정한다.
 
@@ -136,6 +147,7 @@ transaction 안에서는 해당 runner의 manager만 사용한다. database 밖�
 ## 면접 체크포인트
 
 - Cookie와 Session의 저장 위치, 신뢰 경계와 scale 차이를 설명한다.
+- Cookie 삭제가 같은 name, domain, path의 만료 cookie로 이뤄지는 이유를 말한다.
 - Session ID rotation, timeout, invalidation과 CSRF 방어가 각각 필요한 이유를 말한다.
 - JDBC의 Connection, PreparedStatement, ResultSet lifecycle을 순서대로 설명한다.
 - DAO, DTO, Entity와 Value Object의 책임 차이를 말한다.
@@ -172,6 +184,7 @@ transaction 안에서는 해당 runner의 manager만 사용한다. database 밖�
 - [[Session|Stateless HTTP 위의 세션]]
 - [[CSRF|CSRF]]
 - [[SQL|SQL]]
+- [[Java-Web-State-and-Persistence-DataSource|Servlet Container의 JDBC driver와 DataSource]]
 - [[Spring-JDBC-Essentials|Spring JDBC Essentials]]
 - [[Connection-Pool|DB 커넥션 풀]]
 - [[NestJS-Database|NestJS Database]]

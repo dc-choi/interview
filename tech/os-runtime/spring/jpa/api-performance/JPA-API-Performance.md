@@ -30,6 +30,20 @@ JPA API의 성능 문제는 annotation 하나보다 조회 결과의 모양에�
 | 목록 전용 읽기 | DTO projection | flat result regrouping | query repository로 격리 |
 | Transaction 밖 lazy load | transaction 안 DTO 조립 | OSIV를 명시적으로 선택 | serializer의 암묵 query 금지 |
 
+## 조회 방식 선택 순서
+
+Entity 조회를 기본값으로 두고 부족할 때만 한 단계씩 내려간다.
+
+1. Entity를 조회한 뒤 DTO로 변환한다.
+2. Query 수가 문제면 fetch join으로 최적화한다. JPA 성능 문제의 상당수가 N+1이라 여기서 대부분 풀린다.
+3. Collection이 있으면 paging 필요 여부로 나눈다. Paging이 필요하면 to-one만 fetch join하고 collection은 batch fetch로 초기화한다. Paging이 없으면 collection fetch join 하나도 선택지다.
+4. 그래도 부족하면 DTO 직접 조회(V4, V5, V6)를 쓴다.
+5. 그래도 부족하면 native SQL이나 `JdbcTemplate`으로 SQL을 직접 쓴다.
+
+Entity 조회를 먼저 쓰는 이유는 최적화 수단을 바꾸는 비용이 작아서다. Fetch join, batch size, entity graph는 query 한 줄이나 설정만 바꾸면 되고 repository method와 DTO 변환 코드는 거의 그대로 남는다. DTO 직접 조회는 SQL을 직접 짜는 것과 비슷해서 V4에서 V5, V6으로 방식을 바꿀 때마다 query와 조립 코드를 다시 써야 한다. 성능과 코드 복잡도 사이에서 entity 조회는 단순한 코드로 대부분의 성능을 얻게 해 준다.
+
+Entity 결과는 managed 상태라 같은 transaction에서 domain 로직을 재사용할 수 있고 repository가 특정 화면에 묶이지 않는다. DTO 직접 조회는 화면에 맞춘 query라 재사용성이 낮으므로 `OrderQueryRepository` 같은 별도 query repository로 격리한다. 이 순서는 경험적 기본값이므로 아래의 측정 원칙으로 단계마다 효과를 확인한다.
+
 ## Query 횟수만으로 판단하지 않는다
 
 한 query로 합쳐도 parent column이 child 수만큼 반복되면 전송량과 hydration 비용이 커진다. 반대로 두 query 전략은 왕복이 하나 늘지만 root page를 안정적으로 유지하고 중복 row를 줄일 수 있다. 다음 값을 같은 요청에서 비교한다.
@@ -46,7 +60,7 @@ JPA API의 성능 문제는 annotation 하나보다 조회 결과의 모양에�
 
 ## Repository 도구의 위치
 
-Spring Data JPA는 repository interface의 반복 CRUD와 query method 구현을 줄인다. 그러나 fetch plan, index, cardinality와 transaction 경계는 대신 결정하지 않는다. 복잡한 동적 조건에는 Criteria, QueryDSL, 명시적 JPQL/HQL 또는 native SQL 중 팀이 검증 가능한 도구를 선택한다.
+Spring Data JPA는 repository interface의 반복 CRUD와 query method 구현을 줄인다. 그러나 fetch plan, index, cardinality와 transaction 경계는 대신 결정하지 않는다. 복잡한 동적 조건에는 Criteria, QueryDSL, 명시적 JPQL/HQL 또는 native SQL 중 팀이 검증 가능한 도구를 선택한다. 문자열 조립, Criteria와 Querydsl의 오류 발견 시점과 생성 query 가독성 비교는 [[Querydsl-Dynamic-Queries-and-Bulk-DML|동적 query 구현 방식 비교]]에 둔다.
 
 Querydsl은 generated Q type과 Java 표현식으로 동적 predicate를 조립하고 compile 단계에서 property 이름 오류를 찾게 돕는다. 이것도 SQL 비용을 자동 최적화하지 않으므로 최종 SQL과 실행 계획을 확인한다. 설정, projection과 repository 구성은 [[Querydsl]]에서, Spring Data repository 규칙은 [[Spring-Data-JPA-Essentials]]에서 이어서 본다.
 
@@ -75,6 +89,7 @@ Querydsl은 generated Q type과 Java 표현식으로 동적 predicate를 조립�
 - 강의: [강좌 소개](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24316), [수업 자료](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24108), [강의 소스 코드](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=87103), [2편 추가 자료](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=28786)
 - 강의: [API 개발 고급 소개](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24322), [조회용 샘플 데이터 입력](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24323)
 - 강의: [스프링 데이터 JPA 소개](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24341), [QueryDSL 소개](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24342)
+- 강의: [간단한 주문 조회 V4, JPA에서 DTO로 바로 조회](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24328), [API 개발 고급 정리](https://www.inflearn.com/courses/lecture?courseId=324214&unitId=24337)
 
 ## 관련 문서
 

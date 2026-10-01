@@ -7,7 +7,7 @@ aliases: ["Brokers"]
 
 # 브로커(Brokers)
 
-SQS, EventBridge, Kafka, Redis — 주요 메시지 브로커.
+SQS, SNS, EventBridge, Kafka, RabbitMQ, Redis — 주요 메시지 브로커.
 
 ## 목차
 - [x] [[SQS|SQS (Standard/FIFO, Visibility Timeout, DLQ, 멱등성, 소비자 패턴)]]
@@ -15,18 +15,20 @@ SQS, EventBridge, Kafka, Redis — 주요 메시지 브로커.
   - [[SQS-Consumer-Lambda-vs-ECS|컨슈머 선택 (Lambda vs ECS 워커 트레이드오프)]]
   - [[SQS-Worker-Reliability|워커 신뢰성 (재시도 간격 원시 기능, 가시성 하트비트, PROCESSING 좌초 회수)]]
 - [x] [[SNS|SNS (Topic, Fan-out, Filter, SNS+SQS, SNS vs EventBridge)]]
+  - [[SNS-Email-SES|이메일 알림과 SES 선택 (구독 확인, sandbox, 메일 수신, 반송과 불만 처리)]]
 - [x] [[EventBridge|EventBridge (이벤트 버스 3종, Rules/Targets, Scheduler, Archive & Replay, vs SNS)]]
   - [[EventBridge-Event-Patterns|이벤트 패턴 매칭 (연산자 문법, 매칭 규칙, $or, 테스트)]]
   - [[EventBridge-SQS-Target|EventBridge → SQS 타겟 패턴 (리소스 정책, 메시지 구조, 컨슈머, 2단 DLQ)]]
 - [x] [[MQ-Kafka|Kafka (서브 인덱스 — 내부, 패턴, 컨슈머, Streams, 순서 보장, 파티션 산정, 재시도와 DLT)]]
-  - [[MQ-Kafka-Internals|기본 구조와 내부 (토픽, 파티션, 세그먼트, KRaft, 빠른 이유)]]
+  - [[MQ-Kafka-Internals|기본 구조와 내부 (토픽, 파티션, 세그먼트, 복제와 follower fetching, KRaft, 빠른 이유)]]
   - [[MQ-Kafka-Patterns|실전 패턴 (키 순서, Outbox+Debezium, Event Bus, Streams)]]
-  - [[MQ-Kafka-Consumer|컨슈머 구현 (NestJS, eachMessage vs eachBatch)]]
+  - [[MQ-Kafka-Consumer|컨슈머 구현 (NestJS, eachMessage vs eachBatch, 소비 누락 진단)]]
   - [[MQ-Kafka-Streams|Kafka Streams (상태 저장소, KStream/KTable, 윈도우, EOS, 운영)]]
   - [[MQ-Kafka-Event-Ordering|순서 보장 (파티션 순서의 한계, 소비자 체이닝)]]
-  - [[Kafka-Partition-Sizing|파티션 개수 산정 (산정식, per-partition 처리량, eCKU 한도)]]
+  - [[Kafka-Partition-Sizing|파티션 개수 산정 (산정식, per-partition 처리량, eCKU 한도, 자동 토픽 생성)]]
   - [[MQ-Kafka-Retry-DLT|재시도와 DLT (non-blocking retry, opt-in 재시도, 공통 DLT envelope)]]
 - [x] [[Kinesis|Kinesis (Data Streams, Firehose, Analytics, Video — Shard, Partition Key, KCL/KPL, vs Kafka/SQS)]]
+- [x] [[RabbitMQ-Exchange-Routing|RabbitMQ Exchange 라우팅 (AMQP 모델, Exchange 4종, default exchange, unroutable, DLX 조건)]]
 - [x] [[Amazon-MQ|Amazon MQ (RabbitMQ/ActiveMQ 매니지드, 하이브리드 마이그레이션, 표준 프로토콜)]]
 - [x] [[Redis|Redis Messaging (List 큐, Streams, Pub/Sub 선택 기준)]]
 - [x] [[Messaging-Broker-Comparison|브로커 비교 (RabbitMQ, BullMQ, SQS, Kafka — 성능, 운영, 선택 플로차트)]]

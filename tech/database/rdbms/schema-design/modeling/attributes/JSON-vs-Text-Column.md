@@ -16,7 +16,7 @@ RDBMS에서 구조화된 데이터를 **하나의 컬럼에 담을 때**의 선�
 |---|---|---|
 | 저장 형식 | 원본 문자열 그대로 | 파싱된 **내부 표현**(MySQL: binary JSON, PG: JSONB) |
 | 유효성 검사 | 없음(아무 문자열이나 가능) | 삽입 시 파싱 → 유효한 JSON만 허용 |
-| 필드 접근 | native JSON 연산자 없음, cast 또는 별도 파싱 필요 | `->`, `->>`, `JSON_EXTRACT` 등으로 필드 직접 접근 |
+| 필드 접근 | native JSON 연산자 없음, cast 또는 별도 파싱 필요 | `->`, `->>`, `JSON_EXTRACT` 등으로 필드 직접 접근 (MySQL 반환 타입과 비교 규칙은 [[MySQL-JSON-Functions\|MySQL JSON 함수]]) |
 | 부분 업데이트 API | 불가 — 전체 값을 앱에서 구성 | `JSON_SET`, `jsonb_set`으로 경로 단위 변경 표현 가능 |
 | 인덱싱 | 문자열 인덱스는 가능하지만 JSON key 의미를 모름 | **생성 컬럼 또는 표현식 인덱스**(MySQL), **GIN/표현식 인덱스**(PG JSONB) |
 | 전체 조회 비용 | 원본 텍스트를 그대로 반환 가능 | 출력 표현으로 변환하는 비용이 있어 실제 payload로 측정 필요 |
@@ -136,6 +136,14 @@ WHERE payload @> '{"type":"payment"}';
 - PostgreSQL JSONB + GIN 인덱스의 유리한 시나리오
 - Hybrid 설계(정규 컬럼 + JSON 컬럼)의 이점
 
+## JSONB 전개와 변경
+
+`jsonb_each`는 object를 key/value 행으로, `jsonb_array_elements`는 array를 행으로 펼친다. LATERAL 전개가 원본 row를 여러 row로 늘리므로 집계 grain을 확인한다. `jsonb_set`으로 path를 교체하고 `-`/`#-`로 key 또는 path를 삭제할 수 있다. `||`는 최상위 결합이며 nested object를 재귀 병합하는 연산이 아니다.
+
+## MySQL index expression 점검
+
+JSON field를 index하면 추출 식, CHAR cast 길이와 collation이 query와 일치해야 한다. 배열 membership은 multi-valued index의 지원 operator와 제한을 별도로 검토한다. 저장된 JSON이라는 이유만으로 모든 경로 검색이 indexed lookup이 되지는 않는다. 비교 예시는 [[Flexible-Attribute-Modeling#JSON 문자열 index의 collation]]과 함께 확인한다.
+
 ## 출처
 - [MySQL 8.4 Reference Manual, JSON Data Type](https://dev.mysql.com/doc/refman/8.4/en/json.html)
 - [MySQL 8.4 Reference Manual, Multi-Valued Indexes](https://dev.mysql.com/doc/refman/8.4/en/create-index.html#create-index-multi-valued)
@@ -158,9 +166,13 @@ WHERE payload @> '{"type":"payment"}';
 - [PostgreSQL JSONB와 역인덱싱 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439099)
 - [당근마켓 — MySQL JSON vs TEXT](https://medium.com/daangn/json-vs-text-c2c1448b8b1f)
 - [인프런, Real MySQL 시즌 1 - Part 2, JSON 타입 활용](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226581)
+- [MySQL 8.4 Reference Manual, create index](https://dev.mysql.com/doc/refman/8.4/en/create-index.html)
+
 
 ## 관련 문서
 - [[Schema-Design|Schema design]]
 - [[Index|Index 기본]]
 - [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL]]
 - [[Normalization|Normalization / Denormalization]]
+- [[MySQL-JSON-Functions|MySQL JSON 함수]]
+- [[MySQL-Generated-Columns-and-Functional-Indexes|MySQL 생성 컬럼과 함수 인덱스]]

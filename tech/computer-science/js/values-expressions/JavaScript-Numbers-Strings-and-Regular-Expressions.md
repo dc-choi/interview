@@ -124,7 +124,34 @@ Boolean conversion에서는 `undefined`, `null`, `false`, `+0`, `-0`, `0n`, `NaN
 - stateful RegExp instance를 singleton NestJS provider의 mutable field로 공유하지 않는다.
 - database collation/normalization과 application 비교 규칙을 함께 검증한다.
 
+## 표현 정밀도와 입력 문법
+
+binary64는 sign 1bit, exponent 11bit, fraction 52bit다. 정규화된 수는 숨은 선행 1을 합쳐 53bit 정밀도를 가져 연속 정수를 구별할 수 있는 안전 범위가 ±(2^53-1)이다. 2^53도 표현할 수 있지만 그 다음 정수는 구별하지 못하므로 최대 표현 정수와 안전 정수는 다르다. engine의 실제 저장 표현을 모든 Number가 항상 heap 8byte라는 주장으로 확대하지 않는다.
+
+literal의 진법은 0x/0o/0b prefix로 명시한다. legacy 앞자리 0은 sloppy code에서 8진수/10진수 의미가 갈리고 strict에서는 SyntaxError다. `20.toString()`은 첫 점이 numeric literal에 포함되는 문법 문제이므로 `(20).toString()`을 쓴다. Number 문자열 변환은 전체 형식을 읽어 `Number('12px')`는 NaN, parseInt는 12다. unsigned 0x/0o/0b 문자열은 가능하지만 prefix 앞 부호나 numeric separator '_'가 들어간 문자열은 Number 문법과 다르다.
+
+분모 0에 EPSILON을 더하면 정의되지 않은 비율을 임의 숫자로 바꾼다. (EPSILON/EPSILON)은 1이므로 평균/전환율의 정상값처럼 숨길 수 있다. 0분모는 업무 규칙대로 부재/오류를 처리한다. 10의 거듭제곱 보정도 `1.005 * 100`이 100.49999999999999인 것처럼 근사값을 정확한 정수로 복구하지 못한다. decimal 문자열에서 정수 minor unit을 만드는 parsing과 binary64 값을 사후 확대하는 것을 구분한다.
+
+## 문자열 단위와 검색 결과
+
+Unicode code space는 U+0000부터 U+10FFFF까지 17개 plane이고 BMP는 첫 plane이다. JS의 `\x31`은 2자리 byte escape, `\u0031`은 4자리 code unit, `\u{1F600}`은 code point escape다. 보조 평면 문자는 두 `\u` escape의 surrogate pair로도 표현한다. Unicode scalar value는 surrogate code point를 제외한다.
+
+charCodeAt은 code unit을 반환하며 범위 밖은 NaN, codePointAt은 code unit index에서 시작해 pair면 결합한 code point를 반환하며 범위 밖은 undefined다. pair의 두 번째 위치를 주면 low surrogate 값만 얻는다. fromCharCode는 입력을 16bit로 변환하므로 code point 전체 복원에는 fromCodePoint를 쓴다. fromCodePoint는 정수가 아니거나 0~0x10FFFF 밖이면 RangeError다. 문자열 length와 UTF-8 byte 길이는 별개다.
+
+padStart/padEnd는 길이가 이미 크면 자르지 않으며 pad string 생략은 공백, 빈 문자열은 변화 없음이다. code unit 기준 반복/잘림이라 emoji가 깨질 수 있고 화면 폭을 보장하지 않는다. 고정 최대 길이는 별도로 검증한다.
+
+match는 일반 mode에서 첫 일치와 capture, g mode에서 일치 문자열 목록을 반환하며 부재는 null이다. search는 index/-1이고 문자열 인자도 RegExp pattern으로 해석할 수 있어 literal 검색에는 indexOf/includes를 쓴다. split limit은 결과 개수 상한이고 분리 뒤 원본 전체를 보존한다는 보장이 아니다. 관계 비교는 UTF-16 code unit 순서, localeCompare는 locale collation이며 반환값은 부호만 사용하고 ±1로 고정하지 않는다. 반복 locale 정렬에는 Intl.Collator를 재사용한다.
+
+`/^.$/`는 emoji surrogate pair에 false, u mode는 true지만 grapheme 하나를 뜻하지 않는다. s는 dot의 줄바꿈 포함 여부를 바꾸고 Unicode 단위를 바꾸지 않는다. g/y의 lastIndex 공유 위험은 앞 절을 따른다. wrapper 두 개는 내부 primitive 값이 같아도 identity가 달라 ===는 false이며 실제 값은 valueOf로 얻는다.
+
+문자열의 명세 상한 2^53-1 code unit은 실용 allocation 한도가 아니다. Node.js에서는 node:buffer의 constants.MAX_STRING_LENGTH로 engine 한도를 확인한다. 큰 JSON/string 병합은 최종 문자열과 중간값이 함께 남아 그보다 먼저 메모리가 부족할 수 있으므로 입력 상한, chunk/stream 처리와 byte/code unit 구분을 둔다.
+
 ## 출처
+
+- 인프런 보충 강의: [3. 용어 사용 기준: 오브젝트, 인스턴스, 프로퍼티, 함수, 뉘앙스 고려](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=35015)
+- 인프런 보충 강의: [4. 숫자로 변환](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24597), [6. 단항 연산자](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24599), [9. 관계 연산자](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24602), [5. 산술 연산자(-, *, /, % 연산자)](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24598), [6. 정수, 실수, 숫자 처리](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24578), [7. 상수, 진수](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24579), [8. 유니코드, UTF](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24601), [9. Number 타입, String 타입](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24583)
+
+- [Node.js, MAX_STRING_LENGTH](https://nodejs.org/api/buffer.html#bufferconstantsmax_string_length)
 
 - [ECMAScript Language Specification, Number objects](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-number-objects)
 - [ECMAScript Language Specification, String objects](https://tc39.es/ecma262/multipage/text-processing.html#sec-string-objects)

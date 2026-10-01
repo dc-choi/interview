@@ -9,11 +9,11 @@ aliases: ["RDS Overview", "Aurora", "Managed Database", "관리형 DB", "RDS vs 
 
 백업, 패치, HA, 장애 조치 같은 **DB 운영 작업을 클라우드 제공자가 자동화**해주는 서비스. 직접 설치, 운영하는 대신 스펙, 정책만 설정하면 되며, 개발자는 애플리케이션, 쿼리에 집중할 수 있다.
 
-- [[RDS-Aurora-RDS-Core|관리형 DB가 자동화하는 작업과 AWS RDS 핵심 — 인스턴스와 스토리지, Multi-AZ, Read Replica]]
-- [[RDS-Aurora-Backup-Operations|백업과 복구(Automated Backup vs Snapshot), RDS Proxy, Enhanced Monitoring, EC2 자체 설치 비교]]
+- [[RDS-Aurora-RDS-Core|관리형 DB가 자동화하는 작업과 AWS RDS 핵심 — 인스턴스와 스토리지, Multi-AZ, Read Replica와 운영 규칙(replica의 replica, 암호화, 원본 삭제)]]
+- [[RDS-Aurora-Backup-Operations|백업과 복구(Automated Backup vs Snapshot), 삭제와 복원이 백업, 엔드포인트, 연결에 주는 영향, RDS Proxy, Enhanced Monitoring, EC2 자체 설치 비교]]
 - [[RDS-Aurora-Architecture|Aurora 공유 스토리지 아키텍처와 클러스터 엔드포인트, 특장점, RDS 대신 고르는 기준]]
 - [[RDS-Aurora-Graviton|Graviton(ARM) 인스턴스 전환 — 세대별 비교, 벤치마크 한계, 실서비스 쿼리와 현재 지원 Aurora MySQL release 검증]]
-- [[RDS-Aurora-Endpoints|Endpoint 운영 (Writer/Reader/Custom/Instance, Reader Endpoint 함정과 Writer 폴백, Custom Endpoint 워크로드 격리, Failover read-only + AWS Advanced JDBC Wrapper)]]
+- [[RDS-Aurora-Endpoints|Endpoint 운영 (Writer/Reader/Custom/Instance, Reader Endpoint 함정과 Writer 폴백, 프록시 DNS 캐시, Custom Endpoint 워크로드 격리, Failover read-only + AWS Advanced JDBC Wrapper)]]
 - [[RDS-Aurora-AutoScaling|Auto Scaling 운영 (Custom Metric으로 배치 제외, Target Tracking vs Step Scaling, Flapping, Cooldown, Scale-out/in 커넥션 풀, Cache Warming)]]
 - [[RDS-Aurora-Selection-Exam|NCP 등 타 클라우드 비교, 관리형 DB 선택 기준, 흔한 함정, SAA-C03 체크포인트]]
 

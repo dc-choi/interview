@@ -111,7 +111,22 @@ NestJS의 shutdown hook은 process signal만으로 자동 보장되지 않는다
 - 외부 자원을 만든 주체와 닫는 주체가 일치하는가?
 - 정상 종료뿐 아니라 startup 실패와 강제 종료도 관찰 가능한가?
 
+## 조회 시점과 종료 책임의 세부
+
+DI는 의존성을 외부에서 전달받고 DL은 필요한 시점에 조회한다. `ObjectFactory#getObject()`는 간단한 factory 계약, `ObjectProvider`는 optional 조회와 후보 탐색을 더한 Spring 계약, `jakarta.inject.Provider#get()`는 표준 lookup 계약이다. lookup을 택하더라도 전체 container를 업무 코드에 노출하지 않는다.
+
+- 기본 non-lazy singleton은 context 초기화 과정에서 만들어지지만 lazy 설정은 생성 시점을 늦춘다. prototype은 조회나 의존성 해결 때 생성되며 종료 책임은 사용자에게 남는다.
+- request/session scope는 scope 종료에 맞춘 destruction callback을 관리한다. request context에 로그 correlation ID를 두면 한 요청의 controller와 service가 같은 context를 공유할 수 있지만 다른 요청이나 비동기 실행으로 자동 전달되지는 않는다.
+- proxy 없는 `@Scope("request")`를 startup singleton에 바로 주입하면 활성 요청이 없어 실패한다. `@RequestScope`는 기본 class scoped proxy를 포함하므로 두 annotation의 기본값을 구분한다. proxy를 받았어도 요청 밖에서 target method를 호출하면 scope 활성화 문제는 남는다.
+- scoped proxy는 실제 target 조회를 숨긴다. singleton proxy 하나가 target 하나를 영구 보관한다는 뜻이 아니며 `ObjectProvider`도 현재 scope의 instance를 조회한다.
+- 정상 context close는 singleton 정리 경로다. 운영에서는 shutdown hook과 grace period를 함께 확인한다.
+- Boot `ApplicationReadyEvent`는 runner까지 완료된 뒤의 초기화 경계다. 개발용 seed는 local profile 등으로 제한하고 반복 기동에도 중복되지 않게 한다. 이벤트 시점이 늦어도 같은 객체의 자기 호출에 proxy advice가 생기는 것은 아니다.
+
 ## 출처
+
+- [Spring Boot, SpringApplication](https://docs.spring.io/spring-boot/reference/features/spring-application.html)
+
+- [Spring, RequestScope](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/context/annotation/RequestScope.html)
 
 - [Spring Framework, Bean Scopes](https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html)
 - [Spring Framework, Lifecycle Callbacks](https://docs.spring.io/spring-framework/reference/core/beans/factory-nature.html)
@@ -130,6 +145,11 @@ NestJS의 shutdown hook은 process signal만으로 자동 보장되지 않는다
 - 김영한 강사, [Request scope 예제](https://www.inflearn.com/courses/lecture?courseId=325969&unitId=55392)
 - 김영한 강사, [Scope와 Provider](https://www.inflearn.com/courses/lecture?courseId=325969&unitId=55393)
 - 김영한 강사, [Scope와 proxy](https://www.inflearn.com/courses/lecture?courseId=325969&unitId=55394)
+- 인프런 강사, [처음해 보는 스프링 프로젝트](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13714)
+- 인프런 강사, [또 다른 프로젝트 생성 방법](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13715)
+- 김영한 강사, [강의 자료](https://www.inflearn.com/courses/lecture?courseId=325969&unitId=55325)
+- 김영한 강사, [프로젝트 구조 설명2 - 설정](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114618)
+- 김영한 강사, [JdbcTemplate 적용3 - 구성과 실행](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114626)
 
 ## 관련 문서
 

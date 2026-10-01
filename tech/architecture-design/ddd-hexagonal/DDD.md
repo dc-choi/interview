@@ -7,7 +7,9 @@ aliases: ["DDD", "Domain-Driven Design"]
 
 # DDD (Domain-Driven Design)
 
-## MVC의 한계
+## 데이터 중심 계층 구조의 한계
+
+MVC는 UI의 역할 분리 패턴이므로 아래 문제가 MVC 자체에서 필연적으로 생기는 것은 아니다. 업무 규칙이 복잡해졌는데 단순 데이터 전달과 절차 나열에 머물 때 나타나는 문제다. 단순한 업무에는 트랜잭션 스크립트도 유효하다.
 
 - 서비스 레이어가 무의미해지고 레포지토리가 비대해짐
 - 도메인 모델이 아무것도 하지 않음 (빈약한 도메인 모델)
@@ -118,7 +120,71 @@ Tactical은 Strategic이 없으면 의미가 축소된다. **큰 경계 없이 �
 - [[Layered-Clean-Hexagonal|Layered / Clean / Hexagonal]]
 - [[Monolith-vs-Microservice|Monolith vs Microservice]]
 
+## 모델을 발전시키는 절차
+
+도메인 모델은 그림 자체가 아니라 참여자가 공유하는 개념, 관계와 규칙이다. 업무 담당자와 실제 사례를 듣고, 핵심 용어와 관계를 찾고, 각 개념의 행위와 제약을 적은 뒤 그림과 코드로 검증한다. 도메인 전문가가 따로 없다면 기획자, 창업자와 사용자의 경험을 가설로 삼고 실제 사용과 피드백으로 수정한다. 경쟁 서비스는 참고 사례이며 우리 규칙의 정답은 아니다.
+
+용어집, 간단한 모델 문서와 코드를 함께 유지한다. 등록과 활성화처럼 다른 상태 전이를 같은 말로 뭉개지 않는다. 기능 변경 뒤 문서의 규칙을 코드와 테스트에 대조하고, AI가 찾은 차이도 실제 구현을 확인한 뒤 반영한다.
+
+## 변경 경계와 생명주기 규칙
+
+Aggregate Root를 통해 내부 엔티티를 변경하고, 저장도 루트를 기준으로 다룬다. 내부 엔티티마다 Repository를 열면 불변식을 우회하기 쉽다. 읽기 전용 프로젝션은 변경 모델과 다른 형태로 조회할 수 있다. 하나의 경계 안에서 보장할 규칙과 다른 Aggregate 사이에서 조정할 규칙을 구분한다.
+
+주문과 주문 항목의 합계처럼 함께 맞아야 하는 규칙은 같은 경계의 후보지만, 외형상 소속 관계만으로 모두 묶지는 않는다. 교육 서비스에서 강의 소개와 섹션/수업 편집이 별도로 변한다면 커리큘럼이라는 개념을 찾아 별도 Aggregate로 나눌 수 있다. 수강도 회원과 강의 사이의 단순 연결을 넘어 상태와 진도를 가진 독립 개념이 된다.
+
+직접 객체 참조는 단일 프로세스 ORM 모델에서 탐색을 읽기 쉽게 할 수 있다. 이때 다른 Aggregate의 상태를 탐색 중 변경하지 않고, 로딩 비용과 순환을 통제한다. 분산 경계와 비동기 메시지에는 ID 참조가 적합하다. `ensureActive()` 같은 읽기 검사도 검사 직후 다른 트랜잭션이 상태를 바꿀 수 있으므로 참조 방식만으로 교차 Aggregate 동시성이 해결되지는 않는다.
+
+상태는 이름 있는 전이 메서드로 바꾸고 허용된 선행 상태를 확인한다. 항상 참이어야 하는 불변식과 공개 직전에만 필요한 완결성 조건을 구분한다. 초안은 소개나 수업이 비어 있어도 편집할 수 있지만 검수와 공개 전에는 갖춰야 한다. 생성부터 모든 공개 조건을 강제하면 정상적인 작성 흐름이 막힌다.
+
+## 검증과 협력의 책임
+
+자기 상태의 규칙은 도메인이, 저장소 조회와 유스케이스 순서는 애플리케이션 서비스가 맡는다. 수정 시 중복 검사는 자기 자신을 제외해야 하고, 선조회만으로 동시 요청의 중복을 막을 수 없으므로 DB 제약도 둔다. 사용자가 고칠 오류, 업무 충돌, 프로그래밍 오류를 구분하되 클라이언트가 미리 조회했다는 이유만으로 경합에 따른 중복 요청을 프로그램 오류로 단정하지 않는다.
+
+엔티티가 도메인 서비스를 필요로 한다면 필요한 행위나 이름 있는 정적 팩토리의 인자로 받을 수 있다. 예를 들어 비밀번호 검증 능력의 계약은 도메인 언어로 표현하고 구체 해시 구현은 외부에 둔다. 엔티티를 Spring Bean처럼 필드 주입 대상으로 만들 필요는 없다. 테스트 대역은 도메인 협력을 확인하고, 실제 보안 구현은 별도로 검증한다.
+
+참고: [Fowler, Anemic Domain Model](https://martinfowler.com/bliki/AnemicDomainModel.html), [Model View Controller](https://martinfowler.com/eaaCatalog/modelViewController.html).
+
 ## 강의 참고
+
+- [도메인 모델과 DDD](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=290149)
+- [Splearn 도메인 모델 만들기 (1)](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=290151)
+- [Splearn 도메인 모델 만들기 (2)](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=290759)
+- [Splearn 도메인 모델 만들기 (3)](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=290891)
+- [회원 애플리케이션의 포트 정의](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=301409)
+- [헥사고날 아키텍처의 사실과 오해 (2)](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=300707)
+- [회원 상세 정보 도메인 모델](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=313061)
+- [애그리거트와 헥사고날 아키텍처](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=313062)
+- [Member 애플리케이션 추가 기능 개발](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=313421)
+- [문서와 코드 다듬기](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=313422)
+- [회원 도메인 모델 작성](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=290154)
+- [엔티티 클래스와 JPA 매핑 정보 분리](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=312327)
+- [아키텍처 개념 과 레이어드 아키텍처](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104421)
+- [비지니스로직은 어디에? - 레이어드 아키텍처](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=105077)
+- [강사 도메인 설계](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=454901)
+- [애그리거트와 컴포넌트 연결](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=454902)
+- [ArchUnit을 이용한 슬라이스 의존 관계 검증](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=461995)
+- [강의 도메인 개발 (1)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=464142)
+- [Part 2 강의 정리와 AI 시대의 클린 스프링](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=472191)
+- [강사 도메인 개발](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=454903)
+- [강의 도메인 설계](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=463719)
+- [강의 도메인 개발 (2)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=464143)
+- [수강 도메인 설계와 개발](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=466444)
+- [커리큘럼 도메인 설계](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=470527)
+- [커리큘럼 도메인 개발 (3)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=470530)
+- [코드 리뷰와 개선 리팩터링](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=471512)
+- [강의 애플리케이션 서비스 개발 (1)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=465195)
+- [커리큘럼 도메인 개발 (2)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=470529)
+- [커리큘럼 도메인 개발 (4)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=470531)
+- [회원 인증 포트 개발](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=453034)
+- [개발 가이드 업데이트](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=453817)
+- [강사 애플리케이션 서비스 개발](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=457085)
+- [코드 리뷰와 수정](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=457195)
+- [강의 애플리케이션 서비스 개발 (2)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=466440)
+- [강의 애플리케이션 서비스 개발 (3)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=466441)
+- [강의 애플리케이션 서비스 개발 (4)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=466442)
+- [수강 애플리케이션 서비스 개발 (1)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=467531)
+- [수강 애플리케이션 서비스 개발 (2)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=467534)
+- [도메인 모델 문서 업데이트](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=443356)
 
 - [토비 강사 — 애그리거트와 JPA](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=313420)
 - [토비 강사 — PasswordEncoder 도메인 서비스](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=291136)

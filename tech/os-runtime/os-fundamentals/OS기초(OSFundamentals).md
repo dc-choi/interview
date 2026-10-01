@@ -13,11 +13,13 @@ aliases: ["OS Fundamentals"]
 - [x] [[Concurrency-and-Process|동시성과 프로세스 (커널, 동기화, 데드락, Node.js 동기화)]]
 - [x] [[Concurrency-and-Process-Overview|동시성과 프로세스 — Overview]]
 - [x] [[Concurrency-and-Process-IPC|프로세스 간 통신 (IPC)]]
+- [x] [[Concurrency-and-Process-Deadlock|교착상태, 라이브락, 기아 (식사하는 철학자, 은행원 알고리즘, 검출 비용)]]
 - [x] [[Concurrency-vs-Parallelism|동시성, 병렬성 (구조 vs 실행, Actor/CSP 채널, 런타임별 선택)]]
 
 ## 프로세스 & 스케줄링
 - [x] [[Process-Lifecycle|Process lifecycle (PCB, 상태, fork/exec, 좀비, 쓰레드, 컴파일)]]
 - [x] [[Context-Switching|Context switching (CPU 스케줄링, FIFO, SJF, RR, MLFQ)]]
+- [x] [[System-Time-and-Clock-Sync|시스템 시간과 시계 동기화 (Unix time, FILETIME, 윤초, 2038년, NTP 지연과 오프셋, 분산 시스템 시각, tz database)]]
 - [x] [[Sleep-and-Timing|Sleep과 타이밍 (대기와 준비 전이, 타이머 해상도, 단조 증가 카운터, sleep 기반 동기화의 경쟁 상태, 지터와 난수)]]
 
 ## 메모리 & 스토리지

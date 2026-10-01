@@ -23,6 +23,8 @@ InnoDB의 row lock은 SQL 결과 행이 아니라 실행 중 방문한 index rec
 
 Record lock은 항상 index record에 걸린다. 명시적인 index가 없는 table도 InnoDB가 만든 clustered index를 사용한다. Spatial index는 값의 전체 순서가 없어 next-key locking을 그대로 적용하지 않고 최소 경계 사각형을 대상으로 predicate lock을 사용한다.
 
+Global read lock, backup lock, metadata lock 같은 인스턴스와 테이블 수준의 잠금, intention lock 호환성 표와 InnoDB에 lock escalation이 없는 이유는 [[MySQL-InnoDB-Locking-and-Deadlocks-Hierarchy|MySQL 잠금 계층]]에 둔다.
+
 Gap lock은 일반 row S/X lock과 다르다. 서로 다른 transaction의 S gap lock과 X gap lock이 같은 gap에 공존할 수 있고, 목적은 다른 transaction의 insert 억제다. Insert intention끼리는 같은 gap의 서로 다른 위치라면 서로 막지 않지만 기존 gap/next-key lock에는 대기할 수 있다.
 
 ## 실행 계획이 잠금 범위를 만든다
@@ -178,6 +180,7 @@ Performance Schema lock table들은 빠르게 변하고 서로 원자적인 snap
 ## 관련 문서
 
 - [[MySQL-InnoDB-MVCC-and-Undo|InnoDB MVCC와 Undo]]
+- [[MySQL-InnoDB-Locking-and-Deadlocks-Hierarchy|MySQL 잠금 계층]]
 - [[MySQL-Gap-Lock|Gap Lock 사례와 회피 전략]]
 - [[Lock|DB Lock 전략과 애플리케이션 적용]]
 - [[Lock-Deadlock|데드락 완화와 락 제거 설계]]

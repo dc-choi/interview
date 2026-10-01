@@ -1,7 +1,7 @@
 ---
 tags: [java, class, object, reference, array, "null", initialization]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java References and Initialization", "Java 참조와 초기화"]
 ---
@@ -96,6 +96,15 @@ numeric default는 0 계열, `boolean`은 `false`, reference는 `null`이다. �
 - `null`에 field, instance method, array length나 element access를 적용하면 `NullPointerException`이 발생할 수 있다.
 - reference가 더는 reachable하지 않으면 object는 GC 대상이 될 수 있다. 즉시 회수되거나 특정 시점에 finalize된다는 보장은 없다.
 
+### NullPointerException 메시지 읽기
+
+JDK 14에 들어온 JEP 358(Helpful NullPointerExceptions)은 NPE 메시지에 실패한 동작과 null이었던 식을 함께 담는다. JDK 14에서는 `-XX:+ShowCodeDetailsInExceptionMessages`로 켜야 했고 JDK 15부터 기본으로 켜져 있다.
+
+- `bigData.data.value = 10`에서 `data` field가 null이면 `Cannot assign field "value" because "bigData.data" is null`처럼 chain의 어느 단계가 null인지 지목한다. 원인은 because 절의 식부터 읽는다.
+- local variable과 parameter 이름은 class file에 local variable table이 있을 때만 나온다. javac 기본값은 line number와 source file 정보만 넣으므로 `-g` 없이 compile하거나 빌드 설정이 debug 정보를 빼면 `"<local4>.data"`처럼 slot 번호 자리표시자가 나온다.
+- 메시지는 `getMessage()`를 호출할 때 계산된다. 메시지가 source 구조를 드러내는 것이 문제라면 JEP는 JVM option보다 application이 그 메시지를 출력하지 않는 쪽을 권한다.
+- reference field는 자동으로 `null`이 되므로 chain 중간의 null은 constructor 초기화 누락이나 선택 값 처리 누락의 신호다. 필수 reference는 생성 경계에서 대입하고 검증한다.
+
 ## 실전 점검
 
 - 여러 변수가 같은 mutable object를 공유하는지 확인한다.
@@ -112,6 +121,7 @@ numeric default는 0 계열, `boolean`은 `false`, reference는 `null`이다. �
 - `Student[]` 생성 직후 들어 있는 값
 - local variable과 field 초기화 규칙의 차이
 - unreachable과 즉시 GC의 차이
+- Helpful NPE 메시지로 null이었던 식을 찾는 방법과 `-g`의 영향
 
 ## 출처
 
@@ -119,6 +129,9 @@ numeric default는 0 계열, `boolean`은 `false`, reference는 `null`이다. �
 - [Java SE 26 Language Specification, Arrays](https://docs.oracle.com/javase/specs/jls/se26/html/jls-10.html)
 - [Java SE 26 Language Specification, Execution](https://docs.oracle.com/javase/specs/jls/se26/html/jls-12.html)
 - [Oracle, JDK 26 Release Notes](https://www.oracle.com/java/technologies/javase/26all-relnotes.html)
+- [OpenJDK JEP 358, Helpful NullPointerExceptions](https://openjdk.org/jeps/358)
+- [OpenJDK JDK-8233014, Enable ShowCodeDetailsInExceptionMessages by default](https://bugs.openjdk.org/browse/JDK-8233014)
+- [Oracle, JDK 26 javac Command](https://docs.oracle.com/en/java/javase/26/docs/specs/man/javac.html)
 - 김영한 강사, [프로젝트 환경 구성](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194643)
 - 김영한 강사, [클래스가 필요한 이유](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194644)
 - 김영한 강사, [클래스 도입](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194645)

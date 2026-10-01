@@ -30,7 +30,7 @@ DB에서 정렬은 CPU와 메모리를 많이 소모하는 비용이 큰 작업�
 ## UNION
 - `UNION`은 두 결과를 합친 뒤 중복을 제거하므로 정렬 또는 해싱이 발생함
 - 내부적으로 임시 테이블을 생성하여 중복 제거를 수행함 (정렬 기반 또는 해시 기반 중 옵티마이저가 선택)
-- `UNION ALL`은 중복 제거를 하지 않으므로 정렬이 발생하지 않음 (MySQL 5.7.3+부터는 임시 테이블도 생성하지 않음)
+- `UNION ALL`은 중복 제거를 하지 않으므로 정렬이 발생하지 않음 (MySQL 8.4 문서 기준, 전체 `ORDER BY`가 없고 `INSERT`/`REPLACE ... SELECT`의 최상위 query block이 아닐 때만 임시 테이블 없이 결과를 바로 보냄. [[MySQL-Query-Fundamentals#UNION DISTINCT가 비싼 이유|UNION DISTINCT 비용]] 참고)
 - 중복이 없다는 것이 확실하면 `UNION ALL`을 사용하는 것이 성능상 유리함
 
 ## JOIN

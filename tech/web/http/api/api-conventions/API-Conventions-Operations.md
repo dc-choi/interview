@@ -1,7 +1,7 @@
 ---
 tags: [web, http, api, convention]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["API 버저닝과 인증 헤더", "API 운영 컨벤션"]
 ---
@@ -30,6 +30,8 @@ aliases: ["API 버저닝과 인증 헤더", "API 운영 컨벤션"]
 `POST /users/getList` 같은 안티패턴 금지. 자세히는 [[Idempotency]].
 
 POST가 항상 생성인 것은 아니다. 결제 실행, 이벤트 제출과 Batch 처리처럼 대상 Resource가 요청 content를 자체 의미에 따라 처리할 때도 사용한다. PATCH는 media type에 정의된 변경 연산에 따라 멱등 여부가 달라질 수 있다.
+
+PUT은 수정이 아니라 교체다. `/members/100`의 나이만 고치려고 `{"age": 50}`만 담아 PUT을 보내면, 교체 의미를 따르는 서버에서는 요청에 없던 `username` 같은 field가 사라진다. 부분 변경은 PATCH처럼 부분 변경용으로 정의된 method를 쓰거나 변경 대상을 별도 Resource로 식별한다(RFC 9110 §14.5). PATCH를 쓸 수 없어 POST로 대신하면 method 의미로는 멱등을 기대할 수 없으므로 재시도 계약을 함께 둔다([[Idempotency#POST를 멱등하게 만드는 패턴|멱등 키]]). 일부 field만 받는 endpoint를 PUT이라 부르는 서버 쪽 문제와 null, 누락의 구분은 [[JPA-API-DTO-Boundary#PUT, PATCH와 command 의미|DTO 경계]]에 있다.
 
 ## 인증 전달 방식
 

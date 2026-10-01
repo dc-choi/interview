@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, cache]
 status: done
-verified_at: 2026-08-28
+verified_at: 2026-09-30
 category: "Data & Storage - Cache & KV"
 aliases: ["Persistence"]
 ---
@@ -11,6 +11,8 @@ aliases: ["Persistence"]
 Redis는 working dataset을 메모리에 두므로 persistence를 끄면 프로세스 또는 서버 재시작 뒤 데이터가 사라진다. RDB/AOF는 재시작 복구 지점을 만들지만 설정별 손실 창이 있으며, 복제만으로는 백업이나 영속성 보장이 되지 않는다.
 
 따라서 redis를 캐시 이외의 용도로 사용한다면 적절한 데이터 백업이 필요함.
+
+영속성을 끈 인스턴스(`save ""`, `appendonly no`)에 결제 기록 같은 데이터를 넣고 `SHUTDOWN NOSAVE`로 강제 종료를 흉내 낸 뒤 재시작하면 `DBSIZE`가 0이다. 설정을 켜 두는 것으로 끝내지 말고, 설정만 다른 인스턴스 둘을 띄워 같은 데이터를 넣고 강제 종료와 재시작 뒤 무엇이 남는지 대조해 확인한다. 설정 파일의 `dir`, `pidfile` 경로에 공백이 있으면 따옴표로 감싸야 파싱 오류가 나지 않는다.
 
 ## AOF (append only file)
 
@@ -23,6 +25,12 @@ Redis는 working dataset을 메모리에 두므로 persistence를 끄면 프로�
 지정한 시점의 데이터셋을 스냅샷으로 남긴다. 저장 당시 메모리에 있던 데이터가 그대로 바이너리 파일(기본 `dump.rdb`)로 기록된다.
 
 자동 저장은 `redis.conf`의 `save` 옵션으로 N초 동안 M개 이상 변경이 있을 때 스냅샷을 만들도록 지정한다(예: `save 60 1000`). 수동 저장은 `BGSAVE` 또는 `SAVE` 커맨드로 실행한다.
+
+- 설정하지 않으면 기본 save point는 `3600 1 300 100 60 10000`(1시간에 1회, 5분에 100회, 1분에 1만 회 이상 변경)이고(Valkey 9.1 확인), `save ""`로 자동 스냅샷을 끈다.
+- `save 60 1`이어도 마지막 스냅샷 이후 최대 약 60초치 쓰기는 장애 때 사라진다. 간격을 줄이면 fork 횟수가 늘어 무한정 줄일 수 없으므로, 그 틈을 허용할 수 없으면 AOF로 보완한다.
+- `BGSAVE`의 응답(`Background saving started`)은 저장 시작일 뿐이다. 완료와 성공은 `LASTSAVE`나 `INFO persistence`의 `rdb_bgsave_in_progress`, `rdb_last_bgsave_status`로 확인한다.
+- fork는 페이지를 바로 복사하지 않지만 데이터셋이 크면 fork 자체로 수 ms에서 1초까지 응답이 멈출 수 있다. 직전 fork 시간은 `INFO`의 `latest_fork_usec`로 본다.
+- 정상 `SHUTDOWN`은 save point가 하나라도 있으면 블로킹 SAVE를 하고 AOF를 flush한 뒤 종료한다. `SHUTDOWN NOSAVE`는 save point가 있어도 저장하지 않는다.
 
 ### RDB 내부 동작
 
@@ -84,6 +92,8 @@ appendonlydir/
 
 ## 선택 기준
 
+먼저 이 인스턴스가 원본 저장소인지 묻는다. 원본 DB가 있어 miss 때 다시 채우면 되는 상품 캐시는 영속성을 끄거나 RDB만 켜도 되고, Redis/Valkey가 원본인 주문 이벤트 스트림 같은 데이터는 AOF가 필요하다.
+
 백업은 필요하지만 재해 상황에서 몇 분 정도의 데이터 손실을 감수할 수 있으면 RDB 단독으로 충분하다.
 
 PostgreSQL에 준하는 수준의 데이터 안전성이 필요하면 두 방식을 함께 쓴다. 공식 문서는 AOF 단독 사용은 권장하지 않는데, 백업과 빠른 재시작, AOF 엔진 자체의 버그 대비를 위해 주기적인 RDB 스냅샷이 여전히 유용하기 때문이다.
@@ -92,7 +102,15 @@ AOF를 켜도 손실이 0이 되지는 않는다. `appendfsync everysec`이면 �
 
 ## 출처
 - [Redis Docs, Redis persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)
+- [Valkey Docs, Persistence](https://valkey.io/topics/persistence/)
+- [Valkey Docs, BGSAVE](https://valkey.io/commands/bgsave/)
+- [Valkey Docs, SHUTDOWN](https://valkey.io/commands/shutdown/)
+- [Valkey Docs, INFO](https://valkey.io/commands/info/)
+- [valkey.conf 9.1 SNAPSHOTTING — valkey-io/valkey](https://github.com/valkey-io/valkey/blob/9.1/valkey.conf)
+- [인프런, Hong, 그냥 껐다 켜면 사라질까?? RDB 스냅샷 관점에서 생각해보기](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481456)
+- [인프런, Hong, RDB 스냅샷의 단점이 무엇이였을까?? 그걸 보완하기 위한 AOF 방식과 maxmemory 그리고 eviction 까지](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481457)
 
 ## 관련 문서
 - [[Redis-Architecture|Redis architecture]]
+- [[Redis-Architecture-HA|복제와 Sentinel 고가용성]]
 - [[Operations|운영 팁]]

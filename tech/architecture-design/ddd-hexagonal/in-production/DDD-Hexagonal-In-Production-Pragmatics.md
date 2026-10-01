@@ -27,10 +27,12 @@ aliases: ["DDD 헥사고날 실용주의", "헥사고날 적용 판단 기준"]
 
 | 원칙 | 현실적 타협 |
 |---|---|
-| 모든 유스케이스는 인터페이스 | **구현체가 하나뿐이면 생략** — Service만 두기 |
+| 모든 유스케이스는 인터페이스 | 경계 계약 역할이 없는 내부 협력 객체라면 생략 가능 |
 | 프레임워크 종속 금지 | `@Transactional` 같은 선언적 TX는 사용 — 실무 가치가 더 큼 |
 | DTO는 application 바깥 | 단순 케이스에선 엔티티를 컨트롤러까지 노출하기도 |
 | 모든 외부 호출에 port | 교체 가능성, 테스트 필요성이 분명한 곳에만 |
+
+구현이 하나여도 여러 어댑터와 테스트가 소비하는 Provided 포트는 공개 계약으로서 가치가 있다. 구현 개수만으로 지우지 않고, 서비스 분리와 리팩터링 때 호출자를 보호하는 경계인지 판단한다.
 
 **원칙보다 중요한 건 팀이 합의한 기준을 일관되게 적용하는 것.**
 
@@ -55,3 +57,13 @@ aliases: ["DDD 헥사고날 실용주의", "헥사고날 적용 판단 기준"]
 - **Anti-Corruption Layer**가 왜 필요한가
 - 언제 **Usecase 인터페이스를 생략**해도 되는가 — 과잉 설계 판단 기준
 - 이 구조가 **맞지 않는 상황**도 분명히 말할 수 있는가 (성숙도 시그널)
+
+공개 포트에 대한 테스트는 구현 클래스를 바꾸어도 같은 행동 계약을 확인하도록 돕는다. 인터페이스를 추가했다는 사실만으로 테스트가 안정해지는 것은 아니므로 구현 순서나 내부 호출 횟수에 불필요하게 결합하지 않는다.
+
+## 출처
+
+- [헥사고날 아키텍처의 사실과 오해 (1)](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=291178)
+- [회원 애플리케이션 서비스 구현](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=301666)
+- [회원 애플리케이션 서비스 테스트 (1)](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=306030)
+- [회원 애플리케이션 기능 추가](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=306690)
+- [MemberApi와 웹 단위 테스트](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=314630)

@@ -30,7 +30,7 @@ Filter chain
 5. 아직 response가 직접 작성되지 않았고 View가 필요하면 `ViewResolver`가 logical name을 실제 `View`로 바꾸고 render한다.
 6. 예외는 발생 위치와 등록된 resolver에 따라 `HandlerExceptionResolver` chain으로 간다.
 
-실제 세부 단계는 async request, multipart, locale, interceptor와 handler return type에 따라 달라진다. “항상 Controller 뒤에 ViewResolver가 실행된다”라고 외우지 않는다. `@ResponseBody`/`ResponseEntity` 응답은 View rendering 경로를 쓰지 않는다.
+실제 세부 단계는 async request, multipart, locale, interceptor와 handler return type에 따라 달라진다. 항상 Controller 뒤에 ViewResolver가 실행된다고 외우지 않는다. `@ResponseBody`/`ResponseEntity` 응답은 View rendering 경로를 쓰지 않는다.
 
 ## Mapping과 Adapter를 나누는 이유
 
@@ -68,10 +68,22 @@ Custom `HandlerMethodArgumentResolver`, `HttpMessageConverter`, interceptor와 V
 - Binding 실패와 handler 내부 domain 실패를 같은 500으로 합치지 않는다.
 - request thread를 오래 막는 DB/I/O는 DispatcherServlet 구조가 해결하지 않는다. timeout와 pool saturation을 함께 관찰한다.
 
+## 다른 handler로 Mapping과 Adapter를 구분한다
+
+URL 형태 Bean 이름을 가진 과거 `mvc.Controller` 구현은 `BeanNameUrlHandlerMapping`과 `SimpleControllerHandlerAdapter`로, `HttpRequestHandler`는 해당 adapter로 호출할 수 있다. `@Controller` annotation과 `mvc.Controller` interface는 다른 계약이다. 이 예는 전략의 책임을 보여주며 강의의 등록 순서 숫자를 현재 Boot의 고정 목록으로 복사하지 않는다.
+
+현재 annotation handler 감지는 `@Controller`/`@RestController` 역할을 전제로 한다. type-level `@RequestMapping`만으로 감지하던 옛 예제와 구분한다. interface에 mapping 계약을 선언할 때 parameter 이름을 명시하고 구현체의 Bean 등록과 proxy type도 확인한다.
+
 ## 출처
+
+- [Spring, RequestMappingHandlerMapping source (main)](https://github.com/spring-projects/spring-framework/blob/main/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/RequestMappingHandlerMapping.java)
 
 - [Spring Framework, DispatcherServlet](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet.html), [Handler mappings](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/special-bean-types.html), [View resolution](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/viewresolver.html)
 - Spring MVC 구조: [전체 구조](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71202), [mapping/adapter](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71203), [ViewResolver](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71204), [annotation Controller](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71205), [mapping 통합](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71206), [실용적인 handler](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71207), [구조 정리](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71208)
+- 김영한 강사, [수업 자료](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71804)
+- 김영한 강사, [수업 자료](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94404)
+- 김영한 강사, [예제 프로젝트 만들기 v1](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94444)
+- 김영한 강사, [예제 프로젝트 만들기 v2](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94445)
 
 ## 관련 문서
 

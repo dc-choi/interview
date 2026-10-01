@@ -3,7 +3,7 @@ tags: [database, nosql, mongodb, schema-design, document-database]
 status: done
 category: "데이터&저장소(Data&Storage)"
 aliases: ["MongoDB Schema Design", "MongoDB 스키마 설계", "Embed vs Reference"]
-verified_at: 2026-08-27
+verified_at: 2026-09-30
 ---
 
 # MongoDB 스키마 설계
@@ -89,6 +89,18 @@ RDB는 FK 조인이 기본, MongoDB는 선택지가 둘.
 - **TTL 인덱스** — `expireAfterSeconds`로 만료 데이터 자동 삭제(세션, 임시 데이터)
 - **Wildcard Index** — 구조가 가변적인 문서에서 임의 필드에 인덱스
 
+### 숫자 문자열 정렬과 collation `numericOrdering`
+
+숫자를 문자열로 저장하면 정렬이 사전순이라 `"10"`이 `"2"`보다 앞에 온다. 값이 실제 숫자이고 소수나 음수가 섞일 수 있으면 숫자 타입으로 저장하는 것이 먼저다. 외부 식별자처럼 문자열이어야 하는 값에만 collation의 `numericOrdering`을 검토한다.
+
+```javascript
+db.orders.find({}).sort({ code: 1 }).collation({ locale: "en_US", numericOrdering: true })
+```
+
+- collation은 문자열 비교 규칙이다. 컬렉션과 view의 기본값, 인덱스, 연산 단위로 지정하고, collation 문서에는 `locale`이 필수다. 한 연산에서 필드마다 다른 collation을 줄 수는 없다.
+- `numericOrdering: true`는 연속된 음이 아닌 정수 부분 문자열만 숫자로 비교한다. `+`, `-` 부호, 소수점(`.`, `,`), 지수는 해석하지 않으므로 `"2.2"`와 `"2.10"`, 음수 문자열은 기대한 숫자 순서가 되지 않는다.
+- 문자열 비교에 인덱스를 쓰려면 연산이 인덱스와 같은 collation을 지정해야 한다. collation 인덱스는 ICU collation key를 저장해 키가 커질 수 있고, text 인덱스와 2d 인덱스는 collation을 지원하지 않는다. 기본 collation이 simple이 아닌 컬렉션에 이 인덱스를 만들 때는 `{ locale: "simple" }`을 명시한다.
+
 ## 16MB, 배열 성장 경고
 
 MongoDB 문서는 최대 **16MB** (공식 규격 표기는 16 mebibytes, BSON 중첩은 100 레벨까지). 한계에 가까워지는 상황:
@@ -157,7 +169,9 @@ MongoDB 문서는 최대 **16MB** (공식 규격 표기는 16 mebibytes, BSON �
 - [MongoDB Docs — Embedded Data in Your MongoDB Schema](https://www.mongodb.com/docs/manual/data-modeling/embedding/)
 - [MongoDB Docs — Reference Data in Your MongoDB Schema](https://www.mongodb.com/docs/manual/data-modeling/referencing/)
 - [MongoDB Docs — Avoid Unbounded Arrays](https://www.mongodb.com/docs/manual/data-modeling/design-antipatterns/unbounded-arrays/)
+- [MongoDB Docs — Collation](https://www.mongodb.com/docs/manual/reference/collation/)
 - [G마켓 기술블로그 — MongoDB 스키마 설계 가이드](https://dev.gmarket.com/32)
+- [인프런, Hong, 실무에서 사용하는 Database](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272607)
 
 ## 관련 문서
 - [[Schema-Design|Schema design]]

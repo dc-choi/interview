@@ -3,7 +3,7 @@ tags: [web, network, osi, l4, tcp, udp, port, segment, socket, encapsulation]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Transport Layer", "전송 계층", "트랜스포트 계층", "L4", "TCP UDP 포트", "세그먼트"]
-verified_at: 2026-09-15
+verified_at: 2026-09-30
 ---
 
 # 전송 계층 (Transport Layer, L4)
@@ -47,6 +47,16 @@ IP가 건물 주소라면 포트는 그 건물 안의 방 번호다. 같은 IP�
 - **웰노운 포트(well-known)**: 약속처럼 고정된 포트(HTTP 80, HTTPS 443, SSH 22). 서버가 여기서 대기한다.
 - **임시 포트(ephemeral port)**: 클라이언트가 통신할 때마다 남는 번호를 임시로 잡는다. 브라우저가 웹 서버에 붙을 때 목적지 포트는 443이지만 출발지(클라이언트) 포트는 매번 달라진다.
 
+| 구간 (RFC 6335) | 이름 | 의미 |
+|---|---|---|
+| 0~1023 | System Ports (Well Known) | IANA가 표준 서비스에 할당한다. 직접 만든 서비스에 임의로 쓰지 않는다 |
+| 1024~49151 | User Ports (Registered) | IANA에 등록해 쓰는 구간(예: 3306 MySQL) |
+| 49152~65535 | Dynamic Ports (Private, Ephemeral) | 할당하지 않는 구간. 임시 포트용 |
+
+- 포트는 랜카드나 스위치의 물리 포트가 아니라 호스트 안의 프로세스를 가리키는 16비트 논리 번호다. 0, 1023, 1024처럼 구간 경계의 값은 예약돼 있다.
+- 실제 임시 포트 범위는 OS 설정이 정한다. Linux 기본값은 `net.ipv4.ip_local_port_range`의 32768~60999로 RFC의 Dynamic 구간과 다르고, Windows는 Vista와 Server 2008에서 기본값을 1025~5000에서 49152~65535로 바꿨다(현재 값은 `netsh int ipv4 show dynamicport tcp`로 확인). 방화벽 규칙과 대량 연결의 포트 고갈은 실제 범위로 계산한다.
+- Linux에서 1024 미만 포트에 bind하려면 root나 `CAP_NET_BIND_SERVICE`가 필요하다(경계는 `net.ipv4.ip_unprivileged_port_start`, 기본 1024). 그래서 애플리케이션은 보통 8080 같은 높은 포트에서 듣고 앞단의 리버스 프록시나 로드 밸런서가 80, 443을 받는다.
+
 **서버가 고정 포트를 쓰는 이유**: 불특정 다수 클라이언트가 어디로 접속할지 알아야 하기 때문이다. `https://example.com`에 포트를 안 붙여도 되는 건 브라우저가 HTTPS 기본 포트 443을 자동으로 시도해서다. 포트는 설정으로 바꿀 수 있지만, 기본 약속과 다르면 주소에 포트를 직접 명시해야 한다.
 
 ## TCP — 신뢰성 우선
@@ -72,7 +82,7 @@ TCP(Transmission Control Protocol)는 전송을 통제하고 확인하는 데 �
 
 UDP(User Datagram Protocol)는 연결을 미리 맺지 않고 독립적인 datagram을 보낸다. 메시지 경계를 보존하지만 기본 프로토콜은 전달, 중복 방지와 순서를 보장하지 않는다. 구조가 단순하고 애플리케이션이 필요한 신뢰성만 설계할 수 있지만, 낮은 지연이 자동으로 보장되는 것은 아니다.
 
-UDP 데이터그램에는 출발지/목적지 포트, 길이, 체크섬과 데이터가 들어간다. 시퀀스/ACK/윈도우/제어 플래그를 관리하지 않아 헤더가 작고 처리가 가볍다. 늦은 재전송보다 일부 손실을 허용하는 서비스(음성 통화, 온라인 게임 등)에 쓰인다. 영상 손실의 영향은 코덱과 버퍼링에 따라 달라지므로 프레임 누락을 항상 알아채지 못한다고 일반화하지 않는다.
+UDP 헤더는 출발지 포트, 목적지 포트, 길이, 체크섬의 네 필드가 각 16비트로 합계 8바이트다. 길이는 헤더와 데이터를 합친 크기라 최솟값이 8이고, 체크섬은 IP 주소를 담은 가상 헤더와 UDP 헤더, 데이터를 덮는다. IPv4에서는 체크섬을 0으로 보내 계산을 생략할 수 있지만 IPv6에서는 원칙적으로 필수이고 터널 프로토콜에만 0을 허용하는 예외가 있다. 시퀀스/ACK/윈도우/제어 플래그를 관리하지 않아 헤더가 작고 처리가 가볍다. 늦은 재전송보다 일부 손실을 허용하는 서비스(음성 통화, 온라인 게임 등)에 쓰인다. 영상 손실의 영향은 코덱과 버퍼링에 따라 달라지므로 프레임 누락을 항상 알아채지 못한다고 일반화하지 않는다.
 
 ## TCP vs UDP
 
@@ -80,7 +90,7 @@ UDP 데이터그램에는 출발지/목적지 포트, 길이, 체크섬과 데�
 |---|---|---|
 | 연결 | 연결 지향 (3-way handshake) | 비연결 (바로 전송) |
 | 신뢰성 | 확인, 재전송, 순서 보장 | 미보장 (유실/순서 변동 허용) |
-| 헤더 | 큼 (seq, ack, window, flags) | 작음 (포트, 길이, 체크섬) |
+| 헤더 | 큼 (seq, ack, window, flags) | 작음 (8바이트: 포트, 길이, 체크섬) |
 | 전송 비용 | 연결과 신뢰성 상태 관리 | 작은 헤더, 신뢰성 정책은 애플리케이션 몫 |
 | 용도 | 웹, HTTPS, 이메일, 파일, SSH | 스트리밍, 음성, 게임, DNS |
 
@@ -102,7 +112,8 @@ VPC, 보안 그룹(SG), NACL은 포트와 프로토콜(TCP/UDP) 단위로 트래
 - L3(호스트까지)와 L4(포트로 애플리케이션까지)의 경계, 멀티플렉싱
 - 세그먼트가 패킷 안에 캡슐화되는 계층 구조
 - TCP 스트림의 메시지 경계, 계층별 페이로드, `send()` 반환과 상대 수신의 차이
-- 포트 범위(0~65535), 웰노운 vs 임시 포트, 서버가 고정 포트를 쓰는 이유
+- 포트 범위(0~65535)와 RFC 6335의 세 구간, OS별 실제 임시 포트 범위, 웰노운 vs 임시 포트, 서버가 고정 포트를 쓰는 이유
+- UDP 헤더 8바이트의 네 필드와 IPv4, IPv6의 체크섬 차이
 - TCP의 신뢰성 메커니즘(확인/재전송/순서)과 그 비용(지연)
 - TCP 세그먼트 핵심 필드(seq, ack, window, flags)와 흐름 제어
 - UDP가 단순/빠른 이유와 적합 사례, TCP/UDP 선택 기준
@@ -113,9 +124,16 @@ VPC, 보안 그룹(SG), NACL은 포트와 프로토콜(TCP/UDP) 단위로 트래
 
 - 김영한 강사, [TCP, UDP](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61354)
 - 김영한 강사, [PORT](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61355)
+- 감자 강사, [트랜스포트 계층](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160822)
+- 감자 강사, [UDP](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160825)
 - [OSI 7 Layer 기초: Transport Layer (TCP, UDP, 포트, 세그먼트) — YouTube](https://www.youtube.com/watch?v=mHwLHubS_iM&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v&index=3)
 - [RFC 9293 — Transmission Control Protocol](https://www.rfc-editor.org/rfc/rfc9293.html)
 - [RFC 768 — User Datagram Protocol](https://www.rfc-editor.org/rfc/rfc768.html)
+- [RFC 6335 — IANA Procedures for the Management of the Service Name and Transport Protocol Port Number Registry](https://www.rfc-editor.org/rfc/rfc6335.html)
+- [RFC 8200 — Internet Protocol, Version 6 (IPv6) Specification, 8.1 Upper-Layer Checksums](https://www.rfc-editor.org/rfc/rfc8200.html#section-8.1)
+- [Linux Kernel Documentation — IP Sysctl](https://docs.kernel.org/networking/ip-sysctl.html)
+- [Linux man-pages — capabilities(7)](https://man7.org/linux/man-pages/man7/capabilities.7.html)
+- [Microsoft Learn — The default dynamic port range for TCP/IP has changed in Windows Vista and in Windows Server 2008](https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/default-dynamic-port-range-tcpip-chang)
 - [RFC 9000 — QUIC](https://www.rfc-editor.org/rfc/rfc9000.html)
 - [RFC 9114 — HTTP/3](https://www.rfc-editor.org/rfc/rfc9114.html)
 - [Linux man-pages — socket(2)](https://man7.org/linux/man-pages/man2/socket.2.html)

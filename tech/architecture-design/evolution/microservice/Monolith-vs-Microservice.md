@@ -17,7 +17,7 @@ Martin Fowler와 James Lewis는 MSA를 독립 프로세스로 실행되고 경�
 1. **서비스를 통한 Componentization** — 라이브러리가 아닌 독립 배포 단위
 2. **비즈니스 역량 중심 조직** — UI/백엔드/DB 계층이 아니라 결제, 주문, 회원 같은 도메인으로 팀 분할
 3. **프로젝트가 아닌 프로덕트** — "you build it, you run it". 릴리스 후 인계가 아닌 **전 생애주기 운영**
-4. **Smart Endpoints, Dumb Pipes** — 서비스에 로직 집중, 메시지 버스는 단순 경로 역할. ESB의 "스마트 버스" 반대
+4. **Smart Endpoints, Dumb Pipes** — 서비스에 로직 집중, 메시지 버스는 단순 경로 역할. ESB에 처리 판단을 집중하는 접근과 대비
 5. **분산 거버넌스** — 공통 기준 안에서 언어, DB와 프레임워크를 상황에 맞게 선택. Polyglot은 가능성이지 의무가 아니다
 6. **분산 데이터 관리** — 서비스가 데이터 쓰기 권한을 소유하고 다른 서비스는 계약을 통해 접근. 물리 DB 분리는 점진적으로 할 수 있다
 7. **인프라 자동화** — CI/CD, IaC, 컨테이너 오케스트레이션이 필수. 수동 운영으로는 N개 서비스 관리 불가
@@ -34,6 +34,14 @@ Martin Fowler와 James Lewis는 MSA를 독립 프로세스로 실행되고 경�
 | 장애 격리 가능성 | 연쇄 장애를 막는 별도 설계 필요 |
 | 부분 릴리스 가능 | 조직 성숙도, 자동화 전제 |
 
+## 재사용과 독립 변경의 충돌
+
+오케스트레이션 중심 SOA에서는 전사 재사용을 위해 서비스와 통합 버스에 공통 판단을 모을 수 있다. 공통 구성 요소의 변경이 여러 팀의 동시 배포를 요구하거나 중앙 병목을 만들면 재사용의 절약보다 결합 비용이 커진다. 이는 SOA 전체의 실패를 뜻하는 역사 법칙이 아니라 중앙화 방식의 위험이다.
+
+서비스별 모델이나 조회 데이터의 의도적 중복은 이 결합을 줄이는 선택이다. 대신 어떤 서비스가 원본과 쓰기 규칙을 소유하는지, 복제 지연과 삭제 전파를 어떻게 다루는지 정해야 한다. MSA라도 서비스 내부의 ACID transaction은 유지할 수 있으며 모든 처리를 BASE로 바꾸거나 특정 메시지 브로커를 필수로 쓰는 것은 아니다([[Microservice-Data-Ownership-and-Queries|데이터 소유권]]).
+
+선택지도 모놀리스와 MSA 두 개뿐이 아니다. [[Architecture-Styles#서비스 기반 아키텍처|서비스 기반 아키텍처]]는 소수의 큰 도메인 서비스를 독립 배포하면서 DB를 공유하는 중간 선택이다. 배포 조율은 줄일 수 있지만 스키마 변경과 DB 자원은 결합되므로 공유 범위와 소유권을 명시한다. 오케스트레이션 기반 SOA와도 구분한다.
+
 ## 언제 MSA를 도입할 것인가
 
 - 도메인 복잡도가 단일 배포로 관리 불가능할 때
@@ -43,7 +51,7 @@ Martin Fowler와 James Lewis는 MSA를 독립 프로세스로 실행되고 경�
 
 도입 전에 사업 동기, 경계, 팀 소유권, 독립 전달, 데이터, 운영과 거버넌스를 [[Microservice-Readiness-and-Maturity|마이크로서비스 준비도]]로 점검한다.
 
-반대로 **초기 스타트업, 단순 도메인, 작은 팀**은 모놀리스가 빠르고 싸다. "Monolith First → 성장하며 분리"가 Fowler의 권고. 둘 사이의 현실적 중간 지점, 즉 단일 배포를 유지하면서 도메인 경계를 미리 연습하는 구조는 [[Modular-Monolith|모듈러 모노리스]].
+반대로 **초기 스타트업, 단순 도메인, 작은 팀**은 모놀리스가 빠르고 싸다. Monolith First에서 성장하며 필요한 경계를 분리하는 접근가 Fowler의 권고. 둘 사이의 현실적 중간 지점, 즉 단일 배포를 유지하면서 도메인 경계를 미리 연습하는 구조는 [[Modular-Monolith|모듈러 모노리스]].
 
 ### 초기 스타트업의 점진적 선택
 
@@ -92,10 +100,10 @@ Martin Fowler와 James Lewis는 MSA를 독립 프로세스로 실행되고 경�
 - DB 없이 YAML 기반 선언형 설정
 - 설정을 파일로 관리, Git으로 형상 관리 가능
 - 마이크로서비스의 인증, 로깅, 라우팅을 모두 처리
-- 게이트웨이를 타고 넘어오면 신뢰할 수 있는 구조
+- 발표에서 게이트웨이를 공통 인증 경계로 둔 구조. 실제 도메인 권한과 내부 우회 경로는 소유 서비스에서도 검증해야 한다
 
 ### 성과
-- 현재 27개 서비스 운영
+- 발표 시점에 27개 서비스 운영
 - 매주 새로운 어플리케이션 배포
 - 기능 배포: 2주 -> 1일
 
@@ -112,6 +120,14 @@ Martin Fowler와 James Lewis는 MSA를 독립 프로세스로 실행되고 경�
 - [han jeong heon 강사 — 모노리스와 마이크로서비스](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104423)
 - [bcho — 대용량 웹서비스를 위한 마이크로 서비스 아키텍쳐의 이해](https://bcho.tistory.com/948)
 - [스타트업 딜레마, 모놀리스냐 MSA냐? — 코딩하는기술사](https://www.youtube.com/watch?v=p71m3q2QsfU)
+- [Fundamentals of Software Architecture, Service-Based Architecture Style — O’Reilly, Mark Richards와 Neal Ford](https://www.oreilly.com/library/view/fundamentals-of-software/9781492043447/ch13.html)
+- [han jeong heon 강사, 이벤트기반 아키텍처 스타일등](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=113002)
+- [han jeong heon 강사, MSA 패턴 유형](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104424)
+- [han jeong heon 강사, 마이크로서비스 성숙도](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104438)
+- [han jeong heon 강사, 마이크로서비스를 위한 조건2](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=106669)
+- [han jeong heon 강사, Spring Cloud , BFF, API GW](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104428)
+- [성장랜턴 강사, 자주 사용되는 소프트웨어 아키텍처](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=285782)
+- [성장랜턴 강사, 예시 프로젝트를 통해 아키텍처 설계하기](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278155)
 
 ## 관련 문서
 - [[Modular-Monolith|모듈러 모노리스 (중간 지점)]]

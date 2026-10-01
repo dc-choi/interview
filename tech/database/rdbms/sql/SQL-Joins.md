@@ -7,12 +7,12 @@ aliases: ["SQL Joins", "조인"]
 
 # SQL 조인 (Joins)
 
-조인은 **여러 테이블에서 관련된 행을 결합**해 단일 결과셋을 만든다. 조인 종류(syntax)와 조인 알고리즘(execution)은 다른 층위. 종류는 "어떤 결과를 원하는가"를, 알고리즘은 "옵티마이저가 어떻게 처리하는가"를 결정.
+조인은 **여러 테이블에서 관련된 행을 결합**해 단일 결과셋을 만든다. 조인 종류(syntax)와 조인 알고리즘(execution)은 다른 층위. 종류는 어떤 결과를 원하는가를, 알고리즘은 옵티마이저가 어떻게 처리하는가를 결정.
 
 ## 조인 종류
 
 ### INNER JOIN (내부 조인)
-양쪽 테이블 모두에 매칭이 있는 행만 반환. **교집합**.
+양쪽 테이블 모두에 매칭이 있는 행만 반환. 매칭 row 조합을 반환하며 중복을 보존하므로 수학적 집합 교집합과 같지는 않다.
 
 명시적:
 ```sql
@@ -39,13 +39,13 @@ SELECT 학생.학번, 지도교수.교수명
   LEFT OUTER JOIN 지도교수 ON 학생.학번 = 지도교수.학번;
 ```
 
-용도: "지도교수가 배정 안 된 학생까지 모두 보고 싶다."
+용도: 지도교수가 배정 안 된 학생까지 모두 보고 싶다.
 
 ### RIGHT OUTER JOIN
 오른쪽 테이블 기준. LEFT의 좌우 반전. **테이블 순서를 바꾸면 LEFT로 표현 가능**하므로 실무에선 LEFT만 쓰는 컨벤션이 많다.
 
 ### FULL OUTER JOIN
-양쪽 모두의 모든 행. 매칭 없는 쪽은 NULL. **MySQL은 미지원** → `LEFT JOIN UNION RIGHT JOIN`으로 우회. PostgreSQL은 지원.
+양쪽 모두의 모든 행. 매칭 없는 쪽은 NULL. MySQL 8.4는 직접 지원하지 않아 LEFT JOIN과 오른쪽 미매칭 행을 UNION ALL로 결합한다. PostgreSQL은 지원한다.
 
 ### CROSS JOIN (교차 조인)
 **데카르트 곱**. 양쪽의 모든 조합. 100행 × 1000행 = 10만행.
@@ -129,11 +129,24 @@ hint로 join 순서를 강제하기 전에 통계, predicate와 index를 고친�
 - Hash Join의 build/probe와 memory spill
 - BKA와 MRR이 반복 row lookup을 줄이는 방식
 
+## NULL 보완은 매칭이 없을 때
+
+LEFT JOIN은 왼쪽 row에 대해 ON을 만족하는 조합을 모두 만들고 하나도 없을 때만 오른쪽 NULL 행 한 개를 만든다. matched flag는 nested loop 설명 모델이지 모든 물리 algorithm의 구현 계약은 아니다. WHERE는 그 결과를 거르므로 ON의 optional 쪽 조건과 동등하지 않다.
+
+## MySQL FULL OUTER 결과의 구성
+
+왼쪽 LEFT JOIN 전체와 오른쪽 중 왼쪽 매칭이 없는 row를 UNION ALL로 합친다. 반대쪽 LEFT JOIN의 anti 조건에는 NULL이 될 수 없는 왼쪽 PK를 쓰거나 NOT EXISTS를 쓴다. 단순 LEFT JOIN UNION RIGHT JOIN은 projection이 같은 별개 row까지 제거해 SQL의 중복 보존 결과와 달라질 수 있다.
+
 ## 출처
 - [yoonseon — 논리적인 SQL 개념 용어](https://yoonseon.tistory.com/143)
 - [MySQL 8.4, Nested-Loop Join Algorithms](https://dev.mysql.com/doc/refman/8.4/en/nested-loop-joins.html)
 - [MySQL 8.4, Hash Join Optimization](https://dev.mysql.com/doc/refman/8.4/en/hash-joins.html)
 - [MySQL 8.4, Batched Key Access Joins](https://dev.mysql.com/doc/refman/8.4/en/bnl-bka-optimization.html)
+- [MySQL 8.4 Reference Manual, join](https://dev.mysql.com/doc/refman/8.4/en/join.html)
+- [인프런, LEFT JOIN의 NULL 처리와 WHERE vs ON 조건의 실행계획](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=368009)
+- [인프런, MySQL의 다양한 JOIN](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=368007)
+- [인프런, Nested Loop Join, Matched Function](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=368008)
+
 
 ## 관련 문서
 - [[SQL-Tuning-Terminology|SQL 튜닝 용어]]

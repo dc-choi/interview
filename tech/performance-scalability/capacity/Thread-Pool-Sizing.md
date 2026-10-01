@@ -1,7 +1,7 @@
 ---
 tags: [performance, thread-pool, concurrency, sizing, capacity]
 status: done
-verified_at: 2026-08-31
+verified_at: 2026-09-30
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["Thread Pool Sizing", "스레드 풀 사이징", "워커 풀 크기"]
 ---
@@ -15,7 +15,7 @@ Thread pool size는 단독으로 정하는 숫자가 아니라 애플리케이�
 공식을 꺼내기 전에 아래가 숫자로 정해져 있어야 한다. 하나라도 비어 있으면 사이징이 아니라 추측이다.
 
 - **목표 처리량** — 피크 기준 초당 요청 수 또는 작업 수.
-- **작업당 서비스 시간** — 스레드가 그 작업에 묶여 있는 전체 시간. 응답 시간과 다르다 (queue 대기는 제외).
+- **작업당 서비스 시간** — 스레드가 그 작업에 묶여 있는 전체 시간. 응답 시간과 다르다 (queue 대기는 제외). 용어 구분은 [[Throughput-vs-Latency|처리량과 지연시간]]을 따른다.
 - **대기(W)와 계산(C)의 비율** — 서비스 시간 중 블로킹 대기 비중.
 - **가용 코어 수** — 컨테이너의 CPU limit 기준이며, 호스트의 물리 코어 수가 아니다.
 - **latency SLO** — p99 목표. 이 값이 queue 허용 깊이의 상한을 결정한다.
@@ -51,6 +51,14 @@ Thread pool size는 단독으로 정하는 숫자가 아니라 애플리케이�
 - 큐를 키워도 병목의 처리율은 그대로다. **늘어나는 것은 처리량이 아니라 체류 시간뿐이며**, 호출자가 이미 포기한 요청을 뒤늦게 처리하는 낭비가 커진다.
 - Java SE 25 API 문서는 큐와 풀의 상충을 이렇게 정리한다. 큰 큐와 작은 풀은 컨텍스트 스위칭을 줄이지만 처리량이 떨어질 수 있고, 작은 큐와 큰 풀은 CPU를 더 바쁘게 쓰지만 스케줄링 오버헤드가 커진다.
 - 따라서 **bounded queue를 전제로 시작**하고, 넘치는 부하는 거절해 상류로 되돌린다. 거절 이후의 흐름 제어는 [[Backpressure|배압]]으로 이어진다.
+
+## 과소 풀의 증상
+
+풀이 너무 작으면 반대 방향으로 실패한다. 서버 자원은 남는데 요청이 기다리다 timeout되거나 거절되므로, 서버 지표만 보면 한가한데 사용자는 장애를 겪는다.
+
+- **처리 상한이 풀에 묶인다** — 풀이 낼 수 있는 처리량은 대략 `풀 크기 ÷ 작업당 서비스 시간`이다 (Little's Law를 뒤집은 값). 200개 스레드가 작업당 100ms를 점유하면 초당 약 2000건이 상한이고, 유입이 이를 넘으면 CPU와 메모리가 남아도 대기열이 자란다.
+- **대기가 먼저, 거절은 나중** — Tomcat 11.0 문서 기준 동시에 처리하는 요청 수는 `maxThreads`가, 연결 수용은 `maxConnections`와 OS accept 큐인 `acceptCount`가 따로 제한한다. 스레드가 모두 사용 중이어도 수용 한도 안의 연결은 받아진 채 처리를 기다리고, 수용 한도와 accept 큐까지 차야 연결이 거절되거나 timeout된다. 그래서 과소 풀은 p99와 timeout 증가로 먼저 보인다.
+- **상향도 검증 대상이다** — 적정값은 로직 복잡도와 CPU, 메모리, I/O 특성에 따라 달라 정답이 없다. 상향 후보를 실제와 비슷한 환경의 부하 테스트로 비교하고, 올린 만큼 아래 과대 풀의 대가가 시작되는 지점을 함께 찾는다.
 
 ## 과대 풀의 대가
 
@@ -98,7 +106,8 @@ Java 21 이후 virtual thread 모델에서는 스레드가 희소 자원이 아�
 | 관측 | 유력한 원인 | 조치 방향 |
 |---|---|---|
 | active 만석, 작업당 시간 증가 | downstream 지연 또는 쿼리 저하 | 풀이 아니라 느려진 구간을 고친다 |
-| active 만석, 작업당 시간 일정 | 유입 증가 | 용량 증설 또는 상류 제한 |
+| active 만석, 작업당 시간 일정, CPU나 downstream 포화 | 유입 증가 | 용량 증설 또는 상류 제한 |
+| active 만석, 작업당 시간 일정, CPU와 메모리, downstream 여유, 대기나 거절 증가 | 풀 과소 | 상향 후보를 부하 테스트로 검증 |
 | queue depth만 계단식 증가 | 큐가 포화를 감추는 중 | 큐를 줄이고 거절을 노출 |
 | active와 queue가 모두 낮은데 처리 정체 | 풀 포화가 아닌 caller, submission 또는 관측 경로의 병목 | 유입량, executor 제출 지점과 downstream 지표를 함께 확인 |
 | 시간이 지날수록 active 우상향 | 반환 누락, 누수 | 타임아웃과 자원 해제 경로 점검 |
@@ -119,6 +128,7 @@ Java 21 이후 virtual thread 모델에서는 스레드가 희소 자원이 아�
 - 외부 API가 느리다고 스레드를 늘린다. 대기 시간은 그대로이고 동시 대기자만 늘어난다.
 - 429와 rejection이 보인다고 큐와 타임아웃을 늘려 과부하 신호 자체를 숨긴다.
 - 컨테이너 CPU limit이 1인데 호스트 코어 수를 기준으로 계산한다.
+- CPU와 메모리가 여유롭다는 이유로 풀 부족을 원인 후보에서 뺀다.
 
 ## 면접 체크포인트
 
@@ -126,6 +136,7 @@ Java 21 이후 virtual thread 모델에서는 스레드가 희소 자원이 아�
 - Little's Law로 초기값을 잡되 상한 결정 근거로는 쓰지 않는 이유를 말한다 (평균만 반영).
 - 풀을 키웠을 때 downstream이 대신 포화되는 메커니즘을 인스턴스 배수까지 포함해 설명한다.
 - 큐를 키우는 것과 풀을 키우는 것의 차이를 처리량과 체류 시간으로 구분한다.
+- 풀이 너무 작을 때 자원은 남는데 대기와 거절이 생기는 이유를 처리 상한과 연결 수용 한도로 설명한다.
 - virtual thread 환경에서 사이징의 의미가 어떻게 바뀌는지, 그래도 무엇은 여전히 제한해야 하는지 답한다.
 
 ## 출처
@@ -137,6 +148,7 @@ Java 21 이후 virtual thread 모델에서는 스레드가 희소 자원이 아�
 - [Spring Boot, Common Application Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
 - [libuv 1.x, Thread pool work scheduling](https://docs.libuv.org/en/v1.x/threadpool.html)
 - [How to set an ideal thread pool size — Zalando Engineering Blog](https://engineering.zalando.com/posts/2019/04/how-to-set-an-ideal-thread-pool-size.html)
+- [인프런, 김영한, 동시 요청 - 멀티 쓰레드](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71162)
 
 ## 관련 문서
 
@@ -155,3 +167,4 @@ Java 21 이후 virtual thread 모델에서는 스레드가 희소 자원이 아�
 - [[Latency-Optimization|레이턴시 최적화]] — 서비스 시간 자체를 줄이는 축
 - [[Application-Performance-Monitoring|APM]] — W와 C 측정
 - [[Backfill-Resource-Isolation|백필 자원 격리]] — batch와 온라인 요청의 분리
+- [[Servlet-vs-Spring-Container|서블릿 컨테이너와 Spring 컨테이너]] — 요청당 스레드 모델과 싱글톤 Bean의 공유 상태

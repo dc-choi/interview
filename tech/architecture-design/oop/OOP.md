@@ -35,6 +35,8 @@ class Checkout {
 
 `Checkout`은 카드나 계좌 SDK가 아니라 `pay`라는 역할에 의존한다. 구현 교체가 실제로 안전하려면 모든 구현이 성공, 실패, 취소와 부수효과에 관한 같은 행동 계약을 지켜야 한다.
 
+동적 바인딩은 실행 시 수신 객체에 맞는 메서드를 선택하는 기법이다. 송신자는 메시지의 계약을 알고 수신자는 수행 방법을 결정하므로 자율적인 협력이 가능하다. 이 기법만으로 객체지향 설계가 완성되는 것은 아니며 역할과 행동 계약이 함께 필요하다.
+
 ## 주요 설계 개념
 
 ### 추상화
@@ -45,6 +47,8 @@ class Checkout {
 
 단순히 필드를 `private`로 만드는 것이 아니라 변경 가능성이 높은 상태와 판단 규칙을 한 경계 안에 숨긴다. 호출자가 getter로 상태를 꺼내 대신 판단한다면 문법상 접근 제한이 있어도 캡슐화가 약하다.
 
+데이터 캡슐화는 내부 표현과 변경 규칙을, 타입 캡슐화는 어떤 구체 구현이 메시지를 처리하는지를 감춘다. 예를 들어 할인 정책 내부의 비율 필드를 감추는 것과 호출자가 정액/비율 정책 종류를 몰라도 같은 메시지를 보내는 것은 서로 다른 변경을 보호한다.
+
 ### 다형성
 
 클라이언트가 구체 타입을 검사하지 않고 같은 메시지로 여러 구현과 협력하게 한다. 조건문을 없애는 것이 목적이 아니라 변화하는 행동을 안정된 역할 뒤로 보내는 것이 목적이다.
@@ -54,6 +58,16 @@ class Checkout {
 상속은 코드 복사 제거보다 의미 있는 하위 타입 관계와 대체 가능성이 먼저다. 부모의 내부 구현에 강하게 결합하고 독립적인 변경 축을 한 계층에 섞을 수 있으므로, 기능 재사용만 필요할 때는 객체 합성을 먼저 검토한다.
 
 TypeScript는 구조적 타입 시스템을 사용한다. `implements`를 명시하지 않아도 모양이 맞으면 대입할 수 있지만, 컴파일러가 도메인의 사전조건, 사후조건과 부수효과까지 검증해 주는 것은 아니다.
+
+상속으로 공통 흐름을 정리한 뒤 새 요구사항에서 정책을 실행 중 교체해야 한다면 합성으로 재평가할 수 있다. protected 멤버가 늘어 부모 내부를 하위 클래스가 알아야 하는지도 점검한다. 반드시 상속부터 시작해 합성으로 옮겨야 하는 순서는 아니다.
+
+컬렉션을 상속해 업무 객체를 만들면 상위 클래스의 변경 메서드까지 공개될 수 있다. 수하물 적재량을 갱신하는 `extract()`를 제공해도 상속받은 다른 삭제 경로가 그 계산을 우회하면 불변조건이 깨진다. 내부 컬렉션을 합성하고 허용할 업무 행동만 공개하면 변경 경로를 통제하기 쉽다. 상속이 필요한 경우에는 상위 타입의 전체 변경 계약을 검토한다.
+
+### TypeScript에서 소비자의 역할을 좁힌다
+
+`Pick<UserRepository, 'findById'>`는 조회 소비자에게 필요한 연산만 타입으로 드러낸다. 전체 저장소 구현도 구조가 맞으면 전달할 수 있고 fake는 그 연산만 제공하면 된다. 다만 원본 메서드 시그니처가 바뀌면 파생 타입도 바뀐다. 여러 소비자가 공유하는 안정된 경계라면 별도 `UserReader` 역할을 정의한다.
+
+`Pick`이나 `Omit`은 런타임 객체에서 필드를 제거하지 않는다. 응답에 공개할 필드는 명시적으로 새 DTO에 복사하고 허용 목록을 검증한다. 이 타입들은 런타임 DI 토큰도 아니므로 NestJS에서는 역할 타입과 별도로 토큰을 등록하고 `@Inject`로 지정한다.
 
 ## 절차적인 코드와 비교
 
@@ -88,6 +102,8 @@ SOLID를 클래스 수를 늘리는 체크리스트로 쓰면 과설계가 된�
 
 ## 출처
 
+- 즐거운 학습, [클린 코더스 강의 1. 소개 및 OOP](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279438)
+- 즐거운 학습, [클린 코더스 강의 2. OOP Part2](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279439)
 - 얄팍한 코딩사전, [객체지향 프로그래밍](https://www.inflearn.com/courses/lecture?courseId=334495&unitId=236068)
 - 조영호 강사, [객체지향 설계 원칙](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234570)
 - 조영호 강사, [메시지와 메서드의 분리](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234582)
@@ -102,6 +118,15 @@ SOLID를 클래스 수를 늘리는 체크리스트로 쓰면 과설계가 된�
 - yongsoocho, [리스코프 치환 원칙](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=138854)
 - yongsoocho, [인터페이스 분리 원칙](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=137143)
 - yongsoocho, [의존 역전 원칙](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=139594)
+
+- 조영호, [4-5. 결합도 낮추기 - 변경 보호](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234578)
+- 조영호, [6-1. 변경과 설계](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234587)
+- 조영호, [6-4. 캡슐화](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234591)
+- 조영호, [6-5. 설계 평가하기](https://www.inflearn.com/courses/lecture?courseId=334416&unitId=234592)
+- yongsoocho, [utility type](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=138451)
+
+- [TypeScript 공식 문서, Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)
+- [NestJS 공식 문서, Custom providers](https://docs.nestjs.com/fundamentals/custom-providers)
 
 ## 관련 문서
 

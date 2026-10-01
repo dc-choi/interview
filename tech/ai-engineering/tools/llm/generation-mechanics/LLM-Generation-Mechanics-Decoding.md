@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, transformer, inference]
 status: done
-verified_at: 2026-08-22
+verified_at: 2026-09-30
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Generation Mechanics Decoding", "LLM 추론과 디코딩", "Transformer Attention과 Decoding"]
 ---
@@ -26,6 +26,13 @@ aliases: ["LLM Generation Mechanics Decoding", "LLM 추론과 디코딩", "Trans
 ### Token과 위치 표현
 
 Tokenizer는 문자열을 단어, subword나 문자 단위의 Token ID로 바꾼다. **Token Embedding**은 각 ID를 모델 내부 계산에 쓸 벡터로 변환한다. Attention 자체에는 순서 개념이 없으므로 위치 정보를 주입한다. 원 논문의 sinusoidal encoding 외에도 학습형 위치 embedding과 회전 위치 표현 등 구현은 모델마다 다르다.
+
+### Token 단위가 만드는 운영상의 차이
+
+- **토크나이저는 모델마다 다르다**: 같은 문장도 모델 세대에 따라 토큰 수가 달라진다. Anthropic은 Opus 4.7부터 새 토크나이저를 쓰며, 1M 토큰에 들어가는 영어가 이전 약 75만 단어에서 약 55.5만 단어(약 250만 Unicode 문자)로 줄었다고 안내한다(2026-09-30 모델 개요). 모델을 바꾸면 같은 입력의 비용과 컨텍스트 여유를 다시 잰다
+- **언어마다 환산이 다르다**: 토큰당 문자 수는 언어에 따라 달라진다. 한국어가 영어보다 토큰을 더 쓴다는 설명이 흔하지만 차이는 토크나이저 어휘 구성에 좌우되고 공식 배율은 없으므로, 비용 추정은 토큰 카운팅 API로 대표 문서를 직접 재서 정한다
+- **문자 단위 작업에 약하다**: 모델은 문자열이 아니라 Token ID 배열을 받는다. 글자 수 세기, 철자 뒤집기, 특정 위치의 문자처럼 토큰 경계와 어긋나는 질문은 틀리기 쉬우므로 정확한 값은 코드 실행으로 계산하게 한다
+- **과금과 한도의 단위**: 입력, 출력, 사고가 모두 토큰으로 계산되고 컨텍스트 윈도도 토큰으로 잰다. 사고 토큰은 화면에 요약만 보여도 전부 출력 토큰으로 과금된다
 
 ### Q, K와 V로 관계 계산
 
@@ -59,18 +66,23 @@ Attention(Q, K, V) = softmax(QKᵀ / √dₖ)V
 | **Top-k** | 상위 k개 후보로 제한 | 고정 개수라 분포 모양을 반영하지 못할 수 있음 |
 | **Top-p** | 누적 확률 p를 채우는 후보 집합에서 선택 | 입력마다 후보 수가 달라짐 |
 
-선택한 Token을 다시 입력에 붙이고 EOS, stop 조건이나 Runtime의 길이 제한을 만날 때까지 반복한다. Greedy decoding도 틀릴 수 있으므로 환각을 Sampling만의 문제로 보면 안 된다.
+선택한 Token을 다시 입력에 붙이고 EOS, stop 조건이나 Runtime의 길이 제한을 만날 때까지 반복한다. 한 토큰씩 붙여 가며 만들기 때문에 응답을 완성 전에 흘려보내는 스트리밍이 가능하고, 첫 토큰까지의 시간(TTFT)과 전체 생성 시간이 따로 재는 지표가 된다. Greedy decoding도 틀릴 수 있으므로 환각을 Sampling만의 문제로 보면 안 된다.
 
 ## 이해 점검
 
 1. Q, K와 V 중 Attention weight로 섞이는 실제 정보는 무엇인가?
 2. Temperature를 낮춰도 사실 정확성이 보장되지 않는 이유는 무엇인가?
+3. 모델이 단어의 글자 수를 자주 틀리는 이유와 대신 쓸 방법은 무엇인가?
 
 ## 출처
 
 - [Attention Is All You Need — Vaswani et al.](https://arxiv.org/abs/1706.03762)
 - [Attention Is Not Explanation — Jain and Wallace](https://arxiv.org/abs/1902.10186)
 - [The Curious Case of Neural Text Degeneration — Holtzman et al.](https://arxiv.org/abs/1904.09751)
+- [Anthropic Platform Docs, Glossary](https://platform.claude.com/docs/en/about-claude/glossary)
+- [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview)
+- [Anthropic Platform Docs, Steering thinking](https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost)
+- [인프런, 널널한 개발자, LLM 서비스, 토큰, 컨텍스트](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498588)
 
 ## 관련 문서
 

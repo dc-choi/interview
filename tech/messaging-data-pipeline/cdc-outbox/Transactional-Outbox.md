@@ -1,7 +1,7 @@
 ---
 tags: [messaging, reliability, pattern]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-09-30
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Transactional Outbox", "Outbox Pattern", "트랜잭셔널 아웃박스"]
 ---
@@ -65,17 +65,9 @@ CREATE TABLE outbox (
 |------|------|------|------------|
 | **Polling** | 구현 단순, 별도 변경 로그 인프라 불필요 | 폴링 지연, claim과 중복 발행 제어 필요 | 허용 지연과 DB 조회 부하를 감당할 수 있음 |
 | **CDC (Change Data Capture)** | 변경 로그 기반으로 낮은 지연 | Debezium, Kafka Connect 등 운영 요소 증가 | 이미 CDC 운영 역량이 있거나 낮은 지연이 중요함 |
+| **DB 내장 변경 스트림** | connector 운영 없이 DB가 변경을 스트림으로 제공 | 순서 범위, 보존 기간, 중복과 소비자 수 제한이 제품 의미에 묶임 | DynamoDB, Cosmos DB, CockroachDB처럼 변경 스트림을 내장한 DB를 이미 씀 |
 
-### Polling 방식
-- 주기적으로 `WHERE processed_at IS NULL` 조회 → 발행 → 마킹
-- NestJS `@Cron('*/5 * * * * *')`로 5초 간격 구현 가능
-- 단일 코드베이스에서 바로 구현할 수 있어 소규모 팀에 적합
-- 인스턴스를 2개 이상 띄우는 순간 같은 행을 여러 Relay가 집는다 → 아래 다중 인스턴스 절
-
-### CDC 방식
-- Debezium이 DB 변경 로그(PostgreSQL WAL, MySQL binlog 등)를 읽어 outbox 테이블 변경을 감지
-- 변경 즉시 Kafka로 발행 → 거의 실시간
-- 애플리케이션의 별도 polling relay 코드는 줄일 수 있지만 outbox 기록과 connector 설정, CDC 인프라 운영은 필요
+방식별 구현 세부(Polling 주기, Debezium CDC, DynamoDB, Cosmos DB, CockroachDB 변경 스트림의 순서와 보존 의미)는 [[Transactional-Outbox-Relay|Outbox Relay 구현 방식]]에 있다. Polling Relay를 여러 인스턴스로 돌릴 때의 중복 제어는 바로 아래 절에서 다룬다.
 
 ## Relay를 여러 인스턴스에서 돌릴 때
 
@@ -171,11 +163,13 @@ Event Sourcing은 더 나아가 **상태 자체를 이벤트 스트림으로만 
 - [Spring Framework, TransactionSynchronization](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/support/TransactionSynchronization.html)
 - [Chris Richardson, Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html)
 - [Dowon Lee 강사, Dual Write, Outbox와 CDC](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289780)
+- [Dowon Lee 강사, Distributed Databases](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289782)
 - [최상용 강사, 트랜잭션 이후 Kafka 이벤트 발행](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344376)
 - [우아한형제들 — 회원시스템 이벤트기반 아키텍처 구축하기](https://techblog.woowahan.com/7835/)
 - [우아한형제들 — 배민스토어에 이벤트 기반 아키텍처를 곁들인](https://techblog.woowahan.com/13101/)
 
 ## 관련 문서
+- [[Transactional-Outbox-Relay|Outbox Relay 구현 방식 (Polling, CDC, DB 내장 변경 스트림)]]
 - [[Spring-Transaction-Events|Spring 트랜잭션 이벤트]] — 프로세스 안에서 커밋 단계에 부수효과를 거는 쪽의 계약과 함정
 - [[Delivery-Semantics|전달 보장]]
 - [[Idempotency-Key|멱등성 키]]

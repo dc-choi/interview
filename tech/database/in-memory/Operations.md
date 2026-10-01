@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, cache]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-09-30
 category: "Data & Storage - Cache & KV"
 aliases: ["운영 팁", "Operations"]
 ---
@@ -13,8 +13,16 @@ Redis의 명령 실행은 주로 단일 스레드에서 직렬 처리된다. 네
 
 - `keys` 대신 `scan` 사용
 - hash나 sorted set의 한 키가 매우 커지면 단일 명령 지연, migration과 장애 복구 비용이 커질 수 있다. 고정 100만 개 기준 대신 실제 원소 크기와 명령 latency를 측정해 big key 기준을 정한다.
-- 데이터가 많은 키 조회 시 `hgetall` 대신 `hscan` 사용
-- 데이터가 많은 키 삭제 시 `del` 대신 `unlink` 사용 (백그라운드 삭제)
+- 데이터가 많은 키 조회 시 `hgetall` 대신 `hscan` 사용. 10만 원소 리스트를 `LRANGE key 0 -1`로 한 번에 읽으면 서버가 응답을 직렬화하는 동안 다른 명령을 처리하지 못하고 네트워크 전송량도 급증한다. 리스트에는 길이 상한을 두고, 수십만 원소로 커질 해시나 셋은 키를 나눈다.
+- 데이터가 많은 키 삭제 시 `del` 대신 `unlink` 사용 (백그라운드 삭제). Redis 8.x 기본값(`lazyfree-lazy-user-del no`)에서는 여전히 필요하다. Valkey 8.0+는 이 설정이 기본 `yes`라 `DEL`도 메모리 해제를 백그라운드로 넘기므로, 통념보다 버전과 `CONFIG GET lazyfree*` 결과로 판단한다.
+- 운영 중 갑자기 느려졌다면 앞에서 서버를 붙잡은 느린 명령 하나부터 의심한다. 명령 하나가 도는 동안 뒤의 모든 요청이 기다리므로 평소 즉시 끝나는 `PING`도 그만큼 늦어진다. 지연은 `valkey-cli --latency`(PING 반복 측정)나 `--latency-history`로 본다. 장시간 Lua 스크립트와 함수는 `busy-reply-threshold`(기본 5초)를 넘기면 다른 클라이언트에 `BUSY` 오류를 돌려주지만 일반 느린 명령은 오류 없이 붙잡는다 ([[Redis-Atomic-Operations-Lua|Lua 스크립트]]).
+
+## 느려졌을 때 진단 순서
+
+1. `INFO memory`: `used_memory_human`(할당한 데이터 메모리)과 `used_memory_rss_human`(OS가 본 점유)을 비교한다. `mem_fragmentation_ratio`가 높아도 차이 바이트(`mem_fragmentation_bytes`)가 수 MB면 문제가 아니고, 할당량이 RSS보다 크면(비율 1 미만) OS가 메모리 일부를 swap으로 내렸다는 신호다. `INFO stats`의 `evicted_keys`도 함께 본다.
+2. `valkey-cli --bigkeys`(원소 수 기준)와 `--memkeys`(메모리 기준)로 비대한 키를 찾는다. SCAN 기반이라 운영에서도 쓸 수 있고 `-i`로 명령 사이 간격을 둬 부하를 줄인다. `--hotkeys`는 LFU 정책일 때만 동작한다 ([[Hot-Key|Hot key 대응]]).
+3. `SLOWLOG GET`으로 `slowlog-log-slower-than`(마이크로초, 기본 10000)을 넘은 명령과 보낸 클라이언트를 찾는다. 항목은 ID, 시각, 실행 시간(μs), 인자, 클라이언트 주소, 클라이언트 이름이고 실행 시간에는 I/O가 빠진다. 임계값을 미리 정해 둬야 사후에 추적할 수 있다.
+4. Valkey 8.1+는 `COMMANDLOG GET <count> slow|large-request|large-reply`가 느린 명령과 기본 1MB를 넘는 큰 요청, 큰 응답을 따로 기록하고, `slowlog-*` 설정은 `commandlog-*`로 대체되어 deprecated다. 큰 응답 기록은 I/O 스레드를 쓸 때 추적 비용이 있다.
 
 ## MAXMEMORY-POLICY
 - 데이터의 유효기간이 있으면 TTL을 설정하고, 메모리 압력에서 어떤 키를 내보낼지는 eviction policy로 별도 설계한다. `allkeys-*` 정책은 TTL 없는 키도 내보낼 수 있어 모든 캐시 키에 TTL이 기술적으로 필수인 것은 아니다.
@@ -87,6 +95,7 @@ Primary 장애 시 자동 승격 이후 새 replica 보충과 재동기화 부�
 
 ## 관련 문서
 - [[Redis-Architecture|Redis architecture]]
+- [[Redis-Architecture-HA|복제와 Sentinel 고가용성]]
 - [[Persistence]]
 - [[Capacity-Planning|캐퍼시티 플래닝]] — IOPS, UsedMemory 기반 가용량 판단과 클러스터 분리 사례
 
@@ -94,3 +103,13 @@ Primary 장애 시 자동 승격 이후 새 replica 보충과 재동기화 부�
 
 - [Redis latency optimization](https://redis.io/docs/latest/operate/oss_and_stack/management/optimization/latency/)
 - [Redis INFO command](https://redis.io/docs/latest/commands/info/)
+- [Valkey INFO command](https://valkey.io/commands/info/)
+- [Valkey CLI (valkey-cli)](https://valkey.io/topics/cli/)
+- [Valkey SLOWLOG GET command](https://valkey.io/commands/slowlog-get/)
+- [Valkey COMMANDLOG GET command](https://valkey.io/commands/commandlog-get/)
+- [Valkey Programmability (busy-reply-threshold)](https://valkey.io/topics/programmability/)
+- [valkey.conf 9.1 LAZY FREEING, COMMAND LOG — valkey-io/valkey](https://github.com/valkey-io/valkey/blob/9.1/valkey.conf)
+- [redis.conf 8.4 — redis/redis](https://github.com/redis/redis/blob/8.4/redis.conf)
+- [인프런, Hong, MockUp -> Redis만 알면 되는거 아닌가요?](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=489690)
+- [인프런, Hong, 간단한 Valkey 설치부터 단일 스레드의 특징 직접 손으로 확인하기](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481440)
+- [인프런, Hong, Valkey가 이상해요!! 디버깅을 위한 Big Key 및 Hot Key 기반의 추적 진단 패턴](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481458)

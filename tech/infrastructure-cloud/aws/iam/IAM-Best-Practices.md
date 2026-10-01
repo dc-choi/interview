@@ -3,7 +3,7 @@ tags: [infrastructure, aws, iam, security, identity]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["IAM 모범 사례", "IAM 면접 체크포인트"]
-verified_at: 2026-07-21
+verified_at: 2026-09-30
 ---
 
 # IAM 모범 사례, 흔한 실수, 체크포인트
@@ -17,6 +17,19 @@ verified_at: 2026-07-21
 - **CloudTrail로 감사** — 모든 IAM 호출 기록
 - **Access Analyzer** — 외부 공개, 크로스 어카운트 노출 자동 탐지
 - **태그 기반 권한** — `aws:RequestTag` / `aws:ResourceTag`로 동적 분리
+
+## IAM 사용자 비밀번호 정책 — 주기 변경 강제의 트레이드오프
+
+사람의 AWS 접근은 IAM Identity Center나 federation의 임시 자격 증명과 MFA를 기본으로 하고, 비밀번호를 가진 장기 IAM 사용자는 예외로 줄인다. 불가피한 IAM 사용자에게는 계정 비밀번호 정책을 둔다.
+
+- 사용자 지정 정책이 없으면 기본 정책이 적용된다: 8~128자, 대문자, 소문자, 숫자, 특수문자 중 3종 이상, 계정 이름이나 이메일과 다를 것, 만료 없음
+- 사용자 지정 옵션: 최소 길이 6~128자, 문자 종류 요구, 만료 1~1,095일, 만료 뒤 관리자 재설정 요구(hard expiry), 본인 변경 허용, 이전 비밀번호 재사용 방지 1~24개
+- root 사용자 비밀번호와 IAM 사용자 access key에는 적용되지 않는다. 비밀번호가 만료돼도 콘솔 로그인만 막히고 access key는 계속 동작하므로 주기 변경으로 프로그래밍 자격 증명 위험은 줄지 않는다
+- 길이와 문자 종류 변경은 다음 비밀번호 변경 때 적용되지만 만료 기간은 즉시 적용된다. 기존 비밀번호가 그 기간보다 오래된 사용자는 다음 로그인에서 바꿔야 한다
+- hard expiry를 켜기 전에 비밀번호를 재설정할 수 있는 관리자(`iam:UpdateLoginProfile`)를 둘 이상 둬 잠김을 막는다
+- 로그인 실패 횟수로 잠그는 lockout 정책은 만들 수 없으므로 MFA와 함께 쓴다
+- NIST SP 800-63B-4(2025-08 최종)는 주기적 비밀번호 변경 요구를 금지하고 침해 증거가 있을 때만 변경을 강제하게 한다. 문자 종류 조합 규칙도 금지하며, 길이(단일 요소면 15자 이상, MFA의 일부면 8자 이상)와 흔하거나 유출된 비밀번호 차단 목록 대조를 요구한다. 주기 강제는 사용자가 예측 가능한 변형을 만들게 하기 쉽다
+- 적용 방향: 길이 중심 정책, 재사용 방지, MFA를 기본으로 두고 만료는 규정이 요구할 때만 켠다. 규정 때문에 켰다면 그 근거를 기록한다. 매달이나 분기마다 전 사용자 비밀번호를 바꾸게 하는 방침은 이 기준과 맞지 않는다
 
 ## 흔한 실수
 
@@ -41,6 +54,7 @@ verified_at: 2026-07-21
 - Access Key vs Role — 왜 Role 우선인가
 - **Access Key는 생성 시점에만 노출** — 분실 시 재발급
 - 신규 User는 기본 **권한 없음**, 콘솔, 프로그래밍 액세스 별도 선택
+- 계정 비밀번호 정책은 root 비밀번호와 access key에 적용되지 않고, 만료 기간은 설정 즉시 적용된다
 - JSON 정책의 주요 요소는 `Effect`, `Action`, `Resource`, `Condition` 등이며 정책 유형마다 허용 요소가 다르다. `Principal`은 resource-based policy와 role trust policy에 사용하고 identity-based policy에는 넣지 않는다
 - Federation 종류: **SAML, OIDC, Web Identity, IAM Identity Center**
 
@@ -57,3 +71,6 @@ verified_at: 2026-07-21
 - [제3자 접근과 ExternalId](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html)
 - [Root user 전용 작업](https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-tasks.html)
 - [IAM과 CloudTrail](https://docs.aws.amazon.com/IAM/latest/UserGuide/cloudtrail-integration.html)
+- [IAM 계정 비밀번호 정책](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_passwords_account-policy.html)
+- [NIST SP 800-63B-4 Authentication and Authenticator Management](https://pages.nist.gov/800-63-4/sp800-63b.html)
+- [인프런, Sungmin Kim, IAM이란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43727)

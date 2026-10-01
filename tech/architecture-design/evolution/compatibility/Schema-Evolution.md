@@ -1,7 +1,7 @@
 ---
 tags: [architecture, evolution, schema, event-driven, compatibility]
 status: done
-verified_at: 2026-08-31
+verified_at: 2026-10-01
 category: "Architecture - 진화"
 aliases: ["Schema Evolution", "스키마 진화", "이벤트 스키마 진화", "메시지 계약 진화"]
 ---
@@ -20,7 +20,7 @@ aliases: ["Schema Evolution", "스키마 진화", "이벤트 스키마 진화", 
 |---|---|---|---|
 | BACKWARD | 새 소비자가 구 데이터를 읽음 | 소비자 | 필드 삭제, default 있는 필드 추가 |
 | FORWARD | 구 소비자가 새 데이터를 읽음 | 발행자 | 필드 추가, default 있는 필드 삭제 |
-| FULL | 양방향 | 순서 무관 | 모든 필드에 default가 있어야 함 |
+| FULL | 양방향 | 순서 무관 | Avro에서는 optional/default 조건을 만족한 필드 추가와 삭제 등 |
 | NONE | 검사 없음 | 해당 없음 | 전부 |
 
 - Confluent Schema Registry의 기본값은 **BACKWARD**다 (2026-08-31 문서 기준). Kafka에서 소비자를 토픽 처음으로 되감아 과거 데이터를 다시 읽을 수 있어야 하기 때문이다.
@@ -33,17 +33,29 @@ aliases: ["Schema Evolution", "스키마 진화", "이벤트 스키마 진화", 
 - **깨짐**: 설정한 호환 방향과 default 조건을 만족하지 않는 필드 제거와 개명, 타입 변경, default 없는 필수 필드 추가, enum 값 제거, 필드의 의미를 조용히 바꾸기(같은 이름에 다른 단위).
 - enum 값 **추가**는 포맷과 호환 방향, default 규칙에 따라 판정이 갈린다. 예를 들어 Avro의 old reader enum에 새 symbol과 reader default가 없으면 resolution error가 나므로 forward와 full 호환을 깬다. 스키마 검사를 통과하는 조합에서도 exhaustive 분기를 하는 소비자는 깨질 수 있다. 같은 회색지대 분류를 요청-응답 계약에서 다룬 예가 [[GraphQL-Schema-Design|GraphQL 스키마 설계]]의 breaking, dangerous, safe 3분류다.
 
+위 대표 변경은 Avro 중심의 예이며 모든 포맷에 같은 규칙이 적용되지는 않는다. JSON Schema는 열린/닫힌 content model과 필수 조건까지, Protobuf는 필드 번호와 wire type까지 확인한다. FULL도 모든 필드에 default를 요구한다는 일반 규칙은 아니다.
+
 포맷별로 규칙의 강제 지점이 다르다.
 
 | 포맷 | 진화의 축 | 삭제 처리 | 규율의 소재 |
 |---|---|---|---|
 | Avro | writer 스키마와 reader 스키마를 이름으로 매칭 | reader에 없는 writer 필드는 무시 | reader에만 있는 필드는 default가 없으면 오류 |
 | Protobuf | **필드 번호**가 정체성, 이름이 아님 | 번호를 `reserved`로 봉인 | 번호 재사용 금지가 사람 규율이 아니라 문법 |
-| JSON | 강제 장치 없음 | 없음 | 전부 사람과 CI에 옴 |
+| JSON | JSON Schema 등 별도 계약을 선택 | 소비자 계약에 따라 판정 | 검증기와 CI로 강제 가능 |
 
 - Avro는 필드를 이름으로 매칭하므로 순서는 무관하다. reader가 가진 필드가 writer에 없으면 **reader의 default**를 쓰고, default가 없으면 오류다. 즉 Avro에서 default는 편의가 아니라 진화의 필수 조건이다. 숫자 promotion은 int → long → float → double 방향으로만 허용된다 (Avro 1.12 명세 기준).
 - Protobuf에서 필드 번호는 wire format상 필드의 정체성이라 배포 후 변경할 수 없다. 필드를 지웠으면 번호를 `reserved`에 등록해 재사용을 막아야 한다. 재사용하면 구 데이터가 새 필드로 조용히 잘못 해석된다. 포맷 자체의 소개는 [[gRPC|gRPC]]와 [[Java-IO-Serialization-and-Data-Formats|직렬화와 데이터 포맷]]이 소유한다.
-- JSON은 스키마 강제가 없어 가장 자유로워 보이지만, 그래서 가장 위험하다. 안전한 변경과 깨는 변경의 구분이 코드 리뷰어의 기억에만 남는다.
+- JSON 문법만으로 필드 계약이 강제되지는 않는다. JSON Schema와 검증기를 붙이면 타입과 필수 필드를 검사할 수 있고, 안전한 진화는 선택한 계약과 CI 규칙으로 관리한다.
+
+## Registry 없이 JSON 계약 검증하기
+
+스키마 파일을 버전 관리하고 발행자와 소비자가 대응 버전의 검증기를 배포할 수 있다. `$schema`로 사용할 JSON Schema dialect를 명시하고, 메시지의 업무 schema version과 검증기 dialect를 구분한다. Registry도 JSON Schema를 지원하지만 registry 사용 여부와 payload 검증 여부는 별개다.
+
+1. 발행 전에 JSON 파싱과 스키마 검증으로 필수 필드, 타입과 허용값을 확인한다.
+2. 수신 시 해당 이벤트 버전을 식별해 소비자가 사용하는 필드의 타입과 업무 필수 조건을 확인한다. 무해한 추가 필드까지 거절하지 않도록 `additionalProperties` 정책을 계약과 함께 정한다.
+3. 깨진 JSON, UUID/정수 불일치와 필수 필드 누락은 같은 메시지를 반복해도 해결되지 않는다. [[MQ-Kafka-Retry-DLT|비일시 오류 격리]]로 보내 원인, 원문 식별자와 복구 담당을 남긴다.
+
+스키마 문서만 공유하고 실제 검증기를 실행하지 않으면 강제력이 없다. 반대로 스키마 검증은 의미 호환이나 업무 성공을 보장하지 않는다. 보상은 업무 상태에 따라 결정하며, 해석할 수 없는 메시지에 주문 취소 같은 domain event를 무조건 발행하지 않는다.
 
 ## 소비자 쪽 규율: Tolerant Reader
 
@@ -91,7 +103,7 @@ Expand, migrate, contract 3단계와 contract를 시간이 아니라 사용량 �
 ## 흔한 함정
 
 - **버전 필드를 나중에 붙이기** — 초기 이벤트의 version 누락을 v1로 간주하거나 event type과 store metadata로 legacy 이벤트를 골라 upcast할 수는 있다. 다만 예외 분기가 영구히 남으므로 첫 이벤트부터 명시적 version을 두는 편이 단순하다.
-- **JSON이라 안전하다는 착각** — 강제 장치가 없는 것이지 깨지지 않는 것이 아니다.
+- **JSON이라 안전하다는 착각** — 문법이 유연해도 소비자의 필드 계약은 깨질 수 있다.
 - **registry를 등록소로만 쓰기** — compatibility mode를 NONE으로 두면 registry는 스키마 보관함일 뿐 게이트가 아니다.
 - **non-transitive로 만족하기** — replay나 긴 retention이 있으면 직전 버전만 통과해도 두 단계 전 데이터에서 깨진다.
 - **소비자만 보고 제거 일정 잡기** — 남은 소비자가 0이어도 retention 안의 메시지와 replay 구간이 필드를 붙잡는다.
@@ -114,6 +126,11 @@ Expand, migrate, contract 3단계와 contract를 시간이 아니라 사용량 �
 - [Protocol Buffers, Language Guide (proto3) — Updating A Message Type](https://protobuf.dev/programming-guides/proto3/)
 - [Tolerant Reader — martinfowler.com](https://martinfowler.com/bliki/TolerantReader.html)
 - [ParallelChange — martinfowler.com](https://martinfowler.com/bliki/ParallelChange.html)
+- [JSON Schema, Objects](https://json-schema.org/understanding-json-schema/reference/object)
+- [JSON Schema, Dialect and vocabulary declaration](https://json-schema.org/understanding-json-schema/reference/schema)
+- [Dowon Lee 강사, Event Driven Architecture 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290728)
+- [Dowon Lee 강사, [실습 18] Event Driven Architecture ①](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290750)
+- [Dowon Lee 강사, [실습 19] Event Driven Architecture ②](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=307053)
 
 ## 관련 문서
 

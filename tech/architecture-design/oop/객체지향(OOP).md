@@ -13,6 +13,7 @@ OOP, SOLID 기본부터 우아한 객체지향, 아키텍처 적용까지.
 - [x] [[OOP|OOP / SOLID]]
 - [x] [[Responsibility-Driven-Design|책임 주도 설계와 GRASP]]
 - [x] [[Object-Design-Principles|객체 설계 원칙과 리팩터링]]
+- [x] [[Object-Design-Principles-Change-and-Contracts|변경 사례, 행동 계약과 역할 분리 (액터, 반복 switch와 변경 비용의 징후)]]
 - [x] [[App-Architecture-OOP|애플리케이션 아키텍처와 객체지향]]
 - [x] [[Elegant-OOP-Design|우아한 객체지향]]
 - [x] [[OOP-vs-Procedural-In-Practice|OOP vs 절차지향 실무 (Anemic Domain Model, 역사, 선택 기준)]]

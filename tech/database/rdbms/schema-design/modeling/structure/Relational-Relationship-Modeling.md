@@ -123,6 +123,14 @@ CREATE TABLE order_item (
 5. surrogate PK 뒤에도 필요한 natural/composite unique가 남아 있는가?
 6. 대표 join의 결과 grain과 fan-out을 test했는가?
 
+## 존재 종속과 식별 종속
+
+부모 없이는 의미가 없는 존재 종속과 부모 key가 자식 key의 일부인 식별 종속은 별개다. surrogate PK를 쓰는 주문상세도 주문 없이 존재할 수 없지만 key propagation의 식별 관계는 아니다. weak entity 용어를 쓸 때 ER 모델의 정의와 사용하는 ERD 도구 의미를 명시한다.
+
+## 1:1 분리의 이유
+
+큰 선택 속성의 read 폭 축소, 보안 권한 분리, subtype/기능별 선택 존재와 독립적인 변경/보존 주기가 분리 이유가 될 수 있다. join 비용과 두 row 생성의 원자성, FK+UNIQUE의 보장은 반대 비용이다. 반드시 함께 읽고 삭제하며 권한도 같은 필드는 통합을 비교한다.
+
 ## 출처
 
 - [MySQL 8.4, FOREIGN KEY Constraints](https://dev.mysql.com/doc/refman/8.4/en/create-table-foreign-keys.html)
@@ -133,6 +141,9 @@ CREATE TABLE order_item (
 - M:N: [관계형 한계](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347645), [연결 table](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347646), [관계 속성](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347647), [개념/논리 모델](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347648), [정리](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347649)
 - 식별/비식별 관계: [개념](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347651), [1:N](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347652), [문제점](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347653), [SQL/성능](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347654), [1:1](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347655), [M:N 1](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347656), [M:N 2](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347657), [설계 경향](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347658), [정리](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347659)
 - 논리 모델 실습: [시작](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347661), [ERD](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347662)
+- [인프런, 실전 개념적 모델링 - 시작](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347620)
+- [인프런, 엔티티 분류2](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347611)
+
 
 ## 관련 문서
 

@@ -165,6 +165,7 @@ const isValidWebhookSignature = ({ rawBody, signatureHeader, secret }: VerifySig
 
 - [이름궁합과 Checksum 그리고 해시 — 널널한 개발자 TV](https://www.youtube.com/watch?v=HtETF-NL81A&list=PLXvgR_grOs1CakfdJgCy_Df14U3DqRuPk)
 - [Hash를 알아야 블록체인이 보인다! 첫 번째 — 널널한 개발자 TV](https://www.youtube.com/watch?v=gEvpZrsBL1E&list=PLXvgR_grOs1CakfdJgCy_Df14U3DqRuPk&index=2)
+- [암호학1 - 단방향 암호화 방법 — 생활코딩](https://www.youtube.com/watch?v=qP1H2dwnAVA)
 - [NIST, FIPS 180-4: Secure Hash Standard (SHS)](https://csrc.nist.gov/pubs/fips/180-4/upd1/final)
 - [NIST, SP 800-57 Part 1 Rev. 5: Recommendation for Key Management, Table 3](https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final)
 - [Bitcoin: A Peer-to-Peer Electronic Cash System — Satoshi Nakamoto](https://bitcoin.org/bitcoin.pdf)

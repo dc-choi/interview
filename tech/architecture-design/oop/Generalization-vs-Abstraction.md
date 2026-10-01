@@ -61,6 +61,8 @@ aliases: ["Generalization vs Abstraction", "일반화와 추상화"]
 - [[OOP|객체지향 기본]]
 - [[SOLID-In-Practice|SOLID 실전 적용]]
 - [[Elegant-OOP-Design|우아한 객체지향 설계]]
+- [[Software-Modeling|소프트웨어 모델링과 좋은 모델의 기준]]
+- [[Abstraction-and-Structural-Thinking|추상적 사고와 구조적 사고]]
 
 ## 출처
 

@@ -120,7 +120,28 @@ return { ok: true, value: normalize(found) } as const;
 - lazy pipeline 안에 숨은 effect는 일부 값만 소비될 때 실행되지 않을 수 있다.
 - pure core가 실행 계획을 만들고 imperative shell이 외부 I/O를 수행하게 나누면 테스트가 쉬워진다.
 
+## 항등원, materialization과 조회 비용
+
+원소를 숫자나 문자열로 먼저 map하면 마지막 fold는 같은 type 두 값을 합치는 작은 연산이 된다. 빈 원천을 허용하면 덧셈 0, 문자열 연결 '', 객체 병합 {} 같은 항등원을 초기값으로 둔다. native reduce는 callback에 accumulator, value 외에도 index와 원본 배열을 넘긴다. Object.assign처럼 가변 인자를 받는 함수를 그대로 callback으로 전달하면 의도하지 않은 값까지 병합하므로 wrapper로 두 인자를 명시한다.
+
+문자열 조각은 join(separator)이 원소 사이에만 구분자를 넣어 앞뒤 구분자 분기를 없앤다. query에는 URLSearchParams를 쓰되 undefined/null을 생략할지는 pair를 만들기 전에 정한다. 표준 serializer도 이 값을 문자열로 바꿀 수 있다.
+
+Object.entries는 먼저 모든 pair 배열을 만들고, Object.keys를 쓰는 generator도 key 배열은 만든다. lazy로 아끼는 것은 뒤쪽 value 읽기, pair 생성과 callback 실행이지 모든 원천 allocation이 아니다. getter나 순회 중 mutation이 있으면 eager와 lazy의 관찰 시점도 달라진다.
+
+pick은 요청한 k개 key를 기준으로 순회하면 k번 조회다. 값이 undefined인 own key와 부재를 구분해야 하면 Object.hasOwn을 쓴다. n개 목록을 m번 find하는 대신 index를 한 번 만들면 평균 조회 비용을 줄이지만 O(n) 저장과 갱신 비용이 추가된다. 조회 한 번이면 index가 더 비쌀 수 있다. indexBy의 중복 key 정책과 prototype pollution도 입력 경계에서 정한다.
+
+class method 내부에 pipeline을 쓰거나 class가 Symbol.iterator를 제공하는 것은 객체지향 불변식과 공존한다. 내부 배열 iterator를 그대로 반환하면 원소 참조가 외부로 노출되므로 container와 원소 mutation 정책을 따로 정한다.
+
+## 소비자에서 시작하는 평가
+
+lazy range -> map(+10) -> 홀수 filter -> take(2)는 소비자가 값을 요청할 때 원천으로 거슬러 올라가고, 값은 다시 map/filter를 지나 내려온다. 0부터 9까지 원천에서 결과 [11,13]을 얻으면 0부터 3까지만 읽어 map/filter 각 4회다. eager 배열은 원천 10개를 먼저 만들고 map/filter도 10회 수행한다. 순수하고 종료하는 callback에서만 이 재작성의 결과 동등성을 가정한다.
+
+lazy 연산에 terminal 수집을 붙여 eager 버전을 만들 수 있다. 하지만 take가 배열을 돌려주는 library와 iterator를 돌려주는 표준 Iterator.take는 평가 경계가 다르므로 이름보다 반환 계약을 본다. deep flatten이 모든 iterable을 재귀 전개하면 한 글자 문자열도 자신을 다시 내놓아 끝나지 않는다. 문자열은 먼저 원자값으로 분기하고 깊이/순환 정책을 둔다. flatMap의 필요를 JavaScript 전체가 eager하기 때문이라고 단정하지 않는다.
+
 ## 출처
+
+- 인프런 보충 강의: [이미지 목록 그리기](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20519)
+- 인프런 보충 강의: [지연 평가 + Promise - L.map, map, take](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16625)
 
 - [ECMAScript Language Specification, common iteration interfaces](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-common-iteration-interfaces)
 - [ECMAScript Language Specification, generator function definitions](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-generator-function-definitions)

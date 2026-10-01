@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, innodb, transaction, batch, undo, purge]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "Database - RDBMS"
 aliases: ["MySQL Long Transaction", "MySQL 장기 트랜잭션과 배치"]
 ---
@@ -59,6 +59,15 @@ Batch 크기는 고정된 정답이 없다. 다음 신호를 기준으로 조정
 - 처리량이 낮고 여유가 충분하면 점진적으로 늘린다.
 - deadlock과 transient failure는 같은 checkpoint에서 횟수 제한과 backoff를 두고 재시도한다.
 
+## DB 사양에 맞춘 동시성
+
+DB 서버는 요청 처리 프로그램과 배치가 함께 쓰는 공유 자원이다. 마이크로서비스로 나눠도 같은 DB를 쓰는 경우가 많아 배치가 자원을 과하게 쓰면 OLTP 장애가 된다. 많은 스레드로 짧게 끝내는 배치는 CPU를 순간 포화시켜 중요한 쿼리를 지연시키거나 연결 실패를 만든다. 사용률을 일정 수준에 묶고 길게 나눠 처리하는 쪽을 기본으로 한다.
+
+- 기본 thread-per-connection 모델에서는 한 연결의 문장을 그 연결의 스레드 하나가 실행하므로, CPU를 쓰는 무거운 쿼리 하나가 대략 vCPU 하나를 점유한다. vCPU 4개 인스턴스에서 무거운 쿼리 4개가 동시에 돌면 다른 요청이 쓸 CPU가 거의 남지 않는다는 운영 경험칙이 여기서 나온다. clustered index 병렬 읽기(`innodb_parallel_read_threads`)처럼 한 문장이 여러 스레드를 쓰는 예외도 있다.
+- 클라우드 인스턴스는 vCPU 수와 사용률 여유가 사양마다 다르다. 접속할 DB의 사양을 먼저 확인하고 스레드 한두 개로 시작해 CPU, lock wait, replica lag를 보며 늘린다. 큐에 밀린 비동기 작업을 소진할 때도 같다.
+- 사람이 실행한 배치는 CPU 급증의 흔한 원인이다. 모니터링 없이 돌리면 다른 서비스가 느려지고 원인을 역추적하기 어려우므로 실행 전 예상 부하와 중단 조건을 정한다.
+- 자주 도는 대량 작업이라 속도 조절이 어렵다면 OLTP와 분리한 배치 전용 replica나 엔드포인트를 검토한다. Aurora처럼 저장소를 공유하는 구조에서는 Reader의 긴 조회도 Writer의 purge를 막는다([[MySQL-Undo-Purge-HLL#Aurora 공유 스토리지: Reader의 조회가 Writer의 HLL로 나타난다|Aurora 공유 스토리지]]).
+
 ## 안전한 실행 규칙
 
 1. 검색 조건과 `ORDER BY`를 지원하는 index를 준비한다.
@@ -85,6 +94,8 @@ TypeORM에서는 transaction callback의 manager 또는 하나의 `QueryRunner`�
 - [MySQL 8.4 Reference Manual, InnoDB Multi-Versioning](https://dev.mysql.com/doc/refman/8.4/en/innodb-multi-versioning.html)
 - [MySQL 8.4 Reference Manual, Purge Configuration](https://dev.mysql.com/doc/refman/8.4/en/innodb-purge-configuration.html)
 - [MySQL 8.4 Reference Manual, INFORMATION_SCHEMA INNODB_TRX](https://dev.mysql.com/doc/refman/8.4/en/information-schema-innodb-trx-table.html)
+- [MySQL 8.4 Reference Manual, Thread Pool Operation](https://dev.mysql.com/doc/refman/8.4/en/thread-pool-operation.html)
+- [MySQL 8.4 Reference Manual, Configuring Parallel Threads for Online DDL Operations](https://dev.mysql.com/doc/refman/8.4/en/online-ddl-parallel-thread-configuration.html)
 - [인프런, Real MySQL 시즌 1 - Part 2, DBMS 활용과 배치 처리 주의사항](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226588)
 - [인프런, Hong, Mock 데이터 생성 프로시저 1](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338638)
 - [인프런, Hong, Mock 데이터 생성 프로시저 2](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338639)
@@ -92,6 +103,7 @@ TypeORM에서는 transaction callback의 manager 또는 하나의 `QueryRunner`�
 ## 관련 문서
 
 - [[DML-Conflict-and-Batch-Patterns|MySQL DML 충돌 처리와 배치 패턴]]
+- [[DML-Conflict-and-Batch-Patterns-Update-Delete#저장 프로시저로 반복할 때의 계약|저장 프로시저 chunk 반복의 계약]]
 - [[Transactions|트랜잭션]]
 - [[Lock|DB Lock]]
 - [[MySQL-Partitioning|MySQL Partitioning]]

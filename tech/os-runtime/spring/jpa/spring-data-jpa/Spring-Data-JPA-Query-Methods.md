@@ -47,7 +47,7 @@ Repository method의 `@Query`가 named query보다 우선한다. query가 한 re
 List<Member> findAdults(@Param("age") int age);
 ```
 
-Spring Data 4는 compiler의 `-parameters` flag로 parameter 이름이 보존되면 `@Param`을 생략할 수 있다. refactoring 안정성과 팀 명시성을 위해 named binding을 일관되게 쓰는 것도 유효하다. collection은 `in :ids`로 binding하고 빈 collection이 만드는 SQL은 provider와 dialect에서 test한다.
+Compiler의 `-parameters` flag로 parameter 이름이 보존되면 `@Param`을 생략할 수 있다. Spring Data 4에서 처음 도입된 기능이라는 뜻은 아니다. refactoring 안정성과 팀 명시성을 위해 named binding을 일관되게 쓰는 것도 유효하다. collection은 `in :ids`로 binding하고 빈 collection이 만드는 SQL은 provider와 dialect에서 test한다.
 
 Named query와 JPQL `@Query`는 보통 application bootstrap에서 문법 검증을 받는다. Database function, dialect 차이와 실제 plan까지 검증되는 것은 아니며 native SQL 오류는 실행 시점에 드러날 수 있다.
 
@@ -113,6 +113,14 @@ Hint는 provider별 의미가 다르다. Hibernate read-only hint는 snapshot �
 - bulk 뒤 context를 어떻게 동기화할지 명시한다.
 - hint와 lock은 provider 및 DB 통합 test로 확인한다.
 - 모든 방식에서 index, 실행 계획, 반환 row 수를 측정한다.
+
+### 조회 계약과 수정 계약의 분리
+
+Hibernate read-only entity의 단순 field 변경은 dirty checking으로 UPDATE되지 않을 수 있다. 오류가 없다고 수정이 저장되었다는 뜻은 아니므로 읽기 전용 조회를 쓰기 use case에 재사용하지 않고 실제 flush 뒤 다시 조회해 검증한다. Query hint는 provider 지시이며 SQL optimizer hint와 구분한다.
+
+`@Query`의 DML에는 `@Modifying`을 붙여 수정 실행 경로를 선택한다. 문자열이 UPDATE라는 이유만으로 조회 메서드가 수정 메서드로 바뀌지는 않는다. Bulk 뒤 flush/clear의 순서와 반환 row 수도 확인한다.
+
+EntityGraph는 필요한 attribute의 fetch plan이다. 간단한 연관 조회에는 유용하지만 언제나 JPQL fetch join과 동일한 SQL이 나온다는 보장은 없다. 복잡한 join 조건, cardinality와 pagination은 실제 SQL로 판단한다.
 
 ## 출처
 

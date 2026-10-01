@@ -3,7 +3,7 @@ tags: [cicd, git, log, blame, bisect, tags]
 status: done
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["Git History Debugging", "Git 히스토리 디버깅"]
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 ---
 
 # Git 히스토리 분석과 디버깅
@@ -74,6 +74,8 @@ git bisect reset
 
 테스트가 비결정적이거나 중간 커밋이 빌드되지 않으면 결과도 신뢰하기 어렵다. 해당 커밋을 판정할 수 없을 때는 `git bisect skip`을 쓰되 후보가 여러 개로 남을 수 있다. 시작 전 커밋하지 않은 변경을 보존하고, 마지막 후보는 `show`, 테스트와 관련 문맥으로 다시 검증한다.
 
+판정 횟수는 후보 수의 로그 규모다. 커밋 20개 중 3번째가 정상이고 20번째가 실패라면 최초 실패 후보는 4번부터 20번까지 17개다. 4번부터 하나씩 올라가며 확인하면 최악 16번 판정해야 하지만 bisect는 매번 후보를 절반으로 줄여 5번 안에 끝낸다. 후보가 1,000개면 약 10번, 100만 개여도 약 20번이다. Git은 단계마다 `Bisecting: 675 revisions left to test after this (roughly 10 steps)`처럼 남은 revision 수와 대략적인 단계 수를 보여 준다. 줄어드는 것은 판정 횟수뿐이므로 판정이 결정적이어야 한다는 전제는 그대로다.
+
 ## 태그와 GitHub Release
 
 태그는 특정 객체에 붙인 ref다.
@@ -82,18 +84,29 @@ git bisect reset
 - annotated tag는 태거, 시각, 메시지와 선택적 서명을 담는 별도 tag object다.
 - `v1.2.3` 같은 이름은 관례일 뿐, Git이 Semantic Versioning을 강제하지 않는다.
 - 태그는 브랜치 push에 자동으로 모두 따라가지 않는다. 필요한 태그를 명시적으로 push한다.
+- `-m`이나 `-F`로 메시지를 주면 `-a`, `-s`, `-u`가 없어도 `-a`가 함축되어 annotated tag가 된다. Git 문서는 annotated tag를 release용, lightweight tag를 개인이나 임시 표시용으로 구분하고, `git describe` 같은 명령은 기본으로 lightweight tag를 무시한다.
 
 ```bash
 git tag -a v1.2.3 -m "release v1.2.3"
-git push origin v1.2.3
+git tag -m "hotfix" v1.2.2 <commit>   # 과거 커밋에 annotated tag (-a 함축)
+git tag -l 'v1.*'                     # pattern으로 목록 필터
+git push origin v1.2.3                # tag 하나만 push
+git push --follow-tags                # push하는 커밋에서 도달 가능한 annotated tag만 함께 push
+git tag -d v1.2.3                     # 로컬 tag 삭제
+git push origin --delete v1.2.3       # 원격 tag 삭제
 git show v1.2.3
 ```
 
-GitHub Release는 Git tag를 기반으로 릴리스 노트와 바이너리 자산 등을 붙이는 GitHub의 별도 배포 메타데이터다. tag와 Release를 같은 개념으로 취급하지 않는다.
+- `git push --tags`는 `refs/tags` 아래 전부를 보내므로 로컬의 임시 lightweight tag까지 올라갈 수 있다. release tag만 보내려면 개별 push나 `--follow-tags`(`push.followTags` 설정 가능)를 쓴다.
+- 로컬 `tag -d`는 원격에, 원격 `--delete`는 로컬에 영향을 주지 않으므로 둘을 따로 정리한다.
+- 이미 공유한 tag를 지우거나 옮겨도 다른 사람이 받은 tag는 바뀌지 않는다. Git 문서는 잘못 붙인 공개 tag를 같은 이름으로 다시 붙이기보다 X.1 같은 새 이름을 쓰라고 권한다.
+- `git switch --detach v1.2.3`이나 `git checkout v1.2.3`은 그 커밋으로 가서 detached HEAD가 된다. MAJOR, MINOR, PATCH의 의미와 0.y.z 규칙은 [[Version-Upgrade-Difficulty|버전 업그레이드 난이도]]가 다룬다.
+
+GitHub Release는 Git tag를 기반으로 릴리스 노트와 바이너리 자산 등을 붙이는 GitHub의 별도 배포 메타데이터다. tag와 Release를 같은 개념으로 취급하지 않는다. GitHub는 tag 시점 저장소 내용의 zip과 tarball 링크를 자동으로 붙이고, 사용자가 바로 실행할 파일은 release asset으로 올려 배포한다.
 
 ## 출처
 
-- Git 공식 문서: [git log](https://git-scm.com/docs/git-log), [git diff](https://git-scm.com/docs/git-diff), [git blame](https://git-scm.com/docs/git-blame), [git bisect](https://git-scm.com/docs/git-bisect), [git tag](https://git-scm.com/docs/git-tag)
+- Git 공식 문서: [git log](https://git-scm.com/docs/git-log), [git diff](https://git-scm.com/docs/git-diff), [git blame](https://git-scm.com/docs/git-blame), [git bisect](https://git-scm.com/docs/git-bisect), [git tag](https://git-scm.com/docs/git-tag), [git push](https://git-scm.com/docs/git-push)
 - GitHub 공식 문서: [About releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases)
 - 얄팍한 코딩사전, [log 더 자세히 알아보기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=403305), [차이 살펴보기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=404540), [누가 코딩했는지 알아내기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=404737), [오류가 발생한 시점 찾아내기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=404989)
 - 얄팍한 코딩사전, [커밋에 태그 달기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401090), [원격의 태그와 릴리즈](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401091)

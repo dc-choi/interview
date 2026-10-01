@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, guard, authn, authz, execution-context]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-09-30
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Guard 패턴", "JWT Guard와 RolesGuard"]
 ---
@@ -47,6 +47,40 @@ export class JwtAuthGuard implements CanActivate {
 - 전략은 `PassportStrategy(Strategy)` 믹스인을 상속 — 전략 옵션은 `super()`로 넘기고, Passport의 verify 콜백 자리를 **`validate()` 메서드**가 대신한다. validate의 반환값이 `request.user`로 들어가고, null/false 계열이면 Nest가 거부한다.
 - 라우트 보호와 인증 개시 둘 다 **내장 `AuthGuard('전략명')` 팩토리** — 보호 라우트엔 `AuthGuard('jwt')`, 로그인 라우트엔 `AuthGuard('local')`(가드가 전략을 호출해 자격 검증과 user 부착까지 수행). 에러 처리 커스터마이징은 AuthGuard 상속 + 메서드 오버라이드.
 - **전략은 request-scoped 불가** — passport가 전략을 라이브러리 전역 인스턴스에 등록하는 구조라 요청별 인스턴스화가 성립하지 않는다. 요청 의존 로직이 필요하면 전략(싱글턴) 안에서 `ModuleRef.resolve(..., contextId)`로 request-scoped 프로바이더를 꺼내는 우회를 쓴다.
+
+### 패턴 1-1: JWT를 HttpOnly 쿠키로 운반할 때
+
+Authorization 헤더 대신 HttpOnly 쿠키로 JWT를 주고받으면 발급, 추출, 폐기가 서로 다른 계층에 놓인다.
+
+**발급(로그인)**: 서비스는 자격 증명 검증과 서명을 하고 `{ jwt, user }` 같은 값만 반환한다. 두 책임을 함께 한다면 이름에 드러낸다(`verifyUserAndSignJwt(dto)`). 쿠키 설정은 controller가 맡는다. 서비스가 response 객체를 직접 다루면 단위 테스트가 response를 흉내 내야 하고 결과를 값으로 검증하기 어렵다. controller는 `@Res({ passthrough: true }) res`로 받아 `res.cookie('jwt', jwt, { httpOnly: true, secure: true, sameSite: 'lax' })`를 호출하고 user를 반환한다. passthrough 없이 `@Res()`만 쓰면 Nest의 표준 응답 처리가 꺼진다([[NestJS-Middleware]]). 로그인 POST는 리소스를 만들지 않으므로 `@HttpCode(200)`을 붙이고(POST 기본값은 201), 응답 user의 password는 `@Exclude()`와 `ClassSerializerInterceptor`로 뺀다([[NestJS-Serialization]]). E2E 검증 순서는 [[NestJS-Testing-E2E-and-Scope#쿠키 인증 흐름 E2E|쿠키 인증 흐름 E2E]]에 있다.
+
+**추출(보호 라우트)**:
+
+```ts
+const cookieExtractor = (req: Request): string | null => req?.cookies?.jwt ?? null;
+
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor(config: ConfigService, private readonly users: UsersRepository) {
+    super({
+      jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor, ExtractJwt.fromAuthHeaderAsBearerToken()]),
+      secretOrKey: config.getOrThrow<string>('JWT_SECRET'),
+    });
+  }
+
+  async validate(payload: { sub: string }) {
+    return this.users.findOne(payload.sub); // null이면 Nest가 401로 거부
+  }
+}
+```
+
+- `jwtFromRequest`는 요청에서 토큰 문자열이나 `null`을 돌려주는 함수다. `fromExtractors`는 배열 순서대로 시도해 처음 나온 토큰을 쓴다. 서명 키는 발급 쪽과 같은 소스에서 읽는다([[NestJS-Configuration#process.env 직접 참조가 실패하는 두 가지 이유|설정 평가 시점]]).
+- `req.cookies`는 cookie-parser가 먼저 실행돼야 채워진다. 등록이 빠지면 쿠키가 있어도 추출 결과가 `null`이라 401이 난다.
+- 로그인 사용자만 통과시키는 차단은 Guard(`AuthGuard('jwt')`나 커스텀 Guard)가 맡는다. Interceptor로 차단하는 구현도 보이지만 인증 실패는 Guard 단계에서 끊는 편이 요청 수명주기와 맞는다.
+
+**폐기(로그아웃)**: controller에서 `res.clearCookie('jwt', options)`로 지운다. 브라우저는 option이 `res.cookie()` 때와 같아야 쿠키를 지우므로 path와 domain을 발급 때와 맞춘다(Express 5 문서 기준 `expires`와 `maxAge`는 무시된다). 쿠키 삭제는 브라우저 사본만 지울 뿐 이미 서명된 JWT는 만료 전까지 유효하다. 강제 폐기가 필요하면 [[JWT]]의 `jti` denylist나 token version 정책을 연결한다.
+
+쿠키는 자동 전송되므로 [[CSRF]] 방어와 `Secure`, `SameSite`를 함께 둔다. `SameSite` 값은 프런트엔드가 API와 같은 site인지에 따라 정한다. 프런트엔드가 다른 origin이면 [[CORS]]의 credentials 조건(구체 origin, `Access-Control-Allow-Credentials: true`)이 필요하다.
 
 ## 패턴 2: Role 기반 인가 + Reflector
 
@@ -145,3 +179,9 @@ providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }]
 - [NestJS — Authorization](https://docs.nestjs.com/security/authorization)
 - [NestJS — Rate Limiting](https://docs.nestjs.com/security/rate-limiting)
 - [NestJS — Passport](https://docs.nestjs.com/recipes/passport)
+- [NestJS — Controllers](https://docs.nestjs.com/controllers) (POST 기본 201과 `@HttpCode`, `@Res({ passthrough: true })`)
+- [passport-jwt — README](https://github.com/mikenicholson/passport-jwt) (`jwtFromRequest`, `fromExtractors`, cookie extractor)
+- [Express 5.x API — res.clearCookie](https://expressjs.com/en/5x/api/response/)
+- [인프런, 윤상석, 보일러플레이트 코드 리뷰 및 테스팅 소개](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=95951)
+- [인프런, 윤상석, 보일러플레이트 코드 업데이트 보충](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=96478)
+- [인프런, 윤상석, TDD 소개 및 통합 테스팅](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=95952)

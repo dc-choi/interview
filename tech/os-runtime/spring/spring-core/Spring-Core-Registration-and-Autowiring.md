@@ -55,7 +55,7 @@ optional dependency는 의미를 코드에 드러낸다.
 1. `@Qualifier` 또는 custom qualifier로 의미 있는 후보 집합을 좁힌다.
 2. 일반적인 기본 후보 하나는 `@Primary`로 표시한다.
 3. 일반 후보가 없을 때만 선택될 후보는 Spring 6.2 이후 `@Fallback`을 사용할 수 있다.
-4. 별도 resolution indicator가 없고 여전히 모호하면 injection point의 field/parameter name과 Bean name 일치를 fallback으로 본다.
+4. 별도 resolution indicator가 없고 여전히 모호하면 injection point의 field/parameter name과 Bean name 일치를 fallback으로 본다. Java parameter 이름 매칭은 Spring 6.1부터 `-parameters` 컴파일 옵션을 전제로 하므로 build/IDE 설정을 확인한다.
 
 `@Qualifier("persistent")`는 고유 Bean ID를 직접 가리키는 명령이라기보다 type 후보 안에서 특성을 좁히는 의미다. 문자열 오타와 중복 의미를 줄이려면 `@Qualifier`를 meta-annotation으로 포함한 custom annotation을 만들 수 있다.
 
@@ -99,7 +99,19 @@ const discountPolicies = {
 
 NestJS에는 Spring의 `@Primary`와 같은 일반 후보 우선순위를 기계적으로 찾기보다, 소비자가 요청하는 token 자체로 의미를 정한다. `useExisting`은 다른 token이 같은 instance를 가리키는 alias이고, `exports`는 다른 module에 공개할 token을 제한한다.
 
+## 주입과 직접 생성의 경계
+
+qualifier가 먼저 type 후보를 좁히므로 qualifier에 맞지 않는 `@Primary` Bean은 선택되지 않는다. Bean 이름도 기본 qualifier 값으로 fallback될 수 있지만 이를 의미 있는 qualifier 계약과 혼동하지 않는다.
+
+전략 Map에 외부 입력을 그대로 사용하면 Bean 이름 변경이 API 계약을 바꿀 수 있다. 공개 전략 코드는 별도 registry로 매핑하고 없는 코드의 실패를 명시한다. scan의 기본 Bean 이름은 JavaBeans decapitalization을 따르므로 `URLFoo`처럼 첫 두 글자가 대문자인 이름은 그대로 남을 수 있다.
+
+`new Service()`에 붙은 field `@Autowired`는 Java가 실행하는 동작이 아니다. 일반적인 자동 주입과 proxy는 container의 후처리 경로에서 적용된다. 직접 만든 순수 객체는 constructor에 의존성을 넘기고, `@Bean`으로 반환한 외부 객체는 이후 container의 관리 경로를 거칠 수 있다.
+
+`@Autowired`/`@Value` 처리는 `AutowiredAnnotationBeanPostProcessor`, Jakarta `@Resource`와 lifecycle annotation 처리는 `CommonAnnotationBeanPostProcessor`가 담당한다. annotation을 선언하는 일과 처리기를 등록하는 일을 구분한다.
+
 ## 출처
+
+- [Spring, CommonAnnotationBeanPostProcessor](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/CommonAnnotationBeanPostProcessor.html)
 
 - [Spring Framework, Classpath Scanning and Managed Components](https://docs.spring.io/spring-framework/reference/core/beans/classpath-scanning.html)
 - [Spring Framework, Using `@Autowired`](https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired.html)
@@ -122,6 +134,9 @@ NestJS에는 Spring의 `@Primary`와 같은 일반 후보 우선순위를 기계
 - 김영한 강사, [자동과 수동의 실무 운영 기준](https://www.inflearn.com/courses/lecture?courseId=325969&unitId=55381)
 - 김영한 강사, [Component scan과 자동 의존관계 설정](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49586)
 - 김영한 강사, [Java code로 직접 Spring Bean 등록하기](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49587)
+- 인프런 강사, [의존객체 자동 주입](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13720)
+- 인프런 강사, [의존객체 선택](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13721)
+- 김영한 강사, [AOP 적용](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49601)
 
 ## 관련 문서
 

@@ -3,6 +3,7 @@ tags: [infrastructure, aws, ec2, compute]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["EC2 운영과 수명주기", "User Data, ASG, AMI"]
+verified_at: 2026-09-30
 ---
 
 # AWS EC2 — 운영과 수명주기
@@ -40,6 +41,15 @@ systemctl start docker
 
 2026-09-03 AWS 문서 기준, **Stop/Start는 EBS 루트 볼륨 인스턴스만 가능**하다. Instance Store 루트 인스턴스는 Stop 기능 자체를 지원하지 않아 재부팅하거나 종료해야 한다. Stop된 인스턴스에 연결된 EIP에도 공인 IPv4 주소 요금이 발생한다.
 
+### 콘솔의 종료는 삭제다 — Stop과 Terminate 구분
+
+인스턴스 상태 메뉴의 Terminate(한국어 콘솔의 종료, 영문 콘솔의 `Terminate (delete) instance`)는 인스턴스를 잠시 끄는 것이 아니라 삭제하는 작업이다. 되돌릴 수 없고 다시 연결하거나 시작할 수 없어 같은 AMI로 새 인스턴스를 만들어야 한다. 잠시 끄려면 Stop(중지)을 쓴다. `terminated` 인스턴스는 잠시 목록에 남았다가 사라진다.
+
+- 종료하면 `DeleteOnTermination`이 켜진 EBS 볼륨(보통 루트 볼륨)이 함께 삭제되고 instance store 데이터도 사라진다. 볼륨별 기본값은 [[EBS]] 참고
+- termination protection(`DisableApiTermination`, 기본 꺼짐)을 켜면 콘솔과 `TerminateInstances` API의 종료를 막는다. 다만 OS 안의 shutdown이 종료로 이어지는 설정, Auto Scaling의 scale-in과 비정상 인스턴스 교체, AWS 예약 종료 이벤트는 막지 못하고 Spot 인스턴스에는 켤 수 없다. ASG 인스턴스는 instance scale-in protection으로 따로 보호한다
+- `InstanceInitiatedShutdownBehavior`는 OS에서 `shutdown`, `poweroff`를 실행했을 때 stop과 terminate 중 무엇을 할지 정한다. EBS 기반 인스턴스의 기본값은 stop이고, 콘솔이나 `StopInstances` API로 멈추는 경우에는 적용되지 않는다
+- Stop 후 Start하면 자동 할당된 공인 IPv4가 바뀐다. 고정 주소가 필요하면 [[EC2-Network-Access|Elastic IP]]를 쓴다
+
 ## AMI (Amazon Machine Image)
 
 인스턴스를 시작하는 데 필요한 정보를 담은 **이미지 템플릿**. OS, 애플리케이션, 구성, 권한 정보 포함.
@@ -61,3 +71,7 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 - [AWS 공식 문서, EC2 Auto Scaling health checks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html)
 - [AWS 공식 문서, Amazon EC2 Auto Scaling lifecycle hooks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html)
 - [AWS 공식 문서, Stop and start Amazon EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html)
+- [AWS 공식 문서, Terminate Amazon EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html)
+- [AWS 공식 문서, Change instance termination protection](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_ChangingDisableAPITermination.html)
+- [AWS 공식 문서, Change instance initiated shutdown behavior](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_ChangingInstanceInitiatedShutdownBehavior.html)
+- [인프런, JSCODE 박재성, EC2 접속하기 실습](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=227959)

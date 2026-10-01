@@ -13,6 +13,7 @@ MySQL 8.4의 공개된 동작 계약을 기준으로 InnoDB의 버전, 잠금과
 
 1. [[MySQL-InnoDB-MVCC-and-Undo|MVCC와 Undo]]: 현재 row에서 과거 버전을 복원하고 snapshot에 맞는 값을 고르는 과정
 2. [[MySQL-InnoDB-Locking-and-Deadlocks|Locking과 Deadlock]]: 실행 계획이 잠금 범위를 만들고 wait-for 관계가 생기는 과정
+   - [[MySQL-InnoDB-Locking-and-Deadlocks-Hierarchy|잠금 계층]]: 인스턴스, 테이블, 행 잠금의 관계, intention lock 호환성, metadata lock 대기와 lock escalation 부재
 3. [[MySQL-InnoDB-Redo-and-Crash-Recovery|Redo와 Crash Recovery]]: commit을 내구성 경계까지 보내고 crash 뒤 일관성을 회복하는 과정
 
 ## 문서 경계

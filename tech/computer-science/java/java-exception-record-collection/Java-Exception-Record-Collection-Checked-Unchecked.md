@@ -1,7 +1,7 @@
 ---
 tags: [java, exception, checked-exception, unchecked-exception, spring]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Checked vs Unchecked Exception", "Java 예외 계층"]
 ---
@@ -41,6 +41,36 @@ Throwable
 
 checked는 실패 계약을 드러내지만 호출 계층과 interface 전체에 `throws` 결합을 만들 수 있다. unchecked는 전파를 간결하게 하지만 문서와 공통 처리 경계가 없으면 실패를 숨긴다.
 
+## checked가 interface와 호출 계층으로 번지는 이유
+
+재정의 규칙이 결합을 강제한다. JLS 8.4.8.3에 따라 method를 override하거나 interface의 abstract method를 구현하는 method는 상위 method보다 더 많은 checked exception을 선언할 수 없다. 선언한 checked exception마다 같은 class나 상위 타입이 상위 method의 `throws`에 있어야 하며, 선언을 줄이는 것은 허용된다.
+
+```java
+interface MemberRepository {
+    Member save(Member member);
+}
+
+class JdbcMemberRepository implements MemberRepository {
+    public Member save(Member member) throws SQLException { ... } // compile error
+}
+```
+
+JDK 21.0.3 javac는 이 구현을 `overridden method does not throw SQLException`으로 거부한다. 구현이 `SQLException`을 그대로 던지려면 interface에도 `throws SQLException`을 넣어야 하고, 그 순간 interface가 JDBC에 묶인다. JPA 구현으로 바꾸면 interface와 호출부가 함께 바뀌므로 구현 교체를 위해 interface를 둔 목적이 사라진다. unchecked exception은 선언 없이 전파되므로 interface를 기술 중립으로 유지할 수 있다.
+
+- 계층 전파: repository의 `SQLException`, network client의 `ConnectException`처럼 service와 controller가 복구할 수 없는 기술 예외도 checked이면 상위 method마다 `throws`로 다시 선언해야 한다. 의존하는 library와 외부 system이 늘수록 목록이 쌓이고 상위 계층이 `java.sql` 같은 구체 기술에 의존한다.
+- `throws Exception` 회피: `Exception`으로 한꺼번에 선언하면 compile은 통과하고 기술 이름도 감춰지지만, 반드시 처리해야 할 checked exception이 새로 생겨도 compiler가 알려주지 못한다. checked exception의 존재 이유인 누락 검출을 스스로 끄는 셈이다. 이 선언을 받은 호출자가 `catch (Exception e)`로 대응하면 의도하지 않은 `RuntimeException`까지 잡는다. interface를 `throws Exception`으로 선언해 `SQLException`을 감추는 것도 같은 문제다.
+- 변환 위치: 복구할 수 없는 기술 예외는 발생 경계에서 cause를 보존한 unchecked exception으로 바꾸고, 공통 예외 처리 경계에서 오류 log와 개발자 알림을 남긴 뒤 사용자에게는 일반 오류 응답을 준다. 기술이 바뀌어도 변환 경계와 공통 처리만 수정한다.
+
+## 실무 기본값과 unchecked 문서화
+
+Spring의 `DataAccessException`, Jakarta Persistence의 `PersistenceException`처럼 주요 data access library는 `RuntimeException` 계열을 기본 계약으로 제공한다. 이 흐름에서 자주 쓰는 기본값은 다음과 같다.
+
+- 기본은 unchecked exception이다.
+- checked exception은 호출자가 반드시 잡아 업무적으로 대응해야 하는 좁은 경우에 검토한다. 계좌 이체 실패, 결제 시 point 부족, login 정보 불일치처럼 의도적으로 던지는 업무 예외가 후보이며, 이 경우에도 unchecked와 문서화가 더 나을 수 있다.
+- 위의 선택 기준 표와 복구 가능성을 checked로 동일시하지 않는 원칙은 그대로 적용한다.
+
+unchecked exception은 compiler가 강제하지 않으므로 계약을 문서로 드러낸다. Oracle의 doc comment 작성 가이드는 호출자가 잡을 만한 unchecked exception을 Javadoc `@throws`로 적고 `throws` 절에는 넣지 않는 것을 관례로 둔다. compiler는 `throws` 절의 unchecked exception을 허용하되 검사하지 않는다. 실제 API도 갈린다. Jakarta Persistence `EntityManager.persist`는 signature에 `throws` 없이 Javadoc에만 예외를 적고, Spring `JdbcTemplate.update`는 signature에 `throws DataAccessException`을 선언한다. 팀 convention으로 하나를 정한다.
+
 ## Spring과 예외 변환
 
 Spring은 `DataAccessException`처럼 기술별 checked exception을 unchecked 추상화로 변환하는 패턴을 많이 사용한다. 이를 모든 checked exception을 무조건 unchecked로 바꾸라는 규칙으로 확대하지 않는다.
@@ -65,12 +95,28 @@ try {
 - broad catch가 `Error`와 취소 신호까지 숨길 수 있는 문제
 - unchecked 변환이 적절한 추상화 경계
 - cause를 보존해야 하는 이유
+- interface 구현 method가 새 checked exception을 선언할 수 없는 이유와 그 결과로 생기는 기술 종속
+- `throws Exception`이 compiler의 누락 검출을 무력화하는 이유
 
 ## 출처
 
 - [JLS 11, Exceptions](https://docs.oracle.com/javase/specs/jls/se26/html/jls-11.html)
+- [JLS 8.4.8.3, Requirements in Overriding and Hiding](https://docs.oracle.com/javase/specs/jls/se26/html/jls-8.html#jls-8.4.8.3)
 - [Throwable, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html)
 - [Spring Framework, DataAccessException](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/dao/DataAccessException.html)
+- [Spring Framework, JdbcTemplate](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html)
+- [Jakarta Persistence 3.2, EntityManager](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/entitymanager)
+- [Jakarta Persistence 3.2, PersistenceException](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/persistenceexception)
+- [Oracle, How to Write Doc Comments for the Javadoc Tool](https://www.oracle.com/technical-resources/articles/java/javadoc-tool.html)
+- [인프런, 스프링 DB 1편, 체크 예외 기본 이해](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110101)
+- [인프런, 스프링 DB 1편, 체크 예외 활용](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110103)
+- [인프런, 스프링 DB 1편, 언체크 예외 활용](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110104)
+- [인프런, 스프링 DB 1편, 정리](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110106)
+- [인프런, 스프링 DB 1편, 체크 예외와 인터페이스](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110107)
+- [인프런, 김영한의 실전 자바 중급 1편, 자바 예외 처리3 - 체크 예외](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212282)
+- [인프런, 김영한의 실전 자바 중급 1편, 자바 예외 처리4 - 언체크 예외](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212283)
+- [인프런, 김영한의 실전 자바 중급 1편, 실무 예외 처리 방안1 - 설명](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212292)
+- [인프런, 김영한의 실전 자바 중급 1편, 정리](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212295)
 
 ## 관련 문서
 

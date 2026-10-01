@@ -3,7 +3,7 @@ tags: [cicd, git, reset, reflog, recovery]
 status: done
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["Git Reset Reflog", "Git 복구", "force-with-lease"]
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 ---
 
 # Git Reset과 복구 — reset, revert, reflog, force-with-lease, range-diff
@@ -52,6 +52,21 @@ revert:  A---B---C---C역방향   (C를 되돌리는 새 커밋 추가 — 히�
 
 - **push 전 로컬 정리는 reset**, **이미 공유된 커밋을 되돌릴 때는 revert**
 - 공유 브랜치의 히스토리 재작성에 합의와 보존 절차가 필요한 이유는 [[Git-Merge-Strategies|Git 통합 방식]]과 같은 맥락이다.
+
+### 오래된 커밋 revert의 충돌
+
+revert는 대상 커밋이 도입한 patch의 역방향을 현재 트리에 적용해 새 커밋으로 기록한다. 작업 트리가 깨끗해야 시작하고, 편집기에 `Revert "<원 커밋 제목>"`과 `This reverts commit <해시>.` 형태의 자동 메시지가 열리며 저장하면 커밋이 생긴다. Git 문서는 원 커밋을 되돌리는 이유를 메시지에 적으라고 강하게 권한다. GUI 도구의 되돌리기(Reverse commit) 메뉴도 같은 revert 커밋을 만든다.
+
+오래된 커밋일수록, 그 뒤 커밋이 같은 파일과 영역을 건드렸을수록 역방향 patch가 현재 트리와 충돌하기 쉽다. 예를 들어 어떤 커밋이 추가한 파일을 이후 커밋이 수정했다면, 그 커밋을 revert할 때 git은 파일을 지워야 하지만 현재 내용이 그 커밋이 만든 내용과 달라 판단하지 못하고 멈춘다.
+
+```bash
+git rm <파일>            # 삭제가 의도라면 삭제와 스테이징을 한 번에
+# 다른 결과가 필요하면 파일을 고친 뒤 git add <파일>
+git revert --continue    # revert 커밋 완성
+git revert --abort       # 시작 전 상태로 되돌리기
+```
+
+`--skip`은 현재 커밋을 건너뛰고 나머지 순서를 계속하며, `--quit`은 진행 상태만 지운다. 충돌을 해결해 만든 revert 커밋은 결과 트리를 테스트로 다시 검증한다. 충돌 해결의 공통 절차는 [[Git-Mental-Model#충돌이 났을 때의 처리 절차|Git 멘탈 모델]]을 따른다.
 
 ## reflog — 포인터 이동 일지 = 내장 백업
 
@@ -116,7 +131,8 @@ git range-diff origin/main origin/feature feature
 - [git-push 공식 문서 — --force-with-lease와 fetch 상호작용 경고](https://git-scm.com/docs/git-push)
 - [git-range-diff 공식 문서 — base rev1 rev2 형식](https://git-scm.com/docs/git-range-diff)
 - [git-fsck 공식 문서 — --lost-found](https://git-scm.com/docs/git-fsck)
-- 얄팍한 코딩사전, [과거로 돌아가는 세 가지 방법](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401003), [나머지 두 방법들](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401004), [reset 했어도 희망은 있다](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401084)
+- [git-revert 공식 문서 — sequencer 명령(--continue, --skip, --quit, --abort)과 메시지 권고](https://git-scm.com/docs/git-revert)
+- 얄팍한 코딩사전, [과거로 돌아가는 세 가지 방법](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401003), [나머지 두 방법들](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401004), [reset 했어도 희망은 있다](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401084), [GUI 및 AI로 진행히보기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401005)
 
 ## 관련 문서
 

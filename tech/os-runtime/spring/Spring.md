@@ -22,7 +22,7 @@ container 사용 자체가 좋은 설계를 보장하지는 않는다. dependenc
 - [[Spring-Data-Access|Spring 데이터 접근 (선택 전략, JdbcTemplate, MyBatis, JPA, Querydsl, transaction)]]
 - [[Spring-MVC|Spring MVC 웹 계층 (디스패치와 요청 생명주기, 바인딩과 검증, 서버 렌더링, 횡단 관심사와 오류 처리)]]
 - [[Spring-Boot|Spring Boot 구성과 운영 (자동 구성과 starter, 외부 설정과 profile, 내장 서버와 JAR, Actuator와 metric)]]
-- [[Java-Spring-Stack-Migration|Java와 Spring 스택 마이그레이션 (JDK, Boot/Framework, Jakarta/Jackson 호환 그래프, 동작 검증, Native Image와 AI 분리)]]
+- [[Java-Spring-Stack-Migration|Java와 Spring 스택 마이그레이션 (JDK, Boot/Framework, Jakarta/Jackson 호환 그래프, null 계약 build 게이트, 레거시 MVC XML 설정 해석, 동작 검증, Native Image와 AI 분리)]]
 - [[JPA|JPA와 Jakarta Persistence (생태계, 영속성 컨텍스트, 매핑, 로딩, 값 타입, JPQL, Spring Data JPA)]]
 - [[Spring-Authorization-Server|Spring Authorization Server (OAuth2 인가 서버, RegisteredClient, 필터 체인 분리, JWKS, consent)]]
 - [[Spring-Security|Spring Security (FilterChain, 인증 Context, Session, CSRF와 인가)]]

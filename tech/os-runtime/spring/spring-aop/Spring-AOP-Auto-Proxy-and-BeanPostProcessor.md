@@ -67,12 +67,22 @@ class TraceAspect {
 - 같은 target에 proxy가 중첩되면 여러 AOP 설정 source가 unified creator로 합쳐지는지 확인한다.
 - infrastructure Bean까지 잡는 broad package Pointcut을 피한다.
 
+### 반환 객체와 Aspect 등록
+
+BeanPostProcessor가 원본 대신 proxy를 반환하면 그 객체가 노출된 Bean이 된다. 이름이 같아도 노출 type이 달라져 구체 구현 type의 주입이 실패할 수 있다. `@PostConstruct` 처리도 관련 후처리기의 초기화 전 callback 경로에서 이뤄진다.
+
+`@Aspect`만으로 component scan에 등록되지는 않는다. `@Component`, `@Bean` 또는 `@Import` 등으로 Bean을 등록하고 AOP auto-proxy 활성화를 확인한다. Boot의 기본 AOP auto-configuration은 AspectJ가 classpath에 있으면 proxy 지원을 켜며 `spring.aop.auto` 같은 설정도 실제 환경에서 확인한다.
+
 ## 출처
+
+- [Spring Boot, Aspect-Oriented Programming](https://docs.spring.io/spring-boot/reference/features/aop.html)
 
 - [Spring Framework 7.0, Container Extension Points](https://docs.spring.io/spring-framework/reference/core/beans/factory-extension.html)
 - [Spring Framework, Auto-proxying](https://docs.spring.io/spring-framework/reference/core/aop-api/autoproxy.html)
 - BeanPostProcessor: [소개](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94483), [예제 1](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94484), [예제 2](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94485), [적용](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94486), [정리 1](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94487), [Spring 지원 1](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94488), [Spring 지원 2](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94489), [한 proxy와 여러 Advisor](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94490), [정리 2](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94491)
 - `@Aspect`: [적용](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94493), [내부 변환](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94494), [정리](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94495)
+- 김영한 강사, [프로젝트 생성](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94503)
+- 김영한 강사, [스프링 AOP 구현1 - 시작](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94505)
 
 ## 관련 문서
 

@@ -125,6 +125,20 @@ I/O 요청과 interrupt는 스케줄러 진입점이 될 수 있지만 실제 co
 | 멀티프로세서 | CPU가 여러 개 있는 것 |
 | 멀티프로세싱 | 여러 CPU가 작업을 처리하는 것 |
 
+### 평균 대기 시간 계산과 슬라이스 선택
+
+모든 작업이 0초에 준비되고 문맥 전환 비용은 0이라고 가정한다. 비선점 대기 시간은 시작 시각이며, 선점되는 작업은 준비 큐에서 다시 기다린 시간도 더한다.
+
+| 작업과 순서 | 각 작업 대기 시간 | 평균 |
+|---|---|---|
+| FIFO, 실행 시간 25, 5, 4초 | 0, 25, 30초 | 55/3 = 약 18.33초 |
+| SJF, 실행 시간 4, 5, 25초 | 0, 4, 9초 | 13/3 = 약 4.33초 |
+| RR, 실행 시간 25, 4, 10초, 슬라이스 10초 | 14, 10, 14초 | 38/3 = 약 12.67초 |
+
+RR 예의 완료 시각은 39, 14, 24초이며 `대기 시간 = 완료 시각 - 도착 시각 - CPU 실행 시간`으로도 확인된다. 같은 작업의 FIFO 평균은 18초다. RR이 모든 부하에서 평균 대기 시간을 줄인다는 뜻은 아니다.
+
+CPU를 오래 쓰는 작업 뒤에서 I/O 작업이 기다리면 장치가 유휴 상태로 남을 수 있다. 짧은 슬라이스는 I/O 작업이 다음 I/O를 빨리 시작하게 하지만 선점 비용을 늘린다. MLFQ는 관찰한 CPU 사용 특성에 따라 우선순위와 슬라이스를 조정해 이 상충을 다룬다. 타임 슬라이스 만료가 같은 작업의 실제 문맥 전환을 반드시 뜻하지는 않는다.
+
 ## 관련 문서
 - [[Process-Lifecycle|프로세스 생명주기]]
 - [[Concurrency-and-Process|동시성과 프로세스]]
@@ -132,6 +146,8 @@ I/O 요청과 interrupt는 스케줄러 진입점이 될 수 있지만 실제 co
 - [[Sleep-and-Timing|Sleep과 타이밍 (대기 후 준비 큐 복귀와 스케줄링 지연)]]
 
 ## 출처
+
+- [OSTEP, Scheduling: Introduction](https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf)
 
 - 인프런, 감자 강사, [컨텍스트 스위칭](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100763), [CPU스케줄링 개요](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100767), [다중큐](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100768), [스케줄링 목표](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100769)
 - 인프런, 감자 강사, [FIFO](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100770), [SJF](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100771), [RR](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100772), [MLFQ](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100773)

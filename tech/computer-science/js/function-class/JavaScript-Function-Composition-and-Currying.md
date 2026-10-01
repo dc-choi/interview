@@ -87,7 +87,18 @@ JavaScript library의 `curry`가 두 번째 호출에 나머지 인자 여러 �
 
 함수 합성이 잘 맞는 영역은 parsing, validation, normalization, collection transform과 순수한 pricing policy다. transaction, retry, cancellation과 권한처럼 제어 흐름이 핵심인 영역은 pipeline에 숨기지 말고 명시적인 application workflow로 둔다.
 
+## 정책을 먼저, 데이터를 나중에
+
+부분 적용용 helper는 `map(f, iterable)`, `take(limit, iterable)`처럼 정책을 먼저 받고 data를 마지막에 두면 `map(price)`가 다음 data를 기다리는 단계가 된다. pipe의 첫 함수는 여러 인자를 받을 수 있고 이후 함수는 앞 결과 하나를 받는다. 강의의 두 번 호출하는 curry helper를 임의 arity, default/rest까지 지원하는 표준 연산으로 간주하지 않는다.
+
+confirm/alert가 버튼 수, label와 결과값만 다르면 버튼 사양을 인자로 받고 부분 적용해 변형을 만든다. 상태, 수명이나 실패 처리가 달라지면 전략 객체와 명시적인 workflow를 비교한다. 숫자 합계는 projection과 초기값 0을, 문자열 조각은 join('')을 써 재사용 단위와 type을 명확히 한다. 배열을 template expression에 넣으면 원소 사이 쉼표가 자동 삽입된다.
+
+Array map은 async callback의 Promise를 그대로 모아 Promise[]를 만들고 배열 자체에 await해도 원소는 풀리지 않는다. `await Promise.all(items.map(f))` 또는 bounded scheduler를 쓴다. async predicate를 filter에 주면 Promise가 truthy라 모두 남으며, async reduce도 accumulator의 Promise를 callback이 직접 처리해야 한다. callback을 async로 선언하는 것만으로 소비자가 비동기 계약을 갖지는 않는다.
+
 ## 출처
+
+- 인프런 보충 강의: [커스텀 confirm 창과 Promise](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20522), [클래스를 대신 함수로 하는 추상화](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20523)
+- 인프런 보충 강의: [reduce](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16581), [(QnA) Array.prototype.map이 있는데 왜 FxJS의 map 함수가 필요한지?](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16637)
 
 - [ECMAScript Language Specification, function definitions](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-function-definitions)
 - [ECMAScript Language Specification, Array.prototype.map](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.map)
@@ -97,6 +108,7 @@ JavaScript library의 `curry`가 두 번째 호출에 나머지 인자 여러 �
 
 ## 관련 문서
 
+- [[Functional-Data-Structures|함수형 자료구조 (불변 리스트 조작 함수의 합성)]]
 - [[JS-Function-Forms|JavaScript 함수 형태와 일급 함수]]
 - [[JavaScript-Iterable-Functional-Pipelines|JavaScript 이터러블 함수형 파이프라인]]
 - [[JavaScript-Async-Iterable-Pipelines|JavaScript 비동기 이터러블 파이프라인]]

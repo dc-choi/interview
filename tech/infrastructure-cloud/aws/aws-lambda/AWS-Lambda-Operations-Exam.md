@@ -3,7 +3,7 @@ tags: [aws, lambda, serverless, faas, cold-start, provisioned-concurrency]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Lambda 실무 패턴", "Lambda 비용과 면접 체크포인트"]
-verified_at: 2026-07-21
+verified_at: 2026-09-30
 ---
 
 # Lambda 실무 — EC2 비교, 패턴, 비용, 흔한 실수, 체크포인트
@@ -43,6 +43,16 @@ verified_at: 2026-07-21
 - **실시간 스트림 처리** — Kinesis → Lambda → DynamoDB/S3
 - **IoT 백엔드** — IoT Core 메시지 → Lambda 라우팅
 - **CloudWatch Alarm 자동화** — 알람 → Lambda → Slack, PagerDuty
+
+## 버전과 Alias — 불변 배포 단위, 환경 분리, 롤백
+
+- **`$LATEST`**: 코드와 설정을 고칠 수 있는 유일한 미발행 버전이다. 코드를 배포할 때마다 덮어쓰며, qualifier 없는 함수 ARN으로 호출하면 `$LATEST`가 실행된다
+- **발행 버전**: `publish-version`은 `$LATEST`를 복사해 코드, 런타임, 아키텍처, 메모리, layer 등 대부분의 설정을 고정한 스냅샷을 만든다. 번호는 1부터 늘고 함수를 지웠다 다시 만들어도 재사용되지 않으며 ARN 끝에 `:1`처럼 붙는다. `$LATEST`가 직전 발행 버전과 같으면 새 버전이 생기지 않는다. 발행 뒤에도 트리거, Destinations, Provisioned Concurrency, 비동기 호출 설정은 바꿀 수 있다
+- **Alias**: 한 버전을 가리키는 이름 포인터이며 자기 ARN(`function:my-fn:Prod`)을 가진다. 다른 alias는 가리킬 수 없다. Prod alias는 검증된 버전, Staging alias는 새 버전을 가리키게 두면 환경을 나눌 수 있고, 문제가 생기면 alias를 이전 발행 버전으로 되돌려 새 배포 없이 롤백한다
+- **호출 경로는 alias ARN으로**: 이벤트 소스 매핑, API Gateway stage variable, S3 같은 트리거를 alias ARN으로 연결하면 버전을 바꿀 때 매핑을 고칠 필요가 없다. 리소스 기반 정책의 호출 권한도 qualifier별로 걸리므로 alias에 권한을 줬다면 unqualified ARN이나 그 alias가 가리키는 버전 ARN으로 직접 호출해도 권한 오류가 난다
+- **Weighted alias**: 두 발행 버전 사이에 트래픽을 나눠 canary를 한다. 최대 2개 버전이고 둘 다 같은 실행 역할과 같은 DLQ 설정을 가져야 하며 `$LATEST`는 쓸 수 없다. 분배가 확률적이라 트래픽이 적으면 실제 비율이 설정과 크게 다를 수 있다. 실행된 버전은 로그의 `START ... Version`, 지표의 `ExecutedVersion` 차원, 동기 응답의 `x-amz-executed-version` 헤더로 확인한다
+- SAM의 `AutoPublishAlias`와 `DeploymentPreference`는 새 버전을 발행하고 CodeDeploy로 alias 가중치를 canary, linear 방식으로 옮기며 실패하면 되돌린다. CodeDeploy 쪽 구성은 [[CICD-Tool-Selection-AWS-Code-Services|AWS Code 시리즈 운영]]
+- Provisioned Concurrency는 발행 버전이나 alias에 걸리므로 실제 트래픽이 들어오는 qualifier와 일치시킨다([[AWS-Lambda-Invocation-Concurrency|동시성 제어]])
 
 ## RDB와 Lambda의 궁합 문제
 
@@ -84,6 +94,7 @@ verified_at: 2026-07-21
 - **VPC Lambda** — VPC 연결 자체에 NAT Gateway가 필요한 것은 아니다. 인터넷 송신이나 public endpoint 접근 경로가 필요할 때 NAT, VPC endpoint 등 요구에 맞는 경로를 설계하고 Hyperplane ENI 모델 이해
 - **Lambda@Edge vs CloudFront Functions** 차이
 - **Layer**로 의존성 분리하는 이유 (패키지 크기, 재사용)
+- **`$LATEST`, 발행 버전, Alias** 차이와 alias 재지정 롤백, weighted alias canary의 제약(발행 버전 2개, 같은 실행 역할과 DLQ)
 - 메모리를 늘리면 비용이 줄어들 수 있는 이유(CPU 비례)
 - 서버리스가 어울리지 않는 워크로드 유형
 
@@ -93,6 +104,10 @@ verified_at: 2026-07-21
 - [Lambda scaling behavior](https://docs.aws.amazon.com/lambda/latest/dg/scaling-behavior.html)
 - [Lambda execution environment lifecycle](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)
 - [Lambda VPC 인터넷 액세스](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc-internet.html)
+- [Lambda function versions](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html)
+- [Lambda aliases in event sources and permissions policies](https://docs.aws.amazon.com/lambda/latest/dg/using-aliases.html)
+- [Lambda canary deployments using a weighted alias](https://docs.aws.amazon.com/lambda/latest/dg/configuring-alias-routing.html)
 - [Lambda 요금](https://aws.amazon.com/lambda/pricing/)
 - [EC2 On-Demand 요금](https://aws.amazon.com/ec2/pricing/on-demand/)
 - [Sungmin Kim 강사 — Lambda란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=52051) — 입문 구조 참고. 강의의 5분 제한은 현재 15분으로 변경됨
+- [Sungmin Kim 강사 — Lambda - Version Control](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=69323)

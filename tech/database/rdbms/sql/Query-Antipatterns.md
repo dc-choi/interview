@@ -87,7 +87,7 @@ WHERE created_at >= '2026-08-04 00:00:00'
 Index가 존재해도 predicate가 usable range를 만들지 못하거나 많은 row를 반환하면 optimizer가 table scan을 고를 수 있다.
 
 - `LIKE 'prefix%'`는 B-tree range 후보지만 `LIKE '%suffix'`는 일반적인 선두 범위를 만들지 못한다.
-- 숫자와 문자열의 암묵 변환은 변환 방향에 따라 indexed column lookup을 방해하거나 비교 의미를 바꿀 수 있다. 입력과 column 타입을 맞춘다.
+- 숫자와 문자열의 암묵 변환은 변환 방향에 따라 indexed column lookup을 방해하거나 비교 의미를 바꿀 수 있다. 입력과 column 타입을 맞춘다. MySQL의 변환 방향별 결과는 [[MySQL-Query-Fundamentals-Functions#문자열과 숫자의 암묵 변환|문자열과 숫자의 암묵 변환]]에 있다.
 - `<>`, `NOT IN`, 넓은 범위 조건도 index range 후보가 될 수 있지만 selectivity가 낮으면 scan이 더 쌀 수 있다.
 - `OR`가 있다는 이유만으로 scan을 단정할 수 없다. MySQL은 단일 range, Index Merge 또는 scan을 비용으로 비교한다.
 
@@ -122,6 +122,18 @@ MySQL은 view, derived table, CTE를 항상 같은 방식으로 실행하지 않
 4. `DISTINCT`, 임시 테이블, materialization이 필요한 이유를 설명한다.
 5. 의미를 고친 뒤 인덱스와 통계를 조정한다.
 
+## OR IS NULL도 같은 결과가 아니다
+
+오른쪽 조건을 WHERE에서 `p.status = :status OR p.id IS NULL`로 바꿔도 다른 status의 실제 row만 매칭된 부모는 제거된다. ON에 status를 넣으면 그 부모는 NULL 보완 행으로 남는다. 오른쪽 filter는 매칭 자격이면 ON 또는 미리 filtering한 입력에 두고, 최종 제외 조건이면 WHERE에 둔다.
+
+## 후속 join과 COUNT
+
+LEFT JOIN 뒤에 optional row를 참조하는 INNER JOIN을 붙이면 앞에서 보존한 NULL 행이 다시 사라질 수 있다. 보존할 경로 전체를 함께 설계한다. `COUNT(*)`는 NULL 보완 행도 세고 `COUNT(right.id)`는 실제 매칭을 센다. 여러 자식의 fan-out은 두 집계 모두 증폭할 수 있다.
+
+## 한 statement와 책임 경계
+
+한 statement는 왕복과 조회 시점 차이를 줄일 수 있지만 모든 business logic을 거대한 query에 넣는 근거는 아니다. 입력과 중간 결과의 grain을 유지하고 DB가 잘하는 filter/join/aggregation을 맡긴다. 결과 shape, 계획과 변경 책임을 설명하기 어려우면 CTE/집계 단계 또는 command 경계를 나눈다.
+
 ## 출처
 
 - [MySQL 8.4 Reference Manual, Functional Key Parts](https://dev.mysql.com/doc/refman/8.4/en/create-index.html#create-index-functional-key-parts)
@@ -139,6 +151,13 @@ MySQL은 view, derived table, CTE를 항상 같은 방식으로 실행하지 않
 - [인프런, Hong, 뷰 중첩](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367631)
 - [인프런, Real MySQL 시즌 1 - Part 1, LEFT JOIN 주의사항 및 튜닝](https://www.inflearn.com/courses/lecture?courseId=333931&unitId=226570)
 - [인프런, Real MySQL 시즌 1 - Part 2, 풀스캔 쿼리 패턴과 튜닝](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226576)
+- [인프런, Case 문](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30133)
+- [인프런, Nested Loop Join, Matched Function](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=368008)
+- [인프런, 문제와 풀이 (CASE 문)](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328778)
+- [인프런, 문제와 풀이 (서브쿼리)](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328764)
+- [인프런, 문제와 풀이1 (조인2 - 외부 조인과 기타 조인)](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328751)
+- [인프런, 서브 쿼리](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30132)
+
 
 ## 관련 문서
 

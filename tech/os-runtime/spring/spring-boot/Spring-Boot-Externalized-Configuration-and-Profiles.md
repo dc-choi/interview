@@ -79,7 +79,7 @@ client:
     base-url: https://api.example
 ```
 
-- YAML은 표준 `---`로 document를 나눈다. 과거 properties 예제의 구분 문법을 YAML과 섞지 않는다.
+- YAML은 `---`, properties는 `#---` 또는 `!---`로 논리 document를 나눈다. properties 구분자는 들여쓰기 없이 정확히 하이픈 3개를 쓰고 바로 앞뒤 줄의 comment prefix가 구분자와 같으면 안 된다. `@PropertySource`/`@TestPropertySource`로는 이 multi-document 기능을 사용할 수 없다.
 - `application-{profile}.yaml` 파일 분리와 한 파일의 multi-document 방식 중 팀 운영에 맞는 하나를 선택한다.
 - `spring.profiles.active`를 profile-specific document 안에서 다시 설정하지 않는다.
 - `@Profile`은 값을 바꾸는 기능이 아니라 특정 Bean/configuration 등록 조건이다.
@@ -103,6 +103,16 @@ Profile을 `dev`, `prod`라는 거대한 mode switch로 남용하면 조합 테�
 5. type conversion, constructor binding과 validation error를 확인한다.
 6. 긴급 command line override를 영구 운영 설정으로 방치하지 않는다.
 
+## 입력과 병합에서 확인할 조건
+
+- `java -Dclient.mode=dev -jar app.jar --client.mode=prod`에서 `-D`는 JVM option이고 `--`는 Boot option이다. JAR 뒤의 `-D`는 일반 application argument가 된다. 반복 option은 `ApplicationArguments`에서 값 목록으로 읽히므로 단일 값 입력과 구분한다.
+- 실행 시점 값이 packaged 기본값을 덮는다는 설명은 유용한 출발점이다. `SPRING_APPLICATION_JSON`, test override 등 예외가 있으므로 최종 순서는 source 목록으로 확인한다. OS environment 역시 process마다 다르게 상속할 수 있다.
+- 외부 설정의 기본 탐색 기준은 JAR 위치보다 process의 working directory다. 외부 파일은 재build 없이 바꿀 수 있지만 변경 이력을 따로 관리해야 한다.
+- multi-document는 위에서 아래로 읽고 활성 문서의 같은 key만 덮는다. profile 없는 기본 문서를 마지막에 두면 앞 profile 값을 덮을 수 있다. 한 파일의 문서 순서와 여러 profile 파일의 active-profile 순서를 구분한다.
+- 같은 위치에 properties와 YAML이 함께 있으면 properties가 우선한다. profile 미지정은 `default` profile이며 test 실행이 자동으로 `test` profile을 활성화하지 않는다.
+- test resource의 같은 이름 파일이 main resource를 가릴 수 있다. main 기본값을 유지하려면 profile 파일과 `@ActiveProfiles`, test property override를 선택하고 실제 source를 확인한다.
+- immutable 설정은 constructor/record binding과 `@DefaultValue`를 사용할 수 있다. 검증에는 validation 구현체, `@Validated`, 중첩 객체의 `@Valid`가 필요하다. `@DurationMin`은 Jakarta 표준이 아닌 Hibernate Validator 제약이다.
+
 ## 출처
 
 - [Spring Boot 4.1, Externalized Configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html)
@@ -113,6 +123,11 @@ Profile을 `dev`, `prod`라는 거대한 mode switch로 남용하면 조합 테�
 - 설정 source: [project](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148111), [외부 설정](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148112), [OS environment](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148113), [JVM property](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148114), [argument](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148115), [option argument](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148116), [Boot option](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148117), [Spring 통합](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148118)
 - config data: [외부 file](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148119), [내부 file 분리](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148120), [multi-document](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148121), [config data 우선순위](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148122), [전체 우선순위](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148123), [정리](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148124)
 - binding/profile: [project](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148126), [`Environment`](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148127), [`@Value`](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148128), [`@ConfigurationProperties`](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148129), [constructor binding](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148130), [validation](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148131), [YAML](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148132), [`@Profile`](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148133), [정리](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148134)
+- 김영한 강사, [프로젝트 구조 설명2 - 설정](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114618)
+- 김영한 강사, [정리](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114621)
+- 김영한 강사, [JdbcTemplate 적용3 - 구성과 실행](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114626)
+- 김영한 강사, [테스트 - 데이터베이스 연동](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114634)
+- 김영한 강사, [MyBatis 설정](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114643)
 
 ## 관련 문서
 

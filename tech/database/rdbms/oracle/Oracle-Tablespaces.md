@@ -82,12 +82,19 @@ Free space 한 시점만 보지 말고 성장률, autoextend 상한, reclaim 가
 - 삭제 전에 대상 container, 소유 segment, foreign dependency, backup과 복구 절차를 확인한다.
 - 운영 변경은 예측 용량, 실행 시간, lock/availability 영향과 rollback 대체 절차를 migration에 남긴다.
 
+## 할당 공간과 확장 가능 공간
+
+`DBA_FREE_SPACE`는 현재 datafile 안의 free extent를 보여 주며 autoextend 여유는 포함하지 않는다. `DBA_DATA_FILES`의 BYTES, AUTOEXTENSIBLE, MAXBYTES와 실제 filesystem/ASM 여유를 함께 읽는다. 현재 free 비율뿐 아니라 한도 대비 사용량과 성장 속도를 경보 기준으로 삼는다.
+
 ## 출처
 
 - [Oracle AI Database 26ai, Managing Tablespaces](https://docs.oracle.com/en/database/oracle/oracle-database/26/admin/managing-tablespaces.html)
 - [Oracle AI Database 26ai, Managing Data Files and Temp Files](https://docs.oracle.com/en/database/oracle/oracle-database/26/admin/managing-data-files-and-temp-files.html)
 - [Oracle AI Database 26ai, Tablespaces in a PDB](https://docs.oracle.com/en/database/oracle/oracle-database/26/dbiad/db_tablespaces.html)
 - 강의: [Tablespace 이해](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5059), [Tablespace 관리](https://www.inflearn.com/courses/lecture?courseId=36175&unitId=5060)
+- [Oracle AI Database 26ai, DBA_DATA_FILES](https://docs.oracle.com/en/database/oracle/oracle-database/26/refrn/DBA_DATA_FILES.html)
+- [Oracle AI Database 26ai, DBA_FREE_SPACE](https://docs.oracle.com/en/database/oracle/oracle-database/26/refrn/DBA_FREE_SPACE.html)
+
 
 ## 관련 문서
 

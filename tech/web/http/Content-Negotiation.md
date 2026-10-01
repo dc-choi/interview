@@ -1,7 +1,7 @@
 ---
 tags: [web, http, content-negotiation, cache]
 status: done
-verified_at: 2026-08-31
+verified_at: 2026-10-01
 category: "Web - HTTP"
 aliases: ["Content Negotiation", "콘텐츠 협상", "HTTP 콘텐츠 협상"]
 ---
@@ -40,7 +40,14 @@ Accept-Language: ko-KR, ko;q=0.9, en;q=0.5
 3. `q=0`인 후보를 빼고 q 값, 구체성, 서버 우선순위 순으로 정렬한다.
 4. 가장 높은 후보를 고르고 실제 응답의 `Content-Type`, `Content-Language`, `Content-Encoding`을 기록한다.
 
-구체성은 `text/html`이 `text/*`보다, `text/*`가 `*/*`보다 높다. q 값과 구체성이 같을 때의 서버 우선순위를 정해 두지 않으면 구현이나 배포마다 응답이 달라질 수 있다.
+구체성은 매개변수까지 적은 미디어 타입, 맨 미디어 타입, `type/*`, `*/*` 순으로 높다. RFC 9110 예시에서 `Accept: text/*, text/plain, text/plain;format=flowed, */*`의 우선순위는 `text/plain;format=flowed`, `text/plain`, `text/*`, `*/*`다. 한 표현에 여러 범위가 걸리면 가장 구체적으로 일치하는 범위의 q 값을 쓰고, 매개변수가 붙은 범위는 그 매개변수까지 일치하는 표현에만 적용된다.
+
+```http
+Accept: text/*;q=0.3, text/plain;q=0.7, text/plain;format=flowed,
+        text/plain;format=fixed;q=0.4, */*;q=0.5
+```
+
+이 요청에서 `text/plain;format=flowed` 표현은 1, 매개변수 없는 `text/plain`은 0.7, `text/plain;format=fixed`는 0.4, `text/html`은 0.3, `image/jpeg`는 0.5다. RFC 9110 표 5의 `text/html;level=3` 값 0.7은 verified erratum 7138로 0.3으로 정정됐으므로 원문 표를 옮길 때 주의한다. q 값과 구체성이 같을 때의 서버 우선순위를 정해 두지 않으면 구현이나 배포마다 응답이 달라질 수 있다.
 
 ## Vary가 캐시 계약이다
 
@@ -77,8 +84,10 @@ Vary: Accept-Encoding, Accept-Language
 ## 출처
 
 - [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
+- [RFC Editor, RFC 9110 Errata 7138 (Accept 예시 표 5 정정)](https://www.rfc-editor.org/errata/eid7138)
 - [RFC 9111, HTTP Caching](https://www.rfc-editor.org/rfc/rfc9111.html)
 - [MDN, Content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Content_negotiation)
+- [인프런, 김영한, 콘텐츠 협상](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61377)
 
 ## 관련 문서
 

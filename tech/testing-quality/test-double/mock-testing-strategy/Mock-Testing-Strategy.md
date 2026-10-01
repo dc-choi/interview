@@ -12,7 +12,7 @@ aliases: ["Mock Testing Strategy", "Mock 테스트 설계 전략", "Black Box �
 ## 목차
 
 - [[Mock-Testing-Strategy-Evolution|Mock 전략의 진화와 선택]]
-- [[Mock-Testing-Strategy-Isolation|Black Box 격리와 설계 피드백]]
+- [[Mock-Testing-Strategy-Isolation|Black Box 격리, 설계 피드백과 레거시 대체 지점]]
 
 ## 상위 문서
 

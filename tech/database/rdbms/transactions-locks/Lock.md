@@ -138,7 +138,7 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 | Lock | 설명 |
 |------|------|
 | **Table Lock / Metadata Lock** | `LOCK TABLES`의 table lock과 object 정의를 보호하는 MDL은 별개다. `ALTER TABLE`은 기존 transaction의 MDL과 충돌할 수 있음 |
-| **Intention Lock** | 테이블에 거는 S/X 의향 표시 (IS, IX). Row lock 전에 자동 획득. 테이블 lock과의 호환성 확인용 |
+| **Intention Lock** | 테이블에 거는 S/X 의향 표시 (IS, IX). Row lock 전에 자동 획득. 테이블 lock과의 호환성 확인용 ([[MySQL-InnoDB-Locking-and-Deadlocks-Hierarchy#Intention lock과 다중 세분화 잠금\|intention lock 호환성 표]]) |
 | **Auto-Inc Lock** | AUTO_INCREMENT 값 생성 시 사용하는 특수 테이블 lock |
 
 ## MVCC와 Lock의 관계
@@ -152,6 +152,18 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 ## 데드락
 
 발생 원인(ABBA, S → X 업그레이드), InnoDB의 감지와 자동 복구, 완화 전략과 락의 이유를 없애는 설계는 [[Lock-Deadlock|DB 데드락]]으로 분리했다.
+
+## Retry와 Named Lock의 경계
+
+Retry loop는 실패한 transaction 밖에서 매 시도 새 transaction을 열고 최신 상태로 다시 계산한다. Named Lock을 함께 쓰면 lock 획득과 해제를 같은 physical connection에 고정하고 business commit/rollback 완료 뒤 finally에서 해제한다. 획득 timeout은 보유 lease가 아니다. outer lock connection과 inner transaction이 다른 connection이면 pool 고갈과 외부 rollback 경계도 검증한다.
+
+## JOIN locking 대상
+
+MySQL `FOR UPDATE OF c SKIP LOCKED`는 alias c의 row를 대상으로 한다. OF를 생략하면 같은 query block의 다른 table도 잠글 수 있어 쿠폰 claim의 공통 event row를 모두 기다리거나 건너뛸 수 있다. alias를 썼으면 OF에도 alias를 쓰고 실제 lock을 관찰한다. SKIP LOCKED의 빈 결과는 자원 소진과 현재 잠금 상태를 구분하지 못하며 gap/metadata 대기를 없애는 계약도 아니다.
+
+## 전략 선택을 보정하는 축
+
+한 statement의 조건부 UPDATE로 불변식을 표현하는 방법을 먼저 비교한다. 읽은 상태로 계산해야 하면 충돌 빈도 외에도 조회 뒤 실제 수정 확률, 잠금 보유 시간과 재계산/병합 비용을 본다. 짧고 잘 튜닝된 transaction은 저경합에서 비관적 잠금도 단순할 수 있다. ORM optimistic 계약이어도 실제 UPDATE는 DB의 쓰기 lock을 사용한다.
 
 ## 출처
 - [RFC 9110, If-Match](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.1) — 변경 전제조건과 lost update 방지
@@ -172,6 +184,9 @@ InnoDB의 row lock은 **인덱스 레코드**에 건다. 적절한 인덱스가 
 - [MySQL 8.4 Reference Manual — Metadata Locking](https://dev.mysql.com/doc/refman/8.4/en/metadata-locking.html)
 - [Row Lock은 언제 걸리고 언제 풀릴까: 동시성 문제를 해결하며 파고든 MySQL MVCC와 Lock — velog](https://velog.io/@joona95/Row-Lock%EC%9D%80-%EC%96%B8%EC%A0%9C-%EA%B1%B8%EB%A6%AC%EA%B3%A0-%EC%96%B8%EC%A0%9C-%ED%92%80%EB%A6%B4%EA%B9%8C-%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C%EB%A5%BC-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A9%B0-%ED%8C%8C%EA%B3%A0%EB%93%A0-MySQL-MVCC%EC%99%80-Lock)
 - [DB Lock으로 동시성을 해결하려다 Deadlock을 만난 이야기 — velog](https://velog.io/@joona95/DB-Lock%EC%9C%BC%EB%A1%9C-%EB%8F%99%EC%8B%9C%EC%84%B1%EC%9D%84-%ED%95%B4%EA%B2%B0%ED%95%98%EB%A0%A4%EB%8B%A4-Deadlock%EC%9D%84-%EB%A7%8C%EB%82%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0)
+- [MySQL 8.4 Reference Manual, select](https://dev.mysql.com/doc/refman/8.4/en/select.html)
+- [인프런, 다양한 방법 알아보기](https://www.inflearn.com/courses/lecture?courseId=328995&unitId=114978)
+
 
 ## 관련 문서
 - [[Lock-Deadlock|DB 데드락]]

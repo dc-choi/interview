@@ -18,6 +18,21 @@ aliases: ["Throughput vs Latency", "처리량과 지연시간"]
 
 처리량은 시작한 작업 수보다 **완료한 작업 수**로 측정해야 한다. 큐에 넣은 건수를 완료 처리량으로 세면 backlog 증가를 성능 향상으로 오해하게 된다.
 
+### 응답 시간, 서비스 시간과 대기
+
+latency가 가리키는 범위는 문헌마다 달라 먼저 용어를 고정한다.
+
+| 용어 | 뜻 |
+|------|------|
+| 응답 시간 | 클라이언트가 요청을 보낸 뒤 응답을 받을 때까지의 전체 시간 |
+| 서비스 시간 | 서버가 그 요청을 실제로 처리한 시간 |
+| 대기 | 처리 차례를 기다린 시간. 요청 전체로 보면 요청 큐, 스레드 풀과 커넥션 풀 대기가 여기에 든다 |
+| 네트워크 지연 | 요청과 응답이 네트워크를 오가는 시간 |
+
+`응답 시간 = 네트워크 지연 + 대기 + 서비스 시간`이다. Google SRE book은 request latency를 요청에 응답을 돌려주기까지 걸린 시간으로 정의해 응답 시간과 같은 뜻으로 쓰고, DDIA(1판)는 클라이언트가 보는 전체 시간을 response time, 처리를 기다리며 잠복한 시간을 latency로 나눈다. 이 문서의 Latency는 SRE 용법대로 응답 시간을 뜻한다. 이렇게 나누면 knee point 이후 늘어나는 것이 주로 대기라는 점이 정의에서 드러나며, 경합이 심해지면 서비스 시간도 함께 늘어난다.
+
+서비스 시간과 대기의 경계는 어느 자원을 측정하느냐에 따라 달라진다. 요청 전체로 보면 커넥션 풀 대기는 대기지만, 스레드 풀 입장에서는 스레드가 커넥션 획득(`getConnection()`)에서 막혀 있는 동안에도 점유돼 있으므로 커넥션 획득 대기와 downstream 블로킹이 서비스 시간에 들고, 스레드 풀 자체의 큐 대기만 대기다. [[Thread-Pool-Sizing|스레드 풀 사이징]]의 작업당 서비스 시간과 블로킹 대기 비율은 이 스레드 풀 관점의 값이다.
+
 ## 서로 독립적으로 보이는 구간
 
 - 단일 요청을 짧게 처리해도 한 번에 하나만 실행하면 latency는 낮고 throughput은 낮을 수 있다.
@@ -86,7 +101,11 @@ L = λW
 - [[Load-Test-K6|부하 테스트]]
 - [[Backpressure|배압]]
 - [[CPU-Bound-Vs-IO-Bound|CPU Bound와 I/O Bound]]
+- [[Thread-Pool-Sizing|스레드 풀 사이징]]
 
 ## 출처
 
 - [처리량 vs 지연시간 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=63_ApTsEHhU)
+- [Service Level Objectives — Site Reliability Engineering, Google](https://sre.google/sre-book/service-level-objectives/)
+- [Designing Data-Intensive Applications — O'Reilly, Martin Kleppmann](https://dataintensive.net/)
+- [인프런, 성장랜턴, 성능](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=277934)

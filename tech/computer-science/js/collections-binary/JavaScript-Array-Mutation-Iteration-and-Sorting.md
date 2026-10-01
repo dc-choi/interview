@@ -93,7 +93,21 @@ Array(3).fill(0).map((_, i) => i);      // [0, 1, 2]
 - comparator에 DB collation과 다른 locale 규칙을 넣으면 pagination/order가 흔들릴 수 있다. 정렬 책임을 DB/API 중 한곳에 둔다.
 - 대량 결과를 Array로 전부 materialize하기보다 iterator/stream과 backpressure가 필요한지 확인한다.
 
+## 초기값, 결측값과 index 경계
+
+촘촘한 n개 배열에서 reduce 초기값이 없으면 첫 원소가 accumulator가 되고 index 1부터 n-1회 callback을 부른다. 초기값이 있으면 index 0부터 n회다. hole은 건너뛰므로 희소 배열의 호출 수는 length와 다르다. 원소가 하나면 초기값 없는 reduce는 callback 없이 그 원소를 반환하고, 원소 type과 결과 type이 다르면 초기값을 반드시 준다. reduceRight는 반대쪽의 첫 존재 원소를 시작값으로 삼는다.
+
+sort는 undefined를 사용자 comparator에 넘기지 않고 일반 값 뒤, hole 앞에 배치한다. comparator로 undefined를 앞으로 보낼 수 없으므로 결측 위치가 중요하면 명시적 sentinel로 변환하거나 분리한다. `[101,26,7,1234].sort()`는 `[101,1234,26,7]`이고 숫자 오름차순/내림차순은 각각 `(a,b)=>a-b`, `(a,b)=>b-a`다. reverse는 현재 순서만 뒤집는다.
+
+Array의 indexOf/includes에 음수 시작 위치를 주면 length를 더하고 0 아래는 0으로 보정한다. lastIndexOf는 보정한 위치부터 뒤로 찾으며 기본 위치는 length-1이다. String 검색의 음수 position은 0으로 보정되어 끝 기준이 아니다. Array/String slice는 음수에 length를 더하지만 시작이 끝 이상이면 빈 결과를 낸다. indexOf는 strict equality, includes는 SameValueZero라는 차이도 유지한다.
+
+깊은 위치 기반 배열은 차원의 의미가 숨는다. 구조가 데이터 계약이라면 `{ rows: [{ name, values }] }`처럼 이름을 붙이거나 차원별 변환 함수를 분리한다. 2차원을 보편적인 한도로 강제하지 않고 domain의 shape와 가독성으로 결정한다.
+
 ## 출처
+
+- [ECMAScript, CompareArrayElements](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-comparearrayelements)
+
+- [ECMAScript, reduce](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.reduce)
 
 - [ECMAScript Language Specification, Array objects](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array-objects)
 - [ECMAScript Language Specification, Object type](https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-object-type), [ArraySetLength](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-arraysetlength), [Array exotic objects](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-array-exotic-objects), [Array.prototype.concat](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.concat), [IsConcatSpreadable](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-isconcatspreadable)

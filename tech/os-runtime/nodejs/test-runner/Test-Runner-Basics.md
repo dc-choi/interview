@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["Test Runner Basics", "테스트 러너 기본"]
 ---
@@ -47,6 +47,8 @@ describe('Array', () => {
   });
 });
 ```
+
+`node:assert/strict`에서는 `equal`, `deepEqual` 같은 비엄격 메서드도 `strictEqual`, `deepStrictEqual`처럼 동작한다. `strictEqual`은 `Object.is()`로 비교하므로 `1`과 `'1'`을 다르게 본다.
 
 ### test() (TAP 스타일)
 ```js
@@ -118,6 +120,20 @@ describe('Database', () => {
 });
 ```
 
+### skip, todo, only
+```js
+import { test } from 'node:test';
+
+test('결제 재시도', { skip: '외부 PG 샌드박스 점검 중' }, () => {});  // 실행하지 않고 사유만 보고
+test('부분 환불', { todo: true }, () => { /* 실행되지만 실패해도 실패로 세지 않는다 */ });
+test('주문 생성', { only: true }, () => {});                        // --test-only일 때 이 테스트만 실행
+```
+
+- `skip`과 `todo`는 옵션 외에 `test.skip()`, `test.todo()`, 테스트 안의 `t.skip()`, `t.todo()`로도 쓴다. `t.skip()`은 뒤 코드를 멈추지 않으므로 바로 `return`한다. 둘을 함께 주면 `todo`는 무시된다.
+- TODO 테스트는 실행되지만 실패해도 프로세스 종료 코드에 영향을 주지 않는다. 실제 회귀를 todo로 덮으면 CI가 통과하므로, 알려진 실패는 실패해야 통과하는 `expectFailure`(v25.5.0, v24.14.0)로 표시해 고쳐졌을 때 드러나게 한다.
+- `only`는 `--test-only`로 시작했거나 테스트 격리를 끈(`--test-isolation=none`) 경우에만 나머지를 건너뛴다. 기본 `node --test`는 `'only' and 'runOnly' require the --test-only command-line option.` 진단만 남기고 전부 실행하고, 파일을 `node a.test.mjs`로 직접 실행하면 `only`가 적용됐다(Node.js 26.7 확인). 하위 테스트만 고르려면 조상 테스트에도 `only`를 붙이거나 `t.runOnly(true)`를 쓴다.
+- `--test-only`나 격리 해제 상태에서는 남겨 둔 `only`가 다른 테스트를 조용히 건너뛰게 한다. Node.js에는 `only`를 금지하는 CLI 플래그가 없으므로 lint나 CI 검색으로 commit 전에 걸러낸다.
+
 ### UI 테스팅 (JSDOM)
 ```
 JSDOM 인스턴스는 1개만 유지하고, @testing-library/react 등과 함께 사용.
@@ -131,11 +147,33 @@ globalThis.document = dom.window.document;
 globalThis.window = dom.window;
 ```
 
+## 외부 테스트 프레임워크와 선택 기준
+
+| 도구 | 구성 | 맞는 조건 |
+|---|---|---|
+| `node:test` | 러너, `node:assert`, mock, 스냅샷, 커버리지 내장 | 외부 의존성 없이 라이브러리나 작은 서비스를 테스트할 때 |
+| Mocha | 러너 중심. assertion은 Chai 같은 원하는 라이브러리와 조합 | 기존 Mocha 자산이 있거나 구성을 직접 고를 때 |
+| Jest | 러너, `expect`, mock, 스냅샷을 한 패키지로 제공 | mock과 스냅샷 생태계가 필요한 CommonJS 중심 프로젝트. ESM 지원은 실험 단계라 `--experimental-vm-modules`가 필요하다(Jest 30.5 문서) |
+| Vitest | Jest 호환 `expect`, mock, 스냅샷과 ESM, TypeScript, JSX 기본 지원. 개발 환경에서는 watch 모드로 시작 | ESM과 TypeScript 우선 프로젝트, Vite 설정을 공유하는 프로젝트 |
+
+이 표는 각 도구의 공식 문서가 밝힌 기능을 비교한 제안이다. 현재 NestJS 문서는 새로 생성한 프로젝트가 Vitest를 기본으로 쓴다고 안내하므로(2026-09-30 확인), 프로젝트 템플릿이나 기존 CI가 정한 도구가 있으면 그 계약을 우선한다.
+
 ## 출처
 
 - [Node.js, Running tests from the command line](https://nodejs.org/api/test.html#running-tests-from-the-command-line)
 - [Node.js, Test context subtests](https://nodejs.org/api/test.html#contexttestname-options-fn)
 - [Node.js, Snapshot testing](https://nodejs.org/api/test.html#snapshot-testing)
+- [Node.js, Skipping tests](https://nodejs.org/api/test.html#skipping-tests)
+- [Node.js, TODO tests](https://nodejs.org/api/test.html#todo-tests)
+- [Node.js, Expecting tests to fail](https://nodejs.org/api/test.html#expecting-tests-to-fail)
+- [Node.js, only tests](https://nodejs.org/api/test.html#only-tests)
+- [Node.js, Command-line API, --test-only](https://nodejs.org/api/cli.html#--test-only)
+- [Node.js, Assert, Strict assertion mode](https://nodejs.org/api/assert.html#strict-assertion-mode)
+- [Mocha, Assertions](https://mochajs.org/features/assertions/)
+- [Jest, ECMAScript Modules](https://jestjs.io/docs/ecmascript-modules)
+- [Vitest, Features](https://vitest.dev/guide/features)
+- [NestJS, Testing](https://docs.nestjs.com/fundamentals/testing)
+- [인프런, 얄팍한 코딩사전, 테스팅과 린팅](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=278032)
 
 ## 관련 문서
 - [[Test-Runner-Mocking|테스트 러너 모킹/커버리지]]

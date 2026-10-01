@@ -82,6 +82,8 @@ AI가 코드의 상당 부분을 작성하면 개발자의 통제 지점은 코�
 ### 모호한 지시
 - ❌ "이 기능 구현해줘"
 - ✅ 입력 형식 + 출력 형식 + 엣지 케이스 + 실패 시 동작을 명시
+- 한국어 문장은 주어와 목적어를 자주 생략한다. 사람은 맥락으로 채우지만 에이전트는 대상을 추측해 엉뚱한 파일이나 범위에 손댈 수 있으므로 누가 무엇을 어디에 하는지 쓴다. 맥락을 모르는 동료가 읽어도 헷갈리지 않을지가 Anthropic 프롬프트 가이드의 판정 기준이다
+- 순서가 중요한 작업은 나열하지 말고 번호 붙은 단계로 쓴다. 읽기, 분석, 산출물 생성처럼 앞 단계 결과가 다음 단계 입력이 되는 인과 순서를 드러내고, 산출물 형식과 저장 위치까지 적는다
 
 ### 무차별 대량 컨텍스트
 - 관련 파일을 몽땅 주는 건 역효과
@@ -133,6 +135,9 @@ AI가 코드의 상당 부분을 작성하면 개발자의 통제 지점은 코�
 - [Lost in the Middle: How Language Models Use Long Contexts — Liu et al.](https://arxiv.org/abs/2307.03172)
 - [뉴스 Hada — AI 에이전트를 위한 좋은 스펙 작성 방법](https://news.hada.io/topic?id=25949)
 - [AI와 개발하기: 숨은 결정을 드러내기 — NHN Cloud Meetup](https://meetup.nhncloud.com/posts/419)
+- [Anthropic Platform Docs, Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)
+- [인프런, 널널한 개발자, 대화를 넘어! 행동하는 Cowork](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498593)
+- [인프런, 널널한 개발자, 하네스, 루프 엔지니어링](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498601)
 
 ## 관련 문서
 - [[Software-3-0|Software 3.0]]

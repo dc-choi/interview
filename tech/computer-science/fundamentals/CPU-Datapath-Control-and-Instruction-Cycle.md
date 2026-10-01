@@ -124,7 +124,27 @@ PC  <- PC + instruction_length
 - 어셈블리 소스 한 줄과 기계 명령이 항상 1대1이 아닌 이유를 설명할 수 있는가
 - 예외와 인터럽트의 동기/비동기 차이를 설명할 수 있는가
 
+## 저장 프로그램과 누산기 예시
+
+명령어와 data를 같은 memory에 두면 bit 자체가 아니라 읽는 경로가 의미를 정한다. 교육용 8 bit ISA는 opcode 4 bit와 operand 4 bit를 사용하고 A를 암묵적 입력/결과로 삼는 누산기 구조다. LOADA는 RAM[operand], LOADI는 operand 자체를 읽는다. 후자는 메모리 읽기가 없지만 즉값 범위가 0~15다. ADD가 memory 피연산자를 직접 받으므로 고정 길이가 있다는 사실만으로 전형적인 load/store RISC라고 분류하지 않는다.
+
+예를 들어 RAM[15]=1, RAM[14]=2이고 주소 0~3에 1F,2E,E0,F0을 두면 LOADA 15, ADD 14, OUT, HLT로 출력 register에 3을 저장한다. operand 한 bit 오타도 다른 유효 주소를 읽는 조용한 오류가 될 수 있다. 코드 뒤 data까지 PC가 진행하지 않도록 종료와 branch를 확인한다.
+
+제어 신호와 반복 프로그램의 구체 추적은 [[CPU-Datapath-Control-and-Instruction-Cycle-Programs|교육용 CPU 제어와 프로그램]]에서 다룬다.
+
+## 처리량과 실행 자원의 경계
+
+k단계, n개 명령, 각 단계 동일 시간과 해저드 없음 가정에서 순차는 nk, pipeline은 k+n-1단계다. 5단계 명령 2개는 10 대 6단계지만 개별 명령 지연은 여전히 5단계다. 단일 bus CPU에는 같은 단계의 bus/memory 충돌이 있으므로 이 공식대로 overlap하려면 경로와 단계 register를 재설계해야 한다. 실행 시간은 명령 수 × CPI × clock 주기로 보며 RISC 한 명령이 늘 1 clock이라는 설명은 피한다.
+
+외부 interrupt는 비동기 사건, 내부 interrupt라고 부르는 오류는 동기 exception에 대응한다. 처리 후 재개 여부와 mask 가능성은 사건과 ISA에 따라 다르고 overflow가 자동 interrupt가 되는 것은 아니다.
+
+물리 core는 실행 hardware, hardware thread는 SMT로 유지하는 별도 architectural 상태, OS thread는 kernel이 스케줄하는 실행 흐름이다. SMT 형제는 실행 유닛과 cache를 공유해 두 배의 core 처리량을 보장하지 않는다. L1i/L1d/L2/L3의 공유 범위도 제품별 topology다. 런타임의 가용 CPU 수와 cloud vCPU를 물리 core 개수로 단정하지 않고 workload와 quota에서 측정한다.
+
 ## 출처
+
+- 인프런 보충 강의: [컴퓨터 조립하기](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=280426), [수동으로 계산하기](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=280427), [명령어 실행 - NOP, LOADA](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281067), [명령어 실행 - SUB](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281070), [명령어 실행 - STOREA](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281071), [명령어 실행 - LOADI](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281072), [명령어 실행 - JMP, JMPC, JMPZ](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281073), [명령어 실행 - OUT, HLT](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281074), [컴퓨터의 역사](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=276729), [메모리](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=276828), [오버플로우와 인터럽트](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277637), [출력 레지스터](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281075), [어셈블리 언어 프로그래밍 - 곱하기](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281079), [어셈블리 언어 프로그래밍 - 나누기](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281080)
+- 인프런 보충 강의: [다나와에 가보세요.](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128236), [컴퓨터의 구성요소와 아바타](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128254)
+- 인프런 보충 강의: [컴퓨터의 정체성을 결정하는 CPU(Machine)](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476535), [메모리 계층(Register, Cache, RAM, SSD)](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476537), [CPU의 연산흐름과 맥락](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476536)
 
 - 인프런, 널널한 개발자 강사, [컴퓨터가 연산하는 과정](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128248)
 - 인프런, 감자 강사, [중앙 처리 장치](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=276752), [명령어](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=280428), [프로그램 카운터](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=280866)

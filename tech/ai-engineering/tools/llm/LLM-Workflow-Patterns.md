@@ -123,6 +123,7 @@ Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. �
 - [OpenAI, Build skills](https://learn.chatgpt.com/docs/build-skills)
 
 ## 관련 문서
+- [[Agent-From-Scratch|에이전트 직접 만들기 (도구 호출 루프 구현)]]
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]] — 에이전트 위임의 신뢰 설계, 운영 루프
 - [[MCP|MCP]] — 모델-도구 연결 표준 (Function Calling의 연결 레이어)
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]] — 리트리벌, 구조화 조회, 근거 추적

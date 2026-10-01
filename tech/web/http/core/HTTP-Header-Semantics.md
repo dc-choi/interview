@@ -1,7 +1,7 @@
 ---
 tags: [web, http, header, content-negotiation, authentication]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "Web - HTTP"
 aliases: ["HTTP Header Semantics", "HTTP 헤더 의미"]
 ---
@@ -9,6 +9,16 @@ aliases: ["HTTP Header Semantics", "HTTP 헤더 의미"]
 # HTTP 헤더 의미와 콘텐츠 협상
 
 HTTP Field는 메시지의 조건, 표현 메타데이터, 라우팅과 제어 정보를 이름과 값으로 전달한다. 과거의 General, Request, Response, Entity 분류를 현재 표준의 고정 분류처럼 외우기보다 각 필드가 어떤 메시지와 의미에 적용되는지 정의를 확인한다.
+
+오래된 자료의 본문 용어는 다음처럼 옮겨 읽는다.
+
+| 규격 | 본문을 이루는 것 | 본문 해석 정보 |
+|---|---|---|
+| RFC 2616(1999) | entity-body | entity-header |
+| RFC 7230~7235(2014) | 표현 데이터를 실은 payload body | 표현 메타데이터(표현 헤더) |
+| RFC 9110(2022) | content | representation metadata |
+
+RFC 7230~7235는 entity 대신 표현(representation)으로 설명하고, 이를 대체한 RFC 9110은 payload와 payload body를 content로 바꿨다. field 이름과 맞추고 HTTP/2, HTTP/3의 frame payload와 혼동을 피하려는 것이다. REST의 R도 이 표현이다. 회원 같은 추상적인 리소스를 주고받을 때는 HTML, JSON 같은 표현으로 바꾼다. `Content-Length`처럼 표현 메타데이터이면서 HTTP/1.1 framing에도 관여하는 필드가 있어 분류는 문맥으로 읽는다([[HTTP-Content-Type|표현 메타데이터]]).
 
 ## 표현과 전송을 구분한다
 
@@ -38,7 +48,10 @@ HTTP Field는 메시지의 조건, 표현 메타데이터, 라우팅과 제어 �
 
 ## 라우팅과 응답 제어
 
-- `Host`와 HTTP/2, HTTP/3의 `:authority`는 대상 origin을 식별한다.
+- `Host`와 HTTP/2, HTTP/3의 `:authority`는 대상 URI의 host와 port를 전달해 대상 origin을 식별한다. IP 패킷에는 목적지 IP만 있으므로, 한 IP와 포트에 여러 도메인을 두는 가상 호스팅에서 서버와 리버스 프록시는 이 값으로 애플리케이션을 고른다. 그래서 HTTP/1.1 클라이언트는 모든 요청에 `Host`를 보내야 하고, 서버는 `Host`가 없거나 둘 이상이거나 값이 유효하지 않은 HTTP/1.1 요청에 400으로 응답해야 한다.
+  - 프록시가 업스트림에 원래 `Host`를 넘기지 않으면 업스트림의 가상 호스트 라우팅이 깨진다([[Reverse-Proxy|리버스 프록시 흔한 실수]]).
+  - HTTPS에서는 TLS 핸드셰이크의 SNI로 인증서를 고르고, 요청의 `Host`나 `:authority`로 애플리케이션을 고른다.
+  - `Host`는 클라이언트가 보낸 값이라 공유 캐시 오염이나 의도하지 않은 서버로의 전달에 악용될 수 있다. 절대 URL 생성, 라우팅과 캐시 키에 쓰기 전에 허용 목록으로 검증한다.
 - `Location`은 201에서 생성된 Resource, 3xx에서 이동할 URI를 가리킬 수 있다.
 - `Allow`는 Resource가 현재 지원하는 Method 목록이며 405 응답에는 반드시 생성한다.
 - `Retry-After`는 503의 재시도 대기나 3xx의 redirect 최소 지연을 날짜 또는 초로 제안할 수 있다.
@@ -59,6 +72,7 @@ WWW-Authenticate: Bearer realm="api"
 ## 출처
 
 - 김영한 강사, [HTTP 헤더 개요](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61374)
+- 김영한 강사, [표현](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61375)
 - 김영한 강사, [콘텐츠 협상](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61377)
 - 김영한 강사, [전송 방식](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61378)
 - 김영한 강사, [일반 정보](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61379)
@@ -68,6 +82,9 @@ WWW-Authenticate: Bearer realm="api"
 - [RFC 9112, HTTP/1.1](https://www.rfc-editor.org/rfc/rfc9112.html)
 - [RFC 9113, HTTP/2](https://httpwg.org/specs/rfc9113.html)
 - [RFC 9114, HTTP/3](https://www.rfc-editor.org/rfc/rfc9114.html)
+- [RFC 2616, HTTP/1.1 (Entity)](https://www.rfc-editor.org/rfc/rfc2616.html#section-7)
+- [RFC 7231, HTTP/1.1 Semantics and Content (Representations)](https://www.rfc-editor.org/rfc/rfc7231.html#section-3)
+- [RFC 6066, TLS Extensions (Server Name Indication)](https://www.rfc-editor.org/rfc/rfc6066.html#section-3)
 
 ## 관련 문서
 

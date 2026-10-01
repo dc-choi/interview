@@ -1,7 +1,7 @@
 ---
 tags: [web, network, rest, api, http]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["REST", "RESTful", "REST API"]
 ---
@@ -82,6 +82,21 @@ REST의 핵심 차별점. 네 가지 하위 제약:
 - 복수형, kebab-case, trailing slash와 Version 위치는 표준 정답이 아니라 호환성과 운영을 고려한 API convention이다.
 - DB Table을 그대로 노출하기보다 Client에게 안정적인 도메인 Resource와 관계를 제공한다.
 
+### 리소스 유형 어휘
+
+URI는 리소스만 식별하고 행위는 Method로 분리한다. REST API Design Rulebook이 정리한 리소스 원형 네 가지는 이 원칙 위에서 URI를 누가 관리하고 절차를 어떻게 표현할지 말하는 설계 어휘다.
+
+| 유형 | 의미 | 예 | 등록 흐름 |
+|---|---|---|---|
+| 문서(document) | 단일 개념의 리소스 | `/members/{id}`, `/files/{name}` | 컬렉션이나 스토어의 개별 항목 |
+| 컬렉션(collection) | 서버가 관리하는 리소스 디렉터리 | `/members` | `POST /members` 뒤 서버가 URI를 정해 `201 Created`와 `Location: /members/100`으로 알린다 |
+| 스토어(store) | 클라이언트가 관리하는 저장소 | `/files` | 클라이언트가 전체 URI를 알고 `PUT /files/star.jpg`로 없으면 생성, 있으면 대체한다 |
+| 컨트롤러(controller) | 앞의 셋으로 표현하기 어려운 절차 | `POST /orders/{id}/start-delivery` | 주로 POST, 마지막 segment가 동사 |
+
+- 문서와 컬렉션으로 먼저 풀고, 해결되지 않는 절차만 컨트롤러로 둔다. 위의 `POST /orders/{id}/cancellation`처럼 절차를 명사형 처리 리소스로 표현할지 동사형 컨트롤 URI로 표현할지는 팀이 한 가지로 정한다.
+- 컬렉션과 스토어의 구분은 URI 관리 주체를 설명하는 어휘다. Method는 대상 표현을 통째로 교체하는지(PUT), 대상 리소스가 자기 의미대로 처리하는지(POST)로 고른다([[Idempotency#PUT vs POST의 멱등성 차이|PUT vs POST]]). 일부 필드만 바꾸는 수정은 PATCH가 의미에 맞다.
+- HTML form의 method 키워드는 get, post, dialog뿐이라 서버 렌더링 화면은 수정과 삭제를 POST와 컨트롤 URI(`POST /members/{id}/delete`)로 보내는 경우가 많다([[Spring-MVC-Server-Rendered-CRUD|서버 렌더링 CRUD]]). fetch와 앱, 서버 간 HTTP API에는 이 제약이 없다.
+
 ## 상태 코드 컨벤션
 
 | 대역 | 의미 | 대표 코드 |
@@ -139,7 +154,12 @@ REST API 자체가 성능 튜닝 대상은 아니지만, 설계, 응답 수준�
 
 ## 출처
 - 김영한 강사, [HTTP API를 만들어보자](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61364)
+- 김영한 강사, [HTTP 메서드 - GET, POST](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61365)
+- 김영한 강사, [HTTP 메서드 - PUT, PATCH, DELETE](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61366)
+- 김영한 강사, [클라이언트에서 서버로 데이터 전송](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61368)
 - 김영한 강사, [HTTP API 설계 예시](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61369)
+- [REST API Design Rulebook — O'Reilly](https://books.google.com/books/about/REST_API_Design_Rulebook.html?id=eABpzyTcJNIC)
+- [WHATWG HTML, Form submission attributes (method)](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#form-submission-attributes)
 - [Roy Fielding, Architectural Styles and the Design of Network-based Software Architectures](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm)
 - [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
 - [gmlwjd9405 — REST와 RESTful API](https://gmlwjd9405.github.io/2018/09/21/rest-and-restful.html)

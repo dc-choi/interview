@@ -36,7 +36,7 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 
 **캐싱의 고전적 함정**: cache stampede(동시 만료), thundering herd, cache penetration(없는 키 반복 조회). 각각 jitter 있는 TTL, request coalescing, negative caching으로 완화.
 
-→ 깊이 있게: Cache strategy (작성 예정: `Cache-Strategy`) (체크리스트 항목)
+→ 깊이 있게: [[Cache-Strategies|캐시 전략]]
 
 ### 2. 데이터베이스 최적화 — "DB는 거의 항상 병목이다"
 
@@ -44,7 +44,7 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 - **인덱스 설계**: WHERE/JOIN/ORDER BY 순서에 맞춘 복합 인덱스, 커버링 인덱스. 인덱스는 쓰기 비용과 트레이드오프
 - **샤딩 / 파티셔닝**: 샤드 키 선택이 핵심. Hot partition 위험을 피하는 키 설계
 - **비정규화**: 조인을 쿼리 시점이 아닌 쓰기 시점으로 옮김. 일관성 복잡도 증가와 trade-off
-- **Connection Pool 사이징**: 너무 크면 DB가 죽고, 너무 작으면 대기 큐가 길어짐. **DB CPU 코어 × 2~4 정도가 시작점**
+- **Connection Pool 사이징**: 너무 크면 DB 경합이 늘어 오히려 느려지고, 너무 작으면 대기 큐가 길어짐. HikariCP 위키가 소개하는 출발점은 PostgreSQL 프로젝트의 `(core_count × 2) + effective_spindle_count`이며, 이 값 주변을 부하 테스트로 조정한다 — [[Connection-Pool|커넥션 풀 사이징]]
 
 → 깊이 있게: [[Transaction-Lock-Contention|트랜잭션 경합]], [[Sorting-Operations|정렬 연산 회피]]
 
@@ -66,10 +66,19 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 
 - **HTTP/2, HTTP/3**: 멀티플렉싱, 헤더 압축, QUIC로 핸드셰이크 단축
 - **Keep-Alive / Connection Reuse**: TCP, TLS 핸드셰이크 재사용. HTTP 클라이언트의 connection pool 설정 확인
-- **압축**: 텍스트 응답은 Brotli > gzip. 이미지는 WebP/AVIF
+- **압축**: 텍스트 응답은 Brotli > gzip. 이미지는 WebP/AVIF. 비용과 이득 조건은 아래
 - **페이로드 최소화**: 필요한 필드만 반환(GraphQL 또는 field mask), 불필요한 목록 페이징
 - **CDN 앞단 배치**: 정적 리소스뿐 아니라 API 캐시도 고려
 - **프리로드 / 프리페치**: `<link rel="preload">`, 서비스 워커 캐시
+
+#### 응답 압축의 비용과 이득 조건
+
+응답 압축은 파일을 첨부하는 것이 아니라 JSON 같은 응답 본문 자체를 gzip이나 Brotli로 줄여 보내는 것이다. 요청마다 압축 작업이 하나 더 붙어 서버 CPU를 쓰는 대신 네트워크 구간의 전송 바이트를 줄이는 양날의 검이다.
+
+- **이득이 커지는 조건** — 반복이 많은 텍스트 응답(한 운영 사례에서 약 80% 감소, 데이터 형태에 따라 다름), 응답이 여러 인프라와 서비스를 경유하는 구조, 대역폭이나 egress 비용이 큰 구간. 모놀리식이고 응답이 작으면 필요성이 낮다.
+- **어디서 압축하는가** — 중간 서비스가 응답을 해석하거나 다시 만들면 hop마다 해제와 재압축 비용이 생기므로, 다중 hop의 이득은 압축된 바이트를 그대로 통과시키는 구간(게이트웨이, 프록시)에서 크다. 에지 프록시에서만 압축하면 클라이언트 구간만 줄고 서비스 간 구간은 그대로다. 서비스 간 HTTP 클라이언트도 `Accept-Encoding`을 보내야 압축된 응답을 받는다(아래 대조 실험 사례).
+- **작은 응답과 이미 압축된 형식은 거른다** — Express `compression`은 `threshold`(기본 1kb) 미만 응답을 압축하지 않고 Content-Type으로 압축 가능 여부를 가리며, `@fastify/compress`도 기본 1024바이트 임계값을 둔다(각 README, 2026-09-30 확인).
+- **앱 서버와 프록시 중 선택** — NestJS 문서는 고트래픽 운영에서 압축을 리버스 프록시로 오프로드하라고 권한다. 앱에서 압축한다면 `@fastify/compress`는 Brotli 품질 기본값을 4(0~11)로 둬 압축 시간과 크기를 절충한다(README, 2026-09-30 확인). 미들웨어 등록은 [[NestJS-Middleware|NestJS 미들웨어]]를 따르고, 켤지 여부는 CPU 여유와 응답 크기 분포를 측정해 정한다.
 
 → 깊이 있게: [[HTTP-Seminar|HTTP 세미나]], [[HTTPS-TLS|HTTPS/TLS]]
 
@@ -99,11 +108,17 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 - **N+1 문제**와 해결법(eager loading, DataLoader, batching)을 설명할 수 있는가
 - 비동기 처리에서 **멱등성, 순서, 실패 재처리**를 어떻게 다룰 것인가
 - **HTTP/2, HTTP/3**가 왜 레이턴시에 유리한가
+- 응답 압축이 이득인 구조와 손해인 구조를 CPU 비용과 hop 수로 구분할 수 있는가
 - 측정 없이 최적화하면 왜 위험한가
 
 ## 출처
 - [DevPill — 서비스가 느리다고요? 레이턴시 최적화의 모든 것](https://maily.so/devpill/posts/8do7dnkyogq)
 - [latency가 길때 API 응답속도 개선하기 — velog](https://velog.io/@huhdy32/Async-Profiler-%EB%A1%9C-%EB%B3%91%EB%AA%A9-%EC%A7%84%EB%8B%A8-%EB%B0%8F-%EC%9D%91%EB%8B%B5%EC%86%8D%EB%8F%84-6%EB%B0%B0-%EA%B0%9C%EC%84%A0)
+- [NestJS, Compression](https://docs.nestjs.com/techniques/compression)
+- [expressjs/compression, README](https://github.com/expressjs/compression#readme)
+- [@fastify/compress, README](https://github.com/fastify/fastify-compress#readme)
+- [HikariCP, About Pool Sizing](https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing)
+- [인프런, Hong, 첫번쨰 서버 최적화 방법](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272599)
 
 ## 관련 문서
 - [[TCP-Congestion-Control|TCP 혼잡 제어]] — 고지연 링크에서 응답 크기가 왕복 횟수로 바뀌는 기전
@@ -112,5 +127,7 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 - [[HTTP-Seminar|HTTP 세미나]]
 - [[HTTPS-TLS|HTTPS / TLS]]
 - [[Rate-Limiting|Rate Limiting]]
+- [[Connection-Pool|커넥션 풀 사이징]]
+- [[NestJS-Middleware|NestJS 미들웨어]] — compression 설정과 리버스 프록시 오프로드
 - [[메시징&파이프라인(Messaging&Pipeline)|메시징 & 파이프라인 인덱스]]
 - [[데이터&저장소(Data&Storage)|데이터 & 저장소 인덱스]]

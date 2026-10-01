@@ -1,7 +1,7 @@
 ---
 tags: [java, optional, "null", lazy-evaluation, value-based-class]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "CS - 함수형 프로그래밍"
 aliases: ["Java Optional", "자바 Optional"]
 ---
@@ -61,6 +61,14 @@ Optional을 return type으로 쓰면 caller가 부재를 보게 할 수 있다. 
 - 실패 원인까지 보존해야 하면 exception, sealed result type이나 validation result가 더 적합하다.
 
 JDK API가 Optional을 field나 parameter에 쓰는 것을 문법적으로 금지하지는 않는다. Design convention을 명세상의 금지처럼 설명하지 않고 framework와 domain contract로 판단한다.
+
+## null을 흡수하는 정확한 경계
+
+`map`이 empty로 바꾸는 것은 mapper가 반환한 null이다. `map(u -> u.getAddress().getStreet())` 안에서 address가 null이면 NPE가 난다. `ofNullable(user).map(User::getAddress).map(Address::getStreet)`처럼 nullable hop마다 map을 나눈다. Getter가 Optional이면 flatMap을 사용한다. Optional이 모든 예외를 잡아 주는 장치는 아니다.
+
+`or`는 비었을 때 Supplier가 만든 다른 Optional을 반환해 후속 chain을 계속한다. Supplier가 null을 반환하면 NPE다. 기본형 Optional은 boxing을 줄이지만 일반 Optional의 map/flatMap/filter/or를 제공하지 않아 변환 chain에는 제약이 있다(Java SE 26 API 기준).
+
+지연 평가에서는 연산 정의를 Supplier로 전달하고 필요할 때 get을 호출한다. 단순 parameterized logging은 message formatting을 늦추더라도 인자 식의 계산을 늦추지 않을 수 있다. 비싼 인자나 effect를 미루려면 level guard 또는 Supplier 계약을 가진 API인지 확인한다. 부재가 정상인 조회와 반드시 존재해야 하는 업무 규칙의 실패는 구분하고, 후자는 호출자가 원인을 다룰 수 있는 exception이나 result 계약을 사용한다.
 
 ## 출처
 

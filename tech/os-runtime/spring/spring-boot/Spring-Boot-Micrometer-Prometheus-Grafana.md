@@ -44,7 +44,7 @@ management:
 
 Prometheus는 application instance의 `/actuator/prometheus`를 주기적으로 scrape한다. endpoint가 보인다는 사실과 Prometheus target이 `UP`이라는 사실을 각각 검증한다.
 
-Micrometer 이름 `jvm.memory.max`는 backend naming convention에 따라 Prometheus에서 `jvm_memory_max`처럼 보일 수 있다. Actuator `metrics` selector에는 Micrometer 원래 이름을 사용한다.
+Micrometer 이름 `jvm.memory.max`는 backend naming convention에 따라 Prometheus에서 `jvm_memory_max_bytes`처럼 보일 수 있다. Actuator `metrics` selector에는 Micrometer 원래 이름을 사용한다.
 
 ## 자동 제공 metric
 
@@ -97,7 +97,28 @@ Grafana에 Prometheus data source를 연결하고 panel마다 질문을 하나�
 
 metric은 원인을 증명하기보다 시간과 범위를 좁힌다. 순간 graph만 보고 memory leak이나 DB 장애를 단정하지 않는다.
 
+## 수집 계약과 panel 검증
+
+`/actuator/metrics/{name}`은 현재 측정값과 tag 목록을 보여준다. `?tag=area:heap`처럼 필터를 반복하여 좁힐 수 있지만 과거 추세는 별도 저장소가 필요하다. `application.started.time`과 `application.ready.time`의 차이는 runner 등 초기화 구간을 좁히는 단서다.
+
+Tomcat의 `tomcat.*` 계측에는 MBean registry가 필요하다. 기본 비활성 상태에서는 `server.tomcat.mbeanregistry.enabled=true`를 검토하고 thread busy/current/max의 실제 meter와 unit을 확인한다.
+
+Prometheus 변환에서는 Counter에 `_total`, Timer에 seconds 기반 `_count`/`_sum` 등이 붙는다. 실제 노출 이름과 label을 기준으로 query를 작성한다.
+
+```yaml
+scrape_configs:
+  - job_name: application
+    metrics_path: /actuator/prometheus
+    scrape_interval: 15s
+    static_configs:
+      - targets: [application:8080]
+```
+
+`metrics_path` 기본값은 `/metrics`이므로 Boot 경로를 지정한다. 예제의 15초는 선택값이며 부하, 해상도와 alert 지연으로 조정한다. 설정 반영 후 target의 `UP`과 scrape 오류를 확인한다. 공유 Grafana panel은 현재 metric/tag, unit, 범례와 축 범위를 대조한다. 절대 크기 비교가 목적이면 0을 포함한 축이 유용하고 변화 관찰이 목적이면 범위 선택을 명시한다.
+
 ## 출처
+
+- [Prometheus, Configuration](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)
 
 - [Spring Boot 4.1, Metrics](https://docs.spring.io/spring-boot/reference/actuator/metrics.html)
 - [Spring Boot 4.1, Observability](https://docs.spring.io/spring-boot/reference/actuator/observability.html)

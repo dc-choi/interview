@@ -124,3 +124,4 @@ Donald Knuth의 명언: *"Premature optimization is the root of all evil."*
 - [[RFC-Writing|RFC (대안 비교)]]
 - [[One-Way-vs-Two-Way-Door|One-Way vs Two-Way Door]]
 - [[Great-Developer-Habits|뛰어난 개발자 습관 (논리적 증명)]]
+- [[Debugging-Principles|디버깅 원칙 (가설 매몰 방지)]]

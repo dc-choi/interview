@@ -147,7 +147,36 @@ Q. 보상 트랜잭션 설계 시 주의점?
 - 보상은 역연산이 아니라 **추가 거래**인 경우가 많음 (환불, 취소 기록)
 - 멱등성, 재시도, DLQ 없이는 보상 자체가 또 다른 장애의 원인이 됨
 
+## 접수 상태와 참여자 원장
+
+가주문을 먼저 영속화하고 결제 완료를 기다리면 결제 지연 중에도 접수할 수 있다. 접수는 구매 확정이 아니므로 사용자에게 처리 중 상태와 조회 방법, 대기 기한을 제공한다. 주문 저장과 시작 이벤트는 Outbox로 연결하고, 재고 예약 시점과 결제 실패/만료 후 취소 정책을 정한다.
+
+동기 완료 응답과 비동기 접수 응답은 Orchestration/Choreography 선택과 별개다. Orchestrator도 영속 상태와 메시지로 비동기 실행할 수 있다. 비동기 접수에는 주문 ID, 상태 조회 또는 알림 계약이 필요하다.
+
+각 참여자는 요청 ID, 단계, 실제 적용 수량/금액과 결과를 거래 원장에 남긴다. 재시도는 이미 처리한 단계인지 확인하고, 보상량은 재요청 payload가 아닌 실제 적용 기록에서 구한다. 기록과 자원 변경은 같은 트랜잭션이어야 하며 중복 키와 상태 전이를 원자적으로 검사한다.
+
+성공 경로만 그리지 말고 실패 이벤트의 구독 행렬도 적는다. 예를 들어 주문 → 결제 → 배송에서 결제 실패는 주문을 취소하고, 배송 실패는 결제 보상과 주문 취소를 유발한다. 서로 다른 참여자의 보상 완료를 기다리는 상태를 따로 두면 실패 통지를 받자마자 모든 복구가 끝났다고 오인하지 않는다.
+
+역방향 보상 체인은 재고 차감 → 포인트 차감의 실패를 포인트 실패 → 재고 복원 → 주문 실패로 연결할 수도 있다. 메시지에 같은 주문 키를 써도 서로 다른 토픽의 순서를 보장하지는 않는다. 원 작업보다 먼저 온 보상, 보상 도중 종료, 완료 이벤트 중복까지 기존 함정과 대응의 계약으로 처리한다.
+
 ## 출처
+
+- [분산 트랜잭션 처리(SAGA),CQRS,이벤트 소싱](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104434)
+- [[실습 16] 보상 트랜잭션 (코드 실행) ②](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=307051)
+- [[실습 17] 보상 트랜잭션 (코드 분석) ③](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=307052)
+- [Orchestration - 재고차감 API 구현](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=337602)
+- [Orchestration - 재고차감취소 API 구현](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=337613)
+- [Orchestration - 포인트차감 API 구현](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=337614)
+- [Orchestration - 포인트차감취소 API 구현](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=337623)
+- [Orchestration - 주문 API 구현](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=337626)
+- [Orchestration - 실패상황 테스트](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=337627)
+- [Choreography - Order 상태조회 API 구현](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344381)
+- [실무에서는 많이 사용하는것은 무엇인가요 ?](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325833)
+- [Choreography - 주문이벤트 발행](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344376)
+- [Choreography - 주문이벤트 처리](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344377)
+- [Choreography - 재고차감 이벤트 처리](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344379)
+- [Choreography - 포인트차감 이벤트 처리](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344380)
+- [Choreography - 테스트](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344382)
 
 - [Chris Richardson, Saga pattern](https://microservices.io/patterns/data/saga.html)
 - [AWS Prescriptive Guidance, Saga patterns](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/saga-patterns.html)

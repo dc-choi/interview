@@ -101,7 +101,7 @@ Main Queue → Consumer
 ### 플랫폼별 구현
 
 - **AWS SQS**: Main Queue + Redrive Policy(maxReceiveCount 초과 시 DLQ로)
-- **RabbitMQ**: Dead Letter Exchange + delay plugin
+- **RabbitMQ**: 재시도 간격은 Dead Letter Exchange와 TTL 조합, 또는 4.3부터 quorum queue delayed retry(consumer가 반환한 메시지의 재전달 간격만 늘리고 횟수는 제한하지 않음). 지연 메시지 plugin은 유지보수 중단 ([[RabbitMQ-Exchange-Routing#ACK, 재큐잉과 dead letter 조건|DLX 조건과 재시도]])
 - **Kafka**: 직접 구현 (retry topic, DLT topic) — 설계 결정과 함정은 [[MQ-Kafka-Retry-DLT|Kafka 재시도와 DLT 설계]]
 - **BullMQ**: `backoff.type = 'exponential'` + `attempts` 옵션
 

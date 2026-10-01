@@ -1,7 +1,7 @@
 ---
 tags: [testing, jest, express, supertest, tdd, nodejs]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "테스트&품질(Testing&Quality)"
 aliases: ["Jest Express Testing", "Express 컨트롤러 테스트"]
 ---
@@ -37,42 +37,11 @@ Express API 테스트는 컨트롤러 함수, HTTP 어댑터, 실제 저장소 �
 - 기본 탐색은 `__tests__`와 `.test`, `.spec` 파일을 포함한다.
 - `jest.fn()`은 호출 인자와 결과를 기록하며, 구현이 없으면 `undefined`를 반환한다.
 - 비동기 대역은 `mockResolvedValue`와 `mockRejectedValue`로 성공과 실패를 분리한다.
-- `beforeEach`는 해당 범위의 매 테스트 전에 실행되고 반환한 Promise도 기다린다. 호출 기록 제거와 구현 초기화가 필요한지 구분한다.
+- `beforeEach`는 해당 범위의 매 테스트 전에 실행되고 반환한 Promise도 기다린다. 호출 기록 제거와 구현 초기화가 필요한지 구분한다([[Jest-Express-Testing-Doubles-and-Assertions#mock 정리와 복구|clear, reset, restore의 차이]]).
 
-## 컨트롤러 단위 테스트 패턴
+## 컨트롤러 단위 테스트
 
-저장소를 주입하면 모듈 전역을 통째로 mock하지 않고 협력 계약만 대체할 수 있다.
-
-```js
-describe('createProduct', () => {
-  const repository = { create: jest.fn() };
-  const res = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  };
-  const next = jest.fn();
-
-  beforeEach(() => jest.clearAllMocks());
-
-  it('persists input and returns 201', async () => {
-    const saved = { id: 'p1', name: 'keyboard' };
-    repository.create.mockResolvedValue(saved);
-    const handler = makeProductHandlers(repository);
-
-    await handler.create({ body: { name: 'keyboard' } }, res, next);
-
-    expect(repository.create).toHaveBeenCalledWith({ name: 'keyboard' });
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(saved);
-    expect(next).not.toHaveBeenCalled();
-  });
-});
-```
-
-- 요청의 관심 필드만 준비하고 결과 객체 전체를 과도하게 복제하지 않는다.
-- `beforeEach`에서 공유 상태와 호출 기록을 초기화해 실행 순서를 제거한다.
-- 성공 테스트와 오류 테스트가 같은 fixture를 변형해 공유하지 않게 한다.
-- `toHaveBeenCalledWith`와 응답 단언을 함께 써도 하나의 생성 동작을 설명한다면 한 테스트에 둘 수 있다.
+저장소를 주입받는 핸들러의 대역 구성, DI 없이 import한 Model을 바꾸는 방법, node-mocks-http 응답 검증, mock 정리와 matcher 선택은 [[Jest-Express-Testing-Doubles-and-Assertions|Jest와 Express 테스트: 대역 교체와 단언]]에 있다.
 
 ## 비동기 오류와 Express 버전 경계
 
@@ -101,6 +70,19 @@ expect(response.body).toMatchObject({ name: 'keyboard' });
 - 요청을 `await`하거나 반환한다. 콜백 방식이면 assertion 오류를 `done(error)`로 전달한다.
 - 실제 DB 통합이 목표라면 저장소를 mock하지 않고 응답이 가리키는 ID로 저장 상태까지 확인한다.
 
+## 오류 경로 HTTP 테스트
+
+필수 필드를 뺀 생성 요청이 오류 응답을 주는지 Supertest로 확인할 때, 500 상태 단언은 통과하는데 `response.body`에서 메시지를 찾지 못할 수 있다. 컨트롤러가 `next(error)`를 호출했지만 사용자 오류 처리기가 없어 Express 기본 처리기가 응답한 경우다.
+
+- 기본 처리기는 `err.status`나 `err.statusCode`가 4xx, 5xx면 그 값을 쓰고, 없거나 범위 밖이면 응답에 이미 4xx, 5xx가 설정된 경우가 아닌 한 500을 쓴다. `status`가 없는 검증 오류의 500 단언이 통과한 것도 이 기본값 덕분일 수 있다.
+- 본문은 JSON이 아니라 HTML이다. production에서는 상태 메시지, 그 밖에는 `err.stack`을 담으며, 기본 처리기를 구현한 finalhandler 2.1은 `Content-Type: text/html; charset=utf-8`로 보낸다.
+- Supertest가 쓰는 superagent는 파서가 정의된 Content-Type만 `response.body`로 파싱하고, 기본 대상은 `application/json`과 `application/x-www-form-urlencoded`다. Node에서 `response.text`는 `text/*`, `*/json`, `x-www-form-urlencoded`일 때 채워진다. 그래서 HTML 오류 응답은 `response.body`가 빈 객체로 보이고 원문은 `response.text`에 있다.
+- 본문이 비면 로직보다 먼저 `response.headers['content-type']`와 `response.text`를 본다. 오류 경로에도 `.expect('content-type', /json/)`를 걸어 기본 처리기로 떨어진 경우를 첫 단언에서 드러낸다.
+- JSON 오류 계약은 4개 인자 오류 처리기 `(err, req, res, next)`를 다른 `app.use()`와 라우트 뒤에 등록해야 검증할 수 있다. 테스트가 import하는 `app`과 운영 `app`이 같은 등록 코드를 거치게 한다.
+- Model을 대역으로 바꾼 단위 테스트는 스키마의 `required` 검증을 거치지 않는다. 검증 오류가 실제로 나는지와 몇 번 상태로 바뀌는지는 저장소를 포함한 통합 테스트만 확인한다.
+
+오류 본문을 어떤 계약으로 단언할지는 [[HTTP-API-Integration-Testing-Failure-Paths#오류 본문도 계약이다|HTTP API 실패 경로 테스트]]를 따른다.
+
 ## CRUD 동작 행렬
 
 | 동작 | 성공 계약 | 실패 계약 |
@@ -120,6 +102,8 @@ expect(response.body).toMatchObject({ name: 'keyboard' });
 | 모든 `async` 핸들러에서 `catch(next)` | Express 5는 반환된 Promise 거부를 자동 전달한다 |
 | 필수 필드 누락을 500으로 단언 | 클라이언트 입력 오류는 4xx, 예상 못 한 내부 오류는 5xx로 분리한다 |
 | mock `req`, `res`를 통합 테스트로 부름 | 컨트롤러 단위 테스트이며 HTTP 계약은 Supertest로 확인한다 |
+| `toBeCalledWith` 같은 별칭 matcher | Jest 30에서 제거됐다. `toHaveBeenCalledWith` 같은 기본 이름을 쓴다 |
+| Model 정적 메서드에 `jest.fn()`을 직접 대입 | 원본 복구가 필요하면 `jest.spyOn`과 `restoreAllMocks`, 가능하면 저장소 주입 |
 | DB의 기존 ID를 하드코딩 | 테스트마다 fixture를 만들고 반환된 ID를 사용한다 |
 | Jest가 Node.js의 유일한 선택 | `node:test`도 Node.js 20부터 stable이며 요구 기능과 생태계로 선택한다 |
 | Express 핸들러를 NestJS로 그대로 이식 | 단위는 `TestingModule`과 provider override, E2E는 `app.getHttpServer()`와 Supertest를 사용한다 |
@@ -128,6 +112,8 @@ expect(response.body).toMatchObject({ name: 'keyboard' });
 
 - [[TDD-BDD|TDD, BDD]]
 - [[HTTP-API-Integration-Testing|HTTP API 통합 테스트]]
+- [[HTTP-API-Integration-Testing-Failure-Paths|HTTP API 실패 경로 테스트]]
+- [[Jest-Express-Testing-Doubles-and-Assertions|Jest와 Express 테스트: 대역 교체와 단언]]
 - [[Test-Isolation|Test Isolation]]
 - [[Test-Fixture|Test Fixture 전략]]
 - [[NestJS-Testing|NestJS Testing]]
@@ -137,8 +123,11 @@ expect(response.body).toMatchObject({ name: 'keyboard' });
 - [Jest 공식 문서, Configuring Jest](https://jestjs.io/docs/configuration)
 - [Jest 공식 문서, Mock Functions](https://jestjs.io/docs/mock-function-api)
 - [Jest 공식 문서, Globals](https://jestjs.io/docs/api)
+- [Jest 공식 문서, From v29 to v30](https://jestjs.io/docs/upgrading-to-jest30)
 - [Express 공식 문서, Error Handling](https://expressjs.com/en/guide/error-handling/)
 - [Express 공식 문서, Using middleware](https://expressjs.com/en/guide/using-middleware/)
+- [finalhandler 공식 저장소, index.js](https://github.com/pillarjs/finalhandler/blob/master/index.js)
+- [superagent 공식 문서, Response properties](https://github.com/ladjs/superagent/blob/master/docs/index.md)
 - [Supertest 공식 저장소](https://github.com/forwardemail/supertest)
 - [Node.js 공식 문서, Test runner](https://nodejs.org/api/test.html)
 - [NestJS 공식 문서, Testing](https://docs.nestjs.com/fundamentals/testing)

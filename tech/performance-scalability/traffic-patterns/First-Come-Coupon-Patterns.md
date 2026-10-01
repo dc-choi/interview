@@ -1,7 +1,7 @@
 ---
 tags: [performance, concurrency, redis, kafka, coupon, race-condition, distributed-lock]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["First-Come Coupon Patterns", "선착순 쿠폰 패턴", "선착순 이벤트 설계"]
 ---
@@ -76,9 +76,22 @@ Redis Cluster에서는 한 Lua 스크립트가 접근하는 key들이 같은 has
 - 더 복잡한 비즈니스 로직(한도 + 중복 참여 금지 등)이 필요할 때
 - 단순 카운팅에는 과함. `INCR`이 이미 원자적이므로 락 불필요
 
+### 1인 1회 판정: 요청 경로의 원자 게이트
+
+- **쿠폰 타입 기준 DB 유니크 키** — 가장 간단하지만 한 사용자가 같은 타입 쿠폰을 여러 장 가질 수 있어야 하는 일반 도메인과 충돌한다. 이 문서의 `(user_id, event_id)` UNIQUE는 범위를 발급 이벤트로 좁혀 이 충돌을 피한다.
+- **락 + 발급 이력 조회** — API가 판정 뒤 발행만 하고 쿠폰 행은 consumer가 나중에 만드는 구조에서는 막지 못한다. 락이 풀린 뒤 consumer가 쓰기 전에 같은 사용자의 요청이 오면 조회 결과가 비어 있어 통과한다. 쿠폰 생성까지 락 범위에 넣으면 다른 요청의 대기가 길어져 처리량이 떨어진다.
+- **원리** — 권위 있는 쓰기가 비동기로 일어나면 그 저장소를 조회하는 중복 판정은 아직 반영되지 않은 상태를 읽는다([[CAP-Theorem|CAP 정리]]의 read-your-writes). 판정과 기록을 한 명령으로 끝내는 게이트, 즉 `SADD`의 반환값(새로 추가된 원소 수, 이미 있으면 0)으로 판정한다.
+- **순서와 역할 분담** — 1인 1회를 DB UNIQUE에만 맡기면 중복 요청이 API에서 `INCR` 슬롯을 먼저 소비한 뒤 consumer에서 거절돼, 서로 다른 당첨자 수가 한도보다 적어진다. 그래서 위 Lua처럼 `SADD`로 먼저 거르고 `INCR`은 그다음에 두며, DB UNIQUE는 재전달에 대한 멱등성 방어선으로 남긴다. Set 키는 `participants:{eventId}`처럼 이벤트별로 둔다.
+
 ## 해결 축 2: 쓰기 부하 분리
 
-`INCR`로 입장 판정은 원자화했어도 여러 이벤트의 승인 요청이 한꺼번에 DB로 내려가면 피크 쓰기 부하는 남는다. 브로커는 총 작업량을 없애는 장치가 아니라 DB가 감당할 속도로 평탄화하는 버퍼다.
+`INCR`로 입장 판정은 원자화했어도 승인된 요청마다 같은 요청 안에서 DB insert가 일어나면, DB 부하는 요청 수가 아니라 승인 수에 비례해 남는다. 발급 수량이 크거나 여러 이벤트가 겹치면 이것이 피크 쓰기 부하가 된다. 브로커는 총 작업량을 없애는 장치가 아니라 DB가 감당할 속도로 평탄화하는 버퍼다.
+
+### 승인된 쓰기가 공유 DB를 포화시키는 경로
+
+- **단순화한 계산** — DB가 분당 insert 100건만 처리한다고 가정하면, 쿠폰 요청 1만 건 뒤에 들어온 주문과 회원 가입은 100분 뒤에야 처리되고 대부분 timeout으로 실패한다. 실제 DB는 동시에 처리하지만 포화되면 connection pool 대기와 CPU, I/O 경합으로 모든 query의 지연이 함께 늘어 같은 결론에 이른다.
+- **폭발 반경** — 쿠폰 전용이 아닌 공유 DB라면 이벤트와 무관한 페이지까지 느려지거나 실패한다. 정확한 수량 발급, 이벤트 페이지 접속 불가와 함께 선착순 이벤트의 대표 실패로 꼽히는 경로다. 무관한 요청이 connection 획득 단계에서 막히는 모습은 [[Lock-Wait-Convoy|락 대기 convoy]]와 닮았고, 자원 격리는 [[External-Service-Resilience|Bulkhead]]를 따른다.
+- **consumer 속도는 예산이다** — 브로커를 둬도 총 insert 수는 그대로다. 공유 DB라면 consumer 동시성과 처리 속도를 다른 서비스가 쓸 여유를 남기는 값으로 정하고, 부하 도구로 단기간 트래픽을 재현해 DB CPU와 오류율을 함께 본다 — [[Load-Test-K6|성능 테스트 도구]].
 
 ### Kafka(또는 SQS) 비동기 저장
 
@@ -115,25 +128,16 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 5. 실패 시 Fail-Over 토픽 또는 DLQ에 저장, 스케줄러로 재시도
 ```
 
-## 경계 실패 설계
+## 경계 실패, 복구와 검증
 
-- Redis 승인 뒤 Kafka 발행 전 프로세스가 죽으면 수량만 예약되고 이벤트는 사라질 수 있다. `request_id`와 승인 상태를 남기고, 발행 재시도와 주기적 대사를 설계한다.
-- Kafka 소비 결과 저장과 offset 커밋 사이에 장애가 나면 같은 메시지를 다시 받을 수 있다. `(event_id, user_id)` 고유 제약 또는 처리한 `event_id` 기록으로 소비자를 멱등하게 만든다.
-- 실패 이벤트 테이블만 추가한다고 복구가 자동 보장되지는 않는다. 실패 기록 자체의 저장 실패, 무한 재시도, 독성 메시지를 고려해 재시도 횟수와 DLQ, 운영자 재처리 절차를 함께 둔다.
-- 비동기 통합 테스트는 고정 `sleep`으로 완료를 추측하지 않는다. 최종 조건을 제한 시간 안에서 폴링하고, 제한 시간 초과 시 consumer lag와 실패 원인을 출력한다.
-
-## NestJS, TypeORM 적용 관점
-
-- NestJS API는 Redis 스크립트 결과와 Kafka 발행 확인을 조합해 접수 상태를 반환하고, 실제 쿠폰 행 생성은 consumer 책임으로 둔다.
-- TypeORM consumer는 전달받은 transactional entity manager 하나로 쿠폰 저장과 처리 이력 저장을 묶는다. 고유 제약 위반은 이미 처리된 이벤트로 분류한다.
-- Redis, Kafka, MySQL을 하나의 TypeORM 트랜잭션으로 묶을 수는 없다. 각 경계에 식별자, 멱등성, 대사 작업을 배치하는 것이 핵심이다.
+Redis 승인 뒤 발행 전 장애와 소비 중복, 승인 뒤 consumer 실패로 생기는 수량 미달과 재발급, NestJS와 TypeORM 적용 경계, 총량과 1인 1회를 나눠 증명하는 검증 시나리오는 [[First-Come-Coupon-Patterns-Failure-and-Verification|선착순 이벤트 경계 실패, 복구와 검증]]에서 다룬다.
 
 ## 실전 고려사항
 
 - **Redis 장애 대비** — 단일 인스턴스 장애 시 접수를 계속할지 중단할지 정하고, 필요한 가용성 수준에 맞춰 복제와 장애 조치 구성을 선택
 - **스로틀링** — 응답이 성공이라도 클라이언트 재시도 폭주 방지 차원에서 Rate Limit과 조합
 - **대기열 방식 대안** — 정확성보다 **공정성**이 중요하면 Redis Sorted Set으로 입장 티켓을 발급해 순번 대로 처리(예: 트래픽 많은 티켓 예매 사이트)
-- **정합성 모니터링** — Redis 카운터와 DB insert 수의 일치 여부를 주기 점검. 차이가 누적되면 유실, 중복 의심
+- **정합성 모니터링** — Redis 카운터와 DB insert 수의 일치 여부를 주기 점검. 차이가 누적되면 유실, 중복 의심. 카운터가 더 크면 승인 뒤 적재 실패로 인한 수량 미달 신호
 - **DB 스키마** — `(user_id, event_id)` UNIQUE 인덱스. Kafka 지연 상황에서도 중복 insert 차단
 
 ## 선택 가이드
@@ -151,7 +155,7 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 
 - `SELECT COUNT + INSERT` 순차 실행 → 초과 발급
 - `@Transactional`만 붙이면 동시 접근이 막힌다는 오해 — 원자성은 all-or-nothing이지 격리가 아니다 ([[Lock|DB Lock]])
-- Redis `INCR`은 했지만 실패 시 `DECR` 안 함 → 카운터가 실제보다 커짐
+- 발행 실패가 확인된 접수 응답 전 실패에 `DECR`과 `SREM`으로 반납하지 않음 → 카운터가 실제보다 커짐. 발행 결과가 불확실(timeout 등)하면 즉시 반납하지 않고 `request_id` 대사로 확정한다. 반대로 접수 응답 뒤 consumer 실패에 `DECR`하면 접수 성공을 받은 사용자가 쿠폰을 잃는다 (실패 시점별 처리는 경계 실패 문서)
 - Kafka에 produce만 하고 retry 정책 없음 → 네트워크 실패 시 유실
 - Consumer가 동기 DB 쓰기만 하고 멱등 처리 없음 → 재실행 시 중복 발급
 - Redis 한 노드에 의존 → SPOF
@@ -162,6 +166,7 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 - Redis 명령 실행 경계와 Lua 원자성, 네트워크 I/O 스레딩을 구분하는가
 - Pessimistic/Optimistic Lock과 Redis `INCR`의 트레이드오프
 - Kafka 도입으로 얻는 이득과 비용(지연, 멱등, DLQ)
+- 1인 1회를 DB 유니크 키나 락이 아니라 `SADD` 게이트로 판정하는 이유
 - 선착순 vs 대기열 공정성의 설계 선택
 
 ## 출처
@@ -171,15 +176,17 @@ Client → API → Redis INCR 성공 → Kafka produce(이벤트)
 - [Apache Kafka 4.3.1 — KafkaProducer](https://kafka.apache.org/43/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html)
 - [Apache Kafka 4.3.1 — KafkaConsumer](https://kafka.apache.org/43/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html)
 - [Apache Kafka 4.3 — Design](https://kafka.apache.org/43/design/design/)
-- [TypeORM — Transactions](https://typeorm.io/docs/transactions/)
+- [실습으로 배우는 선착순 이벤트 시스템, 강의소개 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=152660)
 - [실습으로 배우는 선착순 이벤트 시스템, 문제점 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=153928)
 - [실습으로 배우는 선착순 이벤트 시스템, 문제점 해결하기 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=155153)
+- [실습으로 배우는 선착순 이벤트 시스템, 문제점 (Redis를 활용하여 문제 해결하기) — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=156125)
 - [실습으로 배우는 선착순 이벤트 시스템, Consumer 사용하기 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=158584)
 - [실습으로 배우는 선착순 이벤트 시스템, 발급가능한 쿠폰개수를 1인당 1개로 제한하기 — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=159888)
 - [실습으로 배우는 선착순 이벤트 시스템, 쿠폰을 발급하다가 에러가 발생하면 어떻게 하나요? — 인프런, 최상용](https://www.inflearn.com/courses/lecture?courseId=329894&unitId=163908)
 - [선착순 수강신청 동시성 이슈 — Nextree 기술블로그](https://www.nextree.io/seoncagsun-sugang-sinceong-dongsiseong-isyu/)
 
 ## 관련 문서
+- [[First-Come-Coupon-Patterns-Failure-and-Verification|선착순 이벤트 경계 실패, 복구와 검증]]
 - [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처]]
 - [[Transaction-Lock-Contention|트랜잭션 경합과 Lock 문제]]
 - [[Latency-Optimization|레이턴시 최적화]]

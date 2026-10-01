@@ -30,6 +30,7 @@ CI에서는 보통 `tsc --noEmit`으로 검사를 별도 단계로 두거나 `no
 
 ## 목차
 - [x] [[option|컴파일러 옵션 (target, module, outDir, strict, moduleDetection)]]
+- [x] [[option-Build-Output|빌드 산출물 관리 (outDir 잔존 파일, incremental buildinfo, exclude 기본값, removeComments)]]
 - [x] [[TS-JavaScript-Migration|JavaScript에서 TypeScript로 점진적 마이그레이션]]
 - [x] [[TypeScript-AST|TypeScript와 AST (컴파일러 파이프라인, Compiler API)]]
 

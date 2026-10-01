@@ -126,7 +126,7 @@ const page = await orders.find({
 | `cache` | query result cache를 켠다. 권한, 최신성, 무효화 정책을 대신하지 않으며 쓰기 뒤 stale read를 허용할 때만 쓴다. |
 | `lock` | `findOne`/`findOneOrFail`에서만 쓴다. `findOneBy`에는 lock option을 넘길 수 없다. 비관적 lock은 같은 transaction manager와 driver 지원을 전제로 한다. |
 
-`relations`가 convenient하다고 목록 API의 기본값으로 두지 않는다. 반환 row의 grain, relation별 최대 건수, pagination과 count의 모양을 먼저 정한다. 대시보드나 집계처럼 entity graph가 아닌 결과가 필요하면 QueryBuilder 또는 SQL을 선택한다.
+`relations`가 convenient하다고 목록 API의 기본값으로 두지 않는다. 반환 row의 grain, relation별 최대 건수, pagination과 count의 모양을 먼저 정한다. 대시보드나 집계처럼 entity graph가 아닌 결과가 필요하면 QueryBuilder 또는 SQL을 선택한다. 위 예시처럼 기본 join 전략의 `relations`와 `skip`/`take`를 함께 쓰면 두 단계 query가 되고, 1.1.0부터 `select`를 준 `findAndCount`는 고른 column으로 distinct count를 센다([[TypeORM-QueryBuilder-Pagination-and-Count|take/skip과 count가 만드는 SQL]]).
 
 ## Find operator와 AND/OR
 

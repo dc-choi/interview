@@ -3,7 +3,7 @@ tags: [cicd, docker]
 status: done
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["Docker Image Pipeline", "Docker 이미지 파이프라인"]
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 ---
 
 # Docker Image Build Pipeline
@@ -47,6 +47,21 @@ permissions:
 
 Docker Hub, ECR과 다른 registry도 로그인, repository-qualified tag, push라는 흐름은 같지만 인증 수명과 권한 모델은 다르다. cloud registry는 가능하면 runner의 workload identity/OIDC와 short-lived credential을 사용한다.
 
+## Image 참조 이름과 registry 선택
+
+image 참조는 `[HOST[:PORT]/]NAMESPACE/REPOSITORY[:TAG]`다. host를 생략하면 Docker Hub(`docker.io`), namespace를 생략하면 Docker Official Image용 `library`, tag를 생략하면 `latest`로 해석된다. `nginx`가 `docker.io/library/nginx:latest`인 이유이며, 직접 올리는 image에는 사용자나 조직 namespace를 붙인다. namespace와 repository 같은 경로 구성 요소는 소문자, 숫자와 구분자만 허용하므로 여기에 대문자가 섞이면 형식 오류로 거부된다. tag는 대문자와 소문자를 모두 쓸 수 있어 `user/app:V1`은 유효하고, 최대 128자다.
+
+| registry | 참조 형식 | 인증 |
+|---|---|---|
+| Docker Hub | `docker.io/<사용자>/<image>:<tag>` | `docker login` |
+| GHCR | `ghcr.io/<소유자>/<image>:<tag>` | workflow는 `GITHUB_TOKEN`, 수동은 `write:packages` scope의 PAT (classic) |
+| Amazon ECR | `<계정>.dkr.ecr.<리전>.amazonaws.com/<repository>:<tag>` | `aws ecr get-login-password`로 받은 12시간 token |
+| Artifact Registry | `<위치>-docker.pkg.dev/<프로젝트>/<repository>/<image>:<tag>` | gcloud credential helper |
+
+`docker tag`는 image를 복사하지 않고 같은 image에 참조 이름을 하나 더 붙인다. 여러 tag가 같은 image ID를 가리키므로 disk를 더 쓰지 않는다. 게시는 build, registry host를 넣은 tag 부여, 로그인, push 순서이고 registry마다 주소와 인증만 다르다. push 뒤 local image를 지우고 같은 참조로 pull해 실행하면 게시가 재현되는지 확인할 수 있다.
+
+private registry는 코드와 실행 환경이 이미 속한 권한 체계를 따라 고른다. GitHub 중심이면 GHCR(처음 publish한 package는 private), ECS와 EKS를 쓰는 AWS 환경이면 IAM과 통합된 [[ECR|ECR]], GCP면 Artifact Registry가 자연스럽다. 2026-09-30 기준 Docker Personal plan의 private repository는 1개이고, GitHub는 Container registry의 storage와 bandwidth를 현재 무료로 두되 바꿀 때는 최소 한 달 전에 알린다고 밝힌다. 가격과 한도는 도입 시점에 다시 확인한다.
+
 ## Build job 안전선
 
 - third-party Action은 검토한 full commit SHA에 pin하고 Dependabot 등으로 update PR을 받는다.
@@ -86,8 +101,16 @@ Q. Docker 이미지 배포 파이프라인은 어떻게 구성했는가?
 - [GitHub Docs, Container registry 인증](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
 - [GitHub Docs, Action SHA pinning policy](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository)
 - [Docker Docs, SBOM and provenance attestations in GitHub Actions](https://docs.docker.com/build/ci/github-actions/attestations/)
+- [Docker Docs, docker image tag](https://docs.docker.com/reference/cli/docker/image/tag/)
+- [distribution/reference, 참조 문법](https://pkg.go.dev/github.com/distribution/reference)
+- [Docker, Pricing](https://www.docker.com/pricing/)
+- [GitHub Docs, GitHub Packages billing](https://docs.github.com/en/billing/concepts/product-billing/github-packages)
+- [AWS Docs, Amazon ECR private registry authentication](https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry_auth.html)
+- [Google Cloud Docs, Artifact Registry pushing and pulling images](https://docs.cloud.google.com/artifact-registry/docs/docker/pushing-and-pulling)
 - [금융 인프라를 운영하는 Toss 개발자의 Docker, GHCR](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=416392)
 - [금융 인프라를 운영하는 Toss 개발자의 Docker, CI/CD pipeline](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=416528)
+- [금융 인프라를 운영하는 Toss 개발자의 Docker, Docker Hub에 image 게시](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=416527)
+- [금융 인프라를 운영하는 Toss 개발자의 Docker, image 선택](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=414206)
 
 ## 관련 문서
 - [[GitHub-Actions]]

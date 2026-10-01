@@ -84,10 +84,30 @@ log.debug("member created id={} requestId={}", memberId, requestId);
 
 Level은 환경별로 조절하고 password/token/body 전체를 남기지 않는다. 비싼 argument 계산은 해당 level이 활성화됐는지 확인한다. Request/response logging은 크기 제한, masking, sampling과 trace correlation을 함께 설계한다.
 
+## 기본값 때문에 생기는 조용한 실패
+
+- `@RequestParam`은 기본 required이며 누락은 보통 400이다. String의 빈 값은 별도 not-blank 검증이 필요하고 `defaultValue`는 누락과 빈 값을 합칠 수 있다. 선택 primitive는 null을 표현하지 못하므로 wrapper/Optional/default를 사용한다.
+- 일반 JavaBean binding은 setter/property를 사용하지만 constructor binding, record와 direct-field 설정도 존재한다. template와 JSON serializer 역시 설정에 따라 accessor/field 경로가 달라지므로 getter/setter가 언제나 필수라는 규칙은 과도하다.
+- 복합 type에서 `@RequestBody`를 빠뜨리면 암묵적 `@ModelAttribute`로 parameter를 읽어 빈 객체가 만들어질 수 있다. `HttpEntity<T>`/`RequestEntity<T>`는 header와 converter 기반 body를 함께 다루는 다른 명시적 경로다.
+- command의 `address.city`, `phones[0].number`처럼 property 경로로 중첩 입력을 bind할 수 있다. 허용 field와 collection 상한도 정한다. model 이름을 생략하면 type에서 유추하므로 DTO rename이 template 계약을 바꿀 수 있다.
+- HTTP method 없는 mapping은 범위를 넓히므로 method를 명시한다. 현재 기본 path matching에서는 `/path`와 `/path/`를 자동으로 같게 보지 않는다. 옛 강의의 trailing slash 예제를 그대로 적용하지 않는다.
+- converter는 type/media type 조건을 만족하는 등록 순서로 선택된다. JSON media type의 String을 raw text로 읽는 경우와 DTO로 deserialize하는 경우를 구분한다.
+- HTML controller의 `void`는 응답이 이미 처리되었다는 조건이 없으면 요청 경로에서 view name을 유추할 수 있다. REST의 빈 body와 혼동하지 말고 반환 계약을 명시한다.
+
 ## 출처
+
+- [Spring MVC, Return Values](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/return-types.html)
+
+- [Spring MVC, ModelAttribute](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html)
+
+- [Spring MVC, RequestParam](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestparam.html)
 
 - [Spring Framework, annotated controllers](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller.html), [method arguments](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/arguments.html), [HTTP message conversion](https://docs.spring.io/spring-framework/reference/web/webmvc/message-converters.html)
 - 기본 기능: [프로젝트](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71213), [logging](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71214), [mapping 조건](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71215), [API mapping](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71216), [header/기본 정보](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71217), [query/form](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71218), [RequestParam](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71219), [ModelAttribute](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71220), [text body](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71221), [JSON body](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71222), [static/View](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71223), [API response](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71224), [message converter](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71225), [handler adapter 내부](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71226), [정리](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71227)
+- 인프런 강사, [다양한 의존 객체 주입](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13718)
+- 김영한 강사, [상품 등록 처리 - @ModelAttribute](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71236)
+- 김영한 강사, [정리](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71240)
+- 김영한 강사, [수업 자료](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71804)
 
 ## 관련 문서
 

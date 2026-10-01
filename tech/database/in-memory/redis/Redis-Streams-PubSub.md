@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, streams, pubsub, consumer-group, message-queue]
 status: done
-verified_at: 2026-08-25
+verified_at: 2026-09-30
 category: "Data & Storage - Cache & KV"
 aliases: ["Redis Streams", "Pub/Sub", "Redis Consumer Group", "XADD"]
 ---
@@ -88,6 +88,9 @@ XREADGROUP GROUP order-processor consumer1 COUNT 10 BLOCK 0 STREAMS orders >
                                               # > = 아직 안 받은 메시지만
 ```
 
+- 스트림 키가 없으면 `XGROUP CREATE`가 오류를 내므로 빈 스트림과 그룹을 함께 만들 때는 `MKSTREAM`을 붙인다. 마지막 ID가 `$`면 생성 이후 메시지만, `0`이면 스트림 처음부터 소비하고, 같은 이름의 그룹이 있으면 `BUSYGROUP` 오류다.
+- 그룹 안에서는 한 메시지가 한 컨슈머에게만 배정되고, 그룹끼리는 각자 읽기 위치와 PEL을 가진다. 주문 API는 `XADD`만 하고 재고, 알림, 분석 팀이 각자 그룹을 만들어 소비하면 팀이 늘어도 발행 코드가 바뀌지 않고, 그룹 안의 컨슈머를 늘려 처리량을 수평 확장한다.
+
 ### 핵심 개념
 
 | 개념 | 의미 |
@@ -104,7 +107,7 @@ XREADGROUP GROUP order-processor consumer1 COUNT 10 BLOCK 0 STREAMS orders >
 XACK orders order-processor 1733564000000-0
 ```
 
-ACK 안 하면 PEL에 남음 → 컨슈머 죽으면 다른 컨슈머가 인계 가능.
+ACK 안 하면 PEL에 남음 → 컨슈머 죽으면 다른 컨슈머가 인계 가능. 같은 이름으로 다시 뜬 컨슈머는 `>` 대신 `0`으로 자기 PEL을 다시 읽어 재처리하고, 영구히 사라진 컨슈머의 몫은 아래처럼 다른 컨슈머가 가져온다. `XPENDING`의 컨슈머별 미처리 수로 멈춘 워커와 병목을 찾는다.
 
 ### 실패 컨슈머 인계 — XCLAIM / XAUTOCLAIM
 
@@ -169,6 +172,8 @@ XCLAIM, XAUTOCLAIM으로 죽은 컨슈머 메시지 재배분. **at-least-once**
 
 - [Redis, Streams](https://redis.io/docs/latest/develop/data-types/streams/)
 - [Redis, Persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)
+- [Valkey, XGROUP CREATE](https://valkey.io/commands/xgroup-create/)
+- [인프런, Hong, 이벤트 데이터 유실을 방지하는 Stream 및 Consumer Group 그리고 Pipeline 설계](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481453)
 
 ## 관련 문서
 

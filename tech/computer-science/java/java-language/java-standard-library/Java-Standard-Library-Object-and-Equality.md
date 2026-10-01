@@ -1,7 +1,7 @@
 ---
 tags: [java, object, equality, equals, hashcode, tostring, polymorphism]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Object and Equality", "Java Object와 동등성"]
 ---
@@ -103,7 +103,15 @@ final class MemberId {
 - `equals`를 재정의할 때 `hashCode`도 재정의하는 이유
 - `Object` 다형성과 역할 인터페이스의 선택 기준
 
+## 재정의된 출력과 instance 추적
+
+System.identityHashCode(obj)는 재정의된 hashCode와 무관한 기본 identity hash를 얻고 null은 0이다. toString이 값 표현으로 바뀌어도 로그에서 공유 instance를 추적하는 보조 단서로 쓸 수 있다. memory 주소가 아니며 다른 객체끼리 충돌할 수 있어 identity 판정은 ==로 한다. 16진수 표기가 같은 객체라는 증거는 아니다.
+
 ## 출처
+
+- 인프런 보충 강의: [열거형 - Enum Type](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212235)
+
+- [System, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/System.html)
 
 - [Object, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html)
 - [Objects, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Objects.html)

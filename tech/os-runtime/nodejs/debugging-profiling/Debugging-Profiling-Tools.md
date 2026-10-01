@@ -1,6 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["디버깅 도구", "Debugging Tools"]
 ---
@@ -51,6 +52,22 @@ aliases: ["디버깅 도구", "Debugging Tools"]
 5. 콘솔 패널에서 표현식 평가
 6. Call Stack 패널에서 호출 경로 추적
 ```
+
+### debugger 문과 단계 실행
+
+`debugger;`는 코드에 고정한 breakpoint다. ECMAScript 명세는 디버거가 없거나 활성 상태가 아니면 이 문이 관찰 가능한 효과가 없다고 정한다. 브라우저에서는 DevTools(Windows, Linux `F12` 또는 `Ctrl+Shift+I`, macOS `Cmd+Option+I`)가 열려 있을 때 멈추고, Node.js에서는 `--inspect`로 띄운 뒤 Inspector 클라이언트가 연결됐거나 `node inspect`로 실행했을 때 멈춘다. `--inspect`만 주고 클라이언트가 없으면 그대로 지나간다(Node.js 26.7 확인).
+
+| 동작 (Chrome DevTools Sources) | Windows, Linux | macOS |
+|---|---|---|
+| 일시정지, 재개 | `F8` 또는 `Ctrl+\` | `F8` 또는 `Cmd+\` |
+| step over (현재 함수의 다음 줄) | `F10` 또는 `Ctrl+'` | `F10` 또는 `Cmd+'` |
+| step into (그 줄에서 호출한 함수 안으로) | `F11` 또는 `Ctrl+;` | `F11` 또는 `Cmd+;` |
+| step out (현재 함수에서 나가기) | `Shift+F11` 또는 `Ctrl+Shift+;` | `Shift+F11` 또는 `Cmd+Shift+;` |
+| 특정 줄까지 계속 | `Ctrl`을 누른 채 그 줄 클릭 | `Cmd`를 누른 채 그 줄 클릭 |
+
+- 현재 함수 안에서 다음 줄로만 넘어가려면 step over를 쓴다. step into는 그 줄에 함수 호출이 있으면 호출된 함수 안으로 들어간다.
+- 긴 스크립트를 구간별로 확인할 때는 검증이 끝난 지점 바로 뒤에 `debugger;`를 두어 다음 확인의 시작점으로 바로 이동할 수 있다. 여러 개를 두어 구간을 나누고 끝난 구간부터 지운다.
+- 남겨 둔 `debugger;`는 디버거가 없는 production 동작은 바꾸지 않지만, 누군가 DevTools나 inspector를 연 상태에서는 예기치 않게 멈춘다. ESLint `no-debugger`(`recommended` 설정에 포함)로 commit 전에 걸러낸다. 반복 조사에는 코드를 고치지 않는 조건부 breakpoint(조건이 참일 때만 멈춤)와 logpoint(멈추지 않고 콘솔에 기록)를 먼저 검토한다.
 
 ## perf_hooks — 코드 내장 측정
 
@@ -104,6 +121,12 @@ setInterval(() => {
 ## 출처
 
 - [Node.js, Performance measurement APIs](https://nodejs.org/api/perf_hooks.html)
+- [Node.js, Debugger](https://nodejs.org/api/debugger.html)
+- [ECMAScript, The debugger Statement](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-debugger-statement)
+- [Chrome DevTools, Keyboard shortcuts](https://developer.chrome.com/docs/devtools/shortcuts)
+- [Chrome DevTools, Pause your code with breakpoints](https://developer.chrome.com/docs/devtools/javascript/breakpoints)
+- [ESLint, no-debugger](https://eslint.org/docs/latest/rules/no-debugger)
+- [인프런, 김영보, 2. if, debugger](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24611)
 
 ## 관련 문서
 - [[Debugging-Profiling|디버깅 & 프로파일링 인덱스]]

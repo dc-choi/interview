@@ -16,7 +16,8 @@ aliases: ["CICD Deployment", "배포 전략과 실행"]
 - [[Rollback|롤백 전략]]: 되돌릴 대상, 중단 기준과 상태 호환
 - [[DB-Migration|DB Migration 전략]]: Expand-Contract, 배포 순서와 검증
 - [[Helm]]: Chart, values, release와 rollback
-- [[Single-Host-SPA-API-Deployment|단일 서버 SPA/API 배포]]: Nginx, TLS, GitHub Actions, 환경 변수, CORS, rollback
+- [[Single-Host-SPA-API-Deployment|단일 서버 SPA/API 배포]]: Nginx, TLS, 서버 기준선, SPA 서빙 위치, 환경 변수, CORS, rollback
+  - [[Single-Host-SPA-API-Deployment-SSH-Workflow|SSH 배포 workflow]]: 권한 경계, runner 노출면과 host key, 원격 셸 PATH, 종료 코드와 health gate
 - [[Deployment-Automation-ChatOps|배포 자동화, ChatOps]]: Slack Bot, 승인 플로우, 회고, 자동화 함정
 
 ## 함께 볼 문서

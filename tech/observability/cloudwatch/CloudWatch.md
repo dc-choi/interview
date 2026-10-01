@@ -11,7 +11,7 @@ AWS의 통합 옵저버빌리티 — Metrics, Logs, Alarms, Events, Insights를 
 
 ## 문서
 - [x] [[CloudWatch-Metrics|CloudWatch Metrics (기본 5분 vs 상세 1분, Namespace/Dimension, 카디널리티 함정, EMF)]]
-- [x] [[CloudWatch-Logs-Alarms|CloudWatch Logs와 Alarms (Log Group/Stream, Log Insights, Static/Composite Alarm, Anomaly Detection)]]
+- [x] [[CloudWatch-Logs-Alarms|CloudWatch Logs와 Alarms (Log Group/Stream, Log Insights, Static/Composite Alarm, Anomaly Detection, Billing Alarm, SNS 이메일 구독 점검)]]
 - [x] [[CloudWatch-Operations|CloudWatch 운영 (Container/Lambda Insights, Agent, EventBridge, 비용 함정, 면접 체크포인트)]]
 
 ## 출처

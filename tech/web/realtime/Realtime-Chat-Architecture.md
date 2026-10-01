@@ -20,7 +20,7 @@ aliases: ["Realtime Chat Architecture", "실시간 채팅 아키텍처", "WebSoc
 
 ## 핵심 요구사항
 
-일반 HTTP 서비스와 달리 **지속 연결**(수분~수시간), **높은 동시성**(서버당 1만~10만), **낮은 지연**(수십 ms), **브로드캐스트 증폭**(한 방 수천 명), **순서 보장**, **연결 복구**(재연결 + 누락 복구)가 필요.
+일반 HTTP 서비스와 달리 **지속 연결**(수분~수시간), **높은 동시성**(서버당 1만~10만), **낮은 지연**(수십 ms), **브로드캐스트 증폭**(한 방 수천 명), **순서 보장**, **연결 복구**(재연결 + 누락 복구)가 필요. 메시지 자체는 양이 많고 한 건의 가치가 낮으며 최근 구간 위주로 읽히고, 단체방은 쓰기 한 건이 멤버 수만큼 전달된다. 이 특성에서 나오는 수신자 기준 라우팅, 오프라인 알림과 이력 저장소 설계는 [[Realtime-Chat-Architecture-Delivery-and-Storage|메시지 전달 경로와 이력 저장소]]에서 다룬다.
 
 ## 통신 프로토콜 선택
 
@@ -53,7 +53,7 @@ aliases: ["Realtime Chat Architecture", "실시간 채팅 아키텍처", "WebSoc
 - **Redis**: 방 상태, 접속자 수, 휘발 데이터
 - **Redis Pub/Sub**: at-most-once로 연결된 서버와 세션에만 실시간 팬아웃. 보존, 재전송, 수신 ACK 책임 없음
 - **내구성 경로**: DB, 영속성을 구성한 Redis Streams, 적절한 복제와 ACK를 설정한 Kafka에 메시지와 방별 sequence 기록
-- **DB / Stream / Log API**: 과거 메시지와 sequence 범위 재조회
+- **DB / Stream / Log API**: 과거 메시지와 sequence 범위 재조회 (저장소 선택과 키 설계는 [[Realtime-Chat-Architecture-Delivery-and-Storage#메시지 이력 저장소|이력 저장소]])
 
 ## 구현 원칙 5가지
 
@@ -176,6 +176,7 @@ const flush = () => {
 - 자체 구현 vs 외부 SaaS 판단 기준
 - **Hot Room, Presence, Heartbeat** 같은 스케일링 고려 포인트
 - Redis Pub/Sub vs Kafka 선택 기준 (보존 필요 여부)
+- 방 채널 브로드캐스트와 수신자 기준 라우팅의 차이, 오프라인 알림 모듈을 분리하는 이유
 
 ## 출처
 - [Firebase, FCM Throttling and Quotas](https://firebase.google.com/docs/cloud-messaging/throttling-and-quotas) (2026-08-26 확인)
@@ -184,8 +185,11 @@ const flush = () => {
 - [Reactor Core, Flux.concatMap](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html)
 - [Spring Framework, InMemoryWebSessionStore](https://raw.githubusercontent.com/spring-projects/spring-framework/main/spring-web/src/main/java/org/springframework/web/server/session/InMemoryWebSessionStore.java)
 - [우아한형제들 기술블로그 — 배민쇼핑라이브를 만드는 기술: 채팅 편](https://techblog.woowahan.com/5268/)
+- [인프런, Hong, Chat Application에 대한 시스템 디자인 설계 1편](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272704)
+- [인프런, Hong, Chat Application에 대한 시스템 디자인 설계 2편](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272612)
 
 ## 관련 문서
+- [[Realtime-Chat-Architecture-Delivery-and-Storage|메시지 전달 경로와 이력 저장소]]
 - [[WebSocket|WebSocket]]
 - [[Fan-Out-Architecture|Fan-out Architecture]]
 - [[Messaging-Patterns|메시징 패턴]]

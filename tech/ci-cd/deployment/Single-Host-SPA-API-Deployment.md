@@ -1,7 +1,7 @@
 ---
 tags: [cicd, deployment, spa, nodejs, nginx, github-actions]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["Single Host SPA API Deployment", "단일 서버 SPA API 배포"]
 ---
@@ -25,6 +25,16 @@ Browser
 - 애플리케이션 process는 public port에 직접 노출하지 않고 loopback이나 private network에서 수신한다.
 - DB와 secret은 SPA bundle이나 Git 저장소가 아니라 서버 측 설정과 secret store에 둔다.
 - 단일 host 장애가 전체 서비스 장애가 되는 구조다. 복구 시간, 데이터 중요도와 부하가 커지면 load balancer, 복수 instance와 managed data store를 검토한다.
+
+SPA build 결과를 API server의 정적 폴더에 넣고(Express `express.static`, NestJS `ServeStaticModule`) Nginx는 모든 요청을 Node process로 proxy하는 구성도 있다. 이때도 page와 API가 같은 origin이라 운영에서는 CORS와 API 절대 주소 env가 필요 없다.
+
+| 축 | API process가 SPA도 서빙 | Nginx가 정적 파일 서빙 |
+|---|---|---|
+| 배포 단위 | frontend만 바뀌어도 API 재시작과 함께 나가고 rollback도 묶인다 | 정적 파일 전환과 API process 교체를 분리할 수 있다 |
+| 정적 응답 | 모든 asset 요청을 Node가 처리하고 cache header도 앱에서 정한다 | Nginx나 CDN이 처리하고 [[CDN#캐시 무효화 전략|hash asset 장기 cache]]를 건다 |
+| client-side routing | `express.static`은 없는 경로에 `index.html`을 주지 않아 catch-all이 필요하다. `ServeStaticModule`은 기본 `renderPath`가 모든 경로라 Express adapter에서는 없는 `/api` 경로도 `index.html`로 답하므로 `exclude`로 API prefix를 뺀다. Fastify adapter는 `serveStaticOptions.fallthrough`를 켜야 이 fallback이 동작하고 `exclude`를 지원하지 않아, 켜면 없는 `/api` 경로도 `index.html`로 답한다 | `try_files $uri /index.html` 같은 fallback을 둔다 |
+
+Fastify adapter에서 라이브러리 주석이 `exclude` 대신 안내하는 `renderPath` 정규식은 Fastify 5가 문자열 route 경로만 받아 등록 단계에서 실패했다. 대신 `@Controller('api')`에 `@All('*')`로 `NotFoundException`을 던지는 catch-all route를 두면 client route의 `index.html` fallback과 없는 API 경로의 JSON 404가 함께 동작했다(serve-static 12.0.0, Fastify 5.12.5에서 재현). process와 배포 단위를 하나로 줄이는 것이 우선인 작은 서비스에는 앞의 구성이 단순하다. 정적 트래픽, cache 제어와 frontend 독립 배포가 중요해지면 Nginx나 CDN 정적 서빙으로 옮긴다. 어느 쪽이든 build 결과를 backend working tree에 복사하면 source와 산출물이 섞이고 이전 hash 파일이 쌓이므로, SPA 산출물도 아래 `releases/<commit-sha>`에 넣어 함께 전환하고 되돌린다.
 
 ## 개발 환경과 운영 산출물을 분리한다
 
@@ -70,26 +80,24 @@ PM2 reload, systemd restart나 container 교체는 process 관리 수단이지 �
 
 - Route 53 record는 고정 public IP나 지원 AWS resource의 Alias를 가리킨다. DNS 반영 시간을 고정된 하루로 가정하지 말고 TTL, registrar와 resolver cache를 확인한다.
 - 먼저 DNS가 새 host를 가리키고 80/443 network path가 열렸는지 확인한 뒤 인증서를 발급한다.
-- Certbot 설치 방식에 자동 renewal task가 포함됐는지 `systemctl list-timers`나 system crontab으로 확인한다. 중복 cron을 무조건 추가하지 않는다.
+- Certbot 설치 방식에 자동 renewal task가 포함됐는지 `systemctl list-timers`나 system crontab으로 확인한다. 중복 cron을 무조건 추가하지 않는다. Certbot의 pip 설치 안내처럼 `/etc/crontab`에 하루 두 번 `certbot renew` 줄을 덧붙이는 방식은 cron daemon이 있어야 동작한다. AL2023은 cronie를 기본 설치하지 않으므로 줄만 남고 실행되지 않아 인증서가 만료될 수 있다. systemd timer로 옮기거나 cronie를 명시적으로 설치한다.
 - `certbot renew --dry-run`으로 검증하고 성공 후 Nginx가 새 certificate를 읽도록 deploy hook이나 plugin 동작을 확인한다.
 - 인증서 갱신 실패, 만료 잔여일과 HTTPS smoke test를 감시한다.
 
 인증서 발급을 위해 장시간 root shell을 유지할 필요는 없다. 필요한 명령에만 `sudo`를 사용하고 private key file 권한을 제한한다. 자세한 수명주기는 [[ACME-Protocol|ACME 인증서 자동화]]를 따른다.
 
+## 서버 기준선
+
+OS와 런타임 설치 방식은 배포 스크립트, 인증서 갱신과 원격 셸의 PATH까지 바꾼다. 예전 따라 하기 절차를 옮기기 전에 확인한다 (2026-09-30 공식 문서 기준).
+
+- Amazon Linux 2는 2026-06-30에 지원이 끝났다. 새 서버는 AL2023을 기준으로 하고, AWS는 AL2023 지원을 2029년 6월까지로 안내한다.
+- AL2023에는 `amazon-linux-extras`가 없고 여러 버전을 DNF의 namespaced package로 제공한다. AWS는 EOL인 `amazon-linux-extras`를 실행하지 말라고 권한다.
+- Node.js 22, 24, 26의 x64 Linux 공식 binary는 glibc 2.28 이상을 요구해 glibc 2.26인 AL2에서는 실행되지 않는다 ([[Version-Upgrade-Difficulty|런타임 업그레이드의 플랫폼 하한]]). Node main branch는 하한을 glibc 2.34로 올려 두었고 AL2023.12의 glibc가 2.34이므로 다음 메이저마다 OS 하한을 다시 확인한다.
+- AL2023은 `nodejs22`, `nodejs24` 같은 namespaced package와 `alternatives`로 `/usr/bin/node`를 제공한다. Node.js 20은 2026-04-30에 upstream 지원이 끝났으므로 22 이상을 고른다. 시스템 경로의 런타임은 비로그인 SSH 셸에서도 PATH에 있어 [[Single-Host-SPA-API-Deployment-SSH-Workflow#원격 셸은 로그인 셸이 아니다|원격 셸의 PATH 문제]]도 줄어든다.
+
 ## GitHub Actions 배포 보안
 
-SSH로 단일 host를 갱신하는 workflow는 단순하지만 production 접근 권한을 CI에 맡긴다. 최소한 다음 경계를 둔다.
-
-- PR에서는 build와 test만 수행하고 보호된 branch의 검증된 commit만 배포한다.
-- `permissions`를 기본 read-only로 두고 job별 최소 권한만 연다.
-- production environment에 승인자, branch/tag 제한과 environment secret을 둔다.
-- third-party action은 repository를 확인한 뒤 full-length commit SHA로 고정한다.
-- SSH key는 전용 계정과 제한된 권한을 사용하고 주기적으로 회전한다. host key를 검증해 중간자 공격을 막는다.
-- cloud API가 지원하면 장기 access key보다 OIDC 기반의 짧고 제한된 credential을 우선한다.
-- workflow와 배포 script 변경은 CODEOWNERS나 필수 review 대상으로 둔다.
-- log에 secret, private key와 command argument가 노출되지 않는지 실패 경로까지 확인한다.
-
-SSH pull-in-place는 학습과 작은 내부 서비스에는 쓸 수 있다. 그러나 immutable artifact, 사전 검증, 빠른 rollback과 audit 요구가 커지면 registry 기반 image 배포나 deployment service로 옮긴다.
+SSH로 단일 host를 갱신하는 workflow는 단순하지만 production 접근 권한을 CI에 맡긴다. 권한과 승인 경계, runner가 22번 port로 들어오는 노출면과 host key 검증, 원격 셸이 로그인 설정을 읽지 않는 문제, 종료 코드와 health check로 성공을 판정하는 방법, pull-in-place를 벗어날 시점은 [[Single-Host-SPA-API-Deployment-SSH-Workflow|SSH 배포 workflow]]에 정리한다.
 
 ## SPA 환경 변수는 public configuration이다
 
@@ -103,6 +111,15 @@ Vite의 `VITE_*` 값은 build 시 client bundle에 정적으로 들어가므로 
 ```
 
 `.env.local`은 production 전용 파일이라는 뜻이 아니다. Vite는 mode별 파일과 별개로 `.env.local`도 읽으며, 이미 process에 존재하는 변수가 더 높은 우선순위를 갖는다. 값이 build에 compile되므로 server process만 재시작해도 기존 SPA bundle의 API URL은 바뀌지 않는다. 새 값으로 rebuild하거나, 배포 시 생성하는 공개 runtime configuration endpoint/file을 설계한다.
+
+개발 때 나뉜 port를 운영까지 끌고 오면 다음 실패가 이어진다.
+
+- bundle에 `http://localhost:4000`이 남으면 browser는 서버가 아니라 사용자 기기의 4000번 port를 부른다. 개발자 PC에서 local API를 켠 채 배포 사이트를 열면 자기 PC의 API가 응답하고, 모든 origin을 허용한 CORS까지 겹치면 정상처럼 보인다. Chrome 142부터는 공개 site가 loopback으로 보내는 요청에 Local Network Access 권한 요청이 붙으므로 browser와 version마다 증상이 다르다.
+- Vite 문서는 `.env.local`과 `.env.[mode].local`을 Git에서 제외할 파일로 표기하고 create-vite template의 `.gitignore`에도 `*.local`이 있다. GitHub의 Node `.gitignore` template은 `.env`와 `.env.*`(`.env.example` 제외)까지 무시하므로 `.env.production`도 서버 clone에 없을 수 있다. 실제 저장소의 `.gitignore`를 확인한다.
+- Vite는 정의되지 않은 `import.meta.env` 변수를 `undefined`로 치환하고 build는 성공한다. `${import.meta.env.VITE_API_URL}/api/hello`는 `undefined/api/hello`라는 상대 URL이 되어 현재 page 기준의 `/undefined/api/hello` 같은 경로로 가고, 404나 HTML 응답이 JSON 파싱 오류로 나타난다.
+- env 파일은 frontend project의 `envDir`(기본 project root)에서 읽는다. 서버에 손으로 만든 파일은 위치, 필수 key와 소유자를 배포 계약에 적는다.
+
+필수 `VITE_*`가 없으면 build를 실패시키고(`vite.config`에서 `loadEnv`로 읽어 누락 시 throw), CI나 배포 스크립트의 build 단계에서 공개 설정 값을 명시적으로 주입한다. 가장 단순한 해결은 이 변수 자체를 없애는 것이다.
 
 API URL은 가능하면 Nginx에서 같은 origin의 `/api`로 통합하면 환경별 absolute host와 CORS 설정을 줄일 수 있다.
 
@@ -129,12 +146,12 @@ app.enableCors({
 | 구간 | 확인할 증거 |
 |---|---|
 | Build | lockfile 고정, test 통과, artifact SHA/checksum |
-| Config | 필수 변수 검증, client 공개 값과 server secret 분리 |
+| Config | 필수 `VITE_*` 누락 시 build 실패, client 공개 값과 server secret 분리 |
 | Data | migration backup/호환성/rollback 판단 |
 | Start | process supervision, readiness, graceful shutdown |
 | Edge | DNS, TLS chain/renewal, Nginx config test |
 | Security | 최소 권한, action pinning, host key, secret log 검사 |
-| Verify | health, smoke test, error/latency/business metric |
+| Verify | health와 smoke test 실패 시 배포 단계 nonzero 종료, error/latency/business metric |
 | Recover | 이전 artifact와 설정, 실행 가능한 rollback 절차 |
 
 ## 교정해야 할 단정
@@ -146,6 +163,8 @@ app.enableCors({
 - CORS 허용은 사용자 인증이나 API 보안을 완성하지 않는다.
 - `VITE_*` 환경 변수는 secret 저장소가 아니다.
 - Certbot을 설치했다고 renewal 성공과 만료 감시까지 보장되지는 않는다.
+- Amazon Linux 2, `amazon-linux-extras`와 기본 cron에 기댄 설치 절차는 2026-06-30 AL2 지원 종료 이후 새 서버의 기준이 아니다.
+- SSH 단계의 녹색 표시, `.bash_profile`의 PATH와 secret 이름 대소문자에 관한 단정은 [[Single-Host-SPA-API-Deployment-SSH-Workflow|SSH 배포 workflow]]에서 교정한다.
 
 ## 출처
 
@@ -153,6 +172,18 @@ app.enableCors({
 - [Vite, Env Variables and Modes](https://vite.dev/guide/env-and-mode)
 - [GitHub, Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)
 - [Certbot, Renewing certificates](https://eff-certbot.readthedocs.io/en/stable/using.html#renewing-certificates)
+- [Certbot, Nginx on Linux (pip) instructions](https://certbot.eff.org/instructions?ws=nginx&os=pip)
+- [AWS, Amazon Linux 2 FAQs](https://aws.amazon.com/amazon-linux-2/faqs/)
+- [AWS, Prepare your migration to AL2023](https://docs.aws.amazon.com/linux/al2/ug/prepare-for-al2023.html)
+- [AWS, Node.js in AL2023](https://docs.aws.amazon.com/linux/al2023/ug/nodejs.html)
+- [Node.js, BUILDING.md supported platforms (v24.x)](https://github.com/nodejs/node/blob/v24.x/BUILDING.md)
+- [Node.js, BUILDING.md supported platforms (main)](https://github.com/nodejs/node/blob/main/BUILDING.md)
+- [Node.js, Release schedule](https://github.com/nodejs/Release)
+- [NestJS, Serve Static](https://docs.nestjs.com/recipes/serve-static)
+- [nestjs/serve-static, serve-static-options.interface.ts](https://github.com/nestjs/serve-static/blob/master/lib/interfaces/serve-static-options.interface.ts)
+- [Vite, create-vite React template .gitignore](https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react/_gitignore)
+- [GitHub gitignore templates, Node.gitignore](https://github.com/github/gitignore/blob/main/Node.gitignore)
+- [Chrome for Developers, New permission prompt for Local Network Access](https://developer.chrome.com/blog/local-network-access)
 - [Kenu 허광남 강사, SPA 개발 환경 구성 1](https://www.inflearn.com/courses/lecture?courseId=328553&unitId=106866)
 - [Kenu 허광남 강사, SPA 개발 환경 구성 2](https://www.inflearn.com/courses/lecture?courseId=328553&unitId=106867)
 - [Kenu 허광남 강사, 배포 프로세스](https://www.inflearn.com/courses/lecture?courseId=328553&unitId=106868)

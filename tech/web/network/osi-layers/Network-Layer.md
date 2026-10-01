@@ -3,7 +3,7 @@ tags: [web, network, osi, l3, ip, cidr, routing, arp, mtu, dpi]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Network Layer", "네트워크 계층", "L3", "IP CIDR 라우터 ARP", "패킷 포워딩"]
-verified_at: 2026-09-22
+verified_at: 2026-09-30
 ---
 
 # 네트워크 계층 (Network Layer, L3)
@@ -103,7 +103,7 @@ RFC 1918의 사설 대역은 다음과 같다. 클래스별 예시 몇 개가 �
 
 ARP는 응답한 쪽이 그 IP의 주인인지 확인하지 않는다. 같은 LAN의 공격자가 위조 ARP로 캐시를 오염시켜 트래픽을 가로채는 흐름과 방어는 [[ARP-Spoofing|ARP 스푸핑]].
 
-ICMP는 IP 전달 중 생긴 오류와 진단 정보를 운반한다. `ping`의 echo request/reply가 대표적이지만 ICMP 전체가 ping 전용인 것은 아니다. destination unreachable과 time exceeded 같은 메시지는 장애 분석과 Path MTU 동작에도 관여하므로 방화벽에서 ICMP 전체를 무조건 막는 것은 부작용을 만든다.
+ICMP는 IP 전달 중 생긴 오류와 진단 정보를 운반한다. `ping`의 echo request/reply가 대표적이지만 ICMP 전체가 ping 전용인 것은 아니다. destination unreachable과 time exceeded 같은 메시지는 장애 분석과 Path MTU 동작에도 관여하므로 방화벽에서 ICMP 전체를 무조건 막는 것은 부작용을 만든다. 헤더 구조, type과 code, ping의 동작과 필터링 기준은 [[ICMP]].
 
 ## 패킷은 유지되고 프레임은 구간마다 바뀐다 (핵심)
 
@@ -126,10 +126,11 @@ ICMP는 IP 전달 중 생긴 오류와 진단 정보를 운반한다. `ping`의 
 
 ## L3의 한계와 L4로의 확장
 
-L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 못 한다.
+IP는 패킷을 목적지 IP까지 보내는 데 집중하는 비연결형 best-effort 전달이라 세 가지 한계가 있다.
 
+- **비연결성**: 받을 호스트가 있는지, 꺼져 있거나 받을 수 없는 상태인지 확인하지 않고 보낸다. destination unreachable 같은 ICMP 오류가 돌아올 수도 있지만 보장되지 않고 중간에서 걸러질 수 있다 → TCP는 데이터 전에 3-way handshake로 상대가 받을 수 있는지 확인하는 논리적 연결을 맺는다.
 - **애플리케이션 구분 불가**: 한 호스트에서 유튜브, 메신저, 화상회의를 동시에 쓸 때 어느 앱으로 갈지 모른다 → 포트 번호가 필요(L4).
-- **순서와 신뢰성 미보장**: 패킷이 뒤바뀌거나 유실될 수 있다 → 재전송과 순서 보장이 필요.
+- **순서와 신뢰성 미보장**: 패킷이 손상, 중복되거나 뒤바뀌고 유실될 수 있다 → 재전송과 순서 보장이 필요.
 
 이를 전송 계층(L4)의 TCP/UDP가 해결한다. [[TCP-Handshake]]
 
@@ -145,7 +146,7 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 - 일반 IP 전달의 주소 유지와 TTL 변화, NAT 예외, 프레임의 링크별 교체
 - MTU와 TCP MSS의 범위 차이, TCP 세그먼트화와 IP 단편화의 구분
 - DPI가 보는 정보와 TLS 암호화가 제한하는 평문 가시성
-- L3가 못 하는 것(앱 구분, 순서/신뢰성) → L4 TCP/UDP로 넘어가는 지점
+- L3가 못 하는 것(비연결성, 앱 구분, 순서/신뢰성) → L4 TCP/UDP로 넘어가는 지점
 
 ## 출처
 
@@ -160,6 +161,7 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 - [OSI 7 Layer 기초: Network Layer (IP, CIDR, 라우터, ARP) — YouTube](https://www.youtube.com/watch?v=ZnBskOsDuFY&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v&index=2)
 - [RFC 4632 — Classless Inter-domain Routing](https://www.rfc-editor.org/rfc/rfc4632.html)
 - [RFC 792 — Internet Control Message Protocol](https://www.rfc-editor.org/rfc/rfc792.html)
+- [RFC 1122 — Requirements for Internet Hosts, Communication Layers](https://www.rfc-editor.org/rfc/rfc1122.html)
 - [RFC 9293 — Transmission Control Protocol, Segmentation](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.7)
 - [RFC 894 — IP Datagrams over Ethernet Networks](https://www.rfc-editor.org/rfc/rfc894.html)
 - [RFC 1812 — Requirements for IP Version 4 Routers, 5.3.1 Time to Live](https://www.rfc-editor.org/rfc/rfc1812.html#section-5.3.1)
@@ -173,6 +175,7 @@ L3는 패킷을 목적지 IP까지 보내는 데 집중하므로 두 가지를 �
 - [[ARP-Spoofing|ARP 스푸핑 (검증 없는 캐시 갱신, DAI)]]
 - [[Network-Encapsulation|캡슐화와 데이터 단위 (스트림에서 프레임까지, MTU/MSS, 단편화)]]
 - [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기 (TTL, 단편화 필드, 체크섬, Wireshark)]]
+- [[ICMP|ICMP 메시지 구조, ping과 필터링 기준]]
 - [[Transport-Layer#세그먼트와 캡슐화|소켓, 바이트 스트림과 패킷 생성 흐름]]
 - [[TCP-Congestion-Control|TCP MSS와 혼잡 제어]]
 - [[HTTPS-TLS|TLS 암호화와 종료 지점]]

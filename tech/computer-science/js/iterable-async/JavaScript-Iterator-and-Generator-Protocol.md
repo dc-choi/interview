@@ -97,7 +97,16 @@ Generator function도 constructor를 통해 동적으로 만들 수 있지만 gl
 - 큰 result를 array로 전부 만들기보다 iterable/async iterable로 streaming하되 backpressure를 연결한다.
 - NestJS request가 끝날 때 iterator owner가 resource를 닫도록 interceptor/adapter 경계를 둔다.
 
+## 하나의 커서와 마지막 yield
+
+generator object의 Symbol.iterator는 자기 자신을 반환한다. 수동 next로 받은 값은 후속 for...of/spread에서 빠지고 같은 generator의 두 번째 전체 순회는 비어 있다. iterable이 반환한 iterator가 next만 제공하면 원천은 순회 가능해도 그 iterator를 직접 spread할 수 없으므로 재소비용 iterator에는 자기 자신을 반환하는 Symbol.iterator를 둔다.
+
+yield가 n개면 n번째 next 뒤에도 마지막 yield에 멈춰 있다. 그 뒤 코드, return과 finally는 다음 재개에서 실행된다. 수동 소비는 끝까지 next하거나 return으로 정리한다. 본문의 throw도 내부 catch가 잡고 yield하면 계속되고, 잡히지 않은 예외가 정상 종료하는 finally를 지나면 현재 호출자에게 전파된 뒤 completed가 된다.
+
 ## 출처
+
+- 인프런 보충 강의: [8. Symbol.iterator에 제너레이터 함수 연결](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30811), [7. Symbol.iterator, Array.prototype(@@iterator), Object 이터레이션](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30810)
+- 인프런 보충 강의: [Array, Set, Map을 통해 알아보는 이터러블/이터레이터 프로토콜](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16569), [사용자 정의 이터러블, 이터러블/이터레이터 프로토콜 정의](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16570), [제너레이터와 이터레이터](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16573), [range와 느긋한 L.range](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16594)
 
 - [ECMAScript Language Specification, iteration interfaces](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-common-iteration-interfaces)
 - [ECMAScript Language Specification, Generator objects](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-generator-objects)

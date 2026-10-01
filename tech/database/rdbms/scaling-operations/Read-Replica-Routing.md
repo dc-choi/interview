@@ -92,7 +92,7 @@ ORM 확장이 transaction을 primary에 고정하는 것은 일반적인 쓰기 
 ## 구현 예 1: Prisma (`extension-read-replicas`)
 
 ```
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from './generated/prisma/client' // prisma-client generator의 output 경로
 import { readReplicas } from '@prisma/extension-read-replicas'
 
 const primary = new PrismaClient({ adapter: primaryAdapter })

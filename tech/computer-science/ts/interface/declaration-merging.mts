@@ -9,7 +9,7 @@ interface User {
 }
 
 interface User {
-    // name: number; // Error: 'name' 중복 선언 불가
+    // name: number; // Error: 'name'을 다른 타입으로 재선언 불가 (같은 타입 재선언은 허용)
     age: number;
 }
 

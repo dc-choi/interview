@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, v8]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["Inline Cache", "IC", "Monomorphic", "Polymorphic", "Megamorphic", "Transition State"]
 ---
@@ -31,7 +31,22 @@ aliases: ["Inline Cache", "IC", "Monomorphic", "Polymorphic", "Megamorphic", "Tr
 | POLYMORPHIC | `P` | 소수의 다른 Hidden Class를 관찰해 여러 handler를 보관 |
 | MEGAMORPHIC | `N` | 매우 다양한 Hidden Class를 관찰해 더 일반적인 조회 경로 사용 |
 
-한 feedback slot의 정상적인 학습 과정은 보통 UNINIT → MONO → POLY → MEGA 방향으로 일반화된다. 코드 교체, feedback 초기화 같은 수명주기까지 포함해 절대 되돌아오지 않는 공개 규칙은 아니다.
+한 feedback slot의 정상적인 학습 과정은 보통 UNINIT → MONO → POLY → MEGA 방향으로 일반화된다. 코드 교체, feedback 초기화 같은 수명주기까지 포함해 절대 되돌아오지 않는 공개 규칙은 아니다. 옛 자료의 PREMONOMORPHIC(`.`) 상태는 현재 V8의 `InlineCacheState`에 없다.
+
+### 상태를 직접 관찰하기
+
+`node --log-ic --logfile=v8.log --no-logfile-per-isolate app.js`로 IC 상태 전이를 로그로 남긴다(V8 플래그 설명: tools/ic-processor용 IC 상태 전이 로그). `LoadIC` 행은 `LoadIC,<pc>,<time>,<line>,<column>,<이전 상태>,<새 상태>,<map>,<key>,<modifier>,<slow stub 사유>` 형태이고 상태 칸에 위 표의 표기가 찍힌다. 대표 네 상태 외에 `X`(NO_FEEDBACK), `^`(RECOMPUTE_HANDLER), `D`(MEGADOM), `G`(GENERIC)도 나온다. V8 main 소스(2026-10-01 확인)에는 여러 map이 같은 handler를 쓰는 HOMOMORPHIC(`H`) 상태가 더 있어, 상태 목록과 로그 기호도 버전마다 달라진다.
+
+배열을 돌며 `u.name`을 읽는 함수 세 개에 각각 모양 1개, 2개, 5개 객체를 넣고 반복 호출하면 다음 전이가 기록됐다(Node.js 26.7.0, V8 14.6.202.34).
+
+| 넣은 모양 수 | 기록된 전이 |
+|---|---|
+| 1개 | `0→1` |
+| 2개 | `0→1`, `1→P` |
+| 5개 | `0→1`, `1→P`, `P→P`, `P→P`, `P→N` |
+
+- 다섯 번째 map에서 MEGA가 된 것은 같은 버전의 `--max-valid-polymorphic-map-count` 기본값 4와 맞는다. 이 숫자는 버전 기준의 관찰이지 계약이 아니다.
+- 함수를 한 번만 호출하면 `name` 접근의 전이가 찍히지 않았다. feedback vector를 지연 할당하므로(`--lazy-feedback-allocation`, 할당 기준 호출 수 기본 8) 그 전에는 IC가 `X` 상태로 피드백을 모으지 않는다.
 
 ## 왜 MEGA에도 일반화된 cache가 필요한가
 
@@ -56,8 +71,14 @@ read(d);  // POLY (HC_ab + HC_c + HC_d)
 
 ## 최적화 원칙
 
-### 1. MONOMORPHIC 상태 유지
-IC가 MONO일 때 TurboFan이 가장 공격적인 최적화를 수행한다. POLY, MEGA는 Deopt 가능성이 높아진다.
+### 1. 접근 지점이 보는 모양을 적고 안정되게 유지
+속도는 MONO, POLY, MEGA 순이다. POLY는 비교할 map이 늘어 MONO보다 느리지만 map별 처리를 포기하는 MEGA보다는 낫다. 비용의 종류는 상태마다 다르다.
+
+- MONO, POLY feedback을 받은 Maglev와 TurboFan은 관찰한 map을 확인하는 검사와 offset 접근을 코드에 넣는다. 처음 보는 모양이 오면 이 가정이 깨져 `wrong map` 사유로 역최적화된다.
+- MEGA 접근은 map별 특화 대신 feedback을 모으지 않는 megamorphic 조회 builtin을 호출한다. 새 모양 때문에 역최적화되지는 않지만 가장 느린 일반 경로다.
+- Node.js 26.7(V8 14.6)에서 `u.name`을 읽는 함수 세 개를 모양 1개, 2개, 5개로 달궈 TurboFan으로 최적화한 뒤 처음 보는 모양을 넣자, MONO와 POLY 함수는 `bailout (kind: deopt-eager, reason: wrong map)`으로 역최적화됐고 MEGA 함수는 최적화 상태를 유지했다.
+
+따라서 POLY와 MEGA가 역최적화를 부른다고 단정하지 않는다. 특화된 코드는 새 모양에 역최적화될 수 있고, 일반화된 코드는 처음부터 느리다. 목표는 hot path의 접근 지점이 적은 수의 안정된 모양만 보게 하는 것이다.
 
 ### 2. 동일 Hidden Class 공유
 같은 구조의 객체를 **동일한 생성자**, **동일한 순서**로 생성 → 같은 Hidden Class 재사용. 상세는 [[V8-Hidden-Class|V8 히든 클래스]] 참조.
@@ -91,6 +112,12 @@ JS의 "어떤 모양의 객체든 받을 수 있다"는 유연성은 IC 관점�
 - [V8 — Maps (Hidden Classes) in V8](https://v8.dev/docs/hidden-classes)
 - [V8 — Fast properties in V8](https://v8.dev/blog/fast-properties)
 - [V8 — InlineCacheState source](https://raw.githubusercontent.com/v8/v8/main/src/common/globals.h)
+- [V8 — Maglev, V8's fastest optimizing JIT](https://v8.dev/blog/maglev)
+- [V8 — IC transition mark source (14.6.202.34)](https://raw.githubusercontent.com/v8/v8/14.6.202.34/src/ic/ic.cc)
+- [V8 — IC transition mark source (main)](https://raw.githubusercontent.com/v8/v8/main/src/ic/ic.cc)
+- [V8 — IC log event format source (14.6.202.34)](https://raw.githubusercontent.com/v8/v8/14.6.202.34/src/logging/log.cc)
+- [V8 — Flag definitions source (14.6.202.34)](https://raw.githubusercontent.com/v8/v8/14.6.202.34/src/flags/flag-definitions.h)
+- [V8 — Generic lowering source, megamorphic access builtin (14.6.202.34)](https://raw.githubusercontent.com/v8/v8/14.6.202.34/src/compiler/js-generic-lowering.cc)
 - [하정훈 강사 — 인라인 캐싱 동작방식](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196072)
 - [하정훈 강사 — 인라인 캐싱 상태](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196073)
 - [하정훈 강사 — 최적화 팁과 마무리](https://www.inflearn.com/courses/lecture?courseId=332466&unitId=196066)

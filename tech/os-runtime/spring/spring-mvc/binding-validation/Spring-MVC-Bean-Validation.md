@@ -72,10 +72,30 @@ Constraint의 default message는 사용자/API contract로 그대로 노출하�
 - Service/integration test로 authorization, unique constraint와 concurrent state를 검증한다.
 - DTO 변경 시 OpenAPI/schema와 runtime constraint가 어긋나지 않는지 확인한다.
 
+## 서비스 검증과 Spring adapter의 세부
+
+웹 외의 adapter도 호출하는 application service/port에는 같은 입력 계약을 검증하는 경계를 둔다. Spring의 service method validation은 보통 `@Validated` Bean의 proxy 호출을 전제로 한다. interface parameter constraint를 구현 method에서 더 강하게 재정의하면 Jakarta Validation의 상속 계약을 위반할 수 있다. MVC 내장 method validation과 service proxy validation의 예외 type도 구분한다.
+
+Boot validation 자동 구성은 provider가 classpath에 있을 때 동작한다. `SpringValidatorAdapter`는 객체를 검증한 뒤 이미 binding failure가 있는 field의 constraint violation을 BindingResult에 추가하지 않는다. 따라서 type mismatch field에 필수값 오류가 중복되는 것을 줄이지만 object-wide rule은 null/부분 binding을 별도로 처리해야 한다.
+
+순수 검증은 `Validation.buildDefaultValidatorFactory()`로 factory를 만들고 `validate(dto)`의 violation을 검사할 수 있다. factory는 사용 뒤 닫고 invalidValue를 로그에 그대로 노출하지 않는다.
+
+constraint annotation 이름에서 시작하는 error code는 MessageCodesResolver로 확장된다. bundle에서 일치하는 code가 없으면 constraint의 interpolated message가 기본 메시지가 된다. annotation message와 provider default가 별개의 두 번 검증되는 단계는 아니다.
+
+groups 미지정 constraint는 `Default`에 속한다. 특정 group만 요청하면 Default 포함 여부도 확인한다. create/update DTO를 나누면 입력 shape와 권한을 함께 분리하기 쉽고 type 변경 시 `@ModelAttribute("item")` 같은 model 이름 계약도 유지한다.
+
 ## 출처
+
+- [Spring 7.0.9, SpringValidatorAdapter source](https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/validation/beanvalidation/SpringValidatorAdapter.java)
+
+- [Spring MVC, Validation](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html)
 
 - [Jakarta Validation 3.1](https://jakarta.ee/specifications/bean-validation/3.1/), [Jakarta Validation 3.1 API](https://jakarta.ee/specifications/bean-validation/3.1/apidocs/), [Spring validation](https://docs.spring.io/spring-framework/reference/core/validation.html)
 - Bean Validation: [소개](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83309), [시작](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83310), [프로젝트 v3](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83311), [Spring 적용](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83312), [error code](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83313), [object error](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83314), [update 적용](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83315), [한계](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83316), [groups](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83317), [form DTO 준비](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83318), [form DTO 분리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83319), [form DTO 구현](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83320), [RequestBody 검증](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83321), [정리](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83322)
+- 김영한 강사, [프로젝트 생성](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83325)
+- 토비 강사, [표준 유효성 검사 도구를 이용한 요청 데이터 검증](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=306323)
+- 토비 강사, [Member 애플리케이션 추가 기능 개발](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=313421)
+- 토비 강사, [MemberApi와 웹 단위 테스트](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=314630)
 
 ## 관련 문서
 

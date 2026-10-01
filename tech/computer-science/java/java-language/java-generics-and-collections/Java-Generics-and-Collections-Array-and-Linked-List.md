@@ -1,7 +1,7 @@
 ---
 tags: [java, arraylist, linkedlist, dynamic-array, linked-list, complexity]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-09-30
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Array and Linked List", "Java 배열 리스트와 연결 리스트"]
 ---
@@ -50,13 +50,20 @@ final class SimpleList<E> {
 
 끝 append 한 번은 resize 때문에 O(n)일 수 있지만 기하급수적으로 capacity를 키우면 일련의 append는 amortized O(1)로 설계할 수 있다. Java SE `ArrayList` API는 growth policy의 세부를 명세하지 않고 add가 amortized 상수 시간이라는 사실만 보장한다. 다만 무인자 `new ArrayList<>()`의 초기 capacity 10과 `ArrayList(int initialCapacity)`의 지정 capacity는 javadoc이 명시한 공개 계약이다. 특정 JDK 구현의 1.5배 확장을 모든 Java 버전의 규칙으로 외우지 않는다.
 
+확장 배수는 복사 빈도와 빈 공간을 맞바꾼다.
+
+- capacity를 1씩 늘리면 거의 모든 add가 전체 복사를 일으킨다. n번 추가하는 동안 복사량이 1 + 2 + ... + (n - 1) = n(n - 1)/2, 즉 O(n²)이다.
+- 1보다 큰 배수로 늘리면 총 복사량이 원소 수에 비례해 add 한 번은 상각 O(1)이다. 최악의 n에서도 2배는 2n 미만, 1.5배는 약 3n이다.
+- 대가로 확장 직후 새 capacity의 약 1 - 1/배수가 비어 있다. 2배는 절반, 1.5배는 3분의 1이다.
+- 확장은 `Arrays.copyOf`처럼 새 배열에 복사한 뒤 참조를 바꾸는 방식이고, 더는 참조되지 않는 이전 배열은 GC 대상이 된다. OpenJDK 21 `ArrayList`의 선호 증가량은 기존 capacity의 절반(`oldCapacity >> 1`)이지만 위 경고대로 API 계약은 아니다.
+
 ## 삽입과 삭제
 
 array 중간에 삽입하려면 뒤 원소를 한 칸씩 옮기고, 삭제하면 빈자리를 메워야 한다. 이동 원소 수에 비례하므로 O(n)이다. 끝에 추가하거나 끝에서 제거하는 작업은 capacity 확장이나 reference 정리를 제외하면 빠르다.
 
 - index를 먼저 검증하고 size와 capacity를 구분한다.
 - 제거한 위치 이후의 사용하지 않는 reference를 null로 지워 객체가 불필요하게 reachable 상태로 남지 않게 한다.
-- `System.arraycopy`나 `Arrays.copyOf`는 구현을 단순화할 수 있지만 복사량에 따른 비용은 남는다.
+- `System.arraycopy`나 `Arrays.copyOf`는 구현을 단순화할 수 있지만 복사량에 따른 비용은 남는다. 다만 원소를 하나씩 옮기는 Java loop보다 상수 계수가 작아 같은 O(n)에서도 실측 순위를 바꿀 수 있다. 같은 배열 안의 겹치는 구간도 임시 배열을 거친 것처럼 복사된다고 Javadoc이 명시하므로 shift에 그대로 쓸 수 있다.
 - 예상 원소 수를 안다면 `ArrayList(initialCapacity)`나 `ensureCapacity`로 resize 횟수를 줄일 수 있다. 과도한 선할당은 메모리 낭비다.
 
 ## generic array의 제약
@@ -104,10 +111,26 @@ head나 이미 알고 있는 node 다음에 연결하는 작업은 O(1)이다. i
 
 복잡도 표는 일반적인 구현 모델이다. thread safety, iterator 계약, memory 비용과 실제 구현 API도 함께 확인한다.
 
+### index 위치별 삽입과 삭제 비용
+
+같은 O(n)이라도 비용이 어디서 나오는지가 다르다. 크기 n인 리스트의 index i에 삽입하거나 삭제할 때의 모델이다.
+
+| 구현 | 위치 찾기 | 연결 또는 이동 | index i의 비용 |
+|---|---|---|---|
+| 배열 리스트 | 주소 계산 O(1) | 뒤쪽 n - i개 shift | n - i에 비례 |
+| head만 가진 단방향 연결 리스트 | head에서 직전 node까지 이동 | 참조 변경 O(1) | i에 비례 |
+| Java `LinkedList`(양방향, first와 last 보유) | 가까운 끝에서 이동 | 참조 변경 O(1) | min(i, n - i)에 비례 |
+
+- 맨 앞(i = 0)에서 배열 리스트는 n개를 모두 밀어 O(n)이고, 연결 리스트는 새 node를 기존 첫 node에 잇고 head만 바꿔 O(1)이다. 삭제도 head를 다음 node로 옮기면 끝난다.
+- 맨 끝에서 배열 리스트는 이동이 없어 O(1)(확장은 상각)이다. head만 가진 단방향 연결 리스트는 마지막 node까지 가야 해 O(n)이고, last를 가진 `LinkedList`는 O(1)이다.
+- 단방향 연결 리스트에서 0이 아닌 위치를 지우려면 직전 node를 찾아 `prev.next = target.next`로 건너뛰어야 하므로 직전 node까지의 탐색이 곧 삭제 비용이다.
+- 모델상 앞쪽일수록 연결 리스트, 뒤쪽일수록 배열 리스트가 유리하다. 실제로는 배열 이동이 구간 복사로 처리되고 node 추적은 cache miss를 겪어 교차점이 더 앞쪽으로 밀린다. 측정 사례는 [[Java-Generics-and-Collections-List-Abstraction#이론과 실측|List 추상화의 이론과 실측]]에 있다.
+
 ## 면접 체크포인트
 
 - array의 고정 length와 dynamic array의 capacity 차이
-- append가 amortized O(1)인 이유
+- append가 amortized O(1)인 이유와 capacity를 1씩이 아니라 배수로 늘리는 이유
+- 같은 O(n) 중간 삽입에서 index 위치에 따라 유리한 구현이 달라지는 이유
 - Big O와 worst-case를 동일시하면 안 되는 이유
 - 연결 리스트 삽입이 O(1)이 되기 위한 전제
 - 연결 리스트가 항상 memory 효율적이지 않은 이유
@@ -118,6 +141,8 @@ head나 이미 알고 있는 node 다음에 연결하는 작업은 O(1)이다. i
 - [JLS 10, Arrays](https://docs.oracle.com/javase/specs/jls/se26/html/jls-10.html)
 - [ArrayList, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/ArrayList.html)
 - [LinkedList, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/LinkedList.html)
+- [System.arraycopy, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/System.html#arraycopy(java.lang.Object,int,java.lang.Object,int,int))
+- [OpenJDK 21 ArrayList source](https://github.com/openjdk/jdk/blob/jdk-21%2B35/src/java.base/share/classes/java/util/ArrayList.java)
 - 김영한 강사, [배열의 특징1 - 배열과 인덱스](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=215953)
 - 김영한 강사, [빅오(O) 표기법](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=215954)
 - 김영한 강사, [배열의 특징2 - 데이터 추가](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=215955)

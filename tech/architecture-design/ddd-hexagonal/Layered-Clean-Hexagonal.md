@@ -20,7 +20,7 @@ verified_at: 2026-09-03
 **문제점:**
 - Business나 Domain이 구체 Infrastructure 구현을 직접 참조하면 기술 세부사항에 묶일 수 있음
 - 레이어 간 순환 의존이 발생하기 쉬움
-- "모든 것이 서비스 레이어에 몰리는" 문제 (Fat Service)
+- 모든 것이 서비스 레이어에 몰리는 문제 (Fat Service)
 
 ## Clean Architecture (클린 아키텍처)
 
@@ -34,15 +34,17 @@ Robert C. Martin(Uncle Bob)이 제안. **의존성 규칙(Dependency Rule)**이 
 
 **의존성 규칙:** 바깥 원은 안쪽 원에 의존할 수 있지만, 안쪽 원은 바깥 원을 모른다.
 
-### 왜 "DB가 중심"이면 안 되는가
+### DB 스키마에 업무 모델을 종속시키지 않는다
 
 레이어드 아키텍처의 가장 큰 함정은 **DB가 사실상 최상위 중심**이 되는 것. 원칙은 "Presentation → Business → Data"지만 실제로는:
 
-- ORM의 엔티티 = 도메인 엔티티로 혼용됨 → 비즈니스 로직이 DB 스키마에 묶임
+- 테이블 행을 그대로 옮긴 데이터 객체만 두고 업무 규칙을 외부에 흩어 놓으면 스키마 변경이 업무 코드 전체로 전파됨
 - DB 컬럼이 바뀌면 도메인, UseCase, 컨트롤러까지 영향
 - "도메인"이라는 이름을 가진 클래스가 실제로는 **DB row의 OOP 표현**에 불과
 
 Clean Architecture는 이를 뒤집는다: **도메인이 중심, DB는 바깥 메커니즘**. 도메인 정의가 먼저 서고, Repository 인터페이스가 도메인이 원하는 형태를 정의, JPA, MongoDB 등은 이 인터페이스의 **구현 세부**일 뿐.
+
+ORM 엔티티와 도메인 엔티티를 같은 클래스로 쓰는 것 자체가 문제는 아니다. 풍부한 행위와 불변식을 가진 모델도 ORM으로 매핑할 수 있다. 저장 구조와 도메인 언어의 차이가 매핑 비용을 정당화할 때 분리한다([[Domain-ORM-Mapper]]).
 
 ### 경계(Boundary)와 의존성 역전
 
@@ -68,7 +70,7 @@ UseCase    → [OutputPort] ← RepositoryAdapter (구현)
 입력, 저장과 출력 계약은 변화 이유가 서로 다를 수 있어 필드가 우연히 같더라도 별도 모델이 필요할 수 있다. 예를 들면:
 
 - Create DTO: 사용자 입력 검증용 (필수, 선택 필드)
-- Update DTO: 부분 수정 (모두 nullable)
+- Update DTO: 부분 수정에서 필드 생략과 명시적 null의 의미를 구분
 - Entity: DB 제약, 관계
 - API Response: 외부 계약
 
@@ -125,7 +127,48 @@ Q. Layered와 Clean Architecture의 차이는?
 - Layered: 흔한 형태는 위→아래 호출이지만, 포트 적용 여부에 따라 의존 방향이 달라짐
 - Clean: 바깥→안쪽 의존, Domain이 중심이고 Infrastructure가 바깥
 
+## 호출 규칙과 배포 경계를 구분한다
+
+엄격한 계층 구조는 바로 아래 계층만 호출하고, 완화된 구조는 합의한 범위에서 중간 계층을 건너뛴다. 공통 목표는 제한된 공개 계약을 통해 사용하고 내부 구현을 숨기는 것이다. 모든 계층이 아무 판단 없이 호출만 전달한다면 분리의 실익을 다시 확인한다.
+
+단순 조회에 서비스의 의미 없는 위임만 남는다면 컨트롤러가 조회 Repository를 직접 쓰도록 정할 수도 있다. 권한 검사, 업무 규칙, 여러 조회의 일관성이 필요하면 애플리케이션 서비스 경계로 모은다. 직접 조회도 트랜잭션과 지연 로딩 범위를 정해야 한다([[JPA-API-OSIV]]).
+
+MVC는 UI 구성의 역할을 설명하며 백엔드 전체의 계층 규칙을 대신하지 않는다. Layer는 논리적 책임 분리, Tier는 물리적 배치 구분이다. Clean의 의존성 규칙을 지켜도 독립 배포와 확장, 팀 소유권이 자동으로 생기지는 않는다. 모놀리스나 개별 마이크로서비스 내부에 적용하고, 기능별 변경을 모으려면 [[Modular-Monolith|수직 모듈 경계]]를 함께 설계한다.
+
+헥사고날의 원래 초점은 UI와 실제 DB 없이도 애플리케이션을 구동하고 시험할 수 있게 하는 내부/외부 경계다. 육각형의 여섯 변, 정해진 패키지 수, `UseCase` 접미사, 내부 동심원은 필수가 아니다. 내부 모델 구조와 ORM 모델 분리 여부는 별도로 판단한다.
+
+## 유스케이스로 경계를 드러낸다
+
+패키지와 문서에서 주문 승인, 게시글 발행처럼 시스템의 목적을 먼저 읽을 수 있게 한다. 프레임워크 이름만 나열한 그림에는 업무 흐름이 빠지기 쉽다. 다만 배포, 성능, 보안과 데이터 일관성도 아키텍처 결정이므로 기술 구성을 무의미한 세부사항으로 치부하지 않는다.
+
+- 유스케이스는 액터의 목표, 입력, 사전 조건, 정상 흐름, 실패/대안 흐름과 완료 후 상태를 기술한다. 버튼 이름이나 HTTP 경로보다 업무 결과를 먼저 정한다.
+- **Boundary**는 입력과 출력의 계약, **Interactor**는 해당 유스케이스의 절차와 조정, **Entity**는 재사용할 업무 규칙을 맡는다. DTO는 경계를 넘는 데이터이며 boundary 인터페이스 자체와 같지는 않다.
+- 주문 승인에서 HTTP 입력 해석은 어댑터, 주문 조회와 저장 조정은 interactor, 승인 가능한 상태인지는 도메인 객체가 맡을 수 있다. 대역 저장소로 흐름을 확인해도 실제 저장소의 트랜잭션, 잠금과 오류 계약은 별도로 검증한다.
+- 결정 연기는 구현 선택을 바꿀 여지를 남기는 전략이다. 이미 필요한 일관성, 지연과 규제 조건까지 나중으로 미루지 않고, 위험한 가정은 작은 실험으로 먼저 확인한다. 임시 구현을 버릴지 발전시킬지도 품질과 변경 비용을 보고 판단한다.
+
 ## 출처
+
+- [클린 코더스, Architecture](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279449)
+- [클린 코더스, Architecture UseCase](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279450)
+- [The Clean Architecture — Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [Screaming Architecture — Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2011/09/30/Screaming-Architecture.html)
+
+- [헥사고날 아키텍처의 사실과 오해 (1)](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=291178)
+- [Entity vs DTO](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=264324)
+- [헥사고날 아키텍처의 사실과 오해 (2)](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=300707)
+- [패키지 구조](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=301373)
+- [회원 애플리케이션 서비스 구현](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=301666)
+- [JPA와 도메인 모델 패턴](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=312138)
+- [엔티티 클래스와 JPA 매핑 정보 분리](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=312327)
+- [아키텍처 개념 과 레이어드 아키텍처](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104421)
+- [비지니스로직은 어디에? - 레이어드 아키텍처](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=105077)
+- [Clean Architecture 소개](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=307060)
+- [[실습 1] Clean Architecture 구현 에제](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=307061)
+- [Modular Monolithic Architecture 개요](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=286772)
+- [애플리케이션 아키텍처](https://www.inflearn.com/courses/lecture?courseId=324119&unitId=24287)
+- [상품 서비스 개발](https://www.inflearn.com/courses/lecture?courseId=324119&unitId=24295)
+- [상품 주문](https://www.inflearn.com/courses/lecture?courseId=324119&unitId=24310)
+- [주문 목록 검색, 취소](https://www.inflearn.com/courses/lecture?courseId=324119&unitId=24311)
 - [Alistair Cockburn — Hexagonal Architecture 원문](https://alistair.cockburn.us/hexagonal-architecture/)
 - [우아한형제들 — 클린 아키텍처](https://techblog.woowahan.com/2647/)
 - [coldpresso — 클린 아키텍처 정리](https://coldpresso.tistory.com/24)

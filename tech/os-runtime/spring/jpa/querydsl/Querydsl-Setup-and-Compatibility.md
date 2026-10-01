@@ -1,7 +1,7 @@
 ---
 tags: [querydsl, jpa, annotation-processing, jakarta-persistence]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "OS & Runtime"
 aliases: ["Querydsl Setup", "Querydsl 설정", "Querydsl Q Type"]
 ---
@@ -12,7 +12,7 @@ Querydsl을 설정할 때는 runtime library와 annotation processor를 같은 a
 
 ## Project 계보와 선택
 
-2026-08-04 기준 원본 `querydsl/querydsl`의 최신 release는 5.1.0이며 maintenance가 느려졌다. 활성 community fork인 OpenFeign Querydsl의 최신 release는 7.5다. Spring Data JPA 4.1은 OpenFeign fork를 best-effort로 지원한다.
+2026-09-30 기준 원본 `querydsl/querydsl`의 최신 release는 2024년 1월의 5.1.0이며 maintenance가 느려졌다. 활성 community fork인 OpenFeign Querydsl의 최신 release는 7.7(2026-09-23)이다(2026-08-04 확인 때는 7.5). Spring Data JPA 4.1은 OpenFeign fork를 best-effort로 지원하며, 4.1.1의 build 자체는 원본 `com.querydsl:querydsl-jpa:jakarta` 5.1.0에 optional로 의존한다.
 
 두 계열은 group ID와 classifier 규칙이 다르다. 한 project 안에서 runtime과 APT artifact 계열을 섞지 않고, Spring Boot, Hibernate, Jakarta Persistence, Java version 조합을 integration test로 고정한다.
 
@@ -73,19 +73,32 @@ Spring이 주입하는 shared `EntityManager` proxy는 현재 transaction에 연
 
 H2 memory 또는 file DB, `ddl-auto=create`, SQL formatting, P6Spy는 local 실습과 query 관찰에 유용하다. 운영 schema는 migration으로 관리하고, bind value logging은 개인정보와 credential을 노출할 수 있으므로 환경별로 제한한다. Member와 Team 같은 작은 relation model도 양방향 편의 method보다 FK owner, lazy loading과 transaction 경계를 먼저 검증한다.
 
+### 생성 JPQL과 SQL 관찰
+
+SQL 로그 방식, bind 값 logger와 p6spy starter의 호환 version은 Hibernate와 Spring Boot version마다 바뀌므로 [[JPA-Ecosystem-and-Version-Migration]]의 SQL 관찰 설정을 따른다. 요점은 `spring.jpa.show-sql` 대신 `logging.level.org.hibernate.SQL=debug`로 `org.hibernate.SQL` logger를 켜는 것이다. 둘을 함께 켜면 같은 SQL이 stdout과 log에 두 번 남는다. Bind 값 logger와 JDBC proxy는 필요한 환경에서만 켜고, 운영에 쓰려면 overhead를 측정한다.
+
+Querydsl은 JPQL builder라서 작성한 code가 결국 JPQL로 실행되지만 기본 로그에는 SQL만 보인다. `spring.jpa.properties.hibernate.use_sql_comments=true`(Hibernate 기본 false)를 켜면 실행 SQL 앞에 HQL/JPQL이 주석으로 붙는다. Hibernate 7.4.11과 OpenFeign Querydsl 7.7에서 `/* select member1 from Member member1 where ... */`가 찍혔다. Alias `member1`은 Q type 기본 instance 이름 `member`가 JPQL 예약어 `MEMBER`와 겹쳐 codegen이 뒤에 1을 붙인 결과이고, `new QMember("m")`으로 만든 instance는 alias `m`으로 찍힌다. 이 alias 규칙이 `QuerydslRepositorySupport`의 정렬 오류로 이어지는 사례는 [[Querydsl-Spring-Data-Integration]]에 둔다.
+
 ## 설정 검증 순서
 
 1. Clean compile에서 Q type이 생성된다.
 2. Test와 application runtime classpath에 같은 Querydsl 계열이 있다.
 3. `jakarta.persistence` entity를 processor가 인식한다.
 4. 간단한 `JPAQueryFactory.selectFrom(QMember.member)` query가 실행된다.
-5. JPQL, bind value와 최종 SQL을 필요한 환경에서 관찰한다.
+5. `use_sql_comments`로 JPQL을, `org.hibernate.SQL` logger로 최종 SQL을, bind 값은 필요한 환경에서만 관찰한다.
 
 ## 출처
 
 - [Spring Data JPA 4.1, Querydsl extension and annotation processing](https://docs.spring.io/spring-data/jpa/reference/repositories/core-extensions.html)
 - [OpenFeign Querydsl 7.5 release](https://github.com/OpenFeign/querydsl/releases/tag/7.5)
+- [OpenFeign Querydsl 7.7 release](https://github.com/OpenFeign/querydsl/releases/tag/7.7)
+- [OpenFeign Querydsl 7.7, DefaultEntitySerializer source](https://github.com/OpenFeign/querydsl/blob/7.7/querydsl-tooling/querydsl-codegen/src/main/java/com/querydsl/codegen/DefaultEntitySerializer.java)
+- [OpenFeign Querydsl 7.7, codegen Keywords source](https://github.com/OpenFeign/querydsl/blob/7.7/querydsl-tooling/querydsl-codegen/src/main/java/com/querydsl/codegen/Keywords.java)
 - [Original Querydsl releases](https://github.com/querydsl/querydsl/releases)
+- [Spring Data JPA 4.1.1 POM](https://repo1.maven.org/maven2/org/springframework/data/spring-data-jpa/4.1.1/spring-data-jpa-4.1.1.pom)
+- [Hibernate ORM 7.4, Introduction, Logging the generated SQL](https://docs.hibernate.org/orm/7.4/introduction/html_single/#logging-generated-sql)
+- [Hibernate ORM 7.4, Introduction, Tracking down slow queries](https://docs.hibernate.org/orm/7.4/introduction/html_single/#slow-queries)
+- [Hibernate ORM 7.4 User Guide, hibernate.use_sql_comments](https://docs.hibernate.org/orm/7.4/userguide/html_single/#settings-hibernate.use_sql_comments)
 - [OpenFeign Querydsl JPA tutorial](https://openfeign.github.io/querydsl/tutorials/jpa/)
 - [소개](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=27939)
 - [강의 자료](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30112)
@@ -94,6 +107,7 @@ H2 memory 또는 file DB, `ddl-auto=create`, SQL formatting, P6Spy는 local 실�
 - [라이브러리 살펴보기](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30116)
 - [H2 데이터베이스 설치](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30117)
 - [스프링 부트 설정, JPA와 DB](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30118)
+- [기본 Q-Type 활용](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30123)
 - [예제 domain model과 동작 확인](https://www.inflearn.com/courses/lecture?courseId=324476&unitId=30120)
 - [Querydsl 설정](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114669)
 

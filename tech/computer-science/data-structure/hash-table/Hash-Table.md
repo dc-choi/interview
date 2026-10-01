@@ -52,6 +52,23 @@ hash table은 더 작은 bucket array를 두고 hash function으로 넓은 key �
 - 같은 key를 다시 `set`할 때 새 항목을 중복 삽입할지 기존 value를 갱신할지 ADT 계약을 명확히 한다.
 - iteration order, thread safety와 null key 허용 여부는 구현마다 다르다.
 
+## C++ 코딩 테스트에서 쓰기
+
+직접 구현할 일은 드물고 표준 컨테이너를 쓴다. 모두 평균 O(1)이지만 원소 순서가 크기 순도 삽입 순도 아니다.
+
+- `unordered_set`: `insert`, `erase(value)`(지운 개수 반환), `find`(없으면 `end()`), `count`, `size`. 중복을 넣어도 무시된다.
+- `unordered_multiset`: 중복을 허용한다. `erase(value)`는 그 값을 모두 지우므로 하나만 지우려면 `ms.erase(ms.find(x))`처럼 iterator를 넘긴다(없는 값이면 `find`가 `end()`라 먼저 확인).
+- `unordered_map`: key로 value를 찾는다. `m[key]`는 key가 없으면 기본값 항목을 새로 만든다. 존재 여부만 볼 때는 `find`나 `count`를 쓴다. 같은 key에 대입하면 덮어쓴다.
+- key가 0부터 수백만 이하의 정수처럼 작은 범위면 hash보다 배열 index가 빠르고 단순하다. 문자열을 번호로 바꾸는 쪽만 `unordered_map`을 쓰고, 번호에서 문자열로 가는 쪽은 배열로 두는 식으로 섞는다.
+- 표준 hash는 입력을 알고 만든 저격 데이터에서 한 bucket에 몰려 최악 O(n)이 될 수 있다([[Password-Hashing#해시 DoS|해시 DoS]]). 이런 위험이 있으면 정렬 기반 `set`, `map`(O(log n) 보장)을 쓰거나 hash 함수에 무작위 요소를 섞는다.
+
+### 직접 구현할 때의 선택
+
+- **table 크기**: chaining은 최대 삽입 수 정도, open addressing은 load factor가 너무 커지지 않도록 최대 삽입 수보다 넉넉하게(보통 load factor 0.75 이하가 되게) 잡는다. 나머지로 index를 정하는 hash라면 크기를 소수로 두면 key 분포의 규칙성이 덜 겹친다(예: 1000003은 소수다). 필수는 아니다.
+- **문자열 hash**: 다항식 rolling hash로 `h = (h * a + c) mod m`을 문자마다 반복한다(a는 작은 상수, m은 table 크기). 앞 글자만 쓰거나 글자 합만 쓰면 충돌이 몰린다.
+- **chaining을 배열로**: bucket마다 연결 리스트를 따로 두지 않고, 전체 삽입 수 크기의 `pre`, `nxt`, key, value 배열과 bucket별 `head` 배열 하나로 여러 리스트를 공유한다([[Linear-Data-Structures#배열로 흉내 내는 linked list|배열로 흉내 내는 linked list]]). 새 항목은 `head[h]` 앞에 끼우고, 지우는 항목이 head면 `head[h]`를 다음 항목으로 옮긴다.
+- **open addressing 삭제**: 지운 칸을 빈칸으로 되돌리면 뒤 probe chain을 못 찾으므로 삭제 표시(tombstone)를 둔다. 탐색은 삭제 표시를 건너뛰고 계속, 삽입은 삭제 표시 칸에 재사용할 수 있다.
+
 ## 저장소 예제의 범위
 
 `HashTable.mjs`는 정수 key를 10개 bucket에 나머지 연산으로 배치하고 doubly linked list로 chaining한다. collision, 기존 key 갱신과 음수 key 정규화를 관찰하기 위한 학습 구현이며 resize, 일반 key hashing, iteration과 concurrency는 제공하지 않는다.
@@ -64,9 +81,20 @@ hash table은 더 작은 bucket array를 두고 hash function으로 넓은 key �
 - [[Checksum-and-Hash|체크섬과 해시 (일반 해시와 암호학적 해시의 목적 차이)]]
 - [[자료구조(DataStructure)|자료구조 인덱스]]
 - [[Algorithm-Complexity|시간복잡도와 Big O]]
+- [[Linear-Data-Structures|선형 자료구조 (배열 기반 linked list)]]
+
+## 시간, 공간과 조회 방향
+
+적재율을 낮추면 chain과 probe는 짧아지지만 빈 bucket이 늘어난다. Chaining의 공간은 bucket m개와 항목 n개를 합친 Θ(m+n)이며 node, key와 pointer 비용도 든다. 좋은 hash 분포와 resize는 빠른 조회를 위해 공간을 쓰는 선택이다.
+
+이름에서 번호, 번호에서 이름을 모두 자주 찾으면 조회 방향마다 index를 둔다. 번호가 조밀하면 역방향은 배열, 이름은 hash map으로 구현할 수 있다. 한 map의 value를 매번 순회하면 역방향 질의당 O(n)이다. 두 index는 memory를 추가로 쓰고 변경 시 함께 갱신해야 한다.
 
 ## 출처
 
+- 인프런 보충 강의: [1-I](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100301)
+
 - 인프런, 감자 강사, [해시테이블 개념](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=115974), [해시테이블 구현](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=115975)
+- [바킹독의 실전 알고리즘 0x15강, 해시 — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=1-k-D2AYY0I)
+- [cppreference, std::unordered_multiset::erase](https://en.cppreference.com/w/cpp/container/unordered_multiset/erase)
 - [NIST DADS, hash table](https://xlinux.nist.gov/dads/HTML/hashtab.html)
 - [Princeton Algorithms, Hash Tables](https://algs4.cs.princeton.edu/34hash/)

@@ -88,6 +88,13 @@ health/availability
 
 endpoint 하나의 순간값으로 원인을 단정하지 않는다. metric은 추세, trace는 요청 경로, log는 상세 사건을 제공하므로 같은 deployment/time window로 연결한다.
 
+## 상태 집계와 변경 가능한 운영 정보
+
+- health의 전체 상태는 contributor 상태를 `StatusAggregator`가 정한 순서로 집계한다. 한 구성 요소의 실패가 전체 상태에 반영될 수 있으므로 readiness와 liveness가 검사하는 의존성을 구분한다.
+- `show-details`와 `show-components`는 세부 값과 구성 요소 공개 범위를 각각 정한다. `never`, `when-authorized`, `always` 중 선택하며 외부 공개 endpoint에는 내부 주소나 장애 원인을 노출하지 않는다.
+- `loggers`의 POST는 실행 중 logger level을 바꾼다. `configuredLevel`과 상속 후 `effectiveLevel`은 다를 수 있고 변경은 설정 파일을 고치거나 재시작 뒤 값을 보존하는 기능이 아니다. shutdown은 프로세스를 종료하는 endpoint이므로 진단 endpoint와 같은 권한으로 열지 않는다.
+- `info`는 등록되고 활성화된 contributor의 결과다. build 정보에는 `META-INF/build-info.properties`, Git 정보에는 `git.properties` 등 생성 자료가 필요하다. endpoint가 비어 있다고 build가 실패한 것은 아니며 commit metadata 공개 범위도 검토한다.
+
 ## 출처
 
 - [Spring Boot 4.1, Production-ready Features](https://docs.spring.io/spring-boot/reference/actuator/)

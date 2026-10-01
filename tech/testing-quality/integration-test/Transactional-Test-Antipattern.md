@@ -1,7 +1,7 @@
 ---
 tags: [testing, transactional, spring, jpa, jdbc, integration-test]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "테스트&품질(Testing&Quality)"
 aliases: ["Transactional Test Antipattern", "테스트 @Transactional 안티패턴", "테스트 데이터 롤백"]
 ---
@@ -27,6 +27,23 @@ class ItemRepositoryTest {
 ```
 
 같은 transaction-bound `DataSource`를 쓰는 `JdbcTemplate`과 MyBatis 호출도 rollback 대상에 참여할 수 있다. ORM이 아니라서 rollback되지 않는다는 설명은 정확하지 않다. 다른 `DataSource`, 새 thread, independent transaction을 쓰면 경계가 달라진다.
+
+Test의 `@Transactional`은 아래 수동 구현을 자동화한 것이다. Transaction manager가 시작한 connection을 `TransactionSynchronizationManager`가 현재 thread에 묶고, `JdbcTemplate`과 `SimpleJdbcInsert`가 그 connection을 꺼내 쓰므로 repository의 쓰기가 test transaction에 들어간다. 같은 transaction 안에서는 commit 전 데이터도 조회되므로 저장 후 검증에는 문제가 없다.
+
+```java
+@Autowired PlatformTransactionManager transactionManager;
+TransactionStatus status;
+
+@BeforeEach
+void beginTransaction() {
+    status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+}
+
+@AfterEach
+void rollbackTransaction() {
+    transactionManager.rollback(status);
+}
+```
 
 ## 지원 범위
 
@@ -71,7 +88,13 @@ Local 개발 DB와 test DB의 URL, credential과 schema를 분리한다. Test가
 
 Spring Boot는 compatible embedded DB가 classpath에 있고 별도 URL이 없으면 test용 `DataSource`를 자동 구성할 수 있다. H2 memory mode는 빠르지만 production DB의 SQL, isolation, lock, collation과 constraint timing이 다를 수 있다. Repository contract의 일부는 실제 engine test로 보완한다.
 
-Test context마다 embedded DB를 분리해야 하면 `spring.datasource.generate-unique-name=true`를 검토한다. Schema는 `schema.sql` 편의 기능보다 production migration을 같은 순서로 적용하는 방식이 drift를 줄인다.
+- **Context별 DB 이름**: Spring Boot 2.3부터 자동 구성 embedded `DataSource`는 기동 때 UUID 이름을 만들어 ApplicationContext마다 별도 in-memory DB를 쓴다. `spring.datasource.generate-unique-name`의 기본값이 이미 `true`다(Boot 4.1.1 `DataSourceProperties` 소스 기준). Boot reference의 SQL Databases 절에는 이 값을 `true`로 설정하라는 NOTE가 남아 있지만 켤 필요가 없다.
+- **여러 test class가 같은 DB를 보는 경우**: TestContext cache가 같은 context를 재사용할 때가 하나다. 그래서 rollback이나 cleanup은 여전히 필요하다. `spring.datasource.url=jdbc:h2:mem:testdb`처럼 URL을 고정했거나 `generate-unique-name=false`로 껐을 때가 다른 하나다(이름을 주지 않으면 `testdb`). 공유가 필요하면 후자를 의도적으로 고른다. 이 기본값 때문에 H2 console 접속 URL도 더 이상 `jdbc:h2:mem:testdb`가 아니다.
+- **In-memory DB 수명**: H2 in-memory DB는 기본적으로 마지막 connection이 닫히면 내용과 함께 사라진다. Pooling 없는 `DriverManagerDataSource`처럼 작업마다 connection을 열고 닫으면 statement 사이에 table과 data가 사라진다. URL에 `DB_CLOSE_DELAY=-1`을 붙이면 JVM이 살아 있는 동안 유지된다. Boot가 자동 구성하는 H2 URL은 이미 `jdbc:h2:mem:<이름>;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE`이고, embedded URL을 직접 설정하면 Boot 문서대로 자동 종료를 끈다(H2는 `DB_CLOSE_ON_EXIT=FALSE`).
+- **빈 DB와 schema script**: 새 in-memory DB에는 table이 없다. Boot는 기동 때 classpath의 `schema.sql`, `data.sql`을 실행하는데, `spring.sql.init.mode` 기본값이 `embedded`라 embedded DB에서만 자동 실행되고 외부 DB에는 `always`가 필요하다. Flyway나 Liquibase와 이 script를 함께 쓰는 방식은 권장되지 않고 지원 제거가 예고됐다.
+- **수동 DataSource 없이 전환**: Test 쪽 `application.properties`에서 `spring.datasource.url`, username, password를 지우면 Boot가 embedded `DataSource`를 만든다. Test classpath에서 `src/test/resources`의 같은 이름 파일이 main 파일을 가리므로 test에서만 바뀐다. H2가 test classpath에 있어야 한다.
+
+Schema는 `schema.sql` 편의 기능보다 production migration을 같은 순서로 적용하는 방식이 drift를 줄인다.
 
 ### Ephemeral production-like database
 
@@ -88,6 +111,9 @@ Testcontainers 등으로 실제 engine version을 띄우고 migration을 적용�
 
 `TRUNCATE` target을 metadata에서 만들 때도 identifier를 사용자 입력과 섞지 않고 test 전용 schema allowlist를 둔다. Cleanup 실패를 삼키지 말고 다음 test를 중단해 오염을 드러낸다.
 
+- **삭제 cleanup이 남기는 찌꺼기**: `@AfterEach`의 `DELETE`는 cleanup 지점에 도달해야 실행된다. 디버깅 중 강제 종료, CI timeout, JVM crash처럼 process가 먼저 끝나면 이미 commit된 row가 남아 다음 실행과 다른 test를 오염시킨다. Rollback 방식은 test의 쓰기를 끝까지 commit하지 않으므로 중간에 process가 죽어도 DB에 반영되지 않는다. 대신 위 표의 한계(commit 시점 제약, `REQUIRES_NEW`, 다른 thread의 쓰기를 가림)는 그대로다.
+- **파괴적 cleanup을 운영 계약에 올리지 않는다**: 저장소 전체를 비우는 `clearStore()` 같은 method는 repository interface에 두지 않는다. Memory 구현을 쓰는 test에서만 구현 타입으로 호출하고, 실제 DB 구현은 rollback이나 test 전용 cleanup으로 정리한다.
+
 ## 설계 원칙
 
 - Rollback test와 production transaction behavior test를 별도 suite로 둔다.
@@ -102,7 +128,13 @@ Testcontainers 등으로 실제 engine version을 띄우고 migration을 적용�
 - [Spring Framework 7.0, TestContext Transaction Management](https://docs.spring.io/spring-framework/reference/testing/testcontext-framework/tx.html)
 - [Spring Framework 7.0, `@Rollback`](https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-rollback.html)
 - [Spring Boot 4.1, SQL Databases](https://docs.spring.io/spring-boot/reference/data/sql.html)
+- [Spring Boot 4.1, Database Initialization](https://docs.spring.io/spring-boot/how-to/data-initialization.html)
 - [Spring Boot 4.1, Testing](https://docs.spring.io/spring-boot/reference/testing/index.html)
+- [Spring Boot 2.3 Release Notes — Spring Boot GitHub Wiki](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.3-Release-Notes)
+- [DataSourceProperties.java v4.1.1 — Spring Boot GitHub](https://github.com/spring-projects/spring-boot/blob/v4.1.1/module/spring-boot-jdbc/src/main/java/org/springframework/boot/jdbc/autoconfigure/DataSourceProperties.java)
+- [EmbeddedDatabaseConnection.java v4.1.1 — Spring Boot GitHub](https://github.com/spring-projects/spring-boot/blob/v4.1.1/module/spring-boot-jdbc/src/main/java/org/springframework/boot/jdbc/EmbeddedDatabaseConnection.java)
+- [H2 Database, Features (In-Memory Databases)](https://h2database.com/html/features.html#in_memory_databases)
+- 김영한 강사, [프로젝트 구조 설명3, 테스트](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114619)
 - 김영한 강사, [테스트, 데이터베이스 연동](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114634)
 - 김영한 강사, [테스트, 데이터베이스 분리](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114635)
 - 김영한 강사, [테스트, 데이터 롤백](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114636)

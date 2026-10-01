@@ -12,7 +12,7 @@ Node.js는 두 가지 모듈 시스템(CommonJS, ES Modules)을 지원하며, �
 ## 하위 문서
 
 - [[Module-System-CommonJS|CommonJS 모듈 시스템]] — Revealing Module Pattern, require() 6단계 해석, exports vs module.exports, 캐싱/순환 의존성, 모듈 정의 패턴
-- [[Module-System-ESM|ESM 모듈 시스템]] — 3단계 로딩, Live Bindings, CJS/ESM 비교표, 상호운용성, package.json exports, 듀얼 패키지 위험, Node-API/ABI
+- [[Module-System-ESM|ESM 모듈 시스템]] — 3단계 로딩, Live Bindings, CJS/ESM 비교표, 모듈 캐시와 쿼리 스트링 재로딩, 상호운용성, package.json exports, 듀얼 패키지 위험, Node-API/ABI
 
 ## 관련 문서
 - [[Node.js]]

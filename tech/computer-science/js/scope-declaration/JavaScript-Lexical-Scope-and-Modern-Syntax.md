@@ -112,7 +112,17 @@ accessor는 property 문법으로 계산과 validation을 연결한다. I/O나 �
 - object spread로 entity를 복제하면 prototype, private state와 descriptor가 사라질 수 있으므로 mapper를 둔다.
 - `const`를 domain immutability와 동일시하지 말고 readonly type, constructor invariant와 persistence update 정책을 함께 쓴다.
 
+## block과 initializer의 실제 경계
+
+switch의 case/default는 따로 scope를 만들지 않고 switch 전체가 하나의 lexical block이다. case마다 let 이름을 쓰려면 각각 {}로 묶는다. try와 catch는 형제 block이며 catch는 try 안의 let을 읽지 못한다. 여러 classic script의 global lexical binding은 서로 보이지만 window property가 아니며 같은 이름 let/const를 다시 선언하면 뒤 script 평가가 SyntaxError로 실패한다. ESM은 별도 module scope다.
+
+default initializer는 필요할 때마다 왼쪽에서 오른쪽으로 평가한다. 앞 binding은 뒤 default에서 읽을 수 있지만 뒤 binding을 앞 default에서 읽으면 TDZ다. null에는 적용되지 않는다. 배열 pattern의 쉼표는 iterator를 진행해 값을 버리고 rest는 남은 iterator 전체를 배열로 수집한다. object pattern의 name은 property lookup이며 같은 key를 여러 번 읽을 수도 있다.
+
+modern object literal은 strict에서도 같은 key의 뒤 정의가 앞 값을 덮는다. computed key도 충돌할 수 있으므로 dispatch key는 외부 문자열을 그대로 사용하지 말고 allowlist로 검증한다. array-like 소비는 length 기준으로 0부터 읽고 없는 index는 undefined로 보므로 index 수와 length가 맞는지, 터무니없이 큰 length가 allocation을 유발하는지 확인한다. iterable method가 있으면 Array.from은 iterable 경로를 먼저 사용한다.
+
 ## 출처
+
+- 인프런 보충 강의: [1. from(), of()](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30776)
 
 - [ECMAScript Language Specification, declarations and variables](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html)
 - [ECMAScript Language Specification, arrow function definitions](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-arrow-function-definitions)

@@ -115,7 +115,17 @@ Map/Set iterator는 underlying collection을 참조한다. 순회 중 delete/add
 - process-local collection을 distributed lock/idempotency/unique constraint 대용으로 쓰지 않는다.
 - serialization boundary에서는 Map/Set을 DTO array/record로 명시적으로 변환한다.
 
+## 생성 입력과 가공
+
+Map 생성자는 각 entry가 object인지 확인하고 그 entry의 property 0과 1을 key/value로 읽는다. `new Map([{id:1},{id:2}])`는 오류 없이 `undefined => undefined` 하나가 되고 primitive entry는 TypeError다. `new Map(rows.map(row => [row.id,row]))`나 Object.entries로 pair를 명시한다. plain Object는 숫자 key를 문자열로 바꾸지만 Map은 100과 '100'을 구분하므로 route/query 입력은 key type을 먼저 통일한다. size는 getter라 대입으로 비우지 않고 clear를 쓴다.
+
+Map/Set 자신에는 map/filter가 없다. `[...map].filter(...)`처럼 배열로 모으거나, 지원 runtime에서는 ES2025 iterator helper로 `new Map(map.entries().filter(([,v]) => v.active))`처럼 중간 배열 없이 지연 소비한다. iterator helper도 한 번만 소비된다. 순차 effect는 for...of에 두고 helper 지원과 type 설정은 배포 환경에서 확인한다.
+
 ## 출처
+
+- [ECMAScript, Iterator.prototype.map](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-iterator.prototype.map)
+
+- [ECMAScript, AddEntriesFromIterable](https://tc39.es/ecma262/multipage/keyed-collections.html#sec-add-entries-from-iterable)
 
 - [ECMAScript Language Specification, keyed collections](https://tc39.es/ecma262/multipage/keyed-collections.html)
 - [ECMAScript Language Specification, liveness and execution](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-liveness)

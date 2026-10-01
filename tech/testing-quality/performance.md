@@ -1,14 +1,14 @@
 ---
 tags: [testing]
 status: done
-verified_at: 2026-08-24
+verified_at: 2026-09-30
 category: "Testing & Quality"
 aliases: ["performance"]
 ---
 
 # Performance Test
 
-이 문서는 성능 테스트의 **유형, 핵심 지표, 부하 모델링, 스파이크 시나리오 설계, SLO 역산 판정 기준**을 소유한다. 판정을 코드로 박는 k6 threshold 예시와 부하 생성기 자체 병목 확인 절차도 여기서 다룬다. k6 실행법과 도구 비교 상세(도구 선택 축, JMeter, Keploy, 분산 부하)는 [[Load-Test-K6|성능 테스트 도구 (k6, JMeter, Keploy)]]에 있다.
+이 문서는 성능 테스트의 **유형, 핵심 지표, 부하 모델링, 스파이크 시나리오 설계, SLO 역산 판정 기준, 실행 절차와 결과 리포트**를 소유한다. 판정을 코드로 박는 k6 threshold 예시와 부하 생성기 자체 병목 확인 절차도 여기서 다룬다. k6 실행법과 도구 비교 상세(도구 선택 축, JMeter, Keploy, 분산 부하)는 [[Load-Test-K6|성능 테스트 도구 (k6, JMeter, Keploy)]]에 있다.
 
 ## 유형별 목적과 종료 조건
 
@@ -114,6 +114,23 @@ export const options = {
 
 같은 부하 스크립트를 생성기 대수만 늘려 돌렸을 때 처리량이 비례해 늘어난다면 이전 결과는 생성기 한계였다는 신호다.
 
+## 실행 절차와 결과 리포트
+
+유형과 지표가 무엇을 볼지 정한다면, 실행 절차는 그 숫자를 믿을 수 있게 만든다. 신규 서비스 런칭 전이나 큰 구조 변경 뒤의 성능 테스트를 기준으로 한다.
+
+1. **환경**: 운영과 같은 서버 사양과 배포 방식으로 성능 테스트 환경을 만든다. 사양이 다르면 찾은 병목과 튜닝 결과가 운영으로 옮겨지지 않는다. 축소 환경의 절대값을 운영 SLO와 직접 비교할 수 없는 이유는 [[Load-Test-Automation|부하 테스트 자동화]]와 같다.
+2. **대상**: 트래픽이 몰리는 화면, 모든 사용자가 거치는 화면(로그인 뒤 첫 화면, 메뉴별 첫 대시보드), API 호출 조합이 많은 화면(대시보드, 통계)을 먼저 고른다.
+3. **세 질문**: 문제가 무엇인가(느린 API, 슬로우 쿼리), 한계가 어디인가(버티지 못하는 요청 임계치), 무엇을 고쳐야 하는가(실제 병목)에 답할 지표를 미리 정한다. 응답 시간 분포, 최대 TPS, 커넥션 풀 사용률, 오류가 시작되는 부하가 그 지표다.
+4. **단계적 증가**: 가상 사용자나 도착률을 계단식(예: VU 100 단위)으로 올리며 단계마다 TPS, 응답 시간, CPU와 메모리, 오류와 예외를 기록한다. VU 계단은 closed model이라 한계 근처에서 부하가 저절로 줄 수 있으므로 포화점은 처리량 곡선과 함께 판단한다([[#ramp-up과 think time 모델링|부하 모델]]).
+5. **APM 병행**: 부하 도구는 한계 상황을 만들고, APM의 분산 트랜잭션 추적은 그 순간 느린 API와 SQL 호출 경로를 짚는다. 둘을 같은 시간축으로 맞춰 본다.
+6. **개선과 반복**: 쿼리와 API 튜닝, 인덱스와 테이블 구조, 중복 쿼리와 불필요한 로직, 병렬 처리와 캐싱을 검토하고 같은 시나리오로 다시 잰다.
+
+결과 리포트에는 반복 측정의 평균과 최대만이 아니라 p95, p99를 남긴다. 함께 적을 항목은 환경(OS, DB, 테스트 도구, 네트워크, 하드웨어), 부하(VU나 도착률, QPS, TPS, 단계별 유지 시간), 결과(오류와 예외, 자원 사용량, 응답 시간 분포, 슬로우 쿼리와 실행 계획), 후속 조치(데이터 규모를 키운 재테스트, 동시 사용자 확대, 구조 변경이나 DB 증설이 필요할 때의 검토 요청)다.
+
+실행 계획에 풀 테이블 스캔과 비효율 조인이 보이면 인덱스를 추가하고 다시 잰다. MySQL 8.4는 조인 조건에 쓸 인덱스가 없는 equi-join에 hash join을 쓰므로(`EXPLAIN` Extra의 `Using join buffer (hash join)`), 인덱스 추가와 hash join 전환을 한 처방으로 묶지 말고 바뀐 실행 계획으로 확인한다([[Execution-Plan|실행 계획]]).
+
+도구 상태는 2026-09-30 기준이다. APM인 Pinpoint는 3.1.0(2026-05)까지 릴리스가 이어진다. 부하 도구 nGrinder의 GitHub 저장소는 archive 상태이고 마지막 릴리스는 2024-06의 3.5.9-p1이다. 도구 선택 축은 [[Load-Test-K6|성능 테스트 도구]]를 따른다.
+
 ## 면접 체크포인트
 
 - 5가지 유형 각각의 목적과 무엇을 보고 끝낼지
@@ -124,6 +141,7 @@ export const options = {
 - 발행 측 성공률만으로 유실을 판정할 수 없는 이유와 종단 간 측정 방법
 - SLO에서 역산한 threshold로 CI 판정을 자동화하는 방식
 - 결과를 믿기 전에 부하 생성기가 병목이 아닌지 확인하는 절차
+- 운영 동등 환경이 필요한 이유와 결과 리포트에 남길 항목
 
 ## 출처
 
@@ -137,6 +155,10 @@ export const options = {
 - [EMQX 공식 문서, Inflight Window and Message Queue](https://docs.emqx.com/en/emqx/latest/design/inflight-window-and-message-queue.html)
 - [Grafana k6 공식 문서, Ramping arrival rate](https://grafana.com/docs/k6/latest/using-k6/scenarios/executors/ramping-arrival-rate/)
 - [스파이크 테스트를 활용한 TPS 검증 — Nextree, jungboke](https://www.nextree.io/seupaikeu-teseuteureul-hwalyonghan-tps-geomjeung/)
+- [MySQL 8.4 Reference Manual, Hash Join Optimization](https://dev.mysql.com/doc/refman/8.4/en/hash-joins.html)
+- [pinpoint-apm/pinpoint — GitHub](https://github.com/pinpoint-apm/pinpoint)
+- [naver/ngrinder — GitHub](https://github.com/naver/ngrinder)
+- [인프런, 코드빌런, 애플리케이션 성능 테스트](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242778)
 
 ## 관련 문서
 

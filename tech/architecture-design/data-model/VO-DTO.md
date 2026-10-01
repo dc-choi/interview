@@ -31,12 +31,22 @@ aliases: ["VO DTO", "VO와 DTO"]
 
 판별 한 줄: 메서드나 setter의 유무로 구분하지 않는다. 도메인 개념을 표현하고 값으로 동등성을 판단하면 VO, 경계를 넘어 데이터를 운반하는 것이 주책임이면 DTO다. DTO에 비즈니스 규칙이 스며들면 경계 객체가 도메인 로직을 삼키고 있다는 신호다.
 
+## 레거시의 VO 이름
+
+J2EE의 초기 Value Object라는 이름은 데이터 전송 패턴을 가리키기도 했고 이후 Transfer Object로 불렸다. 따라서 `UserVO`라는 이름만으로 DDD의 불변 값 객체라고 판단하지 않는다. 실제 책임이 데이터 운반인지, 도메인 값과 동등성 표현인지 확인한다.
+
 ## 출처
+
+- [Oracle, 초기 J2EE Value Object 사용례](https://www.oracle.com/technical-resources/articles/javaee/j2eepatterns.html)
+- [Oracle, Core J2EE Transfer Object](https://www.oracle.com/java/technologies/transfer-object.html)
+
+- [비지니스로직은 어디에? - 레이어드 아키텍처](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=105077)
 
 - [Implementing value objects — Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/implement-value-objects)
 - [Create Data Transfer Objects — Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/web-api/overview/data/using-web-api-with-entity-framework/part-5)
 
 ## 관련 문서
 - [[DTO-Layering|DTO 레이어 스코프, Entity 변환 위치]]
+- [[Measure-Modeling|측도 모델링 (Quantity, Money 값 객체)]]
 - [[DDD]] — Entity vs Value Object (식별자 기반 vs 값 기반)
 - [[OOP]]

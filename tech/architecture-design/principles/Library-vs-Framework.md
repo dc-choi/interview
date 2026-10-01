@@ -123,6 +123,7 @@ NestJS가 라우팅, 의존성 주입, 요청 수명주기를 **대신 돌린다
 - [daddyprogrammer — 기술 용어 및 개념 정리](https://daddyprogrammer.org/post/2058/tech-terms-concept/)
 
 ## 관련 문서
+- [[Modular-Monolith#인터페이스 모듈로 모듈 순환을 끊는다|인터페이스 모듈과 DI로 모듈 순환 끊기]]
 - [[Layered-Clean-Hexagonal|Layered / Clean / Hexagonal]]
 - [[Hexagonal-In-Practice|Hexagonal 실전 적용]]
 - [[SOLID-In-Practice|SOLID 원칙 실전 적용]]

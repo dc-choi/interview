@@ -1,7 +1,7 @@
 ---
 tags: [java, stream, collector, grouping, reduction]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "CS - 함수형 프로그래밍"
 aliases: ["Java Stream Collectors", "Java 스트림 컬렉터"]
 ---
@@ -65,7 +65,15 @@ Map<Grade, Double> averageByGrade = students.stream().collect(
 - 큰 grouping은 모든 결과를 memory에 보관한다. Cardinality와 heap 사용량을 측정한다.
 - 병렬화 전 source splitting 비용, combiner 비용과 encounter order 요구를 확인한다.
 
+## downstream과 finisher의 적용 위치
+
+`groupingBy(grade, mapping(Student::name, toList()))`는 각 원소를 이름으로 바꾼 뒤 group별 List에 모아 Map<Grade,List<String>>을 만든다. `collectingAndThen(maxBy(...), optional -> optional.orElseThrow().name())`은 group 전체를 모은 결과에 finisher를 한 번 적용해 최고점 학생 이름 하나로 바꾼다. 원소 변환과 집계 결과 변환을 구분한다.
+
+merge function 없는 toMap의 중복 key는 IllegalStateException이다. counting은 Long, averagingInt는 Double, summarizingInt는 count/sum/min/average/max를 묶는다. 문자열 결합은 joining으로 의도를 드러낸다. Group 없는 최대값이나 합은 Stream의 max/reduce가 직접적이고 collector는 다단계 집계에서 유용하다. toUnmodifiableList는 null 원소를 거부하지만 Stream.toList는 null을 허용하며, 둘 다 수정 불가능하다고 같은 입력 계약은 아니다.
+
 ## 출처
+
+- 인프런 보충 강의: [다음으로](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275429)
 
 - [Java SE 26, Collector](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Collector.html)
 - [Java SE 26, Collectors](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Collectors.html)

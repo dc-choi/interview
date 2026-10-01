@@ -1,7 +1,7 @@
 ---
 tags: [cs, typescript, enum, type-system]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "CS - TypeScript"
 aliases: ["TS Enum", "TypeScript Enum Antipattern", "TypeScript enum 선택"]
 ---
@@ -29,6 +29,23 @@ enum Role {
 ```
 
 TypeScript 5.0부터 모든 enum은 각 멤버가 고유 타입을 갖는 union enum으로 계산된다. enum 멤버를 discriminant로 사용할 수 있지만, enum 자체는 타입 소거 대상이 아닌 런타임 문법이다. `erasableSyntaxOnly`를 켜거나 Node의 기본 type stripping을 직접 사용할 때는 일반 enum을 사용할 수 없다.
+
+## 숫자 enum의 자동 번호와 저장값 위험
+
+초기값이 없는 첫 멤버는 0이고, 초기값이 없는 다음 멤버는 앞 멤버 값에 1을 더한다. 중간 멤버에 값을 주면 그다음 멤버부터 그 값에서 이어진다. 초기값 없는 멤버는 첫 멤버이거나 숫자 상수 멤버 뒤에만 올 수 있어, 문자열이나 계산된 멤버 다음에는 초기값이 필요하다.
+
+```typescript
+enum Role { Admin, User, Guest }   // 0, 1, 2
+enum Level { Low = 10, Mid, High } // 10, 11, 12
+enum Step { A, B = 5, C, D }       // 0, 5, 6, 7
+enum Lang { Ko = "ko", En }        // 오류 TS1061: Enum member must have initializer
+```
+
+자동 번호는 숫자 코드에 이름을 붙여 의미를 드러내지만 값을 선언 순서에 묶는다.
+
+- 재정렬: `Role.User`의 1을 DB, API 응답, 메시지나 캐시로 내보낸 뒤 `Admin` 다음에 `Manager`를 추가하면 저장된 1이 `Manager`로 해석된다. 프로세스 밖으로 나가는 값에는 명시적 값을 쓰고 가능하면 문자열로 두며, 기존 값은 바꾸지 않고 추가만 한다.
+- falsy 0: 첫 멤버의 0은 falsy라 `role ? ... : ...`나 `if (!role)`로 존재를 확인하면 `Role.Admin`이 미설정으로 판정된다. 존재 확인은 `role === undefined`로 한다.
+- 타입 검사 범위: TypeScript 5.0부터 범위 밖 리터럴 대입(`const r: Role = 7`)은 오류다(4.9 이하는 통과). 그러나 숫자 enum은 `number`와 호환되므로 `number` 변수는 그대로 대입된다. 외부에서 들어온 숫자는 런타임 검증 뒤 enum으로 바꾼다.
 
 ## 문자열 union과 `as const` 객체
 
@@ -72,10 +89,14 @@ enum을 일괄 안티패턴으로 판단하거나 객체가 항상 더 작은 bu
 - [[TS-Type-Assertions|as const와 타입 단언]]
 - [[TS-Collection-Type-Design|컬렉션 타입 설계]]
 - [[MySQL-Enum-Antipattern|MySQL ENUM 선택]]
+- [[Coding-Preferences-TypeScript|enum 사용 선호 기록]]
 
 ## 출처
 
 - [TypeScript Handbook, Enums](https://www.typescriptlang.org/docs/handbook/enums)
 - [TypeScript 5.0, All Enums Are Union Enums](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#all-enums-are-union-enums)
+- [TypeScript 5.0, Enum Overhaul](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#enum-overhaul)
+- [TypeScript Handbook, Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#enums)
 - [TypeScript TSConfig, erasableSyntaxOnly](https://www.typescriptlang.org/tsconfig/erasableSyntaxOnly.html)
 - yongsoocho, [literal type과 enum](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=137133)
+- 이정환 Winterlood, [Enum 타입](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=155995)

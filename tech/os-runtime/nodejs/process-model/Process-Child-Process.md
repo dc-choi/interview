@@ -172,6 +172,7 @@ shell이 필요해도 사용자 입력을 인자로 넣지 말고, 인자 바인
 
 ## 관련 문서
 
+- [[Command-Injection|Command Injection (셸 사용과 인자 인젝션)]]
 - [[Node.js|Node.js 개요]]
 - [[Worker-Threads|Worker Threads (스레드 기반 분리)]]
 - [[Nodejs-Clustering|Cluster (다중 worker 패턴)]]

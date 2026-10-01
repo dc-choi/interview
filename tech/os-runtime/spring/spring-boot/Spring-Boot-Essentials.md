@@ -135,6 +135,8 @@ Spring Boot 4.1에서 HTTP/JMX 기본 노출은 `health` 하나다. 추가 endpo
 - Executable JAR의 **12-Factor/Docker 이점**
 - Actuator의 **보안 주의 사항** (전체 노출 금지)
 
+Spring Boot 4의 AspectJ AOP starter는 `spring-boot-starter-aspectj`다. 이전 `spring-boot-starter-aop` 예제를 현재 starter 목록과 대조한다.
+
 ## 출처
 - [Spring Boot 4.1, Build Systems와 Starters](https://docs.spring.io/spring-boot/reference/using/build-systems.html)
 - [Spring Boot 4.1, System Requirements](https://docs.spring.io/spring-boot/system-requirements.html)
@@ -153,6 +155,7 @@ Spring Boot 4.1에서 HTTP/JMX 기본 노출은 `health` 하나다. 추가 endpo
 - 김영한 강사, [라이브러리 살펴보기](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49571)
 - 김영한 강사, [빌드하고 실행하기](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49574)
 - 김영한 강사, [다음으로](https://www.inflearn.com/courses/lecture?courseId=325630&unitId=49607)
+- 김영한 강사, [수업 자료](https://www.inflearn.com/courses/lecture?courseId=327901&unitId=94404)
 
 ## 관련 문서
 - [[Spring|Spring (인덱스)]]

@@ -84,3 +84,4 @@ Redis가 임시 projection인지 장바구니 원본인지 먼저 정한다. Red
 - [[Transactional-Outbox|Transactional Outbox]]
 - [[CDC-Debezium-Concept|CDC와 Debezium 개념]]
 - [[Microservice-Data-Ownership-and-Queries|마이크로서비스 데이터 소유권과 교차 서비스 조회]]
+- [[NoSQL-Overview|NoSQL 개요 (저장소 선택 절차, 메인과 특수 목적, 보조 저장소 역할 구분)]]

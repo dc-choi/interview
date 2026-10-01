@@ -26,7 +26,7 @@ MySQL 8.4는 applicable join index가 없는 equi-join에서 hash join을 사용
 
 MySQL 8.4의 hash join은 non-equi 조건도 지원한다. 이 경우 hash Cartesian product를 만든 뒤 조건을 filter하는 형태가 될 수 있어 비용이 클 수 있다. inner join뿐 아니라 outer, semijoin과 antijoin에도 지원 범위가 있다.
 
-따라서 "hash join은 등가 조건만 가능"이나 "index가 있으면 nested loop가 항상 빠르다"고 단정하지 않는다. 조건, 통계와 실제 iterator 시간을 본다.
+따라서 hash join은 등가 조건만 가능이나 index가 있으면 nested loop가 항상 빠르다고 단정하지 않는다. 조건, 통계와 실제 iterator 시간을 본다.
 
 ## BKA와 MRR
 
@@ -66,6 +66,10 @@ inner secondary index가 join key와 필요한 projection을 덮으면 각 loop�
 3. 실제 plan을 반복 측정한다.
 4. plan 안정성이 필요한 제한된 query에만 hint를 쓰고 upgrade 때 재검증한다.
 
+## Join 수가 늘어날 때
+
+N개 table의 순서 후보는 제약 없는 이론상 N!로 늘지만 optimizer는 dependency와 pruning으로 탐색을 줄인다. 조인 개수만으로 실패를 판정하지 말고 첫 큰 cardinality 오차가 다음 iterator의 loops를 어떻게 늘렸는지 본다. SQL에 적은 FROM 순서는 일반 inner join의 물리 순서를 보장하지 않는다.
+
 ## 출처
 
 - [MySQL 8.4, Nested-Loop Join Algorithms](https://dev.mysql.com/doc/refman/8.4/en/nested-loop-joins.html)
@@ -77,6 +81,9 @@ inner secondary index가 join key와 필요한 projection을 덮으면 각 loop�
 - [인프런, 해시 조인](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471933)
 - [인프런, 드라이빙 테이블 선택](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471934)
 - [인프런, join과 커버링 인덱스](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471939)
+- [인프런, 정리](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471935)
+- [인프런, 히스토그램 4 - 활용](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471928)
+
 
 ## 관련 문서
 

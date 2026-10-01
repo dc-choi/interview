@@ -27,7 +27,7 @@ Form을 보여 주는 GET과 상태를 바꾸는 POST를 같은 path의 method�
 
 ## static resource와 template
 
-`static` directory의 파일은 일반적으로 client가 직접 요청할 공개 resource다. secret, source map이나 내부 문서를 배치하지 않는다. “정적 파일이므로 보안상 위험”이 아니라 public surface라는 사실에 맞춰 artifact를 분류한다.
+`static` directory의 파일은 일반적으로 client가 직접 요청할 공개 resource다. secret, source map이나 내부 문서를 배치하지 않는다. 공개 resource라는 사실에 맞춰 artifact를 분류한다.
 
 Thymeleaf는 server-side model을 HTML에 적용하면서 template 자체를 browser에서 열 수 있는 natural template 방식도 지원한다.
 
@@ -80,7 +80,17 @@ Controller는 path ID와 허용된 update DTO만 service에 전달한다. Servic
 
 작은 SSR 화면에서는 backend가 template까지 담당할 수 있고 SPA/mobile client가 있으면 JSON API와 frontend가 분리될 수 있다. 어느 방식이든 화면 요구사항, API/DTO, error와 cache contract의 단일 출처를 정한다. Mock HTML은 production authorization/data rule의 대체물이 아니다.
 
+## HTML form과 redirect 응답 계약
+
+HTML form의 일반 method는 GET/POST다. PUT/PATCH/DELETE를 흉내 내려면 `_method`와 활성화된 method-override filter 같은 별도 계약이 필요하다. `th:action`을 현재 path로 정한 form도 렌더링 결과와 실제 POST handler를 확인하고 정적 HTML 파일에 POST하지 않는다.
+
+redirect 경로는 문자열 합치기보다 `RedirectAttributes.addAttribute`와 URI placeholder로 만든다. placeholder에 쓰이지 않은 공개 attribute는 query로 갈 수 있고 flash 값은 별도다.
+
+Spring `RedirectView`는 기본 HTTP 1.0 호환 모드에서 302를 사용한다. POST 뒤 GET을 명확히 하려면 `setStatusCode(HttpStatus.SEE_OTHER)` 등으로 303을 지정한다. 307/308은 method/body를 유지하므로 PRG 목적에 사용하지 않는다.
+
 ## 출처
+
+- [Spring, RedirectView](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/view/RedirectView.html)
 
 - [Spring Framework, annotated controllers](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller.html), [`@ModelAttribute`](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html), [redirect attributes](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/redirecting-passing-data.html), [Thymeleaf integration](https://docs.spring.io/spring-framework/reference/web/webmvc-view/mvc-thymeleaf.html)
 - [Jakarta Persistence 3.2, Merging Detached Entity State](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a1983), [Spring Data JPA 4.1, Persisting Entities](https://docs.spring.io/spring-data/jpa/reference/jpa/entity-persistence.html)

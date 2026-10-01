@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, sql, lateral, subquery]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "Database - RDBMS"
 aliases: ["MySQL Lateral Derived Tables", "MySQL LATERAL 파생 테이블"]
 ---
@@ -37,12 +37,24 @@ LEFT JOIN LATERAL (
 
 LATERAL이 항상 JOIN, window function이나 상관 서브쿼리보다 빠른 것은 아니다. 의존하는 선행 행마다 파생 테이블이 갱신되므로 왼쪽 행 수가 크거나 내부 조건에 인덱스가 없으면 반복 비용이 커진다. `EXPLAIN ANALYZE`로 외부 반복 수, 내부 실제 행 수와 정렬 여부를 비교한다.
 
+## 실행 계획에서 확인하기
+
+| 출력 | LATERAL 표시 |
+|---|---|
+| `EXPLAIN` 표 | 파생 테이블의 `select_type`이 `DEPENDENT DERIVED`, 선행 테이블 행의 `Extra`에 `Rematerialize (<derived2>)` |
+| `FORMAT=TREE` | `Invalidate materialized tables (row from c)`와 `Materialize (invalidate on row from c)` |
+| `EXPLAIN ANALYZE` | 내부 노드의 `loops`가 선행 행 수와 같음 |
+
+`Rematerialize`는 선행 테이블의 새 행을 읽을 때마다 그 파생 테이블을 다시 만든다는 뜻이다. 위 그룹별 Top-N을 8.4.6에서 실행하면(카테고리 50개, 글 20만 행) 내부 노드가 `loops=50`이었다.
+
+같은 재현에서 같은 인덱스로도 Top-N이 3행에서 멈추지 않았다. 카테고리 하나를 상수로 준 단독 쿼리는 인덱스 순서로 3행만 읽었지만, LATERAL 안에서는 카테고리마다 4,000행을 모두 읽고 `Sort ... limit input to 3 row(s) per chunk`로 정렬했다. 인덱스가 정렬을 대신한다고 가정하지 말고 내부 노드의 실제 행 수와 Sort 유무를 확인한다. 반복과 정렬 비용이 크면 window function이나 사전 집계와 실측으로 비교한다.
+
 ## 문법 제약
 
 - LATERAL 파생 테이블은 `FROM` 절에만 올 수 있다.
 - 오른쪽 LATERAL이 왼쪽을 참조하면 `INNER`, `CROSS`, `LEFT JOIN`을 사용한다. 반대 방향 참조에는 대응하는 `RIGHT JOIN` 제약이 적용된다.
 - LATERAL이 참조하는 aggregate는 그 LATERAL을 소유한 같은 `FROM` query block의 집계일 수 없다.
-- `JSON_TABLE()` 같은 table function은 표준에 따라 암묵적으로 lateral이다. 그 앞에 `LATERAL`을 명시하면 안 된다.
+- `JSON_TABLE()` 같은 table function은 표준에 따라 암묵적으로 lateral이다. 그 앞에 `LATERAL`을 명시하면 안 된다([[MySQL-JSON-Functions#JSON_TABLE로 배열을 행으로 펼친다|JSON_TABLE]]).
 - 결과 순서를 보장해야 하는 Top-N은 동률을 깨는 고유 정렬 키까지 둔다.
 
 ## 선택 기준
@@ -57,6 +69,7 @@ LATERAL이 항상 JOIN, window function이나 상관 서브쿼리보다 빠른 �
 ## 출처
 
 - [MySQL 8.4 Reference Manual, Lateral Derived Tables](https://dev.mysql.com/doc/refman/8.4/en/lateral-derived-tables.html)
+- [MySQL 8.4 Reference Manual, EXPLAIN Output Format](https://dev.mysql.com/doc/refman/8.4/en/explain-output.html)
 - [인프런, Real MySQL 시즌 1 - Part 1, Lateral Derived Table](https://www.inflearn.com/courses/lecture?courseId=333931&unitId=226566)
 
 ## 관련 문서

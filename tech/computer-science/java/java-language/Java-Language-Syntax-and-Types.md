@@ -1,7 +1,7 @@
 ---
-tags: [java, syntax, primitive-type, array, control-flow, jvm]
+tags: [java, syntax, primitive-type, array, control-flow, jvm, scope, format]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-09-30
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Syntax and Types", "Java 문법과 타입"]
 ---
@@ -24,7 +24,7 @@ Main.java → javac → Main.class → JVM의 로딩, 검증, 실행
 
 - JDK는 컴파일러 `javac`, 실행기 `java`, 표준 라이브러리와 개발 도구를 포함한다.
 - `.class`에는 특정 CPU의 기계어가 아니라 JVM 바이트코드가 들어간다. JVM은 이를 해석하고 필요하면 JIT 컴파일한다.
-- 2026-08-04 기준 최신 GA 기능 릴리스는 JDK 26이다. Java 8과 Eclipse는 강의 제작 당시의 예시일 뿐, 언어의 필수 전제는 아니다. 프로젝트가 요구하는 JDK와 원하는 IDE를 선택한다.
+- 2026-09-30 기준 최신 GA 기능 릴리스는 2026-09-15에 나온 JDK 27이다. 이 문서의 명세 링크는 Java SE 26 기준이다. Java 8과 Eclipse는 강의 제작 당시의 예시일 뿐, 언어의 필수 전제는 아니다. 프로젝트가 요구하는 JDK와 원하는 IDE를 선택한다.
 - `PATH`는 셸이 실행 파일을 찾는 경로이고, `JAVA_HOME`은 일부 빌드 도구가 JDK 위치를 찾을 때 사용한다.
 
 ```java
@@ -35,7 +35,7 @@ public class Main {
 }
 ```
 
-상세 실행 구조는 [[JVM-Architecture|JVM 아키텍처]], 메모리 회수는 [[JVM-GC|JVM GC]]에서 다룬다.
+상세 실행 구조는 [[JVM-Architecture|JVM 아키텍처]], 메모리 회수는 [[JVM-GC|JVM GC]]에서 다룬다. main 선언의 static 규칙과 JDK 25의 instance main은 [[Java-Language-Class-Members-and-Memory|클래스 멤버와 메모리 모델]]에서 다룬다.
 
 ## 변수와 초기화
 
@@ -51,6 +51,8 @@ final int maxCount = 10;
 - 필드와 배열 원소에는 타입별 기본값이 들어가지만, 기본값에 의존해 의도를 숨기지 않는다.
 - `final` 변수는 한 번만 대입할 수 있다. 참조가 `final`이어도 참조 대상 객체까지 자동으로 불변이 되지는 않는다.
 - 식별자는 의미가 드러나게 짓고, 동일 이름의 지역 변수와 필드가 겹칠 때는 `this.field`로 현재 객체의 필드를 명시한다.
+- 지역 변수의 scope는 선언 지점부터 그 선언이 속한 block의 끝까지다. 그 안에서는 중첩 block, lambda parameter, catch parameter로도 같은 이름을 다시 선언할 수 없어, 바깥에 `int x`가 있으면 `{ int x = 3; }`과 `x -> x + 1`은 `variable x is already defined` 컴파일 오류다. lambda는 local class와 달리 바깥 block과 같은 이름 수준에서 동작해 바깥 지역 변수를 가릴 수 없다. scope가 끝난 뒤에는 연달아 쓴 두 `for (int k = 0; ...)`처럼 같은 이름을 다시 쓸 수 있다(JLS 6.3, 6.4).
+- 재선언 금지는 지역 변수끼리에만 적용된다. 지역 변수가 필드를 가리는 것과 메서드 안의 local class나 anonymous class가 바깥 지역 변수 이름을 다시 선언하는 것은 허용된다. 필드까지 막으면 상위 클래스에 필드가 추가될 때마다 하위 클래스의 지역 변수 이름을 바꿔야 하기 때문이다. 가려진 바깥 이름에 접근하는 방법은 [[Java-Standard-Library-Nested-and-Local-Classes|중첩 클래스와 지역 클래스]]에서 다룬다.
 - 정수 literal은 10진수 외에도 `0b1010`, `012`, `0xA`처럼 2진수, 8진수, 16진수로 쓸 수 있고 `_`로 자릿수를 구분할 수 있다.
 
 ## 기본 타입과 참조 타입
@@ -71,32 +73,29 @@ Java 언어 명세가 보장하는 기본 타입은 다음과 같다.
 - `char` 하나가 항상 사용자가 보는 문자 하나를 뜻하지 않는다. 보조 문자는 surrogate pair가 필요하므로 Unicode 코드 포인트 API를 고려한다.
 - `float`와 `double`은 이진 부동소수점이므로 `0.1` 같은 일부 10진 소수를 정확히 표현하지 못한다. 금액처럼 정확한 10진 계산은 `BigDecimal` 등 별도 표현을 검토한다.
 
-## 타입 변환
+## 타입 변환과 연산자
 
-- 확대 기본 변환은 보통 더 넓은 범위로 이동하며 암시적으로 허용되지만, `int`에서 `float`처럼 정밀도가 일부 손실될 수도 있다.
-- 축소 기본 변환은 보통 명시적 캐스트가 필요하며 값이 잘리거나 반올림될 수 있다. 다만 대입 문맥에서 대상이 `byte`, `short`, `char` 또는 대응 wrapper이고 우변이 해당 타입으로 표현 가능한 constant expression이면 캐스트 없이 허용된다. 예를 들어 `byte theAnswer = 42;`는 유효하다.
-- 형변환 가능 여부는 메모리 크기 비교가 아니라 Java 언어의 변환 규칙으로 판단한다.
-
-```java
-long widened = 42;       // int → long
-int narrowed = (int) 3L; // long → int
-```
+확대와 축소 변환, 이항 숫자 승격, 정수 나눗셈과 나머지의 부호, 복합 대입의 암시적 축소, 오버플로, 단락 평가와 `==`는 [[Java-Language-Syntax-and-Types-Operators|Java 연산자와 숫자 연산]]에서 다룬다. 출발점은 산술 결과의 타입을 피연산자 타입이 정하고, 결과를 담을 변수의 타입은 계산에 관여하지 않는다는 규칙이다.
 
 ## 리터럴, 특수 문자, 출력 형식
 
 - 문자열과 문자 리터럴에서는 `\n`, `\t`, `\\`, `\"`, `\'` 같은 escape sequence를 사용한다.
 - `//`는 한 줄 주석, `/* ... */`는 블록 주석, `/** ... */`는 문서화 주석이다.
-- `System.out.printf`는 `%d`, `%f`, `%s`, `%c`, `%b`, `%n` 등의 변환을 사용한다. 외부 입력을 그대로 format 문자열로 사용하지 않는다.
+- `System.out.printf`, `String.format`, `"...".formatted(...)`는 같은 `java.util.Formatter` 문법을 쓴다. printf는 개행을 붙이지 않으므로 줄바꿈은 platform line separator를 내는 `%n`으로 넣는다. 외부 입력을 그대로 format 문자열로 사용하지 않는다.
 
-## 연산자와 평가
+지정자는 `%[argument_index$][flags][width][.precision]conversion` 형태다.
 
-- 산술 연산자는 `+`, `-`, `*`, `/`, `%`다. 정수 나눗셈은 소수부를 버리고, 정수를 0으로 나누면 `ArithmeticException`이 발생한다.
-- `+=`, `-=`, `*=`, `/=` 같은 복합 대입은 계산과 대입을 결합한다. `==`, `!=`, `<`, `<=`, `>`, `>=`는 비교 결과로 boolean을 만든다.
-- `++x`는 증가한 값을, `x++`는 증가 전 값을 식의 결과로 낸다. 부수 효과가 섞인 복잡한 식보다 별도 문장이 읽기 쉽다.
-- `&&`, `||`는 단락 평가를 하고 `&`, `|`, `^`는 정수의 비트 연산에도 쓰인다.
-- 조건 연산자 `condition ? whenTrue : whenFalse`는 두 값 중 하나를 선택한다. 중첩하면 읽기 어려우므로 단순한 식에만 쓴다.
-- `==`는 기본 타입 값 또는 참조 동일성을 비교한다. 객체의 논리적 동등성은 보통 `equals`로 비교한다.
-- 정수 오버플로는 자동으로 예외를 내지 않고 정해진 비트 폭에서 wraparound한다. 검사가 필요하면 `Math.addExact` 같은 API를 쓴다.
+| 지정자 | 의미 | 예 |
+|---|---|---|
+| `%d`, `%o`, `%x`, `%X` | 10진, 8진, 16진 정수. 음수는 2의 보수 비트를 부호 없는 값으로 보여 준다 | -1을 `%x`로 쓰면 `ffffffff`, 8을 `%o`로 쓰면 `10` |
+| `%5d`, `%-5d`, `%05d` | 최소 폭 5. 기본은 오른쪽 정렬, `-`는 왼쪽 정렬, `0`은 0 채움 | 42가 `[   42]`, `[42   ]`, `00042` |
+| `%,d` | locale의 자릿수 구분 기호 | ko_KR, en_US에서 `1,234,567` |
+| `%f`, `%.2f` | 기본 정밀도 6. `.n`은 자르기가 아니라 HALF_UP 반올림 | 3.14가 `3.140000`, 0.125가 `0.13` |
+| `%s`, `%-10s`, `%c`, `%b` | 문자열, 문자, boolean. 문자열도 폭으로 열을 맞춘다 | `[abc       ]` |
+
+- `%f` 반올림은 `Double.toString`이 내는 10진 자릿수를 기준으로 한다. 그래서 이진 값이 1.00499...인 `1.005`도 `%.2f`에서는 `1.01`이지만 `new BigDecimal(1.005).setScale(2, RoundingMode.HALF_UP)`은 `1.00`이다. 금액처럼 반올림 규칙이 계약인 값은 `BigDecimal`로 먼저 확정한 뒤 표시한다.
+- 자릿수 구분 기호와 소수점 문자는 기본 FORMAT locale을 따른다. `String.format(Locale.GERMANY, "%,.2f", 1234567.891)`은 `1.234.567,89`다. 로그, 파일, protocol처럼 기계가 읽는 출력은 `Locale.ROOT` 등으로 locale을 고정한다.
+- 서식 검사는 컴파일이 아니라 실행 시점에 일어난다. `%d`에 `double`을 넘기면 `IllegalFormatConversionException`, 인자가 모자라면 `MissingFormatArgumentException`이다. `printf("%d %d%n", 1)`은 `1 `까지 출력한 뒤 예외를 던져 부분 출력이 남는다.
 
 ## 배열
 
@@ -109,9 +108,10 @@ int length = scores.length;
 ```
 
 - 인덱스는 0부터 `length - 1`까지다. 범위를 벗어나면 `ArrayIndexOutOfBoundsException`이 발생한다.
-- 배열 변수도 참조를 저장하므로 대입하면 원소를 복사하는 것이 아니라 같은 배열을 가리킬 수 있다. 독립 복사는 `clone`, `Arrays.copyOf`, `System.arraycopy` 등을 사용한다.
-- 다차원 배열은 배열의 배열이다. 각 내부 배열의 길이가 달라도 되는 jagged array이며 2차원보다 높은 차원도 표현할 수 있다.
-- 길이를 바꿔야 하면 새 배열을 만들거나 `ArrayList` 같은 컬렉션을 고려한다.
+- 배열 변수도 참조를 저장하므로 대입하면 원소를 복사하는 것이 아니라 같은 배열을 가리킬 수 있다. `clone`, `Arrays.copyOf`, `System.arraycopy`는 새 배열을 만들지만 배열 슬롯에 든 값만 복사한다. 기본 타입 배열은 원소 값까지 독립되지만, 참조 타입 배열은 같은 원소 객체를 공유하는 얕은 복사다.
+- 다차원 배열은 배열의 배열이다. 각 내부 배열의 길이가 달라도 되는 jagged array이며 2차원보다 높은 차원도 표현할 수 있다. 바깥 배열의 슬롯은 행 배열의 참조라서 `grid.clone()`과 `Arrays.copyOf(grid, grid.length)`는 행을 공유한다. 사본에 `copy[0][0] = 99`를 쓰면 원본도 바뀌고 `grid[0] == copy[0]`은 `true`다(JLS 10.7). 행까지 독립시키려면 `Arrays.stream(grid).map(int[]::clone).toArray(int[][]::new)`처럼 행마다 복사하고, 원소가 가변 객체이면 그 객체의 복사 방식도 정한다([[Defensive-Copy-Depth-Collections|복사 깊이]]).
+- 길이를 바꿔야 하면 새 배열을 만들거나 `ArrayList` 같은 컬렉션을 고려한다. `Arrays.copyOf(arr, newLength)`는 새 길이가 짧으면 뒤를 자르고 길면 기본값(0, false, null)으로 채운다. `Arrays.copyOf(new int[]{1, 2}, 4)`는 `[1, 2, 0, 0]`이다.
+- `System.out.println(intArray)`는 원소 대신 `[I@543588e6`처럼 런타임 타입 이름과 identity hash를 출력한다([[Java-Standard-Library-Object-and-Equality|Object와 동등성]]의 toString 절). 1차원 배열은 `Arrays.toString`, 중첩 배열은 `Arrays.deepToString`으로 출력한다. `Arrays.toString(grid)`는 `[[I@..., [I@...]`처럼 행 참조만 보여 준다. 원소 비교도 `Arrays.equals`와 중첩 배열용 `Arrays.deepEquals`로 한다.
 
 ## 조건문과 반복문
 
@@ -129,28 +129,36 @@ int length = scores.length;
 | 배열 길이가 생성 후 고정 | 일반 배열은 동적으로 늘고 줄어듦 |
 | 명목 타입 중심의 클래스 관계 | 구조가 호환되면 대입 가능한 structural typing 중심 |
 | JVM 바이트코드를 JVM이 실행 | TypeScript를 JavaScript로 변환한 뒤 V8 같은 엔진이 실행 |
+| 같은 메서드의 중첩 block에서도 바깥 지역 변수 이름을 다시 선언할 수 없음 | `let`, `const`는 같은 scope 재선언만 막고 안쪽 block의 같은 이름 선언(shadowing)은 허용 |
 
-두 언어의 표기가 비슷해도 타입 보장과 런타임 표현은 다르다. NestJS 코드를 Java로 옮길 때 `number`를 무조건 `int`로 대응하지 말고 범위, 소수, 식별자 표현을 먼저 결정한다.
+두 언어의 표기가 비슷해도 타입 보장과 런타임 표현은 다르다. NestJS 코드를 Java로 옮길 때 `number`를 무조건 `int`로 대응하지 말고 범위, 소수, 식별자 표현을 먼저 결정한다. 안쪽 block에서 바깥 이름을 다시 선언한 TypeScript 코드는 Java에서 이름을 바꿔야 컴파일된다.
 
 ## 면접 체크포인트
 
 - JDK, JVM, 바이트코드의 역할 차이
 - 기본 타입과 참조 타입, `String`과 배열의 분류
 - `boolean`과 참조 크기를 고정값으로 말할 수 없는 이유
-- 확대와 축소 변환에서 정보 손실 가능성
-- 배열 대입과 배열 복사의 차이, 다차원 배열의 실제 구조
-- `==`와 `equals`, 단락 평가, 정수 오버플로
+- 지역 변수 scope와 같은 이름 재선언이 막히는 범위
+- 배열 대입과 배열 복사의 차이, 다차원 배열 복사가 행을 공유하는 이유
+- `%.2f`의 반올림 기준과 locale이 출력에 주는 영향
+- 숫자 승격, 복합 대입과 정수 오버플로([[Java-Language-Syntax-and-Types-Operators|연산자와 숫자 연산]])
 
 ## 출처
 
 - [Java SE 26 Language Specification](https://docs.oracle.com/javase/specs/jls/se26/html/)
 - [JLS 4, Types, Values, and Variables](https://docs.oracle.com/javase/specs/jls/se26/html/jls-4.html)
 - [JLS 5.2, Assignment Contexts](https://docs.oracle.com/javase/specs/jls/se26/html/jls-5.html#jls-5.2)
+- [JLS 6.3, Scope of a Declaration](https://docs.oracle.com/javase/specs/jls/se26/html/jls-6.html#jls-6.3)
+- [JLS 6.4, Shadowing and Obscuring](https://docs.oracle.com/javase/specs/jls/se26/html/jls-6.html#jls-6.4)
 - [JLS 10, Arrays](https://docs.oracle.com/javase/specs/jls/se26/html/jls-10.html)
+- [Formatter, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Formatter.html)
+- [Arrays, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Arrays.html)
 - [Oracle, JDK 26 Release Notes](https://www.oracle.com/java/technologies/javase/26all-relnotes.html)
+- [OpenJDK, JDK 27](https://openjdk.org/projects/jdk/27/)
 - [jlink, Java SE 26 Tool Specifications](https://docs.oracle.com/en/java/javase/26/docs/specs/man/jlink.html)
 - [TypeScript, Everyday Types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
 - [TypeScript, Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)
+- [TypeScript, Variable Declarations](https://www.typescriptlang.org/docs/handbook/variable-declarations.html)
 - 인프런, [Java 프로그래밍이란?](https://www.inflearn.com/courses/lecture?courseId=182835&unitId=13675)
 - 인프런, [Java 프로그램의 실행 구조](https://www.inflearn.com/courses/lecture?courseId=182835&unitId=13678)
 - 인프런, [변수](https://www.inflearn.com/courses/lecture?courseId=182835&unitId=13679)
@@ -164,6 +172,7 @@ int length = scores.length;
 
 ## 관련 문서
 
+- [[Java-Language-Syntax-and-Types-Operators|Java 연산자와 숫자 연산]]
 - [[Java-Language-References-and-Initialization|Java 참조와 초기화]]
 - [[Java-Language-Object-Model|Java 객체 모델]]
 - [[JVM-Architecture|JVM 아키텍처]]

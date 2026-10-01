@@ -20,6 +20,12 @@ aliases: ["Microservice Data Ownership", "Database per Service", "Cross Service 
 
 어느 배치를 쓰든 다른 서비스는 API나 event로 접근한다. 읽기 편의를 위한 direct join을 허용하면 schema 변경, 배포와 장애가 다시 결합된다.
 
+## 공유 테이블의 소유자를 세우는 위임
+
+여러 기능이 같은 테이블을 함께 수정했다면 먼저 한 서비스가 쓰기 규칙을 소유하도록 정하고, 다른 서비스의 수정 요청은 그 소유자의 API나 command로 위임할 수 있다. 항공편 검색, 예약과 추적이 공유하던 데이터에서 하나의 소유자를 지정하는 방식이다. 물리 DB를 어디에 두는가와 소유자를 누구로 정하는가는 별개 결정이다.
+
+직접 테이블 의존은 줄지만 동기 위임에는 원격 호출 지연과 가용성 결합이, 비동기 위임에는 처리 지연과 중복 대응이 생긴다. 소유 API의 하위 호환과 허용할 호출 수를 정하고, 소유자가 중앙 만능 서비스가 되면 테이블 분할이나 서비스 재결합도 검토한다. 위임만으로 독립 배포가 자동 보장되지는 않는다.
+
 ## Polyglot persistence는 결과다
 
 서비스별로 데이터 특성이 정말 다를 때 적합한 저장소를 고를 수 있다는 것이 장점이다. 모든 서비스가 서로 다른 DB를 써야 한다는 뜻은 아니다.
@@ -67,6 +73,18 @@ projection은 원본이 아니며 직접 수정하지 않는다. event history�
 
 를 별도 데이터 계약으로 관리한다.
 
+## CQRS의 분리 범위를 선택한다
+
+| 분리 범위 | 얻는 것 | 비용과 조건 |
+|---|---|---|
+| command/query 처리 경로만 구분, 같은 모델과 DB | 책임 구분부터 시작 | 클래스 이름만 나누면 모델 분리나 성능 개선은 얻지 못함 |
+| 읽기와 쓰기 모델을 나누고 같은 DB 사용 | 조회에 맞춘 DTO, 쿼리와 index | 같은 DB 자원 경쟁, 별도 projection이면 갱신 방식 결정 |
+| 읽기와 쓰기 저장소까지 분리 | 부하에 맞춘 독립 확장과 저장소 선택 | 동기화, 재구축과 stale read 처리 |
+
+이는 도입 범위 비교이며 반드시 순서대로 올라가야 하는 성숙도 단계가 아니다. 같은 DB에서도 projection을 비동기로 갱신하면 지연이 생기므로 저장소 개수만으로 강한 일관성을 판정하지 않는다. 읽기 부하가 크면 읽기 쪽 복제 수를 더 늘릴 수 있고, 양쪽 저장소가 RDBMS인지 NoSQL인지는 요구사항으로 정한다.
+
+동기화는 같은 transaction의 갱신, event/outbox, CDC, scheduler 기반 batch나 대사로 구성할 수 있다. DB trigger는 숨은 결합과 운영 비용을, 수동 갱신은 누락 위험과 감사 요구를 만든다. 이벤트 재생으로 상태를 만드는 [[Event-Sourcing]]은 별도 선택이며 조회마다 전체 이력을 재생한다면 snapshot과 projection 비용도 검토한다.
+
 ## 선택 표
 
 | 질문 | API Composition | Materialized View | 분석용 복제 |
@@ -88,7 +106,7 @@ projection은 원본이 아니며 직접 수정하지 않는다. event history�
 - DB 변경과 event 발행의 dual write는 [[Transactional-Outbox|Transactional Outbox]]로 연결한다.
 - 소비자는 중복과 순서 역전에 안전해야 한다.
 
-C QRS는 읽기와 쓰기 모델을 분리하는 선택이며 Event Sourcing이나 별도 DB가 필수는 아니다. Event Sourcing도 조회 성능을 자동으로 높이지 않으며 projection 운영 비용이 추가된다.
+CQRS는 읽기와 쓰기 모델을 분리하는 선택이며 Event Sourcing이나 별도 DB가 필수는 아니다. Event Sourcing도 조회 성능을 자동으로 높이지 않으며 projection 운영 비용이 추가된다.
 
 ## 복구 계약
 
@@ -110,6 +128,11 @@ C QRS는 읽기와 쓰기 모델을 분리하는 선택이며 Event Sourcing이�
 - [Dowon Lee 강사, Database per Service](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290719)
 - [Dowon Lee 강사, Cross Service Queries](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290724)
 - [Dowon Lee 강사, CQRS 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290725)
+- [Microsoft, CQRS pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs)
+- [han jeong heon 강사, 저장소 분리, 저장소 공유,위임(API조합)](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104433)
+- [han jeong heon 강사, 분산 트랜잭션 처리(SAGA),CQRS,이벤트 소싱](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104434)
+- [Dowon Lee 강사, [실습 13] CQRS + Event Sourcing 처리 ①](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290748)
+- [Dowon Lee 강사, [실습 14] CQRS + Event Sourcing 처리 ②](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=306269)
 
 ## 관련 문서
 

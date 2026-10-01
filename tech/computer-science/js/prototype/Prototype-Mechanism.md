@@ -73,7 +73,16 @@ ES6 `class`는 이 메커니즘 위에 얹은 문법이다. 문법 설탕에 재
 - `__proto__`는 표준화된 legacy accessor — 새 코드에서는 `Object.getPrototypeOf`/`create` 사용
 - `class`가 프로토타입의 외형이라는 점과 ES5 상속 코드 마이그레이션의 전제
 
+## 변경 범위와 method override
+
+instance의 Object.getPrototypeOf(instance)에 method를 추가하면 같은 prototype을 가진 기존/미래 instance 모두 조회한다. Object.setPrototypeOf(instance,other)는 그 instance의 연결만 바꾼다. ordinary object를 Array.prototype에 연결해도 배열 exotic 동작이나 Array.isArray 판정을 얻지는 않는다.
+
+일반 함수의 prototype을 object literal로 교체하면 기본 constructor property는 함께 복사되지 않는다. constructor를 복구할 때는 non-enumerable을 유지하는 Object.defineProperty를 쓰고 생성 이력 검증에는 의존하지 않는다. String/Number prototype의 toString은 Object.prototype.toString의 일반 tag 대신 내부 primitive 값을 표현한다. prototype 위의 동일 이름 method가 먼저 조회되는 override이며 built-in prototype을 직접 수정하는 권장 패턴은 아니다.
+
 ## 출처
+
+- 인프런 보충 강의: [6. 인스턴스에 함수로 추가](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30767), [7. __proto__에 메소드 추가](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30768), [8. setPrototypeOf(): 인스턴스 사용](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30769)
+- 인프런 보충 강의: [5. 함수 호출 구조, __proto__ 구조](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24641)
 
 - [자바스크립트의 프로토타입 훑어보기 — evan-moon](https://evan-moon.github.io/2019/10/23/js-prototype/)
 - [모던 자바스크립트 딥다이브 스터디 #4-2 (CH 19 프로토타입) — FE재남](https://www.youtube.com/watch?v=IBUSatGNUzs)

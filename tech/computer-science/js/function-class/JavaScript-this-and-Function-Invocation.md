@@ -80,7 +80,20 @@ prototype method를 `instance.method()`로 호출하면 lookup은 prototype에�
 - request handler wrapper에서 `this`를 보존하는 것과 AsyncLocalStorage context 전파는 별개다.
 - function borrowing보다 명시적 adapter/interface가 domain dependency를 더 잘 드러내는지 비교한다.
 
+## identifier, Promise와 host callback
+
+`x`는 lexical Environment Record를 찾고 `this.x`는 receiver의 own/prototype property를 찾는다. 없는 identifier 읽기는 ReferenceError, 없는 property는 undefined지만 this 자체가 nullish면 TypeError다. classic script의 global var가 window property여서 우연히 같아 보이는 경우를 함수 local이나 ESM으로 확대하지 않는다.
+
+Promise reaction의 ordinary handler는 thisArg undefined로 호출되어 strict에서는 undefined, sloppy에서는 global object다. arrow는 enclosing method의 this를 보존하며 async/await는 method의 receiver를 바꾸지 않는다. XHR의 ordinary event handler는 XHR를 this로 받고 arrow는 lexical this다. 외부 owner가 필요하면 arrow나 bind를 사용한다.
+
+bind는 thisArg를 그대로 저장하고 호출 때 target의 strict/sloppy 규칙으로 primitive boxing/global 치환을 적용한다. 인자는 먼저 bind한 값, 다시 bind한 값, 호출 인자 순으로 앞에 붙는다. 두 번째 bind는 이미 고정된 this를 바꾸지 않는다.
+
 ## 출처
+
+- 인프런 보충 강의: [1. 비동기 기본 형태: XHR 비동기 통신, Promise로 비동기 실행, 비동기 통신 + 비동기 실행](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=51765), [5. this 참조: Promise then() 환경, async/await 환경, 이벤트 핸들러 함수 분리](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=52394), [6. 이벤트 핸들러 바인딩, 프레임워크 접근](https://www.inflearn.com/courses/lecture?courseId=325633&unitId=52508)
+- 인프런 보충 강의: [5. this 바인딩 컴포넌트](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26694), [6. this와 prototype, this로 인스턴스 참조, this와 prototype, prototype 메소드 직접 호출](https://www.inflearn.com/courses/lecture?courseId=324398&unitId=26704)
+
+- [ECMAScript, NewPromiseReactionJob](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-newpromisereactionjob)
 
 - [ECMAScript Language Specification, ResolveThisBinding](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-resolvethisbinding)
 - [ECMAScript Language Specification, Function.prototype call/apply/bind](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-properties-of-the-function-prototype-object)

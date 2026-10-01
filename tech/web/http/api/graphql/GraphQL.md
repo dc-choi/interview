@@ -1,7 +1,7 @@
 ---
 tags: [web, network, graphql, api, http]
 status: index
-verified_at: 2026-08-04
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["GraphQL"]
 ---
@@ -17,9 +17,9 @@ GraphQL은 Facebook이 만든 **API 쿼리 언어이자, 데이터에 대해 정
 - [[GraphQL-Architecture-Map|전체 그림 지도]] — 요청 라이프사이클(parse→validate→execute→응답), partial response, N+1과 운영 관심사의 자리
 - [[GraphQL-Schema-and-Query|스키마와 쿼리 언어]] — 타입 시스템, 스키마 설계, 쿼리 언어와 introspection
 - [[Apollo-Server#테스트 전략|테스트 전략]] — resolver 단위 테스트, executeOperation 통합 테스트, HTTP와 Subscription E2E
-- [[GraphQL-Pagination|페이지네이션]] — offset vs cursor, Relay Connection, Global Object Identification
+- [[GraphQL-Pagination|페이지네이션]] — offset vs cursor, Relay Connection, resolver 구현, Global Object Identification
 - [[GraphQL-Caching|캐싱과 HTTP 전송]] — 정규화 캐시, persisted document, GET vs POST, 상태 코드
-- [[GraphQL-Security|보안과 인가]] — demand control, introspection 차단, 인가는 비즈니스 로직 계층
+- [[GraphQL-Security|보안과 인가]] — demand control, introspection 차단, 인가는 비즈니스 로직 계층, 행위자 id는 인증 context에서
 - [[GraphQL-File-Uploads|파일 업로드]] — multipart 관례의 리스크 5가지, signed URL 패턴
 - [[GraphQL-Federation|Federation]] — subgraph, gateway, schema composition, 도입 판단, 거버넌스
 
@@ -48,7 +48,7 @@ type Post {
 ```
 
 ### Query / Mutation / Subscription
-- **Query**: 데이터 조회. 수집된 필드는 결과 순서에 영향이 없는 범위에서 임의 순서로 실행하고 병렬화할 수 있지만 실제 동시 실행을 보장하지 않는다. side effect는 없어야 한다
+- **Query**: 데이터 조회. 수집된 필드는 결과 순서에 영향이 없는 범위에서 임의 순서로 실행하고 병렬화할 수 있지만 실제 동시 실행을 보장하지 않는다. side effect는 없어야 한다. 런타임이 이를 강제하지 않으며 어길 때의 대가는 [[GraphQL-Schema-Design#mutation 설계|mutation 설계]]에 있다
 - **Mutation**: 데이터 변경. 최상위 필드만 문서 순서대로 하나씩 완료하며, 하위 selection set은 일반 규칙으로 실행한다. 전체 연산이 자동으로 트랜잭션이 되는 것은 아니다
 - **Subscription**: long-lived 요청으로 실시간 증분 업데이트. 전송은 스펙이 정하지 않아 서버가 고르며 보통 WebSocket이나 SSE (자세히는 [[NestJS-GraphQL-Subscription|NestJS Subscription]])
 
@@ -56,10 +56,24 @@ type Post {
 각 필드를 어떻게 가져올지 정의하는 함수. 스키마와 데이터 소스를 연결. graphql-js 계열의 관례적 시그니처는 `(parent, args, context, info)` — parent는 상위 필드 resolver가 반환한 객체, args는 필드 인자, context는 요청 스코프 공유 객체로 인증된 사용자, DB 접근 같은 것을 나른다 (예: `me` 필드는 context의 인증 정보로, `name` 필드는 그 user id로 DB 조회). info는 현재 연산과 스키마에 대한 필드 메타 정보로 고급 케이스에서만 쓴다.
 
 - resolver를 생략하면 많은 라이브러리가 parent에서 같은 이름의 프로퍼티를 읽어 반환한다(기본 resolver, 프로퍼티가 함수면 호출해 그 결과를 쓴다). 단순 필드마다 resolver를 손으로 쓸 필요가 없는 이유.
+- 기본 resolver가 값을 못 찾으면 `undefined`가 되고 실행 엔진은 null로 다룬다. 저장 행이 `{ id, title, authorId }`처럼 외래키 모양인데 스키마가 `author: User!`로 관계를 객체로 노출하는 경우([[GraphQL-Schema-Design#흔한 실수와 안티패턴|관계는 객체로]]), 저장값에서 계산하는 파생 필드, DB의 snake_case와 스키마의 camelCase 이름 불일치가 흔한 원인이다. nullable 필드는 오류 없이 조용히 null이 나가고, Non-Null 필드는 `Cannot return null for non-nullable field Post.author.` 실행 오류와 함께 null이 가장 가까운 nullable 조상까지 올라간다. `posts: [Post]`면 원소마다 null과 오류가 생기고, `posts: [Post!]!`면 `data` 전체가 null이 된다(graphql-js 16.14.2, 17.0.2 재현).
+- 해결은 그 타입의 필드 resolver다. `Post.author`는 parent(상위 resolver가 반환한 Post 행)의 `authorId`로 User를 찾고 `Post.comments`는 parent의 `id`로 댓글을 찾는다(NestJS code-first는 `@ResolveField`와 `@Parent`). 필드 resolver는 선택될 때만 실행되고 어느 경로로 도달한 같은 타입에도 똑같이 적용되므로, 이름 매핑을 루트 resolver 한 곳에서만 하면 다른 진입점에서 반환된 객체에는 빠진다. 이 간선이 N+1이 생기는 자리다([[GraphQL-Architecture-Map|지도]] 그림 3).
+- resolver 단위 테스트는 이 누락을 잡지 못한다. 실제 스키마를 태우는 `executeOperation` 테스트에서 관계 필드까지 선택하고, `errors`가 비었는지와 함께 nullable이지만 값이 있어야 하는 필드가 null이 아닌지 단언한다([[Apollo-Server#테스트 전략|테스트 전략]]).
 - context 객체는 서버 통합의 context 함수가 요청마다 새로 만들어(헤더 같은 요청 정보 접근) 그 연산의 모든 resolver가 같은 인스턴스를 공유한다. DataLoader 인스턴스를 요청 스코프로 두는 자리가 여기다. resolver가 context를 파괴적으로 수정하지 않는 것이 계약이다.
+- context에 담는 객체의 수명은 둘로 나뉜다. 커넥션 풀을 가진 DB client(Prisma Client, TypeORM DataSource)와 in-memory PubSub은 기동 시 프로세스에 하나만 만들고 context에는 참조만 넣는다. context 함수에서 요청마다 새로 만들면 요청마다 풀이 생겨 DB 연결 한도에 닿고, publish와 subscribe가 다른 PubSub 인스턴스를 쓰면 같은 프로세스 안에서도 이벤트가 닿지 않는다. 반대로 currentUser, DataLoader, RESTDataSource는 요청마다 만든다. 공유하면 요청과 사용자 사이에 캐시와 인증 결과가 섞인다. NestJS는 provider가 기본 singleton이라 앞의 실수가 드물고 plain Apollo의 context 함수에서 주로 난다. 여러 인스턴스 사이의 이벤트 전파는 [[NestJS-GraphQL-Subscription|Subscription]]에 있다.
 - context 함수에서 던지면 그 요청 전체가 거부된다(기본 500, GraphQLError의 `extensions.http`로 401 같은 상태 코드 지정 가능). 인증 실패를 실행 전에 통째로 끊는 자리다 — 실행 중 필드 단위로 판단되어 partial response가 되는 인가 실패와 대비된다([[GraphQL-Security|인증 vs 인가]]). 단 전면 거부는 공개 접근이 전혀 없는 API에만 적합하고, 공개 필드가 섞여 있으면 필드 수준으로 끊어 부분 응답을 살린다.
 - resolver 반환값은 타입 시스템이 스키마 계약에 맞게 변환한다(scalar coercion). 서버 내부 표현이 정수여도 스키마가 enum이면 enum 값 이름으로 나가는 식.
 - resolver는 Promise 같은 비동기 값을 반환할 수 있고, 실행 엔진이 완료를 기다렸다가 하위 필드로 내려간다. 쿼리 쪽은 비동기 여부를 모른다.
+
+## 구현체 선택
+
+스펙만으로는 데이터를 주고받지 못한다. 서버에는 요청을 파싱, 검증, 실행해 응답하는 구현이, 클라이언트에는 연산을 보내고 결과와 캐시를 다루는 구현이 필요하다. 양쪽은 스펙과 HTTP 전송 관례로만 결합하므로 따로 고를 수 있다.
+
+- 후보는 graphql.org의 Tools and Libraries 목록에서 언어와 Server, Client, Tools 같은 분류로 거른다. GraphQL.js는 스펙의 참조 구현이다. JavaScript 서버로는 Apollo Server, GraphQL Yoga, 클라이언트로는 Apollo Client, Relay, urql, AWS Amplify 등이 올라 있다(2026-10-01 목록 기준).
+- 서버 축: 언어와 런타임, 기존 프레임워크 통합, federation 필요 여부([[GraphQL-Federation|Federation]]), 유지 상태. NestJS가 공식 제공하는 드라이버는 Apollo(`@nestjs/apollo`)와 Mercurius(`@nestjs/mercurius`)이고 Yoga는 커뮤니티 드라이버다([[NestJS-GraphQL]]). Node.js 서버 라이브러리는 GraphQL.js를 peer dependency로 두는 경우가 많아 그 메이저 호환 범위도 확인한다. 2026-10-01 npm 기준 `@apollo/server` 5.5.1은 `graphql` ^16.11.0만, `graphql-yoga` 5.24.1은 ^15, ^16, ^17을 허용한다.
+- 클라이언트 축: 캐시 모델(정규화 캐시 여부, [[GraphQL-Caching|캐싱]]), 대상 플랫폼, codegen 지원. Apollo는 React 중심의 Apollo Client와 네이티브용 Apollo iOS, Apollo Kotlin(Android)을 직접 유지하고, Vue와 Angular 통합은 Apollo 문서가 커뮤니티 유지로 안내한다.
+- 한 벤더로 양쪽을 맞추면 문서, 도구와 APQ 같은 벤더 확장이 매끄럽지만 필수는 아니다([[Apollo-Server]]). 스펙 밖 확장에 기대는 기능을 기록해 두어야 한쪽만 바꿀 때 무엇이 깨지는지 알 수 있다.
+- 탐색 IDE도 바뀐다. 오래된 자료에 나오는 GraphQL Playground는 저장소가 2026-04 archived됐고 GraphQL IDE 개발은 GraphiQL에서 이어진다.
 
 ## 장점
 
@@ -139,7 +153,25 @@ JSON 기반이라 multipart 업로드는 별도 명세(graphql-multipart-request
 - [Apollo Server — Context and contextValue](https://www.apollographql.com/docs/apollo-server/data/context)
 - [Apollo Server — Mocking](https://www.apollographql.com/docs/apollo-server/testing/mocking)
 - [Apollo Server — Authentication and authorization](https://www.apollographql.com/docs/apollo-server/security/authentication)
+- [Prisma ORM 7 — Instantiating Prisma Client (단일 인스턴스와 커넥션 풀)](https://www.prisma.io/docs/orm/v7/prisma-client/setup-and-configuration/introduction)
+- [TypeORM — DataSource](https://typeorm.io/docs/data-source/data-source)
+- [NestJS — Injection scopes](https://docs.nestjs.com/fundamentals/injection-scopes)
+- [NestJS — GraphQL quick start (Apollo, Mercurius 드라이버)](https://docs.nestjs.com/graphql/quick-start)
+- [graphql.org — Tools and Libraries](https://graphql.org/community/tools-and-libraries/)
+- [Apollo Client — View integrations (Vue, Angular 커뮤니티 유지)](https://www.apollographql.com/docs/react/integrations/integrations)
+- [Apollo iOS — Introduction (Apollo Kotlin 안내 포함)](https://www.apollographql.com/docs/ios)
+- [npm — @apollo/server (peerDependencies)](https://www.npmjs.com/package/@apollo/server)
+- [npm — graphql-yoga (peerDependencies)](https://www.npmjs.com/package/graphql-yoga)
+- [GitHub — graphql/graphql-playground (2026-04 archived)](https://github.com/graphql/graphql-playground)
 - [Hong 강사 — 3가지 통신 패턴 및 횡단 관심사를 위한 Directive와 설계 원칙](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449777)
+- [Hong 강사 — GraphQL에서의 타입간 관계 정의](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449781)
+- [Hong 강사 — Prisma 연동과 N+1 문제 및 Include 강제 패턴](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449783)
+- [Hong 강사 — 범용 미들웨어 처리를 위한 Context를 활용한 인증 및 인가 패턴](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449784)
+- [Hong 강사 — Database의 가장 치명적인 문제 N+1 문제 방지를 위한 DataLoader 패턴](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449785)
+- [Hong 강사 — 비동기 및 이벤트 통신(PubSub)을 위한 Subscription 패턴](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449788)
+- [Hong 강사 — 서비스 단위 테스트부터 통합 테스트 진행하기](https://www.inflearn.com/courses/lecture?courseId=341963&unitId=449789)
+- [얄팍한 코딩사전 강사 — Apollo는 뭐고 왜 쓰나요?](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=62914)
+- [얄팍한 코딩사전 강사 — GraphQL의 기본 타입들](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=64524)
 - [요즘IT — GraphQL 도입 시 주의할 점](https://yozm.wishket.com/magazine/detail/2113/)
 - [velog @mdy0102 — GraphQL을 사용하며 느낀 장단점](https://velog.io/@mdy0102/GraphQL을-사용하며-느낀-장단점)
 

@@ -69,9 +69,9 @@ import 방향: `adapter/* → application/* → domain/*`. 절대 역방향 impo
 
 ### 1. CQS (Command Query Separation)
 
-**상태를 바꾸는 메서드(Command)와 값을 반환하는 메서드(Query)를 분리.** 같은 클래스에 두면 사이드 이펙트 추적이 어려워지고, 캐시, 읽기 복제본, 이벤트 소싱 적용 시 분리 비용이 커진다.
+**상태를 바꾸는 메서드(Command)와 상태를 바꾸지 않고 값을 반환하는 메서드(Query)를 구분한다.** CQS는 메서드의 행동 계약이며 두 종류를 같은 클래스에 두어도 적용할 수 있다.
 
-서비스 단위로 `ArticleCommandService` / `ArticleQueryService`를 나누면 자연스럽게 CQRS로 발전 가능.
+`ArticleCommandService` / `ArticleQueryService` 분리는 별도의 구조 선택이다. [[Clean-Architecture-NestJS-CQRS|CQRS]]의 쓰기/읽기 모델 분리, 별도 저장소와 이벤트 소싱까지 자동으로 요구하지 않는다.
 
 ### 2. ISP (Interface Segregation)
 
@@ -120,6 +120,8 @@ NestJS는 헥사고날과 매우 잘 맞는다.
 
 ## Spring에서의 구현 메모
 
+계약 작성과 팀 관례는 [[Hexagonal-In-Practice-Spring]]에서 다룬다.
+
 - `@Component`를 메타 애노테이션으로 사용해 `@ApplicationService` 같은 합성 스테레오타입을 만들 수 있다.
 - `@Transactional`, Bean Validation 같은 프레임워크 애노테이션을 애플리케이션 서비스에 쓰는 것은 실용적 선택이다. 아키텍처의 목적은 프레임워크 이름을 0개로 만드는 것이 아니라 비즈니스 규칙이 기술 세부사항에 끌려가지 않게 하는 것이다.
 - Spring Modulith의 모듈 검증은 순환 의존, 내부 패키지 접근, 허용하지 않은 모듈 의존을 검사할 수 있다.
@@ -153,7 +155,25 @@ NestJS는 헥사고날과 매우 잘 맞는다.
 - 애플리케이션 포트 반환 타입과 외부 응답 DTO를 구분하는 이유
 - 이 패턴의 **단점, 과잉 설계** 위험을 말할 수 있는가
 
+## 포트의 소유권으로 순환 끊기
+
+강의가 커리큘럼을 생성해야 하는데 커리큘럼도 강의를 참조하면 서비스끼리 직접 호출하면서 컴파일 의존이 순환할 수 있다. 강의 쪽이 필요한 `CurriculumCreator` 계약을 소유하고 커리큘럼 쪽이 구현하면, 실행 호출은 강의에서 커리큘럼으로 가도 코드 의존은 한 방향으로 정리할 수 있다. 반환값과 예외 타입의 소유권도 같은 규칙을 따라야 한다.
+
+내부 컴포넌트는 제공/요구 계약으로 협력하는 기능 단위다. 하나의 Aggregate와 서비스를 한 컴포넌트로 시작할 수 있지만 보편적인 크기 규칙은 아니다. 헥사고날의 내부/외부 기술 경계와 내부 모듈 경계를 구분하며, 육각형을 기계적으로 중첩할 필요는 없다.
+
+Spring 구현에서는 필요한 Repository 메서드만 공개하는 포트, 웹 어댑터의 예외-HTTP 변환, 의존 방향 검증을 개발 가이드로 합의한다. Spring Data 인터페이스를 포트가 상속한다면 프레임워크 의존을 수용한 선택임을 기록한다. 핵심 업무 흐름은 테스트 대역으로 검증할 수 있지만 실제 전송이 필요한 알림을 로그 출력만 하는 임시 어댑터로 운영 완료했다고 보지는 않는다.
+
 ## 출처
+
+- [Command Query Separation — Martin Fowler](https://martinfowler.com/bliki/CommandQuerySeparation.html)
+- [패키지 구조](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=301373)
+- [회원 애플리케이션의 포트 정의](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=301409)
+- [코드 다듬기](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=306805)
+- [API 테스트와 ProblemDetail 예외 핸들러 개발](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=314631)
+- [ArchUnit을 이용한 아키텍처 테스트](https://www.inflearn.com/courses/lecture?courseId=336073&unitId=314972)
+- [애그리거트와 컴포넌트 연결](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=454902)
+- [Part 2 강의 정리와 AI 시대의 클린 스프링](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=472191)
+- [코드 리뷰와 개선 리팩터링](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=471512)
 
 - [Alistair Cockburn — Hexagonal Architecture 원문](https://alistair.cockburn.us/hexagonal-architecture/)
 - [Node.js 모노레포 튜토리얼 — 2. 육각형 아키텍처](https://nodejs.myeongjae.kim/pages/002-hexagonal-architecture/)

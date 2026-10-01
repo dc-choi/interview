@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, mysql, postgresql, inverted-index, btree]
 status: done
-verified_at: 2026-08-18
+verified_at: 2026-09-30
 category: "Data & Storage - NoSQL"
 aliases: ["OpenSearch vs RDB Search", "RDB vs 검색엔진 도입 판단", "검색엔진 도입 판단 프레임"]
 ---
@@ -84,6 +84,22 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 
 도입이 정당화되는 요구는 대체로 이 순서로 온다. 형태소 기반 관련도 랭킹(검색 품질이 지표에 직결), 다중 filter와 facet 집계를 검색과 한 질의로 조합, 자동완성과 오타 보정, 그리고 원본 DB의 쿼리 부하 분리가 필요한 규모. 반대로 요구가 admin 화면의 이름 부분 검색 수준이면 사다리 1~2단이 정답이고 검색엔진은 과설계다.
 
+### 원본이 MongoDB라면 DB 통합 검색을 먼저 비교한다
+
+사다리는 원본이 RDB인 경우를 전제로 한다. 원본이 MongoDB라면 4단으로 가기 전에 MongoDB Search(구 Atlas Search)를 비교한다. Apache Lucene 기반의 별도 프로세스 `mongot`이 change stream으로 컬렉션 변경을 받아 역색인을 유지하고, 애플리케이션은 `mongod`에 `$search`, `$searchMeta`, `$vectorSearch` aggregation 단계를 보낸다. 검색 결과를 같은 pipeline의 다른 단계와 이어 쓸 수 있고 별도 동기화 파이프라인을 만들지 않아도 된다.
+
+| 비교 축 | MongoDB Search | 별도 검색엔진(OpenSearch) |
+|---|---|---|
+| 동기화 | `mongot`이 change stream으로 비동기 반영 | outbox나 CDC 파이프라인을 직접 설계, 운영 |
+| 일관성 | 최종 일관성만 보장. 방금 넣은 문서가 `$search`에 바로 보이지 않을 수 있음 | refresh 주기 기반 near real-time |
+| 한국어 | 내장 analyzer 목록에 `lucene.nori`, `lucene.korean`, `lucene.cjk`가 있음. 사전과 필터 튜닝 범위는 문서로 확인 | Nori 플러그인과 사용자 사전 |
+| 운영 주체 | Atlas는 관리형 `mongot`, Community Edition(8.2 이상)과 Enterprise는 `mongot`을 직접 배포, 운영 | 클러스터 직접 운영 또는 관리형 서비스 |
+| 비용 | 검색 자원을 DB 노드와 공유할지 전용 Search Node로 분리할지가 비용과 격리의 축 | 별도 클러스터가 여러 인스턴스를 띄우므로 비용을 주기적으로 모니터링 |
+
+- 2026-07-01 공식 발표 기준 self-managed Community Edition(8.2 이상)과 Enterprise Advanced용 MongoDB Search와 Vector Search는 public preview를 거쳐 GA가 됐다.
+- 컬렉션을 reshard하면 작업이 끝나는 시점에 Search 인덱스를 쓸 수 없게 되어 수동으로 다시 만들어야 한다.
+- 원장 요구와 read-after-write 경로 분리는 이 문서의 원칙을 그대로 따른다. 검색엔진 관련 학습 범위(샤드, 쿼리, 템플릿)가 줄어드는 대신 MongoDB 스키마와 인덱스 설계 이해가 전제가 된다.
+
 ## 도입 질문에 먼저 물을 숫자 4개
 
 사다리의 어느 단이 정답인지는 기술 지식이 아니라 정량 요구가 정한다. 검색엔진을 도입할지 묻는 질문에 대한 첫 반응은 기술 이름이 아니라 이 숫자들을 묻는 것이다.
@@ -125,6 +141,7 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 - [[OpenSearch-Aggregations-Pagination|집계, 패싯과 페이지네이션]]
 - [[OpenSearch-Korean-Text-Analysis|한국어 Nori 분석]]
 - [[MySQL-Aurora-Parameter-Tuning|ngram_token_size 표준값]]
+- [[MongoDB-Schema-Design|MongoDB 스키마 설계]]
 
 ## 출처
 
@@ -137,3 +154,9 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 - [MySQL 8.4 Reference Manual, Comparison of B-Tree and Hash Indexes](https://dev.mysql.com/doc/refman/8.4/en/index-btree-hash.html)
 - [PostgreSQL Documentation, Controlling Text Search (ts_rank)](https://www.postgresql.org/docs/current/textsearch-controls.html)
 - [PostgreSQL Documentation, pg_trgm](https://www.postgresql.org/docs/current/pgtrgm.html)
+- [MongoDB Docs, MongoDB Search and MongoDB Vector Search on Self-Managed Deployments](https://www.mongodb.com/docs/search/self-managed/current/)
+- [MongoDB Docs, MongoDB Search Index Performance](https://www.mongodb.com/docs/search/performance/index-performance/)
+- [MongoDB Docs, Language Analyzers](https://www.mongodb.com/docs/atlas/atlas-search/analyzers/language/)
+- [MongoDB Docs, Reshard a Collection](https://www.mongodb.com/docs/manual/core/sharding-reshard-a-collection/)
+- [MongoDB Search and Vector Search Now Run Anywhere — MongoDB Blog](https://www.mongodb.com/company/blog/product-release-announcements/mongodb-search-vector-search-now-run-anywhere)
+- [인프런, Hong, 실무에서 사용하는 Search](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272609)

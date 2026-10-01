@@ -38,6 +38,8 @@ class CachedOrderReader implements OrderReader {
 
 ## 구조와 참여자
 
+독립적인 선택 옵션이 N개일 때 모든 켜기/끄기 조합을 별도 하위 클래스로 만들면 기본형을 포함해 최대 2^N개가 필요하다. Decorator는 옵션별 구현 N개를 실행 시점에 조합한다. 우유와 설탕을 별도 객체로 감싸면 우유 두 번처럼 반복 적용도 표현할 수 있다. 다만 허용하지 않는 조합과 적용 순서는 별도로 검증해야 한다. 서로 다른 두 변경 축을 분리하는 [[Bridge패턴이란|Bridge]]와는 해결하려는 변경의 성격이 다르다.
+
 - Component: 원본과 Decorator가 함께 지키는 계약이다. 예시의 `OrderReader`다.
 - ConcreteComponent: 책임을 덧붙일 원래 객체다.
 - Decorator: Component 참조를 보관하고 Component와 같은 인터페이스로 요청을 그 대상에 전달한다.

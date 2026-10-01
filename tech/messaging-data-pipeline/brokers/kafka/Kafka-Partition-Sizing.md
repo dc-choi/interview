@@ -1,8 +1,9 @@
 ---
 tags: [messaging, kafka, partition, capacity-planning]
 status: done
+verified_at: 2026-09-30
 category: "메시징&파이프라인(Messaging&Pipeline)"
-aliases: ["Kafka Partition Sizing", "카프카 파티션 개수 산정", "파티션 산정식"]
+aliases: ["Kafka Partition Sizing", "카프카 파티션 개수 산정", "파티션 산정식", "Kafka 자동 토픽 생성"]
 ---
 
 # Kafka 파티션 개수 산정
@@ -78,6 +79,31 @@ catch-up 배수 5와 egress 0.1MB/s를 기본값으로 잡으면, egress 0.1MB/s
 
 파티션 수가 Kafka 성능이 아니라 컨슈머 처리 시간과 장애 복구 요구로 결정된 사례다.
 
+## 자동 토픽 생성은 산정을 우회한다
+
+이 산정식은 토픽을 명시적으로 만든다는 전제 위에 있다. client가 없는 토픽의 metadata를 조회하거나 처음 발행할 때 broker가 토픽을 자동으로 만들면 산정 없이 broker 기본값으로 토픽이 생긴다.
+
+| 설정 | 위치 | 기본값 (Apache Kafka 4.3, KafkaJS 문서 기준) |
+|---|---|---|
+| `auto.create.topics.enable` | broker | `true` |
+| `num.partitions` | broker | `1`. 자동 생성 토픽에 적용 |
+| `default.replication.factor` | broker | `1`. 자동 생성 토픽에 적용 |
+| `min.insync.replicas` | broker | `1` |
+| `allow.auto.create.topics` | Java consumer | `true`. broker가 허용할 때만 생성 |
+| `allowAutoTopicCreation` | KafkaJS producer, consumer | `true` |
+
+4.3 문서 기준으로 자동 생성 토픽의 partition 수와 replication factor는 broker에 명시한 값을 쓰고, 없으면 controller 설정값을 쓴다. 이 경로로 생긴 토픽은 다음 문제를 안고 시작한다.
+
+- **병렬성과 내구성 부재**: partition이 1개면 consumer를 늘려도 한 group 안의 병렬 처리가 늘지 않는다. replica가 1개면 그 broker를 잃을 때 데이터도 잃고, `acks=all`과 `min.insync.replicas`가 지킬 follower가 없다 ([[MQ-Kafka-Internals#문제에서 출발한 mental model|복제 규칙]]).
+- **사후 증설 비용**: 나중에 partition을 늘리면 위 첫 문단처럼 key의 partition 매핑이 바뀌어 key 단위 순서가 그 시점에 끊긴다.
+- **조용한 이름 오타**: 발행 측 토픽 이름이 틀리면 오류 없이 새 토픽이 생기고 consumer는 아무것도 받지 못한다 ([[MQ-Kafka-Consumer#발행은 됐는데 후처리가 일어나지 않을 때|소비 누락 진단]]).
+
+운영 규칙은 다음과 같다.
+
+- 운영 broker는 `auto.create.topics.enable=false`로 두고, 토픽은 IaC나 admin 절차로 partition 수, replication factor, `min.insync.replicas`, retention을 명시해 만든다.
+- client 옵션은 broker가 허용할 때만 의미가 있고 Java producer에는 자동 생성을 끄는 client 설정이 없다(4.3 producer configs 기준). 최종 통제점은 broker 설정이다. KafkaJS `allowAutoTopicCreation` 같은 client 옵션은 로컬 개발 편의로만 켠다.
+- 관리형 Kafka는 기본값이 다르다. 2026-09-30 확인 기준 Amazon MSK Provisioned의 기본 설정은 `auto.create.topics.enable=false`, 3개 AZ cluster에서 `default.replication.factor=3`과 `min.insync.replicas=2`이고, Confluent Cloud는 자동 생성이 기본 비활성이다. 제품과 cluster 유형별 문서로 다시 확인한다.
+
 ## 면접 체크포인트
 
 - 파티션 수는 왜 되돌리기 어려운가 — 축소는 Kafka가 지원하지 않아 새 토픽 이관이 필요하고, 증설도 `hash(key) % partition_count`가 바뀌어 키 단위 순서 보장이 그 시점에 끊김
@@ -87,11 +113,20 @@ catch-up 배수 5와 egress 0.1MB/s를 기본값으로 잡으면, egress 0.1MB/s
 - 실측값이 더 높아도 보수적으로 공식값을 쓰는 이유 — 변동성과 안전 마진
 - 파티션 과다의 비용 — 브로커 파일 핸들과 메모리, 리밸런싱 시간, 리더 선출 부하, end-to-end latency 증가
 - 플랫폼이 바뀌면(AWS MSK 등) 처리량과 파티션 한도를 다시 대입해 재측정해야 함
+- 자동 토픽 생성이 산정과 복제 설정을 우회하는 경로와 운영 broker에서 끄는 이유
 
 ## 출처
 
 - [채널톡 — 카프카 파티션 개수, 어떻게 정할까](https://tech.channel.io/ko/articles/17439f55)
 - [Apache Kafka 4.3 Documentation, Modifying topics](https://kafka.apache.org/43/operations/basic-kafka-operations/#modifying-topics)
+- [Apache Kafka 4.3 Documentation, Broker Configs](https://kafka.apache.org/43/configuration/broker-configs/)
+- [Apache Kafka 4.3 Documentation, Consumer Configs](https://kafka.apache.org/43/configuration/consumer-configs/)
+- [KafkaJS Documentation, Producing Messages](https://kafka.js.org/docs/producing)
+- [Amazon MSK Developer Guide, Default Amazon MSK configuration](https://docs.aws.amazon.com/msk/latest/developerguide/msk-default-configuration.html)
+- [Confluent Cloud Documentation, Topics overview](https://docs.confluent.io/cloud/current/topics/overview.html)
+- [Confluent Cloud Documentation, Kafka Cluster Types (Enterprise eCKU limits)](https://docs.confluent.io/cloud/current/clusters/cluster-types.html)
+- [인프런, 김빌, Kafka 이론](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273696)
+- [인프런, 김빌, Kafka 로 비지니스 로직 리펙토링!](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273698)
 
 ## 관련 문서
 

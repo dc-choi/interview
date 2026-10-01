@@ -19,7 +19,7 @@ verified_at: 2026-08-04
 | NOT | 입력이 0 | 반전 |
 | AND | 모든 입력이 1 | 조건 결합, carry 생성 |
 | OR | 하나 이상이 1 | 조건 합성 |
-| XOR | 입력이 서로 다름 | 합의 현재 자리 계산 |
+| XOR | 1인 입력이 홀수 개(두 입력이면 서로 다름) | 합의 현재 자리 계산 |
 | NAND | AND 결과의 반대 | 범용 게이트 |
 
 NAND만으로 NOT, AND, OR를 만들 수 있으므로 모든 불 함수를 구성할 수 있다.
@@ -123,7 +123,26 @@ ALU는 데이터 입력과 연산 선택 신호를 받아 산술/논리 결과�
 - carry와 signed overflow를 구분할 수 있는가
 - ALU, 레지스터, 제어장치가 각각 무엇을 담당하는가
 
+## 회로를 구성하는 규칙
+
+XOR은 1인 입력 수가 홀수일 때 1이므로 1 XOR 1 XOR 1도 1이다. `x XOR x=0`, `x XOR 0=x`로 toggle과 parity를 만든다. AND/OR/XOR에는 결합법칙이 있지만 NAND/NOR를 연속 연결한 것은 다입력 게이트와 다르다. NAND에서 A=1,B=1,C=0이면 `(A NAND B) NAND C=1`, `A NAND (B NAND C)=0`이다. XNOR은 XOR 반전이라는 이름이며 이 이항 연산은 결합법칙을 만족한다. AND는 OR/XOR 위로, OR는 AND 위로 분배되지만 OR가 XOR 위로 분배되는 것은 아니다.
+
+NAND 4개로 XOR을 만들려면 N1=A NAND B, N2=A NAND N1, N3=B NAND N1, 출력=N2 NAND N3으로 둔다. 2입력 MUX는 `(A AND NOT S) OR (B AND S)`다. 입력 m개에는 ceil(log2 m) 선택 bit가 필요하고, 4입력 MUX는 앞단 2개와 뒷단 1개의 2입력 MUX로 만든다. data 폭은 bit별 MUX를 복제하고 선택선을 공유한다. Decoder는 선택값과 enable을 AND하므로 enable이 0이면 어떤 word도 쓰지 않는다.
+
+카르노 맵의 축은 00,01,11,10처럼 인접 칸에서 한 bit만 바뀌는 Gray 순서다. 양 끝도 이웃이며 직사각형 1/2/4/8개 묶음을 겹쳐 쓸 수 있다. 묶음에서 변하지 않는 변수만 남긴다. 출력 0인 행을 생략하는 것과 입력이 발생하지 않거나 결과가 무관한 don't-care는 다르다.
+
+전기 신호의 0/1은 logic family의 입력 전압 대역이며 모든 회로가 0V/5V를 쓰거나 같은 threshold를 갖지는 않는다. High impedance Z는 0도 unknown 값도 아니며 bus driver가 연결을 놓는 상태다. 여러 driver가 같은 버스를 반대로 구동하면 전류와 신호 경합이 생긴다.
+
+## 산술 결과와 저장 시점
+
+뺄셈은 B의 각 bit를 SU와 XOR하고 초기 carry를 SU로 주어 덧셈기를 공유할 수 있다. n bit의 `A+NOT B+1=A-B+2^n`에서 carry-out은 unsigned A>=B의 no-borrow다. 8 bit에서 0-1은 FF와 C=0, 1-1은 00과 C=1,Z=1이다. 이 해석은 해당 회로의 계약이며 다른 ISA의 carry 관례로 일반화하지 않는다. 조합 ALU 출력은 입력이 바뀌면 다시 계산되므로 조건 분기에 필요한 flag는 지정된 FI edge에 별도 register에 저장한다.
+
+곱셈을 반복 덧셈, 나눗셈을 반복 뺄셈으로 구현할 수 있지만 반복 횟수가 값에 비례한다. shift-and-add 같은 bit 단위 전략과 hardware 연산기는 비용을 줄이는 다른 선택이다. n bit 왼쪽 shift는 폭 밖 bit를 버리고 오른쪽 shift는 signed 반올림 규칙을 확인한다. 0으로 나누기의 결과는 ISA/언어별 계약이므로 분모를 경계에서 검증한다. chip 손상을 일반적인 실패 결과로 설명하지 않는다.
+
 ## 출처
+
+- 인프런 보충 강의: [비트 마스킹](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135781)
+- 인프런 보충 강의: [XOR 게이트](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=278064), [8비트 2입력 MUX(feat.터널 사용법)](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=278070), [8비트 4입력 MUX](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=278084), [8비트 8입력 MUX](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=278687), [8비트 16입력 MUX](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=278688), [4비트 디코더](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=278696), [RAM](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=280414), [컴퓨터 만들기 개요](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=279244), [ALU 업그레이드](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=280425), [진리표를 변환하는 방법](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277208), [불 함수](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277207), [AND 게이트](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277698), [불 대수를 활용할 수 있는 방법](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277644), [NAND 게이트](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277659), [컴퓨터 조립하기](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=280426), [어셈블리 언어 프로그래밍 - 곱하기](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281079), [어셈블리 언어 프로그래밍 - 나누기](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281080)
 
 - 인프런, 널널한 개발자 강사, [디지털 회로와 덧셈](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128245), [컴퓨터가 뺄셈하는 방법](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128246), [CPU가 곱하고 나누는 방법](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128247)
 - 인프런, 감자 강사, [불 연산](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=276833), [불 대수의 성질과 법칙](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277193), [카르노 맵](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277210)

@@ -160,6 +160,7 @@ AI가 처리하니 세부는 몰라도 된다는 착각이 가장 위험하다. 
 - [Fuck it, make it anyway — Joel Auterson](https://www.joelotter.com/posts/2026/09/make-it-anyway/)
 
 ## 관련 문서
+- [[AI-Anxiety-and-FOMO|AI 불안과 FOMO를 다루는 법]]
 - [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 마찰과 판단 위임의 경계, 가드레일 RCT, 튜터형 활용
 - [[AI-Leverage-Small-Teams|AI 시대 작은 팀의 구조적 레버리지]] — 구현 비용 변화와 문제 정의 중심의 팀 구조
 - [[Software-3-0|Software 3.0]]

@@ -25,7 +25,7 @@ Jib은 이미지를 최소 5개 레이어로 분리한다.
 
 | 레이어 | 내용 | 변경 빈도 |
 |---|---|---|
-| **Base Image** | distroless, adoptopenjdk 등 JVM 베이스 | 거의 없음 |
+| **Base Image** | distroless, eclipse-temurin 등 JVM 베이스 | 거의 없음 |
 | **Dependencies** | `~/.m2`, Gradle 캐시의 라이브러리 JAR | 드묾 (버전 변경 시) |
 | **Resources** | `src/main/resources`의 설정, 템플릿 | 보통 |
 | **Classes** | 컴파일된 `.class` 파일 | 매 커밋 |
@@ -100,6 +100,8 @@ Jib은 **distroless**(Google의 최소 이미지) 같은 가벼운 베이스와 
 
 distroless는 `kubectl exec` 디버깅이 어려우므로 디버그 태그(`:debug`)를 별도 준비하거나 Ephemeral Container로 대응.
 
+2026-09-30 Docker Hub 기준 `openjdk` image는 공식 deprecated 상태로 2022년 7월 이후 Early Access build만 갱신되고, `adoptopenjdk` image는 `eclipse-temurin`으로 대체되어 2021-08-01 이후 update가 없다. 오래된 자료의 `FROM openjdk:17-jdk`나 `adoptopenjdk` 태그는 `eclipse-temurin`, `amazoncorretto` 같은 유지되는 image로 바꾼다. Jib Gradle plugin이 `from.image`를 지정하지 않을 때 쓰는 기본 base image도 Java version에 맞춘 `eclipse-temurin:<version>-jre`다(WAR는 `jetty`).
+
 ## JVM 컨테이너 운영 포인트
 
 Jib이 이미지를 만들어도 **JVM 자체의 컨테이너 대응**은 별도 고려 필요.
@@ -146,6 +148,11 @@ Jib이 이미지를 만들어도 **JVM 자체의 컨테이너 대응**은 별도
 ## 출처
 - [Jib 기반의 Java 애플리케이션 컨테이너 이미지 — jh-labs](https://jh-labs.tistory.com/509)
 - [Jib FAQ, Containerizing a JAR](https://github.com/GoogleContainerTools/jib/blob/master/docs/faq.md#i-want-to-containerize-a-jar)
+- [Jib Gradle Plugin, from.image 기본값](https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin)
+- [Docker Hub, openjdk Official Image](https://hub.docker.com/_/openjdk)
+- [Docker Hub, adoptopenjdk Official Image](https://hub.docker.com/_/adoptopenjdk)
+- [인프런, JSCODE 박재성, 보충 설명: 강의 내용 수정 사항](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=369773)
+- [인프런, JSCODE 박재성, 백엔드 프로젝트(Spring Boot) 프로젝트를 Docker로 실행시키기](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=227918)
 
 ## 관련 문서
 - [[Docker-Core|Docker 기본]]

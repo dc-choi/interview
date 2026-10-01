@@ -1,7 +1,7 @@
 ---
 tags: [web, http, content-type, mime, rest]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-10-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["HTTP Content-Type", "Content-Type", "MIME Type"]
 ---
@@ -107,12 +107,27 @@ hello
 - 필드마다 서브 Content-Type을 가질 수 있어 텍스트, 바이너리 혼합 가능
 - boundary 문자열은 바디 안에 등장해선 안 됨(충돌 방지)
 
+### HTML form의 enctype
+
+HTML form은 `enctype` 속성으로 body 인코딩을 고른다. 키워드는 `application/x-www-form-urlencoded`, `multipart/form-data`, `text/plain` 셋이고, 없거나 잘못된 값이면 urlencoded다. 브라우저가 고른 인코딩에 맞춰 `Content-Type`을 붙인다.
+
+```html
+<form action="/items" method="post" enctype="multipart/form-data">
+  <input name="itemName"> <input type="file" name="attachFile" multiple>
+</form>
+```
+
+- 파일을 보내려면 `multipart/form-data`를 명시해야 한다. 텍스트 필드와 여러 파일이 boundary로 구분된 파트로 한 요청에 실린다.
+- `enctype`을 빠뜨리면 urlencoded 직렬화가 file control의 값을 파일 이름으로 바꾼다. 요청은 성공한 것처럼 보이지만 서버에는 파일 이름 문자열만 도착하고 Servlet `Part`, Spring `MultipartFile`, NestJS `FileInterceptor` 같은 multipart 처리는 비어 있다.
+- 서버 비용도 다르다. urlencoded는 parameter API로 바로 읽지만 multipart는 boundary로 잘라 파트마다 header와 body를 파싱하므로 multipart 파서 설정과 크기 제한이 필요하다([[Spring-Multipart-JSON|Spring multipart]], [[NestJS-File-Upload|NestJS 파일 업로드]]). JS 클라이언트는 `FormData`를 쓰고 `Content-Type`을 직접 지정하지 않는다([[Browser-Fetch-and-XHR|Fetch와 XHR]]).
+
 ## 자주 생기는 장애 패턴
 
 - **`Content-Type` 누락** — Express/Spring에서 JSON 파서가 동작하지 않아 `req.body`가 비어 있음
 - **클라가 JSON을 보냈는데 헤더는 form-urlencoded** — 서버가 key=value 파서로 해석하여 400/422
 - **문자 encoding 오해** — Internet 사이에서 교환하는 JSON text는 UTF-8을 사용하고 `application/json` 등록에는 `charset` parameter가 정의돼 있지 않다. 다른 text media type은 각 등록 정의를 확인한다.
 - **boundary 잘못** — multipart 업로드 전체가 실패
+- **form에 `enctype` 누락** — 파일 대신 파일 이름만 urlencoded로 전송돼 서버의 multipart 처리가 비어 있음
 - **Content-Type 기반 content negotiation 남용** — REST에서는 보통 JSON 하나로 통일. 여러 타입을 제공해야 하면 Accept와 조합
 
 ## 면접 체크포인트
@@ -127,11 +142,15 @@ hello
 ## 출처
 - 김영한 강사, [클라이언트에서 서버로 데이터 전송](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61368)
 - 김영한 강사, [표현](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61375)
+- 김영한 강사, [파일 업로드 소개](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83380)
+- 김영한 강사, [정리 (파일 업로드 섹션)](https://www.inflearn.com/courses/lecture?courseId=327260&unitId=83386)
 - [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
 - [RFC 8259, JSON](https://www.rfc-editor.org/rfc/rfc8259.html)
 - [IANA, application/x-www-form-urlencoded](https://www.iana.org/assignments/media-types/application/x-www-form-urlencoded)
 - [WHATWG HTML, URL-encoded form data](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#url-encoded-form-data)
 - [WHATWG URL, application/x-www-form-urlencoded](https://url.spec.whatwg.org/#application/x-www-form-urlencoded)
+- [WHATWG HTML, Form submission attributes (enctype)](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#form-submission-attributes)
+- [WHATWG HTML, Converting an entry list to a list of name-value pairs](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#converting-an-entry-list-to-a-list-of-name-value-pairs)
 - [NestJS, Validation](https://docs.nestjs.com/techniques/validation)
 - [6991httam — REST API Content-Type 설정](https://6991httam.medium.com/rest-api-content-type-%EC%84%A4%EC%A0%95-c903e06a9936)
 - [yunzema — HTTP Content-Type 정리](https://yunzema.tistory.com/186)

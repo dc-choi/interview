@@ -3,7 +3,7 @@ tags: [cs, typescript, array, tuple, mapped-type]
 status: done
 category: "CS - TypeScript"
 aliases: ["TypeScript 컬렉션 타입", "인덱스 시그니처와 readonly"]
-verified_at: 2026-09-03
+verified_at: 2026-10-01
 ---
 
 # TypeScript 컬렉션 타입 설계
@@ -52,13 +52,28 @@ const validators: Validators<Form> = {
 |---|---|
 | `T[]` | 가변 길이, 배열 메서드와 변경 가능성 |
 | `readonly T[]` | 배열 읽기, 타입 검사에서 변경 금지 |
-| `[A, B]` | 길이와 각 위치 타입 |
+| `[A, B]` | 대입 시 길이와 각 위치 타입. 변경 메서드로 바뀐 길이는 추적하지 않음 |
 | `readonly [A, B]` | 고정 위치 타입과 변경 금지 |
 | `ArrayLike<T>` | readonly `length`와 숫자 인덱스 접근 |
 
 `ArrayLike<T>`는 배열 메서드나 이터러블임을 보장하지 않는다. DOM 컬렉션처럼 길이와 숫자 접근만 필요한 API 경계에 맞고, `map`이나 `for...of`가 필요하면 `Array.from`으로 배열을 만들거나 더 정확한 입력 타입을 요구한다.
 
 배열을 흉내 내려고 직접 `{ [index: number]: T }`를 선언하면 길이, 메서드, 위치별 타입 같은 계약이 빠진다. 일반 배열은 `T[]`, 고정된 위치는 튜플, 최소 배열 모양만 필요하면 `ArrayLike<T>`를 쓴다.
+
+### 튜플 길이 보장의 한계
+
+튜플은 별도 자료형이 아니라 컴파일 후 일반 배열이다. 타입으로도 위치별 속성과 리터럴 `length`를 가진 `Array<A | B>`와 같아서, `push`와 `pop` 같은 변경 메서드는 요소 타입의 유니온만 검사하고 길이 변화는 반영하지 않는다.
+
+```typescript
+const pair: [number, string] = [1, "a"];
+const bad: [number, string] = [1, "a", 2]; // 오류: 길이 2를 넘는 대입
+
+pair.push(3);                  // 통과: 인수는 number | string으로만 검사
+pair.pop(); pair.pop(); pair.pop();
+const first: number = pair[0]; // 타입은 number, 실제 값은 undefined
+```
+
+타입 검사가 보장하는 범위는 대입 시점의 길이와 위치별 타입, 범위 밖 리터럴 인덱스 접근 오류(TS2493)까지다. 값을 바꿀 필요가 없는 튜플은 `readonly [A, B]`로 선언해 변경 메서드를 타입에서 없앤다.
 
 ## `readonly`가 보장하는 범위
 
@@ -101,3 +116,4 @@ total(mutable); // 읽기만 하므로 전달 가능
 - yongsoocho, [배열과 tuple](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=138449)
 - [이펙티브 타입스크립트 스터디 3-3회차, 정재남](https://www.inflearn.com/courses/lecture?courseId=327754&unitId=91632)
 - [이펙티브 타입스크립트 스터디 4-1회차, 정재남](https://www.inflearn.com/courses/lecture?courseId=327754&unitId=91633)
+- [배열과 튜플, 이정환 Winterlood](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=154366)

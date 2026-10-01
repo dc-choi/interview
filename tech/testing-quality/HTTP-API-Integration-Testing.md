@@ -1,7 +1,7 @@
 ---
 tags: [testing, integration-test, e2e, http-api, nestjs, typeorm, supertest]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-09-30
 category: "테스트&품질(Testing&Quality)"
 aliases: ["HTTP API Integration Testing", "API 계약 테스트", "Supertest API 테스트"]
 ---
@@ -27,7 +27,7 @@ Supertest는 이 범위를 실행하는 클라이언트일 뿐 테스트 전략 
 
 1. 요청, 사전 상태와 관찰 가능한 결과를 한 문장으로 정의한다.
 2. 그 동작을 표현하는 테스트 하나를 작성한다.
-3. 테스트가 의도한 이유로 실패하는지 확인한다. 경로 오타나 fixture 누락으로 실패하면 Red 단계가 아니다.
+3. 테스트가 의도한 이유로 실패하는지 확인한다. 경로 오타나 fixture 누락으로 실패하면 Red 단계가 아니다. 404를 기대하는 테스트는 라우트가 없어도 통과할 수 있다([[HTTP-API-Integration-Testing-Failure-Paths#라우팅 404와 리소스 없음 404를 구분한다|라우팅 404 구분]]).
 4. 테스트를 통과시키는 가장 작은 구현을 만든다.
 5. 전체 관련 테스트가 Green인 상태에서 중복, 책임과 이름을 정리한다.
 6. 다음 성공 또는 실패 동작으로 이동한다.
@@ -46,6 +46,8 @@ TDD는 유지보수 비용을 자동으로 줄이지 않는다. 외부 동작에
 | `DELETE /users/:id` | 본문 없는 204를 선택할 수 있음 | 잘못된 식별자와 이미 없는 리소스 정책을 명시 |
 
 `PUT`은 전체 표현 교체 의미다. 이름 하나만 바꾸는 API라면 `PATCH`가 더 정확할 수 있다. 삭제 성공을 204로 정했다면 응답 본문이 비었는지도 검증한다. 상태 코드만 맞아도 잘못된 데이터가 저장될 수 있으므로 생성, 수정과 삭제 후 실제 DB 상태까지 확인한다.
+
+실패 테스트가 한 규칙만 위반하게 만드는 법, 400, 404, 409의 판정 순서, 값 없음과 형식 오류의 구분, 오류 본문 계약은 [[HTTP-API-Integration-Testing-Failure-Paths|HTTP API 실패 경로 테스트]]에 있다.
 
 ## NestJS와 Supertest 기준 골격
 
@@ -112,11 +114,22 @@ Supertest는 `http.Server`가 아직 수신 중이 아니면 임시 포트에 �
 - 병렬 실행 시 worker별 database, schema 또는 container로 namespace를 나눈다. 순차 실행은 격리 설계의 대체물이 아니다.
 - 정리는 FK 순서를 고려한 TRUNCATE, database/schema 재생성 또는 검증된 fixture 전략을 사용한다. 테스트 대상 트랜잭션을 바깥 롤백으로 감싸면 실제 commit 동작을 가릴 수 있다.
 
+## 테스트 출력과 로그
+
+요청 로그와 ORM 쿼리 로그는 개발 중 진단에는 유용하지만 기본 테스트 리포트에 섞이면 실패 원인을 가린다. 리포트에는 테스트에 관련된 내용만 남긴다.
+
+- 요청 로그 미들웨어와 ORM 쿼리 로그는 테스트 환경에서 끄거나 error 수준만 남긴다. TypeORM은 DataSource의 `logging: false`나 `logging: ['error']`로 실패한 쿼리와 오류만 남길 수 있다. NestJS `TestingModule`은 기본적으로 error 로그만 콘솔에 쓰며 `setLogger()`로 바꿀 수 있다.
+- 로그를 전부 끄면 실패 진단이 어려워진다. error 수준을 남기거나 실패한 테스트에서만 로그를 보이게 하는 방식과 비교한다.
+- 쿼리 로그는 개발 중 눈으로 확인하는 수단이다. API가 DB에 올바르게 반영했는지는 저장소 상태 단언으로 고정한다.
+- `NODE_ENV` 같은 환경 분기는 로그와 관측 출력에만 둔다. 라우팅, 검증, 필터 동작을 분기하면 프로덕션과 테스트가 같은 HTTP 설정 함수를 호출하는 원칙이 깨진다.
+
 ## 오래된 예제를 현재 스택으로 번역하기
 
 | 예제의 표현 | 현재 NestJS, TypeORM 해석 |
 |---|---|
 | Mocha와 should.js | 러너와 assertion은 교체 가능하다. 저장소 표준을 따른다 |
+| Node 문서가 테스트용 assert를 권하지 않아 서드파티로 교체 | Node 6 문서의 문구다. 현재(v26) `node:assert`는 Stable이고 `node:test` 문서 예제도 이를 쓴다 |
+| legacy `assert.equal` | `==`로 비교해 `1`과 `'1'`을 같다고 본다. `node:assert/strict`나 `strictEqual`, `deepStrictEqual`을 쓴다 |
 | Express 앱 직접 export | `INestApplication`과 `app.getHttpServer()`를 사용한다 |
 | 별도 `body-parser` | HTTP 어댑터의 파싱 뒤 DTO와 `ValidationPipe`로 입력 계약을 검증한다 |
 | Router와 controller 파일 분리 | Controller는 전송, use case는 애플리케이션 규칙, Repository는 저장 책임을 맡는다 |
@@ -137,6 +150,7 @@ Supertest는 `http.Server`가 아직 수신 중이 아니면 임시 포트에 �
 ## 관련 문서
 
 - [[TDD-BDD|TDD, BDD]]
+- [[HTTP-API-Integration-Testing-Failure-Paths|HTTP API 실패 경로 테스트]]
 - [[NestJS-Testing|NestJS Testing]]
 - [[Test-Isolation|Test Isolation]]
 - [[Test-Fixture|Test Fixture 전략]]
@@ -149,8 +163,14 @@ Supertest는 `http.Server`가 아직 수신 중이 아니면 임시 포트에 �
 - [NestJS 공식 문서, Testing](https://docs.nestjs.com/fundamentals/testing)
 - [Supertest 공식 저장소, README](https://github.com/forwardemail/supertest)
 - [TypeORM 공식 문서, Migration setup](https://typeorm.io/docs/migrations/setup/)
+- [TypeORM 공식 문서, Logging](https://typeorm.io/docs/logging/)
 - [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110)
+- [Node.js 공식 문서, Assert](https://nodejs.org/api/assert.html)
+- [Node.js 공식 문서, Test runner](https://nodejs.org/api/test.html)
+- [Node.js v6.1.0 공식 문서, Assert](https://nodejs.org/docs/v6.1.0/api/assert.html)
 - [김정환 강사, 테스트 주도 개발이란?](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6194)
+- [김정환 강사, Node 기본 assert로 첫 단위 테스트](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6197)
+- [김정환 강사, should.js로 assertion 교체](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6198)
 - [김정환 강사, Supertest로 HTTP 통합 테스트](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6199)
 - [김정환 강사, Supertest 비동기 요청](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6200)
 - [김정환 강사, 목록 조회의 limit 검증](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6204)
@@ -164,6 +184,7 @@ Supertest는 `http.Server`가 아직 수신 중이 아니면 임시 포트에 �
 - [김정환 강사, 리팩터링 뒤 회귀 테스트](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6216)
 - [김정환 강사, 테스트와 서버 구동 분리](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6218)
 - [김정환 강사, ORM 스키마 동기화 예제](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6224)
+- [김정환 강사, DB 연동과 SQL 로그](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6225)
 - [김정환 강사, DB fixture와 목록 통합 테스트](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6226)
 - [김정환 강사, DB unique 제약과 409](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6229)
 - [김정환 강사, 수정과 unique 제약](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6230)

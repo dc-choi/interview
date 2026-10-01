@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, testing, jest, integration-test, mock]
 status: done
-verified_at: 2026-09-12
+verified_at: 2026-09-30
 category: "테스트&품질(Testing&Quality)"
 aliases: ["NestJS Testing", "TestingModule", "Test.createTestingModule"]
 ---
@@ -22,6 +22,25 @@ await request(app.getHttpServer())
 ```
 
 실제 HTTP 입구부터 응답까지 태운다. 단 `createNestApplication`이 재현하는 것은 **모듈에 등록한 미들웨어와 `APP_GUARD`, `APP_PIPE`, `APP_FILTER` 같은 프로바이더로 등록한 enhancer**까지다. `main.ts`에서 `useGlobalPipes`, `useGlobalFilters`, `setGlobalPrefix`로만 붙인 전역 설정은 `TestingModule`이 자동으로 재현하지 않아, 프로덕션에서만 걸리는 검증이나 prefix를 테스트가 놓친다. 프로덕션과 테스트가 같은 HTTP 설정 함수를 호출하게 하는 패턴은 [[HTTP-API-Integration-Testing|HTTP API 통합 테스트]] 참조.
+
+## 쿠키 인증 흐름 E2E
+
+회원가입부터 인증 조회까지 한 흐름으로 태우면 단일 엔드포인트 테스트가 놓치는 계약 결함이 드러난다. 아래 기대 계약은 2026-09-30 NestJS 12.1, Supertest 7.3 기준으로 확인했다.
+
+| 순서 | 요청 | 기대 계약 | 실패 테스트가 드러내는 결함 |
+|---|---|---|---|
+| 1 | 쿠키 없이 `GET /users`(현재 사용자) | 401 | - |
+| 2 | `POST /users`로 가입 | 201, 응답 본문에 `password` 없음 | 비밀번호가 응답에 섞임. Entity의 `@Exclude()`와 `ClassSerializerInterceptor`로 막는다 |
+| 3 | 같은 이메일로 다시 가입 | 409 | 충돌을 400으로 뭉갬. 현재 상태와의 충돌은 409로 둔다 |
+| 4 | 로그인 `POST` | 200, `Set-Cookie`에 JWT 쿠키(`HttpOnly`) | 리소스를 만들지 않는 POST가 201을 줌. Nest의 POST 기본 상태가 201이므로 `@HttpCode(200)`을 붙인다 |
+| 5 | 4의 쿠키를 붙여 `GET /users` | 200, 현재 사용자 정보 | - |
+
+- 흐름 테스트는 보일러플레이트에 남아 있던 불필요한 엔드포인트(앱 삭제, 관리자 기능)도 드러낸다. 공개 API 표면도 테스트가 확인하는 계약이다.
+- `@Exclude()`만으로는 부족하다. `ClassSerializerInterceptor`는 핸들러가 반환한 클래스 인스턴스에 `instanceToPlain()`을 적용하므로 평범한 객체를 반환하면 제외 규칙이 적용되지 않는다([[NestJS-Serialization|NestJS 응답 직렬화]]).
+- 4에서는 `set-cookie` 헤더와 `HttpOnly` 속성을 단언한다. 5는 `request.agent(app.getHttpServer())`로 쿠키를 유지하거나 받은 값을 `.set('Cookie', ...)`로 넘긴다.
+- Supertest가 쓰는 superagent 10.4의 agent는 요청 URL이 `https:`일 때만 `Secure` 쿠키를 다시 보낸다(소스 기준). `app.getHttpServer()`는 평문 HTTP이므로 `Secure` 쿠키를 발급하면 agent로 보낸 5가 401이 된다. 이때는 `set-cookie`에서 이름과 값을 꺼내 `Cookie` 헤더로 직접 넣는다.
+- `cookie-parser` 같은 미들웨어와 `ClassSerializerInterceptor`를 `main.ts`에서만 등록하면 테스트 앱에는 적용되지 않는다. 5가 쿠키를 보내도 401로 실패하거나 2의 비밀번호 노출을 놓치므로 위의 공통 HTTP 설정 함수 원칙을 따른다.
+- 실제 DB를 쓰면 테스트 전용 DB로 분리한다. 격리 방식은 [[HTTP-API-Integration-Testing#테스트 격리|HTTP API 통합 테스트]]와 [[Migration-Backed-Test-Database|마이그레이션 기반 테스트 DB]]를 따른다.
 
 ## Request-scoped Provider 테스트
 
@@ -80,3 +99,9 @@ v11부터 동적 모듈이 딥 해시로 중복 제거되지 않아(객체 참�
 - [TypeORM, Transactions](https://typeorm.io/docs/transactions/)
 - [NestJS — NestApplicationContextOptions](https://github.com/nestjs/nest/blob/master/packages/common/interfaces/nest-application-context-options.interface.ts)
 - [SQLite, Release History](https://sqlite.org/changes.html)
+- [NestJS — Controllers (Status code)](https://docs.nestjs.com/controllers)
+- [NestJS — Serialization](https://docs.nestjs.com/techniques/serialization)
+- [Supertest — README (request.agent와 cookie)](https://github.com/forwardemail/supertest)
+- [superagent — node agent.js](https://github.com/ladjs/superagent/blob/master/src/node/agent.js)
+- [인프런, 윤상석, TDD 소개 및 통합 테스팅](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=95952)
+- [인프런, 윤상석, 보일러플레이트 코드 업데이트 보충](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=96478)

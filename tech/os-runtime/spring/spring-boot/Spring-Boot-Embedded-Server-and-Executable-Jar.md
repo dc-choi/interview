@@ -88,6 +88,12 @@ manifest의 실제 `Main-Class`는 `JarLauncher`이고 application main class는
 - executable JAR은 모든 class를 한 덩어리로 합치는 방식이 아니라 nested JAR과 launcher로 dependency 경계를 보존한다.
 - WAR와 JAR의 선택보다 동일 artifact 재현, 종료/health 계약과 rollback 가능성이 더 중요하다.
 
+## container 초기화와 패키징 진단
+
+Servlet container는 service-provider metadata로 `ServletContainerInitializer`를 발견하고 `@HandlesTypes`로 관련 type을 전달할 수 있다. initializer는 Servlet, Filter, Listener를 프로그램으로 등록한다. 외부 WAR의 이 경로와 Boot embedded server의 context 초기화 경로를 같은 시작 순서로 가정하지 않는다.
+
+IDE에서 실행된다는 사실은 배포 JAR의 launcher와 dependency 구성을 검증하지 않는다. plain JAR에는 executable manifest나 runtime dependency가 빠질 수 있다. 직접 shaded JAR를 만들 때도 중복 service metadata를 단순 덮어쓰면 initializer 발견이 달라질 수 있다. 최종 artifact의 manifest, classpath 구조와 `java -jar` 기동을 함께 확인한다.
+
 ## 출처
 
 - [Spring Boot 4.1, Running Your Application](https://docs.spring.io/spring-boot/reference/using/running-your-application.html)

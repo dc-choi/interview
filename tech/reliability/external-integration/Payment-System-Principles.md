@@ -119,6 +119,20 @@ PENDING → PAID → REFUND_REQUESTED → REFUNDED
 - 각 상태 전이를 **명시적 API로만** 허용
 - 비정상 전이(PAID → PENDING) 차단
 
+#### 취소와 실패를 상태 대신 기록으로 남기는 선택
+
+위 모델은 payment row 하나가 취소와 환불까지 상태로 가진다. 승인 뒤 payment row를 고정하고 취소를 별도 기록으로 쌓는 모델도 있다. 이때 payment 상태는 준비와 승인 두 가지뿐이고, 결제 완료와 취소 같은 주문 상태는 order가 가진다.
+
+| 기준 | 같은 row의 상태 갱신 | 승인 row 고정 + insert-only 취소 |
+|---|---|---|
+| 증분 추출, 정산 적재 | 한 달 전 결제가 오늘 취소되면 과거 row가 바뀌므로 갱신을 추적한다(갱신 시각 watermark, CDC) | 승인 뒤 바뀌지 않는 payment와 새 cancel row만 날짜로 읽고 승인은 양수, 취소는 음수로 상계한다. 늦은 commit에 대비한 경계 겹침은 여전히 필요하다 |
+| 날짜별 취소 조회 | 취소 시각 column과 index가 없으면 넓게 scan한다 | cancel 테이블을 취소 일자로 조회한다 |
+| 현재 상태 조회 | row 하나로 끝난다 | 결제와 취소를 합친 view나 projection이 필요하다 |
+
+선택은 규모, 트래픽과 정산 요구에 따른 tradeoff다. 분리 모델은 취소가 결제보다 드물어 cancel 테이블 증가를 감당할 수 있다는 전제에 기대므로 대량 취소가 일상인 서비스는 이 전제를 다시 확인한다. 쿠폰 복원, 사용 포인트 반환과 적립 포인트 회수는 cancel 기록을 원천으로 처리하고, 부분 취소 배분은 [[Commerce-Change-Propagation-and-Money-Invariants|커머스 금액 불변식]], 정산 흐름은 [[Ecommerce-Shopping-Mall-ERD|이커머스 도메인 모델링]]을 따른다.
+
+실패도 상태 대신 이력으로 남길 수 있다. PG 실패 callback에서 order와 payment 상태를 바꾸지 않고 주문에 연결된 거래 이력에만 실패를 쌓으면 상태와 전이가 줄어 PG와 어긋날 지점도 줄어든다. 대신 실패 이력도 없는 준비 건은 사용자 이탈인지 callback 유실인지 내부 데이터만으로 구분할 수 없다. 오래된 준비 건을 실패나 이탈로 단정하지 말고 PG 조회로 수렴시킨다([[Payment-Reconciliation-Worker|결제 대사 worker]]).
+
 ### 결제 + 비결제 작업 분리
 ```
 1. 결제 (PG 호출) ← 동기
@@ -156,9 +170,13 @@ PENDING → PAID → REFUND_REQUESTED → REFUNDED
 
 ## 출처
 - [supims (brunch) — 안정적인 Node.js 기반 백엔드 시스템 7편 (결제 시스템)](https://brunch.co.kr/@supims/128)
+- [인프런, 제미니, 결제 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=339108&unitId=354112)
+- [인프런, 제미니, 취소 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=339108&unitId=354111)
+- [인프런, 제미니, 정산 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=339108&unitId=354110)
 
 ## 관련 문서
 - [[Commerce-Change-Propagation-and-Money-Invariants|부분 취소, coupon과 정산 불변식]]
+- [[Ecommerce-Shopping-Mall-ERD|이커머스 도메인 모델링]]
 - [[Idempotency|HTTP 멱등성]]
 - [[Idempotency-Key|Idempotency Key 상세]]
 - [[External-API-Integration-Patterns|외부 API 연동 패턴 (거래형)]]
