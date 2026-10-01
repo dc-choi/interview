@@ -1,6 +1,7 @@
 ---
 tags: [fit, interview, global, foreign, defense, offense, job-search]
 status: done
+verified_at: 2026-10-01
 category: "Interview - Fit"
 aliases: ["Global IT Interview", "글로벌 IT 인터뷰", "해외 IT 회사 인터뷰 준비"]
 ---
@@ -140,6 +141,15 @@ aliases: ["Global IT Interview", "글로벌 IT 인터뷰", "해외 IT 회사 인
 | 평가 기준 | 실무 적합도 중심 | STAR, Leadership Principles, Values 명시 |
 | 문화 적합성 | 암묵적 | 명시적 (Culture Fit 단계) |
 
+### 빅테크 전형 구조와 결정 단계
+
+2026-10-01 각 사 공식 채용 안내 기준이다. 직무, 레벨, 지역에 따라 다르므로 지원 시 리크루터 안내로 다시 확인한다.
+
+- **Google**: 전체 과정은 대략 6~8주로 안내된다. 직무에 따라 사전 평가(업무 스타일 평가, 코딩 같은 직무 관련 과제), 리크루터와의 짧은 통화 1~2회, 사전 프로젝트를 거쳐 여러 면접관의 패널 인터뷰를 화상이나 대면으로 본다. 모든 후보에게 같은 루브릭을 쓰는 구조화 면접이고, 직무 관련 개방형 질문을 쓰며 브레인티저는 없고, 인터뷰 중 AI 도구 사용은 허용되지 않는다. 끝나면 지원서와 인터뷰 결과를 모아 검토해 결정과 오퍼로 이어진다.
+- **Meta(소프트웨어 엔지니어)**: 2022년 공식 준비 가이드는 코딩 중심의 초기 기술 스크린(약 45분)과 코딩, 설계, 행동 면접으로 이뤄진 풀 루프(각 45분)를 설명한다. 리크루터 통화와 오퍼 단계는 별도의 Hiring process 안내에서 확인하며, 현재 지원 포지션의 구성은 리크루터에게 확인한다.
+- **온사이트 통과가 곧 합격은 아닐 수 있다**: 인터뷰 뒤 면접관 평가를 모으는 디브리프, 채용 위원회 검토, 팀 매칭을 거쳐 최종 결정이 난다는 설명이 있다(강의 시점 설명, 공식 안내 페이지에는 명시 없음). 이때는 합격 판정 뒤에도 맞는 자리가 없거나 채용 시장이 바뀌어 입사가 지연되거나 취소될 수 있으므로, 결정 단계와 기간을 리크루터에게 확인하고 7절처럼 서명된 오퍼 전에는 퇴사를 통보하지 않는다.
+- **리크루터 안내를 준비 범위 정의서로 쓴다**: 온사이트 안내에는 인터뷰 구성과 차수, 트랙(IC, PM, SDE, TPM 등), 레벨, 평가 영역(직무 관련 지식 RRK, 시스템 디자인, 매니지먼트와 리더십 등)이 적혀 오기도 한다. 준비는 그 영역에 맞춘다.
+
 ### 해외 현지 구직의 시간 변수 (캐나다 이직 경험 기준)
 
 통계가 아니라 한 구직자의 경험이므로 지역과 직군별로 다시 확인한다.
@@ -173,6 +183,11 @@ aliases: ["Global IT Interview", "글로벌 IT 인터뷰", "해외 IT 회사 인
 - [brunch ywkim36 — 평상시 준비: 자기인식, 학습, 네트워킹](https://brunch.co.kr/@ywkim36/22)
 - [Threads grace_zumba.canada — 캐나다 이직 현실 10가지](https://www.threads.com/@grace_zumba.canada/post/DWymnMKDXOe)
 - [북미 이력서는 1장으로 — Threads, henrykang227](https://www.threads.com/@henrykang227/post/DJs2ZJex9qF)
+- [인프런, 코드빌런, 주요 회사별 채용 프로세스 - 네카라쿠배 및 메타, 구글 코리아 채용 프로세스](https://www.inflearn.com/courses/lecture?courseId=334892&unitId=242701)
+- [인프런, 코드빌런, 마무리 - 교육기관과 사이드 프로젝트](https://www.inflearn.com/courses/lecture?courseId=334892&unitId=242702)
+- [Google Careers, Our hiring process](https://www.google.com/about/careers/applications/how-we-hire/)
+- [Meta Careers, Preparing for your software engineering interview at Meta](https://www.metacareers.com/blog/preparing-for-your-software-engineering-interview-at-meta/)
+- [Meta Careers, Hiring process](https://www.metacareers.com/hiring-process/)
 
 ## 관련 문서
 - [[Common-Interview-Questions|자주하는 면접 질문]]

@@ -107,6 +107,7 @@ CS 요약집 암기부터 시작하면 무너진다. 면접관이 처음 파는 
 - 확신이 없는 세부사항을 꾸며내지 않고, 아는 원리에서 단계적으로 추론한다.
 - 실무라면 어떤 문서, 로그, 지표, 실험으로 확인할지 제시한다.
 - 면접관이 새 조건을 주면 기존 답을 방어하지 말고 조건을 반영해 다시 판단한다.
+- 어디까지 아는지 한계를 찾으려는 어려운 질문은 잘하고 있다는 신호일 수 있다. 여기서 당황하기 시작하면 불리해지므로 침착하게 아는 원리에서 추론한다.
 
 ### 정답이 없는 트레이드오프 질문
 
@@ -166,6 +167,10 @@ CS 요약집 암기부터 시작하면 무너진다. 면접관이 처음 파는 
 - **핵심 역질문 2~3개는 외워서** 자연스러운 맥락 전환으로 던지기
 - 심화 역질문 1~2개만 노트 확인 — "혹시 놓친 부분 있을까 하여 정리해둔 걸 잠깐 보겠습니다" 한 문장으로 전환
 
+**긴장 관리와 대화 예절**
+- 30분 전에 도착해 예상 질문을 한 번 더 시뮬레이션한다. 머리가 하얘지면 물 한 잔 마시고 심호흡한 뒤 천천히 답해도 된다. 목표 수준과 마음가짐은 [[Interview-Soft-Skills-Metacognition#면접 심리학|면접 심리학]]
+- 캐주얼한 분위기라도 임원이 있는 자리다. 토론은 좋지만 상대의 말을 중간에 자르면 임원 면접에서 치명적일 수 있으므로 질문이 끝났는지 확인한 뒤 답한다
+
 ## 출처
 - [하드 스킬을 설명하게 만드는 소프트 스킬, 코드빌런 강사, unit 242770](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242770)
 - [질문 범위를 좁히고 대화로 이어가는 면접, 코드빌런 강사, unit 242772](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242772)
@@ -173,6 +178,8 @@ CS 요약집 암기부터 시작하면 무너진다. 면접관이 처음 파는 
 - [기술면접과 인성면접의 질문 의도, 코드빌런 강사, unit 242764](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242764)
 - [품질과 일정, 기술부채의 트레이드오프, 코드빌런 강사, unit 242766](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242766)
 - [메타인지와 꼬리질문 준비, 코드빌런 강사, unit 242710](https://www.inflearn.com/courses/lecture?courseId=334892&unitId=242710)
+- [탈락 사례와 긴장 관리 마인드셋, 코드빌런 강사, unit 242782](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242782)
+- [초반 질문과 한계 탐색 질문의 해석, 코드빌런 강사, unit 243602](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=243602)
 - [F-Lab — LG전자, Intel 출신 멘토 인터뷰](https://f-lab.kr/blog/250408-devclub)
 - [개발자 면접 준비 순서, 무엇부터 파야 하는가 — Team Grit](https://teamgrit.co/article/479)
 

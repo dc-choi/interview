@@ -39,6 +39,18 @@ aliases: ["시스템 설계 연습 주제", "System Design Practice Topics"]
 
 핵심 — 카운트 정합성(동시성), 취소 처리, 캐싱, 100만 좋아요 핫키 대응.
 
+#### 심화 변형: Q&A 커뮤니티의 투표 정렬과 포인트
+> "개발자 Q&A 커뮤니티에서 답변을 투표순으로 보여 주고, 활동마다 포인트를 적립하라" (Level 2~3 난이도)
+
+- **명확화**: 질문 조회, 답변 작성, 답변 투표, 포인트가 핵심 기능이고 우선 품질은 성능과 확장성이다. 기능별 목표 수치와 예상 사용자 수를 가정으로 적고, 사용자와 데이터가 늘 때의 병목(실시간 정렬 저하, 포인트 적립의 DB 쓰기 부하)을 미리 정해 둔다.
+- **도메인과 데이터**: 유저, 게시글, 포인트로 도메인을 나눈다. 질문과 답변은 필요한 정보가 달라 한 테이블보다 나눠 두는 편이 낫다.
+- **출발점**: 모놀리식 하나로 시작하면 빠르지만 대규모를 가정하면 한 서버와 한 DB가 병목이 된다. 측정으로 병목을 확인한 뒤에만 컴포넌트를 더한다.
+- **투표 정렬**: 관계형 DB에 사용자와 답변별 투표를 유일하게 기록하고 커밋한 뒤 수락 응답을 보낸다. DB를 정본으로 두고, 읽기 부하가 커지면 Redis Sorted Set을 파생 순위로 사용한다. 변경 이벤트는 투표와 같은 트랜잭션의 Outbox에 기록하고, 소비자는 중복과 역순을 처리해 점수를 반영한다. 단순한 `ZINCRBY` 재전송은 이중 가산을 만들 수 있다. 재구축은 DB의 기준 시점과 이후 변경분을 구분해 수행한다([[Redis-Sorted-Set-Ranking|Sorted Set 랭킹 설계]]).
+- **포인트**: 행위 기록과 적립 이벤트를 같은 트랜잭션으로 남긴 뒤 포인트 서비스가 이벤트를 소비해 이력과 합계를 갱신할 수 있다. 이 방식의 잔액 조회는 결과적 일관성이다. 즉시 확정된 잔액이 필요하면 소비 완료를 확인하거나 동기 처리 경계를 택하고, 접수와 적립 완료를 응답에서 구분한다.
+- **최종 구성 예**: 유저, 게시글, 포인트 서비스를 나누고 API 게이트웨이가 인증, 로깅, 라우팅을 맡으며 서비스 레지스트리로 인스턴스를 찾는다. MSA가 정답은 아니고 잘 다듬은 모놀리식도 선택지다. 아키텍처는 측정 결과와 신규 기능에 따라 계속 고친다.
+- **꼬리질문**: 포인트 이벤트가 두 번 소비되면? (at-least-once 전제의 멱등 소비, [[Idempotent-Consumer|멱등 컨슈머]]) 적립과 차감 합계가 이력과 어긋나면? (주기적 대사 배치) Redis 점수와 DB 정본이 어긋나면? (정본에서 주기적으로 다시 계산) 게시글에 문서형 DB를 고른 근거는? ([[NoSQL-Overview|NoSQL 개요]]의 선택 절차와 비교) 인기 답변의 좋아요가 한 행에 몰리면? ([[Aggregate-Summary-Table-Patterns|집계 테이블 패턴]]의 hot key upsert 경합)
+- **실패 경계**: 행위는 커밋됐지만 이벤트 발행에 실패하면? ([[Transactional-Outbox|Transactional Outbox]]) 적립 직후 잔액을 읽으면? (허용 지연, 완료 확인과 read-after-write 계약을 명시)
+
 ### 4. 검색 기능
 > "게시물 검색을 만들라"
 
@@ -148,7 +160,10 @@ aliases: ["시스템 설계 연습 주제", "System Design Practice Topics"]
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Transactional outbox pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
+- [Redis, Sorted sets](https://redis.io/docs/latest/develop/data-types/sorted-sets/)
 - 성장랜턴, 시스템 디자인 첫걸음: 면접에서 돋보이는 백엔드 아키텍처 설계하기, [321520 면접에서 돋보이는 프로젝트를 하는 방법](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=321520)
+- 성장랜턴, 시스템 디자인 첫걸음: 면접에서 돋보이는 백엔드 아키텍처 설계하기, [278155 예시 프로젝트를 통해 아키텍처 설계하기](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278155)
 - [경매 시스템 설계 — Threads, rich_dev_siliconvalley](https://www.threads.com/@rich_dev_siliconvalley/post/DNolPEdyTtF)
 - [MDN, Using server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
 

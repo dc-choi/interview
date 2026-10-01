@@ -51,6 +51,7 @@ aliases: ["Flow vs Agent Orchestration", "멀티 에이전트 주의력", "딥�
 - 멀티 에이전트 병렬 작업과 몰입에 대한 회고 — 개인 블로그 에세이
 
 ## 관련 문서
+- [[Personal-Task-Management|개인 할 일 관리 (진행 중 작업 수 제한)]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 산출자에서 오케스트레이터로의 전환
 - [[AI-Handicap-Learning|AI 접바둑 학습]] — 단일 에이전트를 몰입형으로 쓰기
 - [[Great-Developer-Habits|뛰어난 개발자의 행동 패턴]]

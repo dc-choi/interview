@@ -12,15 +12,17 @@ aliases: ["채용 인사이트"]
 ## 목차
 
 - [[Developer-Hiring-Insights-Market|채용 시장, CS, 역량]]
-  - 기업이 원하는 개발자, CS 기초의 중요성, 문제해결 역량, 협업에 대한 인식, 동기유지와 성장, 개발자 역량, 문제해결능력(심화)
-- [[Developer-Hiring-Insights-Growth|면접 준비, 스터디, 시니어 로드맵]]
-  - 인터뷰 준비 점검, 스터디와 프로젝트를 통한 성장, 주니어에서 시니어로, 개발자 학습 로드맵
+  - 기업이 원하는 개발자, CS 기초의 중요성, 문제해결 역량, 협업에 대한 인식, 동기유지와 성장, 개발자 역량, 문제해결능력(심화)과 진단 루프
+- [[Developer-Hiring-Insights-Growth|면접 준비, 스터디, 학습 로드맵]]
+  - 인터뷰 준비 점검, 스터디와 프로젝트를 통한 성장, 가시성과 외부 자산, 개발자 학습 로드맵
+- [[Developer-Hiring-Insights-Senior|주니어에서 시니어로 (시니어 경계와 NFR)]]
+  - 시니어 경계 기준, 기술적, 업무적 역량, 비기능 요구사항의 의미와 기술부채, 마인드셋, 채용공고 기반 방법론
 
 ## 형제 문서 (hiring-market)
 
 - [[IT-Downturn-Career-Strategy|IT 긴축기 커리어 전략]]
 - [[Large-Scale-Traffic-Experience|대규모 트래픽 경험]]
-- [[Effort-Value-In-Hiring|채용 시장에서 노력의 가치 (신호 인플레이션, 성실은 위생 요인, AI 활용의 디폴트화)]]
+- [[Effort-Value-In-Hiring|채용 시장에서 노력의 가치 (신호 인플레이션, 연차별 활동 신호, 성실은 위생 요인, AI 활용의 디폴트화)]]
 - [[Labor-Market-Mindset|노동시장을 시장으로 보기 (거래/게임이론, 능력=상품, 취업=경제활동, 면접=시장조사)]]
 
 ## 관련 문서
