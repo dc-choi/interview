@@ -84,6 +84,8 @@ aliases: ["Community Strategy", "커뮤니티 전략", "커머스 커뮤니티"]
 
 소속감과 정체성을 강하게 설계할수록 이탈 비용을 인위적으로 높이거나 내부 비판을 막는 방향으로 흐를 위험이 있다. 윤리 경계는 [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]]에서 점검한다.
 
+형성 사슬, 참여 조건과 미션 중심의 기여 설계는 [[Worldview-Community|세계관 커뮤니티]]에서 다룬다. 대화와 경험을 기록하고 콘텐츠 및 공동창작으로 연결하는 조건은 [[Community-Knowledge-and-Co-Creation|커뮤니티 지식 축적과 공동창작]]을 참고한다.
+
 ## 면접 체크포인트
 
 - 커뮤니티 기능 제안은 부가 기능이 아니라 여정 전체의 거래액 레버로 설명한다 — 단계별 효과(SEO 유입, 신뢰 구매, 리텐션, 옹호)로.
@@ -98,6 +100,7 @@ aliases: ["Community Strategy", "커뮤니티 전략", "커머스 커뮤니티"]
 - [AI 시대 팬덤은 세계관과 소속감 — Threads, storyteller_jhk](https://www.threads.com/@storyteller_jhk/post/Dc9xjgSjc0-)
 
 ## 관련 문서
+- [[Community-Models|커뮤니티 모델]] — 세계관, 기여 구조와 지식 공동창작
 - [[GTM-Strategy|GTM 전략]] — Community-Led Growth 모션
 - [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]] — 커뮤니티 메커니즘의 윤리 경계
 - [[Commerce-Revenue-Formula|이커머스 수익 공식]] — 거래액 레버 분해
