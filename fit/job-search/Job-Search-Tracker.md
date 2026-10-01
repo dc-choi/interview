@@ -42,6 +42,16 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 | KG파이낸셜 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=54149154 | 2026.06 당시 IT본부 스크래핑 개발자 3년+, Python/Java, Spring, Oracle, AWS/Docker, REST. 데이터 수집과 스크래핑 경험이 직접 맞는다고 판단했다. 코스닥 상장, 2000년 설립, 약 149명과 서울 중구 소재는 당시 메모이며 근거 링크가 남아 있지 않다. 주 언어 전환과 이미지형 공고의 상세 자격 요건은 지원 전에 확인한다. 2026.07.11 마감 공고였다. |
 | 하이스트레인저 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=54136124 | 2026.06 당시 백엔드, 경력 무관, 언어와 프레임워크 경험, 캐시, 메시지 큐, 비동기, 컨테이너, 대규모 트래픽 성능과 장애 대응 우대. 콘텐츠 예측과 추천 도메인, 베를린영화제 EFM Startup 2025 선정, 종각역 인근과 자율출근 시간은 당시 메모이며 근거 링크가 남아 있지 않다. 경력 무관 공고가 시니어 역할에 맞는지, 계약직 수습 후 정규직 전환 조건과 0→1 운영 부담은 지원 전 확인한다. 2026.07.10 마감 공고였다. |
 
+### 2026-10-01 지원 전 사전 준비
+
+> 사용자 지정 공고 3건을 최신 이력서 PDF와 기존 Notion 상세로 매칭했다. 모두 지원 전이며 지원일, 면접 일정과 결과는 없다. `1st/` 경로는 예상 면접 준비용이다. 등급을 새로 확정하지 않았으며 트렉시의 기존 B등급은 아래 9월 후보 표에 유지한다.
+
+| 기업 | JD와 준비 문서 | 현재 단계와 확인할 점 |
+| --- | --- | --- |
+| 시옷 | [공고 386353](https://www.wanted.co.kr/wd/386353), [[Interview-Prep-Siot-1st]] | 지원 전 사전 준비. Node.js API, RDBMS 튜닝과 운영 경험 연결. 보안 인증/인가, K8s와 우대 브로커 운영 깊이는 확인 필요. 공고상 2026-10-18 마감, 서류 → 1차 → 임원 면접 → 합격. |
+| 올세일코퍼레이션 | [공고 389639](https://www.wanted.co.kr/wd/389639), [[Interview-Prep-Allsale-1st]] | 지원 전 사전 준비. NestJS, Prisma, 비동기 처리와 외부 API 경험 연결. PostgreSQL/Supabase, BullMQ와 TikTok API 직접 운영은 갭. 상시채용, 서류 → 1차 → 2차 → 처우 협의 → 합격. |
+| 트렉시 | [공고 389461](https://www.wanted.co.kr/wd/389461), [[Interview-Prep-Trexi-1st]] | 지원 전 사전 준비. 재고/발주 정합성과 수집 경험 연결. 필수 React/Next.js 직접 수행 근거, 제품 LLM 추출 운영은 확인 필요. 상시채용, 서류 → 과제 → 1차 → 2차(필요시) → 합격을 2026-10-01 재확인. |
+
 ### 2026-09-29 채용 알림 선별
 
 > 2026-09-23~29 채용 알림 약 150건 가운데 백엔드와 풀스택 40건의 원문을 2026-09-29에 확인하고, 적합도를 반박 관점에서 한 번 더 검증했다. 비고의 요건, 마감일, 근무지는 이날 공고 원문 기준이며 회사 재무와 규모는 적지 않았다. 등급은 A가 필수 요건 대부분 충족, B가 뚜렷한 갭 하나 이상이다.
@@ -59,7 +69,7 @@ aliases: ["Job Search Tracker", "이직 준비 트래커"]
 
 | 기업 | JD 링크 | 비고 |
 | --- | --- | --- |
-| 트렉시 | https://www.wanted.co.kr/wd/389461 | Node.js 개발자. 3~7년. NestJS, Express, MySQL, Redis, AWS(ECS, Lambda, SQS, SES). 메일과 엑셀 AI 분석으로 상품 데이터화, 견적부터 정산까지 무역 거래 흐름, 시장 데이터 수집 파이프라인. Python은 예시라 Node.js로 충족하지만 React/Next.js 웹 개발 경험이 필수다. 트래픽 규모는 작을 가능성. 고용형태 미기재, 상시채용, 합정동. |
+| 트렉시 | https://www.wanted.co.kr/wd/389461 | Node.js 개발자. 3~7년. NestJS, Express, MySQL, Redis, AWS(ECS, Lambda, SQS, SES). 메일과 엑셀 AI 분석으로 상품 데이터화, 견적부터 정산까지 무역 거래 흐름, 시장 데이터 수집 파이프라인. Python은 예시라 Node.js로 충족하지만 React/Next.js 웹 개발 경험이 필수다. 트래픽 규모 미확인. 고용형태 미기재, 상시채용, 합정동. 2026-10-01 지원 전 사전 준비 갱신: [[Interview-Prep-Trexi-1st]]. |
 | 문토 | https://www.wanted.co.kr/wd/388983 | 시니어 소프트웨어 엔지니어(신사업 팀). 5년 이상 또는 그에 준하는 역량. TypeScript, Node.js, NestJS, Prisma, PostgreSQL, Redis, MongoDB, AWS(ECS 등), Docker, React/Next.js, Flutter. 화면부터 인프라까지 혼자 완성하는 0에서 1 역할이라 React와 Flutter 공백이 갭이다. 같은 팀 일반 공고(https://www.wanted.co.kr/wd/388978, 신입~4년, 정규직)도 있다. 2026.10.06 마감, 강남 논현로87길 19. |
 | 티빙 | https://www.jobkorea.co.kr/Recruit/GI_Read/50032817 | Backend Engineer 집중채용(Service, Contents Meta, Media API, AI Ops 4개). 모두 3년 이상, Kotlin/Java와 Spring Boot 필수(Service만 Go 허용). 우대 Kafka, AWS, Kubernetes. 중복 지원 불가라 로그 스키마와 데이터 검증이 겹치는 Media API 하나를 우선 후보로 둔다. 상세 경력기술서 필수. 지원은 tving.ninehire.site. 정규직, 상시채용, 대치동, 주 2회 재택 권장. |
 | 크몽 | https://www.wanted.co.kr/wd/389136 | Product Engineer. 5~12년. Kotlin/Java Spring 설계와 운영 필수, MySQL/NoSQL 튜닝, Claude Code 일상 사용. PHP 서비스 운영과 Kotlin 마이크로서비스 전환, 대용량 API와 배치, 이벤트 파이프라인. Kotlin 실무 부재와 Java 공백이 갭이다. 고용형태 미기재. 2026.10.11 마감, 서초 사임당로 157. |
