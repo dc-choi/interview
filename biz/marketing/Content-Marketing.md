@@ -36,6 +36,14 @@ aliases: ["Content Marketing", "콘텐츠 마케팅"]
 - 게시 직후 셀프 댓글과 답글로 대화를 이어 간다. 초반 반응이 노출에 영향을 준다는 주장은 운영자 관찰이며 공식 확인은 없다.
 - 저장, 댓글처럼 원하는 다음 행동(CTA)을 끝에 둔다.
 
+### 작은 유입을 반복 가능한 성과로 바꾼다
+
+1인 제품의 콘텐츠 실험에서는 조회수 급증과 사업 성과를 구분한다. 바이럴을 보장하는 작성법은 판단 근거로 삼지 않고, 고객의 문제와 사용 장면을 설명하는 글, 데모, 개발 과정과 응대 경험을 비교한다. 이는 운영 경험에서 얻은 실험 가설이며 특정 형식의 우월성이 입증된 것은 아니다.
+
+- 유입 한 명도 초기 학습에 도움될 수 있지만, 제작과 응대 시간, 유입의 적합성, 문의와 결제 여부를 함께 봐야 발행을 계속할 이유가 생긴다.
+- 사용자의 자발적 추천은 자기 홍보와 다른 도달 경로가 될 수 있다. 단발성 추천의 급증은 반복 가능한 채널로 간주하지 않는다. 후기 재사용 시 허락과 공개 범위를 확인하고, 대가가 있다면 아래 표시 기준을 적용한다.
+- 잘된 게시물뿐 아니라 같은 기간의 낮은 성과도 비교한다. 관찰 기간과 도달 수를 맞춰 저장률, 문의율과 전환을 보고 다음 실험에서 바꿀 요소를 정한다. AI를 이용한 제작 절차는 [[AI-Generated-Content-Monetization|AI 생성 콘텐츠 수익화]]로 연결한다.
+
 ## 추천 피드 시대의 콘텐츠 전략
 
 주요 SNS의 메인 피드는 팔로우한 계정보다 추천 시스템이 고른 게시물의 비중이 커졌다. 추천 시스템은 탭, 시청, 공유 같은 행동을 학습해 콘텐츠를 관심사 묶음(임베딩 공간의 클러스터)으로 나누므로, 팔로워 수보다 내 콘텐츠가 어떤 관심사로 분류되고 그 관심사를 가진 사람에게 반응을 얻는지가 도달을 좌우한다. 추천 구조 자체는 [[Personalization-Recommendation|개인화와 추천]]에서 본다.
@@ -158,6 +166,8 @@ Q. 콘텐츠 마케팅은 어떻게 했는가?
 - 콘텐츠 성과와 Earned 채널의 단일 유입 사례를 분리하고, 전환 gate 후 반복성 계측을 거쳐 채널 투자를 결정
 
 ## 출처
+
+- [1인 개발 마케팅 법칙 — Threads, jiwonnnnieee](https://www.threads.com/@jiwonnnnieee/post/Dd6UOLrEfOs) — 운영 경험을 검증 가능한 가설로 재구성했다.
 
 - [Google Search Central, Creating helpful, reliable, people-first content](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)
 - [Google Search Central, SEO Starter Guide](https://developers.google.com/search/docs/fundamentals/seo-starter-guide)

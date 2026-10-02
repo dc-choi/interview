@@ -1,14 +1,14 @@
 ---
 tags: [web, network, grpc, api, http2, protobuf]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-10-02
 category: "웹&네트워크(Web&Network)"
 aliases: ["gRPC"]
 ---
 
 # gRPC
 
-gRPC는 Google이 오픈소스로 공개한 **고성능 RPC(Remote Procedure Call) 프레임워크**다. HTTP/2 위에서 Protocol Buffers(Protobuf)로 직렬화한 바이너리 메시지를 주고받는다. REST의 텍스트 기반, 요청-응답 단방향 한계를 넘어, 양방향 스트리밍, 낮은 오버헤드를 제공한다.
+gRPC는 Google이 오픈소스로 공개한 **RPC(Remote Procedure Call) 프레임워크**다. 기본적으로 HTTP/2 위에서 Protocol Buffers(Protobuf)로 직렬화한 바이너리 메시지를 주고받는다. 서비스 계약과 네 가지 RPC 형태를 제공하며 실제 성능 이점은 payload, 구현과 네트워크 조건에 따라 측정한다. REST 자체가 텍스트나 단방향 통신만 허용하는 규칙은 아니다.
 
 ## 핵심 명제
 
@@ -49,7 +49,7 @@ service UserService {
 }
 ```
 
-- 필드 번호로 식별 → 이름이 바뀌어도 호환 유지(필드 번호만 안 바뀌면)
+- binary wire format에서는 필드 번호로 식별한다. 번호 유지만으로 모든 변경이 호환되는 것은 아니며, ProtoJSON은 필드 이름도 wire에 포함하므로 이름 변경을 따로 검토한다. 자세한 규칙은 [[Schema-Evolution|스키마 진화]] 참고.
 - `.proto` 컴파일러가 Go, Java, Python, Node.js 등 클라이언트, 서버 스텁 자동 생성
 - 많은 스키마형 메시지에서 JSON보다 작고 빠를 수 있지만 데이터, 구현, 압축 여부에 따라 측정값이 달라진다. 사람이 바로 읽기 어려워 전용 도구가 필요하다.
 
@@ -66,18 +66,18 @@ service UserService {
 
 ## 장점
 
-- **성능** — Protobuf + HTTP/2로 메시지 크기, 왕복 비용 모두 작음. 클라우드에서 byte/CPU 단위 과금 시 비용 절감 효과
-- **강력한 계약** — `.proto`가 서버-클라이언트 인터페이스 단일 출처 → 명세 누락, 불일치 차단
+- **성능 후보** — Protobuf와 HTTP/2가 직렬화와 연결 비용을 줄일 수 있다. 왕복 횟수와 비용 절감은 API 설계, 데이터와 실제 측정으로 판단한다.
+- **강력한 계약** — `.proto`를 서버와 클라이언트 인터페이스의 공통 계약으로 사용한다. 생성 코드 배포, 버전 호환성과 업무 검증은 별도로 관리한다.
 - **자동 코드 생성** — 다언어 환경에서 SDK를 일일이 만들 필요 없음
 - **양방향 스트리밍 내장** — 별도 프로토콜 없이 실시간 통신
 - **풍부한 생태계** — interceptor, load balancing, deadline, 인증(SSL/TLS)이 표준화됨
 
 ## 단점
 
-- **브라우저에서 직접 호출 불가** — HTTP/2 트레일러, 바이너리 프레이밍을 브라우저가 노출하지 않음. **gRPC-Web** 게이트웨이를 거쳐야 함
+- **native gRPC의 브라우저 제한** — 브라우저 HTTP API에서 native gRPC에 필요한 제어를 그대로 사용할 수 없다. gRPC-Web이나 Connect 같은 브라우저용 프로토콜이 필요하다. 서버가 이를 직접 지원하면 변환 게이트웨이는 필수가 아니다. 바이너리 payload 자체가 브라우저의 금지 대상인 것은 아니다.
 - **가독성 낮음** — 바이너리 메시지 → 디버깅 시 도구 의존(grpcurl 등)
 - **HTTP 캐싱 활용 불가** — REST 같은 표준 캐시 인프라(CDN, 프록시)를 그대로 쓸 수 없음
-- **공개 API에 부적합** — 외부 개발자가 적응 비용 큼. 내부, B2B 통신에 적합
+- **외부 소비자 비용** — 사용 언어의 gRPC SDK와 계약 배포 방식에 따라 적응 비용이 생긴다. 공개 여부만으로 부적합을 판정하지 않는다.
 - **방화벽, 로드밸런서 호환성** — 일부 인프라가 HTTP/2 양방향 스트림을 제대로 처리 못 함
 
 ## 언제 쓸까
@@ -89,11 +89,11 @@ service UserService {
 - 다언어 폴리글랏 백엔드 (Java + Go + Python 혼재)
 - 네트워크 장비, 인프라 자동화 (시스코, 주니퍼도 gRPC 지원)
 
-**부적합한 경우**:
-- 브라우저가 주 클라이언트인 공개 API
+**추가 조건을 확인할 경우**:
+- 브라우저가 주 클라이언트인 API: native gRPC 대신 gRPC-Web 또는 [[Connect-RPC|Connect RPC]]의 서버와 transport 지원 확인
 - HTTP 캐싱, CDN이 필수인 콘텐츠 API
 - 디버깅, 관찰성 도구가 부족한 작은 조직
-- 외부 파트너에게 노출하는 통합 API
+- 외부 파트너에게 노출하는 통합 API: 지원 SDK, 계약 공유와 일반 HTTP 도구 접근성 확인
 
 ## REST와의 차이
 
@@ -101,9 +101,9 @@ service UserService {
 |---|---|---|
 | 주된 전송 | HTTP/1.1 또는 HTTP/2 등 | HTTP/2 |
 | 데이터 형식 | JSON (텍스트) | Protobuf (바이너리) |
-| 통신 방향 | 단방향 (요청-응답) | 양방향 스트리밍 가능 |
+| 상호작용 | 일반적으로 요청-응답, 실시간 전송 별도 설계 | 네 가지 RPC 형태 내장 |
 | 결합도 | 느슨 (스키마 선택) | 긴밀 (`.proto` 공유 필수) |
-| 브라우저 지원 | 네이티브 | gRPC-Web 게이트웨이 필요 |
+| 브라우저 지원 | HTTP API로 호출 | gRPC-Web 또는 Connect 지원 endpoint 필요 |
 | 학습 곡선 | 낮음 | 중간 |
 | 캐싱 | HTTP 표준 활용 | 직접 구현 |
 | 적합한 곳 | 공개 API, 웹 | 내부 마이크로서비스 |
@@ -111,13 +111,17 @@ service UserService {
 ## 면접 체크포인트
 
 - gRPC가 HTTP/2를 채택해서 얻는 구체적 이점 3가지
-- Protobuf가 JSON보다 빠른 이유 (스키마, 바이너리, 필드 번호)
-- 4가지 통신 방식 중 양방향 스트리밍이 REST에서 어려운 이유
+- Protobuf binary와 JSON의 직렬화 차이, 성능 이점을 측정할 조건
+- 네 가지 RPC 형태와 일반 HTTP API의 실시간 전송 설계 차이
 - gRPC-Web이 왜 필요한가 (브라우저 한계)
-- 마이크로서비스 내부 통신에 gRPC, 외부 공개에 REST를 함께 쓰는 패턴
+- REST/GraphQL과 gRPC를 나누는 패턴과, Connect로 단일 RPC 계약을 제공하는 패턴의 선택 조건
 - `.proto` 파일의 필드 번호가 바뀌면 안 되는 이유 (호환성)
 
 ## 출처
+- [Connect, gRPC compatibility](https://connectrpc.com/docs/go/grpc-compatibility/)
+- [Connect, Choosing a protocol](https://connectrpc.com/docs/web/choosing-a-protocol/)
+- [Protocol Buffers, Language Guide (proto 3)](https://protobuf.dev/programming-guides/proto3/)
+- [Protocol Buffers, ProtoJSON Format](https://protobuf.dev/programming-guides/json/)
 - [RFC 9112, HTTP/1.1](https://www.rfc-editor.org/rfc/rfc9112)
 - [gRPC Core concepts](https://grpc.io/docs/what-is-grpc/core-concepts/)
 - [AWS — gRPC와 REST의 차이](https://aws.amazon.com/ko/compare/the-difference-between-grpc-and-rest/)
@@ -129,4 +133,5 @@ service UserService {
 - [[REST|REST, RESTful API]]
 - [[GraphQL|GraphQL]]
 - [[API-Comparison|REST vs GraphQL vs gRPC 비교]]
+- [[Connect-RPC|Connect RPC, 단일 Protobuf 계약과 브라우저 지원]]
 - [[HTTP-Seminar|HTTP 버전별 진화 (HTTP/2 포함)]]

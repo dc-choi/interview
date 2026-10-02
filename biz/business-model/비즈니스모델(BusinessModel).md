@@ -18,4 +18,5 @@ aliases: ["Business Model Index"]
 - [x] [[Five-Parts-of-Business|사업의 다섯 부분]] — 가치 창출, 마케팅, 판매, 가치 전달, 재무로 막힌 곳 진단, 제1원칙 분해, 불완전한 첫 버전
 - [x] [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]] — 발주자 계약 전 점검표, 권리 귀속과 하자담보 확인, 제안서 구성, 첫 고객 확보 순서
 - [x] [[App-Monetization-Models|앱 수익 모델]] — 앱 수익 모델 10종 비교, 혼합 모델, 광고 회수 한계, 스토어 수수료 조건, 앱 매각 시장
+- [x] [[Side-Project-Asset-Sale|사이드 프로젝트와 디지털 자산 매각]] — 무매출 자산과 운영 사업 구분, 양도 권한, 실사, 에스크로와 데이터 이전
 - [x] [[Low-Capital-Service-Business|소자본 생활 서비스 사업과 아이디어 검증]] — 귀찮음 대행의 정기 구독화, 예산 단계별 선택지, 아이디어 반론 체크리스트

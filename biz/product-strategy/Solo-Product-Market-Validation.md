@@ -44,6 +44,8 @@ aliases: ["Solo Product Market Validation", "1인 제품 시장 검증", "시장
 
 다만 행동 하나를 보편적인 합격선으로 쓰지는 않는다. 무료 또는 광고 기반 제품은 사용자에게 결제를 요구하지 않더라도 사용자 가치 관문과 별도로 광고주, 후원자나 다른 구매자의 수요와 실제 수익 연결을 검증해야 한다. 규제나 구매 절차가 긴 B2B 제품은 담당자의 호감보다 예산권자의 승인, 파일럿 계약과 실제 도입 절차가 더 강한 증거가 된다.
 
+랜딩 페이지에서도 소개 클릭, 요금제 선택, 이메일 등록과 실제 결제를 분리한다. 요금제를 본 뒤 연락처를 남겼다면 가격을 포함한 제안에 관심이 있다는 증거지만, 결제 완료나 갱신의 증거는 아니다. 같은 유입 집합과 기간에서 단계별 전환을 기록하고 대기자에게 실제 사용 맥락을 확인한다.
+
 ## 재사용 관문을 측정한다
 
 재사용은 제품이 가치를 만드는 자연스러운 주기에 맞춰 같은 코호트와 같은 핵심 행동을 추적한다. 재방문 횟수보다 약속한 결과를 다시 얻었는지 확인한다. 코호트 리텐션 커브와 PMF 신호의 해석은 [[PMF-Funnel|PMF 검증과 전환 퍼널]]에서 다룬다.
@@ -62,7 +64,17 @@ aliases: ["Solo Product Market Validation", "1인 제품 시장 검증", "시장
 | 사용자와 구매자 또는 수익원을 더 찾을 수 있다 | 역할이 같으면 하나의 획득 경로를 반복하고, 역할이 다르면 각자의 적격 집합과 기간에서 사용자 가치 경로와 구매자 수익 경로를 따로 반복해 전환과 비용 기록 |
 | 혼자 운영할 수 있다 | 고객별 처리 시간, 지원 요청과 변동비 기록 |
 
-Fake Door나 선주문을 사용한다면 제공되지 않는 기능과 환불 조건을 명확히 알리고 불필요한 개인정보나 결제 정보를 수집하지 않는다.
+Fake Door는 신청 직후 아직 제공되지 않는다는 사실을 알린다. 선주문은 결제 전에 현재 개발 상태, 제공 범위, 납기와 지연 시 처리, 취소와 환불 조건을 명시하고 실제 이행 가능량만 받는다. 아직 없는 기능을 쓸 수 있는 것처럼 속여 얻은 결제는 정상적인 검증으로 보지 않는다. 불필요한 개인정보나 결제 정보를 직접 수집하지 않으며, 결제 도구의 간편함과 사업자등록, 세무, 소비자보호 의무는 따로 확인한다.
+
+Buffer의 초기 실험은 소개와 이메일 신청에 요금 선택 단계를 추가한 뒤 작동 제품을 개발했다. 창업자의 2011년 회고에서 7주는 저녁과 주말의 제품 개발 기간이고, 첫 유료 고객은 출시 후 4일 안에 나왔다. 가격 클릭을 결제로 해석하거나 대기자 모집 기간과 개발 기간을 합치지 않는다. 이메일 120명이라는 수치는 이 회고에서 확인되지 않아 검증 기준으로 쓰지 않는다.
+
+## 콘텐츠도 최소 제품이 될 수 있다
+
+핵심 가치가 정보와 사례 접근이라면 인터뷰, 뉴스레터나 수동 큐레이션으로 먼저 전달할 수 있다. 소프트웨어 기능 수 대신 사용자가 얻는 결과를 기준으로 최소 단위를 정한다. 콘텐츠 수집과 편집 노동, 반복 방문과 구독, 광고주나 후원자의 실제 지불을 별도로 관찰한다.
+
+Indie Hackers 창업자는 인터뷰 기반 사이트를 아이디어부터 출시까지 3주에 만들었다고 설명했다. 이는 빠르게 검증할 범위를 자르라는 사례이지 3주를 넘는 아이디어를 폐기하는 규칙이 아니다. 규제, 데이터 확보와 신뢰 검증에 시간이 필요한 제품은 작은 학습 실험과 출시 가능한 제품을 구분한다. 성공담은 실패 사례와 분모가 빠진 표본이므로 개발 기간이나 매각을 성공 확률로 바꾸지 않는다.
+
+Indie Hackers 공식 소개는 2017년 4월 Stripe 인수와 2023년 3월 독립 사업으로의 분리, Stripe의 투자자 참여를 확인한다. 인수 사실과 거래 금액은 별도 증거다. 해당 사례의 월 8,000달러와 수십억원 인수가는 대조한 공식 자료에서 확인되지 않아 판단 근거에서 제외한다.
 
 ## 검증 카드
 
@@ -165,6 +177,11 @@ Fake Door나 선주문을 사용한다면 제공되지 않는 기능과 환불 �
 - [Viability — Product Talk](https://www.producttalk.org/glossary-discovery-viability/)
 - [Startup School Week 4 Recap — Y Combinator](https://www.ycombinator.com/blog/startup-school-week-4-recap-kat-manalac-and-gustaf-alstromer)
 - [How Superhuman Built an Engine to Find Product-Market Fit — First Round Review](https://review.firstround.com/how-superhuman-built-an-engine-to-find-product-market-fit/)
+- [개발 전 랜딩 페이지 수요 검증 — Threads, groble.im](https://www.threads.com/@groble.im/post/Dd_CCVRkxF4)
+- [Idea to Paying Customers in 7 Weeks: How We Did It — Buffer, Joel Gascoigne](https://buffer.com/resources/idea-to-paying-customers-in-7-weeks-how-we-did-it/)
+- [인터뷰 사이트로 시작한 Indie Hackers 사례 — Threads, vibe.itji](https://www.threads.com/@vibe.itji/post/Dd5-YlQDtzB)
+- [Courtland of Indie Hackers on Acquired — Indie Hackers Podcast](https://www.indiehackers.com/podcast/185-courtland-of-indie-hackers-on-acquired)
+- [About Indie Hackers — Indie Hackers](https://www.indiehackers.com/about)
 
 ## 관련 문서
 
@@ -176,3 +193,4 @@ Fake Door나 선주문을 사용한다면 제공되지 않는 기능과 환불 �
 - [[Market-Analysis|시장 분석과 TAM/SAM/SOM]]
 - [[Scaling-and-Hiring|1인 제품 확장과 첫 채용]]
 - [[Thin-Start-Project-Approach|얇게 시작하기, 프로젝트 MVP 접근]]
+- [[Side-Project-Asset-Sale|사이드 프로젝트와 디지털 자산 매각]]

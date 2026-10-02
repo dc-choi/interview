@@ -1,5 +1,5 @@
 ---
-tags: [web, network, api, rest, graphql, grpc, trpc, ts-rest]
+tags: [web, network, api, rest, graphql, grpc, trpc, ts-rest, connect]
 status: done
 verified_at: 2026-09-03
 category: "웹&네트워크(Web&Network)"
@@ -23,7 +23,7 @@ API 스타일의 본질적 차이를 한눈에 비교하고, 언제 무엇을 �
 | 스키마 | 선택 (OpenAPI) | 필수 | 필수 (`.proto`) |
 | 결합도 | 느슨 | 중간 | 긴밀 |
 | HTTP 캐싱 | 잘 동작 | 기본 활용은 어려움, GET과 persisted document로 보완 | 직접 구현 |
-| 브라우저 직접 호출 | O | O | gRPC-Web 필요 |
+| 브라우저 직접 호출 | O | O | native gRPC 제한, gRPC-Web 또는 Connect 지원 endpoint 필요 |
 | 학습 곡선 | 낮음 | 높음 | 중간 |
 
 ## 페칭 패턴 비교
@@ -53,7 +53,7 @@ GET /posts/1/comments  (게시글마다 N번)
 ```proto
 rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 ```
-→ 서비스가 "대시보드용 응답"을 미리 정의. BFF 패턴과 잘 맞음
+→ 서비스가 대시보드용 응답을 미리 정의. BFF 패턴과 잘 맞음
 
 ## 성능 특성
 
@@ -94,6 +94,14 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 - 지원 언어가 다른 backend 사이에 공통 IDL과 code generation이 유리할 때
 - 강한 계약, 자동 코드 생성이 필요한 대규모 조직
 
+### Connect를 함께 검토하는 경우
+
+2026-10-02 Connect 공식 문서와 브라우저 transport 구현 대조 기준이다. 다른 API 도구의 검증 날짜는 frontmatter 기준을 유지한다.
+
+브라우저, curl과 기존 gRPC 클라이언트에 같은 Protobuf 서비스 계약을 제공하려면 [[Connect-RPC|Connect RPC]]를 비교한다. Connect 프로토콜의 unary JSON은 일반 HTTP 도구로 호출할 수 있고 binary 직렬화도 유지할 수 있다. 서버가 Connect 또는 gRPC-Web을 직접 지원하면 변환 프록시를 생략할 수 있다.
+
+이 방식도 RPC이며 REST의 자원과 메서드 의미를 자동으로 제공하지 않는다. 브라우저 transport의 unary/server streaming 지원과 native 환경의 client/bidirectional streaming 지원을 구분하고, CORS, 코드 생성, JSON과 binary의 스키마 호환성을 함께 판단한다.
+
 ## TypeScript 한정 type-safe 대안 — tRPC, ts-rest
 
 | 축 | tRPC | ts-rest |
@@ -121,23 +129,25 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 
 ## 함께 쓰는 패턴
 
-실무에선 단일 선택이 드물고, **계층별로 다른 스타일을 조합**하는 경우가 많다.
+계층별로 다른 스타일을 조합할 수도 있지만, 외부/내부라는 위치만으로 프로토콜을 결정하지 않는다. 클라이언트 지원, 응답 모양, streaming, 캐싱과 계약 운영 비용을 비교한다.
 
 - **외부(브라우저, 모바일) → BFF**: REST 또는 GraphQL
 - **BFF → 내부 마이크로서비스**: gRPC
 - **이벤트 기반 비동기 통신**: 메시지 큐 (Kafka, SQS) — 위 셋과 별개
 
-이 패턴은 외부 인터페이스의 유연성, 캐싱과 내부 통신의 성능, 계약 강도를 모두 챙긴다.
+위 조합은 외부와 내부의 요구가 다른 경우의 선택지다. 동일한 RPC 계약이 맞는 경우에는 Connect 지원 서버를 브라우저, HTTP 도구와 gRPC 클라이언트에 노출하는 방법도 있다. BFF는 프로토콜 변환 외에 화면별 조합, 인증과 노출 범위가 필요할 때 독립적으로 판단한다.
 
 ## 면접 체크포인트
 
 - 세 스타일이 해결하는 문제와 트레이드오프를 한 문장으로 설명
 - GraphQL 캐싱이 어려운 이유 → 단일 엔드포인트에 POST를 주로 써서 자원 URL 기반 캐싱이 자연스럽지 않음. 조회 GET과 persisted document는 예외
-- "왜 gRPC가 브라우저에서 직접 호출 안 되나" → HTTP/2 트레일러, 바이너리
+- native gRPC의 브라우저 제한과 gRPC-Web/Connect의 역할. 바이너리 payload 자체와 프로토콜 제어 제약을 구분
 - 같은 화면 데이터를 REST 2+N번 vs GraphQL 1번 vs gRPC 1번으로 가져오는 차이
-- BFF 계층에서 외부는 REST/GraphQL, 내부는 gRPC를 쓰는 이유
+- 외부 REST/GraphQL과 내부 gRPC 분리, 단일 Connect 계약과 BFF 유지 여부를 결정하는 조건
 
 ## 출처
+- [Connect, Multi-Protocol Support](https://connectrpc.com/docs/multi-protocol/)
+- [Connect, Choosing a protocol](https://connectrpc.com/docs/web/choosing-a-protocol/)
 - [Serving over HTTP — GraphQL](https://graphql.org/learn/serving-over-http/)
 - [Caching — GraphQL](https://graphql.org/learn/caching/)
 - [GraphQL over HTTP Stage 2 Draft](https://graphql.github.io/graphql-over-http/draft/)
@@ -154,5 +164,6 @@ rpc GetUserDashboard(GetUserDashboardRequest) returns (UserDashboard);
 - [[REST|REST, RESTful API]]
 - [[GraphQL|GraphQL]]
 - [[gRPC|gRPC]]
+- [[Connect-RPC|Connect RPC, 브라우저와 gRPC에 단일 계약 제공]]
 - [[Type-Safe-API|tRPC, ts-rest (TS end-to-end 타입 안전)]]
 - [[Runtime-Validation-Libraries|Typia, Zod, Ajv 검증 라이브러리]]
