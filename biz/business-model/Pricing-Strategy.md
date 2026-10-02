@@ -1,7 +1,7 @@
 ---
 tags: [business, pricing]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-10-03
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Pricing Strategy", "가격 정책"]
 ---
@@ -37,17 +37,22 @@ Freemium 전환율은 활성 사용자 정의, 관찰 기간, 고객 규모, tri
 
 ### 끝자리 가격(9,900원과 10,000원)이 통하는 조건
 
-9로 끝나는 단수가격은 맨 앞자리가 바뀌는 경계($2.99와 $3.00)에서 더 싸게 인식될 수 있다(left-digit effect). 효과는 구매 동기에 따라 달라진다.
+9로 끝나는 단수가격은 맨 앞자리가 바뀌는 경계($2.99와 $3.00)에서 더 싸게 인식될 수 있다(left-digit effect). Thomas와 Morwitz(2005)는 비교하는 가격 사이의 수치적, 심리적 거리에 따라서도 효과가 달라진다고 보고했다. 싸게 인식하는 효과가 실제 구매 증가까지 보장하지는 않는다.
 
-| 구매 유형 | 끝자리 선택 | 이유 |
+아래는 국내 실험(박지혜, 양윤, 2017)의 조건과 구매의도 결과다. 상품 유형별로 끝자리를 정하는 보편 규칙으로 사용하지 않는다.
+
+| 실험 조건 | 비교 가격 | 관찰한 구매의도 |
 |---|---|---|
-| 필요해서 사는 실용재 | 차이가 작다 | 가격보다 필요가 결정을 이끈다 |
-| 죄책감이 있는 충동 구매 | 9로 끝나는 가격 | 조금이라도 싸 보이는 가격이 살 핑계가 된다 |
-| 축하, 자기 보상 구매 | 딱 떨어지는 가격 | 구매가 이미 정당화돼 있으면 반올림 가격이 더 좋은 느낌을 준다 |
+| 헤어드라이기(실용재) | 19,900원과 20,000원 | 유의한 차이를 관찰하지 못함 |
+| 치킨세트(쾌락재) | 19,900원과 20,000원 | 단수가격에서 더 높음 |
+| 조각케이크, 금전적 여유가 없고 식사 직후인 충동 상황 | 5,900원과 6,000원 | 단수가격에서 더 높음 |
+| 조각케이크, 면접 합격을 자축하는 상황 | 5,900원과 6,000원 | 라운드가격에서 더 높음 |
 
-국내 실험(박지혜, 양윤, 2017)에서 헤어드라이기(실용재)는 19,900원과 20,000원의 구매의도 차이가 작았고, 치킨세트(쾌락재)는 단수가격에서 구매의도가 더 높았으며 가격의식이 높은 사람에게서 효과가 컸다. 조각케이크 5,900원과 6,000원 비교에서는 정당화할 수 없는 충동 상황에서 단수가격이, 면접 합격을 자축하는 상황에서 라운드가격이 구매의도를 높였다. 20대 여대생 대상 설문 시나리오 실험이라 실제 매장 판매로 일반화하지 않는다. 해외 연구에서도 감정이 이끄는 구매에는 딱 떨어지는 가격, 이성적 구매에는 정밀한 가격이 유리하다는 결과가 있다(Wadhwa, Zhang, 2015).
+20대 여대생에게 가정한 상황을 제시한 설문 실험이므로 실제 매장 판매나 다른 고객군으로 일반화하지 않는다. 가격의식이 높은 쾌락재 집단에서는 가격유형 간 차이가 유의했고 낮은 집단에서는 유의하지 않았지만, 제품유형, 가격유형, 가격의식의 삼원 상호작용은 유의하지 않았다. 따라서 가격의식에 따른 효과 크기 차이가 입증됐다고 단정하지 않는다([학회 원문, 425-428, 430-434쪽](https://www.accesson.kr/kscap/assets/pdf/15422/journal-18-3-417.pdf)).
 
-적용할 때는 상품이 필요, 핑계, 축하 중 어디에 가까운지로 표기를 고른다. 모든 가격을 9로 끝내면 오히려 역효과라는 실무 의견이 있고, 단수가격이 품질을 낮게 보이게 할 수 있다는 연구(Stiving, 2000, 위 국내 논문에서 재인용)도 있으므로, 자사 결제 데이터로 A/B 비교한다.
+Wadhwa와 Zhang(2015)은 라운드가격이 감정 중심 판단과, 비라운드가격이 인지 중심 판단과 맞을 때 판단이 맞는다는 느낌(feeling right)을 높일 수 있다고 설명한다. 이 적합성은 긍정적 평가뿐 아니라 부정적 평가도 강화할 수 있다. 따라서 감정 중심 구매에서 라운드가격이 구매의도를 높인다는 규칙으로 읽지 않는다. 이 연구의 비라운드가격($198.76 같은 정밀한 가격)도 9로 끝나는 단수가격과 같은 조작은 아니다([저자 소속기관의 공식 초록](https://www.insead.edu/faculty-research/publications/journal-articles/number-just-feels-right-impact-roundedness-price)).
+
+적용할 때는 구매 상황과 고객군을 실험 가설로 삼고, 실제 결제와 기여이익으로 가격안을 비교한다. 9,900원과 10,000원 비교는 가격 수준과 끝자리를 함께 바꾸므로 순수한 표기 효과와 구분한다. 단수가격이 품질을 낮게 보이게 할 수 있다는 연구(Stiving, 2000)는 위 국내 논문에서 재인용한 주장이며, 모든 가격을 9로 끝내면 역효과라는 Threads의 실무 의견도 보편적 실험 결과로 취급하지 않는다.
 
 ## 외주와 전문 서비스의 견적
 
@@ -93,6 +98,8 @@ Q. 가격 정책은 어떻게 설계했는가?
 
 가격 전략과 Freemium 설명은 아래 자료로 대조했다. 2026-09-22에는 OpenStax의 원가와 고객 가치 구분, PMI의 범위 변경 원칙을 다시 확인해 서비스 견적의 적용 질문을 보완했다. 견적 표와 유지보수 구분은 이 원칙을 적용한 정리이며 표준 계약조건이나 특정 업체의 가격표가 아니다. 설문 기반 지불 의향과 실제 구매 행동은 구분한다.
 
+2026-10-03 검증은 끝자리 가격 절에 한정한다. 국내 논문의 실험 방법, 결과와 한계는 학회 공개 원문으로, left-digit effect와 rounded price effect는 출판사 또는 저자 소속기관의 공식 초록으로 대조했다. 해외 논문의 전체 분석과 독립 재현 여부는 이번 검증 범위에 포함하지 않았다.
+
 ## 출처
 
 - [OpenStax, 가격 정책 수립의 5단계](https://openstax.org/books/principles-marketing/pages/12-3-the-five-step-procedure-for-establishing-pricing-policy)
@@ -101,9 +108,9 @@ Q. 가격 정책은 어떻게 설계했는가?
 - [Stripe, 가격 모델과 Freemium](https://stripe.com/resources/more/pricing-models-explained-types-of-pricing-models-and-when-to-use-them)
 - [Judgment under Uncertainty: Heuristics and Biases — Tversky, Kahneman](https://pubmed.ncbi.nlm.nih.gov/17835457/)
 - [Adding Asymmetrically Dominated Alternatives — Huber, Payne, Puto](https://doi.org/10.1086/208899)
-- [단수가격, 쾌락재, 가격의식, 구매정당화에 따른 구매의도 — 박지혜, 양윤 (한국심리학회지: 소비자 광고, 2017)](https://doi.org/10.21074/kjlcap.2017.18.3.417)
-- [Penny Wise and Pound Foolish: The Left-Digit Effect in Price Cognition — Thomas, Morwitz](https://doi.org/10.1086/429600)
-- [This Number Just Feels Right: The Impact of Roundedness of Price Numbers on Product Evaluations — Wadhwa, Zhang](https://academic.oup.com/jcr/article-abstract/41/5/1172/2962090)
+- [단수가격, 쾌락재, 가격의식, 구매정당화에 따른 구매의도 — 박지혜, 양윤 (한국심리학회지: 소비자 광고, 2017)](https://doi.org/10.21074/kjlcap.2017.18.3.417), [학회 원문](https://www.accesson.kr/kscap/assets/pdf/15422/journal-18-3-417.pdf)
+- [Penny Wise and Pound Foolish: The Left-Digit Effect in Price Cognition — Thomas, Morwitz](https://academic.oup.com/jcr/article-abstract/32/1/54/1796360)
+- [This Number Just Feels Right: The Impact of Roundedness of Price Numbers on Product Evaluations — Wadhwa, Zhang](https://academic.oup.com/jcr/article-abstract/41/5/1172/2962090), [저자 소속기관의 공식 초록](https://www.insead.edu/faculty-research/publications/journal-articles/number-just-feels-right-impact-roundedness-price)
 - [9,900원과 10,000원, 끝자리 가격 효과의 조건 — Threads, groble.im](https://www.threads.com/@groble.im/post/DdbYC9cE9YS)
 
 ## 관련 문서
