@@ -16,7 +16,7 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 | 되돌림 | 불가, 어려움 | 시도 후 복구 가능 |
 | 실패 비용 | 큼 — 조직, 사람, 사용자에 장기 영향 | 작음 — 학습 후 원상 복구 |
 | 의사결정 속도 | **신중, 느리게** | **빠르게** |
-| 의사결정 주체 | 상위 리더십 합의 | 실무자, 팀 단위 |
+| 의사결정 주체 | 책임자와 관련 당사자의 충분한 협의 | 판단 권한을 가진 개인이나 작은 팀 |
 | 예시 | 기업 매각, 아키텍처 전면 교체, 정책 변경 | 기능 베타 런칭, A/B 테스트, 새 프로세스 실험 |
 
 ## 핵심 원칙
@@ -24,7 +24,7 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 1. **대부분의 결정은 Two-Way Door** — 보수적으로 보면 One-Way처럼 보이는 것도 실제로는 복구 가능한 경우가 많다
 2. **Two-Way Door를 One-Way처럼 다루면** — 조직은 느려지고 실험이 사라져 혁신 정체
 3. **One-Way Door를 Two-Way처럼 다루면** — 회복 불가 손실. 특히 보안, 인프라, 브랜드
-4. **판별 실수의 비용은 비대칭** — Two-Way를 늦게 결정하는 비용 < One-Way를 급히 결정하는 비용. 따라서 **불확실하면 One-Way로 가정**
+4. **오판과 지연의 비용을 함께 본다** — 되돌릴 수 없는 손실과 결정을 미루는 비용의 크기는 상황마다 다르다. 불확실하다는 이유만으로 모두 One-Way로 분류하지 않고, 복구할 수 없는 영향과 확인에 필요한 시간을 먼저 좁힌다.
 
 ## 판별 체크리스트
 
@@ -37,7 +37,7 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 - 인력 대규모 투입, 해고가 수반되는가?
 - 레거시 시스템이 앞으로 **수년간 호환성**을 강요하는가?
 
-모두 No면 Two-Way. **빨리 시작하고, 돌면서 배우는 편이 낫다**.
+모두 No여도 Two-Way가 자동 확정되는 것은 아니다. 체크리스트가 놓친 영향과 실제 복구 경로를 확인하고, 감당할 손실 안에서 되돌릴 수 있다면 빠르게 시작해 배운다.
 
 여기 쓰인 6개월, 연간 예산 10%, 수년 같은 수치는 아래 출처 어디에도 없다. 2015년 주주 서한은 결정의 중대성(consequential)과 되돌림 가능성으로 Type 1, Type 2를 구분할 뿐 정량 임계값은 제시하지 않으며, 특강 노트도 마찬가지다. 따라서 **예시 임계값으로만 쓰고, 조직의 규모, 런웨이, 리스크 허용도에 맞게 직접 정한다**.
 
@@ -47,9 +47,9 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 
 ### 가역적 설계
 
-- **Feature Flag** — 배포 후에도 on/off로 실험 중단
-- **Blue-Green, Canary** — 트래픽 전환으로 롤백 초단위
-- **Shadow Traffic** — 프로덕션에 영향 없이 신 시스템 검증
+- **Feature Flag** — 새 동작을 끌 수 있지만 이미 보낸 알림, 결제와 데이터 변경의 복구는 별도다
+- **Blue-Green, Canary** — 이전 버전으로 트래픽을 돌릴 수 있다. 상태와 스키마 호환성, 복구 시간은 실제 경로로 검증한다
+- **Shadow Traffic** — 복제 요청의 쓰기와 외부 호출을 격리하고 추가 부하를 제한해야 기존 서비스의 영향을 줄일 수 있다
 - **Expand-Contract 스키마 변경** — DB 변경을 여러 배포로 쪼개 호환 유지 ([[Blue-Green]])
 
 ### 범위 축소
@@ -61,20 +61,20 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 ### 빠른 검증
 
 - **프로토타입, 목업**으로 핵심 가설만 먼저 검증
-- **User Research, 설문, 인터뷰**로 런칭 전 리스크 제거
+- **User Research, 설문, 인터뷰**로 출시 전 가설과 불확실성 축소
 - **A/B 테스트**로 일부 사용자에게만 노출
 
 ## 조직 레벨 적용
 
 ### 의사결정 속도 분리
 
-- Two-Way: **Disagree and Commit** — 리더가 동의 안 해도 팀이 진행하게 허용
-- One-Way: **Disagree and Escalate** — 합의까지 확장, 상위 승인 필수
+- **Disagree and Commit** — 의견 차이를 드러낸 뒤 결정한 방향의 실행에 참여한다. 리더도 팀의 판단을 지지할 수 있으며, 정해진 권한과 필수 승인을 생략한다는 뜻은 아니다.
+- **Escalation** — 목표와 판단 기준이 근본적으로 어긋나 팀 안에서 해결되지 않으면 책임 있는 결정권자에게 신속히 올린다. 2016년 서한의 이 설명을 One-Way에만 해당하거나 모든 One-Way에 상위 승인이 필수라는 규칙으로 바꾸지 않는다.
 
 ### 역방향 신호
 
 - "모든 결정에 전사 승인" = 조직이 Two-Way도 One-Way로 다루는 중
-- "베타 기능이 한 번에 배포" = One-Way를 Two-Way처럼 다루는 중
+- 베타라는 이름만 믿고 복구 불가능한 데이터 변경이나 외부 영향을 한 번에 노출한다면 One-Way 위험을 놓친 신호다
 - 둘 다 비건강 신호. 의사결정 경로 재설계 필요
 
 ## 커리어 결정에 적용
@@ -105,10 +105,10 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 
 ## 실전 사례
 
-- **아마존 AWS 서비스 출시** — 대부분 Two-Way로 분류해 **빠르게 베타 → 피드백 기반 개선** 사이클
-- **신기능 런칭** — Feature Flag로 감싸서 Two-Way 성격 부여
+- **신규 서비스의 제한 공개** — 작은 범위에서 피드백을 얻는 운영 예시다. 공개로 생기는 계약, 데이터와 평판 영향까지 가역적인지는 별도로 확인한다.
+- **신기능 런칭** — Feature Flag로 노출을 중단할 수 있게 하고, 이미 발생한 데이터 변경과 외부 영향은 따로 복구할 수 있는지 확인
 - **조직 개편** — 연단위 One-Way 결정이지만, 파일럿 팀, 기간 제한으로 Two-Way 요소 삽입
-- **기술 부채 해소** — 전면 교체는 One-Way, Strangler Fig로 점진 교체는 Two-Way
+- **기술 부채 해소** — Strangler Fig로 점진 교체하면 영향 범위를 줄일 수 있다. 새 저장소의 쓰기, 동기화와 기존 시스템 폐기 단계마다 복구 경로를 따로 확인한다.
 
 ## 흔한 함정
 
@@ -119,7 +119,7 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 
 ## 주주, 지분 결정은 One-Way Door
 
-대부분의 경영 의사결정은 Two-Way Door라서 일단 해보고 아니면 되돌리면 되지만, 누구를 주주로 들이고 몇 % 지분을 넘기는가 하는 주주, 지분 결정은 대표적인 One-Way Door다. 한 번 들인 주주는 내보내기가 매우 어렵고, 번복하려면 큰 비용을 치른다. 그래서 이 결정만큼은 신중함의 축에 두고 상위 합의로 처리해야 한다.
+누구를 주주로 들이고 몇 % 지분을 넘기는가는 되돌림 비용이 큰 결정이다. 취소나 재매입 가능성은 법과 계약, 상대방 의사 및 자금에 달려 있다. 따라서 결정 전에 권리와 후속 조달 영향을 검토하고, 정관과 계약이 정한 의사결정 권한 및 승인 절차를 확인한다.
 
 ### 일찍 정렬해야 할 어젠다 — 목표와 엑시트
 
@@ -146,18 +146,25 @@ aliases: ["One-Way vs Two-Way Door", "One way door vs Two way door", "아마존 
 - **청산우선권**: 청산 시 우선주가 보통주보다 잔여재산을 먼저 분배받음.
 - **Tag-along**: 지배주주가 지분을 팔 때 투자자 지분도 함께 팔도록 요구.
 
-**창업자는 보통주를 쥔다**. 사업이 잘 안되면 우선주 권리가 먼저 작동해 창업자의 손해가 커진다. 창업자는 성공 시 최대 수혜자이자 실패 시 최대 리스크 부담자이고, 이 비대칭이 **권한 위임을 어렵게 만드는 심리적 배경**이다 — 직원이 내 사업처럼 여기리라 신뢰하기 어렵기 때문이다. 그럼에도 사업을 키우려면 리더가 그 두려움을 넘어 위임해야 한다 ([[DRI-Delegation-Culture|DRI와 권한 위임 문화]]). 운영 차원의 재무 규율은 [[Startup-Financial-Discipline|스타트업 재무 규율]].
+창업자가 보통주를 보유하고 외부 투자자가 우선주를 보유하는 구조는 흔하지만 모든 회사의 규칙은 아니다. 배분 순위와 권리, 투자 금액 및 보증 등 별도 부담을 보지 않고 창업자가 항상 최대 수혜자나 최대 손실 부담자라고 단정할 수는 없다. 지분과 권리의 계산은 [[Startup-Equity-and-Dilution|스타트업 지분과 희석]]을 따른다.
+
+큰 개인적 부담이 위임을 어렵게 할 수 있다는 설명은 경영 경험을 해석하는 관점이다. 모든 창업자의 심리를 자본 구조만으로 설명하지 않는다. 위임 범위와 책임은 [[DRI-Delegation-Culture|DRI와 권한 위임 문화]], 운영 재무는 [[Startup-Financial-Discipline|스타트업 재무 규율]]과 연결한다.
 
 ## 면접 체크포인트
 
 - One-Way vs Two-Way의 한 문장 구분
 - Two-Way를 One-Way처럼 다룰 때 조직이 치르는 비용
-- Feature Flag, Blue-Green, Expand-Contract가 One-Way를 Two-Way로 전환하는 메커니즘
-- "Disagree and Commit" vs "Disagree and Escalate" 적용 기준
+- Feature Flag, Blue-Green, Expand-Contract로 가역성을 높일 수 있는 조건과 남는 비가역적 영향
+- 의견 차이 속 실행 합의와, 근본적 목표 불일치의 escalation 구분
 - 커리어 결정에서 Two-Way로 재해석 가능한 예시 3가지 이상
 
 ## 출처
+
+2026-10-02에는 2015년과 2016년 Amazon 서한의 결정 유형 및 escalation 설명을 대조했다. 가역적 설계 항목은 영향 범위를 확인하기 위한 운영 제안이며 도구 이름만으로 복구를 보장하는 설명이 아니다. 지분과 권리의 조건은 연결한 지분 문서의 공식 출처를 따른다. 특강과 경험 에세이 전체를 재검증한 기록은 아니다.
+
 - [Jeff Bezos — 2015 Amazon Shareholder Letter](https://s2.q4cdn.com/299287126/files/doc_financials/annual/2015-Letter-to-Shareholders.PDF)
+- [Jeff Bezos — 2016 Amazon Shareholder Letter](https://s2.q4cdn.com/299287126/files/doc_financials/annual/2016-Letter-to-Shareholders.pdf)
+- [AWS Prescriptive Guidance, Strangler fig pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/strangler-fig.html)
 - [[Han-Keeyong-Career-Seminar|한기용 특강 — 커리어 결정에의 적용]]
 - 창업자와 주주 관계, 엑시트 플랜에 대한 개인 블로그 에세이 (스타트업 회고)
 
