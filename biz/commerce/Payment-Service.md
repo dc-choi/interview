@@ -112,7 +112,7 @@ Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주�
 
 - 결제 시스템 설계 질문에서 승인과 매입의 분리(취소 vs 환불 분기), PG 연동의 멱등성(중복 승인 방지)을 짚으면 도메인 이해가 드러난다.
 - 카드 네트워크의 역할과 발급사 몫인 interchange를 구분하고, 분쟁 단계별 비용과 계약 범위를 확인하는 관점을 수수료 모델 논의에 쓴다.
-- 간편결제 연동은 토큰(빌링키) 관리 문제다 — 발급, 저장, 폐기 주기와 본인 인증. [[Commerce-Order|커머스 주문 도메인]]의 원클릭 주문이 이 위에서 성립한다.
+- 간편결제 연동에서는 저장 결제수단의 보유 주체, 토큰의 종류와 사용 범위, 사용자 동의와 인증을 확인한다. [[Commerce-Order|커머스 주문 도메인]]의 원클릭 결제는 상점의 빌링키 보관만을 전제로 하지 않는다. Apple Pay, Google Pay, Link처럼 지갑이나 결제사업자가 제공하는 방식도 있으며 지원 국가, 브라우저, 통화와 이용자 설정을 확인한다. ([Stripe Express Checkout](https://docs.stripe.com/elements/express-checkout-element), 2026-10-03 이 항목 부분 대조)
 - 페이 도입의 사업 효과(수수료 수익, 락인, 익명성)는 [[Commerce-Member|커머스 회원 도메인]]의 자체 페이 참조.
 
 ## 출처
@@ -138,7 +138,7 @@ Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주�
 ## 관련 문서
 - [[Payment-Domain|결제 참여자, 수수료, 정산과 세무 증빙]]
 - [[Payment-Domain-Engineering|결제 입력, 토큰화, POS와 실패 복구]]
-- [[Commerce-Order|커머스 주문 도메인]] — 결제 프로세스, 빌링키
+- [[Commerce-Order|커머스 주문 도메인]] — 결제 프로세스, 저장 결제수단과 주문서 재개
 - [[Commerce-Member|커머스 회원 도메인]] — 자체 페이의 다중 효과
 - [[In-App-Purchase|인앱결제]] — 결제시스템 강제와 수수료
 - [[Commerce-Overview|커머스 도메인 개요]]
