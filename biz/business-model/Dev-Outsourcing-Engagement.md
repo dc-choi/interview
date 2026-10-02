@@ -115,6 +115,17 @@ aliases: ["Dev Outsourcing Engagement", "개발 외주 계약과 수주", "외�
 
 민법 제174조의 최고는 6개월 내 재판상 청구나 압류, 가압류 등 법이 정한 후속 조치가 없으면 시효중단 효력이 없다. 내용증명 한 통으로 시효 문제가 영구히 해결되거나, 모든 채권의 시효가 자동으로 6개월 연장되는 것은 아니다. 시효가 임박했거나 청구와 해제의 효과를 다투는 경우에는 원자료를 갖춰 법률 검토를 받는다. 이 절은 2026-10-02 확인한 일반 원칙이며 개별 채권의 시효나 통지 효력을 판정한 기록은 아니다.
 
+### 미수금 회수에서 권리 확정과 집행을 나눈다
+
+통지, 청구권을 다투는 절차, 재산 보전과 실제 회수는 역할이 다르다. 아래는 반드시 차례로 모두 거치는 단계가 아니라 사안별로 검토할 선택지다. 청구액, 하자나 상계 쟁점, 상대방 송달 주소, 집행할 재산과 절차 비용을 함께 정리한다.
+
+- **지급명령:** 금전 등의 지급 청구에 사용할 수 있으며 대한민국에서 공시송달 외의 방법으로 송달할 수 있어야 한다(민사소송법 제462조). 채무자가 송달받은 날부터 2주 이내 적법하게 이의하면 그 범위의 지급명령은 효력을 잃고 소송으로 이행한다(제470조, 제472조). 신청만으로 채권의 실체가 확정되거나 돈이 입금되는 것은 아니다.
+- **소액사건:** 제소 당시 소송목적의 값이 3,000만원 이하인 금전 등의 지급을 구하는 제1심 민사사건이 기본 대상이다. 소 변경과 병합 등 규칙상 제외 사유도 확인한다. 모든 계약 분쟁이 금액만으로 소액사건이 되는 것은 아니다([소액사건심판규칙 제1조의2](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=02&joNo=0001&lsiSeq=187995&urlMode=lsScJoRltInfoR)).
+- **가압류:** 금전채권 등의 장래 강제집행을 보전하는 절차다. 하지 않으면 집행할 수 없거나 매우 곤란할 염려라는 보전의 필요를 살펴야 하며, 법원은 담보 제공을 요구할 수 있다. 가압류 자체가 최종 승소나 대금 회수는 아니다(민사집행법 제276조, 제277조, 제280조).
+- **강제집행:** 확정된 지급명령은 집행 근거가 될 수 있지만, 별도의 집행 절차와 대상 재산을 확인해야 한다(민사집행법 제58조). 집행할 재산과 선순위 권리 등에 따라 실제 회수액이 달라지므로 승소 금액을 곧바로 현금 계획의 확정 입금으로 넣지 않는다.
+
+합의를 선택하면 지급액과 지급일, 분할 지급, 불이행 시 처리와 남는 청구 범위를 명확히 한다. 일반 합의서만으로 바로 강제집행할 수 있다고 가정하지 않는다. 소송상 화해나 법정 요건을 갖춘 집행증서 등 집행권원과 구분한다([민사집행법 제56조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0056&lsiSeq=268837&urlMode=lsScJoRltInfoR)). 어느 절차가 적합한지, 송달과 시효 문제가 있는지, 보전이 필요한지는 계약과 증거를 갖춰 법률 검토를 받는다. 2026-10-02 현행 조문으로 위 구분만 확인했으며 특정 분쟁의 승소 가능성, 비용과 회수 가능성을 판정한 것은 아니다.
+
 ## 예시: 동네 학원 홈페이지 제안
 
 다음은 일반화한 가상 예시다.
@@ -149,6 +160,8 @@ aliases: ["Dev Outsourcing Engagement", "개발 외주 계약과 수주", "외�
 
 ## 출처
 
+- [국가법령정보센터, 민사소송법 제462조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0462&lsiSeq=290113&urlMode=lsScJoRltInfoR), [제470조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0470&lsiSeq=290113&urlMode=lsScJoRltInfoR), [제472조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0472&lsiSeq=290113&urlMode=lsScJoRltInfoR) — 2026-10-02 시행 조문.
+- [국가법령정보센터, 민사집행법 제276조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0276&lsiSeq=268837&urlMode=lsScJoRltInfoR), [제277조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0277&lsiSeq=268837&urlMode=lsScJoRltInfoR), [제280조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0280&lsiSeq=268837&urlMode=lsScJoRltInfoR), [제58조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0058&lsiSeq=268837&urlMode=lsScJoRltInfoR) — 2026-02-01 시행 조문.
 - [찾기쉬운 생활법령정보, 내용증명의 작성](https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=4&cciNo=3&cnpClsNo=1&csmSeq=272)
 - [국가법령정보센터, 민법 제111조(의사표시의 효력발생시기)](https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0111&lsiSeq=284415&urlMode=lsScJoRltInfoR)
 - [국가법령정보센터, 민법 제174조(최고와 시효중단)](https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0174&lsiSeq=284415&urlMode=lsScJoRltInfoR)
