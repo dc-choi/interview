@@ -10,16 +10,16 @@ aliases: ["ORM", "TypeORM vs Prisma", "Prisma vs TypeORM vs MikroORM", "NestJS O
 
 ORM은 애플리케이션 모델과 관계형 schema 사이의 반복적인 변환, query 조립과 결과 매핑을 줄인다. SQL, index, transaction, constraint를 없애는 계층은 아니다. 생성된 SQL과 실행 계획을 확인하지 않으면 편의 뒤에 N+1, 넓은 lock과 불필요한 column 조회가 숨을 수 있다.
 
-## 이 vault의 기준
+## 이 문서의 TypeORM 예제 기준
 
-NestJS의 현재 기준은 `@nestjs/typeorm`과 TypeORM이다.
+아래 NestJS 예제는 `@nestjs/typeorm`과 TypeORM을 기준으로 설명한다. 사용자의 ORM 선택을 TypeORM으로 고정하는 규칙은 아니다. 실제 프로젝트에서는 요구사항과 기존 구성을 확인한다.
 
 - module은 `TypeOrmModule.forFeature()`로 repository를 등록한다.
 - service는 `@InjectRepository()` 또는 application port를 통해 접근한다.
 - transaction은 `QueryRunner`나 callback에 전달된 transaction 전용 `EntityManager`만 사용한다.
 - 운영 schema 변경은 versioned migration으로 관리하고 `synchronize: true`를 사용하지 않는다.
 
-Prisma 강의나 예제는 버리지 않고 **Prisma 고유 동작과 일반 영속성 원칙을 구분한 뒤 TypeORM 표현으로 번역**한다.
+Prisma 강의나 예제를 TypeORM과 비교할 때는 **Prisma 고유 동작과 일반 영속성 원칙을 구분**한다. 아래 대응표는 학습을 위한 비교이며 기존 프로젝트의 ORM 전환을 요구하지 않는다.
 
 ## Prisma, TypeORM, MikroORM에서 TypeORM의 위치
 
@@ -129,7 +129,7 @@ N+1은 부모 N건을 읽은 뒤 각 부모의 relation을 따로 읽어 query�
 
 - 필요한 relation만 join하거나 batch query한다.
 - 목록 API는 필요한 column만 projection하고 pagination을 명시한다.
-- 복잡한 read model은 QueryBuilder, raw SQL 또는 별도 query service를 사용한다. raw SQL로 내려갈 때는 ORM이 대신 해주던 파라미터 바인딩이 사라지므로 값을 문자열로 이어붙이지 않는다([[SQL-Injection]]).
+- 복잡한 read model은 QueryBuilder, raw SQL 또는 별도 query service를 사용한다. raw SQL에서도 TypeORM의 `query(sql, parameters)` 같은 값 전달 API를 사용하고, 값을 SQL 문자열에 이어붙이지 않는다. API 이름만으로 서버 prepare 동작을 단정하지 않고 드라이버의 파라미터 처리 계약을 확인한다([[SQL-Injection]]).
 - 실제 SQL 수, 실행 계획과 반환 row 수로 개선 여부를 검증한다.
 
 ### 본인이 직접 수행한 경험을 공개 가능한 범위로 일반화한 사례 — Prisma relationLoadStrategy
@@ -155,10 +155,13 @@ Prisma 버전, 데이터베이스 커넥터와 query shape에 따라 생성 SQL�
 - [[JPA|JPA와 Jakarta Persistence]]
 
 ## 출처
+2026-10-03 부분 검증: raw SQL에서도 TypeORM `DataSource.query()`의 파라미터 API를 사용할 수 있음을 공식 문서와 대조했다. 문서의 예제 기준과 사용자의 실제 ORM 선택도 구분했다. 나머지 ORM 비교와 버전별 동작을 전부 재검증한 기록은 아니다.
+
 - [NestJS — Prisma](https://docs.nestjs.com/recipes/prisma)
 - [NestJS — Database와 TypeORM](https://docs.nestjs.com/techniques/database)
 - [TypeORM — Getting Started](https://typeorm.io/docs/getting-started/)
 - [TypeORM — Data Source Options](https://typeorm.io/docs/data-source/data-source-options/)
+- [TypeORM — DataSource API](https://typeorm.io/docs/data-source/data-source-api/)
 - [TypeORM — Active Record vs Data Mapper](https://typeorm.io/docs/guides/active-record-data-mapper/)
 - [TypeORM — Release Notes 1.0](https://typeorm.io/docs/releases/1.0/release-notes/)
 - [TypeORM — Transactions](https://typeorm.io/docs/transactions/)
