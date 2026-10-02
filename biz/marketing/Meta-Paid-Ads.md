@@ -23,8 +23,8 @@ Facebook과 Instagram에 광고를 집행하는 일은 소재를 만드는 일�
 
 | 수준 | 정하는 것 |
 |---|---|
-| 캠페인 | 광고 목표(판매, 리드, 트래픽 등) |
-| 광고 세트 | 타겟, 예산, 일정, 입찰, 노출 위치 |
+| 캠페인 | 광고 목표(판매, 리드, 트래픽 등), 캠페인 예산 사용 시 총예산과 배분 |
+| 광고 세트 | 타겟, 일정, 입찰, 노출 위치, 광고 세트 예산 사용 시 예산 |
 | 광고 | 형식(이미지, 동영상, 캐러셀)과 소재(이미지, 문구, 링크) |
 
 하나의 캠페인에 광고 세트가 하나 이상, 광고 세트에 광고가 하나 이상 들어간다. 같은 세트의 광고는 타겟, 예산과 일정을 공유한다.
@@ -53,22 +53,22 @@ Facebook과 Instagram에 광고를 집행하는 일은 소재를 만드는 일�
 아래 수치는 실무자 한 명의 경험 기반 권장치이며 Meta의 공식 기준이 아니다.
 
 - 초기 일 예산은 하루 5만원 수준에서 시작한다.
-- 광고 세트당 소재를 최소 5개 넣는다. 예산이 작으면 노출이 한두 소재에 몰리므로 소재 수가 적으면 비교 자체가 안 된다.
+- 광고 세트당 소재를 최소 5개 넣는 것을 권한다. 이는 해당 운영자의 제안이며, 5개 미만이면 비교가 불가능하거나 5개 이상이면 비교가 공정해진다는 기준은 아니다.
 
-예산이 신호를 모으기에 충분한지는 전환 단가와 목표 이벤트 빈도로 역산해 판단한다.
+예산이 신호를 모으기에 충분한지는 전환 단가와 목표 이벤트 빈도로 역산해 판단한다. 소재별 표본과 노출 조건을 확인하고, 원인을 판정하려면 [[Metrics-Framework|지표 설계]]의 비교 실험 원칙을 적용한다.
 
 ## 볼 지표와 해석
 
 | 지표 | 정의 | 해석 |
 |---|---|---|
-| CPM | 노출 1,000회당 비용 | 경쟁과 타겟 크기, 시즌의 영향을 받는다. 오르면 같은 예산의 도달이 준다 |
+| CPM | 노출 1,000회당 비용 | 경쟁과 타겟 크기, 시즌의 영향을 받는다. 오르면 같은 지출의 노출 수가 준다. 도달은 빈도도 함께 봐야 한다 |
 | CPC | 클릭당 비용 | 소재가 클릭을 끄는 힘과 CPM이 함께 반영된다 |
 | CVR | 클릭 또는 방문 대비 전환 비율 | 낮으면 소재보다 랜딩과 오퍼를 먼저 본다 |
 | CPI | 앱 설치당 비용 | 앱 캠페인에서 쓰며 설치 뒤 활성화와 함께 본다 |
 | ROAS | 광고 기여 전환 가치 / 광고비 | 매출 기준이라 원가를 뺀 이익은 따로 계산한다 ([[Marketing-Fundamentals|마케팅 기초]]의 지표 용어) |
 | 빈도 | 노출 수 / 도달 수, 한 사람이 본 평균 횟수 | 추정치다. 오르면서 성과가 떨어지면 소재 피로를 의심한다 |
 
-지표는 퍼널 순서로 읽는다. CPM이 정상인데 CPC가 높으면 소재 문제, CPC가 정상인데 CVR이 낮으면 랜딩이나 오퍼 문제일 가능성이 크다. 광고 관리자의 기여 전환은 플랫폼의 측정이므로 실제 증분과는 [[Metrics-Framework|지표 설계]]의 증분 관점으로 대조한다.
+지표는 퍼널 순서로 읽되 클릭의 종류, CVR의 분모, 전환 이벤트와 기여 창을 먼저 고정한다. 플랫폼의 기여 전환을 클릭 수로 나눈 값과 방문 세션의 전환율은 측정 범위가 다를 수 있다. CPM과 CPC만으로 소재 문제를 확정하거나 CVR만으로 랜딩 문제를 확정하지 않고 타겟과 계측도 함께 점검한다. 광고 관리자의 기여 전환은 플랫폼의 측정이므로 실제 증분과는 [[Metrics-Framework|지표 설계]]의 증분 관점으로 대조한다.
 
 ## 소재 피로
 
@@ -91,11 +91,14 @@ Facebook과 Instagram에 광고를 집행하는 일은 소재를 만드는 일�
 
 ## 출처
 
+2026-10-02 캠페인 예산 선택은 Meta 공식 발표로 확인하고, CPM과 도달의 구분 및 전환율의 측정 범위를 보완했다. 픽셀과 전환 API의 중복 제거 문서는 접근 제한으로 다시 확인하지 못해 기존 검증일을 유지한다.
+
 - [Meta Business Help Center, What are the advertising levels in Meta Ads Manager?](https://www.facebook.com/business/help/621956575422138)
 - [Meta for Business, Simplify Your Ad Set Structure](https://www.facebook.com/business/ads/ad-set-structure)
 - [Meta Business Help Center, About Conversions API](https://www.facebook.com/business/help/2041148702652965)
 - [Meta for Developers, Deduplicate Pixel and Server Events](https://developers.facebook.com/docs/marketing-api/conversions-api/deduplicate-pixel-and-server-events/)
 - [Meta for Business, Advantage+ Sales Campaigns](https://www.facebook.com/business/ads/meta-advantage-plus/sales-campaigns)
+- [Meta Advantage+ 빠르게 이해하기 — Meta (2025-04)](https://about.fb.com/ko/news/2025/04/meta-advantage-explained-in-two-minutes/amp/)
 - [Meta Business Help Center, Glossary of Reach and Frequency Terms](https://www.facebook.com/business/help/230299314945919)
 - [Google Ads Help, Conversion value per cost](https://support.google.com/google-ads/answer/13405059)
 - [페이드 마케팅 실행 공식 — Threads, korean_money_printer](https://www.threads.com/@korean_money_printer/post/Dd3wE53FLtM)

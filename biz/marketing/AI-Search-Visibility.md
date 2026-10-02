@@ -1,7 +1,7 @@
 ---
 tags: [business, marketing, analytics, search]
 status: done
-verified_at: 2026-09-22
+verified_at: 2026-10-02
 category: "비즈니스&제품(Business&Product)"
 aliases: ["AI Search Visibility", "AI 검색 가시성", "GEO", "LLMO", "AIO"]
 ---
@@ -25,22 +25,26 @@ aliases: ["AI Search Visibility", "AI 검색 가시성", "GEO", "LLMO", "AIO"]
 
 ## 공식 데이터가 덮는 범위
 
-Google Search Console의 생성 AI 성과 리포트는 AI Overviews와 AI Mode를 포함한 생성 AI 기능에서 사이트 링크가 사용자에게 몇 번 보였는지를 노출 수로 제공한다. 공식 문서 기준(2026-09-16 확인)으로 차원은 넷이다.
+Google Search Console의 생성 AI 성과 리포트는 AI Overviews와 AI Mode를 포함한 생성 AI 기능에서 사이트 링크가 사용자에게 몇 번 보였는지를 노출 수로 제공한다. 공식 문서 기준(2026-10-02 확인)으로 차원은 넷이다.
 
 | 차원 | 기준 |
 |---|---|
-| 페이지 | 생성 AI 기능이 최종적으로 연결한 URL, 리다이렉트 이후 기준 |
+| 페이지 | 생성 AI 기능이 최종적으로 연결한 URL, 리다이렉트 이후 기준이며 대부분 Google이 선택한 canonical URL에 귀속 |
 | 국가 | 검색이 시작된 국가 |
 | 기기 | 데스크톱, 태블릿, 모바일 |
-| 날짜 | 선택한 시간 단위에 따라 일, 주, 월 |
+| 날짜 | 선택한 시간 단위에 따라 일, 주, 월. 태평양 시간(PT) 기준 |
 
 쿼리는 차원으로 제공되지 않고, Search Labs 실험 데이터는 제외된다.
 
-왜 이 모양인지는 출처를 보면 짐작이 된다. 인용 자료 기준으로 이 리포트는 2026년 6월 영국에서 먼저 열려 8월 말 전 세계로 확대됐고, 영국 경쟁당국이 구글에 요구한 결과물이다. 같은 자료는 규제 쪽이 2027년 3월까지 페이지 단위 제어와 함께 클릭 데이터도 기대한다고 밝혔으나 전 세계 확대 발표에는 클릭 언급이 없었다고 적는다. 규제 합의의 산물이라 공개 범위가 협상의 결과이지 측정의 필요에 맞춰 설계된 것이 아니라는 뜻이다.
+차트는 기본적으로 속성(property) 단위로 집계하므로 같은 사이트의 여러 링크가 한 AI 결과에 보여도 한 노출로 셀 수 있다. URL 필터를 적용하면 차트도 URL 단위로 집계된다. 페이지 표는 페이지 단위이므로 필터 상태와 집계 단위에 따라 표의 합계와 차트 총합이 다를 수 있다. GA4나 Bing과 일별 수치를 맞출 때는 집계 단위와 시간대도 맞춘다.
+
+Google 공식 발표는 2026-06-03 일부 웹사이트에 공개하고 2026-08-31 전 세계로 확대했다고 설명한다. 규제 일정과 현재 기능은 구분한다. 영국 CMA의 2026-08-04 규제 요약은 노출, 클릭과 CTR, AI 검색 유입 식별 정보를 요구하며 기본 준수 기한을 2026-12-03으로 명시한다. 페이지 단위 제어에만 추가 3개월을 둔다. 이 영국 규제 요건이 전 세계 리포트의 클릭 기능 출시나 준수 완료를 뜻하지는 않으며, 공개 범위만으로 측정 필요와 무관하게 설계됐다고 단정하지 않는다.
 
 클릭의 위치는 한 번 짚어야 한다. 공식 문서 기준으로 AI Overviews와 AI Mode 모두 표준 노출 규칙이 적용되고, 외부 페이지 링크를 누르면 클릭으로 집계된다. 다만 그 클릭은 전체 검색 성과 안에 들어가고 생성 AI 리포트에서 따로 떼어 볼 수 없다. AI Mode에서 후속 질문을 하면 새 쿼리로 계산된다. 정리하면 이 리포트가 답해 주는 것은 보였는가이고, 답이었는가는 여기서 나오지 않는다.
 
-Bing도 공식 데이터를 제공한다. 2026-02-10 공개 프리뷰로 발표한 Bing Webmaster Tools의 AI Performance는 Microsoft Copilot, Bing AI 요약과 일부 파트너에서의 인용 수, 인용된 페이지, URL별 인용과 grounding query 표본을 보여준다. 다만 개별 답변에서의 인용 위치, 페이지의 역할이나 순위를 뜻하지 않는다 (2026-09-22 공식 발표 확인).
+Bing도 공식 데이터를 제공한다. 2026-02-10 공개 프리뷰로 발표한 Bing Webmaster Tools의 AI Performance는 Microsoft Copilot, Bing AI 요약과 일부 파트너에서의 인용 수, 하루 평균 고유 인용 페이지 수, URL별 인용과 grounding query 표본을 보여준다. 다만 개별 답변에서의 인용 위치, 페이지의 역할이나 순위를 뜻하지 않는다 (2026-10-02 공식 발표 확인).
+
+노출 자격과 실제 노출도 구분한다. Google은 AI Overviews와 AI Mode의 지원 링크가 되려면 페이지가 색인되어 있고 검색에서 snippet 표시 자격을 갖춰야 한다고 설명한다. 별도 AI 파일이나 특수 schema.org 구조화 데이터는 필요하지 않으며, 구조화 데이터를 쓴다면 화면의 본문과 맞아야 한다. 요건 충족만으로 색인이나 노출이 보장되지는 않는다. Bing이 권하는 헤딩, 표와 FAQ 개선도 인용을 늘리기 위한 제안으로 보고 인용 보장이나 Google의 별도 필수 조건으로 옮기지 않는다.
 
 ## 노출이 오르는 것과 성과가 오르는 것은 다르다
 
@@ -77,7 +81,7 @@ AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회�
 |---|---|---|
 | Search Console 생성 AI 노출 | 1층, 구글 엔진 한정 | 쿼리와 인용 방식 구분 없음 |
 | Bing Webmaster AI Performance | 2층 일부, 지원되는 Microsoft AI 경험과 파트너의 인용 | grounding query는 표본이며 답변 내 위치, 역할과 순위는 제공하지 않음 |
-| GA4의 AI 레퍼러 | 3층 일부 | ChatGPT와 Perplexity는 레퍼러로 분리되지만 구글 AI 경로는 오가닉에 섞인다 |
+| GA4의 AI 레퍼러 | 3층 일부 | AI 서비스의 레퍼러나 캠페인 식별 정보가 전달된 유입만 분리 가능. 정보가 없으면 direct 등으로 섞일 수 있고, 구글 AI 경로는 이 표만으로 분리할 수 없음 |
 | 문의 폼 자기신고 | 3층 일부, 전환 근처 | 표본이 작고 응답 편향이 있다 |
 
 이들을 합쳐도 엔진과 층별 범위가 다르다. Bing은 인용 횟수를 제공하지만 2층의 세부 인용 방식까지 분리하지 않으며, 위 도구만으로 4층의 답변 점유나 엔진 전체의 비교 가능한 CTR을 구할 수는 없다.
@@ -93,11 +97,14 @@ AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회�
 
 ## 출처
 
-2026-10-02 지표 간 범위 차이와 증분 해석을 보완했다. 플랫폼별 기능과 기존 스냅샷 수치 전체를 이번에 다시 검증한 것은 아니다.
+2026-10-02 Google과 Bing의 위 리포트 범위, Google의 AI 노출 자격, GA4 유입 식별 한계와 CMA 규제 요약의 시행 기한을 공식 자료로 대조하고, 지표 간 범위 차이와 증분 해석을 보완했다. 기존 사례와 엔진별 스냅샷 수치, Google의 규제 준수 구현 전체를 이번에 다시 검증한 것은 아니다.
 
 - [구글이 모든 사이트에 공식 AI 가시성 리포트를 열었다. 담긴 숫자는 노출 수 하나뿐이다 — 뷰저블 (2026-09-16)](https://www.beusable.net/blog/?p=8637)
 - [Google, Generative AI performance report (Search)](https://support.google.com/webmasters/answer/16984139)
 - [Google, What are impressions, position, and clicks?](https://support.google.com/webmasters/answer/7042828)
+- [Google Search Central, AI features and your website](https://developers.google.com/search/docs/appearance/ai-features)
+- [Google Analytics Help, Understand (direct) / (none) traffic](https://support.google.com/analytics/answer/15258820)
+- [CMA, Publisher conduct requirement summary (2026-08-04)](https://assets.publishing.service.gov.uk/media/6a7195d7aec8358a34958bfa/Publisher_conduct_requirement_-_3_Aug_2026.pdf)
 - [Introducing AI Performance in Bing Webmaster Tools Public Preview — Bing Webmaster Blog](https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview)
 - [Introducing Search Generative AI performance reports in Search Console — Google Search Central Blog](https://developers.google.com/search/blog/2026/06/gen-ai-performance-reports)
 
