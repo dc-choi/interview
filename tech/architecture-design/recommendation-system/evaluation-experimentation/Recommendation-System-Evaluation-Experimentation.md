@@ -129,7 +129,7 @@ ITT는 Assignment 모집단을 기준으로 계산하고 Request와 Impression �
 
 적용 가능한 gate를 하나라도 통과하지 못하면 primary metric이 상승해도 승급하지 않는다. 통계적 유의성만 보지 않고 효과 크기, 운영 비용과 제품 의미를 함께 판단한다.
 
-Gate를 실제 계산으로 옮기는 절차, randomization/분석 단위, MDE와 power, ratio metric의 분산, CUPED, SRM과 반복 확인 통제는 [[Recommendation-System-Online-Experimentation-Statistics|온라인 실험 통계]]를 따른다.
+Gate를 실제 계산으로 옮기는 절차, randomization/분석 단위, MDE와 power, ratio metric의 효과와 표준 오차, p-value 해석, CUPED, SRM과 반복 확인 통제는 [[Recommendation-System-Online-Experimentation-Statistics|온라인 실험 통계]]를 따른다.
 
 ## Off-policy Evaluation
 

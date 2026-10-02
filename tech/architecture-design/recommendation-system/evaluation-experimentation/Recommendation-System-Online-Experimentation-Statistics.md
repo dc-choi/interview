@@ -36,13 +36,13 @@ Primary 하나, 핵심 guardrail과 사전 정의 slice를 실험 계획에 vers
 
 ## Power와 MDE
 
-두 variant의 평균 차이를 고정 기간에 검정하는 단순 근사에서 arm당 표본은 다음과 같이 시작한다.
+독립적인 두 variant의 평균 차이를 양측 검정하고, 같은 수의 표본을 배정하며 두 군의 분산을 같은 `σ²`로 근사할 때 arm당 표본은 다음 식으로 시작한다.
 
 ```text
 n ≈ 2 × (z_(1-α/2) + z_(1-β))² × σ² / δ²
 ```
 
-`δ`는 검출하려는 최소 효과(MDE), `σ²`는 randomization 단위 metric의 분산이다. 비율 metric은 baseline `p`에서 `p(1-p)`를 출발점으로 쓰되 반복 노출, cluster와 ratio 구조를 반영한 과거 실험 분산으로 재계산한다.
+`δ`는 검출하려는 최소 효과(MDE), `σ²`는 randomization 단위 metric의 분산이다. `α`는 제1종 오류율, `1-β`는 설계 효과 `δ`에 대한 검정력이고 `z_q`는 표준정규분포의 q 분위수다. 독립 사용자마다 전환 여부 하나를 세는 이항 지표라면 baseline `p`에서 `p(1-p)`를 출발점으로 삼을 수 있다. 반복 노출과 임의의 ratio metric에 이 분산을 그대로 쓰지 않으며, 불균등 배정, 군별 분산 차이와 cluster 구조가 있으면 해당 설계로 다시 계산한다.
 
 - Business threshold보다 작은 MDE로 과도한 표본을 요구하지 않는다.
 - 트래픽만으로 기간을 정하지 않고 weekday cycle, label 완결 창과 novelty 관찰 기간을 포함한다.
@@ -57,12 +57,23 @@ R = E[Y] / E[X]
 delta-method influence ≈ (Y - R×X) / E[X]
 ```
 
-User randomization이면 user별 numerator `Y`와 denominator `X`를 먼저 만들고, 위 linearization의 variant 평균 차이로 표준 오차를 구하거나 user bootstrap을 쓴다. Impression 행을 그대로 독립 표본으로 검정하지 않는다. Denominator 자체가 treatment 영향을 받는다면 CTR 상승과 노출 감소를 함께 보고 product 의미를 확인한다.
+User randomization이면 user별 numerator `Y`와 denominator `X`를 먼저 만든다. 두 군과 군 안의 사용자 단위 관측이 독립이고 유한한 분산을 가지며, 분모 평균이 0에서 충분히 떨어진 큰 표본에서 다음처럼 근사한다. 아래 `g`는 treatment 또는 control이다.
+
+```text
+R_g = ΣY_g / ΣX_g
+W_gi = (Y_gi - R_g × X_gi) / mean(X_g)
+effect = R_treatment - R_control
+SE(effect) ≈ sqrt(sampleVar(W_treatment)/n_treatment
+                 + sampleVar(W_control)/n_control)
+```
+
+각 군의 관측 비율 `R_g`를 넣으면 `W_gi`의 표본 평균은 0이다. 이 평균끼리 빼서 효과를 추정하지 않고, 효과는 원래 비율의 차이로, 불확실성은 `W`의 분산으로 계산한다. 사용자 단위 bootstrap도 같은 단위와 두 군의 구조를 보존한다. Impression 행을 그대로 독립 표본으로 검정하지 않는다. 희소한 분모, 적은 cluster나 군 사이 간섭에는 이 정규 근사의 적용을 따로 검토한다. Denominator 자체가 treatment 영향을 받는다면 CTR 상승과 노출 감소를 함께 보고 product 의미를 확인한다.
 
 ## 효과와 불확실성
 
 - `estimate = treatment - control`, 상대 변화, 표준 오차와 신뢰구간을 함께 보고한다.
 - `p < 0.05`만으로 출시하지 않는다. 신뢰구간이 최소 실용 효과와 non-inferiority guardrail을 만족하는지 본다.
+- `p-value`는 귀무가설과 검정 모형 아래에서 관측값 이상으로 극단적인 검정통계량이 나올 확률이다. 귀무가설이 참일 확률이나 기능이 성공할 확률이 아니며, `1-p`를 성공 확률로 보고하지 않는다. 유의하지 않다는 결과만으로 두 안의 동등성이나 효과 부재가 입증되는 것도 아니다.
 - Heavy-tail metric은 winsorization, robust metric이나 bootstrap을 사전 정의하고 raw 결과도 보존한다.
 - 전체 평균과 신규 사용자, heavy user, 기기, market 및 공급자 slice를 같이 보되 작은 slice의 불확실성을 숨기지 않는다.
 
@@ -125,6 +136,12 @@ Treatment가 공유 후보, 재고, social graph, 모델 학습 데이터나 hou
 
 ## 출처
 
+2026-10-02에는 비율 지표의 Delta method 식과 표본 단위, p-value의 해석을 아래 논문과 ASA 성명에 대조했다. 위 비율 차이의 표준 오차는 논문의 비율 분산을 독립적인 두 군에 적용한 식이다. 표본 수 근사는 NIST의 양측 검정 표본 수와 두 독립 평균 차이의 분산을 같은 배정 수와 분산에 적용했다. CUPED, switchback과 나머지 실험 운영 절차 전체를 다시 검증한 기록은 아니다.
+
+- [Applying the Delta Method in Metric Analytics: A Practical Guide with Novel Ideas — Deng et al.](https://arxiv.org/html/1803.06336)
+- [The ASA Statement on p-Values: Context, Process, and Purpose — Wasserstein and Lazar](https://doi.org/10.1080/00031305.2016.1154108)
+- [NIST/SEMATECH, Sample sizes required](https://www.itl.nist.gov/div898/handbook/prc/section2/prc222.htm)
+- [NIST/SEMATECH, Two-Sample t-Test for Equal Means](https://www.itl.nist.gov/div898/handbook/eda/section3/eda353.htm)
 - [Improving the Sensitivity of Online Controlled Experiments by Utilizing Pre-Experiment Data — Deng et al.](https://doi.org/10.1145/2433396.2433413)
 - [Diagnosing Sample Ratio Mismatch in Online Controlled Experiments — Fabijan et al.](https://www.microsoft.com/en-us/research/publication/diagnosing-sample-ratio-mismatch-in-online-controlled-experiments-a-taxonomy-and-rules-of-thumb-for-practitioners/)
 - [Always Valid Inference: Continuous Monitoring of A/B Tests — Johari et al.](https://doi.org/10.1287/opre.2021.2135)
