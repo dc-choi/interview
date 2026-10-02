@@ -1,7 +1,7 @@
 ---
 tags: [security, authorization, rbac, abac, pbac, policy-engine]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-03
 category: "보안(Security)"
 aliases: ["Access Control Models", "RBAC", "ABAC", "PBAC", "접근 제어 모델"]
 ---
@@ -19,6 +19,15 @@ authorization decision = evaluate(subject, action, resource, environment, policy
 ```
 
 RBAC, ABAC와 PBAC는 이 판단에 어떤 정보를 중심으로 사용하고 정책을 어떻게 관리할지를 설명한다. 셋 중 하나만 배타적으로 선택하기보다 역할, 속성과 정책 엔진을 조합하는 경우가 많다.
+
+모델과 무관하게 다음 경계를 먼저 지킨다.
+
+- 명시적으로 허용하지 않은 접근은 기본 거부하고 필요한 최소 권한만 부여한다. 공개 자원도 익명 접근을 허용하는 범위를 명시한다.
+- 매 요청마다 서버에서 요청한 작업과 실제 객체의 권한을 확인한다. 화면 버튼, API 경로의 역할 검사나 추측하기 어려운 ID만으로 객체 소유권/공유 권한 검사를 대신하지 않는다.
+- SaaS의 tenant ID는 클라이언트가 선택할 수 있는 값이며 권한 증명이 아니다. 검증된 신원과 현재 소속/서비스 권한에 연결하고, 대상 자원이 허용된 tenant나 명시적 공유 범위에 속하는지 확인한다. 다른 tenant에 같은 역할이 있다는 이유로 접근을 허용하지 않는다.
+- 목록, 일괄 수정, 내보내기, 파일과 비동기 작업에도 같은 자원 경계를 집행한다. tenant를 넘는 운영자 작업은 별도 권한과 범위를 명시하고 감사 가능하게 한다.
+
+이는 OWASP의 기본 거부, 매 요청 인가와 tenant 경계 지침을 SaaS에 적용한 기준이다. ([Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html), [Multi Tenant Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Multi_Tenant_Security_Cheat_Sheet.html))
 
 ## 모델 관계와 비교
 
@@ -50,6 +59,8 @@ Session --activates--> Role
 
 따라서 RBAC를 완전히 정적인 모델로 보면 안 된다. 다만 부서, 소유권, 기기 상태와 요청 시간 같은 조건을 역할로 계속 표현하면 역할 조합이 폭증한다.
 
+RBAC의 역할 충족은 허용의 필요조건으로 삼을 수 있으며, 요청 시점에 자원 관계나 tenant 제약을 추가하는 것도 가능하다. 객체별 검사 때문에 반드시 ABAC 제품이나 별도 정책 엔진을 도입해야 하는 것은 아니다. ([NIST, RBAC FAQ](https://csrc.nist.gov/projects/role-based-access-control/faqs))
+
 ## ABAC: 요청 시점의 속성을 평가한다
 
 ABAC는 다음 속성을 정책, 규칙 또는 관계와 대조한다.
@@ -78,7 +89,8 @@ PBAC는 RBAC, ABAC처럼 하나로 합의된 독립 모델이라는 전제에서
 
 ```text
 기본 권한: role == approver
-추가 조건: subject.department == resource.department
+추가 조건: subject.tenant == resource.tenant
+          && subject.department == resource.department
           && resource.amount <= subject.approvalLimit
           && environment.deviceTrusted == true
 정책 운영: 중앙 저장, 검토, 배포, 평가와 감사
@@ -118,7 +130,7 @@ Request
 - `NotApplicable`: 적용할 정책이 없음
 - `Indeterminate`: 속성 누락이나 평가 오류로 판단 불가
 
-서비스는 마지막 두 결과의 처리 방식을 명시해야 한다. 민감한 자원은 보통 명시적 Permit이 없으면 거부하는 fail-closed 정책을 사용한다.
+보호 자원은 명시적 `Permit`이 없으면 거부하는 기본 정책을 사용한다. `NotApplicable`이나 `Indeterminate`를 접근 허용으로 바꾸지 않고, 공개 자원의 익명 허용이나 비상 접근도 별도 정책으로 명시한다. 이는 XACML 결과 자체가 자동으로 강제하는 규칙이 아니라 서비스의 집행 정책이다.
 
 여러 rule 또는 policy 결과는 평가 계층에 맞는 결합 알고리즘으로 처리한다. Deny-overrides, Permit-overrides와 First-applicable을 사용할 수 있고, Only-one-applicable은 policy나 policy set 수준에서 하나만 적용돼야 한다는 제약을 검증한다. 충돌, 누락과 오류 case도 함께 테스트한다.
 
@@ -133,12 +145,12 @@ Request
 ## 운영 체크포인트
 
 - 정책을 코드처럼 versioning하고 review, test, rollout, rollback하는가?
-- Permit뿐 아니라 Deny, 속성 누락, 충돌과 경계값 test가 있는가?
+- Permit뿐 아니라 Deny, 속성 누락, 충돌과 경계값, 같은 tenant의 권한 없는 사용자와 다른 tenant의 같은 역할에 대한 test가 있는가?
 - 속성마다 issuer, freshness, 타입과 누락 시 동작이 정해져 있는가?
 - 정책 변경을 shadow evaluation으로 비교한 뒤 배포할 수 있는가?
-- Audit log에 subject, action, resource, policy version, 결정과 이유를 남기는가?
-- PDP 장애와 cache stale 상황에서 fail-open인지 fail-closed인지 자원별로 정했는가?
-- Cache key에 정책 version과 결정에 사용한 속성이 포함되는가?
+- Audit log에 subject, tenant 범위, action, resource, policy version, 결정과 이유를 남기는가?
+- PDP 장애와 cache stale 상황에서 보호 자원의 기본 거부, 허용할 캐시 수명과 비상 접근 정책을 명시했는가?
+- Cache key가 subject, tenant, action, resource, 정책 version과 결정에 쓰인 속성을 구분하며, 권한 회수와 속성 변경의 반영 기한을 정했는가?
 - 모든 API, queue consumer와 batch 경로에 PEP가 있어 우회가 불가능한가?
 - 특정 사용자가 요청, 승인과 집행을 모두 수행하지 못하도록 직무 분리를 검증하는가?
 
@@ -162,6 +174,11 @@ Request
 
 ## 출처
 
+2026-10-03 부분 검증: OWASP의 기본 거부, 매 요청/객체/tenant 인가, NIST RBAC FAQ의 추가 제약과 SP 800-162의 속성 정의/권위/최신성을 대조했다. PBAC 용례와 XACML 명세 전체, 실제 앱의 정책/집행/배포 상태를 재검증한 기록은 아니다.
+
+- [Authorization Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)
+- [Multi Tenant Security Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Multi_Tenant_Security_Cheat_Sheet.html)
+- [Role Based Access Control FAQ — NIST](https://csrc.nist.gov/projects/role-based-access-control/faqs)
 - [인증과 인가 — 코딩하는기술사](https://www.youtube.com/watch?v=jpA5XIF-etA)
 - [RBAC/ABAC/PBAC, 역할/속성/정책 기반 접근 제어 — JackerLab](https://itpe.jackerlab.com/entry/RBACABACPBAC-%EC%97%AD%ED%95%A0%C2%B7%EC%86%8D%EC%84%B1%C2%B7%EC%A0%95%EC%B1%85-%EA%B8%B0%EB%B0%98-%EC%A0%91%EA%B7%BC-%EC%A0%9C%EC%96%B4)
 - [Role Based Access Control — NIST](https://csrc.nist.gov/projects/role-based-access-control)

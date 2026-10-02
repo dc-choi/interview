@@ -1,7 +1,7 @@
 ---
 tags: [security, auth, jwt, bearer-token]
 status: done
-verified_at: 2026-08-31
+verified_at: 2026-10-03
 category: "Security - 인증"
 aliases: ["JWT", "JSON Web Token", "JWT 탈취", "Bearer Token Replay"]
 ---
@@ -24,14 +24,16 @@ JWT는 JWS로 서명 또는 MAC 보호하거나 JWE로 암호화할 수 있으�
 
 ## 검증 흐름
 
-1. 애플리케이션이 허용한 알고리즘과 키만 사용하고 토큰의 `alg` 값을 그대로 신뢰하지 않는다.
+1. 애플리케이션이 허용한 알고리즘과 키만 사용하고 토큰의 `alg` 값을 그대로 신뢰하지 않는다. 키마다 사용할 알고리즘과 키 타입을 고정해 RSA 공개키를 HMAC secret으로 해석하는 혼동을 막는다. 이 문서의 서명 검증을 요구하는 인증 프로필에서는 `none`을 거부한다.
 2. 서명 또는 MAC 검증에 실패하면 토큰 전체를 거부한다.
-3. 토큰 프로필이 요구한 `exp`, `nbf` 같은 시간 조건을 검증하고 필요한 clock skew 범위를 제한한다.
+3. 필수 claim은 존재 여부부터 검사하고, 존재하는 `exp`, `nbf`의 초 단위 NumericDate와 시간 조건을 검증한다. API 인증용 자체 access token 프로필에서는 `exp`를 필수로 정해 누락 시 거부하고, 허용할 clock skew 범위를 제한한다.
 4. 서비스 프로필이 요구한 `iss`, 현재 리소스를 가리키는 `aud`를 검증한다. `sub`를 신원 식별에 쓰는 프로필이라면 issuer와 함께 유효성을 확인한다.
-5. access token과 ID token처럼 용도가 다른 JWT에는 audience, 키와 필수 claim이 서로 겹치지 않는 검증 규칙을 둔다. `typ`를 프로필에서 정했다면 함께 검증한다.
-6. 인증 뒤에도 scope와 role로 요청한 행위의 인가를 별도로 판단한다.
+5. access token과 ID token처럼 용도가 다른 JWT에는 audience, 키, 필수 claim이나 `typ`로 구별되는 검증 규칙을 두어 다른 유형의 토큰이 통과하지 못하게 한다.
+6. 인증 뒤에도 scope와 role뿐 아니라 요청한 작업, 객체의 소유권과 tenant 범위를 서버에서 인가한다. `aud`가 맞아도 같은 API의 다른 고객 데이터에 접근할 권한을 뜻하지 않는다. 세부 기준은 [[Access-Control-Models]]를 따른다.
 
 JWT가 자체 검증 가능하다는 말은 서명만 맞으면 충분하다는 뜻이 아니다. 애플리케이션이 기대하는 발급자, 대상과 용도까지 일치해야 한다.
+
+RFC 7519 자체는 등록 claim 전체를 모든 JWT에 필수로 요구하지 않는다. 필수 claim과 누락 시 거부 규칙은 사용할 토큰 프로필에 정하고, `iat`는 발급 시각이며 `exp`를 대신하는 만료 조건이 아니다. 같은 issuer가 여러 수신자용 JWT를 발급하면 RFC 8725에 따라 `aud`를 요구하고 수신자 일치까지 확인한다. ([RFC 7519, 4.1](https://www.rfc-editor.org/rfc/rfc7519.html#section-4.1), [RFC 8725, 3.9](https://www.rfc-editor.org/rfc/rfc8725.html#section-3.9))
 
 ## Bearer Token 탈취와 replay
 
@@ -79,7 +81,7 @@ Bearer token은 소유 증명을 추가로 요구하지 않고, 제시한 토큰
 |---|---|---|
 | 짧은 access token 수명 | replay 가능한 시간을 제한 | 갱신 요청과 재인증 UX 증가 |
 | 최소 scope와 audience 제한 | 유출 토큰이 접근할 리소스와 권한을 제한 | 토큰 종류와 정책 관리 증가 |
-| [[Refresh-Token-Rotation|Refresh Token Rotation]] | 이미 사용한 refresh token의 재사용을 탐지하고 family 폐기 | 서버 상태, 동시 갱신과 오탐 처리 필요 |
+| [[Refresh-Token-Rotation|Refresh Token Rotation]] | 이미 사용한 refresh token의 재제출을 탐지하고 family 폐기 | 탈취만으로 탐지되는 것은 아님. 서버 상태, 동시 갱신과 오탐 처리 필요 |
 | `jti` denylist 또는 token version | 로그아웃과 사고 시 만료 전 토큰 거부 | 매 요청 조회 또는 캐시 일관성 비용 |
 | 중요 행위 재인증 | 송금, 비밀번호 변경 같은 고위험 작업을 토큰 하나로 끝내지 않음 | 사용자 마찰 증가 |
 | sender-constrained token | mTLS나 DPoP로 토큰과 클라이언트 키를 묶어 단순 replay 완화 | 클라이언트 키 관리와 인프라 복잡도 증가 |
@@ -96,6 +98,10 @@ User-Agent, IP와 기기 정보를 토큰 발급 환경과 비교하는 방법�
 | 서버 세션 | 세션 저장소 조회 | 세션 삭제로 가능 | 중앙 제어와 단순한 브라우저 인증이 중요 |
 
 JWT를 쓰면 서버 상태가 사라진다고 일반화하지 않는다. 즉시 폐기, refresh 재사용 탐지와 기기별 세션 관리가 필요할수록 상태가 다시 들어온다. 확장성과 보안 제어는 서비스의 위험 수준에 맞춰 선택한다.
+
+refresh family 폐기는 이후 갱신을 차단하지만 이미 발급한 self-contained access token을 자동으로 무효화하지 않는다. 권한 회수와 계정 비활성화를 얼마나 빨리 반영할지 정하고, 그 요구에 맞게 짧은 만료 또는 모든 검증 경로가 확인하는 서버 상태를 연결한다. 토큰 안의 역할과 tenant 소속도 발급 시점의 정보이므로 갱신할 때 오래된 claim을 그대로 복사해 권한 회수를 되돌리지 않는다. ([RFC 7009, 3](https://www.rfc-editor.org/rfc/rfc7009.html#section-3), [OWASP, Multi Tenant Security](https://cheatsheetseries.owasp.org/cheatsheets/Multi_Tenant_Security_Cheat_Sheet.html#1-tenant-identification-context-management))
+
+OAuth public client에 refresh token을 발급했다면 RFC 9700은 sender constraint 또는 rotation으로 재사용을 탐지하도록 요구한다. refresh token을 반드시 발급하라는 뜻은 아니며, 발급 여부와 수명은 위험 평가로 정한다. ([RFC 9700, 4.14.2](https://www.rfc-editor.org/rfc/rfc9700.html#section-4.14.2))
 
 ## 흔한 실수
 
@@ -117,12 +123,15 @@ JWT를 쓰면 서버 상태가 사라진다고 일반화하지 않는다. 즉시
 
 ## 출처
 
-2026-10-02에는 RFC 8725의 키와 issuer 연결, `kid`, `jku`, `x5u` 조회 경계를 대조했다. 기존 출처 전체와 모든 구현체를 다시 검증한 기록은 아니다.
+2026-10-03 부분 검증: RFC 7519의 시간 claim과 선택성, RFC 8725의 알고리즘/키, issuer/audience와 토큰 유형 검증, RFC 7009/9700의 폐기와 refresh 보호, OWASP의 객체/tenant 인가 경계를 대조했다. 기존 출처 전체와 라이브러리, 실제 앱의 구현/배포 상태를 검증한 기록은 아니다.
 
 - [IETF, RFC 7515: JSON Web Signature](https://www.rfc-editor.org/rfc/rfc7515)
 - [RFC 7519 — JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519)
 - [RFC 8725 — JSON Web Token Best Current Practices](https://www.rfc-editor.org/rfc/rfc8725)
 - [RFC 9700 — Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700)
+- [RFC 7009 — OAuth 2.0 Token Revocation](https://www.rfc-editor.org/rfc/rfc7009.html)
+- [Authorization Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)
+- [Multi Tenant Security Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Multi_Tenant_Security_Cheat_Sheet.html)
 - [HTML5 Security Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html)
 - [JWT를 통째로 탈취 당하면 어떻게 될까요? — 코딩하는기술사](https://www.youtube.com/watch?v=2kbBj1w-k6M)
 - [JWT 토큰 하나로 로그인된다? 직접 시연해봤습니다 — 코딩하는기술사](https://www.youtube.com/watch?v=vCQvPeVAAis)
