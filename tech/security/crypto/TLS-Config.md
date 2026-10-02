@@ -3,12 +3,14 @@ tags: [security, crypto, tls, certificate, nginx]
 status: done
 category: "Security - 암호"
 aliases: ["TLS Config", "TLS 설정", "cipher suite 설정", "ssl_protocols"]
-verified_at: 2026-09-28
+verified_at: 2026-10-03
 ---
 
 # TLS Config — TLS 설정 실무
 
 서버와 프록시에서 운영자가 실제로 만지는 TLS 설정값을 다룬다. 버전 하한, cipher suite 선택, 인증서 배포, 세션 재개, mTLS, 배포 전 검증까지가 범위다.
+
+2026-10-03에는 TLS RFC, Mozilla 6.0 설정, nginx와 Node 문서의 인증서 검증 경계, OpenSSL 확인 방법을 대조했다. 아래 예시는 설정 판단을 돕는 자료이며 특정 서버의 배포, 인증서 갱신 성공이나 클라이언트 호환성을 확인한 결과는 아니다.
 
 핸드셰이크 절차와 cipher suite 문자열의 구성요소 해부는 [[HTTPS-TLS|HTTPS와 TLS 핸드셰이크]]에, 대칭과 비대칭 하이브리드 구조와 PKI 기초는 [[Public-Key-Cryptography|공개키 암호, PKI]]에 있다. 인증서를 어떻게 조달하고 자동 갱신하는지는 [[ACME-Protocol|ACME Protocol]]과 [[ACM|AWS Certificate Manager]]가 정본이라 여기서는 발급된 인증서를 서버에 어떻게 얹고 지키는지만 본다. HTTPS 강제는 TLS 설정이 아니라 헤더 계층이라 HSTS는 [[Security-Headers|보안 헤더]]로 넘긴다.
 
@@ -78,30 +80,38 @@ CloudFront: TLSv1.2_2021 또는 TLSv1.3_2025 (정책별 스위트 목록 고정)
 
 ## 인증서 배포 운영
 
-- **fullchain과 leaf-only 혼동**이 가장 흔한 배포 사고다. `ssl_certificate`에 leaf만 넣으면 브라우저는 대개 통과한다. 중간 인증서를 캐시하거나 AIA로 내려받기 때문이다. 반면 서버 간 호출(curl, Java HttpClient, Node.js fetch)은 보완 로직이 없어 검증에 실패한다. 브라우저는 멀쩡한데 내부 API 호출만 깨지는 비대칭이 이 증상의 특징이다.
-- **개인키 권한**: 키 파일은 소유자를 root, 권한을 0600으로 두고 워커 프로세스가 아니라 마스터 프로세스만 읽게 한다. 배포 아티팩트나 컨테이너 이미지에 키를 굽지 않는다.
+- **fullchain과 leaf-only 혼동**: leaf 뒤에 필요한 중간 인증서를 붙인다. 일부 브라우저는 이전에 받은 중간 인증서 캐시로 누락을 보완하므로 한 브라우저의 성공만으로 체인이 완전하다고 판단하지 않는다. 보완 여부는 클라이언트와 설정에 달려 있어 브라우저와 서버 간 호출 모두에서 확인한다. 보통 클라이언트가 이미 신뢰하는 루트 인증서까지 서버가 보낼 필요는 없다.
+- **개인키 권한**: nginx의 실제 마스터 프로세스가 읽을 수 있는 최소 파일 권한으로 제한한다. root로 실행하는 마스터라면 root 소유와 0600이 한 예이며, 비특권 실행 환경에 이를 그대로 적용해 읽기를 막지 않는다. 배포 아티팩트나 컨테이너 이미지에 키를 굽지 않는다.
 - **무중단 교체 순서**: 새 인증서와 키를 먼저 배치하고, `nginx -t`로 문법과 파일 접근을 검증한 뒤 reload한다. reload 적용에 실패하면 nginx master는 변경을 되돌리고 기존 설정과 worker로 계속 서비스하지만, 파이프라인에서는 `nginx -t`로 실패를 더 일찍 차단한다.
-- **키와 인증서는 쌍**이라 순서가 어긋나면 즉시 실패한다. 두 파일을 원자적으로 갈아끼우거나(심볼릭 링크 교체) 새 경로에 배치한 뒤 설정을 함께 바꾼다.
+- **키와 인증서는 쌍**이라 서로 맞지 않으면 로드에 실패한다. 새 쌍을 새 경로에 배치한 뒤 설정을 함께 바꾼다. 파일 두 개를 각각 덮어쓰는 중간 상태에서 검사나 reload가 실행되지 않게 한다.
 - **만료 감시는 갱신 자동화와 별개**로 둔다. 자동 갱신이 도는지가 아니라 서버가 실제로 내놓는 인증서의 잔여일을 외부에서 재고, 임계치 두 단계(예: 21일, 7일)로 알림 경로를 나눈다. 갱신은 성공했는데 reload를 안 해서 옛 인증서를 계속 제시하는 사고가 여기서 잡힌다.
+
+## 클라이언트와 업스트림 검증
+
+- **체인 신뢰와 서비스 신원은 별도 검사**다. 신뢰 CA로 이어지는 유효한 인증서라도 접속하려는 서비스의 이름과 맞아야 한다(RFC 9525). SNI는 서버에 원하는 이름을 전달해 인증서를 선택하게 할 뿐, 클라이언트의 hostname 검증을 대신하지 않는다.
+- **인증서 기반 Node TLS 클라이언트**는 `rejectUnauthorized` 기본값이 true이고 `checkServerIdentity`로 hostname을 검사한다. 사설 CA는 필요한 신뢰 CA를 명시해 해결하며, `rejectUnauthorized: false`나 항상 성공하는 `checkServerIdentity`로 검증을 우회하지 않는다. 이 클라이언트 옵션을 서버의 클라이언트 인증서 요구 설정과 혼동하지 않는다.
+- **nginx에서 TLS를 종료하면 업스트림은 별도 연결**이다. `proxy_pass https://...`는 그 구간을 암호화하지만 `proxy_ssl_verify` 기본값은 off다. 업스트림 인증이 필요하면 on으로 설정하고 `proxy_ssl_trusted_certificate`와 필요한 검증 깊이를 맞춘다. `proxy_ssl_server_name`도 기본 off이며, SNI와 검증 대상 이름은 `proxy_ssl_name`으로 지정한다. 연결할 주소나 upstream 그룹명이 인증서 이름과 다르면 기대한 서비스 이름을 명시한다.
 
 ## 세션 재개와 0-RTT
 
 - TLS 1.2는 session ID(서버 측 캐시)와 session ticket(RFC 5077, 클라이언트 보관)으로 재개했다. TLS 1.3은 둘을 **PSK 기반 재개 하나로 통합**했다(RFC 8446, RFC 9846). 두 RFC는 RFC 5077을 obsolete로 지정하며, 그 의미를 TLS 1.3에서 RFC 5077의 티켓 메커니즘을 PSK 방식으로 대체하는 것으로 설명한다.
 - **session ticket key 회전**은 키 유출의 영향 기간을 제한한다. TLS 1.2 ticket과 TLS 1.3의 PSK-only, 0-RTT 경로는 재개 비밀의 보호에 특히 의존한다. TLS 1.3의 PSK-DHE 재개는 새 ephemeral DH로 이후 application data의 forward secrecy를 유지하므로 모든 재개가 같은 방식으로 무력화된다고 보지는 않는다. 다중 서버 구성에서 티켓 키를 공유하면 수명과 회전, 배포 경로를 함께 설계한다.
-- **0-RTT(early data)**는 재개 시 첫 왕복을 아끼지만 RFC 8446과 RFC 9846이 두 가지 한계를 명시한다. 제공된 PSK로만 암호화되어 프로토콜이 forward secrecy를 보장하지 않고, 연결 간 재전송 방지가 보장되지 않는다. 같은 연결 안의 중복만 서버가 막아 준다. HTTP method만으로 허용하지 말고 replay돼도 부수효과가 없는 resource를 명시적 allowlist로 둔다. 서버가 early data를 받지 않기로 했다면 `425 Too Early`로 다시 보내게 한다.
+- **0-RTT(early data)**는 재개 시 첫 왕복을 아끼지만 RFC 8446과 RFC 9846이 두 가지 한계를 명시한다. 제공된 PSK로만 암호화되어 프로토콜이 forward secrecy를 보장하지 않고, 연결 간 재전송 방지가 보장되지 않는다. 같은 연결 안의 중복만 TLS가 막는다. HTTP method만으로 허용하지 말고 replay돼도 안전한 resource를 명시적 allowlist로 둔다. TLS 계층에서 early data를 거부하는 것과 HTTP 요청을 `425 Too Early`로 거부하는 것은 다르다. RFC 8470의 425 응답 뒤 재시도는 early data로 보내면 안 되며, 프록시가 앞단에서 받은 `Early-Data` 표시를 없애거나 뒤쪽 핸드셰이크 완료만으로 요청이 안전해졌다고 판단하지 않는다.
+- **최초 TLS 종료 프록시도 표시를 만든다.** 사용자 에이전트는 `Early-Data` 헤더 없이 early data를 보낼 수 있다. 프록시가 클라이언트와의 핸드셰이크 완료 전에 요청을 전달하면 `Early-Data: 1`을 추가해야 한다. early data로 받은 요청은 해당 헤더와 425 처리를 지원한다고 확인한 오리진에만 전달한다(RFC 8470 제5.1절, 제6.1절).
 - **OCSP stapling**은 클라이언트가 CA의 OCSP 응답자에 직접 묻는 왕복과 그 과정의 프라이버시 노출을 없앤다. 서버가 미리 받아 둔 서명된 응답을 핸드셰이크에 첨부한다.
 - **ALPN**은 핸드셰이크 안에서 HTTP/2와 HTTP/1.1을 협상한다. h2를 목록에 넣지 않으면 TLS는 붙는데 HTTP/2로 못 올라간다.
 
 ## mTLS 설정
 
 - nginx는 `ssl_verify_client on`으로 클라이언트 인증서를 요구하고 `ssl_client_certificate`로 신뢰할 CA 번들을 지정한다. 기본값은 off다. `optional`을 쓰면 제시된 경우에만 검증하고 결과를 변수로 넘겨 애플리케이션이 판단하게 할 수 있다.
-- 현실적 부담은 설정이 아니라 그 뒤다. 신뢰 CA 목록을 누가 관리하는지, 발급한 클라이언트 인증서를 어떻게 폐기하는지가 남는다. CRL과 OCSP는 배포 지연과 조회 실패 시 동작(fail-open 대 fail-closed)이 애매해서, 실무에서는 인증서 수명을 짧게 가져가 폐기 대신 만료로 처리하는 쪽을 택하는 경우가 많다.
+- 클라이언트 인증서 검증과 mTLS 핸드셰이크 성공은 호출 주체를 인증하는 단계다. 그 주체가 어떤 서비스, tenant와 작업에 접근할 수 있는지는 [[Access-Control-Models|접근 제어]]에서 별도 검사한다. `optional`은 인증서가 없는 연결도 허용하므로 보호된 경로에서 검증 성공 여부를 확인해야 한다.
+- 신뢰 CA 목록, 인증서 수명, CRL/OCSP 배포와 조회 실패 시 정책을 함께 정한다. 짧은 수명은 만료까지의 유출 영향 기간을 줄이지만 즉시 접근 차단을 대신하지 않는다. 키 유출 시의 사용 중단과 신뢰 제거는 [[Secret-Management|시크릿 관리]]와 연결해 설계한다.
 - 사설 CA를 직접 운영하면 루트 키 보관, 중간 CA 교체, 신뢰 번들 배포가 전부 숙제가 된다. 서비스 간 mTLS를 애플리케이션마다 설정하는 대신 인프라 계층이 대신 걸어 주는 접근은 [[Istio-Ambient-Mode|Istio Ambient Mode]]를 참고한다.
 
 ## 검증
 
-- **협상 결과 확인**: `openssl s_client -connect example.com:443 -servername example.com` 출력에서 Protocol과 Cipher 줄을 본다. `-tls1_2`나 `-tls1_3`으로 특정 버전만 강제해 하한이 실제로 막혔는지 확인한다.
-- **체인 확인**: `-showcerts`로 서버가 보내는 인증서 목록을 그대로 보고, leaf만 나오면 체인 누락이다. `-CAfile`과 `-verify_return_error`를 함께 주면 검증 실패 시 핸드셰이크를 중단시켜 결과가 분명해진다.
+- **협상과 신원 확인**: `openssl s_client -connect example.com:443 -servername example.com -verify_hostname example.com -verify_return_error`에서 Protocol, Cipher와 검증 결과를 본다. `-servername`만으로 hostname을 검사하지 않는다. 필요한 신뢰 CA는 `-CAfile`로 지정하고 IP 신원을 검사할 때는 `-verify_ip`를 쓴다. `-tls1_2`와 `-tls1_3` 시험은 허용할 버전의 지원 여부를 확인한다. TLS 1.2 하한은 별도로 `-tls1`과 `-tls1_1` 연결이 서버에서 거부되는지 확인한다. 시험 클라이언트 자체의 프로토콜이나 보안 수준 제한으로 실패한 결과를 서버 차단의 증거로 삼지 않는다.
+- **체인 확인**: `-showcerts`는 서버가 보낸 목록이며 검증된 체인이 아니다. leaf만 보이면 필요한 중간 인증서가 누락됐는지 확인하되, 루트가 직접 서명한 leaf나 클라이언트가 이미 중간 인증서를 가진 경우까지 무조건 실패로 판단하지 않는다. `s_client`는 기본적으로 검증 오류 뒤에도 연결을 계속하는 시험 도구이므로 성공한 연결과 인증 성공을 구분한다.
 - **stapling과 ALPN**: `-status`로 OCSP 응답이 실제로 첨부되는지(기본 설정에서 OCSP 주소가 없는 인증서는 응답이 없는 것이 정상이다), `-alpn h2,http/1.1`로 h2가 협상되는지 본다.
 - **배포 전 문법 검사**: `nginx -t`를 파이프라인에 넣는다. 설정 반영 전에 실패해야 안전하다.
 - **외부 스캔**: testssl.sh나 SSL Labs로 지원 버전, 스위트, 체인, 취약점을 한 번에 훑는다. 등급 자체를 목표로 삼기보다 지적된 항목이 우리 클라이언트 분포에서 의미 있는지로 판단한다.
@@ -109,7 +119,7 @@ CloudFront: TLSv1.2_2021 또는 TLSv1.3_2025 (정책별 스위트 목록 고정)
 ## 흔한 실수
 
 - **중간 인증서 누락** — 브라우저만 확인하고 넘어가면 서버 간 호출에서 뒤늦게 터진다. `-showcerts`로 확인한다.
-- **TLS 1.3만 켜고 배포** — Modern 프로파일은 안전하지만 구버전 클라이언트가 전부 끊긴다. 클라이언트 분포를 먼저 재고 옮긴다.
+- **TLS 1.3만 켜고 배포** — TLS 1.3을 지원하지 않는 클라이언트는 연결할 수 없다. 클라이언트 분포를 먼저 재고 옮긴다.
 - **ssl_ciphers 복붙으로 TLS 1.3까지 제어된다고 착각** — TLS 1.3 스위트는 별도 설정 대상이라 해당 목록에 넣어도 반영되지 않는다.
 - **LB에서 TLS 종료 후 오리진 구간 평문 방치** — 종료 지점 뒤가 신뢰 경계인지 판단이 필요하다. 배치 원칙은 [[Network-Perimeter-Security|네트워크 경계 보안]]과 [[Reverse-Proxy|리버스 프록시]]를 본다.
 - **만료 감시 없이 자동 갱신만 신뢰** — 갱신 성공과 서버가 새 인증서를 제시하는 것은 다른 사건이다.
@@ -120,8 +130,8 @@ CloudFront: TLSv1.2_2021 또는 TLSv1.3_2025 (정책별 스위트 목록 고정)
 - "TLS 최소 버전을 뭘로 잡나?" → TLS 1.2 하한, 1.3 우선. RFC 8996이 TLS 1.0과 1.1에 MUST NOT을 규정했고 SSL 2.0과 3.0은 그 전에 폐기됐다.
 - "TLS 1.3에서 cipher suite를 어떻게 고르나?" → RFC에는 다섯 개가 정의돼 있고, 일반 서버에서는 AES-GCM 두 개와 ChaCha20-Poly1305가 주로 쓰인다. 설정 인터페이스는 TLS 1.2용 cipher list와 분리돼 있다.
 - "forward secrecy를 어떻게 보장하나?" → TLS 1.2는 키 교환을 ECDHE로 제한한다(RFC 10015가 RSA 키 교환과 DHE를 금지). TLS 1.3 full handshake와 PSK-DHE 재개는 ephemeral DH를 쓰지만 PSK-only와 0-RTT는 예외다. ticket key는 유출 영향 기간을 줄이도록 회전한다.
-- "브라우저는 되는데 서버 간 호출만 TLS 검증에 실패한다면?" → 중간 인증서 누락. 브라우저는 캐시나 AIA로 보완하지만 서버 클라이언트는 안 한다. fullchain을 배포한다.
-- "0-RTT를 켜도 되나?" → 리플레이 방지가 연결 간에는 보장되지 않으므로 method 이름만 믿지 않고 replay-safe resource allowlist로 제한하며, 거부할 때는 425로 재시도시킨다.
+- "브라우저는 되는데 서버 간 호출만 TLS 검증에 실패한다면?" → 중간 인증서 누락이 한 원인이다. 클라이언트별 신뢰 CA, 이름 검증과 체인 보완 차이도 확인하고 필요한 fullchain을 배포한다.
+- "0-RTT를 켜도 되나?" → 연결 간 리플레이 방지가 보장되지 않으므로 replay-safe resource로 제한한다. HTTP 425 응답 뒤 재시도는 early data 없이 보내고 프록시에서도 Early-Data 표시를 보존한다.
 - "AWS ALB에서 특정 스위트만 빼려면?" → 못 뺀다. 사용자 정의 정책이 없어 이름 붙은 정책 중에서 고르고, 요구가 정책 경계와 안 맞으면 종료 지점을 옮기는 설계 판단이 된다.
 
 ## 출처
@@ -130,14 +140,19 @@ CloudFront: TLSv1.2_2021 또는 TLSv1.3_2025 (정책별 스위트 목록 고정)
 - [IETF, RFC 8470 — Using Early Data in HTTP](https://www.rfc-editor.org/rfc/rfc8470.html)
 - [IETF, RFC 8996 — Deprecating TLS 1.0 and TLS 1.1](https://datatracker.ietf.org/doc/html/rfc8996)
 - [IETF, RFC 10015 — Deprecating Obsolete Key Exchange Methods in TLS 1.2 and DTLS 1.2](https://www.rfc-editor.org/rfc/rfc10015.html)
+- [IETF, RFC 9525 — Service Identity in TLS](https://www.rfc-editor.org/rfc/rfc9525.html)
 - [Mozilla, SSL Configuration Guidelines 6.0](https://ssl-config.mozilla.org/guidelines/6.0.json)
 - [Mozilla, SSL Configuration Guidelines 5.7](https://ssl-config.mozilla.org/guidelines/5.7.json)
 - [TLSRef, Server-Side TLS](https://docs.tlsref.org/server-side-tls.html)
 - [nginx, Module ngx_http_ssl_module](https://nginx.org/en/docs/http/ngx_http_ssl_module.html)
+- [nginx, Configuring HTTPS servers](https://nginx.org/en/docs/http/configuring_https_servers.html)
+- [nginx, Module ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_ssl_verify)
 - [nginx, Controlling nginx](https://nginx.org/en/docs/control.html)
 - [Node.js, TLS (SSL)](https://nodejs.org/api/tls.html)
 - [Node.js, HTTP/2](https://nodejs.org/api/http2.html)
 - [OpenSSL, openssl-s_client](https://docs.openssl.org/master/man1/openssl-s_client/)
+- [OpenSSL, openssl-verification-options](https://docs.openssl.org/master/man1/openssl-verification-options/)
+- [OWASP, Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)
 - [AWS, Security policies for your Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html)
 - [AWS, Supported protocols and ciphers between viewers and CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html)
 
