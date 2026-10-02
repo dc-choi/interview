@@ -22,3 +22,5 @@ aliases: ["안정성엔지니어링(Reliability)", "Reliability Engineering"]
 - [x] [[Backup-Restore|Backup / Restore + Data recovery (RTO/RPO, PITR, 복원 리허설)]]
 - [x] [[DR-Strategy|DR strategy (4전략, RTO/RPO, multi-region)]]
 - [x] [[RCA-Postmortem|RCA / Postmortem 문화 (blameless, 5 Whys, 액션 아이템, MTTR/MTTD)]]
+
+- [x] [[Payment-Domain-Engineering|결제와 POS의 기술 계약]] — EMV, 토큰화, 망취소, 할인 배분, 부분 환불과 오프라인 복구

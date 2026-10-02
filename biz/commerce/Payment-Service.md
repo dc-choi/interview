@@ -17,7 +17,7 @@ verified_at: 2026-07-21
 | 승인 | 가맹점, acquirer 경로를 거쳐 발급사에 승인 요청 | 가맹점, PG/acquirer, 카드 네트워크, 발급사 |
 | 매입 | 승인 거래를 제출하고 clearing, settlement | acquirer, 네트워크, 발급사, PG 등 계약 구조별 참여자 |
 
-승인과 매입의 분리가 결제 시스템 설계의 출발점이다 — 승인됐지만 매입 전인 거래는 승인 취소가 가능하고, 매입 후에는 환불(반대 거래)로 처리된다. 취소와 환불이 시스템에서 다른 경로인 이유가 여기 있다.
+카드 결제에서는 승인과 매입의 구분이 취소, 환불 경로를 이해하는 출발점이다. 다만 API에서 취소와 환불을 부르는 이름, 매입 시점, 허용 기한은 수단과 제공자 계약에 따라 다르다. 고객의 취소 승인, 카드 청구 반영과 가맹점 정산 공제를 구분한다. [[Payment-Participants-and-Lifecycle|참여자와 거래 생명주기]], [[POS-Split-Payment-and-Refund|부분 취소와 환불]]에 계약별 확인 항목을 정리했다.
 
 ## 플레이어
 
@@ -129,6 +129,8 @@ Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주�
 - [PayAction — 페이액션](https://payaction.app/)
 
 ## 관련 문서
+- [[Payment-Domain|결제 참여자, 수수료, 정산과 세무 증빙]]
+- [[Payment-Domain-Engineering|결제 입력, 토큰화, POS와 실패 복구]]
 - [[Commerce-Order|커머스 주문 도메인]] — 결제 프로세스, 빌링키
 - [[Commerce-Member|커머스 회원 도메인]] — 자체 페이의 다중 효과
 - [[In-App-Purchase|인앱결제]] — 결제시스템 강제와 수수료
