@@ -12,7 +12,9 @@ middleware package는 생성 함수를 호출해 얻은 middleware를 app/Router
 
 ## CORS
 
-`cors()`는 response header를 설정해 browser JavaScript의 cross-origin 응답 읽기를 제어한다. 허용하지 않은 origin의 요청이 server에 도착하거나 변경 작업을 수행하는 것을 막지 않는다. non-browser client는 이 읽기 제한을 따르지 않는다.
+`cors()`는 response header와 preflight 응답으로 browser JavaScript의 cross-origin 응답 공유 정책을 전달한다. simple 요청은 응답 읽기가 허용되지 않아도 server에 도착해 변경 작업이 실행될 수 있다. 반면 preflight가 필요한 CORS 요청은 브라우저의 허가 확인이 실패하면 본 요청을 보내지 않는다. non-browser client는 이 제한을 따르지 않으므로 server의 인증과 인가를 대체하지 않는다.
+
+2026-10-02 부분 검증: 위 문단의 요청 전송과 응답 공유 구분을 WHATWG Fetch 명세와 cors 공식 구현으로 대조했다. 다른 middleware 절이나 배포 설정을 다시 검증한 기록은 아니다.
 
 기본값은 origin `*`, methods `GET,HEAD,PUT,PATCH,POST,DELETE`, preflightContinue=false, optionsSuccessStatus=204다. cookie credential이 필요하면 구체적인 origin 허용과 credentials=true를 함께 정하고 browser의 credentials 설정과 cookie SameSite/Secure도 맞춘다.
 
@@ -86,6 +88,7 @@ body에서 `_method`를 읽는다면 body parser 뒤에, CSRF/권한/route처럼
 
 - [Express, Middleware](https://expressjs.com/ko/resources/middleware/)
 - [Express, cors](https://expressjs.com/ko/resources/middleware/cors/)
+- [WHATWG, Fetch Standard, CORS-preflight fetch](https://fetch.spec.whatwg.org/#cors-preflight-fetch)
 - [Express, compression](https://expressjs.com/ko/resources/middleware/compression/)
 - [Express, timeout](https://expressjs.com/ko/resources/middleware/timeout/)
 - [Express, method-override](https://expressjs.com/ko/resources/middleware/method-override/)

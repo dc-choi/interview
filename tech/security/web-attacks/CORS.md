@@ -3,12 +3,14 @@ tags: [security, cors, browser, web]
 status: done
 category: "Security"
 aliases: ["CORS", "Cross-Origin Resource Sharing"]
-verified_at: 2026-09-30
+verified_at: 2026-10-02
 ---
 
 # CORS (Cross-Origin Resource Sharing)
 
-브라우저의 **Same-Origin Policy(SOP)** 가 기본으로 차단하는 교차 출처 요청을 **서버가 명시적으로 허용**하도록 확장한 메커니즘. 보안을 풀어주는 것이 아니라 **어느 출처에 한해 SOP를 완화할지 서버가 선언**하는 것.
+브라우저의 **Same-Origin Policy(SOP)** 가 제한하는 교차 출처 응답 접근을 **서버가 명시적으로 허용**하는 메커니즘. 허용할 출처와 메서드, 헤더를 선언하며, preflight가 필요한 요청은 허가를 확인한 뒤 본 요청을 보낸다.
+
+2026-10-02 부분 검증: preflight 전송 조건, credentials와 쿠키, 캐시, Origin 반사와 CSRF 방어 조건을 공식 출처와 대조했다. 브라우저별 재현이나 특정 서버의 배포 설정은 검증하지 않았다.
 
 ## Origin 정의
 
@@ -27,15 +29,15 @@ https://a.com/page1   =  https://a.com/page2 (path는 상관없음)
 - 악성 사이트가 내 세션 쿠키를 이용해 은행 API 호출 → 잔액, 이체 정보 탈취 (CSRF와 유사 공격)
 - 다른 도메인의 민감 페이지를 iframe으로 로드해 내용 읽기
 
-**요청 전송 자체는 막지 못함**. 응답을 JavaScript에서 못 읽게 할 뿐. 이 차이가 CSRF 공격이 여전히 가능한 이유. 다만 preflight가 붙는 요청은 preflight가 실패하면 본 요청이 아예 나가지 않으므로, 전송을 막지 못한다는 말은 simple request 범위에서 성립한다.
+**교차 출처 폼 제출과 simple CORS 요청은 응답 읽기가 금지돼도 서버에 도달할 수 있다.** 이 차이가 CSRF가 가능한 이유다. 반면 preflight가 필요한 CORS 요청은 허가 확인에 실패하면 본 요청을 보내지 않는다. SOP와 CORS를 모든 교차 출처 요청의 전송 차단으로 이해하면 안 된다.
 
 ## CORS는 브라우저가 강제하는 정책
 
-출처 비교와 응답 차단 로직은 **서버가 아니라 브라우저에 구현**되어 있다. 그래서:
+응답 공유 제한과 preflight 허가에 따른 전송 제한은 **브라우저가 강제**한다. 서버는 허용 정책을 헤더로 전달하고, 필요한 인증과 인가는 별도로 검사한다. 그래서:
 
-- 서버는 CORS 위반 요청에도 **정상적으로 응답**을 내려준다. 그 응답을 분석해 위반이라 판단하고 **버리는 주체는 브라우저**다. 콘솔엔 빨간 에러가 떠도 **서버 로그엔 정상 응답으로 남아** 에러 트레이싱이 헷갈릴 수 있다.
-- 브라우저를 거치지 않는 **서버 간 통신(server-to-server)에는 CORS가 적용되지 않는다**. 백엔드가 다른 API를 호출할 땐 출처 제약이 없다.
-- **본 요청**은 상태 코드가 404든 500이든 무관하다. 응답을 읽을 수 있는지는 **응답 헤더에 유효한 `Access-Control-Allow-Origin`이 있는가**로 갈린다.
+- 서버에 도달한 요청은 별도의 인증, 인가나 출처 검사가 없으면 **정상 처리될 수 있다**. 브라우저는 CORS 검사에 실패한 응답을 JavaScript에 노출하지 않는다. 콘솔엔 에러가 떠도 **서버 로그엔 정상 응답이 남을 수 있어** 에러 트레이싱이 헷갈린다. preflight 실패로 본 요청이 도달하지 않은 경우와 구분한다.
+- 브라우저를 거치지 않는 **서버 간 통신(server-to-server)에는 CORS가 적용되지 않는다**. CORS에 따른 출처 제약은 없지만 서버의 인증과 인가 정책은 그대로 적용된다.
+- **본 요청**은 상태 코드가 404든 500이든 CORS 허용 여부와 별개다. 유효한 `Access-Control-Allow-Origin`이 필요하고, credentials 모드가 `include`이면 구체 Origin과 `Access-Control-Allow-Credentials: true`까지 필요하다.
 - 반면 **preflight 응답은 2xx여야 한다**. Fetch 스펙의 CORS-preflight fetch는 CORS check 성공과 `response's status is an ok status`를 함께 요구하고 하나라도 어긋나면 network error를 반환한다. 200이나 204를 쓴다.
 
 ## Simple, Preflight와 credentials 축
@@ -43,7 +45,7 @@ https://a.com/page1   =  https://a.com/page2 (path는 상관없음)
 ### 1. Simple Request
 브라우저가 **Preflight 없이** 바로 요청 보냄. 조건:
 - 메서드: `GET`, `HEAD`, `POST`
-- 헤더: CORS-safelisted 요청 헤더인 `Accept`, `Accept-Language`, `Content-Language`, `Content-Type`, `Range`만 (사용자 정의 헤더 없음). `Range`는 `bytes=0-1023` 형태의 단일 바이트 범위여야 하고 각 헤더 값 길이는 128자를 넘을 수 없다
+- JavaScript가 설정하는 헤더: CORS-safelisted인 `Accept`, `Accept-Language`, `Content-Language`, `Content-Type`, `Range`만. 이름뿐 아니라 값 제약도 만족해야 한다. `Range`는 `bytes=0-1023` 형태의 단일 바이트 범위, 각 헤더 값 길이는 128바이트 이하여야 한다. 브라우저가 붙이는 `Origin`이나 `Cookie`까지 금지한다는 뜻은 아니다
 - Content-Type이 `application/x-www-form-urlencoded`, `multipart/form-data`, `text/plain`만
 - `XMLHttpRequest.upload`에 이벤트 리스너가 등록돼 있지 않음 (업로드 진행률 추적을 붙이면 preflight가 붙는다)
 - 요청에 `ReadableStream`을 쓰지 않음
@@ -59,13 +61,14 @@ https://a.com/page1   =  https://a.com/page2 (path는 상관없음)
   Access-Control-Allow-Origin: https://app.com
 ```
 
-서버가 `Access-Control-Allow-Origin`에 요청 Origin을 반환하거나 `*`을 반환해야 통과.
+서버가 `Access-Control-Allow-Origin`에 요청 Origin을 반환하거나, credentials 모드가 `include`가 아니면 `*`을 반환해 응답을 공유할 수 있다. `include`의 추가 조건은 아래에서 다룬다.
 
 ### 2. Preflight Request
-Simple 조건 벗어나면 (PUT, DELETE, 커스텀 헤더, JSON Content-Type 등) 브라우저가 **본 요청 전에 OPTIONS 요청** 먼저 전송해 확인.
+교차 출처 CORS 요청이 simple 조건을 벗어나면 (PUT, DELETE, 커스텀 헤더, JSON Content-Type 등) 브라우저가 허가를 확인한다. 일치하는 preflight 캐시가 없을 때 **본 요청 전에 OPTIONS 요청**을 전송한다.
 
 ```
 Preflight 요청 (OPTIONS):
+  Origin: https://app.com
   Access-Control-Request-Method: PUT
   Access-Control-Request-Headers: Content-Type, Authorization
 
@@ -73,10 +76,10 @@ Preflight 응답:
   Access-Control-Allow-Origin: https://app.com
   Access-Control-Allow-Methods: GET, POST, PUT, DELETE
   Access-Control-Allow-Headers: Content-Type, Authorization
-  Access-Control-Max-Age: 600   ← 이 시간 동안 preflight 재요청 안 함
+  Access-Control-Max-Age: 600   ← 일치하는 요청의 preflight 허가를 최대 600초 캐시
 ```
 
-그 다음에 본 요청이 나감. **왕복 2번** 발생 → 성능 비용.
+허용 Origin, 필요한 메서드와 헤더 검사가 모두 통과해야 본 요청이 나간다. 캐시가 없는 첫 요청은 **OPTIONS와 본 요청, 왕복 2번**이 발생한다. preflight가 성공해도 본 응답은 다시 CORS 검사를 받는다.
 
 완화: `Access-Control-Max-Age`로 preflight 결과 캐시. 헤더가 없거나 파싱에 실패하면 5초가 기본이고 브라우저가 자체 상한으로 잘라낸다 — Chromium은 2시간(7200초, v76 이전은 10분), Firefox는 24시간(86400초). 상한을 넘겨 보내도 상한까지만 적용되므로 86400을 박아도 Chromium에서는 2시간이다.
 
@@ -91,10 +94,12 @@ Preflight 응답:
 | `include` | 교차 출처 요청에도 첨부 |
 | `omit` | 어떤 요청에도 첨부하지 않음 |
 
+`include`는 쿠키 전송을 무조건 보장하지 않는다. Domain/Path/Secure/SameSite와 브라우저의 제3자 쿠키 정책을 만족해야 한다. `SameSite=Lax`/`Strict` 쿠키는 교차 사이트 fetch에 실리지 않지만, 같은 scheme의 형제 서브도메인 간 요청은 cross-origin이면서 same-site일 수 있다.
+
 ```
 요청 (JS):
   fetch(url, { credentials: 'include' })
-  → Cookie: session=xxx
+  → Cookie: session=xxx   // 쿠키 범위와 브라우저 정책이 허용할 때
 
 응답:
   Access-Control-Allow-Origin: https://app.com   ← 반드시 구체 Origin
@@ -131,9 +136,10 @@ fetch('https://api.example.test/me', {
 ### 서버 쪽 설정
 - `credentials: 'include'` 요청에 `Access-Control-Allow-Origin: *`만 보내고 쿠키를 기대 → CORS 응답 공유 실패
 - OPTIONS 메서드를 404로 처리 → 모든 preflight 실패 → 본 요청도 실패
-- 특정 Origin 화이트리스트 — 정규표현식, 동적 매칭 시 **버그로 `null`, `*` 반환하면 대형 사고**
-- 개발용 Origin 반사를 운영에 남김 — Express `cors`와 `@fastify/cors`(NestJS `enableCors`가 플랫폼에 따라 사용)의 `origin: true`는 요청의 `Origin` 값을 그대로 `Access-Control-Allow-Origin`에 돌려주고 `null`도 반사한다. `credentials: true`까지 켜면 반사된 구체 Origin과 `Access-Control-Allow-Credentials: true`가 함께 나가, credentials 요청에 금지된 `*`를 쓰지 않고도 쿠키 인증 응답을 모든 출처에 여는 설정이 된다. 인증 쿠키가 `SameSite=None`이면 브라우저의 제3자 쿠키 정책이 허용하는 한 어느 사이트든, `Lax`나 `Strict`여도 같은 사이트의 다른 서브도메인 페이지가 사용자 세션으로 응답을 읽는다
+- 특정 Origin 허용 목록의 오매칭 — `Access-Control-Allow-Origin: null`은 sandbox/data URL 등 공격자가 만들 수 있는 null 출처에도 읽기를 연다. `*`는 credentials 모드가 `include`가 아닌 요청의 응답을 모든 출처에 공유한다. 공개 비인증 자원에는 사용할 수 있지만, 민감한 응답에서 허용 목록을 대신하면 안 된다. 미들웨어 콜백의 JavaScript `null`과 헤더 문자열 `null`도 구분한다
+- 개발용 Origin 반사를 운영에 남김 — Express `cors`와 `@fastify/cors`(NestJS `enableCors`가 플랫폼에 따라 사용)의 `origin: true`는 요청의 `Origin` 값을 그대로 `Access-Control-Allow-Origin`에 돌려주고 `null`도 반사한다. `credentials: true`까지 켜면 반사된 구체 Origin과 `Access-Control-Allow-Credentials: true`가 함께 나가, credentials 요청에 금지된 `*`를 쓰지 않고도 쿠키 인증 응답을 모든 출처에 여는 설정이 된다. 인증 쿠키가 `SameSite=None`이면 브라우저의 제3자 쿠키 정책이 허용하는 한 어느 사이트든, `Lax`나 `Strict`여도 같은 scheme과 사이트의 다른 서브도메인 페이지가 사용자 세션으로 응답을 읽을 수 있다
   - 허용 Origin은 환경별 설정의 명시 목록으로 읽고 값이 없으면 막는 쪽을 기본값으로 둔다. 배포 뒤 목록 밖 `Origin`과 `Origin: null`로 요청해 `Access-Control-Allow-Origin`이 돌아오지 않는지 확인한다
+- 요청 Origin에 따라 허용 헤더를 바꾸는 응답은 `Vary: Origin`을 포함해 공유 캐시가 다른 출처의 응답을 재사용하지 않도록 한다
 
 ### 클라이언트 쪽
 - `credentials` 기본값(`same-origin`)은 교차 출처에 쿠키를 안 보내는데, 이를 모르고 로그인이 안 된다며 디버깅에 시간 낭비
@@ -145,13 +151,14 @@ fetch('https://api.example.test/me', {
 
 ## CORS와 CSRF의 관계
 
-- **CORS는 CSRF를 막지 못함** — CSRF는 브라우저가 자동으로 쿠키 첨부해 요청을 보내는 걸 이용. 응답을 읽을 필요 없음
-- CSRF 방어는 **CSRF 토큰**이 본 방어, **SameSite 쿠키**는 함께 쓰는 심층 방어층 ([[CSRF]] 참고)
-- CORS는 **응답 읽기 허용 여부**만 제어
+- **CORS 헤더 설정만으로 simple 요청의 CSRF를 막을 수는 없다.** 공격자는 응답을 읽지 않고도 자동 전송된 인증 쿠키로 상태 변경을 시도한다.
+- **필수 커스텀 헤더와 엄격한 CORS 허용 목록을 함께 쓰면 API CSRF 방어가 된다.** 서버가 헤더 없는 상태 변경을 실행 전에 거부하고, preflight에는 통제하는 출처만 허용해야 한다. 폼/simple 요청의 대체 경로, 무제한 Origin 반사나 장악 가능한 서브도메인 허용이 있으면 우회할 수 있다.
+- CSRF 토큰, 출처/Fetch Metadata 검증 등은 클라이언트와 요청 경로에 맞게 선택한다. SameSite는 대부분의 배포에서 다른 방어와 함께 쓰는 심층 방어층이다 ([[CSRF]] 참고).
+- CORS는 브라우저의 응답 공유와 필요한 preflight 허가를 제어한다. 비브라우저 클라이언트의 접근 통제와 서버의 인증, 인가는 별도로 구현한다.
 
 ## 해결, 우회 방법
 
-- **서버에서 `Access-Control-Allow-Origin` 명시** — 정석. 와일드카드 `*`는 정체 모를 출처까지 허용하므로 구체 Origin을 박는다. Nginx, Apache 설정보다 Spring, Express, Django 등의 **CORS 미들웨어**로 처리하는 편이 관리가 쉽다(이중 설정 주의는 위 함정 참고).
+- **서버에서 `Access-Control-Allow-Origin` 명시** — 인증이나 민감한 API는 구체 Origin 허용 목록을 쓴다. 모든 출처에 공개할 비인증 자원에는 `*`를 사용할 수 있다. Nginx, Apache 설정보다 Spring, Express, Django 등의 **CORS 미들웨어**로 처리하는 편이 관리가 쉽다(이중 설정 주의는 위 함정 참고).
 - **로컬 개발 서버 리버스 프록싱** — 프론트 dev-server(webpack-dev-server, Vite 등)의 proxy 기능으로 `/api`를 실제 API 서버로 프록시하면 브라우저는 같은 출처 요청으로 인식해 CORS를 우회한다. 단 dev-server가 떠 있는 **로컬에서만** 통하고, 프로덕션에서 정적 자원 출처와 API 출처가 다르면 프록시가 없어 깨진다 — 정적 자원과 API를 같은 출처로 서빙할 때만 안전 ([[Reverse-Proxy|리버스 프록시]]).
 - **`fetch(url, { mode: 'no-cors' })`** — 교차 출처 응답은 opaque라 JavaScript에서 본문과 헤더를 읽을 수 없다. 일반 JSON API의 응답을 읽기 위한 CORS 우회 방법이 아니다.
 - **classic `<script src>`와 JSONP** — `crossorigin`을 지정하지 않은 classic script는 CORS 허용 헤더 없이도 교차 출처 JavaScript를 가져와 실행할 수 있다. 서버가 `callback({ ... })` 형태로 응답하는 JSONP라면 페이지가 콜백으로 데이터를 받는다. 서버의 협조가 필요한 스크립트 실행 방식이며, 임의의 응답 본문을 직접 읽는 방식과 구분한다. `type="module"`인 교차 출처 스크립트에는 CORS가 필요하다.
@@ -167,7 +174,7 @@ fetch('https://api.example.test/me', {
 - Preflight 성능 비용과 Max-Age로 줄이는 방법
 - 로컬 dev-server 프록시 우회가 프로덕션에서 깨지는 이유
 - opaque 응답의 본문 읽기 제한과 classic script 실행/JSONP의 차이
-- CORS가 CSRF를 막지 못하는 이유
+- simple 요청의 CSRF가 CORS만으로 막히지 않는 이유와 필수 커스텀 헤더/preflight 방어의 조건
 
 ## 출처
 - [MDN — CORS-safelisted request header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header)
@@ -181,6 +188,10 @@ fetch('https://api.example.test/me', {
 - [WHATWG Fetch Standard — filtered response](https://fetch.spec.whatwg.org/#concept-filtered-response-opaque)
 - [WHATWG HTML Standard — Fetching scripts](https://html.spec.whatwg.org/multipage/webappapis.html#fetching-scripts)
 - [MDN — Set-Cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie)
+- [MDN — Site](https://developer.mozilla.org/en-US/docs/Glossary/Site)
+- [MDN — Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Allow-Origin)
+- [WHATWG Fetch Standard — CORS-preflight fetch](https://fetch.spec.whatwg.org/#cors-preflight-fetch)
+- [OWASP Cheat Sheet Series — Cross-Site Request Forgery Prevention, Custom Headers and CORS](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#custom-headers-and-cors)
 - [NestJS — CORS](https://docs.nestjs.com/security/cors)
 - [expressjs/cors — README, Configuration Options](https://github.com/expressjs/cors#configuration-options)
 - [fastify/fastify-cors — README, Options](https://github.com/fastify/fastify-cors#options)
