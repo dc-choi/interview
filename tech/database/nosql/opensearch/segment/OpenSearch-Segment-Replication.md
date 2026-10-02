@@ -62,8 +62,8 @@ Segment와 translog를 S3 같은 remote repository에 두는 구조로, segment 
 판단이 달라지는 지점:
 
 - 내구성: `index.translog.durability=request`면 replica 수와 무관하게 마지막 acknowledged write까지 복구할 수 있다. replica가 내구성 수단에서 가용성과 읽기 분산 수단으로 의미가 좁아지므로 replica 수를 내구성 근거로 늘리던 판단이 바뀐다.
-- 복구: red index를 `POST _remotestore/_restore`로 remote store에서 복원한다. 주기 snapshot 사이 데이터를 잃는 snapshot RPO 문제가 마지막 acknowledged write 기준으로 좁혀진다.
-- 활성화는 cluster bootstrap 시점에만 가능하고 이후 켜고 끌 수 없다. 노드 간 remote store 설정이 다르면 bootstrap이 실패한다.
+- 복구: red index를 `POST _remotestore/_restore`로 remote store에서 복원한다. 위의 `request` 내구성 조건에서 마지막 acknowledged write까지 복구할 수 있다. 주기 snapshot만으로 복구할 때와 가능한 복구 지점이 다르다.
+- 신규 클러스터의 기본 설정은 bootstrap 시점에 구성한다. 다만 OpenSearch 2.15 이상에는 DOCUMENT replication 클러스터를 remote-backed storage로 옮기는 공식 rolling migration 경로가 있다. 단순 설정 토글과 구분하며 사전 snapshot과 노드 교체 절차를 준비한다. 해당 가이드는 2.15 노드의 전환을 되돌릴 때 새 설치와 snapshot 복원을 요구한다. AWS OR1의 전환 정책은 별도로 확인한다.
 - 공식 벤치마크에서 bulk client 24개일 때 색인 처리량 최대 60에서 65% 이득. 단 http_logs 8 client에서는 44.86% 감소도 관측됐다. 색인 latency가 remote 업로드 시간보다 클 만큼 동시성이 높아야 이득이다.
 
 ## AWS OR1 인스턴스
@@ -104,10 +104,13 @@ Amazon OpenSearch Service의 OpenSearch optimized 인스턴스로, remote-backed
 
 ## 출처
 
+2026-10-03에는 remote store의 acknowledged write 복구 조건과 2.15 이상 migration 경로만 공식 문서와 대조했다. OR1 요건과 벤치마크 전체를 다시 검증하거나 실제 클러스터 전환을 실행한 것은 아니다.
+
 - [OpenSearch Documentation, Segment replication](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/index/)
 - [OpenSearch Documentation, Segment replication backpressure](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/segment-replication/backpressure/)
 - [Segment replication, generally available in OpenSearch 2.7 — OpenSearch Blog](https://opensearch.org/blog/segment-replication/)
 - [OpenSearch Documentation, Remote-backed storage](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/remote-store/index/)
+- [OpenSearch Documentation, Migrating to remote-backed storage](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/remote-store/migrating-to-remote/)
 - [OpenSearch Documentation, CAT segment replication](https://docs.opensearch.org/latest/api-reference/cat/cat-segment-replication/)
 - [AWS Documentation, OpenSearch Optimized Instances for Amazon OpenSearch Service domains](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/or1.html)
 - [AWS Documentation, Supported instance types in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html)
