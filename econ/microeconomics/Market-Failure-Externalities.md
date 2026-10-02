@@ -7,11 +7,11 @@ aliases: ["시장 실패와 외부효과", "Market Failure and Externalities"]
 
 # 시장 실패와 외부효과
 
-> 한 줄 요약: 시장이 늘 효율적이지는 않다. 가격에 잡히지 않는 비용과 편익, 공공재, 정보 격차가 있으면 시장이 실패하고, 그것이 정부 개입의 근거가 된다.
+> 한 줄 요약: 시장이 늘 효율적이지는 않다. 가격에 잡히지 않는 비용과 편익, 공공재, 정보 격차는 배분을 비효율적으로 만들 수 있다. 대응은 민간의 해결 장치와 정부 개입의 효과, 비용을 함께 비교해 고른다.
 
 ## 1. 시장 실패란 무엇인가
 
-[[Supply-and-Demand|수요와 공급]]에 맡기면 대개 효율적인 배분이 나온다. 하지만 그 전제가 깨지는 경우가 있다. **자유로운 시장이 자원을 효율적으로 배분하지 못하는 상황**을 시장 실패라 한다. 대표적 원인이 외부효과, 공공재, 정보비대칭, 그리고 [[Market-Structures|독과점]]이다.
+경쟁적 시장 모형이 효율적인 배분을 설명하려면 그 전제가 충족되어야 한다. **시장이 자원을 효율적으로 배분하지 못하는 상황**을 시장 실패라 한다. 외부효과, 공공재, 정보비대칭과 [[Market-Structures|시장지배력 행사]] 등이 원인이 될 수 있다. 과점이라는 구조만으로 시장 실패를 확정하지는 않는다. 소수 기업 사이에서도 치열한 경쟁이 가능하므로 실제 가격, 생산과 경쟁 조건을 확인한다.
 
 ## 2. 외부효과 (externality)
 
@@ -33,9 +33,9 @@ aliases: ["시장 실패와 외부효과", "Market Failure and Externalities"]
 
 ## 4. 정보비대칭
 
-거래의 한쪽이 다른 쪽보다 많이 알 때 시장이 망가진다.
+거래의 한쪽이 다른 쪽보다 중요한 정보를 더 많이 아는 상황이다. 이것만으로 거래가 불가능해지는 것은 아니지만, 품질과 위험을 구별하지 못하면 거래량이 줄거나 배분이 비효율적으로 될 수 있다.
 
-- **역선택(거래 전)**: 중고차 시장에서 파는 사람만 차의 결함을 안다. 사는 사람이 평균 가격만 부르면 좋은 차는 빠지고 나쁜 차(레몬)만 남는다. 보험에서 건강한 사람이 빠지고 아픈 사람만 가입하는 것도 같은 원리다.
+- **역선택(거래 전)**: 중고차의 품질을 구매자가 구별하지 못해 평균 품질에 맞춘 가격만 제시하면 좋은 차의 판매자가 빠질 수 있다. 보험에서도 위험별 구분 없이 책정한 보험료 때문에 저위험 가입자가 이탈하고 고위험 가입자 비중이 높아질 수 있다. 실제 시장이 반드시 나쁜 차나 고위험 가입자만 남는다는 뜻은 아니다.
 - **도덕적 해이(거래 후)**: 보험에 든 뒤 오히려 부주의해지는 것처럼, 계약 후 상대가 못 보는 곳에서 행동이 바뀐다.
 
 해법으로 신호 보내기(품질보증, 자격증), 선별(보험 심사), 평판 시스템 등이 쓰인다.
@@ -44,7 +44,7 @@ aliases: ["시장 실패와 외부효과", "Market Failure and Externalities"]
 
 시장 실패는 정부 개입의 근거다. 하지만 개입이 항상 정답은 아니다. 정부도 정보 부족, 관료의 비효율, 이익집단의 포획 때문에 **정부 실패**를 일으킬 수 있다. 그래서 시장 실패의 크기와 정부 개입의 비용을 견줘 판단해야 한다.
 
-참고로 **코즈 정리**는, 거래비용이 낮고 재산권이 명확하면 외부효과를 정부 없이 당사자끼리 협상으로 풀 수 있다고 말한다. 다만 현실에서는 당사자가 많고 거래비용이 커서 협상이 어려운 경우가 많아, 그때 정부 개입이 정당화된다.
+**코즈 정리**의 출발점은 거래비용이 0이고 거래 가능한 권리가 정해진 이상적 조건이다. 이 조건에서는 당사자 간 협상으로 외부효과를 내부화하는 효율적 배분에 도달할 수 있다. 이를 정부나 법적 권리의 설정, 집행이 필요 없다는 뜻으로 읽지 않는다. 현실의 협상, 측정과 집행에는 비용이 들며, 권리 배분과 제도 선택이 결과에 영향을 준다. 협상이 어렵다는 이유만으로 특정 정부 개입이 더 낫다고 확정하지 않고 실제 대안의 비용과 효과를 비교한다.
 
 ## 6. 핵심 개념
 
@@ -55,17 +55,23 @@ aliases: ["시장 실패와 외부효과", "Market Failure and Externalities"]
 
 ## 7. 흔한 오해
 
-- **시장은 언제나 효율적이다** → 외부효과와 공공재, 정보비대칭이 있으면 실패한다.
+- **시장은 언제나 효율적이다**: 외부효과와 공공재, 정보비대칭은 효율적 배분을 방해할 수 있다. 보증, 평판, 협상 같은 기존 해결 장치까지 확인한다.
 - **시장이 실패하면 정부가 답이다** → 정부 실패도 있다. 개입의 득과 실을 비교해야 한다.
 - **오염은 무조건 금지가 정답이다** → 오염을 0으로 만드는 비용이 편익을 넘을 수 있다. 경제학은 한계비용과 한계편익이 만나는 최적 수준을 찾는다.
 
 ## 출처
 
+2026-10-02 과점, 정보비대칭과 코즈 정리의 적용 조건을 부분 대조했다. 코즈 강연은 NobelPrize.org 직접 열기가 403으로 실패하여 공식 페이지의 검색 색인에 수록된 해당 본문을 확인했다. 개별 정책의 실증 효과나 특정 국가의 법적 판단을 검증한 문서는 아니다.
+
 - [OpenStax, Principles of Economics 3e, Key Concepts and Summary, Externalities](https://openstax.org/books/principles-economics-3e/pages/12-key-concepts-and-summary)
 - [OpenStax, Principles of Economics 3e, Public Goods](https://openstax.org/books/principles-economics-3e/pages/13-3-public-goods)
+- [OpenStax, Principles of Economics 3e, Oligopoly](https://openstax.org/books/principles-economics-3e/pages/10-2-oligopoly) — 2026-10-02 과점의 경쟁 가능성과 시장구조만으로 시장 실패를 단정하지 않는 부분 대조
+- [OpenStax, Principles of Economics 3e, The Problem of Imperfect Information and Asymmetric Information](https://openstax.org/books/principles-economics-3e/pages/16-1-the-problem-of-imperfect-information-and-asymmetric-information)
+- [OpenStax, Principles of Economics 3e, Insurance and Imperfect Information](https://openstax.org/books/principles-economics-3e/pages/16-2-insurance-and-imperfect-information)
+- [The Institutional Structure of Production — NobelPrize.org, Ronald H. Coase](https://www.nobelprize.org/prizes/economic-sciences/1991/coase/lecture/)
 
 ## 관련 문서
 
-- [[Market-Structures|시장구조]] — 독과점도 시장 실패의 한 형태
+- [[Market-Structures|시장구조]] — 시장지배력 행사로 발생할 수 있는 배분 비효율
 - [[Supply-and-Demand|수요와 공급]] — 외부효과는 사적 비용과 사회적 비용의 괴리
 - [[미시경제(Microeconomics)]] — 지도
