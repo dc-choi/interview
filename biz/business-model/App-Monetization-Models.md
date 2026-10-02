@@ -1,7 +1,7 @@
 ---
 tags: [business, revenue, mobile-app, monetization, solo-business]
 status: done
-verified_at: 2026-09-29
+verified_at: 2026-10-02
 category: "비즈니스&제품(Business&Product)"
 aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 ---
@@ -13,7 +13,7 @@ aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 ## Mental model
 
 - **같은 사용자 1만 명도 모델에 따라 가치가 다르다.** 광고는 노출 빈도와 단가, 인앱결제는 결제 전환율과 결제액, 구독은 유지 기간이 가치를 정한다. 사용자 수보다 수익 모델이 요구하는 행동이 일어나는지를 먼저 본다.
-- **수익 모델이 획득 비용의 상한을 정한다.** 설치 한 건을 얻는 데 드는 비용보다 사용자당 기대 수익이 낮으면 유료 획득으로는 성장할 수 없다.
+- **수익 모델이 감당할 획득 비용을 정한다.** 같은 획득 코호트의 설치당 누적 공헌이익(획득 비용 차감 전)을 설치당 획득 비용(CPI)과 비교한다. 매출에서 스토어와 결제 수수료, 환불, 사용량에 따른 API와 제공 비용을 반영해야 하며, 기대 매출이 CPI보다 크다는 사실만으로 수익성을 판단하지 않는다.
 - **구현 난이도와 수익 난이도는 반대로 움직이기 쉽다.** 광고 SDK는 붙이기 쉽지만 트래픽이 적으면 수익이 거의 없고, 구독은 결제 화면과 서버 검증이 필요하지만 소수 사용자로도 매출을 만든다.
 
 ## 모델별 비교
@@ -50,17 +50,17 @@ aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 
 ## 광고 수익화의 한계
 
-광고로 획득 비용을 회수하려면 사용자 한 명이 이탈 전까지 보는 광고 노출 수에 노출당 단가를 곱한 값이 설치당 획득 비용보다 커야 한다.
+광고 집행비를 회수하려면 같은 코호트의 설치당 누적 광고 공헌이익(획득 비용 차감 전)이 광고비 기준 CPI 이상이어야 한다. 광고 매출은 실제 광고 노출 수와 앱에 귀속되는 노출당 수익으로 계산한다. 광고 요청 모두가 노출되지는 않으므로 광고 충족률(fill rate)과 실제 노출, 유지 기간을 반영하고 사용자당 변동비를 뺀다. 정산 수익에 이미 반영된 광고 네트워크 수수료는 중복 차감하지 않는다. CPI에 포함하지 않은 소재 제작과 대행비 등 획득 비용, 고정비와 현금 회수 시점도 따로 확인한다([[Business-Model#같은 고객군과 비용 범위로 획득 비용을 회수하는가|코호트별 획득 비용 회수]]).
 
-- 한 개발자의 공개 실험에서 유료 검색 광고의 설치 단가가 2달러를 넘었고, 무료 보드게임의 광고 수익으로는 이 비용을 회수할 수 없었다. 무료 게임이 광고를 많이 붙이는 이유가 이 계산에 있다.
+- 한 개발자의 공개 실험에서 유료 검색 광고의 설치 단가가 2달러를 넘었고, 무료 보드게임의 광고 수익으로는 이 비용을 회수할 수 없었다. 광고 노출을 늘리는 선택도 유지율과 획득 비용 회수 가능성을 함께 따져야 한다.
 - 같은 실험에서 한 달 동안 앱 30개를 만들어 배포했지만 매출은 약 15달러였다. 앱 순위 상위권에 오른 경우도 있었지만 순위는 매출이 아니었다. 수치는 작성자가 공개한 사례이며 일반화할 수 있는 기준은 아니다.
 - 광고는 구현이 쉬워 초기 전략으로 택하기 쉽지만, 수익을 내기 어려워 인앱 구독 중심으로 전환한 사례도 있다.
 
-## 스토어 조건 (2026-09-29 확인)
+## 스토어 조건 (2026-10-02 확인)
 
-- **Apple App Store Small Business Program:** 전년도 모든 앱의 proceeds가 100만 달러 이하인 기존 개발자와 신규 개발자가 신청할 수 있고, 유료 앱과 인앱결제에 15% 수수료가 적용된다. 연관 개발자 계정의 proceeds를 합산하며, 당해 100만 달러를 넘으면 이후 판매에는 표준 수수료가 적용된다. 자동 적용이 아니라 신청이 필요하다.
-- **Google Play 신규 개인 개발자 계정:** 2023-11-13 이후 만든 개인 계정은 앱을 프로덕션에 배포하기 전에 앱마다 12명 이상의 테스터가 14일 이상 연속으로 참여한 비공개 테스트를 거쳐야 한다.
-- **Google Play 서비스 수수료:** 지역과 거래 유형에 따라 다르다. 일반 시장에서는 연 수익 첫 100만 달러까지 15%, 초과분 30%이며 자동 갱신 구독은 15%다. EEA, 영국, 미국은 2026-06-30부터 서비스 수수료와 결제 수수료를 나눈 별도 구조가 적용된다. 한국 대체결제 조건은 [[In-App-Purchase|인앱결제]]를 본다.
+- **Apple App Store Small Business Program:** 전년도 모든 앱의 proceeds가 100만 달러 이하인 기존 개발자와 신규 개발자가 신청할 수 있고, 유료 앱과 인앱결제에 15% 수수료가 적용된다. proceeds는 Apple 수수료와 일부 세금, 조정액을 제외한 금액으로 매출 총액과 다르다. 연관 개발자 계정의 proceeds를 합산하며, 당해 100만 달러를 넘으면 이후 판매에는 표준 수수료가 적용된다. 신청과 승인 뒤 정해진 효력 발생일에 적용된다.
+- **Google Play 신규 개인 개발자 계정:** 2023-11-13 이후 만든 개인 계정은 앱마다 신청 직전 14일 이상 연속으로 참여 중인 테스터 12명 이상의 비공개 테스트를 거친 뒤 프로덕션 접근을 신청한다. 테스트와 출시 준비에 관한 답변을 Google이 심사하며, 숫자 요건 충족만으로 자동 승인되는 것은 아니다. 추가 테스트를 요구받을 수도 있다.
+- **Google Play 서비스 수수료:** 새 구조가 아직 적용되지 않은 시장에서는 15% service fee tier에 가입한 개발자의 연 수익 첫 100만 달러까지 15%, 초과분 30%이며 자동 갱신 구독은 15%다. 15% tier는 결제 프로필, 연관 계정을 포함한 Account Group과 약관 동의가 필요하고 계정 그룹의 수익을 합산한다. EEA, 영국, 미국은 2026-06-30, 호주와 일본은 2026-09-30부터 서비스 수수료와 Google Play 결제 수수료를 나눈 새 구조가 적용된다. 새 구조는 설치 시점, 거래 유형과 프로그램 참여에 따라 달라지므로 기존 15%/30%를 그대로 적용하지 않는다. 한국은 2026-12-31 전환 예정이며 현재 대체결제 조건은 [[In-App-Purchase|인앱결제]]를 본다.
 
 ## 출구로서의 앱 매각
 
@@ -78,14 +78,16 @@ aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 
 ## 적용 점검
 
-- 사용자당 기대 수익을 모델별로 계산했고, 설치당 획득 비용과 비교했는가
+- 같은 코호트와 관찰 기간의 설치당 공헌이익(획득 비용 차감 전)을 계산했고, CPI와 비교했는가
 - 구독이라면 결제 전환율뿐 아니라 첫 갱신율과 월별 유지율을 측정하는가
-- 광고라면 사용자당 노출 수와 이탈률을 함께 보는가
+- 광고라면 충족률, 실제 노출과 정산 수익, 변동비와 유지율을 함께 보는가
 - 플랫폼별 분기를 경험칙이 아닌 자기 지표로 결정했는가
-- Small Business Program 신청과 Google Play 테스트 요건을 출시 일정에 넣었는가
+- 수수료 프로그램의 가입과 효력 발생일, Google Play 테스트 뒤 프로덕션 접근 심사를 출시 일정에 넣었는가
 - 매출, 비용, 트래픽 증빙과 계정 이전 경로를 남기고 있는가
 
 ## 출처
+
+2026-10-02에는 공식 자료의 스토어 수수료와 테스트 조건, 광고 지표 정의와 공헌이익 개념을 대조했다. 아래 공개 실험의 매출이나 플랫폼별 경험칙을 독립 검증한 날짜는 아니다.
 
 - [앱 수익화 10가지 — Threads, harry.coding](https://www.threads.com/@harry.coding/post/DaoqSUwk5Se)
 - [플랫폼별 수익화 분기와 지표 진단 — Threads, vibe.bizness](https://www.threads.com/@vibe.bizness/post/DdLo7C-GtLj)
@@ -95,6 +97,10 @@ aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 - [App Review Guidelines — Apple Developer](https://developer.apple.com/app-store/review/guidelines/)
 - [App testing requirements for new personal developer accounts — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)
 - [Service fees — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/112622?hl=en)
+- [Changes to Google Play's service fee in 2021 — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/10632485?hl=en)
+- [Understanding Google Play's lower service fees — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/16954621?hl=en)
+- [Getting started FAQs — Google AdMob Help](https://support.google.com/admob/answer/6168758?hl=en)
+- [Principles of Accounting, Volume 2, 3.1 Contribution Margin — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/3-1-explain-contribution-margin-and-calculate-contribution-margin-per-unit-contribution-margin-ratio-and-total-contribution-margin)
 - [Acquire.com](https://acquire.com/)
 - [Flippa](https://flippa.com/)
 - [Fello](https://www.fello.io/products)

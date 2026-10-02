@@ -3,7 +3,7 @@ tags: [business, commerce, payment, platform, regulation]
 status: done
 category: "비즈니스&제품(Business&Product)"
 aliases: ["In-App Purchase", "인앱결제", "IAP", "앱마켓 수수료"]
-verified_at: 2026-07-21
+verified_at: 2026-10-02
 ---
 
 # 인앱결제 (In-App Purchase)
@@ -12,7 +12,7 @@ verified_at: 2026-07-21
 
 ## 결제수단 vs 결제시스템
 
-- **결제수단** — 신용카드, 간편결제 등. 사용자가 자유롭게 선택한다.
+- **결제수단** — 신용카드, 간편결제 등. 사용자는 제공된 결제수단 중에서 선택한다.
 - **결제시스템** — 결제를 처리하는 인프라. 디지털 상품에 어떤 시스템을 써야 하는지와 수수료는 플랫폼, storefront, 사업자 프로그램, 거래 유형과 시점에 따라 다르다.
 
 Apple App Store는 앱 안에서 소비하는 디지털 기능과 콘텐츠에 원칙적으로 In-App Purchase를 요구하지만 예외와 entitlement가 있다. 미국 storefront에서는 현재 외부 구매 버튼과 링크에 별도 규칙이 적용되고, EU에서는 DMA와 Apple의 대체 사업 조건 때문에 배포와 결제 선택지가 달라진다. 한 지역의 규칙을 전 세계 공통으로 일반화하지 않는다.
@@ -32,9 +32,11 @@ Apple App Store는 앱 안에서 소비하는 디지털 기능과 콘텐츠에 �
 
 ## 규제와 우회
 
-- **한국 법률:** 2021년 전기통신사업법 개정으로 앱마켓 사업자가 특정 결제방식을 강제하는 행위가 금지됐다. 실제 선택지와 비용은 플랫폼별 프로그램을 따로 본다.
-- **Apple 한국 storefront:** 2026-07-21 현재 StoreKit External Purchase Entitlement를 받은 한국 전용 별도 앱은 승인된 외부 PSP를 사용할 수 있고, Apple은 이용자 결제액의 부가세 포함 금액에 26% commission을 부과한다. 한국 전용 binary, entitlement, 보고와 지원 의무가 따른다.
-- **Google Play 한국:** 2026-07-21 현재 대체결제 거래의 service fee는 개발자에게 적용되던 표준 수수료에서 4%p 낮아진다. Google은 한국에 새 fee model을 2026-12-31 적용할 예정이라고 공지했으므로 출시 시점 정책을 다시 확인한다.
+- **한국 법률:** 2021년 전기통신사업법 개정으로 앱마켓 사업자가 거래상 지위를 부당하게 이용해 콘텐츠 제공사업자에게 특정 결제방식을 강제하는 행위가 금지됐다(제50조 제1항 제9호). 실제 선택지와 비용은 플랫폼별 프로그램을 따로 본다.
+- **Apple 한국 storefront:** 2026-10-02 현재 StoreKit External Purchase Entitlement를 받은 한국 전용 별도 앱은 승인된 외부 PSP를 사용할 수 있고, Apple은 이용자 결제액의 부가세 포함 금액에 26% commission을 부과한다. 한국 전용 binary, entitlement, 보고와 지원 의무가 따른다.
+- **Google Play 한국:** 2026-10-02 현재 Google Play 결제와 함께 제공하는 대체결제 거래의 service fee는 개발자에게 적용되던 표준 수수료에서 4%p 낮아진다. 프로그램 가입, 대체결제 API 통합과 승인 거래의 24시간 내 보고가 필요하다. Google은 한국에 새 fee model을 2026-12-31 적용할 예정이라고 공지했으므로 출시 시점 정책을 다시 확인한다.
+
+외부 결제도 플랫폼 수수료가 사라지는 것은 아니다. PSP 수수료와 세금 처리, 환불과 구독 지원의 비용을 함께 비교하며, 플랫폼 수수료율의 차이를 그대로 총비용 절감액으로 보지 않는다.
 
 ## 면접 체크포인트
 
@@ -43,10 +45,14 @@ Apple App Store는 앱 안에서 소비하는 디지털 기능과 콘텐츠에 �
 - 규제 우회 패턴 — 플랫폼 정책 리스크를 평가할 때 법 통과 여부가 아니라 실효(수수료율 변화)를 본다.
 
 ## 출처
+
+2026-10-02에는 아래 공식 자료의 Apple 심사 지침, 한국 결제 조건과 Google 지역별 전환 일정을 대조했다. 역사적 사례와 독점 논쟁 전체를 재검증한 날짜는 아니다.
+
 - [Apple — App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
 - [Apple — Distributing apps using a third-party payment provider in South Korea](https://developer.apple.com/support/storekit-external-entitlement-kr/)
 - [Google Play — Changes to billing requirements for users in South Korea](https://support.google.com/googleplay/android-developer/answer/11222040?hl=en)
 - [Google Play — Understanding lower service fees and rollout timeline](https://support.google.com/googleplay/android-developer/answer/16954621?hl=en)
+- [국가법령정보센터, 전기통신사업법 제50조](https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1032080169)
 - [European Commission — Apple and Meta breach the Digital Markets Act](https://digital-strategy.ec.europa.eu/en/news/commission-finds-apple-and-meta-breach-digital-markets-act)
 
 ## 관련 문서
