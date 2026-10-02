@@ -51,10 +51,12 @@ verified_at: 2026-07-21
 
 ## 카드 네트워크의 역할과 수수료 경제
 
-Visa, Mastercard 같은 카드 네트워크는 발급사도 카드 제조사도 아니다. 한쪽의 카드 소지자와 발급사, 반대쪽의 가맹점과 매입사를 잇는 양면 시장 인프라이며, 양쪽 은행과만 계약하고 소지자나 가맹점과는 직접 계약하지 않는다. 브랜드는 네트워크가 갖지만 고객 관계는 은행이 소유하는 이유다. 역할은 넷이다.
+2026-10-02에는 이 절의 계약 범위, 분쟁 규칙과 2024 공시 수치를 공식 출처와 부분 대조했다. 아래 100달러 수수료 예시와 양면 시장 해석은 기존 입문서의 관점이며 공식 요율표나 모든 계약의 설명은 아니다.
+
+Visa, Mastercard 같은 카드 네트워크는 직접 카드를 발급하거나 소비자에게 신용을 제공하는 발급사와 역할이 다르다. 통상적인 4자 모델에서는 카드 소지자와 발급사, 가맹점과 매입사를 연결하며, 카드 회원과 가맹점 관계는 주로 발급사와 매입사가 관리한다. 이것이 네트워크가 은행과만 계약한다는 뜻은 아니다. Visa는 금융기관, 가맹점과 다른 사업 파트너와의 인센티브 계약을 공시하고, Mastercard 참가 자격도 적법한 금융 거래 권한을 가진 다른 법인을 포함한다. 네트워크 참가 계약, 카드 회원 계약, 가맹점 수납 계약과 별도 서비스/인센티브 계약을 구분한다. ([Visa 2024 10-K, Note 1](https://www.sec.gov/Archives/edgar/data/1403161/000140316124000058/v-20240930.htm), [Mastercard Rules, 1.1.1과 5.1](https://www.mastercard.com/content/dam/mccom/shared/business/support/rules-pdfs/mastercard-rules.pdf)) 역할은 넷이다.
 
 1. 메시지 전달 — 승인 요청과 응답을 라우팅하는 통신 네트워크
-2. 정산 — 은행 간 순액 정산과 자금 이동 조율
+2. 정산 — 참여 기관 간 순액 정산과 자금 이동 조율
 3. 인센티브 설계 — 수수료 배분으로 참여자 행동 유도
 4. 규칙과 분쟁 — 규정 제정과 집행, 중재 절차 제공
 
@@ -67,11 +69,11 @@ Visa, Mastercard 같은 카드 네트워크는 발급사도 카드 제조사도 
 | 결제 프로세서 몫 | 0.35% | 프로세서 |
 | network assessment fee | 0.15% | 네트워크 |
 
-- 수수료 대부분이 네트워크가 아니라 발급사로 간다. 카드 발급과 사용을 늘리는 쪽이 네트워크 성장의 병목이라 보조금이 그쪽에 간다. 양면 시장에서 보조금은 참여가 희소한 쪽에 간다. 리워드와 마일리지의 재원이 interchange이므로 가맹점 수수료가 소비자 리워드를 간접 지불하는 구조다.
-- 분쟁 비용은 처리량 관리 장치다. 대부분의 분쟁은 발급사와 매입사 사이에서 해결되고, 네트워크 직접 중재는 600달러, 이의제기는 1,000달러로 통상 분쟁 금액보다 비싸 당사자 합의로 밀린다. 소액 거래에서는 다투는 것보다 환불이 싸다.
-- 순액 정산은 필요 자본을 줄인다. 한 네트워크의 2024 회계연도 정산 익스포저는 일 평균 843억 달러였고 정산용 유동성 보유액은 112억 달러였다. 결제 인프라의 신용 리스크는 총 거래액이 아니라 순 포지션에 비례한다.
-- 네트워크 효과는 양방향이다. 카드가 늘면 가맹점이 늘고 가맹점이 늘면 카드가 는다. 그래서 신규 진입 장벽이 높고 소수 네트워크로 집중된다. 시스템의 목적 함수는 거래 성사이며 사기 방지와 공정성은 제약 조건으로 들어간다.
-- 위 수치는 미국 신용카드 기준이다. 체크카드, 수수료 상한 규제 시장, 한국 가맹점 수수료율에 그대로 적용하지 않는다. 한국의 PG와 VAN이 끼는 다층 구조는 위 플레이어 절을 따른다.
+- 위 예시에서는 수수료 대부분이 네트워크가 아니라 발급사로 간다. 입문서는 이를 카드 발급과 사용을 늘리기 위한 양면 시장의 참여 유인으로 설명한다. Interchange는 발급사의 리워드와 마일리지 재원을 뒷받침할 수 있지만 실제 배분과 리워드 정책은 지역, 카드 종류와 계약에 따라 다르다.
+- 분쟁은 발급사와 매입사의 차지백 대응, 사전 중재를 거쳐 네트워크 중재로 이어질 수 있다. 중재와 이의제기 수수료를 600달러와 1,000달러의 공통값으로 일반화하지 않는다. Visa 공개 규칙 1.10.2.3은 거래금액과 review fee의 책임을 규정하며, Mastercard 가이드도 별도의 중재와 이의제기 절차를 둔다. 실제 비용은 적용 수수료표와 acquirer/processor 계약에서 확인한다. 소액 거래에서 환불이 유리한지는 회수 가능성과 처리 비용을 비교한 판단이다. ([Visa Core Rules, 1.10.2](https://cis.visa.com/content/dam/VCOM/download/about-visa/visa-rules-public.pdf), [Mastercard Chargeback Guide, Arbitration Case Filing](https://www.mastercard.com/content/dam/public/mastercardcom/na/global-site/documents/chargeback-guide.pdf))
+- 순액 정산은 자금 이동 규모를 줄일 수 있지만, 신용 위험이 순 포지션에 비례한다고 단정할 수는 없다. Visa의 2024 회계연도 평균 일일 정산 익스포저는 843억 달러였고, 2024-09-30 현재 고객의 정산 불이행에 대비해 일일 정산에 배정한 가용 유동성은 112억 달러였다. 전자는 미정산 Visa 거래에 대한 보증 익스포저, 후자는 불이행 대비 유동성이므로 필요 자본의 단순 비율로 해석하지 않는다. 정산 시차, 상대방 신용과 담보 등 위험 완화 장치를 함께 본다. ([Visa 2024 10-K, Liquidity와 Note 12](https://www.sec.gov/Archives/edgar/data/1403161/000140316124000058/v-20240930.htm), [Mastercard 2024 10-K, Note 22](https://www.sec.gov/Archives/edgar/data/1141391/000114139125000011/ma-20241231.htm))
+- 네트워크 효과는 양방향이다. 카드가 늘면 가맹점이 늘고 가맹점이 늘면 카드가 는다. 입문서는 이 효과로 진입 장벽과 시장 집중을 설명한다. 거래 성사를 단일 목적 함수로, 사기 방지와 공정성을 그 아래 제약 조건으로 단정하지 않는다. Visa 공개 규칙 1.10.2.2는 중재 판단 시 공정성을 고려할 수 있다고 명시한다. ([Visa Core Rules, 1.10.2.2](https://cis.visa.com/content/dam/VCOM/download/about-visa/visa-rules-public.pdf))
+- 위 수수료 배분 예시는 미국 신용카드 기준이다. 체크카드, 수수료 상한 규제 시장, 한국 가맹점 수수료율에 그대로 적용하지 않는다. 한국의 PG와 VAN이 끼는 다층 구조는 위 플레이어 절을 따른다.
 
 ## 결제 데이터: 주체별 시야
 
@@ -109,7 +111,7 @@ Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주�
 ## 면접 체크포인트
 
 - 결제 시스템 설계 질문에서 승인과 매입의 분리(취소 vs 환불 분기), PG 연동의 멱등성(중복 승인 방지)을 짚으면 도메인 이해가 드러난다.
-- 카드 네트워크의 4대 역할과 interchange가 발급사로 몰리는 이유, 분쟁 수수료가 합의를 유도하는 설계를 말할 수 있으면 수수료 모델 논의에 바로 쓸 수 있다.
+- 카드 네트워크의 역할과 발급사 몫인 interchange를 구분하고, 분쟁 단계별 비용과 계약 범위를 확인하는 관점을 수수료 모델 논의에 쓴다.
 - 간편결제 연동은 토큰(빌링키) 관리 문제다 — 발급, 저장, 폐기 주기와 본인 인증. [[Commerce-Order|커머스 주문 도메인]]의 원클릭 주문이 이 위에서 성립한다.
 - 페이 도입의 사업 효과(수수료 수익, 락인, 익명성)는 [[Commerce-Member|커머스 회원 도메인]]의 자체 페이 참조.
 
@@ -119,6 +121,11 @@ Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주�
 - [오프라인 유통이 생각보다 데이터를 못 모으는 이유 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/299)
 - [What do Visa and Mastercard do? An introduction to card networks — tautology.town](https://tautology.town/2026/06/01/card-networks.html)
 - [Visa와 Mastercard는 무슨 일을 할까? 카드 네트워크 입문 — GeekNews](https://news.hada.io/topic?id=33453)
+- [Visa 2024 Annual Report (Form 10-K) — SEC](https://www.sec.gov/Archives/edgar/data/1403161/000140316124000058/v-20240930.htm)
+- [Mastercard 2024 Annual Report (Form 10-K) — SEC](https://www.sec.gov/Archives/edgar/data/1141391/000114139125000011/ma-20241231.htm)
+- [Visa, Core Rules and Product and Service Rules (2026-04-18)](https://cis.visa.com/content/dam/VCOM/download/about-visa/visa-rules-public.pdf)
+- [Mastercard, Rules (2026-06-02)](https://www.mastercard.com/content/dam/mccom/shared/business/support/rules-pdfs/mastercard-rules.pdf)
+- [Mastercard, Chargeback Guide Merchant Edition (2025-05-13)](https://www.mastercard.com/content/dam/public/mastercardcom/na/global-site/documents/chargeback-guide.pdf)
 - [PCI Security Standards Council — PCI DSS](https://www.pcisecuritystandards.org/standards/pci-dss/)
 - [EMVCo — Payment Tokenisation](https://www.emvco.com/emv-technologies/payment-tokenisation/)
 - [Paddle — What is Paddle?](https://developer.paddle.com/get-started/how-paddle-works/)
