@@ -15,6 +15,6 @@ category: "AI엔지니어링(AIEngineering)"
 - [[Ontology-Document-Outline|문서의 다른 절 찾기]]
 - [[Ontology-Evidence-Read|같은 원문의 본문 이어 읽기]]
 - [[Ontology-Condition-Retrieval|여러 조건의 근거를 찾는 host 절차]]
-- [[Ontology-Evidence-Lifecycle|근거의 시점, 적용 조건과 평가 기준]]
+- [[Ontology-Evidence-Lifecycle|근거의 시점, 적용 조건, 지식 보강과 색인 검증, 평가 기준]]
 
 상위: [[Development-Ontology]].
