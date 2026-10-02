@@ -69,8 +69,14 @@ Tools는 근거를 가져오고 Prompts는 그 근거를 사용하는 학습 절
 - 사람 승인(Human-in-the-loop): 위험한 도구 호출 전 사람이 확인 → [[Harness-Engineering|HITL]]
 - 권한 최소화: 서버가 접근할 수 있는 범위(디렉토리, 스코프)를 제한
 - 프롬프트 인젝션 경계: 서버가 반환한 데이터가 모델의 지시를 오염시킬 수 있으므로 신뢰 경계를 설정
-- 계정 위임의 범위: OAuth로 붙인 원격 서버는 사용자 계정으로 동작하므로 그 계정이 할 수 있는 삭제와 발송까지 에이전트가 쓸 수 있다. 쓰기 도구는 승인 필요나 차단으로 둔다 ([[Claude-Code-Business-Automation|커넥터 도구 권한]])
+- 계정 위임의 범위: OAuth 연결만으로 계정의 모든 권한이 에이전트에 넘어가지는 않는다. 실제 가능 행위는 부여된 scope, 서버가 노출한 도구, 서비스의 객체 접근 권한과 Host 통제를 함께 확인한다. 삭제와 발송 도구가 허용된 경우 승인이나 차단 정책을 정한다 ([[Claude-Code-Business-Automation|커넥터 도구 권한]])
 - 감사: 어떤 도구가 무엇을 실행했는지 로깅
+
+도구의 `annotations`는 동작에 관한 메타데이터이며 권한을 강제하는 장치가 아니다. 명세도 신뢰하는 서버가 제공하지 않은 annotation은 비신뢰로 취급하도록 요구한다. 읽기 전용이라는 설명만으로 외부 전송이나 민감 데이터 노출까지 안전하다고 판단하지 않는다.
+
+원격 서버의 토큰은 그 MCP 서버를 대상으로 발급됐는지 검증한다. 다른 API용 토큰을 검증 없이 받아 downstream으로 그대로 전달하는 token passthrough는 명세에서 금지한다. MCP 접근 권한과 downstream API 접근 권한은 별도로 관리한다.
+
+로컬 stdio 서버는 실행되는 프로그램이다. MCP를 사용한다는 사실이 OS 샌드박스를 자동으로 제공하지 않는다. 시작 명령과 패키지 출처, 파일과 네트워크 접근 범위, 자격증명 전달을 확인하고 최소 권한으로 실행한다. 이 보안 경계는 서버의 도구 이름이나 공개 디렉터리 등재로 대신할 수 없다.
 
 ## 하네스와 컨텍스트에서의 위치
 
@@ -117,6 +123,10 @@ A2A(Agent2Agent)는 서로 다른 조직과 프레임워크의 에이전트가 �
 
 ## 출처
 
+2026-10-02에는 2026-07-28 명세의 tool annotations, token passthrough와 로컬 서버 실행 경계를 대조했다. 개별 Host, 커넥터와 A2A 제품 지원 현황 전체를 다시 확인한 기록은 아니다.
+
+- [Model Context Protocol, Tools (2026-07-28)](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
+- [Model Context Protocol, Security Best Practices (2026-07-28)](https://modelcontextprotocol.io/specification/2026-07-28/basic/security_best_practices)
 - [Architecture overview — Model Context Protocol](https://modelcontextprotocol.io/docs/learn/architecture)
 - [인프런 MCP — Inflearn](https://www.inflearn.com/pages/mcp)
 - [Inflearn Connector — Claude](https://claude.ai/directory/connectors/inflearn)

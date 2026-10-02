@@ -80,6 +80,19 @@ Retriever의 top-k를 그대로 prompt에 붙이지 않는다. 중복 청크를 
 
 근거 추적은 답변 형식이 아니라 데이터 계약이다. Retrieval부터 `source_id`, `document_id`, `chunk_id`, 원문 span과 version을 보존하고, 생성된 각 핵심 claim을 citation에 연결한다. XML이나 JSON 태그는 이 연결을 직렬화할 뿐 근거 지지를 보장하지 않는다. 후처리에서 citation이 실제 span을 가리키는지, 그 span이 claim을 지지하는지 검사하고, 지지 근거가 없으면 claim을 제거하거나 거부한다([[LLM-Abstention]]).
 
+## 검색 권한과 데이터 수명
+
+관련성이 높은 문서와 사용자가 읽을 수 있는 문서는 다르다. OWASP LLM08은 접근 제어 오류와 멀티테넌트 검색의 교차 유출을 별도 위험으로 다룬다. 사용자와 tenant는 인증된 서버 맥락에서 정하고, 모델이 만든 식별자나 검색 필터를 권한 증거로 쓰지 않는다.
+
+다음은 이 원칙을 검색 흐름에 적용한 설계 점검 항목이다.
+
+- 벡터 검색뿐 아니라 BM25, 구조화 조회, 인접 문서 확장과 요약 조회에도 같은 객체 접근 권한을 적용한다. 허용되지 않은 본문을 모델에 먼저 넘긴 뒤 답변에서 숨기도록 지시하지 않는다.
+- 원문 권한 변경과 삭제가 chunk, embedding, 파생 요약과 캐시에 어떻게 반영되는지 정한다. 갱신 지연 중에도 현재 권한을 확인하거나 해당 결과를 차단할 경로가 필요하다.
+- 답변 캐시를 공유할 때는 질문 문자열만으로 재사용하지 않는다. 현재 사용자의 접근 범위가 결과의 원문 전체를 허용하는지 확인한다. 제목, snippet, citation과 로그도 노출 경로다.
+- 출처가 있다는 사실은 내용의 진실성이나 실행 지시의 정당성을 보장하지 않는다. 검색 문서 안의 명령은 비신뢰 데이터로 취급하고 도구 실행 권한은 검색 결과와 분리한다([[LLM-Application-Security]]).
+
+보안 검증에는 다른 tenant의 같은 질문, 권한 철회 직후 조회, 캐시 재사용, 인접 문서로의 우회 접근과 데이터 전송을 요구하는 삽입 지시를 포함한다. 품질 지표가 좋아져도 이 경계가 통과된 것은 아니다.
+
 ## 배포 전 평가 루프
 
 1. 고정 query set에 필요한 source와 passage judgment를 만든다.
@@ -113,6 +126,10 @@ Q. 도메인 사전은 무조건 만드는 게 좋은가?
 - [[LLM-Eval-Strategy|LLM 평가 전략 (검색 품질을 어떻게 측정하나)]]
 
 ## 출처
+
+2026-10-02에는 검색 권한과 교차 유출 위험을 OWASP LLM08에 대조했다. 데이터 수명과 검증 항목은 그 원칙을 적용한 설계 제안이며 특정 검색 엔진의 기본 보장이 아니다. 기존 검색 기법과 평가 논문 전체를 다시 검증한 기록은 아니다.
+
+- [OWASP GenAI, LLM08:2025 Vector and Embedding Weaknesses](https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/)
 - [Ragas: Automated Evaluation of Retrieval Augmented Generation](https://arxiv.org/abs/2309.15217)
 - [ARES: An Automated Evaluation Framework for Retrieval-Augmented Generation Systems — NAACL 2024](https://aclanthology.org/2024.naacl-long.20/)
 - [Enabling Large Language Models to Generate Text with Citations — ALCE](https://arxiv.org/abs/2305.14627)
