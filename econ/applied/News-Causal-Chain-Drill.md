@@ -40,7 +40,7 @@ aliases: ["뉴스 인과 체인 드릴", "News Causal Chain Drill"]
 ## 4. 드릴 문제집
 
 **문제 1. 미국 소비자물가(CPI)가 예상보다 높게 나왔다.**
-풀이: 인플레가 안 잡혔다 → 연준이 금리를 더 오래, 더 높게 유지할 것이란 기대. [[Inflation|기대인플레이션]] 앵커가 풀릴 위험 → [[Interest-Rates-Monetary-Policy|추가 긴축]] → 마스터 예제 체인 그대로. 내 삶: 긴축 장기화 = 펀딩 한파가 길어진다.
+풀이: 예상 밖의 물가 상승이 지속될 것으로 해석되면 [[Interest-Rates-Monetary-Policy|금리 인하 지연이나 추가 긴축]] 기대가 커질 수 있다. 다만 CPI 한 번으로 [[Inflation|기대인플레이션]]의 앵커 이탈이나 추가 인상을 확정하지 않는다. 상승 품목과 추세, 연준의 목표 지표인 PCE 물가, 고용과 장기 기대인플레이션을 함께 확인한다. 금리 경로 기대가 실제로 높아지면 마스터 예제의 파급 경로를 적용한다. 내 삶: 금융여건이 긴축되면 펀딩 부담이 오래갈 수 있다.
 
 **문제 2. 장단기 금리차가 역전됐다(10년물 < 2년물).**
 풀이: [[Bonds|채권시장]]이 미래 단기금리 하락과 경기 둔화를 반영했을 가능성이 있다. 다만 장기금리에는 term premium도 섞이므로 역전만으로 침체를 확정하지 않는다. [[Business-Cycle|역사적 침체 선행 신호]]로 보고 금리 수준, 신용스프레드와 고용을 함께 확인한다. 내 삶: 런웨이 짧은 회사와 본인 유동성의 하방 위험을 점검한다.
@@ -58,7 +58,7 @@ aliases: ["뉴스 인과 체인 드릴", "News Causal Chain Drill"]
 풀이: [[Fiscal-Policy|확장 재정]]은 총수요를 부양할 수 있다. 승수와 물가효과는 경기의 유휴 여력, 지출 구성과 통화정책 반응에 따라 달라진다. 국채 발행 증가는 다른 조건이 같다면 금리 상승 압력을 줄 수 있지만 중앙은행 대응과 민간 자금수요를 함께 본다.
 
 **문제 7. 한국은행이 기준금리를 동결했다.**
-풀이: [[Interest-Rates-Monetary-Policy|현 수준 유지]]. 물가와 경기 사이에서 균형을 본다는 신호다. 미국과의 금리차가 유지되면 [[Exchange-Rates-Balance-of-Payments|환율]]에 영향을 줄 수 있다. 내 삶: 대출금리와 자산시장에 급변이 없을 수 있지만, 시장금리는 기대 변화에도 움직인다. 방향성은 다음 회의의 통화정책방향 결정문과 총재 기자간담회, 경제전망, 이후 의사록을 함께 확인한다. 조건부 점도표가 공표된 시기에는 그 전제와 함께 읽는다.
+풀이: [[Interest-Rates-Monetary-Policy|기준금리 현 수준 유지]]. 동결만으로 이유를 특정하지 않는다. 물가와 성장 전망, 금융안정 위험, 기존 정책의 효과를 더 지켜볼 필요 등을 이번 회의의 통화정책방향 결정문과 총재 기자간담회, 경제전망, 이후 의사록에서 확인한다. 동결이 예상과 다르거나 향후 한미 금리 경로 기대가 바뀌면 [[Exchange-Rates-Balance-of-Payments|환율]]과 시장금리도 움직일 수 있다. 내 삶: 기준금리 동결이 대출금리나 자산가격의 안정을 보장하지 않으므로 실제 금융여건을 확인한다. 조건부 점도표가 공표된 시기에는 그 전제와 함께 읽는다.
 
 ## 5. 막히면 보는 셀프 체크
 
@@ -68,10 +68,14 @@ aliases: ["뉴스 인과 체인 드릴", "News Causal Chain Drill"]
 
 ## 출처
 
+2026-10-03 부분 검증: 문제 1의 CPI와 정책 반응을 연준의 장기목표 성명과, 문제 7의 동결 해석을 한국은행의 운영 원칙과 대조했다. 각 풀이의 실제 시장 반응이나 특정 회의의 정책 의도를 검증한 것은 아니다.
+
 - [Federal Reserve, FOMC calendars and information](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm)
+- [Federal Reserve, Statement on Longer-Run Goals and Monetary Policy Strategy](https://www.federalreserve.gov/monetarypolicy/files/FOMC_LongerRunGoals.pdf) — 2026-01-27 재확인 성명: PCE 목표, 기대인플레이션과 위험 평가
 - [Federal Reserve, The Sensitivity of the U.S. Dollar Exchange Rate to Changes in Monetary Policy Expectations](https://www.federalreserve.gov/econres/notes/ifdp-notes/the-sensitivity-of-the-us-dollar-exchange-rate-to-changes-in-monetary-policy-expectations-20170922.htm)
 - [Federal Reserve, Predicting Recession Probabilities Using the Slope of the Yield Curve](https://www.federalreserve.gov/econres/notes/feds-notes/predicting-recession-probabilities-using-the-slope-of-the-yield-curve-20180301.html)
 - [한국은행, 통화정책방향 결정회의 일정 및 자료](https://www.bok.or.kr/portal/main/contents.do?menuNo=200755)
+- [한국은행, 통화신용정책 운영의 일반원칙](https://www.bok.or.kr/portal/main/contents.do?menuNo=201748) — 물가와 성장 전망, 파급시차와 금융안정 고려
 - [한국은행, 통화신용정책보고서 2026년 3월, 조건부 금리전망](https://www.bok.or.kr/portal/bbs/B0000156/view.do?menuNo=200067&nttId=10096935)
 
 ## 관련 문서
