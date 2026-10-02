@@ -125,7 +125,16 @@ query 수는 요청 데이터 크기와 함께 측정한다. 단건 PK를 고정
 - query, transaction, external side effect와 rollback을 확인했다.
 - 새 지식은 source/test/ADR 가운데 유지 가능한 곳에 남았다.
 
+## 전체 지도와 변경 경로를 오가며 탐색한다
+
+낯선 코드베이스는 처음부터 끝까지 순서대로 읽기보다 시스템 경계와 이번 변경의 진입점을 먼저 찾는다. 모듈의 역할을 대략 확인한 뒤 입력이 들어오는 곳, 호출 관계와 데이터가 나가는 곳을 따라가고, 필요한 구현만 깊게 읽는다. 세부에서 길을 잃으면 전체 구조로 돌아와 위치를 다시 확인한다.
+
+VS Code의 Call Hierarchy는 언어 확장이 제공하는 caller와 callee 관계를 탐색하는 도구다. 지원 범위는 등록된 provider에 달려 있고 결과가 없을 수도 있다([VS Code, CallHierarchyProvider](https://code.visualstudio.com/api/references/vscode-api#CallHierarchyProvider), 2026-10-01 확인). 동적 등록, 이벤트와 외부 설정 등 정적 호출 관계로 설명되지 않는 연결은 실행 흔적, 설정과 동료 설명을 대조한다.
+
+이번 변경과 무관한 모듈을 잠시 추상화로 남겨도 된다. 다만 화면 변경이라도 공용 컴포넌트, 접근성, 권한과 API 계약처럼 영향을 받을 수 있는 경계는 확인한다. 지도 비유는 탐색 순서를 정하는 방법이지 변경 영향 검토를 생략하는 근거가 아니다.
+
 ## 출처
+- [코드를 읽지 않고 찾는 방법 — YouTube, 코딩맨](https://www.youtube.com/watch?v=WfAgL5Ves3Q) — 2025-12-20, 탐색 원칙은 경험적 설명, 도구 계약은 공식 문서 대조
 
 - [JetBrains, Junie Playbook](https://www.jetbrains.com/guide/ai/article/junie/)
 - [JetBrains, Junie project settings](https://junie.jetbrains.com/docs/junie-plugin-project-settings.html)

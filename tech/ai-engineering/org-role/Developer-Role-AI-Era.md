@@ -146,7 +146,16 @@ AI가 처리하니 세부는 몰라도 된다는 착각이 가장 위험하다. 
 - AI 시대에 더 가치 있어지는 개발자 역량 4가지
 - 기술의 역할 이동(술에서 도로)과, 취미로 유지하는 것과 경쟁력 논거를 혼동하지 않는 기준
 
+## 직함보다 문제의 경계와 책임을 본다
+
+Product Engineer, Forward Deployed Engineer(FDE), Agent Engineer 같은 표현을 볼 때 새 직함의 유행보다 맡길 문제를 읽는다. 제품 판단과 구현을 함께 맡는지, 고객 현장에서 요구와 연동을 해결하는지, 모델을 서비스에 연결해 평가와 운영을 책임지는지 확인한다. 이 구분은 영상에서 소개한 역할 관점이며 회사마다 범위와 이름이 다르다.
+
+기반 모델 연구와 기존 모델을 활용한 서비스 구현도 같은 업무로 묶지 않는다. 자신의 전문 영역에서 사용자의 요구, 데이터, 배포와 운영으로 이어지는 연결을 넓혀 본다. 모든 분야를 동시에 얕게 익히는 것보다 직접 맡은 문제의 앞뒤 경계에서 무엇을 판단해야 하는지 확인하는 편이 학습 범위를 정하기 쉽다.
+
+특정 직군의 채용 증가율, 신입 진입 난이도나 프롬프트 기술의 가치 하락은 이 광고 영상만으로 일반화하지 않는다. 지원 시점의 공식 JD에서 역할, 자격과 평가 기준을 다시 확인한다.
+
 ## 출처
+- [취업시장이 원하는 개발자가 바뀌었습니다 — YouTube, 코딩맨](https://www.youtube.com/watch?v=FMUpmrsXAXA) — 2026-04-08, 교육 과정 광고 포함, 직군 전망과 채용 수치는 별도 검증하지 않은 의견
 - [There's no point at which turning your brain off will work — Dan Luu](https://danluu.com/brain-off/)
 - [생각을 멈춰도 되는 때는 오지 않는다 — GeekNews](https://news.hada.io/topic?id=33909)
 - [The GenAI Divide: State of AI in Business 2025 — MIT Project NANDA, 2025년 8월 보존본](https://web.archive.org/web/20250818145714/https://nanda.media.mit.edu/ai_report_2025.pdf)

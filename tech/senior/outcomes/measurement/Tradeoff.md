@@ -64,7 +64,16 @@ aliases: ["트레이드오프 & 사이드 이펙트", "Tradeoff"]
 - 당장의 속도를 위해 코드 품질 포기(Hardcoding)하면 기술 부채로 돌아옴
 - 장기적 관점에서 균형을 잡을 필요
 
+## 핵심 가치를 고르고 판단 과정을 읽는다
+
+기술을 정하기 전에 이번 기능에서 가장 실패하면 안 되는 가치를 합의한다. 채팅이라면 낮은 지연, 메시지 보존, 전달 상태, 비용과 구현 기간 중 어떤 조건이 우선인지 정하고 후보안이 실제로 그 조건을 충족하는지 확인한다. HTTP나 WebSocket이라는 선택만으로 메시지 누락 방지와 안정성이 보장되지는 않는다. 요구한 속성과 저장, 재시도, 중복 처리 등 실제 동작을 함께 평가해야 한다.
+
+설계 감각을 연습할 자료는 완성된 사용법뿐 아니라 RFC, 설계 문서와 PR의 논의 과정이다. 요구, 제약, 버린 대안, 채택 이유를 먼저 적고 결론을 읽는다. 장애 회고에서는 개인의 오타를 비난하기보다 실수가 장애로 확대되는 경로와 제한 장치를 찾는다. 같은 실패를 우리 시스템에서 재현할 수 있는지, 어떤 방어와 관측이 필요한지를 질문한다.
+
+다른 조직의 기술 선택은 해당 규모와 운영 제약에 묶인 사례다. 토론 횟수나 유명 서비스의 성공 원인을 일반적인 설계 공식으로 쓰지 않고, 판단 과정을 자신의 조건에 대조하는 데 사용한다.
+
 ## 출처
+- [개발 감각 있는지 확인하는 법 — YouTube, 코딩맨](https://www.youtube.com/watch?v=Du1aeNElueA) — 2025-10-22, 설계 판단에 관한 경험적 조언, 기업 성공 원인과 장애 규모는 일반 사실로 사용하지 않음
 - [때로는 오버엔지니어링이 필요합니다 — 올리브영 테크블로그](https://oliveyoung.tech/2026-09-23/overengineering-message-system/)
 - [Yagni — martinfowler.com, Martin Fowler](https://martinfowler.com/bliki/Yagni.html)
 - [Technical Debt — martinfowler.com, Martin Fowler](https://martinfowler.com/bliki/TechnicalDebt.html)
