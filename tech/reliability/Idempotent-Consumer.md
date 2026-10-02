@@ -8,7 +8,7 @@ verified_at: 2026-09-04
 
 # 멱등 컨슈머 (Idempotent Consumer)
 
-대부분의 메시지 브로커(SQS, Kafka 등)는 **at-least-once** 전달이다. 같은 메시지가 한 번 이상 도착하는 게 정상이다. 그래서 **정확히 한 번 처리되는 보장은 브로커가 아니라 컨슈머가** 만든다. 같은 메시지를 두 번 받아도 결과가 한 번 처리한 것과 같아야 한다 — 이것이 멱등성이다.
+SQS 표준 큐나 Kafka의 일반적인 at-least-once 소비 흐름에서는 같은 메시지가 한 번 이상 처리될 수 있다. 전달 보장과 DB 변경, 외부 API 호출 같은 업무 효과의 보장은 구분한다. 같은 메시지를 두 번 받아도 결과가 한 번 처리한 것과 같아야 한다 — 이것이 멱등성이다.
 
 ## 중복은 왜 생기나
 
@@ -17,9 +17,11 @@ verified_at: 2026-09-04
 - **컨슈머 재시작/리밸런스**: 오프셋 커밋 전에 죽으면 Kafka가 그 구간을 다시 준다.
 - **네트워크 ack 유실**: 처리는 됐는데 ack가 유실되어 재전달된다.
 
-## exactly-once는 착시 — effectively-once를 노린다
+## exactly-once의 보장 범위
 
-진짜 "정확히 한 번 전달"은 분산 환경에서 사실상 불가능하다(두 장군 문제). 현실에서 달성하는 건 **effectively-once = at-least-once 전달 + 멱등 처리**다. Kafka의 EOS(트랜잭션)도 Kafka 내부 read-process-write에 한정되고, 외부 DB나 API 부수효과까지는 컨슈머가 멱등으로 막아야 한다.
+exactly-once라는 이름만으로 보장을 판단하지 않고 어떤 결과와 장애를 포함하는지 확인한다. Kafka 4.1의 토픽 간 read-process-write는 처리 결과와 소비 offset을 같은 Kafka 트랜잭션에 기록하고 `read_committed` 소비 등 필요한 조건을 갖춰 exactly-once 효과를 제공할 수 있다. 코드가 다시 실행되지 않는다는 뜻은 아니다.
+
+외부 저장소에도 효과와 offset을 함께 원자적으로 저장하는 등 대상 시스템의 협력이 있으면 범위를 확장할 수 있다. Kafka 트랜잭션만으로 외부 DB나 결제 API 효과가 원자적으로 묶이지는 않는다. 이런 경계에서 흔히 쓰는 **effectively-once = at-least-once 전달 + 멱등 효과**도 dedup 보존 기간과 외부 provider의 계약을 충족할 때만 성립한다.
 
 ## 멱등성 확보 전략
 
@@ -91,7 +93,7 @@ if (!acquired) throw new RetryableError(); // 다른 owner가 처리 중, ACK하
 
 ## 면접 체크포인트
 
-- at-least-once에서 멱등성이 컨슈머 책임인 이유, exactly-once가 effectively-once인 이유
+- 전달과 업무 효과의 보장 차이, Kafka exactly-once의 범위와 외부 효과의 원자성 조건
 - 자연 멱등 설계 vs 멱등 키 dedup vs 상태 머신 가드
 - check-then-act 레이스와 원자적 claim(`ON CONFLICT`, `SET NX`), 완료 상태와의 차이
 - 부수효과와 멱등 기록의 원자성(Inbox), 외부 API `Idempotency-Key`
@@ -99,6 +101,9 @@ if (!acquired) throw new RetryableError(); // 다른 owner가 처리 중, ACK하
 
 ## 출처
 
+2026-10-02에는 Kafka 4.1의 exactly-once 범위와 외부 저장소 협력 조건을 대조했다. 기존 SQS, Redis 예시와 외부 provider별 계약 전체를 다시 검증한 기록은 아니다.
+
+- [Apache Kafka 4.1 — Design: Message Delivery Semantics](https://kafka.apache.org/41/design/design/)
 - [Microsoft — Service Bus duplicate detection](https://learn.microsoft.com/en-us/azure/service-bus-messaging/duplicate-detection)
 - [AWS — SQS FIFO exactly-once processing](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html)
 - [PostgreSQL 공식 문서, INSERT와 ON CONFLICT](https://www.postgresql.org/docs/current/sql-insert.html)

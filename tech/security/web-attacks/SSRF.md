@@ -20,17 +20,17 @@ URL을 입력받는 모든 기능(이미지/문서 fetch, 웹훅, URL 미리보�
 
 ## 클라우드에서 위험이 커지는 이유
 
-AWS, GCP, Azure는 인스턴스 내부에서 자격증명, 설정을 조회하는 **메타데이터 API**를 제공한다(링크 로컬 주소 `169.254.169.254`). SSRF로 이 주소를 찌르면 인스턴스 역할의 임시 자격증명이 유출돼 **클라우드 권한 탈취**로 직결된다.
+AWS, GCP, Azure는 인스턴스 내부에서 자격증명, 설정을 조회하는 **메타데이터 API**를 제공한다(대표적인 링크 로컬 주소 `169.254.169.254`). SSRF로 필요한 메서드와 헤더 등 접근 조건까지 충족하면 임시 자격증명이 유출돼 **클라우드 권한 탈취**로 이어질 수 있다.
 
-- 완화: AWS의 경우 IMDSv2(토큰 필요 방식)를 강제하면 단순 SSRF로 메타데이터를 못 읽게 막을 수 있다. 단, 애플리케이션 레벨 방어와 병행해야 한다.
+- 완화: AWS는 IMDSv2를 요구하고 IMDSv1을 비활성화한다. 토큰 발급과 요청 조건을 추가해 일부 SSRF를 완화하지만, 메서드와 헤더까지 제어할 수 있는 모든 SSRF를 없앤다고 가정하지 않는다. 애플리케이션 방어와 최소 권한을 병행한다.
 
 ## 방어
 
 가장 좋은 방어는 **허용 목록(화이트리스트)** — 호출 가능한 URL과 스킴(scheme)을 명시적으로 제한한다.
 
-- 허용할 도메인, 허용할 스킴(https만 등)을 화이트리스트로 고정. 블랙리스트는 우회가 쉬워 약하다.
-- 화이트리스트가 불가피하게 어려우면 강하게 필터링: `localhost`/`127.0.0.1`, 사설 IP 대역(10/8, 172.16/12, 192.168/16), 링크 로컬(169.254/16), 불필요한 특수문자.
-- **DNS rebinding, 리다이렉트 우회** 주의: 도메인을 검증해도 응답이 내부 IP로 리다이렉트되거나 DNS가 내부 IP로 해석될 수 있다. 최종 연결 직전 resolved IP를 재검증한다.
+- 대상이 정해진 연동은 host 허용 목록을 두고 scheme, port와 path를 서버가 구성한다. URL 문자열의 접두사나 특수문자만 검사하지 않고 실제 요청 클라이언트와 같은 해석 규칙으로 비교한다.
+- 임의의 외부 URL이 필요한 기능은 IPv4와 IPv6의 loopback, 사설, link-local 및 조직 내부 범위를 함께 차단한다. DNS의 A와 AAAA 결과를 모두 검사하고 IPv4-mapped IPv6 등 다른 표현도 정규화한다. 일부 IPv4 문자열만 차단하는 목록은 충분하지 않다.
+- **DNS rebinding, 리다이렉트 우회**: 자동 리다이렉트를 끄거나 매 hop에 같은 목적지 검증을 적용한다. 검사 후 클라이언트가 다시 DNS를 해석해 다른 주소로 연결하지 않도록 검증한 주소와 실제 연결 주소를 일치시키는 경로를 확인한다.
 - 가능하면 내부망에서 외부로 나가는 egress 자체를 방화벽으로 제한한다(다층 방어).
 
 ## 면접 포인트
@@ -39,13 +39,17 @@ Q. SSRF가 뭔가?
 - 서버가 사용자 입력 URL로 자원을 가져오는 기능을 악용해, 공격자가 서버에게 내부 주소로 요청을 보내게 만드는 취약점. 서버의 내부망 접근 권한을 빌려 쓴다.
 
 Q. 클라우드에서 왜 더 위험한가?
-- 메타데이터 API(169.254.169.254)로 인스턴스 임시 자격증명이 노출돼 클라우드 권한 탈취로 이어진다. IMDSv2 강제가 완화책.
+- 메타데이터 API의 접근 조건을 충족하는 SSRF는 임시 자격증명 유출과 클라우드 권한 탈취로 이어질 수 있다. AWS에서는 IMDSv2 강제와 IMDSv1 비활성화가 완화책이다.
 
 Q. 어떻게 막나?
-- 허용 URL/스킴 화이트리스트가 1순위. 불가피하면 localhost, 사설/링크로컬 IP, 특수문자 필터링. DNS rebinding, 리다이렉트 우회 때문에 최종 IP를 연결 직전 재검증하고, egress 방화벽으로 다층 방어한다.
+- 허용 host와 서버가 구성한 요청을 우선한다. 임의 URL이 필요하면 IPv4/IPv6 목적지, DNS 결과와 각 redirect hop을 검사하고 검증한 주소로 실제 연결되는지 확인한다. egress 제한과 메타데이터 접근 통제도 함께 둔다.
 
 ## 출처
 
+2026-10-02에는 URL 해석, DNS, IPv6와 리다이렉트 방어 및 IMDSv2의 완화 범위를 아래 공식 자료에 대조했다. 특정 HTTP 클라이언트의 연결 구현을 검증한 기록은 아니다.
+
+- [OWASP Cheat Sheet Series, Server Side Request Forgery Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html)
+- [Amazon EC2, Use the Instance Metadata Service to access instance metadata](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html)
 - [애플리케이션 보안 핵심 — 시큐어코딩, IDOR, SSRF, JWT, Spring Actuator (YouTube)](https://www.youtube.com/watch?v=RQv86D0M5YY&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=19)
 
 ## 관련 문서

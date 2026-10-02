@@ -35,7 +35,7 @@ verified_at: 2026-10-01
 
 | 알고리즘 | 이유 |
 |---|---|
-| MD5, SHA-1 | 절대 사용 금지 (충돌 발견됨) |
+| MD5, SHA-1 | 패스워드 저장에 부적합한 빠른 일반 해시. 알려진 충돌 취약점과 별개로 비밀번호 후보의 고속 대입을 늦추지 못함 |
 | SHA-256 | 일반 목적 해시라 너무 빠름. 단독으로 패스워드 저장에 쓰면 GPU와 ASIC 대입 공격에 취약 |
 | bcrypt | Argon2id나 scrypt가 가능하면 우선순위가 낮음. 다만 충분한 work factor와 72바이트 입력 제한 처리를 전제로 레거시 환경에서는 여전히 사용 가능 |
 
@@ -47,14 +47,17 @@ verified_at: 2026-10-01
 
 ## 권장 패스워드 해시 알고리즘
 
-하드웨어 발전으로 연산 속도는 빨라졌지만 **메모리는 저렴해지지 않았다**.
-따라서 메모리를 많이 쓰도록 강제하는 것이 핵심 전략이다.
+메모리 하드 함수는 각 비밀번호 후보의 계산에 메모리 용량과 대역폭을 요구한다. 공격자가 대량 병렬 대입을 늘릴 때의 자원 비용을 높이는 전략이며, 메모리 가격이 내려가지 않는다는 가정에 의존하지 않는다.
 
 | 알고리즘 | 설명 |
 |---|---|
 | **Argon2id** | OWASP가 우선 권장하는 메모리 하드 패스워드 해시 |
 | **scrypt** | Argon2id를 쓸 수 없을 때 권장되는 메모리 하드 대안 |
 | **bcrypt** | Argon2id와 scrypt를 쓸 수 없는 레거시 환경의 차선책. work factor 10 이상과 입력 길이 제한 처리가 필요 |
+
+OWASP의 최소 Argon2id 구성 예시는 메모리 19 MiB, 반복 2회, 병렬도 1이다. 최소값을 그대로 성능 보장으로 쓰지 않고 로그인 부하와 메모리 한도를 측정해 비용을 조정한다. 느린 해싱 자체도 CPU와 메모리 고갈의 표면이므로 입력 길이, 동시 검증 수와 로그인 요청률을 제한한다.
+
+bcrypt의 72바이트 제한은 글자 수가 아니라 사용하는 인코딩의 바이트 수다. 구현체의 한도를 확인하고 초과 입력을 조용히 잘라 저장하지 않는다. 알고리즘, salt와 비용을 해시와 함께 보존하고, 로그인 검증 성공 시 오래된 비용이나 알고리즘을 새 정책으로 재해싱한다.
 
 ## 오프라인 공격과 온라인 공격
 
@@ -76,6 +79,8 @@ verified_at: 2026-10-01
 - 정상 비밀번호로 로그인했는데 다중 인증에서 실패한 경우처럼 의심스러운 로그인은 사용자에게 알린다.
 
 ## 출처
+
+2026-10-02에는 패스워드 해시 선택, 최소 비용, bcrypt 입력 제한과 재해싱 운영을 OWASP Password Storage 자료에 대조했다. 기존 온라인 공격 관련 출처 전체를 다시 검증한 기록은 아니다.
 
 - [Password Storage Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Credential Stuffing Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html)

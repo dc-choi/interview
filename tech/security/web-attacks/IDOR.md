@@ -7,7 +7,7 @@ aliases: ["IDOR", "Insecure Direct Object Reference", "부적절한 인가", "Br
 
 # IDOR (Insecure Direct Object Reference)
 
-안전하지 않은 직접 객체 참조. 실무에서는 **부적절한 인가(authorization) 문제**로 이해하면 쉽다. 사용자가 요청에 담아 보낸 식별자(ID)로 객체에 접근할 때, 서버가 "이 사용자가 이 객체에 접근할 권한이 있는가"를 확인하지 않아 남의 자원이 노출되는 취약점이다. OWASP Top 10의 1위 카테고리인 Broken Access Control의 대표 사례다.
+안전하지 않은 직접 객체 참조. 실무에서는 **부적절한 인가(authorization) 문제**로 이해하면 쉽다. 사용자가 요청에 담아 보낸 식별자(ID)로 객체에 접근할 때, 서버가 "이 사용자가 이 객체에 접근할 권한이 있는가"를 확인하지 않아 남의 자원이 노출되는 취약점이다. OWASP Top 10의 Broken Access Control에 해당하는 대표 사례다.
 
 ## 동작 방식
 
@@ -17,7 +17,7 @@ GET /mypage?memberId=111
 
 본인이 `memberId=111`로 자기 정보를 조회하는 정상 요청에서, 공격자가 값만 `memberId=222`로 바꿔 보냈을 때 다른 사람의 정보가 보이면 IDOR다. URL 쿼리뿐 아니라 path 변수, 폼 필드, JSON 바디, 헤더 등 **클라이언트가 보내는 모든 식별자**가 대상이 된다.
 
-핵심 원인: 서버가 "요청한 객체가 존재하는가"(인증된 사용자인가)만 보고, "요청자가 그 객체의 소유자/접근 권한자인가"(인가)를 검증하지 않았다.
+객체 존재 확인, 요청 주체의 인증과 객체에 대한 인가는 서로 다른 검사다. 객체가 있고 로그인도 성공했더라도 요청자가 그 객체를 읽거나 변경할 권한이 있는지 별도로 검증해야 한다.
 
 ## 인증 vs 인가 (구분이 핵심)
 
@@ -32,7 +32,10 @@ GET /mypage?memberId=111
 
 - 요청의 `memberId`를 그대로 쓰지 말고, 세션/토큰에서 꺼낸 사용자 ID로 조회하거나 대조한다. 예: `WHERE member_id = :sessionUserId`.
 - 타인 자원 접근이 정당한 경우(관리자 등)는 역할(role) 기반 인가를 명시적으로 통과시킨다.
+- 역할만으로 끝내지 않고 요청한 action, 객체의 소유자와 tenant 범위를 함께 확인한다. 목록, 일괄 수정, 내보내기와 다른 HTTP 메서드에도 같은 원칙을 집행하며 정책이 없거나 평가에 실패하면 기본 거부한다.
 - 추측하기 어려운 식별자(UUID 등)는 **완화책일 뿐 방어가 아니다**. 순차 ID를 UUID로 바꿔도 인가 검증이 없으면 ID가 유출되는 순간 그대로 뚫린다. 근본 해법은 항상 서버 측 인가.
+
+권한 없는 사용자, 다른 tenant, 존재하지 않는 객체와 허용된 공유 객체를 나눠 검사한다. UI에서 버튼을 숨겼다는 사실이나 단건 조회 하나가 통과했다는 사실은 다른 접근 경로의 인가를 검증한 근거가 아니다.
 
 ## 실제 사례 — 대규모 API 인가 유출
 
@@ -55,6 +58,9 @@ Q. 인증은 통과했는데 왜 뚫리나?
 
 ## 출처
 
+2026-10-02에는 객체 존재, 인증과 인가의 구분 및 요청별 기본 거부 원칙을 OWASP 공식 자료에 대조했다. 아래 사고 사례의 규모와 경위는 이번 검증 범위에서 제외했다.
+
+- [OWASP Cheat Sheet Series, Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)
 - [애플리케이션 보안 핵심 — 시큐어코딩, IDOR, SSRF, JWT, Spring Actuator (YouTube)](https://www.youtube.com/watch?v=RQv86D0M5YY&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=19)
 - [미용의료 강남언니 약 22만명 개인정보 유출, 병원명과 시술 이력까지 — 파이낸셜뉴스](https://www.fnnews.com/news/202609071956090818)
 

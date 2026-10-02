@@ -12,8 +12,8 @@ verified_at: 2026-09-03
 
 ## RTO와 RPO — 모든 결정의 기준
 
-- **RPO (Recovery Point Objective)**: 얼마만큼의 데이터 손실을 감수하나. "최대 5분 전 상태로 돌아가도 됨" → RPO 5분. 백업 주기/복제 지연이 결정.
-- **RTO (Recovery Time Objective)**: 복구에 얼마나 걸려도 되나. "1시간 안에 서비스 재개" → RTO 1시간. 복구 절차의 속도가 결정.
+- **RPO (Recovery Point Objective)**: 허용할 데이터 손실을 시간으로 정한 목표. 최대 5분의 최근 변경 손실을 허용하면 RPO 5분이다. 실제 복구 가능한 시점은 백업 성공 여부와 로그 보관, 복제 지연으로 확인한다.
+- **RTO (Recovery Time Objective)**: 서비스 복구까지 허용할 시간 목표. 1시간 안에 서비스 재개가 목표라면 RTO 1시간이다. 감지와 판단, 복원, 전환 및 정상 동작 확인을 포함한 소요 시간을 실측한다.
 
 요구가 빡셀수록(RPO, RTO가 작을수록) 비용이 오른다. 비즈니스 영향도로 등급을 나눠 차등 적용한다.
 
@@ -27,13 +27,17 @@ verified_at: 2026-09-03
 | | **증분(incremental)** | 직전 이후 변경분만. 작고 빠름, 복원은 체인 필요 |
 | 연속성 | **연속 아카이빙** | binlog/WAL을 계속 보관 → PITR의 토대 |
 
+MySQL 8.4의 `--single-transaction`은 비트랜잭션 테이블까지 일관되게 만들지 않는다. 덤프 대상의 `ALTER`, `DROP`, `TRUNCATE` 등 동시 DDL도 덤프를 실패시키거나 내용을 어긋나게 할 수 있으므로 백업 동안 별도로 통제한다.
+
 ## PITR — 시점 복구
 
-**전체 백업 + 트랜잭션 로그(binlog/WAL) 재생**으로 임의 시점까지 되돌린다. 실수로 `DELETE`/`DROP` 한 직전 시점으로 복구하는 핵심 수단이다. RPO를 초 단위까지 줄인다. RDS 자동 백업이 최대 35일 PITR을 제공한다. [[RDS-Aurora]]
+**엔진이 지원하는 기반 백업 + 연속된 트랜잭션 로그 재생**으로 보존된 복구 구간의 시점을 선택한다. PostgreSQL은 물리 base backup과 필요한 WAL이 있어야 하며, `pg_dump` 논리 덤프에 WAL을 적용하는 방식은 지원하지 않는다. MySQL은 일관된 백업과 그 시점에 대응하는 binlog 위치를 함께 확보한다.
+
+복구 시점을 초 단위로 지정할 수 있다는 것과 데이터 손실이 1초 이내라는 것은 다르다. 로그 아카이빙 지연과 누락이 실제 복구 가능한 끝 시점을 제한한다. RDS DB 인스턴스의 자동 백업 보존은 최대 35일이며 0일이면 비활성화된다. 실제 PITR 범위는 설정된 보존 기간과 `LatestRestorableTime`으로 확인한다. [[RDS-Aurora]]
 
 ## 스냅샷의 함정 — 복원은 생각보다 느리다
 
-블록 레벨 스냅샷(RDS/EBS)은 증분이라 백업은 빠르지만, **복원 후 S3에서 블록을 lazy-load**하느라 한동안 I/O가 바닥이다. 대용량일수록 워밍업이 길다. **RTO에 이 워밍업 시간을 반드시 포함**한다. [[RDS-Operational-Pitfalls|스냅샷 워밍업]]
+RDS DB 인스턴스의 스냅샷 복원은 `available` 이후에도 S3에서 데이터를 lazy-load할 수 있어, 아직 로드되지 않은 데이터의 첫 접근이 느릴 수 있다. 모든 스냅샷이 같은 성능 저하를 보인다고 가정하지 말고 실제 복원 경로와 주요 쿼리를 측정한다. 서비스가 요구하는 성능까지의 워밍업도 RTO에 포함한다. [[RDS-Operational-Pitfalls|스냅샷 워밍업]]
 
 ## 3-2-1 규칙
 
@@ -43,6 +47,8 @@ verified_at: 2026-09-03
 
 - 백업이 존재한다와 복원이 된다는 다른 명제다. **정기적으로 실제 복원 드릴**을 돌려 RTO를 실측한다.
 - 측정 항목: 복원 소요 시간, 스냅샷 워밍업, 애플리케이션 정합성, 복원 후 시퀀스/AUTO_INCREMENT 보정([[RDS-Zero-Downtime-Migration]]).
+- 최신 복구 레코드로 실제 손실 구간을 확인하고 핵심 읽기, 쓰기와 제약조건을 검증한다. 복원 리소스 생성 성공만으로 데이터가 사용 가능하다고 판정하지 않는다.
+- 데이터 외에 설정, 애플리케이션 버전과 복호화 키 접근 권한도 복구할 수 있어야 한다. 운영 계정 침해 때 백업 삭제 권한까지 공유되는지 확인하고 보존, 암호화와 복원 권한을 분리한다.
 - 리허설을 안 하면 진짜 장애 때 "백업은 있는데 복구가 안 되는" 최악을 만난다.
 
 ## 데이터 복구 시나리오
@@ -69,6 +75,13 @@ verified_at: 2026-09-03
 
 ## 출처
 
+2026-10-02에는 MySQL 8.4 덤프 일관성, PostgreSQL 물리 PITR, RDS 보존과 lazy loading 및 복원 검증 범위를 대조했다. 연결한 다른 문서의 마이그레이션 절차 전체를 검증한 기록은 아니다.
+
+- [PostgreSQL 18 — Continuous Archiving and Point-in-Time Recovery](https://www.postgresql.org/docs/18/continuous-archiving.html)
+- [Amazon RDS — Backup retention period](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.BackupRetention.html)
+- [Amazon RDS — Restoring to a DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html)
+- [AWS Well-Architected — REL09-BP04 Perform periodic recovery of the data to verify backup integrity and processes](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_backing_up_data_periodic_recovery_testing_data.html)
+- [AWS Well-Architected — REL09-BP02 Secure and encrypt backups](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_backing_up_data_secured_backups_data.html)
 - [AWS — Backup and restore, RTO/RPO](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html)
 - [Amazon RDS — Point-in-time recovery](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html)
 - [PostgreSQL — pg_dump](https://www.postgresql.org/docs/current/app-pgdump.html)

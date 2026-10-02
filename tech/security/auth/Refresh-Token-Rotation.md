@@ -37,7 +37,7 @@ RTR은 **한 번 사용된 Refresh Token을 즉시 폐기**하여 이 문제를 
 3. 공격자가 RT-1로 갱신 시도 → RT-1의 해시와 familyId는 남아 있고 상태가 `used`이므로 **재사용 감지**
 4. 해당 family의 활성 RT를 폐기하고 재인증 요구
 
-사용된 토큰 행을 즉시 삭제하면 나중에 제시된 RT-1을 단순한 알 수 없는 토큰과 구별할 수 없어 familyId를 찾을 수 없다. 따라서 최소한 family 만료 시점까지 `tokenHash`, `familyId`, `status`, `usedAt` 또는 `revokedAt`, `replacedBy`를 tombstone으로 보존한다. 로그에는 원문 토큰을 남기지 않는다.
+이 문서의 opaque RT와 DB 조회 설계에서는 사용된 토큰 행과 계열 식별정보를 즉시 삭제하면 RT-1의 재사용을 해당 family에 연결할 수 없다. `tokenHash`, `familyId`, 상태와 전이 시각을 탐지 기간 동안 tombstone으로 보존하는 방식이 한 해법이다. 서명된 토큰에 계열 식별자를 넣는 다른 설계도 있으므로 이 필드 구성을 RTR의 표준 필수 스키마로 취급하지 않는다. 로그에는 원문 토큰을 남기지 않는다.
 
 ## 구현 핵심
 
@@ -47,7 +47,7 @@ RTR은 **한 번 사용된 Refresh Token을 즉시 폐기**하여 이 문제를 
 - `uuid.v4()` — familyId 생성
 
 **쿠키 보안 설정:**
-- `httpOnly: true` — JavaScript 접근 차단 (XSS 방어)
+- `httpOnly: true` — JavaScript의 토큰 읽기를 차단하되 XSS의 인증된 요청 전송은 별도 방어
 - `secure: true` — HTTPS에서만 전송
 - `sameSite: 'lax'` 또는 요구에 맞는 더 엄격한 값 — 교차 사이트 전송을 줄이지만 모든 CSRF를 단독 차단하지는 않으므로 Origin 검증이나 CSRF token도 위협 모델에 따라 적용
 - `path`는 실제 refresh 엔드포인트가 포함되는 최소 범위로 제한
@@ -56,6 +56,7 @@ RTR은 **한 번 사용된 Refresh Token을 즉시 폐기**하여 이 문제를 
 - 제출된 RT 행을 잠그고 `active`인지 확인한다.
 - `active → used` 상태 전이와 새 RT 생성을 하나의 트랜잭션으로 묶는다. 조건부 UPDATE의 영향 행 수가 0이면 동시 회전 또는 재사용으로 처리한다.
 - 이미 `used` 또는 `revoked`인 토큰이면 같은 트랜잭션에서 family의 활성 토큰을 폐기한다.
+- family 폐기와 현재 활성 RT의 회전도 경합할 수 있다. 토큰 행만 각각 잠그고 새 토큰을 발급하면 폐기 직후 활성 후손이 생길 수 있으므로, 이 DB 설계에서는 family 상태와 잠금 순서를 공유하거나 동등한 원자적 조건으로 폐기된 family에서 발급을 막는다.
 - 만료 tombstone은 family의 최대 수명과 재사용 탐지 보존 기간이 지난 뒤 별도 작업으로 정리한다.
 
 ## 만료 관리
@@ -70,8 +71,8 @@ RTR은 **한 번 사용된 Refresh Token을 즉시 폐기**하여 이 문제를 
 |---|---|---|
 | 상태 관리 | 서버 메모리/Redis | DB에 RT 해시와 family 상태 저장 |
 | 확장성 | 세션 저장소 공유 필요 | Access Token은 자체 검증 가능, 회전에는 공유 DB 조회 필요 |
-| 탈취 감지 | 동시 세션 제한 | familyId 기반 감지 |
-| 강제 로그아웃 | 세션 삭제 | family의 활성 토큰을 `revoked`로 전이하고 tombstone 보존 |
+| 재사용 탐지 | 별도의 이상 징후 탐지 필요 | 사용한 RT의 재사용을 해당 family에 연결해 탐지. 탈취 자체를 항상 알아내는 것은 아님 |
+| 강제 로그아웃 | 세션 삭제 | family 폐기로 미래 갱신을 차단. 이미 발급한 자체 검증 Access Token은 별도 폐기 정책이 없으면 만료까지 유효 |
 
 ## 면접 포인트
 
@@ -121,18 +122,23 @@ class TokenRefreshSingleFlight {
 
 직접 resolver 큐를 구현한다면 `{ resolve, reject }`를 함께 저장하고 refresh 성공과 실패 양쪽에서 전체 대기자를 settle한 뒤 큐를 비워야 한다. 그렇지 않으면 실패 시 일부 요청이 영원히 pending 상태로 남는다.
 
+Single-flight의 공유 범위도 확인한다. 이 객체 하나의 Promise는 다른 탭, 프로세스와 기기의 요청을 직렬화하지 못한다. refresh 성공 응답이 유실된 뒤 같은 RT로 재시도하는 경우도 재사용 탐지와 구분하기 어렵다. 탭 간 조정, 응답 복구 또는 재인증 정책을 서버와 함께 정하되 이전 RT의 무조건 재허용으로 탈취 탐지를 없애지 않는다.
+
 ### 대안: 검증된 라이브러리
 - **`axios-auth-refresh`**: Axios 인터셉터 형태. 대기열, 재시도 내장
 - Apollo Client `errorLink`, **`@tanstack/query`** 커스텀 retry
 
-자체 구현은 학습용엔 좋지만 **실전은 검증된 라이브러리** 권장. 엣지 케이스(refresh 자체 실패, 네트워크 오류, 동시 로그아웃) 모두 처리.
+라이브러리를 선택해도 refresh 실패, 응답 유실, 여러 탭과 동시 로그아웃을 모두 처리한다고 가정하지 않는다. 실제 공유 범위와 오류, 재시도 계약을 확인하고 서비스의 token 정책에 맞춘다.
 
 ### 백엔드, 프론트 협업
 - 백엔드: RTR로 탈취 감지
 - 프론트: 큐 패턴으로 중복 요청 제거
-- 둘 중 하나만 있으면 **"정상 사용자인데 강제 로그아웃"** 오탐 발생
+- 같은 RT의 동시 사용을 방치하면 정상 갱신도 재사용으로 판정될 수 있다. 클라이언트의 중복 억제와 서버의 원자적 회전, 응답 유실 정책을 함께 확인한다.
 
 ## 출처
+
+2026-10-02에는 RFC 9700의 재사용 탐지와 계열 폐기 계약을 대조했다. DB 잠금과 single-flight 범위는 이 문서의 설계에 대한 실패 모드 분석이며 RFC가 특정 스키마를 요구한다는 뜻은 아니다.
+
 - [RFC 9700, OAuth 2.0 Security Best Current Practice](https://www.rfc-editor.org/rfc/rfc9700.html)
 - [velog @miinhho — 중복 토큰 재발급 요청으로 백엔드에 부담을 줘볼까요](https://velog.io/@miinhho/%EC%A4%91%EB%B3%B5-%ED%86%A0%ED%81%B0-%EC%9E%AC%EB%B0%9C%EA%B8%89-%EC%9A%94%EC%B2%AD%EC%9C%BC%EB%A1%9C-%EB%B0%B1%EC%97%94%EB%93%9C%EC%97%90-%EB%B6%80%EB%8B%B4%EC%9D%84-%EC%A4%98%EB%B3%BC%EA%B9%8C%EC%9A%94)
 

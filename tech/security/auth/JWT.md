@@ -71,6 +71,7 @@ Bearer token은 소유 증명을 추가로 요구하지 않고, 제시한 토큰
 - `Authorization`, 쿠키와 refresh token 원문은 로그에 남기지 않고 필요한 식별자만 마스킹한다.
 - 서명 키는 코드와 저장소에서 분리하고 충분한 엔트로피, 회전과 접근 통제를 적용한다.
 - 검증 라이브러리에 알고리즘 허용 목록을 명시하고 issuer, audience와 token type별 검증 규칙을 고정한다.
+- 검증 키는 신뢰한 issuer에 연결한 설정이나 JWKS에서 선택한다. 토큰의 `kid`는 조회용 비신뢰 입력이므로 SQL, 파일 경로에 직접 이어 붙이지 않는다. `jku`, `x5u`의 URL도 그대로 따라가지 말고 허용한 키 제공 위치만 사용해 키 바꿔치기와 [[SSRF]]를 막는다.
 
 ## 훔쳐도 피해를 제한하기
 
@@ -115,6 +116,8 @@ JWT를 쓰면 서버 상태가 사라진다고 일반화하지 않는다. 즉시
 - 알고리즘, issuer, audience와 token type을 함께 검증해야 하는 이유
 
 ## 출처
+
+2026-10-02에는 RFC 8725의 키와 issuer 연결, `kid`, `jku`, `x5u` 조회 경계를 대조했다. 기존 출처 전체와 모든 구현체를 다시 검증한 기록은 아니다.
 
 - [IETF, RFC 7515: JSON Web Signature](https://www.rfc-editor.org/rfc/rfc7515)
 - [RFC 7519 — JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519)

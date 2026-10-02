@@ -11,7 +11,7 @@ aliases: ["Session", "세션", "세션 하이재킹", "Session Hijacking"]
 
 ## HTTP는 기억하지 않는다 (Stateless)
 
-HTTP는 요청과 응답의 반복이다. 클라이언트가 문서를 요청하면 서버는 HTML이나 JSON을 응답하고 끝난다. 서버는 방금 전 요청한 사람이 누구였는지, 로그인했는지, 이전에 무엇을 했는지 기억하지 않는다. 이 성질이 Stateless.
+HTTP의 Stateless는 각 요청 메시지의 의미를 다른 요청이나 연결 이력 없이 해석할 수 있다는 뜻이다. 서버 애플리케이션이 이전 요청이나 로그인 상태를 저장하지 못한다는 뜻은 아니다. 같은 연결을 쓴다는 이유만으로 같은 사용자라고 가정하지 않고, 요청에 실린 자격증명으로 사용자를 판단한다.
 
 따라서 로그인 상태 유지는 별도 장치가 필요하다 — 그 장치가 세션 ID이고, 보통 쿠키로 전달된다.
 
@@ -21,7 +21,7 @@ HTTP는 요청과 응답의 반복이다. 클라이언트가 문서를 요청하
 |---|---|---|
 | 저장 위치 | 브라우저 | 서버 (메모리, Redis, DB) |
 | 내용 | 세션 ID 같은 이름-값 쌍 | 세션 ID ↔ 사용자 매핑, 상태 정보 |
-| 노출 위험 | 클라이언트에 있으므로 탈취 대상 | 중요 정보가 서버에 있어 직접 노출 안 됨 |
+| 노출 위험 | 클라이언트에 있으므로 탈취 대상 | 브라우저로 직접 전달하지 않지만 서버, 저장소 침해와 로그 노출은 별도로 방어 |
 
 로그인 성공 흐름:
 
@@ -47,9 +47,9 @@ user_id 같은 식별자를 쿠키에 직접 담지 않고 추측 불가능한 �
 ### 방어
 
 - **HTTPS 전 구간** — 공공 와이파이 같은 신뢰할 수 없는 네트워크에서 평문 노출 차단
-- **쿠키 보안 속성** — `HttpOnly`(XSS로 JS 접근 차단), `Secure`(HTTPS에서만 전송), `SameSite`(교차 사이트 요청에 쿠키를 붙이지 않아 CSRF 위험 완화, 본 방어는 CSRF 토큰) → 속성 상세는 [[Cookie]]
-- **세션 만료 관리** — 유휴 타임아웃, 절대 만료
-- **로그인 성공 시 세션 ID 재발급** — 세션 고정(session fixation) 공격 방지
+- **쿠키 보안 속성** — `HttpOnly`는 JavaScript의 쿠키 읽기를 막지만 XSS의 인증된 요청 전송까지 막지 않는다. `Secure`로 HTTPS 전송을 제한하고 `SameSite`를 명시한다. `Lax`는 안전한 메서드의 최상위 교차 사이트 이동에 쿠키를 보낼 수 있으므로 [[CSRF]] 방어를 함께 둔다. → 속성 상세는 [[Cookie]]
+- **세션 만료 관리** — 유휴 타임아웃과 절대 만료를 서버에서 집행한다. 로그아웃 때 쿠키를 지우는 것과 서버 세션을 무효화하는 것을 함께 처리한다.
+- **로그인과 권한 변경 시 세션 ID 재발급** — 세션 고정(session fixation)을 막고 이전 ID를 무효화한다.
 - **민감 작업 재인증** — 비밀번호 변경, 결제, 개인정보 조회에서 비밀번호 재확인이나 2단계 인증을 요구하는 이유: 세션 쿠키만으로는 처음 비밀번호를 입력한 실제 사용자와 세션 탈취자를 구분할 수 없기 때문
 
 ## 확장성 — 서버가 기억하는 것의 비용
@@ -57,7 +57,7 @@ user_id 같은 식별자를 쿠키에 직접 담지 않고 추측 불가능한 �
 서버가 클라이언트 상태를 유지해야 하므로 사용자 수에 따라 메모리, DB 부하가 증가한다. 다중 서버 환경에서는 어느 서버로 요청이 가도 로그인이 유지되어야 하므로:
 
 - 세션 저장소를 **Redis 같은 외부 저장소로 분리** ([[Load-Balancer|Load Balancer]]의 세션 분산 문제)
-- 또는 서버가 상태를 갖지 않는 **[[JWT]]** 방식 (선택 기준은 [[Auth-Method-Selection|인증 방식 선택]])
+- 또는 **[[JWT]]**를 자체 검증해 access 요청의 세션 조회를 줄인다. 즉시 폐기와 refresh token 회전이 필요하면 서버 상태는 여전히 필요하다 (선택 기준은 [[Auth-Method-Selection|인증 방식 선택]]).
 
 ## 면접 체크포인트
 
@@ -69,6 +69,10 @@ user_id 같은 식별자를 쿠키에 직접 담지 않고 추측 불가능한 �
 
 ## 출처
 
+2026-10-02에는 HTTP Stateless의 정의와 세션 수명, 쿠키 방어 범위를 아래 공식 자료로 대조했다. 강의 전체를 다시 검증한 기록은 아니다.
+
+- [IETF, RFC 9110: HTTP Semantics, §3.3](https://www.rfc-editor.org/rfc/rfc9110.html#section-3.3)
+- [OWASP Cheat Sheet Series, Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
 - [HTTP Stateless 로그인 판단 원리 — YouTube 강의](https://www.youtube.com/watch?v=K00xh3zsof0&list=PLXvgR_grOs1DEoZFABFCjo7dsXt1BhVih&index=36)
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
 - [인프런, Spring MVC 세션과 쿠키](https://www.inflearn.com/courses/lecture?courseId=182992&unitId=13734)
