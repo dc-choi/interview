@@ -90,7 +90,7 @@ Sentinel 없이 클러스터가 스스로 감시와 승격을 하지만 복제�
 | 응답 | 의미 | 클라이언트 동작 |
 |------|------|---------------|
 | `MOVED 12345 10.0.0.2:6379` | 슬롯 12345는 영구히 다른 노드 | 슬롯 매핑 갱신, 재요청 |
-| `ASK 12345 10.0.0.3:6379` | 슬롯이 마이그레이션 중 (일시) | 일회성 재요청, 매핑은 유지 |
+| `ASK 12345 10.0.0.3:6379` | 슬롯이 마이그레이션 중 (일시) | 대상 연결에서 `ASKING` 후 해당 명령만 재요청, 매핑은 유지 |
 
 스마트 클라이언트는 부팅 시 `CLUSTER SHARDS`로 매핑을 캐싱하고 `MOVED`를 받으면 갱신한다. `CLUSTER SHARDS`는 Redis 7.0부터 사용할 수 있고, `CLUSTER SLOTS`는 Redis 7.0부터 deprecated지만 호환을 위해 남아 있다. Valkey는 8.0에서 `CLUSTER SLOTS`의 deprecated를 해제했다. 키의 슬롯을 계산해 대상 노드에 직접 보내므로 정상 경로에 클러스터 메타데이터 조회를 추가하지 않는다. 따라서 MOVED는 장애가 아니라 캐시한 매핑이 낡았다는 방향 안내다. CLI는 `-c`로 접속해야 MOVED와 ASK를 자동으로 따라가고, `-c` 없이 접속하면 리다이렉트 응답이 그대로 보여 라우팅을 관찰할 수 있다.
 
@@ -158,6 +158,8 @@ Redis Cluster 모델의 강점: **운영자가 슬롯 분배를 정확히 제어
 - Cluster 한계 — multi-key 단일 슬롯, 트랜잭션 제한, DB select 0
 
 ## 출처
+
+2026-10-02에는 ASK 재요청에 필요한 ASKING 선행 명령을 Redis Cluster 명세에 대조했다. 나머지 Redis/Valkey 버전별 기능 전체를 다시 검증한 기록은 아니다.
 
 - [Redis Documentation, Redis Cluster specification](https://redis.io/docs/latest/operate/oss_and_stack/reference/cluster-spec/)
 - [Redis Documentation, CLUSTER SHARDS](https://redis.io/docs/latest/commands/cluster-shards/)

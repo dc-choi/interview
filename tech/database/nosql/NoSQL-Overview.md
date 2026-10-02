@@ -25,13 +25,15 @@ Document 모델링의 Embed vs Reference 트레이드오프는 [[MongoDB-Schema-
 
 ## BASE 모델
 
-NoSQL은 ACID보다 느슨한 BASE 모델을 따르는 경우가 많다. 강한 일관성을 일부 양보하는 대신 가용성과 확장성을 얻는 방향이다.
+BASE는 일시적 불일치를 허용하면서 가용성을 우선하는 설계 관점이다. NoSQL 전체의 필수 계약은 아니며 제품과 연산별 일관성, 트랜잭션 옵션을 확인한다.
 
-- **Basically Available**: 항상 접근 가능한 상태를 우선한다. 데이터를 여러 노드에 분산 저장해 일부 장애가 나도 서비스가 계속 동작한다.
+- **Basically Available**: 일부 장애와 일시적 불일치 속에서도 가능한 요청에 응답하는 가용성을 우선한다. 모든 장애에서 모든 읽기와 쓰기가 성공하거나 서비스가 100% 가동된다는 보장은 아니다.
 - **Soft State**: 데이터 상태가 항상 즉시 확정된 것은 아니다. 외부 입력이 없어도 복제 전파에 따라 상태가 변할 수 있다.
-- **Eventual Consistency(최종적 일관성)**: 업데이트 직후엔 일부 노드/사용자가 예전 값을 볼 수 있지만, 시간이 지나면 결국 같은 상태로 수렴한다.
+- **Eventual Consistency(최종적 일관성)**: 새 업데이트가 멈추고 변경 전파와 충돌 해결이 진행되면 읽기가 최종 상태로 수렴하는 보장이다. 업데이트 직후엔 이전 값을 볼 수 있으며, 정의만으로 불일치 시간이 몇 초 이하라고 정해지지는 않는다.
 
-BASE는 분산 시스템의 일관성-가용성 트레이드오프(CAP/PACELC)의 가용성(AP) 쪽 선택과 맞닿아 있다 — ACID는 CP 성향, BASE는 AP 성향. 깊이는 [[CAP-Theorem|CAP 정리]] 참고. ACID 자체의 정의(원자성, 일관성, 독립성, 영속성)는 [[Transactions|트랜잭션, ACID]]에 정리돼 있다.
+ACID는 트랜잭션의 성질이고 CAP는 네트워크 분할 중 선형화 가능성과 가용성의 관계이므로 ACID=CP, BASE=AP로 분류하지 않는다. ACID의 Consistency는 데이터 불변조건을 보존하는 의미이며 모든 replica 읽기의 최신성 보장과 다르다. [[CAP-Theorem|CAP 정리]]와 [[Transactions|트랜잭션, ACID]] 참고.
+
+예를 들어 DynamoDB는 테이블과 LSI에 강한 일관성 읽기를 선택할 수 있고 여러 항목의 원자적 트랜잭션도 제공한다. GSI 읽기는 최종 일관성이므로 같은 NoSQL 제품에서도 접근 경로에 따라 계약이 달라진다. 이 옵션의 상세 범위는 [[DynamoDB]]에서 확인한다.
 
 ## RDBMS vs NoSQL 핵심 차이
 
@@ -39,7 +41,7 @@ BASE는 분산 시스템의 일관성-가용성 트레이드오프(CAP/PACELC)�
 |---|---|---|
 | 강점 | 정확성, 관계, 복잡한 쿼리(조인/집계) | 유연성, 수평 확장성, 높은 가용성 |
 | 스키마 | 저장 전에 고정 (강한 설계도) | 스키마리스/유연 |
-| 일관성 | 강한 일관성(ACID) | 최종적 일관성(BASE) 중심 |
+| 일관성 | 격리 수준과 복제/읽기 경로를 확인 | 강한/최종 일관성과 트랜잭션을 제품, 연산별로 확인 |
 | 약점 | 수평 확장과 구조 변경이 신중함 | 복잡한 관계 조회, 엄격한 일관성 작업에 주의 |
 
 **선택 기준**: 돈, 주문, 회원 정보처럼 정확성과 관계가 핵심이면 RDBMS를 먼저 본다. 대규모 트래픽, 빠른 조회, 유연한 데이터 구조, 분산 처리가 중요하면 NoSQL이 후보가 된다. 워크로드가 운영성이냐 분석성이냐의 분리는 [[OLTP-vs-OLAP|OLTP vs OLAP]]와도 연결된다.
@@ -84,7 +86,7 @@ BASE는 분산 시스템의 일관성-가용성 트레이드오프(CAP/PACELC)�
 |---|---|---|
 | 메인(정본) | 정형 데이터와 트랜잭션 중심이면 관계형, 구조가 자주 바뀌고 aggregate 단위로 읽고 쓰면 문서형 | 관계형은 인덱스 수와 쓰기 비용, 격리 수준과 동시성, 실행 계획. 문서형은 인덱스 설계, 샤드 키, 중복 데이터 정합성 |
 | 특수 목적 | 컬럼형(대용량 분석), 그래프(관계 탐색, 추천), 벡터(유사도 검색), 시계열(로그, 센서 데이터) | 정본과의 동기화 방식과 지연 허용치 |
-| 보조 | 오브젝트 스토리지(파일, 정적 콘텐츠), 검색 엔진(키워드, 상품 검색), Key-Value(캐시, 휘발성 데이터) | 캐시는 TTL과 eviction 정책, 키 설계. 정합성과 트랜잭션은 기대하지 않는다 |
+| 보조 | 오브젝트 스토리지(파일, 정적 콘텐츠), 검색 엔진(키워드, 상품 검색), Key-Value(캐시, 휘발성 데이터) | 캐시는 TTL과 eviction 정책, 키 설계 및 정본과의 동기화. Key-Value라는 분류만으로 정합성과 트랜잭션 지원을 판단하지 않음 |
 
 많은 DB를 쓰는 것보다 하나의 DB라도 왜 골랐는지 설명하고, 고른 DB를 가장 효율적으로 쓰는 법을 깊게 아는 편이 프로젝트에 도움이 된다.
 
@@ -107,14 +109,20 @@ BASE는 분산 시스템의 일관성-가용성 트레이드오프(CAP/PACELC)�
 ## 면접 체크포인트
 
 - NoSQL 4유형(Key-Value, Document, Graph, Wide-Column)과 각각의 적합 사례
-- BASE 세 글자의 의미와 ACID와의 대비 (강일관성 vs 최종 일관성)
-- BASE가 CAP의 AP 선택과 어떻게 맞닿는가
+- BASE 세 글자의 의미와 가용성, 수렴의 조건
+- ACID의 Consistency와 CAP의 Consistency 차이, 제품 이름만으로 CP/AP를 정할 수 없는 이유
 - 데이터 성격, 조회 패턴, 읽기와 쓰기 비중, 일관성과 가용성, 규모, 팀 역량 순으로 저장소를 고르는 절차와 SQL로 시작하는 이유
 - 노드를 늘려도 처리량이 늘지 않는 경우(거친 쓰기 잠금, 토폴로지 변경 부하)를 설명할 수 있는가
 - "무엇이 더 좋은가"가 아니라 "데이터 성격에 무엇이 더 적합한가"로 선택하는 논리
 - RDBMS 메인 + NoSQL 보조(폴리글랏)가 흔한 이유
 
 ## 출처
+
+2026-10-02에는 가용성/최종 일관성의 한계, ACID와 CAP의 구분 및 DynamoDB 읽기/트랜잭션 반례를 대조했다. MongoDB 버전 이력, Cassandra 설정과 강의 사례 전체를 다시 검증한 기록은 아니다.
+
+- [Amazon DynamoDB, Read consistency](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html)
+- [Amazon DynamoDB, Transactions: How it works](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html)
+- [Eventually Consistent - Revisited — All Things Distributed, Werner Vogels](https://www.allthingsdistributed.com/2008/12/eventually_consistent.html)
 - [AWS 데이터베이스 기초 — RDBMS와 NoSQL (YouTube)](https://www.youtube.com/watch?v=idBsng-hafk&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v&index=33)
 - [DBA의 SQL vs NoSQL 선택 가이드 — Threads, bear_dba](https://www.threads.com/@bear_dba/post/Dc13-Dpk38f)
 - [MongoDB Docs, FAQ: Concurrency](https://www.mongodb.com/docs/manual/faq/concurrency/)

@@ -25,7 +25,7 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 - [[MongoDB-Kubernetes-Operator|MongoDB Kubernetes Operator (PSMDB)]] — 선언적 관리, Reconcile Loop, K8s+AWS 컨트롤러 협력, 외부 접속(Split Horizon+SNI), EBS Volume Clone 빠른 프로비저닝
 
 ## DB 장애 진단
-- [[DB-Incident-Triage|DB 장애 분석 방법론 (시점 비교, 장애 분류)]] — "평소와 달라진 것" 찾기, AAS 주의, 장애 3유형(신규/호출량/레이턴시), 실행계획+통계, MongoDB
+- [[DB-Incident-Triage|DB 장애 분석 방법론 (시점 비교, 장애 분류)]] — baseline과 부하/대기/blocker 대조, 발표 사례의 쿼리 변화 3유형, 실행계획+통계, MongoDB
 - [[Self-Service-DB-Diagnostics|셀프서비스 DB 진단 플랫폼]] — 흩어진 모니터링 통합, 개발자 직접 분석, Slack 문의, AI/MCP 반자동 분석, 보안 설계
 
 ## Data Modeling

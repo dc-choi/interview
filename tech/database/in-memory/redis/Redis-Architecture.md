@@ -27,7 +27,7 @@ replication은 비동기로 사본을 두고, sentinel은 마스터 장애 때 �
 - Node.js 스레드 모델과 유사
 - 대부분의 명령이 **싱글 스레드**로 동작
 - 암호화, File I/O의 경우 별도 스레드에서 처리
-- 반드시 명령어를 받은 순서대로 처리됨
+- 서로 다른 클라이언트의 요청 간 처리 순서는 지정되지 않는다. 같은 연결의 명령 흐름을 전역 도착순 보장으로 확대하지 않는다
 - 레디스 명령어는 **원자성을 보장**
 
 ## 트랜잭션
@@ -57,7 +57,7 @@ Redis는 **싱글 스레드 이벤트 루프 + epoll/kqueue 비동기 I/O**. 명
 |------|------|
 | 메인 루프 | 컴파일 시 하나 선택: evport(Solaris) → epoll(Linux) → kqueue(BSD, macOS) → select(폴백) |
 | 파일 디스크립터 | 클라이언트당 1개, 다중화 |
-| 명령 처리 | 받은 순서대로 직렬, 각 명령 원자성 |
+| 명령 처리 | 일반 명령은 직렬 실행, 클라이언트 간 처리 순서는 미지정 |
 | 백그라운드 | RDB/AOF rewrite는 fork된 자식, AOF flush는 별도 스레드 |
 | Threaded I/O (6.0+) | 네트워크 read/write만 멀티스레드, 명령 실행은 여전히 싱글 |
 | Valkey 8.0+ I/O 스레딩 | 소켓 읽기, 프로토콜 파싱, 응답 쓰기를 I/O 스레드가 비동기로 맡음. 기본 `io-threads 1`(꺼짐), 켜는 조건은 [[Redis-Valkey-Migration\|Redis에서 Valkey로]] |
@@ -134,6 +134,10 @@ Redis Transaction은 RDBMS와 다름 — **EXEC 중 명령 실패해도 롤백 X
 WATCH + MULTI/EXEC = **낙관적 락(optimistic CAS)**. 위 트랜잭션 섹션 참조.
 
 ## 출처
+
+2026-10-02에는 클라이언트 간 명령 순서의 비보장 범위를 Redis client handling 문서에 대조했다. I/O 스레딩, 벤치마크와 프로토콜 버전 전체를 다시 검증한 기록은 아니다.
+
+- [Redis Docs, Redis client handling](https://redis.io/docs/latest/develop/reference/clients/)
 - [우아한테크세미나 191121 우아한레디스 — 우아한테크](https://www.youtube.com/watch?v=mPB2CZiAkKM)
 - [redis/src/ae.c — 이벤트 루프 백엔드 조건부 선택](https://github.com/redis/redis/blob/unstable/src/ae.c)
 - [Redis serialization protocol (RESP) spec](https://redis.io/docs/latest/develop/reference/protocol-spec/)

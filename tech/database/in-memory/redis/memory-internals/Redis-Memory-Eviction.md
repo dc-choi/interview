@@ -14,7 +14,7 @@ verified_at: 2026-09-30
 
 | 정책 | 동작 | 적합 |
 |------|------|------|
-| `noeviction` | 새 쓰기 거부 (`OOM` 응답) | 데이터 손실 절대 금지 |
+| `noeviction` | 추가 메모리를 사용할 수 있는 명령에 `OOM` 오류, eviction하지 않음 | 메모리 압박에 따른 자동 삭제를 피해야 할 때 |
 | `allkeys-lru` | 모든 키에서 근사 LRU 삭제 | **일반 캐시** |
 | `allkeys-lfu` | 모든 키에서 LFU(빈도) 삭제 | 인기 키가 명확한 워크로드 |
 | `allkeys-random` | 모든 키에서 랜덤 삭제 | 분포가 균등할 때 |
@@ -25,6 +25,8 @@ verified_at: 2026-09-30
 
 기본은 `noeviction`. 캐시 용도면 **`allkeys-lru` 또는 `allkeys-lfu`**가 표준.
 
+`noeviction`은 내구성이나 무손실 보장이 아니다. TTL 만료와 명시적 삭제는 계속되며, persistence 설정에 따른 재시작 손실과 비동기 복제의 failover 유실도 별개다 ([[Persistence]], [[Redis-Architecture-HA]]). 오류를 받은 쓰기가 성공했다고 처리하지 않도록 애플리케이션의 실패 경로도 확인한다.
+
 Redis 8.6부터 읽기가 아니라 **쓰기 시각만 갱신하는 LRM(Least Recently Modified)** 계열 `allkeys-lrm`, `volatile-lrm`이 추가돼 정책은 10종이다. 위 8종은 8.4 이하 기준이고, 8.6+에서 읽기는 잦지만 갱신이 멈춘 데이터를 걷어내려면 LRM을 검토한다. Valkey 문서는 위 8종만 제공하고 LRM 계열이 없으므로, 엔진을 바꿀 때는 정책 이름을 그대로 옮길 수 있는지 먼저 확인한다.
 
 maxmemory와 eviction은 일부 키를 잃더라도 서버를 멈추지 않게 하는 장치다. `maxmemory`가 없으면 주는 대로 받다가 호스트 메모리가 바닥나 swap이나 OOM Kill로 끝나고, 정책을 고르지 않은 캐시는 기본 `noeviction` 때문에 쓰기 오류를 받는다. 작은 `maxmemory`(예: 10MB)로 키를 대량 주입한 뒤 `DBSIZE`, `INFO stats`의 `evicted_keys`로 정책이 실제로 동작하는지 확인해 둔다.
@@ -34,8 +36,8 @@ maxmemory와 eviction은 일부 키를 잃더라도 서버를 멈추지 않게 �
 | 운영 패턴 | 권장 |
 |-----------|------|
 | **모든 데이터 캐시** (TTL 무관) | `allkeys-*` |
-| **TTL 키 = 캐시 / TTL 없음 = 영속** 같이 운영 | `volatile-*` |
-| **영속 저장소로만** (eviction 절대 금지) | `noeviction` + 메모리 모니터링 |
+| **TTL 키만 eviction 허용 / TTL 없는 키는 제외** | `volatile-*` |
+| **eviction을 허용하지 않는 데이터** | `noeviction` + 메모리 모니터링. 영속성과 복구는 별도 설정 |
 
 `volatile-*`는 TTL 없는 키가 모두 차면 **새 쓰기 거부** — 사실상 noeviction 동작. 두 용도 분리 의도 안 맞으면 미스리딩.
 
@@ -53,8 +55,8 @@ Redis는 **정확한 LRU가 아니라 근사 LRU**. 메모리 비용 압축 + �
 
 1. 각 키 객체에 **24bit `lru` 필드** — 마지막 접근 시간(초 단위, 약 194일 주기 wraparound).
 2. eviction 필요 시 **N개 무작위 샘플** (`maxmemory-samples` 기본 5).
-3. 샘플 중 가장 오래된 것 삭제.
-4. 샘플 수 ↑ → 정확도 ↑ + CPU ↑. 10이면 거의 정확한 LRU.
+3. 샘플과 유지 중인 eviction 후보 pool에서 오래된 후보를 선택한다. Redis 3.0부터 이 pool을 유지하므로 매번 새 샘플만 비교하는 것은 아니다.
+4. 샘플 수 ↑ → 정확도 ↑ + CPU ↑. 공식 예시에서는 10일 때 이론적 LRU에 가까웠지만 워크로드별 miss rate와 CPU를 측정한다.
 
 ```
 maxmemory-samples 10    # 정확도 강화
@@ -75,10 +77,13 @@ LRU는 "최근 안 쓰면 삭제" — 일회성 폭증 키가 hot 키를 밀어�
 8bit으로 표현하면 0~255. 그대로 카운트하면 빠르게 max 도달. Morris는 **확률적으로만 증가**:
 
 ```
-P(증가) = 1 / ((counter - LFU_INIT_VAL) * lfu_log_factor + 1)
+counter < 255일 때:
+P(증가) = 1 / (max(counter - LFU_INIT_VAL, 0) * lfu_log_factor + 1)
+counter == 255이면 더 증가하지 않음
 ```
 
 - counter 작을수록 자주 증가, 클수록 거의 안 증가.
+- Redis 8.0 소스는 초기값 아래의 차이를 0으로 제한한다. decay로 counter가 낮아져도 음수 확률이 생기지 않으며, 255에서는 포화된다.
 - `lfu-log-factor` 기본 10 — 약 100만 접근에서 카운터가 255로 포화.
 - 8bit으로 백만 단위 빈도 표현. factor를 낮추면 저빈도 구간 해상도가 좋아지고, 높이면 고빈도 구간을 더 잘 구분한다.
 
@@ -116,6 +121,7 @@ MEMORY DOCTOR     # 권고 자동 출력
 핵심 지표:
 - `used_memory_rss` — OS가 실제 점유한 메모리 (단편화 포함)
 - `used_memory_human` — 논리적 사용량
+- `mem_not_counted_for_evict` — eviction 한도 계산에서 제외한 복제/AOF buffer 메모리. `maxmemory`는 프로세스 RSS나 호스트 전체 메모리의 상한이 아님
 - `mem_fragmentation_ratio` — RSS / 논리 사용량. 1.0~1.5 정상, 1.5+면 단편화 의심. 단 차이 바이트(`mem_fragmentation_bytes`)가 수 MB면 비율이 높아도 문제가 아니고, 1 미만이면 OS가 일부를 swap으로 내렸다는 신호다
 - `evicted_keys` — 누적 eviction 수, 폭증하면 maxmemory 부족 신호
 
@@ -127,13 +133,13 @@ maxmemory-policy allkeys-lru
 maxmemory-samples 10
 ```
 
-운영 메모리의 70~80%로 설정. 100% 가까이 두면 OS, 복제, persistence 작업이 메모리 부족으로 실패.
+운영 메모리의 70~80%는 출발점 예시이며 안전 보장이 아니다. OS, 복제/AOF buffer와 persistence 작업의 Copy-on-Write peak까지 실제 부하에서 측정해 여유를 둔다.
 
 ## 흔한 실수
 
-- **기본값(noeviction) 그대로 캐시 운영** → maxmemory 도달 시 쓰기 모두 실패. 도메인에 맞춰 명시 설정.
+- **기본값(noeviction) 그대로 캐시 운영** → maxmemory 초과 시 추가 메모리를 사용할 수 있는 명령이 거부된다. 읽기와 메모리를 회수하는 `DEL` 같은 경로까지 모두 막히는 것은 아니다.
 - **`volatile-*` 쓰면서 캐시 키에 TTL 안 둠** → 사실상 noeviction. 캐시 키는 반드시 EXPIRE.
-- **`maxmemory-samples 5`로 두고 정확도 불만** → 10으로 올림. CPU 비용 미미.
+- **`maxmemory-samples 5`로 두고 정확도 불만** → 10을 후보로 비교하되 CPU 비용과 miss rate 개선을 측정한다.
 - **LFU로 바꿨는데 효과 미미** → `lfu-log-factor`, `lfu-decay-time` 기본값이 워크로드와 안 맞을 수 있음. 빈도 분포 확인 후 튜닝.
 - **단편화 1.5+ 무시** → 메모리 회수 안 됨. `MEMORY PURGE` 또는 재시작 검토. jemalloc 활성 대안.
 - **`evicted_keys` 폭증하는데 캐시 미스 영향 무시** → 응답 시간, DB 부하 ↑. maxmemory 증설 또는 키 정리 정책.
@@ -151,6 +157,12 @@ maxmemory-samples 10
 
 ## 출처
 
+2026-10-02에는 noeviction의 범위, 후보 pool, maxmemory와 RSS 구분을 공식 eviction 문서에, LFU 증가식을 Redis 8.0 소스에 대조했다. 모든 내부 인코딩과 Valkey 정책을 다시 검증한 기록은 아니다.
+
+- [Redis Docs, Redis persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)
+- [Redis Docs, Replication](https://redis.io/docs/latest/operate/oss_and_stack/management/replication/)
+- [redis/src/evict.c 8.0, LFULogIncr와 LFUDecrAndReturn — redis/redis](https://github.com/redis/redis/blob/8.0/src/evict.c)
+- [redis/src/commands/del.json 8.0, DEL 명령의 WRITE flag와 DENYOOM 제외 — redis/redis](https://github.com/redis/redis/blob/8.0/src/commands/del.json)
 - [Redis Docs, Key eviction](https://redis.io/docs/latest/develop/reference/eviction/)
 - [Redis Docs, OBJECT FREQ](https://redis.io/docs/latest/commands/object-freq/)
 - [redis.conf 8.0 (maxmemory-policy 기본값, maxmemory-samples)](https://github.com/redis/redis/blob/8.0/redis.conf)
