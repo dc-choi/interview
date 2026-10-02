@@ -10,7 +10,7 @@ verified_at: 2026-08-27
 
 > 실행 명령은 설치된 client와 server 버전을 먼저 확인한다. 아래 binary log 위치 옵션은 2026-08-27 공식 문서 기준이다.
 
-운영 장애는 **"백업이 있었느냐"가 아니라 "복원이 되느냐"** 로 갈린다. `mysqldump`, Percona XtraBackup, binary log 리플레이를 조합해 **전체/증분/지정 시점 복구(PITR)** 시나리오를 설계한다. 백업은 정기 검증(리스토어 테스트)까지 해야 진짜 백업이다.
+운영 장애에서는 백업의 존재와 실제 복원 가능성을 구분한다. `mysqldump`, Percona XtraBackup, binary log 리플레이를 조합해 **전체/증분/지정 시점 복구(PITR)** 시나리오를 설계한다. 백업은 정기 복원 시험으로 사용할 수 있는지 확인한다.
 
 ## 논리적 vs 물리적 백업
 
@@ -45,12 +45,12 @@ verified_at: 2026-08-27
 ## Binary Log, PITR
 
 - **Binary log(binlog)** — 활성화된 server의 변경 이벤트를 기록. `ROW`, `STATEMENT`, `MIXED` 포맷
-- **Point-in-Time Recovery**: 전체 백업 복원 후 **binlog를 특정 시점까지 리플레이** → 장애 직전 상태 복원
+- **Point-in-Time Recovery**: 일관된 기반 백업을 복원하고 대응하는 위치부터 필요한 binlog를 재생해 보존된 구간의 목표 시점으로 복구한다. 논리적 손상은 손상을 일으킨 이벤트 직전 등 목적에 맞는 시점을 선택한다.
 - 절차:
   1. 전체 백업 복원 → 기준점 확보
   2. `mysqlbinlog --start-position=... --stop-datetime='2026-04-17 10:29:59'`로 원하는 시점까지 재생
   3. 파이프로 mysql 클라이언트에 주입
-- 주의: engine과 version에 맞는 binlog 만료 설정을 사용하고, 복구하려는 구간의 log가 full backup 이후까지 남도록 보존한다
+- 주의: engine과 version에 맞는 binlog 만료 설정을 사용한다. 기반 백업의 위치부터 목표 시점까지 필요한 로그가 빠짐없이 남아 있어야 한다. 시간 옵션만 적은 예시는 전체 실행 명령이나 안전한 이벤트 경계를 확정한 런북이 아니다.
 
 ## 백업 전략 예시
 
@@ -77,8 +77,8 @@ verified_at: 2026-08-27
 
 ## 복원은 백업만큼 중요하다
 
-- **복원 시간(RTO)** — 100GB dump 복원은 수 시간. Prod SLA 내 복원 가능한가?
-- **데이터 손실 허용(RPO)** — 마지막 백업 시점부터의 손실. PITR 있어도 binlog 유실 시 의미 없음
+- **복구 시간 목표(RTO)** — 서비스 재개까지 허용할 시간이다. 덤프 크기만으로 시간을 단정하지 않고 환경 준비, 데이터와 로그 복원, 전환 및 정상 동작 확인까지 실측해 목표와 비교한다.
+- **복구 시점 목표(RPO)** — 허용할 데이터 손실의 시간 범위다. 실제 복구 가능 시점은 마지막 전체 백업 시각만이 아니라 사용 가능한 기반 백업과 연속 로그로 결정된다. 로그가 유실되면 그 기반에서 복구할 수 있는 구간이 제한되며, 남은 백업과 로그까지 모두 무의미해지는 것은 아니다. 목표와 실측의 구분은 [[Backup-Restore]]를 따른다.
 - **정기 복원 드릴** — 요구 RTO와 변경 빈도에 맞는 주기로 격리 환경에 실제 복원
 - **부분 복원 능력** — 논리 백업은 객체 단위 복원이 비교적 쉽지만, 물리 백업의 부분 복원 절차와 제약은 도구 및 server version별로 확인
 
@@ -91,8 +91,8 @@ verified_at: 2026-08-27
 
 ## 실수, 사고 유형
 
-- **테이블 DROP 장애** — `DROP TABLE`은 DDL이라 `ROLLBACK` 불가. binlog가 있으면 과거 데이터를 재주입 가능
-- **binlog가 없어 PITR 불가** — 백업만 하고 binlog는 수일만 보관 → 오래된 논리 삭제는 복구 불가
+- **테이블 DROP 장애** — 일반적인 `DROP TABLE`은 `ROLLBACK`으로 되돌리지 못한다. 삭제 전 데이터가 있는 기반 백업과 필요한 로그로 격리 환경에 복구하고, 운영 반영 전 이후 정상 거래와 제약조건을 대사한다. binlog 존재만으로 복구를 보장하지 않는다.
+- **binlog 보존 누락** — 기반 백업 이후 필요한 로그가 만료되면 해당 백업에서 원하는 시점까지 PITR할 수 없다. 삭제 전 별도 백업 등 다른 복구 경로가 남아 있는지는 별도로 확인한다.
 - **prepare하지 않은 물리 백업 복원 시도** → 일관되지 않은 data file은 복원본으로 바로 사용할 수 없음
 - **복원 테스트 없이 자신** — 실제 장애 시 복원 스크립트가 망가져 있음을 발견
 - **스키마, 데이터 분리 실패** — DDL 변경을 backup에 넣지 않아 복원 후 앱 에러
@@ -107,6 +107,12 @@ verified_at: 2026-08-27
 - "복원 드릴 없는 백업은 믿을 수 없다"는 명제의 근거
 
 ## 출처
+
+2026-10-03에는 RTO/RPO의 목표와 실측 구분, 기반 백업과 로그의 PITR 복구 범위를 부분 대조했다. 명령 전체의 버전 호환성이나 실제 복원 성공을 새로 검증한 기록은 아니다.
+
+- [MySQL 8.4 Reference Manual, Point-in-Time Recovery](https://dev.mysql.com/doc/refman/8.4/en/point-in-time-recovery.html)
+- [MySQL 8.4 Reference Manual, Point-in-Time Recovery Using Binary Log](https://dev.mysql.com/doc/refman/8.4/en/point-in-time-recovery-binlog.html)
+- [AWS Well-Architected, Define recovery objectives for downtime and data loss](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_objective_defined_recovery.html)
 - [MySQL 8.0 Reference Manual, mysqldump](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html)
 - [MySQL 8.4 Reference Manual, mysqldump](https://dev.mysql.com/doc/refman/8.4/en/mysqldump.html)
 - [MariaDB Documentation, mariadb-dump](https://mariadb.com/docs/server/clients-and-utilities/backup-restore-and-import-clients/mariadb-dump)
