@@ -64,7 +64,7 @@ I wrote many codes today.      (X — 개발 맥락에서 어색)
 
 ## 개발 용어 발음 (강세 주의)
 
-눈에 익어도 말로 하면 막히는 단어들. 강세 위치가 핵심이다. 발음 필터 재훈련 원리는 [[English-Learning-Phonics|개발자 영어 발음 학습법]] 참조.
+눈에 익어도 말로 하면 막히는 단어들. 강세 위치가 핵심이다. 목표에 맞는 발음 훈련과 확인 방법은 [[English-Learning-Phonics|개발자 영어 발음 학습법]] 참조.
 
 | 단어 | 한국식 오류 | 실제 강세 |
 |---|---|---|
@@ -170,8 +170,8 @@ Jump over an iteration.
 
 ## 관련 문서
 
-- [[English-Learning-Phonics|개발자 영어 발음 학습법]] — 발음 필터 재훈련, 학습 순서
-- [[Self-Development-While-Working|일하면서 자기계발]] — 영어 학습 복리 효과
+- [[English-Learning-Phonics|개발자 영어 발음 학습법]] — 파닉스와 발음 훈련의 차이, 과제별 학습
+- [[Self-Development-While-Working|일하면서 자기계발]] — 영어 자료 활용과 연구 해석
 - [[Global-IT-Interview|글로벌 IT 면접]] — 영어 면접 대비
 
 ## 출처

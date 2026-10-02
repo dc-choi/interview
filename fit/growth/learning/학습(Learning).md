@@ -14,8 +14,8 @@ CS 학습법, 소스 코드 분석, 영어 학습, 블로그 운영, 성장 원�
 - [x] [[methods|학습 방법론 (CS 학습법, 백엔드 공부 순서, 소스 코드 분석, 역설계 학습, 목적 있는 학습, 얇게 시작하기, 제텔카스텐)]] — 서브폴더
 - [x] [[Learning-Strategy|학습 전략 (CS 기초의 가치, 기술 변화와 선택 기준, AI 접바둑 학습)]] — 서브폴더
 - [x] [[Growth-Principles|성장의 7가지 원칙 (반복, 실전, 회고, 실험, 자기효능감, 습관화, 소셜화)]]
-- [x] [[Self-Development-While-Working|일하면서 자기계발 (커리어 오너십, 8가지 방법, SI 탈출, 영어 복리 효과)]]
+- [x] [[Self-Development-While-Working|일하면서 자기계발 (커리어 오너십, 8가지 방법, 환경 선택, 언어 적성 연구의 해석)]]
 - [x] [[Learning-Business-While-Employed|직장에서 사업을 배우는 열 가지 관점 (업무 앞뒤, 대표의 대안, 매출에서 빠지는 것, 직접 팔기, 예측과 실제 비교, 작은 결정 맡기, 시간 비용)]]
-- [x] [[English-Learning-Phonics|개발자를 위한 영어 발음 학습법 (Phonics, 6단계 학습 순서)]]
+- [x] [[English-Learning-Phonics|개발자를 위한 영어 발음 학습법 (Phonics와 발음 훈련 구분, 과제별 연습, 고정 기간의 한계)]]
 - [x] [[English-Developer-Practical|개발자 실무 영어 (관사/단복수, 전치사, 약어, 깃/코드 설명 동사, 산술/네이밍 표현)]]
 - [x] [[Dev-Writing|글쓰기와 기술 블로그 (블로그 운영 5단계, 개발자 글쓰기, LLM 교정 워크플로우, AI 시대 직접 경험기와 작성자 신뢰)]] — 서브폴더
