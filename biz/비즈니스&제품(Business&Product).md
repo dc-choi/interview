@@ -15,7 +15,7 @@ aliases: ["비즈니스&제품(Business&Product)", "Business & Product"]
 2. **검증과 진입:** [[Solo-Product-Market-Validation|시장 반응 검증]], [[Business-Model|비즈니스 모델]], [[Pricing-Strategy|가격]], [[GTM-Strategy|GTM]], [[Content-Marketing|콘텐츠 마케팅]]을 함께 반복
 3. **전달과 학습:** [[User-Feedback|사용자 피드백]], [[Product-Roadmap|로드맵]], [[PRD-Writing|PRD]], [[Service-Design|서비스 설계]], [[PMF-Funnel|PMF 신호와 전환 퍼널]]
 4. **성장:** [[Expansion-Strategy|성장과 확장]]
-5. **공통 가드레일:** [[Metrics-Framework|지표]], [[Risk-Management|리스크]]
+5. **공통 가드레일:** [[Metrics-Framework|지표]], [[Risk-Management|리스크]], [[Privacy-Operations-for-Small-Business|개인정보 운영]]
 
 각 단계에서 얻은 증거가 약하면 이전 단계로 돌아간다. 구현 완료나 문서 상태만으로 다음 단계에 진입하지 않는다.
 

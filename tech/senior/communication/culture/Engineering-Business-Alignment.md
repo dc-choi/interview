@@ -60,7 +60,7 @@ aliases: ["Engineering Business Alignment", "개발팀 비즈니스 align", "성
 - [[Productivity-Business-Ceiling|개발 생산성과 사업 성과 (Min/Max)]] — 개발팀과 매출의 거리, 사업이 천장을 연다
 - [[Business-Impact|비즈니스 임팩트]] — 기술 결정을 사업 지표로 환산
 - [[Engineering-Influence|엔지니어링 영향력]] — 일을 사업 언어로 보이게 하기
-- [[Startup-Financial-Discipline|스타트업 재무 규율]] — 단위 경제, 이익이 없으면 사업이 아니다
+- [[Startup-Financial-Discipline|스타트업 재무 규율]] — 공헌이익, 현금과 이익의 차이, 적자를 감당할 자금과 개선 가정
 - [[Sector-Economics-Defensibility|섹터 경제와 사업 방어가능성]] — 제품 성공 ≠ 수익성
 - [[Co-Leadership-Partnership|공동 리더십]] — 기술과 비즈니스 언어의 양방향 학습
 - [[Team-Contribution-Culture|엔지니어링 팀 기여 문화]]
