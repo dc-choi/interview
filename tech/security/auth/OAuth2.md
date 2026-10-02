@@ -48,7 +48,7 @@ RFC 6749는 Authorization Code, Implicit, Resource Owner Password Credentials, C
 
 - Authorization Server가 Access Token을 Authorization Response의 프래그먼트 같은 front-channel로 반환
 - front-channel에 Access Token을 노출하면 leakage와 replay 공격면이 커진다
-- 2026-08-31 기준 OAuth 2.1은 Active Internet-Draft이며 이 grant를 제외한다. 현행 보안 BCP인 RFC 9700도 Implicit Grant를 사용하지 말라고 권고한다. 대신 **Authorization Code + PKCE**를 쓴다
+- 2026-10-02 확인한 OAuth 2.1(`draft-ietf-oauth-v2-1-16`)은 Active Internet-Draft이며 이 grant를 제외한다. 현행 보안 BCP인 RFC 9700도 Implicit Grant를 사용하지 말라고 권고한다. 대신 **Authorization Code + PKCE**를 쓴다
 
 ### 3. Resource Owner Password Credentials (ROPC)
 
@@ -63,7 +63,7 @@ RFC 6749는 Authorization Code, Implicit, Resource Owner Password Credentials, C
 ## 일반적인 흐름 (Authorization Code + PKCE)
 
 1. **Client Registration** — Client가 Authorization Server에 사전 등록 → `client_id`, (선택) `client_secret`, `redirect_uri` 할당
-2. **Authorization Request** — 사용자를 `/authorize`로 리다이렉트: `response_type=code`, `code_challenge`, `scope`, `state`
+2. **Authorization Request** — 사용자를 `/authorize`로 리다이렉트: `response_type=code`, `code_challenge`, `code_challenge_method=S256`, `scope`, `state`
 3. **Authorization Grant** — 사용자가 로그인, 동의 → Authorization Server가 `redirect_uri`에 `code` 첨부
 4. **Authorization Code 교환** — Client가 `/token`에 `code` + `code_verifier`(PKCE)를 보내고, confidential client는 등록된 방식으로 인증. Authorization Server는 정책에 따라 Access Token과 선택적 Refresh Token을 발급
 5. **API Access** — `Authorization: Bearer <access_token>`으로 Resource Server 호출
@@ -82,14 +82,14 @@ Authorization Code 흐름은 브라우저를 거치는 front-channel과 Token En
 
 | 방식 | 자격 전달 위치 | 비고 |
 |---|---|---|
-| client_secret_basic | HTTP Basic 방식으로 `client_id`와 `client_secret` 전달 | RFC 6749 §2.3.1이 인가 서버에 지원을 요구하는 기본 |
+| client_secret_basic | HTTP Basic 방식으로 `client_id`와 `client_secret` 전달 | RFC 6749 §2.3.1은 client password를 발급한 클라이언트의 인증에 이 방식 지원을 요구 |
 | client_secret_post | form body의 `client_id`, `client_secret` 필드 | RFC상 차선(NOT RECOMMENDED), 다른 방식이 불가능할 때만 사용 |
 
 제공자마다 지원 방식이 다르므로 연동 시 해당 제공자 문서를 확인한다.
 
 ### 학습용 코드에서 흔히 생략되는 것 (프로덕션 전 체크)
 
-- `state` 검증 생략 → Login CSRF에 노출
+- `state`나 아래 조건을 충족하는 대체 수단으로 요청과 콜백을 바인딩하지 않음 → Login CSRF에 노출
 - PKCE 생략 → 공개 클라이언트의 code 탈취 방어 없음
 - access_token을 화면과 로그에 노출 → 실서비스는 토큰을 서버 세션 뒤로 숨기거나 HttpOnly 쿠키로 관리
 
@@ -102,6 +102,10 @@ Authorization Code 흐름은 브라우저를 거치는 front-channel과 Token En
 - **`PKCE`**(Proof Key for Code Exchange) — Authorization Code 탈취와 injection을 막는다. 새 구현은 난수 `code_verifier`로부터 `S256` 방식의 `code_challenge`를 만들고, Token Endpoint에서 verifier를 증명한다
 - **`redirect_uri`** — 사전 등록한 URI와 exact string matching한다. native app의 `localhost` 포트 예외 외에는 와일드카드와 오픈 리다이렉트를 허용하지 않는다
 - **`scope`** — 최소 권한 원칙. 필요한 범위만 요청
+
+CSRF 방어는 필수지만 `state`만 가능한 것은 아니다. RFC 9700 §2.1은 인가 서버의 PKCE 지원을 확인한 클라이언트가 PKCE의 CSRF 방어에 의존할 수 있다고 명시한다. OIDC에서는 검증한 `nonce`도 수단이다. PKCE challenge나 nonce는 요청마다 새로 만들고 시작한 클라이언트와 사용자 에이전트에 안전하게 묶어야 한다. 이 조건을 구현하지 않은 채 `state`만 제거하지 않는다.
+
+여러 인가 서버와 연동하면 mix-up 방어도 필요하다. 요청마다 선택한 issuer와 대응 엔드포인트를 사용자 에이전트에 묶어 저장하고, 인가 응답의 `iss`를 예상 issuer와 대조한다. 이 방식을 지원하지 않으면 issuer별로 분리한 redirect URI와 실제 콜백 주소를 대조하는 대안을 검토한다. 불일치하면 중단한다. 토큰 교환이 끝난 뒤 ID Token을 검사하는 것만으로 교환 전 code가 잘못된 서버로 전송되는 것을 막지는 못한다 (RFC 9700 §4.4.2).
 
 ## OAuth vs OIDC (OpenID Connect)
 
@@ -124,7 +128,7 @@ OIDC 기반 로그인에서는 access token만으로 로그인을 판단하지 �
 - Implicit Grant로 SPA 구현 → **Authorization Code + PKCE**로 전환
 - Access Token을 `localStorage`에 저장 → XSS 탈취. 가능하면 **HttpOnly 쿠키** + SameSite + CSRF 토큰
 - Refresh Token을 평문 보관, replay 대책 없이 장기간 재사용 → Rotation 또는 sender-constrained token을 적용하고 탈취 대응 정책 정의
-- `state` 검증 생략 → CSRF로 세션 덮어쓰기(Login CSRF)
+- 요청과 콜백의 CSRF 바인딩 생략 → 세션 덮어쓰기(Login CSRF). `state` 또는 조건을 충족하는 PKCE/OIDC nonce 방어를 검증
 - `redirect_uri`를 느슨하게 허용 → Authorization Code 탈취 경로
 - 토큰 스코프를 최소화하지 않고 모든 권한 요청 → 동의율, 보안 모두 악화
 
@@ -139,6 +143,9 @@ OIDC 기반 로그인에서는 access token만으로 로그인을 판단하지 �
 - 도메인 전체 위임의 리스크와 사용자별 토큰 + 최소 스코프 설계
 
 ## 출처
+
+2026-10-02 RFC 9700의 CSRF와 mix-up 방어 조건, RFC 6749의 client password 인증 범위, OAuth 2.1 초안 상태를 부분 대조했다. 기존 Google Workspace 위임 정책과 개별 제공자의 구현 전체를 다시 검증한 것은 아니므로 frontmatter의 기존 검증일은 유지한다.
+
 - [RFC 6749 — The OAuth 2.0 Authorization Framework (§2.3.1 클라이언트 인증)](https://www.rfc-editor.org/rfc/rfc6749)
 - [IETF Internet-Draft — The OAuth 2.1 Authorization Framework](https://datatracker.ietf.org/doc/draft-ietf-oauth-v2-1/)
 - [RFC 9700 — Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700.html)
