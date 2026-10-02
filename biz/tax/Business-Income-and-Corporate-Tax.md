@@ -37,6 +37,14 @@ aliases: ["Business Income and Corporate Tax", "개인사업자 소득세와 법
 
 가령 이익 대부분을 사업에 남기는 경우와 매년 개인에게 지급해야 하는 경우는 비교 조건이 다르다. 이 문서의 조건만으로 법인 전환 시점을 정하지 않는다. 매출, 이익, 인출 방식과 비용을 같은 기간으로 맞춘 비교가 먼저다.
 
+## 법인세율의 적용 시점과 예외
+
+2026년 1월 1일 이후 개시하는 사업연도에는 일반적인 내국법인의 각 과세표준 구간에 10%, 20%, 22%, 25%의 초과누진세율을 적용한다. 경계는 2억원, 200억원, 3,000억원이다. 2026년에 신고한다는 이유만으로 2025년 개시 사업연도에 이 세율을 적용하지 않는다.
+
+사업연도가 1년인 일반 법인의 과세표준이 3억원이면, 첫 2억원의 10%인 2,000만원과 나머지 1억원의 20%인 2,000만원을 합한 산출세액은 4,000만원이다. 공제, 감면, 추가 과세와 지방소득세는 생략한 계산이다.
+
+법인세법 제60조의2 제1항 제1호에 해당하는 특정 소규모 법인은 제55조의 별도 세율표를 적용해 200억원 이하부터 20%다. 매출이나 직원 수가 작다는 이유만으로 이 분류에 해당하지는 않는다. 따라서 과세표준 2억원 이하이면 모두 10%라고 일반화하지 않는다. 사업연도가 1년 미만이면 제55조 제2항의 연환산 계산도 확인한다.
+
 ## 신고 기한과 지방세
 
 개인의 종합소득세는 통상 다음 해 5월 신고이며 성실신고확인서 제출자의 기한은 다르다. 법인세는 일반적으로 사업연도 종료일이 속하는 달의 말일부터 3개월 이내이며, 12월 결산법인은 다음 해 3월 말이 기본이다. 특례, 휴일과 연장 여부는 별도로 확인한다.
@@ -53,6 +61,9 @@ aliases: ["Business Income and Corporate Tax", "개인사업자 소득세와 법
 - [국세청, 법인세 개요](https://nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7744&mi=2370)
 - [국세청, 법인세 신고납부기한과 제출 서류](https://nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7745&mi=2371)
 - [국세청, 법인세 신고절차와 세무조정](https://nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7975&mi=6549)
+- [국세청, 법인세 세율](https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7746&mi=2372) — 2026년 이후 개시 사업연도의 세율과 소규모 법인 구분
+- [국가법령정보센터, 법인세법 제55조](https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0055&lsiSeq=280349&urlMode=lsScJoRltInfoR) — 초과누진세율, 별도 세율과 1년 미만 사업연도 계산
+- [국가법령정보센터, 법인세법 제60조의2](https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1029618409) — 제55조의 별도 세율이 참조하는 제1항 제1호 대상 법인
 - [관악구, 법인지방소득세 신고납부 서식 안내](https://www.gwanak.go.kr/site/gwanak/ex/civilManual/CivilManualFView.do?caIdx=CA00000559)
 - [국세청, 각종 신고서 접수와 신고납부기한](https://g.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=8649&mi=13323)
 - [국세청 보도자료, 법인자금 사적 사용과 허위 비용 계상 조사 사례](https://i.nts.go.kr/nts/na/ntt/selectNttInfo.do?bbsId=1028&mi=2201&nttSn=1354828) — 조사 착수 혐의 사례이며 확정 판결로 취급하지 않는다.

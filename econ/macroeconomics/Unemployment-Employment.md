@@ -7,7 +7,7 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 
 # 실업과 고용
 
-> 한 줄 요약: 일하려는 사람 중 일자리를 못 구한 비율이 실업률이다. 물가와 함께 거시경제의 양대 목표이고, 둘 사이에는 떼기 어려운 트레이드오프가 있다.
+> 한 줄 요약: 실업률은 경제활동인구 중 실업자의 비율이다. 고용과 물가의 관계는 수요, 공급 충격과 기대에 따라 달라지므로 참가율, 고용률과 함께 판단한다.
 
 ## 1. 실업률이란 무엇인가
 
@@ -37,15 +37,15 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 
 실업률 0%는 불가능하고 바람직하지도 않다. 마찰적 실업과 구조적 실업이 남아 있는 상태, 즉 **경기적 실업만 0이 된 상태**를 완전고용이라 부르고 그때의 실업률을 자연실업률이라 한다. 사람들이 더 나은 일자리를 찾아 옮겨 다니는 건 건강한 경제의 정상적 마찰이다.
 
-실제 실업률이 자연실업률보다 낮으면 노동시장이 과열된 것이고, 이는 임금과 물가를 밀어 올린다. 바로 다음 주제로 이어진다.
+실제 실업률이 자연실업률보다 낮으면 노동시장 긴축과 물가 압력을 의심할 수 있다. 다만 자연실업률은 직접 관측되지 않는 추정치이며 생산성, 노동 공급과 기대도 달라진다. 특정 실업률 숫자를 영구적인 과열 경계로 쓰지 않는다.
 
 ## 4. 필립스 곡선 — 물가와 실업의 트레이드오프
 
-**필립스 곡선**은 실업률과 인플레이션이 단기적으로 반대로 움직인다는 관계다. 실업이 낮으면(노동시장 과열) 기업이 사람을 구하려 임금을 올리고, 그 비용이 물가로 전이된다. 반대로 실업이 높으면 임금과 물가 압력이 식는다.
+**필립스 곡선**은 물가나 임금 상승률과 노동시장 여유의 관계를 설명하는 모형이다. 다른 조건이 같다면 수요 확대와 노동시장 긴축이 임금과 물가 압력을 높일 수 있다. 그러나 기대인플레이션과 공급 충격이 바뀌면 같은 실업률에서도 물가가 달라져 단기에도 항상 반대 방향으로 움직이지는 않는다.
 
-이 트레이드오프가 통화정책의 근본 딜레마다. 경기를 부양해 실업을 낮추면 인플레이션을 감수해야 하고, 물가를 잡으려 조이면 실업을 감수해야 한다. → [[Inflation|인플레이션]], [[Interest-Rates-Monetary-Policy|통화정책]]
+수요를 억제해 물가를 낮추는 정책에는 고용 비용이 생길 수 있다. 반면 공급망 정상화나 노동 공급 회복으로 물가 압력이 낮아지면 큰 실업 증가 없이 인플레이션이 내려갈 수도 있다 → [[Inflation|인플레이션]], [[Interest-Rates-Monetary-Policy|통화정책]].
 
-다만 이 관계는 **단기에만** 성립한다. 장기에는 사람들이 인플레이션을 미리 예상해 임금에 반영하므로, 물가만 오르고 실업은 자연실업률로 돌아간다(장기 필립스 곡선은 수직). 1970년대에 높은 실업과 높은 물가가 동시에 온 스태그플레이션이 단순한 필립스 곡선을 깨뜨리고 기대의 역할을 부각시켰다.
+기대가 조정되는 표준 모형의 장기 필립스 곡선은 수직으로 그린다. 인플레이션을 높여 실업을 영구적으로 낮출 수 없다는 모형 결론이며 단기의 안정적인 교환비율을 보장하지 않는다. 1970년대 스태그플레이션은 기대와 공급 충격을 함께 봐야 한다는 사례다.
 
 ## 5. 실업률만으로는 부족하다 — 보완 지표
 
@@ -62,7 +62,7 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 - **소득 상실**: 개인과 가계에 직접적 타격.
 - **인적자본 잠식**: 실업이 길어지면 기술이 녹슬고 재취업이 더 어려워진다(장기실업의 덫).
 - **사회적 비용**: 복지 지출 증가, 세수 감소, 사회 불안.
-- **오쿤의 법칙**: 경험적으로 실업률이 자연실업률보다 1%포인트 높으면 GDP가 대략 2%포인트가량 잠재 수준을 밑돈다. 실업은 곧 생산의 낭비다.
+- **오쿤의 법칙**: 생산과 실업의 경험적 관계다. 미국의 전통적인 갭 모형에서는 실업률이 기준보다 1%포인트 높을 때 실질GDP 수준이 잠재 수준보다 약 2% 낮다는 근사를 쓴다. GDP 수준의 비율 차이와 성장률의 %포인트 차이를 구분한다. 계수는 국가, 기간과 모형에 따라 달라지므로 한국이나 특정 해에 그대로 대입하지 않는다.
 
 ## 7. 핵심 지표와 숫자
 
@@ -82,6 +82,8 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 - [U.S. Bureau of Labor Statistics, Concepts and Definitions (CPS)](https://www.bls.gov/cps/definitions.htm)
 - [U.S. Bureau of Labor Statistics, Comparing employment from the BLS household and payroll surveys](https://www.bls.gov/web/empsit/ces_cps_trends.htm)
 - [Federal Reserve, Speech by Governor Kugler on navigating inflation waves while riding on the Phillips curve](https://www.federalreserve.gov/newsevents/speech/kugler20250220a.htm)
+- [Federal Reserve Bank of San Francisco, Okun's Law and the Unemployment Surprise of 2009](https://www.frbsf.org/research-and-insights/publications/economic-letter/2010/03/okun-law-unemployment-2009/) — 2026-10-02 갭 모형과 성장률 모형 및 단위 대조
+- [Federal Reserve Bank of San Francisco, Labor Markets in the Global Financial Crisis](https://www.frbsf.org/research-and-insights/publications/economic-letter/2013/12/labor-market-global-financial-crisis-okun-law/) — 국가와 시기별 계수 차이
 
 ## 관련 문서
 

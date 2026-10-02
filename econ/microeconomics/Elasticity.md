@@ -27,6 +27,8 @@ aliases: ["탄력성", "Elasticity"]
 
 탄력성은 기울기가 아니라 **변화율의 비율**이다.
 
+두 관측점 사이의 변화율은 분모를 명시해야 한다. 시작값을 쓰면 인상과 인하 방향에 따라 다른 탄력성이 나올 수 있어 구간 비교에는 **중점법**을 쓴다: `|(Q2 − Q1)/((Q1 + Q2)/2) ÷ ((P2 − P1)/((P1 + P2)/2))|`. 한 점의 미소 변화에서는 점탄력성 `|(dQ/dP) × (P/Q)|`을 쓴다. 가격 외 조건을 고정한 수요곡선상의 반응이며, 가격과 판매량이 함께 바뀐 관측만으로 인과적 탄력성이 확인되지는 않는다.
+
 ## 3. 무엇이 탄력성을 결정하나
 
 - **대체재의 유무**: 대체재가 많을수록 탄력적이다. 특정 카페는 탄력적이지만 커피 전체는 덜 탄력적이다.
@@ -41,7 +43,7 @@ aliases: ["탄력성", "Elasticity"]
 - **비탄력적**이면 가격을 올릴 때 줄어드는 판매량보다 오른 가격 효과가 커서 **총수입이 늘어난다**. 담배세를 올려도 세수가 늘고 흡연이 크게 안 주는 이유다.
 - **탄력적**이면 가격을 올리면 판매량이 더 크게 빠져 **총수입이 줄어든다**. 이런 상품은 오히려 가격을 내려 박리다매가 유리할 수 있다.
 
-가격 전략의 출발점이 바로 이 한 줄이다.
+이 관계는 **총수입(P × Q)** 에 관한 것이다. 가격을 내려 매출이 늘어도 추가 생산, 배송과 판매 비용 때문에 이익은 줄 수 있다. 가격 전략은 탄력성과 함께 한계비용, 생산능력과 경쟁 반응을 확인한다 → [[Production-and-Cost|생산과 비용]].
 
 ## 5. 다른 종류의 탄력성
 
@@ -67,7 +69,7 @@ aliases: ["탄력성", "Elasticity"]
 
 ## 출처
 
-- [OpenStax, Principles of Economics 3e, Price Elasticity of Demand and Price Elasticity of Supply](https://openstax.org/books/principles-economics-3e/pages/5-1-price-elasticity-of-demand-and-price-elasticity-of-supply)
+- [OpenStax, Principles of Economics 3e, Price Elasticity of Demand and Price Elasticity of Supply](https://openstax.org/books/principles-economics-3e/pages/5-1-price-elasticity-of-demand-and-price-elasticity-of-supply) — 2026-10-02 변화율 분모와 중점법 대조
 - [OpenStax, Principles of Economics 3e, Elasticity and Pricing](https://openstax.org/books/principles-economics-3e/pages/5-3-elasticity-and-pricing)
 
 ## 관련 문서

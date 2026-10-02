@@ -38,14 +38,16 @@ aliases: ["경기순환", "Business Cycle"]
 
 경기를 판단하는 기준선이 **잠재GDP**다. 한 나라가 인플레이션을 자극하지 않으면서 지속 가능하게 생산할 수 있는 수준이다.
 
-- 실제GDP > 잠재GDP → **양(+)의 갭**, 과열. 인플레이션 압력이 커진다.
-- 실제GDP < 잠재GDP → **음(−)의 갭**, 침체. 실업이 늘고 자원이 논다.
+- 실제GDP > 잠재GDP → **양(+)의 갭**, 여유 생산능력이 줄고 물가 상승 압력이 커질 수 있다.
+- 실제GDP < 잠재GDP → **음(−)의 갭**, 잠재 수준보다 생산이 적어 여유 자원이 남아 있는 상태다.
+
+GDP 갭은 생산의 **수준** 비교이고 경기침체는 경제활동의 **감소 국면**이므로 같은 개념이 아니다. 음의 갭 상태에서도 생산이 늘어 회복 중일 수 있다. 잠재GDP는 직접 관측되지 않는 추정치여서 새 데이터와 추정 방법에 따라 과거 갭도 수정된다.
 
 통화정책과 재정정책의 목표는 이 갭을 줄여 실제GDP를 잠재 수준 가까이 붙여 두는 것이다. → [[Interest-Rates-Monetary-Policy|통화정책]]
 
 ## 4. 경기침체(recession)의 정의
 
-흔히 **실질GDP가 두 분기 연속 감소**하면 경기침체라 부른다(기술적 정의). 다만 이건 편의적 규칙이고, 미국에서는 NBER라는 기관이 GDP뿐 아니라 고용, 소득, 생산 등을 종합해 침체의 시작과 끝을 판정한다. 고용이 무너지면 GDP가 두 분기 연속 마이너스가 아니어도 침체로 본다.
+흔히 **실질GDP가 두 분기 연속 감소**하면 기술적 경기침체라 부른다. 다만 모든 국가의 공식 판정 기준은 아니다. 미국 NBER는 경제 전반에 퍼진 유의미한 경제활동 감소의 깊이, 범위와 지속기간을 GDP, 고용, 소득, 생산 등으로 종합 판단한다. GDP 두 분기 감소나 고용 지표 하나만으로 자동 판정하지 않는다.
 
 ## 5. 경기지표 — 선행, 동행, 후행
 
@@ -57,7 +59,7 @@ aliases: ["경기순환", "Business Cycle"]
 | **동행지표(coincident)** | 경기와 함께 움직임 | GDP, 산업생산, 고용 |
 | **후행지표(lagging)** | 경기보다 늦게 움직임 | 실업률, 물가 |
 
-특히 **장단기 금리차 역전**(장기금리가 단기금리보다 낮아지는 현상)은 역사적으로 경기침체를 앞서 알리는 신호로 유명하다. 시장이 미래에 금리가 내려갈 것(=경기가 나빠질 것)이라 베팅하면 장기금리가 먼저 눌리기 때문이다. → [[Interest-Rates-Monetary-Policy#9. 핵심 지표와 숫자|금리]]
+**장단기 금리차 역전**(장기금리가 단기금리보다 낮아지는 현상)은 일부 국가와 기간에서 경기침체 선행 신호로 관찰됐다. 미래 단기금리 기대뿐 아니라 기간 프리미엄과 수급도 반영하므로 침체가 확정됐다는 뜻은 아니다 → [[Bonds|채권의 수익률곡선]].
 
 ## 6. 신용순환과 버블
 
@@ -91,7 +93,7 @@ aliases: ["경기순환", "Business Cycle"]
 - **실질GDP 성장률**: 경기의 가장 큰 그림
 - **장단기 금리차**: 역전되면 침체 경고
 - **실업률**: 후행이지만 침체의 고통을 직접 보여줌
-- **구매관리자지수(PMI)**: 50을 기준으로 경기 확장과 수축을 가르는 선행성 지표
+- **구매관리자지수(PMI)**: 해당 조사 기업의 전월 대비 개선과 악화 응답을 바탕으로 한 지표. 50은 변화 없음의 기준이며 제조업 PMI가 50 미만이라고 경제 전체의 GDP 감소가 확정되는 것은 아님
 
 ## 10. 흔한 오해
 
@@ -103,6 +105,9 @@ aliases: ["경기순환", "Business Cycle"]
 
 - [NBER, Business Cycle Dating Procedure: Frequently Asked Questions](https://www.nber.org/research/business-cycle-dating/business-cycle-dating-procedure-frequently-asked-questions)
 - [Federal Reserve, How We Conduct Monetary Policy](https://www.federalreserve.gov/aboutthefed/fedexplained/monetary-policy.htm)
+- [IMF, The Output Gap: Veering from Potential](https://www.imf.org/external/pubs/ft/fandd/basics/22_output-gap.htm) — 2026-10-02 생산 수준과 변화 방향의 구분 대조
+- [IMF, Making Monetary Policy Decisions in the Dark](https://www.imf.org/en/Blogs/Articles/2015/08/12/making-monetary-policy-decisions-in-the-dark) — 잠재GDP와 GDP 갭의 추정 및 수정 불확실성
+- [S&P Global, Purchasing Managers' Index](https://www.spglobal.com/market-intelligence/en/solutions/products/pmi) — PMI의 전월 대비 조사 기준
 
 ## 관련 문서
 

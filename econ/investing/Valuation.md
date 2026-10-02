@@ -24,6 +24,8 @@ aliases: ["밸류에이션", "Valuation"]
 
 두 가지가 결과를 좌우한다. 미래 현금흐름을 얼마로 보느냐(성장 가정)와 할인율을 얼마로 잡느냐다. 할인율은 [[Interest-Rates-Monetary-Policy|금리]]에 위험 프리미엄을 얹어 정하는데, 금리가 오르면 할인율이 커져 같은 현금흐름이라도 가치가 줄어든다. 금리가 모든 밸류에이션의 바닥에 깔리는 이유다.
 
+**현금흐름의 주인과 할인율을 맞춘다.** 채권자 지급 전의 기업 잉여현금흐름(FCFF)은 가중평균자본비용(WACC)으로 할인해 사업가치를 구하고, 순부채 등 비지분 청구권을 조정해 주식가치로 연결한다. 채무 상환과 차입까지 반영한 주주 잉여현금흐름(FCFE)은 자기자본 요구수익률로 할인한다. 회계상 순이익을 곧바로 현금흐름으로 쓰거나 FCFE를 WACC로 할인하면 값이 섞인다. 현금흐름과 할인율의 통화, 명목/실질 기준도 일치시킨다.
+
 ## 3. 상대가치 — 멀티플
 
 DCF는 가정이 많아 손이 무겁다. 그래서 비슷한 기업끼리 배수로 빠르게 비교하는 방법을 함께 쓴다.
@@ -91,7 +93,7 @@ EBITDA는 운전자본 변동과 설비투자 같은 현금 지출을 반영하�
 
 ## 출처
 
-- [NYU Stern, Discounted Cash Flow Valuation](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/val.html)
+- [NYU Stern, Discounted Cash Flow Valuation](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/val.html) — 2026-10-02 기업/주주 현금흐름과 할인율 대응 대조
 - [NYU Stern, Valuation: Entry Page](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/valuation/val.htm)
 - [SEC, How to Read a 10-K](https://www.sec.gov/answers/reada10k.htm)
 - [SEC, Modernization of Regulation S-K Items 101, 103, and 105: A Small Entity Compliance Guide](https://www.sec.gov/resources-small-businesses/small-business-compliance-guides/modernization-regulation-s-k-items-101-103-105-small-entity-compliance-guide)

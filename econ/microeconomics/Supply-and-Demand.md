@@ -52,7 +52,7 @@ aliases: ["수요와 공급", "Supply and Demand"]
 
 가격은 단순한 숫자가 아니라 두 가지 일을 동시에 한다.
 
-1. **배분**: 한정된 물건을 가장 필요로 하는(가장 높은 값을 낼) 사람에게 나눈다.
+1. **배분**: 한정된 물건을 해당 가격을 지불할 의향과 능력이 있는 사람에게 나눈다. 지불 의향과 능력은 절실한 필요나 사회적 우선순위와 같지 않다.
 2. **신호**: 어디에 부족이 있는지 생산자에게 알려 자원을 그쪽으로 이동시킨다.
 
 가격이 오른다는 건 "여기 더 만들라"는 신호이고, 내린다는 건 "그만 만들라"는 신호다.
@@ -81,7 +81,7 @@ aliases: ["수요와 공급", "Supply and Demand"]
 
 ## 출처
 
-- [OpenStax, Principles of Economics 3e, Demand, Supply, and Equilibrium in Markets for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services)
+- [OpenStax, Principles of Economics 3e, Demand, Supply, and Equilibrium in Markets for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services) — 2026-10-02 수요의 지불 의향과 능력 조건 대조
 - [OpenStax, Principles of Economics 3e, Shifts in Demand and Supply for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-2-shifts-in-demand-and-supply-for-goods-and-services)
 - [OpenStax, Principles of Microeconomics 3e, Demand and Supply at Work in Labor Markets](https://openstax.org/books/principles-microeconomics-3e/pages/4-1-demand-and-supply-at-work-in-labor-markets)
 - [OpenStax, Principles of Economics 3e, Wages and Employment in an Imperfectly Competitive Labor Market](https://openstax.org/books/principles-economics-3e/pages/14-2-wages-and-employment-in-an-imperfectly-competitive-labor-market)

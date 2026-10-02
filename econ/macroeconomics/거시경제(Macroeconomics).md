@@ -19,17 +19,17 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 - [[GDP-Economic-Growth|GDP와 경제성장]] — 국내총생산, 명목 vs 실질, 성장률, 잠재성장률, 복리의 힘 ✅
 
 ### 2. 물가
-- [[Inflation|인플레이션과 디플레이션]] — 물가가 오르내리는 원리, 화폐가치, CPI, 인플레의 원인과 위험 ✅
+- [[Inflation|인플레이션과 디플레이션]] — 물가 수준과 상승률, 디스인플레이션, CPI, 실질수익률과 위험 ✅
 
 ### 3. 돈과 정책
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 중앙은행, 기준금리, 통화량, 양적완화, 금리가 경제를 조이고 푸는 메커니즘 ✅
-- [[Fiscal-Policy|재정정책]] — 정부 지출과 세금, 승수효과, 재정적자와 국가부채, 케인지언 vs 통화주의 ✅
+- [[Fiscal-Policy|재정정책]] — 정부 지출과 세금, 승수효과의 조건, 재정적자와 국가부채의 구분, 구축효과 ✅
 
 ### 4. 고용
-- [[Unemployment-Employment|실업과 고용]] — 실업률, 실업의 종류, 완전고용, 필립스 곡선(물가와 실업의 트레이드오프) ✅
+- [[Unemployment-Employment|실업과 고용]] — 실업률과 보완 지표, 자연실업률의 추정, 필립스 곡선의 조건과 오쿤의 법칙 ✅
 
 ### 5. 순환과 대외
-- [[Business-Cycle|경기순환]] — 호황과 불황의 반복, 경기침체(recession), 버블과 금융위기 ✅
+- [[Business-Cycle|경기순환]] — 경기침체와 GDP 갭의 구분, PMI 해석, 버블과 금융위기 ✅
 - [[Exchange-Rates-Balance-of-Payments|환율과 국제수지]] — 환율 결정, 국제수지, 트릴레마, 달러 패권 ✅
 
 ## 처음 읽는 순서 추천

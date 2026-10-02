@@ -37,7 +37,7 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 
 정답인 배분은 없고, 두 가지가 비율을 정한다.
 
-- **시간지평**: 은퇴가 먼 젊은 투자자는 변동성을 시간이 흡수해주므로 주식 비중을 높일 수 있다. 돈 쓸 시점이 가까울수록 안전 자산을 늘린다.
+- **시간지평과 위험 감당 능력**: 목표까지 시간이 길면 단기 가격 변동을 감당할 여지가 커질 수 있다. 그러나 시간이 손실을 없애지는 않는다. 필요한 현금, 부채, 소득의 안정성과 손실을 감당할 능력을 함께 보고, 지급 시점이 가까운 자금에는 가격 위험과 현금화 조건을 따로 맞춘다.
 - **위험성향**: 같은 조건이라도 손실을 견디는 정도가 사람마다 다르다. 밤에 잠 못 들 배분은 아무리 이론적으로 옳아도 지속할 수 없다.
 
 ## 6. 현대 포트폴리오 이론 한 줄
@@ -48,7 +48,7 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 
 - **자산배분 우선**: 목표, 시간지평, 위험 감수 수준에 맞는 자산군 비중을 먼저 설계
 - **상관관계**: 분산의 효과를 정하는 진짜 변수
-- **리밸런싱**: 규율로 저가매수 고가매도
+- **리밸런싱**: 목표 비중으로 돌아가 위험 노출을 관리. 상대적 과거 성과가 실제 저평가나 고평가를 뜻하지는 않음
 - **시간지평과 위험성향**: 개인별 배분의 두 축
 
 ## 8. 흔한 오해
@@ -59,7 +59,7 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 
 ## 출처
 
-- [Asset Allocation, Diversification, and Rebalancing — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
+- [Asset Allocation, Diversification, and Rebalancing — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 2026-10-02 시간지평, 위험 감당 능력과 리밸런싱 목적 대조
 - [Determinants of Portfolio Performance — Financial Analysts Journal](https://doi.org/10.2469/faj.v51.n1.1869)
 
 ## 관련 문서

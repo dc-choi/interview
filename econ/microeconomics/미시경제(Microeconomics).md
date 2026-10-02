@@ -17,7 +17,7 @@ aliases: ["미시경제(Microeconomics)", "Microeconomics Map"]
 
 ### 1. 시장의 기본
 - [[Supply-and-Demand|수요와 공급]] — 수요곡선, 공급곡선, 균형가격, 곡선의 이동, 가격통제 ✅
-- [[Elasticity|탄력성]] — 가격탄력성, 총수입과의 관계, 소득과 교차탄력성, 조세의 귀착 ✅
+- [[Elasticity|탄력성]] — 변화율 분모와 중점법, 총수입과 이익의 구분, 소득/교차탄력성, 조세 귀착 ✅
 
 ### 2. 선택의 이론
 - [[Consumer-Theory-Utility|소비자 이론과 효용]] — 한계효용 체감, 무차별곡선, 예산선, 효용극대화 ✅
@@ -36,4 +36,6 @@ aliases: ["미시경제(Microeconomics)", "Microeconomics Map"]
 
 ## 거시경제와의 관계
 
-미시(개별 시장)와 거시([[거시경제(Macroeconomics)]], 경제 전체)는 경제학의 두 기둥이다. 거시의 총수요와 총공급도 결국 수많은 개별 시장의 수요와 공급을 합친 것이라, 미시가 거시의 미시적 기초가 된다.
+미시(개별 시장)와 거시([[거시경제(Macroeconomics)]], 경제 전체)는 경제학의 두 기둥이다. 거시 현상은 가계와 기업의 선택에 연결되지만, 총수요와 총공급 곡선은 개별시장 곡선의 단순 합산이 아니다. 개별 재화의 가격과 수량 대신 경제 전체의 물가수준과 실질 산출을 다루며 곡선이 기울어지는 이유도 다르다.
+
+근거: [OpenStax, Building a Model of Aggregate Demand and Aggregate Supply](https://openstax.org/books/principles-economics-3e/pages/24-2-building-a-model-of-aggregate-demand-and-aggregate-supply), 2026-10-02 대조.

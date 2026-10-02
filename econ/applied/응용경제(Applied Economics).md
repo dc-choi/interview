@@ -17,7 +17,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 
 ### 1. 현실 읽기
 - [[News-Causal-Chain-Drill|뉴스 인과 체인 드릴]] — 헤드라인을 도미노로 펼치는 연습 문제집(마스터 예제 + 7문제) ✅
-- [[Reading-Economic-Indicators|경제지표 캘린더 읽는 법]] — CPI, FOMC, 고용보고서. 서프라이즈와 근원지표, 선행과 후행 ✅
+- [[Reading-Economic-Indicators|경제지표 캘린더 읽는 법]] — 발표치와 예상, 헤드라인과 근원, 계절조정, 연율화와 개정치 ✅
 - [[Hidden-Infrastructure-Markets|보이지 않는 B2B 인프라 시장]] — 재보험, 배출권, 산업용 가스, 용량시장 등 수요 원천과 수익 구조, 장기 계약 인프라 자본의 듀레이션 ✅
 
 ### 2. 의사결정
