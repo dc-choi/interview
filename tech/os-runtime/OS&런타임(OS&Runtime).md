@@ -22,8 +22,8 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 
 ## Linux 체크리스트
 - [x] [[Container-Memory-Metrics|Page cache와 컨테이너 메모리 지표 (RSS, file cache, working set, reclaim, cgroup 진단)]]
-- [x] [[File-Descriptor-Limit|File descriptor limit]] — 기존 보강: [[Storage-and-FileSystem-Files#파일 메타데이터와 파일 디스크립터|파일 디스크립터 구조]], [[libuv-Threading#에러 처리|UV_EMFILE]]
-- [x] [[Epoll-Kqueue|epoll / kqueue]] — 기존 보강: [[libuv-Architecture#이벤트 디멀티플렉서|libuv의 OS별 이벤트 디멀티플렉서]]
+- [x] [[File-Descriptor-Limit|File descriptor limit]] — 기존 보강: [[Storage-and-FileSystem-Files#파일 메타데이터와 파일 디스크립터|파일 디스크립터 구조]], [[libuv-Threading#완료 시점과 오류 분류|libuv 오류 분류]]
+- [x] [[Epoll-Kqueue|epoll / kqueue]] — 기존 보강: [[libuv-Architecture#OS 알림과 실행 모델|libuv의 OS별 이벤트 제공자]]
 - [x] [[Linux-Netfilter-and-iptables|netfilter와 iptables (hook, table, chain, conntrack, 규칙 운영, 컨테이너 경로)]] — 기존 보강: [[Docker-Bridge-Networking#netfilter, iptables와 nftables|Docker의 firewall backend]]
 
 ## Runtime 체크리스트

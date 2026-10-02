@@ -74,13 +74,14 @@ PG를 이용한 계좌이체나 가상계좌 거래는 계약 설정에 따라 �
 - [국세청, 현금영수증 발급 의무](https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7796&mi=2471)
 - [현금영수증 발급의무 확대 안내 — 국세청](https://t.nts.go.kr/ulsan/na/ntt/selectNttInfo.do?mi=6163&nttSn=1297628)
 - [국세청, 전자세금계산서와 전자계산서 의무발급 대상](https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7787&mi=2461)
-- [국세청, 전자 증빙 발급과 전송 기한](https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7789&mi=6592)
+- [국세청, 전자 증빙 발급과 전송 기한](https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7789&mi=2463)
 - [토스페이먼츠, 현금영수증 API](https://docs.tosspayments.com/common/apis/cash-receipt)
 - [토스페이먼츠, 현금영수증](https://docs.tosspayments.com/resources/glossary/cash-receipt)
 - [세 번째 전문 — 결제 도메인 학습](https://mihyekang.github.io/study/payment/day-18.html)
 
 ## 관련 문서
 
+- [[VAT-for-Business|사업자 부가가치세]]
 - [[Payment-Settlement-and-Advance]]
 - [[POS-Split-Payment-and-Refund]]
 - [[Commerce-Order]]

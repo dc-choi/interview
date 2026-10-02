@@ -158,6 +158,8 @@ aliases: ["Solo Business Tax Checklist", "1인 사업자 세금 점검", "프리
 
 ## 관련 문서
 
+- [[Business-Tax|사업자 세무 기초]]
+- [[Tax-Bookkeeping-and-Filing|장부, 증빙과 신고 관리]]
 - [[Startup-Tax-Reduction-Same-Business-Test|창업중소기업 세액감면의 같은 종류 사업 판단]]
 - [[Government-Support-Programs|정부 지원사업의 구조]]
 - [[Business-Model|비즈니스 모델 & 수익 구조]]
