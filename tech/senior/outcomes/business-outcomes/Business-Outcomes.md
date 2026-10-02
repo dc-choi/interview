@@ -13,7 +13,7 @@ aliases: ["Business Outcomes", "비즈니스 성과와 재무"]
 
 - [[Business-Impact|비즈니스 임팩트 (성능 최적화, FinOps, Time to Market)]]
 - [[Productivity-Business-Ceiling|개발 생산성과 사업 성과 (Min/Max 프레임, 영양과다 비타민, 병목 이동)]]
-- [[Startup-Financial-Discipline|스타트업 재무 규율과 단위 경제 (이익과 현금, 공헌이익, 손익분기, 런웨이, 비용과 투자 판단)]]
+- [[Startup-Financial-Discipline|스타트업 재무 규율과 단위 경제 (이익과 현금, 운전자본과 지급 시점, 공헌이익, 손익분기, 런웨이)]]
 
 ## 관련 문서
 

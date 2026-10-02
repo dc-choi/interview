@@ -86,9 +86,19 @@ Alexander Osterwalder와 Yves Pigneur가 체계화하고 널리 알린 비즈니
 비즈니스의 단위당 수익성을 측정하는 핵심 지표이다.
 
 - **CAC (Customer Acquisition Cost):** 고객 1명 획득 비용
-- **LTV (Lifetime Value):** 고객 1명이 생애 동안 가져다주는 수익
+- **LTV (Lifetime Value):** 고객 관계 전체에서 기대하는 가치. 매출 기준인지 매출총이익이나 공헌이익 기준인지 명시한다. 매출 LTV를 그대로 획득 비용의 회수 재원으로 보지 않는다.
 - **LTV/CAC 비율:** 고객 생애 가치와 획득 비용의 관계. 산정 기간, gross margin, churn과 세그먼트 정의를 통일한 뒤 비교한다. 3:1 같은 숫자는 일부 SaaS 문맥의 출발점이지 보편 합격선이 아니다.
 - **Payback Period:** CAC를 회수하는 데 걸리는 기간. 12개월 같은 목표도 현금 여력, ACV, 계약 기간과 성장 단계에 따라 달라진다.
+
+### 같은 고객군과 비용 범위로 획득 비용을 회수하는가
+
+CAC의 분자는 광고비만인지 영업 인건비, 도구와 대행비까지 포함하는지 밝히고, 분모는 가입자가 아니라 같은 정의의 신규 유료 고객으로 맞춘다. 영업 주기가 길면 이번 달 비용과 이번 달 계약이 다른 고객군에 속할 수 있으므로 시차와 배분 가정을 남긴다.
+
+고객 이탈이 없고 고객당 월 공헌이익이 일정한 단순 모델에서 `CAC / 고객당 월 공헌이익`을 회수 개월 수로 쓴다. 실제로는 획득 코호트의 월별 유지 고객 수, 제공 비용, 환불을 반영한 누적 공헌이익이 그 코호트의 총 획득 비용 이상이 되는지 확인한다. 아직 유지 중인 고객의 관찰 기간을 확정된 전체 수명으로 취급하지 않는다.
+
+가상 예시: 10개 고객의 총 CAC가 100만원이고 고객당 월 공헌이익이 2만원이면 모두 유지될 때 5개월에 회수한다. 첫 달 후 5곳이 이탈하고 나머지가 유지되면 첫 달 20만원, 이후 월 10만원이므로 9개월이 필요하다. 평균 단가만으로 계산한 5개월과 다르다. 이는 일정 비용을 가정한 관리용 예시다.
+
+`월 고객당 매출 / 월 고객 이탈률` 같은 LTV 근사는 이탈 확률과 단가가 장기간 일정하다는 강한 가정에 의존한다. 월과 연 이탈률, 고객 수 이탈과 매출 이탈을 섞지 않는다. 초기의 짧은 무이탈 구간을 근거로 수명을 무한대로 늘리지 말고 관찰된 실적과 미래 추정 구간을 분리한다. 선납 현금이 들어오는 시점과 경제적 획득 비용 회수도 따로 본다.
 
 ### 공헌이익과 손익분기 고객 수
 
@@ -96,7 +106,7 @@ Alexander Osterwalder와 Yves Pigneur가 체계화하고 널리 알린 비즈니
 
 - 예: 부가가치세를 뺀 월 구독료가 3만 원이고 고객당 결제 수수료와 API 비용이 월 6천 원이면 고객당 월 공헌이익은 2만 4천 원이다. 월 고정비가 180만 원이면 손익분기 고객 수는 75곳이다. 판매가격, 고객당 변동비와 고정비 총액이 일정하고 모든 비용을 고정비나 변동비로 나눌 수 있다는 가정에서 나온 값이다.
 - 반복 결제 모델은 매달 해지하는 고객이 있으므로 누적 가입 수가 아니라 해지를 뺀 유료 고객 수가 손익분기 고객 수에 닿는 시점을 본다.
-- 획득 비용 회수 개월 수는 CAC를 고객당 월 공헌이익으로 나눈 값이다. 같은 기간에 획득한 고객의 평균 유지 개월 수가 이보다 짧으면 그 기간의 획득 비용을 회수하지 못하므로 두 값을 함께 본다.
+- 획득 비용 회수는 위 코호트 기준으로 점검한다. 단가와 비용, 고객 유지가 변하면 단순 나눗셈 대신 월별 누적 공헌이익을 계산한다.
 
 ### 서비스와 AI의 실제 제공 비용
 
@@ -114,6 +124,8 @@ AI를 쓰는 정보 서비스라면 자료 준비부터 생성, 원문 대조, �
 
 판단에는 단위당 수익성, 같은 기간의 전체 손익과 지급 시점별 현금 계획이 모두 필요하다. 가용 현금과 이미 약속한 지출을 바탕으로 재투자 범위를 정하는 방법은 [[Bootstrapped-Single-Product-Growth#4. 현금으로 성장 속도를 통제한다|현금에 맞춘 성장 속도]]에서 다룬다.
 
+월말 잔액이 양수여도 지급일에 돈이 부족할 수 있다. [[Startup-Financial-Discipline#운전자본과 지급 시점의 공백|운전자본과 지급일별 현금]]을 함께 점검한다.
+
 ## 적용 예시: 소프트웨어와 운영지원의 수익원
 
 다음은 특정 프로젝트의 현재 운영 상태가 아닌 일반화한 예시다. 무료 핵심 기능과 별도 유료 운영지원을 제공한다면 두 제공 범위와 비용을 나누어 본다. 소프트웨어가 무료여도 인프라와 지원 비용은 발생하며, 운영지원이 팔려도 그 고객이 소프트웨어 구독을 구매할지는 별도 가설이다.
@@ -128,6 +140,8 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - 위 일반화한 예시를 본인의 실행이나 성과로 사용하지 않는다.
 
 ## 출처
+- [Stripe Atlas, The business of SaaS](https://stripe.com/guides/atlas/business-of-saas) — 단순 LTV의 가정, 매출 기준 LTV와 초기 획득 지출. 2026-10-02 해당 개념 대조
+- [Stripe, CAC payback period](https://stripe.com/resources/more/what-is-the-cac-payback-period) — 획득 비용의 회수와 매출, 마진의 구분. 위 코호트 계산은 이를 적용한 가상 예시
 - [Principles of Accounting, Volume 1, Chapter 16: Why It Matters — OpenStax](https://openstax.org/books/principles-financial-accounting/pages/16-why-it-matters): 2026-09-22 확인, 발생주의 손익과 현금흐름의 구분.
 - [Principles of Accounting, Volume 2, 2.2 Identify and Apply Basic Cost Behavior Patterns — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/2-2-identify-and-apply-basic-cost-behavior-patterns)
 - [Principles of Accounting, Volume 2, 3.1 Explain Contribution Margin and Calculate Contribution Margin per Unit, Contribution Margin Ratio, and Total Contribution Margin — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/3-1-explain-contribution-margin-and-calculate-contribution-margin-per-unit-contribution-margin-ratio-and-total-contribution-margin)

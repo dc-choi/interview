@@ -11,7 +11,7 @@ aliases: ["Business Model Index"]
 
 ## 목차
 
-- [x] [[Business-Model|비즈니스 모델 & 수익 구조]]
+- [x] [[Business-Model|비즈니스 모델 & 수익 구조]] — 수익원, 공헌이익과 손익분기, 코호트별 획득 비용 회수, 현금 계획
 - [x] [[Pricing-Strategy|가격 정책 설계]]
 - [x] [[Healthcare-B2B-Solutions|의료 B2B 솔루션의 사업 구조와 시장 진입]]
 - [x] [[Live-Ops-Service-Model|라이브옵스와 서비스형 제품 모델]] — 패키지형과 서비스형, 재접속, 지속, 결제 이유와 운영 조직
