@@ -138,6 +138,26 @@ const createPerson = (name: string): Person => ({
 
 클래스를 피하는 것이 목적이면 생성자 함수보다 객체를 반환하는 factory 함수가 맞다. 반환 타입을 interface로 명시해 구현 누락을 잡고, 비공개 상태는 클로저에 둔다. `instanceof`, 상속, decorator가 필요하거나 많은 인스턴스가 prototype 메서드를 공유해야 하면 class를 유지한다. prototype 공유와 인스턴스별 함수의 메모리, identity 차이는 [[JavaScript-Class-Semantics|JavaScript 클래스 의미론]]의 arrow field 설명과 같은 판단이다. React의 함수형 컴포넌트 전환 같은 클래스 지양 흐름은 컴포넌트 모델의 변화이지 생성자 함수 패턴을 권하는 것이 아니다.
 
+## mixin은 생성자를 합성하는 선택지
+
+여러 기반 클래스를 상속하는 문법은 없다. 기존 생성자를 받아 파생 클래스를 반환하는 factory로 동작을 합성할 수 있다.
+
+```typescript
+type Constructor = new (...args: any[]) => object;
+
+function Timestamped<TBase extends Constructor>(Base: TBase) {
+  return class extends Base {
+    readonly createdAt = new Date();
+  };
+}
+
+class Entity { constructor(readonly id: string) {} }
+const TimestampedEntity = Timestamped(Entity);
+const entity = new TimestampedEntity("item-1");
+```
+
+생성자 전달에 필요한 `any[]`를 이 경계에 제한하고 합성 결과의 생성자와 인스턴스 타입을 추론하게 둔다. base에 특정 메서드가 필요하면 constructor constraint의 인스턴스 구조에 그 계약을 추가한다. 오래된 mixin 예제의 prototype 복사와 `implements`만으로는 초기화, 비공개 상태나 런타임 구현이 함께 전달된다고 보장할 수 없다. 동작 하나를 공유할 뿐이라면 일반 함수나 객체 합성이 더 단순한지 먼저 확인한다.
+
 ## 관련 문서
 
 - [[TypeScript-Type-Compatibility|타입 호환성]]
@@ -146,6 +166,8 @@ const createPerson = (name: string): Person => ({
 
 ## 출처
 
+- [TypeScript Deep Dive, Mixins — Basarat](https://basarat.gitbook.io/typescript/type-system/mixins)
+- [TypeScript Handbook, Mixins](https://www.typescriptlang.org/docs/handbook/mixins.html)
 - [TypeScript Handbook, Classes](https://www.typescriptlang.org/docs/handbook/2/classes.html)
 - [TypeScript Handbook, Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)
 - [MDN, Private elements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_elements)

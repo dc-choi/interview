@@ -14,6 +14,8 @@ object를 property 집합과 internal method의 조합으로 보는 관점 — d
 - [[JavaScript-Object-and-Array-Operations|Object와 Array 연산]]: 복사, descriptor, mutation, 목적별 equality 알고리즘
 - [[JavaScript-Global-JSON-Date-and-Builtins|global object, JSON과 Date]]: Realm 경계, built-in과 host API의 구분
 
+- [[JavaScript-Internationalization|Intl 지역화]]: locale, 숫자, 복수형과 상대 시간
+
 ## 함께 볼 문서
 
 - [[자바스크립트(JS)|JavaScript(JS)]]

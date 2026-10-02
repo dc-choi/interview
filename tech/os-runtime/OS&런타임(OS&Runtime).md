@@ -13,10 +13,11 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[tech/os-runtime/linux/Linux-File-System|Linux]] — 파일 시스템, 디렉토리 구조 (FHS), 실행 비트와 파일 시그니처, 로그와 디스크 진단 명령
 - [[tech/os-runtime/runtime/런타임(Runtime)|런타임 (Runtime)]] — Thread vs Event Loop, I/O 동시성과 병목 관측, async/await, Backpressure
 - [[tech/os-runtime/jvm/JVM|JVM]] — 아키텍처, GC, 메모리 누수, 컨테이너 메모리
-- [[tech/os-runtime/nodejs/Node.js|Node.js]] — V8, libuv, Event Loop, Module System, Stream, Worker Threads
+- [[tech/os-runtime/nodejs/Node.js|Node.js]] — V8, libuv API, Event Loop, Stream, Worker Threads, 네이티브 애드온과 Express 5
+- [[V8-Cpp-API|V8 C++ API]] — Isolate와 native 자원 수명, module 실행, 직렬화, cppgc와 Inspector
 - [[Deno-Runtime|Deno]] — Node와의 차이, TypeScript 실행, import map, 캐시와 lockfile, Docker 배포
   - [[Deno-Runtime-Permissions|Deno 권한 모델]] — 자원별 flag, NotCapable, sandbox를 벗어나는 flag, task별 권한 분리와 permission set
-- [[tech/os-runtime/nestjs/NestJS|NestJS]] — Clean Architecture, DI
+- [[tech/os-runtime/nestjs/NestJS|NestJS]] — DI, HTTP, GraphQL, Microservices, 웹훅, durable workflow, 보안과 신뢰성
 - [[tech/os-runtime/spring/Spring|Spring]] — Request Lifecycle, @Transactional, JPA 영속성
 
 ## Linux 체크리스트

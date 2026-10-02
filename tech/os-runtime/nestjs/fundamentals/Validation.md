@@ -1,12 +1,12 @@
 ---
 tags: [runtime, nestjs, validation, dto, class-validator]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-10-02
 category: "OS & Runtime"
 aliases: ["Validation", "ValidationPipe 딥다이브", "Mapped Types"]
 ---
 
-# Validation — ValidationPipe 딥다이브
+# Validation — 클래스 DTO와 Standard Schema
 
 전역에 `app.useGlobalPipes(new ValidationPipe())`를 바인딩하면 class-validator 데코레이터가 붙은 DTO를 쓰는 모든 라우트가 자동 검증되고, 위반 시 400과 메시지 배열로 응답한다. **옵션 표(whitelist, transform 등)와 DTO 작성 패턴은 [[NestJS-Pipes]]가 정본** — 이 문서는 그 밖의 변환 시맨틱, 타입 유틸, 배열 검증을 다룬다.
 
@@ -38,9 +38,25 @@ aliases: ["Validation", "ValidationPipe 딥다이브", "Mapped Types"]
 - 최상위가 배열(`@Body() dtos: CreateUserDto[]`)이면 제네릭 메타데이터 소실로 검증되지 않는다. 배열을 감싸는 전용 클래스를 만들거나 `@Body(new ParseArrayPipe({ items: CreateUserDto }))`.
 - 쿼리스트링의 comma 구분 리스트 파싱: `new ParseArrayPipe({ items: Number, separator: ',' })`.
 
+## v12의 Standard Schema 검증
+
+`StandardSchemaValidationPipe`는 Zod, Valibot, ArkType 등 Standard Schema schema의 `~standard.validate()`를 사용한다. handler의 `@Body({ schema })`, `@Param('id', { schema })`, `@Query({ schema })`는 metadata만 저장하므로 pipe를 실제로 등록해야 한다. schema가 없는 인자는 그대로 통과한다. 클래스 기반 ValidationPipe와 함께 점진적으로 도입할 수 있다.
+
+- 기본 `transform: true`는 schema의 **출력**을 handler에 전달해 coercion, default, transform을 적용한다. false면 검증 뒤 원래 입력을 넘기므로 TS 타입도 `z.input` 등 입력 타입을 따른다.
+- 알 수 없는 key의 처리 방식은 pipe의 whitelist 옵션이 아니라 schema가 정한다. Zod의 `object`는 제거, `strictObject`는 거부, `looseObject`는 유지한다.
+- schema의 array는 element까지 검증한다. 클래스 배열의 metadata 소실과 구분한다. 에러 path에는 array index도 포함된다.
+- custom param decorator의 검증은 `validateCustomDecorators: true`로 활성화한다. `validateOptions`는 라이브러리 검증 옵션, `exceptionFactory`는 검증 issue를 해당 transport의 예외로 변환한다.
+- 클래스 ValidationPipe의 v12 `errorFormat`은 기본 list 또는 property path별 grouped 형식이다. validation error에 target/value를 담는 옵션은 민감 입력의 노출 여부를 확인한다.
+
 ## 전송층 무관
 
-ValidationPipe는 HTTP뿐 아니라 WebSocket, 마이크로서비스 컨텍스트에서도 동일하게 동작한다.
+ValidationPipe와 StandardSchemaValidationPipe는 HTTP, WebSocket, 마이크로서비스에서 사용할 수 있다. 기본 실패 예외는 HTTP용이므로 `exceptionFactory`에서 WS는 `WsException`, RPC는 `RpcException`으로 바꾼다. HTTP exception을 다른 transport에 그대로 던지면 원하는 오류 계약이 되지 않는다.
+
+## 타입 선언과 실제 pipeline을 함께 확인
+
+공식 Zod sample은 `z.infer<typeof Schema>`로 TS DTO를 만들고 `@Body({ schema: Schema })`와 global StandardSchemaValidationPipe를 함께 등록한다. DTO 타입만 정의하거나 schema metadata만 붙인 상태는 validation 완료가 아니다. 유효 입력, 잘못된 타입과 필수 field 누락을 실제 HTTP 요청으로 확인한다.
+
+커스텀 pipe의 계약은 `transform(value, ArgumentMetadata)`의 **반환값**이 handler 인자가 된다는 것이다. `ArgumentMetadata.schema`는 schema metadata이며 metatype과 다른 필드다. 숫자 parsing 예제의 `parseInt`를 검증 정책으로 그대로 쓰면 `12x` 같은 입력이 12로 수용될 수 있다. 정수 전체 문자열 계약이 필요하면 built-in ParseIntPipe 또는 해당 schema의 명시적인 규칙을 쓴다.
 
 ## 관련 문서
 
@@ -49,5 +65,8 @@ ValidationPipe는 HTTP뿐 아니라 WebSocket, 마이크로서비스 컨텍스�
 - [[NestJS-Custom-Decorator-Patterns|커스텀 데코레이터 (validateCustomDecorators)]]
 
 ## 출처
-- [NestJS — Validation](https://docs.nestjs.com/techniques/validation)
+- [NestJS — Validation](https://docs.nestjs.com/application/validation)
 - [NestJS — OpenAPI Mapped types](https://docs.nestjs.com/openapi/mapped-types)
+- [NestJS API, ArgumentMetadata](https://api-references-nestjs.netlify.app/api/common/ArgumentMetadata)
+- [NestJS API, PipeTransform](https://api-references-nestjs.netlify.app/api/common/PipeTransform)
+- [NestJS sample, Standard Schema input](https://github.com/nestjs/nest/blob/7fb52e7f4f7314fbc117e369a09297bc2ecadf6b/sample/35-zod-validation/src/cats/cats.controller.ts)

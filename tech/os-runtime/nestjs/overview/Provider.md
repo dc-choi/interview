@@ -49,6 +49,8 @@ Nest는 Service의 인스턴스를 생성하고 반환하여(또는 싱글톤의
 
 그런 다음 이 종속성은 컨트롤러의 생성자에 주입되거나 지정된 프로퍼티에 할당됩니다.
 
+interface, type alias와 `import type`으로 가져온 클래스는 런타임 토큰으로 남지 않는다. 전용 token을 `@Inject()`로 지정하거나 일반 class import를 사용한다. 추상 클래스는 런타임 값이므로 계약과 토큰을 함께 표현할 수 있다.
+
 ### Scopes
 Provider의 수명(Scope)은 일반적으로 애플리케이션 수명 주기와 일치합니다.
 
@@ -77,6 +79,8 @@ Provider를 정의하는 방법에는 여러 가지가 있습니다. 일반 값,
 이러한 경우 종속성은 선택 사항으로 간주되며 configuration Provider가 없어도 오류가 발생해서는 안 됩니다.
 
 Provider를 선택 사항으로 표시하려면 생성자 서명에서 @Optional() 데코레이터를 사용합니다.
+
+`@Optional()`은 provider 미등록 시 undefined 주입을 허용할 뿐 기본값을 만들지 않는다. 소비 클래스가 fallback을 처리한다. v12에서는 부모 constructor의 optional marker가 상속되지 않으므로 subclass에서 constructor와 `@Optional()`을 다시 선언해야 한다.
 
 Custom Provider 및 관련 토큰의 작동 방식에 대한 자세한 내용은 [[Custom-Provider|Custom Provider]]를 참조하세요.
 
@@ -111,4 +115,5 @@ Custom Provider 및 관련 토큰의 작동 방식에 대한 자세한 내용은
 - [[Injection-Scopes|Injection Scopes]]
 
 ## 출처
+- [NestJS — Migration guide](https://docs.nestjs.com/migration-guide)
 - [NestJS — Providers](https://docs.nestjs.com/providers)

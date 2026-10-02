@@ -2,181 +2,108 @@
 tags: [runtime, nodejs]
 status: done
 category: "OS & Runtime"
+verified_at: 2026-10-01
 aliases: ["libuv Threading", "libuv 스레드 풀", "libuv 스레딩", "libuv 에러"]
-verified_at: 2026-08-05
 ---
 
-### libuv 스레드 풀, 스레딩, 에러
-libuv의 스레드 풀, 스레딩 프리미티브, 스레드 간 통신(`uv_async`), 동적 라이브러리 로딩, TTY, 시스템 정보 유틸리티, 그리고 에러 처리 규약을 다룬다.
+# libuv 스레드 풀과 스레드 간 통신
 
-## 스레드 풀 (`uv_threadpool`)
-```
-기본 크기: 4개 스레드 (UV_THREADPOOL_SIZE 환경변수로 최대 1024까지 확장 가능)
+libuv의 work queue는 루프에서 blocking 작업을 분리하고 완료를 원래 loop 스레드로 돌려준다. 직접 만든 native thread, JavaScript [[Worker-Threads]], libuv pool은 각각 다른 실행 자원이다.
 
-스레드 풀에 위임되는 작업:
-- 파일 시스템 작업 (fs.readFile, fs.writeFile 등)
-- DNS 조회 (dns.lookup — getaddrinfo 기반)
-- CPU 집약적 작업 (crypto.pbkdf2, crypto.randomBytes, zlib 압축)
-- 사용자 정의 C++ 애드온의 비동기 작업
+## 전역 스레드 풀
 
-스레드 풀에 위임되지 않는 작업 (커널에 직접 위임):
-- TCP/UDP 소켓 (네트워크 I/O)
-- 파이프
-- DNS resolve (c-ares 라이브러리 사용)
-```
+pool은 **프로세스 전체의 모든 event loop가 공유**한다. 기본 4개이며 `UV_THREADPOOL_SIZE`를 startup에 지정한다. 최대치는 1.30.0부터 1024(이전 128)다. 최초 pool 사용 때 설정된 전체 스레드를 초기화하므로 작업마다 스레드를 생성하지 않는다.
 
-### 스레드 풀과 이벤트 루프의 관계
-```
-1. JS에서 비동기 작업 요청 (예: fs.readFile)
-2. libuv가 스레드 풀의 워커 스레드에 작업 할당
-3. 워커 스레드가 블로킹 I/O를 수행
-4. 완료 시 결과를 이벤트 큐에 등록
-5. 이벤트 루프(메인 스레드)가 Poll 페이즈에서 콜백을 꺼내 실행
-```
+1.45.0부터 worker stack은 8MB이며 대부분의 플랫폼에서 실제 stack은 필요에 따라 커진다. 1.50.0부터 기본 이름은 libuv-worker다. 크기 증가가 항상 지연을 줄이지는 않으며 메모리, CPU contention과 OS 한도를 포함해서 판단한다.
 
-**주의**: libuv 스레드 풀 ≠ Worker Threads. 상세 비교는 [[Worker-Threads|워커 스레드]] 참조.
+| pool 작업 | loop에서 수행하는 작업 |
+|---|---|
+| 기본 파일시스템 I/O | TCP/UDP nonblocking I/O와 callback |
+| 시스템 getaddrinfo/getnameinfo | timer, poll, handle 단계 callback |
+| 사용자 uv_queue_work의 work callback | after_work callback |
 
-### `uv_queue_work` — 사용자 작업 큐잉
+Linux 파일 I/O의 선택적 io_uring 경로는 [[libuv-Filesystem]]을 본다. Node.js의 일부 crypto/zlib 작업도 pool을 이용하지만 그것은 상위 런타임이 제출한 작업이다. Node의 c-ares resolve를 getaddrinfo의 pool 경로와 혼동하지 않는다.
+
+pool을 늘려도 loop callback의 직렬 실행은 병렬화되지 않는다. 반대로 파일/DNS/CPU 작업을 같은 pool에 많이 넣으면 서로 대기 시간을 늘린다. loop가 여러 개라는 이유만으로 pool이 개별 격리되는 것도 아니다.
+
+## 사용자 작업과 baton
+
 ```c
-// 블로킹 작업을 스레드 풀로 오프로드하는 핵심 함수
-int uv_queue_work(uv_loop_t* loop, uv_work_t* req,
-                  uv_work_cb work_cb,        // 스레드 풀에서 실행
-                  uv_after_work_cb after_cb); // 메인 루프에서 실행
-
-// 복잡한 데이터 전달: baton 패턴
-typedef struct {
-    uv_work_t req;        // 첫 멤버로 배치하면 캐스팅이 편리
-    char* host;
-    int port;
-    // ... 기타 데이터
-} my_baton_t;
-
-my_baton_t *baton = malloc(sizeof(my_baton_t));
-baton->req.data = (void*)baton;  // data 멤버에 자신을 저장
-uv_queue_work(loop, &baton->req, work_fn, after_fn);
+int uv_queue_work(uv_loop_t *loop, uv_work_t *req,
+                  uv_work_cb work_cb,
+                  uv_after_work_cb after_work_cb);
 ```
 
-### `uv_cancel` — 작업 취소
-취소 가능한 요청은 `uv_fs_t`, `uv_getaddrinfo_t`, `uv_getnameinfo_t`, `uv_random_t`, `uv_work_t`, `uv_write_t` 여섯 종류다. 이미 실행 중이거나 끝난 요청은 실패하며, write만 예외로 진행 중인 쓰기도 중단을 시도한다(콜백이 부분 쓰기를 보고할 수 있음). 취소되면 fs는 `req->result`가, 나머지는 콜백 status가 `UV_ECANCELED`가 된다.
+work_cb는 pool 스레드에서, after_work_cb는 제출한 loop의 스레드에서 실행된다. 요청 context는 `req->data`로 전달한다. work_cb에서 loop/handle API나 JavaScript/V8 객체를 직접 조작하지 않는다. thread-safe라고 명시된 API만 별도로 사용할 수 있다.
 
-## 스레딩
+request와 입력/출력 데이터를 묶은 구조체를 baton이라고 부르는 패턴이 있다. request를 첫 멤버로 두면 공통 포인터 캐스팅이 쉽지만 이것이 스레드 동기화를 제공하지는 않는다. 완료 callback까지 구조체와 필요한 데이터 수명을 유지하고, 제출 오류라면 callback이 오지 않으므로 호출 측에서 정리한다.
 
-### 스레드 생성/관리
+main과 worker가 동시에 바꾸는 데이터는 mutex 또는 적절한 atomic 규약을 사용한다. 작업 완료 뒤 loop callback에서 결과를 소비하고 baton을 해제하면 수명 경계가 명확해진다.
 
-| 함수 | 설명 |
-|------|------|
-| `uv_thread_create()` / `uv_thread_create_ex()` | 새 스레드 생성 (옵션 지정 가능) |
-| `uv_thread_join()` / `uv_thread_detach()` | 스레드 종료 대기 / 분리 |
-| `uv_thread_self()` / `uv_thread_equal()` | 현재 스레드 ID / 비교 |
-| `uv_thread_setaffinity()` / `getaffinity()` | CPU 친화성 설정/조회 |
-| `uv_thread_setpriority()` / `getpriority()` | 우선순위 설정/조회 |
+`uv_cancel()`은 아직 실행되지 않은 work를 취소하고 after_work에 `UV_ECANCELED`를 전달한다. 시작된 장기 작업은 강제 중단하지 못한다. 종료 플래그를 주기적으로 확인하는 협력적 취소가 필요하다. 취소 성공 뒤에도 완료 callback 전 메모리를 해제하면 안 된다. 전체 request 취소 계약은 [[libuv-Handles#취소는 완료를 기다리는 작업]]을 본다.
 
-### 동기화 프리미티브
+## 직접 스레드 만들기
 
-| 프리미티브 | 주요 함수 | 특징 |
-|-----------|----------|------|
-| **뮤텍스** | `uv_mutex_init/lock/trylock/unlock/destroy` | pthread_mutex 직접 매핑. BSD는 재귀 불가, Windows는 항상 재귀 |
-| **읽기-쓰기 락** | `uv_rwlock_rdlock/wrlock/...` | 다수 읽기 동시 허용, 쓰기 시 배타적 |
-| **세마포어** | `uv_sem_init/post/wait/trywait` | 카운팅 기반 동기화 |
-| **조건 변수** | `uv_cond_wait/timedwait/signal/broadcast` | 뮤텍스와 함께 사용 |
-| **배리어** | `uv_barrier_init/wait/destroy` | N개 스레드 동기 지점 |
+native threading API는 event loop 없이도 사용할 수 있다. `uv_thread_create(tid, entry, arg)`는 void entry와 context를 실행한다. `uv_thread_join()`은 종료까지 호출 스레드를 막으며 pthread_join처럼 반환값 pointer를 받지 않으므로 결과는 공유 context에 저장한다.
 
-### 일회성 초기화 / TLS
-```
-uv_once(guard, callback)  — 여러 스레드가 호출해도 함수가 딱 한 번만 실행됨.
-uv_key_create/get/set     — 스레드-로컬 스토리지 (TLS). 각 스레드가 독립 값 보유.
-```
+`uv_thread_create_ex()`는 STACK_SIZE flag와 stack_size를 받는다. 0은 기본 크기, 다른 값은 page 경계로 올림한다. options 구조체의 크기/layout은 이후 확장될 수 있으므로 고정된 바이너리 layout을 가정하지 않는다.
 
-### 스레드 간 통신 (`uv_async_t`)
-```
-uv_async_send()는 다른 스레드에서 이벤트 루프를 깨워 콜백을 실행시킨다.
+`uv_thread_detach()`(1.50.0+)는 종료 시 thread 자원을 자동 해제하게 한다. detach는 실행 중인 context나 동기화 객체까지 자동 해제하지 않는다. 종료 확인이 필요한 자원에는 join이나 별도 완료 규약을 선택한다.
 
-핵심 특성:
-- 어떤 스레드에서든 호출 가능 (async-signal-safe)
-- 시그널 핸들러 내에서도 안전하게 사용 가능
-- libuv가 여러 호출을 병합(coalesce)할 수 있음 → send를 5번 호출해도 콜백은 1번만 실행될 수 있다
-- 콜백은 최소 1회 실행이 보장됨 (send 호출 이후)
-- 루프를 가진 스레드만 수신자가 될 수 있음
+`uv_thread_self/equal`로 ID를 다루며 Unix의 pthread_t 구현에 직접 의존하지 않는다. name과 priority API는 이미 종료한 thread에 호출하면 undefined behavior다. name 길이는 플랫폼 한도를 넘으면 잘리고 getname은 NUL 여유가 필요하다.
 
-주의: uv_async_init()은 다른 핸들과 달리 초기화 즉시 핸들을 시작(start)한다.
-활용: 데이터 접근은 뮤텍스/락으로 보호하고, uv_async_send()는 깨우기만 담당.
-```
+affinity는 byte 단위 CPU mask와 `uv_cpumask_size()` 이상 용량을 사용한다(1.45.0+). macOS 미지원, Windows 변경은 원자적이지 않다. `uv_thread_getcpu()`는 현재 Windows/Linux/FreeBSD만 지원한다. thread priority는 OS별 실제 값과 권한 요구가 다르며 set/get 왕복 값이 같다고 가정하지 않는다.
 
-## 유틸리티
+## 동기화 프리미티브
 
-### 동적 라이브러리 로딩
-```
-uv_dlopen(path, &lib)       — 공유 라이브러리(.so/.dll) 로드
-uv_dlsym(&lib, name, &ptr)  — 심볼(함수/변수) 검색
-uv_dlclose(&lib)            — 라이브러리 언로드
-uv_dlerror(&lib)            — 에러 메시지 조회. 플러그인 시스템 구현에 활용.
-```
+| 프리미티브 | 역할과 주의점 |
+|---|---|
+| mutex | 배타적 접근, init/lock/unlock/destroy와 trylock |
+| recursive mutex | 같은 thread의 재진입, condition variable과 함께 사용하지 않음 |
+| rwlock | 동시 reader와 배타적 writer, 공정성이나 writer 우선 보장을 추정하지 않음 |
+| semaphore | permit count, wait는 block, trywait는 즉시 결과 |
+| condition variable | mutex와 predicate를 함께 사용하고 깨어나면 조건 재확인 |
+| barrier | count만큼 도착할 때까지 기다리는 동기화 지점 |
 
-### TTY (`uv_tty_t`)
-```
-터미널 입출력 핸들. uv_stream_t의 하위 타입.
-uv_tty_init(loop, &tty, fd, unused)    — 초기화 (fd: 0=stdin, 1=stdout, 2=stderr. 4번째 인자는 v1.23.1부터 미사용)
-uv_tty_set_mode(&tty, mode)            — UV_TTY_MODE_NORMAL / UV_TTY_MODE_RAW
-uv_tty_get_winsize(&tty, &width, &height) — 터미널 크기 조회
-uv_tty_reset_mode()                     — 프로그램 종료 시 터미널 복원 (필수)
-uv_guess_handle(fd)                     — FD가 TTY/파이프/파일인지 판별
-```
+일반 mutex의 재진입 동작은 플랫폼에 따라 다르다. Windows mutex는 재귀적이라는 guide 설명을 portable한 재귀 보장으로 사용하지 않는다. 명시적 recursive API와 재진입을 피하는 설계를 구분한다. 다른 thread가 소유한 mutex를 대신 unlock하는 방식은 사용하지 않는다.
 
-### 시스템 정보
+`uv_cond_wait/timedwait()`는 spurious wakeup이 가능하다. timeout은 호출 시점 기준 상대 나노초다. condition이 실제 만족했는지를 반복 확인하며 recursive mutex를 함께 사용하지 않는다.
 
-| 함수 | 설명 |
-|------|------|
-| `uv_cpu_info()` | CPU 정보 (모델, 속도, 코어 수) |
-| `uv_get_free_memory()` / `uv_get_total_memory()` | 메모리 정보 |
-| `uv_interface_addresses()` | 네트워크 인터페이스 목록 |
-| `uv_os_uname()` / `uv_os_gethostname()` | OS 정보 / 호스트명 |
-| `uv_hrtime()` | 고해상도 타임스탬프 (나노초) |
-| `uv_exepath()` / `uv_cwd()` / `uv_chdir()` | 실행 파일 경로 / 작업 디렉토리 |
-| `uv_os_homedir()` / `uv_os_tmpdir()` | 홈/임시 디렉토리 |
-| `uv_os_getenv()` / `uv_os_setenv()` | 환경 변수 조회/설정 |
-| `uv_random()` | 암호학적으로 안전한 난수 생성 |
+`uv_barrier_wait()`의 양수 반환은 임의로 선택된 serializer thread다. 이 역할을 정리에 쓸 수 있지만 다른 thread의 마지막 접근이 끝나는 수명까지 보장해야 한다. 동기화 객체를 destroy한 뒤 재사용하지 않는다.
 
-## 에러 처리
-libuv의 에러는 음수 상수로 표현된다. 초기화/동기 함수가 음수를 반환하면 에러. 비동기 함수가 에러를 반환하면 콜백은 절대 호출되지 않는다.
+`uv_once()`는 `UV_ONCE_INIT`으로 정적 초기화한 같은 guard에 대해 딱 한 번 callback을 실행하며 다른 caller는 기다린다. guard를 pointer로 전달한다. `uv_key_create/get/set/delete`는 TLS pointer 슬롯이며 키 수 한도가 있을 수 있다. 슬롯에 넣은 객체의 소유권은 별도 관리한다.
 
-### 에러 변환 함수
+## uv_async는 알림 병합
 
-| 함수 | 설명 |
-|------|------|
-| `uv_strerror(err)` | 에러 코드 → 설명 문자열 |
-| `uv_err_name(err)` | 에러 코드 → 이름 문자열 |
-| `uv_translate_sys_error(sys_errno)` | OS 에러 → libuv 에러 (v1.10.0+) |
+`uv_async_init()`은 성공 즉시 active handle을 만든다. callback NULL도 허용된다. 다른 thread 또는 native signal handler에서 `uv_async_send()`로 깨우면 callback은 **loop 스레드**에서 실행된다. async handle을 닫기 전 sender를 종료시켜 해제된 handle 접근을 막는다.
 
-### 주요 에러 코드
+여러 send가 한 callback으로 합쳐질 수 있다. send 횟수를 작업 개수로 해석하지 않는다. 메시지마다 처리가 필요하면 mutex/atomic으로 보호한 queue를 두고 callback에서 queue를 drain한다. 최신 진행률만 필요하다면 상태 값을 읽는 방식으로 충분하다.
 
-| 에러 | 의미 |
-|------|------|
-| `UV_EADDRINUSE` | 주소 이미 사용 중 |
-| `UV_ECONNREFUSED` / `UV_ECONNRESET` | 연결 거부됨 / 피어에 의해 리셋 |
-| `UV_ETIMEDOUT` | 연결 시간 초과 |
-| `UV_ENOENT` / `UV_EACCES` | 파일, 디렉토리 없음 / 권한 부족 |
-| `UV_ENOMEM` / `UV_ENOSPC` | 메모리 / 디스크 공간 부족 |
-| `UV_EMFILE` | 열린 파일 디스크립터 한도 초과 |
-| `UV_ECANCELED` / `UV_EOF` | 작업 취소됨 / 파일 끝 (스트림 종료) |
-| `UV_EINVAL` / `UV_EIO` | 잘못된 인자 / I/O 에러 |
+현재 API는 1.53.0부터 같은 async handle의 send와 callback을 sequentially consistent로 명시한다. send 이전 memory access가 callback에서 관찰되도록 하는 fence 계약이다. 이전 버전의 coalescing 경우에는 full seq_cst fence가 필요할 수 있다는 공식 설명을 확인한다.
+
+이 fence도 동시에 여러 thread가 공유 구조체를 무잠금 변경하는 것을 허용하지 않는다. data 필드 자체는 concurrent message queue가 아니므로 atomics/lock과 소유권을 지킨다. 온라인 최신 계약을 Node.js 번들 버전에 그대로 적용하지 않는다.
+
+`uv_async_send()`는 async-signal-safe지만 mutex/rwlock은 signal handler 안에서 사용하지 않는다. signal handler는 최소한의 안전한 알림만 보내고 실제 작업은 loop callback에서 수행한다.
+
+## 완료 시점과 오류 분류
+
+libuv 대부분의 int 반환/status에서 음수는 `UV_E*` 오류다. Unix errno의 부호를 바꾼 구현에 의존하지 말고 상수로 비교한다. Windows는 별도 값이다.
+
+- 제출 즉시 오류: callback이 오지 않는다. 호출 측이 request와 입력을 정리한다.
+- 제출 성공 뒤 완료 오류: callback에서 정리와 retry/종료를 결정한다.
+- 취소: callback까지 수명을 유지하고 `UV_ECANCELED`를 일반 실패와 구분한다.
+- stream EOF: `UV_EOF`, 파일 read EOF: result 0이다.
+
+`UV_EAGAIN`은 지금 진행 불가, `UV_EBUSY`는 자원/작업 상태 충돌, `UV_ENOSYS/ENOTSUP`은 기능/플랫폼 미지원, `UV_EINVAL`은 입력/상태 문제를 구분한다. DNS에는 `UV_EAI_*` 계열이 있다.
+
+`uv_err_name/uv_strerror`는 알려지지 않은 오류 코드에서 작은 메모리 누수가 발생할 수 있다. 사용자 buffer를 채우는 `*_r` 변형(1.22.0+)도 있다. `uv_translate_sys_error()`는 errno/GetLastError/WSAGetLastError를 portable 코드로 바꾸며 이미 libuv 오류면 그대로 반환한다.
 
 ## 출처
 
-- [libuv — Thread pool work scheduling](https://docs.libuv.org/en/v1.x/threadpool.html)
-- [libuv — Threading and synchronization utilities](https://docs.libuv.org/en/v1.x/threading.html)
-- [libuv guide — Threads](https://docs.libuv.org/en/v1.x/guide/threads.html)
-- [libuv — uv_req_t (uv_cancel)](https://docs.libuv.org/en/v1.x/request.html)
-- [libuv — uv_async_t](https://docs.libuv.org/en/v1.x/async.html)
-- [libuv — Shared library handling](https://docs.libuv.org/en/v1.x/dll.html)
-- [libuv — uv_tty_t](https://docs.libuv.org/en/v1.x/tty.html)
-- [libuv — Miscellaneous utilities](https://docs.libuv.org/en/v1.x/misc.html)
-- [libuv — Error handling](https://docs.libuv.org/en/v1.x/errors.html)
-- [Node.js 공식 문서, Don't Block the Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)
+- [Thread pool](https://docs.libuv.org/en/v1.x/threadpool.html), [Threading API](https://docs.libuv.org/en/v1.x/threading.html)
+- [Async](https://docs.libuv.org/en/v1.x/async.html), [Request cancellation](https://docs.libuv.org/en/v1.x/request.html)
+- [Errors](https://docs.libuv.org/en/v1.x/errors.html), [Threads guide](https://docs.libuv.org/en/v1.x/guide/threads.html)
 
 ## 관련 문서
-- [[libuv|libuv (TOC)]]
-- [[libuv-Architecture|libuv 아키텍처]]
-- [[libuv-Handles|libuv 핸들, 요청, 스트림]]
-- [[libuv-IO|libuv 네트워킹, 파일시스템, 프로세스]]
-- [[Worker-Threads|워커 스레드]]
-- [[Async-Internals|비동기 내부 구조]]
+
+- [[libuv]], [[libuv-Handles]], [[libuv-Filesystem]], [[Worker-Threads]], [[Async-Internals]]

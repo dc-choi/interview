@@ -14,6 +14,9 @@ aliases: ["JS Values and Expressions", "값, 표현식과 타입 변환"]
 - [[JavaScript-Numbers-Strings-and-Regular-Expressions|숫자, 문자열과 정규표현식]]: IEEE 754 정밀도, UTF-16 code unit과 code point, RegExp index 단위
 - [[JavaScript-Template-Literals-and-Symbols|Template Literal과 Symbol]]: tagged template, escaping의 한계, 고유 property key
 
+- [[JavaScript-BigInt|BigInt]]: 큰 정수, 연산과 직렬화 경계
+- [[JavaScript-RegExp-Unicode-and-Matches|Unicode 정규표현식]]: matchAll, d indices와 v 집합
+
 ## 함께 볼 문서
 
 - [[자바스크립트(JS)|JavaScript(JS)]]

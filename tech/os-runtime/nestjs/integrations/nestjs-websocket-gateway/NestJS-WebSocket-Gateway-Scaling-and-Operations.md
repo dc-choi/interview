@@ -27,9 +27,9 @@ class RedisIoAdapter extends IoAdapter {
     const subClient = pubClient.duplicate();
     this.pubClient = pubClient;
     this.subClient = subClient;
-    [pubClient, subClient].forEach(client =>
-      client.on('error', error => this.logger.error(error)),
-    );
+    for (const client of [pubClient, subClient]) {
+      client.on('error', error => this.logger.error(error));
+    }
     try {
       await pubClient.connect();
       await subClient.connect();
@@ -66,18 +66,24 @@ app.useWebSocketAdapter(redisIoAdapter);
 Nest는 애플리케이션 종료 시 custom adapter의 `dispose()`를 호출한다. node-redis v5에서는 정상 종료에 `close()`, 즉시 폐기에 `destroy()`를 쓰며 연결 전에 `error` listener를 등록한다. 순차 연결은 두 번째 연결 실패 중 다른 연결 작업이 남는 경합도 피한다.
 ### ws 어댑터 — socket.io 대안
 
-`WsAdapter`(@nestjs/platform-ws)를 `app.useWebSocketAdapter(new WsAdapter(app))`로 걸면 socket.io 대신 순수 ws 라이브러리를 쓴다 — **네이티브 브라우저 WebSocket과 호환되고 프로토콜이 단순한 대신 room 같은 내장 기능이 크게 적다.** 커스텀 어댑터는 `WebSocketAdapter` 인터페이스(create, bindClientConnect, bindMessageHandlers 등) 구현으로 어떤 WS 라이브러리든 연결 가능.
+`WsAdapter`(@nestjs/platform-ws)를 `app.useWebSocketAdapter(new WsAdapter(app))`로 걸면 socket.io 대신 순수 ws 라이브러리를 쓴다 — **네이티브 브라우저 WebSocket과 호환되고 프로토콜이 단순한 대신 room 같은 내장 기능이 크게 적다.** `WsAdapter`는 namespace 옵션을 지원하지 않으므로 여러 채널은 서로 다른 path의 WS 서버로 나누거나 애플리케이션 메시지에 구분값을 둔다. 기본 `{ event, data }` 계약과 다른 wire 형식은 `messageParser`로 변환한다.
+
+커스텀 어댑터는 `WebSocketAdapter` 인터페이스(create, bindClientConnect, bindMessageHandlers 등) 구현으로 어떤 WS 라이브러리든 연결 가능.
 
 ## 메시지 응답 — 두 가지 방식
 
 1. **Socket.IO handler의 return 값** → 클라이언트가 ACK 콜백을 전달한 경우에만 응답. 메시지 패턴이 요청-응답일 때.
 2. **server.emit / client.emit** → 별도 이벤트로 푸시. 비동기 통보, 브로드캐스트.
 
+Socket.IO에서 `@Ack()`를 선언하면 자동 return ACK를 비활성화하고 callback을 직접 호출한다. 일반 handler의 `false`, `0`도 응답값이고 null/undefined만 응답을 생략한다. 직접 `client.emit()`한 payload는 handler return 값을 대상으로 하는 Nest interceptor의 변환을 거치지 않는다.
+
 네이티브 WebSocket과 `WsAdapter`에는 ACK가 없으므로 `WsResponse<T>`(`{ event, data }`)나 별도 emit 이벤트로 응답한다. data가 ClassSerializerInterceptor 직렬화에 의존하면 **WsResponse 구현 클래스 인스턴스**를 반환해야 한다 (평문 객체는 직렬화가 무시). `Observable<WsResponse>`를 반환하면 스트림이 완료될 때까지 값이 나올 때마다 응답이 전송된다.
 
 ## 단방향 푸시면 SSE
 
 양방향이 필요 없으면 컨트롤러의 `@Sse()`와 `Observable<MessageEvent>`로 충분하다. 클라이언트는 EventSource로 수신하고, 연결 종료 시 Nest가 구독을 해제한다. 선택 기준과 구현은 [[Realtime-Communication-Comparison]]에서 다룬다.
+
+SSE handler가 Promise로 비싼 setup을 기다리는 동안 client가 disconnect하면 반환 Observable이 subscribe되지 않아 teardown도 실행되지 않는다. @SseSignal()의 AbortSignal을 setup에 전달하거나 aborted를 확인해 생성 자원을 직접 해제한다. signal은 disconnect뿐 아니라 정상 complete/error에도 abort되므로 cleanup은 멱등하게 한다. type/comment/retry/id는 SSE field로 매핑되며 자동 증가 id는 durable replay cursor를 대신하지 않는다.
 
 ## 흔한 실수
 
@@ -96,4 +102,4 @@ Nest는 애플리케이션 종료 시 custom adapter의 `dispose()`를 호출한
 - [NestJS — Gateways](https://docs.nestjs.com/websockets/gateways)
 - [NestJS — WebSocket Pipes](https://docs.nestjs.com/websockets/pipes), [Guards](https://docs.nestjs.com/websockets/guards), [Interceptors](https://docs.nestjs.com/websockets/interceptors)
 - [NestJS — WebSocket Adapters](https://docs.nestjs.com/websockets/adapter)
-- [NestJS — Server-Sent Events](https://docs.nestjs.com/techniques/server-sent-events)
+- [NestJS — Server-Sent Events](https://docs.nestjs.com/http/server-sent-events)

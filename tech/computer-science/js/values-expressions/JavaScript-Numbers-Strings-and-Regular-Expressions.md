@@ -146,7 +146,13 @@ match는 일반 mode에서 첫 일치와 capture, g mode에서 일치 문자열 
 
 문자열의 명세 상한 2^53-1 code unit은 실용 allocation 한도가 아니다. Node.js에서는 node:buffer의 constants.MAX_STRING_LENGTH로 engine 한도를 확인한다. 큰 JSON/string 병합은 최종 문자열과 중간값이 함께 남아 그보다 먼저 메모리가 부족할 수 있으므로 입력 상한, chunk/stream 처리와 byte/code unit 구분을 둔다.
 
+큰 정수의 입력, 연산과 JSON 경계는 [[JavaScript-BigInt|BigInt]], `matchAll`, capture 위치와 Unicode 집합은 [[JavaScript-RegExp-Unicode-and-Matches|정규표현식의 Unicode와 매치 위치]]에서 다룬다. `trimLeft`/`trimRight`는 `trimStart`/`trimEnd`의 alias이며 문자 쓰기 방향에 따라 의미가 바뀌지 않는다. 문자열의 `at(-1)`도 UTF-16 code unit 하나를 반환하므로 emoji 전체를 보장하지 않는다.
+
 ## 출처
+
+- [Numeric separators — V8](https://v8.dev/features/numeric-separators)
+- [String.prototype.replaceAll — V8](https://v8.dev/features/string-replaceall)
+- [String.prototype.trimStart and trimEnd — V8](https://v8.dev/features/string-trimming)
 
 - 인프런 보충 강의: [3. 용어 사용 기준: 오브젝트, 인스턴스, 프로퍼티, 함수, 뉘앙스 고려](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=35015)
 - 인프런 보충 강의: [4. 숫자로 변환](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24597), [6. 단항 연산자](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24599), [9. 관계 연산자](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24602), [5. 산술 연산자(-, *, /, % 연산자)](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24598), [6. 정수, 실수, 숫자 처리](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24578), [7. 상수, 진수](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24579), [8. 유니코드, UTF](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24601), [9. Number 타입, String 타입](https://www.inflearn.com/courses/lecture?courseId=324235&unitId=24583)

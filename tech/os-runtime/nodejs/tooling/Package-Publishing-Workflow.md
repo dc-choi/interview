@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, npm]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["패키지 배포 워크플로", "npm unpublish", "npm deprecate"]
 ---
@@ -52,11 +52,7 @@ npm install my-package@2.0.0    # 정확한 버전
 ```
 
 ## Node-API 모듈 배포
-```
-Node-API(구 N-API)를 사용하는 네이티브 애드온은 한 메이저 버전용으로 빌드한 바이너리를 이후 Node.js 메이저 버전에서 재컴파일 없이 쓸 수 있다.
-다만 해당 애드온이 Node-API만 사용하고 외부 네이티브 라이브러리와 대상 OS, 아키텍처가 호환될 때의 보장이다.
-배포 시 dist-tag를 활용하여 Node-API 버전과 일반 버전을 분리할 수 있다.
-```
+안정 Node-API만 사용하는 애드온은 대상 런타임이 해당 Node-API 버전을 지원하고 OS, 아키텍처, libc와 외부 라이브러리 ABI가 호환될 때 바이너리를 재사용할 수 있다. 배포 행렬과 fallback은 [[Native-Addon-Build]]를 따른다. dist-tag는 기존 구현과 이전한 구현의 배포 경로를 나누는 선택지이며, 그 자체로 ABI를 검사하지는 않는다.
 
 ```bash
 # Node-API 버전 배포

@@ -23,11 +23,11 @@ NestJS의 **Interceptor, Decorator, Provider, Module** 메커니즘으로 캐시
 
 ## 공식 CacheModule 메커니즘 (@nestjs/cache-manager)
 
-- `CacheModule.register()` — 기본 인메모리. 저장 값은 structured clone 알고리즘이 지원하는 타입만.
+- `CacheModule.register()` — 기본 인메모리. 현재 기본 Keyv 인메모리 저장소는 JSON 직렬화를 사용한다(Buffer도 지원). class 인스턴스는 plain object, Date는 문자열로 돌아오며 symbol은 저장하지 않는다. 메모리라는 이유로 객체 identity나 prototype 보존을 기대하지 않는다.
 - 수동 조작: `@Inject(CACHE_MANAGER) private cache: Cache` 주입 후 `get`(미존재 시 현재 버전은 `undefined`, cache-manager v6 이하에서는 `null`. 마이그레이션 호환이 필요하면 `value == null`로 두 miss 값만 확인하고 `0`, `false`, 빈 문자열 같은 유효한 hit를 일반 falsy 검사로 버리지 않는다), `set(key, value, ttl)` — **TTL 단위는 밀리초**, `ttl 0`이면 만료 없음, `del`, `clear`.
-- `CacheInterceptor` 자동 응답 캐시 — **GET 엔드포인트만** 캐시되고, `@Res()`를 주입한 라우트는 사용 불가. **GraphQL에서는 인터셉터가 필드 리졸버마다 실행되므로 CacheModule이 제대로 동작하지 않는다** (공식 경고).
+- `CacheInterceptor` 자동 응답 캐시 — 기본으로 **GET 엔드포인트만** 캐시되지만 명시적 `@CacheKey()`는 이 method 검사를 우회한다. 상태를 바꾸는 동작에는 키를 붙여 캐시하지 않는다., `@Res()`를 주입한 라우트는 사용 불가. **GraphQL에서는 인터셉터가 필드 리졸버마다 실행되므로 CacheModule이 제대로 동작하지 않는다** (공식 경고).
 - 캐시 키는 HTTP에선 요청 URL 기준 — Authorization 헤더별 분리 같은 커스텀은 `CacheInterceptor`를 상속해 `trackBy(context)`를 오버라이드.
-- `@CacheKey`, `@CacheTTL`로 라우트별 오버라이드. WebSocket/마이크로서비스 핸들러에도 적용 가능하지만 그땐 `@CacheKey` 명시가 필수.
+- `@CacheKey`, `@CacheTTL`로 라우트별 오버라이드. controller TTL보다 method TTL이 우선하며 전역 TTL을 생략하면 만료 없음이다. WebSocket/마이크로서비스 핸들러에도 적용 가능하지만 그땐 `@CacheKey` 명시가 필수.
 - 스토어: cache-manager v6+는 **Keyv 기반** — Redis는 `@keyv/redis`(KeyvRedis), 인메모리 LRU는 cacheable의 KeyvCacheableMemory, `stores: [...]` 배열로 L1+L2 다층 구성이 공식 경로.
 
 ## 패턴 1 — Handler 데코레이터 + Interceptor
@@ -114,7 +114,7 @@ NestJS 인스턴스 N개의 L1 캐시는 **각 프로세스 독립** — 한 인
 - DataLoader (요청 내 N+1) vs MultiLevelCache (요청 간) 역할 구분
 
 ## 출처
-- [NestJS — Caching](https://docs.nestjs.com/techniques/caching)
+- [NestJS — Caching](https://docs.nestjs.com/data/caching)
 - [NestJS — Lifecycle events](https://docs.nestjs.com/fundamentals/lifecycle-events)
 - [Node.js — Process](https://nodejs.org/api/process.html)
 - [Redis, Pub/Sub](https://redis.io/docs/latest/develop/pubsub/)

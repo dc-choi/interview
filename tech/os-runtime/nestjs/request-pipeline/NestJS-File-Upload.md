@@ -45,6 +45,15 @@ file: Express.Multer.File,
 - 인터셉터 두 번째(또는 세 번째) 인자로 multer options 전달 (storage, limits 등).
 - 전역 기본값은 `MulterModule.register({ dest: './upload' })`, ConfigService 의존이면 `registerAsync` + useFactory.
 
+## Fastify v12.1의 multipart와 streaming
+
+- @fastify/multipart를 설치하면 DI로 등록한 upload interceptor가 plugin 등록을 유발한다. 기본 fileSize는 Fastify bodyLimit(기본 1 MiB), parts는 1000이며 Multer 기본 제한과 다르다. route/module/application의 limits가 key별로 합쳐진다.
+- multipart adapter 옵션 false는 직접 등록 책임을 뜻한다. app.register(multipart)는 adapter가 등록을 조정하지만 native instance 등록이나 dynamic import를 init 뒤에 적용하면 중복 decorator 오류가 날 수 있다. DI 밖에 생성한 interceptor는 automatic registration을 유발하지 않는다.
+- FileStreamInterceptor는 Fastify 전용으로 buffering 전에 handler에 stream을 전달한다. 텍스트 field는 file보다 먼저 보내야 Body에서 읽을 수 있고 뒤의 field는 파싱하지 않는다. 한 field의 한 file만 받는다.
+- stream은 전체 size나 magic number를 미리 검증할 수 없다. parser fileSize limit은 유지하며 MIME header 검증만으로 내용 안전성을 증명하지 않는다. pipeline으로 backpressure/오류를 처리하고 실패한 임시 파일을 정리한다.
+- 읽지 않은 upload는 응답 전 discard한다. 다른 source의 StreamableFile을 응답할 때는 upload를 먼저 소비하지 않으면 전송 종료 경합으로 EPIPE/ECONNRESET이 날 수 있다.
+- buffer/disk storage, fieldName 검증, JSON text part, attachFieldsToBody와 지원 limits의 차이는 Multer와 같지 않다. 배열 파일도 ParseFilePipeBuilder의 validator가 각 file에 적용된다.
+
 ## 저장 경계와 운영 보안
 
 `ParseFilePipe`는 핸들러에 전달될 파일을 검증하지만 업로드 parser의 자원 사용까지 제한하지는 않는다. Multer `limits`로 파일 수와 크기를 먼저 제한하고, 파일 내용의 magic number, 업무상 허용 형식과 권한을 다음 단계에서 검증한다.
@@ -80,6 +89,8 @@ getFile(): StreamableFile {
 - Fastify는 원래 pipe 없이도 파일 전송이 되지만, StreamableFile은 **Express/Fastify 양쪽 호환**이라 어댑터를 바꿔도 코드가 그대로다.
 - GraphQL, 마이크로서비스에는 적용되지 않고, ClassSerializerInterceptor 직렬화도 StreamableFile 응답은 건너뛴다.
 
+Express stream 오류는 전송 전이면 기본 400, 이미 전송 중이면 response 종료다. setErrorHandler/setErrorLogger로 조정할 수 있다. Fastify는 exception layer가 처리해 기본 500이며 같은 error callback을 공통 계약으로 가정하지 않는다.
+
 ## 관련 문서
 
 - [[File-Upload-Security|파일 업로드 보안 (위협 모델과 OWASP 방어)]]
@@ -89,10 +100,10 @@ getFile(): StreamableFile {
 - [[HTTP-Content-Type|Content-Type (multipart/form-data)]]
 
 ## 출처
-- [NestJS — File upload](https://docs.nestjs.com/techniques/file-upload)
-- [NestJS — Streaming files](https://docs.nestjs.com/techniques/streaming-files)
+- [NestJS — File upload](https://docs.nestjs.com/http/file-upload)
+- [NestJS — Streaming files](https://docs.nestjs.com/http/file-upload#streaming-files)
 - [NestJS — File upload, Fastify](https://docs.nestjs.com/http/file-upload#fastify) (12.1부터 FastifyAdapter 업로드 지원)
-- [NestJS — MVC](https://docs.nestjs.com/techniques/mvc) (`NestExpressApplication`의 `useStaticAssets`)
+- [NestJS — MVC](https://docs.nestjs.com/http/mvc) (`NestExpressApplication`의 `useStaticAssets`)
 - [NestJS CLI — Global compiler options](https://docs.nestjs.com/cli/monorepo#global-compiler-options) (`deleteOutDir`)
 - [nest-cli.json — NestJS typescript-starter](https://github.com/nestjs/typescript-starter/blob/master/nest-cli.json)
 - [multer.utils.ts — NestJS GitHub](https://github.com/nestjs/nest/blob/master/packages/platform-express/multer/multer/multer.utils.ts) (Multer 오류 코드의 400, 413 변환)

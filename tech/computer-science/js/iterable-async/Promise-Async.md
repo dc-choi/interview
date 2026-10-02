@@ -149,7 +149,14 @@ Promise.resolve는 같은 constructor의 native Promise면 그 object를 그대�
 
 Promise executor의 동기 throw도 constructor 밖으로 던지지 않고 rejection이 된다. Array map/filter/slice가 그 Promise를 값으로 다루면 predicate는 Promise를 truthy나 NaN으로 판단하고 실패는 연결되지 않는다. callback 결과를 합성한 최종 Promise를 try 안에서 await해야 각 단계 rejection이 같은 catch에 도달한다. lazy 소비는 아직 평가하지 않은 원소의 오류를 미룰 뿐 전체 원천이 성공했다는 증거가 아니다.
 
+## 합성의 빈 입력과 정리 결과
+
+`Promise.all([])`과 `allSettled([])`는 빈 배열로 fulfilled된다. `Promise.any([])`는 `AggregateError`로 rejected되고 `Promise.race([])`는 계속 pending이다. 반응 callback의 실행은 Promise의 이미 결정된 상태와 별개로 비동기다. `finally`는 원래 값을 인자로 받지 않고 정상 반환하면 앞 결과를 통과시키지만, 예외나 rejected Promise를 반환하면 그 실패로 결과를 바꾼다. 어느 합성 API도 남은 작업을 자동 취소하지 않는다.
+
 ## 출처
+
+- [Promise combinators — V8](https://v8.dev/features/promise-combinators)
+- [Promise.prototype.finally — V8](https://v8.dev/features/promise-finally)
 
 - 인프런 보충 강의: [지연 평가 + Promise - L.map, map, take](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16625), [reduce에서 nop 지원](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16627), [지연된 함수열을 병렬적으로 평가하기 - C.reduce, C.take (1)](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16629), [지연된 함수열을 병렬적으로 평가하기 - C.reduce, C.take (2)](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16630)
 

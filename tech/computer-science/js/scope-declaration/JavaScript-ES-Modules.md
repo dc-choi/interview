@@ -79,7 +79,22 @@ static import는 source 위치에서 순차 실행되는 함수 호출이 아니
 
 Node.js는 `package.json`의 `type`, `.mjs/.cjs`, package `exports/imports`와 extension resolution 규칙을 함께 본다. CommonJS의 value copy/cache 직관을 ESM live binding과 섞지 않는다. NestJS package/toolchain을 ESM으로 바꿀 때 decorator metadata, test runner, migration CLI와 third-party package 호환성을 함께 검증한다.
 
+## 동적 로드, 속성과 비동기 모듈 경계
+
+`import()`는 module namespace로 이행하는 Promise를 반환하는 문법이다. 일반 함수 객체처럼 `call`/`apply`를 사용할 수 없다. `export * as namespace from './module.js'`는 모듈을 namespace 이름으로 다시 내보내는 문법이다. 정적 import와 동적 import는 중요한 초기 dependency와 나중에 필요한 기능을 구분해 선택한다. 청크 수를 무조건 늘리면 요청, 평가와 캐시 비용이 생기므로 cold/warm load를 함께 측정한다.
+
+JSON import는 현재 Node.js에서 `import data from './data.json' with { type: 'json' }`처럼 import attributes를 사용한다. 과거 `assert { type: 'json' }` 문법은 Node.js 22에서 제거됐다. attribute는 로더의 타입 처리 계약이며 데이터 schema나 신뢰성을 검증하지 않는다. 브라우저에서는 응답 MIME과 CSP 등 host 조건도 함께 적용된다.
+
+Top-level await는 그 모듈의 평가에 의존하는 상위 모듈을 기다리게 한다. 독립적인 형제 모듈 전체를 직렬화하는 전역 잠금은 아니다. 비동기 초기화 실패와 순환 의존성의 교착 가능성을 확인하고 REPL의 await 허용 여부를 파일 모듈의 실행 규칙으로 대신하지 않는다.
+
 ## 출처
+
+- [JavaScript modules — V8](https://v8.dev/features/modules)
+- [Dynamic import — V8](https://v8.dev/features/dynamic-import)
+- [Module namespace exports — V8](https://v8.dev/features/module-namespace-exports)
+- [Import assertions — V8](https://v8.dev/features/import-assertions)
+- [Import attributes — V8](https://v8.dev/features/import-attributes)
+- [Top-level await — V8](https://v8.dev/features/top-level-await)
 
 - [ECMAScript Language Specification, scripts and modules](https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html)
 - [HTML Standard, JavaScript module scripts](https://html.spec.whatwg.org/multipage/webappapis.html#integration-with-the-javascript-module-system)

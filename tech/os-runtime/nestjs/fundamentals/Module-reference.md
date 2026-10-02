@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nestjs]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-10-02
 category: "OS & Runtime"
 aliases: ["Module reference", "ModuleRef"]
 ---
@@ -64,6 +64,16 @@ this.catsFactory = await this.moduleRef.create(CatsFactory);
 - 같은 축의 디버깅 도구로 **REPL 모드**가 있다 — `repl(AppModule)`(@nestjs/core)로 띄우면 터미널에서 의존성 그래프를 검사하고 프로바이더/컨트롤러 메서드를 직접 호출한다 (`get()`, scoped용 `resolve()`, 메서드 목록 `methods()`, 전체 모듈 트리 `debug()`).
 - 본격 CLI 앱은 **nest-commander**(서드파티)가 공식 추천 경로 — `@Command()` 클래스 구조로 커맨드를 정의하고 `CommandFactory.run(AppModule)`이 createApplicationContext 자리를 대신한다.
 
+provider/controller를 `app.get()`/REPL로 꺼내 직접 호출하면 HTTP의 guard, pipe, interceptor와 filter pipeline을 통과하지 않는다. DI가 준비됐다는 사실과 endpoint의 인증/validation을 시험한 사실을 구분한다. dynamic module을 strict select할 때는 imports에 넘긴 것과 **같은 DynamicModule 객체**를 사용한다.
+
+REPL history는 watch 재시작 사이에 저장할 수 있으므로 token이나 개인정보를 직접 명령에 넣지 않는다. `get()`은 singleton 조회, `resolve()`는 scoped instance 조회다. `nest-commander`의 `CommandRunner.run(params, options)`은 Promise<void> 계약이고 option parser의 반환값이 options에 들어간다. `CommandFactory`는 기본 종료를 관리하지만 남은 background handle의 수명도 정리한다.
+
+## 여러 등록과 strict 조회의 계약
+
+`INestApplicationContext.get/resolve`의 `each: true`는 같은 토큰으로 등록된 인스턴스를 배열로 반환한다. 같은 이름의 provider가 여러 module에 존재하면 단일 `get()`으로 임의의 한 등록을 골라 전체 등록을 시험했다고 판단하지 않는다. `select(module).get(token, { strict: true })`로 소유 module을 한정하거나 `each: true`로 실제 등록을 모두 확인한다.
+
+정적 class를 선택하는 것과 `register()`가 반환한 dynamic module 객체를 선택하는 것은 다르다. 등록 때의 객체를 변수로 보존해 imports와 select에서 재사용한다. 공식 standalone sample도 이 객체를 공유하며, 컨테이너를 닫아 열린 resource를 정리한다. `resolve(token, contextId, { each: true })`에서도 같은 contextId를 유지해야 같은 요청의 DI 상태를 비교할 수 있다.
+
 ## 관련 문서
 
 - [[Injection-Scopes|Injection Scopes (스코프 3종, 버블링, durable providers)]]
@@ -75,3 +85,5 @@ this.catsFactory = await this.moduleRef.create(CatsFactory);
 - [NestJS — Standalone applications](https://docs.nestjs.com/standalone-applications)
 - [NestJS — REPL](https://docs.nestjs.com/recipes/repl)
 - [NestJS — Nest Commander](https://docs.nestjs.com/recipes/nest-commander)
+- [NestJS API, INestApplicationContext](https://api-references-nestjs.netlify.app/api/common/INestApplicationContext)
+- [NestJS sample, application context](https://github.com/nestjs/nest/blob/7fb52e7f4f7314fbc117e369a09297bc2ecadf6b/sample/18-context/src/main.ts)

@@ -142,7 +142,15 @@ for의 continue는 update 식으로, while의 continue는 조건식으로 이동
 
 DOM 조작은 보통 DOMContentLoaded면 충분하며 image 같은 load 지연 자원까지 필요한 경우 window load를 쓴다. 늦게 등록하는 코드는 document.readyState가 loading일 때만 DOMContentLoaded를 기다리고 아니면 바로 초기화해 event를 놓치지 않는다. script loading의 defer/async/module 조건은 앞 절과 함께 판단한다.
 
+## 조건부 할당과 평가 횟수
+
+`x ||= y`, `x &&= y`, `x ??= y`는 왼쪽 reference를 한 번 평가하고 조건이 맞을 때만 오른쪽 평가와 할당을 수행한다. `obj.value = obj.value || fallback`처럼 매번 setter를 호출하는 코드와 다르다. getter/setter, DOM property나 계산한 index에 부수 효과가 있을 때 이 차이를 확인한다. optional chaining은 선언되지 않은 root identifier의 `ReferenceError`를 막지 않는다.
+
 ## 출처
+
+- [Logical assignment — V8](https://v8.dev/features/logical-assignment)
+- [Nullish coalescing — V8](https://v8.dev/features/nullish-coalescing)
+- [Optional chaining — V8](https://v8.dev/features/optional-chaining)
 
 - 인프런 보충 강의: [텍스트 노드](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102171), [이미지 노드](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102172), [innerHTML vs innerText](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102173), [실전예제 - 작은 이미지 클릭시 큰 이미지로 변경하기(1)](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102179), [실전예제 - 작은 이미지 클릭시 큰 이미지로 변경하기(3)](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102181), [이벤트 위임과 활용(2) - event.target vs event.currentTarget](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102192)
 

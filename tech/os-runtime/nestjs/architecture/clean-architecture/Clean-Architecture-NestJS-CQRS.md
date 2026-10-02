@@ -43,7 +43,18 @@ export class UserFactory {
 
 - **CommandBus/QueryBus**: 커맨드와 쿼리는 각각 `@CommandHandler(X)`/`@QueryHandler(X)` 클래스가 **1:1로** 처리하고, `bus.execute(new X(...))`로 디스패치한다.
 - **Saga**: 이벤트 스트림(Observable)을 받아 `ofType`으로 필터링하고 **새 커맨드를 반환**하는 장기 프로세스 — 반환된 커맨드는 CommandBus가 비동기로 디스패치한다 (가입 이벤트 → 환영 메일 커맨드 같은 워크플로우).
-- **미처리 예외**: 이벤트 핸들러는 비동기 실행이라 예외가 호출자에게 전파되지 않는다 — EventBus가 `UnhandledExceptionBus` 스트림으로 밀어 주므로 구독해서 처리해야 한다 ([[NestJS-Events|이벤트 에러 억제]]와 같은 계열의 조용한 실패 지점).
+- **미처리 예외**: 기본 `rethrowUnhandled: false`에서는 이벤트 핸들러, Saga와 Saga가 디스패치한 command 오류를 `UnhandledExceptionBus`로 전달한다. `true`는 다시 throw하므로 기본 억제 동작과 구분한다. 호출자가 await한 command handler의 실패는 요청의 예외 경로로 처리할 수 있지만 비동기 event handler는 HTTP 응답이나 filter에 기대지 않는다.
+- `Command<Result>`와 `Query<Result>`를 상속하면 `execute()`와 handler 반환 타입을 연결한다. 이것은 TypeScript 계약이며 runtime DTO 검증이 아니다.
+- AggregateRoot 상속 대신 `WithAggregateRoot(BaseClass)` mixin 또는 `IAggregateRoot` 직접 구현을 사용할 수 있다. `mergeObjectContext()`/`mergeClassContext()`는 이벤트 발행을 연결하지만 DB 저장을 자동 수행하지 않는다.
+- Bus 구독을 이벤트 저장소로 연결하는 것만으로 DB 상태 변경과 이벤트 기록이 원자적으로 커밋되는 것은 아니다. 재시작과 재전달을 견뎌야 한다면 [[NestJS-Reliability|영속 outbox/inbox]]의 경계를 따로 둔다.
+
+### CQRS 요청 스코프
+
+Bus는 singleton이지만 handler가 request-scoped 의존성을 갖거나 decorator에 `scope: Scope.REQUEST`를 지정하면 처리별 handler를 해결한다. `REQUEST`의 payload는 반드시 HTTP request인 것이 아니다. `AsyncContext`를 상속한 context를 `commandBus.execute(command, context)`나 query에 전달해 사용자/tenant 정보를 명시한다.
+
+EventPublisher에서 context를 모델과 병합하면 그 모델이 발행한 event handler에 context를 전달할 수 있다. Saga는 반드시 singleton이어야 하며 non-singleton으로 등록하면 오류다. Saga가 만든 후속 command에는 `AsyncContext.of(event)`와 `AsyncContext.merge(context, command)` 또는 `context.attachTo(command)`로 전달한다. context가 전달된다는 사실과 여러 비동기 작업의 DB transaction 공유는 구분한다.
+
+`UnhandledExceptionBus`와 전체 EventBus 구독은 종료 시 unsubscribe한다. exception의 cause는 event/command 객체이므로 로그에 credential이나 개인정보가 그대로 섞이지 않게 필요한 필드만 기록한다.
 
 ### 왜 굳이 분리하나
 - **읽기, 쓰기 최적화 축을 따로** — Query는 denormalized view, Command는 정규화된 도메인

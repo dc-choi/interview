@@ -1,6 +1,7 @@
 ---
 tags: [nestjs, plugin, discovery-service, dynamic-module, extensibility]
 status: done
+verified_at: 2026-10-02
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Plugin System", "DiscoveryService Plugin", "확장 시스템"]
 ---
@@ -58,7 +59,7 @@ export class PluginLoader implements OnModuleInit {
 }
 ```
 
-`OnModuleInit` 시점이라 모든 Provider 인스턴스가 준비된 후 실행 — 다른 모듈에 의존해도 안전.
+생성된 singleton 인스턴스와 다른 module의 lifecycle 준비 완료는 별개다. 위 예제는 singleton 플러그인을 대상으로 하며 request/transient wrapper의 instance를 그대로 호출하지 않는다. 다른 module의 초기화 결과가 필요하면 `OnApplicationBootstrap` 또는 명시적 readiness 계약으로 기다린다.
 
 ## 동적 모듈과 결합
 
@@ -145,9 +146,27 @@ const plugins = this.discoveryService.getProviders()
 - 플러그인 우선순위, 그룹화 — 메타데이터 옵션 활용
 - 다중 인스턴스 환경에서 외부 hook 등록의 중복 문제
 
+`DiscoveryModule`을 import해 DiscoveryService를 주입받는다. `DiscoveryService.createDecorator()`로 표시한 provider만 조회하거나 `getProviders()`/`getControllers()`와 decorator metadata 조회 API를 사용할 수 있다. wrapper를 발견했다는 사실은 해당 scoped instance가 현재 컨텍스트에 생성됐다는 뜻이 아니므로 필요하면 ModuleRef로 적절한 contextId에서 resolve한다.
+
+## 출처
+
+- [NestJS — Discovery service](https://docs.nestjs.com/fundamentals/discovery-service)
+- [NestJS — Lifecycle events](https://docs.nestjs.com/fundamentals/lifecycle-events)
+
+## 탐색과 typed metadata는 다른 계약
+
+`Reflector.createDecorator<T>()`는 타입 있는 metadata를 붙이고 `Reflector.get(Decorator, target)`로 읽는 경로다. `DiscoveryService.createDecorator<T>()`는 metadata에 더해 해당 클래스가 탐색 대상에 등록되도록 한다. 단순 reflection용 decorator를 만들었다고 discovery의 metadata-key 필터에 자동 등록되지는 않는다.
+
+`getProviders({ metadataKey: Feature.KEY })`와 `getControllers()`는 **instance wrapper**를 반환한다. `getMetadataByDecorator(Feature, wrapper, methodKey?)`로 클래스 또는 메서드 metadata를 읽고 module include 필터로 탐색 범위를 제한한다. scoped wrapper의 인스턴스 수명은 앞의 ModuleRef 규칙을 따른다.
+
+권한 metadata의 `[handler, class]` 순서에서 `getAllAndOverride`는 첫 undefined 아닌 값을 선택한다. method의 `false`도 선택값이므로 class의 `true`를 덮을 수 있다. `getAllAndMerge`는 배열을 합치거나 객체를 얕게 병합하므로 상속 우선순위와 같지 않다. 권한 정책을 덮어쓸지 누적할지를 먼저 정하고 API를 선택한다.
+
 ## 관련 문서
 
 - [[NestJS-Custom-Decorator|커스텀 데코레이터 (마킹, 탐색, 실행 3단계)]]
 - [[NestJS-Module-Dynamic|Dynamic Module, forRootAsync]]
 - [[NestJS-Lifecycle|애플리케이션 라이프사이클 훅]]
 - [[NestJS-AOP-Interceptor|Interceptor 기반 AOP]]
+- [NestJS API, DiscoveryService](https://api-references-nestjs.netlify.app/api/core/DiscoveryService)
+- [NestJS API, Reflector](https://api-references-nestjs.netlify.app/api/core/Reflector)
+- [NestJS source, metadata merge and override](https://github.com/nestjs/nest/blob/7fb52e7f4f7314fbc117e369a09297bc2ecadf6b/packages/core/services/reflector.service.ts)

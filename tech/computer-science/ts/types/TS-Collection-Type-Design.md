@@ -24,6 +24,25 @@ interface Environment {
 
 인덱스 시그니처는 키가 실제로 존재한다는 보장이 아니다. `noUncheckedIndexedAccess`를 켜면 선언되지 않은 키 접근에 `undefined`가 추가되어 존재 확인을 요구한다.
 
+## 일반 속성과 중첩 사전 분리
+
+알려진 속성과 임의의 하위 키를 같은 문자열 인덱스에 섞으면 오타도 정상 키로 받아들인다. 스타일 속성과 selector 같은 서로 다른 역할은 구조를 분리한다.
+
+```typescript
+interface Style {
+  color?: string;
+  children?: { [selector: string]: Style };
+}
+
+const style: Style = {
+  color: "red",
+  children: { ".active": { color: "blue" } },
+};
+// { colour: "red" }는 알려지지 않은 속성이라 오류
+```
+
+기존 JavaScript 값이 고정 속성과 열린 사전을 한 객체에 섞었다면 intersection으로 소비 측 타입을 표현할 수 있다. 다만 `{ isValid: boolean } & { [key: string]: FieldState }`는 `isValid`도 `FieldState`여야 한다는 충돌이 생겨 일반 객체 리터럴로 생성하기 어렵다. 새 API를 설계할 때는 이 우회보다 `fields: Record<string, FieldState>` 같은 중첩 구조를 사용한다.
+
 ## 키 집합을 알면 `Record`나 mapped type
 
 가능한 키가 유한하면 열린 문자열 인덱스보다 닫힌 키 유니온을 사용한다.
@@ -109,6 +128,7 @@ total(mutable); // 읽기만 하므로 전달 가능
 
 ## 출처
 
+- [TypeScript Deep Dive, Index Signatures — Basarat](https://basarat.gitbook.io/typescript/type-system/index-signatures)
 - [TypeScript Handbook, Object Types](https://www.typescriptlang.org/docs/handbook/2/objects.html)
 - [TypeScript Handbook, Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html)
 - [TypeScript TSConfig, noUncheckedIndexedAccess](https://www.typescriptlang.org/tsconfig/noUncheckedIndexedAccess.html)

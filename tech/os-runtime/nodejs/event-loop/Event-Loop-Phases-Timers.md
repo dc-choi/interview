@@ -21,12 +21,14 @@ setTimeout의 지연 값 보정, setImmediate와 setTimeout(0)의 선택, setInt
 ## setInterval의 한계
 - 간격은 정확한 실행 시각이 아니라 실행 가능해지는 임계값이다.
 - 같은 JavaScript 이벤트 루프 스레드에서는 콜백 실행이 서로 겹치지 않는다. 긴 콜백 때문에 후속 실행이 지연되고 기대한 주기가 깨질 수 있다.
+- `setInterval(async () => ...)`은 반환된 Promise를 기다리지 않는다. 동기 콜백은 겹치지 않아도 비동기 작업은 여러 회차가 동시에 진행될 수 있다.
 - 완료 시점부터 일정 간격을 두려면 **재귀적 setTimeout**으로 콜백 완료 후 다음 실행을 예약한다.
 
 ## setImmediate()
 - `setTimeout(() => {}, 0)`과 유사하지만 Node.js 이벤트 루프의 check 단계에서 실행
 
 ## 출처
+- [Node.js Learn, Discover JavaScript timers](https://nodejs.org/en/learn/asynchronous-work/discover-javascript-timers)
 - [Node.js 공식 문서, Timers](https://nodejs.org/api/timers.html#settimeoutcallback-delay-args)
 - [Node.js 공식 문서, The Node.js Event Loop](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick#setimmediate-vs-settimeout)
 - [Node.js v26.7.0 timers.js — Node.js](https://github.com/nodejs/node/blob/v26.7.0/lib/internal/timers.js)

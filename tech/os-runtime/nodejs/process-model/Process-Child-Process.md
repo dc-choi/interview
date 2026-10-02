@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, process, child-process, ipc]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["Node.js Process", "Child Process", "spawn vs fork"]
 ---
@@ -79,10 +79,11 @@ process.once('SIGINT', () => void shutdown('SIGINT'));
 const ls = spawn('ls', ['-la']);
 ls.stdout.on('data', d => console.log(d.toString()));
 ls.stderr.on('data', d => console.error(d.toString()));
+ls.on('error', error => console.error('spawn failed', error));
 ls.on('close', code => console.log(`exit ${code}`));
 ```
 
-- **shell 안 쓰므로 인자 인젝션 안전**.
+- 기본값은 shell을 쓰지 않아 셸 문법 해석을 피한다. 하지만 실행파일 경로와 인자는 검증해야 하며 대상 프로그램의 옵션 인젝션은 별개다.
 - 출력이 큰 명령 (`tar`, `ffmpeg`)에 적합 — 메모리에 다 쌓지 않음.
 
 ### exec — shell 사용
@@ -96,9 +97,9 @@ exec('ls -la | grep node', (err, stdout, stderr) => {
 
 - shell 사용으로 **파이프, 리다이렉션, glob 가능**.
 - **사용자 입력을 그대로 넣으면 명령 인젝션** 위험. 인자에 검증 없는 변수 금지.
-- stdout 전체를 버퍼링 → 기본 `maxBuffer` 1MB 초과 시 throw.
+- stdout 전체를 버퍼링 → stdout 또는 stderr가 기본 `maxBuffer` 1MiB를 넘으면 자식을 종료하고 콜백에 오류를 전달한다. Promise 방식은 reject한다.
 
-### execFile — 안전한 exec
+### execFile — shell 없이 실행
 
 ```ts
 execFile('node', ['--version'], (err, stdout) => { ... });
@@ -143,21 +144,22 @@ process.on('message', msg => {
 // ❌ 위험
 exec(`ls ${userInput}`, ...);   // userInput="; rm -rf /" → 실행됨
 
-// ✅ 안전
-execFile('ls', [userInput], ...);   // shell 안 거치므로 인젝션 안 됨
-spawn('ls', [userInput]);           // 동일
+// 셸 문법 해석을 피하고, ls의 옵션 해석도 --로 끝낸다.
+// 입력 경로가 허용된 디렉터리인지 확인하는 검증은 별도로 필요하다.
+execFile('ls', ['--', userInput], ...);
+spawn('ls', ['--', userInput]);
 ```
 
-shell이 필요해도 사용자 입력을 인자로 넣지 말고, 인자 바인딩으로 분리. `shell-quote` 같은 라이브러리도 도움.
+`shell: true`를 켜면 셸 해석 위험이 돌아온다. 셸 없이 실행하는 고정 실행파일과 검증한 인자 배열을 우선한다. `--` 지원 여부와 옵션 의미는 대상 프로그램마다 다르다.
 
 ## 흔한 실수
 
 - **`process.exit(0)` 즉시 호출** → in-flight 작업 끊김. server.close 후 graceful.
 - **`exec`에 신뢰 못 할 입력** → 명령 인젝션. `execFile`/`spawn`으로.
-- **`exec` stdout이 1MB 초과** → throw. 큰 출력은 `spawn` 스트림.
+- **`exec` stdout/stderr가 `maxBuffer` 초과** → 자식 종료와 오류. 큰 출력은 `spawn` 스트림.
 - **장기 실행 child의 lifecycle 미관리** → 살아 있는 child는 zombie가 아니지만 불필요한 프로세스와 핸들이 남을 수 있다. 종료 정책과 `exit`/`close` 처리를 명시한다. zombie는 종료한 자식이 OS에서 wait/reap되지 않은 별도 상태다.
 - **SIGTERM 핸들러에서 새 비동기 작업 시작** → 종료 안 끝남. 정리만.
-- **Cluster + 자체 fork 혼용** → 자식의 자식 관리 복잡. Cluster 안에서는 worker가 fork 안 하는 게 안전.
+- **Cluster + 자체 fork 혼용** → 금지 규칙은 아니지만 전체 프로세스/스레드 수, 종료 전파와 재시작 책임을 함께 관리해야 한다.
 
 ## 면접 체크포인트
 
@@ -180,6 +182,8 @@ shell이 필요해도 사용자 입력을 인자로 넣지 말고, 인자 바인
 - [[tech/os-runtime/nodejs/Security|Node.js 보안 모범 사례]]
 
 ## 출처
+
+- [Node.js Learn, Comparing Node.js concurrency models](https://nodejs.org/en/learn/concurrency/comparing-nodejs-concurrency-models)
 
 - [Node.js Child process API](https://nodejs.org/api/child_process.html)
 - [Node.js HTTP API, `server.close()`](https://nodejs.org/api/http.html#serverclosecallback)

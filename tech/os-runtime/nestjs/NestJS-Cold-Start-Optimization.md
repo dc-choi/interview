@@ -105,9 +105,9 @@ async rarelyUsedFeature() {
 - 외부 SDK는 첫 사용 시 인스턴스를 생성하고 캐시하는 provider wrapper로, 조건부 모듈 전체는 `LazyModuleLoader`로 지연한다.
 
 ### 5. Tree-Shaking과 번들 크기
-- `@nestjs/cli` 빌드 대신 **esbuild, webpack**으로 번들링
-- CLI 안에서 해결하려면 **SWC 빌더**가 공식 경로다. 공식 문서는 기본 TypeScript 컴파일러보다 약 20배 빠르다고 안내한다.
-- SWC 전환 시 함정 3가지: (1) **SWC는 타입 체크를 안 한다** — `--type-check`(또는 nest-cli.json `typeCheck: true`)가 tsc를 noEmit으로 병행 실행해 비동기 체크. (2) **GraphQL/Swagger CLI 플러그인은 --type-check가 있어야 실행**되고(직렬화 메타데이터 파일 생성 → 런타임 로드), 모노레포의 swc-loader에선 자동 로드가 안 돼 수동 generator 파일이 필요. (3) **순환 import에 약하다** — TypeORM 엔티티 상호 참조는 `Relation<Profile>` 래퍼 타입으로 감싸 리플렉션 메타데이터에 타입 저장을 막는 워크어라운드가 공식 가이드.
+- CLI standard tsc/SWC와 v12 monorepo Rspack 빌드를 구분하고, 필요하면 esbuild 같은 별도 bundler를 검토한다.
+- CLI 안에서 해결하려면 **SWC 빌더**가 공식 경로다. 공식 페이지마다 약 10배/20배 수치를 안내하지만 측정 조건이 같다고 볼 수 없어 실제 프로젝트의 build 시간을 비교한다.
+- SWC 전환 시 함정 3가지: (1) **SWC는 타입 체크를 안 한다** — `--type-check`(또는 nest-cli.json `typeCheck: true`)가 tsc를 noEmit으로 병행 실행해 비동기 체크. (2) **GraphQL/Swagger CLI 플러그인은 --type-check가 있어야 실행**되고(직렬화 메타데이터 파일 생성 → 런타임 로드), 기존 webpack 모노레포의 swc-loader에선 자동 로드가 안 돼 수동 generator 파일이 필요. v12 기본 Rspack은 이 legacy recipe와 구분한다. (3) **순환 import에 약하다** — TypeORM 엔티티 상호 참조는 `Relation<Profile>` 래퍼 타입으로 감싸 리플렉션 메타데이터에 타입 저장을 막는 워크어라운드가 공식 가이드.
 - 서버리스라면 단일 JS 파일로 최소화
 - 불필요한 polyfill, legacy API 제거
 
@@ -125,13 +125,13 @@ async rarelyUsedFeature() {
 
 이 197ms는 아래 공식 벤치마크의 197ms(미번들 Nest + platform-express 스타터 부팅 시간)와 값만 겹칠 뿐 별개 환경의 서로 무관한 측정이다.
 
-단일 사례라 절대값은 그대로 일반화하기 어렵지만, 모듈 그래프가 깊어질수록 분리 효과가 커진다는 방향성은 참고할 수 있다.
+단일 사례의 수치나 모듈 분리 효과를 다른 앱의 startup 개선 보장으로 일반화하지 않는다. 초기화 작업과 import 비용을 각각 측정한다.
 
 ## 서버리스 특화 팁
 
 ### 공식 부팅 벤치마크 — 번들링이 결정 변수
 
-같은 스타터 앱 기준 (공식 문서 측정, MacBook Pro 2014):
+현재 FAQ에 남아 있는 역사적 스타터 앱 측정(MacBook Pro 2014)이다. 현재 Node/Nest/배포 runtime의 SLA로 사용하지 않는다:
 
 | 구성 | 미번들 | webpack 단일 번들(node_modules 포함) |
 |------|--------|-------------------------------------|

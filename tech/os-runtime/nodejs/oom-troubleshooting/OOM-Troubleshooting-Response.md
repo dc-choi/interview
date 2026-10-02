@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, memory, troubleshooting]
 status: done
-verified_at: 2026-09-12
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["OOM Response", "Node.js OOM 대응", "OOM 대응 방법"]
 ---
@@ -56,6 +56,14 @@ v8.writeHeapSnapshot('/tmp/heap.heapsnapshot');
 - peak RSS에서 필요한 headroom을 남긴 뒤 workload별 Old Space 값을 정한다. 75% 같은 고정 비율은 보편 안전 기준이 아니다.
 ```
 
+### 힙 튜닝의 해석
+
+`v8.getHeapStatistics().heap_size_limit`으로 실행 환경의 실제 힙 한도를 확인한다. `--max-old-space-size`는 MiB 단위의 old generation 상한이며 전체 RSS 제한이 아니다. `--max-semi-space-size`는 young generation 전체 크기를 직접 지정하는 값이 아니라 semi-space 크기다. 값을 늘릴 때 전체 힙 증가와 GC 빈도, pause, 처리량을 함께 측정한다.
+
+GC 후에도 생존량이 계속 늘고 회수량이 작으면 보존 참조, 무한 캐시와 작업 중 데이터 누적을 조사한다. `allocation failure`라는 GC 사유만으로 OOM이나 누수를 확정하지 않는다. concurrent GC 단계도 있으므로 모든 GC 시간에 JavaScript가 전부 멈춘다고 해석하지 않는다.
+
+`--expose-gc`와 강제 GC는 통제된 실험에 쓴다. 자동 GC를 끄거나 누수를 고치지 않는다. `--gc-interval` 같은 V8 내부 flag와 런타임 flag 변경을 일반 운영 튜닝으로 복제하지 않는다. 힙 한도를 줄여 OOM을 유발하는 재현은 운영 트래픽에서 분리한다.
+
 ### E. 모니터링 & 조기 경보
 ```
 OOM이 발생하기 전에 감지하기 위한 지표 수집.
@@ -102,6 +110,9 @@ Q. 메모리 누수를 어떻게 찾는가?
 - [[Debugging-Profiling|디버깅 & 프로파일링]]
 
 ## 출처
+
+- [Node.js, Understanding and tuning memory](https://nodejs.org/learn/diagnostics/memory/understanding-and-tuning-memory)
+- [Node.js, Tracing garbage collection](https://nodejs.org/learn/diagnostics/memory/using-gc-traces)
 
 - [Node.js, CLI `--max-old-space-size`](https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-mib)
 - [Node.js, `process.memoryUsage()`](https://nodejs.org/api/process.html#processmemoryusage)

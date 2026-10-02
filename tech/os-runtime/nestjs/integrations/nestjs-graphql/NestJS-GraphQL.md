@@ -16,6 +16,8 @@ aliases: ["NestJS GraphQL", "NestJS GraphQL 통합"]
 - [[NestJS-GraphQL-DataLoader|Resolver와 DataLoader — ResolveField, N+1 해결, 부모 resolver eager 로딩과의 트레이드오프, GqlExecutionContext Guard]]
 - [[NestJS-GraphQL-Subscription|Subscription — PubSub, 발행 시점과 trigger 계약, graphql-ws 전송, connectionParams 인증, 수평 확장]]
 
+- [[NestJS-GraphQL-Driver-and-Federation-Operations|드라이버의 요청 계약, Federation 합성과 배포 검증]]
+
 ## 관련 문서
 
 - [[GraphQL-Architecture-Map|GraphQL 전체 그림 지도 (NestJS resolver, DataLoader가 흐름 어디에 앉나)]]

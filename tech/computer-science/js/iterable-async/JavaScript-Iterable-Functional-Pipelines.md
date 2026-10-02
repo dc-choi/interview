@@ -138,7 +138,13 @@ lazy range -> map(+10) -> 홀수 filter -> take(2)는 소비자가 값을 요청
 
 lazy 연산에 terminal 수집을 붙여 eager 버전을 만들 수 있다. 하지만 take가 배열을 돌려주는 library와 iterator를 돌려주는 표준 Iterator.take는 평가 경계가 다르므로 이름보다 반환 계약을 본다. deep flatten이 모든 iterable을 재귀 전개하면 한 글자 문자열도 자신을 다시 내놓아 끝나지 않는다. 문자열은 먼저 원자값으로 분기하고 깊이/순환 정책을 둔다. flatMap의 필요를 JavaScript 전체가 eager하기 때문이라고 단정하지 않는다.
 
+## 표준 Iterator helper와 소비 시점
+
+지원 런타임에서 `Iterator.from(iterable)`로 입력을 감싼 뒤 `map`, `filter`, `take`, `drop`, `flatMap`을 지연 연결하고 `toArray`, `reduce`, `some`, `every`, `find` 같은 소비 연산으로 결과를 얻는다. 기존 iterator는 소비한 위치가 진행되므로 같은 pipeline을 재사용한다고 처음부터 재실행되지 않는다. 이 helper들은 동기 iterator 계약이다. `map(async ...)`가 반환한 Promise를 자동으로 await하거나 동시성을 제한하지 않는다.
+
 ## 출처
+
+- [Iterator helpers — V8](https://v8.dev/features/iterator-helpers)
 
 - 인프런 보충 강의: [이미지 목록 그리기](https://www.inflearn.com/courses/lecture?courseId=324019&unitId=20519)
 - 인프런 보충 강의: [지연 평가 + Promise - L.map, map, take](https://www.inflearn.com/courses/lecture?courseId=247815&unitId=16625)

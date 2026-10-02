@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["파일 경로", "Node.js path", "상대 경로 기준"]
 ---
@@ -49,12 +49,9 @@ const dataUrl = new URL('./data.json', import.meta.url);        // fs API는 fil
 모듈 옆 리소스는 모듈 위치를 기준으로 만들고, 사용자가 CLI 인자로 넘긴 경로처럼 실행 위치 기준이 의도일 때만 cwd 기준을 쓴다. `import.meta.dirname`의 지원 범위와 이식성 있는 대안은 [[Module-System-ESM#상호운용성|ESM 상호운용성]]을 따른다.
 
 ## 다양한 파일 시스템 호환성
-```
-모든 파일 시스템이 동일하게 작동하지는 않는다. 대소문자 구분, 유니코드 형식, 타임스탬프 해상도 등이 다르다.
-process.platform으로 파일 시스템 동작을 추론하지 말 것.
-```
+대소문자 구분과 보존, Unicode 형식의 비교와 보존, 타임스탬프 해상도는 파일 시스템마다 다르다. `process.platform`만으로 판정하지 않고 실제 작업 대상 마운트의 동작을 확인한다. 같은 프로세스에서도 로컬 디스크와 네트워크 드라이브의 성질은 다를 수 있다.
 - **핵심 원칙**: 파일명과 타임스탬프를 있는 그대로 보존하고, 정규화는 비교 함수에서만 사용한다
-- **상위 집합 접근법**: 모든 기능의 상위 집합을 구현 (대소문자 보존, Unicode 형식 보존, 나노초 타임스탬프)
+- **보존 우선**: 대상이 제공한 이름, 시간 정밀도와 지원 메타데이터를 보존한다. 낮은 정밀도의 대상과 비교할 때만 그 대상에 맞게 비교하며 원본 값을 일괄 축소하지 않는다.
 
 ```js
 // 잘못된 방법
@@ -67,7 +64,11 @@ const storedFilename = filename;
 
 `toLowerCase()` 비교만으로 두 path가 같은 file을 가리키는지 판정할 수는 없다. case folding, Unicode normalization, mount option과 file system 규칙이 다르기 때문이다. application이 논리적 이름 중복을 막아야 한다면 canonicalization과 collision 정책을 별도 contract로 정하고, 실제 target 확인에는 file system operation 결과를 사용한다.
 
+기본 `path`는 실행 플랫폼의 경로 규칙을 사용한다. 다른 플랫폼 형식의 문자열을 명시적으로 처리하려면 `path.win32` 또는 `path.posix`를 사용한다. 경로 문자열의 정규화는 실제 파일 접근, 심볼릭 링크 해석이나 접근 통제를 대신하지 않는다.
+
 ## 출처
+
+- [Node.js, File paths](https://nodejs.org/learn/manipulating-files/nodejs-file-paths)
 
 - [Node.js Path API](https://nodejs.org/api/path.html)
 - [Node.js File system API, String paths](https://nodejs.org/api/fs.html#string-paths)

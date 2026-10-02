@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: note
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["파일 시스템"]
 ---
@@ -20,6 +20,8 @@ stats.isDirectory();     // false
 stats.isSymbolicLink();  // false
 stats.size;              // 바이트 단위 파일 크기
 ```
+
+`stat()`는 심볼릭 링크가 가리키는 대상을 조사한다. 링크 자체를 판별하려면 `lstat()` 후 `isSymbolicLink()`를 사용한다. 메타데이터를 얻은 뒤에도 파일 상태는 바뀔 수 있으므로 읽기나 쓰기 단계의 오류를 별도로 처리한다.
 
 ## 파일 경로
 
@@ -50,6 +52,8 @@ for await (const chunk of readStream) {
 ```
 - `encoding`을 생략하면 `readFile`, `readFileSync`, `fsPromises.readFile` 모두 문자열이 아니라 Buffer를 반환한다. 텍스트는 encoding을 명시하고, 이미지 같은 바이너리는 Buffer로 받아 필요할 때 `buf.toString('base64')`로 바꾼다([[Buffer-Memory|Buffer]]).
 - 동기 API는 작업이 끝날 때까지 이벤트 루프와 이후 JavaScript 실행을 막는다. 시작 시 설정 읽기나 CLI 스크립트에 한정하고 요청 처리 경로에서는 비동기 API를 쓴다.
+
+세 readFile 계열은 전체 내용을 메모리에 올린다. Promise를 사용해도 메모리 사용량이 작아지는 것은 아니다. 큰 파일은 스트림과 배압을 적용하고, 네트워크 다운로드는 상태 코드를 확인한 뒤 body를 소비하거나 취소한다.
 
 ## 파일 쓰기
 ```js
@@ -94,9 +98,7 @@ await unlink('/path/to/file.txt').catch((err) => { if (err.code !== 'ENOENT') th
 - 오류 code 분기 기준은 [[Error-Handling-Paths|에러 처리 경로]]를 따른다.
 
 ## 파일 디스크립터
-```
-파일 디스크립터(fd)는 열려있는 파일에 대한 숫자 참조다. callback `fs.open()`은 callback으로 fd를 넘기고, `fs/promises`의 `open()`은 fd를 관리하는 `FileHandle`을 반환한다.
-```
+파일 디스크립터(fd)는 프로세스 안에서 열린 파일을 식별하는 숫자다. callback `fs.open()`은 fd를 넘기고, `fs/promises`의 `open()`은 `FileHandle`을 반환한다. 실패 경로에서도 닫아야 하며, 닫은 fd의 숫자가 다른 파일에 재사용될 수 있으므로 보관한 숫자의 영구적 동일성을 가정하지 않는다.
 ```js
 import { open } from 'node:fs/promises';
 
@@ -153,3 +155,9 @@ await rm('/path/to/folder', { recursive: true, force: true });
 - [얄팍한 코딩사전 강사 — 파일 시스템 2](https://www.inflearn.com/courses/lecture?courseId=336276&unitId=270416)
 - [김정환 강사 — 비동기 세계 1 - readFileSync](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6170)
 - [김정환 강사 — 비동기 세계 2 - readFile](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6171)
+
+- [Node.js, File stats](https://nodejs.org/learn/manipulating-files/nodejs-file-stats)
+- [Node.js, Reading files](https://nodejs.org/learn/manipulating-files/reading-files-with-nodejs)
+- [Node.js, Writing files](https://nodejs.org/learn/manipulating-files/writing-files-with-nodejs)
+- [Node.js, File descriptors](https://nodejs.org/learn/manipulating-files/working-with-file-descriptors-in-nodejs)
+- [Node.js, Working with folders](https://nodejs.org/learn/manipulating-files/working-with-folders-in-nodejs)

@@ -115,7 +115,15 @@ Atomics.load는 현재 값, exchange/add/sub/and/or/xor와 compareExchange는 �
 
 wait는 expected를 Int32/BigInt64로 변환한 뒤 공유 위치의 값과 비교하여 같으면 대기하고, 다르면 즉시 `not-equal`을 낸다. 값이 0인 Int32 위치에 expected `2 ** 32`, timeout 0을 주면 expected가 0으로 변환되어 `not-equal`이 아닌 `timed-out`을 반환한다. 깨어남은 `ok`, timeout은 `timed-out`이며 깨어난 뒤 조건을 다시 검사한다. notify는 깨어난 agent 수를 반환한다. Atomics는 constructor가 아니며 Float/Uint8Clamped view에는 이런 정수 연산을 쓸 수 없다. isLockFree는 view가 아닌 byte 크기를 받고 lock 구현의 공정성이나 여러 field atomicity를 보장하지 않는다.
 
+## Atomics.waitAsync와 재검사
+
+`Atomics.waitAsync`는 `{ async, value }`를 반환한다. 기대값 불일치나 즉시 timeout이면 `async: false`와 문자열 결과를, 기다려야 하면 `async: true`와 Promise를 받는다. `await result.value`로 두 경로를 함께 처리할 수 있지만 알림을 받았다는 사실이 잠금 획득을 뜻하지는 않는다. 깨어난 뒤 공유 조건과 compare-exchange 결과를 다시 검사한다.
+
+wait queue 순서가 application lock의 공정성을 보장하지는 않는다. 새 작업이 먼저 잠금을 얻을 수 있다. 브라우저 main thread의 `Atomics.wait` 금지는 Node.js main thread까지 같은 방식으로 적용되지 않으며, Node.js에서 허용돼도 동기 대기로 event loop를 막는 설계는 피한다.
+
 ## 출처
+
+- [Asynchronous atomic wait — V8](https://v8.dev/features/atomics)
 
 - [ECMAScript, Atomics.compareExchange](https://tc39.es/ecma262/multipage/structured-data.html#sec-atomics.compareexchange)
 

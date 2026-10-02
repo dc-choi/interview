@@ -8,7 +8,7 @@ aliases: ["Inline Cache", "IC", "Monomorphic", "Polymorphic", "Megamorphic", "Tr
 
 # V8 인라인 캐시 (Inline Cache)
 
-동일한 **프로퍼티 접근**이 반복 호출될 때, 매번 Hidden Class 조회를 하지 않도록 **호출 지점(call site)에 조회 결과를 캐싱**하는 V8의 핵심 최적화 기법. [[V8-Hidden-Class|히든 클래스]]와 짝으로 동작한다.
+동일한 **프로퍼티 접근**이 반복될 때 **호출 지점(call site)에 관찰한 Map과 접근 handler를 캐싱**하는 V8의 핵심 최적화 기법. Map 확인 자체를 없애기보다 이름과 prototype을 따라 다시 찾는 비용을 줄인다. [[V8-Hidden-Class|히든 클래스]]와 짝으로 동작한다.
 
 ## 동작 원리
 
@@ -26,8 +26,8 @@ aliases: ["Inline Cache", "IC", "Monomorphic", "Polymorphic", "Megamorphic", "Tr
 
 | 상태 | 표기 | 설명 |
 |---|---|---|
-| UNINITIALIZED | `0` | 최초 상태. 아직 접근이 한 번도 실행되지 않음 |
-| MONOMORPHIC | `1` | 항상 **같은 Hidden Class**로 접근. **가장 빠름** (1회 비교 후 캐시 히트) |
+| UNINITIALIZED | `0` | 초기 feedback 상태. 접근 실행과 feedback 지연 할당은 구분 |
+| MONOMORPHIC | `1` | 해당 slot이 한 Map에 특화된 handler를 유지 |
 | POLYMORPHIC | `P` | 소수의 다른 Hidden Class를 관찰해 여러 handler를 보관 |
 | MEGAMORPHIC | `N` | 매우 다양한 Hidden Class를 관찰해 더 일반적인 조회 경로 사용 |
 
@@ -62,7 +62,9 @@ const b = { x: 3, y: 4 };           // a와 같은 Hidden Class
 const c = { y: 5, x: 6 };           // 순서 다름 → 다른 Hidden Class
 const d = { x: 7, y: 8, z: 9 };     // 프로퍼티 추가 → 다른 Hidden Class
 
-read(a);  // UNINIT → MONO (HC_ab 관찰)
+// 아래는 충분히 피드백을 모으는 상태 전이의 개념 예시다.
+// 실제 최초 호출 몇 회는 feedback vector가 없어 기록되지 않을 수 있다.
+read(a);  // HC_ab 관찰
 read(b);  // MONO 유지 (HC_ab 재사용)
 read(c);  // MONO → POLY (HC_ab + HC_c)
 read(d);  // POLY (HC_ab + HC_c + HC_d)
@@ -72,10 +74,10 @@ read(d);  // POLY (HC_ab + HC_c + HC_d)
 ## 최적화 원칙
 
 ### 1. 접근 지점이 보는 모양을 적고 안정되게 유지
-속도는 MONO, POLY, MEGA 순이다. POLY는 비교할 map이 늘어 MONO보다 느리지만 map별 처리를 포기하는 MEGA보다는 낫다. 비용의 종류는 상태마다 다르다.
+MONO는 특화한 검사를 줄이기 쉽고 POLY는 여러 Map의 handler를 다룬다. MEGA는 더 일반적인 조회를 한다. 실제 속도의 절대 순서는 접근 종류, handler 공유, CPU와 데이터 분포에 따라 달라지므로 상태만으로 성능을 확정하지 않는다.
 
 - MONO, POLY feedback을 받은 Maglev와 TurboFan은 관찰한 map을 확인하는 검사와 offset 접근을 코드에 넣는다. 처음 보는 모양이 오면 이 가정이 깨져 `wrong map` 사유로 역최적화된다.
-- MEGA 접근은 map별 특화 대신 feedback을 모으지 않는 megamorphic 조회 builtin을 호출한다. 새 모양 때문에 역최적화되지는 않지만 가장 느린 일반 경로다.
+- MEGA 접근은 map별 특화 대신 feedback을 모으지 않는 megamorphic 조회 builtin을 호출한다. 그 버전에서 map별 가정에 의한 `wrong map` 역최적화는 피하지만 특화 이점은 줄어든다. 다른 연산의 가정 실패까지 없어지는 것은 아니다.
 - Node.js 26.7(V8 14.6)에서 `u.name`을 읽는 함수 세 개를 모양 1개, 2개, 5개로 달궈 TurboFan으로 최적화한 뒤 처음 보는 모양을 넣자, MONO와 POLY 함수는 `bailout (kind: deopt-eager, reason: wrong map)`으로 역최적화됐고 MEGA 함수는 최적화 상태를 유지했다.
 
 따라서 POLY와 MEGA가 역최적화를 부른다고 단정하지 않는다. 특화된 코드는 새 모양에 역최적화될 수 있고, 일반화된 코드는 처음부터 느리다. 목표는 hot path의 접근 지점이 적은 수의 안정된 모양만 보게 하는 것이다.
@@ -101,6 +103,12 @@ sum({ x: 1, y: 2, z: 3 });// 프로퍼티 추가 → 다른 HC
 ### 4. 동적 유연함의 대가
 JS의 "어떤 모양의 객체든 받을 수 있다"는 유연성은 IC 관점에서 비용이다. **동적, 유연한 코드는 성능 대가가 따른다**는 사실을 인지하고, hot path일수록 정적 언어처럼 작성한다.
 
+## 일반 접근과 다른 의미
+
+`super.x`는 현재 receiver를 값의 소유자처럼 찾아가는 접근이 아니다. HomeObject의 prototype에서 lookup을 시작하고 getter 등의 `this`는 receiver로 유지한다. 이 때문에 lookup 시작 객체와 receiver를 나눈 IC 설계가 필요하다.
+
+Class field의 초기화도 일반 assignment와 다르다. Own property를 정의하므로 상속한 setter를 호출하는 대입과 같은 의미로 바꿀 수 없다. 엔진이 field용 IC를 도입해 빨라져도 이 언어 의미는 유지한다.
+
 ## 관련 문서
 
 - [[V8|V8 엔진]]
@@ -111,6 +119,8 @@ JS의 "어떤 모양의 객체든 받을 수 있다"는 유연성은 IC 관점�
 
 - [V8 — Maps (Hidden Classes) in V8](https://v8.dev/docs/hidden-classes)
 - [V8 — Fast properties in V8](https://v8.dev/blog/fast-properties)
+- [V8 — Super fast super property access](https://v8.dev/blog/fast-super)
+- [V8 — Faster initialization of instances with new class features](https://v8.dev/blog/faster-class-features)
 - [V8 — InlineCacheState source](https://raw.githubusercontent.com/v8/v8/main/src/common/globals.h)
 - [V8 — Maglev, V8's fastest optimizing JIT](https://v8.dev/blog/maglev)
 - [V8 — IC transition mark source (14.6.202.34)](https://raw.githubusercontent.com/v8/v8/14.6.202.34/src/ic/ic.cc)

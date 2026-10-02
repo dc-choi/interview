@@ -95,6 +95,13 @@ try {
 
 `'error'` 리스너 0개인 EventEmitter가 에러 emit하면 **즉시 throw → 프로세스 종료**. Stream, net.Socket, child_process 모두 EventEmitter라 동일하다. 스트림을 연결할 때는 한쪽 리스너만 다는 대신 `pipeline()`으로 전체 체인의 오류 전파와 정리를 맡긴다.
 
+## 원인 보존과 오류 분류
+
+계층 경계에서 설명을 더할 때 `throw new Error('설정 로드 실패', { cause: error })`처럼 원인을 보존한다. `cause`에는 Error 이외의 값도 올 수 있으므로 출력기에서 타입과 순환 참조를 고려한다. 오류 message 문자열은 진단용이며 안정적인 분기 계약이 아니다. 런타임이 제공하는 `code`나 직접 정의한 오류 타입을 사용한다.
+
 ## 출처
+
+- [Error cause — V8](https://v8.dev/features/error-cause)
+- [Optional catch binding — V8](https://v8.dev/features/optional-catch-binding)
 
 - [Node.js Process API](https://nodejs.org/api/process.html), [Stream API, `pipeline()`](https://nodejs.org/api/stream.html#streampipelinesource-transforms-destination-callback)

@@ -84,7 +84,17 @@ Date에 숫자 하나는 연도가 아닌 epoch millisecond다. component 생성
 
 globalThis의 NaN, Infinity, undefined property는 writable/configurable/enumerable이 false다. sloppy 대입은 무시되고 strict 대입은 TypeError지만 local binding으로 이름을 가릴 수 있어 식별자 이름 자체가 예약어라는 뜻은 아니다.
 
+## JSON과 JavaScript 소스의 경계
+
+JSON 문자열을 JavaScript 문자열 literal로 다룰 때의 U+2028/U+2029 제약은 JSON superset 변경으로 완화됐지만 JSON을 HTML의 `<script>`에 그대로 삽입해도 안전하다는 뜻은 아니다. 데이터는 JSON parser로 처리하고 HTML 삽입 문맥의 escaping을 별도로 적용한다.
+
+`JSON.stringify`는 짝 없는 surrogate를 `\ud800` 같은 escape로 출력해 결과를 UTF-8/UTF-16으로 전달할 수 있게 한다. `JSON.parse`하면 원래 code unit이 돌아오므로 문자열이 사용자에게 표시 가능한 정상 Unicode인지 검증하는 기능은 아니다. 지역화된 숫자, 목록과 상대 시간은 [[JavaScript-Internationalization|Intl]]에서 다룬다.
+
 ## 출처
+
+- [globalThis — V8](https://v8.dev/features/globalthis)
+- [JSON superset — V8](https://v8.dev/features/subsume-json)
+- [Well-formed JSON.stringify — V8](https://v8.dev/features/well-formed-json-stringify)
 
 - [ECMAScript Language Specification, global object](https://tc39.es/ecma262/multipage/global-object.html), [JSON](https://tc39.es/ecma262/multipage/structured-data.html#sec-json-object), [Date](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date-objects)
 - [ECMAScript Language Specification, SerializeJSONObject](https://tc39.es/ecma262/multipage/structured-data.html#sec-serializejsonobject), [SerializeJSONProperty](https://tc39.es/ecma262/multipage/structured-data.html#sec-serializejsonproperty), [Date constructor](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date-constructor), [Date.prototype.getTimezoneOffset](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date.prototype.gettimezoneoffset)

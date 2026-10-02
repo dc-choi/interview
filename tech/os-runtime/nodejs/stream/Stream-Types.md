@@ -8,7 +8,7 @@ verified_at: 2026-09-22
 
 # 스트림 타입과 배압
 
-데이터를 청크(chunk) 단위로 처리하는 추상 인터페이스. 전체 데이터를 메모리에 올리지 않고도 대용량 데이터를 처리할 수 있으며, 모든 스트림은 **EventEmitter**의 인스턴스이다.
+데이터를 청크(chunk) 단위로 처리하는 추상 인터페이스. 전체 데이터를 메모리에 올리지 않고도 대용량 데이터를 처리할 수 있으며, Node.js의 Readable/Writable 계열은 **EventEmitter**의 인스턴스다. WHATWG Web Streams는 다른 API다.
 
 ## 4가지 스트림 타입
 
@@ -58,7 +58,8 @@ new Readable({
 데이터를 쓸 수 있는 스트림.
 
 write(chunk) → 내부 _write(chunk, encoding, callback) 호출
-callback을 호출해야 다음 청크를 받을 수 있다 → 이것이 배압(backpressure)의 핵심
+_write callback은 현재 청크 처리가 끝났음을 알리며 정확히 한 번 호출한다.
+외부 write()는 처리 중에도 큐에 넣을 수 있다. false 반환 시 추가 생산을 멈추는 것은 호출자의 책임이다.
 
 예: fs.createWriteStream(), http.ServerResponse (res), process.stdout
 ```
@@ -152,6 +153,10 @@ function writeChunks(writable, chunks) {
 - `write()`가 `false`를 반환하면 반드시 `drain` 이벤트를 기다려야 한다
 - 소비보다 빠르게 계속 쓰면 버퍼가 누적되어 메모리 고갈에 이를 수 있다
 
+`highWaterMark`는 objectMode에서는 객체 수, 일반 바이트 모드에서는 바이트 수를 센다. 한 객체 자체가 클 수 있으므로 객체 16개가 작은 메모리를 뜻하지 않는다. `null`은 objectMode에서도 데이터가 아니라 Readable 종료 신호다.
+
+`end`는 읽을 데이터를 모두 소비한 상태, `finish`는 Writable의 입력 처리가 끝난 상태, `close`는 리소스가 닫힌 상태다. `close`만으로 성공을 판정하지 않는다. 수동 `drain` 대기는 error/조기 close까지 처리해야 하므로 전체 연결에는 `pipeline()`을 우선 검토한다.
+
 ### pipe()의 중요성
 ```javascript
 // ✗ 배압 미처리: 메모리 문제 발생 가능
@@ -176,6 +181,8 @@ pipeline(readable, transform, writable, (err) => {
 - [[libuv]]
 
 ## 출처
+
+- [Node.js Learn, How to use streams](https://nodejs.org/en/learn/modules/how-to-use-streams)
 
 - [Node.js — Stream API](https://nodejs.org/api/stream.html)
 - [Backpressuring in Streams — Node.js](https://nodejs.org/learn/modules/backpressuring-in-streams) — 배압 준수 여부를 비교한 예시 실험

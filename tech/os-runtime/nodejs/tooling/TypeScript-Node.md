@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, typescript, tooling]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["Node.js TypeScript", "Node TypeScript 실행"]
 ---
@@ -59,6 +59,14 @@ Node의 내장 type stripping은 `tsconfig.json`을 읽지 않고 타입 오류�
 }
 ```
 
+## 내장 실행의 버전과 파일 경계
+
+Type stripping은 v22.6.0에 도입되었고 v22.18.0과 v23.6.0에서 기본 활성화되었다. v24.12.0과 v25.2.0부터 stable이다. v26.0.0에서는 `--experimental-transform-types`가 제거되었으므로 이를 최신 버전의 enum 실행 해법으로 사용하지 않는다. JSX나 런타임 변환이 필요한 문법은 별도 변환기 또는 runner로 처리한다.
+
+`.mts`는 ESM, `.cts`는 CommonJS로 해석한다. `.ts`는 `.js`와 같은 모듈 판정 규칙을 따른다. 직접 실행하는 상대 import는 실제 파일 확장자를 포함하고 타입 전용 의존성에는 `import type`을 쓴다. tsc로 출력할 때는 `rewriteRelativeImportExtensions` 등 출력 경로와 맞는 옵션을 검토한다. codemod가 파일을 찾았다는 것만으로 해당 export와 런타임 동작까지 검증되지는 않는다.
+
+`tsc`는 타입 오류가 있어도 설정에 따라 출력을 만들 수 있다. 오류가 있으면 배포 산출물을 만들지 않으려면 `noEmitOnError`와 CI 실패 처리를 명시한다. 파일명을 직접 넘기는 `tsc file.ts`와 프로젝트 설정을 사용하는 `tsc -p tsconfig.json`도 구분한다.
+
 ## 타입과 런타임 import
 
 타입 전용 의존성은 `import type`으로 표시한다. 타입 이름을 일반 import로 가져오면 실행 도구와 compiler option에 따라 불필요한 런타임 import가 남거나, 실제 export가 없어 실패할 수 있다.
@@ -69,6 +77,8 @@ import { createServer } from "node:https";
 ```
 
 `@types/node`는 Node API의 정적 선언을 제공할 뿐 런타임 기능을 추가하지 않는다. 라이브러리 패키지는 소비자의 실행 도구에 TypeScript 변환을 떠넘기지 말고 보통 JavaScript와 `.d.ts`를 함께 발행한다. Node는 `node_modules`의 TypeScript 타입 제거를 기본 지원 대상으로 삼지 않는다.
+
+패키지의 `main`, `exports`, `types`는 게시되는 JavaScript와 선언 파일을 가리켜야 한다. 테스트와 타입 검사는 소스에 수행하고, `prepack` 등으로 생성한 산출물은 `npm pack` 결과를 실제 소비자 환경에 설치해서 검증한다. 테스트용 tsconfig와 배포용 tsconfig는 서로 다른 전역 타입과 포함 파일을 가질 수 있다.
 
 ## 관련 문서
 
@@ -90,3 +100,9 @@ import { createServer } from "node:https";
 - yongsoocho, [TypeScript 프로젝트 생성](https://www.inflearn.com/courses/lecture?courseId=329966&unitId=136788)
 - 이정환 Winterlood, [Hello TS World!](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=154361)
 - 이정환 Winterlood, [외부 라이브러리 사용하기](https://www.inflearn.com/courses/lecture?courseId=330452&unitId=160077)
+
+- [Node.js, Introduction to TypeScript](https://nodejs.org/learn/typescript/introduction)
+- [Node.js, Running TypeScript natively](https://nodejs.org/learn/typescript/run-natively)
+- [Node.js, TypeScript transpilation](https://nodejs.org/learn/typescript/transpile)
+- [Node.js, Running TypeScript with a runner](https://nodejs.org/learn/typescript/run)
+- [Node.js, Publishing a TypeScript package](https://nodejs.org/learn/typescript/publishing-a-ts-package)

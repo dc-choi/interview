@@ -11,7 +11,7 @@ aliases: ["Event Loop", "이벤트 루프"]
 
 ## 목차
 
-- [[Event-Loop-Microtask|이벤트 루프 — Microtask/Macrotask & 브라우저 vs Node]] — Microtask/Macrotask 개념, 실행 순서, 브라우저 단일 큐 vs Node.js 페이즈 기반 큐, 타이머 API 차이, 루프를 붙잡는 리소스와 해제, 흔한 오해, 이름 혼동 주의
+- [[Event-Loop-Microtask|이벤트 루프 — Microtask/Macrotask & 브라우저 vs Node]] — Microtask/Macrotask 개념, 실행 순서, 브라우저 task source별 큐 vs Node.js 페이즈 구조, 타이머 API 차이, 루프를 붙잡는 리소스와 해제, 흔한 오해, 이름 혼동 주의
 - [[Event-Loop-Phases|이벤트 루프 — 페이즈와 실행 순서]] — libuv `uv_run` 소스, nextTick/microtask 삽입 지점, 6개 페이즈 상세, 전체 실행 흐름, CJS/ESM 차이
 - [[Event-Loop-Phases-Timers|이벤트 루프 — 타이머 심화]] — setTimeout 지연 값 보정, setImmediate와 setTimeout(0) 선택, setInterval의 한계
 

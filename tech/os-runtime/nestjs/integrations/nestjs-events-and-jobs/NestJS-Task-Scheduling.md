@@ -10,6 +10,8 @@ aliases: ["NestJS Task Scheduling", "@nestjs/schedule", "NestJS Cron"]
 
 `ScheduleModule.forRoot()`를 루트 모듈에 등록하면 앱 안의 선언적 크론/인터벌/타임아웃이 스케줄러에 등록된다. 등록 시점은 **onApplicationBootstrap** — 모든 모듈이 로드되고 선언이 끝난 뒤다.
 
+`forRoot()`는 한 module에서만 호출한다. 여러 번 등록하면 선언된 handler도 중복 등록돼 같은 process에서 여러 번 실행될 수 있다.
+
 ## 선언적 크론 — @Cron
 
 ```ts
@@ -56,6 +58,10 @@ this.schedulerRegistry.deleteCronJob(name);
 
 스케줄러는 프로세스 내장이라 **인스턴스 N개면 같은 크론이 N번 실행**된다. 중복이 문제인 작업은 [[Distributed-Lock|분산 락]]으로 한 인스턴스만 실행하게 하거나, 스케줄 전용 워커로 분리한다.
 
+2026-10-01 현재 guide는 공식 `@nestjs/locks`의 `@OnOneInstance({ key })`로 공유 store의 lease를 취득, 갱신하고 다른 instance의 tick은 skip하는 경로도 제공한다. 소유 instance가 사라지면 다음 tick에 다른 instance가 인계한다. `@WithoutOverlapping()`은 직전 실행 중인 tick을 생략한다. lease는 외부 side effect의 exactly-once 보장이 아니므로 잡의 멱등성도 유지한다.
+
+`lastDate()`는 Date 또는 미실행이면 null, `nextDate/nextDates()`는 Luxon DateTime이다. 미래 실행이 없는 job의 nextDate는 예외가 날 수 있다. `timeZone`과 `utcOffset`은 함께 쓰지 않는다.
+
 ## 관련 문서
 
 - [[Distributed-Lock|분산 락 (중복 실행 방지)]]
@@ -63,4 +69,4 @@ this.schedulerRegistry.deleteCronJob(name);
 - [[NestJS-Lifecycle|Lifecycle (onApplicationBootstrap 등록 시점)]]
 
 ## 출처
-- [NestJS — Task scheduling](https://docs.nestjs.com/techniques/task-scheduling)
+- [NestJS — Task scheduling](https://docs.nestjs.com/application/task-scheduling)

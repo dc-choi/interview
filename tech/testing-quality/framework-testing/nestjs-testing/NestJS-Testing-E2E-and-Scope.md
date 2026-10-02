@@ -23,6 +23,12 @@ await request(app.getHttpServer())
 
 실제 HTTP 입구부터 응답까지 태운다. 단 `createNestApplication`이 재현하는 것은 **모듈에 등록한 미들웨어와 `APP_GUARD`, `APP_PIPE`, `APP_FILTER` 같은 프로바이더로 등록한 enhancer**까지다. `main.ts`에서 `useGlobalPipes`, `useGlobalFilters`, `setGlobalPrefix`로만 붙인 전역 설정은 `TestingModule`이 자동으로 재현하지 않아, 프로덕션에서만 걸리는 검증이나 prefix를 테스트가 놓친다. 프로덕션과 테스트가 같은 HTTP 설정 함수를 호출하게 하는 패턴은 [[HTTP-API-Integration-Testing|HTTP API 통합 테스트]] 참조.
 
+### Fastify와 초기화
+
+Fastify 테스트 앱은 `createNestApplication<NestFastifyApplication>(new FastifyAdapter())`로 운영 adapter를 재현하고 `await app.init()` 다음 `await app.getHttpAdapter().getInstance().ready()`로 plugin/route 준비를 기다린다. Fastify의 `app.inject()`를 사용할 수도 있다. Express 기반 Supertest만 통과했다고 Fastify의 parser, plugin과 response 계약까지 검증한 것은 아니다.
+
+HTTP를 열지 않는 provider 테스트, 실제 adapter를 만든 HTTP 테스트, 외부 network/service까지 붙인 테스트가 확인하는 범위를 구분한다. 공식 예제도 service를 override하므로 HTTP E2E라는 이름만으로 실제 DB와 외부 API가 실행됐다고 해석하지 않는다.
+
 ## 쿠키 인증 흐름 E2E
 
 회원가입부터 인증 조회까지 한 흐름으로 태우면 단일 엔드포인트 테스트가 놓치는 계약 결함이 드러난다. 아래 기대 계약은 2026-09-30 NestJS 12.1, Supertest 7.3 기준으로 확인했다.
@@ -44,7 +50,7 @@ await request(app.getHttpServer())
 
 ## Request-scoped Provider 테스트
 
-request-scoped 인스턴스는 요청마다 생성되고 응답 후 GC라, 테스트 코드가 해당 요청의 DI 서브트리에 접근할 수 없다. contextId를 미리 만들어 **모든 요청이 그 서브트리를 쓰도록 고정**한다.
+request-scoped 인스턴스는 요청마다 생성되고 응답 후 GC라, 테스트 코드가 해당 요청의 DI 서브트리에 접근할 수 없다. 특정 테스트에서 contextId를 미리 만들어 **요청이 그 서브트리를 쓰도록 고정**할 수 있다. 여러 사용자/tenant 요청의 격리를 검증하는 테스트에서는 하나의 context로 모두 합치지 않는다.
 
 ```ts
 const contextId = ContextIdFactory.create();

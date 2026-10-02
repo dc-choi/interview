@@ -3,11 +3,13 @@ tags: [runtime, nodejs]
 status: index
 category: "OS & Runtime"
 aliases: ["node.js"]
-verified_at: 2026-08-26
+verified_at: 2026-10-01
 ---
 
 # node.js
-웹 브라우저밖에서 돌아가는 JS 런타임
+Node.js는 브라우저 밖에서 JavaScript를 실행하는 런타임이다. V8은 언어 실행을 맡고 Node는 파일, 프로세스와 네트워크 같은 호스트 API를 제공한다.
+
+변수와 타입, 함수와 `this`, 스코프와 클로저, 배열, 모듈을 이해한 뒤 callback, Promise, async/await와 이벤트 루프를 연결해서 읽는다. 같은 JavaScript를 사용해도 브라우저 DOM과 서버의 OS 접근 권한은 서로 다른 실행 환경이다.
 
 ## 탄생 배경
 
@@ -19,7 +21,7 @@ Node.js는 2009년 5월 27일 처음 공개됐고, Ryan Dahl은 같은 해 11월
 - **JavaScript 실행 모델**: 기본 isolate의 JavaScript는 주로 한 메인 스레드에서 실행되지만 Node.js 런타임이 한 스레드뿐인 것은 아니다. worker pool과 `worker_threads`는 별도 스레드를 사용한다.
 
 ### 철학: Unix의 영향
-Node.js의 설계 철학은 Unix의 영향을 강하게 받았다. **"작고 단순한 것이 아름답다(Small is beautiful)"**, **"한 가지 일을 잘하는 프로그램"** 같은 Unix 격언이 Node.js의 모듈 생태계(npm)와 코어 모듈 설계에 그대로 녹아 있다. 코어는 최소한만 제공하고 나머지는 작은 모듈을 조합해 해결하는 방식이다.
+Node.js의 설계 철학은 Unix의 영향을 강하게 받았다. 작고 단순한 프로그램과 한 가지 일을 잘하는 프로그램 같은 Unix 격언이 Node.js의 모듈 생태계(npm)와 코어 모듈 설계에 그대로 녹아 있다. 코어는 최소한만 제공하고 나머지는 작은 모듈을 조합해 해결하는 방식이다.
 
 ### 면접 포인트
 - "왜 Node.js가 등장했나?" → 당시 흔했던 연결별 프로세스나 스레드와 blocking I/O 모델의 동시성 비용을 줄이기 위해서다. 이벤트 루프와 비동기 I/O로 많은 대기 연결을 적은 JavaScript 스레드에서 다중화한다.
@@ -46,7 +48,7 @@ Node.js의 설계 철학은 Unix의 영향을 강하게 받았다. **"작고 단
 └─────────────────────────────────────────────┘
 ```
 
-- **V8 엔진**: Google이 개발한 C++ JS 엔진. JS를 머신코드로 컴파일하고 실행한다.
+- **V8 엔진**: Google이 개발한 C++ JS 엔진. JavaScript와 WebAssembly를 실행하며 인터프리터와 여러 컴파일 단계를 사용한다.
 - **libuv**: C 라이브러리. OS별 비동기 I/O API(epoll, kqueue, IOCP)를 추상화하고 이벤트 루프와 스레드 풀을 구현한다.
 - **Node.js Bindings**: core JavaScript와 native 구현을 연결하는 내부 계층. 애플리케이션이 deprecated internal API인 `process.binding()`에 의존하는 구조로 설명하지 않으며, native addon의 안정된 공개 경계는 Node-API를 사용한다.
 
@@ -92,7 +94,7 @@ ECMAScript는 Promise, async function, job queue 같은 비동기 제어 의미�
 ```
 
 ## HTTP 서버 예제
-Node.js의 네트워킹 지원은 최고 수준이며 표준 라이브러리의 `node:http` 모듈로 간단하게 HTTP 서버를 생성할 수 있다.
+표준 라이브러리의 `node:http` 모듈로 간단하게 HTTP 서버를 생성할 수 있다.
 
 ### CJS 버전 (server.js)
 ```js
@@ -153,8 +155,8 @@ JavaScript는 브라우저와 Node.js 모두에서 동작하지만, 두 환경�
 | 특성 | Node.js | 브라우저 |
 |------|---------|--------|
 | API | 파일 시스템, OS 접근 (`fs`, `path`, `os`) | DOM, Web APIs (`document`, `window`) |
-| 환경 제어 | 실행 환경을 완전히 제어 가능 | 방문자의 브라우저 선택 불가 |
-| JS 버전 | 최신 ES2015+ 직접 사용 | Babel 트랜스파일 필요할 수 있음 |
+| 환경 제어 | 서비스가 배포 런타임을 선택한다. 라이브러리는 소비자의 지원 범위를 고려한다. | 방문자 환경의 호환성을 고려한다. |
+| JS 버전 | 선택한 Node/V8 버전의 지원 문법과 API | 대상 브라우저에 따라 변환과 polyfill 검토 |
 | 모듈 시스템 | CommonJS + ES Module 모두 지원 | ES Module 중심 |
 | 전역 객체 | `global`, `process` | `window`, `document` |
 
@@ -255,7 +257,7 @@ NODE_ENV는 Node.js 자체의 예약된 동작이 아니라 애플리케이션, 
 - [[tooling|개발 도구 폴더 인덱스 (커맨드라인, 의존성 선택, 패키지 배포, TypeScript 연동)]]
 - [[Command-Line|커맨드라인]]
 - [[Dependency-Selection|의존성 선택]]
-- [[Nodejs-Web-Server|웹 서버와 프레임워크 (http 모듈, Hono, Apollo Server)]]
+- [[Nodejs-Web-Server|웹 서버와 프레임워크 (HTTP, Express, Hono, Apollo Server)]]
 - [[File-System|파일 시스템]]
   - [[File-System-Paths|파일 경로와 이름 (cwd 기준 상대 경로, 파일 시스템 호환성)]]
   - [[File-System-Watch|파일 변경 감시 (fs.watch, fs.watchFile, 감시 라이브러리)]]
@@ -270,7 +272,8 @@ NODE_ENV는 Node.js 자체의 예약된 동작이 아니라 애플리케이션, 
 - [[tech/os-runtime/nodejs/Security|보안 모범 사례]]
 - [[TypeScript-Node|TypeScript]]
 - [[WebAssembly|WebAssembly]]
-- [[Nodejs-Native-Addons|Native Addons (Node-API, node-addon-api, napi-rs, prebuild)]]
+- [[Nodejs-Native-Addons|Native Addons (Node-API, ABI, 수명과 비동기 처리)]]
+  - [[native-addons|네이티브 애드온 빌드와 구현]]
 
 ## 출처
 
@@ -282,3 +285,11 @@ NODE_ENV는 Node.js 자체의 예약된 동작이 아니라 애플리케이션, 
 - [Node.js, Command-line API](https://nodejs.org/api/cli.html)
 - [npm, package.json dependencies](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#dependencies)
 - [ECMAScript Jobs and Promise reactions](https://tc39.es/ecma262/)
+
+- [Node.js, Introduction to Node.js](https://nodejs.org/learn/getting-started/introduction-to-nodejs)
+- [Node.js, JavaScript prerequisites](https://nodejs.org/learn/getting-started/how-much-javascript-do-you-need-to-know-to-use-nodejs)
+- [Node.js, Node.js and the browser](https://nodejs.org/learn/getting-started/differences-between-nodejs-and-the-browser)
+- [Node.js, The V8 engine](https://nodejs.org/learn/getting-started/the-v8-javascript-engine)
+- [Node.js, The npm package manager](https://nodejs.org/learn/getting-started/an-introduction-to-the-npm-package-manager)
+- [Node.js, ECMAScript support](https://nodejs.org/learn/getting-started/ecmascript-2015-es6-and-beyond)
+- [Node.js, Development and production](https://nodejs.org/learn/getting-started/nodejs-the-difference-between-development-and-production)

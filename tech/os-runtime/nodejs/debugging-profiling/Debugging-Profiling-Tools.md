@@ -1,12 +1,14 @@
 ---
 tags: [runtime, nodejs]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["디버깅 도구", "Debugging Tools"]
 ---
 
 # 디버깅 & 프로파일링 — 도구 선택과 디버깅
+
+진단 전에 Node 버전, OS, 증상과 발생 시점, 재현 입력, 최근 코드와 환경 변경을 기록한다. 지연이 높아도 CPU 연산 때문인지 DB, 네트워크나 큐 대기 때문인지 먼저 구분한다. 중단점을 거는 디버깅과 부하 중 실행 비중을 재는 프로파일링은 목적이 다르다.
 
 ## 진단 도구 선택 가이드
 
@@ -71,22 +73,26 @@ aliases: ["디버깅 도구", "Debugging Tools"]
 
 ## perf_hooks — 코드 내장 측정
 
-`node:perf_hooks`는 **High Resolution Time(ns 정밀도)**로 코드 구간을 측정하는 표준 모듈. APM 도입 전에도 부분 측정에 즉시 사용 가능.
+`node:perf_hooks`는 고해상도 시간(ms 단위 반환값)로 코드 구간을 측정하는 표준 모듈. APM 도입 전에도 부분 측정에 즉시 사용 가능.
 
 ### mark / measure / observer
 
 ```ts
 import { performance, PerformanceObserver } from 'node:perf_hooks';
 
+const obs = new PerformanceObserver(list => {
+  for (const entry of list.getEntries()) {
+    console.log(`${entry.name}: ${entry.duration.toFixed(2)}ms`);
+  }
+  performance.clearMarks();
+  performance.clearMeasures();
+  obs.disconnect();
+});
+obs.observe({ entryTypes: ['measure'] });
 performance.mark('start');
 await heavyWork();
 performance.mark('end');
 performance.measure('heavy', 'start', 'end');
-
-const obs = new PerformanceObserver(list => {
-  for (const e of list.getEntries()) console.log(`${e.name}: ${e.duration.toFixed(2)}ms`);
-});
-obs.observe({ entryTypes: ['measure'] });
 ```
 
 `mark`는 시점 기록, `measure`는 두 mark 사이 구간을 entry로 만듦. PerformanceObserver가 비동기로 entry를 받아 처리.
@@ -113,12 +119,20 @@ setInterval(() => {
 }, 5000);
 ```
 
-이벤트 루프 지연은 **Tail latency 원인**의 1순위 — 동기 블로킹 코드를 찾는 핵심 신호.
+이벤트 루프 지연은 동기 블로킹과 CPU 경합을 조사하는 신호다. 모든 tail latency의 원인은 아니므로 외부 I/O와 큐 대기도 함께 확인한다. 종료 시 histogram을 disable하고 관측용 interval을 정리한다.
+
+`SIGUSR1`로 Inspector를 켜는 동작은 Windows에서 사용할 수 없다. 지원 버전의 `--disable-sigusr1`로 이 시작 경로를 막을 수 있다. Inspector의 UUID는 인증 자격 증명이 아니며, loopback에 바인딩해도 같은 호스트의 프로세스는 접근할 수 있다.
 
 ## 다음 단계
 - [[Debugging-Profiling-Memory|프로파일링 & 메모리 진단]]
 
 ## 출처
+
+- [Node.js, Diagnostic user journey](https://nodejs.org/learn/diagnostics/user-journey)
+- [Node.js, Live debugging](https://nodejs.org/learn/diagnostics/live-debugging)
+- [Node.js, Using Inspector](https://nodejs.org/learn/diagnostics/live-debugging/using-inspector)
+- [Node.js, Poor performance](https://nodejs.org/learn/diagnostics/poor-performance)
+- [Node.js, Debugging Node.js](https://nodejs.org/learn/getting-started/debugging)
 
 - [Node.js, Performance measurement APIs](https://nodejs.org/api/perf_hooks.html)
 - [Node.js, Debugger](https://nodejs.org/api/debugger.html)

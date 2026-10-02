@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: note
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["커맨드라인"]
 ---
@@ -26,6 +26,8 @@ chmod u+x app.js   # 실행 권한 설정 후 직접 실행 가능
 ```
 
 **내장 작업 러너 (`--run`)의 의도적 제한**: `npm run`보다 제한적. 성능과 단순성을 중시하여 `pre`/`post` 스크립트 실행을 생략함.
+
+`node --run start -- --port 8080`처럼 `--` 뒤에 적은 인자는 실행되는 script에 전달한다. Node 실행 옵션으로 해석되는 것은 아니다. `NODE_RUN_SCRIPT_NAME`과 `NODE_RUN_PACKAGE_JSON_PATH`는 실행한 script와 package.json 경로를 나타낸다. `--env-file`로 읽은 값은 `--run`이 실행하는 명령에 적용되지 않으므로 script 자체의 Node 명령이나 실행 환경에서 설정한다(Node.js 26.10 API 기준).
 
 ## 개발 중 자동 재시작
 
@@ -116,6 +118,8 @@ process.loadEnvFile();    // 코드에서 직접 .env 로드 (v20.12+)
 - dotenv도 기본으로 기존 환경 변수를 덮어쓰지 않고 `override: true`로 뒤집는다. 여러 파일을 주면 dotenv는 먼저 읽은 값이, `--env-file`은 뒤 파일의 값이 이기므로 옮길 때 파일 순서를 확인한다. 운영에서는 런타임에 주입한 값이 이기는 기본 우선순위를 유지하고 시작 시 필수 값을 검증한다([[NestJS-Configuration|NestJS 설정의 시작 시 검증]]).
 - 비밀값을 담은 `.env`는 `.gitignore`에 넣고 별도 경로로 전달한다. 이미 커밋된 비밀은 ignore 추가만으로 이력에서 사라지지 않는다([[Git-Working-Tree-and-Commits|Git 작업 트리와 커밋]]).
 
+`process.env` 값은 문자열이므로 숫자나 boolean으로 사용할 때 파싱과 범위 검증을 한다. `process.loadEnvFile()`은 프로세스 초기화 후 실행되므로 그 파일에 적은 `NODE_OPTIONS`가 이미 시작된 프로세스의 실행 옵션을 바꾸지는 않는다.
+
 ## 재현 가능한 의존성 설치
 
 `package.json`은 직접 의존성과 허용 버전 범위를 선언하고, `package-lock.json`은 실제로 해석된 전체 의존성 트리를 고정한다. 애플리케이션 저장소에서는 lockfile도 커밋해야 개발, CI와 배포가 같은 트리를 재현할 수 있다.
@@ -176,3 +180,9 @@ npm list -g --depth=0                          # 전역 설치 목록
 - [김정환 강사 — 모카(macha) 3](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6197)
 - [김정환 강사 — 슈퍼테스트(superTest) 2](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6200)
 - [김정환 강사 — NPM 테스트 스크립트](https://www.inflearn.com/courses/lecture?courseId=40164&unitId=6203)
+
+- [Node.js, Run scripts from the command line](https://nodejs.org/learn/command-line/run-nodejs-scripts-from-the-command-line)
+- [Node.js, How to use the REPL](https://nodejs.org/learn/command-line/how-to-use-the-nodejs-repl)
+- [Node.js, Output to the command line](https://nodejs.org/learn/command-line/output-to-the-command-line-using-nodejs)
+- [Node.js, Accept input from the command line](https://nodejs.org/learn/command-line/accept-input-from-the-command-line-in-nodejs)
+- [Node.js, Read environment variables](https://nodejs.org/learn/command-line/how-to-read-environment-variables-from-nodejs)

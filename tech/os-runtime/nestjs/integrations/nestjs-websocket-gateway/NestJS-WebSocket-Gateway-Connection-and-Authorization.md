@@ -49,6 +49,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 ## 라이프사이클 훅
 
+NestJS v12는 request-scoped Gateway를 지원한다. 이때 DI subtree는 **연결 하나의 수명**을 따르며 메시지마다 재생성되지 않는다. `REQUEST` 주입값은 client socket이고 disconnect 때 정리된다. 싱글턴 Gateway에 요청별 사용자 상태를 필드로 저장하는 것과 혼동하지 않는다.
+
 `afterInit`은 서버 초기화 직후 한 번, `handleConnection`과 `handleDisconnect`는 클라이언트 연결과 종료마다 실행된다. 연결 시 인증과 room join, 종료 시 자원 정리를 둔다.
 
 ## Socket.IO 프로토콜 경계
@@ -143,11 +145,17 @@ export class WsJwtGuard implements CanActivate {
 }
 ```
 
-`@MessageBody`에 `ValidationPipe` 적용도 됨 — DTO 검증. 단 WS에서 파이프는 **data 파라미터에만 적용**되고(client 인스턴스 검증은 무의미), ValidationPipe는 기본으로 HTTP 예외를 던지므로 `new ValidationPipe({ exceptionFactory: errors => new WsException(errors) })`로 예외 타입을 WS용으로 바꿔야 한다.
+`@MessageBody`에 `ValidationPipe` 적용도 됨 — DTO 검증. v12에서 method, Gateway, global pipe는 handler의 모든 인자에 적용되므로, payload만 검증하려면 `@MessageBody(pipe)`에 한정한다.  ValidationPipe는 기본으로 HTTP 예외를 던지므로 `new ValidationPipe({ exceptionFactory: errors => new WsException(errors) })`로 예외 타입을 WS용으로 바꿔야 한다.
+
+v12에서는 `useGlobalGuards/Pipes/Interceptors`와 `APP_GUARD/PIPE/INTERCEPTOR`도 Gateway에 적용된다. 공통 구현은 WS context에 맞게 분기해야 한다. 반면 global exception filter는 Gateway에 적용되지 않아 method 또는 Gateway에 바인딩한다. Guard가 false를 반환하면 `WsException`의 Forbidden resource 응답으로 바뀐다.
+
+`WsException`의 기본 cause에는 메시지 pattern과 data가 포함될 수 있다. token, 개인정보를 error payload로 반송하지 않으려면 `BaseWsExceptionFilter({ includeCause: false })` 또는 안전한 `causeFactory`로 제한한다.
 
 Guard는 inbound handler가 실행될 때만 검사한다. 서버 push만 받는 연결은 token 만료 타이머나 재인증 정책으로 만료 시 room에서 제거하고 연결을 끊어야 한다.
 
 ## 출처
+- [NestJS — WebSocket Exception filters](https://docs.nestjs.com/websockets/exception-filters)
+- [NestJS — Migration guide](https://docs.nestjs.com/migration-guide)
 - [NestJS — Gateways](https://docs.nestjs.com/websockets/gateways)
 - [NestJS — WebSocket Pipes](https://docs.nestjs.com/websockets/pipes), [Guards](https://docs.nestjs.com/websockets/guards), [Interceptors](https://docs.nestjs.com/websockets/interceptors)
 - [Socket.IO — Introduction](https://socket.io/docs/v4/) (What Socket.IO is not)

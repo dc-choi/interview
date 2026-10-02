@@ -60,7 +60,9 @@ K8s/ECS 환경에서 **롤링 배포 중 in-flight 요청을 안전하게 마무
 
 ## 타임아웃, 강제 종료
 
-종료 훅이 무한 대기에 걸리지 않게 외부에서 타임아웃을 강제. K8s `terminationGracePeriodSeconds` 안에 정리를 끝내도록 종료 시간을 설계한다. `forceCloseConnections: true`는 deadline을 넘긴 연결을 끊는 fallback으로만 사용하며, 활성 요청을 중단할 수 있으므로 정상 drain 설정으로 설명하지 않는다.
+종료 훅이 무한 대기에 걸리지 않게 외부에서 타임아웃을 강제. K8s `terminationGracePeriodSeconds` 안에 정리를 끝내도록 종료 시간을 설계한다. `forceCloseConnections: true`는 app 생성 시 설정하는 **Express adapter의 옵션**으로, 종료 때 활성 연결을 끊을 수 있다. 설정 자체가 deadline 이후에만 작동하는 기능은 아니므로 정상 drain으로 설명하지 않는다. Fastify에서는 FastifyAdapter 생성자 옵션을 사용하며 두 옵션의 의미를 별도로 확인한다.
+
+Nest 외부에서 같은 Express app을 `http.createServer()`/`https.createServer()`로 감쌌다면 Nest가 그 서버를 자동 종료하지 않는다. 각 listener를 추적하고 shutdown 때 직접 close한다. HTTP와 HTTPS의 포트별 공개 계약을 갖고, 이 FAQ recipe가 GraphQL subscription까지 지원한다고 가정하지 않는다.
 
 ## 흔한 실수
 
@@ -70,7 +72,7 @@ K8s/ECS 환경에서 **롤링 배포 중 in-flight 요청을 안전하게 마무
 - **종료 훅에서 새 비동기 작업 시작**: 정리 끝나기 전에 새 작업 만들면 영원히 안 끝남. 이미 시작된 작업 마무리만.
 - **OnModuleDestroy에서 DB 쓰기 시도하다 연결 이미 끊김**: 다른 Provider의 종료가 먼저 일어났을 수 있음 — 의존성 순서 확인.
 - **app.close()가 프로세스를 죽인다고 가정**: 훅만 트리거할 뿐 프로세스는 종료되지 않음 — interval, 장기 백그라운드 작업이 남아 있으면 계속 산다.
-- **Keep-Alive 장수명 연결로 종료가 안 끝남**: HTTP 어댑터는 기본으로 활성 응답 종료를 기다린다. 먼저 요청 deadline과 전체 종료 deadline을 두고, `forceCloseConnections: true`는 시간이 끝난 뒤 요청 중단을 감수하는 fallback으로만 사용한다.
+- **Keep-Alive 장수명 연결로 종료가 안 끝남**: HTTP 어댑터는 기본으로 활성 응답 종료를 기다린다. 먼저 요청 deadline과 전체 종료 deadline을 두고, `forceCloseConnections: true`는 활성 요청을 중단할 수 있는 별도 종료 정책으로 사용한다.
 
 ## 면접 체크포인트
 
@@ -88,3 +90,4 @@ K8s/ECS 환경에서 **롤링 배포 중 in-flight 요청을 안전하게 마무
 ## 출처
 - [NestJS — Lifecycle events](https://docs.nestjs.com/fundamentals/lifecycle-events)
 - [NestJS — Keep alive connections (FAQ)](https://docs.nestjs.com/faq/keep-alive-connections)
+- [NestJS — Multiple servers](https://docs.nestjs.com/faq/multiple-servers)

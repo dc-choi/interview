@@ -27,6 +27,14 @@ npm 생태계의 가장 큰 함정은 과의존이다. 후보를 찾기 전에 �
 | CLI 인자 파싱 | `node:util`의 `parseArgs` | v20 stable (v18.3+, v16.17+) |
 | 취소 신호 | 전역 `AbortController` | v15.4 stable |
 
+### 기존 의존성을 내장 API로 바꿀 때
+
+내장 API가 생겼다는 이유만으로 바로 제거하지 않는다. 최소 지원 Node 버전과 실제 호출부의 기능 차이를 확인한 뒤 복구 가능한 상태에서 codemod를 실행하고 diff, 타입 검사와 동작 테스트를 확인한다. 변환이 건너뛴 호출과 남은 import까지 확인해야 의존성을 제거할 수 있다.
+
+`chalk`, `kleur`, `ansi-colors`의 단순 색상과 스타일은 `util.styleText()`로 옮길 수 있다. 체이닝은 스타일 배열로 표현하지만 RGB/hex, 사용자 theme/alias, 런타임 색상 토글과 특수 API는 도구별 지원이 다르다. TTY와 색상 환경 변수에 따른 출력도 확인한다. codemod 예제와 지원 목록이 다르면 설치한 도구의 실제 diff를 기준으로 판단한다.
+
+HTTP 클라이언트는 [[HTTP-Networking#Axios에서 Fetch로 이전]], 테스트 러너는 [[Test-Runner-Basics#Mocha에서 이전할 때]], TypeScript import 경로는 [[TypeScript-Node]]의 계약 차이를 검토한다. 자동 변환 성공을 동등한 동작의 증거로 쓰지 않는다.
+
 ## 1. 후보 찾기 (Discovery)
 
 - **awesome-nodejs**, GitHub Topics와 Trending으로 목적별 후보 목록을 훑는다.
@@ -92,6 +100,11 @@ npm 생태계의 가장 큰 함정은 과의존이다. 후보를 찾기 전에 �
 - 의존성이 적은 게 왜 중요한가 → transitive 트리가 커질수록 공급망 공격 표면과 유지보수 부담이 함께 늘어난다. left-pad 사건처럼 작은 패키지 하나가 전체를 흔들 수 있다.
 
 ## 출처
+- [Node.js, Userland migrations](https://nodejs.org/learn/getting-started/userland-migrations)
+- [Node.js, Chalk to util.styleText](https://nodejs.org/learn/userland-migrations/chalk-to-util-styletext)
+- [Node.js, Kleur to util.styleText](https://nodejs.org/learn/userland-migrations/kleur-to-util-styletext)
+- [Node.js, ansi-colors to util.styleText](https://nodejs.org/learn/userland-migrations/ansi-colors-to-styletext)
+- [Node.js, Correct TypeScript specifiers](https://nodejs.org/learn/userland-migrations/correct-ts-specifiers)
 - [Node.js, Global objects](https://nodejs.org/api/globals.html)
 - [Node.js, Test runner](https://nodejs.org/api/test.html)
 - [Node.js, util.parseArgs](https://nodejs.org/api/util.html)

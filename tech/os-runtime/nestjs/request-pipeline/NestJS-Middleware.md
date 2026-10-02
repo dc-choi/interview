@@ -93,7 +93,7 @@ Express의 전역 적용은 `main.ts`의 `app.use(...)`로도 가능. Fastify의
 
 모듈 미들웨어(MiddlewareConsumer) 간에는 v11부터 **전역 모듈(@Global)에 등록한 미들웨어가 의존성 그래프상 위치와 무관하게 최우선 실행**된다 — v10까지는 전역/일반 구분 없이 루트 모듈로부터의 위상 정렬 거리 순이어서 비일관적이었다.
 
-쿠키가 대표 사례 — NestJS는 쿠키 파싱을 내장하지 않고 미들웨어에 위임한다:
+v12.1 이전의 쿠키 파싱은 미들웨어/plugin에 위임했다. 현재는 [[NestJS-Cookies-and-Sessions|built-in Cookies/SignedCookies와 adapter setCookie]]도 제공한다. 아래는 기존 middleware 경로의 계약이다:
 - `cookie-parser`가 Cookie 헤더를 파싱해 `req.cookies`로, secret을 주면 서명 쿠키를 검증해 `req.signedCookies`로 노출. **서명 검증에 실패한(변조된) 쿠키는 값이 false**로 들어온다.
 - 응답 쿠키는 `@Res({ passthrough: true })`로 받은 response의 `cookie()` — passthrough 없이 `@Res()`만 쓰면 프레임워크의 응답 처리가 꺼진다.
 - Fastify는 미들웨어 대신 `@fastify/cookie` 플러그인을 `app.register()`로 등록. 플랫폼 무관 접근이 필요하면 `createParamDecorator`로 `@Cookies()` 커스텀 데코레이터를 만든다.
@@ -105,13 +105,15 @@ Express의 전역 적용은 `main.ts`의 `app.use(...)`로도 가능. Fastify의
 
 응답 압축도 같은 구조 — Express는 `compression()`(gzip), Fastify는 `@fastify/compress` 플러그인:
 - **고트래픽 운영에선 앱 서버 압축을 쓰지 말고 리버스 프록시(Nginx)로 오프로드**하는 것이 공식 강력 권장 — 그 경우 compression 미들웨어를 빼야 한다.
-- `@fastify/compress`는 브라우저가 지원하면 **기본 Brotli** — 압축률은 좋지만 기본 품질 11이 느리다. `BROTLI_PARAM_QUALITY`(0~11) 튜닝 또는 `encodings: ['gzip', 'deflate']`로 제한해 응답은 커져도 전달을 빠르게 하는 트레이드오프.
+- `@fastify/compress`는 브라우저가 지원하면 지원 runtime에선 zstd, br, gzip, deflate 순으로 선택한다. Brotli 기본 품질은 4이며 높은 품질은 느릴 수 있다. `BROTLI_PARAM_QUALITY`(0~11) 튜닝 또는 `encodings: ['gzip', 'deflate']`로 제한해 응답은 커져도 전달을 빠르게 하는 트레이드오프.
 
 ```ts
 // main.ts — 전역, DI 불필요
 app.use(helmet());
 app.use(compression());
 ```
+
+MiddlewareConsumer의 async middleware는 Promise를 반환하거나 use를 async로 선언해야 rejection을 예외 계층에 전달한다. throw/next(error)는 global filter가 처리하며 method/controller filter와 middleware의 UseFilters는 적용되지 않는다. app.use로 직접 등록한 middleware는 adapter의 오류 경로를 따른다.
 
 ## 패턴: Rate Limiting
 
@@ -188,8 +190,8 @@ export class RateLimitMiddleware implements NestMiddleware {
 ## 출처
 
 - [NestJS — Middleware](https://docs.nestjs.com/middleware)
-- [NestJS — Cookies](https://docs.nestjs.com/techniques/cookies)
-- [NestJS — Compression](https://docs.nestjs.com/techniques/compression)
-- [NestJS — Session](https://docs.nestjs.com/techniques/session)
+- [NestJS — Cookies](https://docs.nestjs.com/http/cookies)
+- [NestJS — Compression](https://docs.nestjs.com/http/compression)
+- [NestJS — Session](https://docs.nestjs.com/http/session)
 - [NestJS — Helmet](https://docs.nestjs.com/security/helmet)
 - [NestJS — Migration guide (v11)](https://docs.nestjs.com/v11/migration-guide)

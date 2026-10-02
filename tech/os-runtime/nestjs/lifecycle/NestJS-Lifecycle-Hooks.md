@@ -80,7 +80,7 @@ export class MyService implements OnModuleInit, OnApplicationBootstrap, OnModule
 
 ```
 [Constructor]                          ← Provider 인스턴스화
-[OnModuleInit]                         ← module import 순서에 따라 이전 훅을 await
+[OnModuleInit]                         ← 의존성 그래프의 module 계층별 실행
 [OnApplicationBootstrap]               ← 모든 모듈 init 완료 후
 ... 요청 처리 ...
 [OnModuleDestroy]                      ← app.close() 또는 종료 신호
@@ -88,7 +88,7 @@ export class MyService implements OnModuleInit, OnApplicationBootstrap, OnModule
 [OnApplicationShutdown]
 ```
 
-`OnModuleInit`과 `OnApplicationBootstrap`의 실행 순서는 module import 순서에 직접 의존하며 Nest는 이전 훅을 await한다. 반면 종료 훅의 전역 역순, 전역 모듈의 정확한 위치를 리소스 정리 계약으로 가정하지 않는다. 반드시 정해진 정리 순서가 있으면 한 Provider가 순서를 조정하거나 대상 Nest 버전 통합 테스트로 확인한다.
+공식 lifecycle 문서는 init 훅을 import graph상 깊은 module과 global module부터, root module을 마지막으로 실행하고 module별 await하며 종료 훅은 반대 순서로 설명한다. v12 migration은 component hierarchy level에 따른 훅 순서 변경도 명시한다. 따라서 imports 배열의 단순 나열 순서를 초기화 계약으로 해석하지 않는다. 반면 종료 훅의 전역 역순, 전역 모듈의 정확한 위치를 리소스 정리 계약으로 가정하지 않는다. 반드시 정해진 정리 순서가 있으면 한 Provider가 순서를 조정하거나 대상 Nest 버전 통합 테스트로 확인한다.
 
 ## OnModuleInit vs OnApplicationBootstrap
 
@@ -104,7 +104,7 @@ export class MyService implements OnModuleInit, OnApplicationBootstrap, OnModule
 - Bootstrap 단계 순서 (NestFactory.create → 전역 설정 → 모듈 init → bootstrap → listen)
 - `OnModuleInit` vs `OnApplicationBootstrap` 차이 — *내 모듈* vs *전체 트리*
 - Constructor에서 비동기 작업 못 하는 이유, 대체 (OnModuleInit)
-- init 훅은 module import 순서에 의존하며 이전 훅을 await
+- init 훅의 module 계층과 await, v12의 component hierarchy 변경을 확인
 - 종료 단계의 순서 보장과 Provider 간 세부 순서는 구분하고, 의존하는 정리는 명시적으로 조정
 
 ## 관련 문서
@@ -114,4 +114,5 @@ export class MyService implements OnModuleInit, OnApplicationBootstrap, OnModule
 - [[NestJS-Module-Dynamic|Dynamic Module (registerAsync 옵션 초기화)]]
 
 ## 출처
+- [NestJS — Migration guide](https://docs.nestjs.com/migration-guide)
 - [NestJS — Lifecycle events](https://docs.nestjs.com/fundamentals/lifecycle-events)

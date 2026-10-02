@@ -34,6 +34,12 @@ aliases: ["V8 Pipeline History", "V8 파이프라인 변천", "JavaScript 엔진
 
 - Sparkplug와 TurboFan 사이에 빠른 최적화 컴파일러 Maglev가 추가됐다. 2023년 12월 V8 블로그 기준 데스크톱 Chrome에 먼저 적용됐다.
 
+## 2025년: Sea of Nodes에서 CFG/Turboshaft로
+
+2015년 TurboFan 글은 값, effect와 control을 엮는 Sea of Nodes IR로 최적화 순서를 유연하게 조정한 설계를 설명했다. 반면 2025년 글은 명시적인 CFG와 block 순서가 analysis, memory 접근의 reasoning과 디버깅을 단순하게 한다고 설명한다. Node를 자유롭게 옮기는 장점과 schedule 복원, effect 연결의 복잡성을 함께 본다.
+
+해당 발표 시점에 JavaScript backend는 Turboshaft를 사용했고 Wasm은 파이프라인 전반에서 사용했다. JS frontend의 Maglev 전환과 builtin 전환은 당시 진행 중이었다. TurboFan이라는 최고 실행 계층 이름과 그 안의 IR 변경은 같은 변화가 아니다. 옛 Sea of Nodes 설명을 현재 파이프라인 전체로 단정하지 않는다.
+
 ## 다른 엔진의 파이프라인
 
 엔진 비교 자료는 기준 시점을 함께 본다. 아래 왼쪽 열은 V8 5.9가 나온 2017년 구성이고, 오른쪽 열은 2026-10-01에 확인한 각 엔진 공식 문서 기준이다.
@@ -54,6 +60,7 @@ aliases: ["V8 Pipeline History", "V8 파이프라인 변천", "JavaScript 엔진
 - [V8 — Launching Ignition and TurboFan](https://v8.dev/blog/launching-ignition-and-turbofan)
 - [V8 — Firing up the Ignition interpreter](https://v8.dev/blog/ignition-interpreter)
 - [V8 — Digging into the TurboFan JIT](https://v8.dev/blog/turbofan-jit)
+- [V8 — Land ahoy: leaving the Sea of Nodes](https://v8.dev/blog/leaving-the-sea-of-nodes)
 - [V8 — Sparkplug, a non-optimizing JavaScript compiler](https://v8.dev/blog/sparkplug)
 - [V8 — Maglev, V8's fastest optimizing JIT](https://v8.dev/blog/maglev)
 - [Chromium Blog — Chrome is up to 23% faster in M91 and saves over 17 years of CPU time daily](https://blog.chromium.org/2021/05/chrome-is-faster-in-m91.html)

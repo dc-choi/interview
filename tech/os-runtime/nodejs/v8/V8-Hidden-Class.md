@@ -79,7 +79,7 @@ Map은 **구조가 같은 객체들이 모양 정보를 공유**하게 하고, i
 - **back pointer**로 이전 히든 클래스도 참조 → 체인 형태
 - 전이는 새 모양의 Map으로 이어지며 descriptor 정보는 엔진이 공유하거나 복사할 수 있다. 일반 프로퍼티 접근 때마다 transition chain을 거슬러 올라가 값을 찾는 구조는 아니다.
 
-**같은 순서로 프로퍼티를 추가하면** 다른 객체도 동일 체인을 재사용한다 → [[V8-Inline-Cache|Inline Cache]] 가 잘 먹힘.
+**같은 생성 경로와 prototype, descriptor와 값 표현 조건**에서 같은 순서로 프로퍼티를 추가하면 다른 객체도 transition 경로를 재사용하기 쉽다 → [[V8-Inline-Cache|Inline Cache]]의 특화에 도움이 된다.
 
 반대로 **순서가 다르면** 체인 경로가 갈려 다른 히든 클래스로 분기된다.
 
@@ -95,6 +95,14 @@ Map은 ECMAScript 계약이 아니라 V8 내부 구현이다. 아래는 객체 �
 | `class` 인스턴스와 object literal | 다른 초기 Map을 쓰기 쉬움 | 생성자 함수마다 initial map이 따로 붙는다. 같은 생성자로 만든 인스턴스끼리는 공유하기 쉬움 |
 | 같은 모양이지만 값 타입만 변경 | 대개 같은 Map을 유지하지만 정수(Smi)에서 소수(Double)로 바뀌면 갈라질 수 있음 | Map은 이름과 배치뿐 아니라 field representation도 가진다. Smi에서 Double로 가는 변경은 새 Map을 만들고 이전 Map을 deprecated로 표시한다 |
 | 생성 후 프로퍼티 추가, 삭제 반복 | Map 전환 또는 dictionary properties 가능 | 변경이 잦으면 공유 descriptor와 IC 이점을 잃기 쉬움 |
+
+## Metadata 공유와 slack tracking
+
+Transition의 앞부분을 공유하는 Map들은 DescriptorArray도 공유할 수 있다. Map이 자신에게 유효한 descriptor 개수를 갖기 때문에 뒤에 추가된 속성 정보까지 같은 array에 있어도 자기 객체의 속성으로 읽지 않는다. 메타데이터 공유와 객체 값 공유는 다르다.
+
+필드에 붙는 내부 `const` 정보는 엔진이 관찰한 값의 안정성이다. JS `const` binding이나 `writable: false`와 같은 공개 의미가 아니다. 나중에 값을 바꾸면 가정이 일반화되거나 최적화 코드가 무효화될 수 있다.
+
+Slack tracking은 생성자가 실제로 사용하는 in-object 슬롯을 관찰해 여분 공간을 줄이는 설계다. 같은 생성자 계열의 Map/객체 배치와 연결되므로 객체 몇 개를 만들기 전후의 크기가 달라질 수 있다. 공개 글의 관찰 횟수를 영구적인 임계값으로 사용하지 않는다.
 
 ## 최적화 팁
 
@@ -154,6 +162,7 @@ Node.js 26.7.0(V8 14.6.202.34)에서 확인한 결과:
 
 - [V8 — Fast properties in V8](https://v8.dev/blog/fast-properties)
 - [V8 — Maps (Hidden Classes) in V8](https://v8.dev/docs/hidden-classes)
+- [V8 — Slack tracking in V8](https://v8.dev/blog/slack-tracking)
 - [ECMAScript 2024 — Property Descriptor Specification Type](https://tc39.es/ecma262/2024/multipage/ecmascript-data-types-and-values.html#sec-property-descriptor-specification-type)
 - [MDN — Map, Objects vs. Maps](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map#objects_vs._maps)
 - [V8 — The story of a V8 performance cliff in React](https://v8.dev/blog/react-cliff)

@@ -129,7 +129,7 @@ MicrotaskQueue 전부 비움 (Promise 콜백)
 | 기술적 | 이벤트 루프의 일부가 아님. 현재 단계에서 nextTickQueue 처리 | poll 단계 완료 후 실행되는 특수 타이머 |
 | 선택 기준 | 호출 스택이 풀린 직후, 다음 페이즈 전에 실행해야 할 때. 재귀 사용 주의 | poll 뒤 check 페이즈에서 다음 실행 기회를 원할 때 |
 
-- `process.nextTick()`을 재귀적으로 호출하면 poll 단계에 도달하지 못해 I/O "고갈" 가능
+- `process.nextTick()`을 재귀적으로 호출하면 poll 단계에 도달하지 못해 I/O 처리 기회 고갈 가능
 - 같은 I/O 콜백 안에서 둘을 함께 예약하면 현재 콜백 직후 `process.nextTick()`이 먼저 실행되고, 이후 check 페이즈에서 `setImmediate()`가 실행된다.
 
 ### James Snell의 네이밍 비판
@@ -138,7 +138,7 @@ James Snell(Node.js Core Contributor)은 **"`nextTick`과 `Immediate`의 이름�
 - `process.nextTick()` → 이름은 "다음 틱"이지만 이벤트 루프의 다음 반복보다 앞선 nextTick 처리 경계에서 실행된다. 이미 진행 중인 microtask 처리는 선점하지 않는다.
 - `setImmediate()` → 이름은 "즉시"지만 **poll 이후 check 단계**에서 실행된다. 예약 위치에 따라 같은 반복의 check에 도달할 수도 있으므로 무조건 다음 반복이라고 외우지 않는다.
 
-면접에서 "왜 둘 다 있는데 이름이 헷갈리는가?"라는 질문이 나오면, **"`nextTick`이 더 빠르다"** 는 한 줄 요약과 함께 이 네이밍 비판을 덧붙이면 이해도를 어필할 수 있다.
+이름보다 예약 위치와 처리 경계를 설명한다. `nextTick`을 언제나 더 빠르다고 표현하면 ESM 최상위와 진행 중인 microtask의 예외를 놓친다.
 
 ## 핵심 원리: JS 실행 중에도 백그라운드 작업은 동시에 진행된다
 

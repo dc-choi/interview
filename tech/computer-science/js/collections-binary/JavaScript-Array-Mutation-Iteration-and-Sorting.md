@@ -103,7 +103,14 @@ Array의 indexOf/includes에 음수 시작 위치를 주면 length를 더하고 
 
 깊은 위치 기반 배열은 차원의 의미가 숨는다. 구조가 데이터 계약이라면 `{ rows: [{ name, values }] }`처럼 이름을 붙이거나 차원별 변환 함수를 분리한다. 2차원을 보편적인 한도로 강제하지 않고 domain의 shape와 가독성으로 결정한다.
 
+## 정렬 안정성과 상대 index
+
+Array와 TypedArray의 `sort`는 같은 비교 결과를 가진 원소의 기존 순서를 보존한다. 안정성은 특정 정렬 알고리즘을 사용한다는 보장이 아니다. Array의 기본 정렬은 문자열 비교인 반면 TypedArray의 기본 정렬은 숫자 순서다. `at(-1)`은 Array, TypedArray와 String에서 끝의 원소에 접근하지만 일반 `array[-1]`은 마지막 원소 문법이 아니라 `'-1'` property 접근이다.
+
 ## 출처
+
+- [Stable Array.prototype.sort — V8](https://v8.dev/features/stable-sort)
+- [The at method for relative indexing — V8](https://v8.dev/features/at-method)
 
 - [ECMAScript, CompareArrayElements](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-comparearrayelements)
 

@@ -2,180 +2,110 @@
 tags: [runtime, nodejs]
 status: done
 category: "OS & Runtime"
-aliases: ["libuv IO", "libuv 네트워킹", "libuv 파일시스템", "libuv 프로세스"]
+verified_at: 2026-10-01
+aliases: ["libuv IO", "libuv 네트워킹", "libuv DNS"]
 ---
 
-### libuv 네트워킹, 파일시스템, 프로세스
-libuv가 제공하는 고수준 I/O API: TCP/UDP/DNS 네트워킹, 파일시스템 작업, 자식 프로세스 생성과 IPC를 다룬다.
+# libuv 네트워킹과 DNS
 
-## 네트워킹
+TCP와 UDP는 커널의 nonblocking I/O와 이벤트 제공자를 이용하며 완료 처리는 해당 loop 스레드에서 진행한다. 비동기 API가 소켓별 스레드를 만든다는 뜻은 아니다. 공통 stream 계약은 [[libuv-Handles]], 파일과 프로세스 작업은 [[libuv-Filesystem]], [[libuv-Processes]]에서 다룬다.
 
-### TCP (`uv_tcp_t`)
+## TCP 서버와 클라이언트
 
-#### 서버 흐름
-```
-1. uv_tcp_init()       — TCP 핸들 초기화
-2. uv_tcp_bind()       — 주소:포트에 바인딩
-3. uv_listen()         — 연결 대기 시작, connection 콜백 설정
-4. uv_accept()         — 콜백 내에서 연결 수락
-5. uv_read_start()     — 클라이언트 데이터 읽기
-6. uv_write()          — 응답 전송
-```
+서버는 `uv_tcp_init → uv_tcp_bind → uv_listen → connection_cb → uv_accept → uv_read_start/uv_write` 순서다. 클라이언트는 init 뒤 `uv_tcp_connect(req, handle, addr, cb)`로 연결하며 성공 callback 뒤 stream I/O를 시작한다.
 
-#### 클라이언트 흐름
-```
-1. uv_tcp_init()       — TCP 핸들 초기화
-2. uv_tcp_connect()    — 서버에 연결, connect 콜백 설정
-3. connect 콜백에서 uv_read_start() / uv_write()로 통신
-```
+`uv_tcp_init()`은 아직 소켓을 만들지 않는다. `uv_tcp_init_ex()`의 낮은 8비트는 address family이며 AF_UNSPEC은 기본 init과 같이 생성하지 않는다. 기존 소켓은 `uv_tcp_open()`으로 연결한다. 소켓 타입을 자동 검증하지 않으므로 valid stream socket인지 호출자가 보장해야 한다.
 
-#### 주요 옵션
-| 함수 | 설명 |
-|------|------|
-| `uv_tcp_nodelay()` | TCP_NODELAY (Nagle 알고리즘 비활성화) |
-| `uv_tcp_keepalive()` | TCP 킵얼라이브 활성화 |
-| `uv_tcp_simultaneous_accepts()` | 동시 accept 요청 수 제어 |
-| `uv_tcp_close_reset()` | RST 패킷으로 연결 강제 종료 |
+주소는 `uv_ip4_addr/uv_ip6_addr`로 `sockaddr_in/in6`를 채운다. reverse 변환은 `uv_ip4_name/ip6_name`, family 공통 변환은 `uv_ip_name`이다. `getsockname/getpeername` 출력은 충분한 `sockaddr_storage`와 in/out 길이를 사용한다.
 
-#### IP 주소 유틸리티
-```
-uv_ip4_addr(ip_string, port, &addr)  — "127.0.0.1" → struct sockaddr_in
-uv_ip4_name(&addr, ip_string, size)  — struct sockaddr_in → "127.0.0.1"
-IPv6는 uv_ip6_addr / uv_ip6_name 사용.
-```
+bind 성공이 listen/connect 성공을 보장하지 않는다. 포트 충돌이 후속 `uv_listen/uv_tcp_connect`의 `UV_EADDRINUSE`로 드러날 수 있다. Windows에서는 connect 대상 0.0.0.0/::가 localhost로 매핑된다. 이를 외부 서버 주소처럼 사용하지 않는다.
 
-### UDP (`uv_udp_t`)
-비연결형 비신뢰성 통신. `uv_udp_t`(수신)와 `uv_udp_send_t`(송신) 사용. 포트 0 지정 시 OS가 자동 할당. 브로드캐스트는 `uv_udp_set_broadcast()` 필수(미설정 시 EACCES), 멀티캐스트는 `uv_udp_set_membership()`으로 그룹 가입/탈퇴. 읽기 콜백에서 nread=0이면 읽을 데이터 없음, `UV_UDP_PARTIAL`은 버퍼 부족.
+| TCP 옵션 | 의미와 경계 |
+|---|---|
+| `UV_TCP_IPV6ONLY` | IPv6 bind의 dual stack을 끈다 |
+| `UV_TCP_REUSEPORT` | 여러 listener의 같은 포트 bind와 커널 분배(1.49.0+) |
+| `uv_tcp_nodelay` | Nagle 알고리즘 비활성화 |
+| `uv_tcp_keepalive` | idle delay 이후 기본 probe 설정 |
+| `uv_tcp_keepalive_ex` | idle, interval, count를 각각 제어(1.52.0+) |
+| `uv_tcp_simultaneous_accepts` | OS가 준비하는 동시 accept를 제어, 기본 활성 |
 
-| 함수 | 설명 |
-|------|------|
-| `uv_udp_init()` / `uv_udp_bind()` | UDP 핸들 초기화 및 바인딩 |
-| `uv_udp_send()` / `uv_udp_recv_start()` | 데이터 전송 및 수신 시작 |
-| `uv_udp_set_membership()` | 멀티캐스트 그룹 설정 |
-| `uv_udp_set_broadcast()` / `uv_udp_set_ttl()` | 브로드캐스트 허용 / TTL 설정 |
+REUSEPORT는 현재 Linux 3.9+, DragonFlyBSD 3.6+, FreeBSD 12+, Solaris 11.4, AIX 7.2.5+만 지원하며 나머지는 `UV_ENOTSUP`이다. 참여 listener 모두 같은 reuse 정책을 사용해야 한다. simultaneous accepts는 수락률을 높일 수 있지만 multiprocess 분배가 고르지 않을 수 있다.
 
-### DNS
-```
-uv_getaddrinfo()  — 비동기 DNS 조회 (호스트명 → IP 주소)
-uv_getnameinfo()  — 비동기 역 DNS 조회 (IP → 호스트명)
-uv_freeaddrinfo() — 결과 메모리 해제 (필수)
+keepalive의 delay는 초다. 현재 API에서 delay < 1은 `UV_EINVAL`이며 기본 probe는 1초 간격 10회다. `keepalive_ex`도 활성화 시 idle/intvl/cnt 모두 1 이상이며 OS 지원을 확인한다. TCP keepalive는 애플리케이션 응답 deadline을 대신하지 않는다.
 
-콜백을 NULL로 전달하면 동기 모드로 동작한다 (v1.3.0+). DNS 조회는 스레드 풀에서 실행된다.
-```
+### 정상 종료와 reset
 
-## 파일시스템 (`uv_fs_t`)
+`uv_shutdown()`은 pending write를 마친 뒤 송신 측을 닫는다. `uv_tcp_close_reset()`은 SO_LINGER 0을 설정하고 RST로 연결을 종료한다. 두 API를 같은 종료 흐름에서 혼용하는 것은 허용되지 않는다. reset은 피어가 데이터를 받았다는 확인 수단이 아니다.
 
-### 핵심 개념
-```
-libuv의 파일시스템 작업은 스레드 풀에서 블로킹으로 실행된다.
-이유: 플랫폼 공통의 논블로킹 파일 I/O API가 존재하지 않기 때문.
+`uv_socketpair()`(1.41.0+)는 연결된 소켓 두 개를 만들고 `uv_tcp_open`이나 spawn의 stdio로 넘길 수 있다. libuv가 사용할 소켓에는 각 endpoint에 `UV_NONBLOCK_PIPE`를 지정하는 방식이 권장된다.
 
-모든 함수는 두 가지 형태로 동작한다:
-- 비동기: 콜백 전달 시 스레드 풀에서 실행, 완료 후 콜백 호출
-- 동기: 콜백을 NULL로 전달하면 즉시 블로킹 실행 후 반환
-```
+## UDP는 메시지 단위
 
-### 주요 함수
+UDP는 stream이 아니며 데이터그램 경계를 유지한다. `uv_udp_t`는 수신/소켓 상태, `uv_udp_send_t`는 개별 송신 요청이다. bind port 0은 OS가 포트를 선택한다. 명시적으로 bind하지 않은 send/recv start는 IPv4 all interfaces와 임의 포트에 bind하므로 원하는 family/interface가 있으면 먼저 bind한다.
 
-| 분류 | 함수 | 설명 |
-|------|------|------|
-| 파일 I/O | `uv_fs_open()` / `uv_fs_close()` | 파일 열기/닫기 |
-| | `uv_fs_read()` / `uv_fs_write()` | 파일 읽기/쓰기 |
-| | `uv_fs_unlink()` / `uv_fs_rename()` / `uv_fs_copyfile()` | 삭제/이름변경/복사 |
-| 디렉토리 | `uv_fs_mkdir()` / `uv_fs_rmdir()` / `uv_fs_scandir()` | 생성/삭제/스캔 |
-| | `uv_fs_opendir()` / `uv_fs_readdir()` | 디렉토리 스트림 |
-| 정보/권한 | `uv_fs_stat()` / `uv_fs_fstat()` | 파일 정보 조회 |
-| | `uv_fs_chmod()` / `uv_fs_chown()` / `uv_fs_access()` | 권한, 소유자 변경 / 접근 확인 |
-| 링크 | `uv_fs_symlink()` / `uv_fs_readlink()` / `uv_fs_realpath()` | 심볼릭 링크 |
-| 동기화 | `uv_fs_fsync()` | 디스크 동기화 (flush) |
+`uv_udp_init_ex()`의 낮은 8비트는 family, 나머지 비트에는 `UV_UDP_RECVMMSG`를 지정할 수 있다. 기존 datagram socket은 open 가능하며 Unix에서는 raw/netlink처럼 datagram 계약을 만족하는 소켓도 허용한다.
 
-### 파일 열기 플래그 및 필수 정리
-```
-UV_FS_O_RDONLY/WRONLY/RDWR  — 읽기/쓰기 모드
-UV_FS_O_CREAT               — 파일 생성
-UV_FS_O_TRUNC               — 기존 내용 삭제
-UV_FS_O_APPEND              — 파일 끝에 추가
+`uv_udp_open()`은 SO_REUSEADDR를 무조건 활성화한다. 의도한 reuse 정책을 직접 정하려면 `uv_udp_open_ex(handle, sock, flags)`(1.52.0+)를 사용한다. 기존 소켓의 실제 타입 유효성은 호출자 책임이다.
 
-모든 파일시스템 요청 후 uv_fs_req_cleanup()을 호출하여 libuv가 내부적으로 할당한 메모리를 해제해야 한다.
-```
+### 연결된 UDP
 
-### 파일 변경 감시
+`uv_udp_connect()`는 remote endpoint를 연결 상태로 지정한다. TCP handshake나 전달 보장은 생기지 않는다. 이미 연결된 handle을 재연결하면 `UV_EISCONN`, NULL 주소로 disconnect할 때 미연결이면 `UV_ENOTCONN`이다.
 
-| 방식 | Handle | 특징 |
-|------|--------|------|
-| OS 이벤트 | `uv_fs_event_t` | inotify/kqueue/ReadDirectoryChangesW 사용. 빠르지만 플랫폼별 차이 |
-| stat 폴링 | `uv_fs_poll_t` | 주기적 stat() 호출. 느리지만 호환성 높음 |
+connected handle의 send에는 addr NULL이 필요하다. 주소를 지정하면 `UV_EISCONN`이다. unconnected handle에는 목적지가 필요하며 NULL은 `UV_EDESTADDRREQ`다. peername은 연결된 handle에서만 유효하다.
 
-`uv_fs_event` 콜백은 `UV_RENAME` 또는 `UV_CHANGE` 이벤트를 전달한다. `UV_FS_EVENT_RECURSIVE` 플래그로 하위 디렉토리까지 감시 가능 (macOS/Windows만).
+### 수신 callback을 구분하기
 
-## 프로세스 (`uv_process_t`)
+`uv_udp_recv_cb(handle, nread, buf, addr, flags)`에서 sender 주소는 callback 동안만 유효하다. 계속 사용할 주소는 복사한다.
 
-### 자식 프로세스 생성 (`uv_spawn`)
-```
-uv_process_options_t 구조체로 실행 환경을 제어한다:
-- file:  실행할 프로그램 (PATH에서 자동 검색, execvp 사용)
-- args:  인자 배열 (마지막 요소는 NULL)
-- env:   환경 변수 배열 (NULL이면 부모 환경 상속)
-- cwd:   작업 디렉토리
-- flags: 동작 제어 플래그
+| 상태 | 의미 |
+|---|---|
+| `nread > 0` | 받은 데이터그램의 바이트 수 |
+| `nread == 0`, `addr != NULL` | 실제 빈 데이터그램 |
+| `nread == 0`, `addr == NULL` | 읽을 데이터 없음 또는 batch buffer 반환 이벤트 |
+| `nread < 0` | 오류, NULL 버퍼 가능 |
+| `UV_UDP_PARTIAL` | 버퍼가 작아 메시지가 잘림, 남은 부분은 OS가 폐기 |
 
-프로세스 종료를 관찰하면 exit 콜백이 호출된다. 이 콜백 이전에는 process handle에 `uv_close()`를 호출하지 않고, 콜백 안이나 이후에 handle을 닫아 watcher 자원을 정리한다. libuv가 종료를 관찰해 callback을 전달한 시점에는 자식을 reap했으므로, `uv_close()`는 zombie 방지가 아니라 handle lifecycle 정리다.
-```
+stream의 0 바이트 읽기와 UDP의 빈 데이터그램은 다르다. UDP PARTIAL 뒤 추가 read로 나머지를 복구할 수 없다. 일반 수신 buffer는 callback에서 해제하지만 recvmmsg에는 다른 소유권 규칙이 적용된다.
 
-### 프로세스 플래그
+### recvmmsg batch의 소유권
 
-| 플래그 | 설명 |
-|--------|------|
-| `UV_PROCESS_SETUID` / `UV_PROCESS_SETGID` | 자식의 UID/GID 변경 (Unix만) |
-| `UV_PROCESS_DETACHED` | 부모 종료 후에도 자식이 계속 실행 (데몬 생성) |
-| `UV_PROCESS_WINDOWS_HIDE` | Windows에서 창 숨김 |
+`UV_UDP_RECVMMSG`는 지원 플랫폼에서 여러 메시지를 한 번에 수신하도록 요청한다. 1.37.0 이후 명시적으로 요청해야 하며 `uv_udp_using_recvmmsg()`로 실제 사용 여부를 확인한다. alloc callback은 64KiB 배수 buffer를 준비한다.
 
-### stdio 설정 (`uv_stdio_container_t`)
-```
-자식 프로세스의 stdin/stdout/stderr를 제어한다:
-UV_IGNORE:         FD를 제공하지 않음 (stdin/stdout/stderr는 /dev/null로 리다이렉트)
-UV_CREATE_PIPE:    부모-자식 간 새 파이프 생성
-UV_INHERIT_FD:     부모의 파일 디스크립터를 복제
-UV_INHERIT_STREAM: 부모의 스트림 FD를 복제
-UV_READABLE_PIPE / UV_WRITABLE_PIPE: 파이프 방향 설정 (자식 관점)
-```
+`UV_UDP_MMSG_CHUNK`가 붙은 callback의 buf는 큰 buffer의 조각이므로 개별 free하면 안 된다. 정상적으로 끝나면 `nread=0`, addr NULL, `UV_UDP_MMSG_FREE`와 원래 buffer를 받으며 그때 해제한다. 오류로 nread < 0이면 더 이상 chunk가 오지 않으므로 해제 가능하다.
 
-### IPC: 파이프를 통한 소켓 전달
-```
-멀티프로세스 서버의 핵심 메커니즘:
-1. 마스터 프로세스가 TCP 서버를 생성하고 연결을 수락
-2. uv_write2()로 클라이언트 소켓 핸들을 워커에게 전송 (빈 버퍼도 필수)
-3. 워커는 uv_pipe_pending_count()로 대기 핸들을 확인하고
-4. uv_accept()로 소켓을 꺼내 직접 처리
+### 송신 queue와 즉시 송신
 
-전송 가능한 핸들: Unix에서는 TCP, pipe와 UDP handle, Windows에서는 TCP handle. Listening 또는 connected 상태여야 하며 bind된 socket과 pipe는 server로 간주된다.
-파이프 초기화 시 ipc=1 필수: uv_pipe_init(loop, &pipe, 1)
-```
+`uv_udp_send()`는 request를 queue하고 callback에서 성공/실패를 전달한다. request와 전송 본문은 완료까지 유지한다. send queue size/count로 대기 바이트와 요청 수를 구분한다. 송신 성공은 상대가 받은 사실을 보장하지 않는다.
+
+`uv_udp_try_send()`는 즉시 한 데이터그램 전체를 보내거나 음수 오류를 반환한다. stream try_write처럼 메시지 일부를 성공 처리하지 않는다. 지금 못 보내면 `UV_EAGAIN`이다.
+
+`uv_udp_try_send2()`(1.50.0+)는 여러 데이터그램을 보내고 반환값은 **바이트가 아닌 데이터그램 수**다. 첫 메시지부터 실패하면 음수, 일부 보낸 뒤 실패하면 양수 개수다. fully initialized/bound handle이 필요하며 남은 메시지부터 다시 처리한다.
+
+### reuse, multicast와 ICMP
+
+`UV_UDP_REUSEADDR`와 `UV_UDP_REUSEPORT`는 다르다. REUSEADDR는 같은 주소 bind를 허용하지만 플랫폼에 따라 마지막 socket이 트래픽을 가져갈 수 있다. REUSEPORT는 지원 플랫폼에서 여러 socket에 수신 메시지를 분배한다(1.49.0+, TCP와 같은 현재 지원 플랫폼). flag를 조합할 때도 플랫폼 지원을 확인한다.
+
+`UV_UDP_LINUX_RECVERR`는 Linux의 ICMP 오류 보고를 강화하고 다른 플랫폼에서는 no-op이다. API 문장의 flag 표기보다 enum의 정확한 식별자를 사용한다.
+
+broadcast는 `uv_udp_set_broadcast()`로 허용해야 하며 미설정은 EACCES를 유발할 수 있다. `set_ttl/set_multicast_ttl` 범위는 1~255다. multicast는 membership JOIN/LEAVE, source-specific membership, 송수신 interface, local loopback을 각각 설정한다. TTL/loop/interface 설정 전에 handle을 해당 family로 초기화하거나 bind한다.
+
+## DNS와 인터페이스
+
+`uv_getaddrinfo()`와 `uv_getnameinfo()`는 시스템 resolver를 전역 pool에서 실행한다. Node.js의 c-ares 기반 resolve와 같은 경로라고 가정하지 않는다. DNS API 선택은 [[Node.js]]의 상위 API 설명과 연결한다.
+
+`getaddrinfo`의 node 또는 service 하나는 NULL일 수 있지만 둘 다 NULL은 안 된다. hints로 family, socktype, protocol을 제한한다. 제출 반환값이 음수면 callback은 없고, 제출 성공 뒤 callback status가 음수면 결과 res는 NULL이다.
+
+성공 res는 addrinfo 목록이다. 선택한 sockaddr로 connect를 제출한 뒤 `uv_freeaddrinfo()`로 해제한다. NULL 해제는 no-op이다. `getnameinfo`는 req의 host/service에 NUL 종료 결과를 저장한다. 두 API 모두 callback NULL이면 동기로 실행된다(1.3.0+).
+
+`uv_interface_addresses()`는 같은 물리 interface의 여러 IP를 여러 항목으로 반환할 수 있다. `is_internal`은 loopback 여부다. `uv_free_interface_addresses()`로 배열을 해제한다. scoped IPv6의 interface identifier는 Windows가 숫자를 사용하므로 `uv_if_indextoiid()`를 사용한다.
 
 ## 출처
 
-- [libuv process guide](https://docs.libuv.org/en/latest/guide/processes.html)
-- [libuv, Stream handle](https://docs.libuv.org/en/v1.x/stream.html)
-
-### 시그널 처리 (`uv_signal_t`)
-```
-uv_signal_init() → uv_signal_start(handle, callback, signum) → uv_signal_stop()
-여러 핸들이 같은 시그널을 감시하면 모두 호출된다.
-uv_signal_start_oneshot(): 시그널 수신 후 자동 리셋 (v1.12.0+).
-
-제약:
-- Windows: SIGINT, SIGBREAK, SIGHUP, SIGWINCH만 지원
-- Unix: SIGKILL, SIGSTOP은 캡처 불가
-
-uv_kill(pid, signum)            — PID로 시그널 전송
-uv_process_kill(handle, signum) — 핸들로 시그널 전송
-Windows에서 SIGTERM, SIGINT, SIGKILL은 모두 프로세스 종료를 유발한다.
-```
+- [TCP](https://docs.libuv.org/en/v1.x/tcp.html), [UDP](https://docs.libuv.org/en/v1.x/udp.html)
+- [DNS](https://docs.libuv.org/en/v1.x/dns.html), [Miscellaneous utilities](https://docs.libuv.org/en/v1.x/misc.html)
+- [Networking guide](https://docs.libuv.org/en/v1.x/guide/networking.html)
 
 ## 관련 문서
-- [[libuv|libuv (TOC)]]
-- [[libuv-Architecture|libuv 아키텍처]]
-- [[libuv-Handles|libuv 핸들, 요청, 스트림]]
-- [[libuv-Threading|libuv 스레드 풀, 스레딩, 에러]]
-- [[File-System|파일 시스템]]
-- [[HTTP-Networking|HTTP, 네트워킹]]
+
+- [[libuv]], [[libuv-Handles]], [[libuv-Filesystem]], [[libuv-Processes]]
+- [[HTTP-Networking]], [[Stream]]

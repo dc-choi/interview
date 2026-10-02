@@ -134,7 +134,15 @@ arrow field의 `this`가 instance인 이유는 field initializer의 평가 방�
 
 `Child.create()`로 상속받은 static method를 호출하면 this는 Child여서 `return new this()` factory는 Child를 만든다. method를 떼어 일반 호출하면 class code는 strict라 this가 undefined다. static member는 instance에는 없고 `this.constructor.method()`는 교체 가능한 일반 constructor property를 읽는다. 생성 중 실제 class가 필요하면 new.target을 확인한다. class도 typeof 결과는 function이고 public static field는 ES2022 표준이다.
 
+## private brand 검사
+
+클래스 안에서 `#field in candidate`는 해당 private name이 그 객체에 등록됐는지 검사한다. prototype chain 검사인 `instanceof`와 다르고, 다른 클래스의 같은 철자 `#field`도 별개다. 피연산자는 객체여야 하므로 외부 입력에는 먼저 null과 primitive 경계를 검사한다. 특정 private field가 존재한다는 사실만으로 생성자가 끝까지 성공했거나 뒤의 다른 field까지 초기화됐다고 단정하지 않는다.
+
 ## 출처
+
+- [Public and private class fields — V8](https://v8.dev/features/class-fields)
+- [Class static initialization blocks — V8](https://v8.dev/features/class-static-initializer-blocks)
+- [Ergonomic brand checks for private fields — V8](https://v8.dev/features/private-brand-checks)
 
 - [ECMAScript Language Specification, class definitions](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-class-definitions)
 - [ECMAScript Language Specification, private identifiers](https://tc39.es/ecma262/multipage/ecmascript-language-lexical-grammar.html#sec-names-and-keywords)

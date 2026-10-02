@@ -59,6 +59,12 @@ Mongoose 자체도 선택 사항이다. MongoDB는 BSON으로 저장하고 공�
 
 **모델 컴파일 후에는 `pre()`/`post()` 등록이 동작하지 않는다** (Mongoose 규칙). 훅, 플러그인은 모델 등록 전에 걸어야 하므로 `forFeatureAsync` + `useFactory`에서 스키마에 등록하고 반환한다. 팩토리는 async 가능, `inject`로 다른 프로바이더(ConfigService 등) 사용 가능.
 
+## 연결 관측과 subdocument 타입
+
+- `onConnectionCreate`는 connection이 **열리기 전** 호출되어 connected/open/disconnected 같은 이벤트 리스너를 등록하는 자리다. 전체 schema에 적용하는 plugin은 model 생성 전의 `connectionFactory`에서 등록한다. 두 옵션을 DB 작업 준비 완료 훅으로 혼동하지 않는다.
+- Mongoose subdocument는 plain nested object와 다르다. `HydratedDocument`의 override 타입에서 단일 경로는 `Types.Subdocument`, 배열은 `Types.DocumentArray`로 표시해야 `ownerDocument()` 같은 API를 TS에서도 사용한다. `@Prop(NameSchema)`/`@Prop([NameSchema])`가 런타임 schema를 정의하며 타입 단언만으로 subdocument가 되지는 않는다.
+- 세션의 transaction에 참여하는 DB 호출에는 같은 session을 전달하고 commit/abort 뒤 `endSession()`으로 정리한다. `startSession()` 호출만으로 이후 모든 query가 자동 참여하는 것은 아니다.
+
 ## Discriminator
 
 같은 컬렉션 위에 겹치는 스키마의 모델 여러 개를 두는 상속 메커니즘. `forFeature`/`forFeatureAsync`의 `discriminators: [...]` 옵션으로 등록.
@@ -91,7 +97,7 @@ Virtual이나 TypeScript의 `Readonly<T>`는 민감 field를 숨기는 보안 �
 - [[NestJS-Testing|NestJS Testing (토큰 기반 mock)]]
 
 ## 출처
-- [NestJS — Mongo](https://docs.nestjs.com/techniques/mongodb)
+- [NestJS — MongoDB](https://docs.nestjs.com/data/mongodb)
 - [Mongoose — Populate](https://mongoosejs.com/docs/populate.html)
 - [Mongoose — Virtuals](https://mongoosejs.com/docs/tutorials/virtuals.html)
 - [Mongoose — SchemaType options](https://mongoosejs.com/docs/schematypes.html#schematype-options)

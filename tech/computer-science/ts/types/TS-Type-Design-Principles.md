@@ -61,6 +61,27 @@ function createUser(input: Readonly<CreateUserInput>): User {
 
 너그러운 입력은 `any`나 무제한 인덱스 시그니처를 뜻하지 않는다. 호출자가 가진 더 큰 객체도 구조적으로 전달할 수 있으므로 함수는 실제로 읽는 속성만 요구하면 된다. 반환 타입은 기본값과 정규화를 끝낸 상태를 약속한다.
 
+## 저장 계약의 버전을 판별자로 쓰기
+
+이전 저장 형태와 새 형태를 한 타입의 선택적 속성들로 합치면 어떤 조합이 유효한지 흐려진다. 버전별 객체 타입을 두고 경계에서 내부의 한 형태로 정규화한다.
+
+```typescript
+type StoredProfile =
+  | { version?: 1; name: string }
+  | { version: 2; displayName: string; locale: string };
+
+type Profile = { displayName: string; locale: string };
+
+function normalizeProfile(value: StoredProfile): Profile {
+  if (value.version === 2) {
+    return { displayName: value.displayName, locale: value.locale };
+  }
+  return { displayName: value.name, locale: "ko-KR" };
+}
+```
+
+버전 필드가 없던 과거 데이터는 legacy variant의 선택적 판별자로 표현한 것이다. 기본 locale과 필드 변환은 실제 데이터 계약이 정한 정책이어야 한다. 외부 JSON을 이 유니온으로 단언하는 것만으로 검증되지 않으므로 입력 검증 뒤 정규화하고, 알 수 없는 미래 버전은 별도 오류로 처리한다. 생산자와 소비자의 배포 순서, 저장 마이그레이션은 타입 선언과 별도로 계획한다.
+
 ## 문자열보다 도메인 타입
 
 가능한 값이 유한하면 리터럴 유니온을 쓰고, 같은 구조지만 의미가 다른 식별자는 brand를 고려한다.
@@ -103,6 +124,7 @@ TypeScript 타입은 런타임 응답을 검증하지 않는다. OpenAPI, JSON S
 
 ## 출처
 
+- [TypeScript Deep Dive, Discriminated Unions — Basarat](https://basarat.gitbook.io/typescript/type-system/discriminated-unions)
 - [TypeScript Handbook, Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)
 - [TypeScript Handbook, Everyday Types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
 - [TypeScript TSConfig, exactOptionalPropertyTypes](https://www.typescriptlang.org/tsconfig/exactOptionalPropertyTypes.html)

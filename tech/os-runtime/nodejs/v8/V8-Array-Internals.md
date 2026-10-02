@@ -1,99 +1,114 @@
 ---
-tags: [runtime, nodejs, v8, array, performance]
+tags: [runtime, nodejs, v8, array]
 status: done
+verified_at: 2026-10-01
 category: "OS & Runtime"
-aliases: ["V8 Array Internals", "Elements Kinds", "배열 내부 구현", "Packed Array", "Holey Array", "Typed Array", "ArrayBuffer", "SharedArrayBuffer"]
+aliases: ["Elements Kinds", "Packed Array", "Holey Array", "Fast Elements", "Dictionary Elements"]
 ---
 
-# V8 배열 내부 구현 (Array Internals)
+# V8 배열 내부 구현
 
-JavaScript의 `Array`는 명세상 정수 키를 가진 객체일 뿐, 메모리 연속성을 보장하지 않는다. 그런데도 실무에서 배열이 빠른 이유는 V8이 조건을 만족하는 배열을 내부적으로 연속 메모리 배열로 깔아 두기 때문이다. 그 조건을 깨면 더 느린 표현으로 내려가고, 희소해지면 객체(해시) 표현까지 떨어져 크게 느려진다. 이 최적화의 규칙이 elements kinds다.
+JavaScript `Array`는 인덱스 프로퍼티와 `length`의 관계에 특별한 규칙을 둔 객체다. 명세가 연결 리스트나 해시 테이블을 요구하지는 않는다. V8은 원소의 표현과 밀집도에 맞춰 저장 방식과 접근 코드를 고른다. 구현이 빠른 경로를 제공하는 조건과 프로그램의 관찰 가능한 의미를 구분한다.
 
-## 진짜 배열 — 연속성과 인접성
+## 이름 프로퍼티와 인덱스 원소
 
-정적 언어(C 등)의 배열은 생성 시점에 정해진 크기만큼 메모리를 **연속(continuous), 인접(contiguous)** 하게 할당한다. 이 성질 덕에 임의 원소 접근이 O(1)이다. 시작 주소가 1201이고 원소 한 칸이 4바이트면 `arr[2]`의 주소는 `1201 + 2 × 4 = 1209`로 곧장 계산된다. 탐색 없이 수식 한 번이다.
+객체는 이름 프로퍼티의 properties store와 정수 인덱스의 elements store를 구분한다. 배열에 `items.label`을 붙이는 것은 `items[0]`을 넣는 것과 다른 저장 경로다. 다만 elements kind도 Map에 담기는 정보여서 원소 표현의 전환이 [[V8-Hidden-Class|Map]]에 영향을 줄 수 있다.
 
-연속 메모리가 아니면 이 수식이 성립하지 않는다. 옛 JS 배열처럼 연결 리스트로 깔리면 `arr[2]`를 읽으려고 앞에서부터 따라가야 해 접근이 O(n)으로 늘어난다.
+| 저장 경로 | 용도와 비용 |
+|---|---|
+| Fast elements | 비교적 밀집된 인덱스를 backing store에 저장, 타입과 경계 검사를 줄일 기회가 있음 |
+| Dictionary elements | 큰 간격의 인덱스나 일부 복잡한 descriptor를 사전 구조에 저장, 빈 구간 전체를 할당하지 않음 |
 
-## JS 배열은 객체다
+`a[1_000_000] = 1`처럼 희소한 배열을 만드는 경우 dictionary가 메모리를 아낄 수 있다. 전환 임계값과 내부 자료구조는 버전마다 바뀐다. Dictionary는 잘못된 배열이라는 뜻이 아니며, 모든 dictionary 연산이 JIT에서 제외된다는 뜻도 아니다.
 
-ECMAScript 명세에서 배열은 키가 정수 문자열인 객체에 가깝다. 동적 크기, 임의 키, 타입 혼합(`[1, 'a', {}]`)을 모두 허용한다. 명세를 곧이곧대로 구현하면 연속 메모리를 보장할 수 없어 임의 접근의 O(1)이 깨진다. 그래서 초기 엔진의 배열은 사실상 해시 맵이었고, 이것이 JS 배열이 진짜 배열이 아니라고 불리는 이유다.
+## Elements kinds
 
-## V8의 배열 최적화 — Elements Kinds
+주요 fast elements 종류는 두 축으로 이해한다.
 
-현대 V8은 배열의 원소들을 관찰해 **두 가지 백킹 스토어** 중 하나로 관리한다.
-
-- **Fast Elements (연속 메모리 배열)**: 원소를 C 배열처럼 연속 메모리에 담아 O(1) 접근. 타입이 섞이거나 hole이 생겨도 아래의 elements kind가 더 일반적인 쪽으로 바뀔 뿐 연속 메모리는 유지된다. JIT(TurboFan)는 단일 타입 밀집 배열일수록 정적 언어 수준의 인덱싱 코드를 생성한다.
-- **Dictionary Elements (해시 모드)**: 단순히 hole이 생기는 수준(Holey)이 아니라 빈 슬롯 비율이 커 충분히 희소해지거나 인덱스가 매우 커지면 키-값 해시 테이블로 전락. 임의 접근이 해시 조회가 되어 느려지고 JIT 최적화 대상에서 빠진다.
-
-Fast Elements는 다시 **두 축**으로 세분된다.
-
-| 축 | 값 (왼쪽일수록 빠름) | 의미 |
+| 축 | 종류 | 의미 |
 |---|---|---|
-| 타입 | SMI → Double → Tagged | SMI(작은 정수) < 부동소수 < 임의 객체 참조 |
-| 밀집도 | Packed → Holey | 빈 칸 없음 → 중간에 hole 있음 |
+| 값 표현 | Smi | 작은 정수 값을 tagged 표현 안에 담음, 범위는 빌드에 따라 다름 |
+| 값 표현 | Double | 배정밀도 숫자용 저장 공간 |
+| 값 표현 | Tagged elements | 객체 참조 등 일반 JS 값을 담음 |
+| 밀집도 | Packed | 논리적 원소 구간에 hole이 없음 |
+| 밀집도 | Holey | 논리적 구간 안에 없는 인덱스가 있음 |
 
-예: 정수만 빽빽한 배열은 가장 빠른 `PACKED_SMI_ELEMENTS`, 객체가 섞이고 hole이 있으면 가장 느린 `HOLEY_ELEMENTS`다.
+```js
+const values = [1, 2, 3]; // 보통 PACKED_SMI_ELEMENTS
+values.push(4.5);         // 보통 PACKED_DOUBLE_ELEMENTS
+values.push({ id: 5 });   // 보통 PACKED_ELEMENTS
+values[10] = 6;           // hole을 만들어 HOLEY_ELEMENTS
+```
 
-### 전이는 한 방향뿐
+일반적인 전이는 Smi에서 Double, 더 일반적인 tagged 표현으로, Packed에서 Holey로 향한다. `-0`, `NaN`, `Infinity`도 Smi 표현을 벗어나게 할 수 있다. 더 일반적인 표현이 된 뒤 값 몇 개를 바꾼다고 자동으로 원래 표현을 회복하는 것은 아니다.
 
-elements kind는 **더 일반적인(느린) 쪽으로만** 바뀌고 원칙적으로 되돌아오지 않는다. 정수 배열에 실수를 넣으면 Double로, 객체를 넣으면 Tagged로 내려가며, 다시 정수만 남겨도 SMI로 복귀하지 않는다. hole이 생긴 배열도 보통 Packed로 돌아오지 않지만, `Array.prototype.fill`로 hole을 모두 채우는 경우에는 HOLEY에서 PACKED로 전환될 수 있다. 그래서 hot한 배열일수록 처음 타입과 밀집도를 흐트러뜨리지 않는 게 중요하다.
+다만 전이가 영구히 한 방향이라는 규칙은 아니다. V8의 elements kinds 글은 **2025-02-28부터 `Array.prototype.fill`에 예외**가 생겼다고 명시한다. 이 예외까지 포함한 내부 표현을 애플리케이션의 정확성 조건으로 삼지 않는다.
 
-hole이 생기는 대표 동작: `delete arr[i]`, 인덱스를 건너뛴 할당(`arr[0]=1; arr[100]=1`), `arr.length`를 키워 빈 칸을 만드는 것, `new Array(n)`으로 비어 있는 슬롯을 미리 잡는 것.
+## Hole과 undefined는 다르다
 
-## 역최적화 — 타입 혼합과 hole의 비용
+```js
+const absent = [, 2];
+const present = [undefined, 2];
+console.log(0 in absent);  // false, 프로토타입에 0이 없다는 조건
+console.log(0 in present); // true
+```
 
-단일 타입 Packed 배열에 다른 타입 원소를 하나라도 섞으면 elements kind가 더 일반적인 쪽(`PACKED_SMI_ELEMENTS` → `PACKED_DOUBLE_ELEMENTS` → `PACKED_ELEMENTS`)으로 바뀌고, TurboFan이 세웠던 타입 가정이 깨져 역최적화가 일어난다. 이 단계에서도 백킹 스토어는 여전히 연속 메모리이며, dictionary 전락은 별개로 배열이 희소해지거나 매우 커질 때 일어난다. 측정상 동일 타입 삽입 루프와 객체 한 개를 섞은 삽입 루프는 같은 코드인데도 약 20배 이상 벌어진다. 역최적화 메커니즘 자체는 [[V8-Ignition-TurboFan#Deoptimization (역최적화)|컴파일 파이프라인의 Deoptimization]] 참고. 배열은 그 가정 중 하나가 elements kind라는 점이 핵심이다.
+Hole은 값이 `undefined`인 원소가 아니라 인덱스 프로퍼티의 부재다. 읽기에서 프로토타입 체인도 확인해야 하므로 holey 경로에는 검사가 더 필요할 수 있다. 프로토타입에 같은 인덱스가 있으면 그 값을 읽을 수 있다.
 
-## Fast 배열을 유지하는 규칙
+- `delete a[i]`는 hole을 만들고 `length`를 줄이지 않는다.
+- `new Array(n)`은 n개의 `undefined` 값을 넣은 배열이 아니라 빈 슬롯 n개를 만든다.
+- 기본 배열 iterator를 쓰는 spread와 `for...of`는 빈 슬롯에서 얻은 값을 처리한다. 보통 `undefined`지만 프로토타입의 인덱스 값이 있으면 달라진다.
+- `slice()`는 부재한 슬롯을 결과에서도 보존한다. Spread로 복사하는 것과 같은 의미라고 바꾸지 않는다.
+- 사용자 정의 `Symbol.iterator`나 iterator의 `next`는 spread의 의미를 바꾼다. V8은 기본 iterator라는 가정을 확인할 수 있을 때만 특화된 복사 경로를 쓴다.
 
-- 한 배열에는 **한 타입만** 담는다(정수면 정수, 객체면 객체).
-- **hole을 만들지 않는다**: 인덱스를 건너뛰지 말고 0번부터 순차로 채운다. 크기를 아는 경우라도 `new Array(n)`으로 빈 슬롯을 잡기보다 push로 채우는 편이 Packed를 유지한다.
-- 중간 원소를 지울 땐 `delete`(hole 생성) 대신 `splice`를 쓴다.
-- 추가, 삭제는 가능하면 배열 **끝**에서 한다.
+## 최적화와 역최적화
 
-이는 [[V8-Hidden-Class|히든 클래스]]에서 객체의 모양을 일정하게 유지하라는 규칙과 같은 원리다. 객체는 프로퍼티 구조를, 배열은 원소 타입과 밀집도를 일정하게 지킬 때 엔진의 최적화를 받는다.
+최적화 코드는 관찰한 elements kind, 인덱스 범위, 프로토타입 조건 등에 특화될 수 있다. 새 값으로 표현이 일반화되면 기존 가정이 깨져 [[V8-Ignition-TurboFan#Deoptimization (역최적화)|역최적화]]될 수 있다. 모든 타입 혼합 대입이 역최적화를 발생시키는 것은 아니며, 코드가 아직 최적화되지 않았거나 이미 일반 경로를 쓰면 상황이 다르다.
 
-## Typed Array — 진짜 연속 메모리
+실제 데이터의 의미를 먼저 정하고 반복되는 병목만 다듬는다.
 
-ES2015는 일반 `Array`의 한계를 우회할 **타입이 고정된 연속 메모리**를 도입했다.
+- 수치 연산 hot path에서 숫자와 객체를 같은 배열에 섞을 필요가 없다면 분리한다.
+- 값이 순차적으로 생기면 `push()`로 채운다. 크기 선할당과 `fill()`이 유리한지는 대상 버전과 작업으로 측정한다.
+- `delete`와 `splice`는 의미가 다르다. `splice`는 뒤 인덱스를 이동시키므로 hole을 없애려고 대체할 때 비용과 의미를 함께 본다.
+- 배열 끝에서 넣고 빼는 작업은 중간 원소 이동을 줄인다. 자료구조 선택이 내부 kind 조정보다 큰 차이를 만들 수 있다.
 
-- **ArrayBuffer**: 연속 raw 바이트 블록. 기본은 고정 길이지만 `maxByteLength`를 지정하면 `resize()`로 크기를 바꿀 수 있다. 그 자체로는 읽고 쓸 수 없다.
-- **View**: ArrayBuffer를 특정 타입으로 해석하는 창. `Int8Array`, `Uint8Array`, `Uint8ClampedArray`, `Int16Array`, `Uint16Array`, `Int32Array`, `Uint32Array`, `Float32Array`, `Float64Array` 등 타입별 뷰와, 임의 오프셋, 엔디언을 직접 다루는 `DataView`가 있다.
-- **SharedArrayBuffer**: 여러 [[Worker-Threads-Core|Web Worker/워커 스레드]]가 공유하는 ArrayBuffer. 복사 없이 메모리를 공유해 병렬 처리 성능을 끌어올린다(접근 동기화는 별도 필요).
+출처의 배수 향상이나 한 버전의 임계값을 모든 프로그램의 성능으로 옮기지 않는다. 입력 분포, 최초 컴파일과 충분히 실행된 상태, GC 시간을 함께 비교한다.
 
-원소 타입은 생성 시 고정되고 hole을 허용하지 않아 타입 혼합이나 hole로 인한 역최적화 여지가 없다. 기본 ArrayBuffer의 길이는 고정되지만, resizable ArrayBuffer의 길이 추적 뷰는 buffer가 resize될 때 보이는 길이도 바뀐다. 메모리는 연속적이어서 인덱싱이 정적 언어 배열과 유사하다. WebGL처럼 바이너리 데이터를 대량 처리하는 영역에서 일반 배열의 성능 문제를 풀기 위해 도입됐다. Node.js의 `Buffer`도 `Uint8Array`의 서브클래스다([[Buffer-Memory|Buffer, 메모리 관리]]).
+## 정렬과 관찰 가능한 의미
 
-### 일반 Array vs Typed Array
+`Array.prototype.sort`는 사용자 comparator, getter, setter와 프로토타입 접근을 실행할 수 있다. 따라서 엔진은 단순한 숫자 버퍼 정렬보다 많은 조건을 확인한다. 사용자 코드가 정렬 중 배열을 바꿀 수도 있어 빠른 경로의 가정을 재검사해야 한다.
 
-| 축 | 일반 Array | Typed Array |
+V8은 **2018년 V8 7.0에서 안정 정렬을 위해 Timsort로 전환**했다. 이는 구현 역사이며 ECMAScript가 Timsort를 요구하는 것은 아니다. 비교되는 값, 뒤로 모이는 `undefined`, 마지막에 남는 부재 슬롯을 구분한 처리도 배열의 의미를 보존하기 위한 것이다. 특이한 accessor와 상충하는 comparator의 결과까지 엔진 간 동일하다고 가정하지 않는다.
+
+## TypedArray와 ArrayBuffer
+
+`TypedArray`는 `ArrayBuffer`의 바이트를 특정 원소 타입으로 해석하는 뷰다. JS 일반 배열의 kind 추적과 달리 원소 타입이 뷰에 고정되고 대입 시 해당 표현으로 변환된다. `DataView`는 임의 오프셋과 엔디언을 직접 다루는 뷰다.
+
+| 축 | 일반 Array | TypedArray |
 |---|---|---|
-| 타입 | 혼합 허용 (섞이면 역최적화) | 단일 고정 |
-| 크기 | 동적 | 기본 고정, 길이 추적 뷰는 buffer resize를 따름 |
-| 메모리 | 조건 만족 시에만 연속 | 항상 연속 (ArrayBuffer) |
-| 임의 접근 | Fast면 O(1), Dictionary면 해시 조회 | 항상 O(1) |
-| 용도 | 범용 | 바이너리, 수치 연산, WebGL, 워커 공유 |
+| 원소 | JS 값 혼합 가능 | 뷰의 수치 타입으로 변환 |
+| Hole | 가능 | 유효한 뷰 구간에 배열의 hole 개념이 없음 |
+| 길이 | 인덱스와 `length` 규칙에 따라 변경 | 고정 길이 또는 resizable buffer를 따르는 길이 추적 뷰 |
+| 저장 | fast/dictionary 등 엔진 선택 | buffer의 연속 바이트를 해석 |
+| 주 용도 | 범용 컬렉션 | 바이너리, 수치 계산, I/O |
 
-## 면접 체크포인트
-
-- JS 배열이 명세상 객체인데도 실무에서 빠른 이유 — V8이 조건 충족 시 연속 메모리(Fast Elements)로 깔기 때문
-- elements kinds 두 축(타입 SMI→Double→Tagged, 밀집도 Packed→Holey)과 전이가 일방향이라는 점
-- 단일 타입 배열에 다른 타입을 섞으면 더 일반적인 elements kind로 전이(SMI → Double → Tagged) + 타입 가정이 깨져 역최적화(출처 벤치마크 기준 약 20배 차이). dictionary 전락은 별개로 배열이 희소해지거나 매우 커질 때 발생 — [[V8-Ignition-TurboFan|Deopt]]의 한 사례
-- Fast 배열 유지 규칙 — 단일 타입, hole 금지(delete 대신 splice), 끝에서 조작
-- Typed Array가 연속 메모리를 쓰는 이유와 고정 길이, resizable ArrayBuffer의 차이, ArrayBuffer/View/SharedArrayBuffer 역할
-- `Buffer`가 `Uint8Array` 서브클래스라는 연결
+TypedArray도 bounds 검사, buffer 분리(detach), resize에 따른 뷰 범위 변화와 최적화 가정을 고려해야 한다. 고정 타입이 모든 역최적화를 없애는 것은 아니다. `SharedArrayBuffer`를 공유할 때는 데이터 경쟁과 `Atomics` 동기화가 별도 문제다. Node.js `Buffer`는 `Uint8Array`의 하위 클래스다.
 
 ## 출처
 
 - [Diving deep into JavaScript array - evolution & performance — Paul Shan (evan-moon 번역)](https://evan-moon.github.io/2019/06/15/diving-into-js-array/)
 - [Elements kinds in V8 — V8 공식 블로그](https://v8.dev/blog/elements-kinds)
+- [Fast properties in V8 — V8 공식 블로그](https://v8.dev/blog/fast-properties)
+- [Spread elements — V8 공식 블로그](https://v8.dev/blog/spread-elements)
+- [Getting things sorted in V8 — V8 공식 블로그](https://v8.dev/blog/array-sort)
+- [ECMAScript, Array.prototype.slice](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.slice)
 - [Fixed-length and Resizable ArrayBuffer Objects — ECMAScript](https://tc39.es/ecma262/multipage/structured-data.html#sec-fixed-length-and-resizable-arraybuffer-objects)
 
 ## 관련 문서
 
 - [[V8|V8 엔진]]
-- [[V8-Hidden-Class|히든 클래스 (객체 모양 최적화)]]
+- [[V8-Hidden-Class|히든 클래스]]
 - [[V8-Ignition-TurboFan|컴파일 파이프라인, Deoptimization]]
 - [[V8-Inline-Cache|인라인 캐시]]
 - [[Buffer-Memory|Node.js Buffer, 메모리 관리]]
-- [[자료구조(DataStructure)|자료구조 (Array vs LinkedList)]]
+- [[자료구조(DataStructure)|자료구조]]

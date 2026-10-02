@@ -17,5 +17,7 @@ NestJS로 개발할 때의 설계 의사결정을 모은다. 클린 아키텍처
 - [[NestJS-Plugin-System|플러그인 시스템 — DiscoveryService 기반 확장 지점]]
 - [[NestJS-Platform-Adapter|플랫폼 어댑터 — Express 기본인 이유, Fastify 전환 실전 차이]]
 
+- [[NestJS-Devtools-and-Diagnostics|Devtools — DI graph, playground, preview와 CI 진단의 한계]]
+
 ## 관련 문서
 - [[NestJS|NestJS Overview]]

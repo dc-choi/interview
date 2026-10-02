@@ -46,9 +46,17 @@ app.useGlobalGuards(new JwtAuthGuard());
 
 전역 Guard에 DI가 필요하면 `APP_GUARD` 토큰으로 모듈 등록. `app.useGlobalGuards(new ...)`는 인스턴스 직접 생성이라 DI 안 됨.
 
+`APP_GUARD`를 여러 번 등록하면 각 Guard가 등록 순서대로 실행된다. `APP_*`는 bootstrap 때 framework가 소비하는 pseudo-provider여서 `app.get(APP_GUARD)`나 일반 constructor injection으로 다시 꺼내는 token이 아니다. Gateway에는 v12 전역 Guard가 적용되고 hybrid microservice는 `inheritAppConfig` 여부를 따로 확인한다.
+
 ## throw vs return false
 
 - `return false` → NestJS가 자동으로 `ForbiddenException` (403)
 - `throw new UnauthorizedException()` → 401 + 커스텀 메시지
 
 인증 실패는 401, 인가 실패는 403으로 명시적으로 던지는 게 표준.
+
+
+## 출처
+
+- [NestJS Documentation, Guards](https://docs.nestjs.com/guards)
+- [NestJS Documentation, WebSocket Guards](https://docs.nestjs.com/websockets/guards)

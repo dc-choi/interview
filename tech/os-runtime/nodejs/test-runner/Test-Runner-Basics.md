@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["Test Runner Basics", "테스트 러너 기본"]
 ---
@@ -134,11 +134,13 @@ test('주문 생성', { only: true }, () => {});                        // --tes
 - `only`는 `--test-only`로 시작했거나 테스트 격리를 끈(`--test-isolation=none`) 경우에만 나머지를 건너뛴다. 기본 `node --test`는 `'only' and 'runOnly' require the --test-only command-line option.` 진단만 남기고 전부 실행하고, 파일을 `node a.test.mjs`로 직접 실행하면 `only`가 적용됐다(Node.js 26.7 확인). 하위 테스트만 고르려면 조상 테스트에도 `only`를 붙이거나 `t.runOnly(true)`를 쓴다.
 - `--test-only`나 격리 해제 상태에서는 남겨 둔 `only`가 다른 테스트를 조용히 건너뛰게 한다. Node.js에는 `only`를 금지하는 CLI 플래그가 없으므로 lint나 CI 검색으로 commit 전에 걸러낸다.
 
+### 실행 환경별 setup
+
+단위 테스트, Service Worker 테스트, UI 테스트는 필요한 환경이 다르다. `--import ./test/setup.mjs`로 준비 코드를 로드하되 DOM과 IndexedDB 같은 전역 대체는 이를 쓰는 테스트 범위로 제한하고 종료 시 복원한다. 모든 테스트에 브라우저 환경을 설치하면 실행 비용과 전역 충돌이 늘어난다.
+
 ### UI 테스팅 (JSDOM)
-```
-JSDOM 인스턴스는 1개만 유지하고, @testing-library/react 등과 함께 사용.
-history.pushState, IndexedDB 같은 전역 객체는 setup 파일에서 데코레이션.
-```
+
+같은 테스트 환경에서 여러 JSDOM 인스턴스의 전역을 섞지 않는다. 실제 브라우저의 탐색, 네트워크와 렌더링을 확인해야 하는 동작은 브라우저 E2E 테스트로 검증한다.
 ```js
 import { JSDOM } from 'jsdom';
 
@@ -146,6 +148,10 @@ const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
 globalThis.document = dom.window.document;
 globalThis.window = dom.window;
 ```
+
+## Mocha에서 이전할 때
+
+자동 변환은 테스트 전역의 `node:test` import, callback 인자의 `(t, done)` 변경과 timeout 옵션 이전을 도울 수 있다. 그러나 `this.skip()`을 `t.skip()`으로 바꾼 뒤에는 `return`으로 실행을 끝내야 한다. Mocha의 retry, reporter, hook 범위와 timeout 동작은 별도로 확인한다. 변환 결과가 원래 테스트 수와 실패 조건을 유지하는지 확인한 후 의존성을 제거한다.
 
 ## 외부 테스트 프레임워크와 선택 기준
 
@@ -159,6 +165,10 @@ globalThis.window = dom.window;
 이 표는 각 도구의 공식 문서가 밝힌 기능을 비교한 제안이다. 현재 NestJS 문서는 새로 생성한 프로젝트가 Vitest를 기본으로 쓴다고 안내하므로(2026-09-30 확인), 프로젝트 템플릿이나 기존 CI가 정한 도구가 있으면 그 계약을 우선한다.
 
 ## 출처
+
+- [Node.js, Discovering the test runner](https://nodejs.org/learn/test-runner/introduction)
+- [Node.js, Using the test runner](https://nodejs.org/learn/test-runner/using-test-runner)
+- [Node.js, Mocha to Node.js test runner](https://nodejs.org/learn/userland-migrations/mocha-to-node-test-runner)
 
 - [Node.js, Running tests from the command line](https://nodejs.org/api/test.html#running-tests-from-the-command-line)
 - [Node.js, Test context subtests](https://nodejs.org/api/test.html#contexttestname-options-fn)

@@ -24,7 +24,8 @@ handleOrderCreatedEvent(payload: OrderCreatedEvent) { ... }
 
 - forRoot 옵션: `wildcard`(기본 false — 켜면 `order.*` 매칭과 이벤트명 배열 가능), `delimiter`(기본 `.`), `maxListeners`(기본 10 — 초과 시 누수 경고, `verboseMemoryLeak`로 이벤트명 표시), `ignoreErrors`.
 - `@OnEvent` 옵션: `{ async: true }`(비동기 실행), `prependListener`, `suppressErrors`.
-- **구독자는 request-scoped 불가** (공식 경고).
+- 2026-10-01 현재 공식 guide는 request-scoped listener를 지원한다. **event마다 새 인스턴스**를 만들고 `REQUEST`는 event payload를 주입한다. 원래 request/context ID를 담은 payload를 보낼 때 `inheritRequestContextId: true`로 해당 DI subtree를 재사용할 수 있다. 이전 3.0.1 기반 제약을 모든 버전에 적용하지 않는다.
+- forRoot는 기본 global module이며 `global: false`로 변경할 수 있다. wildcard의 `*`는 한 segment만, `**`는 여러 segment를 매칭한다.
 
 ## 함정 1 — 리스너 에러는 기본 억제
 

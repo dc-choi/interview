@@ -84,6 +84,12 @@ const module = await Test.createTestingModule({
 
 **APP_GUARD로 등록한 전역 enhancer는 useExisting 트릭 필요**: `{ provide: APP_GUARD, useClass: JwtAuthGuard }`로 등록하면 테스트에서 교체가 안 된다. `{ provide: APP_GUARD, useExisting: JwtAuthGuard }`로 바꾸고 `JwtAuthGuard`를 일반 프로바이더로도 등록해 두면 Nest에 보이는 일반 프로바이더가 되어 `overrideProvider(JwtAuthGuard).useClass(MockAuthGuard)`로 교체된다. pipe, interceptor, filter의 APP_* 토큰도 동일.
 
+## Module 대체와 관측 경계
+
+`overrideModule(OriginalModule).useModule(TestModule)`은 모듈 경계를 통째로 대체한다. provider/enhancer override의 `useClass`, `useValue`, `useFactory`와 다른 API다. override chain을 마친 뒤 compile한다. `setLogger(LoggerService)`는 테스트 컨테이너의 로깅을 바꾸며 기본 출력은 error다.
+
+메일과 파일 저장에서는 전송/저장 adapter만 in-memory로 바꾸고 실제 rendering, validation과 도메인 흐름을 유지할 수 있다. [[NestJS-Localized-Notifications]]의 InMemoryMailTransport와 [[NestJS-File-Storage]]의 InMemoryDisk는 네트워크 전달/S3 IAM을 검증하는 대체물이 아니다. 실제 migrations를 사용하는 DB와 outbox relay를 함께 시험하면 커밋 뒤 전송, rollback 때 알림 없음, 영구 오류의 dead letter를 확인할 수 있다. 이는 공식 예시에서 도출한 검증 범위이며 이 문서에서 해당 예제를 실행했다는 뜻은 아니다.
+
 ## 출처
 - [NestJS — Testing](https://docs.nestjs.com/fundamentals/testing)
 - [TypeORM, Transactions](https://typeorm.io/docs/transactions/)

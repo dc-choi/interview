@@ -1,189 +1,88 @@
 ---
-tags: [runtime, nodejs, native-addon, n-api, node-api, c++, ffi]
+tags: [runtime, nodejs, native-addon, node-api, c++, ffi]
 status: done
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["Native Addons", "N-API", "Node-API", "C++ Addons", "node-addon-api"]
 ---
 
-# Node.js Native Addons (Node-API, C++ Addons)
+# Node.js Native Addons
 
-JavaScript 코드에서 **C/C++/Rust로 작성한 네이티브 코드를 직접 호출**하는 메커니즘. `require()`로 로드되는 동적 라이브러리(`.node`)로 배포되며, V8, libuv가 제공하지 못하는 시스템 호출, 고성능 연산, 기존 C 라이브러리 통합에 사용.
+네이티브 애드온은 JavaScript에서 C/C++/Rust로 만든 코드를 호출하는 동적 라이브러리다. 보통 `.node` 바이너리와 이를 로드하는 JavaScript 진입점을 npm 패키지로 배포한다. 기존 네이티브 라이브러리, 시스템 기능, 측정으로 확인한 연산 병목을 연결할 때 사용한다.
 
-## 왜 필요한가
+네이티브 구현도 같은 스레드에서 오래 실행하면 이벤트 루프를 막는다. 언어 변경만으로 비동기 실행이나 성능 향상이 보장되지는 않는다. 데이터 복사, 언어 경계 호출, 빌드와 배포 비용까지 비교해야 한다.
 
-| 용도 | 예 |
-|------|-----|
-| 기존 C/C++ 라이브러리 바인딩 | OpenSSL, libxml2, OpenCV, SQLite |
-| 성능이 결정적인 hot path | 암호화, 이미지 처리, 압축, 시리얼라이즈 |
-| 시스템 호출, 하드웨어 접근 | GPIO, USB, 시리얼 포트 |
-| 기존 코드 자산 활용 | 회사 내부 C/C++ 코어 라이브러리 |
+## API와 ABI
 
-JS 자체로 충분한 케이스에 도입하면 빌드, 배포 복잡도만 증가 — 진짜 필요할 때만.
+API는 소스 코드의 호출 계약이고 ABI는 컴파일된 코드가 연결되는 계약이다. 헤더가 같아 보여도 타입 배치나 호출 규약이 달라지면 기존 바이너리를 그대로 쓸 수 없다.
 
-## 3가지 접근 방식
+| 접근 | 계약과 제약 |
+|---|---|
+| V8/Node C++ API 직접 사용 | 내부 기능에 접근할 수 있지만 Node/V8 변화에 따라 소스 수정이나 재빌드가 필요할 수 있다. |
+| Node-API | 엔진 내부에서 분리한 C API다. 지원되는 안정 API 버전을 대상으로 하면 Node 메이저 버전 사이에도 ABI 호환성을 활용할 수 있다. |
+| node-addon-api | Node-API를 감싼 C++ 래퍼다. 래퍼의 소스 호환성과 Node-API의 바이너리 호환성은 구분한다. |
+| Rust 바인딩 | napi-rs 같은 도구로 Node-API를 사용한다. FFI와 `unsafe` 경계까지 메모리 안전이 자동 보장되지는 않는다. |
 
-| 방식 | API | 안정성 | 권장도 |
-|------|-----|-------|-------|
-| **V8 직접 사용** (구식) | V8 C++ API (`Local<Value>`, `Isolate`) | 버전마다 깨짐 | ✗ |
-| **Node-API (구 N-API)** | C ABI 안정 인터페이스 | **메이저 버전 호환** | ✅ 표준 |
-| **node-addon-api / napi-rs** | Node-API 위의 C++/Rust 래퍼 | Node-API와 동일 | ✅ 권장 |
+Node-API 바이너리를 재사용하려면 대상 런타임이 요구 Node-API 버전을 지원해야 한다. OS, CPU 아키텍처, libc와 외부 네이티브 라이브러리의 ABI도 맞아야 한다. 실험 API와 직접 사용한 V8 API에는 같은 안정성 보장을 적용하지 않는다.
 
-V8 API는 Node.js 메이저 버전마다 재컴파일 필요 → 패키지 사용자가 새 버전마다 리빌드. Node-API는 **ABI 안정** — 한 번 빌드하면 이후 버전에서도 동작.
+## 호출 경계
 
-## Node-API (Node-API, 구 N-API)
-
-C ABI 기반으로 V8, JerryScript, 다른 엔진에 독립적인 인터페이스. v8.12부터 안정화.
-
-```c
-#include <node_api.h>
-napi_value Method(napi_env env, napi_callback_info info) {
-  napi_value result;
-  napi_create_string_utf8(env, "Hello", NAPI_AUTO_LENGTH, &result);
-  return result;
-}
-```
-
-| 측면 | 의미 |
-|------|------|
-| `napi_env` | 호출 컨텍스트 (Isolate 추상화) |
-| `napi_value` | JS 값의 핸들 (V8 `Local<Value>` 추상화) |
-| `napi_callback_info` | 인자, this 정보 |
-| 누적 버전 | v3 지원하면 v1, v2도 자동 지원 |
-
-ABI 안정성 = **prebuild 배포 가능** — 사용자 머신에서 컴파일 안 해도 됨.
-
-## node-addon-api (C++ 래퍼) — 표준
-
-Node-API의 C 인터페이스는 verbose. **node-addon-api**는 RAII, 예외 기반 C++ 래퍼:
+- `napi_env`는 특정 Node 실행 환경에 속한다. Worker마다 환경이 다르므로 다른 Worker로 전달해 쓰지 않는다.
+- `napi_value`는 JavaScript 값의 핸들이다. 장기간 보관할 값은 reference와 명시적인 수명 관리를 사용한다.
+- `napi_callback_info`에서 인자와 수신 객체를 얻는다. 타입과 범위 검사는 네이티브 함수 진입 시 수행한다.
+- C Node-API는 상태 코드를 반환한다. C++ 래퍼의 예외 처리 방식은 빌드 설정에 따라 달라진다.
 
 ```cpp
 #include <napi.h>
-Napi::String Method(const Napi::CallbackInfo& info) {
+
+Napi::String Hello(const Napi::CallbackInfo& info) {
   return Napi::String::New(info.Env(), "Hello from C++");
 }
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  exports.Set("hello", Napi::Function::New(env, Method));
+  exports.Set("hello", Napi::Function::New(env, Hello));
   return exports;
 }
+
 NODE_API_MODULE(addon, Init)
 ```
 
-장점: 자동 메모리 관리, 예외→ JS Error 변환, RAII 패턴. Node-API의 ABI 안정성 그대로 유지.
+`Init`는 exports를 구성해 반환하고 `NODE_API_MODULE`이 초기화 함수를 등록한다. JavaScript 진입점은 바이너리 로드와 공개 API를 담당한다. 실제 빌드 설정은 [[Native-Addon-Build|빌드와 배포]]를 따른다.
 
-## napi-rs — Rust 대안
+## 객체와 비동기 작업
 
-Rust + Node-API 조합. memory-safe + zero-cost 추상화:
+`Napi::ObjectWrap`은 JavaScript 인스턴스와 네이티브 객체를 연결한다. 클래스 정의, 생성자, 메서드를 등록하고 인스턴스별 상태를 네이티브 객체에 둔다. 소멸자는 소유 자원을 해제하지만, GC가 임의의 외부 자원 사용 시점까지 알아서 조정해 주지는 않는다.
 
-```rust
-use napi_derive::napi;
-#[napi]
-fn hello(name: String) -> String {
-  format!("Hello, {}", name)
-}
-```
+유한한 백그라운드 연산은 `AsyncWorker`, 네이티브 스레드의 연속 이벤트는 thread-safe function을 검토한다. JavaScript 객체 접근은 해당 환경의 JavaScript 스레드에서 수행한다.
 
-빌드 도구가 cross-compile + prebuild 제공. `parcel`, `swc`, `rspack`이 핵심에 napi-rs 사용.
+- [[Native-Addon-Lifetime|핸들, reference, 환경별 상태와 종료]]
+- [[Native-Addon-Async|AsyncWorker, 취소와 thread-safe function]]
 
-## 빌드 시스템
+## 선택 기준
 
-| 도구 | 특징 |
-|------|------|
-| **node-gyp** | Python 기반 GYP, 표준 (오래됨) |
-| **cmake-js** | CMake 기반, 모던 |
-| **prebuildify** | 사전 빌드 바이너리를 패키지에 포함 |
-| **node-pre-gyp** | S3, GitHub Releases에서 prebuild 다운로드 |
-| **napi-rs cli** | Rust 환경, GitHub Actions 통합 cross-compile |
+| 방식 | 유리한 조건 | 확인할 비용 |
+|---|---|---|
+| JavaScript | 현재 처리량과 지연 요구를 만족한다. | 이벤트 루프 점유와 메모리 |
+| Node-API | 기존 라이브러리나 호스트 기능을 긴밀하게 연결한다. | 플랫폼별 바이너리, 메모리 안전, 수명 관리 |
+| FFI | 기존 공유 라이브러리의 비교적 단순한 C 인터페이스를 호출한다. | 타입 마샬링, 라이브러리 설치, 콜백과 스레드 계약 |
+| WebAssembly | 호스트 의존성을 제한한 연산을 여러 실행 환경에 배포한다. | 지원 기능, imports/WASI, 데이터 전달과 성능 측정 |
 
-`binding.gyp` (node-gyp) 예:
-```python
-{
-  "targets": [{
-    "target_name": "addon",
-    "sources": ["addon.cc"],
-    "dependencies": ["<!(node -p \"require('node-addon-api').targets\"):node_addon_api"]
-  }]
-}
-```
-
-2026-09-03 `node-addon-api` 공식 소스 기준, `Napi::Error` 예외를 사용하면 target suffix를 `node_addon_api_except`, 모든 C++ 예외까지 처리하면 `node_addon_api_except_all`로 바꾼다. 이 target들이 필요한 예외 설정을 제공하므로 수동 `-fexceptions` flag는 필요 없다.
-
-## 배포 — Prebuild 패턴
-
-사용자가 `npm install` 시 빌드하면:
-- 빌드 도구(Python, C++ 컴파일러) 필요 → CI, 서버리스 환경에서 실패 빈번
-- 시간 소요 (수십 초~분)
-
-**Prebuild** 패턴:
-1. CI에서 OS, 아키텍처, Node 버전별로 미리 빌드 (`linux-x64`, `darwin-arm64`, `win32-x64` ...)
-2. GitHub Releases / S3 / npm 패키지에 동봉
-3. 설치 시 OS, 아키텍처 매칭하는 prebuild 다운로드, 없으면 fallback 빌드
-
-| 도구 | 역할 |
-|------|------|
-| `prebuildify` | 패키지 자체에 prebuild 포함 (오프라인 설치 가능) |
-| `node-pre-gyp` | 외부 저장소에서 다운로드 |
-| `napi-rs` | GitHub Actions matrix로 cross-compile + npm 자동 배포 |
-
-## 라이프사이클, 예외, 메모리
-
-- **메모리**: napi handle은 callback scope 안에서만 유효. 장기 보관은 `napi_create_reference`로 weak/strong 참조
-- **예외**: C++ throw → `napi_throw`로 JS Error 발행. node-addon-api는 자동 변환
-- **GC**: V8 GC가 native 객체를 회수하려면 `Napi::ObjectWrap` + finalizer 등록
-- **비동기**: `napi_async_work`로 libuv 스레드풀에서 실행, 완료 시 메인 스레드로 콜백
-- **AsyncResource**: async_hooks와 통합되어 추적 가능
-
-## 흔한 시나리오
-
-| 패턴 | 도구 |
-|------|------|
-| 기존 C 라이브러리 바인딩 | node-addon-api + node-gyp |
-| 성능 hot path 신규 작성 | napi-rs (Rust 안전성) |
-| 사내 C++ 코어 통합 | node-addon-api + cmake-js |
-| 서버리스, 컨테이너 배포 | prebuildify로 빌드 의존성 제거 |
-
-## 흔한 실수
-
-- **V8 C++ API 직접 사용** — Node 버전마다 재컴파일, 코드 수정. Node-API로 마이그레이션
-- **prebuild 없이 npm 배포** — 설치 환경(서버리스, alpine, Windows)에서 빌드 실패. CI matrix로 prebuild 강제
-- **napi handle을 callback 밖으로 누출** — invalid handle. reference 사용
-- **finalizer 누락** — JS GC됐는데 native 메모리 안 풀림. `Napi::ObjectWrap`의 destructor 정의
-- **동기 API로 무거운 작업** — Event Loop 블로킹. `AsyncWorker`로 libuv 스레드풀 활용
-- **Node-API 버전 미선언** (`napi_versions` 필드) — 최신 Node에서만 동작
-- **OS, 아키텍처 prebuild 누락** — Apple Silicon (`darwin-arm64`), musl alpine, Windows 빠뜨림
-
-## Node-API vs FFI vs WebAssembly
-
-| 측면 | Node-API | node-ffi-napi | WebAssembly |
-|------|----------|---------------|-------------|
-| 컴파일 | 네이티브 빌드 필요 | 동적 .so/.dll 호출 | wasm 모듈 |
-| 성능 | 가장 빠름 | 호출 오버헤드 큼 | JIT/AOT, 빠름 |
-| 이식성 | OS, arch별 prebuild | 동적 라이브러리 의존 | 한 번 빌드, 어디서든 |
-| 메모리 안전 | C/C++ 위험 | C/C++ 위험 | sandbox 격리 |
-| 배포 단순성 | prebuild 필요 | 라이브러리 동봉 | 단일 wasm 파일 |
-
-새 코드라면 **WebAssembly**가 이식성, 안전성에서 우월 ([[WebAssembly]]). 기존 C++ 자산 통합, 시스템 호출은 Node-API.
-
-## 면접 체크포인트
-
-- V8 직접 사용 vs Node-API의 ABI 안정성 차이
-- node-addon-api, napi-rs가 표준이 된 이유 (verbose 회피, 메모리 안전)
-- node-gyp vs cmake-js, prebuildify, node-pre-gyp 빌드 도구 분류
-- prebuild 패턴이 npm 설치 실패를 막는 메커니즘
-- napi handle scope, finalizer로 GC와 native 메모리 매칭
-- Node-API vs WebAssembly 선택 기준
-- napi 비동기 API로 Event Loop 블로킹 회피
+한 방식이 항상 가장 빠르거나 배포가 가장 간단하지는 않다. 입력 크기와 호출 빈도를 포함한 실제 부하로 비교한다. Rust 도구를 선택해도 플랫폼 지원과 네이티브 라이브러리 의존성 검토는 남는다.
 
 ## 출처
-- [Node.js 아키텍처 학습 메모]
-- [node-addon-api setup — Node.js](https://github.com/nodejs/node-addon-api/blob/main/doc/setup.md)
-- [node-addon-api targets source — Node.js](https://github.com/nodejs/node-addon-api/blob/main/index.js)
+
+- [Node.js, ABI stability](https://nodejs.org/learn/modules/abi-stability)
+- [Node.js, Node-API getting started](https://nodejs.org/learn/node-api/getting-started)
+- [Node.js, Your first project](https://nodejs.org/learn/node-api/getting-started/your-first-project)
+- [Node.js, ObjectWrap](https://nodejs.org/learn/node-api/getting-started/objectwrap)
+- [Node.js, Node-API](https://nodejs.org/api/n-api.html)
 
 ## 관련 문서
+
 - [[Node.js|Node.js 개관]]
-- [[V8|V8 엔진]]
-- [[libuv|libuv]]
-- [[Module-System|모듈 시스템]]
+- [[Native-Addon-Build|애드온 빌드와 배포]]
+- [[Native-Addon-Lifetime|애드온 수명 관리]]
+- [[Native-Addon-Async|애드온 비동기 처리]]
 - [[Package-Publishing|npm 패키지 배포]]
-- [[Package-Publishing-Workflow|npm 배포 워크플로 (Node-API 버전 dist-tag)]]
-- [[WebAssembly|WebAssembly]]
-- [[Worker-Threads|Worker Threads]]
+- [[WebAssembly]]
+- [[Worker-Threads]]

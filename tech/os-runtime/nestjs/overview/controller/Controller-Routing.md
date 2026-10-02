@@ -45,6 +45,10 @@ Controller의 목적은 애플리케이션에 대한 특정 요청을 처리하�
    두 접근 방식을 동시에 사용하려면 @Res({ passthrough: true }) 데코레이터에서 passthrough 옵션을 true로 설정해야 합니다.
     ```
 
+### v12 라우트 충돌 진단
+
+기본 등록 순서는 declaration이다. `routeConflictPolicy: { duplicate: 'error', shadow: 'warn' }`는 부팅 때 중복과 shadow를 진단하며 error 설정의 충돌은 `app.init()` 또는 `listen()` 때 한 번에 보고된다. `routeResolutionStrategy: 'specificity'`는 literal, parameter, wildcard 순으로 등록한다. 두 옵션 모두 opt-in이다. Fastify router는 자체 specificity 순서를 적용하므로 shadow 진단과 sorting은 효과가 없고 duplicate 진단만 적용된다. Pipe는 라우팅 뒤에 실행돼 가려진 static route를 복구하지 못한다.
+
 ### 요청 객체
 핸들러는 종종 클라이언트의 요청 세부 정보에 액세스해야 합니다.
 
@@ -83,7 +87,7 @@ Res()는 @Response()의 별칭일 뿐입니다. 둘 다 기본 네이티브 플�
 
 메서드 핸들러에 @Res() 또는 @Response()를 삽입하면 해당 핸들러에 대해 Nest를 라이브러리 전용 모드로 전환하고 응답을 관리할 책임이 있다는 점에 유의하세요.
 
-이 경우 응답 객체(예: res.json(...) 또는 res.send(...))를 호출하여 일종의 응답을 발행해야 하며, 그렇지 않으면 HTTP 서버가 중단됩니다.
+이 경우 응답 객체(예: res.json(...) 또는 res.send(...))로 응답해야 하며, 누락하면 해당 요청이 끝나지 않습니다.
 
 ### 경로 매개변수
 정적 경로를 사용하는 경로는 요청의 일부로 동적 데이터를 받아들여야 하는 경우 작동하지 않습니다.
@@ -128,6 +132,7 @@ Express v5는 경로 문법 외에 **쿼리 파서 기본값도 바꿨다** — 
 - `VERSION_NEUTRAL` — 요청의 버전과 무관하게(버전 없는 요청 포함) 매칭. URI 버저닝에선 경로에 버전이 없다.
 - `defaultVersion` — enableVersioning 옵션. 버전 명시가 없는 컨트롤러/라우트 전체의 기본값 (배열, VERSION_NEUTRAL 가능).
 - 미들웨어도 `forRoutes({ path, method, version })`로 특정 버전에만 적용 가능.
+- versioning을 켠 뒤 version이나 defaultVersion이 없는 route는 404다. custom extractor의 빈 결과도 매칭하지 않는다. Fastify는 높은 버전부터 정렬한 배열로 highest match를 선택하지만 Express는 다중 결과가 신뢰성 있게 동작하지 않아 한 버전만 반환한다.
 
 어떤 전략을 고를지(경로 명시 권장, 쿼리스트링 비권장)는 [[REST]]의 버전 관리 원칙 참조.
 
@@ -154,8 +159,8 @@ Fastify는 중첩 라우터를 지원하지 않으므로 하위 도메인 라우
 
 ## 출처
 - [NestJS — Controllers](https://docs.nestjs.com/controllers)
-- [NestJS — Versioning](https://docs.nestjs.com/techniques/versioning)
+- [NestJS — Versioning](https://docs.nestjs.com/http/versioning)
 - [NestJS — Router module](https://docs.nestjs.com/recipes/router-module)
 - [NestJS — Global prefix (FAQ)](https://docs.nestjs.com/faq/global-prefix)
 - [NestJS — Raw body (FAQ)](https://docs.nestjs.com/faq/raw-body)
-- [NestJS — Migration guide (v11)](https://docs.nestjs.com/migration-guide)
+- [NestJS — Migration guide (v12)](https://docs.nestjs.com/migration-guide)

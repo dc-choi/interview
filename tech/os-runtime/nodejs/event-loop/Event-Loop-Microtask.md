@@ -35,7 +35,7 @@ Microtask/Macrotask 큐 개념과 브라우저, Node.js의 이벤트 루프 차�
 | **처리 방식** | checkpoint에서 큐가 빌 때까지 | 한 번에 실행 가능한 task 1개 선택 |
 | **대표 API** | Promise, queueMicrotask | setTimeout, I/O |
 
-Microtask는 현재 태스크의 "꼬리"에 붙고, Macrotask는 다음 턴에 실행된다.
+Microtask는 현재 실행이 끝난 뒤 checkpoint에서 처리된다. 다음 일반 작업을 실행하기 전에 새로 예약된 microtask도 비운다.
 
 ### 예시
 ```js
@@ -72,8 +72,8 @@ Macrotask 1개 → Microtask 전부 → 렌더링 → 반복
 - 타이머, 네트워크, 사용자 상호작용 등은 서로 다른 task source에서 오며 사용자 에이전트는 task source별 queue를 둘 수 있다. 모든 작업이 하나의 FIFO queue에 들어간다고 일반화하면 안 된다.
 
 ### Node.js: 페이즈 기반 이벤트 루프 (libuv)
-- Macrotask Queue가 **하나가 아니라 페이즈별로 나뉘어** 있음
-- 페이즈 = Macrotask Queue를 종류별로 쪼갠 것
+- Node.js의 페이즈는 libuv가 타이머, I/O polling, check 등을 처리하는 구조다. 브라우저의 task queue를 그대로 쪼갠 사양은 아니다.
+- 아래 큐 그림은 실행 순서를 이해하기 위한 추상화다. 타이머의 heap/연결 리스트와 OS polling까지 모두 같은 FIFO 자료구조라는 뜻은 아니다.
 ```
 브라우저:  task source별 queue들에서 실행 가능한 task 선택
 Node.js:  timers큐 [ setTimeout ]  /  poll큐 [ I/O 콜백 ]  /  check큐 [ setImmediate ]  / ...각각 별도 큐

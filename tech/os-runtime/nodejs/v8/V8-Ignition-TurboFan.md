@@ -8,7 +8,7 @@ aliases: ["V8 Pipeline", "Ignition", "TurboFan", "SparkPlug", "Maglev", "Cranksh
 
 # V8 컴파일 파이프라인 (Ignition, SparkPlug, TurboFan)
 
-V8은 JIT(Just-In-Time) 엔진이다. 실행 시점에 코드를 프로파일링해 자주 쓰이는(hot) 코드만 점진적으로 더 공격적인 최적화 계층으로 승격시킨다.
+일반적인 V8 구성은 바이트코드 실행과 JIT(Just-In-Time)를 결합한다. 실행 중 모은 피드백과 budget으로 더 높은 계층의 컴파일 비용을 쓸지 결정한다. JITless와 플랫폼별 구성에서는 사용 계층이 달라질 수 있다.
 
 ## 전체 흐름
 
@@ -35,6 +35,8 @@ V8 9.1에서 Sparkplug가 추가됐고, Chrome 117에서 Maglev가 데스크톱�
 - 성공 시 필요한 정보만 추려 **AST(Abstract Syntax Tree, 추상 구문 트리)** 생성
 
 AST는 코드의 의미(변수, 함수, 조건문)를 구조화한 트리다. 변수, 함수의 **스코프도 이 파싱 단계에서 확정**된다([[Scope|스코프]], [[Variable-Declarations|var/let/const]]). 산술 리터럴(`1 + 2`)처럼 컴파일 시점에 값이 정해지는 식은 파서가 미리 계산해(constant folding의 일종) 하나의 리터럴 노드로 접는다.
+
+Preparser는 아직 실행하지 않을 함수의 본문을 검사하면서 scope/binding 정보를 남기고 완전한 AST와 바이트코드 생성을 미룰 수 있다. 중첩 함수의 반복 파싱과 최초 호출 지연의 교환은 [[V8-Startup-and-Code-Caching|시작 비용]]에서 다룬다.
 
 ## Ignition (바이트코드 인터프리터)
 
@@ -83,6 +85,8 @@ Ignition과 TurboFan 사이에 위치한 **빠른 컴파일**에 초점을 둔 �
 - IR을 만들지 않고 바이트코드를 순서대로 훑으며 바이트코드마다 정해진 기계어를 내보내고, 대부분의 동작은 인터프리터와 공유하는 builtin 호출로 처리한다. 이득은 인터프리터의 피연산자 디코딩과 다음 바이트코드 dispatch 비용을 없애는 데서 나온다
 - **과도한 최적화를 수행하지 않는다**. 뒤에 Maglev와 TurboFan이 있기 때문
 
+Sparkplug는 interpreter와 호환되는 frame 배치를 이용해 디버깅, profiling과 tier 전환 처리를 공유한다. Bytecode와 기계어 위치의 대응도 유지한다.
+
 ### 왜 중간 계층이 필요한가
 
 Ignition만으로는 hot 코드 실행이 느리고, TurboFan은 컴파일 비용이 크다. 너무 일찍 TurboFan을 적용하면 **아직 hot도 아닌 함수**를 최적화해버리거나 **Deopt가 빈번**해진다. SparkPlug는 Ignition의 느린 실행과 TurboFan의 느린 컴파일 사이 간극을 메운다.
@@ -115,11 +119,15 @@ TurboFan이 최적화 시 세운 **가정이 깨지면** 최적화된 기계어�
 - 변수 타입 변경 (number → string)
 - 새 프로퍼티 추가, 삭제로 Hidden Class 변경
 
+Deopt metadata로 가상 레지스터, 지역 변수와 인라인된 호출 프레임을 재구성해 중간 실행을 이어간다. 이미 수행한 부수효과를 반복하려고 함수를 처음부터 다시 실행하지 않는다. 반대로 OSR(on-stack replacement)은 실행 중인 긴 루프 등에서 더 높은 tier로 옮기는 기법이며 함수의 다음 호출까지 기다리는 전환과 다르다.
+
 역최적화 자체가 비용이라 성능에 영향을 준다. 다만 특정 문법이 무조건 최적화를 막는다는 식의 목록은 오래 유지되지 않는다. 예를 들어 `try`, `catch`, `finally`를 최적화하지 못한 것은 Crankshaft의 한계였고, Ignition과 TurboFan은 예외 처리를 포함한 언어 전체를 지원하도록 설계됐다. 실제 병목을 프로파일링한 뒤 hot path의 타입과 객체 모양 안정성을 확인한다.
 
 ## Maglev (Chrome 117+)
 
 Chrome 117에서 Sparkplug와 TurboFan 사이에 추가된 **빠른 최적화 컴파일러**. Sparkplug보다 나은 코드를 만들면서 TurboFan보다 훨씬 빨리 컴파일하는 포지션이다. runtime feedback으로 관찰한 객체 모양과 타입에 특화된 코드를 만들고, 가정이 깨지면 기존 deoptimization 메커니즘으로 복귀한다.
+
+Maglev는 bytecode를 CFG와 SSA 기반 IR로 옮기고 피드백으로 타입과 Map을 특화한다. 루프와 합류점에서 값을 연결하고 필요한 검사와 deopt 상태를 유지하면서 컴파일 비용을 제한한다. 2025년에는 TurboFan의 JS backend를 Turboshaft로 옮긴 흐름이 공개됐다. Turboshaft는 새 실행 tier 이름이 아니라 compiler 내부 IR/파이프라인이다([[V8-Ignition-TurboFan-History|변천]]).
 
 ## 인라이닝 (Inlining)
 
@@ -157,6 +165,8 @@ Full-codegen과 Crankshaft에서 Ignition과 TurboFan으로 바뀐 5.9 전환, 9
 - [V8 — Launching Ignition and TurboFan](https://v8.dev/blog/launching-ignition-and-turbofan)
 - [V8 — Sparkplug, a non-optimizing JavaScript compiler](https://v8.dev/blog/sparkplug)
 - [V8 — Maglev, V8's fastest optimizing JIT](https://v8.dev/blog/maglev)
+- [V8 — Land ahoy: leaving the Sea of Nodes](https://v8.dev/blog/leaving-the-sea-of-nodes)
+- [V8 — Blazingly fast parsing, part 2: lazy parsing](https://v8.dev/blog/preparser)
 - [V8 — Tiering manager source](https://raw.githubusercontent.com/v8/v8/main/src/execution/tiering-manager.cc)
 - [V8 — Firing up the Ignition interpreter](https://v8.dev/blog/ignition-interpreter)
 - [V8 — Flag definitions source (14.6.202.34)](https://raw.githubusercontent.com/v8/v8/14.6.202.34/src/flags/flag-definitions.h)

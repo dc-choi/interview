@@ -49,6 +49,8 @@ export class AudioConsumer extends WorkerHost {
 - **잡 이름별 핸들러 분리는 BullMQ에서 미지원** — 레거시 Bull의 `@Process('transcode')` 방식은 혼란을 이유로 제거됐고, 단일 `process()` 안에서 `job.name`으로 switch 분기한다.
 - process 반환값은 잡 객체에 저장되어 completed 이벤트 리스너에서 접근 가능.
 
+request-scoped consumer는 job마다 생성되며 `JOB_REF`로 현재 job을 주입받는다. HTTP request나 전역 mutable field로 job context를 대신하지 않는다.
+
 ## 이벤트 리스너
 
 - **워커 레벨**: 컨슈머 클래스 안에서 `@OnWorkerEvent('active')` 등.
@@ -59,6 +61,10 @@ export class AudioConsumer extends WorkerHost {
 - `queue.pause()` / `resume()` — pause는 **새 잡 처리만** 멈추고, 진행 중인 잡은 끝까지 계속된다.
 - **Separate processes**: processor를 파일 경로로 등록하면 forked 프로세스에서 실행 — 크래시가 워커에 전파되지 않고(샌드박스), 블로킹 코드를 써도 잡이 stall되지 않으며, 멀티코어 활용과 Redis 연결 수 감소 이점. 대신 fork된 함수에는 Nest DI/IoC 컨테이너가 없으므로 필요한 외부 의존성을 그 파일에서 직접 생성해야 한다.
 
+`forRoot`의 defaultJobOptions는 FlowProducer가 추가한 job에는 적용되지 않는다. named configuration은 configKey로 선택한다. `extraOptions.manualRegistration: true`면 `BullRegistrar.register()`를 호출하기 전까지 processor와 listener가 동작하지 않는다. queue wait time, execution time, attempt와 failure는 별도 지표로 본다.
+
+레거시 Bull의 `@Process` concurrency는 동일 queue의 여러 consumer 전체를 제한하지 않는다. 최소 동시성은 consumer 수만큼이며, global event의 인자는 job 대신 jobId일 수 있어 `getJob()`으로 조회한다. Bull과 BullMQ event decorator와 API를 혼용하지 않는다.
+
 ## 관련 문서
 
 - [[Messaging-Broker-Comparison|브로커 비교 (BullMQ vs Kafka vs RabbitMQ 선택 기준)]]
@@ -66,6 +72,6 @@ export class AudioConsumer extends WorkerHost {
 - [[NestJS-Microservices|Microservices (Transport 추상화와의 구분)]]
 
 ## 출처
-- [NestJS — Queues](https://docs.nestjs.com/techniques/queues)
+- [NestJS — Queues](https://docs.nestjs.com/application/queues)
 - [BullMQ, Prioritized](https://docs.bullmq.io/guide/jobs/prioritized)
 - [BullMQ, Repeatable](https://docs.bullmq.io/guide/jobs/repeatable)

@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-01
 category: "OS & Runtime"
 aliases: ["비동기 프로그래밍 기초"]
 ---
@@ -12,8 +12,8 @@ aliases: ["비동기 프로그래밍 기초"]
 
 ## 콜백 (Callbacks)
 ```
-JavaScript는 기본적으로 동기식이며 단일 스레드이다. 비동기 기능은 환경(브라우저, Node.js)이 제공한다.
-콜백은 다른 함수에 값으로 전달되는 함수로, 이벤트가 발생할 때만 실행된다.
+한 JavaScript 실행 스레드에서는 현재 호출 스택의 코드가 순서대로 실행된다. Node.js 전체에는 다른 스레드와 워커도 있다.
+콜백은 다른 함수에 인자로 넘기는 함수다. Array.map처럼 호출 중 동기로 실행될 수도 있고, fs.readFile처럼 나중에 실행될 수도 있다.
 ```
 
 **에러-우선 콜백 (Error-First Callbacks)**: Node.js가 채택한 전략. 콜백의 첫 번째 파라미터는 오류 객체.
@@ -71,7 +71,7 @@ promise
 | `Promise.allSettled([p1, p2])` | 모든 Promise가 settled될 때까지 대기. 실패해도 단락되지 않음 |
 | `Promise.race([p1, p2])` | 첫 번째 settled된 Promise의 결과를 반환 |
 | `Promise.any([p1, p2])` | 첫 번째 fulfilled된 Promise의 결과를 반환. 모두 rejected되면 AggregateError |
-| `Promise.resolve(value)` | 즉시 resolve되는 Promise 생성 |
+| `Promise.resolve(value)` | 값으로 이행하거나 Promise/thenable의 최종 상태를 따르는 Promise를 반환 |
 | `Promise.reject(reason)` | 즉시 reject되는 Promise 생성 |
 | `Promise.try(fn)` | 동기/비동기 함수를 실행하고 Promise로 감쌈 |
 | `Promise.withResolvers()` | executor 외부에서 resolve/reject 가능한 Promise 생성 |
@@ -89,6 +89,10 @@ const { promise, resolve, reject } = Promise.withResolvers();
 setTimeout(() => resolve('완료!'), 1000);
 ```
 
+Promise executor는 생성 시 동기로 실행되며 반환값은 무시한다. 다른 Promise로 `resolve()`하면 아직 pending일 수 있다. `.then()` 안에서 다음 Promise를 반환하지 않으면 바깥 체인이 그 작업을 기다리지 않는다.
+
+`all()`의 빠른 실패나 `race()`/`any()`의 결과 확정은 남은 작업을 취소하지 않는다. 지원 API의 `AbortSignal` 등으로 취소와 정리를 별도로 설계한다. `Promise.try(fn)`은 `fn`을 동기로 호출해 결과와 예외를 감싸며, `.then(fn)`은 microtask로 미룬다. `withResolvers()`는 외부 완료 신호를 연결할 뿐 취소나 동시성 제한을 제공하지 않는다.
+
 ## async/await
 ```js
 async function performTasks() {
@@ -101,6 +105,8 @@ async function performTasks() {
   }
 }
 ```
+
+`await`는 해당 async 함수의 후속 실행을 미루며 스레드를 점유한 채 기다리지 않는다. 위 예제의 `promise1`, `promise2`가 이미 생성됐다면 작업도 이미 시작됐을 수 있다. 시작 순서까지 보장하려면 `await task1()` 뒤에 `task2()`를 호출한다. 독립 작업만 함께 시작하고 큰 입력에는 동시성 제한을 둔다.
 
 **최상위 Await**: ES Modules에서 `async` 함수 없이도 최상위에서 `await` 사용 가능
 ```js
@@ -140,7 +146,7 @@ const load = (id) => new Promise((resolve, reject) => {
 | 메서드 | 실행 시점 | 용도 |
 |--------|---------|------|
 | `queueMicrotask()` | 현재 스크립트 직후, I/O/타이머 이전 | Promise 해결처럼 즉각 실행 필요 시 |
-| `process.nextTick()` | 현재 단계 직후, 어떤 I/O 이벤트보다 먼저 | 비동기 보장이 필요한 내부 작업 |
+| `process.nextTick()` | nextTick 처리 경계에서 실행. 진행 중인 microtask를 선점하지 않음 | 기존 API 호환. 신규 일반 지연 콜백에는 `queueMicrotask()` 우선 검토 |
 | `setImmediate()` | poll 단계 후 check 단계에서 | 대부분의 I/O 콜백 처리 후 실행 |
 
 ```js
@@ -152,6 +158,9 @@ console.log('끝');
 ```
 
 ## 출처
+
+- [Node.js Learn, JavaScript asynchronous programming and callbacks](https://nodejs.org/en/learn/asynchronous-work/javascript-asynchronous-programming-and-callbacks)
+- [Node.js Learn, Discover promises](https://nodejs.org/en/learn/asynchronous-work/discover-promises-in-nodejs)
 
 - [ECMAScript, Properties of Promise Instances](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-properties-of-promise-instances)
 - [Node.js, util.promisify](https://nodejs.org/api/util.html#utilpromisifyoriginal)

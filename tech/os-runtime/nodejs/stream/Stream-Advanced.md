@@ -11,18 +11,15 @@ verified_at: 2026-08-26
 EventEmitter 아키텍처, Web Streams 비교, 에러 전파를 돕는 pipeline(), cork/uncork 배칭 등 스트림의 고급 사용법을 다룬다.
 
 ## Event Emitter 아키텍처
-```
+
 Node Streams가 상속하는 이벤트 API. 이벤트 이름별로 리스너를 등록하고 호출한다.
 
-핵심 특성:
-- emit()는 등록된 모든 리스너를 "동기적"으로 실행한다.
+- emit()는 등록된 모든 리스너를 동기적으로 실행한다.
 - 비동기 실행이 필요하면 리스너가 process.nextTick(), setImmediate()나 비동기 API를 직접 사용한다. EventEmitter가 emit()을 내부적으로 nextTick에 넘기는 것은 아니다.
 - on()으로 등록, removeListener()로 제거, once()로 일회성 등록.
 
-주의:
 - 이벤트별 리스너가 기본 한도인 10개를 넘으면 가능한 메모리 누수를 알리는 경고가 발생한다. 실제 누수로 확정하는 판정은 아니다.
-- emitter.setMaxListeners(n)으로 조절 가능.
-```
+- `emitter.setMaxListeners(n)`으로 조절할 수 있다.
 
 ## Web Streams vs Node Streams
 
@@ -32,12 +29,16 @@ Node Streams가 상속하는 이벤트 API. 이벤트 이름별로 리스너를 
 | 호환성 | Node.js 전용 | 브라우저 + Node.js |
 | 성능 특성 | Node.js 버전과 워크로드에 따라 측정 | Node.js 버전과 워크로드에 따라 측정 |
 | API | on/pipe/write | getReader/getWriter/pipeTo |
-| 배압 | drain 이벤트 기반 | pull 기반 (내장) |
+| 배압 | Readable의 push 결과, Writable의 write 결과와 drain | pull/desiredSize, writer.ready 등 |
 | 적합 대상 | Node.js 서버 고성능 I/O | 브라우저-서버 범용 코드 |
 
 Node Congress 2026 발표에서 James Snell은 Node.js의 ReadableStream 구현이 Node Streams보다 열 배 수준(order of magnitude)으로 느리며, 여러 런타임과 프레임워크 벤치마크에서도 Web Streams가 눈에 띄게 느리게 나온다고 말했다.
 
 다만 이 격차는 사양이 아니라 구현과 워크로드에 달려 있다. 2026년 Vercel은 Node.js 내장 Web Streams의 불필요한 할당과 Promise 오버헤드를 줄인 유저랜드 구현으로 최대 10배 이상 개선한 사례를 공개했다. 어느 쪽이 빠른지는 대상 Node.js 버전, 청크 크기, 파이프 단계 수로 직접 측정해 판단한다. 이식성이 필요하면 Web Streams, Node.js 전용 고성능 I/O면 Node Streams가 기본 선택이다.
+
+`Readable.fromWeb()`/`toWeb()`, `Writable.fromWeb()`/`toWeb()`, `Duplex.fromWeb()`/`toWeb()`으로 경계를 변환할 수 있다. 최신 `pipeline()`은 Web Streams도 받지만 배포 Node.js의 지원 버전을 확인한다. `fetch().body`는 바이트 Web Stream이므로 문자열 변환에는 청크 경계를 보존하는 `TextDecoderStream` 등을 쓴다.
+
+Readable은 `for await...of`로 소비할 수 있다. 루프 안에서 작업을 `await`하면 소비 속도를 제한하지만, 생성한 Promise를 기다리지 않고 쌓으면 이 효과가 사라진다. 기본 async iterator는 `break` 같은 조기 종료 시 스트림을 destroy하므로 재사용하려면 수명 정책을 확인한다. `data`, `readable`, `pipe`, async iterator 소비 방식을 한 스트림에서 무분별하게 섞지 않는다.
 
 ## EventEmitter vs Callback 선택 기준
 
@@ -85,7 +86,7 @@ const streams = [readable, transform, writable];
 function handleError(error) {
     console.error('Pipe failed:', error);
     process.exitCode = 1;
-    streams.forEach((stream) => stream.destroy());
+    for (const stream of streams) stream.destroy();
 }
 
 readable.on('error', handleError);
@@ -168,15 +169,8 @@ process.nextTick(() => {
 });
 ```
 
-```
-cork(): 이후의 write()를 내부 버퍼에 보류하고 즉시 시스템 콜을 하지 않는다.
-uncork(): 보류된 데이터를 한꺼번에 플러시한다.
+`cork()`는 이후 쓰기를 버퍼에 보류한다. `uncork()`는 보류한 쓰기를 처리하도록 한다. `process.nextTick`에서 uncork하면 현재 JavaScript 작업의 연속된 쓰기를 모을 수 있다. 여러 번 cork했다면 같은 횟수만큼 uncork해야 한다.
 
-process.nextTick에서 uncork를 호출하는 것이 관용구:
-현재 JavaScript 작업에서 이어진 쓰기를 모은 뒤 이벤트 루프가 진행되기 전에 플러시한다.
-
-여러 번 cork()하면 동일한 횟수만큼 uncork()를 호출해야 플러시된다.
-```
 
 ## 관련 문서
 - [[Stream-Types|스트림 타입과 배압]]
@@ -185,6 +179,9 @@ process.nextTick에서 uncork를 호출하는 것이 관용구:
 - [[Node.js]]
 
 ## 출처
+
+- [Node.js Learn, How to use streams](https://nodejs.org/en/learn/modules/how-to-use-streams)
+- [Node.js Learn, Backpressuring in streams](https://nodejs.org/en/learn/modules/backpressuring-in-streams)
 
 - [We Deserve a Better Streams API for the Web — James Snell, Node Congress 2026](https://gitnation.com/contents/we-deserve-a-better-streams-api-for-the-web)
 - [Node.js, Events](https://nodejs.org/api/events.html)

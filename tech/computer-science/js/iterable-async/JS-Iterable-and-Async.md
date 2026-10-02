@@ -14,6 +14,8 @@ aliases: ["JS Iterable and Async", "이터러블과 비동기"]
 - [[JavaScript-Async-Iterable-Pipelines|비동기 이터러블 파이프라인]]: Promise, 동시성 제한, lifecycle
 - [[Promise-Async|Promise와 async/await]]: 상태, resolve와 fulfilled의 차이, Promise.all
 
+- [[JavaScript-Resource-Management|명시적 리소스 해제]]: using, disposal stack과 소유권
+
 ## 함께 볼 문서
 
 - [[자바스크립트(JS)|JavaScript(JS)]]

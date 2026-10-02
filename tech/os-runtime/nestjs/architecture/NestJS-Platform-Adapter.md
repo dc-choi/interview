@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, fastify, express, adapter, performance]
 status: done
-verified_at: 2026-08-28
+verified_at: 2026-10-02
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Platform Adapter", "FastifyAdapter", "Express vs Fastify"]
 ---
@@ -36,6 +36,20 @@ Nest의 프레임워크 독립성은 **어댑터가 미들웨어와 핸들러를
 
 인프로세스 TLS 종료가 필요하면 `NestFactory.create(AppModule, { httpsOptions: { key, cert } })` — 다만 관례는 앞단 로드밸런서/프록시에서 TLS를 종료하는 것 ([[HTTPS-TLS]]). 같은 앱에서 HTTP와 HTTPS를 동시에 리슨하려면 http.createServer를 수동 배선한다.
 
+## MVC와 SPA serving
+
+MVC는 Express의 `setBaseViewsDir()`/`setViewEngine()` 또는 Fastify의 `@fastify/view` 설정을 사용한다. `@Render()`의 handler 반환 객체가 template 변수이며, Fastify는 view 이름에 확장자를 포함한다. 동적 view를 선택해 `@Res()`를 사용하면 해당 adapter의 render/view 응답 계약을 직접 책임진다.
+
+SPA에는 `ServeStaticModule`의 `rootPath`, `serveRoot`, `renderPath`를 설정한다. 기본 renderPath는 client routing을 위해 index.html로 fallback한다. Fastify에서 Express와 같은 fallback을 원하면 `serveStaticOptions.fallthrough: true`를 지정한다. controller API route와 정적 파일 공개 경로를 함께 확인한다.
+
+## Parser, view와 readiness의 API 경계
+
+Express의 `useBodyParser('json', options)`와 Fastify의 `useBodyParser(contentType, options, parser)`는 인자 계약이 다르다. Express의 `NestExpressBodyParserOptionsFor<Parser>`는 parser별 옵션을 좁히며 `verify`는 raw-body 보존을 위해 Nest가 소유한다. custom parser를 붙일 때도 request 크기와 content type을 명시하고 `rawBody` 보존 여부를 확인한다.
+
+`getHttpServer<TServer>()`는 native server, `getHttpAdapter().getInstance()`는 Express/Fastify application 객체다. generic으로 지정한 타입은 실제 adapter를 바꾸지 않는다. `HttpAdapterHost.init$`와 `listen$`도 서로 다르며 DI 초기화, route/plugin 준비와 network listening을 하나의 상태로 취급하지 않는다.
+
+Fastify `setViewEngine()`은 engine/templates 옵션 객체를 받는다. 타입 호환을 위해 남아 있는 string overload를 Express처럼 사용하면 예외가 난다. `ServeStaticModule`의 `exclude`는 Fastify에서 지원하지 않아 `renderPath`의 정규식 같은 지원 계약으로 API 경로와 SPA fallback을 분리한다. Express용 설정을 adapter 이름만 바꿔 재사용하지 않는다.
+
 ## 관련 문서
 
 - [[NestJS|NestJS 개요 (플랫폼 중립성 계약)]]
@@ -45,9 +59,16 @@ Nest의 프레임워크 독립성은 **어댑터가 미들웨어와 핸들러를
 
 ## 출처
 - [NestJS, First steps](https://docs.nestjs.com/first-steps)
-- [NestJS — Performance (Fastify)](https://docs.nestjs.com/techniques/performance)
+- [NestJS — Performance (Fastify)](https://docs.nestjs.com/http/performance)
 - [NestJS — CORS](https://docs.nestjs.com/security/cors)
 - [NestJS — HTTP adapter (FAQ)](https://docs.nestjs.com/faq/http-adapter)
 - [NestJS — File upload, Fastify](https://docs.nestjs.com/http/file-upload#fastify)
 - [NestJS — HTTPS & multiple servers (FAQ)](https://docs.nestjs.com/faq/multiple-servers)
 - [NestJS — Migration guide (v11)](https://docs.nestjs.com/v11/migration-guide)
+
+- [NestJS — MVC](https://docs.nestjs.com/http/mvc)
+- [NestJS — Serve static](https://docs.nestjs.com/recipes/serve-static)
+- [NestJS API, NestExpressApplication](https://api-references-nestjs.netlify.app/api/platform-express/NestExpressApplication)
+- [NestJS API, NestFastifyApplication](https://api-references-nestjs.netlify.app/api/platform-fastify/NestFastifyApplication)
+- [NestJS API, ServeStaticModuleOptions](https://api-references-nestjs.netlify.app/api/serve-static/ServeStaticModuleOptions)
+- [NestJS sample, Fastify view options](https://github.com/nestjs/nest/blob/7fb52e7f4f7314fbc117e369a09297bc2ecadf6b/sample/17-mvc-fastify/src/main.ts)

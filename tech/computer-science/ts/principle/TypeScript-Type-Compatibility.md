@@ -110,6 +110,7 @@ type FeedDog = (d: Dog) => void;
 
 ### 제네릭 타입
 - 인스턴스화된 타입끼리 구조 비교
+- 타입 매개변수가 멤버에 쓰이지 않으면 `Empty<number>`와 `Empty<string>`도 같은 구조다. 이름만 붙인 제네릭으로 값의 의미를 분리할 수 없으며 실제 필드 계약이나 brand가 필요하다.
 
 ## 구조적 타이핑의 함정
 
@@ -166,6 +167,7 @@ const n: Empty = 42;   // ✅ — 아무 속성도 요구 안 하니까 뭐든 O
 - `any`와 `unknown`의 차이
 
 ## 출처
+- [TypeScript Deep Dive, Type Compatibility — Basarat](https://basarat.gitbook.io/typescript/type-system/type-compatibility)
 - [TypeScript Handbook, Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)
 - [TypeScript Handbook, Object Types, Excess Property Checks](https://www.typescriptlang.org/docs/handbook/2/objects.html#excess-property-checks)
 - [TypeScript TSConfig, strictFunctionTypes](https://www.typescriptlang.org/tsconfig/strictFunctionTypes.html)

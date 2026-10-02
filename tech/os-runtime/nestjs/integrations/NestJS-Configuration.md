@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, config, env, dotenv, validation]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-02
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Configuration", "@nestjs/config", "ConfigModule"]
 ---
@@ -12,7 +12,7 @@ aliases: ["NestJS Configuration", "@nestjs/config", "ConfigModule"]
 
 ## 로드와 우선순위
 
-- **런타임 환경변수(셸 export) > .env 파일** — 같은 키가 양쪽에 있으면 런타임이 이긴다 (dotenv 충돌 규칙).
+- **런타임 환경변수(셸 export) > .env 파일** — 같은 키가 양쪽에 있으면 런타임이 이긴다 (dotenv 충돌 규칙). `override: true`를 지정하면 .env 값을 우선할 수 있다.
 - `envFilePath`: 단일 경로 또는 배열. 배열에서 같은 변수가 여러 파일에 있으면 **앞의 파일이 우선**.
 - `ignoreEnvFile: true` — .env를 읽지 않고 런타임 환경변수만 사용.
 - `isGlobal: true` — 전역 모듈로 등록해 다른 모듈에서 import 불필요.
@@ -58,7 +58,8 @@ JwtModule.registerAsync({
 
 - `get<T>(key, default?)` — 점표기로 중첩 접근, 두 번째 인자로 기본값.
 - `{ infer: true }` — 환경변수 인터페이스나 커스텀 설정 타입에서 반환 타입을 자동 추론 (점표기 중첩 경로도 추론).
-- `skipProcessEnv: true` (forRoot 옵션) — 커스텀 설정 파일 값만 보고 process.env는 무시.
+- `getOrThrow()`는 undefined면 예외를 던진다. generic이나 `ConfigService<T, true>`는 TS 타입 단언이며 누락된 런타임 값을 생성하거나 검증하지 않는다.
+- `skipProcessEnv: true` (forRoot 옵션) — process.env 직접 조회는 건너뛰고 커스텀 설정과 검증된 환경변수 값을 읽는다.
 - `cache: true` (forRoot 옵션) — process.env 접근은 느리므로 캐시해 get 성능 향상.
 
 ## 시작 시 검증 — 잘못된 설정이면 부팅 실패
@@ -68,14 +69,21 @@ JwtModule.registerAsync({
 1. **Standard Schema 호환 스키마** — @nestjs/config 12.0.0부터 `validationSchema`에 Zod, Valibot, ArkType 같은 Standard Schema 구현을 사용할 수 있다. 스키마에 없는 변수는 허용하고 실패한 변수는 모두 모아 보고하며, 라이브러리별 옵션은 `validationOptions.libraryOptions`에 둔다. Joi는 Standard Schema를 구현한 v18 이상에서 동작하고, 이 경우 `allowUnknown: true`, `abortEarly: false`가 기본이다. @nestjs/config 4.x 이하의 Joi 전용 API에서는 옵션을 `validationOptions` 바로 아래에 뒀다.
 2. **커스텀 validate 함수** — `validate(config)`가 환경변수 객체를 받아 검증. class-validator + plainToInstance 조합이 공식 예시.
 
+- validationSchema는 환경변수만 검증한다. load factory가 만든 YAML/중첩 설정 객체는 factory에서 별도로 검증하고 TS 외 asset은 CLI assets로 배포한다. custom validate 함수는 동기 함수이며 변환한 객체를 반환한다.
 - `validatePredefined: false` — 모듈 import 전에 이미 설정된 process.env 변수(`PORT=3000 node main.js`의 PORT 같은)는 검증에서 제외.
 
 ## 기타
 
 - `expandVariables: true` — .env 안에서 `${APP_URL}` 형태의 변수 확장 (dotenv-expand).
 - `ConfigModule.envVariablesLoaded` — Promise. await하면 .env 로드 완료가 보장된 뒤 process.env를 읽을 수 있다 (동적 모듈 선택 등).
-- `ConditionalModule.registerWhen(FooModule, 'USE_FOO')` — env 값 조건으로 모듈 로드 (두 번째 인자로 `(env) => boolean` 커스텀 조건 가능). ConfigModule이 함께 로드돼 있어야 하고, 기본 5초(옵션으로 조정) 안에 env 로드가 안 되면 부팅 실패.
+- `ConditionalModule.registerWhen(FooModule, 'USE_FOO')` — env 값 조건으로 모듈 로드 (두 번째 인자로 `(env) => boolean` 커스텀 조건 가능). 문자열 변수 조건은 값이 false(대소문자 무시)일 때만 제외하고 미정의면 로드한다. ConfigModule이 함께 로드돼 있어야 하고, 기본 5초(옵션으로 조정) 안에 env 로드가 안 되면 부팅 실패.
 - main.ts(모듈 밖)에서는 `app.get(ConfigService)`로 꺼내 사용.
+
+## 변경 스트림의 의미
+
+`ConfigService.changes$`는 `set(path, value)`로 바꾼 설정의 path, oldValue와 newValue를 알리는 스트림이다. .env 파일이나 외부 secret store를 자동 감시하는 기능으로 해석하지 않는다. 구독으로 재설정하려는 client가 이미 생성된 singleton이라면 그 client의 교체/종료 계약도 별도로 필요하다.
+
+`getOrThrow`의 기본값 overload는 해당 key가 없으면 기본값을 쓰지만 그 기본값까지 undefined면 예외를 던진다. 기본값이 형식과 보안 정책에 맞는지는 schema 또는 factory 검증으로 확인한다. 설정 API의 generic과 infer는 런타임 환경변수의 문자열을 숫자나 boolean으로 자동 검증하는 근거가 아니다.
 
 ## 관련 문서
 
@@ -84,7 +92,7 @@ JwtModule.registerAsync({
 - [[NestJS-Lifecycle|Lifecycle (모듈 init 순서)]]
 
 ## 출처
-- [NestJS — Configuration](https://docs.nestjs.com/techniques/configuration)
+- [NestJS — Configuration](https://docs.nestjs.com/application/configuration)
 - [NestJS — Configuration source](https://raw.githubusercontent.com/nestjs/docs.nestjs.com/master/content/application/configuration.md)
 - [config.module.ts — nestjs/config GitHub](https://github.com/nestjs/config/blob/master/lib/config.module.ts) (`forRoot`의 동기 할당과 `validationSchema` await 순서)
 - [jwt-module-options.interface.ts — nestjs/jwt GitHub](https://github.com/nestjs/jwt/blob/master/lib/interfaces/jwt-module-options.interface.ts) (`registerAsync`의 `imports`, `inject`, `useFactory`)
@@ -95,3 +103,5 @@ JwtModule.registerAsync({
 - [인프런, 윤상석, AWS-SDK를 사용하여 S3에 업로드 보충강의](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=95255)
 - [인프런, 윤상석, MVC 패턴, 프로젝트 셋업](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=86917)
 - [인프런, 윤상석, AWS RDS MySQL 구축 및 NestJS + TypeORM 프로젝트 셋업 (old)](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=87485)
+- [NestJS API, ConfigService](https://api-references-nestjs.netlify.app/api/config/ConfigService)
+- [NestJS API, ConfigChangeEvent](https://api-references-nestjs.netlify.app/api/config/ConfigChangeEvent)

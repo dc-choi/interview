@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, module, dynamic-module]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-10-02
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Dynamic Module", "Global Module", "register registerAsync"]
 ---
@@ -81,6 +81,14 @@ export class BService implements OnModuleInit {
 - 순환 참조 발생 시 `forwardRef`로 임시 해결, 근본은 모듈 단방향화
 - export하지 않은 Provider는 외부 주입 불가
 
+## 옵션 객체와 모듈 정의를 분리하는 계약
+
+`setExtras(defaults, transformDefinition)`의 extras는 consumer 값과 기본값을 합쳐 dynamic module 정의를 변환한다. `isGlobal` 같은 배선 플래그가 서비스에 주입되는 `MODULE_OPTIONS_TOKEN` 값에 섞이지 않게 한다. `setFactoryMethodName('createOptions')`는 useClass/useExisting 옵션 팩토리가 구현할 메서드 이름을 바꾸며, `setClassMethodName('forRoot')`는 공개 등록 메서드의 이름을 바꾼다. 서로 다른 역할이다.
+
+`OPTIONS_TYPE`, `ASYNC_OPTIONS_TYPE`은 타입 추론용이며 런타임 설정값이 아니다. builder의 `alwaysTransient`는 등록 호출마다 별도 module 식별자를 만드는 옵션으로 provider의 `Scope.TRANSIENT`와 구분한다.
+
+같은 configurable module을 사용자/주문 module에서 각각 다른 prefix로 등록하면 각 소유 module의 서비스가 자신의 옵션을 받는다. 공식 ID generator sample은 이 경계를 단위 테스트와 HTTP 결과로 확인한다. global 등록으로 합치거나 앱 전체의 단일 `get(IdGenerator)`에 기대면 이 소유 관계가 흐려진다.
+
 ## 관련 문서
 
 - [[NestJS|NestJS 개요, DI, 모듈 기본]]
@@ -90,3 +98,6 @@ export class BService implements OnModuleInit {
 ## 출처
 - [NestJS — Dynamic modules](https://docs.nestjs.com/fundamentals/dynamic-modules)
 - [NestJS — Migration guide (v11)](https://docs.nestjs.com/v11/migration-guide)
+- [NestJS API, ConfigurableModuleBuilder](https://api-references-nestjs.netlify.app/api/common/ConfigurableModuleBuilder)
+- [NestJS API, ConfigurableModuleHost](https://api-references-nestjs.netlify.app/api/common/ConfigurableModuleHost)
+- [NestJS sample, dynamic module options](https://github.com/nestjs/nest/blob/7fb52e7f4f7314fbc117e369a09297bc2ecadf6b/sample/25-dynamic-modules/src/id-generator/id-generator.module.ts)

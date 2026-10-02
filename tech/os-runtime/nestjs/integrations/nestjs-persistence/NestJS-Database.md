@@ -17,8 +17,15 @@ aliases: ["NestJS Database", "@nestjs/typeorm", "TypeOrmModule"]
 | `retryAttempts` | 10 | DB 연결 재시도 횟수 |
 | `retryDelay` | 3000ms | 재시도 간격 |
 | `autoLoadEntities` | false | forFeature 등록 엔티티 자동 수집 |
+| `toRetry` | 모든 오류 재시도 | 연결 오류를 받아 재시도 여부 결정 |
+| `verboseRetryLog` | false | 재연결 오류 메시지 로그 포함 |
+| `manualInitialization` | false | 자동 initialize와 migration 실행을 생략 |
 
 - `synchronize: true`는 **운영 금지** — 스키마를 엔티티에 맞춰 바꾸면서 운영 데이터를 잃을 수 있다.
+
+`manualInitialization: true`이면 `DataSource.initialize()`와 재시도를 직접 관리한다. `dataSourceFactory`로 만든 DataSource가 아직 초기화되지 않았다면 모듈은 기본으로 initialize하지만 이 옵션을 켜면 생략한다. 연결 재시도 횟수는 SQL 작업의 재시도 정책이 아니다.
+
+`EntitySchema`도 entity class 대신 `forFeature()`에 등록할 수 있다. `target`을 지정했다면 schema `name`은 target class 이름과 일치해야 한다.
 
 ## Repository 등록 — forFeature
 
@@ -70,7 +77,7 @@ aliases: ["NestJS Database", "@nestjs/typeorm", "TypeOrmModule"]
 - [[NestJS-Configuration|Configuration (asProvider로 forRootAsync 연결)]]
 
 ## 출처
-- [NestJS — Database](https://docs.nestjs.com/techniques/database)
+- [NestJS — TypeORM](https://docs.nestjs.com/data/typeorm)
 - [NestJS — Hot Reload](https://docs.nestjs.com/recipes/hot-reload)
 - [TypeORM — Custom repositories](https://typeorm.io/docs/working-with-entity-manager/custom-repository/)
 - [TypeORM — 0.3에서 1.0으로 업그레이드](https://typeorm.io/docs/releases/1.0/upgrading-from-0.3/)

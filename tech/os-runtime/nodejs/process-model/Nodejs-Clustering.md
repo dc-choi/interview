@@ -33,6 +33,7 @@ import http from 'node:http';
 if (cluster.isPrimary) {
   for (let i = 0; i < os.availableParallelism(); i++) cluster.fork();
   cluster.on('exit', (worker) => {
+    if (worker.exitedAfterDisconnect) return;
     console.error(`worker ${worker.process.pid} died, restarting`);
     cluster.fork();
   });
@@ -40,6 +41,8 @@ if (cluster.isPrimary) {
   http.createServer((req, res) => res.end('ok')).listen(3000);
 }
 ```
+
+이 예제는 의도한 disconnect를 재시작하지 않는다. 운영에서는 primary의 종료 상태, 재시작 횟수와 backoff도 관리해 부팅 실패가 무한 fork로 이어지지 않게 한다.
 
 - 장점: 외부 의존 없음, 앱이 자체 감독
 - 단점: 재시작, 모니터링, 로그 집계, graceful shutdown을 직접 구현해야 함
@@ -110,6 +113,7 @@ K8s에서는 Pod 수평 확장과 컨테이너 내부 cluster 중 장애 격리,
 - PM2 `reload`가 무중단에 가까워지려면 필요한 조건(워커 순차 교체, 준비 완료 신호와 잔여 용량)
 
 ## 출처
+- [Node.js Learn, Comparing Node.js concurrency models](https://nodejs.org/en/learn/concurrency/comparing-nodejs-concurrency-models)
 - [요즘IT — Node.js 병렬처리를 위한 PM2, Docker 기반 실험](https://yozm.wishket.com/magazine/detail/1556/)
 - [Node.js Docs — Cluster](https://nodejs.org/api/cluster.html)
 - [Node.js Docs — Worker threads](https://nodejs.org/api/worker_threads.html)

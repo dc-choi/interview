@@ -97,7 +97,17 @@ instance own function은 instance마다 새 identity/storage를 갖고 prototype
 - prototype-sensitive key인 `__proto__`, `constructor`, `prototype`을 동적 merge에서 차단하고 검증된 schema를 쓴다.
 - 큰 async input을 `Array.fromAsync`로 전부 모으기 전에 streaming/backpressure 필요를 검토한다.
 
+## entries 왕복의 정보 손실
+
+`Object.fromEntries`는 key를 property key로 변환한다. 서로 다른 객체를 Map key로 쓰더라도 일반 객체로 옮기면 같은 문자열 key로 겹칠 수 있다. Symbol key는 만들 수 있지만 `Object.entries`는 Symbol key를 내보내지 않는다. 두 API를 모든 객체에 대한 손실 없는 역연산으로 취급하지 않는다. spread/rest도 descriptor와 prototype을 복제하는 연산이 아니다.
+
 ## 출처
+
+- [Object.fromEntries — V8](https://v8.dev/features/object-fromentries)
+- [Object rest and spread — V8](https://v8.dev/features/object-rest-spread)
+- [Object.hasOwn — V8](https://v8.dev/features/object-has-own)
+- [Array.prototype.flat and flatMap — V8](https://v8.dev/features/array-flat-flatmap)
+- [Finding elements in Arrays and TypedArrays — V8](https://v8.dev/features/finding-in-arrays)
 
 - [ECMAScript Language Specification, Object constructor](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object-constructor)
 - [ECMAScript Language Specification, Array objects](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array-objects)

@@ -121,7 +121,13 @@ Map 생성자는 각 entry가 object인지 확인하고 그 entry의 property 0�
 
 Map/Set 자신에는 map/filter가 없다. `[...map].filter(...)`처럼 배열로 모으거나, 지원 runtime에서는 ES2025 iterator helper로 `new Map(map.entries().filter(([,v]) => v.active))`처럼 중간 배열 없이 지연 소비한다. iterator helper도 한 번만 소비된다. 순차 effect는 for...of에 두고 helper 지원과 type 설정은 배포 환경에서 확인한다.
 
+## 약한 참조와 closure의 숨은 소유권
+
+WeakRef wrapper를 만들더라도 같은 lexical environment의 closure가 원래 대상이나 listener를 강하게 붙잡으면 회수되지 않을 수 있다. FinalizationRegistry의 held value가 target을 직접 또는 간접으로 참조하는 경우도 확인한다. registry 자체가 사라져 callback을 기대할 수 없는 경우까지 포함해 참조 그래프를 본다. 파일 close와 잠금 반환처럼 필수 작업은 [[JavaScript-Resource-Management|명시적 리소스 해제]]나 `try/finally`로 처리한다.
+
 ## 출처
+
+- [Weak references and finalizers — V8](https://v8.dev/features/weak-references)
 
 - [ECMAScript, Iterator.prototype.map](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-iterator.prototype.map)
 

@@ -88,7 +88,14 @@ String match는 인자의 Symbol.match method를 먼저 조회하고, startsWith
 
 Symbol.unscopables는 sloppy code의 with environment에서 제외할 property 이름을 정한다. strict/ESM의 with는 SyntaxError이므로 새 code에는 쓰지 않는다. 과거 명세의 @@ 표기는 해당 well-known Symbol을 가리키는 설명 관례이며 실제 property 접근은 Symbol.xxx를 쓴다. toStringTag는 표시용이고 type 신뢰 기준이 아니라는 앞 절의 원칙을 유지한다.
 
+## 진단용 문자열과 식별성
+
+사용자 정의 함수의 `Function.prototype.toString()`은 소스가 제공되는 경우 주석과 공백을 포함한 원문 형태를 보존한다. native 함수나 source를 제공하지 않는 함수까지 실행 가능한 원문을 돌려준다는 계약은 아니므로 함수 복원, 보안 검사와 의존성 분석을 여기에 의존하지 않는다. `Symbol().description`은 `undefined`, `Symbol('').description`은 빈 문자열이다. 같은 description은 같은 Symbol identity를 뜻하지 않는다.
+
 ## 출처
+
+- [Function.prototype.toString revision — V8](https://v8.dev/features/function-tostring)
+- [Symbol.prototype.description — V8](https://v8.dev/features/symbol-description)
 
 - 인프런 보충 강의: [1. Set 오브젝트 개요, new Set(), Set과 Map 비교](https://www.inflearn.com/courses/lecture?courseId=324642&unitId=30827)
 

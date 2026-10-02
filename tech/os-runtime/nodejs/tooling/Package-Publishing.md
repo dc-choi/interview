@@ -110,6 +110,14 @@ export default cjsModule;
 }
 ```
 
+## 배포 계약에서 구분할 것
+
+- `exports.import`와 `exports.require`는 선택 조건이다. 파일 형식은 `.mjs`, `.cjs`, 가장 가까운 package.json의 `type` 등으로 결정된다. `require` 조건 아래 파일도 지원 런타임에서는 동기 ESM일 수 있다.
+- 기존 패키지에 `exports`를 추가하면 선언하지 않은 deep import가 막혀 breaking change가 될 수 있다. 파일시스템 전체 접근을 차단하는 보안 경계는 아니다.
+- CJS named export 감지는 정적 패턴에 의존한다. 동적으로 만든 `module.exports` 속성이 모두 ESM named import로 노출되는 것은 아니다. default import로 CJS 객체를 받는 경로와 구분한다.
+- 위 ESM 래퍼의 구조 분해는 속성의 현재 값을 내보낸다. 이후 CJS가 그 속성을 재대입해도 래퍼의 named export가 자동 갱신되지는 않는다.
+- `engines`는 지원 범위를 알린다. 설치 차단 여부는 패키지 매니저 설정에 달려 있으므로 최소 지원 Node.js와 실제 소비 방식으로 tarball을 검사한다.
+
 ## 파일 확장자 규칙
 
 | 확장자 | `"type": "module"` 없을 때 | `"type": "module"` 있을 때 |
@@ -125,6 +133,7 @@ export default cjsModule;
 게시 전 확인(`npm publish --dry-run`, `npm pack`), `files` 허용 목록, dist-tag 운영, Node-API 모듈 배포와 잘못 배포한 버전의 unpublish 조건, deprecate 대응은 [[Package-Publishing-Workflow|패키지 배포 워크플로]]로 분리했다.
 
 ## 출처
+- [Node.js Learn, Publishing a package](https://nodejs.org/en/learn/modules/publishing-a-package) — 오래된 Node.js 12/17 예제의 지원 범위는 현재 API와 구분
 - [Node.js, Modules: Packages, Conditional exports](https://nodejs.org/api/packages.html#conditional-exports)
 - [Node.js, Modules: Packages, Determining module system](https://nodejs.org/api/packages.html#determining-module-system)
 - [Node.js, Modules: Packages, Syntax detection](https://nodejs.org/api/packages.html#syntax-detection)

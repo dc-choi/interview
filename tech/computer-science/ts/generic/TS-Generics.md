@@ -68,6 +68,21 @@ interface Store<T> {
 
 제네릭 interface와 type alias를 변수의 타입 주석으로 쓸 때는 타입 인수를 적어야 한다. 초기값에서 추론하지 않으므로 기본 타입 인자가 없으면 TS2314(Generic type 'KeyPair<K, V>' requires 2 type argument(s))다. 반면 제네릭 클래스는 생성자 인수에서 `T`를 추론해 `new List([1, 2, 3])`이 `List<number>`가 되므로 요소 타입별 클래스를 따로 만들 필요가 없고, 추론이 의도와 다를 때만 `new List<number>([])`처럼 명시한다. 값 타입만 달라지는 사전은 `Record<string, V>`로 쓰고, 인덱스 시그니처의 보장 범위는 [[TS-Collection-Type-Design|컬렉션 타입 설계]]를 따른다.
 
+## 제네릭 값의 특수화
+
+TypeScript 4.7부터 instantiation expression으로 기존 제네릭 함수나 생성자 값에 타입 인수를 고정할 수 있다. 같은 구현을 재사용하려고 불필요한 wrapper나 서브클래스를 만들지 않아도 된다.
+
+```typescript
+function box<T>(value: T): { value: T } { return { value }; }
+const stringBox = box<string>;
+const StringMap = Map<string, string>;
+
+stringBox("hello");
+const labels = new StringMap();
+```
+
+`box<string>`은 함수 실행이 아니라 호출 가능한 값의 타입 특수화다. 구현을 복제하거나 런타임에 새 클래스를 만들지 않는다. 여러 오버로드가 있으면 주어진 타입 인수와 호환되는 시그니처만 남는다.
+
 ## 타입 인수로 받을 변형 고정하기
 
 판별 유니온을 속성으로 가진 객체는 함수마다 같은 좁히기를 반복하기 쉽다. 변형을 타입 매개변수로 올리면 함수 시그니처가 받을 변형을 고정하고, 잘못된 변형은 호출부에서 컴파일 오류가 된다.
@@ -129,6 +144,8 @@ async function loadUser(id: number): Promise<User> {
 
 ## 출처
 
+- [TypeScript Deep Dive, Generics — Basarat](https://basarat.gitbook.io/typescript/type-system/generics)
+- [TypeScript 4.7, Instantiation Expressions](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-7.html#instantiation-expressions)
 - [TypeScript Handbook, Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html)
 - [TypeScript Handbook, More on Functions](https://www.typescriptlang.org/docs/handbook/2/functions.html)
 - [TypeScript TSConfig, useUnknownInCatchVariables](https://www.typescriptlang.org/tsconfig/useUnknownInCatchVariables.html)

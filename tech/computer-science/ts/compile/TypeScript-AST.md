@@ -14,21 +14,21 @@ TypeScript 컴파일러는 소스 코드를 **AST(Abstract Syntax Tree)** 로 �
 
 - 소스 코드는 **Scanner(토큰화) → Parser(AST 생성) → Checker(의미 분석) → Emitter(코드 생성)** 파이프라인을 거친다
 - **AST = 코드의 구조를 트리로 표현한 중간 표현**. 기계가 이해하고 조작하기 쉬운 형태
-- TS는 JS 파이프라인 앞에 **자체 AST + 타입 체커 단계**를 추가
+- TypeScript는 JavaScript 문법과 타입 문법을 함께 파싱하고 타입 검사를 수행한다. JavaScript 엔진의 AST와 별개인 빌드 도구의 표현이다.
 - **린터, 포매터, 번들러, 트랜스파일러**는 모두 AST를 읽거나 변환
 
 ## TypeScript 컴파일러 파이프라인
 
 | 단계 | 입력 → 출력 | 역할 |
 |---|---|---|
-| **Scanner** | 소스 문자열 → 토큰 | 어휘 분석. 공백, 주석 제거, 키워드/식별자 구분 |
+| **Scanner** | 소스 문자열 → 토큰 | 어휘 분석. 키워드/식별자와 토큰 구분. 공백과 주석(trivia)의 처리도 옵션과 목적에 따라 다름 |
 | **Parser** | 토큰 → AST | 구문 분석. 문법 트리 생성 |
 | **Binder** | AST → 심볼 테이블 | 스코프, 식별자 해석 |
 | **Type Checker** | AST + 심볼 → 타입 검증 결과 | TS 고유. 타입 추론, 검사, 에러 보고 |
 | **Transformer** | AST → 변환된 AST | 타입 구문 제거, ES 버전 다운레벨, 커스텀 변환 |
 | **Emitter** | 변환된 AST → JS/선언 파일 | 코드 생성 |
 
-TS 고유 단계는 Type Checker. 타입은 Emitter 전에 **완전히 제거**되며 런타임에 존재하지 않는다.
+타입 검사는 실행 전에 수행한다. 타입 주석과 interface 등 타입 전용 문법은 emit 결과에서 제거된다. 반면 enum, namespace의 값 멤버와 parameter property 같은 TypeScript 구문은 JavaScript 구현을 생성할 수 있다.
 
 ## AST 노드의 구조
 
@@ -38,7 +38,7 @@ TS 고유 단계는 Type Checker. 타입은 Emitter 전에 **완전히 제거**�
 interface Node {
   kind: SyntaxKind;       // 노드 종류 (FunctionDeclaration, Identifier 등)
   flags: NodeFlags;
-  parent: Node;
+  parent: Node;          // 생성 방식과 순회 환경에 따라 연결 여부 확인
   pos: number;            // 소스 내 시작 위치
   end: number;            // 종료 위치
 }
@@ -112,6 +112,18 @@ visit(sourceFile);
 
 `ts.forEachChild`, `ts.visitEachChild`로 트리 순회, `ts.isXxx` 타입 가드로 노드 종류 판별.
 
+### 구문 트리와 타입 정보 구분
+
+`createSourceFile`은 한 파일의 구문 트리를 만들지만 import 관계를 해석하고 타입을 검사한 프로젝트는 아니다. 여러 파일의 의미를 분석하려면 `Program`이 관리하는 소스 파일과 `program.getTypeChecker()`를 사용한다. `CompilerHost`는 파일 읽기와 모듈 해석 등 컴파일러가 외부 환경에 접근하는 경계를 제공한다.
+
+- `Symbol`: 선언된 이름과 그 선언들을 연결하는 의미 분석 객체다. JavaScript의 런타임 `Symbol` primitive와 다르다.
+- `Type`: 특정 표현이나 선언이 가진 타입 정보다. `checker.getTypeAtLocation(node)`와 `typeToString` 같은 API로 확인한다.
+- `node.type`: 소스에 명시한 타입 구문 노드다. 타입 주석이 없는 표현의 추론 타입까지 담고 있지는 않는다.
+- `forEachChild`: 구문적 자식 노드를 방문한다. `getChildren`은 토큰과 `SyntaxList`를 포함해 더 구체적인 트리 표현을 반환한다.
+- `pos`와 `getStart()`: 앞의 trivia를 포함한 위치와 실제 구문 시작 위치가 다를 수 있다. 코드 치환 도구는 이를 구분한다.
+
+Compiler API의 내부 함수와 노드 구조는 버전에 민감하다. 책의 binder/checker/emitter 내부 구현은 파이프라인 이해에 참고하고, 실제 도구는 사용하는 패키지 버전의 공개 API와 출력물을 확인한다.
+
 ## 실무 활용 사례
 
 - **커스텀 린터 룰** — 팀 내 코드 컨벤션 강제 (특정 API 사용 금지, 패턴 요구)
@@ -124,7 +136,7 @@ visit(sourceFile);
 ## 자주 헷갈리는 포인트
 
 - **AST ≠ Parse Tree** — Parse Tree는 문법 규칙을 그대로 반영, AST는 **의미 있는 구조만** 추상화
-- **TS 타입은 런타임에 없음** — `typeof`, `instanceof`로 검증 불가. 런타임 검증은 별도 라이브러리
+- **타입 별칭과 interface는 런타임에 없음** — 이름으로 `instanceof` 검증할 수 없다. 런타임 값인 class는 `instanceof`, primitive는 `typeof`로 좁힐 수 있지만 외부 객체의 전체 schema 검증과는 다르다.
 - **Babel의 AST와 TS의 AST는 다름** — 호환 안 됨. Babel-TS 플러그인이 있긴 하지만 기능 제한
 - **ESLint의 AST는 ESTree 스펙** — TS AST와는 별도. `@typescript-eslint/parser`로 연결
 - **컴파일 시간이 긴 이유** — Type Checker가 프로젝트 전체 심볼을 분석. `tsc --noEmit`으로도 시간이 상당
@@ -142,6 +154,8 @@ visit(sourceFile);
 
 ## 출처
 - [velog @chltjdrhd777 — Typescript와 AST](https://velog.io/@chltjdrhd777/Typescript%EC%99%80-AST)
+- [TypeScript Deep Dive, Compiler Internals — Basarat](https://basarat.gitbook.io/typescript/overview)
+- [Using the Compiler API — microsoft/TypeScript](https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API)
 - [Announcing TypeScript 7.0 — Microsoft](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)
 - [TypeScript TSConfig, incremental](https://www.typescriptlang.org/tsconfig/incremental.html)
 - [tRPC](https://trpc.io/)
