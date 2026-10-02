@@ -11,6 +11,7 @@ aliases: ["Funding Index", "자금 조달"]
 
 ## 목차
 
+- [x] [[Startup-Equity-and-Dilution|스타트업 지분과 희석]] — 신주와 구주, Pre/Post-money, Cap table과 Fully diluted, 연속 희석, 경제권과 의결권, SAFE의 적용 범위
 - [x] [[Government-Support-Programs|정부 지원사업의 구조]] — 지원금, 정책자금, 보증의 차이, 자격, 중복 수혜 제한, 사업비 규칙, 환수
 - [x] [[Government-Grant-Business-Plan|정부 지원사업 사업계획서]] — 평가 구조와 PSST, 양식과 블라인드, 항목별 작성, 발표평가, 금지 사항
 - [x] [[Grant-Search-Channels|지원사업 공고 탐색 채널]] — 통합 포털, 운영기관, R&D 시스템, 광역 경제진흥기관과 테크노파크, 업종별 소관 기관
