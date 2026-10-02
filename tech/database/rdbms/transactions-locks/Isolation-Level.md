@@ -14,13 +14,13 @@ verified_at: 2026-08-11
 ### 레벨 0: Read Uncommitted
 
 - 트랜잭션에서 아직 처리 중인 데이터를 다른 트랜잭션에서 읽는 것을 허용
-- Dirty Read, Non-Repeatable Read, Phantom Read 현상 모두 발생
+- Dirty Read, Non-Repeatable Read, Phantom Read 현상이 발생할 수 있음
 - MySQL에서 설정 가능하지만 권장하지 않음
 
 ### 레벨 1: Read Committed
 
-- **Dirty Read 방지**: 트랜잭션이 커밋되어 확정된 데이터만 읽는 것을 허용
-- Non-Repeatable Read, Phantom Read 현상은 발생
+- **Dirty Read 방지**: 다른 트랜잭션의 아직 커밋되지 않은 변경을 읽지 않음. 자신의 앞선 변경은 읽을 수 있음
+- Non-Repeatable Read, Phantom Read 현상은 발생할 수 있음
 
 ### 레벨 2: Repeatable Read
 
@@ -42,12 +42,12 @@ verified_at: 2026-08-11
 
 | 격리 수준 | 스냅샷 시점 | Consistent Read 동작 |
 |-----------|-----------|---------------------|
-| **Read Committed** | **매 쿼리마다** 최신 커밋 스냅샷 | 같은 트랜잭션 안에서도 SELECT할 때마다 다른 결과 가능 (Non-Repeatable Read) |
+| **Read Committed** | **consistent read 문장마다** 새 커밋 스냅샷 | 같은 트랜잭션 안에서도 nonlocking SELECT를 다시 실행하면 다른 결과 가능 (Non-Repeatable Read) |
 | **Repeatable Read** | 기본적으로 **첫 consistent read 시점**에 스냅샷 고정 | 이후 consistent read는 같은 읽기 관점 사용 |
 
 - RR에서도 `SELECT FOR UPDATE` 같은 locking read는 현재 record를 잠그므로 plain `SELECT`의 스냅샷과 다를 수 있음
 - MySQL 매뉴얼은 RR에서 locking statement와 nonlocking `SELECT`를 섞으면 서로 다른 table 상태를 다루게 된다고 경고한다. 한 상태에 의존하는 transaction이라면 locking 전략이나 `SERIALIZABLE` 필요성을 명시적으로 검토한다.
-- 격리 수준은 read view 수명의 단위(트랜잭션 단위냐 statement 단위냐)만 정할 뿐, 그 단위 하나가 실제로 얼마나 오래 걸리는지는 정하지 못한다. RC라도 하나의 statement가 오래 실행되면 그 read view가 실행 내내 유지되어 undo purge를 막는다 → [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length]]
+- RC와 RR의 차이에는 consistent read의 read view 수명뿐 아니라 gap lock과 DML의 잠금 유지 방식도 포함된다. 격리 수준을 바꾼다고 statement의 실행 시간이 짧아지는 것은 아니다. RC에서도 긴 consistent read가 필요한 이전 버전의 회수를 지연시킬 수 있다 → [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length]]
 
 ## InnoDB RR에서의 Phantom Read 방지
 
@@ -59,8 +59,8 @@ verified_at: 2026-08-11
 ## RC vs RR 실무 선택
 
 ### RC로 변경하면 좋아지는 점
-- 일반적인 검색, 인덱스 스캔에서 Gap Lock 사용이 줄어듦 → INSERT 동시성 향상
-- 각 쿼리가 최신 데이터를 읽음 → 일부 상황에서 더 직관적
+- 일반적인 검색, 인덱스 스캔에서 Gap Lock 사용이 줄어 INSERT 대기가 감소할 수 있다. 외래키와 중복 키 검사에는 gap locking이 남는다.
+- consistent read마다 새 스냅샷을 읽어 중간에 커밋된 변경을 다음 읽기에 반영할 수 있다. 실행 중 계속 최신 상태를 따라간다는 뜻은 아니다.
 
 ### RC로 변경하면 위험한 점
 - Phantom Read 허용 → 범위 조건 결과가 트랜잭션 중 변할 수 있음
@@ -97,13 +97,17 @@ verified_at: 2026-08-11
 
 ## 이상 현상의 구분
 
-Dirty read는 아직 commit되지 않은 다른 transaction의 값을 읽은 뒤 그 변경이 rollback되는 상황이다. Non-repeatable read는 같은 key를 다시 읽을 때 다른 commit으로 값/존재가 달라지는 상황이다. Phantom은 같은 predicate로 재조회한 row 집합이 달라지는 상황으로 insert뿐 아니라 범위에 들어오거나 나가는 update/delete도 고려한다. 이 정의와 특정 DB의 snapshot/lock 구현은 구분한다.
+Dirty read는 읽는 시점에 아직 commit되지 않은 다른 transaction의 변경을 읽는 것이다. 그 transaction이 나중에 실제로 rollback되어야만 성립하는 것은 아니다. Non-repeatable read는 같은 key를 다시 읽을 때 다른 commit으로 값/존재가 달라지는 상황이다. Phantom은 같은 predicate로 재조회한 row 집합이 달라지는 상황으로 insert뿐 아니라 범위에 들어오거나 나가는 update/delete도 고려한다. 이 정의와 특정 DB의 snapshot/lock 구현은 구분한다.
 
 ## 설정의 적용 범위
 
 Read Uncommitted는 나중에 사라질 중간 상태를 결제/정산 판단에 사용할 위험이 있다. 속도를 얻는 일반 튜닝으로 채택하지 않는다. MySQL `SET SESSION TRANSACTION ISOLATION LEVEL ...`은 session의 후속 transaction에, GLOBAL 변경은 새 연결의 기본값에 적용되며 기존 연결을 일괄 변경하지 않는다. scope 없는 SET TRANSACTION은 다음 transaction에만 적용한다. pool의 상태 복원과 `@@session.transaction_isolation`을 확인한다.
 
 ## 출처
+
+2026-10-03 부분 검증: dirty read의 정의, RC의 consistent read와 잠금 차이를 MySQL 8.4 공식 문서와 대조했다. 실제 DB의 동시 실행이나 애플리케이션의 격리 수준 변경을 시험한 기록은 아니다.
+
+- [MySQL 8.4 Glossary, dirty read](https://dev.mysql.com/doc/refman/8.4/en/glossary.html#glos_dirty_read)
 - [m0rph2us — MySQL Isolation Level 이해하기](https://m0rph2us.github.io/mysql/transaction/2020/07/06/understanding-mysql-isolation-level.html)
 - [네이버파이낸셜 — 실무에서 만나는 DB Isolation Level](https://medium.com/naverfinancial/실무에서-만나는-db-isolation-level-e94a904bbf9d)
 - [woojjam — 트랜잭션과 동시성 제어](https://woojjam.tistory.com/9)

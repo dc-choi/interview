@@ -37,9 +37,9 @@ HLL은 purge 대상 update undo의 생성 속도가 실제 purge 속도를 넘�
 | 격리 수준 | read view 생성 | read view 수명 |
 |---|---|---|
 | REPEATABLE READ | 트랜잭션의 첫 consistent read | 트랜잭션 종료까지 |
-| READ COMMITTED | statement마다 새로 생성 | 해당 statement 실행 동안 |
+| READ COMMITTED | consistent read 문장마다 새로 생성 | 해당 consistent read 실행 동안 |
 
-격리 수준은 read view가 트랜잭션 단위로 사느냐 statement 단위로 사느냐 하는 수명의 상한만 정할 뿐, 그 단위 하나가 실제로 얼마나 오래 걸리는지는 정하지 못한다. READ COMMITTED라도 한 statement가 15분을 돌면 read view는 15분 동안 purge를 막는다. 장기 실행되는 단일 SELECT는 autocommit 상태여도 같은 효과를 낸다. 그래서 HLL 급증의 해결책으로 격리 수준 변경부터 꺼내는 것은 대부분 과녁을 빗나간다.
+InnoDB의 RC와 RR은 consistent read의 read view 유지 단위가 다르지만 실제 실행 시간을 제한하지는 않는다. READ COMMITTED라도 consistent read 하나가 15분을 돌면 그동안 필요한 이전 버전의 purge를 지연시킬 수 있다. 장기 실행되는 단일 SELECT는 autocommit 상태여도 이 문제가 생길 수 있다. 격리 수준은 잠금 동작에도 영향을 주므로 HLL만 보고 변경하지 않고, 오래 열린 트랜잭션과 장기 statement 중 무엇이 원인인지 구분한다.
 
 ## Undo 백로그의 실제 비용
 
@@ -105,7 +105,7 @@ REPEATABLE READ에서 chunk 분할이 read view를 놓으려면 각 chunk를 aut
 ## 면접 체크포인트
 
 - HLL의 정의와 증가 메커니즘 (undo 생성 속도, purge 가능 경계와 purge 처리 용량의 균형)
-- 격리 수준은 read view 수명의 단위(트랜잭션이냐 statement냐)만 정하고 실제 수명은 statement와 트랜잭션 길이가 정한다는 구분
+- RC와 RR의 consistent read 유지 단위와 실제 실행 시간을 구분하고, 격리 수준 변경의 잠금 영향도 함께 검토
 - READ COMMITTED에서도 장기 단일 statement가 purge를 막는 이유
 - REPEATABLE READ chunk가 read view를 놓기 위한 트랜잭션 경계와 chunk 간 일관성의 대가
 - Aurora 공유 스토리지에서 Reader 장기 조회가 Writer HLL로 나타나는 구조
@@ -114,6 +114,9 @@ REPEATABLE READ에서 chunk 분할이 read view를 놓으려면 각 chunk를 aut
 
 ## 출처
 
+2026-10-03 부분 검증: read view 유지 단위를 설명하면서 격리 수준의 잠금 영향을 제외했던 표현을 MySQL 공식 문서와 대조해 정정했다. 사례 수치와 Aurora 버전별 동작 전체를 다시 검증한 기록은 아니다.
+
+- [MySQL 8.4 Reference Manual, Transaction Isolation Levels](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-isolation-levels.html)
 - [963초짜리 쿼리 하나가 HLL 205만까지 끌어올렸습니다 — 아임웹 테크](https://tech.imweb.me/posts/aurora-hll-snapshot-lifetime/)
 - [MySQL 8.4 Reference Manual, InnoDB Multi-Versioning](https://dev.mysql.com/doc/refman/8.4/en/innodb-multi-versioning.html)
 - [MySQL 8.4 Reference Manual, autocommit, Commit, and Rollback](https://dev.mysql.com/doc/refman/8.4/en/innodb-autocommit-commit-rollback.html)
