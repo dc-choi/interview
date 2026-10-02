@@ -7,30 +7,37 @@ aliases: ["Incident Runbook", "런북", "Runbook", "대응 절차서"]
 
 # Incident Runbook
 
-런북은 **특정 알람/장애가 떴을 때 무엇을 어떤 순서로 확인하고 조치하는지** 적은 절차서다. 새벽 3시에 깬 당직자가 머리로 떠올리지 않고 **따라가기만 하면 되게** 만들어 MTTR을 줄이고, 대응을 사람에 의존하지 않게 한다. [[RCA-Postmortem]]
+런북은 **특정 알람/장애가 떴을 때 무엇을 어떤 순서로 확인하고 조치하는지** 적은 절차서다. 새벽 3시에 깬 당직자가 기억에만 의존하지 않도록 판단과 실행을 돕는다. 문서가 있어도 현재 환경에 맞는 절차, 훈련과 실행 권한이 필요하다. [[RCA-Postmortem]]
+
+AWS는 알려진 결과를 달성하는 절차를 runbook, 문제를 조사하는 절차를 playbook으로 구분한다. 이 문서는 알람 조사와 완화 절차를 함께 연결하는 운영 문서라는 넓은 의미로 런북을 사용한다.
 
 ## 왜 필요한가
 
 - **MTTR 단축**: 진단 경로를 미리 정해두면 헤매는 시간이 준다. [[Incident-Detection-Logging]]
-- **속인성 제거**: 특정 시니어만 아는 지식을 문서로 옮겨 누구나 1차 대응 가능.
-- **스트레스 하 일관성**: 압박 상황에서 빠지기 쉬운 단계를 강제.
+- **속인성 완화**: 특정 시니어만 아는 지식을 문서로 옮겨 훈련과 권한을 갖춘 당직자가 1차 대응할 수 있게 한다.
+- **스트레스 하 일관성**: 압박 상황에서 빠지기 쉬운 단계를 확인하게 한다.
 
 ## 무엇을 담나
 
 - **트리거**: 어떤 알람/증상에서 이 런북을 펴는가.
 - **영향/긴급도**: 사용자 영향과 에스컬레이션 기준.
+- **실행 전제**: 대상 계정, 리전, 클러스터와 환경, 현재 배포 버전, 필요한 도구와 권한, 승인 또는 사전 승인 범위. 명령의 입력값과 예상 결과를 함께 적는다.
 - **진단 단계**: 무엇을 어떤 대시보드/쿼리로 확인하는지(순서대로). 대시보드/로그 링크 직접 첨부.
-- **완화 조치**: 롤백, 스케일업, 기능 플래그 off, 트래픽 차단 등 **되돌리기 쉬운 것부터**.
+- **완화 조치**: 롤백, 스케일업, 기능 플래그 off, 트래픽 차단 중 현재 피해를 줄이고 데이터와 의존 시스템에 안전한 수단을 고른다. 가역성만으로 우선순위를 정하지 않는다. [[Rollback]]
+- **중단 조건**: 예상과 다른 결과, 영향 확대나 확인되지 않은 호환성이 있으면 맹목적으로 다음 명령을 실행하지 않고 재평가와 에스컬레이션으로 전환한다.
 - **에스컬레이션**: 안 풀리면 누구를 언제 부르는가.
-- **검증**: 조치 후 정상 복귀를 어떻게 확인하는가.
+- **검증**: 조치 후 실제 사용자 여정, 오류율과 지연, 데이터 정합성과 남은 처리 작업을 어떻게 확인하는가.
+- **기록**: 관측 시각, 실행 역할, 변경 전후 상태, 실행한 조치와 결과, 판단 근거를 사건 기록에 남긴다.
 
 ## 알람과 묶는다
 
 런북은 **알람에서 한 번에 닿아야** 가치가 있다. 알람 메시지에 런북 URL을 박아 [[Alert-Fatigue|받는 즉시 행동]]으로 잇는다. 런북 없는 알람은 "받았는데 뭘 하지"가 된다.
 
-## 완화 우선, 진단은 나중
+## 최소 진단으로 완화하고, 근본 원인은 복구 후 조사한다
 
-장애 대응의 기본 순서는 **먼저 출혈을 멈추고(완화), 원인 분석은 복구 후**다. 런북도 이 순서를 따른다 — 롤백/플래그 off 같은 빠른 완화를 앞에 두고, 근본 원인은 [[RCA-Postmortem|포스트모템]]으로 넘긴다.
+큰 장애에서는 근본 원인을 끝까지 규명하느라 사용자 피해를 방치하지 않는다. 다만 빠른 완화도 영향 범위, 최근 변경, 조치의 적용 조건을 확인하는 최소 진단이 필요하다. 배포 변경이 의심되고 이전 버전이 현재 데이터와 호환된다면 롤백을 우선 검토한다. 원인이 다르거나 롤백이 위험하면 기능 격리, 트래픽 제어와 다른 복구 수단을 비교한다. [[Hotfix-Decision-Loop|핫픽스 판단과 학습 루프]]
+
+완화를 지연하지 않는 범위에서 관련 로그와 변경 이력을 보존하고 조치 결과를 기록한다. 명령 성공이나 알람 해제만으로 복구를 선언하지 않고 실제 사용자 요청과 핵심 여정이 회복됐는지 확인한다. 이미 발생한 데이터 손상이나 외부 부수효과는 코드 롤백으로 사라지지 않으므로 별도 복구 상태를 추적한다. 근본 원인과 재발 방지 조치는 [[RCA-Postmortem|포스트모템]]으로 연결한다.
 
 ## 살아있게 유지하기
 
@@ -50,19 +57,26 @@ aliases: ["Incident Runbook", "런북", "Runbook", "대응 절차서"]
 - 완화보다 원인 분석을 먼저 시켜 출혈이 길어짐
 - 알람에 런북이 연결 안 됨 → 존재해도 안 펴봄
 - 너무 추상적("상황을 확인한다") → 따라갈 수 없음
-- 자동화 가능한 절차를 계속 수동 런북으로 → 자동 완화로 승격 가능
+- 반복 절차를 계속 수동으로 처리함. 적용 조건, 실패 처리와 중단 수단을 검증한 뒤 자동화한다. 자동화 자체가 조치의 안전성을 보장하지 않는다.
 
 ## 면접 체크포인트
 
 - 런북이 MTTR/속인성/일관성에 기여하는 방식
 - 담아야 할 항목(트리거, 진단 순서, 완화, 에스컬레이션, 검증)
 - 알람-런북 연결의 중요성([[Alert-Fatigue]])
-- 완화 우선, 원인 분석은 복구 후라는 순서
+- 근본 원인 조사와 완화를 고르기 위한 최소 진단을 구분하는가
 - 드릴/포스트모템으로 런북을 살아있게 유지하는 법
 
 ## 출처
 
-- [Google SRE Book — Being On-Call / Emergency Response](https://sre.google/sre-book/being-on-call/)
+2026-10-03에 최소 진단과 피해 완화의 구분, 실행 전제와 예외 처리, 롤백의 호환성 조건을 아래 공식 자료와 대조했다. 개별 서비스의 명령, 권한, 복구 시간과 합성 점검의 실제 구현은 검증하지 않았다.
+
+- [Being On-Call — Google SRE Book](https://sre.google/sre-book/being-on-call/)
+- [Effective Troubleshooting — Google SRE Book](https://sre.google/sre-book/effective-troubleshooting/)
+- [Emergency Response — Google SRE Book](https://sre.google/sre-book/emergency-response/)
+- [AWS 공식 문서, OPS07-BP03 Use runbooks to perform procedures](https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/ops_ready_to_support_use_runbooks.html)
+- [AWS 공식 문서, OPS07-BP04 Use playbooks to investigate issues](https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/ops_ready_to_support_use_playbooks.html)
+- [Ensuring rollback safety during deployments — AWS Builders' Library](https://d1.awsstatic.com/builderslibrary/pdfs/ensuring-rollback-safety-during-deployments.pdf)
 - [PagerDuty — Runbook documentation](https://www.pagerduty.com/resources/learn/what-is-a-runbook/)
 
 ## 관련 문서
@@ -72,3 +86,5 @@ aliases: ["Incident Runbook", "런북", "Runbook", "대응 절차서"]
 - [[Incident-Detection-Logging|장애 감지와 로깅]]
 - [[DR-Strategy|DR 전략 (드릴)]]
 - [[SLI-SLO|SLI/SLO]]
+- [[Rollback|롤백 전략]]
+- [[Hotfix-Decision-Loop|핫픽스 판단과 학습 루프]]
