@@ -1,19 +1,20 @@
 ---
 tags: [security, auth, selection]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-10-03
 category: "Security - 인증"
 aliases: ["Auth Method Selection", "인증 방식 선택"]
 ---
 
 # 인증 방식 선택
 
-HTTP는 Stateless. **매 요청마다 자격증명을 함께 보내야** 서버가 신원을 확인. 무엇을, 어디에 실어 보낼지 = 인증 방식 선택.
+HTTP는 Stateless지만 애플리케이션은 로그인 상태를 저장할 수 있다. 보호된 요청의 신원과 권한을 어떻게 검증하고, 자격증명을 어떻게 전달하고 폐기할지 함께 선택한다.
 
-## 2차원 결정
+## 선택할 축
 
-1. **자격증명을 어디에 실을까** — Header, Body, Cookie, Query
-2. **어떤 스키마로** — Basic, Bearer, API Key, OAuth2
+1. **전달과 저장** — Authorization 헤더, 보안 속성을 설정한 쿠키, 클라이언트의 저장 위치
+2. **자격증명과 상태** — 비밀번호, API key, 세션 ID, JWT나 opaque access token, 만료와 폐기 방식
+3. **발급과 위임 절차** — 자체 로그인, OAuth 2.0과 OpenID Connect. 프로토콜과 토큰 형식은 같은 분류가 아니다.
 
 ## 쿠키, 세션, JWT의 관계
 
@@ -27,7 +28,7 @@ HTTP는 Stateless. **매 요청마다 자격증명을 함께 보내야** 서버�
 
 쿠키, 세션과 JWT는 순서대로 서로를 완전히 대체한 세대가 아니다. 세션 ID도 쿠키로 전달하고 JWT도 HttpOnly 쿠키에 담을 수 있다. 선택할 때는 자격증명을 어디에 전달할지와 서버가 어느 정도의 상태와 폐기 제어권을 가질지를 나누어 판단한다.
 
-[[Cookie|쿠키]]는 클라이언트가 저장하고 편집할 수 있으므로 사용자 ID, 권한과 결제 금액처럼 서버가 신뢰해야 할 값을 평문으로 두지 않는다. Domain과 Path 조건에 맞으면 이미지와 CSS 같은 정적 리소스 요청에도 자동 첨부되므로 값의 크기와 전송 범위를 최소화한다.
+[[Cookie|쿠키]]의 값은 클라이언트가 변조할 수 있다. 사용자 ID, 권한과 결제 금액을 쿠키에서 읽었다는 이유만으로 신뢰하지 않고, 서버 상태와 대조하거나 적절한 무결성 검증을 한다. 기밀성과 무결성은 별도 요구다. 전송 조건에 맞으면 정적 리소스 요청에도 첨부될 수 있으므로 값의 크기와 범위를 최소화한다.
 
 [[Session|세션]]은 쿠키를 없애는 방식이 아니라, 중요한 상태를 서버로 옮기고 쿠키에는 추측하기 어려운 불투명 ID만 남기는 방식이다. 인메모리 세션은 로드 밸런서가 다음 요청을 다른 인스턴스로 보내면 조회에 실패할 수 있다. Sticky Session은 구현이 단순하지만 특정 인스턴스의 장애와 부하 쏠림에 취약하고, Redis나 DB 같은 공유 저장소는 어느 인스턴스에서도 세션을 조회할 수 있는 대신 네트워크 호출과 저장소 운영 비용이 생긴다.
 
@@ -35,28 +36,28 @@ HTTP는 Stateless. **매 요청마다 자격증명을 함께 보내야** 서버�
 
 | 위치 | 특징 |
 |---|---|
-| **Authorization 헤더** | **권장 기본값** — 메타데이터라는 의미가 명확하고 URL 캐시 키를 오염시키지 않음. 단, 공유 캐시는 `Authorization`이 있는 요청의 응답을 기본적으로 재사용할 수 없고 `public`, `s-maxage`, `must-revalidate` 같은 명시적 응답 지시자가 필요 |
-| **Cookie** | 브라우저가 자동 첨부 → CSRF 위험 (SameSite로 완화), 동일 도메인 제약 |
-| **쿼리스트링** | **금지에 가까움** — URL이 로그, 리퍼러, 히스토리에 남음 |
-| **Request Body** | POST만 가능, 일관성 없음, 비권장 |
+| **Authorization 헤더** | RFC 6750의 Bearer access token 전달 권장 방식. 공유 캐시는 이 헤더가 있는 요청의 응답을 기본적으로 재사용할 수 없고 `public`, `s-maxage`, `must-revalidate` 같은 명시적 응답 지시자가 필요 |
+| **Cookie** | 브라우저 세션 ID 전달에 적합. Domain, Path, Secure, SameSite와 브라우저 정책에 따라 자동 첨부되므로 CSRF 방어를 함께 설계 |
+| **쿼리스트링** | 로그, 리퍼러와 기록에 자격증명이 노출될 수 있음. RFC 9700은 OAuth access token의 URI query 전달을 금지 |
+| **Request Body** | 일반적으로 POST만 가능한 것은 아님. RFC 6750의 Bearer 전달은 form-encoded, single-part, ASCII, 본문 의미가 정의된 메서드 등의 조건을 모두 요구하며 GET은 금지. 헤더를 사용할 수 없는 제한적 상황 외에는 권장하지 않음 |
 
-**결론**: 기본은 `Authorization` 헤더. 브라우저 기반 웹앱이 쿠키 세션이 필요한 경우에만 쿠키.
+Bearer API 요청의 헤더 권장과 브라우저 세션의 쿠키 권장을 구분한다. 헤더에 넣는다는 이유만으로 토큰 저장, XSS와 로그 노출 문제가 해결되지는 않는다.
 
-## 스키마 비교
+## 자격증명과 프로토콜 비교
 
 ### HTTP Basic
 ```
 Authorization: Basic base64(username:password)
 ```
-- **가역 base64 인코딩** → 평문과 다름없음. HTTPS 필수, 그래도 비권장
-- 매 요청마다 비밀번호 전송 → 로그, 캐시 유출 위험
-- **사용처**: 내부 관리 도구, 사내 사이트 정도
+- Base64는 암호화가 아니다. TLS 없이 비밀번호의 기밀성을 보장하지 못한다.
+- 재사용 비밀번호를 요청에 반복 전달하므로 노출과 폐기 범위를 고려한다. 내부망이라는 이유로 안전한 것은 아니다.
+- 기존 연동이 요구하는 경우 프로토콜 조건과 TLS를 확인하고, 신규 사용자 로그인에는 세션이나 단기 토큰 등도 비교한다.
 
 ### Bearer Token (JWT, Opaque Token)
 ```
 Authorization: Bearer eyJhbGciOiJIUzI1NiI...
 ```
-- 토큰 자체가 **자격증명** — 발급 시 1회 인증 후 유효기간 내 재사용
+- 토큰 자체가 자격증명이다. 사용자 로그인 외에 클라이언트 자격증명 등으로도 발급될 수 있다.
 - **JWT**: self-contained 검증이 가능해 매 요청 저장소 조회를 줄일 수 있음. 서명뿐 아니라 만료, issuer와 audience 등 애플리케이션 검증도 필요
 - **Opaque Token**: 랜덤 문자열, 서버에서 조회 필요 → 취소 가능
 - **사용처**: 대부분의 모던 API
@@ -68,7 +69,7 @@ Authorization: Bearer <api-key>
 X-API-Key: <api-key>
 ```
 - 서비스간, 파트너 API에 주로 사용
-- 사용자 단위보다 **클라이언트(앱, 조직) 단위**
+- 식별하는 주체와 권한 범위는 발급 정책에 따른다. 브라우저나 배포 앱에 내장한 공통 키를 비밀이나 최종 사용자 신원의 증거로 취급하지 않는다.
 - **사용처**: 외부 파트너, B2B API, 레이트 리밋 키
 
 ### OAuth 2.0 / OpenID Connect
@@ -89,35 +90,35 @@ Cookie: session=abc123
 ## 선택 가이드
 
 ### 웹 브라우저 + 자체 백엔드
-**세션 쿠키 + SameSite=Lax**가 가장 단순, 안전.
-- 토큰을 LocalStorage에 넣지 않음 → XSS에서 탈취 방지
-- 세션 쿠키는 HttpOnly, Secure, SameSite를 설정하고 상태 변경 요청에는 CSRF 방어를 적용한다. SameSite만으로 모든 CSRF를 막는다고 가정하지 않는다.
+같은 사업자가 브라우저와 백엔드를 운영하면 보안 속성을 설정한 세션 쿠키를 우선 비교할 수 있다.
+- 인증 자격증명을 `localStorage`나 `sessionStorage`에 두지 않는다. HttpOnly는 JS의 쿠키 읽기를 막지만 XSS의 인증된 요청 실행은 별도 방어가 필요하다.
+- HttpOnly, Secure와 흐름에 맞는 SameSite를 설정한다. 상태 변경 요청에 CSRF 방어를 적용하고 SameSite만으로 충분하다고 가정하지 않는다.
 
 ### 모바일 앱 + 자체 백엔드
-**JWT Bearer**. 모바일은 CSRF 무관, SecureStorage에 토큰 저장.
+네이티브 클라이언트가 헤더에 명시적으로 보내는 access token은 JWT나 opaque token 중 검증과 폐기 요구에 맞게 고른다. OS의 안전한 저장소를 사용한다. 모바일이라는 이유로 CSRF가 사라지지는 않으며, WebView나 쿠키를 사용하는 경로는 자동 전송과 외부 요청 유도 가능성을 별도로 확인한다.
 
 ### SPA (React, Vue) + 자체 백엔드
 두 선택:
 - **HttpOnly 쿠키 + 세션 또는 토큰** — JS의 직접 토큰 탈취를 줄이지만 XSS가 인증된 요청을 실행하는 것까지 막지는 못한다. CSRF와 XSS 방어를 별도로 적용한다.
-- **JWT in Memory** — 페이지 리프레시마다 refresh token으로 재발급
+- **Access token in Memory** — JWT나 opaque token 모두 가능. 새로고침 뒤 재인증 또는 갱신 절차가 필요하며, refresh token의 보관과 보호를 별도로 설계한다. 메모리 저장도 실행 중인 악성 JS로부터 완전히 격리되지는 않는다.
 
 ### 서드파티 로그인 (Google, Kakao)
 **OpenID Connect Authorization Code + PKCE**를 사용한다.
 
 ### 서비스 간 통신 (MSA, 서버→서버)
-- 내부: **mTLS** 또는 **JWT (Client Credentials)**
-- 외부 파트너: **API Key**
+- mTLS, OAuth Client Credentials나 제한된 API key를 신뢰 경계, 수명과 폐기 요구에 맞춰 비교한다. Client Credentials가 JWT 형식을 요구하지는 않는다.
+- mTLS의 인증서와 access token은 함께 사용할 수도 있다. 내부와 외부라는 위치만으로 사용자/서비스별 권한 검사를 생략하지 않는다.
 
 ### 공개 API + 많은 클라이언트
-**API Key** + per-key 레이트 리밋 + 사용량 추적.
+API key와 키별 제한으로 사용량을 관리할 수 있다. 민감 자원의 사용자/객체 인가를 공통 키 하나로 대체하지 않는다. 익명 공개 데이터와 인증이 필요한 API도 구분한다.
 
 ## JWT의 함정
 
-- **민감 정보 싣지 말 것** — JWT는 base64 인코딩이지 암호화 아님
-- **서명 검증 잊지 말 것** — `alg: none` 공격, 서명 검증 누락
+- **보호 형식 구분** — JWS JWT의 Payload는 Base64URL 인코딩이며 기밀성이 없다. JWE 암호화도 가능하지만 용도와 설계가 다르다
+- **프로필 전체 검증** — 허용 알고리즘과 키, 서명, issuer, audience, 시간과 필수 claim을 검증하고 서명을 요구하는 프로필에서는 `none`을 거부
 - **만료 시간 짧게** — 서비스 위험과 재인증 UX에 맞춰 제한하고 필요하면 Refresh Token으로 갱신
-- **취소 어려움** — self-contained라 서버에서 "이 JWT 취소"가 불가 → 블랙리스트, 짧은 수명으로 완화
-- **크기** — 쿠키 4KB 한계와 경쟁
+- **폐기와 최신 권한** — 자체 검증만으로는 즉시 회수가 반영되지 않는다. denylist, 버전이나 세션 상태를 검증 경로에 연결하거나 짧은 만료로 노출 시간을 제한
+- **크기** — 쿠키와 헤더의 브라우저/서버별 크기 제한 및 전송 비용을 확인
 
 자세히는 [[JWT]] 참고.
 
@@ -125,7 +126,7 @@ Cookie: session=abc123
 
 Access Token(짧은 수명) + Refresh Token(긴 수명) 조합. Refresh 시 **새 refresh token 발급 + 이전 것 즉시 무효**.
 
-- 탈취된 refresh token 재사용 감지 가능
+- 사용한 refresh token의 재제출을 감지할 수 있다. 탈취 자체가 자동 탐지되거나 기존 access token이 자동 폐기되는 것은 아니다.
 - "로그인 7일 유지" 같은 UX 지원하면서 탈취 리스크 완화
 
 상세는 [[Refresh-Token-Rotation]].
@@ -146,25 +147,33 @@ Access Token(짧은 수명) + Refresh Token(긴 수명) 조합. Refresh 시 **�
 
 ## HTTPS 필수
 
-어떤 방식이든 **HTTPS 아니면 무용**. 네트워크상에서 평문 헤더 노출 = 모든 인증 무력화. Let's Encrypt로 무료 인증서 발급 가능하므로 HTTPS 미도입은 변명 불가.
+자격증명을 주고받는 로그인과 보호 API, 세션 전체에 HTTPS를 적용한다. TLS 종료 이후의 전달 구간도 보호한다. HTTPS는 전송 중 노출과 변조를 막는 통제이며 XSS, 권한 검사 누락이나 안전하지 않은 저장을 대신하지 않는다.
 
 ## 흔한 실수
 
 - **비밀번호를 쿼리스트링에** → 로그, 리퍼러 유출
-- **JWT에 민감 정보 담기** → base64 디코딩으로 그대로 보임
+- **JWS JWT에 비밀 담기** — Payload를 디코딩해 읽을 수 있음
 - **알고리즘 검증 없이 JWT 수락** → `alg: none` 취약점
 - **세션을 in-memory에만** → 서버 재시작 시 전원 로그아웃
-- **HTTPS 미적용** → 나머지 모든 방어 무의미
+- **HTTPS 미적용** — 전송 중 자격증명 노출과 변조 위험
 
 ## 면접 체크포인트
 
-- Authorization 헤더가 쿠키, 쿼리보다 기본값인 이유
-- Basic vs Bearer 차이와 Basic이 비권장인 이유
+- Bearer의 헤더 전달과 브라우저 세션의 쿠키 전달을 구분하는 이유
+- Basic과 Bearer의 노출 범위, TLS와 폐기 정책의 차이
 - 세션 vs JWT 선택 기준 (쿠키, 서버 상태, 취소 가능성)
 - OAuth 2.0이 "인증"이 아니라 "인가" 프레임워크인 이유
-- JWT의 한계 4가지 (암호화 아님, 취소 어려움, 크기, 서명 검증)
+- JWT의 형식과 보호 방식, 상태를 통한 폐기, 크기와 검증 프로필의 구분
 
 ## 출처
+
+2026-10-03 부분 검증: RFC 6750/9700의 전달과 OAuth 경계, OWASP의 세션/API key 통제, RFC 7519의 JWS/JWE 구분을 대조했다. 선택 가이드는 이를 적용한 판단 기준이며 특정 앱과 모든 라이브러리의 동작을 검증한 기록은 아니다.
+
+- [IETF, RFC 6750: OAuth 2.0 Bearer Token Usage, §2](https://www.rfc-editor.org/rfc/rfc6750.html#section-2)
+- [IETF, RFC 7519: JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519.html)
+- [IETF, RFC 7617: The Basic HTTP Authentication Scheme](https://www.rfc-editor.org/rfc/rfc7617.html)
+- [OWASP Cheat Sheet Series, REST Security](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html)
+- [OWASP MASVS, MASVS-STORAGE-1](https://mas.owasp.org/MASVS/controls/MASVS-STORAGE-1/)
 - [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
 - [RFC 6749 — The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749)
