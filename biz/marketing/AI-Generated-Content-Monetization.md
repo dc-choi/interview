@@ -1,7 +1,7 @@
 ---
 tags: [business, marketing, content, ai, youtube, monetization]
 status: done
-verified_at: 2026-09-29
+verified_at: 2026-10-02
 category: "비즈니스&제품(Business&Product)"
 aliases: ["AI-Generated Content Monetization", "AI 생성 콘텐츠 수익화", "AI 음악 채널 수익화"]
 ---
@@ -17,36 +17,39 @@ aliases: ["AI-Generated Content Monetization", "AI 생성 콘텐츠 수익화", 
 - **차별화는 결과물보다 편집 판단에 있다.** 누가 들을지(상황, 분위기, 용도), 어떤 일관된 컨셉으로 묶을지, 무엇을 버릴지를 정하는 큐레이션이 남는 가치다. 이는 [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]]의 일반 원리가 콘텐츠 시장에 적용된 경우다.
 - **수익 경로는 두 겹의 허가 위에 있다.** 생성 도구 약관이 상업적 이용을 허락해야 하고, 유통 플랫폼의 수익화 정책도 그 콘텐츠를 수익화 대상으로 인정해야 한다. 둘 중 하나만 어긋나도 수익이 막힌다.
 
-## 확인된 정책 (2026-09-29 공식 도움말 기준)
+## 확인한 정책 (2026-10-02 부분 검증)
+
+YouTube의 채널 수익화, YPP 신청과 AI 공개 기준, Suno의 약관과 관련 도움말, 한국 저작권법의 정의와 미국 저작권청의 AI 저작물성 원칙을 대조했다. 개별 채널의 승인 가능성, 개별 곡의 권리 상태와 침해 여부, Instagram 정책이나 아래 경험담의 성과는 검증하지 않았다.
 
 ### YouTube 수익화 정책: 진정성 없는 콘텐츠
 
 - YouTube는 2025-07-15 기존의 반복적인 콘텐츠(repetitious content) 정책명을 진정성 없는 콘텐츠(inauthentic content)로 바꾸고, 반복적이거나 대량 생산된 콘텐츠가 이에 포함된다고 명확히 했다. 재사용 콘텐츠 정책은 바뀌지 않았다.
-- 수익화 채널의 콘텐츠는 업로더의 독창적 창작물이어야 하고, 대량 생산되거나 일반적이거나 반복적이거나 조작적이어서는 안 된다. 조회수만을 목적으로 한 콘텐츠가 아니라 시청자의 즐거움이나 교육을 위한 것이어야 한다.
+- 수익화 채널의 콘텐츠는 독창성과 진정성이 있어야 한다. 다른 사람의 소재를 쓰면 실질적으로 바꾸고 시청자에게 새로운 가치를 주어야 하며, 대량 생산되거나 일반적이거나 반복적이거나 조작적인 콘텐츠는 제외된다. 조회수만을 목적으로 한 콘텐츠가 아니라 시청자의 즐거움이나 교육을 위한 것이어야 한다.
 - 수익화 불가 예시에 교육적 가치, 해설, 서사나 변주가 거의 없는 유사하거나 반복적인 콘텐츠, 그리고 일반적이거나 독창성 없는 템플릿으로 만들어 대량 생산 인상을 주는 AI 생성 콘텐츠가 들어 있다.
 - AI 도구 사용 자체는 금지 대상이 아니다. 직접 만든 캐릭터와 서사를 AI로 시각화하거나 대본 편집, 배경 영상 생성에 AI를 쓰는 것은 허용 예시로 제시된다.
+- **재사용 콘텐츠는 별도 기준이다.** 기존 온라인 콘텐츠에 충분한 해설, 실질적 수정이나 가치를 더하지 않으면 채널 전체의 수익화가 제한될 수 있다. 원저작자의 허락을 받았거나 저작권 신고가 없어도 이 심사를 통과한다는 뜻은 아니다. 같은 도입과 마무리를 쓰더라도 본문의 내용과 가치가 실질적으로 다르면 반복 콘텐츠로 일괄 제외하지 않는다. [채널 수익화 정책](https://support.google.com/youtube/answer/1311392)
+- **콘텐츠 적격성과 광고 수익 시작은 별개다.** 광고 수익 배분에는 구독자 1,000명과 최근 12개월의 유효 공개 시청 시간 4,000시간 또는 최근 90일의 유효 공개 Shorts 조회수 1,000만 회가 필요하다. Shorts 피드 시청 시간은 4,000시간에 포함되지 않는다. 지원 국가, 계정 요건과 채널 심사도 충족해야 한다. 구독자 500명 단계의 확대 YPP는 추가 요건을 갖춘 채널에 팬 후원과 일부 Shopping 기능을 먼저 여는 제도이며 광고 수익 기준은 다르다. [YPP 자격](https://support.google.com/youtube/answer/72851), [확대 YPP](https://support.google.com/youtube/answer/13429240)
 
 ### YouTube 변형 또는 합성 콘텐츠 공개
 
 - 사실처럼 보이면서 의미 있게 변형되거나 합성된 콘텐츠는 업로드 시 공개해야 한다. 공개 대상 예시 목록에 AI 생성 음악(AI generated music)이 명시돼 있다.
 - 명백히 비현실적인 콘텐츠, 완전한 애니메이션, 색 보정이나 자막 생성 같은 제작 보조는 공개 대상이 아니다.
 - 지속적으로 공개하지 않으면 YouTube가 라벨을 직접 붙이거나, 콘텐츠 삭제 또는 YouTube 파트너 프로그램 정지 같은 제재를 할 수 있다.
+- 공개 자체는 시청자 범위나 수익화 적격성을 제한하지 않는다고 안내한다. 현재 도움말의 업로드 설정명은 `AI use`이며, 공개를 했어도 위의 콘텐츠 심사와 권리 요건은 따로 충족해야 한다. [AI 공개 도움말](https://support.google.com/youtube/answer/14328491)
 
-### Suno 소유권과 상업적 이용
+### Suno 소유권과 상업적 이용: 생성과 다운로드 조건
 
-| 생성 시점의 플랜 | 곡 소유권 | 상업적 이용 |
-|---|---|---|
-| Basic(무료) | Suno가 보유 | 비상업적 이용만 가능, 수익화 불가 |
-| Pro, Premier(유료) | 사용자가 소유 | 가능, 구독 종료 뒤에도 유지 |
+- **현재 약관:** 2026-08-10 개정, 2026-09-03 시행 약관은 Pro, Premier 사용자에게 Suno가 보유한 생성물의 권리를 이전하되 저작권 발생은 보장하지 않는다. Basic은 개인적, 비상업적 이용으로 제한한다. 상업 이용에는 플랜별 할당량에 따른 승인된 다운로드가 필요하며 녹음이나 스트림 추출로 대신할 수 없다. 적법하게 취득한 다운로드의 상업 이용 권리는 구독 종료 뒤에도 유지된다. [Suno 약관](https://suno.com/terms)
+- **Remix 예외:** 다른 사용자가 Suno의 공유 기능으로 만든 공동 Remix는 유료 플랜이거나 승인된 다운로드여도 비상업적 이용으로 제한된다. 이는 약관이 정의한 공동 Remix의 조건이며 모든 자체 편집을 뜻하지 않는다. [Suno 약관, Remixes와 Permitted Commercial Use](https://suno.com/terms)
+- **공식 안내 사이의 차이:** 소유권과 배포 도움말은 유료 구독 중 생성한 곡을 기준으로 설명한다. 소급 권리 도움말은 나중의 구독이 자동으로 권리를 주지는 않지만 특정 곡에 예외를 허용할 수 있다고 안내한다. 반면 9월 변경 FAQ는 유료 구독자로 다운로드한 곡의 상업 권리와 기존 곡에도 적용되는 다운로드 제한을 설명한다. 무료 생성곡의 후속 다운로드에 대한 일관된 안내는 확인하지 못했으므로 자동 허용을 사업의 전제로 삼지 않고, 해당 곡의 적용 조건을 Suno에 확인한다. [소유권](https://help.suno.com/en/articles/2416769), [배포](https://help.suno.com/en/articles/2410177), [소급 권리](https://help.suno.com/en/articles/2425729), [9월 변경 FAQ](https://help.suno.com/en/articles/13614785)
+- **입력 소재의 권리:** 약관은 가사와 샘플 등을 입력하고 Suno가 이용하도록 허락하는 데 필요한 권리, 라이선스와 동의를 요구한다. 배포 도움말은 모든 소재의 배타적 권리 확보를 요구하며 타인의 가사를 쓰는 수익화를 경고한다. 권리 확보 없이 타인의 소재를 넣지 않고, 허락받은 소재도 허용 범위와 배포 조건을 확인한다. 생성물의 소유권은 다른 이용자에게 유사한 결과가 생성되지 않는다는 보장도 아니다. [Suno 약관](https://suno.com/terms), [배포 도움말](https://help.suno.com/en/articles/2410177)
 
-- 권리는 곡을 만든 시점의 플랜으로 정해진다. 무료로 만든 곡은 나중에 구독해도 소급해서 상업적 이용 권리가 생기지 않는다.
-- 수익화하려면 곡의 모든 구성 요소에 대해 배타적 권리를 가져야 한다. 타인이 쓴 가사를 넣은 곡은 수익화 대상이 아니다.
-- 소유권과 저작권 보호는 별개다. Suno 도움말은 100% AI로 만든 음악은 사람이 가사나 음악을 쓰지 않았으므로 저작권 보호 대상이 아닐 수 있다고 안내한다. 직접 쓴 가사는 사용자 소유이며, 저작권 판단은 국가별로 다르다.
+소유권과 상업 이용 허가, 법정 저작권 보호는 구분한다. 미국 저작권청은 순수 AI 생성 부분을 보호하지 않지만 사람이 창작한 가사, 표현과 창의적 편집은 개별적으로 보호될 수 있다고 설명한다. 프롬프트만으로는 충분하지 않으며, 사람이 가사를 썼다는 사실이 AI 작곡 부분까지 자동으로 보호하지는 않는다. 한국 저작권법 제2조도 저작물을 인간의 사상이나 감정을 표현한 창작물로 정의한다. 구체적 보호 범위는 인간의 창작 기여와 적용 국가에 따라 판단한다. [미국 저작권청 보고서](https://www.copyright.gov/ai/Copyright-and-Artificial-Intelligence-Part-2-Copyrightability-Report.pdf), [한국 저작권법 제2조, 2026-08-11 시행](https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1027697001)
 
 ## 예시: AI 음악 채널의 판단 흐름
 
 1. **컨셉 정의**: 장르 하나가 아니라 청취 상황(공부, 수면, 카페, 운동)과 분위기를 함께 정한다. 수요가 많은 장르일수록 경쟁도 많다는 점을 함께 본다.
-2. **플랜 확인**: 수익화할 곡은 처음부터 유료 플랜 구독 중에 만든다. 무료로 만든 곡을 나중에 올리는 전략은 성립하지 않는다.
+2. **플랜과 다운로드 확인**: 안내가 일치하는 유료 구독 중 생성곡부터 실험하고 승인된 다운로드를 확보한다. 무료 생성곡의 후속 상업 이용이나 공동 Remix를 자동으로 허용한다고 가정하지 않는다.
 3. **변주와 큐레이션**: 같은 템플릿의 반복 업로드는 진정성 없는 콘텐츠 정책에 걸리기 쉽다. 곡 선별, 구성, 영상과 설명에 사람의 편집 판단이 드러나게 한다.
 4. **공개 설정**: 업로드 때 합성 콘텐츠 공개를 켠다.
 5. **기간 설정**: 초기 조회수가 낮아도 버틸 기간과 중단 기준(업로드 수, 기간, 구독 전환율)을 미리 정한다.
@@ -66,15 +69,16 @@ AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 �
 ## 트레이드오프와 한계
 
 - **낮은 비용은 모두에게 낮다.** 제작비가 싸다는 장점은 경쟁자 수를 늘리는 단점과 같은 현상이다. 단위 콘텐츠의 기대 수익이 함께 내려간다.
-- **정책 리스크가 사업 리스크다.** 플랫폼이 수익화 기준을 바꾸면 채널 전체의 수익이 한 번에 흔들릴 수 있다. 도구 약관도 바뀔 수 있으므로 곡을 만드는 시점의 도움말과 약관을 기준으로 삼는다.
+- **정책 리스크가 사업 리스크다.** 플랫폼이 수익화 기준을 바꾸면 채널 전체의 수익이 한 번에 흔들릴 수 있다. 생성 당시 플랜과 권리 취득 근거를 보관하고, 다운로드와 배포 시점에도 적용 약관과 변경 조건을 확인한다. 이미 취득한 권리의 유지와 이후 다운로드에 적용되는 조건은 구분한다.
 - **저작권 보호가 약할 수 있다.** 완전 AI 생성물은 보호 대상이 아닐 수 있어 타인이 비슷한 결과물을 만들어도 막기 어렵다. 자산 가치가 곡 자체보다 채널 브랜드와 구독자 관계에 쌓인다.
 - **미검증 주장**: 이 분야는 극소수 상위 채널이 노출을 장악하고, 고품질이 아니면 노출이 적으며, 성과를 보려면 2~3년 꾸준히 해야 한다는 경험담이 있다. 공식 통계로 확인하지 못한 체감 주장이므로 판단 근거가 아니라 가설로 둔다.
 
 ## 적용 점검
 
 - 이 채널이 다른 채널과 다른 점을 한 문장으로 말할 수 있는가. 말하지 못하면 세팅만 한 상태다.
-- 수익화할 모든 곡이 유료 플랜 구독 중에 만들어졌는가.
-- 가사, 샘플, 이미지까지 포함해 모든 구성 요소의 권리를 갖고 있는가.
+- 수익화할 곡의 생성 플랜, 승인된 다운로드와 적용 약관을 확인했으며 공동 Remix 제한에 해당하지 않는가.
+- 가사, 샘플, 이미지까지 포함해 입력과 상업적 배포에 필요한 권리를 확보했는가.
+- YouTube 광고 수익을 기대한다면 YPP의 수치 요건과 채널 심사를 별도로 충족했는가.
 - 업로드가 같은 템플릿의 반복으로 보이지 않을 만큼 사람의 편집 판단이 들어가 있는가.
 - 합성 콘텐츠 공개 설정을 빠짐없이 했는가.
 - 정책이 바뀌어 수익화가 막혀도 감당할 수 있는 투입 규모인가.
@@ -85,10 +89,17 @@ AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 �
 
 - [AI 음악 유튜브 수익화 첫날 세팅 — Threads, kjkl_55](https://www.threads.com/@kjkl_55/post/DdllH1Nm0ie)
 - [YouTube Help, YouTube channel monetization policies](https://support.google.com/youtube/answer/1311392)
+- [YouTube Help, YouTube Partner Program overview & eligibility](https://support.google.com/youtube/answer/72851)
+- [YouTube Help, Overview of the expanded YouTube Partner Program](https://support.google.com/youtube/answer/13429240)
 - [YouTube Help, Disclosing use of GenAI content](https://support.google.com/youtube/answer/14328491)
+- [Suno, Terms of Service](https://suno.com/terms) — 2026-08-10 개정, 2026-09-03 시행
 - [Suno Help, Does Suno own the music I make?](https://help.suno.com/en/articles/2416769)
 - [Suno Help, Do I have the copyrights to songs I made?](https://help.suno.com/en/articles/2746945)
 - [Suno Help, Can I distribute my songs to Spotify, etc?](https://help.suno.com/en/articles/2410177)
+- [Suno Help, If I subscribe, do I get rights for the songs I made before subscribing?](https://help.suno.com/en/articles/2425729)
+- [Suno Help, Upcoming Changes FAQ: Downloads, Models, and Terms of Service](https://help.suno.com/en/articles/13614785)
+- [U.S. Copyright Office, Copyright and Artificial Intelligence, Part 2: Copyrightability](https://www.copyright.gov/ai/Copyright-and-Artificial-Intelligence-Part-2-Copyrightability-Report.pdf)
+- [국가법령정보센터, 저작권법 제2조](https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1027697001) — 2026-08-11 시행
 
 ## 관련 문서
 
