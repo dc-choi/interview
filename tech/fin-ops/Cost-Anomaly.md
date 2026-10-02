@@ -1,13 +1,14 @@
 ---
 tags: [finops, aws, cost-anomaly-detection, monitoring, ml, alert]
 status: done
+verified_at: 2026-10-03
 category: "비용&운영(FinOps)"
 aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 ---
 
 # 비용 이상 탐지 (Cost Anomaly Detection)
 
-예산 초과를 월말 청구서에서 발견하면 이미 늦다. **비용이 평소 패턴에서 벗어나는 순간 자동으로 잡아내는** 것이 이상 탐지다. 예산 알람([[Budget-Alert]])이 정해둔 선을 넘는지 본다면, 이상 탐지는 **평소와 다른 급변**을 본다. 둘은 보완 관계다.
+**청구 데이터에서 평소 패턴과 다른 비용 증가를 자동으로 찾는** 것이 이상 탐지다. 예산 알람([[Budget-Alert]])이 정해둔 선을 넘는지 본다면, 이상 탐지는 **평소와 다른 급변**을 본다. 둘은 보완 관계이며, 실시간 탐지나 지출 상한을 보장하지 않는다.
 
 ## 무엇이 다른가 — Anomaly vs Budget
 
@@ -15,19 +16,25 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 |---|---|---|
 | 트리거 | 평소 패턴 대비 **비정상 급변** | 미리 정한 **금액/사용량 임계** |
 | 방식 | ML이 베이스라인 학습 | 사용자가 임계 설정 |
-| 강점 | 예상 못 한 폭증 포착 | 명시적 상한 강제 |
-| 약점 | 임계가 아니라 추세라 즉각 차단은 못 함 | 평소와 다른 미세 급증은 못 봄 |
+| 강점 | 예상 못 한 비용 증가 탐지 | 명시한 임계 알림과 선택한 Budget Action 연결 |
+| 약점 | 청구 데이터 지연과 학습 기간이 있으며 자체 차단 기능 없음 | 집계 지연이 있으며 임계 미만의 패턴 변화는 알리지 않음 |
 
-예산은 "넘지 마"고, 이상 탐지는 "어, 평소랑 다른데?"다.
+예산은 정한 목표 대비 비용을, 이상 탐지는 과거 패턴 대비 증가를 확인한다.
 
 ## 작동 방식
 
-- **Monitor 정의**: 2026-09-03 AWS 문서 기준, 감시 차원은 AWS services, 연결 계정, 비용 카테고리, 태그 네 가지다. AWS services 차원은 계정에서 사용하는 전체 서비스를 자동 평가하는 AWS managed monitor만 지원한다. Customer managed monitor는 연결 계정, 태그 값, 비용 카테고리 값으로 범위를 정하며 특정 서비스 하나만 고르는 monitor는 만들 수 없다. 서비스별 기여는 탐지 후 근본 원인 분해나 AWS User Notifications 필터로 확인한다.
-- **ML 베이스라인**: 과거 사용 패턴을 학습해 정상 범위를 만들고, 벗어나면 이상으로 표시.
-- **근본 원인 분해**: 이상 발생 시 어느 서비스/사용 유형/리전이 기여했는지 자동 분석.
-- **Alert Subscription**: 임계 금액 이상의 이상에 대해 이메일/SNS로 알림(개별 또는 일/주 요약).
+- **Monitor 정의**: 감시 차원은 AWS services, 연결 계정, 비용 카테고리, 비용 할당 태그 네 가지다. AWS managed monitor는 선택한 차원의 값을 자동으로 개별 평가한다. AWS services 차원은 AWS managed만 지원하며 특정 서비스 하나만 고르는 customer managed monitor는 만들 수 없다. Customer managed는 선택한 연결 계정/태그 값 등을 합산해 감시한다. 연결 계정/태그/비용 카테고리 monitor는 관리 계정에서만 생성한다. 서비스별 기여와 알림 전달 범위는 근본 원인 분해와 AWS User Notifications 필터로 확인한다.
+- **ML 베이스라인**: 과거 비용 패턴을 학습해 비용 증가의 이상 여부를 평가한다.
+- **근본 원인 분해**: 서비스/계정/리전/사용 유형별 기여 비용을 제시한다. 실제 원인은 리소스와 사용 내역을 추가로 확인한다.
+- **Alert Subscription**: 예상 대비 증가액(절대 금액)이나 증가율 임계로 알림을 설정한다. 개별 알림은 SNS, 일/주 요약은 이메일로 받는다. AWS User Notifications로 별도 전달/필터 규칙도 구성할 수 있다.
 
-## 흔한 원인 — 무엇을 잡아주나
+## 탐지 시점과 범위의 한계
+
+- 할인 적용 후 **net unblended cost**를 대상으로, 청구 데이터 처리 뒤 하루 약 세 번 분석한다. Cost Explorer 데이터는 최대 24시간 지연되어 사용 발생 후 탐지에도 최대 24시간이 걸릴 수 있다. 개별 알림도 사용 순간의 경보가 아니다.
+- 새 monitor는 탐지를 시작하기까지 최대 24시간이 걸릴 수 있다. 새 서비스는 10일 분량의 과거 사용 데이터가 필요하다.
+- AWS Marketplace의 타사 제품/서비스는 감시하지 않는다. 단, Amazon Bedrock의 타사 파운데이션 모델은 포함한다. 그 밖의 Marketplace 비용은 AWS Budgets 등으로 별도 추적한다.
+
+## 비용 증가의 조사 후보
 
 - 실수로 켠 대형 인스턴스, 지우지 않은 리소스
 - 무한 루프/재시도로 폭증한 Lambda/요청 수
@@ -38,13 +45,14 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 
 - **태그 기반 Monitor**로 팀/서비스별 책임 소재를 명확히. [[AWS-Cost-Optimization|태그 정책]]
 - 알림 임계를 적절히 — 너무 낮으면 [[Alert-Fatigue|알람 피로]], 너무 높으면 놓침.
-- 이상 탐지(추세) + 예산 알람(상한) + 예산 액션(차단)을 **층으로** 운영.
+- 이상 탐지(패턴 변화) + 예산 알람(임계) + 예산 액션(선택한 조치)을 **층으로** 운영. 액션의 대상, 권한과 실행 결과는 [[Budget-Alert]]에서 구분한다.
 
 ## 흔한 함정
 
-- 이상 탐지만 믿고 상한(예산 액션)을 안 둠 → 탐지해도 자동 차단 안 됨
-- 전체 한 Monitor만 → 작은 서비스의 폭증이 큰 비용에 묻힘
-- 알림 임계 미설정 → 소액 이상까지 알려 피로
+- 이상 탐지만 믿음 → 탐지 지연 중에도 비용 발생. 탐지 자체로 자동 차단되지 않음
+- 선택한 값을 합산하는 customer managed monitor만 사용 → 작은 범위의 증가가 합계에 묻힐 수 있음. AWS services monitor는 서비스별로 평가함
+- 알림 임계를 너무 낮게 설정 → 소액 이상까지 알려 피로. 너무 높으면 탐지된 이상도 알림에서 제외됨
+- 새 monitor/서비스를 만들자마자 탐지된다고 기대 → 초기 지연과 학습 기간을 놓침
 - 탐지 후 근본 원인 분해를 안 봐 대응이 느림
 
 ## 면접 체크포인트
@@ -58,6 +66,8 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 ## 출처
 
 - [AWS Cost Management, Getting started with AWS Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/getting-started-ad.html)
+- [AWS Cost Management, Detecting unusual spend with AWS Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html)
+- [AWS Cost Management, Using AWS User Notifications with Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/cad-user-notifications.html)
 
 ## 관련 문서
 
