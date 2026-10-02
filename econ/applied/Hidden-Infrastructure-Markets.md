@@ -36,7 +36,8 @@ B2B 인프라 시장은 다른 기업의 생산, 거래, 위험 관리를 가능
 
 제도 세부는 국가별로 다르다.
 
-- **한국 배출권거래제(K-ETS)**: 2015년에 시작했다. 계획기간 전 3년 평균 배출량이 업체 기준 125,000tCO2-eq 이상이거나 사업장 기준 25,000tCO2-eq 이상이면 할당 대상이다. 무상할당 비율은 1차 계획기간 100%에서 계획기간마다 낮아졌다.
+- **한국 배출권거래제(K-ETS)의 대상**: 2015년에 시작했다. 법 제8조는 할당계획의 대상 부문과 업종에 속하면서 최근 3년 연평균 배출량이 업체 기준 125,000tCO2-eq 이상이거나 25,000tCO2-eq 이상인 사업장을 하나 이상 보유한 업체 중, 직전 계획기간 할당대상업체 또는 목표관리업체를 지정 대상으로 정한다. 별도 기준을 충족해 신청하는 자발적 참여 경로도 있다. 배출량 숫자만으로 모든 기업의 지정 여부를 단정하지 않는다.
+- **K-ETS 무상할당과 유상할당**: 모든 업종의 무상 비율이 계획기간마다 일률적으로 낮아지는 것은 아니다. 2025-11-11 확정 발표된 제4차 계획기간(2026~2030)은 발전 부문의 유상할당을 2030년 50%까지 단계적으로 늘리지만, 철강 등 수출 비중이 높은 다수 업종은 100% 무상할당을 유지한다. 대상 지정, 할당량과 유상 비율은 각각 확인한다. (2026-10-03 이 두 항목만 법 제8조와 정부 확정 발표에 부분 대조. 다른 시장과 수익 안정성 설명은 이번 확인 범위 밖이다.)
 - **영국 용량시장**: 신뢰할 수 있는 용량에 대가를 지급해 전력 공급 안정을 확보하는 제도다. 공급 연도 4년 전(T-4)과 1년 전(T-1) 경매로 계약하고, 공급 의무를 이행하는 조건으로 대가를 받는다. 미국에서는 일부 전력망 운영자가 유사한 용량 시장을 운영한다.
 
 ## 3. 큰 자본이 지루한 사업을 선호하는 이유
@@ -79,6 +80,8 @@ B2B 인프라 시장은 다른 기업의 생산, 거래, 위험 관리를 가능
 
 - [NAIC, Reinsurance](https://content.naic.org/insurance-topics/reinsurance)
 - [국가기록원, 배출권거래제](https://www.archives.go.kr/next/newsearch/listSubjectDescription.do?id=009873&pageFlag=&sitePage=)
+- [국가법령정보센터, 온실가스 배출권의 할당 및 거래에 관한 법률 제8조](https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1030667097)
+- [기후에너지환경부, 2035 감축목표와 제4차 계획기간 할당계획 확정 (2025-11-11)](https://www.korea.kr/news/policyNewsView.do?newsId=148954548)
 - [GOV.UK, Electricity Market Reform: Capacity Market](https://www.gov.uk/government/collections/electricity-market-reform-capacity-market)
 - [Linde plc, 2024 Annual Report](https://assets.linde.com/-/media/global/corporate/corporate/documents/investors/full-year-financial-reports/2024-annual-report-to-shareholders.pdf)
 - [OECD, Institutional Investors and Infrastructure Financing (2013)](https://www.oecd.org/content/dam/oecd/en/publications/reports/2013/11/institutional-investors-and-infrastructure-financing_g17a2399/5k3wh99xgc33-en.pdf)
