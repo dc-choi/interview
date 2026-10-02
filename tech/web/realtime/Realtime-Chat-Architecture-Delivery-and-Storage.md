@@ -8,7 +8,7 @@ aliases: ["Realtime Chat Delivery and Storage", "채팅 메시지 전달 경로"
 
 # 실시간 채팅: 메시지 전달 경로와 이력 저장소
 
-[[Realtime-Chat-Architecture|실시간 채팅 시스템 아키텍처]]의 표준 구성(WebSocket, 내구성 경로, Pub/Sub 팬아웃)을 전제로, 메시지를 누구에게 어떤 경로로 보낼지와 지난 메시지를 어떤 키로 쌓을지를 다룬다. 서버가 여러 대이고 클라이언트가 아무 서버에나 붙는 환경에서는 서버 코드보다 인스턴스 사이의 전달 구조가 설계의 중심이다.
+[[Realtime-Chat-Architecture|실시간 채팅 시스템 아키텍처]]의 대표 구성(WebSocket, 내구성 경로, Pub/Sub 팬아웃)을 예로, 메시지를 누구에게 어떤 경로로 보낼지와 지난 메시지를 어떤 키로 쌓을지를 다룬다. 서버가 여러 대이고 클라이언트가 아무 서버에나 붙는 환경에서는 인스턴스 사이의 전달 구조를 함께 설계해야 한다.
 
 ## 채팅 워크로드의 특성
 
@@ -33,7 +33,7 @@ aliases: ["Realtime Chat Delivery and Storage", "채팅 메시지 전달 경로"
 ### 1:1 흐름
 
 1. 송신 클라이언트가 임의의 채팅 서버에 WebSocket으로 메시지를 보낸다.
-2. 서버는 메시지를 내구성 경로에 기록한 뒤 송신자에게 ACK를 보낸다 ([[Realtime-Chat-Architecture#표준 아키텍처|표준 아키텍처]]).
+2. 서버는 메시지를 내구성 경로에 기록한 뒤 송신자에게 ACK를 보낸다 ([[Realtime-Chat-Architecture#아키텍처 예시|아키텍처 예시]]).
 3. 수신자가 접속 중이면 수신자가 연결된 서버로 보내고, 그 서버가 WebSocket으로 전달한다.
 4. 접속 중이 아니면 알림 경로로 넘긴다.
 
@@ -54,7 +54,7 @@ aliases: ["Realtime Chat Delivery and Storage", "채팅 메시지 전달 경로"
 
 - 알림 모듈은 내구성 경로의 메시지 이벤트를 별도 컨슈머 그룹으로 구독한다. Kafka에서는 구독하는 그룹마다 모든 파티션을 받으므로 채팅 서버의 소비와 독립적으로 같은 메시지를 받는다.
 - 연결 레지스트리로 수신자의 접속 여부를 확인해 미접속 수신자에게만 푸시한다. 판단과 전달 사이의 경합으로 실시간 메시지와 푸시가 함께 갈 수 있으므로 클라이언트는 `messageId`로 중복을 제거한다.
-- Kafka는 기본적으로 at-least-once 전달이라 같은 이벤트를 다시 처리할 수 있고, 외부 시스템으로의 exactly-once는 그 시스템의 협력이 필요하다. 푸시 제공자 호출은 Kafka 밖의 부수 효과이므로 `(messageId, 수신자)` 발송 기록으로 멱등하게 처리한다 ([[Idempotent-Consumer|멱등 컨슈머]]).
+- Kafka의 일반적인 at-least-once 소비에서는 같은 이벤트를 다시 처리할 수 있고, 외부 시스템으로의 exactly-once는 그 시스템의 협력이 필요하다. `(messageId, 수신자)` 발송 기록만으로는 푸시 호출과 기록을 원자적으로 묶을 수 없다. 호출 전에 완료를 기록하면 crash 시 발송이 누락되고, 호출 뒤 기록 전에 죽으면 재시도로 중복 푸시가 생긴다. 제공자가 보장하는 멱등 키나 결과 조회가 있으면 활용하고, 그렇지 않으면 결과 불명 상태와 재시도 정책을 기록하며 앱에서 처리하는 메시지는 `messageId`로 중복을 흡수한다. FCM의 background notification처럼 SDK가 자동 표시하는 알림은 앱의 중복 제거가 표시 전에 실행된다고 보장할 수 없다 ([[Idempotent-Consumer|멱등 컨슈머]]).
 - 푸시는 깨우기 신호로 쓰고 메시지의 정본으로 쓰지 않는다. payload에는 방 ID와 `messageId` 정도만 담고, 앱이 열리면 마지막 sequence 이후를 재조회한다. 제공자의 수락이 기기 도착을 뜻하지 않는 점과 collapse의 한계는 [[Notification-Broadcast-System#Provider 수락, 전달, 표시와 등록 정보|대규모 알림 시스템]]을 본다.
 - 메시지를 DB에 저장한 뒤 브로커에 따로 발행하면 둘 중 하나만 성공할 수 있다. 저장과 발행을 묶으려면 [[Transactional-Outbox|Transactional Outbox]]나 CDC를 쓴다.
 
@@ -87,7 +87,7 @@ aliases: ["Realtime Chat Delivery and Storage", "채팅 메시지 전달 경로"
 
 - **사용자 큐를 구독한 서버가 곧 수신자 연결을 가진 서버라고 가정** — 컨슈머 그룹의 파티션 배정은 연결 위치와 무관하다
 - **채팅 서버 안에서 푸시를 동기 호출** — 제공자 지연이 실시간 경로를 막는다
-- **발송 기록 없이 알림 이벤트를 재처리** — at-least-once 소비가 중복 푸시가 된다
+- **발송 기록만으로 외부 호출의 멱등성을 가정** — 호출과 기록 사이의 crash로 누락이나 중복이 생기므로 provider 계약과 결과 불명 처리까지 확인한다
 - **단체방 메시지마다 멤버를 DB에서 조회** — 메시지 수와 방 크기의 곱만큼 부하가 늘어난다
 - **방 ID만으로 이력 파티션을 잡음** — 오래된 큰 방의 파티션이 한없이 커진다
 
@@ -101,7 +101,10 @@ aliases: ["Realtime Chat Delivery and Storage", "채팅 메시지 전달 경로"
 
 ## 출처
 
+2026-10-02 부분 검증: Kafka의 외부 효과 보장 범위와 알림 발송 기록의 crash 구간을 공식 Kafka 문서 및 [[Idempotent-Consumer|멱등 컨슈머]] 원문과 대조하고, FCM 자동 표시와 앱 처리의 경계를 공식 문서로 확인했다. Discord 저장소 사례 전체를 다시 검증한 기록은 아니다.
+
 - [Apache Kafka, Design (4.3 문서)](https://kafka.apache.org/43/design/design/)
+- [Firebase, Firebase Cloud Messaging message types](https://firebase.google.com/docs/cloud-messaging/customize-messages/set-message-type)
 - [How Discord Stores Billions of Messages — Discord Blog](https://discord.com/blog/how-discord-stores-billions-of-messages)
 - [How Discord Stores Trillions of Messages — Discord Blog](https://discord.com/blog/how-discord-stores-trillions-of-messages)
 - [인프런, Hong, Chat Application에 대한 시스템 디자인 설계 1편](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272704)
