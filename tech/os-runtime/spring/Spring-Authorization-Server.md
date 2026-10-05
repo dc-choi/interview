@@ -34,6 +34,7 @@ http
 
 - **PKCE가 기본값이 됐다.** Spring Security 7.0의 What's New는 인가 서버에서 PKCE를 기본으로 켰다고 적고, 7.1.1 API의 `ClientSettings.isRequireProofKey()` 기본값도 `true`다. 기본 설정에서는 PKCE가 필수이므로, 아래 흐름처럼 `code_challenge`와 `code_verifier` 없이 인가 코드를 교환하던 클라이언트는 7.x로 올리기 전에 PKCE를 보내게 하거나 그 클라이언트의 `ClientSettings`에서 `requireProofKey(false)`로 명시적으로 끈다. 기본값은 `ClientSettings.builder()`로 만드는 설정에 들어간다. `JdbcRegisteredClientRepository`는 저장된 설정을 `ClientSettings.withSettings(...)`로 다시 만들고 이 경로는 기본값을 넣지 않으므로, 저장소에 `requireProofKey`가 false로 저장된 클라이언트는 그 값을 유지한다.
 - **1.x 지원 기간:** 마지막 세대인 1.5.x는 OSS 지원이 2026-06-30에 끝났고 상용 지원은 2032-06-30까지다. 1.4.x의 상용 지원은 2026-12-31에 끝나고, 아래 코드의 기준인 1.3.x는 OSS(2025-06-30)와 상용(2026-06-30) 지원이 모두 끝났다. spring.io 세대 API에서 Spring Security 7.0.x는 Spring Boot 4.0.x, 7.1.x는 4.1.x와 짝을 이루므로 7.x 전환은 Boot 4 전환과 함께 계획한다([[Java-Spring-Stack-Migration|Java와 Spring 스택 마이그레이션]]).
+- **DPoP:** 1.5에서 OAuth 2.0 DPoP 지원이 추가됐다(2025-05-20 1.5 GA 발표). 토큰을 클라이언트 키에 묶는 프로토콜 동작은 [[OAuth2#DPoP: access token을 클라이언트 키에 묶기|OAuth2의 DPoP]]에 정리했다. nonce 같은 선택 기능의 지원 여부는 사용하는 버전의 문서로 확인한다.
 
 ## 최소 구성 요소
 
@@ -105,6 +106,7 @@ RegisteredClient.withId(UUID.randomUUID().toString())
 - [Spring Authorization Server Reference — spring.io](https://docs.spring.io/spring-authorization-server/reference/index.html)
 - [Spring Security OAuth Reaches End of Life — spring.io blog](https://spring.io/blog/2022/06/01/spring-security-oauth-reaches-end-of-life)
 - [Spring Authorization Server moving to Spring Security 7.0 — spring.io blog](https://spring.io/blog/2025/09/11/spring-authorization-server-moving-to-spring-security-7-0/)
+- [Spring Authorization Server 1.5 goes GA — spring.io blog](https://spring.io/blog/2025/05/20/spring-authorization-server-1-5-goes-ga)
 - [What's New in Spring Security 7.0 — spring.io](https://docs.spring.io/spring-security/reference/7.0/whats-new.html)
 - [OAuth 2.0 Authorization Server, Getting Started (7.1) — spring.io](https://docs.spring.io/spring-security/reference/7.1/servlet/oauth2/authorization-server/getting-started.html)
 - [OAuth2AuthorizationServerConfiguration, Spring Security 7.1.1 API — spring.io](https://docs.spring.io/spring-security/reference/7.1/api/java/org/springframework/security/config/annotation/web/configuration/OAuth2AuthorizationServerConfiguration.html)

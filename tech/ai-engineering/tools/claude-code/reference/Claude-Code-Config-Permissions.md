@@ -36,7 +36,7 @@ aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한",
 
 ## 권한 규칙 — 평가 순서가 곧 보안 모델
 
-Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 적용**(first match wins)되고 **deny는 어느 스코프에서 매칭되든 차단**(deny-at-any-level)된다. 매칭이 없으면 프롬프트. 읽기 전용 도구(Read, Grep, Glob)는 작업 디렉터리와 추가 디렉터리 안에서는 승인이 필요 없고, 그 밖의 경로는 프롬프트를 띄운다. 2026-09-30 공식 도구 레퍼런스 기준 macOS, Linux와 WSL에서는 Glob과 Grep이 기본 도구 목록에서 빠지고 `find`, `grep`이 `Bash` 호출로 실행되므로, 이 검색에는 `Bash` 권한 규칙이 적용된다([[Agent-Code-Search|에이전트 코드 검색]]).
+Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 적용**(first match wins)되고 **deny는 어느 스코프에서 매칭되든 차단**(deny-at-any-level)된다. 예외로 설치한 mod가 `tool.check`를 처리하면 규칙과 managed settings 밖 PreToolUse 훅이 정한 결과를 바꿀 수 있다(managed PreToolUse 훅의 차단은 최종). deny 규칙은 managed settings가 있는 기기나 Team, Enterprise 로그인에서 내장 guard가 로드될 때만 기본으로 mod보다 우선하고, 그 밖의 환경이나 조직이 guard 옵션 `allowModsToOverrideDenyRules`를 켠 경우에는 mod가 deny 규칙이 거부한 호출까지 승인할 수 있다(2026-10-06 공식 권한 문서 기준, [[Claude-Code-Extension-Reference#Mod — Claude Code 안에서 도는 함수 훅|Mod]]). 매칭이 없으면 프롬프트. 읽기 전용 도구(Read, Grep, Glob)는 작업 디렉터리와 추가 디렉터리 안에서는 승인이 필요 없고, 그 밖의 경로는 프롬프트를 띄운다. 2026-09-30 공식 도구 레퍼런스 기준 macOS, Linux와 WSL에서는 Glob과 Grep이 기본 도구 목록에서 빠지고 `find`, `grep`이 `Bash` 호출로 실행되므로, 이 검색에는 `Bash` 권한 규칙이 적용된다([[Agent-Code-Search|에이전트 코드 검색]]).
 
 ### 권한 모드 6종
 
@@ -76,7 +76,7 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 ## 체크포인트
 
 - 관리자 소스의 기본 first-wins, merge 모드와 모든 admin source에서 읽는 보안 키 예외
-- 권한 평가 순서 (deny → ask → allow, first match wins, deny-at-any-level)
+- 권한 평가 순서 (deny → ask → allow, first match wins, deny-at-any-level)와 설치한 mod가 그 결과를 바꿀 수 있는 조건
 - bare deny와 scoped deny의 차이 (컨텍스트 제거 vs 호출 차단)
 - Read deny가 인식 가능한 Bash 파일 명령까지 막지만 임의 서브프로세스는 못 막는 경계와 샌드박스의 역할
 - 와일드카드, 복합 명령, 심볼릭 링크 매칭의 경계 사례

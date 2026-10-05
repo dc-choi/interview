@@ -78,6 +78,8 @@ Tools는 근거를 가져오고 Prompts는 그 근거를 사용하는 학습 절
 
 로컬 stdio 서버는 실행되는 프로그램이다. MCP를 사용한다는 사실이 OS 샌드박스를 자동으로 제공하지 않는다. 시작 명령과 패키지 출처, 파일과 네트워크 접근 범위, 자격증명 전달을 확인하고 최소 권한으로 실행한다. 이 보안 경계는 서버의 도구 이름이나 공개 디렉터리 등재로 대신할 수 없다.
 
+MCP 서버가 다루는 자격 증명이 남에게 쓰이거나 밖으로 새는 네 경계(인증, 파일 경로, API 목적지, Origin과 Host), 실제 보안 권고와 조직용 게이트웨이 구성은 [[MCP-Security-Boundaries|MCP 보안 경계]]에서 다룬다.
+
 ## 하네스와 컨텍스트에서의 위치
 
 MCP는 하네스의 Inform(맥락 주입)과 도구 실행 축을 표준화한 수단이다. 다만 서버가 너무 많은 도구와 리소스를 노출하면 선택 비용과 [[Context-Engineering|Context Rot]]가 늘어난다. 필요한 서버만 켜고, 도구 스키마를 필요할 때만 로드하는 JIT 원칙이 그대로 적용된다.
@@ -155,6 +157,7 @@ A2A(Agent2Agent)는 서로 다른 조직과 프레임워크의 에이전트가 �
 - [[Context-Engineering]] — 도구 과다 노출 = Context Rot, 필요한 서버만(JIT, Select)
 - [[Tool-Output-Filtering]] — MCP 응답이 컨텍스트를 채우는 주범, 프록시 계층에서 필드만 추출
 - [[Production-Agent-Architecture]] — 도구를 가진 에이전트의 Defense in Depth
+- [[MCP-Security-Boundaries]] — 서버 자격 증명의 네 경계, 2026년 MCP 서버 권고, 게이트웨이와 URL 모드 elicitation
 - [[AI-Handicap-Learning|AI를 학습 난이도 조절 도구로]] — 강의 근거를 활용하는 학습 루프
 - [[Codex-CLI]] — 같은 재단의 창립 프로젝트인 AGENTS.md 지침 파일
 - [[AI엔지니어링(AIEngineering)]] — 카테고리 인덱스

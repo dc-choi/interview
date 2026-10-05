@@ -29,6 +29,20 @@ OAuth 2.0은 **접근 권한 위임(access delegation)** 을 위한 개방형 �
 
 공개 클라이언트의 Refresh Token은 sender-constrained 방식 또는 [[Refresh-Token-Rotation|Rotation]]으로 replay를 탐지하고 막아야 한다. Rotation은 그중 널리 쓰는 방식이다.
 
+### DPoP: access token을 클라이언트 키에 묶기
+
+Bearer token은 가진 쪽이면 누구나 쓸 수 있어 만료 전이면 그대로 재사용될 수 있다([[JWT#Bearer Token 탈취와 replay|Bearer Token 탈취와 replay]]). DPoP(RFC 9449, 2023-09)는 access token을 클라이언트가 만든 비대칭 키 쌍의 공개키에 묶고, 요청마다 개인키로 서명한 증명(DPoP proof)을 함께 보내게 하는 애플리케이션 계층의 sender-constraining 방식이다. TLS 클라이언트 인증서로 묶는 mTLS 방식(RFC 8705)과 달리 요청의 `DPoP` 헤더에 실은 서명 JWT로 키 보유를 증명하며, TLS 기반 방식이 TLS 계층과 결합해 얻는 강한 메시지 무결성과 replay 방어를 같은 수준으로 제공하지는 않는다.
+
+1. **토큰 요청**: 클라이언트가 token endpoint 요청의 `DPoP` 헤더에 proof JWT를 싣는다. JOSE 헤더는 `typ: dpop+jwt`, 비대칭 서명 알고리즘의 `alg`(`none` 금지)와 공개키 `jwk`이고, payload는 `jti`(고유 ID), `htm`(HTTP method), `htu`(query와 fragment를 뺀 대상 URI)와 `iat`다.
+2. **바인딩**: 인가 서버가 키에 묶어 발급하면 `token_type`을 `DPoP`로 응답하고(`Bearer`로 오면 묶이지 않은 토큰이다), 공개키의 JWK SHA-256 thumbprint를 JWT access token이면 `cnf.jkt` claim에 담고 opaque token이면 introspection 응답의 `cnf.jkt`로 알린다. 공개 클라이언트에 발급하는 refresh token도 같은 키에 묶는다(confidential client는 제외).
+3. **리소스 요청**: `Authorization: DPoP <access token>`과 함께 그 요청용 새 proof를 보낸다. 이때 proof에는 access token의 SHA-256 해시 `ath`가 들어간다. 리소스 서버는 RFC 9449 §4.3의 검사(`typ`, 비대칭 `alg`, 서명, `jwk`에 개인키가 없는지, `htm`과 `htu`, 서버가 준 nonce와의 일치, `iat` 또는 서버 nonce 기준 생성 시각의 허용 범위)에 더해 `ath`와, proof 공개키의 thumbprint가 토큰에 묶인 값과 같은지 확인한다. 허용 시간 동안 `jti`를 기억해 재사용을 거부하는 검사는 선택이다.
+4. **nonce**: 인가 서버는 400 응답의 `use_dpop_nonce` 오류로, 리소스 서버는 401 응답의 `WWW-Authenticate: DPoP error="use_dpop_nonce"`로 알리며 `DPoP-Nonce` 헤더에 nonce를 실어 다음 proof에 넣게 할 수 있다. 서버가 nonce로 proof 수명을 정하면 클라이언트를 장악한 쪽(정상 사용자 포함)이 미리 만들어 반출한 proof의 사용을 막는다.
+
+- DPoP는 HTTPS를 대신하지 않는다. proof는 HTTP method와 query, fragment를 뺀 URI만 덮고 본문, query와 다른 헤더는 덮지 않으므로 요청 무결성은 TLS에 맡긴다.
+- 클라이언트 실행 환경에서 공격자 코드가 돌면(XSS 등) 보호가 보장되지 않는다. 키를 내보낼 수 없게 저장해도 클라이언트가 온라인인 동안에는 그 키로 새 proof를 만들 수 있다.
+- replay 방어의 실제 범위는 서버가 proof 생성 시각을 허용하는 시간 창과 그동안 `jti`를 기억하는지에 달려 있다.
+- Spring에서는 Spring Authorization Server 1.5에서 DPoP 지원이 추가됐고([[Spring-Authorization-Server]]), Spring Security 6.5부터 servlet 기반 resource server가 DPoP-bound access token을 검증한다.
+
 ## RFC 6749의 4가지 Grant Type과 현재 선택
 
 RFC 6749는 Authorization Code, Implicit, Resource Owner Password Credentials, Client Credentials의 네 grant를 정의한다. 새 사용자 위임 연동은 Authorization Code + PKCE를 기본으로 하고 사용자 없는 서비스 자격은 Client Credentials를 쓴다.
@@ -141,15 +155,22 @@ OIDC 기반 로그인에서는 access token만으로 로그인을 판단하지 �
 - OAuth와 OIDC의 경계(권한 vs 인증)
 - Refresh Token Rotation이 필요한 이유
 - 도메인 전체 위임의 리스크와 사용자별 토큰 + 최소 스코프 설계
+- DPoP proof의 구성, `cnf.jkt`로 토큰을 키에 묶고 `ath`로 proof를 토큰에 묶는 방식과 DPoP가 막지 못하는 것
 
 ## 출처
 
 2026-10-02 RFC 9700의 CSRF와 mix-up 방어 조건, RFC 6749의 client password 인증 범위, OAuth 2.1 초안 상태를 부분 대조했다. 기존 Google Workspace 위임 정책과 개별 제공자의 구현 전체를 다시 검증한 것은 아니므로 frontmatter의 기존 검증일은 유지한다.
 
+2026-10-06에는 RFC 9449의 DPoP proof 구성, 토큰 바인딩, nonce와 보안 한계, Spring Security 6.5와 Spring Authorization Server 1.5의 DPoP 지원을 대조했다. 문서에 남은 버전 민감 주장(OAuth 2.1 초안 상태, 제공자별 위임 정책)과의 상충 여부는 이번에 확인하지 않았으므로 frontmatter 검증일은 유지한다.
+
 - [RFC 6749 — The OAuth 2.0 Authorization Framework (§2.3.1 클라이언트 인증)](https://www.rfc-editor.org/rfc/rfc6749)
 - [IETF Internet-Draft — The OAuth 2.1 Authorization Framework](https://datatracker.ietf.org/doc/draft-ietf-oauth-v2-1/)
 - [RFC 9700 — Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700.html)
 - [IETF, RFC 7636: Proof Key for Code Exchange by OAuth Public Clients](https://www.rfc-editor.org/rfc/rfc7636)
+- [IETF, RFC 9449: OAuth 2.0 Demonstrating Proof of Possession (DPoP)](https://www.rfc-editor.org/rfc/rfc9449.html)
+- [Spring Security, What's New in Spring Security 6.5](https://docs.spring.io/spring-security/reference/6.5/whats-new.html)
+- [Spring Security 6.5, OAuth 2.0 DPoP-bound Access Tokens](https://docs.spring.io/spring-security/reference/6.5/servlet/oauth2/resource-server/dpop-tokens.html)
+- [Spring Authorization Server 1.5 goes GA — spring.io blog](https://spring.io/blog/2025/05/20/spring-authorization-server-1-5-goes-ga)
 - [OpenID Foundation, OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
 - [Google for Developers, Using OAuth 2.0 for Server to Server Applications](https://developers.google.com/identity/protocols/oauth2/service-account)
 - [Tecoble — OAuth2.0 이해하기](https://tecoble.techcourse.co.kr/post/2021-07-10-understanding-oauth/)
