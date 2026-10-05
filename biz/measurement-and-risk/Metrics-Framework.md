@@ -2,7 +2,7 @@
 tags: [business, metrics, analytics]
 status: done
 category: "비즈니스&제품(Business&Product)"
-aliases: ["Metrics Framework", "지표 설계", "AARRR", "North Star Metric"]
+aliases: ["Metrics Framework", "지표 설계", "AARRR", "North Star Metric", "Power User Curve", "파워 유저 곡선", "L30"]
 ---
 
 # 지표 설계 & North Star Metric
@@ -101,6 +101,28 @@ Dave McClure(500 Startups)가 제안한 스타트업 성장 지표 프레임워�
 
 2026-09-22 보강: 로컬 운영 지표 정의와 업무 기록의 생성/수정 경로를 대조했다. 활성과 휴면의 이벤트 기반 정의는 Amplitude 공식 문서로 확인했으며, 현재 제품의 리텐션 수치를 새로 계산한 결과는 아니다.
 
+## 참여 빈도 분포: 파워 유저 곡선
+
+DAU/MAU는 하루 활성 사용자를 월간 활성 사용자로 나눈 숫자 하나라서, 거의 매일 쓰는 사용자와 한 달에 한두 번 들르는 사용자가 섞인 분포를 가린다. 파워 유저 곡선은 한 달(달력 월이면 28~31일) 동안 사용자가 활성이었던 날의 수를 가로축에, 그 일수에 해당하는 사용자 수나 비율을 세로축에 둔 히스토그램이다. 활동 히스토그램이나 L30이라고도 부르며, L30은 Facebook 성장팀이 붙인 이름이다.
+
+| 볼 것 | 읽는 법 |
+|---|---|
+| 모양 | 매일에 가까운 오른쪽 끝이 다시 올라가는 U자(smile)면 매일 또는 거의 매일 쓰는 사용자 집단이 있다는 신호다. 최빈값이 한 달에 하루이고 며칠 뒤 빠르게 줄어드는 왼쪽 쏠림이면 그런 집단이 드러나지 않는다 |
+| 활성의 기준 | 보통 앱 열기나 로그인 같은 최상위 활동으로 그리지만, 사용자가 가치를 얻었는지나 수익화와 가까운 핵심 행동(게시, 거래, 운동 완료 등)으로 다시 그릴 수 있다. 무엇을 셀지 정하려면 정말 측정해야 할 행동이 무엇인지 먼저 따져야 한다 |
+| 시간에 따른 이동 | 달마다 그 달의 활성 사용자로 곡선을 그려 겹치면, 더 자주 쓰는 쪽으로 옮겨 간 사용자가 늘었는지와 어느 출시나 마케팅 뒤에 곡선이 휘기 시작했는지 볼 수 있다. 다만 가벼운 사용자가 MAU에서 빠지기만 해도 비율로 그린 곡선은 오른쪽으로 옮겨 가므로 사용자 수 기준 곡선이나 같은 사용자 집단의 달별 활성 일수를 함께 보고, 시점이 겹친다는 것만으로 출시나 마케팅을 원인으로 판정하지 않는다 |
+| 기간 창 | 주 단위 주기를 따르는 제품(예: 평일에 쓰는 업무 도구)은 주간 활성 사용자로 그린 7일 곡선(L7)이 더 맞을 수 있다. 평일 업무 도구라면 5일까지 U자가 이어지고 6~7일 사용자가 적은 모양이 자연스럽다 |
+
+모든 제품의 곡선이 U자일 필요는 없다. 매일 쓸 이유가 없는 제품은 사용자가 활성일 때 회사가 충분한 가치를 거두는 수익 구조(매일 사용에 묶이지 않은 사업 모델)가 있는지가 중요하다. 기간 창과 활성 기준은 [[Solo-Product-Market-Validation|1인 제품 시장 검증]]의 재사용 관문처럼 제품이 가치를 만드는 자연스러운 주기와 핵심 행동에 맞춘다.
+
+- 달력 월과 고정 길이 창(예: 최근 30일) 중 하나를 정하고, 하루를 세는 시간대와 날짜 경계, 창의 시작일을 고정한다. 달력 월끼리 겹쳐 볼 때는 최대 일수가 달라 오른쪽 끝을 그대로 비교하지 않는다. 하루에 핵심 행동을 여러 번 해도 활성 일수는 하루다.
+- 창 중간에 처음 들어온 사용자는 활성일 수 있는 날이 적어 왼쪽에 쌓인다. 신규 유입이 많았던 달은 신규와 기존 사용자를 나눠 보거나 창 전체를 관찰할 수 있는 사용자만 따로 본다.
+- 파워 유저의 기준(예: 30일 중 며칠 이상)은 제품마다 정하는 운영 정의다. 기준을 바꾸면 이전 수치와 그대로 비교하지 않는다.
+- 이 곡선의 U자는 [[PMF-Funnel|PMF 검증]]의 리텐션 커브가 다시 오르는 smile curve와 다르다. 리텐션 커브의 가로축은 가입 뒤 경과 기간이고, 파워 유저 곡선의 가로축은 한 기간 안의 활성 일수다. 어느 쪽도 단독으로 PMF를 판정하지 않는다.
+
+**사례:** 한 소셜 러닝 앱 제작자는 30일 동안 4회 이상 달린 사용자를 파워 유저로 따로 센다. 파워 유저를 앱 열기가 아니라 핵심 행동인 달리기 횟수로 정의한 예다. 활성 일수가 아니라 횟수 기준이라 L30과 정의가 같지는 않다. 2026-10-04에 공개된 인터뷰에서 밝힌 사용자 약 1,070명과 파워 유저 116명은 제작자의 자체 수치이며, 사용자 수의 정의와 플랫폼 범위, 30일 창의 기준은 공개되지 않았다.
+
+2026-10-06 보강: 파워 유저 곡선의 정의, 활성 기준, 기간 창과 U자 해석은 a16z 원문과 대조했다. 날짜 경계, 창 중간 유입과 파워 유저 기준에 관한 점검은 정의에서 도출한 운영 기준이다.
+
 ## 현장 적용: school-manage
 
 - **운영 스냅숏:** 2026-07-15 기준 MAO(월간 활성 조직), 누적 본당, 모임 레코드는 서로 다른 지표로 관리했으며 구체적 수치는 공개하지 않는다. 활성 목표는 프로젝트 재개 결정 뒤에만 다시 검토한다.
@@ -120,6 +142,8 @@ Q. 어떤 지표를 추적하고 왜 그 지표를 선택했는가?
 - [허수지표가 되기 쉬운 KPI — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/754)
 - [A Dirty Dozen: Twelve Common Metric Interpretation Pitfalls in Online Controlled Experiments — Microsoft Research](https://www.microsoft.com/en-us/research/publication/a-dirty-dozen-twelve-common-metric-interpretation-pitfalls-in-online-controlled-experiments/)
 - [Amplitude, Lifecycle: track the growth of your product's user base](https://www.amplitude.com/docs/analytics/charts/lifecycle/lifecycle-track-growth)
+- [The Power User Curve: The Best Way to Understand Your Most Engaged Users — a16z, Li Jin, Andrew Chen](https://a16z.com/the-power-user-curve-the-best-way-to-understand-your-most-engaged-users/)
+- [HR 직원이 2주 만에 만든 러닝 앱, 천 명 넘게 모였습니다 — YouTube, 하조은](https://www.youtube.com/watch?v=L542k5Ru9bk)
 
 ## 관련 문서
 - [[App-Analytics-Event-Tracking|앱 분석과 이벤트 설계 (GA4와 Firebase)]]

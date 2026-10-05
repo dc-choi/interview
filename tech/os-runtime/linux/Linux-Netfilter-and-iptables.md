@@ -1,7 +1,7 @@
 ---
 tags: [linux, netfilter, iptables, nftables, firewall, nat, conntrack, container]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-06
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Linux Netfilter and iptables", "netfilter", "iptables", "리눅스 방화벽", "netfilter hook"]
 ---
@@ -77,6 +77,24 @@ iptables -P INPUT DROP   # 원격 접속 허용 rule을 먼저 넣은 뒤 policy
 
 AWS security group이 응답 방향을 따로 열지 않아도 되는 것도 같은 stateful 원리이고, subnet 단위 NACL은 stateless라 반대 방향 규칙이 필요하다([[RDS-Security-Group#SG vs NACL 차이|SG vs NACL]]).
 
+### conntrack 표가 가득 차면
+
+conntrack 항목은 kernel 메모리의 표에 있고 개수 상한이 있다. 상한에 다다르면 새 연결은 추적 항목을 만들지 못해 packet이 버려지고, 연결을 시작한 쪽은 DROP과 마찬가지로 응답 없이 연결 timeout을 겪는다. 애플리케이션 로그에는 연결 timeout만 남아 원인이 연결 경로에 있는 host의 kernel 표라는 단서가 잘 드러나지 않는다.
+
+| sysctl(`net.netfilter.`) | 의미 |
+|---|---|
+| `nf_conntrack_count` | 현재 할당된 항목 수(읽기 전용) |
+| `nf_conntrack_max` | 허용 항목 수의 상한. 기본값은 `nf_conntrack_buckets`와 같다 |
+| `nf_conntrack_tcp_timeout_time_wait` | 닫힌 TCP 연결의 TIME_WAIT 항목을 유지하는 시간. 기본 120초 |
+| `nf_conntrack_tcp_timeout_established` | 수립된 연결의 항목을 유지하는 시간. 기본 432000초(5일) |
+
+표의 기본값은 kernel 문서 기준이며 kube-proxy 같은 도구가 노드에서 바꿔 둘 수 있으므로 실제 값은 해당 host의 sysctl로 확인한다.
+
+- 동시에 열린 연결이 적어도 짧은 연결을 계속 맺고 끊으면 닫힌 연결의 항목이 쌓인다. 닫힌 연결도 TIME_WAIT 항목으로 기본 120초 남으므로, 초당 1,000개의 연결을 새로 맺고 닫으면 TIME_WAIT 항목만 어림잡아 12만 개가 유지된다(생성 속도에 유지 시간을 곱한 추정). 이 곱이 상한에 가까워지면 표가 찬다. conntrack의 TIME_WAIT 항목은 그 연결을 추적하는 host마다 생기며, 능동 종료 쪽 소켓에 남는 TCP의 TIME_WAIT([[TCP-Handshake#TIME_WAIT 상태|TIME_WAIT 상태]])와는 다른 표다.
+- 상한에 다다르면 kernel은 다른 항목을 먼저 비워 자리를 만들려 하고(early drop), 그래도 자리가 없으면 packet을 버리며 `nf_conntrack: table full, dropping packet` 경고를 횟수 제한을 두고 kernel 로그에 남긴다. 최근 kernel은 초기 network namespace가 아닌 곳(컨테이너, 파드)에서는 `nf_conntrack: table full in netns <번호>, dropping packet`으로 남기므로 로그는 `table full`로 찾는다.
+- node_exporter의 conntrack collector는 기본으로 켜져 있고 `node_nf_conntrack_entries`(count)와 `node_nf_conntrack_entries_limit`(max)를 내보낸다(`/proc/sys/net/netfilter/`가 없는 host에서는 아무것도 수집하지 않는다). 둘의 비율에 알림을 두면 연결 오류보다 먼저 알 수 있다. `/proc/net/stat/nf_conntrack`의 drop과 early drop 통계도 `node_nf_conntrack_stat_drop`, `node_nf_conntrack_stat_early_drop`으로 본다.
+- 원인이 연결 생성 속도라면 상한을 올리는 것은 증상 완화다. 연결 풀과 keep-alive로 연결을 재사용해 생성 속도를 낮춘다. 정상적인 동시 연결이 많아 상한이 부족한 경우에는 상한 상향이 해법이 될 수 있다. 진단 과정의 예는 [[Root-Cause-Investigation-Loop#사례: Redis 연결 timeout과 conntrack 표 포화|원인 조사 사례]]에 있다.
+
 ## 조회와 편집
 
 ```bash
@@ -123,6 +141,7 @@ network namespace는 network device, routing table과 firewall rule을 따로 �
 - hook, table, chain, rule의 관계와 first-match 평가, chain policy
 - DROP과 REJECT의 차이, SNAT과 MASQUERADE의 차이
 - conntrack이 stateful 규칙을 가능하게 하는 방식
+- conntrack 표가 가득 찰 때 클라이언트에 보이는 증상, 짧은 연결이 표를 채우는 이유와 감시 지표
 - 컨테이너 traffic 규칙을 host INPUT에 넣으면 효과가 없는 이유
 - 재부팅 뒤 규칙이 사라지는 이유와 iptables-legacy, iptables-nft를 섞으면 생기는 문제
 
@@ -134,6 +153,10 @@ network namespace는 network device, routing table과 firewall rule을 따로 �
 - [Linux man-pages, network_namespaces(7)](https://man7.org/linux/man-pages/man7/network_namespaces.7.html)
 - [nftables wiki, Netfilter hooks](https://wiki.nftables.org/wiki-nftables/index.php/Netfilter_hooks) (hook 경로와 priority)
 - [Linux Kernel Docs, IP Sysctl](https://docs.kernel.org/networking/ip-sysctl.html) (`ip_forward`)
+- [Linux Kernel Docs, Netfilter Conntrack Sysfs variables](https://docs.kernel.org/networking/nf_conntrack-sysctl.html) (`nf_conntrack_max`, `nf_conntrack_count`, TCP timeout 기본값)
+- [nf_conntrack_core.c — Linux GitHub](https://github.com/torvalds/linux/blob/master/net/netfilter/nf_conntrack_core.c) (`__nf_conntrack_alloc()`의 early drop과 table full 경고)
+- [Kubernetes Documentation, kube-proxy](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/) (`--conntrack-max-per-core`, `--conntrack-min`, established timeout 기본값 변경)
+- [node_exporter — prometheus/node_exporter](https://github.com/prometheus/node_exporter) (conntrack collector 기본 활성), [conntrack_linux.go — prometheus/node_exporter](https://github.com/prometheus/node_exporter/blob/master/collector/conntrack_linux.go) (지표 이름과 읽는 파일)
 - [loopback.c — Linux GitHub](https://github.com/torvalds/linux/blob/master/drivers/net/loopback.c), [ip_input.c — Linux GitHub](https://github.com/torvalds/linux/blob/master/net/ipv4/ip_input.c) (loopback 송신이 수신 경로의 prerouting hook으로 다시 들어옴)
 - [Debian Wiki, iptables](https://wiki.debian.org/iptables), [nftables](https://wiki.debian.org/nftables)
 - [Red Hat, RHEL 9 Configuring firewalls and packet filters, Getting started with nftables](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_firewalls_and_packet_filters/getting-started-with-nftables_firewall-packet-filters)
@@ -151,3 +174,4 @@ network namespace는 network device, routing table과 firewall rule을 따로 �
 - [[Inline-vs-Out-of-Path|Inline vs Out-of-Path 보안 장비]]
 - [[RDS-Security-Group|Security Group (stateful)과 NACL]]
 - [[Linux-File-System|Linux 파일 시스템]]
+- [[Root-Cause-Investigation-Loop|근본 원인 조사 루프 (conntrack 표 포화 사례)]]

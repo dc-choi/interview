@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, cache]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-06
 category: "Data & Storage - Cache & KV"
 aliases: ["Redis Architecture"]
 ---
@@ -133,9 +133,19 @@ Redis Transaction은 RDBMS와 다름 — **EXEC 중 명령 실패해도 롤백 X
 
 WATCH + MULTI/EXEC = **낙관적 락(optimistic CAS)**. 위 트랜잭션 섹션 참조.
 
+### 클라이언트가 pipeline에 쓰는 연결
+
+트랜잭션의 MULTI 대기열은 연결마다 있고 블로킹 명령은 응답을 기다리는 동안 연결을 붙잡으므로, 클라이언트 라이브러리는 이런 명령에 공유 연결 대신 전용 연결을 쓴다. 라이브러리에 따라 pipeline도 전용 연결을 쓰는데, 그 연결을 호출마다 새로 맺으면 왕복을 줄이려던 pipeline이 연결 수립과 종료 비용, 서버 쪽 연결 상태를 늘린다.
+
+- Spring Data Redis의 Lettuce 연결은 기본으로 thread-safe한 공유 네이티브 연결 하나로 일반 명령을 처리하고, 블로킹 명령과 트랜잭션에는 연결 공급자(`LettuceConnectionProvider`)에서 얻은 전용 연결을 쓴다. 소스에서는 `openPipeline()`도 전용 연결을 얻고 pipeline이나 트랜잭션 중의 명령을 전용 연결로 보낸다. pipeline에 전용 연결을 쓰는 이유는 문서에 적혀 있지 않다. `shareNativeConnection`을 false로 두면 javadoc 설명대로 모든 작업이 소켓을 열고 닫는다.
+- 풀이 없는 기본 공급자는 전용 연결을 새로 만들고, 반환할 때(`release`) 그 연결을 닫는다. `LettucePoolingClientConfiguration`(commons-pool2 기반)을 쓰면 반환한 연결이 풀로 돌아간다. 풀 없이 `executePipelined`를 자주 부르면 호출마다 연결 수립, 인증 같은 초기화, 명령과 종료가 반복될 수 있다(2026-10-06 Spring Data Redis 4.1 문서와 main 브랜치 소스 기준).
+- 짧은 연결이 빠르게 반복되면 연결을 추적하는 host의 conntrack 표에 닫힌 연결의 TIME_WAIT 항목이 쌓여 새 연결이 timeout될 수 있다([[Linux-Netfilter-and-iptables#conntrack 표가 가득 차면|conntrack 표 포화]], [[Root-Cause-Investigation-Loop#사례: Redis 연결 timeout과 conntrack 표 포화|진단 사례]]). pipeline이 꼭 필요한지, `MGET` 같은 집계 명령으로 바꿀 수 있는지, 전용 연결을 풀로 재사용할지를 함께 정한다.
+
 ## 출처
 
 2026-10-02에는 클라이언트 간 명령 순서의 비보장 범위를 Redis client handling 문서에 대조했다. I/O 스레딩, 벤치마크와 프로토콜 버전 전체를 다시 검증한 기록은 아니다.
+
+2026-10-06에는 Spring Data Redis의 Lettuce 공유 연결과 전용 연결 구분, pipeline의 전용 연결 사용과 연결 반환 동작을 4.1 API 문서와 main 브랜치 소스에 대조했다. 문서의 다른 Redis와 Valkey 주장 전체를 다시 검증한 기록은 아니다.
 
 - [Redis Docs, Redis client handling](https://redis.io/docs/latest/develop/reference/clients/)
 - [우아한테크세미나 191121 우아한레디스 — 우아한테크](https://www.youtube.com/watch?v=mPB2CZiAkKM)
@@ -145,6 +155,12 @@ WATCH + MULTI/EXEC = **낙관적 락(optimistic CAS)**. 위 트랜잭션 섹션 
 - [Redis Docs 아카이브, Install Redis on Windows](https://redis.io/docs/latest/operate/oss_and_stack/install/archive/install-redis/install-redis-on-windows/) — 공식 네이티브 빌드 미제공, WSL2 안내
 - [Redis Documentation, Scripting with Lua](https://redis.io/docs/latest/develop/programmability/eval-intro/)
 - [You Don't Need Transaction Rollbacks in Redis — Redis](https://redis.io/blog/you-dont-need-transaction-rollbacks-in-redis/)
+- [Spring Data Redis, Drivers](https://docs.spring.io/spring-data/redis/reference/redis/drivers.html)
+- [Spring Data Redis API, LettuceConnectionFactory](https://docs.spring.io/spring-data/redis/docs/current/api/org/springframework/data/redis/connection/lettuce/LettuceConnectionFactory.html)
+- [Spring Data Redis API, LettucePoolingClientConfiguration](https://docs.spring.io/spring-data/redis/docs/current/api/org/springframework/data/redis/connection/lettuce/LettucePoolingClientConfiguration.html)
+- [Redis Docs, Transactions](https://redis.io/docs/latest/develop/using-commands/transactions/), [Redis Docs, BLPOP](https://redis.io/docs/latest/commands/blpop/) (MULTI 상태와 블로킹이 연결 단위)
+- [LettuceConnection.java — spring-projects/spring-data-redis](https://github.com/spring-projects/spring-data-redis/blob/main/src/main/java/org/springframework/data/redis/connection/lettuce/LettuceConnection.java) (`openPipeline()`, 전용 연결 선택과 반환)
+- [LettuceConnectionProvider.java — spring-projects/spring-data-redis](https://github.com/spring-projects/spring-data-redis/blob/main/src/main/java/org/springframework/data/redis/connection/lettuce/LettuceConnectionProvider.java) (기본 `release`가 연결을 닫음), [LettucePoolingConnectionProvider.java — spring-projects/spring-data-redis](https://github.com/spring-projects/spring-data-redis/blob/main/src/main/java/org/springframework/data/redis/connection/lettuce/LettucePoolingConnectionProvider.java) (풀로 반환)
 - [Valkey Documentation, Benchmarking tool](https://valkey.io/topics/benchmark/)
 - [Valkey Documentation, Bulk loading](https://valkey.io/topics/mass-insertion/)
 - [valkey.conf 9.1 THREADED I/O — valkey-io/valkey](https://github.com/valkey-io/valkey/blob/9.1/valkey.conf)
