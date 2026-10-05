@@ -192,3 +192,4 @@ aliases: ["Dev Outsourcing Engagement", "개발 외주 계약과 수주", "외�
 - [[Business-Model|비즈니스 모델과 수익 구조]] — 공급 제약이 있는 서비스 매출
 - [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]] — 이미 돈이 오가는 곳에서 문제 찾기
 - [[Low-Capital-Service-Business|소자본 생활 서비스 사업과 아이디어 검증]]
+- [[Public-Procurement-Small-Contracts|국가기관과 지방자치단체의 소액 수의계약]] — 공공 용역의 1인 견적과 나라장터 견적
