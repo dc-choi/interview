@@ -21,7 +21,7 @@ React 지식은 JSX 문법보다 state를 어디에 두고, render를 순수하�
 - [[React-DOM|React DOM]] — HTML, events, form, resource, root와 SSR
 - [[React-Server-Boundaries|서버와 client 경계]] — Server Components, Server Functions와 직렬화
 - [[React-Application-Design|요구사항에서 component와 data 계약 도출하기]]
-- [[React-Routing-and-Styling|React Router와 styling 경계]]
+- [[React-Routing-and-Styling|React Router와 styling 경계, runtime CSS-in-JS와 CSS Modules 비용]]
 - [[TS-React-Type-Contracts|React와 TypeScript 타입 계약]]
 - [[React-Form-Builder-Practice|설문, admin과 form builder 설계]]
 

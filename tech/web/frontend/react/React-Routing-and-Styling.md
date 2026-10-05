@@ -118,6 +118,13 @@ button처럼 variant(primary, secondary, tertiary)와 상태(default, hover, pre
 
 위 `tones`처럼 JavaScript map의 값이 CSS 변수 참조를 가리키면 variant 이름은 타입으로 제한하고 실제 값은 cascade로 바꿀 수 있다. 방법 자체보다 design 값을 한곳에서 관리하고 재사용하기 쉽게 만드는 목적을 기준으로 고른다.
 
+### runtime CSS-in-JS와 빌드 타임 CSS의 비용
+
+runtime CSS-in-JS는 render 중에 style rule을 만든다. SSR에서는 그 rule을 모아 markup보다 먼저 보내야 하고([[NextJS-CSS-in-JS|CSS-in-JS의 SSR registry와 streaming]]), client에서도 style 초기화와 잦은 style 재계산 비용이 든다. CSS Modules처럼 빌드 때 CSS 파일을 만드는 방식은 server와 client가 runtime에 style을 만들지 않고 공유 stylesheet의 browser cache를 쓸 수 있는 대신, chunk 구성에 따라 그 page에 쓰지 않는 rule까지 내려받을 수 있다([[NextJS-Config-CSS-Images#cssChunking|CSS chunk 병합의 비용]]). 어느 쪽이 빠른지는 서버 render 시간, client의 style과 컴포넌트 초기화 시간, 상호작용 중 style 재계산, 전송량과 첫 화면 지표를 함께 재서 정한다. CSS-in-JS를 쓸 때 정적 style은 CSS 파일로, 동적 style은 inline style로 먼저 검토하라는 기준은 [[React-Layout-and-Insertion-Effects#useInsertionEffect 계약|useInsertionEffect 계약]]에 있다.
+
+- **사례:** GitHub은 Primer React와 github.com의 styled-components를 CSS Modules로 옮겼다(2026년 9월 공개). client의 style 초기화로 첫 page load가 늦어지고, style 수집이 client에서 server로 옮겨 가며 SSR 성능이 떨어지고, page의 컴포넌트가 늘수록 style 갱신을 감당하기 어려워진 것이 문제였다. GitHub은 2024년 12월까지 Primer 컴포넌트를 옮긴 뒤 page를 서버 렌더하는 시간이 55%, page의 컴포넌트 초기화 시간이 25% 줄었다고 밝혔지만 측정한 page와 방법은 공개하지 않았다. 이어 github.com의 `sx` prop 6,419개를 옮긴 단계에서는 page에 따라 서버 렌더 시간 개선이 1%에서 22%까지 달랐다. 두 수치는 적용 범위가 다른 단계의 결과라 더하지 않으며, 서버 렌더 시간의 개선이 전체 page load 시간의 같은 비율 개선을 뜻하지도 않는다. style이 stylesheet로 HTML과 함께 전달돼 client와 server의 runtime 처리는 없어졌고, CSS 전송량이 얼마나 늘었는지는 공개되지 않았다.
+- **전환 방식:** Primer 컴포넌트는 컴포넌트마다 visual regression 테스트로 전후 스냅샷이 같은지 확인하고 feature flag로 팀, 사내 직원, 전체 사용자 순서로 넓혔다. github.com의 `sx` prop 사용처는 호환 wrapper로 동작을 유지한 채 대부분 자동 변환 도구로 옮기고, package 단위로 pre-production에서 시험한 뒤 배포했다. GitHub은 2026년 6월 기준 100% CSS Modules로 운영한다고 밝혔다. 단계적 노출의 일반론은 [[Feature-Flag|Feature Flag]]를 따른다.
+
 ## native form control을 대체할 때의 접근성
 
 기본 checkbox와 radio는 CSS만으로 원하는 모양을 내기 어려워 input을 숨기고 span 같은 대체 element를 그리곤 한다. 이때 input에 `display: none`을 주면 accessibility tree에서 빠지고 focus도 받을 수 없어 keyboard와 screen reader 사용자가 선택지를 조작할 수 없다.
@@ -152,6 +159,7 @@ label, error 연결과 keyboard 동작 같은 공통 계약은 [[React-State-Eff
 - [MDN, appearance](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/appearance)
 - [styled-components, Basics](https://styled-components.com/docs/basics)
 - [styled-components, Security](https://styled-components.com/docs/advanced#security)
+- [Improving site performance by shipping more CSS — The GitHub Blog](https://github.blog/engineering/architecture-optimization/improving-site-performance-by-shipping-more-css/)
 - IT Share, [React Router 소개](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161803)
 - IT Share, [React Router v6 적용](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161804)
 - IT Share, [Router로 survey step 구분](https://www.inflearn.com/courses/lecture?courseId=331070&unitId=161805)
