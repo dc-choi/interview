@@ -60,7 +60,8 @@ SPIVA scorecard에서는 여러 시장과 기간에 걸쳐 다수의 액티브 �
 
 ## 출처
 
-- [SPIVA U.S. Year-End 2025](https://www.spglobal.com/spdji/en/spiva/article/spiva-us)
+- [SPIVA U.S. Year-End 2025](https://www.spglobal.com/spdji/en/documents/spiva/spiva-us-year-end-2025.pdf) — 2026-10-05 대형주 액티브 펀드의 2025년 S&P 500 미달 비율 79%와 20년 92.9%, 범주별 차이와 생존 편향 보정 대조
+- [U.S. Persistence Scorecard Year-End 2025](https://www.spglobal.com/spdji/en/documents/spiva/persistence-scorecard-year-end-2025.pdf) — 2026-10-05 상위 성과의 낮은 지속성 대조
 - [Investor.gov, Index Funds](https://www.investor.gov/introduction-investing/investing-basics/investment-products/mutual-funds-and-exchange-traded-4)
 - [The Benefits and Limitations of Dollar-Cost Averaging — FINRA](https://www.finra.org/investors/insights/dollar-cost-averaging) — 2026-10-03 적립식의 행동상 이점, 목돈 분할의 기회비용과 거래비용 대조
 - [What Is Market Timing? — FINRA](https://www.finra.org/investors/insights/market-timing) — 2026-10-03 단기 예측 매매의 비용과 반등을 놓칠 위험 대조

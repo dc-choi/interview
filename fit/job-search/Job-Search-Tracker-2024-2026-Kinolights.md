@@ -331,7 +331,7 @@ aliases: ["트라이포드-키노 이직 트래커", "Job Search Tracker 2024-20
 | 아이헤이트플라잉버그스(밀당PT) | 26.04.22 | 26.04.28 | https://careers.mildang.kr/ko/o/69968 |
 | 어스얼라이언스 | 26.04.22 | 26.04.30 | https://www.wanted.co.kr/wd/355467 |
 | 리디 | 26.04.28 | 26.04.30 | https://ridi.recruit.roundhr.com/c/D66vdMM2xc — 재지원 (이전 25년 탈락) |
-| 스캐터랩 (제타) | 26.04.28 | 26.04.30 | https://www.scatterlab.co.kr/ko/o/123249 — 재지원 (이전 25.2.26 탈락) |
+| 스캐터랩 (제타) | 26.04.28 | 26.04.30 | https://www.scatterlab.co.kr/ko/o/123249 — 재지원 (이전 25.2.26 지원 건 탈락) |
 | 로앤컴퍼니 | 26.03.10 | 26.05.04 | https://lawcompany.career.greetinghr.com/ko/o/196729 — 3회 탈락 (25.4.18, 25.8.25, 26.03.10) |
 | 페이타랩(패스오더) | 26.04.20 | 26.05.04 | https://recruit.passorder.co.kr/c/umtrEJrqdg |
 | 앤서스랩코리아 | 26.04.28 | 26.05.06 | https://nsuslab.com/?round_form_id=aozPj4bYhn#/careers — 3회 탈락 (25.2.20, 26.01.20, 26.04.28) |
@@ -341,7 +341,7 @@ aliases: ["트라이포드-키노 이직 트래커", "Job Search Tracker 2024-20
 | AB180 | 26.04.28 | 26.05.11 | https://recruit.ab180.co/job_posting/yTlPR6Ki — 2회 탈락 (이전 에이비일팔공) |
 | 테크타카(ARGO) | 26.04.28 | 26.05.11 | https://techtaka.ninehire.site/job_posting/n0xee2mi |
 | 베슬에이아이(VESSL AI) | 26.05.04 | 26.05.12 | https://vessl.recruit.roundhr.com/c/uKCMrULfaT |
-| 딜라이트룸(Alarmy) | 26.05.07 | 26.05.20 | https://team.alar.my/job_posting/6BpuJhsW — 2회 탈락 (25.3.17, 26.05.20 재도전) |
+| 딜라이트룸(Alarmy) | 26.05.07 | 26.05.20 | https://team.alar.my/job_posting/6BpuJhsW — 2회 탈락 (25.3.17 지원 건, 26.05.07 재지원 건) |
 | 콕스웨이브 (Coxwave, AX Workflow Builder) | 26.05.27 | 26.05.28 | https://careers.coxwave.com/c/SnHVam6Hjd, 원티드 https://www.wanted.co.kr/wd/363962 — Backend[AX Workflow] 3-7년, TS, 워크플로우 실행 엔진, LLM 에이전트. 누적 ~125억, Align AI |
 | 아임웹 Core (Back-end Engineer, **재지원**) | 26.05.28 | 26.06.01 | https://team.imweb.me/career_detail?id=209669 — **2회 탈락** (25.4.29, 26.05.28 자기소개 fork 재지원). 서류 컷, 과제 진입 X. 5년+ hard cut(본인 4년차) 추정. 2024 매출 255억(근거 URL 미보존, 재검증 필요) |
 | 풀림 [신사업] (애드테크) | 26.05.27 | 26.06.01 | https://www.wanted.co.kr/wd/358135 — 백엔드 3년+, 0→1, Node, RDBMS 복잡 모델링, 결제/정산 |
@@ -363,6 +363,7 @@ aliases: ["트라이포드-키노 이직 트래커", "Job Search Tracker 2024-20
 | 데이블 | 포기 | 25.6.13 지원 |
 | 토스 | 탈락 | 추천을 통해 Node 포지션에 지원, 25.08.25 지원, 25.09.15 탈락 |
 | 모니모니 | 통과 | 1차 면접을 먼저 봄, 과제를 나중에 봄 |
+| 히로인스 | 탈락 | 커피챗 뒤 라이브 코딩 전형에서 탈락. 지원일과 결과일은 미확인이며 회고 커밋 메시지에는 25.10으로 적혀 있다. 회고 [[Interview-Analysis#히로인스]] |
 | 크리에이트립 | 탈락 | 25.11.12 지원, 12.2 탈락 |
 | 아이오트러스트 | 탈락 | 25.12.18 지원, 26.01.07 탈락 |
 | 넛지헬스케어 | 탈락 | 26.03.04 지원, 26.03.25 탈락통보 |

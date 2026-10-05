@@ -8,7 +8,7 @@ aliases: ["Global IT Interview", "글로벌 IT 인터뷰", "해외 IT 회사 인
 
 # 글로벌 IT 기업 인터뷰 준비
 
-해외 IT 기업(영어 면접), 글로벌 본사, 외국계 지사 인터뷰는 한국 로컬과 세 가지가 다르다. **(1) 서류 탈락률이 높음**(98% 초기 탈락 통계), **(2) JD 일치도와 컬처핏 검증이 집요함**, **(3) 마지막 질문도 가산점 기회**. 답변 방어(Defense)만 잘해선 합격하기 어렵고, **능동적 질문(Offense)으로 주도권을 잡아야** 한다.
+해외 IT 기업(영어 면접), 글로벌 본사, 외국계 지사 인터뷰는 한국 로컬과 세 가지가 다르다. **(1) 서류 탈락률이 높음**(자주 인용되는 98% 초기 탈락은 Korn Ferry CEO가 2017년 Forbes 칼럼에서 기업 공고 1건당 평균 지원서 250건 중 98%가 초기 스크리닝에서 걸러진다고 쓴 수치다. 조사 방법은 제시되지 않았고 글로벌 IT와 한국 로컬을 비교한 통계도 아니다), **(2) JD 일치도와 컬처핏 검증이 집요함**, **(3) 마지막 질문도 가산점 기회**. 답변 방어(Defense)만 잘해선 합격하기 어렵고, **능동적 질문(Offense)으로 주도권을 잡아야** 한다.
 
 ## 단계별 준비 지도
 
@@ -181,6 +181,7 @@ aliases: ["Global IT Interview", "글로벌 IT 인터뷰", "해외 IT 회사 인
 - [brunch ywkim36 — 인터뷰 2편: 거짓말, 준비 부족 금지](https://brunch.co.kr/@ywkim36/5)
 - [brunch ywkim36 — 구직활동 전략(목표, SNS, 리쿠르터)](https://brunch.co.kr/@ywkim36/21)
 - [brunch ywkim36 — 평상시 준비: 자기인식, 학습, 네트워킹](https://brunch.co.kr/@ywkim36/22)
+- [Forbes Gary Burnison — Why You Need To 'Lose the Resume' To Land A Job: 4 Things To Seize To Your Next Opportunity](https://www.forbes.com/sites/garyburnison/2017/11/27/why-you-need-to-lose-the-resume-to-land-a-job-4-things-to-seize-to-your-next-opportunity/)
 - [Threads grace_zumba.canada — 캐나다 이직 현실 10가지](https://www.threads.com/@grace_zumba.canada/post/DWymnMKDXOe)
 - [북미 이력서는 1장으로 — Threads, henrykang227](https://www.threads.com/@henrykang227/post/DJs2ZJex9qF)
 - [인프런, 코드빌런, 주요 회사별 채용 프로세스 - 네카라쿠배 및 메타, 구글 코리아 채용 프로세스](https://www.inflearn.com/courses/lecture?courseId=334892&unitId=242701)

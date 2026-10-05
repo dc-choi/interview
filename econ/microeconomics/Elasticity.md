@@ -40,7 +40,7 @@ aliases: ["탄력성", "Elasticity"]
 
 기업이 가격을 올릴지 내릴지는 탄력성에 달렸다.
 
-- **비탄력적**이면 가격을 올릴 때 줄어드는 판매량보다 오른 가격 효과가 커서 **총수입이 늘어난다**. 담배세를 올려도 세수가 늘고 흡연이 크게 안 주는 이유다.
+- **비탄력적**이면 가격을 올릴 때 줄어드는 판매량보다 오른 가격 효과가 커서 **총수입이 늘어난다**. 담배세를 올리면 판매량이 줄어도 그 감소율이 가격 인상률보다 작아 세수가 늘 수 있는 이유다. 2015년 담뱃값이 80% 오른 해에 판매량은 23.7% 줄었다.
 - **탄력적**이면 가격을 올리면 판매량이 더 크게 빠져 **총수입이 줄어든다**. 이런 상품은 오히려 가격을 내려 박리다매가 유리할 수 있다.
 
 이 관계는 **총수입(P × Q)** 에 관한 것이다. 가격을 내려 매출이 늘어도 추가 생산, 배송과 판매 비용 때문에 이익은 줄 수 있다. 가격 전략은 탄력성과 함께 한계비용, 생산능력과 경쟁 반응을 확인한다 → [[Production-and-Cost|생산과 비용]].
@@ -71,6 +71,8 @@ aliases: ["탄력성", "Elasticity"]
 
 - [OpenStax, Principles of Economics 3e, Price Elasticity of Demand and Price Elasticity of Supply](https://openstax.org/books/principles-economics-3e/pages/5-1-price-elasticity-of-demand-and-price-elasticity-of-supply) — 2026-10-02 변화율 분모와 중점법 대조
 - [OpenStax, Principles of Economics 3e, Elasticity and Pricing](https://openstax.org/books/principles-economics-3e/pages/5-3-elasticity-and-pricing)
+- [국회예산정책처, 담배가격 인상에 따른 재정 영향 분석](https://nabo.go.kr/ko/notice/releasesView.do?idx=4396) — 2026-10-05 담배수요의 가격탄력성 −0.38 추정과 세입 증가 효과 대조
+- [한국보건사회연구원, 보건복지포럼 2022년 5월호, 우리나라 국민의 흡연 현황과 담배규제 정책이 주는 시사점](https://doi.org/10.23062/2022.05.2) — 2026-10-05 2015년 담뱃값 80% 인상과 판매량 23.7% 감소(기획재정부 자료) 대조
 
 ## 관련 문서
 

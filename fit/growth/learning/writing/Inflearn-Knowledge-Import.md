@@ -27,7 +27,7 @@ aliases: ["Inflearn Knowledge Import", "인프런 지식 문서화 트래커"]
 - 확인된 lecture 단원: 4,880개(최초 92개 기준)
 - quiz 등 기타 단원: 607개(최초 92개 기준)
 - 커리큘럼에 표시된 총 영상 시간: 약 869시간(최초 92개 기준). runtime이 0인 단원이 있어 실제 합계의 하한이다
-- 초기 통합 완료 기록: 91개(2026-09-30 신규 2개 포함). 원문 전문 미확보 3개는 Course 327754, 327527, 330462이며 최종 재감사 결과를 아래에 기록했다. GraphQL, HTTP, Node.js/NestJS, JavaScript/TypeScript/Java/C++/JSP/React, PostgreSQL, MySQL/Oracle/SQL/JPA/Spring Data/Querydsl/MyBatis, Redis/Kafka, AWS, V8/Deno, Docker/Kubernetes, Git/GitHub, 네트워크, 운영체제/컴퓨터 구조, 자료구조/알고리즘, 객체지향/함수형/디자인 패턴, 동시성, Spring MVC/JDBC/Security/AOP/헥사고날, 마이크로서비스/분산 트랜잭션, 커머스 도메인, DB 모델링/설계/성능/운영, 시스템 설계, 배포, 테스트, 브라우저 DOM/CSS, 프로덕트 디자인 협업, 이력서, 취업/이직, 선착순 이벤트와 재고 동시성 문서군에 통합했다
+- 초기 통합 완료 기록: 91개(2026-09-30 신규 2개 포함). 2026-10-01 Course 336905 통합으로 누적 92개. 원문 전문 미확보 3개는 Course 327754, 327527, 330462이며 최종 재감사 결과를 아래에 기록했다. GraphQL, HTTP, Node.js/NestJS, JavaScript/TypeScript/Java/C++/JSP/React, PostgreSQL, MySQL/Oracle/SQL/JPA/Spring Data/Querydsl/MyBatis, Redis/Kafka, AWS, V8/Deno, Docker/Kubernetes, Git/GitHub, 네트워크, 운영체제/컴퓨터 구조, 자료구조/알고리즘, 객체지향/함수형/디자인 패턴, 동시성, Spring MVC/JDBC/Security/AOP/헥사고날, 마이크로서비스/분산 트랜잭션, 커머스 도메인, DB 모델링/설계/성능/운영, 시스템 설계, 배포, 테스트, 브라우저 DOM/CSS, 프로덕트 디자인 협업, 이력서, 취업/이직, 선착순 이벤트와 재고 동시성 문서군에 통합했다
 
 ## 강의 대기열
 

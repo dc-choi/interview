@@ -13,7 +13,7 @@ aliases: ["재정정책", "Fiscal Policy"]
 
 재정정책은 **정부가 지출(G)과 조세(T)를 조절해 경기와 소득분배에 영향을 주는 정책**이다. 금리로 간접적으로 작동하는 [[Interest-Rates-Monetary-Policy|통화정책]]과 달리, 재정정책은 정부가 직접 돈을 쓰거나 세금을 깎아 수요에 곧장 손을 댄다.
 
-거시정책에는 두 개의 큰 손이 있다. 중앙은행이 쥔 통화정책과 정부가 쥔 재정정책이다. 둘은 같은 목표(물가 안정과 완전 고용)를 다른 도구로 추구한다.
+거시정책에는 두 개의 큰 손이 있다. 중앙은행이 쥔 통화정책과 정부가 쥔 재정정책이다. 둘 다 경기 안정에 쓰이지만 목표가 같지는 않다. 한국은행법은 물가안정을 목적으로 하고 금융안정에 유의하도록 정하며, 미국 연준처럼 최대 고용과 물가 안정을 함께 위임받은 중앙은행도 있다.
 
 ## 2. 두 개의 손잡이
 
@@ -79,6 +79,8 @@ aliases: ["재정정책", "Fiscal Policy"]
 - [BEA, Measures of government spending](https://www.bea.gov/help/faq/552) — 2026-10-02 정부 구매와 이전지출의 GDP 반영 방식 대조
 - [IMF, Public Sector Debt Statistics, Chapter 10](https://www.elibrary.imf.org/display/book/9781616351564/ch010.xml) — 2026-10-02 재정적자와 채무 증감의 차이 대조
 - [IMF, Fiscal Policy: Taking and Giving Away](https://www.imf.org/external/pubs/ft/fandd/basics/36-fiscal-policy.htm) — 재정 효과, 여유 자원과 자금 조달 제약
+- [국가법령정보센터, 한국은행법 제1조(목적)](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%ED%95%9C%EA%B5%AD%EC%9D%80%ED%96%89%EB%B2%95/%EC%A0%9C1%EC%A1%B0) — 2026-10-05 물가안정 목적과 금융안정 유의 조항 대조(2026-01-02 시행 조문)
+- [Federal Reserve, How We Conduct Monetary Policy](https://www.federalreserve.gov/aboutthefed/fedexplained/monetary-policy.htm) — 2026-10-05 최대 고용과 물가 안정의 이중 책무 대조
 
 - [IMF — Fiscal Multipliers: Size, Determinants, and Use in Macroeconomic Projections](https://www.imf.org/en/publications/tnm/issues/2016/12/31/fiscal-multipliers-size-determinants-and-use-in-macroeconomic-projections-41784)
 

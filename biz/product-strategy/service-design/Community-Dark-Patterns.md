@@ -92,15 +92,15 @@ aliases: ["Community Dark Patterns", "커뮤니티 다크 패턴", "리텐션 �
 | **규제 리스크** | EU DSA, GDPR, FTC, 공정위의 dark pattern 제재 확대 |
 | **브랜드 붕괴** | 한 번의 언론 보도, 사회적 이슈로 장기 신뢰 손실 |
 | **직원 윤리적 번아웃** | "우리 제품이 해롭다"는 자각이 퇴사로 이어짐 |
-| **법적 소송** | 미국의 "unfair design" 소송, 한국의 표시광고법 |
+| **법적 제재와 소송** | 미국 FTC법 제5조의 불공정하거나 기만적인 행위 금지와 ROSCA 등에 근거한 FTC 제재와 소송, 한국 전자상거래법 제21조의2의 온라인 인터페이스 금지행위와 표시광고법 |
 | **장기 LTV 하락** | 강제된 리텐션은 구전 마케팅을 역으로 소모 |
 
 단기 리텐션 지표에 최적화하면 장기 지속가능성이 붕괴되는 **로컬 최적 함정**.
 
 ## 반대 사례 — 건강한 리텐션 설계
 
-- **Basecamp**: 언제든 데이터 export, 이탈 절차 2클릭, 이메일로 사용률 낮으면 "해지하시겠어요?" 먼저 제안
-- **Spotify**: 추천 품질로 재진입 유도, 이탈 절차 짧음 (subscription 해지 가능)
+- **Basecamp**: 계정 소유자가 언제든 전체 데이터를 export, Adminland에서 해지를 누르고 다음 화면에서 확인하면 바로 해지. 사용률이 낮으면 해지를 먼저 제안한다는 공식 근거는 확인하지 못했다
+- **Spotify**: 추천 품질로 재진입 유도, 계정 페이지의 플랜 관리에서 해지를 선택하는 두 단계로 해지 (파트너 결제는 해당 업체에서 해지)
 - 반면 예: **삭제 절차가 지원팀 문의만 가능한 서비스**, **탈퇴 후에도 계정 복구 유도 메일 반복 발송하는 서비스** 등
 
 ## 윤리 경계 — 언제 선을 넘는가
@@ -135,6 +135,10 @@ aliases: ["Community Dark Patterns", "커뮤니티 다크 패턴", "리텐션 �
 - [제품에 철학을 담다 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-10-philosophy-in-product/)
 - [FTC, Bringing Dark Patterns to Light](https://www.ftc.gov/reports/bringing-dark-patterns-light)
 - [European Commission, Digital Services Act](https://digital-strategy.ec.europa.eu/en/policies/digital-services-act)
+- [국가법령정보센터, 전자상거래 등에서의 소비자보호에 관한 법률 제21조의2](https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=282793&efYd=20260721) — 2026-07-21 시행본
+- [Basecamp Help, Export your Basecamp data](https://5.basecamp-help.com/article/1139-export-your-basecamp-data)
+- [Basecamp Help, Cancelling your Basecamp account](https://5.basecamp-help.com/article/1141-cancel-your-basecamp-account)
+- [Spotify Support, How to cancel Premium plans](https://support.spotify.com/us/article/cancel-premium/)
 
 ## 관련 문서
 - [[User-Feedback|사용자 피드백 관리]]

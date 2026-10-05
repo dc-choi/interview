@@ -60,7 +60,7 @@ OS × 배역은 이 두 축을 나누는 설계 프레임이다. OS는 전문가
 ## 출처
 
 - [퍼스널 브랜드는 세계관의 입구다 — 만년필, 정회권](https://10000yearspen.com/post/%ED%8D%BC%EC%8A%A4%EB%84%90-%EB%B8%8C%EB%9E%9C%EB%93%9C%EB%8A%94-%EC%84%B8%EA%B3%84%EA%B4%80%EC%9D%98-%EC%9E%85%EA%B5%AC%EB%8B%A4-nlbOMUysRGGnlDTNJlQsNA)
-- [퍼스널 브랜드는 기능으로 완성된다 — 만년필, 정회권](https://10000yearspen.com/post/%ED%8D%BC%EC%8A%A4%EB%84%90-%EB%B8%8C%EB%9E%9C%EB%93%9C%EB%8A%94-%EA%B8%B0%EB%8A%A5%EC%9C%BC%EB%A1%9C-%EC%99%84%EC%84%B1%EB%90%9C%EB%8B%A4-4HZ5bM19TJakWgDVsnjJOg)
+- [퍼스널 브랜드는 기능으로 완성된다 — 만년필, 정회권](https://10000yearspen.com/post/%ED%8D%BC%EC%8A%A4%EB%84%90-%EB%B8%8C%EB%9E%9C%EB%93%9C%EB%8A%94-%EA%B8%B0%EB%8A%A5%EC%9C%BC%EB%A1%9C-%EC%99%84%EC%84%B1%EB%90%9C%EB%8B%A4-4HZ5bM19TJakWgDVsnjJOg) — 2026-10-05에는 공개된 부분의 OS 예시와 배역이 대략 여덟이라는 설명만 대조했다. 공개된 부분은 스승과 해석자를 OS 예시로 들며, 이 문서는 두 표현을 배역으로 쓴다. 여덟 배역의 목록은 로그인 뒤 본문에 있어 확인하지 못했다.
 
 ## 관련 문서
 

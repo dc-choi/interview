@@ -166,6 +166,7 @@ aliases: ["Government Support Programs", "정부 지원사업", "정부지원금
 - [제3자 부당개입 문제해결 TF 6차 회의 개최 — 중소벤처기업부](https://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=86&bcIdx=1069363)
 - [부당개입 방지 3종 세트 도입하고 법제화도 추진 — 중소벤처기업부](https://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=86&bcIdx=1064819)
 - [중기부, 제3자 부당개입 문제 해결 위해 총력대응 — 중소벤처기업부](https://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=86&bcIdx=1064333)
+- [소상공인 10명 중 8명 디지털 기술 활용하지만 83%는 기초, 입문 단계 — 중소기업중앙회](https://www.kbiz.or.kr/ko/contents/bbs/view.do?seq=163176&mnSeq=207)
 - [소상공인 10곳 중 8곳 DX 기초 수준, 정부 지원사업 참여 3% 그쳐 — 서울경제](https://www.sedaily.com/article/20053382)
 - 내 사업도 정부 지원금을 10억 원 이상 받을 수 있을까 — 하우그로우 (2026-09-23, 라이브 판매 설명회. 이 문서의 수치와 규칙은 위 공식 자료로 다시 확인한 것만 남겼다)
 

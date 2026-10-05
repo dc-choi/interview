@@ -77,7 +77,7 @@ aliases: ["Reverse Engineering Learning", "역설계 학습", "모방을 통한 
 ## 출처
 - 역설계 학습과 탁월함에 대한 개인 블로그 에세이
 - Decoding Greatness(론 프리드먼) — 역설계, 전략적 연습, 과정 상상, 리스크 관리
-- 직업으로서의 소설가, 달리기를 말할 때 내가 하고 싶은 이야기(무라카미 하루키) — 필사를 통한 모방 학습
+- 직업으로서의 소설가, 달리기를 말할 때 내가 하고 싶은 이야기(무라카미 하루키) — 필사를 통한 모방 학습(두 책에서 필사를 다룬 대목은 미확인)
 - [build-your-own-x — GitHub, codecrafters-io](https://github.com/codecrafters-io/build-your-own-x)
 - [일 잘하는 선배의 습관을 따라 한 경험 — Threads, hidden.gemgem](https://www.threads.com/@hidden.gemgem/post/Db8QnHPCao6)
 - [build-your-own-x 소개 — Threads, mori_mement0](https://www.threads.com/@mori_mement0/post/Da2ulbJmD9A)

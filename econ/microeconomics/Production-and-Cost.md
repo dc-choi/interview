@@ -106,7 +106,7 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 
 - **고정비는 모든 의사결정에서 제외한다** → 현재 범위에서 바뀌지 않는 고정비와, 선택에 따라 추가되거나 회피할 수 있는 고정비를 구분한다.
 - **이미 많이 투자했으니 계속해야 한다** → 매몰비용 오류다. 앞으로의 비용과 편익만 본다.
-- **많이 만들수록 무조건 싸진다** → 일정 규모를 넘으면 규모의 불경제로 단가가 다시 오른다.
+- **많이 만들수록 무조건 싸진다** → 규모의 경제가 소진되면 단가가 더 내려가지 않는 구간이 있고, 그보다 커지면 규모의 불경제로 단가가 다시 오를 수 있다.
 
 ## 출처
 
@@ -114,6 +114,7 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 - [OpenStax, Evaluate and Determine Whether to Accept or Reject a Special Order](https://openstax.org/books/principles-managerial-accounting/pages/10-2-evaluate-and-determine-whether-to-accept-or-reject-a-special-order) — 여유 용량과 추가 비용, 기존 고객에 미치는 영향
 - [OpenStax, Evaluate and Determine How to Make Decisions When Resources Are Constrained](https://openstax.org/books/principles-managerial-accounting/pages/10-6-evaluate-and-determine-how-to-make-decisions-when-resources-are-constrained) — 병목 자원당 공헌이익. 서비스 수주 예시는 이를 적용한 가정이다.
 - [OpenStax, Principles of Microeconomics 3e, How Perfectly Competitive Firms Make Output Decisions](https://openstax.org/books/principles-microeconomics-3e/pages/8-2-how-perfectly-competitive-firms-make-output-decisions)
+- [OpenStax, Principles of Microeconomics 3e, Costs in the Long Run](https://openstax.org/books/principles-microeconomics-3e/pages/7-5-costs-in-the-long-run) — 2026-10-05 규모의 경제, 규모에 대한 수익 불변 구간과 규모의 불경제 대조
 - [KIFRS.com, 기업회계기준서 제1002호 재고자산의 취득원가](https://www.kifrs.com/s/1002/a36dbb) — 매입원가, 전환원가와 제외 원가
 - [IFRS Foundation, IAS 2 Inventories](https://www.ifrs.org/issued-standards/list-of-standards/ias-2-inventories/) — 문단 11, 12, 16
 - [원가 구성 도식과 댓글 논의 — Threads, i.am_goldenhour](https://www.threads.com/@i.am_goldenhour/post/DdafhDikm86)

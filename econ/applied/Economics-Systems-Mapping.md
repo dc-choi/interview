@@ -23,7 +23,7 @@ aliases: ["경제와 분산시스템 매핑", "Economics and Distributed Systems
 | [[Asset-Allocation-Diversification\|분산투자]] | redundancy, bulkhead 격리 | 상관 낮은 자산에 분산해 단일 장애의 전체 전파를 막음 |
 | 시장 가격발견 | 분산 합의, eventual consistency | 중앙 조정자 없이 수많은 참여자가 가격 하나로 수렴 |
 | [[Inflation\|기대인플레이션 앵커링]] | 제어 루프 안정 마진 | 기대가 풀리면(앵커 이탈) 시스템이 발산. 신뢰가 안정성 |
-| [[Financial-System-Overview\|차익거래]] | reconciliation, 자동 정합성 복원 | 가격 불일치를 자동으로 메워 일관성을 회복 |
+| [[Derivatives\|차익거래]] | reconciliation, 자동 정합성 복원 | 가격 불일치를 자동으로 메워 일관성을 회복 |
 | 유동성 | 버퍼, 큐 용량 | 평소엔 안 보이다 마르면 즉시 장애. 여유가 충격 흡수 |
 | [[Derivatives\|파생 얽힘]] | tight coupling | 개별 위험 분산 도구가 전체로는 강결합을 만들어 전염 |
 | [[Business-Cycle\|경기순환]] | 오토스케일링 헌팅, 부하 사이클 | 지연된 피드백이 과잉 반응을 부르며 호황과 불황을 진동 |

@@ -67,7 +67,7 @@ AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회�
 | 관측 | 내용 |
 |---|---|
 | AI Overviews 상위 인용 도메인(미국 쿼리, 9월 스냅샷) | YouTube 22.9%, Reddit 18.5%, Facebook 10.1% |
-| 직전 6월 스냅샷 대비 | YouTube 20.9에서 22.9로 상승, Reddit 19.6에서 18.5로 하락, Facebook 11.6에서 10.1로 하락 |
+| 6월 스냅샷 대비 | YouTube 20.9에서 22.9로 상승, Reddit 19.6에서 18.5로 하락, Facebook 11.6에서 10.1로 하락 |
 | 엔진별 Wikipedia 비중(2025년 6월 데이터) | ChatGPT 16.3%, Perplexity 12.5%, AI Overviews 8.4% |
 | 브랜드 약 7만 5천 개 벤치마크 | AI 가시성과 가장 강하게 상관한 것은 YouTube 언급, 링크 수와 페이지 수는 약했다 |
 
@@ -97,7 +97,7 @@ AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회�
 
 ## 출처
 
-2026-10-02 Google과 Bing의 위 리포트 범위, Google의 AI 노출 자격, GA4 유입 식별 한계와 CMA 규제 요약의 시행 기한을 공식 자료로 대조하고, 지표 간 범위 차이와 증분 해석을 보완했다. 기존 사례와 엔진별 스냅샷 수치, Google의 규제 준수 구현 전체를 이번에 다시 검증한 것은 아니다.
+2026-10-02 Google과 Bing의 위 리포트 범위, Google의 AI 노출 자격, GA4 유입 식별 한계와 CMA 규제 요약의 시행 기한을 공식 자료로 대조하고, 지표 간 범위 차이와 증분 해석을 보완했다. 기존 사례와 엔진별 스냅샷 수치, Google의 규제 준수 구현 전체를 이번에 다시 검증한 것은 아니다. 2026-10-05에는 사례, 9월 스냅샷, 엔진별 Wikipedia 비중과 브랜드 벤치마크를 whito와 Ahrefs 원 자료와 대조했다. 6월 수치는 Ahrefs 데이터를 인용한 2차 기사로만 확인했다. Ahrefs AI Overviews 집계는 월별 스냅샷이고 7월 스냅샷이 따로 있어 6월이 9월의 직전 스냅샷은 아니다.
 
 - [구글이 모든 사이트에 공식 AI 가시성 리포트를 열었다. 담긴 숫자는 노출 수 하나뿐이다 — 뷰저블 (2026-09-16)](https://www.beusable.net/blog/?p=8637)
 - [Google, Generative AI performance report (Search)](https://support.google.com/webmasters/answer/16984139)
@@ -108,6 +108,10 @@ AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회�
 - [Introducing AI Performance in Bing Webmaster Tools Public Preview — Bing Webmaster Blog](https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview)
 - [New AI Visibility Insights in Bing Webmaster Tools: Intents, Topics, Citation Share, Compare — Bing Search Blog](https://blogs.bing.com/search/2026/6/New-AI-Visibility-Insights-in-Bing-Webmaster-Tools-Intents-Topics-Citation-Share-Compare/)
 - [Introducing Search Generative AI performance reports in Search Console — Google Search Central Blog](https://developers.google.com/search/blog/2026/06/gen-ai-performance-reports)
+- [Do AI Citations Drive Traffic? 17,400 Citations, 167 Clicks — whito](https://whito.co.uk/research/do-ai-citations-drive-traffic/)
+- [The 50 Most-Cited Websites in Google AI Overviews (September 2026) — Ahrefs](https://ahrefs.com/blog/most-cited-domains-ai-overviews/)
+- [The 10 Most Mentioned Domains for ChatGPT, Perplexity, and AI Overviews Across 78.6M Searches — Ahrefs](https://ahrefs.com/blog/top-10-most-cited-domains-ai-assistants/)
+- [Top Brand Visibility Factors in ChatGPT, AI Mode, and AI Overviews (75k Brands Studied) — Ahrefs](https://ahrefs.com/blog/ai-brand-visibility-correlations/)
 
 ## 관련 문서
 

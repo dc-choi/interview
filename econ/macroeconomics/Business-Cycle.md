@@ -80,7 +80,7 @@ GDP 갭은 생산의 **수준** 비교이고 경기침체는 경제활동의 **�
 
 개념을 실제 역사에 걸어 보면 한 줄로 꿰어진다.
 
-- **2008 글로벌 금융위기** — 주택 버블 붕괴. 각국이 제로금리와 양적완화(QE)로 대응하며 저금리 시대가 열림
+- **2008 글로벌 금융위기** — 주택 버블 붕괴. 미국과 영국 등 주요 중앙은행이 0에 가까운 정책금리와 양적완화(QE)로 대응하며 저금리 시대가 열림(한국은행 기준금리는 2.0%까지 인하)
 - **2010년대** — 저금리, 저물가, 저성장이 길게 이어짐. 풀린 돈이 실물보다 자산으로 흘러 주식과 부동산이 오름
 - **2020 코로나 충격** — 급격한 침체에 사상 최대 규모의 통화와 재정 부양
 - **2021~22 인플레이션 급등** — 풀린 돈(수요)과 공급망, 에너지 충격(비용)이 겹침
@@ -105,6 +105,9 @@ GDP 갭은 생산의 **수준** 비교이고 경기침체는 경제활동의 **�
 
 - [NBER, Business Cycle Dating Procedure: Frequently Asked Questions](https://www.nber.org/research/business-cycle-dating/business-cycle-dating-procedure-frequently-asked-questions)
 - [Federal Reserve, How We Conduct Monetary Policy](https://www.federalreserve.gov/aboutthefed/fedexplained/monetary-policy.htm)
+- [Federal Reserve, FOMC statement (2008-12-16)](https://www.federalreserve.gov/newsevents/pressreleases/monetary20081216b.htm) — 2026-10-05 연방기금금리 목표 0~0.25%와 MBS 대량 매입 대조
+- [Bank of England, Quantitative easing](https://www.bankofengland.co.uk/monetary-policy/quantitative-easing) — 2026-10-05 2009년 3월 QE 시작 대조
+- [한국은행, 한국은행 기준금리 추이](https://www.bok.or.kr/portal/singl/baseRate/list.do?dataSeCd=01&menuNo=200643) — 2026-10-05 2008~2010년 최저치인 2009년 2월 2.00% 대조
 - [IMF, The Output Gap: Veering from Potential](https://www.imf.org/external/pubs/ft/fandd/basics/22_output-gap.htm) — 2026-10-02 생산 수준과 변화 방향의 구분 대조
 - [IMF, Making Monetary Policy Decisions in the Dark](https://www.imf.org/en/Blogs/Articles/2015/08/12/making-monetary-policy-decisions-in-the-dark) — 잠재GDP와 GDP 갭의 추정 및 수정 불확실성
 - [S&P Global, Purchasing Managers' Index](https://www.spglobal.com/market-intelligence/en/solutions/products/pmi) — PMI의 전월 대비 조사 기준

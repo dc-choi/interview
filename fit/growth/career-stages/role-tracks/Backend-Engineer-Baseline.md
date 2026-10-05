@@ -34,7 +34,7 @@ aliases: ["Backend Engineer Baseline", "백엔드 엔지니어 기본 역량"]
 ## 3. 인증, 인가
 
 - [ ] **Session vs JWT** 장단점, 선택 기준 ([[Session]], [[JWT]])
-- [ ] **OAuth2 플로우** — Authorization Code, Implicit, Client Credentials 차이 ([[OAuth2]])
+- [ ] **OAuth2 플로우** — Authorization Code와 PKCE, Client Credentials 차이, Implicit를 쓰지 않는 이유 ([[OAuth2]])
 - [ ] **Refresh Token Rotation** ([[Refresh-Token-Rotation]])
 - [ ] **Password Hashing** — argon2, bcrypt 비교, Salt, Pepper ([[Password-Hashing]])
 - [ ] **다중 서버 세션 관리** — Sticky, Clustering, External Store
@@ -49,7 +49,7 @@ aliases: ["Backend Engineer Baseline", "백엔드 엔지니어 기본 역량"]
 
 ## 5. 데이터베이스
 
-- [ ] **RDBMS vs NoSQL** 선택 기준 ([[MySQL-vs-PostgreSQL]])
+- [ ] **RDBMS vs NoSQL** 선택 기준 ([[NoSQL-Overview]])
 - [ ] **스키마 설계** — 정규화 vs 반정규화 트레이드오프 ([[Normalization]])
 - [ ] **인덱스 설계** — 복합 인덱스 순서, 커버링 인덱스 ([[Index]], [[Covering-Index]])
 - [ ] **트랜잭션, 격리 수준** ([[Transactions]], [[Isolation-Level]])
@@ -136,6 +136,7 @@ aliases: ["Backend Engineer Baseline", "백엔드 엔지니어 기본 역량"]
 ## 출처
 - [velog @city7310 — 백엔드가 이정도는 해줘야 함 (17부작 시리즈 + 커리큘럼)](https://velog.io/@city7310/series/%EB%B0%B1%EC%97%94%EB%93%9C%EA%B0%80-%EC%9D%B4%EC%A0%95%EB%8F%84%EB%8A%94-%ED%95%B4%EC%A4%98%EC%95%BC-%ED%95%A8)
 - [API 개발 후 배포 전 점검 11가지 — Threads, richardlee0202](https://www.threads.com/@richardlee0202/post/DNUdQmIhZYh)
+- [IETF, RFC 9700 Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700.html)
 
 ## 관련 문서
 - [[Backend-Developer-Career-Overview|백엔드 개발자 진로 개요]]

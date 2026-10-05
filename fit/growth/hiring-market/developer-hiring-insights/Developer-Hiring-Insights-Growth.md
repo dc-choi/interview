@@ -55,7 +55,7 @@ aliases: ["채용 인사이트 성장", "Developer Hiring Insights Growth"]
 ### 스터디 운영 팁
 - 미리 회비를 걷어서 진행, 그라운드 룰 작성
 - 발표자 결석 시 즉시 배제 (무임승차 방지)
-- 온라인 스터디라도 완주 시 회비로 식사 (매몰비용 효과 — 무료 스터디는 결석이 많음)
+- 온라인 스터디라도 완주 시 회비로 식사 (매몰비용 효과 — 무료 스터디는 결석이 많다는 강사 경험칙)
 - 코드를 짜보고 리뷰하는 것이 가장 적절
 - 발표 양식 등의 포맷을 공유
 - 실무에서 사용하기 어려운 주제는 지양
@@ -157,6 +157,7 @@ aliases: ["채용 인사이트 성장", "Developer Hiring Insights Growth"]
 - [F-Lab — 훌륭한 동료 개발자들에게 배운 것](https://f-lab.kr/blog/things-I-learned-from-great-fellow-developers)
 - [F-Lab — 회사가 뽑고 싶어하는 개발자 (developer-growth-strategy)](https://f-lab.kr/blog/developer-growth-strategy)
 - [F-Lab — 개발자로 크게 성장한 계기와 노력 (growth-developer)](https://f-lab.kr/blog/growth-developer)
+- [인프런, 코드빌런, 스터디와 팀 프로젝트 - 나의 성장 커리어 만들기](https://www.inflearn.com/courses/lecture?courseId=334892&unitId=242711)
 
 ## 관련 문서
 - [[Developer-Hiring-Insights|채용 인사이트 (인덱스)]]

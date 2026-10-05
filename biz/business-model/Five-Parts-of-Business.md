@@ -46,7 +46,7 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 
 ### 사례, 로켓 원가
 
-널리 인용되는 사례는 일론 머스크가 2012년 Wired 인터뷰에서 설명한 로켓 원가 계산이다. 로켓을 항공우주용 알루미늄 합금, 티타늄, 구리, 탄소섬유 같은 원자재로 나누고 원자재 시장 가격을 합하니 통상 판매가의 약 2% 수준이었다는 내용이다. 이 수치는 Wired 원문을 직접 대조하지 못했고 원문을 인용한 2차 자료로만 확인했다. 머스크 본인의 설명이지 독립적으로 검증된 원가 자료가 아니므로, 수치보다 분해 절차의 예시로만 쓴다.
+널리 인용되는 사례는 일론 머스크가 2012년 Wired 인터뷰에서 설명한 로켓 원가 계산이다. 로켓을 항공우주용 알루미늄 합금, 티타늄, 구리, 탄소섬유 같은 원자재로 나누고 원자재 시장 가격을 합하니 통상 판매가의 약 2% 수준이었다는 내용이다. 원자재 목록과 약 2% 수치는 2026-10-05에 Wired 원문(2012-10-21 게재)의 인터넷 아카이브 사본으로 대조했다. 머스크 본인의 설명이지 독립적으로 검증된 원가 자료가 아니므로, 수치보다 분해 절차의 예시로만 쓴다.
 
 ### 적용 절차
 
@@ -97,7 +97,7 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 
 - [모든 비즈니스의 5요소와 제1원칙 사고 — Threads, bearkim.advisory](https://www.threads.com/@bearkim.advisory/post/DdkjReiI01G)
 - [The 5 Parts of Every Business — The Personal MBA, Josh Kaufman](https://personalmba.com/5-parts-of-every-business/)
-- [Elon Musk's Mission to Mars — Wired, Chris Anderson](https://www.wired.com/2012/10/ff-elon-musk-qa/) (직접 대조하지 못함)
+- [Elon Musk's Mission to Mars — Wired, Chris Anderson](https://www.wired.com/2012/10/ff-elon-musk-qa/) (2026-10-05 인터넷 아카이브 사본으로 대조)
 - [First Principles: Elon Musk on the Power of Thinking for Yourself — James Clear](https://jamesclear.com/first-principles)
 
 ## 관련 문서

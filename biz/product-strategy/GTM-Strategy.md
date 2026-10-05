@@ -167,7 +167,7 @@ Q. GTM 전략을 어떻게 수립/실행했는가?
 - [인핸스, 512억원 시리즈C 유치 — 벤처스퀘어](https://www.venturesquare.net/1114540)
 - [캐즘과 스레드의 성장 — Threads, turtle_step_](https://www.threads.com/@turtle_step_/post/DY7Dq81iTrz)
 - [인핸스 시리즈C와 고객사 계열 투자 — Threads, pioaxis](https://www.threads.com/@pioaxis/post/DdjIofnE7om)
-- [Reddit Help, What constitutes spam? Am I a spammer?](https://support.reddithelp.com/hc/en-us/articles/360043504051-What-constitutes-spam-Am-I-a-spammer-)
+- [Reddit Help, Spam](https://support.reddithelp.com/hc/en-us/articles/360043504051-What-constitutes-spam-Am-I-a-spammer-) — 2026-10-05 본인 사업 링크의 게시 빈도와 커뮤니티별 규칙 안내 확인
 - [1인 개발자의 레딧 마케팅과 서브레딧 10곳 — Threads, andytechcan](https://www.threads.com/@andytechcan/post/DR-xm3SgS7x)
 
 ## 관련 문서

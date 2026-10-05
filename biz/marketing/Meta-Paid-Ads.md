@@ -91,7 +91,7 @@ Facebook과 Instagram에 광고를 집행하는 일은 소재를 만드는 일�
 
 ## 출처
 
-2026-10-02 캠페인 예산 선택은 Meta 공식 발표로 확인하고, CPM과 도달의 구분 및 전환율의 측정 범위를 보완했다. 픽셀과 전환 API의 중복 제거 문서는 접근 제한으로 다시 확인하지 못해 기존 검증일을 유지한다.
+2026-10-02 캠페인 예산 선택은 Meta 공식 발표로 확인하고, CPM과 도달의 구분 및 전환율의 측정 범위를 보완했다. 픽셀과 전환 API의 중복 제거 문서는 접근 제한으로 다시 확인하지 못해 기존 검증일을 유지한다. 2026-10-05에는 같은 문서에서 eventID와 event_id, 이벤트 이름 일치와 첫 이벤트 수신 뒤 48시간 기준을 다시 확인했다.
 
 - [Meta Business Help Center, What are the advertising levels in Meta Ads Manager?](https://www.facebook.com/business/help/621956575422138)
 - [Meta for Business, Simplify Your Ad Set Structure](https://www.facebook.com/business/ads/ad-set-structure)

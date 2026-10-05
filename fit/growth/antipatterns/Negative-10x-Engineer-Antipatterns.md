@@ -128,7 +128,7 @@ aliases: ["Negative 10x Engineer Antipatterns", "-10배 엔지니어", "팀 생�
 - **팀 평균이 실제 하한**
 - 개선: 채용 기준 엄격, [[Competence-Identification|개발 역량 판별]]
 
-### 18. 역할 모델로 -1x 엔지니어 고용
+### 18. -1x 엔지니어 고용
 
 - 재앙을 일으키고 학습에 저항
 - **문화 전염** — 후배가 따라함

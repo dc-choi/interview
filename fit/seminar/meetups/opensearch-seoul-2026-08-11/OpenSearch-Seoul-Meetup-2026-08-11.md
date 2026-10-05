@@ -13,7 +13,7 @@ aliases: ["OpenSearch Seoul Meetup 2026-08-11", "OpenSearch Project Seoul Meetup
 > 일시: 2026-08-11 19:00~21:00 KST
 > 장소: 센터필드 EAST 18층
 > 최초 확인: 2026-07-16. 두 발표의 세부 내용은 아직 `Update 예정`이어서 행사 일주일 전에 다시 확인할 예정이었다.
-> 이후 [2026-08-11 공개 행사 안내](https://kr.linkedin.com/posts/kim-sewoong_opensearch-project-seoul-meetup-tue-aug-activity-7484863601061679104-41p2) 기준, 첫 발표는 검색서비스 엔지니어의 OpenSearch와 Elasticsearch 성능 벤치마킹이고 발표자 소속은 공개되지 않았다. 두 번째 발표는 AWS 검색 아키텍트의 Agentic Search and the Relevance Agent였다.
+> 이후 [2026-08-11 공개 행사 안내](https://www.linkedin.com/feed/update/urn:li:activity:7484863601061679104/) 기준, 첫 발표는 검색서비스 엔지니어의 OpenSearch와 Elasticsearch 성능 벤치마킹이고 발표자 소속은 공개되지 않았다. 두 번째 발표는 AWS 검색 아키텍트의 Agentic Search and the Relevance Agent였다.
 > 목적: 검색 시스템을 새로 맡아 배우는 단계에서 기초 방향을 잡고, 공부가 더 된 뒤 현재 설계의 판단 기준을 검증할 질문까지 준비한다.
 
 ## 한 줄 전략

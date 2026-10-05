@@ -76,7 +76,7 @@ aliases: ["뉴스 인과 체인 드릴", "News Causal Chain Drill"]
 - [Federal Reserve, Predicting Recession Probabilities Using the Slope of the Yield Curve](https://www.federalreserve.gov/econres/notes/feds-notes/predicting-recession-probabilities-using-the-slope-of-the-yield-curve-20180301.html)
 - [한국은행, 통화정책방향 결정회의 일정 및 자료](https://www.bok.or.kr/portal/main/contents.do?menuNo=200755)
 - [한국은행, 통화신용정책 운영의 일반원칙](https://www.bok.or.kr/portal/main/contents.do?menuNo=201748) — 물가와 성장 전망, 파급시차와 금융안정 고려
-- [한국은행, 통화신용정책보고서 2026년 3월, 조건부 금리전망](https://www.bok.or.kr/portal/bbs/B0000156/view.do?menuNo=200067&nttId=10096935)
+- [한국은행, 통화신용정책보고서 2026년 3월, 조건부 금리전망](https://www.bok.or.kr/portal/bbs/B0000156/view.do?menuNo=200067&nttId=10096935) — 2026-10-05 참고 II-1(2026년 2월부터 6개월 후 시계, 경제전망월 공개) 대조
 
 ## 관련 문서
 
