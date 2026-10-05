@@ -1,7 +1,7 @@
 ---
 tags: [java, constructor, package, import, access-control, encapsulation, static-factory]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Construction and Encapsulation", "Java 생성과 캡슐화"]
 ---
@@ -13,6 +13,8 @@ constructor는 object를 유효한 초기 상태로 만들고, package와 access
 ## constructor는 method가 아니다
 
 constructor declaration은 class와 같은 이름을 사용하고 return type을 쓰지 않지만 method declaration의 한 종류는 아니다. constructor는 상속되지 않으며 `static`, `final`, `abstract`로 선언할 수 없다.
+
+class file에서는 constructor가 `<init>`이라는 instance initialization method로 컴파일되고 생성 중인 instance에 대해 `invokespecial`로만 호출된다(JVMS 2.9.1). 그래서 실행 모델에서는 constructor 호출에도 method처럼 frame이 생기고 생성 중인 object의 reference가 첫 local variable인 `this`로 전달된다. 생성자를 메서드의 일종이라고 부르는 설명은 이 JVM 관점에서만 맞고, 언어 규칙에서는 method 호출식으로 부를 수 없고 상속과 override도 되지 않는 별도 선언이다(JLS 8.8).
 
 ~~~java
 final class Member {
@@ -134,6 +136,7 @@ final class Volume {
 - [Java SE 26 Language Specification, Names and Access Control](https://docs.oracle.com/javase/specs/jls/se26/html/jls-6.html)
 - [Java SE 26 Language Specification, Packages and Modules](https://docs.oracle.com/javase/specs/jls/se26/html/jls-7.html)
 - [Java SE 26 Language Specification, Classes](https://docs.oracle.com/javase/specs/jls/se26/html/jls-8.html)
+- [Java Virtual Machine Specification 26, Instance Initialization Methods](https://docs.oracle.com/javase/specs/jvms/se26/html/jvms-2.html#jvms-2.9.1)
 - [Java SE 26 API, Integer](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Integer.html)
 - [Oracle, JDK 26 javac Command](https://docs.oracle.com/en/java/javase/26/docs/specs/man/javac.html)
 - 김영한 강사, [생성자 - 필요한 이유](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194668)
@@ -158,6 +161,7 @@ final class Volume {
 - 김영한 강사, [정리](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194687)
 - 김영한 강사, [스트림 만들기2](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275358)
 - 김영한 강사, [정리](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275361)
+- 쉬운코드, [변수와 객체와 메모리의 관계](https://www.youtube.com/watch?v=GIsr_r8XztQ)
 
 ## 관련 문서
 

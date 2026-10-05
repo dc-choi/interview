@@ -3,7 +3,7 @@ tags: [database, rdbms]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["Index"]
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 ---
 
 # Index
@@ -52,6 +52,10 @@ index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentati
 - 레드 블랙 트리와 B+Tree 모두 탐색 높이는 로그 규모지만, 디스크와 버퍼 풀은 페이지 단위로 접근한다.
 - B+Tree는 한 페이지에 많은 key와 자식 포인터를 담아 fan-out을 높이고 트리 높이와 페이지 접근 횟수를 줄인다.
 - 정렬된 리프 페이지를 연결해 범위 스캔에도 유리하다. MySQL 문서는 이 계열을 통칭해 B-tree 인덱스라고 부른다.
+
+## Hash 인덱스와의 차이
+
+Hash 인덱스는 등호 조회를 평균 상수 시간에 끝내지만 키 순서를 보존하지 않아 범위 조건, `ORDER BY`와 최좌선 접두사 탐색에 쓸 수 없다. MySQL 8.4의 엔진별 지원, range optimizer 제약과 InnoDB에서 `USING HASH`가 BTREE로 바뀌는 동작은 [[MySQL-Data-and-Access-Safety#인덱스와 스토리지 엔진|MySQL 인덱스와 스토리지 엔진]]에 있다. PostgreSQL 18의 hash 인덱스는 단일 컬럼만 지원하고 유일성 검사를 하지 않으며, 행이 늘 때 bucket 확장이 foreground에서 일어나 삽입 시간을 늘릴 수 있어 행 수가 빠르게 느는 테이블에는 맞지 않을 수 있다.
 
 ## 인덱스 레인지 스캔
 
@@ -194,6 +198,9 @@ DROP INDEX CONCURRENTLY idx_name;
 - [인프런, 랜덤 I/O와 순차 I/O](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471893)
 - [MySQL 8.4 Reference Manual, Column Indexes](https://dev.mysql.com/doc/refman/8.4/en/column-indexes.html)
 - [PostgreSQL 18 Documentation, Unique Indexes](https://www.postgresql.org/docs/current/indexes-unique.html)
+- [MySQL 8.4 — Comparison of B-Tree and Hash Indexes](https://dev.mysql.com/doc/refman/8.4/en/index-btree-hash.html)
+- [PostgreSQL 18 — Hash Indexes](https://www.postgresql.org/docs/current/hash-index.html)
+- [YouTube, 쉬운코드, DB 인덱스 핵심](https://www.youtube.com/watch?v=IMDH4iAQ6zM)
 - [인프런, Hong, 파티셔닝과 인덱스 설계](https://www.inflearn.com/courses/lecture?courseId=338473&unitId=338546)
 - Index 기초 강의: [Sample](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328787), [필요성](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328788), [소개](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328789), [Tree](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328790), [DDL/EXPLAIN](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328791), [Equality](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328792), [Range](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328793), [LIKE](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328794), [Sort](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328795), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328796)
 - Index 설계 강의: [Optimizer 선택](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328798), [Covering](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328799), [Composite 1](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328800), [2](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328801), [3](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328802), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328803), [Guide](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328804), [비용](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328805), [문제](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328806), [전체 정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328807)

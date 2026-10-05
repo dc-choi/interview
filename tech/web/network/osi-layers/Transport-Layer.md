@@ -3,7 +3,7 @@ tags: [web, network, osi, l4, tcp, udp, port, segment, socket, encapsulation]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Transport Layer", "전송 계층", "트랜스포트 계층", "L4", "TCP UDP 포트", "세그먼트"]
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 ---
 
 # 전송 계층 (Transport Layer, L4)
@@ -14,7 +14,7 @@ verified_at: 2026-09-30
 
 L3의 IP 주소는 호스트(컴퓨터 한 대)까지만 가리킨다([[Network-Layer]]). 한 노트북에서 웹 브라우저, 메신저, 게임이 동시에 통신할 때 들어온 데이터가 어느 프로그램 몫인지는 IP만으로 못 가린다. L4가 다루는 문제는 셋이다.
 
-1. **멀티플렉싱**: 데이터를 어느 애플리케이션에 줄지 구분(포트).
+1. **다중화와 역다중화**: 보낼 때는 여러 애플리케이션의 데이터를 포트로 구분해 내보내고, 받을 때는 포트를 보고 맞는 애플리케이션에 넘긴다.
 2. **순서**: 데이터가 순서대로 도착했는지 확인.
 3. **유실 대응**: 중간에 사라진 데이터를 어떻게 처리할지 결정.
 
@@ -29,6 +29,8 @@ L4의 데이터 단위 세그먼트는 L3의 패킷 안에 담겨 이동한다. 
 `send()`의 성공 반환값은 로컬 송신 버퍼가 받아들인 바이트 수다. 상대가 받았다는 확인이 아니고, 요청한 길이보다 적을 수도 있으므로 반환값을 확인한다. 호출 한 번, 세그먼트 하나, 수신 측 `recv()` 한 번은 일대일이 아니다. 장애를 볼 때는 로컬 송신 버퍼가 막힌 것인지, 전송 중 손실과 재전송인지, 수신 애플리케이션이 늦게 읽는 것인지부터 구분한다.
 
 소켓 스트림이 커널을 거쳐 프레임으로 나가는 전 과정과 계층별 payload, MTU, MSS의 관계, NIC offload는 [[Network-Encapsulation|캡슐화와 데이터 단위]]. 크기 제약은 [[Network-Encapsulation#크기 제한: MTU, MSS와 단편화|MTU, MSS와 단편화]], 전송량 제어는 [[TCP-Flow-Error-Control]], [[TCP-Congestion-Control]]로 이어진다.
+
+소켓이라는 말의 두 의미(RFC의 주소와 API의 객체), accept한 소켓의 포트 공유와 수신 측 역다중화 순서, TCP와 UDP의 메시지 경계와 프레이밍은 [[Transport-Layer-Sockets|소켓과 포트]].
 
 ## 포트 — 호스트 안의 방 번호
 
@@ -53,9 +55,10 @@ IP가 건물 주소라면 포트는 그 건물 안의 방 번호다. 같은 IP�
 | 1024~49151 | User Ports (Registered) | IANA에 등록해 쓰는 구간(예: 3306 MySQL) |
 | 49152~65535 | Dynamic Ports (Private, Ephemeral) | 할당하지 않는 구간. 임시 포트용 |
 
-- 포트는 랜카드나 스위치의 물리 포트가 아니라 호스트 안의 프로세스를 가리키는 16비트 논리 번호다. 0, 1023, 1024처럼 구간 경계의 값은 예약돼 있다.
+- 포트는 랜카드나 스위치의 물리 포트가 아니라 호스트 안의 통신 종단(소켓)을 구별하는 16비트 논리 번호다. 0, 1023, 1024처럼 구간 경계의 값은 예약돼 있다.
 - 실제 임시 포트 범위는 OS 설정이 정한다. Linux 기본값은 `net.ipv4.ip_local_port_range`의 32768~60999로 RFC의 Dynamic 구간과 다르고, Windows는 Vista와 Server 2008에서 기본값을 1025~5000에서 49152~65535로 바꿨다(현재 값은 `netsh int ipv4 show dynamicport tcp`로 확인). 방화벽 규칙과 대량 연결의 포트 고갈은 실제 범위로 계산한다.
-- Linux에서 1024 미만 포트에 bind하려면 root나 `CAP_NET_BIND_SERVICE`가 필요하다(경계는 `net.ipv4.ip_unprivileged_port_start`, 기본 1024). 그래서 애플리케이션은 보통 8080 같은 높은 포트에서 듣고 앞단의 리버스 프록시나 로드 밸런서가 80, 443을 받는다.
+- Linux에서 1024 미만 포트에 bind하려면 root나 `CAP_NET_BIND_SERVICE`가 필요하다(경계는 `net.ipv4.ip_unprivileged_port_start`, 기본 1024). 그래서 애플리케이션은 보통 8080 같은 높은 포트에서 듣고 앞단의 리버스 프록시나 로드 밸런서가 80, 443을 받는다. 8080은 IANA에 HTTP Alternate(`http-alt`)로 등록된 번호일 뿐 특정 서버 제품에 배정된 포트가 아니다.
+- 연결은 포트 하나가 아니라 양 끝의 IP와 포트 네 값으로 구별된다. 그래서 서버는 포트 하나로 수많은 연결을 받고, 임시 포트 수는 같은 목적지로 연결을 여는 클라이언트 쪽에서 상한이 된다. TCP와 UDP는 포트 공간이 따로라 같은 번호를 동시에 쓸 수 있다([[Transport-Layer-Sockets#포트 하나로 수많은 연결을 받는 이유와 실제 한계|포트와 연결 수]]).
 
 **서버가 고정 포트를 쓰는 이유**: 불특정 다수 클라이언트가 어디로 접속할지 알아야 하기 때문이다. `https://example.com`에 포트를 안 붙여도 되는 건 브라우저가 HTTPS 기본 포트 443을 자동으로 시도해서다. 포트는 설정으로 바꿀 수 있지만, 기본 약속과 다르면 주소에 포트를 직접 명시해야 한다.
 
@@ -109,7 +112,8 @@ VPC, 보안 그룹(SG), NACL은 포트와 프로토콜(TCP/UDP) 단위로 트래
 
 ## 면접 체크포인트
 
-- L3(호스트까지)와 L4(포트로 애플리케이션까지)의 경계, 멀티플렉싱
+- L3(호스트까지)와 L4(포트로 애플리케이션까지)의 경계, 다중화와 역다중화의 방향
+- 연결을 구별하는 네 값(양 끝의 IP와 포트)과 서버 포트 하나로 수많은 연결을 받는 이유, 8080 같은 번호로 제품을 단정하지 않는 이유
 - 세그먼트가 패킷 안에 캡슐화되는 계층 구조
 - TCP 스트림의 메시지 경계, 계층별 페이로드, `send()` 반환과 상대 수신의 차이
 - 포트 범위(0~65535)와 RFC 6335의 세 구간, OS별 실제 임시 포트 범위, 웰노운 vs 임시 포트, 서버가 고정 포트를 쓰는 이유
@@ -142,11 +146,16 @@ VPC, 보안 그룹(SG), NACL은 포트와 프로토콜(TCP/UDP) 단위로 트래
 - [AWS Documentation — What is an Application Load Balancer?](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html)
 - [패킷의 생성 원리와 캡슐화 — 널널한 개발자 TV](https://www.youtube.com/watch?v=Bz-K-DPfioE&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=14)
 - [그림으로 쉽게 배우는 네트워크 — TCP와 UDP, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160826)
+- [IANA — Service Name and Transport Protocol Port Number Registry](https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml)
+- YouTube, 쉬운코드, [RFC 스펙에서 정의한 Socket, Port, TCP connection 개념](https://www.youtube.com/watch?v=X73Jl2nsqiE)
+- YouTube, 쉬운코드, [표준 스펙과 차이가 있는 실제 소켓, 포트 개념](https://www.youtube.com/watch?v=WwseO8l8rZc)
+- YouTube, 쉬운코드, [소켓 식별 예제로 보는 segment, datagram, packet, frame, multiplexing, demultiplexing](https://www.youtube.com/watch?v=eveNtda0_yk)
 
 ## 관련 문서
 
 - [[Network-Layer|네트워크 계층 (L3, IP, 라우팅, ARP)]]
 - [[Network-Encapsulation|캡슐화와 데이터 단위 (스트림, 세그먼트, 패킷, 프레임, MTU/MSS)]]
+- [[Transport-Layer-Sockets|소켓과 포트 (연결 식별, 역다중화, 메시지 경계)]]
 - [[Physical-DataLink-Layer|물리 신호와 Ethernet 프레임]]
 - [[TCP-Handshake|TCP Handshake (3-way/4-way, TIME_WAIT, RTT 비용)]]
 - [[OSI-7-Layer|OSI 7계층 전체 지도]]

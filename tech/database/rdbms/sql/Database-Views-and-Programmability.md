@@ -1,7 +1,7 @@
 ---
 tags: [database, mysql, oracle, view, stored-procedure, function, trigger]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-05
 category: "Data & Storage - RDB"
 aliases: ["Database Views and Programmability", "DB View Procedure Trigger", "뷰와 저장 프로그램"]
 ---
@@ -64,7 +64,18 @@ Procedure는 `CALL`로 실행하는 statement 묶음이고 IN/OUT parameter를 �
 
 저장 프로그램은 낡아서 무조건 금지하거나 network가 줄어 항상 빠른 기능이 아니다. data locality, 원자성, 변경 주체, DB 병목과 이식성으로 선택한다.
 
-Oracle의 cursor, exception, package specification/body, definer/invoker rights와 trigger transaction 경계는 [[PL-SQL-Cursors-Routines-and-Triggers|PL/SQL 커서와 저장 프로그램]]에서 분리해 다룬다.
+MySQL의 파라미터 모드, 트랜잭션 경계와 프로시저와 함수의 차이는 [[MySQL-Stored-Procedures|MySQL 저장 프로시저]], 함수의 결정성과 정의 규칙은 [[MySQL-Stored-Functions|MySQL 저장 함수]]에 둔다. Oracle의 cursor, exception, package specification/body, definer/invoker rights와 trigger transaction 경계는 [[PL-SQL-Cursors-Routines-and-Triggers|PL/SQL 커서와 저장 프로그램]]에서 분리해 다룬다.
+
+### 변경 배포와 공유의 비용
+
+프로시저에 업무 로직을 두면 애플리케이션 배포 없이 본문만 바꿀 수 있고, 여러 서비스가 같은 로직을 언어별로 다시 구현하지 않아도 된다. 이 두 장점은 운영에서 반대 방향의 비용이 된다.
+
+- 본문 변경은 모든 호출에 즉시 적용된다. 애플리케이션은 rolling 배포나 [[Canary|canary]]로 새 버전을 일부 인스턴스에만 올려 결함의 영향을 일부 트래픽으로 제한하지만, 프로시저 교체는 되돌릴 때까지 전체 트래픽이 영향을 받는다. MySQL은 본문을 바꾸려면 DROP 뒤 CREATE를 해야 해 그 사이의 호출이 실패할 수도 있다([[MySQL-Stored-Procedures#변경과 배포|변경과 배포]]).
+- 이름이나 파라미터를 바꾸는 변경은 호출부에 투명하지 않다. 새 이름으로 만들고, 호출부를 배포해 옮기고, 옛 프로시저를 지우는 expand-contract 순서가 필요하다([[Backward-Compatibility|하위 호환]]).
+- 여러 서비스가 같은 DB의 프로시저를 직접 호출하면 한 서비스의 과도한 호출이 DB CPU를 소진시켜 모두 함께 느려진다. 공유 로직은 데이터를 소유한 서비스의 API 뒤에 두면 호출자별 [[Rate-Limiting|rate limit]]과 장애 격리를 적용할 수 있다.
+- 왕복 감소가 목적이라면 애플리케이션에서도 줄일 수 있다. 서로 의존하지 않고 한 트랜잭션으로 묶을 필요도 없는 쿼리는 별도 연결로 동시에 보내고(한 연결은 한 번에 한 문장만 실행한다), 반복 조회는 TTL 캐시로 DB 부하까지 줄인다([[Cache-Strategies|Cache 전략]]).
+- table 권한 대신 프로시저 실행 권한만 주는 경계는 프로시저가 반환하는 데이터만큼만 보호한다. 정의를 바꿀 수 있는 사람은 경계를 넘을 수 있으므로 최소 권한, 민감 컬럼 암호화와 접근 감사를 함께 둔다.
+- DB는 데이터를 가진 상태 계층이라 부하가 몰릴 때 애플리케이션 서버처럼 인스턴스를 바로 늘리기 어렵다. 새 replica는 데이터 복제가 끝나야 쓸 수 있으므로 계산이 많은 로직을 프로시저로 옮기면 가장 늘리기 어려운 계층에 부하가 모인다([[Business-Logic-App-vs-DB|비즈니스 로직 위치]]).
 
 ## Event scheduler
 
@@ -78,15 +89,7 @@ MySQL Event Scheduler는 server 안에서 정해진 시각이나 주기로 SQL�
 
 ## Trigger
 
-Trigger는 table의 INSERT/UPDATE/DELETE에 결합된 암시적 write path다. DB를 직접 수정하는 여러 client에도 적용된다는 강점이 있지만 호출한 SQL만 보고 side effect를 알기 어렵다.
-
-- 단순 audit metadata나 좁은 파생 값처럼 DB 경계의 작은 규칙에 제한한다.
-- 같은 table에 대한 recursion/수정 제한과 실행 순서를 대상 DBMS에서 확인한다.
-- 큰 cascade, 외부 호출 또는 복잡한 workflow를 trigger에 숨기지 않는다.
-- bulk import, backfill과 replication에서 실행 여부/부하를 rehearsal한다.
-- business actor/reason은 DB session만으로 알 수 없을 수 있어 application context 전달이 필요하다.
-
-이력 기록은 trigger, application write와 CDC 중 누락 가능성, business context와 운영 비용을 비교한다. trigger가 있다는 이유로 history table의 retention/권한/검증이 해결되지는 않는다.
+Trigger는 table의 INSERT/UPDATE/DELETE에 결합된 암시적 write path다. DB를 직접 수정하는 여러 client에도 적용된다는 강점이 있지만 호출한 SQL만 보고 side effect를 알기 어렵다. 시점과 OLD/NEW, MySQL과 PostgreSQL의 기능 차이, 트리거가 실행되지 않는 변경 경로, 집계 트리거의 동시성 함정과 운영 원칙은 [[Database-Views-and-Programmability-Triggers|데이터베이스 트리거]]로 분리했다.
 
 ## 배포와 관측
 
@@ -130,10 +133,14 @@ MySQL view의 `SELECT *`는 생성 시점 column 목록으로 고정된다. base
 - 저장 프로그램: [소개](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328821), [실습](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328822), [함정과 대안](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328823), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328824)
 - [MySQL 8.4 Reference Manual, create view](https://dev.mysql.com/doc/refman/8.4/en/create-view.html)
 - [인프런, SQL 안티 패턴 - 3 : View에서 SELECT ALL 사용의 문제와 해결](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=367632)
+- [MySQL 8.4 Reference Manual, ALTER PROCEDURE Statement](https://dev.mysql.com/doc/refman/8.4/en/alter-procedure.html)
+- [YouTube, 쉬운코드, stored procedure를 실무에서 쓰기 조심스러운 이유](https://www.youtube.com/watch?v=SOLm-GXFzG8)
 
 
 ## 관련 문서
 
+- [[Database-Views-and-Programmability-Triggers|데이터베이스 트리거]]
+- [[MySQL-Stored-Procedures|MySQL 저장 프로시저]]
 - [[Business-Logic-App-vs-DB|비즈니스 로직 위치]]
 - [[Operational-Data-History-and-Audit|운영 데이터 이력과 감사]]
 - [[SQL-Query-Composition|SQL Query 조합]]

@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, primary-key, natural-key, surrogate-key, uuid]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-05
 category: "Data & Storage - RDB"
 aliases: ["PK Strategy", "Primary Key Strategy", "PK 생성 전략"]
 ---
@@ -19,7 +19,11 @@ Primary key는 row의 장기 identity다. 생성 편의만 보지 않고 **불�
 - Natural key: 업무 의미에서 나온 key다.
 - Surrogate key: 업무 의미와 분리해 시스템이 만든 identity다.
 
+선수 relation `player(id, name, team_id, back_number, birth_date)`에서 등번호가 같은 팀 안에서만 고유하다면 `{id}`와 `{team_id, back_number}`가 candidate key다. `{id, name}`도 row를 식별하는 superkey지만 `name`을 빼도 식별되므로 최소가 아니다. `team_id`나 `back_number` 하나만으로는 식별되지 않으므로 두 컬럼을 합친 집합이 최소다. 보통 속성 수가 적고 바뀌지 않는 `id`를 PK로 고르고 `{team_id, back_number}`는 alternate key로 `UNIQUE`에 남긴다.
+
 PK를 surrogate로 바꿨다고 email, 사업자 번호나 `(order_id, product_id)`의 중복 규칙이 사라지는 것은 아니다. 자연 key의 업무 유일성은 별도 `UNIQUE`로 남긴다.
+
+candidate key를 `UNIQUE`로 옮길 때는 NULL을 확인한다. candidate key는 모든 row를 식별해야 하지만 SQL `UNIQUE`는 nullable 컬럼에서 NULL 행끼리 중복 검사를 하지 않으므로(MySQL과 PostgreSQL 기본값) NULL인 row는 그 key로 식별되지 않는다. candidate key의 성질을 지키려면 `NOT NULL`을 함께 선언한다. PK 컬럼은 `NOT NULL`을 적지 않아도 MySQL이 암묵적으로 `NOT NULL`로 만든다.
 
 ## Natural key와 surrogate key
 
@@ -169,10 +173,15 @@ Natural key는 값 변경뿐 아니라 보관 근거가 사라지거나 외부 �
 - [인프런, 실무에서 사용하는 Database](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272607)
 - [인프런, 정리(물리적 모델링)](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347679)
 - [인프런, 정리](https://www.inflearn.com/courses/lecture?courseId=328990&unitId=114621)
+- [MySQL 8.4 Reference Manual, CREATE TABLE Statement](https://dev.mysql.com/doc/refman/8.4/en/create-table.html)
+- [PostgreSQL 18 Documentation, Constraints](https://www.postgresql.org/docs/18/ddl-constraints.html)
+- [YouTube, 쉬운코드, 관계형 데이터베이스, relation, 키와 제약](https://www.youtube.com/watch?v=gjcbqZjlXjM)
+- [YouTube, 쉬운코드, SQL의 개념과 데이터베이스 정의](https://www.youtube.com/watch?v=c8WNbcxkRhY)
 
 
 ## 관련 문서
 
+- [[Relational-Model-Fundamentals|관계형 모델 기본 개념]]
 - [[Data-Modeling-Workflow|데이터 모델링 절차]]
 - [[Relational-Relationship-Modeling|관계형 관계 모델링]]
 - [[Index|Index와 clustered key]]

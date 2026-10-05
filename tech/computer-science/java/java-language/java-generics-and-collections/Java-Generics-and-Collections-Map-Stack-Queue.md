@@ -1,7 +1,7 @@
 ---
 tags: [java, collections, map, stack, queue, deque]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Map Stack Queue", "Java Map Stack Queue Deque"]
 ---
@@ -27,6 +27,12 @@ aliases: ["Java Map Stack Queue", "Java Map Stack Queue Deque"]
 | `TreeMap` | 자연 순서 또는 comparator로 키 정렬 | 범위 조회, 정렬된 키 |
 
 Java 21부터 `LinkedHashMap`과 `SortedMap` 구현은 `SequencedMap`이라 `firstEntry`, `lastEntry`, `pollFirstEntry`, `reversed` 같은 순서 연산을 공통 이름으로 제공한다(JEP 431).
+
+### SortedMap과 NavigableMap
+
+- `SortedMap`은 key의 natural ordering이나 생성 시 받은 `Comparator`로 전체 순서를 두는 `Map`이고, `entrySet`, `keySet`, `values` 순회에 그 순서가 반영된다. `NavigableMap`이 `lowerKey`, `floorKey`, `ceilingKey`, `higherKey` 같은 근접 탐색을 더하며, Java SE 26의 구현은 `TreeMap`과 `ConcurrentSkipListMap`이다. `HashMap`은 `SortedMap`도 `SequencedMap`도 구현하지 않으므로 순서 성질이 없다.
+- `TreeMap`은 red-black tree로 `containsKey`, `get`, `put`, `remove`에 log(n)을 보장한다. `ConcurrentSkipListMap`은 skip list로 같은 연산에 기대 평균 log(n)을 주고 여러 thread의 동시 삽입, 삭제와 조회가 안전하며 null key와 value를 허용하지 않는다.
+- 정렬은 시간을 내고 얻는다. 선수별 득점 수만 집계하면 `HashMap`, 이름순으로 저장하고 꺼내야 하면 `TreeMap`을 쓴다. 끝에서 한 번만 정렬해 출력하면 `HashMap`에 모은 뒤 key를 정렬하는 방법도 있다.
 
 ## 삽입과 누적 API
 
@@ -91,6 +97,7 @@ int first = queue.pollFirst(); // 1
 
 - `Map`이 `Collection`이나 `Iterable`이 아닌 이유와 순회 방법
 - `HashMap`, `LinkedHashMap`, `TreeMap`의 순서 계약
+- `HashMap`과 `SortedMap` 구현의 비용 차이, `TreeMap`과 `ConcurrentSkipListMap`의 선택 기준
 - `Queue`의 예외형 메서드와 특별값형 메서드 차이
 - `Queue`가 항상 FIFO는 아닌 이유
 - `Stack` 대신 `Deque`를 권장하면서도 `Deque`가 엄격한 LIFO 타입은 아닌 이유
@@ -112,12 +119,19 @@ int first = queue.pollFirst(); // 1
 - [문제와 풀이4 - Queue](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216018)
 - [정리](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216019)
 
+## 쉬운코드 YouTube 강의
+
+- [Java에서 SortedMap 정의와 특징, HashMap과의 차이, 구현체들](https://www.youtube.com/watch?v=ubtfdesmYdw)
+
 ## Java SE 26 근거
 
 - [Map](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Map.html)
 - [HashMap](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/HashMap.html)
 - [LinkedHashMap](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/LinkedHashMap.html)
 - [TreeMap](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/TreeMap.html)
+- [SortedMap](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/SortedMap.html)
+- [NavigableMap](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/NavigableMap.html)
+- [ConcurrentSkipListMap](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ConcurrentSkipListMap.html)
 - [Queue](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Queue.html)
 - [Deque](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Deque.html)
 - [ArrayDeque](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/ArrayDeque.html)

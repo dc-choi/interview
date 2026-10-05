@@ -12,7 +12,7 @@ Java 동시성은 스레드를 많이 만드는 기술이 아니라, 공유 상�
 
 ## 학습 지도
 
-- [[Java-Threads-Lifecycle-and-Cancellation|스레드 생성, 생명 주기와 협력적 취소]]
+- [[Java-Threads-Lifecycle-and-Cancellation|스레드 생성, 생명 주기, 협력적 취소와 thread dump]]
 - [[Java-Memory-Model-and-Monitors|Java Memory Model과 monitor]]
 - [[Java-Locks-Monitors-and-Conditions|Lock, monitor와 Condition]]
 - [[Java-BlockingQueue-and-Producer-Consumer|BlockingQueue와 생산자, 소비자]]

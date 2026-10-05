@@ -3,7 +3,7 @@ tags: [cs, digital, bit, encoding]
 status: done
 category: "CS - 기초"
 aliases: ["디지털 기초", "비트와 진법", "정수 표현과 엔디언"]
-verified_at: 2026-08-04
+verified_at: 2026-10-05
 ---
 
 # 디지털 기초: 비트, 진법, 정수 표현
@@ -45,15 +45,33 @@ verified_at: 2026-08-04
 
 ### 2의 보수
 
-음수 `-x`의 고정 폭 표현은 `x`의 모든 비트를 뒤집고 1을 더해 구한다.
+음수 `-x`의 고정 폭 표현은 `x`의 모든 비트를 뒤집고 1을 더해 구한다. 비트만 뒤집은 값이 1의 보수이고, 거기에 1을 더한 값이 2의 보수다.
 
 ```text
 8비트 5     = 0000 0101
-비트 반전   = 1111 1010
-1 더하기    = 1111 1011 = -5
+비트 반전   = 1111 1010   (1의 보수)
+1 더하기    = 1111 1011 = -5   (2의 보수)
 ```
 
 2의 보수를 쓰면 같은 가산기로 덧셈과 뺄셈을 처리할 수 있다. 다만 MSB가 1이면 음수라는 해석은 **부호 있는 2의 보수로 읽을 때만** 성립한다. 같은 `1111 1011`도 부호 없이 읽으면 251이다.
+
+0이 아닌 `x`와 `-x`의 비트열을 n비트 덧셈기로 더하면 `2^n`이 되고, 폭 밖으로 나간 carry를 버리면 0만 남는다. 변환 결과를 이 덧셈으로 검산할 수 있다.
+
+```text
+  0000 1001   (9)
++ 1111 0111   (-9)
+-----------
+1 0000 0000   → 8비트에 남는 값은 0000 0000
+```
+
+부호 있는 2의 보수 비트열을 10진수로 읽는 방법은 둘이다.
+
+- MSB가 1이면 같은 연산(비트 반전 후 1 더하기)으로 절댓값을 구하고 그 결과를 부호 없는 수로 읽는다. `1011 0011`은 `0100 1101`(77)이 되므로 -77이다.
+- MSB의 자릿값을 `-2^(n-1)`로 두고 나머지 비트는 평소처럼 더한다. `1011 0011 = -128 + 32 + 16 + 2 + 1 = -77`이다.
+
+부호와 크기(sign-magnitude) 방식은 `1000 0000`, 1의 보수 방식은 `1111 1111`이 음의 0이 되어 0을 나타내는 패턴이 두 개다. 덧셈에서도 부호와 크기 방식은 부호를 따로 비교해야 하고, 1의 보수 방식은 MSB 밖으로 넘친 carry를 최하위 비트에 다시 더해야 한다(end-around carry). 2의 보수는 0이 하나뿐이라 남는 패턴 하나가 음수 쪽에 배정되고 범위가 `-128`부터 `127`처럼 비대칭이 된다.
+
+가장 작은 음수는 절댓값을 같은 폭에 담을 수 없다. 8비트 `1000 0000`(-128)에 비트 반전과 1 더하기를 하면 다시 `1000 0000`이 나오고, 이 결과를 부호 없이 읽은 128이 절댓값이다. Java도 정수를 2의 보수로 다루므로 `-Integer.MIN_VALUE`는 예외 없이 `Integer.MIN_VALUE` 그대로이고(JLS 15.15.4) `Math.abs(Integer.MIN_VALUE)`도 음수를 반환한다(`Math.abs` API). 이 넘침을 오류로 다뤄야 하면 Java 15부터 제공되는 `Math.absExact`처럼 `ArithmeticException`을 던지는 API를 쓴다.
 
 ### 캐리와 오버플로
 
@@ -113,6 +131,8 @@ SI 접두사와 이진 접두사를 구분한다.
 - `n`비트 signed/unsigned 범위를 계산할 수 있는가
 - carry와 signed overflow를 예로 구분할 수 있는가
 - 2의 보수로 뺄셈을 덧셈 회로에 재사용하는 이유를 설명할 수 있는가
+- 1의 보수와 2의 보수의 차이, 2의 보수가 0을 하나만 갖는 이점을 설명할 수 있는가
+- 8비트 `1000 0000`이 -128인 이유와 그 절댓값을 같은 폭에 담지 못하는 결과(`Math.abs(Integer.MIN_VALUE)`)를 설명할 수 있는가
 - 엔디언이 값의 의미가 아니라 바이트 배치 순서라는 점을 설명할 수 있는가
 - 문자 수, 코드 포인트 수, UTF-8 바이트 수를 구분할 수 있는가
 
@@ -133,9 +153,12 @@ RGB 8 bit 채널 세 개는 pixel당 3 B, RGBA는 4 B다. 디코딩 buffer 크�
 - 인프런, 널널한 개발자 강사, [1비트와 디지털](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128238), [4비트와 16진수 그리고 진법변환](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128239), [16진수 표기가 사용되는 예](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128240), [외워야 할 단위 체계와 숫자](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128241), [컴퓨터가 글자를 다루는 방법](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128243), [컴퓨터가 사진을 다루는 방법](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128244)
 - 인프런, 감자 강사, [10진법과 2진법](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277215), [16진법](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277224)
 - 인프런, 감자 강사, [빅 엔디안과 리틀 엔디안](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277632), [오버플로우와 인터럽트](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277637), [음수](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277641)
+- YouTube, 쉬운코드, [컴퓨터 양의 정수 표현 방법](https://www.youtube.com/watch?v=P6s_66Ta72s), [컴퓨터 음의 정수 표현 방법](https://www.youtube.com/watch?v=oMX8305gTmQ), [10000000 십진수 변환 해설](https://www.youtube.com/watch?v=6-6x6s5Rme8)
 - [Unicode Standard 17.0, UTF-8](https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-2/)
 - [NIST, Prefixes for binary multiples](https://physics.nist.gov/cuu/Units/binary.html)
 - [RISC-V RV32I Base Integer Instruction Set](https://docs.riscv.org/reference/isa/unpriv/rv32.html)
+- [Java SE 26 Language Specification, 15.15.4 Unary Minus Operator](https://docs.oracle.com/javase/specs/jls/se26/html/jls-15.html#jls-15.15.4)
+- [Java SE 26 API, Math.abs와 Math.absExact](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Math.html)
 
 ## 관련 문서
 

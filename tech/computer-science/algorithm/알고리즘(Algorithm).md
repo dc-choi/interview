@@ -10,15 +10,17 @@ aliases: ["Algorithm"]
 알고리즘이란 어떤 문제를 해결하기 위한 확실한 방법이다. 자료구조에 따라 영향을 받는다.
 
 ## 목차
-- [x] [[Algorithm-Complexity|시간복잡도와 Big O, P-NP (결정 문제, 최적화 문제)]]
+- [x] [[Algorithm-Complexity|시간복잡도와 Big O, 케이스별 분석, 함수 호출 비용, P-NP (결정 문제, 최적화 문제)]]
 - [x] [[Algorithm-Recursion|재귀 (기저 조건, 콜스택, 하향식 계산)]]
 - [x] [[Algorithm-Sorting|정렬 (버블, 선택, 삽입, 병합, 퀵, 힙)]]
 - [x] [[Algorithm-DP|동적 프로그래밍 (메모이제이션, 타뷸레이션)]]
 - [x] [[Algorithm-DP-Patterns|DP 응용 패턴 (경우의 수, 확률, 구간, 큰 값)]]
 - [x] [[Graph-Algorithms-and-Optimization|그래프 탐색과 최단 경로, MST, 최대 유량, 비트마스크 DP와 TSP]]
-- [x] [[Trees-and-Balanced-Search-Trees|BST, AVL, Red-Black Tree]]
+- [x] [[Trees-and-Balanced-Search-Trees|트리 순회, BST, 균형 BST 개요]]
+- [x] [[Trees-and-Balanced-Search-Trees-Rebalancing|AVL과 Red-Black 균형 복구 (회전, 삽입과 삭제 case)]]
+- [x] [[B-Tree|B-Tree (분할과 병합, 높이와 수용량)]]
 - [x] [[Trie-and-Autocomplete|Trie와 자동완성]]
-- [x] [[Algorithm-Practice|필수 알고리즘 체크리스트, 백엔드 활용 사례, 학습 방법]]
+- [x] [[Algorithm-Practice|필수 알고리즘 체크리스트, 통과한 풀이 개선(Two Sum), 백엔드 활용 사례, 학습 방법]]
 - [x] [[Problem-Solving-Techniques|누적합, 완전탐색, Greedy, 이분탐색, LIS, Fenwick tree, 시뮬레이션, 정수론과 KMP]]
 - [x] [[Algorithm-Quad-Remeshing|쿼드 리메싱/리토폴로지 (조합 문제의 연속 완화 + 정수 제약, 위상 하한, 파이프라인 분해)]]
 

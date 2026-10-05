@@ -1,9 +1,9 @@
 ---
 tags: [os, concurrency, synchronization, ipc, deadlock]
 status: done
-verified_at: 2026-10-01
+verified_at: 2026-10-05
 category: "OS&런타임(OS&Runtime)"
-aliases: ["원자성과 IPC", "동기화와 교착상태", "Synchronization and IPC"]
+aliases: ["원자성과 IPC", "동기화와 교착상태", "Synchronization and IPC", "임계구역 문제", "Critical Section Problem"]
 ---
 
 # 원자성, 동기화, IPC
@@ -13,11 +13,24 @@ aliases: ["원자성과 IPC", "동기화와 교착상태", "Synchronization and 
 ## 원자성, 경쟁 조건, 임계구역
 
 - **원자적 연산**: 다른 실행 흐름이 중간 상태를 관찰할 수 없는 하나의 단위처럼 수행되는 연산
-- **경쟁 조건**: 타이밍이나 실행 순서에 따라 결과가 달라지는 상태
+- **경쟁 조건**: 여러 프로세스나 스레드가 같은 데이터를 동시에 조작할 때 타이밍이나 접근 순서에 따라 결과가 달라지는 상태
 - **임계구역**: 공유 불변식을 깨지 않도록 동시 진입을 제한해야 하는 코드 구간
-- **동기화**: 상호배제뿐 아니라 사건 순서, 조건 대기와 메모리 가시성을 조정하는 메커니즘
+- **동기화**: 여러 흐름을 동시에 실행해도 공유 데이터의 일관성이 유지되도록 상호배제, 사건 순서, 조건 대기와 메모리 가시성을 조정하는 메커니즘
 
 락으로 감싼 코드 전체가 하드웨어적으로 한 명령이 되는 것은 아니다. 락의 계약을 지키는 참여자에게 임계구역의 상호배제와 happens-before 관계를 제공하는 것이다. 화장실 문을 잠그는 lock부터 unlock까지가 다른 사람이 끼어들 수 없는 구간이고, 공유하는 사람이 없는 1인 가구라면 잠글 이유가 없다. 이런 보장은 공유 자원이 있을 때만 필요하다.
+
+### 한 줄 코드도 여러 명령이다
+
+공유 카운터의 `count++`는 소스에서 한 문장이지만 CPU에서는 메모리 값을 레지스터로 읽고(load), 1을 더하고(add), 다시 메모리에 쓰는(store) 여러 명령이다. 레지스터 값은 스레드 문맥으로 저장되고 복원되므로, 중간에 컨텍스트 스위칭이 일어나면 낡은 계산 결과가 나중에 그대로 기록된다.
+
+| 순서 | 스레드 T1 | 스레드 T2 | 메모리의 count |
+|---|---|---|---|
+| 1 | load (레지스터 0) | | 0 |
+| 2 | add (레지스터 1) | | 0 |
+| 3 | 컨텍스트 스위칭으로 중단 | load, add, store | 1 |
+| 4 | store (레지스터 1) | | 1 |
+
+두 번 증가시켰지만 결과는 1이다. 멀티코어에서는 컨텍스트 스위칭이 없어도 두 코어가 같은 값을 동시에 읽어 같은 결과가 나온다. 스레드끼리뿐 아니라 공유 메모리나 파일을 함께 쓰는 프로세스끼리도 같은 문제가 생긴다.
 
 ### 동기화, 데이터 동기화, 동기 호출의 구분
 
@@ -31,47 +44,46 @@ aliases: ["원자성과 IPC", "동기화와 교착상태", "Synchronization and 
 
 세 뜻은 서로 다른 축이다. 동기 호출을 쓴다고 상호배제가 생기지 않고, 비동기 코드에도 실행 조정으로서의 동기화가 필요하다(아래 `await` 사이 lost update).
 
-### 올바른 상호배제 설계
+### 임계구역 문제와 해결 조건
 
-1. 동시에 허용된 수보다 많은 실행 흐름이 임계구역에 들어가지 않는다.
-2. 진입 가능할 때 참여자들이 영원히 결정하지 못하는 상태에 빠지지 않는다.
-3. 정책이 요구하면 대기 시간이 무한히 늘지 않도록 공정성이나 bounded waiting을 제공한다.
+임계구역 문제는 공유 데이터를 바꾸는 임계구역에 여러 흐름이 동시에 들어가지 않도록 진입 규약을 설계하는 문제다. 각 흐름의 코드는 다음 구조로 본다.
 
-상호배제는 safety, 진척과 공정성은 liveness 성질이다. 모든 mutex가 강한 공정성을 보장하는 것은 아니다. 대기 시간을 줄이려면 임계구역에 들어간 흐름이 최대한 빨리 나오게 한다. 외부 호출이나 느린 I/O처럼 공유 상태와 무관한 작업은 임계구역 밖으로 뺀다.
+| 구역 | 역할 |
+|---|---|
+| 진입 구역 (entry section) | 임계구역에 들어갈 수 있는지 확인하고 허가를 얻는다 |
+| 임계구역 (critical section) | 공유 데이터를 다룬다 |
+| 퇴장 구역 (exit section) | 다음 흐름이 들어올 수 있도록 상태를 되돌린다 |
+| 나머지 구역 (remainder section) | 공유 데이터와 무관한 나머지 코드 |
 
-## 동기화 원시 도구
+해결책은 세 조건을 모두 만족해야 한다.
 
-### Mutex
+1. **상호배제 (mutual exclusion)**: 한 흐름이 임계구역을 실행 중이면 다른 흐름은 임계구역을 실행할 수 없다. 세마포어처럼 N개까지 허용하는 도구는 허용 수를 넘지 않는 것으로 일반화한다.
+2. **진행 (progress)**: 임계구역이 비어 있고 들어가려는 흐름이 있으면, 다음에 들어갈 흐름의 선택이 무한히 미뤄지지 않는다.
+3. **한정된 대기 (bounded waiting)**: 한 흐름이 진입을 요청한 뒤 허가받기 전까지 다른 흐름이 먼저 들어갈 수 있는 횟수에 상한이 있다.
 
-- 한 시점에 소유자 하나가 임계구역에 들어가도록 한다.
-- POSIX mutex는 성공적으로 lock한 thread가 소유자가 되며 타입에 따라 재진입과 오류 동작이 달라진다.
-- 구현은 사용자 공간의 빠른 경로와 경합 시 커널 대기를 조합할 수 있다. mutex와 spinlock을 같은 것으로 보지 않는다.
+상호배제는 safety, 진행과 한정된 대기는 liveness 성질이다. 실제 lock API가 모두 한정된 대기를 보장하는 것은 아니므로(단순 스핀락이 대표적이다) 기아가 문제 되는 경로에서는 사용하는 lock의 공정성 옵션과 대기 시간 상한을 확인한다. 대기 시간을 줄이려면 임계구역에 들어간 흐름이 최대한 빨리 나오게 한다. 외부 호출이나 느린 I/O처럼 공유 상태와 무관한 작업은 임계구역 밖으로 뺀다.
 
-### Semaphore
+### 인터럽트를 끄는 방식의 한계
 
-- 정수 permit 수를 표현한다.
-- `wait`는 값이 양수이면 감소하고 진행하며 0이면 기다린다. `post/signal`은 값을 증가시키고 대기자를 깨울 수 있다.
-- counting semaphore는 최대 N개의 동시 사용을 제한하는 데 적합하다. 초기값은 동시에 쓸 수 있는 자원 수로 둔다(공유 변수 하나면 1, 프린터 N대면 N).
-- binary semaphore는 값이 0/1이지만 mutex와 달리 일반적으로 소유권 계약이 없다.
-- 오용 위험: 임계구역마다 `wait`와 `signal`을 프로그래머가 직접 짝지어야 한다. 값 1로 상호배제에 쓸 때 `signal`을 먼저 부르고 `wait`를 나중에 부르면 값이 늘어 여러 흐름이 동시에 임계구역에 들어간다. `signal` 자리에 `wait`를 한 번 더 부르면 그 흐름 자신까지 영원히 막히고, `signal`을 빠뜨리면 나머지가 영원히 기다린다. 예외로 빠져나가는 경로에서 `signal`이 누락되는 것도 같은 실패다.
+임계구역 동안 인터럽트를 꺼서 컨텍스트 스위칭을 막으면 단일 CPU에서는 원자적으로 실행된 효과를 얻는다. 그러나 일반 해법은 아니다.
 
-### Monitor와 condition variable
+- 멀티코어에서는 다른 CPU의 스레드가 같은 임계구역을 동시에 실행하므로 막지 못한다.
+- 인터럽트 제어는 특권 연산이다. 사용자 프로그램에 맡기면 CPU를 독점하거나 무한 루프로 시스템을 멈출 수 있다.
+- 오래 끄면 장치 완료 같은 인터럽트를 놓칠 수 있고, 임계구역이 길면 다른 흐름이 기아에 빠진다.
 
-- monitor는 공유 상태, 그 상태를 조작하는 상호배제 연산, 조건 대기를 한 추상화로 묶는다.
-- condition variable의 wait는 연관 mutex를 원자적으로 놓고 대기하며, 깨어난 뒤 mutex를 다시 얻고 조건 predicate를 재검사해야 한다.
-- Java의 `synchronized`는 특정 객체 또는 class monitor를 잠근다. 다른 객체의 monitor를 사용하는 코드까지 모두 막는 것은 아니다.
-- monitor는 세마포어의 오용 위험을 줄이려고 상호배제를 운영체제 호출이 아닌 언어 구성으로 묶은 것이다. 진입과 해제를 런타임이 처리하므로 프로그래머가 `wait`, `signal` 짝을 직접 맞추지 않는다. 같은 객체의 `synchronized` 메서드 `increase`와 `decrease`는 한 스레드가 하나를 실행하는 동안 다른 스레드가 둘 중 어느 것도 실행하지 못하고, 블록이 예외로 끝나도 monitor는 해제된다. 조건 대기와 `wait`, `notify` 계약은 [[Java-Locks-Monitors-and-Conditions|Java Lock, monitor와 Condition]]에 있다.
+그래서 운영체제 커널이 자기 자료구조를 짧게 보호할 때처럼 제한된 곳에만 쓰고, 일반 해법은 CPU의 원자적 명령 위에 만든 lock이다.
 
-| 목적 | 적합한 도구 | 핵심 계약 |
-|---|---|---|
-| 공유 불변식 보호 | mutex | 소유자 한 명, unlock 규칙 |
-| N개 자원 수량 제한 | semaphore | permit 감소/증가 |
-| 상태 조건을 기다림 | monitor + condition variable | mutex와 predicate 재검사 |
-| 매우 짧은 커널 임계구역 | spinlock | 잠들지 않고 반복 확인 |
+### 스레드 안전성 확인
+
+공유 상태를 가진 클래스를 멀티스레드에서 그대로 쓰면 경쟁 조건이 생긴다. 직접 만든 카운터뿐 아니라 표준 라이브러리 클래스도 마찬가지다. Java의 `SimpleDateFormat`은 동기화되지 않아 스레드마다 인스턴스를 만들거나 외부에서 동기화해야 하고, API 문서는 불변이며 thread-safe한 `DateTimeFormatter`를 대안으로 제시한다([[Java-Standard-Library-Date-and-Time|Java 날짜와 시간]]). 멀티스레드 서버에서 공유할 클래스는 API 문서의 동기화 설명을 먼저 확인하고, 확인하기 어려우면 thread-safe한 대안을 쓰거나 공유하지 않는 구조로 바꾼다.
+
+## 동기화 도구
+
+스핀락, 뮤텍스, 세마포어의 동작과 선택 기준, 뮤텍스와 binary semaphore의 차이, 우선순위 역전은 [[Concurrency-and-Process-Synchronization|동기화 도구: 스핀락, 뮤텍스, 세마포어]]로, 모니터와 condition variable, bounded buffer와 Java monitor는 [[Concurrency-and-Process-Monitor|모니터와 condition variable]]로 분리했다.
 
 ## 교착상태, 라이브락, 기아
 
-교착상태의 네 필요조건, 식사하는 철학자 예시, 예방과 회피(은행원 알고리즘), 검출 방식의 비용, 라이브락과 기아는 [[Concurrency-and-Process-Deadlock|교착상태, 라이브락, 기아]]로 분리했다.
+교착상태의 네 필요조건, 식사하는 철학자 예시, 조건별 예방 방법과 비용, 회피(은행원 알고리즘), 검출과 복구, 코드에서 생기는 교착상태와 진단, 라이브락과 기아는 [[Concurrency-and-Process-Deadlock|교착상태, 라이브락, 기아]]로 분리했다.
 
 ## 프로세스 간 통신
 
@@ -127,23 +139,26 @@ RPC는 transport 위에 요청/응답, 직렬화와 오류 의미를 얹는 상�
 ## 관련 문서
 
 - [[Concurrency-and-Process-Overview|OS 개요와 동시성]]
+- [[Concurrency-and-Process-Synchronization|동기화 도구: 스핀락, 뮤텍스, 세마포어]]
+- [[Concurrency-and-Process-Monitor|모니터와 condition variable]]
 - [[Concurrency-and-Process-Deadlock|교착상태, 라이브락, 기아]]
 - [[Concurrency-and-Process|동시성과 프로세스 (인덱스)]]
 - [[Context-Switching|컨텍스트 스위칭과 CPU 스케줄링]]
 - [[Concurrency-vs-Parallelism|동시성과 병렬성]]
 - [[Thread-vs-Event-Loop|Thread vs Event Loop]]
+- [[Race-Condition-Patterns-Toolbox|Race Condition 도구 선택과 경쟁 재현]]
 
 ## 출처
 
 - 인프런, 널널한 개발자 강사, [원자성, 동기화 그리고 교착상태](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128253)
-- 인프런, 감자 강사, [프로세스 간 통신](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100805), [공유자원과 임계구역](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100806), [세마포어](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100807), [모니터](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100808)
+- 인프런, 감자 강사, [프로세스 간 통신](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100805), [공유자원과 임계구역](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100806)
 - 인프런, 널널한 개발자 강사, [프로세스간 관계와 권한](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476541)
-- [Linux sem_wait(3)](https://man7.org/linux/man-pages/man3/sem_wait.3.html)
-- [Linux sem_post(3)](https://man7.org/linux/man-pages/man3/sem_post.3.html)
-- [POSIX pthread_mutex_lock(3p)](https://man7.org/linux/man-pages/man3/pthread_mutex_lock.3p.html)
-- [POSIX pthread_cond_wait(3p)](https://man7.org/linux/man-pages/man3/pthread_cond_wait.3p.html)
+- YouTube, 쉬운코드, [동기화(synchronization), 경쟁 조건(race condition), 임계 영역(critical section)](https://www.youtube.com/watch?v=vp0Gckz3z64)
+- [Concurrency: An Introduction — Operating Systems: Three Easy Pieces, Remzi H. Arpaci-Dusseau, Andrea C. Arpaci-Dusseau](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)
+- [Locks — Operating Systems: Three Easy Pieces, Remzi H. Arpaci-Dusseau, Andrea C. Arpaci-Dusseau](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-locks.pdf)
+- [Synchronization Tools 강의 슬라이드 — Operating System Concepts 10th Edition, Silberschatz, Galvin, Gagne](https://www.os-book.com/OS10/slide-dir/PPTX-dir/ch6.pptx)
+- [Java SE 26 API, SimpleDateFormat](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/text/SimpleDateFormat.html)
 - [Java Language Specification 17.1, Synchronization](https://docs.oracle.com/javase/specs/jls/se25/html/jls-17.html#jls-17.1)
-- [Java Language Specification 14.19, The synchronized Statement](https://docs.oracle.com/javase/specs/jls/se25/html/jls-14.html#jls-14.19)
 - [Linux pipe(7)](https://man7.org/linux/man-pages/man7/pipe.7.html)
 - [Linux fifo(7)](https://man7.org/linux/man-pages/man7/fifo.7.html)
 - [Linux mq_overview(7)](https://man7.org/linux/man-pages/man7/mq_overview.7.html)

@@ -1,7 +1,7 @@
 ---
 tags: [database, mysql, innodb, mvcc, undo, read-view]
 status: done
-verified_at: 2026-08-11
+verified_at: 2026-10-05
 category: "Database - RDBMS"
 aliases: ["MySQL InnoDB MVCC", "InnoDB MVCC and Undo"]
 ---
@@ -52,6 +52,14 @@ Reference Manual이 보장하는 것은 이 가시성 결과다. 소스 코드�
 InnoDB consistent read는 자신의 변경을 항상 보여 준다. 따라서 오래된 snapshot으로 읽은 뒤 다른 transaction이 새로 commit한 row를 자신이 update하면, 다음 일반 `SELECT`에는 과거 snapshot과 자기 변경이 섞일 수 있다. 그 결과는 database 전체가 한 시점에 가졌던 상태일 필요가 없다.
 
 이 성질 때문에 `SELECT`로 검증한 값을 애플리케이션에서 계산한 뒤 `UPDATE`하는 check-then-act는 안전하지 않다. 불변식을 `UPDATE ... WHERE 조건`에 넣거나 처음부터 locking read를 사용하고 영향받은 row 수를 확인한다.
+
+## REPEATABLE READ는 lost update를 감지하지 않는다
+
+InnoDB의 RR은 read view 이후 다른 transaction이 commit한 row를 `UPDATE`해도 오류를 내지 않는다. 쓰기는 read view가 아니라 최신 commit 상태에 적용되므로, 일반 `SELECT`로 읽은 값을 애플리케이션에서 계산해 쓰면 그사이의 commit을 덮어쓰는 lost update가 RR에서도 생긴다. PostgreSQL RR은 같은 상황에서 나중 갱신자를 serialization failure로 실패시킨다([[MVCC-Implementation-Tradeoffs#같은 격리 수준 이름에서 갈리는 쓰기 충돌|두 제품 비교]]).
+
+- 계산을 `SET balance = balance + ?`처럼 문장 안으로 옮기면 최신 commit 값에 적용된다.
+- 읽은 값에 의존해야 하면 그 읽기를 `SELECT ... FOR UPDATE`로 바꾼다. locking read는 RR에서도 최신 commit 값을 읽고 잠그므로, 같은 row를 읽고 쓰는 모든 transaction이 같은 방식을 따라야 한다.
+- 충돌을 감지만 하려면 version 조건을 둔 조건부 `UPDATE`의 영향받은 row 수를 확인한다.
 
 ## Secondary index에서 생기는 추가 조회
 
@@ -126,6 +134,10 @@ ROLLBACK;
 - [MySQL 8.4 Reference Manual, Transaction Isolation Levels](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-isolation-levels.html)
 - [MySQL 8.4 Reference Manual, The INNODB_TRX Table](https://dev.mysql.com/doc/refman/8.4/en/information-schema-innodb-trx-table.html)
 - [MySQL 8.4 Reference Manual, SHOW ENGINE](https://dev.mysql.com/doc/refman/8.4/en/show-engine.html)
+- [MySQL 8.4 Reference Manual, Locking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
+- [PostgreSQL 18 Documentation, Transaction Isolation](https://www.postgresql.org/docs/18/transaction-iso.html)
+- [YouTube, 쉬운코드, DB MVCC 개념과 isolation level별 동작 (MySQL, PostgreSQL)](https://www.youtube.com/watch?v=wiVvVanI3p4)
+- [YouTube, 쉬운코드, DB MVCC 이어서: MySQL, PostgreSQL 예제와 select ... for update](https://www.youtube.com/watch?v=-kJ3fxqFmqA)
 
 ## 관련 문서
 

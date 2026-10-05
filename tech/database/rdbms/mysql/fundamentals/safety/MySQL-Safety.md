@@ -11,7 +11,7 @@ aliases: ["MySQL Safety", "MySQL 안전성과 서버 동작"]
 
 - [[MySQL-Data-and-Access-Safety|MySQL 데이터와 접근 안전성]]: 자료형, 제약, 마이그레이션 관리, DML과 safe-updates, hash 인덱스, JOIN view 수정 조건, 계정 host와 권한, NestJS와 TypeORM 연결
 - [[MySQL-SQL-Mode|MySQL SQL Mode]]: strict mode, 8.4 기본 모드, IGNORE 상호작용, 조합 모드, 실서버 값과 strict 전환
-- [[MySQL-Error-Handling|MySQL 오류 처리]]: 오류 번호 대역, SQLSTATE class, 심볼, 분기 순서와 애플리케이션 매핑, 안전한 로깅
+- [[MySQL-Error-Handling|MySQL 오류 처리]]: 오류 번호 대역, SQLSTATE class, 심볼, 분기 순서와 애플리케이션 매핑, 안전한 로깅, CHECK 위반과 SQLSTATE 23의 불일치
 - [[MySQL-Long-Transactions-and-Batch|MySQL 장기 트랜잭션과 배치]]: undo, purge lag, keyset batch와 재시작 설계, DB 사양에 맞춘 배치 동시성
 
 ## 함께 볼 문서

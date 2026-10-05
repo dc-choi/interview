@@ -3,7 +3,7 @@ tags: [database, rdbms, mysql, innodb, index, btree]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["B-Tree Index Depth", "B-Tree 인덱스 깊이", "InnoDB 페이지 깊이"]
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 ---
 
 # B-Tree 인덱스 깊이
@@ -42,6 +42,8 @@ InnoDB의 B+Tree 인덱스 깊이를 페이지 구조로 추정하는 방법을 
 | B+Tree | 루트와 브랜치는 키와 자식 페이지 번호, 행은 리프에만 | 같은 조건의 1,600만 건이 3단 |
 
 순수 B-Tree는 행 크기가 곧 분기 수를 깎는다. B+Tree는 항상 리프까지 내려가야 하지만 브랜치 엔트리가 작아 분기 수가 크다. InnoDB 소스 기준 COMPACT 계열 레코드 헤더는 5바이트, node pointer의 자식 페이지 번호는 4바이트라 `BIGINT` PK의 브랜치 엔트리는 약 17바이트이고, 16KiB 페이지에 이론상 1,000개 가까이 들어간다.
+
+storage는 byte가 아니라 page나 block 단위로 읽으므로 키 하나가 필요해도 그 page 전체를 읽는다. 이진 트리 노드를 page마다 하나씩 두면 읽은 page 대부분을 버리고 경로도 길다. 균형 BST의 노드를 page 단위로 묶어 저장하려는 최적화는 결국 노드 하나에 키 여러 개를 두는 B-Tree와 비슷한 구조가 되므로, 처음부터 B-Tree 계열을 쓰는 편이 낫다. 차수와 분할, 병합 규칙과 높이별 수용량 범위(101차, 높이 3이면 키 약 26만에서 1억 개)는 [[B-Tree|B-Tree]]에 있다.
 
 ## 이론 fan-out과 실측
 
@@ -106,6 +108,10 @@ CREATE INDEX id_index ON t1 (id) COMMENT 'MERGE_THRESHOLD=40'; -- 인덱스 단�
 - 따라서 보조 인덱스 노드 1개에 들어가는 엔트리 수는 **(인덱스 컬럼 크기 + PK 크기)**에 반비례
 - PK가 길수록 보조 인덱스도 깊어지고 비대해짐 → **PK 짧게 유지**가 보조 인덱스 효율로 직결
 
+## Hash 인덱스와 비교
+
+hash 인덱스는 키의 hash로 위치를 바로 찾아 등호 조회가 평균 O(1)이지만, 키 순서를 버려 다음 키를 찾지 못한다. MySQL 8.4 문서 기준 hash 인덱스는 `=`와 `<=>` 비교에만 쓰이고 범위 비교, `ORDER BY` 최적화와 키의 leftmost prefix 탐색에는 쓰이지 않으며, 두 값 사이의 행 수를 추정하지 못해 range optimizer의 인덱스 선택에도 불리하다. PostgreSQL 18의 hash 인덱스도 32-bit hash code만 저장해 `=` 비교만 처리하는 반면, B-tree는 `<`, `<=`, `>=`, `>`와 `BETWEEN` 같은 범위 조건과 정렬된 출력까지 같은 구조로 처리한다. 그래서 등호 조회만 있다고 확신할 수 있는 key-value 성격의 데이터가 아니면 B-tree 계열이 기본이다. MySQL storage engine별로 지정할 수 있는 index type과 InnoDB에 `USING HASH`를 적었을 때의 동작은 [[MySQL-Data-and-Access-Safety#인덱스와 스토리지 엔진|MySQL 인덱스와 스토리지 엔진]], PostgreSQL access method별 용도는 [[PostgreSQL-Production-Operations#Access method의 역할|PostgreSQL access method]]에 있다.
+
 ## 면접 체크포인트
 
 - 왜 RDB가 **레드블랙트리가 아니라 B+Tree**를 쓰는가 (디스크 I/O 단위, 한 노드당 자식 수)
@@ -115,6 +121,7 @@ CREATE INDEX id_index ON t1 (id) COMMENT 'MERGE_THRESHOLD=40'; -- 인덱스 단�
 - UUID PK가 왜 안 좋은가 (페이지 분할, 단편화, 보조 인덱스 비대)
 - B-Tree 대신 B+Tree가 fan-out을 키우는 이유와 `innodb_index_stats`로 실제 fan-out을 어림하는 방법
 - 순차 삽입과 무작위 삽입의 페이지 채움률 차이, `MERGE_THRESHOLD`와 병합 후 재분할 반복
+- hash 인덱스가 등호 조회에만 쓰이는 이유와 B-tree 계열이 기본값인 이유
 
 ## 출처
 - [mysqlinternal.com — B-Tree 인덱스의 깊이에 대해서](https://mysqlinternal.com/2024/10/31/b-tree-%ec%9d%b8%eb%8d%b1%ec%8a%a4%ec%9d%98-%ea%b9%8a%ec%9d%b4%ec%97%90-%eb%8c%80%ed%95%b4%ec%84%9c/)
@@ -127,6 +134,8 @@ CREATE INDEX id_index ON t1 (id) COMMENT 'MERGE_THRESHOLD=40'; -- 인덱스 단�
 - [MySQL 8.4 — InnoDB INFORMATION_SCHEMA Metrics Table](https://dev.mysql.com/doc/refman/8.4/en/innodb-information-schema-metrics-table.html)
 - [MySQL 8.4 — Configuring Persistent Optimizer Statistics Parameters](https://dev.mysql.com/doc/refman/8.4/en/innodb-persistent-stats.html)
 - [MySQL 8.4 — InnoDB Row Formats](https://dev.mysql.com/doc/refman/8.4/en/innodb-row-format.html)
+- [MySQL 8.4 — Comparison of B-Tree and Hash Indexes](https://dev.mysql.com/doc/refman/8.4/en/index-btree-hash.html)
+- [PostgreSQL 18 — Index Types](https://www.postgresql.org/docs/18/indexes-types.html)
 - [btr_get_size, btr_page_get_split_rec_to_right, storage/innobase/btr/btr0btr.cc — MySQL Server 8.4 GitHub](https://github.com/mysql/mysql-server/blob/8.4/storage/innobase/btr/btr0btr.cc)
 - [REC_N_NEW_EXTRA_BYTES, REC_NODE_PTR_SIZE, storage/innobase/rem/rec.h — MySQL Server 8.4 GitHub](https://github.com/mysql/mysql-server/blob/8.4/storage/innobase/rem/rec.h)
 - [인프런, Hong, MySQL B-Tree Index (Clustered, Secandary, Page, Format)](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=373903)
@@ -137,9 +146,11 @@ CREATE INDEX id_index ON t1 (id) COMMENT 'MERGE_THRESHOLD=40'; -- 인덱스 단�
 - [인프런, 김영한, B+Tree 내부 구조 3](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471884)
 - [인프런, 김영한, 정리 (인덱스 내부 구조 1 - B+Tree 섹션)](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471885)
 - [인프런, 김영한, 클러스터드 인덱스 2 - 순차 PK vs 랜덤 PK](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471888)
+- [YouTube, 쉬운코드, B tree가 DB 인덱스로 사용되는 이유](https://www.youtube.com/watch?v=liPSnc6Wzfk)
 
 ## 관련 문서
 - [[Index|Index 기본 (B-Tree, 커버링, 카디널리티)]]
+- [[B-Tree|B-Tree 자료구조 (차수, 분할과 병합, 높이별 수용량)]]
 - [[Execution-Plan|실행 계획 분석]]
 - [[Primary-Key-Strategy|Primary Key 전략]]
 - [[Index-Write-Cost-and-Cleanup|인덱스의 쓰기 비용과 정리]]

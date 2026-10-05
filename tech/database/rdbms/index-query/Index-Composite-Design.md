@@ -3,7 +3,7 @@ tags: [database, rdbms, mysql, index, composite-index, performance]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["Composite Index Design", "복합 인덱스 설계", "복합 인덱스 컬럼 순서", "인덱스 추가 판단"]
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 ---
 
 # 복합 인덱스 설계
@@ -52,6 +52,10 @@ MySQL 8.4.6 재현(20만 행, category 5종 균등)에서 `category >= 'fashion'
 ## WHERE 절의 조건 순서는 무관하다
 
 `category = ? AND price = ?`와 `price = ? AND category = ?`는 같은 계획을 낸다. 옵티마이저가 조건을 인덱스 key part에 맞춰 매칭하기 때문이다. 결과를 바꾸는 것은 인덱스 정의의 컬럼 순서와 각 조건이 등호인지 범위인지다.
+
+## OR 조건은 조건마다 접근 경로가 필요하다
+
+`(category, price)` 인덱스는 `category = ? AND price = ?`와 `category = ?`를 풀지만 `category = ? OR price = ?`는 풀지 못한다. OR는 어느 한쪽만 맞아도 행을 돌려줘야 하므로, `price = ?`를 만족하는 행을 찾을 경로가 없으면 OR 전체를 인덱스 범위로 좁힐 수 없어 풀 스캔이 된다. price가 선두인 인덱스를 따로 두면 MySQL은 두 조건의 range 결과를 합치는 Index Merge를 고를 수 있다. 실행 계획의 `type`은 `index_merge`이고, 모든 조건이 각 인덱스의 key part 전체를 등호로 덮으면 `Using union(...)`, 이 예의 `category = ?`처럼 일부만 덮으면 행 ID를 모아 정렬한 뒤 합치는 `Using sort_union(...)`이 `Extra`에 나온다. 옵티마이저가 Index Merge 대신 풀 스캔을 고를 수도 있으므로 두 조건을 `UNION`으로 나눈 쿼리와 `EXPLAIN ANALYZE`로 비교한다. 알고리즘별 차이는 [[MySQL-Advanced-Index-Access#Index Merge|Index Merge]]에, `UNION`으로 나눌 때 projection이 같은 서로 다른 행이 합쳐지는 문제는 [[MySQL-Advanced-Index-Access#OR를 재작성할 때의 중복|OR 재작성의 중복]]에 있다.
 
 ## 범위 조건을 IN 목록으로 바꾸기
 
@@ -152,6 +156,7 @@ CREATE INDEX idx_items_category_active_stock
 - [인프런, 김영한, 인덱스 설계 - 실습](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347682)
 - [인프런, 김영한, 쇼핑몰 기능 확인1](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347687)
 - [인프런, 김영한, 정리 (물리적 모델링 실습)](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347689)
+- [YouTube, 쉬운코드, DB 인덱스 핵심](https://www.youtube.com/watch?v=IMDH4iAQ6zM)
 
 ## 관련 문서
 

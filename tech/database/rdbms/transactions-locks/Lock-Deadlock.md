@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, lock, deadlock, concurrency]
 status: done
-verified_at: 2026-08-21
+verified_at: 2026-10-05
 category: "Data & Storage - RDB"
 aliases: ["DB Deadlock", "데드락", "Deadlock"]
 ---
@@ -20,6 +20,7 @@ aliases: ["DB Deadlock", "데드락", "Deadlock"]
 - 이론적으로 Lock 순서를 통일하면 Circular Wait를 제거하여 데드락을 예방할 수 있음
 - 하지만 실무에서는 Gap Lock, Next-Key Lock이 **개발자가 의도하지 않은 순서로 암묵적으로 획득**됨
 - 쿼리 실행 계획에 따라 InnoDB가 잡는 lock 범위가 달라질 수 있어 완벽한 순서 통일은 현실적으로 불가능
+- 이론도 같은 결론이다. 직렬성을 보장하는 2PL은 deadlock 자유를 보장하지 않는다. 필요한 lock을 시작 전에 모두 얻는 conservative 2PL은 deadlock을 없애지만, 접근할 row가 조건 분기와 질의 결과로 정해지는 일반 트랜잭션에서는 미리 선언하기 어렵다 ([[Two-Phase-Locking|2PL]])
 - 따라서 **데드락은 발생할 수 있다는 전제** 하에 감지 + 복구를 설계하는 것이 핵심
 
 ## 감지 + 자동 복구 (InnoDB 기본 전략)
@@ -69,11 +70,14 @@ SQL Server의 UPDLOCK은 읽을 때 update lock을 취해 공유 잠금끼리의
 - [데드락과 락 순서 통일 — Threads, dev_coach_kr](https://www.threads.com/@dev_coach_kr/post/DRGENQikl7o)
 - [Microsoft Learn, Table hints (Transact-SQL)](https://learn.microsoft.com/en-us/sql/t-sql/queries/hints-transact-sql-table?view=sql-server-ver17)
 - [인프런, 비관적락을 이용한 동시성 제어(with Prisma)](https://www.inflearn.com/courses/lecture?courseId=336546&unitId=273680)
+- [Concurrency Control and Recovery in Database Systems, Chapter 3 Two Phase Locking — Bernstein, Hadzilacos, Goodman](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/05/chapter3.pdf)
+- [YouTube, 쉬운코드, LOCK을 활용한 concurrency control과 2PL](https://www.youtube.com/watch?v=0PScmeO3Fig)
 
 
 ## 관련 문서
 
 - [[Lock|DB Lock]]
+- [[Two-Phase-Locking|2단계 잠금 (2PL)]]
 - [[MySQL-InnoDB-Locking-and-Deadlocks|MySQL 8.4 InnoDB Locking과 Deadlock]]
 - [[Transactions|트랜잭션]]
 - [[Isolation-Level|트랜잭션 격리 수준]]

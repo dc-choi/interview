@@ -21,6 +21,10 @@ handler(req):
 - 요청 A: stock=5 읽음 → (네트워크 대기) → 4로 쓰기
 - 요청 B: stock=5 읽음 (A 쓰기 전) → 4로 쓰기 → 1개만 차감된 것처럼 보임
 
+## 멀티스레드 런타임과의 차이
+
+JavaScript는 한 스레드에서 한 번에 하나의 작업만 실행하고, 시작한 작업은 끝까지 실행된 뒤 다음 작업으로 넘어간다. 그래서 Node.js 메인 스레드의 경쟁은 `await`처럼 제어를 양보하는 지점 사이에서 생긴다(Worker와 공유 메모리를 쓰면 실제 data race도 생긴다). Java처럼 여러 스레드가 힙을 공유하는 런타임에서는 양보 지점이 없어도 명령 사이 어디서든 다른 스레드가 끼어들고, 멀티코어에서는 실제로 동시에 실행된다. `count++` 한 줄도 read, add, write 세 단계라 두 스레드가 같은 값을 읽으면 증가 하나가 사라진다([[Concurrency-and-Process-IPC|원자성, 동기화, IPC]]). 단일 값 갱신은 `AtomicInteger.incrementAndGet()` 같은 원자적 연산으로, 여러 필드에 걸친 불변식은 `synchronized`나 `Lock`으로 한 임계구역에 묶는다([[Java-Atomic-and-Concurrent-Collections|Java Atomic 연산과 동시성 컬렉션]]). 재현과 검증 방법은 [[Race-Condition-Patterns-Toolbox#경쟁 재현 실험|경쟁 재현 실험]]에 있다.
+
 ## 해결
 **1. 원자적 DB 연산** (최우선):
 ```
@@ -77,3 +81,6 @@ await mutex.waitForUnlock();
 ## 출처
 
 - [async-mutex repository, README](https://github.com/DirtyHairy/async-mutex/blob/master/README.md)
+- [ECMAScript 2026 Language Specification, 9.5 Jobs and Host Operations to Enqueue Jobs](https://tc39.es/ecma262/2026/#sec-jobs)
+- [Java SE 26 API, AtomicInteger](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/atomic/AtomicInteger.html)
+- [YouTube, 쉬운코드, 자바 스레드로 OS에서 배우는 Race condition을 재현하기](https://www.youtube.com/watch?v=mFBcfaPwPeQ)

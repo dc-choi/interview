@@ -74,6 +74,26 @@ sample은 설명용이지 완전한 검증 집합이 아니다. 답이 없는 �
 
 오답 분석에서는 증상을 고치기 전에 invariant가 처음 깨지는 state를 찾는다. 변수명을 좌표와 역할에 맞게 통일하고 test case마다 공유 state를 초기화하면 관찰해야 할 경우의 수가 줄어든다.
 
+## 통과한 풀이를 더 줄이기
+
+통과한 풀이에도 시간 성능을 줄일 여지가 남아 있는 경우가 많고, 면접에서는 그 여지를 이어서 물을 수 있다. 반복되는 계산을 찾고, 조건식을 다른 형태로 바꿔 더 빠른 자료구조에 맡기고, 바꾼 뒤 경계 입력으로 다시 검증하는 순서로 줄인다. 서로 다른 두 원소의 합이 target인 쌍이 있는지 묻는 Two Sum으로 보면 다음과 같다.
+
+1. i와 j를 모두 처음부터 끝까지 돌며 i = j만 건너뛰면 loop가 `n²`번 돌아 O(n²)다.
+2. 이미 본 쌍을 다시 보지 않도록 j를 i + 1부터 시작하면 `n(n-1)/2`번이다. 여전히 Θ(n²)지만 일은 절반이라, 같은 점근 복잡도가 같은 실행 시간을 뜻하지는 않는다.
+3. 조건 `a[i] + a[j] == target`을 `a[j] == target - a[i]`로 바꾸면 안쪽 loop는 값의 존재 여부 조회다. 조회를 hash set에 맡기면 평균 O(1)이라 전체가 평균 O(n)이 되고, 대신 O(n) 공간을 쓴다.
+4. 모든 값을 먼저 set에 넣고 시작하면 자기 자신이 짝으로 잡힌다. `[1, 2, 5]`, target 4에서 2를 볼 때 `4 - 2 = 2`가 set에 있어 true가 나오지만 답은 false다. 각 원소를 조회한 뒤에 넣으면 set에는 현재 원소 앞의 값만 있으므로 서로 다른 위치끼리만 짝짓고, `[2, 2]`처럼 같은 값이 두 번 나오는 입력도 맞게 처리한다.
+
+```text
+seen = empty hash set
+for value in nums:
+    if target - value in seen:
+        return true
+    add value to seen
+return false
+```
+
+입력이 이미 정렬돼 있거나 추가 공간을 줄여야 하면 정렬 뒤 양 끝에서 좁혀 오는 two pointers도 후보다([[Greedy-Sweep-and-Two-Pointers#정렬된 배열의 두 수 합|정렬된 배열의 두 수 합]]). hash set의 평균 O(1)은 hash가 고르게 퍼질 때의 성질이라 충돌이 몰리면 느려진다([[Hash-Table#Load factor와 resize|Load factor와 resize]]). 중첩 loop 안의 선형 탐색을 set이나 map 조회로 바꾸는 것은 실무 코드에서도 자주 쓰는 개선이다.
+
 ## 코딩 테스트의 채점 방식
 
 코딩 테스트는 주어진 문제를 시간 제한(프로그램 시작부터 종료까지)과 메모리 제한 안에서 푸는지를 본다. 제출한 코드는 사람이 읽지 않고, 숨겨진 테스트 케이스(TC) 묶음에 대해 출력이 모두 맞는지로 채점한다. 입력은 문제의 제약 조건을 지킨다고 보장되므로 범위 검증 코드는 필요 없고, 그 대신 제약의 최댓값에서 시간과 자료형이 버티는지를 따진다.
@@ -101,7 +121,7 @@ sample은 설명용이지 완전한 검증 집합이 아니다. 답이 없는 �
 | rate limit | fixed/sliding window, token bucket | 정확도, burst 허용, 분산 clock과 atomic update |
 | LRU cache | hash map + doubly linked list | eviction 동시성, memory overhead |
 | 지연 작업 | min-heap 또는 ordered queue | cancel, retry, 같은 시각의 순서 |
-| index lookup | B-tree 계열, hash index | range query, persistence와 engine 구현 |
+| index lookup | [[B-Tree\|B-tree]] 계열, hash index | range query, persistence와 engine 구현 |
 | 경로 탐색 | BFS, Dijkstra 등 | edge weight, 음수 가중치와 graph 크기 |
 
 이 표는 출발점이다. 실제 시스템에서는 database, library와 runtime이 이미 제공하는 구현을 우선 검토하고 관측된 병목이 있을 때 직접 최적화한다.
@@ -119,6 +139,7 @@ sample은 설명용이지 완전한 검증 집합이 아니다. 답이 없는 �
 - 인프런, 큰돌 강사, [맞왜틀팁 : 반례를 생각하는 방법 | 2 - C 보완설명](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=144195), [맞왜틀팁 : 변수명의 통일](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=146818), [2-M](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100337), [맞왜틀팁 : 실수를 줄이는 방법 | 히든퀘스트](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=144196)
 
 - 인프런, 널널한 개발자 강사, [가장 큰 수 찾기 #1](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128261), [가장 큰 수 찾기 #2](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128262), [일단 써놓고 규칙을 찾자](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128263)
+- YouTube, 쉬운코드, [TwoSum 문제로 보는 코드 성능 개선 과정](https://www.youtube.com/watch?v=cxhbgAbAiXI)
 - [바킹독의 실전 알고리즘 0x00강, 오리엔테이션 — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=LcOIobH7ues)
 - [NIST Dictionary of Algorithms and Data Structures, data structure](https://xlinux.nist.gov/dads/HTML/dataStructure.html)
 - [Princeton Algorithms, Analysis of Algorithms](https://algs4.cs.princeton.edu/14analysis/)

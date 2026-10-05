@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, foreign-key, referential-integrity]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 category: "Data & Storage - RDB"
 aliases: ["외래 키 설계", "Foreign Key Integrity", "참조 무결성"]
 ---
@@ -26,6 +26,10 @@ aliases: ["외래 키 설계", "Foreign Key Integrity", "참조 무결성"]
 - 주문 상태 전이, 잔액 보존 같은 여러 행의 비즈니스 불변식
 
 FK가 있다는 이유로 JOIN의 컬럼과 결과 grain 검증을 생략하면 안 된다.
+
+### NULL인 FK는 검사하지 않는다
+
+FK 컬럼이 NULL이면 부모를 찾지 않는다. 선택 관계를 nullable FK로 표현하는 근거지만 복합 FK에서는 함정이 된다. MySQL은 표준의 MATCH SIMPLE 의미를 따르므로 `(tenant_id, parent_id)` 같은 복합 FK에서 한 컬럼만 NULL이어도 나머지 값이 부모에 없는 행이 들어간다. MySQL은 `MATCH` 절을 문법으로만 받고 강제하지 않으며 `SHOW CREATE TABLE`에도 남기지 않는다. 매뉴얼은 `MATCH`를 쓰면 ON DELETE, ON UPDATE가 무시된다고 적지만 8.4.11 재현에서는 `MATCH FULL`과 함께 쓴 `ON DELETE CASCADE`, `MATCH SIMPLE`과 함께 쓴 `ON UPDATE CASCADE`가 모두 동작했다. 효과가 없고 문서와 동작도 어긋나므로 쓰지 않는다. 일부 NULL을 막으려면 FK 컬럼을 모두 `NOT NULL`로 두거나 `CHECK ((tenant_id IS NULL) = (parent_id IS NULL))` 같은 제약을 더한다. 다만 MySQL은 `ON DELETE SET NULL`이나 `ON UPDATE CASCADE`처럼 FK 동작이 값을 바꾸는 컬럼을 CHECK에 쓰면 오류 3823으로 거부한다. 매뉴얼은 ON UPDATE, ON DELETE 동작 전체를 금지 대상으로 적지만 8.4.11에서는 동작을 생략하거나 `RESTRICT`, `NO ACTION`, `ON DELETE CASCADE`만 둔 FK에는 이 CHECK를 함께 둘 수 있었다. PostgreSQL은 `MATCH FULL`로 일부만 NULL인 행을 거부할 수 있다.
 
 ## MySQL InnoDB 정의 조건
 
@@ -58,6 +62,19 @@ CREATE TABLE orders (
 | `SET NULL` | 참조를 끊고 child를 남김 | 담당자 해제처럼 독립 생존 가능 | child 컬럼이 nullable이어야 함 |
 
 InnoDB의 `NO ACTION`은 deferred constraint가 아니라 `RESTRICT`와 같은 즉시 검사다. cascade는 편리하지만 데이터 보존 요구, 감사 로그와 최대 fan-out을 먼저 확인한다.
+
+## 순환 참조와 적재 순서
+
+부서의 `leader_id`가 직원을, 직원의 `dept_id`가 부서를 참조하면 두 테이블이 서로를 참조한다. 아직 없는 테이블은 참조할 수 없으므로 먼저 만드는 쪽은 FK 없이 만들고, 두 테이블이 생긴 뒤 추가한다.
+
+```sql
+ALTER TABLE department
+  ADD CONSTRAINT fk_department_leader
+  FOREIGN KEY (leader_id) REFERENCES employee(id)
+  ON DELETE SET NULL;
+```
+
+데이터 적재도 같은 문제를 가진다. 직원을 먼저 넣을 때 `dept_id`를 NULL로 두고, 부서를 넣은 뒤 UPDATE로 채우려면 그 FK 컬럼이 nullable이어야 한다. MySQL은 FK를 문장의 행마다 즉시 검사하고 commit까지 미루지 않으므로, 두 행이 서로를 NOT NULL로 참조하는 순환은 적재 순서로 풀 수 없다. 한쪽을 nullable로 두거나 리더 지정처럼 나중에 생기는 관계를 별도 테이블로 분리한다. PostgreSQL은 `DEFERRABLE` 제약으로 검사를 commit 시점까지 미룰 수 있다. 대량 적재에서 `foreign_key_checks = 0`으로 순서를 우회했다면 아래 운영 주의점처럼 재활성화 뒤 별도 검증이 필요하다.
 
 ## FK를 빼는 이유와 유지할 조건
 
@@ -159,10 +176,15 @@ InnoDB의 cascaded FK action은 child trigger를 활성화하지 않는다. chil
 - [인프런, 식별 관계 vs 비식별 관계 - 다대다(M:N) 2](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347657)
 - [인프런, 일대일(1:1) 관계 - [실습] 관계 확장의 유연성](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347643)
 - [인프런, 테이블 관계 설계와 기본키와 외래키 제약 조건에 대한 연관관계](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=432801)
+- [MySQL 8.4 Reference Manual, FOREIGN KEY Constraint Differences](https://dev.mysql.com/doc/refman/8.4/en/ansi-diff-foreign-keys.html)
+- [MySQL 8.4 Reference Manual, CHECK Constraints](https://dev.mysql.com/doc/refman/8.4/en/create-table-check-constraints.html)
+- [YouTube, 쉬운코드, SQL의 개념과 데이터베이스 정의](https://www.youtube.com/watch?v=c8WNbcxkRhY)
+- [YouTube, 쉬운코드, SQL로 데이터 추가, 수정, 삭제하기](https://www.youtube.com/watch?v=mgnd5JWeCK4)
 
 
 ## 관련 문서
 
+- [[Data-Integrity-Constraints|데이터 무결성과 제약 조건]]
 - [[Normalization|정규화]]
 - [[Schema-Migration-Large-Table|대용량 스키마 변경]]
 - [[SQL-Joins|SQL 조인]]

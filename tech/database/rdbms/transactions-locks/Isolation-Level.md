@@ -3,7 +3,7 @@ tags: [database, rdbms]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["트랜잭션 격리 수준", "Isolation Level"]
-verified_at: 2026-08-11
+verified_at: 2026-10-05
 ---
 
 # 트랜잭션 격리 수준
@@ -33,6 +33,21 @@ verified_at: 2026-08-11
 
 - 트랜잭션 결과가 어떤 직렬 실행 순서와 같아지도록 더 강하게 격리한다.
 - 구현체마다 방식은 다르다. InnoDB에서는 `autocommit`이 꺼진 트랜잭션의 일반 SELECT를 `SELECT ... FOR SHARE`처럼 바꿔 공유 잠금을 잡으므로 range insert/update와 충돌할 수 있다. `autocommit`이 켜진 일반 SELECT는 각 문장이 독립 트랜잭션인 consistent nonlocking read다.
+
+## 표준 정의와 제품 기본값
+
+SQL-92는 격리 수준을 세 현상의 허용 여부로 정의했다.
+
+| 격리 수준 | Dirty Read | Non-Repeatable (Fuzzy) Read | Phantom |
+|---|---|---|---|
+| READ UNCOMMITTED | 가능 | 가능 | 가능 |
+| READ COMMITTED | 불가 | 가능 | 가능 |
+| REPEATABLE READ | 불가 | 불가 | 가능 |
+| SERIALIZABLE | 불가 | 불가 | 불가 |
+
+- SERIALIZABLE은 세 현상 금지에 더해 직렬 실행과 같은 효과를 요구한다. 세 현상을 막는 것만으로 serializable이 보장되지는 않으며(Snapshot Isolation이 그 예다), 표에 없는 lost update, read skew, write skew도 있다([[Isolation-Level-Beyond-ANSI#논문이 정리한 현상 목록|확장 현상 목록]]).
+- 표준의 기본 격리 수준은 SERIALIZABLE이지만 MySQL InnoDB는 REPEATABLE READ, PostgreSQL과 Oracle은 READ COMMITTED가 기본값이다.
+- 같은 이름이어도 제품마다 동작이 다르다. PostgreSQL은 READ UNCOMMITTED를 READ COMMITTED처럼 처리하고 REPEATABLE READ에서 phantom read를 허용하지 않는다. 같은 RR에서 lost update를 막는지도 MySQL과 PostgreSQL이 다르다([[MVCC-Implementation-Tradeoffs#같은 격리 수준 이름에서 갈리는 쓰기 충돌|쓰기 충돌 비교]]). 사용하는 DBMS 매뉴얼에서 제공 수준과 실제 동작을 확인한다.
 
 ## 격리 수준은 성능 등급표가 아니다
 
@@ -99,6 +114,8 @@ verified_at: 2026-08-11
 
 Dirty read는 읽는 시점에 아직 commit되지 않은 다른 transaction의 변경을 읽는 것이다. 그 transaction이 나중에 실제로 rollback되어야만 성립하는 것은 아니다. Non-repeatable read는 같은 key를 다시 읽을 때 다른 commit으로 값/존재가 달라지는 상황이다. Phantom은 같은 predicate로 재조회한 row 집합이 달라지는 상황으로 insert뿐 아니라 범위에 들어오거나 나가는 update/delete도 고려한다. 이 정의와 특정 DB의 snapshot/lock 구현은 구분한다.
 
+같은 key를 다시 읽지 않아도 같은 계열의 문제가 생긴다. 다른 transaction이 x에서 y로 이체하고 commit하는 사이에 x는 이체 전, y는 이체 후 값으로 읽으면 두 잔액의 합이 실제와 어긋난다. 이를 read skew라고 하며, x와 y가 같은 항목이면 non-repeatable read가 된다.
+
 ## 설정의 적용 범위
 
 Read Uncommitted는 나중에 사라질 중간 상태를 결제/정산 판단에 사용할 위험이 있다. 속도를 얻는 일반 튜닝으로 채택하지 않는다. MySQL `SET SESSION TRANSACTION ISOLATION LEVEL ...`은 session의 후속 transaction에, GLOBAL 변경은 새 연결의 기본값에 적용되며 기존 연결을 일괄 변경하지 않는다. scope 없는 SET TRANSACTION은 다음 transaction에만 적용한다. pool의 상태 복원과 `@@session.transaction_isolation`을 확인한다.
@@ -106,6 +123,8 @@ Read Uncommitted는 나중에 사라질 중간 상태를 결제/정산 판단에
 ## 출처
 
 2026-10-03 부분 검증: dirty read의 정의, RC의 consistent read와 잠금 차이를 MySQL 8.4 공식 문서와 대조했다. 실제 DB의 동시 실행이나 애플리케이션의 격리 수준 변경을 시험한 기록은 아니다.
+
+2026-10-05 부분 검증: SQL-92 현상 표는 Berenson 등의 논문과 대조했고, 제품별 기본 격리 수준과 PostgreSQL의 READ UNCOMMITTED, phantom 처리는 MySQL 8.4, PostgreSQL 18, Oracle 19c 공식 문서와 대조했다. 이 역시 실행 재현 기록은 아니다.
 
 - [MySQL 8.4 Glossary, dirty read](https://dev.mysql.com/doc/refman/8.4/en/glossary.html#glos_dirty_read)
 - [m0rph2us — MySQL Isolation Level 이해하기](https://m0rph2us.github.io/mysql/transaction/2020/07/06/understanding-mysql-isolation-level.html)
@@ -117,10 +136,16 @@ Read Uncommitted는 나중에 사라질 중간 상태를 결제/정산 판단에
 - [MySQL 8.4 Reference Manual, set transaction](https://dev.mysql.com/doc/refman/8.4/en/set-transaction.html)
 - [인프런, 정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328819)
 - [인프런, 트랜잭션의 ACID 속성](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328817)
+- [PostgreSQL 18 Documentation, Transaction Isolation](https://www.postgresql.org/docs/18/transaction-iso.html)
+- [PostgreSQL 18 Documentation, SET TRANSACTION](https://www.postgresql.org/docs/18/sql-set-transaction.html)
+- [Berenson et al. — A Critique of ANSI SQL Isolation Levels (SIGMOD 1995)](https://arxiv.org/abs/cs/0701157)
+- [YouTube, 쉬운코드, transaction isolation level과 snapshot isolation](https://www.youtube.com/watch?v=bLLarZTrebU)
 
 
 ## 관련 문서
 - [[Isolation-Level-Beyond-ANSI|ANSI 격리의 한계, Strict Serializable, Snapshot Isolation]]
+- [[Serializability-and-Recoverability|스케줄, 직렬 가능성과 회복 가능성]]
+- [[MVCC-Implementation-Tradeoffs|MVCC 구현과 MySQL, PostgreSQL의 쓰기 충돌 차이]]
 - [[Transactions|트랜잭션]]
 - [[Lock|DB Lock]]
 - [[MySQL-InnoDB-MVCC-and-Undo|MySQL 8.4 InnoDB MVCC와 Undo]]

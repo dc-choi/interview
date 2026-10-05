@@ -1,7 +1,7 @@
 ---
 tags: [java, class, object, inheritance, interface, lambda, encapsulation]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-05
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Object Model", "Java 객체 모델"]
 ---
@@ -32,6 +32,8 @@ final class Account {
 - 생성자는 반환 타입이 없고 클래스 이름과 같으며 overload할 수 있다. 생성자를 선언하지 않으면 조건에 따라 기본 생성자가 제공된다.
 - method 선언은 접근 modifier, 반환 타입, 이름, parameter 목록과 body로 구성된다. 반환 타입이 `void`가 아니면 정상 종료 경로에서 호환되는 값을 반환해야 한다.
 - 인스턴스 메서드의 `this`는 현재 객체를 가리킨다. 생성자 위임에는 `this(...)`, 상위 클래스 생성자 호출에는 `super(...)`를 쓴다.
+- 함수는 특정 객체나 클래스에 속하지 않고 이름으로 호출하는 독립된 코드 단위이고, 메서드는 클래스나 인터페이스의 member로 선언된다. 인스턴스 메서드는 receiver 객체의 상태에 접근하므로 `c1.get()`과 `c2.get()`처럼 같은 메서드를 호출해도 각 객체의 상태에 따라 결과가 다르다. static 메서드는 객체 없이 클래스에 대해 호출하며 `this`를 쓸 수 없다.
+- Java에는 클래스 밖에 선언하는 함수가 없다. lambda는 functional interface를 구현한 클래스의 인스턴스로 평가되고(JLS 15.27.4), JDK 25 compact source file에서 클래스 선언 없이 쓴 메서드도 소스 코드에서 이름으로 참조할 수 없는 암시적 클래스의 member가 된다(JLS 8.1.8, JEP 512). Python이나 JavaScript의 모듈 수준 함수와 비교할 때 이 차이를 구분한다.
 - Java의 인자는 항상 값으로 전달된다. 객체 인자는 참조 값의 복사본이므로 같은 객체를 변경할 수는 있지만 호출자의 변수를 재대입할 수는 없다.
 - 더는 도달할 수 없는 객체는 GC 대상이 될 수 있지만, 회수 시점은 프로그램이 결정하지 않는다.
 - `null` 참조를 통해 instance member에 접근하면 `NullPointerException`이 발생한다. null을 임의의 유효 상태처럼 퍼뜨리기보다 경계에서 contract를 정한다.
@@ -127,6 +129,7 @@ try (var input = Files.newInputStream(path)) {
 ## 면접 체크포인트
 
 - 객체 생성과 생성자, `this`, `super`의 역할
+- 함수와 메서드의 차이, Java에 클래스 밖 함수가 없다는 말의 범위
 - 캡슐화와 단순 getter/setter의 차이
 - overload, override, static hiding의 차이
 - 상속보다 조합이 나은 조건
@@ -139,6 +142,8 @@ try (var input = Files.newInputStream(path)) {
 
 - [JLS 8, Classes](https://docs.oracle.com/javase/specs/jls/se26/html/jls-8.html)
 - [JLS 9, Interfaces](https://docs.oracle.com/javase/specs/jls/se26/html/jls-9.html)
+- [JLS 15.27.4, Run-Time Evaluation of Lambda Expressions](https://docs.oracle.com/javase/specs/jls/se26/html/jls-15.html#jls-15.27.4)
+- [JEP 512, Compact Source Files and Instance Main Methods](https://openjdk.org/jeps/512)
 - [Object.finalize, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html)
 - [AutoCloseable, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html)
 - [JEP 421, Deprecate Finalization for Removal](https://openjdk.org/jeps/421)
@@ -159,6 +164,7 @@ try (var input = Files.newInputStream(path)) {
 - 인프런, [인터페이스](https://www.inflearn.com/courses/lecture?courseId=182835&unitId=13699)
 - 인프런, [추상클래스](https://www.inflearn.com/courses/lecture?courseId=182835&unitId=13700)
 - 인프런, [람다식](https://www.inflearn.com/courses/lecture?courseId=182835&unitId=13701)
+- YouTube, 쉬운코드, [함수](https://www.youtube.com/watch?v=2bL2mVXGr4I)
 
 ## 관련 문서
 

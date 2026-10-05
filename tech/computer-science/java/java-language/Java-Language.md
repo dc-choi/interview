@@ -19,6 +19,7 @@ Java 문법에서 객체 설계와 표준 라이브러리까지 현재 명세에
 4. [[Java-Language-Class-Members-and-Memory|클래스 멤버와 메모리 모델]]
 5. [[Java-Language-Object-Model|객체 모델]]
 6. [[Java-Language-Inheritance-and-Polymorphism|상속과 다형성]]
+   - [[Java-Language-Inheritance-and-Polymorphism-Pattern-Matching|downcast와 instanceof 패턴 매칭]]
 7. [[Java-Language-OOP-Design-and-OCP|객체 협력과 OCP]]
 8. [[Java-Language-Library-and-IO|표준 라이브러리와 I/O]]
 9. [[Java-Standard-Library|표준 라이브러리 심화]]

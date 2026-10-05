@@ -14,9 +14,10 @@ OSI 7계층 전체 지도와 계층별 상세 문서를 모은다. 흐름 한 �
 - [x] [[Physical-DataLink-Layer|L1/L2 물리와 데이터링크 (허브와 CSMA/CD, MAC과 프레임, L2 스위칭, VLAN과 STP, 충돌과 브로드캐스트 도메인)]]
 - [x] [[Network-Layer|L3 네트워크 (IP, CIDR, 라우팅, ARP, MTU와 MSS, 패킷은 유지되고 프레임은 구간마다 바뀜, 헤더와 페이로드 검사)]]
 - [x] [[Transport-Layer|L4 전송 (TCP, UDP, 소켓, 스트림, 세그먼트와 캡슐화, 포트)]]
+- [x] [[Transport-Layer-Sockets|L4 소켓과 포트 (소켓의 두 의미, bind/listen/accept와 포트 공유, 수신 측 역다중화 순서, 5-tuple과 임시 포트 고갈, 메시지 경계와 프레이밍)]]
 - [x] [[Session-Presentation-Application-Layer|L5/6/7 세션, 프레젠테이션, 애플리케이션 (세션 유지, 인코딩, ALB L7)]]
-- [x] [[LAN-vs-WAN|LAN과 WAN (거리가 아닌 MAC 직접 전달과 IP 라우팅으로 구분, 물리와 논리 네트워크)]]
-- [x] [[Network-Encapsulation|캡슐화와 데이터 단위 (소켓 스트림 → 세그먼트 → 패킷 → 프레임, MTU/MSS와 단편화, 커널 송수신 경로, DPI)]]
+- [x] [[LAN-vs-WAN|LAN과 WAN (거리가 아닌 MAC 직접 전달과 IP 라우팅으로 구분, 물리와 논리 네트워크, 노드와 호스트 용어)]]
+- [x] [[Network-Encapsulation|캡슐화와 데이터 단위 (소켓 스트림 → 세그먼트 → 패킷 → 프레임, 라우터 홉의 재캡슐화, MTU/MSS와 단편화, 커널 송수신 경로, DPI)]]
 - [x] [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기 (필드별 의미, TTL, 단편화 필드, 체크섬, IPv6 대비, Wireshark 필터)]]
 - [x] [[ICMP|ICMP (오류 보고와 진단, type과 code, ping 해석, ICMPv6와 Neighbor Discovery, 방화벽 필터링 기준)]]
 - [x] [[Unicast-Broadcast-Multicast|유니캐스트, 브로드캐스트, 멀티캐스트 (수신 대상 범위, limited/directed broadcast, IGMP와 MAC 매핑, IPv6의 애니캐스트)]]
@@ -91,6 +92,7 @@ ARPANET은 1969년 설치가 시작된 연구망이었고, 그 호스트 간 프
 - [[Switch-Hierarchy-and-Uplink]] — 액세스, 디스트리뷰션, 코어 계층과 업링크, 포트 용량 설계 (tech/web/network)
 - [[LAN-vs-WAN]] — LAN과 WAN 구분 기준
 - [[Network-Encapsulation]] — 스트림에서 프레임까지의 캡슐화, MTU/MSS, DPI
+- [[Transport-Layer-Sockets]] — 소켓 식별, 역다중화, 메시지 경계
 - [[IPv4-Header]] — IPv4 헤더 필드, TTL, 단편화 필드, 캡처로 읽기
 - [[Unicast-Broadcast-Multicast]] — 전달 방식과 목적지 주소, 브로드캐스트 도메인의 비용, 멀티캐스트와 IGMP
 - [[네트워크(Network)]] — 카테고리 인덱스

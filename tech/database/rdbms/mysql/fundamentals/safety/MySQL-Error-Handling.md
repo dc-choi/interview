@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, error-handling, typeorm]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 category: "Database - RDBMS"
 aliases: ["MySQL Error Handling", "MySQL 오류 처리"]
 ---
@@ -55,6 +55,8 @@ SQLSTATE는 벤더 중립이라 큰 갈래를 정하기 좋지만 세부 의미�
 
 1062는 키 이름까지 본다. AUTO_INCREMENT가 타입 상한에 닿아도 PRIMARY 키의 1062로 실패하므로 모든 1062를 사용자 입력 충돌로 번역하면 소진 장애가 중복 요청처럼 보인다([[MySQL-Numeric-and-Temporal-Types#AUTO_INCREMENT 상한|AUTO_INCREMENT 상한]]).
 
+SQLSTATE class `23`과 무결성 위반은 정확히 겹치지 않는다. CHECK 위반인 3819 `ER_CHECK_CONSTRAINT_VIOLATED`는 `HY000`이라 class 23 분기에서 빠지고, 다중 테이블 쿼리에서 컬럼 참조가 모호하다는 1052 `ER_NON_UNIQ_ERROR`는 쿼리 버그인데도 `23000`이다. 제약 위반을 409나 422로 번역하는 분기는 class가 아니라 번호나 symbol 목록으로 정의한다. 위반 message에는 `Check constraint 'employee_chk_2' is violated.`처럼 제약 이름이 들어가므로 자동 생성 이름 대신 규칙을 드러내는 이름을 붙이면 오류를 도메인 규칙에 매핑하기 쉽다([[Data-Integrity-Constraints#이름 있는 제약과 NULL|이름 있는 제약과 NULL]]).
+
 ## 안전한 로깅
 
 다음은 함께 남기되 민감 정보는 제거한다.
@@ -83,9 +85,12 @@ SQLSTATE는 벤더 중립이라 큰 갈래를 정하기 좋지만 세부 의미�
 - [MySQL 8.4 Error Message Reference, Server Error Message Reference](https://dev.mysql.com/doc/mysql-errors/8.4/en/server-error-reference.html)
 - [MySQL 8.4 Error Message Reference, Client Error Message Reference](https://dev.mysql.com/doc/mysql-errors/8.4/en/client-error-reference.html)
 - [인프런, Real MySQL 시즌 1 - Part 1, 에러 핸들링](https://www.inflearn.com/courses/lecture?courseId=333931&unitId=226569)
+- [MySQL 8.4 Reference Manual, CHECK Constraints](https://dev.mysql.com/doc/refman/8.4/en/create-table-check-constraints.html)
+- [YouTube, 쉬운코드, SQL로 데이터 추가, 수정, 삭제하기](https://www.youtube.com/watch?v=mgnd5JWeCK4)
 
 ## 관련 문서
 
+- [[Data-Integrity-Constraints|데이터 무결성과 제약 조건]]
 - [[Transactions|트랜잭션]]
 - [[Lock|DB Lock]]
 - [[MySQL-SQL-Mode|MySQL SQL Mode]]

@@ -1,14 +1,14 @@
 ---
-tags: [database, rdbms, mysql, schema, integer, datetime]
+tags: [database, rdbms, mysql, schema, integer, decimal, datetime]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 category: "Database - RDBMS"
-aliases: ["MySQL Numeric and Temporal Types", "MySQL 정수 타입 범위", "AUTO_INCREMENT 소진", "TIMESTAMP 2038"]
+aliases: ["MySQL Numeric and Temporal Types", "MySQL 정수 타입 범위", "AUTO_INCREMENT 소진", "TIMESTAMP 2038", "MySQL DECIMAL", "MySQL BOOLEAN"]
 ---
 
 # MySQL 숫자와 날짜 시간 타입
 
-요구별 타입 후보는 [[MySQL-Data-and-Access-Safety#자료형은 도메인 의미로 고른다|자료형 선택표]]에 있고, 이 문서는 숫자와 날짜 시간 타입의 범위가 실제 쓰기 실패로 이어지는 지점을 모은다. 문자열 타입은 [[MySQL-String-Types|MySQL 문자열 타입 선택]]에 둔다. MySQL 8.4 문서 기준이며 8.4.6 재현 결과를 함께 적었다.
+요구별 타입 후보는 [[MySQL-Data-and-Access-Safety#자료형은 도메인 의미로 고른다|자료형 선택표]]에 있고, 이 문서는 숫자와 날짜 시간 타입의 범위와 표현 방식이 실제 쓰기 실패나 비교 오류로 이어지는 지점을 모은다. 문자열 타입은 [[MySQL-String-Types|MySQL 문자열 타입 선택]]에 둔다. MySQL 8.4 문서 기준이며 8.4.6 재현 결과를 함께 적었다.
 
 ## 정수 타입의 범위
 
@@ -35,6 +35,22 @@ aliases: ["MySQL Numeric and Temporal Types", "MySQL 정수 타입 범위", "AUT
 - `sys.schema_auto_increment_columns`는 테이블별 `max_value`, 현재 `auto_increment`와 사용 비율 `auto_increment_ratio`를 비율 내림차순으로 보여 준다. 8.4.6 재현의 소진된 컬럼은 비율이 `1.0000`이었다. 비율 임계값 알림을 둔다.
 - 로그, 이벤트, 알림처럼 빠르게 쌓이는 테이블은 `BIGINT`로 시작하는 비용이 나중의 PK 타입 변경보다 작다. PK 타입 변경은 테이블 재구축이고 참조하는 FK 컬럼까지 같은 타입으로 바꿔야 한다. 반대로 PK 폭은 InnoDB secondary index마다 복제되므로 성장 상한과 인덱스 비용을 함께 비교한다([[Primary-Key-Strategy#Auto increment|Auto increment]]).
 
+## 고정 소수점과 부동 소수점
+
+| 타입 | 저장 | 성질 |
+|---|---|---|
+| `DECIMAL(M, D)`, `NUMERIC` | 정수부와 소수부를 따로 9자리마다 4바이트로 묶어 저장 | exact value. M은 전체 유효 자릿수(최대 65, 생략하면 10), D는 소수 자릿수(생략하면 0) |
+| `FLOAT` | 4바이트 | approximate value. 약 7자리 정밀도 |
+| `DOUBLE`(`DOUBLE PRECISION`, 기본 설정의 `REAL`) | 8바이트 | approximate value. 약 15자리 정밀도 |
+
+- `DECIMAL(5, 2)`는 -999.99 ~ 999.99를 저장한다. 금액과 정확한 비율은 DECIMAL로, 등가 비교와 합계에서 오차를 허용하는 측정값은 FLOAT과 DOUBLE로 둔다.
+- MySQL은 NUMERIC을 DECIMAL로 구현한다. SQL-92는 NUMERIC의 정밀도를 선언 값 그대로, DECIMAL의 정밀도는 선언 값 이상에서 구현이 정하도록 구분했지만 MySQL에서는 같은 타입이다. PostgreSQL도 decimal과 numeric을 같은 타입으로 다룬다.
+- `FLOAT(M, D)`, `DOUBLE(M, D)` 문법은 표준이 아니며 deprecated다.
+
+## BOOLEAN은 TINYINT(1)이다
+
+`BOOL`, `BOOLEAN`은 `TINYINT(1)`의 동의어다. 조건식에서는 0이 거짓, 0이 아닌 값이 참이지만 `TRUE`와 `FALSE`는 1과 0의 별칭일 뿐이다. 그래서 2가 저장된 행은 `WHERE flag`에서는 참으로 통과하고 `WHERE flag = TRUE`에서는 빠진다. 0과 1 외의 값이 들어올 수 있으면 `CHECK (flag IN (0, 1))`로 값을 제한하거나 비교 방식을 하나로 통일한다. PostgreSQL은 별도의 boolean 타입을 가지므로 이관 때 값 범위를 먼저 확인한다([[MySQL-to-PostgreSQL-Migration|이기종 마이그레이션]]).
+
 ## DATETIME과 TIMESTAMP
 
 날짜와 시각은 문자열이 아니라 전용 타입에 저장해야 비교와 기간 계산을 DB 함수로 할 수 있다.
@@ -42,12 +58,14 @@ aliases: ["MySQL Numeric and Temporal Types", "MySQL 정수 타입 범위", "AUT
 | 타입 | 지원 범위 | time zone 처리 |
 |---|---|---|
 | `DATE` | `'1000-01-01'` ~ `'9999-12-31'` | 없음 |
+| `TIME` | `'-838:59:59'` ~ `'838:59:59'` | 없음. 하루 안의 시각뿐 아니라 24시간을 넘거나 음수인 경과 시간과 간격도 담는다 |
 | `DATETIME` | `'1000-01-01 00:00:00'` ~ `'9999-12-31 23:59:59'` | 입력한 값을 변환 없이 저장 |
 | `TIMESTAMP` | `'1970-01-01 00:00:01'` UTC ~ `'2038-01-19 03:14:07'` UTC | 저장 때 세션 time zone에서 UTC로, 조회 때 UTC에서 세션 time zone으로 변환 |
 
 - 2038년 상한은 먼 미래의 문제가 아니다. 만료일, 보증 종료일, 장기 예약과 만기일처럼 미래 시점을 담는 값은 지금도 상한을 넘을 수 있다. 8.4.6에서 `TIMESTAMP` 컬럼에 2040년을 넣으면 strict mode는 오류 1292(`Incorrect datetime value`)로 거부했고, strict를 끈 세션은 경고 1264와 함께 `0000-00-00 00:00:00`을 저장했다. 같은 값은 `DATETIME`에 그대로 들어갔다.
 - 가입일, 주문일, 작성일처럼 날짜와 시각이 함께 필요한 값은 `DATETIME`을 기본으로 두고 UTC 저장 규약을 애플리케이션 경계에서 강제한다([[Recurring-Event-Modeling|반복 일정 모델링]]). 생년월일처럼 시각이 필요 없으면 `DATE`를 쓴다. `TIMESTAMP`는 자동 time zone 변환이 꼭 필요하고 값이 범위 안에 머무를 때만 고른다.
 - `TIMESTAMP`는 저장한 뒤 세션 time zone을 바꾸면 같은 값이 다르게 조회된다. 연결 풀과 마이그레이션 도구의 time zone 설정을 함께 고정한다.
+- `TIME`은 시각과 기간을 같은 타입으로 담는다. 영업 시작 시각인지 작업 소요 시간인지를 컬럼 이름과 제약으로 고정하고, 838시간을 넘을 수 있는 기간은 초 단위 정수 같은 다른 표현을 쓴다.
 
 ## 출처
 
@@ -56,6 +74,13 @@ aliases: ["MySQL Numeric and Temporal Types", "MySQL 정수 타입 범위", "AUT
 - [MySQL 8.4 Reference Manual, Using AUTO_INCREMENT](https://dev.mysql.com/doc/refman/8.4/en/example-auto-increment.html)
 - [MySQL 8.4 Reference Manual, The schema_auto_increment_columns View](https://dev.mysql.com/doc/refman/8.4/en/sys-schema-auto-increment-columns.html)
 - [MySQL 8.4 Reference Manual, The DATE, DATETIME, and TIMESTAMP Types](https://dev.mysql.com/doc/refman/8.4/en/datetime.html)
+- [MySQL 8.4 Reference Manual, The TIME Type](https://dev.mysql.com/doc/refman/8.4/en/time.html)
+- [MySQL 8.4 Reference Manual, Fixed-Point Types (Exact Value) - DECIMAL, NUMERIC](https://dev.mysql.com/doc/refman/8.4/en/fixed-point-types.html)
+- [MySQL 8.4 Reference Manual, Numeric Data Type Syntax](https://dev.mysql.com/doc/refman/8.4/en/numeric-type-syntax.html)
+- [MySQL 8.4 Reference Manual, Data Type Storage Requirements](https://dev.mysql.com/doc/refman/8.4/en/storage-requirements.html)
+- [PostgreSQL 18 Documentation, Numeric Types](https://www.postgresql.org/docs/18/datatype-numeric.html)
+- [ISO/IEC 9075:1992 draft, Database Language SQL](https://www.contrib.andrew.cmu.edu/~shadow/sql/sql1992.txt)
+- [YouTube, 쉬운코드, SQL의 개념과 데이터베이스 정의](https://www.youtube.com/watch?v=c8WNbcxkRhY)
 - [인프런, 얄팍한 코딩사전, 자료형](https://www.inflearn.com/courses/lecture?courseId=327501&unitId=86856)
 - [인프런, 얄팍한 코딩사전, 테이블 만들고 데이터 입력하기](https://www.inflearn.com/courses/lecture?courseId=327501&unitId=86855)
 - [인프런, 김영한, 데이터 타입2 - 날짜와 시간 타입](https://www.inflearn.com/courses/lecture?courseId=338886&unitId=347676)

@@ -1,7 +1,7 @@
 ---
 tags: [java, collections, set, hashset, linkedhashset, treeset]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Set Implementations", "Java Set 구현 선택"]
 ---
@@ -28,6 +28,8 @@ aliases: ["Java Set Implementations", "Java Set 구현 선택"]
 `TreeSet`은 `NavigableSet` 구현이라 `lower`, `floor`, `ceiling`, `higher`, 범위 뷰 같은 탐색 API를 제공한다. 정렬만 필요하고 membership이나 범위 연산이 필요 없다면 리스트를 한 번 정렬하는 편이 나을 수도 있다.
 
 Java 21부터 `LinkedHashSet`은 `SequencedSet`이라 `getFirst`, `getLast`, `reversed`와 encounter order를 바꾸는 `addFirst`, `addLast`를 제공한다. `TreeSet` 같은 `SortedSet`은 비교 결과가 위치를 정하므로 `addFirst`, `addLast`가 항상 `UnsupportedOperationException`이다.
+
+순회 비용도 구현마다 다르다. `HashSet` 순회는 원소 수와 배경 `HashMap`의 bucket 수(capacity)의 합에 비례해 빈 bucket까지 훑으므로, 순회가 중요하면 초기 capacity를 과하게 잡지 않는다. `LinkedHashSet`은 entry를 doubly linked list로 이어 capacity와 무관하게 원소 수에 비례해 순회하는 대신, 그 연결을 유지하느라 다른 연산은 `HashSet`보다 약간 느릴 수 있다. 중복 검사도 순서도 필요 없이 순회만 한다면 `ArrayList`가 memory와 순회 모두 가볍다([[Linear-Data-Structures-List-and-Set|List와 Set]]).
 
 ## TreeSet이 로그 시간인 이유
 
@@ -69,6 +71,7 @@ intersection.retainAll(right);
 
 - `Set`의 중복 기준과 `hashCode`, `equals`의 관계
 - `HashSet`, `LinkedHashSet`, `TreeSet`의 순서와 비용 차이
+- `HashSet`과 `LinkedHashSet`의 순회 비용이 capacity에 따라 달라지는 이유
 - `TreeSet` comparator가 `equals`와 일관되어야 하는 이유
 - 중복 제거 뒤 입력 순서를 유지해야 할 때의 구현 선택
 - `TreeSet`이 정렬된 입력에도 로그 시간을 유지하는 이유와 순회가 정렬 순서인 이유
@@ -82,6 +85,10 @@ intersection.retainAll(right);
 - [문제와 풀이1](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216004)
 - [문제와 풀이2](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216005)
 - [정리](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216006)
+
+## 쉬운코드 YouTube 강의
+
+- [BJ.24 셋(set)과 해시 셋(hash set)](https://www.youtube.com/watch?v=IkImFugfFQk)
 
 ## Java SE 26 근거
 
@@ -97,3 +104,4 @@ intersection.retainAll(right);
 - [[Java-Generics-and-Collections-Hashing|해시와 HashSet 원리]]
 - [[Java-Generics-and-Collections-Iteration-and-Sorting|순회와 정렬]]
 - [[Trees-and-Balanced-Search-Trees|트리와 균형 탐색 트리]]
+- [[Linear-Data-Structures-List-and-Set|List와 Set]]

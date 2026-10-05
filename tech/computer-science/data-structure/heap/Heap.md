@@ -9,6 +9,13 @@ aliases: ["Heap", "힙", "Max Heap", "Min Heap", "완전 이진 트리", "Comple
 
 완전 이진 트리를 기반으로, 부모와 자식 노드 사이에 대소관계가 성립하도록 유지하는 자료구조다. 그 덕에 루트에는 항상 전체에서 가장 큰 값(Max Heap) 또는 가장 작은 값(Min Heap)이 놓여, 최댓값/최솟값을 비교 없이 O(1)로 조회할 수 있다. 우선순위 큐(Priority Queue)의 표준 구현이다.
 
+## Priority Queue는 ADT, Heap은 자료구조
+
+priority queue는 원소를 우선순위와 함께 넣는 insert, 우선순위가 가장 높은 원소를 꺼내는 delete, 꺼내지 않고 보는 peek만 정한 추상 자료형이다. heap은 이를 구현하는 자료구조의 하나다. 정렬하지 않은 배열은 insert O(1)과 delete O(n), 정렬된 배열은 insert O(n)과 delete O(1), 균형 탐색 트리는 둘 다 O(log n)이다. heap은 두 연산이 모두 O(log n)이면서 배열 하나로 구현돼 가장 흔히 쓰이다 보니 둘을 같은 것으로 부르기 쉽지만 층위가 다르다.
+
+- 이름에 queue가 있어도 FIFO가 아니다. 우선순위 scheduling을 쓰는 OS가 ready queue에서 우선순위가 가장 높은 process를 다음에 실행하는 것이 대표 사례다([[Context-Switching|문맥 전환과 scheduling]]).
+- 메모리의 heap 영역(동적 할당 영역)과는 이름만 같다. 그 영역이 이 자료구조로 관리된다는 뜻이 아니다([[Stack-vs-Heap|Stack과 Heap]]).
+
 ## 왜 힙인가 — 정렬된 배열 대비
 
 최댓값/최솟값에 O(1)로 접근하는 것만 원하면 정렬된 배열이나 연결 리스트로도 된다(헤드만 보면 됨). 차이는 **삽입**에서 난다. 선형 자료구조는 새 값을 넣을 때마다 전체를 다시 보고 재정렬해 O(n)이 들지만, 힙은 새 노드를 조상 경로의 부모들과만 비교하면 정렬 상태가 유지돼 O(log n)이다. 데이터가 많고 삽입이 잦을수록 힙이 유리하다.
@@ -82,6 +89,7 @@ aliases: ["Heap", "힙", "Max Heap", "Min Heap", "완전 이진 트리", "Comple
 ## 면접 체크포인트
 
 - 힙 = 완전 이진 트리 + 부모-자식 대소관계, 루트가 최대/최소
+- priority queue(ADT)와 heap(자료구조)의 차이와 다른 구현(정렬 안 된 배열, 정렬된 배열, 균형 탐색 트리)의 연산 비용
 - 정렬된 배열 대비 삽입이 O(log n) vs O(n)이라 잦은 삽입에 유리
 - 완전 이진 트리를 배열로 구현하는 세 이유(인덱스 수식, 끝에만 삽입, 안 기움)
 - 부모/자식 인덱스 수식((i−1)/2, 2i+1, 2i+2)
@@ -111,3 +119,4 @@ N개 입력 중 가장 작은 K개만 보관하려면 크기를 K로 제한한 m
 - [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — 힙 정렬, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135765)
 - [바킹독의 실전 알고리즘 0x17강, 우선순위 큐 — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=_9mbqoF9qzc)
 - [cppreference, std::priority_queue](https://en.cppreference.com/w/cpp/container/priority_queue)
+- [BJ.12 우선순위 큐와 힙의 개념과 차이 — YouTube, 쉬운코드](https://www.youtube.com/watch?v=P-FTb1faxlo)

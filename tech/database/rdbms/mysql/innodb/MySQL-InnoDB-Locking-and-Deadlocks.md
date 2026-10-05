@@ -1,7 +1,7 @@
 ---
 tags: [database, mysql, innodb, lock, deadlock, next-key-lock]
 status: done
-verified_at: 2026-08-11
+verified_at: 2026-10-05
 category: "Database - RDBMS"
 aliases: ["MySQL InnoDB Locking", "InnoDB Locking and Deadlocks"]
 ---
@@ -50,11 +50,11 @@ Locking read, `UPDATE`와 `DELETE`는 보통 검색하며 스캔한 index record
 
 `READ COMMITTED`도 foreign key와 duplicate-key 검사에는 gap lock을 사용할 수 있다. 또한 `UPDATE`는 잠긴 row의 최신 committed version을 MySQL server에 돌려 조건 일치 여부를 먼저 판단하는 semi-consistent read를 사용한다. 따라서 RC 전환을 단순히 gap lock 제거 옵션으로 취급하지 않는다.
 
-`SERIALIZABLE`에서 `autocommit`이 꺼진 일반 `SELECT`는 `FOR SHARE`처럼 공유 잠금을 잡는다. `autocommit`이 켜진 일반 `SELECT`는 문장 하나가 독립 transaction인 consistent nonlocking read다.
+`SERIALIZABLE`에서 `autocommit`이 꺼진 일반 `SELECT`는 `FOR SHARE`처럼 공유 잠금을 잡는다. `autocommit`이 켜진 일반 `SELECT`는 문장 하나가 독립 transaction인 consistent nonlocking read다. 이 변환으로 RR의 write skew는 막히지만, 같은 row를 읽은 뒤 서로 갱신하려는 transaction들은 S lock을 X lock으로 올리다 deadlock이 날 수 있으므로 재시도 경로를 함께 둔다([[Lock-Deadlock|DB 데드락]]).
 
 ## Locking read의 계약
 
-- `FOR SHARE`는 읽은 범위에 S lock을, `FOR UPDATE`는 X lock을 잡고 commit 또는 rollback까지 보유한다.
+- `FOR SHARE`는 읽은 범위에 S lock을, `FOR UPDATE`는 X lock을 잡고 commit 또는 rollback까지 보유한다. transaction이 잡은 InnoDB lock은 commit 또는 abort 때 함께 풀리고, 오류로 문장 하나만 rollback될 때는 풀리지 않는다. 끝까지 보유하는 이 방식은 교재의 strict, rigorous 2PL에 해당하고, `READ COMMITTED`에서 `WHERE`에 맞지 않는 row의 lock을 일찍 푸는 동작은 그 예외다([[Two-Phase-Locking|2PL]]).
 - 과거 undo version에는 lock을 걸 수 없다. locking read는 필요한 현재 record가 잠겨 있으면 기다린 뒤 그 상태를 읽는다.
 - 바깥 query의 locking clause는 nested subquery가 읽는 table에 자동 전파되지 않는다. 그 table도 잠가야 하면 subquery에 clause를 둔다.
 - `NOWAIT`는 기다리지 않고 오류를 반환한다.
@@ -170,16 +170,20 @@ Performance Schema lock table들은 빠르게 변하고 서로 원자적인 snap
 - [MySQL 8.4 Reference Manual, Transaction Isolation Levels](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-isolation-levels.html)
 - [MySQL 8.4 Reference Manual, Deadlock Detection](https://dev.mysql.com/doc/refman/8.4/en/innodb-deadlock-detection.html)
 - [MySQL 8.4 Reference Manual, InnoDB Error Handling](https://dev.mysql.com/doc/refman/8.4/en/innodb-error-handling.html)
+- [MySQL 8.4 Reference Manual, autocommit, Commit, and Rollback](https://dev.mysql.com/doc/refman/8.4/en/innodb-autocommit-commit-rollback.html)
 - [MySQL 8.4 Reference Manual, InnoDB System Variables](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html)
 - [MySQL 8.4 Reference Manual, Performance Schema Table Characteristics](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-table-characteristics.html)
 - [MySQL 8.4 Reference Manual, Performance Schema Data Lock Tables](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-data-locks-table.html)
 - [MySQL 8.4 Reference Manual, The data_lock_waits Table](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-data-lock-waits-table.html)
 - [MySQL 8.4 Reference Manual, InnoDB Transaction and Locking Information](https://dev.mysql.com/doc/refman/8.4/en/innodb-information-schema-examples.html)
 - [MySQL 8.4 Reference Manual, InnoDB Internal Data Caveats](https://dev.mysql.com/doc/refman/8.4/en/innodb-information-schema-internal-data.html)
+- [YouTube, 쉬운코드, LOCK을 활용한 concurrency control과 2PL](https://www.youtube.com/watch?v=0PScmeO3Fig)
+- [YouTube, 쉬운코드, DB MVCC 이어서: MySQL, PostgreSQL 예제와 select ... for update](https://www.youtube.com/watch?v=-kJ3fxqFmqA)
 
 ## 관련 문서
 
 - [[MySQL-InnoDB-MVCC-and-Undo|InnoDB MVCC와 Undo]]
+- [[Two-Phase-Locking|2단계 잠금 (2PL)]]
 - [[MySQL-InnoDB-Locking-and-Deadlocks-Hierarchy|MySQL 잠금 계층]]
 - [[MySQL-Gap-Lock|Gap Lock 사례와 회피 전략]]
 - [[Lock|DB Lock 전략과 애플리케이션 적용]]

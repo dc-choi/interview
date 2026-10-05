@@ -56,7 +56,7 @@ verified_at: 2026-09-30
 2. 한쪽이 소진되면 다른 쪽의 남은 원소를 비교 없이 순서대로 복사한다. 남은 원소는 이미 정렬돼 있고 모두 결과 끝에 온다.
 3. 임시 배열의 `[lo, hi]`를 원본 구간으로 되돌려 쓴다. 결과를 원본에 바로 쓰면 아직 비교하지 않은 원소를 덮어쓴다.
 
-2를 빠뜨리면 원소가 사라지고, 3을 빠뜨리면 결과가 원본에 반영되지 않는다. 원소 k개를 병합하는 비교는 최대 k-1번이고, 임시 배열에 쓰기와 원본으로 되돌려 쓰기는 각각 k번이다. `[2, 5, 7]`과 `[1, 3, 9]`는 비교 5번으로 1, 2, 3, 5, 7을 채운 뒤 9를 그대로 복사한다. 같은 깊이의 merge들이 다루는 원소 수의 합은 n이고 구간이 절반씩 줄어 깊이는 약 log₂ n이므로 `T(n) = 2T(n/2) + Θ(n)`, 즉 Θ(n log n)이다. 비교 수는 입력에 따라 ½ n lg n에서 n lg n 사이지만 단계 수와 단계당 이동 수는 입력과 무관하다.
+2를 빠뜨리면 원소가 사라지고, 3을 빠뜨리면 결과가 원본에 반영되지 않는다. 반대로 두 구간을 먼저 임시 배열 두 개(L, R)에 복사해 두면 원본 `[lo, hi]`에 작은 값부터 바로 써도 된다. 비교할 원소가 복사본에 남아 있어 덮어쓰기 문제가 없고 3단계가 필요 없으며, 어느 방식이든 보조 공간은 O(n)이다. 원소 k개를 병합하는 비교는 최대 k-1번이고, 임시 배열에 쓰기와 원본으로 되돌려 쓰기는 각각 k번이다. `[2, 5, 7]`과 `[1, 3, 9]`는 비교 5번으로 1, 2, 3, 5, 7을 채운 뒤 9를 그대로 복사한다. 같은 깊이의 merge들이 다루는 원소 수의 합은 n이고 구간이 절반씩 줄어 깊이는 약 log₂ n이므로 `T(n) = 2T(n/2) + Θ(n)`, 즉 Θ(n log n)이다. 비교 수는 입력에 따라 ½ n lg n에서 n lg n 사이지만 단계 수와 단계당 이동 수는 입력과 무관하다.
 
 ### 퀵 정렬 (Quick sort)
 피벗(pivot) 한 개를 골라 그보다 작은 값은 왼쪽, 큰 값은 오른쪽으로 나누는 분할(partition)을 한 뒤, 양쪽을 재귀로 같은 방식으로 정렬한다. 병합 정렬과 반대로 **분할 단계에서 핵심 작업이 일어나고** 합치는 단계엔 할 일이 없다. 균형 분할이면 Θ(n log n), 계속 0:n-1로 치우치면 Θ(n^2)이다. 제자리 partition은 별도 array를 줄일 수 있지만 call stack은 평균 O(log n), 최악 O(n)이다. randomization, median-of-three와 작은 구간의 insertion sort 전환은 실무 성능을 개선하지만 비교 방식, 입력 분포와 memory hierarchy에 따라 merge sort보다 빠르다고 일반화하지 않는다.
@@ -131,6 +131,7 @@ C++ `std::sort(a, a + n)`처럼 끝 위치는 마지막 원소 다음을 넘긴�
 - 인프런, 감자 강사, [버블정렬](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116713), [선택정렬](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116820), [삽입정렬](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116893)
 - 인프런, 감자 강사, [병합정렬](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=117350), [퀵정렬](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=117552)
 - 인프런, 감자 강사, [힙 정렬 알고리즘](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135765)
+- YouTube, 쉬운코드, [divide and conquer와 merge sort](https://www.youtube.com/watch?v=aj3vw_KDmxc)
 - [Princeton Algorithms, Elementary Sorts](https://algs4.cs.princeton.edu/21elementary/)
 - [바킹독의 실전 알고리즘 0x0E강, 정렬 I — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=59fZkZO0Bo4)
 - [바킹독의 실전 알고리즘 0x0F강, 정렬 II — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=dq5t1woLJMw)

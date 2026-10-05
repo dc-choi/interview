@@ -1,9 +1,9 @@
 ---
 tags: [java, thread, lifecycle, interrupt, cancellation]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-05
 category: "OS&런타임(OS&Runtime)"
-aliases: ["Java Threads Lifecycle and Cancellation", "자바 스레드 생명 주기와 취소"]
+aliases: ["Java Threads Lifecycle and Cancellation", "자바 스레드 생명 주기와 취소", "Thread Dump", "스레드 덤프"]
 ---
 
 # Java 스레드 생성, 생명 주기와 협력적 취소
@@ -32,6 +32,31 @@ Context switch에는 register와 scheduling 상태 교체, cache locality 손실
 | `TERMINATED` | `run()`이 정상 또는 예외로 끝남 |
 
 상태 조회는 순간 snapshot이다. 정확한 제어 신호로 쓰기보다 thread dump와 장애 진단에 사용한다.
+
+`Thread.State`는 JVM 상태이며 OS 스레드 상태를 반영하지 않는다. OS의 준비와 실행은 모두 `RUNNABLE`이고, API 문서도 `RUNNABLE` 스레드가 프로세서 같은 OS 자원을 기다리는 중일 수 있다고 적는다. 그래서 native 블로킹 호출에서 소켓 응답을 기다리는 platform thread도 덤프에서 `RUNNABLE`로 보일 수 있다. OS 쪽 상태 모델은 [[Process-Lifecycle#프로세스 상태|프로세스 상태]]를 따른다.
+
+### `wait()`와 `notifyAll()`에서 보이는 상태 변화
+
+비어 있는 버퍼에서 꺼내려는 소비자와, 값을 넣고 깨우는 생산자가 같은 monitor를 쓴다고 하자.
+
+```java
+synchronized Item consume() throws InterruptedException {
+    while (count == 0) {
+        wait();          // monitor를 놓고 WAITING
+    }
+    Item item = removeFirst();
+    notifyAll();         // 공간을 기다리는 생산자를 깨움
+    return item;
+}
+```
+
+1. 소비자 스레드는 `start()` 전 `NEW`, 시작 뒤 `RUNNABLE`이다.
+2. Monitor를 얻어 들어갔지만 버퍼가 비어 `wait()`를 호출하면 monitor를 놓고 `WAITING`이 된다.
+3. 생산자가 monitor를 얻어 값을 넣고 `notifyAll()`을 호출해도 생산자는 monitor를 쥔 채 자기 일을 이어 간다. 깨어난 소비자는 monitor를 다시 얻어야 `wait()`에서 돌아올 수 있으므로 `BLOCKED`가 된다.
+4. 생산자가 `synchronized` 영역을 벗어나 monitor를 놓으면 소비자가 다시 얻어 `RUNNABLE`이 되고 `while` 조건을 다시 검사한다.
+5. `run()`이 끝나면 `TERMINATED`다.
+
+`BLOCKED`는 처음 진입할 때뿐 아니라 `wait()` 뒤 monitor를 다시 얻을 때도 나타난다. Wait set과 조건 재검사 계약은 [[Java-Locks-Monitors-and-Conditions|Lock, monitor와 Condition]]에 있다.
 
 ## `sleep()`, `join()`과 daemon
 
@@ -73,6 +98,17 @@ Thread dump의 BLOCKED 수만으로 모든 lock 경합을 판단하지 말고 �
 
 위 취소 예제의 `closeOwnedResources()`는 interruptible 대기를 하지 않는 정리를 전제로 한다. Status가 이미 true이면 뒤따르는 sleep/wait 같은 정리가 즉시 실패할 수 있다. 취소를 최종 처리하는 thread 소유자만 신호를 소비할지 결정하고, 상위 정책이 있는 라이브러리는 예외 전파 또는 정리 뒤 status 복원으로 신호를 유지한다.
 
+## Thread dump로 멈춘 서버 읽기
+
+Thread dump는 실행 중인 JVM의 스레드별 상태와 스택을 찍은 스냅샷이며 애플리케이션을 종료시키지 않는다. 요청 처리 스레드가 모두 묶여 새 요청에 응답하지 못할 때 어디서 멈췄는지 확인하는 1차 도구다.
+
+- **수집**: `jcmd <pid> Thread.print`는 platform thread와 carrier에 올라가 있는(mounted) virtual thread를 출력하고, `-l`을 주면 `java.util.concurrent` lock 정보도 넣는다. 모든 virtual thread까지 보려면 `jcmd <pid> Thread.dump_to_file -format=json <file>`을 쓴다. Linux에서는 `kill -QUIT <pid>`로 표준 출력에 덤프를 남길 수도 있다. `jstack`은 문서상 실험적이고 지원되지 않는 도구다.
+- **Deadlock**: HotSpot은 덤프를 찍으면서 deadlock 검출도 수행해, 순환이 있으면 `Found one Java-level deadlock`과 서로 기다리는 monitor와 `java.util.concurrent` lock을 따로 보고한다.
+- **`BLOCKED`가 한 monitor에 몰림**: 그 monitor를 쥔 스레드의 스택에서 lock을 쥔 채 오래 걸리는 작업부터 찾는다.
+- **`WAITING`, `TIMED_WAITING`이 대부분**: 풀 worker의 정상적인 작업 대기인지, connection pool 획득이나 `Future.get()` 같은 하위 자원 대기인지 스택 위쪽 프레임으로 가른다.
+- **`RUNNABLE`인데 스택 맨 위가 소켓 읽기**: CPU를 쓰는 중이 아니라 외부 응답을 기다리는 중일 수 있으므로 CPU 사용률과 함께 본다.
+- 덤프 하나는 순간이므로 짧은 간격으로 여러 번 떠서 같은 스레드가 같은 위치에 머무는지 비교한다. 풀 포화 지표와 함께 읽는 법은 [[Thread-Pool-Sizing|스레드 풀 사이징]]의 포화 진단을 따른다.
+
 ## 강의 출처
 
 - 프로세스와 스레드 소개: [멀티태스킹과 멀티프로세싱](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232313), [프로세스와 스레드](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232314), [스레드와 스케줄링](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232315), [컨텍스트 스위칭](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232316)
@@ -87,6 +123,7 @@ Thread dump의 BLOCKED 수만으로 모든 lock 경합을 판단하지 말고 �
 - 김영한 강사, [생산자 소비자 문제 - 예제2 분석](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232378)
 - 김영한 강사, [스레드의 대기](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232388)
 - 김영한 강사, [CAS 락 구현2](https://www.inflearn.com/courses/lecture?courseId=334352&unitId=232404)
+- YouTube, 쉬운코드, [OS 프로세스 상태와 자바 스레드 상태](https://www.youtube.com/watch?v=_dzRW48NB9M)
 
 ## 공식 문서
 
@@ -95,9 +132,18 @@ Thread dump의 BLOCKED 수만으로 모든 lock 경합을 판단하지 말고 �
 - [Thread, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html)
 - [JLS 17.3, Sleep and Yield](https://docs.oracle.com/javase/specs/jls/se26/html/jls-17.html#jls-17.3)
 - [JLS 17.4.5, Happens-before Order](https://docs.oracle.com/javase/specs/jls/se26/html/jls-17.html#jls-17.4.5)
+- [Thread.State, Java SE 27](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Thread.State.html)
+- [JLS 17.2, Wait Sets and Notification, Java SE 27](https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html#jls-17.2)
+- [jcmd, JDK 27](https://docs.oracle.com/en/java/javase/27/docs/specs/man/jcmd.html)
+- [jstack, JDK 27](https://docs.oracle.com/en/java/javase/27/docs/specs/man/jstack.html)
+- [Diagnostic Tools, JDK 27 Troubleshooting Guide](https://docs.oracle.com/en/java/javase/27/troubleshoot/diagnostic-tools.html)
+- [diagnosticCommand.cpp (ThreadDumpDCmd) — OpenJDK jdk 저장소](https://github.com/openjdk/jdk/blob/master/src/hotspot/share/services/diagnosticCommand.cpp)
 
 ## 관련 문서
 
 - [[Java-Concurrency|Java 멀티스레드와 동시성]]
 - [[Context-Switching|Context Switching]]
+- [[Process-Lifecycle|프로세스 생명주기와 OS 상태]]
+- [[Thread-Models|스레드 종류와 스레딩 모델]]
+- [[Java-Locks-Monitors-and-Conditions|Lock, monitor와 Condition]]
 - [[Java-Executors-Futures-and-Thread-Pools|Executor, Future와 thread pool]]

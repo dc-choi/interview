@@ -1,9 +1,9 @@
 ---
 tags: [os, concurrency, parallelism, thread, interview]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-05
 category: "OS&런타임(OS&Runtime)"
-aliases: ["Concurrency vs Parallelism", "동시성 vs 병렬성"]
+aliases: ["Concurrency vs Parallelism", "동시성 vs 병렬성", "Amdahl's Law", "암달의 법칙"]
 ---
 
 # 동시성, 병렬성
@@ -70,7 +70,7 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 | 런타임 | 동시성 | 병렬성 |
 |---|---|---|
 | **Node.js** | main event loop와 비동기 I/O | Worker Threads는 JavaScript를 병렬 실행, `cluster`는 여러 process 활용 |
-| **Python(CPython)** | `asyncio`, `threading` | 기본 GIL build와 optional free-threaded build가 다름. process와 native extension도 선택지 |
+| **Python(CPython)** | `asyncio`, `threading` | 기본 GIL build와 optional free-threaded build가 다름. process(`ProcessPoolExecutor`), 인터프리터마다 GIL을 따로 두는 3.14의 `InterpreterPoolExecutor`와 native extension도 선택지 |
 | **Java** | Thread/Executor, Project Loom(가상 스레드) | ForkJoinPool, Streams parallel |
 | **Go** | goroutine + runtime scheduler | 병렬 상한은 `GOMAXPROCS`, default는 version, CPU affinity와 container limit 등에 따라 결정 |
 | **Rust** | async/await | Rayon, tokio multi-thread |
@@ -82,6 +82,15 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 - **"코어를 다 쓰게 스레드를 코어 수보다 많이"** — I/O bound에서는 이득 있지만, CPU bound에서는 역효과
 - **"동시성 이슈는 테스트로 잡힌다"** — 재현율이 낮아 프로덕션에서만 터지기 쉬움. 모델 검증, 락 프리 자료구조, 스레드 세이프 프로미티브가 근본
 
+### 스레드를 늘리면 항상 빨라지는가
+
+스레드 수와 성능의 관계는 아래 전제를 차례로 확인하면 정리된다.
+
+1. **작업을 나눌 수 있는가**: 스레드를 늘리면 빨라진다는 말은 작업을 독립적인 조각으로 나눠 동시에 실행할 수 있다는 전제를 깔고 있다. 순서대로 실행해야 하는 구간은 스레드를 늘려도 줄지 않는다. 직렬 구간 비율이 S일 때 코어 N개로 얻는 속도 향상은 최대 1 / (S + (1 - S) / N)이며 N이 아무리 커도 1 / S를 넘지 못한다(Amdahl의 법칙). 25%가 직렬이면 코어 2개에서 1.6배, 코어를 무한히 늘려도 4배가 상한이다.
+2. **코어 수는 고정이다**: 실행 가능한 스레드가 코어보다 많아지면 코어마다 경합이 생기고, 전환 자체가 CPU 시간을 쓰는 오버헤드와 캐시 지역성 손실이 커진다 ([[Context-Switching|컨텍스트 스위칭]]).
+3. **작업의 성격**: CPU-bound 작업은 코어 수 근처를 넘기면 이득 없이 전환 비용만 는다. I/O-bound 작업은 대기 중인 스레드가 코어를 쓰지 않으므로 코어 수보다 많은 스레드로 처리량을 높일 수 있지만, 이때도 메모리, 전환 비용과 DB 같은 하위 자원의 한도에서 이득이 끝난다 ([[Thread-Pool-Sizing|스레드 풀 사이징]]).
+4. **공유 자원**: 스레드가 같은 lock이나 데이터를 두고 다투면 늘린 스레드는 대기열만 길게 만든다.
+
 ## 면접 체크포인트
 
 - 동시성과 병렬성의 한 문장 구분(구조 vs 실행)
@@ -89,6 +98,7 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 - event loop, GIL-enabled/free-threaded build와 worker가 병렬성에 미치는 영향
 - 공유 자원이 없으면 왜 안전한가(share nothing, 불변, 메시지)
 - Actor vs CSP 채널의 차이
+- 스레드를 늘리면 항상 빨라지는가에 답하는 순서(분할 가능성과 Amdahl의 법칙, 고정된 코어와 전환 비용, CPU-bound와 I/O-bound, 공유 자원)
 
 ### 데이터 병렬성과 작업 병렬성
 
@@ -98,18 +108,23 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 
 ## 출처
 - 인프런, 널널한 개발자 강사, [동시성과 병렬성](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128252)
+- YouTube, 쉬운코드, [스레드를 많이 쓸수록 항상 성능이 좋아질까요?](https://www.youtube.com/watch?v=jSaBkvtHhrM), [CPU bound, IO bound와 스레드 개수](https://www.youtube.com/watch?v=qnVKEwjG_gM)
 - [Node.js, Worker threads](https://nodejs.org/api/worker_threads.html)
 - [Python 3.14, Python support for free threading](https://docs.python.org/3/howto/free-threading-python.html)
+- [Python 3.14, concurrent.futures](https://docs.python.org/3/library/concurrent.futures.html)
 - [Go runtime, GOMAXPROCS](https://pkg.go.dev/runtime#GOMAXPROCS)
 - [Effective Go, concurrency and parallelism](https://go.dev/doc/effective_go#concurrency)
 - [동시성 vs 병렬성 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=qCW-N-B7Mgc)
 - [seamless — 동시성 vs 병렬성](https://seamless.tistory.com/42)
 - [binux — 동시성, 액터, 칠판 패턴](https://binux.tistory.com/169)
 - [yeonyeon — Concurrency vs Parallelism](https://yeonyeon.tistory.com/270)
+- [Silberschatz, Galvin, Gagne — Operating System Concepts 10th 강의 슬라이드 4장 (Amdahl's Law)](https://www.os-book.com/OS10/slide-dir/index.html)
 
 ## 관련 문서
 - [[Concurrency-and-Process|동시성과 프로세스]]
 - [[Concurrency-and-Process-IPC|원자성, 동기화, IPC]]
+- [[Thread-Models|스레드 종류와 스레딩 모델]]
+- [[Thread-Pool-Sizing|스레드 풀 사이징]]
 - [[Thread-vs-Event-Loop|Thread vs Event Loop]]
 - [[Sync-Async-Blocking|동기, 비동기, 블로킹, 논블로킹]]
 - [[Async-vs-Threads|async/await vs 스레드]]

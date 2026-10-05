@@ -39,7 +39,7 @@ OSI 하위 2계층은 같은 로컬 네트워크(LAN) 안에서 비트와 프레
 
 ### 허브와 충돌 도메인
 
-허브는 한 포트로 받은 신호를 나머지 모든 포트로 그대로 복제해 내보낸다(확성기처럼 방 전체에 외침). 특정 대상만 지정할 수 없고 MAC 주소를 이해하지 못한다.
+허브는 한 포트로 받은 신호를 나머지 모든 포트로 그대로 복제해 내보낸다(확성기처럼 방 전체에 외침). 특정 대상만 지정할 수 없고 MAC 주소를 이해하지 못한다. 공유기의 랜 포트를 늘리려고 사는 장비를 스위칭 허브나 그냥 허브라고 부르는 경우가 많지만, 동작으로는 프레임의 목적지 MAC으로 포트를 고르는 스위치다. 이름보다 신호를 모든 포트로 복제하는지, MAC 주소로 골라 보내는지로 구분한다.
 
 문제는 충돌(collision)이다. 허브에 연결된 모든 장치는 하나의 통신 매체를 공유하므로 하나의 충돌 도메인에 묶인다. 두 장치가 동시에 전송하면 신호가 겹쳐 둘 다 깨진다. 허브는 충돌을 감지하거나 조정하지 못하고 받은 신호를 전달만 한다.
 
@@ -167,6 +167,7 @@ L2는 같은 로컬 네트워크 안에서만 동작한다. 서로 다른 네트
 - [Use private Wi-Fi addresses on Apple devices — Apple](https://support.apple.com/en-us/102509)
 - [System Management Configuration Guide, IOS XE 16.12.x, Administering the Device — Cisco](https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9500/software/release/16-12/configuration_guide/sys_mgmt/b_1612_sys_mgmt_9500_cg/administering_the_device.html)
 - [TCP/IP Fundamentals for Microsoft Windows — Microsoft](https://download.microsoft.com/download/9/4/6/946958ef-7b86-4ddc-bfdb-c7ed2af4ce51/tcpip_fund.pdf)
+- [네트워크와 인터넷 개념, 인터넷 동작 방식과 ISP — YouTube, 쉬운코드](https://www.youtube.com/watch?v=oFKYzp6gGfc)
 
 ## 관련 문서
 

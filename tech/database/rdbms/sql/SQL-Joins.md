@@ -1,6 +1,7 @@
 ---
 tags: [database, rdbms, sql, join]
 status: done
+verified_at: 2026-10-05
 category: "Data & Storage - RDB"
 aliases: ["SQL Joins", "조인"]
 ---
@@ -30,8 +31,10 @@ SELECT 학생.학번, 학생.이름, 지도교수.교수명
 
 암시적 조인은 WHERE 절에 **조인 조건과 필터 조건이 섞여서** 가독성, 유지보수성 떨어짐. 명시적 JOIN ... ON 사용.
 
+`INNER`는 생략할 수 있다. 조인 조건이 TRUE인 조합만 결과가 되므로 조인 키가 NULL인 행은 `=` 비교가 UNKNOWN이 되어 어떤 행과도 매칭되지 않고 빠진다. 부서가 배정되지 않은 직원과 직원이 없는 부서는 INNER JOIN 결과에 나오지 않는다([[SQL-Fundamentals-NULL|SQL NULL과 3값 논리]]).
+
 ### LEFT OUTER JOIN
-왼쪽 테이블의 모든 행 + 오른쪽 테이블의 매칭 행. 매칭 없으면 오른쪽 컬럼은 NULL.
+왼쪽 테이블의 모든 행 + 오른쪽 테이블의 매칭 행. 매칭 없으면 오른쪽 컬럼은 NULL. `OUTER`는 생략할 수 있다(`LEFT JOIN`).
 
 ```sql
 SELECT 학생.학번, 지도교수.교수명
@@ -41,11 +44,24 @@ SELECT 학생.학번, 지도교수.교수명
 
 용도: 지도교수가 배정 안 된 학생까지 모두 보고 싶다.
 
+여러 조인을 이을 때는 optional 관계마다 보존할 쪽을 정한다. 프로젝트 2001 참여자의 이름과 부서 이름을 구할 때 `works_on`과 `employee`는 INNER JOIN으로, `employee`에서 `department`로 가는 조인은 LEFT JOIN으로 두어야 부서 미배정 참여자가 남는다. LEFT JOIN 뒤에 optional 쪽을 다시 INNER JOIN하면 보존한 행이 사라지는 경우는 [[Query-Antipatterns#후속 join과 COUNT|후속 join과 COUNT]]에 있다.
+
+```sql
+SELECT e.name, e.position, d.name AS dept_name
+FROM works_on AS w
+JOIN employee AS e ON e.id = w.empl_id
+LEFT JOIN department AS d ON d.id = e.dept_id
+WHERE w.proj_id = 2001;
+```
+
 ### RIGHT OUTER JOIN
 오른쪽 테이블 기준. LEFT의 좌우 반전. **테이블 순서를 바꾸면 LEFT로 표현 가능**하므로 실무에선 LEFT만 쓰는 컨벤션이 많다.
 
 ### FULL OUTER JOIN
 양쪽 모두의 모든 행. 매칭 없는 쪽은 NULL. MySQL 8.4는 직접 지원하지 않아 LEFT JOIN과 오른쪽 미매칭 행을 UNION ALL로 결합한다. PostgreSQL은 지원한다.
+
+### Equi-join과 non-equi join
+조인 조건에 `=`를 쓰면 equi-join이다. INNER와 OUTER를 가리지 않고 equality 조건이면 equi-join으로 부르는 쓰임과 inner join에 한정하는 쓰임이 함께 있어 문맥을 확인한다. ON에는 WHERE에 쓸 수 있는 어떤 조건식도 올 수 있으므로 `o.ordered_at >= p.valid_from AND o.ordered_at < p.valid_to`처럼 주문 시각이 가격 정책의 유효 구간에 들어가는 행을 잇는 범위 조인(non-equi join)도 가능하다. non-equi 조건은 인덱스 탐색 범위와 결과 fan-out이 커지기 쉬워 실행 계획을 확인한다(아래 Hash Join).
 
 ### CROSS JOIN (교차 조인)
 **데카르트 곱**. 양쪽의 모든 조합. 100행 × 1000행 = 10만행.
@@ -68,11 +84,11 @@ NATURAL JOIN 지도교수;
 ```
 
 위험성:
-- 컬럼명이 우연히 같으면 의도치 않은 조인
+- 컬럼명이 우연히 같으면 의도치 않은 조인. 직원과 부서 테이블에 `dept_id`뿐 아니라 `name`도 있으면 NATURAL JOIN은 `dept_id`와 `name`이 모두 같은 행을 찾으므로 사람 이름과 부서 이름이 같을 리 없어 빈 결과가 된다
 - **공통 컬럼이 하나도 없으면 CROSS JOIN으로 동작** → 결과 폭발
 - 테이블 스키마 변경(컬럼 추가)으로 동작이 바뀜
 
-**실무에선 거의 쓰지 않음**. 명시적 ON 절을 항상 사용.
+NATURAL은 INNER와 OUTER 모두에 붙일 수 있다(`NATURAL LEFT JOIN`). **실무에선 거의 쓰지 않음**. 명시적 ON 절을 항상 사용.
 
 ### USING (, )
 공통 컬럼명을 명시. NATURAL의 안전한 대안.
@@ -83,7 +99,15 @@ SELECT 학생.학번, 지도교수.교수명
   JOIN 지도교수 USING (학번);
 ```
 
-ON과 비슷하지만 USING은 **결과셋에 조인 컬럼이 한 번만** 등장.
+ON과 비슷하지만 USING은 **결과셋에 조인 컬럼이 한 번만** 등장. 이름이 같은 컬럼 여러 개를 `USING (a, b)`로 나열할 수 있고 INNER와 OUTER 모두에 쓴다.
+
+MySQL은 NATURAL과 USING 결과의 공통 컬럼을 `COALESCE(t1.a, t2.a)`로 정의한 단일 컬럼으로 만든다. `SELECT *`의 컬럼 순서는 공통 컬럼(첫 테이블의 순서), 첫 테이블 고유 컬럼, 둘째 테이블 고유 컬럼이다. OUTER JOIN에서 이 컬럼은 NULL 보완 쪽이 아니라 값이 있는 쪽을 보여 주므로 어느 테이블 행이 매칭되지 않았는지 판단하려면 테이블별 컬럼을 따로 투영한다.
+
+## MySQL 조인 문법의 차이
+
+- MySQL에서 `JOIN`, `CROSS JOIN`, `INNER JOIN`은 문법상 동등하다. 표준 SQL은 INNER JOIN에 ON을 쓰고 CROSS JOIN에는 조인 조건을 쓰지 않는다. MySQL에서는 ON 없는 `INNER JOIN`이 Cartesian product가 되고 ON을 붙인 `CROSS JOIN`이 inner join처럼 동작하므로 조건 누락이 오류 없이 행 폭발로 이어질 수 있다.
+- 조인 조건이 없으면 쉼표로 나열한 테이블과 INNER JOIN은 같은 Cartesian product다.
+- 쉼표 연산자는 `JOIN`, `LEFT JOIN`보다 우선순위가 낮다. `FROM t1, t2 JOIN t3 ON t1.i1 = t3.i3`에서 ON의 피연산자는 t2와 t3라서 `Unknown column 't1.i1' in 'on clause'` 오류가 난다. 쉼표 조인과 명시적 JOIN을 섞지 않는다.
 
 ## 드라이빙 vs 드리븐 테이블
 
@@ -122,8 +146,10 @@ hint로 join 순서를 강제하기 전에 통계, predicate와 index를 고친�
 ## 면접 체크포인트
 
 - INNER vs LEFT OUTER 차이
+- 조인 키가 NULL인 행이 INNER JOIN에서 빠지는 이유
 - 암시적 조인 vs 명시적 조인 (가독성, 유지보수)
 - NATURAL JOIN을 권장하지 않는 이유
+- MySQL에서 ON 없는 INNER JOIN이 만드는 결과
 - join 종류와 물리 실행 알고리즘의 차이
 - NL Join에서 `actual rows * loops`를 보는 이유
 - Hash Join의 build/probe와 memory spill
@@ -146,9 +172,11 @@ LEFT JOIN은 왼쪽 row에 대해 ON을 만족하는 조합을 모두 만들고 
 - [인프런, LEFT JOIN의 NULL 처리와 WHERE vs ON 조건의 실행계획](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=368009)
 - [인프런, MySQL의 다양한 JOIN](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=368007)
 - [인프런, Nested Loop Join, Matched Function](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=368008)
+- [YouTube, 쉬운코드, join의 의미와 여러 종류의 join](https://www.youtube.com/watch?v=E-khvKjjVv4)
 
 
 ## 관련 문서
+- [[SQL-Fundamentals-NULL|SQL NULL과 3값 논리]]
 - [[SQL-Tuning-Terminology|SQL 튜닝 용어]]
 - [[Index|Index]]
 - [[Execution-Plan|Execution Plan]]

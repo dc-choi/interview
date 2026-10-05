@@ -3,7 +3,7 @@ tags: [database, nosql, mongodb, schema-design, document-database]
 status: done
 category: "데이터&저장소(Data&Storage)"
 aliases: ["MongoDB Schema Design", "MongoDB 스키마 설계", "Embed vs Reference"]
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 ---
 
 # MongoDB 스키마 설계
@@ -16,6 +16,20 @@ MongoDB는 **도큐먼트 지향 DB** — 정규화된 테이블, 조인이 아�
 - **JOIN을 피하는 대신 중복을 감수**한다 — 공간보다 읽기 횟수, 지연이 중요
 - **16MB 문서 크기 한도**와 **무제한 배열 금지** — 경계 없는 배열은 시한폭탄
 - **스키마가 없는 게 아니라 "앱이 책임지는" 것** — 스키마 검증은 앱 계층이나 MongoDB Schema Validation으로
+
+## 용어와 저장 형식
+
+| RDBMS | MongoDB |
+|---|---|
+| table | collection |
+| row, tuple | document |
+| column | field |
+| primary key | `_id` |
+
+- 문서는 JSON처럼 쓰지만 BSON으로 저장된다. BSON은 JSON의 binary 표현이며 JSON보다 많은 데이터 타입을 가진다.
+- 일반 컬렉션의 모든 문서는 컬렉션 안에서 유일하고 바꿀 수 없는 `_id`를 가진다. 삽입할 때 `_id`를 빼면 driver가 ObjectId를 만들어 넣는다.
+- 컬렉션은 처음 데이터를 저장할 때 자동으로 생긴다. 최대 크기나 검증 규칙 같은 옵션이 필요하면 `db.createCollection()`으로 미리 만든다.
+- `db.students.find({ name: "easycode" })`처럼 조회 조건도 문서로 쓰고 `find({})`는 전체를 읽는다. 기본적으로 한 컬렉션의 문서들은 스키마를 공유하지 않아 문서마다 필드와 타입이 다를 수 있으므로, 필요한 규칙은 아래 [[#Schema Validation(느슨한 스키마의 타협)|Schema Validation]]으로 insert와 update에 강제한다.
 
 ## 설계 3대 축
 
@@ -170,8 +184,11 @@ MongoDB 문서는 최대 **16MB** (공식 규격 표기는 16 mebibytes, BSON �
 - [MongoDB Docs — Reference Data in Your MongoDB Schema](https://www.mongodb.com/docs/manual/data-modeling/referencing/)
 - [MongoDB Docs — Avoid Unbounded Arrays](https://www.mongodb.com/docs/manual/data-modeling/design-antipatterns/unbounded-arrays/)
 - [MongoDB Docs — Collation](https://www.mongodb.com/docs/manual/reference/collation/)
+- [MongoDB Docs — Documents](https://www.mongodb.com/docs/manual/core/document/)
+- [MongoDB Docs — Databases and Collections](https://www.mongodb.com/docs/manual/core/databases-and-collections/)
 - [G마켓 기술블로그 — MongoDB 스키마 설계 가이드](https://dev.gmarket.com/32)
 - [인프런, Hong, 실무에서 사용하는 Database](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272607)
+- [YouTube, 쉬운코드, NoSQL과 RDB의 차이, MongoDB와 Redis 예제](https://www.youtube.com/watch?v=sqVByJ5tbNA)
 
 ## 관련 문서
 - [[Schema-Design|Schema design]]

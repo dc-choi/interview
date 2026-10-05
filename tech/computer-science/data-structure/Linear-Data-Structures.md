@@ -11,11 +11,22 @@ aliases: ["Linear Data Structures", "선형 자료구조", "Array LinkedList Sta
 
 ## ADT와 구현을 분리해서 보기
 
-추상 자료형(ADT)은 값과 허용 연산의 의미를 구체 구현과 독립적으로 명세한다. stack, queue, deque와 set은 ADT이고 array나 linked list는 이를 구현하는 후보가 될 수 있다. 따라서 queue에 이중 연결 리스트가 반드시 필요한 것은 아니다. `head`와 `tail`을 유지하는 단방향 연결 리스트도 tail enqueue와 head dequeue를 각각 O(1)에 구현할 수 있다.
+추상 자료형(ADT, Abstract Data Type)은 값과 허용 연산의 의미, 즉 무엇을 할 수 있는지를 구체 구현과 독립적으로 명세한다. 자료구조는 그 연산을 메모리 배치와 알고리즘으로 어떻게 수행할지까지 정한 구현이다. stack, queue, deque, list, map과 set은 ADT이고 array나 linked list는 이를 구현하는 후보가 될 수 있다. 따라서 queue에 이중 연결 리스트가 반드시 필요한 것은 아니다. `head`와 `tail`을 유지하는 단방향 연결 리스트도 tail enqueue와 head dequeue를 각각 O(1)에 구현할 수 있다.
+
+- array와 list의 차이도 이 구분으로 답한다. array는 연속 배치와 index 계산까지 정해진 자료구조이고, list는 순서 있는 원소의 추가, 삭제, 조회만 정한 ADT라 array list나 linked list로 구현한다. Python `list`처럼 구체 타입 이름에 list를 쓰는 언어도 있어 문맥을 확인한다.
+- Java에서는 `List`, `Set`, `Map` interface가 ADT, `ArrayList`, `HashSet` 같은 class가 자료구조에 대응한다. signature만으로는 순서, 중복, 비용 같은 의미를 다 표현하지 못하므로 Javadoc 계약과 테스트가 명세를 보완한다([[Java-Generics-and-Collections-List-Abstraction|List 추상화]]).
+- 필요한 연산을 ADT로 먼저 합의하면 사용하는 쪽과 구현하는 쪽을 나눌 수 있다. 이름순으로 득점자 전체를 돌려주는 `add`, `remove`, `getAll`만 정해 두면 한쪽은 그 연산으로 화면을 만들고, 다른 쪽은 정렬된 list, set이나 탐색 트리 중 구현을 고르고 바꾼다.
+- 함수형 문맥의 ADT(Algebraic Data Type)와 약어가 같다([[Algebraic-Data-Types|대수적 자료형]]).
 
 ## Array와 dynamic array
 
 array는 index로 원소 위치를 계산해 random access가 O(1)이다. contiguous representation은 cache locality가 좋지만 중간 삽입/삭제는 뒤 원소를 shift해 O(n)이다.
+
+C 배열은 같은 타입 원소를 연속 할당하므로 i번째 원소의 주소가 `시작 주소 + i × 원소 크기`다. `a[i]`는 정의상 `*(a + i)`라 index는 첫 원소로부터의 offset이고, 첫 원소가 offset 0이라 index가 0부터 시작한다. 시작 주소가 1000인 4바이트 int 5개 배열은 원소 주소가 1000, 1004, 1008, 1012, 1016이고 전체 20바이트다. 원소가 100만 개든 1억 개든 같은 계산 한 번이라 index 접근이 O(1)이고, hash table도 이 성질 위에 만든다.
+
+- 메모리 주소는 1차원이라 C의 `int a[2][3]`은 행을 이어 붙인 row-major 배치다. Java의 다차원 배열은 하위 배열 참조를 원소로 갖는 배열의 배열이라 행마다 별도 객체이고 행 길이도 다를 수 있다.
+- 객체를 담는 배열은 대개 객체가 아니라 참조를 원소로 저장한다. Java 참조 타입 배열의 원소는 참조(또는 `null`)이고, CPython `list`는 객체 참조의 연속 배열이다. 참조 칸이 붙어 있어도 객체는 heap 곳곳에 있을 수 있어 원시값 배열만큼의 cache locality는 기대하지 않는다.
+- 연관 배열(associative array)은 배열이라는 이름과 달리 key-value 쌍을 저장하는 map ADT다. 같은 key의 쌍은 최대 하나이고 hash table이나 균형 탐색 트리로 구현한다([[Hash-Table]]).
 
 배열 연산의 비용은 끝과 중간이 다르다. index로 읽고 쓰기, 끝에 추가, 끝에서 제거는 O(1)이고, 임의 위치 삽입과 삭제는 뒤 원소를 옮겨야 해 평균 n/2개를 움직이는 O(n)이다. 삭제한 칸을 비워 두면 원소가 연속하지 않게 되어 k번째 원소를 O(1)에 찾는 성질이 깨지므로 반드시 당긴다. 추가 공간 없이 구현하려면 옮기는 방향을 지킨다. 삽입은 끝에서부터 한 칸씩 오른쪽으로 밀어야 덮어쓰지 않고, 삭제는 지운 위치 다음부터 왼쪽으로 당긴다. 구현 오류는 대부분 loop 경계(`len - 1`부터인지 `len`부터인지, `idx`까지인지 `idx + 1`까지인지)에서 나오고, `i >= idx`처럼 한 칸 더 가면 `idx = 0`일 때 `a[-1]`을 읽는다.
 
@@ -26,7 +37,7 @@ array는 index로 원소 위치를 계산해 random access가 O(1)이다. contig
 - **빈도 세기**: 소문자 알파벳 개수는 `freq[c - 'a']++`로 문자열을 한 번만 훑어 O(n)에 센다. 알파벳마다 문자열 전체를 다시 훑으면 O(26n)이다.
 - **등장 여부 확인**: 0에서 100 사이 정수 배열에서 합이 100인 두 수가 있는지는 모든 쌍을 보면 O(n²)이다. 앞에서부터 읽으며 `seen[100 - x]`가 켜져 있는지 확인한 뒤 `seen[x]`를 켜면 각 확인이 O(1)이라 전체 O(n)이다. 값의 범위가 크거나 희소하면 배열 대신 hash set을 쓴다.
 
-고정 array는 크기를 미리 정하고, ArrayList나 vector 같은 dynamic array는 capacity가 부족할 때 더 큰 storage를 할당해 복사한다. append 한 번은 resize 때문에 O(n)일 수 있지만 여러 append에 나누어 계산한 amortized cost는 O(1)이다.
+고정 array는 크기를 미리 정하고, ArrayList, C++ vector, CPython list 같은 dynamic array(resizable array)는 capacity가 부족할 때 더 큰 storage를 할당해 복사한다. append 한 번은 resize 때문에 O(n)일 수 있지만 여러 append에 나누어 계산한 amortized cost는 O(1)이다.
 
 확장 폭이 amortized 비용을 가른다. 꽉 찰 때마다 상수 k칸씩 늘리면 k번 삽입마다 전체 복사가 일어나 삽입당 평균 O(n)이다. k를 크게 잡으면 상수는 줄지만 빈 공간 낭비가 커진다. 크기를 두 배(일정 배수)로 늘리면 n번 삽입하는 동안 복사되는 원소 수가 1 + 2 + 4 + ... < 2n이라 삽입당 amortized O(1)이고, 낭비도 현재 크기의 일정 비율 이하로 유지된다. 구현은 `len`과 할당 크기 `capacity`를 따로 두고, `len == capacity`일 때 두 배 크기의 새 배열에 복사한 뒤 교체한다. amortized O(1)은 모든 삽입이 빠르다는 뜻이 아니라, 확장이 걸린 한 번은 O(n)이지만 여러 번의 합을 나누면 상수라는 뜻이다. 표준 `vector`의 성장 배수(2 또는 1.5 등)는 구현마다 다르다.
 
@@ -45,7 +56,7 @@ node가 value와 다음 node reference를 가진다. doubly linked list는 previ
 
 구현: [LinkedList.mjs](linked-list/LinkedList.mjs), [DoublyLinkedList.mjs](linked-list/DoublyLinkedList.mjs)
 
-종류는 다음 node만 아는 singly, 이전 node도 아는 doubly, 끝이 처음과 이어진 circular가 있다. doubly는 이전 node를 O(1)에 알지만 node마다 pointer를 하나 더 쓴다. C++ `std::list`는 doubly linked list라 양 끝 삽입과 삭제가 O(1)이고, iterator가 node 주소 역할을 한다. `erase`는 지운 다음 원소의 iterator를 반환한다.
+종류는 다음 node만 아는 singly, 이전 node도 아는 doubly, 끝이 처음과 이어진 circular와 둘을 합친 circular doubly가 있다. head만 두면 끝 추가가 매번 끝까지 걷는 O(n)이라 tail 참조를 함께 둔다. circular singly list는 `tail.next`가 head라 tail 하나만 유지해도 양 끝에 O(1)로 닿는다. doubly는 이전 node를 O(1)에 알지만 node마다 pointer를 하나 더 쓴다. C++ `std::list`는 doubly linked list라 양 끝 삽입과 삭제가 O(1)이고, iterator가 node 주소 역할을 한다. `erase`는 지운 다음 원소의 iterator를 반환한다.
 
 대표 쓰임은 cursor가 가리키는 위치에서 삽입과 삭제가 반복되는 문제다. 텍스트 편집기 명령(왼쪽, 오른쪽 이동, 삽입, 삭제)을 수십만 번 적용하면 배열은 매번 O(n) shift가 들지만 linked list는 cursor 이동과 삽입, 삭제가 모두 O(1)이다. 입력이 수천 이하라면 O(n²)도 통과하므로 익숙한 배열이 낫다. cursor가 `begin()`에서 왼쪽, `end()`에서 오른쪽으로 가는 경계와 지운 위치의 iterator를 다시 쓰는 실수가 흔한 runtime error 원인이다.
 
@@ -67,7 +78,9 @@ node가 value와 다음 node reference를 가진다. doubly linked list는 previ
 
 ## Stack
 
-LIFO 추상 자료형으로 한쪽 끝에서 push/pop한다. call stack, parser, DFS, undo와 괄호 검증에 사용한다.
+LIFO(FILO라고도 한다) 추상 자료형으로 한쪽 끝에서 push/pop하고, 꺼내지 않고 맨 위를 보는 peek(top)을 둔다. call stack, parser, DFS, undo와 괄호 검증에 사용한다. undo는 수행한 편집을 push하고, 되돌릴 때 가장 최근 편집을 pop해 취소한다.
+
+call stack은 함수 호출마다 stack frame을 쌓고 반환하면 걷어 낸다. 종료 조건이 없거나 틀린 재귀, 끝나더라도 너무 깊은 재귀는 stack 영역을 다 써 Java에서는 `StackOverflowError`가 난다. 종료 조건을 고치거나 깊이를 줄이고, 필요하면 명시적 stack을 쓰는 반복으로 바꾼다([[Algorithm-Recursion|재귀]], [[Stack-vs-Heap|Stack과 Heap]]).
 
 dynamic array의 끝을 top으로 쓰면 push/pop은 amortized O(1)이고, linked list의 head를 top으로 써도 O(1)이다. linked list의 tail을 매번 순회하는 구현은 stack 장점을 잃는다.
 
@@ -90,7 +103,11 @@ stack, queue, deque는 원소를 넣고 빼는 위치를 제한한 자료구조(
 
 ## Queue
 
-FIFO 추상 자료형으로 rear에 enqueue하고 front에서 dequeue한다. scheduler, buffer, BFS와 producer-consumer 경계에 사용한다.
+FIFO 추상 자료형으로 rear에 enqueue하고 front에서 dequeue하며, 꺼내지 않고 front를 보는 peek을 둔다. 도착 순서대로 처리하므로 번호표 순서대로 창구를 배정하거나 받은 메시지를 보낸 순서대로 읽게 하는 것처럼 순서 보장이 요구사항일 때 쓴다. scheduler, buffer, BFS와 producer-consumer 경계에 사용한다.
+
+기술 문서의 queue가 항상 FIFO는 아니다. OS의 ready queue처럼 대기 공간이라는 뜻으로 쓰이고 실제로 꺼내는 순서는 우선순위 같은 scheduling 정책이 정할 수 있다([[Context-Switching|문맥 전환과 scheduling]], [[Heap|Priority Queue]]).
+
+producer-consumer 사이 queue에 상한이 없으면 소비가 생산을 따라가지 못할 때 원소가 계속 쌓여 memory가 고갈된다(Java heap이면 `OutOfMemoryError`). 상한을 두고, 가득 찼을 때 예외, `false` 같은 실패 값, 자리가 날 때까지 대기(그동안 thread가 묶인다), 제한 시간 대기 뒤 포기 중 하나를 고른다. Java API별 대응과 `LinkedBlockingQueue`의 기본 상한은 [[Java-BlockingQueue-and-Producer-Consumer|BlockingQueue와 생산자, 소비자]]에 있다.
 
 JavaScript array에서 `shift()`를 반복하면 원소 이동 비용이 들 수 있다. head index를 별도로 두는 array queue, circular buffer 또는 linked list의 head/tail pointer를 사용하면 enqueue/dequeue를 O(1)에 유지할 수 있다.
 
@@ -116,7 +133,7 @@ C++ `std::deque`는 ADT의 deque보다 넓은 인터페이스를 준다. 양 끝
 
 중복 없는 원소 collection이라는 추상 자료형이다. hash set이면 평균 membership/insert/delete가 O(1), ordered tree set이면 O(log n)과 정렬 순회를 제공한다. set이 반드시 hash table로만 구현된다고 단정하지 않는다.
 
-구현: [Set.mjs](set/Set.mjs), hash 기반 원리는 [[Hash-Table]].
+구현: [Set.mjs](set/Set.mjs), hash 기반 원리는 [[Hash-Table]]. list와 set의 선택, list로 중복을 막을 때의 비용과 hash set 구현 비교는 [[Linear-Data-Structures-List-and-Set|List와 Set]]에서 다룬다.
 
 ## 비교
 
@@ -136,6 +153,7 @@ C++ `std::deque`는 ADT의 deque보다 넓은 인터페이스를 준다. 양 끝
 - [[Trees-and-Balanced-Search-Trees|Tree와 균형 BST]]
 - [[Heap|Heap과 Priority Queue]]
 - [[Hash-Table|Hash Table]]
+- [[Linear-Data-Structures-List-and-Set|List와 Set]]
 - [[Algorithm-Complexity|시간복잡도와 amortized 분석]]
 
 ## 경계 불변식과 지연된 뒤집기
@@ -166,3 +184,15 @@ Stack 응용은 [[Stack-Pairing-and-Monotonic-Patterns|짝짓기, 가장 긴 괄
 - [NIST DADS, abstract data type](https://xlinux.nist.gov/dads/HTML/abstractDataType.html)
 - [Princeton Algorithms, Bags, Queues, and Stacks](https://algs4.cs.princeton.edu/13stacks/)
 - [ECMAScript Language Specification, Array Exotic Objects](https://tc39.es/ecma262/#sec-array-exotic-objects)
+- [ADT 뜻, 데이터구조와 차이 — YouTube, 쉬운코드](https://www.youtube.com/watch?v=QcsQKgXemtA)
+- [array list 차이 — YouTube, 쉬운코드](https://www.youtube.com/watch?v=2zF7PpvDwFg)
+- [BJ.21 배열, 동적배열과 연관배열 — YouTube, 쉬운코드](https://www.youtube.com/watch?v=Hpg6zS0Nq28)
+- [배열이 0번째부터 시작하는 이유 — YouTube, 쉬운코드](https://www.youtube.com/watch?v=_5McFoJ3VsQ)
+- [BJ.22 리스트, array list와 linked list — YouTube, 쉬운코드](https://www.youtube.com/watch?v=xvi-n11kym0)
+- [스택(stack) 설명 — YouTube, 쉬운코드](https://www.youtube.com/watch?v=ELEoJHiqlF4)
+- [큐(queue) 설명 — YouTube, 쉬운코드](https://www.youtube.com/watch?v=ZZw6remsJNo)
+- [BJ.11 스택과 큐 설명 — YouTube, 쉬운코드](https://www.youtube.com/watch?v=-2YpvLCT5F8)
+- [cppreference, C array declaration](https://en.cppreference.com/w/c/language/array)
+- [cppreference, C member access operators](https://en.cppreference.com/w/c/language/operator_member_access)
+- [Python 3.14 FAQ, How are lists implemented in CPython?](https://docs.python.org/3.14/faq/design.html#how-are-lists-implemented-in-cpython)
+- [The Java Tutorials, Arrays](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/arrays.html)

@@ -11,7 +11,7 @@ aliases: ["MySQL Parameter Tuning", "MySQL 파라미터 튜닝"]
 
 - [[MySQL-InnoDB-Tuning|InnoDB 튜닝]]: Buffer Pool, flush_log_at_trx_commit, io_capacity, 압축
 - [[MySQL-Aurora-Parameter-Tuning|MySQL/Aurora 파라미터 표준 튜닝]]: max_connections 로그스케일, 버퍼 고정차감, temptable, sysdate_is_now, cte 깊이, ngram, OOM Response
-- [[MySQL-Connection-Management|Connection 관리]]: pool 예산, timeout, thread 모델, overload 진단
+- [[MySQL-Connection-Management|Connection 관리]]: pool 예산, max_connections 고갈 경로, timeout, wait_timeout과 pool 수명, 부하 테스트로 연결 상한 정하기, thread 모델, overload 진단
 
 ## 함께 볼 문서
 

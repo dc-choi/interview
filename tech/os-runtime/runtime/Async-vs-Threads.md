@@ -1,6 +1,7 @@
 ---
 tags: [runtime, concurrency, async, threads, virtual-threads, structured-concurrency]
 status: done
+verified_at: 2026-10-05
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Async vs Threads", "async/await vs 스레드", "가상 스레드", "Function Coloring"]
 ---
@@ -31,6 +32,8 @@ async/await의 비용과 **가상 스레드 + 구조적 동시성 + 채널** 모
 ### 2. 백프레셔 부재
 
 용량이 제한된 스레드 풀 큐나 blocking write는 제출자를 막아 백프레셔를 만들 수 있다. 반면 unbounded 큐와 async task 생성은 둘 다 작업을 계속 쌓을 수 있다. 모델과 관계없이 세마포어, bounded channel, `highWaterMark` 같은 용량 제한과 포화 정책을 명시해야 한다.
+
+표준 라이브러리의 기본 스레드 풀도 대기 큐에 상한이 없을 수 있다. Java SE 27의 `Executors.newFixedThreadPool`은 용량이 `Integer.MAX_VALUE`인 `LinkedBlockingQueue`를, CPython 3.14의 `concurrent.futures.ThreadPoolExecutor`는 상한 없는 `queue.SimpleQueue`를 작업 큐로 쓴다. 처리 속도보다 빠르게 제출되면 대기 작업이 메모리에 계속 쌓이므로, 요청이 끝없이 들어올 수 있는 경로에서는 bounded 큐와 거절 정책을 두고 넘치는 작업은 버리거나 상류로 되돌린다 ([[Java-Executors-Futures-and-Thread-Pools|Java Executor와 thread pool]], [[Thread-Pool-Sizing|스레드 풀 사이징]]).
 
 ### 3. 취소와 기한 전파
 
@@ -105,9 +108,15 @@ CPU 바운드는 **Worker Threads**로, I/O 바운드는 **이벤트 루프**로
 - [Oracle Java SE 26, Structured Concurrency](https://docs.oracle.com/en/java/javase/26/core/structured-concurrency.html)
 - [Kotlin Language Specification, Suspending functions](https://kotlinlang.org/spec/asynchronous-programming-with-coroutines.html#suspending-functions)
 - [Zero-cost async stack traces — V8](https://v8.dev/blog/fast-async)
+- [Oracle Java SE 27, Executors](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Executors.html)
+- [Oracle Java SE 27, LinkedBlockingQueue](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/LinkedBlockingQueue.html)
+- [Python Documentation, queue.SimpleQueue](https://docs.python.org/3/library/queue.html#queue.SimpleQueue)
+- [concurrent/futures/thread.py — CPython 3.14 저장소](https://github.com/python/cpython/blob/3.14/Lib/concurrent/futures/thread.py)
+- [YouTube, 쉬운코드, 스레드 풀을 쓰는 이유와 사용 팁](https://www.youtube.com/watch?v=B4Of4UgLfWc)
 
 ## 관련 문서
 - [[Thread-vs-Event-Loop|Thread vs Event Loop]]
+- [[Thread-Models|스레드 종류와 스레딩 모델 (1:1, N:1, M:N)]]
 - [[Single-vs-Multi-Thread|Node.js 싱글 vs 멀티 스레드]]
 - [[Async-Internals|비동기 내부 동작 (async/await 메커니즘)]]
 - [[Backpressure|Backpressure (스트림 배압)]]

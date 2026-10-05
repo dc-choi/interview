@@ -3,7 +3,7 @@ tags: [web, network, osi, encapsulation, socket, segment, packet, frame, mtu, ms
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Network Encapsulation", "네트워크 캡슐화", "패킷 캡슐화", "PDU", "세그먼트 패킷 프레임", "소켓 스트림", "MTU와 MSS", "Deep Packet Inspection"]
-verified_at: 2026-09-22
+verified_at: 2026-10-05
 ---
 
 # 네트워크 데이터 흐름과 캡슐화: 스트림, 세그먼트, 패킷, 프레임
@@ -12,6 +12,8 @@ TCP 애플리케이션이 소켓에 쓴 바이트 스트림은 커널의 프로�
 
 한 줄 요약: **내용물(데이터)을 상자에 넣고 송장을 붙이면 패킷, 그 상자를 트럭에 실으면 프레임이다. 트럭은 구간마다 갈아타지만 송장은 목적지까지 그대로다.**
 
+프로토콜은 통신에 참여하는 쪽이 지키는 형식과 절차의 규칙이다(RFC 4949: "A set of rules (i.e., formats and procedures)"). 네트워크 기능을 프로토콜 하나에 몰지 않고 계층으로 나누므로, 각 계층의 프로토콜은 바로 아래 계층이 제공하는 전달 서비스를 쓰면서 자기 기능에 필요한 정보만 헤더에 담아 상대편의 같은 계층과 주고받는다. 캡슐화는 이 계층 구조가 데이터에 드러난 모습이다.
+
 ## 소켓과 스트림: 유저 모드의 출발점
 
 프로그램은 네트워크를 직접 만지지 않고 소켓(socket)이라는 커널 인터페이스를 쓴다. `socket()`은 파일 디스크립터를 반환하며, 연결된 `SOCK_STREAM` 소켓은 `read()`/`write()` 또는 `send()`/`recv()`로 다룬다. 파일, 장치, 소켓을 같은 디스크립터 API로 다루는 Unix 계열의 설계는 [[Linux-File-System|모든 것이 파일]] 원칙의 한 예다. 파일과 같은 입출력 인터페이스를 쓴다는 뜻이지, 소켓이 디스크에 저장되는 일반 파일이라는 뜻은 아니다.
@@ -19,7 +21,7 @@ TCP 애플리케이션이 소켓에 쓴 바이트 스트림은 커널의 프로�
 - `SOCK_STREAM`(TCP): 순서가 보장되는 신뢰성 있는 양방향 바이트 스트림. 애플리케이션 메시지의 경계를 보존하지 않는다. 무한한 데이터라는 뜻은 아니며 연결 종료와 EOF는 존재한다.
 - `SOCK_DGRAM`(UDP): 고정된 최대 길이를 가진 독립 메시지(datagram). 메시지 경계가 보존된다. 그래서 모든 소켓을 스트림으로 일반화하지 않는다.
 
-스트림에는 메시지 경계가 없다. TCP는 애플리케이션이 `write()`한 단위와 실제 세그먼트 경계, 상대가 `read()`로 받는 단위 사이에 아무 상관관계도 보장하지 않는다. `ABC`와 `DEF`를 순서대로 보내도 수신자는 `AB`, `CDEF`로 나눠 읽을 수 있다. 한 번 보낸 메시지가 두 번에 나뉘어 읽히거나 두 메시지가 한 번에 붙어 읽힐 수 있으므로, 애플리케이션 프로토콜이 길이 필드나 구분자로 경계를 직접 정의한다. HTTP의 `Content-Length`와 chunked 전송이 그 예다.
+스트림에는 메시지 경계가 없다. TCP는 애플리케이션이 `write()`한 단위와 실제 세그먼트 경계, 상대가 `read()`로 받는 단위 사이에 아무 상관관계도 보장하지 않는다. `ABC`와 `DEF`를 순서대로 보내도 수신자는 `AB`, `CDEF`로 나눠 읽을 수 있다. 한 번 보낸 메시지가 두 번에 나뉘어 읽히거나 두 메시지가 한 번에 붙어 읽힐 수 있으므로, 애플리케이션 프로토콜이 길이 필드나 구분자로 경계를 직접 정의한다. HTTP의 `Content-Length`와 chunked 전송이 그 예다. TCP 명세도 PUSH가 없는 SEND의 데이터는 이후 SEND와 합쳐 보낼 수 있고 PSH 비트는 레코드 경계 표시가 아니라고 정한다(RFC 9293 3.9.1.2). 경계와 신뢰성이 별개 축이라는 점, UDP의 잘림과 크기 상한, 프레이밍 방식의 비교는 [[Transport-Layer-Sockets#스트림 소켓과 데이터그램 소켓: 메시지 경계|소켓의 메시지 경계]].
 
 `send()`는 성공하면 보낸 바이트 수를 반환하지만, send(2)는 전달 실패가 반환값에 암시되지 않고 지역에서 감지한 오류만 -1로 나타난다고 명시한다. 즉 성공 반환값은 상대가 받았다는 확인이 아니다. send(2)는 flags가 0인 `send()`가 write(2)와 같다고 설명하고, write(2)는 성공한 호출이 요청한 `count`보다 적게 전송할 수 있으며 이때 호출자가 다시 호출해 남은 바이트를 보낼 수 있다고 적는다. 그래서 반환값을 확인해 남은 바이트를 다시 보낸다. 호출 한 번, TCP 세그먼트 하나, 수신 측 `recv()` 한 번은 서로 일대일이 아니며, 버퍼링과 흐름 제어, 혼잡 제어가 실제 송신 시점과 크기를 정한다. 이후의 분할, 캡슐화, 재전송은 애플리케이션이 아니라 커널과 NIC offload가 처리한다. 시스템 콜을 경계로 유저 모드와 커널 모드가 나뉘는 구조는 [[Concurrency-and-Process-Overview#커널모드vs유저모드|커널 모드와 유저 모드]].
 
@@ -41,11 +43,11 @@ TCP 애플리케이션이 소켓에 쓴 바이트 스트림은 커널의 프로�
 - **패킷**: 송장이 붙은 상자. 출발지에서 목적지까지 같은 상자가 간다.
 - **프레임**: 상자를 싣고 한 구간을 달리는 트럭. 라우터마다 트럭을 갈아탄다.
 
-트럭 비유는 구간마다 바뀐다는 점을 잡기 위한 것이고 정확히 대응하지는 않는다. 일반적인 IP over Ethernet에서 한 프레임은 IP 패킷 하나만 싣는다. 프레임은 라우터에서 다음 링크에 맞게 새로 만들어지며, 모든 링크가 이더넷인 것도 아니다.
+트럭 비유는 구간마다 바뀐다는 점을 잡기 위한 것이고 정확히 대응하지는 않는다. 일반적인 IP over Ethernet에서 한 프레임은 IP 패킷 하나만 싣는다. 프레임은 라우터에서 다음 링크에 맞게 새로 만들어지며, 모든 링크가 이더넷인 것도 아니다. 라우터는 역캡슐화와 캡슐화를 L3까지만 되풀이한다. 받은 프레임의 FCS를 확인하고 L2 헤더와 트레일러를 벗긴 뒤, IP 헤더의 목적지로 다음 홉을 정한다. TTL(IPv6는 Hop Limit)을 줄이고 IPv4라면 헤더 체크섬도 다시 맞춘 뒤(RFC 1812, RFC 8200) 다음 링크의 프레임으로 감싼다. 포트를 보는 ACL이나 NAT 같은 기능이 없으면 전송 계층 헤더는 읽지 않는다.
 
 패킷의 IP 주소는 end-to-end로 유지되고 프레임의 MAC 주소는 hop-by-hop으로 바뀐다는 점이 가장 중요한 통찰이다. 다만 NAT가 없는 일반 전달을 전제로 한 말이며, TTL, 헤더 체크섬, NAT와 터널이 헤더를 바꾸는 예외는 [[Network-Layer#패킷은 유지되고 프레임은 구간마다 바뀐다 (핵심)|패킷은 유지되고 프레임은 구간마다 바뀐다]], NAT는 [[IPv4-NAT-and-Traversal]].
 
-패킷은 문맥에 따라 네트워크 데이터 단위를 넓게 부르는 말이며, 이 문서에서는 L3의 IP 패킷을 뜻한다. 세그먼트는 여기서 TCP 단위지만 다른 분야에서도 쓰이는 용어다. TCP 세그먼트에는 데이터뿐 아니라 페이로드 없는 ACK 같은 제어 정보도 실린다. UDP 데이터그램은 애플리케이션의 독립 메시지이며 TCP처럼 스트림을 잘랐다는 뜻이 아니다. 데이터그램이라는 말은 IP에서도 사용한다. tcpdump나 Wireshark 같은 도구가 캡처하는 것은 프레임이고 도구가 그 안의 IP 헤더, TCP 헤더, payload를 계층별로 펼쳐 보여 준다. 캡처 도구의 구조와 캡처 위치는 [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark]].
+패킷은 문맥에 따라 네트워크 데이터 단위를 넓게 부르는 말이며, 이 문서에서는 L3의 IP 패킷을 뜻한다. 세그먼트는 여기서 TCP 단위지만 다른 분야에서도 쓰이는 용어다. TCP 세그먼트에는 데이터뿐 아니라 페이로드 없는 ACK 같은 제어 정보도 실린다. UDP 데이터그램은 애플리케이션의 독립 메시지이며 TCP처럼 스트림을 잘랐다는 뜻이 아니다. 데이터그램이라는 말은 IP에서도 사용한다. 그래서 수식어 없이 데이터그램이라고 쓰면 UDP 데이터그램인지 IP 데이터그램인지 문맥으로 가리고, 교재에 따라 TCP와 UDP의 단위를 함께 세그먼트라 부르기도 한다. tcpdump나 Wireshark 같은 도구가 캡처하는 것은 프레임이고 도구가 그 안의 IP 헤더, TCP 헤더, payload를 계층별로 펼쳐 보여 준다. 캡처 도구의 구조와 캡처 위치는 [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark]].
 
 ## 크기 제한: MTU, MSS와 단편화
 
@@ -104,7 +106,9 @@ AWS에서는 이런 DPI 어플라이언스를 [[ELB|Gateway Load Balancer]] 뒤�
 
 ## 면접 체크포인트
 
+- 프로토콜이 형식과 절차의 규칙이고 각 계층이 바로 아래 계층의 서비스만 쓴다는 점, 라우터가 L3까지만 역캡슐화와 캡슐화를 되풀이하는 과정
 - 스트림에서 세그먼트, 패킷, 프레임으로 내려가는 순서와 계층마다 붙는 헤더 정보, 계층마다 payload가 달라지는 이유
+- 수식어 없이 쓰인 패킷, 데이터그램, 세그먼트가 어느 계층의 단위인지 문맥으로 가리는 법
 - 소켓이 파일 디스크립터이고 `read()`/`write()`로 다룰 수 있는 이유, 그럼에도 디스크 파일이 아닌 이유
 - TCP가 메시지 경계를 보존하지 않는 이유와 애플리케이션 프로토콜의 대응, `send()` 반환값의 의미
 - MTU와 MSS의 관계, 1500과 1460의 계산, PMTUD와 ICMP 차단의 부작용
@@ -136,10 +140,16 @@ AWS에서는 이런 DPI 어플라이언스를 [[ELB|Gateway Load Balancer]] 뒤�
 - [Linux man-pages, write(2)](https://man7.org/linux/man-pages/man2/write.2.html)
 - [Linux Kernel Documentation, Segmentation Offloads](https://docs.kernel.org/networking/segmentation-offloads.html)
 - [Linux Kernel Documentation, NAPI](https://docs.kernel.org/networking/napi.html)
+- [IETF, RFC 4949: Internet Security Glossary, Version 2](https://www.rfc-editor.org/rfc/rfc4949.html)
+- [IETF, RFC 1812: Requirements for IP Version 4 Routers](https://www.rfc-editor.org/rfc/rfc1812.html)
+- [YouTube, 쉬운코드, 프로토콜과 OSI 7 layer](https://www.youtube.com/watch?v=6l7xP7AnB64)
+- [YouTube, 쉬운코드, 소켓 식별 예제로 보는 segment, datagram, packet, frame, multiplexing, demultiplexing](https://www.youtube.com/watch?v=eveNtda0_yk)
+- [YouTube, 쉬운코드, byte-stream protocol vs message-oriented protocol](https://www.youtube.com/watch?v=lLb2lMQpKbY)
 
 ## 관련 문서
 
 - [[Transport-Layer|L4 전송 계층 (세그먼트, 포트, TCP/UDP)]]
+- [[Transport-Layer-Sockets|소켓과 포트 (연결 식별, 역다중화, 메시지 경계와 프레이밍)]]
 - [[Network-Layer|L3 네트워크 계층 (패킷, IP, 라우팅, ARP)]]
 - [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기]]
 - [[IPv4-NAT-and-Traversal|IPv4 NAT, NAPT와 NAT 통과]]

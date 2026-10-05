@@ -3,7 +3,7 @@ tags: [database, nosql, base, consistency]
 status: done
 category: "데이터&저장소(Data&Storage)"
 aliases: ["NoSQL Overview", "NoSQL 개요", "RDBMS vs NoSQL", "BASE 모델"]
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 ---
 
 # NoSQL 개요 — 유형, BASE, RDBMS와의 선택
@@ -45,6 +45,21 @@ ACID는 트랜잭션의 성질이고 CAP는 네트워크 분할 중 선형화 �
 | 약점 | 수평 확장과 구조 변경이 신중함 | 복잡한 관계 조회, 엄격한 일관성 작업에 주의 |
 
 **선택 기준**: 돈, 주문, 회원 정보처럼 정확성과 관계가 핵심이면 RDBMS를 먼저 본다. 대규모 트래픽, 빠른 조회, 유연한 데이터 구조, 분산 처리가 중요하면 NoSQL이 후보가 된다. 워크로드가 운영성이냐 분석성이냐의 분리는 [[OLTP-vs-OLAP|OLTP vs OLAP]]와도 연결된다.
+
+## RDBMS가 받던 압력과 NoSQL의 응답
+
+웹 서비스의 사용자와 데이터가 급증하면서 더 높은 처리량, 더 낮은 지연과 형태를 미리 정하기 어려운 데이터를 다루는 요구가 커졌다. NoSQL의 공통 특징은 이때 관계형 모델이 받던 압력에 대한 설계 선택으로 읽으면 이해하기 쉽고, 각 선택은 비용을 애플리케이션으로 옮긴다.
+
+| RDBMS의 압력 | NoSQL의 선택 | 옮겨 가는 비용 |
+|---|---|---|
+| 저장 전에 스키마를 정하고 새 속성마다 DDL이 필요 | 같은 컬렉션의 문서끼리도 필드가 달라도 되는 유연한 스키마 | 문서 버전과 필드 존재를 애플리케이션이 검증 |
+| 정규화로 나눈 데이터를 다시 읽을 때 여러 테이블 조인 | 함께 읽는 데이터를 한 문서나 항목에 중복 저장 | 중복된 값을 모두 최신으로 맞추는 갱신 경로 |
+| replica를 늘려도 쓰기는 primary 한 대가 받음 | 키 기준으로 데이터를 여러 노드에 나눈 클러스터 | 키 없는 조회의 fan-out, 노드 추가 때 재배치 부하 |
+| 엄격한 격리와 트랜잭션이 처리량과 지연을 제약 | 일부 보장을 완화해 처리량과 응답 시간 우선 | 정합성 규칙을 애플리케이션이 지키거나 제품의 트랜잭션 범위를 확인 |
+
+- 중복 저장과 수평 분할은 서로를 돕는다. 한 요청에 필요한 데이터가 한 문서에 모여 있으면 그 문서가 있는 노드 하나만 읽으면 되지만, 정규화된 테이블을 여러 노드에 흩으면 조인마다 노드 사이 네트워크 이동이 생긴다. 그래서 문서형 저장소에서는 조회 패턴에 맞춘 중복이 확장 전략의 일부다([[MongoDB-Schema-Design|MongoDB 스키마 설계]]).
+- 스키마 변경 비용을 과장하지 않는다. MySQL 8.4 InnoDB는 컬럼 추가에 `ALGORITHM=INSTANT`를 기본으로 써서 테이블을 재구성하지 않는다. 다만 instant 추가와 삭제로 생기는 행 버전은 테이블당 64개까지이고(테이블을 재구성하면 0으로 돌아간다) `COMPRESSED` 행 형식이나 FULLTEXT 인덱스가 있는 테이블에는 쓸 수 없다. PostgreSQL 18도 비휘발성 `DEFAULT`는 메타데이터에 두고 기본값 없는 일반 컬럼은 NULL로 읽으므로, 두 경우 모두 컬럼 추가에 테이블을 다시 쓰지 않는다. 대형 테이블에서 위험한 것은 컬럼 추가 자체보다 MySQL에서 `ALGORITHM=COPY`만 지원하는 컬럼 타입 변경, PostgreSQL에서 휘발성 기본값이나 stored generated, identity 컬럼을 추가하는 것처럼 재작성이 필요한 DDL과 대량 백필이다. INSTANT DDL에도 남는 metadata lock 대기와 재작성 DDL의 도구 선택은 [[Schema-Migration-Large-Table|대용량 테이블 스키마 변경]]에 있다.
+- RDBMS도 [[Sharding|sharding]]으로 쓰기를 나눌 수 있지만, 운영 중에 데이터를 옮기고 cross-shard 조회와 트랜잭션을 애플리케이션이 떠안는다. 여러 노드가 쓰기를 받는 multi-primary 복제도 모든 노드가 모든 쓰기를 적용하므로 쓰기 지점을 늘릴 뿐 쓰기 처리량을 노드 수만큼 늘리지는 않는다. 분산형 NoSQL 저장소는 키 기준 분할을 저장소 모델과 운영 도구에 처음부터 넣어 둔 쪽이다.
 
 ## 선택 절차
 
@@ -113,12 +128,15 @@ ACID는 트랜잭션의 성질이고 CAP는 네트워크 분할 중 선형화 �
 - ACID의 Consistency와 CAP의 Consistency 차이, 제품 이름만으로 CP/AP를 정할 수 없는 이유
 - 데이터 성격, 조회 패턴, 읽기와 쓰기 비중, 일관성과 가용성, 규모, 팀 역량 순으로 저장소를 고르는 절차와 SQL로 시작하는 이유
 - 노드를 늘려도 처리량이 늘지 않는 경우(거친 쓰기 잠금, 토폴로지 변경 부하)를 설명할 수 있는가
+- 유연한 스키마, 중복 허용, 키 기준 분할, 완화된 보장이 각각 RDBMS의 어떤 압력에 대한 선택이고 비용이 어디로 옮겨 가는지 말할 수 있는가
+- 중복 저장이 수평 분할에 유리한 이유와, replica나 multi-primary 복제가 쓰기 처리량을 늘리지 못하는 이유를 설명할 수 있는가
+- 컬럼 추가가 대형 테이블에서 항상 위험하다는 통념을 MySQL INSTANT DDL과 PostgreSQL의 메타데이터 기본값으로 반박할 수 있는가
 - "무엇이 더 좋은가"가 아니라 "데이터 성격에 무엇이 더 적합한가"로 선택하는 논리
 - RDBMS 메인 + NoSQL 보조(폴리글랏)가 흔한 이유
 
 ## 출처
 
-2026-10-02에는 가용성/최종 일관성의 한계, ACID와 CAP의 구분 및 DynamoDB 읽기/트랜잭션 반례를 대조했다. MongoDB 버전 이력, Cassandra 설정과 강의 사례 전체를 다시 검증한 기록은 아니다.
+2026-10-02에는 가용성/최종 일관성의 한계, ACID와 CAP의 구분 및 DynamoDB 읽기/트랜잭션 반례를 대조했다. MongoDB 버전 이력, Cassandra 설정과 강의 사례 전체를 다시 검증한 기록은 아니다. 2026-10-05에는 MySQL 8.4의 INSTANT 컬럼 추가 한도와 COPY 전용 컬럼 타입 변경, Group Replication 구성원이 데이터 전체 사본을 갖는 구조, PostgreSQL 18의 컬럼 추가 재작성 조건을 대조했다.
 
 - [Amazon DynamoDB, Read consistency](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html)
 - [Amazon DynamoDB, Transactions: How it works](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html)
@@ -135,6 +153,10 @@ ACID는 트랜잭션의 성질이고 CAP는 네트워크 분할 중 선형화 �
 - [Apache Cassandra Documentation, nodetool setstreamthroughput](https://cassandra.apache.org/doc/latest/cassandra/managing/tools/nodetool/setstreamthroughput.html)
 - [인프런, 모영철, MicroService Architecture - Process 여러 개면 여러모로 좋아](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178847)
 - [인프런, 성장랜턴, DB 종류와 선택 전략](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278150)
+- [MySQL 8.4 Reference Manual, Online DDL Operations](https://dev.mysql.com/doc/refman/8.4/en/innodb-online-ddl-operations.html)
+- [PostgreSQL 18 Documentation, ALTER TABLE](https://www.postgresql.org/docs/current/sql-altertable.html)
+- [MySQL 8.4 Reference Manual, Group Replication](https://dev.mysql.com/doc/refman/8.4/en/group-replication-summary.html)
+- [YouTube, 쉬운코드, NoSQL과 RDB의 차이, MongoDB와 Redis 예제](https://www.youtube.com/watch?v=sqVByJ5tbNA)
 
 ## 관련 문서
 - [[Transactions|트랜잭션, ACID]] — 원자성/일관성/독립성/영속성 정의

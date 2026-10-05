@@ -3,7 +3,7 @@ tags: [web, network, lan, wan, l2, l3, broadcast-domain, mac, ip]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["LAN vs WAN", "LAN과 WAN", "Local Area Network", "Wide Area Network", "물리 네트워크와 논리 네트워크"]
-verified_at: 2026-09-14
+verified_at: 2026-10-05
 ---
 
 # LAN과 WAN: 크기가 아니라 주소 체계로 구분한다
@@ -21,6 +21,18 @@ LAN(Local Area Network)과 WAN(Wide Area Network)을 좁으면 LAN, 넓으면 WA
 | 대표 기술 | Ethernet, Wi-Fi, 스위치 | IP, 라우터, 전용선과 ISP 망 |
 
 인터넷은 여러 물리 네트워크를 IP라는 하나의 논리 네트워크로 묶은 것이고, 이 상호 연결(internetwork)에서 이름이 나왔다. 그래서 WAN의 본질은 거리가 아니라 물리 링크 위에 얹힌 논리 주소 체계다.
+
+## 구성 요소 용어: 노드, 호스트, 라우터, 링크
+
+| 용어 | RFC의 정의 | 덧붙일 점 |
+|---|---|---|
+| 노드(node) | IP(RFC 8200에서는 IPv6)를 구현한 장치 | 토폴로지 그림에서는 스위치나 허브처럼 IP를 쓰지 않는 장비까지 노드라 부르기도 한다 |
+| 라우터(router) | 자기에게 오지 않은 패킷을 전달하는 노드(RFC 8200). OSI 용어로는 intermediate system(RFC 1122) | 네트워크와 네트워크를 잇는다 |
+| 호스트(host) | 라우터가 아닌 노드(RFC 8200). 통신 서비스의 최종 소비자로서 사용자의 애플리케이션을 실행하며 OSI의 end system에 해당한다(RFC 1122) | 엔드 시스템, 엔드포인트라고도 부른다 |
+| 링크(link) | 노드가 IP 바로 아래 계층에서 통신하는 매체나 설비. 단일 또는 브리지로 이은 이더넷, PPP, 터널 등(RFC 8200) | 같은 링크에 붙은 노드끼리를 이웃(neighbors)이라 부른다 |
+
+- 이 문서의 LAN은 RFC 8200의 링크에 가깝다. RFC 8200은 스위치(브리지)로 이은 이더넷 전체를 하나의 링크로 보며, 같은 링크의 이웃끼리는 링크 계층 주소로 바로 닿고 이웃이 아니면 라우터를 거친다.
+- 클라이언트와 서버는 장치의 종류가 아니라 통신 하나에서 맡는 역할이다. 요청을 보내는 쪽이 클라이언트, 응답하는 쪽이 서버이며, RFC 9110은 같은 프로그램이 어떤 연결에서는 클라이언트, 다른 연결에서는 서버가 될 수 있다고 적는다. 웹 서버도 DB에 질의할 때는 DB의 클라이언트다.
 
 ## 동작 원리: 호스트는 어떻게 LAN 안팎을 가르는가
 
@@ -49,6 +61,8 @@ LAN(Local Area Network)과 WAN(Wide Area Network)을 좁으면 LAN, 넓으면 WA
 | 집에서 회사 서버에 HTTPS 접속 | WAN | 기본 게이트웨이를 거쳐 여러 라우터를 경유 |
 | 회사 VPN에 붙은 뒤 사내 파일 서버 접속 | 논리적으로는 사내 네트워크, 물리적으로는 WAN | 터널이 IP 경로를 감쌀 뿐 라우팅은 여전히 필요 |
 | 같은 스위치의 다른 VLAN에 있는 동료 PC | 다른 LAN | 브로드캐스트가 닿지 않고 L3 장비를 거쳐야 함 |
+| 일반적인 가정용 공유기 설정에서 Wi-Fi 노트북과 유선 데스크톱 | LAN | 무선과 유선이 섞여도 같은 서브넷과 브로드캐스트 도메인이면 같은 LAN |
+| 스마트폰의 LTE나 5G 데이터로 서버 접속 | WAN | 이동통신 사업자의 망과 라우터를 거쳐 IP로 전달된다. 무선이라는 사실이 LAN을 뜻하지 않는다 |
 
 ## 트레이드오프와 흔한 오해
 
@@ -64,12 +78,16 @@ LAN(Local Area Network)과 WAN(Wide Area Network)을 좁으면 LAN, 넓으면 WA
 - 호스트의 로컬과 원격 판단 절차와 ARP, 게이트웨이의 역할
 - 인터넷이 물리 네트워크들을 IP로 묶은 논리 네트워크라는 점과 이름의 유래
 - VLAN, VPN, 컨테이너 브리지, VPC가 물리 크기 기준을 무의미하게 만드는 이유
+- 노드, 호스트, 라우터, 링크와 이웃의 RFC 정의, 클라이언트와 서버가 장치가 아니라 역할이라는 점, 무선 여부가 LAN 판단 기준이 아닌 이유
 
 ## 출처
 
 - [LAN과 WAN을 구별하는 방법 — 널널한 개발자 TV](https://www.youtube.com/watch?v=N8pE-vDsJ38&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=13)
 - [IETF, RFC 1180: A TCP/IP Tutorial](https://www.rfc-editor.org/rfc/rfc1180.html)
 - [IETF, RFC 1122: Requirements for Internet Hosts, Communication Layers](https://www.rfc-editor.org/rfc/rfc1122.html)
+- [IETF, RFC 8200: Internet Protocol, Version 6 (IPv6) Specification](https://www.rfc-editor.org/rfc/rfc8200.html)
+- [IETF, RFC 9110: HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
+- [YouTube, 쉬운코드, 네트워크와 인터넷 개념, 인터넷 동작 방식과 ISP](https://www.youtube.com/watch?v=oFKYzp6gGfc)
 
 ## 관련 문서
 

@@ -1,9 +1,9 @@
 ---
 tags: [os, process, thread, pcb, fork]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-05
 category: "OS&런타임(OS&Runtime)"
-aliases: ["Process Lifecycle", "프로세스 생명주기"]
+aliases: ["Process Lifecycle", "프로세스 생명주기", "프로세스 상태 전이"]
 ---
 
 # Process Lifecycle
@@ -33,6 +33,33 @@ aliases: ["Process Lifecycle", "프로세스 생명주기"]
 | 실행(Running) | 하나 이상의 스레드가 논리 CPU에서 실행 중. 동시에 실행 가능한 스레드 수의 상한은 사용 가능한 논리 CPU와 스케줄링 제약에 좌우되지만 runnable task가 적으면 CPU가 유휴일 수 있고, 한 멀티스레드 프로세스가 여러 CPU에서 동시에 실행될 수도 있음 |
 | 대기(Waiting) | I/O, lock, timer, event 등 조건을 기다려 실행할 수 없는 상태. 조건이 충족되면 준비 상태로 복귀 |
 | 완료(Terminated) | 실행이 끝난 상태. 부모가 종료 상태를 회수하기 전에는 최소한의 종료 정보가 남을 수 있음 |
+
+### 상태 전이
+
+| 전이 | 계기 |
+|---|---|
+| 생성 → 준비 | 생성이 끝나 실행할 수 있게 됨 |
+| 준비 → 실행 | 스케줄러가 고르고 디스패처가 CPU를 넘김 |
+| 실행 → 준비 | time slice 만료나 더 높은 우선순위 task의 준비로 선점됨 |
+| 실행 → 대기 | I/O 요청, lock이나 이벤트 대기 |
+| 대기 → 준비 | 기다리던 I/O 완료나 이벤트 발생 |
+| 실행 → 완료 | `exit` 호출이나 종료 시그널로 끝남 |
+
+- 대기에서 깨어난 task는 곧바로 실행되지 않고 준비 상태로 돌아가 다시 선택을 기다린다. 스케줄러가 그 자리에서 고르면 바로 실행될 수도 있지만 그것도 준비를 거친 선택이다.
+- 생성에서 준비로 넘어가는 승인을 장기 스케줄러(job scheduler)가 맡는 모델은 메모리에 올릴 작업을 고르던 배치 시스템의 개념이다. 범용 시분할 OS에서는 생성된 프로세스가 곧바로 준비 상태에 들어간다고 보면 된다.
+- 상태 이름과 세분화는 OS마다 다르다. Linux `ps`의 `R`은 실행 중과 실행 대기(run queue)를 합친 상태이고, 대기는 시그널로 깨울 수 있는 `S`와 깨울 수 없는 `D`(주로 I/O)로 나뉘며, 부모가 회수하지 않은 종료 프로세스는 `Z`로 보인다.
+- 스레드도 같은 상태 모델을 따른다. Java 같은 언어 런타임은 자체 상태를 정의하므로 OS 상태와 일대일로 대응하지 않는다 ([[Java-Threads-Lifecycle-and-Cancellation#상태 모델|Java Thread.State]]).
+
+### 상태 전이를 일으키는 시스템 콜과 인터럽트
+
+싱글 코어에서 스레드 T1이 실행 중이고 T2가 준비 상태라고 하자.
+
+1. T1이 파일을 읽으려고 블로킹 `read()` 시스템 콜을 호출하면 trap으로 커널 모드에 들어간다. 커널은 T1의 CPU 상태를 저장하고 장치에 읽기를 요청한 뒤 T1을 대기 상태로 바꾼다.
+2. CPU를 놀리지 않도록 스케줄러가 준비 상태의 T2를 고르고, 커널은 T2의 CPU 상태를 복원해 사용자 모드로 돌아간다. 이제 T2가 실행된다.
+3. 장치가 읽기를 마치면 인터럽트를 건다. CPU는 T2를 멈추고 커널 모드에서 인터럽트를 처리한다. 커널은 T1을 대기에서 준비로 옮기고, 정책상 교체할 이유가 없으면 T2를 이어서 실행한다.
+4. T2의 time slice가 끝나면 타이머 인터럽트로 다시 커널 모드에 들어간다. 커널은 T2를 준비 상태로 돌리고 T1의 상태를 복원해 실행한다. T1은 커널 안에서 멈췄던 `read()`를 마저 수행해 데이터를 사용자 버퍼로 받고 사용자 모드로 돌아온다.
+
+시스템 콜은 실행 중인 코드가 의도적으로 커널에 들어가는 동기적 진입이고, 인터럽트는 장치나 타이머가 현재 코드와 무관하게 거는 비동기적 진입이다. 둘 다 커널이 상태를 바꾸고 스케줄링할 기회를 만들지만, 커널 모드에 들어갔다고 항상 다른 task로 전환되지는 않는다 ([[Context-Switching|컨텍스트 스위칭]], [[Concurrency-and-Process-Overview|OS 개요의 인터럽트와 시스템 콜]]).
 
 ## 프로세스 생성과 종료
 
@@ -69,6 +96,7 @@ aliases: ["Process Lifecycle", "프로세스 생명주기"]
 - 각 스레드는 스택, 레지스터 상태, 스레드 ID와 스케줄링 상태를 개별 소유한다.
 - 쓰레드 ID와 TCB(Thread Control Block)로 관리
 - 현대 범용 운영체제는 보통 스레드 또는 task를 스케줄링 단위로 삼지만 자료구조와 모델은 구현마다 다르다.
+- 하드웨어 스레드, OS 스레드, 사용자 수준 스레드의 구분과 1:1, N:1, M:N 매핑은 [[Thread-Models|스레드 종류와 스레딩 모델]]에서 다룬다.
 
 ### 프로세스 vs 쓰레드
 
@@ -111,14 +139,20 @@ OS가 검사하는 주체는 사람이 아니라 요청한 프로세스다. Linu
 ## 관련 문서
 - [[Concurrency-and-Process|동시성과 프로세스]]
 - [[Context-Switching|컨텍스트 스위칭과 CPU 스케줄링]]
+- [[Thread-Models|스레드 종류와 스레딩 모델]]
 - [[Virtual-Memory|가상 메모리]]
 
 ## 출처
 
+- [The Abstraction: The Process — OSTEP](https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-intro.pdf)
+- [Mechanism: Limited Direct Execution — OSTEP](https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-mechanisms.pdf)
+- [Operating System Concepts 10th 강의 슬라이드 1장, 3장 — Silberschatz, Galvin, Gagne](https://www.os-book.com/OS10/slide-dir/index.html)
 - [Linux, credentials(7)](https://man7.org/linux/man-pages/man7/credentials.7.html)
+- [Linux ps(1)](https://man7.org/linux/man-pages/man1/ps.1.html)
 
 - 인프런, 감자 강사, [프로그램과 프로세스](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100759), [멀티프로그래밍과 멀티프로세싱](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100760), [PCB](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100761), [프로세스 상태](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100762)
 - 인프런, 감자 강사, [프로세스 생성과 종료](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100764), [쓰레드](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100765), [컴파일과 프로세스](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100824)
+- YouTube, 쉬운코드, [OS 프로세스 상태와 자바 스레드 상태](https://www.youtube.com/watch?v=_dzRW48NB9M), [인터럽트와 시스템 콜, 유저 모드와 커널 모드](https://www.youtube.com/watch?v=v30ilCpITnY)
 - [Linux execve(2)](https://man7.org/linux/man-pages/man2/execve.2.html)
 - [Linux fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html)
 - [Linux wait(2)](https://man7.org/linux/man-pages/man2/wait.2.html)

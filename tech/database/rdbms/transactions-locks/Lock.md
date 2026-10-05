@@ -190,6 +190,7 @@ MySQL `FOR UPDATE OF c SKIP LOCKED`는 alias c의 row를 대상으로 한다. OF
 
 ## 관련 문서
 - [[Lock-Deadlock|DB 데드락]]
+- [[Two-Phase-Locking|2단계 잠금 (2PL)]]
 - [[Transactions|트랜잭션]]
 - [[Isolation-Level|트랜잭션 격리 수준]]
 - [[Distributed-Lock|분산 락]]

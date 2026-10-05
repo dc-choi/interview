@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, sql, subquery, semijoin]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 category: "Database - RDBMS"
 aliases: ["MySQL Subqueries", "MySQL 서브쿼리 실행", "상관 서브쿼리 비용", "IN vs EXISTS"]
 ---
@@ -53,6 +53,18 @@ GROUP BY p.product_id, p.name;
 
 JOIN은 옵티마이저가 조인 순서와 접근 경로를 고를 여지가 크고 단순한 서브쿼리는 JOIN으로 바뀌기도 하므로, 성능이 같거나 JOIN이 나은 경우가 많다. JOIN을 먼저 고려하되, JOIN으로 쓰면 지나치게 복잡하거나 서브쿼리 쪽이 훨씬 읽기 쉽거나 단계별 derived table이 더 명확하면 서브쿼리를 쓴다. 성능이 의심되면 두 형태를 `EXPLAIN ANALYZE`와 실제 실행 시간으로 비교한다. 관계형 의미와 결과 grain 비교는 [[SQL-Query-Composition|SQL 쿼리 조합]]에 둔다.
 
+## 서브쿼리 해석 규칙
+
+서브쿼리(nested query, inner query)는 SELECT, INSERT, UPDATE, DELETE 안에 괄호로 넣은 쿼리이고, 이를 감싸는 쿼리가 outer query다. 결과가 기대와 다를 때는 실행 전략보다 먼저 다음 해석 규칙을 확인한다.
+
+- 한정하지 않은 컬럼 참조는 안쪽 query block부터 바깥쪽으로 찾는다. 서브쿼리의 FROM에 그 이름의 컬럼이 없으면 오류가 아니라 바깥 컬럼을 참조하는 상관 서브쿼리가 된다. `SELECT * FROM employee WHERE id IN (SELECT id FROM works_on)`에서 works_on에 `id` 컬럼이 없으면 안쪽 `id`는 바깥 employee의 `id`가 되어, works_on에 행이 하나라도 있으면 id가 NULL이 아닌 모든 직원이 통과한다. 서브쿼리 안의 컬럼은 모두 별칭으로 한정한다.
+- FROM 절의 derived table에는 별칭이 필수다. FROM의 모든 테이블에 이름이 있어야 하기 때문이며, 빠뜨리면 오류 1248(`Every derived table must have its own alias`)이 난다.
+- 행 서브쿼리는 여러 컬럼을 한 번에 비교한다. `WHERE (dept_id, sex) = (SELECT dept_id, sex FROM employee WHERE id = 1)`처럼 쓰고, 서브쿼리가 두 행 이상을 내면 오류이며 행이 없으면 비교가 UNKNOWN이 된다.
+- 서브쿼리와 함께 쓸 때 `IN`은 `= ANY`, `SOME`은 `ANY`의 별칭이다. `NOT IN`은 `<> ALL`의 별칭이며 `<> ANY`와 다르다. `x <> ANY (...)`는 x와 다른 값이 하나라도 있으면 참이라 `NOT IN`의 뜻이 아니다. 이 뜻을 읽기 쉽게 하려면 `<> SOME`으로 쓴다.
+- `ALL`은 서브쿼리가 비면 참, `ANY`는 거짓이다. 비교 대상에 NULL이 섞이면 결과가 확정되지 않은 비교는 UNKNOWN이 된다([[SQL-Query-Composition#ANY/ALL의 extrema와 예외|ANY/ALL의 extrema와 예외]]).
+- `EXISTS` 서브쿼리의 SELECT 목록은 무시된다. `SELECT *`와 `SELECT 1`은 결과가 같고, 모든 컬럼이 NULL인 행도 행이므로 하나라도 있으면 참이다.
+- 상관 조건을 서브쿼리 SELECT 목록으로 옮기면 `EXISTS`와 `IN`을 서로 바꿔 쓸 수 있다. `NOT EXISTS`와 `NOT IN`은 서브쿼리 결과에 NULL이 섞이면 결과가 달라진다([[SQL-Fundamentals-NULL#NOT IN과 NULL|NOT IN과 NULL]]).
+
 ## 출처
 
 - [MySQL 8.4 Reference Manual, Semijoin and Antijoin Transformations](https://dev.mysql.com/doc/refman/8.4/en/semijoins-antijoins.html)
@@ -65,9 +77,16 @@ JOIN은 옵티마이저가 조인 순서와 접근 경로를 고를 여지가 �
 - [인프런, 김영한, SELECT 서브쿼리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328761)
 - [인프런, 김영한, 서브쿼리 vs JOIN](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328763)
 - [인프런, 김영한, 정리 (서브쿼리)](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328765)
+- [MySQL 8.4 Reference Manual, Subqueries with ANY, IN, or SOME](https://dev.mysql.com/doc/refman/8.4/en/any-in-some-subqueries.html)
+- [MySQL 8.4 Reference Manual, Subqueries with ALL](https://dev.mysql.com/doc/refman/8.4/en/all-subqueries.html)
+- [MySQL 8.4 Reference Manual, Row Subqueries](https://dev.mysql.com/doc/refman/8.4/en/row-subqueries.html)
+- [MySQL 8.4 Reference Manual, Subqueries with EXISTS or NOT EXISTS](https://dev.mysql.com/doc/refman/8.4/en/exists-and-not-exists-subqueries.html)
+- [MySQL 8.4 Reference Manual, Derived Tables](https://dev.mysql.com/doc/refman/8.4/en/derived-tables.html)
+- [YouTube, 쉬운코드, subquery와 IN, EXISTS, ANY, ALL](https://www.youtube.com/watch?v=lwmwlA2WhFc)
 
 ## 관련 문서
 
+- [[SQL-Fundamentals-NULL|SQL NULL과 3값 논리]]
 - [[MySQL-Query-Fundamentals|MySQL 조회 기본기]]
 - [[SQL-Query-Composition|SQL 쿼리 조합]]
 - [[SQL-Tuning-Terminology|SQL 튜닝 용어]]

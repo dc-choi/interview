@@ -1,7 +1,7 @@
 ---
 tags: [database, integrity, constraint, not-null, unique, check, foreign-key]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-05
 category: "Data & Storage - RDB"
 aliases: ["Data Integrity Constraints", "데이터 무결성 제약", "DB Constraints"]
 ---
@@ -20,6 +20,18 @@ aliases: ["Data Integrity Constraints", "데이터 무결성 제약", "DB Constr
 | Cross-row/business | 여러 row의 상태가 규칙을 지키는가? | transaction, lock/CAS, ledger, reconciliation |
 
 DB가 표현할 수 있는 규칙은 constraint로 두고, 여러 aggregate/외부 system을 가로지르는 정책은 application workflow와 사후 대사로 보완한다.
+
+### 관계형 모델의 제약 분류
+
+관계형 모델은 제약을 표현 위치로 셋으로 나눈다. 데이터 모델 자체가 가진 암묵적 제약(중복 tuple 금지, 한 relation 안의 attribute 이름 중복 금지), DDL로 스키마에 선언하는 명시적 제약, 스키마로 표현하지 못해 애플리케이션이 지키는 의미적 제약(업무 규칙)이다. 명시적 제약은 다섯 가지다.
+
+- domain constraint: attribute 값은 그 domain에 속해야 한다. 1~4 학년 컬럼에 100은 들어갈 수 없다. SQL에서는 타입과 `CHECK`로 표현한다.
+- key constraint: 서로 다른 tuple은 같은 key 값을 가질 수 없다. `PRIMARY KEY`와 `UNIQUE`다.
+- NOT NULL constraint: `NOT NULL`로 선언한 attribute는 NULL을 가질 수 없다.
+- entity integrity constraint: PK는 NULL을 가질 수 없다. NULL을 허용하면 여러 tuple의 PK가 NULL이 되어 tuple을 식별하지 못한다.
+- referential integrity constraint: FK 값은 참조하는 relation의 key에 존재하는 값이어야 한다. SQL에서는 PK뿐 아니라 UNIQUE key도 참조할 수 있고 NULL FK는 검사하지 않는다([[Foreign-Key-Integrity|외래 키와 참조 무결성]]).
+
+SQL 테이블은 중복 행을 허용하는 multiset이므로 중복 tuple 금지라는 암묵적 제약도 PK나 `NOT NULL`인 UNIQUE를 선언해야 생긴다. nullable 컬럼의 UNIQUE는 NULL 행끼리 검사하지 않아 완전히 같은 행이 여러 번 들어갈 수 있다([[Relational-Model-Fundamentals|관계형 모델 기본 개념]]). 제약 위반은 DBMS 오류로 돌아오므로 애플리케이션은 이를 받아 도메인 오류로 번역한다([[MySQL-Error-Handling|MySQL 오류 처리]]).
 
 ## 기본 제약
 
@@ -44,6 +56,9 @@ CHECK (valid_to IS NULL OR valid_to > valid_from)
 ```
 
 CHECK는 현재 row의 값 범위/조합에 적합하다. 다른 table 조회, 현재 시각에 따라 계속 변하는 규칙이나 복잡한 상태 machine에는 맞지 않는다. MySQL version의 CHECK enforcement와 허용 expression을 migration 전에 확인한다.
+
+- CHECK는 조건이 FALSE일 때만 위반이다. NULL 때문에 UNKNOWN이 되면 통과하므로 `CHECK (salary >= 5000)`만으로는 NULL salary를 막지 못한다. 필수 값이면 `NOT NULL`을 함께 둔다([[SQL-Fundamentals-NULL#절마다 다른 판정 규칙|절마다 다른 판정 규칙]]).
+- MySQL에서 column 정의 안의 CHECK는 그 column만 참조할 수 있다. `CHECK (start_date < end_date)`처럼 여러 column을 비교하는 제약은 table 수준에 선언한다.
 
 ## FOREIGN KEY
 
@@ -138,9 +153,11 @@ CHECK가 감당하지 못하는 유형은 위 CHECK 절에 정리했다. 각 유
 
 단일 컬럼 제약은 column 선언에 둘 수 있고 여러 컬럼 제약은 table 수준에서 전체 조합을 선언한다. 안정적인 CONSTRAINT 이름은 migration과 오류 mapping에 유용하다. Oracle은 빈 문자열을 NULL로 취급하며 nullable UNIQUE와 composite key의 세부 NULL 의미는 DBMS별로 다르므로 실제 제약으로 시험한다. NOT NULL과 DEFAULT를 같은 검증으로 해석하지 않는다.
 
+MySQL은 이름 없는 CHECK에 `<테이블>_chk_<번호>`, FK에 `<테이블>_ibfk_<번호>` 형태의 이름을 만든다. 위반 오류는 `Check constraint 'employee_chk_2' is violated.`처럼 이름만 알려 주므로 의미를 알려면 `SHOW CREATE TABLE`을 찾아봐야 한다. `chk_employee_min_salary`처럼 규칙을 드러내는 이름을 붙이면 오류 로그만으로 원인을 알 수 있고 제약을 지우거나 바꾸는 migration에서도 그 이름을 쓴다. MySQL의 CHECK 이름은 schema 안에서 고유해야 한다.
+
 ## 선택적 unique 값의 제거
 
-없어진 optional identifier를 빈 문자열로 바꾸면 빈 문자열끼리 충돌하거나 실제 값처럼 조회될 수 있다. 값 부재가 domain에서 허용된다면 NULL과 nullable UNIQUE의 의미를 사용한다. Oracle의 빈 문자열 처리와 PostgreSQL의 NULLS NOT DISTINCT처럼 제품별 의미는 별도로 확인한다.
+없어진 optional identifier를 빈 문자열로 바꾸면 빈 문자열끼리 충돌하거나 실제 값처럼 조회될 수 있다. 값 부재가 domain에서 허용된다면 NULL과 nullable UNIQUE의 의미를 사용한다. Oracle의 빈 문자열 처리와 PostgreSQL의 NULLS NOT DISTINCT처럼 제품별 의미는 별도로 확인한다. SQL Server의 UNIQUE 제약은 컬럼당 NULL을 하나만 허용하므로 여러 행이 값을 비워 두는 설계는 그대로 옮겨지지 않는다.
 
 ## 출처
 
@@ -152,10 +169,16 @@ CHECK가 감당하지 못하는 유형은 위 CHECK 절에 정리했다. 각 유
 - 강의: [무결성이 중요한 이유](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328809), [기본 제약](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328810), [FK](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328811), [CHECK](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328812), [정리](https://www.inflearn.com/courses/lecture?courseId=338212&unitId=328813)
 - [PostgreSQL 18 Documentation, ddl constraints](https://www.postgresql.org/docs/18/ddl-constraints.html)
 - [인프런, Part 1 피드백 (2)](https://www.inflearn.com/courses/lecture?courseId=337730&unitId=443353)
+- [MySQL 8.4 Error Message Reference, Server Error Message Reference](https://dev.mysql.com/doc/mysql-errors/8.4/en/server-error-reference.html)
+- [Microsoft Learn, Unique constraints and check constraints](https://learn.microsoft.com/en-us/sql/relational-databases/tables/unique-constraints-and-check-constraints)
+- [YouTube, 쉬운코드, 관계형 데이터베이스, relation, 키와 제약](https://www.youtube.com/watch?v=gjcbqZjlXjM)
+- [YouTube, 쉬운코드, SQL의 개념과 데이터베이스 정의](https://www.youtube.com/watch?v=c8WNbcxkRhY)
 
 
 ## 관련 문서
 
+- [[Relational-Model-Fundamentals|관계형 모델 기본 개념]]
+- [[SQL-Fundamentals-NULL|SQL NULL과 3값 논리]]
 - [[Foreign-Key-Integrity|외래 키와 참조 무결성]]
 - [[Primary-Key-Strategy|Primary Key 전략]]
 - [[Business-Logic-App-vs-DB|비즈니스 로직 위치]]

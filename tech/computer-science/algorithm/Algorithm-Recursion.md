@@ -79,7 +79,7 @@ base case를 원소 1개로 두면 빈 입력은 base case에 닿지 않는다. 
 
 ### 분할 정복
 
-둘 이상의 독립 subproblem으로 나누고 결과를 결합한다. merge sort가 대표적이다. subproblem이 겹치면 같은 계산이 반복될 수 있으며, 이때 [[Algorithm-DP|메모이제이션 또는 동적 프로그래밍]]을 검토한다.
+분할 정복(divide and conquer)은 세 단계로 쓴다. divide는 문제를 같은 모양의 더 작은 subproblem으로 나누고, conquer는 각 subproblem을 같은 방식으로 재귀 해결하되 충분히 작으면 직접 답하며, combine은 subproblem의 답을 합쳐 원래 답을 만든다. 보통 둘 이상의 독립 subproblem으로 나누며 merge sort가 대표적이다. merge sort는 divide가 가운데를 자르는 일뿐이고 combine인 merge에 O(n)이 들며, quick sort는 반대로 divide인 partition에 일이 몰리고 combine이 없다([[Algorithm-Sorting|정렬]]). binary search도 divide가 탐색할 절반을 고르고 combine은 고른 쪽의 답을 그대로 쓰는 분할 정복의 예로 든다. subproblem이 겹치면 같은 계산이 반복될 수 있으며, 이때 [[Algorithm-DP|메모이제이션 또는 동적 프로그래밍]]을 검토한다.
 
 ### 하노이 탑
 
@@ -117,7 +117,9 @@ side effect를 쓰는 재귀에서는 `push -> call -> pop`, `visited=true -> ca
 - 인프런, 큰돌 강사, [2-E와 분할정복(Divide & Conquer)](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100329), [8-H](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=101061)
 
 - 인프런, 감자 강사, [재귀](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116184), [재귀적으로 생각하기](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116362), [재귀와 하노이 탑](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116528)
+- YouTube, 쉬운코드, [divide and conquer와 merge sort](https://www.youtube.com/watch?v=aj3vw_KDmxc)
 - [바킹독의 실전 알고리즘 0x0B강, 재귀 — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=8vDDJm5EewM)
 - [NIST DADS, recursion](https://xlinux.nist.gov/dads/HTML/recursion.html)
+- [NIST DADS, divide and conquer](https://xlinux.nist.gov/dads/HTML/divideAndConquer.html)
 - [Princeton Algorithms, Programming Model](https://algs4.cs.princeton.edu/11model/)
 - [MDN, Array.prototype.slice()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)

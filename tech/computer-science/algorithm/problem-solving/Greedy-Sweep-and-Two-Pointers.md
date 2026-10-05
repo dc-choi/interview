@@ -74,7 +74,7 @@ deadline과 reward 문제는 event를 deadline 순으로 훑으며 지금까지 
 
 ### 정렬된 배열의 두 수 합
 
-합이 target보다 작으면 left를 오른쪽으로, 크면 right를 왼쪽으로 옮긴다. 정렬로 인해 그 반대쪽 후보들을 한꺼번에 버려도 안전하다. 원래 index가 필요하면 값과 index를 함께 정렬한다. 이중 loop로 모든 쌍을 보면 n = 10만에서 약 50억 쌍이지만, 정렬 O(n log n) 뒤 pointer 이동은 O(n)이다.
+합이 target보다 작으면 left를 오른쪽으로, 크면 right를 왼쪽으로 옮긴다. 정렬로 인해 그 반대쪽 후보들을 한꺼번에 버려도 안전하다. 원래 index가 필요하면 값과 index를 함께 정렬한다. 이중 loop로 모든 쌍을 보면 n = 10만에서 약 50억 쌍이지만, 정렬 O(n log n) 뒤 pointer 이동은 O(n)이다. 정렬되지 않은 배열에서 그런 쌍이 있는지만 물으면 정렬 없이 hash set으로 한 번 훑는 방법도 있다. 평균 O(n) 시간에 O(n) 공간을 쓰며, 자기 자신을 짝으로 세지 않도록 조회한 뒤에 넣는다([[Algorithm-Practice#통과한 풀이를 더 줄이기|통과한 풀이를 더 줄이기]]).
 
 합이 target과 같을 때도 pointer를 옮겨야 한다. 개수만 세고 아무것도 움직이지 않으면 같은 쌍을 계속 보는 무한 loop가 된다. 값이 모두 다르면 a[l]과 짝이 되는 값은 a[r] 하나뿐이고 a[r]도 마찬가지라, 한쪽만 옮기든 둘 다 옮기든 다른 쌍을 놓치지 않는다. 중복 값을 허용하면 같은 값 묶음의 크기 cl, cr를 곱해 더하고 두 묶음을 모두 건너뛴다. a[l] == a[r]이면 사이의 r - l + 1개가 모두 같은 값이므로 그중 두 개를 고르는 C(r - l + 1, 2)를 더하고 끝낸다. 한 분기에서 개수 증가와 pointer 이동 두 문장을 실행하면 중괄호로 묶는다. 중괄호 없이 이어 쓰면 두 번째 문장은 조건과 무관하게 실행된다.
 
@@ -129,6 +129,7 @@ for (int st = 0; st < n; st++) {
 - 인프런, 큰돌 강사, [5-E](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100400), [5-F](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100401), [5-G](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100402), [5-H](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100403), [5-I](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100404)
 - 인프런, 큰돌 강사, [5-J](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100405), [5-Q](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100412), [5-Z](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100421), [6-F 그리디를 이용한 풀이](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=152628), [6-L](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100958)
 - 인프런, 큰돌 강사, [7-Y 최대값풀이](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100988), [8-T](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=101073)
+- YouTube, 쉬운코드, [TwoSum 문제로 보는 코드 성능 개선 과정](https://www.youtube.com/watch?v=cxhbgAbAiXI)
 
 - [Princeton Algorithms, minimum spanning trees](https://algs4.cs.princeton.edu/lectures/keynote/43MinimumSpanningTrees-2x2.pdf)
 - [Princeton Algorithms, geometric search](https://algs4.cs.princeton.edu/lectures/keynote/99GeometricSearch-2x2.pdf)

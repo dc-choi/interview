@@ -1,7 +1,7 @@
 ---
 tags: [java, collections, hash, hashcode, equals, hashset]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Hashing", "Java 해시와 HashSet"]
 ---
@@ -63,7 +63,7 @@ record는 구성 요소를 바탕으로 `equals`와 `hashCode`를 제공하므�
 
 ### 한쪽만 구현했을 때의 실패
 
-해시 자료구조는 hashCode로 버킷을 찾고 버킷 안의 후보를 equals로 최종 확인한다. 버킷에 원소가 하나뿐이어도 equals는 생략할 수 없다. hi만 저장된 상태에서 같은 0번 버킷으로 떨어지는 JPA로 검색하면 equals 없이는 hi를 찾았다고 오판한다.
+해시 자료구조는 hashCode로 버킷을 찾고 버킷 안의 후보를 equals로 최종 확인한다. 버킷에 원소가 하나뿐이어도 equals는 생략할 수 없다. hi만 저장된 상태에서 같은 0번 버킷으로 떨어지는 JPA로 검색하면 equals 없이는 hi를 찾았다고 오판한다. OpenJDK 21 `HashMap`은 이 확인을 두 단계로 한다. node에 저장한 hash가 같을 때만 참조 비교(`==`)와 equals를 부르므로, 앞 표의 hi와 JPA처럼 버킷만 같고 hash가 다른 후보는 equals 없이 걸러지고 `"Aa"`와 `"BB"`처럼 hash까지 같을 때 equals가 최종 판정한다.
 
 JDK 21.0.3 `HashSet`에 id가 같은 두 instance를 넣고 같은 id의 새 instance로 검색한 결과다.
 
@@ -71,7 +71,7 @@ JDK 21.0.3 `HashSet`에 id가 같은 두 instance를 넣고 같은 id의 새 ins
 |---|---|---|
 | 둘 다 미구현 | instance마다 기본 hashCode가 달라 대개 다른 버킷에 중복 저장(size 2) | 실패 |
 | hashCode만 구현 | 같은 버킷에 가지만 기본 equals가 참조 비교라 중복 저장(size 2) | 버킷은 찾지만 equals가 false라 실패 |
-| equals만 구현 | 버킷이 대개 달라 equals로 비교할 기회도 없이 중복 저장(size 2) | 우연히 같은 버킷이 아니면 실패 |
+| equals만 구현 | 기본 hashCode가 instance마다 대개 달라, 같은 버킷에 가더라도 저장된 hash 비교에서 갈려 equals까지 가지 못하고 중복 저장(size 2) | 두 기본 hashCode가 우연히 같지 않으면 실패 |
 | 둘 다 구현 | 같은 버킷에서 equals가 true라 중복 거부(size 1) | 성공 |
 
 - 논리적 동등 기준이 필요하면 두 메서드를 같은 필드로 함께 구현한다. 넓이와 높이가 같은 사각형처럼 값으로 같다고 볼 객체도 재정의 전에는 `HashSet`에 중복 저장된다. 해시 자료구조에 넣지 않는 타입이라면 둘 다 재정의하지 않아도 되지만, equals를 재정의했다면 Object 계약대로 hashCode도 함께 재정의한다([[Java-Backend-Fundamentals-Object-Concurrency#잘못 구현했을 때|Object 계약을 잘못 구현했을 때]]).
@@ -150,6 +150,10 @@ Java SE 26 API는 `HashSet`이 `HashMap`을 배경으로 사용하고, 해시 �
 - [자바가 제공하는 Set4 - 최적화](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216003)
 - [문제와 풀이2 (Set 섹션)](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216005)
 - [정리 (Set 섹션)](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216006)
+
+## 쉬운코드 YouTube 강의
+
+- [BJ.25 객체를 해시셋에 넣거나 해시맵의 key로 쓰면](https://www.youtube.com/watch?v=Dmo3sG-ZFTw)
 
 ## Java SE 26 근거
 

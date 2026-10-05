@@ -1,7 +1,7 @@
 ---
 tags: [java, class, object, reference, array, "null", initialization]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java References and Initialization", "Java 참조와 초기화"]
 ---
@@ -19,6 +19,7 @@ Java 프로그램은 primitive value와 reference value를 변수에 저장한�
 - class declaration은 field, method, constructor와 타입 관계를 정의한다.
 - object는 class instance 또는 array처럼 runtime에 동적으로 생성된 실체다.
 - instance는 특정 class와의 관계를 강조하는 object 표현이다. 객체와 인스턴스가 서로 다른 메모리 종류를 뜻하지 않는다.
+- class가 선언한 field는 object가 가질 속성(attribute)이고, 각 object의 field에 실제로 든 값이 그 object의 상태(state)다. 같은 `name` field를 선언해도 object마다 다른 이름을 상태로 가질 수 있다. class는 속성과 행동을 정의한 사용자 정의 타입이고, class로 object를 만드는 일을 instantiate라고 부른다.
 - `new Student()`는 object를 생성하고 constructor를 실행한 뒤 그 object를 가리키는 reference value를 결과로 낸다.
 - dot operator는 reference를 통해 선택된 member에 접근한다. reference가 `null`이면 instance member 접근 중 `NullPointerException`이 발생할 수 있다.
 
@@ -46,6 +47,17 @@ Student b = a;
 
 `b = a`는 object를 복제하지 않고 `a`에 든 reference value를 복사한다. 두 변수가 같은 object를 가리킬 수 있으므로 `b.name` 변경이 `a.name`을 통해서도 보인다.
 
+반대로 참조 변수에 다른 값을 대입하면 가리키던 object가 바뀌는 것이 아니라 변수가 다른 object를 가리키게 된다.
+
+~~~java
+String a = "messi";
+String b = a;
+a = "ronaldo";
+System.out.println(b); // messi
+~~~
+
+세 번째 줄은 `a`에 든 reference value만 바꾸고 `b`는 처음 object를 계속 가리킨다. object 상태 변경(`b.name = ...`)과 변수 재대입(`a = ...`)을 구분해야 공유로 생기는 버그를 추적할 수 있다.
+
 method에 object를 넘겨도 reference value의 복사본이 전달된다.
 
 ~~~java
@@ -56,6 +68,10 @@ static void rename(Student target) {
 ~~~
 
 첫 대입은 caller와 공유하는 object의 상태를 바꾼다. 두 번째 대입은 local parameter만 다른 reference로 바꾸며 caller 변수 자체를 재대입하지 않는다. Java를 pass-by-reference라고 부르면 이 차이가 흐려진다.
+
+method를 호출할 때마다 callee의 frame이 새로 생기고 argument 값은 그 frame의 parameter로 복사된다. instance method와 constructor에는 receiver reference도 숨은 첫 local variable로 전달되며 source에서는 `this`로 보인다(JVMS 2.6.1). 그래서 callee가 parameter나 `this`로 바꾼 object 상태는 frame이 사라진 뒤에도 caller가 같은 object를 통해 본다.
+
+Python은 변수에 타입을 선언하지 않고 이름을 어떤 object에든 다시 바인딩한다. 정수까지 모든 값이 object라 이름은 항상 object를 참조하고, 인자 전달도 대입처럼 참조를 넘길 뿐 call by reference가 아니다. Java 변수는 선언한 compile-time type과 호환되는 값만 다시 담을 수 있고 primitive 변수에는 object가 아닌 값이 직접 들어간다. primitive와 참조 타입의 비용 차이는 [[Java-Standard-Library-Wrapper-Class-System-and-Random|래퍼 클래스]]에서 다룬다.
 
 ## 객체 배열
 
@@ -117,7 +133,9 @@ JDK 14에 들어온 JEP 358(Helpful NullPointerExceptions)은 NPE 메시지에 �
 
 - class, object와 instance의 관계
 - reference 대입과 object 복제의 차이
-- Java가 pass-by-value인 이유
+- 참조 변수 재대입과 object 상태 변경의 차이
+- Java가 pass-by-value인 이유와 `this`가 frame에 전달되는 방식
+- 속성과 상태의 구분, Java와 Python 변수 모델의 차이
 - `Student[]` 생성 직후 들어 있는 값
 - local variable과 field 초기화 규칙의 차이
 - unreachable과 즉시 GC의 차이
@@ -132,6 +150,9 @@ JDK 14에 들어온 JEP 358(Helpful NullPointerExceptions)은 NPE 메시지에 �
 - [OpenJDK JEP 358, Helpful NullPointerExceptions](https://openjdk.org/jeps/358)
 - [OpenJDK JDK-8233014, Enable ShowCodeDetailsInExceptionMessages by default](https://bugs.openjdk.org/browse/JDK-8233014)
 - [Oracle, JDK 26 javac Command](https://docs.oracle.com/en/java/javase/26/docs/specs/man/javac.html)
+- [Java Virtual Machine Specification 26, Frames](https://docs.oracle.com/javase/specs/jvms/se26/html/jvms-2.html#jvms-2.6)
+- [Python 3 Language Reference, Objects, values and types](https://docs.python.org/3/reference/datamodel.html#objects-values-and-types)
+- [Python 3 Programming FAQ, Call by reference](https://docs.python.org/3/faq/programming.html#how-do-i-write-a-function-with-output-parameters-call-by-reference)
 - 김영한 강사, [프로젝트 환경 구성](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194643)
 - 김영한 강사, [클래스가 필요한 이유](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194644)
 - 김영한 강사, [클래스 도입](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194645)
@@ -150,6 +171,10 @@ JDK 14에 들어온 JEP 358(Helpful NullPointerExceptions)은 NPE 메시지에 �
 - 김영한 강사, [NullPointerException](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194658)
 - 김영한 강사, [문제와 풀이](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194659)
 - 김영한 강사, [정리](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194660)
+- 쉬운코드, [객체와 클래스](https://www.youtube.com/watch?v=1pZjXnev45A)
+- 쉬운코드, [변수와 값](https://www.youtube.com/watch?v=jOI2GG4hVz4)
+- 쉬운코드, [변수와 객체와 메모리의 관계](https://www.youtube.com/watch?v=GIsr_r8XztQ)
+- 쉬운코드, [참조형 변수와 참조형 타입 퀴즈](https://www.youtube.com/watch?v=s-OEoclGTWw)
 
 ## 관련 문서
 

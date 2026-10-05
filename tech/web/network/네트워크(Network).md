@@ -11,14 +11,14 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 
 ## 목차
 - [x] [[HTTPS-TLS|HTTPS / TLS Handshake]]
-- [x] [[OSI-7-Layer|OSI 7계층 (osi-layers/ 서브폴더) — 계층별 상세 (L1/L2 MAC과 프레임, L2 스위칭, L3 IP와 라우팅, ARP, ICMP, L4 TCP/UDP와 소켓, L5/6/7), TCP/IP 4계층 대응과 역사, Internet vs Ethernet]]
-- [x] [[Network-Encapsulation|캡슐화와 데이터 단위 (소켓 스트림, 세그먼트, 패킷, 프레임, MTU/MSS, 단편화, DPI)]]
+- [x] [[OSI-7-Layer|OSI 7계층 (osi-layers/ 서브폴더) — 계층별 상세 (L1/L2 MAC과 프레임, L2 스위칭, L3 IP와 라우팅, ARP, ICMP, L4 TCP/UDP, 소켓 식별과 역다중화, 메시지 경계와 프레이밍, L5/6/7), TCP/IP 4계층 대응과 역사, Internet vs Ethernet]]
+- [x] [[Network-Encapsulation|캡슐화와 데이터 단위 (프로토콜과 계층, 라우터 홉의 재캡슐화, 소켓 스트림, 세그먼트, 패킷, 프레임, MTU/MSS, 단편화, DPI)]]
 - [x] [[Network-Layer|IP 주소의 범위 (공인, 사설, 루프백), CIDR와 라우팅]]
 - [x] [[IPv4-Subnetting|서브넷팅과 주소 관리 (비트 계산, 게이트웨이, /31 예외, VLAN과 브로드캐스트)]]
 - [x] [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기 (필드별 의미, TTL과 traceroute, 단편화 필드, 체크섬, IPv6 대비, Wireshark 필터)]]
 - [x] [[ICMP|ICMP (오류 보고와 진단 메시지, type과 code, ping 해석, ICMPv6와 Neighbor Discovery, 방화벽 필터링 기준)]]
 - [x] [[Unicast-Broadcast-Multicast|유니캐스트, 브로드캐스트, 멀티캐스트 (수신 대상 범위, limited/directed broadcast, 브로드캐스트 비용, IGMP와 MAC 매핑, IPv6의 애니캐스트)]]
-- [x] [[LAN-vs-WAN|LAN과 WAN (브로드캐스트 범위와 MAC vs IP 라우팅으로 구분, 물리와 논리 네트워크)]]
+- [x] [[LAN-vs-WAN|LAN과 WAN (브로드캐스트 범위와 MAC vs IP 라우팅으로 구분, 물리와 논리 네트워크, 노드, 호스트, 라우터, 링크 용어)]]
 - [x] [[Switch-Hierarchy-and-Uplink|스위치 계층과 업링크 (토폴로지 유형과 장애 범위, 물리와 논리 토폴로지, 링 보호 절체, 엔드포인트, 액세스/디스트리뷰션/코어, collapsed core, 링크 업/다운, 포트 용량 설계)]]
 - [x] [[TCP|TCP (tcp/ 서브폴더) — 헤더 구조, 핸드셰이크, 흐름/오류 제어, SACK, 혼잡 제어]]
 - [x] [[Routing-Protocols|정적 라우팅과 RIP, OSPF, BGP (RIP 타이머와 수렴, LSA와 SPF 비용, AS 분리와 IGP/BGP 결합)]]

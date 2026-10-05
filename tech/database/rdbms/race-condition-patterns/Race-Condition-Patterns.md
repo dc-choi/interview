@@ -11,10 +11,10 @@ aliases: ["Race Condition Patterns", "경쟁 조건 패턴"]
 
 ## 하위 문서
 
-- [[Race-Condition-Patterns-Process|층위 1: 프로세스 내부 (Node.js 이벤트 루프 race, async-mutex 패턴)]]
+- [[Race-Condition-Patterns-Process|층위 1: 프로세스 내부 (Node.js 이벤트 루프 race, 멀티스레드 런타임과의 차이, async-mutex 패턴)]]
 - [[Race-Condition-Patterns-DB-Distributed|층위 2와 3: 단일 DB 다중 서버, 분산 환경 (DB 락, 분산 락, Saga, 카카오 안티패턴 사례)]]
-- [[Race-Condition-Patterns-Toolbox|도구 선택 플로차트, 흔한 실수, 면접 체크포인트]]
-- [[Race-Condition-Patterns-OS-Sync|OS 수준 동기화 기초 (Mutex, Semaphore, Spinlock)]]
+- [[Race-Condition-Patterns-Toolbox|도구 선택 플로차트, 흔한 실수, 면접 체크포인트, 경쟁 재현 실험]]
+- [[Race-Condition-Patterns-OS-Sync|OS 수준 동기화 기초 (Mutex, Semaphore, Spinlock, 뮤텍스와 binary semaphore 차이)]]
 
 ## 3가지 층위
 

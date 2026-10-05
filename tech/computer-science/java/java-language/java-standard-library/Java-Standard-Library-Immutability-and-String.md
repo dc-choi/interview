@@ -1,7 +1,7 @@
 ---
 tags: [java, immutability, string, stringbuilder, value-object, method-chaining]
 status: done
-verified_at: 2026-10-01
+verified_at: 2026-10-05
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Immutability and String", "Java 불변 객체와 String"]
 ---
@@ -37,10 +37,11 @@ public final class Money {
 }
 ```
 
-- 클래스의 상속을 막거나 하위 타입이 불변성을 깨지 못하게 설계한다.
+- 클래스의 상속을 막거나 하위 타입이 불변성을 깨지 못하게 설계한다. 상속을 열어 두면 하위 class가 getter를 override해 자기 가변 field를 반환할 수 있고, 불변 타입으로 선언된 참조를 통해서도 값이 바뀌는 것처럼 보인다.
 - 필드를 `private final`로 두고 생성 시 유효성을 검사한다.
 - 상태를 바꾸는 setter 대신 새 객체를 반환하는 연산을 제공한다.
-- 내부에 배열, 컬렉션, 날짜처럼 가변 객체가 있으면 입력과 출력 경계에서 방어적 복사를 한다.
+- 내부에 배열, 컬렉션, 날짜처럼 가변 객체가 있으면 입력과 출력 경계에서 방어적 복사를 한다. 생성자가 받은 참조를 그대로 저장하면 호출자가 원본을 바꿀 때 내부 상태도 바뀌고, getter가 내부 참조를 그대로 반환하면 받은 쪽이 상태를 바꿀 수 있다.
+- 컬렉션 field는 `List.copyOf(source)`처럼 수정 불가 사본으로 받으면 getter가 그 list를 그대로 반환해도 된다. 단, `List.copyOf`는 null 원소가 있으면 `NullPointerException`을 던진다. `List.copyOf`와 `new ArrayList<>(source)`는 원소 참조를 공유하는 얕은 복사이므로 원소가 가변이면 원소도 새 object로 복사한다([[Defensive-Copy-Depth-Collections|복사 깊이]]).
 - 생성 중인 `this`가 외부로 탈출하지 않게 한다.
 
 `final`은 필드 재대입만 막는다. `final List<String>`의 원소는 여전히 바뀔 수 있으므로 `final`만으로 깊은 불변성이 생기지 않는다. record도 구성 요소 참조를 재대입할 수 없게 만들 뿐, 참조 대상까지 자동으로 불변으로 만들지는 않는다.
@@ -52,6 +53,17 @@ Money total = new Money(10_000);
 total.add(5_000);          // total은 그대로다.
 total = total.add(5_000);  // 새 값을 사용한다.
 ```
+
+## 불변 객체가 주는 이점
+
+- method에 넘긴 뒤에도 상태가 그대로라 호출 경로를 따라가며 변경 여부를 확인하거나 저장소에서 다시 읽을 필요가 없다. 실수로 상태를 바꾸려는 코드도 바꿀 수단이 없다.
+- `HashSet` 원소, `HashMap` key와 cache key로 안전하다. 가변 object를 넣은 뒤 `hashCode`와 `equals`에 쓰는 field를 바꾸면 그 object로도, 원래 값으로 새로 만든 object로도 찾지 못할 수 있다([[Java-Generics-and-Collections-Hashing|해시 컬렉션의 가변 키]]). 값을 바꾸는 연산이 자기 field를 고치는 대신 새 object를 반환하면 이미 넣은 key는 그대로 유지된다.
+- 생성 중 `this`가 탈출하지 않았다면 다른 thread는 동기화 없이도 `final` field의 초기화된 값을 본다(JLS 17.5). 이후 상태 변경이 없으므로 공유해도 경쟁 조건이 생기지 않는다.
+- 불변 객체를 field로 쓰면 방어적 복사 없이 참조를 공유해도 된다.
+
+외부에서 관찰되는 상태만 불변이고 지연 계산한 hash 같은 내부 cache는 가변인 객체도 불변이라고 부르곤 한다. 이때 thread safety는 자동으로 따라오지 않는다. OpenJDK의 `String.hashCode`는 계산이 불변 상태에서 나오는 멱등 연산이고 instance마다 두 cache field(`hash`, `hashIsZero`) 중 하나에만 쓰도록 제한해, 동기화 없는 경쟁이 결과를 해치지 않게 설계했다고 주석에 밝힌다. 이런 조건을 갖추지 못한 cache는 `volatile`이나 lock이 필요하고, `long`과 `double`의 non-volatile 쓰기는 원자성도 보장되지 않는다(JLS 17.7).
+
+불변의 뜻은 언어마다 다르다. Python은 가변 list를 담은 tuple의 list 내용이 바뀌어도 tuple이 담은 object 묶음은 바뀌지 않으므로 tuple을 불변으로 본다. 참조 대상까지 바뀌지 않는 깊은 불변성보다 느슨한 정의다.
 
 ## String 생성과 비교
 
@@ -116,6 +128,8 @@ String label = new StringBuilder()
 - 참조 공유가 가변 객체에서 부작용으로 이어지는 과정
 - `final` 필드와 깊은 불변성의 차이
 - 불변 연산의 반환값을 받아야 하는 이유
+- 상태 변경 method 제거, `private final` field, 상속 차단, 가변 참조의 방어적 복사가 각각 막는 우회 경로
+- 불변 객체가 hash key와 thread 공유에 안전한 이유, 내부 cache가 가변일 때의 예외
 - String 비교에 `equals`를 써야 하는 이유
 - `length()`와 사용자가 보는 문자 수의 차이
 - `StringBuilder`를 선택할 조건과 thread-safe하지 않다는 의미
@@ -137,6 +151,11 @@ String label = new StringBuilder()
 - [StringBuffer, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/StringBuffer.html)
 - [JLS 3.10.5, String Literals](https://docs.oracle.com/javase/specs/jls/se26/html/jls-3.html#jls-3.10.5)
 - [JLS 15.18.1, String Concatenation Operator](https://docs.oracle.com/javase/specs/jls/se26/html/jls-15.html#jls-15.18.1)
+- [JLS 17.5, final Field Semantics](https://docs.oracle.com/javase/specs/jls/se26/html/jls-17.html#jls-17.5)
+- [JLS 17.7, Non-Atomic Treatment of double and long](https://docs.oracle.com/javase/specs/jls/se26/html/jls-17.html#jls-17.7)
+- [List, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/List.html)
+- [Objects, values and types, Python 3 Language Reference](https://docs.python.org/3/reference/datamodel.html#objects-values-and-types)
+- [String.java hashCode — OpenJDK jdk-26-ga](https://github.com/openjdk/jdk/blob/jdk-26-ga/src/java.base/share/classes/java/lang/String.java)
 - 김영한 강사, [기본형과 참조형의 공유](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212200)
 - 김영한 강사, [공유 참조와 사이드 이펙트](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212201)
 - 김영한 강사, [불변 객체 - 도입](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212202)
@@ -155,6 +174,7 @@ String label = new StringBuilder()
 - 김영한 강사, [String 문제와 풀이1](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212216)
 - 김영한 강사, [String 문제와 풀이2](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212217)
 - 김영한 강사, [String 정리](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212218)
+- 쉬운코드, [불변 객체의 개념, 장점, 구현 방법](https://www.youtube.com/watch?v=EOGOJdBy2Rg)
 
 ## 관련 문서
 

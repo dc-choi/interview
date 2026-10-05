@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, replication, binlog, consistency]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-05
 category: "Data & Storage - RDB"
 aliases: ["Replication", "MySQL Replication"]
 ---
@@ -96,6 +96,12 @@ MySQL 8.4의 binlog_format 기본값은 ROW다. statement 기록은 비결정성
 
 Replica가 필요한 transaction의 binlog가 source에 남아 있는지 GTID set과 purge 상태를 먼저 확인한다. 남아 있으면 catch-up의 적용 시간과 snapshot 복사/복원 시간을 비교한다. 필요한 로그가 없어 정상 재생을 못 하면 일관된 snapshot과 정확한 GTID/position으로 재시드한다. 기다린 날짜만으로 선택하지 말고 적체 bytes, apply 처리량과 RTO를 기준으로 정한다.
 
+## 역할 이름과 복제가 나누는 부하
+
+쓰기를 받는 서버는 primary, master, leader, source로, 사본을 유지하는 서버는 secondary, slave, replica, follower로 부른다. MySQL은 source와 replica로 용어를 바꿨고 8.4에서 `CHANGE MASTER TO`, `START SLAVE`, `SHOW SLAVE STATUS` 같은 옛 문법을 제거했다. 각각 `CHANGE REPLICATION SOURCE TO`, `START REPLICA`, `SHOW REPLICA STATUS`를 쓰므로 8.4로 올리기 전에 운영 스크립트와 모니터링 쿼리의 옛 문법을 바꾼다.
+
+복제는 읽기를 나누고 장애 때 승격할 후보를 남기지만 쓰기를 나누지는 않는다. 모든 replica가 source의 쓰기를 그대로 다시 적용하므로 쓰기 처리량의 한계는 source 한 대에 남는다. 쓰기 확장이 목적이면 [[Sharding|sharding]]을 검토한다.
+
 ## 복제 구조의 경계
 
 이 문서의 MySQL source-replica는 leader-follower 구조다. Leaderless 저장소는 quorum, 충돌 해소와 read repair 같은 별도 일관성 계약을 가진다. 읽기/쓰기 node가 여러 개라는 사실만으로 자동 failover나 강한 일관성을 얻지 않는다. shard별 replica가 있어도 shard routing과 leader fencing은 별도 책임이다.
@@ -113,6 +119,9 @@ Replica가 필요한 transaction의 binlog가 source에 남아 있는지 GTID se
 - [인프런, DB 핵심 개념 (확장성/일관성/가용성)](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278149)
 - [인프런, MySQL Transaction Deep Dive [ LifeCycle, Autocommit, Statement vs Row based ]](https://www.inflearn.com/courses/lecture?courseId=339423&unitId=373900)
 - [인프런, MySql 파헤치기 - 어려운 부분만 부분 쉽게 설명해 줄게요](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178850)
+- [MySQL 8.4 Reference Manual, What Is New in MySQL 8.4 since MySQL 8.0](https://dev.mysql.com/doc/refman/8.4/en/mysql-nutshell.html)
+- [YouTube, 쉬운코드, DB 파티셔닝, 샤딩, 레플리케이션](https://www.youtube.com/watch?v=P7LqaEO-nGU)
+- [YouTube, 쉬운코드, NoSQL과 RDB의 차이, MongoDB와 Redis 예제](https://www.youtube.com/watch?v=sqVByJ5tbNA)
 
 
 ## 관련 문서

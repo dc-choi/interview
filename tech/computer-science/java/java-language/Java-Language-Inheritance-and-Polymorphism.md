@@ -73,15 +73,7 @@ vehicle.move();
 
 ## downcast와 instanceof
 
-downcast는 reference의 static type을 좁히며 runtime check가 필요하다. 실제 object가 target type의 instance가 아니면 `ClassCastException`이 발생한다.
-
-~~~java
-if (vehicle instanceof ElectricCar electricCar) {
-    electricCar.move();
-}
-~~~
-
-pattern matching `instanceof`는 test가 성공한 범위에서 cast된 variable을 제공한다. `null instanceof SomeType`은 `false`다. type test가 필요한 boundary도 있지만 구현별 behavior를 호출하려는 목적이라면 virtual method로 옮길 수 있는지 먼저 본다.
+downcast는 reference의 static type을 좁히며 runtime check가 필요하다. 실제 object가 target type의 instance가 아니면 `ClassCastException`이 발생하므로 type test 뒤에 cast한다. test와 cast를 묶는 pattern matching `instanceof`, pattern variable의 flow scoping과 field shadowing 함정은 [[Java-Language-Inheritance-and-Polymorphism-Pattern-Matching|downcast와 instanceof 패턴 매칭]]에서 다룬다.
 
 ## abstract class
 
@@ -119,7 +111,6 @@ interface에는 instance field와 constructor가 없고 직접 instance화할 �
 - override 시 checked exception 선언 규칙과 그 이유
 - 부모에 no-arg constructor가 없을 때 자식 constructor가 해야 할 일
 - upcast와 downcast의 runtime check 차이
-- pattern matching `instanceof`의 scope
 - abstract method가 override 누락을 compile error로 바꾸는 방식
 - abstract class와 현대 interface의 상태와 구현 차이
 - interface default method 충돌 해결 필요성
@@ -131,7 +122,6 @@ interface에는 instance field와 constructor가 없고 직접 instance화할 �
 - [Java SE 26 Language Specification, Classes](https://docs.oracle.com/javase/specs/jls/se26/html/jls-8.html)
 - [Java SE 26 Language Specification, Interfaces](https://docs.oracle.com/javase/specs/jls/se26/html/jls-9.html)
 - [Java SE 26 Language Specification, Expressions](https://docs.oracle.com/javase/specs/jls/se26/html/jls-15.html)
-- [OpenJDK JEP 394, Pattern Matching for instanceof](https://openjdk.org/jeps/394)
 - [Oracle Java Tutorials, Multiple Inheritance of State, Implementation, and Type](https://docs.oracle.com/javase/tutorial/java/IandI/multipleinheritance.html)
 - 김영한 강사, [상속 - 시작](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194704)
 - 김영한 강사, [상속 관계](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194705)
@@ -166,6 +156,7 @@ interface에는 instance field와 constructor가 없고 직접 instance화할 �
 ## 관련 문서
 
 - [[Java-Language-Object-Model|Java 객체 모델]]
+- [[Java-Language-Inheritance-and-Polymorphism-Pattern-Matching|Java downcast와 instanceof 패턴 매칭]]
 - [[Java-Language-OOP-Design-and-OCP|Java 객체 협력과 OCP]]
 - [[OOP|객체 지향 프로그래밍]]
 - [[SOLID-In-Practice|SOLID 원칙 실전 적용]]

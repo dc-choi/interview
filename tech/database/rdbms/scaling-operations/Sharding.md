@@ -80,6 +80,24 @@ Citus metadata의 shard와 placement 정보를 query의 distribution filter와 �
 
 수직 분할은 column을 나눠 좁은 조회와 접근 권한을 분리하며 다시 합칠 join 비용이 든다. 수평 분할은 row를 key로 나누고 한 서버의 partition과 여러 서버의 shard를 구분한다. 기능 분할은 업무 영역별 table/DB를 분리해 소유권과 장애 경계를 바꾼다. 어느 분할도 capacity와 가용성을 무제한으로 보장하지 않는다. 단일 DB의 query/index, 수명주기와 자원 조정 뒤 해결되지 않는 분산 요구를 확인한다.
 
+| 구분 | 나누거나 복제하는 단위 | 위치 | 주된 목적 | 대가 |
+|---|---|---|---|---|
+| 수직 partitioning | column 묶음, schema가 바뀜 | 보통 같은 DB | 좁은 행, 큰 column 격리, 접근 권한 분리 | 전체 행이 필요하면 join |
+| 수평 partitioning | row, schema 유지 | 같은 DB server | pruning, 수명주기 관리, 조각별 인덱스 축소 | server 자원은 공유, partition key 없는 조회는 모든 조각 탐색 |
+| sharding | row, schema 유지 | 서로 다른 DB server | 저장 용량과 읽기, 쓰기 부하의 수평 분산 | cross-shard 조회와 transaction, 재배치 |
+| replication | 전체 데이터의 사본 | 서로 다른 DB server | failover로 가용성 확보, 읽기 분산 | 복제 지연, 쓰기는 분산되지 않음 |
+
+수평 partitioning의 partition key를 sharding에서는 shard key, 나뉜 조각을 shard라고 부른다. 키를 고르는 기준은 같다. 가장 자주 쓰는 조회가 키 조건을 포함해야 조각 하나만 읽고, 키 값이 고르게 퍼져야 특정 조각만 커지지 않는다. 사용자 ID로 나눈 구독 테이블은 한 사용자의 구독 목록을 한 조각에서 읽지만, 채널 ID로 구독자를 찾는 조회는 모든 조각을 읽는다. Hash로 나눈 뒤 조각 수를 바꾸면 기존 행 일부를 새 조각으로 옮겨야 하므로 처음 조각 수와 재배치 방식([[#키 → 서버 매핑 방식|키 매핑]])을 함께 설계한다. MySQL 내장 partitioning의 방식과 pruning은 [[MySQL-Partitioning|MySQL Partitioning]]에, replication의 지연과 failover는 [[Replication]]에 있다.
+
+### 수직 분할이 I/O를 줄이는 조건
+
+행 저장 DB는 필요한 column만 골라 디스크에서 읽지 않고 행이 담긴 page 단위로 읽는다. 목록 화면에 필요 없는 본문 column이 행 안에 있으면 page당 행 수가 줄어, 같은 목록을 읽는 데 더 많은 page와 buffer pool을 쓴다. 다만 큰 값은 엔진이 이미 행 밖으로 옮기기도 한다.
+
+- MySQL 8.4 InnoDB의 기본 `DYNAMIC` 행 형식은 행이 page에 맞지 않으면 가장 긴 가변 길이 column부터 overflow page로 옮기고 clustered index 레코드에는 20바이트 포인터만 남긴다. 40바이트 이하인 `TEXT`, `BLOB`은 행 안에 둔다.
+- PostgreSQL 18은 행이 `TOAST_TUPLE_THRESHOLD`(보통 2kB)를 넘으면 값을 압축하거나 TOAST 테이블로 옮기고, 옮긴 값은 선택된 경우에만 결과를 클라이언트로 보낼 때 꺼낸다.
+
+그래서 행 밖으로 빠지지 않고 page 안에 남는 중간 크기 column이 목록 스캔의 page 수를 늘린다. 분리하기 전에 `SELECT *`를 필요한 column 목록으로 바꾸고, 분리한 뒤에는 행 크기, 읽은 page 수와 buffer pool 적중률로 효과를 확인한다. 자주 쓰는 column과 드물게 쓰는 column을 나누거나, 민감 정보를 별도 테이블로 떼어 접근 권한과 보존 정책을 따로 관리하는 것도 수직 분할의 목적이다. 정규화도 함수 종속성에 따라 column을 나누는 수직 분해지만 목적은 성능이 아니라 이상 현상 제거다([[Normalization|정규화]]).
+
 ## 애플리케이션 routing의 수명
 
 Shard key와 mapping은 쓰기와 읽기, retry에서 같은 계약을 사용한다. ThreadLocal로 routing context를 넣으면 finally에서 제거하고 thread pool, async 전환과 transaction이 connection을 획득하는 시점까지 확인한다. shard별 connection을 얻은 뒤 key를 바꿔도 진행 중 transaction이 다른 shard로 옮겨지지 않는다. 한 MariaDB 안의 두 schema 실습은 물리 장애와 독립 확장을 검증하지 않는다.
@@ -104,11 +122,15 @@ User/tenant key는 관련 데이터를 함께 배치할 수 있지만 특정 대
 - [인프런, [실습 11] 2개의 MariaDB를 이용한 Sharding 처리 ①](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290747)
 - [인프런, [실습 12] 2개의 MariaDB를 이용한 Sharding 처리 ②](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=306268)
 - [인프런, 대용량 데이터 처리와 부하분산](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242779)
+- [YouTube, 쉬운코드, DB 파티셔닝, 샤딩, 레플리케이션](https://www.youtube.com/watch?v=P7LqaEO-nGU)
+- [MySQL 8.4 Reference Manual, InnoDB Row Formats](https://dev.mysql.com/doc/refman/8.4/en/innodb-row-format.html)
+- [PostgreSQL 18 Documentation, TOAST](https://www.postgresql.org/docs/current/storage-toast.html)
 
 
 ## 관련 문서
 - [[Clustering|Cluster]]
 - [[Replication]]
+- [[MySQL-Partitioning|MySQL Partitioning]]
 - [[Normalization|정규화]]
 - [[Consistent-Hashing|Consistent Hashing]]
 - [[Redis-Cluster-Sharding|Redis Cluster, Hash Slot]]

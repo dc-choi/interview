@@ -7,7 +7,9 @@ aliases: ["동적 프로그래밍", "Dynamic Programming", "DP"]
 
 # 동적 프로그래밍 (DP)
 
-동적 프로그래밍은 문제를 state와 recurrence로 표현하고, 같은 subproblem의 답을 한 번만 계산해 재사용하는 설계 기법이다. 최적화 문제에서는 optimal substructure가 필요하고, 일반적으로는 subproblem이 겹쳐 결과 재사용의 이득이 있어야 한다. subproblem이 독립적이면 divide-and-conquer만으로 충분할 수 있다.
+동적 프로그래밍은 문제를 state와 recurrence로 표현하고, 같은 subproblem의 답을 한 번만 계산해 재사용하는 설계 기법이다. 최적화 문제에서는 optimal substructure가 필요하고, 일반적으로는 subproblem이 겹쳐 결과 재사용의 이득이 있어야 한다. subproblem이 겹치지 않으면 divide-and-conquer만으로 충분할 수 있다.
+
+optimal substructure는 최적해가 subproblem의 최적해로 이루어진다는 성질이고, 이를 쓰려면 subproblem들이 서로의 해를 제약하지 않아야 한다(독립). 독립은 같은 subproblem을 반복해서 푸는 겹침과 다른 개념이다. 가중치 없는 그래프에서 최단 경로 u→w→v의 두 조각은 각각 최단 경로라 이 성질이 있지만, 최장 단순 경로는 그렇지 않다. u→w 최장 경로와 w→v 최장 경로를 이으면 같은 정점을 두 번 지날 수 있는데, 두 subproblem이 정점이라는 자원을 공유하기 때문이다. 최장 단순 경로 문제는 결정 버전이 NP-complete라 일반 그래프에서 polynomial time 풀이가 알려져 있지 않다([[Algorithm-Complexity#P, NP, NP-hard, NP-complete|P와 NP]]).
 
 ## 설계 순서
 
@@ -57,7 +59,7 @@ bottom-up으로 dependency가 먼저 계산되도록 table을 채운다. base st
 
 이동 주체의 위치가 항상 과거 사건 중 하나의 좌표라면 좌표 대신 마지막으로 처리한 사건 index를 state로 둔다. 두 차량이 사건을 순서대로 처리하며 총 이동 거리를 최소화할 때 `dp[a][b]`를 차량 1과 2가 마지막으로 처리한 사건이 a, b일 때 남은 최소 거리로 두면, 다음 사건은 `max(a, b) + 1`로 정해지고 state는 좌표 범위와 무관하게 사건 수 W에 대해 O(W²)다. 두 차량의 시작 위치를 0번, 1번 가짜 사건으로 넣으면 시작 state가 `dp[0][1]` 하나로 정리된다. 어느 차량이 맡았는지 출력할 때는 완성된 table에서 두 선택의 값을 다시 비교하며 따라간다.
 
-최솟값만 저장한 table에서 실제 선택을 복원하려면 최적 transition을 만든 predecessor나 choice를 함께 저장한다. 또는 완성된 table에서 recurrence equality를 만족하는 이전 state를 역추적한다. rolling array는 중간 state를 버리므로 복원이 필요하면 별도 정보를 유지한다.
+최솟값만 저장한 table에서 실제 선택을 복원하려면 최적 transition을 만든 predecessor나 choice를 함께 저장한다. 또는 완성된 table에서 recurrence equality를 만족하는 이전 state를 역추적한다. rolling array는 중간 state를 버리므로 복원이 필요하면 별도 정보를 유지한다. 최적화 문제의 값(가장 빠른 경로의 소요 시간)과 해(그 경로 자체)를 구분하면 이 요구를 놓치지 않는다. 값만 묻는 문제는 table 값으로 끝나지만 해를 묻는 문제는 계산한 정보로 해를 구성하는 단계가 더 필요하다.
 
 ## 초기값의 세 역할과 기저 사례
 
@@ -93,6 +95,7 @@ INF는 비용을 더해도 넘치지 않을 크기로 잡는다([[Cpp-Coding-Tes
 - 1로 만들기는 3이나 2로 나눌 수 있으면 먼저 나누는 greedy가 틀린다. 10은 greedy로 10, 5, 4, 2, 1(4번)이지만 10, 9, 3, 1(3번)이 최소다. 선택이 이후에 미치는 영향을 모두 비교해야 하므로 DP다.
 - 계단 문제처럼 규칙(연속 세 칸 금지)을 1차원 테이블에 담을 수 없으면 필요한 정보(연속 횟수)를 차원으로 추가한다. 위의 상태 설계 원칙과 같다. 이 문제는 밟지 않을 계단들의 점수 합을 최소화하는 문제로 바꿔 풀 수도 있다.
 - 방법 수가 커지면 문제에서 요구한 수로 매번 나눈 나머지를 저장한다.
+- 한 번에 1칸 또는 2칸씩 n칸 계단을 오르는 방법 수도 마지막 이동이 1칸이냐 2칸이냐로 나눠 `D[n] = D[n-1] + D[n-2]`, `D[1]=1, D[2]=2`로 2 × n 타일 채우기와 같은 점화식이다. 그대로 재귀로 풀면 같은 `D[k]`를 지수적으로 반복 호출하고, memo나 반복문으로 채우면 O(n)이다.
 - 값만이 아니라 경로가 필요하면 `pre[i]`에 최적값을 만든 이전 상태를 함께 저장하고, 목표에서 `pre`를 따라 거슬러 올라간다. BFS의 경로 복원과 같은 방식이다.
 
 ## 심화 유형: 채우는 순서가 핵심일 때
@@ -135,6 +138,8 @@ bestOverall = max(bestOverall, bestEnding)
 
 이전 값 두 개만 필요해 O(n) 시간과 O(1) 추가 공간으로 계산한다. 빈 구간을 허용하지 않고 모든 값이 음수일 수 있으면 첫 원소로 초기화해야 한다. `0`으로 시작하면 존재하지 않는 빈 구간을 답으로 선택할 수 있다.
 
+같은 문제를 시작점마다 합을 이어 더하며 모든 구간을 보면 O(n²)이고, 구간마다 처음부터 다시 더하면 O(n³)이다. 배열을 반으로 나눠 양쪽의 답과 가운데를 걸치는 최대 구간(O(n))을 비교하는 분할 정복은 `T(n) = 2T(n/2) + O(n)`이라 O(n log n)이다. Kadane이 O(n)인 이유는 i에서 끝나는 최대 구간을 i − 1의 답으로 바로 구하는 subproblem 재사용에 있다.
+
 연속 구간 곱의 최댓값도 같은 틀이다. 모든 값이 양수면 `bestEnding = max(a[i], bestEnding * a[i])`이고, 누적 곱이 1보다 작아지는 순간 버리고 새로 시작하는 것과 같다. `[100, 0.5, 8]`은 0.5를 곱해 줄어도 이어 가야 400이 되고, `[0.9, 0.5, 2, 3]`은 0.45가 된 누적을 버리고 2부터 시작해야 6이 된다. 0이나 음수가 섞이면 이 식은 틀린다. `[-2, 3, -4]`의 답은 24지만 식은 3을 낸다. 음수를 곱하면 최대와 최소가 뒤바뀌므로 i에서 끝나는 최대 곱과 최소 곱을 함께 들고 `a[i]`, `최대 * a[i]`, `최소 * a[i]` 중 최댓값과 최솟값으로 둘 다 갱신한다. 모든 구간을 직접 곱하는 이중 loop는 n이 1만이면 약 5천만 번이라 가능하지만 10만이면 약 50억 번이다.
 
 ## 선택 기준
@@ -166,8 +171,10 @@ bestOverall = max(bestOverall, bestEnding)
 - 인프런, 큰돌 강사, [8-E](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=101058), [8-F](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=101059), [8-G](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=101060), [#2. LCS(최장공통부분수열)](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=331811), [6-L](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100958)
 
 - 인프런, 감자 강사, [동적 프로그래밍과 메모이제이션](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=117692), [동적 프로그래밍과 타뷸레이션](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=117694)
+- YouTube, 쉬운코드, [dynamic programming의 개념과 사용 시점](https://www.youtube.com/watch?v=GtqHli8HIqk)
 - [바킹독의 실전 알고리즘 0x10강, 다이나믹 프로그래밍 — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=5leTtB3PQu0)
 - [바킹독의 실전 알고리즘 부록 E, 다이나믹 프로그래밍 심화 — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=cLpFW_ykJ6U)
 - [NIST DADS, dynamic programming](https://xlinux.nist.gov/dads/HTML/dynamicprog.html)
 - [NIST DADS, LCS](https://xlinux.nist.gov/dads/HTML/LCS.html)
 - [MIT OpenCourseWare 6.006, Dynamic Programming](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2008/resources/lecture-notes/)
+- [MIT 6.006 Fall 2011, Recitation 11-12 Dynamic Programming](https://courses.csail.mit.edu/6.006/fall11/handouts/recitation11-12.pdf)
