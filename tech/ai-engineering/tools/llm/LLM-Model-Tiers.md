@@ -65,7 +65,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 한계와 반론:
 
 - 서브에이전트는 각자 모델과 도구를 돌리므로 같은 작업의 단일 에이전트 실행보다 토큰을 더 쓴다(공식 문서). 병렬 쓰기 작업은 충돌과 조정 비용이 커서 공식 문서도 탐색, 테스트, 요약 같은 읽기 위주 작업부터 병렬화하도록 권한다
-- 모델이 바뀌는 경계마다 프롬프트 캐시를 이어 쓰기 어렵고, 하위 티어 결과를 상위 티어가 다시 정리하는 부담이 커서 단일 모델을 중간 추론 수준으로 쓰는 편이 실제로 빠르고 효율적이었다는 사용자 경험도 많다
+- 캐시는 모델마다 따로 있어 같은 대화를 다른 모델로 이어 가면 캐시를 읽지 못하고 대화 전체를 다시 처리한다. `opusplan`도 plan 모드를 드나들 때마다 모델이 바뀌어 캐시를 새로 만든다(2026-10-05 Claude Code 문서 확인, [[LLM-Prompt-Caching#세션 분기로 공통 맥락 재사용|세션 분기의 캐시 조건]]). 하위 티어 결과를 상위 티어가 다시 정리하는 부담까지 더해 단일 모델을 중간 추론 수준으로 쓰는 편이 실제로 빠르고 효율적이었다는 사용자 경험도 많다
 - 위 효과는 모두 개별 사례의 주장이고 측정 조건이 공개되지 않았다. 도입 전에 같은 과업에서 단일 모델 대비 품질, 시간과 비용을 [[LLM-Eval-Strategy|eval]]로 비교한다
 
 역할과 검토 루프를 모델 밖의 구조로 고정하는 관점은 [[Harness-Engineering|하네스 엔지니어링]], 서브에이전트가 도구 호출 루프 위에서 도는 방식은 [[Codex-Agent-Execution-Model|Codex 동작 원리]]에서 다룬다.
@@ -113,6 +113,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - [Anthropic Platform Docs, Steering thinking](https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost)
 - [Introducing Claude Opus 5.5 — Anthropic](https://www.anthropic.com/claude-opus-5-5)
 - [Claude Code Docs, Model configuration](https://code.claude.com/docs/en/model-config) (opusplan 확인)
+- [Claude Code Docs, How Claude Code uses prompt caching](https://code.claude.com/docs/en/prompt-caching) (모델별 캐시, opusplan 전환의 캐시 재생성)
 - [Claude Help Center, Models, usage, and limits in Claude Code](https://support.claude.com/en/articles/14552983-models-usage-and-limits-in-claude-code)
 - [OpenAI Codex, Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) (2026-09-29 커스텀 에이전트 설정 확인)
 - [OpenAI Codex, Models](https://learn.chatgpt.com/docs/models) (2026-09-29 GPT-6 Sol, Luna 확인)
