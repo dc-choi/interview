@@ -1,4 +1,4 @@
 interface:
   display_name: "Auto Learn"
-  short_description: "Turn subscribed videos and reposts into verified vault docs with daily recall quizzes"
+  short_description: "Turn subscriptions, saved posts and newsletters into verified vault docs with a daily digest"
   default_prompt: "Use $auto-learn to run or operate the automatic learning pipeline."

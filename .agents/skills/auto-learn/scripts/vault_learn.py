@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """auto-learn 파이프라인의 결정적 작업을 맡는다.
 
-전사 큐와 작업자, 구독 채널 RSS 수집, 임시 전사 작업 이관, learn run의 기준선과 규칙 검사, Git 게시와 증명,
-다이제스트 자료와 회상 퀴즈 일정, launchd가 부르는 claude -p 실행(잠금, 시간 제한, 사용량 한도 백오프)을 한다.
-상태는 장비 로컬 디렉터리(기본 ~/.local/state/vault-auto-learn, VAULT_LEARN_STATE로 변경)에 두고 저장소에는
-지식 문서만 커밋한다. 절차와 운영은 같은 스킬의 SKILL.md를 따르며 표준 라이브러리만 쓴다.
+전사 큐와 작업자, 학습 출처 목록의 채널 RSS 수집, 임시 전사 작업 이관, 단서 수집함 색인, learn과 harvest run의
+기준선과 규칙 검사, Git 게시와 증명, 다이제스트 자료, launchd가 부르는 claude -p 실행(잠금, 시간 제한, 사용량 한도
+백오프)을 한다. 상태는 장비 로컬 디렉터리(기본 ~/.local/state/vault-auto-learn, VAULT_LEARN_STATE로 변경)에 두고
+저장소에는 지식 문서와 학습 출처 목록만 커밋한다. 절차와 운영은 같은 스킬의 SKILL.md를 따르며 표준 라이브러리만 쓴다.
 """
 
 import argparse
@@ -25,6 +25,7 @@ import sys
 import tempfile
 import threading
 import time
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -39,10 +40,13 @@ REPO = SKILL.parents[2]
 TRANSCRIBE = SKILL.parent / "memo" / "scripts" / "yt_transcript.py"
 S = Path(os.environ.get("VAULT_LEARN_STATE", "~/.local/state/vault-auto-learn")).expanduser()
 LABEL = "com.dcchoi.vault-learn."
-MODES = ("harvest", "learn", "digest")
+MODES = ("harvest", "instagram", "learn", "digest")
+# 지정한 친구 DM의 이름(instagram_dm_name)과 뉴스레터 발신 주소는 config.json에만 둔다.
 DEFAULTS = {"k": 6, "jobs": 2, "whisper_threads": 4, "learn_timeout_min": 180, "harvest_timeout_min": 90,
-            "digest_timeout_min": 30, "idle_interval_min": 180, "stale_days": 180, "claude": "claude",
-            "threads_reposts_url": "", "adhoc_dir": ""}
+            "instagram_timeout_min": 45, "digest_timeout_min": 30, "idle_interval_min": 180, "stale_days": 180,
+            "claude": "claude", "threads_reposts_url": "", "adhoc_dir": "", "instagram_saved_url": "",
+            "instagram_saved_collection": "", "instagram_dm_name": "", "instagram_dm_thread_url": "",
+            "email_since": "", "email_senders": []}
 # 30초 간격 3회 재시도는 사용자 결정이다. 그 뒤 6시간 쉬고 다시 시도하며, 세 차례 모두 실패하면 제외한다.
 ATTEMPTS, RETRY_WAIT_S, COOLDOWN_S, MAX_ROUNDS, MAX_LIVE_ROUNDS = 3, 30, 6 * 3600, 3, 20
 PERMANENT = re.compile(
@@ -69,6 +73,22 @@ ATOM = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/sc
 INDEX_COLS = ["order", "id", "status", "reason", "author", "posted_at", "chain", "captured", "images", "videos",
               "links", "title", "file"]
 TITLE_SKIP = ("[[QUOTE]]", "## ", "Source:", "Media:", "- [")
+# 학습할 YouTube 채널과 뉴스레터의 정본(2026-10-05 사용자 결정). channels.tsv는 채널 id 캐시와 제외 기록이다.
+SOURCES = "fit/growth/learning/Learning-Sources.md"
+SOURCE_SECTIONS = ("YouTube 채널", "이메일 뉴스레터")
+DOMAINS = ("tech", "biz", "econ", "fit")
+YT_LINK = re.compile(r"\]\(https://www\.youtube\.com/(@[^)\s]+|channel/UC[\w-]{22})\)")
+CHANNEL_COLS = ["handle", "channel_id", "title", "decision", "reason", "added_at"]
+# 단서 수집함과 learn key 접두사. threads의 본 id 목록은 처음 만든 이름(seen_reposts)을 그대로 쓴다.
+INBOX = {"threads": "repost", "instagram": "insta", "email": "email"}
+CHROME_TOOLS = ("tabs_context_mcp", "tabs_create_mcp", "tabs_close_mcp", "navigate", "javascript_tool", "get_page_text",
+                "find", "computer", "read_page", "list_connected_browsers", "select_browser")
+GMAIL_READ = ("search_threads", "get_thread", "get_message")
+GMAIL_WRITE = ("send_message reply forward create_draft update_draft delete_draft label_message label_thread "
+               "unlabel_message unlabel_thread update_message_labels apply_sensitive_message_label "
+               "apply_sensitive_thread_label create_label update_label delete_label trash_message trash_thread "
+               "untrash_message untrash_thread mark_message_spam mark_thread_spam unmark_message_spam "
+               "unmark_thread_spam").split()
 STOP = threading.Event()
 
 
@@ -162,9 +182,55 @@ def locked(name, wait=True):
 
 
 def ensure_layout():
-    for name in ("queue", "transcripts", "inbox/threads", "digests", "runs", "logs/agent", "locks", "tmp",
-                 "launchd", "migrate"):
+    for name in ("queue", "transcripts", *(f"inbox/{src}" for src in INBOX), "digests", "runs", "logs/agent", "locks",
+                 "tmp", "launchd", "migrate"):
         (S / name).mkdir(parents=True, exist_ok=True)
+
+
+def seen_file(src):
+    return S / ("seen_reposts" if src == "threads" else f"seen_{src}")
+
+
+def hkey(handle):
+    """YouTube handle 비교 키. 대소문자와 한글 자모 분리(NFD) 차이를 무시한다."""
+    return unicodedata.normalize("NFC", handle.strip()).lower()
+
+
+def parse_sources(lines):
+    """학습 출처 목록에서 YouTube 채널 {handle: (채널명, 태그)}와 뉴스레터 {이름: 태그}를 읽는다."""
+    channels, letters, section = {}, {}, ""
+    for line in lines:
+        section = line[3:].strip() if line.startswith("## ") else section
+        cells = [c.strip().replace("\\|", "|") for c in re.split(r"(?<!\\)\|", line.strip())[1:-1]]
+        tags = [t for t in re.split(r"[\s,]+", cells[-1]) if t in DOMAINS] if line.startswith("|") and cells else []
+        link = YT_LINK.search(line)
+        if tags and link and section == SOURCE_SECTIONS[0]:
+            channels[urllib.parse.unquote(link.group(1))] = (cells[0], tags)
+        elif tags and section == SOURCE_SECTIONS[1]:
+            letters[cells[0]] = tags
+    return channels, letters
+
+
+def learning_sources():
+    return parse_sources(read_lines(REPO / SOURCES))
+
+
+def sources_problems(text):
+    """학습 출처 목록의 표 행을 discover와 email-query가 읽을 수 있는지 본다(채널 링크, 도메인 태그)."""
+    problems, section = [], ""
+    for n, line in enumerate(text.splitlines(), 1):
+        section = line[3:].strip() if line.startswith("## ") else section
+        if section not in SOURCE_SECTIONS or not line.startswith("|") or re.fullmatch(r"[|\s:-]+", line):
+            continue
+        cells = [c.strip() for c in re.split(r"(?<!\\)\|", line.strip())[1:-1]]
+        if cells[-1:] == ["도메인"]:  # 머리글 행
+            continue
+        tags = re.split(r"[\s,]+", cells[-1]) if cells else [""]
+        if not line.rstrip().endswith("|") or not set(tags) <= set(DOMAINS):
+            problems.append(f"{SOURCES}:{n}: 마지막 칸은 tech, biz, econ, fit 중 하나 이상이어야 한다")
+        elif section == SOURCE_SECTIONS[0] and not YT_LINK.search(line):
+            problems.append(f"{SOURCES}:{n}: YouTube 채널 링크가 없다")
+    return problems
 
 
 def http_get(url, timeout=20):
@@ -418,6 +484,26 @@ def poll_due(state, t):
     return not quiet or t - state.get("checked", 0) > 86400
 
 
+def listed_channels(write=True):
+    """학습 출처 목록의 채널을 channels.tsv 캐시 행으로 바꾼다.
+
+    캐시에 없는 handle(다른 장비, 손으로 더한 행)은 채널 페이지에서 id를 찾아 오늘 날짜로 더하므로 그날 이후 업로드부터 모은다.
+    """
+    listed = learning_sources()[0]
+    cache = {hkey(r[0]): r for r in rows(S / "channels.tsv")[1:] if len(r) >= 6 and r[1]}
+    missing = [(h, title) for h, (title, _) in listed.items() if hkey(h) not in cache]
+    if missing:
+        with ThreadPoolExecutor(6) as ex:
+            infos = [i for i in ex.map(lambda ht: resolve_channel(*ht), missing) if i["channel_id"]]
+        new = [[i["handle"], i["channel_id"], field(i["title"]), "learn", "listed", str(dt.date.today())] for i in infos]
+        if write and new:
+            with locked("channels"):
+                table = rows(S / "channels.tsv") or [CHANNEL_COLS]
+                write_text(S / "channels.tsv", "".join("\t".join(r) + "\n" for r in [*table, *new]))
+        cache |= {hkey(r[0]): r for r in new}
+    return [cache[hkey(h)] for h in listed if hkey(h) in cache]
+
+
 def cmd_discover(a):
     if (S / "paused").exists() and not a.dry_run:
         log("discover: paused")
@@ -430,8 +516,9 @@ def cmd_discover(a):
         if poll.get("_backoff_until", 0) > time.time():
             log("discover: RSS 429 백오프 중")
             return 0
-        gone = set(read_lines(S / "unsubscribed"))
-        learn = [r for r in rows(S / "channels.tsv")[1:] if len(r) >= 6 and r[3] == "learn" and r[0] not in gone]
+        # 학습 출처 목록이 정본이다. 구독을 해지한 채널은 목록에 남아 있어도 건너뛴다.
+        gone = {hkey(h) for h in read_lines(S / "unsubscribed")}
+        learn = [r for r in listed_channels(write=not a.dry_run) if hkey(r[0]) not in gone]
         t = time.time()
         due = [r for r in learn if poll_due(poll.get(r[1]), t)][: a.limit or None]
         with ThreadPoolExecutor(6) as ex:
@@ -727,26 +814,28 @@ def file_hash(rel):
     return hashlib.sha1(path.read_bytes()).hexdigest() if path.is_file() else "absent"
 
 
-def leftover_runs():
-    """끝난 learn run이 게시하지 못하고 남긴 파일 중 그 뒤 내용이 그대로인 것({run: [파일]}).
+def leftover_runs(kind=None):
+    """끝난 run(kind를 주면 그 종류만)이 게시하지 못하고 남긴 파일 중 그 뒤 내용이 그대로인 것({run: [파일]}).
 
     내용이 바뀐 파일은 사용자나 다른 작업이 고친 것일 수 있어 이어받지 않는다(게시하거나 되돌리면 남의 작업을 건드린다).
     """
     dirty, out = set(dirty_paths()), {}
     for path in sorted((S / "runs").glob("*/manifest.json")):
         m = read_json(path, {}) or {}
+        if kind and m.get("kind") != kind:
+            continue
         files = sorted(f for f, h in (m.get("left") or {}).items() if f in dirty and file_hash(f) == h)
         if files:
             out[m["run"]] = files
     return out
 
 
-def finish_runs(since):
-    """launchd learn 실행이 끝나면 그동안 연 learn run마다 게시하지 못한 파일과 그 내용 해시를 남긴다."""
+def finish_runs(since, kind):
+    """launchd learn, harvest 실행이 끝나면 그동안 연 그 종류의 run마다 게시하지 못한 파일과 그 내용 해시를 남긴다."""
     dirty = set(dirty_paths())
     for path in (S / "runs").glob("*/manifest.json"):
         m = read_json(path, {}) or {}
-        if m.get("kind") != "learn" or "ended" in m or dt.datetime.fromisoformat(m["started"]).timestamp() < since:
+        if m.get("kind") != kind or "ended" in m or dt.datetime.fromisoformat(m["started"]).timestamp() < since:
             continue
         m["files"] = [f for f in m["files"] if f in dirty]
         m |= {"left": {f: file_hash(f) for f in m["files"]}, "ended": now().isoformat(timespec="seconds")}
@@ -760,7 +849,7 @@ def cmd_begin(a):
         return 1
     run = f"{stamp()}-{a.kind}"
     with locked("runs"):
-        adopted = leftover_runs() if a.kind == "learn" else {}
+        adopted = leftover_runs(a.kind)  # learn은 learn run의, harvest는 harvest run의 남은 파일만 이어받는다.
         for old in adopted:  # 이어받은 파일은 이 run의 plan이 된다. 이전 run은 더 손대지 않는다.
             om = load_manifest(old)
             om["files"], om["left"] = [], {}
@@ -806,12 +895,15 @@ def repo_names():
 
 
 def personal_terms():
-    """personal 사유로 제외한 채널의 handle, id, 이름. 저장소 문서에 들어가면 안 된다."""
+    """저장소 문서와 커밋 메시지에 들어가면 안 되는 이름: personal 사유로 제외한 채널의 handle, id, 이름,
+    지정한 친구 DM의 이름, 개인이 보내는 뉴스레터(private)의 발신 주소 앞부분."""
     terms = set()
     for r in rows(S / "channels.tsv")[1:]:
         if len(r) >= 5 and r[4].strip() == "personal":
             terms |= {t.strip().lower() for t in (r[0].lstrip("@"), r[1], r[2]) if len(t.strip()) >= 3}
-    return terms
+    conf = cfg()
+    private = [s.get("from", "").split("@")[0] for s in conf["email_senders"] if s.get("private")]
+    return terms | {t.strip().lower() for t in [conf["instagram_dm_name"], *private] if len(t.strip()) >= 2}
 
 
 def added_lines(rel):
@@ -832,8 +924,8 @@ def added_lines(rel):
 def line_problems(line, personal):
     """공개 저장소에 들어가면 안 되는 줄(문서의 추가된 줄과 커밋 메시지)."""
     low, out = line.lower(), []
-    if re.search(r"threads\.(?:com|net)/", low):
-        out.append("Threads 링크(단서는 출처로 쓰지 않는다)")
+    if re.search(r"threads\.(?:com|net)/|instagram\.com/(?:[\w.]+/)?(?:p|reels?|tv|stories|direct)/", low):
+        out.append("Threads나 Instagram 글 링크(단서는 출처로 쓰지 않는다)")
     if "vault-auto-learn" in low:
         out.append("로컬 상태 경로")
     if any(term in low for term in personal):
@@ -856,6 +948,8 @@ def check_files(files):
             problems.append(f"{rel}: 가운뎃점(U+00B7)")
         if not text.startswith("---\n"):
             problems.append(f"{rel}: frontmatter 없음")
+        if rel == SOURCES:
+            problems += sources_problems(text)
         for target in WIKILINK.findall(re.sub(r"```.*?```", "", text, flags=re.S)):
             name = target.strip().rstrip("\\").split("/")[-1].lower()  # 표 안의 [[파일\|별칭]]
             if name and name not in names:
@@ -946,8 +1040,7 @@ def cmd_publish(a):
                              if files_it & set(unplanned) else ("skipped", note or "바뀐 파일이 없다"))
             out.append({"ts": now().isoformat(timespec="seconds"), "run": a.run, "key": it.get("key"), "result": res,
                         "files": sorted(files_it), "topic": it.get("topic", ""), "takeaway": it.get("takeaway", ""),
-                        "recall": it.get("recall", []) if res in ("learned", "merged") else [], "note": note,
-                        "commit": sha if committed & files_it else None, "subject": result.get("subject")})
+                        "note": note, "commit": sha if committed & files_it else None, "subject": result.get("subject")})
             logged.add(it.get("key"))
         # 푸시 전에 기록해 둔다. 푸시 중에 끊겨도 커밋한 항목을 다음 run이 다시 배우지 않는다.
         append(S / "digests" / "log.jsonl", "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in out))
@@ -1020,36 +1113,51 @@ def idle_candidates(k, done):
     return {"todos": todos[: 2 * k], "stale": stale[:k]}
 
 
+def inbox_leads(done):
+    """처리하지 않은 단서(Threads 리포스트, Instagram 글, 이메일 뉴스레터)를 최근 수집, 수집 순서대로 준다."""
+    leads = []
+    for src, prefix in INBOX.items():
+        root = S / "inbox" / src
+        excluded = {r[0] for r in rows(root / "EXCLUDED.tsv")}
+        for path in root.glob("*.md"):
+            key = f"{prefix}:{path.stem}"
+            if key in done or path.stem in excluded:
+                continue
+            meta, body = frontmatter(path)
+            leads.append({"key": key, "source": src, "title": meta.get("subject") or repost_title(body),
+                          "who": meta.get("publication") or meta.get("author", ""),
+                          "date": (meta.get("posted_at") or meta.get("date", ""))[:10], "path": str(path),
+                          "chain": meta.get("chain", ""), "links": body.count("\n- http"),
+                          "harvested": meta.get("harvested_at", ""),
+                          "order": as_int(meta.get("repost_order") or meta.get("order"))})
+    leads.sort(key=lambda x: (x["harvested"], -x["order"]), reverse=True)
+    return leads
+
+
 def pick_data(k):
     done, ready = processed_keys(), done_ids()
-    excluded = {r[0] for r in rows(S / "inbox" / "threads" / "EXCLUDED.tsv")}
-    reposts = []
-    for path in (S / "inbox" / "threads").glob("*.md"):
-        key = f"repost:{path.stem}"
-        if key in done or path.stem in excluded:
-            continue
-        meta, body = frontmatter(path)
-        reposts.append({"key": key, "title": repost_title(body), "who": meta.get("author", ""),
-                        "date": meta.get("posted_at", "")[:10], "path": str(path), "chain": meta.get("chain", ""),
-                        "links": body.count("\n- http"), "harvested": meta.get("harvested_at", ""),
-                        "order": as_int(meta.get("repost_order"))})
-    reposts.sort(key=lambda x: (x["harvested"], -x["order"]), reverse=True)  # 최근 수집, 최근 리포스트 순
+    leads = inbox_leads(done)
+    # 영상의 tags는 학습 출처 목록에 적은 채널의 주 도메인이며 우선순위에만 쓴다. 이관한 백로그는 채널명으로 찾는다.
+    tags = {hkey(h): t for h, (_, t) in learning_sources()[0].items()}
+    by_title = {r[2]: r[0] for r in rows(S / "channels.tsv")[1:] if len(r) > 2}
 
     def videos(prio):
         """전사가 끝났고 처리하지 않은 영상의 (전체 수, 앞쪽 2k개의 메타데이터)."""
-        ids = [r[0] for r in rows(S / "queue" / f"{prio}.tsv") if r[0] in ready and f"video:{r[0]}" not in done]
+        entries = [r for r in rows(S / "queue" / f"{prio}.tsv") if r[0] in ready and f"video:{r[0]}" not in done]
         out = []
-        for vid in ids[: 2 * k]:
-            path = S / "transcripts" / vid / "transcript.md"
+        for r in entries[: 2 * k]:
+            path = S / "transcripts" / r[0] / "transcript.md"
             meta = transcript_meta(path)
-            out.append({"key": f"video:{vid}", "title": meta.get("title", ""), "who": meta.get("채널", ""),
-                        "date": meta.get("업로드", ""), "duration": meta.get("길이", ""), "path": str(path)})
-        return len(ids), out
+            handle = r[1] if len(r) > 1 and r[1].startswith("@") else by_title.get(meta.get("채널", ""), "")
+            out.append({"key": f"video:{r[0]}", "title": meta.get("title", ""), "who": meta.get("채널", ""),
+                        "date": meta.get("업로드", ""), "duration": meta.get("길이", ""), "path": str(path),
+                        "tags": tags.get(hkey(handle), [])})
+        return len(entries), out
 
     (new_count, new), (backlog_count, backlog) = videos("new"), videos("backlog")
-    data = {"k": k, "tier1": new + reposts[: 3 * k], "tier2": backlog,
-            "counts": {"new_videos": new_count, "reposts": len(reposts), "backlog_videos": backlog_count,
-                       "awaiting_transcription": waiting_counts()}}
+    data = {"k": k, "tier1": new + leads[: 3 * k], "tier2": backlog,
+            "counts": {"new_videos": new_count, "leads": dict(Counter(x["source"] for x in leads)),
+                       "backlog_videos": backlog_count, "awaiting_transcription": waiting_counts()}}
     if not data["tier1"] and not data["tier2"]:
         data["tier3"] = idle_candidates(k, done)
     return data
@@ -1060,38 +1168,7 @@ def cmd_pick(a):
     return 0
 
 
-# ---------------------------------------------------------------- 다이제스트와 퀴즈
-
-def next_due(result, round_no, today):
-    """틀림 1일, 부분 3일 뒤 다시 묻는다. 맞으면 7일, 21일 뒤 한 번씩 더 묻고 끝낸다."""
-    gap = {"wrong": 1, "partial": 3}.get(result) or {1: 7, 2: 21}.get(round_no)
-    return str(today + dt.timedelta(days=gap)) if gap else None
-
-
-def choose_questions(day, log_rows):
-    quiz = read_jsonl(S / "quiz.jsonl")
-    parents = {q.get("parent") for q in quiz}
-    due = sorted((q for q in quiz if q.get("due") and q["due"] <= str(day) and q["qid"] not in parents),
-                 key=lambda q: q["due"])
-    picked = [{"item": q["item"], "doc": q.get("doc", ""), "q": q["q"], "a": q["a"], "round": q.get("round", 1) + 1,
-               "parent": q["qid"], "why": "다시 묻기"} for q in due[:2]]
-    spaced = []
-    for gap in (7, 3, 1):
-        same_day = [r for r in log_rows if r.get("ts", "")[:10] == str(day - dt.timedelta(days=gap))
-                    and r.get("result") in ("learned", "merged") and r.get("recall")]
-        same_day.sort(key=lambda r: hashlib.sha1(f"{r['key']}{day}".encode()).hexdigest())
-        spaced += [(gap, r) for r in same_day]
-    for gap, r in spaced:
-        if len(picked) >= 2:
-            break
-        rec = r["recall"][{7: 2, 3: 1, 1: 0}[gap] % len(r["recall"])]
-        picked.append({"item": r["key"], "doc": rec.get("doc", ""), "q": rec["q"], "a": rec["a"], "round": 1,
-                       "why": f"{gap}일 전 학습"})
-    for i, q in enumerate(picked, 1):
-        q |= {"qid": f"{day:%Y%m%d}-{i}", "date": str(day)}
-    append(S / "quiz.jsonl", "".join(json.dumps(q, ensure_ascii=False) + "\n" for q in picked))
-    return picked
-
+# ---------------------------------------------------------------- 다이제스트
 
 def state_summary():
     done, skipped, keys = done_ids(), skipped_ids(), processed_keys()
@@ -1100,9 +1177,11 @@ def state_summary():
     unpushed = count_unpushed()
     return {"paused": (S / "paused").exists(), "transcribe_waiting": waiting_counts(), "transcripts": len(done),
             "videos_skipped": len(skipped), "videos_unlearned": sum(1 for v in done if f"video:{v}" not in keys),
-            "reposts_unlearned": sum(1 for p in (S / "inbox" / "threads").glob("*.md") if f"repost:{p.stem}" not in keys),
+            "leads_unlearned": {src: sum(1 for p in (S / "inbox" / src).glob("*.md") if f"{prefix}:{p.stem}" not in keys)
+                                for src, prefix in INBOX.items()},
             "processed": dict(Counter(r.get("result") for r in log_rows)),
-            "channels": dict(Counter(r[3] for r in rows(S / "channels.tsv")[1:] if len(r) > 3)),
+            "channels": dict(Counter(r[3] for r in rows(S / "channels.tsv")[1:] if len(r) > 3))
+            | {"listed": len(learning_sources()[0])},
             "unpushed_commits": unpushed,
             # 나중에 푸시되면 지난 보류는 더 알릴 필요가 없다.
             "deferred_runs": sorted(p.parent.name for p in (S / "runs").glob("*/manifest.json")
@@ -1115,49 +1194,40 @@ def state_summary():
 def cmd_digest_data(a):
     day = dt.date.fromisoformat(a.date) if a.date else dt.date.today()
     selection = S / "digests" / f"{day}.json"
-    if selection.exists():  # 같은 날 다시 불러도 같은 문항을 준다.
+    if selection.exists():  # 같은 날 다시 불러도(재시도) 같은 범위를 준다.
         print(selection.read_text(encoding="utf-8"))
         return 0
     log_rows = read_jsonl(S / "digests" / "log.jsonl")
     previous = sorted(p for p in (S / "digests").glob("????-??-??.json") if p.stem < str(day))
     since = ((read_json(previous[-1], {}) or {}).get("generated_at") if previous else None) \
         or (now() - dt.timedelta(days=1)).isoformat(timespec="seconds")
+    # 다이제스트에는 커밋한 변경만 싣는다(건너뛰거나 미룬 항목은 넣지 않는다).
     changes = [{"key": r["key"], "result": r["result"], "files": r.get("files", []), "topic": r.get("topic", ""),
-                "takeaway": r.get("takeaway", ""), "note": r.get("note", ""),
-                "commit": resolve_commit(r.get("commit"), r.get("subject"))}
-               for r in log_rows if r.get("ts", "") > since]
-    data = {"date": str(day), "generated_at": now().isoformat(timespec="seconds"), "since": since,
-            "changes": changes, "questions": choose_questions(day, log_rows), "state": state_summary()}
+                "takeaway": r.get("takeaway", ""), "commit": resolve_commit(r.get("commit"), r.get("subject"))}
+               for r in log_rows if r.get("ts", "") > since and r.get("commit")]
+    data = {"date": str(day), "generated_at": now().isoformat(timespec="seconds"), "since": since, "changes": changes}
     write_json(selection, data)
     emit(data)
     return 0
 
 
-def cmd_quiz_grade(a):
-    quiz = read_jsonl(S / "quiz.jsonl")
-    q = next((x for x in quiz if x.get("qid") == a.qid), None)
-    if not q:
-        raise SystemExit(f"문항이 없다: {a.qid}")
-    today = dt.date.today()
-    q |= {"result": a.result, "graded": str(today), "note": a.note,
-          "due": next_due(a.result, q.get("round", 1), today)}
-    write_text(S / "quiz.jsonl", "".join(json.dumps(x, ensure_ascii=False) + "\n" for x in quiz))
-    emit(q)
-    return 0
+# ---------------------------------------------------------------- 단서 수집함과 구독 채널
 
-
-# ---------------------------------------------------------------- Threads와 구독 채널
-
-def cmd_threads_reindex(a):
-    """리포스트 파일을 정리(가운뎃점, 연락처)하고 INDEX.tsv와 seen_reposts를 다시 만든다."""
-    root = S / "inbox" / "threads"
-    status = {r["key"][7:]: r["result"] for r in read_jsonl(S / "digests" / "log.jsonl")
-              if str(r.get("key", "")).startswith("repost:")}
+def cmd_inbox_reindex(a):
+    """단서 파일을 정리(가운뎃점, 본문의 연락처, 지정한 친구 이름)하고 INDEX.tsv와 본 id 목록을 다시 만든다."""
+    root, prefix = S / "inbox" / a.source, INBOX[a.source] + ":"
+    status = {r["key"][len(prefix):]: r["result"] for r in read_jsonl(S / "digests" / "log.jsonl")
+              if str(r.get("key", "")).startswith(prefix)}
     old_reason = {r[1]: r[3] for r in rows(root / "INDEX.tsv")[1:] if len(r) > 3}
+    friend = cfg()["instagram_dm_name"].strip()
     records, normalized, problems = [], [], []
     for path in sorted(root.glob("*.md")):
         text = path.read_text(encoding="utf-8")
-        clean = EMAIL.sub("[연락처]", PHONE.sub("[연락처]", text.replace("\u00b7", "/")))
+        head = re.match(r"---\n.*?\n---\n", text, re.S)
+        cut = head.end() if head else 0  # 메일의 sender처럼 frontmatter에 둔 값은 그대로 두고 본문만 가린다.
+        clean = (text[:cut] + EMAIL.sub("[연락처]", PHONE.sub("[연락처]", text[cut:]))).replace("\u00b7", "/")
+        if friend:
+            clean = clean.replace(friend, "[지정한 친구]")
         if clean != text:
             normalized.append(path.name)
             if not a.dry_run:
@@ -1166,13 +1236,15 @@ def cmd_threads_reindex(a):
         if meta.get("id") != path.stem:
             problems.append(f"{path.name}: frontmatter id가 파일명과 다르다")
         links = body.split("## Outbound links\n", 1)
-        records.append({"harvested": meta.get("harvested_at", ""), "o": as_int(meta.get("repost_order")),
+        records.append({"harvested": meta.get("harvested_at", ""),
+                        "o": as_int(meta.get("repost_order") or meta.get("order")),
                         "id": path.stem, "status": status.get(path.stem, "new"), "reason": old_reason.get(path.stem, ""),
-                        "author": meta.get("author", ""), "posted_at": meta.get("posted_at", ""),
+                        "author": meta.get("publication") or meta.get("author", ""),
+                        "posted_at": meta.get("posted_at") or meta.get("date", ""),
                         "chain": meta.get("chain", ""), "captured": meta.get("chain_captured", ""),
                         "images": meta.get("images", ""), "videos": meta.get("videos", ""),
                         "links": sum(1 for l in links[1].splitlines() if l.startswith("- http")) if len(links) > 1 else 0,
-                        "title": repost_title(body), "file": path.name})
+                        "title": meta.get("subject") or repost_title(body), "file": path.name})
     for r in rows(root / "EXCLUDED.tsv"):
         records.append({"harvested": r[1] if len(r) > 1 else "", "id": r[0], "status": "excluded",
                         "o": as_int(r[2]) if len(r) > 2 else 0,
@@ -1181,15 +1253,40 @@ def cmd_threads_reindex(a):
     text = "\t".join(INDEX_COLS) + "\n" + "".join(
         "\t".join(field(i if c == "order" else r.get(c, "")) for c in INDEX_COLS) + "\n"
         for i, r in enumerate(records, 1))
-    seen = set(read_lines(S / "seen_reposts"))
+    seen = set(read_lines(seen_file(a.source)))
     new_seen = [r["id"] for r in records if r["id"] not in seen]
     changed = text != "\n".join(read_lines(root / "INDEX.tsv")) + "\n"
+    # 처음부터 모으기(뉴스레터 소급, Instagram 저장 글과 DM)를 끝낸 부분과 날짜. 다음 수집은 최신 항목만 본다.
+    state = (read_json(root / "STATE.json", {}) or {}) | {part: str(dt.date.today()) for part in a.complete}
     if not a.dry_run:
         write_text(root / "INDEX.tsv", text)
-        append(S / "seen_reposts", "".join(i + "\n" for i in new_seen))
+        append(seen_file(a.source), "".join(i + "\n" for i in new_seen))
+        if a.complete:
+            write_json(root / "STATE.json", state)
     emit({"rows": len(records), "index_changed": changed, "normalized": normalized, "new_seen": len(new_seen),
-          "problems": problems})
+          "state": state, "problems": problems})
     return 1 if problems else 0
+
+
+def cmd_email_query(a):
+    """harvest의 Gmail 검색어. 학습 출처 목록에 있는 뉴스레터의 발신 주소만 넣고, 소급을 끝낸 뒤에는 마지막으로
+    검색 결과를 다 처리한 날의 이틀 전부터 찾는다(겹친 메일은 본 id로 거른다)."""
+    conf, letters = cfg(), learning_sources()[1]
+    senders = [s for s in conf["email_senders"] if s.get("name") in letters]
+    done = (read_json(S / "inbox" / "email" / "STATE.json", {}) or {}).get("mail")
+    since = conf["email_since"] or str(dt.date.today())
+    if done:
+        since = max(since, str(dt.date.fromisoformat(done) - dt.timedelta(days=2)))
+    query = "{" + " ".join(f"from:{s['from']}" for s in senders) + "} after:" + since.replace("-", "/")
+    emit({"query": query if senders else "", "since": since, "senders": senders,
+          "seen": len(read_lines(seen_file("email")))})
+    return 0
+
+
+def cmd_lead_id(a):
+    """DM에서 본 외부 링크의 수집함 id. 같은 링크(조각 제외)는 늘 같은 id다."""
+    print("link-" + hashlib.sha1(urllib.parse.urldefrag(a.url.strip())[0].encode()).hexdigest()[:12])
+    return 0
 
 
 def resolve_channel(handle, title):
@@ -1208,47 +1305,57 @@ def resolve_channel(handle, title):
 
 def cmd_channels_merge(a):
     path = S / "channels.tsv"
-    table = rows(path)
-    header, body = table[0], table[1:]
-    known_handles, known_ids = {r[0] for r in body}, {r[1] for r in body if len(r) > 1}
-    incoming = {}
-    for line in read_lines(a.rows):
-        handle, _, title = line.partition("\t")
-        handle = handle.strip().lstrip("/")
-        if handle.startswith("@") or handle.startswith("channel/UC"):
-            incoming.setdefault(handle, field(title))
-    before = len(body)
-    new = [(h, t) for h, t in incoming.items() if h not in known_handles]
-    with ThreadPoolExecutor(6) as ex:
-        infos = list(ex.map(lambda ht: resolve_channel(*ht), new))
-    added = []
-    for info in infos:
-        if info["channel_id"] and info["channel_id"] not in known_ids:
-            body.append([info["handle"], info["channel_id"], info["title"], "pending", "", str(dt.date.today())])
-            known_ids.add(info["channel_id"])
-            added.append(info["handle"])
-    unsubscribed = []
-    if a.complete and len(incoming) >= 0.9 * before:  # 목록을 덜 읽었을 때 대량 구독 해지로 오인하지 않는다.
-        unsubscribed = sorted({r[0] for r in body} - set(incoming))
-        write_text(S / "unsubscribed", "".join(h + "\n" for h in unsubscribed))
-    write_text(path, "".join("\t".join(r) + "\n" for r in [header, *body]))
+    with locked("channels"):  # discover가 목록에만 있던 채널을 캐시에 더하는 쓰기와 겹치지 않게 한다.
+        table = rows(path) or [CHANNEL_COLS]
+        header, body = table[0], table[1:]
+        known_handles, known_ids = {r[0] for r in body}, {r[1] for r in body if len(r) > 1}
+        incoming = {}
+        for line in read_lines(a.rows):
+            handle, _, title = line.partition("\t")
+            handle = handle.strip().lstrip("/")
+            if handle.startswith("@") or handle.startswith("channel/UC"):
+                incoming.setdefault(handle, field(title))
+        before = len(body)
+        new = [(h, t) for h, t in incoming.items() if h not in known_handles]
+        with ThreadPoolExecutor(6) as ex:
+            infos = list(ex.map(lambda ht: resolve_channel(*ht), new))
+        added = []
+        for info in infos:
+            if info["channel_id"] and info["channel_id"] not in known_ids:
+                body.append([info["handle"], info["channel_id"], info["title"], "pending", "", str(dt.date.today())])
+                known_ids.add(info["channel_id"])
+                added.append(info["handle"])
+        unsubscribed = []
+        if a.complete and len(incoming) >= 0.9 * before:  # 목록을 덜 읽었을 때 대량 구독 해지로 오인하지 않는다.
+            # 구독하지 않고 목록에만 적은 채널(reason listed)은 구독 해지로 보지 않는다.
+            unsubscribed = sorted({r[0] for r in body if r[4:5] != ["listed"]} - set(incoming))
+            write_text(S / "unsubscribed", "".join(h + "\n" for h in unsubscribed))
+        write_text(path, "".join("\t".join(r) + "\n" for r in [header, *body]))
     resolved = {info["handle"]: info for info in infos}
     pending = [r for r in body if len(r) > 3 and r[3] == "pending"]
     with ThreadPoolExecutor(6) as ex:
         details = list(ex.map(lambda r: resolved.get(r[0]) or resolve_channel(r[0], r[2]), pending))
-    emit({"incoming": len(incoming), "added": added, "unsubscribed": len(unsubscribed), "pending": details})
+    listed = {hkey(h) for h in learning_sources()[0]}  # 목록에 이미 있으면(앞선 harvest가 게시) channels-set만 한다.
+    emit({"incoming": len(incoming), "added": added, "unsubscribed": len(unsubscribed),
+          "leftover": leftover_runs("harvest"),
+          "pending": [d | {"listed": hkey(d["handle"]) in listed} for d in details]})
     return 0
 
 
 def cmd_channels_set(a):
     path = S / "channels.tsv"
-    table = rows(path)
-    hits = [r for r in table[1:] if a.handle in (r[0], r[1])]
-    if not hits:
-        raise SystemExit(f"채널이 없다: {a.handle}")
-    for r in hits:
-        r[3], r[4] = a.decision, field(a.reason)
-    write_text(path, "".join("\t".join(r) + "\n" for r in table))
+    listed = {hkey(h) for h in learning_sources()[0]}
+    with locked("channels"):
+        table = rows(path)
+        hits = [r for r in table[1:] if a.handle in (r[0], r[1])]
+        if not hits:
+            raise SystemExit(f"채널이 없다: {a.handle}")
+        # learn은 저장소 목록이 정본이므로 목록에 행을 더해 게시한 뒤에만 기록한다(실패하면 pending으로 남아 다시 시도된다).
+        if a.decision == "learn" and any(hkey(r[0]) not in listed for r in hits):
+            raise SystemExit(f"{SOURCES}에 먼저 행을 더해 게시한다: {a.handle}")
+        for r in hits:
+            r[3], r[4] = a.decision, field(a.reason)
+        write_text(path, "".join("\t".join(r) + "\n" for r in table))
     emit({"updated": [r[0] for r in hits], "decision": a.decision})
     return 0
 
@@ -1257,30 +1364,34 @@ def cmd_channels_set(a):
 
 def agent_rules(mode):
     repo, state, vl = REPO.as_posix(), S.as_posix(), SCRIPT.as_posix()
-    # 편집은 지식 문서 폴더와 에이전트가 직접 쓰는 상태 폴더만 연다. config.json(실행할 claude 경로)과
-    # own_commits(VL이 푸시해도 되는 커밋 목록)는 VL만 바꾼다.
-    allow = ["Read", "Grep", "Glob", "Agent", "ToolSearch", "WebSearch", "WebFetch",
-             *(f"Edit(/{repo}/{top}/**)" for top in ("tech", "biz", "econ", "fit")),
-             *(f"Edit(/{state}/{sub}/**)" for sub in ("runs", "tmp", "inbox", "digests")),
-             f"Bash(python3 {vl} *)", f"Bash(python3 {SCRIPT.relative_to(REPO).as_posix()} *)",
-             "mcp__development-context", "mcp__plugin_context7_context7"]
-    if mode == "harvest":  # 서버 전체가 아니라 SKILL.md의 harvest 도구만 연다. file_upload 같은 도구는 로컬 파일을 올린다.
-        allow += [f"mcp__claude-in-chrome__{t}" for t in (
-            "tabs_context_mcp", "tabs_create_mcp", "tabs_close_mcp", "navigate", "javascript_tool", "get_page_text",
-            "find", "computer", "read_page", "list_connected_browsers", "select_browser")]
+    # 모든 모드는 읽기, VL과 에이전트가 직접 쓰는 상태 폴더 편집만 쓴다. config.json(실행할 claude 경로, 지정한 친구
+    # 이름)과 own_commits(VL이 푸시해도 되는 커밋 목록)는 VL과 사용자만 바꾼다. 모드마다 필요한 것만 더 연다.
+    allow = ["Read", "Grep", "Glob", "ToolSearch", f"Bash(python3 {vl} *)",
+             f"Bash(python3 {SCRIPT.relative_to(REPO).as_posix()} *)",
+             *(f"Edit(/{state}/{sub}/**)" for sub in ("runs", "tmp", "inbox", "digests"))]
+    if mode == "learn":
+        allow += ["Agent", "WebSearch", "WebFetch", "mcp__development-context", "mcp__plugin_context7_context7",
+                  *(f"Edit(/{repo}/{top}/**)" for top in DOMAINS)]
+    if mode in ("harvest", "instagram"):  # 서버 전체가 아니라 SKILL.md의 읽기 도구만 연다.
+        allow += [f"mcp__claude-in-chrome__{t}" for t in CHROME_TOOLS]
+    if mode == "harvest":  # 새 learn 채널을 학습 출처 목록에 더하고, Gmail 연결이 있으면 읽기 도구만 쓴다.
+        allow += [f"Edit(/{repo}/{SOURCES})", *(f"mcp__claude_ai_Gmail__{t}" for t in GMAIL_READ)]
     # 사용자와 프로젝트 설정의 허용 규칙(git add/commit/push, codex exec, pandoc, pnpm build, python3 -m)도
-    # 이 실행에 그대로 적용된다. 거부가 우선하므로 Git 쓰기와 그 밖의 실행 경로를 여기서 막는다.
+    # 이 실행에 그대로 적용된다. 거부가 우선하므로 Git 쓰기와 그 밖의 실행 경로를 여기서 막는다. 메일 쓰기와
+    # 브라우저의 파일 업로드, 폼 입력은 설정에 넓은 허용 규칙이 생겨도 열리지 않게 함께 막는다.
     deny = [f"Bash(git {sub} *)" for sub in ("add", "commit", "push", "stash", "reset", "checkout", "restore",
                                               "clean", "rebase", "merge", "pull", "rm")]
     deny += ["Bash(rm *)", "Bash(codex *)", "Bash(pandoc *)", "Bash(pnpm *)", "Bash(python3 -m *)",
              "mcp__plugin_playwright_playwright", f"Edit(/{repo}/**/AGENTS.md)", f"Edit(/{repo}/**/CLAUDE.md)",
+             *(f"mcp__claude_ai_Gmail__{t}" for t in GMAIL_WRITE),
+             *(f"mcp__claude-in-chrome__{t}" for t in ("file_upload", "upload_image", "form_input")),
              *(f"Read(~/{p})" for p in (".ssh/**", ".aws/**", ".gnupg/**", ".config/**", ".codex/**", ".netrc"))]
     return allow, deny
 
 
 def agent_prompt(mode, conf):
-    extra = {"learn": f" K={conf['k']}.",
-             "harvest": " Chrome 도구를 쓸 수 없으면 CHROME_UNAVAILABLE 한 줄만 출력하고 끝낸다.",
+    chrome = " Chrome 도구를 쓸 수 없으면 CHROME_UNAVAILABLE 한 줄만 출력하고 끝낸다."
+    extra = {"learn": f" K={conf['k']}.", "harvest": chrome, "instagram": chrome,
              "digest": f" 날짜는 {dt.date.today()}이다."}
     return (f"auto-learn 스킬의 {mode} 모드를 launchd에서 무인으로 실행한다. 먼저 {SKILL / 'SKILL.md'}를 읽고 "
             f"공통 원칙과 {mode} 절차를 그대로 따른다. 상태 디렉터리는 {S}이고 VL은 `python3 {SCRIPT}`다. "
@@ -1319,13 +1430,16 @@ def agent_has_work(mode, conf):
             log("digest: 오늘 다이제스트가 이미 있다")
             return False
         return True
-    if mode == "harvest":
+    if mode == "instagram" and not (conf["instagram_saved_url"] or conf["instagram_dm_name"]):
+        log("instagram: config.json에 저장 글 주소와 DM 이름이 없다")
+        return False
+    if mode in ("harvest", "instagram"):
         if subprocess.run(["pgrep", "-x", "Google Chrome"], capture_output=True).returncode != 0:
-            log("harvest: Chrome이 실행 중이 아니다")
+            log(f"{mode}: Chrome이 실행 중이 아니다")
             return False
         return True
     data = pick_data(conf["k"])
-    if data["tier1"] or data["tier2"] or leftover_runs():
+    if data["tier1"] or data["tier2"] or leftover_runs("learn"):
         return True
     idle = read_json(S / "runs" / "idle.json", {}) or {}
     if time.time() - idle.get("ts", 0) < conf["idle_interval_min"] * 60:
@@ -1368,8 +1482,8 @@ def run_claude(mode, cmd, prompt, timeout_s):
 
 def notify_digest():
     selection = read_json(S / "digests" / f"{dt.date.today()}.json", {}) or {}
-    questions = selection.get("questions") or []
-    text = f"회상 퀴즈 {len(questions)}문항: {questions[0]['q']}" if questions else "오늘 다이제스트가 준비됐다."
+    files = {f for c in selection.get("changes") or [] for f in c.get("files", [])}
+    text = f"바뀐 문서 {len(files)}개와 핵심 3가지가 준비됐다." if files else "어제 바뀐 문서가 없다."
     script = (f"display notification {json.dumps(text[:200], ensure_ascii=False)} "
               f"with title {json.dumps('Vault 학습 다이제스트', ensure_ascii=False)}")
     subprocess.run(["osascript", "-e", script], capture_output=True)
@@ -1399,7 +1513,8 @@ def cmd_agent(a):
         allow, deny = agent_rules(mode)
         cmd = [conf["claude"], "-p", "--model", "opus", "--effort", "max", "--permission-mode", "dontAsk",
                "--add-dir", str(S), "--output-format", "json", "--no-session-persistence",
-               "--allowedTools", *allow, "--disallowedTools", *deny, *(["--chrome"] if mode == "harvest" else [])]
+               "--allowedTools", *allow, "--disallowedTools", *deny,
+               *(["--chrome"] if mode in ("harvest", "instagram") else [])]
         prompt = agent_prompt(mode, conf)
         if a.dry_run:
             print(shlex.join(cmd))
@@ -1409,8 +1524,8 @@ def cmd_agent(a):
         try:
             rc, path = run_claude(mode, cmd, prompt, conf[f"{mode}_timeout_min"] * 60)
         finally:
-            if mode == "learn":
-                finish_runs(since)
+            if mode in ("learn", "harvest"):
+                finish_runs(since, mode)
         text = path.read_text(encoding="utf-8", errors="replace")
         result = last_result(text)
         failed = rc != 0 or not result or result.get("is_error")
@@ -1454,8 +1569,12 @@ def cmd_doctor(a):
     for path in SCRIPT.parent.iterdir():
         if path.is_file() and (not (twin / path.name).exists() or path.read_bytes() != (twin / path.name).read_bytes()):
             problems.append(f"스킬 스크립트 사본이 다르다: {path.name}")
-    if not any(len(r) > 3 and r[3] == "learn" for r in rows(S / "channels.tsv")[1:]):
-        problems.append("channels.tsv에 learn 채널이 없다")
+    channels, letters = learning_sources()
+    if not channels:
+        problems.append(f"{SOURCES}에서 YouTube 채널을 읽지 못했다")
+    unmapped = sorted(set(letters) - {s.get("name") for s in cfg()["email_senders"]})
+    if unmapped:
+        problems.append(f"config.json email_senders에 발신 주소가 없는 뉴스레터: {', '.join(unmapped)}")
     if not cfg()["threads_reposts_url"]:
         problems.append("config.json에 threads_reposts_url이 없다")
     print("\n".join(problems) or "ok")
@@ -1473,6 +1592,9 @@ def cmd_plists(a):
     jobs = {"transcriber": (["transcribe"], {"KeepAlive": True, "RunAtLoad": True, "ThrottleInterval": 60, "Nice": 5}),
             "discover": (["discover"], {"StartInterval": 1800, "RunAtLoad": True}),
             "harvest": (["agent", "harvest"], {"StartInterval": 7200}),
+            # Instagram은 계정 제한을 피하려고 하루 세 번만 읽는다(2026-10-05 사용자 결정).
+            "instagram": (["agent", "instagram"], {"StartCalendarInterval": [{"Hour": h, "Minute": 0}
+                                                                             for h in (9, 15, 21)]}),
             "learn": (["agent", "learn"], {"StartInterval": 1800}),
             # 07:30이 본 실행이다. 밤새 learn이 사용량 한도에 걸려 백오프 중이거나 실패하면 그날 뒤 시각에 다시 한다.
             # 오늘 다이제스트가 있으면 agent_has_work가 claude를 띄우지 않고 끝낸다.
@@ -1504,8 +1626,6 @@ def cmd_selftest(a):
     assert WIKILINK.findall("[[A|b]] [[C#h]] [[D]] [[#x]]") == ["A", "C", "D", ""]
     assert field(0) == "0" and field(None) == "" and field("a\tb\nc") == "a b c"
     today = dt.date(2026, 10, 10)
-    assert next_due("wrong", 2, today) == "2026-10-11" and next_due("partial", 1, today) == "2026-10-13"
-    assert next_due("correct", 1, today) == "2026-10-17" and next_due("correct", 3, today) is None
     log_rows = [{"key": "a", "result": "learned", "ts": "2026-10-01"},
                 {"key": "b", "result": "deferred", "ts": "2026-10-08"},
                 {"key": "c", "result": "deferred", "ts": "2026-10-01"},
@@ -1518,6 +1638,15 @@ def cmd_selftest(a):
     assert SECRET.search("k=AKIA" + "Q" * 16) and not SECRET.search("AKIAIOSFODNN7EXAMPLE")
     assert line_problems("근거 https://www.threads.com/@a/post/1", set()) and not line_problems("docs(x): 요약", set())
     assert line_problems("채널 abcd 소개", {"abcd"}) and not line_problems(TRAILER, set())
+    assert line_problems("https://www.instagram.com/p/AbC123/", set()) and line_problems("instagram.com/u/reel/x/", set())
+    assert not line_problems("https://help.instagram.com/123", set())
+    assert hkey(unicodedata.normalize("NFD", "@가나Ab")) == hkey("@가나aB")
+    sample = ["## YouTube 채널", "| 채널 | 링크 | 도메인 |", "|---|---|---|",
+              "| A \\| B | [@가나](https://www.youtube.com/@가나) | tech, biz |", "| 링크 없음 | @x | tech |",
+              "## 이메일 뉴스레터", "| 뉴스레터 | 도메인 |", "|---|---|", "| 레터 | fit |", "| 태그 없음 | |"]
+    assert parse_sources(sample) == ({"@가나": ("A | B", ["tech", "biz"])}, {"레터": ["fit"]})
+    problems = sources_problems("\n".join(sample))  # 링크 없는 채널 행(5행)과 태그 없는 뉴스레터 행(10행)
+    assert len(problems) == 2 and ":5:" in problems[0] and ":10:" in problems[1]
     real = S
     with tempfile.TemporaryDirectory() as tmp:
         S = Path(tmp)
@@ -1530,6 +1659,27 @@ def cmd_selftest(a):
         worker = Transcriber(DEFAULTS)
         assert worker.claim() == ("backlog", "aaaaaaaaaaa")  # c는 쉬는 중, b는 끝났다.
         assert worker.claim() is None
+        write_json(S / "config.json", {"instagram_dm_name": "테스트친구",
+                                       "email_senders": [{"from": "jane.doe@corp.example", "name": "x", "private": True}]})
+        assert {"테스트친구", "jane.doe"} <= personal_terms()
+        box = S / "inbox"
+        (box / "email" / "m1.md").write_text("---\nid: m1\npublication: 레터\nsender: a@b.example\nsubject: 제목\n"
+                                             "date: 2026-10-05T07:00:00+09:00\nharvested_at: 2026-10-05\n---\n\n"
+                                             "## Text\n\n본문\n", encoding="utf-8")
+        (box / "instagram" / "x1.md").write_text("---\nid: x1\n---\n", encoding="utf-8")
+        (box / "instagram" / "EXCLUDED.tsv").write_text("x1\t2026-10-05\t1\tpersonal\n", encoding="utf-8")
+        (box / "instagram" / "p1.md").write_text("---\nid: p1\nauthor: \"@a\"\nharvested_at: 2026-10-04\n---\n\n"
+                                                 "## Sender note\n\n테스트친구에게 a@corp.co.kr\n", encoding="utf-8")
+        assert [(x["key"], x["title"], x["who"]) for x in inbox_leads(set())][:1] == [("email:m1", "제목", "레터")]
+        assert "insta:x1" not in {x["key"] for x in inbox_leads(set())}  # 제외한 단서
+        with open(os.devnull, "w") as null, contextlib.redirect_stdout(null):
+            cmd_inbox_reindex(argparse.Namespace(source="instagram", dry_run=False, complete=["dm"]))
+            cmd_inbox_reindex(argparse.Namespace(source="email", dry_run=False, complete=[]))
+        note = (box / "instagram" / "p1.md").read_text(encoding="utf-8")
+        assert "테스트친구" not in note and "[연락처]" in note and "@a" in note
+        assert "a@b.example" in (box / "email" / "m1.md").read_text(encoding="utf-8")  # frontmatter는 그대로 둔다.
+        assert set(read_lines(seen_file("instagram"))) == {"p1", "x1"} and read_lines(seen_file("email")) == ["m1"]
+        assert (read_json(box / "instagram" / "STATE.json") or {}).get("dm") == str(dt.date.today())
     S = real
     print("selftest ok")
     return 0
@@ -1545,7 +1695,7 @@ def main():
         return p
 
     add("transcribe", cmd_transcribe, "전사 작업자(launchd KeepAlive)").add_argument("--dry-run", action="store_true")
-    p = add("discover", cmd_discover, "learn 채널 RSS에서 새 업로드를 큐에 넣는다")
+    p = add("discover", cmd_discover, "학습 출처 목록의 채널 RSS에서 새 업로드를 큐에 넣는다")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--limit", type=int, default=0, help="확인할 채널 수 상한(시험용)")
     p = add("enqueue", cmd_enqueue, "영상 URL이나 id를 전사 큐에 넣는다")
@@ -1557,12 +1707,13 @@ def main():
     p.add_argument("--wait-mins", type=int, default=20, help="진행 중 전사를 기다릴 시간. 넘기면 멈추고 다시 큐에 넣는다")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--force", action="store_true", help="이미 이관했어도 다시 한다")
-    add("begin", cmd_begin, "learn 또는 quiz run을 연다").add_argument("--kind", choices=("learn", "quiz"), default="learn")
+    add("begin", cmd_begin, "learn 또는 harvest run을 연다").add_argument("--kind", choices=("learn", "harvest"),
+                                                                    default="learn")
     add("pick", cmd_pick, "learn 후보를 우선순위대로 보여 준다").add_argument("--k", type=int, default=0)
     p = add("plan", cmd_plan, "편집할 파일을 run에 등록한다")
     p.add_argument("--run", required=True)
     p.add_argument("--file", nargs="+", required=True)
-    p = add("check", cmd_check, "규칙 검사(가운뎃점, 위키링크, Threads 링크, 개인 채널, 연락처)")
+    p = add("check", cmd_check, "규칙 검사(가운뎃점, 위키링크, 단서 링크, 개인 정보, 연락처, 학습 출처 목록 형식)")
     group = p.add_mutually_exclusive_group(required=True)
     group.add_argument("--run")
     group.add_argument("--files", nargs="+")
@@ -1572,12 +1723,14 @@ def main():
     p = add("publish", cmd_publish, "검사, 커밋, 원격 동기화, 푸시, 증명, 다이제스트 기록")
     p.add_argument("--run", required=True)
     p.add_argument("--dry-run", action="store_true")
-    add("digest-data", cmd_digest_data, "다이제스트 자료와 오늘의 회상 퀴즈").add_argument("--date")
-    p = add("quiz-grade", cmd_quiz_grade, "퀴즈 채점 결과와 다음 복습일을 기록한다")
-    p.add_argument("--qid", required=True)
-    p.add_argument("--result", choices=("correct", "partial", "wrong"), required=True)
-    p.add_argument("--note", default="")
-    add("threads-reindex", cmd_threads_reindex, "리포스트 정리와 INDEX.tsv 재생성").add_argument("--dry-run", action="store_true")
+    add("digest-data", cmd_digest_data, "다이제스트 자료(지난 다이제스트 이후 커밋한 변경)").add_argument("--date")
+    p = add("inbox-reindex", cmd_inbox_reindex, "단서 정리와 INDEX.tsv, 본 id 목록 재생성")
+    p.add_argument("source", choices=tuple(INBOX))
+    p.add_argument("--complete", action="append", default=[], choices=("mail", "saved", "dm"),
+                   help="처음부터 모으기를 끝낸 부분(email은 mail, instagram은 saved와 dm)")
+    p.add_argument("--dry-run", action="store_true")
+    add("email-query", cmd_email_query, "harvest의 Gmail 검색어와 발신자")
+    add("lead-id", cmd_lead_id, "DM에서 본 외부 링크의 수집함 id").add_argument("url")
     p = add("channels-merge", cmd_channels_merge, "Chrome에서 읽은 구독 목록을 channels.tsv에 합친다")
     p.add_argument("--rows", required=True, help="handle<TAB>title 행 파일")
     p.add_argument("--complete", action="store_true", help="목록 전체를 읽었을 때만 준다(구독 해지 반영)")
@@ -1585,7 +1738,7 @@ def main():
     p.add_argument("--handle", required=True)
     p.add_argument("--decision", choices=("learn", "exclude"), required=True)
     p.add_argument("--reason", required=True)
-    p = add("agent", cmd_agent, "claude -p로 harvest, learn, digest 모드를 실행한다(launchd)")
+    p = add("agent", cmd_agent, "claude -p로 harvest, instagram, learn, digest 모드를 실행한다(launchd)")
     p.add_argument("mode", choices=MODES)
     p.add_argument("--dry-run", action="store_true")
     add("status", cmd_status, "큐, 처리 기록, 백오프, 미푸시 커밋")

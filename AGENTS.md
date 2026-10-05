@@ -119,12 +119,13 @@
 - 회사별 면접 준비에는 Codex에서 `.agents/skills/interview-prep/SKILL.md`, Claude에서 `.claude/skills/interview-prep/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
 - 메모, 강의, 세미나, 블로그와 아티클 정리에는 Codex에서 `.agents/skills/memo/SKILL.md`, Claude에서 `.claude/skills/memo/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
 - 데일리 회고와 TIL, 주간, 월간, 행사 및 프로젝트 회고에는 Codex에서 `.agents/skills/retro/SKILL.md`, Claude에서 `.claude/skills/retro/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
+- 구독 채널, 리포스트, Instagram 저장 글과 이메일 뉴스레터를 무인으로 모아 검증된 지식 문서로 반영하는 자동 학습과 그 운영에는 Codex에서 `.agents/skills/auto-learn/SKILL.md`, Claude에서 `.claude/skills/auto-learn/SKILL.md`를 사용한다.
 - 대응하는 `.claude/skills/`와 `.agents/skills/` 워크플로우 본문은 한쪽이 바뀌면 동기화한다. 단, Claude용 스킬의 읽기 경로는 `CLAUDE.md`, Codex용 스킬의 읽기 경로는 `AGENTS.md`를 사용하며 규칙을 수정하는 대상은 모두 정본인 `AGENTS.md`로 둔다.
 
 ## Claude/Codex 공존
 
 - 이 레포는 **Claude와 Codex를 함께** 쓴다. 저장소 규칙과 사용자 컨텍스트의 정본은 루트와 대상 경로의 `AGENTS.md`다. Codex는 `AGENTS.md`를 직접 읽고, Claude는 같은 경로의 `CLAUDE.md`에 있는 `@AGENTS.md` import를 통해 동일한 규칙을 읽는다.
-- **스킬은 두 곳에 중복 존재**: `.claude/skills/{memo,interview-prep,retro,development-context}/`와 `.agents/skills/{memo,interview-prep,retro,development-context}/`. 한쪽 스킬을 수정하면 frontmatter와 위의 도구별 읽기 경로 차이를 제외한 워크플로우를 다른 쪽에도 반영한다. 스킬의 `scripts/` 사본은 두 곳이 바이트 단위로 같아야 하고, `SKILL.md`에서는 스크립트 경로만 도구별로 다르다. 불변 규칙이 바뀌면 해당 도메인 `AGENTS.md`를 먼저 고친 뒤 양쪽 스킬을 동기화한다.
+- **스킬은 두 곳에 중복 존재**: `.claude/skills/{memo,interview-prep,retro,development-context,auto-learn}/`와 `.agents/skills/{memo,interview-prep,retro,development-context,auto-learn}/`. 한쪽 스킬을 수정하면 frontmatter와 위의 도구별 읽기 경로 차이를 제외한 워크플로우를 다른 쪽에도 반영한다. 스킬의 `scripts/` 사본은 두 곳이 바이트 단위로 같아야 하고, `SKILL.md`에서는 스크립트 경로만 도구별로 다르다. 불변 규칙이 바뀌면 해당 도메인 `AGENTS.md`를 먼저 고친 뒤 양쪽 스킬을 동기화한다.
 - `CLAUDE.md`에는 같은 경로의 `@AGENTS.md` import만 두고 별도 규칙을 추가하지 않는다. `CLAUDE.md`, `.claude/`와 다른 Claude 파일은 사용자가 명시적으로 요청할 때만 삭제, 개명하거나 변환한다. `.agents/`는 호환 헬퍼일 뿐 Claude 설정을 대체하지 않는다.
 - MCP setup과 장비별 로컬 설정 규칙은 루트 `AGENTS.md`에서 관리한다. `.mcp.json`은 장비별 로컬 설정(gitignore)이라 커밋하지 않는다. Obsidian MCP는 저장소 안에서 아래 명령을 실행해 현재 장비의 저장소 루트를 계산해서 등록한다. Claude의 project scope는 로컬 `.mcp.json`을 만들고, Codex는 계산된 절대경로를 사용자 설정에 저장한다. `.mcp.json.example`은 수동 설정이 필요할 때만 사용한다.
 - 개발 지식 조회용 `development-context` MCP는 루트 `ontology/`의 서버를 각 장비의 사용자 설정에 등록한다. 다른 개발 프로젝트에서도 이 Vault를 조회하며, 실제 실행 경로와 등록 방법은 `ontology/Ontology-Operations.md`를 따른다. 도구가 현재 세션에 보이지 않으면 연결 완료를 가정하지 않고 CLI 또는 원문 조회로 보완한다.
