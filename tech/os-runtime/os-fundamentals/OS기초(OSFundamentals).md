@@ -27,7 +27,7 @@ aliases: ["OS Fundamentals"]
 - [x] [[Sleep-and-Timing|Sleep과 타이밍 (대기와 준비 전이, 타이머 해상도, 단조 증가 카운터, sleep 기반 동기화의 경쟁 상태, 지터와 난수)]]
 
 ## 메모리 & 스토리지
-- [x] [[Stack-vs-Heap|스택 vs 힙 (수명, LIFO 한계, 스레드 공유, 메모리 풀, 파편화, GC 컴팩션)]]
+- [x] [[Stack-vs-Heap|스택 vs 힙 (수명, LIFO 한계, 스레드 공유, C 저장 기간, 스택 소진과 버퍼 오버플로, 메모리 풀, 파편화, GC 컴팩션)]]
 - [x] [[Virtual-Memory|Virtual memory (세그멘테이션, 페이징, 디맨드 페이징, 페이지 교체)]]
 - [x] [[Virtual-Memory-Allocation|Virtual Memory — 할당]]
 - [x] [[Virtual-Memory-Paging|Virtual Memory — 페이징]]

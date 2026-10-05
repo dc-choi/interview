@@ -10,12 +10,16 @@ verified_at: 2026-10-05
 
 컴퓨터는 비트열 자체에 숫자, 문자, 명령어라는 의미를 붙이지 않는다. 같은 비트열도 해석 규칙과 비트 폭에 따라 값이 달라진다. 따라서 값을 볼 때는 **비트 폭, 부호 여부, 인코딩, 바이트 순서**를 함께 확인해야 한다.
 
+예를 들어 16진수 바이트열 `48 49 21`은 ASCII 문자로 읽으면 `HI!`, RGB 픽셀 하나로 읽으면 R=72, G=73, B=33, 24비트 big-endian 부호 없는 정수로 읽으면 4,737,313이다.
+
 ## 비트, 바이트, 워드
 
 - **비트(bit)**: 0 또는 1 한 상태를 표현하는 최소 정보 단위다.
 - **바이트(byte)**: 8비트다.
 - **워드(word)**: CPU가 자연스럽게 처리하는 데이터 폭을 가리키지만 ISA와 문맥에 따라 뜻이 달라진다.
 - **주소 공간**: 주소 비트 수뿐 아니라 주소 단위, ISA, MMU, 운영체제 제약에 의해 정해진다.
+
+회로는 비트를 전압 대역으로 구분한다. 같은 전압 범위를 10단계로 나누는 대신 두 대역으로만 나누면 대역 사이 간격을 넓게 잡을 수 있어 잡음이 섞여도 0과 1을 가르기 쉽다 ([[CPU-and-Arithmetic|CPU와 산술논리연산]]).
 
 32비트 CPU라는 말도 레지스터, ALU, 주소 폭이 모두 반드시 32비트라는 뜻은 아니다. 전체 64비트 주소를 구현했다고 해서 실제로 `2^64`바이트 메모리를 장착할 수 있다는 뜻도 아니다.
 
@@ -36,7 +40,7 @@ verified_at: 2026-10-05
 
 ## 고정 폭 정수
 
-`n`비트가 표현할 수 있는 비트 패턴은 `2^n`개다.
+`n`비트가 표현할 수 있는 비트 패턴은 `2^n`개다. 반대로 서로 다른 값 `k`개를 구분하려면 최소 `⌈log₂ k⌉`비트가 필요하다. ASCII의 128개 부호는 7비트, Unicode 코드 공간의 1,114,112개 코드 포인트는 21비트가 필요하다.
 
 | 해석 | 범위 |
 |---|---|
@@ -114,17 +118,27 @@ SI 접두사와 이진 접두사를 구분한다.
 | 1 MiB | `2^20` |
 | 1 GiB | `2^30` |
 
+`KB`, `MB` 같은 표기는 문맥마다 기준이 다르다. SI 접두사 kilo의 기호는 소문자 `k`라 대문자 K를 쓴 `KB`는 SI 접두사 표기가 아니고, `MB`도 메모리 제조사는 보통 `2^20`바이트, 저장장치 제조사는 `10^6`바이트의 뜻으로 써 왔다. 용량과 quota 계약에는 `kB`와 `KiB`처럼 기준이 드러나는 표기를 쓰거나 바이트 수를 함께 적는다.
+
 ## 문자 인코딩
 
-- **ASCII**: 7비트 코드로 `U+0000`부터 `U+007F`에 대응하는 문자와 제어 문자를 표현한다.
-- **Unicode**: 문자에 코드 포인트를 부여하는 표준이다.
+- **ASCII**: 7비트 코드로 `U+0000`부터 `U+007F`에 대응하는, 제어 문자를 포함한 128개 부호를 표현한다. `A`는 65(`0x41`, `100 0001₂`), `B`는 66이다.
+- **Unicode**: 문자에 코드 포인트를 부여하는 표준이다. 코드 공간은 `U+0000`부터 `U+10FFFF`까지다.
 - **UTF-8**: Unicode 스칼라 값을 1바이트에서 4바이트로 인코딩하며 ASCII 범위는 같은 1바이트 값을 유지한다.
+
+저장하고 전송하는 바이트열은 인코딩이 정한다. UTF-32는 코드 단위 값이 코드 포인트 값과 같지만, UTF-16은 보충 평면 문자를 서로게이트 쌍으로, UTF-8은 ASCII 밖 문자를 여러 바이트로 나눠 코드 포인트와 다른 값을 담는다. 기쁨의 눈물 이모지(FACE WITH TEARS OF JOY)는 코드 포인트 `U+1F602`(128,514)이고 UTF-32로는 `0001F602`, UTF-16으로는 서로게이트 쌍 `D83D DE02`, UTF-8로는 `F0 9F 98 82` 4바이트다. 받는 쪽은 바이트열을 코드 포인트로 디코딩한 뒤 글꼴의 글리프로 그린다. Unicode는 문자만 정하고 글리프 모양은 글꼴 제작사가 정하므로 같은 이모지도 운영체제와 글꼴마다 다르게 보일 수 있다.
 
 문자 수와 바이트 수는 같지 않다. UTF-8에서 `A`는 1바이트, 현대 한글 음절 `가`는 3바이트지만, 사용자에게 보이는 한 글자가 여러 코드 포인트로 구성될 수도 있다.
 
 ## 이미지의 비트 표현
 
 래스터 이미지는 픽셀마다 색상 채널 값을 저장한다. 24비트 RGB는 보통 R/G/B 채널에 각 8비트를 쓰며, 32비트 RGBA는 알파 채널을 더한다. BMP, PNG, JPEG 같은 형식은 같은 픽셀 정보를 저장하고 압축하는 규칙이 서로 다르다.
+
+## 소리와 영상의 비트 표현
+
+PCM은 소리 같은 아날로그 신호의 크기를 일정한 간격으로 표본화하고 각 표본을 정해진 비트 수의 값으로 양자화한다. 압축하지 않은 PCM의 초당 바이트 수는 `표본화 주파수 × 채널 수 × 표본 비트 수 ÷ 8`이므로 44.1kHz, 16비트, 2채널이면 초당 176,400바이트, 1분에 약 10.6MB다. MIDI는 파형 대신 어떤 음을 언제 어떤 세기로 연주할지를 담는다. Note On 메시지는 채널 번호를 담은 상태 바이트 뒤에 7비트 음 번호와 7비트 세기를 붙인 3바이트이고, 소리는 받는 쪽 신시사이저가 만든다.
+
+영상은 프레임이라 부르는 이미지를 연속으로 보여 주는 표현이다. 채널당 8비트인 1920×1080 RGB 프레임 하나는 6,220,800바이트이고, 초당 30프레임이면 압축 전 데이터가 초당 186,624,000바이트(약 1.49Gbit/s)다. 저장과 전송 크기는 코덱의 압축이 정하지만 재생 중 메모리와 처리량은 디코딩한 프레임 크기와 프레임 속도로 계산한다.
 
 ## 면접 체크포인트
 
@@ -135,6 +149,8 @@ SI 접두사와 이진 접두사를 구분한다.
 - 8비트 `1000 0000`이 -128인 이유와 그 절댓값을 같은 폭에 담지 못하는 결과(`Math.abs(Integer.MIN_VALUE)`)를 설명할 수 있는가
 - 엔디언이 값의 의미가 아니라 바이트 배치 순서라는 점을 설명할 수 있는가
 - 문자 수, 코드 포인트 수, UTF-8 바이트 수를 구분할 수 있는가
+- 코드 포인트, 인코딩된 바이트열과 글리프를 구분해 같은 이모지가 기기마다 다르게 보이는 이유를 설명할 수 있는가
+- PCM 오디오와 압축 전 영상의 초당 데이터량을 계산할 수 있는가
 
 ## 범위, 바이트와 실제 저장 크기
 
@@ -154,8 +170,16 @@ RGB 8 bit 채널 세 개는 pixel당 3 B, RGBA는 4 B다. 디코딩 buffer 크�
 - 인프런, 감자 강사, [10진법과 2진법](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277215), [16진법](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277224)
 - 인프런, 감자 강사, [빅 엔디안과 리틀 엔디안](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277632), [오버플로우와 인터럽트](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277637), [음수](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277641)
 - YouTube, 쉬운코드, [컴퓨터 양의 정수 표현 방법](https://www.youtube.com/watch?v=P6s_66Ta72s), [컴퓨터 음의 정수 표현 방법](https://www.youtube.com/watch?v=oMX8305gTmQ), [10000000 십진수 변환 해설](https://www.youtube.com/watch?v=6-6x6s5Rme8)
-- [Unicode Standard 17.0, UTF-8](https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-2/)
+- 부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), [2진법](https://www.boostcourse.org/cs112/lecture/118997), [정보의 표현](https://www.boostcourse.org/cs112/lecture/118998)
+- [Unicode Standard 17.0, Chapter 2 General Structure](https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-2/)
+- [Unicode Character Database 17.0, UnicodeData.txt](https://www.unicode.org/Public/17.0.0/ucd/UnicodeData.txt)
+- [IETF RFC 20, ASCII format for Network Interchange](https://www.rfc-editor.org/rfc/rfc20)
 - [NIST, Prefixes for binary multiples](https://physics.nist.gov/cuu/Units/binary.html)
+- [NIST, Metric (SI) Prefixes](https://www.nist.gov/pml/owm/metric-si-prefixes)
+- [Microsoft Learn, WAVEFORMATEX structure (mmeapi.h)](https://learn.microsoft.com/en-us/windows/win32/api/mmeapi/ns-mmeapi-waveformatex)
+- [Library of Congress, Linear Pulse Code Modulated Audio (LPCM)](https://www.loc.gov/preservation/digital/formats/fdd/fdd000011.shtml)
+- [MIDI Association, Summary of MIDI 1.0 Messages](https://midi.org/summary-of-midi-1-0-messages)
+- [MIDI Association, About MIDI Part 1: Overview](https://midi.org/about-midi-part-1overview)
 - [RISC-V RV32I Base Integer Instruction Set](https://docs.riscv.org/reference/isa/unpriv/rv32.html)
 - [Java SE 26 Language Specification, 15.15.4 Unary Minus Operator](https://docs.oracle.com/javase/specs/jls/se26/html/jls-15.html#jls-15.15.4)
 - [Java SE 26 API, Math.abs와 Math.absExact](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Math.html)
@@ -166,3 +190,5 @@ RGB 8 bit 채널 세 개는 pixel당 3 B, RGBA는 4 B다. 디코딩 buffer 크�
 - [[Sequential-Logic-and-Memory|순차 논리회로와 메모리]]
 - [[CPU-Datapath-Control-and-Instruction-Cycle|CPU 데이터패스와 명령어 사이클]]
 - [[IPv4-Header|IPv4 헤더 구조와 패킷 읽기 (16진수 덤프 해석 예시)]]
+- [[Java-Character-Encoding-and-Charset|Java 문자 인코딩과 Charset (charset별 바이트 수)]]
+- [[JavaScript-Numbers-Strings-and-Regular-Expressions|JavaScript 숫자, 문자열과 정규표현식 (UTF-16 code unit과 grapheme)]]

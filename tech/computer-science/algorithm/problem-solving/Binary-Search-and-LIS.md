@@ -119,6 +119,7 @@ while lo <= hi:
 
 ## 관련 문서
 
+- [[Algorithm-Searching|선형 검색과 이진 검색 기본]]
 - [[Cpp-Language-Memory-and-STL|C++ 표준 Algorithm]]
 - [[Algorithm-DP|동적 프로그래밍]]
 - [[Algorithm-Complexity|복잡도 분석]]

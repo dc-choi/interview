@@ -10,6 +10,8 @@ aliases: ["Hash Table", "해시 테이블", "HashTable", "Hash Map", "해시 맵
 
 map ADT(associative array, dictionary라고도 한다)는 key를 value에 대응시킨다. key는 유일하고 value는 중복될 수 있다. hash table은 이 ADT를 배열과 hash function으로 구현한 자료구조로, key의 hash를 bucket index로 압축하고 collision resolution 규칙에 따라 항목을 저장한다. key 순서가 필요하면 균형 탐색 트리로 구현한 map을 쓴다([[Java-Generics-and-Collections-Map-Stack-Queue#SortedMap과 NavigableMap|Java SortedMap]]). Set도 value 없이 key만 저장하는 방식으로 구현할 수 있지만 모든 map과 set이 hash table인 것은 아니다([[Linear-Data-Structures-List-and-Set|List와 Set]]).
 
+같은 ADT를 연결 리스트나 B-tree 같은 탐색 트리로도 구현하고, key가 문자열이면 trie도 map 구현이 된다([[Trie-and-Autocomplete#Hash table과 비교|Trie와 hash table 비교]]). dictionary를 hash table과 같은 말로 쓰는 설명은 ADT와 그 대표 구현을 합쳐 부른 것이다.
+
 ## 직접 주소 테이블에서 출발하기
 
 key universe가 작고 정수 index로 바로 쓸 수 있다면 `table[key]`에 값을 두는 direct-address table을 만들 수 있다. lookup, insert와 delete는 worst-case O(1)이지만 공간은 실제 항목 수가 아니라 universe 크기 Θ(|U|)만큼 필요하다. key 범위가 크거나 sparse하면 대부분의 칸이 비어 비효율적이다.
@@ -59,6 +61,8 @@ hash table은 더 작은 bucket array를 두고 hash function으로 넓은 key �
 - open addressing에서는 점유 비율이고 반드시 1보다 작다.
 
 α가 커지면 chain이나 probe가 길어진다. 구현은 정책 임계치에서 더 큰 table을 만들고 항목을 새 bucket 수에 맞춰 재배치한다. 한 번의 resize는 Θ(n)이지만 충분히 큰 폭으로 확장하면 여러 insert에 나눈 amortized 비용을 작게 유지할 수 있다. 임계치와 성장 배수는 구현 정책이지 보편 상수가 아니다.
+
+bucket 수를 고정하면 기대 O(1)이 성립하지 않는다. separate chaining의 검색과 삽입 비교 수는 n/m에 비례하므로, 이름의 첫 글자로 26개 bucket에 나누는 table은 이름이 고르게 퍼져도 평균 chain 길이가 n/26이라 Θ(n)이고 상수만 26분의 1로 줄어든다. 실제 첫 글자 분포는 고르지 않아 긴 chain은 더 길다. 기대 O(1)은 n이 늘 때 m도 늘려 n/m을 상수 범위에 묶는 resize를 전제한다. Princeton `SeparateChainingHashST`는 평균 chain 길이가 10 이상이면 table을 2배로 늘리고, chain 수가 기본 초기값 4보다 클 때 평균이 2 이하로 떨어지면 절반으로 줄인다.
 
 항목마다 hash를 함께 저장하는 구현은 resize 때 hash function을 다시 부르지 않고 저장된 hash로 새 index만 계산한다(OpenJDK `HashMap`의 `Node.hash`, CPython dict 일반 entry의 `me_hash`, 문자열 key만 담은 dict는 문자열 객체에 cache된 hash). 같은 값은 조회에서 후보를 거르는 데도 쓰인다(아래 Key 절).
 
@@ -129,6 +133,8 @@ CPython dict와 set, OpenJDK `HashMap`은 모두 table 크기를 2의 거듭제�
 - [[Linear-Data-Structures|선형 자료구조 (배열 기반 linked list)]]
 - [[Linear-Data-Structures-List-and-Set|List와 Set (hash set 구현 비교)]]
 - [[Java-Generics-and-Collections-Hashing|Java 해시와 HashSet 원리]]
+- [[Trie-and-Autocomplete|Trie (문자열 key의 map 구현)]]
+- [[Data-Structures-in-C|C로 구현하는 자료구조 (chaining table의 C 표현)]]
 
 ## 시간, 공간과 조회 방향
 
@@ -156,3 +162,8 @@ CPython dict와 set, OpenJDK `HashMap`은 모두 table 크기를 2의 거듭제�
 - [Java SE 26 API, HashMap](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/HashMap.html)
 - [dictobject.c — CPython v3.14.0](https://github.com/python/cpython/blob/v3.14.0/Objects/dictobject.c)
 - [HashMap.java — OpenJDK jdk-21+35](https://github.com/openjdk/jdk/blob/jdk-21%2B35/src/java.base/share/classes/java/util/HashMap.java)
+- [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 해시 테이블](https://www.boostcourse.org/cs112/lecture/119042)
+- [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 스택, 큐, 딕셔너리](https://www.boostcourse.org/cs112/lecture/119044)
+- [NIST DADS, dictionary](https://xlinux.nist.gov/dads/HTML/dictionary.html)
+- [Princeton Algorithms, SeparateChainingHashST.java](https://algs4.cs.princeton.edu/34hash/SeparateChainingHashST.java.html)
+- [Princeton Algorithms, TrieST.java](https://algs4.cs.princeton.edu/52trie/TrieST.java.html)

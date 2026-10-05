@@ -1,8 +1,9 @@
 ---
-tags: [os, memory, stack, heap, fragmentation, memory-pool]
+tags: [os, memory, stack, heap, fragmentation, memory-pool, stack-overflow, buffer-overflow]
 status: done
+verified_at: 2026-10-05
 category: "OS - 기초"
-aliases: ["Stack vs Heap", "스택 vs 힙", "메모리 풀", "메모리 파편화"]
+aliases: ["Stack vs Heap", "스택 vs 힙", "메모리 풀", "메모리 파편화", "스택 오버플로와 버퍼 오버플로"]
 ---
 
 # 스택 vs 힙 — 크기가 아니라 수명의 문제
@@ -33,6 +34,28 @@ aliases: ["Stack vs Heap", "스택 vs 힙", "메모리 풀", "메모리 파편�
 - **수명 구조의 불일치**: 스택은 LIFO지만 실제 프로그램의 데이터 수명은 LIFO가 아니다. 함수 A에서 만든 객체가 함수 B, C와 여러 스레드에서 계속 필요할 수 있고, 이런 데이터는 호출 스택의 생명주기에 묶을 수 없다
 - **멀티스레드 공유**: 스레드는 각자 스택을 갖고 힙을 공유한다 ([[Process-Lifecycle|프로세스와 스레드]]). 한 스레드의 스택에 있는 데이터를 다른 스레드가 공유하는 것은 구조적으로 위험하다 — 여러 실행 흐름이 함께 쓰는 객체는 힙에 두고 동기화로 보호하는 것이 정석
 
+## C 코드로 보는 스택과 힙
+
+C 표준은 스택과 힙이라는 영역 대신 저장 기간을 정한다. 지역 변수와 매개변수는 자동 저장 기간, `malloc`으로 만든 객체는 할당 저장 기간이고, 이를 스택과 힙에 배치하는 것은 구현이다([[C-Pointers-and-Dynamic-Memory#저장 기간과 메모리 영역|C 저장 기간]]).
+
+- 함수를 호출할 때마다 새 스택 프레임에 매개변수와 지역 변수가 생긴다. `swap(int a, int b)`의 a, b는 호출자 x, y의 복사본이라 다른 위치에 있고, a와 b를 바꿔도 x와 y는 그대로다. 원본을 바꾸려면 x, y의 주소를 넘긴다.
+- 지역 배열의 주소를 반환하면 프레임이 사라진 뒤의 위치를 가리킨다. 호출이 끝난 뒤에도 쓸 데이터는 `malloc`으로 할당해 포인터를 반환하고 해제 책임을 함께 넘긴다.
+- GC가 없는 C에서 `free`하지 않은 블록은 프로세스가 끝날 때까지 할당된 채로 남는다(메모리 누수).
+- 힙과 스택이 주소 공간 양 끝에서 서로를 향해 자란다는 그림은 단순화다. 성장 방향은 흔한 ABI의 예일 뿐이고, 실제 주소 공간에는 `mmap` 영역과 스레드마다 따로 잡힌 스택이 섞여 있다([[Concurrency-and-Process-Overview#프로세스메모리구조(상세)|프로세스 메모리 구조]]). 두 영역이 맞부딪쳐 서로를 덮어쓰는 식으로 실패하기보다, Linux에서 메인 스레드 스택은 `RLIMIT_STACK` 한도에서, 다른 스레드 스택은 끝의 guard 영역에 닿을 때 SIGSEGV를 받고, 힙 할당 실패는 `malloc`의 NULL 반환이나 OOM killer로 드러난다.
+
+## 스택 오버플로와 버퍼 오버플로
+
+이름은 비슷하지만 원인과 대응이 다른 세 문제다.
+
+| 문제 | 뜻 | 흔한 원인 | 결과 |
+|---|---|---|---|
+| 스택 오버플로(스택 소진) | 스택 사용량이 한도를 넘음 | 종료 조건이 틀리거나 너무 깊은 재귀, 큰 지역 배열이나 VLA | Linux는 메인 스레드 스택이 `RLIMIT_STACK`에 도달하거나 스레드 스택이 guard 영역에 닿으면 SIGSEGV를 보낸다 |
+| 스택 버퍼 오버플로(CWE-121) | 스택에 있는 지역 버퍼의 범위 밖 쓰기 | 폭 없는 `scanf("%s", buf)`, 길이 검사 없는 `strcpy` | 저장된 반환 주소, 프레임 포인터 같은 이웃 값 손상 |
+| 힙 버퍼 오버플로(CWE-122) | `malloc`으로 받은 블록의 범위 밖 쓰기 | `malloc(strlen(s))`에 NUL까지 복사, 10칸 블록의 `x[10]` | 이웃 데이터와 함수 포인터 손상 |
+
+- 두 버퍼 오버플로는 메모리 안전성 결함이라 공격자가 실행 흐름을 바꾸는 보안 취약점이 될 수 있다. AddressSanitizer와 Valgrind로 찾는다([[C-Pointers-and-Dynamic-Memory#메모리 오류와 도구|C 메모리 오류와 도구]]).
+- 스택 소진은 재귀를 반복으로 바꾸거나 큰 데이터를 힙으로 옮겨 줄인다([[Algorithm-Recursion#Call stack과 비용|재귀의 call stack 비용]]).
+
 ## 힙 할당 비용과 메모리 풀
 
 `malloc`, `new`는 빈 공간을 찾고, 관리 정보를 갱신하고, 해제까지 처리해야 해서 스택 할당보다 느리다. 고성능 서버, 게임 서버에서 매 요청마다 동적 할당을 반복하면 병목이 된다.
@@ -43,7 +66,7 @@ aliases: ["Stack vs Heap", "스택 vs 힙", "메모리 풀", "메모리 파편�
 
 OS 분할 방식 관점(가변/고정 분할, 버디 시스템)은 [[Virtual-Memory-Allocation|메모리 할당 방식]] 참조. 힙 관점 요약:
 
-- **내부 파편화** — 할당 단위 때문에 받은 공간 안에서 남는 낭비. 1바이트만 필요해도 정렬 단위(4~8바이트)로 할당되고, 디스크에서도 1바이트 파일이 블록 단위(4KB)를 차지한다
+- **내부 파편화** — 할당 단위 때문에 받은 공간 안에서 남는 낭비. 1바이트만 필요해도 할당기의 정렬 단위 이상으로 할당되고(GNU C Library의 `malloc`은 주소를 8의 배수, 64비트 시스템에서는 16의 배수로 맞춘다), 디스크에서도 1바이트 파일이 블록 단위(흔히 4KiB)를 차지한다
 - **외부 파편화** — 전체 빈 공간은 충분한데 **연속된 큰 공간이 없어** 할당 실패. 작은 객체의 생성, 삭제가 반복되며 빈 구멍이 흩어진다. 힙을 오래 쓸수록 커지는 문제
 
 ## GC 컴팩션 — 흩어진 메모리 정리
@@ -59,6 +82,8 @@ Java, V8 같은 런타임의 GC는 참조되지 않는 객체를 회수하고, �
 - 내부 vs 외부 파편화 구분과 각각의 원인
 - 메모리 풀이 유효한 조건 (크기, 개수 예측 가능)
 - GC 컴팩션의 효과와 비용 (외부 파편화 해소 vs STW, 참조 갱신)
+- C의 값 전달 `swap`이 실패하는 이유를 스택 프레임과 복사본으로 설명
+- 스택 오버플로(스택 소진)와 스택, 힙 버퍼 오버플로의 원인과 결과 구분
 
 ### 사용자 공간 할당기와 커널 할당
 
@@ -69,10 +94,20 @@ Java, V8 같은 런타임의 GC는 참조되지 않는 객체를 회수하고, �
 ## 출처
 
 - [Linux, malloc(3)](https://man7.org/linux/man-pages/man3/malloc.3.html)
+- [Linux, mallopt(3)](https://man7.org/linux/man-pages/man3/mallopt.3.html)
+- [Linux, getrlimit(2)](https://man7.org/linux/man-pages/man2/getrlimit.2.html)
+- [Linux, pthread_attr_setguardsize(3)](https://man7.org/linux/man-pages/man3/pthread_attr_setguardsize.3.html)
+- [GNU C Library, Aligned Memory Blocks](https://sourceware.org/glibc/manual/latest/html_node/Aligned-Memory-Blocks.html)
+- [cppreference, Storage-class specifiers](https://en.cppreference.com/w/c/language/storage_class_specifiers)
+- [MITRE CWE, CWE-121: Stack-based Buffer Overflow](https://cwe.mitre.org/data/definitions/121.html)
+- [MITRE CWE, CWE-122: Heap-based Buffer Overflow](https://cwe.mitre.org/data/definitions/122.html)
 
 - [스택이 커져도 힙이 필요한 이유와 메모리 파편화 — YouTube 강의](https://www.youtube.com/watch?v=9TSojdIr8Q0&list=PLXvgR_grOs1DEoZFABFCjo7dsXt1BhVih&index=38)
 - [인프런, 널널한 개발자, 가상 메모리 개요](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476544)
 - [인프런, 널널한 개발자, \[보강\] 가상 메모리 시스템에 대한 보충 설명 (Live 방송 중 편집)](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=479157)
+- [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 메모리 할당과 해제](https://www.boostcourse.org/cs112/lecture/119032)
+- [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 메모리 교환, 스택, 힙](https://www.boostcourse.org/cs112/lecture/119033)
+- [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 파일 쓰기](https://www.boostcourse.org/cs112/lecture/119034)
 
 ## 관련 문서
 
@@ -81,3 +116,6 @@ Java, V8 같은 런타임의 GC는 참조되지 않는 객체를 회수하고, �
 - [[Virtual-Memory|가상 메모리]]
 - [[GC-Algorithm|GC 알고리즘 (Mark-Sweep, Compaction)]]
 - [[JVM-GC|JVM GC]]
+- [[C-Pointers-and-Dynamic-Memory|C 포인터와 동적 메모리 (저장 기간, malloc과 free)]]
+- [[Concurrency-and-Process-Overview|OS 개요 (프로세스 메모리 구조)]]
+- [[Algorithm-Recursion|재귀 (call stack)]]

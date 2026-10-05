@@ -135,3 +135,4 @@ shift 횟수는 0 이상이고 승격된 왼쪽 피연산자 폭보다 작아야
 - [[Linear-Data-Structures|선형 자료구조]]
 - [[Algorithm-Sorting|정렬]]
 - [[Bitmask-DP-and-TSP|비트마스크]]
+- [[C-Pointers-and-Dynamic-Memory|C 포인터와 동적 메모리 (malloc과 free, 값 전달)]]

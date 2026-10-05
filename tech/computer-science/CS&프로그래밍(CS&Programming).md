@@ -15,6 +15,7 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 - [[tech/computer-science/functional/함수형(Functional)|함수형 프로그래밍 (Functional)]] — 카테고리 이론, Functor, Monad, CCC
 - [[tech/computer-science/data-structure/자료구조(DataStructure)|자료구조 (Data Structure)]] — Array, LinkedList, Stack, Queue, Hash, Set
 - [[tech/computer-science/algorithm/알고리즘(Algorithm)|알고리즘 (Algorithm)]] — Big O, 재귀, 정렬, DP, 탐색, 최단 경로, P-NP
+- [[tech/computer-science/c/C언어(C)|C]] — 빌드와 디버깅, 자료형과 함수, 배열과 문자열, 포인터와 동적 메모리, 표준 입출력과 파일
 - [[tech/computer-science/cpp/C++(Cpp)|C++]] — 값과 메모리, STL, 코딩 테스트 구현 규칙
 - [[tech/computer-science/ts/타입스크립트(TS)|TypeScript]] — 타입 시스템, 제네릭, 모듈 경계, compiler 진단과 Runtime 검증
 - [[tech/computer-science/js/자바스크립트(JS)|JavaScript]] — Promise, 모듈, Prototype, BigInt, Unicode, Intl과 리소스 해제

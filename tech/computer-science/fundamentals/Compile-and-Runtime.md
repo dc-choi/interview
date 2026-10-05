@@ -20,6 +20,22 @@ aliases: ["컴파일과 런타임"]
 4. 순서가 필요한 부분과 순서에 독립적인 부분을 나눈다.
 5. 구현 뒤 계약과 실제 동작을 비교한다.
 
+### 의사코드와 알고리즘
+
+의사코드는 특정 언어의 문법 없이 절차의 동작과 분기를 적은 글이며, 들여쓰기로 어떤 단계가 어느 조건이나 반복에 속하는지 드러낸다. 블록형 언어든 텍스트 언어든 절차는 대체로 다음 요소의 조합으로 정리된다. 불리언 식과 명제의 관계는 [[Math-Logic-For-Programming|프로그래밍에 필요한 수학과 논리]]에서 다룬다.
+
+| 요소 | 역할 | 예 |
+|---|---|---|
+| 함수 | 이름 붙인 동작. 입력을 받아 결과나 부작용을 만든다 | `open(middle)`, `call(person)` |
+| 조건문 | 여러 경로 중 하나를 고른다 | `if`, `else if`, `else` |
+| 불리언 식 | 분기와 반복 여부를 정하는 참/거짓 질문 | `person is on page` |
+| 반복문 | 종료 조건을 만족할 때까지 단계를 되풀이한다 | `go back to line 3`, `while pages remain` |
+| 변수 | 단계 사이에 이어지는 상태를 저장한다 | `counter = counter + 1`, `muted = !muted` |
+
+알고리즘은 이런 단계를 모호하지 않게 나열한 유한한 절차이고, 유효한 모든 입력에서 끝나며 올바른 출력을 낼 때 정확하다고 한다. 같은 문제도 규칙을 어떻게 배열하느냐에 따라 걸리는 시간이 달라지므로 정확성을 먼저 확인하고 효율을 비교한다. 이름순으로 정렬된 n쪽 전화번호부에서 이름을 찾을 때 한 쪽씩 넘기면 정확하지만 최대 n번 확인한다. 두 쪽씩 넘기면 빨라지지만 목표를 지나쳤을 때 한 쪽 되돌아가 확인하는 보완이 없으면 답을 놓칠 수 있다. 가운데를 펼쳐 절반을 버리는 방식은 쪽수가 두 배가 되어도 확인이 한 번만 늘어 약 log₂ n번에 끝나지만, 정렬이라는 입력 조건이 깨지면 정확성도 함께 깨진다 ([[Algorithm-Complexity|시간복잡도]], [[Algorithm-Searching|선형 검색과 이진 검색]], [[Binary-Search-and-LIS|이분탐색과 LIS]]).
+
+반복문 안에서 일정 간격으로 입력 상태를 확인하는 폴링은 확인 간격보다 짧은 입력을 놓칠 수 있고, 간격보다 오래 유지된 입력을 여러 번 처리할 수 있다. 키를 누를 때마다 불리언 변수를 한 번씩 토글해야 한다면 입력이 생길 때 한 번 실행되는 이벤트 처리 방식을 먼저 검토한다. 다만 키를 누르고 있으면 시스템 설정에 따라 같은 키 이벤트가 반복되므로(브라우저는 `keydown`의 `repeat`로 표시한다) 반복 이벤트는 거른다.
+
 ## 소스에서 실행까지
 
 일반적인 구현은 다음 단계 일부를 조합한다.
@@ -78,6 +94,8 @@ API는 함수 하나에 한정되지 않고 SDK도 단순히 API 여러 개의 �
 - [[CPU-Datapath-Control-and-Instruction-Cycle|CPU 데이터패스와 명령어 사이클]]
 - [[Process-Lifecycle|프로세스 생명주기]]
 - [[Digital-Fundamentals|디지털 기초]]
+- [[Algorithm-Practice|알고리즘 문제를 절차로 바꾸는 법]]
+- [[Math-Logic-For-Programming|프로그래밍에 필요한 수학과 논리]]
 
 ## 실행 관리, 메모리 회수와 VM의 범위
 
@@ -93,8 +111,10 @@ Bytecode와 source의 이식성은 runtime 자체가 모든 OS에서 같은 바�
 - [Microsoft Learn, What is managed code?](https://learn.microsoft.com/en-us/dotnet/standard/managed-code)
 
 - 인프런, 널널한 개발자 강사, [프로그래밍의 다른 이름 절차적 글쓰기](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128259), [컴파일과 고급어 저급어](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128264), [인터프리터](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128265), [API와 SDK](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128266)
+- 부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), [알고리즘](https://www.boostcourse.org/cs112/lecture/118999), [스크래치: 기초](https://www.boostcourse.org/cs112/lecture/119000), [스크래치: 심화](https://www.boostcourse.org/cs112/lecture/119001)
 - [GCC, Options Controlling the Kind of Output](https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html)
 - [Java SE 26, Java Virtual Machine Specification](https://docs.oracle.com/en/java/javase/26/docs/specs/jvms/index.html)
 - [V8, Ignition interpreter](https://v8.dev/docs/ignition)
 - [V8, Launching Ignition and TurboFan](https://v8.dev/blog/launching-ignition-and-turbofan)
 - [Android Developers, SDK packages](https://developer.android.com/studio/intro/update)
+- [W3C, UI Events](https://www.w3.org/TR/uievents/#dom-keyboardevent-repeat)

@@ -70,7 +70,7 @@ BST의 각 node는 왼쪽 subtree의 key가 더 작고 오른쪽 subtree의 key�
 
 이 invariant에서 순서 연산이 나온다. 최솟값은 root에서 왼쪽 child만 따라간 끝이고 최댓값은 오른쪽 끝이다. 어떤 key의 successor(그보다 큰 key 중 가장 작은 key)는 오른쪽 subtree가 있으면 그 최솟값이고, 없으면 자신이 왼쪽 subtree에 들어 있는 가장 가까운 ancestor다. 그런 ancestor도 없으면 최댓값이라 successor가 없다. predecessor는 좌우를 바꾼 대칭이다. 삽입은 root부터 비교하며 내려가 비어 있는 child 자리에 새 leaf로 붙인다.
 
-검색, 삽입과 삭제는 root-to-leaf 경로 하나를 따라가므로 `O(h)`다. 균형이 잡히면 `h = O(log n)`이지만 정렬된 입력을 그대로 넣은 일반 BST는 linked list처럼 기울어 `O(n)`이 된다. root에서 바로 끝나는 최선은 Θ(1)이고, 무작위 순서로 넣은 key n개의 BST에서 검색은 평균 약 2 ln n(≈ 1.39 log₂ n)번 비교한다. 참조만 바꾸는 삽입과 삭제, inorder 정렬 순회와 range query가 장점이지만 최악 높이가 입력 순서에 달려 있어, 갱신마다 높이를 되돌리는 self-balancing BST를 쓴다.
+검색, 삽입과 삭제는 root-to-leaf 경로 하나를 따라가므로 `O(h)`다. 균형이 잡히면 `h = O(log n)`이지만 정렬된 입력을 그대로 넣은 일반 BST는 linked list처럼 기울어 `O(n)`이 된다. root에서 바로 끝나는 최선은 Θ(1)이고, 무작위 순서로 넣은 key n개의 BST에서 검색은 평균 약 2 ln n(≈ 1.39 log₂ n)번 비교한다. 참조만 바꾸는 삽입과 삭제, inorder 정렬 순회와 range query가 장점이지만 최악 높이가 입력 순서에 달려 있어, 갱신마다 높이를 되돌리는 self-balancing BST를 쓴다. C로 node를 정의하고 재귀로 검색하는 코드는 [[Data-Structures-in-C#이진 검색 트리|C로 구현하는 자료구조]]에 있다.
 
 ### 삭제 세 경우
 
@@ -109,7 +109,7 @@ C++ 표준의 `set`, `multiset`, `map`은 균형 이진 검색 트리(구현은 
 
 Perfect는 한국어로 포화, complete는 완전, full/proper는 정 이진 트리로 부르는 경우가 많지만 번역은 자료마다 다르다. degenerate는 변질 이진 트리, skewed는 편향 이진 트리로 옮기기도 한다. root depth는 0이며 level은 0 또는 1로 시작한다. 높이를 node 수로 세면 perfect tree 크기는 2^h-1, edge 수로 세면 2^(h+1)-1이다. AVL의 모든 node 높이 차 1 이하 조건은 Red-Black의 조건이 아니다. Red-Black은 색과 black-height로 높이를 제한한다.
 
-탐색이 빨라지는 이유는 비선형 모양 자체가 아니라 순서 불변식과 작은 높이다. 정렬 배열도 이진 탐색이 O(log n)이지만 중간 삽입/삭제는 O(n)이다. BST는 균형을 유지해야 조회와 변경을 O(log n)에 수행한다. hash는 순서 없이 exact lookup을 빠르게 처리한다. C++ 표준은 map/set의 복잡도를 규정하며 Red-Black이라는 구현을 의무화하지 않는다. `next`, `prev`로 한 칸 이동은 amortized 상수 시간인 반면 k칸 이동은 O(k)여서 random access가 아니다.
+탐색이 빨라지는 이유는 비선형 모양 자체가 아니라 순서 불변식과 작은 높이다. 정렬 배열도 이진 탐색이 O(log n)이지만 중간 삽입/삭제는 O(n)이다. 정렬 연결 리스트는 반대로 끼울 위치를 알면 연결만 바꾸면 되지만 가운데로 바로 갈 수 없어 그 위치를 찾는 검색이 O(n)이다. BST는 node마다 자식 pointer를 둘 두어 이진 검색에서 왼쪽, 오른쪽으로 갈라지는 분기를 구조에 저장하고, 균형을 유지해야 조회와 변경을 O(log n)에 수행한다. hash는 순서 없이 exact lookup을 빠르게 처리한다. C++ 표준은 map/set의 복잡도를 규정하며 Red-Black이라는 구현을 의무화하지 않는다. `next`, `prev`로 한 칸 이동은 amortized 상수 시간인 반면 k칸 이동은 O(k)여서 random access가 아니다.
 
 Perfect tree의 중위 순서가 주어졌다면 가운데가 root이고 좌우 구간을 재귀적으로 나누어 다음 level을 복원한다. 왼쪽을 먼저 방문하면 level 안에서도 왼쪽부터 쌓인다. O(n) 시간, O(log n) 재귀 깊이다. 마지막 level이 덜 찬 complete tree에는 가운데 root 규칙을 그대로 적용할 수 없다.
 
@@ -145,6 +145,7 @@ AVL의 높이 갱신과 삭제 case 선택, Red-Black의 삽입과 삭제 복구
 - [이진탐색트리의 순회와 삽입, 삭제, 검색 — YouTube, 쉬운코드](https://www.youtube.com/watch?v=i57ZGhOVPcI)
 - [Princeton Algorithms, Binary Search Trees](https://algs4.cs.princeton.edu/32bst/)
 - [Lecture 7: Binary Trees II: AVL — MIT OpenCourseWare 6.006](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/a2c80596cf4a2b5fbc854afdd2f23dcb_MIT6_006S20_lec7.pdf)
+- [연결 리스트: 트리 — 부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019)](https://www.boostcourse.org/cs112/lecture/119041)
 
 ## 관련 문서
 
@@ -154,5 +155,6 @@ AVL의 높이 갱신과 삭제 case 선택, Red-Black의 삽입과 삭제 복구
 - [[Heap|Heap과 우선순위 큐]]
 - [[Hash-Table|Hash Table]]
 - [[Greedy-Sweep-and-Two-Pointers|Greedy와 정렬 기반 선택]]
+- [[Data-Structures-in-C|C로 구현하는 자료구조]]
 - [[Algorithm-Complexity|시간복잡도]]
 - [[자료구조(DataStructure)|자료구조 인덱스]]

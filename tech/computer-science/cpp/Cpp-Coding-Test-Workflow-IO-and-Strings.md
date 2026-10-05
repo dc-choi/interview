@@ -91,3 +91,4 @@ std::vector<std::string> split(const std::string& s, const std::string& sep) {
 - [[C++(Cpp)|C++ 인덱스]]
 - [[String-Matching-KMP|문자열 매칭과 KMP]]
 - [[Hash-Table|해시 테이블]]
+- [[C-Standard-IO-and-Files|C 표준 입출력과 파일 (scanf, fgets, fopen)]]

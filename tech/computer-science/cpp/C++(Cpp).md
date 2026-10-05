@@ -29,3 +29,4 @@ C++ 코딩 테스트에서는 문법 암기보다 값의 범위, 객체 수명, 
 - [[Algorithm-Complexity|시간복잡도와 공간복잡도]]
 - [[Problem-Solving-Techniques|코딩 테스트 문제 해결 기법]]
 - [[Linear-Data-Structures|선형 자료구조]]
+- [[C언어(C)|C (빌드, 포인터와 동적 메모리, 표준 입출력)]]

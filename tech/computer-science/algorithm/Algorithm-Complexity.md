@@ -3,7 +3,7 @@ tags: [cs, algorithm, complexity]
 status: done
 category: "CS - 알고리즘"
 aliases: ["시간복잡도", "Big O", "P-NP"]
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 ---
 
 # 시간복잡도와 Big O, P-NP
@@ -20,11 +20,15 @@ verified_at: 2026-09-30
 - **Ω(g(n))**: 증가율이 `g(n)`보다 느리지 않다는 하한.
 - **Θ(g(n))**: 위아래가 모두 `g(n)`으로 묶이는 tight bound.
 
+O의 정의에는 상수 두 개가 들어간다. `f(n) = O(g(n))`은 양의 상수 `c`와 `n₀`가 있어 `n ≥ n₀`인 모든 `n`에서 `0 ≤ f(n) ≤ c × g(n)`이라는 뜻이다. Ω는 부등호 방향을 바꾼 `c × g(n) ≤ f(n)`이고, Θ는 `c₁ × g(n) ≤ f(n) ≤ c₂ × g(n)`으로 양쪽을 함께 묶는다. 상수는 한 번 정하면 `n`에 따라 바꿀 수 없다. 상수 배를 버리는 것은 어림이 아니라 이 정의의 결과라, `n/2`는 `c = 1/2`로 O(n)이고 Θ(n)이다. 같은 class라는 뜻일 뿐 실제 일은 절반이다. 반대로 `n²`은 어떤 `c`를 골라도 `n > c`인 곳에서 `c × n`을 넘으므로 O(n)이 아니다.
+
 Big O와 worst case는 같은 말이 아니다. Big O는 상한 표기이고, best/average/worst는 어떤 입력 집합을 분석하는지다. 예를 들어 선형 검색의 worst case는 Θ(n), best case는 Θ(1)이며 둘 다 각 경우에 O(n)이라고 쓸 수 있지만 정보량이 다르다.
 
 케이스와 표기는 서로 독립이다. best case에는 Ω, worst case에는 O, average case에는 Θ를 짝지어 쓴다는 규칙은 없고, 각 케이스마다 세 표기를 모두 쓸 수 있다. average case는 입력 분포를 가정해야 정의된다. 찾는 값이 배열에 있고 위치가 균등하다고 가정하면 선형 검색의 평균 비교는 `(n + 1) / 2`번이라 Θ(n)이다. 정렬된 배열의 binary search는 가운데에서 바로 찾으면 Θ(1)이 best이고, 값이 없으면 범위가 절반씩 줄어 1이 될 때까지(`n / 2ᵏ = 1`에서 `k = log₂ n`) 약 log₂ n번 비교하므로 worst가 Θ(log n)이다. 케이스를 가리지 않고 한 줄로 말하면 Ω(1), O(log n)이다.
 
 실무와 면접에서 O를 가장 많이 쓰는 이유는 최악의 상한만 알아도 계획을 세울 수 있고 다른 bound는 구하기 번거롭기 때문이다. O를 tight bound 뜻으로 느슨하게 쓰는 경우가 많지만 O는 상한일 뿐이라, 선형 검색을 O(n²)이라 해도 틀리지는 않고 정보가 적을 뿐이다. merge sort처럼 입력과 무관하게 같은 방식으로 나누고 합쳐 best와 worst가 같은 차수면 Θ(n log n)으로 적는 편이 정확하다.
+
+best case가 빠르다는 정보는 약하다. 입력이 이미 정렬됐는지 n-1번 비교로 먼저 확인해 그렇다면 바로 끝내는 분기를 붙이면 어떤 정렬이든 best case가 Θ(n)이 되기 때문이다. 그래서 알고리즘을 고를 때는 worst case 상한과, 실제 입력 분포를 가정한 average를 본다. 하한이라는 말은 두 뜻으로 쓰인다. 하나는 한 알고리즘의 실행 시간에 붙는 Ω이고, 다른 하나는 그 문제를 푸는 어떤 알고리즘도 피할 수 없는 문제 자체의 하한이다. 정렬되지 않은 배열 검색의 Ω(n)([[Algorithm-Searching#선형 검색|선형 검색]])과 비교 정렬의 Ω(n log n)([[Algorithm-Sorting#비교 정렬의 하한|비교 정렬의 하한]])은 문제의 하한이며, worst case가 이 하한과 같은 차수인 선형 검색과 병합 정렬은 그 계산 모델에서 점근적으로 최적이다.
 
 | 표기 | 이름 | 설명 |
 |---|---|---|
@@ -133,8 +137,11 @@ TSP decision이 NP-complete라는 주장은 두 부분으로 보인다.
 - 인프런, 감자 강사, [자료구조와 알고리즘이란?](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=114977), [시간복잡도](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=114984), [정렬 - 버블정렬](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116713)
 - 인프런, 감자 강사, [외판원 문제 - 개념](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135782)
 - YouTube, 쉬운코드, [시간복잡도와 점근적 표기법](https://www.youtube.com/watch?v=tTFoClBZutw), [기술 면접에서 시간 복잡도를 물어보는 이유](https://www.youtube.com/watch?v=0b2VU45xmDk), [TwoSum 문제로 보는 코드 성능 개선 과정](https://www.youtube.com/watch?v=cxhbgAbAiXI)
+- 부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), [알고리즘 표기법](https://www.boostcourse.org/cs112/lecture/119020)
 - [바킹독의 실전 알고리즘 0x01강, 기초 코드 작성 요령 I — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=9MMKsrvRiw4)
 - [NIST DADS, big-O notation](https://xlinux.nist.gov/dads/HTML/bigOnotation.html)
+- [NIST DADS, Ω](https://xlinux.nist.gov/dads/HTML/omegaCapital.html)
+- [NIST DADS, Θ](https://xlinux.nist.gov/dads/HTML/theta.html)
 - [Clay Mathematics Institute — P versus NP](https://www.claymath.org/millennium/p-vs-np/)
 - [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — P-NP, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135775)
 - [CME305 Sample Midterm II, Traveling Salesman Problem — Stanford University](https://stanford.edu/~rezab/classes/cme305/W15/Midterm/pmidtermIIsoln.pdf)
@@ -142,5 +149,6 @@ TSP decision이 NP-complete라는 주장은 두 부분으로 보인다.
 
 ## 관련 문서
 - [[알고리즘(Algorithm)|알고리즘 인덱스]]
+- [[Algorithm-Searching|선형 검색과 이진 검색]]
 - [[Bitmask-DP-and-TSP|비트마스크 DP와 외판원 문제]]
 - [[Problem-Solving-Techniques|코딩 테스트 문제 해결 기법]]

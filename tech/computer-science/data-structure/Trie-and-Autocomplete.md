@@ -59,6 +59,19 @@ bool find(const std::string& s) {
 - **메모리**: 글자 하나가 `int` 26칸(104바이트)을 차지해 원문 저장보다 약 100배 쓴다. 자식 번호를 pointer로 두면 64비트 환경에서 다시 두 배다. 먼저 고정 배열의 사용량을 계산해 메모리 제한 안이면 그대로 쓰고, 넘으면 정점마다 `vector`나 `map`으로 필요한 자식만 두는 방식으로 바꾼다(접근 상수가 커진다).
 - 삭제가 반복되는 환경에서는 정점이 회수되지 않아 적합하지 않다.
 
+## Hash table과 비교
+
+둘 다 문자열 key의 map을 구현하고 조회 비용이 저장된 key 수보다 key 길이에 좌우된다(hash table은 평균 기준). 이름처럼 길이에 상한이 있는 key라면 O(L)을 상수로 보고 둘 다 O(1)이라 부를 수 있으므로 차이는 다른 곳에 있다.
+
+| 기준 | Trie | Hash table |
+|---|---|---|
+| 조회 최악 | child를 배열로 두면 충돌이 없어 key 길이에 비례 | 한 bucket에 몰리면 저장된 key 수에 비례 |
+| 없는 key 조회 | 처음 비어 있는 child에서 멈춰 L보다 일찍 끝날 수 있다 | 보통 key 전체를 읽어 hash를 계산한다 |
+| 순서와 prefix | child를 문자 코드 순으로 훑으면 key가 그 순서로 나오고 prefix 질의가 된다 | 순서가 없어 prefix 질의는 전체 순회다 |
+| memory | node마다 alphabet 크기의 child 칸을 두고 대부분 비어 있다 | 항목과 빈 bucket, load factor에 좌우된다 |
+
+C에서 node를 정의하고 새 node의 child를 초기화하는 방법은 [[Data-Structures-in-C#Trie|C로 구현하는 자료구조]]에 있다.
+
 ## 자동완성은 Trie만으로 끝나지 않는다
 
 prefix node 아래 모든 terminal을 순회하면 일치 목록을 얻지만 결과가 많으면 subtree 크기만큼 비용이 든다. 추천 품질과 latency를 위해 별도 ranking이 필요하다.
@@ -84,11 +97,15 @@ Trie는 prefix search가 핵심일 때 적합하다. exact lookup만 필요하�
 - [NIST Dictionary of Algorithms and Data Structures — Trie](https://www.nist.gov/dads/HTML/trie.html)
 - [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — Trie 개념, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135766)
 - [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — Trie 자동완성 구현, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135767)
+- [트라이 — 부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019)](https://www.boostcourse.org/cs112/lecture/119043)
+- [Princeton Algorithms — TrieST.java](https://algs4.cs.princeton.edu/52trie/TrieST.java.html)
 
 ## 관련 문서
 
 - [[String-Matching-KMP|문자열 매칭과 KMP]]
 - [[Trees-and-Balanced-Search-Trees|트리와 균형 탐색 트리]]
+- [[Hash-Table|해시 테이블]]
+- [[Data-Structures-in-C|C로 구현하는 자료구조]]
 - [[Heap|우선순위 큐와 top-K]]
 - [[OpenSearch-Autocomplete|OpenSearch 자동완성]]
 - [[자료구조(DataStructure)|자료구조 인덱스]]

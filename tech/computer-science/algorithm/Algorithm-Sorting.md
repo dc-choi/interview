@@ -3,12 +3,12 @@ tags: [cs, algorithm, sorting]
 status: done
 category: "CS - 알고리즘"
 aliases: ["정렬", "Sorting", "계수 정렬", "Counting Sort", "기수 정렬", "Radix Sort", "버블 정렬", "선택 정렬", "삽입 정렬", "병합 정렬", "퀵 정렬", "힙 정렬", "Heap Sort", "분할 정복"]
-verified_at: 2026-09-30
+verified_at: 2026-10-05
 ---
 
 # 정렬 (Sorting)
 
-정렬은 데이터셋을 정해진 순서로 재배치하는 것이다. 별도 index가 없는 unsorted array의 comparison search는 worst-case Θ(n)이지만, 정렬된 random-access array에서는 binary search로 worst-case Θ(log n)에 찾을 수 있다. 정렬 비용과 이후 search, merge, range 처리의 이득을 함께 비교한다. 성능 표기인 Big O는 [[Algorithm-Complexity]].
+정렬은 데이터셋을 정해진 순서로 재배치하는 것이다. 별도 index가 없는 unsorted array의 comparison search는 worst-case Θ(n)이지만, 정렬된 random-access array에서는 binary search로 worst-case Θ(log n)에 찾을 수 있다. 정렬 비용과 이후 search, merge, range 처리의 이득을 함께 비교한다. 성능 표기인 Big O는 [[Algorithm-Complexity]], 몇 번 찾을 때부터 정렬해 두는 편이 이득인지는 [[Algorithm-Searching#정렬해 두고 찾을지 판단하기|검색]]에 있다.
 
 ## 알고리즘 비교
 
@@ -35,8 +35,12 @@ verified_at: 2026-09-30
 ### 버블 정렬 (Bubble sort)
 인접한 두 원소를 비교해 순서가 어긋나면 교환하며 끝까지 훑는다. 한 번 순회할 때마다 가장 큰 값이 거품처럼 맨 뒤로 떠올라 자리를 확정한다(이름의 유래). 직관적이고 구현이 쉽지만 교환이 잦아 비효율적이다. 이미 정렬된 입력에서 교환이 한 번도 없으면 그 순회에서 멈추도록 최적화하면 최선 O(n)이 된다. 회차 i의 안쪽 비교 범위는 `0..n-2-i`로 한 칸씩 줄어, 조기 종료가 없으면 비교는 모두 `n(n-1)/2`번이다([[Algorithm-Complexity|시간복잡도]]의 삼각합). 앞 값이 뒤 값보다 클 때(`a[j] > a[j+1]`)만 교환하므로 같은 값은 서로를 넘지 않아 stable하다. 조건을 `>=`로 바꾸면 같은 값끼리 자리를 바꿔 안정성이 깨진다.
 
+회차 k가 끝나면 가장 큰 k개가 끝의 k칸에 최종 순서로 놓인다. `6 3 8 5 2 7 4 1`은 첫 회차 뒤 `3 6 5 2 7 4 1 8`, 둘째 회차 뒤 `3 5 2 6 4 1 7 8`이다. 이 불변식이 안쪽 범위를 회차마다 한 칸씩 줄여도 되는 근거다. 범위를 줄이지 않고 매 회차 `0..n-2`를 모두 비교하는 구현은 `(n-1)²`번 비교해(n = 8이면 28번 대신 49번) 같은 Θ(n²)에서 거의 두 배를 일한다. 교환 횟수는 입력의 inversion, 즉 앞에 있는 값이 뒤의 값보다 큰 쌍의 수와 같다. 인접한 두 값을 바꾸면 그 쌍의 inversion 하나만 사라지고 다른 쌍의 앞뒤 관계는 그대로이기 때문이다. 위 입력은 inversion이 19개라 정확히 19번 교환하고, 역순 입력은 `n(n-1)/2`번, 서로 다른 값의 무작위 순열은 평균 `n(n-1)/4`번 교환한다. 삽입 정렬이 원소를 미는 횟수도 inversion 수와 같지만, 밀기는 대입 한 번이고 교환은 대입 세 번이라 inversion이 많은 입력에서 버블 정렬이 쓰기를 더 많이 한다.
+
 ### 선택 정렬 (Selection sort)
 전체에서 최솟값을 찾아 맨 앞과 교환하고, 다음 위치부터 같은 일을 반복한다. 한 순회마다 한 자리가 확정된다. 입력 상태와 무관하게 항상 전체를 훑으므로 비교는 늘 `n(n-1)/2`번이고 최선이든 최악이든 한결같이 O(n^2)이다. 교환은 회차당 한 번 이하라 최대 n-1번으로 적다(회차마다 제자리 교환까지 하는 구현은 n번으로 센다). 대신 멀리 떨어진 두 원소를 맞바꾸므로 같은 값의 순서가 뒤집힐 수 있다. `[2a, 2b, 1]`은 첫 회차에 2a와 1이 바뀌어 `[1, 2b, 2a]`가 된다.
+
+선택 정렬은 회차마다 앞 회차의 비교 결과를 버리고 남은 구간을 처음부터 다시 훑는다. 아무 정보 없이 k개 중 최솟값을 확정하려면 최솟값이 아닌 k-1개가 각각 한 번은 비교에서 져야 하므로 회차마다 k-1번이 필요하다([[Algorithm-Practice#가장 큰 수 찾기|최댓값 찾기의 n-1번 하한]]). 정렬됐는지 먼저 확인하는 분기를 붙이면 완전히 정렬된 입력만 Θ(n)이 될 뿐, 거의 정렬된 입력도 회차마다 같은 비교를 한다. 줄일 곳은 최솟값을 고르는 방법이다. 비교 결과를 heap에 남겨 재사용하면 남은 값의 최댓값을 O(log n)에 꺼낼 수 있고, 꺼낸 값을 범위 끝에 놓기를 반복하는 것이 아래 힙 정렬이다. 교환이 최대 n-1번이라 데이터 이동이 원소 수에 선형인 점은 쓰기 비용이 비교보다 훨씬 큰 환경에서 장점이 된다.
 
 ### 삽입 정렬 (Insertion sort)
 앞에서부터 한 원소씩 꺼내, 이미 정렬된 앞부분에서 제자리를 찾아 끼워 넣는다. 손에 든 카드를 정렬하는 방식과 가장 비슷하다. 거의 정렬된 데이터에선 이동이 거의 없어 최선 O(n)으로 빠르고, 작은 입력에 효율적이라 실무 정렬의 작은 구간 처리에 자주 쓰인다.
@@ -77,6 +81,7 @@ pivot은 최종 위치에 고정되므로 재귀 범위 `[lo, p-1]`, `[p+1, hi]`
 
 - **정렬된 두 리스트 합치기**는 병합 정렬과 별개로 자주 쓰는 기법이다. 두 리스트의 맨 앞만 비교해 작은 쪽을 결과에 옮기면 비교 한 번에 원소 하나가 자리를 찾으므로 길이 n, m이면 O(n + m)이다. 한쪽이 먼저 끝나면 남은 쪽을 그대로 붙이는 처리를 빠뜨리기 쉽다.
 - 병합 정렬의 합치는 단계는 결과를 임시로 담을 공간이 필요하다. 호출마다 새 배열을 만들지 말고 입력 크기만 한 버퍼를 한 번 잡아 재사용한다.
+- 대표 구현은 이미 정렬된 입력에서도 같은 분할과 병합을 거쳐 Θ(n log n)이다. 병합 전에 왼쪽 구간의 마지막 값 `a[mid]`가 오른쪽 구간의 첫 값 `a[mid+1]` 이하인지 확인해 그렇다면 병합을 건너뛰면, 정렬된 입력은 병합마다 비교 한 번, 모두 n-1번으로 끝나 선형 시간이 된다. 작은 구간을 삽입 정렬로 처리해 재귀와 병합의 고정 비용을 줄이는 것도 흔한 개선이다.
 - 퀵 정렬은 분할이 1:99처럼 일정 비율로 치우쳐도 여전히 O(n log n)이고, 제자리에서 연속 구간을 다뤄 캐시 적중률이 높아 평균적으로 빠르다. 하지만 정렬된 입력처럼 매번 0:n-1로 갈리면 O(n²)이다. 코딩 테스트에서 정렬을 직접 짜야 한다면 최악이 보장되는 병합 정렬을 쓴다.
 - 표준 라이브러리 정렬은 이 약점을 보완해 두었으므로 직접 구현보다 우선한다. C++ `std::sort`는 최악에도 O(n log n) 비교를 요구하며(결함 보고 LWG 713 반영, 그 전에는 순수 퀵 정렬 구현도 허용됐다), 보통 퀵 정렬로 시작해 재귀가 일정 깊이를 넘으면 힙 정렬로 바꾸는 introsort로 구현한다. `std::sort`는 안정 정렬이 아니므로 같은 key의 원래 순서를 지켜야 하면 `std::stable_sort`를 쓴다.
 
@@ -88,6 +93,12 @@ root가 항상 최댓값(또는 최솟값)인 [[Heap|heap]]으로 정렬한다.
 - 표준 in-place 구현은 배열 자체를 max heap으로 만든다. 마지막 internal node(0-based index `⌊n/2⌋ - 1`)부터 root까지 거꾸로 sift-down하면 heap 구성은 O(n)이다(비교 2n번, 교환 n번 이하). 그다음 root와 범위 끝을 교환하고 범위를 하나 줄여 sift-down하기를 반복하면 추가 공간 O(1)로 오름차순이 된다. 전체 비교와 교환은 2n lg n번 이하다.
 - pivot이 없어 입력과 무관하게 최악도 O(n log n)이다. 이 예측 가능성을 성능이 안정적이라고 표현하기도 하지만 정렬의 안정성(stable)과는 다른 개념이다. root와 끝 원소를 교환하며 같은 key의 순서가 바뀌므로 unstable하다. 같은 key 두 개인 `[1a, 1b]`도 `[1b, 1a]`가 된다.
 - 최악 보장과 제자리 정렬을 함께 갖춘 드문 비교 정렬이지만, 부모와 자식 index가 멀어 cache를 잘 쓰지 못하고 inner loop도 퀵 정렬보다 길어 평균적으로는 퀵 정렬보다 느린 경우가 많다. 그래서 단독보다 introsort에서 재귀가 깊어질 때의 fallback으로 쓰인다(위 `std::sort`).
+
+## 비교 정렬의 하한
+
+원소끼리 비교한 결과만으로 순서를 정하는 정렬은 최악에 `log₂ n!`번 이상 비교해야 하고, `log₂ n!`은 n log₂ n과 같은 차수다. 서로 다른 n개 값이 들어오는 순서는 n!가지이고, 정렬은 그중 어느 순서인지 가려내 각각 다르게 재배치해야 한다. 비교 한 번의 결과는 두 갈래라 k번 비교로 가려낼 수 있는 경우는 많아야 2^k가지이므로 `2^k ≥ n!`이어야 한다. n = 8이면 8! = 40,320이 2^15 = 32,768보다 커서 어떤 비교 정렬도 최악 16번 이상 비교한다.
+
+병합 정렬과 힙 정렬은 최악 O(n log n)이라 이 하한과 차수가 같아, 비교 정렬 중 점근적으로 최적이다. 퀵 정렬은 평균만 이 차수에 맞는다. 검색의 하한도 가려낼 경우의 수와 비교 한 번이 나누는 갈래로 같은 방식으로 구한다([[Algorithm-Searching|검색]]).
 
 ## 비교하지 않는 정렬
 
@@ -104,6 +115,8 @@ C++ `std::sort(a, a + n)`처럼 끝 위치는 마지막 원소 다음을 넘긴�
 
 비교 함수 `cmp(a, b)`는 a가 b보다 앞에 와야 할 때만 true를 반환해야 한다. 같은 값이나 같은 우선순위에서 true를 반환하면(`return a >= b;`) strict weak ordering을 어겨 결과가 정의되지 않고, 정렬 도중 배열 범위를 벗어나 runtime error가 나기도 한다. 내림차순은 `a > b`로 쓴다. 문자열이나 구조체를 받는 비교 함수는 `const string& a`처럼 const 참조로 받아 호출마다 복사하지 않는다.
 
+C의 `qsort(base, n, size, cmp)`는 이름과 달리 C 표준과 POSIX 모두 퀵 정렬 구현을 요구하지 않고, 복잡도와 안정성도 보장하지 않는다. 같은 key의 순서는 정해지지 않으므로 순서를 지켜야 하면 원래 index 같은 2차 key를 비교 함수에 넣는다. 비교 함수는 첫 인자가 작으면 음수, 같으면 0, 크면 양수를 반환한다. `int`를 `return a - b;`로 비교하면 차가 `int` 범위를 넘을 때(`INT_MIN`과 양수, 20억과 -20억처럼) 부호 있는 overflow로 정의되지 않은 동작이 되므로 `(a > b) - (a < b)`로 쓴다.
+
 ## 정렬로 풀리는 문제
 
 정렬하면 같은 값이 인접한다. 가장 많이 나온 수 찾기는 모든 쌍을 세는 O(n²) 대신 정렬(O(n log n)) 뒤 한 번 훑으며 연속 구간 길이를 세면 된다. 값의 범위가 커서(예: ±2⁶²) 횟수 배열을 쓸 수 없을 때 특히 유용하다. 구간이 바뀌는 순간에만 최댓값을 갱신하므로 마지막 구간을 loop 뒤에 한 번 더 처리하는 것을 빠뜨리기 쉽다. 중복 제거도 정렬 뒤 인접 비교(`std::unique`)로 한다.
@@ -119,9 +132,12 @@ C++ `std::sort(a, a + n)`처럼 끝 위치는 마지막 원소 다음을 넘긴�
 - 퀵 정렬 최악의 원인(치우친 피벗, 같은 값을 건너뛰는 partition의 중복 key)과 완화책(randomization, median-of-three, 같은 key에서 멈추는 partition, introspective fallback)
 - 힙 정렬: 최악 O(n log n)과 제자리를 함께 보장하지만 unstable. 최악 성능이 안정적이라는 말과 stable은 다른 개념
 - 대표 구현에서 병합, 삽입, 버블은 stable하고 선택, in-place quick sort, heap sort는 unstable하지만 실제 구현 계약을 확인
+- 비교 정렬의 하한 Ω(n log n)을 입력 순서의 경우의 수(n!)로 설명하고, 병합 정렬과 힙 정렬이 점근적으로 최적인 이유
+- 버블 정렬의 교환 수가 inversion 수와 같은 이유, 선택 정렬의 비교 수를 입력에 따라 줄일 수 없는 이유
 
 ## 관련 문서
 - [[Algorithm-Complexity|시간복잡도와 Big O]]
+- [[Algorithm-Searching|검색 (정렬해 두고 찾을지 판단)]]
 - [[Algorithm-Recursion|재귀 (분할 정복의 구현 토대)]]
 - [[Heap|힙 (힙 정렬 O(n log n)의 토대)]]
 - [[알고리즘(Algorithm)|알고리즘 인덱스]]
@@ -132,10 +148,12 @@ C++ `std::sort(a, a + n)`처럼 끝 위치는 마지막 원소 다음을 넘긴�
 - 인프런, 감자 강사, [병합정렬](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=117350), [퀵정렬](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=117552)
 - 인프런, 감자 강사, [힙 정렬 알고리즘](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135765)
 - YouTube, 쉬운코드, [divide and conquer와 merge sort](https://www.youtube.com/watch?v=aj3vw_KDmxc)
+- 부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), [버블 정렬](https://www.boostcourse.org/cs112/lecture/119022), [선택 정렬](https://www.boostcourse.org/cs112/lecture/119023), [정렬 알고리즘의 실행시간](https://www.boostcourse.org/cs112/lecture/119024), [병합 정렬](https://www.boostcourse.org/cs112/lecture/119026)
 - [Princeton Algorithms, Elementary Sorts](https://algs4.cs.princeton.edu/21elementary/)
 - [바킹독의 실전 알고리즘 0x0E강, 정렬 I — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=59fZkZO0Bo4)
 - [바킹독의 실전 알고리즘 0x0F강, 정렬 II — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=dq5t1woLJMw)
 - [cppreference, std::sort](https://en.cppreference.com/w/cpp/algorithm/sort)
+- [cppreference, qsort](https://en.cppreference.com/w/c/algorithm/qsort)
 - [Princeton Algorithms, Mergesort](https://algs4.cs.princeton.edu/22mergesort/)
 - [Princeton Algorithms, Quicksort](https://algs4.cs.princeton.edu/23quicksort/)
 - [Princeton Algorithms, Priority Queues](https://algs4.cs.princeton.edu/24pq/)

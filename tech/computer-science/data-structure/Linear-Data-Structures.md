@@ -37,7 +37,7 @@ C 배열은 같은 타입 원소를 연속 할당하므로 i번째 원소의 주
 - **빈도 세기**: 소문자 알파벳 개수는 `freq[c - 'a']++`로 문자열을 한 번만 훑어 O(n)에 센다. 알파벳마다 문자열 전체를 다시 훑으면 O(26n)이다.
 - **등장 여부 확인**: 0에서 100 사이 정수 배열에서 합이 100인 두 수가 있는지는 모든 쌍을 보면 O(n²)이다. 앞에서부터 읽으며 `seen[100 - x]`가 켜져 있는지 확인한 뒤 `seen[x]`를 켜면 각 확인이 O(1)이라 전체 O(n)이다. 값의 범위가 크거나 희소하면 배열 대신 hash set을 쓴다.
 
-고정 array는 크기를 미리 정하고, ArrayList, C++ vector, CPython list 같은 dynamic array(resizable array)는 capacity가 부족할 때 더 큰 storage를 할당해 복사한다. append 한 번은 resize 때문에 O(n)일 수 있지만 여러 append에 나누어 계산한 amortized cost는 O(1)이다.
+고정 array는 크기를 미리 정하고, ArrayList, C++ vector, CPython list 같은 dynamic array(resizable array)는 capacity가 부족할 때 더 큰 storage를 할당해 복사한다. append 한 번은 resize 때문에 O(n)일 수 있지만 여러 append에 나누어 계산한 amortized cost는 O(1)이다. C에서 `realloc`으로 키울 때의 실패 처리와 옛 pointer 무효화는 [[Data-Structures-in-C#배열 키우기와 realloc|C로 구현하는 자료구조]]에 있다.
 
 확장 폭이 amortized 비용을 가른다. 꽉 찰 때마다 상수 k칸씩 늘리면 k번 삽입마다 전체 복사가 일어나 삽입당 평균 O(n)이다. k를 크게 잡으면 상수는 줄지만 빈 공간 낭비가 커진다. 크기를 두 배(일정 배수)로 늘리면 n번 삽입하는 동안 복사되는 원소 수가 1 + 2 + 4 + ... < 2n이라 삽입당 amortized O(1)이고, 낭비도 현재 크기의 일정 비율 이하로 유지된다. 구현은 `len`과 할당 크기 `capacity`를 따로 두고, `len == capacity`일 때 두 배 크기의 새 배열에 복사한 뒤 교체한다. amortized O(1)은 모든 삽입이 빠르다는 뜻이 아니라, 확장이 걸린 한 번은 O(n)이지만 여러 번의 합을 나누면 상수라는 뜻이다. 표준 `vector`의 성장 배수(2 또는 1.5 등)는 구현마다 다르다.
 
@@ -52,9 +52,9 @@ node가 value와 다음 node reference를 가진다. doubly linked list는 previ
 - random access: O(n)
 - node별 allocation과 pointer 때문에 memory overhead와 cache locality가 불리할 수 있음
 
-연결 리스트의 삽입이 항상 O(1)이라는 설명은 target node를 이미 알고 있다는 전제가 빠진 것이다. 위치를 먼저 찾아야 하면 전체 연산은 O(n)이다.
+연결 리스트의 삽입이 항상 O(1)이라는 설명은 target node를 이미 알고 있다는 전제가 빠진 것이다. 위치를 먼저 찾아야 하면 전체 연산은 O(n)이다. 검색도 같은 이유로 느리다. 정렬된 배열은 가운데 원소로 O(1)에 가서 이진 검색이 O(log n)이지만, 연결 리스트는 정렬돼 있어도 가운데 node까지 걸어가야 해 이진 검색을 흉내 내도 이동이 n/2 + n/4 + ... 로 n에 가까워 O(n)이다. 정렬되지 않은 배열의 검색도 O(n)이므로 배열이 검색의 점근 비용에서 앞서는 것은 정렬을 유지할 때다([[Binary-Search-and-LIS|이분탐색]]).
 
-구현: [LinkedList.mjs](linked-list/LinkedList.mjs), [DoublyLinkedList.mjs](linked-list/DoublyLinkedList.mjs)
+구현: [LinkedList.mjs](linked-list/LinkedList.mjs), [DoublyLinkedList.mjs](linked-list/DoublyLinkedList.mjs). C에서 node를 정의하고 할당, 연결, 해제하는 방법은 [[Data-Structures-in-C|C로 구현하는 자료구조]]에 있다.
 
 종류는 다음 node만 아는 singly, 이전 node도 아는 doubly, 끝이 처음과 이어진 circular와 둘을 합친 circular doubly가 있다. head만 두면 끝 추가가 매번 끝까지 걷는 O(n)이라 tail 참조를 함께 둔다. circular singly list는 `tail.next`가 head라 tail 하나만 유지해도 양 끝에 O(1)로 닿는다. doubly는 이전 node를 O(1)에 알지만 node마다 pointer를 하나 더 쓴다. C++ `std::list`는 doubly linked list라 양 끝 삽입과 삭제가 O(1)이고, iterator가 node 주소 역할을 한다. `erase`는 지운 다음 원소의 iterator를 반환한다.
 
@@ -154,6 +154,7 @@ C++ `std::deque`는 ADT의 deque보다 넓은 인터페이스를 준다. 양 끝
 - [[Heap|Heap과 Priority Queue]]
 - [[Hash-Table|Hash Table]]
 - [[Linear-Data-Structures-List-and-Set|List와 Set]]
+- [[Data-Structures-in-C|C로 구현하는 자료구조]]
 - [[Algorithm-Complexity|시간복잡도와 amortized 분석]]
 
 ## 경계 불변식과 지연된 뒤집기
@@ -196,3 +197,4 @@ Stack 응용은 [[Stack-Pairing-and-Monotonic-Patterns|짝짓기, 가장 긴 괄
 - [cppreference, C member access operators](https://en.cppreference.com/w/c/language/operator_member_access)
 - [Python 3.14 FAQ, How are lists implemented in CPython?](https://docs.python.org/3.14/faq/design.html#how-are-lists-implemented-in-cpython)
 - [The Java Tutorials, Arrays](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/arrays.html)
+- [연결 리스트: 시연 — 부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019)](https://www.boostcourse.org/cs112/lecture/119040)

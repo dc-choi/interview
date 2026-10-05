@@ -13,6 +13,7 @@ aliases: ["Data Structure"]
 
 - [x] [[Linear-Data-Structures|Array, Linked List, Stack, Queue, Deque, Set]]
 - [x] [[Linear-Data-Structures-List-and-Set|List와 Set, 순서, 중복과 membership 비용]]
+- [x] [[Data-Structures-in-C|C로 구현하는 자료구조 (pointer 규칙, realloc 확장, 자기 참조 구조체, 연결 리스트와 BST, hash chain, trie node)]]
 - [x] [[Stack-Pairing-and-Monotonic-Patterns|Stack 짝짓기, 최장 괄호와 단조 stack]]
 - [x] [[Hash-Table|Hash Table, 직접 주소화, 적재율과 resize]]
 - [x] [[Hash-Collision|Hash collision, chaining과 open addressing]]

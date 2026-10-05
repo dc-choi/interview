@@ -77,6 +77,27 @@ call stack 크기는 문제의 메모리 제한과 별도로 작게 잡혀 있�
 
 base case를 원소 1개로 두면 빈 입력은 base case에 닿지 않는다. 빈 입력도 유효하면 빈 입력을 base case로 둔다. index나 slice가 매 호출마다 줄어드는지와 함께 줄이는 비용도 확인한다. `arr.slice(1)`처럼 호출마다 남은 부분을 새 배열로 복사하면 복사량이 n-1, n-2, ...로 이어져 전체 Θ(n²) 시간과 할당이 든다. 시작 index를 인자로 넘기면 Θ(n)이다(`recursion/SumOfArr.mts`는 읽기 쉽게 slice를 쓴 예다).
 
+### 바깥 loop를 재귀로 바꾸기
+
+높이 h인 왼쪽 정렬 계단(1층에 `#` 1개, h층에 h개)은 층을 도는 바깥 loop와 `#`를 찍는 안쪽 loop로 그린다. 높이 h 계단은 높이 h-1 계단 아래에 h칸짜리 줄 하나를 더한 것이므로, 바깥 loop를 재귀 호출로 바꿀 수 있다.
+
+```c
+void draw(int h) {
+    if (h <= 0) {  // 음수 입력도 여기서 멈춘다
+        return;
+    }
+    draw(h - 1);   // 위의 h-1층을 먼저 그린다
+    for (int i = 0; i < h; i++) {
+        putchar('#');
+    }
+    putchar('\n');
+}
+```
+
+- 출력이 재귀 호출 뒤에 있어 `draw(1)`의 1층이 가장 먼저 찍히고, 호출이 반환될 때마다 한 층씩 아래에 붙는다. 출력을 호출 앞으로 옮기면 h층부터 찍혀 뒤집힌 계단이 된다. 같은 재귀식이라도 side effect를 호출 앞에 두느냐 뒤에 두느냐가 결과 순서를 정한다.
+- base case를 `h == 0`으로만 두면 음수 입력은 0에서 멀어지기만 해 base case에 닿지 못하고, 호출이 쌓이다 stack 한도를 넘는다. 줄어드는 방향의 모든 값을 덮도록 `h <= 0`으로 둔다.
+- 호출 깊이가 h라 call stack을 O(h) 쓰고, 찍는 칸은 `h(h+1)/2`개라 시간은 이중 loop와 같은 Θ(h²)다. 재귀로 바꿔도 일은 줄지 않고, 문제를 자기 자신으로 정의한 구조가 코드에 드러날 뿐이다.
+
 ### 분할 정복
 
 분할 정복(divide and conquer)은 세 단계로 쓴다. divide는 문제를 같은 모양의 더 작은 subproblem으로 나누고, conquer는 각 subproblem을 같은 방식으로 재귀 해결하되 충분히 작으면 직접 답하며, combine은 subproblem의 답을 합쳐 원래 답을 만든다. 보통 둘 이상의 독립 subproblem으로 나누며 merge sort가 대표적이다. merge sort는 divide가 가운데를 자르는 일뿐이고 combine인 merge에 O(n)이 들며, quick sort는 반대로 divide인 partition에 일이 몰리고 combine이 없다([[Algorithm-Sorting|정렬]]). binary search도 divide가 탐색할 절반을 고르고 combine은 고른 쪽의 답을 그대로 쓰는 분할 정복의 예로 든다. subproblem이 겹치면 같은 계산이 반복될 수 있으며, 이때 [[Algorithm-DP|메모이제이션 또는 동적 프로그래밍]]을 검토한다.
@@ -118,6 +139,7 @@ side effect를 쓰는 재귀에서는 `push -> call -> pop`, `visited=true -> ca
 
 - 인프런, 감자 강사, [재귀](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116184), [재귀적으로 생각하기](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116362), [재귀와 하노이 탑](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116528)
 - YouTube, 쉬운코드, [divide and conquer와 merge sort](https://www.youtube.com/watch?v=aj3vw_KDmxc)
+- 부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), [재귀](https://www.boostcourse.org/cs112/lecture/119025)
 - [바킹독의 실전 알고리즘 0x0B강, 재귀 — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=8vDDJm5EewM)
 - [NIST DADS, recursion](https://xlinux.nist.gov/dads/HTML/recursion.html)
 - [NIST DADS, divide and conquer](https://xlinux.nist.gov/dads/HTML/divideAndConquer.html)
