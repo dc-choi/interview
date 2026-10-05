@@ -113,3 +113,4 @@ aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 - [[Pricing-Strategy|가격 정책 설계]] — 구독 티어와 가격 심리학
 - [[AI-Solo-Software-Business|AI 시대 1인 소프트웨어 사업의 유형과 순서]]
 - [[Side-Project-Asset-Sale|사이드 프로젝트와 디지털 자산 매각]]
+- [[App-Store-Launch-Checklist|앱 스토어 첫 출시 준비]] — 계정, 정산 정보, 정책 문서, 국내 판매자 정보와 게임 규제
