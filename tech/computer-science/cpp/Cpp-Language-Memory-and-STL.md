@@ -2,8 +2,8 @@
 tags: [cs, cpp, memory, pointer, stl, container, algorithm]
 status: done
 category: "CS - C++"
-aliases: ["C++ Language Memory and STL", "C++ 메모리와 STL"]
-verified_at: 2026-10-01
+aliases: ["C++ Language Memory and STL", "C++ 메모리와 STL", "RVO", "NRVO", "Copy Elision", "반환값 최적화"]
+verified_at: 2026-10-05
 ---
 
 # C++ 값과 메모리, Container와 Algorithm
@@ -32,6 +32,21 @@ pointer는 객체나 함수의 주소를 표현하고, dereference는 그 주소
 함수에 인자를 값으로 넘기면 복사본이 만들어진다. `int`와 구조체는 물론 `std::vector`, `std::string` 같은 container도 값으로 넘기면 원소 전체가 복사되므로 함수 안에서 바꿔도 원본은 그대로다. 배열만 예외처럼 보이는데, 위 array-to-pointer 변환 때문에 첫 원소의 주소가 넘어가 원본이 바뀐다.
 
 복사는 비용이기도 하다. 크기 `n`인 vector 두 개를 값으로 받아 원소 하나만 비교하는 함수는 호출마다 복사 때문에 O(n)이다. 원본을 바꿔야 하면 `std::vector<int>& v`, 읽기만 하면 `const std::vector<int>& v`로 받아 복사 없이 O(1)로 만든다. 참조는 pointer와 비슷하게 원본을 가리키지만 null이 될 수 없고 다른 객체로 다시 묶이지 않아, 두 값을 바꾸는 `swap(int& a, int& b)`처럼 원본 수정 의도를 간단히 표현한다.
+
+### 반환값: 복사 생략(RVO, NRVO)
+
+함수가 객체를 값으로 반환할 때 컴파일러는 지역 객체를 따로 만든 뒤 호출부로 복사하지 않고, 호출부가 받을 결과 객체 자리에 바로 생성할 수 있다. 이것이 copy elision이고, 반환값에 적용된 형태를 RVO(Return Value Optimization), 이름 있는 지역 객체에 적용된 형태를 NRVO(Named RVO)라고 부른다.
+
+| 형태 | 예 | 보장 여부 |
+|---|---|---|
+| prvalue 반환 (RVO) | `return T();` | 반환 타입과 같은 클래스 타입(cv 한정 무시)의 prvalue면 C++17부터 보장된다. prvalue는 필요할 때까지 materialize되지 않고 최종 저장 위치에 직접 생성되므로 복사나 이동이 없고, 복사나 이동 생성자가 없어도 된다. 반환 타입의 소멸자는 접근 가능하고 delete되지 않아야 한다. |
+| 이름 있는 지역 객체 반환 (NRVO) | `T obj; ...; return obj;` | 허용될 뿐 보장되지 않는다. 반환식이 자동 저장 기간의 비volatile 객체의 이름이고, 그 객체가 함수 매개변수나 catch 절 매개변수가 아니며, 반환 타입과 같은 클래스 타입(cv 한정 무시)일 때만 대상이 된다. 생략되더라도 복사나 이동 생성자는 사용할 수 있어야 한다. |
+
+- NRVO가 적용되지 않아도 자동 저장 기간의 비volatile 지역 객체나 값으로 받은 매개변수를 이름 그대로 반환하면 먼저 이동이 시도된다(C++11부터, C++20부터는 rvalue reference 변수도 포함, C++23에서는 xvalue로 취급). `T&`로 받은 매개변수나 static 지역 변수를 반환하면 복사된다. 따라서 `return std::move(obj);`는 이동에 필요하지 않고, 반환식이 객체의 이름이 아니게 되어 오히려 NRVO 대상에서 빠진다.
+- 두 지역 객체가 동시에 살아 있는 상태에서 분기마다 다른 객체를 반환하면 결과 객체 자리는 하나뿐이라 둘 다 그 자리에 미리 만들 수 없어 NRVO가 적용되지 않기 쉽다. 각 객체가 서로 겹치지 않는 블록에서 선언되면 이 제약이 없어 적용될 수 있다. 표준은 NRVO를 허용만 하므로 적용 여부는 구현에 달려 있고, 성능이 중요하면 측정으로 확인한다.
+- 복사, 이동 생성자나 소멸자의 부수효과에 프로그램 결과가 의존하면 이식성이 없다. 생략 여부에 따라 호출 횟수가 달라지기 때문이다.
+
+복사 생략은 서로 다른 호출이 같은 메모리를 공유하게 만드는 기능이 아니다. 결과 객체는 호출마다 호출부가 정한 자리에 따로 만들어진다. NRVO가 적용되면 표준은 지역 객체와 결과 객체를 같은 객체로 취급하므로 그 객체는 호출이 끝난 뒤에도 결과 객체로 남지만, 그 호출 하나의 결과일 뿐이고 다음 호출은 새 결과 객체를 받는다. 여러 곳에서 같은 상태가 보인다면 전역 객체나 static 지역 객체, 참조나 포인터 반환, 또는 Python처럼 객체를 참조로 다루는 언어에서 같은 가변 객체를 돌려받은 경우를 먼저 의심한다.
 
 ### Array-to-pointer conversion
 
@@ -126,6 +141,9 @@ shift 횟수는 0 이상이고 승격된 왼쪽 피연산자 폭보다 작아야
 - [바킹독의 실전 알고리즘 0x02강, 기초 코드 작성 요령 II — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=6lhVHP8bkPA)
 - [바킹독의 실전 알고리즘 0x03강, 배열 — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=mBeyFsHqzHg)
 - [cppreference, containers library](https://en.cppreference.com/w/cpp/container)
+- [cppreference, copy elision](https://en.cppreference.com/w/cpp/language/copy_elision)
+- [cppreference, return statement](https://en.cppreference.com/w/cpp/language/return)
+- [함수 반환값 최적화가 뭔지 아십니까? — YouTube, Uzchowall](https://www.youtube.com/watch?v=_wrvSr-oulc)
 
 ## 관련 문서
 

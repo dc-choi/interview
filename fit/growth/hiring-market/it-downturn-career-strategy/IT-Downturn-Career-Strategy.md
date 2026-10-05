@@ -7,14 +7,14 @@ aliases: ["IT Downturn Career Strategy", "긴축기 IT 커리어", "IT 일자리
 
 # 긴축기 IT 커리어 전략
 
-> 검토 기준일: 2026-07-28
+> 검토 기준일: 2026-10-05
 
 공식 지표와 회사 수준의 증거를 바탕으로 시장 변화와 개인 전략을 갱신하는 인덱스다.
 
 ## 목차
 
 - [[IT-Downturn-Career-Strategy-Signals|긴축 시그널과 대응 기준]]: 시장 지표, 회사 직접 증거, 위험 요인, 개인 대응 단계
-- [[IT-Downturn-Career-Strategy-Market-Shift|AI 패러다임과 시장 구조 변화]]: 모델과 데이터 경쟁, 산업별 소프트웨어 수요, 임금과 채용의 지역 차이, AI 대체 기대와 채용 반전
+- [[IT-Downturn-Career-Strategy-Market-Shift|AI 패러다임과 시장 구조 변화]]: 모델과 데이터 경쟁, 산업별 소프트웨어 수요, 임금과 채용의 지역 차이, AI 대체 기대와 채용 반전, 개발 비용 하락과 일자리, 경기 요인과 구조 요인 구분
 - [[IT-Downturn-Career-Strategy-Developer-Strategy|개발자 대응 전략]]: 총보상, AI 활용, 회사 선택, CS와 영어, 상황별 준비
 
 ## 갱신 규칙
