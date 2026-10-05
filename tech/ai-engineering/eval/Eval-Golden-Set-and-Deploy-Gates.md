@@ -1,7 +1,7 @@
 ---
 tags: [ai, evaluation, quality, deployment]
 status: done
-verified_at: 2026-09-16
+verified_at: 2026-10-06
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Golden Set", "골든셋", "배포 관문", "Deploy Gates"]
 ---
@@ -33,6 +33,21 @@ aliases: ["Golden Set", "골든셋", "배포 관문", "Deploy Gates"]
 - **양쪽을 다 잰다.** 일어나야 할 것과 일어나면 안 될 것을 둘 다 채점한다. 한쪽만 재면 시스템은 그쪽으로만 좋아진다.
 
 문항 자체가 잘못된 경우를 가려내는 보조 판별법도 있다. 최고 성능 모델이 여러 번 시도해도 통과율이 0%인 문항은 모델이 못 푸는 것이 아니라 문항이 잘못 만들어졌을 가능성을 먼저 본다. 데이터 품질을 다단계 게이트로 거르는 원칙은 [[LLM-Eval-Strategy]]의 Multi-gate를 따르고, 문항을 AI로 늘릴 때 사람 검수를 빼지 않는 이유도 같다.
+
+## 문항 구성과 홀드아웃
+
+답이 문자열 하나로 정해지지 않으므로 문항에는 입력과 함께 좋은 답의 조건을 담는다.
+
+| 필드 | 담는 것 |
+|---|---|
+| 입력과 컨텍스트 | 질문, 그때 모델에 준 검색 문서, 정책 버전, 계정 상태 같은 조건 |
+| 기대 사실과 금지 주장 | 답에 들어가야 할 사실, 들어가면 안 되는 약속이나 단정 |
+| 허용 도구 호출 | 도구를 쓰는 시스템이면 불러도 되는 도구와 인자 범위 |
+| 루브릭과 참조 답 | 판정 기준과 점수별 정의, 필요할 때만 두는 모범 답 |
+
+같은 질문도 주문 시점, 지역, 계정 상태, 현행 정책에 따라 정답이 달라진다. 컨텍스트를 문항에 고정하지 않으면 나중에 같은 조건으로 재채점할 수 없고, 판정기도 자기 지식으로 채점하게 된다. 문항 분포는 실제 요청 분포를 따르되 관련 없거나 비어 있는 입력, 지나치게 긴 입력, 부적절하거나 해로운 입력, 사람도 합의하기 어려운 모호한 문항 같은 경계 사례를 섞는다. 답이 없는 질문은 [[LLM-Abstention]], 검색 문서에 숨은 지시는 아래 가드레일 절의 공격 문제집으로 다룬다. 이 필드를 판정기 입력으로 쓰는 법은 [[Eval-LLM-Judge]]를 본다.
+
+문항은 프롬프트를 고칠 때 보는 개발용 세트와, 조정에 쓰지 않고 릴리스 판정에만 쓰는 홀드아웃으로 나눈다. 같은 데이터로 개선 결정을 반복할수록 그 데이터가 닳아 새 입력에서의 성능을 덜 보증하고, 프롬프트 수정도 그런 개선 결정이다. 홀드아웃도 쓸수록 닳으므로 운영에서 새로 모은 사례로 주기적으로 갈아 준다. 아래 관문에서 PR마다 재채점하는 회귀용 골든셋은 개발용 세트에 해당해 닳아도 회귀 검출에는 계속 쓰고, 개선이 새 입력에도 통하는지는 릴리스 때 홀드아웃으로 확인한다.
 
 ## 베이스라인 - 무엇과 비교할 것인가
 
@@ -94,6 +109,7 @@ aliases: ["Golden Set", "골든셋", "배포 관문", "Deploy Gates"]
 
 - 프롬프트와 Eval을 같은 문장의 앞뒷면으로 설계하는 이유
 - 골든셋을 작게 일찍 시작하라는 근거와 소재를 어디서 가져오는가
+- 문항에 그때의 컨텍스트를 고정하고 개발용 세트와 홀드아웃을 나누는 이유
 - 절대 점수가 아니라 베이스라인 대비 차이로 판정하는 이유와 베이스라인 표류
 - 배포 세 관문에서 관문 하나만 고른다면 무엇이고 왜인가
 - 가드레일에서 탐지율, 차단율, 과잉 차단을 따로 재야 하는 이유
@@ -104,12 +120,16 @@ aliases: ["Golden Set", "골든셋", "배포 관문", "Deploy Gates"]
 - [promptfoo, Assertions and metrics](https://www.promptfoo.dev/docs/configuration/expected-outputs/)
 - [promptfoo — GitHub](https://github.com/promptfoo/promptfoo)
 - [Bypassing LLM Guardrails: An Empirical Analysis of Evasion Attacks against Prompt Injection and Jailbreak Detection Systems — arXiv (2025-04)](https://arxiv.org/abs/2504.11168)
+- [Anthropic, Define success criteria and build evaluations](https://platform.claude.com/docs/en/test-and-evaluate/develop-tests)
+- [Google for Developers, Machine Learning Crash Course, Datasets: Dividing the original dataset](https://developers.google.com/machine-learning/crash-course/overfitting/dividing-datasets)
 
 ## 관련 문서
 
 - [[Evaluation-Driven-Development|평가 주도 개발 (두 축, 성숙도, 부품 승격)]]
 - [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트 (채점기 3종, 3층 게이트)]]
 - [[LLM-Eval-Strategy|LLM 평가 전략 (Multi-gate 데이터 품질, 평가 프레임워크에 대한 입장)]]
+- [[Eval-LLM-Judge|LLM 판정기 (문항 필드를 판정 입력으로 쓰는 법, 사람 라벨 교정)]]
+- [[LLM-Abstention|LLM Abstention (답이 없는 질문의 채점)]]
 - [[LLM-Application-Security|LLM 애플리케이션 보안 (프롬프트 인젝션 위협 모델, 가드레일의 한계)]]
 - [[Load-Test-Automation|부하 테스트 자동화 (베이스라인 운영과 표류)]]
 - [[Regression-Test-Automation|회귀 테스트 자동화 (배포 게이트로서의 회귀 스위트)]]

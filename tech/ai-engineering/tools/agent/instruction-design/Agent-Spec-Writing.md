@@ -143,3 +143,4 @@ AI가 코드의 상당 부분을 작성하면 개발자의 통제 지점은 코�
 - [[Software-3-0|Software 3.0]]
 - [[Harness-Engineering|하네스 엔지니어링]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
+- [[Simplified-Technical-English|Simplified Technical English (출력 문체 제약, 한 문장 한 지시)]]

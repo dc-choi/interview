@@ -20,6 +20,8 @@ aliases: ["Rubric", "루브릭", "점수 게이트", "Score Gate"]
 
 조합 원칙은 하나다. 가능하면 코드로, 필요하면 모델로, 검증에는 사람을 쓴다. 셋은 대체재가 아니라 조합이다.
 
+모델형 채점기의 판정 입력, 판정 방식, 편향과 사람 라벨 교정, 판정기 교체는 [[Eval-LLM-Judge]]가 맡는다.
+
 ## 게이트는 3층
 
 | 층 | 검사 | 통과하지 못하면 |
@@ -171,6 +173,7 @@ G1에서 G3은 거부권을 가진다. 하나라도 0점이면 나머지가 만�
 - [[Evaluation-Driven-Development|평가 주도 개발 (두 축, 성숙도, 부품 승격)]]
 - [[Harness-Engineering|하네스 엔지니어링 (역할별 파이프라인의 QA와 조정자)]]
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문 (채점에 쓸 문제 집합)]]
+- [[Eval-LLM-Judge|LLM 판정기 (판정 입력, 판정 방식, 편향, 사람 라벨 교정)]]
 - [[LLM-Eval-Strategy|LLM 평가 전략 (성공의 정의, LLM-as-Judge의 품질 조건)]]
 - [[Claude-Code-Extension-Reference|Claude Code 확장 메커니즘 (훅 이벤트와 exit code 정본)]]
 - [[Harness-Gate-Placement|게이트 배치 (강제 층으로 내리는 판별 질문)]]

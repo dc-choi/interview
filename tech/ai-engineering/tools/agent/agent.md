@@ -12,7 +12,7 @@ aliases: ["에이전트 심화", "Agent Engineering"]
 ## 목차
 - [x] [[Agent-From-Scratch|에이전트 직접 만들기 (모델, 오케스트레이션, 도구 계층, 도구 호출 루프와 병렬 호출, 도구 정의, 계획 검증과 saveAs/inputFrom 데이터 흐름, 메모리 세 종류)]]
 - [x] [[Agent-Context-Budget|에이전트 컨텍스트 예산 (경계 밖 설계 — 파일 Lazy Loading, 목록 Hybrid, 스킬 Catalog-First, Compaction 대신 사전 통제, hard cap)]]
-- [x] [[Agent-Instruction-Design|에이전트 지시 설계 (instruction-design/ 서브폴더) — 스펙 작성, 코딩 가드레일 4원칙, 과잉설계 방지, 검증 행동 교정]]
+- [x] [[Agent-Instruction-Design|에이전트 지시 설계 (instruction-design/ 서브폴더) — 스펙 작성, 코딩 가드레일 4원칙, 과잉설계 방지, 검증 행동 교정, 출력 문체 제약(STE)]]
 - [x] [[Agent-Code-Search|에이전트 코드 인텔리전스 (rg 전수 검색, Semble 후보 발견, Serena 심볼 검증/수정, Graphify 구조 경로, index freshness)]]
 - [x] [[Agent-Ready-API-Design|에이전트 친화 API 설계 (사람+AI 공용 인터페이스, 강제보다 안내, 에러 코드 append-only 계약, --dense 출력 밀도, Vibe Test 공정성 5불변식)]]
 - [x] [[Agent-Ready-Data|에이전트용 데이터 준비 (5속성 Trusted/Contextual/Traceable/Governed/Operational, 계약 검증 게이트와 격리, agentic lineage, 위임 접근과 JIT 자격증명, 지표 정의를 코드로, 능력 선언과 가역성 3등급, 단계적 자율성 4단계와 승격 증거)]]
