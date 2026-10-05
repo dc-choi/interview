@@ -22,7 +22,7 @@ aliases: ["Allganize Interview Prep", "올거나이즈 면접 준비", "Allganiz
 ## 이 차수 문서
 
 1. **본 문서**: 역할 해석, 핵심 요약, 전략과 미해결 사항
-2. [[Interview-Prep-Allganize-1st-JD|JD 분석과 FIT 답변]]: 회사 개요, 자격요건과 우대사항 매칭, 스택 비교, 자기소개와 지원 동기, 이직 사유 슬롯
+2. [[Interview-Prep-Allganize-1st-JD|JD 분석과 FIT 답변]]: 회사 개요, 자격요건과 우대사항 매칭, 스택 비교, 자기소개와 지원 동기, 확정된 이직 사유의 위치(C3, C4)
 3. [[Interview-Prep-Allganize-1st-Tech-Resume|이력서 기반 기술 질문]]: R1~R10
 4. [[Interview-Prep-Allganize-1st-Tech-JD|JD 기반 기술 질문]]: J1~J10
 5. [[Interview-Prep-Allganize-1st-Service|서비스 맥락, 컬처핏, 역질문]]: 서비스 맥락 6개, 컬처핏과 민감 질문 10개, 역질문

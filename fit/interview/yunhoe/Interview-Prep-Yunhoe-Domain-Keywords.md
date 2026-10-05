@@ -42,7 +42,7 @@ aliases: ["CARE ID 도메인 키워드", "DPP ESPR 순환경제 키워드 정리
 ### 4. EPR (Extended Producer Responsibility, 생산자책임재활용제도)
 
 - **생산자가 제품의 폐기, 재활용 단계까지 책임**지는 제도. 한국도 포장재, 전자제품 등에 시행 중.
-- EU는 **섬유 폐기물에 대한 EPR 도입**을 추진 중 → 브랜드가 자사 의류의 수거, 재활용을 책임지게 됨.
+- EU는 개정 폐기물 기본 지침(2025-10-16 발효)으로 **섬유와 신발 EPR 도입**을 확정했고, 회원국은 2028년 4월까지 제도를 마련해야 한다 → 브랜드가 자사 의류의 수거, 재활용을 책임지게 됨.
 - DPP와의 연결: 생산자가 책임을 지려면 자사 제품이 어디서 어떻게 폐기, 재활용되는지 추적할 정보가 필요하고 DPP가 EPR 이행을 지원할 수 있다.
 
 ### 5. 탄소시장 (EU ETS 배출권과 탄소크레딧)
@@ -74,6 +74,7 @@ aliases: ["CARE ID 도메인 키워드", "DPP ESPR 순환경제 키워드 정리
 - [European Commission, The Digital Product Passport Registry is now live](https://single-market-economy.ec.europa.eu/news/digital-product-passport-registry-now-live-2026-07-20_en)
 - [European Commission, About the EU Emissions Trading System](https://climate.ec.europa.eu/areas-action/carbon-markets/about-eu-ets_en)
 - [European Commission, Use of international credits in the EU ETS](https://climate.ec.europa.eu/eu-action/carbon-markets/eu-emissions-trading-system-eu-ets/use-international-credits_en)
+- [European Commission, Revised Waste Framework Directive enters into force](https://environment.ec.europa.eu/news/revised-waste-framework-directive-enters-force-2025-10-16_en), 확인: 2026-10-04
 - [CARE ID DPP 솔루션](https://careid.center/dpp)
 - [DPPs required by EU legislation across sectors — Circularise](https://www.circularise.com/blogs/dpps-required-by-eu-legislation-across-sectors)
 - [DPP Timeline 2026-2030: Every Product, Every Deadline — PassportCraft](https://passportcraft.com/insights/dpp-timeline-2026-2030-every-deadline)

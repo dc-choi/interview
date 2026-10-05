@@ -58,13 +58,13 @@ aliases: ["Peer Comparison Anxiety", "동료 비교 불안", "뒤처짐 신호 �
 ## 관련 문서
 
 - [[First-90-Days|새 직장 첫 90일 원칙]] — 온보딩 구간의 비교 금지
-- [[Self-Belief|자기 믿음]] — 타인의 평가는 타인의 것, 자기충족 예언
+- [[Self-Belief|자기 믿음]] — 타인의 평가는 타인의 것, 자기 효능감
 - [[Self-Knowledge-Through-Others|타인을 통한 자기 인식]] — 내가 생각한 나 vs 진짜 나
 - [[Developer-Growth-Stages|개발자 성장 단계]] — 계단형 성장, 정체기는 정상
-- [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]] — 번아웃과 슬럼프 구분, 뒤처짐 불안과 회복
+- [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]] — 슬럼프와 번아웃을 단순 판별하지 않는 기준, 회복
 - [[Self-Development-While-Working|일하면서 자기계발]] — 흔한 함정의 동료 비교
 - [[Self-Analysis|자기 분석 (확신 vs 정보)]] — 불안의 정체 분해
 - [[Code-Review-Culture|생산적 코드 리뷰 문화]] — 리뷰 문화와 피드백 톤
 - [[Developer-Communication|개발자 커뮤니케이션]] — 회의 발언의 행동 처방 (질문으로 진입, 회의 전 준비)
-- [[Dreyfus-Skill-Model|드레퓌스 기술 습득 모형]] — 자기 코드를 공개할 용기, 모방으로 기준 흡수
+- [[Dreyfus-Skill-Model|드레퓌스 기술 습득 모형]] — 과제별 판단 수준 점검과 사례 비교
 - [[Tech-Writing-Craft|개발자 글쓰기]] — 피드백을 초안 때부터 구체적으로 요청하는 법

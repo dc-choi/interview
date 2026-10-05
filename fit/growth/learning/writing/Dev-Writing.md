@@ -10,7 +10,7 @@ aliases: ["Dev Writing", "글쓰기와 기술 블로그"]
 경험을 재사용 가능한 지식으로 바꾸는 축 — 기술 블로그 운영, 개발자 글쓰기 기술, AI 시대에 직접 경험기가 갖는 가치. 상위: [[학습(Learning)|학습 방법]].
 
 ## 목차
-- [ ] [[Inflearn-Knowledge-Import|인프런 지식 문서화 트래커 (92개 수강권의 커리큘럼, 본문 수집과 기존 문서 통합)]]
+- [ ] [[Inflearn-Knowledge-Import|인프런 지식 문서화 트래커 (누적 95개 수강권의 커리큘럼, 본문 수집과 기존 문서 통합)]]
 - [ ] [[Career-Technical-Output-Backlog|커리어 기술 아웃풋 백로그 (Node.js 시리즈, 업무 기반 글감, 장기 구현 실습)]]
 - [x] [[Running-A-Tech-Blog|기술 블로그 운영 (왜 쓰는가, 플랫폼 선택, 성과 측정, 흔한 어려움)]]
 - [x] [[Running-A-Tech-Blog-Process|기술 블로그 운영 프로세스 (글감 등록부터 배포까지 5단계)]]

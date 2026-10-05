@@ -19,7 +19,7 @@ aliases: ["Labor Market Mindset", "노동시장 시장 사고", "커리어 시�
 ## 게임이론의 렌즈
 
 - **죄수의 딜레마**: 각자에게 최선인 선택이 전체에는 최선이 아닐 수 있다. 서로 협력하면 더 나은 결과인데, 배신당할 리스크 때문에 각자 자기 이익을 택해 차선에 수렴한다. 시장의 많은 인터랙션이 이 구조다.
-- **팃포탯**: 협력으로 시작하되 배신에는 배신으로, 협력에는 협력으로 갚는다. 처우 협의 때는 협력하되 연봉 협상이 불발되면 감정 호소가 아니라 이직을 검토하는 식이다. 협상의 심리와 시간 게임은 [[Negotiation-Tactics|협상 전략과 기대치 관리]], 실전 절차와 불발 시 대안은 [[Salary-Negotiation-Guide-Principles|연봉 협상 원칙]], [[Salary-Negotiation-Guide-Process|연봉 협상 프로세스]].
+- **팃포탯**: 협력으로 시작하되 배신에는 배신으로, 협력에는 협력으로 갚는다. 처우 협의 때는 협력하되 연봉 협상이 불발되면 감정 호소가 아니라 이직을 검토하는 식이다. 결렬 시 대안(BATNA)과 기대치 관리는 [[Negotiation-Tactics|협상 전략과 기대치 관리]], 실전 절차와 불발 시 대안은 [[Salary-Negotiation-Guide-Principles|연봉 협상 원칙]], [[Salary-Negotiation-Guide-Process|연봉 협상 프로세스]].
 
 ## 절대적 갑을은 없다
 
@@ -65,7 +65,7 @@ aliases: ["Labor Market Mindset", "노동시장 시장 사고", "커리어 시�
 
 ## 관련 문서
 - [[Effort-Value-In-Hiring|채용 시장에서 노력의 가치]] — 수요공급, 성실은 위생 요인, ROI 채용
-- [[Negotiation-Tactics|협상 전략과 기대치 관리]] — 협상은 심리와 시간의 게임
+- [[Negotiation-Tactics|협상 전략과 기대치 관리]] — 결렬 시 대안, 합의 범위와 기대치 관리
 - [[Salary-Trajectory|연봉은 실력의 결과가 아니다]] — 연봉은 시장가, 궤적의 함수
 - [[Salary-Negotiation-Guide-Principles|연봉 협상 원칙]] — 등가교환, 레버리지, 명분
 - [[Software-Craftsmanship-Professionalism|소프트웨어 장인정신과 프로페셔널리즘]] — 회사는 고객, 노비가 아닌 프로

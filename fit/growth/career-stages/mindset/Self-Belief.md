@@ -80,5 +80,5 @@ aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "
 - [[Failure-Driven-Growth|실패를 성장으로 바꾸기]] — 부정 루프를 끊는 해석 프레임 (버린 시간 vs 과정 자산)
 - [[Result-Oriented-Career|결과 지향 커리어]] — 주니어 라벨과 자기 정의가 행동을 만드는 함정
 - [[Radical-Candor-Feedback|Radical Candor와 행동 기반 피드백]] — 받은 내용을 이해하고 다음 행동으로 연결하는 루프
-- [[Developer-Growth-Stages|개발자 성장 단계]] — 피드백을 받아들이는 근육을 기르는 연습
+- [[Developer-Growth-Stages-Junior-To-Mid|주니어 → 미드레벨 전환 7단계]] — 피드백을 받아들이는 근육을 기르는 연습
 - [[Code-Review-Culture|생산적 코드 리뷰 문화]] — 리뷰이의 자세 (지적은 위험 신호가 아니다)

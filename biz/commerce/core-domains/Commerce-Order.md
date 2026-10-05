@@ -126,7 +126,7 @@ aliases: ["Commerce Order", "커머스 주문"]
 
 상품 이동 시작 전이라는 기준은 화면에 보이는 것보다 이르다 — 주문이 들어가는 순간 물류센터에서는 픽업과 포장이 이미 진행되고, 이 단계의 취소는 상품을 원위치로 되돌리는 인건비를 실제로 발생시킨다. 고객에게는 발송 전(취소 가능해 보임)인데 셀러에게는 작업 진행 중인 회색 지대가 생기는 것. 배송 상태 추적이 정교해질수록 발송 전 취소 요청은 늘어나는데(정보 공개의 역설) 작업 비용은 사라지지 않으므로, 셀러와 구매자의 마찰이 구조화된다.
 
-중개 플랫폼이 거래 당사자가 아니라는 사실이 판매자의 무제한 재량을 뜻하지는 않는다. 판매자가 통신판매업자인 거래에는 전자상거래법상 청약철회 요건이 적용되고, 비사업자 개인 간 거래는 계약, 플랫폼 정책과 적용 법률을 별도로 확인해야 한다. 플랫폼은 입점 계약과 운영정책으로 취소 처리 기한, 판매자 제재와 보상 절차를 정할 수 있다. 또한 중개자는 판매자 신원정보를 제공하고 플랫폼에서 생긴 불만과 분쟁에 필요한 조치를 신속히 해야 한다. 시스템은 화면 상태가 아니라 **물류 작업 상태(피킹 시작 여부)**와 법정 권리, 입점 계약, 플랫폼 정책을 각각 판정해야 한다.
+중개 플랫폼이 거래 당사자가 아니라는 사실이 판매자의 무제한 재량을 뜻하지는 않는다. 판매자가 통신판매업자인 거래에는 전자상거래법상 청약철회 요건이 적용되고, 비사업자 개인 간 거래는 계약, 플랫폼 정책과 적용 법률을 별도로 확인해야 한다. 플랫폼은 입점 계약과 운영정책으로 취소 처리 기한, 판매자 제재와 보상 절차를 정할 수 있다. 또한 중개자는 사업자 판매자의 신원정보를 청약 전에 제공하고(개인 판매자는 신원을 확인해 분쟁 시 요청에 따라 제공) 플랫폼에서 생긴 불만과 분쟁에 필요한 조치를 신속히 해야 한다. 시스템은 화면 상태가 아니라 **물류 작업 상태(피킹 시작 여부)**와 법정 권리, 입점 계약, 플랫폼 정책을 각각 판정해야 한다.
 
 ### 반품 프로세스
 
@@ -166,6 +166,7 @@ aliases: ["Commerce Order", "커머스 주문"]
 - [쇼핑 주문서의 임시저장 기능? — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/229)
 - [셀러와 구매자 사이, 이커머스 플랫폼이 골치아픈 이유 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/635)
 - [국가법령정보센터, 전자상거래법 제17조부터 제20조](https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1022341869)
+- [국가법령정보센터, 전자상거래법 제20조의4](https://www.law.go.kr/법령/전자상거래등에서의소비자보호에관한법률/제20조의4)
 - [Shopify Help Center, Understanding your order statuses](https://help.shopify.com/en/manual/fulfillment/managing-orders/order-status)
 - [Shopify Help Center, Creating draft orders](https://help.shopify.com/en/manual/fulfillment/managing-orders/create-orders/create-draft)
 - [Stripe API Reference, The Checkout Session object](https://docs.stripe.com/api/checkout/sessions/object)

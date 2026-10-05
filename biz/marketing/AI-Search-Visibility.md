@@ -42,7 +42,7 @@ Google 공식 발표는 2026-06-03 일부 웹사이트에 공개하고 2026-08-3
 
 클릭의 위치는 한 번 짚어야 한다. 공식 문서 기준으로 AI Overviews와 AI Mode 모두 표준 노출 규칙이 적용되고, 외부 페이지 링크를 누르면 클릭으로 집계된다. 다만 그 클릭은 전체 검색 성과 안에 들어가고 생성 AI 리포트에서 따로 떼어 볼 수 없다. AI Mode에서 후속 질문을 하면 새 쿼리로 계산된다. 정리하면 이 리포트가 답해 주는 것은 보였는가이고, 답이었는가는 여기서 나오지 않는다.
 
-Bing도 공식 데이터를 제공한다. 2026-02-10 공개 프리뷰로 발표한 Bing Webmaster Tools의 AI Performance는 Microsoft Copilot, Bing AI 요약과 일부 파트너에서의 인용 수, 하루 평균 고유 인용 페이지 수, URL별 인용과 grounding query 표본을 보여준다. 다만 개별 답변에서의 인용 위치, 페이지의 역할이나 순위를 뜻하지 않는다 (2026-10-02 공식 발표 확인).
+Bing도 공식 데이터를 제공한다. 2026-02-10 공개 프리뷰로 발표한 Bing Webmaster Tools의 AI Performance는 Microsoft Copilot, Bing AI 요약과 일부 파트너에서의 인용 수, 하루 평균 고유 인용 페이지 수, URL별 인용과 grounding query 표본을 보여준다. 다만 개별 답변에서의 인용 위치, 페이지의 역할이나 순위를 뜻하지 않는다 (2026-10-02 공식 발표 확인). 2026-06-16에는 grounding query의 의도(Intents)와 주제(Topics) 분류, 같은 grounding query에 표시된 전체 인용 중 우리 사이트의 비율인 Citation Share, 이전 기간 비교(Compare)의 프리뷰가 전 세계에 순차 제공되기 시작했다. Citation Share도 경쟁 도메인, 트래픽 점유나 순위를 보여주지 않는다 (2026-10-04 공식 발표 확인).
 
 노출 자격과 실제 노출도 구분한다. Google은 AI Overviews와 AI Mode의 지원 링크가 되려면 페이지가 색인되어 있고 검색에서 snippet 표시 자격을 갖춰야 한다고 설명한다. 별도 AI 파일이나 특수 schema.org 구조화 데이터는 필요하지 않으며, 구조화 데이터를 쓴다면 화면의 본문과 맞아야 한다. 요건 충족만으로 색인이나 노출이 보장되지는 않는다. Bing이 권하는 헤딩, 표와 FAQ 개선도 인용을 늘리기 위한 제안으로 보고 인용 보장이나 Google의 별도 필수 조건으로 옮기지 않는다.
 
@@ -106,6 +106,7 @@ AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회�
 - [Google Analytics Help, Understand (direct) / (none) traffic](https://support.google.com/analytics/answer/15258820)
 - [CMA, Publisher conduct requirement summary (2026-08-04)](https://assets.publishing.service.gov.uk/media/6a7195d7aec8358a34958bfa/Publisher_conduct_requirement_-_3_Aug_2026.pdf)
 - [Introducing AI Performance in Bing Webmaster Tools Public Preview — Bing Webmaster Blog](https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview)
+- [New AI Visibility Insights in Bing Webmaster Tools: Intents, Topics, Citation Share, Compare — Bing Search Blog](https://blogs.bing.com/search/2026/6/New-AI-Visibility-Insights-in-Bing-Webmaster-Tools-Intents-Topics-Citation-Share-Compare/)
 - [Introducing Search Generative AI performance reports in Search Console — Google Search Central Blog](https://developers.google.com/search/blog/2026/06/gen-ai-performance-reports)
 
 ## 관련 문서

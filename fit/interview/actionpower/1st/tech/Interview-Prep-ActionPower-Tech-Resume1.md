@@ -2,9 +2,9 @@
 tags: [fit, interview, actionpower]
 status: done
 category: "Interview - Fit"
-aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM, MQ 질문"]
+aliases: ["ActionPower 이력서 기술 질문 1", "액션파워 DB, ORM 질문"]
 ---
-# 액션파워 1차 — 이력서 기반 기술 질문 (1/4): DB, ORM, MQ, Docker
+# 액션파워 1차 — 이력서 기반 기술 질문 (1/4): DB, ORM
 
 > 상위 TOC: [[Interview-Prep-ActionPower|액션파워 1차 면접 준비]]
 

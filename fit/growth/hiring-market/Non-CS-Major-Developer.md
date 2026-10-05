@@ -23,7 +23,7 @@ aliases: ["Non-CS-Major Developer", "비전공 개발자", "전공 vs 비전공"
 
 - 명문대 전공이지만 깃허브도 프로젝트도 안 보이는 지원자와, 학력은 약해도 유명 오픈소스의 핵심 기여자인 지원자 중 회사는 후자를 택할 확률이 높다. 실력이 검증되어 리스크가 작기 때문이다.
 - 단 회사마다 원하는 실력은 다르다(특정 프레임워크 숙련 vs 탄탄한 기초). **그 회사가 원하는 스펙을 파악**해 맞추는 것이 먼저다.
-- 외부 자산으로 실력을 증명하는 구체 전략은 [[Developer-Hiring-Insights-Growth|채용 인사이트 성장 축]], [[Running-A-Tech-Blog|기술 블로그]], [[Self-Development-While-Working|회사 밖 성장]]. 학력으로 실력을 판단할 수 없다는 채용자 관점은 [[Competence-Identification|Competent 판별]], 서류 스크리닝 메커니즘은 [[Resume-15-Second-Rules|이력서 15초 룰]].
+- 외부 자산으로 실력을 증명하는 구체 전략은 [[Developer-Hiring-Insights-Growth|채용 인사이트 성장 축]], [[Running-A-Tech-Blog|기술 블로그]], [[Self-Development-While-Working|회사 밖 성장]]. 직무 과제와 설명으로 역량을 확인하는 채용자 관점은 [[Competence-Identification|Competent 판별]], 서류 스크리닝 메커니즘은 [[Resume-15-Second-Rules|이력서 15초 룰]].
 
 ## 비전공자의 강점 — 복수 전문성
 
@@ -57,7 +57,7 @@ aliases: ["Non-CS-Major Developer", "비전공 개발자", "전공 vs 비전공"
 ## 관련 문서
 - [[CS-Fundamentals-Value|CS 기초의 가치]] — 전공자의 진짜 강점이 무엇인가
 - [[Developer-Hiring-Insights-Growth|채용 인사이트 성장 축]] — 외부 자산 3축
-- [[Competence-Identification|Competent 판별]] — 학력으로 실력 판단 불가
+- [[Competence-Identification|Competent 판별]] — 직무 과제와 설명으로 역량 확인
 - [[Resume-15-Second-Rules|이력서 15초 룰]] — 서류 스크리닝
 - [[Running-A-Tech-Blog|기술 블로그 운영]] — 증명 도구
 - [[Self-Development-While-Working|일하면서 자기계발]] — 실력 어필, 커리어 오너십

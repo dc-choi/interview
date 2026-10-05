@@ -141,5 +141,5 @@ PGT는 프로젝트로 증명한 것(Proof & Project), 학습 잠재력을 보�
 - [[Developer-Interview-Signals|개발자 면접 시그널]] — 일 잘하는 사람을 본다
 - [[Resume-15-Second-Rules|이력서 15초 룰]] — 임팩트로 보이게
 - [[Resume-Experience-Narrative-and-Evidence|이력서 경험 서술과 증거 설계]] — AI 활용 경험의 이력서 서술
-- [[Intrinsic-vs-Extrinsic-Motivation|내재적 동기와 외재적 동기]] — 외재적 활동이 지속되지 않는 이유
+- [[Intrinsic-vs-Extrinsic-Motivation|내재적 동기와 외재적 동기]] — 외재적 동기의 내면화와 목표 이후의 선택
 - [[Labor-Market-Mindset|노동시장을 시장으로 보기]] — 거래, 게임이론, 능력=상품의 메타 프레임

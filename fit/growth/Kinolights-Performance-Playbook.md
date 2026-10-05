@@ -1,13 +1,13 @@
 ---
 tags: [fit, growth, kinolights, performance]
-status: active
+status: done
 category: "Fit - 성장"
 aliases: ["Kinolights Performance Playbook", "키노라이츠 성과 플레이북"]
 ---
 
 # 키노라이츠 성과 플레이북
 
-키노라이츠에서 개인 기여를 과장 없이 증거로 전환하기 위한 기록 기준이다. 2026-09-01 퇴사 결정 이후에는 남은 업무와 인수인계의 증거를 정리하는 동안 활성 상태로 두고, 실제 마지막 근무일이 지난 뒤 종료 기록으로 전환한다. 회사의 평가 기준, 실제 업무 계획, 내부 지표와 운영 정보는 다루지 않는다. 업무 행동 루프는 [[Kinolights-Engineer-Growth-Direction|당시 엔지니어 성장 방향]], 전체 우선순위와 WIP 규칙은 [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]]이 정본이다.
+키노라이츠에서 개인 기여를 과장 없이 증거로 전환하기 위한 기록 기준이다. 2026-09-01 퇴사 결정 이후에는 남은 업무와 인수인계의 증거를 정리하는 동안 활성 상태로 두었고, 2026-09-15 근무 종료에 따라 종료 기록으로 전환했다. 회사의 평가 기준, 실제 업무 계획, 내부 지표와 운영 정보는 다루지 않는다. 업무 행동 루프는 [[Kinolights-Engineer-Growth-Direction|당시 엔지니어 성장 방향]], 전체 우선순위와 WIP 규칙은 [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]]이 정본이다.
 
 ## 2026-08 점검에서 확인한 공백
 

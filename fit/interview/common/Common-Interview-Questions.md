@@ -15,9 +15,9 @@ aliases: ["내 답변 마스터 TOC", "Common Interview Questions", "자주하�
 - [[My-Motivation-Reasons|이직 사유 마스터]] (이썸, 시솔, 트라이포드 경험과 잦은 이직, 공백기, B2C/B2B, **백엔드 기술 충돌**)
 - [[My-Tech-Cards|이력서 기반 기술 답변 8개 카드]] (DB Lock, EventBridge+SQS, 슬로우쿼리, Prisma, Grafana, Docker/ECS, 클린 아키텍처, 캐시 전략)
 - [[My-Tech-Cards-Extended|기술 답변 심화]] (비교 표, 꼬리 풀, 아키텍처 디테일)
-- [[My-FIT-Answers|FIT 답변 메인 12개]] (왜 백엔드, 장단점, 갈등, 기획자 소통, 5년 후, 번아웃, AI 도구, 워라밸, 실패, 개발 환경, 디버깅, **마지막 한마디**)
+- [[My-FIT-Answers|FIT 답변 메인 15개]] (왜 백엔드, 장단점, 갈등, 기획자 소통, 5년 후, 번아웃, AI 도구, 워라밸, 실패, 개발 환경, 디버깅, AI 시대 가치, 리더, 기존 방식 변화, **마지막 한마디**)
 - [[My-FIT-Answers-Extended|FIT 답변 보조 11개]] (별명, 이상적, 비전, 학습, 사이드, 긴급 이슈, 문화, 몰입, 자기 평가, 동료 피드백, 힘든 동료)
-- [[My-Reverse-Questions|역질문 마스터 + 사전 분석 체크]] (재무, R&R, 기술, 온보딩, 근무 5카테고리)
+- [[My-Reverse-Questions|역질문 마스터 + 사전 분석 체크]] (역할과 사업 지속성, R&R, 기술, 온보딩, 협업과 근무, 면접 전 사전 확인 6카테고리)
 
 ## 면접 사이클 도구
 

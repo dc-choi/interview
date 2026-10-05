@@ -26,7 +26,7 @@ verified_at: 2026-07-21
 - **VAN (Value Added Network)** — 카드사와 가맹점 사이의 승인 중계와 단말기 (주로 오프라인)
 - **카드사, acquirer, 카드 네트워크** — 발급, 가맹점 매입, 승인과 clearing 경로를 나눠 맡는다. 국내 계약 구조에서는 PG와 VAN의 역할이 추가된다.
 
-한국은 PG와 VAN이 끼는 다층 구조다. 플랫폼과 은행이 직결되는 단층 구조(중국형 간편결제)와 비교하면 수수료 단계가 많고, 이 분산 구조가 국내 핀테크의 속도를 늦춘 배경으로 꼽힌다.
+한국은 PG와 VAN이 끼는 다층 구조다. 플랫폼과 은행이 직결되던 단층 구조(2018년 6월 넷츠유니온(网联) 경유 의무화 전의 중국형 간편결제)와 비교하면 수수료 단계가 많고, 이 분산 구조가 국내 핀테크의 속도를 늦춘 배경으로 꼽힌다.
 
 ## 간편결제의 실체: 토큰
 
@@ -128,6 +128,7 @@ Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주�
 - [Mastercard, Chargeback Guide Merchant Edition (2025-05-13)](https://www.mastercard.com/content/dam/public/mastercardcom/na/global-site/documents/chargeback-guide.pdf)
 - [PCI Security Standards Council — PCI DSS](https://www.pcisecuritystandards.org/standards/pci-dss/)
 - [EMVCo — Payment Tokenisation](https://www.emvco.com/emv-technologies/payment-tokenisation/)
+- [China's Central Bank notions all online payment connect to a unified platform by middle of 2018 — CGTN](https://news.cgtn.com/news/7a597a4d78557a6333566d54/index.html) — 2018-06-30부터 은행 계좌 연계 온라인 결제의 넷츠유니온 경유
 - [Paddle — What is Paddle?](https://developer.paddle.com/get-started/how-paddle-works/)
 - [Lemon Squeezy — Merchant of Record](https://docs.lemonsqueezy.com/help/payments/merchant-of-record)
 - [Gumroad — Gumroad is becoming a Merchant of Record](https://gumroad.com/blog/p/gumroad-is-becoming-a-merchant-of-record-more-updates)

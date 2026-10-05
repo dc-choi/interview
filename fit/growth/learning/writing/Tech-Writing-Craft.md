@@ -154,7 +154,7 @@ aliases: ["Tech Writing", "개발자 글쓰기", "기술 글쓰기", "Tech Writi
 - [[LLM-Assisted-Editing|LLM을 활용한 글 교정 워크플로우]] — 결함 탐지와 반복 점검에 LLM을 쓰는 방식
 - [[Zettelkasten|제텔카스텐]] — 메모를 연결해 글감으로 키우는 메모법
 - [[First-Hand-Experience-AI-Era|AI 시대 직접 경험기와 작성자 신뢰]] — 직접 경험 기록의 가치
-- [[Purpose-Driven-Learning|목적 있는 학습]] — 가르치기, 공유가 가장 깊은 학습인 이유
+- [[Purpose-Driven-Learning|목적 있는 학습]] — 가르치며 배우기와 그 근거의 범위
 - [[Self-Development-While-Working|일하면서 자기계발]]
 
 ## 출처

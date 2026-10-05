@@ -19,7 +19,7 @@ verified_at: 2026-08-27
 - [[Interview-Prep-Yunhoe-CoffeeChat|커피챗, 2026-05-15 전화]]
 - [[Interview-Prep-Yunhoe-1st|1차 본 미팅, 2026-05-20]]
 - [[Interview-Prep-Yunhoe-Offer-Salary-Scenario|최종합격, 2026-05-28 및 2026-06-17 제안 철회]]
-- [[Interview-Prep-Yunhoe-Program-Screening|미래청년일자리 사업 참여 심사, 2026-06-18]]
+- [[Interview-Prep-Yunhoe-Program-Screening|미래청년일자리 사업 참여 심사, 2026-06-18 예정, 06-17 철회로 미진행]]
 
 ## 조사 기준
 

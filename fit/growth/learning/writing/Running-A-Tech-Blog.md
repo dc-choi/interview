@@ -50,8 +50,8 @@ aliases: ["Running A Tech Blog", "기술 블로그 운영", "팀 블로그 운�
 
 ## 배포 타이밍
 
-- **화~목 퇴근 1~2시간 전** (오후 4~5시)이 경험적으로 트래픽 좋음
-- 월, 금은 상대적으로 낮음
+- **화요일과 목요일 퇴근 1~2시간 전** (오후 4~5시)이 경험적으로 트래픽 좋음
+- 주말은 접속자가 크게 줄어듦
 - 컨퍼런스, 핫이슈와 겹치는 시기는 회피 or 활용
 
 ## 성과 측정
@@ -157,7 +157,7 @@ Git 기반 버전 관리 / 글감→배포 프로세스 정의 / 템플릿, 문�
 - [[Running-A-Tech-Blog-Process|기술 블로그 운영 프로세스]] — 글감 등록부터 배포까지 5단계
 - [[Tech-Writing-Craft|개발자 글쓰기]] — 글쓰기 기법과 습관 (메모, 마감, 리뷰, 수정)
 - [[First-Hand-Experience-AI-Era|AI 시대 직접 경험기와 작성자 신뢰]] — 왜 직접 경험 기록이 더 중요해졌나
-- [[Purpose-Driven-Learning|목적 있는 학습]] — 가르치기/공유가 가장 깊은 학습인 이유
+- [[Purpose-Driven-Learning|목적 있는 학습]] — 가르치며 배우기와 그 근거의 범위
 - [[Self-Development-While-Working|일하면서 자기계발]]
 - [[Great-Developer-Habits|뛰어난 개발자의 행동 패턴]]
 - [[Growth-Principles|성장의 7가지 원칙]]

@@ -52,7 +52,7 @@ aliases: ["Severance Offer Negotiation", "권고사직 위로금", "위로금 �
 ## 실업급여와 세금
 
 - **실업급여**: 자발적 이직은 원칙적으로 구직급여 수급이 제한되지만, 고용보험법 시행규칙 별표 2는 사업의 양도와 합병, 일부 사업 폐지, 직제개편에 따른 조직 축소, 경영 악화, 인사 적체 등의 사정으로 사업주에게 퇴직을 권고받아 이직한 경우를 정당한 이직 사유로 둔다. 본인의 중대한 귀책사유가 실제 이유라면 제한될 수 있다.
-- 수급하려면 이직일 이전 18개월 동안 피보험 단위기간이 합산 180일 이상이어야 한다(고용보험법 제40조). 신청은 고용24에서 한다.
+- 수급하려면 이직일 이전 18개월 동안 피보험 단위기간이 합산 180일 이상이어야 한다(고용보험법 제40조). 구직신청은 고용24에서 하고, 실업 신고와 수급자격 인정신청은 이직 후 지체 없이 고용센터(원칙적으로 거주지 관할)에 출석해서 한다(고용보험법 제42조, 제43조, 같은 법 시행령 제61조).
 - 회사가 고용보험 상실 신고에 적는 이직 사유가 수급 심사의 출발점이므로, 권고사직 사유가 합의서와 신고에 어떻게 기재되는지 확인한다.
 - **세금**: 현실적인 퇴직을 원인으로 받는 소득은 퇴직소득으로 과세하는 것이 원칙이다. 다만 퇴직위로금도 지급 근거와 성격에 따라 근로소득으로 구분될 수 있으므로, 어떤 소득으로 원천징수하는지 회사에 확인하고 필요하면 국세청 상담을 받는다.
 
@@ -89,6 +89,7 @@ aliases: ["Severance Offer Negotiation", "권고사직 위로금", "위로금 �
 - [국가법령정보센터, 고용보험법 시행규칙 별표 2 수급자격이 제한되지 아니하는 정당한 이직 사유](https://www.law.go.kr/lsBylInfoPLinkR.do?bylCls=BE&lsNm=%EA%B3%A0%EC%9A%A9%EB%B3%B4%ED%97%98%EB%B2%95+%EC%8B%9C%ED%96%89%EA%B7%9C%EC%B9%99&bylNo=0002&bylBrNo=00)
 - [고용노동부, 퇴직금 및 평균임금 산정공식](https://www.moel.go.kr/faq/faqView.do?seqRepeat=89)
 - [찾기쉬운 생활법령정보, 구직급여 수급자격](https://easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=722&ccfNo=2&cciNo=1&cnpClsNo=1)
+- [찾기쉬운 생활법령정보, 실업의 신고](https://easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=722&ccfNo=2&cciNo=2&cnpClsNo=1)
 - [고용24](https://www.work24.go.kr)
 - [국세청, 퇴직소득의 범위](https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=6441&cntntsId=7877)
 - [권고사직 위로금 제안의 함정 — Threads, cpla_pure](https://www.threads.com/@cpla_pure/post/DWdPf1ZgOfI)

@@ -53,11 +53,11 @@ aliases: ["Allganize 1st Service Culture Reverse", "올거나이즈 1차 서비�
 
 ### C1. 자기소개
 
-[[Interview-Prep-Allganize-1st-JD|JD 분석 문서]]의 1분 자기소개를 쓴다. 현재 역할 한 줄은 C3 확정 후 채운다.
+[[Interview-Prep-Allganize-1st-JD|JD 분석 문서]]의 1분 자기소개를 쓴다. C3이 확정됐으므로 현재 소속은 첫 문장에 넣지 않고, 물으면 C3 답변을 쓴다.
 
 ### C2. 지원 동기
 
-JD 분석 문서의 지원 동기 골격을 쓴다. 본문은 C3과 함께 확정한다.
+JD 분석 문서의 지원 동기 골격을 쓴다. 본문은 확정된 C3과 한 흐름이 되게 사용자가 확정한다.
 
 ### C3. 이직 사유, 퇴사 사유, 지금 무엇을 하고 있나요?
 

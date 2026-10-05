@@ -62,7 +62,7 @@ aliases: ["Developer Downturn Strategy", "개발자 대응 원칙", "사이클 �
 - 읽기: 공식 문서와 변경 이력을 원문으로 확인한다.
 - 쓰기: 이슈, 설계 결정, 장애 설명을 짧게 남긴다.
 - 듣기와 말하기: 실제 협업이나 지원 목표가 있을 때 우선순위를 높인다.
-- [[English-Learning-Phonics|발음 기반 영어 학습법]]
+- [[English-Learning-Phonics|개발자 영어 학습과 발음 훈련]]
 
 ## 상황별 전략
 

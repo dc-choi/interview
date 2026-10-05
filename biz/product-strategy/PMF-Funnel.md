@@ -94,7 +94,7 @@ Q. PMF를 어떻게 검증했는가?
 
 ## 출처
 
-- [First Round Review — How Superhuman Built an Engine to Find Product-Market Fit](https://review.firstround.com/how-to-measure-product-market-fit/)
+- [First Round Review — How Superhuman Built an Engine to Find Product-Market Fit](https://review.firstround.com/how-superhuman-built-an-engine-to-find-product-market-fit/)
 
 ## 관련 문서
 - [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]

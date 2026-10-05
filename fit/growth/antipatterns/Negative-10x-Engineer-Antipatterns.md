@@ -11,7 +11,7 @@ aliases: ["Negative 10x Engineer Antipatterns", "-10배 엔지니어", "팀 생�
 
 ## 본질
 
-- **개인 생산성은 평균의 3배가 천장**
+- **+10배 엔지니어는 신화에 가까울 수 있다**
 - 반면 팀 생산성을 깎는 데는 **한 명이 10명분을 삭제 가능**
 - 좋은 개발자는 **자기 효율**, 나쁜 패턴은 **남의 시간, 주의, 동기**를 삭제
 - 의도적으로 나쁜 사람은 드물다 — 대부분 **자각 없이** 한다
@@ -126,7 +126,7 @@ aliases: ["Negative 10x Engineer Antipatterns", "-10배 엔지니어", "팀 생�
 
 - 유능한 인재의 자리를 평범한 엔지니어가 차지
 - **팀 평균이 실제 하한**
-- 개선: 채용 기준 엄격, [[Competence-Identification|Competent 판별법]]
+- 개선: 채용 기준 엄격, [[Competence-Identification|개발 역량 판별]]
 
 ### 18. 역할 모델로 -1x 엔지니어 고용
 
@@ -191,5 +191,5 @@ aliases: ["Negative 10x Engineer Antipatterns", "-10배 엔지니어", "팀 생�
 - [[Software-Productivity-Measurement|소프트웨어 생산성 측정의 함정]]
 - [[Team-Contribution-Culture|엔지니어링 팀 기여 문화]]
 - [[Code-Review-Culture|생산적 코드 리뷰 문화]]
-- [[Competence-Identification|Competent 개발자 판별법]]
+- [[Competence-Identification|개발 역량 판별]]
 - [[Code-Quality-Criteria|코드 품질의 기준]]

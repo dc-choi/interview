@@ -16,7 +16,7 @@ aliases: ["투자(Investing)", "Investing Map"]
 ## 토픽 지도
 
 ### 1. 토대
-- [[Investing-Principles|투자의 기본 원칙]] — 복리, 인플레이션 극복, 위험과 수익, 시간지평, 비용 최소화 ✅
+- [[Investing-Principles|투자의 기본 원칙]] — 복리, 인플레이션과 자금의 목적, 위험과 수익, 시간지평, 비용 관리 ✅
 
 ### 2. 설계
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 자산군, 상관관계, 리밸런싱, 생애주기 배분 ✅

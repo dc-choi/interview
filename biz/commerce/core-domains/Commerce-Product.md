@@ -29,7 +29,7 @@ aliases: ["Commerce Product", "커머스 상품"]
 | 영역 | 들어가는 것 | 복잡해지는 이유 |
 |---|---|---|
 | 가격 | 현재가, 종전가, 할인가 다중 노출 + 결제수단별 할인(제휴카드 청구할인) + 행사 쿠폰 + 배송비 | 이중가 표시 규제([[Commerce-Pricing\|가격 도메인]]) + 배송비에 민감한 이용자 + 혜택 총량을 보여줘야 전환되는 시장 |
-| 법적 고지 | 상품정보 제공고시(공정위 품목별 40여 항목), 교환반품 안내 | 고객 이용률은 낮지만 분쟁 대비 의무 표기 — 회피 불가 영역 |
+| 법적 고지 | 상품정보 제공고시(공정위 고시의 40개 품목별 항목), 교환반품 안내 | 고객 이용률은 낮지만 분쟁 대비 의무 표기 — 회피 불가 영역 |
 | 상품평 | 텍스트 리뷰, 별점 | 식품 등 효능 과장 우려 카테고리는 텍스트 표현이 제한돼 별점이 주된 신뢰 전달 수단 |
 | 연결고리(추천) | 동일 브랜드와 카테고리 인기상품, 함께 구매한 상품, 이전 조회 상품 | 클릭수와 매출 전환 효율이 높아 마케팅이 포기하지 않는 영역 |
 
@@ -166,6 +166,7 @@ aliases: ["Commerce Product", "커머스 상품"]
 - [오프라인 마트가 생각보다 데이터를 못 모으는 이유 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/322)
 - [규모의 경제란 대체 무엇일까 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/674)
 - [GS1, Are the description and price of the item included in the barcode?](https://support.gs1.org/support/solutions/articles/43000734158-are-the-description-and-price-of-the-item-included-in-the-barcode-)
+- [국가법령정보센터, 전자상거래 등에서의 상품 등의 정보제공에 관한 고시](https://www.law.go.kr/행정규칙/전자상거래등에서의상품등의정보제공에관한고시)
 
 ## 관련 문서
 - [[Commerce-Overview|커머스 도메인 개요]]

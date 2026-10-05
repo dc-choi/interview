@@ -75,7 +75,7 @@ aliases: ["대규모 트래픽 경험", "Large-Scale Traffic Experience", "대�
 
 ## 사례 (참고)
 
-작은 회사, 레거시 환경에서 문서 없이 인프라를 떠맡아 다음을 동시에 처리한 사례가 종종 회자된다 — Fleet 같은 컨테이너 오케스트레이션 붕괴, 8년 운영 MongoDB 디스크 포화 + 버전업 경로 차단, Redis Codis 메모리 포화로 인한 BGSAVE 실패와 데이터 유실, Redshift 로그 검색을 ElasticSearch로 이전해 연 3억 절감. 같은 패턴(레거시, 문서 부재, 동시 다발 장애)이 다른 회사에서도 반복적으로 나타난다.
+작은 회사, 레거시 환경에서 문서 없이 인프라를 떠맡아 다음을 동시에 처리한 원문 필자의 2018~2020년 경험이다 — Fleet 같은 컨테이너 오케스트레이션 붕괴, 8년 운영 MongoDB 디스크 포화 + 버전업 경로 차단, Redis Codis 메모리 포화로 인한 BGSAVE 실패와 데이터 유실, Redshift 로그 검색을 ElasticSearch로 이전해 연 3억 절감. 같은 패턴(레거시, 문서 부재, 동시 다발 장애)은 다른 회사에서도 나타날 수 있다.
 
 ## 출처
 - [요즘IT — '대규모 트래픽 경험'이라는 환상](https://yozm.wishket.com/magazine/detail/3006/)

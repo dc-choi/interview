@@ -20,7 +20,7 @@ aliases: ["인플레이션과 디플레이션", "Inflation and Deflation"]
 
 | 지표 | 무엇을 보나 |
 |---|---|
-| **CPI(소비자물가지수)** | 가계가 사는 대표 상품과 서비스 바구니의 가격. 가장 널리 쓰는 체감 물가 |
+| **CPI(소비자물가지수)** | 가계가 사는 대표 상품과 서비스 바구니의 가격. 가장 널리 쓰는 물가 지표 |
 | **근원물가(Core CPI)** | 흔히 CPI에서 식품과 에너지를 제외한 지표. 중앙은행은 이 밖에도 여러 기조 물가 지표를 함께 봄 |
 | **PPI(생산자물가지수)** | 생산자 판매 단계의 가격. 비용 변화가 소비자물가에 전가될 수 있지만 시차와 폭은 시장 구조에 따라 다름 |
 | **GDP 디플레이터** | 국내에서 생산된 최종 재화와 서비스의 가격 변화. 수출은 포함하고 수입은 제외 |
@@ -69,7 +69,7 @@ aliases: ["인플레이션과 디플레이션", "Inflation and Deflation"]
 
 - **물가목표**: 여러 선진국 중앙은행이 2%를 쓰지만 국가별 제도, 대상 지표와 허용 범위가 다름
 - **CPI YoY**: 매달 발표되는 헤드라인 물가 상승률
-- **근원물가**: 추세를 보는 중앙은행의 진짜 관심 지표
+- **근원물가**: 중앙은행이 기조적 추세를 판단할 때 함께 보는 지표. 한국은행 물가목표는 전체 CPI 상승률 기준
 - **기대인플레이션**: 채권시장(BEI)이나 설문으로 추정. 앵커가 풀렸는지 보는 창
 
 ## 9. 흔한 오해
@@ -82,6 +82,8 @@ aliases: ["인플레이션과 디플레이션", "Inflation and Deflation"]
 
 - [U.S. BEA, GDP Price Deflator](https://www.bea.gov/data/prices-inflation/gdp-price-deflator)
 - [IMF, Inflation: Prices on the Rise](https://www.imf.org/en/publications/fandd/issues/series/back-to-basics/inflation) — 2026-10-02 비교 기간별 물가 상승률과 실질 구매력 개념 대조
+- [한국은행, 물가안정목표제](https://www.bok.or.kr/portal/main/contents.do?menuNo=200291) — 2026-10-04 물가목표가 소비자물가 상승률(전년동기대비) 기준 2%임을 대조
+- [e-나라지표, 소비자물가지수](https://www.index.go.kr/unity/potal/main/EachDtlPageDetail.do?idx_cd=1060) — 2026-10-04 소비자물가지수와 체감물가를 설명하는 생활물가지수의 구분 대조
 
 ## 관련 문서
 

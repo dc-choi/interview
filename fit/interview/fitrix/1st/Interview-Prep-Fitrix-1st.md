@@ -23,7 +23,7 @@ aliases: ["Fitrix Interview Prep", "피트릭스 면접 준비"]
 
 1. **본 문서**: 전략, 핵심 요약, 강점과 갭, 역질문, 체크리스트
 2. [[Interview-Prep-Fitrix-1st-JD|JD와 회사 분석]]: 공개 회사 사실, 자격요건과 우대사항 매칭, 스택 비교
-3. [[Interview-Prep-Fitrix-1st-FIT|FIT 답변과 컬처핏 질문]]: 자기소개, 지원 동기, 확정 전 이직 사유 슬롯, 컬처핏 8문항
+3. [[Interview-Prep-Fitrix-1st-FIT|FIT 답변과 컬처핏 질문]]: 자기소개, 지원 동기, 확정된 현재 이직 사유, 컬처핏 8문항
 4. [[Interview-Prep-Fitrix-1st-Tech-Resume|이력서 기반 기술 질문]]: 9문항
 5. [[Interview-Prep-Fitrix-1st-Tech-JD|JD 기반 기술 질문]]: 8문항
 6. [[Interview-Prep-Fitrix-1st-Service|서비스 맥락 질문]]: OUTBODY 신체 데이터와 운영 맥락 6문항

@@ -2,7 +2,7 @@
 tags: [fit, interview, actionpower]
 status: done
 category: "Interview - Fit"
-aliases: ["ActionPower 이력서 기술 질문 3", "액션파워 아키텍처, 모니터링 질문"]
+aliases: ["ActionPower 이력서 기술 질문 3", "액션파워 아키텍처, 비동기 분리 질문"]
 ---
 # 액션파워 1차 — 이력서 기반 기술 질문 (3/4): 아키텍처 전환과 비동기 분리
 

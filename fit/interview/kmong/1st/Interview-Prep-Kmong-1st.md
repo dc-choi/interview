@@ -15,13 +15,13 @@ aliases: ["Kmong Interview Prep", "크몽 면접 준비"]
 | 면접일, 형식 | 미정. 1차 형식과 참여 역할은 공식 안내로 확인한다 |
 | JD 출처 | [원티드 공고 389136](https://www.wanted.co.kr/wd/389136), 2026-09-29 원문 대조, 마감 2026-10-11 |
 | 기준 템플릿 | [[Interview-Prep-Template]] |
-| 이전 회고 | 없음 (첫 지원) |
+| 이전 회고 | 없음. 2025-04-28 지원 기록이 있으나 2주 경과 무응답으로 끝나 전형 회고는 없다(이전 사이클 트래커) |
 
 ## 이 차수 문서
 
 1. **본 문서**: 전략, 강점과 갭 요약, 미확정 슬롯, 체크리스트
 2. [[Interview-Prep-Kmong-1st-JD|JD와 회사 분석]]: 공개 회사 사실, 자격과 우대 매칭, 기술 스택 비교
-3. [[Interview-Prep-Kmong-1st-FIT|FIT 답변과 컬처핏 질문]]: 자기소개, 지원 동기, 이직 사유 슬롯, 컬처핏 10문항
+3. [[Interview-Prep-Kmong-1st-FIT|FIT 답변과 컬처핏 질문]]: 자기소개, 지원 동기, 확정된 이직 사유, 컬처핏 10문항
 4. [[Interview-Prep-Kmong-1st-Tech-Resume|이력서 기반 기술 질문]]: 9문항
 5. [[Interview-Prep-Kmong-1st-Tech-JD|JD 기반 기술 질문]]: 8문항
 6. [[Interview-Prep-Kmong-1st-Service|서비스 맥락 질문과 역질문]]: 6문항, 역질문 7개
