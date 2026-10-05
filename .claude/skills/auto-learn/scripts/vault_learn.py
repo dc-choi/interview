@@ -13,6 +13,7 @@ import datetime as dt
 import fcntl
 import hashlib
 import html
+import io
 import json
 import os
 import plistlib
@@ -869,8 +870,9 @@ def cmd_plan(a):
     dirty, rejected = set(dirty_paths()), []
     for f in a.file:
         rel = norm_rel(f)
-        if not rel or not EDITABLE.match(rel):
-            rejected.append({"file": f, "why": "tech/, biz/, econ/, fit/ 아래 Markdown만 편집한다"})
+        # harvest는 학습 출처 목록만 고친다. 다른 파일을 plan하면 그사이 다른 세션이 고친 내용까지 커밋할 수 있다.
+        if not rel or not EDITABLE.match(rel) or (m.get("kind") == "harvest" and rel != SOURCES):
+            rejected.append({"file": f, "why": f"learn은 tech/, biz/, econ/, fit/ 아래 Markdown만, harvest는 {SOURCES}만 편집한다"})
         elif rel in m["files"]:
             continue
         elif rel in m["baseline_dirty"] or rel in dirty:
@@ -1353,6 +1355,9 @@ def cmd_channels_set(a):
         # learn은 저장소 목록이 정본이므로 목록에 행을 더해 게시한 뒤에만 기록한다(실패하면 pending으로 남아 다시 시도된다).
         if a.decision == "learn" and any(hkey(r[0]) not in listed for r in hits):
             raise SystemExit(f"{SOURCES}에 먼저 행을 더해 게시한다: {a.handle}")
+        # 목록에 남은 채널을 로컬에서만 제외하면 discover는 계속 모으고 공개 목록과 기록이 어긋난다.
+        if a.decision == "exclude" and any(hkey(r[0]) in listed for r in hits):
+            raise SystemExit(f"{SOURCES}에서 먼저 행을 지워 게시한다: {a.handle}")
         for r in hits:
             r[3], r[4] = a.decision, field(a.reason)
         write_text(path, "".join("\t".join(r) + "\n" for r in table))
@@ -1521,8 +1526,11 @@ def cmd_agent(a):
             print(prompt)
             return 0
         since = int(time.time())
+        # harvest와 instagram은 같은 Chrome을 쓴다. 겹치면 탭 전환과 클릭이 섞이므로 앞 실행이 끝날 때까지 기다린다.
+        chrome = locked("chrome") if mode in ("harvest", "instagram") else contextlib.nullcontext()
         try:
-            rc, path = run_claude(mode, cmd, prompt, conf[f"{mode}_timeout_min"] * 60)
+            with chrome:
+                rc, path = run_claude(mode, cmd, prompt, conf[f"{mode}_timeout_min"] * 60)
         finally:
             if mode in ("learn", "harvest"):
                 finish_runs(since, mode)
@@ -1680,6 +1688,19 @@ def cmd_selftest(a):
         assert "a@b.example" in (box / "email" / "m1.md").read_text(encoding="utf-8")  # frontmatter는 그대로 둔다.
         assert set(read_lines(seen_file("instagram"))) == {"p1", "x1"} and read_lines(seen_file("email")) == ["m1"]
         assert (read_json(box / "instagram" / "STATE.json") or {}).get("dm") == str(dt.date.today())
+        # harvest run은 학습 출처 목록 밖의 파일을 plan하지 못하고, 목록에 있는 채널은 로컬에서만 제외하지 못한다.
+        write_json(run_dir("t-harvest") / "manifest.json", {"run": "t-harvest", "kind": "harvest", "files": [],
+                                                              "baseline_dirty": []})
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            assert cmd_plan(argparse.Namespace(run="t-harvest", file=["tech/x.md"])) == 3
+        assert json.loads(out.getvalue())["rejected"][0]["file"] == "tech/x.md"
+        handle = next(iter(learning_sources()[0]))
+        (S / "channels.tsv").write_text("\t".join(CHANNEL_COLS) + f"\n{handle}\tUC{'x' * 22}\tt\tlearn\tx\t2026-10-05\n",
+                                        encoding="utf-8")
+        with contextlib.suppress(SystemExit), contextlib.redirect_stdout(out):
+            cmd_channels_set(argparse.Namespace(handle=handle, decision="exclude", reason="x"))
+            raise AssertionError("목록에 있는 채널을 제외했다")
     S = real
     print("selftest ok")
     return 0
