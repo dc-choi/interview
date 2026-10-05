@@ -1,21 +1,45 @@
 ---
 tags: [spring, security, oauth2, authorization-server, oidc]
 status: done
+verified_at: 2026-10-06
 category: "OS & Runtime"
 aliases: ["Spring Authorization Server", "스프링 인가 서버", "OAuth2 Authorization Server"]
 ---
 
 # Spring Authorization Server
 
-Spring Security 팀이 만드는 OAuth2 인가 서버 프레임워크. Spring Boot 웹 앱에 핵심 의존성 하나(`spring-security-oauth2-authorization-server`)를 추가하면 `/oauth2/authorize`, `/oauth2/token`, `/oauth2/jwks` 같은 표준 엔드포인트를 갖춘 인가 서버를 직접 띄울 수 있다. EOL된 구 Spring Security OAuth 프로젝트의 후속이다.
+Spring Security 팀이 만드는 OAuth2 인가 서버 프레임워크. 인가 서버 모듈(`spring-security-oauth2-authorization-server`)을 Spring Boot 웹 앱에 추가하면 `/oauth2/authorize`, `/oauth2/token`, `/oauth2/jwks` 같은 표준 엔드포인트를 갖춘 인가 서버를 직접 띄울 수 있다. 이 모듈용 스타터는 Spring Boot 3.1부터 있었고, 작은 모듈로 나뉜 Spring Boot 4에서는 서드파티 의존성만으로 동작하던 기능도 스타터가 필요할 수 있으므로 스타터로 추가한다(아래 절). EOL된 구 Spring Security OAuth 프로젝트의 후속이며, Spring Security 7.0부터는 별도 프로젝트가 아니라 Spring Security의 모듈이다.
 
-카카오, 구글 소셜 로그인에서 제공자 쪽이 무엇을 하는지 로컬에서 재현할 수 있어 OAuth 학습용으로 좋고, 실무에서는 사내 IdP나 서비스 간 토큰 발급(M2M) 구축에 쓰인다. 프로토콜 자체는 [[OAuth2]] 참조. 아래 코드는 Spring Boot 3.3 + Authorization Server 1.3 기준.
+카카오, 구글 소셜 로그인에서 제공자 쪽이 무엇을 하는지 로컬에서 재현할 수 있어 OAuth 학습용으로 좋고, 실무에서는 사내 IdP나 서비스 간 토큰 발급(M2M) 구축에 쓰인다. 프로토콜 자체는 [[OAuth2]] 참조. 아래 구성 요소와 흐름의 코드는 Spring Boot 3.3 + Authorization Server 1.3 기준이며, 현재 버전의 설정 방식과 지원 기간은 바로 아래 절을 따른다.
+
+## 버전과 프로젝트 위치
+
+2026-10-06에 Spring 공식 블로그, Spring Security 레퍼런스와 API 문서, 인가 서버 1.5 API 문서, Spring Boot 릴리스 노트와 마이그레이션 가이드, spring.io 프로젝트 API, GitHub 저장소와 소스로 확인한 내용이다.
+
+- **Spring Security 7.0부터 Spring Security의 모듈이다.** 2025-09-11 발표에 따르면 인가 서버가 충분히 성숙해 OAuth2 Client와 인가 서버를 한 프로젝트에서 다루도록 옮겼다. 소스, javadoc, 레퍼런스 문서와 OAuth2 관련 이슈, PR은 Spring Security 저장소에서 관리한다. Spring Security 7.0의 What's New도 Modules 항목에 같은 변경을 적는다. 독립 저장소의 README는 1.5.x를 마지막 세대로 적는다. 저장소는 2026-08-26에 보관(archived)돼 읽기 전용이 됐고 지금은 `spring-attic` 조직으로 옮겨졌다.
+- **모듈 좌표는 버전만 바뀐다.** groupId와 artifactId는 그대로(`org.springframework.security:spring-security-oauth2-authorization-server`)이고 버전이 Spring Security 버전을 따른다(7.0.0부터). 클래스 이름과 패키지 위치는 대부분 유지되지만 일부 패키지가 옮겨졌으므로 업그레이드 때 깨진 import부터 확인한다. 스타터는 다르다. Spring Boot 4.0 마이그레이션 가이드에 따르면 스타터 이름은 `spring-boot-starter-security-oauth2-authorization-server`로 바뀌었고 기존 `spring-boot-starter-oauth2-authorization-server`는 deprecated로 남는다. 7.1 레퍼런스의 시작 예시는 아직 기존 이름을 쓰므로 Boot 문서의 새 이름과 함께 확인한다. 인가 서버 버전은 Spring Security 버전과 함께 움직이므로 고정할 때도 `spring-authorization-server.version` 대신 `spring-security.version`을 쓴다.
+- **설정 방식이 바뀌었다.** 아래 표의 `applyDefaultSecurity(http)`는 1.5.x API 문서에서 2.0 제거 예정으로 표시됐고, 그 문서는 1.4에 추가된 `http.with(OAuth2AuthorizationServerConfigurer.authorizationServer(), ...)`를 대안으로 안내했다. 7.x에서는 둘 다 쓸 수 없다. `OAuth2AuthorizationServerConfiguration`은 `org.springframework.security.config.annotation.web.configuration` 패키지로 옮겨지며 `applyDefaultSecurity`가 없어졌고, `OAuth2AuthorizationServerConfigurer`도 `org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization` 패키지로 옮겨져 정적 `authorizationServer()`가 없다(7.1.1 API). 1.x 설정을 그대로 두고 올리면 컴파일 오류가 나므로, Spring Security 7.1 레퍼런스의 시작 예시처럼 `http.oauth2AuthorizationServer(...)`로 인가 서버 엔드포인트만 매칭하는 체인을 만든다.
+
+```java
+http
+    .oauth2AuthorizationServer(authorizationServer -> {
+        http.securityMatcher(authorizationServer.getEndpointsMatcher());
+        authorizationServer.oidc(Customizer.withDefaults());
+    })
+    .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+    .exceptionHandling(exceptions -> exceptions.defaultAuthenticationEntryPointFor(
+        new LoginUrlAuthenticationEntryPoint("/login"),
+        new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
+```
+
+- **PKCE가 기본값이 됐다.** Spring Security 7.0의 What's New는 인가 서버에서 PKCE를 기본으로 켰다고 적고, 7.1.1 API의 `ClientSettings.isRequireProofKey()` 기본값도 `true`다. 기본 설정에서는 PKCE가 필수이므로, 아래 흐름처럼 `code_challenge`와 `code_verifier` 없이 인가 코드를 교환하던 클라이언트는 7.x로 올리기 전에 PKCE를 보내게 하거나 그 클라이언트의 `ClientSettings`에서 `requireProofKey(false)`로 명시적으로 끈다. 기본값은 `ClientSettings.builder()`로 만드는 설정에 들어간다. `JdbcRegisteredClientRepository`는 저장된 설정을 `ClientSettings.withSettings(...)`로 다시 만들고 이 경로는 기본값을 넣지 않으므로, 저장소에 `requireProofKey`가 false로 저장된 클라이언트는 그 값을 유지한다.
+- **1.x 지원 기간:** 마지막 세대인 1.5.x는 OSS 지원이 2026-06-30에 끝났고 상용 지원은 2032-06-30까지다. 1.4.x의 상용 지원은 2026-12-31에 끝나고, 아래 코드의 기준인 1.3.x는 OSS(2025-06-30)와 상용(2026-06-30) 지원이 모두 끝났다. spring.io 세대 API에서 Spring Security 7.0.x는 Spring Boot 4.0.x, 7.1.x는 4.1.x와 짝을 이루므로 7.x 전환은 Boot 4 전환과 함께 계획한다([[Java-Spring-Stack-Migration|Java와 Spring 스택 마이그레이션]]).
 
 ## 최소 구성 요소
 
 | 빈 | 역할 |
 |---|---|
-| SecurityFilterChain (@Order 1) | 인가 서버 엔드포인트 보안 — `OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http)` |
+| SecurityFilterChain (@Order 1) | 인가 서버 엔드포인트 보안 — 1.3 기준 `OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http)`, 현재 방식은 위 절 |
 | SecurityFilterChain (@Order 2) | 나머지 요청 보안 — formLogin 등 Resource Owner 로그인 |
 | RegisteredClientRepository | Client 등록부 — client_id/secret, grant type, redirect_uri, scope |
 | UserDetailsService | Resource Owner 계정 저장소 |
@@ -73,12 +97,28 @@ RegisteredClient.withId(UUID.randomUUID().toString())
 - client_secret을 해시로 저장하는 이유 (사용자 비밀번호와 같은 원리)
 - 토큰 서명 키(JWKS)를 영속화하지 않으면 생기는 일 (재시작 시 기존 토큰 전부 검증 실패)
 - 동의 화면에서 state가 왕복하는 이유 (CSRF 방지 — [[OAuth2]])
+- Spring Security 7.0 이후 인가 서버가 어느 프로젝트에 있고, 1.5.x에 남은 서비스의 OSS 지원이 언제 끝났는지, 7.x에서 PKCE 기본값이 바뀌어 기존 클라이언트에 무엇을 확인해야 하는지
 
 ## 출처
 
 - [dingco-web-security — dingcodingco (GitHub, 강의 실습 소스)](https://github.com/dingcodingco/dingco-web-security)
 - [Spring Authorization Server Reference — spring.io](https://docs.spring.io/spring-authorization-server/reference/index.html)
 - [Spring Security OAuth Reaches End of Life — spring.io blog](https://spring.io/blog/2022/06/01/spring-security-oauth-reaches-end-of-life)
+- [Spring Authorization Server moving to Spring Security 7.0 — spring.io blog](https://spring.io/blog/2025/09/11/spring-authorization-server-moving-to-spring-security-7-0/)
+- [What's New in Spring Security 7.0 — spring.io](https://docs.spring.io/spring-security/reference/7.0/whats-new.html)
+- [OAuth 2.0 Authorization Server, Getting Started (7.1) — spring.io](https://docs.spring.io/spring-security/reference/7.1/servlet/oauth2/authorization-server/getting-started.html)
+- [OAuth2AuthorizationServerConfiguration, Spring Security 7.1.1 API — spring.io](https://docs.spring.io/spring-security/reference/7.1/api/java/org/springframework/security/config/annotation/web/configuration/OAuth2AuthorizationServerConfiguration.html)
+- [OAuth2AuthorizationServerConfigurer, Spring Security 7.1.1 API — spring.io](https://docs.spring.io/spring-security/reference/7.1/api/java/org/springframework/security/config/annotation/web/configurers/oauth2/server/authorization/OAuth2AuthorizationServerConfigurer.html)
+- [ClientSettings, Spring Security 7.1.1 API — spring.io](https://docs.spring.io/spring-security/reference/7.1/api/java/org/springframework/security/oauth2/server/authorization/settings/ClientSettings.html)
+- [OAuth2AuthorizationServerConfigurer, Spring Authorization Server 1.5.3 API — spring.io](https://docs.spring.io/spring-authorization-server/docs/current/api/org/springframework/security/oauth2/server/authorization/config/annotation/web/configurers/OAuth2AuthorizationServerConfigurer.html)
+- [Spring Authorization Server API, Deprecated List — spring.io](https://docs.spring.io/spring-authorization-server/docs/current/api/deprecated-list.html)
+- [Spring Authorization Server generations — spring.io API](https://api.spring.io/projects/spring-authorization-server/generations)
+- [Spring Security generations — spring.io API](https://api.spring.io/projects/spring-security/generations)
+- [spring-attic/spring-authorization-server README — GitHub](https://github.com/spring-attic/spring-authorization-server)
+- [ClientSettings.java (7.1.x) — GitHub](https://github.com/spring-projects/spring-security/blob/7.1.x/oauth2/oauth2-authorization-server/src/main/java/org/springframework/security/oauth2/server/authorization/settings/ClientSettings.java)
+- [JdbcRegisteredClientRepository.java (7.1.x) — GitHub](https://github.com/spring-projects/spring-security/blob/7.1.x/oauth2/oauth2-authorization-server/src/main/java/org/springframework/security/oauth2/server/authorization/client/JdbcRegisteredClientRepository.java)
+- [Spring Boot 3.1 Release Notes — GitHub Wiki](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.1-Release-Notes)
+- [Spring Boot 4.0 Migration Guide — GitHub Wiki](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide)
 
 ## 관련 문서
 
