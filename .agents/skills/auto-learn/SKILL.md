@@ -19,7 +19,7 @@ description: 구독한 YouTube 채널과 리포스트한 Threads 글을 사용�
 | discover | 30분 | learn 채널의 RSS에서 채널 `added_at` 이후 올라온 영상을 새 업로드 큐에 넣는다 |
 | harvest | 2시간 | Chrome으로 구독 목록을 갱신하고 새 리포스트를 모은다 |
 | learn | 30분(잠금) | 이 스킬의 learn 모드로 최대 K개 항목을 반영한다 |
-| digest | 매일 07:30 | 다이제스트와 회상 퀴즈를 쓰고 알림을 보낸다 |
+| digest | 매일 07:30(실패하거나 백오프 중이면 22:30까지 2~3시간마다 다시) | 다이제스트와 회상 퀴즈를 쓰고 알림을 보낸다 |
 
 - 주요 파일: `S/channels.tsv`(handle, channel_id, title, decision, reason, added_at), `S/queue/{new,backlog}.tsv`, `S/transcripts/<id>/transcript.md`, `S/inbox/threads/`(리포스트, `INDEX.tsv`, `EXCLUDED.tsv`), `S/digests/log.jsonl`(처리 기록), `S/digests/<날짜>.md`, `S/quiz.jsonl`, `S/runs/<run>/`, `S/logs/`.
 
@@ -36,13 +36,13 @@ description: 구독한 YouTube 채널과 리포스트한 Threads 글을 사용�
 
 ## learn 모드
 
-1. 준비: 루트 `AGENTS.md`, `.agents/skills/memo/SKILL.md`와 대상 도메인의 `AGENTS.md`를 읽는다. `VL begin`으로 run을 연다. `blocked`면 결과 JSON만 출력하고 끝낸다. `foreign_dirty`는 다른 작업의 미커밋 변경이라 편집하지 않는다. `orphans`는 시간 제한이나 사용량 한도로 끊긴 이전 run이 남긴 파일이다. 그 파일부터 읽고 4~5단계 검증을 거쳐 `S/runs/<그 run>/result.json`을 남은 파일 기준으로 다시 쓴 뒤 `VL publish --run <그 run>`으로 게시하거나, `VL discard --run <그 run> --file ...`로 되돌린다.
+1. 준비: 루트 `AGENTS.md`, `.agents/skills/memo/SKILL.md`와 대상 도메인의 `AGENTS.md`를 읽는다. `VL begin`으로 run을 연다. `blocked`면 결과 JSON만 출력하고 끝낸다. `foreign_dirty`는 다른 작업의 미커밋 변경이라 편집하지 않는다. `adopted`는 시간 제한이나 사용량 한도로 끊긴 이전 learn run이 게시하지 못한 파일 중 그 뒤 아무도 고치지 않은 것이며 이미 이 run의 plan에 들어 있다. 그 파일부터 읽고(`S/runs/<이전 run>/result.json`이 있으면 그 key를 쓴다) 4~5단계 검증을 거쳐 이 run의 묶음으로 게시하거나 `VL discard --run R --file ...`로 되돌린다.
 2. 후보: `VL pick --k K`를 실행하고 현재 목표를 `fit/AGENTS.md`의 현재 커리어 상태, `fit/growth/Current-Goals-and-Roadmap.md`, `fit/job-search/Job-Search-Tracker.md`의 지원 공고 요구사항과 `fit/growth/learning/roadmaps/roadmaps.md`에서 확인한다. 고르는 순서는 tier1(새 리포스트와 새 업로드) 중 1인 사업과 외주, 구직 요구사항, 학습 로드맵에 직접 닿는 항목, tier2(백로그 전사문) 중 같은 기준의 항목, 나머지 학습 영역 항목이다. tier3(인덱스의 `[ ]` 항목과 오래된 `verified_at`)은 tier1과 tier2가 비었을 때만 나온다. 학습 영역(개발, CS, 인프라와 클라우드, AI 엔지니어링, 사업과 제품, 마케팅과 영업, 운영, 경제와 재무, 커리어) 밖이거나 새 지식이 없는 항목은 제목과 메타데이터만 보고 `skipped`로 둘 수 있다. 한 run에서 반영은 K개, 건너뛰기는 2K개까지다.
 3. 항목마다:
    - 원문(`path`)을 읽는다. 리포스트의 외부 링크는 WebFetch로 확인하고, YouTube 링크는 `VL enqueue <URL> --source repost:<id>`로 전사 큐에 넣는다.
    - 중복 확인: `mcp__development-context__context_lookup`(주제에 맞는 scope, `max_bytes: 24000`)과 Grep으로 같은 개념의 문서를 찾는다. 있으면 보강하고 보탤 내용이 없으면 `skipped`(사유에 해당 문서 경로)로 둔다.
    - 1차 출처 대조: WebSearch와 WebFetch를 쓰고 라이브러리 문서는 context7을 쓴다. 확인하지 못한 주장은 쓰지 않는다.
-   - 편집 전에 대상 문서와 카테고리 인덱스를 `VL plan --run R --file <경로> ...`로 등록한다. 거부된 파일은 편집하지 않고 그 항목을 `deferred`로 둔다.
+   - 편집 전에 대상 문서와 카테고리 인덱스를 `VL plan --run R --file <경로> ...`로 등록한다. run 시작 전이나 그 뒤에 다른 작업이 고친 파일, plan 없이 먼저 고친 파일은 거부된다. 거부된 파일은 편집하지 않고 그 항목을 `deferred`로 둔다.
    - memo 스킬의 대상 결정, 본문 작성 원칙, 프론트매터와 출처, 연결 규칙대로 쓰고 인덱스의 `[ ]`를 `[x]`로 바꾸거나 새 항목을 더한다. tier3의 `[ ]` 항목은 계획된 문서를 쓰고, 오래된 문서는 1차 출처와 다시 대조한 범위만 고친 뒤 tech 규칙의 조건을 만족할 때만 `verified_at`을 바꾼다.
 4. 반증 검증: 작성자와 분리된 새 서브에이전트(Agent 도구, `subagent_type: general-purpose`, `model: opus`)에 변경 파일 목록, `git diff`로 변경을 보는 방법, 원문 경로와 대조한 1차 출처 URL을 주고 결론을 반증하게 한다. 사실 오류와 과장된 일반화, 전사 오인식, 버전과 날짜처럼 시점에 민감한 주장, 출처 중립성, 지침 위반(가운뎃점, 강조용 따옴표, PII, 신앙 관련 내용, 출처 표기, `verified_at` 조건), 깨진 위키링크를 보게 하고 확정 오류, 조건부 문제, 설명 보완, 미검증으로 나눠 근거와 함께 보고하게 한다. 확정 오류는 고치고, 고친 범위가 크면 새 서브에이전트로 한 번 더 검증한다. 두 번째 검증 뒤에도 확정 오류가 남은 항목은 `VL discard`로 되돌리고 `deferred`로 둔다.
 5. 규칙 검사: `VL check --run R`이 통과할 때까지 고친다.
@@ -56,7 +56,7 @@ description: 구독한 YouTube 채널과 리포스트한 Threads 글을 사용�
    ```
 
    `result`는 learned, merged, skipped, deferred 중 하나이고 `key`는 pick이 준 값을 그대로 쓴다.
-7. 게시: 묶음마다 `VL publish --run R`을 실행한다. 묶음마다 게시하므로 run이 시간 제한이나 사용량 한도로 끊겨도 끝난 묶음은 남는다. 이 run이 plan한 파일 중 바뀐 것만 검사해 커밋하고, 다른 작업이 미리 바꿔 둔 파일은 건너뛰어 보고한다. 원격과 맞춘 뒤 푸시하고 HEAD, 추적 브랜치, `git ls-remote`의 SHA가 같고 차이가 `0 0`인지 증명한다. 원격이 앞서 있는데 다른 작업의 미커밋 변경이나 미푸시 커밋이 있으면 리베이스와 푸시를 미루고 `deferred`로 끝나며 다음 run이 다시 시도한다. 처리 기록(`S/digests/log.jsonl`)도 이때 남는다.
+7. 게시: 묶음마다 `VL publish --run R`을 실행한다. 묶음마다 게시하므로 run이 시간 제한이나 사용량 한도로 끊겨도 끝난 묶음은 남는다. 이 run이 plan한 파일 중 바뀐 것만 검사해 커밋하고, result.json에만 적고 plan하지 않은 파일은 커밋하지 않고 `skipped_unplanned`로 보고한다. 커밋한 파일은 plan에서 빠지므로 다음 항목에서 같은 파일(카테고리 인덱스 등)을 고치려면 다시 plan한다. 사용자가 리베이스나 병합 중이면 커밋하지 않고 `blocked`로 끝난다. 원격과 맞춘 뒤 푸시하고 HEAD, 추적 브랜치, `git ls-remote`의 SHA가 같고 차이가 `0 0`인지 증명한다. 원격이 앞서 있는데 다른 작업의 미커밋 변경이나 미푸시 커밋이 있으면 리베이스와 푸시를 미루고 `deferred`로 끝나며 다음 run이 다시 시도한다. 처리 기록(`S/digests/log.jsonl`)도 이때 남는다.
 8. 마지막 줄에 `{"mode":"learn","run":"R","learned":0,"skipped":0,"deferred":0,"publish":"마지막 게시 상태","commits":["SHA"]}` 형식의 JSON 한 줄을 출력한다.
 
 ## harvest 모드
@@ -91,4 +91,5 @@ Chrome 도구(`tabs_context_mcp`, `tabs_create_mcp`, `navigate`, `javascript_too
 - 사용자는 `~/.local/bin/vault-learn`으로 관리한다. `install`(도구 점검, 임시 전사 작업 이관, plist 복사와 `launchctl bootstrap`), `uninstall`, `status`, `pause`와 `resume`(`S/paused` 플래그, 진행 중 작업은 마친다), `run-now <작업>`, `logs [작업] [-f]`, `migrate [--dry-run]`이 있다.
 - 에이전트는 launchd 작업, crontab이나 상주 프로세스를 등록하거나 시작하지 않는다. 등록은 사용자가 `vault-learn install`로 한다.
 - K, 전사 동시 작업 수와 시간 제한은 `S/config.json`에서 바꾼다. 사용량 한도 오류가 나면 VL이 지수 백오프한다(`S/backoff.json`).
-- 점검: `VL status`, `VL doctor`, `VL selftest`. node 경로가 바뀌면 `VL plists`로 plist를 다시 만든 뒤 `vault-learn install`을 다시 실행한다.
+- 점검: `VL status`, `VL doctor`, `VL selftest`. node 경로가 바뀌면 `VL plists`로 plist를 다시 만든 뒤 `vault-learn install`을 다시 실행한다. node와 deno가 모두 PATH에 없으면 전사 작업자는 영상을 제외하지 않고 15분씩 멈춘다.
+- headless 실행의 권한: 편집은 `tech/`, `biz/`, `econ/`, `fit/`와 `S/{runs,tmp,inbox,digests}`만, Bash는 VL만, harvest의 Chrome 도구는 위 harvest 절에 적은 것(과 브라우저 선택, read_page)만 허용한다. 사용자와 프로젝트 설정의 허용 규칙도 함께 적용되므로 Git 쓰기, `codex`, `pandoc`, `pnpm`, `python3 -m`과 `~/.ssh` 같은 비밀 폴더 읽기는 거부 규칙으로 막는다. 설정에 넓은 허용 규칙을 더하면 `agent_rules`의 거부 목록도 함께 본다.

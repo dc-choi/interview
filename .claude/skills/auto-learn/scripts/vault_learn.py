@@ -57,6 +57,10 @@ PHONE = re.compile(r"(?<!\d)0\d{1,2}[-.\s]\d{3,4}[-.\s]\d{4}(?!\d)")
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 SAFE_EMAIL = re.compile(r"^(?:git|ec2-user|ubuntu|root|admin|user|postgres|no-?reply)@|@(?:example|test|localhost)\b|"
                         r"\.(?:png|jpe?g|gif|svg|webp)$", re.I)
+# 공개 저장소로 자동 푸시하므로 키와 토큰 형식을 막는다. AWS 문서의 예시 키(...EXAMPLE)는 허용한다.
+SECRET = re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----|\b(?:AKIA|ASIA)(?![0-9A-Z]{9}EXAMPLE)[0-9A-Z]{16}\b|"
+                    r"\bgh[pousr]_[A-Za-z0-9]{30,}|\bsk-(?:ant-|proj-)?[A-Za-z0-9_-]{20,}|\bxox[abprs]-[A-Za-z0-9-]{10,}|"
+                    r"\bAIza[0-9A-Za-z_-]{35}\b")
 VIDEO = re.compile(r"(?:[?&]v=|youtu\.be/|/shorts/|/live/|/embed/)([\w-]{11})(?![\w-])")
 EDITABLE = re.compile(r"^(?:tech|biz|econ|fit)/.+\.md$")
 TRAILER = "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -298,16 +302,22 @@ class Transcriber:
         self.hold_until = max(self.hold_until, time.time() + seconds)
 
     def process(self, prio, vid):
+        # JS 런타임이 없으면 yt-dlp가 형식을 못 받아 '오디오 형식이 없다'로 끝나고 영구 제외로 잘못 분류된다.
+        if not (shutil.which("node") or shutil.which("deno")):
+            return self.hold(15 * 60, "PATH에서 node나 deno를 찾지 못했다")
         output, kind = "", "transient"
         for attempt in range(1, ATTEMPTS + 1):
-            p = subprocess.run([sys.executable, str(TRANSCRIBE), f"https://www.youtube.com/watch?v={vid}",
-                                "--out", str(S / "transcripts"), "--threads", str(self.conf["whisper_threads"])],
-                               capture_output=True, text=True, errors="replace")
+            p = subprocess.Popen([sys.executable, str(TRANSCRIBE), f"https://www.youtube.com/watch?v={vid}",
+                                  "--out", str(S / "transcripts"), "--threads", str(self.conf["whisper_threads"])],
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, errors="replace")
+            out, err = p.communicate()
+            # 메타데이터 단계에서 끝나면(라이브, 조회 실패) yt_transcript.py가 수 MB의 meta-<pid>.log를 남긴다.
+            (S / "transcripts" / f"meta-{p.pid}.log").unlink(missing_ok=True)
             if p.returncode == 0:
                 tidy(S / "transcripts" / vid)
                 log(f"done {prio} {vid}")
                 return
-            output = (p.stdout + p.stderr).strip()
+            output = (out + err).strip()
             kind = classify(p.returncode, output)
             if kind != "transient" or attempt == ATTEMPTS or STOP.wait(RETRY_WAIT_S):
                 break
@@ -486,6 +496,9 @@ def stop_runner(feeders, jobs, wait_s):
     for pid in feeders:
         with contextlib.suppress(ProcessLookupError):
             os.kill(pid, signal.SIGTERM)
+    if feeders:  # 처음 스캔과 공급 종료 사이에 xargs가 띄운 작업도 기다리거나 멈춘다.
+        time.sleep(2)
+        jobs = list(dict.fromkeys(jobs + runner_procs()[1]))
     deadline = time.time() + wait_s
     while (left := [j for j in jobs if pid_alive(j[0])]) and time.time() < deadline:
         log(f"migrate: 진행 중 전사 {len(left)}개를 기다린다 ({', '.join(v for _, v in left)})")
@@ -495,13 +508,14 @@ def stop_runner(feeders, jobs, wait_s):
     for pid, _ in left:
         with contextlib.suppress(ProcessLookupError):
             groups.add(os.getpgid(pid))
+    # macOS는 좀비만 남은 그룹에 신호를 보내면 EPERM을 준다. 그때 이관 전체가 멈추지 않게 함께 무시한다.
     for pgid in groups - {os.getpgrp()}:
-        with contextlib.suppress(ProcessLookupError):
+        with contextlib.suppress(ProcessLookupError, PermissionError):
             os.killpg(pgid, signal.SIGTERM)
     if groups:
         time.sleep(10)
         for pgid in groups - {os.getpgrp()}:
-            with contextlib.suppress(ProcessLookupError):
+            with contextlib.suppress(ProcessLookupError, PermissionError):
                 os.killpg(pgid, signal.SIGKILL)
     return [v for _, v in left]
 
@@ -708,23 +722,35 @@ def save_manifest(m):
     write_json(run_dir(m["run"]) / "manifest.json", m)
 
 
-def orphan_runs(exclude=None):
-    """시간 제한을 넘겼는데 plan으로 등록한 파일이 미커밋으로 남은 run. 남은 변경이 없으면 닫는다."""
-    limit = (cfg()["learn_timeout_min"] + 30) * 60
-    dirty, out = set(dirty_paths()), []
+def file_hash(rel):
+    path = REPO / rel
+    return hashlib.sha1(path.read_bytes()).hexdigest() if path.is_file() else "absent"
+
+
+def leftover_runs():
+    """끝난 learn run이 게시하지 못하고 남긴 파일 중 그 뒤 내용이 그대로인 것({run: [파일]}).
+
+    내용이 바뀐 파일은 사용자나 다른 작업이 고친 것일 수 있어 이어받지 않는다(게시하거나 되돌리면 남의 작업을 건드린다).
+    """
+    dirty, out = set(dirty_paths()), {}
     for path in sorted((S / "runs").glob("*/manifest.json")):
         m = read_json(path, {}) or {}
-        if m.get("run") == exclude or m.get("status") == "closed" or "started" not in m:
-            continue
-        if time.time() - dt.datetime.fromisoformat(m["started"]).timestamp() < limit:
-            continue
-        files = [f for f in m.get("files", []) if f in dirty]
+        files = sorted(f for f, h in (m.get("left") or {}).items() if f in dirty and file_hash(f) == h)
         if files:
-            out.append({"run": m["run"], "kind": m.get("kind"), "files": files})
-        else:
-            m["status"] = "closed"
-            save_manifest(m)
+            out[m["run"]] = files
     return out
+
+
+def finish_runs(since):
+    """launchd learn 실행이 끝나면 그동안 연 learn run마다 게시하지 못한 파일과 그 내용 해시를 남긴다."""
+    dirty = set(dirty_paths())
+    for path in (S / "runs").glob("*/manifest.json"):
+        m = read_json(path, {}) or {}
+        if m.get("kind") != "learn" or "ended" in m or dt.datetime.fromisoformat(m["started"]).timestamp() < since:
+            continue
+        m["files"] = [f for f in m["files"] if f in dirty]
+        m |= {"left": {f: file_hash(f) for f in m["files"]}, "ended": now().isoformat(timespec="seconds")}
+        save_manifest(m)
 
 
 def cmd_begin(a):
@@ -733,26 +759,35 @@ def cmd_begin(a):
         emit({"blocked": blockers})
         return 1
     run = f"{stamp()}-{a.kind}"
-    m = {"run": run, "kind": a.kind, "started": now().isoformat(timespec="seconds"), "status": "open",
-         "head": git("rev-parse", "HEAD").stdout.strip(), "baseline_dirty": dirty_paths(), "files": []}
-    save_manifest(m)
-    orphans = orphan_runs(exclude=run)
-    mine = {f for o in orphans for f in o["files"]}
-    emit({"run": run, "foreign_dirty": [f for f in m["baseline_dirty"] if f not in mine], "orphans": orphans,
-          "unpushed": count_unpushed()})
+    with locked("runs"):
+        adopted = leftover_runs() if a.kind == "learn" else {}
+        for old in adopted:  # 이어받은 파일은 이 run의 plan이 된다. 이전 run은 더 손대지 않는다.
+            om = load_manifest(old)
+            om["files"], om["left"] = [], {}
+            save_manifest(om)
+        mine = sorted({f for files in adopted.values() for f in files})
+        m = {"run": run, "kind": a.kind, "started": now().isoformat(timespec="seconds"), "status": "open",
+             "head": git("rev-parse", "HEAD").stdout.strip(),
+             "baseline_dirty": [f for f in dirty_paths() if f not in mine], "files": mine,
+             "adopted": [{"run": r, "files": f} for r, f in adopted.items()]}
+        save_manifest(m)
+    emit({"run": run, "foreign_dirty": m["baseline_dirty"], "adopted": m["adopted"], "unpushed": count_unpushed()})
     return 0
 
 
 def cmd_plan(a):
     m = load_manifest(a.run)
-    rejected = []
+    dirty, rejected = set(dirty_paths()), []
     for f in a.file:
         rel = norm_rel(f)
         if not rel or not EDITABLE.match(rel):
             rejected.append({"file": f, "why": "tech/, biz/, econ/, fit/ 아래 Markdown만 편집한다"})
-        elif rel in m["baseline_dirty"]:
-            rejected.append({"file": rel, "why": "run 시작 전부터 다른 작업의 미커밋 변경이 있다"})
-        elif rel not in m["files"]:
+        elif rel in m["files"]:
+            continue
+        elif rel in m["baseline_dirty"] or rel in dirty:
+            # run 시작 뒤 다른 세션이 고치기 시작한 파일도 막는다. plan 없이 먼저 편집한 파일도 여기서 걸린다.
+            rejected.append({"file": rel, "why": "다른 작업의 미커밋 변경이 있다(run 시작 전이나 그 뒤)"})
+        else:
             m["files"].append(rel)
     save_manifest(m)
     emit({"files": m["files"], "rejected": rejected})
@@ -794,6 +829,22 @@ def added_lines(rel):
     return out
 
 
+def line_problems(line, personal):
+    """공개 저장소에 들어가면 안 되는 줄(문서의 추가된 줄과 커밋 메시지)."""
+    low, out = line.lower(), []
+    if re.search(r"threads\.(?:com|net)/", low):
+        out.append("Threads 링크(단서는 출처로 쓰지 않는다)")
+    if "vault-auto-learn" in low:
+        out.append("로컬 상태 경로")
+    if any(term in low for term in personal):
+        out.append("personal로 제외한 채널의 이름")
+    if PHONE.search(line) or any(not SAFE_EMAIL.search(e) for e in EMAIL.findall(line)):
+        out.append("연락처 형식(전화번호, 이메일)")
+    if SECRET.search(line):
+        out.append("비밀 값 형식(키, 토큰)")
+    return out
+
+
 def check_files(files):
     names, personal, problems = repo_names(), personal_terms(), []
     for rel in files:
@@ -809,16 +860,7 @@ def check_files(files):
             name = target.strip().rstrip("\\").split("/")[-1].lower()  # 표 안의 [[파일\|별칭]]
             if name and name not in names:
                 problems.append(f"{rel}: 깨진 위키링크 [[{target}]]")
-        for n, line in added_lines(rel):
-            low = line.lower()
-            if re.search(r"threads\.(?:com|net)/", low):
-                problems.append(f"{rel}:{n}: Threads 링크(단서는 출처로 쓰지 않는다)")
-            if "vault-auto-learn" in low:
-                problems.append(f"{rel}:{n}: 로컬 상태 경로")
-            if any(term in low for term in personal):
-                problems.append(f"{rel}:{n}: personal로 제외한 채널의 이름")
-            if PHONE.search(line) or any(not SAFE_EMAIL.search(e) for e in EMAIL.findall(line)):
-                problems.append(f"{rel}:{n}: 연락처 형식(전화번호, 이메일)")
+        problems += [f"{rel}:{n}: {p}" for n, line in added_lines(rel) for p in line_problems(line, personal)]
     return problems
 
 
@@ -863,49 +905,58 @@ def cmd_publish(a):
     m = load_manifest(a.run)
     result = read_json(run_dir(a.run) / "result.json", {}) or {}
     items = result.get("items", [])
-    item_files = [norm_rel(f) for it in items for f in it.get("files", [])]
-    files = list(dict.fromkeys(m["files"] + [f for f in item_files if f]))
-    foreign = [f for f in files if f in m["baseline_dirty"]]
     pending = set(dirty_paths())
-    changed = [f for f in files if f not in foreign and f in pending and EDITABLE.match(f)]
-    report = {"run": a.run, "skipped_foreign": foreign, "committed": changed}
-    problems = check_files(changed)
+    # plan으로 등록한 파일만 커밋한다. result.json에만 적힌 파일은 사용자나 다른 작업의 변경일 수 있다.
+    changed = [f for f in m["files"] if f in pending and EDITABLE.match(f)]
+    unplanned = sorted({f for it in items for f in map(norm_rel, it.get("files", []))
+                        if f and f in pending and f not in m["files"]})
+    report = {"run": a.run, "committed": changed, "skipped_unplanned": unplanned}
+    message = commit_message(result) if changed else None
+    personal = personal_terms()
+    problems = check_files(changed) + [f"커밋 메시지: {p}" for line in (message or "").splitlines()
+                                       for p in line_problems(line, personal)]
     if problems:
         emit(report | {"status": "check_failed", "problems": problems})
         return 1
-    message = commit_message(result) if changed else None
     if a.dry_run:
         emit(report | {"status": "dry_run", "message": message})
         return 0
     with locked("git"):
+        blockers = repo_blockers()  # 사용자가 리베이스나 병합 중이면 그 작업에 커밋을 끼워 넣거나 중단시키지 않는다.
+        if blockers:
+            emit(report | {"status": "blocked", "blocked": blockers})
+            return 1
         sha = None
         if changed:
             git("add", "--all", "--", *changed)
             git("commit", "--only", "-m", message, "--", *changed)
             sha = git("rev-parse", "HEAD").stdout.strip()
             append(S / "own_commits", sha + "\n")
+            m["files"] = [f for f in m["files"] if f not in changed]  # 다시 고치려면 다시 plan한다.
+        committed = set(changed)
+        logged = set(m.get("logged_keys", []))  # 한 run에서 묶음마다 게시하므로 이미 기록한 항목은 건너뛴다.
+        out = []
+        for it in items:
+            if it.get("key") in logged:
+                continue
+            files_it = {norm_rel(f) for f in it.get("files", [])} - {None}
+            res, note = it.get("result", "skipped"), it.get("note", "")
+            if res in ("learned", "merged") and not committed & files_it:
+                res, note = (("deferred", "plan하지 않았거나 다른 작업이 바꾼 파일이라 커밋하지 않았다")
+                             if files_it & set(unplanned) else ("skipped", note or "바뀐 파일이 없다"))
+            out.append({"ts": now().isoformat(timespec="seconds"), "run": a.run, "key": it.get("key"), "result": res,
+                        "files": sorted(files_it), "topic": it.get("topic", ""), "takeaway": it.get("takeaway", ""),
+                        "recall": it.get("recall", []) if res in ("learned", "merged") else [], "note": note,
+                        "commit": sha if committed & files_it else None, "subject": result.get("subject")})
+            logged.add(it.get("key"))
+        # 푸시 전에 기록해 둔다. 푸시 중에 끊겨도 커밋한 항목을 다음 run이 다시 배우지 않는다.
+        append(S / "digests" / "log.jsonl", "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in out))
+        m["logged_keys"] = sorted(k for k in logged if k)
+        m["commits"] = m.get("commits", []) + ([sha] if sha else [])
+        save_manifest(m)
         sync = sync_and_push()
         if sha and sync.get("rebased"):
             sha = git("rev-parse", "HEAD").stdout.strip()
-    committed = set(changed) if sha else set()
-    logged = set(m.get("logged_keys", []))  # 한 run에서 묶음마다 게시하므로 이미 기록한 항목은 건너뛴다.
-    out = []
-    for it in items:
-        if it.get("key") in logged:
-            continue
-        files_it = {norm_rel(f) for f in it.get("files", [])} - {None}
-        res, note = it.get("result", "skipped"), it.get("note", "")
-        if res in ("learned", "merged") and not committed & files_it:
-            res, note = (("deferred", "다른 작업의 미커밋 변경과 겹쳐 커밋하지 못했다") if files_it & set(foreign)
-                         else ("skipped", note or "바뀐 파일이 없다"))
-        out.append({"ts": now().isoformat(timespec="seconds"), "run": a.run, "key": it.get("key"), "result": res,
-                    "files": sorted(files_it), "topic": it.get("topic", ""), "takeaway": it.get("takeaway", ""),
-                    "recall": it.get("recall", []) if res in ("learned", "merged") else [], "note": note,
-                    "commit": sha if committed & files_it else None, "subject": result.get("subject")})
-        logged.add(it.get("key"))
-    append(S / "digests" / "log.jsonl", "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in out))
-    m["logged_keys"] = sorted(k for k in logged if k)
-    m["commits"] = m.get("commits", []) + ([sha] if sha else [])
     m["status"] = sync["status"]
     save_manifest(m)
     emit(report | {"commit": sha} | sync)
@@ -1046,14 +1097,18 @@ def state_summary():
     done, skipped, keys = done_ids(), skipped_ids(), processed_keys()
     backoff = read_json(S / "backoff.json", {}) or {}
     log_rows = read_jsonl(S / "digests" / "log.jsonl")
+    unpushed = count_unpushed()
     return {"paused": (S / "paused").exists(), "transcribe_waiting": waiting_counts(), "transcripts": len(done),
             "videos_skipped": len(skipped), "videos_unlearned": sum(1 for v in done if f"video:{v}" not in keys),
             "reposts_unlearned": sum(1 for p in (S / "inbox" / "threads").glob("*.md") if f"repost:{p.stem}" not in keys),
             "processed": dict(Counter(r.get("result") for r in log_rows)),
             "channels": dict(Counter(r[3] for r in rows(S / "channels.tsv")[1:] if len(r) > 3)),
-            "unpushed_commits": count_unpushed(),
-            "deferred_runs": [p.parent.name for p in (S / "runs").glob("*/manifest.json")
-                              if (read_json(p, {}) or {}).get("status") in ("deferred", "conflict", "push_failed")],
+            "unpushed_commits": unpushed,
+            # 나중에 푸시되면 지난 보류는 더 알릴 필요가 없다.
+            "deferred_runs": sorted(p.parent.name for p in (S / "runs").glob("*/manifest.json")
+                                    if (read_json(p, {}) or {}).get("status") in ("deferred", "conflict", "push_failed",
+                                                                                  "unverified"))[-5:] if unpushed else [],
+            "leftover_files": sum(len(v) for v in leftover_runs().values()),
             "backoff_until": backoff.get("until_local") if backoff.get("until", 0) > time.time() else None}
 
 
@@ -1202,18 +1257,24 @@ def cmd_channels_set(a):
 
 def agent_rules(mode):
     repo, state, vl = REPO.as_posix(), S.as_posix(), SCRIPT.as_posix()
+    # 편집은 지식 문서 폴더와 에이전트가 직접 쓰는 상태 폴더만 연다. config.json(실행할 claude 경로)과
+    # own_commits(VL이 푸시해도 되는 커밋 목록)는 VL만 바꾼다.
     allow = ["Read", "Grep", "Glob", "Agent", "ToolSearch", "WebSearch", "WebFetch",
-             f"Edit(/{repo}/**)", f"Edit(/{state}/**)", f"Bash(python3 {vl} *)",
-             f"Bash(python3 {SCRIPT.relative_to(REPO).as_posix()} *)",
+             *(f"Edit(/{repo}/{top}/**)" for top in ("tech", "biz", "econ", "fit")),
+             *(f"Edit(/{state}/{sub}/**)" for sub in ("runs", "tmp", "inbox", "digests")),
+             f"Bash(python3 {vl} *)", f"Bash(python3 {SCRIPT.relative_to(REPO).as_posix()} *)",
              "mcp__development-context", "mcp__plugin_context7_context7"]
-    if mode == "harvest":
-        allow.append("mcp__claude-in-chrome")
-    # Git 쓰기는 VL publish만 한다. 사용자 설정의 git add/commit/push 허용보다 거부 규칙이 우선한다.
+    if mode == "harvest":  # 서버 전체가 아니라 SKILL.md의 harvest 도구만 연다. file_upload 같은 도구는 로컬 파일을 올린다.
+        allow += [f"mcp__claude-in-chrome__{t}" for t in (
+            "tabs_context_mcp", "tabs_create_mcp", "tabs_close_mcp", "navigate", "javascript_tool", "get_page_text",
+            "find", "computer", "read_page", "list_connected_browsers", "select_browser")]
+    # 사용자와 프로젝트 설정의 허용 규칙(git add/commit/push, codex exec, pandoc, pnpm build, python3 -m)도
+    # 이 실행에 그대로 적용된다. 거부가 우선하므로 Git 쓰기와 그 밖의 실행 경로를 여기서 막는다.
     deny = [f"Bash(git {sub} *)" for sub in ("add", "commit", "push", "stash", "reset", "checkout", "restore",
                                               "clean", "rebase", "merge", "pull", "rm")]
-    deny += ["Bash(rm *)", "mcp__plugin_playwright_playwright", f"Edit(/{repo}/.claude/**)",
-             f"Edit(/{repo}/.agents/**)", f"Edit(/{repo}/ontology/**)", f"Edit(/{repo}/**/AGENTS.md)",
-             f"Edit(/{repo}/**/CLAUDE.md)", f"Edit(/{repo}/README.md)", f"Edit(/{state}/launchd/**)"]
+    deny += ["Bash(rm *)", "Bash(codex *)", "Bash(pandoc *)", "Bash(pnpm *)", "Bash(python3 -m *)",
+             "mcp__plugin_playwright_playwright", f"Edit(/{repo}/**/AGENTS.md)", f"Edit(/{repo}/**/CLAUDE.md)",
+             *(f"Read(~/{p})" for p in (".ssh/**", ".aws/**", ".gnupg/**", ".config/**", ".codex/**", ".netrc"))]
     return allow, deny
 
 
@@ -1264,7 +1325,7 @@ def agent_has_work(mode, conf):
             return False
         return True
     data = pick_data(conf["k"])
-    if data["tier1"] or data["tier2"] or orphan_runs():
+    if data["tier1"] or data["tier2"] or leftover_runs():
         return True
     idle = read_json(S / "runs" / "idle.json", {}) or {}
     if time.time() - idle.get("ts", 0) < conf["idle_interval_min"] * 60:
@@ -1283,6 +1344,8 @@ def run_claude(mode, cmd, prompt, timeout_s):
         def stop(signum, _frame):  # launchd가 작업을 내리면 claude 프로세스 그룹까지 정리한다.
             with contextlib.suppress(ProcessLookupError):
                 os.killpg(proc.pid, signal.SIGTERM)
+            with contextlib.suppress(subprocess.TimeoutExpired):
+                proc.wait(timeout=10)  # 끝난 뒤의 파일 상태로 finish_runs가 남은 파일을 기록하게 한다.
             sys.exit(128 + signum)
 
         signal.signal(signal.SIGTERM, stop)
@@ -1342,7 +1405,12 @@ def cmd_agent(a):
             print(shlex.join(cmd))
             print(prompt)
             return 0
-        rc, path = run_claude(mode, cmd, prompt, conf[f"{mode}_timeout_min"] * 60)
+        since = int(time.time())
+        try:
+            rc, path = run_claude(mode, cmd, prompt, conf[f"{mode}_timeout_min"] * 60)
+        finally:
+            if mode == "learn":
+                finish_runs(since)
         text = path.read_text(encoding="utf-8", errors="replace")
         result = last_result(text)
         failed = rc != 0 or not result or result.get("is_error")
@@ -1406,7 +1474,10 @@ def cmd_plists(a):
             "discover": (["discover"], {"StartInterval": 1800, "RunAtLoad": True}),
             "harvest": (["agent", "harvest"], {"StartInterval": 7200}),
             "learn": (["agent", "learn"], {"StartInterval": 1800}),
-            "digest": (["agent", "digest"], {"StartCalendarInterval": {"Hour": 7, "Minute": 30}})}
+            # 07:30이 본 실행이다. 밤새 learn이 사용량 한도에 걸려 백오프 중이거나 실패하면 그날 뒤 시각에 다시 한다.
+            # 오늘 다이제스트가 있으면 agent_has_work가 claude를 띄우지 않고 끝낸다.
+            "digest": (["agent", "digest"], {"StartCalendarInterval": [{"Hour": h, "Minute": 30}
+                                                                       for h in (7, 9, 11, 13, 16, 19, 22)]})}
     written = []
     for name, (args, extra) in jobs.items():
         plist = {"Label": LABEL + name, "ProgramArguments": [python, str(SCRIPT), *args], "WorkingDirectory": str(S),
@@ -1444,6 +1515,9 @@ def cmd_selftest(a):
     assert not SAFE_EMAIL.search("someone@corp.co.kr") and SAFE_EMAIL.search("git@github.com")
     assert SAFE_EMAIL.search("icon@2x.png") and SAFE_EMAIL.search("ec2-user@10.0.0.1")
     assert WIKILINK.findall("| [[A\\|b]] |")[0].rstrip("\\") == "A"  # 표 안의 이스케이프된 별칭
+    assert SECRET.search("k=AKIA" + "Q" * 16) and not SECRET.search("AKIAIOSFODNN7EXAMPLE")
+    assert line_problems("근거 https://www.threads.com/@a/post/1", set()) and not line_problems("docs(x): 요약", set())
+    assert line_problems("채널 abcd 소개", {"abcd"}) and not line_problems(TRAILER, set())
     real = S
     with tempfile.TemporaryDirectory() as tmp:
         S = Path(tmp)
