@@ -15,7 +15,7 @@ aliases: ["Git 폴더", "Git 인덱스"]
 - [[Git-Mental-Model|Git 멘탈 모델 (커밋 스냅샷/브랜치 포인터/HEAD, fast-forward, 3-way merge, rebase 원리)]]
 - [[Git-Working-Tree-and-Commits|Git 작업 트리와 커밋 관리 (staging, stash, restore, clean, amend와 rebase -i)]]
 - [[Git-Merge-Strategies|Git 통합 방식 (Merge commit/Squash/Rebase, fast-forward와 히스토리 재작성)]]
-- [[Git-Reset-Reflog|Git Reset과 복구 (reset/revert, reflog, force-with-lease, range-diff)]]
+- [[Git-Reset-Reflog|Git Reset과 복구 (reset/revert, revert 충돌과 merge revert, reflog, force-with-lease, range-diff)]]
 - [[Git-History-Debugging|Git 히스토리 분석과 디버깅 (log/diff, blame, bisect, tag)]]
 - [[Git-Worktree-and-Hooks|Git worktree와 hooks (병렬 작업 트리, 샘플 hook, husky와 pre-commit, 로컬 자동화와 CI 경계)]]
 

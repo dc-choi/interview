@@ -1,7 +1,7 @@
 ---
 tags: [cicd, github-actions]
 status: done
-verified_at: 2026-08-28
+verified_at: 2026-10-06
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["GitHub Actions", "깃헙 액션"]
 ---
@@ -41,6 +41,7 @@ PR이 올라올 때 코드 품질을 자동 검증하는 파이프라인이다.
 - workflow의 `permissions`로 `GITHUB_TOKEN`을 job에 필요한 최소 권한만 부여한다.
 - third-party action은 검토한 full-length commit SHA로 고정하고 Dependabot 같은 갱신 경로를 둔다.
 - fork PR처럼 신뢰하지 않는 코드에 write token이나 secret을 넘기지 않는다. 특히 `pull_request_target`에서 PR 코드를 checkout해 실행하지 않는다.
+- cache도 신뢰 경계다. read 권한이 있으면 PR을 만들어 캐시 내용에 접근할 수 있으므로 token이나 credential이 든 경로를 캐시하지 않는다. 2026-10-06 GitHub Docs 기준 workflow나 job의 `cache-mode`(`read`, `write`, `write-only`, `none`)로 cache 권한을 좁힐 수 있고, 생략하면 `push` 같은 신뢰된 event는 `write`, `pull_request_target` 같은 low-trust event는 `read`가 기본이다. low-trust event에 `write`나 `write-only`를 명시하면 이 기본값을 덮어써 cache poisoning 위험이 돌아오므로 명시하지 않는다. `read`에서는 저장이 수행되지 않지만 step과 job은 실패하지 않으므로 캐시는 신뢰된 event의 workflow에서 채운다.
 - cloud 배포는 장기 access key보다 OIDC와 짧은 수명의 자격 증명을 우선하고, production environment에는 승인과 branch 제한을 둔다.
 
 ## CD 워크플로우 — 자동 배포
@@ -83,15 +84,21 @@ CI 시간이 길면 피드백이 늦어진다. 아래 기법의 효과는 설치
 
 반복 설치에서 가장 큰 시간을 먹는 부분.
 
-- **`actions/setup-node` cache 옵션**: `cache: 'npm'` / `'yarn'` / `'pnpm'`은 package manager의 global data를 캐시한다. `node_modules`를 캐시하지 않으므로 이후 설치 명령은 여전히 실행한다
-- **`actions/cache` 직접 사용**: setup action이 다루지 않는 경로만 검토한다. OS, runtime, package manager와 lock file을 key에 반영하고, `node_modules` 직접 캐시는 native module과 install script의 재현성까지 확인한 뒤 선택한다
-- **Gradle/Maven**: `actions/setup-java`의 `cache` 옵션 또는 `~/.gradle/caches` 직접 캐시
+- **`actions/setup-node` cache 옵션**: `cache: 'npm'` / `'yarn'` / `'pnpm'`(pnpm v6.10 이상)은 package manager의 global data를 캐시한다. `node_modules`를 캐시하지 않으므로 이후 설치 명령은 여전히 실행한다. key에 Node 버전이 들어가지 않아 Node 버전이 달라도 재사용된다. v6 이상은 `cache`를 생략해도 `package.json`의 `packageManager`나 `devEngines.packageManager`가 npm이면 npm 캐시를 자동으로 켜고(v5에서 도입, v6에서 npm으로 한정), `package-manager-cache: false`로 끈다
+- **`actions/setup-java` cache 옵션**: `cache: maven` / `gradle` / `sbt`는 내려받은 의존성 디렉터리(`~/.m2/repository`, `~/.gradle/caches`, sbt의 `~/.ivy2/cache`, `~/.sbt`와 Coursier cache)를 캐시한다. 프로젝트의 `target/`, `build/` 산출물은 기본 경로에 없다. v6 기준 Maven, Gradle wrapper 배포본은 별도 entry로 저장되고, `cache`를 켜면 내려받은 JDK도 기본으로 캐시되어(`cache-jdk: false`로 끔) matrix의 JDK 조합마다 저장 용량을 쓴다. build output 캐시, configuration cache 같은 고급 Gradle 캐시가 필요하면 `gradle/actions/setup-gradle`을 검토한다
+- **key는 OS, 아키텍처, package manager와 의존성 파일 해시**: setup-node는 저장소 루트의 lock 파일을, setup-java는 저장소 전체의 `pom.xml`, `.mvn/wrapper/maven-wrapper.properties`, `.mvn/extensions.xml`(Maven)이나 `*.gradle*`, `gradle.properties`, `gradle-wrapper.properties` 등과 루트의 `gradle/*.versions.toml`(Gradle)을 해시한다. 해시 대상은 `cache-dependency-path`로 바꾸고, 다른 위치의 version catalog도 여기에 넣는다. setup-java의 `cache-path`는 캐시할 디렉터리를 바꾼다. key 문자열은 같지만 경로가 cache version에 들어가므로 경로를 바꾸기 전의 entry는 복원되지 않는다
+- **부분 복원과 덧붙이기가 없다**: 두 action은 `restore-keys`를 쓰지 않으므로(setup-node가 Yarn Berry 로컬 cache를 감지한 경우 제외) 의존성 파일이 바뀌면 이전 캐시를 복원하지 않고 다시 내려받은 뒤 job이 성공하면 새 key로 저장한다. 정확히 hit한 실행은 저장하지 않으므로 그 실행에서 추가로 받은 plugin이나 artifact는 key가 바뀌거나 entry가 축출될 때까지 캐시에 들어가지 않는다
+- **`actions/cache` 직접 사용**: setup action이 다루지 않는 경로(`.next/cache` 같은 build 도구 캐시, [[NextJS-CI-Build-Cache|Next.js CI 빌드 캐시]]), `restore-keys` 부분 복원, `actions/cache/restore`와 `actions/cache/save`로 복원과 저장 시점을 나눠야 할 때 쓴다. OS, runtime, package manager와 lock file을 key에 반영하고, `node_modules` 직접 캐시는 native module과 install script의 재현성까지 확인한 뒤 선택한다
+- **PR과 matrix는 복원만**: 캐시는 만든 뒤 내용을 바꿀 수 없고, PR이 만든 캐시는 merge ref 범위라 같은 PR의 재실행에서만 복원된다. 실행은 현재 branch, default branch와 PR의 base branch 캐시를 복원할 수 있으므로 main의 workflow가 캐시를 채우고, PR, 짧은 branch와 다른 job이 채운 캐시만 쓰는 matrix fan-out job은 setup-java v6의 `cache-read-only: true`나 job의 `cache-mode: read`로 복원만 하게 한다. key에 OS와 아키텍처가 들어가므로 조합마다 캐시를 채울 job은 남겨 둔다
+- **한도**: 2026-10-06 GitHub Docs 기준 7일 넘게 접근하지 않은 entry는 삭제되고, repository 기본 한도 10 GB를 넘으면 마지막 접근이 오래된 entry부터 축출된다. 결제 수단을 등록한 계정은 한도를 늘릴 수 있고 10 GB 초과분은 과금된다. 생성은 repository당 분당 200회, 다운로드는 분당 1500회까지다
+
+캐시는 다운로드를 줄이는 장치이고, 버전을 고정했을 때 사용할 버전은 build 파일과 lock 파일이 정한다. Maven `SNAPSHOT`과 Gradle의 dynamic version, changing module은 같은 선언에서도 해석 결과가 바뀔 수 있고(Gradle은 기본 24시간 동안 해석 결과를 캐시한다), 복원된 캐시 상태에 따라 결과가 달라질 수 있다. setup-java의 key는 build 파일 해시라 이런 변화에도 그대로다. 재현 가능한 build에는 release 버전을 고정하고 [[Dependency-Management|의존성 관리]]의 버전 고정 정책을 따른다.
 
 ### Docker Layer 캐싱
 
 Dockerfile 빌드가 매번 처음부터면 시간이 늘 수 있다. GitHub Actions cache backend는 선택지 중 하나이며 repository cache quota, eviction과 API throttling을 함께 본다.
 
-- 검토한 full commit SHA로 고정한 `docker/build-push-action`의 `cache-from: type=gha`, `cache-to: type=gha,mode=max`. 여러 image가 같은 기본 scope를 덮어쓰지 않도록 image별 scope를 분리한다
+- 검토한 full commit SHA로 고정한 `docker/build-push-action`의 `cache-from: type=gha`, `cache-to: type=gha,mode=max`. 여러 image가 같은 기본 scope를 덮어쓰지 않도록 image별 scope를 분리한다. cache 권한이 `read`인 job에서는 export가 거부돼 build가 실패할 수 있으므로 `cache-to`를 빼거나 `ignore-error=true`를 붙인다
 - **Dockerfile 계층 순서 최적화**: 자주 변하는 파일(소스 코드, 커밋 SHA)을 **뒤쪽 레이어**에 배치해 앞쪽 캐시 무효화 방지
 - **Git commit SHA 인자를 마지막에** — 매 커밋마다 앞 계층의 `assets:precompile` 같은 무거운 단계가 무효화되지 않도록
 
@@ -141,7 +148,7 @@ Q. 배포 중 문제 발생 시 롤백은?
 - 이전에 승인, 검증한 image digest를 Compose manifest에 다시 지정하고 `docker compose up` 재실행. commit SHA 태그는 후보를 찾는 용도로만 사용
 
 Q. CI 시간을 단축하기 위해 어떤 전략을 쓰는가?
-- `actions/cache`로 lock 파일 기반 의존성 캐시
+- setup action의 `cache` 입력이나 `actions/cache`로 lock, build 파일 해시 기반 의존성 캐시
 - Docker Layer 캐시(`type=gha`), Dockerfile 계층 순서 최적화
 - lint, test, build를 별도 Job으로 병렬화
 - Jest `--changedSince`로 영향받는 테스트만 실행
@@ -153,7 +160,20 @@ Q. CI 시간을 단축하기 위해 어떤 전략을 쓰는가?
 - [GitHub Docs, OpenID Connect](https://docs.github.com/en/actions/concepts/security/openid-connect)
 - [GitHub Docs, Publishing Docker images](https://docs.github.com/en/actions/tutorials/publish-packages/publish-docker-images)
 - [GitHub Docs, GitHub Actions billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
+- [GitHub Docs, Dependency caching reference](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching)
+- [GitHub Docs, Workflow syntax for GitHub Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)
+- [GitHub Changelog — Control GitHub Actions cache access with cache-mode](https://github.blog/changelog/2026-09-10-control-github-actions-cache-access-with-cache-mode)
 - [actions/setup-node, Caching global packages data](https://github.com/actions/setup-node#caching-global-packages-data)
+- [actions/setup-node, src/cache-restore.ts](https://github.com/actions/setup-node/blob/main/src/cache-restore.ts)
+- [actions/setup-node, src/cache-save.ts](https://github.com/actions/setup-node/blob/main/src/cache-save.ts)
+- [actions/setup-node, Releases](https://github.com/actions/setup-node/releases)
+- [actions/setup-java, Caching](https://github.com/actions/setup-java)
+- [actions/setup-java, Advanced usage: Caching JDK installations](https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md)
+- [actions/setup-java, src/cache.ts](https://github.com/actions/setup-java/blob/main/src/cache.ts)
+- [actions/setup-java, src/cleanup-java.ts](https://github.com/actions/setup-java/blob/main/src/cleanup-java.ts)
+- [actions/cache, Usage](https://github.com/actions/cache)
+- [Maven, Getting Started Guide](https://maven.apache.org/guides/getting-started/index.html)
+- [Gradle, Dependency caching](https://docs.gradle.org/current/userguide/dependency_caching.html)
 - [actions/checkout, Fetch only a single commit by default](https://github.com/actions/checkout)
 - [docker/build-push-action — GitHub](https://github.com/docker/build-push-action)
 - [Docker Docs, GitHub Actions cache backend](https://docs.docker.com/build/cache/backends/gha/)

@@ -1,9 +1,9 @@
 ---
-tags: [cicd, git, reset, reflog, recovery]
+tags: [cicd, git, reset, revert, reflog, recovery]
 status: done
 category: "CI/CD&배포(CI/CD&Delivery)"
-aliases: ["Git Reset Reflog", "Git 복구", "force-with-lease"]
-verified_at: 2026-09-30
+aliases: ["Git Reset Reflog", "Git 복구", "force-with-lease", "Git Revert"]
+verified_at: 2026-10-06
 ---
 
 # Git Reset과 복구 — reset, revert, reflog, force-with-lease, range-diff
@@ -59,6 +59,15 @@ revert는 대상 커밋이 도입한 patch의 역방향을 현재 트리에 적�
 
 오래된 커밋일수록, 그 뒤 커밋이 같은 파일과 영역을 건드렸을수록 역방향 patch가 현재 트리와 충돌하기 쉽다. 예를 들어 어떤 커밋이 추가한 파일을 이후 커밋이 수정했다면, 그 커밋을 revert할 때 git은 파일을 지워야 하지만 현재 내용이 그 커밋이 만든 내용과 달라 판단하지 못하고 멈춘다.
 
+역방향 patch 적용의 실제 계산은 3-way merge다. git의 sequencer는 cherry-pick과 같은 merge 기계를 쓰되 base와 합쳐 오는 쪽을 맞바꾼다.
+
+| 명령 | base (`:1:`) | HEAD 쪽 (`:2:`) | 합쳐 오는 쪽 (`:3:`) |
+|---|---|---|---|
+| `git cherry-pick C` | C의 부모 | 현재 HEAD | C |
+| `git revert C` | C | 현재 HEAD | C의 부모 |
+
+C에서 C의 부모로 가는 변경이 C의 역방향이고, C에서 HEAD로 가는 변경은 C 이후 커밋들이 쌓은 변경이다. 두 변경이 C의 같은 영역을 서로 다르게 바꾸면 [[Git-Mental-Model|3-way merge]]의 충돌 조건대로 멈춘다. 위의 파일 예시는 base(C)에 있던 파일을 합쳐 오는 쪽은 지우고 HEAD 쪽은 고친 modify/delete 충돌이라 파일에 마커가 없고, HEAD 쪽 내용이 남은 채 `git status`에 `deleted by them`으로 표시된다. 같은 영역의 내용 충돌이면 충돌 마커는 위쪽이 `HEAD`, 아래쪽이 `parent of <짧은 해시> (<제목>)`이므로 아래쪽이 C 이전의 코드이고, [[Git-Mental-Model#3-way merge — 세 지점을 비교해 새 커밋 생성|zdiff3]](Git 2.35 이상)를 켜면 가운데 base 구간에 C의 내용이 나온다. 되돌리는 중인 커밋은 `REVERT_HEAD`가 가리키므로 `git show REVERT_HEAD`로 원래 변경을 다시 확인한다.
+
 ```bash
 git rm <파일>            # 삭제가 의도라면 삭제와 스테이징을 한 번에
 # 다른 결과가 필요하면 파일을 고친 뒤 git add <파일>
@@ -67,6 +76,30 @@ git revert --abort       # 시작 전 상태로 되돌리기
 ```
 
 `--skip`은 현재 커밋을 건너뛰고 나머지 순서를 계속하며, `--quit`은 진행 상태만 지운다. 충돌을 해결해 만든 revert 커밋은 결과 트리를 테스트로 다시 검증한다. 충돌 해결의 공통 절차는 [[Git-Mental-Model#충돌이 났을 때의 처리 절차|Git 멘탈 모델]]을 따른다.
+
+여러 커밋을 revert 커밋 하나로 묶을 때는 `--no-commit`(`-n`)을 쓴다. 커밋을 만들지 않고 역변경을 작업 트리와 index에만 쌓으며, 이 옵션을 쓰면 index가 HEAD와 같지 않아도 되고 시작 시점의 index를 기준으로 되돌린다. 범위를 주면 cherry-pick은 오래된 커밋부터 적용하도록 순서를 뒤집지만 revert는 뒤집지 않아 최근 커밋부터 되돌린다.
+
+```bash
+git revert -n main~5..main~2   # main이 선형이면 main~2, main~3, main~4 순서로 역변경을 쌓는다
+git commit                      # 되돌리는 이유를 적어 한 커밋으로 기록
+```
+
+### merge commit revert와 재병합
+
+merge commit은 부모가 둘 이상이라 `-m` 없이 revert하면 `commit <해시> is a merge but no -m option was given.` 오류로 멈춘다. `-m <부모 번호>`(1부터)로 기준이 될 mainline 부모를 정하고, `-m 1`이면 첫 부모(merge를 실행한 쪽)가 기준이다. 계산은 일반 revert와 같아 base는 merge commit M, 합쳐 오는 쪽은 지정한 부모이고, 결과는 그 merge가 들여온 변경을 되돌린다.
+
+```
+---o---o---M---x---W---Y        ← main   (W = revert -m 1 M, Y = revert W)
+          /
+  ---A---B---------------C---D  ← topic  (C, D는 A, B의 결함 수정)
+```
+
+W는 M이 들여온 데이터만 되돌리고 히스토리의 M은 그대로 둔다. M은 계속 두 가지를 합친 지점이라 다음 merge는 B까지 이미 합쳐진 것으로 계산한다. 그래서 수정 없이 다시 merge하면 이미 최신이라며 아무것도 가져오지 않고, C와 D를 더해 merge하면 C와 D만 들어오며 A와 B의 변경은 W에 지워진 채 남는다.
+
+- 고친 topic을 다시 합치기 전에 W를 revert해 Y를 만든다. Y가 A와 B의 변경을 되살리고 이어서 topic을 merge하면 C와 D가 들어와, 결과에 A부터 D까지 모두 반영된다. W 이후 커밋이 같은 영역을 바꿨다면 Y에서도 충돌할 수 있다. Git 2.43부터 되돌리는 커밋의 제목이 기본값 `Revert "<원 제목>"` 그대로이면 새 기본 제목은 `Revert "Revert ..."` 대신 `Reapply "<원 제목>"`이다. 제목을 고쳐 썼거나 `--reference`를 쓰면 해당하지 않는다.
+- topic을 `git rebase --no-ff <원래 분기점>`으로 모두 새 커밋으로 다시 만들었다면 Y 없이 그대로 merge한다.
+- GitHub에서 merge된 PR을 Revert하면 원 merge commit을 되돌리는 새 PR이 생긴다(2026-10-06 GitHub Docs 기준). merge commit으로 합쳤던 브랜치를 다시 합칠 때 같은 함정을 확인한다.
+- 문제를 추적하다 merge revert 커밋을 만나면 합쳐진 커밋들의 변경이 역방향 커밋 하나로 뭉쳐 있어 어느 부분이 원인인지 좁히기 어렵다. 기술적으로 문제는 없지만 workflow 측면에서는 피하는 편이 낫고, 가능하면 [[Git-History-Debugging|bisect]]로 원인 커밋을 찾아 그 커밋만 고치거나 revert한다.
 
 ## reflog — 포인터 이동 일지 = 내장 백업
 
@@ -120,6 +153,7 @@ git range-diff origin/main origin/feature feature
 
 - reset 3옵션이 각각 무엇을 되돌리는지 (포인터, 스테이징, 작업 파일의 3층 모델)
 - reset vs revert 선택 기준 — 히스토리 공유 여부
+- revert 충돌의 3-way 구조(base는 되돌릴 커밋, 합쳐 오는 쪽은 그 부모)와, merge revert 뒤 고친 topic을 다시 합칠 때 revert의 revert가 필요한 이유와 rebase --no-ff로 다시 만들면 필요 없는 이유
 - reflog가 복구할 수 있는 것과 없는 것 (ref에 담겼던 것만, 로컬 전용)
 - `--force`와 `--force-with-lease`의 차이, lease의 한계
 - range-diff의 용도 — rebase 검증
@@ -131,11 +165,19 @@ git range-diff origin/main origin/feature feature
 - [git-push 공식 문서 — --force-with-lease와 fetch 상호작용 경고](https://git-scm.com/docs/git-push)
 - [git-range-diff 공식 문서 — base rev1 rev2 형식](https://git-scm.com/docs/git-range-diff)
 - [git-fsck 공식 문서 — --lost-found](https://git-scm.com/docs/git-fsck)
-- [git-revert 공식 문서 — sequencer 명령(--continue, --skip, --quit, --abort)과 메시지 권고](https://git-scm.com/docs/git-revert)
+- [git-revert 공식 문서 — sequencer 명령(--continue, --skip, --quit, --abort), -m, --no-commit, 메시지 권고와 Reapply 제목](https://git-scm.com/docs/git-revert)
+- [revert-a-faulty-merge 공식 문서 — merge revert가 남기는 히스토리, revert의 revert, rebase --no-ff 재작성](https://www.kernel.org/pub/software/scm/git/docs/howto/revert-a-faulty-merge.html)
+- [git-rebase 공식 문서 — --no-ff로 되돌린 topic 재작성](https://git-scm.com/docs/git-rebase)
+- [gitrevisions 공식 문서 — REVERT_HEAD](https://git-scm.com/docs/gitrevisions)
+- [GitHub 공식 문서 — Reverting a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/reverting-a-pull-request)
+- [Git Tools - Advanced Merging — Pro Git 2판](https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging)
+- [sequencer.c — git/git 저장소](https://github.com/git/git/blob/master/sequencer.c)
+- [Git 2.43.0 릴리즈 노트 — git/git 저장소](https://github.com/git/git/blob/master/Documentation/RelNotes/2.43.0.adoc)
 - 얄팍한 코딩사전, [과거로 돌아가는 세 가지 방법](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401003), [나머지 두 방법들](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401004), [reset 했어도 희망은 있다](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401084), [GUI 및 AI로 진행히보기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=401005)
 
 ## 관련 문서
 
 - [[Git-Mental-Model|Git 멘탈 모델 (커밋/브랜치/HEAD)]]
 - [[Git-Merge-Strategies|Git 통합 방식 (공유 브랜치 히스토리 재작성 주의)]]
+- [[Git-History-Debugging|Git 히스토리 분석과 디버깅 (bisect로 원인 커밋 좁히기)]]
 - [[Development-Workflow|개발 워크플로 (PR 기반 협업)]]
