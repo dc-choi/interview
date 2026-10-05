@@ -47,6 +47,16 @@ AI에게 정답을 받아 검토 없이 붙여넣으면 대리 대국에 가깝�
 
 이는 고수의 판(처음 보는 기술) 위에 **나한테 맞는 교수법이라는 돌을 미리 깔아놓고 앉는 것**과 같다. 그래서 판을 뜨지 않고 계속 둘 수 있다. 한 강사가 한 과목만 가르치던 제약이, 좋아하는 교수법을 어떤 주제에든 입힐 수 있는 형태로 풀린다.
 
+## 주요 서비스의 학습 모드
+
+교수법을 직접 지시사항으로 쓰지 않아도, 주요 AI 서비스는 답을 바로 주는 대신 질문과 단계별 안내를 주거나 직접 작성할 부분을 남기는 학습 모드를 제공한다.
+
+- **ChatGPT 공부 모드(study mode)**: 2025-07-29 발표 기준으로 바로 답하는 대신 소크라테스식 질문, 힌트와 자기 성찰 프롬프트로 이해를 유도하고, 퀴즈와 주관식 질문으로 피드백한다. 대화 중에 켜고 끌 수 있다. OpenAI는 이 모드가 맞춤형 시스템 지침으로 구동되며, 대화 간 일관성 없는 행동과 실수가 생길 수 있음을 감수한 방식이라고 밝혔다.
+- **Gemini Guided Learning**: 2025-08-06 발표 기준으로 질문과 단계별 분해로 능동적인 학습을 돕고, 학습자에 맞춰 설명을 조정하며 이미지, 도표, 영상과 퀴즈를 섞는다.
+- **Claude Code Learning 출력 스타일**: 2026-10-05 공식 문서 기준으로 일상적인 구현은 Claude가 맡고, 오류 처리, 자료구조, 여러 접근이 가능한 비즈니스 로직처럼 설계 판단이 필요한 몇 줄은 `TODO(human)`으로 남긴 뒤 사용자가 작성할 때까지 기다린다. 선택 이유는 `Insight` 블록으로 설명하며, 직접 작성 없이 설명만 받으려면 Explanatory 스타일을 쓴다. 공식 문서는 출력 스타일이 따를 지시일 뿐 동작을 보장하지 않는다고 밝힌다.
+
+이런 모드는 위의 교수법 심기를 제품 기능으로 미리 만들어 둔 형태에 가깝다. 위 발표와 문서는 학습 성과를 측정한 결과를 제시하지 않으며, 수학 RCT에서 AI 없는 시험의 유의한 하락이 나타나지 않은 튜터 설계(정답과 교사 설계 힌트를 함께 넣은 구성)와도 같지 않다([[Expertise-Formation-AI|AI 시대 전문성 형성]]). 모드를 켠 사실보다 도움을 끈 뒤에 설명하고 재현할 수 있는지로 확인하고, 기능 이름과 동작은 사용 시점의 공식 문서로 다시 확인한다.
+
 ## 강의 근거를 붙인 학습 루프
 
 수강 권한에 묶인 콘텐츠를 [[MCP|MCP 커넥터]]로 검색하면 일반적인 AI 설명 대신 실제 학습한 유닛과 커리큘럼을 근거로 삼을 수 있다. 커넥터는 자료를 찾는 통로일 뿐이므로 학습자는 다음 사고 구간을 직접 맡는다.
@@ -84,6 +94,8 @@ AI를 튜터나 사서처럼 쓰려면 결과물만 얻는 것이 아니라 **�
 
 반대로 빈 화면에서 완성 답안을 받은 뒤 이해했다고 느끼는 방식은 산출 속도는 높여도 학습 여부를 확인하기 어렵다. 작업마다 AI가 대신해도 되는 부분과 내가 직접 판단해야 하는 부분을 먼저 나누는 것이 안전하다.
 
+개발자가 새 라이브러리를 배운 RCT에서도 AI 보조 집단의 직후 이해도가 직접 코딩한 집단보다 낮았고, 격차는 디버깅 문항에서 가장 컸다. AI에 개념을 묻거나 생성 코드의 설명을 구한 참가자의 점수가 높았다는 관찰은 소수 인원의 사후 분류라 인과로 읽지 않는다([[Expertise-Formation-AI|AI 시대 전문성 형성]]).
+
 ## 체크포인트
 
 - 정답을 받아 끝내는가, 풀이를 설명하고 자료 없이 다시 적용하는가
@@ -101,12 +113,16 @@ AI를 튜터나 사서처럼 쓰려면 결과물만 얻는 것이 아니라 **�
 - [인프런 MCP — Inflearn](https://www.inflearn.com/pages/mcp)
 - [The People Who Will Thrive in the AI Age — The Atlantic](https://www.theatlantic.com/ideas/2026/06/ai-open-ai-anthropic/687689/)
 - [AI 시대에 번영할 사람들 — GeekNews](https://news.hada.io/topic?id=31683)
+- [공부 모드를 소개합니다 — OpenAI](https://openai.com/ko-KR/index/chatgpt-study-mode/)
+- [Guided Learning in Gemini: From answers to understanding — Google](https://blog.google/outreach-initiatives/education/guided-learning/)
+- [Claude Code Docs, Output styles](https://code.claude.com/docs/en/output-styles)
+- [AI 시대에 컴공을 선택한 용사들에게 - \[잡담\] — YouTube, Uzchowall](https://www.youtube.com/watch?v=luyBenV55xk) — 2026-09-05, 학습 모드를 다룬 계기, 화자 스스로 써 보지 않았다고 밝힌 언급이라 기능과 효과의 근거로 사용하지 않음
 
 ## 관련 문서
 - [[Growth-Principles|성장의 7가지 원칙]] — 자기효능감, 계단식 성장, 보이지 않는 벽돌
 - [[CS-Fundamentals-Value|CS 기초의 가치]] — 판단 도구로서의 지식 (태도와 짝을 이루는 축)
 - [[First-Hand-Experience-AI-Era|AI 시대 직접 경험기]] — AI를 직접 경험 가속 도구로
-- [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 마찰과 판단 위임의 경계, 가드레일 RCT
+- [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 마찰과 판단 위임의 경계, 가드레일 RCT, 코딩 학습 RCT
 - [[CS-Learning-Method|CS 지식 학습법]] — 키워드 기반 목차 접근
 - [[MCP|Model Context Protocol]] — 사용자 소유 콘텐츠를 AI 컨텍스트로 연결하는 기술 경계
 - [[Self-Development-While-Working|일하면서 자기계발]]

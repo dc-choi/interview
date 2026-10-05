@@ -1,16 +1,16 @@
 ---
 tags: [ai, expertise, learning, mentoring]
 status: done
-verified_at: 2026-10-02
+verified_at: 2026-10-05
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Expertise Formation AI", "AI 시대 전문성 형성"]
+aliases: ["Expertise Formation AI", "AI 시대 전문성 형성", "AI와 코딩 숙련 형성", "AI Skill Formation"]
 ---
 
 # AI 시대 전문성 형성 — 마찰, 판단 위임의 경계, 튜터형 활용
 
 로그 없는 모호한 오류를 추적하고, 구현 방식에 따라 성능이 갈리는 걸 직접 확인하는 경험은 직관을 기를 기회다. 설명과 풀이 예제도 학습을 도울 수 있으므로, 마찰이 많을수록 더 잘 배우는 것으로 보지는 않는다. Lars Faye가 제기한 우려는 AI 코딩 도구가 문제 해결을 대신하면서 이런 학습 기회까지 줄일 수 있다는 것이다. 생산성 효과도 작업에 따라 갈린다(2025년 초 도구 기준 숙련 오픈소스 개발자 16명이 익숙한 저장소의 246개 작업을 수행한 METR RCT에서는 완료 시간이 19% 늘었다 — 조건과 후속 데이터는 [[AI-Leverage-Small-Teams|AI 시대 작은 팀의 구조적 레버리지]] 참조). 학습 관점의 위험은 마찰 제거 자체보다 사고와 검증의 연습을 생략해, 산출물은 나오지만 독립 수행 능력은 늘지 않는 상태다. 속도와 완성물만으로는 이 차이를 알기 어렵다.
 
-> 부분 검증(2026-10-02): 수학 RCT의 설계와 효과 수치, METR의 2025년 결과, IES의 예제와 독립 문제풀이 병행 권고, Bainbridge 원문을 대조했다. 개발자의 장기 전문성 변화와 AI SRE의 MTTR 효과는 이 근거들로 검증되지 않았으며, 아래 도메인 확장은 위험 가설로 읽는다.
+> 부분 검증(2026-10-02): 수학 RCT의 설계와 효과 수치, METR의 2025년 결과, IES의 예제와 독립 문제풀이 병행 권고, Bainbridge 원문을 대조했다. 2026-10-05에는 코딩 학습 RCT의 설계와 수치를 Anthropic 발표와 arXiv 논문으로 대조했다. 개발자의 장기 전문성 변화와 AI SRE의 MTTR 효과는 이 근거들로 검증되지 않았으며, 아래 도메인 확장은 위험 가설로 읽는다.
 
 ## 숙련자 역설과 역전된 학습 구조
 
@@ -33,6 +33,16 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성"]
 
 이 연구에서 보조 중 높은 점수는 독립 수행의 향상을 보장하지 않았다. GPT Tutor의 결과는 가드레일 설계가 중요함을 시사하지만, 단순히 힌트를 요청하면 같은 효과가 난다는 뜻은 아니다. 정답을 시스템 프롬프트에 넣어 오답 생성을 줄이고, 흔한 오개념에 대한 교사 설계 힌트를 주되 전체 풀이는 내주지 않는 조합이었다. 장기 학습은 측정하지 않았다([저자 제공 원문 PDF, 본문 각주 3](https://hamsabastani.github.io/education_llm.pdf)).
 
+## 근거 — 새 라이브러리를 배우는 개발자 RCT
+
+개발자의 코딩 학습을 직접 다룬 무작위 실험도 있다. Anthropic의 Shen과 Tamkin이 2026년 1월 발표한 연구는 Python을 1년 넘게 매주 써 왔고 AI 코딩 보조를 몇 번 이상 써 본 개발자 52명을 26명씩 두 집단으로 나눴다(Anthropic 발표는 대부분 주니어라고 소개했지만, 논문의 참가자 표에서는 코딩 경력 7년 이상이 29명이다). 두 집단은 처음 보는 비동기 라이브러리 Trio로 기능 두 개를 구현했고, 한 집단만 AI 보조를 쓸 수 있었다. 직후 두 집단 모두 AI 없이 개념 이해, 코드 읽기와 디버깅을 묻는 퀴즈(14문항, 27점)를 쳤으며, 문법 오류의 영향을 줄이려고 코드 작성 문항은 뺐다.
+
+- 퀴즈 평균은 AI 집단 50%, 직접 코딩 집단 67%로 약 17퍼센트포인트 차이였다(Cohen's d 0.738, p = 0.01). 만점 대비 점수 비율의 차이이며, 위 수학 RCT의 17%처럼 통제군 대비 상대 변화가 아니다. 다만 논문 본문의 평균 차이는 27점 만점에 4.15점(약 15%)이라 발표 수치와 약간 어긋난다. 사전 등록하지 않은 탐색 분석에서 격차는 디버깅 문항에서 가장 컸다.
+- AI 집단은 평균 약 2분 빨리 끝냈지만 통계적으로 유의하지 않았다. 구현을 통째로 맡긴 참가자들이 가장 빨랐지만 점수는 낮았다.
+- 화면 녹화를 수작업으로 분류한 결과, 코드 생성을 전부 맡기거나, 처음엔 질문하다 코드 작성을 모두 넘기거나, 이해 대신 디버깅을 AI에 반복해 맡긴 패턴은 평균 40% 미만이었다. 생성한 코드에 후속 질문을 하거나, 코드와 설명을 함께 요청하거나, 개념 질문만 한 패턴은 65% 이상이었다. 패턴별 인원이 2~7명인 사후 분류라 사용 방식이 점수를 바꿨다는 인과 근거로 쓰지 않는다.
+
+한 라이브러리를 약 한 시간 익힌 직후의 이해도를 잰 결과이며, 장기 숙련과 실무 성과는 측정하지 않았다. 따라서 AI를 쓰면 배우지 못한다는 결론이 아니라, 처음 배우는 라이브러리로 과제를 할 때 AI 보조를 쓰면 평균적으로 단기 이해도가 낮아질 수 있다는 근거로 읽는다. 구현과 디버깅을 통째로 맡긴 패턴은 점수가 낮고 질문과 설명 요청으로 직접 생각하는 구간을 남긴 패턴은 높았다는 관찰은 대안 후보를 가리킬 뿐이며, 그 효과는 따로 확인해야 한다. 수학 RCT와 마찬가지로 보조 중 산출과 도움 없이 남은 이해를 나눠 측정해야 한다는 점이 겹친다.
+
 ## 도메인 확장 — 운영 자동화와 시스템 직관
 
 운영에서도 비슷한 위험을 검토할 수 있다. Sylvain Kalache는 2026-09-04 글에서 AI가 일상 장애를 처리하면 평균 복구 시간(MTTR)은 줄고, 대응자의 연습 부족으로 복잡한 장애의 해결 시간은 늘 수 있다고 예측했다. 이는 비교 측정한 효과가 아니라 저자의 전망이다. AI SRE가 경보 분석부터 조치까지 맡고 사람이 낯설고 심각한 장애에만 개입하는 운영이라면, 독립 진단 연습이 충분한지 확인할 필요가 있다. 온콜과 사고 대응의 기본 구조는 [[SRE|SRE]]가 다룬다.
@@ -45,7 +55,7 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성"]
 
 ## 실천
 
-- 학습 국면과 산출 국면을 구분한다. 배우는 중인 영역에서는 힌트와 질문을 받는 튜터 모드를 활용하고, 기초가 부족하면 설명과 검증된 풀이 예제를 독립 문제풀이와 교대한다. [IES 교육 지침](https://ies.ed.gov/ncee/wwc/practiceguide/1)도 예제와 문제풀이 병행을 권고한다. 이를 코딩에 적용하는 것은 학습 설계 제안이다. 초안 먼저 쓰기, 힌트 요청, AI 있는 작업과 없는 작업의 교대 같은 구체 수칙은 [[AI-Handicap-Learning|AI 핸디캡 학습법]]이 다룬다. 불필요한 막힘보다 스스로 판단하고 확인하는 구간을 남기는 데 초점을 둔다.
+- 학습 국면과 산출 국면을 구분한다. 배우는 중인 영역에서는 힌트와 질문을 받는 튜터 모드를 활용하고, 기초가 부족하면 설명과 검증된 풀이 예제를 독립 문제풀이와 교대한다. [IES 교육 지침](https://ies.ed.gov/ncee/wwc/practiceguide/1)도 예제와 문제풀이 병행을 권고한다. 이를 코딩에 적용하는 것은 학습 설계 제안이다. 초안 먼저 쓰기, 힌트 요청, AI 있는 작업과 없는 작업의 교대 같은 구체 수칙과 주요 서비스의 학습 모드는 [[AI-Handicap-Learning|AI 핸디캡 학습법]]이 다룬다. 불필요한 막힘보다 스스로 판단하고 확인하는 구간을 남기는 데 초점을 둔다.
 - 위임 범위의 기준은 감사 가능성이다. 산출물을 스스로 감사할 수 있거나, 감사할 수 있는 사람이 리뷰 경로에 있는 영역까지만 판단을 위임한다.
 - 팀 차원의 육성 구조(검토와 직접 구현의 배합)는 [[Developer-Role-AI-Era|AI 시대 개발자 역할]]의 견습 사다리 재설계가 다룬다.
 - 반대 방향의 주장도 있다. AI를 튜터이자 스파링 상대로 쓰면 도제식으로 오래 쌓던 도메인 암묵지를 짧은 기간에 압축해 익힐 수 있고, 선배의 역할은 정답을 주는 사람에서 의도(해결할 비즈니스 문제)와 인지적 스캐폴딩(판단 기준, 검토 질문, 스스로 구조를 그리고 말로 설명하게 하는 과제)을 설계하는 사람으로 바뀐다는 것이다. 압축 학습의 속도는 근거가 제시되지 않은 주장이다. 위 수학 RCT는 가드레일 없는 보조가 단기 독립 수행을 낮출 수 있음을 보여 주지만, 개발자의 압축 학습 속도를 입증하지는 않는다. 역할 재정의는 활용할 관점으로 두고, 설명과 예제, 힌트를 받은 뒤의 학습 여부는 AI 없이 설명하고 재현하는 결과로 확인한다.
@@ -53,6 +63,7 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성"]
 ## 면접 체크포인트
 
 - 보조 중 성과와 학습의 괴리를 RCT 결과로 설명할 수 있는가 (연습 +127%가 시험 성적 향상이 아니었던 이유).
+- 코딩 RCT에서 격차가 디버깅 문항에서 가장 컸다는 결과와, 사용 패턴별 점수 차이를 인과로 읽지 않는 이유를 설명할 수 있는가.
 - 숙련자 역설 — 기존 전문성이 감사에 어떻게 도움이 되며, 위임이 독립 연습을 줄일 위험과 아직 측정되지 않은 부분은 무엇인가.
 - 주니어 육성을 어떻게 설계할 것인가 — 튜터 모드, 마찰 보존 구간, 검토와 직접 구현의 배합.
 
@@ -63,16 +74,19 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성"]
 - [Generative AI without guardrails can harm learning: Evidence from high school mathematics — PNAS, Bastani et al.](https://www.pnas.org/doi/10.1073/pnas.2422633122)
 - [Generative AI Without Guardrails Can Harm Learning — Bastani et al., 저자 제공 원문 PDF](https://hamsabastani.github.io/education_llm.pdf)
 - [Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity — METR](https://arxiv.org/abs/2507.09089)
+- [How AI assistance impacts the formation of coding skills — Anthropic](https://www.anthropic.com/research/AI-assistance-coding-skills)
+- [How AI Impacts Skill Formation — arXiv, Shen and Tamkin](https://arxiv.org/abs/2601.20245)
 - [Organizing Instruction and Study to Improve Student Learning — IES, What Works Clearinghouse](https://ies.ed.gov/ncee/wwc/practiceguide/1)
 - [Ironies of Automation — Automatica, Lisanne Bainbridge](https://tc.ifac-control.org/4/1/newsletter/ironies-of-automation/@@download/file/Bainbridge1983_Automatica_Ironies%20of%20automation.pdf)
 - [AI Handles Incidents, Engineers Lose Touch With Their Systems — Sylvain Kalache](https://www.sylvainkalache.com/blog/ai-handles-incidents-engineers-lose-touch-with-their-systems)
 - [AI 시대 주니어 육성과 선배의 역할 — Threads, simula](https://www.threads.com/@simula/post/DdV6f9aGGjo)
+- [AI 시대에 컴공을 선택한 용사들에게 - \[잡담\] — YouTube, Uzchowall](https://www.youtube.com/watch?v=luyBenV55xk) — 2026-09-05, 학습 중 AI 대신 직접 구현과 디버깅을 하라는 권고는 화자의 경험적 견해, 학습 효과의 근거로 사용하지 않음
 
 ## 관련 문서
 
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 견습 사다리 붕괴, 위임의 4분면
 - [[Technical-Debt|기술 부채]] — 인지 부채 명명 비판, 위축과 탈숙련
-- [[AI-Handicap-Learning|AI 핸디캡 학습법]] — 튜터 모드의 구체 수칙 (초안 먼저, 힌트 요청, 교대 훈련)
+- [[AI-Handicap-Learning|AI 핸디캡 학습법]] — 튜터 모드의 구체 수칙 (초안 먼저, 힌트 요청, 교대 훈련), 주요 서비스의 학습 모드
 - [[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]] — 깊이 있는 학습과 이전 가능한 작동 모델
 - [[SRE|SRE]] — 온콜과 사고 대응 구조, 자동화가 걷어가는 일상 반복과 이해 부채
 - [[AI-Capability-Transfer|AI 역량 이전]] — 내부 코치 양성과 자립 역량 기준
