@@ -21,6 +21,7 @@ aliases: ["CS Fundamentals"]
 - [x] [[CPU-Datapath-Control-and-Instruction-Cycle-Programs|교육용 CPU 제어 신호와 반복 산술 프로그램]]
 - [x] [[Compile-and-Runtime|컴파일과 런타임 (의사코드와 알고리즘, 네이티브, 매니지드, 인터프리터)]]
 - [x] [[Math-Logic-For-Programming|프로그래밍에 필요한 수학과 논리 (명제, 집합, 드 모르간, 수학적 귀납법)]]
+- [x] [[Data-Measurement-and-Tidy-Data|데이터 측정 척도와 정돈된 데이터 (명목, 순서, 등간, 비율, 변수와 관측 단위)]]
 - [x] [[Checksum-and-Hash|체크섬과 해시 (모듈러 합, 인터넷 체크섬, CRC, 일반 해시와 암호학적 해시, HMAC과 서명, 웹훅 서명 검증)]]
 
 ## 출처

@@ -107,6 +107,16 @@ Clef의 모델 설명과 Hugging Face 모델 카드는 비디오도 읽는다고
 
 Cloudflare가 Jev Decision Index의 평가 가운데 10개를 골라 직접 잰 결과에서 다섯 개를 옮겼다. 도구 호출 형식(BFCL)과 BANKING77 의도 분류에서는 Clef 계열이 앞선다. CLINC150+OOS는 Clef가 앞서지만, 범위 밖(out-of-scope) 질의 탐지를 포함한 이 평가에서 Clef-flash는 Jev보다도 크게 낮다. 도구를 부를지, 되물을지, 답할 수 없다고 할지를 고르는 When2Call과 추론이 필요한 검색인 BRIGHT에서는 Jev가 앞선다. 표에 옮기지 않은 ToolRet, API-Bank, Home appliances, Amazon ESCI, PhishNChips에서는 Clef와 Clef-flash가 모두 Jev보다 높았고, Cloudflare는 TypeSafe 자체 워크플로 평가 네 영역 중 세 영역에서 Clef가 Jev를 앞섰다고 밝히며, 같은 표에서 Clef-flash는 한 영역만 앞서고 한 영역은 동률이다. 한쪽 벤더가 고른 평가와 조건이므로 채택은 자기 과업의 라벨 데이터로 정한다.
 
+### 로컬 결정 모델: Laya
+
+2026-10-06에 확인한 Laya 저장소는 입력과 질문을 한 번의 forward pass로 채점하는 비자기회귀 결정 엔진을 제공한다. `choice`, `score`, `noul` 형태의 결정을 내고 영어, 다국어와 특정 워크플로에 맞춘 체크포인트를 구분한다. 첫 사용에는 가중치 다운로드가 필요하므로 로컬 추론과 최초 설치의 네트워크 요구를 나눠 본다.
+
+- **학습 전후를 구분한다:** 제작자가 공개한 typed-decisions 평가(네 워크플로, 2,000개 결정)에서 기본 영어 체크포인트 정확도는 0.362, 해당 과업에 미세조정한 체크포인트는 0.766이다. 제작자 평가이며 다른 언어와 업무에서의 우위를 보장하지 않는다.
+- **실행 계층과 모델을 구분한다:** `laya-mlx`는 Apple Silicon용 독립 MLX 포트다. 추론과 가중치 변환을 제공하고 학습은 상위 Laya 프로젝트가 맡는다. 체크포인트와 정밀도가 다르면 확률도 달라질 수 있다.
+- **언어와 비용을 다시 잰다:** 다국어 체크포인트가 있다는 사실만으로 한국어 업무 정확도가 충분하다고 판단하지 않는다. 같은 라벨 표본에서 정확도, 양성 재현율, 보정과 전체 지연을 비교한다. 로컬 실행도 하드웨어, 전력, 운영과 재학습 비용이 있으므로 API 청구액이 없다는 이유만으로 총비용을 0으로 잡지 않는다.
+
+게임 데모의 처리 속도는 입력 표현, 모델, 장비와 네트워크 조건에 의존한다. 특정 데모의 속도 배수를 문서 분류나 고객 문의 판정의 정확도 우위로 바꾸지 않는다.
+
 ## 한계
 
 - **닫힌 선택지**: 선택지 밖 입력도 어떤 선택지로든 확률이 배분된다. 해당 없음 선택지나 관련성을 묻는 `noul`을 따로 둔다. 입력에 답의 근거가 없는 질문(미래 성과 예측 등)에도 확률은 나온다.
@@ -127,6 +137,8 @@ Cloudflare가 Jev Decision Index의 평가 가운데 10개를 골라 직접 잰 
 ## 출처
 
 - [Introducing Clef: our open-source decision models, and new RL fine-tuning platform — Cloudflare Blog](https://blog.cloudflare.com/clef-decision-models/)
+- [Laya — GitHub, NandhaKishorM](https://github.com/NandhaKishorM/laya) — 로컬 결정 엔진, 체크포인트와 과업별 미세조정 평가
+- [laya-mlx — GitHub, mizorewww](https://github.com/mizorewww/laya-mlx) — 독립 MLX 포트와 정밀도, 언어별 체크포인트의 한계
 - [Introducing System One Models & Jev — TypeSafe](https://typesafe.ai/blog/introducing-system-one-models-and-jev)
 - [Cloudflare Workers AI, clef](https://developers.cloudflare.com/workers-ai/models/clef/)
 - [Cloudflare Workers AI, clef-flash](https://developers.cloudflare.com/workers-ai/models/clef-flash/)

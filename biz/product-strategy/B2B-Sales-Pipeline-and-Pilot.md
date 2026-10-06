@@ -21,6 +21,18 @@ aliases: ["B2B 영업 파이프라인", "B2B 파일럿과 구매 절차", "Sales
 
 한 사람이 여러 역할을 맡거나 한 역할을 여러 사람이 나눌 수 있다. 제품을 좋아하는 담당자를 예산권자로 가정하지 않는다. 누가 최종 승인하는지 모르면 미확인으로 남기고 확인 경로를 정한다. 역할 구분의 산업별 예시는 [[Healthcare-B2B-Solutions|의료 B2B]]에 있다.
 
+## 공통 지인을 통한 소개를 구매 증거와 구분한다
+
+Warm introduction은 잠재 고객과 관계가 있는 사람에게 소개를 요청해 첫 대화를 여는 방법이다. 목표 고객의 역할과 업무 문제를 먼저 조사하고, 공통 지인에게 연결 가능성을 확인한 뒤 짧은 소개와 대화 목적을 전달한다. LinkedIn의 공개 안내도 팀의 연결 관계에서 소개 경로를 찾고 이해관계자와 탐색 대화를 여는 흐름을 제시한다(2026-10-06 확인).
+
+소규모 영업에 적용할 때는 다음을 구분한다.
+
+- **연결 경로:** 소개자가 상대를 실제로 알고 소개할 의사가 있는지 확인한다. 공통 연결 수를 신뢰의 강도나 추천 의사로 간주하지 않는다.
+- **대화의 이유:** 고객의 문제 가설과 확인할 질문을 짧게 준비한다. 친분만으로 제품 적합성을 대신하지 않는다.
+- **진전의 증거:** 소개 요청, 소개 수락, 첫 대화, 구매 경로 확인을 각각 기록한다. 소개를 받았다고 예산이나 구매 의지가 확인된 것은 아니다.
+
+이는 공개 안내를 소규모 영업에 적용한 운영 제안이다. 유명인에게 접근한 가상 사례나 특정 수의 공통 연결을 재현 가능한 성사 공식으로 사용하지 않는다.
+
 ## 다음 단계로 넘어갈 증거를 정한다
 
 다음은 출발점으로 쓸 수 있는 단계 예시다. 실제 구매 과정은 앞뒤로 이동하거나 일부 단계가 병행될 수 있다.
@@ -79,6 +91,7 @@ aliases: ["B2B 영업 파이프라인", "B2B 파일럿과 구매 절차", "Sales
 2026-10-02에 아래 공개 본문의 역할, 적격성 판단, 단계 완료 조건과 평가 절차를 대조했다. 운영표와 계산 예시는 이를 적용한 제안이며 사용자 사업의 채택된 영업 절차나 성사율이 아니다.
 
 - [What is a Sales Pipeline? — Salesforce](https://www.salesforce.com/sales/pipeline/) — 적합성, 예산/권한/시점 확인과 파이프라인 관리
+- [Discovery Call Guide — LinkedIn Sales Solutions](https://business.linkedin.com/sell/resources/sales-terms/discovery-call) — 2026-10-06 확인, 공통 지인을 통한 소개와 고객 탐색 대화
 - [Launching Meta Enterprise Platform — Meta](https://about.fb.com/news/2026/09/launching-meta-enterprise-platform/) — 2026-10-06 확인, 플랫폼 발표의 범위와 구매 조건을 구분한 사례
 - [GitLab Handbook, Commercial Sales Opportunity Stages](https://handbook.gitlab.com/handbook/sales/commercial/comm-sales-opp-stages/) — 기업 내부의 단계별 활동과 완료 조건 사례
 - [GitLab Handbook, Facilitate The Opportunity](https://handbook.gitlab.com/handbook/sales/sales-operating-procedures/facilitate-the-opportunity/) — 기술 평가, 내부 추진자와 구매 절차의 구분

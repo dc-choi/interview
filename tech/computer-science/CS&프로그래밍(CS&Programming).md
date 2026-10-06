@@ -9,7 +9,7 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 
 ## 목차
 
-- [[tech/computer-science/fundamentals/기초(Fundamentals)|컴퓨터 기초 (Fundamentals)]] — 진법, 인코딩, CPU, 컴파일/런타임
+- [[tech/computer-science/fundamentals/기초(Fundamentals)|컴퓨터 기초 (Fundamentals)]] — 진법, 인코딩, CPU, 컴파일/런타임, 데이터 측정 척도와 관측 단위
 - [[tech/computer-science/oop/SOLID-In-Practice|OOP / SOLID]] — OCP, DIP 실전 적용
 - [[tech/computer-science/code-quality/코드품질(CodeQuality)|코드 품질 (Code Quality)]] — 하드코딩 제거, 응집, 가독성 인지과학, 용어 엄밀성
 - [[tech/computer-science/functional/함수형(Functional)|함수형 프로그래밍 (Functional)]] — 카테고리 이론, Functor, Monad, CCC
