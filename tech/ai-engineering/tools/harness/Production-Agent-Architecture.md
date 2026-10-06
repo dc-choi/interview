@@ -152,6 +152,8 @@ Human-in-the-loop이 "사람이 매번 확인"이라면, Closure-loop은 "사람
 
 ## 사례
 
+Meta Muse의 2026-09 공개 설계는 사용자별 VM에 에이전트와 데이터를 두고, 시스템 수준에서 분리한 Sentinel이 외부 통신을 승인하는 방식을 설명한다. 메일 발송과 구매 같은 민감한 행동에는 사용자 확인을 받고 감사 이력을 제공한다(2026-10-06 공식 발표 확인). 이는 실행 환경 격리와 외부 행동 통제를 별도로 두는 사례이며, 발표만으로 격리의 완전성이나 실제 사고 방지 효과를 검증한 것은 아니다.
+
 마이리얼트립 데이터 에이전트(2026): 슬랙 → Dispatcher(Sonnet) → Parent Worker → 분업 워커(Claude Code Max + Docker)로 구성. 라이브 7일 누적 2,000건+, 일 500~600건 처리. 분석가 인당 일 4~7건이던 반복 분석을 위임하고 신규 지표 설계, 정책 결정에 인력 재배치.
 
 LY Corporation SRELens(2026): Grafana 플러그인으로 자연어 장애 원인 분석. 메트릭, 로그, 트레이스, 프로파일을 MCP 게이트웨이로 조회하는 LLM 에이전트에 위 3계층 프롬프트와 루프 가드레일, 사후 반영 사용량 제한을 적용. 오픈소스 PoC에서 사용자 컨텍스트 전파, 프롬프트 제어, 호출 라운드 제한 등의 한계를 확인하고 자체 구현으로 전환한 사례.
@@ -186,5 +188,6 @@ Q. 자동 메모리를 끄는 이유는?
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 
 ## 출처
+- [Introducing Muse: The World's First Personal AI Agent Built for Everyone — Meta](https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/)
 - [Product Engineer | 하루 500건 분석 요청을 받아내는, 데이터 에이전트 — 일을 돕는 AI에서 일을 수행하는 AI로 — 마이리얼트립 Product](https://medium.com/myrealtrip-product/product-engineer-%ED%95%98%EB%A3%A8-500%EA%B1%B4-%EB%B6%84%EC%84%9D-%EC%9A%94%EC%B2%AD%EC%9D%84-%EB%B0%9B%EC%95%84%EB%82%B4%EB%8A%94-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8-%EC%9D%BC%EC%9D%84-%EB%8F%95%EB%8A%94-ai%EC%97%90%EC%84%9C-%EC%9D%BC%EC%9D%84-%EC%88%98%ED%96%89%ED%95%98%EB%8A%94-ai%EB%A1%9C-dde9b6a891c5)
 - [Grafana에서 자연어로 장애 원인을 분석하기: LLM 에이전트 기반 SRELens 개발기 — LY Corporation 기술블로그](https://techblog.lycorp.co.jp/ko/analyzing-incident-root-causes-in-grafana-using-natural-language-with-llm-agent)

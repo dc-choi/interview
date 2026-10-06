@@ -70,6 +70,14 @@ aliases: ["Scale Up vs Scale Out", "수직 vs 수평 확장"]
 - 분산 시스템 특유의 복잡도 (CAP, 네트워크 분할, 일관성)
 - 많아진 노드만큼 운영 비용 증가 (모니터링, 배포, 보안 패치)
 
+### Stateless는 상태의 소유 위치를 옮긴다
+
+무상태 프로세스에도 요청을 처리하는 동안의 지역 변수와 임시 파일은 있을 수 있다. 핵심은 다음 요청이나 작업이 같은 프로세스의 메모리와 디스크를 다시 사용할 것이라고 기대하지 않는 것이다. 지속해야 하는 세션, 업로드 결과와 작업 상태는 별도의 저장 서비스가 소유한다(Twelve-Factor Processes, 2026-10-06 확인).
+
+예를 들어 워커 A가 처리한 결과를 자기 메모리에만 남기면 재시작하거나 워커 B가 후속 작업을 받을 때 그 결과를 복원할 수 없다. 필요한 결과를 외부 저장소에 기록하면 워커 교체는 쉬워지지만, 저장소의 장애와 동시 갱신 문제까지 사라지지는 않는다. 이는 상태 제거가 아니라 애플리케이션 인스턴스와 상태 수명의 분리다.
+
+설계 점검에서는 각 상태의 정본, 보존 기간, 다음 요청의 조회 경로와 프로세스 재시작 시 유실 여부를 적는다. 서버 수를 늘리기 전에 다른 인스턴스가 후속 요청을 받아도 필요한 상태를 찾는지 확인한다.
+
 ## 혼합 패턴 (실무)
 
 단일 축으로만 가는 경우는 드물고 **조합**이 일반적.
@@ -141,6 +149,7 @@ Auto Scaling은 **자동화된 Scale Out**. 수동으로 Out 할 수도 있고, 
 - 단계적 확장 경로에서 다음 단계로 넘어갈 신호를 무엇으로 확인하는지
 
 ## 출처
+- [The Twelve-Factor App, VI. Processes](https://12factor.net/processes)
 - [매일메일 — 스케일 업과 스케일 아웃](https://www.maeil-mail.kr/question/128)
 - [microservices.io — The Scale Cube](https://microservices.io/articles/scalecube.html)
 - [microservices.io — Pattern: Microservice Architecture](https://microservices.io/patterns/microservices.html)

@@ -37,7 +37,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] Bottleneck tracing — [[Application-Performance-Monitoring|APM (RED/USE, P95/P99, slow request, trace ID)]]와 [[OpenTelemetry|분산 트레이싱]]
 - [x] 성능 테스트 — [[performance|유형과 시나리오 (종료 조건, open/closed 부하 모델, 스파이크 설계, 종단 간 유실 측정)]]와 [[Load-Test-K6|도구 (k6, JMeter, Keploy, 실행 설정, 전용 환경)]]
 - [x] Autoscaling — [[Auto-Scaling|EC2 ASG (target tracking, step, scheduled, warmup)]]와 [[ECS-Service-AutoScaling|ECS 서비스 오토스케일링]]
-- [x] [[Scale-Up-vs-Out|Scale Up vs Scale Out (수직, 수평 확장 비교, 혼합 패턴, Scale Cube, 단계적 확장 경로)]]
+- [x] [[Scale-Up-vs-Out|Scale Up vs Scale Out (수직, 수평 확장 비교, 무상태 프로세스와 상태 소유, 혼합 패턴, Scale Cube, 단계적 확장 경로)]]
 - [x] [[Traffic-Scaling-Playbook|트래픽 스케일링 실전 (서버 증설 없는 최적화, 모니터링→식별→카나리)]]
 - [x] [[Notification-Broadcast-System|대규모 알림 시스템 (계층적 팬아웃, SQS in-flight, 전용 인프라 격리)]]
 - [x] [[Image-Delivery-Optimization|이미지 전송 최적화 (Lambda@Edge 리사이즈, WebP/AVIF, GIF→MP4, LCP/egress)]]
