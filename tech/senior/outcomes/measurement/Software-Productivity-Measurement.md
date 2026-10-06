@@ -97,6 +97,16 @@ verified_at: 2026-09-03
 - 동료, 매니저 피드백의 질적 수렴
 - 회고에서 본인이 제시하는 개선 액션의 실행률
 
+## 토큰 사용량과 성과를 분리한다
+
+토큰 맥싱(tokenmaxxing)은 토큰 소비를 늘리는 일을 AI 활용 성과처럼 보상하는 방식이다. 사용량은 도입과 비용을 살펴볼 입력 지표지만, 문제 해결이나 품질을 증명하지 않는다. 사용량 순위를 인사 평가에 연결하면 불필요한 반복 실행도 유리해질 수 있다. 이 구분은 2026-10-06 DORA의 측정 지침과 대조했다.
+
+- 개인 순위 대신 팀, 애플리케이션과 사용 사례별로 사용량을 묶어 개선할 작업을 찾는다. 많이 쓴 사람의 작업 방식은 조사할 후보이지 성과가 검증된 모범 사례가 아니다.
+- 같은 작업 범위와 품질 기준에서 채택된 변경당 비용, 검토와 재작업, 전달 시간과 실패율을 함께 본다. 생성량을 늘려 동료의 검토 부담으로 넘겼다면 팀 전체의 개선으로 계산하지 않는다.
+- 사용량 최소화도 단독 목표로 두지 않는다. 탐색과 학습에 필요한 실험을 허용하되, 예산과 완료 기준을 두고 결과를 평가한다.
+
+이는 측정 체계의 설계 원칙이다. 특정 회사의 비용 절감률이나 전체 업계의 채택 상태를 입증하는 통계로 읽지 않는다.
+
 ## AI 도구 설문을 생산성 근거로 읽는 법
 
 사용률, 사용 계획, 정확성에 대한 신뢰와 생산성 체감은 서로 다른 질문이다. 비율을 비교하기 전에 조사 연도, 문항과 응답 집단을 확인한다.
@@ -150,6 +160,7 @@ verified_at: 2026-09-03
 - 시니어가 잘못된 측정에 **개별 설명으로 대응**하는 원칙
 
 ## 출처
+- [Finding balance in the era of tokenmaxxing — DORA](https://dora.dev/insights/finding-balance-in-the-era-of-tokenmaxxing/)
 - [2025 Developer Survey: AI — Stack Overflow](https://survey.stackoverflow.co/2025/ai)
 - [2025 Developer Survey: Methodology — Stack Overflow](https://survey.stackoverflow.co/2025/methodology)
 - [DORA Metrics — 현재 5개 지표](https://dora.dev/guides/dora-metrics-four-keys/)

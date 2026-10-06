@@ -26,6 +26,18 @@ aliases: ["Agent-Ready API Design", "에이전트 친화 API 설계", "Astryx", 
 - **검색이 다음 행동을 안내**: 통합 검색 결과에 도메인 태그와 후속 실행 명령을 함께 실어, 에이전트가 탐색 → 상세 조회로 스스로 이동
 - 프로젝트에 CLI 경로를 npm script로 고정해 에이전트가 경로 오류 없이 호출하게 하고, init가 에이전트용 문서를 프로젝트에 설치
 
+### 명령 발견과 실패 응답도 계약이다
+
+에이전트가 CLI를 쓰려면 결과뿐 아니라 가능한 명령과 인자, 실패 뒤의 선택지도 기계가 읽을 수 있어야 한다. 특정 제품의 플래그 이름을 보편 규칙으로 강제하지 않고 이 세 경계를 점검한다.
+
+Basecamp CLI의 공식 README를 2026-10-06 확인한 사례다.
+
+- 명령 발견: `--help --agent`는 플래그, 주의점과 하위 명령을 JSON으로 제공하고, `basecamp commands --json`은 전체 명령 목록을 제공한다.
+- 결과 탐색: `--json` 결과의 `breadcrumbs`가 후속 명령을 안내한다. JSON 필드는 위치가 아니라 이름으로 읽는다.
+- 실패 분기: 오류 응답의 안정적인 `code`와 `retryable`을 구분한다. `retryable: false`는 재시도가 도움이 될 알려진 이유가 없다는 뜻이며, 영구 실패의 보장은 아니다.
+
+적용 시 후속 명령 제안과 실행 권한을 분리한다. 재시도 가능성도 중복 실행의 안전성을 뜻하지 않으므로, 상태를 바꾸는 명령은 별도로 멱등성과 결과 확인 경로를 설계한다. 이는 인터페이스를 적용할 때의 점검 원칙이며 해당 CLI가 모든 업무의 중복 실행을 막는다는 주장이 아니다.
+
 ### API 스키마와 생성 결과를 함께 관리한다
 
 API 정의를 CLI, SDK와 문서 생성의 공통 입력으로 쓰면 이름과 인자 규칙을 각각 손으로 맞추는 부담을 줄일 수 있다. 에이전트가 문서를 읽고 만든 호출이 실제 명령과 어긋나는 문제도 같은 계약에서 점검한다.
@@ -66,6 +78,7 @@ Meta 사내 8년, 13,000+ 앱에서 쓰인 최대 디자인 시스템의 오픈�
 
 ## 출처
 
+- [Basecamp CLI — Basecamp (GitHub)](https://github.com/basecamp/basecamp-cli)
 - [Astryx: An open source design system that's fully customizable and agent ready — Meta (GitHub)](https://github.com/facebook/astryx)
 - [Introducing cf: the agentic CLI for the entire Cloudflare API — Cloudflare](https://blog.cloudflare.com/cloudflare-cf-cli-launch/)
 - [Introducing Forge: the open source pipeline for generating SDKs, CLIs, docs, and more — Cloudflare](https://blog.cloudflare.com/forge-open-source-generation-pipeline/)
