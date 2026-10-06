@@ -37,6 +37,16 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 | 매출은 오르는데 통장이 마른다 | 재무 | 단위당 공헌이익과 현금 회수 주기가 버티는가 |
 | 기능은 계속 늘어나는데 아무 지표도 안 움직인다 | 가치 창출 | 누구의 어떤 문제를 푸는지 한 문장으로 말할 수 있는가 |
 
+## 사업 기능과 대표의 역량을 구분한다
+
+사업의 다섯 부분은 수행해야 할 기능을 나눈 것이지 대표 개인의 능력 점수표가 아니다. 제품을 잘 만드는 능력과 판매, 전달, 현금 흐름을 연결하는 능력은 구분해 점검한다. 직접 수행하지 않는 기능도 담당자에게 무엇을 요구하고 어떤 결과로 판단할지 알아야 한다.
+
+**균형 역량 가설(jack-of-all-trades)**은 여러 역할을 결합하는 기업가에게 한 분야의 최고 능력뿐 아니라 여러 분야의 기본 역량이 필요하다는 설명이다. Lazear의 2003년 연구는 Stanford 졸업생 자료에서 다양한 역할 경험과 창업 선택의 관련성을 확인했다. 이는 특정 표본에서 창업자가 되는 선택을 설명하는 근거다.
+
+- 이 결과를 모든 분야에서 일정 점수를 받으면 사업이 성공한다는 법칙으로 바꾸지 않는다. 창업 선택과 매출, 이익, 생존은 다른 결과이며 특정 졸업생 표본의 관련성이 보편적인 인과를 증명하지 않는다.
+- 실무 적용은 별도의 진단 휴리스틱이다. 가장 막힌 기능 하나를 고르고, 직접 수행할 일과 외부 도움을 받을 일을 나눈다. 외부에 맡겨도 요구사항, 검수 기준과 비용을 판단할 최소 이해는 남긴다.
+- 학습 범위를 무작정 넓히기보다 해당 기능의 입력, 결과물과 실패 신호를 설명해 본다. 설명이 막히는 부분부터 보완하며 전문 자격이나 법적 책임을 기초 지식으로 대체하지 않는다.
+
 ## 유추 대신 제1원칙으로 원가 분해
 
 유추에 의한 추론(reasoning by analogy)은 비슷한 선례의 가격, 구조, 관행을 그대로 전제로 삼는다. 제1원칙 사고(first principles thinking)는 대상을 더 쪼갤 수 없는 구성 요소까지 분해한 뒤 거기서 다시 쌓아 올린다.
@@ -95,8 +105,8 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 
 ## 출처
 
-- [모든 비즈니스의 5요소와 제1원칙 사고 — Threads, bearkim.advisory](https://www.threads.com/@bearkim.advisory/post/DdkjReiI01G)
 - [The 5 Parts of Every Business — The Personal MBA, Josh Kaufman](https://personalmba.com/5-parts-of-every-business/)
+- [Entrepreneurship — IZA Discussion Paper No. 760, Edward P. Lazear](https://www.iza.org/en/publications/dp/760/entrepreneurship) — 2003년 연구의 공식 초록, 균형 역량 가설과 창업 선택의 관련성. 모든 사업자의 성공을 보장하는 기준으로 사용하지 않는다.
 - [Elon Musk's Mission to Mars — Wired, Chris Anderson](https://www.wired.com/2012/10/ff-elon-musk-qa/) (2026-10-05 인터넷 아카이브 사본으로 대조)
 - [First Principles: Elon Musk on the Power of Thinking for Yourself — James Clear](https://jamesclear.com/first-principles)
 
