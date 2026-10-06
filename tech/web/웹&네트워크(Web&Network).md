@@ -20,6 +20,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [[Expo|Expo]] — Home/Guides/EAS/Reference/Learn 전체, SDK API, Expo UI, native 확장과 배포
 
 ## 추가 주제
+- [x] [[HTTP-2#바이너리 프레이밍과 요청 스머글링|HTTP/2의 요청 스머글링 경계]] — 가변 길이 프레임, 필드 검증과 HTTP/1.1 변환
 - [x] [[Frontend-Rendering-Models|프런트엔드 렌더링과 상호작용 모델]] — hydration, islands, resumability와 서버 HTML 조각 교체의 실행 비용
 - [x] [[Application-Layer-Protocols#SMTP 수락과 최종 배달은 다르다|SMTP 성공의 경계]] — 수신자 수락, 본문 수락과 배달 실패 반송
 - [x] [[HTTP-3#스트림별 멀티플렉싱 (HOL 블로킹 제거)|QUIC의 손실 격리 범위]] — 여러 스트림을 담은 패킷, 공유 제어와 QPACK 대기

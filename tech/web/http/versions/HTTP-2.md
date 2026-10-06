@@ -25,6 +25,14 @@ HTTP/1.1은 문서 전송용으로 설계돼, 무거운 페이로드와 빈번�
 ### 바이너리 프레이밍
 텍스트 대신 **바이너리 프레임**으로 메시지를 쪼개 전송한다. 모든 상위 기능의 토대다.
 
+프레임 전체가 고정 길이인 것은 아니다. 고정된 9바이트 헤더 뒤에 가변 길이 payload가 붙으며, 헤더의 Length 필드가 payload 길이를 나타낸다.
+
+### 바이너리 프레이밍과 요청 스머글링
+
+명시적인 프레임 경계가 있어도 요청 스머글링이 사라지는 것은 아니다. HTTP/2를 받은 프록시가 HTTP/1.1로 전달할 때 필드 이름과 값을 검증하지 않으면 CR, LF 같은 문자가 메시지 구분자로 해석될 수 있다.
+
+RFC 9113은 필드 값의 NUL, CR, LF 등을 금지하고, 잘못된 요청이나 응답을 중개자가 전달하지 않도록 요구한다. 따라서 확인 대상은 프로토콜 버전뿐 아니라 프록시의 필드 검증과 오리진으로의 변환 경계다. HTTP/2 사용 여부만으로 보안 검증을 끝내지 않는다.
+
 ### 멀티플렉싱 (다중화)
 **하나의 TCP 연결로 여러 요청과 응답을 동시에** 주고받는다. 각 요청-응답이 독립된 stream으로 interleave되어 HTTP/1.1의 response-order HOL과 여러 연결에 의존하던 병목을 줄인다. 동시 stream 수는 peer의 `SETTINGS_MAX_CONCURRENT_STREAMS`와 구현 정책의 제한을 받는다.
 
@@ -70,6 +78,9 @@ HTTP/2의 멀티플렉싱은 HTTP 계층에선 병렬이지만 단일 TCP 연결
 - LB, CDN이 HTTP/2를 종단하고 백엔드와 HTTP/1.1로 통신하는 구조
 
 ## 출처
+
+2026-10-07 부분 대조: 프레임 길이와 요청 스머글링 절은 RFC 9113의 4.1, 8.1.1, 8.2.1절을 확인했다. 브라우저 지원 현황과 AWS 설정은 이번 대조 범위에 포함하지 않아 기존 `verified_at`을 유지한다.
+
 - [RFC 9112 — HTTP/1.1 (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9112)
 - [RFC 9113 — HTTP/2 (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9113)
 - [RFC 9218 — Extensible Prioritization Scheme for HTTP (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9218)

@@ -17,3 +17,4 @@ DNS, VPN, Load Balancer, Reverse Proxy — 인프라 계층 네트워킹.
 - [x] [[Forward-vs-Reverse-Proxy|Forward vs Reverse Proxy (방향, 용도, LB와의 관계)]]
 - [x] [[Proxy-Internals|프락시 동작 구조 (패킷 vs 소켓 스트림, 두 연결 종단, 유저 모드와 splice, L4/L7, 터널과 CONNECT, PROXY protocol)]]
 - [x] [[CDN|CDN (Edge Location, Cache Key, TTL, Invalidation, CloudFront)]]
+- [x] [[Cloudflare-HTML-Cache|Cloudflare HTML 캐시 (기본 제외, 캐시 대상과 저장 조건, 개인화 제외, 응답 헤더 진단)]]
