@@ -15,6 +15,7 @@ aliases: ["CS Fundamentals"]
 
 ## 목차
 - [x] [[Digital-Fundamentals|디지털 기초 (비트, 진법, 정수 표현, 엔디언, 문자, 이미지, 소리, 영상의 비트 표현)]]
+- [x] [[Base64-Encoding|Base64 (바이너리의 텍스트 표현, 패딩과 크기, Base64url, HTTP 파일 전송)]]
 - [x] [[CPU-and-Arithmetic|CPU와 산술논리연산 (불 대수, 조합회로, ALU)]]
 - [x] [[Sequential-Logic-and-Memory|순차 논리회로와 메모리 (래치, 플립플롭, 레지스터, RAM)]]
 - [x] [[CPU-Datapath-Control-and-Instruction-Cycle|CPU 데이터패스와 명령어 사이클 (제어장치, ISA, 어셈블리)]]
