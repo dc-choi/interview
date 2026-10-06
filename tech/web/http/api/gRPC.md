@@ -53,6 +53,14 @@ service UserService {
 - `.proto` 컴파일러가 Go, Java, Python, Node.js 등 클라이언트, 서버 스텁 자동 생성
 - 많은 스키마형 메시지에서 JSON보다 작고 빠를 수 있지만 데이터, 구현, 압축 여부에 따라 측정값이 달라진다. 사람이 바로 읽기 어려워 전용 도구가 필요하다.
 
+### 인코딩 비용을 계산하는 단위
+
+2026-10-06 공식 wire format 문서를 대조한 설명이다. 메시지는 필드 번호와 wire type을 담은 tag, 값의 인코딩으로 구성된다. 문자열과 bytes에는 길이 정보도 붙는다. 바이너리라고 파싱이 없어지는 것은 아니다.
+
+양의 정수를 varint로 저장할 때 각 바이트의 하위 7비트가 값을 담고 최상위 비트가 다음 바이트의 존재를 표시한다. `12345`의 값 부분은 2바이트지만 `123456`은 3바이트다. 필드 번호 1의 `uint32`에 저장하면 tag 1바이트가 더 필요하므로 전체는 각각 3바이트와 4바이트다. JSON 숫자의 십진 자릿수와 비교할 때도 필드 이름, 구분자와 메시지 전체 크기를 함께 센다.
+
+고정된 용량 감소율이나 속도 배율을 포맷의 보장으로 쓰지 않는다. 같은 데이터와 압축 조건에서 직렬화, 역직렬화와 전송 시간을 측정한다. 삭제한 필드 번호는 `reserved`로 남겨 다른 의미로 재사용하지 않는다.
+
 ## 4가지 통신 방식
 
 | 방식 | 설명 | 사용 사례 |
@@ -118,6 +126,8 @@ service UserService {
 - `.proto` 파일의 필드 번호가 바뀌면 안 되는 이유 (호환성)
 
 ## 출처
+- [Protocol Buffers, Encoding](https://protobuf.dev/programming-guides/encoding/)
+- [Protocol Buffers, Proto Best Practices](https://protobuf.dev/best-practices/dos-donts/)
 - [Connect, gRPC compatibility](https://connectrpc.com/docs/go/grpc-compatibility/)
 - [Connect, Choosing a protocol](https://connectrpc.com/docs/web/choosing-a-protocol/)
 - [Protocol Buffers, Language Guide (proto 3)](https://protobuf.dev/programming-guides/proto3/)

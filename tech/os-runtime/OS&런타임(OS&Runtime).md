@@ -9,7 +9,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 
 ## 목차
 
-- [[tech/os-runtime/os-fundamentals/OS기초(OSFundamentals)|OS 기초 (OS Fundamentals)]] — 동시성과 false sharing, 프로세스와 fork/exec 제약, 스레딩 모델, 스케줄링, 가상 메모리, 파일시스템, NVMe와 EDSFF
+- [[tech/os-runtime/os-fundamentals/OS기초(OSFundamentals)|OS 기초 (OS Fundamentals)]] — 동시성과 false sharing, 프로세스와 fork/exec 제약, 스레딩 모델, 스케줄링, 가상 메모리, 파일시스템, NVMe와 EDSFF, RAID 용량과 장애 위치
 - [[tech/os-runtime/linux/Linux-File-System|Linux]] — 파일 시스템, 디렉토리 구조 (FHS), 실행 비트와 파일 시그니처, 로그와 디스크 진단 명령, 파일 생성과 덮어쓰기, 삭제 확인
 - [[tech/os-runtime/runtime/런타임(Runtime)|런타임 (Runtime)]] — Thread vs Event Loop, I/O 동시성과 병목 관측, async/await, Backpressure
 - [[tech/os-runtime/jvm/JVM|JVM]] — 아키텍처, GC pause와 할당 정체, 메모리 누수, 컨테이너 메모리
