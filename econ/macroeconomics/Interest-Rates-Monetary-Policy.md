@@ -44,6 +44,12 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 
 부수 효과도 크다. 다른 조건이 같다면 금리 상승은 할인율과 조달비용을 높여 자산 가격에 하방 압력을 주고 해당 통화 자산 수요를 높일 수 있다. 실제 자산 가격과 환율은 성장 기대, 위험 프리미엄, 해외 금리와 정책 신뢰가 함께 움직여 반대 반응도 가능하다.
 
+### 전달 경로마다 반응 시점이 다르다
+
+예상된 금리 변화는 자산 가격과 환율에 발표 전에 반영될 수 있다. 가계 현금흐름도 한 방향으로만 움직이지 않는다. 인하는 차입자의 이자 부담을 줄이지만 예금자의 이자 소득도 줄인다. 고정금리 대출은 금리가 재설정되기 전까지 상환 부담이 그대로일 수 있다. 투자와 고용을 거친 간접 효과는 더 늦게 나타날 수 있다.
+
+**역사적 모델 사례:** 2025-03-18 RBA 연설에서 사용한 MARTIN 모형은 완화의 산출 효과가 9~12개월 뒤 가장 크고, 물가 효과의 정점은 더 늦게 나타나는 경로를 제시했다. 이는 당시 호주 모형의 추정이며, 모든 나라와 시기에 적용할 고정 시차가 아니다.
+
 ## 5. 통화량과 신용창조
 
 중앙은행이 공급하는 본원통화는 전체 통화량의 일부다. 상업은행이 대출을 승인하면 대출 자산과 고객 예금 부채를 동시에 기록해 **새 예금을 만든다**. 은행이 기존 예금을 단순히 떼어 재대출하거나 중앙은행 돈에 고정 배수를 곱하는 과정으로 설명하면 부정확하다. 대출은 자본, 유동성, 규제, 수익성, 신용 가능한 차입 수요와 중앙은행의 금리 조건에 제약받는다. 상환하면 반대로 은행 예금 통화가 줄어든다.
@@ -78,6 +84,12 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 - **유동성 함정과 유효 하한**: 단기 명목금리가 낮고 현금, 안전자산 수요가 매우 탄력적이면 추가 금리 인하의 효과가 약해질 수 있다. 비전통적 통화정책과 재정정책의 역할은 당시의 수요, 금융시장과 제도에 따라 평가한다.
 - **자산 불평등**: 저금리와 QE는 주식, 부동산 같은 자산 가격을 밀어 올려 자산을 가진 쪽과 못 가진 쪽의 격차를 키운다는 비판을 받는다.
 
+### 데이터 의존은 단일 지표에 대한 자동 반응이 아니다
+
+새 통계와 수정치는 현재 경제 상태와 향후 전망을 바꾸고, 그 전망이 정책 판단에 반영된다. 따라서 데이터 의존과 선제적 정책은 양립한다. 공식 통계, 설문, 금융시장과 현장 정보에서 일시적 변동과 지속되는 추세를 구분하고, 기본 전망뿐 아니라 대안 시나리오와 위험 분포도 검토한다.
+
+학습 점검: 물가 지표가 한 번 낮아졌을 때 곧바로 인하를 확정할 수 없는 이유를 전망 변화, 전달 시차와 불확실성으로 설명해 본다.
+
 ## 9. 핵심 지표와 숫자
 
 - **기준금리**: 한국은행 기준금리, 미국 연방기금금리. 뉴스의 출발점
@@ -92,6 +104,7 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 
 ## 출처
 
+- [RBA — Monetary Policy: Forward Looking and Data Dependent in the Face of Uncertainty](https://www.rba.gov.au/speeches/2025/sp-ag-2025-03-18.html) — 2025-03-18 연설. 전달 경로, 시차와 데이터 의존 절을 2026-10-07 대조.
 - [Bank of England — Money creation in the modern economy](https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy)
 - [ECB — Key ECB interest rates](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html)
 - [Federal Reserve, Implementing Monetary Policy in an Ample-Reserves Regime](https://www.federalreserve.gov/econres/notes/feds-notes/implementing-monetary-policy-in-an-ample-reserves-regime-the-basics-note-1-of-3-20200701.html)
