@@ -12,6 +12,7 @@ aliases: ["Git 폴더", "Git 인덱스"]
 
 ## 문서
 
+- [[Git-Object-Format|Git 객체 형식과 SHA-256 호환성 (ID 길이, 현재 지원과 전환 계획, 자동화 점검)]]
 - [[Git-Mental-Model|Git 멘탈 모델 (커밋 스냅샷/브랜치 포인터/HEAD, fast-forward, 3-way merge, rebase 원리)]]
 - [[Git-Working-Tree-and-Commits|Git 작업 트리와 커밋 관리 (staging, stash, restore, clean, amend와 rebase -i)]]
 - [[Git-Merge-Strategies|Git 통합 방식 (Merge commit/Squash/Rebase, fast-forward와 히스토리 재작성)]]

@@ -9,6 +9,7 @@ aliases: ["Frontend", "프론트엔드"]
 
 ## 목차
 
+- [[Frontend-Rendering-Models|프런트엔드 렌더링과 상호작용 모델]] — hydration, islands, resumability와 서버 HTML 조각 교체
 - [[Foldable-Web-Layout|폴더블 웹 레이아웃]] — 자세와 뷰포트 구획의 구분, 경첩 공간, 점진적 적용과 접근성
 - [[React|React]] — UI/state, DOM, 서버 경계, Compiler와 lint
 - [[React-Native|React Native]] — Guides, [[RN-Components|컴포넌트]], [[RN-APIs|API와 전역 객체]], [[RN-Architecture|아키텍처]], 개발 환경과 플랫폼 확장

@@ -14,6 +14,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 
 ### 버전 관리
 
+- [x] [[Git-Object-Format|Git 객체 형식과 SHA-256 호환성]] — 객체 ID 길이, 현재 지원과 전환 계획, CI와 외부 도구 점검
 - [x] [[version-control|버전 관리 폴더 인덱스 (Git 도구, 개발 워크플로, Git 멘탈 모델/머지 전략/복구)]]
 - [x] [[Git-Flow|Git Flow / Trunk-Based]] — 기존 보강: [[Version-Control-Tooling#Branch 전략은 배포 모델의 결과다|GitHub Flow, Git Flow, Trunk-Based 개요]]
 
