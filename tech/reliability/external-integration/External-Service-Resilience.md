@@ -3,7 +3,7 @@ tags: [reliability, resilience, circuit-breaker, timeout, bulkhead]
 status: done
 category: "Reliability"
 aliases: ["External Service Resilience", "외부 서비스 장애 대응"]
-verified_at: 2026-08-31
+verified_at: 2026-10-06
 ---
 
 # 외부 서비스 장애 대응 (Resilience Patterns)
@@ -34,7 +34,7 @@ verified_at: 2026-08-31
 
 | 종류 | 언제 측정 | 초과 시 |
 |---|---|---|
-| **전체 요청 deadline** | 요청 시작부터 취소까지 | 남은 시간 안에 응답을 못 받으면 중단 |
+| **전체 요청 deadline** | 요청 시작부터 정해 둔 종료 시각까지 | 응답 대기 중단과 취소 요청, 실제 작업 종료는 별도 확인 |
 | **Connection Timeout** | 연결 수립 시도 중 | 연결 수립이 늦으면 중단 |
 | **Read/idle Timeout** | 응답을 읽는 중 바이트가 오지 않는 구간 | 지정 시간 동안 읽을 데이터가 없으면 중단 |
 
@@ -44,6 +44,17 @@ HTTP 클라이언트마다 이름과 포함 범위가 다르다. `socket timeout
 - 허용 가능한 오탐률을 먼저 정하고, 의존성의 실제 지연 분포에서 그에 맞는 백분위수와 여유분을 선택한다. 고정된 초 단위나 단순 배수만으로는 보편적인 정답을 정할 수 없다.
 - 전체 요청 deadline에서 로컬 처리, 폴백, 필요한 재시도 시간을 남긴 뒤 하위 호출의 시간 예산을 배정한다.
 - 재시도는 남은 deadline 안에서만 수행하고, 운영 지표로 오탐과 실제 지연을 다시 조정한다.
+
+### 응답 대기 종료와 작업 취소는 다르다
+
+클라이언트가 기다리기를 포기해도 서버의 DB 쿼리나 외부 호출이 자동으로 끝난다고 볼 수 없다. gRPC도 deadline 초과로 RPC를 취소하지만, 요청을 처리하던 애플리케이션 작업을 멈추는 책임은 서버에 있다. 오래 실행되는 handler는 취소 상태를 확인하고 하위 작업 중단과 자원 정리를 연결해야 한다.
+
+- 하위 호출에는 최초 timeout을 새로 주지 않고 이미 쓴 시간을 뺀 예산을 전달한다. 전체 2초 중 0.5초를 썼다면 남은 상한은 1.5초이며 로컬 마무리 시간도 이 안에 남긴다.
+- gRPC의 deadline 자동 전파는 구현 언어와 설정에 따라 다르다. 일반 HTTP 호출이나 DB 드라이버까지 같은 동작이라고 가정하지 않는다.
+- 취소 신호를 보냈다는 사실과 작업이 종료됐다는 사실을 구분한다. 라이브러리의 협력적 취소 지원과 정리 경로를 확인한다.
+- 결제처럼 부작용이 있는 요청의 timeout은 실패 확정이나 롤백 증거가 아니다. 같은 작업 식별자로 결과를 조회하거나 대사한 뒤 멱등성 조건에 맞춰 재시도한다.
+
+운영 검증에서는 지연된 의존성과 클라이언트 연결 종료를 재현하고, 대기 종료 시각, 서버 작업 종료 시각과 커넥션 반환을 함께 관측한다. 이는 취소가 자원 회수로 이어지는지 확인하기 위한 점검 제안이다.
 
 ### 주의
 - 타임아웃 너무 짧으면 **정상 요청도 실패** → 오탐 증가
@@ -142,6 +153,11 @@ External Service
 - 요청 deadline 안에서 하위 호출 시간 예산을 배정하는 방법
 
 ## 출처
+
+2026-10-06 부분 검증: deadline의 측정 범위, 남은 시간 전파와 서버 작업 취소 책임을 gRPC 공식 가이드에 대조했다. 기존 벌크헤드와 서킷 브레이커 설명 전체를 새로 검증한 것은 아니다.
+
+- [gRPC, Deadlines](https://grpc.io/docs/guides/deadlines/)
+- [gRPC, Cancellation](https://grpc.io/docs/guides/cancellation/)
 - [Timeouts, retries, and backoff with jitter — Amazon Builders' Library, Marc Brooker](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/)
 - [Making retries safe with idempotent APIs — Amazon Builders' Library](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)
 - [AWS Well-Architected Framework, Control and limit retry calls](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_mitigate_interaction_failure_limit_retries.html)

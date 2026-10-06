@@ -112,6 +112,18 @@ ACORN 논문은 predicate subgraph traversal로 이론상 이상적이지만 실
 
 정규화 여부는 모델과 출력 차원마다 다르므로 모델 문서로 확인한다(2026-10-06 문서 기준). OpenAI는 임베딩을 길이 1로 정규화해 제공하므로 내적만으로 코사인을 조금 더 빨리 계산할 수 있고 코사인과 유클리드 거리가 같은 순위를 낸다고 안내한다. 차원을 줄일 때는 생성 시 `dimensions` 파라미터를 쓰는 방식을 권장하며, 생성 뒤 직접 자르면 다시 정규화해야 한다. Gemini의 `gemini-embedding-001`은 기본 3072차원만 정규화돼 있어 `output_dimensionality`로 줄인 차원은 직접 정규화해야 하고, `gemini-embedding-2`는 줄인 차원도 자동으로 정규화한다. pgvector는 길이 1로 정규화된 벡터라면 성능을 위해 내적을 쓰라고 안내한다.
 
+### 높은 점수와 관련성 판정은 구분한다
+
+코사인 유사도는 벡터 방향의 가까움을 나타내며, `0.95`를 관련 있을 확률 95%로 읽을 수는 없다. 차원 수만으로 무관한 문서의 평균 점수나 공통 합격선을 정하지 않는다. 예를 들어 E5-base-v2 모델 카드는 점수가 0.7~1.0에 분포하는 특성을 InfoNCE 학습의 낮은 temperature 0.01로 설명한다. 이 범위를 모든 임베딩 모델이나 무작위 벡터의 분포로 일반화하지 않는다.
+
+Top K는 후보 안의 상대 순위를 정하므로, 정답 문서가 없는 질의에도 결과를 낼 수 있다. 그렇다고 벡터 검색이 빈 결과를 반환할 수 없는 것은 아니다. Qdrant의 `score_threshold`는 기준보다 나쁜 결과를 제외하며, Euclidean처럼 작을수록 가까운 metric에서는 높은 점수를 제외한다(2026-10-06 문서 기준).
+
+다음은 이를 검색 품질 평가에 적용한 절차다.
+
+1. 실제 query와 관련성 라벨을 모으고 정답 문서가 없는 query도 포함한다.
+2. 모델, 전처리와 metric을 고정한 상태에서 임계값별 오탐과 누락을 비교한다. 1위라는 이유만으로 통과시키지 않는다.
+3. 통과한 후보가 없으면 빈 결과나 근거 부족 응답을 허용한다. 모델이나 corpus가 바뀌면 같은 평가를 다시 수행한다.
+
 ## 임베딩 공간은 versioned contract다
 
 vector만 저장하면 어떤 공간의 값인지 복구할 수 없다. 최소한 다음 metadata를 함께 versioning한다.
@@ -181,3 +193,5 @@ DEVOCEAN 사례는 1,291개 글의 embedding을 MySQL에 저장하고 batch memo
 - [Weaviate Documentation, Filtering](https://docs.weaviate.io/weaviate/concepts/filtering)
 - [Filterable HNSW Without Recall Loss — Qdrant, Andrei Vasnetsov](https://qdrant.tech/articles/filterable-hnsw/)
 - [ACORN: Performant and Predicate-Agnostic Search Over Vector Embeddings and Structured Data — arXiv](https://arxiv.org/abs/2403.04871)
+- [E5-base-v2 model card, FAQ — intfloat](https://huggingface.co/intfloat/e5-base-v2#faq)
+- [Qdrant Documentation, Filtering Results by Score](https://qdrant.tech/documentation/search/search/#filtering-results-by-score)

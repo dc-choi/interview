@@ -12,7 +12,7 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 - [[tech/database/rdbms/RDBMS|RDBMS (OLTP)]] — 스키마, 인덱스, 트랜잭션, 격리 수준, Lock, 샤딩, 복제, 제품 비교
 - [[tech/database/in-memory/캐시&KV(Redis)|Cache & KV Store (Redis)]] — 자료구조, TTL, 캐시 전략, 분산 Lock, Stampede, 일관 해싱의 메모리와 링 교체
 - [[tech/database/nosql/nosql|NoSQL (Document, 검색, OLAP)]] — MongoDB 스키마 설계, OpenSearch, ClickHouse
-- [[tech/database/vector/vector|벡터 검색 (Vector)]] — 임베딩 유사도, HNSW, pgvector, OpenSearch k-NN, hybrid와 embedding pipeline
+- [[tech/database/vector/vector|벡터 검색 (Vector)]] — 임베딩 유사도와 점수 임계값, HNSW, pgvector, OpenSearch k-NN, hybrid와 embedding pipeline
 - [[tech/database/orm/ORM허브(ORMHub)|ORM, 도메인 모델링 (ORM)]] — TypeORM 실무, 임피던스 불일치, Aggregate 경계, Domain Model
 
 ## 워크로드 분류
