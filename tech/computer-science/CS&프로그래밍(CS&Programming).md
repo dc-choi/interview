@@ -19,5 +19,5 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 - [[tech/computer-science/c/C언어(C)|C]] — 빌드와 디버깅, 자료형과 함수, 배열과 문자열, 포인터와 동적 메모리, 표준 입출력과 파일
 - [[tech/computer-science/cpp/C++(Cpp)|C++]] — 값과 메모리, STL, 코딩 테스트 구현 규칙
 - [[tech/computer-science/ts/타입스크립트(TS)|TypeScript]] — 타입 시스템, 제네릭, 모듈 경계, compiler 진단과 Runtime 검증, Effect 오류 채널
-- [[tech/computer-science/js/자바스크립트(JS)|JavaScript]] — Promise, 모듈, Prototype, BigInt, Unicode, Intl과 리소스 해제
+- [[tech/computer-science/js/자바스크립트(JS)|JavaScript]] — Promise, 모듈, Prototype, BigInt, Unicode, Intl과 리소스 해제, JSON과 설정 파일 문법
 - [[tech/computer-science/java/자바(Java)|Java]] — 언어 기초, 백엔드 면접 필수

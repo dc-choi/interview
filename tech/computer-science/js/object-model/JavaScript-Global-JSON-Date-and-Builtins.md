@@ -52,6 +52,16 @@ URI encoding은 HTML escaping, SQL parameterization, JSON serialization과 목�
 
 `JSON.parse`는 JSON grammar 전체가 맞아야 하며 실패하면 `SyntaxError`다. 외부 입력은 `try/catch`만이 아니라 size limit와 schema validation을 거친다. reviver는 child부터 parent 순서로 value를 변환하고 property를 삭제할 수도 있다. `__proto__` 같은 key가 포함된 parsed object를 다른 object에 무검증 merge하지 않는다.
 
+### 설정 파일의 주석과 JSON 확장
+
+RFC 8259의 JSON 문법에는 주석이 없다. `//`, `/* ... */`와 trailing comma가 든 텍스트는 표준 JSON이 아니며 `JSON.parse`의 입력으로 쓸 수 없다. `_comment` 같은 속성은 주석이 아니라 데이터이므로 소비자의 스키마와 충돌할 수 있다.
+
+같은 `.json` 확장자라도 소비 프로그램의 문법 계약이 다를 수 있다. npm의 `package.json`은 실제 JSON이어야 한다. TypeScript는 1.8부터 `tsconfig.json`의 한 줄과 여러 줄 주석을 허용한다. 따라서 TypeScript가 읽는 설정을 일반 `JSON.parse`로 읽으면 실패할 수 있다.
+
+JSONC는 주석을 허용하는 확장이고, jsonc.org 명세에서 trailing comma 지원은 선택 사항이다. 확장자나 편집기 표시만으로 지원 범위를 판단하지 말고 실제 파서와 옵션을 확인한다. 외부에 `application/json`으로 전달할 때는 확장 문법을 읽는 파서로 해석한 값을 표준 JSON으로 다시 직렬화한다.
+
+2026-10-07에는 이 절의 JSON 문법과 설정 파일 소비자 계약을 아래 공식 명세와 제품 문서에 대조했다. 다른 내장 객체와 런타임 지원 범위의 검증일은 기존 frontmatter를 유지한다.
+
 ## Date의 시간 모델
 
 Date는 UTC 1970-01-01T00:00:00Z 기준 millisecond time value를 저장하고 getter/formatter가 local 또는 UTC 관점을 제공한다.
@@ -92,6 +102,10 @@ JSON 문자열을 JavaScript 문자열 literal로 다룰 때의 U+2028/U+2029 �
 
 ## 출처
 
+- [IETF, RFC 8259: The JavaScript Object Notation (JSON) Data Interchange Format](https://www.rfc-editor.org/rfc/rfc8259.html)
+- [npm Docs, package.json](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/)
+- [TypeScript 1.8: Allow comments in tsconfig.json — TypeScript](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-1-8.html#allow-comments-in-tsconfigjson)
+- [JSONC, Specification](https://jsonc.org/)
 - [globalThis — V8](https://v8.dev/features/globalthis)
 - [JSON superset — V8](https://v8.dev/features/subsume-json)
 - [Well-formed JSON.stringify — V8](https://v8.dev/features/well-formed-json-stringify)

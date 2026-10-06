@@ -10,6 +10,7 @@ aliases: ["컨텍스트", "Context Engineering Hub", "컨텍스트 허브"]
 모델이 무엇을 보게 할지 설계하는 층 — 수요 측(윈도우에 무엇을 넣을지), 공급 측(조직 자산을 어떻게 모아 공급할지), 그리고 컨텍스트를 실제로 채우는 도구 출력의 통제. 상위: [[tools|AI 엔지니어링 실천 도구]].
 
 ## 목차
+- [x] [[Long-Context-Evaluation|긴 문맥 평가]] — 길이와 위치 민감도, RULER의 한계, RAG와 전체 투입 비교
 - [x] [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]] — 사실과 믿음의 분리, 검색과 종합의 비용 및 평가
 - [x] [[Development-Ontology|개인 지식을 개발 판단에 연결하는 온톨로지 (파일 기반 지도, 적용 조건과 첫 파일럿)]]
 - [x] [[Context-Engineering|컨텍스트 엔지니어링 (수요 측 — Context Rot, Write/Select/Compress/Isolate, CLAUDE.md 200줄, Hook vs Advisory, 모델 세대와 지시 밀도)]]

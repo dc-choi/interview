@@ -12,7 +12,7 @@ object를 property 집합과 internal method의 조합으로 보는 관점 — d
 - [[Object-Property-Descriptor|프로퍼티 디스크립터]]: Object 불변성, writable/enumerable/configurable, getter와 setter, own과 inherited
 - [[JavaScript-Proxy-and-Reflect|Proxy와 Reflect]]: trap, receiver, invariant
 - [[JavaScript-Object-and-Array-Operations|Object와 Array 연산]]: 복사, descriptor, mutation, 목적별 equality 알고리즘
-- [[JavaScript-Global-JSON-Date-and-Builtins|global object, JSON과 Date]]: Realm 경계, built-in과 host API의 구분
+- [[JavaScript-Global-JSON-Date-and-Builtins|global object, JSON과 Date]]: Realm 경계, built-in과 host API의 구분, 설정 파일 주석과 JSON 확장
 
 - [[JavaScript-Internationalization|Intl 지역화]]: locale, 숫자, 복수형과 상대 시간
 
