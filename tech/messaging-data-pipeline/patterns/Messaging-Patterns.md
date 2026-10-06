@@ -32,8 +32,8 @@ verified_at: 2026-08-26
 특징:
 - 발행자는 구독자를 알 필요 없음 (느슨한 결합)
 - 토픽/채널 기반 메시지 분류
-- Fan-out: 하나의 메시지가 모든 구독자에게 전달
-- 구독자가 사전에 등록되어 있어야 수신 가능
+- Fan-out: 관심 있는 구독마다 같은 이벤트를 독립적으로 소비
+- 뒤늦게 구독한 소비자의 과거 이벤트 조회 가능 여부는 보존과 재생 정책에 따라 다르다. Kafka는 보존된 로그를 다시 읽을 수 있다.
 
 적합한 경우: 이벤트 전파, 실시간 알림, 로그 수집, 캐시 무효화
 
@@ -42,10 +42,10 @@ verified_at: 2026-08-26
 작업을 경쟁 소비자(competing consumers)에게 분배하여 병렬 처리한다.
 
 특징:
-- 각 메시지는 하나의 소비자만 처리 (Pub/Sub과 다름)
+- 같은 작업을 경쟁 소비자에게 분배하지만, 재전달로 같은 메시지를 다시 처리할 수 있으므로 멱등성이 필요하다.
 - 로드 밸런싱: 라운드 로빈 또는 최소 부하 할당
 - Fanout/Fanin: 여러 단계의 파이프라인 처리
-- ACK 기반 처리 확인으로 메시지 유실 방지
+- 처리 완료 후 ACK 또는 offset commit으로 진행 상태를 기록한다. 영속성, 재전달과 외부 부수효과의 보장은 별도로 확인한다.
 
 적합한 경우: 이미지 처리, 이메일 발송, 데이터 변환, 배치 작업
 
@@ -83,8 +83,8 @@ verified_at: 2026-08-26
 | 기준 | Kafka | SQS | Pub/Sub (GCP) |
 |------|-------|-----|---------------|
 | 모델 | 분산 로그 (Consumer가 offset 관리) | 큐 (메시지 삭제형) | Topic 기반 팬아웃 (1:N) |
-| 순서 보장 | 파티션 내 보장 | Standard: 미보장, FIFO: 보장 | 미보장 (ordering key로 부분 보장) |
-| 메시지 보존 | 설정 기간 동안 보존 (리플레이 가능) | 처리 후 삭제 | ACK 후 삭제 |
+| 순서 보장 | 파티션에 기록된 순서대로 읽음 | Standard: 미보장, FIFO: 같은 message group 내 보장 | 미보장 (ordering key로 부분 보장) |
+| 메시지 보존 | 보존 정책에 따라 유지 (남아 있는 로그 리플레이 가능) | 소비자가 처리 후 명시적으로 삭제, 미삭제 메시지도 보존 기간 만료 가능 | ACK 후 timestamp seek로 재생하려면 topic retention 또는 acknowledged message retention 필요. 미리 만든 유효한 snapshot으로의 seek는 별도 경로 |
 | 처리량 | 파티션, 브로커 구성과 워크로드에 따라 측정 | Standard는 매우 높은 처리량을 지원. FIFO 할당량은 리전, 파티션과 배치 여부에 따라 확인 | 프로젝트와 리전 할당량, 메시지 크기에 따라 확인 |
 | 비용 구조 | 직접 운영과 프로비저닝형 서비스는 용량 고정비와 운영 비용이 있고, MSK Serverless는 사용량 과금 | 요청과 데이터 전송 기반 사용량 과금. 무료 사용량은 현재 계정 자격과 가격 정책을 확인 | 처리량과 데이터 전송 기반 사용량 과금. 현재 가격 정책을 확인 |
 | 적합 | 이벤트 리플레이, 로그 수집, 파티션 내 순서 보장 필요 | 작업 큐, 비동기 처리, 운영 부담 최소화 | 마이크로서비스 간 이벤트 팬아웃 |
@@ -98,7 +98,24 @@ verified_at: 2026-08-26
 - **EventBridge + SQS**: EventBridge가 이벤트 라우팅(규칙 기반 필터링), SQS가 큐 역할. 서버리스 이벤트 아키텍처에 적합
 - **SNS + SQS**: SNS가 팬아웃(1:N), SQS가 소비자별 큐. 다수 소비자가 같은 이벤트를 받아야 할 때
 
+## 큐, 순서와 복제의 보장 경계
+
+2026-10-07 Kafka 4.1 문서와 Amazon SQS, Google Cloud Pub/Sub 공식 문서로 이 절과 위의 전달, 보존 설명을 대조했다. 가격과 전체 제품 기능표를 다시 검증한 날짜는 아니다.
+
+- **큐는 대기를 옮긴다:** 소비자가 멈춰도 발행을 계속하려면 브로커가 메시지를 받아 보존할 수 있어야 한다. 유입량이 처리량보다 크면 적체가 늘어난다. 큐 길이뿐 아니라 가장 오래된 미처리 메시지의 나이와 보존 기간을 함께 본다. SQS 지표는 근삿값이고 일부 독성 메시지를 나이 계산에서 제외하므로 DLQ도 확인한다.
+- **소비자를 늘리는 데도 경계가 있다:** Kafka의 일반 consumer group은 파티션을 그룹 구성원에게 나눠 할당한다. 파티션 수보다 소비자가 많으면 추가 소비자가 맡을 파티션이 없을 수 있다. 서로 다른 그룹은 같은 로그를 독립적으로 읽는다. 이 설명을 share group이나 모든 큐 제품의 동작으로 일반화하지 않는다.
+- **읽기 순서와 업무 완료 순서는 다르다:** 같은 파티션에서 순서대로 읽어도 애플리케이션이 외부 작업을 병렬 실행하거나 실패 건을 따로 재시도하면 완료 순서는 바뀔 수 있다. 주문별 상태 전이처럼 순서가 필요한 범위를 정하고, 그 범위의 처리와 재시도까지 직렬화할지 판단한다. SQS FIFO도 서로 다른 message group 간 전역 순서는 보장하지 않는다.
+- **복제만으로 무중단과 무손실을 단정하지 않는다:** Kafka에서 `acks=all`은 현재 ISR의 확인을 기다린다는 뜻이다. `min.insync.replicas`를 함께 설정하면 ISR이 최소 수보다 적을 때 쓰기를 거부해 내구성을 우선할 수 있다. 장애 감지와 리더 교체 중에는 지연이나 실패가 생길 수 있고, ACK된 로그의 보존과 외부 DB 반영의 중복 방지는 별개다.
+
+실무에서는 소비자를 잠시 중단했을 때 적체와 복구 시간을 관찰하고, 같은 메시지를 두 번 처리해도 부수효과가 중복되지 않는지 확인한다. 순서와 재시도의 상세는 [[MQ-Kafka-Event-Ordering|Kafka 순서 보장]], [[Idempotent-Consumer|멱등 소비자]], [[Backpressure|백프레셔]]로 이어진다.
+
 ## 출처
+- [Apache Kafka 4.1 Documentation, Introduction](https://kafka.apache.org/41/getting-started/introduction/)
+- [Apache Kafka 4.1 Documentation, Design](https://kafka.apache.org/41/design/design/)
+- [Amazon SQS Developer Guide, At-least-once delivery](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html)
+- [Amazon SQS Developer Guide, FIFO queue delivery logic](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-understanding-logic.html)
+- [Amazon SQS Developer Guide, Available CloudWatch metrics](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-available-cloudwatch-metrics.html)
+- [Google Cloud, Replay and purge messages with seek](https://docs.cloud.google.com/pubsub/docs/replay-overview)
 - [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
 - [Amazon Web Services, Amazon MSK pricing](https://aws.amazon.com/msk/pricing/)
 - [Amazon Web Services, Amazon SQS pricing](https://aws.amazon.com/sqs/pricing/)

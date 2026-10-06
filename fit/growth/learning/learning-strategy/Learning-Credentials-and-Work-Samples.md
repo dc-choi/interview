@@ -30,6 +30,15 @@ aliases: ["Learning Credentials and Work Samples", "교육 수료증과 실무 �
 
 여러 프로그램을 묶어 모두 무료이거나 하루에 하나씩 끝낼 수 있다고 판단하지 않는다. 수강, 평가, 수료증 발급과 구독 갱신의 조건을 각각 확인한다. 과정이 제공하는 취업 지원도 개인의 채용 결과를 보장하는 증거는 아니다.
 
+## 공개 강좌의 열람과 이수 조건
+
+공개 학습 플랫폼에 강좌가 있다는 사실과 지금 수강 신청, 평가 참여, 이수증 발급이 가능하다는 사실은 구분한다. 비용뿐 아니라 신청 기간, 접근 가능한 자료와 완료 조건을 확인한다.
+
+- **K-MOOC 청강:** 2026-10-07 확인한 공식 안내에서는 청강을 허용한 강좌에 한해 종강일 이후 청강 신청이 가능하다. 영상과 학습자료 등을 확인할 수 있지만 이수증은 발급하지 않는다. 재개강 여부와 일정도 강좌별로 다르다.
+- **목적에 따른 선택:** 필요한 개념을 다시 보는 목적이면 청강 가능 범위를 먼저 확인한다. 수료 증빙이 필요하면 정규 수강 신청과 평가 조건을 확인한다. 이는 선택 절차 제안이며 특정 강좌의 효과나 수료를 보장하는 기준은 아니다.
+
+공공 플랫폼 목록은 [[Self-Development-While-Working#8. 저비용 자원 활용|저비용 학습 자원]]에서 찾는다. 사이트 수를 늘리기보다 현재 질문에 맞는 강좌 하나를 골라 설명이나 적용 결과로 이해를 확인한다.
+
 ## 학습 목적에 맞게 선택하기
 
 다음은 위 차이를 활용한 학습 절차 제안이다. 특정 수료증의 채용 효과를 입증한 연구 결과는 아니다.
@@ -51,6 +60,7 @@ aliases: ["Learning Credentials and Work Samples", "교육 수료증과 실무 �
 - [Free virtual job simulations and career prep — Forage](https://www.theforage.com/)
 - [Forage, Deloitte Australia, Data Analytics](https://www.theforage.com/simulations/deloitte-au/data-analytics-s5zy)
 - [Online Certificates for Job-Ready Skills — Grow with Google](https://grow.google/certificates/)
+- [수강신청이 마감된 강좌를 수강하고 싶은데 방법이 없나요? — K-MOOC](https://www.kmooc.kr/board_detail/board/notice/597)
 
 ## 관련 문서
 
