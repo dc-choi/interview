@@ -13,7 +13,7 @@ LLM은 학습 단계에서 데이터의 통계적 패턴을 가중치에 반영�
 
 - [[LLM-Generation-Mechanics-Training|학습과 사전학습 이후 조정]]: AI 전체 지도, Training과 Inference 구분, Forward Pass와 Loss, Backpropagation, Pretraining, SFT, RLHF, DPO
 - [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]]: Token과 위치 표현, BPE 토크나이저 구성, 토크나이저 차이와 문자 단위 작업의 약점, 이미지와 사고 토큰 과금, Q, K, V Attention, Transformer Block, Logit에서 Greedy, Sampling, Temperature, Top-k, Top-p와 스트리밍까지
-- [[LLM-Generation-Mechanics-Context-and-Agent|Context, 환각과 에이전트]]: Weight와 Context와 RAG와 Memory 구분, Context Window와 대화 누적, 벤더별 긴 컨텍스트 단가 구간, 환각이 생기는 조건, Tool Call과 Runtime, 자주 헷갈리는 점
+- [[LLM-Generation-Mechanics-Context-and-Agent|Context, 환각과 에이전트]]: Weight와 Context와 RAG와 Memory 구분, Context Window와 대화 누적, 벤더별 긴 컨텍스트 단가 구간, 대화 요약과 별도 작업 기록, 환각이 생기는 조건, Tool Call과 Runtime, 자주 헷갈리는 점
 
 ## 함께 볼 문서
 

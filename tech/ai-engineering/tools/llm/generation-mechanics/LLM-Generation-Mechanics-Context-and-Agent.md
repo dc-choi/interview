@@ -32,6 +32,19 @@ Context Window는 모델이 한 번 응답할 때 참조하는 작업 기억이�
 - **윈도 크기와 단가 구간은 별개다**: 2026-10-06 공식 가격표 기준으로 Claude 4.6 이후 모델은 1M 윈도 전체를 같은 단가로 받는다(900K 요청도 9K 요청과 토큰당 단가가 같다). 반면 OpenAI GPT-6 계열은 입력이 272K를 넘는 요청에 긴 컨텍스트 단가가 따로 있다(GPT-6.1 Sol은 100만 토큰당 입력 $2 → $4, 출력 $10 → $15). Gemini 3.1 Pro Preview도 200K를 넘는 프롬프트에 높은 단가를 매긴다(100만 토큰당 입력 $2 → $4, 출력 $12 → $18). 약 20만 토큰짜리 문서를 통째로 넣는 설계라면 윈도에 들어가는지와 함께 어느 단가 구간에 걸리는지도 확인한다
 - **실무 함의**: 주제가 바뀌면 세션을 새로 열고, 이어 가야 할 결정과 상태는 파일로 남긴다. 새 세션도 지침 파일과 기록을 읽으면 같은 맥락에서 일을 이어 갈 수 있다 ([[Claude-Code-Fundamentals|Claude Code 컨텍스트 관리]])
 
+## 대화 요약과 별도 기록의 경계
+
+긴 작업을 이어 가는 방법에는 대화를 압축해 다음 컨텍스트로 넘기는 방식과 필요한 사실을 컨텍스트 밖에 기록했다가 읽는 방식이 있다.
+
+| 방식 | 남기는 것 | 주의점 |
+|---|---|---|
+| 대화 압축 | 이전 대화의 핵심 결정과 미해결 문제 | 과도한 압축은 나중에 필요한 세부를 버릴 수 있음 |
+| 구조화된 작업 기록 | 목표, 진행 상태와 의존관계 같은 지속 정보 | 저장만으로 모델에 전달되지 않으며 이후 호출에서 읽어야 함 |
+
+압축은 기존 내용을 줄이는 과정이고 별도 기록은 재사용할 상태를 외부에 보존하는 과정이다. 둘 다 가중치 학습이 아니며, 파일이나 데이터베이스의 저장 용량이 커져도 한 요청의 컨텍스트 한도가 커지지는 않는다.
+
+설계 적용 예로 확정 결정, 미해결 문제와 다음 행동을 따로 기록할 수 있다. 요약이 원문을 대체하는 정본이 되지 않도록 근거 위치를 함께 남기고 중요한 판단에서는 다시 대조한다.
+
 ## 왜 환각하는가
 
 다음 Token loss는 학습 분포에 맞는 연속을 보상하지, 생성한 claim의 출처와 사실성을 직접 검증하지 않는다. 다음 조건이 함께 오류를 만든다.
@@ -73,6 +86,7 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 
 ## 출처
 
+- [Effective context engineering for AI agents — Anthropic](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 - [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks — Lewis et al.](https://arxiv.org/abs/2005.11401)
 - [Function Calling — OpenAI API](https://developers.openai.com/api/docs/guides/function-calling)
 - [Context windows — Anthropic Platform Docs](https://platform.claude.com/docs/en/build-with-claude/context-windows)

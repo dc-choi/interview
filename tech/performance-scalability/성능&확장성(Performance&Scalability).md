@@ -23,6 +23,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] [[Read-Write-Performance-Strategies|읽기와 쓰기 성능 전략 (계층별 병목, 상충 관계, 측정과 검증)]]
 - [x] [[Cache-vs-Queue|캐시와 큐 (값 재사용 vs 작업 전달, 접수와 완료, 선택 기준, burst 흡수와 backlog 소진 시간)]]
 - [x] [[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound (병목 구분, 언어 선택, 최적화 전략 매트릭스)]]
+- [x] [[Portable-SIMD|이식성 있는 SIMD (벡터 폭 독립 설계, Go simd와 archsimd, tail 처리, dispatch와 측정)]]
 - [x] [[First-Come-Coupon-Patterns|선착순 이벤트(쿠폰, 재고, 티켓) 패턴 (Redis INCR 원자성 + Kafka 비동기 저장)]]
 - [x] [[First-Come-Coupon-Patterns-Failure-and-Verification|선착순 이벤트 경계 실패, 복구와 검증 (승인 뒤 consumer 실패와 재발급, 총량과 1인 1회 검증)]]
 - [x] [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처 폴더 인덱스 (문제 정의와 대기 등록, 입장 제어와 예매 처리, 대기 상태 통신과 운영)]]

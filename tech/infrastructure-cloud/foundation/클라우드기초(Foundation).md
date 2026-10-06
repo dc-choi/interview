@@ -17,3 +17,4 @@ IaaS/PaaS/FaaS 구분, IaC, 클라우드 전환 전략 — 클라우드 추상�
 - [x] [[IaC-Tooling-Evolution|IaC 도구 선택 사다리 (Terragrunt DRY, Terratest 테스트, Atlantis 협업, Pulumi 범용 언어, BUSL)]]
 - [x] [[Cloudflare-vs-Vercel-Hosting|Vercel과 Cloudflare 호스팅 선택 (무료 플랜 상업 이용 조건, DNS와 CDN 통합, 이메일 수신 전달, R2와 S3 egress)]]
 - [x] [[Cloudflare-CF-CLI|Cloudflare cf CLI (API 명령 발견, JSON 출력, 인증과 계정, 타입 구성과 빌드, Wrangler 이전 경계)]]
+- [x] [[Cloudflare-Artifacts|Cloudflare Artifacts (Git 호환 버전 저장소, 작업별 fork, 저장소 권한, 빌드 연결과 보존 비용)]]

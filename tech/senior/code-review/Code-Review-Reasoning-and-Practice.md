@@ -61,6 +61,14 @@ Amazon S3의 객체 키 하나에 대한 갱신은 원자적이지만, 서로 �
 
 훈련 효과는 이후 변경에서 같은 조건을 스스로 찾았는지 확인하는 방식으로 점검할 수 있다. 이 점검은 적용 제안이며, 위 방법들의 효과가 이미 입증됐다는 뜻은 아니다.
 
+## Linus의 법칙과 검토의 다양성
+
+Linus의 법칙은 충분한 베타 테스터와 공동 개발자가 참여하면 문제를 빠르게 특징짓고, 누군가는 해결 방법을 알아볼 가능성이 커진다는 개발 원칙이다. 검토 인원수만으로 무결함이 보장된다는 정리는 아니다.
+
+핵심은 서로 다른 사용 환경, 지식과 분석 도구다. 문제를 처음 발견하는 사람과 원인을 이해해 고치는 사람도 다를 수 있다. 발견과 해결을 연결하려면 재현 조건, 관찰 결과와 수정 내용을 전달할 수 있어야 한다.
+
+이를 팀 리뷰에 적용할 때는 같은 시각의 승인 수보다 놓친 조건을 볼 관점을 고른다. 예를 들어 API 계약, 동시성, 운영 환경을 나누어 검토할 수 있다. 이는 원칙에서 도출한 적용 예이며 리뷰어를 늘릴수록 품질이 비례해 오른다는 주장이 아니다.
+
 ## 자동화와 사람 검토의 역할
 
 린터, 타입 검사와 테스트는 반복 가능한 오류를 검사한다. 사람 리뷰는 요구와 테스트가 빠뜨린 조건, 설계와 시스템의 상호작용을 확인한다. AI 리뷰의 결론도 코드, 환경과 재현 결과에 대조한다.
@@ -69,6 +77,7 @@ Amazon S3의 객체 키 하나에 대한 갱신은 원자적이지만, 서로 �
 
 ## 출처
 
+- [The Cathedral and the Bazaar: Release Early, Release Often — Eric S. Raymond](https://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html)
 - [Reviewing code is a skill — Type Sanitizer](https://typesanitizer.com/blog/code-review.html)
 - [Google Engineering Practices, What to look for in a code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html)
 - [Expectations, Outcomes, and Challenges of Modern Code Review — Microsoft Research](https://www.microsoft.com/en-us/research/publication/expectations-outcomes-and-challenges-of-modern-code-review/)
