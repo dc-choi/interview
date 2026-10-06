@@ -16,6 +16,7 @@ aliases: ["AWS 네트워킹 인덱스"]
 - [[Route53|Route 53 — DNS, 라우팅 정책, 헬스체크]]
 - [[Global-Accelerator|Global Accelerator — Anycast 기반 글로벌 가속]]
 - [[Transit-Gateway|Transit Gateway — 멀티 VPC 허브 연결]]
+- [[Direct-Connect-SiteLink|Direct Connect SiteLink — 거점 간 백본 연결, BGP 경로 할당, MTU와 비용]]
 
 ## 관련 문서
 

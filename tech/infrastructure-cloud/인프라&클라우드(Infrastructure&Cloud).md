@@ -26,6 +26,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[EBS#EBS vs Instance Store (요약)|EBS vs Instance Store (영속성, 성능, 스냅샷, 적용 워크로드)]]
 
 ## Network 체크리스트
+- [x] [[Direct-Connect-SiteLink|Direct Connect SiteLink]] — 거점 간 연결, prefix controls, 터널과 MTU, 암호화와 비용 경계
 - [x] [[Cloudflare-HTML-Cache|Cloudflare HTML 캐시]] — 공개 HTML의 캐시 조건, 로그인 제외와 CF-Cache-Status 진단
 - [x] [[DNS#UDP와 TCP의 선택|DNS 전송 방식]] — EDNS의 크기 협상, TCP 연결 재사용과 암호화 DNS의 QUIC 경로
 - [x] [[DNS#JVM 이름 해석 캐시는 별도로 확인한다|JVM DNS 캐시]] — DNS TTL과 런타임 캐시, Security Manager 조건과 보안 속성
