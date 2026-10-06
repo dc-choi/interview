@@ -81,6 +81,18 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 
 예를 들어 `347 × 28 = 9716`은 설명용 산술 예시다. 특정 모델의 오답 사례나 성능 측정값이 아니다. 정답 숫자만으로 계산 도구 사용 여부를 판단할 수 없다.
 
+### 계산 계획을 검토 가능한 데이터로 둔다
+
+복잡한 계산에서는 모델이 최종 숫자 대신 변수, 연산과 의존관계를 담은 계획을 만들고 실행기가 그 계획을 계산하도록 분리할 수 있다. 사람이 읽는 상위 계획과 기계가 실행할 계산 그래프를 함께 남기면, 요청 해석 오류와 계산 실행 오류를 나눠 조사하기 쉽다.
+
+적용 예로 다음 세 경계를 둔다.
+
+1. **요청에서 계획으로:** 입력값, 기간, 단위와 변경할 변수를 명시한다. 설명 문장과 실행 그래프가 같은 계산을 뜻하는지 대조한다.
+2. **계획에서 실행으로:** 허용한 연산과 변수 참조를 검사하고, 실행 결과를 남긴다. 계산 도구가 성공해도 잘못된 산식은 별도 오류다.
+3. **실행에서 설명으로:** 보고서가 실행 결과와 같은 값, 단위와 가정을 전달하는지 확인한다. 시나리오 계산을 미래 관측값의 정확성 보장으로 바꾸지 않는다.
+
+핀다의 AWS 공개 발표자료 35~37쪽은 PRism이라는 도메인 특화 표현으로 사용자 시나리오를 계산 함수와 그래프로 옮기는 사례다. 위 검증 경계는 그 구조에 적용한 설계 기준이며 발표 시스템의 전체 구현이나 예측 정확도를 검증한 결과는 아니다. 단순 계산이면 기존 함수와 구조화된 인자로 시작할 수 있고, 별도 언어는 반복되는 도메인 규칙과 검토 필요가 있을 때 검토한다.
+
 ## 자주 헷갈리는 점
 
 - 파일을 읽었다고 모델이 즉시 재학습한 것은 아니다. 고정 가중치 추론에서는 Context만 달라진다.
@@ -98,6 +110,7 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 
 ## 출처
 
+- [Project Taylor: 핀다가 만드는 스타트업 전용 AI CFO, 발표자료 — AWS](https://mkt-kr.s3.ap-northeast-2.amazonaws.com/2025+AI+x+Industry+Week/%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C/Day3_Track3/D3T3S4_%EA%B3%B5%EC%9C%A0%EC%9A%A9+%EC%B5%9C%EC%A2%85.pdf)
 - [Toolformer: Language Models Can Teach Themselves to Use Tools — Schick et al.](https://arxiv.org/abs/2302.04761)
 - [Effective context engineering for AI agents — Anthropic](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 - [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks — Lewis et al.](https://arxiv.org/abs/2005.11401)
