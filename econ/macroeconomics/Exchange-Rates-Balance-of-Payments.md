@@ -34,6 +34,21 @@ verified_at: 2026-07-21
 - **경상거래와 자본흐름**: 무역 결제 수요뿐 아니라 증권투자, 직접투자, 헤지와 중앙은행 거래가 환율을 함께 움직인다. 무역흑자만으로 통화 강세를 보장하지 않는다.
 - **위험선호**: 위기 때 특정 시기와 시장에서 달러, 엔, 스위스프랑 등 안전자산으로 인식된 통화가 강해질 수 있지만 자금조달 구조와 위기의 발원지에 따라 반응은 다르다.
 
+### 금리를 올렸는데 통화가 약해지는 이유
+
+정책금리의 변화와 발표 직후 환율의 변화는 비교 기준이 다르다. 금리는 이전 결정과 비교하지만, 시장은 이미 예상한 결정과 새 정보를 비교한다. 인상이 충분히 예상됐다면 발표 뒤 추가 반응은 작을 수 있다. 인상 자체보다 향후 금리 경로에 대한 기대가 어떻게 바뀌었는지도 중요하다.
+
+예를 들어 이번 인상은 예상대로인데 이후 추가 인상 기대가 낮아지거나 상대국 금리 전망이 더 높아지면, 상대적인 수익률 기대가 약해져 통화가 하락할 수 있다. 이는 금리차와 기대를 적용한 조건부 예시이며 특정 날짜의 환율 하락 원인을 입증한 것은 아니다. 위험선호와 다른 경제 뉴스도 함께 움직인다.
+
+다음 순서로 발표와 시장 반응을 분리해 읽는다.
+
+1. 실제 결정과 발표 직전 시장의 예상 인상 폭을 비교한다.
+2. 결정문과 기자회견이 향후 금리 경로에 어떤 새 정보를 줬는지 확인한다.
+3. 상대국 금리 전망과 위험선호의 변화도 확인한다.
+4. 발표 직후와 하루 전체의 움직임을 구분한다. 하루 변동을 정책 하나의 효과로 단정하지 않는다.
+
+이 순서는 분석을 위한 점검 틀이다. 선반영만으로 반대 방향의 움직임까지 설명할 수는 없으며, 금리 인상 뒤 통화가 약해졌다는 관찰만으로 원인을 확정하지 않는다.
+
 ## 3. 환율제도
 
 - **변동환율제**: 시장의 수요와 공급이 환율을 주로 결정한다. 외환시장 개입이 병행될 수 있으며, 개입한다는 사실만으로 모두 같은 관리변동 제도로 분류하지 않는다. 공식 제도와 실제 운용을 구분하고, 국가별 분류는 해당 시점의 자료로 확인한다.
@@ -79,8 +94,13 @@ verified_at: 2026-07-21
 
 ## 출처
 
+2026-10-07 부분 검증: 2절의 정책 발표 전 기대, 향후 금리 경로와 상대국 금리차에 관한 설명을 RBA 자료와 대조했다. 점검 순서는 이를 적용한 분석 틀이며, 개별 국가의 최근 정책 결정과 환율 변동 원인은 검증 범위에 포함하지 않았다.
+
 2026-10-03 부분 검증: PPP의 한계, 변동환율과 개입의 관계, 금융계정 거래와 평가변동의 구분, 경상수지의 판단 조건을 아래 원문과 대조했다. 국가별 현행 환율제도나 2022년 위기 사례까지 재검증한 날짜는 아니다.
 
+- [Monetary Policy: Forward Looking and Data Dependent in the Face of Uncertainty — RBA](https://www.rba.gov.au/speeches/2025/sp-ag-2025-03-18.html) — 충분히 예상된 결정과 발표 뒤 환율 반응의 구분
+- [The Impact of Monetary Policy on the Exchange Rate: A Study Using Intraday Data — RBA](https://www.rba.gov.au/publications/rdp/2005/2005-02.html) — 향후 정책 기대에 따라 달라지는 반응. 연구 표본의 효과 크기를 일반 예측값으로 사용하지 않음
+- [RBA, Drivers of the Australian Dollar Exchange Rate](https://www.rba.gov.au/education/resources/explainers/drivers-of-the-aud-exchange-rate.html) — 상대국 금리차, 자본흐름과 위험선호
 - [IMF — Balance of Payments and International Investment Position Manual, Sixth Edition](https://www.imf.org/-/media/websites/imf/imported-full-text-pdf/external/pubs/ft/bop/2007/pdf/_bpm6.pdf) — 2.12–2.21, 8.1–8.8: 거래, 기타 증감과 잔액의 구분
 - [IMF, Choice of Exchange Rate Arrangement](https://www.imf.org/en/-/media/files/publications/miscellaneous/english/2022/mcm-technical-assistance-handbook/choice-of-exchange-rate-arrangement.pdf) — Appendix 2: 공식 제도와 실제 운용의 분류
 - [Real Exchange Rates: What Money Can Buy — IMF](https://www.imf.org/en/publications/fandd/issues/series/back-to-basics/real-exchange-rates) — PPP, 생산성과 비교역재 가격

@@ -31,7 +31,7 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 
 ### 5. 순환과 대외
 - [[Business-Cycle|경기순환]] — 경기침체와 GDP 갭의 구분, PMI 해석, 버블과 금융위기 ✅
-- [[Exchange-Rates-Balance-of-Payments|환율과 국제수지]] — 환율 결정, 국제수지, 트릴레마, 달러 패권 ✅
+- [[Exchange-Rates-Balance-of-Payments|환율과 국제수지]] — 금리 결정과 시장 기대, 환율 결정, 국제수지, 트릴레마, 달러 패권 ✅
 
 ## 처음 읽는 순서 추천
 
