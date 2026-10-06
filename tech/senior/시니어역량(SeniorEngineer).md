@@ -16,6 +16,7 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [[tech/senior/design/설계(SeniorDesign)|설계 (Design)]] — 시스템 설계 인터뷰, 포용 디자인
 
 ## 추가 학습 체크리스트
+- [x] [[Tech-Decision#에이전트가 제안한 의존성도 기술 결정이다|에이전트의 기술 선택 검토]] — 기존 스택 대안, 운영과 제거 비용, 선택 빈도 실험의 한계
 - [x] [[Software-Productivity-Measurement#AI 도구 설문을 생산성 근거로 읽는 법|AI 도구 설문 해석]] — 사용과 사용 계획, 신뢰, 자기보고 생산성과 실측 결과 구분
 - [x] [[Incident-Commander|장애 대응 리딩 (Incident Commander)]] — 기존 보강: [[Incident-Runbook|장애 절차와 에스컬레이션]], [[Incident-Recovery-Prevention|복구와 포스트모템]]
 - [x] [[People-Leadership|멘토링 (1:1, 질문형 코칭, 위임과 안전망, 성장 과제, 온보딩)]]

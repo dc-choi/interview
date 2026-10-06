@@ -10,6 +10,7 @@ aliases: ["Growth and Expansion Strategy", "Expansion Strategy", "성장과 확�
 한 제품을 지속 가능하게 운영하고, 검증된 핵심을 지키면서 고객, 제품, 채널과 조직을 넓히는 전략 묶음.
 
 ## 목차
+- [x] [[Job-Based-Compensation|직무 기반 보상 설계]] — 역할과 수준, 성장 경로, 시장임금과 재무 여건, 인터뷰 근거의 한계
 - [x] [[Bootstrapped-Single-Product-Growth|한 제품 부트스트랩 성장 전략]] — 제품 경계, 내부 현금 재투자, 확장 순서와 창업자 독립성
 - [x] [[Scaling-and-Hiring|1인 제품 확장과 첫 채용]] — 확장 축, 병목 기반 자원 선택, 첫 역할 정의와 한국의 고용 의무
 - [x] [[Category-Expansion|카테고리 확장과 카니발리제이션]] — 확장 두 축, 해자와 엣지, 다각화, O2O, 데이터 선점

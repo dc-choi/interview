@@ -10,6 +10,7 @@ aliases: ["Algorithm"]
 알고리즘이란 어떤 문제를 해결하기 위한 확실한 방법이다. 자료구조에 따라 영향을 받는다.
 
 ## 목차
+- [x] [[Audio-Fingerprinting|오디오 핑거프린팅]] — 스펙트로그램 피크 쌍, 해시 후보와 시간차 검증, 녹음 식별의 한계
 - [x] [[Algorithm-Complexity|시간복잡도와 Big O, 케이스별 분석, 함수 호출 비용, P-NP (결정 문제, 최적화 문제)]]
 - [x] [[Algorithm-Recursion|재귀 (기저 조건, 콜스택, 하향식 계산)]]
 - [x] [[Algorithm-Searching|검색 (선형 검색, 이진 검색, 정렬해 두고 찾을지 판단, 레코드 검색)]]
