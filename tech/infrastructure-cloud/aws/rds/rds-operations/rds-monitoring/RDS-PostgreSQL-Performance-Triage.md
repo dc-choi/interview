@@ -53,6 +53,19 @@ CPU가 주원인이면 실행 계획과 자원 요구량을, 잠금 대기가 �
 
 변경 뒤에는 같은 부하 조건에서 지연, 오류, CPU와 대기 이벤트를 다시 비교한다. 부하가 줄어든 시간대의 개선을 튜닝 효과로 단정하지 않는다.
 
+## Aurora의 실행 계획 회귀를 관리한다
+
+통계, 바인딩 값이나 엔진 버전이 바뀐 뒤 같은 SQL이 더 느린 계획을 선택하는 현상을 실행 계획 회귀라고 한다. Aurora PostgreSQL의 Query Plan Management(QPM)는 `apg_plan_mgmt` 확장으로 계획을 수집하고 사용할 계획을 관리한다. RDS PostgreSQL 일반 기능과 구분한다.
+
+- **수집과 적용은 별개다.** `apg_plan_mgmt.capture_plan_baselines`는 `manual` 또는 `automatic`으로 계획을 수집한다. 수집만 켰다고 계획 선택을 제한하지는 않으며, 기준 계획을 사용하려면 `apg_plan_mgmt.use_plan_baselines` 설정도 확인한다.
+- **첫 승인도 검증 대상이다.** 처음 수집한 계획은 `Approved`, 이후 추가 계획은 보통 `Unapproved`로 저장된다. 첫 상태가 자동 승인이라는 사실은 실제 성능 검증을 통과했다는 뜻이 아니다. 병렬 수집에서는 처음에 여러 승인 계획이 생길 수도 있다.
+- **한 계획의 영구 고정이 아니다.** 미승인 계획도 `apg_plan_mgmt.unapproved_plan_execution_threshold`보다 추정 비용이 낮으면 실행될 수 있다. 사용할 수 있는 유효한 승인 또는 우선 계획이 없으면 옵티마이저의 최소 비용 계획으로 돌아갈 수 있다. 인덱스나 파티션 삭제로 기존 계획이 무효화되는 경우도 확인한다.
+- **새 계획을 비교하고 발전시킨다.** `apg_plan_mgmt.evolve_plan_baselines`는 실제 성능을 비교해 승인, 거절이나 비활성화 판단을 돕는다. 대표 바인딩 값과 부하 조건을 고르고, 성능 평가를 실행할 환경과 비용을 먼저 확인한다.
+
+도입 전 엔진과 확장 버전, 권한, 파라미터 적용과 재시작 필요 여부를 확인한다. 시스템 테이블을 참조하는 SQL의 수집 제한과 기존 세션에 캐시된 generic plan의 영향도 있다. QPM을 켰다는 사실만으로 모든 SQL의 지연 회귀가 방지됐다고 판단하지 않는다.
+
+확인 질문: 계획을 수집했는데도 새 계획으로 실행된다면, 수집 여부 외에 적용 설정, 계획 상태와 유효성, 미승인 실행 임계값 중 무엇을 확인해야 하는가?
+
 ## 출처
 
 - [AWS RDS User Guide, Initial troubleshooting for common PostgreSQL performance issues](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.InitialTroubleshooting.html)
@@ -61,6 +74,10 @@ CPU가 주원인이면 실행 계획과 자원 요구량을, 잠금 대기가 �
 - [PostgreSQL 18 Documentation, The Cumulative Statistics System](https://www.postgresql.org/docs/18/monitoring-stats.html)
 - [PostgreSQL 18 Documentation, pg_stat_statements](https://www.postgresql.org/docs/18/pgstatstatements.html)
 - [How do I troubleshoot high CPU utilization for Amazon RDS for PostgreSQL or Amazon Aurora PostgreSQL-Compatible instances? — AWS re:Post](https://repost.aws/knowledge-center/rds-aurora-postgresql-high-cpu)
+- [AWS Aurora User Guide, Overview of Aurora PostgreSQL query plan management](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Optimize.overview.html)
+- [AWS Aurora User Guide, Capturing Aurora PostgreSQL execution plans](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Optimize.CapturePlans.html)
+- [AWS Aurora User Guide, Using Aurora PostgreSQL managed plans](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Optimize.UsePlans.html)
+- [AWS Aurora User Guide, Improving Aurora PostgreSQL query plans](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Optimize.Maintenance.html)
 
 ## 관련 문서
 
