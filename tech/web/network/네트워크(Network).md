@@ -24,7 +24,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[Routing-Protocols|정적 라우팅과 RIP, OSPF, BGP (RIP 타이머와 수렴, LSA와 SPF 비용, AS 분리와 IGP/BGP 결합)]]
 - [x] [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택 (longest prefix match, 메트릭, OS별 확인 명령)]]
 - [x] [[IPv4-NAT-and-Traversal|공유기의 NAT/NAPT 매핑, 정적/동적 NAT와 PAT 비교, 방화벽과의 차이, Cone 분류 해석, STUN/TURN/ICE 통과 전략]]
-- [x] [[Application-Layer-Protocols|DHCP, DNS, SSH, FTP, SMTP, POP3, IMAP 프로토콜 지도 (DORA 주소 지정, SSH 공개키 서명 인증, 메일 포트와 TLS)]]
+- [x] [[Application-Layer-Protocols|DHCP, DNS, SSH, FTP, SMTP, POP3, IMAP 프로토콜 지도 (DORA 주소 지정, SSH 공개키 서명 인증, 메일 포트와 TLS, SMTP 수락과 배달 실패)]]
 - [x] [[Loopback-And-Localhost|Loopback, Localhost 동작 원리 (127.0.0.1, ::1, loopback NIC, 커널 내 처리, 디버깅)]]
 - [x] [[Browser-URL-Flow|브라우저 URL 입력 프로세스 (DNS→ARP→TCP/TLS→HTTP→렌더링, Core Web Vitals)]]
 - [x] [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark (libpcap/Npcap, dumpcap, dissector, promiscuous 모드, 캡처 필터와 디스플레이 필터, TCP 스트림 재조립, SPAN/TAP, TLS 복호화, 법적 범위)]]

@@ -20,6 +20,8 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [[Expo|Expo]] — Home/Guides/EAS/Reference/Learn 전체, SDK API, Expo UI, native 확장과 배포
 
 ## 추가 주제
+- [x] [[Application-Layer-Protocols#SMTP 수락과 최종 배달은 다르다|SMTP 성공의 경계]] — 수신자 수락, 본문 수락과 배달 실패 반송
+- [x] [[HTTP-3#스트림별 멀티플렉싱 (HOL 블로킹 제거)|QUIC의 손실 격리 범위]] — 여러 스트림을 담은 패킷, 공유 제어와 QPACK 대기
 - [x] [[Foldable-Web-Layout|폴더블 웹 레이아웃]] — Device Posture, 구획 수와 CSS 환경 변수, 미지원 환경의 기본 화면
 - [x] [[HTTP-Status-Code#HTTP 성공과 업무 완료를 구분한다|HTTP 성공과 업무 완료]] — 200 응답과 결제 상태, 421의 의미, 결과 미확인과 재시도 경계
 - [x] [[tech/web/http/versions/versions|HTTP/1.1, HTTP/2, HTTP/3 (진화, 멀티플렉싱, HPACK, QUIC, HOL 차이)]]

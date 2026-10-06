@@ -69,6 +69,20 @@ FTP는 보통 하나의 control connection과 별도의 data connection을 사�
 
 메일을 보낸다는 동작과 mailbox를 읽는 동작은 프로토콜이 다르다. RFC 8314는 메일 client와 submission, mailbox 접근 server 사이의 평문 접속을 폐기 대상으로 보고 implicit TLS 포트를 우선하라고 권고하며, 전환 기간에는 587의 STARTTLS와 465의 implicit TLS를 모두 구현하라고(SHOULD) 둔다. 현대 배포에서는 TLS, authentication, spam 방어와 SPF/DKIM/DMARC 정책까지 함께 설계하며 기본 port 번호만으로 보안을 판단하지 않는다.
 
+### SMTP 수락과 최종 배달은 다르다
+
+메일 발송 성공은 어느 단계의 응답인지부터 구분한다(RFC 5321 3.3, 4.2.5절).
+
+| 관측한 응답 | 의미 | 보장하지 않는 것 |
+|---|---|---|
+| `RCPT TO` 뒤 `250` | 해당 SMTP 서버가 수신자 경로를 수락 | 메시지 본문 수락, 최종 mailbox 배달 |
+| `DATA` 시작의 `354` | 본문을 보내라는 중간 응답 | 전송 완료 |
+| 본문 종료 뒤 `250` | 서버가 배달 또는 실패 보고 책임을 인수 | 최종 수신함 도착, 사용자 열람 |
+
+없는 주소를 `RCPT TO` 단계에서 `550`으로 거부할 수도 있고, 본문 수신 뒤 검증하거나 relay 이후 실패를 반송할 수도 있다. 내부 도메인은 즉시 거절하고 외부 도메인은 항상 수락한다는 규칙은 없다. Google도 존재하지 않는 계정의 `550 5.1.1`을 공식 오류 목록에 명시한다. 응답 차이는 접속한 서버, relay 경로와 정책을 확인해야 하며 계정 열거 방지 하나로 단정하지 않는다.
+
+운영에서는 동기 SMTP 오류와 수락 이후 bounce를 별도로 처리하고, 제출 성공과 배달 실패 상태를 구분한다. 정상 주소, 즉시 거절, 수락 이후 실패를 각각 시험한다. bounce의 기본 목적지는 화면에 보이는 `From` 헤더가 아니라 SMTP envelope의 reverse-path다. null reverse-path 메시지에는 반송 루프를 막기 위해 다시 오류 메일을 보내지 않는다.
+
 ## Proxy와 VPN
 
 proxy는 client 또는 server를 대신해 특정 application traffic을 전달한다. cache가 hit하면 latency와 origin 부하를 줄일 수 있지만 언제나 속도를 높이는 장치는 아니다. [[Forward-vs-Reverse-Proxy]]
@@ -77,6 +91,9 @@ VPN의 원격 접속과 사이트 간 연결, 터널의 보호 범위, MTU와 sp
 
 ## 출처
 
+2026-10-06 부분 대조: SMTP 수락과 배달 책임은 RFC 5321 3.3, 4.2.5, 6.1절, 계정 부재 오류는 Google 공식 목록으로 확인했다. 나머지 프로토콜의 재검증 날짜는 갱신하지 않았다.
+
+- [Gmail SMTP errors and codes — Google Workspace](https://knowledge.workspace.google.com/admin/support/troubleshooting/gmail-smtp-errors-and-codes)
 - 김영한 강사, [DNS](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61356)
 - [RFC 2131 — Dynamic Host Configuration Protocol](https://www.rfc-editor.org/rfc/rfc2131.html)
 - [RFC 4251 — Secure Shell Protocol Architecture](https://www.rfc-editor.org/rfc/rfc4251.html)
