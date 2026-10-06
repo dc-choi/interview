@@ -29,7 +29,7 @@ aliases: ["Visual Hierarchy", "시각적 위계"]
 
 ## 대시보드 정보 위계
 
-SaaS 대시보드처럼 정보가 빽빽한 화면은 위 5가지 중 크기와 색만 과하게 쓰기 쉽다. 생성 AI로 UI를 만들면 넉넉한 패딩, 강한 보더, 배경색 대비로 영역을 나누는 경향이 있어 모든 카드가 같은 무게로 보이고 위계가 흐려진다. 이때 AI에게 줄 디자인 지침은 다음 형태가 된다.
+SaaS 대시보드처럼 정보가 빽빽한 화면에서 모든 카드에 강한 보더와 배경색을 주면 중요도 차이가 흐려질 수 있다. 이런 화면을 조정할 때 다음을 실무 가설로 비교한다.
 
 - 영역 구분은 보더, 패딩, 배경색을 최소화하고 여백과 글자 크기, 굵기로 위계를 표현한다.
 - 강조색은 화면의 핵심 CTA에만 쓰고, 나머지 정보의 중요도는 그레이스케일 안의 명도 차이로 나눈다.
@@ -39,7 +39,23 @@ SaaS 대시보드처럼 정보가 빽빽한 화면은 위 5가지 중 크기와 
 
 ### 타이포그래피
 
-무료 영문 서체 선택도 첫인상에 영향을 준다. Inter는 UI용으로 널리 쓰이며 SIL Open Font License 1.1로 배포된다. 다른 서체도 배포처(Google Fonts 또는 제작사 사이트)의 라이선스에서 상업 이용, 수정, 웹폰트 자체 호스팅 허용 여부를 먼저 확인한다.
+서체는 인기 순위보다 화면에서 맡을 역할, 실제 문자의 판독성과 배포 조건으로 고른다. 아래는 2026-10-07 제작사 안내와 공식 저장소에서 확인한 특성이다. 특정 서체가 전환율이나 브랜드 평가를 높인다는 효과는 검증하지 않았다.
+
+| 서체 | 확인한 특성과 선택 질문 | 공식 배포처 |
+|---|---|---|
+| Inter | UI부터 큰 제목까지 쓰도록 설계됐고 text와 display optical size, tabular numbers를 제공한다. 작은 본문과 숫자 열을 실제 화면에서 비교한다 | [Inter](https://rsms.me/inter/) |
+| Space Grotesk | Space Mono에서 출발한 비례폭 산세리프다. 고정폭 서체로 오해하지 않고 본문 크기에서 글자 간격과 판독성을 확인한다 | [공식 저장소](https://github.com/floriankarsten/space-grotesk) |
+| Instrument Serif | 큰 크기를 위한 폭이 좁은 display serif다. 제목 후보로 검토하고 작은 본문에도 적합하다고 자동 확대하지 않는다 | [공식 저장소](https://github.com/Instrument/instrument-serif) |
+| Satoshi, General Sans | Fontshare 공식 목록의 검색 색인에서 배포와 Closed Source 표시를 확인했다. 다른 서체와 라이선스가 같다고 가정하지 않는다 | [Satoshi](https://www.fontshare.com/?q=Satoshi), [General Sans](https://www.fontshare.com/?q=General+Sans) |
+
+Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font License 1.1을 명시한다. Satoshi와 General Sans의 개별 라이선스 전문은 확인하지 못했으므로 허용 범위를 여기서 확정하지 않는다. 상업 이용, 수정, 재배포와 웹폰트 자체 호스팅 조건은 실제로 받을 파일의 라이선스로 확인한다. 비용 없이 내려받을 수 있다는 안내와 오픈소스 여부도 구분한다.
+
+실무 비교는 다음 순서로 진행할 수 있다. 이는 제작사의 성능 보장이 아닌 적용 체크리스트다.
+
+1. 제목, 본문, 버튼과 숫자 표 중 서체가 맡을 역할을 정한다.
+2. 실제 문구로 작은 화면과 긴 문장, 숫자와 기호를 비교한다.
+3. 한국어가 섞이면 한글 지원을 별도로 확인하고, 함께 쓸 한글 서체의 크기와 굵기, 행간을 맞춘다. 영문 후보를 고르는 것만으로 한글 서체를 대체했다고 보지 않는다.
+4. 납품 시 폰트 파일의 출처, 버전과 적용 라이선스를 인계한다. 유행이나 특정 기업의 채택 사례만으로 선택을 확정하지 않는다.
 
 ## 면접 체크포인트
 
@@ -50,8 +66,11 @@ SaaS 대시보드처럼 정보가 빽빽한 화면은 위 5가지 중 크기와 
 - [시각적 위계를 만드는 5가지 방법 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/49)
 - [MDN, font-synthesis-style](https://developer.mozilla.org/en-US/docs/Web/CSS/font-synthesis-style)
 - [Inter, LICENSE.txt (SIL Open Font License 1.1)](https://github.com/rsms/inter/blob/master/LICENSE.txt)
-- [바이브코딩 대시보드 UI를 위한 디자인 지침 — Threads, inblogai](https://www.threads.com/@inblogai/post/DY4CATRk3I7)
-- [해외에서 쓰이는 무료 영문 폰트 5개 — Threads, pageone.designer](https://www.threads.com/@pageone.designer/post/DcPxsgNoNgS)
+- [The Inter typeface family — Inter](https://rsms.me/inter/)
+- [Space Grotesk — 공식 프로젝트 저장소](https://github.com/floriankarsten/space-grotesk)
+- [Instrument Serif — Instrument](https://github.com/Instrument/instrument-serif)
+- [Fontshare, Satoshi 목록](https://www.fontshare.com/?q=Satoshi)
+- [Fontshare, General Sans 목록](https://www.fontshare.com/?q=General+Sans)
 
 ## 관련 문서
 - [[Service-Design-Principles|서비스 설계 원칙 (GOV.UK)]] — 일관성, 디자인 시스템
