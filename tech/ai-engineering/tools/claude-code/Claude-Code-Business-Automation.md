@@ -8,7 +8,7 @@ verified_at: 2026-09-30
 
 # Claude Code 비즈니스 자동화 — 문서, 데이터, 연동, 반복
 
-코딩 없이 AI 에이전트로 사무 업무를 자동화하는 패턴. 개별 기능(이메일, 회의록, Excel, PPT…)은 많지만 관통하는 골격은 하나다 — **도구 선택 → 형식 명시 → 대화 체이닝 → 반복 작업 승격**. 모양이 중요한 산출물은 HTML로 먼저 만들고 렌더링을 캡처해 검수한다.
+코딩 없이 AI 에이전트로 사무 업무를 자동화하는 패턴. 개별 기능(이메일, 회의록, Excel, PPT…)은 많지만 관통하는 골격은 하나다 — **도구 선택 → 형식 명시 → 대화 체이닝 → 반복 작업 승격**. 시각 산출물은 전달 형식을 먼저 정하고 최종 파일을 렌더링해 검수한다.
 
 ## 도구 선택 매트릭스
 
@@ -39,14 +39,16 @@ Cowork는 Claude Code와 같은 에이전트 구조를 터미널 없이 쓰는 �
 - **결과는 폴더에서 확인**: 채팅에 보이는 표 요약은 보여 주기용이고 실제 산출물은 폴더의 파일이다. 회사 양식이 필요하면 PPT 테마나 템플릿 파일을 먼저 넣는다
 - **공유 범위 확인**: 아티팩트는 비공개로 시작한다. Pro와 Max는 나만 보기, 링크가 있는 누구나, 이메일 초대 중에서 고르고, Team과 Enterprise는 조직 안이 기본이며 소유자가 외부 공유를 통제한다. 현재 아티팩트는 링크가 있어도 Claude 계정이 있어야 열리지만 채팅에서 게시한 레거시 아티팩트는 계정 없이 열린다. 링크는 한번 전달되면 받는 사람을 통제할 수 없으므로 민감 자료는 특정인 초대나 조직 범위로 공유한다
 
-## 시각 산출물 — HTML 먼저, PDF는 마지막
+## 시각 산출물 — 출력 형식과 최종 PDF 검수
 
-보고서, 제안서, 발표 자료처럼 모양이 중요한 산출물은 처음부터 DOCX나 PPTX를 생성하게 하지 않고 HTML과 CSS로 만든 뒤 PDF로 변환한다. HTML과 CSS는 텍스트로 된 공개 표준이라 에이전트가 레이아웃, 색, 간격을 코드로 세밀하게 지정하고 부분만 고칠 수 있다. 오피스 파일은 내부가 XML 묶음이라 생성 뒤 깨진 레이아웃을 찾아 고치기가 상대적으로 어렵다(경험 기반 판단이며 품질을 측정한 비교는 아니다).
+보고서, 제안서, 발표 자료를 고정 레이아웃의 PDF로 전달할 때는 HTML과 CSS로 만든 뒤 변환하는 방식을 선택할 수 있다. 레이아웃, 색, 간격을 텍스트로 지정하고 부분 수정하기에 편리하다. 이것이 DOCX나 PPTX보다 항상 좋은 결과를 낸다는 뜻은 아니며, 수신자의 편집 요구와 기존 양식에 따라 원본 형식을 정한다.
 
 1. **레퍼런스 고정**: 원하는 느낌의 디자인 하나를 먼저 고른다(Figma Community 등). Figma MCP 서버를 연결하면 에이전트가 Figma 파일의 프레임, 컴포넌트, 변수를 읽어 코드에 반영할 수 있다. 공개 디자인은 파일별 이용 조건을 확인하고, 에셋을 그대로 복제하기보다 색, 여백, 구성 원칙을 가져온다
 2. **HTML/CSS 작성**: 인쇄용 CSS를 함께 요청한다. `@page`로 용지 크기와 여백, `break-before`/`break-inside`로 페이지 나눔을 지정한다
-3. **PDF 변환**: Puppeteer의 `page.pdf()`(또는 Playwright)로 변환한다. 배경색은 `printBackground: true`를 줘야 인쇄되고, CSS에 선언한 `@page` 크기를 쓰려면 `preferCSSPageSize: true`가 필요하다
-4. **렌더링 검수 루프**: 결과를 페이지별로 캡처해 이미지를 다시 모델에게 보여 주고 간격, 정렬, 넘침, 페이지 끊김, 색 대비를 점검하게 한다. 텍스트만 보는 검수는 레이아웃 깨짐을 놓친다
+3. **PDF 변환**: Puppeteer의 `page.pdf()`는 기본적으로 `print` CSS 미디어를 사용한다. 배경 그래픽은 `printBackground: true`, CSS의 `@page` 크기를 출력 옵션보다 우선하려면 `preferCSSPageSize: true`를 지정한다. `waitForFonts`의 기본값은 `true`이며 `document.fonts.ready`를 기다린다(이 절의 Puppeteer API는 2026-10-07 공식 문서 대조)
+4. **렌더링 검수 루프**: HTML 화면 캡처로 초안을 점검한 뒤, 생성된 PDF 자체를 페이지별 이미지로 렌더링해 간격, 정렬, 넘침, 페이지 끊김과 색 대비를 확인한다. `page.screenshot({fullPage: true})`는 웹페이지 전체 캡처이므로 PDF의 용지 크기와 페이지 나눔을 검증한 증거로 대신 쓰지 않는다
+
+화면용 CSS로 PDF를 만들려면 변환 전에 `page.emulateMediaType('screen')`을 명시한다. 화면용 미디어를 선택해도 최종 PDF 확인은 필요하다. 백그라운드 페이지에서는 폰트 대기를 위해 `page.bringToFront()`로 페이지를 활성화해야 할 수 있다. 폰트 준비 완료는 업무 데이터, 차트와 이미지까지 모두 준비됐다는 보장이 아니므로 해당 산출물의 완료 상태도 확인한다.
 
 - **한계**: PDF는 받는 사람이 편집하기 어렵다. 상대가 DOCX나 PPTX로 받아서 고쳐야 하면 편집 가능한 형식을 따로 만들거나, 처음부터 그 형식의 템플릿을 채우는 방식을 고른다
 - **자동 검수의 한계**: 모델의 시각 검수도 놓치는 것이 있다. 숫자, 고유명사, 최종 페이지 수는 사람이 한 번 더 본다
@@ -102,13 +104,11 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 - [클로드 코드 가이드 (비즈니스 파트 15챕터) — WikiDocs](https://wikidocs.net/book/19104)
 - [Puppeteer — PDF generation](https://pptr.dev/guides/pdf-generation)
 - [Puppeteer — PDFOptions](https://pptr.dev/api/puppeteer.pdfoptions)
+- [Puppeteer — Page.pdf()](https://pptr.dev/api/puppeteer.page.pdf)
+- [Puppeteer — ScreenshotOptions](https://pptr.dev/api/puppeteer.screenshotoptions)
 - [Figma — Guide to the Figma MCP server](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server)
-- [AI 문서는 HTML로 먼저 만들기 — Threads, workfree.wave](https://www.threads.com/@workfree.wave/post/Da7rkiBFB6C)
 - [Aside Help Center, Use the CLI, MCP, and REPL](https://docs.aside.com/help/developers)
 - [OpenAI Codex, Computer Use](https://learn.chatgpt.com/docs/computer-use)
-- [Playwright 대신 AI용 브라우저 Aside — Threads, kez_works](https://www.threads.com/@kez_works/post/DcCxUniD1at)
-- [Aside CLI의 openTab과 attach 활용 — Threads, yun_ja_dong](https://www.threads.com/@yun_ja_dong/post/DcfsU2QE2Om)
-- [업무 실행용 AI 도구 사용 빈도 평가 — Threads, thisnthatdev](https://www.threads.com/@thisnthatdev/post/DdTTIJdmK44)
 - [Claude — Cowork overview](https://claude.com/docs/cowork/overview)
 - [Claude — Organize work with projects](https://claude.com/docs/cowork/guide/projects)
 - [Claude — Claude Desktop changelog](https://claude.com/docs/cowork/changelog)
