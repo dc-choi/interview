@@ -1,7 +1,7 @@
 ---
 tags: [business, market, competition, ai, differentiation]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-06
 category: "비즈니스&제품(Business&Product)"
 aliases: ["AI Commoditization and Differentiation", "AI 범용화와 사업 차별화", "AI 시대 사업 해자"]
 ---
@@ -29,6 +29,7 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 ## Mental model
 
 - 결과물은 범용화되고 결과물을 둘러싼 판단과 책임은 남는다. 고객이 사는 것이 산출물인지, 산출물이 만든 결과인지 구분하면 압박의 크기를 가늠할 수 있다.
+- 같은 흐름을 희소성의 이동으로 보는 시각도 있다. AI가 산출물을 흔하게 만들어도 희소성은 사라지지 않고 데이터센터에 필요한 전력과 물 같은 물리 자원, 그리고 사람의 판단, 책임과 신뢰 쪽으로 옮겨 간다는 관점이다(2026-07-24 Fortune 기고, 의견).
 - 다섯 방향은 [[Competitive-Analysis|경쟁 분석]]의 경쟁 해자와 겹친다. 문제 해결과 전략은 도메인 특화, 검증과 책임은 신뢰, 자동화 시스템은 전환 비용, 브랜드와 팬은 브랜드 해자에 해당한다.
 - 업무를 대신해 주는 사업과 업무를 없애 주는 사업은 다르다. 앞쪽은 AI와 같은 자리에서 경쟁하고, 뒤쪽은 AI를 재료로 쓴다.
 
@@ -73,6 +74,16 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 
 같은 업종 안에서도 반응은 갈린다. 보안처럼 모델의 취약점 탐지 능력과 겹치는 분야에서는 단일 점검 기능 제품은 대체 압력을, 데이터와 설치 기반을 가진 플랫폼은 모델을 흡수할 기회를 받는다고 볼 수 있다. 이는 해석이며, 특정 기업의 주가 등락이나 섹터 시가총액 감소 폭 같은 수치는 1차 자료로 확인하지 못해 넣지 않는다. 출시 전 루머에 기댄 시장 해석도 확정 사실로 쓰지 않고, 모델 사양은 [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5]]에서 본다.
 
+## 초기 실증: 프리랜서 수요의 이동
+
+옥스퍼드 인터넷 연구소(Oxford Internet Institute) 연구진은 한 글로벌 프리랜서 플랫폼의 구인 공고 300만 건 이상(2021년 1월부터 2023년 9월까지)을 116개 기술 묶음으로 나누고, 각 묶음을 대규모 언어 모델로 대체되는 기술, 보완되는 기술, 영향이 없는 기술로 분류한 뒤 ChatGPT 출시 전후의 수요를 비교했다. 결과는 2025년 1월 Journal of Economic Behavior and Organization에 실렸다. 연구소 자료에는 플랫폼 이름이 나오지 않는다.
+
+- 글쓰기와 번역처럼 대체되기 쉬운 기술의 수요는 출시 전 추세로 추정한 반사실 경로보다 20~50% 줄었고, 1~3주짜리 단기 일감에서 감소가 가장 컸다.
+- 전체 수요는 늘었지만 증가는 보완 관계이거나 영향이 없는 기술 묶음에서만 나왔다. 보완 기술 안에서도 결과가 갈려 머신러닝 프로그래밍은 24% 늘고 AI 챗봇 개발은 3배 가까이 늘었지만, 초보 인력의 수요는 전반적으로 줄었다.
+- 숙련도별로 보면 대체 기술에서는 숙련 인력의 수요 감소가 가장 컸고, 코딩 같은 보완 기술에서는 초보 인력의 수요가 줄었다(연구소 발표 기준).
+
+짧고 결과물 단위로 거래되던 일감이 먼저 줄고 AI를 재료로 쓰는 전문 영역이 늘었다는 결과는 위 표의 이동 방향과 맞는다는 해석이 가능하다. 초보 인력 수요의 감소는 신규 진입자에게 불리한 조건이다. 결과물이 흔해질 때 구매자가 무엇으로 수행자를 가려내는지는 [[Signaling-Screening|신호와 선별]]에서 본다. 연구소의 논문 소개와 발표 자료에는 웹 개발이나 홈페이지 제작 범주의 별도 수치가 없다. 플랫폼 하나에서 출시 직후 기간을 본 자료이므로 오프라인 외주 시장이나 이후 시기의 추세로 일반화하지 않는다.
+
 ## 트레이드오프와 한계
 
 - 이 틀은 방향에 대한 예측이지 검증된 결과가 아니다. 업종별 수요 변화, 규제, 유통 구조에 따라 속도와 크기가 다르다.
@@ -102,6 +113,9 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 - [Anthropic raises $30 billion in Series G funding at $380 billion post-money valuation — Anthropic](https://www.anthropic.com/news/anthropic-raises-30-billion-series-g-funding-380-billion-post-money-valuation)
 - [Anthropic raises $65B in Series H funding at $965B post-money valuation — Anthropic](https://www.anthropic.com/news/series-h)
 - [Claude Fable 5 출시 루머와 AI 모델 경쟁, 섹터 반응 — Threads, choi.openai](https://www.threads.com/@choi.openai/post/DZWwm3uD1Zf)
+- [Winners and losers of generative AI: Early Evidence of Shifts in Freelancer Demand — Oxford Internet Institute, Ole Teutloff 외](https://sosi.oii.ox.ac.uk/publications/winners-and-losers-of-generative-ai-early-evidence-of-shifts-in-freelancer-demand/)
+- [The Winners and Losers of Generative AI in the Freelance Job Market — Oxford Internet Institute](https://www.oii.ox.ac.uk/the-winners-and-losers-of-generative-ai-in-the-freelance-job-market/)
+- [AI doesn't end scarcity. It relocates it — Fortune, François Candelon 외](https://fortune.com/2026/07/24/ai-doesnt-end-scarcity-it-relocates-it/)
 
 ## 관련 문서
 
@@ -115,3 +129,4 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 - [[AI-Generated-Content-Monetization|AI 생성 콘텐츠 수익화]] — 제작이 범용화된 콘텐츠 시장에서 남는 차별화와 정책 리스크
 - [[Distribution-As-Moat|도달력(Distribution)이 새 해자]] — 모델이 같아질 때 남는 설치 위치와 유통 경로
 - [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5]] — 모델 사양과 제한 공개
+- [[Signaling-Screening|신호와 선별]] — 결과물이 흔해질 때 구매자가 수행자를 가려내는 근거
