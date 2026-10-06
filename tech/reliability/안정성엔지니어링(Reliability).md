@@ -25,4 +25,4 @@ aliases: ["안정성엔지니어링(Reliability)", "Reliability Engineering"]
 - [x] [[RCA-Postmortem|RCA / Postmortem 문화 (blameless, 5 Whys, 액션 아이템, MTTR/MTTD)]]
 - [x] [[Root-Cause-Investigation-Loop|근본 원인 조사 루프 (특이점 파악, 수직과 수평 구체화, 가설 검증, conntrack 표 포화 사례)]]
 
-- [x] [[Payment-Domain-Engineering|결제와 POS의 기술 계약]] — EMV, 토큰화, 망취소, 할인 배분, 부분 환불과 오프라인 복구
+- [x] [[Payment-Domain-Engineering|결제와 POS의 기술 계약]] — EMV, 토큰화, 망취소, 할인 배분, 부분 환불, 오프라인 복구와 MPP 에이전트 결제
