@@ -10,6 +10,7 @@ aliases: ["RDS Monitoring", "RDS 모니터링"]
 RDS는 관리형이지만 **운영 책임은 여전히 우리에게 있다.** 느린 쿼리, 커넥션 고갈, 스토리지 포화, Replica Lag은 AWS가 자동으로 막아주지 않으므로 지표, 로그, 알람을 직접 설계해야 한다.
 
 - [[RDS-Monitoring-Metrics|지표와 알람 기준]] — 모니터링 3계층, CloudWatch 핵심 지표, 알람 임계치, Database Insights 전환, Enhanced Monitoring
+- [[RDS-PostgreSQL-Performance-Triage|RDS와 Aurora PostgreSQL 성능 진단]] — DB Load와 CPU, 세션 상태와 시간, 연결과 vacuum 진단
 - [[RDS-Monitoring-Logs|로그 수집과 알람 파이프라인]] — Slow Query Log, RDS for MySQL 로그 6종, CloudWatch Logs 게시, Redo Log 크기, Lambda에서 Slack으로 보내는 알람
 - [[RDS-Monitoring-Tools-Pitfalls|외부 도구와 운영 함정]] — Datadog DBM, Percona PMM, pganalyze, 흔한 함정, 면접 체크포인트
 - [[RDS-Monitoring-Deep-Metrics|모니터링 심화]] — CommitLatency, History List Length, RDS Event Subscription, 커스텀 Prometheus, pt-query-digest, Support Case

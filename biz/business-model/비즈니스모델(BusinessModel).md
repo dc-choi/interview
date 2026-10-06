@@ -13,6 +13,7 @@ aliases: ["Business Model Index"]
 
 - [x] [[Business-Model|비즈니스 모델 & 수익 구조]] — 수익원, 공헌이익과 손익분기, 코호트별 획득 비용 회수, 현금 계획
 - [x] [[Pricing-Strategy|가격 정책 설계]]
+- [x] [[AI-Creative-Service-Delivery|AI 콘텐츠 제작 서비스의 납품 조건]] — 플랫폼별 제출 자격, 생성 과정 보관, 인계 파일과 수정 범위
 - [x] [[Healthcare-B2B-Solutions|의료 B2B 솔루션의 사업 구조와 시장 진입]]
 - [x] [[Live-Ops-Service-Model|라이브옵스와 서비스형 제품 모델]] — 패키지형과 서비스형, 재접속, 지속, 결제 이유와 운영 조직
 - [x] [[Five-Parts-of-Business|사업의 다섯 부분]] — 기능별 병목 진단, 대표의 균형 역량 가설과 한계, 제1원칙 분해, 불완전한 첫 버전
