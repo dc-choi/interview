@@ -18,6 +18,7 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 분류 폴더 인덱스: [[compute|컴퓨팅]], [[storage|스토리지]], [[data|데이터]], [[networking|네트워킹]], [[management|관리]], [[aws-security|보안]]
 
 - [x] [[AWS-Fundamentals|AWS 기본 (Region, AZ, Edge Location, 책임 공유 모델, Elasticity vs Scalability, 리저널/글로벌 서비스)]]
+- [x] [[Amazon-Connect-Conversation-Continuity|Amazon Connect 대화 연속성]] — 채팅 복원 범위, 비동기 전사문 준비와 인증 경계
 - [x] [[EC2|EC2 (Nitro, Instance Store, Placement Group, IMDSv2, T 시리즈 크레딧, AMI, ENA, Key Pair, Lifecycle)]]
 - [x] [[EBS|EBS (gp2/gp3/io1/io2/st1/sc1, io2 Multi-Attach, 증분 스냅샷, Cross-Region 공유, KMS 암호화)]]
 - [x] [[Auto-Scaling|EC2 Auto Scaling (ASG, Launch Template, Target Tracking/Simple/Step, Cooldown, Lifecycle Hook, Health Check)]]
