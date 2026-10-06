@@ -20,6 +20,7 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 
 ### 2. 물가
 - [[Inflation|인플레이션과 디플레이션]] — 물가 수준과 상승률, 디스인플레이션, CPI, 실질수익률과 위험 ✅
+- [[Oil-Supply-Chokepoints|원유 공급 병목과 유가]] — 생산 여력, 운송 경로와 재고의 구분, 우회 제약과 위험 프리미엄 ✅
 
 ### 3. 돈과 정책
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 중앙은행, 기준금리, 통화량, 양적완화, 금리가 경제를 조이고 푸는 메커니즘 ✅
