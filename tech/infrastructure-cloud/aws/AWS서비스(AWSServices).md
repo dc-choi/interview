@@ -43,6 +43,7 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 - [x] [[Storage-Gateway-DataSync|Storage Gateway & DataSync (File/Volume/Tape Gateway, 온프레미스↔AWS 이전, DataSync vs Gateway 결정)]]
 - [x] [[Snow-Family|Snow Family (Snowcone, Snowball Edge, Snowmobile — PB~EB 오프라인 이전, 엣지 컴퓨팅)]]
 - [x] [[IAM|IAM (정책 평가, Permission Boundary, AssumeRole, Condition Key)]]
+- [x] [[AWS-Builder-ID-Recovery|AWS Builder ID (복구 이메일 등록, 비밀번호와 MFA 복구, 소셜 로그인 전환)]]
 - [x] [[AWS-Organizations|AWS Organizations (멀티 계정, SCP, OU, 통합 결제, CloudTrail Org Trail)]]
 - [x] [[Cognito|Cognito (User Pool 인증, 운영 설정(셀프 가입, SES, 앱 클라이언트), Identity Pool 임시 자격 증명, OAuth2/OIDC, Federated Identity, Lambda Trigger)]]
 - [x] [[KMS|KMS (CMK 3종, 키 정책 관리자와 사용자, SSE-KMS 이중 권한, Envelope Encryption, Key Rotation, Multi-Region Key, SSE-S3/KMS/C/DSSE)]]
