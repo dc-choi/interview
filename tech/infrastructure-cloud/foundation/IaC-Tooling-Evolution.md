@@ -67,6 +67,19 @@ HCL 대신 **TypeScript, Python, Go 등 범용 언어**로 인프라를 작성�
 - **자유도의 대가** — 범용 언어라 표현력이 큰 만큼 컨벤션 없이는 일관성이 흐트러진다.
 - **파이프라인 선택** — CI나 Automation API처럼 팀의 승인과 배포 흐름에 맞는 실행 경로를 정해야 한다.
 
+### ComponentResource로 반복 구성을 묶기
+
+Pulumi는 별도의 프로그래밍 언어가 아니라 범용 언어의 SDK로 인프라를 정의하는 도구다. `ComponentResource`는 여러 리소스를 하나의 논리적 부모 아래 묶고, 호출자가 필요한 입력과 출력만 다루게 하는 재사용 단위다.
+
+2026-10-07 Pulumi 공식 컴포넌트 문서 대조 범위는 다음과 같다. 다른 도구의 기능과 정책을 다시 검증한 것은 아니다.
+
+- TypeScript에서는 `ComponentResource`를 상속하고 자식 리소스마다 `parent: this`를 지정한다. CLI의 리소스 트리에 소속이 드러나며 부모의 provider 구성을 상속할 수 있다.
+- 자식의 논리적 이름에 컴포넌트의 `name`을 포함해, 같은 컴포넌트를 여러 번 사용할 때 이름이 겹치지 않게 한다.
+- 생성자 끝의 `registerOutputs`는 자식 등록을 마쳤음을 엔진에 알리고 컴포넌트 출력을 state에 저장한다. 출력이 없어도 빈 객체로 호출한다. 이는 애플리케이션의 정상 동작을 검사한 결과가 아니다.
+- 예를 들어 버킷과 관련 설정을 묶고 endpoint를 출력하면, 사용자는 내부 리소스를 하나씩 연결하지 않아도 된다. 다만 컴포넌트로 감쌌다는 이유만으로 권한과 공개 범위가 안전해지지는 않는다.
+
+적용 판단에서는 실제로 반복되는 리소스 조합과 공통 설정이 있는지 먼저 확인한다. 작은 구성이 한 번만 쓰이면 그대로 두고, 여러 서비스에서 같은 변경을 반복하거나 설정이 어긋날 때 컴포넌트로 추출한다.
+
 ## Terraform 라이선스 이슈 (BUSL)
 
 HashiCorp는 2023년 8월 이후 Terraform을 포함한 제품의 향후 릴리스 소스 코드를 MPL 2.0에서 BUSL 1.1로 바꾼다고 발표했다. 이 발표는 Terraform provider와 SDK 대부분에는 적용되지 않았다. 뒤이어 OpenTofu가 Terraform 포크로 출범했다. 라이선스와 배포 방식은 IaC 도구 선택의 실질 변수다.
@@ -94,6 +107,8 @@ HashiCorp는 2023년 8월 이후 Terraform을 포함한 제품의 향후 릴리�
 - [Atlantis, Using Atlantis](https://www.runatlantis.io/docs/using-atlantis)
 - [Pulumi, State and Backends](https://www.pulumi.com/docs/reference/state/)
 - [Pulumi, Unit Testing Pulumi Programs](https://www.pulumi.com/docs/iac/guides/testing/unit/)
+- [Pulumi, Component Resources](https://www.pulumi.com/docs/iac/concepts/components/)
+- [Pulumi, Build a Component](https://www.pulumi.com/docs/iac/guides/building-extending/components/build-a-component/)
 - [HashiCorp, Business Source License announcement](https://www.hashicorp.com/en/blog/hashicorp-adopts-business-source-license)
 - [OpenTofu, Fork announcement](https://opentofu.org/blog/opentofu-announces-fork-of-terraform/)
 
