@@ -10,7 +10,7 @@ aliases: ["S3 Scale Design Lessons", "S3 설계에서 배우는 대규모 스토
 
 규모가 커지면 같은 시스템이라도 풀어야 할 문제의 성질이 바뀐다. 스토리지의 병목은 용량뿐 아니라 요청 분포와 I/O 성능에도 달려 있다. 수많은 디스크와 고객을 가진 스토리지에서는 부하 편중, 드문 장애의 확률적 누적, 수백 개 서비스를 나눠 맡은 조직의 책임 경계가 중요한 문제가 된다. Amazon S3의 공개 설계 글과 논문은 이 변화를 보여 주는 사례다.
 
-S3 내부 설계와 운영 사례는 2023년 공개 설계 글과 2021년 ShardStore 논문 기준이다. 현재 구현 전체를 설명하는 명세로 읽지 않는다.
+S3 내부 설계와 운영 사례는 2023년 공개 설계 글과 FAST 발표, 2021년 ShardStore 논문 기준이다. 현재 구현 전체를 설명하는 명세로 읽지 않는다.
 
 ## Heat: 용량보다 요청 편중이 병목이다
 
@@ -57,6 +57,16 @@ ShardStore는 S3의 스토리지 노드에서 shard 데이터를 저장하는 ke
 
 SOSP 2021 논문은 이 방식이 크래시 일관성과 동시성 문제를 포함한 16건의 문제가 운영에 도달하는 것을 막았고, 형식 기법 전문가가 아닌 엔지니어도 새 기능에 검증을 확장했다고 보고한다. 핵심은 증명의 완전성이 아니라 기능 개발 속도에 맞춰 검증이 함께 진화한다는 점이다.
 
+참조 모델은 실제 구현과 같은 저장소에서 관리하고 커밋마다 검증 도구를 적용한다. 명세와 구현의 대조를 일회성 연구로 끝내지 않고, 새로 합류한 엔지니어도 모델을 유지하며 변경을 검증할 수 있도록 개발 흐름에 포함한다.
+
+## 추가 shard로 배포 중 복구 여유를 확보한다
+
+저장 계층의 오류는 짧은 관찰 기간에 드러나지 않을 수 있다. 데이터센터별 순차 배포 외에도, 새 구현에 데이터를 맡기는 비중을 조절하며 충분히 관찰하는 방법이 필요하다.
+
+2023년 FAST 발표의 ShardStore 배포 사례에서는 추가 redundancy를 만들고 그 추가 shard에 새 저장 계층을 적용했다. 이후 관찰 결과에 따라 같은 데이터의 더 많은 shard로 적용 범위를 늘렸다. 기존 구현과 새 구현을 함께 운영해 장시간 관찰하는 동안, 새 구현에 데이터의 내구성을 의존하는 정도를 제한한 사례다(발표 38:35~39:59).
+
+일반 시스템에 적용할 때는 새 버전의 shard를 사용할 수 없어도 기존 경로로 데이터를 복구할 수 있는지 먼저 확인한다. 추가 저장 공간과 I/O 비용, 구버전과 신버전의 호환성, 확대와 중단 조건도 설계 대상이다. 이는 사례에서 도출한 적용 점검이며, 추가 shard만으로 모든 데이터 손실을 막는다는 보장이나 현재 S3의 배포 명세가 아니다.
+
 ## 조직도 시스템의 일부다
 
 S3는 수많은 마이크로서비스로 이루어지고, 각 팀이 자기 서비스의 API, 성능, 가용성과 내구성까지 책임진다. 이런 구조에서 설계 품질은 코드만이 아니라 책임 배치에서 나온다.
@@ -84,6 +94,7 @@ S3는 수많은 마이크로서비스로 이루어지고, 각 팀이 자기 서�
 
 - [Building and operating a pretty big storage system called S3 — All Things Distributed, Andy Warfield](https://www.allthingsdistributed.com/2023/07/building-and-operating-a-pretty-big-storage-system.html)
 - [Using Lightweight Formal Methods to Validate a Key-Value Storage Node in Amazon S3 — SOSP 2021, Amazon Science](https://www.amazon.science/publications/using-lightweight-formal-methods-to-validate-a-key-value-storage-node-in-amazon-s3)
+- [Building and Operating a Pretty Big Storage System (My Adventures in Amazon S3) — USENIX FAST '23, Andy Warfield](https://www.usenix.org/conference/fast23/presentation/warfield) — 38:35~39:59, 추가 shard를 이용한 배포와 관찰 사례
 
 ## 관련 문서
 
