@@ -16,3 +16,4 @@ aliases: ["LLM 원리와 운영", "LLM 운영", "LLM Fundamentals and Operations
 - [x] [[LLM-Decision-Models|결정 모델 (System One, Jev와 Clef, state와 noul/choice/score 질문 스키마, 비자기회귀 채점과 입력 토큰 과금, confidence 문턱과 에스컬레이션, 보정 검증, 닫힌 선택지와 프롬프트 인젝션, 언어 한계)]]
 - [x] [[LLM-Prompt-Caching|LLM 프롬프트 캐싱 (prefix matching, cache_write/read 과금, TTL 히트 갱신, 활용 패턴 6, 안티패턴 6, 세션 분기와 seed 세션의 캐시 재사용 조건, 히트율 98% 사례)]]
 - [x] [[LLM-Inference-Bottlenecks|LLM 추론 병목 (루프라인과 arithmetic intensity, 프리필 vs 디코드, memory-bound 디코드, 배칭/KV 캐시/speculative decoding/양자화의 공통 제약, 가속기 스펙 읽기, M1 ANE 역공학 사례, 파운데이션 모델 교재 진입점)]]
+- [x] [[LLM-Failure-Handling|LLM 실패 처리 (기술적 실패와 의미적 실패, 지속성과 범위 분류, 429 속도 한도와 지출 한도 구분, stop_reason, 구조화 출력의 한계, 토큰 사전 계산, 스트리밍 복구, SDK 기본 재시도, 폴백 범위와 잠복 결함, 모델별 한도와 동시성, 도구 멱등 키)]]

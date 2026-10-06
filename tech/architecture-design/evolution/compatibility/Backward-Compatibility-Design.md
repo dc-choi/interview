@@ -10,7 +10,7 @@ verified_at: 2026-08-31
 
 계약(contract)은 코드가 아니라 약속이다. 배포 단위가 둘 이상인 순간 신구 버전이 함께 도는 구간이 생기고, 하위 호환성 설계는 그 겹침을 견디도록 계약을 진화시키는 규율이다.
 
-이 문서는 기질(REST, 이벤트, RPC, 캐시, 파일 포맷)에 중립인 원칙만 다룬다. GraphQL의 breaking 판정 목록은 [[GraphQL-Schema-Design|GraphQL 스키마 설계]]가, DB 컬럼과 backfill 절차는 [[Backward-Compatibility|DB 하위 호환]]이, 버전 표현 방식은 [[API-Conventions-Operations|API 규약 운영]]이 소유한다.
+이 문서는 기질(REST, 이벤트, RPC, 캐시, 파일 포맷)에 중립인 원칙만 다룬다. GraphQL의 breaking 판정 목록은 [[GraphQL-Schema-Design|GraphQL 스키마 설계]]가, RPC 메서드의 추가, 삭제와 개명 판정은 [[RPC-Interface-Evolution|RPC 인터페이스 진화]]가, DB 컬럼과 backfill 절차는 [[Backward-Compatibility|DB 하위 호환]]이, 버전 표현 방식은 [[API-Conventions-Operations|API 규약 운영]]이 소유한다.
 
 ## 호환의 방향을 먼저 정의한다
 
@@ -172,6 +172,7 @@ API 호환성 검사는 [[Architecture-Fitness-Functions|아키텍처 fitness fu
 
 - [[GraphQL-Schema-Design|GraphQL 스키마 설계]] — breaking, dangerous, safe 변경 판정과 `@deprecated` 절차
 - [[Schema-Evolution|스키마 진화]] — 이 문서의 방향 프레임워크를 이벤트, 메시지 계약과 Schema Registry로 구체화
+- [[RPC-Interface-Evolution|RPC 인터페이스 진화]] — 메서드 삭제와 개명의 방향별 판정, 공유 서버 업그레이드 전 호출 클라이언트 확인
 - [[Backward-Compatibility|DB 하위 호환]] — 컬럼 추가와 제거, NOT NULL 승격, backfill과 이중 쓰기 (방향 이름은 스키마 변경 축)
 - [[Blue-Green|블루그린 배포]] — DB Expand-Contract 3단계와 신구 버전 동시 구동
 - [[Zero-Downtime-Deployment|무중단 배포]] — 마이그레이션과 앱 배포의 분리

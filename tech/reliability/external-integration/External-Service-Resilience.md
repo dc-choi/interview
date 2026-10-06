@@ -103,6 +103,8 @@ HTTP 클라이언트마다 이름과 포함 범위가 다르다. `socket timeout
 ### Fallback
 차단 시 기본값, 캐시, 부분 기능 제공. 예: 추천 서비스 다운 시 인기 상품 리스트 반환.
 
+평소에 쓰이지 않는 폴백 경로는 잠복 결함을 품기 쉽다. Amazon Builders' Library는 분산 시스템의 폴백이 테스트하기 어렵고 그 자체도 실패할 수 있으며 장애 범위와 복구 시간을 키우는 경우가 많다고 보고, 주 경로의 신뢰성을 먼저 높이거나 두 경로를 평소에도 함께 실행하는 failover로 바꾸라고 권한다. LLM 호출의 폴백은 [[LLM-Failure-Handling|LLM 실패 처리]]를 본다.
+
 ### Graceful Degradation
 전체 기능이 안 되면 **핵심만 남기고 부가 기능 끔**. 결제는 되지만 추천은 생략하는 식.
 
@@ -144,7 +146,9 @@ External Service
 - [Making retries safe with idempotent APIs — Amazon Builders' Library](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)
 - [AWS Well-Architected Framework, Control and limit retry calls](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_mitigate_interaction_failure_limit_retries.html)
 - [IETF, RFC 9110: HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
+- [Avoiding fallback in distributed systems — Amazon Builders' Library, Jacob Gabrielson](https://builder.aws.com/content/3EuS9Sakq7L3VLQIF3qzfMfke1Y/avoiding-fallback-in-distributed-systems)
 
 ## 관련 문서
 - [[Idempotency|HTTP 멱등성]]
+- [[LLM-Failure-Handling|LLM 실패 처리]]
 - [[Rate-Limiting|Rate Limiting]]

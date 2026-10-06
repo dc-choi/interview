@@ -61,7 +61,7 @@ data: {"user":"lee","msg":"world"}
 **장점**:
 - 표준 HTTP → **방화벽, 프록시 호환성 좋음**
 - 브라우저 `EventSource` API로 구현 단순
-- **자동 재연결** 내장 (Last-Event-ID)
+- 연결이 끊기면(네트워크 오류, 200 응답 스트림의 정상 종료) **자동 재연결** (Last-Event-ID). 200이 아니거나 `text/event-stream`이 아닌 응답은 실패로 닫고 재연결하지 않음 ([[Realtime-Sync-Recovery|재연결 복구]])
 - 서버 → 클라 단방향이 충분한 경우 WebSocket보다 가벼움
 
 **단점**:
