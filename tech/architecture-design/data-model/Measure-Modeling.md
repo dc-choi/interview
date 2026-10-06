@@ -63,6 +63,16 @@ class Quantity<K extends string> {
 - **스케일이 다른 같은 값**: Java `BigDecimal`의 `equals`는 2.0과 2.00을 다르게 보고 `compareTo`는 같게 본다. 측도의 동등성과 해시를 어느 기준으로 둘지 정한다.
 - **확정 반올림은 도메인 정책이다**: 계산 중 정밀도와 확정 자릿수, 반올림 시점은 별개다. 금액의 반올림과 배분 잔여 처리는 [[Commerce-Change-Propagation-and-Money-Invariants#Decimal과 반올림 정책은 별개다|Decimal과 반올림 정책]]을 따른다.
 
+### BigDecimal을 컬렉션 키로 쓸 때
+
+Java SE 26 API 기준으로 2026-10-07에 대조한 범위다. `equals`는 값과 scale을 함께 비교하고 `hashCode`도 scale을 반영한다. `compareTo`는 수치만 비교한다. 이 차이는 BigDecimal의 해시 계약 위반이 아니라 자연 순서와 `equals`의 불일치다.
+
+- `HashMap`에 `new BigDecimal("1.0")`을 키로 넣고 `new BigDecimal("1.00")`으로 조회하면 같은 키로 찾지 못한다. 호출부에서 `compareTo`를 사용해도 해시 컬렉션의 키 비교 방식은 바뀌지 않는다.
+- 수치만으로 같은 값인지 판단하는 도메인은 키를 저장할 때와 조회할 때 같은 정규화 정책을 적용한다. 통화나 단위가 다르면 정규화한 숫자만으로 같은 측도라고 판단하지 않는다.
+- 고정 자릿수가 계약이면 `setScale(2, RoundingMode.UNNECESSARY)`처럼 값 변경 없이 맞춘다. 2는 소수 둘째 자리까지 허용하는 도메인의 예시다. `1.230`은 `1.23`이 되지만 `1.231`은 반올림이 필요하므로 `ArithmeticException`이 난다. 원본을 바꾸는 메서드가 아니므로 반환값을 사용한다.
+- 자릿수 자체가 의미 없으면 `stripTrailingZeros()`를 검토한다. `1000.00`이 `1E+3`처럼 음수 scale로 바뀔 수 있으므로 화면 표시와 저장 형식은 별도로 정한다. 입력 정밀도를 보존해야 하는 측정값에는 무조건 적용하지 않는다.
+- 키를 같게 만들려고 `HALF_UP`으로 반올림하면 서로 다른 수치를 합칠 수 있다. 반올림은 금액 확정 정책이 허용하는 경계에서 수행하고, 표현 통일과 값 변경을 구분한다.
+
 ## 화폐는 선형 수량이 아니다
 
 화폐는 값과 단위(통화)의 조합이지만 물리 수량과 다른 점이 있다.
@@ -110,6 +120,7 @@ class Quantity<K extends string> {
 
 - [모델링 시리즈: 측도 — kciter.so, kciter](https://kciter.so/posts/modeling-series-measure/)
 - [Java SE 21 API, BigDecimal](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/BigDecimal.html)
+- [Java SE 26 API, BigDecimal](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/math/BigDecimal.html) — 컬렉션 키의 동등성과 scale 정규화
 - [SIX, ISO 4217 Current currency & funds code list](https://www.six-group.com/en/products-services/financial-information/data-standards.html)
 - [NIST, Prefixes for binary multiples](https://physics.nist.gov/cuu/Units/binary.html)
 

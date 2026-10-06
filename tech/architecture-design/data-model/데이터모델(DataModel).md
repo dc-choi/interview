@@ -12,7 +12,7 @@ VO, DTO, Entity 레이어링 — 계층 간 데이터 전달 규약.
 ## 목차
 - [x] [[DTO-Layering|DTO 레이어 스코프, Entity 변환 위치 (Controller/Service/Mapper 3안, Repository 입력과 Projection의 소유권)]]
 - [x] [[VO-DTO|VO vs DTO]]
-- [x] [[Measure-Modeling|측도 모델링 (값, 단위, 단위계, 십진 타입 함정, 화폐와 환율, 비선형, 복합, 파생 측도)]]
+- [x] [[Measure-Modeling|측도 모델링 (값, 단위, 단위계, 십진 타입 함정과 BigDecimal 키 정규화, 화폐와 환율, 비선형, 복합, 파생 측도)]]
 - [x] [[Temporal-Modeling|시간 모델링 (시간 값의 세 가지 쓰임, 시점, 기간, 간격, 반복, 반개구간, RRULE)]]
 - [x] [[View-Model-Design|뷰모델 설계와 Server Driven UI (상태, 구조, 동작, 스타일 분해, 테이블 뷰모델, SDUI 비용)]]
 - [x] [[Ecommerce-Shopping-Mall-ERD|이커머스 도메인 모델링 (상품, 고객 행동, 할인, 주문, 결제, 취소, 정산)]]
