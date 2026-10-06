@@ -9,7 +9,7 @@ aliases: ["보안(Security)", "Security Index"]
 
 ## 목차
 
-- [[Application-Security|애플리케이션 보안 / 시큐어코딩]] — 4대 원칙, 진단 vs 모의해킹, OWASP Top 10, OWASP API Security Top 10:2023, 트렌드 리스크, 클라이언트 불신, 학습 경로
+- [[Application-Security|애플리케이션 보안 / 시큐어코딩]] — 4대 원칙, 진단 vs 모의해킹, OWASP Top 10, OWASP API Security Top 10:2023, 트렌드 리스크, 클라이언트 불신, 비밀번호 확인 UI와 서버 검증 계약, 학습 경로
 - [[CIA-Triad|CIA Triad (기밀성, 무결성, 가용성)]] — 세 보안 목표, 위협과 통제, 트레이드오프와 가장 약한 고리
 - [[Security-Policy-and-Assessment|보안 정책과 점검]] — 자산과 위험, 책임과 교육, 점검 범위 승인, 증거와 개선 후 재점검
 - [[Security-Incident-Response|보안 사고 대응]] — NIST CSF 2.0 수명주기, 로그 상관분석과 공백, 자동 차단의 실행 경계, 증거 보존과 복구 완료 조건

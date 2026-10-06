@@ -134,6 +134,20 @@ GUI가 없는 서버와 컨테이너에서는 CLI로 원인을 좁힌다. 옵션
 - `rm`은 휴지통을 거치지 않는다. 복구는 백업과 스냅샷에 기대야 하므로 삭제 대상을 먼저 확인한다.
 - 로그가 쌓이는 경로의 용량 관리는 아래 `/var` 모니터링과 logrotate, 컨테이너에서는 [[Container-Memory-Metrics]]의 파일 로그 page cache 문제와 함께 본다.
 
+## 파일 작업: 생성, 덮어쓰기와 삭제를 구분한다
+
+아래는 GNU coreutils 매뉴얼을 2026-10-06 대조한 범위다. 연습은 원본과 분리한 복사본에서 하고, 실행 전에 현재 위치와 원본, 목적지를 함께 확인한다.
+
+| 명령 | 대상 상태에 따른 의미 | 확인할 것 |
+|---|---|---|
+| `touch notes.txt` | 파일이 없으면 빈 파일을 만들고, 있으면 접근 시각과 수정 시각을 갱신한다 | 기존 내용을 비우는 명령이 아니다 |
+| `cp source.txt copy.txt` | 원본을 남기고 복사하지만 기존 목적지 파일을 덮어쓸 수 있다 | 원본뿐 아니라 목적지 존재 여부도 확인한다. `-i`는 덮어쓰기 전에 묻는다 |
+| `cp a.txt b.txt backup/` | 여러 원본을 목적지 디렉터리에 복사한다 | 마지막 인자는 목적지 디렉터리여야 한다 |
+| `rm -i copy.txt` | 해당 파일을 지우기 전에 확인을 묻는다 | 거부는 그 삭제를 건너뛰는 것이며, 이미 끝난 삭제를 되돌리는 기능은 아니다 |
+| `rm -r copies/` | 디렉터리와 그 안의 항목을 재귀적으로 제거한다 | `-r` 자체는 확인 질문을 켜지 않는다 |
+
+목적지 목록을 확인한 것만으로 복사 내용까지 검증한 것은 아니다. 중요한 원본을 정리하기 전에는 복사본의 내용과 복구 가능성도 따로 확인한다.
+
 ## 흔한 실수
 
 - **`/etc`를 Git에 통째로 커밋** → 시크릿(`/etc/shadow`, API 키) 유출. 필요한 설정만 선별
@@ -153,6 +167,7 @@ GUI가 없는 서버와 컨테이너에서는 CLI로 원인을 좁힌다. 옵션
 - `df`와 `du` 값이 다를 때 먼저 의심할 원인(지웠지만 열린 파일, 마운트에 가려진 데이터)
 
 ## 출처
+- [GNU coreutils, cp(1)](https://man7.org/linux/man-pages/man1/cp.1.html), [touch(1)](https://man7.org/linux/man-pages/man1/touch.1.html), [rm(1)](https://man7.org/linux/man-pages/man1/rm.1.html) (파일 작업의 대상 상태와 확인 옵션, 2026-10-06 부분 검증)
 - [Tecoble — Linux 파일 디렉토리 시스템](https://tecoble.techcourse.co.kr/post/2021-10-18-linux-file-directory-system/)
 - [GNU coreutils, `rm` source](https://git.savannah.gnu.org/cgit/coreutils.git/plain/src/rm.c)
 - [Linux man-pages, execve(2)](https://man7.org/linux/man-pages/man2/execve.2.html) (shebang, `EACCES`, `ENOEXEC`, `ENOENT`)

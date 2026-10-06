@@ -115,6 +115,17 @@ AI는 프롬프트에 없는 제약을 스스로 채워 넣지 않는 경우가 
 - **클라이언트에서 할 수 있는 보조 보안**: 운영 환경 소스맵 미노출, 불필요한 디버깅 정보 제거
 - 최종 권한 판단은 반드시 서버에서. 클라이언트 보안은 어디까지나 보조다.
 
+### 비밀번호 확인: 입력 피드백과 서버 계약을 분리한다
+
+비밀번호 재입력은 오타를 줄이는 UI다. 두 값의 일치는 비밀번호 강도나 사용자 인증을 증명하지 않는다. 아래 입력 검증과 브라우저 동작은 2026-10-06 OWASP와 WHATWG 문서로 대조했다.
+
+- **브라우저 피드백**: 비밀번호와 확인 필드 어느 쪽이 바뀌어도 일치 여부를 다시 계산한다. 키보드의 `keyup`에만 묶지 않고 값 변경을 다루는 `input` 이벤트를 사용한다. WHATWG의 확인 필드 예제도 폼의 `oninput`에서 두 값을 비교한다.
+- **제출 검증과 연결**: 불일치하면 확인 필드의 `setCustomValidity()`에 오류 메시지를 설정하고, 일치하면 빈 문자열로 해제한다. 안내 문구나 색상만 바꾸는 것은 제출 검증을 설정한 것이 아니다. 필수 입력 여부도 별도로 정한다.
+- **서버 계약**: API가 `password`와 `passwordConfirm`을 받으며 일치를 요구한다면 서버에서도 누락, 타입과 일치를 검사한다. 확인 필드를 UI에서만 쓰는 API라면 모든 클라이언트에 이 필드를 강제할 필요는 없다. 어느 설계든 실제 비밀번호 정책과 서버 입력 검증은 브라우저 결과에 의존하지 않는다.
+- **실패 처리**: 파싱과 검증을 통과한 입력만 업무 처리와 저장에 넘긴다. 필드가 없거나 타입이 잘못된 요청을 일부만 검증한 채 가입 처리하지 않는다.
+
+검증할 사례는 빈 값, 서로 다른 값, 일치 후 원래 비밀번호만 수정, 붙여넣기, 브라우저 검증을 우회한 직접 API 요청이다. 두 필드의 일치 검사와 [[Password-Hashing|서버의 비밀번호 저장 방식]]은 별도 책임이다.
+
 ### 난독화와 매핑 파일
 
 난독화(minification 포함)는 클래스, 함수, 변수 이름에서 의미를 지워 배포물을 읽기 어렵게 만든다. 목적은 보안 하나가 아니다. Android의 R8은 이름을 짧게 바꿔 DEX 크기를 줄이고, 코드 축소와 인라이닝 같은 최적화를 함께 수행한다. 웹 번들의 minify도 주목적은 전송 크기다. 따라서 난독화는 분석 비용을 높여 로직과 지식재산을 보호하는 보조 수단이지, 서버 검증을 대신하는 방어가 아니다.
@@ -146,6 +157,8 @@ Q. 보안팀과 개발팀의 충돌은?
 
 ## 출처
 
+- [OWASP, Input Validation Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html) (서버 검증과 입력 계약, 2026-10-06 부분 검증)
+- [WHATWG, HTML Standard: The required attribute](https://html.spec.whatwg.org/dev/input.html#the-required-attribute) (비밀번호 확인과 `oninput`, `setCustomValidity` 예제)
 - [OWASP, Top 10:2025](https://owasp.org/Top10/2025/)
 - [OWASP, API Security Top 10 2023](https://api-security.owasp.org/editions/2023/en/0x11-t10/)
 - [OWASP, API Security Top 10 2023 Release Notes](https://api-security.owasp.org/editions/2023/en/0x04-release-notes/)
