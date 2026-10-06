@@ -13,6 +13,7 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[Marketing-Fundamentals|마케팅, 브랜딩, 광고 기초 (브랜드와 제품 통합의 구분, STP, 4P, Customer Journey)]]
 - [x] [[GTM-Strategy|Go-to-Market 전략과 유입, 체험 물량 역산]] *(→ product-strategy/)*
 - [x] [[Content-Marketing|콘텐츠 마케팅]] — 작은 유입의 전환 검증과 추천 채널
+- [x] [[LinkedIn-Content-Distribution|LinkedIn 콘텐츠 도달]] — 관계와 관심사 신호, 인맥 밖 추천, 반응 조작 제한과 전환 검증
 - [x] [[Personal-Brand-Identity-and-Role|퍼스널 브랜드의 정체성과 배역]] — 정체성, 반복 기능과 세계관의 입구
 - [x] [[Trademark-and-Brand-Clearance|상표와 브랜드 권리 확인]] — 상호와 도메인, 선출원, 지정상품과 권리 유지
 - [x] [[Storytelling|스토리텔링]] — 욕망과 갈등, 구원과 대가, 캐릭터, 구조와 감정 표현
