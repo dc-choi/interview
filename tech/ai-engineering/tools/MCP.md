@@ -39,6 +39,21 @@ MCP는 stdio와 Streamable HTTP 전송을 지원한다. 일반적으로 로컬 �
 
 이게 자동완성 수준의 AI와 작업에 참여하는 AI를 가르는 경계다. 도구가 붙어야 모델이 환경을 읽고 바꾸는 작업자가 된다.
 
+## RAG, 에이전트와 Function Calling의 경계
+
+네 개념은 대체재 목록이 아니라 서로 다른 책임을 설명한다.
+
+| 개념 | 맡는 책임 | 그 자체로 보장하지 않는 것 |
+|---|---|---|
+| MCP | 외부 도구와 데이터의 발견, 호출과 전달을 표준화 | 검색 품질, 답의 정확성, 업무 완료 |
+| RAG | 검색한 외부 근거를 생성 입력에 결합 | 원본과 색인의 최신성, 근거 해석의 정확성 |
+| 에이전트 | 결과를 관찰하며 다음 행동과 도구 사용을 동적으로 결정 | 무제한 자율 실행이나 사람 개입의 불필요성 |
+| Function Calling | 모델이 도구 이름과 인자를 구조화해 요청 | 함수 실행 자체와 실행 권한 |
+
+예를 들어 정책 문서를 검색하는 MCP 도구를 에이전트가 호출하고, 반환된 문서를 넣어 답변을 생성하면 한 흐름에 세 개념이 함께 들어간다(설명용 예시). 검색과 생성을 고정 순서로 실행하는 RAG에는 에이전트 루프가 없어도 된다. MCP도 모델이나 컨텍스트 관리 방식을 지정하지 않는다.
+
+MCP와 Function Calling을 원격 실행과 로컬 실행으로 나누면 틀린다. MCP 서버는 로컬과 원격에서 모두 실행할 수 있고, 모델이 요청한 함수도 애플리케이션 구현에 따라 외부 API를 호출할 수 있다. 핵심 차이는 실행 장소가 아니라 연결 프로토콜과 모델의 호출 요청이라는 책임이다. 세부 검색 설계는 [[RAG-Retrieval-Engineering]], 실행 흐름은 [[LLM-Workflow-Patterns]]에서 다룬다.
+
 ## 사용자 소유 콘텐츠 커넥터 패턴
 
 원격 MCP 서버는 사용자가 구독하거나 소유한 콘텐츠를 검색 가능한 AI 컨텍스트로 바꿀 수 있다. 디렉터리 목록은 발견과 설치를 돕는 배포 계층이고, 실제 접근은 원격 endpoint와 OAuth 권한으로 결정된다.
@@ -127,6 +142,11 @@ A2A(Agent2Agent)는 서로 다른 조직과 프레임워크의 에이전트가 �
 
 2026-10-02에는 2026-07-28 명세의 tool annotations, token passthrough와 로컬 서버 실행 경계를 대조했다. 개별 Host, 커넥터와 A2A 제품 지원 현황 전체를 다시 확인한 기록은 아니다.
 
+2026-10-06에는 RAG, 에이전트와 Function Calling 비교 절을 아래 프로토콜 문서, RAG 논문, 에이전트 설계 자료와 OpenAI Function calling 문서에 대조했다. 기존 제품 지원 현황 전체의 재검증은 아니므로 frontmatter의 검증일은 유지한다.
+
+- [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks — NeurIPS 2020](https://arxiv.org/abs/2005.11401)
+- [Building effective agents — Anthropic](https://www.anthropic.com/engineering/building-effective-agents)
+- [OpenAI, Function calling](https://developers.openai.com/api/docs/guides/function-calling)
 - [Model Context Protocol, Tools (2026-07-28)](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
 - [Model Context Protocol, Security Best Practices (2026-07-28)](https://modelcontextprotocol.io/specification/2026-07-28/basic/security_best_practices)
 - [Architecture overview — Model Context Protocol](https://modelcontextprotocol.io/docs/learn/architecture)
@@ -141,7 +161,6 @@ A2A(Agent2Agent)는 서로 다른 조직과 프레임워크의 에이전트가 �
 - [Key Changes (2026-07-28) — Model Context Protocol](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
 - [Key Changes (2025-11-25) — Model Context Protocol](https://modelcontextprotocol.io/specification/2025-11-25/changelog)
 - [Versioning — Model Context Protocol](https://modelcontextprotocol.io/specification/versioning)
-- [MCP 리눅스 재단 기부와 AAIF 출범 — Threads, hyle.ai.kr](https://www.threads.com/@hyle.ai.kr/post/DSD02cHk25B)
 - [Agent2Agent (A2A) Protocol — A2A Protocol](https://a2a-protocol.org/latest/)
 - [A2A Protocol Specification — A2A Protocol](https://a2a-protocol.org/latest/specification/)
 - [Agent Discovery — A2A Protocol](https://a2a-protocol.org/latest/topics/agent-discovery/)
