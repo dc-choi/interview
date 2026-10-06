@@ -3,7 +3,7 @@ tags: [infrastructure, network, dns]
 status: done
 category: "Infrastructure & Cloud"
 aliases: ["DNS", "DNS 구조", "도메인 네임 시스템"]
-verified_at: 2026-09-30
+verified_at: 2026-10-07
 ---
 
 # DNS (Domain Name System)
@@ -88,6 +88,14 @@ verified_at: 2026-09-30
 
 전통적인 DNS는 UDP/TCP 53번 포트를 사용한다. EDNS가 없는 UDP 응답의 크기 한도는 512바이트이고, EDNS에서는 요청자가 수용할 UDP 크기를 알린다. 응답이 잘려 TC 비트가 설정되면 TCP로 다시 조회할 수 있다. 512바이트를 넘는 모든 응답이 자동으로 같은 전송 경로를 따르는 것은 아니다.
 
+### UDP와 TCP의 선택
+
+UDP는 작은 질의와 응답을 새 연결의 핸드셰이크 없이 교환할 수 있다. 다만 512바이트는 EDNS가 없는 DNS 메시지의 제한이지 UDP 자체의 최대 크기가 아니다. EDNS로 더 큰 UDP 응답을 허용해도 경로 MTU와 IP 단편화에 따른 손실 가능성은 남는다.
+
+RFC 7766은 범용 DNS 구현에 UDP와 TCP 지원을 모두 요구한다. TCP를 UDP 실패 뒤에만 쓰는 것도 아니다. 처음부터 TCP를 선택하거나 기존 연결을 재사용하고 여러 질의를 파이프라이닝할 수 있다. 방화벽에서 UDP 53만 허용하면 작은 응답은 성공해도 TCP가 필요한 조회는 실패할 수 있다.
+
+암호화와 TCP 사용도 같은 조건이 아니다. DoT는 TLS/TCP를 사용하지만, DoH를 HTTP/3로 전송하면 QUIC/UDP를 사용한다. 별도 규격인 DoQ도 QUIC를 사용하며 기본 포트는 UDP 853이다. DNS가 보안 때문에 모두 TCP로 전환한다고 일반화하지 않는다. 이 절은 2026-10-07에 RFC 6891, 7766, 7858, 8484, 9114와 9250을 대조했다.
+
 ## 캐싱과 TTL
 
 같은 질의를 매번 루트부터 반복하지 않도록 브라우저, OS와 재귀 리졸버 등이 결과를 캐싱한다. `hosts` 파일과 캐시의 조회 순서는 OS, 애플리케이션과 설정에 따라 다르며, 브라우저가 자체 DNS/DoH 경로를 사용할 수도 있다. DNS 응답 캐시의 유효 기간은 레코드의 **TTL**(Time To Live, 초)을 기준으로 한다.
@@ -170,6 +178,8 @@ nslookup -type=AAAA naver.com
 - [RFC 8484, DNS Queries over HTTPS](https://www.rfc-editor.org/rfc/rfc8484.html)
 - [RFC 6891, Extension Mechanisms for DNS](https://www.rfc-editor.org/rfc/rfc6891.html)
 - [RFC 7766, DNS Transport over TCP](https://www.rfc-editor.org/rfc/rfc7766.html)
+- [RFC 9114, HTTP/3](https://www.rfc-editor.org/rfc/rfc9114.html)
+- [RFC 9250, DNS over Dedicated QUIC Connections](https://www.rfc-editor.org/rfc/rfc9250.html)
 - [Root Server Operators, Root Server System](https://root-servers.org/)
 - [Nameserver DoS Attack October 2002 — CAIDA](https://www.caida.org/projects/dns/oct02dos/)
 - [Microsoft Learn, nslookup](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/nslookup)

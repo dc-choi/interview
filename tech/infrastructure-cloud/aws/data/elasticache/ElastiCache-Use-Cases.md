@@ -81,10 +81,29 @@ LLM 응답을 프롬프트 임베딩 기반으로 캐시하면 유사 프롬프�
 
 - RAG(Retrieval-Augmented Generation)의 세션 메모리, 지식 검색에도 활용. ElastiCache Search의 엔진, 버전, 배포 제한이 맞지 않으면 OpenSearch k-NN이나 별도 벡터 저장소를 비교
 
+### 정확 일치와 의미 기반 재사용
+
+LLM 응답도 입력과 재사용 조건이 같으면 해시 키로 캐시할 수 있다. 시맨틱 캐시는 표현이 다른 질문까지 재사용 후보로 찾는 확장이다. 임베딩 검색으로 후보를 얻고 유사도 기준을 통과하면 저장된 답을 반환하며, 미스이면 모델을 호출하고 새 응답을 저장한다. 같은 답을 다시 제공해도 되는 요청에 적용하며 새 생성이나 최신 조회가 필요한 요청은 제외한다.
+
+유사도 점수는 답이 맞을 확률이 아니다. 유사도는 클수록 가까운 반면 거리 지표는 작을수록 가까우므로 임계값의 방향부터 확인한다. 예를 들어 RedisVL의 `distance_threshold`를 유사도 하한으로 해석하면 안 된다. 임베딩과 거리 함수가 달라지면 숫자를 그대로 옮기지 않고, 같은 답을 써도 되는 질문 쌍과 비슷하지만 답이 다른 쌍으로 오적중을 측정한다.
+
+### 문맥, 권한과 수명
+
+- 다중 턴 대화는 마지막 질문만으로 검색하지 않는다. 답변에 필요한 대화 문맥과 사실을 함께 구성한다. 같은 문장이어도 대상 상품이나 이전 대화가 다르면 답이 달라질 수 있다.
+- 테넌트, 사용자 권한과 지역처럼 재사용 범위를 결정하는 값은 인증된 애플리케이션 문맥에서 정해 검색 필터나 별도 인덱스로 제한한다. 모델이 생성한 필터에 권한 결정을 맡기지 않는다. ElastiCache Search의 ACL 검사는 인덱스 전체 단위이므로 결과마다 사용자 권한을 대신 확인해 주는 것으로 가정하지 않는다.
+- TTL은 허용 가능한 데이터 노후도에 맞춘다. 지식, 정책, 프롬프트나 모델을 바꾸면 기존 답의 재사용 가능성을 다시 판단하고, 호환되지 않는 항목은 무효화하거나 캐시 버전을 분리한다. TTL만으로 변경 직후의 정확성이 보장되지는 않는다.
+- 적중률과 함께 오적중률, 오래된 답의 반환, 권한 경계 침범과 전체 응답 지연을 본다. 적중해도 임베딩, 검색과 저장소 운영 비용은 남으므로 줄어든 모델 호출 비용에서 이 비용을 빼고 비교한다. 고정된 절감 배수는 일반 기준으로 쓰지 않는다.
+
+이 절의 검색 지원 범위와 시맨틱 캐시 운영 조건은 2026-10-07에 AWS와 Redis 공식 문서로 대조했다. 문서의 다른 사용 사례 전체를 재검증한 날짜는 아니다.
+
 ## 출처
 
 - [AWS Docs, 일반적인 ElastiCache 사용 사례](https://docs.aws.amazon.com/ko_kr/AmazonElastiCache/latest/dg/elasticache-use-cases.html)
 - [ElastiCache Search 지원 범위](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/search-features-limits.html)
+- [AWS Docs, Implementing a semantic cache with ElastiCache for Valkey](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/semantic-caching-implementation.html)
+- [AWS Docs, Semantic caching best practices](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/semantic-caching-best-practices.html)
+- [Redis Docs, Semantic cache](https://redis.io/docs/latest/develop/use-cases/semantic-cache/)
+- [Redis Docs, RedisVL LLM Cache API](https://redis.io/docs/latest/develop/ai/redisvl/api/cache/)
 - [Redis INCR rate limiter와 race condition](https://redis.io/docs/latest/commands/incr/)
 
 ## 관련 문서
@@ -92,6 +111,8 @@ LLM 응답을 프롬프트 임베딩 기반으로 캐시하면 유사 프롬프�
 - [[ElastiCache|Amazon ElastiCache]]
 - [[ElastiCache-Engine-Deployment|ElastiCache 엔진 선택, 운영 기능과 클러스터 구조]]
 - [[ElastiCache-Caching-Strategy|ElastiCache 캐시 전략과 체크포인트]]
+- [[LLM-Prompt-Caching|LLM 프롬프트 캐싱]] — 입력 계산의 재사용과 완성된 답변 재사용의 구분
+- [[LLM-Application-Security|LLM 애플리케이션 보안]] — 검색과 출력의 권한 경계
 - [[Distributed-Lock|분산락 (Redlock)]]
 - [[Redis-Atomic-Operations|Redis 원자 연산]]
 - [[Realtime-Chat-Architecture|실시간 아키텍처 (Pub/Sub)]]
