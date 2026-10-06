@@ -28,12 +28,26 @@ aliases: ["주식", "Stocks"]
 
 시장가격은 미래 현금흐름 기대뿐 아니라 할인율, 위험 프리미엄, 유동성과 참여자의 기대 변화에 영향을 받는다. 오래 보유한다고 추정한 가치가 반드시 가격에 실현되는 것은 아니다.
 
+### 좋은 실적과 기대를 넘는 실적은 다르다
+
+실적 발표를 읽을 때는 전년 대비 성장과 발표 전 기대 대비 차이를 나눈다. 컨센서스는 애널리스트 추정치를 집계한 값이며 시장 참여자 전체의 기대와 정확히 같지는 않다. 실적이 컨센서스를 넘어도 향후 전망이 약해지거나 발표 전에 기대가 가격에 반영됐다면 주가는 하락할 수 있다.
+
+가상 예로 전년 주당순이익이 5, 발표 전 예상이 8, 실제가 7이면 전년 대비 40% 성장했지만 예상에는 못 미쳤다. 이 비교만으로 주가 방향을 확정할 수는 없다. 실적의 수준, 예상과의 차이, 다음 기간 전망을 각각 확인하는 예시다.
+
 ## 4. 밸류에이션의 첫걸음
 
 주가가 싼지 비싼지 가늠하는 대표 지표다(자세한 건 [[Valuation|밸류에이션]]).
 
 - **PER(주가수익비율)**: 주가 ÷ 주당순이익. 이익의 몇 배에 거래되나. 높으면 성장 기대가 크거나 고평가.
 - **PBR(주가순자산비율)**: 주가 ÷ 주당순자산. 장부가치 대비 몇 배인가.
+
+### PER은 분모의 기간과 산정 기준을 맞춘다
+
+과거 12개월 EPS를 쓰는 trailing PER과 미래 기간의 예상 EPS를 쓰는 forward PER은 서로 다른 지표다. 최근 결산연도, 다음 회계연도와 향후 12개월도 구분한다. 분기 EPS 하나를 연간 EPS처럼 사용하지 않는다.
+
+기업 실적 자료에서는 GAAP와 조정(non-GAAP), 기본과 희석 EPS를 구분한다. 조정 EPS에는 어떤 항목이 제외됐는지 확인한다. 예를 들어 NVIDIA의 2027회계연도 2분기 공식 발표는 GAAP와 non-GAAP 희석 EPS 및 조정 내역을 따로 제시한다. 이 구조는 확인 가능한 사례이며, 여기서 특정 기업의 목표주가를 도출하지 않는다.
+
+`예상 EPS × 가정한 PER`은 시나리오의 가격이지 확정 가치가 아니다. 가상으로 예상 EPS 10에 20배를 적용하면 200이지만, EPS가 8이고 적용 배수가 15배로 낮아지면 120이다. 성장 전망과 요구수익률이 변하면 적용할 배수도 달라질 수 있으므로 EPS만 바꿔 계산하지 않는다.
 
 ## 5. 주식 vs 채권 (자본구조)
 
@@ -66,6 +80,9 @@ aliases: ["주식", "Stocks"]
 
 ## 출처
 
+- [What Is Earnings Season? — FINRA](https://www.finra.org/investors/insights/earnings-season) — 2026-10-07 실적, 컨센서스와 주가 반응의 구분 대조
+- [Price Earnings Ratio — Aswath Damodaran, NYU Stern](https://people.stern.nyu.edu/adamodar/pdfiles/pe.pdf) — EPS 기간 구분과 성장, 위험에 따른 배수 차이
+- [NVIDIA Announces Financial Results for Second Quarter Fiscal 2027 — NVIDIA](https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027) — 2026-10-07 GAAP/non-GAAP 희석 EPS와 조정 내역 표기 확인
 - [Investor.gov, Stock](https://www.investor.gov/introduction-investing/investing-basics/glossary/stock)
 - [Investor.gov, Stocks](https://www.investor.gov/introduction-investing/investing-basics/investment-products/stocks) — 2026-10-02 보통주, 우선주, 청구 순위와 손실 가능성 대조
 - [Aswath Damodaran, Discounted Cash Flow Valuation](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/val.html) — 주주 현금흐름과 자기자본 요구수익률의 대응

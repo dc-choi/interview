@@ -8,6 +8,30 @@ aliases: ["Agent Memory Retain Recall Reflect", "에이전트 기억의 저장 �
 
 # 에이전트 기억의 저장, 검색과 추론
 
+## 기억의 역할과 연산은 다른 분류다
+
+CoALA는 기억을 현재 의사결정에 쓰는 작업 기억과 장기 기억으로 나누고, 장기 기억을 의미, 일화, 절차 기억으로 구분한다. 이는 정보를 사용하는 역할의 구분이며 데이터베이스 네 개를 설치해야 한다는 뜻은 아니다.
+
+| 역할 | 담는 정보 | 코딩 에이전트에 적용한 예시 |
+|---|---|---|
+| 작업 기억(working) | 현재 목표, 관찰과 추론 결과 | 재현 중인 오류와 방금 실행한 테스트 결과 |
+| 의미 기억(semantic) | 세계와 에이전트에 관한 지식 | 저장소 구조와 테스트 실행 명령 |
+| 일화 기억(episodic) | 이전 의사결정 과정에서 얻은 경험 | 특정 장애의 증상, 조치와 확인된 결과 |
+| 절차 기억(procedural) | 행동과 의사결정을 수행하는 방법 | 도구 실행과 결과 검증을 제어하는 코드 |
+
+CoALA의 작업 기억은 LLM 호출 사이에도 유지되는 상태 구조다. 매 호출에서는 그 일부로 입력을 만들므로 컨텍스트 윈도우와 같은 개념이 아니다. 절차 기억에는 에이전트 코드뿐 아니라 모델 가중치에 내재한 지식도 포함된다. 자연어로 적은 작업 절차는 실무상 보조 수단이지만, 실행을 강제하는 코드와 동일하지 않다.
+
+반면 아래의 `retain`, `recall`, `reflect`는 기억에 수행하는 연산이다. 특정 사건을 저장하고 검색한 뒤 일반적인 설명을 생성할 수 있지만, 그 설명이 검증된 사실로 자동 승격되는 것은 아니다. CoALA의 역할 분류와 Hindsight의 기억망 분류도 일대일 대응으로 간주하지 않는다.
+
+## 경험을 재사용할 때의 검토 기준
+
+다음은 기억 역할을 디버깅에 적용한 운영 제안이다.
+
+- 과거 사건에는 증상, 변경, 검증 결과와 당시 적용 범위를 함께 남긴다.
+- 같은 증상이라는 이유만으로 과거 원인을 확정하지 않는다. 현재 코드와 재현 결과를 대조한다.
+- 경험에서 만든 일반 규칙은 추론으로 구분하고, 반례와 환경 변경을 확인한 뒤 사용한다.
+- 문서 수정과 실행 절차의 변경 권한을 분리한다. 과거 경험이 현재 작업의 실행 허가를 대신하지 않는다.
+
 ## 세 연산의 책임
 
 장기 기억은 대화 이력을 저장하는 것 외에도 필요한 근거를 찾고, 근거에서 만든 해석을 구분하는 책임이 있다. Hindsight의 공개 설계는 이를 `retain`, `recall`, `reflect`로 나눈다. 아래 API 의미는 2026-10-06 확인한 공개 자료 기준이며 모든 메모리 제품의 공통 규격은 아니다.
@@ -39,6 +63,7 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 
 ## 출처
 
+- [Cognitive Architectures for Language Agents — CoALA 연구진](https://arxiv.org/html/2309.02427v3)
 - [Hindsight: Structured Agent Memory that Retains, Recalls, and Reflects — ACL Anthology](https://aclanthology.org/2026.acl-demo.27/)
 - [recall vs reflect: Search Your Agent's Memory, or Ask It — Hindsight](https://hindsight.vectorize.io/blog/2026/07/24/recall-vs-reflect)
 
