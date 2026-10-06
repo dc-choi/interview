@@ -29,6 +29,17 @@ verified_at: 2026-09-30
 
 음성-텍스트 변환(회의록)은 도구 선택이 갈린다: 플랫폼 자막(화자 자동), Clova Note(화자 분리), Whisper 로컬(`whisper 파일.m4a --language ko` — 화자 구분 없음). `--language ko` 누락이 대표 실수.
 
+### 긴 문서 분석과 출력 독자를 함께 지정한다
+
+문서 분석 요청은 입력 구조, 검토 기준과 출력 독자를 나누어 적는다. 아래 입력 구조와 근거 추출 방식은 2026-10-07 Anthropic 공식 프롬프트 가이드를 대조했다. 제품 간 우열이나 일정 배수의 품질 향상을 보장하는 방법은 아니다.
+
+- **입력 구조:** 긴 문서 본문을 앞에, 질문을 뒤에 두는 구성을 시험한다. 여러 문서는 문서명, 출처와 본문을 태그로 구분해 서로 다른 자료의 주장이 섞이지 않게 한다.
+- **분석 근거:** 결론을 내기 전에 관련 구절과 위치를 추출하게 한다. 추출한 구절이 실제 결론을 지지하는지는 원문에서 다시 확인한다([[LLM-Hallucination-Verification|환각 검증]]).
+- **출력 독자:** 대상 독자가 알아야 할 결정, 배경지식과 분량을 지정하고 원하는 문체의 짧은 예시를 준다. 예를 들어 비개발자 구매 담당자가 비교할 제안서는 용어 설명과 선택 조건을 함께 요청한다.
+- **반론 검토:** 실무 적용 예시로 `주장, 근거 위치, 반대 근거, 미확인 조건`을 나누어 요청할 수 있다. 반론도 모델이 생성한 후보이므로 사실 오류가 확인된 것으로 취급하지 않는다.
+
+이 구성을 적용한 결과는 같은 원문과 검토 기준으로 비교한다. 문체가 자연스러워진 것과 분석이 정확해진 것을 별도로 평가한다.
+
 ## Cowork로 맡길 때 — 범위, 원본, 절차, 공유
 
 Cowork는 Claude Code와 같은 에이전트 구조를 터미널 없이 쓰는 작업 공간이다(Pro, Max, Team, Enterprise 플랜. Desktop 앱 외에 웹과 모바일은 플랜별로 제공). 작업은 Anthropic 서버의 격리 환경에서 돌고, 로컬 파일, 브라우저, 컴퓨터를 쓰는 동안에는 Desktop 앱이 열려 있어야 한다(2026-09-30 공식 문서 확인). 원본 자료를 읽고 결과물을 만드는 일이라면 일반 채팅보다 Cowork가 맞다.
@@ -98,6 +109,7 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 
 ## 출처
 
+- [Anthropic — Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)
 - [Claude Code — MCP](https://code.claude.com/docs/en/mcp)
 - [Claude Code — Routines](https://code.claude.com/docs/en/routines)
 - [Claude Cowork 시작하기](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
