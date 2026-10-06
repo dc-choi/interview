@@ -42,6 +42,18 @@ LLM 추론 속도는 가속기의 연산 성능(TOPS, FLOPS)만으로 예측할 
 
 운영에서는 대표 입력으로 답변 품질, 최대 메모리, 첫 토큰 지연과 이후 생성 속도를 함께 측정한다. 먼저 문맥 길이와 동시 요청 수를 제한하고, 용량이 부족하면 양자화나 오프로딩을 비교한다. 적재에 성공해도 대화형 응답 시간을 만족하지 못하면 더 작은 모델을 검토한다.
 
+## 에이전트 서빙은 세션 단위로 측정한다
+
+단일 요청의 입력 길이를 고정한 채 얻은 처리량은 대화와 도구 결과가 누적되는 세션의 용량을 대표하지 못할 수 있다. 턴이 진행될수록 프리필과 KV 캐시 부담이 달라지므로 다음 조건을 함께 남긴다.
+
+- **워크로드:** 턴 순서, 턴별 입력과 출력 길이, 세션 길이, 컨텍스트 상한과 잘라내기 정책.
+- **캐시:** prefix caching 설정, 재사용한 토큰과 새로 처리한 토큰, 캐시 적중률. 합성 입력은 길이뿐 아니라 접두어 재사용 구조도 맞춘다.
+- **부하:** 동시성을 단계적으로 높여 req/s가 더 늘지 않는 포화점을 찾는다. TTFT, TPOT, 전체 응답 지연의 분포와 메모리 점유도 함께 본다. 출력 tok/s만으로 긴 입력 처리 비용을 판단하지 않는다.
+
+AgentPerfBench v1(2026-09-28)의 고동시성 합성 프로파일 비교에서는 동시성을 200에서 320으로 높였을 때 일부 에이전트 구성의 req/s가 43~76% 줄었다. 그러나 비교 가능한 에이전트 66개 구성 중 41개는 변화가 ±10% 이내였고, 15개가 10% 넘게 감소했다. 43~76%를 모든 에이전트의 감소율로 일반화하지 않는다. 실제 trace 재생과 합성 프로파일의 결과도 구분한다.
+
+실무 적용 시에는 포화점과 서비스 허용 부하를 따로 정한다. 처리량이 최대여도 지연 목표를 넘으면 운영 동시성으로 채택하지 않는다. 위 내용은 2026-10-06 원 논문의 측정 방법과 결과를 대조한 범위이며, 특정 GPU의 구매 성능이나 에이전트의 업무 성공률을 보장하지 않는다.
+
 ## 가속기 스펙 읽기
 
 - TOPS 단독 수치는 LLM 성능 예측에 거의 쓸모가 없다. TOPS와 메모리 대역폭의 비, 즉 릿지 포인트를 본다.
@@ -71,8 +83,9 @@ LLM 추론 속도는 가속기의 연산 성능(TOPS, FLOPS)만으로 예측할 
 
 ## 출처
 
-2026-10-06 검증 범위는 작은 배치의 행렬곱 근사, 가중치와 KV 캐시의 용량 구분, 양자화와 오프로딩의 제약이다. M1 역공학 수치와 교재 구성은 기존 출처의 한정된 기록으로 남기며 이번에 재검증하지 않았다.
+2026-10-06 검증 범위는 작은 배치의 행렬곱 근사, 가중치와 KV 캐시의 용량 구분, 양자화와 오프로딩의 제약, 세션 기반 서빙 벤치마크의 측정 조건이다. M1 역공학 수치와 교재 구성은 기존 출처의 한정된 기록으로 남기며 이번에 재검증하지 않았다.
 
+- [AgentPerfBench: A Benchmarking and Evaluation Suite for Inference Performance of Agentic LLMs — arXiv](https://arxiv.org/html/2609.34683v1)
 - [JAX Scaling Book, All About Transformer Inference](https://jax-ml.github.io/scaling-book/inference/)
 - [Hugging Face Accelerate, Loading big models into memory](https://huggingface.co/docs/accelerate/main/concept_guides/big_model_inference)
 - [Hugging Face Transformers, Cache strategies](https://huggingface.co/docs/transformers/main/en/kv_cache)
