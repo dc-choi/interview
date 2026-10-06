@@ -94,9 +94,20 @@ HTTP 클라이언트마다 이름과 포함 범위가 다르다. `socket timeout
 
 전이 조건:
 - Closed → Open: 임계치 초과 (예: 50% 실패율, 5초 윈도우)
-- Open → Half-Open: 쿨다운 시간 경과 (예: 30초)
-- Half-Open → Closed: 탐색 요청 성공
-- Half-Open → Open: 탐색 요청 실패
+- Open → Half-Open: 대기 시간 경과 뒤 탐색 허용. 전이를 일으키는 호출이나 타이머는 구현과 설정에 따라 다름
+- Half-Open → Closed: 탐색 결과가 설정한 복구 조건을 만족
+- Half-Open → Open: 탐색 결과가 실패 조건을 만족
+
+### 복구 탐색과 트래픽 복귀는 별도다
+
+2026-10-06 Resilience4j 공식 문서 기준으로 Open은 요청을 `CallNotPermittedException`으로 거절한다. 서킷 브레이커 자체가 요청을 저장했다가 한꺼번에 방출하는 큐는 아니다. 복구 직후 요청이 몰린다면 호출자의 재시도, 별도 큐와 새 유입을 구분한다.
+
+- Half-Open의 허용 호출 수는 탐색 표본이다. 기본 10회가 전체 호출자의 합산 상한은 아니며, 별도 브레이커를 가진 호출자가 함께 탐색하면 하류 부하가 합쳐질 수 있다.
+- `automaticTransitionFromOpenToHalfOpenEnabled`의 기본값은 `false`다. 이때 대기 시간이 지나도 다음 호출이 있어야 전이하며, 브레이커가 시험 요청을 스스로 생성하지 않는다.
+- Half-Open에서는 실패율과 느린 호출 비율을 설정한 임계치와 비교한다. 느린 호출 비율에 따른 재차 차단은 트래픽을 점진적으로 늘리는 slow start와 다른 기능이다.
+- Closed에서는 sliding window 크기가 동시 호출 수를 제한하지 않는다. 동시성은 Bulkhead 등으로 제한하고, 복귀 시 유입량 조절은 별도로 설계한다.
+
+운영 점검 제안: 브레이커별 탐색 성공뿐 아니라 전체 호출량, 큐 잔량과 의존성의 지연을 함께 본다. 복귀 직후 재차 차단되면 재시도 예산과 유입 한도를 조정한 뒤 같은 부하에서 재현한다.
 
 ### 효과
 - 외부 서비스 장애 시 내 서버의 커넥션과 동시 처리 용량이 **대기에 묶이지 않음**
@@ -154,8 +165,9 @@ External Service
 
 ## 출처
 
-2026-10-06 부분 검증: deadline의 측정 범위, 남은 시간 전파와 서버 작업 취소 책임을 gRPC 공식 가이드에 대조했다. 기존 벌크헤드와 서킷 브레이커 설명 전체를 새로 검증한 것은 아니다.
+2026-10-06 부분 검증: deadline의 측정 범위, 남은 시간 전파와 서버 작업 취소 책임을 gRPC 공식 가이드에 대조했다. 추가로 Resilience4j의 요청 거절, Half-Open 전이와 탐색, 동시성 제한의 경계를 공식 문서에 대조했다. 모든 라이브러리의 복구 동작을 검증한 것은 아니다.
 
+- [Resilience4j, CircuitBreaker](https://resilience4j.readme.io/docs/circuitbreaker)
 - [gRPC, Deadlines](https://grpc.io/docs/guides/deadlines/)
 - [gRPC, Cancellation](https://grpc.io/docs/guides/cancellation/)
 - [Timeouts, retries, and backoff with jitter — Amazon Builders' Library, Marc Brooker](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/)

@@ -11,7 +11,7 @@ aliases: ["External Integration", "외부 연동 복원력"]
 
 ## 목차
 
-- [[External-Service-Resilience|외부 서비스 장애 대응]] — Timeout, Bulkhead, Circuit Breaker 계층 방어
+- [[External-Service-Resilience|외부 서비스 장애 대응]] — Timeout, Bulkhead, Circuit Breaker 계층 방어, 복구 탐색과 트래픽 복귀의 구분
 - [[Retry-Backoff-Jitter|재시도, 지수 백오프와 지터]] — 재시도 규율, jitter 변형 비교, 토큰 버킷 재시도 예산
 - [[External-API-Integration-Patterns|외부 API 연동 실전 패턴]] — 조회형과 거래형, 상태 머신, 보상 트랜잭션, 대사
 - [[External-Collection-Pipeline-Reliability|외부 수집 파이프라인 신뢰성]] — 조용한 실패, 관측과 저장 성공의 구분, 삭제 보류, 신선도 SLO
