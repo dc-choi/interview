@@ -17,6 +17,9 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 
 ## 세부 학습
 
+- [x] [[Codex-CLI#구독 요금과 속도 모드의 사용량|Codex 구독과 속도 모드]] — 포함 사용량, 구매 크레딧과 API 과금의 구분
+- [x] [[LLM-Decision-Models#도구 기록을 선별하는 압축|결정 모델을 이용한 기록 선별]] — 원문 보존과 정보 손실, 판정 입력과 반복 호출 비용
+- [x] [[LLM-Inference-Bottlenecks#사례 수치는 CPU와 GPU 작업을 나눠 읽는다|가속기 사례의 측정 경계]] — CPU와 GPU 작업, 측정치와 추정치, 독립 검증 여부
 - [x] [[Claude-Code-Extension-Reference#화면 변경과 데이터 보호의 경계|Mods 화면 변경]] — 이벤트 전달, 공유 표시 영역과 화면 가림의 데이터 보호 한계
 - [x] [[Agent-Ready-API-Design#API 스키마와 생성 결과를 함께 관리한다|API 스키마 기반 도구 생성]] — CLI, SDK와 문서의 공통 계약, 수작업 명령과 생성 결과 검토
 - [x] [[LLM-Generation-Mechanics-Context-and-Agent#숫자 생성과 계산 도구 실행은 다르다|LLM 산술과 계산 도구]] — 식과 입력, 실행 증거, 결과 전달의 검증 경계

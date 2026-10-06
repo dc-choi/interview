@@ -76,6 +76,15 @@ else:
 
 Noul의 문턱도 오판 비용으로 정한다. 예와 아니오의 처리 비용이 같으면 0.5에서 자르고, 잘못된 예가 비싸면(담당자 호출, 환불) 올리고, 놓친 예가 비싸면(안전 문제 미탐) 내린다.
 
+### 도구 기록을 선별하는 압축
+
+결정 모델은 요약문을 새로 쓰는 대신 도구 호출과 결과를 남길지 고를 수 있다. `fast-jev-compaction`의 공개 README에서 확인한 설계(2026-10-06)는 호출과 결과를 ID로 짝지은 뒤, 호출 보존과 결과 원문 보존을 각각 `noul`로 묻는다. 결과를 남기거나, 호출과 결과 앞부분만 남기거나, 둘을 함께 제거한다. 첫 메시지와 최근 메시지는 보호하며 출력의 사용자, 어시스턴트 텍스트는 유지한다.
+
+- **원문 유지와 무손실은 다르다:** 남긴 내용이 원문이어도 필요한 도구 결과를 잘못 제거할 수 있다. 확률은 삭제해도 된다는 증거가 아니다.
+- **판정 입력과 출력 이력은 다르다:** 판정용 `state`에서는 도구 결과 본문을 짧은 상태 표시로 대체한다. 입력 상한을 맞추려고 오래된 입력이나 텍스트를 줄이면 모델이 보는 판단 근거도 줄어든다.
+- **호출 비용을 합산한다:** 질문을 여러 요청으로 나누면 같은 `state`가 반복 전송된다. 입력 토큰, 보존 품질과 압축 뒤 과업 성공률을 함께 비교한다.
+- **실패 시 원본을 보존한다:** 공개 패키지는 API 실패와 잘못된 응답 등에서 예외를 내고 호출자가 폴백을 정하게 한다. 이는 README에 명시된 동작이며 이 문서에서 실행 검증한 결과는 아니다.
+
 ## 트레이드오프
 
 ### Jev와 Clef 비교 (2026-10-06 확인)
@@ -136,6 +145,7 @@ Cloudflare가 Jev Decision Index의 평가 가운데 10개를 골라 직접 잰 
 
 ## 출처
 
+- [fast-jev-compaction — GitHub, tamaratran](https://github.com/tamaratran/fast-jev-compaction) — 도구 호출과 결과 선별 설계, 판정 입력 축소와 실패 경계
 - [Introducing Clef: our open-source decision models, and new RL fine-tuning platform — Cloudflare Blog](https://blog.cloudflare.com/clef-decision-models/)
 - [Laya — GitHub, NandhaKishorM](https://github.com/NandhaKishorM/laya) — 로컬 결정 엔진, 체크포인트와 과업별 미세조정 평가
 - [laya-mlx — GitHub, mizorewww](https://github.com/mizorewww/laya-mlx) — 독립 MLX 포트와 정밀도, 언어별 체크포인트의 한계

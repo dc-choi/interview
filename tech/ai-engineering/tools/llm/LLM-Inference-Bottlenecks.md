@@ -60,6 +60,18 @@ AgentPerfBench v1(2026-09-28)의 고동시성 합성 프로파일 비교에서�
 - 스펙시트의 총 대역폭과 실제로 동시에 쓸 수 있는 대역폭은 다르다. 전송 경로가 직렬로 실행되면 경로를 늘려도 시간이 중첩되지 않고 더해진다. 대역폭 증설만큼 전송 동시성이 중요하다.
 - CNN을 전제로 설계된 가속기는 작은 커널을 큰 피처맵 전체에 재사용하므로 온칩 SRAM에 가중치를 올려두고 데이터를 흘리면 재사용률이 높다. 작은 배치의 트랜스포머 디코드는 가중치 재사용이 적어, 수 MiB의 온칩 메모리만으로 수 GB의 가중치 전송을 없애기 어렵다.
 
+### 사례 수치는 CPU와 GPU 작업을 나눠 읽는다
+
+가속기 도입 사례에서 전체 파이프라인의 개선을 GPU 교체 효과로 합산하지 않는다. 2026-10-06 확인한 AMD의 MindWalk 사례는 서로 다른 작업을 구분한다.
+
+| 작업 | 보고된 결과 | 해석 경계 |
+|---|---|---|
+| MI300X 기반 문헌 처리 | 초기 시험에서 백만 샘플당 비용 약 39% 감소 | 가격과 처리량이 섞인 비용 지표이며 순수 속도 배율이 아니다 |
+| MI300X 기반 단백질 언어 모델 임베딩 | 비교 플랫폼보다 처리량 약 70% 증가 | 위 비용 시험과 다른 지표이며 일반 LLM 디코드 성능이 아니다 |
+| EPYC CPU 클러스터의 항체 쌍 검사 | 여러 64코어 노드에서 17만 쌍 이상을 약 4.5시간에 처리 | 이전 플랫폼의 145일은 같은 작업에 대한 추정치다. GPU 단독 가속으로 해석하지 않는다 |
+
+CPU 사례에는 병렬화, 단계 간 데이터 전달, CPU 활용률과 하드웨어 최적화가 함께 들어갔다. AMD는 성능과 비용 주장을 고객사가 제공했으며 독립 검증하지 않았다고 명시한다. 따라서 이 수치는 특정 구성의 사례로 두고, 재현 가능한 비교에는 모델, 데이터, 노드 수, 정밀도, 소프트웨어와 가격 조건을 함께 확보한다.
+
 ## 사례 — Apple M1 Neural Engine 역공학
 
 한 역공학 분석(2026년 8월, M1 ANE 기준)의 수치다.
@@ -83,8 +95,11 @@ AgentPerfBench v1(2026-09-28)의 고동시성 합성 프로파일 비교에서�
 
 ## 출처
 
+MindWalk 사례는 AMD 공개 사례 PDF의 작업 구분과 수치 한계를 2026-10-06에 대조했다. 하드웨어 실측을 재현한 것은 아니다.
+
 2026-10-06 검증 범위는 작은 배치의 행렬곱 근사, 가중치와 KV 캐시의 용량 구분, 양자화와 오프로딩의 제약, 세션 기반 서빙 벤치마크의 측정 조건이다. M1 역공학 수치와 교재 구성은 기존 출처의 한정된 기록으로 남기며 이번에 재검증하지 않았다.
 
+- [MindWalk accelerates AI drug discovery with AMD — AMD](https://www.amd.com/content/dam/amd/en/documents/resources/case-studies/mindwalk-case-study.pdf)
 - [AgentPerfBench: A Benchmarking and Evaluation Suite for Inference Performance of Agentic LLMs — arXiv](https://arxiv.org/html/2609.34683v1)
 - [JAX Scaling Book, All About Transformer Inference](https://jax-ml.github.io/scaling-book/inference/)
 - [Hugging Face Accelerate, Loading big models into memory](https://huggingface.co/docs/accelerate/main/concept_guides/big_model_inference)
