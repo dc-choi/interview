@@ -73,4 +73,5 @@ aliases: ["게임이론", "Game Theory"]
 
 - [[Market-Structures|시장구조]] — 과점의 전략적 행동을 푸는 도구
 - [[Market-Failure-Externalities|시장 실패와 외부효과]] — 공유지의 비극은 외부효과 문제
+- [[Signaling-Screening|신호와 선별]] — 정보비대칭 게임의 분리균형과 풀링균형
 - [[미시경제(Microeconomics)]] — 지도

@@ -29,6 +29,7 @@ aliases: ["미시경제(Microeconomics)", "Microeconomics Map"]
 
 ### 4. 시장이 실패할 때
 - [[Market-Failure-Externalities|시장 실패와 외부효과]] — 외부효과, 피구세, 공공재, 정보비대칭, 정부 개입 ✅
+- [[Signaling-Screening|신호와 선별]] — 신호의 비용 조건, 분리균형과 풀링균형, 자기선택을 끌어내는 선별 ✅
 
 ## 처음 읽는 순서 추천
 
