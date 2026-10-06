@@ -46,15 +46,26 @@ aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 
 ## 플랫폼별 분기 가설
 
-실무에서는 안드로이드 사용자에게 광고 중심, iOS 사용자에게 구독 중심 수익화가 잘 맞는다는 경험칙이 공유된다. 이는 검증된 법칙이 아니라 가설이다. 같은 앱의 플랫폼별 결제 전환율, 광고 노출당 수익, 유지율을 직접 측정해 분기 여부를 정한다. 지표 정의는 [[Metrics-Framework|지표 설계]]를 따른다.
+플랫폼마다 광고와 구독의 적합성이 다를 수 있지만, 운영체제만으로 우세한 수익 모델을 정하지 않는다. 같은 앱의 플랫폼별 결제 전환율, 광고 노출당 수익, 유지율을 직접 측정해 분기 여부를 정한다. 지표 정의는 [[Metrics-Framework|지표 설계]]를 따른다.
 
 ## 광고 수익화의 한계
 
 광고 집행비를 회수하려면 같은 코호트의 설치당 누적 광고 공헌이익(획득 비용 차감 전)이 광고비 기준 CPI 이상이어야 한다. 광고 매출은 실제 광고 노출 수와 앱에 귀속되는 노출당 수익으로 계산한다. 광고 요청 모두가 노출되지는 않으므로 광고 충족률(fill rate)과 실제 노출, 유지 기간을 반영하고 사용자당 변동비를 뺀다. 정산 수익에 이미 반영된 광고 네트워크 수수료는 중복 차감하지 않는다. CPI에 포함하지 않은 소재 제작과 대행비 등 획득 비용, 고정비와 현금 회수 시점도 따로 확인한다([[Business-Model#같은 고객군과 비용 범위로 획득 비용을 회수하는가|코호트별 획득 비용 회수]]).
 
-- 한 개발자의 공개 실험에서 유료 검색 광고의 설치 단가가 2달러를 넘었고, 무료 보드게임의 광고 수익으로는 이 비용을 회수할 수 없었다. 광고 노출을 늘리는 선택도 유지율과 획득 비용 회수 가능성을 함께 따져야 한다.
-- 같은 실험에서 한 달 동안 앱 30개를 만들어 배포했지만 매출은 약 15달러였다. 앱 순위 상위권에 오른 경우도 있었지만 순위는 매출이 아니었다. 수치는 작성자가 공개한 사례이며 일반화할 수 있는 기준은 아니다.
-- 광고는 구현이 쉬워 초기 전략으로 택하기 쉽지만, 수익을 내기 어려워 인앱 구독 중심으로 전환한 사례도 있다.
+앱 수나 스토어 순위만으로 획득 비용을 회수했다고 판단하지 않는다. 광고 노출을 늘리거나 구독을 더하는 선택도 같은 코호트의 유지율과 누적 공헌이익을 확인하는 실험으로 다룬다.
+
+### ARPU와 당일 매출만으로 광고를 늘리지 않는다
+
+ARPU는 사용자당 매출이며 이익이 아니다. GA4의 ARPU는 활성 사용자를 분모로 사용한다. 광고로 획득한 전체 설치를 분모로 삼는 CPI와 비교하려면 대상 집합과 관찰 기간을 먼저 맞춰야 한다. 최초 실행 코호트의 매출 지표도 설치 계측과 귀속 범위가 같은지 확인하고 사용한다.
+
+가령 광고비 10만원으로 설치 100건을 얻고, 이 설치 코호트에서 관찰 기간의 활성 사용자 20명이 총매출 4만원을 만들었다고 가정하자. 활성 사용자 기준 ARPU는 2,000원으로 CPI 1,000원보다 높지만, 원래 설치 100건당 매출은 400원이다. 변동비를 빼기 전에도 해당 기간에 광고비를 회수하지 못했다. 이는 분모 차이를 설명하는 가상 계산이며 실제 캠페인 성과가 아니다.
+
+- **전체 매출과 신규 획득을 분리한다.** 기존 사용자의 매출로 당일 광고비를 낼 수 있어도 신규 유입 코호트의 수익성이 확인된 것은 아니다. 각 코호트의 누적 공헌이익, 회수 기간과 전체 현금흐름을 함께 본다.
+- **관찰 기간을 고정한다.** 설치 뒤 같은 기간의 매출과 유지율을 비교한다. 아직 관찰하지 못한 미래 수익을 확정 회수액에 넣지 않는다.
+- **프로모션을 반복 가능한 수익과 분리한다.** Google Ads 크레딧은 제안별 대상, 필요 지출과 기한 등 조건을 충족해야 한다. 현금 환급이 아니며, 크레딧 소진 뒤에도 광고는 계속 비용을 발생시킬 수 있다. 동일 금액의 상시 지급을 가정하지 않고 실제 제안 조건을 확인한다.
+- **확대 판단은 보조금 없이도 계산한다.** 크레딧 적용 전 광고비와 실제 현금 지출을 나누어 기록하고, 크레딧 종료 뒤 같은 획득을 반복할 수 있는지 계산한다. 이는 프로모션 효과와 지속 가능한 손익을 구분하기 위한 관리 제안이다.
+
+2026-10-07에 GA4의 ARPU 정의와 Google Ads 프로모션 조건을 공식 도움말로 대조했다. 위 계산과 확대 판단은 그 정의를 적용한 예시와 운영 제안이며, 특정 예산이나 설치 수를 보편적인 성공 기준으로 제시하지 않는다.
 
 ## 스토어 조건 (2026-10-02 확인)
 
@@ -87,12 +98,8 @@ aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 
 ## 출처
 
-2026-10-02에는 공식 자료의 스토어 수수료와 테스트 조건, 광고 지표 정의와 공헌이익 개념을 대조했다. 아래 공개 실험의 매출이나 플랫폼별 경험칙을 독립 검증한 날짜는 아니다.
+스토어 조건과 공헌이익 개념의 대조 기준은 2026-10-02다. 2026-10-07에는 ARPU와 최초 실행 코호트의 분모, 광고 크레딧 조건만 다시 확인했다.
 
-- [앱 수익화 10가지 — Threads, harry.coding](https://www.threads.com/@harry.coding/post/DaoqSUwk5Se)
-- [플랫폼별 수익화 분기와 지표 진단 — Threads, vibe.bizness](https://www.threads.com/@vibe.bizness/post/DdLo7C-GtLj)
-- [사이드 프로젝트 매각 플랫폼 목록 — Threads, dietthatgirl](https://www.threads.com/@dietthatgirl/post/Dd035CMk8XD)
-- [퇴사 후 한 달간 앱 30개 배포 실험 — Threads, limsangjin12](https://www.threads.com/@limsangjin12/post/DZ6WqOxlC-t)
 - [App Store Small Business Program — Apple Developer](https://developer.apple.com/app-store/small-business-program/)
 - [App Review Guidelines — Apple Developer](https://developer.apple.com/app-store/review/guidelines/)
 - [App testing requirements for new personal developer accounts — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)
@@ -100,6 +107,8 @@ aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 - [Changes to Google Play's service fee in 2021 — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/10632485?hl=en)
 - [Understanding Google Play's lower service fees — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/16954621?hl=en)
 - [Getting started FAQs — Google AdMob Help](https://support.google.com/admob/answer/6168758?hl=en)
+- [Analytics dimensions and metrics — Google Analytics Help](https://support.google.com/analytics/table/13948007?hl=en) — ARPU의 활성 사용자 분모와 최초 실행 코호트 매출 지표
+- [How Google Ads promotional offers work with different payment settings — Google Ads Help](https://support.google.com/google-ads/answer/16915411?hl=en) — 제안별 조건, 환급 제한과 크레딧 소진 뒤 과금
 - [Principles of Accounting, Volume 2, 3.1 Contribution Margin — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/3-1-explain-contribution-margin-and-calculate-contribution-margin-per-unit-contribution-margin-ratio-and-total-contribution-margin)
 - [Acquire.com](https://acquire.com/)
 - [Flippa](https://flippa.com/)
