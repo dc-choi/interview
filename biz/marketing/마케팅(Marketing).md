@@ -11,7 +11,7 @@ aliases: ["Marketing", "마케팅"]
 
 ## 목차
 - [x] [[Affiliate-Marketing|제휴 마케팅]] — CPC와 CPA, 적격 성과와 정산 수익의 구분
-- [x] [[Marketing-Fundamentals|마케팅, 브랜딩, 광고 기초 (브랜드와 제품 통합의 구분, STP, 4P, Customer Journey)]]
+- [x] [[Marketing-Fundamentals|마케팅, 브랜딩, 광고와 홍보 기초 (PR의 관계 관리, 브랜드와 제품 통합의 구분, STP, 4P, Customer Journey)]]
 - [x] [[GTM-Strategy|Go-to-Market 전략과 유입, 체험 물량 역산]] *(→ product-strategy/)*
 - [x] [[Content-Marketing|콘텐츠 마케팅]] — 작은 유입의 전환 검증과 추천 채널
 - [x] [[LinkedIn-Content-Distribution|LinkedIn 콘텐츠 도달]] — 관계와 관심사 신호, 인맥 밖 추천, 반응 조작 제한과 전환 검증

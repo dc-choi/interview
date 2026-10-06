@@ -62,18 +62,14 @@ aliases: ["Commerce Revenue Formula", "이커머스 수익 공식"]
 
 ## 비수기 대응
 
-비수기는 손님이 없는 시기가 아니라 덜 오는 시기다. 방문수가 줄어든 상태에서 흔한 두 대응은 수익 공식의 다른 변수를 망가뜨린다.
+계절에 따라 수요가 줄어드는 사업은 연중 운영, 다른 고객군이나 상품으로의 전환, 일시 휴업을 비교할 수 있다. 기존 고객 집중이나 할인 금지를 보편적인 정답으로 두지 않는다. 아래는 비수기 운영 안내를 적용한 검토 질문이며 업종별 성과를 입증한 실험 결과는 아니다.
 
-- **할인**: 줄어든 방문을 되살리려고 가격을 내리면 원래 오던 단골까지 싸게 사게 된다. 방문수는 조금 늘어도 객단가와 마진이 전체 고객에게서 함께 떨어진다.
-- **버티기**: 아무것도 바꾸지 않으면 고정비가 줄어든 매출을 그대로 깎아 현금만 빠져나간다.
+- **할인과 공헌이익:** 할인 대상, 기간과 추가 주문을 구분한다. 원래 정가로 살 고객에게도 할인이 적용되면 기존 주문의 공헌이익이 줄 수 있다. 반대로 추가 수요와 유휴 용량 활용이 이를 보완할 수도 있으므로 방문수만으로 성공을 판단하지 않는다.
+- **재방문과 신규 유입:** 기존 고객의 재구매, 추천과 다음 시즌 예약을 시험하되, 지역 고객이나 기업 고객처럼 비수기에도 수요가 있는 새 고객군도 비교한다. 재방문이 신규 획득보다 항상 효율적이라는 전제는 두지 않는다.
+- **운영 개선:** 한가한 기간에 예산, 작업 절차와 제공 상품을 점검한다. 메뉴나 동선, 수리와 정비는 사업에 맞춰 고를 개선 후보이며 전환율 상승이 확인된 결과는 아니다.
+- **현금과 이행 의무:** 다음 성수기까지 예상 입금과 지급을 기간별로 나누고 매출 회복이 늦는 경우도 계산한다. 조기 예약과 선납은 입금 시점을 앞당길 수 있지만 이후 제공 비용과 환불 의무를 없애지는 않는다. [[Business-Model#매출, 이익과 현금흐름을 구분한다|손익과 현금의 구분]]을 함께 본다.
 
-대신 변수를 나눠서 본다.
-
-- 방문수는 신규 유입보다 재방문으로 채운다. 새 손님 유치보다 이미 오는 손님이 다시 올 이유(얼굴을 기억하는 응대, 다음 방문에 쓸 작은 혜택)를 만드는 편이 비수기에 효율이 높다.
-- 전환과 객단가를 손보는 작업을 한다. 메뉴나 상품 구성 재편, 동선 개선, 미뤄 둔 수리와 정비는 성수기에 하기 어려운 일이다.
-- 현금 계획을 시즌 사이클에 맞춘다. 성수기 잉여 현금으로 비수기 고정비를 버티도록 연 단위로 자금을 배분한다.
-
-이 절은 오프라인 자영업 운영 경험에서 나온 경험칙이며 업종별 효과를 측정한 근거는 아니다.
+2026-10-07에 아래 SBA 공개 안내의 선택지와 대조했다. 미국의 마케팅 및 운영 제안을 한국 사업의 수익 보장이나 법적 기준으로 적용하지 않는다.
 
 ## 면접 체크포인트
 
@@ -87,7 +83,8 @@ aliases: ["Commerce Revenue Formula", "이커머스 수익 공식"]
 - [Post-implementation Review of IFRS 15 Revenue from Contracts with Customers — IFRS Foundation](https://www.ifrs.org/content/dam/ifrs/project/pir-ifrs-15/rfi-iasb-2023-4-pir-ifrs-15.pdf)
 - [Shopify, Sales reports](https://help.shopify.com/en/manual/reports-and-analytics/shopify-reports/report-types/default-reports/sales-report)
 - [Compare and Contrast Variable and Absorption Costing — OpenStax, Principles of Accounting](https://openstax.org/books/principles-managerial-accounting/pages/6-5-compare-and-contrast-variable-and-absorption-costing)
-- [자영업 비수기 대응 — taek_ceo (Threads)](https://www.threads.com/@taek_ceo/post/DdTaBDhm9jo)
+- [17 Ideas for Marketing a Seasonal Business in the Off-Season — Rieva Lesonsky (SBA)](https://www.sba.gov/blog/2018/2018-09/17-ideas-marketing-seasonal-business-season/)
+- [The Pros and Cons of Running a Seasonal Business — Ijeoma S. Nwatu (SBA)](https://www.sba.gov/blog/2016/2016-06/pros-cons-running-seasonal-business/)
 
 ## 관련 문서
 - [[Commerce-Overview|커머스 도메인 개요]]

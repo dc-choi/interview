@@ -15,7 +15,7 @@ aliases: ["Commerce", "커머스"]
 - [x] [[Commerce-Domain-Knowledge|도메인 지식]] — 복잡도의 근원, 빅블러와 도메인 흡수, 정책과 구현의 갭, 습득 방법
 - [x] [[Commerce-Korea-Market|한국 시장]] — 온라인 갈라파고스, 동질화와 메타쇼핑몰, 이용자 행동 특성
 - [x] [[Commerce-Korea-History|한국 이커머스 역사]] — 시대별 흐름과 반복 패턴 (1996~2017, korea-history/ 폴더 인덱스)
-- [x] [[Commerce-Revenue-Formula|수익 공식]] — 거래액, 매출과 공헌이익 구분, 전환율 분모, 사업모델별 검증 가설
+- [x] [[Commerce-Revenue-Formula|수익 공식]] — 거래액, 매출과 공헌이익 구분, 전환율 분모, 비수기의 할인, 고객군과 현금 계획
 - [x] [[Payment-Service|결제 서비스]] — 카드 결제 4단계(주문서, 인증, 승인, 매입), PG와 VAN, 간편결제 토큰, 페이 스펙트럼, 카드 네트워크 4대 역할과 interchange 수수료 경제, 결제 데이터 시야와 POS 연동 범위
 - [x] [[In-App-Purchase|인앱결제]] — 결제수단 vs 결제시스템, 앱마켓 수수료의 가격 전가, 독점 규제
 - [x] [[Cross-Border-Resale-Arbitrage|해외 중고 리셀 차익 거래]] — 소싱, 선별과 물류, 거래별 잔액과 순이익 구분, 관세 부담 주체, 미국 소액 면세 중단과 eBay 드롭쉬핑 제한
