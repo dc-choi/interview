@@ -36,6 +36,15 @@ CPU가 주원인이면 실행 계획과 자원 요구량을, 잠금 대기가 �
 - 연결 생성과 종료가 잦으면 인증 비용과 연결 지연도 본다. 현재 연결 수가 많다는 관찰과 connection churn은 같은 지표가 아니다.
 - 세션 종료 전에는 소유 애플리케이션, 열린 트랜잭션과 재시도 영향을 확인한다. 반복 문제는 연결 반환, 트랜잭션 경계, 풀 예산과 timeout 설정에서 해결한다.
 
+## 누적 SQL 통계와 문제 구간을 구분한다
+
+`pg_stat_activity`가 현재 세션을 보여 준다면 `pg_stat_statements`는 정규화한 SQL별 누적 계획과 실행 통계를 보여 준다. PostgreSQL 18 기준으로 다음을 구분한다.
+
+- `calls`, `total_exec_time`, `mean_exec_time`을 함께 본다. 한 번 느린 SQL과 짧지만 자주 실행되는 SQL은 개선할 지점이 다르다. 실행 경과 시간을 CPU 사용 시간으로 해석하지 않고 DB Load의 CPU와 대기 이벤트를 대조한다.
+- 누적 순위가 최근 CPU 급증의 순위인 것은 아니다. 문제 구간의 시작과 끝에서 같은 `dbid`, `userid`, `queryid`, `toplevel` 조합의 차이를 비교한다. `stats_since`, 전체 초기화 시각인 `pg_stat_statements_info.stats_reset`, 항목 퇴출 횟수 `dealloc`도 확인한다. 초기화나 퇴출로 연속성이 끊긴 항목은 단순 차분으로 비교하지 않는다.
+- `total_plan_time` 등 계획 통계는 `pg_stat_statements.track_planning`을 켜야 수집되며 기본값은 `off`다. 0을 계획 비용이 없다는 증거로 읽지 않는다. 활성화에는 추가 비용이 있을 수 있으므로 필요한 관찰 범위를 정한다.
+- 확장 로드와 해당 DB의 뷰 설치, 조회 권한을 확인한다. 일반 PostgreSQL의 `shared_preload_libraries` 변경은 재시작이 필요하므로 장애 중 즉석 활성화를 기본 조치로 삼지 않는다. 관리형 엔진에서는 현재 파라미터와 적용 상태부터 확인한다.
+
 ## 유지보수와 실행 계획을 함께 본다
 
 `pg_stat_user_tables`의 `n_dead_tup`, `last_autovacuum`, `last_autoanalyze`를 함께 확인한다. `n_dead_tup`은 추정치이며 정확한 bloat 크기나 수동 정리의 충분한 근거가 아니다. 장기 트랜잭션이 회수를 막는지, autovacuum이 처리량을 따라가는지도 조사한다.
@@ -50,6 +59,7 @@ CPU가 주원인이면 실행 계획과 자원 요구량을, 잠금 대기가 �
 - [AWS Aurora User Guide, Initial troubleshooting for common PostgreSQL performance issues](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/PostgreSQL.InitialTroubleshooting.html)
 - [AWS RDS User Guide, Database load](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.Overview.ActiveSessions.html)
 - [PostgreSQL 18 Documentation, The Cumulative Statistics System](https://www.postgresql.org/docs/18/monitoring-stats.html)
+- [PostgreSQL 18 Documentation, pg_stat_statements](https://www.postgresql.org/docs/18/pgstatstatements.html)
 - [How do I troubleshoot high CPU utilization for Amazon RDS for PostgreSQL or Amazon Aurora PostgreSQL-Compatible instances? — AWS re:Post](https://repost.aws/knowledge-center/rds-aurora-postgresql-high-cpu)
 
 ## 관련 문서

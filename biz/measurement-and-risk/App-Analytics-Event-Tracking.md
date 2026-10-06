@@ -12,6 +12,8 @@ aliases: ["App Analytics Event Tracking", "앱 분석과 이벤트 설계", "GA4
 
 검증 범위는 공식 문서의 자동 수집 조건, 개발자 필터, 코호트와 수집 제어, PII 정책이다. 실제 앱의 SDK 버전, 설정, 이벤트 전달과 법적 처리 근거는 확인하지 않았다. 아래 적용 점검은 사용자 서비스의 도입 완료 기록이 아니다.
 
+2026-10-07에는 사용자 속성의 보고 조건과 개발자 필터의 대상을 추가 대조했다. 나머지 제품 동작은 재검증하지 않아 frontmatter 검증일은 유지한다.
+
 ## 설정과 자동 수집
 
 1. Firebase 프로젝트를 만들고 Google Analytics를 연결한다.
@@ -66,6 +68,8 @@ aliases: ["App Analytics Event Tracking", "앱 분석과 이벤트 설계", "GA4
 - IP 기반 내부 트래픽 규칙은 웹 데이터 스트림에만 정의되고, 공식 도움말은 앱 사용자의 내부 트래픽을 이 방식으로 거를 수 없다고 안내한다. 앱에서는 확인된 테스트 계정이나 빌드 종류를 사용자 속성으로 보내고 맞춤 측정기준을 등록해 분석에서 구분할 수 있다. 이 값이 모든 심사자나 내부 사용자를 자동 식별한다는 뜻은 아니다.
 - 구분값은 첫 배포 전에 설계한다. 수집하지 않은 과거의 테스트 여부를 새 속성이 자동 복원하지는 않는다. 이미 남아 있는 앱 버전 등으로 일부를 구분할 수 있어도, 식별할 수 없는 트래픽은 미분류로 남긴다.
 
+사용자 속성으로 테스트 여부를 구분한다면 앱에서 값을 전송하고 실제 수집을 확인한 뒤 사용자 범위의 맞춤 측정기준을 등록한다. 관리 화면에 이름만 만드는 것으로 테스트 사용자가 식별되지는 않는다. 설치 경로를 뜻하는 값과 테스트 여부는 별개이므로, 특정 스토어 경로만 남겼다는 이유로 심사자와 내부 사용자가 모두 제외됐다고 해석하지 않는다. 이는 구분값의 의미를 점검하는 설계 원칙이며 특정 앱에서 검증된 분류 방법은 아니다.
+
 ## 수집 제어와 개인정보
 
 - iOS와 Android SDK의 Analytics 수집은 기본 활성 상태다. 수집 전 동의 등으로 보류해야 하는 조건이 있으면 초기 설정부터 비활성화하고 필요한 시점에 활성화한다. 나중에 보여 주는 동의 화면이나 이벤트 필터가 최초 수집을 막았다고 가정하지 않는다. 처리 근거와 위탁, 국외 이전 등은 [[Privacy-Operations-for-Small-Business|대표의 개인정보 운영]]에서 별도로 검토한다.
@@ -107,7 +111,6 @@ aliases: ["App Analytics Event Tracking", "앱 분석과 이벤트 설계", "GA4
 - [Firebase Android Reference, FirebaseAnalytics](https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics)
 - [Firebase, Google Analytics pricing](https://firebase.google.com/products/analytics/)
 - [Firebase Help, Link BigQuery to Firebase](https://support.google.com/firebase/answer/6318765)
-- [앱 출시 후 GA 데이터 분석 기본 — Threads, whitep.life](https://www.threads.com/@whitep.life/post/Dd1gUilmpYL)
 
 ## 관련 문서
 
