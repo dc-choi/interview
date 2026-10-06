@@ -116,7 +116,7 @@ button처럼 variant(primary, secondary, tertiary)와 상태(default, hover, pre
 | CSS custom property(`--color-primary`) | cascade로 subtree별 theme을 덮어쓰고 plain CSS와 CSS Modules에서도 쓴다. component를 다시 render하지 않고 값을 바꾼다 | 이름 오타가 type check로 잡히지 않는다 |
 | JavaScript object | TypeScript 타입, 조건 로직과 CSS-in-JS에서 고르기 쉽다 | JavaScript에서만 읽을 수 있어 plain CSS에서 쓰려면 CSS 변수로 내보내는 단계가 필요하다 |
 
-위 `tones`처럼 JavaScript map의 값이 CSS 변수 참조를 가리키면 variant 이름은 타입으로 제한하고 실제 값은 cascade로 바꿀 수 있다. 방법 자체보다 design 값을 한곳에서 관리하고 재사용하기 쉽게 만드는 목적을 기준으로 고른다.
+위 `tones`처럼 JavaScript map의 값이 CSS 변수 참조를 가리키면 variant 이름은 타입으로 제한하고 실제 값은 cascade로 바꿀 수 있다. 방법 자체보다 design 값을 한곳에서 관리하고 재사용하기 쉽게 만드는 목적을 기준으로 고른다. Tailwind 기반 design system에서 정해 둔 token과 variant를 사용처의 class로 덮어쓰지 못하게 lint로 검사하는 방법은 [[Design-System-Lint|디자인 시스템 lint]]에 있다.
 
 ### runtime CSS-in-JS와 빌드 타임 CSS의 비용
 

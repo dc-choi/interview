@@ -143,3 +143,5 @@ Claude Code 훅에서 종료 코드만으로 차단을 만드는 것은 대부�
 - [[LLM-Application-Security|LLM 애플리케이션 보안 (프롬프트 인젝션, 가드레일의 한계)]]
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문 (배포 전 층의 실체)]]
 - [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트 (fail-closed, 완료 선언 차단)]]
+- [[Design-System-Lint|디자인 시스템 lint (경고에 그친 디자인 규칙을 lint error와 CI로 강제)]]
+- [[GitHub-Agentic-Workflows|GitHub Agentic Workflows (CI 에이전트의 읽기 전용 실행과 쓰기 분리)]]

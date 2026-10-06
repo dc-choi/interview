@@ -116,7 +116,7 @@ Service selector가 일치하는 Pod를 EndpointSlice로 묶고 안정된 DNS �
 Namespace는 namespaced object의 이름 범위와 관리 단위다. DNS에서 다른 namespace의 Service는 `service.namespace.svc`처럼 구분한다. Namespace만 만들었다고 보안이나 비용이 자동 격리되지는 않는다.
 
 - RBAC으로 API 접근을 나눈다.
-- NetworkPolicy와 이를 구현하는 CNI로 traffic을 제한한다.
+- NetworkPolicy와 이를 구현하는 CNI로 traffic을 제한한다([[K8s-NetworkPolicy]]).
 - ResourceQuota와 LimitRange로 자원 사용 정책을 둔다.
 - cluster-scoped resource, CRD와 node는 Namespace 밖에 있다.
 
@@ -136,7 +136,7 @@ kubectl get events -n NAMESPACE --sort-by=.lastTimestamp
 2. Pending이면 scheduler event, request와 node constraint를 본다.
 3. CrashLoop이면 current/previous log와 probe를 본다.
 4. Service 장애면 selector, Pod label, readiness와 EndpointSlice를 잇는다.
-5. DNS, NetworkPolicy와 CNI 경로를 그 다음에 확인한다.
+5. DNS, NetworkPolicy와 CNI 경로를 그 다음에 확인한다([[K8s-NetworkPolicy#검증 절차|NetworkPolicy 검증 절차]]).
 
 cluster 안에서 경계를 넓혀 가며 호출하면 끊긴 층이 드러난다.
 
@@ -169,6 +169,7 @@ kubectl run tmp --rm -it --image=curlimages/curl -n NAMESPACE -- sh
 
 - [[K8s-Core-Workloads-and-Service-Architecture|Kubernetes control plane과 node component]]
 - [[K8s-PDB|PodDisruptionBudget]]
+- [[K8s-NetworkPolicy|Kubernetes NetworkPolicy]]
 - [[Blue-Green|Blue-Green 배포]]
 - [[Canary|Canary 배포]]
 - [[Helm|Helm]]

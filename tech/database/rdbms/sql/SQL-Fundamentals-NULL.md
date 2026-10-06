@@ -1,5 +1,5 @@
 ---
-tags: [database, sql, null, three-valued-logic]
+tags: [database, sql, "null", three-valued-logic]
 status: done
 verified_at: 2026-10-05
 category: "Data & Storage - RDB"

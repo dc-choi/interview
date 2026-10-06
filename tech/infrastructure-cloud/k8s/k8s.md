@@ -17,6 +17,7 @@ workload와 Service, 설정과 storage, traffic 진입과 배포, 리소스 적�
 - [x] [[K8s-Resource-Right-Sizing|Resource Right-Sizing (기준 수립, PromQL 쿼리, 컴포넌트 차등과 롤백 기준)]]
 - [x] [[K8s-HPA-VPA|HPA와 VPA (스케일 기준, 요청값과 관측값, 충돌 회피)]]
 - [x] [[K8s-PDB|PodDisruptionBudget (자발적 중단 가용성, drain과 롤링 업데이트)]]
+- [x] [[K8s-NetworkPolicy|NetworkPolicy (방향별 격리와 합집합 허용, selector AND와 OR, default deny와 DNS egress, 검증 절차)]]
 
 ## 관련 문서
 - [[tech/infrastructure-cloud/인프라&클라우드(Infrastructure&Cloud)|인프라&클라우드]] — 상위 카테고리 인덱스

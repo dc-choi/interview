@@ -95,5 +95,6 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]]
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]
 - [[LLM-Abstention|LLM 응답 보류와 캘리브레이션]]
+- [[LLM-Hallucination-Verification|LLM 환각 유형과 검증]]
 - [[LLM-Eval-Strategy|LLM 평가 전략]]
 - [[LLM-Model-Tiers|LLM 모델 티어 선택 (벤더별 단가)]]

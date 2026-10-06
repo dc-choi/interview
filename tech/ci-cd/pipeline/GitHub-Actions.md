@@ -189,3 +189,4 @@ Q. CI 시간을 단축하기 위해 어떤 전략을 쓰는가?
 - [[Multi-Stage-Build|Multi-stage build]]
 - [[AWS-Cost-Optimization|AWS 비용 최적화 (Self-hosted Runner Spot)]]
 - [[Dependency-Management|의존성 관리 (lock 파일 정책, frozen-lockfile의 근거)]]
+- [[GitHub-Agentic-Workflows|GitHub Agentic Workflows (읽기 전용 에이전트와 safe outputs로 쓰기 권한 분리)]]

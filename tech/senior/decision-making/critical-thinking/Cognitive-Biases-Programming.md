@@ -31,7 +31,7 @@ aliases: ["Cognitive Biases in Programming", "프로그래밍 인지 편향", "�
 - NIH(Not Invented Here) 증후군의 인지적 뿌리
 
 **대응**
-- **Build vs Buy** 결정을 설계 초기에 기록 (시간이 지나면 sunk cost와 얽힘)
+- **Build vs Buy** 결정을 설계 초기에 기록 (시간이 지나면 sunk cost와 얽힘, 판단 틀은 [[Build-vs-Buy|Build vs Buy]])
 - 정기적인 **도구, 라이브러리 재평가** 세션
 - 외부 리뷰어, 컨설턴트에게 "이거 왜 자체 제작해?" 질문받기
 

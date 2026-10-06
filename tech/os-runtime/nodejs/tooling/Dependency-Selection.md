@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, tooling, dependency]
 status: done
-verified_at: 2026-09-09
+verified_at: 2026-10-06
 category: "OS & Runtime"
 aliases: ["의존성 선택", "라이브러리 평가", "라이브러리 선별", "Dependency Selection"]
 ---
@@ -57,6 +57,7 @@ HTTP 클라이언트는 [[HTTP-Networking#Axios에서 Fetch로 이전]], 테스�
 | 문서와 예제 | README, 실사용 예제, CHANGELOG | semver 준수도까지 본다 |
 | 라이선스 | 패키지 라이선스 | copyleft(GPL) 여부와 프로젝트 호환성 |
 | 버스 팩터 | 메인테이너 구성 | 1인 대 조직이나 재단 백업 |
+| 유지보수 자금 | 급여를 받는 유지보수 인력, 주 후원사와 수입원 | 채택도와 별개로 보고, 후원사가 떠날 때의 계획을 확인 (6절) |
 
 ## 3. 도구
 
@@ -93,11 +94,25 @@ HTTP 클라이언트는 [[HTTP-Networking#Axios에서 Fetch로 이전]], 테스�
 
 한 기업이 인프라, 최대 기여자, 상업 라이선스 독점을 동시에 쥐면 그 기업의 내부 분쟁이 생태계 전체의 가용성 사건이 되고, 기여 시간 자체가 협상 지렛대로 쓰일 수 있다. WordPress에서는 GPL 소프트웨어, 상표를 가진 재단, 플러그인과 업데이트 인프라를 개인적으로 통제하는 한 기업의 CEO가 분리돼 있었다. 2024년 한 호스팅 업체와의 분쟁에서 인프라 접근 차단, 로그인 확인 절차, 플러그인 포크와 업데이트 경로 전환이 잇따랐고 되돌림은 법원의 예비적 금지명령으로만 작동했다. 2026년 9월에는 그 기업 이사회가 CEO를 유급 휴직 조치했다가 48시간 안에 복귀하는 일이 있었다.
 
+## 6. 자금 리스크 — 누가 유지보수 비용을 내나
+
+채택도와 유지보수 자금은 별개다. 다운로드와 dependents가 늘어도 유지보수 인력의 급여를 내는 수입원은 줄어들 수 있고, 주 후원사가 떠나면 널리 쓰이던 프로젝트도 새 유지보수 주체를 찾아야 한다. 라이선스가 포크를 허용해도 포크를 계속 유지할 사람과 비용은 따로 마련해야 하므로, 포크할 권리와 유지할 여력을 구분한다. 버스 팩터와 위 거버넌스 리스크를 자금 관점으로 넓힌 항목이다.
+
+- 누가 급여를 받으며 유지보수하는가: 개인 자원봉사, 한 기업의 직원, 재단이나 여러 후원사
+- 유지보수 비용의 수입원은 무엇이며, 사용량이 늘 때 그 수입원도 함께 느는 구조인가
+- 주 후원사가 떠날 때 후원 종료 시점, 유지보수 주체 이양, 저장소 보관(archive) 중 무엇을 공지하는가
+- 깊이 의존한다면 후원, 기여나 포크 유지 비용을 조직이 나눠 맡을 수 있는가
+
+다음은 2026-10-06에 확인한 당사자 발표 기준의 사례다. Tailwind CSS를 처음 만든 메인테이너는 2026년 1월 문서 저장소의 공개 PR 댓글에서, Tailwind가 그 어느 때보다 많이 쓰이는데도 문서 트래픽은 2023년 초보다 약 40%, 매출은 80% 가까이 줄었고 AI가 사업에 준 타격으로 엔지니어링 팀의 75%가 일자리를 잃었다고 밝혔다. 문서가 상용 제품을 알리는 유일한 경로여서, LLM이 문서를 읽기 쉬워질수록 문서 방문과 유료 제품을 알게 되는 사람이 줄어든다고 설명했다. 2026-09-09 Tailwind Labs는 Shopify 합류를 발표하며 오픈소스 프로젝트는 MIT 라이선스로 남고 기존 팀이 Shopify의 지원으로 계속 유지보수한다고 밝혔고, 상용 제품인 Tailwind Plus와 ui.sh는 기존 고객의 이용을 유지하되 신규 가입을 닫았다.
+
+후원사가 떠나는 쪽의 사례도 있다. 2026-09-10 Shopify는 모바일 앱의 네이티브 전환을 발표하며 자사가 만들거나 후원한 React Native 라이브러리별 계획을 공지했다. React Native Skia는 2026년 말까지 후원하고 이후 기존 메인테이너가 포크해 새 이름으로 배포하며, 이전이 끝나면 원 저장소를 보관 처리한다. Shopify가 주간 약 200만 다운로드라고 밝힌 FlashList는 호환성을 깨는 치명적 문제를 계속 고치면서 장기 유지보수를 맡을 기업들과 논의 중이다. 사용자 기반이 작은 Restyle은 2026년 말까지 동작을 유지한 뒤 유지보수를 중단하고 저장소를 보관 처리하며, 포크는 누구나 할 수 있다고 밝혔다.
+
 ## 면접 포인트
 
 - 라이브러리를 어떻게 고르나 → 먼저 빌트인이나 몇 줄로 되는지 확인해 도입 자체를 줄이고, npm trends와 Moiva로 후보를 좁힌 뒤 유지보수, 의존성 트리, 타입, 라이선스로 검증하고, 도입 직전 Socket으로 공급망을 본다.
 - 스타 수가 많으면 좋은 라이브러리인가 → 스타는 관심의 대리 지표일 뿐이다. 주간 다운로드, dependents, 이슈 응답, 릴리스 주기가 실제 건강도를 더 잘 보여준다.
 - 의존성이 적은 게 왜 중요한가 → transitive 트리가 커질수록 공급망 공격 표면과 유지보수 부담이 함께 늘어난다. left-pad 사건처럼 작은 패키지 하나가 전체를 흔들 수 있다.
+- 유명 기업이 쓰거나 후원하는 라이브러리면 안심해도 되나 → 채택도와 유지보수 자금은 별개다. 누가 급여를 받으며 유지보수하는지, 후원사가 떠날 때 이양이나 보관 계획을 공지하는지 보고, 깊이 의존한다면 포크를 유지할 여력까지 함께 판단한다.
 
 ## 출처
 - [Node.js, Userland migrations](https://nodejs.org/learn/getting-started/userland-migrations)
@@ -114,6 +129,9 @@ HTTP 클라이언트는 [[HTTP-Networking#Axios에서 Fetch로 이전]], 테스�
 - [Bundlephobia](https://bundlephobia.com)
 - [npm trends](https://npmtrends.com)
 - [WordPress는 누구의 것인가 — GeekNews](https://news.hada.io/article/who-owns-wordpress)
+- [Tailwind Labs is joining Shopify — Tailwind CSS Blog](https://tailwindcss.com/blog/tailwind-is-joining-shopify)
+- [feat: add llms.txt endpoint for LLM-optimized documentation (PR #2388) — GitHub tailwindlabs/tailwindcss.com](https://github.com/tailwindlabs/tailwindcss.com/pull/2388)
+- [Native is now the future of mobile at Shopify — Shopify Engineering](https://shopify.engineering/back-to-native)
 
 ## 관련 문서
 - [[Dependency-Management|의존성 관리]]
@@ -123,4 +141,6 @@ HTTP 클라이언트는 [[HTTP-Networking#Axios에서 Fetch로 이전]], 테스�
 - [[Nodejs-Native-Addons|네이티브 애드온과 prebuild]]
 - [[Version-Upgrade-Difficulty|버전 업그레이드 난이도]]
 - [[ADR|라이브러리 선택 결정 기록]]
+- [[Open-Source-License-Review|오픈소스 라이선스 검토]]
+- [[Mobile-App-Architectures|모바일 서비스 아키텍처]]
 - [[Node.js]]

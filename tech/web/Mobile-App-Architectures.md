@@ -1,7 +1,7 @@
 ---
 tags: [web, mobile, client, architecture]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-10-06
 category: "웹&네트워크(Web&Network)"
 aliases: ["Mobile App Architectures", "모바일 앱 개발 방식", "하이브리드 앱", "웹뷰"]
 ---
@@ -41,7 +41,11 @@ SPA, MPA와 SSR은 위 배포 형태와 다른 축이다. 모바일 브라우저
 
 ### 사례 — 크로스플랫폼에서 네이티브로 복귀
 
-한 커머스 플랫폼(Shopify)은 2020년 중복 구현 제거, 스택을 넘나드는 기여, 플랫폼 패리티 비용 절감을 이유로 React Native를 채택했고 2025년 1월까지 긍정 평가를 유지했다. 2025년 말 코딩 에이전트가 소프트웨어를 두 번 만드는 것을 더 이상 두 배의 일이 아니게 만들자, 성능 문제가 아니라 전제 변화를 이유로 모든 모바일 앱을 Swift와 Kotlin으로 전환하기로 했다. 네이티브의 근거는 플랫폼 역량과 1st party 도구 접근, 레이어 감소, 에이전트 보조 개발의 빠른 피드백 루프였다. 점진 마이그레이션 대신 전면 재구축을 택했는데, 기존 코드가 에이전트의 참조 자료로 잘 쓰이고 재구현 비용이 낮아 백지의 이점이 위험 분산의 이점을 넘어섰기 때문이다. 대량 에이전트 생성물은 작은 순서 있는 조각마다 테스트 통과, 실행 앱과의 시각 비교, 적대적 리뷰, 사람 승인을 거치는 게이트로 품질을 지켰고, 비즈니스 로직을 UI에서 분리해 CLI로 실행하게 만들어 반복 주기를 줄였다. 떠나는 생태계에는 라이브러리별로 후원 종료 시점, 스튜어드십 이양, 포크 허용을 사전 공지했다. 전환 후 속도와 품질의 실측 결과는 아직 제시되지 않았고, 다른 조직에 대한 일반 권고도 아니다.
+한 커머스 플랫폼(Shopify)은 2020년 중복 구현 제거, 스택을 넘나드는 기여, 플랫폼 패리티 비용 절감을 이유로 React Native를 채택했고 2025년 1월까지 긍정 평가를 유지했다. 2025년 말 코딩 에이전트가 소프트웨어를 두 번 만드는 일이 여전히 두 배의 일인지 다시 묻게 만들자, 성능 문제가 아니라 전제 변화를 이유로 모든 모바일 앱을 Swift와 Kotlin으로 전환하기로 했다. 네이티브의 근거는 플랫폼 역량과 1st party 도구에 더 가깝고 코드와 플랫폼 사이의 프레임워크와 의존성 레이어가 적다는 점이었다. React Native로 옮길 때는 큰 앱을 다시 쓰는 데 수년이 걸리고 그동안 기능 출시가 멈추는 문제 때문에 일부 큰 앱에 점진 마이그레이션을 택했지만, 이번에는 에이전트가 기존 React Native 코드를 참조해 기능을 잘 다시 만들고 프로토타입에서 재구축이 훨씬 빨라져 이전 제약 없이 다시 설계하는 전면 재구축을 택했다. 대량 에이전트 생성물은 작은 순서 있는 조각마다 테스트 통과, 실행 앱과의 시각 비교, 적대적 리뷰, 사람 승인을 거치는 게이트로 품질을 지켰고, 비즈니스 로직을 UI에서 분리해 CLI로 실행하게 만들어 반복 주기를 줄였다. 떠나는 생태계에는 라이브러리별로 후원 종료 시점, 스튜어드십 이양, 포크 허용을 사전 공지했다.
+
+2026-09-10 Shopify는 Shop 앱 전환 결과를 자체 보고했다. 엔지니어 한 명의 1주 개념 증명에서 시작해 핵심 엔지니어 6명이 기반과 주요 사용자 흐름을 만들고 기능 팀이 중간에 합류했으며, 네이티브 앱의 스토어 배포까지 12주가 걸렸다. React Native 이전 버전과 비교해 콜드 스타트는 iOS 3,200ms에서 2,466ms로 23%, Android 4,433ms에서 2,233ms로 50% 줄었다. 세션 안정성은 99.5% 이상에서 99.95% 이상으로 올라 크래시가 나는 세션이 10분의 1로 줄었다고 밝혔다. 앱 크기는 iOS가 67MB에서 68MB로 1MB(1.5%) 늘고 Android가 293MB에서 184MB로 37.2% 줄었으며, 릴리스 빌드 시간은 Android에서 약 75% 줄고 iOS에서는 비슷했다. 측정 기간, 기기와 백분위 같은 조건은 밝히지 않았으므로 독립 검증된 비교가 아니라 한 회사의 자체 보고로 읽고, 다른 조직의 일반 기준으로 옮기지 않는다.
+
+전환 과정에서는 계획 승인을 계획 내용의 해시에 묶어 계획이 바뀌면 이전 승인이 무효가 되게 했다. 지정한 체크포인트마다 두 앱의 화면과 이벤트 구간을 캡처하고 원시 이벤트 캡처로 이벤트 이름, 개수와 payload 필드를 비교했으며, 타임스탬프와 페이지 UUID처럼 실행마다 자연히 달라지는 값은 비교 지시에서 따로 고려했다. 전문화된 서브에이전트가 기존 React Native 소스 분석과 동작 문서화, 플랫폼별 계획, 기능 구현, 패리티 리뷰를 나눠 맡았고, 개발자 한 명이 변경과 실행을 반복하는 대신 여러 에이전트 세션을 별도 worktree에서 돌리는 방식을 자주 썼다.
 
 ## 백엔드 관점: 클라이언트 유형이 서버에 미치는 영향
 
@@ -65,6 +69,7 @@ SPA, MPA와 SSR은 위 배포 형태와 다른 축이다. 모바일 브라우저
 - [[REST|REST API]]
 - [[Project-Management|프로젝트 관리]] — 다중 API 버전 운영 부담의 회고 사례
 - [[Tech-Decision|기술 의사결정]] — 트렌드 도입 판단과 전제 기반 재평가
+- [[Dependency-Selection|의존성 선택]] — 후원 기업이 떠날 때 라이브러리 의존성 판단
 
 ## 출처
 - [App Review — Apple Developer](https://developer.apple.com/app-store/review/)
@@ -72,7 +77,8 @@ SPA, MPA와 SSR은 위 배포 형태와 다른 축이다. 모바일 브라우저
 - [MDN, Single-page application](https://developer.mozilla.org/en-US/docs/Glossary/SPA)
 - [MDN, Progressive web apps](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 - [모바일 서비스 개발 방식 4가지 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/40)
-- [Back to Native — Shopify Engineering](https://shopify.engineering/back-to-native)
+- [Native is now the future of mobile at Shopify — Shopify Engineering](https://shopify.engineering/back-to-native)
+- [Migrating Shop app from React Native to native — Shopify Engineering](https://shopify.engineering/shop-app-migration)
 - [Shopify, React Native에서 네이티브로 복귀 — GeekNews](https://news.hada.io/topic?id=33485)
 - [인프런, 제미니, 상품 목록 - 요구사항 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392731)
 - [인프런, 제미니, 상품 목록 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392732)

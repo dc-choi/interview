@@ -23,7 +23,7 @@ client -> external LB -> ingress controller -> Service -> ready Pod
 - `IngressClass`로 어떤 controller가 처리할지 명시한다.
 - TLS Secret, certificate 발급/갱신 주체와 redirect/HSTS 정책을 분리해 확인한다.
 - controller annotation은 구현체 종속 API다. 다른 controller로 옮길 때 호환되지 않을 수 있다.
-- Service endpoint가 비었거나 NetworkPolicy가 막으면 Ingress rule이 맞아도 502/503이 발생한다.
+- Service endpoint가 비었거나 NetworkPolicy가 막으면 Ingress rule이 맞아도 502/503이 발생한다. 정책의 격리 규칙과 검증 절차는 [[K8s-NetworkPolicy|Kubernetes NetworkPolicy]]에 정리했다.
 - Kubernetes 프로젝트는 Ingress 대신 Gateway를 쓰라고 권한다. Ingress API는 GA라 제거 계획은 없지만 동결되어 더 이상 변경되지 않는다(Kubernetes 1.37 문서 기준). 새 설계는 역할 분리와 확장성이 큰 Gateway API를 기본으로 평가한다.
 
 Gateway API는 대체로 infrastructure owner의 `GatewayClass/Gateway`와 application owner의 `HTTPRoute` 같은 route를 분리한다. controller가 해당 resource와 feature를 실제 지원하는지 conformance를 확인한다.
@@ -114,3 +114,4 @@ CRD, controller, config, workload처럼 의존 순서가 있으면 sync wave/hoo
 - [[K8s-Core-Workloads-and-Service|Kubernetes core workload와 Service]]
 - [[Docker-Image-Pipeline|Docker image pipeline]]
 - [[Istio-Traffic-Management-and-Resilience|Istio traffic management와 resilience]]
+- [[K8s-NetworkPolicy|Kubernetes NetworkPolicy]]
