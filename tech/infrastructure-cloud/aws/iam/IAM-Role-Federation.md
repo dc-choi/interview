@@ -69,6 +69,25 @@ CI 워크플로우에 AWS 액세스 키를 리포지토리 시크릿으로 박�
 - `aud` 조건을 빼면 다른 대상으로 발급된 토큰까지 통과할 여지가 생긴다. 두 조건을 함께 건다.
 - 워크플로우 쪽에는 `permissions: id-token: write`가 있어야 토큰을 요청할 수 있다. 없으면 자격증명 설정 단계에서 실패한다.
 
+## IAM Roles Anywhere — AWS 밖 워크로드의 임시 자격증명
+
+온프레미스 서버와 컨테이너가 AWS 리소스를 호출할 때 장기 AWS 액세스 키 대신 X.509 인증서로 임시 자격증명을 발급받는 방식이다. 인증서에 연결된 개인 키로 `CreateSession` 요청에 서명하므로, 장기 AWS 키를 없애도 개인 키 보호와 인증서 수명 관리는 남는다.
+
+1. 신뢰할 CA를 **trust anchor**로 등록한다.
+2. **profile**에 사용할 IAM role과 필요하면 권한을 제한할 session policy를 지정한다.
+3. role의 trust policy에서 `rolesanywhere.amazonaws.com`에 `sts:AssumeRole`, `sts:TagSession`, `sts:SetSourceIdentity`를 허용한다. `aws:SourceArn` 조건에 허용할 trust anchor ARN을 지정하고, 필요하면 인증서의 Subject나 Issuer 조건도 적용한다. 서비스 principal만 허용하면 같은 계정의 다른 trust anchor가 발급한 인증서도 role을 사용할 수 있으므로 신뢰 범위를 명시한다.
+4. 인증서 신뢰 체인, 서명과 role 조건 검증을 거쳐 임시 자격증명을 받고 AWS API를 호출한다. session policy는 세션 권한을 제한하는 용도다.
+
+IAM role 자체와 달리 Roles Anywhere 리소스는 리전 단위다. 함께 사용하는 trust anchor와 profile은 같은 계정과 리전에 둔다.
+
+### SDK 연결과 운영 경계
+
+- 공식 credential helper는 인증서 서명과 자격증명 발급을 처리한다. SDK의 `credential_process`에 연결할 수 있으며, 해당 SDK의 만료 전 재호출과 갱신 동작을 확인한다.
+- `serve` 모드는 로컬 IMDSv2 호환 endpoint로 자격증명을 제공한다. 그 endpoint에 접근 가능한 다른 로컬 프로세스도 자격증명을 받을 수 있으므로, localhost라는 이유만으로 워크로드별 권한 격리가 완성되지는 않는다.
+- 여러 워크로드 앞에 별도 자격증명 게이트웨이를 두는 것은 선택적인 설계다. 도입한다면 호출 워크로드와 허용 role의 매핑 검증, 게이트웨이 장애와 갱신 실패 대응을 추가로 설계한다.
+
+이 절은 2026-10-07 공식 문서로 확인했다. 기존 STS와 GitHub OIDC 절 전체를 재검증한 날짜는 아니다.
+
 ## Permission Boundary — 권한 천장
 
 ```
@@ -78,6 +97,10 @@ CI 워크플로우에 AWS 액세스 키를 리포지토리 시크릿으로 박�
 위임 관리자가 이 한도 안에서만 사용자와 Role을 만들 수 있게 보장한다. 개발자에게 IAM 관리 위임할 때, 자기보다 강한 권한 부여 못 하게 막는 가드.
 
 ## 출처
+- [AWS IAM Roles Anywhere User Guide, What is IAM Roles Anywhere?](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/introduction.html)
+- [AWS IAM Roles Anywhere User Guide, The authentication process](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication.html)
+- [AWS IAM Roles Anywhere User Guide, The trust model](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/trust-model.html)
+- [AWS IAM Roles Anywhere User Guide, Get temporary security credentials](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/credential-helper.html)
 - [GitHub Docs, Configuring OpenID Connect in Amazon Web Services](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws)
 - [AWS STS API Reference, AssumeRole](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html) — DurationSeconds 900초(15분)~43200초(12시간)
 - [AWS IAM User Guide, IAM roles, Roles terms and concepts](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html) — role chaining 최대 1시간

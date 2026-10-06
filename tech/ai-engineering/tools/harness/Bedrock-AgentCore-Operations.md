@@ -1,0 +1,72 @@
+---
+tags: [ai, agent, aws, bedrock, isolation, authorization]
+status: done
+verified_at: 2026-10-07
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["Bedrock AgentCore Operations", "AgentCore 운영 경계"]
+---
+
+# Bedrock AgentCore의 실행, 권한과 상태 경계
+
+Amazon Bedrock AgentCore는 에이전트의 실행 환경, 도구 연결, 자격증명, 기억과 관측 기능을 제공한다. 관리형 기능을 조합해도 사용자 식별, 데이터 접근 범위와 업무 결과 검증은 애플리케이션에서 설계해야 한다.
+
+## 기능보다 책임 경계를 먼저 나눈다
+
+| 구성요소 | 맡기는 기능 | 애플리케이션에서 확인할 것 |
+|---|---|---|
+| Runtime | 세션 실행과 환경 격리 | 사용자와 세션의 소유 관계, 재개 시 상태 복원 |
+| Identity | 에이전트 identity와 자격증명 관리 | 접근 주체, 대상 리소스와 허용 권한 |
+| Gateway | API와 Lambda 등을 MCP 호환 도구로 연결 | 도구별 인가와 입력 검증, 외부 부수 효과 |
+| Memory | 대화 이벤트와 세션을 넘는 기억 | 저장 범위, 사용자별 조회 권한, 추출 결과의 검증 |
+| Observability | 실행 단계, 지연, 토큰과 오류 관측 | 계측 범위, 민감 데이터, 업무 성공 판정 |
+
+이 표의 애플리케이션 점검 항목은 각 서비스의 책임 범위를 바탕으로 한 설계 점검 제안이다.
+
+## 세션 격리는 사용자 인증을 대신하지 않는다
+
+Runtime의 microVM 기반 세션은 연산 자원, 메모리와 파일시스템을 분리한다. 같은 세션으로 이어지는 호출은 해당 연산 환경이 유지되는 동안 실행 문맥을 재사용한다. 하지만 **AgentCore가 사용자와 세션의 소유 관계를 강제하지는 않는다.** 백엔드가 인증된 사용자에게 속한 세션인지 확인하고 사용자별 세션 수와 수명을 관리해야 한다.
+
+따라서 클라이언트가 보낸 세션 식별자를 그대로 신뢰해서는 안 된다. 다른 사용자의 세션 재사용 요청을 거절하는지 확인한다. 실행 환경이 분리돼 있어도 외부 DB, 객체 저장소와 기억 조회의 사용자별 권한 검증은 별도로 필요하다.
+
+## 실행 환경의 상태와 영속 기억을 구분한다
+
+기본 microVM의 메모리와 디스크 상태는 연산 환경의 수명에 묶인다. 중지와 재개를 넘어 파일을 유지하려면 별도 session storage 설정이 필요하다. 대화 이력처럼 구조화된 상태의 영속 보관에는 Memory를 사용할 수 있다. 실행 환경이 종료돼도 모든 데이터가 그대로 복원된다고 가정하지 않는다.
+
+Memory의 short-term memory는 대화 턴과 이벤트를 저장하고, long-term memory는 대화에서 선호, 사실과 요약 등을 추출해 세션을 넘어 사용한다. 추출된 요약을 원문이나 승인된 업무 기록과 동일하게 취급하지 않는다. 재개에 필요한 상태와 모델이 추론한 기억을 나누는 것은 애플리케이션의 데이터 설계다.
+
+## 도구 연결과 실행 권한은 별도 계약이다
+
+Gateway는 OpenAPI, Smithy, Lambda 같은 입력을 도구로 연결하고, 의미 검색으로 도구 후보를 찾는 기능을 제공한다. 도구 후보 검색을 사용자별 실행 권한 검사로 대체하지 않는다.
+
+Identity와 Gateway의 인증 구성에서는 들어오는 사용자 또는 에이전트 요청과 외부 서비스로 나가는 호출을 나눠 본다. 외부 호출의 OAuth 2.0, API key나 AWS 권한 설정이 필요하며, 도구를 연결했다는 사실만으로 원래 서비스의 인가 규칙이 충족되지는 않는다. 변경 작업의 승인, 중복 실행 방지와 실패 복구도 따로 점검한다.
+
+## 관측 데이터와 업무 성공을 분리한다
+
+Observability는 CloudWatch 기반 관측과 OpenTelemetry 호환 데이터를 제공한다. 기본 지표 외의 상세 span과 trace는 에이전트 코드 계측이 필요할 수 있고, Memory의 span과 로그도 활성화 여부를 확인한다.
+
+토큰, 지연과 오류율은 운영 지표다. 주문 처리나 분석 완료 같은 업무 성공은 결과 데이터와 별도 평가로 확인한다. 실행 시간이 짧거나 도구 호출이 성공했다는 이유만으로 답변의 정확성을 확정하지 않는다.
+
+## 운영 점검
+
+- 다른 사용자의 세션과 기억 조회를 거절하는가
+- 실행 환경 종료 뒤 필요한 상태만 복원되며, 재개가 외부 변경을 중복 실행하지 않는가
+- 자격증명 갱신 실패와 도구 권한 거절이 구분돼 기록되는가
+- 각 실행 단계의 trace와 실제 업무 결과를 연결해 실패 위치를 찾을 수 있는가
+
+가격, 실행 시간 상한, 리전과 target별 지원 범위는 이 문서의 대조 범위에 포함하지 않는다. 배포 전에 해당 구성의 공식 문서와 quota를 확인한다.
+
+## 출처
+
+- [AWS, Use isolated sessions for agents](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-sessions.html)
+- [AWS, Security best practices for AgentCore Runtime](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-security-best-practices.html)
+- [AWS, Overview of Amazon Bedrock AgentCore Identity](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-overview.html)
+- [AWS, Amazon Bedrock AgentCore Gateway](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html)
+- [AWS, Add memory to your Amazon Bedrock AgentCore agent](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory.html)
+- [AWS, Observe your agent applications on Amazon Bedrock AgentCore Observability](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability.html)
+
+## 관련 문서
+
+- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]]
+- [[MCP-Security-Boundaries|MCP 보안 경계]]
+- [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]]
+- [[LLM-Eval-Strategy|LLM 평가 전략]]
