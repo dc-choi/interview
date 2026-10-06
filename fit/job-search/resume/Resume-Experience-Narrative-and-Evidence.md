@@ -104,6 +104,17 @@ aliases: ["이력서 경험 서술", "Resume Experience Narrative"]
 - **이직 사유 한 줄**: 면접 답변과 어긋나지 않는 한 줄로 정리해 둔다. 이력서에 쓰지 않더라도 서류와 면접의 메시지가 같아야 한다.
 - **입사 후 1년 기여 계획**: 이력서 본문이 아니라 면접 재료로 준비한다. 과거 증거에서 이어지는 기여 가설이어야 설득력이 있다.
 
+## AI로 지원 문서를 다듬을 때
+
+AI에는 직접 정리한 경험과 지원 공고를 주고, 문장 개선안과 요건별 강점, 빈틈을 요청한다. 경험을 대신 만들어 달라고 하지 않는다. 다음은 지원 문서 편집에 적용할 검토 절차다.
+
+1. 지원 기관의 AI 사용 지침을 확인하고, 입력에서 개인정보와 회사 기밀을 제거한다.
+2. 기존 초안을 경험 블록별로 나누어 수정안을 받는다. 공고의 키워드는 실제 경험으로 설명할 수 있는 것만 반영한다.
+3. 추가된 역할, 기술, 숫자를 원천 기록과 대조한다. 근거 없는 성과나 기여 확대는 제거하고, 요건과 경험 사이의 빈틈은 남긴다.
+4. 최종본을 소리 내어 읽고 각 문장을 자신의 말로 설명한다. 자연스럽게 설명하지 못하는 표현은 고친다.
+
+문장 개선을 합격 가능성의 검증으로 해석하지 않는다. AI의 제안은 편집 후보이며, 최종 사실 확인과 제출 판단은 지원자가 맡는다.
+
 ## AI 활용 경험을 쓰는 법
 
 AI 도구 이름이나 생성 결과만 나열하지 않는다. 개발자로서 내 판단과 품질 책임이 보이도록 다음 순서로 쓴다.
@@ -171,6 +182,7 @@ AI 도구 이름이나 생성 결과만 나열하지 않는다. 개발자로서 
 - [경력직 이직을 준비하는 개발자에게 — Team Grit](https://teamgrit.co/article/340)
 - [개발자의 "할 수 있다"는 말은 어디까지일까요? — 요즘IT](https://yozm.wishket.com/magazine/detail/3880/)
 - [개발자 이력서 프로젝트 서술 — Team Grit](https://teamgrit.co/article/485)
+- [AI for Resumes and Cover Letters — Harvard Mignone Center for Career Success](https://careerservices.fas.harvard.edu/ai-resumes-and-cover-letters/) — 초안 기반 편집, 경험의 정확성, 직접 설명 가능성과 개인정보 보호
 - [개발자 취준생 이력서 무응답 체크리스트 — Threads, parkelo__](https://www.threads.com/@parkelo__/post/DdjZIqNlNYe)
 - [합격하는 경력직 지원 준비 7가지 특징 — Threads, allpass_everything](https://www.threads.com/@allpass_everything/post/DMLnpuHz3eh)
 - [개발자 면접 첫 질문을 유도하는 이력서 — Threads, think_lighthouse](https://www.threads.com/@think_lighthouse/post/DN29vUFZDbC)

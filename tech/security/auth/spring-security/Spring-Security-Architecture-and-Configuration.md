@@ -73,6 +73,10 @@ SecurityFilterChain api(HttpSecurity http) throws Exception {
 }
 ```
 
+위 코드는 `/api/**`만 보호하는 부분 예제다. 다른 Chain이 없으면 `/api/**` 밖의 요청에는 Spring Security의 보안 Filter가 적용되지 않는다. Chain 안의 `anyRequest()`도 이 Chain이 선택한 요청에만 적용된다.
+
+전체 보호에는 `securityMatcher`를 지정하지 않은 낮은 우선순위의 fallback Chain을 둔다. 미등록 경로를 차단하는 정책이면 그 Chain에서 `anyRequest().denyAll()`을 사용하고, 공개 경로와 허용할 기능은 앞선 규칙으로 명시한다. `authenticated()`는 로그인한 사용자의 접근을 허용하므로 명시적 허용 목록과는 다른 기본 정책이다. AI가 생성한 설정도 Chain의 범위와 내부 인가 규칙을 나누어 확인한다. 이 범위 설명은 2026-10-06 Spring Security 7.1.1 공식 문서와 대조했다.
+
 실제 Application은 Browser Session, Resource Server와 관리 Endpoint처럼 보안 요구가 다를 때만 Chain을 나눈다. Chain을 많이 만들기보다 경계, 인증 방식과 상태 정책이 정말 다른지 먼저 확인한다.
 
 ## 구형 API를 읽는 법
@@ -110,6 +114,7 @@ SecurityFilterChain api(HttpSecurity http) throws Exception {
 
 - 시작 시 각 Chain의 Matcher, 순서와 Filter 목록을 관측할 수 있는가?
 - 모든 요청이 정확히 한 Chain에 들어가며 fallback이 존재하는가?
+- 보호 범위 밖의 실제 Endpoint와 새로 추가한 경로가 의도 없이 공개되지 않는가? 익명 요청과 인증된 요청을 모두 확인하는가?
 - 공개 Endpoint도 Security Header, CSRF와 CORS 정책을 의도대로 거치는가?
 - Custom Filter 앞뒤의 인증 Context와 예외 처리 경계를 Test하는가?
 - Browser Redirect와 JSON API 401/403 응답 Chain을 분리했는가?
@@ -131,6 +136,7 @@ SecurityFilterChain api(HttpSecurity http) throws Exception {
 - 정수원 강사, [2) 정적 자원 관리 - WebIgnore 설정](https://www.inflearn.com/courses/lecture?courseId=324591&unitId=29853)
 - 정수원 강사, [정리](https://www.inflearn.com/courses/lecture?courseId=324591&unitId=29906)
 - [Spring Security 7.1, Servlet Architecture](https://docs.spring.io/spring-security/reference/servlet/architecture.html)
+- [Spring Security 7.1, Java Configuration](https://docs.spring.io/spring-security/reference/servlet/configuration/java.html) — Chain 미일치 요청과 fallback 범위
 - [Spring Security 7.1, Authorize HttpServletRequests](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html)
 - [Spring Security 7.1, Authentication Persistence and Session Management](https://docs.spring.io/spring-security/reference/servlet/authentication/session-management.html)
 - [FilterOrderRegistration.java 7.1.1 — spring-security GitHub](https://github.com/spring-projects/spring-security/blob/7.1.1/config/src/main/java/org/springframework/security/config/annotation/web/builders/FilterOrderRegistration.java)
