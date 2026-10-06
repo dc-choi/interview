@@ -52,10 +52,19 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 
 ### Online DDL
 
+- 테이블 재작성 여부와 잠금 대기는 별개다. PostgreSQL 18의 `ADD COLUMN`에서 비휘발성 기본값은 메타데이터로 처리할 수 있지만, `clock_timestamp()` 같은 휘발성 기본값은 재작성을 유발한다. 빠른 컬럼 추가도 `ACCESS EXCLUSIVE` 잠금을 획득해야 한다.
 - 일반 `CREATE INDEX`는 쓰기를 막을 수 있다. `CREATE INDEX CONCURRENTLY`는 `INSERT`, `UPDATE`, `DELETE`를 막지 않지만 두 번의 table scan과 기존 트랜잭션 대기를 수반하므로 더 오래 걸리고 추가 I/O를 사용한다.
 - 동시 인덱스 생성은 트랜잭션 블록 안에서 실행할 수 없고, 같은 테이블에는 한 번에 하나만 실행할 수 있다. 실패하면 invalid index가 남을 수 있으므로 progress, 실패 처리와 재실행 절차를 준비한다.
 - PostgreSQL 18에서는 partitioned table의 partitioned index를 `CONCURRENTLY`로 직접 생성할 수 없다. 각 partition에 동시 생성 후 parent index에 연결하는 절차를 검토한다.
 - 큰 테이블의 FK, `CHECK`, not-null 제약은 `NOT VALID`로 먼저 추가하고 `VALIDATE CONSTRAINT`로 기존 행을 나중에 검증할 수 있다. 새 쓰기에는 즉시 제약이 적용되며 validation의 lock과 참조 테이블 영향도 사전에 확인한다.
+
+### DDL 대기열과 시간 제한
+
+장기 트랜잭션이 대상 테이블의 `ACCESS SHARE`를 보유하면 컬럼 추가의 `ACCESS EXCLUSIVE` 요청이 기다린다. 뒤따르는 같은 테이블의 조회도 먼저 대기 중인 충돌 요청에 막힐 수 있다. 이는 해당 잠금의 대기 관계이며, DDL 하나가 모든 테이블을 직접 잠근다는 뜻은 아니다. 공용 연결 풀이 대기로 채워지면 다른 요청까지 지연될 수 있다.
+
+- `pg_blocking_pids(pid)`는 잠금 보유자뿐 아니라 대기열 앞에서 충돌하는 잠금을 기다리는 세션도 반환한다. `pg_stat_activity`의 트랜잭션 시작 시각과 wait event를 함께 보고 원래 보유자와 대기 중인 DDL을 구분한다.
+- 마이그레이션 세션의 `lock_timeout`은 각 잠금 획득 시도의 대기 시간을 제한한다. SQL 전체 시간은 `statement_timeout`으로 별도 제한하며, 둘을 켜면 잠금 제한을 더 짧게 둔다. 잠금을 획득한 뒤 실행이 오래 걸리는 문제는 `lock_timeout`만으로 막지 못한다.
+- 두 제한의 기본값 0은 비활성이다. 전역 설정으로 모든 세션에 같은 값을 강제하기보다 작업별 지연 예산을 정한다. 실패 뒤에는 트랜잭션 종료와 실제 적용 상태를 확인하고, 원인 해소 없이 촘촘하게 재시도하지 않는다.
 
 ### 대용량 데이터 이동
 
@@ -160,6 +169,11 @@ FOR VALUES FROM ('2026-10-01') TO ('2026-11-01');
 
 ## 출처
 
+2026-10-06에는 PostgreSQL 18 공식 문서로 Online DDL의 컬럼 추가와 DDL 대기열, 시간 제한을 대조했다. 나머지 제품과 운영 도구의 버전 민감 주장은 재검증하지 않아 frontmatter 검증일은 유지한다.
+
+- [PostgreSQL 18 Documentation, Explicit Locking](https://www.postgresql.org/docs/18/explicit-locking.html)
+- [PostgreSQL 18 Documentation, Client Connection Defaults](https://www.postgresql.org/docs/18/runtime-config-client.html)
+- [PostgreSQL 18 Documentation, System Information Functions and Operators](https://www.postgresql.org/docs/18/functions-info.html)
 - [PostgreSQL 18 Documentation, Using EXPLAIN](https://www.postgresql.org/docs/18/using-explain.html)
 - [민감 테이블 감사 로그를 켰는데, 정작 제일 위험한 테이블은 빠져 있었다 — velog](https://velog.io/@donghoong2/%EC%9D%B8%ED%94%84%EB%9D%BC-%EB%AF%BC%EA%B0%90-%ED%85%8C%EC%9D%B4%EB%B8%94-%EA%B0%90%EC%82%AC-%EB%A1%9C%EA%B7%B8%EB%A5%BC-%EC%BC%B0%EB%8A%94%EB%8D%B0-%EC%A0%95%EC%9E%91-%EC%A0%9C%EC%9D%BC-%EC%9C%84%ED%97%98%ED%95%9C-%ED%85%8C%EC%9D%B4%EB%B8%94%EC%9D%80-%EB%B9%A0%EC%A0%B8-%EC%9E%88%EC%97%88%EB%8B%A4)
 - [PostgreSQL 18 Documentation, Routine Vacuuming](https://www.postgresql.org/docs/18/routine-vacuuming.html)

@@ -67,11 +67,17 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 - 정의: JavaScript나 TypeScript 이벤트 핸들러로 된 플러그인이다. 도구 호출, 제출한 프롬프트, 화면 일부를 그리는 일 같은 이벤트가 생기면 Claude Code가 핸들러를 부르고, 핸들러는 이벤트를 지켜보거나(observe), 바꿔서 넘기거나(rewrite), 직접 응답해 원래 동작을 대신한다(answer). mods 문서는 mod의 핸들러를 hook, 설정 파일의 기존 훅을 settings hook이라 부른다. 이 문서의 `## 훅` 절은 settings hook을 다룬다
 - settings hook, 스킬과 MCP는 Claude Code 밖에서 동작한다(스크립트 실행, 텍스트나 도구 제공). mod는 프로세스 안에서 돌기 때문에 transcript 옆 pane과 프롬프트 위 band를 그리고, 도구 행이나 spinner처럼 Claude Code가 그리는 화면을 바꾸고, 도구 호출을 붙잡아 두거나 대신 답하고, Claude 턴 없이 바로 실행되는 `/command`를 더하고, 같은 파일의 변수로 hook끼리 데이터를 나눈다. `/diff` pane과 `AGENTS.md` 로딩도 내장 mod다
-- 버전과 실행 위치: 설치한 mod는 v2.1.287 이상에서 기본으로 켜진다. hook은 그 플러그인을 로드한 세션에서 돌지만 그리는 요소는 터미널과 Desktop 앱 Code 탭에만 보인다(Desktop은 터미널 전용 요소를 그리지 않고, 플러그인을 쓸 수 없는 Desktop의 WSL 세션에서는 hook도 돌지 않는다). VS Code 확장의 채팅 패널, `claude -p`와 Agent SDK에서는 hook만 돌고, 클라우드 세션은 그 세션까지 전달된 플러그인에 한해 hook만 돈다
+- 버전과 실행 위치: 설치한 mod는 기본으로 켜지며 터미널은 Claude Code v2.1.287 이상, Desktop 앱에 포함된 Claude Code는 v2.1.286 이상에서 지원한다. hook은 그 플러그인을 로드한 세션에서 돌지만 그리는 요소는 터미널과 Desktop 앱 Code 탭에만 보인다(Desktop은 터미널 전용 요소를 그리지 않고, 플러그인을 쓸 수 없는 Desktop의 WSL 세션에서는 hook도 돌지 않는다). VS Code 확장의 채팅 패널, `claude -p`와 Agent SDK에서는 hook만 돌고, 클라우드 세션은 그 세션까지 전달된 플러그인에 한해 hook만 돈다
 - 신뢰 경계: mod는 사용자 권한으로 Claude Code 안에서 도는 코드이고 샌드박스가 없다. 사용자 계정이 닿는 파일 읽기와 쓰기, 프로세스 실행과 네트워크 요청, 환경 변수와 설정 파일(그 안의 API 키 포함) 읽기, 모든 프롬프트와 도구 호출의 관찰과 재작성, 사용자가 입력한 것처럼 프롬프트를 제출하거나 다른 세션에 메시지 보내기, 사용자 대신 도구 호출 승인, 사용자의 요금제나 API 키로 모델 호출을 할 수 있다. sandbox를 켜도 격리되는 것은 Claude가 실행하는 Bash 명령이고 mod가 띄운 프로세스는 밖에서 돈다. 다만 권한 프롬프트 화면은 바꾸지 못한다
 - 권한 규칙과의 순서: `tool.check`를 처리하는 mod는 규칙과 PreToolUse 훅이 결정한 뒤에 답해 그 결정을 바꿀 수 있다. `ask` 규칙이 물을 호출과 managed settings 밖 PreToolUse 훅이 막은 호출을 승인할 수 있고, auto 모드에서 mod가 승인한 호출은 분류기 검사를 거치지 않는다. deny 규칙은 managed settings가 있는 기기나 Team, Enterprise 로그인에서 내장 guard가 로드될 때만 기본으로 mod보다 우선한다. 그 밖의 환경이나 조직이 guard 옵션 `allowModsToOverrideDenyRules`를 켠 경우, managed `prependPlugins`에서 guard를 빼 guard가 로드되지 않는 경우에는 mod가 deny 규칙이 거부한 호출도 승인할 수 있다. deny 규칙과 managed 훅은 mod 자신의 `$.fs`, `$.process` 호출에는 적용되지 않는다
 - 설치 전 점검: 플러그인 파일을 받아 `claude plugin validate <경로>`를 실행하면 코드를 돌리지 않고 `hooks:`(처리하는 이벤트)와 `calls:`(호출하는 mods API 메서드)를 보여 준다. hook은 mods API를 거쳐야만 자기 코드 밖의 일을 할 수 있어서 이 목록이 가능하고, 이 명령이 읽을 수 없는 방식으로 API를 쓰는 mod는 로드되지 않는다. 다만 목록은 메서드 이름이라 `$.process.run`으로 띄운 프로그램의 동작까지 보여 주지는 않는다
 - 끄기: 플러그인 단위로 비활성화하거나, 한 세션은 `--safe-mode`, 모든 세션은 `~/.claude/settings.json`의 `"disableAllHooks": true`를 쓴다(내 settings hook과 커스텀 상태표시줄도 멈추고, 조직이 관리하는 것은 계속 돈다). `--safe-mode`, `--bare`, `disableAllHooks`는 내장 mod를 멈추지 않는다. 조직은 managed settings의 `pluginConfigs`에서 내장 guard(`cc-plugin-sec-default@builtin`)의 `allowManagedModsOnly` 옵션을 켜 조직 것으로 인정되는 mod(관리 설정이 가리키는 기기 안 디렉터리 마켓플레이스에서 켠 mod)와 내장 mod만 로드하게 한다. 조직이 켠 원격 마켓플레이스의 mod도 사용자 mod로 분류돼 막히고, 이 옵션은 guard가 로드되는 환경에서만 적용된다
+
+### 화면 변경과 데이터 보호의 경계
+
+- `ui.render`의 `component` 필터로 `AssistantMessage`, `AbovePrompt`, `Pane` 같은 표시 위치를 고른다. 기존 화면의 일부를 바꾸려면 수정한 `props`를 담아 `next`로 넘기고, 화면 자체를 대체하려면 그릴 요소 트리를 반환한다. `next(e)`는 원래 이벤트를 다음 처리로 넘긴다.
+- 버튼으로 모듈 변수를 바꾼 뒤 `$.ui.invalidate('ui.render')`로 다시 그릴 수 있다. 공유 상태를 다룰 때는 여러 mod가 같은 `AbovePrompt` 영역을 사용한다는 점도 고려한다. 자기 트리만 반환하면 뒤에 오는 mod의 표시를 대체할 수 있다.
+- 이메일 가림처럼 화면 텍스트를 치환하는 기능은 표시 계층의 변경이다. 이 기능만으로 모델 입력이나 저장된 대화 기록에서 원문이 제거됐다고 판단하지 않는다. 입력, 기록과 화면 각각의 처리 경계를 별도로 확인한다.
 
 ## MCP — 외부 경계 확장
 
@@ -92,7 +98,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 ## 출처
 
-2026-10-06에는 mods, 플러그인 보안과 권한 문서로 Mod 절과 훅, 플러그인 절의 mod 관련 문장을 대조했다(mod는 v2.1.287 이상 기준). 기존 훅 절의 exit code와 타임아웃 서술처럼 남은 버전 민감 주장이 최신 Hooks 문서와 맞는지는 이번에 다시 확인하지 않았으므로 frontmatter 검증일은 유지한다.
+2026-10-06에는 mods, 플러그인 보안과 권한 문서로 Mod 절과 훅, 플러그인 절의 mod 관련 문장을 대조했다. 화면 변경 절과 터미널, Desktop의 지원 버전은 Mods overview와 interface, reference 문서로 추가 대조했다. 기존 훅 절의 exit code와 타임아웃 서술처럼 남은 버전 민감 주장이 최신 Hooks 문서와 맞는지는 이번에 다시 확인하지 않았으므로 frontmatter 검증일은 유지한다.
 
 - [클로드 코드 가이드 (레퍼런스 08 MCP, 09 훅, 10 서브에이전트, 11 스킬, 18 플러그인) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code Docs, Orchestrate teams of Claude Code sessions](https://code.claude.com/docs/en/agent-teams)
@@ -106,6 +112,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - [Claude Code Docs, React to events with a mod](https://code.claude.com/docs/en/plugins/mods/events)
 - [Claude Code Docs, Manage mods for your organization](https://code.claude.com/docs/en/plugins/mods/admin)
 - [Claude Code Docs, Mods reference](https://code.claude.com/docs/en/plugins/mods/reference)
+- [Claude Code Docs, Draw in the interface with a mod](https://code.claude.com/docs/en/plugins/mods/interface)
 - [Claude Code Docs, Plugin security and trust](https://code.claude.com/docs/en/plugins/security)
 - [Claude Code Docs, Configure permissions (Extend permissions with hooks)](https://code.claude.com/docs/en/permissions)
 - [Agent Skills, Specification](https://agentskills.io/specification)
