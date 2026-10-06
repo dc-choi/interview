@@ -57,6 +57,8 @@ aliases: ["Golden Set", "골든셋", "배포 관문", "Deploy Gates"]
 
 베이스라인 운영에는 표류 문제가 따라온다. 매번 직전 값과만 비교하면 조금씩 나빠지는 변화가 각각은 통과하면서 누적된다. 릴리스 시점의 고정 베이스라인을 하나 더 두는 설계와 그 트레이드오프는 [[Load-Test-Automation]]이 정본이고, 성능 도메인의 논리가 그대로 옮겨온다. 기존 부채를 게이트로 끌어들이지 않고 스냅샷으로 분리하는 게이트 설계 원칙은 [[Dependency-Vulnerability-Scanning]]을 참고한다.
 
+여기까지는 내가 바꾼 것의 회귀다. 코드와 프롬프트를 그대로 두었는데 제공자 쪽(별칭, 서빙 인프라, 하네스 기본값)에서 생기는 변화는 골든셋 일부를 실제 호출 경로로 정기 실행해 잡고, 그 설계는 [[Eval-Model-Drift-Monitoring]]이 맡는다.
+
 ## 배포로 가는 세 관문
 
 | 관문 | 판정 | 통과 조건 |
@@ -137,3 +139,4 @@ aliases: ["Golden Set", "골든셋", "배포 관문", "Deploy Gates"]
 - [[One-Way-vs-Two-Way-Door|되돌릴 수 있는 문과 없는 문 (카나리와 롤백 판단)]]
 - [[Harness-Gate-Placement|게이트 배치 (배포 전 층이 놓치는 것)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (지시 변경도 검증 대상이라는 관점)]]
+- [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시 (내가 바꾸지 않은 쪽의 변화, 동결 기준점과 연속 확인)]]

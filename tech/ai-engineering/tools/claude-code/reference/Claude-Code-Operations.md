@@ -40,7 +40,7 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 - 인증 대표 함정: 셸 프로필에 남은 낡은 ANTHROPIC_API_KEY가 구독 OAuth를 조용히 오버라이드 — `/status`로 활성 자격 증명 확인
 - 설정 디버깅은 "실제로 뭐가 로드됐나"부터: /status, /context, /permissions, /hooks. 흔한 실수 — 훅 matcher를 배열로 작성(단일 문자열이어야 함), permissions를 엉뚱한 파일에 배치, 서브에이전트가 CLAUDE.md를 상속한다고 가정
 - 에러: 일시 오류는 지수 백오프로 자동 재시도되므로 기다리는 게 먼저. 용량 초과(529)는 모델 전환(용량은 모델별), 컨텍스트 초과는 /compact
-- **품질이 나빠졌다면 모델이 몰래 바뀐 게 아니다** — 컨텍스트 압박, 낡은 CLAUDE.md를 확인하고, 잘못된 답변에 수정을 이어가기보다 되감고(rewind) 더 구체적으로 재프롬프트하는 편이 낫다
+- **품질이 나빠졌다면 컨텍스트와 하네스부터 확인한다** — 전체 모델 ID로 고정했다면 가중치는 바뀌지 않지만 별칭이 가리키는 모델, Claude Code 버전과 기본값(effort, 시스템 프롬프트)은 바뀔 수 있다([[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]]). 컨텍스트 압박, 낡은 CLAUDE.md를 확인하고, 잘못된 답변에 수정을 이어가기보다 되감고(rewind) 더 구체적으로 재프롬프트하는 편이 낫다
 - **adaptive thinking 끄기 팁은 모델을 확인한다**: 품질 저하를 느낄 때 settings.json의 `env`에 `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1`과 `MAX_THINKING_TOKENS`를 넣었더니 같은 작업의 재프롬프트 횟수가 줄었다는 커뮤니티 보고가 있다(2026-04, 개인 비교). 공식 환경 변수 문서(2026-09-29 확인) 기준 이 변수는 Opus 4.6과 Sonnet 4.6에서만 adaptive reasoning을 끄고 `MAX_THINKING_TOKENS` 고정 예산으로 돌리며, Opus 4.7 이후, Sonnet 5 이후와 Fable 모델에는 효과가 없다. adaptive 모델에서는 `MAX_THINKING_TOKENS`의 0이 아닌 값도 무시된다. 현재 모델에서는 effort 수준(`/effort`, `CLAUDE_CODE_EFFORT_LEVEL`)으로 조절하고, 효과는 같은 과업의 재프롬프트 횟수처럼 비교 가능한 지표로 판정한다
 
 ## 안티패턴 5종
@@ -53,7 +53,7 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 
 - 성능 저하와 비용 폭증의 공통 제1 원인 (컨텍스트)과 대응 순서
 - CI에서 에이전트를 태울 때의 안전장치 4종과 모델 버전 고정이 필수인 이유
-- 품질 저하 시 확인 순서 (모델 의심이 아니라 컨텍스트, CLAUDE.md, 재프롬프트), 커뮤니티 설정 팁이 현재 모델에 적용되는지
+- 품질 저하 시 확인 순서 (컨텍스트, CLAUDE.md, CLI 버전과 기본값 변경, 재프롬프트), 커뮤니티 설정 팁이 현재 모델에 적용되는지
 - /btw와 서브에이전트의 트레이드오프
 - 안티패턴 5종과 각각의 처방
 
@@ -64,6 +64,7 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 - [Run Claude Code programmatically — bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
 - [Claude Code 공식 문서, Fast mode](https://code.claude.com/docs/en/fast-mode)
 - [Claude Code 공식 문서, Manage costs](https://code.claude.com/docs/en/costs)
+- [Claude Code 공식 문서, Model configuration](https://code.claude.com/docs/en/model-config)
 - [클로드 코드 가이드 (레퍼런스 03 기본 사용법, 13 CI/CD, 14 CLI, 16 베스트 프랙티스, 17 트러블슈팅) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code 품질 저하 때 adaptive thinking 끄기 — Threads, withfox](https://www.threads.com/@withfox/post/DXDx0mhCX4z)
 

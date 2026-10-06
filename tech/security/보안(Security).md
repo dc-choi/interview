@@ -22,7 +22,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Supply-Chain-Security|공급망 보안 (Supply Chain)]] — PyPI/npm 공급망 공격, postinstall/.pth, 전이 의존성, AI 네이티브 상방-하방 딜레마, lockfile 핀/대응 플레이북
 - [[Open-Source-License-Review|오픈소스 라이선스 검토]] — MIT/Apache 고지, GPL 전달 조건, AGPL 네트워크 조건, SaaS와 납품, SPDX/SBOM의 판단 범위
 - [[tech/security/network-security/네트워크보안(NetworkSecurity)|네트워크 보안 (Network Security)]] — 경계 보안과 공인 IP 배치, UTM, 보안 장비 배치 순서, 인라인과 아웃오브패스, 포트 미러링과 TAP, IDS와 IPS, ARP 스푸핑과 DAI, ARP 기반 NAC 차단, 망분리와 망연계
-- [[LLM-Application-Security|LLM 애플리케이션 보안 (OWASP Top 10 2025)]] — 프롬프트 인젝션, Dual-LLM 격리와 가드의 한계, 민감정보 유출, 공급망, 출력 처리, 과도한 위임, RAG 임베딩, 허위정보, 무제한 소비
+- [[LLM-Application-Security|LLM 애플리케이션 보안 (OWASP Top 10 2025, 2026판 순위 변경)]] — 프롬프트 인젝션, Spotlighting과 Instruction Hierarchy의 한계, Dual-LLM과 CaMeL 격리, 가드의 한계, 적응형 공격과 Rule of Two, 민감정보 유출, 공급망, 출력 처리, 과도한 위임, RAG 임베딩, 허위정보, 무제한 소비
 - [[tech/security/age-identity-verification/연령신원검증(AgeIdentityVerification)|연령/신원 검증 (Age & Identity Verification)]] — age assurance, IDV, PET, 규제 지형, 제3자 위탁 리스크
 
 ## 보강 체크리스트

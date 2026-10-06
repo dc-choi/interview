@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, inference, rag, agent]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-06
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Generation Mechanics Context and Agent", "LLM Context와 환각", "LLM 에이전트 전환 지점"]
 ---
@@ -25,10 +25,11 @@ aliases: ["LLM Generation Mechanics Context and Agent", "LLM Context와 환각",
 
 Context Window는 모델이 한 번 응답할 때 참조하는 작업 기억이다. 학습 데이터와는 별개이고, 시스템 프롬프트, 도구 정의, 지금까지의 대화, 도구 결과, 이번 출력(사고 포함)이 모두 이 한도 안에 들어간다.
 
-- **대화는 매 턴 다시 들어간다**: Messages API 기준으로 각 턴의 입력은 이전 대화 전체와 새 메시지이고, 응답은 다음 턴 입력의 일부가 된다. 대화가 길수록 요청마다 처리하는 입력 토큰이 쌓인다. 프롬프트 캐싱은 반복되는 앞부분의 요금을 줄일 뿐 윈도를 차지하는 양은 줄이지 않는다 ([[LLM-Prompt-Caching|프롬프트 캐싱]])
+- **대화는 매 턴 다시 들어간다**: Messages API 기준으로 각 턴의 입력은 이전 대화 전체와 새 메시지이고, 응답은 다음 턴 입력의 일부가 된다. 대화가 길수록 요청마다 처리하는 입력 토큰이 쌓인다. 사고를 쓰는 모델은 컨텍스트에 남은 이전 턴의 사고 블록도 다시 입력 토큰으로 과금된다(Anthropic은 모델별 보존 기본값에 따라 모든 턴 또는 마지막 턴의 사고를 남긴다). 프롬프트 캐싱은 반복되는 앞부분의 요금을 줄일 뿐 윈도를 차지하는 양은 줄이지 않는다 ([[LLM-Prompt-Caching|프롬프트 캐싱]])
 - **길수록 좋은 것은 아니다**: Anthropic 문서는 토큰이 늘수록 정확도와 회수가 떨어지는 context rot를 명시한다. 윈도 크기보다 무엇을 넣을지 고르는 일이 품질을 가른다 ([[Context-Engineering|컨텍스트 엔지니어링]])
 - **한도에서 일어나는 일**: 입력만으로 윈도를 넘으면 요청이 거부되고, Claude 4.5 이후 모델은 생성 중 한도에 닿으면 `model_context_window_exceeded`로 멈춘다. 긴 에이전트 작업은 이전 대화를 요약하는 압축(compaction)이나 오래된 도구 결과 정리로 이어 간다
 - **규모**: 2026-09-30 기준 Anthropic 현재 모델은 Fable 5.1, Opus 5.5, Sonnet 5.5가 1M, Haiku 4.5가 200K다. 1M 토큰은 현재 토크나이저에서 영어 약 55.5만 단어다 ([[LLM-Generation-Mechanics-Decoding|토크나이저 차이]])
+- **윈도 크기와 단가 구간은 별개다**: 2026-10-06 공식 가격표 기준으로 Claude 4.6 이후 모델은 1M 윈도 전체를 같은 단가로 받는다(900K 요청도 9K 요청과 토큰당 단가가 같다). 반면 OpenAI GPT-6 계열은 입력이 272K를 넘는 요청에 긴 컨텍스트 단가가 따로 있다(GPT-6.1 Sol은 100만 토큰당 입력 $2 → $4, 출력 $10 → $15). Gemini 3.1 Pro Preview도 200K를 넘는 프롬프트에 높은 단가를 매긴다(100만 토큰당 입력 $2 → $4, 출력 $12 → $18). 약 20만 토큰짜리 문서를 통째로 넣는 설계라면 윈도에 들어가는지와 함께 어느 단가 구간에 걸리는지도 확인한다
 - **실무 함의**: 주제가 바뀌면 세션을 새로 열고, 이어 가야 할 결정과 상태는 파일로 남긴다. 새 세션도 지침 파일과 기록을 읽으면 같은 맥락에서 일을 이어 갈 수 있다 ([[Claude-Code-Fundamentals|Claude Code 컨텍스트 관리]])
 
 ## 왜 환각하는가
@@ -76,6 +77,10 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 - [Function Calling — OpenAI API](https://developers.openai.com/api/docs/guides/function-calling)
 - [Context windows — Anthropic Platform Docs](https://platform.claude.com/docs/en/build-with-claude/context-windows)
 - [Models overview — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/models/overview)
+- [Pricing — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/pricing)
+- [Steering thinking — Anthropic Platform Docs](https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost)
+- [Pricing — OpenAI API](https://developers.openai.com/api/docs/pricing)
+- [Gemini Developer API pricing — Google AI for Developers](https://ai.google.dev/gemini-api/docs/pricing)
 - [인프런, 널널한 개발자, LLM 서비스, 토큰, 컨텍스트](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498588)
 - [인프런, 널널한 개발자, AI도구 설치](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498586)
 
@@ -91,3 +96,4 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]
 - [[LLM-Abstention|LLM 응답 보류와 캘리브레이션]]
 - [[LLM-Eval-Strategy|LLM 평가 전략]]
+- [[LLM-Model-Tiers|LLM 모델 티어 선택 (벤더별 단가)]]

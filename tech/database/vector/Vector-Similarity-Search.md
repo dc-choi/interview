@@ -1,9 +1,9 @@
 ---
-tags: [database, vector, embedding, hnsw, ann, similarity-search]
+tags: [database, vector, embedding, hnsw, ann, similarity-search, filtering]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-06
 category: "데이터&저장소(Data&Storage)"
-aliases: ["Vector Similarity Search", "벡터 유사도 검색", "HNSW", "ANN", "임베딩 검색", "거리 계산"]
+aliases: ["Vector Similarity Search", "벡터 유사도 검색", "HNSW", "ANN", "임베딩 검색", "거리 계산", "필터 벡터 검색", "Filtered Vector Search"]
 ---
 
 # 벡터 유사도 검색 (임베딩, HNSW, 거리)
@@ -71,6 +71,33 @@ IVF는 대표 centroid를 먼저 학습하고 각 vector를 가장 가까운 inv
 - 최초 training은 필요하지만 새 vector마다 다시 학습하지는 않는다. 데이터 분포나 embedding model이 크게 바뀌면 재학습과 새 index 전환을 검토한다.
 - OpenSearch의 IVF는 Faiss engine이 제공하며 배포 형태와 version별 지원 범위를 확인한다.
 
+## 메타데이터 필터와 ANN
+
+실제 검색은 tenant, 권한, 지역, 유효 기간 같은 조건을 만족하는 후보 중에서 가까운 벡터를 찾아야 할 때가 많다. 조건을 적용하는 위치에 따라 결과 수, recall과 지연이 달라진다.
+
+| 배치 | 동작 | 위험 |
+|---|---|---|
+| ANN 뒤 필터 | 인덱스가 후보를 찾은 뒤 조건으로 제거한다 | 조건에 맞는 비율이 낮으면 요청한 수를 못 채운다. pgvector는 조건이 10% 행에 맞고 `hnsw.ef_search`가 기본값 40이면 평균 4행만 남는다고 설명한다 |
+| 필터 뒤 exact | 조건으로 후보를 먼저 좁히고 전수 비교한다 | 남은 후보가 적으면 정확하고 빠르지만, 많으면 전수 비교 비용이 커진다 |
+| 탐색 중 필터 | 허용 목록을 들고 그래프를 탐색하며 조건을 만족하는 노드만 결과에 넣는다 | 통과하지 않는 노드도 경유하는 방식은 조건이 엄격하거나 질의 벡터와 상관이 낮으면 탐색이 전수에 가까워지고, 통과 노드만 경유하는 방식은 허용 노드끼리의 경로가 끊길 수 있다 |
+
+HNSW는 이웃 링크를 따라 이동하므로 필터를 통과하는 노드 비율이 낮아지면 남은 노드만으로 연결된 경로가 사라질 수 있다. Qdrant는 percolation 이론으로 통과 비율이 임계점보다 낮아지면 그래프가 조각나 탐색이 실패하기 시작하고, `m`을 늘리면 임계점을 옮길 수 있다고 설명했다.
+
+엔진은 선택도에 따라 경로를 바꾸거나 경로를 고르는 기준을 안내한다(2026-10-06 문서 기준).
+
+- OpenSearch: Lucene filter(2.4 이상)와 Faiss filter(HNSW는 2.9 이상, IVF는 2.10 이상)는 필터 후 문서 수와 `k` 등을 보고 사전 필터 exact search와 수정된 사후 필터 ANN 중 하나를 고른다. Faiss는 필터를 통과한 문서가 `k`개 이상인데 filtered ANN이 `k`개보다 적게 반환하면 필터 통과 문서 ID에 exact search로 fallback한다. 3.5부터는 `index.knn.faiss.efficient_filter.disable_exact_search`를 true로 두어 이 fallback을 끌 수 있다. 사용 예는 [[OpenSearch-Vector-Search-Mapping-Query|OpenSearch query와 filter]]에 있다.
+- Qdrant: 약한 필터는 HNSW를 그대로 쓰고 엄격한 필터는 payload index와 전체 rescore가 맞지만, 그 사이에서는 둘 다 잘 맞지 않는다. 그래서 indexed payload 값을 기준으로 HNSW에 edge를 추가하며, 이를 위해 데이터 적재 전에 payload index를 만들라고 권장한다. 조건을 만족하는 추정 규모가 임계값보다 작으면 query planner가 full scan을 고른다.
+- Weaviate: inverted index로 만든 허용 목록을 HNSW 탐색에 넘기고, 필터가 지나치게 엄격하면 flat search로 자동 전환하는 cutoff를 둔다. v1.34부터 새 컬렉션의 HNSW 기본 필터 전략은 ACORN이며, 다단계 이웃 평가와 필터를 만족하는 추가 진입점으로 질의와 가까운 영역의 노드가 필터로 많이 제외되는 경우를 완화한다.
+- pgvector: 조건 컬럼 인덱스로 exact search 대상을 좁히는 방법, partial index와 partitioning을 대안으로 안내하고, 0.8.0부터는 iterative index scan을 켜면 결과가 모자랄 때 상한 안에서 인덱스를 더 탐색한다. 세부는 [[pgvector-Query-Optimization|pgvector 쿼리 최적화]]에 있다.
+
+ACORN 논문은 predicate subgraph traversal로 이론상 이상적이지만 실용적이지 않은 필터 검색 전략을 근사하고, 실험 데이터셋에서 고정 recall 기준 기존 방법보다 2~1,000배 높은 처리량을 보고했다.
+
+다음은 이 동작을 운영에 적용한 설계 지침이다.
+
+- 필터 선택도(넓음, 중간, 매우 좁음)별 대표 query를 따로 두고, 같은 필터를 건 exact 결과 대비 Recall@k와 지연을 잰다.
+- 필터 없는 benchmark의 recall을 필터 query에 그대로 옮기지 않는다.
+- tenant와 권한 같은 보안 조건은 결과 수와 무관하게 검색 경계에서 강제한다([[OpenSearch-Hybrid-Search-RRF-Filtering|하이브리드 검색의 filter 배치]], [[RAG-Retrieval-Engineering#검색 권한과 데이터 수명|RAG 검색 권한]]).
+
 ## 거리 계산 방식
 
 | 방식 | 무엇을 보나 | 적합 |
@@ -80,6 +107,10 @@ IVF는 대표 centroid를 먼저 학습하고 각 vector를 가장 가까운 inv
 | **내적(inner product)** | 방향 + 크기, **클수록 더 유사** | 선호 강도까지 반영하는 추천 |
 
 거리 방식은 임의로 정하는 게 아니라 **사용하는 임베딩 모델의 특성에 맞춰** 골라야 한다(모델이 코사인 정규화로 학습됐으면 코사인, 추천 점수 스케일이 의미 있으면 내적).
+
+길이를 1로 정규화한 벡터에서는 세 방식이 수학적으로 같은 순위를 만든다. 내적이 곧 코사인 유사도이고 `||a - b||² = 2 - 2cos(a, b)`이므로 L2 거리 순서도 코사인 순서와 같다. 다만 값의 범위와 방향(거리는 작을수록, 유사도는 클수록 가까움)이 다르므로 threshold는 metric마다 따로 정한다. 정규화하지 않은 벡터에서는 내적이 크기를 반영해 순위가 달라질 수 있다([[Recommendation-System-Modeling-Foundations#벡터, 내적과 코사인|추천 모델의 내적과 코사인]]).
+
+정규화 여부는 모델과 출력 차원마다 다르므로 모델 문서로 확인한다(2026-10-06 문서 기준). OpenAI는 임베딩을 길이 1로 정규화해 제공하므로 내적만으로 코사인을 조금 더 빨리 계산할 수 있고 코사인과 유클리드 거리가 같은 순위를 낸다고 안내한다. 차원을 줄일 때는 생성 시 `dimensions` 파라미터를 쓰는 방식을 권장하며, 생성 뒤 직접 자르면 다시 정규화해야 한다. Gemini의 `gemini-embedding-001`은 기본 3072차원만 정규화돼 있어 `output_dimensionality`로 줄인 차원은 직접 정규화해야 하고, `gemini-embedding-2`는 줄인 차원도 자동으로 정규화한다. pgvector는 길이 1로 정규화된 벡터라면 성능을 위해 내적을 쓰라고 안내한다.
 
 ## 임베딩 공간은 versioned contract다
 
@@ -121,6 +152,8 @@ DEVOCEAN 사례는 1,291개 글의 embedding을 MySQL에 저장하고 batch memo
 - `m` / `ef_construction`(생성 고정) vs `ef_search`(쿼리 조정)의 역할 분담
 - L2 / 코사인 / 내적의 차이와 임베딩 모델 정합성
 - model, task type, 차원과 전처리를 함께 versioning해야 하는 이유
+- 정규화 벡터에서 코사인, 내적, L2 순위가 같아지는 이유와 모델, 출력 차원별 정규화 확인
+- ANN 뒤 필터, 필터 뒤 exact, 탐색 중 필터의 차이와 엄격한 필터에서 HNSW recall이 무너지는 이유
 
 ## 관련 문서
 - [[Vector-Space-Model-and-Cosine-Similarity|희소 렉시컬 벡터 공간 모델]]
@@ -142,3 +175,9 @@ DEVOCEAN 사례는 1,291개 글의 embedding을 MySQL에 저장하고 batch memo
 - [Embedding task type](https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/task-types)
 - [벡터DB를 걷어내고 유사글 추천 되살리기 — DEVOCEAN](https://devocean.sk.com/blog/techBoardDetail.do?id=168411&boardType=techBlog&isShared=Y)
 - [pgvector 검색 최적화 — YouTube](https://www.youtube.com/watch?v=n3_LY7YFCwE&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=6)
+- [OpenAI API Documentation, Vector embeddings](https://developers.openai.com/api/docs/guides/embeddings)
+- [OpenSearch Documentation, Efficient k-NN filtering](https://docs.opensearch.org/latest/vector-search/filter-search-knn/efficient-knn-filtering/)
+- [Qdrant Documentation, Indexing](https://qdrant.tech/documentation/concepts/indexing/)
+- [Weaviate Documentation, Filtering](https://docs.weaviate.io/weaviate/concepts/filtering)
+- [Filterable HNSW Without Recall Loss — Qdrant, Andrei Vasnetsov](https://qdrant.tech/articles/filterable-hnsw/)
+- [ACORN: Performant and Predicate-Agnostic Search Over Vector Embeddings and Structured Data — arXiv](https://arxiv.org/abs/2403.04871)

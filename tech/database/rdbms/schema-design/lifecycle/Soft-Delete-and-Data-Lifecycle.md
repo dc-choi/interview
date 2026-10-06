@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, soft-delete, lifecycle, retention, typeorm]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-06
 category: "Data & Storage - RDB"
 aliases: ["Soft Delete", "Logical Delete", "소프트 삭제", "논리 삭제"]
 ---
@@ -96,6 +96,27 @@ ALTER TABLE account
 
 보존 기한이 끝난 row는 batch로 hard delete/anonymize한다. 작은 chunk, stable cursor와 rate limit을 사용하고 replica lag, lock과 redo를 감시한다. purge retry는 같은 대상에서 안전해야 하며, 완료/실패 수와 삭제 근거를 기록한다.
 
+## 사본별 삭제 전파와 완료 시점
+
+운영 DB에서 지운 값도 replica, cache, 검색 색인, 분석 저장소, 로그, 객체 version과 백업에 한동안 남아 있을 수 있다. 삭제가 끝나는 시점은 가장 늦게 사라지는 사본이 정하므로, 사본마다 삭제 경로와 최대 소요 시간을 정해 둔다.
+
+| 사본 | 삭제 경로 | 남는 기간을 정하는 것 |
+|---|---|---|
+| 운영 DB와 replica | `DELETE` 또는 purge job, 복제 | 엔진의 물리 정리 시점과 replica lag |
+| cache | 명시 무효화 또는 TTL | TTL 상한 |
+| 검색 색인, 분석 저장소, export 파일 | delete event, 별도 삭제 job | 이벤트 유실, 늦은 update의 재생성([[OpenSearch-Indexing-Pipeline-Reliability\|색인 파이프라인 신뢰성]]), 적재 주기 |
+| 로그 | 보존 기간 만료 | log retention([[PII-Masking\|PII 마스킹과 최소 수집]]) |
+| S3 versioning 버킷 | version ID 지정 삭제, `NoncurrentVersionExpiration` | delete marker 아래 이전 version, Object Lock |
+| 자동 백업과 수동 snapshot | 보존 기간 만료, 직접 삭제 | 자동 백업 보존 기간, 만료가 없는 수동 snapshot |
+
+- **엔진의 물리 정리는 별도 단계다.** InnoDB는 삭제한 row와 index record를 그 삭제의 update undo log record를 버릴 때 purge로 제거한다. 보통 그 `DELETE` 문과 비슷한 시간 규모로 끝나지만, 작은 batch의 insert와 delete가 비슷한 속도로 이어지면 purge가 밀리고 dead row 때문에 table이 계속 커질 수 있다. PostgreSQL은 `DELETE` 뒤에도 이전 row version이 남는다. standard `VACUUM`은 dead row version을 제거하고 그 공간을 재사용 가능하게 표시하지만, 테이블 끝 page가 완전히 비고 exclusive table lock을 쉽게 얻을 수 있는 경우를 빼면 OS에 반환하지 않는다. 동작 차이는 [[MVCC-Implementation-Tradeoffs|MVCC 구현 트레이드오프]]를 본다.
+- **S3는 version 단위로 지워졌는지 확인한다.** versioning을 켠 버킷에서 version ID 없는 단순 `DELETE`와 lifecycle `Expiration`은 delete marker를 추가할 뿐 이전 version에는 영향을 주지 않는다. 이전 version은 version ID를 지정해 지우거나 `NoncurrentVersionExpiration`으로 영구 삭제한다. lifecycle은 Object Lock이 적용된 noncurrent version에 작동하지 않고, 만료일과 실제 제거 사이에 지연이 있을 수 있다.
+- **수동 snapshot은 저절로 사라지지 않는다.** RDS 수동 snapshot은 백업 보존 기간을 적용받지 않고 만료되지 않으므로 삭제 정책에 별도 정리 주기를 둔다. 인스턴스를 중지한 기간은 보존 기간 계산에 들어가지 않아 자동 백업이 설정보다 오래 남을 수 있다. 자동 백업 보존과 PITR 범위는 [[Backup-Restore|백업과 복원]]을 본다.
+- **불변 백업은 삭제 요구와 충돌한다.** S3 Object Lock compliance 모드에서는 root 사용자를 포함한 어떤 사용자도 보존 기간 안에 객체 version을 덮어쓰거나 지울 수 없고 기간을 줄일 수도 없다. 기간 전에 지우는 방법은 AWS 계정 삭제뿐이다. governance 모드는 `s3:BypassGovernanceRetention` 권한과 `x-amz-bypass-governance-retention:true` 헤더로 보존 기간 안에도 지울 수 있다. 개인정보가 든 백업은 삭제 정책이 허용하는 보존 기간 안에서 잠금 기간을 정하거나 [[Crypto-Shredding|crypto-shredding]]으로 범위를 줄인다(설계 판단).
+- **완료 시점은 단계별 상한으로 정한다.** Google Cloud는 서비스나 삭제 요청에 따라 최대 30일의 내부 복구 기간이 적용될 수 있고, 활성 시스템에서는 보통 약 2개월, 백업에서는 삭제 요청 뒤 6개월 안에 만료되도록 설계해 최대 약 6개월(180일) 안에 고객 데이터를 삭제한다고 공개한다(2026-10-06 확인). 사본별 상한을 정해야 사용자와 고객사에 삭제 완료 시점을 약속할 수 있다(설계 판단).
+
+한국 법령의 파기 기한, 방법과 파기 기록은 [[Privacy-Operations-for-Small-Business#탈퇴하거나 계약이 끝나면 언제 지우는가|대표의 개인정보 운영]]을 따른다.
+
 ## Soft delete와 history
 
 둘은 대체 관계가 아니다.
@@ -115,6 +136,7 @@ ALTER TABLE account
 - restore conflict와 연관 data 복구 정책이 있다.
 - retention, purge/anonymization과 관측 지표가 있다.
 - cache, search index와 event consumer도 삭제/복구를 반영한다.
+- 사본 목록과 사본별 삭제 경로, 최대 소요 시간을 문서화했다.
 
 ## 삭제 조건과 복합 index
 
@@ -139,10 +161,19 @@ ALTER TABLE account
 - [김영한 강사, soft delete와 history](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401988)
 - [김영한 강사, soft delete index](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401989)
 - [김영한 강사, soft delete 정리](https://www.inflearn.com/courses/lecture?courseId=340524&unitId=401990)
-
+- [MySQL 8.4, InnoDB Multi-Versioning](https://dev.mysql.com/doc/refman/8.4/en/innodb-multi-versioning.html)
+- [PostgreSQL 18, Routine Vacuuming](https://www.postgresql.org/docs/18/routine-vacuuming.html)
+- [Amazon S3, Expiring objects](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-expire-general-considerations.html)
+- [Amazon S3, Locking objects with Object Lock](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html)
+- [Amazon RDS, Creating a DB snapshot for a Single-AZ DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapshot.html)
+- [Amazon RDS, Backup retention period](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.BackupRetention.html)
+- [Google Cloud, Data deletion on Google Cloud](https://docs.cloud.google.com/docs/security/deletion)
 
 ## 관련 문서
 
 - [[Operational-Data-History-and-Audit|운영 데이터 변경 이력]]
 - [[Foreign-Key-Integrity|외래 키와 참조 무결성]]
 - [[Schema-Migration-Large-Table|대용량 schema migration]]
+- [[Crypto-Shredding|Crypto-shredding]]
+- [[Backup-Restore|백업과 복원]]
+- [[Privacy-Operations-for-Small-Business|대표의 개인정보 운영]]

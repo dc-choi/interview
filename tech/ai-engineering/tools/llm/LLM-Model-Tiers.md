@@ -24,7 +24,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 
 ## 티어 간 트레이드오프
 
-- **단가**: 상위 티어보다 하위 티어가 저렴하지만 가격 차이는 벤더와 세대마다 다르다. 티어 이름만 보고 절반이라고 가정하지 말고, 선택 시점의 공식 단가와 eval 결과를 함께 비교한다.
+- **단가**: 상위 티어보다 하위 티어가 저렴하지만 가격 차이는 벤더와 세대마다 다르다. 티어 이름만 보고 절반이라고 가정하지 말고, 선택 시점의 공식 단가와 eval 결과를 함께 비교한다. 2026-10-06 공식 가격 기준으로 OpenAI GPT-6 계열의 출력 단가는 Astra $50, GPT-6.1 Sol $10, Luna $0.50(100만 토큰당, 입력 272K 이하)으로 같은 벤더 안에서도 100배 차이 난다. 출력 단가는 Anthropic 현재 모델과 GPT-6 계열이 입력의 5배, Gemini 3.1 Pro Preview가 6배다(긴 컨텍스트 구간 제외). 같은 가격표에도 Gemini 3.5 Flash-Lite 약 8배, Gemini 2.5 Pro 8배처럼 배율이 다른 모델이 있다. 그래서 출력과 사고 토큰이 많은 작업은 비용이 출력 쪽에 몰린다. 간결한 응답이 필요하면 프롬프트로 원하는 길이를 지시한다.
 - **지연**: 작은 티어일수록 빠르다. 사용자 대면 실시간 경로(자동완성, 채팅 첫 토큰)는 지연이 품질만큼 중요하다.
 - **능력 게이팅**: 최상위 추론 강도(max reasoning effort)나 특수 모드는 플래그십에서만 열리는 경우가 있다. 즉 일부 능력은 돈을 더 낸다고 아무 티어에서나 살 수 없고, 티어 자체를 올려야 한다.
 - **재작업 비용**: 호출 단가만 보면 하위 티어가 싸지만, 복잡한 작업에서는 근거 없는 내용을 사실처럼 쓰거나 스스로 점검하지 못하고 중간에 멈춰 사람이 뒷수습하는 비용이 붙는다. 반대로 스펙이 확정된 단순 반복 구현(CRUD, 정해진 양식의 보고서)에 상위 티어를 쓰면 비용만 늘고 결과가 더 좋지도 않다. 초기 오류를 막는 일이 중요하고 디버깅이 비싼 작업은 상위 티어와 높은 effort를, 스펙이 분명하고 속도가 중요한 작업은 하위 티어를 먼저 고른다. 경험칙이므로 같은 과업의 품질, 시간, 비용으로 확인한다.
@@ -110,7 +110,9 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - [OpenAI API, Models](https://developers.openai.com/api/docs/models) (2026-09-04 플래그십 확인)
 - [OpenAI API, GPT-5.6 모델 가이드](https://developers.openai.com/api/docs/guides/latest-model)
 - [OpenAI API, GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna)
-- [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격, 2026-09-30 현재 모델 확인)
+- [OpenAI API, Pricing](https://developers.openai.com/api/docs/pricing) (2026-10-06 GPT-6 계열과 GPT-5.6 가격 확인)
+- [Gemini API, Pricing](https://ai.google.dev/gemini-api/docs/pricing) (2026-10-06 Gemini 3.1 Pro Preview 가격 확인)
+- [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격, 2026-09-30 현재 모델 확인, 2026-10-06 재확인)
 - [Anthropic Platform Docs, Effort](https://platform.claude.com/docs/en/build-with-claude/effort)
 - [Anthropic Platform Docs, Steering thinking](https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost)
 - [Introducing Claude Opus 5.5 — Anthropic](https://www.anthropic.com/claude-opus-5-5)

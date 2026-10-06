@@ -9,7 +9,7 @@ aliases: ["vector", "벡터 검색", "Vector Search"]
 
 임베딩 기반 유사도 검색 문서 모음. Exact와 ANN 선택, embedding 공간 계약과 소규모 batch에서 시작해 PostgreSQL, OpenSearch와 Redis 구현, 쿼리 최적화와 운영까지.
 
-- [[Vector-Similarity-Search|벡터 유사도 검색 (exact vs ANN, embedding 공간 versioning, 소규모 item-to-item batch, HNSW/IVF, 거리 함수)]]
+- [[Vector-Similarity-Search|벡터 유사도 검색 (exact vs ANN, embedding 공간 versioning, 소규모 item-to-item batch, HNSW/IVF, 메타데이터 필터와 ANN, 거리 함수와 정규화 벡터)]]
 - [[OpenSearch-Semantic-Search|OpenSearch 시맨틱 검색 지도 (opensearch-search 폴더 인덱스)]]
 - [[OpenSearch-Vector-Search|OpenSearch 벡터 검색 폴더 (검색 방식 선택, projection과 index 배치, knn_vector mapping, embedding contract와 model 교체)]]
 - [[OpenSearch-Hybrid-Search|OpenSearch 하이브리드 검색 폴더 (실행 흐름과 score 결합, RRF와 filter, 평가와 운영)]]

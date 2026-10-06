@@ -2,7 +2,7 @@
 tags: [senior, communication, soft-skills, collaboration, messaging]
 status: done
 category: "Senior - 커뮤니케이션"
-aliases: ["Developer Communication", "개발자 커뮤니케이션", "개발자의 말투", "기술 부채 번역"]
+aliases: ["Developer Communication", "개발자 커뮤니케이션", "개발자의 말투", "기술 부채 번역", "BLUF", "두괄식 보고"]
 ---
 
 # 개발자 커뮤니케이션 — 사람은 컴파일러가 아니다
@@ -64,6 +64,17 @@ aliases: ["Developer Communication", "개발자 커뮤니케이션", "개발자�
 - **파일명**: 260430_제안서_v1.1처럼 날짜를 앞에, 최종 대신 버전 번호를 쓴다. 날짜를 앞에 두면 정렬이 쉽지만 제목 가독성은 떨어지므로 팀 규칙으로 하나를 정한다.
 - **성과 다이어리**: 매월 한 일과 결과를 전환율, 처리 시간, 절감 비용 같은 숫자로 적어 두면 평가, 이력서와 면접의 재료가 된다([[Performance-Evidence-Playbook|성과 증거 플레이북]]).
 
+### 두괄식과 결정 요청의 순서
+
+글이 왜 필요한지 먼저 밝히라는 원칙과 결론부터 말하라는 원칙은 왜를 얼마나 길게 말할지 정하면 함께 쓸 수 있다. 앞에 두는 왜는 긴 배경이 아니라 상대가 이 이야기를 들어야 하는 이유 한 문장이고, 바로 뒤에 결론이나 추천을 붙인다. 배경, 대안 비교와 구현 방법은 그 뒤나 첨부로 보낸다.
+
+- **근거**: 미 육군 서신 규정 AR 25-50(2020년 10월판, 2024년 10월 4일 행정 개정 기준)은 효과적인 글을 한 번 빠르게 읽어 이해되는 글로 보고, 요점을 서신 첫머리에 두는 것(bottom line up front, BLUF)과 능동태를 두 가지 필수 요건으로 든다. 메모 본문은 짧고 분명한 목적 문장으로 시작하고 추천이나 결론 같은 요점을 바로 다음에 둔다(목적과 요점을 한 문장에 합치기도 한다). 미국 연방정부의 쉬운 글 지침(Digital.gov)도 목적과 결론부터 밝히고, 가장 중요한 정보는 앞에, 배경 정보는 필요할 때 끝 쪽에 두라고 한다. 그 자료가 독자에게 왜 중요한지도 말하라고 한다.
+- **결정 요청의 뼈대**: AR 25-50의 결정 메모(decision memorandum)는 지휘부나 상급 본부의 결정을 받기 위한 문서로, 근거 문서를 빼고 2쪽을 넘기지 않도록 한다. 결정 요청(FOR DECISION)이라는 표시로 시작해 목적(취할 조치를 한 문장으로), 추천(구체적인 추천과 결정권자가 표시할 승인, 반려, 면담 요청 선택란), 배경(사안의 발단, 추천을 이해하는 데 필요한 사실, 검토한 대안), 논의(대안별 장단점, 근거 문서는 첨부하고 요점만 본문에 요약), 영향(누가 어떻게 영향을 받는지, 없으면 없다고 적음), 협의(누구와 언제 검토했는지와 동의 여부, 반대 의견에는 사유) 순서로 쓴다. 일반 서신도 대부분 한 쪽으로 쓰고 추가 정보는 첨부로 돌린다. 군 내부 규정이므로 외주 고객 보고나 기술 결정 요청에는 양식이 아니라 순서와 분량 원칙만 빌린다.
+- **근거는 묶어서 내려간다**: Barbara Minto의 피라미드 원칙은 생각을 하나의 요점 아래 피라미드로 묶어 제시하면 독자가 쉽게 이해하고, 전달은 독자를 피라미드 위에서 아래로 안내하는 일이라고 설명한다. 위의 요점은 아래 생각들의 요약이어야 하고, 한 묶음의 생각은 논리적으로 같은 종류이면서 논리적 순서를 가져야 한다. Minto는 Situation, Complication, Question(SCQ) 틀을 독자 머릿속의 질문을 찾는 도구로 제시한다. 이 틀을 보고에 적용하면 앞에 두는 왜 한 문장은 상대가 이미 가진 질문을 세우는 역할로 쓸 수 있다.
+- **독자가 다르면 나눠 쓴다**: Digital.gov 지침은 독자가 이미 아는 것, 알아야 할 것, 가질 질문을 먼저 따져 보라고 한다. 서로 다른 독자를 위한 내용을 섞으면 독자가 혼란스럽고 자기에게 해당하는 내용을 찾기 어려워질 수 있으므로 독자별로 나눠 쓰라고도 한다. 장애 대응 중의 청중 분리는 [[Incident-Commander|장애 대응 리딩]]과 같은 원리다.
+- **절차는 시간순이 낫다**: Digital.gov 지침은 절차 정보라면 일이 일어나는 순서대로 쓰는 편이 가장 낫다고 한다. 장애 타임라인, 배포 절차와 재현 단계는 목적이나 요약 한 줄 뒤의 본문을 시간순으로 쓰고, 결론과 추천을 앞세우는 구성은 판단이나 결정을 요청하는 글에 쓴다.
+- **적용 예**: 결정을 요청한다면 오늘 정할 사항과 이유 한 문장(주문 조회 지연으로 이탈이 늘고 있어 조회 결과 캐시 도입 승인을 요청한다), 추천, 대안과 비용, 영향 범위 순서로 쓰고 구현 세부는 첨부로 돌린다.
+
 ## 고맥락과 저맥락 문화
 
 Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하며, 그 첫째인 커뮤니케이션 척도가 저맥락과 고맥락을 나눈다. 저맥락 문화에서는 말한 그대로가 메시지이고 명확하고 단순하게 반복하는 것이 좋은 소통이다. 고맥락 문화에서는 누가, 언제, 어떤 분위기에서 말했는지까지 메시지에 포함되며 행간을 읽는 것이 기대된다. 책의 척도에서 미국은 가장 저맥락 쪽, 일본은 가장 고맥락 쪽에 있고 한국도 고맥락 쪽에 놓인다(책 기준, 국가 위치는 상대 비교다).
@@ -92,6 +103,7 @@ Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하
 - 기술 부채를 비즈니스 언어로 번역하는 구조 (현상 → 비용 → 개선 후 이득)
 - 갈등 회피와 갈등 관리의 차이
 - 고맥락과 저맥락 기대가 부딪힌 장면을 악의가 아닌 맥락 차이로 설명할 수 있는가
+- 글이 필요한 이유 한 문장과 두괄식을 함께 쓰는 방법과 결정 요청의 순서(목적, 추천, 배경, 대안 논의, 영향, 협의)를 설명할 수 있는가
 
 ## 대안과 비용, 불확실성을 함께 전달한다
 
@@ -113,6 +125,12 @@ Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하
 - [미국 스타트업에서 필요한 3가지 — Threads, 2daepyo1](https://www.threads.com/@2daepyo1/post/Db-VXYzEgjc)
 - [The Culture Map: Breaking Through the Invisible Boundaries of Global Business — PublicAffairs, Erin Meyer (2014)](https://www.hachettebookgroup.com/titles/erin-meyer/the-culture-map/9781610392501/?lens=publicaffairs)
 - [The Culture Map — Erin Meyer](https://erinmeyer.com/books/the-culture-map/)
+- [U.S. Department of the Army, AR 25-50 Preparing and Managing Correspondence (2020, 2024-10-04 행정 개정)](https://www.maine.gov/dvem/policies/documents/AR%2025-50%20%2810%20October%202020%29.pdf)
+- [Digital.gov, Principles of plain language: Organize the information](https://digital.gov/guides/plain-language/principles/organize)
+- [Digital.gov, Principles of plain language: Write for the reader](https://digital.gov/guides/plain-language/principles/write-for-reader)
+- [The Minto Pyramid Principle — Barbara Minto](https://www.barbaraminto.com/)
+- [The Minto Pyramid Principle Concept — Barbara Minto](https://www.barbaraminto.com/concept)
+- [Barbara Minto: MECE: I invented it, so I get to say how to pronounce it — McKinsey & Company](https://karriere.mckinsey.de/alumni/news-and-events/global-news/alumni-news/barbara-minto-mece-i-invented-it-so-i-get-to-say-how-to-pronounce-it)
 
 ## 관련 문서
 
@@ -125,3 +143,5 @@ Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하
 - [[Peer-Comparison-Anxiety|동료 비교 불안]]
 - [[Performance-Evidence-Playbook|성과 증거 플레이북]]
 - [[Global-IT-Interview|글로벌 IT 인터뷰 준비]]
+- [[Managing-Up|상사와 일하는 법]]
+- [[Incident-Commander|장애 대응 리딩]]

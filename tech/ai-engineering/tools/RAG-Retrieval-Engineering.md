@@ -1,9 +1,9 @@
 ---
 tags: [ai, rag, retrieval, search]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-10-06
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["RAG Retrieval Engineering", "RAG 검색 엔지니어링", "RAG", "Hybrid Search"]
+aliases: ["RAG Retrieval Engineering", "RAG 검색 엔지니어링", "RAG", "Hybrid Search", "Contextual Retrieval"]
 ---
 
 # RAG 검색 엔지니어링 (RAG Retrieval Engineering)
@@ -22,6 +22,10 @@ RAG(Retrieval-Augmented Generation)의 품질은 검색 하나가 아니라 **re
 
 RAGAS와 ARES 같은 연구도 retrieval context의 관련성, 답변 관련성, faithfulness를 서로 다른 차원으로 평가한다. LLM judge는 빠른 회귀 탐지 수단이지만 고위험 도메인에서는 표본 human review와 calibration을 함께 둔다.
 
+## 검색 전에: 전체를 넣을 수 있는 규모인가
+
+검색 대상 corpus가 작으면 검색 단계 없이 전체를 prompt에 넣는 선택지가 있다(자주 바뀌면 prefix 캐시 재사용이 줄어 비용 이점이 작아진다). Anthropic은 지식 베이스가 200,000 토큰(약 500쪽)보다 작으면 RAG 없이 전체를 넣을 수 있고 prompt caching이 이를 더 빠르고 싸게 만든다고 안내했다(2024-09 발표 기준). 이 수치는 발표 당시 모델 기준이므로 지금은 사용할 모델의 윈도와 토큰 환산([[LLM-Generation-Mechanics-Context-and-Agent|Context Window와 대화 누적]]), 비용으로 다시 판단한다. 다만 입력이 길어지면 정보 활용이 비균일해질 수 있으므로([[Context-Engineering#Context Rot|Context Rot]]) 같은 질문 세트로 전체 투입과 검색의 정확도, 지연과 비용을 비교한다. Corpus가 크거나 계속 늘면 검색이나 아래 Progressive Disclosure 탐색으로 필요한 부분만 넣는다. 전체를 넣을 때의 캐시 배치는 [[LLM-Prompt-Caching|프롬프트 캐싱]]을 따른다.
+
 ## 청킹 전략: 고정 길이의 한계
 
 가장 단순한 청킹은 문서를 N 토큰 단위로 자르는 고정 길이 방식이다. 구현은 쉽지만 표, 이미지, 그래프처럼 한 청크를 넘어가는 구조를 끊어버린다. 표 상단 헤더와 하단 데이터가 다른 청크로 갈리면 둘 다 의미를 잃는다.
@@ -34,6 +38,14 @@ RAGAS와 ARES 같은 연구도 retrieval context의 관련성, 답변 관련성,
 | 구조 기반 | 제목, 섹션, 문단 경계 | 파서 구현 비용, 비정형 문서엔 전처리 필요 |
 
 PDF, 스캔본 같은 비정형 문서는 청킹 전에 OCR과 layout parsing으로 텍스트, 표, 읽기 순서를 복원한다. Chunk 크기와 overlap은 정답이 아니라 corpus별 변수다. 대표 질문에서 retrieval recall과 context token 비용을 함께 비교한다.
+
+### 청크별 문서 맥락 보강 (Contextual Retrieval)
+
+청크는 잘리는 순간 주어, 기간과 적용 범위 같은 문서 맥락을 잃을 수 있다. 회사 매출이 전 분기보다 3% 늘었다는 청크만으로는 어느 회사의 어느 분기인지 알 수 없다. 규칙과 예외가 다른 청크로 갈리면 예외 없는 규칙만 검색될 수도 있다(설명용 예시).
+
+Contextual Retrieval은 문서 전체와 청크를 함께 LLM에 주어 그 청크를 문서 안에서 설명하는 짧은 맥락(보통 50~100 토큰)을 만들고, 이를 청크 앞에 붙인 뒤 embedding(Contextual Embeddings)과 BM25 색인(Contextual BM25)을 만든다. Anthropic의 2024-09 평가에서 상위 20개 청크 검색 실패율(1 - recall@20)은 5.7%에서 contextual embeddings로 3.7%(35% 감소), contextual BM25를 더해 2.9%(49% 감소), reranking까지 더해 1.9%(67% 감소)로 줄었다. 평가 corpus는 codebase, 소설, arXiv 논문과 과학 논문이었다. Anthropic은 문서 전체의 일반 요약을 청크에 붙이는 방식도 시험했지만 이득이 매우 제한적이었다고 보고했다. 수치는 해당 corpus, embedding 모델과 설정의 관찰이므로 적용할 corpus의 질문 세트로 다시 잰다.
+
+비용은 색인할 때 청크마다 추가되는 LLM 호출에서 생기며, 문서를 prompt cache에 올려 같은 문서의 청크별 호출에서 재사용하면 줄일 수 있다([[LLM-Prompt-Caching|프롬프트 캐싱]]). 맥락은 문서 전체에서 생성되므로 문서가 바뀌면 그 문서에 속한 청크의 맥락, embedding과 BM25 색인을 다시 만든다. 맥락 생성 prompt와 모델도 [[Vector-Similarity-Search#임베딩 공간은 versioned contract다|임베딩 공간 계약]]의 전처리 version에 포함한다.
 
 ## 하이브리드 검색: 벡터 + BM25
 
@@ -54,7 +66,7 @@ BM25를 병행해 정확 token match를 보완하고 RRF나 score normalization�
 
 ## Progressive Disclosure 탐색
 
-문서 전체를 한 번에 컨텍스트에 밀어넣지 않는다. 폴더 구조와 메타데이터만 먼저 컨텍스트로 주고, 에이전트가 tool-calling으로 매 턴 탐색 방향을 스스로 정한다. 코딩 에이전트가 디렉터리를 훑고 필요한 파일만 열어보는 패턴과 같다.
+전체 투입이 맞지 않는 규모라면 문서 전체를 한 번에 컨텍스트에 밀어넣지 않는다. 폴더 구조와 메타데이터만 먼저 컨텍스트로 주고, 에이전트가 tool-calling으로 매 턴 탐색 방향을 스스로 정한다. 코딩 에이전트가 디렉터리를 훑고 필요한 파일만 열어보는 패턴과 같다.
 
 - 필요한 만큼씩만 로드 → 토큰 절약, 노이즈 감소
 - 검색된 문서의 인접 문서를 자동 탐색해 끊긴 맥락을 보완
@@ -82,7 +94,7 @@ Retriever의 top-k를 그대로 prompt에 붙이지 않는다. 중복 청크를 
 
 ## 검색 권한과 데이터 수명
 
-관련성이 높은 문서와 사용자가 읽을 수 있는 문서는 다르다. OWASP LLM08은 접근 제어 오류와 멀티테넌트 검색의 교차 유출을 별도 위험으로 다룬다. 사용자와 tenant는 인증된 서버 맥락에서 정하고, 모델이 만든 식별자나 검색 필터를 권한 증거로 쓰지 않는다.
+관련성이 높은 문서와 사용자가 읽을 수 있는 문서는 다르다. OWASP LLM08:2025는 접근 제어 오류와 멀티테넌트 검색의 교차 유출을 별도 위험으로 다룬다. 사용자와 tenant는 인증된 서버 맥락에서 정하고, 모델이 만든 식별자나 검색 필터를 권한 증거로 쓰지 않는다. 권한 필터를 ANN의 어느 단계에 두는지에 따라 결과 수와 recall도 달라진다([[Vector-Similarity-Search#메타데이터 필터와 ANN|메타데이터 필터와 ANN]]).
 
 다음은 이 원칙을 검색 흐름에 적용한 설계 점검 항목이다.
 
@@ -117,6 +129,9 @@ Q. RAG를 더 고도화한다면?
 Q. 도메인 사전은 무조건 만드는 게 좋은가?
 - 아니다. 멀티테넌트에서 용어 다양성이 크면 관리 비용이 효과를 넘는다. 운영 복잡성 대비 효과로 판단하고 안 만드는 선택도 설계다.
 
+Q. 청크가 문맥을 잃어 검색이 빗나가면?
+- 구조 기반 청킹과 원문 provenance를 먼저 갖춘다. 그다음 청크별 문서 맥락을 앞에 붙여 embedding과 BM25를 함께 색인하는 방식을 같은 평가 세트로 비교한다. 비용은 청크당 LLM 호출이고, 문서가 바뀌면 맥락과 색인을 다시 만든다.
+
 ## 관련 문서
 - [[Context-Engineering|컨텍스트 엔지니어링 (Select, Isolate — 검색 단계 토큰 경제학)]]
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (구조화 조회, Metric Registry, 조회 우선순위)]]
@@ -127,7 +142,7 @@ Q. 도메인 사전은 무조건 만드는 게 좋은가?
 
 ## 출처
 
-2026-10-02에는 검색 권한과 교차 유출 위험을 OWASP LLM08에 대조했다. 데이터 수명과 검증 항목은 그 원칙을 적용한 설계 제안이며 특정 검색 엔진의 기본 보장이 아니다. 기존 검색 기법과 평가 논문 전체를 다시 검증한 기록은 아니다.
+2026-10-02에는 검색 권한과 교차 유출 위험을 OWASP LLM08에 대조했다. 데이터 수명과 검증 항목은 그 원칙을 적용한 설계 제안이며 특정 검색 엔진의 기본 보장이 아니다. 기존 검색 기법과 평가 논문 전체를 다시 검증한 기록은 아니다. 2026-10-06에는 청크별 맥락 보강과 전체 투입 규모 안내를 Anthropic 발표에 대조했다. 맥락 재생성과 version 관리는 그 기법을 적용한 설계 제안이다.
 
 - [OWASP GenAI, LLM08:2025 Vector and Embedding Weaknesses](https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/)
 - [Ragas: Automated Evaluation of Retrieval Augmented Generation](https://arxiv.org/abs/2309.15217)
@@ -136,3 +151,4 @@ Q. 도메인 사전은 무조건 만드는 게 좋은가?
 - [OpenSearch Documentation, Rerank processor](https://docs.opensearch.org/latest/search-plugins/search-pipelines/rerank-processor/)
 - [AI ENGINEER NIGHT Q&A 총정리 — 채널톡 Tech](https://tech.channel.io/ko/articles/4052f1f4)
 - [LLM 에이전트 실무 사례 (리트리벌 스킬, RankJ 근거 태깅) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)
+- [Introducing Contextual Retrieval — Anthropic](https://www.anthropic.com/news/contextual-retrieval)

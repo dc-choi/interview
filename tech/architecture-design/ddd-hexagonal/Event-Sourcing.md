@@ -145,7 +145,7 @@ Outbox는 **메시지 발행 신뢰성** 문제 해결이 목적이고, Event So
 - **Aggregate 경계 설계가 핵심** — 너무 크면 동시성 충돌, 이벤트 폭주, 너무 작으면 일관성 보장 깨짐
 - **버전 필드 처음부터** — `event_type` + `version` 으로 시작해야 후속 진화 가능
 - **재해 복구 시나리오 미리** — Read Model 전체 rebuild 비용, 시간을 사전 측정
-- **개인정보, 민감 데이터** — 삭제와 보존 의무를 먼저 확인하고 이벤트에 불필요한 개인정보를 넣지 않는다. crypto-shredding은 주체별 키를 분리하고 백업을 포함한 모든 키 복제본을 폐기할 수 있을 때 검토할 수 있는 한 방법이지 자동으로 삭제 의무를 충족하지 않는다
+- **개인정보, 민감 데이터** — 삭제와 보존 의무를 먼저 확인하고 이벤트에 불필요한 개인정보를 넣지 않는다. crypto-shredding은 주체별 키를 분리하고 백업을 포함한 모든 키 복제본을 폐기할 수 있을 때 검토할 수 있는 한 방법이지 자동으로 삭제 의무를 충족하지 않는다. 전제와 키 사본 관리는 [[Crypto-Shredding|Crypto-shredding]]을 따른다
 
 ## 관련 문서
 
@@ -153,6 +153,7 @@ Outbox는 **메시지 발행 신뢰성** 문제 해결이 목적이고, Event So
 - [[Saga-Pattern|Saga 패턴]] (분산 트랜잭션 — Event Sourcing과 자연스러운 짝)
 - [[DDD&Hexagonal|DDD, Hexagonal]] (Aggregate, 경계 모델링)
 - [[CDC&Outbox|CDC vs Outbox]]
+- [[Crypto-Shredding|Crypto-shredding]] (키 파기로 이벤트와 백업 사본의 복호화를 막는 방식과 전제)
 
 ## 출처
 

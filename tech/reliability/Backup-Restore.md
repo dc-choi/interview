@@ -64,6 +64,7 @@ RDS DB 인스턴스의 스냅샷 복원은 `available` 이후에도 S3에서 데
 - 보존 기간이 컴플라이언스 요구보다 짧음
 - 대용량 논리 덤프가 RTO 안에 못 끝남(물리/스냅샷 고려)
 - 수동 스냅샷을 방치해 비용 누적([[RDS-Connection-Credentials|백업 스토리지 과금]])
+- 삭제 요청 뒤에도 백업, 수동 스냅샷과 잠근 백업에 남는 사본을 삭제 완료 시점과 복원 절차에 반영하지 않음([[Soft-Delete-and-Data-Lifecycle#사본별 삭제 전파와 완료 시점|사본별 삭제 전파]], [[Crypto-Shredding|crypto-shredding]])
 
 ## 면접 체크포인트
 
