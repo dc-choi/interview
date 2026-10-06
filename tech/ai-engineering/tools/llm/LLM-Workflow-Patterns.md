@@ -103,7 +103,28 @@ Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. �
 - **Text-to-SQL**: 자연어 질문에서 필요한 테이블, 조건, SQL 함수를 고려해 쿼리를 생성
 - **데이터 디스커버리**: 테이블의 의미를 설명하고 어떤 데이터를 써야 하는지 안내
 
-품질은 모델이 아니라 **구조화된 메타데이터**에 달려 있다. 테이블 의미, 업무 용어, 지표 정의를 벡터 스토어와 사전에 적재해야 한다. 모호한 의미 검색을 결정론적 조회로 바꾸는 방향은 [[RAG-Retrieval-Engineering|엔티티 추출 후 구조화 조회]], 지표 정의 수렴은 [[Production-Agent-Architecture|Metric Registry]]와 같은 결이다.
+품질은 모델 능력뿐 아니라 **스키마와 업무 의미를 얼마나 정확히 전달하는지**에 달려 있다. 전체 스키마를 한꺼번에 넣기보다 질문에 맞는 데이터 도메인으로 범위를 좁히고 다음 맥락을 제공한다. 벡터 저장소는 관련 맥락을 찾는 선택지이며 필수 구성은 아니다.
+
+| 맥락 | 담을 내용 |
+|---|---|
+| 스키마 | 테이블과 컬럼의 의미, 관계와 조인 조건, 대상 DB의 SQL 방언 |
+| 업무 정의 | 동의어, 지표 산식, 포함하거나 제외할 데이터 조건 |
+| 검토한 예시 | 자연어 질문과 올바른 SQL의 쌍, 해당 예시의 적용 범위 |
+
+모호한 의미 검색을 결정론적 조회로 바꾸는 방향은 [[RAG-Retrieval-Engineering|엔티티 추출 후 구조화 조회]], 지표 정의 수렴은 [[Production-Agent-Architecture|Metric Registry]]와 연결된다. 이 맥락 구성은 AWS와 Cisco의 공개 설계에서 도메인 분류, 메타데이터와 예시 SQL을 함께 사용하는 방식과 대조했다(2026-10-07 확인).
+
+### 생성, 검증과 실행의 경계
+
+SQL 문자열을 만드는 것과 권한 안에서 올바른 결과를 얻는 것은 별도 단계다. Amazon Bedrock Knowledge Bases의 `GenerateQuery`는 SQL 변환을 조회와 분리하고, `Retrieve`는 SQL 실행 결과를 반환한다. 생성 SQL의 정확도는 맥락, 스키마와 질문 의도에 따라 달라져 워크로드에 사용하기 전 평가가 필요하다(2026-10-07 공식 문서 기준).
+
+다음은 이 경계를 분석 서비스에 적용한 설계 예시다.
+
+1. **질문 확정:** 매출의 취소분 포함 여부나 기간처럼 결과를 바꾸는 조건이 업무 정의에 없으면 확인한다. 무인 처리에서는 추정 실행 대신 보류한다.
+2. **SQL 생성과 검토:** 선택한 도메인의 스키마, 업무 정의와 예시를 사용한다. 문법 통과 외에 조인으로 집계가 중복되는지, 기간과 지표 정의가 맞는지 별도 검증한다.
+3. **제한된 실행:** 분석용 DB 권한을 필요한 테이블의 조회 범위로 제한한다. 프롬프트에 읽기 전용이라고 적는 것으로 권한 통제를 대체하지 않는다.
+4. **결과 대조:** 검토한 질문과 기대 결과를 가진 평가셋으로 결과를 비교하고, 모델이나 메타데이터가 바뀌면 같은 질문을 다시 평가한다.
+
+AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명시하고 제한된 역할, 읽기 전용 DB와 샌드박싱을 권고한다. Redshift 연결 예시도 조회 권한을 부여하되 `CREATE`, `UPDATE`, `DELETE` 권한은 부여하지 않도록 안내한다(2026-10-07 확인). 이는 데이터 변경 방지 경계이며, 조회 가능한 데이터의 테넌트와 민감정보 범위까지 자동으로 보장하지는 않는다.
 
 ## 데이터와 모델 중 무엇이 더 중요한가
 
@@ -141,6 +162,9 @@ Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. �
 - API 에이전트 플랫폼: 스킬셋 연결로 도메인 에이전트 생성, Detector-CoT-Answer 처리, 리트리벌 스킬(CoT+랭킹으로 RAG 확장)과 근거를 XML로 표시하는 랭킹 모델로 출처 추적.
 
 ## 출처
+- [Enterprise-grade natural language to SQL generation using LLMs: Balancing accuracy, latency, and scale — AWS](https://aws.amazon.com/blogs/machine-learning/enterprise-grade-natural-language-to-sql-generation-using-llms-balancing-accuracy-latency-and-scale/)
+- [Amazon Bedrock User Guide, Generate a query for structured data](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-generate-query.html)
+- [Amazon Bedrock User Guide, Set up your query engine and permissions for creating a knowledge base with structured data store](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-prereq-structured.html)
 - [n8n Docs, Error handling](https://github.com/n8n-io/n8n-docs/blob/main/docs/build/flow-logic/handle-errors-gracefully.md)
 - [n8n Docs, Error Trigger node](https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/core-nodes/n8n-nodes-base.errortrigger.md)
 - [Trustworthy agents in practice — Anthropic](https://www.anthropic.com/research/trustworthy-agents)
