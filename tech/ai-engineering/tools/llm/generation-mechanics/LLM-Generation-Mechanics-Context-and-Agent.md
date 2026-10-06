@@ -69,6 +69,18 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 
 검증은 기본 LLM이 내장한 성공 보장이 아니다. 지침, 테스트, 출처 확인과 하네스가 별도 정책으로 요구해야 한다. 에이전트 루프는 정상 답변 외에도 오류, 승인 거절, 호출 한도, 예산 상한과 진전 없음으로 끝날 수 있다.
 
+### 숫자 생성과 계산 도구 실행은 다르다
+
+도구 없이 자기회귀 언어 모델이 산술 답을 출력할 때는 풀이와 숫자를 토큰으로 생성한다. 학습한 계산 절차로 맞힐 수 있지만, 내부에서 수많은 행렬 연산을 한다는 사실이 질문의 수식을 계산기로 실행했다는 뜻은 아니다. 산술 능력의 한계와 계산기 API 활용은 Toolformer 연구가 다룬 구분이며, 모든 모델이 산술을 못한다는 결론은 아니다.
+
+계산 도구를 연결하면 모델이 식과 인자를 만들고, Runtime이 계산을 실행한 뒤 결과를 Context로 돌려준다. 아래는 이 경계에 적용할 검증 기준이다.
+
+- **식과 입력:** 원문 수치, 단위와 연산이 질문에 맞는지 확인한다. 도구는 잘못 전달된 식도 그대로 계산할 수 있다.
+- **실행 증거:** 도구를 사용했다는 설명과 실제 호출 결과를 구분한다. 호출 실패를 모델이 추정한 숫자로 채우지 않는다.
+- **결과 전달:** 도구 출력과 최종 답의 값, 단위와 반올림 조건을 대조한다.
+
+예를 들어 `347 × 28 = 9716`은 설명용 산술 예시다. 특정 모델의 오답 사례나 성능 측정값이 아니다. 정답 숫자만으로 계산 도구 사용 여부를 판단할 수 없다.
+
 ## 자주 헷갈리는 점
 
 - 파일을 읽었다고 모델이 즉시 재학습한 것은 아니다. 고정 가중치 추론에서는 Context만 달라진다.
@@ -86,6 +98,7 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 
 ## 출처
 
+- [Toolformer: Language Models Can Teach Themselves to Use Tools — Schick et al.](https://arxiv.org/abs/2302.04761)
 - [Effective context engineering for AI agents — Anthropic](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 - [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks — Lewis et al.](https://arxiv.org/abs/2005.11401)
 - [Function Calling — OpenAI API](https://developers.openai.com/api/docs/guides/function-calling)

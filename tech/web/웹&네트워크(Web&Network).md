@@ -20,6 +20,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [[Expo|Expo]] — Home/Guides/EAS/Reference/Learn 전체, SDK API, Expo UI, native 확장과 배포
 
 ## 추가 주제
+- [x] [[HTTP-Status-Code#HTTP 성공과 업무 완료를 구분한다|HTTP 성공과 업무 완료]] — 200 응답과 결제 상태, 421의 의미, 결과 미확인과 재시도 경계
 - [x] [[tech/web/http/versions/versions|HTTP/1.1, HTTP/2, HTTP/3 (진화, 멀티플렉싱, HPACK, QUIC, HOL 차이)]]
 - [x] [[Content-Negotiation|Content Negotiation]] — 기존 보강: [[HTTP-Content-Type#요청 vs 응답|Accept와 Content-Type의 기본 관계]]
 - [x] [[tech/web/http/Idempotency|Idempotent / Safe Method]]

@@ -28,6 +28,16 @@ aliases: ["HTTP 상태 코드", "HTTP Status Code", "401 vs 403", "502 vs 504"]
 - `204 No Content`: 성공했으며 응답 content가 없다. 204 응답에 content를 넣지 않는다.
 - `206 Partial Content`: Range 요청의 일부 Representation을 반환한다.
 
+### HTTP 성공과 업무 완료를 구분한다
+
+HTTP는 응용 계층 프로토콜이다. `200 OK`는 해당 요청의 성공을 뜻하며, TCP 전송 성공만 나타내는 코드가 아니다. 다만 **상태 조회 요청의 성공과 조회한 작업의 완료는 다르다**. 결제 조회가 정상 응답했어도 결제 객체는 처리 중이거나 실패한 상태일 수 있다.
+
+외부 API는 HTTP 상태와 문서화된 응답 계약을 함께 읽는다. 예를 들어 Stripe PaymentIntent의 `status`는 `succeeded`, `processing`, `requires_action`, `requires_payment_method` 등을 구분한다. 주문 이행은 클라이언트 화면의 성공 표시만 믿지 않고 서버에서 `payment_intent.succeeded` 웹훅을 받아 처리하는 방식이 권장된다. 이 동작은 2026-10-06 Stripe 공식 문서에서 확인했다.
+
+- 상태 조회의 200을 결제 승인 완료로 해석하지 않는다.
+- 200 안에 오류 코드를 담는 API를 연동한다면 그 계약에 따라 분기한다. 이를 모든 API가 업무 실패를 200으로 반환해야 한다는 설계 규칙으로 확대하지 않는다.
+- 타임아웃으로 결과를 못 받으면 실패 확정과 구분한다. 재시도 전에 [[Idempotency|멱등성]]과 결과 조회 경로를 확인한다.
+
 ## 3xx와 Redirect
 
 | 코드 | 지속성 | 자동 Redirect의 Method |
@@ -63,6 +73,7 @@ POST 처리 후 303으로 결과 페이지를 GET하게 하는 PRG는 새로고�
 - `408 Request Timeout`: Server가 기다리던 완전한 요청을 받지 못해 연결을 닫으려 한다.
 - `409 Conflict`: 현재 Resource 상태와 요청이 충돌한다.
 - `415 Unsupported Media Type`: 요청 content 형식이나 coding을 지원하지 않는다.
+- `421 Misdirected Request`: 대상 URI에 권위 있는 응답을 제공할 수 없거나 제공하지 않으려는 서버로 요청이 향했다. 잔액 부족을 뜻하는 코드가 아니다.
 - `422 Unprocessable Content`: 형식과 구문은 이해했지만 포함된 지시를 처리할 수 없다.
 - `429 Too Many Requests`: 요청량 제한을 초과했다. 별도 RFC 6585가 정의하며 `Retry-After`를 함께 보낼 수 있다.
 
@@ -86,6 +97,7 @@ POST 처리 후 303으로 결과 페이지를 GET하게 하는 PRG는 새로고�
 - [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
 - [RFC 6585, Additional HTTP Status Codes](https://www.rfc-editor.org/rfc/rfc6585.html)
 - [RFC 9457, Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457.html)
+- [Stripe, Payment status updates](https://docs.stripe.com/payments/payment-intents/verifying-status)
 - [WHATWG Fetch, HTTP-redirect fetch](https://fetch.spec.whatwg.org/#http-redirect-fetch)
 - [Express 5.x API, Response (res.redirect)](https://expressjs.com/en/5x/api/response/)
 - [Spring Framework API, UrlBasedViewResolver (setRedirectHttp10Compatible)](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/view/UrlBasedViewResolver.html)

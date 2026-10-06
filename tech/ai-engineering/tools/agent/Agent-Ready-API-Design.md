@@ -26,6 +26,18 @@ aliases: ["Agent-Ready API Design", "에이전트 친화 API 설계", "Astryx", 
 - **검색이 다음 행동을 안내**: 통합 검색 결과에 도메인 태그와 후속 실행 명령을 함께 실어, 에이전트가 탐색 → 상세 조회로 스스로 이동
 - 프로젝트에 CLI 경로를 npm script로 고정해 에이전트가 경로 오류 없이 호출하게 하고, init가 에이전트용 문서를 프로젝트에 설치
 
+### API 스키마와 생성 결과를 함께 관리한다
+
+API 정의를 CLI, SDK와 문서 생성의 공통 입력으로 쓰면 이름과 인자 규칙을 각각 손으로 맞추는 부담을 줄일 수 있다. 에이전트가 문서를 읽고 만든 호출이 실제 명령과 어긋나는 문제도 같은 계약에서 점검한다.
+
+설계 적용 시에는 다음을 확인한다.
+
+1. 스키마 변경과 생성 결과의 차이를 같은 변경 검토에서 본다. 생성 성공만으로 실제 서버와의 동작 호환성을 보장하지는 않는다.
+2. API 호출에 대응하지 않는 로컬 빌드, 개발 명령은 별도 구현이 필요할 수 있다. 수작업 명령의 도움말과 문서도 관리 대상에 포함한다.
+3. 모든 도구를 새로 만들기보다 실제 사용하는 인터페이스부터 공통 계약으로 연결한다. 생성기와 배포 파이프라인의 유지 비용도 비교한다.
+
+사례로 Cloudflare의 cf CLI는 OpenAPI 스키마에 추가 정보를 붙여 Forge의 생성 입력으로 사용한다. Forge의 2026-09-28 발표는 cf CLI 출력 생성과 향후 문서, SDK 확장을 구분한다. 따라서 전체 도구 체인이 이미 Forge로 전환됐다고 해석하지 않는다. 이 사례 범위는 2026-10-06 공식 발표와 대조했다.
+
 ## Vibe Test — 컨벤션을 측정으로 검증
 
 같은 프롬프트 배터리를 서로 다른 시스템 구성(자사 시스템, 경쟁 조합, 순수 HTML baseline)에 주고 LLM이 생성한 UI 코드를 정량 비교하는 평가 체계. 프롬프트마다 기대 컴포넌트와 난이도를 메타데이터로 두되 평가에만 쓴다.
@@ -55,6 +67,8 @@ Meta 사내 8년, 13,000+ 앱에서 쓰인 최대 디자인 시스템의 오픈�
 ## 출처
 
 - [Astryx: An open source design system that's fully customizable and agent ready — Meta (GitHub)](https://github.com/facebook/astryx)
+- [Introducing cf: the agentic CLI for the entire Cloudflare API — Cloudflare](https://blog.cloudflare.com/cloudflare-cf-cli-launch/)
+- [Introducing Forge: the open source pipeline for generating SDKs, CLIs, docs, and more — Cloudflare](https://blog.cloudflare.com/forge-open-source-generation-pipeline/)
 
 ## 관련 문서
 
