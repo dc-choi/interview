@@ -15,7 +15,7 @@ aliases: ["Decision Frameworks", "의사결정 프레임워크"]
 - [[Architecture-Decision-Making|아키텍처 의사결정과 경제적 관점]] — 지식 공유, 결정의 비가역성, 내부 품질과 Design Stamina 가설
 - [[Build-vs-Buy|Build vs Buy]] — 만드는 비용과 가진 비용, 영향 반경, 소유 비용, 차별화와 출구의 네 질문, 다년 소유 비용 비교와 분기별 패치 책임자 점검
 - [[Data-Driven-Decision|데이터 기반 의사결정]] — 측정 정의 선행, 전환 퍼널과 코호트, 사용자 세그먼트 분석, 이해 충돌의 중재 도구
-- [[RFC-Writing|RFC / PRD 작성]] — RFC와 PRD의 차이, PRD 8섹션 템플릿, Spec-Driven Development
+- [[RFC-Writing|RFC / PRD 작성]] — 오판 비용에 따른 작성 범위, 미해결 쟁점과 결정 기록, PRD 템플릿, Spec-Driven Development
 
 ## 상위 문서
 
