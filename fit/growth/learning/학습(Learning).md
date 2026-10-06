@@ -13,6 +13,7 @@ CS 학습법, 소스 코드 분석, 영어 학습, 블로그 운영, 성장 원�
 - [x] [[roadmaps|실행 로드맵 (OpenSearch는 checkpoint를 보존한 채 보류, 현재 활성 정규 트랙 없음)]] — 서브폴더
 - [x] [[methods|학습 방법론 (CS 학습법, 백엔드 공부 순서, 소스 코드 분석, 역설계 학습, 목적 있는 학습, 얇게 시작하기, 제텔카스텐)]] — 서브폴더
 - [x] [[Learning-Strategy|학습 전략 (CS 기초의 가치, 기술 변화와 선택 기준, AI 접바둑 학습)]] — 서브폴더
+- [x] [[Learning-Credentials-and-Work-Samples|교육 수료증과 실무 증거 (직무 시뮬레이션, 비용과 기간 확인, 독립 수행 검증)]]
 - [x] [[Growth-Principles|성장의 7가지 원칙 (반복, 실전, 회고, 실험, 자기효능감, 습관화, 소셜화)]]
 - [x] [[Self-Development-While-Working|일하면서 자기계발 (커리어 오너십, 8가지 방법, 환경 선택, 언어 적성 연구의 해석)]]
 - [x] [[Learning-Business-While-Employed|직장에서 사업을 배우는 열 가지 관점 (업무 앞뒤, 대표의 대안, 매출에서 빠지는 것, 직접 팔기, 예측과 실제 비교, 작은 결정 맡기, 시간 비용)]]
