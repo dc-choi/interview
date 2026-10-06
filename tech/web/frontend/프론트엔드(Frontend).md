@@ -19,7 +19,7 @@ aliases: ["Frontend", "프론트엔드"]
   - [[Browser-Main-Thread-Scheduling|메인 스레드 스케줄링]] — 개수와 시간 기준 양보, 양보 도구별 재개 시점, 프레임당 한 번 그리기, 우선순위 큐와 idle-until-urgent, 화면 밖 렌더링 지연
   - [[Browser-Main-Thread-Offloading|메인 스레드 밖으로 보내기]] — 스레드 분담, transform과 FLIP, will-change, 레이아웃 스래싱, 워커와 transferable, 버리기, 합치기, 생략하기
 - [[Atomic-Design|Atomic Design과 컴포넌트 계층 규칙]] — 다섯 단계, Atom 범위, Molecule과 Organism 경계, 순수 컴포넌트와 부수 효과 계층, 목록과 모달 배치
-- [[Design-System-Lint|디자인 시스템 lint]] — 테마 토큰과 공용 컴포넌트 계약 위반 검출, `@shadcn/lint` 여섯 규칙과 예외 설정, 진단을 AI 수정 입력으로 쓰는 루프, 단계적 도입과 CI 게이트
+- [[Design-System-Lint|디자인 시스템 lint]] — 테마 토큰과 공용 컴포넌트 계약 위반 검출, `@shadcn/lint` 여섯 규칙과 예외 설정, 진단을 AI 수정 입력으로 쓰는 루프, 단계적 도입과 CI 게이트, 토큰 생성과 화면 대비 검증의 경계
 - [[In-Browser-Build|브라우저 내 빌드 런타임]] — esbuild-wasm 브라우저 컴파일, import map 의존성 해석, 로드 타임을 빌드 타임으로 옮겨 프리뷰 가속
 
 ## 관련 문서

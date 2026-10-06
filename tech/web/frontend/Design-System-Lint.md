@@ -104,6 +104,18 @@ Next.js 16은 `next lint` 명령을 없앴고 `next build`는 더 이상 lint를
 - 측정의 한계: 저장소 eval은 진단을 받은 뒤 150회가 넘는 작업 실행 중 두 번을 빼고 위반이 0이 됐다고 보고한다. 다만 시험한 모델과 판정 모델이 모두 한 모델 계열이고 측정 사이에 규칙과 prompt가 바뀌었으며, 수정이 일과 비용을 더하고 연속 작업 측정에서 첫 초안 자체는 나아지지 않았다고 함께 적는다. lint는 첫 생성을 개선하는 장치가 아니라 생성 뒤의 교정 루프로 본다.
 - 대안과 조합: Tailwind v4는 `@theme`에서 `--color-*: initial`로 기본 palette를 지우고 프로젝트 색만 남길 수 있다. 이는 CSS 생성 범위를 줄이는 방법이고, 어느 파일의 어느 class를 무엇으로 바꿀지 알려 주는 일은 lint 진단이 맡는다. 지운 palette를 쓰던 기존 코드는 해당 CSS를 잃으므로 사용처를 먼저 찾는다.
 
+## 토큰 생성, 정적 검사와 화면 검증을 나눈다
+
+디자인 토큰 생성기는 기준값을 코드에 옮기는 도구이고, lint는 코드가 그 기준을 따르는지 확인하는 도구다. 토큰이 일치해도 실제 화면의 가독성과 접근성이 충족되는지는 별도로 확인해야 한다.
+
+- **기준과 코드 연결:** 확정한 토큰에서 CSS 변수를 생성하면 기준 파일과 구현에 값을 따로 입력하는 일을 줄일 수 있다. 생성 뒤에는 실제 컴포넌트가 해당 변수를 참조하는지도 확인한다.
+- **검사 범위 구분:** 정적 분석 결과와 브라우저에서 측정한 결과를 나눠 남긴다. 브라우저 검사가 생략됐다면 정적 검사 통과를 화면 검증 완료로 기록하지 않는다.
+- **대비 기준 구분:** WCAG 2.2의 텍스트 대비 기준은 일반 텍스트 4.5:1, 큰 텍스트 3:1이다. 큰 텍스트는 18pt 이상 또는 굵은 14pt 이상이며, 버튼이라는 이유만으로 큰 텍스트가 되지 않는다. 비활성 컨트롤, 순수 장식과 로고 등에는 예외가 있다.
+
+2026-10-07 확인한 `design-studio-plugins`의 README는 `.design/tokens.json`에서 CSS 변수나 Tailwind `@theme`를 생성하는 흐름과 정적/실측 검사를 구분한다. 브라우저 도구가 없으면 실측을 생략했다고 보고한다. 다만 `contrastOn()` 소스는 흰색과 배경의 대비가 3:1 이상이면 흰색을 선택하므로, 자동으로 고른 `onPrimary`가 일반 크기 버튼 글자의 4.5:1 기준까지 보장하지는 않는다. 실제 글자 크기와 전경/배경 조합으로 다시 판정한다.
+
+이 날짜의 확인 범위는 해당 저장소 README, 대비 계산 소스와 WCAG 텍스트 대비 기준이다. 플러그인 설치나 실행, 앞 절의 `@shadcn/lint` 버전과 전체 동작 재검증은 포함하지 않는다.
+
 ## 체크포인트
 
 - 디자인을 맞춰 달라는 자연어 요청보다 lint 진단이 AI 수정에 유리한 이유(위반 위치와 대체 토큰, variant가 정해진다)
@@ -115,6 +127,9 @@ Next.js 16은 `next lint` 명령을 없앴고 `next build`는 더 이상 lint를
 
 ## 출처
 
+- [design-studio-plugins — GitHub](https://github.com/dbsxortime/design-studio-plugins) — 2026-10-07 토큰 생성과 정적/실측 검사 구분 확인
+- [design-studio-plugins, tokens.mjs — GitHub](https://github.com/dbsxortime/design-studio-plugins/blob/main/design-check/scripts/lib/tokens.mjs) — 2026-10-07 `contrastOn()`의 3:1 선택 조건 확인
+- [W3C WAI, Understanding SC 1.4.3: Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
 - [shadcn-ui/lint — GitHub](https://github.com/shadcn-ui/lint)
 - [@shadcn/lint, SETUP.md](https://github.com/shadcn-ui/lint/blob/main/SETUP.md)
 - [@shadcn/lint, How it works](https://github.com/shadcn-ui/lint/blob/main/docs/how-it-works.md)

@@ -64,6 +64,19 @@ aliases: ["주식", "Stocks"]
 
 고지 의무와 리서치 부서의 독립성 규정은 국가와 시점마다 다르다. 보고서 독해 원칙과 법적 의무를 구분하고, 국내 제도개선안은 발표와 실제 시행 여부를 따로 확인한다.
 
+### 지배주주와 소수주주의 이해관계를 구분한다
+
+기업의 실적이 좋아지는 것과 모든 주주가 공정하게 그 이익을 누리는 것은 별개다. 지배주주는 경영진을 감시해 대리인 문제를 줄일 수 있지만, 특수관계자 거래나 자신에게 유리한 신주 발행으로 다른 주주에게 손해를 줄 위험도 있다. 지분율과 실제 지배력이 다른 구조에서는 그 차이도 살핀다.
+
+다음은 OECD 2023 기업지배구조 원칙의 소수주주 보호와 이해상충 관리 항목을 기업 자료 읽기에 적용한 점검 질문이다.
+
+- 주요 주주의 지분과 의결권 구조를 확인할 수 있는가?
+- 특수관계자 거래의 이해상충을 공개하고 관리하는 절차가 있는가?
+- 증자 등 자본구조 변경이 특정 주주에게만 유리하지 않은가?
+- 소수주주가 의결권을 행사하고 권리 침해에 대응할 수 있는가?
+
+이는 국제 지배구조 원칙을 활용한 질문이며, 개별 기업의 위법 여부나 국내의 현재 법적 의무를 판정하는 기준은 아니다. IR 응대에 관한 일화나 낮은 배당만으로 경영진의 의도와 투자 적합성을 단정하지 않고 공개된 거래, 자본배분과 권리 구조를 확인한다. 이 절은 2026-10-07 OECD 2023 원칙 II.F와 II.G를 대조했다.
+
 ## 5. 주식 vs 채권 (자본구조)
 
 같은 기업의 보통주와 일반적인 고정금리 채권을 비교한다. 우선주, 전환사채나 후순위채권은 계약 조건을 별도로 확인한다.
@@ -95,6 +108,7 @@ aliases: ["주식", "Stocks"]
 
 ## 출처
 
+- [OECD, G20/OECD Principles of Corporate Governance 2023: The rights and equitable treatment of shareholders and key ownership functions](https://www.oecd.org/en/publications/g20-oecd-principles-of-corporate-governance-2023_ed750b30-en/full-report/component-5.html) — 2026-10-07 II.F와 II.G의 이해상충 관리, 소수주주 보호 원칙 대조
 - [Analyzing Analyst Recommendations — SEC](https://www.sec.gov/about/reports-publications/investorpubsanalystshtm) — 2026-10-07 등급 정의, 이해상충과 기업 공시 대조 원칙 확인. 현행 국가별 규제 검증은 제외
 - [What Is Earnings Season? — FINRA](https://www.finra.org/investors/insights/earnings-season) — 2026-10-07 실적, 컨센서스와 주가 반응의 구분 대조
 - [Price Earnings Ratio — Aswath Damodaran, NYU Stern](https://people.stern.nyu.edu/adamodar/pdfiles/pe.pdf) — EPS 기간 구분과 성장, 위험에 따른 배수 차이
