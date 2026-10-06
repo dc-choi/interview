@@ -17,6 +17,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 
 ## 세부 학습
 
+- [x] [[Claude-Design-Handoff|AI 디자인 시스템과 구현 인계]] — 시안 선택, 디자인 동기화와 프로토타입의 검증 경계
 - [x] [[Agent-Ready-API-Design#명령 발견과 실패 응답도 계약이다|에이전트 CLI 계약]] — 구조화된 도움말, 후속 명령 안내와 재시도 판단의 한계
 - [x] [[LLM-Generation-Mechanics-Training#LoRA와 QLoRA: 바꾸는 파라미터와 저장 정밀도|LoRA와 QLoRA]] — 저랭크 변화량, 기반 가중치 고정, 저장 정밀도와 연산 정밀도, 배포 구성 평가
 - [x] [[Codex-CLI#구독 요금과 속도 모드의 사용량|Codex 구독과 속도 모드]] — 포함 사용량, 구매 크레딧과 API 과금의 구분

@@ -29,6 +29,7 @@ JavaScript도 대규모 애플리케이션에 사용된다. TypeScript가 해결
 - [[TypeScript-Type-Level-Programming|타입 레벨 프로그래밍 (Conditional, Mapped, Infer, Recursive)]]
 - [[TS-Type-Narrowing|Type Narrowing (typeof, instanceof, in, predicate, assertion function, 패턴 매칭)]]
 - [[Runtime-Validation-Libraries|Runtime 검증 라이브러리 (Zod/Typia/Ajv, AOT 최적화, 벤치마크)]]
+- [[Effect-Typed-Errors|Effect의 오류 타입과 실행 경계 (성공, 예상 오류, 요구사항, 결함과 중단)]]
 - [[tech/computer-science/ts/ts-study/ts-study|실습 프로젝트]]
 - [[TS-Generics|제네릭 (타입 관계 보존, 제약과 기본 타입 인자)]]
 - [[TS-Function-Overloading|함수 오버로딩 (오버로드 vs 구현 시그니처, 조건부 타입 대비)]]
