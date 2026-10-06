@@ -36,6 +36,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [[DDD&Hexagonal|DDD, Hexagonal]] — Aggregate, 경계 모델링 (이벤트 발행 단위)
 
 ## 추가 학습 체크리스트
+- [x] [[Distributed-Batch-Execution#CronJob의 겹침 방지와 실행 시간 제한|CronJob 실행 제한]] — Forbid의 적용 범위, 실행과 시작 기한, 회차 멱등과 누락 복구
 - [x] [[RabbitMQ-Exchange-Routing|RabbitMQ (AMQP 모델, Exchange 라우팅, DLX 조건)]] — 운영 부담과 선택 기준은 [[Messaging-Broker-Comparison|브로커 비교]], NestJS 전송 계약은 [[NestJS-Microservices|수동 ACK, prefetch, durable queue]]
 - [x] [[NestJS-Queues|BullMQ (잡 옵션, 재시도와 백오프, WorkerHost, 분리 프로세스)]]
 - [x] [[Delivery-Semantics|At-Most-Once (유실 가능, 중복 없음, 적용 범위)]]

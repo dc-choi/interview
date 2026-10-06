@@ -84,6 +84,14 @@ vault 다른 문서에서 전후방 호환이라고 부르는 상태는 full com
 
 위 네 가지는 기질 중립인 최소치다. Avro와 Protobuf, JSON에서 이 규율이 각각 어디까지 포맷에 강제되고 어디부터 소비자 코드의 몫인지는 [[Schema-Evolution|스키마 진화]]가, 요청-응답 계약의 클라이언트 진화 내성 3종은 [[GraphQL-Schema-Design|GraphQL 스키마 설계]]가 소유한다.
 
+### 응답 필드 추가와 엄격한 JSON 파싱
+
+2026-10-06 Kotlin 공식 API와 kotlinx.serialization 가이드 대조 기준, `JsonBuilder.ignoreUnknownKeys`의 기본값은 `false`다. DTO에 없는 필드를 응답에 더하면 기존 필드를 보존해도 역직렬화가 실패할 수 있다. `Json { ignoreUnknownKeys = true }`는 알 수 없는 프로퍼티를 무시하게 하지만 알려진 필드의 잘못된 타입이나 미지의 enum 값까지 허용하는 설정은 아니다.
+
+호환성 점검에는 배포된 소비자의 파서와 설정을 넣는다. 기존 DTO로 새 필드가 포함된 응답을 읽는 테스트와 미지의 enum, 누락, `null` 테스트를 구분한다. 플랫폼 이름이나 스키마 diff만으로 이 동작을 추정하지 않는다. 서버 요청의 권한 관련 입력까지 같은 이유로 관대하게 처리하는 규칙으로 확대하지 않는다.
+
+추가 필드를 무시한다는 계약을 문서화해도 이미 배포된 앱의 파서 설정은 바뀌지 않는다. 지원 중인 소비자가 이를 처리하는지 확인한 뒤 응답을 확장하고, 확인할 수 없으면 기존 응답을 유지하거나 별도 버전으로 전환한다. 모든 필드 추가에 자동으로 버전을 올리는 규칙보다 실제 소비자 계약으로 판단한다.
+
 ## Expand-Contract를 계약 일반으로
 
 martinfowler.com에 실린 Danilo Sato의 Parallel Change(expand and contract)는 인터페이스 변경 패턴이지만, 계약이라면 기질을 가리지 않고 같은 3단계가 적용된다.
@@ -164,6 +172,8 @@ API 호환성 검사는 [[Architecture-Fitness-Functions|아키텍처 fitness fu
 - [Parallel Change — martinfowler.com, Danilo Sato](https://martinfowler.com/bliki/ParallelChange.html)
 - [Protocol Buffers, Language Guide (proto3)](https://protobuf.dev/programming-guides/proto3/)
 - [Pact Docs, Introduction](https://docs.pact.io/)
+- [Kotlin API, JsonBuilder.ignoreUnknownKeys](https://kotlinlang.org/api/kotlinx.serialization/kotlinx-serialization-json/kotlinx.serialization.json/-json-builder/ignore-unknown-keys.html)
+- [JSON configuration — Kotlin kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/json.md)
 - [Confluent Developer, Schema Registry 101, Testing Schema Compatibility](https://developer.confluent.io/courses/schema-registry/schema-compatibility/)
 - [제미니 강사, 찜하기 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392786)
 - [제미니 강사, 찜하기 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392787)

@@ -36,6 +36,17 @@ aliases: ["Distributed Batch Execution", "분산 배치 실행", "트리거 외�
 
 처리 대상을 잡의 내부 상태가 아니라 공유 저장소의 데이터로 만든다. 대상이 데이터가 되면 어느 워커가 집어가든 상관없어져 워커 수만큼 처리를 병렬화할 수 있다 — 공유 저장소 경합이나 외부 API 한도가 새 병목이 되기 전까지다.
 
+## CronJob의 겹침 방지와 실행 시간 제한
+
+Kubernetes 공식 문서를 2026-10-06 대조한 범위다. `concurrencyPolicy` 기본값 `Allow`는 이전 Job이 실행 중이어도 다음 Job을 허용한다. `Forbid`는 같은 CronJob이 만든 Job끼리의 동시 실행을 막는다. 서로 다른 CronJob이나 별도 실행 경로를 묶는 전역 락은 아니다.
+
+- 실행이 멈춘 채 끝나지 않으면 `Forbid` 때문에 이후 예약 시각을 놓칠 수 있다. CronJob의 `.spec.jobTemplate.spec.activeDeadlineSeconds`에 Job 전체 실행 시간 상한을 둔다. Pod template 안의 동명 필드와 구분한다.
+- 상한에 도달하면 실행 중인 Pod를 종료하고 Job은 `DeadlineExceeded`로 실패한다. `backoffLimit`보다 실행 시간 제한이 우선하며, 실패한 Job 자체가 자동으로 다시 시작되지는 않는다.
+- `.spec.startingDeadlineSeconds`는 예약 시각을 놓친 Job을 얼마나 늦게 시작할지 정한다. 실행 중인 Job의 시간 제한을 대신하지 않는다. 이전 Job 종료 뒤 지연 실행 여부도 이 값의 영향을 받는다.
+- CronJob의 생성은 근사적이어서 중복이나 누락이 가능하다. `Forbid`와 시간 제한을 설정해도 회차 키 멱등, 누락 회차 탐지와 복구 절차가 필요하다.
+
+운영 점검에서는 장기 실행과 시간 초과, 놓친 예약 횟수를 함께 본다. 종료 전에 외부 호출이 성공했을 수 있으므로 재처리 시 아래 외부 시스템 대사 원칙을 적용한다.
+
 ## 원자적 선점 (atomic claim)
 
 여러 워커가 같은 대상을 집지 않으려면 가져가는 동작 자체가 원자적이어야 한다.
@@ -82,6 +93,7 @@ aliases: ["Distributed Batch Execution", "분산 배치 실행", "트리거 외�
 - [MySQL 8.4 Reference Manual, Locking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)
 - [MySQL 8.4 Reference Manual, Server System Variables](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html)
 - [Kubernetes Documentation, CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/)
+- [Kubernetes Documentation, Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/)
 - [Amazon EventBridge Scheduler User Guide, What is Amazon EventBridge Scheduler](https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html)
 - [Amazon SQS Developer Guide, Visibility timeout](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html)
 - [Spring Batch Reference, The Domain Language of Batch](https://docs.spring.io/spring-batch/reference/domain.html)
