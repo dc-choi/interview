@@ -17,6 +17,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 
 ## 세부 학습
 
+- [x] [[Generative-Video-Editing|생성형 영상 편집]] — 자연어 수정, Google Vids 기능 범위, 원본 보존과 프레임 검수
 - [x] [[LLM-Workflow-Patterns#Text-to-SQL과 데이터 디스커버리|Text-to-SQL]] — 스키마, 업무 정의와 예시 SQL, 생성과 실행의 분리, 조회 권한과 결과 검증
 - [x] [[LLM-Workflow-Patterns#시각적 워크플로우의 오류 처리|시각적 워크플로우 오류 처리]] — n8n Error Trigger, 수동 실행과 자동 실행 검증의 차이
 - [x] [[Long-Context-Evaluation|긴 문맥 평가]] — 근거 위치와 입력 길이, 검색 누락과 활용 실패, 비용과 정확도 비교

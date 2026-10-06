@@ -1,7 +1,7 @@
 ---
 tags: [browser, css, animation, transition, compatibility, accessibility]
 status: done
-verified_at: 2026-10-01
+verified_at: 2026-10-07
 category: "CS - JavaScript"
 aliases: ["Browser CSS Animation", "브라우저 CSS 애니메이션과 호환성"]
 ---
@@ -55,6 +55,22 @@ timing function은 linear/ease/ease-in/ease-out/ease-in-out/cubic-bezier/steps �
 
 duration과 delay가 UX 응답을 느리게 만들거나 motion sickness를 유발하지 않게 한다.
 
+## 모션 지시를 시간과 경로로 나눈다
+
+연출 용어는 구현 조건으로 풀어 쓴다. 다음은 CSS 명세의 시간과 경로 제어를 디자인 요청에 대응시킨 예시다.
+
+| 요청 | 구현에서 정할 것 |
+|---|---|
+| 이징(easing) | 위치 경로와 별도로 진행률 곡선을 정한다. 감속에는 `ease-out` 등을 검토한다 |
+| 스태거(stagger) | 요소별 시작 지연을 다르게 둔다. 0ms, 60ms, 120ms처럼 간격을 주며 이전 요소의 종료를 기다리는 순차 실행과 구분한다 |
+| 곡선 이동(arc) | 곡선 경로와 속도 곡선을 따로 지정한다. `offset-path`로 경로를, `offset-distance`로 그 경로의 진행 위치를 표현할 수 있다 |
+| 홀드(hold) | 일정 구간 같은 값을 유지할지, `animation-play-state: paused`로 진행 자체를 멈출지 구분한다 |
+| 패럴랙스(parallax) | 전경과 배경의 이동 속도를 다르게 둔다. 장식적 이동은 끌 수 있는 경로를 함께 설계한다 |
+
+`animation-delay`는 시작 시점을 바꾸며 음수면 이미 그만큼 진행한 상태에서 즉시 시작한다. 스태거 대기 중에도 시작 모양을 유지해야 하면 `animation-fill-mode: backwards` 등을 검토한다. easing을 바꾸는 것만으로 직선 경로가 곡선으로 바뀌지는 않는다.
+
+예를 들어 카드 세 개의 등장을 요청할 때 대상, 이동 거리, 지속 시간, 시작 간격, 최종 상태와 reduced motion 대체 상태를 함께 정한다. 이 값은 특정 모델의 마법 같은 프롬프트가 아니라 확인 가능한 디자인 조건이다. 새 CSS 기능의 실제 지원 범위는 아래 호환성 기준으로 확인한다.
+
 ## reduced motion
 
 ```css
@@ -66,6 +82,8 @@ duration과 delay가 UX 응답을 느리게 만들거나 motion sickness를 유�
 ```
 
 animation이 정보 전달의 유일한 수단이 되지 않게 하고 keyboard/focus interaction에도 같은 state 변화가 보여야 한다. 자동 반복/큰 이동에는 stop/pause 정책을 검토한다.
+
+WCAG 2.1의 2.3.3(Animation from Interactions, AAA)은 기능이나 정보에 필수적이지 않은 상호작용 모션을 비활성화할 수 있게 하는 기준이다. 패럴랙스처럼 스크롤에 덧붙인 장식 이동도 대상이 될 수 있다. 자동으로 시작하는 움직임에는 별도의 2.2.2(Pause, Stop, Hide) 조건을 확인한다.
 
 ## vendor prefix는 compatibility data로 결정한다
 
@@ -91,6 +109,10 @@ class를 토글해 state를 표현하고 `transitionend`/`animationend`는 event
 
 ## 출처
 
+2026-10-07 추가 대조 범위는 모션 지시의 시간과 경로 구분, animation delay/fill/play-state와 상호작용 모션 접근성이다. 기존 호환성 절 전체를 이날 다시 검증했다는 뜻은 아니다.
+
+- [W3C, Motion Path Module Level 1](https://www.w3.org/TR/motion-1/)
+- [W3C WAI, Understanding SC 2.3.3: Animation from Interactions](https://www.w3.org/WAI/WCAG21/Understanding/animation-from-interactions)
 - [CSS Animations Level 1](https://www.w3.org/TR/css-animations-1/)
 - [CSS Transitions Level 2](https://www.w3.org/TR/css-transitions-2/)
 - [CSS Transitions Level 1, Starting of transitions](https://drafts.csswg.org/css-transitions-1/#starting), [CSS Easing Functions Level 1](https://drafts.csswg.org/css-easing-1/), [MDN, KeyframeEffect() constructor](https://developer.mozilla.org/en-US/docs/Web/API/KeyframeEffect/KeyframeEffect)

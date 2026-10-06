@@ -10,6 +10,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 하네스 시스템, 컨텍스트, 에이전트, 사용량 관측, RAG, MCP, 음성 인식 — AI를 프로덕션에서 쓰고 제어하는 도구. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
 
 ## 목차
+- [x] [[Generative-Video-Editing|생성형 영상 편집과 결과 검증]] — 변경 범위, 원본 보존, 장면 연장과 생성 기능의 한계
 - [x] [[Agent-Client-Protocol|ACP]] — 에디터와 코딩 에이전트의 메시지, capability와 승인 경계
 - [x] [[LLM-Wiki-Knowledge-Compilation|LLM 위키와 지식 합성의 영속화]] — 원문, 위키와 규칙 분리, 자동 갱신의 검증과 보류
 - [x] [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]] — 사실과 믿음의 분리, 검색과 종합 비용

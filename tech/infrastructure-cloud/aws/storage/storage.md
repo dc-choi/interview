@@ -12,7 +12,7 @@ aliases: ["AWS 스토리지 인덱스"]
 - [[EBS|EBS — 블록 스토리지, gp3/io2, 증분 스냅샷, KMS 암호화]]
 - [[EFS|EFS — NFS 파일 스토리지, Multi-AZ, Performance Mode]]
 - [[FSx|FSx — Windows, Lustre, ONTAP, OpenZFS 특화 파일시스템]]
-- [[Storage-Gateway-DataSync|Storage Gateway와 DataSync — 하이브리드 스토리지, 온프레미스 이전]]
+- [[Storage-Gateway-DataSync|Storage Gateway와 DataSync — 하이브리드 스토리지, 온프레미스 이전, Enhanced와 파티션 간 S3 전송]]
 - [[Snow-Family|Snow Family — 오프라인 대용량 데이터 이전, 엣지 컴퓨팅]]
 
 ## 관련 문서

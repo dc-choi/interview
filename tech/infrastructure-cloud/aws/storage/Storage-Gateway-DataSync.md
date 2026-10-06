@@ -3,7 +3,7 @@ tags: [infrastructure, aws, storage-gateway, datasync, hybrid-cloud]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["Storage Gateway", "AWS Storage Gateway", "DataSync", "AWS DataSync"]
-verified_at: 2026-09-03
+verified_at: 2026-10-07
 ---
 
 # Storage Gateway & DataSync
@@ -84,6 +84,21 @@ verified_at: 2026-09-03
 | **AWS 서비스 간** | S3, EFS, FSx for Windows, FSx for Lustre, FSx for OpenZFS, FSx for NetApp ONTAP |
 | **AWS → 온프레미스** | (역방향 동기화도 지원) |
 
+## DataSync Enhanced 모드와 파티션 간 S3 전송
+
+Enhanced는 목록 조회, 준비, 전송과 검증을 병렬화하고 Basic은 준비, 전송과 검증을 순차 수행한다. **Enhanced가 항상 agent 없는 모드라는 뜻은 아니다.** 지원 location 조합과 agent 필요 여부를 함께 확인하며, 작업을 만든 뒤에는 task mode를 바꿀 수 없다.
+
+상용 AWS와 AWS GovCloud (US)의 S3 버킷 사이에는 다음 구성을 쓴다.
+
+1. 작업을 실행할 리전의 버킷은 Amazon S3 location으로 둔다.
+2. 다른 파티션의 버킷은 같은 작업 리전에서 **Object storage location**으로 등록한다. 반대쪽 S3 endpoint, 버킷과 해당 버킷에 접근할 IAM 사용자 자격 증명이 필요하다.
+3. agent 없이 전송하려면 Enhanced를 선택한다. Basic이면 agent가 필요하다. 이 S3 구성의 조건을 모든 EFS/FSx 파티션 간 전송에 확대하지 않는다.
+4. IAM 사용자는 필요한 버킷 작업만 허용하고 더 이상 필요하지 않으면 제거한다. 장기 자격 증명을 문서나 명령 예시에 넣지 않는다.
+
+이는 다른 파티션의 IAM role을 그대로 참조하는 일반 S3 location 두 개의 구성이 아니다. Object storage location의 인증 경계를 별도로 다룬다. 전송 기능의 지원과 해당 데이터를 파티션 밖으로 옮겨도 되는지는 다른 판단이다.
+
+Enhanced의 검증은 전송한 데이터를 대상으로 하므로 대상 버킷 전체가 원본과 같다는 보증으로 해석하지 않는다. 실행 상태, 검증 결과와 필요한 데이터 범위를 함께 확인한다. 실제 계정의 권한과 전송 실행은 이 문서에서 검증하지 않았다.
+
 ## Storage Gateway vs DataSync
 
 | 기준 | Storage Gateway | DataSync |
@@ -106,6 +121,10 @@ verified_at: 2026-09-03
 
 ## 출처
 
+2026-10-07 추가 대조 범위는 DataSync task mode, 파티션 간 S3 location 구성과 권한 경계다. Storage Gateway 절의 기존 검증 기준은 2026-09-03이다.
+
+- [AWS DataSync, Choosing a task mode for your data transfer](https://docs.aws.amazon.com/datasync/latest/userguide/choosing-task-mode.html)
+- [AWS DataSync, Configuring transfers with Amazon S3](https://docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html) — 상용 리전과 GovCloud 간 S3 전송 절.
 - [AWS Storage Gateway, How Volume Gateway works](https://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html)
 - [AWS Storage Gateway, Hardware Appliance end of availability](https://docs.aws.amazon.com/storagegateway/latest/vgw/appliance-launch-gateway.html)
 - [AWS Storage Gateway API, GatewayInfo](https://docs.aws.amazon.com/storagegateway/latest/APIReference/API_GatewayInfo.html)
