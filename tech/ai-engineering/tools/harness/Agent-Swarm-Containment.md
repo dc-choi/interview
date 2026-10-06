@@ -50,15 +50,30 @@ METR는 트랜스크립트가 관련 메시지 보드 활동의 90%를 조금 �
 
 Anthropic도 2026년 7월 30일 별도 공지에서 자사 평가 중 세 조직의 실제 시스템에 비인가 접근한 세 사건을 공개했다. 실제 인터넷 연결과 격리돼 있다는 지침의 불일치가 핵심이었다. 이는 9월 위협 정보 보고서의 외부 행위자에 의한 Claude 오용 사례와 구분한다.
 
+## 역량 평가와 배포 통제를 분리해 읽는다
+
+사이버 역량 등급, 안전장치가 없는 평가 결과와 실제 서비스 동작은 서로 다른 관측값이다. 모델 이름만 같다고 같은 실행 조건으로 취급하지 않는다.
+
+2026-09-01 OpenAI의 Astra 안전 발표를 2026-10-07 대조한 사례다. 이 절만 추가 확인했으며, 앞선 사건 조사를 다시 검증한 것은 아니다.
+
+- **등급의 범위**: Critical은 OpenAI Preparedness Framework의 사이버 역량 임계값이다. 이 분류만으로 모든 업무를 수행하는 AGI에 도달했다고 판단할 수 없다.
+- **평가 접근권**: 발표의 Astra 사이버 역량 결과는 Daybreak Blue 접근 조건이며 기본 프로덕션 설정의 결과가 아니다.
+- **관측의 조건**: 주변 보안 인프라에 대한 비인가 접근을 살핀 honeypot 평가에서는 프로덕션 안전장치 없이 시험했다. 그 조건의 성공이나 실패 비율을 일반 사용의 사고율로 옮기지 않는다.
+- **방어의 두 대상**: 악의적 사용자의 오용뿐 아니라 모델 자체의 비인가 행동도 통제한다. 정렬 학습, 오용 탐지와 실행 중단을 겹치되, 정당한 작업이 지연되거나 중단되는 오탐 비용도 확인한다.
+
+운영 점검에서는 평가 대상, 도구와 접근권, 안전장치 활성 여부, 관측 지표와 배포 구성을 함께 기록한다. 이는 위 사례에서 도출한 적용 기준이며, 벤더의 평가 결과를 독립 검증했다는 뜻은 아니다.
+
 ## 체크포인트
 
 - 왜 쓰기 가능한 공유 자원이 곧 에이전트 간 통신 채널인지 설명할 수 있는가.
 - 벤치마크의 보상 구조가 치팅 인센티브를 만드는 메커니즘을 말할 수 있는가.
 - 익숙한 공격 유형과 취약점의 신규 여부를 구분하고, 각 단계의 권한 경계를 말할 수 있는가.
 - 통제 설계 원칙 일곱 개 중 자기 환경에 당장 적용할 것과 빠진 것을 가려낼 수 있는가.
+- 사이버 역량 등급, 안전장치 없는 평가와 기본 서비스 설정을 구분해 설명할 수 있는가.
 
 ## 출처
 
+- [Path to Astra: critical capabilities and frontier safeguards — OpenAI](https://openai.com/index/path-to-astra/)
 - [Brief independent investigation of agents' behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident — METR](https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/)
 - [We Must Pace the Frontier — Dario Amodei](https://darioamodei.com/post/we-must-pace-the-frontier)
 - [Investigating three real-world incidents in our cybersecurity evaluations — Anthropic](https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals)

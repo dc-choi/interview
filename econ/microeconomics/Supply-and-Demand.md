@@ -79,8 +79,22 @@ aliases: ["수요와 공급", "Supply and Demand"]
 - **가격통제는 언제나 같은 결과를 낸다** → 구속 여부, 경쟁 정도와 배분 방식에 따라 효과가 달라진다.
 - **수요곡선은 늘 직선이다** → 편의상 직선으로 그릴 뿐, 실제 형태는 다양하다.
 
+## 9. 산업 발표를 읽을 때: 전망, 약정과 실제 공급
+
+큰 수요 전망이나 증설 발표를 현재의 거래량으로 읽으면 수급 판단이 어긋난다. 발표를 비교할 때는 수치의 단위, 대상 기간, 계약 단계와 실제 가동 여부를 나눈다.
+
+2025-10-01 Stargate 메모리 협력 발표를 2026-10-07 확인한 사례다.
+
+- OpenAI는 삼성전자와 SK하이닉스의 생산 확대 계획에 월 90만 장의 DRAM 웨이퍼 투입 목표를 제시했다. 웨이퍼 투입량은 완성된 메모리 칩 개수나 납품 실적과 다른 단위다.
+- SK는 HBM 공급 의향서(LOI)를 체결했다고 발표하면서, 구체적인 공급 물량과 조건은 후속 논의로 정한다고 명시했다. 월 최대 90만 장 규모의 수요에 대응할 생산 체계를 마련한다는 설명을 SK 한 회사의 확정 주문량으로 읽지 않는다.
+- 데이터센터 협력도 건설 가능성을 검토하는 MOU와 협력 단계로 발표됐다. 그 발표 자체는 준공이나 가동 실적의 근거가 아니다.
+
+따라서 수급 분석에서는 **예상 수요 → 확정 주문 → 생산능력 확보 → 실제 생산과 납품**을 각각 확인한다. 이 구분은 사례에서 도출한 분석 기준이다. 해당 발표만으로 이후 공급 부족의 기간, 메모리 가격이나 개별 기업의 이익을 확정할 수 없다. 세계 생산능력과 비율을 비교할 때도 전체 DRAM과 HBM의 범위, 웨이퍼 투입량과 완제품 수량, 기준 시점을 맞춘다.
+
 ## 출처
 
+- [Samsung and SK join OpenAI’s Stargate initiative to advance global AI infrastructure — OpenAI](https://openai.com/index/samsung-and-sk-join-stargate/)
+- [SK Group Partners with OpenAI to Advance Global AI Infrastructure — SK](https://eng.sk.com/news/%73k-group-partners-with-openai-to-advance-global-ai-infrastructure)
 - [OpenStax, Principles of Economics 3e, Demand, Supply, and Equilibrium in Markets for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services) — 2026-10-02 수요의 지불 의향과 능력 조건 대조
 - [OpenStax, Principles of Economics 3e, Shifts in Demand and Supply for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-2-shifts-in-demand-and-supply-for-goods-and-services)
 - [OpenStax, Principles of Microeconomics 3e, Demand and Supply at Work in Labor Markets](https://openstax.org/books/principles-microeconomics-3e/pages/4-1-demand-and-supply-at-work-in-labor-markets)
