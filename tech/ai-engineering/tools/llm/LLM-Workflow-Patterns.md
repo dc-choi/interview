@@ -43,6 +43,19 @@ LLM 서비스의 중심축은 "질문하면 답하는 챗봇"에서 **업무 흐
 
 에이전트를 자율로 돌리되 메일 발송, 결제, 삭제처럼 **되돌릴 수 없는 행동 직전에만 사람 승인을 두는** 방식도 있다 — 모든 단계를 통제하는 대신 위험이 몰린 지점에 통제를 집중하는 [[Harness-Engineering|HITL]] 배치다. 발신만 사람 게이트로 남기는 [[Agent-Email-Interface|에이전트 이메일 인터페이스]]가 전형이다.
 
+### 콘텐츠 초안과 승인 대기열
+
+콘텐츠 생성과 외부 발행을 분리하면 반복 제작을 맡기면서도 공개 범위를 통제할 수 있다. 아래는 사전 승인 정책을 선택한 서비스의 설계 예시다. 특정 앱의 기본 기능이나 조회수 증가를 보장하는 운영법은 아니다.
+
+1. **초안 생성:** 자료를 읽고 문안과 이미지를 검토 대기 상태로 저장한다. 이 단계에는 발행 권한을 주지 않는다.
+2. **최종본 검토:** 내용, 첨부, 대상 계정과 공개 범위를 함께 보여준다. 승인 후 이 값이 바뀌면 기존 승인을 그대로 재사용하지 않는다.
+3. **예약과 실행:** 승인된 항목만 정해 둔 시간대의 대기열에 넣는다. 생성 시각, 승인 시각과 발행 시각을 구분하고, 발행 전 승인된 내용과 대상을 다시 대조한다.
+4. **결과 확인:** 외부 서비스의 게시 결과와 식별자를 기록한다. 응답이 끊겼으면 기존 게시 여부를 먼저 확인하고 재시도해 중복 발행을 피한다([[LLM-Failure-Handling|실패 처리와 멱등성]]).
+
+승인 화면만 추가하고 생성 에이전트에 게시 권한을 그대로 주면 우회 경로가 남는다. 도구 권한과 실행 경로에서도 경계를 집행한다. 사람이 미리 정한 목적과 범위를 검토하는 통제 원칙은 Anthropic의 공식 설명과 대조했으며, 위 대기열과 재승인 절차는 이를 콘텐츠 발행에 적용한 설계 예시다(2026-10-06 확인).
+
+처음에는 한 종류의 초안을 수동으로 검토하고, 반복되는 수정 이유를 다음 입력의 규칙으로 남긴다. 품질이 안정된 뒤 예약을 추가한다. 승인 대기열이 쌓이면 생성량을 늘리기보다 검토 가능한 처리량에 맞춘다.
+
 ## Function Calling: 모델이 도구를 다루는 능력
 
 Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. 모델은 **사용자 발화와 함수 스키마**를 보고, 어떤 함수를 호출할지와 어떤 파라미터를 넣을지를 생성한다. API 결과(보통 JSON)는 사람이 읽기 어려우므로, 모델이 다시 사람 친화적인 문장이나 표로 정리한다.
@@ -118,6 +131,8 @@ Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. �
 - API 에이전트 플랫폼: 스킬셋 연결로 도메인 에이전트 생성, Detector-CoT-Answer 처리, 리트리벌 스킬(CoT+랭킹으로 RAG 확장)과 근거를 XML로 표시하는 랭킹 모델로 출처 추적.
 
 ## 출처
+- [Trustworthy agents in practice — Anthropic](https://www.anthropic.com/research/trustworthy-agents)
+- [Building effective agents — Anthropic](https://www.anthropic.com/engineering/building-effective-agents)
 - [LLM 에이전트 실무 사례 (물어보세, 스마트 마이 노트, HyperCLOVA X Skill Universe) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)
 - [AI 에이전트, 자율에 맡길까 절차로 통제할까 — DEVOCEAN](https://devocean.sk.com/blog/techBoardDetail.do?id=168417&boardType=techBlog&isShared=Y)
 - [OpenAI, Build skills](https://learn.chatgpt.com/docs/build-skills)

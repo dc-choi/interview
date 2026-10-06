@@ -7,7 +7,7 @@ aliases: ["LLM Inference Bottlenecks", "LLM 추론 병목", "Memory-bound Decode
 
 # LLM 추론 병목 — 디코드는 연산이 아니라 데이터 이동에 묶인다
 
-LLM 추론 속도를 가속기의 연산 성능(TOPS, FLOPS)으로 예측하면 틀린다. 자기회귀 디코드는 토큰 하나를 만들 때마다 모델 가중치 전체를 메모리에서 읽어 와야 하고, 읽은 바이트당 수행하는 연산은 아주 작다. 그래서 병목은 곱셈기가 아니라 가중치를 실어 나르는 대역폭이다. KV 캐시, 배칭, 양자화, speculative decoding 같은 서빙 기법은 전부 이 제약 위에서 나왔다. 모델의 학습과 생성 원리는 [[LLM-Generation-Mechanics|LLM 동작 원리]]가 다루고, 이 문서는 그 생성이 하드웨어에서 왜 느려지는지를 다룬다.
+LLM 추론 속도는 가속기의 연산 성능(TOPS, FLOPS)만으로 예측할 수 없다. 온칩 캐시에 가중치가 들어가지 않는 dense 모델의 작은 배치 디코드는 가중치와 KV 캐시를 읽는 메모리 대역폭에 묶이기 쉽다. 배치 크기, 컨텍스트 길이와 모델 구조가 달라지면 병목도 달라진다. 모델의 학습과 생성 원리는 [[LLM-Generation-Mechanics|LLM 동작 원리]]가 다루고, 이 문서는 용량과 데이터 이동이 추론에 주는 제약을 다룬다.
 
 ## 멘탈 모델 — 루프라인과 arithmetic intensity
 
@@ -19,23 +19,34 @@ LLM 추론 속도를 가속기의 연산 성능(TOPS, FLOPS)으로 예측하면 
 
 | 단계 | 하는 일 | 가중치 재사용 | 병목 |
 |---|---|---|---|
-| 프리필 | 프롬프트 토큰 전체를 한 번에 처리 | 여러 토큰이 같은 가중치를 공유 | compute-bound에 가까움 |
-| 디코드 | 토큰을 하나씩 생성 | 배치 1이면 토큰마다 가중치 전체를 1회 읽음 | memory-bound |
+| 프리필 | 프롬프트 토큰을 병렬 처리 | 여러 토큰이 같은 가중치를 공유 | 충분히 긴 입력의 행렬곱은 compute-bound에 가까움 |
+| 디코드 | 토큰을 순차 생성 | 작은 배치의 dense 모델은 가중치 재사용이 적음 | 작은 배치에서는 memory-bound가 되기 쉬움 |
 
-배치 크기 1의 디코드에서 FP16 가중치 하나(2바이트)는 MAC 1회(연산 2회)에 쓰이고 버려진다. 4바이트당 2연산 수준이라 intensity가 릿지 포인트보다 훨씬 낮고, 성능은 가중치를 얼마나 빨리 읽어오는지로 결정된다. 같은 모델이라도 두 단계의 병목이 다르므로 최적화와 용량 산정을 분리한다. 프롬프트 접두어의 프리필을 재사용하는 [[LLM-Prompt-Caching|프롬프트 캐싱]]은 프리필 쪽 비용을 줄이는 기법이다.
+배치 크기 1의 dense 행렬곱에서 FP16 가중치 하나(2바이트)는 MAC 1회(곱셈과 덧셈, 2 FLOPs)에 쓰인다. 가중치 읽기가 지배하고 입력과 출력 전송을 무시한 근사에서는 약 1 FLOP/byte다. 긴 컨텍스트에서는 KV 캐시 읽기도 중요해지므로 가중치 크기만으로 지연을 계산하지 않는다. 프롬프트 접두어의 프리필을 재사용하는 [[LLM-Prompt-Caching|프롬프트 캐싱]]은 프리필 쪽 비용을 줄이는 기법이다.
 
-## 서빙 기법은 전부 이 제약 위에 있다
+## 서빙 기법이 줄이는 비용은 다르다
 
 - 배칭과 continuous batching: 한 번 읽은 가중치로 여러 요청의 토큰을 처리해 intensity를 올린다. 요청이 끝나는 대로 새 요청을 배치에 끼워 넣어 GPU가 비는 시간을 줄인다.
 - KV 캐시: 이전 토큰의 key와 value를 저장해 재계산을 피한다. 대신 그 자체가 메모리를 차지해 배치 크기와 컨텍스트 길이를 제한하므로, 캐시 메모리를 페이지 단위로 관리해 단편화를 줄이는 기법(PagedAttention)이 나왔다.
-- speculative decoding: 작은 모델이 여러 토큰을 제안하고 큰 모델이 한 번의 forward로 검증한다. 가중치 1회 읽기당 확정되는 토큰 수를 늘린다.
-- 양자화: 엣지 LLM에서 효과적인 이유는 연산을 줄여서가 아니라 읽어야 할 바이트 수를 줄이기 때문이다. INT8이나 4비트 양자화는 memory-bound 구간에서 거의 선형에 가까운 이득을 준다.
+- speculative decoding: 작은 모델이 여러 토큰을 제안하고 큰 모델이 묶어서 검증한다. 제안의 수락률과 검증 비용에 따라 속도 이득이 달라진다. 대상 모델은 계속 필요하므로 가중치 용량 부족의 해법은 아니다.
+- 양자화: 가중치나 KV 캐시의 저장 정밀도를 낮춰 용량과 읽을 바이트 수를 줄인다. 저장 정밀도와 연산 정밀도는 다를 수 있으며, 커널과 하드웨어, 변환 비용에 따라 속도 이득이 달라진다. 비트 수 감소 비율을 그대로 가속 배율로 쓰지 않는다.
+
+## 로컬 추론의 용량과 지연을 따로 계산한다
+
+2026-10-06에 아래 용량 구분과 오프로딩 설명을 Hugging Face 공식 문서에 대조했다. API 예시는 생략하고 메모리 예산의 원칙을 다룬다.
+
+- **가중치 하한:** 파라미터 수 × 저장 비트 수 / 8로 계산한다. 8B 파라미터를 모두 16비트로 저장하면 16 GB, 4비트면 4 GB다(십진 단위). 양자화 메타데이터, 고정밀로 남긴 모듈과 실행 중 할당은 제외한 산술 예시다.
+- **추가 할당:** KV 캐시, 중간 텐서, 런타임과 커널 메모리를 별도로 남긴다. 전체 문맥을 유지하는 KV 캐시는 토큰 수와 동시 요청 수에 따라 커지며, sliding window 계층은 창 크기에서 증가가 멈출 수 있다. 모델 파일이 VRAM보다 작다는 사실만으로 실행을 보장하지 않는다.
+- **가중치 오프로딩:** Accelerate는 CPU에 둔 가중치를 해당 계층의 실행 직전에 GPU로 옮기고 사용 뒤 정리할 수 있다. 디스크에 둔 가중치는 RAM을 거친다. GPU 상주 용량은 줄지만 전송 비용이 생기므로 RAM과 VRAM을 같은 속도의 단일 용량으로 합산하지 않는다.
+- **캐시 오프로딩과 양자화:** 가중치와 별개로 KV 캐시를 CPU로 옮기거나 낮은 정밀도로 저장할 수 있다. CPU 왕복은 처리량을 낮출 수 있고, 짧은 문맥에 GPU 여유가 있으면 캐시 양자화가 오히려 지연을 늘릴 수 있다.
+
+운영에서는 대표 입력으로 답변 품질, 최대 메모리, 첫 토큰 지연과 이후 생성 속도를 함께 측정한다. 먼저 문맥 길이와 동시 요청 수를 제한하고, 용량이 부족하면 양자화나 오프로딩을 비교한다. 적재에 성공해도 대화형 응답 시간을 만족하지 못하면 더 작은 모델을 검토한다.
 
 ## 가속기 스펙 읽기
 
 - TOPS 단독 수치는 LLM 성능 예측에 거의 쓸모가 없다. TOPS와 메모리 대역폭의 비, 즉 릿지 포인트를 본다.
 - 스펙시트의 총 대역폭과 실제로 동시에 쓸 수 있는 대역폭은 다르다. 전송 경로가 직렬로 실행되면 경로를 늘려도 시간이 중첩되지 않고 더해진다. 대역폭 증설만큼 전송 동시성이 중요하다.
-- CNN을 전제로 설계된 가속기는 작은 커널을 큰 피처맵 전체에 재사용하므로 온칩 SRAM에 가중치를 올려두고 데이터를 흘리면 재사용률이 높다. 트랜스포머 디코드는 재사용할 것이 없어서 수 MiB의 온칩 메모리가 수 GB의 가중치 앞에서 의미를 잃는다.
+- CNN을 전제로 설계된 가속기는 작은 커널을 큰 피처맵 전체에 재사용하므로 온칩 SRAM에 가중치를 올려두고 데이터를 흘리면 재사용률이 높다. 작은 배치의 트랜스포머 디코드는 가중치 재사용이 적어, 수 MiB의 온칩 메모리만으로 수 GB의 가중치 전송을 없애기 어렵다.
 
 ## 사례 — Apple M1 Neural Engine 역공학
 
@@ -55,11 +66,17 @@ LLM 추론 속도를 가속기의 연산 성능(TOPS, FLOPS)으로 예측하면 
 ## 면접 체크포인트
 
 - 프리필과 디코드의 병목이 왜 다른지 arithmetic intensity로 설명할 수 있는가.
-- 배칭, KV 캐시, speculative decoding, 양자화가 모두 같은 제약(가중치 읽기 대역폭)에 대한 대응임을 말할 수 있는가.
+- 배칭, KV 캐시, speculative decoding, 양자화가 각각 어떤 비용을 줄이고 어떤 메모리를 추가로 요구하는지 설명할 수 있는가.
 - 가속기 스펙에서 TOPS 대신 무엇을 봐야 하는지, 스펙 대역폭과 실효 대역폭이 왜 다른지 말할 수 있는가.
 
 ## 출처
 
+2026-10-06 검증 범위는 작은 배치의 행렬곱 근사, 가중치와 KV 캐시의 용량 구분, 양자화와 오프로딩의 제약이다. M1 역공학 수치와 교재 구성은 기존 출처의 한정된 기록으로 남기며 이번에 재검증하지 않았다.
+
+- [JAX Scaling Book, All About Transformer Inference](https://jax-ml.github.io/scaling-book/inference/)
+- [Hugging Face Accelerate, Loading big models into memory](https://huggingface.co/docs/accelerate/main/concept_guides/big_model_inference)
+- [Hugging Face Transformers, Cache strategies](https://huggingface.co/docs/transformers/main/en/kv_cache)
+- [Hugging Face Transformers, Bitsandbytes](https://huggingface.co/docs/transformers/main/en/quantization/bitsandbytes)
 - [Retrospectively Reverse-Engineering Apple's Neural Engine — Eileen Yoon](https://eiln.github.io/posts/ane.html)
 - [Apple Neural Engine 역공학 하기: LLM의 병목은 연산보다 데이터 이동 — GeekNews](https://news.hada.io/topic?id=33583)
 - [Foundation Model Engineering — Seongeun So](https://sungeuns.github.io/foundation-model-engineering/)
