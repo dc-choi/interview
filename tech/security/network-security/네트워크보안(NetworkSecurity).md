@@ -11,6 +11,7 @@ aliases: ["Network Security", "네트워크 보안"]
 
 ## 목차
 
+- [[SSH-Authentication|SSH 인증]] — 서버 호스트 키, 사용자 인증 키와 세션 키, 첫 접속의 신뢰와 호스트 키 변경
 - [[Network-Perimeter-Security|네트워크 경계 보안]] — 공인 IP 배치 원칙, DNS 응답 IP와 실제 서버, UTM, 보안 장비가 로드밸런서보다 앞에 서는 순서, 프록시 방식 WAF와 SSL 종료, 클라우드의 퍼블릭/프라이빗 구분
 - [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치]] — 경로 위 제어 장비와 사본 관찰 센서, fail-open과 fail-closed, 소프트웨어와 하드웨어 bypass, 포트 미러링(SPAN)과 TAP, 미러 포트 대역폭 병목과 사본 유실, IDS와 IPS, 클라우드의 GWLB와 Traffic Mirroring
 - [[Network-Separation|망분리와 망연계]] — 막는 경로와 못 막는 경로, 물리적 분리와 서버 기반(VDI), 단말 기반 논리적 분리, 가상화 탈출과 공유 기능, 스냅샷 복원의 한계, 망연계와 data diode, 금융과 개인정보 규정의 요구 범위, N2SF, 경계 모델과 제로 트러스트
