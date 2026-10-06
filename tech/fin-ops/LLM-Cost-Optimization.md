@@ -19,6 +19,20 @@ LLM 운영 비용 그래프는 방치하면 거의 항상 우상향한다. 절�
 - **단가는 코드가 아니라 대시보드 변수로** — 비용 계산을 Grafana 변수(토큰 단가)로 옮기면 단가가 바뀌어도 재배포 없이 변수만 수정
 - 산출한 비용은 프로바이더 콘솔 청구액과 대조해 검증
 
+### Bedrock의 비용 귀속과 사용량 관측을 나눈다
+
+2026-10-07 AWS 공식 문서 기준이다. 아래 CloudWatch 지표와 invocation logging은 `bedrock-runtime` 호출 기준이며, 다른 endpoint에도 같은 수집 범위가 적용된다고 가정하지 않는다.
+
+| 확인할 질문 | 자료 | 해석 경계 |
+|---|---|---|
+| 어느 팀과 역할에 비용을 귀속할 것인가 | CUR 2.0의 `line_item_iam_principal`, 활성화한 IAM principal 비용 할당 태그 | 호출 역할과 팀의 대응 관계가 필요하다. 여러 업무가 역할 하나를 공유하면 역할만으로 API별 비용을 나눌 수 없다 |
+| 토큰 소비와 오류가 언제 늘었는가 | `AWS/Bedrock`의 `InputTokenCount`, `OutputTokenCount`, 캐시 읽기/쓰기 토큰 지표와 호출, 오류 지표 | 사용량 신호다. 토큰 종류별 단가와 청구 비용을 별도로 대조한다 |
+| 어떤 요청과 응답이 비용을 만들었는가 | Model invocation logging 또는 애플리케이션 호출 계측 | Invocation logging은 기본 비활성이다. 활성화하면 입력과 출력 본문도 저장될 수 있으므로 목적, 접근 권한과 보존 기간을 먼저 정한다 |
+
+IAM principal 귀속은 CUR 2.0 export의 `Include caller identity (IAM principal) allocation data`를 켜야 한다. 팀별 집계에 쓸 태그는 IAM 사용자나 역할에 붙인 뒤 Billing의 비용 할당 태그로 활성화한다. 태그를 붙인 principal이 Bedrock API를 한 번 이상 호출해야 활성화 후보에 나타나며, 태그 표시와 활성화에는 각각 최대 24시간이 걸릴 수 있다. 활성화된 태그는 Cost Explorer에서도 그룹화할 수 있다. 역할별 행이 추가되므로 export 크기 증가도 고려한다.
+
+AWS Budgets의 알림 설정만으로 호출이 차단되지는 않는다. Budget Actions는 별도 구성할 수 있지만 청구 반영과 알림에 지연이 있어 정확한 실시간 지출 상한을 보장하지 않는다. 운영 설계에서는 [[Budget-Alert|예산 알람]]과 함께 호출 경로의 요청 수, 출력 길이, 재시도와 에이전트 반복 상한을 따로 둔다. 비용 귀속 자료는 누가 얼마나 썼는지를 설명하며, 그 사용이 유효했는지는 작업 성공률과 재작업량으로 따로 확인한다.
+
 ## 2. 원인 분석 — 파레토 집중을 찾는다
 
 - 사례: 속성 추출 단일 API가 전체 LLM 토큰의 약 92%, 나머지 전부 합쳐 10% 미만. 최적화 대상은 사실상 하나였다.
@@ -76,6 +90,10 @@ Bedrock 기반 배치 워크로드에서 가시성 대시보드 구축, 92% 파�
 
 ## 출처
 
+- [AWS Billing, Using IAM principal for cost allocation](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/iam-principal-cost-allocation.html)
+- [Amazon Bedrock User Guide, Monitor bedrock-runtime inference using CloudWatch metrics](https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html)
+- [Amazon Bedrock User Guide, Monitor model invocation using CloudWatch Logs and Amazon S3](https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html)
+- [AWS Cost Management User Guide, Managing your costs with AWS Budgets](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html)
 - [RouteLLM: An Open-Source Framework for Cost-Effective LLM Routing — LMSYS Org](https://www.lmsys.org/blog/2024-07-01-routellm/) (사전 라우팅과 비용, 품질 평가)
 - [FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance — arXiv](https://arxiv.org/abs/2305.05176) (LLM 캐스케이드 연구)
 - [LLM 비용 64% 절감, 캐시 히트율 98% 달성기 — 무신사 테크블로그 (29CM)](https://techblog.musinsa.com/llm-%EB%B9%84%EC%9A%A9-64-%EC%A0%88%EA%B0%90-%EC%BA%90%EC%8B%9C-%ED%9E%88%ED%8A%B8%EC%9C%A8-98-%EB%8B%AC%EC%84%B1%EA%B8%B0-d568135bd40e)
