@@ -95,6 +95,12 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 
 ## 튜닝 포인트
 
+### 짧은 GC pause와 서비스 지연을 구분한다
+
+2026-10-06에 대조한 Oracle JDK 23 문서는 ZGC의 짧은 정지 시간과 처리량의 절충을 설명한다. 동시 GC가 도는 동안 새 객체를 할당할 힙 여유도 필요하다. 여유가 부족하면 메모리 회수를 기다리는 할당 정체가 생길 수 있으므로 짧은 GC pause만으로 응답 지연을 설명하지 않는다.
+
+운영 비교에서는 같은 JDK, 부하와 자원 한도에서 GC pause, 할당 정체, CPU, 메모리, 요청 p99, 타임아웃과 재시도를 함께 기록한다. GC 정지가 타임아웃과 재시도를 유발했다는 것은 타임라인으로 검증할 가설이다. 수집기 교체만으로 서버 수나 총비용이 줄어든다고 일반화하지 않는다.
+
 ### 힙 크기
 
 - `-Xms` 초기, `-Xmx` 최대. 보통 같은 값으로 → 런타임 리사이즈 비용 제거 (전용 서버, 지연 민감 기준. 컨테이너에서 커밋 풋프린트와 메모리 지표가 중요하면 Initial을 낮춰 분리하기도 한다 — [[JVM-Container-Memory]])
@@ -139,7 +145,7 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 - **"큰 힙 = 안전"** — Full GC 길어짐. G1/ZGC 아니면 위험
 - **"Survivor는 한 개면 된다"** — 복사 알고리즘 특성상 **두 개 교대**가 핵심
 - **"CMS가 최신"** — JDK 14에서 제거됨. **G1이 현재 표준**
-- **"Stop-the-World는 없어졌다"** — ZGC도 루트 스캔 등 일부 STW는 존재. 다만 **ms 미만**으로 짧음
+- **"Stop-the-World는 없어졌다"** — ZGC에도 짧은 정지 구간이 있다. 짧은 pause 목표와 모든 요청의 지연 보장은 다르며 할당 정체도 따로 확인한다
 - **"GC가 있으니 Java에는 메모리 누수가 없다"** — GC는 도달할 수 없는 객체만 회수한다. 더 쓰지 않는데 static, cache, listener 등에서 여전히 도달 가능한 객체는 남는다([[JVM-GC-Memory-Leak]])
 
 ## 면접 체크포인트
@@ -153,6 +159,8 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 - GC 튜닝이 만능이 아닌 이유(할당 패턴이 근원)
 
 ## 출처
+- [Oracle Java 23, The Z Garbage Collector](https://docs.oracle.com/en/java/javase/23/gctuning/z-garbage-collector.html)
+- [Oracle Java 23, Available Collectors](https://docs.oracle.com/en/java/javase/23/gctuning/available-collectors.html)
 - [Oracle, JDK 1.4.1의 새 병렬, 동시 수집기](https://www.oracle.com/technical-resources/articles/javame/garbagecollection2.html)
 - [Oracle Java 25, HotSpot GC Tuning Guide, Class Metadata](https://docs.oracle.com/en/java/javase/25/gctuning/other-considerations.html#GUID-F4188072-92FA-4A7C-BF5A-9EF7D32BC82B)
 - [OpenJDK Wiki, Shenandoah Performance Guidelines and Diagnostics](https://wiki.openjdk.org/display/shenandoah/Main#Main-PerformanceGuidelinesandDiagnostics)
