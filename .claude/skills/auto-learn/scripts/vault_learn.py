@@ -2,7 +2,7 @@
 """auto-learn 파이프라인의 결정적 작업을 맡는다.
 
 전사 큐와 작업자, 학습 출처 목록의 채널 RSS 수집, 임시 전사 작업 이관, 단서 수집함 색인, learn과 harvest run의
-기준선과 규칙 검사, Git 게시와 증명, 다이제스트 자료, launchd가 부르는 claude -p 실행(잠금, 시간 제한, 사용량 한도
+기준선과 규칙 검사, Git 게시와 증명, 다이제스트 자료, launchd가 부르는 Claude/Codex 실행(잠금, 시간 제한, 사용량 한도
 백오프)을 한다. 상태는 장비 로컬 디렉터리(기본 ~/.local/state/vault-auto-learn, VAULT_LEARN_STATE로 변경)에 두고
 저장소에는 지식 문서와 학습 출처 목록만 커밋한다. 절차와 운영은 같은 스킬의 SKILL.md를 따르며 표준 라이브러리만 쓴다.
 """
@@ -45,7 +45,9 @@ MODES = ("harvest", "instagram", "learn", "digest")
 # 지정한 친구 DM의 이름(instagram_dm_name)과 뉴스레터 발신 주소는 config.json에만 둔다.
 DEFAULTS = {"k": 6, "jobs": 2, "whisper_threads": 4, "learn_timeout_min": 180, "harvest_timeout_min": 90,
             "instagram_timeout_min": 45, "digest_timeout_min": 30, "idle_interval_min": 180, "stale_days": 180,
-            "claude": "claude", "threads_reposts_url": "", "adhoc_dir": "", "instagram_saved_url": "",
+            "claude": "claude", "codex": "codex", "codex_model": "gpt-6-astra", "codex_effort": "high",
+            "engine": {mode: "alternate" for mode in MODES}, "primary": {mode: "claude" for mode in MODES},
+            "threads_reposts_url": "", "adhoc_dir": "", "instagram_saved_url": "",
             "instagram_saved_collection": "", "instagram_dm_name": "", "instagram_dm_thread_url": "",
             "email_since": "", "email_senders": []}
 # 30초 간격 3회 재시도는 사용자 결정이다. 그 뒤 6시간 쉬고 다시 시도하며, 세 차례 모두 실패하면 제외한다.
@@ -68,7 +70,11 @@ SECRET = re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----|\b(?:AKIA|ASIA)(?![0-9A
                     r"\bAIza[0-9A-Za-z_-]{35}\b")
 VIDEO = re.compile(r"(?:[?&]v=|youtu\.be/|/shorts/|/live/|/embed/)([\w-]{11})(?![\w-])")
 EDITABLE = re.compile(r"^(?:tech|biz|econ|fit)/.+\.md$")
-TRAILER = "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+TRAILERS = {"claude": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+            "codex": "Co-Authored-By: Codex <noreply@openai.com>"}
+TRAILER = TRAILERS["claude"]
+ENGINES = ("claude", "codex")
+AUTH = re.compile(r"authentication|unauthorized|not logged in|login required|invalid.?api.?key|\b401\b", re.I)
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
 ATOM = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/schemas/2015"}
 INDEX_COLS = ["order", "id", "status", "reason", "author", "posted_at", "chain", "captured", "images", "videos",
@@ -728,7 +734,13 @@ def norm_rel(path):
         except ValueError:
             return None
     rel = os.path.normpath(p.as_posix())
-    return None if rel.startswith("..") or rel.startswith("/") or rel == "." else rel
+    if rel.startswith("..") or rel.startswith("/") or rel == ".":
+        return None
+    try:
+        canonical = (REPO / rel).resolve().relative_to(REPO.resolve()).as_posix()
+    except ValueError:
+        return None
+    return rel if canonical == rel else None
 
 
 def own_commits():
@@ -810,9 +822,33 @@ def save_manifest(m):
     write_json(run_dir(m["run"]) / "manifest.json", m)
 
 
+def block_scope(m):
+    if m:
+        m |= {"status": "scope_blocked", "left": {}}
+        save_manifest(m)
+
+
 def file_hash(rel):
     path = REPO / rel
+    if path.is_symlink():
+        return "symlink:" + os.readlink(path)
     return hashlib.sha1(path.read_bytes()).hexdigest() if path.is_file() else "absent"
+
+
+def repo_snapshot():
+    paths = set(git("ls-files", "--cached", "--others", "--exclude-standard", "-z").stdout.split("\0")) - {""}
+    # 숨긴 로컬 설정도 검사한다. 의존성, 생성 캐시와 Git 내부 파일은 sandbox와 도구의 별도 경계다.
+    for root, dirs, names in os.walk(REPO):
+        dirs[:] = [d for d in dirs if d not in (".git", "node_modules", ".obsidian", ".venv", "__pycache__")]
+        for name in names:
+            paths.add((Path(root) / name).relative_to(REPO).as_posix())
+    return {rel: file_hash(rel) for rel in paths}
+
+
+def scope_problems(before, after, dirty, files, mode):
+    changed = {f for f in before.keys() | after.keys() if before.get(f, "absent") != after.get(f, "absent")}
+    allowed = {f for f in files if EDITABLE.fullmatch(f) and (mode != "harvest" or f == SOURCES)}
+    return sorted(f for f in changed if f in dirty or f not in allowed or after.get(f, "").startswith("symlink:"))
 
 
 def leftover_runs(kind=None):
@@ -823,7 +859,7 @@ def leftover_runs(kind=None):
     dirty, out = set(dirty_paths()), {}
     for path in sorted((S / "runs").glob("*/manifest.json")):
         m = read_json(path, {}) or {}
-        if kind and m.get("kind") != kind:
+        if (kind and m.get("kind") != kind) or m.get("status") == "scope_blocked":
             continue
         files = sorted(f for f, h in (m.get("left") or {}).items() if f in dirty and file_hash(f) == h)
         if files:
@@ -839,16 +875,27 @@ def finish_runs(since, kind):
         if m.get("kind") != kind or "ended" in m or dt.datetime.fromisoformat(m["started"]).timestamp() < since:
             continue
         m["files"] = [f for f in m["files"] if f in dirty]
-        m |= {"left": {f: file_hash(f) for f in m["files"]}, "ended": now().isoformat(timespec="seconds")}
+        if m.get("engine") == "codex":
+            owned = m.get("writer_hashes", {})
+            if any(owned.get(f) != file_hash(f) for f in m["files"]):
+                m["status"] = "scope_blocked"
+            # 검사 뒤 사용자가 고쳐도 소유 해시는 작성자 종료 시점의 값만 남긴다.
+            left = {f: owned[f] for f in m["files"]} if m.get("status") != "scope_blocked" else {}
+        else:
+            left = {f: file_hash(f) for f in m["files"]} if m.get("status") != "scope_blocked" else {}
+        m |= {"left": left, "ended": now().isoformat(timespec="seconds")}
         save_manifest(m)
 
 
 def cmd_begin(a):
+    if os.environ.get("VAULT_LEARN_ENGINE") == "codex":
+        emit({"blocked": "Codex run은 외부 runner가 연다"})
+        return 1
     blockers = repo_blockers()
     if blockers:
         emit({"blocked": blockers})
         return 1
-    run = f"{stamp()}-{a.kind}"
+    run = f"{stamp()}-{time.time_ns()}-{a.kind}"
     with locked("runs"):
         adopted = leftover_runs(a.kind)  # learn은 learn run의, harvest는 harvest run의 남은 파일만 이어받는다.
         for old in adopted:  # 이어받은 파일은 이 run의 plan이 된다. 이전 run은 더 손대지 않는다.
@@ -859,6 +906,7 @@ def cmd_begin(a):
         m = {"run": run, "kind": a.kind, "started": now().isoformat(timespec="seconds"), "status": "open",
              "head": git("rev-parse", "HEAD").stdout.strip(),
              "baseline_dirty": [f for f in dirty_paths() if f not in mine], "files": mine,
+             "engine": os.environ.get("VAULT_LEARN_ENGINE", "claude"),
              "adopted": [{"run": r, "files": f} for r, f in adopted.items()]}
         save_manifest(m)
     emit({"run": run, "foreign_dirty": m["baseline_dirty"], "adopted": m["adopted"], "unpushed": count_unpushed()})
@@ -871,7 +919,7 @@ def cmd_plan(a):
     for f in a.file:
         rel = norm_rel(f)
         # harvest는 학습 출처 목록만 고친다. 다른 파일을 plan하면 그사이 다른 세션이 고친 내용까지 커밋할 수 있다.
-        if not rel or not EDITABLE.match(rel) or (m.get("kind") == "harvest" and rel != SOURCES):
+        if not rel or not EDITABLE.fullmatch(rel) or (m.get("kind") == "harvest" and rel != SOURCES) or (rel and (REPO / rel).is_symlink()):
             rejected.append({"file": f, "why": f"learn은 tech/, biz/, econ/, fit/ 아래 Markdown만, harvest는 {SOURCES}만 편집한다"})
         elif rel in m["files"]:
             continue
@@ -968,6 +1016,9 @@ def cmd_check(a):
 
 
 def cmd_discard(a):
+    if os.environ.get("VAULT_LEARN_ENGINE") == "codex":
+        emit({"status": "blocked", "note": "Codex는 자동으로 파일을 되돌리지 않는다"})
+        return 1
     m = load_manifest(a.run)
     for f in a.file:
         rel = norm_rel(f)
@@ -984,14 +1035,14 @@ def cmd_discard(a):
     return 0
 
 
-def commit_message(result):
+def commit_message(result, engine="claude"):
     scope, subject = result.get("scope", ""), (result.get("subject") or "").strip()
     if not re.fullmatch(r"[a-z0-9-]+", scope) or not subject:
         raise SystemExit("result.json에 scope(영문 소문자, 숫자, 하이픈)와 subject가 있어야 한다")
     text = f"docs({scope}): {subject}"
     if (result.get("body") or "").strip():
         text += "\n\n" + result["body"].strip()
-    text += "\n\n" + TRAILER
+    text += "\n\n" + TRAILERS[engine]
     if "\u00b7" in text:
         raise SystemExit("커밋 메시지에 가운뎃점(U+00B7)이 있다")
     return text
@@ -999,15 +1050,25 @@ def commit_message(result):
 
 def cmd_publish(a):
     m = load_manifest(a.run)
+    if (m.get("engine") == "codex" or os.environ.get("VAULT_LEARN_ENGINE") == "codex") and not getattr(a, "outer", False):
+        emit({"status": "blocked", "note": "Codex는 게시하지 않는다. 외부 runner만 게시한다"})
+        return 1
     result = read_json(run_dir(a.run) / "result.json", {}) or {}
     items = result.get("items", [])
     pending = set(dirty_paths())
     # plan으로 등록한 파일만 커밋한다. result.json에만 적힌 파일은 사용자나 다른 작업의 변경일 수 있다.
-    changed = [f for f in m["files"] if f in pending and EDITABLE.match(f)]
+    changed = [f for f in m["files"] if f in pending and EDITABLE.fullmatch(f)
+               and f not in m["baseline_dirty"] and (m.get("kind") != "harvest" or f == SOURCES)]
+    if m.get("engine") == "codex":
+        expected = m.get("publish_hashes", {})
+        if git("rev-parse", "HEAD").stdout.strip() != m.get("head") or set(expected) != set(changed) or any(expected.get(f) != file_hash(f) for f in changed):
+            block_scope(m)
+            emit({"status": "scope_blocked", "note": "범위 검사 또는 검증 뒤 파일이 바뀌었다"})
+            return 1
     unplanned = sorted({f for it in items for f in map(norm_rel, it.get("files", []))
                         if f and f in pending and f not in m["files"]})
     report = {"run": a.run, "committed": changed, "skipped_unplanned": unplanned}
-    message = commit_message(result) if changed else None
+    message = commit_message(result, m.get("engine", "claude")) if changed else None
     personal = personal_terms()
     problems = check_files(changed) + [f"커밋 메시지: {p}" for line in (message or "").splitlines()
                                        for p in line_problems(line, personal)]
@@ -1023,6 +1084,14 @@ def cmd_publish(a):
             emit(report | {"status": "blocked", "blocked": blockers})
             return 1
         sha = None
+        current_pending = set(dirty_paths()) if m.get("engine") == "codex" else pending
+        if m.get("engine") == "codex" and (git("rev-parse", "HEAD").stdout.strip() != m.get("head")
+                or set(m.get("publish_hashes", {})) != set(changed)
+                or set(changed) != {f for f in m["files"] if f in current_pending}
+                or any(m.get("publish_hashes", {}).get(f) != file_hash(f) for f in changed)):
+            block_scope(m)
+            emit(report | {"status": "scope_blocked", "note": "Git 잠금 대기 중 파일이 바뀌었다"})
+            return 1
         if changed:
             git("add", "--all", "--", *changed)
             git("commit", "--only", "-m", message, "--", *changed)
@@ -1174,7 +1243,7 @@ def cmd_pick(a):
 
 def state_summary():
     done, skipped, keys = done_ids(), skipped_ids(), processed_keys()
-    backoff = read_json(S / "backoff.json", {}) or {}
+    backoff = {engine: engine_backoff(engine) for engine in ENGINES}
     log_rows = read_jsonl(S / "digests" / "log.jsonl")
     unpushed = count_unpushed()
     return {"paused": (S / "paused").exists(), "transcribe_waiting": waiting_counts(), "transcripts": len(done),
@@ -1190,7 +1259,10 @@ def state_summary():
                                     if (read_json(p, {}) or {}).get("status") in ("deferred", "conflict", "push_failed",
                                                                                   "unverified"))[-5:] if unpushed else [],
             "leftover_files": sum(len(v) for v in leftover_runs().values()),
-            "backoff_until": backoff.get("until_local") if backoff.get("until", 0) > time.time() else None}
+            "engines": engine_settings(cfg()),
+            "backoff": {engine: value if value.get("until", 0) > time.time() else None
+                        for engine, value in backoff.items()},
+            "last_attempts": {mode: read_json(S / "runs" / f"last-{mode}.json") for mode in MODES}}
 
 
 def cmd_digest_data(a):
@@ -1307,7 +1379,8 @@ def resolve_channel(handle, title):
 
 def cmd_channels_merge(a):
     path = S / "channels.tsv"
-    with locked("channels"):  # discover가 목록에만 있던 채널을 캐시에 더하는 쓰기와 겹치지 않게 한다.
+    lock = contextlib.nullcontext() if getattr(a, "dry_run", False) else locked("channels")
+    with lock:  # discover가 채널 캐시를 쓰는 동안 실제 병합만 잠근다.
         table = rows(path) or [CHANNEL_COLS]
         header, body = table[0], table[1:]
         known_handles, known_ids = {r[0] for r in body}, {r[1] for r in body if len(r) > 1}
@@ -1331,8 +1404,10 @@ def cmd_channels_merge(a):
         if a.complete and len(incoming) >= 0.9 * before:  # 목록을 덜 읽었을 때 대량 구독 해지로 오인하지 않는다.
             # 구독하지 않고 목록에만 적은 채널(reason listed)은 구독 해지로 보지 않는다.
             unsubscribed = sorted({r[0] for r in body if r[4:5] != ["listed"]} - set(incoming))
-            write_text(S / "unsubscribed", "".join(h + "\n" for h in unsubscribed))
-        write_text(path, "".join("\t".join(r) + "\n" for r in [header, *body]))
+            if not getattr(a, "dry_run", False):
+                write_text(S / "unsubscribed", "".join(h + "\n" for h in unsubscribed))
+        if not getattr(a, "dry_run", False):
+            write_text(path, "".join("\t".join(r) + "\n" for r in [header, *body]))
     resolved = {info["handle"]: info for info in infos}
     pending = [r for r in body if len(r) > 3 and r[3] == "pending"]
     with ThreadPoolExecutor(6) as ex:
@@ -1395,7 +1470,9 @@ def agent_rules(mode):
 
 
 def agent_prompt(mode, conf):
-    chrome = " Chrome 도구를 쓸 수 없으면 CHROME_UNAVAILABLE 한 줄만 출력하고 끝낸다."
+    chrome = (" Chrome이 없거나 연결되지 않았으면 CHROME_UNAVAILABLE만 출력한다. "
+              "자동 승인이나 정책이 브라우저 동작을 거부했으면 POLICY_BLOCKED만 출력하고 끝낸다. "
+              "정책 거부를 연결 실패로 바꾸거나 다른 엔진과 브라우저로 우회하지 않는다.")
     extra = {"learn": f" K={conf['k']}.", "harvest": chrome, "instagram": chrome,
              "digest": f" 날짜는 {dt.date.today()}이다."}
     return (f"auto-learn 스킬의 {mode} 모드를 launchd에서 무인으로 실행한다. 먼저 {SKILL / 'SKILL.md'}를 읽고 "
@@ -1416,17 +1493,425 @@ def last_result(text):
     return {}
 
 
-def set_backoff(text):
-    previous = read_json(S / "backoff.json", {}) or {}
+def engine_settings(conf):
+    settings = {}
+    for mode in MODES:
+        selected = conf.get("engine", {})
+        primary = conf.get("primary", {})
+        selected = selected.get(mode, "alternate") if isinstance(selected, dict) else selected
+        primary = primary.get(mode, "claude") if isinstance(primary, dict) else primary
+        if selected not in (*ENGINES, "alternate") or primary not in ENGINES:
+            raise SystemExit(f"잘못된 engine/primary 설정: {mode}")
+        settings[mode] = {"engine": selected, "primary": primary}
+    return settings
+
+
+def engine_backoff(engine):
+    value = read_json(S / "backoff" / f"{engine}.json", {}) or {}
+    if not value and engine == "claude":
+        value = read_json(S / "backoff.json", {}) or {}  # 기존 전역 한도는 Claude 실행에서 생겼다.
+    return value
+
+
+def engine_candidates(mode, conf, ignore_backoff=False):
+    setting = engine_settings(conf)[mode]
+    first = setting["primary"] if setting["engine"] == "alternate" else setting["engine"]
+    engines = [first, next(e for e in ENGINES if e != first)] if setting["engine"] == "alternate" else [first]
+    return [e for e in engines if ignore_backoff or engine_backoff(e).get("until", 0) <= time.time()]
+
+
+def cmd_engine(a):
+    if a.mode and os.environ.get("VAULT_LEARN_ENGINE") in ENGINES:
+        raise SystemExit("학습 agent는 엔진 설정을 바꾸지 않는다")
+    if a.mode:
+        if not a.engine:
+            raise SystemExit("engine <mode|all> <claude|codex|alternate> [--primary claude|codex]")
+        with locked("config"):
+            conf = read_json(S / "config.json", {}) or {}
+            settings = engine_settings(DEFAULTS | conf)
+            for mode in MODES if a.mode == "all" else (a.mode,):
+                settings[mode]["engine"] = a.engine
+                if a.primary:
+                    settings[mode]["primary"] = a.primary
+            conf["engine"] = {m: v["engine"] for m, v in settings.items()}
+            conf["primary"] = {m: v["primary"] for m, v in settings.items()}
+            write_json(S / "config.json", conf)
+    elif a.engine or a.primary:
+        raise SystemExit("--primary는 mode와 engine을 지정할 때 쓴다")
+    emit(engine_settings(cfg()))
+    return 0
+
+
+def set_backoff(text, engine="claude", reason="limit"):
+    previous = engine_backoff(engine)
     n = previous.get("n", 0) + 1
     reset = re.search(r"\|(\d{10})\b", text)
     reset_at = int(reset.group(1)) if reset else 0
-    until = reset_at + 60 if reset_at > time.time() else time.time() + min(900 * 2 ** (n - 1), 8 * 3600)
+    until = reset_at + 60 if reset_at > time.time() else time.time() + min(900 * 2 ** min(n - 1, 5), 8 * 3600)
     local = dt.datetime.fromtimestamp(until).astimezone().isoformat(timespec="minutes")
-    match = LIMIT.search(text)
-    write_json(S / "backoff.json", {"n": n, "until": until, "until_local": local,
-                                    "reason": match.group(0) if match else "error"})
+    write_json(S / "backoff" / f"{engine}.json", {"n": n, "until": until, "until_local": local, "reason": reason})
+    if engine == "claude":
+        (S / "backoff.json").unlink(missing_ok=True)
     return local
+
+
+def clear_backoff(engine):
+    (S / "backoff" / f"{engine}.json").unlink(missing_ok=True)
+    if engine == "claude":
+        (S / "backoff.json").unlink(missing_ok=True)
+
+
+def transport_errors(text):
+    errors = []
+    for line in text.splitlines():
+        try:
+            value = json.loads(line)
+        except ValueError:
+            errors.append(line)  # CLI 실행 자체의 stderr(시작 실패, 인증 실패 등).
+            continue
+        if isinstance(value, dict) and value.get("type") in ("error", "turn.failed", "thread.error"):
+            error = value.get("error") or value.get("message") or ""
+            errors.append(error.get("message", "") if isinstance(error, dict) else str(error))
+    return "\n".join(errors)
+
+
+def browser_policy_error(text):
+    for line in text.splitlines():
+        with contextlib.suppress(ValueError):
+            value = json.loads(line)
+            item = value.get("item", {})
+            if item.get("type") != "mcp_tool_call" or item.get("server") != "node_repl":
+                continue
+            result = item.get("result") or {}
+            message = (item.get("error") or {}).get("message", "")
+            if (result.get("_meta") or {}).get("codex/browserUse"):
+                message += "\n".join(c.get("text", "") for c in result.get("content", []) if isinstance(c, dict))
+            if re.search(r"Browser Use rejected this action due to browser security policy|Auto-review denied this action", message):
+                return message.strip()[:1000]
+    return ""
+
+
+def fallback_reason(text, failed, errors="", policy=""):
+    sentinel = text.strip()
+    if sentinel != "POLICY_BLOCKED":
+        sentinel = json_response(text).get("error", "")
+    if policy or sentinel == "POLICY_BLOCKED":
+        return "policy"
+    if failed:
+        failure = text + "\n" + errors
+        if LIMIT.search(failure):
+            return "limit"
+        if AUTH.search(failure):
+            return "auth"
+    sentinel = text.strip()
+    if sentinel not in ("CHROME_UNAVAILABLE", "INSTAGRAM_LOGGED_OUT", "GMAIL_LOGGED_OUT"):
+        sentinel = json_response(text).get("error", "")
+    if sentinel in ("CHROME_UNAVAILABLE", "INSTAGRAM_LOGGED_OUT", "GMAIL_LOGGED_OUT"):
+        return "chrome"
+    return None
+
+
+def codex_command(mode, conf, output, verify=False, run=None):
+    readonly = mode == "digest" or verify
+    cmd = [conf["codex"], "-a", "never", "exec", "--ephemeral", "--sandbox",
+           "read-only" if readonly else "workspace-write", "-C", str(REPO), "-m",
+           "gpt-6-astra" if verify else conf["codex_model"],
+           "-c", f'model_reasoning_effort="{"ultra" if verify else conf["codex_effort"]}"',
+           "-c", 'service_tier="fast"', "-c", 'web_search="live"' if mode == "learn" else 'web_search="disabled"',
+           "-c", "mcp_servers.playwright.enabled=false", "-c", "features.multi_agent=false",
+           "-c", 'shell_environment_policy.set.VAULT_LEARN_ENGINE="codex"',
+           "-c", "shell_environment_policy.set.VAULT_LEARN_STATE=" + json.dumps(str(S)),
+           "-c", "sandbox_workspace_write.network_access=false",
+           "-c", "sandbox_workspace_write.writable_roots=[]",
+           "-c", "sandbox_workspace_write.exclude_tmpdir_env_var=true",
+           "-c", "sandbox_workspace_write.exclude_slash_tmp=true", "--json", "--color", "never", "-o", str(output)]
+    if mode in ("harvest", "instagram") and not verify:
+        cmd += ["-c", 'mcp_servers.node_repl.env.BROWSER_USE_AVAILABLE_BACKENDS="chrome"']
+    else:
+        cmd += ["-c", "mcp_servers.node_repl.enabled=false"]
+    if not readonly:
+        # 루트 config, 채널 캐시, 처리 기록과 own_commits는 모델에게 쓰기 권한을 주지 않는다.
+        roots = {"learn": [S / "tmp", run_dir(run) if run else S / "runs" / "RUN"],
+                 "harvest": [S / "tmp", run_dir(run) if run else S / "runs" / "RUN",
+                             S / "inbox" / "threads", S / "inbox" / "email"],
+                 "instagram": [S / "tmp", S / "inbox" / "instagram"]}
+        for root in roots[mode]:
+            cmd += ["--add-dir", str(root)]
+    return cmd
+
+
+def codex_prompt(mode, conf, run=None, digest=None):
+    skill = REPO / ".agents" / "skills" / "auto-learn" / "SKILL.md"
+    text = (f"Read {skill} and follow common principles and {mode} mode. Read root and applicable domain AGENTS.md. "
+            f"State S={S}; VL=`python3 {SCRIPT}`. Noninteractive: defer uncertain items. "
+            "Do not commit, push, publish, discard, restore, install jobs, change config, or invoke another AI CLI. "
+            "Do not read ~/.ssh, ~/.aws, ~/.gnupg, ~/.netrc, credential/auth/session files, or Claude configuration. "
+            "Read installed Codex plugin skill files only when required. No state identifiers or private names in repo files. ")
+    if mode in ("learn", "harvest"):
+        m = load_manifest(run)
+        text += (f"Runner already opened run R={run}; do not begin another. Baseline dirty files are protected: "
+                 f"{json.dumps(m['baseline_dirty'], ensure_ascii=False)}. Adopted plan: {json.dumps(m['files'])}. "
+                 "Use VL plan before every edit. Write result.json once with every item in this run, then VL check. "
+                 "Skip in-skill publish and writer-side verification: outer runner independently verifies learn and publishes. "
+                 "Do not change manifest.json directly. Never edit files that plan rejected. "
+                 f"Final JSON must include mode={mode!r} and run={run!r}. ")
+    if mode == "learn":
+        text += (f"K={conf['k']}. Final response is one JSON object with mode and run. "
+                 "Do not run VL enqueue because queue/seen state is runner-owned. "
+                 "Return discovered YouTube links as actions.enqueue=[{url:URL,source:PICK_KEY}]; outer runner enqueues them. ")
+    if mode in ("harvest", "instagram"):
+        text += ("The user explicitly requires real Chrome, not iab or standalone Playwright. "
+                 "Read installed chrome:control-chrome SKILL.md; discover node_repl js, import its absolute browser-client.mjs, "
+                 "select agent.browsers.get('chrome') and read complete documentation. "
+                 "Its documented internal browser-use backend is authorized. No alternate browser backend. "
+                 "If automatic approval or policy rejects a browser action, return POLICY_BLOCKED; do not retry or switch engines/surfaces. "
+                 "Only missing/disconnected Chrome setup returns CHROME_UNAVAILABLE. If Instagram/Gmail requires login, return "
+                 "INSTAGRAM_LOGGED_OUT/GMAIL_LOGGED_OUT. Open new tabs; close only your tabs. "
+                 "Use supported Chrome AX/UI and read-only DOM inspection. Read youtube_subs.js/threads_extract.js "
+                 "as extraction format examples only; do not execute their mutable page code. "
+                 "Never type, press keys or double-click in Gmail/Instagram; never like/save/send/archive/delete/mark-read. "
+                 "Open already-read mail by URL only; unread/uncertain rows are list-only. Read only user-sent DM items. "
+                 "Write inbox files but do not run inbox-reindex; outer runner performs it. "
+                 "Final response JSON may include actions.complete={email:['mail'],instagram:['saved','dm']} "
+                 "only for fully scanned portions. ")
+    if mode == "harvest":
+        text += ("Use Gmail through Chrome with the same read-only mail rules. Write subscriptions TSV under S/tmp. "
+                 "Use VL channels-merge --rows PATH --dry-run [--complete] for pending channel preview. "
+                 "Do not use channels-set or real channels-merge. Add approved learning channels only after successful plan. "
+                 "Final JSON actions={subscriptions:PATH,subscriptions_complete:true|false,"
+                 "channels:[{handle:HANDLE,decision:'learn'|'exclude',reason:SHORT_ENGLISH_REASON}],"
+                 "complete:{email:['mail']}}; omit actions you did not complete. Outer runner applies cache/seen changes. ")
+    if mode == "digest":
+        text += (f"Today={dt.date.today()}. Read-only process: do not call VL digest-data or write any files. "
+                 "The runner supplies selected data below. Return only Markdown with ## 변경 and ## 핵심 3가지. "
+                 "If changes is empty use 없음 under ## 변경. Read changed documents to choose three useful points.\n"
+                 + json.dumps(digest, ensure_ascii=False))
+    return text
+
+
+def codex_final(text):
+    for line in reversed(text.splitlines()):
+        with contextlib.suppress(ValueError):
+            obj = json.loads(line)
+            item = obj.get("item", {})
+            if obj.get("type") == "item.completed" and item.get("type") == "agent_message":
+                return item.get("text", "")
+    return ""
+
+
+def json_response(text):
+    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
+    with contextlib.suppress(ValueError):
+        value = json.loads(text.strip())
+        if isinstance(value, dict):
+            return value
+    for line in reversed(text.splitlines()):
+        with contextlib.suppress(ValueError):
+            value = json.loads(line)
+            if isinstance(value, dict):
+                return value
+    return {}
+
+
+def call_codex(mode, conf, prompt, verify=False, run=None):
+    output = S / "logs" / "agent" / f"{mode}-codex-{stamp()}-{time.time_ns()}.response"
+    cmd = codex_command(mode, conf, output, verify, run)
+    rc, path = run_cli(mode, "codex", cmd, prompt, conf[f"{mode}_timeout_min"] * 60)
+    text = path.read_text(encoding="utf-8", errors="replace")
+    final = output.read_text(encoding="utf-8") if output.exists() else codex_final(text)
+    return rc, path, final
+
+
+def verify_codex(run, conf, files):
+    prompt = (f"Independent adversarial read-only review. Read root/domain AGENTS.md and {run_dir(run) / 'result.json'}. "
+              f"Review only these planned files: {json.dumps(files, ensure_ascii=False)}. Read git diff HEAD -- FILES "
+              "and untracked full files. Follow original source paths/primary URLs in the documents, verify facts, "
+              "dates, scope, domain routing, wiki links, PII, faith exclusion, U+00B7 and verified_at rules. "
+              "Do not edit files or execute state mutations. Never read credentials or private config outside the task. "
+              'Return only JSON {"ok":true|false,"findings":[{"kind":"confirmed|conditional|unverified",'
+              '"file":"path","reason":"evidence"}]}. Set ok false for confirmed defects or material unverified claims.')
+    rc, path, final = call_codex("learn", conf, prompt, verify=True)
+    value = json_response(final)
+    ok = rc == 0 and value.get("ok") is True and isinstance(value.get("findings"), list)
+    findings = value.get("findings", [])
+    if not isinstance(findings, list):
+        findings = []
+        ok = False
+    if any(not isinstance(f, dict) or f.get("kind") not in ("confirmed", "conditional", "unverified") for f in findings):
+        ok = False
+    if any(f.get("kind") in ("confirmed", "unverified") for f in findings if isinstance(f, dict)):
+        ok = False
+    return ok, {"log": path.name, "result": value, "rc": rc}
+
+
+def codex_actions(mode, value, published=False, cache=False):
+    actions = value.get("actions", {})
+    if not isinstance(actions, dict):
+        raise ValueError("actions는 JSON object여야 한다")
+    with open(os.devnull, "w") as null, contextlib.redirect_stdout(null):
+        if mode == "learn":
+            entries = actions.get("enqueue", [])
+            if not isinstance(entries, list):
+                raise ValueError("enqueue는 JSON array여야 한다")
+            pending = []
+            for entry in entries:
+                if not isinstance(entry, dict) or not isinstance(entry.get("url"), str) or not isinstance(entry.get("source"), str):
+                    raise ValueError("enqueue 항목에 url과 source 문자열이 있어야 한다")
+                vid = video_id(entry["url"])
+                if not vid or not entry["source"].strip():
+                    raise ValueError("enqueue에 유효한 YouTube 영상과 출처 key가 있어야 한다")
+                pending.append((vid, entry["source"]))
+            for vid, source in pending:
+                cmd_enqueue(argparse.Namespace(ids=[vid], source=source, priority="new"))
+            return
+        if cache and mode == "harvest" and actions.get("subscriptions"):
+            path = Path(actions["subscriptions"]).resolve()
+            path.relative_to((S / "tmp").resolve())
+            cmd_channels_merge(argparse.Namespace(rows=str(path), complete=actions.get("subscriptions_complete") is True))
+        if mode == "harvest":
+            for channel in actions.get("channels", []):
+                if channel.get("decision") not in ("learn", "exclude"):
+                    raise ValueError("잘못된 채널 결정")
+                if cache and channel["decision"] != "exclude":
+                    continue
+                if not cache and (channel["decision"] != "learn" or not published):
+                    continue
+                cmd_channels_set(argparse.Namespace(handle=channel["handle"], decision=channel["decision"],
+                                                   reason=channel.get("reason", "")))
+        if cache:
+            return
+        for source in ("threads", "email") if mode == "harvest" else ("instagram",):
+            allowed = {"mail"} if source == "email" else ({"saved", "dm"} if source == "instagram" else set())
+            parts = (actions.get("complete", {}) or {}).get(source, [])
+            if not isinstance(parts, list) or not set(parts) <= allowed:
+                raise ValueError(f"잘못된 complete: {source}")
+            cmd_inbox_reindex(argparse.Namespace(source=source, complete=parts, dry_run=False))
+
+
+def execute_codex(mode, conf):
+    run, digest, trusted = None, None, None
+    if mode in ("learn", "harvest"):
+        opened = io.StringIO()
+        with contextlib.redirect_stdout(opened):
+            rc = cmd_begin(argparse.Namespace(kind=mode))
+        if rc:
+            return {"engine": "codex", "status": "blocked", "reason": "repo_state"}
+        run = json_response(opened.getvalue())["run"]
+        m = load_manifest(run)
+        m["engine"] = "codex"
+        save_manifest(m)
+        trusted = m.copy()
+    if mode == "digest":
+        with open(os.devnull, "w") as null, contextlib.redirect_stdout(null):
+            cmd_digest_data(argparse.Namespace(date=str(dt.date.today())))
+        digest = read_json(S / "digests" / f"{dt.date.today()}.json")
+    before, dirty = repo_snapshot(), set(dirty_paths())
+    if run:
+        dirty -= set(load_manifest(run)["files"])  # 해시가 같은 이전 미게시 파일만 begin이 이어받는다.
+    head = git("rev-parse", "HEAD").stdout.strip()
+    protected = {f: hashlib.sha256((S / f).read_bytes()).hexdigest() if (S / f).is_file() else "absent"
+                 for f in ("config.json", "own_commits")}
+    rc, path, final = call_codex(mode, conf, codex_prompt(mode, conf, run, digest), run=run)
+    value = json_response(final)
+    failed = rc != 0 or not final.strip() or (mode != "digest" and value.get("mode") != mode)
+    if run and value.get("run") != run:
+        failed = True
+    transcript = path.read_text(encoding="utf-8", errors="replace")
+    errors = transport_errors(transcript)
+    policy = browser_policy_error(transcript)
+    reason = fallback_reason(final, failed, errors, policy)
+    registered = (read_json(run_dir(run) / "manifest.json", {}) or {}).get("files", []) if run else []
+    m = trusted
+    files = registered
+    if not isinstance(files, list) or any(not isinstance(f, str) or norm_rel(f) != f for f in files):
+        block_scope(m)
+        return {"engine": "codex", "status": "scope_blocked", "note": "잘못된 plan 경로"}
+    if m:
+        m |= {"run": run, "engine": "codex", "kind": mode, "files": files,
+              "baseline_dirty": sorted(dirty), "head": head}
+        save_manifest(m)
+    after = repo_snapshot()
+    problems = scope_problems(before, after, dirty, files, mode)
+    for name, digest_hash in protected.items():
+        current = hashlib.sha256((S / name).read_bytes()).hexdigest() if (S / name).is_file() else "absent"
+        if current != digest_hash:
+            problems.append(f"protected state changed: {name}")
+    if git("rev-parse", "HEAD").stdout.strip() != head:
+        problems.append("HEAD changed during Codex run")
+    reset = re.search(r"\|(\d{10})\b", final + "\n" + errors)
+    report = {"engine": "codex", "log": path.name, "rc": rc, "run": run,
+              "reset": reset.group(0) if reset else ""}
+    if problems:
+        block_scope(m)
+        return report | {"status": "scope_blocked", "files": problems}
+    if m:
+        pending = set(dirty_paths())
+        m["writer_hashes"] = {f: after.get(f, "absent") for f in files if f in pending}
+        save_manifest(m)
+    if reason or failed:
+        return report | {"status": "failed", "reason": reason, "note": policy or final[-1000:]}
+    if mode == "digest":
+        if not final.strip().startswith("## 변경") or "## 핵심 3가지" not in final or "\u00b7" in final:
+            return report | {"status": "failed", "reason": "digest_format"}
+        write_text(S / "digests" / f"{dt.date.today()}.md", final.strip() + "\n")
+        notify_digest()
+        return report | {"status": "completed"}
+    if mode == "harvest":
+        codex_actions(mode, value, cache=True)  # 새 personal 채널도 게시 전 PII 검사에 포함한다.
+    if run:
+        pending = set(dirty_paths())
+        changed = [f for f in files if f in pending]
+        hashes = m["writer_hashes"]
+        if set(changed) != set(hashes) or any(file_hash(f) != h for f, h in hashes.items()):
+            block_scope(m)
+            return report | {"status": "scope_blocked", "note": "작성 뒤 plan 파일이 바뀌었다"}
+        problems = check_files(changed)
+        if problems:
+            return report | {"status": "check_failed", "problems": problems}
+        if mode == "learn" and changed:
+            ok, verification = verify_codex(run, conf, changed)
+            m["verification"] = verification
+            save_manifest(m)
+            review_pending = set(dirty_paths())
+            if (scope_problems(before, repo_snapshot(), dirty, files, mode)
+                    or set(hashes) != {f for f in files if f in review_pending}
+                    or git("rev-parse", "HEAD").stdout.strip() != head
+                    or any(file_hash(f) != h for f, h in hashes.items())):
+                block_scope(m)
+                return report | {"status": "scope_blocked", "note": "검증 동안 파일이나 HEAD가 바뀌었다"}
+            if not ok:
+                m["status"] = "verification_failed"
+                save_manifest(m)
+                return report | {"status": "verification_failed", "verification": verification}
+        if git("rev-parse", "HEAD").stdout.strip() != head or any(file_hash(f) != h for f, h in hashes.items()):
+            block_scope(m)
+            return report | {"status": "scope_blocked", "note": "검증 뒤 파일이 바뀌었다"}
+        m["publish_hashes"] = hashes
+        save_manifest(m)
+        result = run_dir(run) / "result.json"
+        if changed and not result.exists():
+            return report | {"status": "failed", "reason": "result_missing"}
+        if result.exists():
+            result_data = read_json(result)
+            if not isinstance(result_data, dict) or not isinstance(result_data.get("items", []), list):
+                return report | {"status": "failed", "reason": "result_format"}
+            if changed and (not isinstance(result_data.get("scope"), str) or not isinstance(result_data.get("subject"), str)):
+                return report | {"status": "failed", "reason": "result_format"}
+            out = io.StringIO()
+            try:
+                with contextlib.redirect_stdout(out):
+                    published = cmd_publish(argparse.Namespace(run=run, dry_run=False, outer=True)) == 0
+            except (SystemExit, TypeError) as e:
+                return report | {"status": "failed", "reason": "result_format", "note": str(e)}
+            report["publish"] = json_response(out.getvalue())
+        else:
+            published = True
+    else:
+        published = True
+    if mode in ("learn", "harvest", "instagram"):
+        codex_actions(mode, value, published)
+    status = "completed" if published else ("scope_blocked" if report.get("publish", {}).get("status") == "scope_blocked" else "publish_failed")
+    return report | {"status": status}
 
 
 def agent_has_work(mode, conf):
@@ -1454,13 +1939,14 @@ def agent_has_work(mode, conf):
     return bool(data["tier3"]["todos"] or data["tier3"]["stale"])
 
 
-def run_claude(mode, cmd, prompt, timeout_s):
-    path = S / "logs" / "agent" / f"{mode}-{stamp()}.log"
+def run_cli(mode, engine, cmd, prompt, timeout_s):
+    path = S / "logs" / "agent" / f"{mode}-{engine}-{stamp()}-{time.time_ns()}.log"
     with open(path, "w", encoding="utf-8") as out:
         proc = subprocess.Popen(cmd, cwd=REPO, stdin=subprocess.PIPE, stdout=out, stderr=subprocess.STDOUT,
-                                text=True, start_new_session=True)
+                                text=True, start_new_session=True,
+                                env=os.environ | {"VAULT_LEARN_ENGINE": engine, "VAULT_LEARN_STATE": str(S)})
 
-        def stop(signum, _frame):  # launchd가 작업을 내리면 claude 프로세스 그룹까지 정리한다.
+        def stop(signum, _frame):  # launchd가 작업을 내리면 엔진 프로세스 그룹까지 정리한다.
             with contextlib.suppress(ProcessLookupError):
                 os.killpg(proc.pid, signal.SIGTERM)
             with contextlib.suppress(subprocess.TimeoutExpired):
@@ -1498,10 +1984,36 @@ def prune_agent_logs(keep=300):
     logs = sorted((S / "logs" / "agent").glob("*.log"), key=lambda p: p.stat().st_mtime, reverse=True)
     for path in logs[keep:]:
         path.unlink(missing_ok=True)
+    responses = sorted((S / "logs" / "agent").glob("*.response"), key=lambda p: p.stat().st_mtime, reverse=True)
+    for path in responses[keep:]:
+        path.unlink(missing_ok=True)
+
+
+def execute_claude(mode, conf):
+    allow, deny = agent_rules(mode)
+    cmd = [conf["claude"], "-p", "--model", "opus", "--effort", "max", "--permission-mode", "dontAsk",
+           "--add-dir", str(S), "--output-format", "json", "--no-session-persistence",
+           "--allowedTools", *allow, "--disallowedTools", *deny,
+           *(["--chrome"] if mode in ("harvest", "instagram") else [])]
+    rc, path = run_cli(mode, "claude", cmd, agent_prompt(mode, conf), conf[f"{mode}_timeout_min"] * 60)
+    text = path.read_text(encoding="utf-8", errors="replace")
+    result = last_result(text)
+    failed = rc != 0 or not result or result.get("is_error")
+    final = result.get("result") or ""
+    reason = fallback_reason(final, failed, transport_errors(text))
+    reset = re.search(r"\|(\d{10})\b", text if failed else final)
+    return {"engine": "claude", "log": path.name, "rc": rc, "reset": reset.group(0) if reset else "",
+            "status": "failed" if failed or reason else "completed", "reason": reason}
 
 
 def cmd_agent(a):
+    if os.environ.get("VAULT_LEARN_ENGINE") in ENGINES:
+        emit({"status": "blocked", "note": "학습 agent는 다른 agent를 재귀 실행하지 않는다"})
+        return 1
     conf, mode = cfg(), a.mode
+    if getattr(a, "engine", None):
+        conf = conf | {"engine": {m: a.engine if m == mode else v["engine"]
+                                  for m, v in engine_settings(conf).items()}}
     if (S / "paused").exists() and not a.dry_run:
         log(f"{mode}: paused")
         return 0
@@ -1509,44 +2021,59 @@ def cmd_agent(a):
         if not ok:
             log(f"{mode}: 이전 실행이 아직 진행 중이다")
             return 0
-        backoff = read_json(S / "backoff.json", {}) or {}
-        if backoff.get("until", 0) > time.time() and not a.dry_run:
-            log(f"{mode}: 사용량 한도 백오프 중({backoff.get('until_local')})")
+        engines = engine_candidates(mode, conf, ignore_backoff=a.dry_run)
+        if not engines:
+            log(f"{mode}: 선택한 엔진이 모두 백오프 중이다")
             return 0
-        if not a.dry_run and not agent_has_work(mode, conf):
-            return 0
-        allow, deny = agent_rules(mode)
-        cmd = [conf["claude"], "-p", "--model", "opus", "--effort", "max", "--permission-mode", "dontAsk",
-               "--add-dir", str(S), "--output-format", "json", "--no-session-persistence",
-               "--allowedTools", *allow, "--disallowedTools", *deny,
-               *(["--chrome"] if mode in ("harvest", "instagram") else [])]
-        prompt = agent_prompt(mode, conf)
         if a.dry_run:
-            print(shlex.join(cmd))
-            print(prompt)
+            for engine in engines:
+                if engine == "codex":
+                    print(shlex.join(codex_command(mode, conf, S / "logs" / "agent" / "dry-run.response")))
+                    # dry-run은 실제 run이나 다이제스트 선택을 만들지 않는다.
+                    print(f"Codex {mode}: runner begins run, checks scope, verifies learn, publishes; digest returns Markdown.")
+                else:
+                    allow, deny = agent_rules(mode)
+                    cmd = [conf["claude"], "-p", "--model", "opus", "--effort", "max", "--permission-mode", "dontAsk",
+                           "--add-dir", str(S), "--output-format", "json", "--no-session-persistence",
+                           "--allowedTools", *allow, "--disallowedTools", *deny,
+                           *(["--chrome"] if mode in ("harvest", "instagram") else [])]
+                    print(shlex.join(cmd))
+                    print(agent_prompt(mode, conf))
             return 0
-        since = int(time.time())
-        # harvest와 instagram은 같은 Chrome을 쓴다. 겹치면 탭 전환과 클릭이 섞이므로 앞 실행이 끝날 때까지 기다린다.
+        if not agent_has_work(mode, conf):
+            return 0
+        # 두 엔진의 Chrome과 저장소 편집을 각각 한 실행으로 묶는다. 수동 편집은 아래 기준선 검사로 보호한다.
         chrome = locked("chrome") if mode in ("harvest", "instagram") else contextlib.nullcontext()
-        try:
-            with chrome:
-                rc, path = run_claude(mode, cmd, prompt, conf[f"{mode}_timeout_min"] * 60)
-        finally:
-            if mode in ("learn", "harvest"):
-                finish_runs(since, mode)
-        text = path.read_text(encoding="utf-8", errors="replace")
-        result = last_result(text)
-        failed = rc != 0 or not result or result.get("is_error")
-        final = ((result.get("result") or "").strip().splitlines() or [""])[-1][:300]
-        if failed and LIMIT.search(text):
-            log(f"{mode}: 사용량 한도로 {set_backoff(text)}까지 쉰다 ({path.name})")
-        elif failed:
-            log(f"{mode}: 실패 rc={rc} ({path.name}) {final}")
-        else:
-            (S / "backoff.json").unlink(missing_ok=True)
-            log(f"{mode}: 완료 ({path.name}) {final}")
-            if mode == "digest":
-                notify_digest()
+        editing = locked("agent-write") if mode in ("learn", "harvest") else contextlib.nullcontext()
+        attempts = []
+        with chrome, editing:
+            for engine in engine_candidates(mode, conf):  # 엔진마다 한 번, 한 slot에 최대 두 번만 실행한다.
+                since = int(time.time())
+                try:
+                    report = execute_codex(mode, conf) if engine == "codex" else execute_claude(mode, conf)
+                except FileNotFoundError as e:
+                    report = {"engine": engine, "status": "failed", "reason": "unavailable", "note": str(e)}
+                except (ValueError, GitError, OSError, subprocess.SubprocessError) as e:
+                    report = {"engine": engine, "status": "failed", "reason": None, "note": str(e)}
+                finally:
+                    if mode in ("learn", "harvest"):
+                        finish_runs(since, mode)
+                attempts.append(report)
+                write_json(S / "runs" / f"last-{mode}.json", {"at": now().isoformat(timespec="seconds"),
+                                                             "attempts": attempts})
+                reason = report.get("reason")
+                if report["status"] == "completed":
+                    clear_backoff(engine)
+                    log(f"{mode}: {engine} 완료 ({report.get('log', '')})")
+                    if mode == "digest" and engine == "claude":
+                        notify_digest()
+                    break
+                if reason in ("limit", "auth", "chrome", "unavailable"):
+                    until = set_backoff(report.get("reset", ""), engine, reason)
+                    log(f"{mode}: {engine} {reason}, {until}까지 쉰다")
+                    continue
+                log(f"{mode}: {engine} {report['status']} ({report.get('log', '')})")
+                break  # 부분 편집이나 검증 실패를 다른 엔진이 바로 이어받지 않는다.
         prune_agent_logs()
     return 0
 
@@ -1557,7 +2084,7 @@ def cmd_status(a):
     summary = state_summary()
     summary["last_agent_runs"] = {}
     for mode in MODES:
-        logs = sorted((S / "logs" / "agent").glob(f"{mode}-*.log"))
+        logs = sorted((S / "logs" / "agent").glob(f"{mode}-*.log"), key=lambda p: p.stat().st_mtime)
         summary["last_agent_runs"][mode] = logs[-1].name if logs else None
     emit(summary)
     return 0
@@ -1565,7 +2092,7 @@ def cmd_status(a):
 
 def cmd_doctor(a):
     problems = []
-    for tool in ("python3", "uvx", "ffmpeg", "ffprobe", "whisper-cli", "node", "git", "osascript", cfg()["claude"]):
+    for tool in ("python3", "uvx", "ffmpeg", "ffprobe", "whisper-cli", "node", "git", "osascript", cfg()["claude"], cfg()["codex"]):
         if not shutil.which(tool):
             problems.append(f"PATH에서 {tool}을 찾지 못했다")
     models = Path(os.environ.get("WHISPER_CPP_MODEL_DIR", "~/.cache/whisper-cpp")).expanduser()
@@ -1605,7 +2132,7 @@ def cmd_plists(a):
                                                                              for h in (9, 15, 21)]}),
             "learn": (["agent", "learn"], {"StartInterval": 1800}),
             # 07:30이 본 실행이다. 밤새 learn이 사용량 한도에 걸려 백오프 중이거나 실패하면 그날 뒤 시각에 다시 한다.
-            # 오늘 다이제스트가 있으면 agent_has_work가 claude를 띄우지 않고 끝낸다.
+            # 오늘 다이제스트가 있으면 agent_has_work가 엔진을 띄우지 않고 끝낸다.
             "digest": (["agent", "digest"], {"StartCalendarInterval": [{"Hour": h, "Minute": 30}
                                                                        for h in (7, 9, 11, 13, 16, 19, 22)]})}
     written = []
@@ -1619,6 +2146,278 @@ def cmd_plists(a):
         written.append(str(target))
     emit({"written": written, "PATH": path})
     return 0
+
+
+def selftest_engines():
+    global S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work
+    original = S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            REPO, S = Path(tmp) / "repo", Path(tmp) / "state"
+            REPO.mkdir()
+            ensure_layout()
+            git("init", "-q", "-b", "main")
+            (REPO / "tech").mkdir()
+            (REPO / "tech" / "A.md").write_text("---\nstatus: done\n---\n\n# A\n", encoding="utf-8")
+            (REPO / "tech" / "B.md").write_text("---\nstatus: done\n---\n\n# B\n", encoding="utf-8")
+            (REPO / "AGENTS.md").write_text("protected\n", encoding="utf-8")
+            git("add", ".")
+            git("-c", "user.name=Test", "-c", "user.email=user@example.com", "commit", "-qm", "baseline")
+            conf = DEFAULTS.copy()
+            assert engine_candidates("learn", conf) == ["claude", "codex"]
+            assert engine_candidates("learn", conf | {"primary": {"learn": "codex"}}) == ["codex", "claude"]
+            write_json(S / "backoff.json", {"until": time.time() + 120})
+            assert engine_candidates("learn", conf) == ["codex"]
+            assert not engine_backoff("codex")
+            set_backoff("usage limit", "codex")
+            assert not engine_candidates("learn", conf)
+            assert engine_candidates("learn", conf, True) == ["claude", "codex"]
+            clear_backoff("codex")
+            assert engine_candidates("learn", conf | {"engine": {"learn": "claude"}}) == []
+            clear_backoff("claude")
+            assert fallback_reason("authentication failed", True) == "auth"
+            assert fallback_reason("CHROME_UNAVAILABLE", False) == "chrome"
+            assert fallback_reason("usage limit", True) == "limit"
+            assert fallback_reason("document about rate limit", False) is None
+            assert fallback_reason("POLICY_BLOCKED", True) == "policy"
+            assert fallback_reason('{"error":"POLICY_BLOCKED","detail":"authentication usage limit"}', True) == "policy"
+            assert fallback_reason("generic failed edit", True) is None
+            assert fallback_reason("source mentions CHROME_UNAVAILABLE", True) is None
+            telemetry = json.dumps({"type": "item.completed", "item": {"type": "command_execution",
+                                      "output": "CHROME_UNAVAILABLE usage limit authentication"}})
+            assert not transport_errors(telemetry)
+            denied = json.dumps({"type": "item.completed", "item": {"type": "mcp_tool_call", "server": "node_repl",
+                                 "result": {"_meta": {"codex/browserUse": True}, "content": [{"type": "text",
+                                 "text": "Error: Browser Use rejected this action due to browser security policy. Reason: Auto-review denied this action"}]}}})
+            assert browser_policy_error(denied)
+            assert not browser_policy_error(telemetry)
+            assert fallback_reason("CHROME_UNAVAILABLE", True, policy=browser_policy_error(denied)) == "policy"
+            assert transport_errors(json.dumps({"type": "turn.failed", "error": {"message": "usage limit"}})) == "usage limit"
+            cmd = codex_command("learn", conf, S / "last.response")
+            assert cmd[1:4] == ["-a", "never", "exec"] and "workspace-write" in cmd
+            assert "danger-full-access" not in cmd and "--dangerously-bypass-approvals-and-sandbox" not in cmd
+            assert "sandbox_workspace_write.writable_roots=[]" in cmd and "mcp_servers.playwright.enabled=false" in cmd
+            assert cmd.count("--add-dir") == 2
+            readonly = codex_command("digest", conf, S / "last.response")
+            assert "read-only" in readonly and "--add-dir" not in readonly
+            verifier = codex_command("learn", conf, S / "last.response", verify=True)
+            assert 'model_reasoning_effort="ultra"' in verifier and "read-only" in verifier
+            chrome = codex_command("harvest", conf, S / "last.response")
+            assert 'mcp_servers.node_repl.env.BROWSER_USE_AVAILABLE_BACKENDS="chrome"' in chrome
+            with contextlib.redirect_stdout(io.StringIO()):
+                cmd_engine(argparse.Namespace(mode="all", engine="codex", primary="codex"))
+            assert all(v == {"engine": "codex", "primary": "codex"} for v in engine_settings(cfg()).values())
+            (S / "config.json").unlink()
+            before = repo_snapshot()
+            (REPO / "tech" / "A.md").write_text("---\nstatus: done\n---\n\n# Changed\n", encoding="utf-8")
+            after = repo_snapshot()
+            assert scope_problems(before, after, set(), ["tech/A.md"], "learn") == []
+            assert scope_problems(before, after, {"tech/A.md"}, ["tech/A.md"], "learn") == ["tech/A.md"]
+            assert scope_problems(before, after, set(), ["tech/A.md"], "harvest") == ["tech/A.md"]
+            assert scope_problems(before, after, set(), [], "learn") == ["tech/A.md"]
+            git("restore", "tech/A.md")
+            (REPO / ".gitignore").write_text("local-config.json\n", encoding="utf-8")
+            before = repo_snapshot()
+            (REPO / "local-config.json").write_text("{}", encoding="utf-8")
+            assert "local-config.json" in scope_problems(before, repo_snapshot(), set(), [], "learn")
+            (REPO / ".gitignore").unlink()
+            (REPO / "local-config.json").unlink()
+            publications, reviews, writes = [], [], [0]
+
+            def fake_call(mode, _conf, prompt, verify=False, run=None):
+                run = re.search(r"run R=([^;]+);", prompt).group(1)
+                cmd_plan(argparse.Namespace(run=run, file=["tech/A.md"]))
+                writes[0] += 1
+                (REPO / "tech" / "A.md").write_text(f"---\nstatus: done\n---\n\n# Learned {writes[0]}\n", encoding="utf-8")
+                write_json(run_dir(run) / "result.json", {"scope": "tech", "subject": "learn", "items": []})
+                path = S / "logs" / "agent" / "fake.log"
+                path.write_text("success", encoding="utf-8")
+                return 0, path, json.dumps({"mode": mode, "run": run})
+
+            def fake_verify(run, _conf, files):
+                reviews.append((run, list(files)))
+                return True, {"result": {"ok": True, "findings": []}}
+
+            def fake_publish(a):
+                manifest = load_manifest(a.run)
+                assert manifest["engine"] == "codex" and a.outer
+                assert manifest["publish_hashes"] == {"tech/A.md": file_hash("tech/A.md")}
+                publications.append(a.run)
+                emit({"status": "nothing"})
+                return 0
+
+            call_codex, verify_codex, cmd_publish = fake_call, fake_verify, fake_publish
+            with contextlib.redirect_stdout(io.StringIO()):
+                report = execute_codex("learn", conf)
+            assert report["status"] == "completed" and len(publications) == len(reviews) == 1
+            git("restore", "tech/A.md")
+            verify_codex = lambda *_: (False, {"result": {"ok": False, "findings": []}})
+            with contextlib.redirect_stdout(io.StringIO()):
+                report = execute_codex("learn", conf)
+            assert report["status"] == "verification_failed" and len(publications) == 1
+            git("restore", "tech/A.md")
+            verify_codex = fake_verify
+            good_call = call_codex
+
+            def bad_call(*args, **kwargs):
+                result = good_call(*args, **kwargs)
+                (REPO / "AGENTS.md").write_text("modified", encoding="utf-8")
+                return result
+
+            call_codex = bad_call
+            with contextlib.redirect_stdout(io.StringIO()):
+                report = execute_codex("learn", conf)
+            assert report["status"] == "scope_blocked" and "AGENTS.md" in report["files"]
+            assert len(publications) == 1 and (REPO / "AGENTS.md").read_text() == "modified"
+            assert report["run"] not in leftover_runs("learn")
+            git("restore", "AGENTS.md", "tech/A.md")
+            call_codex = good_call
+
+            def user_edit_during_review(run, _conf, files):
+                (REPO / "tech/A.md").write_text("---\nstatus: done\n---\n\n# Concurrent user edit\n", encoding="utf-8")
+                return True, {"result": {"ok": True, "findings": []}}
+
+            verify_codex = user_edit_during_review
+            with contextlib.redirect_stdout(io.StringIO()):
+                report = execute_codex("learn", conf)
+                finish_runs(0, "learn")
+            assert report["status"] == "scope_blocked" and load_manifest(report["run"])["status"] == "scope_blocked"
+            assert report["run"] not in leftover_runs("learn") and len(publications) == 1
+            assert "Concurrent user edit" in (REPO / "tech/A.md").read_text()
+            git("restore", "tech/A.md")
+
+            def user_commit_during_review(run, _conf, files):
+                git("add", "tech/A.md")
+                git("-c", "user.name=Test", "-c", "user.email=user@example.com", "commit", "-qm", "user commit")
+                return True, {"result": {"ok": True, "findings": []}}
+
+            verify_codex = user_commit_during_review
+            with contextlib.redirect_stdout(io.StringIO()):
+                report = execute_codex("learn", conf)
+                finish_runs(0, "learn")
+            assert report["status"] == "scope_blocked" and load_manifest(report["run"])["status"] == "scope_blocked"
+            assert report["run"] not in leftover_runs("learn") and len(publications) == 1
+            assert not read_jsonl(S / "digests" / "log.jsonl")
+            for concurrent in (user_edit_during_review, user_commit_during_review):
+                def failed_review(*args):
+                    concurrent(*args)
+                    return False, {"result": {"ok": False, "findings": []}}
+                verify_codex = failed_review
+                with contextlib.redirect_stdout(io.StringIO()):
+                    report = execute_codex("learn", conf)
+                    finish_runs(0, "learn")
+                assert report["status"] == "scope_blocked" and load_manifest(report["run"])["status"] == "scope_blocked"
+                assert report["run"] not in leftover_runs("learn") and len(publications) == 1
+                git("restore", "tech/A.md")
+
+            def two_plan_call(*args, **kwargs):
+                result = good_call(*args, **kwargs)
+                run = json_response(result[2])["run"]
+                cmd_plan(argparse.Namespace(run=run, file=["tech/B.md"]))
+                return result
+
+            call_codex = two_plan_call
+            for verdict in (True, False, "exception"):
+                def edit_clean_planned(run, _conf, files):
+                    (REPO / "tech/B.md").write_text("---\nstatus: done\n---\n\n# User B\n", encoding="utf-8")
+                    if verdict == "exception":
+                        raise ValueError("verifier error")
+                    return verdict, {"result": {"ok": verdict, "findings": []}}
+                verify_codex = edit_clean_planned
+                with contextlib.redirect_stdout(io.StringIO()):
+                    try:
+                        report = execute_codex("learn", conf)
+                    except ValueError:
+                        assert verdict == "exception"
+                    finish_runs(0, "learn")
+                run = max(p.parent.name for p in (S / "runs").glob("*/manifest.json"))
+                assert load_manifest(run)["status"] == "scope_blocked" and run not in leftover_runs("learn")
+                assert not load_manifest(run).get("left") and len(publications) == 1
+                assert "User B" in (REPO / "tech/B.md").read_text()
+                git("restore", "tech/A.md", "tech/B.md")
+            # alternate 한 slot은 최대 두 번이며, 일반 실패와 범위 실패에는 교대하지 않는다.
+            calls = []
+            execute_claude = lambda *_: calls.append("claude") or {"engine": "claude", "status": "failed", "reason": "limit"}
+            execute_codex = lambda *_: calls.append("codex") or {"engine": "codex", "status": "completed"}
+            agent_has_work = lambda *_: True
+            with contextlib.redirect_stdout(io.StringIO()):
+                cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
+            assert calls == ["claude", "codex"] and engine_backoff("claude").get("until", 0) > time.time()
+            assert not engine_backoff("codex")
+            clear_backoff("claude")
+            calls.clear()
+            execute_codex = lambda *_: calls.append("codex") or {"engine": "codex", "status": "failed", "reason": "auth"}
+            with contextlib.redirect_stdout(io.StringIO()):
+                cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
+            assert calls == ["claude", "codex"] and not engine_candidates("learn", conf)
+            with contextlib.redirect_stdout(io.StringIO()):
+                cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
+            assert calls == ["claude", "codex"]
+            for engine in ENGINES:
+                clear_backoff(engine)
+            calls.clear()
+            execute_claude = lambda *_: calls.append("claude") or {"engine": "claude", "status": "failed", "reason": None}
+            with contextlib.redirect_stdout(io.StringIO()):
+                cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
+            assert calls == ["claude"]
+            calls.clear()
+            execute_claude = lambda *_: calls.append("claude") or {"engine": "claude", "status": "failed", "reason": "policy"}
+            with contextlib.redirect_stdout(io.StringIO()):
+                cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
+            assert calls == ["claude"]
+            codex_actions("learn", {"actions": {"enqueue": [{"url": "https://youtu.be/aaaaaaaaaaa", "source": "repost:x"}]}})
+            assert rows(S / "queue" / "new.tsv")[0][:2] == ["aaaaaaaaaaa", "repost:x"]
+            assert read_lines(S / "seen_videos") == ["aaaaaaaaaaa"]
+            try:
+                codex_actions("learn", {"actions": {"enqueue": [{"url": "nope", "source": "x"}]}})
+            except ValueError:
+                pass
+            else:
+                raise AssertionError("잘못된 enqueue를 받았다")
+            assert len(rows(S / "queue" / "new.tsv")) == 1
+            (REPO / "tech/A.md").write_text("---\nstatus: done\n---\n\n# Owned\n", encoding="utf-8")
+            owned_hash = file_hash("tech/A.md")
+            save_manifest({"run": "toc", "kind": "learn", "started": now().isoformat(), "status": "open",
+                           "engine": "codex", "files": ["tech/A.md"], "writer_hashes": {"tech/A.md": owned_hash}})
+            real_hash = globals()["file_hash"]
+            hash_calls = [0]
+
+            def edit_after_hash(rel):
+                digest = real_hash(rel)
+                if rel == "tech/A.md":
+                    hash_calls[0] += 1
+                    if hash_calls[0] == 1:
+                        (REPO / rel).write_text("---\nstatus: done\n---\n\n# User after hash\n", encoding="utf-8")
+                return digest
+
+            try:
+                globals()["file_hash"] = edit_after_hash
+                finish_runs(0, "learn")
+                assert load_manifest("toc")["left"] == {"tech/A.md": owned_hash}
+                assert "toc" not in leftover_runs("learn")
+            finally:
+                globals()["file_hash"] = real_hash
+            assert "User after hash" in (REPO / "tech/A.md").read_text()
+            prior_engine = os.environ.get("VAULT_LEARN_ENGINE")
+            try:
+                for child in ENGINES:
+                    os.environ["VAULT_LEARN_ENGINE"] = child
+                    try:
+                        cmd_engine(argparse.Namespace(mode="all", engine="codex", primary=None))
+                    except SystemExit:
+                        pass
+                    else:
+                        raise AssertionError("child agent가 엔진 설정을 바꿨다")
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        assert cmd_engine(argparse.Namespace(mode=None, engine=None, primary=None)) == 0
+                        assert cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False)) == 1
+            finally:
+                if prior_engine is None:
+                    os.environ.pop("VAULT_LEARN_ENGINE", None)
+                else:
+                    os.environ["VAULT_LEARN_ENGINE"] = prior_engine
+    finally:
+        S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work = original
 
 
 def cmd_selftest(a):
@@ -1702,6 +2501,7 @@ def cmd_selftest(a):
             cmd_channels_set(argparse.Namespace(handle=handle, decision="exclude", reason="x"))
             raise AssertionError("목록에 있는 채널을 제외했다")
     S = real
+    selftest_engines()
     print("selftest ok")
     return 0
 
@@ -1755,19 +2555,25 @@ def main():
     p = add("channels-merge", cmd_channels_merge, "Chrome에서 읽은 구독 목록을 channels.tsv에 합친다")
     p.add_argument("--rows", required=True, help="handle<TAB>title 행 파일")
     p.add_argument("--complete", action="store_true", help="목록 전체를 읽었을 때만 준다(구독 해지 반영)")
+    p.add_argument("--dry-run", action="store_true", help="상태를 쓰지 않고 분류할 pending 미리 보기")
     p = add("channels-set", cmd_channels_set, "채널 분류를 기록한다")
     p.add_argument("--handle", required=True)
     p.add_argument("--decision", choices=("learn", "exclude"), required=True)
     p.add_argument("--reason", required=True)
-    p = add("agent", cmd_agent, "claude -p로 harvest, instagram, learn, digest 모드를 실행한다(launchd)")
+    p = add("agent", cmd_agent, "선택한 Claude/Codex로 harvest, instagram, learn, digest 모드를 실행한다(launchd)")
     p.add_argument("mode", choices=MODES)
+    p.add_argument("--engine", choices=(*ENGINES, "alternate"), help="이 실행만 엔진 선택을 바꾼다")
     p.add_argument("--dry-run", action="store_true")
+    p = add("engine", cmd_engine, "모드별 Claude/Codex/alternate와 우선 엔진을 보고 바꾼다")
+    p.add_argument("mode", nargs="?", choices=(*MODES, "all"))
+    p.add_argument("engine", nargs="?", choices=(*ENGINES, "alternate"))
+    p.add_argument("--primary", choices=ENGINES)
     add("status", cmd_status, "큐, 처리 기록, 백오프, 미푸시 커밋")
     add("doctor", cmd_doctor, "도구, 모델, 스크립트 사본, 설정 점검")
     add("plists", cmd_plists, "S/launchd에 plist를 만든다")
     add("selftest", cmd_selftest, "순수 함수와 큐 순서 자체 검사")
     args = ap.parse_args()
-    if args.cmd != "selftest":
+    if args.cmd != "selftest" and os.environ.get("VAULT_LEARN_ENGINE") != "codex":
         ensure_layout()
     return args.fn(args)
 
