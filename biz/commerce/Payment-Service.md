@@ -92,9 +92,16 @@ Visa, Mastercard 같은 카드 네트워크는 직접 카드를 발급하거나 
 1. **주문서형 페이** — 주문서를 가져가면 회원, 상품, 배송지, 결제까지 전부 보인다 (페이커머스).
 2. **결제수단형 + 상품명 필수화** — 결제 API 정책으로 상품명을 필수값으로 만들어, 단순 결제수단이면서도 상품 단위 데이터를 수집한다.
 3. **PLCC(상업자 표시 신용카드)** — 카드사와 브랜드가 혜택, 분석과 마케팅을 협업할 수 있지만 고객정보와 결제정보의 공유 범위는 계약, 동의, 개인정보 처리 역할과 법적 근거에 의해 제한된다.
-4. **영수증 수집** — 오프라인 결제는 가맹점명까지만 보이므로, 영수증 이미지(상품명 포함)를 포인트 보상으로 수집해 오프라인까지 상품 단위로 확장한다. 오프라인은 임대몰 영수증과 브랜드 영수증이 이원화돼 몰 운영사조차 상품 상세를 못 보는 구조라, 상품 단위 데이터는 영수증 같은 우회 수집 없이는 닿지 않는다.
+4. **영수증 수집** — 상품 상세를 직접 전달받지 못하는 사업자가 상품명이 담긴 영수증 이미지로 데이터 범위를 넓히는 방식이다. 임대몰과 개별 브랜드의 주문 시스템이 분리돼 있으면 몰 운영사가 상품 상세를 받지 못할 수 있다. 다만 영수증 수집만이 오프라인 상품 데이터의 확보 경로는 아니다.
+5. **POS 주문 연동** — 매장의 주문 시스템과 연결해 상품 내역과 결제 내역을 함께 받는 방식이다. 토스플레이스의 주문 모델은 상품 목록과 결제 내역을 포함하며, 주문 조회 API로 이를 조회할 수 있다. 조회 범위는 연동한 매장과 제공자 계약에 한정된다. ([토스플레이스, 주문 모델](https://docs.tossplace.com/reference/open-api/order/order-model.html), [주문 조회](https://docs.tossplace.com/reference/open-api/order/order-methods.html), 2026-10-06 부분 대조)
 
 포인트 보상은 페이 재사용과 추가 거래 데이터를 유도할 수 있다. 회원정보, 구매 상품, 결제처와 결제 패턴을 결합하면 민감한 생활 프로파일이 될 수 있으므로 목적 제한, 최소 수집, 보유기간과 이용자 권리를 함께 설계해야 한다. 적법하게 사용할 수 있는 데이터만 개인화([[Personalization-Recommendation|개인화와 추천]])의 원료가 된다.
+
+### 결제 단말 보급과 데이터 연동 범위
+
+단말기 설치 수를 곧바로 외부 서비스가 분석할 수 있는 매장 수로 계산하지 않는다. 2026-10-06 확인한 토스플레이스 가이드는 단말의 기능 확장과 POS의 주문, 매출, ERP 연동을 구분한다. App API는 앱이 설치된 매장에서만 정보 조회와 웹훅 수신이 가능하다고 명시한다. ([연동 이해하기](https://docs.tossplace.com/guide/understanding.html), [App API](https://docs.tossplace.com/reference/open-api/app.html))
+
+이 구분을 사업 검토에 적용하면 단말 보급, 데이터 접근이 열린 매장, 필요한 상품 필드가 채워진 주문을 따로 확인해야 한다. POS와 연결됐다는 사실만으로 다른 검색, 광고 플랫폼에도 데이터가 전달된다고 추정하지 않는다. 제휴와 연동 범위를 각각 확인하고, 매장 분석 상품의 가치는 실제 확보한 데이터의 범위와 품질로 판단한다. 주문 정본, 권한과 중복 이벤트 처리의 기술 계약은 [[POS-Offline-and-Integration|POS 외부 연동]]에서 다룬다.
 
 ## 디지털 상품 판매와 MoR
 
@@ -116,6 +123,10 @@ Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주�
 - 페이 도입의 사업 효과(수수료 수익, 락인, 익명성)는 [[Commerce-Member|커머스 회원 도메인]]의 자체 페이 참조.
 
 ## 출처
+- [토스플레이스, 연동 이해하기](https://docs.tossplace.com/guide/understanding.html)
+- [토스플레이스, App API](https://docs.tossplace.com/reference/open-api/app.html)
+- [토스플레이스, 주문 - 개념 상세](https://docs.tossplace.com/reference/open-api/order/order-model.html)
+- [토스플레이스, 주문 - 주문 조회](https://docs.tossplace.com/reference/open-api/order/order-methods.html)
 - [페이 서비스가 뭔지 이해해보자 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/101)
 - [데이터 관점에서 보는 네이버페이 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/212)
 - [오프라인 유통이 생각보다 데이터를 못 모으는 이유 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/299)
