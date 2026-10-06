@@ -14,7 +14,7 @@ aliases: ["Concurrency vs Parallelism", "동시성 vs 병렬성", "Amdahl's Law"
 
 | 축 | 동시성 (Concurrency) | 병렬성 (Parallelism) |
 |---|---|---|
-| 본질 | "다룰 수 있는 구조" | "동시에 하는 실행" |
+| 본질 | 다룰 수 있는 구조 | 동시에 하는 실행 |
 | 필요 하드웨어 | 싱글 코어에서도 성립 | 둘 이상의 실행 자원 필요 |
 | 구현 기법 | 이벤트 루프, 코루틴, 컨텍스트 스위칭 | SMP, 스레드 풀, GPU, 분산 처리 |
 | 목적 | **유휴 시간 최소화**(I/O 대기 중 다른 일) | **처리량, 속도** |
@@ -91,6 +91,16 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 3. **작업의 성격**: CPU-bound 작업은 코어 수 근처를 넘기면 이득 없이 전환 비용만 는다. I/O-bound 작업은 대기 중인 스레드가 코어를 쓰지 않으므로 코어 수보다 많은 스레드로 처리량을 높일 수 있지만, 이때도 메모리, 전환 비용과 DB 같은 하위 자원의 한도에서 이득이 끝난다 ([[Thread-Pool-Sizing|스레드 풀 사이징]]).
 4. **공유 자원**: 스레드가 같은 lock이나 데이터를 두고 다투면 늘린 스레드는 대기열만 길게 만든다.
 
+### False sharing: 다른 변수도 같은 캐시 라인을 다툰다
+
+서로 다른 코어가 독립적인 변수를 사용해도 같은 캐시 라인에 있으면 일관성 유지 비용이 생길 수 있다. 한 코어의 쓰기로 다른 코어가 그 라인을 다시 가져와야 하기 때문이다. 두 코어가 모두 쓰는 경우뿐 아니라 한쪽이 자주 쓰고 다른 쪽이 인접한 읽기 전용 필드를 읽는 경우에도 발생한다. 데이터 레이스가 없다는 사실은 이런 성능 경합이 없다는 뜻이 아니다.
+
+64바이트는 흔한 캐시 라인 크기이지 모든 플랫폼의 고정값이 아니다. 변수 이름이나 선언 순서만으로 판정하지 않고 실제 배치와 접근 패턴을 확인한다. Linux에서는 지원되는 환경의 `perf c2c`로 경합 라인을 찾고 `pahole`의 구조체 필드 오프셋과 대조할 수 있다.
+
+측정된 병목에는 쓰기가 잦은 필드를 분리하거나 정렬과 패딩을 검토한다. 메모리 사용량과 캐시 지역성 비용도 늘 수 있으므로 드물게 쓰는 구조까지 일괄 패딩하지 않는다. 적용 대안으로 즉시 공유할 필요가 없는 카운터는 스레드별로 집계한 뒤 합칠 수 있지만, 중간 결과의 가시성과 병합 비용이 요구사항에 맞는지 확인한다.
+
+2026-10-06 Linux 커널의 False Sharing 문서로 발생 조건과 진단 도구, 공간 비용을 대조했다. 속도 개선 배율은 워크로드별 측정 대상이다.
+
 ## 면접 체크포인트
 
 - 동시성과 병렬성의 한 문장 구분(구조 vs 실행)
@@ -107,6 +117,7 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 여러 작업을 기준으로 보면 병렬 실행 중인 작업들은 실행 구간도 겹치므로 동시적이다. 위 표의 SIMD는 하나의 명령 흐름 안에서 데이터가 병렬 처리되는 경우를 따로 분류한 것이다. 포함 관계를 설명할 때 작업 구조와 명령/데이터 처리 중 어느 층위를 말하는지 먼저 정한다.
 
 ## 출처
+- [Linux Kernel, False Sharing](https://docs.kernel.org/kernel-hacking/false-sharing.html)
 - 인프런, 널널한 개발자 강사, [동시성과 병렬성](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128252)
 - YouTube, 쉬운코드, [스레드를 많이 쓸수록 항상 성능이 좋아질까요?](https://www.youtube.com/watch?v=jSaBkvtHhrM), [CPU bound, IO bound와 스레드 개수](https://www.youtube.com/watch?v=qnVKEwjG_gM)
 - [Node.js, Worker threads](https://nodejs.org/api/worker_threads.html)

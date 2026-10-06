@@ -77,6 +77,16 @@ aliases: ["Process Lifecycle", "프로세스 생명주기", "프로세스 상태
 - `execve()` 계열은 현재 PID 안에서 기존 주소 공간의 매핑, stack, heap을 포함한 process image를 새 프로그램 이미지로 교체하고 새 entry point에서 시작한다
 - PID와 명세에 따라 보존되는 속성, `FD_CLOEXEC`이 없는 file descriptor 등은 남을 수 있다. 성공한 `execve()`는 기존 프로그램으로 반환하지 않는다
 
+### fork와 exec 사이의 준비와 제약
+
+생성과 실행을 나누면 자식의 파일 디스크립터를 연결한 뒤 프로그램 이미지를 교체할 수 있다. 셸 파이프라인은 파이프 끝을 표준 입출력에 연결하고 불필요한 디스크립터를 닫는 방식으로 명령들을 조합할 수 있다. 부모와 자식의 디스크립터는 같은 open file description을 가리킬 수 있으므로 파일 오프셋 같은 상태도 공유될 수 있다.
+
+다만 멀티스레드 프로세스의 `fork()` 후 자식에는 호출한 스레드만 남고 다른 스레드가 잠근 mutex 상태는 복제될 수 있다. Linux에서는 이 자식이 `execve()`를 호출하기 전까지 async-signal-safe 함수만 안전하게 호출할 수 있다. 그 구간에서 임의의 로깅, 메모리 할당이나 런타임 초기화를 수행하는 설계는 피한다.
+
+필요한 준비가 API의 file actions와 속성 설정으로 표현되면 `posix_spawn()`을 비교한다. 생성과 실행을 묶지만 `fork()` 이후 가능한 모든 처리를 제공하는 대체품은 아니다. Copy-on-Write도 초기 복사를 줄일 뿐 페이지 테이블과 task 생성 비용을 없애지는 않는다.
+
+2026-10-06 Linux 매뉴얼의 `fork(2)`, `pipe(2)`와 `posix_spawn(3)`를 대조한 범위다. 특정 셸이나 런타임이 어떤 생성 API를 쓰는지는 구현별로 확인한다.
+
 ### wait()와 exit()
 - **wait()/waitpid()**: 부모가 종료한 자식의 상태를 회수한다. 정상 종료뿐 아니라 시그널 종료 상태도 확인할 수 있다.
 - **exit()/_exit()**: 프로세스를 종료하고 종료 상태를 남긴다. 커널은 부모에게 `SIGCHLD`를 알릴 수 있다.
@@ -155,6 +165,8 @@ OS가 검사하는 주체는 사람이 아니라 요청한 프로세스다. Linu
 - YouTube, 쉬운코드, [OS 프로세스 상태와 자바 스레드 상태](https://www.youtube.com/watch?v=_dzRW48NB9M), [인터럽트와 시스템 콜, 유저 모드와 커널 모드](https://www.youtube.com/watch?v=v30ilCpITnY)
 - [Linux execve(2)](https://man7.org/linux/man-pages/man2/execve.2.html)
 - [Linux fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html)
+- [Linux pipe(2)](https://man7.org/linux/man-pages/man2/pipe.2.html)
+- [Linux posix_spawn(3)](https://man7.org/linux/man-pages/man3/posix_spawn.3.html)
 - [Linux wait(2)](https://man7.org/linux/man-pages/man2/wait.2.html)
 - [Linux exit(3)](https://man7.org/linux/man-pages/man3/exit.3.html)
 - 인프런, 널널한 개발자 강사, [이해가 아닌 암기대상](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476534)

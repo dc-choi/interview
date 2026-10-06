@@ -48,7 +48,21 @@ Client delegation의 위임 이벤트에는 작업 본문 대신 메타데이터
 - 들리는 응답까지의 지연, 불필요한 침묵과 발화 겹침이 얼마나 발생하는가?
 - 연결 실패, 오디오 누락과 세션 시간 초과를 업무 판단 오류와 분리했는가?
 
+## TTS 지연은 첫 재생 시점까지 측정한다
+
+연쇄 파이프라인에서는 음성 인식, LLM 응답, 음성 합성과 재생 준비가 대화 지연에 각각 기여한다. TTS 모델의 추론 시간, 첫 오디오 바이트 도착(TTFB), 사용자가 첫 소리를 듣는 시점(TTFA)을 구분한다. 네트워크, 요청 처리와 플레이어 버퍼가 있으므로 모델 수치를 사용자 체감 지연으로 대신하지 않는다.
+
+- 전체 텍스트가 준비됐다면 오디오 스트리밍으로 완성 파일을 기다리지 않고 재생을 시작할 수 있다.
+- LLM 출력처럼 텍스트가 조금씩 도착하면 입력 스트리밍도 검토한다. WebSocket을 연결했어도 합성기가 충분한 텍스트를 기다리는 동안은 소리가 나오지 않을 수 있다.
+- 입력 버퍼를 줄이면 합성을 일찍 시작할 수 있지만 발음과 운율에 필요한 문맥이 줄 수 있다. 플레이어 버퍼를 줄이면 재생 시작은 빨라져도 네트워크 변동 때 끊김 위험이 커진다.
+
+적용 점검에서는 같은 문장, 언어, 음성과 사용자 리전으로 첫 재생 지연과 음질을 함께 비교한다. 특정 서비스가 언제나 느리다거나 자체 모델이 필수라고 일반화하지 않고, 실제 상담 문장의 품질과 전체 지연 예산으로 판단한다. 이 절은 2026-10-06 ElevenLabs 공식 지연 및 스트리밍 문서를 대조한 범위이며, 특정 서비스의 성능을 직접 측정한 결과는 아니다.
+
 ## 출처
+
+- [ElevenLabs, Understanding latency](https://elevenlabs.io/docs/eleven-api/concepts/latency)
+- [ElevenLabs, Latency optimization](https://elevenlabs.io/docs/eleven-api/guides/how-to/best-practices/latency-optimization)
+- [ElevenLabs, Generate audio in real-time](https://elevenlabs.io/docs/eleven-api/guides/how-to/websockets/realtime-tts)
 
 - [OpenAI, Voice agents](https://developers.openai.com/api/docs/guides/voice-agents)
 - [OpenAI, Getting started with GPT-Live](https://developers.openai.com/api/docs/guides/live)

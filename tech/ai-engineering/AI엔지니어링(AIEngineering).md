@@ -23,7 +23,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[MCP#변경 알림 구독과 재연결|MCP 변경 알림 구독]] — subscriptions/listen, 재조회와 연결 단절의 의미
 - [x] [[Production-Agent-Architecture#사례|에이전트 격리와 행동 승인 사례]] — 사용자별 VM과 별도 통제 계층
 
-- [x] [[Realtime-Voice-Architecture|실시간 음성 에이전트]] — 전이중 대화와 백엔드 작업 분리, 위임과 취소, 음성 안내와 실제 결과 대조
+- [x] [[Realtime-Voice-Architecture|실시간 음성 에이전트]] — 전이중 대화와 백엔드 작업 분리, 위임과 취소, 음성 안내와 실제 결과 대조, TTS의 첫 재생 지연과 버퍼 절충
 - [x] [[MCP#RAG, 에이전트와 Function Calling의 경계|MCP, RAG와 에이전트의 책임 구분]] — 연결 프로토콜, 근거 검색과 동적 실행 흐름
 - [x] [[LLM-Inference-Bottlenecks#에이전트 서빙은 세션 단위로 측정한다|에이전트 서빙 벤치마크]] — 턴별 문맥 증가, 캐시 재사용, 동시성 포화점과 지연 목표
 - [x] [[LLM-Generation-Mechanics-Context-and-Agent#대화 요약과 별도 기록의 경계|LLM 대화 요약과 작업 기록]] — 압축의 손실, 외부 상태 저장과 컨텍스트 재주입

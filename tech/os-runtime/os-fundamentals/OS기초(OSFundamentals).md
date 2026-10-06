@@ -16,10 +16,10 @@ aliases: ["OS Fundamentals"]
 - [x] [[Concurrency-and-Process-Synchronization|동기화 도구 (test-and-set, 스핀락, 뮤텍스, 세마포어, 우선순위 역전)]]
 - [x] [[Concurrency-and-Process-Monitor|모니터와 condition variable (Mesa와 Hoare 의미론, bounded buffer, Java monitor)]]
 - [x] [[Concurrency-and-Process-Deadlock|교착상태, 라이브락, 기아 (식사하는 철학자, 조건별 예방 비용, 은행원 알고리즘, 검출과 복구, 코드 교착상태 진단)]]
-- [x] [[Concurrency-vs-Parallelism|동시성, 병렬성 (구조 vs 실행, Actor/CSP 채널, 런타임별 선택, 스레드 수와 Amdahl의 법칙)]]
+- [x] [[Concurrency-vs-Parallelism|동시성, 병렬성 (구조 vs 실행, Actor/CSP 채널, 런타임별 선택, 스레드 수와 Amdahl의 법칙, false sharing 진단)]]
 
 ## 프로세스 & 스케줄링
-- [x] [[Process-Lifecycle|Process lifecycle (PCB, 상태 전이, 시스템 콜과 인터럽트 흐름, fork/exec, 좀비, 쓰레드, 컴파일)]]
+- [x] [[Process-Lifecycle|Process lifecycle (PCB, 상태 전이, 시스템 콜과 인터럽트 흐름, fork/exec 사이의 준비와 멀티스레드 제약, 좀비, 쓰레드, 컴파일)]]
 - [x] [[Thread-Models|스레드 종류와 스레딩 모델 (멀티프로그래밍부터 멀티프로세싱까지, 하드웨어 스레드와 SMT, OS 스레드, 1:1, N:1, M:N, 그린 스레드와 virtual thread)]]
 - [x] [[Context-Switching|Context switching (수행 주체, CPU와 I/O 버스트, 스케줄러와 디스패처, 선점과 비선점, 스케줄링 목표)]]
 - [x] [[Context-Switching-Scheduling-Algorithms|CPU 스케줄링 알고리즘 (FIFO, SJF, SRTF, 우선순위, RR, 다단계 큐, MLFQ, 에이징)]]
