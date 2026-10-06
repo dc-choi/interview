@@ -46,6 +46,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [x] [[Event-Driven-Patterns|DLQ (오류 분류, 격리, 알람, 플랫폼별 구현)]] — Kafka 구현은 [[MQ-Kafka-Retry-DLT|재시도와 DLT]]
 - [x] [[Event-Driven-Patterns|Retry / Backoff (재시도 지연, 일시 오류와 영구 오류 분류)]] — 공식과 jitter 변형 비교는 [[Retry-Backoff-Jitter|지수 백오프와 지터]]
 - [x] [[Backfill-Resource-Isolation|Replay / Backfill (전용 토픽과 워커, 청크 처리, 자원 격리)]]
+- [x] [[MQ-Kafka-Retention|Kafka 보존 정책과 재생 가능 기간]] — 파티션별 크기 한도, 세그먼트 삭제, compaction
 - [x] [[Backpressure|Backpressure 제어 (pull, feedback, buffer, drop, BullMQ concurrency 경계)]]
 - [x] [[Shadow-Traffic|Shadow Traffic]] — 기존 보강: [[Blue-Green#관련 무중단 배포 전략|Blue-Green과 Shadow/Dark Launch]]
 

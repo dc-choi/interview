@@ -18,6 +18,7 @@ aliases: ["Kafka", "Message Queue: Kafka"]
 - [[MQ-Kafka-Event-Ordering|순서 보장 (파티션 순서의 한계, 소비자 체이닝, watermark식 제한적 비순서)]]
 - [[Kafka-Partition-Sizing|파티션 개수 산정 (산정식, per-partition 처리량, eCKU 한도, 자동 토픽 생성)]]
 - [[MQ-Kafka-Retry-DLT|재시도와 DLT (non-blocking retry, opt-in 재시도, 공통 DLT envelope, 구현 함정)]]
+- [[MQ-Kafka-Retention|보존 정책과 재생 가능 기간 (시간과 크기 한도, 세그먼트 삭제, compaction)]]
 
 ## 핵심 한 줄
 
