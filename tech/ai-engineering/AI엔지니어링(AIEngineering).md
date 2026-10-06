@@ -17,6 +17,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 
 ## 세부 학습
 
+- [x] [[LLM-Workflow-Patterns#시각적 워크플로우의 오류 처리|시각적 워크플로우 오류 처리]] — n8n Error Trigger, 수동 실행과 자동 실행 검증의 차이
 - [x] [[Long-Context-Evaluation|긴 문맥 평가]] — 근거 위치와 입력 길이, 검색 누락과 활용 실패, 비용과 정확도 비교
 - [x] [[Agent-Client-Protocol|ACP]] — 에디터와 에이전트 연결, 요청/알림, 기능 협상과 실행 승인
 - [x] [[LLM-Wiki-Knowledge-Compilation|LLM 위키]] — 합성 결과의 재사용, 원문 추적과 자동 갱신의 검증 경계

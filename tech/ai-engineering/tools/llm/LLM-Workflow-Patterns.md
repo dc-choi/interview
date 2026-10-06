@@ -56,6 +56,16 @@ LLM 서비스의 중심축은 "질문하면 답하는 챗봇"에서 **업무 흐
 
 처음에는 한 종류의 초안을 수동으로 검토하고, 반복되는 수정 이유를 다음 입력의 규칙으로 남긴다. 품질이 안정된 뒤 예약을 추가한다. 승인 대기열이 쌓이면 생성량을 늘리기보다 검토 가능한 처리량에 맞춘다.
 
+### 시각적 워크플로우의 오류 처리
+
+시각적으로 노드를 연결해도 실패를 감지하고 후속 동작을 정하는 운영 계약은 필요하다. n8n의 오류 처리 기능은 정상 경로를 구성하는 것과 실패 경로를 검증하는 것이 별개임을 보여 준다(2026-10-07 공식 문서 기준).
+
+- 각 워크플로우의 설정에서 `Error Trigger`로 시작하는 오류 워크플로우를 지정하고, 여러 워크플로우가 이를 공유할 수 있다.
+- `Stop And Error`로 업무상 허용할 수 없는 결과를 실패로 처리해 오류 워크플로우를 실행할 수 있다.
+- `Error Trigger`는 자동 실행에서 발생한 오류에 반응한다. 편집기에서 수동 실행한 실패만으로 오류 처리 경로가 검증됐다고 판단하지 않는다.
+
+예를 들어 LLM 결과의 필수 필드가 없으면 저장 전에 실패로 분기하고, 자동 트리거로 그 경로를 시험하는 구성을 검토할 수 있다. 이는 위 기능을 활용한 설계 예시다. 재시도 시 DB 저장이나 외부 발행이 중복되지 않는지는 별도로 확인한다([[LLM-Failure-Handling|실패 처리와 멱등성]]). 워크플로우 개수만으로 도구의 운영 한계나 코드 전환 시점을 확정하지 않는다.
+
 ## Function Calling: 모델이 도구를 다루는 능력
 
 Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. 모델은 **사용자 발화와 함수 스키마**를 보고, 어떤 함수를 호출할지와 어떤 파라미터를 넣을지를 생성한다. API 결과(보통 JSON)는 사람이 읽기 어려우므로, 모델이 다시 사람 친화적인 문장이나 표로 정리한다.
@@ -131,6 +141,8 @@ Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. �
 - API 에이전트 플랫폼: 스킬셋 연결로 도메인 에이전트 생성, Detector-CoT-Answer 처리, 리트리벌 스킬(CoT+랭킹으로 RAG 확장)과 근거를 XML로 표시하는 랭킹 모델로 출처 추적.
 
 ## 출처
+- [n8n Docs, Error handling](https://github.com/n8n-io/n8n-docs/blob/main/docs/build/flow-logic/handle-errors-gracefully.md)
+- [n8n Docs, Error Trigger node](https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/core-nodes/n8n-nodes-base.errortrigger.md)
 - [Trustworthy agents in practice — Anthropic](https://www.anthropic.com/research/trustworthy-agents)
 - [Building effective agents — Anthropic](https://www.anthropic.com/engineering/building-effective-agents)
 - [LLM 에이전트 실무 사례 (물어보세, 스마트 마이 노트, HyperCLOVA X Skill Universe) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)

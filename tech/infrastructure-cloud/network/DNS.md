@@ -96,6 +96,17 @@ verified_at: 2026-09-30
 - TTL이 짧으면 — 새 응답을 받은 캐시의 만료가 빨라지지만, 이미 저장한 이전 응답을 즉시 무효화하지는 않음. 질의 부하는 증가
 - 레코드 변경(서버 이전, 페일오버)을 앞두면 기존 TTL보다 충분히 먼저 TTL을 낮추고, 이전 캐시가 만료된 뒤 변경해 전파 지연을 줄인다
 
+### JVM 이름 해석 캐시는 별도로 확인한다
+
+`dig`가 새 IP를 반환해도 실행 중인 애플리케이션이 같은 주소를 쓰는지는 별도 확인해야 한다. Java의 `InetAddress`는 성공한 조회와 실패한 조회를 자체 캐시하며, 이 수명은 DNS 레코드의 TTL 설정과 구분한다.
+
+- Java SE 8과 21 명세에서 Security Manager가 설치된 경우 성공 조회의 기본 캐시는 무기한이다. 설치되지 않았다면 유한한 구현별 기본값을 사용하므로 모든 JVM이 영구 캐싱한다고 일반화하지 않는다.
+- `networkaddress.cache.ttl`은 성공 조회의 캐시 시간(초)이며 `-1`은 무기한, `0`은 캐시하지 않음을 뜻한다. `networkaddress.cache.negative.ttl`은 실패 조회의 수명이고 문서상 기본값은 10초다.
+- 이 값은 Java 보안 속성이다. 같은 이름의 `-D` 옵션이나 `System.setProperty()`로 설정했다고 적용된 것으로 판단하지 않는다.
+- 진단할 때 권한 서버와 재귀 리졸버의 응답, 해당 JVM의 이름 해석 결과, 실제 연결 대상 IP를 나눠 비교한다. 새 프로세스의 조회 성공만으로 기존 프로세스의 캐시가 갱신됐다고 판단하지 않는다.
+
+위 동작은 2026-10-07에 Java SE 8/21 공식 문서와 대조했다. 다른 JDK 버전이나 자체 resolver를 쓰는 클라이언트에는 해당 구현의 정책을 확인한다.
+
 ## DNS 보안: 응답 검증과 전송 보호
 
 캐시 오염은 리졸버 등에 위조 응답을 저장시켜 잘못된 목적지로 연결하게 한다. 공유기의 DNS 설정이나 단말의 `hosts` 파일 변조는 이름 해석 경로 자체를 바꾸는 별도 공격이다. 올바른 도메인을 입력했다는 사실만으로 올바른 서버에 도달했다고 판단하지 않는다.
@@ -147,6 +158,10 @@ nslookup -type=AAAA naver.com
 - TTL과 변경 전파 지연 — 마이그레이션 전 TTL을 낮추는 운영 패턴
 
 ## 출처
+
+- [Oracle Java SE 8, InetAddress](https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html)
+- [Oracle Java SE 21, InetAddress](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html)
+- [Oracle Java SE 21, Networking Properties](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/doc-files/net-properties.html)
 
 이번 참고 영상은 제공된 메모를 바탕으로 반영했으며 영상 본문과 자막은 직접 확인하지 못했다. 보완한 기술 설명은 아래 공식 자료와 대조했다.
 
