@@ -49,6 +49,21 @@ aliases: ["주식", "Stocks"]
 
 `예상 EPS × 가정한 PER`은 시나리오의 가격이지 확정 가치가 아니다. 가상으로 예상 EPS 10에 20배를 적용하면 200이지만, EPS가 8이고 적용 배수가 15배로 낮아지면 120이다. 성장 전망과 요구수익률이 변하면 적용할 배수도 달라질 수 있으므로 EPS만 바꿔 계산하지 않는다.
 
+### 리서치보고서는 등급의 정의와 이해상충도 읽는다
+
+같은 매수나 중립 등급이라도 증권사마다 뜻이 다를 수 있다. 보고서의 등급 정의와 매수, 중립, 매도 의견의 전체 분포를 함께 확인한다. 목표주가도 앞 절의 이익 전망과 평가 배수 같은 가정에 의존하므로 등급만 떼어 판단하지 않는다.
+
+분석 대상 기업과 증권사 사이의 인수주선 등 기업금융 관계, 증권사나 분석가의 지분 보유는 이해상충을 만들 수 있다. **이해상충의 가능성과 분석의 오류는 별개**다. 관계가 있다는 이유만으로 보고서가 틀렸다고 단정하지 않고, 공시된 관계와 추정 근거를 함께 읽는다.
+
+다음은 리서치 활용을 위한 점검 순서다.
+
+1. 등급의 뜻과 평가 시점, 목표주가를 계산한 가정을 확인한다.
+2. 보고서의 이해상충 고지와 증권사 전체 의견 분포를 확인한다.
+3. 실적과 재무상태는 기업의 사업보고서, 분기보고서와 대조한다.
+4. 관측된 사실, 분석가의 추정, 그 추정을 바꿀 조건을 나눠 적는다.
+
+고지 의무와 리서치 부서의 독립성 규정은 국가와 시점마다 다르다. 보고서 독해 원칙과 법적 의무를 구분하고, 국내 제도개선안은 발표와 실제 시행 여부를 따로 확인한다.
+
 ## 5. 주식 vs 채권 (자본구조)
 
 같은 기업의 보통주와 일반적인 고정금리 채권을 비교한다. 우선주, 전환사채나 후순위채권은 계약 조건을 별도로 확인한다.
@@ -80,6 +95,7 @@ aliases: ["주식", "Stocks"]
 
 ## 출처
 
+- [Analyzing Analyst Recommendations — SEC](https://www.sec.gov/about/reports-publications/investorpubsanalystshtm) — 2026-10-07 등급 정의, 이해상충과 기업 공시 대조 원칙 확인. 현행 국가별 규제 검증은 제외
 - [What Is Earnings Season? — FINRA](https://www.finra.org/investors/insights/earnings-season) — 2026-10-07 실적, 컨센서스와 주가 반응의 구분 대조
 - [Price Earnings Ratio — Aswath Damodaran, NYU Stern](https://people.stern.nyu.edu/adamodar/pdfiles/pe.pdf) — EPS 기간 구분과 성장, 위험에 따른 배수 차이
 - [NVIDIA Announces Financial Results for Second Quarter Fiscal 2027 — NVIDIA](https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027) — 2026-10-07 GAAP/non-GAAP 희석 EPS와 조정 내역 표기 확인

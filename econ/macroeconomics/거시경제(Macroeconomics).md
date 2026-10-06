@@ -23,8 +23,8 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 - [[Oil-Supply-Chokepoints|원유 공급 병목과 유가]] — 생산 여력, 운송 경로와 재고의 구분, 우회 제약과 위험 프리미엄 ✅
 
 ### 3. 돈과 정책
-- [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 중앙은행, 기준금리, 통화량, 양적완화, 전달 시차와 데이터 의존적 전망 ✅
-- [[Fiscal-Policy|재정정책]] — 정부 지출과 세금, 승수효과의 조건, 재정적자와 국가부채의 구분, 구축효과 ✅
+- [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 중앙은행, 기준금리, 통화량, 양적완화, 전달 시차, 점도표와 정책 결정의 구분 ✅
+- [[Fiscal-Policy|재정정책]] — 정부 지출과 세금, 승수효과, 재정적자와 국가부채, 국채 바이백과 TGA, 구축효과 ✅
 
 ### 4. 고용
 - [[Unemployment-Employment|실업과 고용]] — 실업률과 보완 지표, 자연실업률의 추정, 필립스 곡선의 조건과 오쿤의 법칙 ✅

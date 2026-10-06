@@ -96,6 +96,18 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 - **물가목표**: 다수 주요 중앙은행이 2% 안팎을 사용하지만 대상 지표와 제도는 기관별 확인
 - **장단기 금리차**: 장기금리에서 단기금리를 뺀 값. 마이너스로 뒤집히면(역전) 경기침체 선행 신호로 본다 → [[Business-Cycle|경기순환]]
 
+### 점도표와 정책 결정을 구분한다
+
+연준의 경제전망요약(SEP)에 있는 점도표는 참가자가 각자 적절하다고 판단한 **해당 연도 말 또는 장기(longer run)의 정책금리 목표 범위의 중간값(midpoint) 또는 목표 수준**을 나타낸다. 그날 결정된 금리나 위원회가 약속한 미래 경로가 아니다. 참가자별 경제 전망과 적절한 정책에 대한 가정이 달라질 수 있다.
+
+- **중앙값(median)**: 전망을 낮은 순서로 정렬했을 때 가운데 놓이는 값이다. 참가자 수가 짝수면 가운데 두 값의 평균을 쓴다. 개별 목표 범위의 중간값(midpoint)과는 다른 개념이다.
+- **중심경향(central tendency)**: 변수별로 가장 높은 전망 세 개와 가장 낮은 전망 세 개를 제외한 범위다.
+- **전체 범위(range)**: 해당 변수의 가장 낮은 전망부터 가장 높은 전망까지다.
+
+세 통계는 불확실성을 읽는 서로 다른 요약이며, 중심경향이나 전체 범위를 확률구간으로 해석하지 않는다. 연도별 중앙값을 연결해도 한 참가자의 실제 전망 경로가 된다고 볼 수 없다. 마지막 두 문장은 요약 통계의 정의에서 도출한 해석상 주의다.
+
+읽는 순서는 이번 회의의 결정문, 이전 전망 대비 변화, 참가자 전망의 분포, 전망을 바꿀 경제 조건이다. 중앙값이 높아졌다는 사실만으로 다음 회의의 인상 시점이나 횟수를 확정하지 않는다.
+
 ## 10. 흔한 오해
 
 - **금리를 내리면 무조건 경기가 산다** → 유동성 함정에선 안 통한다. 심리가 죽으면 공짜 돈도 안 빌린다.
@@ -104,6 +116,7 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 
 ## 출처
 
+- [Federal Reserve — September 16, 2026: FOMC Projections materials, accessible version](https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm) — 2026-10-07 도입부, Table 1 주석과 Figure 2의 정의 대조. 위 점도표 절만 부분 검증
 - [RBA — Monetary Policy: Forward Looking and Data Dependent in the Face of Uncertainty](https://www.rba.gov.au/speeches/2025/sp-ag-2025-03-18.html) — 2025-03-18 연설. 전달 경로, 시차와 데이터 의존 절을 2026-10-07 대조.
 - [Bank of England — Money creation in the modern economy](https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy)
 - [ECB — Key ECB interest rates](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html)

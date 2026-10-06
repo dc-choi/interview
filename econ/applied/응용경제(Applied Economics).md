@@ -21,7 +21,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[Hidden-Infrastructure-Markets|보이지 않는 B2B 인프라 시장]] — 재보험, 배출권, 산업용 가스, 용량시장 등 수요 원천과 수익 구조, 장기 계약 인프라 자본의 듀레이션 ✅
 
 ### 2. 의사결정
-- [[Personal-Income-Tax-Basics|개인 소득세와 연말정산]] — 결정세액과 환급, 소득공제와 세액공제, 이직과 부업의 신고 판단 ✅
+- [[Personal-Income-Tax-Basics|개인 소득세와 연말정산]] — 결정세액과 환급, 공제 구분, 이직과 부업, 가상자산소득의 시행 시점과 취득가액 ✅
 - [[Career-Company-Judgment|이직, 회사 판단 체크리스트]] — 막연한 불안을 거시 사이클과 측정 가능한 회사 변수로 환원 ✅
 - [[Salary-Negotiation-Inflation|연봉 협상에 인플레이션 적용하기]] — 명목 vs 실질임금, 동결은 삭감, 물가상승률은 기준선 ✅
 

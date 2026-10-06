@@ -42,6 +42,19 @@ aliases: ["재정정책", "Fiscal Policy"]
 
 적자 자체가 악은 아니다. 침체기엔 적자를 내서라도 수요를 떠받치는 게 정석이다. 문제는 부채가 너무 커져 이자 부담이 눈덩이가 되고, 시장이 그 나라의 상환 능력을 의심하기 시작할 때다. 그러면 국채 금리가 치솟아 재정위기로 번진다.
 
+### 국채 바이백과 TGA는 무엇을 바꾸나
+
+미국 재무부의 국채 바이백은 만기 전에 기존 국채를 사서 상환하는 **부채 관리 수단**이다. 2026-10-07 확인한 TreasuryDirect 설명은 목적을 두 가지로 나눈다.
+
+- **시장 유동성 지원**: 최근 발행물이 아닌 기존 국채(off-the-run)를 팔 수 있는 정기적인 기회를 제공한다.
+- **현금 관리**: 재무부 현금 잔액과 단기국채 발행의 변동을 줄이고 조달비용을 관리한다.
+
+재원에는 국채 발행대금과 재무부 일반기금의 자금이 쓰일 수 있다. 따라서 모든 바이백을 단기채로 장기채를 교체하는 거래라고 정의하지 않는다. 재무부의 기존 채무 상환과 중앙은행의 [[Interest-Rates-Monetary-Policy#6. 공개시장운영과 양적완화|양적완화]]는 실행 주체와 회계 처리가 다르다.
+
+**TGA(Treasury General Account)**는 연준에 둔 미국 정부의 예금 계정이다. 다른 대차대조표 항목이 그대로라면 TGA 감소는 은행 준비금 증가와 대응한다. 실제 변화는 역레포 잔액, 연준 자산과 대출 등 다른 항목의 조정에도 좌우된다. 준비금이 충분한 상황에서는 이 변화가 단기금리를 크게 움직이지 않을 수 있다.
+
+학습 점검: 국채 매입 뉴스를 보면 매입 주체, 재원, 상환 여부와 바뀐 대차대조표 항목부터 나눈다. 바이백 규모나 TGA 감소만으로 주가 상승, 달러 약세나 특정 만기의 금리 하락을 확정하지 않는다. 이는 위 구분을 적용한 해석 원칙이다.
+
 ## 6. 재정정책의 한계
 
 - **시차**: 예산 편성과 입법, 집행에 시간이 걸려 통화정책보다 느리다. 부양책이 풀릴 무렵엔 이미 경기가 돌아서 있기도 하다.
@@ -76,6 +89,8 @@ aliases: ["재정정책", "Fiscal Policy"]
 
 ## 출처
 
+- [TreasuryDirect, FAQs about Treasury Securities Buybacks](https://www.treasurydirect.gov/help-center/faqs/buyback-faqs/) — 2026-10-07 목적, 재원과 매입 국채의 상환 대조. 개별 회차 규모와 일정은 검증 범위 밖
+- [Federal Reserve — Fluctuations in the Treasury General Account and their effect on the Fed's balance sheet](https://www.federalreserve.gov/econres/notes/feds-notes/fluctuations-in-the-treasury-general-account-and-their-effect-on-the-feds-balance-sheet-20250806.html) — 2025-08-06 연구 노트의 회계 관계와 준비금 조건을 2026-10-07 대조. 제안된 운용 방식의 채택을 뜻하지 않음
 - [BEA, Measures of government spending](https://www.bea.gov/help/faq/552) — 2026-10-02 정부 구매와 이전지출의 GDP 반영 방식 대조
 - [IMF, Public Sector Debt Statistics, Chapter 10](https://www.elibrary.imf.org/display/book/9781616351564/ch010.xml) — 2026-10-02 재정적자와 채무 증감의 차이 대조
 - [IMF, Fiscal Policy: Taking and Giving Away](https://www.imf.org/external/pubs/ft/fandd/basics/36-fiscal-policy.htm) — 재정 효과, 여유 자원과 자금 조달 제약
