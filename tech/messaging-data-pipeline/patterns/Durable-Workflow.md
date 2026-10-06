@@ -71,6 +71,16 @@ verified_at: 2026-09-30
 - 관측과 운영: 전용 UI 대신 상태 테이블 조회가 기본이고, 확장 설치와 백그라운드 워커 실행이 허용되지 않는 환경에서는 쓸 수 없다.
 - 성숙도: 예시인 microsoft/pg_durable은 2026-09 기준 0.2.x 릴리스(PostgreSQL License, PostgreSQL 17과 18 대상)다. `~>`(순차), `|=>`(결과에 이름 붙이기), `&`(병렬 join) 같은 연산자로 단계를 조합해 `df.start()`로 실행하고, 공개 Docker 이미지는 평가용으로만 안내된다.
 
+### pg_durable의 시작 트랜잭션과 완료 경계
+
+이 절은 2026-10-07에 확인한 pg_durable User Guide 기준이다. 앞의 Workflow/Activity와 결정적 replay 설명은 Temporal형 모델이며, 모든 DB 내장 실행기의 API 계약이 같다는 뜻은 아니다.
+
+- 기본 `df.start()`는 호출자의 트랜잭션에 참여한다. 호출자가 커밋해야 워크플로가 실행되며, 롤백하면 시작 요청도 취소된다.
+- `transaction_mode => 'new'`는 별도 세션의 트랜잭션으로 시작 요청을 커밋한다. 호출자의 롤백 뒤에도 요청이 남지만, 이는 비동기 작업의 시작만 독립시킨다. 업무 처리가 끝났다는 보장은 아니다.
+- 반환된 인스턴스 ID를 보관하고 `df.status()`, `df.result()`와 모니터링 API로 후속 결과를 확인한다. 별도 트랜잭션 시작 중 연결이 끊기면 시작 여부가 불확실할 수 있으므로 대상 작업을 멱등하게 설계한다.
+
+예를 들어 주문 저장과 후속 작업 등록을 함께 취소해야 한다면 기본 호출자 트랜잭션의 경계를 유지한다. 호출자 롤백과 무관하게 남겨야 할 비동기 작업에만 별도 시작 트랜잭션을 검토한다. DB 확장이 추가 서비스 수를 줄여도 이 완료 확인과 실패 처리는 필요하다.
+
 ## Build vs Buy
 
 - Buy(Temporal 등): durable execution을 관리형으로 제공하고 결정적 실행, 재시도, replay, 관측 UI를 갖춘다. 대신 deterministic execution 패러다임 학습, 별도 cluster/DB/UI 운영, 핵심 실행 기반의 기술 종속이 비용이다.
@@ -90,7 +100,7 @@ verified_at: 2026-09-30
 - [한꺼번에 짊어지던 배치를 내려놓고, 하나씩 흘려보내는 워크플로로 — 우아한형제들 기술블로그](https://techblog.woowahan.com/26832/)
 - [Temporal Documentation, Workflows](https://docs.temporal.io/workflows)
 - [pg_durable — GitHub, microsoft](https://github.com/microsoft/pg_durable)
-- [PostgreSQL로 Airflow와 Temporal 대체하기, pg_durable — Threads, think.5x](https://www.threads.com/@think.5x/post/DZW_w6pk4Z0)
+- [Microsoft, pg_durable User Guide](https://github.com/microsoft/pg_durable/blob/main/USER_GUIDE.md#transaction-semantics)
 
 ## 관련 문서
 
