@@ -1,12 +1,14 @@
 ---
 tags: [os, storage, filesystem, memory, io]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-06
 category: "OS&런타임(OS&Runtime)"
 aliases: ["저장 장치와 주변장치", "기억장치 계층과 HDD SSD"]
 ---
 
 # 저장 장치와 주변장치
+
+> 2026-10-06 부분 검증: HDD의 회전 부품, 저장 매체와 통신 규격 및 폼팩터의 구분을 공식 자료와 대조했다. 주변장치와 메모리 계층 전체를 다시 검증한 날짜는 아니다.
 
 ## 기억장치계층
 
@@ -34,7 +36,7 @@ aliases: ["저장 장치와 주변장치", "기억장치 계층과 HDD SSD"]
 ## HDD(하드디스크)
 
 ### 구조
-- 자기 디스크 위를 헤드가 회전하며 읽기/쓰기
+- 플래터가 회전하고 액추에이터가 헤드를 목표 트랙으로 이동시켜 읽고 쓴다
 - 데이터는 **트랙**(원형 경로)과 **섹터**(트랙의 구간)로 구분
 - **스핀들**: 플래터를 회전시키는 막대
 - **플래터**: 자기 기록층이 있는 원판. 실제 인코딩과 오류 정정은 drive controller가 담당
@@ -56,7 +58,7 @@ aliases: ["저장 장치와 주변장치", "기억장치 계층과 HDD SSD"]
 - HDD의 자기 디스크 → 반도체 칩으로 대체
 - host에는 logical block interface를 제공하고 내부 Flash Translation Layer가 이를 flash page/erase block에 매핑
 - HDD처럼 head seek를 줄이기 위한 전통적 조각 모음의 이점은 작고, 불필요한 재쓰기는 수명과 write amplification에 영향을 줄 수 있음
-- 칩의 I/O 성능에 따라 속도 결정
+- 실제 I/O 성능은 저장 매체뿐 아니라 컨트롤러, 연결 규격과 요청 패턴의 영향을 함께 받음
 
 ### SSD 특성
 - 성능이 좋고 소음이 없음. 자석에 데이터가 손상되지 않고 충격에 강함
@@ -67,6 +69,23 @@ aliases: ["저장 장치와 주변장치", "기억장치 계층과 HDD SSD"]
 - filesystem이 더는 필요하지 않은 logical block range를 장치에 알리는 discard 명령 계열
 - 장치는 이 정보를 garbage collection과 write amplification 완화에 활용할 수 있음
 - 지원 여부, 즉시/주기 실행과 실제 효과는 OS, filesystem, controller와 storage 계층 설정에 따라 다름
+
+## 저장 매체, 통신 규격과 폼팩터
+
+HDD, SSD, NVMe와 EDSFF는 같은 분류 단계의 네 가지 디스크가 아니다. 사양표를 읽을 때는 아래 축을 분리한다.
+
+| 구분 | 용어 | 설명 |
+|---|---|---|
+| 저장 방식 | HDD, SSD | HDD는 회전하는 자기 매체, 일반적인 SSD는 NAND 플래시 기반이며 기계적 탐색이 없음 |
+| 연결과 전송 | SATA, PCIe | 장치와 호스트를 연결하는 인터페이스. 지원 규격과 대역폭 조건을 확인 |
+| 호스트 통신 규격 | NVMe | 호스트 소프트웨어와 비휘발성 메모리 장치의 통신을 정의. 로컬 SSD에서는 PCIe 전송과 결합 |
+| 물리 형상 계열 | M.2, U.2, EDSFF | 장착 공간, 커넥터와 냉각 조건에 관련. NVMe 지원 여부와 별도로 읽음 |
+
+NVMe에는 PCIe뿐 아니라 TCP와 RDMA 전송 규격도 있다. NVMe를 특정 모양의 SSD나 PCIe 자체와 같은 뜻으로 쓰지 않는다. M.2에도 SATA 제품이 있으므로 길쭉한 모양만으로 NVMe라고 판단할 수 없다.
+
+EDSFF는 데이터센터의 밀도, 전력과 냉각 요구를 고려한 폼팩터 계열이다. E1.S, E1.L과 E3가 있으며 모두 한 가지 길이나 자 모양인 것은 아니다. NVMe SSD에 EDSFF 형상을 적용할 수 있으므로 둘은 경쟁하는 저장 방식이 아니다.
+
+예를 들어 `E1.S NVMe SSD, PCIe 4.0 x4`는 E1.S 형상, NVMe 통신, PCIe 4.0 네 개 레인을 쓰는 SSD라는 뜻이다. 구매와 교체 전에는 서버 베이, 백플레인, 전원과 냉각의 지원 조건을 함께 확인한다. 명칭만으로 실제 IOPS나 처리량을 보장하지 않으며, 성능 측정의 구분은 [[Storage-and-FileSystem-Performance|디스크 접근 시간과 RAID]]를 참고한다.
 
 ## 주변장치
 
@@ -115,6 +134,12 @@ Write-back과 write-allocate는 같은 라인의 후속 쓰기를 합칠 수 있
 - [[Storage-and-FileSystem-Performance|디스크 접근 시간과 RAID]]
 
 ## 출처
+
+- [NVM Express, Specifications](https://nvmexpress.org/specifications/)
+- [How EDSFF is Making NVMe Technology Even Cooler — NVM Express](https://nvmexpress.org/how-edsff-is-making-nvme-technology-even-cooler/)
+- [Kingston, FAQs for SATA and M.2 SSDs](https://www.kingston.com/en/ssd/ssd-faq)
+- [Understanding SSD Technology: NVMe, SATA, M.2 — Kingston](https://www.kingston.com/en/ssd/what-is-nvme-ssd-technology)
+- [Internal Hard Drives — Western Digital](https://www.westerndigital.com/solutions/hard-drives/internal-hdd)
 
 - [인프런, 모영철, Guarded Suspension](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178840)
 
