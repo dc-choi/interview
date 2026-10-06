@@ -49,7 +49,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[K8s-Resource-Right-Sizing|Resource request / limit (스케줄링, CPU 경합, throttling, OOM, 실측 기준과 PromQL, 컴포넌트별 적용)]]
 - [x] [[K8s-Configuration-Storage-and-Probes|Startup / Liveness / Readiness probe]] — mesh 심화: [[Istio-Ambient-Partially-Enrolled-Pod|Kubernetes Ready와 mesh 준비의 차이]]
 - [x] [[K8s-PDB|PodDisruptionBudget]]
-- [x] [[K8s-NetworkPolicy|NetworkPolicy (방향별 격리, selector 조합, default deny와 DNS egress)]]
+- [x] [[K8s-NetworkPolicy|NetworkPolicy (방향별 격리, selector 조합, default deny와 DNS egress, CNI 집행 구성과 kube-proxy 대체의 구분)]]
 - [x] [[EKS#Cluster Autoscaler vs Karpenter|Node autoscaling (Cluster Autoscaler와 Karpenter)]]
 
 ## 현장사례

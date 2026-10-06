@@ -124,6 +124,14 @@ Kubernetes 1.37 문서 기준으로 다음 기능은 NetworkPolicy API에 없다
 - 명시적 deny 규칙
 - loopback과 자기 node에서 들어오는 traffic 차단
 
+## CNI 연결성과 정책 집행을 구분한다
+
+2026-10-07에 확인한 Flannel과 Cilium 공식 문서 기준이다. CNI 이름만으로 수평 이동 차단 여부나 성능 우위를 판단하지 않는다.
+
+- Flannel은 Pod 연결을 제공하며, 정책 집행은 함께 배포한 컨트롤러를 확인한다. 공식 Helm chart의 `netpol.enabled`는 Kubernetes SIGs 정책 컨트롤러를 추가한다. Calico나 Cilium chaining을 조합하는 선택지도 있으므로 Flannel을 쓴다는 이유만으로 정책을 적용할 수 없다고 단정하지 않는다.
+- Cilium의 kube-proxy 대체는 eBPF로 Service 처리를 맡는 기능이다. kube-proxy를 내장했다는 설명과 다르며, Cilium 1.20.2 문서는 Helm 기본값을 `kubeProxyReplacement=false`로 명시한다. 대체 모드를 설정했다면 `cilium-dbg status --verbose`의 상태와 실제 Service 연결을 확인한다.
+- kube-proxy 대체와 NetworkPolicy 집행은 별도 확인 대상이다. Service가 정상이어도 허용하지 않은 Pod 사이의 새 연결이 차단되는지 시험해야 한다. 운영 중 대체 모드를 전환하면 기존 연결이 끊길 수 있으므로 정책 추가와 같은 변경으로 취급하지 않는다.
+
 ## 검증 절차
 
 API object가 있다는 사실은 차단이 동작한다는 증거가 아니다. 구현하는 plugin이 없어도 정책은 만들어지므로 적용 전후의 실제 연결로 판정한다. 공식 task 문서는 NetworkPolicy를 지원하는 provider 예로 Antrea, Calico, Cilium, Kube-router를 든다.
@@ -167,6 +175,9 @@ Spec:
 
 ## 출처
 
+- [Flannel, Network policy controller](https://github.com/flannel-io/flannel/blob/master/Documentation/netpol.md)
+- [Flannel — GitHub](https://github.com/flannel-io/flannel)
+- [Cilium, Kubernetes Without kube-proxy](https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/)
 - [Kubernetes Docs, Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 - [Kubernetes Docs, Declare Network Policy](https://kubernetes.io/docs/tasks/administer-cluster/declare-network-policy/)
 - [Kubernetes Docs, NetworkPolicy v1](https://kubernetes.io/docs/reference/kubernetes-api/policy-resources/network-policy-v1/)

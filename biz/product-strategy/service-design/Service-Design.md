@@ -14,7 +14,7 @@ aliases: ["Service Design", "서비스 설계"]
 - [x] [[Gamification|게이미피케이션]] — 5가지 적용 유형, 인증 뱃지, 보상 설계, 다크 패턴 경계
 - [x] [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]] — 리텐션 vs 조작, 사용자의 끝낼 자유, 자발적 재방문, 4가지 판별 질문
 - [x] [[Pagination-Patterns|페이지네이션 UX 패턴]] — Pagination, Load More, Infinite Scroll, SEO, 접근성
-- [x] [[Cross-Device-UX|크로스 디바이스 심리스 UX와 QR]] — 포그 행동 모델, 기술 상용화 조건, QR 로그인 플로우
+- [x] [[Cross-Device-UX|크로스 디바이스 심리스 UX와 QR]] — 포그 행동 모델, 기술 상용화 조건, QR 로그인 플로우, 폴더블 화면 전환의 과업 연속성
 - [x] [[Search-UX|검색 UX 설계]] — 탐색형 vs 목적형, 여정 4구간 진단, 정렬/필터의 인덱스 비용
 - [x] [[Personalization-Recommendation|개인화와 추천]] — 데이터 신호 5가지 예, 추천 3요소, 운영 함정, FAT 윤리
 - [x] [[UI-Screen-Design|화면 UI 설계 (ui-design/ 폴더 인덱스)]] — UI 용어, 시각적 위계, UX 법칙, 가이드 배치
