@@ -59,6 +59,14 @@ VAN 경로에 카드사 부담 비용이 포함될 수 있고, 가맹점에는 �
 
 해외 거래에서는 거래 통화, 카드 청구 통화, 네트워크 환율과 해외 이용 수수료를 구분한다. DCC는 가맹점 측에서 카드 소지자의 통화로 변환하는 선택지이며, 최종 비용은 해당 카드와 가맹점의 조건으로 비교한다.
 
+## 고객의 결제 자산과 가맹점의 정산 자산을 나눈다
+
+스테이블코인으로 결제받는 구조에서도 가맹점이 같은 코인을 직접 보유할 필요는 없다. 코인 수취, 법정화폐 전환과 가맹점 지급을 서로 다른 사업자가 맡을 수 있다.
+
+2026-09-28 발표된 Citi와 Coinbase 협력은 Spring by Citi에서 스테이블코인을 수취하고 Coinbase Payments를 통해 법정화폐로 자동 전환한 뒤 Citi가 정산하는 구조를 제시했다. 이는 해당 협력의 발표 범위이며 모든 가맹점의 도입 완료나 국내 서비스 제공을 뜻하지 않는다(2026-10-07 원문 확인).
+
+계약 검토에서는 고객이 보낸 자산, 가맹점이 받을 통화, 전환과 지급의 책임 주체를 나눠 기록한다. 블록체인 거래 확인을 가맹점 계좌 입금 완료와 동일시하지 않고, 전환 비용, 지급 시점과 환불 책임을 별도로 확인한다. 이 구분은 중개기관이 사라진다는 예측보다 실제 자금 경로를 설명하는 데 유용하다.
+
 ## 운영에서 확인할 것
 
 - 승인 실패, 승인 후 취소, 정산 후 환불의 책임 기관과 식별자가 각각 존재하는가?
@@ -68,6 +76,7 @@ VAN 경로에 카드사 부담 비용이 포함될 수 있고, 가맹점에는 �
 
 ## 출처
 
+- [Citi and Coinbase Expand Collaboration to Connect Digital and Fiat Payments for Corporations and Consumers — Citi](https://www.citigroup.com/global/news/press-release/2026/citi-coinbase-expand-collaboration-connect-digital-fiat-payments-corporations-consumers) — 스테이블코인 수취와 법정화폐 정산의 분리만 부분 대조
 - [Adyen, Pre-authorization and authorization adjustment](https://docs.adyen.com/point-of-sale/pre-authorisation/)
 - [토스페이먼츠, 카드 결제](https://docs.tosspayments.com/resources/glossary/card-payment)
 - [토스페이먼츠, 결제 흐름](https://docs.tosspayments.com/guides/v2/get-started/payment-flow)

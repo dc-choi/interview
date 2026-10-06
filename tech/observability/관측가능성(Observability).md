@@ -31,6 +31,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [x] [[PII-Masking|PII 마스킹 (생성 시점 마스킹, redaction/tokenization, 허용목록)]]
 
 ## Metrics
+- [x] [[VDI-Performance-Diagnosis|VDI 성능 진단]] — 로그인 단계, 게스트와 호스트, CPU Ready와 제한 설정
 - [[metrics|메트릭 폴더 인덱스]] — Prometheus, RED/USE, 카디널리티, 장기 보존, 측정 레이어
 - [x] [[Metric-Layer-Mismatch|메트릭 측정 레이어의 함정 (CloudWatch vs node_exporter, iowait, 두 레이어 교차 알람)]]
 - [x] [[Container-Monitoring|컨테이너 모니터링 (cAdvisor, node_exporter, Prometheus, Grafana, Fluentd, 사이드카 vs 데몬셋)]]

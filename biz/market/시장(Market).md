@@ -10,6 +10,7 @@ aliases: ["Market"]
 시장 분석, 경쟁사 분석 — 사업의 외부 환경 이해.
 
 ## 목차
+- [x] [[Regulatory-Market-Entry|규제와 시장 진입]] — 자기인증, 감독과 상용화, 제도 변경 가정의 분리
 - [x] [[Trend-Research-Validation|트렌드 조사와 수요 검증]] — 검색 관심도의 정규화, 잡음과 AI 조사 후보의 근거 검토
 - [x] [[Market-Analysis|시장 분석 & TAM/SAM/SOM]] — 의향률과 경험률의 해석, CAGR, 시장 동인, 세분화, Blue Ocean, JTBD
 - [x] [[Competitive-Analysis|경쟁사 분석]] — Five Forces, 간접 경쟁, 경쟁 해자, SWOT, 벤치마킹, 공개 자료의 증거 범위, KSF
