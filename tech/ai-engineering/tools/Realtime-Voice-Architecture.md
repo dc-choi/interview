@@ -20,6 +20,20 @@ aliases: ["Realtime Voice Architecture", "실시간 음성 에이전트", "전�
 
 2026-10-06 OpenAI 문서 기준으로 Realtime API는 단일 음성 세션, GPT-Live는 별도 백엔드를 쓰는 전이중 구성의 예다. 모든 음성 제품이 같은 구조를 갖는다는 뜻은 아니다.
 
+## 말소리의 끝과 발화 차례의 끝을 구분한다
+
+VAD(Voice Activity Detection)는 말소리가 있는 구간을 찾는다. Turn detection은 사용자가 발화 차례를 마쳐 응답을 시작해도 되는지 판단한다. 무음은 생각하거나 자료를 확인하는 중에도 생기므로 두 판단을 동일하게 취급하지 않는다.
+
+| 방식 | 판단 근거 | 적용 시 확인할 점 |
+|---|---|---|
+| VAD와 무음 대기 | 말소리가 멎은 뒤 정해진 시간 경과 | 대기를 줄이면 응답은 빨라질 수 있지만 문장 중간의 쉼을 종료로 오인할 수 있음 |
+| 문맥을 보는 turn detector | 발화 의미, 모델에 따라 억양과 리듬 같은 음향 단서 | 잠시 기다려 달라는 말과 미완성 발화를 구분하는지, 대상 언어와 통화 음질에서 확인 |
+| 명시적인 수동 종료 | 버튼을 놓거나 별도 완료 신호 전송 | 경계는 분명하지만 자연스러운 전화 대화와 다른 사용자 동작이 필요 |
+
+예를 들어 사용자가 “잠시만요, 확인해 볼게요”라고 말한 뒤 조용해졌다면 바로 응답하는 것이 적절하지 않을 수 있다. 문맥 기반 검출도 무기한 대기를 보장하지 않으므로, 장시간 확인 대기는 애플리케이션의 대화 정책과 함께 다룬다. 별도 모델을 직접 학습하는 것만이 해결책은 아니며 STT나 실시간 모델에 내장된 종료 판단을 사용할 수도 있다.
+
+평가에서는 마지막 말소리부터 턴 확정까지의 대기와, 확정 이후 첫 응답 재생까지의 시간을 나눈다. 실제 상담 예문으로 문장 중간 쉼, 확인 요청, 짧은 맞장구와 배경 소음을 시험하고 조기 종료와 불필요한 대기를 함께 기록한다. 이는 적용 점검 방법이며 특정 모델의 실측 성능 주장은 아니다. 턴 종료 판단과 AI 발화 중 사용자의 끼어들기에 반응하는 정책도 별도로 조정한다(2026-10-06 LiveKit 공식 문서 대조).
+
 ## 대화 진행과 작업 완료를 나눈다
 
 GPT-Live 구성에서 음성 모델은 말하기 방식과 위임 시점을 담당하고, 백엔드는 추론, 업무 규칙과 도구 흐름을 담당한다. 애플리케이션은 권한, 필요한 확인, 실제 함수 실행과 작업 기록을 관리한다.
@@ -60,6 +74,8 @@ Client delegation의 위임 이벤트에는 작업 본문 대신 메타데이터
 
 ## 출처
 
+- [LiveKit, Turns overview](https://docs.livekit.io/agents/logic/turns/)
+- [LiveKit, LiveKit turn detector](https://docs.livekit.io/agents/logic/turns/turn-detector/)
 - [ElevenLabs, Understanding latency](https://elevenlabs.io/docs/eleven-api/concepts/latency)
 - [ElevenLabs, Latency optimization](https://elevenlabs.io/docs/eleven-api/guides/how-to/best-practices/latency-optimization)
 - [ElevenLabs, Generate audio in real-time](https://elevenlabs.io/docs/eleven-api/guides/how-to/websockets/realtime-tts)
