@@ -16,6 +16,7 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [[tech/senior/design/설계(SeniorDesign)|설계 (Design)]] — 시스템 설계 인터뷰, 포용 디자인
 
 ## 추가 학습 체크리스트
+- [x] [[Debugging-Principles#다른 사람이 재현할 수 있는 버그 보고|재현 가능한 버그 보고]] — 재현 절차, 기대 결과와 실제 결과 분리, 관측과 추측 구분
 - [x] [[Software-Productivity-Measurement#토큰 사용량과 성과를 분리한다|토큰 사용량과 성과 평가]] — 사용 사례별 관측, 채택된 변경당 비용과 검토 부담
 - [x] [[Tech-Decision#에이전트가 제안한 의존성도 기술 결정이다|에이전트의 기술 선택 검토]] — 기존 스택 대안, 운영과 제거 비용, 선택 빈도 실험의 한계
 - [x] [[Software-Productivity-Measurement#AI 도구 설문을 생산성 근거로 읽는 법|AI 도구 설문 해석]] — 사용과 사용 계획, 신뢰, 자기보고 생산성과 실측 결과 구분

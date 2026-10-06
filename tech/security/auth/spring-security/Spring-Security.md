@@ -14,7 +14,7 @@ Spring Security의 Servlet 보안 구조를 현재 API 기준으로 정리한 �
 - [x] [[Spring-Security-Architecture-and-Configuration|FilterChain 아키텍처와 설정, 보호 범위와 fallback]]
 - [x] [[Spring-Security-Authentication-Core|인증 핵심 구조]]
 - [x] [[Spring-Security-Authentication-Endpoints|Browser와 API 인증 Endpoint]]
-- [x] [[Spring-Security-Session-and-CSRF|Session, Logout, Remember Me와 CSRF]]
+- [x] [[Spring-Security-Session-and-CSRF|Session, Logout, Remember Me와 CSRF]] — Persistent 저장소 연결, 테이블 준비와 발급/복원/폐기 확인
 - [x] [[Spring-Security-Authorization|Request와 Method 인가]]
 - [x] [[Spring-Security-Dynamic-Policy|DB 기반 동적 정책]]
   - [x] [[Spring-Security-Dynamic-Policy-Legacy|Legacy 동적 인가 구현과 실패 모드]]

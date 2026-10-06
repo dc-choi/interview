@@ -105,6 +105,16 @@ Remember-Me Cookie는 Session이 끝난 뒤에도 사용자를 복원할 수 있
 
 Hash 기반 Cookie에는 평문 Password가 아니라 Password와 Server Key로 만든 서명이 들어간다. 다만 Username은 Base64로만 감싸져 드러나므로 Persistent 방식은 Cookie에서 Username을 뺐다. 고위험 경로는 [[Spring-Security-Authorization|인가 문서]]의 `fullyAuthenticated`로 Remember-Me 사용자를 재인증시킨다.
 
+### Persistent 저장소 연결과 동작 확인
+
+Spring Security 7.1.1에서 기본 Remember-Me는 Hash 기반이다. `PersistentTokenRepository` Bean을 선언하는 것과 그 저장소를 Remember-Me에 연결하는 것은 별개다. JDBC 방식을 쓰려면 `JdbcTokenRepositoryImpl`에 `DataSource`를 주고 `rememberMe(r -> r.tokenRepository(repository))`로 지정한다. `UserDetailsService`도 여전히 필요하며, 이미 구성한 Bean을 찾을 수 있다는 사실을 사용자 조회가 불필요하다는 뜻으로 해석하지 않는다.
+
+- 로그인 Form의 체크박스는 `id`만이 아니라 제출되는 `name`을 `remember-me`로 맞춘다. 다른 이름을 쓰면 `rememberMeParameter(...)`도 맞춘다.
+- `persistent_logins`는 JPA Entity의 자동 DDL과 별개로 준비한다. `setCreateTableOnStartup(true)`는 디버깅 편의 기능이며 기본값은 false다. 초기화 때 조건 없는 `CREATE TABLE`을 실행하므로 운영에서는 Migration으로 만들고 재시작마다 생성하도록 켜 두지 않는다.
+- 발급 확인: 체크 후 로그인하면 Remember-Me Cookie와 DB Token 행이 모두 생기는지 본다. Cookie만 있으면 Hash 기반 설정인지 먼저 확인한다.
+- 복원 확인: 테스트 환경에서 Remember-Me Cookie는 남기고 Session Cookie를 제거한 뒤 보호 경로를 요청한다. 이미 인증된 Session으로 성공한 요청만으로 자동 로그인 복원을 증명하지 않는다.
+- 폐기 확인: 정상 Logout 경로를 거친 뒤 Cookie와 해당 사용자의 저장 Token이 제거되고, 다음 요청에서 다시 로그인해야 하는지 본다.
+
 ## CSRF
 
 Browser가 Session Cookie나 다른 Credential을 자동 첨부하면 공격자가 피해자 Browser로 상태 변경 요청을 보낼 수 있다. Token은 Browser가 자동으로 넣지 않는 Form Field나 Header로 함께 제출하고 Server가 기대값과 비교한다.
@@ -160,6 +170,8 @@ Page에는 요청 속성 `_csrf`의 값을 쓴다. 기본 `XorCsrfTokenRequestAt
 - [Spring Security 7.1, FAQ](https://docs.spring.io/spring-security/reference/servlet/appendix/faq.html)
 - [Spring Security 7.1 API, AbstractRememberMeServices](https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/web/authentication/rememberme/AbstractRememberMeServices.html)
 - [Spring Security 7.1 API, PersistentTokenBasedRememberMeServices](https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/web/authentication/rememberme/PersistentTokenBasedRememberMeServices.html)
+- [Spring Security 7.1 API, RememberMeConfigurer](https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/config/annotation/web/configurers/RememberMeConfigurer.html)
+- [JdbcTokenRepositoryImpl.java 7.1.1 — spring-security GitHub](https://github.com/spring-projects/spring-security/blob/7.1.1/web/src/main/java/org/springframework/security/web/authentication/rememberme/JdbcTokenRepositoryImpl.java)
 - [Spring Security 7.1 API, ConcurrentSessionControlAuthenticationStrategy](https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/web/authentication/session/ConcurrentSessionControlAuthenticationStrategy.html)
 - [Spring Security 7.1, JSP Tag Libraries](https://docs.spring.io/spring-security/reference/servlet/integrations/jsp-taglibs.html)
 - [Spring Security 7.1, Testing with CSRF Protection](https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/csrf.html)

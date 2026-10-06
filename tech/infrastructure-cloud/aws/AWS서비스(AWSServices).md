@@ -77,7 +77,7 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 - [x] [[DMS|Database Migration Service (Full Load + CDC, schema는 DMS Schema Conversion 또는 수동 DDL, 동종도 target schema 준비)]]
 - [x] [[VPC|VPC, Subnet, Peering, Transit Gateway, CIDR 설계, NAT GW vs Instance, SG vs NACL, 온프레미스 연결]]
 - [x] [[ELB|ELB (ALB, NLB, GWLB, CLB, Sticky Session, Cross-Zone, SSL Termination, Connection Draining)]]
-  - [[ELB-5XX-Troubleshooting|ALB 5XX 진단 (502와 504 원인 분리, ELB와 Target 지표, keep-alive와 idle timeout)]]
+  - [[ELB-5XX-Troubleshooting|ALB 5XX 진단 (502와 504 원인 분리, ELB와 Target 지표, keep-alive 경합과 NLB TCP reset)]]
 - [x] [[Route53|Route 53 (Hosted Zone, 레코드 9종 + Alias, Routing Policy 8종, Alias vs CNAME, Health Check, DNSSEC)]]
 - [x] [[Global-Accelerator|Global Accelerator (Anycast IP, AWS 백본 가속, Endpoint Group/Weight, CloudFront vs AGA — L7 vs L4)]]
 - [x] [[Transit-Gateway|Transit Gateway (허브-스포크, 5종 어태치먼트, Route Table, ECMP, RAM 공유, vs VPC Peering)]]
