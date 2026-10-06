@@ -18,5 +18,5 @@ aliases: ["Product Strategy", "제품 전략"]
 
 ## 역할과 관련 주제
 
-- [[B2B-Sales-Pipeline-and-Pilot|B2B 영업 파이프라인과 파일럿]] — 구매 역할, 단계별 증거, 평가 조건과 예상 계약금액의 한계
+- [[B2B-Sales-Pipeline-and-Pilot|B2B 영업 파이프라인과 파일럿]] — 구매 역할, 단계별 증거, 플랫폼 발표와 구매 조건의 구분, 예상 계약금액의 한계
 - [[Product-Owner-Role|PO의 역할과 책임]] — 제품 기반 매출, 고객 근거, 실험, 조직 정렬, 인접 직무와의 차이

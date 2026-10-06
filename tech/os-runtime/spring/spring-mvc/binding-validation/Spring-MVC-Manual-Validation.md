@@ -88,7 +88,22 @@ HTML form은 invalid input과 message를 다시 render할 수 있다. JSON API�
 
 `@InitBinder("item")`처럼 대상 이름을 좁혀 custom validator를 추가한다. `DataBinder.addValidators()`는 대상 type의 `supports()`를 등록 시 확인하므로 아무 객체에 등록한 뒤 매번 supports로 자동 필터링될 것이라 가정하지 않는다. `addValidators`는 기본 validator에 추가하는 의미이고 MVC 글로벌 validator 교체는 Bean Validation 통합을 바꿀 수 있다.
 
+## 비동기 아이디 중복 확인의 경계
+
+아이디 사용 가능 조회는 입력을 돕는 사전 안내이며 가입 권한이나 아이디 예약을 발급하지 않는다. OWASP의 서버 검증 원칙과 PostgreSQL의 유일성 제약을 가입 화면에 적용하면 다음 경계를 나눌 수 있다(2026-10-06 대조, 화면 상태 관리는 적용 제안).
+
+- **입력 상태:** 확인한 문자열과 현재 입력값을 함께 관리한다. 값이 바뀌면 성공 표시를 무효화하고, 이전 요청의 늦은 응답이 새 입력을 사용 가능 상태로 바꾸지 않도록 요청 순서와 값을 확인한다.
+- **오류 상태:** 요청 실패와 이미 사용 중이라는 결과를 구분한다. 통신 오류를 사용 가능으로 처리하지 않는다.
+- **최종 저장:** 서버가 실제 제출값을 다시 검증한다. 두 요청이 사전 조회를 통과할 수 있으므로 저장소의 유일성 제약으로 중복 저장을 막고 충돌 결과를 처리한다. 사전 조회만 트랜잭션으로 감싼다고 이후 가입까지 예약되는 것은 아니다.
+- **노출 범위:** 사용 가능 응답은 계정 존재 여부를 드러낸다. 공개 닉네임과 비공개 로그인 식별자를 구분하고, 서비스 위험에 따라 일반 응답과 별도 확인 흐름을 선택한다. 요청 빈도 제한만으로 단일 계정의 존재 노출이 없어지지는 않는다.
+
+검증할 상황은 입력 변경 후 늦은 응답, 클라이언트 검증 우회, 같은 아이디의 동시 가입과 조회 실패다. 대소문자나 공백을 정규화한다면 사전 조회, 저장과 유일성 비교가 같은 정책을 사용해야 한다.
+
 ## 출처
+
+- [OWASP, Input Validation Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html)
+- [OWASP, Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
+- [PostgreSQL 18, Constraints](https://www.postgresql.org/docs/18/ddl-constraints.html#DDL-CONSTRAINTS-UNIQUE-CONSTRAINTS)
 
 - [Spring 7.0.9, DataBinder source](https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/validation/DataBinder.java)
 

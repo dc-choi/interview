@@ -132,6 +132,22 @@ Node.js에서는 큰 JSON의 `JSON.parse`와 `JSON.stringify`가 이벤트 루�
 
 측정 없이 "C++로 바꾸자", "async로 감싸자"는 흔히 역효과.
 
+## 혼합 AI 파이프라인의 성능 수치를 읽는 법
+
+AI 서비스에도 데이터 준비, CPU 병렬 작업과 GPU 모델 실행이 함께 있다. 같은 시스템에서 나온 수치라도 작업과 측정 단위가 다르면 하나의 가속 배율로 합치지 않는다.
+
+2026-10-06에 확인한 AMD의 MindWalk 고객 사례는 다음 결과를 구분한다. 공급사와 고객의 공개 보고이며 독립 재현 결과가 아니다.
+
+| 작업 | 실행 자원 | 보고된 결과와 비교 범위 |
+|---|---|---|
+| 항체 쌍의 면역원성 스크리닝 | 여러 64코어 노드의 AMD EPYC CPU 클러스터 | 17만 개 넘는 쌍을 약 4.5시간에 처리. 비교값 145일은 이전 평가 플랫폼에서 같은 작업에 걸릴 것으로 추정한 시간 |
+| 문헌 탐색 RAG | AMD Instinct MI300X GPU | 초기 시험에서 샘플 100만 개당 비용 약 39% 감소, 초당 서열 2,741개 대비 약 3,421개 |
+| 단백질 언어 모델 임베딩 | AMD Instinct MI300X GPU | 비교한 다른 플랫폼 대비 처리량 약 70% 증가 |
+
+4.5시간은 GPU 단독 추론이나 신약 개발 전체의 소요 시간이 아니다. CPU 스크리닝 개선에는 병렬화, 단계 간 전송, CPU 활용률과 하드웨어가 함께 기여했으므로 CPU 교체 하나의 효과로 분리할 수 없다. 공개 본문만으로 비교 플랫폼의 전체 구성과 동일 품질 조건을 재현할 수 없으므로 구매 성능 보장으로 쓰지 않는다.
+
+다른 사례에도 작업 종류, 데이터 규모, 자원 수, 실측과 추정, 품질 조건, 종단 시간과 비용을 같은 표에 적어 비교한다. 일반 LLM의 프리필과 디코드 병목은 [[LLM-Inference-Bottlenecks|LLM 추론 병목]]에서 별도로 다룬다.
+
 ## 면접 체크포인트
 
 - **CPU-Bound vs I/O-Bound 구분 기준** (시간복잡도가 CPU 사이클에서 나오는지 vs 대기에서)
@@ -144,6 +160,7 @@ Node.js에서는 큰 JSON의 `JSON.parse`와 `JSON.stringify`가 이벤트 루�
 - 하드웨어 vs 소프트웨어 최적화의 경계
 
 ## 출처
+- [MindWalk Accelerates AI Drug Discovery with AMD — AMD](https://www.amd.com/en/resources/case-studies/mindwalk.html)
 - [arca.live 프로그래머즈 — CPU-intensive vs I/O-intensive (모댕숲)](https://arca.live/b/programmers/62350982)
 - [Node.js — Don't Block the Event Loop](https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop)
 - [Node.js, Worker threads](https://nodejs.org/api/worker_threads.html)

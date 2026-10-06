@@ -51,6 +51,14 @@ aliases: ["B2B 영업 파이프라인", "B2B 파일럿과 구매 절차", "Sales
 
 기술적으로 작동했다는 결과가 예산 승인이나 정식 구매를 보장하지 않는다. 유료 파일럿도 그 범위의 지불 증거이며 장기 갱신의 증거는 아니다. 반대로 무료 파일럿이라는 이유만으로 가치가 없다고 단정하지 않는다. 학습 가치, 지원 비용과 후속 구매 경로를 함께 비교한다. 데이터 처리와 외주 범위는 [[Privacy-Operations-for-Small-Business|개인정보 운영]], [[Dev-Outsourcing-Engagement|외주 계약과 인계]]를 연결해 확인한다.
 
+## 플랫폼 발표와 구매 가능한 조건을 구분한다
+
+기업용 플랫폼의 발표는 공급자의 방향을 보여주는 자료다. 우리 업무에 도입할 수 있는지 판단하려면 사용 가능한 제품, 가격, 계약, 데이터 처리, 관리 기능과 지원 범위를 별도로 확인한다. 제품군 이름이나 조직 신설을 파일럿 통과와 같은 증거로 계산하지 않는다.
+
+사례로 Meta는 2026-09-28 Enterprise Platform을 발표하며 Muse agent, Meta Business Agent, Muse API와 Muse Code를 기업과 개발자에게 제공하는 데 초점을 맞추겠다고 밝혔다. 확인한 발표문에는 통합 상품의 가격, 세부 제공 일정과 개별 계약 조건이 제시되지 않았다(2026-10-06 확인). 보안과 개인정보 보호를 강조한 문구도 구체적인 계약상 통제 항목의 확인을 대신하지 않는다.
+
+이 사례를 소규모 사업의 도입 판단에 적용하면, 공급자 발표는 후보 등록에 쓰고 평가/파일럿 진입은 실제 사용 조건과 성공 기준이 확인된 뒤 결정하는 편이 낫다. 반대로 발표문에 조건이 없다는 이유만으로 해당 기능이 없거나 기업 고객을 받지 않는다고 단정하지 않는다. 발표 확인, 판매 조건 확인과 고객 업무 검증을 별도 단계로 관리한다.
+
 ## 거래 금액과 확률을 현금처럼 쓰지 않는다
 
 파이프라인 합계에는 같은 단위의 금액을 쓴다. 월 구독료, 연간 계약금액과 다년 총액을 섞지 않고 파일럿과 본계약을 중복 집계하지 않는다.
@@ -71,6 +79,7 @@ aliases: ["B2B 영업 파이프라인", "B2B 파일럿과 구매 절차", "Sales
 2026-10-02에 아래 공개 본문의 역할, 적격성 판단, 단계 완료 조건과 평가 절차를 대조했다. 운영표와 계산 예시는 이를 적용한 제안이며 사용자 사업의 채택된 영업 절차나 성사율이 아니다.
 
 - [What is a Sales Pipeline? — Salesforce](https://www.salesforce.com/sales/pipeline/) — 적합성, 예산/권한/시점 확인과 파이프라인 관리
+- [Launching Meta Enterprise Platform — Meta](https://about.fb.com/news/2026/09/launching-meta-enterprise-platform/) — 2026-10-06 확인, 플랫폼 발표의 범위와 구매 조건을 구분한 사례
 - [GitLab Handbook, Commercial Sales Opportunity Stages](https://handbook.gitlab.com/handbook/sales/commercial/comm-sales-opp-stages/) — 기업 내부의 단계별 활동과 완료 조건 사례
 - [GitLab Handbook, Facilitate The Opportunity](https://handbook.gitlab.com/handbook/sales/sales-operating-procedures/facilitate-the-opportunity/) — 기술 평가, 내부 추진자와 구매 절차의 구분
 

@@ -19,6 +19,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
   - [[Deno-Runtime-Permissions|Deno 권한 모델]] — 자원별 flag, NotCapable, sandbox를 벗어나는 flag, task별 권한 분리와 permission set
 - [[tech/os-runtime/nestjs/NestJS|NestJS]] — DI, HTTP, GraphQL, Microservices, 웹훅, durable workflow, 보안과 신뢰성
 - [[tech/os-runtime/spring/Spring|Spring]] — Request Lifecycle, @Transactional, JPA 영속성
+  - [[Spring-MVC-Manual-Validation|Spring MVC 수동 검증]] — 비동기 아이디 확인, 최종 저장의 유일성과 계정 존재 노출 경계
 
 ## Linux 체크리스트
 - [x] [[Container-Memory-Metrics|Page cache와 컨테이너 메모리 지표 (RSS, file cache, working set, reclaim, cgroup 진단)]]
