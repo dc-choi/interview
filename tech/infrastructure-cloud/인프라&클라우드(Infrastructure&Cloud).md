@@ -18,6 +18,8 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[RDS-Stop-Start-Scheduling|RDS 중지와 재시작 예약]] — 7일 한도와 유지보수 완료 확인, 중지 후 남는 비용
+- [x] [[ECS-Service-AutoScaling#예정된 이벤트의 사전 확장과 복구|ECS 이벤트 사전 확장]] — 예약 min/max, 동적 축소 제어, 준비 확인과 원래 설정 복구
 - [x] [[S3-Scale-Design-Lessons|S3 대규모 설계 교훈]] — 워크로드 집계와 데이터 배치의 구분, 부하 평탄화의 조건, 내구성 위협과 대응책 검토, 추가 shard를 이용한 점진 배포
 - [x] [[Amazon-Connect-Conversation-Continuity|Amazon Connect 대화 연속성과 채팅 복원]] — persistent chat, contact 연결, 토큰 보호와 인계 검토
 - [x] [[RDS-PostgreSQL-Performance-Triage|RDS와 Aurora PostgreSQL 성능 진단]] — 자원과 세션 연결, idle 상태 구분, 누적 SQL 통계의 차분, 유지보수와 실행 계획, QPM의 수집과 적용

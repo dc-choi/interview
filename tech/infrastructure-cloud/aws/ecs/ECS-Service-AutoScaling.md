@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, ecs, auto-scaling, sqs, fargate]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-10-07
 category: "Infrastructure - AWS"
 aliases: ["ECS Service Auto Scaling", "ECS 오토스케일링", "Backlog per Task", "SQS 워커 오토스케일링"]
 ---
@@ -27,7 +27,7 @@ aws application-autoscaling register-scalable-target \
   --min-capacity 1 --max-capacity 20
 ```
 
-min과 max가 안전벨트다. 폭주해도 20을 안 넘고 1 밑으로 안 내려간다.
+min과 max는 Application Auto Scaling의 조정 범위다. 수동으로 지정한 desired count나 배포 중 실행되는 task 수까지 이 범위에 고정한다는 뜻은 아니다.
 
 ## 스케일링 유형 4종
 
@@ -39,6 +39,19 @@ min과 max가 안전벨트다. 폭주해도 20을 안 넘고 1 밑으로 안 내
 | **Scheduled Scaling** | 예약 작업 | cron으로 시간대별 min/max를 바꾼다. 정책이 아니라 scheduled action이다 |
 
 실무는 Scheduled로 바닥(floor)을 깔고 + Target Tracking으로 그 안의 변동을 처리하는 조합을 많이 쓴다.
+
+### 예정된 이벤트의 사전 확장과 복구
+
+티켓 오픈처럼 시작 시각을 아는 부하는 알람을 기다리기 전에 scheduled action으로 최소 용량을 높일 수 있다. 현재 용량이 새 최소치보다 낮으면 확장하고, 이후 동적 정책은 변경된 min/max 안에서 계속 동작한다.
+
+다음은 이 기능을 이벤트 운영에 적용하는 점검 예시다.
+
+1. 시작 시각, 시간대, 대상 서비스, 임시 min/max와 원래 값을 기록한다. task 시작과 애플리케이션 준비 시간을 고려해 확장 시점을 앞당긴다.
+2. desired count 변경과 실제 준비 완료를 구분한다. running task와 대상 그룹의 health, EC2 용량 또는 Fargate quota를 확인한다.
+3. 이벤트 중 짧은 저부하에 축소되면 안 되는 경우 최소 용량을 유지한다. 필요하면 `DynamicScalingInSuspended=true`로 Target Tracking과 Step Scaling의 축소만 중지하고 확장은 유지한다. 이 설정은 scheduled action이나 수동 축소까지 막지 않는다.
+4. 종료 후 원래 min/max와 suspension 설정을 복구한다. 최소치만 낮추면 현재 task가 즉시 줄어드는 것은 아니며 동적 정책의 조건을 확인한다. 최대치를 현재 용량 아래로 낮추는 예약은 축소를 유발하므로 잔여 요청과 작업이 있는지 먼저 확인한다.
+
+예약 성공은 이벤트를 감당할 처리 용량의 증명이 아니다. 준비 완료와 실패를 별도로 확인하고, 취소되거나 연장된 이벤트의 복구 시점도 갱신한다.
 
 ## 지표 선택 — SQS 워커에 CPU는 함정
 
@@ -132,7 +145,7 @@ BacklogPerTask 알람에 단계별 조정을 직접 정의한다. 살짝 넘으�
 
 **Fargate는 스케일링 레이어가 1개, EC2는 2개**다.
 
-- **Fargate (레이어 1)**: 인스턴스 개념이 없어 AWS가 밑단 컴퓨팅을 댄다. 서비스의 task 수(backlog-per-task)만 조절하면 끝. 자리 걱정이 없다.
+- **Fargate (레이어 1)**: 사용자가 EC2 인스턴스 fleet을 관리하지 않고 서비스의 task 수를 조절한다. 그래도 리전별 vCPU quota와 task 시작 속도 제한, 실제 task 배치와 준비 상태를 확인해야 한다.
 - **EC2 (레이어 2)**:
   - 레이어 1 = 서비스 오토스케일링(task 수) — Fargate와 동일, backlog-per-task 그대로
   - 레이어 2 = 클러스터 캐파시티(EC2 인스턴스 수) — EC2에만 추가. task를 늘려도 인스턴스에 빈 자리(CPU나 메모리)가 없으면 task가 `PROVISIONING`에서 멈춘다. 인스턴스 fleet도 같이 스케일해야 한다.
@@ -161,3 +174,6 @@ BacklogPerTask 알람에 단계별 조정을 직접 정의한다. 살짝 넘으�
 - [AWS 공식 문서, Amazon ECS service auto scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html)
 - [Application Auto Scaling API, PutScalingPolicy](https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PutScalingPolicy.html)
 - [Application Auto Scaling API, PredefinedMetricSpecification](https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html)
+- [AWS 공식 문서, How scheduled scaling for Application Auto Scaling works](https://docs.aws.amazon.com/autoscaling/application/userguide/scheduled-scaling-policy-overview.html)
+- [AWS 공식 문서, Suspend and resume scaling for Application Auto Scaling](https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-suspend-resume-scaling.html)
+- [AWS 공식 문서, Amazon ECS service quotas](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-quotas.html)
