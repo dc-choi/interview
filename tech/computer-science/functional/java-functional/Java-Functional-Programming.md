@@ -11,7 +11,7 @@ Java의 lambda target typing에서 시작해 Stream pipeline, Collector, Optiona
 
 - [[Java-Lambda-and-Method-Reference|Lambda와 method reference]]
 - [[Java-Functional-Interfaces-and-Default-Methods|함수형 interface와 default method]]
-- [[Java-Stream-Pipelines-and-Operations|Stream pipeline과 연산]]
+- [[Java-Stream-Pipelines-and-Operations|Stream pipeline과 연산]] — Iterator의 선택적 삭제, 외부 순회 전환과 source 간섭 계약
 - [[Java-Stream-Collectors|Collector와 다단계 집계]]
 - [[Java-Optional|Optional과 지연 대안 계산]]
 - [[Java-Parallel-Streams-and-ForkJoin|병렬 Stream과 Fork/Join]]

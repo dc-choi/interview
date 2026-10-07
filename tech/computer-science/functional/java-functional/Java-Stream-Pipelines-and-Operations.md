@@ -1,7 +1,7 @@
 ---
 tags: [java, stream, lazy-evaluation, pipeline, flatmap]
 status: done
-verified_at: 2026-10-01
+verified_at: 2026-10-07
 category: "CS - 함수형 프로그래밍"
 aliases: ["Java Stream Pipeline", "Java 스트림 파이프라인"]
 ---
@@ -25,6 +25,17 @@ Stream operation은 원본 collection을 자동으로 immutable하게 만들지 
 직접 `for` loop로 traversal을 통제하는 외부 반복과 달리 Stream library가 traversal을 통제한다. 이 경계 덕분에 library가 lazy evaluation, short-circuit와 parallel execution 전략을 선택할 수 있다.
 
 Pipeline이 항상 element 하나를 모든 stage에 차례로 통과시키는 특정 loop로 구현된다고 가정하지 않는다. 명세가 지키는 것은 operation 결과와 encounter order 계약이며, 구현은 결과에 영향이 없는 stage나 callback 실행을 생략할 수 있다.
+
+## Iterator와의 경계
+
+Java SE 26 API 기준으로 `Iterator`는 호출자가 `hasNext()`와 `next()`로 진행을 제어하고, Stream은 `filter`, `map`, `reduce` 같은 연산을 조합한다. 둘 다 메모리에 저장된 컬렉션만을 전제로 하는 것은 아니다.
+
+- `Iterator.remove()`는 마지막 `next()`가 반환한 원소를 제거하는 **선택 연산**이다. 지원하지 않으면 `UnsupportedOperationException`이 발생하며, `next()` 호출마다 한 번만 사용할 수 있다. `forEachRemaining()` 뒤의 `remove()` 동작은 명세상 미지정이다.
+- `ListIterator`는 리스트용 확장으로 `hasPrevious()`와 `previous()`를 통한 역방향 이동도 제공한다. 일반 `Iterator`의 기능으로 혼동하지 않는다.
+- Stream의 `iterator()`는 외부 순회로 전환하는 terminal operation이다. 호출 즉시 전체 입력을 다 소비하는 방식은 아니며 반환된 Iterator로 진행을 제어한다. 이후 같은 Stream으로 다른 파이프라인을 실행하지 않는다.
+- `filter`는 원본에서 원소를 삭제하는 연산이 아니다. 일반적인 비동시 source는 파이프라인 실행 중 변경하지 않아야 하며, 동시 컬렉션 source는 별도 간섭 계약을 확인한다.
+
+따라서 Stream은 원소별 접근이 불가능하다거나 모든 Iterator가 삭제를 지원한다고 설명하면 부정확하다. 반복 중 원본 삭제가 필요하면 해당 Iterator의 지원 여부를, 변환과 집계가 목적이면 Stream의 연산 계약을 먼저 확인한다.
 
 ## Intermediate와 terminal operation
 
@@ -99,6 +110,8 @@ ordered stream에서 takeWhile은 첫 실패 전의 prefix만 남기고 dropWhil
 - [Java SE 26, Stream](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Stream.html)
 - [Java SE 26, `java.util.stream` package](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/package-summary.html)
 - [Java SE 26, BaseStream](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/BaseStream.html)
+- [Java SE 26, Iterator](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Iterator.html)
+- [Java SE 26, ListIterator](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/ListIterator.html)
 - [Java SE 26, DoubleStream](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/DoubleStream.html)
 - 김영한 강사, [필터 만들기1](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275349), [필터 만들기2](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275352), [맵 만들기1](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275353), [맵 만들기2](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275354), [필터와 맵 활용1](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275355), [필터와 맵 활용2](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275356), [스트림 만들기1](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275357), [스트림 만들기2](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275358), [스트림 만들기3](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275359), [스트림 만들기4](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275360), [정리](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275361)
 - 김영한 강사, [스트림 API 시작](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275373), [스트림 API란?](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275374), [파이프라인 구성](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275375), [지연 연산](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275376), [지연 연산과 최적화](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275377), [스트림 생성](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275379), [중간 연산](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275380), [FlatMap](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275381), [Optional 간단 설명](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275382), [최종 연산](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275383), [기본형 특화 스트림](https://www.inflearn.com/courses/lecture?courseId=336672&unitId=275384)

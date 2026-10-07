@@ -22,3 +22,4 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 - [[tech/computer-science/js/자바스크립트(JS)|JavaScript]] — Promise, 모듈, Prototype, BigInt, Unicode, Intl과 리소스 해제, JSON과 설정 파일 문법
 - [[Browser-CSS-Animation-and-Compatibility|브라우저 CSS 애니메이션]] — 이징, 스태거와 경로의 구분, reduced motion과 호환성
 - [[tech/computer-science/java/자바(Java)|Java]] — 언어 기초, 백엔드 면접 필수
+- [[Java-Stream-Pipelines-and-Operations#Iterator와의 경계|Java Stream과 Iterator]] — 선택적 삭제, terminal operation인 외부 순회와 source 변경 조건

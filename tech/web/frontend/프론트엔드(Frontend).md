@@ -9,6 +9,7 @@ aliases: ["Frontend", "프론트엔드"]
 
 ## 목차
 
+- [[Responsive-Web-Layout|반응형 웹 레이아웃]] — 콘텐츠 기준 분기, 표 스크롤, 안전 영역과 모달 메뉴의 포커스
 - [[Swiper-Carousel|Swiper 이미지 슬라이드]] — 자산과 모듈 구성, 자동 재생 옵션, 포커스와 정지 제어
 - [[Agent-Friendly-Websites|에이전트 친화적 웹사이트]] — 화면, DOM과 접근성 트리의 의미 일치, 버튼의 키보드 동작과 레이아웃 안정성
 - [[Frontend-Rendering-Models|프런트엔드 렌더링과 상호작용 모델]] — hydration, islands, resumability와 서버 HTML 조각 교체
