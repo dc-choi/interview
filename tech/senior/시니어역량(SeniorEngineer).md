@@ -22,7 +22,7 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [x] [[Tech-Decision#에이전트가 제안한 의존성도 기술 결정이다|에이전트의 기술 선택 검토]] — 기존 스택 대안, 운영과 제거 비용, 선택 빈도 실험의 한계
 - [x] [[Software-Productivity-Measurement#AI 도구 설문을 생산성 근거로 읽는 법|AI 도구 설문 해석]] — 사용과 사용 계획, 신뢰, 자기보고 생산성과 실측 결과 구분
 - [x] [[Incident-Commander|장애 대응 리딩 (Incident Commander)]] — 기존 보강: [[Incident-Runbook|장애 절차와 에스컬레이션]], [[Incident-Recovery-Prevention|복구와 포스트모템]]
-- [x] [[People-Leadership|멘토링 (1:1, 질문형 코칭, 위임과 안전망, 성장 과제, 온보딩)]]
+- [x] [[People-Leadership|멘토링 (1:1, 질문형 코칭, 위임과 안전망, 성장 과제, 온보딩)]] — 기술적 조언과 자율성, 갈등의 사실 확인과 문제 제기 경로
 - [x] [[Cross-Team-Communication|Cross-Team Communication]] — 기존 보강: [[Cross-Functional-Product-Collaboration|직군 간 프로덕트 협업]], [[Tech-Spec-Writing-Review-Process|의존 팀 테크스펙 리뷰]]
 
 ## 현장사례

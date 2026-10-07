@@ -23,7 +23,7 @@ aliases: ["Visual Hierarchy", "시각적 위계"]
 
 ## 실무 포인트
 
-- **기능의 대비만큼 시각 대비를** — 상충하는 두 액션(구매 vs 판매, 승인 vs 반려)은 색상 대비를 크게 줘서 오조작을 막는다.
+- **행동의 차이를 명시한다** — 승인과 반려처럼 결과가 다른 액션은 라벨과 배치로 구분하고 색상을 보조로 쓴다. 색상 대비만으로 오조작 방지를 보장하지 않는다.
 - **정보 유형은 형태로 구분** — 같은 그리드 안에서 성격이 다른 항목(브랜드 vs 상품)은 도형 자체를 다르게 하면 라벨 없이도 계층이 읽힌다.
 - **커머스 상세 페이지의 정석** — 구매 결정 직결 정보(할인율, 가격)를 크기와 색으로 최상위 위계에 둔다.
 
@@ -31,11 +31,13 @@ aliases: ["Visual Hierarchy", "시각적 위계"]
 
 SaaS 대시보드처럼 정보가 빽빽한 화면에서 모든 카드에 강한 보더와 배경색을 주면 중요도 차이가 흐려질 수 있다. 이런 화면을 조정할 때 다음을 실무 가설로 비교한다.
 
-- 영역 구분은 보더, 패딩, 배경색을 최소화하고 여백과 글자 크기, 굵기로 위계를 표현한다.
-- 강조색은 화면의 핵심 CTA에만 쓰고, 나머지 정보의 중요도는 그레이스케일 안의 명도 차이로 나눈다.
+- 영역 구분은 여백과 글자 크기, 굵기로 먼저 비교한다. 패딩도 여백을 만드는 수단이므로 일괄 축소하지 않고, 관련 항목 내부 간격과 그룹 사이 간격을 구분한다. 경계를 읽는 데 필요한 보더와 배경은 남긴다.
+- 강조색을 핵심 CTA에 집중하는 안을 비교하되 오류, 경고와 선택 상태의 의미를 지우지 않는다. 상태는 텍스트나 형태로도 식별하게 하고, 그레이스케일을 쓰더라도 텍스트와 배경의 대비를 확인한다.
 - 한국어 텍스트는 영문 기준 행간과 자간을 그대로 쓰지 말고 조정한다. 이탤릭 글꼴이 없는 한글 글꼴에 이탤릭을 지정하면 브라우저가 글자를 기울여 합성할 수 있어 어색해지므로, 강조는 굵기로 대신한다.
 
 이 지침은 실무 휴리스틱이다. 결과 화면에서 사용자가 가장 먼저 봐야 할 숫자가 실제로 먼저 읽히는지 확인한다.
+
+접근성의 최소 조건은 미감과 따로 확인한다. 2026-10-07 대조한 WCAG 2.2의 SC 1.4.1은 색만으로 정보를 전달하지 않도록 요구한다. SC 1.4.3의 일반 텍스트 최소 대비는 4.5:1이며, 큰 텍스트는 3:1이다. 큰 텍스트 기준은 18pt 이상 또는 굵은 14pt 이상이다. 비활성 컨트롤, 순수 장식과 로고 등에는 예외가 있으나, 읽어야 할 보조 설명을 장식으로 취급해 흐리게 만들지 않는다.
 
 ### 타이포그래피
 
@@ -63,6 +65,9 @@ Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font Licen
 - 위계 설계의 전제는 우선순위 정의다 — 화면에서 무엇이 중요한지 답하지 못하면 시각 위계도 못 만든다. 기획의 우선순위 결정([[Product-Roadmap|프로덕트 로드맵]])과 같은 축.
 
 ## 출처
+- [Carbon Design System, Spacing](https://www.carbondesignsystem.com/building-blocks/foundations/spacing/overview)
+- [W3C, Understanding SC 1.4.1: Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)
+- [W3C, Understanding SC 1.4.3: Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
 - [시각적 위계를 만드는 5가지 방법 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/49)
 - [MDN, font-synthesis-style](https://developer.mozilla.org/en-US/docs/Web/CSS/font-synthesis-style)
 - [Inter, LICENSE.txt (SIL Open Font License 1.1)](https://github.com/rsms/inter/blob/master/LICENSE.txt)
