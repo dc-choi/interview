@@ -10,6 +10,7 @@ aliases: ["Algorithm"]
 알고리즘이란 어떤 문제를 해결하기 위한 확실한 방법이다. 자료구조에 따라 영향을 받는다.
 
 ## 목차
+- [x] [[Contraction-Hierarchies|축약 계층과 도로망 최단 경로]] — 전처리, shortcut, CCH의 비용 갱신과 경로 복원
 - [x] [[Adversarial-Search|적대적 탐색과 미니맥스]] — 게임 상태, 상대의 최선, 알파 베타 가지치기와 깊이 제한
 - [x] [[Audio-Fingerprinting|오디오 핑거프린팅]] — 스펙트로그램 피크 쌍, 해시 후보와 시간차 검증, 녹음 식별의 한계
 - [x] [[Algorithm-Complexity|시간복잡도와 Big O, 케이스별 분석, 함수 호출 비용, P-NP (결정 문제, 최적화 문제)]]

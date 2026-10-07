@@ -187,3 +187,4 @@ relaxation으로 `dist[v]`를 갱신할 때 `prev[v] = u`도 저장한다. targe
 - [[Graph-Traversal-and-Shortest-Path-Grid-BFS|grid BFS 패턴]]
 - [[Graph-Traversal-and-Shortest-Path-Variants|최단 경로 변형]]
 - [[Topological-Sort|위상 정렬]]
+- [[Contraction-Hierarchies|축약 계층과 반복적인 도로망 질의]]

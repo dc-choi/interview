@@ -16,16 +16,20 @@ LLM 단발 호출을 도구로 쓰는 단계를 넘어, **에이전트에게 일
 
 ## 컴포넌트 분업
 
-단일 LLM이 모든 단계를 처리하면 컨텍스트가 폭증하고 비결정성이 쌓인다. 역할을 쪼개 토큰, 권한, 실패 범위를 분리한다.
+단일 에이전트에 도구와 책임이 늘어 라우팅 정확도나 컨텍스트 관리가 어려워졌을 때 분업을 검토한다. 역할 분리는 선택지이며, 추가 호출과 조율 비용까지 비교한다. 아래 표는 구성 예시다.
 
 | 컴포넌트 | 역할 | 비고 |
 |---|---|---|
 | **Listener** | 외부 채널(슬랙 등) 이벤트 수신 | 상시 실행, LLM 미사용 |
 | **Dispatcher** | 잡담/유효 요청 분류, 중복, 세션 관리 | 가벼운 모델(예: Sonnet) |
-| **Parent Worker** | 요청 의도 정리, 라우팅, 재확인 | 6개 컴포넌트 컨텍스트(요청자, 범위, 개념, 취소분 포함/제외, 합의된 사실) |
+| **Parent Worker** | 요청 의도 정리, 라우팅, 재확인 | 요청자, 범위, 개념, 취소분 포함/제외, 합의된 사실 등의 컨텍스트 |
 | **Sub-agents** | 단순 분석, 복잡 분석, 검색, 보고서, 시각화, 시트 출력 | 도메인별 워커, 권한 분리 |
 
-Parent의 핵심 책무는 **"정보 부족 시 재확인"**이다. 모호한 요청을 추측으로 채우면 다층 안전망이 무용지물이 된다. 예: "거래 뽑아줘" → "숙박만요, 아니면 전체요?", "취소분 포함요?"로 분기.
+Parent의 핵심 책무는 **정보 부족 시 재확인**이다. 모호한 요청을 추측으로 채우면 다층 안전망이 무용지물이 된다. 예: "거래 뽑아줘" → "숙박만요, 아니면 전체요?", "취소분 포함요?"로 분기.
+
+**라우팅과 대화 전달은 별도 계약이다.** supervisor는 collaborator의 역할과 책임을 명확히 구분하고 겹침을 줄인다. 설계 점검에서는 전문 에이전트가 바뀐 뒤에도 후속 질문의 대상과 조건이 이어지는지 확인하고, 각 에이전트에 전달할 대화 범위와 민감정보를 제한한다. 역할 이름이나 프롬프트 분리만으로 데이터 접근 권한이 격리되지는 않는다.
+
+관리형 API의 한 예로 Bedrock Agents Classic의 `AssociateAgentCollaborator`는 `relayConversationHistory`에 `TO_COLLABORATOR` 또는 `DISABLED`를 받는다(2026-10-07 공식 문서 확인). 같은 날 사용자 가이드는 Classic의 신규 고객 이용이 닫혀 있다고 안내하므로, 이 예시를 신규 도입 권고로 해석하지 않는다. 기존 에이전트의 단계적 연결과 대화 전달 계약을 이해하는 참고로 쓴다.
 
 ## 핵심 엔진: 프레임워크 vs 자체 구현
 
@@ -52,7 +56,7 @@ Sub-agent가 자기 규칙만 런타임에 로드
 
 부작용 효과:
 - **유지보수**: 한 워커 규칙만 수정 → 다른 워커 무영향
-- **권한 분리**: 보고서 워커가 BigQuery 직접 접근 못 함 (규칙 자체가 분리됨)
+- **권한 분리**: 보고서 워커의 BigQuery 직접 접근은 실제 도구와 자격증명 권한으로 제한한다. 규칙 파일 분리만으로 접근이 차단되지는 않는다.
 - **토큰 절감**: 세션당 200K+ 절약 가능
 
 ## Defense in Depth (4겹 안전망)
@@ -148,7 +152,7 @@ Knowledge 수정 (Metric Registry / Rule / Skill)
 | 정책 의사결정 | 정책 적용 |
 | 새 에이전트, 워크플로우 개발 | 기존 워크플로우 실행 |
 
-Human-in-the-loop이 "사람이 매번 확인"이라면, Closure-loop은 "사람은 정의에만 개입, 실행은 닫힌 루프로 위임"이다.
+이 문서에서 Human-in-the-loop은 사람의 실행 검토를 포함하고, Closure-loop은 사전에 정한 위임 범위 안에서 실행을 닫힌 루프로 맡기는 운영 구분이다.
 
 ## 사례
 
@@ -161,7 +165,7 @@ LY Corporation SRELens(2026): Grafana 플러그인으로 자연어 장애 원인
 ## 면접 포인트
 
 Q. 단발 LLM 호출과 프로덕션 에이전트의 차이는?
-- 단발은 "도구", 에이전트는 "동료". 위임의 신뢰 수준이 다름.
+- 단발 호출과 작업 위임은 요구하는 신뢰 수준이 다르다.
 - 신뢰는 **분업, Lazy Load, Defense in Depth, 명시적 지식, eval, 고가용성** 6축으로 만든다.
 
 Q. LLM의 비결정성을 어떻게 통제하는가?
@@ -171,7 +175,7 @@ Q. LLM의 비결정성을 어떻게 통제하는가?
 
 Q. 멀티 에이전트는 왜 필요한가? 단일 거대 에이전트로 안 되는가?
 - 컨텍스트 폭증, 권한 비대화, 실패 범위 확산.
-- 분업하면 워커별 권한 최소화, 규칙 Lazy Load, 장애 격리가 가능하다.
+- 분업은 선택지다. 워커별 권한, 컨텍스트와 장애 격리를 실제로 구현하고 추가 조율 비용과 비교해야 한다.
 
 Q. 자동 메모리를 끄는 이유는?
 - 무엇을 기억하는지 불투명 → 회사 기준과 어긋난 답변이 누적될 위험. 명시적, 버전 관리되는 정의만 정책으로 인정한다.
@@ -188,6 +192,8 @@ Q. 자동 메모리를 끄는 이유는?
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 
 ## 출처
+- [Amazon Bedrock, Use multi-agent collaboration with Amazon Bedrock Agents](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-multi-agent-collaboration.html)
+- [Amazon Bedrock API Reference, AssociateAgentCollaborator](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent_AssociateAgentCollaborator.html)
 - [Introducing Muse: The World's First Personal AI Agent Built for Everyone — Meta](https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/)
 - [Product Engineer | 하루 500건 분석 요청을 받아내는, 데이터 에이전트 — 일을 돕는 AI에서 일을 수행하는 AI로 — 마이리얼트립 Product](https://medium.com/myrealtrip-product/product-engineer-%ED%95%98%EB%A3%A8-500%EA%B1%B4-%EB%B6%84%EC%84%9D-%EC%9A%94%EC%B2%AD%EC%9D%84-%EB%B0%9B%EC%95%84%EB%82%B4%EB%8A%94-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8-%EC%9D%BC%EC%9D%84-%EB%8F%95%EB%8A%94-ai%EC%97%90%EC%84%9C-%EC%9D%BC%EC%9D%84-%EC%88%98%ED%96%89%ED%95%98%EB%8A%94-ai%EB%A1%9C-dde9b6a891c5)
 - [Grafana에서 자연어로 장애 원인을 분석하기: LLM 에이전트 기반 SRELens 개발기 — LY Corporation 기술블로그](https://techblog.lycorp.co.jp/ko/analyzing-incident-root-causes-in-grafana-using-natural-language-with-llm-agent)

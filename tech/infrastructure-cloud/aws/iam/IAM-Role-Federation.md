@@ -32,6 +32,17 @@ Role의 특징:
 - **Region에 국한되지 않음** (글로벌)
 - Role의 주체(Principal)는 IAM User, AWS 서비스(EC2, RDS, ELB 등), 외부 IdP로 인증된 사용자
 
+## 계정 간 Bedrock 호출 — 역할 위임과 추론 권한
+
+계정 B의 Lambda가 계정 A의 권한으로 Bedrock을 호출하는 경우, 세 가지 정책과 실제 요청 자격증명을 나누어 확인한다. 2026-10-07 공식 IAM과 Bedrock 문서로 대조한 범위다.
+
+1. **A 역할의 trust policy**에서 B의 Lambda 실행 역할을 `Principal`로 지정하고 `sts:AssumeRole`을 허용한다.
+2. **B 실행 역할의 identity policy**에서 A의 대상 역할 ARN에 대한 `sts:AssumeRole`을 허용한다. A가 B를 신뢰한다는 설정만으로 B의 호출 권한이 생기지는 않는다.
+3. **A 역할의 permissions policy**에 사용할 모델과 API의 권한을 둔다. 일반 추론에는 `bedrock:InvokeModel`, 스트리밍에는 `bedrock:InvokeModelWithResponseStream`을 확인하고, inference profile 등 추가 리소스를 쓰면 해당 권한도 확인한다. 전체 Bedrock 권한을 기본값으로 복사하지 않는다.
+4. Lambda에서 A 역할을 AssumeRole한 뒤 반환된 access key, secret key와 session token으로 `bedrock-runtime` 클라이언트를 구성한다. B의 기존 실행 자격증명으로 만든 클라이언트를 계속 쓰면 정책을 추가해도 A 역할로 호출한 것이 아니다.
+
+실패를 진단할 때는 STS의 역할 위임 실패와 Bedrock의 모델 호출 실패를 분리한다. 전자는 양쪽 정책과 조직의 권한 제한을, 후자는 실제 호출 역할, 리전, 모델 식별자와 모델 사용 전제조건을 확인한다. 세션 만료와 갱신도 처리하고 자격증명을 로그에 남기지 않는다. 이 구성은 IAM 권한 경계이며, 비공개 네트워크 경로는 [[Bedrock-Private-Access|Bedrock 비공개 연결]]에서 별도로 설계한다.
+
 ## IAM 사용자 MFA — GetSessionToken
 
 2026-10-07 공식 STS API 문서로 확인한 범위다. IAM 사용자의 장기 자격증명으로 MFA가 필요한 API를 호출해야 할 때, `GetSessionToken`에 MFA 장치의 `SerialNumber`와 6자리 `TokenCode`를 전달해 임시 자격증명을 받는다. 사람의 일상 접근은 federation을 우선하고, 이 절차를 장기 키 신규 발급의 기본 경로로 삼지는 않는다.
@@ -123,6 +134,9 @@ IdP 속성을 session tag로 전달해 ABAC에 쓴다면 trust policy의 `sts:Ta
 위임 관리자가 이 한도 안에서만 사용자와 Role을 만들 수 있게 보장한다. 개발자에게 IAM 관리 위임할 때, 자기보다 강한 권한 부여 못 하게 막는 가드.
 
 ## 출처
+- [AWS IAM User Guide, Delegate access across AWS accounts using IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html)
+- [AWS Bedrock User Guide, Prerequisites for running model inference](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-prereq.html)
+- [Use a cross-account to invoke Amazon Bedrock in another account — AWS re:Post](https://repost.aws/knowledge-center/bedrock-invoke-with-cross-account)
 - [AWS STS API Reference, GetSessionToken](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html)
 - [AWS IAM User Guide, Account access manager](https://docs.aws.amazon.com/IAM/latest/UserGuide/account-access-manager.html)
 - [AWS IAM User Guide, Getting started with account access manager](https://docs.aws.amazon.com/IAM/latest/UserGuide/account-access-manager-getting-started.html)
