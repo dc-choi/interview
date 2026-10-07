@@ -41,6 +41,20 @@ aliases: ["Product Carbon Footprint", "PCF", "제품 탄소발자국"]
 
 계측기를 설치하거나 데이터 레이크를 만든 것만으로 올바른 PCF가 나오지는 않는다. 산정 기준, 자료 품질과 계산 경로를 함께 검토한다. 값을 낮추는 일과 측정 방법을 바꾸는 일도 구분해 보고한다.
 
+## 포장 최적화의 비용과 배출량을 따로 검증한다
+
+포장재를 줄이는 결정에는 배송 비용과 파손 비용의 상충이 있다. 덜 견고한 포장이 파손과 반품을 늘릴 수 있으므로, 포장 비용만 줄이는 대신 파손 비용의 허용 범위를 함께 정한다. 머신러닝이 포장 선택을 돕더라도 비용 절감 결과만으로 탄소 감축량을 계산할 수는 없다.
+
+다음은 포장 최적화와 생애주기 산정 원칙을 연결한 운영 점검 제안이다. 특정 인증의 필수 지표는 아니다.
+
+| 확인할 결과 | 비교할 자료 |
+|---|---|
+| 포장과 배송 비용 | 같은 제품군의 포장재, 운송 비용과 출하량 |
+| 품질과 후속 처리 | 파손률, 반품과 재배송 발생량 |
+| 온실가스 배출 | 같은 분석 단위와 경계에서 계산한 포장재, 운송과 후속 처리 배출량 |
+
+포장 중량 감소율을 CO2e 감소율로 그대로 바꾸지 않는다. 재질과 배출계수, 파손 이후 처리까지 반영한 계산을 남겨야 비용 개선과 환경 개선을 구분할 수 있다.
+
 ## 적용 범위
 
 2026-10-07 GHG Protocol 공개 자료로 측정 개념과 경계를 확인했다. 이 문서는 개별 제품의 인증, CBAM, 배터리 규정이나 디지털 제품 여권의 대상과 시행일을 판정하지 않는다. 실제 납품이나 제출에서는 해당 품목과 시장의 현행 규칙을 별도로 대조한다.
@@ -49,6 +63,7 @@ aliases: ["Product Carbon Footprint", "PCF", "제품 탄소발자국"]
 
 ## 출처
 
+- [How to compute the optimal way to package Amazon products — Amazon Science](https://www.amazon.science/blog/how-to-compute-the-optimal-way-to-package-amazon-products) — 포장과 배송 비용, 파손 비용의 상충 및 허용 비용 제약.
 - [GHG Protocol, Product Standard](https://ghgprotocol.org/product-standard) — 제품과 기업 단위의 구분, 생애주기와 제품 비교의 한계.
 - [GHG Protocol, Product Life Cycle Accounting and Reporting Standard](https://ghgprotocol.org/sites/default/files/ghgp/standards/Product-Life-Cycle-Accounting-Reporting-Standard_041613.pdf) — 6~9장과 11장, 분석 단위, 경계, 자료 품질, 배분과 배출량 계산.
 
