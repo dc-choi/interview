@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, quicksight, bi, visualization, analytics]
 status: done
-verified_at: 2026-08-25
+verified_at: 2026-10-07
 category: "Infrastructure - AWS"
 aliases: ["QuickSight", "Amazon QuickSight", "Amazon Quick Sight", "BI"]
 ---
@@ -27,11 +27,35 @@ Amazon Quick의 BI 기능. 서버리스 **머신러닝 기반 BI**로 대화형 
 - 임시 분석 수행
 - 비즈니스 인사이트 대시보드
 
+## 계정 간 템플릿으로 대시보드 재사용
+
+부분 검증(2026-10-07): 이 절의 템플릿, 데이터셋 매핑, 공유 권한과 생성 상태를 AWS API Reference로 대조했다. 기존 서비스 개요 전체를 다시 검증한 날짜는 아니다.
+
+템플릿은 분석과 대시보드를 재사용하는 데 필요한 메타데이터를 담고, 데이터셋을 placeholder로 추상화한다. 같은 스키마의 다른 데이터셋을 연결해 대시보드를 만들 수 있다. 따라서 템플릿 공유를 원본 데이터 복사나 데이터 소스 접근 권한의 이전으로 해석하지 않는다.
+
+### 원본 계정과 대상 계정의 역할
+
+1. 원본 계정에서 `CreateTemplate`의 `SourceEntity.SourceAnalysis`에 분석 ARN과 `DataSetReferences`를 지정한다. 이때 정한 `DataSetPlaceholder`가 이후 데이터셋을 연결하는 키다. `DescribeTemplate`으로 해당 버전의 `Template.Version.Status`가 `CREATION_SUCCESSFUL`인지 확인한 뒤 재사용한다.
+2. 원본 계정에서 `UpdateTemplatePermissions`로 대상 계정에 필요한 템플릿 권한을 부여한다. 계정 간 템플릿 공유의 `Principal`에는 대상 AWS 계정 root ARN을 사용한다. 이는 공유 대상을 지정하는 값이며 root 사용자로 로그인하라는 뜻이 아니다.
+3. 대상 계정에 연결할 데이터 소스와 데이터셋을 준비한다. 데이터셋 스키마는 원본 템플릿의 placeholder 스키마와 맞아야 한다.
+4. 대상 계정에서 `CreateDashboard`를 호출한다. `SourceEntity.SourceTemplate.Arn`은 원본 템플릿 ARN, `DataSetReferences[].DataSetArn`은 대상 데이터셋 ARN, `DataSetPlaceholder`는 원본에서 정한 값으로 매핑한다.
+5. 대상 대시보드의 사용자와 그룹 권한을 별도로 설정한다. 템플릿을 재사용할 권한과 생성된 대시보드를 볼 권한은 별개다.
+
+`CreateDashboard`의 `SourceTemplate` ARN은 다른 AWS 계정과 Quick Sight 지원 리전을 가리킬 수 있다. 템플릿 위치와 생성할 대시보드 위치를 같은 값으로 가정하지 않는다. 데이터 소스 연결과 접근 권한은 대상 환경에서 따로 확인한다.
+
+### 완료와 실패를 판정하는 기준
+
+`DescribeDashboard` 응답의 최상위 `Status`는 HTTP 상태 코드다. 조회가 200으로 성공했다고 대시보드 생성이 끝난 것은 아니다. `Dashboard.Version.Status`가 신규 생성이면 `CREATION_SUCCESSFUL`, 갱신이면 `UPDATE_SUCCESSFUL`인지 확인한다. 진행 중 상태는 기다리고, 실패 상태는 같은 버전의 `Errors`를 확인한다.
+
+완료를 확인할 때는 생성이나 갱신 응답의 `VersionArn`에 해당하는 버전 번호를 `DescribeDashboard.VersionNumber`로 지정한다. 버전 번호를 생략하면 최신 게시 버전을 조회하므로, 갱신 중인 새 버전 대신 기존 게시 버전의 성공 상태를 확인할 수 있다.
+
+배포 검토에서는 placeholder와 실제 데이터셋 ARN의 매핑, 스키마 일치, 템플릿 공유 권한, 대상 사용자 권한을 나눠 점검한다. 마지막으로 대상 사용자 권한으로 대시보드가 열리고 의도한 데이터가 조회되는지 확인한다. 이 절은 문서로 확인한 절차이며 실제 AWS 계정에서의 실행 결과는 아니다.
+
 ## 시험 빈출 포인트 (AWS SAA-C03 강의 기준)
 
-- "**대시보드/시각화**" → QuickSight
-- "Redshift나 S3 데이터 시각화" → QuickSight
-- "Athena와 함께 BI" → QuickSight (Athena가 쿼리, QS가 시각화)
+- **대시보드/시각화** → QuickSight
+- Redshift나 S3 데이터 시각화 → QuickSight
+- Athena와 함께 BI → QuickSight (Athena가 쿼리, QuickSight가 시각화)
 
 ## 관련 문서
 
@@ -43,3 +67,11 @@ Amazon Quick의 BI 기능. 서버리스 **머신러닝 기반 BI**로 대화형 
 - [Amazon Quick, Visualize, analyze, and share data with Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/quick-bi.html)
 - [Amazon Quick, Supported data sources](https://docs.aws.amazon.com/quick/latest/userguide/supported-data-sources.html)
 - [Amazon Quick, Gaining insights with machine learning](https://docs.aws.amazon.com/quick/latest/userguide/making-data-driven-decisions-with-ml-in-quicksight.html)
+- [Amazon Quick, Template](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_Template.html)
+- [Amazon Quick, CreateTemplate](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_CreateTemplate.html)
+- [Amazon Quick, DescribeTemplate](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_DescribeTemplate.html)
+- [Amazon Quick, ResourcePermission](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_ResourcePermission.html)
+- [Amazon Quick, UpdateTemplatePermissions](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_UpdateTemplatePermissions.html)
+- [Amazon Quick, CreateDashboard](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_CreateDashboard.html)
+- [Amazon Quick, DescribeDashboard](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_DescribeDashboard.html)
+- [Amazon Quick, DashboardVersion](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_DashboardVersion.html)

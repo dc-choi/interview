@@ -14,7 +14,7 @@ S3 데이터레이크에서 ETL, 쿼리, 데이터 웨어하우스, BI로 이어
 - [[Glue|Glue]]: 서버리스 ETL, Data Catalog, Crawler
 - [[EMR|EMR]]: Hadoop, Spark 클러스터 — Master/Core/Task 노드, Spot 인스턴스 비용 절감
 - [[Lake-Formation|Lake Formation]]: 데이터레이크 구축과 권한 관리 — Glue 기반, 분석 도구 통합
-- [[QuickSight|QuickSight]]: 서버리스 BI 대시보드 — SPICE 인메모리 엔진, 데이터 소스 통합
+- [[QuickSight|QuickSight]]: 서버리스 BI 대시보드 — SPICE 인메모리 엔진, 데이터 소스 통합, 계정 간 템플릿 공유와 생성 상태 확인
 
 ## 함께 볼 문서
 
