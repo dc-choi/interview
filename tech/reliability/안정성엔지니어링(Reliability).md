@@ -14,7 +14,7 @@ aliases: ["안정성엔지니어링(Reliability)", "Reliability Engineering"]
 ## Checklist
 - [x] [[Retry-Backoff-Jitter#재시도 예산과 최초 요청의 속도 제한|SDK 재시도 예산과 속도 제한]] — standard의 retry quota, adaptive의 client 공유 영향과 과부하 회복 시험
 - [x] [[Trading-API-Execution-Safety|증권 API 주문 실행 경계]] — 주문 멱등성의 유효기간, 접수와 체결, 응답 유실과 대사
-- [x] [[Cell-Based-Failure-Isolation|셀 기반 장애 격리]] — 데이터 지역성, 얇은 라우터, 재시작과 외부 효과의 경계
+- [x] [[Cell-Based-Failure-Isolation|셀 기반 장애 격리]] — 데이터 지역성, 얇은 라우터, 외부 효과의 경계, 셀별 단계 배포와 제어 계층 장애 분리
 - [x] [[SRE|SRE (규모와 신뢰성의 난제, 비상 대응 체계, 위험 탐지 지표, 시간 압축, 도메인 전문성)]]
 - [x] [[Failure-Evolution-Under-Load|부하에 따른 장애 진화 (단일 원인, 용량/런타임, 상호작용 3단계, 재시도 증폭기, Degradation 사다리, 돈으로 시간 사고 엔지니어링으로 회수)]]
 - [x] [[N-1-Capacity-Headroom|N-1 가용량 헤드룸 (최대가용배수 vs 부하증가배수, 임계 상황 사전 경보, 상관 장애와 정적 안정성)]]
