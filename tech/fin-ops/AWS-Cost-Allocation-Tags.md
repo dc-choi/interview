@@ -33,6 +33,22 @@ aliases: ["AWS 비용 할당 태그", "AWS Cost Allocation Tags"]
 - `aws:eks:cluster-name`은 EKS에 참여하는 EC2 인스턴스 비용을 클러스터별로 나누는 AWS 생성 태그다. Control plane 비용은 포함하지 않으며, 비용 분석에 쓰려면 활성화해야 한다.
 - EKS 태그 키와 값은 대소문자를 구분한다. 표준 표기는 한 가지로 정하되, 대문자를 쓰면 청구 데이터가 반드시 깨진다는 규칙으로 확대하지 않는다.
 
+## 과거 태그와 공유 비용은 별도로 처리한다
+
+2026-10-07 공식 문서 기준, 관리 계정 사용자는 최대 12개월의 비용 할당 태그 backfill을 요청할 수 있다. 현재 활성화 상태를 과거 기간에 적용하는 기능이며, 리소스에 태그가 없었던 기간의 값을 새로 만들어 주지는 않는다. 현재 비활성화된 키를 backfill하면 과거 비용 데이터에서도 그 키가 비활성화될 수 있다.
+
+Cost Categories는 계정, 서비스, 태그 등의 규칙으로 비용을 묶는다. 일반 분류 결과와 공유 비용의 **split charge 계산 결과**는 구분한다.
+
+| 배분 방식 | 기준 |
+|---|---|
+| Proportional | 각 대상의 비용에 비례 |
+| Fixed | 사용자가 정한 비율 |
+| Even split | 대상에 균등 배분 |
+
+공유 비용을 source로 먼저 분류한 뒤 대상 category 값에 나눈다. 규칙은 위에서 아래로 평가되므로 공유 비용 분류 규칙의 순서를 확인한다. 같은 값을 split charge의 source와 target으로 동시에 쓰지는 못한다.
+
+**Split charge 결과는 Cost Categories 상세 페이지와 다운로드 CSV에서 확인한다. CUR와 Cost Explorer의 비용을 바꾸거나 다른 비용 관리 도구로 배분 결과를 전달하지 않는다.** 내부 비용 보고에 사용할 때는 원래 청구 비용과 배분 후 비용을 분리해 표시한다. 예산 경보도 자동으로 배분 후 금액을 감시한다고 가정하지 않는다.
+
 ## 운영 완료 기준
 
 다음은 태깅 결과와 비용 보고의 연결을 확인하는 점검 절차다.
@@ -49,6 +65,9 @@ aliases: ["AWS 비용 할당 태그", "AWS Cost Allocation Tags"]
 - [AWS Billing, Activating user-defined cost allocation tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html)
 - [AWS Resource Groups Tagging API, GetResources](https://docs.aws.amazon.com/resourcegroupstagging/latest/APIReference/API_GetResources.html)
 - [Amazon EKS, Organize Amazon EKS resources with tags](https://docs.aws.amazon.com/eks/latest/userguide/eks-using-tags.html)
+- [AWS Billing, Backfill cost allocation tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-allocation-backfill.html)
+- [AWS Billing, Creating cost categories](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/create-cost-categories.html)
+- [AWS Billing, Splitting charges within cost categories](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/splitcharge-cost-categories.html)
 
 ## 관련 문서
 

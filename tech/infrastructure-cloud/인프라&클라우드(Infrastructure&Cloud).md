@@ -103,7 +103,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[K8s-Configuration-Storage-and-Probes|Startup / Liveness / Readiness probe]] — mesh 심화: [[Istio-Ambient-Partially-Enrolled-Pod|Kubernetes Ready와 mesh 준비의 차이]]
 - [x] [[K8s-PDB|PodDisruptionBudget]]
 - [x] [[K8s-NetworkPolicy|NetworkPolicy (방향별 격리, selector 조합, default deny와 DNS egress, CNI 집행 구성과 kube-proxy 대체의 구분)]]
-- [x] [[EKS#Cluster Autoscaler vs Karpenter|Node autoscaling (Cluster Autoscaler와 Karpenter)]]
+- [x] [[EKS#Cluster Autoscaler vs Karpenter|Node autoscaling (Cluster Autoscaler와 Karpenter)]] — 트래픽 수용 준비 시간, consolidation 제약과 Spot 중단 처리
 
 ## 현장사례
 - [[Kakao-Ent-Seminar#백엔드인프라전체그림|카카오엔터 백엔드 인프라 전체 그림]] — 네트워크~모니터링 계층별 구성

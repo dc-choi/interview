@@ -16,6 +16,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 
 ## 세부 학습
+- [x] [[GraphRAG-Retrieval|GraphRAG 검색]] — 관계 확장, 원문 검증, Bedrock 동기화와 자원 정리 경계
 - [x] [[Review-Moderation-Pipeline|리뷰 검수 자동화]] — 정책과 판정 수단, 정밀도와 재현율, 재검토 물량과 오래된 결과 방지
 - [x] [[LLM-Generation-Mechanics-Training#사전학습 데이터와 재현 가능한 공개 범위|사전학습의 데이터와 재현성]] — 가중치와 학습 과정 공개의 차이, 데이터 필터링과 과업 평가
 - [x] [[Harness-Component-Evaluation#코딩 도구의 비용 비교|코딩 도구 비용 비교]] — 모델과 하네스 효과 분리, 실패와 재시도 포함, 환산 사용량과 청구액 구분

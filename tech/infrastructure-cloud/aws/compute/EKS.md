@@ -99,12 +99,16 @@ StatefulSet은 **EBS + PersistentVolumeClaim**이 표준.
 
 | 항목 | Cluster Autoscaler | Karpenter |
 |------|---------------------|-----------|
-| 노드 그룹 | ASG 미리 정의 필요 | **JIT 프로비저닝** — Pod 요구에 맞춰 즉시 생성 |
-| 인스턴스 선택 | 정해진 ASG | Spot, 다양한 타입 자동 선택 |
-| 속도 | 분 단위 | 수십 초 |
-| 권장 | 레거시 | **신규 클러스터 표준** |
+| 노드 그룹 | 미리 구성한 ASG의 용량 조절 | NodePool 제약과 Pod 요구에 맞춰 EC2 노드 프로비저닝 |
+| 인스턴스 선택 | ASG의 인스턴스 구성에 따름 | 허용 타입, 가용 용량과 비용을 고려해 선택 |
+| 검토할 조건 | 기존 노드 그룹의 관리 방식과 요구를 충족하는지 | 급격한 수요 변화와 다양한 컴퓨팅 요구에 대응할지 |
 
-Karpenter는 AWS가 만든 오픈소스로 **유연성, 비용 효율**이 압도적.
+두 도구의 실제 준비 시간과 절감률은 환경별로 측정한다. Karpenter가 모든 클러스터에서 더 빠르거나 저렴하다고 단정하지 않는다. 아래는 2026-10-07 AWS와 Karpenter 공식 문서를 대조한 운영 기준이며, 문서의 다른 기능과 가격을 전부 재검증한 기록은 아니다.
+
+- **준비 시간의 경계:** 적용 시에는 스케줄 불가 Pod 발생부터 용량 요청, 인스턴스 부팅, 노드 등록, 이미지 다운로드와 애플리케이션 준비까지 나눠 잰다. EC2 생성 시간만으로 실제 트래픽 수용 시간을 설명하지 않는다.
+- **Consolidation:** 비어 있거나 다른 노드로 워크로드를 옮길 수 있는 노드를 제거하고, 더 저렴한 노드로 교체할 수 있다. 자발적 consolidation은 PDB와 NodePool disruption budget 등의 제약을 받으므로 남은 노드의 이벤트를 보고 회수되지 않은 이유를 확인한다.
+- **Spot 중단:** 중단 처리를 위한 SQS queue 설정을 확인한다. 중단 예고에 맞춘 drain과 대체 노드 생성이 애플리케이션의 무중단을 보장하지는 않으므로 재시도와 종료 처리를 시험한다.
+- **컨트롤러 배치:** 자신이 관리하는 노드에만 의존하지 않도록 Karpenter controller를 별도 노드 그룹이나 Fargate에 둔다. 운영 AMI는 검증한 버전으로 고정하고 새 AMI는 별도로 시험한다.
 
 ## 배포, 운영 도구
 
@@ -154,6 +158,9 @@ Karpenter는 AWS가 만든 오픈소스로 **유연성, 비용 효율**이 압�
 
 ## 출처
 
+- [Amazon EKS, Karpenter](https://docs.aws.amazon.com/eks/latest/best-practices/karpenter.html)
+- [Amazon EKS, Kubernetes Data Plane](https://docs.aws.amazon.com/eks/latest/best-practices/scale-data-plane.html)
+- [Karpenter, Disruption](https://karpenter.sh/docs/concepts/disruption/)
 - AWS Docs — EKS User Guide
 - Kubernetes Docs — Concepts
 - AWS SAA C03 학습 자료 (로컬)
