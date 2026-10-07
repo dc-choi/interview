@@ -51,6 +51,27 @@ NIST SP 800-115의 계획, 수행, 사후 조치를 다음처럼 운영할 수 �
 
 외주 점검에서는 고객의 승인 범위와 제3자가 소유한 시스템의 허용 범위를 구분한다. 수집한 설정과 취약점 보고서도 민감한 자료이므로 접근과 취급 방법을 계획에 포함한다.
 
+## AWS 구성 점검 도구와 예외 처리
+
+2026-10-07 Prowler 문서와 Service Screener 저장소를 대조한 범위다. 자동 점검 결과는 실제 위험과 조치 우선순위를 검토할 입력이며, 인증 충족이나 침해 부재의 증명으로 쓰지 않는다.
+
+| 도구 | 확인할 범위 | 운영 경계 |
+|---|---|---|
+| Prowler | AWS 구성에 대한 보안 검사와 finding | 공식 권한 안내는 `SecurityAudit`, `ViewOnlyAccess`와 일부 검사의 추가 읽기 권한을 요구한다. 권한 부족과 대상 누락을 통과로 계산하지 않는다 |
+| Service Screener | AWS와 커뮤니티 모범 사례에 따른 보안, 안정성, 성능과 비용 등의 구성 개선 권고 | Well-Architected 검토를 보완한다. 생성한 보고서는 로컬에서 호스팅하고 인터넷에 공개하지 않도록 저장소가 명시한다 |
+
+검사용 읽기 권한과 개선 조치를 실행할 쓰기 권한은 따로 설계한다. 점검 보고서에도 자원 구성과 취약한 설정이 담길 수 있으므로 저장 위치, 열람자와 보존 기간을 정한다.
+
+Service Screener의 실행 전체를 읽기 전용으로 가정해서는 안 된다. 현재 저장소의 사전 조건에는 `AWSCloudShellFullAccess`, `cloudformation:CreateStack`, `cloudformation:DeleteStack`도 포함된다. 도구는 감사용 빈 CloudFormation 스택을 실행 중 생성하고 삭제한다고 설명한다. 구성 조회, 실행 기록용 변경과 개선 조치의 권한을 구분해 승인 범위를 확인한다. [실행 사전 조건](https://github.com/aws-samples/service-screener-v2#prerequisites)
+
+Prowler의 mutelist는 의도적인 설정에 대한 finding을 억제한다. CSV에서는 `muted=True`로 표시하면서 원래 `PASS`, `FAIL`, `MANUAL` 상태를 유지하고, JSON-OCSF에서는 `status_id`가 `Suppressed`가 된다. 따라서 억제된 결과를 수정 완료나 점검 통과로 합산하지 않는다.
+
+다음은 이 기능을 운영에 적용할 때의 제안이다.
+
+- 예외마다 대상 자원, 근거, 책임자와 재검토 날짜를 남긴다. 낮은 우선순위와 오탐, 승인된 위험 수용을 구분한다.
+- 실행마다 도구 버전, 계정과 리전, 검사 범위, 실패와 제외 항목을 함께 기록한다. 결과 수 감소만으로 보안이 좋아졌다고 판단하지 않는다.
+- 조치 뒤 같은 범위로 다시 검사하고 실제 접근 차단 여부도 확인한다. 보고서 생성과 위험 해소는 별도 완료 조건이다.
+
 ## 작은 서비스의 적용 예
 
 관리자 권한 회수 점검을 가정한 예시다.
@@ -69,6 +90,9 @@ NIST SP 800-115의 계획, 수행, 사후 조치를 다음처럼 운영할 수 �
 
 ## 출처
 
+- [Prowler, AWS Authentication in Prowler](https://docs.prowler.com/user-guide/providers/aws/authentication)
+- [Prowler, Mutelisting](https://docs.prowler.com/user-guide/cli/tutorials/mutelist)
+- [Service Screener — AWS Samples](https://github.com/aws-samples/service-screener-v2)
 - [NIST, SP 800-50 Rev. 1: Building a Cybersecurity and Privacy Learning Program](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-50r1.pdf) — 2.4절의 측정과 2.5절의 대상별 학습
 - [NIST, The Cybersecurity Framework (CSF) 2.0](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf) — Appendix A의 GV.PO, GV.RR, ID.AM, ID.RA와 PR.AT
 - [NIST, SP 800-115: Technical Guide to Information Security Testing and Assessment](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-115.pdf) — 6장의 계획과 승인, 7장의 자료 취급, 8장의 개선과 재점검

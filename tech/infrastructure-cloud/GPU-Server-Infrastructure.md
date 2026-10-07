@@ -69,6 +69,18 @@ DCGM Exporter는 GPU 지표를 Prometheus가 수집할 수 있도록 노출한�
 
 2026-10-07 부분 대조: 사용률 정의, DCGM Exporter의 작업 연결과 GPU 공유 제약을 공식 문서로 확인했다. GPU 수명, 보편적인 장애율이나 비용 절감률은 이 지표만으로 추정하지 않는다.
 
+## GPU 체크포인트와 초기화 비용
+
+2026-10-07 NVIDIA `cuda-checkpoint` 문서 기준이다. 이 도구는 Linux 프로세스의 CUDA 상태를 중지하고 복원한다. GPU 상태를 바꾸는 API를 잠그고 이미 제출한 작업의 완료를 기다린 뒤 장치 메모리를 호스트로 복사하고 GPU 자원을 해제한다. 복원할 때는 메모리와 CUDA 객체를 되살린다.
+
+CUDA 상태의 중지만으로 CPU 스레드까지 멈추지는 않는다. 전체 프로세스를 저장하려면 CRIU 같은 CPU 측 체크포인트 도구와 결합해야 한다. 모델 가중치 파일을 저장하는 것과 실행 중인 프로세스를 복원하는 것은 다른 작업이다.
+
+- 기능은 드라이버 버전에 의존한다. 현재 문서는 UVM 메모리와 `cuMemExportToShareableHandle()`로 만든 IPC 메모리를 지원하지 않는다고 명시한다. 모든 IPC가 같은 제약을 갖는다고 일반화하지 않는다.
+- 체크포인트나 복원 중 오류가 나면 프로세스의 정상 상태 유지를 보장하지 않는다. 실패 후 재시작 경로를 별도로 준비한다.
+- 콜드 스타트 단축은 검증할 가설이다. 초기화 생략 이득과 상태 저장, 읽기, 호스트와 GPU 간 복사 비용을 함께 측정한다(운영 제안).
+
+성능 비교는 프로세스 복원 완료 대신 실제 추론 준비와 첫 정상 응답까지 측정한다. 같은 모델, 드라이버와 장비에서 일반 시작과 복원 시작을 비교하고 결과의 정확성도 확인한다(검증 제안).
+
 ## 확인 질문
 
 - 작업이 연산, 메모리 용량, 메모리 대역폭, 서버 간 통신 중 어디에서 제한되는가?
@@ -78,6 +90,7 @@ DCGM Exporter는 GPU 지표를 Prometheus가 수집할 수 있도록 노출한�
 
 ## 출처
 
+- [cuda-checkpoint: CUDA checkpoint and restore utility — NVIDIA](https://github.com/NVIDIA/cuda-checkpoint)
 - [NVIDIA CUDA, CUDA C++ Best Practices Guide](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html)
 - [NVIDIA, H100 GPU Product Specifications](https://www.nvidia.com/en-us/data-center/h100/)
 - [NVIDIA DGX H100/H200 User Guide, Introduction to NVIDIA DGX H100/H200 Systems](https://docs.nvidia.com/dgx/dgxh100-user-guide/introduction-to-dgxh100.html)
