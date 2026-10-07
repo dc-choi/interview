@@ -50,6 +50,19 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 
 예를 들어 과거 회의의 결정과 그 결정을 바탕으로 생성한 추천은 서로 다른 자료다. 추천을 다시 저장하더라도 원래 결정의 직접 증거로 바꾸지 않는 것이 검토 기준이다. 최신성, 충돌과 원문 위치의 계약은 [[Agentic-Context-Platform|컨텍스트 플랫폼]]과 연결한다.
 
+## 개인화 기억의 출처, 저장 위치와 삭제 범위
+
+개인의 역할과 선호를 재사용하는 시스템도 직접 입력한 사실과 활동에서 추론한 내용을 구분해야 한다. 기억에 저장됐다는 사실은 사용자가 승인했거나 내용이 정확하다는 증거가 아니다.
+
+2026-10-07 확인한 Amazon Quick 데스크톱 공식 문서는 다음 경계를 제공한다.
+
+- **출처와 적용 대상:** 사용자가 직접 말한 `Told`와 추론한 `Learned`를 구분하고 형성 근거를 보여 준다. 기억은 에이전트별로 보관하지만 지식 그래프 엔티티는 에이전트 간 공유된다.
+- **수정과 삭제:** 기억을 편집하거나 지울 수 있다. 기억 기능을 끄면 기존 기억을 사용하지 않고 새 기억도 기록하지 않는다. 모든 기억을 지워도 지식 그래프는 별도로 남는다.
+- **저장 위치:** 대화, 기억, 지식 그래프는 클라우드의 사용자 계정에 보관된다. 원본 파일이 로컬에 있다는 사실만으로 파생 데이터도 로컬에만 있다고 판단하지 않는다.
+- **권한:** 폴더 접근과 도구 작업 권한을 따로 설정한다. 도구에는 `Always Allow`, `Ask Each Time`, `Always Deny`가 있으며 예약 에이전트에도 적용된다.
+
+적용 시에는 기억을 잘 찾는지 외에 잘못 추론한 선호를 고칠 수 있는지, 에이전트 사이에 무엇이 공유되는지, 삭제가 어디까지 전파되는지를 점검한다. 한 번 교정하면 다시 틀리지 않는다거나 정직성 지침만으로 환각이 사라진다는 보장으로 해석하지 않는다. 위 내용은 제품 문서 대조이며 실제 계정의 격리나 삭제 동작을 시험한 결과는 아니다.
+
 ## 비용과 품질을 확인하는 방법
 
 `recall`은 임베딩과 재순위화 기반 검색이고 `reflect`는 LLM을 포함한 추론 루프다. 따라서 같은 `budget`도 전자는 검색 깊이, 후자는 탐색 반복을 뜻한다. `max_tokens` 역시 전자는 반환 기억의 크기, 후자는 최종 답변 길이를 제한한다. 최종 답변 제한을 전체 검색 비용 상한으로 해석하면 안 된다.
@@ -63,6 +76,8 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 
 ## 출처
 
+- [AWS, Amazon Quick: Memories](https://docs.aws.amazon.com/quick/latest/userguide/memories-desktop.html)
+- [AWS, Amazon Quick: Security, privacy, and architecture](https://docs.aws.amazon.com/quick/latest/userguide/desktop-security.html)
 - [Cognitive Architectures for Language Agents — CoALA 연구진](https://arxiv.org/html/2309.02427v3)
 - [Hindsight: Structured Agent Memory that Retains, Recalls, and Reflects — ACL Anthology](https://aclanthology.org/2026.acl-demo.27/)
 - [recall vs reflect: Search Your Agent's Memory, or Ask It — Hindsight](https://hindsight.vectorize.io/blog/2026/07/24/recall-vs-reflect)

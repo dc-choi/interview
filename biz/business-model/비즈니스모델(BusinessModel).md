@@ -11,7 +11,7 @@ aliases: ["Business Model Index"]
 
 ## 목차
 
-- [x] [[Business-Model|비즈니스 모델 & 수익 구조]] — 수익원, 공헌이익과 손익분기, 코호트별 획득 비용 회수, 현금 계획
+- [x] [[Business-Model|비즈니스 모델 & 수익 구조]] — 수익원, 공헌이익과 손익분기, 코호트별 획득 비용 회수, AI 도입의 방어와 운영, 성장 가설, 현금 계획
 - [x] [[Pricing-Strategy|가격 정책 설계]]
 - [x] [[AI-Creative-Service-Delivery|AI 콘텐츠 제작 서비스의 납품 조건]] — 플랫폼별 제출 자격, 생성 과정 보관, 인계 파일과 수정 범위
 - [x] [[Healthcare-B2B-Solutions|의료 B2B 솔루션의 사업 구조와 시장 진입]]

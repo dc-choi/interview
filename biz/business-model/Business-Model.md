@@ -116,6 +116,20 @@ AI를 쓰는 정보 서비스라면 자료 준비부터 생성, 원문 대조, �
 
 대표의 무급 노동에 분석용 단가를 부여하면 직접 제공하는 서비스의 경제성을 비교할 수 있다. 이 값은 실제 지급액과 구분하고, 이미 지급 인건비를 반영한 경우 같은 노동을 다시 차감하지 않는다. 같은 단위의 수익, 노동과 운영 용량 계산은 [[Solo-Product-Market-Validation#1인 사업에 충분한 시장인지 계산한다|1인 사업의 시장과 운영 용량]]을 따른다.
 
+### AI 도입의 방어, 운영과 성장 가설을 나눈다
+
+AI로 작업 시간이 줄어도 고객이 내는 가격과 반복 구매 이유가 함께 바뀔 수 있다. 따라서 비용 절감 과제와 새 수익원 탐색을 같은 성공 지표로 평가하지 않는다.
+
+다음은 전문 서비스 사업의 변화를 검토하는 판단 틀이다. Factory X의 Defend, Operate, Grow 구분을 2026-10-07 공식 설명과 대조했으며 보편적인 성과 법칙으로 보지 않는다.
+
+| 구분 | 확인할 질문 | 적용 시 남길 근거 |
+| --- | --- | --- |
+| 방어(Defend) | 기존 고객의 가격 압박 속에서도 품질과 수익성을 유지하는가? | 계약 단가, 재작업을 포함한 제공 비용과 유지 고객 |
+| 운영(Operate) | 기존 절차에 AI만 추가했는가, 업무 전달 방식도 바꿨는가? | 인계 단계, 사람의 검토와 수정 시간, 품질 기준 |
+| 성장(Grow) | 다음에 고객이 지불할 서비스나 상품화할 지식이 있는가? | 고객 문제, 유료 검증과 반복 제공 가능성 |
+
+표의 근거 항목은 이 틀을 적용하기 위한 제안이다. 작은 예산으로 가설을 시험하고 증거가 생긴 경우에만 투자를 늘린다. 세 관점이 필요하다는 말이 한 사람이 세 프로젝트를 동시에 시작해야 한다는 뜻은 아니다. 도구 도입 수나 생성량 대신 고객 가치와 전체 제공 비용으로 범위를 정한다.
+
 ## 매출, 이익과 현금흐름을 구분한다
 
 발생주의에서는 매출과 비용의 인식 시점이 돈을 받고 지급하는 시점과 다를 수 있다. 이익이 발생해도 아직 대금을 받지 못하면 지출할 현금이 부족할 수 있고, 돈이 들어왔어도 앞으로 제공할 업무와 지급 의무가 남아 있을 수 있다. [OpenStax의 현금흐름 설명](https://openstax.org/books/principles-financial-accounting/pages/16-why-it-matters)은 같은 기간의 손익과 현금의 발생 및 사용을 함께 보도록 설명한다.
@@ -140,6 +154,7 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - 위 일반화한 예시를 본인의 실행이나 성과로 사용하지 않는다.
 
 ## 출처
+- [AI Transformation for Professional Services — Factory X](https://www.factoryx.co.uk/) — Defend, Operate, Grow와 단계별 검증 투자
 - [Stripe Atlas, The business of SaaS](https://stripe.com/guides/atlas/business-of-saas) — 단순 LTV의 가정, 매출 기준 LTV와 초기 획득 지출. 2026-10-02 해당 개념 대조
 - [Stripe, CAC payback period](https://stripe.com/resources/more/what-is-the-cac-payback-period) — 획득 비용의 회수와 매출, 마진의 구분. 위 코호트 계산은 이를 적용한 가상 예시
 - [Principles of Accounting, Volume 1, Chapter 16: Why It Matters — OpenStax](https://openstax.org/books/principles-financial-accounting/pages/16-why-it-matters): 2026-09-22 확인, 발생주의 손익과 현금흐름의 구분.
