@@ -19,7 +19,9 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## AWS 체크리스트
 - [x] [[Amazon-Quick-Flows-and-Knowledge|Amazon Quick의 자동화와 개인 지식 그래프]] — 예약 action 권한, 변경된 flow 실행과 원문 근거
-- [x] [[SageMaker-Catalog-Discovery|SageMaker Catalog의 탐색과 분석]] — 추천 메타데이터의 검토, 구독 권한과 SQL 생성
+- [x] [[SageMaker-Catalog-Discovery|SageMaker Catalog의 탐색과 분석]] — 메타데이터 검토, 계보 보기, 품질 결과와 구독 권한, SQL 생성
+- [x] [[EKS-Windows|EKS Windows 노드]] — Linux 시스템 Pod, OS 스케줄링, 단일 ENI와 prefix IP 용량
+- [x] [[DocumentDB-TTL-Operations|DocumentDB TTL 운영]] — 비동기 삭제, 만료 데이터의 사용 제한과 부하 검증
 - [x] [[MemoryDB-Multi-Region|MemoryDB Multi-Region]] — 비동기 복제, 자료형별 LWW와 동시 카운터의 한계
 - [x] [[Glue#수집 로그를 분석 테이블로 만드는 경계|수집 로그와 분석 테이블]] — 부분 실패와 재시도, 스키마 누락과 중첩 구조 변환
 - [x] [[AWS-Control-Tower|Control Tower 거버넌스]] — 계정 표준화, 통제별 적용 범위와 공동 책임
