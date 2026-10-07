@@ -85,6 +85,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[EBS#EBS vs Instance Store (요약)|EBS vs Instance Store (영속성, 성능, 스냅샷, 적용 워크로드)]]
 
 ## Network 체크리스트
+- [x] [[VPC-Connectivity#특정 리소스 연결 — PrivateLink와 VPC Lattice|PrivateLink와 VPC Lattice 리소스 연결]] — resource endpoint, 소비자 연결 방식, auth policy와 보안 그룹의 적용 경계
 - [x] [[VPC-NAT-Security#NACL 응답 포트와 적용 범위|SG와 NACL 운영]] — 기본값 구분, 연결 추적, 응답의 임시 포트와 서브넷 경계
 - [x] [[Direct-Connect-SiteLink|Direct Connect SiteLink]] — 거점 간 연결, prefix controls, 터널과 MTU, 암호화와 비용 경계
 - [x] [[Cloudflare-HTML-Cache|Cloudflare HTML 캐시]] — 공개 HTML의 캐시 조건, 로그인 제외와 CF-Cache-Status 진단
