@@ -10,7 +10,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 ## 목차
 
 - [[GPU-Server-Infrastructure|GPU 서버 인프라]] — CPU와 GPU, 워프와 분기 발산, 메모리와 통신 경로, 전력과 냉각, 사용률 해석과 MIG/time-slicing 관측 제약
-- [[tech/infrastructure-cloud/foundation/클라우드기초(Foundation)|클라우드 기초 (Foundation)]] — IaaS/PaaS/FaaS, IaC와 Pulumi 컴포넌트, 클라우드 전환 전략, Cloudflare cf CLI와 Artifacts
+- [[tech/infrastructure-cloud/foundation/클라우드기초(Foundation)|클라우드 기초 (Foundation)]] — IaaS/PaaS/FaaS, SaaS 리전별 데이터 격리, IaC와 Pulumi 컴포넌트, 클라우드 전환 전략, Cloudflare cf CLI와 Artifacts
 - [[tech/infrastructure-cloud/container/컨테이너(Container)|컨테이너 (Container)]] — Docker, Compose, 컨테이너 내부 구조, 이미지 빌드와 베이스 이미지 선택
 - [[tech/infrastructure-cloud/aws/AWS서비스(AWSServices)|AWS 서비스 (AWS)]] — EC2/ASG/ALB, Lambda, ALB 5XX와 NLB TCP 연결 진단
 - [[tech/infrastructure-cloud/network/인프라네트워크(InfraNetwork)|인프라 네트워크 (Network)]] — DNS, Load Balancer, Reverse Proxy
@@ -58,13 +58,14 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[RDS-PostgreSQL-Performance-Triage|RDS와 Aurora PostgreSQL 성능 진단]] — 자원과 세션 연결, idle 상태 구분, 누적 SQL 통계의 차분, 유지보수와 실행 계획, QPM의 수집과 적용
 - [x] [[Storage-Gateway-DataSync|DataSync 클라우드 간 전송]] — 파티션 간 S3의 Object storage location, Azure Blob의 SAS와 태그, agent 조건과 검증 범위
 - [x] [[ElastiCache-Use-Cases#8. Semantic Cache (Gen AI)|시맨틱 캐시]] — 정확 일치 캐시와의 차이, 임계값, 문맥과 권한, 무효화와 총비용
-- [x] [[IAM|AWS IAM (엔티티, 정책 평가, AssumeRole과 Federation, Roles Anywhere의 외부 워크로드 인증, 모범 사례)]]
+- [x] [[IAM|AWS IAM (엔티티, 정책 평가, AssumeRole과 Federation, Roles Anywhere와 Account access manager, 모범 사례)]]
 - [x] [[AWS-Builder-ID-Recovery|AWS Builder ID 복구 이메일]] — 등록 절차, MFA 복구에 필요한 두 메일함과 계정 유형 구분
 - [x] [[SQS|SQS]] / [[SNS|SNS]] / [[EventBridge|EventBridge]] — Queue, Pub/Sub, Event Bus의 선택 기준과 운영
 - [x] [[CloudWatch|CloudWatch (Metrics, Logs, Alarms, Insights, 운영과 비용)]]
 - [x] [[EBS#EBS vs Instance Store (요약)|EBS vs Instance Store (영속성, 성능, 스냅샷, 적용 워크로드)]]
 
 ## Network 체크리스트
+- [x] [[VPC-NAT-Security#NACL 응답 포트와 적용 범위|SG와 NACL 운영]] — 기본값 구분, 연결 추적, 응답의 임시 포트와 서브넷 경계
 - [x] [[Direct-Connect-SiteLink|Direct Connect SiteLink]] — 거점 간 연결, prefix controls, 터널과 MTU, 암호화와 비용 경계
 - [x] [[Cloudflare-HTML-Cache|Cloudflare HTML 캐시]] — 공개 HTML의 캐시 조건, 로그인 제외와 CF-Cache-Status 진단
 - [x] [[DNS#UDP와 TCP의 선택|DNS 전송 방식]] — EDNS의 크기 협상, TCP 연결 재사용과 암호화 DNS의 QUIC 경로

@@ -29,13 +29,26 @@ NAT Instance는 **추천하지 않음** — Public Subnet에 두는 특수 EC2(`
 | 계층 | 인스턴스(ENI) | 서브넷 |
 | 상태 | **Stateful** — 응답 자동 허용 | **Stateless** — 인/아웃 모두 규칙 필요 |
 | 룰 | allow만 (deny 없음) | allow + **deny 가능** |
-| 기본값 | 인바운드 거부 / 아웃바운드 허용 | 인, 아웃 모두 허용 |
+| 생성 시 기본값 | 새 custom SG는 인바운드 규칙 없음 / 아웃바운드 허용. default SG는 같은 SG를 source로 하는 인바운드 허용 | default NACL은 양방향 허용, custom NACL은 규칙 추가 전 양방향 거부 |
 | 평가 순서 | 규칙 리스트 전체 매칭 | **우선순위(번호) 순** — 작은 값이 먼저 |
 | 인스턴스 부착 | ENI당 SG **기본 쿼터 5개** (최대 16개까지 조정 가능) | 서브넷당 1개 NACL |
 | 체크 시점 | 트래픽이 ENI에 도달할 때 | 서브넷 경계 진입/이탈 |
-| 적용 | 변경 즉시 반영 | 변경 즉시 반영 |
+| 기존 연결에 대한 변경 효과 | 추적 중인 연결은 규칙을 제거해도 즉시 끊기지 않을 수 있음 | 상태를 추적하지 않아 기존 연결의 패킷도 변경한 규칙으로 평가 |
 
 **실전**: SG가 기본 도구, NACL은 서브넷 전체에 강한 차단이 필요할 때(규제, IP 블랙리스트) 사용. NACL은 **deny 규칙이 가능**하다는 점이 시험에서 자주 묻는 포인트.
+
+### NACL 응답 포트와 적용 범위
+
+SG의 stateful 동작은 허용된 요청의 응답에 대한 규칙이다. 아웃바운드 규칙을 제거하면 인바운드 요청의 응답은 나갈 수 있어도, 인스턴스가 새로 시작하는 외부 연결까지 허용되는 것은 아니다.
+
+NACL은 요청과 응답을 각각 허용해야 한다. 외부 클라이언트가 서버의 TCP 22번으로 접속했다면, 인바운드에는 서버의 22번을, 아웃바운드에는 클라이언트의 임시 포트를 허용한다. 응답의 목적지 포트를 다시 22번으로 설정하면 연결이 막힌다.
+
+- 임시 포트 범위는 연결을 시작한 OS와 서비스에 따라 다르다. 다양한 클라이언트를 포괄하는 `1024-65535`는 선택 가능한 넓은 범위이며, 실제 환경에 맞춰 좁히고 상대 CIDR도 제한한다.
+- NACL은 작은 번호부터 첫 일치 규칙을 적용한다. 넓은 허용 규칙보다 뒤에 있는 거부 규칙은 그 트래픽을 차단하지 못한다.
+- NACL 하나를 여러 서브넷에 연결할 수 있지만 서브넷에는 한 번에 하나만 연결된다. 같은 서브넷 내부에서 라우팅되는 트래픽에는 NACL을 적용하지 않는다.
+- SG와 NACL로 AmazonProvidedDNS나 IMDS를 차단할 수 있다고 가정하지 않는다. DNS는 Route 53 Resolver DNS Firewall, 메타데이터는 IMDS 설정처럼 별도 제어를 확인한다.
+
+SG/NACL의 기본값, 연결 추적과 이 절은 2026-10-07 공식 문서로 확인했다. NAT와 규제 관련 기존 절 전체를 재검증한 날짜는 아니다.
 
 ## 보안, 규제 관점
 
@@ -46,5 +59,16 @@ NAT Instance는 **추천하지 않음** — Public Subnet에 두는 특수 EC2(`
 
 ## 출처
 
+- [Amazon VPC User Guide, Control traffic to your AWS resources using security groups](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html)
+- [Amazon VPC User Guide, Default security groups for your VPCs](https://docs.aws.amazon.com/vpc/latest/userguide/default-security-group.html)
+- [Amazon VPC User Guide, Default network ACL for a VPC](https://docs.aws.amazon.com/vpc/latest/userguide/default-network-acl.html)
+- [Amazon VPC User Guide, Control subnet traffic with network access control lists](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html)
+- [Amazon VPC User Guide, Custom network ACLs for your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/custom-network-acl.html)
+- [Amazon EC2 User Guide, Security group connection tracking](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-connection-tracking.html)
 - [Amazon VPC User Guide, NAT gateway basics](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html)
 - [Amazon VPC quotas — ENI당 보안 그룹 기본 5개, 최대 16개까지 조정](https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html)
+
+## 관련 문서
+
+- [[VPC|VPC 구성과 연결]]
+- [[VPC-Pitfalls-Interview|VPC 운영 실수와 점검 질문]]

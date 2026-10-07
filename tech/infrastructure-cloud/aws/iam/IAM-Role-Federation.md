@@ -88,6 +88,21 @@ IAM role 자체와 달리 Roles Anywhere 리소스는 리전 단위다. 함께 �
 
 이 절은 2026-10-07 공식 문서로 확인했다. 기존 STS와 GitHub OIDC 절 전체를 재검증한 날짜는 아니다.
 
+## Account access manager — 기존 역할의 중앙 할당
+
+Account access manager(AAM)는 각 AWS 계정에 존재하는 IAM role을 IAM Identity Center organization instance의 사용자와 그룹에 할당한다. 계정마다 다른 역할을 유지할 때 적합하며, 여러 계정에 공통 권한을 배포하는 permission set과 함께 사용할 수 있다. 역할 생성과 정책 관리는 계속 IAM 또는 IaC에서 수행한다.
+
+설정은 다음 경계를 나누어 확인한다.
+
+1. Organizations와 Identity Center의 organization instance를 준비한다. account instance는 지원하지 않는다. AAM은 관리 계정에서 해당 Identity Center의 기본 리전에 활성화한다.
+2. 대상 role의 기존 trust policy에 `account-access.amazonaws.com`이 `sts:AssumeRole`과 `sts:SetContext`를 호출할 수 있는 statement를 추가한다. `aws:SourceAccount`와 `aws:SourceArn`으로 AAM을 소유한 계정과 application ARN을 한정해 confused deputy를 방지한다.
+3. 사용자 또는 그룹, 대상 계정과 role을 연결한다. 콘솔이 계정 안의 role 목록을 자동 탐색하지 않으므로 이름을 미리 확인한다. 할당 관리는 관리 계정 또는 위임 관리자에서 수행할 수 있다.
+4. 사용자는 account access portal로 역할에 접근한다. CLI는 브라우저 로그인 뒤 `aws login`으로 임시 역할 자격증명을 받는 경로를 제공한다. permission set의 `aws configure sso`와 `aws sso login` 경로와 구분한다.
+
+IdP 속성을 session tag로 전달해 ABAC에 쓴다면 trust policy의 `sts:TagSession`도 검토한다. 역할을 할당했다는 사실만으로 리소스 작업이 허용되지는 않는다. 실제 역할 권한과 조직 정책을 함께 확인한다.
+
+이 절은 2026-10-07 공식 문서로 확인했다. 기존 STS와 GitHub OIDC 절의 검증 날짜를 바꾸지는 않는다.
+
 ## Permission Boundary — 권한 천장
 
 ```
@@ -97,6 +112,10 @@ IAM role 자체와 달리 Roles Anywhere 리소스는 리전 단위다. 함께 �
 위임 관리자가 이 한도 안에서만 사용자와 Role을 만들 수 있게 보장한다. 개발자에게 IAM 관리 위임할 때, 자기보다 강한 권한 부여 못 하게 막는 가드.
 
 ## 출처
+- [AWS IAM User Guide, Account access manager](https://docs.aws.amazon.com/IAM/latest/UserGuide/account-access-manager.html)
+- [AWS IAM User Guide, Getting started with account access manager](https://docs.aws.amazon.com/IAM/latest/UserGuide/account-access-manager-getting-started.html)
+- [AWS IAM User Guide, Prepare your IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/aam-prepare-roles.html)
+- [AWS IAM User Guide, Assign and remove access](https://docs.aws.amazon.com/IAM/latest/UserGuide/aam-assign-remove-access.html)
 - [AWS IAM Roles Anywhere User Guide, What is IAM Roles Anywhere?](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/introduction.html)
 - [AWS IAM Roles Anywhere User Guide, The authentication process](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication.html)
 - [AWS IAM Roles Anywhere User Guide, The trust model](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/trust-model.html)
