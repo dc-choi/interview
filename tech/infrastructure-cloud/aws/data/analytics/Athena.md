@@ -90,6 +90,16 @@ S3에 저장된 데이터를 **별도 적재 없이 표준 SQL로 직접 쿼리*
 - **Federated Query**: 운영 RDS + 로그 S3를 한 SQL로 조인.
 - **CTAS / INSERT INTO**: SQL만으로 데이터 변환 파이프라인 구성 가능.
 
+## CloudTrail 로그의 파티션과 호출 주체 추적
+
+2026-10-07 AWS 공식 문서 기준, CloudTrail Event history는 계정과 리전별 최근 90일의 관리 이벤트만 제공한다. 데이터 이벤트 조회나 장기 조사는 사전에 수집한 Trail의 S3 로그 등 별도 기록이 필요하다. Athena는 기록되지 않은 과거 이벤트를 복원하지 않는다.
+
+- **테이블 경로**: AWS의 partition projection 예시는 단일 계정과 리전의 `AWSLogs/<account-id>/CloudTrail/<region>/` 아래 날짜 경로를 대상으로 한다. 조직 Trail 등 경로가 다른 로그는 실제 저장 구조에 맞춰 `LOCATION`과 `storage.location.template`을 설정한다.
+- **파티션 범위**: 예제의 `timestamp`는 `yyyy/MM/dd` 형식의 날짜 파티션이고 `eventtime`은 이벤트 발생 시각이다. 두 필드를 구분하고 날짜 파티션 조건으로 스캔 범위를 줄인 뒤 사건 시각으로 좁힌다. Projection은 경로를 계산하므로 새 날짜마다 `ALTER TABLE ADD PARTITION`을 실행할 필요가 없다.
+- **호출 주체**: `useridentity.type`, `arn`, `accesskeyid`와 `sessioncontext.sessionissuer`를 함께 본다. `AssumedRole`의 session issuer는 사용한 역할 정보이며 실제 사람의 신원을 단독으로 증명하지 않는다. `accessKeyId`는 누락되거나 빈 값일 수 있다.
+- **세션 연결**: 기록이 있으면 `AssumeRole` 응답의 임시 access key ID와 후속 이벤트의 `userIdentity.accessKeyId`를 연결한다. IAM 공식 문서는 해당 STS 호출의 `responseElements`에서 `secretAccessKey`를 제외한다고 명시한다. 호출 계정과 대상 계정의 이벤트를 구분해 조사한다.
+- **결과 판정**: `eventname`만 보고 리소스 생성이나 데이터 유출이 성공했다고 단정하지 않는다. `errorcode`, 응답과 관련 리소스 상태를 대조하고, 조회 결과가 없으면 수집 설정과 보존 기간, 파티션 경로부터 확인한다(조사 원칙).
+
 ## SageMaker Unified Studio와 Power BI의 ODBC 연결
 
 Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연결을 지원한다. 2026-10-07 확인한 릴리스 노트에서는 `SageMakerBrowserIdc`와 `SageMakerIam` 지원이 2.2.0.0에 추가됐다. 실제 배포 버전은 이후 인증과 메타데이터 조회 수정 사항까지 확인해 선택한다.
@@ -127,6 +137,10 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 - [Amazon Athena, Work with query results and recent queries](https://docs.aws.amazon.com/athena/latest/ug/querying.html)
 - [Amazon Athena, Manage query processing capacity](https://docs.aws.amazon.com/athena/latest/ug/capacity-management.html)
 - [Amazon Athena Pricing](https://aws.amazon.com/athena/pricing/)
+- [Amazon Athena, Create the table for CloudTrail logs in Athena using partition projection](https://docs.aws.amazon.com/athena/latest/ug/create-cloudtrail-table-partition-projection.html)
+- [AWS CloudTrail, Working with CloudTrail event history](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html)
+- [AWS CloudTrail, CloudTrail userIdentity element](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-user-identity.html)
+- [AWS IAM, Logging IAM and AWS STS API calls with AWS CloudTrail](https://docs.aws.amazon.com/IAM/latest/UserGuide/cloudtrail-integration.html)
 - AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서
@@ -135,3 +149,4 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 - [[S3]]
 - [[AWS-Lambda]]
 - [[Kinesis]]
+- [[CloudTrail-Config|CloudTrail과 Config]]

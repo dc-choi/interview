@@ -100,6 +100,16 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 
 - 루트 도메인(`example.com`)에는 CNAME을 만들 수 없다. ELB, CloudFront처럼 DNS 이름을 가진 지원 리소스에 연결할 때 Alias를 사용하며, 루트 A/AAAA 레코드에 IP 주소를 직접 넣는 구성도 가능하다.
 
+## 삭제한 S3 버킷을 가리키는 DNS
+
+2026-10-07 AWS 공식 문서 기준, S3 endpoint로 향하는 CNAME이나 Alias를 남긴 채 대응 버킷을 삭제하면 다른 계정이 같은 이름의 버킷을 만들어 해당 도메인으로 콘텐츠를 제공할 수 있다. 이는 도메인 등록 소유권 이전이 아니라 남은 DNS와 재사용된 버킷 이름의 결합이다.
+
+운영에서는 버킷 폐기와 DNS 정리를 함께 관리한다. 이미 다른 계정으로 요청이 가면 해당 레코드를 제거하거나 통제 가능한 대상으로 바꾸고, DNS 캐시가 갱신될 때까지 기존 요청이 남을 수 있음을 고려한다. 도메인 소유만으로 기존 이름의 S3 버킷을 되찾을 수 있다고 가정하지 않는다.
+
+- **새 이름 사용**: 소유한 새 서브도메인과 일치하는 버킷을 먼저 확보한 뒤 S3 website endpoint로 연결한다.
+- **기존 이름 유지**: 통제하는 S3 버킷을 origin으로 둔 CloudFront에 기존 서브도메인을 alternate domain name으로 등록하고, 그 이름을 포함한 TLS 인증서와 Route 53 Alias를 연결한다.
+- **비공개 origin**: CloudFront OAC를 쓸 때는 일반 S3 bucket origin을 사용한다. S3 website endpoint는 custom origin이며 OAC/OAI를 지원하지 않는다.
+
 ## Health Check
 
 - 엔드포인트 상태를 주기적으로 감시 → 실패 시 라우팅에서 자동 제외
@@ -148,6 +158,10 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 - [Latency-based routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html)
 - [Route 53 상태 확인 종류](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-types.html)
 - [상태 확인의 healthy 판정 방식](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-determining-health-of-endpoints.html)
+- [Virtual hosting of general purpose buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html)
+- [Routing traffic to an Amazon CloudFront distribution by using your domain name](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-cloudfront-distribution.html)
+- [Restrict access to an Amazon S3 origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)
+- [Stop subdomain routing to a different AWS account — AWS re:Post](https://repost.aws/knowledge-center/route-53-stop-routing-different-account)
 
 ## 관련 문서
 

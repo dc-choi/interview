@@ -124,6 +124,21 @@ Anthropic의 환각 완화 가이드(2026-10-06 기준)는 모르겠다고 답�
 
 Claude API의 Citations 기능은 API가 인용을 파싱하고 `cited_text`를 문서에서 직접 추출하므로 인용이 제공 문서의 유효한 위치를 가리킨다고 보장한다. 존재 검사는 플랫폼이 맡지만 적용과 지지 검사는 남는다. 2026-10-06 문서 기준으로 Citations를 구조화 출력과 함께 켜면 400 오류가 난다. 근거 추적 데이터 계약은 [[RAG-Retrieval-Engineering#Context packing과 근거 추적|근거 추적]]을 따른다.
 
+## Bedrock의 근거 검사와 정책 검증
+
+2026-10-07 AWS 공식 문서 기준, contextual grounding과 Automated Reasoning은 비교 기준과 후속 처리가 다르다.
+
+| 기능 | 비교 기준 | 한계 |
+|---|---|---|
+| Contextual grounding | 주어진 자료에 근거하는지(grounding), 질문과 관련 있는지(relevance)를 각각 평가 | 자료 자체의 사실성 보증이 아니며, 임계값을 올리면 과잉 차단도 평가해야 함 |
+| Automated Reasoning | 자연어를 논리 표현으로 변환한 뒤 정의한 정책 규칙과 대조 | 정책 변수에 담기지 않은 주장과 자연어 변환 오류까지 검증하지 못함 |
+
+Contextual grounding은 참조 자료, 질문과 검사할 응답을 받는다. 공식 지원 범위는 요약, 바꿔쓰기와 질의응답이며 대화형 QA와 챗봇은 지원 대상으로 명시하지 않는다. 스트리밍에서는 관련성 판정이 응답 전체를 보낸 뒤에 나올 수 있어, 판정 전 노출을 허용할지 별도로 설계한다.
+
+Automated Reasoning은 **detect mode**로 결과를 반환하며 자체적으로 응답을 차단하지 않는다. 애플리케이션이 결과에 따라 전달, 수정, 추가 질문이나 보류를 결정한다. 자연어를 논리로 옮기는 단계에는 기반 모델을 쓰므로, 수학적 검증이 전체 응답의 무오류를 보장하지 않는다. 당시 지원은 영어(US), 비스트리밍이며, 정책 추출 결과와 번역 정확도를 테스트해야 한다.
+
+API 성공도 검사 실행의 증거는 아니다. `Converse`에서 `guardContent` 없이 일반 `text`만 보내면 Automated Reasoning 검사가 생략될 수 있다. 응답의 `automatedReasoningPolicyUnits`와 findings를 확인하고, `translationAmbiguous`, `tooComplex`, `noTranslations` 같은 결과를 통과로 합치지 않는다. 다른 가드레일이 동작했더라도 이 검사의 실행 여부는 따로 확인한다.
+
 ## 평가 세트에 넣을 사례
 
 평가 세트는 실제 요청 분포에 판정이 갈리는 경계 사례를 섞는다. 환불 상담이라면 자격이 되는 구매, 이미 사용한 계정, 주문 기록이 없는 경우, 폐기된 정책만 검색되는 경우, 30일 환불이 보장된다던데처럼 거짓 전제를 깐 질문, 원천 데이터로 답할 수 없는 질문, 결제 도구가 실패하거나 타임아웃이 난 경우를 넣는다(설명용 예시).
@@ -160,6 +175,9 @@ Claude API의 Citations 기능은 API가 인용을 파싱하고 `cited_text`를 
 - [Reasoning Models Don't Always Say What They Think — arXiv, Chen et al.](https://arxiv.org/abs/2505.05410)
 - [Claude Platform Docs, Reduce hallucinations](https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations)
 - [Claude Platform Docs, Citations](https://platform.claude.com/docs/en/build-with-claude/citations)
+- [Amazon Bedrock, Use contextual grounding check to filter hallucinations in responses](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-contextual-grounding-check.html)
+- [Amazon Bedrock, What are Automated Reasoning checks in Amazon Bedrock Guardrails?](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-automated-reasoning-checks.html)
+- [Amazon Bedrock, Integrate Automated Reasoning checks in your application](https://docs.aws.amazon.com/bedrock/latest/userguide/integrate-automated-reasoning-checks.html)
 
 ## 관련 문서
 
