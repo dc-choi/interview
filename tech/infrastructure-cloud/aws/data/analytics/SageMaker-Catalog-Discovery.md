@@ -24,6 +24,16 @@ AI 추천은 자산과 컬럼의 이름, 설명과 용어집 항목을 제안한
 
 도메인에 게시된 자산은 구독 요청과 소유자의 승인 절차를 거친다. 관리 대상 Glue/Redshift 자산은 서비스가 권한 부여를 관리할 수 있다. 비관리 자산은 구독 승인 이벤트와 별도의 연동으로 접근을 제공해야 한다. 승인과 실제 접근 가능 여부를 함께 확인한다.
 
+### 구독 철회와 실제 권한 회수
+
+2026-10-07 공식 문서 기준. 소유 프로젝트가 승인한 구독을 철회하는 `Revoke subscription`과 구독 프로젝트가 사용을 끝내는 `Unsubscribe`를 구분한다. 소유자가 철회한 구독은 다시 승인할 수 없으며, 이용자가 새 구독 요청을 해야 한다.
+
+철회 화면에는 프로젝트의 subscription target에 자산을 유지하도록 허용하는 선택 사항이 있다. 이를 선택한 뒤 해당 target의 접근을 나중에 회수하려면 AWS Lake Formation에서 처리해야 한다. 따라서 구독 상태가 철회됐다는 사실만으로 모든 데이터 접근이 즉시 차단됐다고 판단하지 않는다.
+
+비관리 자산은 승인 이벤트를 EventBridge로 받은 사용자 정의 handler가 실제 권한을 부여하고 결과 상태를 서비스에 보고하는 구조다. 이 연동에서는 권한 회수 경로도 별도로 설계하고 확인한다.
+
+여러 조직이 데이터를 공유할 때는 승인 기록, 실제 조회 권한, 구독 종료와 보존 자료를 각각 점검한다. 같은 조회 주체로 철회 전후의 접근을 확인하고, 다른 경로로 부여한 권한과 이미 복사한 데이터의 처리도 검토한다. 이는 운영 점검 제안이며 구독 철회가 복사본 삭제나 연구 환경의 반출 통제까지 수행한다는 뜻은 아니다.
+
 ## 계보로 출처와 변경 영향을 추적한다
 
 2026-10-07 공식 문서 기준. 데이터 계보는 OpenLineage 호환 시스템이나 API로 수집한 이벤트를 바탕으로 원천 데이터, 변환 작업과 소비 관계를 연결한다. 카탈로그 자산과 구독자 정보뿐 아니라 API로 전달한 외부 활동도 포함할 수 있다. 수집되지 않은 외부 작업까지 자동으로 발견했다고 해석하지 않는다.
@@ -72,6 +82,9 @@ Query Editor의 대화형 SQL 생성에서는 후속 질문으로 쿼리를 수�
 
 ## 출처
 
+- [Amazon SageMaker Unified Studio, Revoke an existing subscription](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/revoke-subscription.html)
+- [Amazon SageMaker Unified Studio, Unsubscribe from an asset](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/unsubscribe-from-subscription.html)
+- [Amazon SageMaker Unified Studio, Grant access for approved subscriptions to unmanaged assets](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/grant-access-to-unmanaged-asset.html)
 - [Amazon SageMaker Unified Studio, Data lineage](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/datazone-data-lineage.html)
 - [Amazon SageMaker Unified Studio, Aggregated lineage view](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/aggregated-lineage-view.html)
 - [Amazon SageMaker Unified Studio, Data quality](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/data-quality.html)
