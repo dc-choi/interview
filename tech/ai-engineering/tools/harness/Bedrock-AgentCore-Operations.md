@@ -46,6 +46,20 @@ AgentCore Policy는 policy engine을 Gateway에 연결하고 도구 접근 전�
 
 이 경계에서 도출할 점검은 두 가지다. 금지한 호출이 실제로 거절되는지 확인하고, 도구의 원래 endpoint를 직접 호출하는 우회 경로도 통제한다. Gateway에 연결한 정책만으로 별도 SDK나 직접 API 호출까지 보호된다고 가정하지 않는다.
 
+### Temporal policy는 같은 세션의 이력을 평가한다
+
+Dogwood temporal policy는 현재 요청과 같은 policy session에 기록된 이전 행동을 함께 평가한다. 예를 들어 일정 시간 안에 승인된 대상과 현재 변경 대상이 같은지, 선행 도구가 성공한 뒤 후속 도구를 호출하는지 검사할 수 있다. 현재 요청만 평가하는 Cedar 정책에 시간 이력 조건을 추가하는 방식이다.
+
+호출자는 첫 요청부터 `x-amzn-bedrock-agentcore-policy-session-id`를 전달해야 한다. Gateway가 이 값을 대신 만들지 않으며, temporal policy가 있는 엔진에 세션 값 없이 요청하면 검증 오류가 난다. 정책을 추가하거나 수정하면 활성 temporal session이 무효화되고, 재사용 요청은 HTTP 409 `ConflictException`으로 실패한다. 새 세션에는 이전 이력이 없다.
+
+설계와 검증에서는 다음 경계를 확인한다.
+
+- 선행 성공을 요구하면 `request` 대신 `response` 이벤트와 필요한 출력 필드를 검사한다. 선행 도구 자체도 허용해야 하며 응답이 끝난 뒤 후속 호출을 보낸다.
+- `count`와 `sum`은 세션 안의 이력만 집계한다. 호출자가 새 세션을 만들 수 있으므로 계정 전체 호출량이나 지출 상한을 대신하지 않는다.
+- 적용 경로의 AgentCore Gateway와 Runtime은 같은 계정과 리전에 있어야 한다. Workload Access Token 전파가 필요하며, 중간의 자체 운영 구성요소는 전달 로직을 구현해야 한다. Gateway 역할에는 `bedrock-agentcore:GetWorkloadAccessToken` 권한도 필요하다.
+
+운영 도입 전에는 `LOG_ONLY`로 결정을 관찰한 뒤 `ENFORCE`로 강제한다. 선행 호출 실패, 다른 대상의 승인 재사용, 새 세션과 정책 변경 뒤 요청을 각각 시험하는 것은 애플리케이션 점검 제안이다.
+
 ## 관측 데이터와 업무 성공을 분리한다
 
 Observability는 CloudWatch 기반 관측과 OpenTelemetry 호환 데이터를 제공한다. 기본 지표 외의 상세 span과 trace는 에이전트 코드 계측이 필요할 수 있고, Memory의 span과 로그도 활성화 여부를 확인한다.
@@ -71,6 +85,8 @@ AgentCore 배포가 끝났어도 내부에서 호출하는 Bedrock 모델의 접
 
 ## 출처
 
+- [AWS, Temporal policies](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-temporal.html)
+- [AWS, Authoring temporal policies](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-temporal-authoring.html)
 - [AWS, Request access to models](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html)
 - [AWS, Policy in Amazon Bedrock AgentCore: Control Agent Interactions](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy.html)
 - [AWS, Create gateway with Policy Engine](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/create-gateway-with-policy.html)

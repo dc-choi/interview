@@ -18,6 +18,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[ACM#외부 인증서 가져오기와 재가져오기|ACM 외부 인증서 운영]] — PEM과 체인, 대상 서비스 호환성, ARN 유지 갱신과 WHOIS 검증 종료
 - [x] [[Amazon-Braket|Amazon Braket]] — 시뮬레이션과 QPU 실측, 고전 기준선과 변환 비용
 - [x] [[EC2-Operations#Amazon Linux 패치와 저장소 버전|Amazon Linux 패치 운영]] — 저장소 버전, 종료 코드, 보안 선택 갱신과 재시작
 - [x] [[ECS-Express-Mode|ECS Express Mode]] — 자동 구성, 기본 최소 태스크 수, ALB 공유와 변경 제한

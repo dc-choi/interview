@@ -11,7 +11,7 @@ aliases: ["AWS 보안 인덱스"]
 
 - [[KMS|KMS — CMK, 키 정책 관리자와 사용자, SSE-KMS 이중 권한, Envelope Encryption, Key Rotation]]
 - [[Secrets-Manager|Secrets Manager — 시크릿 저장, 자동 회전, RDS 통합]]
-- [[ACM|ACM — 퍼블릭 SSL/TLS 인증서, 자동 갱신]]
+- [[ACM|ACM — 퍼블릭 TLS 인증서, 외부 인증서 가져오기, ARN 유지 갱신과 검증 조건]]
 - [[Cognito|Cognito — 웹, 모바일 앱 사용자 인증과 인가, User Pool 운영 설정(셀프 가입, SES, 앱 클라이언트)]]
 - [[AWS-Builder-ID-Recovery|AWS Builder ID — 복구 이메일 등록과 MFA 복구 조건]]
 - [[Shield-WAF-NetworkFirewall|Shield, WAF, Network Firewall — DDoS, L7 웹공격, VPC 방화벽]]

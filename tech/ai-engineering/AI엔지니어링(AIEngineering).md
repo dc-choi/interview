@@ -32,7 +32,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[LLM-Product-Attribute-Extraction|LLM 상품 속성 추출]] — 이미지 전처리, 치수와 모델 정보의 구분, 검증된 예시와 보류 평가
 - [x] [[RAG-Retrieval-Engineering#가설을 분해해 반대 근거를 찾는다|가설 검토용 RAG]] — 전제별 반대 근거 검색, 원문과 해석의 연결, 검색 실패와 가설 입증의 구분
 - [x] [[Claude-Code-Business-Automation#긴 문서 분석과 출력 독자를 함께 지정한다|문서 분석 프롬프트]] — 원문 구조, 근거 추출, 대상 독자와 반론 검토의 한계
-- [x] [[Bedrock-AgentCore-Operations|Bedrock AgentCore 운영 경계]] — 세션 소유 관계, 영속 상태, Gateway Policy, 계측과 모델 초기 구독 권한
+- [x] [[Bedrock-AgentCore-Operations|Bedrock AgentCore 운영 경계]] — 세션 소유 관계, 영속 상태, Gateway Policy와 temporal session, 계측과 모델 초기 구독 권한
 - [x] [[Agent-Swarm-Containment#역량 평가와 배포 통제를 분리해 읽는다|사이버 역량 평가의 조건]] — 역량 등급, 평가 접근권, 안전장치와 서비스 설정의 구분
 - [x] [[Agent-Spec-Writing#스펙 산출물과 승인 지점을 분리한다|스펙 생성과 검토 흐름]] — 요구사항, 설계와 작업 목록, Quick Spec의 승인 생략과 사후 검토
 - [x] [[Agent-Test-Verification-Behavior#마이그레이션에서는 기존 구현을 비교 기준으로 쓴다|생성 코드의 마이그레이션 검증]] — 같은 초기 상태, 반환값과 DB 변경, 의도된 차이와 회귀
