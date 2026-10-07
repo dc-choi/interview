@@ -89,6 +89,6 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 - [x] [[Route53|Route 53 (Hosted Zone, 레코드 9종 + Alias, Routing Policy 8종, Alias vs CNAME, Health Check, DNSSEC)]]
 - [x] [[Global-Accelerator|Global Accelerator (Anycast IP, AWS 백본 가속, Endpoint Group/Weight, CloudFront vs AGA — L7 vs L4)]]
 - [x] [[Transit-Gateway|Transit Gateway (허브-스포크, 5종 어태치먼트, Route Table, ECMP, RAM 공유, vs VPC Peering)]]
-- [x] [[ElastiCache|ElastiCache (Redis, Valkey, Memcached, Semantic Cache, Pub/Sub, 분산락, 캐시 전략, Cluster 모드, Failover)]]
+- [x] [[ElastiCache|ElastiCache (Redis, Valkey, Memcached, Semantic Cache, Pub/Sub, 분산락, 캐시 전략, Cluster 모드, Failover)]] — [[ElastiCache-Engine-Deployment#Multi-AZ 장애 복구와 데이터 손실 경계|Multi-AZ, 자동 장애 조치와 durability별 데이터 손실 경계]]
 - [x] [[CloudFormation|CloudFormation (Template, Change Set, Drift Detection, StackSet, Nested Stack, SAM)]]
 - [x] [[AWS-X-Ray|AWS X-Ray (분산 추적, trace map, segment/subsegment, OpenTelemetry 계측)]]

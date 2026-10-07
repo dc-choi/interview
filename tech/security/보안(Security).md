@@ -9,6 +9,7 @@ aliases: ["보안(Security)", "Security Index"]
 
 ## 목차
 
+- [[Grafana-Shared-Dashboard-Security|Grafana 공유 대시보드 보안]] — 일시정지와 토큰 폐기, 데이터 소스 설정 노출, 브랜치별 수정 기준
 - [[Synthetic-Data-Privacy|합성 데이터와 개인정보 보호]] — 합성과 익명성의 구분, DP 보장과 정확도 검증
 - [[SSH-Authentication|SSH 인증]] — 서버 인증과 사용자 인증의 분리, 키 교환, 호스트 키 검증
 - [[OpenSSF-Scorecard|OpenSSF Scorecard]] — 저장소 보안 관행 평가, 검사별 근거와 총점의 한계

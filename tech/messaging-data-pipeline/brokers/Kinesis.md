@@ -69,6 +69,23 @@ KDS에 적재된 데이터를 다음에서 수집/처리:
 
 대표 사용 예시: 다수 웹사이트의 **Click Stream Data** → KDS → Firehose → S3 (저장, 분석).
 
+## KDS에서 S3 Tables로 직접 적재
+
+2026-10-07 AWS 공식 문서 기준, **Streaming tables**는 KDS 레코드를 Amazon S3 Tables의 Apache Iceberg 테이블로 전달한다. Shard에서 읽은 데이터를 버퍼링하고 스키마 검증 후 Parquet로 변환해 inline compaction과 Iceberg commit을 수행한다. Athena 같은 엔진으로 결과를 조회할 수 있다.
+
+| 설정 | 제약과 운영 의미 |
+|---|---|
+| 스키마 | AWS Glue Schema Registry 필수. 일반 JSON도 `GSRSchemaARN`으로 스키마를 지정하며, `GSR_JSON`은 레코드의 schema ID를 사용 |
+| 대상 | Delivery마다 새 테이블을 생성. 기존 테이블로 전달 불가 |
+| 신선도 | 최대 버퍼링 시간 300~900초, 기본 300초. 전체 조회 지연의 SLA로 해석하지 않음 |
+| 오류 | S3 기반 DLQ 필수. 전체 원문이 아니라 레코드 식별자와 오류 문맥을 저장 |
+| 배치 범위 | Source stream, S3 table bucket, Glue Schema Registry는 같은 계정과 리전에 위치 |
+| 암호화 키 | Source stream을 AWS managed key로 암호화한 경우 delivery 생성 불가. 대상에서 SSE-KMS를 선택하면 customer managed key 필요 |
+
+따라서 DLQ만 보관하면 원문을 재처리할 수 있다고 가정하지 않는다. 복구 설계에서는 원본 보존 기간과 식별자로 원문을 찾는 방법을 함께 검증한다. 별도 consumer 운영을 줄일 수 있어도 오류 대응 책임까지 사라지는 것은 아니다.
+
+이 경로는 아래 Firehose 전송과 별개의 선택지다. 기존 Iceberg 테이블 사용 여부, 변환 요구와 목적지를 먼저 비교한다.
+
 ## Amazon Data Firehose
 
 생산자 실시간 데이터를 **캡쳐, 변환하여 지정 대상으로 전송**하는 fully-managed ETL 파이프라인.
@@ -121,6 +138,8 @@ KDS와 Firehose는 자주 함께 쓰인다: KDS로 수집, 재읽기 가능하�
 - "S3로 near real-time 적재" 요구사항 = **Firehose** (서버리스, 변환 가능)
 
 ## 출처
+- [Amazon Kinesis Data Streams, Streaming tables](https://docs.aws.amazon.com/streams/latest/dev/data-delivery-st.html)
+- [Amazon Kinesis Data Streams, How streaming table delivery works](https://docs.aws.amazon.com/streams/latest/dev/data-delivery-st-about.html)
 - [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
 - [Amazon Kinesis Data Streams, Quotas and limits](https://docs.aws.amazon.com/streams/latest/dev/service-sizes-and-limits.html)
 - [Amazon Kinesis Data Streams, Change the data retention period](https://docs.aws.amazon.com/streams/latest/dev/kinesis-extended-retention.html)

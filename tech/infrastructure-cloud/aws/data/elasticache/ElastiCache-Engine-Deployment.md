@@ -62,6 +62,26 @@ node-based ElastiCache는 **Node**를 서비스 단위로 사용한다. Node는 
 
 복제, 자동 장애 조치, 백업이 필요하면 Valkey 또는 Redis OSS를 선택한다. 어느 엔진이든 캐시를 유일한 원본 데이터 저장소로 두는지는 복구 요구와 데이터 손실 허용 범위를 따로 검토한다.
 
+### Multi-AZ 장애 복구와 데이터 손실 경계
+
+이 절은 2026-10-07 AWS 공식 문서 기준이다. Multi-AZ는 AZ 분산을, automatic failover는 장애 시 replica 승격을 다루지만, 현재 공식 설정 안내에서는 Multi-AZ 활성화가 자동 장애 조치를 함께 켠다. 각 shard에 primary와 다른 AZ의 replica가 최소 하나 필요하다. Automatic failover만 켠 구성은 AZ 분산을 보장하지 않는다.
+
+Durability를 사용하지 않는 구성의 primary 장애에서는 복제 지연이 가장 작은 replica를 승격하고 대체 replica를 만든다. AZ 전체 장애라면 해당 AZ의 복구 전까지 대체 replica 생성이 지연될 수 있다. Primary endpoint의 DNS가 갱신돼도 기존 연결의 재연결 동작은 애플리케이션에서 확인해야 한다. 개별 replica endpoint를 직접 사용하는 클라이언트는 승격 후 읽기 대상 변경도 확인한다.
+
+데이터 손실 범위는 내구성 설정에 따라 다르다.
+
+| 구성 | 장애 조치 때 확인할 경계 |
+|---|---|
+| Durability를 사용하지 않는 비동기 복제 | replica로 전달되지 않은 쓰기가 유실될 수 있음 |
+| Valkey 9.0+의 durability와 synchronous writes | 성공 응답 전에 Multi-AZ transactional log에 저장, primary 장애 조치 후에도 성공한 쓰기의 강한 일관성 유지 |
+| Durability와 asynchronous writes | 로그 저장 전에 응답할 수 있어 장애 시 최대 10초의 승인된 쓰기가 유실될 수 있음 |
+
+Synchronous writes 구성에서도 replica 읽기는 최종 일관성이므로 최신 쓰기의 즉시 조회를 보장하지 않는다. **Multi-AZ 활성화만으로 무손실을 단정하지 않는다.**
+
+Durability는 지원 노드 유형의 Valkey 9.0 이상에서 cluster mode enabled와 Multi-AZ, shard당 replica 최소 하나를 요구한다. Serverless와 Global Datastore에는 적용되지 않는다. 클러스터 생성 때 활성화해야 하며 기존 비내구성 클러스터에 나중에 켤 수 없다. 활성화한 뒤 sync와 async 모드는 바꿀 수 있지만 durability 자체를 끌 수는 없다.
+
+개발 또는 검증 환경의 `TestFailover`로 쓰기 중단, 클라이언트 복구와 오류 처리를 확인한다. 이 API는 장애 시 애플리케이션 동작을 시험하기 위한 기능이며 운영 장애를 해결하는 도구로 설계되지 않았다.
+
 ## 비용, 사이징
 
 - **인스턴스 타입**: 데이터 크기, eviction, CPU, 네트워크와 엔진 호환성을 측정해 선택한다. Graviton 계열의 가격 대비 성능도 워크로드에서 비교한다.
@@ -70,6 +90,9 @@ node-based ElastiCache는 **Node**를 서비스 단위로 사용한다. Node는 
 
 ## 출처
 
+- [ElastiCache Multi-AZ와 자동 장애 조치](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/AutoFailover.html)
+- [ElastiCache 내구성 구성의 일관성](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Durability.Consistency.html)
+- [ElastiCache 내구성 지원 조건과 제한](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Durability.Limitations.html)
 - [ElastiCache 배포 옵션](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.deployment.html)
 - [ElastiCache 요금](https://aws.amazon.com/elasticache/pricing/)
 - [ElastiCache 백업과 복원](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/backups.html)
