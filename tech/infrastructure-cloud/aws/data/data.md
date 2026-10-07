@@ -17,7 +17,8 @@ RDS 외의 데이터베이스와 분석 서비스 모음. RDS, Aurora는 [[rds|r
 - [[MemoryDB-Durable-Write-Behind|MemoryDB 내구성 쓰기 버퍼 — 응답 시점, 소비자 복구와 DB 반영 완료]]
 - [[AWS-Analytics|분석 서비스 폴더 — Redshift, Athena, Glue, EMR, Lake Formation, QuickSight]]
 - [[OpenSearch-Service|OpenSearch Service — 검색, 로그 분석]]
-- [[DMS|DMS — 데이터베이스 마이그레이션 서비스]]
+- [[DMS|DMS — 데이터베이스 마이그레이션, endpoint 연결과 TLS 검증]]
+- [[HealthOmics-Workflows|HealthOmics 워크플로 — 실행 단위, 상태 이벤트 누락 대비와 자원 관측]]
 - [[DocumentDB-TTL-Operations|DocumentDB TTL — 비동기 삭제, I/O와 부하 검증, 시간별 컬렉션 비교]]
 
 ## 관련 문서

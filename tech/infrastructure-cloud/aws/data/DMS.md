@@ -20,7 +20,26 @@ verified_at: 2026-08-28
 | **대상 엔드포인트(Target Endpoint)** | 마이그레이션 대상 DB 연결 정보 |
 | **마이그레이션 작업(Task)** | "어떤 테이블을, 어떤 방식으로, 언제까지" 정의 — 매핑 규칙 포함 |
 
-복제 인스턴스가 소스에서 데이터를 가져와 대상에 쏟아붓는 구조. 소스, 대상 모두 AWS 외부도 가능 (온프레미스 ↔ RDS 등).
+복제 인스턴스가 소스에서 읽고 대상에 쓰는 구조다. 소스나 대상에 온프레미스 DB를 둘 수 있지만, 적어도 한쪽 endpoint는 AWS 서비스여야 한다. 온프레미스 DB끼리의 이전은 지원하지 않는다(2026-10-07 endpoint 생성 문서 확인).
+
+## 엔드포인트 연결과 TLS 검증
+
+다음은 DMS Standard의 복제 인스턴스와 endpoint 연결에 대한 설명이다. 2026-10-07 공식 endpoint 생성 문서, SSL 지원 표와 CLI 예제를 대조했다. 기존 서비스 설명 전체를 재검증한 날짜는 아니다.
+
+1. 소스와 대상 endpoint를 각각 만들고 엔진, 서버, 포트와 DB 접근 방식을 정한다. Secrets Manager를 사용하면 secret과 이를 읽을 IAM 역할을 함께 지정한다. 지원 인증 방식과 DB 사용자 권한은 엔진별 조건을 확인한다.
+2. 데이터를 옮길 복제 인스턴스를 지정해 **양쪽 연결을 각각 검사**한다. 로컬 PC에서 DB에 연결된다는 사실만으로 복제 인스턴스의 접근이 증명되지는 않는다.
+3. CLI의 `test-connection` 응답이 `testing`이면 검사 중이다. `describe-connections`에서 해당 인스턴스와 endpoint 쌍의 최종 상태를 확인한다.
+
+| SSL mode | 암호화와 검증 범위 |
+|---|---|
+| `none` | 아래 DB 연결 모드에서는 암호화하지 않음 |
+| `require` | TLS 암호화, CA 검증 없음 |
+| `verify-ca` | TLS 암호화와 서버 인증서 검증 |
+| `verify-full` | TLS 암호화와 서버 인증서 검증, 인증서의 호스트명 일치 확인 |
+
+네 모드를 모든 엔진이 지원하지는 않는다. 예를 들어 MySQL 계열은 `require`를 지원하지 않고, PostgreSQL은 네 모드를 지원한다. Kinesis나 DynamoDB 같은 일부 endpoint는 이 SSL mode 설정이 적용되지 않으며 `none` 표시만으로 평문 전송이라고 판단하지 않는다. 인증서나 mode를 바꾼 뒤에도 연결을 다시 검사한다.
+
+연결 검사는 마이그레이션 완료 판정이 아니다. CDC용 로그 설정, 테이블 접근 권한, 데이터 불일치와 애플리케이션 호환성은 아래 검증 절차에서 별도로 확인한다.
 
 ## 마이그레이션 유형 3가지
 
@@ -132,6 +151,9 @@ DMS data validation은 지원되는 소스와 대상의 대응 행을 비교한�
 
 ## 출처
 
+- [AWS DMS, Creating source and target endpoints](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Endpoints.Creating.html)
+- [AWS DMS, Using SSL with AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.SSL.html)
+- [AWS CLI, AWS DMS code examples](https://docs.aws.amazon.com/cli/latest/userguide/cli_database-migration-service_code_examples.html)
 - [AWS DMS, Converting database objects with generative AI](https://docs.aws.amazon.com/dms/latest/userguide/schema-conversion-convert.databaseobjects.html)
 - [AWS DMS, Conversion assessment reports with DMS Schema Conversion](https://docs.aws.amazon.com/dms/latest/userguide/assessment-reports.html)
 - [AWS DMS, AWS DMS data validation](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Validating.html)
