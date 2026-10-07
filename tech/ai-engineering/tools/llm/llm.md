@@ -11,7 +11,7 @@ aliases: ["LLM 원리와 운영", "LLM 운영", "LLM Fundamentals and Operations
 
 ## 목차
 - [x] [[Event-Log-Highlight-Generation|이벤트 로그 기반 하이라이트]] — 로그 정규화, SQL 템플릿, 사실 검증과 검토 처리량
-- [x] [[LLM-Gateway|LLM 게이트웨이]] — 관리 키와 업무 키, DB에 의존하는 예산 검사, 배포와 운영 검증
+- [x] [[LLM-Gateway|LLM 게이트웨이]] — 관리 키와 업무 키, DB에 의존하는 예산 검사, 배포와 운영 검증, 호환 API의 기능과 대화 상태 보존
 - [x] [[LLM-Product-Attribute-Extraction|상품 이미지의 속성 추출]] — OCR 후보 선별, 형식과 의미 검증, 보류 비율과 정확도
 - [x] [[LLM-Generation-Mechanics|LLM 동작 원리 (generation-mechanics/ 서브폴더) — AI 전체 지도, Training/Inference와 역전파, BPE 토크나이저 구성과 토크나이저 차이, 이미지와 사고 토큰 과금, Transformer QKV Attention과 Decoding, Weight/Context/RAG 구분, Context Window와 대화 누적, 긴 컨텍스트 단가 구간, 환각과 Agent 연결]]
 - [x] [[LLM-Model-Tiers|LLM 모델 티어 선택, 라우팅 (3단 티어 수렴, 벤더 내 100배 단가 격차와 출력/입력 단가 비, 재작업 비용과 effort, 난이도 기반 라우팅, 에스컬레이션/폴백, 프런티어 단계적 출시, 계획과 실행의 모델 분담)]]

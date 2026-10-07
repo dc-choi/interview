@@ -33,11 +33,28 @@ AWS 참조 구성에는 CloudFront를 둔 공개 경로, ALB 직접 접근과 pr
 
 단일 서비스에 중앙 관리 요구가 없다면 프록시의 DB, 컨테이너와 운영 비용도 비교한다. 이 문서는 참조 구조와 제품 문서의 대조 결과이며, 특정 배포의 보안이나 가용성을 검증한 결과가 아니다.
 
+## 호환성은 요청 수락과 기능 보존으로 나눠 확인한다
+
+2026-10-08 공식 문서 대조 기준, Anthropic의 OpenAI SDK 호환 계층은 도구 호출의 `strict`를 무시하며, 지원하지 않는 필드 다수를 오류 없이 무시한다. 정상 응답을 받았다는 사실만으로 원래 요청의 제약이 적용됐다고 판정하지 않는다. 이 제약은 해당 호환 계층의 동작이며, 모든 게이트웨이 구현에 그대로 적용되는 것은 아니다.
+
+Gemini의 Generate Content API에서는 모델 응답의 `thoughtSignature`가 후속 호출에 필요한 불투명 상태를 전달한다. 공식 Google Gen AI SDK를 사용하고 전체 모델 응답을 이력에 추가하면 서명을 자동으로 처리한다. 프록시가 응답에서 텍스트나 도구 이름만 추출해 다시 만들면 필요한 상태를 잃을 수 있다. 반환 의무와 위치는 모델별로 다르므로 해당 모델의 계약을 확인한다.
+
+이 차이에서 도출한 게이트웨이 이전 점검은 다음과 같다.
+
+- 일반 텍스트뿐 아니라 스트리밍, 도구 호출 왕복과 모델 고유 필드가 보존되는지 실제 클라이언트로 확인한다.
+- 필수 기능을 지원하지 않는 경로는 명시적으로 거절하거나 지원 경로로 보낸다. 조용히 필드를 버리는 동작을 성공으로 처리하지 않는다.
+- 폴백 후보는 모델 이름 외에 필요한 기능과 대화 상태의 호환 여부로 제한한다. 다른 제공자의 같은 계열 모델이라는 이유만으로 진행 중 대화를 옮기지 않는다.
+
+위 목록은 제품별 제약에서 도출한 설계 점검이며, 특정 배포의 호환성을 시험한 결과는 아니다.
+
 ## 출처
 
+- [당근은 왜 LLM Router를 직접 만들었을까? — 당근 팀, 2026 당근 빌더 밋업](https://www.youtube.com/watch?v=anmRVnqdyco)
 - [Guidance for Multi-Provider Generative AI Gateway on AWS — AWS Solutions Library Samples](https://github.com/aws-solutions-library-samples/guidance-for-multi-provider-generative-ai-gateway-on-aws)
 - [LiteLLM, Virtual Keys](https://docs.litellm.ai/docs/proxy/virtual_keys)
 - [LiteLLM, Budgets, Rate Limits](https://docs.litellm.ai/docs/proxy/users)
+- [Anthropic, OpenAI SDK compatibility](https://platform.claude.com/docs/en/cli-sdks-libraries/libraries/openai-sdk)
+- [Google AI for Developers, Thought signatures (Generate Content API)](https://ai.google.dev/gemini-api/docs/generate-content/thought-signatures)
 
 ## 관련 문서
 
