@@ -11,7 +11,7 @@ aliases: ["Observability Reliability", "관측성 신뢰성", "관측 신호 기
 
 ## 문서
 - [x] [[SLI-SLO|SLI / SLO / Error budget (9의 의미, burn rate, 버짓 정책)]]
-- [x] [[Alert-Fatigue|Alert fatigue 방지 (actionable, 증상 기반, burn rate, 통계형과 건별 알림 이원화)]]
+- [x] [[Alert-Fatigue|Alert fatigue 방지 (actionable, 증상 기반, burn rate, 통계형과 건별 알림 이원화, 탐지 정밀도와 전달 지연)]]
 - [x] [[Grafana-Alerting|Grafana Alerting (평가 그룹, pending period, No Data/Error, 정책 트리, 그룹핑, silence)]]
 - [x] [[Alert-as-Code|Alert as Code (Terraform+YAML SSOT, proxy 계층 표준화, grouped alert, custom action 권한, deadman switch)]]
 - [x] [[Incident-Runbook|Incident runbook (절차서, 알람 연결, 완화 우선)]]

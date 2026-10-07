@@ -60,5 +60,6 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [[tech/observability/datadog/datadog|Datadog 학습 지도]] — Unified Service Tagging, Catalog, APM, Monitor, SLO, 배포 추적
 
 ## Reliability
+- [x] [[Alert-Fatigue#이상 탐지는 정확도와 전달 지연을 함께 평가한다|이상 탐지 평가]] — 정밀도, 재현율, 탐지와 해제 시간, 경고와 후속 진단의 분리
 - [x] [[Observability-Reliability|관측성 신뢰성 인덱스 (SLI/SLO, alert fatigue, Grafana Alerting, alert as code, 런북, 배포 가시성)]]
 - [x] [[Grafana-Alerting|Grafana Alerting (평가 그룹, pending period, No Data/Error, 정책 트리, 그룹핑, silence)]]
