@@ -23,6 +23,19 @@ NIST CSF 2.0은 조직 맥락과 우선순위에 맞춘 정책 수립, 전달과
 
 위 표는 CSF의 자산 관리, 위험 평가, 책임과 교육 항목을 연결한 실무 정리다. 정책, 세부 기준, 작업 절차로 문서를 나눌 수 있지만 파일 세 개를 만드는 것 자체가 목표는 아니다.
 
+## 보안 인식 교육의 목표와 측정
+
+교육은 수강 완료와 실제 행동 변화를 구분해 평가한다. 모든 사용자가 알아야 할 위협 인식과 신고 방법을 공통으로 다루고, 관리자와 개발자에게는 권한 관리와 설정 변경처럼 역할에 맞는 실습을 더한다. 아래는 NIST SP 800-50 Rev. 1의 학습 프로그램과 측정 원칙을 적용한 예시다(2026-10-07 확인).
+
+| 목표 | 실습 예시 | 확인할 증거 |
+|---|---|---|
+| 의심스러운 요청 식별과 신고 | 피싱 또는 지원팀 사칭 상황에서 확인 절차 수행 | 모의 공격 대응과 신고 기록 |
+| 계정 보호 습관 | 비밀번호 관리와 MFA 사용 절차 연습 | 정책 준수와 MFA 사용 변화 |
+| 역할별 안전한 작업 | 관리자 권한 부여와 회수 상황 재현 | 수행 결과와 잘못된 판단의 원인 |
+| 지식 유지 | 교육 전후와 일정 기간 뒤 같은 개념 재확인 | 즉시 점수와 지연 평가의 차이 |
+
+교육 이수율만으로 위험 감소를 입증할 수 없다. 실습 결과, 신고와 업무 행동의 변화를 함께 보고 교육 내용을 조정한다. 교육 기록도 개인 평가와 연결될 수 있으므로 접근과 취급 범위를 정한다. 이 지침은 미국 연방기관을 주 대상으로 하며, 국내 조직의 법정 교육 주기나 일률적인 사고 감소율을 증명하지 않는다.
+
 ## 점검의 범위와 증거
 
 보안 감사 전체를 취약점 스캐너 실행으로 대신할 수 없다. 기술 점검은 문서와 설정 검토, 테스트를 조합하며, 목적과 허용 위험에 맞게 방법을 고른다. [[Application-Security|취약점 진단과 모의해킹]]도 서로 다른 범위를 확인한다.
@@ -56,6 +69,7 @@ NIST SP 800-115의 계획, 수행, 사후 조치를 다음처럼 운영할 수 �
 
 ## 출처
 
+- [NIST, SP 800-50 Rev. 1: Building a Cybersecurity and Privacy Learning Program](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-50r1.pdf) — 2.4절의 측정과 2.5절의 대상별 학습
 - [NIST, The Cybersecurity Framework (CSF) 2.0](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf) — Appendix A의 GV.PO, GV.RR, ID.AM, ID.RA와 PR.AT
 - [NIST, SP 800-115: Technical Guide to Information Security Testing and Assessment](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-115.pdf) — 6장의 계획과 승인, 7장의 자료 취급, 8장의 개선과 재점검
 

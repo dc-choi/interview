@@ -15,7 +15,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[OpenSSF-Scorecard|OpenSSF Scorecard]] — 저장소 보안 관행 평가, 검사별 근거와 총점의 한계
 - [[Application-Security|애플리케이션 보안 / 시큐어코딩]] — 4대 원칙, 진단 vs 모의해킹, OWASP Top 10, OWASP API Security Top 10:2023, 트렌드 리스크, 클라이언트 불신, 비밀번호 확인 UI와 서버 검증 계약, 학습 경로
 - [[CIA-Triad|CIA Triad (기밀성, 무결성, 가용성)]] — 세 보안 목표, 위협과 통제, 트레이드오프와 가장 약한 고리
-- [[Security-Policy-and-Assessment|보안 정책과 점검]] — 자산과 위험, 책임과 교육, 점검 범위 승인, 증거와 개선 후 재점검
+- [[Security-Policy-and-Assessment|보안 정책과 점검]] — 자산과 위험, 역할별 보안 교육과 행동 측정, 점검 범위 승인, 증거와 개선 후 재점검
 - [[Security-Incident-Response|보안 사고 대응]] — NIST CSF 2.0 수명주기, 로그 상관분석과 공백, 자동 차단의 실행 경계, 증거 보존과 복구 완료 조건
 - [[Access-Control-Models|접근 제어 모델 (RBAC, ABAC, PBAC)]] — 역할, 속성, 정책의 관계, PAP/PDP/PIP/PEP, 하이브리드 설계와 운영
 - [[tech/security/auth/인증(Auth)|인증 (Auth)]] — Session과 비밀번호 변경 재인증, JWT, OAuth2, Token Exchange, FIDO, Refresh Token, Spring Security의 자동 로그인 저장소와 검증

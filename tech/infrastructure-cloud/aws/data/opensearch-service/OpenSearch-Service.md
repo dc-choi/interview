@@ -11,7 +11,7 @@ Amazon OpenSearch Service는 OpenSearch를 AWS에서 운영하는 관리형 서�
 
 - [[OpenSearch-Service-Deployment|배포 모델과 관리 책임]] — 서비스 구분, 적합한 문제, Provisioned와 Serverless 비교, 책임 경계
 - [[OpenSearch-Service-Operations|가용성, 변경과 복구]] — Multi-AZ, service software와 engine upgrade, snapshot, 프로덕션 체크리스트
-- [[OpenSearch-Service-Security-Observability|보안, 수집과 관측]] — 보안 경계, 데이터 수집, 관측과 알람, 비용 입력
+- [[OpenSearch-Service-Security-Observability|보안, 수집과 관측]] — 보안 경계, 데이터 수집, 관측과 알람, 높은 CPU 진단과 자동화의 자원 생성, 비용 입력
 - [[OpenSearch-Service-Engine-Upgrade|Engine upgrade 경로와 사전 검증]] — upgrade path, 사전 검증 실패 원인, rollback 설계
 - [[OpenSearch-Service-Instance-Storage|인스턴스와 스토리지 선정]] — 계열 판단, Graviton, gp3, k-NN off-heap
 - [[OpenSearch-Service-Cost-Optimization|비용 최적화와 배포 함정]] — RI, UltraWarm 손익, OCU floor, blue-green trigger

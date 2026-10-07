@@ -17,6 +17,7 @@ aliases: ["AWS 보안 인덱스"]
 - [[Shield-WAF-NetworkFirewall|Shield, WAF, Network Firewall — DDoS, L7 웹공격, VPC 방화벽]]
 - [[Firewall-Manager|Firewall Manager — 멀티 계정 방화벽 정책 일괄 관리]]
 - [[GuardDuty-Investigation|GuardDuty Investigation — Preview 지원 조건, 위험과 신뢰도, 권고 조치 검토]]
+- [[Security-Hub-Exposure-Analysis|Security Hub 노출 분석 — 외부 도달성 스캔, IAM 경로와 영향 범위, 미검사와 안전의 구분]]
 
 ## 관련 문서
 

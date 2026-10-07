@@ -51,6 +51,18 @@ OpenSearch Ingestion은 source, buffer, processor, sink로 구성한다. Persist
 
 CloudWatch 평균만 보지 않고 최소와 최대 statistic, node 차원, `_nodes/stats`, `_cat/shards`, slow log를 함께 본다. Provisioned domain의 403과 429는 thread pool 포화뿐 아니라 heap 보호 throttling과 Search Backpressure에서도 생길 수 있으므로 response reason, queue와 rejected, JVM, CPU, disk, shard skew로 원인을 구분한다. Alarm threshold는 공식 예시를 복사하기보다 SLO와 정상 peak baseline으로 조정한다.
 
+## 높은 CPU와 자동 진단의 실행 경계
+
+Provisioned domain에서 CPU가 높으면 먼저 부하가 몰린 node와 실행 작업을 연결한다. 다음은 AWS의 CPU 진단 자료를 적용한 확인 순서다(2026-10-07 확인).
+
+1. `_cat/nodes?v&s=cpu:desc`로 node를 좁히고 `_nodes/<node_id>/hot_threads`에서 search, write 또는 merge 작업을 확인한다.
+2. `_tasks?actions=*search&detailed=true`의 실행 시간과 query 설명을 보고, thread pool의 active, queue와 rejected를 대조한다. 오래 실행됐다는 이유만으로 즉시 취소하지 않는다.
+3. JVM pressure와 GC, shard 분포, 요청량을 같은 시간대로 비교한다. 원인에 맞춰 query, 동시성이나 shard 배치를 조정한 뒤 자원 확장을 판단한다.
+
+`AWSSupport-TroubleshootOpenSearchHighCPU`는 이 진단 자료 수집을 자동화한다. 다만 읽기 API만 호출하는 도구는 아니다. CloudFormation으로 domain의 공개/VPC 배치에 맞는 Lambda 등을 만들고, Step Functions로 실행을 조율한 뒤 CloudWatch Logs에 결과를 저장한다. 완료 시 생성 자원은 정리하지만 로그 그룹은 남고, 로그 보존은 기본 24시간이다.
+
+실행 전에는 필요한 IAM 권한과 VPC 연결 조건, 로그의 민감정보와 보존 정책을 확인한다. 완료 뒤에는 진단 결과뿐 아니라 stack 정리 결과도 확인한다. 수집 성공은 CPU 원인 해결이나 성능 회복을 뜻하지 않는다.
+
 ## 비용 입력
 
 - Provisioned: data와 manager instance 시간, EBS, warm과 cold storage, snapshot S3, data transfer
@@ -70,6 +82,8 @@ CloudWatch 평균만 보지 않고 최소와 최대 statistic, node 차원, `_no
 
 ## 출처
 
+- [How do I troubleshoot high CPU utilization on my OpenSearch Service cluster? — AWS re:Post Knowledge Center](https://www.repost.aws/knowledge-center/opensearch-troubleshoot-high-cpu)
+- [AWS Documentation, AWSSupport-TroubleshootOpenSearchHighCPU](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-troubleshoot-opensearch-high-cpu.html)
 - [AWS Documentation, Fine-grained access control](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/fgac.html)
 - [AWS Documentation, Handling errors](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html)
 - [AWS Documentation, Serverless IAM](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html)

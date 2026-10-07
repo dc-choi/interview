@@ -10,7 +10,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 ## 목차
 
 - [[GPU-Server-Infrastructure|GPU 서버 인프라]] — CPU와 GPU, 워프와 분기 발산, 메모리와 통신 경로, 전력과 냉각, 사용률 해석과 MIG/time-slicing 관측 제약
-- [[tech/infrastructure-cloud/foundation/클라우드기초(Foundation)|클라우드 기초 (Foundation)]] — IaaS/PaaS/FaaS, SaaS 리전별 데이터 격리, IaC와 Pulumi 컴포넌트, 클라우드 전환 전략, Cloudflare cf CLI와 Artifacts
+- [[tech/infrastructure-cloud/foundation/클라우드기초(Foundation)|클라우드 기초 (Foundation)]] — IaaS/PaaS/FaaS, SaaS 리전별 데이터 격리와 운영 주권, IaC와 Pulumi 컴포넌트, 클라우드 전환 전략, Cloudflare cf CLI와 Artifacts
 - [[tech/infrastructure-cloud/container/컨테이너(Container)|컨테이너 (Container)]] — Docker, Compose, 컨테이너 내부 구조, 이미지 빌드와 베이스 이미지 선택
 - [[tech/infrastructure-cloud/aws/AWS서비스(AWSServices)|AWS 서비스 (AWS)]] — EC2/ASG/ALB, Lambda, ALB 5XX와 NLB TCP 연결 진단
 - [[tech/infrastructure-cloud/network/인프라네트워크(InfraNetwork)|인프라 네트워크 (Network)]] — DNS, Load Balancer, Reverse Proxy
@@ -18,6 +18,8 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[Security-Hub-Exposure-Analysis|Security Hub 노출 분석]] — 외부 스캔 근거, 지원 범위, IAM 경로와 잠재 영향
+- [x] [[OpenSearch-Service-Security-Observability#높은 CPU와 자동 진단의 실행 경계|OpenSearch Service CPU 진단]] — hot threads와 검색 task, 진단 자원 생성과 정리
 - [x] [[ACM#외부 인증서 가져오기와 재가져오기|ACM 외부 인증서 운영]] — PEM과 체인, 대상 서비스 호환성, ARN 유지 갱신과 WHOIS 검증 종료
 - [x] [[Amazon-Braket|Amazon Braket]] — 시뮬레이션과 QPU 실측, 고전 기준선과 변환 비용
 - [x] [[EC2-Operations#Amazon Linux 패치와 저장소 버전|Amazon Linux 패치 운영]] — 저장소 버전, 종료 코드, 보안 선택 갱신과 재시작

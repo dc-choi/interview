@@ -38,6 +38,20 @@ SaaS의 control plane은 온보딩, 인증, 테넌트 관리와 운영 분석 �
 
 복제 전략은 RPO, 데이터 정합성과 위치 제약을 함께 만족하도록 정한다. 복구 속도만을 이유로 허용하지 않은 지역에 사본을 만들지 않는다. 모든 유전체 또는 의료 데이터에 같은 반출 금지가 적용된다고 일반화하지 않으며, 특정 클라우드나 리전 선택을 법률 준수의 증명으로 쓰지 않는다.
 
+## 데이터 위치와 운영 주권의 경계
+
+데이터 저장 리전을 정하는 것과 계정, 인증, 과금, 운영 지원의 의존성을 분리하는 것은 다른 설계다. 운영 주권 요구가 있으면 업무 데이터 외에 제어 기능과 운영자 접근 경계도 확인한다.
+
+AWS European Sovereign Cloud의 설계는 별도 파티션과 독립된 계정, identity, 과금 시스템을 두는 사례다. 글로벌 AWS 계정과 분리된 계정이 필요하며, 고객이 자원을 관리하며 만드는 역할, 권한과 설정 같은 메타데이터도 EU 안에 유지하는 경계를 제시한다. 고객 콘텐츠는 고객이 달리 선택하지 않는 한 해당 경계 안에서 저장하고 처리하도록 설계됐다(2026-10-07 설계 문서 확인).
+
+이를 SaaS에 적용할 때는 다음을 별도로 검토한다.
+
+- 고객 인증과 운영 도구가 다른 파티션이나 외부 서비스에 의존하는가
+- 로그, 백업, 지원 과정의 자료 전달까지 허용한 위치와 접근 조건을 만족하는가
+- 고객이 선택한 외부 전송이나 원격 접근이 원래의 데이터 경계를 바꾸는가
+
+위 항목은 설계 검토 제안이다. 별도 파티션을 선택했다는 사실만으로 애플리케이션의 모든 데이터 경로나 법률상 의무를 충족했다고 판단하지 않는다.
+
 ## 적용 예시
 
 대용량 분석 서비스에서 원본 파일, 분석 작업과 결과는 허용된 리전에 두고 중앙 control plane에는 관리에 필요한 최소 정보만 전달하는 구성을 검토할 수 있다. 어떤 정보를 전달할 수 있는지는 해당 데이터의 요구사항으로 결정한다. 이는 설계 예시이며 특정 의료기관의 실제 배포를 재현한 구성이 아니다.
@@ -46,6 +60,7 @@ SaaS의 control plane은 온보딩, 인증, 테넌트 관리와 운영 분석 �
 
 ## 출처
 
+- [AWS European Sovereign Cloud, Design approach](https://docs.aws.amazon.com/whitepapers/latest/overview-aws-european-sovereign-cloud/design-approach.html)
 - [AWS SaaS Architecture Fundamentals, Control plane vs. application plane](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/control-plane-vs.-application-plane.html)
 - [AWS SaaS Tenant Isolation Strategies, Pool isolation](https://docs.aws.amazon.com/whitepapers/latest/saas-tenant-isolation-strategies/pool-isolation.html)
 - [AWS SaaS Tenant Isolation Strategies, Silo isolation](https://docs.aws.amazon.com/whitepapers/latest/saas-tenant-isolation-strategies/silo-isolation.html)
