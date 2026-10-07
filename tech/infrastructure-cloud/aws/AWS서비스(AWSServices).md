@@ -15,6 +15,8 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 
 ## 목차
 
+- [x] [[Amazon-Braket|Amazon Braket]] — 양자와 고전 계산, Hybrid Jobs와 문제 표현 비용
+- [x] [[EC2-Operations#Amazon Linux 패치와 저장소 버전|Amazon Linux 패치]] — AL2023 버전 고정, 보안 업데이트와 재시작 경계
 - [x] [[Athena-MCP-Text-to-SQL|Athena MCP 자연어 분석]] — SQL 실행과 결과 접근의 권한 분리
 - [x] [[RDS-MySQL-Storage-Reclamation|RDS MySQL 공간 회수]] — 테이블, binlog와 로그의 원인별 진단
 - [x] [[GameLift-Servers|GameLift Servers]] — 세션 배치, 부하 테스트와 Spot fleet

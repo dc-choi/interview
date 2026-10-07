@@ -11,7 +11,7 @@ AWS의 **가상 머신 컴퓨트 서비스**. 하이퍼바이저 위에서 인�
 
 - [[EC2-Compute|컴퓨트 아키텍처]] — Nitro System, Instance Store vs EBS, 인스턴스 패밀리, T 시리즈 크레딧, Placement Group
 - [[EC2-Network-Access|네트워크와 접근]] — IMDS, Elastic IP, ENA, Key Pair
-- [[EC2-Operations|운영과 수명주기]] — User Data, ASG 연계, 인스턴스 상태, AMI
+- [[EC2-Operations|운영과 수명주기]] — User Data, AL2023 저장소 버전과 패치, ASG 연계, 인스턴스 상태, AMI
 - [[EC2-Cost|비용 모델]] — On-Demand, Reserved, Savings Plans, Spot, Capacity Reservations
 - [[EC2-Checkpoints|흔한 실수와 체크포인트]] — 운영 실수, 면접, SAA-C03 시험 대비
 - [[Auto-Scaling|EC2 Auto Scaling]] — ASG, Launch Template, Scaling Policy, Cooldown, Lifecycle Hook

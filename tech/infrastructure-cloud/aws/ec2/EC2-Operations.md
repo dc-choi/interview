@@ -3,14 +3,14 @@ tags: [infrastructure, aws, ec2, compute]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["EC2 운영과 수명주기", "User Data, ASG, AMI"]
-verified_at: 2026-09-30
+verified_at: 2026-10-07
 ---
 
 # AWS EC2 — 운영과 수명주기
 
 ## User Data와 Cloud-init
 
-부팅 시 1회 실행되는 스크립트로 자동 셋업:
+부팅 시 1회 실행되는 스크립트로 자동 셋업한다. 아래는 AL2 계열의 과거 `yum` 예시다. AL2023의 패치 절차는 다음 절처럼 저장소 버전까지 지정한다.
 ```
 #!/bin/bash
 yum update -y
@@ -19,6 +19,42 @@ systemctl start docker
 ```
 
 전형적 활용: 패키지 설치, 에이전트 등록(SSM Agent, CloudWatch Agent), 애플리케이션 부트. 단, 매 부팅 실행 아님 — `cloud-init-per` 또는 AMI 베이크가 정석.
+
+## Amazon Linux 패치와 저장소 버전
+
+2026-10-07 공식 문서 대조 기준이다. 먼저 `/etc/os-release`로 배포판과 버전을 확인한다. Amazon Linux용 명령을 Ubuntu 같은 다른 배포판에 그대로 적용하지 않는다. AL2는 공식 공지상 2026-06-30에 지원이 종료됐으므로, 기존 패키지 갱신과 지원되는 OS로의 이전을 별도 작업으로 관리한다.
+
+AL2023 AMI는 특정 저장소 버전에 고정된다. 오래된 AMI로 인스턴스를 새로 만들거나 `dnf check-update`만 실행해도 이후 릴리스의 보안 패치가 자동 포함되는 것은 아니다. 버전 고정은 재현성을 주지만 운영자가 새 릴리스의 검토와 적용을 책임져야 한다.
+
+### 조회와 적용을 나눈다
+
+아래 조회 후 대상 버전을 선택한다.
+
+```bash
+cat /etc/os-release
+sudo dnf check-release-update
+```
+
+`<검증한-릴리스>`는 위 출력에서 고른 실제 버전으로 바꾼다. 비운영 환경에서 애플리케이션을 검증하고 복구 가능한 AMI와 데이터 백업을 준비한 뒤 운영에 적용한다.
+
+```bash
+dnf check-update --releasever=<검증한-릴리스>
+sudo dnf upgrade --releasever=<검증한-릴리스>
+```
+
+- `check-update`의 종료 코드 `100`은 갱신할 패키지가 있다는 뜻이고 `0`은 해당 저장소에 갱신 대상이 없다는 뜻이다. `100`을 통신 실패로 처리하지 않는다.
+- 전체 릴리스 업그레이드가 끝나면 새 버전이 이후 DNF 작업의 기본 저장소 버전이 된다. 테스트와 운영에서 같은 버전을 지정해야 `latest`가 실행 시점마다 달라지는 문제를 피할 수 있다.
+- AWS는 새 AL2023 릴리스의 전체 업데이트 적용을 권장한다. 보안 항목만 선택하는 것은 예외 운영으로 둔다.
+
+### 보안 패치만 선택할 때의 경계
+
+`dnf upgrade --security --releasever=<검증한-릴리스>`는 보안 권고가 있는 패키지로 갱신 대상을 제한한다. 특정 권고의 최소 수정 버전만 필요하면 `upgrade-minimal --advisory <권고-ID>`와 대상 `--releasever`를 조합한다. 실제 설치에는 관리자 권한이 필요하다.
+
+일부 패키지만 갱신하고 `system-release`를 갱신하지 않으면 기본 저장소 버전은 이전 값으로 남을 수 있다. 그 상태에서 후속 설치를 하면 새 패키지의 의존성을 오래된 저장소가 충족하지 못할 수 있으므로, 설치 결과와 기본 저장소 버전을 따로 확인한다.
+
+패키지 설치 완료와 실행 중인 코드의 교체도 다르다. 새 커널 활성화에는 재부팅이 필요하며, 서비스는 재시작이 필요할 수 있다. `smart-restart`를 설치한 환경에서는 패키지 변경 시 서비스 재시작이 발생할 수 있으므로 유지보수 창과 서비스별 제외 정책을 함께 확인한다. 적용 후에는 커널, 서비스 상태와 애플리케이션 상태 검사를 확인한다.
+
+여러 인스턴스의 일정과 실행을 조정할 때는 [[Systems-Manager|Systems Manager Patch Manager]]를 검토한다. 이 절은 문서 대조이며 실제 EC2에서 패치나 재부팅을 실행한 기록은 아니다. 기존 수명주기와 AMI 절 전체를 다시 검증한 것으로 해석하지 않는다.
 
 ## Auto Scaling Group (ASG) 연계
 
@@ -68,6 +104,10 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 
 ## 출처
 
+- [AWS 공식 문서, Deterministic upgrades through versioned repositories on AL2023](https://docs.aws.amazon.com/linux/al2023/ug/deterministic-upgrades.html)
+- [AWS 공식 문서, Manage package and operating system updates in AL2023](https://docs.aws.amazon.com/linux/al2023/ug/managing-repos-os-updates.html)
+- [AWS 공식 문서, Applying security updates in-place](https://docs.aws.amazon.com/linux/al2023/ug/security-inplace-update.html)
+- [Amazon Linux 2 version 2.0.20260918.0 release notes — AWS](https://docs.aws.amazon.com/AL2/latest/relnotes/relnotes-20260918.html)
 - [AWS 공식 문서, EC2 Auto Scaling health checks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html)
 - [AWS 공식 문서, Amazon EC2 Auto Scaling lifecycle hooks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html)
 - [AWS 공식 문서, Stop and start Amazon EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html)
