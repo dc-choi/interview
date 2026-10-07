@@ -15,6 +15,9 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 
 ## 목차
 
+- [x] [[AWS-Control-Tower|Control Tower]] — 랜딩 존, 계정 프로비저닝, 예방과 탐지 및 사전 통제
+- [x] [[IoT-Edge-Cloud-Pipeline|IoT 엣지와 클라우드 파이프라인]] — MQTT 수집, SQS 순서와 중복, Greengrass V2 추론
+
 분류 폴더 인덱스: [[compute|컴퓨팅]], [[storage|스토리지]], [[data|데이터]], [[networking|네트워킹]], [[management|관리]], [[aws-security|보안]]
 
 - [x] [[AWS-Fundamentals|AWS 기본 (Region, AZ, Edge Location, 책임 공유 모델, Elasticity vs Scalability, 리저널/글로벌 서비스)]]

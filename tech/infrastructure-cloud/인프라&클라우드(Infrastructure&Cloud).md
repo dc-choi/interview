@@ -18,6 +18,8 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[AWS-Control-Tower|Control Tower 거버넌스]] — 계정 표준화, 통제별 적용 범위와 공동 책임
+- [x] [[IoT-Edge-Cloud-Pipeline|IoT 엣지와 클라우드 파이프라인]] — 수집과 추론 분리, 메시지 순서와 중복, 현장 제어의 검증 경계
 - [x] [[End-User-Messaging-Two-Way-SMS|양방향 SMS 수신 진단]] — 목적지별 권한, FIFO 제한과 암호화 topic
 - [x] [[Elemental-Inference|영상 인코딩과 AI 분석]] — feed와 기능별 output, 자막 지원 언어와 최종 출력 검수
 - [x] [[DMS#자동 변환율과 업무 동작 검증은 별개다|DB 마이그레이션 검증 경계]] — 객체 변환, 행 비교와 애플리케이션 회귀 검증

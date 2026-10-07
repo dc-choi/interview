@@ -10,6 +10,7 @@ aliases: ["AWS 관리 인덱스"]
 멀티 계정, IaC, 감사, 운영 자동화 서비스 모음.
 
 - [[AWS-Organizations|Organizations — 멀티 계정 관리, SCP, OU, 통합 결제]]
+- [[AWS-Control-Tower|Control Tower — 랜딩 존, 계정 생성과 통제의 적용 경계]]
 - [[CloudFormation|CloudFormation — IaC 템플릿, 스택]]
 - [[Step-Functions|Step Functions — 상태 머신, 서비스 오케스트레이션, 재시도와 보상]]
 - [[CloudTrail-Config|CloudTrail과 Config — API 감사, 리소스 구성 추적]]
