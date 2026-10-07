@@ -52,6 +52,14 @@ Observability는 CloudWatch 기반 관측과 OpenTelemetry 호환 데이터를 �
 
 토큰, 지연과 오류율은 운영 지표다. 주문 처리나 분석 완료 같은 업무 성공은 결과 데이터와 별도 평가로 확인한다. 실행 시간이 짧거나 도구 호출이 성공했다는 이유만으로 답변의 정확성을 확정하지 않는다.
 
+## 모델 접근 오류는 초기 구독과 호출 권한을 나눠 본다
+
+AgentCore 배포가 끝났어도 내부에서 호출하는 Bedrock 모델의 접근은 별도다. 먼저 실행 로그에서 실패한 API, 모델과 리전, 호출 역할을 확인한다. 배포 도구의 로컬 오류와 Runtime 내부의 모델 접근 오류를 같은 실패로 처리하지 않는다.
+
+2026-10-07 Bedrock 공식 문서 기준으로 AWS Marketplace 구독이 필요한 serverless 모델은 계정의 첫 사용 때 활성화 절차가 필요하다. 이 초기 설정에는 `aws-marketplace:Subscribe`, `aws-marketplace:Unsubscribe`, `aws-marketplace:ViewSubscriptions` 권한이 사용된다. 이미 활성화한 모델의 호출에는 Marketplace 구독 권한이 필요하지 않다. 모델 호출 자체의 IAM 허용은 별도로 확인한다.
+
+따라서 초기 활성화 역할과 상시 실행 역할을 나누는 구성을 검토한다. `AccessDeniedException`만 보고 Runtime 역할에 Marketplace 전체 권한을 추가하지 않는다. 구독 처리 중에도 접근 오류가 이어질 수 있으므로 선행 조건과 처리 상태를 확인한 뒤 제한적으로 재시도한다. 구독이 필요 없는 모델에 이 절차를 일괄 적용하지 않는다.
+
 ## 운영 점검
 
 - 다른 사용자의 세션과 기억 조회를 거절하는가
@@ -63,6 +71,7 @@ Observability는 CloudWatch 기반 관측과 OpenTelemetry 호환 데이터를 �
 
 ## 출처
 
+- [AWS, Request access to models](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html)
 - [AWS, Policy in Amazon Bedrock AgentCore: Control Agent Interactions](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy.html)
 - [AWS, Create gateway with Policy Engine](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/create-gateway-with-policy.html)
 - [AWS, Use isolated sessions for agents](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-sessions.html)

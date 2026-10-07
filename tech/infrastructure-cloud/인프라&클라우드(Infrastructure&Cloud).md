@@ -18,10 +18,12 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[ECS-Express-Mode|ECS Express Mode]] — 자동 구성, 기본 최소 태스크 수, ALB 공유와 변경 제한
+- [x] [[GuardDuty-Investigation|GuardDuty 경보 조사]] — Preview 전제, 조사 범위, 위험과 신뢰도, 권고 조치 검토
 - [x] [[Athena-MCP-Text-to-SQL|Athena MCP 자연어 분석]] — 실행과 결과 열람, 도구 플래그와 실제 AWS 권한
 - [x] [[RDS-MySQL-Storage-Reclamation|RDS MySQL 공간 회수]] — 테이블스페이스, binlog와 로그, 할당 용량과의 구분
 - [x] [[GameLift-Servers|GameLift Servers]] — 세션 배치와 Spot 중단 경계
-- [x] [[GameLift-Streams|GameLift Streams]] — WebRTC 연결과 always-on, maximum, target-idle 용량
+- [x] [[GameLift-Streams|GameLift Streams]] — WebRTC와 위치별 용량, 공유 URL의 사용 횟수와 재접속 제한
 - [x] [[Athena#CloudTrail 로그의 파티션과 호출 주체 추적|Athena로 CloudTrail 조사]] — 날짜 파티션과 사건 시각, 역할 세션 연결, 미수집과 실행 실패의 구분
 - [x] [[Route53#삭제한 S3 버킷을 가리키는 DNS|S3 버킷 삭제와 DNS 정리]] — 남은 Alias의 이름 재사용 위험, CloudFront 전환과 OAC origin 구분
 - [x] [[ElastiCache-Engine-Deployment#엔진 업그레이드와 클라이언트 복구|ElastiCache 엔진 업그레이드]] — node-based 교체 절차, 연결 복구와 제한된 rollback
@@ -38,7 +40,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[IoT-Edge-Cloud-Pipeline|IoT 엣지와 클라우드 파이프라인]] — 수집과 추론 분리, 메시지 순서와 중복, 현장 제어의 검증 경계
 - [x] [[End-User-Messaging-Two-Way-SMS|양방향 SMS 수신 진단]] — 목적지별 권한, FIFO 제한과 암호화 topic
 - [x] [[Elemental-Inference|영상 인코딩과 AI 분석]] — feed와 기능별 output, 자막 지원 언어와 최종 출력 검수
-- [x] [[DMS#자동 변환율과 업무 동작 검증은 별개다|DB 마이그레이션 검증 경계]] — 객체 변환, 행 비교와 애플리케이션 회귀 검증
+- [x] [[DMS#자동 변환율과 업무 동작 검증은 별개다|DB 마이그레이션 검증 경계]] — 생성형 AI 적용 범위, 객체 변환, 행 비교와 애플리케이션 회귀 검증
 - [x] [[Athena#SageMaker Unified Studio와 Power BI의 ODBC 연결|Athena ODBC와 Power BI]] — 대화형 로그인, 게이트웨이 IAM 역할과 연결 매핑
 - [x] [[DynamoDB#스로틀링과 재시도|DynamoDB 스로틀링 진단]] — reason과 resource ARN, GSI back pressure, 파티션과 quota, Auto Scaling 지연
 - [x] [[S3-Tables-Maintenance|S3 Tables 유지보수]] — table bucket, 스냅샷 만료와 파일 삭제, Iceberg 설정 충돌과 운영 책임

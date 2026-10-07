@@ -56,6 +56,14 @@ DMS Standard는 replication instance와 task를 만들고, DMS Serverless는 rep
 - 이기종 이전은 데이터 전송 외에 스키마와 애플리케이션 호환성 작업이 필요하다. 변환 도구를 쓸지 수동 DDL과 검증으로 할지는 객체 범위와 지원 수준에 따라 선택한다.
 - 같은 엔진 계열 이전도 대상 schema, 객체와 DDL 적용 방식을 명시한다.
 
+### 생성형 AI 변환의 적용 범위
+
+2026-10-07 공식 문서 기준으로 DMS Schema Conversion의 생성형 AI는 지정된 action item에 해당하는 SQL 요소의 변환을 보완한다. 그 밖의 요소에는 기본 규칙 기반 변환을 사용하므로, 기능을 켰다고 모든 미변환 객체가 해결되는 것은 아니다.
+
+Oracle에서 RDS for PostgreSQL 또는 Aurora PostgreSQL로 옮기는 경로 등이 지원된다. 실제 소스와 대상 조합, 대상 SQL 요소와 리전 지원을 확인하고 변환 옵션을 활성화한다. 이 기능은 Cross-Region inference를 사용하므로 처리 리전 조건도 확인한다.
+
+생성한 SQL을 대상에 적용하기 전에 검토하고, 남은 action item과 업무 회귀 테스트 결과를 함께 남긴다. AI 변환은 아래의 데이터 검증과 애플리케이션 검증을 대체하지 않는다. 이 절의 추가 검증일이며 기존 서비스 설명 전체를 재검증한 날짜는 아니다.
+
 ### 자동 변환율과 업무 동작 검증은 별개다
 
 DMS Schema Conversion의 assessment report는 자동 변환 가능한 객체와 수동 조치가 필요한 객체를 나누고, action item별 문제와 권고 조치를 제공한다. 이 결과는 변환 작업의 범위를 파악하는 근거이며 애플리케이션의 업무 동작까지 검증한 성적표는 아니다(2026-10-07 공식 문서 확인).
@@ -124,6 +132,7 @@ DMS data validation은 지원되는 소스와 대상의 대응 행을 비교한�
 
 ## 출처
 
+- [AWS DMS, Converting database objects with generative AI](https://docs.aws.amazon.com/dms/latest/userguide/schema-conversion-convert.databaseobjects.html)
 - [AWS DMS, Conversion assessment reports with DMS Schema Conversion](https://docs.aws.amazon.com/dms/latest/userguide/assessment-reports.html)
 - [AWS DMS, AWS DMS data validation](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Validating.html)
 - [AWS DMS, Components](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.Components.html)

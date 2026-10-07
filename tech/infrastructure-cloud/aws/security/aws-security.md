@@ -16,6 +16,7 @@ aliases: ["AWS 보안 인덱스"]
 - [[AWS-Builder-ID-Recovery|AWS Builder ID — 복구 이메일 등록과 MFA 복구 조건]]
 - [[Shield-WAF-NetworkFirewall|Shield, WAF, Network Firewall — DDoS, L7 웹공격, VPC 방화벽]]
 - [[Firewall-Manager|Firewall Manager — 멀티 계정 방화벽 정책 일괄 관리]]
+- [[GuardDuty-Investigation|GuardDuty Investigation — Preview 지원 조건, 위험과 신뢰도, 권고 조치 검토]]
 
 ## 관련 문서
 
