@@ -56,6 +56,18 @@ sudo dnf upgrade --releasever=<검증한-릴리스>
 
 여러 인스턴스의 일정과 실행을 조정할 때는 [[Systems-Manager|Systems Manager Patch Manager]]를 검토한다. 이 절은 문서 대조이며 실제 EC2에서 패치나 재부팅을 실행한 기록은 아니다. 기존 수명주기와 AMI 절 전체를 다시 검증한 것으로 해석하지 않는다.
 
+### 커널 업데이트 뒤 부팅에 실패했을 때
+
+2026-10-07 공식 문서로 대조한 Linux, EBS 루트 볼륨의 복구 경로다. SSH 접속 실패만으로 커널 문제를 단정하지 않고 시스템 로그에서 kernel panic, initramfs와 부팅 오류를 확인한다. 아래는 복구 판단 순서이며 모든 배포판에 그대로 실행하는 스크립트가 아니다.
+
+1. 원본 EBS의 스냅샷이나 복구 가능한 AMI를 확보하고 원래 루트 장치 매핑을 기록한다. Stop은 instance store 데이터 손실과 자동 공인 IPv4 변경을 동반할 수 있어 영향을 확인한다.
+2. 지원 인스턴스와 권한, GRUB 설정을 갖췄다면 EC2 Serial Console을 검토한다. SSH가 안 된다고 사전 설정 없이 Serial Console을 곧바로 쓸 수 있는 것은 아니다.
+3. 구조용 인스턴스를 쓰면 원본을 중지한 뒤 루트 EBS를 분리하고 **같은 AZ**의 호환되는 Linux 인스턴스에 보조 볼륨으로 연결한다. `lsblk`로 실제 장치와 파티션을 식별하고 마운트한 원본 루트의 `chroot` 환경에서 작업한다. `/boot`가 별도 파티션이면 해당 파티션도 확인한다.
+4. AL2023 등 `grubby`를 쓰는 구성은 `grubby --default-kernel`과 `grubby --info=ALL`로 현재 기본값과 설치된 커널을 확인한다. 정상 동작을 확인한 커널의 실제 경로를 `grubby --set-default=<커널-경로>`에 지정한다. 예제의 index 1을 모든 머신의 안정 커널이라고 가정하지 않는다.
+5. `grubby --default-kernel`로 설정을 확인한다. `chroot`를 빠져나와 마운트를 해제하고 구조용 인스턴스를 중지한 뒤, EBS를 원본의 루트 장치로 다시 연결한다. 부팅 후 실행 커널과 서비스 상태를 확인한다.
+
+커널 파일, initramfs나 부팅 항목이 없으면 기본값 변경만으로 복구되지 않을 수 있다. 배포판별 복구 절차를 따르며, 복구 후에는 실패한 업데이트의 원인을 따로 해결한다. 실제 인스턴스에서 수행한 검증 기록은 아니다.
+
 ## Auto Scaling Group (ASG) 연계
 
 - **Launch Template** — AMI, 인스턴스 타입, User Data, SG, IAM 정의
@@ -104,6 +116,11 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 
 ## 출처
 
+- [Revert to a stable kernel after updates to an EC2 instance — AWS re:Post](https://repost.aws/knowledge-center/revert-stable-kernel-ec2-reboot)
+- [AWS 공식 문서, Prerequisites for the EC2 Serial Console](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console-prerequisites.html)
+- [AWS 공식 문서, Attach an Amazon EBS volume to an Amazon EC2 instance](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-attaching-volume.html)
+- [AWS 공식 문서, Updating the Linux Kernel on AL2023](https://docs.aws.amazon.com/linux/al2023/ug/kernel-update.html)
+- [AWS 공식 문서, Troubleshoot Amazon EC2 Linux instances with failed status checks](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstances.html)
 - [AWS 공식 문서, Deterministic upgrades through versioned repositories on AL2023](https://docs.aws.amazon.com/linux/al2023/ug/deterministic-upgrades.html)
 - [AWS 공식 문서, Manage package and operating system updates in AL2023](https://docs.aws.amazon.com/linux/al2023/ug/managing-repos-os-updates.html)
 - [AWS 공식 문서, Applying security updates in-place](https://docs.aws.amazon.com/linux/al2023/ug/security-inplace-update.html)

@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, cloudformation, iac, automation, devops]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-07
 category: "Infrastructure - AWS"
 aliases: ["CloudFormation", "AWS CloudFormation", "CFN"]
 ---
@@ -45,6 +45,18 @@ AWS의 **네이티브 IaC 서비스**. JSON, YAML 템플릿으로 AWS 리소스(
 - 스택을 생성, 업데이트, 삭제하면 포함된 리소스가 일괄 처리됨
 - **스택 삭제** → 기본적으로 포함 리소스를 삭제하지만 `DeletionPolicy`, retain option과 리소스별 삭제 제약에 따라 보존되거나 삭제가 실패할 수 있음
 - **Automatic Rollback on Error**가 기본 동작이다. 다만 preserve successfully provisioned resources를 선택하면 성공한 리소스를 유지한 채 실패 지점에서 진단, 재시도할 수 있음
+
+### DELETE_FAILED 진단과 잔존 리소스
+
+2026-10-07 공식 문서 대조 기준이다. 스택 Events에서 실패한 논리 ID와 사유를 확인하고, 삭제를 막는 원인을 먼저 구분한다.
+
+- **외부 의존성과 리소스 제약**: 스택 밖에서 사용 중인 리소스나 비어 있지 않은 S3 버킷은 삭제가 실패할 수 있다. 의존성을 해소하거나 데이터를 보존할지 결정한 뒤 재시도한다.
+- **서비스 역할과 권한**: 삭제에 쓰는 역할과 하위 서비스의 삭제 권한을 확인한다. `DeleteStack`의 `RoleARN`으로 사용할 역할을 지정할 수 있으며, 생략하면 기존에 스택과 연결된 역할을 사용한다.
+- **Custom resource 응답**: Lambda 실행 성공만으로 완료되지 않는다. `Delete` 요청을 받은 provider가 제한 시간 안에 `ResponseURL`로 `SUCCESS` 또는 `FAILED` 응답을 보내야 한다. 기본 `ServiceTimeout`은 3,600초이며 무응답 원인을 고치지 않은 재시도는 다시 시간 초과할 수 있다.
+
+`DELETE_FAILED`에서 `RetainResources`에 **논리 ID**를 지정하면 해당 리소스를 남기고 스택을 삭제할 수 있다. `DeletionMode=FORCE_DELETE_STACK`도 리소스 전체의 물리적 삭제를 보장하지 않는다. 콘솔의 강제 삭제는 삭제에 실패한 리소스와 그 의존 리소스를 보존한다.
+
+삭제 뒤에는 Deleted 필터에서 스택의 Resources를 열어 `DELETE_SKIPPED`를 확인하고, 남은 리소스의 사용 여부, 비용과 정리 책임을 별도로 기록한다. Custom resource를 건너뛰었어도 provider가 만든 실제 자원이 사라졌다고 가정하지 않는다.
 
 ## Change Set (변경 세트)
 
@@ -165,6 +177,10 @@ IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인�
 
 ## 출처
 
+- [AWS CloudFormation — Troubleshooting, Delete stack fails](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html#troubleshooting-errors-delete-stack-fails)
+- [AWS CloudFormation — Delete a stack from the CloudFormation console](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-delete-stack.html)
+- [AWS CloudFormation — DeleteStack API](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_DeleteStack.html)
+- [AWS CloudFormation — Custom resource request and response reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref.html)
 - [AWS CloudFormation — Continue rolling back an update](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html)
 - AWS SAA C03 학습 자료 (로컬)
 - [AWS CloudFormation — Template anatomy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html)

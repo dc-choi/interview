@@ -1,7 +1,7 @@
 ---
 tags: [runtime, jvm, gc, memory-leak, heap-dump, java]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-07
 category: "OS&런타임(OS&Runtime)"
 aliases: ["JVM Memory Leak", "Java 메모리 누수", "unintentional retention", "GC가 막지 못하는 누수"]
 ---
@@ -13,8 +13,18 @@ GC가 있어도 Java에는 메모리 누수가 생긴다. GC가 해결하는 것
 ## 도달 가능성이 회수를 정한다
 
 - 추적형 GC는 GC root에서 참조를 따라 도달할 수 있는 객체를 살리고, 도달할 수 없는 객체만 회수 후보로 삼는다. GC root에는 실행 중인 thread의 stack frame이 가진 지역 변수와 parameter, 클래스의 static field, JNI 참조 등이 있다([[GC-Algorithm]]의 루트 집합).
-- 어떤 참조도 가리키지 않는 객체가 도달 불가능 객체다. 서로만 참조하는 순환 구조도 root에서 끊기면 회수된다. 기준은 참조 횟수가 아니라 도달 경로다([[Call-Stack-Heap#Garbage Collection (V8 GC)|JS 엔진의 같은 원리]]).
+- root에서 도달할 경로가 없는 객체는 회수 후보가 된다. 서로만 참조하는 순환 구조도 root에서 끊기면 회수될 수 있다. 기준은 참조 횟수가 아니라 도달 경로다([[Call-Stack-Heap#Garbage Collection (V8 GC)|JS 엔진의 같은 원리]]).
 - C의 누수는 도달할 수 없게 됐는데 free하지 않은 메모리다. GC는 이 종류를 없앤다. Java의 누수는 더 쓰지 않는데 여전히 도달 가능한 객체가 쌓이는 것(unintentional retention)이고, GC는 이것을 구분하지 못한다.
+
+### null 대입과 실제 회수 시점은 다르다
+
+2026-10-07 Java SE 25의 도달 가능성 정의와 `System.gc()` 계약을 대조했다.
+
+1. `a = null`은 변수 `a`가 가진 참조 하나를 끊는다. 객체를 직접 해제하는 명령이 아니다.
+2. 다른 변수나 컬렉션을 통해 그 객체에 강하게 도달할 수 있으면 회수 대상이 되지 않는다. 강한 참조가 없어져도 soft, weak, phantom reference의 처리 규칙을 별도로 고려한다.
+3. 회수 가능한 상태와 실제 회수가 끝난 시점은 다르다. `System.gc()`도 JVM에 회수 노력을 요청하는 호출이므로 특정 객체의 즉시 회수를 보장하는 동기화 수단으로 쓰지 않는다.
+
+메모리 누수를 판단할 때는 null을 대입했는지가 아니라 남은 도달 경로와 GC 뒤 live set을 확인한다. 파일과 소켓 해제는 아래의 명시적 자원 정리 규칙을 따른다.
 
 ## static이 누수 경로가 되는 방식
 
@@ -54,6 +64,8 @@ static field는 그 클래스와 class loader가 살아 있는 동안 계속 도
 
 ## 출처
 
+- [Oracle Java SE 25 Docs, java.lang.ref Reachability](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ref/package-summary.html#reachability)
+- [Oracle Java SE 25 Docs, System.gc()](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/System.html#gc())
 - [Oracle Java SE 25, Troubleshooting Guide, Troubleshoot Memory Leaks](https://docs.oracle.com/en/java/javase/25/troubleshoot/troubleshooting-memory-leaks.html)
 - [Oracle Java SE 25 Docs, WeakHashMap](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/WeakHashMap.html)
 - [JEP 421 — Deprecate Finalization for Removal (OpenJDK)](https://openjdk.org/jeps/421)

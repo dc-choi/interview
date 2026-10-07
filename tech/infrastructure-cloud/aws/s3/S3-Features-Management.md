@@ -3,7 +3,7 @@ tags: [infrastructure, aws, s3, object-storage]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["S3 기능 (Event, Select, Replication)", "S3 데이터 관리"]
-verified_at: 2026-07-15
+verified_at: 2026-10-07
 ---
 
 # S3 기능과 데이터 관리
@@ -48,10 +48,18 @@ verified_at: 2026-07-15
 
 ## Versioning과 삭제 보호
 
-- **Versioning** — 동일 key에 여러 버전 보존, 실수 삭제 복구 가능. 삭제 요청은 객체를 지우지 않고 **DeleteMarker**를 최신 버전으로 붙여 숨김 → 마커를 제거하면 이전 버전으로 복구
-- **MFA Delete** — 객체 삭제 시 MFA 토큰 요구
+- **Versioning** — 동일 key에 여러 버전을 보존한다. Versioning이 활성화된 버킷에서 version ID 없는 일반 삭제는 **DeleteMarker**를 추가하며, 특정 version ID를 지정한 삭제는 해당 버전을 영구 삭제한다. 마커를 제거하면 이전 버전을 다시 조회할 수 있다
+- **MFA Delete** — 객체 버전의 영구 삭제와 버킷 Versioning 상태 변경에 추가 MFA 인증을 요구한다. 모든 삭제 요청에 같은 방식으로 적용되는 기능은 아니다
 - **Object Lock** — Compliance/Governance 모드로 일정 기간, 영구 삭제 금지 (WORM, 컴플라이언스용)
 - Lifecycle Rule로 **noncurrent version expire**, **완료되지 않은 Multipart abort**, **DeleteMarker 정리**까지 설정 가능
+
+### MFA Delete의 운영 제약
+
+2026-10-07 공식 문서 기준이다. MFA Delete는 Versioning과 함께 설정하며, 활성화는 버킷 소유 계정의 root 사용자만 할 수 있다. 콘솔에서는 활성화할 수 없어 CLI나 API를 사용한다. MFA Delete가 켜진 버킷의 버전 영구 삭제와 Versioning 구성 변경도 root 사용자 작업이다.
+
+- 영구 삭제는 대상 `version-id`와 MFA 장치 일련번호 또는 ARN, 현재 인증 코드를 함께 전달한다. 콘솔 로그인 때 MFA를 거쳤다는 사실만으로 삭제 요청의 MFA 요건이 충족되지는 않는다.
+- **Lifecycle 구성과 함께 사용할 수 없다.** 이전 버전 자동 만료가 필요한 버킷에 일괄 적용하기 전에 삭제 보호와 보관 비용의 요구사항을 비교한다.
+- Versioning, MFA Delete와 Object Lock은 각각 버전 보존, 추가 인증, 보존 정책에 따른 삭제 제한을 맡는다. 하나를 켰다고 나머지 요구사항까지 충족되는 것은 아니다.
 
 ## Replication — CRR / SRR
 
@@ -98,6 +106,9 @@ S3 자체가 정적 페이지 서버 역할. `index.html`, `error.html` 지정�
 
 ## 출처
 
+- [AWS 공식 문서, Configuring MFA delete](https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiFactorAuthenticationDelete.html)
+- [AWS 공식 문서, Deleting an object from an MFA delete-enabled bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMFADelete.html)
+- [AWS 공식 문서, Deleting object versions from a versioning-enabled bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/DeletingObjectVersions.html)
 - [AWS 공식 문서, Querying data in place with Amazon S3 Select](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html)
 - [AWS 공식 문서, Amazon S3 Object Lambda availability change](https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazons3-ol-change.html)
 - [AWS 공식 문서, S3 Event Notification 대상](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-event-types-and-destinations.html)
