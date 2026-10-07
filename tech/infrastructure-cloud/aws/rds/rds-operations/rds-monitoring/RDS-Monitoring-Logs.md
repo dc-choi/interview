@@ -97,12 +97,25 @@ Slack Webhook (채널별 분기)
 - UTC → KST 변환해 가독성 확보
 - `EXPLAIN` 실행 결과는 Slow Query로 오인되므로 제외
 
+## Aurora Database Activity Streams와 CDC의 경계
+
+2026-10-07 공식 문서로 대조한 범위다. Database Activity Streams는 DB 활동을 준실시간으로 수집하는 감사 경로다. Aurora가 Kinesis stream을 생성하며 SQL, 연결과 실행 정보를 전달한다. KMS로 암호화된 활동 데이터를 소비자가 복호화하고 처리한다.
+
+- **비동기 모드**는 활동 기록의 내구화 완료를 기다리지 않고 DB 처리를 계속한다. 백그라운드 오류로 기록이 유실될 수 있는 구간을 RDS event로 알린다.
+- **동기 모드**는 활동 기록의 내구화를 기다리지만, 내구화 실패 시 DB 처리를 재개하고 유실 가능성을 알린다. 무손실 보장은 아니며 Aurora PostgreSQL에서만 지원한다. Aurora MySQL은 비동기 모드만 지원한다.
+- Aurora가 생성한 Kinesis stream의 보존 기간은 24시간이다. activity stream 중지나 DB cluster 삭제 시 Kinesis stream도 삭제되므로 장기 감사 보관은 별도로 구성한다.
+- SQL 전문에 민감 데이터가 포함될 수 있다. 암호 일부가 문맥에 따라 마스킹되는 기능을 모든 PII의 제거로 해석하지 않는다. LLM 분석이나 테스트 데이터 생성에 넘기기 전에 접근 통제와 정제를 적용한다.
+
+감사 로그에서 SQL을 파싱하는 것과 커밋된 행 변경을 복제하는 CDC는 같은 계약이 아니다. 위 유실 가능성과 기록 범위를 고려하면 activity stream을 데이터 동기화나 결제 후속 처리의 유일한 근거로 채택해서는 안 된다. 적용 설계에서는 rollback, 재시도, 누락 복구와 SQL 재실행의 부작용을 별도로 확인하고 [[CDC-Debezium|로그 기반 CDC]] 또는 [[CDC&Outbox|Transactional Outbox]]와 비교한다.
+
 ## 출처
 
 - [jojoldu — AWS RDS PostgreSQL Slack 알람 구현](https://jojoldu.tistory.com/711)
 - [AWS Docs — RDS for MySQL 데이터베이스 로그 개요](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQL.LogFileSize.html)
 - [AWS Docs — CloudWatch Logs에 MySQL 로그 게시](https://docs.aws.amazon.com/ko_kr/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQLDB.PublishtoCloudWatchLogs.html)
 - [AWS Docs — CloudWatch Logs quotas](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/cloudwatch_limits_cwl.html)
+- [Amazon Aurora — Monitoring Amazon Aurora with Database Activity Streams](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html)
+- [Amazon Aurora — Monitoring database activity streams](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.Monitoring.html)
 
 ## 관련 문서
 

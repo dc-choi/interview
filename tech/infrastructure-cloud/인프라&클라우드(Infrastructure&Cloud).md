@@ -18,6 +18,10 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[AWS-Backup-Malware-Scanning|AWS Backup 악성코드 검사]] — 검사 상태와 결과, 증분 기준과 복원 검증
+- [x] [[Bedrock-Private-Access|Bedrock 비공개 연결]] — API별 endpoint, DNS와 IAM 인가의 구분
+- [x] [[ECS-GPU-Inference|ECS GPU 추론]] — GPU 배치, 분할 용량과 모델 준비 완료
+- [x] [[RDS-Monitoring-Logs#Aurora Database Activity Streams와 CDC의 경계|Aurora 활동 감사와 CDC]] — 유실 가능성, SQL 민감 데이터와 동기화 계약의 구분
 - [x] [[RDS-Aurora-Replica-Lag|Aurora Reader 지연 진단]] — 밀리초 단위, Writer 쓰기, Reader 용량과 purge 부담
 - [x] [[Auto-Scaling#예정된 급증은 준비 완료 시각에서 역산한다|EC2 예정 트래픽 사전 확장]] — 예약과 동적 정책, 초기화 시간, 종료 후 용량 복구
 - [x] [[Security-Hub-AI-Inventory|Security Hub AI Inventory]] — 발견 신호, Inspector/GuardDuty 전제와 미지원 범위

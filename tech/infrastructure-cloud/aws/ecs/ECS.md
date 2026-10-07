@@ -12,6 +12,7 @@ AWS 관리형 컨테이너 오케스트레이션 서비스. **Task Definition, S
 
 ecs 폴더 문서 구성:
 
+- [[ECS-GPU-Inference|ECS GPU 추론 — GPU 배치, fractional GPU 조건과 준비 완료 검증]]
 - [[ECS-Rolling-Deployment|ECS 롤링 배포 메커니즘 — 용량 산술, deployment circuit breaker, 드레이닝과 stopTimeout]]
 - [[ECS-Secrets-Injection|ECS 런타임 시크릿 주입 — secrets valueFrom, 역할 분리, 회전과 재기동]]
 - [[ECS-Service-AutoScaling|ECS Service Auto Scaling — Scalable Target, 정책 3종, backlog-per-task 패턴]]

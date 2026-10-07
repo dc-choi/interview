@@ -13,6 +13,7 @@ AWS VPC(Virtual Private Cloud)는 **격리된 가상 네트워크**. IP 대역, 
 - [[VPC-NAT-Security|NAT Gateway vs NAT Instance, SG vs NACL, 보안 규제 관점]]
 - [[VPC-Connectivity|Peering vs Transit Gateway, VPC Endpoint, 온프레미스 연결(VPN, DX)]]
 - [[VPC-Pitfalls-Interview|흔한 실수와 면접 체크포인트]]
+- [[Bedrock-Private-Access|Bedrock 비공개 연결 — API별 endpoint, private DNS와 권한 경계]]
 
 ## 출처
 - [AWS VPC 기본 개념 — brunch @growthminder](https://brunch.co.kr/@growthminder/93)
