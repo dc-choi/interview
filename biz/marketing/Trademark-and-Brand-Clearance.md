@@ -53,6 +53,19 @@ WIPO도 목표 시장의 등록상표와 진행 중인 출원을 먼저 조사�
 
 한국 등록이 해외 보호로 자동 확대되지는 않는다. 목표 국가별 권리를 검토하고 직접 출원과 마드리드 국제출원 등을 비교한다. WIPO의 마드리드 제도는 본국의 기초 출원 또는 등록과 자격 요건을 요구하며, 지정국의 법이 보호 범위를 결정한다. 국제출원 한 번으로 전 세계 등록을 보장받는 구조는 아니다. [WIPO 국제출원 안내](https://www.wipo.int/en/web/madrid-system/how_to/file/index)
 
+## 외부 브랜드 로고를 가져올 때
+
+SVG 모음은 파일을 찾는 경로다. 파일을 내려받을 수 있다는 사실과 서비스 화면, 광고에 그 브랜드를 표시할 권한은 구분한다. 2026-10-07에 확인한 theSVG는 브랜드 로고를 검색하고 복사하는 기능을 제공하지만, 자체 라이선스 안내에서도 SVG 파일의 복제 조건과 상표 사용 조건을 나눈다.
+
+다음은 해당 정책을 적용한 확인 순서다.
+
+1. 개별 아이콘의 라이선스와 원래 배포처를 확인한다. 저장소 코드가 MIT라는 이유만으로 포함된 모든 로고도 같은 조건이라고 가정하지 않는다.
+2. 권리자의 공식 브랜드 가이드에서 사용 목적, 변형과 표시 조건을 확인한다. 모음 사이트의 표시는 권리자의 허가를 대신하지 않는다.
+3. 공식 제휴나 보증을 받았다는 인상을 주는 배치인지 검토한다. 기술 지원 목록에 브랜드를 표시하는 것과 자사 브랜드처럼 쓰는 것은 다른 사용 맥락이다.
+4. 납품물에는 사용한 자산의 원출처, 확인 날짜와 적용 조건을 함께 넘긴다. 권한이 불명확하면 로고 사용을 보류하고 공식 배포처에서 다시 확인한다.
+
+theSVG는 제출자가 신고한 라이선스를 기록하며 모든 제출물의 상표 정책을 개별 감사하지는 않는다고 밝힌다. 따라서 검색 결과에 있다는 이유만으로 상업적 사용 가능이나 비침해가 검증된 것으로 취급하지 않는다. 이 절은 수집 도구의 공개 정책을 확인한 것으로, 개별 로고의 사용을 승인한 결과가 아니다.
+
 ## 적용 질문
 
 - 도메인을 샀고 사업자등록도 마쳤다. 같은 이름의 앱을 광고하기 전에 무엇을 더 확인해야 하는가?
@@ -71,6 +84,9 @@ WIPO도 목표 시장의 등록상표와 진행 중인 출원을 먼저 조사�
 - [국가법령정보센터, 상표법 제119조](https://www.law.go.kr/법령/상표법/제119조) — 불사용에 따른 취소심판
 - [WIPO, Search Before Filing an International Trademark Application](https://www.wipo.int/en/web/madrid-system/how_to/search/index)
 - [WIPO, Filing International Trademark Applications](https://www.wipo.int/en/web/madrid-system/how_to/file/index)
+- [theSVG — GitHub](https://github.com/glincker/thesvg)
+- [theSVG, Icon Licensing Guide](https://github.com/glincker/thesvg/blob/main/LICENSING.md)
+- [theSVG, Trademark Policy](https://github.com/glincker/thesvg/blob/main/TRADEMARK.md)
 
 ## 관련 문서
 

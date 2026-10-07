@@ -16,7 +16,7 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[Content-Marketing|콘텐츠 마케팅]] — 작은 유입의 전환 검증과 추천 채널
 - [x] [[LinkedIn-Content-Distribution|LinkedIn 콘텐츠 도달]] — 관계와 관심사 신호, 인맥 밖 추천, 반응 조작 제한과 전환 검증
 - [x] [[Personal-Brand-Identity-and-Role|퍼스널 브랜드의 정체성과 배역]] — 정체성, 반복 기능과 세계관의 입구
-- [x] [[Trademark-and-Brand-Clearance|상표와 브랜드 권리 확인]] — 상호와 도메인, 선출원, 지정상품과 권리 유지
+- [x] [[Trademark-and-Brand-Clearance|상표와 브랜드 권리 확인]] — 상호와 도메인, 선출원, 지정상품과 권리 유지, 외부 로고의 파일 라이선스와 상표 사용 조건
 - [x] [[Storytelling|스토리텔링]] — 욕망과 갈등, 구원과 대가, 캐릭터, 구조와 감정 표현
 - [x] [[Meta-Paid-Ads|Meta 유료 광고 실행 구조 (픽셀과 전환 API 중복 제거, 캠페인-세트-광고와 1-1-N, 소재 4축 조합, CPM부터 빈도까지 지표 해석, 소재 피로)]]
 - [x] [[AI-Search-Visibility|AI 검색 가시성 측정 (가시성 4층, Search Console 생성 AI 리포트의 범위, 노출과 인용이 성과가 아닌 이유, 엔진별 출처 차이)]]

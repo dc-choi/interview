@@ -111,6 +111,19 @@ Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주�
 - 1인 기업이 해외 구매자에게 디지털 상품을 팔 때 국가별 세금 등록 부담을 줄이는 것이 MoR의 핵심 가치다. 판매자의 소득세 신고는 그대로 남는다.
 - 대가는 수수료와 통제권이다. 수수료에 세무와 분쟁 처리 비용이 들어 있으므로 PG 요율과 숫자만 비교하지 않고 각 가격 페이지로 확인한다. 결제 화면, 환불 판단, 구매자 데이터와 지원 결제수단은 플랫폼 정책을 따른다. 매출이 커지면 직접 결제와 세무 대응 비용과 다시 비교한다.
 
+### 판매 운영 기능과 결제 책임을 나눠 비교한다
+
+강의, 뉴스레터와 커뮤니티를 운영하는 기능은 MoR라는 계약상 역할과 다른 비교 축이다. 2026-10-07에 공식 제품 페이지와 도움말에서 확인한 기능은 다음과 같다. 기능이 겹칠 수 있으므로 서로 배타적인 제품 분류로 쓰지 않는다.
+
+| 운영할 것 | 공식 기능의 예시 | 결제와 별도로 확인할 것 |
+|---|---|---|
+| 강의와 지식 상품 | Kajabi의 강의, 코칭, 커뮤니티와 멤버십 | 콘텐츠 제공, 수강 권한과 운영 흐름 |
+| 뉴스레터 | beehiiv의 발행, 웹사이트, 광고 네트워크와 유료 구독 | 발행과 구독자 관리, 수익화 기능의 이용 조건 |
+| 이메일 마케팅 | Kit의 이메일 발송, 자동화, 디지털 상품과 유료 뉴스레터 | 고객 유입부터 후속 발송까지의 연결 |
+| 커뮤니티와 강의 | Skool의 그룹, Classroom과 일회성 강의 구매 | 그룹 구독과 개별 강의 접근 조건 |
+
+이 표는 제품 적합성을 검토할 질문을 정리한 것이며 수익 보장이나 도입 추천이 아니다. 위 운영 기능을 제공한다는 사실만으로 판매세, 환불과 차지백 책임까지 이전됐다고 판단하지 않는다. 실제 결제 경로의 판매 주체와 계약을 확인하고, 앞 절의 MoR 사례와 구분한다. 기능별 요금제, 판매자 국가와 정산 지원은 도입 시 다시 확인한다.
+
 ### PG 없이 계좌이체 받기
 
 소액 판매나 사이드 프로젝트는 PG 계약 대신 무통장 입금을 받고, 입금 알림을 받아 주문과 자동으로 맞춰 주는 입금 확인 자동화 서비스(예: 페이액션, 2026-09-30 공식 사이트 기준 PG 가입, 심사와 결제 수수료 없음을 내세움)를 붙일 수 있다. 카드 결제를 원하는 구매자는 받을 수 없고, 입금자명과 금액으로 매칭하므로 동명이인과 금액 불일치는 수동 확인이 필요하다. 환불은 카드 취소가 아니라 계좌로 돌려보내는 별도 처리이고, 현금영수증 발급 요청 대응과 통신판매업자의 구매안전서비스(에스크로) 적용 여부도 판매자가 직접 확인한다.
@@ -143,8 +156,11 @@ Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주�
 - [Paddle — What is Paddle?](https://developer.paddle.com/get-started/how-paddle-works/)
 - [Lemon Squeezy — Merchant of Record](https://docs.lemonsqueezy.com/help/payments/merchant-of-record)
 - [Gumroad — Gumroad is becoming a Merchant of Record](https://gumroad.com/blog/p/gumroad-is-becoming-a-merchant-of-record-more-updates)
-- [글로벌 1인 기업 인프라 플랫폼 — binx_lab (Threads)](https://www.threads.com/@binx_lab/post/DZJ1-TzGFHI)
-- [사이드 프로젝트 무통장 입금 자동 확인 — classbinu (Threads)](https://www.threads.com/@classbinu/post/DNNf8XwpD1b)
+- [Kajabi, 제품 기능](https://www.kajabi.com/)
+- [beehiiv, 뉴스레터 플랫폼과 기능](https://www.beehiiv.com/)
+- [Kit, 이메일 마케팅과 수익화 기능](https://kit.com/)
+- [Skool Help Center, What is Classroom?](https://help.skool.com/article/166-what-is-classroom)
+- [Skool Help Center, How to set up one time course purchases?](https://help.skool.com/article/168-how-to-set-up-one-time-course-purchases)
 - [PayAction — 페이액션](https://payaction.app/)
 
 ## 관련 문서
