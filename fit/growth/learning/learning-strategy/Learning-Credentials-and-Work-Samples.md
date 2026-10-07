@@ -49,6 +49,21 @@ aliases: ["Learning Credentials and Work Samples", "교육 수료증과 실무 �
 4. 허용된 자료로 과제를 수행한 뒤 답안을 보지 않고 판단 이유와 한계를 설명한다. 공개할 수 없는 과제나 데이터를 포트폴리오에 복제하지 않는다.
 5. 다른 입력으로 같은 작업을 다시 수행해 본다. 막힌 부분만 보완하고, 수료 사실과 독립 수행 여부를 별도로 기록한다.
 
+## 교육 과정을 실제 업무 수요에 연결하기
+
+조직이나 지역의 교육 설계에서도 먼저 필요한 역할과 역량을 정한다. AWS CAF의 Workforce transformation은 학습 목표를 전환 로드맵에 연결하고, 현재 지식과 기술의 차이를 파악해 역할별 학습 경로를 고르도록 안내한다. 이 조직 운영 원칙을 개인 학습에 적용할 때는 현재 수행할 업무와 확인할 빈칸으로 범위를 줄인다.
+
+아래는 이 원칙을 교육 선택과 평가에 적용한 제안이다. 특정 지역 사업의 성과나 개인의 채용 가능성을 입증하는 기준은 아니다.
+
+| 단계 | 남길 근거 | 혼동하지 않을 것 |
+|---|---|---|
+| 수요 확인 | 실제 역할에서 수행해야 하는 작업과 필요한 수준 | 인기 기술 목록을 업무 수요로 간주하지 않는다 |
+| 격차 진단 | 도움 없이 수행 가능한 부분과 막히는 부분 | 수강 이력만으로 시작 수준을 정하지 않는다 |
+| 실습 연결 | 해당 작업을 다루는 과제, 피드백과 재수행 결과 | 자격증 취득과 독립적인 문제 해결을 구분한다 |
+| 후속 확인 | 다른 입력이나 실제 업무에 적용한 결과와 한계 | 수료율, 업무 적용과 취업 성과를 하나로 합치지 않는다 |
+
+교육 이후에 실습 결과를 활용할 업무와 피드백 경로가 없다면 그 연결부터 보완한다. 이 절은 과정 선택 기준이며 사용자의 새 학습 트랙이나 자격증 준비를 시작한다는 결정이 아니다.
+
 ## 이해 확인
 
 - 무료 체험이 있는 유료 과정과 무료 직무 시뮬레이션의 비용 조건은 어떻게 다른가?
@@ -57,6 +72,7 @@ aliases: ["Learning Credentials and Work Samples", "교육 수료증과 실무 �
 
 ## 출처
 
+- [AWS, AWS Cloud Adoption Framework: People Perspective, Workforce transformation](https://docs.aws.amazon.com/whitepapers/latest/aws-caf-people-perspective/workforce-transformation.html) — 2026-10-07 업무 수요와 학습 경로 연결 원칙을 대조했다.
 - [Free virtual job simulations and career prep — Forage](https://www.theforage.com/)
 - [Forage, Deloitte Australia, Data Analytics](https://www.theforage.com/simulations/deloitte-au/data-analytics-s5zy)
 - [Online Certificates for Job-Ready Skills — Grow with Google](https://grow.google/certificates/)
