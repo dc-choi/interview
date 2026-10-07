@@ -48,6 +48,19 @@ PostgreSQL은 binlog 대신 **WAL(Write-Ahead Log)** 을 사용. Debezium의 Pos
 - 컨슈머가 죽은 슬롯은 WAL 보존 정책에 따라 `pg_wal`을 압박하거나, 보존 한도를 넘으면 필요한 WAL을 잃어 재동기화가 필요할 수 있음. 어느 쪽을 택해도 slot lag와 복구 절차를 운영 계약으로 둔다
 - `pg_replication_slots`의 `restart_lsn`, `confirmed_flush_lsn`, `wal_status`를 감시한다. PostgreSQL 버전이 제공하면 `safe_wal_size`와 invalidation 상태도 함께 확인한다
 
+### 슬롯 지연과 장애 전환의 경계
+
+이 절은 PostgreSQL 18 공식 문서를 2026-10-07에 대조했다. 관리형 서비스의 지원 범위와 Debezium의 슬롯 생성 옵션은 배포 환경에서 별도로 확인한다.
+
+- `restart_lsn`은 보존이 필요한 가장 오래된 WAL 위치이고 `confirmed_flush_lsn`은 소비자가 수신을 확인한 위치다. LSN 자체는 경과 시간이 아니다. 위치 차이, WAL 발생량과 디스크 여유를 함께 관측한다.
+- `active = false`는 현재 스트리밍하지 않는다는 뜻이다. 일시 중단과 폐기를 구분하고, 소유자와 재개 필요가 없는 것으로 확인한 슬롯만 정리한다. 필요한 슬롯을 삭제하면 기존 소비 위치를 이어받는 계약을 잃을 수 있다.
+- `max_slot_wal_keep_size`는 체크포인트 시 슬롯의 WAL 보존 한도를 제한한다. 디스크 전체의 하드 한도가 아니며, 초과해 필요한 WAL이 제거되면 슬롯이 무효화될 수 있다. `safe_wal_size`가 NULL인 경우에는 무제한 설정인지 이미 `lost`인지 구분한다.
+- PostgreSQL 18은 failover 논리 슬롯을 대기 서버로 동기화할 수 있다. 권장되는 자동 주기 동기화에는 원본 슬롯의 `failover` 활성화와 대기 서버의 `sync_replication_slots`, 물리 복제 슬롯을 가리키는 `primary_slot_name`, `hot_standby_feedback`, 유효한 `dbname`을 포함한 `primary_conninfo`가 필요하다.
+- 동기화는 비동기다. 승격 전에 필요한 슬롯이 **모두 존재**하고 각각 `synced AND NOT temporary AND invalidation_reason IS NULL`인지 확인한다. 일부 슬롯만 조회됐는데 반환된 행이 모두 참이라는 이유로 준비 완료로 판정하지 않는다.
+- 원본의 `synchronized_standby_slots`에 물리 슬롯을 지정하면 논리 소비자가 대기 서버보다 앞서 진행하는 것을 막을 수 있지만 대기 서버를 기다리는 지연이 생긴다. 전환 시 기존 원본에서 계속 소비하지 않도록 연결을 차단하고 새 원본으로 재연결한다.
+
+슬롯 재생성만으로 누락된 변경이 복구되지는 않는다. 이어받을 슬롯이나 필요한 WAL이 없으면 일관된 스냅샷과 새 스트림 기준점을 맞춰 재동기화한다. 장애 복구 뒤 변경이 다시 전달될 가능성도 있으므로 마지막 적용 위치와 멱등 처리를 함께 설계한다.
+
 ## 동작 모드: Snapshot → Streaming
 
 Debezium 커넥터는 두 단계로 진행.
@@ -70,6 +83,10 @@ Debezium 커넥터는 두 단계로 진행.
 - 중단 후 재개 동작은 snapshot 종류와 connector 버전에 따라 다르다. initial snapshot과 incremental snapshot의 재시작 동작을 현재 connector 문서로 확인한다.
 
 ## 출처
+- [PostgreSQL 18 공식 문서, Logical Decoding Concepts](https://www.postgresql.org/docs/18/logicaldecoding-explanation.html)
+- [PostgreSQL 18 공식 문서, Logical Replication Failover](https://www.postgresql.org/docs/18/logical-replication-failover.html)
+- [PostgreSQL 18 공식 문서, pg_replication_slots](https://www.postgresql.org/docs/18/view-pg-replication-slots.html)
+- [PostgreSQL 18 공식 문서, Replication settings](https://www.postgresql.org/docs/18/runtime-config-replication.html)
 - [Debezium 공식 문서, MySQL connector 3.6](https://debezium.io/documentation/reference/3.6/connectors/mysql.html)
 - [Debezium 공식 문서, PostgreSQL connector 3.6](https://debezium.io/documentation/reference/3.6/connectors/postgresql.html)
 - [Debezium 3.6 Release Summary — Debezium](https://debezium.io/blog/2026/07/01/debezium-3-6-final-release/)

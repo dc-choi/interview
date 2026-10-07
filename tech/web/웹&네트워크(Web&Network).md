@@ -20,6 +20,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [[Expo|Expo]] — Home/Guides/EAS/Reference/Learn 전체, SDK API, Expo UI, native 확장과 배포
 
 ## 추가 주제
+- [x] [[Agent-Friendly-Websites|에이전트 친화적 웹사이트]] — 의미 있는 HTML, 접근성 정보와 시각적 표현의 일치
 - [x] [[Design-System-Lint#토큰 생성, 정적 검사와 화면 검증을 나눈다|디자인 토큰과 화면 검증]] — 기준값 생성, 실측 생략 표시, 일반 텍스트와 큰 텍스트의 대비 기준
 - [x] [[HTTP-2#바이너리 프레이밍과 요청 스머글링|HTTP/2의 요청 스머글링 경계]] — 가변 길이 프레임, 필드 검증과 HTTP/1.1 변환
 - [x] [[Frontend-Rendering-Models|프런트엔드 렌더링과 상호작용 모델]] — hydration, islands, resumability와 서버 HTML 조각 교체의 실행 비용
