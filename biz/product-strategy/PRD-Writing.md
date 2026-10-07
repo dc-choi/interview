@@ -64,13 +64,19 @@ aliases: ["PRD", "Product Requirements Document", "제품 요구사항 정의서
 
 모든 기능에 `이것이 해결하는 Pain은 무엇인가`를 물어 답을 남긴다. 답이 없으면 기능에서 빼거나 우선순위를 내린다.
 
+### 고객 성과에서 요구사항을 역산한다
+
+기능 목록 전에 고객이 어떤 상황에서 무엇을 더 잘하게 될지 정의한다. Working Backwards의 PRFAQ는 고객 가치와 예상 질문을 먼저 구체화하는 도구이며, PRD의 구현 범위와 인수 기준을 대신하는 문서는 아니다. 인터뷰, 설문과 사용 흐름으로 가정을 확인하고 개발 중에도 피드백을 반영한다.
+
+작은 제품에서는 **기능 산출물, 기대하는 고객 행동, 확인할 증거**를 한 줄로 연결할 수 있다. 예를 들어 문의 폼 출시, 적합한 고객의 상담 요청 증가, 실제 상담으로 이어진 비율을 나누어 적는다. 이는 적용 예시이며 폼 출시만으로 매출이나 고객 가치가 입증되는 것은 아니다. 관찰 기간과 판단 기준을 미리 정해 유지, 수정 또는 중단을 결정한다.
+
 ### 근거 기반 우선순위
 
 - **사용자 근거**: 인터뷰 수, 설문 응답, 정량 지표
 - **비즈니스 근거**: 매출 영향, 리텐션, 전환 영향, 전략 적합도
 - **기술 근거**: 개발 공수, 의존성, 리스크
 
-근거 없이 "중요하다"로 우선순위를 매긴 PRD는 개발 단계에서 우선순위가 뒤집힌다.
+근거 없이 중요하다는 말로 우선순위를 매긴 PRD는 개발 단계에서 우선순위가 뒤집힌다.
 
 ### 범위(Scope)와 비범위(Non-Scope) 명시
 
@@ -157,7 +163,7 @@ PRD는 **의견 대립 시 판단 기준점**이다. "디자이너와 개발자�
 ## 흔한 실수
 
 - **기능 나열서**로 쓴다 — 왜 필요한지 없음
-- **형용사만 가득** — "빠르게", "쉽게", "직관적으로"로만 기준을 서술
+- **형용사만 가득** — 빠르게, 쉽게, 직관적으로라는 말로만 기준을 서술
 - **페르소나 없이 시작** — 사용자 없는 기능 정의
 - **일정만 있고 근거 없음** — 왜 그 시점에 내야 하는지, 왜 이만한 공수가 필요한지 없음
 - **배포 후 업데이트 안 함** — Dead Document로 전락
@@ -171,6 +177,7 @@ PRD는 **의견 대립 시 판단 기준점**이다. "디자이너와 개발자�
 
 ## 출처
 
+- [AWS, Prioritize customer needs to deliver optimal business outcomes](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/oa.ti.6-prioritize-customer-needs-to-deliver-optimal-business-outcomes.html)
 - [GOV.UK, How the live phase works](https://www.gov.uk/service-manual/agile-delivery/how-the-live-phase-works) — 운영과 지원 인력의 준비, 지속 개선 기준
 - [PRD 제품 요구사항 정의서 작성법 — 코드스테이츠](https://www.codestates.com/blog/content/prd-%EC%A0%9C%ED%92%88%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD%EC%A0%95%EC%9D%98%EC%84%9C)
 - [PRD 작성법 — 이랜서](https://www.elancer.co.kr/blog/detail/957)

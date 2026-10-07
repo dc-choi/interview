@@ -1,7 +1,7 @@
 ---
 tags: [security, ssh, authentication, cryptography, network]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-07
 category: "Security - 네트워크 보안"
 aliases: ["SSH Authentication", "SSH 인증", "SSH 호스트 키와 사용자 키"]
 ---
@@ -50,6 +50,23 @@ RFC 4252의 공개키 인증 서명에는 세션 식별자, 사용자 이름과 
 
 이미 알던 호스트 키가 바뀌었다면 정상적인 서버 교체나 키 회전일 수도 있고 다른 서버나 공격자에게 연결된 것일 수도 있다. 경고를 없애려고 기존 기록부터 지우지 말고, 변경 이유와 새 지문을 신뢰하는 경로로 확인한다. CI 배포에서 호스트 키 검증을 생략하는 위험과 실제 설정은 [[Single-Host-SPA-API-Deployment-SSH-Workflow|SSH 배포 workflow]]에서 다룬다.
 
+## 개인키 저장 형식: PEM과 PPK
+
+키 알고리즘과 파일 저장 형식은 별개다. PuTTY의 PPK와 OpenSSH 개인키 형식 사이의 변환은 같은 키를 다른 클라이언트에서 읽게 만드는 작업이다. 확장자만 바꾸는 것으로 변환되지 않으며, 키를 새로 생성하거나 서버의 접근 권한을 바꾸는 작업도 아니다.
+
+Windows PuTTYgen에서는 OpenSSH 키를 `Conversions > Import key`로 읽고 `Save private key`로 PPK를 저장한다. 반대 방향은 PPK를 `Load`한 뒤 `Conversions > Export OpenSSH key`를 사용한다. 가져오기와 내보내기에서 패스프레이즈 보호를 확인한다.
+
+Unix/Linux용 `puttygen`이 설치된 환경의 변환 예시는 다음과 같다. 기존 출력 파일이 없는 별도 경로를 사용한다.
+
+```bash
+puttygen input.pem -O private -o converted.ppk
+puttygen input.ppk -O private-openssh -o converted.pem
+```
+
+`private-openssh`는 해당 키 유형에 가능한 가장 오래된 OpenSSH 형식을 고른다. Ed25519는 새 OpenSSH 형식이 필요하므로 출력 이름이 `.pem`이어도 구형 PEM 형식이라고 단정할 수 없다. 새 형식을 강제하려면 `private-openssh-new`를 쓴다.
+
+변환 전후 공개키 지문을 같은 알고리즘으로 비교하고 출력 파일의 접근 권한과 암호화 여부를 확인한다. 패스프레이즈를 새로 설정하거나 바꾸려면 `-P`를 사용한다. 개인키를 온라인 변환 사이트에 올리지 않고, 신뢰하는 로컬 도구에서 처리한다. 이는 운영 점검 제안이며 실제 키 파일을 읽거나 변환한 기록은 아니다.
+
 ## 확인 질문
 
 - 호스트 키 검증은 성공했는데 사용자 인증이 실패했다면 어느 신원과 권한을 확인해야 하는가?
@@ -58,13 +75,15 @@ RFC 4252의 공개키 인증 서명에는 세션 식별자, 사용자 이름과 
 
 ## 출처
 
-2026-10-06 기준으로 SSH의 계층, 키 교환과 공개키 인증 구조를 RFC와 대조했다. 구현 설명은 OpenSSH 매뉴얼 기준이며, RFC의 과거 알고리즘 목록을 현재 권장 설정으로 채택한 문서가 아니다. 실제 서버 접속이나 로컬 키 파일 검사는 수행하지 않았다.
+2026-10-06 기준으로 SSH의 계층, 키 교환과 공개키 인증 구조를 RFC와 대조했다. 구현 설명은 OpenSSH 매뉴얼 기준이며, RFC의 과거 알고리즘 목록을 현재 권장 설정으로 채택한 문서가 아니다. 2026-10-07에는 개인키 형식 변환을 PuTTY 매뉴얼과 대조했다. 실제 서버 접속이나 로컬 키 파일 검사는 수행하지 않았다.
 
 - [IETF, RFC 4251: The Secure Shell (SSH) Protocol Architecture](https://www.rfc-editor.org/rfc/rfc4251.html)
 - [IETF, RFC 4252: The Secure Shell (SSH) Authentication Protocol](https://www.rfc-editor.org/rfc/rfc4252.html)
 - [IETF, RFC 4253: The Secure Shell (SSH) Transport Layer Protocol](https://www.rfc-editor.org/rfc/rfc4253.html)
 - [OpenBSD, ssh(1)](https://man.openbsd.org/ssh.1)
 - [OpenBSD, ssh-keyscan(1)](https://man.openbsd.org/ssh-keyscan.1)
+- [PuTTY, Using public keys for SSH authentication](https://the.earth.li/~sgtatham/putty/0.85/htmldoc/Chapter8.html)
+- [PuTTY, puttygen(1), Debian 매뉴얼 배포본](https://manpages.debian.org/testing/putty-tools/puttygen.1.en.html)
 
 ## 관련 문서
 
