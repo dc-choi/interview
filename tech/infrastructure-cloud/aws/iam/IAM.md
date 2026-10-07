@@ -10,7 +10,7 @@ aliases: ["IAM", "AWS IAM", "Identity and Access Management"]
 AWS 리소스에 대한 인증과 인가를 관리하는 글로벌 서비스. 주제별 문서로 분리했다.
 
 - [[IAM-Entities-Access|IAM 엔티티와 액세스 타입 — User, Group, Role, Policy와 콘솔, 프로그래밍 액세스]]
-- [[IAM-Policy|IAM 정책 — 정책 타입, 평가 로직, JSON 구조, Condition Key]]
+- [[IAM-Policy|IAM 정책 — 정책 타입, 평가 로직, JSON 구조, Condition Key, PassRole 권한과 감사]]
 - [[IAM-Role-Federation|IAM Role — AssumeRole과 STS, MFA GetSessionToken, Identity Federation, Roles Anywhere, Account access manager, Permission Boundary]]
 - [[IAM-Best-Practices|IAM 모범 사례, 흔한 실수, 면접 시험 체크포인트]]
 

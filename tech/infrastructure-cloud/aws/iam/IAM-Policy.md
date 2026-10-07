@@ -98,6 +98,26 @@ aliases: ["IAM 정책", "IAM Policy 평가 로직"]
 | `s3:x-amz-server-side-encryption` | 업로드(PUT) 요청 헤더의 서버 측 암호화 방식. 강제는 부정 연산자를 쓴 Deny로 |
 | `kms:ViaService` | 특정 서비스 경유한 KMS 호출만 |
 
+## iam:PassRole — 역할 전달 권한과 실행 권한의 구분
+
+`iam:PassRole`은 AWS 서비스에 기존 역할을 전달할 수 있는 권한이다. 별도 API 호출이 아니며, 역할 ARN을 받는 리소스 생성이나 변경 요청에서 검사된다. 다음 내용은 2026-10-08 공식 IAM 문서로 확인했다. 기존 절 전체의 검증 날짜를 바꾸지는 않는다.
+
+`not authorized to perform iam:PassRole` 오류는 아래 경계를 나누어 확인한다.
+
+| 경계 | 확인할 내용 |
+|---|---|
+| 요청 주체 | 실패한 요청을 보낸 사용자 또는 역할의 identity policy에서 대상 역할에 대한 `iam:PassRole`을 허용하는가 |
+| 전달 범위 | `Resource`를 승인한 역할 ARN으로 좁히고, `iam:PassedToService` 조건으로 전달받을 서비스 principal을 제한했는가 |
+| 역할 신뢰 | 대상 역할의 trust policy가 해당 서비스의 `sts:AssumeRole`을 허용하는가 |
+| 실행 권한 | 서비스가 역할을 맡은 뒤 수행할 작업을 그 역할의 permissions policy가 허용하는가 |
+| 계정 경계 | 전달할 역할과 역할을 사용할 서비스가 같은 AWS 계정에 있는가 |
+
+EC2에 역할을 전달한다면 `iam:PassedToService`의 값은 `ec2.amazonaws.com`이다. 이 조건은 역할의 trust policy나 EC2 생성 권한을 대신하지 않는다. Allow를 추가했는데도 거부되면 앞 절의 정책 평가 규칙에 따라 SCP, permissions boundary와 명시적 Deny도 확인한다.
+
+`Resource: "*"`로 모든 역할을 전달하게 하면 서비스에 과도한 권한을 맡길 수 있다. 역할 태그와 `ResourceTag` 조건만으로 PassRole 대상을 제한하는 방식은 공식 문서가 신뢰할 수 있는 결과를 보장하지 않는다고 명시하므로 사용하지 않는다.
+
+감사할 때는 별도 `PassRole` CloudTrail 이벤트를 찾지 않는다. 예를 들어 Lambda에 전달된 역할은 `CreateFunction`처럼 역할을 받은 리소스의 생성 또는 변경 이벤트에서 확인한다. 역할 전달 성공과 서비스의 실제 작업 성공을 각각 점검한다.
+
 ## IAM Policy Simulator로 사전 검증
 
 Policy Simulator는 identity policy, permissions boundary, SCP와 직접 넣어 준 resource-based policy를 실제 API 호출 없이 action, resource, context key 조합으로 평가한다. 아직 부착하지 않은 새 policy도 붙여 넣어 실험할 수 있고, 결과가 allow나 explicit deny일 때는 그 결과를 만든 policy를 보여 준다 (implicit deny는 매칭 statement가 없다는 뜻이라 추적 대상이 아니다). 다만 SCP는 결정만 알려 주고 매칭 statement는 보안상 노출하지 않는다. 2026-07-30부터 simulator는 IAM 콘솔 안으로 들어왔고 기존 standalone 콘솔(`policysim.aws.amazon.com`)은 유지보수하지 않는다.
@@ -106,6 +126,7 @@ Policy Simulator는 identity policy, permissions boundary, SCP와 직접 넣어 
 
 ## 출처
 
+- [AWS IAM — Grant a user permissions to pass a role to an AWS service](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html)
 - [AWS IAM — IAM policy testing with the policy simulator](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_testing-policies.html)
 - [AWS IAM — How to simulate policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/policies_policy-simulator-how-to.html)
 - [AWS What's New — IAM Policy Simulator moves to the IAM console and adds additional capabilities (2026-07-30)](https://aws.amazon.com/about-aws/whats-new/2026/07/iam-policy-simulator-iam-console/)

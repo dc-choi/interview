@@ -38,6 +38,17 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 입력 자료 확정, 보고서 생성 완료와 최종 승인은 서로 다른 상태다. 내부 데이터만 사용해도 필터 오류나 잘못된 해석은 남을 수 있다. 이 구조 자체가 특정 산업의 규제 준수나 무오류를 보장하지 않는다.
 
+## 운영 보고서는 과거 지식과 현재 관측을 구분한다
+
+과거 장애 문서와 답변은 점검 절차를 찾는 근거다. 지금 실행 중인 인스턴스나 방금 바뀐 설정을 증명하려면 대상 환경을 조회해야 한다. 다음은 클라우드 운영 자동화 사례의 조회와 분석 분리를 보고서에 적용한 설계 기준이다.
+
+- 질문의 대상 계정, 리전, 리소스와 관측 기간을 먼저 정한다. 생략된 조건을 과거 답변에서 가져와 현재 요청의 사실로 채우지 않는다.
+- API 응답이나 로그 조회 결과에 조회 시각과 범위를 연결한다. 문서 검색 결과, 실제 관측과 모델의 원인 가설을 보고서에서 구분한다.
+- EC2 `DescribeInstances`는 eventual consistency를 따른다. 생성 또는 변경 직후의 상태가 후속 조회에 즉시 반영되지 않을 수 있고, 최근 종료한 인스턴스도 결과에 남을 수 있다. 단일 조회 결과로 변경 실패나 현재 가동 상태를 단정하지 않는다(2026-10-08 EC2 API 문서 확인).
+- 필요한 ID나 필터로 범위를 좁히고 페이지네이션을 처리한다. 일부 페이지만 읽은 결과를 전체 리소스 목록으로 보고하지 않는다.
+
+조회와 보고서 생성을 자동화했어도 생성, 변경과 삭제는 별도 실행 경계다. 점검 결과를 근거로 조치안을 제안하는 단계와 승인된 변경을 수행하는 단계를 나눈다. 프롬프트에 운영 규칙을 적는 것만으로 실제 IAM 권한이나 승인 절차가 생기지는 않는다.
+
 ## 검증할 최소 계약
 
 다음은 계산과 보고서의 분리 원리를 적용한 설계 제안이다.
@@ -52,6 +63,8 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 ## 출처
 
+- [MSP 자동화 도구 AutoMSP와 생산성 강화를 위한 Agentic AI Platform — Amazon Web Services Korea](https://www.youtube.com/watch?v=i0g-h5OWPDE)
+- [AWS, DescribeInstances](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html)
 - [LG CNS의 Agentic AI를 활용한 APQR 시스템 설계 및 자동화 구축 사례 — AWS](https://aws.amazon.com/ko/blogs/tech/automate-apqr-system-with-agentic-ai/)
 - [데이터 쌓기만 하면 뭐하나? 어떻게 볼지를 모르는데 – LG전자의 Agentic AI 기반 인사이트 추출 시스템 개발기 — AWS](https://aws.amazon.com/ko/blogs/tech/lge-agentic-report-automation/)
 - [AWS, Execute code and analyze data using Amazon Bedrock AgentCore Code Interpreter](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html)
