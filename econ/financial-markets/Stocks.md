@@ -94,6 +94,18 @@ aliases: ["주식", "Stocks"]
 
 개별 종목이 아니라 시장 전체의 흐름을 보는 묶음이다. 코스피와 코스닥(한국), S&P500과 나스닥(미국)이 대표적이다. 지수는 시장 전반의 체온계이자, 패시브 투자의 기준이 된다 → [[Investment-Strategies|투자 전략]].
 
+### 산업 분류와 투자 테마를 구분한다
+
+GICS는 MSCI와 S&P Dow Jones Indices가 만든 산업 분류 체계다. Sector, Industry Group, Industry, Sub-Industry의 네 단계로 나누며 기업은 주된 사업 활동에 따라 각 단계에서 하나의 분류를 부여받는다. 매출이 핵심 판단 요소이고 이익과 시장의 인식도 고려한다. 분류 체계는 정기적으로 검토되므로 과거의 분류를 영구적인 기업 속성으로 보지 않는다.
+
+AI, 로봇이나 친환경 같은 투자 테마는 여러 산업을 가로지를 수 있다. 다음은 공식 분류와 테마 목록을 구별하기 위한 독해 기준이다.
+
+- **산업 분류:** 기업의 주된 사업을 같은 기준으로 비교한다. 어떤 분류 체계와 기준일을 썼는지 확인한다.
+- **테마 연결:** 특정 기술이나 수요와 어떤 사업 부문이 연결되는지 살핀다. 테마에 이름이 등장한다는 사실만으로 매출 기여나 수익성을 확정하지 않는다.
+- **분산 점검:** 업종 이름이나 종목 수만 세지 않고 자산 비중과 공통 위험도 본다. 한 산업에 집중한 펀드가 여러 종목을 보유해도 충분한 분산을 보장하지 않는다.
+
+사업 연결은 기업 공시로, 투자 가능한 종목인지는 거래소와 증권 정보를 통해 별도로 확인한다. 위 기준은 목록의 해석 방법이며 개별 기업의 현재 상장 상태나 매수 적합성을 검증한 목록은 아니다. 이 절은 2026-10-07 MSCI의 GICS 설명과 Investor.gov의 분산 원칙을 대조했다.
+
 ## 7. 핵심 개념
 
 - **잔여청구권**: 보통주는 채권자와 우선주보다 청구 순위가 뒤이며 손실 가능성을 부담
@@ -108,6 +120,8 @@ aliases: ["주식", "Stocks"]
 
 ## 출처
 
+- [The Global Industry Classification Standard (GICS) — MSCI](https://www.msci.com/indexes/index-resources/gics) — 2026-10-07 네 단계 분류, 주된 사업과 매출 중심 판단 기준 대조
+- [Asset Allocation and Diversification — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 2026-10-07 산업 집중 펀드와 분산의 구분 대조
 - [OECD, G20/OECD Principles of Corporate Governance 2023: The rights and equitable treatment of shareholders and key ownership functions](https://www.oecd.org/en/publications/g20-oecd-principles-of-corporate-governance-2023_ed750b30-en/full-report/component-5.html) — 2026-10-07 II.F와 II.G의 이해상충 관리, 소수주주 보호 원칙 대조
 - [Analyzing Analyst Recommendations — SEC](https://www.sec.gov/about/reports-publications/investorpubsanalystshtm) — 2026-10-07 등급 정의, 이해상충과 기업 공시 대조 원칙 확인. 현행 국가별 규제 검증은 제외
 - [What Is Earnings Season? — FINRA](https://www.finra.org/investors/insights/earnings-season) — 2026-10-07 실적, 컨센서스와 주가 반응의 구분 대조

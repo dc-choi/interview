@@ -11,6 +11,7 @@ aliases: ["Service Design", "서비스 설계"]
 
 ## 목차
 - [x] [[Service-Design-Principles|서비스 설계 원칙 (GOV.UK)]] — 사용자 니즈, 포용 설계, 정보의 확인 범위와 갱신 책임, 디자인 시스템의 공동 판단과 예외
+- [x] [[Backoffice-Workflow-Design|업무용 제품의 처리 흐름 설계]] — 접수와 보완 왕복, 다음 행동 중심 어드민, 경과 시간과 작업 시간의 구분
 - [x] [[Gamification|게이미피케이션]] — 5가지 적용 유형, 인증 뱃지, 보상 설계, 다크 패턴 경계
 - [x] [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]] — 리텐션 vs 조작, 사용자의 끝낼 자유, 자발적 재방문, 4가지 판별 질문
 - [x] [[Pagination-Patterns|페이지네이션 UX 패턴]] — Pagination, Load More, Infinite Scroll, SEO, 접근성
