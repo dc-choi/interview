@@ -18,6 +18,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[S3-Tables-Maintenance|S3 Tables 유지보수]] — table bucket, 스냅샷 만료와 파일 삭제, Iceberg 설정 충돌과 운영 책임
 - [x] [[Glue#Data Quality: 검사와 적재 차단을 나눈다|Glue Data Quality]] — 규칙별 검사 범위, 기본 실패 동작과 적재 차단, 행과 데이터셋 결과의 구분
 - [x] [[Redshift#Iceberg와 Delta Lake 조회의 운영 차이|Redshift의 레이크 테이블 조회]] — Iceberg 메타데이터와 Delta Lake manifest, 일관성 범위와 파일 정리
 - [x] [[QuickSight#계정 간 템플릿으로 대시보드 재사용|QuickSight 계정 간 템플릿 공유]] — 데이터셋 placeholder와 스키마, 공유 권한과 대시보드 생성 완료 확인

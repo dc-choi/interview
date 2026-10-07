@@ -10,6 +10,7 @@ aliases: ["LLM 원리와 운영", "LLM 운영", "LLM Fundamentals and Operations
 모델의 학습과 생성 원리부터 추론 병목, 선택, 호출 계층과 운영까지 연결한다. 상위: [[tools|AI 엔지니어링 실천 도구]].
 
 ## 목차
+- [x] [[LLM-Product-Attribute-Extraction|상품 이미지의 속성 추출]] — OCR 후보 선별, 형식과 의미 검증, 보류 비율과 정확도
 - [x] [[LLM-Generation-Mechanics|LLM 동작 원리 (generation-mechanics/ 서브폴더) — AI 전체 지도, Training/Inference와 역전파, BPE 토크나이저 구성과 토크나이저 차이, 이미지와 사고 토큰 과금, Transformer QKV Attention과 Decoding, Weight/Context/RAG 구분, Context Window와 대화 누적, 긴 컨텍스트 단가 구간, 환각과 Agent 연결]]
 - [x] [[LLM-Model-Tiers|LLM 모델 티어 선택, 라우팅 (3단 티어 수렴, 벤더 내 100배 단가 격차와 출력/입력 단가 비, 재작업 비용과 effort, 난이도 기반 라우팅, 에스컬레이션/폴백, 프런티어 단계적 출시, 계획과 실행의 모델 분담)]]
 - [x] [[LLM-Workflow-Patterns|LLM 워크플로우 패턴 (체인 vs 에이전트 선택, 예측 가능성 판단 축, Plan-and-Execute, 콘텐츠 초안과 승인 대기열, 그래프 워크플로우, n8n 오류 처리와 자동 실행 검증, Function Calling/스킬 시스템 Detector-CoT-Answer, Text-to-SQL 맥락 구성과 생성/실행 권한 분리, 데이터 vs 모델)]]
