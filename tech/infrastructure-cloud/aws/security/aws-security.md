@@ -21,7 +21,7 @@ aliases: ["AWS 보안 인덱스"]
 - [[Security-Hub-Exposure-Analysis|Security Hub 노출 분석 — 외부 도달성 스캔, IAM 경로와 영향 범위, 미검사와 안전의 구분]]
 - [[Security-Hub-AI-Inventory|Security Hub AI Inventory — 발견 신호와 활성화 전제, EC2/ECR 범위와 finding 제한]]
 
-- [[AWS-Security-Response-Automation|AWS 보안 대응 자동화 — finding 분류, 실제 조치, 실행 역할과 승인]]
+- [[AWS-Security-Response-Automation|AWS 보안 대응 자동화 — finding 분류, 실행 역할과 승인, 관리형 사고 대응의 OU 범위와 격리 권한, 기존 연결의 차단 한계]]
 
 ## 관련 문서
 

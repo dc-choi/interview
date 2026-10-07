@@ -19,7 +19,7 @@ verified_at: 2026-07-21
 | Stateful 쓰기 (파형 패턴) | Ingester (메모리 버퍼링 → 주기적 flush) | 높음 (예: +50%, ~67%) | OOM 발생 시 flush 안 된 데이터 유실 |
 | 버스트 패턴 | Compactor (대기 → 순간 대용량 소비) | 높음 + max 병행 | P95가 실제 피크 과소 추정 |
 
-벤더 권장치 비교 — 모두 **"피크에 100% 채우지 않는다"**로 수렴.
+벤더 권장치 비교 — 피크와 운영 변동에 대응할 여유를 둔다.
 
 | 출처 | 기준 | 버퍼 |
 |---|---|---|
@@ -40,6 +40,20 @@ verified_at: 2026-07-21
 
 각 단계는 개발 환경에서 최소 **3~7일 검증** 후 운영 반영. **롤백 조건은 적용 전에 명시**(예: OOMKill 발생률, Throttling 비율, 응답 지연 임계값 초과 시 즉시 원복).
 
+## Pod 적정화와 노드 통합을 분리한다
+
+2026-10-07 Karpenter 공식 문서와 AWS 운영 가이드 대조 기준. Pod의 `requests`를 실측에 맞추는 작업과 Karpenter가 노드를 통합하는 작업은 서로 다른 조정이다.
+
+Karpenter는 Pod의 resource requests와 스케줄링 제약을 이용해 노드를 구성한다. CPU와 메모리 실사용량이 낮다는 이유만으로 Pod의 requests를 자동으로 줄이지 않는다. 과다한 requests를 유지하면 노드 통합만으로 낭비를 충분히 줄이기 어렵고, requests를 과하게 줄이면 배치 밀도가 높아져 자원 경합 위험이 커진다.
+
+Consolidation은 빈 노드 제거, 다른 노드로 Pod 이동 또는 더 저렴한 노드로 교체를 검토한다. 비용 최적화 과정에서도 Pod 재배치와 중단이 생길 수 있으므로 다음을 함께 확인한다.
+
+- `consolidationPolicy`와 `consolidateAfter`로 통합 대상과 대기 시간을 정한다.
+- NodePool의 `spec.disruption.budgets`는 자발적 consolidation과 drift 등의 속도를 제한한다. expiration이나 Spot interruption까지 막는 장치로 해석하지 않는다.
+- PDB와 `karpenter.sh/do-not-disrupt`는 자발적 교체를 제약한다. 별도의 `terminationGracePeriod`가 설정된 종료에서는 기한에 따른 강제 삭제 가능성도 검토한다.
+
+운영 적용 시에는 Pod requests 변경과 노드 정책 변경을 한꺼번에 적용하지 않는 방식을 검토한다. 먼저 작은 워크로드 집합에서 Pending, OOMKill, CPU throttling과 지연을 관찰하고, 이후 노드 교체 빈도와 비용을 함께 비교한다. 이 순서는 원인 분리를 위한 운영 제안이며 Karpenter가 보장하는 무중단 절차는 아니다.
+
 ## 트레이드오프
 
 - **정확도 vs 쿼리 부하**: 샘플링 간격 ↓ = 정밀도 ↑ = 쿼리 부하 ↑.
@@ -58,6 +72,8 @@ verified_at: 2026-07-21
 
 ## 출처
 
+- [Karpenter, Disruption](https://karpenter.sh/docs/concepts/disruption/)
+- [AWS, Karpenter Best Practices](https://aws.github.io/aws-emr-containers-best-practices/performance/docs/karpenter/)
 - [옵저버빌리티 Right-Sizing: 여기어때에서 기준을 만드는 법 — 양현진(코플), 여기어때 기술블로그](https://techblog.gccompany.co.kr/%EC%98%B5%EC%A0%80%EB%B2%84%EB%B9%8C%EB%A6%AC%ED%8B%B0-right-sizing-%EC%97%AC%EA%B8%B0%EC%96%B4%EB%95%8C%EC%97%90%EC%84%9C-%EA%B8%B0%EC%A4%80%EC%9D%84-%EB%A7%8C%EB%93%9C%EB%8A%94-%EB%B2%95-8c9e1b3d3c97)
 - [Grafana Mimir, Planning capacity](https://grafana.com/docs/mimir/latest/manage/run-production-environment/planning-capacity/)
 - [AWS Compute Optimizer, Rightsizing recommendation preferences](https://docs.aws.amazon.com/compute-optimizer/latest/ug/rightsizing-preferences.html)

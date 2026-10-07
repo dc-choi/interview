@@ -77,6 +77,21 @@ Rehost한 앱을 여러 instance로 늘리면 로컬 상태가 바로 장애가 
 
 다음은 이 절차를 적용한 검증 질문이다. 인벤토리에 없는 배치와 외부 연동은 없는가. 테스트 인스턴스에서 핵심 업무와 데이터 정합성이 유지되는가. 전환 실패 때 기존 환경으로 돌아갈 조건을 정했는가. 자동화율과 소요 시간만으로 이 질문의 답을 대신하지 않는다.
 
+## 가상화 플랫폼 유지와 재해복구 설계
+
+2026-10-07 Nutanix NC2와 AWS 재해복구 공식 자료 대조 기준. 애플리케이션 재작성 범위를 줄이는 선택과 복구 목표를 충족하는 선택은 따로 검증한다.
+
+Nutanix Cloud Clusters(NC2)는 AWS의 bare-metal 인스턴스에서 Nutanix 소프트웨어를 실행하는 배포 모델이다. 기존 가상화 플랫폼을 유지하며 이동하는 선택지로 검토할 수 있다. 애플리케이션 리팩터링을 줄일 수 있어도 대상 워크로드의 호환성, 네트워크 연결과 보안 정책을 검증하는 절차가 사라지지는 않는다.
+
+| 복구 구성 | 평상시 유지할 것 | 복구 때 확인할 것 |
+|---|---|---|
+| 작은 pilot-light 클러스터 | 복구용 데이터와 최소 클러스터 | 필요한 노드 용량 확보, 확장과 애플리케이션 기동 |
+| 원격 저장소 기반 복구 | 스냅샷과 복원에 필요한 구성 | 클러스터 생성, 데이터 복원과 애플리케이션 기동 |
+
+NC2는 작은 클러스터 또는 원격 EBS/S3 저장소를 활용하는 복구 선택지를 제공한다. 구체적인 지원 구성은 제품 버전에 맞춰 확인한다. AWS의 일반적인 DR 분류에서도 backup/restore, pilot light와 warm standby는 평상시 실행 자원과 복구 시 추가 작업이 다르다. 제품의 구성을 이름만으로 특정 RTO에 대응시키지 않는다.
+
+설계 검토에서는 허용 데이터 손실인 RPO와 복구 시간인 RTO를 먼저 정한다. 데이터 복제 지연뿐 아니라 자원 확보, 복원, 의존 서비스, 트래픽 전환과 업무 검증까지 훈련에 포함한다. 컴퓨팅 대기를 줄여도 저장소와 복제 비용은 남으며, 발표 사례의 절감률이나 복구 시간을 다른 환경의 보장값으로 쓰지 않는다.
+
 ## 흔한 실수
 
 - 전략 이름만 합의하고 바뀌는 범위를 적지 않아 견적, 일정과 책임이 어긋난다.
@@ -93,6 +108,9 @@ Rehost한 앱을 여러 instance로 늘리면 로컬 상태가 바로 장애가 
 
 ## 출처
 
+- [Nutanix Cloud Clusters (NC2) on AWS — Nutanix](https://www.nutanix.com/library/datasheets/nc2-on-aws)
+- [Nutanix Cloud Platform for AWS — Nutanix](https://www.nutanix.com/en_gb/products/nutanix-cloud-clusters/aws)
+- [AWS, Disaster recovery options in the cloud](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html)
 - [AWS, Build migration plan](https://docs.aws.amazon.com/transform/latest/userguide/transform-vmware-review-groupings-and-waves.html)
 - [AWS, Migrate servers](https://docs.aws.amazon.com/transform/latest/userguide/transform-vmware-migrate-servers.html)
 - [비즈니스 혁신 가속화를 위한 AI기반 클라우드 마이그레이션과 현대화 — Amazon Web Services Korea](https://www.youtube.com/watch?v=U09lkoLDMsE)

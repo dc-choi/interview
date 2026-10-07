@@ -12,7 +12,7 @@ IaaS/PaaS/FaaS 구분, IaC, 클라우드 전환 전략 — 클라우드 추상�
 ## 목차
 - [x] [[SaaS-Regional-Data-Isolation|SaaS 리전별 데이터 격리 (control/application plane, pool/silo/bridge, 복제와 복구, 파티션과 운영 주권)]]
 - [x] [[Cloud-Service-Models|IaaS/PaaS/FaaS/SaaS (추상화 계층, 책임 공유 모델, 서버리스 범위)]]
-- [x] [[Cloud-Migration-Strategies|클라우드 전환 전략 (AWS 7 Rs와 Microsoft CAF 용어 차이, 성숙 단계, 12 Factor, AI 계획의 의존성 검토와 cutover 검증)]]
+- [x] [[Cloud-Migration-Strategies|클라우드 전환 전략 (AWS 7 Rs와 Microsoft CAF 용어 차이, 12 Factor, AI 계획과 cutover 검증, 가상화 플랫폼 유지와 DR 복구 조건)]]
 - [x] [[IaC|IaC (선언형 vs 명령형, 프로비저닝과 구성 관리, 검증 단계와 생략 결과, 드리프트/불변 인프라, GitOps)]]
 - [x] [[CDK-vs-Terraform|CDK vs Terraform (CloudFormation 경유 diff 신뢰성, 드리프트 대응, 투명성, 도구 선택 기준)]]
 - [x] [[IaC-Tooling-Evolution|IaC 도구 선택 사다리 (Terragrunt DRY, Terratest 테스트, Atlantis 협업, Pulumi 범용 언어와 ComponentResource, BUSL)]]

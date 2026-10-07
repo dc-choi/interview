@@ -14,7 +14,7 @@ workload와 Service, 설정과 storage, traffic 진입과 배포, 리소스 적�
 - [x] [[K8s-Core-Workloads-and-Service|Core workload와 Service (Pod, Deployment, RollingUpdate와 Recreate, selector 불일치, EndpointSlice, Namespace)]]
 - [x] [[K8s-Configuration-Storage-and-Probes|Configuration, storage와 probe (ConfigMap 소비 형태, Secret, PV/PVC, probe 판정과 감지 시간, QoS와 eviction)]]
 - [x] [[K8s-Traffic-Entry-Helm-and-GitOps|Traffic entry, Helm과 GitOps (Ingress pathType과 rewrite, ingress-nginx 은퇴, Gateway API, Argo CD)]]
-- [x] [[K8s-Resource-Right-Sizing|Resource Right-Sizing (기준 수립, PromQL 쿼리, 컴포넌트 차등과 롤백 기준)]]
+- [x] [[K8s-Resource-Right-Sizing|Resource Right-Sizing (기준 수립, PromQL, 컴포넌트 차등, Karpenter 노드 통합과 중단 제약)]]
 - [x] [[K8s-HPA-VPA|HPA와 VPA (스케일 기준, 요청값과 관측값, 충돌 회피)]]
 - [x] [[K8s-PDB|PodDisruptionBudget (자발적 중단 가용성, drain과 롤링 업데이트)]]
 - [x] [[K8s-NetworkPolicy|NetworkPolicy (방향별 격리와 합집합 허용, selector AND와 OR, default deny와 DNS egress, CNI 집행 구성과 kube-proxy 대체의 구분, 검증 절차)]]

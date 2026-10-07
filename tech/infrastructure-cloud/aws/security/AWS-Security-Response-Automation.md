@@ -27,6 +27,17 @@ AWS의 Automated Security Response 솔루션은 대상 계정의 조치 역할�
 
 서비스 중단 가능성이 있는 격리나 정책 변경은 실행 전 승인 단계가 필요한지 판단한다. Systems Manager의 `aws:approve`는 자동화 실행을 일시 중지하고 지정된 주체의 승인을 기다리는 단계다. 탐지 심각도 하나만으로 모든 운영 변경을 즉시 실행하도록 묶지 않는다.
 
+## 관리형 사고 대응의 권한 경계
+
+AWS Security Incident Response는 finding의 자동 분류와 사고 조사, 대응을 지원하는 관리형 서비스다. 2026-10-07 공식 가이드 기준으로 도입과 격리 권한을 다음처럼 구분한다.
+
+- **등록 범위**: AWS Organizations의 All Features가 필요하다. 중앙 membership은 위임 관리자 계정에 두는 구성이 권장되며, 적용 범위는 조직 전체 또는 선택한 OU와 하위 OU다. 개별 계정을 직접 고르는 방식은 아니다.
+- **조사 권한**: 서비스 연결 역할, 로그 접근과 Proactive Response의 finding 수집 권한을 검토한다. GuardDuty와 Security Hub CSPM의 탐지 설정도 별도로 확인한다.
+- **경보 억제**: 정상 활동으로 분류한 finding을 보관하거나 억제하고, quota가 허용하면 같은 활동의 후속 경보를 억제할 규칙을 만들 수 있다. 경보 감소 자체는 자원의 취약점 수정이나 침해 차단을 뜻하지 않는다.
+- **격리 권한**: containment는 별도의 권한과 선호 설정이 필요하다. 사전 승인한 범위와 서비스 영향을 확인하고 조사 권한만으로 모든 격리 조치를 허용했다고 판단하지 않는다.
+
+EC2 containment는 인스턴스를 보존한 채 보안 그룹을 제한적인 그룹으로 바꾼다. **이미 추적 중인 연결은 보안 그룹 변경만으로 끊어지지 않는다.** 따라서 조치 완료 기록과 실제 연결 차단 효과를 따로 확인한다. 격리 해제와 근본 원인 제거, 서비스 복구도 별개의 단계다.
+
 ## 운영 검토 예시
 
 다음은 위 기능을 조합할 때 사용할 설계 점검 항목이며, 제품이 자동으로 보장하는 동작은 아니다.
@@ -41,6 +52,9 @@ AWS의 Automated Security Response 솔루션은 대상 계정의 조치 역할�
 
 ## 출처
 
+- [AWS, Step 1: Enable and configure AWS Security Incident Response](https://docs.aws.amazon.com/security-ir/latest/userguide/deploy-configure.html)
+- [AWS, Detect and Analyze](https://docs.aws.amazon.com/security-ir/latest/userguide/detect-and-analyze.html)
+- [AWS, Contain](https://docs.aws.amazon.com/security-ir/latest/userguide/contain.html)
 - [AWS, Understanding automation rules in Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/automation-rules.html)
 - [AWS, Automation rules in EventBridge](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-eventbridge-automations.html)
 - [AWS, Processing GuardDuty findings with Amazon EventBridge](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings_eventbridge.html)
