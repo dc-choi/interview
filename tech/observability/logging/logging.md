@@ -10,7 +10,7 @@ aliases: ["logging", "로깅"]
 로그의 생성(구조화, 상관관계), 수집 파이프라인, 비용(샘플링), 보안(PII)까지 로깅 축 문서를 모은다.
 
 ## 문서
-- [x] [[Structured-Logging|Structured logging (JSON 구조화 로깅)]]
+- [x] [[Structured-Logging|Structured logging (JSON 스키마, 라이브러리 로깅, 지연 평가와 마스킹 경계)]]
 - [x] [[Correlation-ID|Correlation ID / Trace ID (요청 단위 로그 연결)]]
 - [x] [[Log-Collection-and-Backends|로그 수집과 저장 백엔드 (파이프라인, Loki, AWS 중앙 로깅 솔루션)]]
 - [x] [[Log-Sampling|로그/트레이스 샘플링 (head vs tail, 에러 편향, 동적 샘플링)]]

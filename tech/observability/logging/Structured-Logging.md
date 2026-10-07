@@ -1,7 +1,7 @@
 ---
 tags: [observability, logging]
 status: done
-verified_at: 2026-09-29
+verified_at: 2026-10-07
 category: "관측가능성(Observability)"
 aliases: ["Structured Logging", "구조화된 로깅"]
 ---
@@ -65,13 +65,13 @@ OpenTelemetry는 `SeverityNumber`로 이 구간을 수치화한다. TRACE 1-4, D
 Node.js에서는 `AsyncLocalStorage`(`node:async_hooks`)를 쓴다. 공식 문서 설명대로 콜백과 프로미스 체인 전반에 상태를 연결해 전파하며, 웹 요청 수명 동안 데이터를 보관하는 용도로 설계됐다. v16.4.0부터 Stable이다.
 
 - `run(store, callback)` — 콜백을 컨텍스트 안에서 실행한다. 그 안에서 만들어진 비동기 작업은 store에 접근할 수 있고, 밖에서는 접근할 수 없다.
-- `getStore()` — 현재 store를 반환한다. `run()`이나 `enterWith()`로 만든 컨텍스트 밖에서 부르면 `undefined`다.
+- `getStore()` — 현재 store를 반환한다. 기본 옵션으로 만든 인스턴스에서 활성 컨텍스트가 없으면 `undefined`다. Node.js v24.0.0부터는 생성자의 `defaultValue`로 store가 없을 때 사용할 값을 지정할 수 있다.
 
 적용 형태는 요청 진입점(미들웨어, 인터셉터)에서 `trace_id`와 `request_id`를 담아 `run()`으로 감싸고, 로거가 출력 직전에 `getStore()`로 꺼내 모든 레코드에 자동으로 붙이는 것이다. 공식 문서의 예제도 HTTP 서버에서 요청마다 id를 부여하고 이후 비동기 단계에서 그 id로 로그를 찍는 구조다.
 
 주의할 점:
 
-- **`getStore()`가 `undefined`인 경로가 반드시 생긴다.** 스케줄러, 큐 컨슈머, 부팅 시점 로그가 그렇다. 없으면 새 id를 만들어 넣고, 없다고 예외를 던지지 않는다.
+- **요청 컨텍스트가 없는 경로를 처리한다.** 스케줄러, 큐 컨슈머와 부팅 시점에 별도 컨텍스트를 만들지 않았다면 요청 id가 없을 수 있다. 작업 단위 식별자가 필요하면 그 진입점에서 만들고, 요청 id가 없다는 이유만으로 로깅이 실패하지 않게 한다.
 - **컨텍스트를 벗어나는 지점을 관리한다.** 이벤트 이미터에 넘긴 콜백, 외부 라이브러리의 풀링된 콜백은 컨텍스트가 끊길 수 있다.
 - **store에 큰 객체를 담지 않는다.** 요청 수명 동안 유지되므로 그대로 메모리 압박이 된다.
 
@@ -93,7 +93,15 @@ Java, Spring 계열은 같은 역할을 MDC가 맡는다. 스레드 로컬 기�
 - **민감정보 마스킹.** 필드 이름이나 패턴 기준으로 값을 지우거나 가리는 처리를 출력 전 단계에 둔다([[PII-Masking]]).
 - **Sink로 연결.** 콘솔, 파일, OpenTelemetry, Sentry 같은 출력 대상은 애플리케이션이 sink로 붙인다.
 
-JS/TS의 LogTape가 이 설계를 따르는 예다. 공식 문서 기준(2026-09-29 확인)으로 의존성 0개, Node.js, Deno, Bun, 브라우저, 엣지 런타임을 지원하고, 라이브러리 작성자에게 `configure()`를 호출하지 말라고 안내한다. 공식 sink 패키지로 파일, OpenTelemetry, Sentry, CloudWatch Logs, Syslog 등이 있고, Express, Fastify, Hono, Koa, Drizzle ORM 통합과 `@logtape/redaction` 패키지를 제공한다. pino, winston 어댑터는 LogTape 로그 레코드를 기존 pino나 winston 로거로 전달하는 방향이다. 그래서 NestJS 앱이 이미 pino나 winston을 쓰고 있어도 LogTape로 로깅하는 라이브러리의 로그를 기존 파이프라인에 합칠 수 있다. 공식 NestJS 전용 통합은 확인하지 못했다.
+JS/TS의 LogTape가 이 설계를 따르는 예다. 공식 문서 기준(2026-10-07 확인)으로 코어 패키지 `@logtape/logtape`는 런타임 의존성 없이 Node.js, Deno, Bun, 브라우저와 엣지 런타임을 지원한다. 라이브러리 작성자는 `configure()`를 호출하지 않고 출력 설정을 애플리케이션에 맡긴다. 파일, OpenTelemetry, Sentry, CloudWatch Logs, Syslog sink와 Express, Fastify, Hono, Koa, Drizzle ORM 통합은 필요한 패키지를 선택해 연결한다. 코어의 의존성 수를 통합 패키지 전체의 의존성 수로 해석하지 않는다.
+
+pino, winston 어댑터는 LogTape 로그 레코드를 기존 pino나 winston 로거로 전달하는 방향이다. 따라서 이미 이 로거를 사용하는 애플리케이션도 LogTape 기반 라이브러리의 로그를 기존 파이프라인에 합칠 수 있다.
+
+적용할 때는 다음 경계를 구분한다.
+
+- **템플릿 문법과 지연 평가는 다르다.** 템플릿 보간이나 함수 인자에서 무거운 함수를 먼저 호출하면 debug가 꺼져 있어도 계산 비용이 든다. 계산 자체를 지연 평가 콜백 안으로 옮겨야 한다. LogTape 2.0.0부터 제공하는 `lazy()`는 구조화 속성이나 컨텍스트 값의 평가를 로그 시점으로 미룬다.
+- **마스킹은 별도 설정이다.** `@logtape/redaction`을 설치하는 것만으로 모든 출력 경로가 보호되지는 않는다. `redactByField()`는 sink를 감싸 구조화 필드를 이름으로 처리하고, `redactByPattern()`은 formatter를 감싸 포맷된 출력에서 패턴을 찾는다.
+- **필드 마스킹은 자유 형식 문자열을 모두 검사하지 않는다.** 민감한 값을 message에 먼저 합치지 않고, 필요한 필드만 남긴다. 패턴 검사도 등록하지 않은 형식은 놓칠 수 있으므로 민감정보를 처음부터 기록하지 않는 것이 우선이다.
 
 ## 사례
 
@@ -121,7 +129,9 @@ JS/TS의 LogTape가 이 설계를 따르는 예다. 공식 문서 기준(2026-09
 - [Node.js 공식 문서, Asynchronous context tracking](https://nodejs.org/api/async_context.html)
 - [LogTape 공식 문서, Using in libraries](https://logtape.org/manual/library)
 - [LogTape 공식 문서, Adapters](https://logtape.org/manual/adaptors)
-- [JS/TS 로깅 라이브러리 LogTape 소개 — Threads, sdreamerh](https://www.threads.com/@sdreamerh/post/DYHJodMFLLT)
+- [LogTape 공식 문서](https://logtape.org/)
+- [LogTape 공식 문서, Lazy evaluation](https://logtape.org/manual/lazy)
+- [LogTape 공식 문서, Data redaction](https://logtape.org/manual/redaction)
 
 ## 관련 문서
 
