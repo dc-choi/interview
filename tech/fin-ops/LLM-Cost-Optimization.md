@@ -33,6 +33,14 @@ IAM principal 귀속은 CUR 2.0 export의 `Include caller identity (IAM principa
 
 AWS Budgets의 알림 설정만으로 호출이 차단되지는 않는다. Budget Actions는 별도 구성할 수 있지만 청구 반영과 알림에 지연이 있어 정확한 실시간 지출 상한을 보장하지 않는다. 운영 설계에서는 [[Budget-Alert|예산 알람]]과 함께 호출 경로의 요청 수, 출력 길이, 재시도와 에이전트 반복 상한을 따로 둔다. 비용 귀속 자료는 누가 얼마나 썼는지를 설명하며, 그 사용이 유효했는지는 작업 성공률과 재작업량으로 따로 확인한다.
 
+### 같은 모델을 공유하는 서비스의 비용 분리
+
+2026-10-07 AWS 공식 문서 기준, `bedrock-runtime`의 `InvokeModel`과 `Converse`에는 application inference profile을 사용해 애플리케이션이나 워크로드별 비용을 나눌 수 있다. Profile을 만든 것만으로 기존 호출이 분리되지는 않는다. Profile에 비용 할당 태그를 붙이고 Billing에서 활성화한 뒤, 호출의 `modelId`에 해당 profile ARN을 전달해야 한다. 같은 모델을 쓰는 사진 분석과 대화 요약도 서로 다른 profile과 태그로 귀속할 수 있다.
+
+System-defined cross-Region profile은 여러 리전으로 요청을 라우팅하는 리소스이고, application profile은 사용자가 비용과 사용량 추적을 위해 만드는 리소스다. Application profile은 단일 리전의 모델 또는 cross-Region profile을 참조할 수 있으므로 비용 분리와 리전 라우팅을 같은 기능으로 취급하지 않는다. 모델마다 profile이 필요해 모델 버전과 귀속 단위가 늘면 관리할 profile 수도 늘어난다.
+
+Cost Explorer와 CUR의 profile별 금액은 집계된 청구 자료이며 요청 한 건의 비용을 제공하지 않는다. 개별 요청의 토큰과 지연은 위의 호출 계측으로 보완한다. 또한 application profile은 Responses와 Chat Completions API에서 지원되지 않으므로 그 API의 비용 귀속에 그대로 적용하지 않는다.
+
 ## 2. 원인 분석 — 파레토 집중을 찾는다
 
 - 사례: 속성 추출 단일 API가 전체 LLM 토큰의 약 92%, 나머지 전부 합쳐 10% 미만. 최적화 대상은 사실상 하나였다.
@@ -90,6 +98,9 @@ Bedrock 기반 배치 워크로드에서 가시성 대시보드 구축, 92% 파�
 
 ## 출처
 
+- [Amazon Bedrock User Guide, Application inference profiles](https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-application-inference-profiles.html)
+- [Amazon Bedrock User Guide, Set up a model invocation resource using inference profiles](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles.html)
+- [Amazon Bedrock User Guide, Use an inference profile in model invocation](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-use.html)
 - [AWS Billing, Using IAM principal for cost allocation](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/iam-principal-cost-allocation.html)
 - [Amazon Bedrock User Guide, Monitor bedrock-runtime inference using CloudWatch metrics](https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html)
 - [Amazon Bedrock User Guide, Monitor model invocation using CloudWatch Logs and Amazon S3](https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html)

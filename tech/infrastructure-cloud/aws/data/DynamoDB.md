@@ -92,6 +92,19 @@ TTL 속성에는 Unix epoch seconds의 Number 값을 저장한다. 만료는 정
 
 스로틀링은 provisioned capacity 부족뿐 아니라 hot partition, 계정 할당량, on-demand 최대 처리량에서도 발생한다. 예외의 `ThrottlingReason`과 table 또는 index ARN을 CloudWatch 지표와 대조해 원인을 먼저 구분한다.
 
+2026-10-07 AWS 공식 문서로 대조한 진단 절차다. `ThrottlingReasons` 배열의 각 항목에서 `reason`과 `resource` ARN을 읽는다. `reason`은 `Table`/`Index`, `Read`/`Write`, 제한 종류의 조합이다. 예외 이름만으로 테이블 전체 용량 부족이라고 판단하지 않는다.
+
+| 제한 종류 | 먼저 확인할 대상 | 대응 방향 |
+|---|---|---|
+| `KeyRangeThroughputExceeded` | 해당 테이블/GSI의 `ReadKeyRangeThroughputThrottleEvents` 또는 `WriteKeyRangeThroughputThrottleEvents`, Contributor Insights | hot key와 key range 집중을 구분하고 키 분산이나 요청 속도를 조정 |
+| `ProvisionedThroughputExceeded` | 해당 테이블/GSI의 provisioned 용량과 `ReadProvisionedThroughputThrottleEvents` 또는 `WriteProvisionedThroughputThrottleEvents` | 용량, Auto Scaling의 최소/최대값과 목표 사용률 확인 |
+| `AccountLimitExceeded` | on-demand 테이블/GSI에 적용되는 리전별 처리량 quota | Service Quotas의 적용값 확인과 증액 검토 |
+| `MaxOnDemandThroughputExceeded` | 사용자가 설정한 on-demand 최대 읽기/쓰기 처리량 | 비용 상한 의도와 필요한 처리량을 대조해 설정 조정 |
+
+`IndexWriteProvisionedThroughputExceeded`처럼 ARN이 GSI를 가리키면 그 인덱스의 지표를 본다. GSI 갱신이 밀리면 base table 쓰기도 제한될 수 있다. 테이블의 키가 고르게 분산되어도 GSI의 키가 소수 상태값에 집중되면 GSI에서 병목이 생긴다.
+
+Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하며, 알람 평가와 `UpdateTable` 반영에 추가 시간이 걸린다. 확장 중에는 이전 용량을 넘는 요청이 제한될 수 있다. 짧은 급증을 자동 확장이 즉시 흡수한다고 가정하지 않으며, on-demand 전환도 파티션과 quota 제한을 없애지는 않는다.
+
 - AWS SDK의 제한된 exponential backoff와 jitter를 사용하고 전체 deadline과 최대 시도 횟수를 둔다.
 - write 재시도는 조건부 쓰기나 idempotency key로 중복 부작용을 막는다.
 - 재시도만 반복하지 말고 partition key 분산, GSI write pressure, capacity 또는 on-demand maximum을 교정한다.
@@ -129,12 +142,12 @@ TTL 속성에는 Unix epoch seconds의 Number 값을 저장한다. 만료는 정
 
 ## 시험 빈출 포인트
 
-- "**서버리스, NoSQL, 자동 확장**" 키워드 → DynamoDB
-- "반복되는 eventually consistent read에서 마이크로초 단위 cache 응답 필요" → DAX 검토
-- "집계 결과 캐싱" → ElastiCache
-- "여러 리전 active-active" → Global Table
-- "테이블 변경 → Lambda 트리거" → DynamoDB Streams
-- "S3 객체에서 Athena로 쿼리" → DynamoDB Export to S3
+- **서버리스, NoSQL, 자동 확장** 키워드 → DynamoDB
+- 반복되는 eventually consistent read에서 마이크로초 단위 cache 응답 필요 → DAX 검토
+- 집계 결과 캐싱 → ElastiCache
+- 여러 리전 active-active → Global Table
+- 테이블 변경 → Lambda 트리거 → DynamoDB Streams
+- S3 객체에서 Athena로 쿼리 → DynamoDB Export to S3
 
 ## 출처
 
@@ -151,6 +164,9 @@ TTL 속성에는 Unix epoch seconds의 Number 값을 저장한다. 만료는 정
 - [AWS DynamoDB — Time to Live](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html)
 - [AWS DynamoDB — Error handling and exponential backoff](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html)
 - [AWS DynamoDB — Troubleshooting throttling](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TroubleshootingThrottling.html)
+- [AWS DynamoDB — Diagnosing throttling](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/throttling-diagnosing-workflow.html)
+- [AWS DynamoDB — Managing throughput capacity automatically with DynamoDB auto scaling](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html)
+- [AWS DynamoDB — Understanding Global Secondary Index (GSI) write throttling and back pressure](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/gsi-throttling.html)
 - [AWS DynamoDB — PutItem API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html)
 - [AWS DynamoDB — Query API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html)
 - [AWS DynamoDB — Scanning tables](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html)
