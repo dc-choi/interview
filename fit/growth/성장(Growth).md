@@ -12,7 +12,7 @@ aliases: ["Growth"]
 ## 목차
 
 - [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]] — 생활과 장기 개발자 목표의 우선순위
-- [[Performance-Evidence-Playbook|성과 증거 플레이북]] — 결과를 과장 없이 확인하고 공개 가능한 기록으로 전환
+- [[Performance-Evidence-Playbook|성과 증거 플레이북]] — 결과 확인, 행동 근거에 따른 자기평가 교정과 공개 가능한 기록
 - [[fit/growth/retrospectives/회고(Retrospectives)|회고 기록 (Retrospectives)]] — 데일리, 주간, 월간, 행사와 프로젝트 종료 회고
 - [[fit/growth/career-stages/커리어단계(CareerStages)|커리어 단계 (Career Stages)]] — 마인드셋, 성장 단계 모델, 직군별 진로와 기본 역량, 첫 90일
 - [[fit/growth/learning/학습(Learning)|학습 방법 (Learning)]] — CS 학습법, 소스 코드 분석, 영어, 블로그, 성장 원칙
