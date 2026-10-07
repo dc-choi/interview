@@ -18,6 +18,9 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[Security-Hub-AI-Inventory|Security Hub AI Inventory]] — 발견 신호, Inspector/GuardDuty 전제와 미지원 범위
+- [x] [[ROSA|ROSA 관리형 OpenShift]] — HCP와 Classic, 고객의 애플리케이션 운영과 복구 책임
+- [x] [[QuickSight#상담 녹취의 분석 결과를 시각화한다|상담 녹취 분석과 BI]] — 전사, 분류와 집계의 경계, 원문 추적과 처리 누락 확인
 - [x] [[Security-Hub-Exposure-Analysis|Security Hub 노출 분석]] — 외부 스캔 근거, 지원 범위, IAM 경로와 잠재 영향
 - [x] [[OpenSearch-Service-Security-Observability#높은 CPU와 자동 진단의 실행 경계|OpenSearch Service CPU 진단]] — hot threads와 검색 task, 진단 자원 생성과 정리
 - [x] [[ACM#외부 인증서 가져오기와 재가져오기|ACM 외부 인증서 운영]] — PEM과 체인, 대상 서비스 호환성, ARN 유지 갱신과 WHOIS 검증 종료

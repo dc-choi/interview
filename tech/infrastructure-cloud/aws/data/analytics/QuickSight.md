@@ -27,6 +27,21 @@ Amazon Quick의 BI 기능. 서버리스 **머신러닝 기반 BI**로 대화형 
 - 임시 분석 수행
 - 비즈니스 인사이트 대시보드
 
+## 상담 녹취의 분석 결과를 시각화한다
+
+음성을 텍스트로 바꾸는 작업, 문의 유형을 분류하는 작업과 대시보드 집계는 다른 단계다. Quick Sight에는 분석 결과를 데이터셋으로 연결한다. 음성 파일을 S3에 넣었다는 사실만으로 상담 지표가 만들어지지는 않는다.
+
+AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 변환해 S3의 Parquet로 저장하고, Glue Data Catalog로 테이블을 정의한다. Athena가 조회하고 QuickSight가 시각화하며 예제는 SPICE를 사용한다. 이는 가능한 구성 예시이며 모든 상담 시스템에 같은 서비스 조합을 요구하지 않는다. 구성 흐름은 2026-10-07 공식 게시물로 대조했다.
+
+다음은 이 흐름을 다른 상담 데이터에 적용할 때의 설계 점검 제안이다.
+
+- 통화 식별자, 발생 시각과 분류 결과를 연결하고, 재처리 때문에 동일 통화를 중복 집계하지 않는지 확인한다.
+- 분류 결과에서 근거 전사문으로 돌아갈 수 있게 하되, 원문 열람 권한과 집계 화면 권한을 구분한다.
+- 전사 실패와 분류 불확실성을 빈 문자열이나 정상 문의로 합치지 않는다. 처리한 통화와 전체 통화의 수를 별도로 본다.
+- 표본 원문과 분류 결과를 대조한다. 화면이 정상 표시됐다는 사실은 전사와 분류의 정확성을 증명하지 않는다.
+
+업무 성과와 비용의 비교 기준은 [[Customer-Support-Operations-Metrics|고객지원 운영 지표]]에서 다룬다. 이탈 원인에 대한 추정과 실제 이탈 방지 효과도 따로 검증한다.
+
 ## 계정 간 템플릿으로 대시보드 재사용
 
 부분 검증(2026-10-07): 이 절의 템플릿, 데이터셋 매핑, 공유 권한과 생성 상태를 AWS API Reference로 대조했다. 기존 서비스 개요 전체를 다시 검증한 날짜는 아니다.
@@ -75,3 +90,4 @@ Amazon Quick의 BI 기능. 서버리스 **머신러닝 기반 BI**로 대화형 
 - [Amazon Quick, CreateDashboard](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_CreateDashboard.html)
 - [Amazon Quick, DescribeDashboard](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_DescribeDashboard.html)
 - [Amazon Quick, DashboardVersion](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_DashboardVersion.html)
+- [Advanced reporting and analytics for the Post Call Analytics (PCA) solution with Amazon QuickSight — AWS Business Intelligence Blog](https://aws.amazon.com/blogs/business-intelligence/advanced-reporting-and-analytics-for-the-post-call-analytics-pca-solution-with-amazon-quicksight/)
