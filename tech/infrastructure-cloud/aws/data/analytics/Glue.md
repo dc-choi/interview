@@ -65,6 +65,18 @@ AI 입력 파이프라인에 적용할 때는 품질 실패 후 색인이나 후
 
 포맷 변경만 필요하고 입력이 지원 조건에 맞으면 Firehose 내장 변환을 검토할 수 있다. 조인, 업무 규칙이나 행 재구성이 필요하면 해당 변환을 ETL에 명시한다. 변환 완료 뒤 집계 전에 중복, 누락과 타입 오류를 확인하는 절차는 위 Data Quality와 연결한다.
 
+## Glue 6.0 전환의 호환성 경계
+
+2026-10-07 공식 마이그레이션 문서 확인 기준. Glue 6.0은 Spark 4.1.1, Scala 2.13.17과 Python 3.13을 사용한다. 새 런타임 선택과 기존 작업의 동작 검증은 별도다.
+
+- Spark Declarative Pipelines는 선언한 테이블과 흐름으로 파이프라인을 구성한다. real-time mode는 stateless streaming을 대상으로 하므로 모든 상태 기반 스트리밍 작업의 대체재로 보지 않는다.
+- Iceberg format v3는 VARIANT와 shredding 등을 지원하지만 v2로 되돌릴 수 없다. 현재 Glue 마이그레이션 문서는 Athena SQL이 v3 테이블을 읽지 못한다고 명시하므로, Athena와 공유할 테이블은 v2를 유지한다.
+- Spark ANSI mode가 기본 활성화되어 overflow와 잘못된 cast가 오류로 드러날 수 있다. 기존 결과의 null 처리와 예외 처리를 비교한다.
+- Scala 2.12용 JAR는 2.13에 맞춰 재컴파일해야 한다. Python 의존성과 custom JAR도 새 런타임에서 확인한다.
+- EMRFS가 제거되고 S3A를 사용한다. Java AWS SDK v1도 제거됐으므로 기존 import와 관련 설정을 확인한다.
+
+전환 검증에서는 대표 입력으로 결과 행 수, 자료형과 실패 동작을 비교하고 하위 쿼리 엔진에서도 읽어 본다. 특히 런타임 업그레이드와 Iceberg 테이블 형식 변경을 한 번의 가역적 설정 변경으로 취급하지 않는다.
+
 ## 관련 문서
 
 - [[Athena]], [[Redshift]], [[EMR]]
@@ -73,6 +85,7 @@ AI 입력 파이프라인에 적용할 때는 품질 실패 후 색인이나 후
 
 ## 출처
 
+- [AWS Glue, Migrating AWS Glue for Spark jobs to AWS Glue version 6.0](https://docs.aws.amazon.com/glue/latest/dg/migrating-version-60.html)
 - [AWS Glue, Using crawlers to populate the Data Catalog](https://docs.aws.amazon.com/glue/latest/dg/add-crawler.html)
 - [Amazon Data Firehose, PutRecordBatch](https://docs.aws.amazon.com/firehose/latest/APIReference/API_PutRecordBatch.html)
 - [Amazon Data Firehose, Convert input data format](https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html)

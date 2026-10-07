@@ -18,6 +18,9 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[MemoryDB-Durable-Write-Behind|MemoryDB 내구성 쓰기 버퍼]] — 응답과 DB 반영의 구분, 소비자 복구와 정리 시점
+- [x] [[Cloud-WAN-Migration|Cloud WAN 마이그레이션]] — attachment 태그, 정책 change set과 단계별 통신 검증
+- [x] [[Glue#Glue 6.0 전환의 호환성 경계|Glue 6.0 전환]] — 런타임 호환성, Iceberg v3의 비가역성과 Athena 조회 제한
 - [x] [[Amazon-Quick-Flows-and-Knowledge|Amazon Quick의 자동화와 개인 지식 그래프]] — 예약 action 권한, 변경된 flow 실행과 원문 근거
 - [x] [[SageMaker-Catalog-Discovery|SageMaker Catalog의 탐색과 분석]] — 메타데이터 검토, 계보 보기, 품질 결과와 구독 권한, SQL 생성
 - [x] [[EKS-Windows|EKS Windows 노드]] — Linux 시스템 Pod, OS 스케줄링, 단일 ENI와 prefix IP 용량

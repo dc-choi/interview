@@ -10,6 +10,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 하네스 시스템, 컨텍스트, 에이전트, 사용량 관측, RAG, MCP, 음성 인식 — AI를 프로덕션에서 쓰고 제어하는 도구. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
 
 ## 목차
+- [x] [[A2A-Kafka-Transport|A2A와 Kafka 전송]] — 사용자 정의 바인딩, 작업 상태, 재전달과 권한 경계
 - [x] [[Generative-Product-Image-Workflow|생성형 상품 이미지 워크플로우]] — 마스크와 상품 정합성, GPU 배치 실행과 비동기 추론
 - [x] [[Generative-Video-Editing|생성형 영상 편집과 결과 검증]] — 변경 범위, 원본 보존, 장면 연장과 생성 기능의 한계
 - [x] [[Agent-Client-Protocol|ACP]] — 에디터와 코딩 에이전트의 메시지, capability와 승인 경계
