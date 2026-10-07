@@ -10,6 +10,7 @@ aliases: ["Observability Reliability", "관측성 신뢰성", "관측 신호 기
 관측 신호를 목표(SLO)와 알림으로 바꾸고, 알림에서 장애 대응까지 잇는 문서를 모은다. 신뢰성 목표 정의, 알림 설계와 코드화, 런북, 배포 가시성이 한 축이다.
 
 ## 문서
+- [x] [[DevOps-Agent-Datadog|Datadog와 AWS DevOps Agent]] — MCP 조회와 알림 전달, 사건 중복과 payload 검증
 - [x] [[MCP-Incident-Investigation|MCP 기반 장애 조사]] — 신호 연결, 쿼리 권한과 변경 권한, 복구 증거
 - [x] [[DevOps-Agent-Grafana|Grafana와 AWS DevOps Agent]] — 알림 전달, 읽기 전용 조사와 payload의 맥락 경계
 - [x] [[SLI-SLO|SLI / SLO / Error budget (9의 의미, burn rate, 버짓 정책)]]

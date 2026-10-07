@@ -64,6 +64,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [[tech/observability/datadog/datadog|Datadog 학습 지도]] — Unified Service Tagging, Catalog, APM, Monitor, SLO, 배포 추적
 
 ## Reliability
+- [x] [[DevOps-Agent-Datadog|Datadog와 AWS DevOps Agent]] — MCP 조회와 webhook 조사 시작, 우선순위 매핑과 HTTP 200의 한계
 - [x] [[CloudWatch-Investigations|CloudWatch AI 장애 조사]] — 세션과 group 기반 조사, 자료 접근과 변경 권한, 복구 확인
 - [x] [[MCP-Incident-Investigation|MCP 기반 장애 조사]] — Grafana와 EKS 도구 범위, trace 연결, 알림별 조사 작업과 변경 권한
 - [x] [[DevOps-Agent-Grafana|Grafana와 AWS DevOps Agent]] — webhook 전달과 조사 데이터, 읽기 전용 권한과 복구 확인
