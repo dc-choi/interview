@@ -1,0 +1,60 @@
+---
+tags: [aws, sagemaker, catalog, metadata, text-to-sql, governance]
+status: done
+verified_at: 2026-10-07
+category: "Infrastructure - AWS"
+aliases: ["SageMaker Catalog", "SageMaker 메타데이터 추천과 데이터 탐색"]
+---
+
+# SageMaker Catalog의 메타데이터와 데이터 탐색
+
+SageMaker Catalog의 업무 메타데이터는 기술적인 테이블명과 사용자가 찾는 업무 개념을 연결한다. SageMaker Unified Studio에서는 자산을 설명하고 검색하는 과정, 접근 권한을 얻는 과정과 Data Agent로 분석 코드를 만드는 과정을 나누어 다룬다.
+
+## 메타데이터 추천은 검토할 초안이다
+
+AI 추천은 자산과 컬럼의 이름, 설명과 용어집 항목을 제안한다. 용어 추천은 시스템에 이미 있는 용어집과 정의를 탐색하므로 먼저 용어집을 정확히 관리해야 한다. 추천 결과는 편집, 수락 또는 거절할 수 있다.
+
+예를 들어 `active_customer`를 설명할 때 최근 로그인 사용자와 최근 결제 고객은 다른 개념이다. 컬럼명으로 생성한 설명만 보고 의미를 확정하지 말고 원천 정의와 대조한다. 이 검토 예시는 메타데이터 추천을 적용하는 운영 원칙이다.
+
+2026-10-07 공식 문서 기준으로 수락하거나 거절하지 않은 자동 생성 메타데이터는 자산을 게시해도 게시된 자산에 포함되지 않는다. 추천 생성, 검토와 게시를 별도 완료 조건으로 둔다. 이름, 설명과 용어 추천은 지원 리전 및 추론 경로가 다를 수 있으므로 사용할 기능의 조건을 각각 확인한다.
+
+## 검색과 접근 권한
+
+업무 이름, 설명, 용어집과 메타데이터는 기술 테이블명을 모르는 사용자의 데이터 발견을 돕는다. 검색에서 자산을 발견했다고 데이터 조회 권한을 얻은 것은 아니다.
+
+도메인에 게시된 자산은 구독 요청과 소유자의 승인 절차를 거친다. 관리 대상 Glue/Redshift 자산은 서비스가 권한 부여를 관리할 수 있다. 비관리 자산은 구독 승인 이벤트와 별도의 연동으로 접근을 제공해야 한다. 승인과 실제 접근 가능 여부를 함께 확인한다.
+
+## Data Agent가 업무 질문을 코드로 바꾸는 과정
+
+업무 맥락 통합은 기술 메타데이터와 용어집, 메타데이터 양식, 요약 및 README를 함께 사용한다. Agent는 관련 테이블을 찾고 SQL이나 PySpark 코드의 카탈로그, 테이블과 컬럼 참조를 구성한다.
+
+- 현재 프로젝트가 구독한 게시 자산과 프로젝트 내부의 미게시 자산을 탐색한다.
+- 관련 자산에 접근할 수 없으면 접근이 필요하다고 알리고 해당 테이블에 대한 코드를 생성하지 않는다.
+- 셀 내부 코드 생성은 접근 가능한 구독 자산과 로컬 자산을 사용한다.
+
+Query Editor의 대화형 SQL 생성에서는 후속 질문으로 쿼리를 수정할 수 있다. 복잡한 질문은 계획을 검토한 뒤 생성하며, 생성한 SQL은 검토 후 실행한다. 쿼리 실패 시 AI의 수정 제안을 받을 수 있지만 실행 성공만으로 집계의 의미가 맞는 것은 아니다.
+
+## 분석에 적용할 검토 기준
+
+다음은 기능을 실제 분석에 적용할 때의 설계 체크포인트다.
+
+1. 질문의 지표 정의, 기간과 대상 집단을 먼저 정한다.
+2. 찾은 자산의 업무 정의, 조인 키와 최신성을 확인한다.
+3. 생성 SQL의 조인으로 행이 중복되거나 필터로 대상이 누락되는지 확인한다.
+4. 개인정보 제외 요청은 컬럼 검토와 데이터 접근 통제로 집행한다. 프롬프트 한 문장을 접근 통제로 취급하지 않는다.
+5. 작은 검증 데이터의 기대 결과와 실행 결과를 대조한다.
+
+일반적인 Text-to-SQL의 생성, 검증과 실행 경계는 [[LLM-Workflow-Patterns#생성, 검증과 실행의 경계|LLM 워크플로 패턴]]에서 다룬다.
+
+## 출처
+
+- [Amazon SageMaker Unified Studio, Using machine learning and generative AI](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/autodoc.html)
+- [Amazon SageMaker Unified Studio, Data discovery, subscription, and consumption](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/discover-data.html)
+- [Amazon SageMaker Unified Studio, Using Business Context with the SageMaker Data Agent](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/data-agent-business-catalog.html)
+- [Amazon SageMaker Unified Studio, Generate SQL with the Data Agent](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/sql-query-data-agent.html)
+
+## 관련 문서
+
+- [[Glue|Glue Data Catalog와 ETL]]
+- [[Athena|Athena의 SQL 분석]]
+- [[LLM-Workflow-Patterns|Text-to-SQL과 데이터 디스커버리]]

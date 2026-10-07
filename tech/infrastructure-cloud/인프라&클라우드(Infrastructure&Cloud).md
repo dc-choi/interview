@@ -18,6 +18,10 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[Amazon-Quick-Flows-and-Knowledge|Amazon Quick의 자동화와 개인 지식 그래프]] — 예약 action 권한, 변경된 flow 실행과 원문 근거
+- [x] [[SageMaker-Catalog-Discovery|SageMaker Catalog의 탐색과 분석]] — 추천 메타데이터의 검토, 구독 권한과 SQL 생성
+- [x] [[MemoryDB-Multi-Region|MemoryDB Multi-Region]] — 비동기 복제, 자료형별 LWW와 동시 카운터의 한계
+- [x] [[Glue#수집 로그를 분석 테이블로 만드는 경계|수집 로그와 분석 테이블]] — 부분 실패와 재시도, 스키마 누락과 중첩 구조 변환
 - [x] [[AWS-Control-Tower|Control Tower 거버넌스]] — 계정 표준화, 통제별 적용 범위와 공동 책임
 - [x] [[IoT-Edge-Cloud-Pipeline|IoT 엣지와 클라우드 파이프라인]] — 수집과 추론 분리, 메시지 순서와 중복, 현장 제어의 검증 경계
 - [x] [[End-User-Messaging-Two-Way-SMS|양방향 SMS 수신 진단]] — 목적지별 권한, FIFO 제한과 암호화 topic

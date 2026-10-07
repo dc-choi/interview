@@ -50,12 +50,32 @@ aliases: ["Glue", "AWS Glue", "Glue Data Catalog"]
 
 AI 입력 파이프라인에 적용할 때는 품질 실패 후 색인이나 후속 작업이 실행되지 않는지 확인한다. 실패 결과와 알림을 남기고 복구 뒤 재처리하는 경로는 별도 설계 사항이다. Data Quality 도입만으로 데이터의 의미적 정확성이나 답변의 사실성이 보장되지는 않는다.
 
+## 수집 로그를 분석 테이블로 만드는 경계
+
+2026-10-07 공식 문서 확인 기준. Crawler는 저장소의 스키마를 추론해 Data Catalog 메타데이터를 만든다. 실제 데이터의 읽기, 변환과 적재는 ETL 작업이 수행한다. Crawler 실행을 중첩 JSON의 평탄화나 데이터 정제 완료로 취급하지 않는다.
+
+아래는 로그 분석에 적용할 설계 예시다. 원본 로그와 분석용 데이터를 구분하고, 최종 테이블의 행 단위, 자료형과 버전 필드를 먼저 정한 뒤 필요한 변환을 역으로 설계한다. 이벤트 하나가 배열 원소별 여러 행으로 펼쳐지면 원본 이벤트 수와 결과 행 수의 관계도 정의한다.
+
+| 경계 | 확인할 내용 |
+|---|---|
+| 수집 | `PutRecordBatch` 호출 성공에도 `FailedPutCount`가 0보다 클 수 있다. 요청 순서에 대응하는 `RequestResponses`로 실패 레코드를 식별한다 |
+| 재시도 | 실패 가능 레코드만 다시 보내고 목적지에서 중복을 처리한다. 타임아웃은 쓰기 실패를 확정하지 않는다 |
+| 포맷 변환 | Firehose의 JSON → Parquet/ORC 변환은 Glue Data Catalog 스키마를 사용한다. 스키마에 없는 속성은 변환 결과에서 빠질 수 있다 |
+| 중첩 구조 | Firehose 변환에서 중첩 JSON을 보존하려면 대응하는 `STRUCT` 스키마가 필요하다. 평탄화된 분석 테이블이 필요하면 별도 변환을 설계한다 |
+
+포맷 변경만 필요하고 입력이 지원 조건에 맞으면 Firehose 내장 변환을 검토할 수 있다. 조인, 업무 규칙이나 행 재구성이 필요하면 해당 변환을 ETL에 명시한다. 변환 완료 뒤 집계 전에 중복, 누락과 타입 오류를 확인하는 절차는 위 Data Quality와 연결한다.
+
 ## 관련 문서
 
 - [[Athena]], [[Redshift]], [[EMR]]
+- [[Kinesis|Data Streams와 Firehose]]
+- [[SageMaker-Catalog-Discovery|업무 메타데이터와 데이터 탐색]]
 
 ## 출처
 
+- [AWS Glue, Using crawlers to populate the Data Catalog](https://docs.aws.amazon.com/glue/latest/dg/add-crawler.html)
+- [Amazon Data Firehose, PutRecordBatch](https://docs.aws.amazon.com/firehose/latest/APIReference/API_PutRecordBatch.html)
+- [Amazon Data Firehose, Convert input data format](https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html)
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)
 - [AWS, Announcing AWS Glue Elastic Views preview](https://aws.amazon.com/about-aws/whats-new/2020/12/announcing-aws-glue-elastic-view-preview/)
 - [AWS Glue, Data Catalog views](https://docs.aws.amazon.com/glue/latest/dg/catalog-views.html)
