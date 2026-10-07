@@ -99,6 +99,18 @@ Enhanced는 목록 조회, 준비, 전송과 검증을 병렬화하고 Basic은 
 
 Enhanced의 검증은 전송한 데이터를 대상으로 하므로 대상 버킷 전체가 원본과 같다는 보증으로 해석하지 않는다. 실행 상태, 검증 결과와 필요한 데이터 범위를 함께 확인한다. 실제 계정의 권한과 전송 실행은 이 문서에서 검증하지 않았다.
 
+## Azure Blob에서 S3로 이전할 때의 조건
+
+2026-10-07 공식 문서 기준, Azure Blob과 S3 사이의 Enhanced task는 agent 없이 전송할 수 있다. Azure Blob location과 S3 location을 만들고 전송 범위, 변경분 처리와 검증 옵션을 정한다. Azure에서 EFS/FSx로 옮기는 구성에 이 agent 생략 조건을 확대하지 않는다.
+
+- **인증 범위:** 계정 수준 SAS는 Blob 서비스, Container와 Object 리소스, Read와 List 권한이 필요하다. 컨테이너 수준 SAS는 Read와 List를 사용한다. Azure를 목적지로 쓰는 경우의 쓰기 권한과 혼동하지 않는다.
+- **태그 복사:** 컨테이너 SAS에는 Tag 권한, 계정 SAS에는 blob index Read/Write 권한이 추가로 필요하다. 컨테이너 SAS의 Tag 권한은 Azure portal에서 넣을 수 없어 Storage Explorer 등을 사용한다. 태그가 불필요하면 task에서 복사를 끈다.
+- **네임스페이스:** hierarchical namespace를 사용하는 계정은 객체 태그 복사를 지원하지 않는다. 해당 옵션을 켜 두면 task가 실패할 수 있다.
+- **토큰 만료:** SAS가 전송 완료 전에 만료되지 않도록 한다. 도중에 만료됐다면 location의 토큰을 갱신하고 task를 다시 시작한다.
+- **접근 계층:** Azure 원본은 hot/cool 계층에서 읽는다. archive 객체는 먼저 복원해야 하며 cold 계층은 지원하지 않는다.
+
+agent 운영비가 없어져도 Azure의 데이터 전송과 요청, DataSync 처리, S3 요청과 저장 비용은 남는다. 소규모 전송에서 권한, 태그와 검증 결과를 먼저 확인한 뒤 전체 범위를 옮기는 것은 이 제약을 적용한 운영 절차다.
+
 ## Storage Gateway vs DataSync
 
 | 기준 | Storage Gateway | DataSync |
@@ -121,8 +133,9 @@ Enhanced의 검증은 전송한 데이터를 대상으로 하므로 대상 버�
 
 ## 출처
 
-2026-10-07 추가 대조 범위는 DataSync task mode, 파티션 간 S3 location 구성과 권한 경계다. Storage Gateway 절의 기존 검증 기준은 2026-09-03이다.
+2026-10-07 추가 대조 범위는 DataSync task mode, 파티션 간 S3 location 구성, Azure Blob 전송의 SAS, 태그와 접근 계층 조건이다. Storage Gateway 절의 기존 검증 기준은 2026-09-03이다.
 
+- [AWS DataSync, Configuring transfers with Microsoft Azure Blob Storage](https://docs.aws.amazon.com/datasync/latest/userguide/creating-azure-blob-location.html)
 - [AWS DataSync, Choosing a task mode for your data transfer](https://docs.aws.amazon.com/datasync/latest/userguide/choosing-task-mode.html)
 - [AWS DataSync, Configuring transfers with Amazon S3](https://docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html) — 상용 리전과 GovCloud 간 S3 전송 절.
 - [AWS Storage Gateway, How Volume Gateway works](https://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html)

@@ -10,12 +10,13 @@ aliases: ["에이전트 심화", "Agent Engineering"]
 에이전트를 프로덕션에서 설계하고 제어하는 실천 도구 — 컨텍스트 예산, 지시 설계, 코드 인텔리전스, 친화 API 설계, 데이터 준비, 이메일 인터페이스, 스킬, 루프 엔지니어링. 상위: [[tools|AI 엔지니어링 실천 도구]].
 
 ## 목차
+- [x] [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]] — 계획, 코드 실행, 계산 결과 인계와 검산
 - [x] [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]] — 화면 배치, 상태 관찰, worktree 분리와 완료 검증
 - [x] [[Agent-From-Scratch|에이전트 직접 만들기 (모델, 오케스트레이션, 도구 계층, 도구 호출 루프와 병렬 호출, 도구 정의, 계획 검증과 saveAs/inputFrom 데이터 흐름, 메모리 세 종류)]]
 - [x] [[Agent-Context-Budget|에이전트 컨텍스트 예산 (경계 밖 설계 — 파일 Lazy Loading, 목록 Hybrid, 스킬 Catalog-First, Compaction 대신 사전 통제, hard cap)]]
 - [x] [[Agent-Instruction-Design|에이전트 지시 설계 (instruction-design/ 서브폴더) — 스펙 작성, 코딩 가드레일 4원칙, 과잉설계 방지, 검증 행동 교정, 출력 문체 제약(STE)]]
 - [x] [[Agent-Code-Search|에이전트 코드 인텔리전스 (rg 전수 검색, Semble 후보 발견, Serena 심볼 검증/수정, Graphify 구조 경로, index freshness)]]
-- [x] [[Agent-Ready-API-Design|에이전트 친화 API 설계 (사람+AI 공용 인터페이스, 명령 발견과 실패 계약, 에러 코드 append-only 계약, --dense 출력 밀도, Vibe Test 공정성 5불변식)]]
+- [x] [[Agent-Ready-API-Design|에이전트 친화 API 설계 (사람+AI 공용 인터페이스, 명령 발견과 실패 계약, 상품 ID 반환과 화면 조립 분리, 출력 밀도, Vibe Test 공정성)]]
 - [x] [[Agent-Ready-Data|에이전트용 데이터 준비 (5속성 Trusted/Contextual/Traceable/Governed/Operational, 계약 검증 게이트와 격리, agentic lineage, 위임 접근과 JIT 자격증명, 지표 정의를 코드로, 능력 선언과 가역성 3등급, 단계적 자율성 4단계와 승격 증거)]]
 - [x] [[Agent-Email-Interface|이메일 에이전트 인터페이스 (비동기 궁합, 주소=라우팅 키, 엔티티별 DO 격리, HITL 발신 게이트, 단일 신뢰 경계 명시, MCP vs CLI vs 스킬)]]
 - [x] [[Agent-Skills|에이전트 스킬 (재사용 작업 단위 = 온디맨드 플레이북, SKILL.md 폴더+description 자동 로드, 점진적 공개, Claude vs Codex 같은 포맷 다른 관례, 스킬 vs 훅, 수명주기 감사, 표면별 설치와 외부 스킬 신뢰)]]

@@ -28,7 +28,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[S3-Scale-Design-Lessons|S3 대규모 설계 교훈]] — 워크로드 집계와 데이터 배치의 구분, 부하 평탄화의 조건, 내구성 위협과 대응책 검토, 추가 shard를 이용한 점진 배포
 - [x] [[Amazon-Connect-Conversation-Continuity|Amazon Connect 대화 연속성과 채팅 복원]] — persistent chat, contact 연결, 토큰 보호와 인계 검토
 - [x] [[RDS-PostgreSQL-Performance-Triage|RDS와 Aurora PostgreSQL 성능 진단]] — 자원과 세션 연결, idle 상태 구분, 누적 SQL 통계의 차분, 유지보수와 실행 계획, QPM의 수집과 적용
-- [x] [[Storage-Gateway-DataSync#DataSync Enhanced 모드와 파티션 간 S3 전송|DataSync 파티션 간 S3 전송]] — Object storage location, agent 조건과 검증 범위
+- [x] [[Storage-Gateway-DataSync|DataSync 클라우드 간 전송]] — 파티션 간 S3의 Object storage location, Azure Blob의 SAS와 태그, agent 조건과 검증 범위
 - [x] [[ElastiCache-Use-Cases#8. Semantic Cache (Gen AI)|시맨틱 캐시]] — 정확 일치 캐시와의 차이, 임계값, 문맥과 권한, 무효화와 총비용
 - [x] [[IAM|AWS IAM (엔티티, 정책 평가, AssumeRole과 Federation, Roles Anywhere의 외부 워크로드 인증, 모범 사례)]]
 - [x] [[AWS-Builder-ID-Recovery|AWS Builder ID 복구 이메일]] — 등록 절차, MFA 복구에 필요한 두 메일함과 계정 유형 구분

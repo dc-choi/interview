@@ -50,6 +50,19 @@ API 정의를 CLI, SDK와 문서 생성의 공통 입력으로 쓰면 이름과 
 
 사례로 Cloudflare의 cf CLI는 OpenAPI 스키마에 추가 정보를 붙여 Forge의 생성 입력으로 사용한다. Forge의 2026-09-28 발표는 cf CLI 출력 생성과 향후 문서, SDK 확장을 구분한다. 따라서 전체 도구 체인이 이미 Forge로 전환됐다고 해석하지 않는다. 이 사례 범위는 2026-10-06 공식 발표와 대조했다.
 
+## 선택 결과와 화면 데이터를 분리한다
+
+검색 API가 이미 상품명, 가격과 이미지 주소를 반환했다면 모델에게 같은 JSON 전체를 다시 쓰게 할 필요는 없다. 모델은 선택한 상품 ID와 필요한 설명만 반환하고, 애플리케이션은 조회 결과에서 해당 상품을 찾아 화면 데이터를 조립할 수 있다.
+
+다음은 쇼핑 에이전트 발표의 출력 축소 방식을 적용한 설계 점검이다.
+
+- 반환 ID가 이번 요청에서 조회한 후보에 속하는지 검증한다. 임의 ID를 그대로 조회하면 다른 사용자나 판매 범위의 데이터가 섞일 수 있다.
+- 가격, 재고와 거래 조건은 모델이 재작성한 문장보다 서비스의 원본 데이터를 사용한다. 결제 시점에는 다시 확인한다.
+- 후보에 없는 ID, 중복 ID와 필수 필드 누락은 정상 결과와 구분한다. 설명이 유창해도 잘못된 상품을 표시하지 않는다.
+- 출력 토큰 감소와 실제 화면 응답 시간은 따로 측정한다. ID를 받은 뒤 추가 조회가 필요하면 그 지연도 포함한다.
+
+Bedrock의 `OutputTokenCount`, `TimeToFirstToken`과 `InvocationLatency`는 각각 출력량, 첫 토큰 지연과 마지막 토큰까지의 호출 지연을 보여 준다(2026-10-07 공식 문서 기준). 이 지표만으로 프런트엔드의 상품 카드 표시 완료 시간을 대신하지 않는다. 출력 축소의 효과는 동일한 질문 집합에서 상품 선택 정확도와 전체 지연을 함께 비교한다.
+
 ## Vibe Test — 컨벤션을 측정으로 검증
 
 같은 프롬프트 배터리를 서로 다른 시스템 구성(자사 시스템, 경쟁 조합, 순수 HTML baseline)에 주고 LLM이 생성한 UI 코드를 정량 비교하는 평가 체계. 프롬프트마다 기대 컴포넌트와 난이도를 메타데이터로 두되 평가에만 쓴다.
@@ -78,6 +91,8 @@ Meta 사내 8년, 13,000+ 앱에서 쓰인 최대 디자인 시스템의 오픈�
 
 ## 출처
 
+- [Agent와 함께하는 쇼핑 경험 혁신 - 검색, 추천부터 초개인화까지 — AWS Korea](https://www.youtube.com/watch?v=h3usF3KVweA) — 24분 구간의 상품 ID 반환과 코드 기반 화면 조립 사례.
+- [Amazon Bedrock, Monitor bedrock-runtime inference using CloudWatch metrics](https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html)
 - [Basecamp CLI — Basecamp (GitHub)](https://github.com/basecamp/basecamp-cli)
 - [Astryx: An open source design system that's fully customizable and agent ready — Meta (GitHub)](https://github.com/facebook/astryx)
 - [Introducing cf: the agentic CLI for the entire Cloudflare API — Cloudflare](https://blog.cloudflare.com/cloudflare-cf-cli-launch/)

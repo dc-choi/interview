@@ -1,7 +1,7 @@
 ---
 tags: [finops, aws, cost-anomaly-detection, monitoring, ml, alert]
 status: done
-verified_at: 2026-10-03
+verified_at: 2026-10-07
 category: "비용&운영(FinOps)"
 aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 ---
@@ -41,6 +41,19 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 - 데이터 전송 급증([[Egress-Cost]]), 로그 폭증([[Long-Term-Retention]])
 - 침해로 인한 비정상 사용(크립토 마이닝 등) — 보안 신호이기도 함
 
+## 에이전트로 조사할 때도 원인과 조치를 나눈다
+
+Amazon Q Developer의 비용 조사 기능은 비용 기여 차원을 분해하고 사용량 증가와 단가 변화를 구분한다. 사용량 변화는 CloudTrail 이벤트와 연결하고, 단가 변화는 가격과 할인 구성을 분석한다. 필요한 로그가 없으면 사용 가능한 비용 데이터로 조사하므로, 설명이 생성됐다는 사실만으로 원인까지 입증된 것은 아니다(2026-10-07 공식 문서 기준).
+
+별도 에이전트를 만드는 경우에도 다음처럼 조사와 실행의 경계를 둔다. 이는 서비스의 자동 보장이 아니라 운영 설계 제안이다.
+
+1. **범위 고정:** 대상 계정, 리전, 서비스, 비교 기간과 비용 산식을 기록한다. 청구 데이터와 운영 지표의 집계 시간대를 맞춘다.
+2. **근거 수집:** 비용 증가 구간을 사용량, 요청 로그와 배포 이력에 연결한다. 실행한 쿼리, 조회 시각과 결과를 남겨 재현할 수 있게 한다.
+3. **가설 분리:** 사용량 증가, 단가 변화와 할인 재배분을 구분한다. 로그가 없거나 리소스 연결이 불완전하면 미확인으로 남긴다.
+4. **조치 검토:** 삭제, 축소와 약정 구매를 조사 도구에 한꺼번에 위임하지 않는다. 서비스 소유자, 피크 부하와 복구 방법을 확인한 뒤 승인된 경로로 실행한다.
+
+분석 시간 단축, 예상 절감액과 실제 청구 절감은 별도 지표다. 쿼리 비용, 에이전트 비용과 사람의 검토 시간을 포함해 비교한다. AWS의 조사 기능 자체 요금과 별개로 CloudWatch Logs Insights 같은 하위 서비스 사용료가 발생할 수 있다.
+
 ## 운영 팁
 
 - **태그 기반 Monitor**로 팀/서비스별 책임 소재를 명확히. [[AWS-Cost-Optimization|태그 정책]]
@@ -65,6 +78,9 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 
 ## 출처
 
+2026-10-07에는 탐지 지연과 근본 원인 분해, Amazon Q Developer의 비용 조사 범위를 대조했다. 위 조사 절차는 이를 적용한 설계 제안이다.
+
+- [AWS Cost Management, Investigating anomaly root causes with Amazon Q Developer](https://docs.aws.amazon.com/cost-management/latest/userguide/investigating-ad.html)
 - [AWS Cost Management, Getting started with AWS Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/getting-started-ad.html)
 - [AWS Cost Management, Detecting unusual spend with AWS Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html)
 - [AWS Cost Management, Using AWS User Notifications with Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/cad-user-notifications.html)
@@ -75,3 +91,4 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 - [[AWS-Cost-Optimization|AWS 비용 최적화 (가시화 도구)]]
 - [[Egress-Cost|데이터 전송 비용 (폭증 원인)]]
 - [[Alert-Fatigue|Alert fatigue (알림 임계)]]
+- [[AI-Workflow-Knowledge-Loop|AI 업무와 지식 환류]] — 조사 결과와 현재 환경의 구분
