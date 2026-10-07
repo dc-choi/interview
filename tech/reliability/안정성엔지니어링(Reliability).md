@@ -12,6 +12,7 @@ aliases: ["안정성엔지니어링(Reliability)", "Reliability Engineering"]
 - [[Large-Scale-Traffic-Experience#사례 (참고)|레거시 인프라 3종 장애]] — Fleet 오케스트레이션 붕괴, MongoDB 2.6 포화, Redis Codis BGSAVE 유실
 
 ## Checklist
+- [x] [[Retry-Backoff-Jitter#재시도 예산과 최초 요청의 속도 제한|SDK 재시도 예산과 속도 제한]] — standard의 retry quota, adaptive의 client 공유 영향과 과부하 회복 시험
 - [x] [[Trading-API-Execution-Safety|증권 API 주문 실행 경계]] — 주문 멱등성의 유효기간, 접수와 체결, 응답 유실과 대사
 - [x] [[Cell-Based-Failure-Isolation|셀 기반 장애 격리]] — 데이터 지역성, 얇은 라우터, 재시작과 외부 효과의 경계
 - [x] [[SRE|SRE (규모와 신뢰성의 난제, 비상 대응 체계, 위험 탐지 지표, 시간 압축, 도메인 전문성)]]

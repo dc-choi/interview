@@ -40,9 +40,24 @@ sleep = min(cap, base * 2 ** attempt)
 - **멱등한 요청에만**: 타임아웃이나 실패가 부수효과가 없었다는 뜻이 아니다. 부수효과 있는 API는 멱등성 보장 없이 재시도하면 안전하지 않다 ([[Idempotency|멱등성]]).
 - **상태 코드만으로 재시도 여부를 뭉뚱그리지 않는다**: 검증 실패, 권한 거부처럼 결정적인 4xx는 반복해도 성공하지 않는다. 반면 408, 다른 connection에서 시도할 수 있는 421, 425, 429, 충돌 회복이 가능한 일부 409, eventual consistency 구간의 404는 API 계약에 따라 재시도 대상이 될 수 있다. 401도 자격증명 refresh가 가능한 경우에 한해 refresh 후 한 번 다시 시도할 수 있다. `Retry-After`가 있으면 우선하고, 멱등성과 호출 예산을 별도로 확인한다.
 - **단일 계층에서만 재시도**: 5층 스택이 층마다 최초 요청을 포함해 총 3회 시도하면 최하단 DB에는 최대 3의 5제곱, 243배 호출이 도달한다. 최초 요청 뒤 재시도를 3회 더 한다면 층별 시도는 4회다. SDK의 내장 재시도도 확인해 스택의 한 지점에서 전체 호출 예산을 소유하게 한다.
-- **토큰 버킷 재시도 예산**: 단일 계층 재시도라도 오류가 시작되면 트래픽이 크게 는다. 서킷 브레이커는 이를 통째로 끊지만 모달(modal) 동작이 생겨 테스트가 어렵고 회복 시간을 늘릴 수 있다. 토큰 버킷으로 재시도율을 로컬에서 제한하면 토큰이 있는 동안은 전부 재시도하고, 소진되면 고정 비율로만 재시도한다. AWS는 2016년 AWS SDK에 이 동작을 추가했다.
+- **토큰 버킷 재시도 예산**: 단일 계층 재시도라도 오류가 시작되면 트래픽이 크게 는다. 서킷 브레이커는 이를 통째로 끊지만 모달(modal) 동작이 생겨 테스트가 어렵고 회복 시간을 늘릴 수 있다. 토큰 버킷은 재시도 예산을 로컬에서 제한한다. 토큰 보충 방식과 소진 후 동작은 구현별로 확인한다. 아래 AWS SDK의 `standard` retry quota는 토큰이 부족하면 재시도하지 않고 오류를 반환한다.
 - **성공 가능성과 예산이 있을 때만**: 재시도가 가용성을 개선하지 못하거나 다운스트림 과부하를 키우면 멈춘다. 429나 일시적인 과부하는 `Retry-After`, backoff, jitter와 재시도 예산 안에서만 다룬다.
 - **전체 deadline 안에서만**: 각 시도의 timeout뿐 아니라 대기, 연결과 모든 재시도를 합친 총 시간을 제한한다. `Retry-After`가 남은 예산보다 길면 그 요청을 계속 붙잡지 않는다. 호출자가 취소한 뒤 재시도 작업이 남지 않도록 취소 전파도 확인한다.
+
+## 재시도 예산과 최초 요청의 속도 제한
+
+지터는 재시도 시점을 흩지만 허용한 총 시도 횟수를 줄이는 장치는 아니다. 백오프와 지터만 설정해도 과부하에서 회복한다고 가정하지 않고, 재시도 예산과 새 요청의 유입을 함께 본다.
+
+2026-10-07 AWS SDK 공통 문서 기준으로 `standard`도 토큰 버킷 기반 retry quota를 사용한다. 토큰 버킷이 있다는 이유만으로 `adaptive` 모드라고 부르면 안 된다.
+
+| 제어 | 제한하는 대상 | 주의점 |
+|---|---|---|
+| Retry quota (`standard`, `adaptive`) | 실패한 요청의 재시도 | 토큰이 소진되면 재시도하지 않고 오류를 반환하며 최초 요청은 이 quota로 막지 않음 |
+| Adaptive rate limiter | 같은 SDK client의 최초 요청과 재시도 | 한 리소스의 throttling이 같은 client를 쓰는 다른 리소스 요청까지 늦출 수 있음 |
+
+현재 공통 문서는 `AWS_NEW_RETRIES_2026=true`로 선택하는 새 동작을 설명한다. 기존 배포의 기본 횟수나 대기 시간을 이 문서의 값으로 추정하지 않고 SDK 버전과 활성 설정을 확인한다. `max attempts`는 최초 요청을 포함한 횟수이므로 3이면 재시도는 최대 2회다. SDK 내장 재시도와 애플리케이션 재시도가 겹치는지도 확인한다.
+
+운영 시험에서는 스파이크를 끝낸 뒤 정상 유입량으로 돌아왔을 때 성공 처리량과 큐 길이가 회복하는지 확인한다. 실패한 요청마다 재시도를 늘리는 정책은 회복에 필요한 여유를 소모할 수 있으므로, 요청별 횟수뿐 아니라 전체 재시도량과 남은 deadline도 제한한다.
 
 ## 지터는 재시도 전용이 아니다
 
@@ -66,6 +81,7 @@ sleep = min(cap, base * 2 ** attempt)
 2026-10-02에는 AWS의 재시도 횟수, 계층 증폭과 전체 시간 제한 원칙을 대조했다. 지터 비교 표의 실험 결과나 모든 HTTP 클라이언트를 다시 검증한 기록은 아니다.
 
 - [AWS Well-Architected, REL05-BP03 Control and limit retry calls](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_mitigate_interaction_failure_limit_retries.html)
+- [AWS SDKs and Tools, Retry behavior](https://docs.aws.amazon.com/sdkref/latest/guide/feature-retry-behavior.html) — retry quota와 adaptive rate limiter의 구분, 2026 동작 선택 조건
 - [Exponential Backoff and Jitter — AWS Architecture Blog, Marc Brooker](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/)
 - [Timeouts, retries, and backoff with jitter — Amazon Builders' Library, Marc Brooker](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/)
 - [RFC 9110, 408 Request Timeout and Retry-After](https://www.rfc-editor.org/rfc/rfc9110)

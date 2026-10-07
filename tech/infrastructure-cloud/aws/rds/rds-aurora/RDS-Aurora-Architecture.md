@@ -68,6 +68,23 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 | **Database Cloning** | 운영 DB의 특정 시점을 빠르게 복제 DB로. 전체 물리 복사 대신 **스토리지 페이지 공유(copy-on-write)** 라 빠르고 저렴 |
 | **Aurora PostgreSQL Limitless Database** | router와 shard로 구성된 DB shard group에서 sharded table을 수평 확장. AWS가 제시하는 petabyte, 대규모 write 처리 목표와 별개로 지원 SQL, shard key, isolation level, Region과 용량 제한을 검증 |
 
+## Global Database의 대기 구성과 전환 준비
+
+2026-10-07 공식 DR 및 연결 문서로 대조한 범위다. 스토리지가 복제되고 있다는 사실과 애플리케이션이 새 리전에서 요청을 처리할 준비가 됐다는 사실은 구분한다.
+
+| 대기 구성 | 전환 전에 필요한 작업 | 선택의 비용 |
+|---|---|---|
+| Headless secondary | DB 인스턴스를 추가한 뒤 switchover 또는 failover 수행 | 대기 컴퓨트 비용을 줄이지만 인스턴스 준비 시간이 복구 경로에 추가됨 |
+| DB 인스턴스가 있는 secondary | 승격할 인스턴스와 애플리케이션의 처리 용량 확인 | 대기 비용이 들지만 장애 때 새 DB 인스턴스를 만드는 단계를 줄임 |
+
+계획된 **switchover**는 정상인 클러스터를 동기화한 뒤 역할을 바꾸므로 RPO 0을 제공한다. 비계획 **failover**는 미복제 트랜잭션을 잃을 수 있다. 관리형 전환의 엔진 버전 호환성, 대상 리전의 parameter group, 모니터링과 외부 서비스 연동을 미리 확인한다. 발표나 데모의 복구 시간을 서비스 전체 RTO의 보장값으로 사용하지 않는다.
+
+**Global writer endpoint**는 관리형 switchover 또는 failover 뒤 새 primary의 writer를 가리키도록 갱신된다. 애플리케이션의 연결 주소 변경을 줄이는 기능이며 DNS 전파, 새 primary까지의 네트워크 경로와 실제 쓰기 성공은 별도로 확인한다. RDS Proxy를 쓰는 경로는 새 primary에 연결된 proxy의 read/write endpoint로 전환하는 절차가 필요하다.
+
+관리형 failover의 이전 primary 쓰기 차단(write fencing)은 최선 노력 방식이다. 이전 리전이 일시적으로 쓰기를 계속 받는 split-brain 가능성은 global writer endpoint를 써도 남는다. 전환 절차에는 애플리케이션 쓰기를 멈추고, DNS 변경 반영과 새 primary의 쓰기 성공을 확인한 뒤 재개하는 단계를 포함한다.
+
+다음은 복구 훈련의 완료 기준 예다. DB 승격 완료 후 새 연결의 쓰기와 읽기를 확인하고, 누락된 트랜잭션 및 외부 처리 결과를 대사한다. 정상화된 이전 리전의 복제 상태까지 확인해야 다음 장애에 대비한 구성이 복구됐다고 판단할 수 있다.
+
 ## 언제 RDS 대신 Aurora를 고르나
 
 - 읽기 트래픽이 많고 Lag에 민감한 서비스
@@ -77,6 +94,8 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 
 ## 출처
 
+- [Amazon Aurora User Guide, Using switchover or failover in Amazon Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html)
+- [Amazon Aurora User Guide, Connecting to Amazon Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-connecting.html)
 - [Aurora Reader Endpoint](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Reader.html)
 - [Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html)
 - [Aurora Global Database write forwarding](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-write-forwarding.html)

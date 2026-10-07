@@ -18,6 +18,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[RDS-Aurora-Architecture#Global Database의 대기 구성과 전환 준비|Aurora 글로벌 복구 준비]] — headless의 컴퓨트 준비, switchover와 failover, global writer와 proxy 전환
 - [x] [[EKS-Hybrid-Nodes|EKS Hybrid Nodes]] — 에어갭과의 구분, CIDR와 CNI, 등록 진단과 연결 단절 시험
 - [x] [[AWS-Organizations#SCP, RCP와 선언적 정책의 경계|Organizations 정책 경계]] — 권한 부여와 상한, 외부 주체와 관리 계정 예외
 - [x] [[Cloud-Migration-Strategies#AI가 만든 이전 계획의 검증 경계|AI 이전 계획 검증]] — 의존성, move group과 wave, 테스트와 cutover 분리
