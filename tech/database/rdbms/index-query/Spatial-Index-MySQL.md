@@ -99,9 +99,26 @@ R-Tree 인덱스는 **MBR(Minimum Bounding Rectangle)** 단위로 후보를 빠�
 - 각 배송 영역이 **자신이 포함하는 육각형 ID 집합**을 보유 (H3 압축으로 메모리 효율화)
 - 좌표 입력 → 14레벨 육각형 ID 변환 → 어느 영역에 속하는지 O(1) 가까이 판별
 
-H3가 S2(구글) 대비 우위인 이유: 육각형은 인접 셀과의 거리가 균일해 왜곡이 적음. 사각형 격자는 대각선 인접 셀과 직각 인접 셀의 거리가 다름.
+평면 정육각형은 이웃 방향별 중심 거리가 같다는 장점이 있지만, 실제 H3에서는 구면 투영에 따른 크기와 거리 차이가 있다. 이 성질 하나로 H3가 S2보다 모든 공간 질의에서 우수하다고 판단하지 않는다.
 
 이 방식은 **MySQL의 SPATIAL INDEX 대신 격자 ID 기반 정수 인덱스**로 검색을 단순화한 사례. 공간 색인을 직접 쓰지 않고도 공간 검색의 본질(영역 분할 + 빠른 조회)을 달성.
+
+## H3 영역 조회: 압축과 경계 정확도
+
+2026-10-08 H3 4.x 공식 문서 기준이다. 위치 이력과 영역의 관계를 미리 전부 저장하는 대신, 위치의 셀 ID와 영역의 셀 집합을 따로 저장하고 조회 시 결합할 수 있다. 영역이 바뀔 때 사용자별 매핑 전체를 다시 쓰는 부담은 줄지만, 셀 집합 갱신과 조회 비용은 남는다.
+
+**압축 전후 같은 논리적 셀 집합을 조회하는 설계 예시**는 다음과 같다.
+
+1. 위치와 영역에 공통 기준 해상도 R을 정한다. 영역을 R의 셀 집합으로 만들고 중복을 제거한다.
+2. `compactCells`로 완성된 자식 묶음을 부모로 줄인다. 결과에는 서로 다른 해상도가 섞일 수 있다.
+3. 위치를 R의 셀로 저장한다. 조회할 때 자기 셀과 압축 결과에 나타날 수 있는 해상도의 모든 조상 ID를 구해 중복을 제거한다.
+4. `(cell_id, area_id)` 등의 인덱스로 영역을 찾고 area ID를 중복 제거한다. B-Tree 조회 비용을 해시 집합의 평균 O(1)과 혼동하지 않는다. 조회 셀 수와 매칭 행 수가 비용에 영향을 준다.
+
+압축된 셀을 R로 `uncompactCells`하면 원래 집합으로 돌아갈 수 있다. 하지만 **논리적 포함은 정확해도 지리적 포함은 근사**다. 부모 다각형과 자식 다각형의 합집합은 일치하지 않으며, 높은 해상도의 셀에서 부모를 구한 값과 좌표를 낮은 해상도로 직접 변환한 값이 경계에서 달라질 수 있다. 영역마다 다른 기준 해상도를 쓴다면 이 차이를 별도로 검증한다.
+
+`polygonToCells`는 셀 중심이 다각형 안에 있는지를 기준으로 셀을 선택한다. 따라서 다각형에 걸치는 모든 셀을 반환하는 함수로 취급하면 경계 후보를 놓칠 수 있다. 겹침 기준이 필요하면 사용 중인 바인딩의 실험적 `polygonToCellsExperimental`과 containment mode 지원을 확인한다. 정확한 영역 판정에는 원래 다각형과 좌표를 남기고, 누락 없는 후보 조회 뒤 `ST_Contains`나 `ST_Intersects` 등 업무 경계 규칙에 맞는 함수로 재검사한다.
+
+해상도는 허용 오차와 셀 수를 함께 보고 정한다. 최종 압축 결과뿐 아니라 압축 전 생성량에도 상한을 둬야 큰 영역의 메모리 폭증을 막는다. 같은 폴리곤에 대해 경계 안팎의 점, 구멍과 작은 영역을 검사하고, 압축 전후 ID 매칭 결과가 같은지도 확인한다. 정확한 재검사가 필요하면 셀 ID만 저장해서는 부족하다.
 
 ## 면접 체크포인트
 
@@ -112,6 +129,11 @@ H3가 S2(구글) 대비 우위인 이유: 육각형은 인접 셀과의 거리�
 - "근처 N km 가게" 쿼리를 어떻게 작성할지
 
 ## 출처
+- [H3, Region functions](https://h3geo.org/docs/api/regions/)
+- [H3, Indexing](https://h3geo.org/docs/highlights/indexing/)
+- [H3, Hierarchical grid functions](https://h3geo.org/docs/api/hierarchy/)
+- [H3, Overview of the H3 Geospatial Indexing System](https://h3geo.org/docs/core-library/overview/)
+- [H3로 실시간 공간 타겟팅하기 — 당근 팀](https://www.youtube.com/watch?v=bNw33qn__Jk)
 - [MySQL 8.0 — Geometry Property Functions](https://dev.mysql.com/doc/refman/8.0/en/gis-property-functions.html)
 - [MySQL 8.0 — Point Property Functions](https://dev.mysql.com/doc/refman/8.0/en/gis-point-property-functions.html)
 - [MySQL 8.0 — Polygon and MultiPolygon Property Functions](https://dev.mysql.com/doc/refman/8.0/en/gis-polygon-property-functions.html)

@@ -73,6 +73,26 @@ private registry는 코드와 실행 환경이 이미 속한 권한 체계를 �
 
 현재 공식 GitHub 예시는 checkout, Docker login/metadata/build-push action과 artifact attestation을 조합한다. action major version을 문서에 영구 고정하기보다 공식 예시와 release note를 확인하고 조직 정책에 승인된 SHA를 사용한다.
 
+## CI 캐시와 이미지 저장소의 비용 분리
+
+2026-10-08 Docker 공식 문서 기준이다. 빌드 캐시 적중과 전체 CI 시간은 다른 지표다. 캐시를 가져오고 결과를 내보내는 비용까지 재면, 재계산을 줄였어도 작은 빌드는 느려질 수 있다.
+
+- **캐시의 소유자**: 내부 캐시는 BuildKit 인스턴스에 속한다. 임시 builder를 매번 만들면 이전 내부 캐시를 그대로 공유하지 못하므로, 유지되는 builder나 `--cache-from`/`--cache-to`로 가져오고 내보내는 외부 캐시를 검토한다.
+- **레이어 재사용**: 자주 바뀌지 않는 의존성 설치를 소스 복사보다 앞에 둔다. 캐시 데이터가 존재해도 명령과 입력이 달라지면 해당 레이어를 다시 빌드한다. 캐시 볼륨 연결 성공률을 레이어 적중률로 계산하지 않는다.
+- **전송과 재계산의 교환**: `mode=min`은 최종 이미지에 포함되는 레이어를, `mode=max`는 중간 단계까지 내보낸다. `inline` 캐시는 `mode=max`를 지원하지 않는다. 더 넓은 캐시가 적중 기회를 늘려도 저장과 전송 비용이 커질 수 있으므로 총 소요시간으로 선택한다.
+- **동시 빌드**: 캐시 export 위치를 공유하면 이전 데이터가 덮어써질 수 있다. branch별로 쓰기 위치를 나누고 현재 branch와 main 캐시를 함께 읽는 방식이 가능하다. 외부 PR과 release의 신뢰 경계는 그대로 유지한다.
+
+빌드 시간이 일괄 증가하면 캐시 miss뿐 아니라 **실제 image store와 출력 단계**를 확인한다. Docker Engine 29.0 이상은 새 설치에서 containerd image store가 기본이지만, 이전 버전에서 업그레이드한 daemon은 명시적으로 전환하기 전까지 기존 graph driver를 유지한다. `userns-remap` 구성은 containerd image store를 지원하지 않는 예외다.
+
+containerd image store는 압축된 이미지와 압축을 푼 레이어를 함께 저장한다. 따라서 버전 번호가 같아도 기존 데이터가 있는 runner와 새 runner의 저장 방식, 디스크 사용량이 다를 수 있다. Docker data directory를 따로 지정했더라도 containerd의 저장 경로는 별도로 확인한다. 특정 환경의 `unpacking` 지연을 모든 containerd 빌드의 성능 저하로 일반화하지 않는다.
+
+운영 비교는 다음처럼 나눈다.
+
+1. 동일 입력에서 cold/warm cache, 기존/신규 runner를 각각 비교한다.
+2. 대기, builder 준비, cache import, 실제 build, image export/load, registry push 시간을 분리한다.
+3. 평균만 보지 않고 중앙값과 상위 지연, 읽기/쓰기 byte, cache import/export 크기도 비교한다.
+4. 저장 방식 전환은 기능과 호환성을 확인한 뒤 판단한다. graph driver로의 복귀를 일반 최적화로 권하지 않는다. 전환 뒤 이전 이미지가 안 보이더라도 삭제된 것으로 단정하지 않는다.
+
 ## 작은 서비스의 SSH + Compose 배포
 
 GitHub Actions에서 SSH로 운영 서버에 접속하여 배포를 실행한다.
@@ -97,6 +117,10 @@ Q. Docker 이미지 배포 파이프라인은 어떻게 구성했는가?
 
 ## 출처
 
+- [Docker Docs, Optimize cache usage in builds](https://docs.docker.com/build/cache/optimize/)
+- [Docker Docs, Cache storage backends](https://docs.docker.com/build/cache/backends/)
+- [Docker Docs, containerd image store with Docker Engine](https://docs.docker.com/engine/storage/containerd/)
+- [궁극의 CI 환경을 위한 여정 2: 캐시 히트율 100%에 도전하다 — 당근 팀](https://www.youtube.com/watch?v=PTEZnscaSwE)
 - [GitHub Docs, publishing Docker images](https://docs.github.com/en/actions/tutorials/publish-packages/publish-docker-images)
 - [GitHub Docs, Container registry 인증](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
 - [GitHub Docs, Action SHA pinning policy](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository)
