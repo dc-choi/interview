@@ -1,13 +1,14 @@
 ---
 tags: [cicd, devops, devsecops, security, automation, iac]
 status: done
+verified_at: 2026-10-07
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["DevOps vs DevSecOps", "데브옵스 vs 데브섹옵스", "보안을 왼쪽으로"]
 ---
 
 # DevOps vs DevSecOps
 
-DevOps가 개발과 운영을 통합했다면, DevSecOps는 **보안(Security)을 양쪽에 처음부터 통합**한다. 핵심은 "보안을 파이프라인 왼쪽으로 (Shift Left)" — 배포 직전이 아니라 **설계, 코드, CI 단계부터** 보안을 검증. 개발 속도와 보안 중 하나를 택하는 것이 아니라 **자동화로 두 가지를 모두 얻는다**.
+DevOps가 개발과 운영의 협업을 강조한다면, DevSecOps는 **보안(Security)을 개발과 운영 전 과정에 통합**하는 데 초점을 둔다. **Shift Left**는 배포 직전까지 기다리지 않고 설계, 코드와 CI 단계부터 보안을 검증하는 접근이다. 자동화와 빠른 피드백은 재작업을 줄일 수 있지만 도구 도입만으로 속도와 보안이 함께 개선되지는 않는다.
 
 ## 핵심 명제
 
@@ -24,9 +25,9 @@ DevOps가 개발과 운영을 통합했다면, DevSecOps는 **보안(Security)�
 | DevOps | DevSecOps |
 |---|---|
 | 개발 속도, 협업 중심 | **보안을 처음부터 염두** |
-| 별도 보안팀이 사후 점검 | 보안 전문가가 파이프라인에 상주 |
-| 배포 말기에 보안 리뷰 | CI 단계에서 SAST, 의존성 스캔 |
-| 미발견 취약점이 프로덕션까지 | **왼쪽 이동(Shift Left)** 으로 조기 차단 |
+| 보안 협업의 방식은 조직마다 다름 | 보안 전문가와 개발자가 기준과 대응 책임을 공유 |
+| 보안 검증 시점은 구현에 따라 다름 | CI 단계부터 SAST와 의존성 스캔 연결 |
+| 도구와 검사 범위에 따라 탐지 공백 존재 | **왼쪽 이동(Shift Left)** 으로 조기 발견 기회 확대 |
 
 ### 2. 협업 (Collaboration)
 
@@ -37,7 +38,7 @@ DevOps가 개발과 운영을 통합했다면, DevSecOps는 **보안(Security)�
 
 ### 3. 자동화 (Automation)
 
-- "보안을 파이프라인 앞으로 당기는 가장 큰 이득은 **자동화**"
+- 보안 검사를 초기 단계에 **자동화**해 피드백을 앞당긴다
 - **SAST** (Static Application Security Testing) — 코드 정적 분석
 - **DAST** (Dynamic Application Security Testing) — 실행 중 앱 검증
 - **SCA** (Software Composition Analysis) — 오픈소스 의존성 취약점
@@ -47,7 +48,7 @@ DevOps가 개발과 운영을 통합했다면, DevSecOps는 **보안(Security)�
 
 ### 4. 협업, 커뮤니케이션 단절
 
-- DevOps와 보안은 **상충 사고방식** — 속도 vs 엄격성
+- 개발 속도와 보안 검토 기준을 합의하지 않으면 팀 사이에 갈등이 생길 수 있다
 - 팀 간 물리적, 조직적 거리로 갈등 발생
 - DevSecOps는 **조기 발견**으로 비용 효율 확보
 - 성공 열쇠: **교육 과정**으로 팀 구성원이 서로의 언어를 이해하게
@@ -110,7 +111,7 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 
 - **일관된 기준** — 사람마다 다르지 않음
 - **빠른 피드백** — 개발자가 PR 시점에 문제 파악
-- **누락 없음** — 점검 체크리스트 자동화
+- **반복 점검 누락 감소** — 정해진 체크리스트 자동화, 검사 범위 밖 위험은 남음
 - **인프라 유지 비용 절감**
 
 ### 위험
@@ -120,7 +121,18 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 - **Rule 의존** — 룰에 없는 새 취약점은 자동 탐지 불가
 - **IaC, Policy as Code 자체의 보안 취약점**
 
-대응: 정기적 룰 튜닝, False Positive 억제, 보안 전문가의 **최종 검증**.
+대응: 정기적 룰 튜닝, 근거를 검토한 False Positive 억제, 보안 전문가의 **최종 검증**. SAST는 핵심 규칙부터 점진적으로 적용하고 탐지 결과를 확인하며 민감도를 조정한다. 예외의 사유와 만료 관리 기준은 [[Dependency-Vulnerability-Scanning#트리아지 절차|의존성 취약점 트리아지]]를 따른다.
+
+### 스캔 성공과 배포 허용은 다르다
+
+2026-10-07에 확인한 Amazon Inspector 공식 문서와 GitHub Action을 기준으로, 자산 목록 생성, 취약점 탐지와 배포 판정을 나누어 본다.
+
+- **입력과 탐지:** Sbomgen으로 컨테이너 이미지의 SBOM을 만들고 Scan API로 취약점 보고서를 받는다. SBOM 생성 성공만으로 취약점 평가가 끝난 것은 아니다.
+- **정책과 출력:** GitHub Action의 `critical_threshold: 1`은 critical 취약점이 하나 이상이면 `vulnerability_threshold_exceeded`를 `1`로 만든다. 해당 심각도의 임계값 `0`은 그 심각도의 임계값 판정을 비활성화하는 값이며, 취약점 0개만 허용한다는 뜻이 아니다.
+- **배포 차단:** 위 출력은 판정 신호다. 공식 예제처럼 별도 단계가 이 값을 실패 종료 코드로 연결해야 해당 조건으로 작업을 막는다. 보고서 출력만 추가한 파이프라인을 차단 관문으로 간주하지 않는다.
+- **운영 점검 제안:** 스캔 오류, 일부만 검사한 결과나 필수 출력 누락은 취약점 0개와 구분한다. 같은 배포 산출물을 검사했는지와 실패한 검사 뒤 배포가 진행되지 않는지를 확인한다.
+
+예외 등록으로 경고 수만 줄어든 것과 취약점을 수정한 것은 다른 결과다. 관문 도입 효과를 볼 때는 확인된 취약점의 수정 시간, 검토에 든 시간과 배포 후 발견 건수를 함께 본다. 특정 고객 사례의 비용 절감률을 다른 조직의 예상 효과로 적용하지 않는다.
 
 ## 조직적 접근
 
@@ -149,11 +161,11 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 
 ## 한계와 오해
 
-- **"DevSecOps = 도구 도입"** — 도구는 수단. 문화, 프로세스, 교육이 본질
-- **"보안은 개발자 책임만"** — 조직, 리더십, 보안 전문가 협업
-- **"100% 자동화 가능"** — 페넷트레이션 테스트, 위협 모델링 같은 수동 활동 필수
-- **"속도와 보안은 트레이드오프"** — Shift Left로 **둘 다 개선 가능**
-- **"DevSecOps가 DevOps를 대체"** — 확장 개념. 기본 DevOps 위에 보안 추가
+- **도구 도입만으로 완성되지 않는다** — 문화, 프로세스와 교육도 필요하다
+- **개발자에게만 책임을 두지 않는다** — 조직, 리더십과 보안 전문가가 협업한다
+- **모든 보안 검토를 자동화할 수는 없다** — 침투 테스트와 위협 모델링에는 사람의 판단이 필요하다
+- **속도와 보안을 함께 개선할 수 있다** — 검사 비용과 재작업 감소를 실제로 측정한다
+- **DevOps를 대체하는 개념은 아니다** — 기존 협업 과정에 보안을 통합한다
 
 ## 면접 체크포인트
 
@@ -165,6 +177,9 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 - Policy as Code가 주는 이점과 주의
 
 ## 출처
+- [AWS DevOps Guidance, Enhance source code security with static application security testing](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/qa.st.4-enhance-source-code-security-with-static-application-security-testing.html)
+- [Amazon Inspector, Creating a custom CI/CD pipeline integration with Amazon Inspector Scan](https://docs.aws.amazon.com/inspector/latest/user/cicd-custom.html)
+- [Vulnerability Scan GitHub Action for Amazon Inspector — AWS](https://github.com/aws-actions/vulnerability-scan-github-action-for-amazon-inspector)
 - [요즘IT — 데브옵스 vs 데브섹옵스](https://yozm.wishket.com/magazine/detail/1553/) — 문서의 뼈대. 다만 이 기사에 100배 수치는 없고, 운영 환경에서 발견된 결함은 수정 비용이 크다는 서술만 있다
 - [The Register (2021-07-22) — Everyone cites that 'bugs are 100x more expensive to fix in production' research, but the study might not even exist](https://www.theregister.com/2021/07/22/bugs_expense_bs/) — Laurent Bossavit, Hillel Wayne의 추적. IBM Systems Sciences Institute는 사내 교육 프로그램이었고 차트를 뒷받침하는 데이터가 확인되지 않는다
 - [Netsparker is now Invicti — Invicti](https://www.invicti.com/blog/news/netsparker-is-now-invicti-signaling-a-new-era-for-modern-appsec/)
