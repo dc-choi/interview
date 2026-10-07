@@ -66,6 +66,20 @@ B2B 인프라 시장은 다른 기업의 생산, 거래, 위험 관리를 가능
 - **물가 연동의 틈**: 연동 지수와 실제 비용 구조가 다르거나 인상 상한이 있으면 인플레이션을 다 넘기지 못한다.
 - **수요 구조 변화**: 기술 대체나 산업 이전으로 수십 년 계약의 전제가 흔들릴 수 있다.
 
+### 데이터센터: 투자액과 지역 고용을 나눠 보기
+
+인프라의 투자 규모, 건설 중 일자리, 가동 후 일자리는 서로 다른 지표다. 건설 정점의 현장 인원을 장기 운영 인원으로 해석하거나, 운영 인원이 적다는 이유만으로 지역 경제 효과 전체를 없다고 판단하지 않는다.
+
+미국 버지니아주 JLARC의 2024년 조사에 담긴 업계 관계자 설명에서는 일반적인 25만 제곱피트 데이터센터에 약 50명의 상근 인력이 있고, 약 절반은 계약업체 인력이었다. 건물 하나의 건설은 통상 12~18개월이며 정점에는 약 1,500명이 현장에서 일할 수 있었다. 이는 특정 지역과 시설 규모의 사례이지 한국 AI 데이터센터의 고용 예측 계수가 아니다.
+
+지역 파급효과를 검토할 때는 다음을 구분한다.
+
+- **고용 기간과 범위**: 건설 정점 인원과 운영 상근 인원을 따로 적고, 직접 고용과 계약업체 인력을 구분한다.
+- **지역에 남는 수익**: 건설 자재와 서비스의 지역 조달, 지방세 수입을 확인한다. 세제 감면은 유치 효과와 함께 실제 세수 감소도 비교한다.
+- **전력 수요의 하방 위험**: 예상 수요에 맞춰 발전과 송전 설비를 늘렸는데 수요가 실현되지 않으면 회수하지 못한 비용이 남을 수 있다. 비용을 누가 부담하는지 함께 확인한다.
+
+2026-10-07에는 이 절만 JLARC 보고서와 대조했다. 다른 시장 설명과 국내 정책, 특정 기업의 투자 동기는 이번 검증 범위에 포함하지 않았다.
+
 ## 6. 적용 점검
 
 - [ ] 수요가 규제, 물리적 필요, 위험 이전 중 어디서 오는가
@@ -85,8 +99,7 @@ B2B 인프라 시장은 다른 기업의 생산, 거래, 위험 관리를 가능
 - [GOV.UK, Electricity Market Reform: Capacity Market](https://www.gov.uk/government/collections/electricity-market-reform-capacity-market)
 - [Linde plc, 2024 Annual Report](https://assets.linde.com/-/media/global/corporate/corporate/documents/investors/full-year-financial-reports/2024-annual-report-to-shareholders.pdf)
 - [OECD, Institutional Investors and Infrastructure Financing (2013)](https://www.oecd.org/content/dam/oecd/en/publications/reports/2013/11/institutional-investors-and-infrastructure-financing_g17a2399/5k3wh99xgc33-en.pdf)
-- [세계 경제를 움직이는 보이지 않는 시장 — Threads, binx_lab](https://www.threads.com/@binx_lab/post/DaklkAhmFmI)
-- [큰 자본이 투자하는 지루한 사업 — Threads, binx_lab](https://www.threads.com/@binx_lab/post/DZpCa36mJuY)
+- [JLARC — Data Centers in Virginia (2024)](https://jlarc.virginia.gov/landing-2024-data-centers-in-virginia.asp)
 
 ## 관련 문서
 
