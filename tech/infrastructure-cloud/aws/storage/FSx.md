@@ -43,7 +43,7 @@ verified_at: 2026-09-03
 - 스토리지 클래스와 구성에 따라 최대 **수 TB/s 처리량**, 수백만 IOPS와 밀리초 미만 지연시간 제공
 - **S3 통합**이 강점 — S3 버킷을 Lustre 파일 시스템으로 마운트
   - S3 데이터셋을 FSx에 연결해 **분석 실행** → 결과를 다시 S3로 기록 → 파일 시스템 삭제 가능
-  - "Lazy load" 방식 — 처음 접근 시 S3에서 캐싱
+  - Lazy load 방식 — 처음 접근 시 S3에서 캐싱
 - 배포 옵션
   - **Scratch File System** — 임시, 고성능, 복제 없음. 단기 처리에 저렴
   - **Persistent File System** — 장기 보관, 복제 있음, 고가용성 워크로드
@@ -57,6 +57,17 @@ verified_at: 2026-09-03
 - 온프레미스 NetApp 환경을 **그대로 AWS로 이전**하는 시나리오에 적합
 - 자동 계층화 — 자주 안 쓰는 데이터를 저비용 용량 풀로 이동
 - 대표 사용 사례 — 엔터프라이즈 NAS 마이그레이션, 멀티 OS 환경 공유 스토리지
+
+### S3 access point로 파일 데이터에 접근하기
+
+2026-10-07 공식 문서 기준, ONTAP 볼륨에 S3 access point를 연결하면 파일을 S3 버킷으로 복사하지 않고 `GetObject`, `PutObject`, `ListObjectsV2`로 접근할 수 있다. 데이터는 FSx에 남으며 NFS와 SMB 접근도 유지된다.
+
+- **인가를 두 번 확인한다.** S3의 IAM 정책 평가를 통과한 뒤 access point에 연결한 UNIX 또는 Windows 사용자의 파일 권한을 검사한다. 같은 access point를 통한 요청은 이 파일 시스템 사용자의 권한으로 처리된다.
+- Access point 정책의 제한은 그 경로에만 적용된다. 직접 NFS나 SMB로 접근하는 경로의 권한까지 바꾸지는 않는다.
+- S3 API를 지원해도 일반 S3 버킷의 모든 기능이 제공되는 것은 아니다. Object Versioning, Object Lock, Object Lifecycle과 conditional writes는 지원하지 않는다. 연동 서비스가 요구하는 API를 호환성 표와 대조한다.
+- 읽기와 쓰기는 원래 볼륨에 대한 작업이다. 분석용 연결이라면 IAM과 파일 권한 모두 읽기 범위로 제한하고, 기존 클라이언트의 쓰기와 충돌할 조건을 확인한다.
+
+파일 복제 부담을 줄이는 선택지이며, S3 버킷 이전이나 별도 백업을 수행한 것으로 해석하지 않는다. 이 절만 추가 대조했으며 다른 FSx 엔진의 기능과 한도는 다시 검증하지 않았다.
 
 ## FSx for OpenZFS
 
@@ -92,8 +103,8 @@ verified_at: 2026-09-03
 - **Linux + Windows 혼합 + 멀티프로토콜(NFS, SMB, iSCSI)** → **FSx for NetApp ONTAP**
 - **온프레미스 NetApp 환경 마이그레이션** → **FSx for ONTAP**
 - **ZFS 스냅샷, 데이터 클론 + 저지연 NFS** → **FSx for OpenZFS**
-- "공유 NFS + Linux 전용 + 자동 확장" → **EFS** (FSx 아님)
-- "Windows SMB" 키워드가 보이면 **EFS가 아니라 FSx for Windows** (EFS는 NFS 전용)
+- 공유 NFS + Linux 전용 + 자동 확장 → **EFS** (FSx 아님)
+- Windows SMB 키워드가 보이면 **EFS가 아니라 FSx for Windows** (EFS는 NFS 전용)
 - **DFS 네임스페이스**로 여러 파일 공유 그룹화 → **FSx for Windows**
 - Lustre의 두 배포 옵션 — **Scratch**(임시, 저렴) vs **Persistent**(장기, 복제)
 - Windows, ONTAP, OpenZFS는 단일 AZ와 **다중 AZ** 옵션을 제공. Lustre는 Scratch / Persistent와 스토리지 클래스를 구분
@@ -106,6 +117,9 @@ verified_at: 2026-09-03
 - [AWS, Protecting FSx for Lustre data with backups](https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-backups-fsx.html)
 - [AWS, FSx for Windows encryption in transit](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/encryption-in-transit.html)
 - [AWS, FSx for OpenZFS FAQ](https://aws.amazon.com/fsx/openzfs/faqs/)
+- [AWS, Accessing your data via Amazon S3 access points](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/accessing-data-via-s3-access-points.html)
+- [AWS, Managing access point access](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/s3-ap-manage-access-fsxn.html)
+- [AWS, Access point compatibility](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/access-points-for-fsxn-object-api-support.html)
 - AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서

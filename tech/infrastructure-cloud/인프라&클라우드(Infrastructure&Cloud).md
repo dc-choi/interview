@@ -18,6 +18,8 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[FSx#S3 access point로 파일 데이터에 접근하기|FSx ONTAP의 S3 접근]] — 파일 복사 없는 접근, 이중 인가와 S3 기능 호환성
+- [x] [[AWS-Local-Zones|AWS Local Zones]] — 네트워크 경로, 서비스 지원과 추론 전체 지연의 구분
 - [x] [[RDS-Aurora-Architecture#Global Database의 대기 구성과 전환 준비|Aurora 글로벌 복구 준비]] — headless의 컴퓨트 준비, switchover와 failover, global writer와 proxy 전환
 - [x] [[EKS-Hybrid-Nodes|EKS Hybrid Nodes]] — 에어갭과의 구분, CIDR와 CNI, 등록 진단과 연결 단절 시험
 - [x] [[AWS-Organizations#SCP, RCP와 선언적 정책의 경계|Organizations 정책 경계]] — 권한 부여와 상한, 외부 주체와 관리 계정 예외

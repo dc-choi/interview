@@ -40,11 +40,25 @@ Grafana의 읽기 모드는 원시 SQL을 넘기는 `query_sql`, `query_influxdb
 
 예를 들어 응답에 5초가 걸리는 의존성을 3초 timeout으로 호출하면 timeout 확대가 증상을 줄일 수 있다. 그러나 의존성이 느려진 원인이나 사용자 응답 목표를 해결했다는 뜻은 아니다. 변경 후 오류율, 전체 지연과 자원 포화를 다시 확인한다.
 
+## 알림마다 짧게 실행하는 조사 작업
+
+조사 도구의 MCP 연결 여부와 별개로, 알림이 올 때 조사 작업을 만들고 완료 후 종료하는 실행 방식이 있다. CloudWatch 알림을 webhook으로 전달하고 ECS의 Fargate task에서 로그와 시스템 정보를 읽은 뒤 Bedrock 모델로 분석하는 공개 구현 사례가 있다. 수정안은 PR로 만들고 사람이 검토하는 단계를 둘 수 있다.
+
+다음은 이 방식을 적용할 때의 운영 설계 제안이다.
+
+- 입력에 사건 식별자, 서비스와 시간 범위를 고정한다. 같은 알림이 반복되면 중복 조사와 PR 생성을 제어한다.
+- 조사 작업에는 필요한 조회 권한만 주고, 코드 제안과 운영 반영의 권한을 분리한다. 짧게 실행하는 task 자체가 최소 권한을 보장하지는 않는다.
+- 종료 전에 근거 링크, 조회 실패, 원인 가설과 수정 제안을 남긴다. 작업 종료와 장애 복구는 별도로 확인한다.
+- 알림 폭주 시 동시 실행 수와 조사 시간, 모델 사용량을 제한한다. 조사가 실행되지 않은 사건도 추적할 수 있게 한다.
+
+이 실행 방식은 반복 조사의 대기 시간을 줄이기 위한 선택지다. 사례의 처리량이나 시간 절감 수치를 다른 서비스의 예상 효과로 사용하지 않는다.
+
 ## 출처
 
 - [Grafana, Enable and disable tools](https://grafana.com/docs/grafana-cloud/ai-tools/mcp-servers/oss-mcp/configure/enable-and-disable-tools/)
 - [Grafana, Configure the Tempo data source](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/)
 - [AWS Labs, Amazon EKS MCP Server](https://awslabs.github.io/mcp/servers/eks-mcp-server)
+- [Halter scales farm management using AI on Amazon Bedrock — AWS](https://aws.amazon.com/solutions/case-studies/halter-case-study/)
 
 ## 관련 문서
 
