@@ -64,6 +64,21 @@ PostgreSQL 기반의 **OLAP에 최적화된 완전 관리형 데이터 웨어하
 - RA3와 DC2 provisioned cluster의 Spectrum query는 별도 전용 Spectrum fleet을 사용한다. RG provisioned node와 Redshift Serverless는 integrated data lake engine을 자체 compute에서 실행하므로 외부 테이블 쿼리가 주 compute와 독립이라고 일반화할 수 없다.
 - **활용**: Hot 데이터는 Redshift 내부 테이블, Cold/대용량 로그는 S3 + Spectrum으로 비용 최적화.
 
+### Iceberg와 Delta Lake 조회의 운영 차이
+
+2026-10-07 공식 문서 확인 기준. Redshift로 Glue Data Catalog의 Iceberg 테이블을 조회하고 내부 테이블과 조인할 수 있다. 데이터 레이크와 DW를 함께 조회할 수 있다는 의미이며, 같은 데이터의 복제본이나 별도 권한 관리가 자동으로 사라진다는 뜻은 아니다.
+
+| 항목 | Iceberg 테이블 조회 | Spectrum의 Delta Lake manifest 조회 |
+|---|---|---|
+| 메타데이터 | Glue Data Catalog에 등록된 Iceberg 메타데이터 사용 | 쿼리 전에 데이터 파일 목록인 manifest 생성 필요 |
+| 변경 반영 | 새 파티션과 파티션 명세 변경을 자동 감지 | 변경된 스냅샷을 반영하도록 manifest 갱신 관리 필요 |
+| 일관성 | Iceberg 테이블 쿼리의 트랜잭션 일관성 제공 | manifest가 제공하는 일관성은 파티션 단위 |
+| 주의점 | 권한, 열 통계와 읽기 엔진의 지원 범위를 확인 | manifest가 가리키는 파일을 VACUUM 등으로 제거하면 쿼리가 실패할 수 있음 |
+
+따라서 파일 포맷 지원 여부뿐 아니라 쓰기, 메타데이터 갱신과 파일 정리의 순서를 함께 검토한다. Iceberg 네이티브 조회를 운영 관리가 필요 없다는 뜻으로 해석하지 않는다. 기존 Delta Lake를 바꿀지는 사용하는 엔진, 갱신 빈도와 전환 비용까지 비교해서 결정한다.
+
+Iceberg 데이터를 Redshift 내부 테이블로 가져올 때는 `INSERT INTO ... SELECT`나 `CREATE TABLE AS`를 사용할 수 있다. 이 절의 확인 시점에는 Iceberg 테이블 내용을 직접 적재하는 `COPY`가 지원되지 않는다. 일반 파일의 `COPY` 지원과 구분한다.
+
 ## Concurrency Scaling, Materialized View
 
 - **Concurrency Scaling**: 동시 쿼리 증가 시 추가 용량을 자동 사용해 부하를 흡수한다. 메인 클러스터가 실행 중인 24시간마다 1시간의 무료 크레딧이 누적되고 활성 클러스터당 최대 30시간까지 쌓이며 크레딧을 초과한 사용분은 과금되므로 현재 요금 정책을 확인한다.
@@ -129,6 +144,8 @@ PostgreSQL 기반의 **OLAP에 최적화된 완전 관리형 데이터 웨어하
 - [Multi-AZ 배포](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)
 - [스냅샷과 백업](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html)
 - [Redshift 요금(Concurrency Scaling 크레딧)](https://aws.amazon.com/redshift/pricing/)
+- [Amazon Redshift에서 Apache Iceberg 테이블 사용](https://docs.aws.amazon.com/redshift/latest/dg/querying-iceberg.html) — Iceberg 절의 부분 검증이며 기존 요금과 노드 정책 전체의 재검증은 아니다.
+- [Redshift Spectrum 외부 테이블](https://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-external-tables.html) — Delta Lake manifest의 생성, 일관성과 오류 조건
 
 ## 관련 문서
 

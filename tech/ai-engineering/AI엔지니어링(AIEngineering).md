@@ -16,6 +16,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 
 ## 세부 학습
+- [x] [[RAG-Retrieval-Engineering#가설을 분해해 반대 근거를 찾는다|가설 검토용 RAG]] — 전제별 반대 근거 검색, 원문과 해석의 연결, 검색 실패와 가설 입증의 구분
 - [x] [[Claude-Code-Business-Automation#긴 문서 분석과 출력 독자를 함께 지정한다|문서 분석 프롬프트]] — 원문 구조, 근거 추출, 대상 독자와 반론 검토의 한계
 - [x] [[Bedrock-AgentCore-Operations|Bedrock AgentCore 운영 경계]] — 세션 소유 관계, 영속 상태, 도구 권한과 계측 범위
 - [x] [[Agent-Swarm-Containment#역량 평가와 배포 통제를 분리해 읽는다|사이버 역량 평가의 조건]] — 역량 등급, 평가 접근권, 안전장치와 서비스 설정의 구분

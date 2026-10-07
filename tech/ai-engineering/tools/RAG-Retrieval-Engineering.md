@@ -74,6 +74,14 @@ BM25를 병행해 정확 token match를 보완하고 RRF나 score normalization�
 
 1차 검색이 부족하면 query를 분해하거나 표현을 바꿔 재탐색할 수 있다. 단 무제한 재시도는 latency와 비용을 키우고 처음 의도를 변형한다. 최대 횟수, 종료 조건, query rewrite 전후 결과와 선택 근거를 기록하고 대표 query set에서 단발 검색보다 실제로 나은지 검증한다.
 
+### 가설을 분해해 반대 근거를 찾는다
+
+가설 검토에서는 주제와 비슷한 문서를 모으는 것에 더해, 가설이 성립하려면 필요한 전제를 나누고 각 전제를 반박할 자료를 검색할 수 있다. 예를 들어 신기능이 매출을 늘린다는 가설에서는 유료 전환 수요, 가격 수용성과 대체재 대비 경쟁력을 검토할 수 있다(설명용 예시). 반박 결과에는 전제, 반대 근거의 원문 구간과 그 근거로 도출한 해석을 연결한다.
+
+문서 파싱, 반대 근거 검색과 반박 종합을 나누면 표나 그래프의 추출 오류와 추론 오류를 따로 추적하기 쉽다. 추가 근거가 필요하면 제한된 재검색을 수행한다. 이 흐름은 여러 에이전트로 구성할 수도 있지만 역할 분리만으로 정확성이 보장되지는 않는다.
+
+설계 시에는 **반대 근거를 찾지 못함과 가설이 참임을 구분**한다. 검색 범위와 시점이 제한돼 있고 반박 자체도 잘못된 해석일 수 있다. 지지 근거와 반대 근거를 같은 기준으로 검토하고, 원문이 실제로 전제를 반박하는지 사람이 확인할 수 있게 한다. 반박의 개수나 문장의 강도를 품질 점수로 쓰지 않는다.
+
 ## Progressive Disclosure 탐색
 
 전체 투입이 맞지 않는 규모라면 문서 전체를 한 번에 컨텍스트에 밀어넣지 않는다. 폴더 구조와 메타데이터만 먼저 컨텍스트로 주고, 에이전트가 tool-calling으로 매 턴 탐색 방향을 스스로 정한다. 코딩 에이전트가 디렉터리를 훑고 필요한 파일만 열어보는 패턴과 같다.
@@ -168,3 +176,4 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 - [AI ENGINEER NIGHT Q&A 총정리 — 채널톡 Tech](https://tech.channel.io/ko/articles/4052f1f4)
 - [LLM 에이전트 실무 사례 (리트리벌 스킬, RankJ 근거 태깅) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)
 - [Introducing Contextual Retrieval — Anthropic](https://www.anthropic.com/news/contextual-retrieval)
+- [How LinqAlpha assesses investment theses using Devil’s Advocate on Amazon Bedrock — AWS, LinqAlpha](https://aws.amazon.com/blogs/machine-learning/how-linqalpha-assesses-investment-theses-using-devils-advocate-on-amazon-bedrock/) — 2026-10-07 전제 분해, 반대 근거 검색과 인용 연결 흐름을 대조했다. 검색 실패의 해석과 품질 점수 기준은 적용 시 설계 제안이다. 제품 성과 수치나 특정 모델의 우월성을 일반화하지 않는다.
