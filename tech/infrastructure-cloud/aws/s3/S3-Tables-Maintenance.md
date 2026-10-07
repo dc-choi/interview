@@ -41,7 +41,17 @@ Compaction은 새 스냅샷을 만든다. 스냅샷 만료와 실제 파일 삭�
 
 S3 Tables는 `s3tables` 서비스 네임스페이스를 사용한다. 일반 S3 권한만으로 테이블 접근이 해결됐다고 가정하지 않는다. Glue Data Catalog 통합은 분석 서비스가 테이블을 발견하고 접근하도록 연결하는 기능이며, 접근 권한 설계는 별도로 필요하다. [기능과 접근 관리](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables.html)
 
-다음은 자체 관리 Iceberg와 비교할 때의 점검 질문이다.
+### 분석 통합과 조회 권한은 다르다
+
+2026-10-07 공식 문서 기준, Lake Formation으로 분석 서비스에 통합한 table bucket은 IAM과 Lake Formation의 권한 검사를 모두 통과해야 조회할 수 있다. 카탈로그가 보인다는 사실만으로 데이터 조회 권한이 생기지 않는다.
+
+- 통합을 수행한 사용자 외에 다른 IAM 사용자나 역할이 조회하려면 필요한 Lake Formation 권한을 부여한다.
+- 메타데이터 접근 권한과 실제 데이터의 읽기, 쓰기 권한을 구분한다.
+- Lake Formation 권한은 부여한 리전에 적용된다. 다른 리전에도 같은 권한이 있다고 가정하지 않는다.
+
+따라서 검증할 때는 관리자 계정의 성공만 확인하지 않고 실제 분석 작업이 사용하는 역할로 조회한다. 이 절은 Lake Formation 통합 경로에 대한 설명이다. [테이블과 데이터베이스 접근 관리](https://docs.aws.amazon.com/AmazonS3/latest/userguide/grant-permissions-tables.html)
+
+### 자체 관리와 비교할 질문
 
 - 작은 파일 병합과 스냅샷 정리에 실제로 얼마나 운영 시간이 드는가?
 - 현재 엔진과 카탈로그, 권한 구성이 table bucket에 연결되는가?
@@ -55,6 +65,7 @@ S3 Tables는 `s3tables` 서비스 네임스페이스를 사용한다. 일반 S3 
 - [AWS, Working with Amazon S3 Tables and table buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables.html)
 - [AWS, Maintenance for tables](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-maintenance.html)
 - [AWS, Maintenance for table buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html)
+- [AWS, Managing access to a table or database with Lake Formation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/grant-permissions-tables.html)
 
 ## 관련 문서
 

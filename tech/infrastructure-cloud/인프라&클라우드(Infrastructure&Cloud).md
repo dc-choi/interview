@@ -65,7 +65,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[HealthOmics-Workflows|HealthOmics 워크플로 운영]] — 실행 정의, 상태 이벤트 누락 대비, 로그와 자원 조정
 - [x] [[Athena#SageMaker Unified Studio와 Power BI의 ODBC 연결|Athena ODBC와 Power BI]] — 대화형 로그인, 게이트웨이 IAM 역할과 연결 매핑
 - [x] [[DynamoDB#스로틀링과 재시도|DynamoDB 스로틀링 진단]] — reason과 resource ARN, GSI back pressure, 파티션과 quota, Auto Scaling 지연
-- [x] [[S3-Tables-Maintenance|S3 Tables 유지보수]] — table bucket, 스냅샷 만료와 파일 삭제, Iceberg 설정 충돌과 운영 책임
+- [x] [[S3-Tables-Maintenance|S3 Tables 유지보수]] — table bucket, 스냅샷 만료와 파일 삭제, Iceberg 설정 충돌, Lake Formation 통합과 실제 조회 역할의 권한
 - [x] [[Glue#Data Quality: 검사와 적재 차단을 나눈다|Glue Data Quality]] — 규칙별 검사 범위, 기본 실패 동작과 적재 차단, 행과 데이터셋 결과의 구분
 - [x] [[Redshift#Iceberg와 Delta Lake 조회의 운영 차이|Redshift의 레이크 테이블 조회]] — Iceberg 메타데이터와 Delta Lake manifest, 일관성 범위와 파일 정리
 - [x] [[QuickSight#계정 간 템플릿으로 대시보드 재사용|QuickSight 계정 간 템플릿 공유]] — 데이터셋 placeholder와 스키마, 공유 권한과 대시보드 생성 완료 확인
@@ -76,6 +76,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[RDS-PostgreSQL-Performance-Triage|RDS와 Aurora PostgreSQL 성능 진단]] — 자원과 세션 연결, idle 상태 구분, 누적 SQL 통계의 차분, 유지보수와 실행 계획, QPM의 수집과 적용
 - [x] [[Storage-Gateway-DataSync|DataSync 클라우드 간 전송]] — 파티션 간 S3의 Object storage location, Azure Blob의 SAS와 태그, agent 조건과 검증 범위
 - [x] [[ElastiCache-Use-Cases#8. Semantic Cache (Gen AI)|시맨틱 캐시]] — 정확 일치 캐시와의 차이, 임계값, 문맥과 권한, 무효화와 총비용
+- [x] [[ElastiCache-Use-Cases#9. 챗봇의 캐시 대상과 지연 측정|챗봇 캐시와 지연]] — 대화 이력, 임베딩, 검색 결과와 답변 재사용, 조회와 전체 완료 시간의 구분
 - [x] [[IAM|AWS IAM (엔티티, 정책 평가, AssumeRole과 Federation, Roles Anywhere와 Account access manager, 모범 사례)]]
 - [x] [[AWS-Builder-ID-Recovery|AWS Builder ID 복구 이메일]] — 등록 절차, MFA 복구에 필요한 두 메일함과 계정 유형 구분
 - [x] [[SQS|SQS]] / [[SNS|SNS]] / [[EventBridge|EventBridge]] — Queue, Pub/Sub, Event Bus의 선택 기준과 운영

@@ -96,12 +96,32 @@ LLM 응답도 입력과 재사용 조건이 같으면 해시 키로 캐시할 �
 
 이 절의 검색 지원 범위와 시맨틱 캐시 운영 조건은 2026-10-07에 AWS와 Redis 공식 문서로 대조했다. 문서의 다른 사용 사례 전체를 재검증한 날짜는 아니다.
 
+## 9. 챗봇의 캐시 대상과 지연 측정
+
+대화 이력, 검색 결과와 완성된 답변은 서로 다른 재사용 단위다. 무엇을 캐시했는지에 따라 생략할 수 있는 작업이 달라진다.
+
+| 저장한 대상 | 재사용하는 것 | 적중해도 남을 수 있는 작업 |
+|---|---|---|
+| 대화 이력과 선호도 | 사용자의 이전 맥락 | 검색과 새 응답 생성 |
+| 입력별 임베딩 | 같은 입력의 벡터 변환 결과 | 벡터 검색과 새 응답 생성 |
+| 검색 결과 | 이미 찾은 문서나 데이터 | 프롬프트 구성과 새 응답 생성 |
+| 완성된 응답 | 이전에 생성한 답변 | 권한, 문맥과 최신성 확인 |
+
+대화 이력은 list, 세션 메타데이터는 hash, TTL이 있는 도구 결과는 string으로 저장하는 구성을 사용할 수 있다. 이런 키 기반 저장이 곧 벡터 검색 기능 사용을 뜻하지 않는다. 벡터 검색의 엔진과 배포 조건은 앞의 Semantic Cache 절을 따른다. [대화 상태의 저장 유형](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/agentic-memory-types.html)
+
+다음은 캐시와 RAG 흐름에서 도출한 설계 점검 기준이다. 임베딩 캐시 키에는 입력과 임베딩 모델 버전을 구분하고, 검색 결과에는 지식 버전과 접근 범위를 연결한다. 가격과 재고처럼 변하는 값은 허용 가능한 오래됨의 범위를 먼저 정하고, 예약 같은 상태 변경 직전에는 정본에서 다시 확인한다.
+
+캐시 조회가 빨라도 모델 생성과 외부 API 호출이 남으면 전체 응답이 같은 시간 안에 끝나지 않는다. 조회 단계의 지연, 첫 응답 지연과 최종 완료 지연을 따로 측정한다. 적중과 미적중 경로도 나눠 비교한다. 특정 데모의 캐시 조회 시간을 챗봇 전체나 예약 완료 시간의 보장값으로 사용하지 않는다.
+
+이 절의 저장 유형과 캐시 재사용 구분은 2026-10-07 공식 문서에 대조했다. 측정과 키 구성은 적용 시 확인할 설계 기준이다.
+
 ## 출처
 
 - [AWS Docs, 일반적인 ElastiCache 사용 사례](https://docs.aws.amazon.com/ko_kr/AmazonElastiCache/latest/dg/elasticache-use-cases.html)
 - [ElastiCache Search 지원 범위](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/search-features-limits.html)
 - [AWS Docs, Implementing a semantic cache with ElastiCache for Valkey](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/semantic-caching-implementation.html)
 - [AWS Docs, Semantic caching best practices](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/semantic-caching-best-practices.html)
+- [AWS Docs, Types of agentic memory](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/agentic-memory-types.html)
 - [Redis Docs, Semantic cache](https://redis.io/docs/latest/develop/use-cases/semantic-cache/)
 - [Redis Docs, RedisVL LLM Cache API](https://redis.io/docs/latest/develop/ai/redisvl/api/cache/)
 - [Redis INCR rate limiter와 race condition](https://redis.io/docs/latest/commands/incr/)
