@@ -18,6 +18,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[ElastiCache-Engine-Deployment#엔진 업그레이드와 클라이언트 복구|ElastiCache 엔진 업그레이드]] — node-based 교체 절차, 연결 복구와 제한된 rollback
 - [x] [[MemoryDB-Durable-Write-Behind|MemoryDB 내구성 쓰기 버퍼]] — 응답과 DB 반영의 구분, 소비자 복구와 정리 시점
 - [x] [[Cloud-WAN-Migration|Cloud WAN 마이그레이션]] — attachment 태그, 정책 change set과 단계별 통신 검증
 - [x] [[Glue#Glue 6.0 전환의 호환성 경계|Glue 6.0 전환]] — 런타임 호환성, Iceberg v3의 비가역성과 Athena 조회 제한

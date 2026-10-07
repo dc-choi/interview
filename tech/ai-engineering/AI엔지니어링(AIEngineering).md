@@ -16,6 +16,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 
 ## 세부 학습
+- [x] [[Agent-Skills#Kiro Powers: 도구와 지침을 함께 활성화한다|Kiro Powers와 API 명세 연동]] — 도구와 지침의 동적 로드, 현재 패키지 형식과 검증 경계
 - [x] [[A2A-Kafka-Transport|A2A와 Kafka 전송]] — 표준 바인딩과 사용자 정의 전송, 외부 부수효과의 멱등성과 MSK 권한
 - [x] [[Generative-Product-Image-Workflow|생성형 상품 이미지 워크플로우]] — 편집 영역, 원본 대조, SageMaker GPU 지원과 유휴 축소의 구분
 - [x] [[Aspect-Based-Sentiment-Analysis|속성 기반 감성 분석]] — 구문과 감성 추출, 리뷰 집계와 요약, 단계별 평가

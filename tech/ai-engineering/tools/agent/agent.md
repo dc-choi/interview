@@ -10,6 +10,7 @@ aliases: ["에이전트 심화", "Agent Engineering"]
 에이전트를 프로덕션에서 설계하고 제어하는 실천 도구 — 컨텍스트 예산, 지시 설계, 코드 인텔리전스, 친화 API 설계, 데이터 준비, 이메일 인터페이스, 스킬, 루프 엔지니어링. 상위: [[tools|AI 엔지니어링 실천 도구]].
 
 ## 목차
+- [x] [[Agent-Skills#Kiro Powers: 도구와 지침을 함께 활성화한다|Kiro Powers]] — 키워드 활성화, plugin.json과 스킬, API 명세 조회와 생성 코드 검증
 - [x] [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]] — 계획, 코드 실행, 계산 결과 인계와 검산
 - [x] [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]] — 화면 배치, 상태 관찰, worktree 분리와 완료 검증
 - [x] [[Agent-From-Scratch|에이전트 직접 만들기 (모델, 오케스트레이션, 도구 계층, 도구 호출 루프와 병렬 호출, 도구 정의, 계획 검증과 saveAs/inputFrom 데이터 흐름, 메모리 세 종류)]]

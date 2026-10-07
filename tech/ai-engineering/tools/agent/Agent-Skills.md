@@ -85,6 +85,30 @@ Claude 쪽에서는 커스텀 슬래시 커맨드도 스킬로 흡수됐다. 사
 
 훅은 언제 실행될지를, 스킬은 무엇을 할지를 정의한다. 둘은 상보적이라 함께 쓰면 강해진다 — 훅으로 실행 흐름을 강제하고, 스킬로 작업을 자동화한다. 이는 권장(CLAUDE.md, AGENTS.md)과 강제(Hook)를 분리하는 원칙과 같은 축이다([[Context-Engineering]]). 훅의 세부(exit code 2만 차단, additionalContext 주입 등)는 [[Claude-Code-Extension-Reference]].
 
+## Kiro Powers: 도구와 지침을 함께 활성화한다
+
+이 절은 2026-10-07 Kiro 공식 문서로 확인한 범위다. 기존 Claude와 Codex 설명 전체를 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
+
+Powers는 MCP 도구, 스킬과 지식을 함께 설치하고 작업 맥락에 따라 활성화하는 패키지다. 스킬이 작업 방법을 설명한다면 Power는 그 지침과 연결 도구를 함께 묶는다. 대화의 키워드에 맞는 Power를 로드하므로 모든 연동 문서를 처음부터 넣을 필요가 줄어든다. 실제 토큰 절감과 결과 품질은 작업별로 측정한다.
+
+| 구성 | 역할 |
+|---|---|
+| `plugin.json` | 필수 manifest, 패키지 식별 정보와 활성화 `keywords` |
+| `skills/<작업>/SKILL.md` | 선택한 작업의 지침, 필요하면 scripts와 references 포함 |
+| `mcp.json` | 선택적 MCP 서버 연결 설정 |
+| `dev.kiro/` | steering 같은 Kiro 전용 확장 |
+
+과거 `POWER.md` 중심 예제를 현재 생성 규격으로 그대로 사용하지 않는다. 현재 공식 생성 가이드는 `plugin.json`을 요구하며 MCP 없는 스킬 전용 Power도 허용한다. 키워드 활성화는 지침을 선택하는 수단이며 생성 코드의 정확성을 보증하지 않는다.
+
+### API 명세 연동에 적용하는 점검 순서
+
+다음은 명세 조회와 코드 생성을 연결할 때의 설계 점검안이다. Power 설치만으로 자동 충족되는 기능은 아니다.
+
+1. 필요한 API의 공식 명세 위치와 버전을 식별한다.
+2. 조회 도구로 요청 경로, 필드, 인증과 오류 응답을 확인하고 관련 부분만 사용한다.
+3. 지침에는 추측한 필드 사용 금지, 오류 처리와 검증할 응답을 적는다.
+4. 생성 코드는 명세와 테스트 응답으로 대조한다. 명세 읽기와 실제 데이터 변경 권한은 구분한다.
+
 ## 언제 프롬프트를 스킬로 승격하나
 
 - 같은 프롬프트를 반복 입력할 때 → 스킬로 캡슐화
@@ -129,6 +153,8 @@ Claude 쪽에서는 커스텀 슬래시 커맨드도 스킬로 흡수됐다. 사
 
 ## 출처
 
+- [Kiro Docs, Powers](https://kiro.dev/docs/powers/)
+- [Kiro Docs, Create powers](https://kiro.dev/docs/powers/create/)
 - [Claude Code Skills vs Codex Skills: 구조와 차이 완전 정리 — AlienCoder](https://aliencoder.tistory.com/243)
 - [skill-graveyard — sfrangulov](https://github.com/sfrangulov/skill-graveyard)
 - [diagram-design — cathrynlavery](https://github.com/cathrynlavery/diagram-design)

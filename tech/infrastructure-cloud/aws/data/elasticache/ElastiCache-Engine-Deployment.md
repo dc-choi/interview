@@ -82,6 +82,25 @@ Durability는 지원 노드 유형의 Valkey 9.0 이상에서 cluster mode enabl
 
 개발 또는 검증 환경의 `TestFailover`로 쓰기 중단, 클라이언트 복구와 오류 처리를 확인한다. 이 API는 장애 시 애플리케이션 동작을 시험하기 위한 기능이며 운영 장애를 해결하는 도구로 설계되지 않았다.
 
+## 엔진 업그레이드와 클라이언트 복구
+
+이 절은 2026-10-07 AWS 공식 문서로 확인한 **node-based Valkey와 Redis OSS**의 범위다. Serverless에 같은 노드 교체 절차를 적용하지 않는다. 다른 절 전체의 검증일을 갱신한 것은 아니다.
+
+현재 공식 가이드는 shard마다 새 엔진의 노드를 만들고 기존 primary와 동기화한 뒤 새 노드를 primary로 승격한다고 설명한다. 나머지 새 노드가 새 primary와 동기화하면 기존 노드를 제거한다. 여러 shard의 작업은 병렬이지만 shard당 업그레이드 작업은 하나이며, primary failover는 전체 shard에서 하나씩 진행한다.
+
+업그레이드는 기존 클라이언트 연결을 종료한다. 토폴로지에 기존 노드와 새 노드가 잠시 함께 보이고, 데이터를 적재 중인 새 replica로 연결하면 오류가 날 수 있다. 클라이언트의 재연결, 오류 재시도와 exponential backoff를 검증한다. 짧은 failover도 애플리케이션의 무중단을 보장하지 않는다.
+
+| 조건 | 확인할 영향 |
+|---|---|
+| 단일 Redis OSS 클러스터 또는 Multi-AZ 비활성 | 업그레이드 중 primary가 요청을 처리하지 못할 수 있으며 스냅샷에 필요한 메모리 여유도 확인 |
+| Multi-AZ 구성 | 쓰기 트래픽이 적은 시간에 수행하고 failover 중 쓰기 오류와 복구 확인 |
+| 메이저 엔진 버전 변경 | 새 엔진과 호환되는 parameter group 선택 |
+| 캐시를 유일한 데이터 원본으로 사용 | 데이터 보존은 성공적인 복제에 의존하므로 복구 계획을 별도로 검증 |
+
+운영 점검에서는 읽기 성공과 쓰기 성공을 따로 측정한다. 재시도할 쓰기가 중복 실행돼도 안전한지, 캐시 실패 때 원본 DB로 몰리는 부하를 감당하는지도 확인한다. 이는 업그레이드 기능의 보장 사항이 아니라 애플리케이션의 검증 책임이다.
+
+복구를 임의 버전의 제자리 downgrade로 가정하지 않는다. 현재 공식 가이드의 cross-engine rollback은 **Valkey 7.2에서 Redis OSS 7.1로** 한정하며 연결된 user와 user group의 엔진 유형은 `REDIS`여야 한다. 다른 버전의 복원 가능성과 전환 경로는 작업 전에 따로 확인한다.
+
 ## 비용, 사이징
 
 - **인스턴스 타입**: 데이터 크기, eviction, CPU, 네트워크와 엔진 호환성을 측정해 선택한다. Graviton 계열의 가격 대비 성능도 워크로드에서 비교한다.
@@ -90,6 +109,8 @@ Durability는 지원 노드 유형의 Valkey 9.0 이상에서 cluster mode enabl
 
 ## 출처
 
+- [ElastiCache 노드 기반 업그레이드 고려사항](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/VersionManagement-upgrade-considerations.html)
+- [ElastiCache 엔진 업그레이드와 엔진 전환](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/VersionManagement.HowTo.html)
 - [ElastiCache Multi-AZ와 자동 장애 조치](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/AutoFailover.html)
 - [ElastiCache 내구성 구성의 일관성](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Durability.Consistency.html)
 - [ElastiCache 내구성 지원 조건과 제한](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Durability.Limitations.html)
