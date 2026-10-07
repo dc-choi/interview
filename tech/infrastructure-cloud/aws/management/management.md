@@ -11,7 +11,7 @@ aliases: ["AWS 관리 인덱스"]
 
 - [[AWS-Organizations|Organizations — 멀티 계정, SCP와 RCP의 권한 상한, 선언적 정책, OU와 통합 결제]]
 - [[AWS-Control-Tower|Control Tower — 랜딩 존, 계정 생성과 통제의 적용 경계]]
-- [[CloudFormation|CloudFormation — IaC 템플릿, 스택]]
+- [[CloudFormation|CloudFormation — IaC 템플릿, 스택, 롤백 실패 복구와 건너뛴 리소스 정합성]]
 - [[Step-Functions|Step Functions — 상태 머신, 서비스 오케스트레이션, 재시도와 보상]]
 - [[CloudTrail-Config|CloudTrail과 Config — API 감사, 리소스 구성 추적]]
 - [[Systems-Manager|Systems Manager — Run Command, Patch Manager, Session Manager]]

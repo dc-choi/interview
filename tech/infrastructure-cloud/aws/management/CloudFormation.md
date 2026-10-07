@@ -119,6 +119,17 @@ IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인�
 - **업데이트 중 실패** — **Rollback on Update Failure** → 변경 전 상태로 복구
 - 디버깅이 필요하면 Rollback을 비활성화하여 실패한 상태 그대로 유지 가능 (단, 비용 발생)
 
+### UPDATE_ROLLBACK_FAILED 복구
+
+2026-10-07 공식 문서로 확인한 복구 절차다. 업데이트 실패 뒤 이전 상태로 되돌리는 작업까지 실패하면 이 상태가 되며, 새 업데이트보다 롤백 복구가 먼저다.
+
+1. 스택 Events에서 롤백 실패 원인을 확인하고 필요한 권한이나 리소스 상태를 복구한다. 일시적인 타임아웃은 변경 없이 재시도할 수 있다.
+2. `aws cloudformation continue-update-rollback --stack-name <스택명>`으로 재개하고, 명령 종료만 보지 말고 스택이 `UPDATE_ROLLBACK_COMPLETE`에 도달했는지 확인한다.
+3. 원인 해결이 어려울 때만 `--resources-to-skip`에 최소한의 논리 ID를 지정한다. 대상은 **롤백 중** `UPDATE_FAILED`가 된 리소스이며, 최초 업데이트 중 실패한 리소스를 무조건 지정하는 옵션이 아니다.
+4. 건너뛴 리소스의 `UPDATE_COMPLETE` 표시는 실제 복구를 보장하지 않는다. 다음 업데이트 전에 템플릿과 실제 리소스의 불일치를 해소한다.
+
+중첩 스택 내부 리소스는 `NestedStackName.ResourceLogicalID` 형식으로 지정한다. `AWS::CloudFormation::Stack` 리소스 자체를 건너뛸 때는 대응하는 자식 스택이 `DELETE_IN_PROGRESS`, `DELETE_COMPLETE`, `DELETE_FAILED` 중 하나여야 한다.
+
 ## CloudFormation vs 다른 IaC
 
 | 기준 | CloudFormation | Terraform | CDK |
@@ -154,6 +165,7 @@ IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인�
 
 ## 출처
 
+- [AWS CloudFormation — Continue rolling back an update](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html)
 - AWS SAA C03 학습 자료 (로컬)
 - [AWS CloudFormation — Template anatomy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html)
 - [AWS CloudFormation — Infrastructure Composer](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/infrastructure-composer-for-cloudformation.html)

@@ -32,6 +32,17 @@ Role의 특징:
 - **Region에 국한되지 않음** (글로벌)
 - Role의 주체(Principal)는 IAM User, AWS 서비스(EC2, RDS, ELB 등), 외부 IdP로 인증된 사용자
 
+## IAM 사용자 MFA — GetSessionToken
+
+2026-10-07 공식 STS API 문서로 확인한 범위다. IAM 사용자의 장기 자격증명으로 MFA가 필요한 API를 호출해야 할 때, `GetSessionToken`에 MFA 장치의 `SerialNumber`와 6자리 `TokenCode`를 전달해 임시 자격증명을 받는다. 사람의 일상 접근은 federation을 우선하고, 이 절차를 장기 키 신규 발급의 기본 경로로 삼지는 않는다.
+
+- 응답의 `AccessKeyId`, `SecretAccessKey`, `SessionToken`을 함께 사용하고 `Expiration`을 확인한다. 세션 토큰을 빠뜨리거나 만료된 세션을 재사용하지 않는다.
+- IAM 사용자 세션은 900~129600초(15분~36시간), 기본 43200초(12시간)다. `AssumeRole`의 최대 시간과 혼동하지 않는다.
+- `GetSessionToken`은 MFA 인증 작업이므로 호출 허용 정책을 추가해서 권한을 높이는 API가 아니다. 반환된 세션의 권한은 원래 IAM 사용자 권한을 바탕으로 하며, MFA 인증이 리소스 작업의 허용을 대신하지 않는다.
+- 이 세션으로 다른 STS API를 호출할 때는 `AssumeRole`과 `GetCallerIdentity`만 허용된다. 임시 세션으로 `GetSessionToken`을 반복 호출해 갱신하는 구조를 만들지 않는다. 재발급은 원래 장기 자격증명으로 호출한다.
+
+예를 들어 MFA 조건이 붙은 S3 접근에서는 MFA 세션 발급 성공과 대상 버킷 조회 성공을 각각 확인한다. 운영에서는 자격증명을 로그나 저장소에 남기지 않고, 사용자 정책과 리소스 정책의 허용 범위도 함께 점검한다.
+
 ## Identity Federation — 외부 ID 연동
 
 | 방식 | 시나리오 |
@@ -112,6 +123,7 @@ IdP 속성을 session tag로 전달해 ABAC에 쓴다면 trust policy의 `sts:Ta
 위임 관리자가 이 한도 안에서만 사용자와 Role을 만들 수 있게 보장한다. 개발자에게 IAM 관리 위임할 때, 자기보다 강한 권한 부여 못 하게 막는 가드.
 
 ## 출처
+- [AWS STS API Reference, GetSessionToken](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html)
 - [AWS IAM User Guide, Account access manager](https://docs.aws.amazon.com/IAM/latest/UserGuide/account-access-manager.html)
 - [AWS IAM User Guide, Getting started with account access manager](https://docs.aws.amazon.com/IAM/latest/UserGuide/account-access-manager-getting-started.html)
 - [AWS IAM User Guide, Prepare your IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/aam-prepare-roles.html)
