@@ -16,6 +16,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 
 ## 세부 학습
+- [x] [[Event-Log-Highlight-Generation|이벤트 로그 기반 하이라이트]] — 코드와 모델의 역할 분리, 통계 조회와 사실 검증
 - [x] [[Strands-Conversation-State|Strands 대화와 세션 상태]] — 문맥 축약과 저장, 대화별 동시 쓰기 경계
 - [x] [[LLM-Gateway|LLM 게이트웨이]] — 키별 권한, 예산 검사의 DB 의존성, 배포 경로와 운영 점검
 - [x] [[Generative-AI-Multi-Tenancy|생성형 AI SaaS의 테넌트 격리]] — 자원 배치와 접근 통제, RAG 검색 범위와 토큰 사용량 제한

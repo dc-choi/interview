@@ -18,6 +18,10 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[Athena-MCP-Text-to-SQL|Athena MCP 자연어 분석]] — 실행과 결과 열람, 도구 플래그와 실제 AWS 권한
+- [x] [[RDS-MySQL-Storage-Reclamation|RDS MySQL 공간 회수]] — 테이블스페이스, binlog와 로그, 할당 용량과의 구분
+- [x] [[GameLift-Servers|GameLift Servers]] — 세션 배치와 Spot 중단 경계
+- [x] [[GameLift-Streams|GameLift Streams]] — WebRTC 연결과 always-on, maximum, target-idle 용량
 - [x] [[Athena#CloudTrail 로그의 파티션과 호출 주체 추적|Athena로 CloudTrail 조사]] — 날짜 파티션과 사건 시각, 역할 세션 연결, 미수집과 실행 실패의 구분
 - [x] [[Route53#삭제한 S3 버킷을 가리키는 DNS|S3 버킷 삭제와 DNS 정리]] — 남은 Alias의 이름 재사용 위험, CloudFront 전환과 OAC origin 구분
 - [x] [[ElastiCache-Engine-Deployment#엔진 업그레이드와 클라이언트 복구|ElastiCache 엔진 업그레이드]] — node-based 교체 절차, 연결 복구와 제한된 rollback

@@ -60,6 +60,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [[tech/observability/datadog/datadog|Datadog 학습 지도]] — Unified Service Tagging, Catalog, APM, Monitor, SLO, 배포 추적
 
 ## Reliability
+- [x] [[MCP-Incident-Investigation|MCP 기반 장애 조사]] — Grafana와 EKS 도구 범위, trace 연결과 변경 권한
 - [x] [[DevOps-Agent-Grafana|Grafana와 AWS DevOps Agent]] — webhook 전달과 조사 데이터, 읽기 전용 권한과 복구 확인
 - [x] [[Alert-Fatigue#이상 탐지는 정확도와 전달 지연을 함께 평가한다|이상 탐지 평가]] — 정밀도, 재현율, 탐지와 해제 시간, 경고와 후속 진단의 분리
 - [x] [[Observability-Reliability|관측성 신뢰성 인덱스 (SLI/SLO, alert fatigue, Grafana Alerting, alert as code, 런북, 배포 가시성)]]

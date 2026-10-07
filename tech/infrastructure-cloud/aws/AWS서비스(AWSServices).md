@@ -15,6 +15,11 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 
 ## 목차
 
+- [x] [[Athena-MCP-Text-to-SQL|Athena MCP 자연어 분석]] — SQL 실행과 결과 접근의 권한 분리
+- [x] [[RDS-MySQL-Storage-Reclamation|RDS MySQL 공간 회수]] — 테이블, binlog와 로그의 원인별 진단
+- [x] [[GameLift-Servers|GameLift Servers]] — 세션 배치, 부하 테스트와 Spot fleet
+- [x] [[GameLift-Streams|GameLift Streams]] — 게임 스트리밍과 용량 관리
+
 - [x] [[AWS-Control-Tower|Control Tower]] — 랜딩 존, 계정 프로비저닝, 예방과 탐지 및 사전 통제
 - [x] [[IoT-Edge-Cloud-Pipeline|IoT 엣지와 클라우드 파이프라인]] — MQTT 수집, SQS 순서와 중복, Greengrass V2 추론
 

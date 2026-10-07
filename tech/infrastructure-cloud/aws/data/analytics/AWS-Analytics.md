@@ -20,4 +20,6 @@ S3 데이터레이크에서 ETL, 쿼리, 데이터 웨어하우스, BI로 이어
 
 ## 함께 볼 문서
 
+- [[Athena-MCP-Text-to-SQL|Athena MCP 자연어 분석]] — SQL 실행과 결과 열람, 쓰기와 민감 데이터 접근의 분리
+
 - [[data|AWS 데이터 인덱스]]

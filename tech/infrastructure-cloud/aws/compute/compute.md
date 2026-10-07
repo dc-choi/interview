@@ -17,4 +17,7 @@ EC2, Lambda, ECS 외의 컴퓨팅 서비스 모음. EC2는 [[EC2|EC2 인덱스]]
 
 ## 관련 문서
 
+- [[GameLift-Servers|GameLift Servers]] — 비동기 세션 배치, 부하 측정과 Spot 중단
+- [[GameLift-Streams|GameLift Streams]] — 게임 클라이언트 실행, WebRTC와 위치별 스트리밍 용량
+
 - [[AWS서비스(AWSServices)|AWS 서비스 인덱스]]

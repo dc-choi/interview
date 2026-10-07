@@ -20,5 +20,7 @@ RDS를 프로덕션에서 굴릴 때 필요한 운영 문서 모음. 상위 개�
 
 ## 관련 문서
 
+- [[RDS-MySQL-Storage-Reclamation|MySQL 디스크 공간 회수]] — 테이블 재구축, binlog와 로그, 할당 용량의 구분
+
 - [[rds|RDS 폴더 인덱스]]
 - [[DMS|AWS DMS]]
