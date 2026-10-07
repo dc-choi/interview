@@ -31,6 +31,18 @@ Stream도 schema를 가질 수 있고 batch도 매우 작을 수 있다. latency
 
 정확한 결과가 필요한 pipeline은 늦게 도착한 event를 무시하는 것으로 끝내지 않는다. 수정 event, 재집계 batch 또는 source와의 reconciliation 경로를 둔다.
 
+## 실시간 표시와 확정 결과를 분리한다
+
+순위표처럼 한 항목의 값이 다른 항목의 순위에도 영향을 주는 화면은 개별 이벤트의 빠른 전달만으로 완성되지 않는다. 실시간 집계는 현재까지의 잠정값을 제공하고, 종료 시점에는 확정 입력을 반영하는 경로가 필요하다. 확정 처리가 반드시 배치인 것은 아니다. 종료를 나타내는 이벤트를 별도 소비해 최종 결과를 저장할 수도 있다.
+
+다음은 실시간 순위와 종료 결과를 분리하는 구조에 적용할 설계 기준이다.
+
+- 원본과 파생 통계를 구분한다. 나중에 정정이 들어올 수 있다면 정정 대상과 변경 이력을 식별하고 영향받는 기간과 순위를 재계산할 수 있게 한다.
+- 현재값을 조회하는 경로와 변경을 알리는 경로를 구분한다. 알림 수신을 결과 확정의 증거로 삼지 않고, 화면에서 기준 시각과 잠정 또는 확정 상태를 구분한다.
+- 집계와 전송 주기를 함께 정한다. 여러 이벤트를 묶어 저장과 알림 횟수를 줄이면 화면 지연이 늘 수 있으므로 허용 지연과 쓰기 부하를 같이 측정한다.
+
+2026-10-07 AWS AppSync GraphQL 공식 문서 확인 기준, 일반적인 schema subscription은 연결된 mutation이 실행될 때 발생한다. Query나 DynamoDB 직접 쓰기를 subscription 발행과 동일하게 취급하지 않는다. 구독자가 요구한 필드가 mutation의 selection set에 없으면 `null`이나 non-null 제약 오류가 생길 수 있으므로 저장 성공과 알림 payload의 완전성을 따로 확인한다. 이는 AppSync GraphQL subscription의 조건이며 모든 이벤트 전송 서비스의 공통 동작은 아니다.
+
 ## MySQL의 역할
 
 MySQL은 transactional source of record와 조회 serving에 적합하지만 unbounded stream processor는 아니다. log 기반 CDC가 commit된 row change를 꺼내 broker와 Flink, Kafka Streams 같은 처리기로 전달할 수 있다. CDC transport가 domain event 의미, 중복 제거와 최종 정합성을 자동으로 해결하지는 않는다.
@@ -88,6 +100,9 @@ shuffle은 같은 key의 데이터를 partition 사이로 다시 모으는 과�
 
 ## 출처
 
+- [Building leaderboard functionality with serverless data analytics — AWS Compute Blog](https://aws.amazon.com/blogs/compute/building-serverless-applications-with-streaming-data-part-4/)
+- [AWS AppSync GraphQL, Using subscriptions for real-time data applications](https://docs.aws.amazon.com/appsync/latest/devguide/aws-appsync-real-time-data.html)
+- [Inside the Ropes: PGA TOUR X AWS: Powering TOURCAST — Amazon Web Services](https://www.youtube.com/watch?v=4doZZtycrqg)
 - [Apache Flink Documentation, Windows](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/datastream/operators/windows/)
 - [Apache Spark Documentation, JDBC Data Source](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 - [Apache Spark Documentation, RDD Programming Guide (Shuffle operations)](https://spark.apache.org/docs/latest/rdd-programming-guide.html#shuffle-operations)

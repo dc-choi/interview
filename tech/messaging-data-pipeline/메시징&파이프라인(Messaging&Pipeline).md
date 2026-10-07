@@ -22,7 +22,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 
 - [[MSK-Streaming-Tables|MSK Streaming Tables]] — Express에서 Iceberg 적재, 백필과 스키마 변경 제약, DLQ 원문 미보존
 - [[Kinesis#KDS에서 S3 Tables로 직접 적재|Kinesis Streaming tables]] — Iceberg 직접 적재, 스키마, 암호화 키 제약과 DLQ의 원문 보존 경계
-- [[Stream-and-Batch-Processing|스트림과 배치 처리]] — bounded/unbounded 입력, event time/window, 계산 위임 시점, Spark JDBC 병렬 추출(분할 query와 source 부하, shuffle)
+- [[Stream-and-Batch-Processing|스트림과 배치 처리]] — bounded/unbounded 입력, event time/window, 실시간 표시와 확정 결과, AppSync 알림 조건, Spark JDBC 병렬 추출과 source 부하
 - [[Airflow-DAG-Parsing|Airflow DAG 파싱 최적화]] — dag-processor 재파싱 비용, 메트릭 기반 진단, 인프라 튜닝, top-level 안티패턴, 2.x→3.x 변경점
 - [[Airflow-Task-Process-Model|Airflow 태스크 프로세스 모델]] — Python start method, COW, supervisor와 task runner, 메모리 측정
 - [[ELT-Platform|ELT 플랫폼 (셀프서비스 데이터 파이프라인)]] — 정의와 실행을 DSL로 분리, 동적 DAG 생성, DB→DWH 대량 복제(JDBC 파티셔닝), 재실행과 데이터 품질 검사, Build vs Buy

@@ -25,6 +25,17 @@ aliases: ["Bedrock 관측", "Bedrock Observability"]
 
 지연 증가를 볼 때 출력 길이와 첫 토큰 지연을 함께 본다. 성공 수만 분모로 삼아 전체 요청의 실패율이라고 부르지 않는다. 애플리케이션 요청 한 건이 여러 모델 호출과 재시도를 만들 수 있으므로 업무 요청 수와 모델 호출 수도 구분한다. 이는 지표 정의를 적용한 분석 기준이다.
 
+## 503과 429를 구분해 대응한다
+
+2026-10-07 공식 오류 문서 기준, `503 ServiceUnavailable`은 높은 수요나 일시적인 서비스 용량 부족을 뜻한다. 계정 할당량 초과인 `429 ThrottlingException`과 구분한다. 서버 오류가 늘었다는 이유만으로 할당량 증설을 해결책으로 정하지 않는다.
+
+1. 애플리케이션에서 오류 코드, 요청 ID, 모델 또는 inference profile, 호출 리전과 시각을 기록한다. CloudWatch의 서버 오류와 throttling 지표를 함께 보고 AWS Health의 공지된 장애를 확인한다.
+2. 지수 백오프와 지터를 적용한다. SDK와 애플리케이션의 재시도를 함께 세어 총 시도 수와 요청 기한을 제한한다. 이 제한은 재시도로 부하와 지연이 증폭되는 것을 막기 위한 설계 기준이다.
+3. 반복되는 503에는 해당 모델과 리전이 지원하는 cross-Region inference를 검토한다. Geographic profile은 정해진 지리적 범위 안에서, Global profile은 지원하는 전 세계 상용 리전에서 처리할 수 있으므로 데이터 처리 위치와 IAM/SCP 허용 범위를 먼저 확인한다.
+4. 지속적으로 높은 처리량이 필요하면 지원 모델의 Provisioned Throughput을 별도 용량 선택지로 평가한다. Inference profile과 Provisioned Throughput은 현재 함께 사용할 수 없다. 구매 자원은 시간 단위로 과금되며 삭제할 때까지 과금이 이어지고, 약정에 따라 즉시 삭제하지 못할 수 있다.
+
+복구 판단에서는 최종 실패 수만 보지 않고 요청당 시도 수, 총 지연과 성공률을 함께 본다. 모델이나 리전을 바꿨다면 응답 품질과 데이터 처리 조건도 다시 검증한다. 재시도 공통 원칙은 [[Retry-Backoff-Jitter|재시도와 백오프]], 모델 전환은 [[LLM-Failure-Handling|LLM 장애 대응]]을 따른다.
+
 ## 호출 로그는 별도로 켠다
 
 Model invocation logging은 기본 비활성화다. 지원 호출의 요청, 응답과 메타데이터를 CloudWatch Logs나 S3로 전달하며 목적지는 같은 계정과 리전이어야 한다. `bedrock-runtime` 외의 endpoint에도 같은 로깅이 적용된다고 가정하지 않는다.
@@ -49,6 +60,9 @@ Embedded Metric Format(EMF)은 구조화 로그에서 커스텀 지표를 비동
 
 ## 출처
 
+- [Amazon Bedrock, Troubleshooting Amazon Bedrock API Error Codes](https://docs.aws.amazon.com/bedrock/latest/userguide/troubleshooting-api-error-codes.html)
+- [Amazon Bedrock, Route model inference requests across AWS Regions with cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html)
+- [Amazon Bedrock, Increase model invocation capacity with Provisioned Throughput](https://docs.aws.amazon.com/bedrock/latest/userguide/prov-throughput.html)
 - [Amazon Bedrock, Monitor bedrock-runtime inference using CloudWatch metrics](https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html)
 - [Amazon Bedrock, Monitor model invocation using CloudWatch Logs and Amazon S3](https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html)
 - [Amazon CloudWatch, Embedding metrics within logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format.html)
