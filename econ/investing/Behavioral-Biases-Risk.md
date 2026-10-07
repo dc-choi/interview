@@ -28,6 +28,16 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 
 시장의 거품과 폭락에는 펀더멘털 변화와 함께 심리가 작용한다. 상승 뒤에는 군중 심리와 과신 때문에 추격 매수 충동이, 급락 뒤에는 손실 회피와 공포 때문에 계획 밖 매도 충동이 커질 수 있다. 당시 가격이 사후적으로 최고점인지 최저점인지는 알 수 없으므로 절대적인 타이밍 문장보다 사전에 정한 규칙으로 대응한다 → [[Business-Cycle|경기순환]]의 신용 사이클과 맞물린다.
 
+### 댓글 분위기와 매매 신호를 구분한다
+
+소셜 미디어의 낙관이나 비관은 추가 조사할 단서다. 이를 집계한 심리 지표에도 부정확하거나 오래된 정보, 가격에 영향을 주려는 게시물이 섞일 수 있다. 부정적인 댓글이 늘었다는 사실만으로 저평가나 반등 시점이 확인되지는 않는다. 이는 소셜 심리 도구의 한계를 개별 댓글 해석에 적용한 판단 기준이다.
+
+- 수집한 플랫폼, 기간과 분석 방식을 확인하고 홍보나 이해충돌 가능성을 살핀다.
+- 공시와 재무정보, 가치평가를 함께 확인한다. 단기 심리와 자신의 투자 기간을 구분한다.
+- 심리 지표로 내린 결정은 시장이나 업종 지수와 비교해 기록한다. 맞았던 사례만 기억하지 않는다.
+
+대중과 반대로 행동한다는 이유만으로 수익성이 입증되지는 않는다. 역발상 규칙도 검증할 가설로 두고, 과거 데이터로 시험한다면 [[Backtesting-Pitfalls|백테스트의 함정]]을 함께 점검한다. 불편한 감정을 견디는 연습과 실제 투자 성과는 별개다.
+
 ## 4. 리스크 관리 — 구조로 감정을 누르기
 
 편향은 의지로 이기기 어렵다. 그래서 미리 정한 규칙과 구조로 행동을 묶는다.
@@ -57,6 +67,8 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 
 ## 출처
 
+2026-10-07 부분 검증: 소셜 심리 도구의 정보 오류, 시의성과 이해충돌 위험, 공시 대조와 성과 비교 기준을 SEC와 FINRA의 공동 안내로 확인했다. 특정 댓글이나 역발상 전략의 예측력을 검증한 것은 아니다.
+
 2026-10-03 부분 검증: 합리적 선택 모형과 행동경제학의 구분, 처분 효과와 아래 위험 완화 수단의 한계를 대조했다. 모든 편향의 원인과 효과 크기나 실제 투자자의 행동을 검증한 기록은 아니다.
 
 - [OpenStax, Principles of Microeconomics 3e, Behavioral Economics: An Alternative Framework for Consumer Choice](https://openstax.org/books/principles-microeconomics-3e/pages/6-3-behavioral-economics-an-alternative-framework-for-consumer-choice)
@@ -65,6 +77,7 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 - [Diversify Your Investments — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/save-and-invest/diversify-your-investments) — 2026-10-03 분산의 손실 방지 한계 대조
 - [An essential guide to building an emergency fund — CFPB](https://www.consumerfinance.gov/an-essential-guide-to-building-an-emergency-fund/) — 2026-10-03 비상금의 목적, 접근성과 상황별 규모 대조
 - [The Benefits and Limitations of Dollar-Cost Averaging — FINRA](https://www.finra.org/investors/insights/dollar-cost-averaging) — 2026-10-03 자동 적립의 행동상 이점과 한계 대조
+- [Investor Bulletin: Social Sentiment Investing Tools — SEC, FINRA](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-18)
 
 ## 관련 문서
 

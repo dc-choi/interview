@@ -21,6 +21,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 ### 기초와 도구 선택
 
 - [x] [[CICD-Foundations|기초와 도구 선택 폴더 인덱스 (CI/CD 개념 구분, 툴 선택 기준, AWS Code 시리즈 운영, CI 도구 비교, DevSecOps)]]
+- [x] [[CICD-Basics#생성형 AI 보조 단계와 배포 판정|생성형 AI를 보조 단계에 연결하기]] — 초안과 승인 구분, 실행 검사, 배포 성과 측정
 
 ### 파이프라인
 

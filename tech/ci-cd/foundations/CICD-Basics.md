@@ -1,6 +1,7 @@
 ---
 tags: [cicd, ci, cd, continuous-integration, continuous-delivery, continuous-deployment]
 status: done
+verified_at: 2026-10-07
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["CICD Basics", "CI/CD 기초", "Continuous Integration", "Continuous Delivery", "Continuous Deployment"]
 ---
@@ -14,7 +15,7 @@ aliases: ["CICD Basics", "CI/CD 기초", "Continuous Integration", "Continuous D
 - **CI**: 코드 변경을 **자주, 작게** 머지하고 자동으로 **빌드, 테스트**
 - **CD**: CI 통과 후 **배포 가능 상태**로 저장(Delivery) 또는 **자동 배포**(Deployment)
 - 자동화의 목적: **휴먼 에러 감소, 조기 문제 발견, 릴리즈 시간 단축**
-- "작고 자주"가 핵심 — 큰 배치를 한 번에 하면 오류 원인 파악이 어려워지고 롤백 리스크 증가
+- 작고 자주 통합하는 것이 핵심 — 큰 배치를 한 번에 하면 오류 원인 파악이 어려워지고 롤백 리스크 증가
 
 ## 배포가 무서울 때 — 미루기가 더 위험하다
 
@@ -57,7 +58,7 @@ aliases: ["CICD Basics", "CI/CD 기초", "Continuous Integration", "Continuous D
 | **적합한 경우** | 규제 산업, 중대 변경, 수동 QA 필요 | Feature flag, 점진 롤아웃이 잘 된 조직 |
 | **단점** | 배포 시점이 사람에 의존 | 자동 배포를 신뢰할 수준의 테스트, 관측 필요 |
 
-**Delivery**는 "언제든 배포 가능한 상태", **Deployment**는 "실제로 자동 배포됨". Netflix, Amazon 같은 곳은 Deployment, 금융권은 Delivery가 일반적.
+**Delivery**는 언제든 배포 가능한 상태를 유지하고, **Deployment**는 검증을 통과한 변경을 운영 환경에 자동으로 배포한다. 선택은 회사나 업종 이름보다 승인 요건과 검증, 복구 능력에 따른다.
 
 ## 코드 배포와 기능 릴리스 분리
 
@@ -120,18 +121,30 @@ Post-deploy Monitoring
 | **Jenkins** | 셀프 호스팅, 플러그인 생태계 풍부, 운영 부담 |
 | **GitHub Actions** | GitHub 통합, YAML 기반, 관리형 |
 | **GitLab CI** | GitLab 통합, Pipeline as Code |
-| **CircleCI** | 관리형, 빠른 빌드, 가격 경쟁력 |
-| **Travis** | 오픈소스 친화, GitHub 통합 (인기 감소) |
+| **CircleCI** | CI/CD 서비스, 실행 환경과 비용 조건은 선택 시 확인 |
+| **Travis CI** | CI 서비스, 저장소 연동과 이용 조건은 선택 시 확인 |
 | **AWS CodePipeline/CodeBuild** | AWS 통합, IAM |
 | **ArgoCD/FluxCD** | K8s GitOps 전용 CD |
 
 도구 선택 기준은 [[CICD-Tool-Selection]].
 
+## 생성형 AI 보조 단계와 배포 판정
+
+AI가 코드, 테스트나 리뷰 초안을 만들었다는 사실과 변경이 배포 가능하다는 판정은 다르다. 다음은 AWS의 SDLC 지침과 리뷰 보조 사례를 바탕으로 정리한 파이프라인 설계 기준이다(2026-10-07 대조).
+
+| 보조 작업 | 다음 단계로 넘기기 전에 확인할 것 |
+|---|---|
+| 티켓과 테스트 초안 생성 | 수용 기준이 실제 요구사항과 맞는지 검토하고, 테스트를 실행해 결과 확인 |
+| 변경 요약과 리뷰 의견 생성 | 원 diff와 영향 범위를 대조하고, 기존 빌드와 보안 검사를 유지 |
+| 배포 승인 자료 생성 | AI 설명을 검토 자료로 사용하고, 정해 둔 승인 주체와 파이프라인 통과 조건으로 배포 결정 |
+
+코드 생성 시간만 줄어도 검토 대기와 재작업이 늘면 전달 속도는 개선되지 않을 수 있다. 같은 서비스에서 도입 전후의 병목과 DORA 지표를 함께 본다. 2026-10-07 확인한 DORA 지표는 변경 처리 시간, 배포 빈도, 실패 배포 복구 시간, 변경 실패율, 배포 재작업률이며, 배포 빈도까지 모두 낮추는 것이 목표는 아니다. 실패 배포 복구 시간은 모든 원인의 장애 복구 시간을 뜻하지 않는다. 측정의 해석과 함정은 [[Software-Productivity-Measurement]]에서 다룬다.
+
 ## 자주 헷갈리는 포인트
 
 - **CI = 단순 빌드 자동화** 오해 — 통합, 테스트, 품질 검증을 포함
 - **CD Delivery = Deployment** 혼동 — 자동 배포 여부가 결정적 차이
-- **"자동화하면 품질 OK"** — 자동화는 일관성, 속도 확보, 품질은 테스트, 리뷰가 결정
+- **자동화만으로 품질이 보장되지는 않음** — 자동화는 일관성, 속도 확보, 품질은 테스트, 리뷰가 결정
 - **파이프라인이 너무 길어지면 CI 가치 하락** — 10분 넘으면 개발자 대기로 생산성 저하. 병렬화, 캐싱 중요
 - **빅뱅 파이프라인** — 모든 테스트를 일괄 실행하기보다, 빠른 피드백(lint, unit) 먼저 → 느린 단계 뒤로
 - **CI 실패를 방치** — 실패한 빌드가 며칠 쌓이면 문화가 무너짐. 빨간 불은 즉시 대응
@@ -166,6 +179,12 @@ Post-deploy Monitoring
 - 성숙도 단계(0~5)로 자신의 팀 현재 위치 설명
 
 ## 출처
+
+2026-10-07 부분 검증: 생성형 AI 보조와 배포 판정, DORA 지표의 정의를 공식 자료와 대조했다. 모든 도구의 기능, 이용 조건과 성숙도 예시를 재검증한 것은 아니다.
+
+- [AWS Prescriptive Guidance, Best practices for using generative AI in software development](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-accelerate-software-dev-lifecycle-gen-ai/best-practices.html)
+- [Enhance code review and approval efficiency with generative AI using Amazon Bedrock — AWS](https://aws.amazon.com/blogs/machine-learning/enhance-code-review-and-approval-efficiency-with-generative-ai-using-amazon-bedrock/)
+- [DORA’s software delivery performance metrics — DORA](https://dora.dev/guides/dora-metrics/)
 - [테코블 — CI/CD란?](https://tecoble.techcourse.co.kr/post/2021-08-14-ci-cd/)
 - [Implement Incremental Feature Release Techniques — AWS DevOps Guidance](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/dl.ads.4-implement-incremental-feature-release-techniques.html)
 - [45권의 기술 서적에서 얻은 핵심 인사이트 — GeekNews](https://news.hada.io/topic?id=31718)
