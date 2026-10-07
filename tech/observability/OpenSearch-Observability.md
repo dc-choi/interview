@@ -93,6 +93,16 @@ Discover에서 query 결과를 table과 chart로 확인하고 그대로 dashboar
 
 `join`, `lookup`, `timechart`, `eventstats`, `rex`, `spath` 같은 명령의 지원 범위는 OpenSearch index, S3 direct query, CloudWatch data source마다 다를 수 있다. 기능 이름만 보고 설계하지 말고 대상 data source와 engine version의 command matrix를 확인한다.
 
+### 로그 분석용 Optimized 엔진의 조사 경계
+
+2026-10-07 공식 가이드 대조 기준, Optimized는 로그 집계와 전문 검색을 결합하는 엔진 모드다. 서비스 배포 모델은 [[OpenSearch-Service-Deployment|배포 모델]]을 참고한다. 통합 관측성 기능 전체가 이 엔진에서도 제공된다고 가정하지 않는다.
+
+- **결과 0건 해석**: Optimized의 PPL `search`는 텍스트 검색을 지원하지만 숫자, 날짜, IP 필드 비교는 0건을 반환할 수 있다. 비텍스트 조건은 `where`로 분리한다. 알려진 이벤트로 필터를 검증한 뒤 로그 부재를 판단한다.
+- **조사 기능 확인**: 설정 가이드의 미지원 목록에는 APM과 Agent Traces가 있다. 아래 Application Map과 trace 조사 흐름을 Optimized domain에 그대로 적용하기 전에 해당 데이터 소스의 지원 여부를 확인한다.
+- **보존 계층 확인**: Optimized의 warm tier는 읽기 전용이다. 수집은 hot tier로 하고 ISM으로 warm에 옮긴다. 일반 Multi-tier storage의 warm 쓰기 지원을 이 엔진의 보장으로 해석하지 않는다.
+
+이 절의 엔진별 쿼리, 기능과 보존 제약만 추가 대조했다. 문서 전체의 기존 기능, 리전과 지원 정책을 재검증한 것은 아니다.
+
 ## Trace와 Application Map
 
 Discover Traces는 service별 RED metric, span table, waterfall, 관련 log 이동을 제공한다. Application Monitoring은 trace에서 만든 topology와 Amazon Managed Service for Prometheus의 RED metric을 결합한다.
@@ -113,7 +123,7 @@ Slack, webhook, SNS 같은 채널 전송에는 network 경로와 secret 관리�
 ## 저장과 비용
 
 - 자주 조사하는 최근 log와 trace는 검색 가능한 hot 계층에 둔다.
-- 오래된 OpenSearch index는 ISM으로 warm, cold, delete를 자동화한다.
+- 오래된 OpenSearch index는 엔진과 배포 구성에서 지원하는 ISM 전환 및 삭제 기능으로 관리한다. Optimized는 cold storage를 지원하지 않는다.
 - 원본 archive와 완전 replay가 필요하면 S3 보존을 별도로 둔다.
 - S3 direct query는 S3를 자동 cold tier로 쓰는 기능이 아니라 별도 data source와 OCU 과금, format, Region 제약이 있는 query 경로다.
 - Metric은 Amazon Managed Service for Prometheus의 retention과 cardinality를 별도로 관리한다.
@@ -175,6 +185,9 @@ OpenSearch UI 내장 Agentic AI는 현재 사용자의 IAM과 RBAC, document와 
 
 ## 출처
 
+- [AWS Documentation, Optimized engine supported query languages](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/optimized-log-analytics-queries.html)
+- [AWS Documentation, Optimized engine setting up](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/optimized-log-analytics-prerequisites.html)
+- [AWS Documentation, Optimized engine storage behavior](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/optimized-log-analytics-storage.html)
 - [AWS Documentation, Observability in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/observability.html)
 - [AWS Documentation, CloudWatch Application Signals](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Services.html)
 - [AWS Documentation, Using OpenSearch UI](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/application.html)

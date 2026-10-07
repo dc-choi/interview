@@ -56,6 +56,18 @@ DSL 기반 실행을 Airflow로 구현할 때 쓰는 기법. DAG를 파일마다
 
 큰 table을 단일 connection으로 scan하면 완료 시간이 길 수 있어 Spark JDBC 범위 병렬화를 검토한다. `partitionColumn`은 numeric, date 또는 timestamp column이어야 하고 `lowerBound`, `upperBound`는 filter가 아니라 partition stride를 정한다. `numPartitions`는 동시 JDBC connection 상한이기도 하므로 source DB의 pool, CPU와 I/O 예산 안에서 정한다. 범위 분포가 치우치면 task skew가 생기며 병렬 query 사이 snapshot 시점도 달라질 수 있다. 자세한 안전 조건은 [[Stream-and-Batch-Processing|스트림과 배치 처리]]에서 다룬다.
 
+## 재실행과 데이터 품질을 별도로 검증한다
+
+복제 작업의 성공 상태만으로 분석에 쓸 데이터가 준비됐다고 판단하지 않는다. 재시도해도 같은 결과를 만드는 조건과 적재 결과의 품질 조건을 나눠 확인한다. 아래 Airflow와 AWS Glue의 동작 및 검사 유형은 2026-10-07 공식 문서 대조 기준이다.
+
+- **입력 구간 고정**: 재시도 때마다 최신 데이터를 다시 읽지 않고 같은 논리 구간이나 파티션을 읽는다. Airflow에서는 `data_interval_start`를 파티션 기준으로 쓸 수 있다. 다만 같은 파티션의 원본이 수정되면 결과도 달라질 수 있으므로 재현이 필요할 때는 입력 버전이나 스냅샷까지 고정한다.
+- **중복 적재 방지**: 재실행 시 단순 `INSERT`가 행을 중복 생성할 수 있다. 키 기반 `UPSERT` 같은 멱등 쓰기를 검토하고, 태스크 실패 후 부분 결과가 완료 데이터처럼 노출되지 않는지 확인한다. 중복 제거의 키와 원자성은 [[Idempotent-Consumer|멱등 처리]]와 함께 설계한다.
+- **결과 검사**: 적재 뒤 대상 파티션 존재와 내용 검사를 후속 작업으로 둔다. AWS Glue DQDL에는 `ColumnExists`, `Completeness`, `Uniqueness`, `RowCount`, `DataFreshness`처럼 서로 다른 품질 항목을 검사하는 규칙이 있다. 하나의 검사 통과로 나머지 품질까지 보장하지 않는다.
+
+예를 들어 일별 주문 복제에서는 동일한 입력 구간을 두 번 처리한 뒤 주문 키 중복, 필수값 누락과 기대 건수를 확인할 수 있다. 원천과 대상의 건수를 비교할 때는 필터, 삭제와 중복 제거 조건부터 맞춘다. 검사 실패 시 후속 집계를 막을지, 문제 행을 격리할지는 데이터 사용 목적에 맞춰 정할 운영 정책이다.
+
+이 절은 재실행과 품질 확인 조건만 보강한다. 기존 플랫폼 구축 사례 전체를 재검증한 것은 아니다.
+
 ## Build vs Buy (자체 구축 vs OSS/SaaS)
 
 Airbyte, Fivetran 같은 기성 커넥터 솔루션이 있는데 왜 자체 구축하나:
@@ -86,6 +98,8 @@ Airbyte, Fivetran 같은 기성 커넥터 솔루션이 있는데 왜 자체 구�
 
 - [당근 200개 DB를 옮기는 ELT 플랫폼(DT Platform)을 만든 이야기 — 당근 기술 블로그](https://medium.com/daangn/%EB%8B%B9%EA%B7%BC-200-%EA%B0%9C-db-%EB%A5%BC-%EC%98%AE%EA%B8%B0%EB%8A%94-elt-%ED%94%8C%EB%9E%AB%ED%8F%BC-dt-platform-%EC%9D%84-%EB%A7%8C%EB%93%A0-%EC%9D%B4%EC%95%BC%EA%B8%B0-65a499b4967a)
 - [Apache Spark Documentation, JDBC Data Source](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
+- [Apache Airflow Documentation, Best Practices](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html)
+- [AWS Documentation, DQDL rule type reference](https://docs.aws.amazon.com/glue/latest/dg/dqdl-rule-types.html)
 
 ## 관련 문서
 
