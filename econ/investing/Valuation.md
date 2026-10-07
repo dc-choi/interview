@@ -40,6 +40,16 @@ DCF는 가정이 많아 손이 무겁다. 그래서 비슷한 기업끼리 배�
 
 EBITDA는 운전자본 변동과 설비투자 같은 현금 지출을 반영하지 않으므로 영업현금흐름과 같지 않다. 현금 창출력을 볼 때는 현금흐름표를 함께 확인한다.
 
+### PEG는 성장률로 나눠도 위험을 제거하지 않는다
+
+PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센트 숫자로 넣으므로 PER 20배, 예상 연간 EPS 성장률 20%라면 `20 ÷ 20 = 1`이다. 0.20으로 나누지 않는다.
+
+비교할 때는 PER의 EPS 기준연도, 성장률의 시작점과 예측 기간, 추정 출처를 맞춘다. 올해 EPS를 출발점으로 한 성장 전망에 내년 EPS로 계산한 PER을 섞으면 성장 효과를 중복 반영할 수 있다. 예상 EPS의 기간과 회계 기준은 [[Stocks#PER은 분모의 기간과 산정 기준을 맞춘다|PER의 분모 확인]]을 따른다.
+
+**PEG 1 미만은 저평가를 확정하는 기준이 아니다.** 위험과 배당성향은 PEG에도 영향을 주며, 같은 성장률이어도 재투자 부담과 투자 수익성이 다르면 적정 배수가 달라질 수 있다. 성장과 가치의 관계가 선형이 아니므로 성장률로 나눴다고 기업 간 성장 차이가 제거되는 것도 아니다.
+
+가상으로 PER 20배가 같아도 예상 성장률을 40%로 놓으면 PEG는 0.5, 10%로 놓으면 2다. 낮은 숫자가 보수적인 추정의 결과인지, 낙관적인 성장률 때문인지 먼저 확인한다. 성장률 0에서는 나눗셈이 정의되지 않으며, 음의 이익이나 성장률을 가진 기업을 양의 성장 기업과 같은 PEG 순위로 비교하지 않는다. 이 절의 정의와 비교 한계는 2026-10-07 NYU Stern의 PEG 강의 자료와 대조했다.
+
 ## 4. 성장과 가치
 
 미래 성장을 얼마로 보느냐가 밸류에이션의 가장 큰 변수다. 빠르게 크는 기업은 지금 이익이 적어도 높은 가격이 정당화될 수 있고, 성숙한 기업은 안정적 현금흐름으로 평가된다. 다만 성장은 미래의 가정이라 틀리기 쉽다. 낙관적 성장 가정 위에 쌓은 높은 밸류에이션은 금리가 오르거나 성장이 꺾이면 빠르게 무너진다.
@@ -103,6 +113,7 @@ EBITDA는 운전자본 변동과 설비투자 같은 현금 지출을 반영하�
 
 ## 출처
 
+- [NYU Stern, PEG Ratios](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/peg.htm) — 2026-10-07 EPS 기준, 예상 성장률의 기간과 위험 및 재투자에 따른 해석 한계 대조
 - [NYU Stern, The Fundamental Determinants of Growth](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/valquestions/growth.htm) — 2026-10-06 재투자, 평균/한계 자본수익률과 측정 한계 대조
 - [NYU Stern, Growth companies: Value Drivers](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/littlebook/growthvaluedrivers.htm) — 성장과 재투자, 기존 자산의 효율 개선
 
@@ -111,9 +122,7 @@ EBITDA는 운전자본 변동과 설비투자 같은 현금 지출을 반영하�
 - [SEC, How to Read a 10-K](https://www.sec.gov/answers/reada10k.htm)
 - [SEC, Modernization of Regulation S-K Items 101, 103, and 105: A Small Entity Compliance Guide](https://www.sec.gov/resources-small-businesses/small-business-compliance-guides/modernization-regulation-s-k-items-101-103-105-small-entity-compliance-guide)
 - [금융감독원 DART, 기업공시 길라잡이 정기보고서](https://dart.fss.or.kr/info/main.do?menu=210)
-- [IAS Plus, IFRS 8 Operating Segments](https://iasplus.com/content/e67eaae8-edcf-434b-af99-ff0f1c6a57c1)
-- [미국 기업 검토 7항목 — Threads, ex_manager1](https://www.threads.com/@ex_manager1/post/DdRXx2xlH5Y)
-- [주식 기초 지표 6가지 — Threads, geni_kimdirector](https://www.threads.com/@geni_kimdirector/post/DXj779pk97-)
+- [IFRS Foundation, IFRS 8 Operating Segments (2021 issued)](https://www.ifrs.org/content/dam/ifrs/publications/pdf-standards/english/2021/issued/part-a/ifrs-8-operating-segments.pdf) — 문단 34의 주요 고객 매출 공시 기준
 
 ## 관련 문서
 
