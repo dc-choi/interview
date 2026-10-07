@@ -141,6 +141,17 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - SPA route 대응: asset과 실제 권한 오류를 제외한 client-side route만 viewer-request에서 `/index.html`로 rewrite. 모든 403/404 일괄 200 변환은 피함
 - `index.html`은 `no-cache`, 해시 파일명 자산은 `max-age=31536000, immutable`
 
+## 403 오류 — 거부한 계층부터 찾기
+
+2026-10-08 공식 오류 처리와 HTTPS 문서 확인 기준이다. 응답 코드만으로 CloudFront, WAF와 origin 중 거부한 주체를 확정할 수 없다.
+
+1. **도메인과 프로토콜:** DNS만 연결하지 말고 distribution의 alternate domain name도 확인한다. `HTTPS only` behavior에 HTTP로 요청하면 403이므로 먼저 HTTPS로 재현한다.
+2. **viewer 정책:** 지리적 제한, signed URL/cookie의 필요 여부를 확인한다. 서명이 필요한 behavior에 서명 없이 접근하면 거부된다.
+3. **WAF:** distribution과 origin의 Web ACL에서 해당 요청을 차단한 규칙을 찾는다. 원인 확인을 위해 전체 WAF를 해제하는 방식은 피한다.
+4. **origin:** custom origin 로그와 허용된 직접 요청으로 비교한다. S3 REST origin은 OAC/OAI와 버킷 정책, 객체 경로와 존재 여부를 확인한다. 비공개 origin은 직접 요청 자체가 거부될 수 있으므로 인증 조건이 다른 403을 같은 원인으로 단정하지 않는다.
+
+`Redirect HTTP to HTTPS`도 모든 HTTP 요청을 리디렉션하지는 않는다. GET/HEAD는 301, HTTP/1.1 이상의 POST/PUT/DELETE/OPTIONS/PATCH는 307이며, 뒤의 메서드를 HTTP/1.0으로 보내면 403이다. 장애를 없애려고 HTTP 허용 범위를 넓히기 전에 요청 프로토콜과 정책을 맞춘다.
+
 ## 시험, 면접 체크포인트
 
 - **CDN의 두 가지 효과**: 지리적 근접성(지연 ↓) + Origin 부하 분산
@@ -155,6 +166,8 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - 지원되는 AWS origin → CloudFront 전송은 별도 데이터 전송 요금 없음, Shield Standard 포함
 
 ## 출처
+- [AWS 공식 문서, HTTP 403 status code (Permission Denied)](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/http-403-permission-denied.html)
+- [AWS 공식 문서, Require HTTPS for communication between viewers and CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html)
 - AWS SAA C03 학습 자료 — CloudFront
 - [AWS 공식 문서, CloudFront flat-rate pricing plans](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/flat-rate-pricing-plan.html)
 - [AWS 공식 문서, CloudFront Functions JavaScript runtime 2.0](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/functions-javascript-runtime-20.html)

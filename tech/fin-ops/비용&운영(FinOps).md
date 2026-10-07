@@ -14,7 +14,7 @@ aliases: ["비용&운영(FinOps)", "Cost & Operations", "FinOps"]
 ## Checklist
 - [x] [[AWS-Cost-Allocation-Tags|AWS 비용 할당 태그 (활성화와 backfill, EKS 귀속, Cost Categories와 공유 비용 배분 결과의 범위)]]
 - [x] [[AWS-Cost-Optimization|AWS 비용 최적화 종합 (Frugal Architect, FinOps 라이프사이클, Showback/Chargeback, Spot, RI/SP, Managed→Self-Hosted, 적정 기술 선택)]]
-- [x] [[AWS-Pricing|AWS 요금 구조 (종량+약정, 서비스별 과금 차원, Calculator)]]
+- [x] [[AWS-Pricing|AWS 요금 구조 (종량+약정, 서비스별 과금 차원, Calculator, 계정 폐쇄 후 청구와 구독 정리)]]
 - [x] [[AWS-Cost-Levers|AWS 비용 절감 레버 문서 묶음 (적정화, 오토스케일링, RI/SP, 스토리지 티어링, 데이터 전송, ECR)]]
 - [x] [[Cost-Anomaly|비용 이상 탐지 (ML 베이스라인, Monitor, 예산과 보완, 에이전트 조사의 근거와 변경 승인 분리)]]
 - [x] [[Budget-Alert|예산 알람 (Actual/Forecasted, Budget Actions, 층 구성)]]

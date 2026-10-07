@@ -43,6 +43,17 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 - **Cost Explorer**: 실제 청구를 서비스/태그별로 분해. [[Budget-Alert]]
 - 둘을 비교해 가정과 실제의 괴리를 좁힌다.
 
+## 계정 폐쇄 뒤에도 남는 청구
+
+2026-10-08 공식 계정 관리와 CloudTrail 문서 확인 기준이다. 계정 폐쇄, 종량 사용 중단과 약정 종료는 서로 다른 사건이다.
+
+- **이미 사용한 금액:** 폐쇄 전 사용료는 다음 달에 청구될 수 있다. 청구서 도착일만 보고 폐쇄 후 새 사용이 발생했다고 판단하지 않는다.
+- **Reserved Instances와 Savings Plans:** 계정을 닫아도 만료 전 약정 청구는 남는다. 폐쇄를 약정 취소 수단으로 계산하지 않는다.
+- **AWS Marketplace:** 계정 폐쇄만으로 구독이 자동 취소되지 않는다. 해당 소프트웨어 인스턴스를 종료하고 Marketplace에서 구독 취소를 별도로 확인한다.
+- **CloudTrail trail:** 계정 폐쇄 뒤에도 trail이 남을 수 있다. 다른 계정의 S3 버킷으로 전송하던 trail은 전달이 가능한 동안 이벤트를 계속 보낼 수 있다. 종료 전 보존 요구와 전달 대상을 확인해 삭제 여부를 정하고, 이미 닫았다면 AWS Support에 삭제를 요청할 수 있다. 이 동작을 CloudTrail Lake 등 모든 관련 리소스에 일반화하지 않는다.
+
+운영 점검은 Bills에서 **서비스, 리전, 사용 기간과 약정**을 분리해 대조하는 순서로 한다. 폐쇄 후 90일 동안은 과거 청구 조회와 미납 요금 납부가 가능하지만, 이를 서비스 사용 권한이나 납부 유예 기간으로 해석하지 않는다.
+
 ## 흔한 함정
 
 - 인스턴스 단가만 비교하고 전송/스토리지/요청을 빼먹음
@@ -61,6 +72,9 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 
 ## 출처
 
+- [AWS, Close an AWS account](https://docs.aws.amazon.com/accounts/latest/reference/manage-acct-closing.html)
+- [AWS, AWS account closure and trails](https://docs.aws.amazon.com/en_en/awscloudtrail/latest/userguide/cloudtrail-account-closure.html)
+- [Why did I receive a bill after I closed my AWS account? — AWS re:Post](https://repost.aws/knowledge-center/closed-account-bill)
 - [AWS, How AWS Pricing Works](https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/how-aws-pricing-works.html)
 - [AWS, Explore AWS services with AWS Free Tier](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier.html)
 - [AWS, AWS Free Tier FAQs](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-FAQ.html)

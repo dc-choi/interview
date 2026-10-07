@@ -23,6 +23,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 - [x] [[CICD-Foundations|기초와 도구 선택 폴더 인덱스 (CI/CD 개념 구분, 툴 선택 기준, AWS Code 시리즈 운영, CI 도구 비교, DevSecOps)]]
 - [x] [[CICD-Basics#생성형 AI 보조 단계와 배포 판정|생성형 AI를 보조 단계에 연결하기]] — 초안과 승인 구분, 실행 검사, 배포 성과 측정
 - [x] [[DevOps-vs-DevSecOps#스캔 성공과 배포 허용은 다르다|보안 스캔과 배포 관문]] — SBOM, 취약점 보고서, 임계값 출력과 작업 실패의 구분
+- [x] [[GitLab-Security-Policies|GitLab 보안 정책]] — 스캔 실행, 공통 CI job과 MR 승인 분리, 보고서 전제와 정책 변경 권한
 
 ### 파이프라인
 

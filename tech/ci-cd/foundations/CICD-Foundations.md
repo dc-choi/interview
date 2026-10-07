@@ -14,6 +14,7 @@ CI/CD의 개념 구분과 파이프라인을 어떤 도구로 만들지의 판�
   - [[CICD-Tool-Selection-AWS-Code-Services|AWS Code 시리즈 운영]]: CodeDeploy 전제와 배포 구성 판정, EC2 lifecycle hook, CodePipeline S3 source, CodeBuild Docker build와 ECR push
 - [[CI-Tool-Selection|CI 도구 비교]]: GitHub Actions, Jenkins, GitLab, CodeBuild, Argo, 파이프라인 구조, 배포 전략
 - [[DevOps-vs-DevSecOps|DevOps vs DevSecOps]]: Shift Left, SAST/DAST/SCA, Policy as Code, 스캔 결과와 배포 차단의 연결
+- [[GitLab-Security-Policies|GitLab 보안 정책]]: 스캔 실행, 공통 CI job과 MR 승인 분리, 보고서 전제와 정책 변경 권한
 
 ## 함께 볼 문서
 
