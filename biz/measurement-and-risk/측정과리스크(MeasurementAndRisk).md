@@ -10,6 +10,7 @@ aliases: ["Measurement and Risk", "측정과 리스크", "Analytics", "분석", 
 지표로 사업을 측정하고 리스크를 관리하는 프레임워크.
 
 ## 목차
+- [x] [[Customer-Support-Operations-Metrics|고객지원 운영 지표]] — 상담과 문제 해결의 구분, 포기율과 처리 시간, 자동화 비교와 해결 건당 비용
 - [x] [[Metrics-Framework|지표 설계 & North Star Metric (AARRR, 증분과 가치 구분, 분자와 분모, 실험 해석, 업무 날짜와 제품 사용 시각, 파워 유저 곡선)]]
 - [x] [[App-Analytics-Event-Tracking|앱 분석과 이벤트 설계 (GA4와 Firebase, 권장 이벤트, 퍼널과 코호트, 테스트 구분값과 필터 상태)]]
 - [x] [[Risk-Management|리스크 관리]] — 제품 가정, 거래 상대, 지급 승인과 대사, 1인 사업의 대체 통제

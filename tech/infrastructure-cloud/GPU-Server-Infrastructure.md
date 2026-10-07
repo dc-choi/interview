@@ -45,6 +45,30 @@ DGX H100/H200 공식 사용자 가이드의 예시는 GPU 8개, 최대 시스템
 
 공식 환경 조건에는 전면에서 후면으로 흐르는 냉각 공기와 작동 온도 범위가 있다. 랙 공간이 남는다는 사실만으로 추가 설치가 가능하다고 판단하지 않는다. 도입 검토에서는 해당 모델의 전원 입력, 랙 하중, 풍량과 열 배출 요구를 설치 환경과 대조한다. 최대 전력 사양과 실제 부하의 소비 전력도 구분한다.
 
+## GPU 사용률을 작업 성과와 연결한다
+
+`nvidia-smi`의 GPU utilization은 표본 구간에 하나 이상의 커널이 실행된 시간의 비율이다. 연산 장치를 최대한 활용한 비율이나 업무 처리량을 뜻하지 않는다. Memory utilization도 장치 메모리를 읽거나 쓴 시간의 비율이며, 메모리 용량 점유율과 다르다. [NVIDIA 지표 정의](https://docs.nvidia.com/deploy/nvidia-smi/index.html)
+
+따라서 다음 항목을 같은 시간축으로 비교한다. 이는 지표 정의에서 도출한 운영 점검안이다.
+
+| 관측 범위 | 함께 볼 것 | 피할 해석 |
+| --- | --- | --- |
+| 장치 | GPU 활동률, 사용 메모리 용량, 온도, 전력과 오류 | 활동률이 높으면 유효 처리량도 높다는 판단 |
+| 호스트와 통신 | CPU, 디스크 I/O, GPU 간 통신과 서버 네트워크 | GPU 활동률이 낮다는 이유만으로 장비를 줄이는 판단 |
+| 작업 | 할당된 GPU, 대기 시간, 완료량, 지연과 실패 | 자원 할당을 실제 사용이나 성공으로 계산 |
+
+유휴 자원을 회수하기 전에는 입력 데이터 대기, 통신 병목, 예약된 작업과 복구 여유를 확인한다. 순간값만 보지 않고 작업 주기를 포함한 이력을 비교하며, 자원을 줄인 뒤에는 완료량과 지연이 유지되는지 확인한다.
+
+### Kubernetes와 GPU 공유의 관측 경계
+
+DCGM Exporter는 GPU 지표를 Prometheus가 수집할 수 있도록 노출한다. Kubernetes에서는 `KubeletPodResources` API를 이용해 GPU와 Pod의 연결을 관측한다. GPU, 호스트와 Kubernetes 객체 지표를 함께 보되, 수집 설정과 실제 label에 작업 식별 정보가 있는지 확인한다. [GPU Telemetry 개요](https://docs.nvidia.com/datacenter/cloud-native/gpu-telemetry/latest/)
+
+- **MIG**는 지원 GPU를 미리 정의된 인스턴스로 나누며 하드웨어 수준의 메모리와 장애 격리를 제공한다. DCGM Exporter의 MIG 모드에서는 GPU 인스턴스 단위로 관측한다. [Exporter 문서](https://docs.nvidia.com/datacenter/cloud-native/gpu-telemetry/latest/dcgm-exporter.html)
+- **Time-slicing**은 같은 GPU를 공유하며 replica 사이의 메모리와 장애 격리를 제공하지 않는다. replica를 더 요청해도 비례하는 연산량을 보장받지 않는다. NVIDIA Kubernetes Device Plugin으로 time-slicing을 켠 경우 DCGM Exporter는 지표를 컨테이너에 연결하는 기능을 지원하지 않는다. [GPU 공유 문서](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/gpu-sharing.html)
+- `nvidia-smi`는 MIG가 활성화된 GPU의 GPU/Memory utilization 조회를 지원하지 않는다고 명시한다. 누락된 값을 0으로 처리하거나 물리 GPU의 관측 결과를 각 Pod의 사용량으로 복제하지 않는다. [NVIDIA 지표 정의](https://docs.nvidia.com/deploy/nvidia-smi/index.html)
+
+2026-10-07 부분 대조: 사용률 정의, DCGM Exporter의 작업 연결과 GPU 공유 제약을 공식 문서로 확인했다. GPU 수명, 보편적인 장애율이나 비용 절감률은 이 지표만으로 추정하지 않는다.
+
 ## 확인 질문
 
 - 작업이 연산, 메모리 용량, 메모리 대역폭, 서버 간 통신 중 어디에서 제한되는가?
@@ -57,6 +81,10 @@ DGX H100/H200 공식 사용자 가이드의 예시는 GPU 8개, 최대 시스템
 - [NVIDIA CUDA, CUDA C++ Best Practices Guide](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html)
 - [NVIDIA, H100 GPU Product Specifications](https://www.nvidia.com/en-us/data-center/h100/)
 - [NVIDIA DGX H100/H200 User Guide, Introduction to NVIDIA DGX H100/H200 Systems](https://docs.nvidia.com/dgx/dgxh100-user-guide/introduction-to-dgxh100.html)
+- [NVIDIA, System Management Interface](https://docs.nvidia.com/deploy/nvidia-smi/index.html)
+- [NVIDIA GPU Telemetry, About GPU Telemetry](https://docs.nvidia.com/datacenter/cloud-native/gpu-telemetry/latest/)
+- [NVIDIA GPU Telemetry, DCGM Exporter](https://docs.nvidia.com/datacenter/cloud-native/gpu-telemetry/latest/dcgm-exporter.html)
+- [NVIDIA GPU Operator, Time-Slicing GPUs in Kubernetes](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/gpu-sharing.html)
 
 ## 관련 문서
 
