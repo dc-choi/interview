@@ -59,6 +59,18 @@ Microsoft Defender XDR의 자동 공격 차단은 여러 제품의 신호를 사
 
 Defender는 자동 조치의 해제와 지원 대상 자산의 제외 설정을 제공하지만, 조치를 해제한다고 이미 생긴 업무 중단까지 없어지는 것은 아니다. 생성형 AI가 조사 설명을 보조할 때도 설명과 실행 권한을 분리한다. 외부 로그나 메일의 문장을 실행 지시로 받아들이는 위험은 [[LLM-Application-Security|LLM 애플리케이션 보안]]에서 다룬다.
 
+## 생성형 AI로 만든 보안 리포트의 검증
+
+CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증거가 아니다. 생성된 코드와 설명은 원 API 응답에 대조하고, 누락을 정상 결과로 바꾸지 않는지 확인한다.
+
+다음은 2026-10-07 Amazon Inspector API Reference를 대조한 검증 예시다.
+
+- **API와 수집 범위**: 의도한 제품 API, 계정, 리전과 필터인지 확인한다. `ListFindings` 응답에 `nextToken`이 있으면 후속 페이지를 조회한다. 첫 페이지를 전체 결과로 내보내지 않는다.
+- **필드 매핑**: 패키지 취약점 식별자는 `packageVulnerabilityDetails.vulnerabilityId`에서 읽는다. 네트워크 도달성 등 다른 finding에는 이 객체가 없을 수 있으므로 모든 행에 CVE가 있어야 한다고 가정하지 않는다.
+- **빈 값의 의미**: 적용되지 않는 필드, 파서가 놓친 필드, API 호출 실패를 같은 `N/A`나 0건으로 합치지 않는다. 원본 finding과 출력 행을 비교하고 수집이 끝나지 않았으면 불완전한 보고서로 표시한다.
+
+이 항목들은 API 계약을 이용한 검토 기준이다. 특정 환경에서 코드를 실행하거나 취약점을 점검했다는 기록은 아니다. 보고서의 권고 조치를 실행할 때는 대상과 변경 영향, 승인과 복구 경로를 별도로 검토한다.
+
 ## 이해 점검
 
 1. 차단 뒤에도 다른 자산의 침해 흔적을 찾아야 하는 이유는 무엇인가?
@@ -72,6 +84,9 @@ Defender는 자동 조치의 해제와 지원 대상 자산의 제외 설정을 
 - [ASD ACSC, Best practices for event logging and threat detection](https://www.cyber.gov.au/business-government/detecting-responding-to-threats/event-logging/best-practices-for-event-logging-and-threat-detection)
 - [Microsoft Learn, Automatic attack disruption in Microsoft Defender](https://learn.microsoft.com/en-us/defender-xdr/automatic-attack-disruption)
 - [Microsoft Learn, Configure automatic attack disruption in Microsoft Defender XDR](https://learn.microsoft.com/en-us/defender-xdr/configure-attack-disruption)
+- [Amazon Inspector API Reference, ListFindings](https://docs.aws.amazon.com/inspector/v2/APIReference/API_ListFindings.html)
+- [Amazon Inspector API Reference, Finding](https://docs.aws.amazon.com/inspector/v2/APIReference/API_Finding.html)
+- [Amazon Inspector API Reference, PackageVulnerabilityDetails](https://docs.aws.amazon.com/inspector/v2/APIReference/API_PackageVulnerabilityDetails.html)
 
 ## 관련 문서
 

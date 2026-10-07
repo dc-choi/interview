@@ -27,6 +27,16 @@ Exposure finding은 여러 보안 신호를 연결해 잠재 위험을 나타낸
 
 이 그래프는 실제 침해가 발생했다는 기록이 아니다. 공개 포트에서 서비스를 발견한 사실과, 공격자가 자원을 장악한 뒤 IAM 권한으로 이동할 가능성을 구분한다. 실제 활동 조사는 로그와 탐지 신호를 별도로 대조한다.
 
+## Azure 연동에서 확인할 수집 경계
+
+Azure connector를 구성하면 Security Hub가 CSPM과 Inspector의 service-linked connector를 만들어 설정 점검과 취약점 수집 범위를 연결한다. Azure 쪽 애플리케이션 등록, 연합 자격 증명, 권한과 Event Hub 구성이 먼저 필요하다. tenant ID만 입력하면 준비가 끝나는 구조는 아니다.
+
+- 설정 점검은 CIS Microsoft Azure Foundations Benchmark와 Azure Foundational Best Practices를 사용한다. Inspector는 지원하는 VM, Function App과 ACR 이미지의 소프트웨어 취약점을 검사한다. VM 검사는 같은 리전의 Systems Manager 구성 등 별도 전제를 확인한다.
+- Microsoft Defender for Cloud의 위협 경보를 받으려면 Event Hub로 continuous export를 구성해야 한다. 설정 점검과 취약점 수집이 켜졌다는 사실만으로 위협 경보까지 수집된다고 보지 않는다.
+- Security Hub finding은 AWS와 Azure 모두 OCSF 형식으로 읽을 수 있다. 공통 형식이 각 클라우드의 수집 범위나 권한 설정까지 같다는 뜻은 아니다.
+
+연결 후에는 connector 상태, Azure 필터의 finding, 표준별 control 결과를 함께 확인한다. 전부 `NO_DATA`이면 점검 통과로 해석하지 않는다. 구독별 Activity Log export와 권한 범위를 점검한다. Azure 리전을 추가하면 새 리전의 Event Hub 구성도 필요하다.
+
 ## 개선 순서의 예
 
 다음은 위 기능을 이용한 운영 판단 예시다.
@@ -41,6 +51,9 @@ Exposure finding은 여러 보안 신호를 연결해 잠재 위험을 나타낸
 - [AWS Security Hub, Network Scanning in Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-network-scanning.html)
 - [AWS Security Hub, Exposure findings in Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/exposure-findings.html)
 - [AWS Security Hub, Viewing exposures in Security Hub with the potential attack path graph](https://docs.aws.amazon.com/securityhub/latest/userguide/potential-attack-path-graph.html)
+- [AWS Security Hub, Integrating Security Hub with Microsoft Azure](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-azure.html)
+- [AWS Security Hub, Configuring Microsoft Azure to integrate with Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-azure-setup-azure.html)
+- [AWS Security Hub, Configuring Security Hub to integrate with Microsoft Azure](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-azure-setup-securityhub-v2.html)
 
 ## 관련 문서
 

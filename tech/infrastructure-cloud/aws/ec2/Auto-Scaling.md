@@ -46,6 +46,16 @@ Launch Configuration은 한번 만들면 못 바꾸므로 변경 시 **새로 �
 
 대상 추적 지표 예: `ASGAverageCPUUtilization`, `ASGAverageNetworkIn/Out`, `ALBRequestCountPerTarget`.
 
+## 예정된 급증은 준비 완료 시각에서 역산한다
+
+2026-10-07 공식 문서 대조 기준이다. 광고나 판매 시작처럼 시각을 아는 부하는 scheduled action으로 미리 용량을 확보하고, 예측 오차는 동적 정책으로 대응한다. 예약 실행 시각과 애플리케이션이 트래픽을 받을 수 있는 시각은 다르다.
+
+- EC2 scheduled action은 원하는 용량과 필요 시 최소, 최대 용량을 설정한다. 실행이 최대 2분 늦어질 수 있으므로 인스턴스 시작, 초기화와 상태 확인 시간도 포함해 여유를 둔다.
+- 예약 뒤에도 동적 정책이 작동한다. 행사 전 낮은 사용률로 다시 축소되지 않도록 필요한 최소 용량을 검토하고, 종료 후 원래 범위로 돌리는 별도 action을 계획한다. 반복 예약의 종료 시각은 반복을 멈추는 조건이며 이전 용량을 복원하는 기능이 아니다.
+- 반복 일정의 시간대와 CLI/SDK 시작, 종료 시각의 UTC 표현을 구분한다. 여러 ASG 사이의 실행 순서는 보장되지 않는다.
+
+운영 판단 예시로, 증설 뒤 목표 대수만 확인하지 않고 정상 target 수, 실제 요청 지연과 오류를 확인한다. 앱 대수가 늘어도 DB 연결 풀이나 하위 서비스가 병목이면 문제가 남는다. `default instance warmup`은 `InService` 뒤 지표 집계에 참여하는 시간을 조절하며, 애플리케이션 준비 완료 검사를 대신하지 않는다.
+
 ## Cooldown과 Instance Warmup — 중복 조정 방지
 
 ```
@@ -114,6 +124,7 @@ EC2, ELB, VPC Lattice, EBS 또는 사용자 지정 헬스 체크가 인스턴스
 - [Default instance warmup](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html)
 - [Auto Scaling health check](https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html)
 - [Lifecycle hook 고려사항](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html)
+- [Scheduled scaling for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html)
 
 ## 관련 문서
 - [[EC2|EC2]]

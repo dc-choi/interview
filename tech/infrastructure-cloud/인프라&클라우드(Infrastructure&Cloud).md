@@ -18,10 +18,12 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[RDS-Aurora-Replica-Lag|Aurora Reader 지연 진단]] — 밀리초 단위, Writer 쓰기, Reader 용량과 purge 부담
+- [x] [[Auto-Scaling#예정된 급증은 준비 완료 시각에서 역산한다|EC2 예정 트래픽 사전 확장]] — 예약과 동적 정책, 초기화 시간, 종료 후 용량 복구
 - [x] [[Security-Hub-AI-Inventory|Security Hub AI Inventory]] — 발견 신호, Inspector/GuardDuty 전제와 미지원 범위
 - [x] [[ROSA|ROSA 관리형 OpenShift]] — HCP와 Classic, 고객의 애플리케이션 운영과 복구 책임
 - [x] [[QuickSight#상담 녹취의 분석 결과를 시각화한다|상담 녹취 분석과 BI]] — 전사, 분류와 집계의 경계, 원문 추적과 처리 누락 확인
-- [x] [[Security-Hub-Exposure-Analysis|Security Hub 노출 분석]] — 외부 스캔 근거, 지원 범위, IAM 경로와 잠재 영향
+- [x] [[Security-Hub-Exposure-Analysis|Security Hub 노출 분석]] — 외부 스캔, IAM 경로, Azure connector 수집 범위와 NO_DATA 확인
 - [x] [[OpenSearch-Service-Security-Observability#높은 CPU와 자동 진단의 실행 경계|OpenSearch Service CPU 진단]] — hot threads와 검색 task, 진단 자원 생성과 정리
 - [x] [[ACM#외부 인증서 가져오기와 재가져오기|ACM 외부 인증서 운영]] — PEM과 체인, 대상 서비스 호환성, ARN 유지 갱신과 WHOIS 검증 종료
 - [x] [[Amazon-Braket|Amazon Braket]] — 시뮬레이션과 QPU 실측, 고전 기준선과 변환 비용
