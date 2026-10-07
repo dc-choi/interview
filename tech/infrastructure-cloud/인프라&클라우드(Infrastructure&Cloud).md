@@ -18,6 +18,8 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[DMS#자동 변환율과 업무 동작 검증은 별개다|DB 마이그레이션 검증 경계]] — 객체 변환, 행 비교와 애플리케이션 회귀 검증
+- [x] [[Athena#SageMaker Unified Studio와 Power BI의 ODBC 연결|Athena ODBC와 Power BI]] — 대화형 로그인, 게이트웨이 IAM 역할과 연결 매핑
 - [x] [[DynamoDB#스로틀링과 재시도|DynamoDB 스로틀링 진단]] — reason과 resource ARN, GSI back pressure, 파티션과 quota, Auto Scaling 지연
 - [x] [[S3-Tables-Maintenance|S3 Tables 유지보수]] — table bucket, 스냅샷 만료와 파일 삭제, Iceberg 설정 충돌과 운영 책임
 - [x] [[Glue#Data Quality: 검사와 적재 차단을 나눈다|Glue Data Quality]] — 규칙별 검사 범위, 기본 실패 동작과 적재 차단, 행과 데이터셋 결과의 구분

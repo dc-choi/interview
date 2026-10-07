@@ -90,6 +90,19 @@ S3에 저장된 데이터를 **별도 적재 없이 표준 SQL로 직접 쿼리*
 - **Federated Query**: 운영 RDS + 로그 S3를 한 SQL로 조인.
 - **CTAS / INSERT INTO**: SQL만으로 데이터 변환 파이프라인 구성 가능.
 
+## SageMaker Unified Studio와 Power BI의 ODBC 연결
+
+Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연결을 지원한다. 2026-10-07 확인한 릴리스 노트에서는 `SageMakerBrowserIdc`와 `SageMakerIam` 지원이 2.2.0.0에 추가됐다. 실제 배포 버전은 이후 인증과 메타데이터 조회 수정 사항까지 확인해 선택한다.
+
+| 사용 경로 | 인증과 확인 사항 |
+|---|---|
+| 분석가의 Power BI Desktop | `SageMakerBrowserIdc`가 브라우저에서 IAM Identity Center 로그인을 진행하고 프로젝트 환경용 임시 자격 증명을 얻음 |
+| EC2의 Power BI 게이트웨이 | `SageMakerIam`과 인스턴스 역할을 사용하는 공식 구성 예시. 역할의 연결 서비스 권한, 도메인 등록과 프로젝트 멤버십을 별도로 확인 |
+
+프로젝트의 연결 정보에서 리전, workgroup, 도메인과 프로젝트 식별자를 확인한다. Desktop에서 성공한 연결만으로 Power BI Service의 조회나 예약 새로 고침을 검증했다고 보지 않는다. DSN 방식에서는 게이트웨이에도 같은 이름의 System DSN을 만들고, 드라이버와 인증 설정을 확인한 뒤 Service의 연결에 매핑한다.
+
+공식 게이트웨이 예시의 Power BI 인증 선택값 `Anonymous`는 Athena 데이터를 익명 공개한다는 의미가 아니다. 그 구성에서는 ODBC 드라이버가 IAM 역할로 AWS 인증을 수행한다. 실제 사용자의 로그인, 게이트웨이 실행 역할과 조회 데이터 권한을 구분해 점검한다.
+
 ## 시험 체크포인트
 
 - **S3 데이터를 SQL로 즉시 분석, 인프라 관리 없이** → **Athena**.
@@ -103,6 +116,10 @@ S3에 저장된 데이터를 **별도 적재 없이 표준 SQL로 직접 쿼리*
 
 ## 출처
 
+- [Amazon Athena, SageMaker Browser IDC](https://docs.aws.amazon.com/athena/latest/ug/odbc-v2-driver-sagemaker-idc.html)
+- [Amazon Athena, SageMaker IAM](https://docs.aws.amazon.com/athena/latest/ug/odbc-v2-driver-sagemaker-iam.html)
+- [Amazon Athena ODBC 2.x release notes — AWS](https://docs.aws.amazon.com/athena/latest/ug/odbc-v2-driver-release-notes.html)
+- [Connect Amazon SageMaker Unified Studio to Microsoft Power BI – Part 1: IAM Identity Center (IDC)-based domains — AWS](https://aws.amazon.com/blogs/big-data/connect-amazon-sagemaker-unified-studio-to-microsoft-power-bi-part-1-iam-identity-center-idc-based-domains/)
 - [Amazon Athena, Athena engine versioning](https://docs.aws.amazon.com/athena/latest/ug/engine-versions.html)
 - [Amazon Athena, Use Amazon Athena Federated Query](https://docs.aws.amazon.com/athena/latest/ug/federated-queries.html)
 - [Amazon Athena, Configure per-query and per-workgroup data usage controls](https://docs.aws.amazon.com/athena/latest/ug/workgroups-setting-control-limits-cloudwatch.html)

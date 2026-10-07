@@ -16,7 +16,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 
 ## 세부 학습
-- [x] [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]] — 계획, 격리된 코드 실행, 계산 결과 인계와 검산
+- [x] [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]] — 계획, 격리된 코드 실행, 계산 결과 인계와 검산, 정기 보고서의 데이터 확정과 최종 승인
 - [x] [[Agent-Ready-API-Design#선택 결과와 화면 데이터를 분리한다|에이전트 출력과 화면 조립]] — 상품 ID 검증, 원본 데이터 재사용과 전체 지연 측정
 - [x] [[LLM-Product-Attribute-Extraction|LLM 상품 속성 추출]] — 이미지 전처리, 치수와 모델 정보의 구분, 검증된 예시와 보류 평가
 - [x] [[RAG-Retrieval-Engineering#가설을 분해해 반대 근거를 찾는다|가설 검토용 RAG]] — 전제별 반대 근거 검색, 원문과 해석의 연결, 검색 실패와 가설 입증의 구분
@@ -30,7 +30,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]] — 화면 배치, 상태 관찰, worktree 분리와 완료 검증
 
 - [x] [[Generative-Video-Editing|생성형 영상 편집]] — 자연어 수정, Google Vids 기능 범위, 원본 보존과 프레임 검수
-- [x] [[LLM-Workflow-Patterns#Text-to-SQL과 데이터 디스커버리|Text-to-SQL]] — 스키마, 업무 정의와 예시 SQL, 생성과 실행의 분리, 조회 권한과 결과 검증
+- [x] [[LLM-Workflow-Patterns#Text-to-SQL과 데이터 디스커버리|Text-to-SQL]] — 스키마, 업무 정의와 예시 SQL, 생성과 실행의 분리, 오류별 복구 지점과 조회 권한
 - [x] [[LLM-Workflow-Patterns#시각적 워크플로우의 오류 처리|시각적 워크플로우 오류 처리]] — n8n Error Trigger, 수동 실행과 자동 실행 검증의 차이
 - [x] [[Long-Context-Evaluation|긴 문맥 평가]] — 근거 위치와 입력 길이, 검색 누락과 활용 실패, 비용과 정확도 비교
 - [x] [[Agent-Client-Protocol|ACP]] — 에디터와 에이전트 연결, 요청/알림, 기능 협상과 실행 승인

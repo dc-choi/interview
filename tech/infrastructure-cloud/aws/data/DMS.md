@@ -56,6 +56,20 @@ DMS Standard는 replication instance와 task를 만들고, DMS Serverless는 rep
 - 이기종 이전은 데이터 전송 외에 스키마와 애플리케이션 호환성 작업이 필요하다. 변환 도구를 쓸지 수동 DDL과 검증으로 할지는 객체 범위와 지원 수준에 따라 선택한다.
 - 같은 엔진 계열 이전도 대상 schema, 객체와 DDL 적용 방식을 명시한다.
 
+### 자동 변환율과 업무 동작 검증은 별개다
+
+DMS Schema Conversion의 assessment report는 자동 변환 가능한 객체와 수동 조치가 필요한 객체를 나누고, action item별 문제와 권고 조치를 제공한다. 이 결과는 변환 작업의 범위를 파악하는 근거이며 애플리케이션의 업무 동작까지 검증한 성적표는 아니다(2026-10-07 공식 문서 확인).
+
+| 검증 대상 | 확인할 증거 |
+|---|---|
+| 스키마와 코드 객체 | 변환 대상 목록, 남은 action item, 프로시저와 함수의 수정 결과 |
+| 이동한 데이터 | 검증을 활성화한 테이블의 validation 상태, 불일치와 대기 및 검증 불가 항목 |
+| 애플리케이션 | 동일 입력에 대한 반환값과 DB 변경, 타입 변환과 예외 처리, 주요 쿼리 성능 |
+
+DMS data validation은 지원되는 소스와 대상의 대응 행을 비교한다. 추가 쿼리와 네트워크 부하가 발생하고, 검증 대상과 제한도 확인해야 한다. 행 비교 통과로 애플리케이션 SQL, 트랜잭션이나 외부 연계의 의미까지 보존됐다고 결론 내리지 않는다.
+
+애플리케이션 검증은 별도 설계가 필요하다. 예를 들어 DB Link를 API로 바꾸면 기존 호출의 원자성, 타임아웃과 실패 후 재시도 경계를 다시 정의한다. AI가 만든 변환 코드도 같은 회귀 기준으로 검토하며, 특정 프로젝트의 자동 변환 비율이나 기간을 다른 시스템의 보장값으로 쓰지 않는다.
+
 ## 동종 마이그레이션 — 스키마 준비와 데이터 전송
 
 같은 엔진 계열 간에는 변환 도구가 필요하지 않을 수 있지만, 대상 schema와 객체 준비는 여전히 필요하다. DMS의 target table preparation은 테이블, primary key와 일부 unique index만 만들 수 있으므로, 그 밖의 객체와 운영 DDL은 별도 확인한다.
@@ -110,6 +124,8 @@ DMS Standard는 replication instance와 task를 만들고, DMS Serverless는 rep
 
 ## 출처
 
+- [AWS DMS, Conversion assessment reports with DMS Schema Conversion](https://docs.aws.amazon.com/dms/latest/userguide/assessment-reports.html)
+- [AWS DMS, AWS DMS data validation](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Validating.html)
 - [AWS DMS, Components](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.Components.html)
 - [AWS DMS, High-level view](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.HighLevelView.html)
 - [AWS DMS, Schema conversion](https://docs.aws.amazon.com/dms/latest/userguide/schema-conversion.html)

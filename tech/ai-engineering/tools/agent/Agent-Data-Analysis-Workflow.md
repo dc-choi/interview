@@ -27,6 +27,17 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 실행 환경의 선택지로 AgentCore Code Interpreter는 격리된 환경의 코드 실행과 데이터 분석을 제공한다. 이것이 앞선 공개 구현의 실행 환경과 같다는 뜻은 아니다. 네트워크 모드, 실행 역할과 접근 가능한 데이터는 별도로 설정하고 확인한다.
 
+## 정기 보고서는 데이터 확정과 최종 승인을 분리한다
+
+보고서 항목과 계산식이 정해져 있으면 매번 SQL이나 계산 코드를 생성하기보다 검토한 조회 조건과 계산 로직을 재사용한다. 아래는 공식 APQR 구축 사례의 조회, 계산, 서술 분리를 일반 보고서에 적용한 설계 예시다(2026-10-07 확인).
+
+1. **근거 준비:** 대상, 기간과 원본 버전을 확인하고 누락된 자료와 수기 보완 항목을 구분한다. 원본 참조를 조회 결과에도 남긴다.
+2. **데이터 확정:** 검토자가 포함하거나 제외한 항목을 반영해 이번 보고서의 데이터셋을 확정한다. 이후 데이터가 바뀌면 계산과 검토를 다시 수행한다.
+3. **계산과 서술:** 통계, 단위, 반올림과 차트 축은 검토한 코드와 템플릿으로 처리하고, LLM에는 확인된 결과의 설명을 맡긴다. 정형 표만 필요한 부분은 LLM 없이 만든다.
+4. **조립과 승인:** 필요한 절과 첨부가 준비됐는지 확인한 뒤 최종 문서를 만든다. 파일과 필수 항목 누락 검사는 코드로, 의미상 모순 검토는 필요할 때 모델로 보조하며 최종 확정은 검토자가 맡는다.
+
+입력 자료 확정, 보고서 생성 완료와 최종 승인은 서로 다른 상태다. 내부 데이터만 사용해도 필터 오류나 잘못된 해석은 남을 수 있다. 이 구조 자체가 특정 산업의 규제 준수나 무오류를 보장하지 않는다.
+
 ## 검증할 최소 계약
 
 다음은 계산과 보고서의 분리 원리를 적용한 설계 제안이다.
@@ -41,6 +52,7 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 ## 출처
 
+- [LG CNS의 Agentic AI를 활용한 APQR 시스템 설계 및 자동화 구축 사례 — AWS](https://aws.amazon.com/ko/blogs/tech/automate-apqr-system-with-agentic-ai/)
 - [데이터 쌓기만 하면 뭐하나? 어떻게 볼지를 모르는데 – LG전자의 Agentic AI 기반 인사이트 추출 시스템 개발기 — AWS](https://aws.amazon.com/ko/blogs/tech/lge-agentic-report-automation/)
 - [AWS, Execute code and analyze data using Amazon Bedrock AgentCore Code Interpreter](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html)
 

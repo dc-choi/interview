@@ -126,6 +126,18 @@ SQL 문자열을 만드는 것과 권한 안에서 올바른 결과를 얻는 �
 
 AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명시하고 제한된 역할, 읽기 전용 DB와 샌드박싱을 권고한다. Redshift 연결 예시도 조회 권한을 부여하되 `CREATE`, `UPDATE`, `DELETE` 권한은 부여하지 않도록 안내한다(2026-10-07 확인). 이는 데이터 변경 방지 경계이며, 조회 가능한 데이터의 테넌트와 민감정보 범위까지 자동으로 보장하지는 않는다.
 
+### 오류 종류에 따라 복구 지점을 나눈다
+
+같은 SQL을 반복 생성하는 대신 실패 원인이 있는 단계로 돌아간다. AWS의 공개 Text-to-SQL 구현도 실행 오류와 수정 힌트를 반환하고, 필요하면 테이블 목록과 스키마를 다시 조회한다(2026-10-07 확인).
+
+| 실패 | 복구 방향 |
+|---|---|
+| 테이블이나 컬럼을 잘못 선택 | 접근 가능한 스키마를 다시 확인하고 대상 선정부터 수정 |
+| SQL 문법이나 함수 사용 오류 | 대상 DB 방언과 오류 정보를 주고 SQL 생성 단계에서 수정 |
+| 접근 권한 부족 | 권한 경계에서 중단하고 승인된 조회 범위를 확인 |
+
+다음은 운영 설계 제안이다. 재시도 횟수와 총 실행 시간을 제한하고, 한도에 도달하면 실패 원인을 남겨 보류한다. 모델에 전달하는 오류에서는 민감한 값과 불필요한 내부 정보를 제거한다. 실행 성공만으로 질문의 의미나 집계 결과가 맞다고 판정하지 않으며, 오류 복구가 조회 권한을 넓히는 경로가 되어서는 안 된다.
+
 ## 데이터와 모델 중 무엇이 더 중요한가
 
 - **도메인 특화 서비스 → 데이터가 더 중요**: 사내 용어, 테이블 의미, 업무 규칙은 범용 LLM이 알 수 없다
@@ -162,6 +174,7 @@ AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명�
 - API 에이전트 플랫폼: 스킬셋 연결로 도메인 에이전트 생성, Detector-CoT-Answer 처리, 리트리벌 스킬(CoT+랭킹으로 RAG 확장)과 근거를 XML로 표시하는 랭킹 모델로 출처 추적.
 
 ## 출처
+- [Dynamic text-to-SQL for enterprise workloads with Amazon Bedrock Agents — AWS](https://aws.amazon.com/blogs/machine-learning/dynamic-text-to-sql-for-enterprise-workloads-with-amazon-bedrock-agents/)
 - [Enterprise-grade natural language to SQL generation using LLMs: Balancing accuracy, latency, and scale — AWS](https://aws.amazon.com/blogs/machine-learning/enterprise-grade-natural-language-to-sql-generation-using-llms-balancing-accuracy-latency-and-scale/)
 - [Amazon Bedrock User Guide, Generate a query for structured data](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-generate-query.html)
 - [Amazon Bedrock User Guide, Set up your query engine and permissions for creating a knowledge base with structured data store](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-prereq-structured.html)
