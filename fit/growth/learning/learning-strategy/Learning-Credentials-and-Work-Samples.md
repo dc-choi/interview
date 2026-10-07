@@ -39,6 +39,17 @@ aliases: ["Learning Credentials and Work Samples", "교육 수료증과 실무 �
 
 공공 플랫폼 목록은 [[Self-Development-While-Working#8. 저비용 자원 활용|저비용 학습 자원]]에서 찾는다. 사이트 수를 늘리기보다 현재 질문에 맞는 강좌 하나를 골라 설명이나 적용 결과로 이해를 확인한다.
 
+## 자격 유지와 재취득을 구분하기
+
+시험형 자격은 학습 이력뿐 아니라 유효기간과 유지 조건도 확인한다. 2026-10-07 확인한 AWS 정책은 3년 갱신(renewal)과 1년 유지(maintenance)를 구분한다. 경로는 자격별로 다르며 모든 자격에 같은 방법이 적용되지는 않는다.
+
+- **Skill Builder 유지 경로:** 지원 대상인 활성 자격이 만료까지 90일 이내이고, 유효한 AWS Skill Builder 구독이 있어야 한다. 지정된 교육과 실습을 만료 전에 완료해야 한다.
+- **기간 계산:** 1년 유지의 새 만료일은 활동 완료일부터 계산한다. 기존 만료일에 1년을 더하는 방식이 아니다. 시험 재응시를 통한 갱신도 시험 완료일부터 3년을 계산한다.
+- **교육과 실습 요건:** 2026-06-23 공개 베타 안내는 Associate에 500점과 실습 활동 최소 1개, Professional에 700점과 최소 2개를 제시했다. 다른 등급으로 일반화하지 않고 신청할 때 해당 프로그램의 현재 요건을 확인한다.
+- **서로 다른 무시험 경로:** Cloud Practitioner의 Cloud Quest 재인증은 만료 6개월 이내에 참여해 3년을 연장하는 별도 경로다. Skill Builder의 1년 유지 조건과 섞지 않는다.
+
+기존 자격의 유지와 새 자격 취득은 목적이 다르다. 먼저 필요한 증빙과 만료일, 지원 경로를 확인한 뒤 비용과 학습 범위를 정한다. 유지 활동을 마쳤다는 사실만으로 실제 업무에서의 독립 수행 능력을 확인했다고 기록하지 않는다.
+
 ## 학습 목적에 맞게 선택하기
 
 다음은 위 차이를 활용한 학습 절차 제안이다. 특정 수료증의 채용 효과를 입증한 연구 결과는 아니다.
@@ -72,6 +83,8 @@ aliases: ["Learning Credentials and Work Samples", "교육 수료증과 실무 �
 
 ## 출처
 
+- [AWS Recertification — AWS](https://aws.amazon.com/certification/recertification/) — 2026-10-07 유지와 갱신의 기간, 자격 조건 및 Cloud Quest 경로를 대조했다.
+- [A new way to keep your AWS Certification current — AWS Training and Certification Blog](https://aws.amazon.com/blogs/training-and-certification/a-new-way-to-keep-your-aws-certification-current/) — 2026-06-23 공개 베타의 교육과 실습 요건.
 - [AWS, AWS Cloud Adoption Framework: People Perspective, Workforce transformation](https://docs.aws.amazon.com/whitepapers/latest/aws-caf-people-perspective/workforce-transformation.html) — 2026-10-07 업무 수요와 학습 경로 연결 원칙을 대조했다.
 - [Free virtual job simulations and career prep — Forage](https://www.theforage.com/)
 - [Forage, Deloitte Australia, Data Analytics](https://www.theforage.com/simulations/deloitte-au/data-analytics-s5zy)

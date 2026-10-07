@@ -32,6 +32,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [x] [[PII-Masking|PII 마스킹 (생성 시점 마스킹, redaction/tokenization, 허용목록)]]
 
 ## Metrics
+- [x] [[Network-Synthetic-Monitoring|네트워크 합성 모니터링]] — TCP와 ICMP probe, RTT와 손실, Direct Connect와 Transit Gateway 경로의 NHI
 - [x] [[Bedrock-Observability|Bedrock 관측]] — 모델 지표와 응답 품질, 호출 로그 설정, EMF의 비용과 집계 경계
 - [x] [[SageMaker-LLM-Observability|SageMaker LLM 추론 관측]] — enhanced와 detailed 지표, PromQL 연결, 모델 준비와 요청 지연, scale-to-zero 복구 실패, 응답 품질
 - [x] [[VDI-Performance-Diagnosis|VDI 성능 진단]] — 로그인 단계, 게스트와 호스트, CPU Ready와 제한 설정
