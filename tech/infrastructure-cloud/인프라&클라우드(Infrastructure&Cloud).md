@@ -18,6 +18,8 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[AWS-Organizations#SCP, RCP와 선언적 정책의 경계|Organizations 정책 경계]] — 권한 부여와 상한, 외부 주체와 관리 계정 예외
+- [x] [[Cloud-Migration-Strategies#AI가 만든 이전 계획의 검증 경계|AI 이전 계획 검증]] — 의존성, move group과 wave, 테스트와 cutover 분리
 - [x] [[AWS-Security-Response-Automation|AWS 보안 대응 자동화]] — finding 분류와 실제 조치, 실행 권한과 승인, 효과 확인
 - [x] [[EC2-Compute#Nitro의 인스턴스 간 전송 암호화 조건|EC2 전송 암호화]] — 지원 타입, 리전과 경로 조건, 애플리케이션 TLS
 - [x] [[Redshift#RG 전환 시 데이터 레이크 부하를 함께 비교한다|Redshift RG 전환 검토]] — Spectrum 부하의 compute 공유, 스냅샷 재현과 용량 비교

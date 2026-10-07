@@ -66,6 +66,17 @@ Rehost한 앱을 여러 instance로 늘리면 로컬 상태가 바로 장애가 
 3. **레퍼런스 아키텍처**: 클라우드 벤더가 전략별로 제공하는 레퍼런스 아키텍처(모놀리스 구성, Kubernetes 활용, 모니터링 연동)를 출발점으로 쓰되 비용과 보안 경계는 자체 조건으로 다시 검증한다.
 4. **단계 이동**: 이전과 현대화를 한꺼번에 하지 않는다. 옮긴 뒤 재평가해 다음 단계로 간다. 기능 단위 교체 전술은 [[Legacy-Modernization-Strategies]], 반복 가능한 환경 구성은 [[IaC]]가 받친다.
 
+## AI가 만든 이전 계획의 검증 경계
+
+2026-10-07 AWS Transform 공식 문서 확인 기준. 자동화는 인벤토리 분석, 애플리케이션 묶음과 이전 순서 제안을 돕지만, 계획 생성과 실제 전환 성공은 다른 결과다.
+
+- **Move group**은 의존성 때문에 함께 옮겨야 할 애플리케이션 묶음이다. 공유 DB나 메시지 큐뿐 아니라 업무 중요도, RPO/RTO와 운영 책임도 입력한다.
+- **Wave**는 하나 이상의 move group을 묶은 실행 단위다. 일정과 위험에 따라 순서를 정하고, 새 의존성이 발견되면 계획을 다시 검토한다.
+- 서버 이전은 인벤토리 확인, 복제, 테스트 인스턴스 검증과 최종 cutover를 나눈다. EC2 타입, 네트워크와 라이선스 설정의 추천값도 검토 대상이다.
+- 승인 대상 배포는 AWS Transform의 승인 절차를 거친다. 생성된 계획이나 채팅 응답만으로 운영 환경이 바뀌었거나 검증을 통과했다고 판단하지 않는다.
+
+다음은 이 절차를 적용한 검증 질문이다. 인벤토리에 없는 배치와 외부 연동은 없는가. 테스트 인스턴스에서 핵심 업무와 데이터 정합성이 유지되는가. 전환 실패 때 기존 환경으로 돌아갈 조건을 정했는가. 자동화율과 소요 시간만으로 이 질문의 답을 대신하지 않는다.
+
 ## 흔한 실수
 
 - 전략 이름만 합의하고 바뀌는 범위를 적지 않아 견적, 일정과 책임이 어긋난다.
@@ -82,6 +93,9 @@ Rehost한 앱을 여러 instance로 늘리면 로컬 상태가 바로 장애가 
 
 ## 출처
 
+- [AWS, Build migration plan](https://docs.aws.amazon.com/transform/latest/userguide/transform-vmware-review-groupings-and-waves.html)
+- [AWS, Migrate servers](https://docs.aws.amazon.com/transform/latest/userguide/transform-vmware-migrate-servers.html)
+- [비즈니스 혁신 가속화를 위한 AI기반 클라우드 마이그레이션과 현대화 — Amazon Web Services Korea](https://www.youtube.com/watch?v=U09lkoLDMsE)
 - [AWS Prescriptive Guidance, About the migration strategies](https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html)
 - [Microsoft Learn, Select your cloud migration strategies](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/plan/select-cloud-migration-strategy)
 - [The Twelve-Factor App, III. Config](https://12factor.net/config)

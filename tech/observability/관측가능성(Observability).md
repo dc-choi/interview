@@ -20,6 +20,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [x] [[OpenSearch-Observability|Amazon OpenSearch 통합 관측성 (OpenSearch UI, PPL, 상관분석, AI 장애 조사)]]
 
 ## Logging
+- [x] [[Splunk-S3-Federated-Search|Splunk S3 연합 검색]] — 원격 조회의 전제, 스캔 비용과 보관 객체 복원
 - [[logging|로깅 폴더 인덱스]] — 구조화, 상관관계, 파이프라인, 샘플링, PII 마스킹
 - [[Log-Collection-and-Backends|로그 수집과 저장 백엔드 폴더 인덱스]] — 파이프라인, Loki, AWS 중앙 로깅 솔루션
 - [x] [[Structured-Logging|Structured logging (스키마, LogTape 설정, 지연 평가와 마스킹)]]

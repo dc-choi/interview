@@ -15,4 +15,6 @@ aliases: ["Log Collection and Backends", "로그 수집과 저장 백엔드"]
 
 ## 함께 볼 문서
 
+- [[Splunk-S3-Federated-Search|Splunk S3 연합 검색]]: 사전 수집과 원격 조회의 구분, 스캔 비용, 보관 계층의 복원 조건
+
 - [[logging|로깅]]
