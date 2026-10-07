@@ -10,6 +10,7 @@ aliases: ["Observability Reliability", "관측성 신뢰성", "관측 신호 기
 관측 신호를 목표(SLO)와 알림으로 바꾸고, 알림에서 장애 대응까지 잇는 문서를 모은다. 신뢰성 목표 정의, 알림 설계와 코드화, 런북, 배포 가시성이 한 축이다.
 
 ## 문서
+- [x] [[DevOps-Agent-Grafana|Grafana와 AWS DevOps Agent]] — 알림 전달, 읽기 전용 조사와 payload의 맥락 경계
 - [x] [[SLI-SLO|SLI / SLO / Error budget (9의 의미, burn rate, 버짓 정책)]]
 - [x] [[Alert-Fatigue|Alert fatigue 방지 (actionable, 증상 기반, burn rate, 통계형과 건별 알림 이원화, 탐지 정밀도와 전달 지연)]]
 - [x] [[Grafana-Alerting|Grafana Alerting (평가 그룹, pending period, No Data/Error, 정책 트리, 그룹핑, silence)]]

@@ -40,6 +40,12 @@ Gateway는 OpenAPI, Smithy, Lambda 같은 입력을 도구로 연결하고, 의�
 
 Identity와 Gateway의 인증 구성에서는 들어오는 사용자 또는 에이전트 요청과 외부 서비스로 나가는 호출을 나눠 본다. 외부 호출의 OAuth 2.0, API key나 AWS 권한 설정이 필요하며, 도구를 연결했다는 사실만으로 원래 서비스의 인가 규칙이 충족되지는 않는다. 변경 작업의 승인, 중복 실행 방지와 실패 복구도 따로 점검한다.
 
+### Policy는 Gateway를 지나는 호출에 적용한다
+
+AgentCore Policy는 policy engine을 Gateway에 연결하고 도구 접근 전에 정책을 평가한다. Cedar로 사용자와 도구 입력 조건을 표현할 수 있으며, 자연어로 생성한 정책은 검토할 후보로 취급한다. Gateway 구성의 `ENFORCE` 모드 예제는 정책을 실행 경로에서 강제하는 설정을 보여준다.
+
+이 경계에서 도출할 점검은 두 가지다. 금지한 호출이 실제로 거절되는지 확인하고, 도구의 원래 endpoint를 직접 호출하는 우회 경로도 통제한다. Gateway에 연결한 정책만으로 별도 SDK나 직접 API 호출까지 보호된다고 가정하지 않는다.
+
 ## 관측 데이터와 업무 성공을 분리한다
 
 Observability는 CloudWatch 기반 관측과 OpenTelemetry 호환 데이터를 제공한다. 기본 지표 외의 상세 span과 trace는 에이전트 코드 계측이 필요할 수 있고, Memory의 span과 로그도 활성화 여부를 확인한다.
@@ -57,6 +63,8 @@ Observability는 CloudWatch 기반 관측과 OpenTelemetry 호환 데이터를 �
 
 ## 출처
 
+- [AWS, Policy in Amazon Bedrock AgentCore: Control Agent Interactions](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy.html)
+- [AWS, Create gateway with Policy Engine](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/create-gateway-with-policy.html)
 - [AWS, Use isolated sessions for agents](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-sessions.html)
 - [AWS, Security best practices for AgentCore Runtime](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-security-best-practices.html)
 - [AWS, Overview of Amazon Bedrock AgentCore Identity](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-overview.html)
