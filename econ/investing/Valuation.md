@@ -68,6 +68,16 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 
 밸류에이션의 약점은 입력값에 결과가 크게 흔들린다는 점이다. 성장률이나 할인율을 조금만 바꿔도 가치가 크게 달라진다. 그래서 하나의 숫자보다 **범위로 보고, 보수적 가정에서도 말이 되는지** 확인하는 안전마진의 태도가 중요하다.
 
+### 경기민감 기업의 정상 이익과 회복 시점
+
+일시적인 경기 침체로 이익이 낮아진 성숙 기업은 현재 한 해의 이익 대신 경기순환을 포함한 정상 이익을 추정할 수 있다. 이는 회복을 가정하는 방법이므로 사업 경쟁력이 구조적으로 약해진 기업에 자동 적용하지 않는다.
+
+- 사업 규모가 안정적이면 호황과 불황을 포함한 기간의 이익 평균을 검토한다.
+- 규모가 바뀌었다면 과거 평균 이익률을 현재 매출에 적용하거나 평균 자본수익률을 현재 투자자본에 적용하는 방법을 비교한다. 과거 금액 평균만 쓰면 현재 규모를 놓칠 수 있다.
+- 정상 이익을 바로 넣으면 첫 기간부터 회복한다고 가정한 셈이다. 회복에 여러 해가 걸린다면 중간 기간의 낮은 현금흐름과 회복 시점을 따로 반영한다.
+
+가상 예시로 과거 평균 영업이익률이 8%, 현재 매출이 200이면 정상 영업이익 추정은 16이다. 이 계산은 8%가 다시 가능한지 증명하지 않으며, 16을 곧바로 주주 현금흐름으로 쓰지도 않는다. 회복 지연과 회복 실패 시나리오를 현재 가격과 비교한다. 이 절의 정상화 방법과 즉시 회복 가정의 한계는 2026-10-07 NYU Stern 자료와 대조했다.
+
 ## 6. 핵심 개념
 
 - **가격 ≠ 가치**: 투자는 그 차이를 사는 것
@@ -113,6 +123,7 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 
 ## 출처
 
+- [NYU Stern, More on normalizing earnings](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/valquestions/normearn.htm) — 2026-10-07 경기순환, 기업 규모 변화와 정상화 시점 대조
 - [NYU Stern, PEG Ratios](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/peg.htm) — 2026-10-07 EPS 기준, 예상 성장률의 기간과 위험 및 재투자에 따른 해석 한계 대조
 - [NYU Stern, The Fundamental Determinants of Growth](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/valquestions/growth.htm) — 2026-10-06 재투자, 평균/한계 자본수익률과 측정 한계 대조
 - [NYU Stern, Growth companies: Value Drivers](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/littlebook/growthvaluedrivers.htm) — 성장과 재투자, 기존 자산의 효율 개선

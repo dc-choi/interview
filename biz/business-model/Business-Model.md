@@ -140,6 +140,19 @@ AI로 작업 시간이 줄어도 고객이 내는 가격과 반복 구매 이유
 
 월말 잔액이 양수여도 지급일에 돈이 부족할 수 있다. [[Startup-Financial-Discipline#운전자본과 지급 시점의 공백|운전자본과 지급일별 현금]]을 함께 점검한다.
 
+### 사용량 매출과 장기 비용 약정의 비대칭
+
+고객이 사용량을 줄일 수 있어도 공급자에게 약속한 최소 지출은 같은 속도로 줄지 않을 수 있다. 사용량 기반 사업은 단위당 공헌이익과 함께 수요 감소 시 남는 지급 의무를 계산한다. 매출 증가율만으로 현금 위험이 줄었다고 판단하지 않는다.
+
+공개 계약 구조의 예로 AWS Savings Plans는 시간당 지출을 약정하며, 해당 시간에 쓰지 않은 약정분을 다음 시간으로 이월하지 못한다. 2026-10-07 공식 문서와 대조한 예시이며, 모든 클라우드 계약이나 특정 AI 기업의 개별 계약이 같은 구조라는 뜻은 아니다.
+
+다음은 이 구조를 사업 계획에 적용하기 위한 점검 질문이다.
+
+- 고객 매출이 줄어들 때 함께 줄일 수 있는 비용과 남는 최소 약정은 각각 얼마인가?
+- 평균 사용량 아래의 저수요 구간에도 약정 비용을 감당할 현금이 있는가?
+- 계약 기간, 지급일, 중도 변경과 반환 조건이 고객의 해지 조건과 맞는가?
+- 할인율뿐 아니라 미사용 약정과 초과 사용료를 포함한 총액을 비교했는가?
+
 ## 적용 예시: 소프트웨어와 운영지원의 수익원
 
 다음은 특정 프로젝트의 현재 운영 상태가 아닌 일반화한 예시다. 무료 핵심 기능과 별도 유료 운영지원을 제공한다면 두 제공 범위와 비용을 나누어 본다. 소프트웨어가 무료여도 인프라와 지원 비용은 발생하며, 운영지원이 팔려도 그 고객이 소프트웨어 구독을 구매할지는 별도 가설이다.
@@ -154,6 +167,8 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - 위 일반화한 예시를 본인의 실행이나 성과로 사용하지 않는다.
 
 ## 출처
+- [AWS, Select the best pricing model](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/select-the-best-pricing-model.html) — 시간당 지출 약정과 수요 변화에 맞춘 비용 비교
+- [AWS, Understanding how Savings Plans apply to your usage](https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-applying.html) — 미사용 시간당 약정의 이월 불가, 2026-10-07 대조
 - [AI Transformation for Professional Services — Factory X](https://www.factoryx.co.uk/) — Defend, Operate, Grow와 단계별 검증 투자
 - [Stripe Atlas, The business of SaaS](https://stripe.com/guides/atlas/business-of-saas) — 단순 LTV의 가정, 매출 기준 LTV와 초기 획득 지출. 2026-10-02 해당 개념 대조
 - [Stripe, CAC payback period](https://stripe.com/resources/more/what-is-the-cac-payback-period) — 획득 비용의 회수와 매출, 마진의 구분. 위 코호트 계산은 이를 적용한 가상 예시
