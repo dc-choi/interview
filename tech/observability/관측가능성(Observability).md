@@ -31,6 +31,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [x] [[PII-Masking|PII 마스킹 (생성 시점 마스킹, redaction/tokenization, 허용목록)]]
 
 ## Metrics
+- [x] [[SageMaker-LLM-Observability|SageMaker LLM 추론 관측]] — enhanced와 detailed 지표, PromQL 연결, 자원과 응답 품질의 구분
 - [x] [[VDI-Performance-Diagnosis|VDI 성능 진단]] — 로그인 단계, 게스트와 호스트, CPU Ready와 제한 설정
 - [[metrics|메트릭 폴더 인덱스]] — Prometheus, RED/USE, 카디널리티, 장기 보존, 측정 레이어
 - [x] [[Metric-Layer-Mismatch|메트릭 측정 레이어의 함정 (CloudWatch vs node_exporter, iowait, 두 레이어 교차 알람)]]

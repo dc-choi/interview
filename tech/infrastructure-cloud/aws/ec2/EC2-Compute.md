@@ -20,6 +20,16 @@ verified_at: 2026-07-21
 
 Nitro System은 네트워크, EBS 스토리지, 관리 기능을 전용 카드와 보안 칩으로 오프로드한다. 다수의 현행 인스턴스 타입이 Nitro 기반이지만 지원 기능은 타입과 크기별로 다르므로 EC2 인스턴스 유형 표에서 확인한다.
 
+### Nitro의 인스턴스 간 전송 암호화 조건
+
+2026-10-07 공식 문서 확인 기준. Nitro 기반이라는 사실만으로 모든 인스턴스 간 경로에 같은 자동 암호화가 적용된다고 판단하지 않는다. Nitro 하드웨어가 제공하는 추가 전송 암호화는 다음 조건을 함께 확인한다.
+
+- 양쪽 인스턴스 타입이 해당 기능을 지원해야 한다.
+- 같은 리전에 있어야 한다.
+- 같은 VPC 또는 피어링된 VPC에 있어야 하며, 트래픽이 로드 밸런서나 Transit Gateway 같은 가상 네트워크 장치와 서비스를 통과하지 않아야 한다.
+
+이 조건은 AWS 물리 계층 암호화와 구분한다. 인터넷 클라이언트부터 애플리케이션까지 민감 데이터를 보호하는 TLS 설정과 검증은 별도로 필요하다. 토폴로지가 바뀌면 인스턴스 타입뿐 아니라 실제 패킷 경로도 다시 확인한다.
+
 ## 스토리지 — Instance Store vs EBS
 
 | 측면 | Instance Store | EBS (Elastic Block Store) |
@@ -75,3 +85,4 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 - [Nitro 기반 EC2 인스턴스](https://docs.aws.amazon.com/ec2/latest/instancetypes/ec2-nitro-instances.html)
 - [버스터블 성능 인스턴스의 CPU 크레딧](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html)
 - [인스턴스 스토어 수명](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html)
+- [EC2 데이터 보호와 인스턴스 간 전송 암호화](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-protection.html) — 전송 암호화 조건의 부분 검증

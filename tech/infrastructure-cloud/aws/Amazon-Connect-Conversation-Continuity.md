@@ -28,6 +28,24 @@ Persistent chat은 이전 채팅 전사문을 새 채팅에 불러오는 rehydra
 - Participant token은 소지자가 세션에 접근할 수 있는 bearer token이다. 발급 전에 인증과 인가를 확인하고, 로그와 URL에 넣지 않으며 HTTPS/TLS로 전달한다. [보안 가이드](https://docs.aws.amazon.com/connect/latest/adminguide/security-best-practices.html)
 - 상담 메시지를 화면에 표시할 때 `innerHTML`로 직접 삽입하지 않는다. 출력 인코딩과 CSP 등으로 DOM XSS에 대응한다. [보안 가이드](https://docs.aws.amazon.com/connect/latest/adminguide/security-best-practices.html)
 
+## 상담 종료 후 요약과 업무 완료를 구분한다
+
+Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After Contact Work)를 돕는다. 이전 전사문을 복원하는 persistent chat과 별도 기능이며, 요약 생성만으로 환불이나 교환 같은 외부 업무가 완료되지는 않는다.
+
+음성 상담의 CCP 요약은 상담원과 고객 녹음, 음성 분석, 실시간 및 통화 후 분석과 post-contact summary 설정이 필요하다. 조회자의 security profile에도 요약과 관련 데이터 접근 권한이 있어야 한다. 채팅과 이메일은 채널별 설정을 확인한다.
+
+모든 상담에 요약이 생성되는 것은 아니다. 생성 대기 상태와 생성되지 않은 이유를 구분한다.
+
+| 원인 코드 예 | 확인할 내용 |
+|---|---|
+| `QUOTA_EXCEEDED` | 동시 요약 작업 한도 |
+| `INSUFFICIENT_CONVERSATION_CONTENT` | 요약할 대화의 양과 지원 메시지 유형 |
+| `INVALID_ANALYSIS_CONFIGURATION` | 분석 설정과 지원 언어 |
+| `FAILED_SAFETY_GUIDELINES` | 보안과 품질 보호 기준 충족 여부 |
+| `INTERNAL_ERROR` | 서비스 내부 오류 |
+
+운영 설계에서는 요약 부재를 상담 정상 종료나 업무 해결의 증거로 쓰지 않는다. 상담원이 권한 범위에서 전사문을 확인하고 후처리를 이어 갈 경로를 둔다. 외부 업무의 완료 상태는 해당 업무 시스템에서 확인한다.
+
 ## 구현 검토에 적용하기
 
 다음은 위 제약에서 도출한 설계 점검 항목이다. 제품 도입이나 특정 환경의 동작을 검증한 결과는 아니다.
@@ -48,6 +66,7 @@ Persistent chat은 이전 채팅 전사문을 새 채팅에 불러오는 rehydra
 - [AWS, Enable customers to resume chat conversations in Connect Customer](https://docs.aws.amazon.com/connect/latest/adminguide/chat-persistence.html)
 - [AWS, StartChatContact](https://docs.aws.amazon.com/connect/latest/APIReference/API_StartChatContact.html)
 - [AWS, Security Best Practices for Connect Customer](https://docs.aws.amazon.com/connect/latest/adminguide/security-best-practices.html)
+- [AWS, View generative AI-powered post-contact summaries in Connect Customer](https://docs.aws.amazon.com/connect/latest/adminguide/view-generative-ai-contact-summaries.html)
 
 ## 관련 문서
 

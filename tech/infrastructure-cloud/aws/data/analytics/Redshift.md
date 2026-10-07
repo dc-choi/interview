@@ -43,6 +43,14 @@ PostgreSQL 기반의 **OLAP에 최적화된 완전 관리형 데이터 웨어하
 
 이 문서의 Data Sharing 서술은 RA3와 Serverless 기준이며 RG의 지원 범위는 공식 문서에서 별도 확인이 필요하다.
 
+### RG 전환 시 데이터 레이크 부하를 함께 비교한다
+
+2026-10-07 공식 문서 확인 기준. Spectrum 사용 비중이 큰 RA3/DC2 클러스터는 RG로 옮긴 뒤 외부 테이블 쿼리가 느려질 수 있다. 별도 Spectrum fleet에서 처리하던 작업이 RG 클러스터의 compute를 다른 워크로드와 공유하기 때문이다. Graviton 전환 자체를 개별 쿼리의 성능 개선 보장으로 해석하지 않는다.
+
+운영 트래픽 전환 전에 스냅샷을 RG 클러스터로 복원해 내부 테이블과 데이터 레이크 쿼리를 함께 재현한다. 지연이 악화되면 노드 수나 노드 크기 조정이 필요한지 확인한다. 이 비교에는 늘어난 용량의 비용도 포함한다.
+
+RA3에서 RG로 이동할 때 필요한 최소 patch는 대상 노드 타입과 단일/다중 노드 구성에 따라 다르다. 지원 리전, 대상 구성과 원본 patch 조건을 배포 시점의 공식 전환 가이드에서 확인한다.
+
 ## 분산 키, 정렬 키
 
 - **DISTKEY (분산 키)**: 행을 어느 컴퓨팅 노드에 배치할지 결정.
@@ -140,6 +148,7 @@ Iceberg 데이터를 Redshift 내부 테이블로 가져올 때는 `INSERT INTO 
 - [COPY를 사용한 테이블 로드](https://docs.aws.amazon.com/redshift/latest/dg/t_Loading_tables_with_the_COPY_command.html)
 - [Redshift Spectrum 개요와 배포별 실행 모델](https://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-overview.html)
 - [Redshift provisioned 클러스터와 노드 타입](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html)
+- [Redshift RG 전환 고려사항](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html) — RG 전환 절의 부분 검증
 - [데이터 웨어하우스 시스템 아키텍처](https://docs.aws.amazon.com/redshift/latest/dg/c_high_level_system_architecture.html)
 - [Multi-AZ 배포](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)
 - [스냅샷과 백업](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html)

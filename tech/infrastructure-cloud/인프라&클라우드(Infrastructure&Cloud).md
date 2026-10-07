@@ -18,6 +18,9 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[AWS-Security-Response-Automation|AWS 보안 대응 자동화]] — finding 분류와 실제 조치, 실행 권한과 승인, 효과 확인
+- [x] [[EC2-Compute#Nitro의 인스턴스 간 전송 암호화 조건|EC2 전송 암호화]] — 지원 타입, 리전과 경로 조건, 애플리케이션 TLS
+- [x] [[Redshift#RG 전환 시 데이터 레이크 부하를 함께 비교한다|Redshift RG 전환 검토]] — Spectrum 부하의 compute 공유, 스냅샷 재현과 용량 비교
 - [x] [[AWS-Backup-Malware-Scanning|AWS Backup 악성코드 검사]] — 검사 상태와 결과, 증분 기준과 복원 검증
 - [x] [[Bedrock-Private-Access|Bedrock 비공개 연결]] — API별 endpoint, DNS와 IAM 인가의 구분
 - [x] [[ECS-GPU-Inference|ECS GPU 추론]] — GPU 배치, 분할 용량과 모델 준비 완료
@@ -66,7 +69,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[RDS-Stop-Start-Scheduling|RDS 중지와 재시작 예약]] — 7일 한도와 유지보수 완료 확인, 중지 후 남는 비용
 - [x] [[ECS-Service-AutoScaling#예정된 이벤트의 사전 확장과 복구|ECS 이벤트 사전 확장]] — 예약 min/max, 동적 축소 제어, 준비 확인과 원래 설정 복구
 - [x] [[S3-Scale-Design-Lessons|S3 대규모 설계 교훈]] — 워크로드 집계와 데이터 배치의 구분, 부하 평탄화의 조건, 내구성 위협과 대응책 검토, 추가 shard를 이용한 점진 배포
-- [x] [[Amazon-Connect-Conversation-Continuity|Amazon Connect 대화 연속성과 채팅 복원]] — persistent chat, contact 연결, 토큰 보호와 인계 검토
+- [x] [[Amazon-Connect-Conversation-Continuity|Amazon Connect 대화 연속성과 채팅 복원]] — persistent chat, 토큰 보호, 상담 종료 후 요약의 설정과 누락 원인
 - [x] [[RDS-PostgreSQL-Performance-Triage|RDS와 Aurora PostgreSQL 성능 진단]] — 자원과 세션 연결, idle 상태 구분, 누적 SQL 통계의 차분, 유지보수와 실행 계획, QPM의 수집과 적용
 - [x] [[Storage-Gateway-DataSync|DataSync 클라우드 간 전송]] — 파티션 간 S3의 Object storage location, Azure Blob의 SAS와 태그, agent 조건과 검증 범위
 - [x] [[ElastiCache-Use-Cases#8. Semantic Cache (Gen AI)|시맨틱 캐시]] — 정확 일치 캐시와의 차이, 임계값, 문맥과 권한, 무효화와 총비용
