@@ -148,6 +148,18 @@ AI 서비스에도 데이터 준비, CPU 병렬 작업과 GPU 모델 실행이 �
 
 다른 사례에도 작업 종류, 데이터 규모, 자원 수, 실측과 추정, 품질 조건, 종단 시간과 비용을 같은 표에 적어 비교한다. 일반 LLM의 프리필과 디코드 병목은 [[LLM-Inference-Bottlenecks|LLM 추론 병목]]에서 별도로 다룬다.
 
+## 여러 단계로 구성된 배치의 병목과 재사용
+
+배치 파이프라인은 단계마다 CPU, 메모리와 파일 I/O의 비중이 다르다. 아래는 2026-10-07 AWS HealthOmics의 private workflow 최적화와 call caching 문서를 대조한 점검 기준이다.
+
+1. **작업별 시간과 사용량을 함께 본다.** Run Analyzer는 CPU와 메모리 과다 할당, 작업 의존성과 실행 순서, 컨테이너 준비 시간을 분석한다. 비용 추정은 도구 실행 시점의 AWS 정가 기준이며 권고를 적용한 뒤 실제 실행으로 검증한다.
+2. **압축률을 CPU와 I/O의 교환으로 본다.** 중간 파일의 압축률을 낮추면 압축 연산은 줄지만 파일 크기와 쓰기 시간이 늘 수 있다. 입력 크기가 다른 샘플로 종단 시간을 비교한다.
+3. **작업 통합의 이득과 실패 범위를 함께 본다.** 짧은 순차 작업을 합치면 준비 시간과 중간 파일 I/O를 줄일 수 있다. 여러 샘플을 한 실행으로 묶을 때는 잘못된 샘플 하나가 전체 실행을 실패시킬 가능성도 평가한다.
+4. **재사용 조건을 실행 입력에 드러낸다.** HealthOmics는 워크플로우 엔진의 해시에 S3 ETag와 ECR 컨테이너 digest 등을 반영해 캐시를 매칭한다. 난수, 현재 시각과 명시되지 않은 외부 파일에 의존하는 작업은 같은 입력에서도 결과가 달라질 수 있으므로 캐시 제외를 검토한다.
+5. **재계산 절감과 캐시 유지 비용을 구분한다.** 캐시 출력은 S3 저장 비용과 export 시간을 더한다. 보존과 정리는 사용자가 관리하며 유효한 캐시가 없으면 작업과 종속 작업을 다시 계산한다. Ready2Run workflow에는 이 call caching 기능을 적용하지 않는다.
+
+이 기준은 자원 증설, 중복 계산 제거와 I/O 감소를 나누어 평가하기 위한 것이다. 특정 사례의 시간 단축을 CPU 교체나 클라우드 이전 하나의 효과로 환산하지 않는다.
+
 ## 면접 체크포인트
 
 - **CPU-Bound vs I/O-Bound 구분 기준** (시간복잡도가 CPU 사이클에서 나오는지 vs 대기에서)
@@ -160,6 +172,8 @@ AI 서비스에도 데이터 준비, CPU 병렬 작업과 GPU 모델 실행이 �
 - 하드웨어 vs 소프트웨어 최적화의 경계
 
 ## 출처
+- [AWS, Run optimization for a private HealthOmics workflow](https://docs.aws.amazon.com/omics/latest/dev/workflows-run-optimize.html)
+- [AWS, How call caching works](https://docs.aws.amazon.com/omics/latest/dev/how-run-cache.html)
 - [MindWalk Accelerates AI Drug Discovery with AMD — AMD](https://www.amd.com/en/resources/case-studies/mindwalk.html)
 - [arca.live 프로그래머즈 — CPU-intensive vs I/O-intensive (모댕숲)](https://arca.live/b/programmers/62350982)
 - [Node.js — Don't Block the Event Loop](https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop)
