@@ -56,6 +56,17 @@ aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하
 - **확장 계층**: MCP 서버, 스킬과 커맨드, 서브에이전트, 플러그인을 꽂는 자리. 문법과 예산은 [[Claude-Code-Extension-Reference]].
 - **세션, 상태, 관측성**: resume, 체크포인트와 롤백, 도구 호출 트레이스, 토큰 회계, 감사 로그. 모든 턴을 기록하고 되돌리는 지점.
 
+### 상태 복구와 외부 작업의 중복 방지는 별도다
+
+2026-10-09 LangGraph와 Temporal 공식 문서로 대조한 실행 경계다. 체크포인트가 있어도 외부 시스템의 변경이 정확히 한 번만 발생한다고 보장되지는 않는다.
+
+- **저장 위치:** LangGraph의 `InMemorySaver`는 프로세스 재시작 시 상태를 잃는다. 재시작을 견뎌야 하는 작업에는 영속 checkpointer를 사용한다.
+- **재개 지점:** LangGraph Functional API는 멈춘 코드 줄에서 이어지는 방식이 아니다. `entrypoint`부터 다시 실행하면서 완료되어 저장된 task 결과를 복원한다. API 호출과 파일 쓰기 같은 부수효과는 task로 분리한다.
+- **미완료 작업:** 시작했지만 완료되지 않은 task는 재개 시 다시 실행될 수 있다. 외부 변경이 끝난 직후 결과 기록 전에 실패하는 경우도 고려해, 같은 논리 작업의 멱등성 키나 기존 결과 조회로 중복을 막는다.
+- **완료 기록과 실제 실행:** Temporal도 재시도를 허용한 Activity의 완료 관측은 한 번이어도 실제 실행과 부분 실행은 여러 번 발생할 수 있다고 설명한다. 워크플로우 엔진 채택만으로 결제와 발송의 중복 방지가 완성되지는 않는다.
+
+복구 시험에서는 외부 작업 직후, 완료 기록 직전에 프로세스를 중단하는 경우를 포함한다. 재개 성공뿐 아니라 외부 변경 횟수를 확인한다. 이는 위 실행 경계를 확인하기 위한 시험 제안이며 실제 장애 시험 결과는 아니다.
+
 ## 하네스 경계 밖에 있는 것
 
 구성도에서 점선으로 그려지는 세 상자는 하네스가 빌려 쓰거나 하네스를 바깥에서 검증하는 대상이다.
@@ -116,6 +127,9 @@ aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하
 
 ## 출처
 
+- [LangGraph, Persistence](https://docs.langchain.com/oss/python/langgraph/persistence)
+- [LangGraph, Functional API overview](https://docs.langchain.com/oss/python/langgraph/functional-api)
+- [Temporal, Activity Definition](https://docs.temporal.io/activity-definition)
 - [Harness engineering for coding agent users — martinfowler.com, Birgitta Böckeler](https://martinfowler.com/articles/harness-engineering.html)
 - [Level 9 하네스 엔지니어링과 Evaluator 제어 — 클로드 코드 마스터 활용편 발표 자료(한빛미디어), 빌런 (2026-09)](https://run-ai.kr/learn/carve-harness)
 - [코딩 에이전트 아키텍처 다이어그램 — claude-code-expert](https://claude-code-expert.github.io/diagrams/coding-agent-architecture.html)

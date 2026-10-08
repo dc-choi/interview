@@ -72,6 +72,20 @@ Prowler의 mutelist는 의도적인 설정에 대한 finding을 억제한다. CS
 - 실행마다 도구 버전, 계정과 리전, 검사 범위, 실패와 제외 항목을 함께 기록한다. 결과 수 감소만으로 보안이 좋아졌다고 판단하지 않는다.
 - 조치 뒤 같은 범위로 다시 검사하고 실제 접근 차단 여부도 확인한다. 보고서 생성과 위험 해소는 별도 완료 조건이다.
 
+## 인증 종류와 심사 범위를 먼저 정한다
+
+2026-10-09 KISA 제도 소개와 인증 절차를 대조한 범위다. 구성 점검 도구의 결과를 인증 전체의 충족 증거로 대신하지 않는다.
+
+| 구분 | 확인 대상 |
+|---|---|
+| ISMS | 정보보호 관리체계. 정보서비스의 운영과 보호에 필요한 조직, 물리적 위치와 정보자산을 인증범위에 포함한다 |
+| ISMS-P | 정보보호와 개인정보보호 관리체계. 개인정보의 수집, 보유, 이용, 제공과 파기에 관여하는 시스템과 취급자까지 범위를 확인한다 |
+| CSAP | 클라우드서비스에 대한 별도 보안인증. ISMS-P의 개인정보보호 부분이나 하위 심사 항목으로 취급하지 않는다 |
+
+ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항, 개인정보 처리 단계별 요구사항으로 구분한다. 심사 항목 수만 외우기보다 적용할 기준과 서비스 범위를 먼저 확정한다. 최초심사로 부여되는 유효기간은 3년이며, 유지 여부를 확인하는 사후심사는 유효기간 중 매년 1회 이상 받는다. 인증범위의 중요한 변경도 최초심사 대상이다.
+
+준비 자료에는 인증 대상 서비스, 운영 조직과 자산, 개인정보 처리 흐름, 운영 증거와 결함 보완 내역을 연결한다. 인증 의무 여부와 제재 감경은 별도 법적 요건이므로 위 분류만으로 단정하지 않는다.
+
 ## 작은 서비스의 적용 예
 
 관리자 권한 회수 점검을 가정한 예시다.
@@ -90,6 +104,9 @@ Prowler의 mutelist는 의도적인 설정에 대한 finding을 억제한다. CS
 
 ## 출처
 
+- [KISA, ISMS-P 제도소개](https://www.isms-p.or.kr/sysm/intro/selectSysmCertDetail.do)
+- [KISA, ISMS-P 인증 절차 안내](https://www.isms-p.or.kr/cert/aply/selectCertPrcdDetail.do)
+- [KISA, 클라우드보안인증제](https://www.isms-p.or.kr/sysm/intro/selectSysmVrtlDetail.do)
 - [Prowler, AWS Authentication in Prowler](https://docs.prowler.com/user-guide/providers/aws/authentication)
 - [Prowler, Mutelisting](https://docs.prowler.com/user-guide/cli/tutorials/mutelist)
 - [Service Screener — AWS Samples](https://github.com/aws-samples/service-screener-v2)
