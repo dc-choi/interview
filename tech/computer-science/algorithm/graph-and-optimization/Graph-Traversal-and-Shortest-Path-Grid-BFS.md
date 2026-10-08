@@ -39,7 +39,17 @@ while (!q.empty()) {
 - **grid가 아닌 상태 공간**: 위치 x에서 x-1, x+1, 2x로 이동하는 문제처럼 이동 규칙이 edge인 1차원 상태도 같은 BFS다. 이때 탐색 범위를 입력 범위로 멋대로 가정하지 말고, 범위 밖으로 나가는 것이 최단이 될 수 있는지 논증해 배열 크기를 정한다.
 - 3차원 grid는 dz를 더해 인접 6칸을 본다.
 - **칸마다 비용이 다르면**: 칸에 들어갈 때 그 칸의 값만큼 비용이 드는 grid는 넣는 칸의 거리가 꺼낸 칸보다 정확히 1 크다는 성질이 없어 BFS로 최단 거리를 구할 수 없다. 칸을 정점, 이웃 칸으로 가는 비용을 도착 칸의 값으로 보고 Dijkstra를 돌린다([[Graph-Traversal-and-Shortest-Path#Dijkstra|Dijkstra]]). 출발 칸의 비용을 내는지는 지문을 따라 `dist[start]`를 0이나 그 칸의 값으로 둔다. 비용이 0과 1뿐이면 [[Graph-Traversal-and-Shortest-Path#0-1 BFS|0-1 BFS]]로 충분하다.
-- **queue를 stack으로 바꾸면**: 같은 틀에서 queue만 stack으로 바꿔도 연결된 칸을 모두 방문하므로 flood fill은 똑같이 풀린다. 하지만 방문 순서가 동심원처럼 퍼지지 않고 한 방향으로 막힐 때까지 뻗으므로 "넣는 칸은 꺼낸 칸보다 거리가 1 크다"는 성질이 깨져 거리 계산에는 쓸 수 없다. 넣을 때 방문 표시를 하는 이 stack 순회는 재귀 DFS와 방문 순서도 같지 않다([[Graph-Traversal-and-Shortest-Path#DFS|DFS 절]]). 그래서 grid 문제는 BFS로 통일하고, DFS는 tree와 graph의 구조(cycle, 후위 순서 등)가 필요할 때 쓴다.
+- **queue를 stack으로 바꾸면**: 같은 틀에서 queue만 stack으로 바꿔도 연결된 칸을 모두 방문하므로 flood fill은 똑같이 풀린다. 하지만 거리 순서대로 처리하지 않으므로 최초 방문 거리가 최단 거리라는 보장이 사라진다. `dist[next] = dist[cur] + 1`로 탐색 경로의 길이는 계산할 수 있어도 일반적인 최단 거리로 쓸 수는 없다. 넣을 때 방문 표시를 하는 이 stack 순회는 재귀 DFS와 방문 순서도 같지 않다([[Graph-Traversal-and-Shortest-Path#DFS|DFS 절]]). 그래서 grid 문제는 BFS로 통일하고, DFS는 tree와 graph의 구조(cycle, 후위 순서 등)가 필요할 때 쓴다.
+
+## 미로의 목표에서 역으로 거리 채우기
+
+벽을 한쪽 손으로 따라가는 규칙은 일반적인 미로 탐색의 성공을 보장하지 않는다. 바깥 벽과 떨어진 중앙 목표를 가진 미로에서는 같은 벽을 돌며 출발 위치로 돌아올 수 있다. 통로의 연결과 방문 정보를 기억하는 탐색이 필요하다.
+
+벽 배치를 아는 양방향 격자에서 한 칸 이동 비용이 모두 1이면, 목표를 거리 0으로 넣고 BFS를 돌려 각 칸에서 목표까지의 최단 거리를 구한다. 목표가 여러 칸이면 모두 0으로 넣는다. 현재 칸의 거리가 유한할 때 벽으로 막히지 않은 이웃 중 거리가 정확히 1 작은 칸으로 이동하면 최단 경로를 따라갈 수 있다. `INF`나 미방문 값이 남은 칸은 현재 지도에서 목표에 닿지 못한다.
+
+로봇이 아직 모르는 벽을 열려 있다고 가정한 지도에서 계산한 거리는 잠정값이다. 새 벽을 관측하면 지도를 갱신하고 거리를 다시 계산해야 한다. 실제 벽을 모두 반영한 지도의 최단 거리와 탐색 중의 추정 거리를 구분한다. 또한 최소 칸 수 경로가 회전과 가감속까지 포함한 최소 주행 시간 경로인 것은 아니다.
+
+이해 확인: 목표가 여러 개일 때 왜 BFS 한 번으로 충분한가? 벽 하나가 추가되면 기존 거리표를 그대로 써도 되는가?
 
 ## 영역 번호와 크기 표
 
@@ -66,6 +76,9 @@ BFS의 한 level이 문제의 1초(한 턴)이고 턴마다 목표나 지형이 
 
 ## 출처
 
+- [Floodfill — IEEE at UC Irvine](https://ieee.ics.uci.edu/micromouse/floodfill.html)
+- [Solving the maze — Micromouse Online](https://micromouseonline.com/micromouse-book/mazes-and-maze-solving/solving-the-maze/)
+- [Micromouse maze solving performance — Micromouse Online](https://micromouseonline.com/2018/10/28/micromouse-maze-solving-performance/)
 - [바킹독의 실전 알고리즘 0x09강, BFS — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=ftOmGdm95XI)
 - [바킹독의 실전 알고리즘 0x0A강, DFS — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=93jy2yUYfVE)
 - 인프런, 큰돌 강사, [2-C](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100327), [맞왜틀팁 : 반례를 생각하는 방법 | 2 - C 보완설명](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=144195), [2-Q](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100341), [3-C](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100358), [3-D와 반례](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100359)

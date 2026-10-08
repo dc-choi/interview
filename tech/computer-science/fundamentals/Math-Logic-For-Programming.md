@@ -69,7 +69,7 @@ function meanSquaredError(xs, ys, f) {
 | 보장 | 전제가 다 참이어도 결론이 틀릴 수 있음 | 결론이 거짓이면 전제 중 하나가 반드시 거짓 |
 | 쓰임 | 새 지식 탐구(현대 과학의 가설 제시) | 이미 전제에 담긴 것의 증명 |
 
-프로그래밍의 목표는 새 지식 탐구가 아니라 **내 코드가 오류 없이 성립하는가의 증명**이므로 연역논증이 알맞다.
+코드가 주어진 명세를 만족하는지 증명할 때는 전제에서 결론을 이끄는 연역논증을 사용한다. 관찰한 몇 번의 실행 결과만으로 모든 허용 입력에서의 정당성을 결론 내리지는 않는다.
 
 ## 수학적 귀납법 (Mathematical Induction)
 
@@ -124,6 +124,20 @@ function factorial(n) {
 
 이해 확인에는 같은 공식을 다시 읽기보다 작은 사례와 증명의 차이, 잠시 제거한 조건을 설명해 본다. 이후 다른 수열이나 입력 제약에서 도움 없이 다시 적용하고, 간격을 두고 짧게 재확인한다.
 
+## 자동 검증의 한계와 안전한 근사
+
+정적 분석은 프로그램을 실제로 실행하지 않고 그 동작의 성질을 추론한다. 다만 임의의 프로그램과 입력에 대해 종료 여부를 항상 정확하게 답하고 자신도 종료하는 일반 알고리즘은 존재하지 않는다. 개별 프로그램의 종료를 증명할 수 없다는 뜻은 아니다. 분석할 프로그램과 성질을 제한하거나 근사해 유용한 보장을 얻을 수 있다.
+
+안전성 검증에 쓰는 **과대근사(overapproximation)**는 가능한 실제 실행 상태를 모두 포함하는 더 큰 집합을 계산한다. 실제 도달 상태를 C, 분석이 포함하는 상태를 A, 오류 상태를 E라 하면 `C ⊆ A`이고 `A ∩ E = ∅`일 때 `C ∩ E = ∅`도 성립한다. 이것이 집합과 논리를 프로그램 검증에 연결하는 한 방법이다.
+
+- **건전성(soundness)**: 분석 모델과 가정 안에서 가능한 실제 상태를 빠뜨리지 않는다. 근사가 거칠면 실제로 불가능한 상태까지 포함해 거짓 경보가 생길 수 있다.
+- **경보의 의미**: `A ∩ E`가 비어 있지 않다는 사실만으로 실제 오류가 발생한다고 결론 낼 수 없다. 분석이 잃어버린 조건과 실제 반례를 확인한다.
+- **보장의 범위**: 오류가 없다는 결론은 분석한 성질과 모델에 한정된다. 도구가 건전성을 보장하지 않거나 일부 코드와 환경을 모델링하지 못하면 경보가 없다는 사실을 전체 시스템의 안전성 증명으로 확대하지 않는다.
+
+예를 들어 실제 변수 값이 1 또는 3일 때 구간 `[1, 3]`으로 근사하면 2도 포함된다. 오류 조건이 `x == 2`이면 경보가 나와도 실제 오류의 증거는 아니다. 반대로 이 근사에서 0이 제외된다는 사실은, 해당 값 모델 안에서 `x == 0`이 불가능하다는 근거가 된다.
+
+이해 확인: 테스트 몇 개의 성공과 건전한 과대근사의 무경보는 무엇이 다른가? 경보를 줄이려고 가능한 실제 상태까지 제거하면 어떤 보장을 잃는가?
+
 ## 실무 적용
 
 - 요구사항을 들으면 그것을 충족하는 **명제(조건식)부터** 세운다.
@@ -144,6 +158,8 @@ function factorial(n) {
 - 타입 시스템에서 명제/증명 대응(커리-하워드)으로 확장해 설명할 수 있는가 ([[Types-As-Proofs|타입은 증명이다]])
 
 ## 출처
+- [Abstract Interpretation in a Nutshell — Patrick Cousot](https://www.di.ens.fr/~cousot/AI/IntroAbsInt.html)
+- [Aarhus University, Anders Møller와 Michael I. Schwartzbach, Static Program Analysis](https://www.cs.au.dk/~amoeller/spa/)
 - [Interview with Terence Tao — International Mathematical Union, ICM 2006](https://www.mathunion.org/fileadmin/IMU/ICM2006/offline/icm2006.mathunion.org/dailynews/fields_tao_entr_en.pdf) — 핵심 난점 하나를 남기는 작은 모델의 문제 탐색 방식
 - [The world's greatest mathematician explains 6 essential concepts of math — Big Think, Terence Tao](https://bigthink.com/series/full-interview/6-essential-mathematical-concepts/) — 이상화에서 유한한 조건으로 돌아오는 설명, 영상 22분 이후와 공개 전사문의 Analysis 절
 - 개발자는 수학을 잘해야 할까 (명제, 집합, 수학적 귀납법) — 개인 블로그 에세이

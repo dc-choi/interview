@@ -1,7 +1,7 @@
 ---
 tags: [react-native, mobile, performance]
 status: done
-verified_at: 2026-10-01
+verified_at: 2026-10-09
 category: "웹&네트워크(Web&Network)"
 aliases: ["React Native 네이티브 빌드 시간"]
 ---
@@ -38,6 +38,24 @@ org.gradle.configuration-cache=true
 
 앱과 플러그인의 호환성을 확인하고 첫 실행과 반복 실행을 나눠 측정한다. 캐시를 켰다는 사실만으로 모든 task가 생략되는 것은 아니다.
 
+## Gradle task output 재사용
+
+Android 빌드에서는 configuration cache와 별도로 task output을 재사용할 수 있다. Gradle 9.8.1 문서 기준이며, 실제 적용은 프로젝트의 Gradle과 플러그인 버전에서 확인한다.
+
+| 구분 | 재사용하는 것 | 확인할 경계 |
+|---|---|---|
+| Configuration cache | 설정 단계에서 계산한 빌드 상태 | 설정 입력 변경과 플러그인 호환성 |
+| `UP-TO-DATE` | 같은 작업공간에 남아 있는 task output | 입력과 출력이 이전 실행 이후 바뀌지 않았는가 |
+| `FROM-CACHE` | local 또는 remote build cache에 저장한 task output | task 구현과 선언한 입력 등이 캐시 키와 맞는가 |
+
+`FROM-CACHE`는 다른 사람이 만든 결과라는 뜻이 아니다. 자신이 이전에 만든 local cache에서도 복원할 수 있다. build cache는 다운로드한 의존성 보관소와도 다르다.
+
+`org.gradle.caching=true` 또는 실행 옵션 `--build-cache`로 켠다. 먼저 변경 없는 연속 빌드에서 output을 갖는 task가 `UP-TO-DATE`가 되는지 확인한다. 그다음 산출물을 지운 빌드에서 cacheable task의 `FROM-CACHE`와 전체 소요 시간을 함께 본다. `clean`만으로 build cache까지 비워지는 것은 아니다. task output cache를 쓰지 않는 기준 실행은 `clean`과 `--no-build-cache`를 함께 사용하고, configuration cache와 compiler cache의 사용 여부도 별도로 기록해 비교한다.
+
+- 입력 누락은 잘못된 결과 재사용으로, 같은 입력에서 달라지는 출력은 후속 task의 cache miss로 이어질 수 있다. 시각이나 절대경로처럼 결과에 섞이는 값부터 확인한다.
+- 공유 remote cache에는 신뢰할 수 있는 CI job만 쓰고 개발자와 다른 job은 읽도록 권한을 분리하는 구성을 검토한다. 캐시 속도를 위해 검증되지 않은 산출물의 쓰기 권한을 넓히지 않는다.
+- hit 비율만으로 효과를 판단하지 않는다. 어떤 task를 생략했는지, 복원에 든 시간과 전체 빌드 시간이 함께 줄었는지 비교한다.
+
 ## Maven mirror
 
 `exclusiveEnterpriseRepository`는 지정한 repository만으로 의존성을 가져오도록 한다. 조직 mirror가 이미 있고 필요한 artifact를 모두 제공할 때 선택한다. 외부 fallback이 자동 유지된다고 생각하면 누락 artifact로 빌드가 실패할 수 있다.
@@ -66,6 +84,9 @@ CI에서는 다음 조건을 확인한다.
 ## 출처
 
 - [React Native, Speeding up your Build phase](https://reactnative.dev/docs/build-speed)
+- [Gradle, Build Cache](https://docs.gradle.org/current/userguide/build_cache.html)
+- [Gradle, Solving common problems](https://docs.gradle.org/current/userguide/common_caching_problems.html)
+- [Gradle, Gradle on CI / CD Systems](https://docs.gradle.org/current/userguide/gradle_on_ci.html)
 
 ## 관련 문서
 
