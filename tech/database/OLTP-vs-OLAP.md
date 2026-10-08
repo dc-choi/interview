@@ -59,6 +59,20 @@ OLTP(Online Transaction Processing)와 OLAP(Online Analytical Processing)는 제
 - 분석 DB에서는 [[SCD-Type2|SCD Type 2]] 같은 이력 모델로 시점 일관성 확보
 - 운영 DB는 가벼운 스키마를 유지, 분석 DB는 정렬 키, Materialized View로 별도 최적화
 
+## 분석 데이터 통합과 레이크하우스
+
+OLTP와 OLAP는 처리할 업무의 성격을, 데이터 웨어하우스와 데이터 레이크, 레이크하우스는 데이터를 저장하고 관리하는 방식을 설명한다. 두 분류를 같은 축으로 보지 않는다.
+
+- **데이터 웨어하우스**는 정제된 데이터를 SQL과 BI 분석에 제공하는 데 초점을 둔다.
+- **데이터 레이크**는 다양한 형태의 원본 데이터를 저장하고 분석과 ML에 활용하는 기반이다. 파일이 존재한다는 사실만으로 품질과 사용 권한이 정해지지는 않는다.
+- **레이크하우스**는 레이크의 데이터에 테이블 관리와 분석 기능을 결합해 BI와 ML이 공통 데이터 기반을 활용하도록 하는 아키텍처다. 레이크와 웨어하우스 사이의 중복 복사와 별도 관리 부담을 줄이려는 접근이다.
+
+2026-10-09 Databricks 공식 문서 대조 기준, 해당 구현은 Delta Lake의 ACID 트랜잭션과 스키마 검증, Unity Catalog의 접근 통제와 계보 관리, 저장소와 분리된 Spark 연산을 조합한다. 이는 한 구현의 구성이지 모든 레이크하우스가 같은 제품을 사용해야 한다는 뜻은 아니다.
+
+설계 판단에서는 ACID 지원과 OLTP 적합성을 구분한다. 주문, 결제 DB를 대체할지는 단건 처리 지연, 동시 쓰기, 제약 조건과 장애 복구 요구로 따로 평가한다. 분석팀과 ML팀이 같은 저장소를 읽더라도 서로 다른 정제 단계나 갱신 시점을 선택할 수 있으므로 지표 정의, 읽는 테이블과 데이터 시점을 맞춘다.
+
+이 절은 분석 데이터 통합 방식의 구분을 보강한다. 기존 제품별 트랜잭션 지원 범위를 다시 검증한 것은 아니다.
+
 ## 부적합 시그널
 
 ### OLTP DB로 분석을 돌리고 있는 신호
@@ -86,6 +100,7 @@ OLTP(Online Transaction Processing)와 OLAP(Online Analytical Processing)는 제
 - 분리형 CDC 구조와 HTAP의 격리, freshness, 운영 복잡도 tradeoff
 
 ## 출처
+- [Databricks — What is a data lakehouse?](https://docs.databricks.com/aws/en/lakehouse/)
 - [NHN Cloud Meetup — MySQL 3분 vs ClickHouse 0.3초, 같은 쿼리입니다](https://meetup.nhncloud.com/posts/414)
 - [ClickHouse — Transactional support](https://clickhouse.com/docs/guides/developer/transactional)
 - [VLDB — TiDB: A Raft-based HTAP Database](https://www.vldb.org/pvldb/vol13/p3072-huang.pdf)

@@ -72,6 +72,24 @@ DB 프로시저를 API로 옮기는 경우에는 HTTP 성공 응답뿐 아니라
 
 시간처럼 실행마다 달라지는 필드는 비교 규칙을 먼저 정한다. 기존 구현에도 오류가 있을 수 있어 양쪽 결과의 일치만으로 요구사항의 정확성이나 전체 입력 범위의 동등성을 증명하지는 못한다.
 
+## 빌드 성공과 사용자 동작 검증을 분리한다
+
+코딩 에이전트의 완료 조건에는 코드 생성뿐 아니라 실행 환경에서 확인할 동작을 넣는다. 리팩토링은 변경한 모듈과 연결된 기능의 동작 보존을, PoC는 화면 표시와 사용자 조작 뒤의 결과를 구분해 확인한다.
+
+Android에서는 테스트의 실행 위치와 검증 범위가 서로 다른 축이다. 2026-10-09 공식 문서 대조 기준, local test는 개발 장비나 서버에서, instrumented test는 실제 기기나 에뮬레이터에서 실행한다. 단위 테스트가 전부 local인 것도, 큰 범위의 테스트가 전부 기기에서 실행되는 것도 아니다. 기기와 Android 프레임워크의 실제 동작이 필요한 범위를 골라 instrumented test를 사용한다.
+
+다음은 이를 에이전트 작업의 완료 조건에 적용한 예시다.
+
+| 단계 | 확인할 근거 | 통과만으로 알 수 없는 것 |
+|---|---|---|
+| 빌드 | 대상 변경으로 만든 산출물과 빌드 결과 | 기기에서의 화면과 기능 동작 |
+| 로직 검사 | 요구사항으로 정한 기대값과 자동 테스트 결과 | 검사하지 않은 UI와 기기 의존 동작 |
+| 사용자 흐름 검사 | 초기 상태, 조작 순서, 기대 상태와 실행 결과 | 다른 기기, API 수준과 미실행 경로 |
+
+예를 들어 저장 버튼을 구현했다면 버튼이 보이는지만 검사하지 않고 입력, 누르기, 저장 결과 확인까지 연결한다. 스크린샷과 로그는 보조 근거이며 기대 상태의 검사를 대신하지 않는다. 기기를 연결하지 못했거나 도구 실행이 실패했다면 해당 범위를 미검증으로 남긴다.
+
+당근 Android 팀의 공개 발표는 빌드 이후 화면, 로그와 기기 조작 도구를 에이전트에 연결한 적용 사례다. 특정 팀의 생산성 수치를 일반적인 효과로 옮기거나, 도구 연결만으로 제품 의도까지 검증됐다고 판단하지 않는다.
+
 ## 면접 체크포인트
 
 - 에이전트에게 테스트 기법 이름을 지시하는 것이 왜 행동을 바꾸지 못하는지 설명할 수 있는가.
@@ -81,9 +99,11 @@ DB 프로시저를 API로 옮기는 경우에는 HTTP 성공 응답뿐 아니라
 
 ## 출처
 
+- [Android Developers, Fundamentals of testing Android apps](https://developer.android.com/training/testing/fundamentals)
+- [Android Developers, Build instrumented tests](https://developer.android.com/training/testing/instrumented-tests)
+- [에이전트가 코드를 짜는 시대, 당근 Android 팀은 어떻게 일을 하고 있는가 — 당근 팀, 공개 발표](https://www.youtube.com/watch?v=TWI2Ofb9N2Y)
 - [Refine의 Amazon Q Developer를 활용한 어플리케이션 현대화 여정 소개, 발표자료 — AWS](https://mkt-kr.s3.ap-northeast-2.amazonaws.com/2025+AI+x+Industry+Week/%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C/Day3_Track1/D3T1S3_%EA%B3%B5%EC%9C%A0%EC%9A%A9+%EC%B5%9C%EC%A2%85.pdf)
 - [How well do agents use test/verification techniques? — Dan Luu](https://danluu.com/agentic-testing/)
-- [코딩 에이전트는 테스트와 검증 기법을 얼마나 잘 활용할까? — GeekNews](https://news.hada.io/topic?id=33410)
 
 ## 관련 문서
 
