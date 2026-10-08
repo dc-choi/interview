@@ -262,6 +262,9 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널과 이메�
 | 헬로카일 | [@hello-kyle](https://www.youtube.com/@hello-kyle) | tech, fit |
 | 현수IT HyunsooIT - 데이터와 AI를 쉽게 | [@hyunsooIT](https://www.youtube.com/@hyunsooIT) | tech |
 | 홍정모 | [@HongLab](https://www.youtube.com/@HongLab) | tech |
+| bigboxSWE | [@bigboxSWE](https://www.youtube.com/@bigboxSWE) | tech, fit |
+| The Coding Gopher | [@TheCodingGopher](https://www.youtube.com/@TheCodingGopher) | tech |
+| 개발자방16 | [@devbang](https://www.youtube.com/@devbang) | tech, fit |
 
 ## 이메일 뉴스레터
 
