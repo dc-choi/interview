@@ -187,6 +187,7 @@ AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명�
 - [OpenAI, Build skills](https://learn.chatgpt.com/docs/build-skills)
 
 ## 관련 문서
+- [[LLM-Workflow-Expressions|워크플로 표현식과 실행 경계]] — JSONata의 계산 제한, 호스트 함수와 도구 실행의 분리
 - [[Agent-From-Scratch|에이전트 직접 만들기 (도구 호출 루프 구현)]]
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]] — 에이전트 위임의 신뢰 설계, 운영 루프
 - [[MCP|MCP]] — 모델-도구 연결 표준 (Function Calling의 연결 레이어)

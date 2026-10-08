@@ -181,6 +181,7 @@ API 성공도 검사 실행의 증거는 아니다. `Converse`에서 `guardConte
 
 ## 관련 문서
 
+- [[LLM-Sycophancy-Evaluation|아첨 편향 평가]] — 근거 없는 반박에 따른 정답 훼손과 유효한 정정 수용을 함께 측정
 - [[LLM-Abstention|LLM Abstention (채점이 추측을 보상하는 구조, 확신 목표, needs_review)]]
 - [[LLM-Generation-Mechanics-Context-and-Agent|Context, 환각과 에이전트 (생성 단계의 환각 원인)]]
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링 (적용 범위 메타데이터, 근거 추적)]]

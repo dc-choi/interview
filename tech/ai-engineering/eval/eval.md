@@ -10,6 +10,7 @@ aliases: ["LLM 평가, 신뢰성", "LLM Eval & Reliability"]
 LLM 출력의 평가와 모른다고 말하는 능력 — 신뢰할 수 있는 AI 시스템의 검증 축. 평가 철학에서 시작해 개발 프로세스(EDD), 채점 장치(루브릭과 게이트, LLM 판정기), 데이터셋과 배포 관문, 배포 뒤 서빙 모델 감시로 내려간다. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
 
 ## 목차
+- [x] [[LLM-Sycophancy-Evaluation|LLM 아첨 편향 평가]] — 정답 훼손, 정정 수용과 선호만 바꾼 쌍 비교
 - [x] [[Review-Moderation-Pipeline|리뷰 검수 자동화]] — 정책별 판정, 정밀도와 재현율, 사람 재검토와 결과 버전
 - [x] [[LLM-Eval-Strategy|LLM 평가 전략 (Pass@k, 성능 비고정성, Multi-gate 데이터 품질, CSAT vs 사실정확도)]]
 - [x] [[LLM-Abstention|LLM Abstention (모른다고 말하는 능력, 정확도와 독립, AbstentionBench의 세 결과, 이진 채점이 추측을 보상, 확신 목표와 behavioral calibration, 과잉 거부, needs_review, alignment 재설계)]]

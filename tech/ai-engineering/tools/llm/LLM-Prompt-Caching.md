@@ -81,6 +81,16 @@ verified_at: 2026-10-06
 - **측정**: 멀티턴 에이전트 세션은 매 턴이 직전 요청 전체를 prefix로 다시 보내므로 분기가 없어도 적중률이 높게 나온다. 적중률만으로 분기 효과를 판단하지 말고, 같은 작업을 seed 없이 돌린 실행과 `cache_creation_input_tokens`, `cache_read_input_tokens`, `input_tokens`를 단가로 환산해 비교한다. Claude Code `/usage`의 `Prompt cache (main)` 줄은 메인 대화 기준이므로 분기까지 합산할 때는 응답의 사용량 필드나 OpenTelemetry 지표를 모으고, 로컬 기록을 합칠 때는 fork가 부모 기록을 replay할 수 있어 생기는 중복을 제거한다([[AI-Coding-Agent-Usage-Telemetry]]).
 - **Codex**: Codex CLI도 `/fork`로 대화를 분기하고 서브에이전트에 넘길 부모 이력을 `fork_turns`로 정한다([[Codex-CLI#Subagent 컨텍스트 범위|Codex 서브에이전트 컨텍스트]]). 분기의 캐시 재사용 조건은 2026-10-05 Codex 공식 문서에서 확인하지 못했으므로 사용량 기록으로 확인한다.
 
+## 구독형 앱의 캐시와 사용량 한도
+
+API의 토큰 단가와 구독형 앱의 사용량 차감은 구분한다. 2026-10-08 Claude 공식 도움말 기준, 프로젝트 지식에 올린 자료는 캐시가 살아 있는 동안 재사용하면 새 내용보다 사용량 한도에서 적게 차감된다. 일정 기간 사용하지 않아 캐시가 만료되면 다음 첫 메시지에서는 해당 내용이 다시 전부 산입된다. 이 안내에는 정확한 만료 시간이나 할인율이 없으므로 API의 TTL과 가격 배율을 그대로 적용하지 않는다.
+
+- 관련 질문은 한 메시지에 묶고 반복 참조할 문서는 프로젝트 지식에 두는 방식을 공식 도움말이 권한다. 서로 무관한 작업까지 한 대화에 누적하라는 뜻은 아니다.
+- 사용량 한도는 일정 시간 동안의 이용량이고, 길이 한도는 한 대화의 컨텍스트 크기다. 새 대화를 여는 것은 길이 문제를 줄이는 방법이며 이미 소비한 사용량을 초기화하는 방법은 아니다.
+- 프로젝트 RAG는 관련 자료를 골라 문맥에 넣는 방식이다. 캐시의 재사용 차감과 컨텍스트 선별을 같은 기능으로 해석하지 않는다.
+
+캐시의 지속 시간, 재사용되는 자료와 실제 작업량이 다르므로 한 번 업로드하면 이후 계속 같은 양이 할인된다고 계산하지 않는다. Claude Code의 작업 전환과 `/clear`는 [[Claude-Code-Fundamentals#컨텍스트 관리|컨텍스트 관리]]를 따르고, API 비용 계산은 위의 제공자별 과금 기준으로 분리한다.
+
 ## 효과 사례
 
 - 15K 토큰 고정 시스템 프롬프트에 2K 변동 데이터를 붙여 배치로 고빈도 호출하는 속성 추출 워크로드: 고정/변동 분리 후 1시간 TTL 캐시 포인트 적용, 1주 실측 캐시 히트율 98%. 이 입력 비용 방어가 전체 청구액 절감으로 이어진 파레토 구조는 [[LLM-Cost-Optimization|LLM 비용 최적화]] 참고.
@@ -100,6 +110,8 @@ verified_at: 2026-10-06
 
 ## 출처
 
+- [Claude Help Center, Usage limit best practices](https://support.claude.com/en/articles/9797557-usage-limit-best-practices)
+- [Claude Help Center, How do usage and length limits work?](https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work)
 - [LLM 비용 64% 절감, 캐시 히트율 98% 달성기 — 무신사 테크블로그 (29CM)](https://techblog.musinsa.com/llm-%EB%B9%84%EC%9A%A9-64-%EC%A0%88%EA%B0%90-%EC%BA%90%EC%8B%9C-%ED%9E%88%ED%8A%B8%EC%9C%A8-98-%EB%8B%AC%EC%84%B1%EA%B8%B0-d568135bd40e)
 - [Anthropic Docs, Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) (가격 배율, 최소 토큰, TTL 갱신, 조직과 workspace 격리, 무효화 조건, 사용량 필드, 자동 캐싱)
 - [Anthropic Docs, Mid-conversation system messages](https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages) (대화 중 도구 변경 지원 모델과 베타 헤더)
