@@ -50,6 +50,10 @@ aliases: ["Solo Product Market Validation", "1인 제품 시장 검증", "시장
 
 재사용은 제품이 가치를 만드는 자연스러운 주기에 맞춰 같은 코호트와 같은 핵심 행동을 추적한다. 재방문 횟수보다 약속한 결과를 다시 얻었는지 확인한다. 코호트 리텐션 커브와 PMF 신호의 해석은 [[PMF-Funnel|PMF 검증과 전환 퍼널]]에서 다룬다.
 
+프로모션으로 신규 유입이 늘면 전체 이용자 중 재방문자 비중이 낮아질 수 있다. 그 비중 하나로 기존 고객의 리텐션 하락을 확정하지 않고, 유입 시점과 혜택 노출 조건을 나눠 보상 종료 뒤의 재사용을 확인한다. 게임이나 미션 실험에서도 다음 단계 진입률, 보상 획득률과 보상 뒤 재사용을 구분한다. 마지막 보상 직전의 전환율이 높아도 게임 자체의 효과가 입증되지는 않는다. 단계마다 남은 사용자 구성이 달라질 수 있기 때문이다.
+
+제품 실험의 유지 비용도 판정에 넣는다. 반복 제작하는 이미지, 수동 운영과 지원 비용에 비해 후속 사용 근거가 약하면, 가설을 확인할 수 있는 더 단순한 방식으로 바꾸거나 중단한다. 당근 현장결제의 공개 사례에서는 혜택 뒤 재결제와 반복 에셋 제작 부담을 검토해 게임형 기능을 걷어내고 스탬프 방식으로 바꿨다. 이를 모든 제품에서 스탬프가 우월하다는 결론으로 일반화하지 않는다.
+
 ## 가장 싼 검증부터 시작한다
 
 제품 전체가 아니라 실패하면 아이디어를 무너뜨릴 가장 위험한 가정 하나를 먼저 검증한다. 구체적인 가정일수록 더 작고 빠른 테스트를 설계할 수 있다.
@@ -177,9 +181,8 @@ Indie Hackers 공식 소개는 2017년 4월 Stripe 인수와 2023년 3월 독립
 - [Viability — Product Talk](https://www.producttalk.org/glossary-discovery-viability/)
 - [Startup School Week 4 Recap — Y Combinator](https://www.ycombinator.com/blog/startup-school-week-4-recap-kat-manalac-and-gustaf-alstromer)
 - [How Superhuman Built an Engine to Find Product-Market Fit — First Round Review](https://review.firstround.com/how-superhuman-built-an-engine-to-find-product-market-fit/)
-- [개발 전 랜딩 페이지 수요 검증 — Threads, groble.im](https://www.threads.com/@groble.im/post/Dd_CCVRkxF4)
+- [하드코딩에서 플랫폼까지, 현장결제 실험루프 — 당근 팀](https://www.youtube.com/watch?v=qM6AC_Nyxgw)
 - [Idea to Paying Customers in 7 Weeks: How We Did It — Buffer, Joel Gascoigne](https://buffer.com/resources/idea-to-paying-customers-in-7-weeks-how-we-did-it/)
-- [인터뷰 사이트로 시작한 Indie Hackers 사례 — Threads, vibe.itji](https://www.threads.com/@vibe.itji/post/Dd5-YlQDtzB)
 - [Courtland of Indie Hackers on Acquired — Indie Hackers Podcast](https://www.indiehackers.com/podcast/185-courtland-of-indie-hackers-on-acquired)
 - [About Indie Hackers — Indie Hackers](https://www.indiehackers.com/about)
 

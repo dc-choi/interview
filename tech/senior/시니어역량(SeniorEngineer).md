@@ -16,6 +16,7 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [[tech/senior/design/설계(SeniorDesign)|설계 (Design)]] — 시스템 설계 인터뷰, 포용 디자인
 
 ## 추가 학습 체크리스트
+- [x] [[Product-Design-Workflow-and-Handoff-Organization#직군 통합은 인계 대기를 줄이는 작은 실험으로 시작한다|직군 통합의 지원 조건과 평가]] — 작은 제품 과제, 동료 검토, 운영 문서, 완료량과 계획 신뢰도 구분
 - [x] [[Product-Design-Workflow-and-Handoff-Organization#디자인 엔지니어: 디자인과 구현 사이의 문제를 소유한다|디자인 엔지니어의 역할과 책임]] — 경험 기준, 구현, 재사용 패턴과 채택 지원, 결과물별 결정권
 - [x] [[Failure-Tolerant-Culture#침묵을 해석하고 발언을 요청하는 방법|심리적 안전과 발언 요청]] — 침묵과 동의 구분, 리더의 오류 가능성 인정, 품질 책임과 안전감의 병행
 - [x] [[Senior-Retention-Signals|시니어 유지와 조직 상태 점검]] — 행동 지표의 해석 한계, 피드백 공유 범위, 기술 부채 개선 예산과 효과 확인
