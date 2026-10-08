@@ -12,7 +12,7 @@ aliases: ["Commerce", "커머스"]
 ## 목차
 - [x] [[Agentic-Commerce|대화형 쇼핑과 구매 대행]] — 탐색과 주문 실행, 판매자와 사후 지원 책임, 전환과 공헌이익
 - [x] [[Commerce-Overview|커머스 도메인 개요]] — 거래주체, 입점 계약 4유형, 업태 6유형, 업의 본질(부동산업 vs 요식업)
-- [x] [[Commerce-Core-Domains|핵심 도메인 영역]] — 회원, 상품, 가격, 주문 4개 영역 (core-domains/ 폴더 인덱스)
+- [x] [[Commerce-Core-Domains|핵심 도메인 영역]] — 회원, 상품, 가격, 주문 4개 영역, 동일 상품 확인에 기반한 국내외 가격 비교 (core-domains/ 폴더 인덱스)
 - [x] [[Commerce-Domain-Knowledge|도메인 지식]] — 복잡도의 근원, 빅블러와 도메인 흡수, 정책과 구현의 갭, 습득 방법
 - [x] [[Commerce-Korea-Market|한국 시장]] — 온라인 갈라파고스, 동질화와 메타쇼핑몰, 이용자 행동 특성
 - [x] [[Commerce-Korea-History|한국 이커머스 역사]] — 시대별 흐름과 반복 패턴 (1996~2017, korea-history/ 폴더 인덱스)
