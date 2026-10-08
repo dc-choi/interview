@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, gpu, ai, memory, network, power, cooling]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-09
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["GPU Server Infrastructure", "GPU 서버 인프라"]
 ---
@@ -69,6 +69,21 @@ DCGM Exporter는 GPU 지표를 Prometheus가 수집할 수 있도록 노출한�
 
 2026-10-07 부분 대조: 사용률 정의, DCGM Exporter의 작업 연결과 GPU 공유 제약을 공식 문서로 확인했다. GPU 수명, 보편적인 장애율이나 비용 절감률은 이 지표만으로 추정하지 않는다.
 
+## 추론 Pod 확장과 GPU 노드 준비를 분리한다
+
+부분 검증(2026-10-09): KEDA 2.18과 Karpenter 공식 문서 기준이다. KEDA는 이벤트 지표로 워크로드의 0과 1 사이 활성화를 담당하고, 활성화 이후 1개 이상 구간의 replica 수 조정은 HPA가 맡는다. Karpenter는 Pod의 자원 요구와 스케줄링 제약에 맞는 노드를 구성하는 계층이다. Pod 수를 늘리는 결정과 GPU를 갖춘 노드의 준비는 별도로 확인한다.
+
+GPU 워크로드에는 GPU 자원 요구를 명시하고 해당 장치 플러그인을 배치해야 한다. Karpenter 문서는 장치 플러그인이 없으면 GPU 노드의 초기화가 완료된 것으로 보지 않는다고 설명한다. Pod의 제약이 NodePool의 허용 범위를 벗어나도 배치할 수 없다.
+
+다음은 GPU 추론을 0개까지 축소할 때의 운영 점검 제안이다.
+
+- replica가 0이어도 관측할 수 있는 외부 요청량이나 큐 지표를 활성화 신호로 검토한다. 종료된 추론 Pod 자체의 지표에만 의존하지 않는다.
+- 모델별 부하 시험으로 처리량이 더 늘지 않고 지연이 증가하는 구간을 찾는다. CPU 사용률 하나를 모든 모델의 확장 기준으로 삼지 않는다.
+- 이벤트 감지, Pod 생성, 노드 확보, 이미지 준비, 가중치 적재와 첫 정상 추론까지의 시간을 구분해 측정한다. 노드가 생겼다는 사실을 모델 준비 완료로 보지 않는다.
+- 허용 가능한 첫 응답 지연을 만족하지 못하면 최소 replica 유지나 사전 용량 확보를 비교한다. Pod를 0개로 만든 것만으로 노드까지 제거되거나 비용이 0이 된다고 계산하지 않는다.
+
+노드 축소와 재배치의 중단 제약은 [[K8s-Resource-Right-Sizing-Component-Rollout|Pod 적정화와 노드 통합]]에서 이어진다. 이 절은 설정과 검증 기준이며 특정 클러스터에서의 용량 확보나 지연 보장 결과가 아니다.
+
 ## GPU 체크포인트와 초기화 비용
 
 2026-10-07 NVIDIA `cuda-checkpoint` 문서 기준이다. 이 도구는 Linux 프로세스의 CUDA 상태를 중지하고 복원한다. GPU 상태를 바꾸는 API를 잠그고 이미 제출한 작업의 완료를 기다린 뒤 장치 메모리를 호스트로 복사하고 GPU 자원을 해제한다. 복원할 때는 메모리와 CUDA 객체를 되살린다.
@@ -90,6 +105,8 @@ CUDA 상태의 중지만으로 CPU 스레드까지 멈추지는 않는다. 전�
 
 ## 출처
 
+- [KEDA 2.18, Scaling Deployments, StatefulSets & Custom Resources](https://keda.sh/docs/2.18/concepts/scaling-deployments/)
+- [Karpenter, Scheduling](https://karpenter.sh/docs/concepts/scheduling/)
 - [cuda-checkpoint: CUDA checkpoint and restore utility — NVIDIA](https://github.com/NVIDIA/cuda-checkpoint)
 - [NVIDIA CUDA, CUDA C++ Best Practices Guide](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html)
 - [NVIDIA, H100 GPU Product Specifications](https://www.nvidia.com/en-us/data-center/h100/)

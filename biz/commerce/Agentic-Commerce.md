@@ -28,6 +28,16 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 
 이 사례는 모든 국가와 상품에서 같은 기능이 제공된다는 보장이 아니다. 실제 도입 시 해당 시장의 제공 범위와 판매자 정책을 확인한다.
 
+## AI 채널 참여와 주문 완료를 나눠 확인한다
+
+상품이 AI 검색에 노출되는 것, 구매자가 결제 화면으로 이동하는 것과 에이전트가 주문을 실행하는 것은 서로 다른 단계다. 판매 채널을 검토할 때는 지원되는 구매 경로, 판매자의 참여 설정과 고객의 최종 확인 지점을 따로 확인한다.
+
+2026-10-09 Shopify 공식 안내 기준, 판매자는 관리자 화면에서 판매할 AI 채널을 관리한다. 채널마다 구매 경로가 다르고, 일부 채널의 내부 결제는 direct checkout 활성화 여부에 달려 있다. AI 채널에서 발생한 주문도 판매자가 고객 관계와 구매 후 경험을 맡으며, 관리자에는 채널 또는 유입 경로의 attribution이 표시된다.
+
+브라우저 에이전트를 지원하는 결제 경로에서도 고객 확인은 남는다. Shopify의 Checkout WebMCP 안내는 현재 열린 결제를 읽고 수정하되, 주문은 구매자가 확인한 뒤 실행하는 흐름을 명시한다. 이를 모든 쇼핑몰이 외부 에이전트의 접근이나 자동 구매를 허용한다는 뜻으로 확대하지 않는다.
+
+운영 점검 제안: 상품 노출 수, 결제 화면 도달과 주문 완료를 구분해 집계한다. 채널별 지원 범위와 주문 확인 절차를 시험하고, 유입 경로가 기록된 주문의 취소, 반품과 문의 비용까지 연결한다. 추천 화면의 등장만으로 매출 효과를 판정하지 않는다.
+
 ## 사업 적용 시 측정할 것
 
 다음은 고객 여정과 책임 구분을 바탕으로 한 측정 제안이다.
@@ -41,6 +51,8 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 
 ## 출처
 
+- [Shopify Help Center, Shopify agentic storefronts](https://help.shopify.com/en/manual/online-sales-channels/agentic-storefronts)
+- [Shopify, Carts and checkout for agents](https://shopify.dev/docs/agents/carts-and-checkout)
 - [Amazon’s next-gen AI assistant for shopping is now even smarter, more capable, and more helpful — Amazon](https://www.aboutamazon.com/news/retail/amazon-rufus-ai-assistant-personalized-shopping-features)
 - [Buy for Me button on Amazon Shopping app: Purchase items Amazon doesn’t sell — Amazon](https://www.aboutamazon.com/news/retail/amazon-shopping-app-buy-for-me-brands)
 

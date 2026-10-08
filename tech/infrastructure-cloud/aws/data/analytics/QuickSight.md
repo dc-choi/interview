@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, quicksight, bi, visualization, analytics]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-09
 category: "Infrastructure - AWS"
 aliases: ["QuickSight", "Amazon QuickSight", "Amazon Quick Sight", "BI"]
 ---
@@ -38,6 +38,18 @@ Amazon Quick의 BI 기능. 서버리스 **머신러닝 기반 BI**로 대화형 
 - 업무 담당자가 검토한 질문과 기대 결과로 동의어와 관계 설정을 바꿀 때의 회귀를 확인한다. 결과가 표시되거나 SQL이 실행됐다는 사실만으로 의미상 정확성을 판정하지 않는다.
 
 의미 정보는 해석을 돕는 설정이다. 데이터 접근 권한이나 결과 정확성을 대신 보장하지 않는다.
+
+## 셀프서비스 BI와 조회 권한을 구분한다
+
+업무 담당자가 직접 분석하도록 도구를 제공하는 것과 모든 데이터를 공개하는 것은 다른 결정이다. 지표의 정의와 집계 단위를 공유하더라도 조직별로 열람할 수 있는 행은 따로 제한할 수 있다.
+
+부분 검증(2026-10-09): Amazon Quick의 사용자 기반 행 수준 보안(RLS) 문서를 대조했다. Enterprise Edition에서는 사용자 또는 그룹과 허용할 필드 값을 담은 권한 데이터셋으로 조회 행을 제한한다.
+
+- RLS가 적용된 데이터셋의 소유자는 전체 데이터를 볼 수 있다. 제한된 독자의 결과를 소유자 계정만으로 검증하지 않는다.
+- 사용자나 그룹에 적용할 규칙이 없으면 해당 주체는 데이터를 볼 수 없다.
+- 반대로 사용자나 그룹을 지정하고 나머지 필터 열을 모두 `NULL`로 두면 전체 데이터 접근을 허용한다. 빈 필터를 접근 거부로 해석하지 않는다.
+
+운영 점검 제안: 다른 조직의 독자, 규칙이 없는 독자와 데이터셋 소유자로 같은 대시보드를 조회한다. 정상 조회뿐 아니라 보이면 안 되는 행이 감춰지는지 확인한다. 이 권한 검증은 자연어 질문의 의미상 정확성이나 지표 정의 검증을 대신하지 않는다.
 
 ## 상담 녹취의 분석 결과를 시각화한다
 
@@ -90,6 +102,7 @@ AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 �
 
 ## 출처
 
+- [Amazon Quick, Using row-level security with user-based rules to restrict access to a dataset](https://docs.aws.amazon.com/quick/latest/userguide/restrict-access-to-a-data-set-using-row-level-security.html)
 - [Amazon Quick, Working with Amazon Quick Sight Topics](https://docs.aws.amazon.com/quick/latest/userguide/topics.html)
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)
 - [Amazon Quick, Visualize, analyze, and share data with Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/quick-bi.html)
