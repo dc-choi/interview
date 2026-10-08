@@ -27,6 +27,18 @@ Amazon Quick의 BI 기능. 서버리스 **머신러닝 기반 BI**로 대화형 
 - 임시 분석 수행
 - 비즈니스 인사이트 대시보드
 
+## 자연어 분석에는 업무 의미를 연결한다
+
+2026-10-09 공식 Topics 문서 기준, Topic은 여러 데이터셋과 그 관계를 묶는 의미 계층이다. 데이터셋을 추가하기 전에 컬럼 설명, 동의어, 의미 유형과 사용자 정의 지침을 보강한다. Topic에는 데이터셋 사이의 조인 키와 업무 정의, 모호한 표현을 해석할 지침을 둘 수 있다. 기존 Topics는 legacy Topics로 구분되므로 과거 발표의 설정 화면과 현재 구성을 같은 것으로 가정하지 않는다.
+
+자연어 분석 품질을 점검할 때는 다음을 적용한다(설계 제안).
+
+- 판매 채널이라는 질문이 구매 채널 컬럼을 뜻하는지 업무 정의부터 확인한다. 비슷한 이름을 동의어로 등록하는 것만으로 서로 다른 지표를 합치지 않는다.
+- 주문 수, 구매 수량과 구매자 수를 구분하고 집계 단위, 기간과 조인 관계를 명시한다.
+- 업무 담당자가 검토한 질문과 기대 결과로 동의어와 관계 설정을 바꿀 때의 회귀를 확인한다. 결과가 표시되거나 SQL이 실행됐다는 사실만으로 의미상 정확성을 판정하지 않는다.
+
+의미 정보는 해석을 돕는 설정이다. 데이터 접근 권한이나 결과 정확성을 대신 보장하지 않는다.
+
 ## 상담 녹취의 분석 결과를 시각화한다
 
 음성을 텍스트로 바꾸는 작업, 문의 유형을 분류하는 작업과 대시보드 집계는 다른 단계다. Quick Sight에는 분석 결과를 데이터셋으로 연결한다. 음성 파일을 S3에 넣었다는 사실만으로 상담 지표가 만들어지지는 않는다.
@@ -78,6 +90,7 @@ AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 �
 
 ## 출처
 
+- [Amazon Quick, Working with Amazon Quick Sight Topics](https://docs.aws.amazon.com/quick/latest/userguide/topics.html)
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)
 - [Amazon Quick, Visualize, analyze, and share data with Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/quick-bi.html)
 - [Amazon Quick, Supported data sources](https://docs.aws.amazon.com/quick/latest/userguide/supported-data-sources.html)

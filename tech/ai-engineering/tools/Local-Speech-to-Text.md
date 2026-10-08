@@ -107,6 +107,16 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 - 휴대폰 입력은 데스크톱 앱이 대신하지 못하므로 모바일 받아쓰기 앱을 따로 고른다
 - 받아쓰기도 식별자와 경로를 잘못 적을 수 있으므로 긴 설명은 말로, 파일 경로와 명령은 타이핑으로 넣는다
 
+### 전사와 문장 재작성은 따로 검수한다
+
+받아쓰기 앱은 발화를 그대로 옮기는 데서 끝나지 않을 수 있다. Typeless Dictate는 말하는 중의 정정과 추가 맥락을 반영해 다듬은 텍스트를 입력창에 넣는 기능이다(2026-10-09 공식 사용 안내 대조). 따라서 음성 인식 오류와 문장 재작성 과정의 의미 변화는 다른 검수 항목이다. 이 기능 설명만으로 코딩 정확도나 생산성 향상을 입증할 수는 없다.
+
+코딩 지시용으로 적용할 때는 다음을 확인한다(검수 절차 제안).
+
+- 최종 수치, 부정 표현, 예외 조건과 유지해야 할 제약이 남았는지 확인한다.
+- 경로, 식별자, 대소문자와 명령 옵션을 실행 전에 읽는다. 자연스러운 문장으로 정리됐다는 이유로 명령까지 정확하다고 보지 않는다.
+- 입력문 검수와 코딩 에이전트의 변경 및 테스트 결과 검수를 분리한다. 받아쓰기 앱이 지시를 잘 정리한 것과 코드가 요구사항을 만족한 것은 별개다.
+
 ## 운영 체크포인트
 
 - 전사문에는 화면의 슬라이드와 코드가 없다. 발표가 화면 위주면 핵심 내용이 빠진다.
@@ -116,6 +126,7 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 
 ## 출처
 
+- [Typeless, How to use Dictate](https://www.typeless.com/help/quickstart/dictate)
 - [whisper.cpp — GitHub, ggml-org](https://github.com/ggml-org/whisper.cpp)
 - [whisper.cpp 모델 파일 — Hugging Face, ggerganov](https://huggingface.co/ggerganov/whisper.cpp)
 - [whisper-large-v3-turbo — Hugging Face, openai](https://huggingface.co/openai/whisper-large-v3-turbo)

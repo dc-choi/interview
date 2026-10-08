@@ -129,6 +129,18 @@ route는 실제 URL이 아니라 `/contents/:id` 같은 템플릿으로 기록�
 
 조직에서 Incident Management를 사용한다면 공동 대응과 상태 공유가 필요한 장애에 incident를 열고 영향, 심각도, 지휘 역할과 타임라인을 한곳에 모은다. monitor 알림에는 incident 생성 기준과 Runbook을 연결하고 종료 뒤에는 탐지, 완화와 재발 방지 항목을 회고한다.
 
+## LLM 호출은 응답 품질과 실행 상태를 나눠 본다
+
+2026-10-09 Datadog 공식 설명 기준, Agent Observability는 모델 체인의 입력과 출력, 토큰 사용량과 단계별 지연을 추적하고 Amazon Bedrock 등과 연결한다. 환각, 프롬프트 인젝션과 출력 품질 평가도 제공한다. 기능 제공은 개별 답변의 정확성이나 모든 공격의 차단을 보장한다는 뜻이 아니다.
+
+운영에 적용할 때는 다음을 구분한다(설계 제안).
+
+- **실행 상태**: 검색, 모델 호출과 후속 처리 중 어느 단계가 느리거나 실패했는지 추적으로 좁힌다.
+- **응답 품질**: 정상 응답의 내용도 근거와 업무 기준에 맞는지 평가한다. HTTP 성공률을 답변 정확도로 쓰지 않는다.
+- **사용량**: 모델별 토큰과 호출량을 비교한다. 비용을 줄이는 변경은 같은 질문 세트의 품질과 지연도 함께 비교한다.
+
+프롬프트와 응답을 수집하기 전에 민감정보 범위, 마스킹과 보존 정책을 정한다. 이 절은 기능과 점검 기준을 정리한 것이며 SDK별 자동 계측 범위나 실제 환경의 연결 성공을 검증한 기록은 아니다.
+
 ## 10. 기존 환경을 인수할 때 확인할 것
 
 1. Catalog에서 담당 서비스와 dependency를 찾는다.
@@ -153,6 +165,7 @@ route는 실제 URL이 아니라 `/contents/:id` 같은 템플릿으로 기록�
 
 ## 출처
 
+- [What Is LLM Observability & Monitoring? — Datadog](https://www.datadoghq.com/knowledge-center/llm-observability/)
 - [Unified Service Tagging — Datadog](https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/)
 - [Catalog — Datadog](https://docs.datadoghq.com/internal_developer_portal/software_catalog/)
 - [Define ownership for Catalog entities — Datadog](https://docs.datadoghq.com/internal_developer_portal/catalog/set_up/ownership/)
