@@ -44,6 +44,18 @@ aliases: ["Failure Tolerant Culture", "실패에 관대한 문화", "심리적 �
 - 하드스킬 편차로 생긴 위계, 네임밸류에 대한 오해(유명함과 실력은 별개)는 안전감을 깎는다. 이를 낮추는 적극적 장치가 필요하다 — 실패를 캐주얼하게 공유하는 자리, 위계를 평평하게 만드는 활동.
 - 문제 제기 자체를 기여로 인정하는 문화와 같은 뿌리다 ([[Team-Contribution-Culture|팀 기여 문화]], [[Toxic-Org-Detection|독성 조직 판별]]). 안전한 1:1 경청도 그 토대다 ([[Trusted-Advisor-Listening|신뢰받는 조언자의 경청]]).
 
+## 침묵을 해석하고 발언을 요청하는 방법
+
+회의에서 반대 의견이 나오지 않았다는 사실만으로 모두 동의했거나 문제가 없다고 판단하지 않는다. 무능하거나 부정적인 사람으로 보일까 걱정해 질문과 우려를 숨길 수 있고, 말하지 않은 정보는 리더에게 관측되지 않는다. 반대로 말수가 적다는 사실만으로 안전감 부족을 확정할 수도 없다. Google의 팀 연구에서는 외향성이 팀 효과성과 유의하게 연결되지 않았으며, 이 결과를 다른 조직에 그대로 일반화할 수는 없다.
+
+리더가 먼저 할 행동은 다음과 같다.
+
+1. 업무에 아직 모르는 부분이 있으며 함께 배워야 한다는 맥락을 설명한다.
+2. 자신의 판단도 틀릴 수 있음을 인정하고 구성원의 관찰과 질문을 요청한다.
+3. 다른 의견을 제시하거나 실수를 드러낸 사람을 망신 주거나 처벌하지 않는다. 품질 기준과 수행 책임은 별도로 분명하게 유지한다.
+
+적용 예시로 설계 검토에서 빠진 위험과 아직 확인하지 못한 가정을 묻고, 제기된 우려를 검증할 항목으로 정리할 수 있다. 목표는 발언량을 늘리는 것이 아니라 판단에 필요한 정보가 안전하게 드러나게 하는 것이다. 이 예시는 학습 문제로 업무를 설명하고 질문을 요청하는 원칙을 설계 검토에 적용한 방법이다.
+
 ## 시니어, 리더 체크포인트
 
 - 실패를 추궁하는가, 배움을 추출, 공유하는가
@@ -51,6 +63,7 @@ aliases: ["Failure Tolerant Culture", "실패에 관대한 문화", "심리적 �
 - 위계, 네임밸류로 입을 닫게 만드는 요인이 있는가
 - 리더 본인이 실패를 먼저 드러내는가
 - 시도의 빈도를 막는 절차, 분위기가 없는가
+- 침묵을 동의로 간주하지 않고 미확인 가정과 우려를 구체적으로 요청하는가
 - 운영 사고와 가역적 실험을 구분하고 각각 재발 방지와 중단 기준을 두는가
 
 ## 관련 문서
@@ -66,6 +79,8 @@ aliases: ["Failure Tolerant Culture", "실패에 관대한 문화", "심리적 �
 
 ## 출처
 
+- [Leading in Tough Times: HBS Faculty member Amy C. Edmondson on Psychological Safety — Harvard Business School](https://www.hbs.edu/recruiting/guides-and-stories/leading-in-tough-times)
+- [Understand team effectiveness — Google re:Work](https://rework.withgoogle.com/intl/en/guides/understand-team-effectiveness)
 - 실패에 관대한 문화와 심리적 안전 — 개인 블로그 회고
 - 사피 바칼, 룬샷(Loon Shots) — 도서
 - [Google SRE Book, Postmortem Culture: Learning from Failure](https://sre.google/sre-book/postmortem-culture/)

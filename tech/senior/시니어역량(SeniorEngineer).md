@@ -16,6 +16,7 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [[tech/senior/design/설계(SeniorDesign)|설계 (Design)]] — 시스템 설계 인터뷰, 포용 디자인
 
 ## 추가 학습 체크리스트
+- [x] [[Failure-Tolerant-Culture#침묵을 해석하고 발언을 요청하는 방법|심리적 안전과 발언 요청]] — 침묵과 동의 구분, 리더의 오류 가능성 인정, 품질 책임과 안전감의 병행
 - [x] [[Senior-Retention-Signals|시니어 유지와 조직 상태 점검]] — 행동 지표의 해석 한계, 피드백 공유 범위, 기술 부채 개선 예산과 효과 확인
 - [x] [[RFC-Writing#작성 범위는 오판 비용으로 정한다|설계 문서의 작성 범위]] — 되돌리기 어려운 결정에 검토 집중, 미해결 쟁점의 다음 행동과 결정 근거 보존
 - [x] [[Debugging-Principles#다른 사람이 재현할 수 있는 버그 보고|재현 가능한 버그 보고]] — 재현 절차, 기대 결과와 실제 결과 분리, 관측과 추측 구분
