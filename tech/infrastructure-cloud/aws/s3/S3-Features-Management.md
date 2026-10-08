@@ -76,6 +76,30 @@ verified_at: 2026-10-07
 - 신규 객체만 복제 — **기존 객체는 S3 Batch Replication** 사용
 - 복제 **사슬 불가**: A → B → C로 연쇄 복제해도 A의 객체가 C까지 가지 않음
 
+## AWS CLI로 버킷 사이의 현재 객체 복사
+
+이 절은 2026-10-08 AWS 공식 문서와 AWS CLI v2 기준이며 일반 목적 버킷을 대상으로 한다. `aws s3 sync`는 복사할 차이를 찾아 반영하는 명령이다. 버킷 설정과 과거 버전까지 보존하는 백업으로 취급하지 않는다.
+
+먼저 대상과 옵션을 확인한다. 아래 버킷 이름은 예시이며 첫 명령은 실행 예정 작업만 출력한다.
+
+```bash
+aws s3 sync s3://amzn-s3-demo-source-bucket s3://amzn-s3-demo-target-bucket --dryrun
+aws s3 sync s3://amzn-s3-demo-source-bucket s3://amzn-s3-demo-target-bucket
+```
+
+| 확인할 항목 | 복사 범위와 주의점 |
+|---|---|
+| 복사 대상 판정 | S3 간 기본 sync는 대상에 키가 없거나 크기가 다르거나 원본의 최종 수정 시각이 더 최신이면 복사한다. 이 판정을 객체 내용 전체의 비교로 해석하지 않음 |
+| 버전 | 현재 객체 버전만 복사한다. 과거 버전 이력은 이 명령의 이전 범위에 포함되지 않음 |
+| 덮어쓰기와 삭제 | 대상의 같은 키가 복사 대상이 되면 덮어쓸 수 있다. `--delete`를 추가하면 원본에 없는 대상 객체를 삭제하므로 단순 복사 예제에는 넣지 않음 |
+| 속성 | `--copy-props default`는 태그와 지정된 메타데이터 속성을 보존한다. Annotations까지 복사하려면 이를 지원하는 CLI 버전에서 `--copy-props all`을 사용한다. 멀티파트에서는 속성 보존을 위한 추가 API 호출과 권한이 필요할 수 있음 |
+| ACL | 원본 ACL은 자동 복사되지 않는다. 객체 데이터 복사와 대상의 접근 권한 설정을 별도로 확인 |
+| 메타데이터만 변경 | `--metadata`를 지정해도 sync에서 변경 대상으로 선택되지 않은 객체에는 적용되지 않음 |
+| 큰 객체 | 단일 `CopyObject`의 상한은 5 GB다. 그보다 큰 객체는 CLI나 SDK의 multipart copy를 사용하며 CLI 전체의 복사 한도로 오해하지 않음 |
+| 아카이브 | Glacier Flexible Retrieval과 Deep Archive의 객체는 복원한 뒤 복사 |
+
+작업 전 읽기와 쓰기 권한, 암호화 키 접근 권한과 대상 버킷 설정을 확인한다. 운영 검증에서는 종료 코드와 실패 목록, 대상 key와 크기, 필요한 메타데이터와 무결성을 대조한다. 객체 수와 총 크기의 일치만으로 내용까지 같다고 확정하지 않는다. 큰 버킷은 객체 수와 실행 시간을 보고 S3 Batch Operations도 비교한다.
+
 ## Lifecycle Management
 
 객체를 시간 기준으로 다른 클래스로 전환, 만료. 비용 최적화의 핵심 도구.
@@ -106,9 +130,18 @@ S3 자체가 정적 페이지 서버 역할. `index.html`, `error.html` 지정�
 
 ## 출처
 
+- [Copy objects between S3 buckets — AWS re:Post](https://repost.aws/knowledge-center/move-objects-s3-bucket)
+- [AWS 공식 문서, AWS CLI s3 sync](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html)
+- [AWS 공식 문서, Copying, moving, and renaming objects](https://docs.aws.amazon.com/AmazonS3/latest/userguide/copy-object.html)
 - [AWS 공식 문서, Configuring MFA delete](https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiFactorAuthenticationDelete.html)
 - [AWS 공식 문서, Deleting an object from an MFA delete-enabled bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMFADelete.html)
 - [AWS 공식 문서, Deleting object versions from a versioning-enabled bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/DeletingObjectVersions.html)
 - [AWS 공식 문서, Querying data in place with Amazon S3 Select](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html)
 - [AWS 공식 문서, Amazon S3 Object Lambda availability change](https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazons3-ol-change.html)
 - [AWS 공식 문서, S3 Event Notification 대상](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-event-types-and-destinations.html)
+
+## 관련 문서
+
+- [[S3|S3 개요]]
+- [[S3-Storage-Performance|S3 성능과 무결성]]
+- [[S3-Security-Cost|S3 보안과 비용]]

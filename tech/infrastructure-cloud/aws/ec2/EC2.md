@@ -7,10 +7,10 @@ aliases: ["AWS EC2", "Elastic Compute Cloud"]
 
 # AWS EC2 (Elastic Compute Cloud)
 
-AWS의 **가상 머신 컴퓨트 서비스**. 하이퍼바이저 위에서 인스턴스를 임대하는 모델이며, 모든 AWS 컴퓨트 서비스의 기반. ASG, ELB, ECS, EKS의 노드도 결국 EC2. 내용은 아래 다섯 문서로 분리.
+AWS의 **가상 서버 컴퓨트 서비스**. 인스턴스의 컴퓨트, 네트워크, 운영과 비용을 아래 문서에서 다룬다.
 
 - [[EC2-Compute|컴퓨트 아키텍처]] — Nitro System, Instance Store vs EBS, 인스턴스 패밀리, T 시리즈 크레딧, Placement Group
-- [[EC2-Network-Access|네트워크와 접근]] — IMDS, Elastic IP, ENA, Key Pair
+- [[EC2-Network-Access|네트워크와 접근]] — IMDS, Elastic IP, 기본 사설 IPv4 변경과 ENI 보존, ENA, Key Pair
 - [[EC2-Operations|운영과 수명주기]] — User Data, AL2023 저장소 버전과 패치, ASG 연계, 인스턴스 상태, AMI
 - [[EC2-Cost|비용 모델]] — On-Demand, Reserved, Savings Plans, Spot, Capacity Reservations
 - [[EC2-Checkpoints|흔한 실수와 체크포인트]] — 운영 실수, 면접, SAA-C03 시험 대비

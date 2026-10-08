@@ -31,6 +31,20 @@ EC2 네트워크 인터페이스에 부여하는 **정적 공인 IP**. 기본 Pu
 
 권장 패턴: 고정 공인 IPv4가 실제로 필요한지 먼저 확인하고 웹 서비스는 요구에 따라 ALB, NLB, Global Accelerator, CloudFront나 NAT 설계와 비교한다. Bastion도 Session Manager나 EC2 Instance Connect Endpoint로 대체 가능한지 검토한다.
 
+## Primary private IPv4 변경과 인스턴스 교체
+
+이 절은 2026-10-08 AWS 공식 문서 기준이다. 기본 사설 IPv4는 시작할 때 지정하거나 서브넷에서 자동 할당받으며, 시작한 인스턴스에서 직접 바꿀 수 없다. Stop/Start로도 유지된다. EIP 재연결은 공인 주소를 바꾸는 작업이므로 이 제한을 해결하지 않는다.
+
+| 목적 | 처리 방식과 경계 |
+|---|---|
+| 다른 기본 사설 IPv4 사용 | 기존 인스턴스의 AMI로 새 인스턴스를 시작하면서 선택한 서브넷의 사용 가능한 주소를 지정 |
+| 기존 기본 사설 IPv4를 새 인스턴스에 유지 | 원본 primary ENI의 `Delete on termination`을 끄고 AMI를 만든다. AMI 상태가 `available`인지 확인한 뒤 원본을 종료하고, 같은 VPC와 서브넷에서 새 인스턴스를 시작하며 보존한 ENI를 선택 |
+| 서비스용 사설 주소를 옮길 필요 | 재할당 가능한 secondary private IPv4를 검토한다. Primary ENI를 실행 중인 원본에서 분리하는 방식과 구분 |
+
+원본 종료가 필요한 경로는 중단과 복구 계획을 먼저 확정한다. EBS 기반 AMI를 생성할 때 기본 재부팅은 볼륨의 일관된 스냅샷을 위한 절차다. 재부팅을 생략하면 파일시스템 무결성이 보장되지 않으며, instance store의 데이터는 AMI로 복원되지 않는다.
+
+애플리케이션 검증에서는 AMI 생성 뒤의 추가 쓰기, 외부 데이터 저장소, IAM 역할, 보안 그룹과 접속 경로를 별도로 확인한다. 주소가 같다는 사실만으로 서비스 상태까지 복구됐다고 판단하지 않는다.
+
 ## ENA (Elastic Network Adapter)
 
 **SR-IOV (Single Root I/O Virtualization)** 기반 고성능 네트워크 인터페이스.
@@ -57,6 +71,9 @@ EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를
 
 ## 출처
 
+- [Change the primary private IP address of an EC2 instance — AWS re:Post](https://repost.aws/knowledge-center/ec2-change-primary-ip)
+- [AWS 공식 문서, Amazon EC2 instance IP addressing](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html)
+- [AWS 공식 문서, Create an Amazon EBS-backed AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html)
 - [Amazon VPC 공식 문서, AWS charges for all public IPv4 addresses](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html)
 - [EC2 instance metadata options](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-options.html)
 - [IMDSv2 작동 방식](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html)
@@ -68,3 +85,8 @@ EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를
 - [EC2 연결 옵션](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect.html)
 - [EC2 network interface 생성과 이동 제한](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-network-interface.html)
 - [AWS 공식 문서, EC2 인스턴스의 기본 사용자 이름](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connection-prereqs-general.html)
+
+## 관련 문서
+
+- [[EC2|EC2 개요]]
+- [[EC2-Operations|EC2 운영과 AMI]]

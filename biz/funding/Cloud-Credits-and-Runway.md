@@ -26,6 +26,20 @@ AWS 프로모션 약관은 현금 교환과 환급을 허용하지 않으며, �
 
 Billing의 크레딧 상세에서 잔액, 시작일, 만료일과 적용 가능한 상품을 확인한다. 크레딧은 적격 요금에 자동 적용되며 소진되거나 만료되면 적용이 끝난다. 만료월의 세부 처리는 약관과 청구 주기 기준을 따른다.
 
+## AI 지원 프로그램은 자격과 혜택을 나누어 확인한다
+
+Claude Startups는 2026-10-08 공식 페이지 본문과 약관을 대조한 사례다. 지원 조건과 심사 통과, 혜택 수령은 별개다.
+
+| 확인할 항목 | 공개 조건과 예산 반영 경계 |
+| --- | --- |
+| 신청 자격 | 설립 5년 이내 또는 최근 2년 내 투자 유치한 스타트업. VC 투자 없이도 신청할 수 있다. Claude Console 계정, 웹사이트 도메인과 일치하는 회사 이메일, 만드는 제품 설명이 필요하며 지원 가능 지역 등 정책도 충족해야 한다 |
+| 심사 | 신청마다 심사한다. 약관상 사업 성과, 투자와 자금 조달, Claude 통합과 사용 등 여러 요소를 고려하며 최종 적격 여부는 Anthropic이 판단한다. 도메인과 회사 이메일만으로 승인을 보장하지 않는다 |
+| API 크레딧 | 승인 기업에 1,000달러를 제공하며 Console에서 수령한다. 부여일부터 6개월 후 만료된다. Claude Console의 직접 API에 적용되고 Bedrock, Vertex AI 등 제3자 플랫폼에는 적용되지 않는다 |
+| Team 구독 | Claude Team 신규 조직은 최대 Premium 좌석 5개를 1년간 무료로 사용할 수 있다. 기존 Team 조직은 이 혜택 대상이 아니다. API 크레딧과 구독 혜택의 기간을 같은 것으로 계산하지 않는다 |
+| 파트너 혜택 | 최대 45,000달러는 제휴사의 할인과 크레딧 등을 합친 제안 가치다. 현금 지급액이나 모든 회사의 확정 절감액이 아니다. 각 제공사의 자격, 기간과 약관을 따로 확인한다 |
+
+승인 뒤에도 Console에서 실제 제공된 혜택과 수령 조건을 확인한다. 신청 준비 때는 현재 제품과 Claude 사용 방식을 사실대로 설명하고, 실제로 줄일 수 있는 비용만 현금 계획에 반영한다. 신청 후기가 심사 기준이나 개인 사업자의 적격 여부를 대신하지 않는다.
+
 ## 만료 전후 현금 지출을 따로 계산한다
 
 다음은 지원 정책 자체가 아니라, 일시적 혜택을 현금 계획에 반영하는 관리 방법이다.
@@ -41,6 +55,9 @@ Billing의 크레딧 상세에서 잔액, 시작일, 만료일과 적용 가능�
 
 ## 출처
 
+- [Claude Startups — Anthropic](https://claude.com/programs/startups) — 2026-10-08 페이지 본문의 자격, API와 Team 혜택 및 기간 확인
+- [Anthropic, Startup Program Official Terms](https://www.anthropic.com/startup-program-official-terms) — 심사 요소와 적격 판단
+- [Anthropic, Claude Startups Additional Benefits Addendum](https://www.anthropic.com/legal/startup-program-addendum) — 제휴사 혜택의 제공 주체와 별도 조건
 - [AWS Activate Credits — AWS Startups](https://aws.amazon.com/startups/credits/) — 2026-10-07 자격, Founders와 Portfolio 조건 확인
 - [AWS, AWS Promotional Credit Terms & Conditions](https://aws.amazon.com/awscredits/) — 현금 교환, 환급, 초과 요금, 세금과 만료 조건
 - [AWS Billing, Applying AWS credits](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/useconsolidatedbilling-credits.html) — 잔액, 적용 상품과 유효기간 확인

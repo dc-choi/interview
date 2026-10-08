@@ -78,6 +78,17 @@ images/2026/05/file.jpg          ← 한 prefix에 폭주
 hash(id)/images/2026/05/file.jpg  ← 분산
 ```
 
+### HTTP 500과 503의 진단과 재시도
+
+이 절은 2026-10-08 AWS 공식 문서 기준이다. `500 InternalError`는 해당 요청을 처리하지 못한 상태이고, `503 SlowDown`은 급격한 요청 증가나 확장 중에 나타날 수 있다. HTTP 상태만 보고 원인을 하나로 확정하지 않고 오류 코드, 요청 대상과 부하 변화를 함께 확인한다.
+
+1. AWS SDK의 재시도 설정을 먼저 확인한다. SDK를 쓰지 않는 경로에는 exponential backoff를 적용한다. 운영 설정에서는 총 시도 횟수와 요청 제한 시간을 정해 재시도가 부하를 증폭시키지 않도록 한다.
+2. 대량 작업은 낮은 동시성에서 시작해 점진적으로 늘린다. Prefix 분산은 높은 요청률이 필요한 경우의 수단이며 prefix만 생성한다고 처리 자원이 미리 할당되지는 않는다.
+3. CloudWatch의 S3 request metrics를 활성화하고 `5xxErrors`를 본다. `Sum`은 기간의 오류 건수, `Average`는 요청 대비 오류 비율이므로 두 통계의 알람 기준을 구분한다. Request metrics도 best-effort로 전달되므로 지연과 누락이 가능하다.
+4. 개별 실패는 애플리케이션 로그와 S3 server access log로 좁힌다. S3 버킷으로 전달한 access log는 Athena로 조회할 수 있지만, 전달 지연과 누락 또는 중복이 가능해 전체 요청의 완전한 장부로 쓰지 않는다.
+
+오류가 지속되면 실패 요청의 S3 request ID 쌍을 확보해 지원 요청에 포함한다. 재시도 성공 여부와 최종 실패율을 나눠 측정하는 것은 애플리케이션 운영 점검 항목이다.
+
 ### Transfer Acceleration
 
 AWS edge location을 통해 업로드한 뒤 AWS 네트워크로 S3에 전달한다. 추가 비용이 들며 개선 폭은 거리뿐 아니라 회선과 네트워크 상태에 따라 달라지므로 AWS Speed Comparison 도구나 실제 측정으로 결정한다.
@@ -87,6 +98,10 @@ AWS edge location을 통해 업로드한 뒤 AWS 네트워크로 S3에 전달한
 큰 객체를 범위 단위 병렬 GET — 동영상 스트리밍, 로그 부분 조회.
 
 ## 출처
+- [Troubleshoot HTTP 5xx errors from Amazon S3 — AWS re:Post](https://repost.aws/knowledge-center/http-5xx-errors-s3)
+- [Amazon S3 User Guide, Metrics and dimensions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metrics-dimensions.html)
+- [Amazon S3 User Guide, Monitoring metrics with Amazon CloudWatch](https://docs.aws.amazon.com/AmazonS3/latest/userguide/cloudwatch-monitoring.html)
+- [Amazon S3 User Guide, Logging requests with server access logging](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html)
 - [AWS What's New — Amazon S3 increases maximum object size to 50 TB](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-s3-maximum-object-size-50-tb/)
 - [Amazon S3 User Guide — What's new](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WhatsNew.html)
 - [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html)
@@ -99,3 +114,8 @@ AWS edge location을 통해 업로드한 뒤 AWS 네트워크로 S3에 전달한
 - [Amazon S3 User Guide, Checking object integrity](https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html)
 - [인프런, Sungmin Kim, S3란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43742)
 - [인프런, Sungmin Kim, S3 실습 1부](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=45759)
+
+## 관련 문서
+
+- [[S3|S3 개요]]
+- [[S3-Features-Management|S3 기능과 데이터 관리]]
