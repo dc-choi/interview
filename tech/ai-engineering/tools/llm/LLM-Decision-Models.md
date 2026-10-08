@@ -85,6 +85,17 @@ Noul의 문턱도 오판 비용으로 정한다. 예와 아니오의 처리 비�
 - **호출 비용을 합산한다:** 질문을 여러 요청으로 나누면 같은 `state`가 반복 전송된다. 입력 토큰, 보존 품질과 압축 뒤 과업 성공률을 함께 비교한다.
 - **실패 시 원본을 보존한다:** 공개 패키지는 API 실패와 잘못된 응답 등에서 예외를 내고 호출자가 폴백을 정하게 한다. 이는 README에 명시된 동작이며 이 문서에서 실행 검증한 결과는 아니다.
 
+### OpenAI Decisions API의 요청과 실행 경계
+
+2026-10-09 공식 문서 기준, Decisions API는 public beta이며 `POST /v1/decisions`에서 `gpt-6-luna`를 사용한다. 텍스트와 이미지를 평가하지만 임의의 설명문이나 추출 객체 생성은 Responses API의 Structured Outputs, 인자를 포함한 도구 호출 요청은 function calling의 영역이다. 기존 Jev와 Clef 비교의 가격, 버전과 성능 기준일은 유지한다.
+
+- **입력 계약:** Jev의 `state`와 질문 맵을 그대로 보내지 않는다. 공통 근거는 `input`, 질문은 `questions` 배열로 전달하며 질문별 `name`으로 답을 식별한다.
+- **질문 타입:** `predicate`는 조건이 참일 추정 확률, `choice`는 제공한 선택지, `score`는 순서가 있는 단계 인덱스의 확률 가중 평균을 돌려준다.
+- **이미지 제약:** 이미지에는 inline base64 data URL을 사용한다. 외부 이미지 URL과 `file_id`는 지원하지 않는다.
+- **거부 처리:** 질문별 답이 `type: refusal`일 수 있으므로 확률이나 선택값을 읽기 전에 답의 타입을 검사한다. 거부를 낮은 점수나 기본 선택지로 바꾸어 실행하지 않는다.
+
+모델과 추론 노력을 고르는 라우터에 쓸 때도 판정과 실제 호출 설정 적용을 분리한다. 이는 위 API 계약을 이용한 설계 예시다. 선택 결과가 런타임에서 지원되는지 확인하고, 라벨 표본의 품질 합격률과 라우터를 포함한 전체 비용, 지연을 비교한다. 소수 예제에서 그럴듯한 모델을 골랐다는 사실만으로 비용 절감률이나 과업 성공을 보장하지 않는다.
+
 ## 트레이드오프
 
 ### Jev와 Clef 비교 (2026-10-06 확인)
@@ -145,6 +156,8 @@ Cloudflare가 Jev Decision Index의 평가 가운데 10개를 골라 직접 잰 
 
 ## 출처
 
+- [OpenAI API, Decisions](https://developers.openai.com/api/docs/guides/decisions)
+- [OpenAI API Reference, Create a decision](https://developers.openai.com/api/reference/resources/decisions/methods/create)
 - [fast-jev-compaction — GitHub, tamaratran](https://github.com/tamaratran/fast-jev-compaction) — 도구 호출과 결과 선별 설계, 판정 입력 축소와 실패 경계
 - [Introducing Clef: our open-source decision models, and new RL fine-tuning platform — Cloudflare Blog](https://blog.cloudflare.com/clef-decision-models/)
 - [Laya — GitHub, NandhaKishorM](https://github.com/NandhaKishorM/laya) — 로컬 결정 엔진, 체크포인트와 과업별 미세조정 평가

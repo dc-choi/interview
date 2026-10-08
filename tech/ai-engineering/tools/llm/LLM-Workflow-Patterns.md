@@ -113,6 +113,12 @@ Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. �
 
 모호한 의미 검색을 결정론적 조회로 바꾸는 방향은 [[RAG-Retrieval-Engineering|엔티티 추출 후 구조화 조회]], 지표 정의 수렴은 [[Production-Agent-Architecture|Metric Registry]]와 연결된다. 이 맥락 구성은 AWS와 Cisco의 공개 설계에서 도메인 분류, 메타데이터와 예시 SQL을 함께 사용하는 방식과 대조했다(2026-10-07 확인).
 
+### 메타데이터의 정본과 검색용 사본을 구분한다
+
+스키마 설명은 검색에 넣기 전에 변경 이력을 남길 수 있는 정본에서 관리한다. dbt는 모델, 소스 테이블과 컬럼의 `description`을 YAML 속성으로 정의하고 문서에 반영할 수 있다(2026-10-09 공식 문서 확인). 이 기능만으로 Text-to-SQL 검색 색인이 자동 갱신되는 것은 아니므로 별도의 수집 경로를 확인한다.
+
+다음은 이를 적용한 운영 설계 예시다. 컬럼이나 업무 정의를 바꾸는 변경에서 설명과 예시 SQL도 함께 검토하고, 검색용 메타데이터에는 원본 위치와 반영한 버전을 남긴다. 정본을 고친 시점과 검색에 반영된 시점을 구분해야 오래된 설명으로 만든 SQL의 원인을 추적할 수 있다. 설명이 존재한다는 사실은 업무 정의의 정확성을 보장하지 않으며, 변경 뒤에는 영향을 받는 질문과 기대 결과를 다시 대조한다.
+
 ### 생성, 검증과 실행의 경계
 
 SQL 문자열을 만드는 것과 권한 안에서 올바른 결과를 얻는 것은 별도 단계다. Amazon Bedrock Knowledge Bases의 `GenerateQuery`는 SQL 변환을 조회와 분리하고, `Retrieve`는 SQL 실행 결과를 반환한다. 생성 SQL의 정확도는 맥락, 스키마와 질문 의도에 따라 달라져 워크로드에 사용하기 전 평가가 필요하다(2026-10-07 공식 문서 기준).
@@ -174,6 +180,7 @@ AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명�
 - API 에이전트 플랫폼: 스킬셋 연결로 도메인 에이전트 생성, Detector-CoT-Answer 처리, 리트리벌 스킬(CoT+랭킹으로 RAG 확장)과 근거를 XML로 표시하는 랭킹 모델로 출처 추적.
 
 ## 출처
+- [dbt Developer Hub, description](https://docs.getdbt.com/reference/resource-properties/description)
 - [Dynamic text-to-SQL for enterprise workloads with Amazon Bedrock Agents — AWS](https://aws.amazon.com/blogs/machine-learning/dynamic-text-to-sql-for-enterprise-workloads-with-amazon-bedrock-agents/)
 - [Enterprise-grade natural language to SQL generation using LLMs: Balancing accuracy, latency, and scale — AWS](https://aws.amazon.com/blogs/machine-learning/enterprise-grade-natural-language-to-sql-generation-using-llms-balancing-accuracy-latency-and-scale/)
 - [Amazon Bedrock User Guide, Generate a query for structured data](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-generate-query.html)

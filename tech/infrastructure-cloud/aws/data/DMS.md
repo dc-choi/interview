@@ -41,6 +41,17 @@ verified_at: 2026-08-28
 
 연결 검사는 마이그레이션 완료 판정이 아니다. CDC용 로그 설정, 테이블 접근 권한, 데이터 불일치와 애플리케이션 호환성은 아래 검증 절차에서 별도로 확인한다.
 
+### 연결 실패는 출발지와 왕복 경로로 좁힌다
+
+2026-10-09 AWS 네트워크 보안과 NACL 문서를 대조한 DMS Standard 진단 절차다. 연결 오류를 보고 DB 비밀번호부터 바꾸기보다 복제 인스턴스에서 각 endpoint까지 실제로 허용된 경로를 확인한다.
+
+1. **출발지 확인:** 복제 인스턴스의 서브넷, 보안 그룹과 IP를 확인한다. DB가 보는 출발지는 구성에 따라 private IP, public IP 또는 NAT 주소가 되므로 실제 경로와 DB 수신 규칙을 맞춘다.
+2. **보안 그룹 확인:** 복제 인스턴스의 outbound가 endpoint의 DB 포트를 허용하고, DB의 inbound가 해당 출발지에서 오는 DB 포트 연결을 허용하는지 확인한다.
+3. **NACL 확인:** 관련 서브넷의 NACL은 stateless이므로 요청과 응답 방향을 모두 확인한다. DB 포트로 나간 요청의 응답은 클라이언트가 고른 임시 포트로 돌아온다. DB 포트만 양방향으로 열었다고 왕복 통신이 증명되지는 않는다.
+4. **규칙 순서 확인:** 작은 번호부터 평가되는 규칙에서 먼저 일치하는 거부가 있는지, 허용 CIDR이 실제 양쪽 서브넷과 맞는지 확인한다. 임시 포트 범위는 클라이언트와 경로에 맞추며 공개 예제의 전체 대역 허용을 그대로 복사하지 않는다.
+
+변경 뒤에는 같은 복제 인스턴스와 endpoint 조합으로 연결을 다시 검사한다. 네트워크 경로와 별개로 TLS와 인증 설정을 확인하며, 연결 성공을 CDC나 데이터 정합성 검증으로 확대하지 않는다.
+
 ## 마이그레이션 유형 3가지
 
 ### 1. Full Load (전체 로드)
@@ -151,6 +162,9 @@ DMS data validation은 지원되는 소스와 대상의 대응 행을 비교한�
 
 ## 출처
 
+- [AWS DMS, Security in AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html)
+- [AWS DMS, Network Access Control List (NACL) configuration for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Advanced.Ednpoints.NACL.html)
+- [Amazon VPC, Custom network ACLs](https://docs.aws.amazon.com/vpc/latest/userguide/custom-network-acl.html)
 - [AWS DMS, Creating source and target endpoints](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Endpoints.Creating.html)
 - [AWS DMS, Using SSL with AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.SSL.html)
 - [AWS CLI, AWS DMS code examples](https://docs.aws.amazon.com/cli/latest/userguide/cli_database-migration-service_code_examples.html)
