@@ -62,6 +62,20 @@ aliases: ["Marketplace Seller Launch", "오픈마켓 셀러 첫 상품 출시", 
 
 반대로 같은 도구를 쓰는 경쟁자도 늘어 탐색만으로 얻는 마진은 줄어든다. 오래 남는 차이는 선별 기준, 공급사 관계, 품질 관리, 판매자 평점처럼 쌓이는 운영 역량이다([[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]]). 해외 소싱과 판매로 넓히는 경로는 [[Cross-Border-Resale-Arbitrage|해외 중고 리셀 차익 거래]]를 따른다.
 
+## 위탁판매의 정산 시차와 운영자금
+
+재고를 미리 사지 않아도 주문 후 공급사에 지급할 돈은 필요할 수 있다. 고객 결제, 공급사 발주와 결제, 판매대금의 계좌 입금을 서로 다른 사건으로 기록한다. Shopify의 드롭쉬핑 예에서도 고객 주문 대금은 다음 지급분에 들어가고, 판매자는 도매상에 발주하며 상품 대금을 지급한다. 실제 선지급 여부는 공급사 결제 조건과 판매 채널의 지급 일정으로 판단한다.
+
+2026-10-08 확인한 쿠팡 판매 준비 안내는 구매 확정된 주문을 정산 기준으로 삼는다. 주 정산은 정산 금액의 70%를 먼저 지급하고 나머지 30%는 월 단위로 합산해 지급하며, 월 정산은 월말부터 15영업일 후 지급하는 방식이다. 이는 해당 안내의 일반 정산 예이며 다른 마켓이나 별도 빠른정산 계약에 그대로 적용하지 않는다. 실행 전에는 판매자 계정의 약정과 지급 달력을 확인한다.
+
+다음은 **운영자금 추정을 위한 가정 예시**다. 실제 요율이나 최소 창업금액이 아니다.
+
+- 하루 10건을 발주하고 건당 상품과 배송 선지급액이 12,000원이며, 첫 입금까지 14일 동안 발주가 계속되면 그 기간의 선지급 합계는 `10 × 12,000 × 14 = 1,680,000원`이다.
+- 이 금액은 매출이나 손실이 아니라 정산 전에 먼저 지출하는 현금이다. 광고, 반품, 고정 지출과 입금 지연에 필요한 자금은 따로 더한다.
+- 주문량과 지급일이 달라지거나 일부만 정산되면 위 곱셈 대신 날짜별 누적 입금과 출금을 계산한다. 잔액이 가장 낮은 날을 기준으로 필요한 자금과 감당할 주문량을 판단한다.
+
+등록 상품 수를 늘리기 전에 주문 증가에 따른 선지급액, 공급사 품절과 발송 지연, 환불 이후 남는 잔액을 점검한다. 매출 증가만으로 현금 여유가 커진다고 가정하지 않는다. 정산 기준일과 공제 항목의 상세는 [[Payment-Settlement-and-Advance|결제 정산과 선정산]]을 따른다.
+
 ## 트레이드오프와 한계
 
 - 저가 상품도 구매 목적과 품질 위험에 따라 충분한 설명이 필요하다. 건당 마진이 얇으면 물류비와 반품 한 건에 크게 흔들린다.
@@ -77,13 +91,14 @@ aliases: ["Marketplace Seller Launch", "오픈마켓 셀러 첫 상품 출시", 
 - [ ] 실제 품목과 모델의 인증, 수입, 표시 의무를 매입 전에 확인했는가
 - [ ] 상표와 디자인 등 권리별로 조사하고, 검색만으로 비침해를 확정하지 않았는가
 - [ ] 판매가와 비용의 부가세 포함 여부, 공제 가능 여부를 구분했는가
+- [ ] 공급사 결제일과 실제 입금일의 차이, 부분 정산과 환불을 반영해 주문량별 운영자금을 계산했는가
 - [ ] 첫 상품에서 확인할 가설, 손실 한도와 판매 중단 기준을 정했는가
 
 ## 출처
 
-- [쿠팡 셀러 첫 상품 11단계 체크리스트 — Threads, moneypi__](https://www.threads.com/@moneypi__/post/DcybYM0j3He)
-- [쿠팡 셀러 시작 체크리스트 — Threads, moneypi__](https://www.threads.com/@moneypi__/post/DcOH_CeD7Ng)
-- [플랫폼 창업 실패 후 위탁판매로 전환한 회고 — Threads, manddang_snu](https://www.threads.com/@manddang_snu/post/DdlBfVQIOTn)
+- [Shopify Help Center, Supply chain and fulfillment process](https://help.shopify.com/en/manual/products/dropshipping/what-is-dropshipping/fulfillment-process)
+- [Shopify Help Center, Getting paid](https://help.shopify.com/en/manual/payments/getting-paid)
+- [쿠팡 마켓플레이스, 판매 준비하기](https://marketplace.coupang.com/register) — 2026-10-08 정산 기준과 주/월 정산 안내 확인. 다른 절의 과거 확인일은 유지한다.
 - [정부24, 통신판매업신고](https://www.gov.kr/main?CappBizCD=11300000006&HighCtgCD=A09006&a=AA020InfoCappViewApp)
 - [국가법령정보센터, 통신판매업 신고 면제 기준에 대한 고시](https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000191541)
 - [국가법령정보센터, 지방세법 시행령 별표 면허의 종류와 종별 구분](https://www.law.go.kr/flDownload.do?gubun=&flSeq=42497795)
@@ -99,6 +114,7 @@ aliases: ["Marketplace Seller Launch", "오픈마켓 셀러 첫 상품 출시", 
 ## 관련 문서
 
 - [[Commerce-Revenue-Formula|이커머스 거래액, 매출, 이익 공식]]
+- [[Payment-Settlement-and-Advance|결제 정산과 선정산]]
 - [[Cross-Border-Resale-Arbitrage|해외 중고 리셀 차익 거래]]
 - [[Commerce-Korea-Market|한국 이커머스 시장의 특수성]]
 - [[User-Feedback|사용자 피드백 관리]]
