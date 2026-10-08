@@ -98,6 +98,19 @@ interface TableState {
 
 도입 전에 화면 변경 빈도, 플랫폼 수, 전담 조직 여부를 따져 필요한 추상화 수준까지만 올린다.
 
+## 화면 조립 전에 제품 조건을 해석한다
+
+국가, 사용자 역할, 거래 상태와 실험 조건을 각 버튼에서 반복 판정하면 화면을 나눠도 제품 규칙은 흩어진다. 원본 DTO와 환경 값을 제품에서 의미 있는 타입으로 바꾸고, 그 결과로 화면 블록을 고르는 조립 지점을 둔다.
+
+1. 판매자와 구매자처럼 화면 책임을 가르는 조건을 먼저 정한다.
+2. 원본 필드의 조합을 거래 맥락 같은 명시적인 타입으로 변환한다. 표시 코드가 가격과 국가 조건을 다시 해석하지 않게 한다.
+3. 각 블록은 표시할 상태와 발생시킬 이벤트를 받는다. 같은 행동은 공통 유스케이스로 연결하고, 전용 행동은 필요한 블록에만 둔다.
+4. 실험은 바뀌는 블록의 선택 지점에 둔다. 종료하면 선택 분기와 패배한 블록을 정리하고 공통 영역은 유지한다.
+
+이는 당근 팀의 화면 분해 경험에서 정리한 설계 패턴이다. 클라이언트가 타입과 렌더러 목록으로 화면을 조립할 수도 있으므로, 블록 조립 자체가 SDUI를 뜻하지는 않는다. Compose의 상태와 이벤트 분리 원칙도 표시와 상태 변경을 분리하지만 국가별 팩토리 같은 특정 구조를 요구하지 않는다.
+
+블록 단위 표시와 이벤트 연결, 조립 조건을 각각 검증한다. 블록이 따로 잘 그려진다는 사실만으로 국가, 역할과 거래 상태가 결합된 전체 화면의 정확성을 보장하지 않는다. 기존 조건 조합이 단순하면 추가 타입과 팩토리를 먼저 늘릴 필요는 없다.
+
 ## 체크포인트
 
 - 화면 특화 응답, 도메인 모델 응답, 뷰모델의 장단점
@@ -107,6 +120,8 @@ interface TableState {
 
 ## 출처
 
+- [레고처럼 조립하고 분해하는 중고거래 게시글 상세화면 — 당근 팀, 2026 당근 빌더 밋업](https://www.youtube.com/watch?v=4hI7bbT74LY)
+- [Android Developers, Compose UI Architecture](https://developer.android.com/develop/ui/compose/architecture)
 - [모델링 시리즈: 뷰모델 — kciter.so, kciter](https://kciter.so/posts/modeling-series-view-model/)
 - [A Deep Dive into Airbnb's Server-Driven UI System — The Airbnb Tech Blog, Ryan Brooks](https://medium.com/airbnb-engineering/a-deep-dive-into-airbnbs-server-driven-ui-system-842244c5f5)
 

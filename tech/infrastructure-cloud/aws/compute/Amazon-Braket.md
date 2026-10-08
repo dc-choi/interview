@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, quantum-computing, braket, optimization]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-09
 category: "Infrastructure - AWS"
 aliases: ["Amazon Braket", "브라켓", "양자 고전 하이브리드 계산"]
 ---
@@ -19,6 +19,12 @@ Amazon Braket은 양자 알고리즘을 설계하고 시뮬레이터와 실제 �
 | 실제 QPU | 선택한 장치에서 양자 작업을 실행한다 | 장치 특성과 노이즈, 문제를 장치에 맞추는 비용을 고려한다 |
 
 변분 양자 알고리즘은 고전 최적화기가 회로 파라미터를 정하고, 양자 계산 결과를 받아 다시 조정하는 반복 구조다. 전체 애플리케이션을 QPU로 옮기는 방식으로 이해하지 않는다.
+
+## 장치의 실행 모델부터 맞춘다
+
+Braket의 기본 제출 단위는 quantum task다. 게이트 기반 장치에는 회로, 측정 지시와 shots 수를 전달한다. 아날로그 해밀토니안 시뮬레이션(AHS)은 같은 회로를 그대로 받는 방식이 아니라 원자의 배치와 제어장의 시간, 공간 의존성을 기술한다.
+
+따라서 여러 QPU를 한 서비스에서 선택할 수 있다는 사실을 동일 프로그램의 무수정 이식성으로 해석하지 않는다. 먼저 알고리즘의 표현이 장치의 실행 모델과 맞는지 확인하고 지원 연산과 제약을 대조한다. 시뮬레이터에서 검증한 표현과 실제 장치에 제출할 표현도 구분한다.
 
 ## Hybrid Jobs가 맡는 범위
 
@@ -49,6 +55,7 @@ QUBO(Quadratic Unconstrained Binary Optimization)는 이진 변수의 이차 목
 
 ## 출처
 
+- [AWS, How Amazon Braket works](https://docs.aws.amazon.com/braket/latest/developerguide/braket-how-it-works.html)
 - [AWS, What is Amazon Braket?](https://docs.aws.amazon.com/braket/latest/developerguide/what-is-braket.html)
 - [AWS, Working with Amazon Braket Hybrid Jobs](https://docs.aws.amazon.com/braket/latest/developerguide/braket-jobs.html)
 - [Optimization of robot trajectory planning with nature-inspired and hybrid quantum algorithms — AWS Quantum Technologies Blog](https://aws.amazon.com/blogs/quantum-computing/optimization-of-robot-trajectory-planning-with-nature-inspired-and-hybrid-quantum-algorithms/)

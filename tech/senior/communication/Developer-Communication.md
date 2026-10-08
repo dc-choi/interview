@@ -27,6 +27,12 @@ aliases: ["Developer Communication", "개발자 커뮤니케이션", "개발자�
 - 해법: **채널별 응답 기대 시간을 팀 규범으로 명시** — 예: 프로덕션 장애 15분, 일반 논의 당일, 코드 리뷰 다음날
 - 묻는 쪽 실천: 맥락을 갖춘 구체적 질문으로 왕복 횟수를 줄인다
 
+### 원격 온보딩에는 도움을 받을 경로를 만든다
+
+비동기 협업에서도 새 구성원이 누구에게 무엇을 물어볼지 알아야 한다. 온보딩 담당자나 버디, 시작할 작업과 참고 문서를 연결하고, 질문과 진행 상황을 확인할 접점을 마련한다. 채팅이 조용하다는 사실만으로 온보딩이 잘 진행된다고 판단하지 않는다.
+
+글로 남긴 질문이 반복해서 엇갈리거나 함께 재현해야 할 문제가 있으면 짧은 통화나 공동 작업으로 전환할 수 있다. 전환 전에는 막힌 지점과 이미 확인한 내용을 공유하고, 끝나면 결정과 다음 행동을 문서에 남긴다. 이는 GitLab의 버디 운영과 비동기, 동기 소통의 균형을 적용한 실천 제안이다. 모든 질문에 즉답하거나 하루 종일 연결해 두는 규칙은 아니다.
+
 ### 메일을 읽는 순서와 처리하는 순서
 
 수신함을 훑는 일과 실제 답변을 완성하는 일은 나눠 관리한다. To는 회신이나 행동을 요청받는 역할, Cc는 정보를 공유받는 역할이라는 구분을 출발점으로 삼는다. 다만 수신자 위치만으로 긴급성을 확정하지 않고 본문의 요청, 기한과 업무 영향을 확인한다.
@@ -136,6 +142,8 @@ Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하
 제안하는 것과 일정을 약속할 권한은 다르다. 변경된 범위와 위험을 책임자가 승인하도록 확인하고, 불법이거나 안전하지 않은 요구에는 거절이 필요할 수 있다. 항상 대안을 만들어 상대를 붙잡아야 전문가라는 의무로 확대하지 않는다. 작은 일에서 판단의 근거와 한계를 설명하는 연습으로 사용한다.
 
 ## 출처
+- [GitLab Onboarding Buddies — GitLab Handbook](https://handbook.gitlab.com/handbook/people-group/general-onboarding/onboarding-buddies/)
+- [All-Remote Meetings — GitLab Handbook](https://handbook.gitlab.com/handbook/company/culture/all-remote/meetings/)
 - [the senior engineer death spiral — Sunil Pai](https://sunilpai.dev/posts/the-senior-engineer-death-spiral/) — 2026-09-19, 작업 공유와 작은 기여를 통한 회복에 관한 경험적 조언
 - [I Don’t Want to Read What You Didn’t Write — Colin Breck](https://blog.colinbreck.com/i-dont-want-to-read-what-you-didnt-write/) — 2026-09-20, 설계 합의와 독자 맥락, AI 검증 보조에 관한 경험적 조언
 - [Microsoft Support, Outlook Best Practices: Write great email](https://support.microsoft.com/en-us/outlook/outlook-best-practices-write-great-email)
