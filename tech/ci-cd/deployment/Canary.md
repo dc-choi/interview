@@ -16,7 +16,7 @@ Canary는 새 버전을 전체가 아니라 트래픽의 일부에만 먼저 노
 - **배포 성공을 프로세스 기동이 아니라 지표로 판정** — Pod가 Running이 된 것은 성공의 근거가 아니다. 게이트 임계는 [[SLI-SLO|SLI, SLO]]에서 가져온다.
 - **관찰 램프가 길면 신구 공존 구간도 길어진다** — Canary 램프를 수십 분에서 수 시간 유지하면 그만큼 스키마, 캐시 포맷, 메시지 포맷의 전후방 호환 요구가 커진다. Blue-Green도 Blue 보존과 rollback window를 길게 잡으면 더 오래 공존할 수 있다 (Expand-Contract 패턴은 [[Blue-Green|Blue-Green 배포]]가 소유).
 - **표본이 안 나오면 Canary는 형식만 남는다** — 판정에 필요한 요청 수가 모이지 않으면 비율만 올리는 의식이 된다.
-- **롤백은 가중치 0 복귀** — 되돌아가는 것은 트래픽이고 이미 발생한 쓰기와 외부 부작용은 되돌아가지 않는다.
+- **서버 트래픽 롤백은 가중치 0 복귀** — 되돌아가는 것은 트래픽이고 이미 발생한 쓰기와 외부 부작용은 되돌아가지 않는다. 모바일 앱의 배포 중단은 아래처럼 별도로 판단한다.
 
 ## 트래픽 분할 메커니즘
 
@@ -97,6 +97,17 @@ GitOps sync 자체는 Canary 판정을 만들지 않는다. ArgoCD가 매니페�
 
 - 배포와 노출을 분리하고 싶으면 코드는 전량 배포하고 활성화만 비율로 여는 [[Feature-Flag|Feature Flag]]가 더 정밀하다. 배포 단위가 아니라 기능 단위로 반경을 통제할 수 있다.
 
+## 모바일 앱의 단계적 배포는 설치 비율로 판단한다
+
+Google Play staged rollout은 새 앱 버전을 일부 사용자에게 제공하는 방식이다. 서버 요청을 매번 나누는 가중치와 다르며, 설정한 비율의 사용자에게 업데이트가 실제로 전달되기까지 시간이 걸릴 수 있다. 2026-10-09 확인한 Play Console 문서 기준으로 배포 비율은 자동으로 증가하지 않는다. 지표에 따른 자동 승격과 중단을 원하면 별도 판정 절차와 실행 연결이 필요하다.
+
+- **중단은 설치된 버전의 복원이 아니다.** 배포를 중단하면 추가 사용자에게 해당 버전을 제공하지 않지만, 이미 받은 사용자는 그 버전에 남는다. 앱 번들에 결함이 있으면 수정한 새 릴리스를 배포하는 복구 경로를 준비한다.
+- **설정 비율과 관측 표본을 구분한다.** 승격 조건에는 경과 시간뿐 아니라 실제 새 버전 사용자 수와 품질 점검 결과를 둔다. 최소 표본과 연속 통과 횟수는 서비스별 설계값이며, 특정 팀의 값을 공통 기준으로 옮기지 않는다.
+- **전체 평균과 환경별 이상을 함께 본다.** Crash와 ANR을 앱 버전, OS와 기기별로 나눠 확인한다. 일부 구형 환경의 회귀가 전체 평균에 가려질 수 있으므로 해당 환경의 표본도 확인한다.
+- **서로 다른 지표의 비율을 그대로 비교하지 않는다.** Android vitals는 일간 활성 사용자를 기준으로 비율을 계산하며, 세션 기준 SDK 지표와 분모와 수집 대상이 다를 수 있다. 같은 출처와 정의, 관측 기간으로 비교하고 지표가 없다는 사실을 정상으로 판정하지 않는다.
+
+위 관측 조건은 모바일 단계적 배포에 적용할 설계 점검사항이다. 경과 시간, 사용자 수와 연속 판정을 함께 쓰더라도 낮은 빈도의 결함이 없다는 증거는 아니다. 중단 이후에도 이미 업데이트한 사용자의 오류 추이와 수정 버전 도달 여부를 확인한다.
+
 ## Canary가 잘 듣지 않는 경우
 
 - **저트래픽 서비스** — 분당 수십 요청 규모면 1% 노출로는 유의한 판정이 어렵다. 시작 비율을 올리거나 Blue-Green과 빠른 롤백 조합으로 간다.
@@ -125,6 +136,9 @@ GitOps sync 자체는 Canary 판정을 만들지 않는다. ArgoCD가 매니페�
 
 ## 출처
 
+- [Google Play 공식 문서, Release app updates with staged rollouts](https://support.google.com/googleplay/android-developer/answer/6346149?hl=en)
+- [Android Developers 공식 문서, Android vitals](https://developer.android.com/google/play/vitals)
+- [자주 배포하고, 문제는 먼저 발견하기 — 당근 팀, 2026 당근 빌더 밋업](https://www.youtube.com/watch?v=9G_NDyuW9w0) — 2026-10-08 업로드, 11~12분의 승격 조건
 - [Argo Rollouts 공식 문서, Canary Deployment Strategy](https://argo-rollouts.readthedocs.io/en/stable/features/canary/)
 - [Argo Rollouts 공식 문서, Analysis and Progressive Delivery](https://argo-rollouts.readthedocs.io/en/stable/features/analysis/)
 - [Argo Rollouts 공식 문서, Experiment CRD](https://argo-rollouts.readthedocs.io/en/stable/features/experiment/)
