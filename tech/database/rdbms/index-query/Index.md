@@ -37,7 +37,11 @@ index range scan도 leaf page는 key 순서로 읽고, table scan도 fragmentati
 - **PK는 NULL 불가**, unique index와 UNIQUE 제약의 NULL 처리 방식은 DBMS마다 다름 (MySQL과 PostgreSQL 기본값은 여러 NULL 허용, PostgreSQL은 `NULLS NOT DISTINCT` 선택 가능)
 - **PK는 테이블당 1개**, 유니크 인덱스는 **여러 개 가능**
 
-이 때문에 "주민번호처럼 NULL일 수 있는 자연키"는 유니크 인덱스로 두고, 자체 인조키(`AUTO_INCREMENT` 등)를 PK로 두는 패턴이 흔하다.
+이 때문에 NULL을 허용하는 자연키는 유니크 인덱스로 두고, 자체 인조키(`AUTO_INCREMENT` 등)를 PK로 두는 패턴이 흔하다.
+
+### SHOW INDEX를 읽을 때
+
+MySQL 8.4 공식 문서로 2026-10-08 확인한 기준이다. `SHOW INDEX FROM 테이블명`의 `Non_unique = 0`은 중복을 허용하지 않는다는 뜻이며 클러스터링 여부를 나타내지 않는다. `Key_name = PRIMARY`는 기본 키 인덱스이고, `Seq_in_index`는 복합 인덱스 안의 column 순서로 1부터 시작한다. PK가 없는 InnoDB 테이블에서는 아래의 클러스터링 키 선택 규칙까지 확인한다.
 
 ## B-Tree
 
@@ -86,6 +90,7 @@ Hash 인덱스는 등호 조회를 평균 상수 시간에 끝내지만 키 순�
 - InnoDB는 PK가 있으면 이를 clustered index로 사용한다. PK가 없으면 모든 컬럼이 `NOT NULL`인 첫 번째 `UNIQUE` 인덱스를 사용하고 그것도 없으면 숨은 clustered index를 생성한다.
 - **테이블당 하나만 생성 가능**하다. PK에 의해 레코드의 저장 위치가 결정되며 PK가 변경되면 저장 위치도 변경된다.
 - InnoDB row는 항상 clustered index 리프에 저장된다. 정렬 기준은 위 규칙으로 선택된 clustered key다.
+- 저장 구조의 key 순서와 쿼리 결과 순서는 구분한다. PK가 있어도 결과 순서가 필요하면 `ORDER BY`를 명시한다. 인덱스가 정렬을 대신할지는 실행 계획으로 확인한다(MySQL 8.4 공식 문서, 2026-10-08 확인).
 - clustered key 기반 범위 검색은 leaf 순서를 활용하고 추가 secondary lookup이 없어 유리할 수 있다.
 - PK의 변경이 느리다. PK가 자주 변경되는 값으로 설정되면 매번 저장 위치가 조정되면서 성능 이슈가 발생한다. 따라서 자주 변경되는 값은 유니크 키로 잡고, PK는 `AUTO_INCREMENT` 같은 인조키를 사용한다.
 
@@ -188,6 +193,8 @@ DROP INDEX CONCURRENTLY idx_name;
 
 ## 출처
 
+- [MySQL 8.4 — SHOW INDEX Statement](https://dev.mysql.com/doc/refman/8.4/en/show-index.html)
+- [MySQL 8.4 — ORDER BY Optimization](https://dev.mysql.com/doc/refman/8.4/en/order-by-optimization.html)
 - [MySQL 8.4 — Clustered and Secondary Indexes](https://dev.mysql.com/doc/refman/8.4/en/innodb-index-types.html)
 - [MySQL 8.4 — `innodb_page_size`](https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_page_size)
 - [MySQL 8.4 — Skip Scan Range Access Method](https://dev.mysql.com/doc/refman/8.4/en/range-optimization.html#range-access-skip-scan)

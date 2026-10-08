@@ -9,7 +9,7 @@ aliases: ["RDS 운영 인덱스", "RDS 운영, 연결, 마이그레이션"]
 
 RDS를 프로덕션에서 굴릴 때 필요한 운영 문서 모음. 상위 개관은 [[RDS-Aurora]].
 
-- [[RDS-Connection-Credentials|앱 연결과 자격증명 — ORM 연결, SSL, Secrets Manager, IAM DB 인증]]
+- [[RDS-Connection-Credentials|앱 연결과 자격증명 — ORM 연결, SSL, PostgreSQL 터널의 인증서 이름, Secrets Manager, IAM DB 인증]]
 - [[RDS-Operational-Pitfalls|운영 함정 빅7 — 프로덕션에서 실제로 터지는 것들]]
 - [[RDS-Operational-Pitfalls-Rare|운영 함정 — 저빈도, 진단 어려운 것들]]
 - [[RDS-Stop-Start-Scheduling|중지와 재시작 예약 — 7일 한도, 유지보수 완료 확인과 남는 비용]]

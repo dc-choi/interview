@@ -10,7 +10,7 @@ verified_at: 2026-07-21
 
 > 상위 문서: [[RDS-Aurora|RDS / Aurora 관리형 DB]]
 
-RDS는 결국 **엔드포인트 + 포트가 주어지는 평범한 DB**다. 애플리케이션 입장에서 로컬 DB와 다른 점은 세 가지뿐이다. 전송 구간 보안(SSL), 자격증명을 어떻게 안전하게 주입하나, 그리고 네트워크 경로(어느 VPC/SG에서 닿나). 운영 자동화 기능은 [[RDS-Aurora]], 네트워크 방화벽 설계는 [[RDS-Security-Group]]에 있고, 이 문서는 그 사이의 "앱에서 붙는 실무"를 다룬다.
+RDS 연결에서는 DB 엔드포인트와 포트를 사용한다. 이 문서는 전송 구간 보안(SSL), 자격증명의 안전한 주입, 네트워크 경로(어느 VPC/SG에서 닿나)를 다룬다. 운영 자동화 기능은 [[RDS-Aurora]], 네트워크 방화벽 설계는 [[RDS-Security-Group]]에 둔다.
 
 ## 연결 — host만 엔드포인트로 바꾸면 된다
 
@@ -66,6 +66,14 @@ DATABASE_URL="mysql://user:pass@mydb.xxxx.ap-northeast-2.rds.amazonaws.com:3306/
   - **Access denied / authentication failed**는 네트워크는 뚫렸고 자격증명/권한이 틀린 것이다.
   - 이 둘을 헷갈려 비밀번호만 계속 고치면 SG 문제를 영영 못 잡는다.
 
+### PostgreSQL 터널 연결과 인증서 이름
+
+다음 내용은 2026-10-08 AWS RDS와 PostgreSQL 18 libpq 공식 문서로 확인했다. SSH 터널이 로컬 포트를 RDS PostgreSQL로 전달하도록 이미 구성됐다는 전제다.
+
+- 로컬 터널에 연결할 주소와 TLS 인증서에서 검증할 서버 이름을 분리한다. RDS 인증서는 DB 엔드포인트 이름을 사용하므로 `host=localhost`로 바꾸면 `sslmode=verify-full`의 이름 검증이 실패할 수 있다.
+- libpq 기반 클라이언트에서는 `host`에 실제 RDS 엔드포인트, `hostaddr`에 `127.0.0.1`, `port`에 터널의 로컬 포트를 지정할 수 있다. 네트워크 연결은 `hostaddr`로 하고 인증에 필요한 서버 이름은 `host`에서 가져온다.
+- `sslmode=verify-full`과 RDS CA 파일을 가리키는 `sslrootcert`를 함께 설정한다. 터널 때문에 이름이 다르다는 이유로 인증서 검증을 끄지 않는다. 이 파라미터 방식은 libpq 기준이며 다른 드라이버에 그대로 적용하지 않는다.
+
 ## 책임 경계 — RDS가 안 해주는 것
 
 RDS는 운영을 자동화하지만 경계가 있다. 이 경계가 책임 공유 모델이자 면접/시험 단골이다.
@@ -95,6 +103,8 @@ RDS 요금은 대략 다섯 축으로 쌓인다. 단가는 리전/인스턴스 �
 
 ## 출처
 
+- [Amazon RDS User Guide, Using SSL with a PostgreSQL DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Concepts.General.SSL.html)
+- [PostgreSQL 18 Documentation, Database Connection Control Functions](https://www.postgresql.org/docs/18/libpq-connect.html)
 - [Amazon RDS User Guide — Connecting, IAM database authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html)
 - [AWS 공식 문서, Using SSL/TLS to encrypt a connection to a DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html)
 - [RDS DB engine 업그레이드](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Upgrading.html)

@@ -43,6 +43,15 @@ MySQL의 일반 view가 결과를 영구 저장하는 것은 아니지만, 실�
 
 수정 가능한 view를 API처럼 쓴다면 `WITH CHECK OPTION`으로 수정 뒤 row가 view predicate를 벗어나는 것을 막을지 결정한다. 일반적으로 복잡한 view는 read contract로 사용하고 write는 명시적 command path에 둔다.
 
+### 갱신 가능성과 삽입 가능성은 다르다
+
+다음 조건은 MySQL 8.4 공식 문서로 2026-10-08 확인했다.
+
+- `INFORMATION_SCHEMA.VIEWS.IS_UPDATABLE = 'YES'`만으로 `INSERT` 가능 여부를 판단하지 않는다. 삽입에는 중복 없는 view column 이름, 단순 column 참조, 기본값이 없는 base table column의 포함 같은 추가 조건이 필요하다.
+- 예를 들어 base table의 필수 column을 view에서 생략했다면 기존 행의 다른 column을 `UPDATE`할 수 있어도 새 행을 `INSERT`하지 못할 수 있다. 필수 column을 view에 포함하거나 업무상 타당한 기본값을 정의할지 검토한다.
+- 단일 base table을 읽는 수정 가능한 view의 `WHERE`는 조회 범위를 정한다. `WITH CHECK OPTION`이 없으면 그 범위를 벗어난 행을 삽입해도 성공하고, 같은 view로 다시 조회하면 보이지 않을 수 있다.
+- `WITH CHECK OPTION`은 view 조건을 만족하지 않는 삽입과, 보이던 행을 보이지 않게 만드는 갱신을 막는다. 다른 view 위에 만든 view는 `LOCAL`과 `CASCADED`의 검사 범위도 확인한다. 생략 시 기본값은 `CASCADED`다.
+
 ## Stored procedure와 function
 
 Procedure는 `CALL`로 실행하는 statement 묶음이고 IN/OUT parameter를 사용할 수 있다. Stored function은 expression 안에서 scalar 값을 반환한다.
@@ -122,6 +131,8 @@ MySQL view의 `SELECT *`는 생성 시점 column 목록으로 고정된다. base
 
 ## 출처
 
+- [MySQL 8.4, Updatable and Insertable Views](https://dev.mysql.com/doc/refman/8.4/en/view-updatability.html)
+- [MySQL 8.4, The View WITH CHECK OPTION Clause](https://dev.mysql.com/doc/refman/8.4/en/view-check-option.html)
 - [MySQL 8.4, Using Views](https://dev.mysql.com/doc/refman/8.4/en/views.html)
 - [MySQL 8.4, Using Stored Routines](https://dev.mysql.com/doc/refman/8.4/en/stored-routines.html)
 - [MySQL 8.4, Stored Objects](https://dev.mysql.com/doc/refman/8.4/en/stored-objects.html)
