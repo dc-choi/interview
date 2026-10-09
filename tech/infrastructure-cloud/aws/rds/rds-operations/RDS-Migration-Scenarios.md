@@ -1,6 +1,7 @@
 ---
 tags: [infrastructure, aws, rds, migration, dms, snapshot, blue-green]
 status: done
+verified_at: 2026-10-10
 category: "Infrastructure - AWS"
 aliases: ["RDS Migration Scenarios", "RDS 데이터 마이그레이션", "마이그레이션이 필요한 상황", "in-place vs migration"]
 ---
@@ -50,6 +51,21 @@ mysqldump -h old-host -u admin -p --single-transaction --routines mydb \
 - **깨진 인코딩 복구** — latin1에 UTF-8 바이트가 잘못 담긴 경우, 제자리 CONVERT는 데이터를 더 망가뜨린다. 사실상 컬럼 데이터를 바이너리 경유로 옮겨 고치는 마이그레이션이다(절차는 [[MySQL-Charset-Migration]]).
 - **대규모 스키마 재설계 / 샤딩, 분할, 통합** — 구조를 크게 바꾸거나 DB를 쪼개고 합칠 때 새 구조로 데이터를 옮긴다(→ [[Sharding]]).
 
+## MySQL의 계정 간, 리전 간 지속 복제
+
+2026-10-10 AWS 문서 기준, RDS for MySQL의 다른 계정으로 향하는 크로스 리전 읽기 복제본은 콘솔이나 CLI의 관리형 읽기 복제본 생성으로 직접 만들 수 없다. DMS 또는 두 DB 인스턴스 사이의 외부 binlog 복제를 검토한다. 스냅샷 공유만으로 이후 변경까지 동기화되지는 않는다.
+
+외부 복제의 초기 데이터와 시작 위치를 맞추는 흐름은 다음과 같다.
+
+1. 원본 계정에서 binlog를 활성화하고, 복제 전용 사용자를 준비한다. 초기 데이터 이전과 복구에 필요한 로그가 지워지지 않도록 보존 시간을 정한다.
+2. 원본 계정 안에서 대상 리전에 읽기 복제본을 만든다. 동기화를 확인한 뒤 **복제본에서** 복제를 멈추고 적용 완료한 원본 binlog 파일과 위치를 기록한다.
+3. 멈춘 복제본의 스냅샷을 대상 계정에 공유해 복원한다. 암호화 스냅샷은 KMS 권한을 공유하고 대상 계정에서 복사한 뒤 복원한다.
+4. 두 계정의 네트워크와 보안 그룹을 구성한다. 대상 DB에서 원본 DB 엔드포인트와 앞서 기록한 위치를 사용해 외부 복제를 설정하고 시작한다.
+
+RDS MySQL 8.4 이상은 `mysql.rds_set_external_source`, 8.0 이하는 `mysql.rds_set_external_master`를 사용한다. 두 프로시저는 `autocommit` 활성화가 필요하며 `ssl_encryption` 인자를 포함한 공식 시그니처를 확인한다. TLS를 사용할 때 이 값은 `1`이다. 접속 사용자는 복제 전용으로 제한하고 원본에는 `REPLICATION CLIENT`, `REPLICATION SLAVE` 권한을 부여한다.
+
+복제 재개 뒤에는 지연뿐 아니라 복제 오류와 데이터 반영을 확인한다. 리전 간 지연과 전송 비용이 있고, 외부 복제가 연결됐다는 사실만으로 애플리케이션 전환이나 장애 복구 검증이 끝난 것은 아니다. 이번 확인은 계정 간 복제와 스냅샷 공유 경계에 대한 부분 검증이다.
+
 ## 도구 선택 매트릭스
 
 | 도구 | 적합 상황 | 다운타임 | 비고 |
@@ -64,7 +80,7 @@ mysqldump -h old-host -u admin -p --single-transaction --routines mydb \
 
 ## 면접 체크포인트
 
-- 제자리로 되는 변경과 마이그레이션이 강제되는 변경의 경계("제자리 불가 = 마이그레이션")
+- 제자리로 되는 변경과 마이그레이션이 강제되는 변경의 경계(제자리 불가 = 마이그레이션)
 - 제자리 변경이 제한되는 항목: 암호화, 할당 스토리지 축소, lower_case_table_names. 스토리지 축소는 조건에 맞는 Blue/Green 전환도 검토
 - 이기종 전환에서 DMS(데이터)와 DMS Schema Conversion 또는 수동 DDL(스키마)의 역할 분리
 - 리전 이동에서 스냅샷 복사 vs 크로스 리전 Read Replica 승격의 다운타임 차이
@@ -78,6 +94,9 @@ mysqldump -h old-host -u admin -p --single-transaction --routines mydb \
 - [Amazon RDS, Creating a blue/green deployment — Modify storage and performance settings](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-creating.html#blue-green-deployments-creating-storage)
 - [AWS DMS, Converting database schemas using DMS Schema Conversion](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html)
 - [Amazon RDS, Sharing a DB snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ShareSnapshot.html)
+- [How do I create a cross-Region read replica of my Amazon RDS for MySQL DB instance in another AWS account? — AWS re:Post](https://repost.aws/knowledge-center/rds-mysql-cross-region-replica)
+- [Amazon RDS, Configuring binary log file position replication with an external source instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Procedural.Importing.External.Repl.html)
+- [Amazon RDS, Configuring, starting, and stopping binary log replication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/mysql-stored-proc-replicating.html)
 
 ## 관련 문서
 

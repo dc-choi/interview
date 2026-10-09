@@ -92,6 +92,12 @@ AI 사용률, 호출 수와 생성 코드량은 채택 활동의 보조 신호�
 
 이 점검은 별도 전담 조직이나 자체 모델 학습을 필수로 요구하지 않는다. 평가 자료, 통합 조건과 실패 처리까지 설명할 수 있는 범위로 실험을 제한한다.
 
+### 모델 교체 뒤에도 업무 기준을 유지한다
+
+기반 모델의 교체와 업무 적합성의 승인은 별도 결정이다. 2026-10-10 AWS의 정기 기능 평가 지침을 대조했다. 새 후보 모델이나 모델 맞춤화가 생기면 업무별 정답 자료와 평가 기준으로 다시 평가하고, 지속 평가의 담당자와 최소 성능 기준을 정한다. 실제 입력이 달라지면 평가 자료도 갱신한다.
+
+운영 제안으로, 특정 모델에 맞춘 프롬프트와 설정을 업무 규칙 및 검증 자료와 구분해 관리한다. 모델 교체 전후에 같은 업무 사례를 비교해 품질 저하와 재작업 범위를 확인한다. 기존 맞춤 설정이 새 모델에 그대로 통한다는 보장은 없으므로 모델 교체 승인에 재검증 책임을 포함한다. 이는 모델 공급자를 바꾸거나 자체 모델을 학습하라는 요구가 아니다.
+
 ## Maker → Closer — 커리어 재정의
 
 | 구분 | Maker (기존) | Closer (AX) |
@@ -176,6 +182,8 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 - 조직 AX 성숙도 자가 진단 질문
 
 ## 출처
+- [AWS Well-Architected, GENOPS01-BP01 Periodically evaluate functional performance](https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/genops01-bp01.html) — 새 모델과 맞춤화의 재평가, 최소 성능 기준과 담당자
+- [Innovation Without Friction: Lessons for the AI Era — AWS Executive Insights](https://www.youtube.com/watch?v=fldCczwjcTA) — 모델 교체 시 기존 맞춤화의 유지 문제를 제기한 공개 인터뷰
 - [AWS Prescriptive Guidance, Architecting a successful generative AI proof of concept](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-lifecycle-operational-excellence/dev-architecting.html) — 데이터 준비, 평가 기준과 기술 실현 가능성만 부분 대조
 - [flowkater.io — 조직에 Claude Code를 설치한다고 AX가 되지 않는다 (Tony Cho)](https://flowkater.io/posts/2026-03-15-ax-organization-transformation/)
 - [Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity — METR (2025)](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/)
