@@ -80,6 +80,16 @@ iperf3 -c SERVER_PRIVATE_IP -p 5201 -t 10 -u -b 100M
 
 시험 뒤 서버 프로세스를 종료하고 임시 보안 그룹 규칙을 제거한다. 이 결과는 테스트 경로의 네트워크 기준선이며, DB 처리나 애플리케이션 응답 시간까지 측정한 결과는 아니다.
 
+## 메일 발송과 포트 25 제한
+
+이 절은 2026-10-09 AWS 공식 문서 기준이다. EC2에서 공인 주소로 SMTP 연결이 timeout이면 보안 그룹뿐 아니라 AWS의 포트 25 제한도 확인한다. 기본적으로 공인 IPv4와 IPv6 목적지로 향하는 포트 25 트래픽을 제한하지만, 출발 ENI가 속한 VPC의 primary CIDR과 RFC 1918, RFC 6598, RFC 4193 주소 범위에는 예외가 있다. 모든 사설망 SMTP 통신까지 차단된다고 일반화하지 않는다.
+
+- **SES를 쓰는 경우:** SMTP endpoint는 TLS를 요구한다. 클라이언트가 지원하면 STARTTLS 587 또는 TLS Wrapper 465처럼 포트 25 이외의 경로를 검토한다. 포트와 TLS 연결 방식은 함께 맞춘다.
+- **포트 25가 필요한 경우:** AWS에 이메일 발송 제한 해제를 요청한다. 사용 목적, 원치 않는 메일 발송 방지 대책과 대상 리전을 설명하며, 여러 리전이면 리전별로 요청한다. 신청 자체를 승인으로 간주하지 않는다.
+- **Lambda에서 해제 요청하는 경우:** 먼저 함수에 VPC를 연결한다. 인터넷 IPv4 발송 경로는 private subnet에서 NAT gateway를 거치도록 구성한다. Public subnet에 함수를 연결하는 것만으로 인터넷 접근이 생기지는 않는다.
+
+진단은 네트워크 연결, SMTP 인증과 TLS, 수신 측의 배달 결과를 나누어 진행한다. 제한 해제만으로 보안 그룹, 라우팅 또는 수신 측 스팸 차단까지 해결됐다고 판단하지 않는다.
+
 ## Key Pair
 
 EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를 인스턴스에 저장, 사용자가 개인키(`*.pem`)를 보유.
@@ -97,6 +107,10 @@ EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를
 
 ## 출처
 
+- [AWS 공식 문서, Amazon EC2 service quotas — Restriction on email sent using port 25](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html#port-25-throttle)
+- [Remove port 25 restrictions for instances and functions — AWS re:Post](https://repost.aws/knowledge-center/ec2-port-25-throttle)
+- [AWS 공식 문서, Connecting to an Amazon SES SMTP endpoint](https://docs.aws.amazon.com/ses/latest/dg/smtp-connect.html)
+- [AWS 공식 문서, Enable internet access for VPC-connected Lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc-internet.html)
 - [ESnet, Invoking iperf3](https://software.es.net/iperf/invoking.html)
 - [AWS 공식 문서, Improve network performance between EC2 instances with ENA Express](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ena-express.html)
 - [Change the primary private IP address of an EC2 instance — AWS re:Post](https://repost.aws/knowledge-center/ec2-change-primary-ip)

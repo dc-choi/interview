@@ -18,6 +18,20 @@ verified_at: 2026-09-30
 - **Access Analyzer** — 외부 공개, 크로스 어카운트 노출 자동 탐지
 - **태그 기반 권한** — `aws:RequestTag` / `aws:ResourceTag`로 동적 분리
 
+## Access Analyzer의 분석 범위와 조치 경계
+
+이 절은 2026-10-09 AWS 공식 문서 기준이다. 정책 문법 검증, 외부 접근 분석과 미사용 권한 분석은 서로 다른 질문에 답한다.
+
+| 기능 | 확인하는 내용 | 해석 경계 |
+|---|---|---|
+| 정책 검증 | 정책 문법과 AWS 모범 사례 위반 | 검사 통과만으로 업무에 필요한 최소 권한임을 증명하지 않는다 |
+| 외부 접근 분석 | 신뢰 영역인 계정 또는 조직 밖에 허용된 리소스 접근 | 지원 리소스의 정책 분석이다. 실제 침입이나 API 실행 기록을 뜻하지 않는다 |
+| 미사용 접근 분석 | 사용하지 않는 역할, access key, 비밀번호와 서비스/작업 권한 | 사용 이력에 근거한 검토 대상이다. 삭제 전에 정기 배치와 비상 복구 경로를 확인한다 |
+
+외부 접근 분석기는 지원 리소스를 사용하는 리전마다 구성한다. 미사용 접근 결과는 리전별로 달라지지 않으므로 같은 범위를 여러 리전에 중복 생성할 필요가 없고, 생성한 분석기마다 과금될 수 있다.
+
+Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결과를 활성 목록에서 숨기는 상태 변경이며 권한 회수가 아니다. 의도하지 않은 접근은 실제 정책을 수정하고 재분석으로 해소 여부를 확인한다. AI 요약을 사용하더라도 원본 finding과 정책을 대조하고 변경 전후의 정상 호출을 검증한다.
+
 ## IAM 사용자 비밀번호 정책 — 주기 변경 강제의 트레이드오프
 
 사람의 AWS 접근은 IAM Identity Center나 federation의 임시 자격 증명과 MFA를 기본으로 하고, 비밀번호를 가진 장기 IAM 사용자는 예외로 줄인다. 불가피한 IAM 사용자에게는 계정 비밀번호 정책을 둔다.
@@ -65,6 +79,8 @@ verified_at: 2026-09-30
 
 ## 출처
 
+- [AWS, Using AWS Identity and Access Management Access Analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html)
+- [AWS, Review IAM Access Analyzer findings](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-findings-view.html)
 - [AWS, Manage access keys for IAM users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html)
 - [AWS IAM API, ListAccessKeys](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListAccessKeys.html)
 - [AWS IAM — Security best practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)

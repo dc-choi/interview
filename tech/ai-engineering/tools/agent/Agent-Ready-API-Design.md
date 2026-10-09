@@ -63,6 +63,19 @@ API 정의를 CLI, SDK와 문서 생성의 공통 입력으로 쓰면 이름과 
 
 Bedrock의 `OutputTokenCount`, `TimeToFirstToken`과 `InvocationLatency`는 각각 출력량, 첫 토큰 지연과 마지막 토큰까지의 호출 지연을 보여 준다(2026-10-07 공식 문서 기준). 이 지표만으로 프런트엔드의 상품 카드 표시 완료 시간을 대신하지 않는다. 출력 축소의 효과는 동일한 질문 집합에서 상품 선택 정확도와 전체 지연을 함께 비교한다.
 
+## 도구 계약과 실제 실행을 분리한다
+
+도구 이름만 등록하지 않고 목적, 입력 타입과 필수 여부를 함께 정의한다. 상품 조회와 고객 구독 조회처럼 권한 범위가 다른 작업은 구분하고, 모델이 채운 인자를 서버가 다시 검증한다. 이 절의 설계 점검에서는 고객 식별자를 알고 있다는 사실을 해당 고객 정보의 조회 권한으로 취급하지 않는다.
+
+Bedrock Agents Classic의 action group은 이 경계를 보여 주는 사례다. 2026-10-09 공식 문서 기준이며, 2026-07-30부터 신규 고객에게 열려 있지 않은 서비스다. 아래 API 흐름을 신규 계정의 도입 절차로 그대로 사용하지 않는다. 기존 고객의 사용은 유지되며 새 구성을 검토할 때는 AgentCore의 지원 범위를 별도로 확인한다.
+
+1. 동작은 OpenAPI schema 또는 function details로 정의한다. 필수 인자는 에이전트가 사용자에게 확인할 수 있도록 명시한다.
+2. 실행은 Lambda에 맡기거나 `RETURN_CONTROL`로 애플리케이션에 돌려줄 수 있다. 후자는 `InvokeAgent` 응답의 `invocationInputs`와 `invocationId`를 받아 애플리케이션이 실제 동작을 수행하는 방식이다.
+3. 실행 결과는 같은 `invocationId`와 `actionGroup`에 연결해 다음 요청의 `sessionState.returnControlInvocationResults`로 전달한다. 이 결과 필드를 보내면 `inputText`는 무시된다.
+4. 명시적 승인이 필요한 동작에는 action별 user confirmation을 설정할 수 있다. 승인과 업무 인가는 별도이므로 서버의 접근 제어를 생략하지 않는다.
+
+이는 도구 선택, 인자 수집과 실행 성공을 구분하는 설계다. 테스트에서는 올바른 도구 선택뿐 아니라 필수 인자 누락, 타 고객 식별자, 실행 실패와 승인 거부도 확인한다. 최종 답변이 유창하다는 이유로 실제 조회나 변경까지 성공했다고 판단하지 않는다.
+
 ## Vibe Test — 컨벤션을 측정으로 검증
 
 같은 프롬프트 배터리를 서로 다른 시스템 구성(자사 시스템, 경쟁 조합, 순수 HTML baseline)에 주고 LLM이 생성한 UI 코드를 정량 비교하는 평가 체계. 프롬프트마다 기대 컴포넌트와 난이도를 메타데이터로 두되 평가에만 쓴다.
@@ -91,6 +104,10 @@ Meta 사내 8년, 13,000+ 앱에서 쓰인 최대 디자인 시스템의 오픈�
 
 ## 출처
 
+- [Amazon Bedrock, Define actions in the action group](https://docs.aws.amazon.com/bedrock/latest/userguide/action-define.html)
+- [Amazon Bedrock, Return control to the agent developer](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-returncontrol.html)
+- [Amazon Bedrock, Get user confirmation before invoking action group function](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-userconfirmation.html)
+- [Amazon Bedrock, Amazon Bedrock Agents Classic maintenance mode](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-classic-maintenance-mode.html)
 - [Agent와 함께하는 쇼핑 경험 혁신 - 검색, 추천부터 초개인화까지 — AWS Korea](https://www.youtube.com/watch?v=h3usF3KVweA) — 24분 구간의 상품 ID 반환과 코드 기반 화면 조립 사례.
 - [Amazon Bedrock, Monitor bedrock-runtime inference using CloudWatch metrics](https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html)
 - [Basecamp CLI — Basecamp (GitHub)](https://github.com/basecamp/basecamp-cli)
