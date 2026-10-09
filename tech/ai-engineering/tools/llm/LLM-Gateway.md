@@ -47,6 +47,18 @@ Gemini의 Generate Content API에서는 모델 응답의 `thoughtSignature`가 �
 
 위 목록은 제품별 제약에서 도출한 설계 점검이며, 특정 배포의 호환성을 시험한 결과는 아니다.
 
+## 호출 계층과 프롬프트 배포 계약을 분리한다
+
+호출 권한과 사용량을 모으는 것과 프롬프트의 작성, 버전, 평가를 관리하는 것은 별도 책임이다. 같은 플랫폼에 두더라도 운영 호출이 어떤 프롬프트와 모델 설정을 사용했는지 식별할 수 있어야 한다. 이는 프롬프트 관리 기능을 게이트웨이에 연결할 때의 설계 점검이다.
+
+2026-10-10 Bedrock Prompt management 공식 문서 기준, 저장한 draft는 수정할 수 있고 배포용 version은 특정 시점의 스냅샷이다. `Converse`와 `ConverseStream`에서 관리 프롬프트를 호출할 때는 다음 제약을 지킨다.
+
+- `modelId`에 프롬프트 버전 ARN을 전달하고 변수 값은 `promptVariables`로 전달한다.
+- `additionalModelRequestFields`, `inferenceConfig`, `system`, `toolConfig`를 같은 요청에 넣을 수 없다.
+- 추가한 `messages`는 프롬프트에 정의된 메시지 뒤에 붙는다.
+
+따라서 게이트웨이가 모델 직접 호출용 공통 필드를 무조건 덧붙이면 관리 프롬프트 호출 계약을 어길 수 있다. 호출 유형별로 필드를 구성하고, 프롬프트 버전 변경 전후에 같은 평가 입력으로 결과를 비교하는 방안을 검토한다. 버전 생성 자체가 출력 품질 검증은 아니다. 이 절은 Bedrock API 계약을 확인한 것이며 특정 게이트웨이의 구현이나 배포 동작을 시험한 결과는 아니다.
+
 ## 출처
 
 - [당근은 왜 LLM Router를 직접 만들었을까? — 당근 팀, 2026 당근 빌더 밋업](https://www.youtube.com/watch?v=anmRVnqdyco)
@@ -55,6 +67,8 @@ Gemini의 Generate Content API에서는 모델 응답의 `thoughtSignature`가 �
 - [LiteLLM, Budgets, Rate Limits](https://docs.litellm.ai/docs/proxy/users)
 - [Anthropic, OpenAI SDK compatibility](https://platform.claude.com/docs/en/cli-sdks-libraries/libraries/openai-sdk)
 - [Google AI for Developers, Thought signatures (Generate Content API)](https://ai.google.dev/gemini-api/docs/generate-content/thought-signatures)
+- [Amazon Bedrock, Deploy a prompt to your application using versions in Prompt management](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management-deploy.html)
+- [Amazon Bedrock, Test a prompt using Prompt management](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management-test.html)
 
 ## 관련 문서
 

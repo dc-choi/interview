@@ -1,6 +1,7 @@
 ---
 tags: [observability, runbook, incident, on-call, sre, operations]
 status: done
+verified_at: 2026-10-10
 category: "관측가능성(Observability)"
 aliases: ["Incident Runbook", "런북", "Runbook", "대응 절차서"]
 ---
@@ -39,6 +40,14 @@ AWS는 알려진 결과를 달성하는 절차를 runbook, 문제를 조사하�
 
 완화를 지연하지 않는 범위에서 관련 로그와 변경 이력을 보존하고 조치 결과를 기록한다. 명령 성공이나 알람 해제만으로 복구를 선언하지 않고 실제 사용자 요청과 핵심 여정이 회복됐는지 확인한다. 이미 발생한 데이터 손상이나 외부 부수효과는 코드 롤백으로 사라지지 않으므로 별도 복구 상태를 추적한다. 근본 원인과 재발 방지 조치는 [[RCA-Postmortem|포스트모템]]으로 연결한다.
 
+## 외부 장애 지원과 내부 당직을 함께 연결한다
+
+2026-10-10 AWS Incident Detection and Response(IDR) 공식 문서 기준, 온보딩 때 감시할 알람을 선택하고 애플리케이션과 런북에 연결한다. 런북에는 최초 연락 대상, 공동 대응 채널과 미응답 시 에스컬레이션 순서 및 대기 간격을 정한다.
+
+IDR에 연결하는 중요 알람은 즉각 대응할 업무 영향이 있을 때 발생하도록 구성한다. 같은 알람으로 내부 해결 담당자도 AWS와 동시에 또는 먼저 호출해야 한다. AWS Incident Manager는 내부 담당자와 함께 완화에 참여하며, 먼저 혼자 대응한 뒤 고객에게 넘기는 1차 당직을 대신하지 않는다.
+
+이 계약에서 도출한 운영 점검은 알람 전달, 내부 담당자 호출, 공동 대응 채널 합류를 각각 시험하는 것이다. 외부 지원에 등록했다는 사실만으로 전체 워크로드가 감시되거나 내부 대응 책임이 이전됐다고 보지 않는다. 실제 연락처와 회의 접근 정보는 접근 통제된 운영 런북에서 관리한다.
+
 ## 살아있게 유지하기
 
 - **장애 때마다 갱신**: 포스트모템 액션 아이템으로 런북을 보강.
@@ -69,9 +78,14 @@ AWS는 알려진 결과를 달성하는 절차를 runbook, 문제를 조사하�
 
 ## 출처
 
+2026-10-10에는 IDR의 선택 알람, 내부 담당자 동시 호출과 에스컬레이션 계약을 대조했다. 실제 계정의 온보딩과 알림 전달은 시험하지 않았다.
+
 2026-10-03에 최소 진단과 피해 완화의 구분, 실행 전제와 예외 처리, 롤백의 호환성 조건을 아래 공식 자료와 대조했다. 개별 서비스의 명령, 권한, 복구 시간과 합성 점검의 실제 구현은 검증하지 않았다.
 
 - [Being On-Call — Google SRE Book](https://sre.google/sre-book/being-on-call/)
+- [AWS 공식 문서, AWS Incident Detection and Response monitoring and observability](https://docs.aws.amazon.com/IDR/latest/userguide/observe-idr.html)
+- [AWS 공식 문서, Workload onboarding questionnaire in Incident Detection and Response](https://docs.aws.amazon.com/IDR/latest/userguide/idr-gs-questionnaire.html)
+- [AWS 공식 문서, Develop runbooks and response plans for responding to an incident in Incident Detection and Response](https://docs.aws.amazon.com/IDR/latest/userguide/idr-workloads-dev-runbook.html)
 - [Effective Troubleshooting — Google SRE Book](https://sre.google/sre-book/effective-troubleshooting/)
 - [Emergency Response — Google SRE Book](https://sre.google/sre-book/emergency-response/)
 - [AWS 공식 문서, OPS07-BP03 Use runbooks to perform procedures](https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/ops_ready_to_support_use_runbooks.html)

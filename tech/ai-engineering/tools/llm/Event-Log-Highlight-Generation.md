@@ -51,6 +51,16 @@ aliases: ["Event Log Highlight Generation", "이벤트 로그 기반 하이라�
 
 두 사례의 지연이나 이용자 반응을 다른 서비스의 목표치로 복사하지 않는다. 입력과 전달 구조는 구현 참고로, 공개 전 사람 검토 여부는 콘텐츠 경로별 운영 조건으로 판단한다.
 
+## 실시간 사건과 과거 비교 집단을 연결한다
+
+최고 기록이나 이례적 사건을 설명하려면 현재 이벤트뿐 아니라 비교할 시즌, 선수와 팀의 과거 집계가 필요하다. 비교 범위를 바꾸면 같은 사건의 의미도 달라지므로 수치와 함께 집계 범위를 보존한다.
+
+2026-10-10 대조한 2025-07-18 AWS 공개 사례의 Data Story Finder 2.0은 경기 이벤트, 임계값을 넘는 성과, 경기 요약을 구분하고 경기 및 시즌 통계를 공통 데이터 계층에서 제공한다. MSK로 입력을 받고 EventBridge, DynamoDB와 Lambda를 이용해 이야기 유형별 워크플로우를 나눈다.
+
+이 구조에서 도출할 적용안은 한 유형의 계산 실패가 다른 유형의 생성을 멈추지 않도록 실행 경계를 나누는 것이다. 다만 공통 데이터 계층과 입력 경로의 장애까지 격리됐다는 뜻은 아니다. 유형별 지연과 실패 외에 공유 의존성도 관측한다.
+
+편집 경계도 전달 채널별로 확인한다. 해당 사례의 CLS Story Monitor는 해설자에게 전달하기 전 편집자가 결과를 검토, 수정하거나 제거할 수 있다. 팬 대상 live feed는 직접 통합하거나 편집 후보로 전달하는 등 관여 수준이 다르다. 검토 기능의 존재를 모든 출력의 필수 승인이나 사실성 보장으로 확대하지 않는다.
+
 ## 적용 근거와 한계
 
 2025년 PNC 사례 발표는 필요한 게임 로그 선별, 규칙 기반 텍스트 변환, SQL 템플릿 매핑과 추가 검증을 결합한 구현을 소개한다. 위 패턴의 적용 사례이며, 발표의 특정 모델 속도와 평가 점수는 다른 워크로드의 성능 보장으로 사용하지 않는다. 본문에 적은 바인딩과 입력 검증은 적용을 위한 설계 제안이며 발표 구현의 확인 사실과 구분한다.
@@ -60,6 +70,7 @@ aliases: ["Event Log Highlight Generation", "이벤트 로그 기반 하이라�
 - [생성형 AI를 통한 이스포츠 시청자 경험 향상 — Amazon Web Services Korea](https://www.youtube.com/watch?v=UgiHMSGcYj4)
 - [Revolutionizing fan engagement: Bundesliga generative AI-powered live commentary — AWS for M&E Blog](https://aws.amazon.com/blogs/media/revolutionizing-fan-engagementcer-bundesliga-generative-ai-powered-live-commentary/)
 - [Creating AI-generated stories for the Bundesliga channels — DFL](https://www.dfl.de/en/innovation/creating-ai-generated-stories-for-the-bundesliga-channels/)
+- [Bundesliga Data Story Finder: Delivering fans the stories they love — AWS for M&E Blog](https://aws.amazon.com/blogs/media/bundesliga-data-story-finder-delivering-fans-the-stories-they-love/)
 
 ## 관련 문서
 

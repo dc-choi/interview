@@ -37,6 +37,17 @@ Azure connector를 구성하면 Security Hub가 CSPM과 Inspector의 service-lin
 
 연결 후에는 connector 상태, Azure 필터의 finding, 표준별 control 결과를 함께 확인한다. 전부 `NO_DATA`이면 점검 통과로 해석하지 않는다. 구독별 Activity Log export와 권한 범위를 점검한다. Azure 리전을 추가하면 새 리전의 Event Hub 구성도 필요하다.
 
+## 조직 온보딩과 수집 전제를 구분한다
+
+2026-10-10 공식 문서 대조 기준, 조직 관리 계정의 위임 관리자 지정, 위임 관리자 계정의 서비스 활성화, 멤버 계정에 적용할 구성 정책 생성은 별도 단계다. 관리자 화면이 열렸다는 사실만으로 멤버 계정 전체의 수집이 준비됐다고 판단하지 않는다.
+
+AWS 보안 표준의 CSPM 점검에 필요한 Config 구성도 활성화 조합에 따라 다르다.
+
+- Security Hub와 Security Hub CSPM을 함께 활성화한 계정과 리전에서는 CSPM이 service-linked configuration recorder를 자동 생성하고 관리한다. 이 경우 AWS Config를 수동으로 구성할 필요가 없다.
+- Security Hub 없이 CSPM만 사용하면 필요한 리소스 유형의 AWS Config 기록을 직접 활성화해야 한다.
+
+위 조건에서 도출한 점검 순서는 대상 계정과 리전, 적용한 기능과 정책, 구성 기록 전제, 실제 finding을 차례로 확인하는 것이다. 구성 완료는 침해가 없다는 증거가 아니며, 비어 있는 분석 결과는 수집 누락 가능성과 함께 해석한다. 기존 고객 관리 recorder를 다른 감사나 자동화에도 쓰는지는 별도로 확인한다.
+
 ## 개선 순서의 예
 
 다음은 위 기능을 이용한 운영 판단 예시다.
@@ -48,6 +59,8 @@ Azure connector를 구성하면 Security Hub가 CSPM과 Inspector의 service-lin
 
 ## 출처
 
+- [AWS Security Hub, Enabling Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-enable.html)
+- [AWS Security Hub, Enabling and configuring AWS Config for Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-setup-prereqs.html)
 - [AWS Security Hub, Network Scanning in Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-network-scanning.html)
 - [AWS Security Hub, Exposure findings in Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/exposure-findings.html)
 - [AWS Security Hub, Viewing exposures in Security Hub with the potential attack path graph](https://docs.aws.amazon.com/securityhub/latest/userguide/potential-attack-path-graph.html)
