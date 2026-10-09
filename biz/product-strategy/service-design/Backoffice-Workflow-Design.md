@@ -48,6 +48,31 @@ aliases: ["Backoffice Workflow Design", "업무용 제품 설계", "어드민 �
 
 체크리스트는 기억 부담을 덜기 위한 도구다. 규칙 변경 시 누가 항목을 갱신할지 정하고, 목록에 없는 상황을 억지로 예 또는 아니요에 맞추지 않는다.
 
+## 자동 인식과 업무 결정을 분리한다
+
+문서에서 값을 읽는 단계와 그 값으로 신청을 승인하거나 금액을 지급하는 단계는 별도다. 인식 속도가 빨라져도 잘못 읽은 값이 후속 결정으로 넘어가면 재처리와 고객 피해가 늘 수 있다.
+
+다음은 문서 접수 자동화에 적용할 설계 제안이다.
+
+1. 원본과 추출값을 연결해 담당자가 어디에서 읽은 값인지 확인할 수 있게 한다.
+2. 누락된 필수 항목, 서로 모순되는 값과 낮은 인식 신뢰도를 별도 검토 사유로 남긴다.
+3. 재검토 대기 상태를 최종 승인이나 거절과 구분하고, 판단이 끝나기 전에는 후속 처리를 진행하지 않는다.
+4. 자동 처리 비율과 함께 오처리, 재검토 물량과 최종 완료 시간을 측정한다.
+
+2026-10-10 확인한 Amazon Textract의 공식 지침도 오류 민감도에 따라 신뢰도 문턱을 정하고, 미달 결과를 사용하지 않거나 사람이 더 엄격하게 검토하도록 안내한다. 이는 검토 경계를 설계할 근거이며, 특정 보험사의 모델이나 한국어 문서 처리에 Textract가 적합하다는 뜻은 아니다. 모델의 인식 신뢰도는 신청의 적격성이나 지급 결정의 정확도를 대신하지 않는다.
+
+## 고객, 현장과 중앙 운영의 흐름을 함께 본다
+
+여러 지점에서 쓰는 제품은 고객 화면 외에도 현장 담당자와 중앙 운영자의 과업을 구분한다. 다음은 음식점 운영을 예로 든 설계 관점이다.
+
+| 사용자 | 필요한 흐름 | 연결 지점 |
+|---|---|---|
+| 고객 | 앱, 키오스크와 매장에서 주문 | 채널별 주문 정보와 처리 상태 |
+| 현장 담당자 | 주문 처리, 재고 확인과 일상 업무 | 실제 처리할 주문과 지금 필요한 행동 |
+| 중앙 운영자 | 여러 지점의 메뉴와 프로모션 관리 | 변경 대상 지점, 적용 상태와 현장 예외 |
+
+Byte by Yum!의 공개 제품 구성에는 여러 채널의 주문과 메뉴 관리, POS, 주방과 배송 조율, 재고 추적이 포함된다(2026-10-10 확인). 이 구성은 사용자별 흐름을 연결하는 사례다. 통합 플랫폼을 도입했다는 사실만으로 모든 지점의 적용 성공이나 생산성 향상이 증명되지는 않는다. 설계에서는 어느 역할의 작업을 줄이면서 다른 역할의 확인 부담을 늘리는지도 함께 살핀다.
+
 ## 효과를 확인할 때의 측정 제안
 
 고객 관점의 경과 시간과 담당자의 실제 작업 시간을 구분한다. 다음은 개선안을 평가하기 위한 제안이며, 특정 조직의 성과 수치를 재현한다는 보장은 아니다.
@@ -61,6 +86,10 @@ aliases: ["Backoffice Workflow Design", "업무용 제품 설계", "어드민 �
 
 ## 출처
 
+- [Amazon Textract, Best Practices](https://docs.aws.amazon.com/textract/latest/dg/textract-best-practices.html) — 인식 신뢰도와 사람 검토의 경계
+- [Byte by Yum! — Yum! Brands](https://www.yum.com/wps/portal/yumbrands/Yumbrands/bytebyyum) — 주문, 메뉴와 현장 운영의 제품 구성
+- [AI로 만나는 새로운 보험 서비스 - 카카오페이손해보험의 AI 활용 전략 — Amazon Web Services Korea](https://www.youtube.com/watch?v=DUXGkxSka9g) — 문서 인식과 업무 처리 흐름의 사례. 발표의 인식 정확도와 지급 시간은 일반 성능 기준으로 옮기지 않았다.
+- [How Yum! Brands Built Its Own Technology Platform for Restaurant Operators — Amazon Web Services](https://www.youtube.com/watch?v=8POOO76nhQk) — 고객, 매장 직원과 중앙 운영자 관점의 사례. 트래픽 수치와 개발 중인 장애 분석 기능은 반영하지 않았다.
 - [업무 시간을 70% 단축하는 제품 만들기 — Toss Makers Conference 25](https://www.youtube.com/watch?v=Fx4-5ehZe70) — 2025년 발표의 업무 관찰과 어드민 설계 사례. 성과 수치와 개별 금융 업무의 제도를 일반화하지 않는다.
 - [업무 시간을 70% 단축하는 제품 만들기, 세션 소개 — Toss Makers Conference 25](https://toss.im/tmc-25/sessions/design/product-design-11) — 공식 세션과 발표 범위 확인
 - [GOV.UK, Service Standard: Solve a whole problem for users](https://www.gov.uk/service-manual/service-standard/point-2-solve-a-whole-problem) — 2026-10-07 사용자 여정의 범위, 제약 확인과 점진적 개선 원칙 대조

@@ -19,6 +19,18 @@ AWS Organizations 등 여러 서비스의 기능을 조합해 멀티 계정 환�
 
 예를 들어 외부 API를 제공하는 계정과 내부 업무 계정을 분리하면 각 경계에 적용할 권한과 통제를 다르게 설계할 수 있다. 다만 계정을 만들었다는 사실만으로 애플리케이션 인증, 네트워크 연결과 데이터 접근 정책까지 완성되지는 않는다.
 
+## 랜딩 존 설계와 구현 수단을 구분한다
+
+랜딩 존은 Control Tower라는 제품명과 같은 뜻이 아니다. AWS 공식 지침은 Control Tower 기반 구성과 직접 구축하는 사용자 정의 랜딩 존을 구분한다. 어느 방식을 택하든 접근 관리, 기술 스택과 모니터링 요구사항은 조직의 조건에 맞춰 정하고 문서화해야 한다(2026-10-10 확인).
+
+첫 서비스에 맞춘 기반을 여러 서비스로 확장할 때는 계정 생성 속도뿐 아니라 다음 경계를 다시 검토한다. 이는 랜딩 존 설계 지침을 적용한 운영 제안이다.
+
+- **분리할 것:** 서비스와 환경별 접근 권한, 변경 영향과 비용을 구분할 계정 경계
+- **공통으로 관리할 것:** 표준 설정, 감사 로그, 모니터링 요구사항과 운영 담당자
+- **변경할 때 남길 것:** 설계 이유, 승인된 변경 이력과 실제 대상에 적용된 결과
+
+설계 문서는 개발자와 운영자가 함께 볼 수 있는 위치에서 관리하고, 조직에 맞는 변경 검토와 승인 절차를 둔다. IaC 템플릿을 재사용해도 새 워크로드의 접근 권한이나 운영 요구사항이 자동으로 충족되는 것은 아니다. 외부 구축 업체가 참여했는지와 별개로 내부 운영자가 구조, 예외와 변경 절차를 이해할 수 있어야 한다.
+
 ## 통제의 세 가지 동작
 
 | 동작 | 구현 수단 | 판정할 때 주의할 점 |
@@ -56,6 +68,8 @@ Control Tower 도입 자체가 규제 준수의 완료 증거는 아니다. AWS�
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Document your AWS landing zone design](https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/document-your-aws-landing-zone-design.html)
+- [AWS와 함께하는 신한카드의 pLay — Amazon Web Services Korea](https://www.youtube.com/watch?v=FUt8eR5o3Kc) — 랜딩 존 재설계와 표준화의 발표 사례. 자체 구축을 Control Tower 도입 사례로 단정하지 않는다.
 - [AWS, Customizations for AWS Control Tower (CfCT) overview](https://docs.aws.amazon.com/controltower/latest/userguide/cfct-overview.html)
 - [AWS, Code pipeline overview](https://docs.aws.amazon.com/controltower/latest/userguide/cfct-codepipeline-overview.html)
 - [AWS, Deployment considerations](https://docs.aws.amazon.com/controltower/latest/userguide/cfct-considerations.html)
