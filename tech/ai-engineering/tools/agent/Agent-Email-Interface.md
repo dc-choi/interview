@@ -27,6 +27,21 @@ AI 에이전트에 채팅 UI만 붙이는 대신 **이메일 주소를 부여**�
 
 새 메일이 오면 에이전트가 자동으로 읽고 답장 초안까지 만들지만, **발신은 반드시 명시적 확인을 거친다**. 읽기(내부, 되돌릴 수 있음)와 발신(외부 부작용, 회수 불가)의 위험 비대칭을 워크플로우에 박은 것 — 자동화의 이득(초안 생성)은 취하되 비가역 액션만 사람 게이트를 남기는 [[Harness-Engineering|HITL]] 배치의 전형이다.
 
+### Gmail 초안 저장과 발송 승인을 분리한다
+
+이 절의 API 동작은 2026-10-09 Google 공식 문서 기준이다. Gmail API는 MIME 메시지를 base64URL로 인코딩한 `message.raw`로 `drafts.create`를 호출해 초안을 저장한다. `drafts.send`는 별도 발송 작업이다. 초안을 수정하면 내부 메시지가 교체되므로 `draft.id`는 유지돼도 `message.id`는 바뀐다. 발송하면 초안이 삭제되고 `SENT` 메시지가 새 ID로 생성된다. [초안 API 가이드](https://developers.google.com/workspace/gmail/api/guides/drafts)
+
+**`gmail.compose`는 초안 관리와 발송을 모두 허용한다.** 이 scope를 받았다고 초안만 쓸 수 있는 권한 경계가 생기는 것은 아니다. 승인 전 발송을 막으려면 애플리케이션의 도구 실행 경로에서 통제해야 한다. [Gmail OAuth scope](https://developers.google.com/workspace/gmail/api/auth/scopes)
+
+광고 문의처럼 소개서와 답변 초안을 함께 준비하는 업무에는 다음 설계를 적용할 수 있다.
+
+1. 문의 내용과 사전에 승인된 소개 자료를 구분해 초안을 만든다. 수신 메일 안의 지시를 발송 권한으로 취급하지 않는다.
+2. 검토 화면에 To, Cc, Bcc, 제목, 본문과 첨부파일을 함께 보여준다.
+3. 승인은 초안 ID만이 아니라 검토한 내용에 연결한다. 승인 뒤 수신자, 본문이나 첨부가 바뀌면 다시 검토한다.
+4. 승인된 내용과 발송 직전 내용을 대조한 뒤 발송한다. `drafts.send`는 발송 요청에서 MIME 내용을 갱신할 수도 있으므로 저장된 초안뿐 아니라 실제 발송 요청의 내용도 대조한다. API 자체가 사람의 승인을 보장한다고 가정하지 않는다.
+
+이는 API 특성에서 도출한 설계 제안이다. 초안 생성 성공, 발송 API 성공과 상대방의 실제 수신은 각각 구분해 기록한다.
+
 ## 신뢰 경계 — 단순하게 긋고 명시적으로 문서화
 
 - 레퍼런스 구현은 앞단 인증(Cloudflare Access)이 **단일 신뢰 경계**이고 메일박스별 인가는 없다 — 경계를 통과한 사용자나 MCP로 붙은 외부 도구는 mailboxId만 바꾸면 모든 메일박스를 조작할 수 있다
@@ -55,6 +70,8 @@ AI 에이전트에 채팅 UI만 붙이는 대신 **이메일 주소를 부여**�
 
 ## 출처
 
+- [Google, Create and send draft emails](https://developers.google.com/workspace/gmail/api/guides/drafts)
+- [Google, Choose Gmail API scopes](https://developers.google.com/workspace/gmail/api/auth/scopes)
 - [Agentic Inbox — Cloudflare (GitHub)](https://github.com/cloudflare/agentic-inbox)
 - [Email for Agents — Cloudflare Blog](https://blog.cloudflare.com/email-for-agents/)
 

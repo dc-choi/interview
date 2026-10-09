@@ -54,6 +54,32 @@ EC2 네트워크 인터페이스에 부여하는 **정적 공인 IP**. 기본 Pu
 - 많은 현행 Nitro 기반 인스턴스 타입이 ENA를 사용하며 실제 지원 여부와 baseline, burst 대역폭은 타입별 네트워크 사양에서 확인
 - 클러스터 컴퓨팅, 실시간 분석, 고성능 DB 통신에서 중요한 선택 요소지만 필요한 대역폭, PPS와 EFA 지원 여부를 워크로드별로 확인
 
+## 인스턴스 간 처리량을 측정하는 기준
+
+이 절은 2026-10-09 AWS와 ESnet 공식 문서 기준이다. 같은 VPC라도 인스턴스 타입, 배치, 트래픽 경로와 연결 수가 다르면 결과가 달라진다. **단일 연결 처리량과 병렬 연결의 합산 처리량을 따로 측정**한다. 인스턴스의 최대 대역폭을 단일 TCP 연결의 보장값으로 읽지 않는다. [EC2 대역폭](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html)
+
+두 Linux 테스트 인스턴스의 타입, AZ, placement group, ENA 지원과 드라이버 상태를 기록하고 사설 IP로 연결한다. ENA가 켜져 있다는 사실만으로 ENA Express가 동작한다고 판단하지 않는다. ENA Express는 양쪽 network interface attachment의 설정과 지원 조건을 별도로 확인한다. [ENA Express](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ena-express.html)
+
+다음은 양쪽에 iperf3가 설치된 상태에서 쓰는 비교 예시다. `SERVER_PRIVATE_IP`는 서버의 사설 IP로 바꾼다. 서버의 TCP 5201 접근을 테스트 상대에만 허용하고, UDP 시험에는 UDP 5201도 허용한다. UDP 시험에도 TCP 제어 연결이 필요하다. [iperf3 매뉴얼](https://software.es.net/iperf/invoking.html)
+
+```bash
+# 서버 인스턴스에서 실행
+iperf3 -s -p 5201
+
+# 클라이언트 인스턴스에서 각각 실행
+iperf3 -c SERVER_PRIVATE_IP -p 5201 -t 10
+iperf3 -c SERVER_PRIVATE_IP -p 5201 -t 10 -P 4
+iperf3 -c SERVER_PRIVATE_IP -p 5201 -t 10 -P 4 -R
+iperf3 -c SERVER_PRIVATE_IP -p 5201 -t 10 -u -b 100M
+```
+
+- `-P 4`는 병렬 스트림 4개의 합산 결과를 만든다. 한 연결의 성능과 분리해 해석한다. `-R`은 데이터 전송 방향을 바꾼다.
+- UDP의 `-b 100M`은 송신 목표값이다. 달성 가능한 대역폭을 보장하지 않으므로 수신 결과, 손실률과 jitter를 함께 본다.
+- 위의 10초는 명령 예시다. Burst 가능한 인스턴스는 네트워크 크레딧 소진 뒤 baseline으로 돌아갈 수 있으므로 짧은 최고값을 지속 처리량으로 간주하지 않는다.
+- 네트워크 한도 초과는 ENA 지표도 확인한다. 짧은 microburst는 CloudWatch의 분 단위 인스턴스 지표에 드러나지 않을 수 있다.
+
+시험 뒤 서버 프로세스를 종료하고 임시 보안 그룹 규칙을 제거한다. 이 결과는 테스트 경로의 네트워크 기준선이며, DB 처리나 애플리케이션 응답 시간까지 측정한 결과는 아니다.
+
 ## Key Pair
 
 EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를 인스턴스에 저장, 사용자가 개인키(`*.pem`)를 보유.
@@ -71,6 +97,8 @@ EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를
 
 ## 출처
 
+- [ESnet, Invoking iperf3](https://software.es.net/iperf/invoking.html)
+- [AWS 공식 문서, Improve network performance between EC2 instances with ENA Express](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ena-express.html)
 - [Change the primary private IP address of an EC2 instance — AWS re:Post](https://repost.aws/knowledge-center/ec2-change-primary-ip)
 - [AWS 공식 문서, Amazon EC2 instance IP addressing](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html)
 - [AWS 공식 문서, Create an Amazon EBS-backed AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html)
