@@ -76,6 +76,16 @@ Bedrock Agents Classic의 action group은 이 경계를 보여 주는 사례다.
 
 이는 도구 선택, 인자 수집과 실행 성공을 구분하는 설계다. 테스트에서는 올바른 도구 선택뿐 아니라 필수 인자 누락, 타 고객 식별자, 실행 실패와 승인 거부도 확인한다. 최종 답변이 유창하다는 이유로 실제 조회나 변경까지 성공했다고 판단하지 않는다.
 
+### 도구 계약의 테스트 대상과 배포 대상을 구분한다
+
+도구 정의나 지침을 수정한 뒤에는 어떤 구성을 시험했고 애플리케이션이 무엇을 호출하는지 연결해 확인한다. 2026-10-10 공식 문서 기준, Bedrock Agents Classic은 다음 경계를 둔다. 앞서 설명한 기존 고객용 서비스 범위에 해당한다.
+
+1. 변경은 작업 초안인 `DRAFT`에 반영한다. 변경 뒤 `PrepareAgent`를 호출하고 `GetAgent`의 `preparedAt`으로 최신 구성이 준비됐는지 확인한다. `TSTALIASID`는 이 초안을 가리키는 테스트 별칭이다.
+2. 배포 버전은 생성 시점의 구성을 보존하는 불변 스냅샷이다. 애플리케이션은 버전을 가리키는 별칭을 호출하며, 초안 변경만으로 운영 별칭이 새 구성으로 바뀌었다고 판단하지 않는다.
+3. 새 버전을 시험한 뒤 운영 별칭의 대상 버전을 전환한다. 문제가 있으면 이전 버전을 가리키도록 별칭을 되돌릴 수 있다.
+
+운영 적용 시에는 별칭과 버전 확인에 더해 실제 도구 입력, 결과와 업무 상태를 대조한다. 별칭 복구가 이미 실행한 예약이나 변경까지 취소하는 것은 아니므로, 외부 부수효과의 복구는 별도로 설계한다.
+
 ### 예약 도구는 검색 결과와 거래 완료를 구분한다
 
 여행 추천을 실제 예약으로 연결할 때는 호텔, 판매 조건과 예약 결과의 식별자를 구분한다. 에이전트가 호텔을 골랐다는 사실만으로 특정 날짜의 객실을 확보했다고 응답하지 않도록 도구의 입력과 완료 조건을 설계한다.
@@ -114,6 +124,8 @@ Meta 사내 8년, 13,000+ 앱에서 쓰인 최대 디자인 시스템의 오픈�
 
 ## 출처
 
+- [Amazon Bedrock, Test and troubleshoot agent behavior](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-test.html)
+- [Amazon Bedrock, Deploy an agent](https://docs.aws.amazon.com/bedrock/latest/userguide/deploy-agent.html)
 - [Amadeus for Developers, Hotel APIs Tutorial](https://github.com/amadeus4dev/developer-guides/blob/master/docs/resources/hotels.md) — 공식 가이드 소스의 검색, 예약과 결제 조건
 - [Amazon Bedrock, Define actions in the action group](https://docs.aws.amazon.com/bedrock/latest/userguide/action-define.html)
 - [Amazon Bedrock, Return control to the agent developer](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-returncontrol.html)

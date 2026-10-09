@@ -48,6 +48,23 @@ complexity와 rate limit은 스펙이 가이드를 주지 않는다. 커뮤니�
 
 demand control은 대체로 실행 전에 요청을 막고(depth limit은 명시적으로 실행 시작 전), 인가는 실행이 시작된 뒤 필드별로 판단한다. 라이프사이클 위치는 [[GraphQL-Architecture-Map|지도]]의 validate와 execute 단계와 겹친다.
 
+### AppSync: HTTP 상태와 필드 오류를 함께 본다
+
+관리형 서비스의 인증과 인가 진단에서는 요청 입구와 resolver 이후를 구분한다. 다음은 2026-10-10 AWS 공식 문서와 Knowledge Center로 확인한 AppSync 기준이며, 모든 GraphQL 서버의 오류 규약을 뜻하지 않는다.
+
+| 관측 결과 | 먼저 확인할 경계 |
+| --- | --- |
+| HTTP `401 Unauthorized` | 선택한 인증 방식에 맞는 `Authorization` 또는 `x-api-key` 헤더, 자격 증명 만료, JWT의 Cognito user pool 또는 OIDC 제공자 |
+| HTTP `200 OK`와 응답 본문의 `Unauthorized` 오류 | resolver 또는 그 이후의 접근 거부. 실패한 필드와 resolver 로직을 확인하고 필요하면 AppSync CloudWatch 로그로 좁힌다 |
+
+HTTP 200만으로 요청한 데이터의 조회 성공을 판단하지 않는다. 응답의 `errors`와 실패한 필드를 함께 확인하고 다음 조건을 대조한다.
+
+- IAM 방식에서는 SigV4 서명과 `appsync:GraphQL` 권한을 확인한다. 정책은 루트 `Query`, `Mutation`, `Subscription`의 필드 ARN으로 접근을 제한할 수 있다.
+- Lambda authorizer의 `isAuthorized: false`는 요청을 거부한다. `deniedFields`는 resolver가 값을 반환했더라도 지정 필드를 `null`로 바꾼다. API 여러 개가 authorizer를 공유하면 전체 필드 ARN으로 대상을 구분한다.
+- 복수 인증 방식에서는 루트 필드뿐 아니라 반환 타입과 하위 필드의 directive도 확인한다. 예를 들어 루트에 `@aws_api_key`를 붙였어도 반환 타입에 필요한 접근을 허용하지 않으면 해당 데이터 접근 문제가 남는다.
+
+진단에서는 실제로 사용한 인증 방식, 실패한 필드와 오류 내용을 먼저 남긴다. 토큰이나 HAR 원본은 공개 문서에 복사하지 않는다.
+
 ## 흔한 실수
 
 - introspection만 끄면 안전하다고 믿음(security through obscurity, 그 자체로 불충분).
@@ -78,6 +95,8 @@ demand control은 대체로 실행 전에 요청을 막고(depth limit은 명시
 
 ## 출처
 
+- [Resolve unauth errors for GraphQL requests in AWS AppSync — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/aws-appsync-graphql-request-unauth-error)
+- [AWS AppSync — Configuring authorization and authentication to secure your GraphQL APIs](https://docs.aws.amazon.com/appsync/latest/devguide/security-authz.html)
 - [graphql.org — Security](https://graphql.org/learn/security/)
 - [graphql.org — Authorization](https://graphql.org/learn/authorization/)
 - [graphql.org — Serving over HTTP (Where auth happens)](https://graphql.org/learn/serving-over-http/)
