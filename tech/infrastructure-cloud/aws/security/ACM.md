@@ -56,6 +56,26 @@ ACM 인증서를 사용하거나 발급과 연결을 자동화하는 대표 서�
    - **이메일 검증** — 도메인의 admin, administrator, hostmaster, postmaster, webmaster 표준 주소로 검증 메일을 보낸다. 신규 발급과 갱신에서 WHOIS 이메일 검증은 지원하지 않는다. 갱신 때도 이메일 응답이 필요하다.
 3. **검증 완료** → "Issued" 상태가 되면 통합 서비스에 attach 가능.
 
+## DNS 검증이 Pending validation에 머무를 때
+
+2026-10-10 ACM과 Route 53 공식 문서 대조 기준. DNS 관리 화면에 레코드가 보이는 것과 인터넷에서 해당 레코드를 조회할 수 있는 것은 별개다.
+
+1. 인증서의 각 도메인에 대해 ACM이 준 CNAME 이름과 값을 대조한다. DNS 제공자가 도메인을 자동으로 붙이면 이름에 도메인을 중복 입력하지 않는다.
+2. 공개 DNS에서 CNAME을 조회한다. Private hosted zone이나 VPN 내부에서만 조회되는 레코드로는 퍼블릭 인증서를 검증할 수 없다.
+3. 서브도메인을 별도 hosted zone으로 관리한다면 부모 영역의 NS 레코드가 그 하위 영역의 Route 53 네임서버를 가리키는지 확인한다. 하위 영역을 만들기만 해서는 위임이 완료되지 않는다. 부모 영역에서 직접 관리하는 서브도메인에 별도 위임을 추가할 필요는 없다.
+4. DNS 제공자가 CNAME 값의 선행 밑줄을 허용하지 않으면 값에서만 제거할 수 있다. 레코드 이름의 선행 밑줄은 유지한다. CNAME 연결이 5개를 초과하는지도 확인한다.
+5. CNAME이 올바르게 조회돼도 발급이 막히면 CAA 레코드의 발급 허용 조건을 확인한다. 레코드 생성 뒤 ACM 화면 반영에는 최대 30분이 걸릴 수 있다. 검증이 72시간 안에 끝나지 않아 `Validation timed out`이 됐다면 DNS 구성을 점검한 뒤 인증서를 다시 요청한다.
+
+공개 조회와 위임을 확인하는 읽기 전용 명령 예시다. 이름과 네임서버는 실제 ACM 값과 DNS 구성으로 바꾼다.
+
+```bash
+dig +short CNAME _token.sub.example.com
+dig +trace _token.sub.example.com CNAME
+dig @ns-parent.example.net sub.example.com NS
+```
+
+재귀 조회 결과와 권한 있는 서버의 응답을 대조하고, DNS 수정과 인증서 `Issued` 전환을 각각 확인한다. 인증서 발급은 애플리케이션에 인증서가 배포됐다는 증거가 아니다.
+
 ## 갱신
 
 - ACM 관리형 인증서는 자격 조건을 만족하면 자동 갱신을 시도한다. 시작 시점과 방식은 인증서 유형에 따라 다르므로 운영에서는 만료 이벤트를 함께 감시한다.
@@ -108,6 +128,8 @@ ACM 인증서를 사용하거나 발급과 연결을 자동화하는 대표 서�
 
 ## 출처
 
+- [AWS Certificate Manager — Troubleshoot DNS validation problems](https://docs.aws.amazon.com/acm/latest/userguide/troubleshooting-DNS-validation.html)
+- [Amazon Route 53 — Creating a subdomain that uses Amazon Route 53 as the DNS service without migrating the parent domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
 - [AWS Certificate Manager — Prerequisites for importing ACM certificates](https://docs.aws.amazon.com/acm/latest/userguide/import-certificate-prerequisites.html)
 - [AWS Certificate Manager — Certificate and key format for importing](https://docs.aws.amazon.com/acm/latest/userguide/import-certificate-format.html)
 - [AWS Certificate Manager — Import certificates](https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html)

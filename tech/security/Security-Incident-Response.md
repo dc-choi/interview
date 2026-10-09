@@ -45,6 +45,15 @@ NIST SP 800-61 Rev. 3(2025)은 CSF 2.0의 여섯 기능에 대응을 연결한�
 
 SIEM(Security Information and Event Management)은 로그를 모아 검색하고 상관관계를 분석하는 데 활용한다. 분석 도구가 있어도 기록하지 않은 사건을 복원할 수는 없다. 중앙 수집, 전송과 저장 보호, 수정과 삭제 권한 통제가 함께 필요하다. 레코드 설계와 보존 원칙은 [[Audit-Log|감사 로그]]를 따른다. 이 조사 흐름은 ACSC 공동 지침과 NIST 사고 대응 지침을 연결한 실무 적용 예시다.
 
+## XDR의 사건 묶음과 리스크 점수를 해석한다
+
+XDR은 엔드포인트 외에 네트워크, 클라우드와 이메일 등 여러 영역의 신호를 연결해 탐지와 대응을 돕는다. 실제 수집 범위와 대응 기능은 제품 및 연결한 솔루션에 따라 확인한다. 다음은 2026-10-10 제품 공식 설명을 대조한 예시다.
+
+- Microsoft Defender에서 alert는 악성 또는 의심스러운 사건을 나타내는 탐지 신호이고, incident는 관련 alert를 묶는 조사 단위다. 사건 안에서 원본 이벤트의 타임라인, 사용자와 장비, 조사와 대응 이력을 함께 확인할 수 있다.
+- AhnLab XDR의 리스크 지수는 사용자와 자산을 중심으로 대응 우선순위를 정하는 데 쓰인다. 자산가치, 이벤트, 확률과 가중치를 함께 계산하므로 점수 80을 곧바로 침해 확률 80%로 해석하지 않는다.
+
+이를 운영에 적용할 때는 경고 수와 사건 수를 같은 지표로 비교하지 않는다. 피싱 경고를 닫았더라도 관련 단말 실행과 다른 자산으로의 접근이 같은 사건에 남아 있는지 확인한다. 점수 하락을 평가할 때도 실제 조치, 로그 수집 범위와 분석 규칙의 변경을 함께 대조한다. 이는 제품 기능을 바탕으로 한 검토 기준이며 특정 제품의 도입 효과나 침해 부재를 입증한 수치는 아니다.
+
 ## 탐지에서 자동 차단으로 연결하기
 
 탐지 결과와 대응 실행은 별도의 경계다. 계정, 단말과 서비스의 신호를 연결했더라도 실제 차단을 수행할 제품, 권한과 적용 범위가 있어야 한다.
@@ -80,6 +89,8 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 
 ## 출처
 
+- [Microsoft Learn, Incidents and alerts in the Microsoft Defender portal](https://learn.microsoft.com/en-us/defender-xdr/incidents-overview)
+- [AhnLab XDR 출시, 통합 보안의 정점을 향하다 — AhnLab](https://www.ahnlab.com/ko/contents/content-center/34045)
 - [NIST, SP 800-61 Rev. 3: Incident Response Recommendations and Considerations for Cybersecurity Risk Management](https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-61r3.pdf)
 - [ASD ACSC, Best practices for event logging and threat detection](https://www.cyber.gov.au/business-government/detecting-responding-to-threats/event-logging/best-practices-for-event-logging-and-threat-detection)
 - [Microsoft Learn, Automatic attack disruption in Microsoft Defender](https://learn.microsoft.com/en-us/defender-xdr/automatic-attack-disruption)

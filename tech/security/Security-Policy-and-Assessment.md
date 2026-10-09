@@ -35,6 +35,19 @@ CSF 2.0의 ID.AM-03은 내부와 외부 데이터 흐름을, ID.AM-04는 공급�
 
 예를 들어 외부 API의 방화벽 규칙이 충분해도 운영 계정의 과도한 데이터 조회 권한은 별도 위험이다. 권한 축소와 재점검이 필요한지 해당 경로의 피해 범위로 판단한다. 이 원칙은 특정 금융회사 사고의 원인이나 피해 사실을 입증하지 않는다.
 
+## 관리형 서비스의 책임과 감사 증거를 나눈다
+
+2026-10-10 AWS 공동 책임 모델과 Artifact 문서 대조 기준. 클라우드 공급자가 맡는 통제와 고객이 수행할 통제는 사용하는 서비스에 따라 달라진다.
+
+| 사용 방식 | 고객이 확인할 책임의 예 |
+|---|---|
+| EC2에서 애플리케이션 운영 | 게스트 OS와 설치한 애플리케이션의 패치, 보안 그룹 설정 |
+| S3와 DynamoDB 같은 추상화된 서비스 이용 | 데이터 분류, 암호화 옵션과 IAM 접근 권한 |
+
+관리형 서비스를 사용해도 고객 데이터와 접근 권한의 관리 책임이 사라지지는 않는다. 외주 운영에서는 이 책임을 다시 발주자와 운영 담당자의 작업 범위로 나누고, 설정 변경과 재점검을 누가 수행할지 정하는 방식을 검토한다. 이는 계약과 운영을 위한 적용 예시이며 AWS가 두 당사자의 책임 배분까지 정한다는 뜻은 아니다.
+
+AWS Artifact는 AWS의 보안과 규정 준수 보고서 및 인증 문서를 제공한다. 이 자료는 사용 중인 AWS 인프라와 서비스의 통제를 설명할 감사 증거로 활용할 수 있다. 고객 회사와 애플리케이션의 보안 및 규정 준수를 입증할 자료는 고객이 별도로 준비해야 한다. 공급자의 보고서 확보와 자사 서비스의 통제 검증을 서로 다른 완료 조건으로 둔다.
+
 ## 보안 인식 교육의 목표와 측정
 
 교육은 수강 완료와 실제 행동 변화를 구분해 평가한다. 모든 사용자가 알아야 할 위협 인식과 신고 방법을 공통으로 다루고, 관리자와 개발자에게는 권한 관리와 설정 변경처럼 역할에 맞는 실습을 더한다. 아래는 NIST SP 800-50 Rev. 1의 학습 프로그램과 측정 원칙을 적용한 예시다(2026-10-07 확인).
@@ -141,6 +154,8 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 
 ## 출처
 
+- [Shared Responsibility Model — AWS](https://aws.amazon.com/compliance/shared-responsibility-model/)
+- [AWS Artifact, What is AWS Artifact?](https://docs.aws.amazon.com/artifact/latest/ug/what-is-aws-artifact.html)
 - [NIST, Tabletop Exercise](https://csrc.nist.gov/glossary/term/Tabletop_Exercise)
 - [NIST, Functional Exercise](https://csrc.nist.gov/glossary/term/functional_exercise)
 - [CISA, CTEP Facilitator / Evaluator Handbook](https://www.cisa.gov/sites/default/files/2023-01/3_-_ctep_facilitator_evaluator_handbook_2020_final_508.pdf)
