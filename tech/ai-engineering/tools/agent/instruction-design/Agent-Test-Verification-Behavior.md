@@ -90,6 +90,20 @@ Android에서는 테스트의 실행 위치와 검증 범위가 서로 다른 �
 
 당근 Android 팀의 공개 발표는 빌드 이후 화면, 로그와 기기 조작 도구를 에이전트에 연결한 적용 사례다. 특정 팀의 생산성 수치를 일반적인 효과로 옮기거나, 도구 연결만으로 제품 의도까지 검증됐다고 판단하지 않는다.
 
+### 생성한 IaC는 템플릿과 배포 후 동작을 나눠 검증한다
+
+아키텍처 그림에서 인프라 코드를 생성했거나 README의 요청 예제가 실행됐다는 사실만으로 서비스 전체의 정확성을 판단하지 않는다. 생성 코드, 설명과 테스트가 같은 오해를 공유할 수 있으므로 기대 동작은 요구사항에서 정한다.
+
+2026-10-09 AWS CDK v2 공식 문서 기준, fine-grained assertion은 합성한 CloudFormation 템플릿의 특정 속성을 검사하고 snapshot test는 저장한 템플릿과 비교한다. CDK 업그레이드만으로도 스냅샷이 달라질 수 있어 스냅샷 하나로 구현의 정확성을 판단하지 않는다. 배포된 리소스의 통합 테스트는 실제 요청과 결과를 연결해 다른 범위를 확인한다.
+
+다음은 이를 코딩 에이전트의 완료 조건에 적용한 점검 예시다.
+
+- 템플릿 검사: 필요한 리소스, 연결과 권한 설정이 생성됐는지 확인한다.
+- 배포 후 검사: 생성 API의 응답 ID로 조회해 저장 값이 입력과 일치하는지 확인한다. 삭제 기능을 추가했다면 삭제 후 조회 결과도 요구사항과 대조한다.
+- 비동기 처리: 접수 응답과 최종 저장을 구분하고, 정해진 제한 시간 안에 기대 상태에 도달하는지 검사한다.
+
+통합 테스트가 통과해도 실행하지 않은 오류 경로나 권한 거부까지 검증된 것은 아니다. 클라우드 실행을 못 했다면 템플릿 검사만 통과했다고 남긴다.
+
 ## 면접 체크포인트
 
 - 에이전트에게 테스트 기법 이름을 지시하는 것이 왜 행동을 바꾸지 못하는지 설명할 수 있는가.
@@ -99,6 +113,8 @@ Android에서는 테스트의 실행 위치와 검증 범위가 서로 다른 �
 
 ## 출처
 
+- [AWS CDK v2, Test AWS CDK applications](https://docs.aws.amazon.com/cdk/v2/guide/testing.html)
+- [How to write and execute integration tests for AWS CDK applications — AWS](https://aws.amazon.com/blogs/devops/how-to-write-and-execute-integration-tests-for-aws-cdk-applications/)
 - [Android Developers, Fundamentals of testing Android apps](https://developer.android.com/training/testing/fundamentals)
 - [Android Developers, Build instrumented tests](https://developer.android.com/training/testing/instrumented-tests)
 - [에이전트가 코드를 짜는 시대, 당근 Android 팀은 어떻게 일을 하고 있는가 — 당근 팀, 공개 발표](https://www.youtube.com/watch?v=TWI2Ofb9N2Y)

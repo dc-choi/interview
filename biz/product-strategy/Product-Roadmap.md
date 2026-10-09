@@ -56,6 +56,21 @@ aliases: ["Product Roadmap", "프로덕트 로드맵", "Story Mapping", "스토�
 - **Living Document 원칙** — 로드맵은 한 번 만들고 방치하는 산출물이 아니라 부서 의견과 데이터가 주기적으로 반영되는 살아있는 문서다. [[PRD-Writing|PRD 작성법]]의 Living Document, [[Tech-Roadmap|기술 로드맵]]의 데이터 기반 조정과 같은 원칙.
 - 가까운 실행 항목과 먼 미래의 가설을 구분한다. 목표, 현재 근거, 다음 검증과 재검토 조건을 함께 적고, 새 근거에 따라 항목을 추가하거나 뺀다. 로드맵의 희망 시점을 계약상 납기나 확정된 외부 약속으로 자동 해석하지 않는다.
 
+### 방향 자체가 가설이면 학습 결과를 완료 조건으로 둔다
+
+목표 고객이나 해결할 문제는 정했어도, 어떤 제공 방식이 효과적인지는 모를 수 있다. 이때 로드맵의 항목을 확정 기능처럼 관리하면 기능 출시와 가설 검증을 혼동하기 쉽다. 계획의 전제와 실제 행동의 영향을 대조하고, 관측 결과에 따라 방향을 조정한다.
+
+다음은 이 학습 관점을 제품 로드맵에 적용한 작성 예시다. 특정 연구가 검증한 고정 양식은 아니다.
+
+| 항목 | 남길 내용 |
+|---|---|
+| 가설 | 어떤 고객의 어떤 행동이나 문제가 바뀔 것으로 보는가 |
+| 작은 실행 | 그 전제를 확인할 수 있는 최소 실험이나 제공 범위 |
+| 관측 | 실제 영향과 예상의 차이, 관측 기간과 해석의 한계 |
+| 다음 결정 | 유지, 수정, 중단을 판단할 근거와 판단 시점 |
+
+예를 들어 자동 견적 기능의 출시 여부만 세지 않고, 견적을 기다리는 시간이 줄었는지와 사람이 다시 고치는 일이 늘었는지를 함께 확인한다. 결과가 기대와 다르면 기능 수를 늘리기 전에 가정이나 제공 방식을 바꾼다. 이는 적용 예시이며, 실험 실패를 무조건 허용하거나 계약상 납기를 가설로 바꾼다는 뜻은 아니다.
+
 ## 면접 체크포인트
 
 - 로드맵 수립 질문에는 Vision → Goal → Theme → 우선순위의 도출 순서로 답한다 — 과제 나열이 아니라 비전에서 내려오는 구조를 보여주는 것이 핵심.
@@ -69,6 +84,7 @@ aliases: ["Product Roadmap", "프로덕트 로드맵", "Story Mapping", "스토�
 - [GOV.UK, How the alpha phase works](https://www.gov.uk/service-manual/agile-delivery/how-the-alpha-phase-works)
 - [GOV.UK, Developing a roadmap](https://www.gov.uk/service-manual/agile-delivery/developing-a-roadmap)
 - [서비스 기획자의 로드맵 수립 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/54)
+- [The Parlor Room, Season 1 Bonus Content (Part 2) — Linda Hill 외 (Harvard Business School Online)](https://online.hbs.edu/podcast/season-1-bonus-content-part-2-linda-hill-mihir-desai-forest-reinhardt-and-joshua-margolis) — 계획의 가정, 행동의 영향과 방향 수정에 관한 공개 대담
 
 ## 관련 문서
 - [[Tech-Roadmap|기술 로드맵 수립]]

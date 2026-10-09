@@ -76,6 +76,16 @@ Bedrock Agents Classic의 action group은 이 경계를 보여 주는 사례다.
 
 이는 도구 선택, 인자 수집과 실행 성공을 구분하는 설계다. 테스트에서는 올바른 도구 선택뿐 아니라 필수 인자 누락, 타 고객 식별자, 실행 실패와 승인 거부도 확인한다. 최종 답변이 유창하다는 이유로 실제 조회나 변경까지 성공했다고 판단하지 않는다.
 
+### 예약 도구는 검색 결과와 거래 완료를 구분한다
+
+여행 추천을 실제 예약으로 연결할 때는 호텔, 판매 조건과 예약 결과의 식별자를 구분한다. 에이전트가 호텔을 골랐다는 사실만으로 특정 날짜의 객실을 확보했다고 응답하지 않도록 도구의 입력과 완료 조건을 설계한다.
+
+2026-10-09 Amadeus의 공식 Hotel APIs 가이드 소스 기준, Hotel List의 `hotelId`로 호텔을 찾고 Hotel Search에서 객실의 가격과 조건이 담긴 offer를 받는다. Hotel Booking은 `offerId`, 투숙객과 결제 정보를 받아 예약을 만들며, 예약이 만들어지면 별도의 booking confirmation ID를 반환한다.
+
+- Hotel Search V3는 실시간 데이터를 반환하지만 검색과 예약 사이에 가용 객실이 바뀔 수 있다. 사용자 검토로 시간이 지났다면 offer를 다시 조회하는 경계를 둔다. 재조회만으로 객실이 확보됐다고 판단하지 않는다.
+- 예약 완료와 전액 결제 완료는 같은 상태가 아니다. 가이드는 카드 보증인 Guarantee, 일부 금액을 받는 Deposit, 전액 선결제인 Prepay를 구분한다. 최종 응답도 실제 예약 결과와 해당 결제 조건에 맞춘다.
+- 적용 시 검색된 offer, 사용자가 승인한 조건과 예약 응답을 연결해 검증한다. 가격이나 조건이 바뀌면 다시 확인하고, 예약 응답을 받지 못했다면 성공을 추정하지 않는다. 이는 에이전트 통합의 설계 기준이며 해당 API가 승인이나 중복 실행 방지를 자동 제공한다는 뜻은 아니다.
+
 ## Vibe Test — 컨벤션을 측정으로 검증
 
 같은 프롬프트 배터리를 서로 다른 시스템 구성(자사 시스템, 경쟁 조합, 순수 HTML baseline)에 주고 LLM이 생성한 UI 코드를 정량 비교하는 평가 체계. 프롬프트마다 기대 컴포넌트와 난이도를 메타데이터로 두되 평가에만 쓴다.
@@ -104,6 +114,7 @@ Meta 사내 8년, 13,000+ 앱에서 쓰인 최대 디자인 시스템의 오픈�
 
 ## 출처
 
+- [Amadeus for Developers, Hotel APIs Tutorial](https://github.com/amadeus4dev/developer-guides/blob/master/docs/resources/hotels.md) — 공식 가이드 소스의 검색, 예약과 결제 조건
 - [Amazon Bedrock, Define actions in the action group](https://docs.aws.amazon.com/bedrock/latest/userguide/action-define.html)
 - [Amazon Bedrock, Return control to the agent developer](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-returncontrol.html)
 - [Amazon Bedrock, Get user confirmation before invoking action group function](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-userconfirmation.html)
