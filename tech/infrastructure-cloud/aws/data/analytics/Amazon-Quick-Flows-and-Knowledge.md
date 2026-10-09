@@ -1,7 +1,7 @@
 ---
 tags: [aws, amazon-quick, workflow, knowledge-graph, automation]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-09
 category: "Infrastructure - AWS"
 aliases: ["Amazon Quick Flows", "Amazon Quick 개인 지식 그래프"]
 ---
@@ -26,6 +26,16 @@ Amazon Quick Flows는 입력, 조사, AI 응답과 연결 앱의 동작을 순�
 - 공유 flow가 새 버전으로 바뀌면 기존 예약도 갱신된 버전으로 계속 실행된다. 변경된 입력과 action을 다시 확인한다.
 - 실행 이력에서 성공과 실패를 확인한다. 결과 생성과 외부 앱 변경 완료 여부는 따로 확인한다.
 
+## 연결 앱의 실행 주체와 검증 경계
+
+2026-10-09 공식 문서 기준, Jira Cloud 커넥터는 이슈 검색뿐 아니라 생성, 수정과 삭제 action을 제공한다. 실제로 사용할 수 있는 action은 Jira의 권한과 인증 방식에 따라 달라진다. 문제 해결 안내나 영업 미팅용 초안을 생성하는 작업과 티켓 생성, 상태 변경을 수행하는 작업은 권한과 완료 조건을 나누어 설계한다.
+
+ServiceNow의 서비스 인증에서는 설정한 OAuth application user의 권한으로 action을 실행한다. 해당 통합에 접근할 수 있는 Quick 사용자는 그 계정의 권한을 사용하므로, 각 사용자의 개인 계정 권한이 그대로 적용된다고 가정하지 않는다. 통합 공유 대상과 서비스 계정의 실제 권한을 함께 검토한다.
+
+ServiceNow REST API 경로에는 브라우저의 UI policy, UI action과 client script가 적용되지 않는다. 서버의 business rule, ACL과 data policy는 적용된다. 따라서 화면에서 필수 입력을 요구했다는 사실만으로 자동 생성 티켓에도 같은 검증이 수행된다고 판단하지 않는다.
+
+다음은 위 경계를 적용한 운영 점검 예시다. 티켓 생성 전에 대상 프로젝트나 테이블, 필수 필드와 실행 계정을 확인한다. 실행 뒤에는 반환된 식별자로 생성 결과를 확인하고, 응답이 끊긴 경우 기존 생성 여부부터 조회해 중복을 피한다. 보고서나 알림 초안이 만들어졌다는 사실을 외부 앱 변경이나 수신자 전달의 완료로 기록하지 않는다. 이 점검 절차는 커넥터가 자동으로 보장하는 동작이 아니다.
+
 ## 개인 지식 그래프의 근거
 
 Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 같은 개체와 관계를 추출하고 사용자별 계정에 보관한다. 연결 앱의 자동 수집과 폴더별 그래프 추출은 별도 설정이다. 폴더의 키워드/시맨틱 색인과 그래프 추출도 독립적이다.
@@ -43,6 +53,8 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 ## 출처
 
+- [Amazon Quick, Atlassian Jira Cloud integration](https://docs.aws.amazon.com/quick/latest/userguide/jira-integration.html)
+- [Amazon Quick, ServiceNow integration](https://docs.aws.amazon.com/quick/latest/userguide/servicenow-integration.html)
 - [Amazon Quick, Using Amazon Quick Flows](https://docs.aws.amazon.com/quick/latest/userguide/using-amazon-quick-flows.html)
 - [Amazon Quick, Scheduling your Amazon Quick Flows](https://docs.aws.amazon.com/quick/latest/userguide/schedules-in-quick-flows.html)
 - [Amazon Quick, Knowledge graph](https://docs.aws.amazon.com/quick/latest/userguide/knowledge-graph-desktop.html)
