@@ -81,6 +81,24 @@ Scale In/Out 용어:
 - **Scale Out** = 인스턴스 수 증가 (수평 확장)
 - **Scale In** = 인스턴스 수 감소
 
+## Warm Pool — 초기화와 서비스 준비를 나눈다
+
+2026-10-09 공식 문서 부분 대조 기준이다. Warm Pool은 ASG 옆에 미리 초기화한 EC2 인스턴스를 두고 확장 시 가져오는 방식이다. 큰 컨테이너 이미지나 모델 파일을 준비하는 시간이 병목일 때 검토한다. `default instance warmup`과 별개이며, 재시작과 애플리케이션 준비 시간을 없애지는 않는다.
+
+- `Stopped` 상태에서도 EBS와 연결된 Elastic IP 비용은 남는다. `Hibernated`는 RAM을 EBS에 보존하며, 인스턴스의 최대 절전 지원 조건을 별도로 충족해야 한다.
+- 초기화가 끝나기 전에 인스턴스가 중지되지 않도록 launch lifecycle hook으로 `Warmed:Pending:Wait`에서 기다린다. 준비가 끝나면 `CompleteLifecycleAction`으로 완료를 알린다.
+- 웜 풀에서 나와 서비스로 진입할 때는 `Pending:Wait`에서 서비스 준비를 확인할 수 있다. cloud-init의 user data는 기본적으로 첫 부팅에만 실행되므로 재시작 때 자동 재실행된다고 가정하지 않는다.
+- scale-in 뒤 인스턴스를 풀로 돌려보내려면 instance reuse policy를 설정한다. 기본 동작은 종료이며, 풀의 용량 설정에 따라 재사용 인스턴스도 종료될 수 있다.
+- 풀이 고갈되면 새 인스턴스가 ASG로 직접 시작하는 cold start 경로가 남는다. launch template을 바꿔도 기존 풀 인스턴스는 갱신되지 않으므로 instance refresh 등으로 교체한다.
+
+GPU 워커에 적용할 때는 이미지와 모델 파일의 디스크 준비, 프로세스 시작, GPU 메모리 적재와 첫 추론 완료를 나누어 측정한다. 이 구분은 운영 점검 제안이다. 정지된 인스턴스에 파일이 있다는 이유만으로 추론 준비가 끝났다고 판정하지 않는다.
+
+### 처리 중인 작업과 scale-in 보호
+
+작업 중인 인스턴스는 scale-in protection으로 축소 대상에서 보호할 수 있다. 보호는 `InService`부터 적용되며, 모든 인스턴스가 보호된 상태에서도 desired capacity는 내려갈 수 있지만 실제 종료는 보호 해제까지 미뤄진다.
+
+이 보호는 헬스 체크에 따른 교체, Spot 중단과 수동 종료를 막지 않는다. 워커 설계에서는 작업 결과의 내구성, 재시도와 멱등성을 따로 확보하고, 작업 완료 뒤 보호를 해제하는 절차를 둔다. 컨테이너 태스크 수와 GPU 인스턴스 용량의 구분은 [[ECS-GPU-Inference|ECS GPU 추론]]을 참고한다.
+
 ## Health Check — 비정상 인스턴스 교체
 
 | 타입 | 검사 대상 |
@@ -125,6 +143,9 @@ EC2, ELB, VPC Lattice, EBS 또는 사용자 지정 헬스 체크가 인스턴스
 - [Auto Scaling health check](https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html)
 - [Lifecycle hook 고려사항](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html)
 - [Scheduled scaling for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html)
+- [Decrease latency for applications with long boot times using warm pools](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html)
+- [Use lifecycle hooks with a warm pool in Auto Scaling group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/warm-pool-instance-lifecycle.html)
+- [Use instance scale-in protection to control instance termination](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-protection.html)
 
 ## 관련 문서
 - [[EC2|EC2]]
