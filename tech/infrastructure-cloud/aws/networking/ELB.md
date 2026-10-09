@@ -3,7 +3,7 @@ tags: [aws, elb, alb, nlb, gwlb, load-balancer, infrastructure]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["ELB", "AWS ELB", "Elastic Load Balancer", "ALB", "NLB", "GWLB"]
-verified_at: 2026-09-30
+verified_at: 2026-10-10
 ---
 
 # ELB, Elastic Load Balancer
@@ -70,6 +70,14 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 - 예약 용량은 가용 영역에 균등 배분되므로 각 영역의 정상 대상과 처리 여력도 확인한다.
 - `ReservedLCUs`는 분 단위 과금 지표다. 6,000 LCU를 한 시간 예약하면 1분 합계는 100, 한 시간 합계는 6,000이다. `PeakLCUs` 1분 합계는 설정한 예약량 또는 `ReservedLCUs` 한 시간 합계와 비교한다.
 - 사용하지 않은 예약 용량도 취소 전까지 비용이 발생한다. 이벤트 뒤 축소나 취소를 점검하며 예약량 감소는 하루 두 번 제한을 고려한다.
+
+### 용량 산정에서 요청 수와 연결 수를 구분한다
+
+2026-10-10 부분 검증: ALB 요금의 LCU 차원과 용량 예약 문서를 대조했다. 초당 요청 수(RPS)는 초당 새 연결 수가 아니다. 한 연결에서 여러 요청을 처리할 수 있으므로 RPS를 새 연결 차원에 그대로 대입하지 않는다.
+
+- ALB의 LCU 차원은 새 연결, 활성 연결, 요청과 응답의 처리 바이트, 규칙 평가다. 과금은 사용량이 가장 큰 차원을 기준으로 하며, 예약량 추정에는 앞 절의 `PeakLCUs`를 사용한다.
+- 연결 재사용으로 새 연결 수가 줄어도 처리 바이트나 규칙 평가가 지배하면 같은 비율로 LCU가 줄지는 않는다. 고정 절감률을 가정하지 않는다.
+- 공식 요금표의 새 연결 25개/초 기준도 HTTPS 인증서의 키 유형과 크기에 조건이 있다. 대상 유형, TLS와 실제 연결 재사용 조건을 맞춘 부하 테스트로 확인한다.
 
 ## NLB — Network Load Balancer
 
@@ -179,6 +187,7 @@ ALB의 504는 대상이 연결 timeout이나 idle timeout(기본 60초) 안에 �
 - **CLB는 이전 세대** — 기존 구성은 지원되지만 신규 설계는 ALB, NLB, GWLB의 기능을 우선 검토
 
 ## 출처
+- [AWS, Elastic Load Balancing pricing](https://aws.amazon.com/elasticloadbalancing/pricing/)
 - [Application Load Balancer 용량 예약](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html)
 - [Application Load Balancer 용량 예약 요청](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/request-capacity-unit-reservation.html)
 - [Application Load Balancer 용량 예약 모니터링](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/monitor-capacity-unit-reservation.html)

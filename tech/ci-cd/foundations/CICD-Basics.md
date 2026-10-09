@@ -1,7 +1,7 @@
 ---
 tags: [cicd, ci, cd, continuous-integration, continuous-delivery, continuous-deployment]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-10
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["CICD Basics", "CI/CD 기초", "Continuous Integration", "Continuous Delivery", "Continuous Deployment"]
 ---
@@ -140,6 +140,14 @@ AI가 코드, 테스트나 리뷰 초안을 만들었다는 사실과 변경이 
 
 코드 생성 시간만 줄어도 검토 대기와 재작업이 늘면 전달 속도는 개선되지 않을 수 있다. 같은 서비스에서 도입 전후의 병목과 DORA 지표를 함께 본다. 2026-10-07 확인한 DORA 지표는 변경 처리 시간, 배포 빈도, 실패 배포 복구 시간, 변경 실패율, 배포 재작업률이며, 배포 빈도까지 모두 낮추는 것이 목표는 아니다. 실패 배포 복구 시간은 모든 원인의 장애 복구 시간을 뜻하지 않는다. 측정의 해석과 함정은 [[Software-Productivity-Measurement]]에서 다룬다.
 
+### DORA 대시보드 전에 수집 범위를 확인한다
+
+2026-10-10 부분 검증: Apache DevLake의 `Next` 문서 기준, 프로젝트는 저장소, CI/CD 범위와 이슈 보드를 묶어 지표를 계산한다. 팀 하나로 서로 다른 서비스의 데이터를 합치기 전에 실제 프로젝트 경계와 연결된 데이터 범위를 확인한다.
+
+- DORA 지표가 비어 있으면 성과가 0이라고 해석하기 전에 수집과 매핑을 확인한다. DevLake의 DORA Validation Dashboard와 Grafana 차트의 SQL로 계산에 들어간 데이터를 추적할 수 있다.
+- Webhook 수집은 프로젝트별로 분리한다. 같은 webhook을 여러 프로젝트가 공유하면 전달된 배포와 이슈가 각 프로젝트에 중복 연결될 수 있다.
+- DevLake 문서의 4개 지표와 `Median Time to Restore Service`를 DORA의 현재 5개 지표와 자동으로 동일시하지 않는다. 실제 설치 버전의 차트 SQL과 측정 정의를 대조한다.
+
 ## 자주 헷갈리는 포인트
 
 - **CI = 단순 빌드 자동화** 오해 — 통합, 테스트, 품질 검증을 포함
@@ -179,6 +187,9 @@ AI가 코드, 테스트나 리뷰 초안을 만들었다는 사실과 변경이 
 - 성숙도 단계(0~5)로 자신의 팀 현재 위치 설명
 
 ## 출처
+
+- [Apache DevLake, How to Organize DevLake Projects](https://devlake.apache.org/docs/Configuration/HowToOrganizeDevlakeProjects/)
+- [Apache DevLake, Dashboard Troubleshooting](https://devlake.apache.org/docs/Troubleshooting/Dashboard/)
 
 2026-10-07 부분 검증: 생성형 AI 보조와 배포 판정, DORA 지표의 정의를 공식 자료와 대조했다. 모든 도구의 기능, 이용 조건과 성숙도 예시를 재검증한 것은 아니다.
 

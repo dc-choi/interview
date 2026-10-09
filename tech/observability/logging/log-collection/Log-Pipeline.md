@@ -1,6 +1,7 @@
 ---
 tags: [observability, logging, pipeline, backpressure, retention]
 status: done
+verified_at: 2026-10-10
 category: "관측가능성(Observability)"
 aliases: ["Log Pipeline", "로그 파이프라인", "중앙 집중식 로깅"]
 ---
@@ -55,6 +56,16 @@ Collector와 중앙 버퍼는 같은 것이 아니다. Fluent Bit의 로컬 파�
 - 일일 수집량, 평균 레코드 크기, peak 배율, 검색 보존 기간
 
 실무에서는 최근 로그를 검색 저장소에 두고 전체 원본이나 저빈도 로그를 객체 저장소에 보관하는 혼합 구조가 흔하다. 모든 로그를 고성능 검색 계층에 영구 보관할 필요는 없다.
+
+## CDN 로그의 표본과 전달 누락을 구분한다
+
+2026-10-10 부분 검증: CloudFront의 표준 로그와 실시간 로그 전달 조건을 대조했다. 이 절의 제품 조건만 확인했으며 다른 수집기의 전체 동작을 재검증한 것은 아니다.
+
+- 실시간 로그는 Kinesis Data Streams로 보내며 수집 필드, cache behavior와 1~100% 표본 비율을 설정한다. 100%로 설정해도 best-effort 전달이므로 지연과 드문 누락이 가능하다. 로그 건수를 모든 요청의 완전한 집계나 청구 수량으로 간주하지 않는다.
+- 표준 로그도 일부 항목이 최대 24시간 늦게 전달될 수 있다. 따라서 짧은 시간창에서 로그가 없다는 사실만으로 요청이 없었다고 판단하지 않는다.
+- 다음은 관측 설계 제안이다. 수집 설정, 표본 비율, 이벤트 시각과 도착 시각을 함께 관리하고, CDN 응답 로그와 클라이언트 재생 오류를 구분한다. 정상 HTTP 응답만으로 재생 성공이나 광고 노출을 확정하지 않는다.
+
+저장소가 받은 로그를 모두 보관하는 것과 소스의 모든 이벤트가 전달되는 것은 다른 보장이다. 표본 설정과 소스 누락을 확인한 뒤 버퍼, 소비 지연과 저장 실패를 조사한다.
 
 ## 중복과 순서를 전제로 설계한다
 
@@ -130,6 +141,9 @@ OpenSearch의 shard, rollover, storage tier는 [[OpenSearch-Index-Lifecycle]]을
 - [[Kinesis|Amazon Kinesis]]
 
 ## 출처
+
+- [AWS Documentation, Use real-time access logs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/real-time-logs.html)
+- [AWS Documentation, Standard logging reference](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/standard-logs-reference.html)
 
 - [Fluent Bit buffering — Official Manual](https://docs.fluentbit.io/manual/administration/buffering-and-storage)
 - [Fluent Bit backpressure — Official Manual](https://docs.fluentbit.io/manual/administration/backpressure)

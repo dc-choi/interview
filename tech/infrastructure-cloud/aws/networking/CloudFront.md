@@ -3,7 +3,7 @@ tags: [infrastructure, aws, cloudfront, cdn, cache, edge]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["CloudFront", "AWS CloudFront", "Amazon CloudFront"]
-verified_at: 2026-07-21
+verified_at: 2026-10-10
 ---
 
 # Amazon CloudFront
@@ -79,6 +79,14 @@ AWS의 **CDN(Content Delivery Network) 서비스**. HTTP/HTTPS origin의 캐시 
 
 - cache behavior의 cache policy가 Origin의 `Cache-Control`과 함께 실제 TTL을 결정한다. 헤더가 없으면 Default TTL을 사용
 - Min/Max/Default TTL을 behavior별로 지정. **Minimum TTL이 0보다 크면 `no-cache`, `no-store`, `private`에도 최소 TTL이 적용될 수 있음**
+
+### 같은 URL의 미디어 변형과 캐시 키
+
+2026-10-10 부분 검증: cache policy와 CloudFront 생성 헤더 문서를 대조했다. 같은 URL이라도 기기 유형에 따라 origin 응답이 달라지면 해당 차이를 캐시 키에 반영해야 변형을 따로 저장한다.
+
+- `cache policy`는 캐시 키에 포함할 헤더, 쿠키와 쿼리를 정한다. `origin request policy`로 헤더만 전달하는 것은 캐시 분리와 다르다.
+- 기기별 응답을 만들 때는 필요한 `CloudFront-Is-Mobile-Viewer` 등의 헤더를 캐시 정책에 넣을 수 있다. 한 기기가 mobile과 tablet에 동시에 해당할 수 있으므로 배타적 분류로 가정하지 않는다.
+- 다음은 적용 점검 예시다. 같은 URL을 다른 기기 조건으로 반복 요청해 응답 변형과 캐시 적중을 대조한다. 응답을 바꾸지 않는 값까지 키에 넣으면 캐시가 잘게 나뉘므로 필요한 조건만 남긴다.
 
 ### Cache Invalidation
 
@@ -166,6 +174,8 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - 지원되는 AWS origin → CloudFront 전송은 별도 데이터 전송 요금 없음, Shield Standard 포함
 
 ## 출처
+- [AWS 공식 문서, Control the cache key with a policy](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html)
+- [AWS 공식 문서, Add CloudFront request headers](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-cloudfront-headers.html)
 - [AWS 공식 문서, HTTP 403 status code (Permission Denied)](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/http-403-permission-denied.html)
 - [AWS 공식 문서, Require HTTPS for communication between viewers and CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html)
 - AWS SAA C03 학습 자료 — CloudFront
