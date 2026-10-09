@@ -95,6 +95,16 @@ Restore를 해보지 않은 backup은 복구 가능성이 검증되지 않은 �
 
 Rolling upgrade는 인접 major version만 지원한다. 3.x로 갈 때는 source cluster가 최소 2.19.0이어야 하며 목표 버전별 공식 matrix를 다시 확인한다. 이전 버전 cluster는 새 버전에서 만든 snapshot을 restore할 수 없으므로 downgrade를 사후 snapshot 복원으로 계획하면 안 된다. Upgrade 전에 이전 버전과 호환되는 snapshot을 만들고 실제 restore를 검증한다. Rollback은 이전 버전으로 새 cluster를 설치해 그 pre-upgrade snapshot을 복원하며, checkpoint 이후 쓰기는 dual-write나 변경 로그 replay 같은 별도 경로로 복구한다. Plugin은 OpenSearch와 major, minor, patch 호환성을 확인한다.
 
+### Kubernetes Operator로 운영할 때
+
+2026-10-09 OpenSearch Kubernetes Operator의 `main` 사용자 가이드 대조 기준이다. 이 가이드는 개발 중 상태이므로 실제 적용 전에는 설치한 Operator의 release tag 문서와 OpenSearch 호환성 표를 확인한다.
+
+- `OpenSearchCluster`의 `spec.general.version` 변경은 Operator가 순차 업그레이드하도록 맡기는 경로다. `opensearch.yml`이나 node pool 설정 변경도 rolling restart를 유발할 수 있어 단순 설정 수정으로만 취급하지 않는다.
+- 영속 데이터에는 PVC를 사용한다. `emptyDir`는 데이터 손실 가능성이 있어 테스트나 다른 곳에 원본이 보존된 데이터용으로 제한한다. `spec.general.drainDataNodes: true`는 rolling restart와 upgrade 전에 shard를 다른 노드로 이동시키는 설정이며, 외부 snapshot을 대신하지 않는다.
+- Shard를 옮길 공간과 배치 가능한 노드가 없으면 drain이 완료되지 않을 수 있다. 진행이 멈췄을 때 Pod를 연속 삭제하지 말고 allocation, replica 수와 저장 공간을 먼저 확인한다.
+
+순차 재시작 기능만으로 무중단이 보장되지는 않는다. 변경 전 snapshot과 복원 경로를 확보하고, 각 단계에서 cluster 상태와 실제 검색 및 색인 성공을 함께 확인한다.
+
 ## Cross-Cluster Replication
 
 지역 단위 DR이 필요하면 CCR을 검토한다.
@@ -135,5 +145,6 @@ Rolling upgrade는 인접 major version만 지원한다. 3.x로 갈 때는 sourc
 - [OpenSearch Documentation, Cluster allocation explain](https://docs.opensearch.org/latest/api-reference/cluster-api/cluster-allocation/)
 - [OpenSearch Documentation, Take and restore snapshots](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/snapshots/snapshot-restore/)
 - [OpenSearch Documentation, Rolling upgrade](https://docs.opensearch.org/latest/migrate-or-upgrade/rolling-upgrade/)
+- [OpenSearch Kubernetes Operator, User Guide](https://github.com/opensearch-project/opensearch-k8s-operator/blob/main/docs/userguide/main.md)
 - [OpenSearch Documentation, Cross-cluster replication](https://docs.opensearch.org/latest/tuning-your-cluster/replication-plugin/index/)
 - [OpenSearch Documentation, Cross-cluster replication API](https://docs.opensearch.org/latest/tuning-your-cluster/replication-plugin/api/)

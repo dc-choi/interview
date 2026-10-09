@@ -47,6 +47,16 @@ aliases: ["SNS Email vs SES", "SNS 이메일과 SES", "Amazon SES", "SES vs SNS"
 
 연결 시간 초과를 비밀번호 변경으로, identity 검증 실패를 포트 변경으로 해결하려 하지 않는다. 먼저 실패 단계와 응답 코드를 좁힌다. SMTP의 4xx 응답은 대기 시간을 늘려 재시도하고, 5xx 응답은 요청이나 설정을 바로잡은 뒤 다시 시도한다. SDK의 자동 재시도 설명을 SMTP 클라이언트의 동작으로 간주하지 않는다. AWS SDK는 HTTPS 인터페이스를 사용한다.
 
+## 소프트 바운스와 전달 지연을 구분한다
+
+이 절은 2026-10-09 AWS 공식 알림 스키마 대조 기준이다. SES가 발송 요청을 수락한 뒤 수신 서버로 전달하는 단계의 실패이며, 앞 절의 애플리케이션과 SES 사이 SMTP 오류와 구분한다.
+
+- **재시도 중:** 일시적인 수신 서버 문제에는 SES가 일정 기간 재전달을 시도한다. 이때의 지연을 관측하려면 configuration set의 event publishing에서 `DeliveryDelay`를 수집한다. `deliveryDelay.delayType`, 수신자별 진단과 `expirationTime`으로 원인과 재시도 종료 예정 시각을 확인한다.
+- **재시도 종료:** `Bounce` 알림의 `bounceType: Transient`는 일시적 원인이지만 SES가 해당 메일의 재전달을 중단한 결과다. 이 알림을 재시도 진행 중이라는 뜻으로 해석하지 않는다. `Permanent`는 영구 반송이므로 발송 목록에서 제외한다.
+- **원인별 대응:** `bounceSubType`이 `MailboxFull`이면 사서함 상태를, `MessageTooLarge`이면 크기를, `ContentRejected`나 `AttachmentRejected`이면 본문이나 첨부를 확인한다. Transient라도 같은 내용을 즉시 반복 발송하면 해결된다는 뜻은 아니다.
+
+Identity의 SNS 알림은 `notificationType`, event publishing은 `eventType`을 사용한다. 처리기는 한 알림의 여러 수신자를 다루고, SES가 부여한 `mail.messageId`로 원래 발송과 연결한다. SNS 알림의 순서와 묶음 크기는 보장되지 않으므로 수신 순서만으로 최종 상태를 덮어쓰지 않는다.
+
 ## 출처
 
 - [Amazon SNS, Email subscription setup and management](https://docs.aws.amazon.com/sns/latest/dg/sns-email-notifications.html)
@@ -58,6 +68,8 @@ aliases: ["SNS Email vs SES", "SNS 이메일과 SES", "Amazon SES", "SES vs SNS"
 - [Amazon SES, Obtaining Amazon SES SMTP credentials](https://docs.aws.amazon.com/ses/latest/dg/smtp-credentials.html)
 - [Amazon SES, Connecting to an Amazon SES SMTP endpoint](https://docs.aws.amazon.com/ses/latest/dg/smtp-connect.html)
 - [Amazon SES, Amazon SES SMTP issues](https://docs.aws.amazon.com/ses/latest/dg/troubleshoot-smtp.html)
+- [Amazon SES, Amazon SNS notification contents for Amazon SES](https://docs.aws.amazon.com/ses/latest/dg/notification-contents.html)
+- [Amazon SES, Contents of event data that Amazon SES publishes to Amazon SNS](https://docs.aws.amazon.com/ses/latest/dg/event-publishing-retrieving-sns-contents.html)
 - [인프런, Sungmin Kim, SNS란?](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=83507)
 - [인프런, Sungmin Kim, SES VS SNS](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=83508)
 

@@ -150,6 +150,14 @@ OpenSearch UI의 Agentic Chat은 자연어를 PPL로 바꾸고 현재 Discover c
 > [!note] Region 확인
 > 2026-07-11 공식 Agentic AI 지원 Region 목록에는 서울이 없다. OpenSearch UI 자체는 서울에서 제공되더라도 Agentic Chat과 Investigation Agent는 별도 Region 지원표를 배포 전에 확인해야 한다.
 
+### 직접 구성하는 조사 파이프라인의 경계
+
+2026-10-09 OpenSearch Flow agents 문서와 공개 장애 조사 데모 대조 기준이다. 오픈소스 ML Commons의 flow agent는 설정된 순서로 도구를 실행하고 앞선 출력을 다음 도구의 입력으로 연결한다. 이 실행 모델과 AWS OpenSearch UI의 Investigation Agent를 같은 제품 기능으로 취급하지 않는다.
+
+조사 파이프라인을 직접 구성할 때는 알림의 service, index와 발생 시간 구간을 입력으로 고정한다. 조사 실행 시각 기준의 최근 몇 분만 조회하면 늦게 처리한 알림의 실제 장애 구간을 놓칠 수 있다. 이상 결과 확인, 해당 구간 로그 조회, 배포 기록 대조를 거친 뒤 수집된 근거로 가설을 작성하도록 단계를 나눈다. 빈 결과와 조회 실패는 구분해 남기고, 근거가 없는 원인은 미확인으로 둔다.
+
+이 연결은 별도로 설계할 운영 패턴이다. Detector나 flow agent 등록만으로 조사와 복구가 자동 완성되는 것은 아니다. 같은 장애 사례에서 알림부터 검토 가능한 가설까지의 시간과 오진을 비교하고, 변경 실행 권한은 조사 권한과 분리한다. 데모의 조사 시간이나 비용을 운영 환경의 보장값으로 쓰지 않는다.
+
 ## MCP 연결을 구분한다
 
 | 경로 | 목적 | 주의점 |
@@ -202,5 +210,7 @@ OpenSearch UI 내장 Agentic AI는 현재 사용자의 IAM과 RBAC, document와 
 - [OpenSearch Documentation, PPL commands](https://docs.opensearch.org/latest/sql-and-ppl/ppl/commands/)
 - [AWS Documentation, Agentic AI in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/application-ai-assistant.html)
 - [AWS Documentation, Investigation Agent](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/application-investigation-agent.html)
+- [OpenSearch Documentation, Flow agents](https://docs.opensearch.org/latest/ml-commons-plugin/agents-tools/agents/flow/)
+- [From Alert to Answer: Accelerating Anomaly Investigation with OpenSearch Agent Skills — OpenSearch](https://www.youtube.com/watch?v=bJeRaEVuAeg)
 - [AWS Documentation, Agentic Observability with MCP Apps](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/opensearch-observability-mcp-app.html)
 - [Amazon OpenSearch Service로 배우는 지능형 Observability — YouTube](https://www.youtube.com/watch?v=0H5ynofcRBM)

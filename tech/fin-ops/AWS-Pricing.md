@@ -43,6 +43,16 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 - **Cost Explorer**: 실제 청구를 서비스/태그별로 분해. [[Budget-Alert]]
 - 둘을 비교해 가정과 실제의 괴리를 좁힌다.
 
+## Free Tier 사용 중의 청구 점검
+
+이 절은 2026-10-09 AWS Billing 문서 대조 기준이다. 서비스별 무료 사용량, 크레딧 잔액과 계정 플랜을 따로 확인한다.
+
+- **플랜 경계:** 신규 Free account plan은 최대 6개월 또는 크레딧 소진 중 먼저 오는 시점까지다. Paid plan으로 전환하기 전에는 요금이 발생하지 않는다. Paid plan은 크레딧을 초과한 사용이나 크레딧 비적용 서비스에 표준 요금이 적용될 수 있다. 레거시 계정에 신규 플랜 조건을 그대로 적용하지 않는다.
+- **사용량 확인:** Billing의 Free Tier 화면에서 서비스별 혜택과 실제 사용량을 대조하고, Bills에서는 서비스, 리전과 사용 기간별 청구를 확인한다. 무료 혜택 대상 서비스라는 사실만으로 그 서비스의 모든 사용이 무료라고 판단하지 않는다.
+- **알림 범위:** Free Tier 사용량 알림은 해당 월의 활성 혜택을 대상으로 서비스별 한도의 85% 초과를 알린다. 개별 계정에는 기본 활성화되지만 AWS Organizations 관리 계정은 opt-in이 필요하다. 수신 주소와 활성 상태를 확인하고 `zero spend budget`으로 추가 감시할 수 있다.
+
+알림 설정은 리소스 중지나 지출 상한 설정이 아니다. [[Budget-Alert|예산 알람의 지연과 조치 범위]]를 함께 보고, 청구 항목과 실제 리소스를 연결해 남아 있는 과금 원인을 점검한다.
+
 ## 계정 폐쇄 뒤에도 남는 청구
 
 2026-10-08 공식 계정 관리와 CloudTrail 문서 확인 기준이다. 계정 폐쇄, 종량 사용 중단과 약정 종료는 서로 다른 사건이다.
@@ -78,6 +88,7 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 - [AWS, How AWS Pricing Works](https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/how-aws-pricing-works.html)
 - [AWS, Explore AWS services with AWS Free Tier](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier.html)
 - [AWS, AWS Free Tier FAQs](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-FAQ.html)
+- [AWS, Tracking your AWS Free Tier usage](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/tracking-free-tier-usage.html)
 - [AWS, Track your Free Tier usage for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-free-tier-usage.html)
 - [AWS Pricing Calculator](https://calculator.aws/)
 
