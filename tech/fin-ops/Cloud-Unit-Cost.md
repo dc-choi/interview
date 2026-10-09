@@ -57,8 +57,26 @@ API 호출 수를 줄이는 최적화에서는 호출당 비용만 보면 개선
 
 이 문서는 인프라 측정 기준을 다룬다. 고객 획득 비용과 공헌이익을 포함한 사업의 수익성 판단은 [[Business-Model#Unit Economics|비즈니스 모델의 Unit Economics]]와 구분한다.
 
+## 비용 절감과 자원 효율을 구분한다
+
+2026-10-09 AWS Sustainability Pillar 대조 기준. 비용 지표와 함께 작업 한 건을 제공하기 위해 할당한 자원도 측정한다. 할인으로 청구액이 줄어도 같은 자원을 계속 사용한다면 자원 효율이 개선됐다고 볼 수 없다.
+
+`작업 단위당 자원 = 해당 자원의 대리 지표 / 같은 범위의 업무 결과 수`
+
+| 자원 | 대리 지표 예시 | 작업 단위당 비교 예시 |
+|---|---|---|
+| 컴퓨팅 | 할당한 vCPU 시간(분) | 완료 거래당 할당 vCPU 분 |
+| 저장소 | 할당한 GB | 같은 기간 완료 거래 수로 정규화한 할당 GB |
+| 네트워크 | 전송한 GB | 완료 거래당 전송 GB |
+
+대리 지표는 개선 대상 자원을 추적하는 수단이며 탄소 배출량의 직접 측정값은 아니다. AWS 대시보드도 자원 대리 지표와 carbon data export에서 가져온 배출 데이터를 구분한다. 따라서 비용 감소율이나 vCPU 시간 감소율을 같은 비율의 탄소 감축으로 바꾸어 적지 않는다.
+
+캐시로 계산을 줄이면 저장소가 늘 수 있고, 전송량을 줄이려고 전처리하면 컴퓨팅이 늘 수 있다. 변경 전후에는 대상 자원의 총량과 작업당 지표, 비용 및 성능을 함께 비교한다. 다음은 적용 예다. 보고서 생성 캐시를 도입했다면 생성당 vCPU 시간 외에 캐시 저장량, 갱신 작업과 결과의 최신성도 확인한다. 절감 효과가 구현과 운영 비용을 넘는지 평가하고 보안, 신뢰성 요구를 유지한다.
+
 ## 출처
 
+- [AWS Well-Architected, Evaluate specific improvements](https://docs.aws.amazon.com/wellarchitected/latest/sustainability-pillar/evaluate-specific-improvements.html) — 2026-10-09 작업당 자원 지표와 자원 간 절충을 대조했다.
+- [AWS, Sustainability Proxy Metrics and Carbon Emissions Dashboard](https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/sustainability-proxy-metrics-dashboard.html)
 - [FinOps Foundation, Unit Economics](https://www.finops.org/framework/capabilities/unit-economics/)
 - [Introduction to Cloud Unit Economics — FinOps Foundation](https://www.finops.org/wg/introduction-cloud-unit-economics/)
 - [AWS Well-Architected, COST03-BP04 Establish organization metrics](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost_monitor_usage_define_kpi.html)

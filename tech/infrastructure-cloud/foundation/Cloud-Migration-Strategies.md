@@ -66,6 +66,19 @@ Rehost한 앱을 여러 instance로 늘리면 로컬 상태가 바로 장애가 
 3. **레퍼런스 아키텍처**: 클라우드 벤더가 전략별로 제공하는 레퍼런스 아키텍처(모놀리스 구성, Kubernetes 활용, 모니터링 연동)를 출발점으로 쓰되 비용과 보안 경계는 자체 조건으로 다시 검증한다.
 4. **단계 이동**: 이전과 현대화를 한꺼번에 하지 않는다. 옮긴 뒤 재평가해 다음 단계로 간다. 기능 단위 교체 전술은 [[Legacy-Modernization-Strategies]], 반복 가능한 환경 구성은 [[IaC]]가 받친다.
 
+## 컨테이너화와 기능 분리는 별도 작업이다
+
+2026-10-09 AWS 공식 문서 대조 기준. 컨테이너 이미지 생성은 실행 환경을 옮기는 단계이며, 도메인 경계와 데이터 소유권까지 분리했다는 증거는 아니다.
+
+| 단계 | 도구가 맡는 범위 | 별도로 검증할 것 |
+|---|---|---|
+| App2Container를 통한 컨테이너화 | 지원 애플리케이션의 실행 의존성 분석, 아티팩트 추출, Dockerfile과 이미지 및 배포 구성 생성 | 누락된 외부 의존성, 로컬 상태, 생성된 네트워크와 권한, 핵심 업무 회귀 |
+| Refactor Spaces를 통한 점진 전환 | 기존 서비스와 신규 서비스가 공존할 네트워크와 프록시, 트래픽 라우팅 구성 | 새 기능의 구현, 인증과 데이터 정합성, 전환 및 복구 조건 |
+
+App2Container는 애플리케이션 소스 코드 없이 실행 중인 지원 앱의 아티팩트를 컨테이너화할 수 있다. 이를 코드 리팩터링이나 마이크로서비스 자동 분해로 해석하지 않는다. Refactor Spaces도 신규 업무 로직을 대신 작성하는 도구가 아니다. 라우팅 인프라를 갖춘 뒤 기능 단위로 구현과 데이터 변경을 검증하는 절차는 [[Legacy-Modernization-Strategies|점진적 현대화 전략]]을 따른다. 표의 검증 항목은 도구의 성공 메시지와 업무 성공을 구분하기 위한 설계 점검이다.
+
+**신규 도입 제한:** App2Container와 Migration Hub Refactor Spaces는 2025-11-07부터 신규 고객을 받지 않는다. 기존 고객은 진행 중인 프로젝트를 계속 수행할 수 있으므로 이를 기존 서비스의 즉시 종료로 해석하지 않는다. 과거 실습 절차를 새 계정에 그대로 적용하기 전에 이용 자격을 확인한다. AWS가 대안으로 안내하는 AWS Transform도 대상 언어, 지원 작업과 전환 결과를 별도로 검토해야 하며 기존 도구의 명령과 런타임 구성을 그대로 대체한다고 가정하지 않는다.
+
 ## AI가 만든 이전 계획의 검증 경계
 
 2026-10-07 AWS Transform 공식 문서 확인 기준. 자동화는 인벤토리 분석, 애플리케이션 묶음과 이전 순서 제안을 돕지만, 계획 생성과 실제 전환 성공은 다른 결과다.
@@ -129,6 +142,10 @@ EVS는 환경 배포를 자동화하지만 VCF 운영 전체를 AWS가 대신 �
 
 ## 출처
 
+- [AWS, What is AWS App2Container?](https://docs.aws.amazon.com/app2container/latest/UserGuide/what-is-a2c.html)
+- [AWS, What is AWS Migration Hub Refactor Spaces?](https://docs.aws.amazon.com/migrationhub-refactor-spaces/latest/userguide/what-is-mhub-refactor-spaces.html)
+- [AWS, AWS .NET Modernization Tools availability change](https://docs.aws.amazon.com/app2container/latest/UserGuide/dotnet-modernization-tools-availability-change.html)
+- [AWS, AWS Migration Hub Refactor Spaces availability change](https://docs.aws.amazon.com/migrationhub-refactor-spaces/latest/userguide/migrationhub-availability-change.html) — 위 네 자료는 2026-10-09 컨테이너화와 기능 분리, 신규 고객 제한을 대조했다. 기존 전환 전략 전체의 재검증은 아니다.
 - [AWS, What is Amazon Elastic VMware Service?](https://docs.aws.amazon.com/evs/latest/userguide/what-is-evs.html)
 - [AWS, Getting started with Amazon Elastic VMware Service](https://docs.aws.amazon.com/evs/latest/userguide/getting-started.html) — 2026-10-09 EVS 배포와 Self-deployed 모드의 운영 책임을 대조했다.
 - [AWS Countdown Premium — AWS](https://aws.amazon.com/premiumsupport/aws-countdown/) — 2026-10-09 운영 준비 지원 범위를 대조했다. 점검 목록은 적용 예시이며 기존 전환 전략 전체를 재검증한 기록은 아니다.
