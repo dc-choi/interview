@@ -139,6 +139,16 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 - 관통하는 원칙: 입력도 출력도 불신, 최소 권한, 권한 강제는 LLM 밖 결정적 시스템에서, 고위험엔 사람 승인, 전 구간 모니터링
 - 기존 웹 보안과의 연결: 출력 처리(LLM05)는 [[XSS]], [[SQL-Injection|SQL Injection]]의 LLM 버전, 공급망(LLM03)은 [[Supply-Chain-Security]]의 ML 확장, 시스템 프롬프트(LLM07)는 [[Secret-Management|시크릿 관리]] 원칙과 동일
 
+### 자체 학습 모델의 공급망과 복구 경계
+
+자체 학습이나 미세조정을 하는 모델은 추론 API뿐 아니라 데이터 준비, 학습 환경과 배포 산출물까지 추적해야 한다. 다음은 AWS Machine Learning Lens의 데이터 계보, 승인 패키지와 복구 지침을 연결한 점검 순서다(2026-10-10 해당 지침 대조).
+
+1. **데이터 준비:** 원본 출처, 전처리 변환, 접근과 변경 이력, 무결성 검사 결과를 남긴다. 모델 파일의 버전만으로는 어떤 데이터와 변환이 결과에 영향을 줬는지 재현할 수 없다.
+2. **학습 환경:** 승인한 공개 라이브러리를 관리하는 저장소와 버전 정책을 두고, 의존성과 컨테이너 구성도 추적한다. 데이터 계보와 실행 환경 기록은 서로 대체하지 않는다.
+3. **배포와 복구:** 학습 데이터, 특징 변환, 모델 산출물, 컨테이너 이미지와 엔드포인트 설정의 연결을 보존한다. 이전 정상 모델 파일만 보관하지 말고 해당 서비스 구성을 복구하는 절차까지 시험한다.
+
+위험 목록은 무엇을 막을지 정하는 기준이고, 이 기록은 문제가 생겼을 때 어느 데이터와 배포를 조사하고 되돌릴지 정하는 근거다. 계보와 버전 관리를 갖췄다는 사실만으로 오염이나 취약점이 없음을 증명하지는 않는다.
+
 ## 면접 체크포인트
 
 - 프롬프트 인젝션의 직접/간접/멀티모달 구분과 완전한 예방은 불가능하고 완화만 가능하다는 전제
@@ -168,6 +178,9 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 - [Defeating Prompt Injections by Design — arXiv](https://arxiv.org/abs/2503.18813)
 - [Mitigating prompt injection attacks with a layered defense strategy — Google](https://blog.google/security/mitigating-prompt-injection-attacks/)
 - [Blocks.txt — Unicode](https://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt)
+- [AWS, Machine Learning Lens: MLSEC03-BP04 Enforce data lineage](https://docs.aws.amazon.com/wellarchitected/latest/machine-learning-lens/mlsec03-bp04.html)
+- [AWS, Machine Learning Lens: MLOPS04-BP02 Establish reliable packaging patterns to access approved public libraries](https://docs.aws.amazon.com/wellarchitected/latest/machine-learning-lens/mlops04-bp02.html)
+- [AWS, Machine Learning Lens: MLREL05-BP02 Create a recoverable endpoint with a managed version control strategy](https://docs.aws.amazon.com/wellarchitected/latest/machine-learning-lens/mlrel05-bp02.html)
 
 ## 관련 문서
 
