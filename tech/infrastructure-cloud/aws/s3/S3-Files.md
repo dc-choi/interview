@@ -50,19 +50,29 @@ S3 버킷을 **NFS 파일시스템으로 마운트**해 파일 인터페이스�
 - 처리량 한계: 파일시스템당 읽기 250,000 IOPS, 쓰기 50,000 IOPS, 클라이언트당 읽기 3 GiB/s
 - `DataReadBytes`/`DataWriteBytes`는 NFS 클라이언트 작업만 포함하고 내부 동기화 트래픽은 빠진다 — 비용 예측은 Cost Explorer의 USAGE_TYPE 집계로 교차검증
 
+## 파일 쓰기 완료와 S3 반영 완료를 구분한다
+
+2026-10-10 S3 Files 동기화 공식 문서 대조 기준. 파일시스템의 변경은 S3로 자동 내보내지만, 파일 쓰기 성공이 곧바로 S3 API에서 최신 버전을 읽을 수 있다는 뜻은 아니다.
+
+파일이 변경되면 쓰기가 60초 동안 없을 때 내보내기를 시작한다. 연속된 쓰기는 하나의 S3 PUT으로 묶일 수 있다. 이 60초는 내보내기 시작 조건이며 동기화 완료 시간의 보장이 아니다.
+
+디렉터리 이름 변경도 두 경로의 완료 시점이 다르다. 파일시스템에서 이름 변경이 끝나도 S3에서는 객체별 복사와 삭제가 이어져 이전 prefix와 새 prefix가 함께 보일 수 있다. 같은 범위의 이름을 바꾸는 동안 S3 API로 새 객체를 추가하지 않는 것이 공식 권장사항이다.
+
+파일시스템 생산자와 S3 API 소비자를 함께 운영한다면 소비 시작 전에 필요한 객체가 반영됐는지 확인하는 완료 조건을 설계한다. 이는 동기화 경계에 따른 설계 제안이며 고정 시간 대기만으로 전체 반영을 판단하지 않는다.
+
 ## 운영 — 동일 버킷에서 Mountpoint와의 충돌
 
 같은 버킷의 같은 객체 키에 S3 Files와 Mountpoint for Amazon S3가 동시에 쓰면, S3 Files가 내보내기 시점에 객체 변경을 감지해 **충돌로 판정하고 파일시스템 버전을 `.s3files-lost+found-{fs-id}/`로 이동**시킨다 (S3 버킷에는 Mountpoint 버전이 남음).
 
 - 감지: CloudWatch `LostAndFoundFiles` 지표 — 0 초과 시 알람 설정
-- **근본 해결은 경로 분리**: S3 Files는 버킷 루트, Mountpoint는 별도 prefix처럼 쓰기 영역을 완전히 나눔
+- **쓰기 영역 분리**: S3 Files는 `files/`, Mountpoint는 `mountpoint/`처럼 겹치지 않는 prefix로 범위를 제한한다. S3 Files를 버킷 루트에 연결하면 하위 prefix도 포함하므로, Mountpoint에만 prefix를 지정한 것으로는 분리되지 않는다. 각 쓰기 주체의 권한도 담당 prefix에 맞춰 제한한다
 - 복구: lost+found 파일의 xattr(`user.s3files.status`)로 원래 경로를 확인해 복사. **lost+found는 자동 청소되지 않으므로 수동 삭제 필요**
 
 ## 접두사 우선 설계
 
 파일시스템 범위를 버킷 전체가 아니라 좁은 prefix로 잡는 것이 기본기:
 
-1. **이름 변경 4시간 임계** — 접두사 내 객체 1,200만 개 초과 시 디렉토리 이름 변경 금지 수준의 비용
+1. **이름 변경과 동기화 범위** — 대규모 prefix는 객체별 복사와 삭제 비용을 키운다. 공식 문서는 이름 변경에 최대 4시간이 걸릴 수 있는 규모(약 1,200만 객체)의 prefix로 파일시스템을 만들 때 오류를 반환하며 경고를 수락해 생성할 수 있다고 설명한다. AWS CLI의 정확한 옵션명은 `--accept-bucket-warning`이다. 이름 변경 자체의 일률적인 금지 조건은 아니다
 2. 첫 목록 조회의 4 KiB 메타데이터 청구가 범위에 비례
 3. 다른 마운트 도구와의 충돌 표면 축소
 4. 용도별 prefix(ml-training, build-cache 등)로 IAM 권한과 비용 분리
@@ -74,7 +84,7 @@ S3 버킷을 **NFS 파일시스템으로 마운트**해 파일 인터페이스�
 3. **반복 읽기 여부** — 캐시 비용 vs S3 GET 트레이드오프
 4. **Mountpoint 동시 사용 여부** — 충돌 위험, 경로 분리 설계
 5. **ECS 컴퓨팅 유형** — EC2 시작 유형 미지원, Fargate와 관리형 인스턴스만 가능
-6. **버전 관리 정책** — S3 Files는 버저닝 필수 활성화이고 모든 쓰기가 새 버전을 만들므로 **수명 주기 정책이 없으면 비용이 누적**된다 ([[S3-Features-Management|Versioning, Lifecycle]])
+6. **버전 관리 정책** — S3 Files는 버저닝 필수 활성화이며 파일 변경을 S3로 내보낼 때 새 객체 버전이 생긴다. 연속된 파일 쓰기는 하나의 PUT으로 묶일 수 있으므로 개별 쓰기 횟수와 버전 수를 동일시하지 않는다. **수명 주기 정책이 없으면 이전 버전 비용이 누적**된다 ([[S3-Features-Management|Versioning, Lifecycle]])
 
 ## 면접, 시험 체크포인트
 
@@ -87,6 +97,7 @@ S3 버킷을 **NFS 파일시스템으로 마운트**해 파일 인터페이스�
 
 ## 출처
 
+- [AWS CLI, s3files create-file-system](https://docs.aws.amazon.com/cli/latest/reference/s3files/create-file-system.html) — 2026-10-10 옵션명과 prefix 생략 시 버킷 전체 접근 범위를 대조했다.
 - [Amazon S3 Files 도입 전 확인해야 할 3가지 고려사항 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/amazon-s3-files-3-considerations-before-adoption/)
 - [Amazon S3 Files 측정 방법](https://docs.aws.amazon.com/ko_kr/AmazonS3/latest/userguide/s3-files-metering.html)
 - [Amazon S3 Files 성능 사양](https://docs.aws.amazon.com/ko_kr/AmazonS3/latest/userguide/s3-files-performance.html)

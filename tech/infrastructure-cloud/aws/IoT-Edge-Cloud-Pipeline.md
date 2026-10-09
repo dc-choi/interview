@@ -24,6 +24,16 @@ IoT Core의 SQS rule action은 MQTT 메시지 데이터를 SQS 큐로 전달한�
 
 Standard SQS는 같은 메시지를 다시 전달할 수 있다. 소비자는 멱등하게 처리해야 한다. 이를 장비 상태 갱신에 적용하면 이벤트 식별자와 측정 시각 또는 장비별 순번을 두고, 늦게 도착한 값이 최신 상태를 덮어쓰지 않도록 하는 설계를 검토할 수 있다. 구체적인 순번과 재부팅 처리는 장비 계약에 따라 정한다.
 
+## 원시 수집과 설비 맥락 연결을 분리한다
+
+2026-10-10 AWS IoT SiteWise 공식 개념 문서 대조 기준. 센서 값을 저장하는 것과 그 값이 어떤 설비와 공정에 속하는지 표현하는 것은 별도의 작업이다.
+
+SiteWise에서는 asset model로 같은 종류의 설비가 공유할 구조를 정의하고, 그 모델에서 개별 asset을 만든다. 모델에는 정적 속성인 `attributes`, 시계열 입력인 `measurements`, 변환인 `transforms`, 집계인 `metrics`와 설비 간 계층을 정의할 수 있다. 각 property는 데이터 타입과 선택적인 단위를 가진다.
+
+원시 데이터 스트림은 모델과 asset을 만들기 전에도 수집할 수 있다. 이후 스트림을 asset property와 연결해 설비별 의미를 부여한다. 예를 들어 온도 값에 설비 식별자, 섭씨 단위와 생산 라인 관계를 연결하면 서로 다른 설비의 같은 이름 측정값을 구분할 수 있다.
+
+적용 시에는 수집 성공과 맥락 연결 완료를 따로 확인한다. 단위가 다른 값을 같은 지표로 합치거나 교체된 센서를 이전 설비에 연결하지 않도록 매핑을 점검한다. 이 점검은 설계 제안이며 모델 생성만으로 원시 데이터의 정확성이나 현장 제어 안전성이 검증되지는 않는다.
+
 ## 엣지 추론과 클라우드 작업
 
 AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행하고 데이터를 필터링하거나 집계하는 런타임을 제공한다. 소프트웨어를 component 단위로 배포하고 관리할 수 있다. 모델 추론을 로컬로 옮기는 것과 전체 시스템의 오프라인 동작은 구분한다.
@@ -102,6 +112,7 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT SiteWise, AWS IoT SiteWise concepts](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/concept-overview.html) — 원시 스트림 수집, asset model과 property 연결을 대조했다.
 - [AWS IoT Greengrass, Greengrass nucleus](https://docs.aws.amazon.com/greengrass/v2/developerguide/greengrass-nucleus-component.html) — MQTT spooler 설정을 대조했다. 단절과 복구 점검은 설계 제안이다.
 - [AWS, Guidance for AI-Driven Robotic Simulation and Training on AWS](https://docs.aws.amazon.com/solutions/ai-driven-robotic-simulation-and-training-on-aws/) — 2026-10-09 상위 전략 생성과 시뮬레이션 제어의 분리를 대조했다. 현장 통과 조건은 설계 제안이며 기존 IoT 기능 전체의 재검증은 아니다.
 - [AWS IoT Core, AWS IoT Device Shadow service](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html)

@@ -54,6 +54,16 @@ Consolidation은 빈 노드 제거, 다른 노드로 Pod 이동 또는 더 저�
 
 운영 적용 시에는 Pod requests 변경과 노드 정책 변경을 한꺼번에 적용하지 않는 방식을 검토한다. 먼저 작은 워크로드 집합에서 Pending, OOMKill, CPU throttling과 지연을 관찰하고, 이후 노드 교체 빈도와 비용을 함께 비교한다. 이 순서는 원인 분리를 위한 운영 제안이며 Karpenter가 보장하는 무중단 절차는 아니다.
 
+## Spot 중단 대응과 대체 용량의 준비를 분리한다
+
+2026-10-10 Karpenter 공식 문서의 interruption handling 대조 기준. Spot을 도입할 때는 할인율뿐 아니라 중단 이벤트 전달과 워크로드 복구 시간을 확인한다.
+
+- Spot 중단 이벤트를 전달하려면 EventBridge 규칙과 대상, SQS 큐를 구성하고 Karpenter의 `--interruption-queue`에 큐 이름을 지정한다. 노드 상태 검사와 달리 이 이벤트 경로에는 큐 구성이 필요하다.
+- Karpenter는 Spot 중단 경고를 받으면 기존 노드를 drain하면서 대체 노드를 병렬로 준비한다. 대체 노드가 Ready가 될 때까지 기존 노드의 drain을 미루는 절차가 아니다.
+- Spot rebalance recommendation은 Kubernetes 이벤트로 게시하지만 Karpenter 자체의 taint, drain, terminate 처리 대상은 아니다. 중단 경고와 같은 이벤트로 취급하지 않는다.
+
+운영 검증에서는 이벤트 수신, 대체 노드 준비, 이미지 다운로드, Pod readiness와 실제 요청 성공을 구분해 측정한다. 큐를 연결했다는 사실만으로 무중단 복구가 입증되지는 않는다. 이는 공식 동작을 바탕으로 한 점검 제안이며 특정 비용 절감률이나 복구 시간을 보장하지 않는다.
+
 ## 트레이드오프
 
 - **정확도 vs 쿼리 부하**: 샘플링 간격 ↓ = 정밀도 ↑ = 쿼리 부하 ↑.
