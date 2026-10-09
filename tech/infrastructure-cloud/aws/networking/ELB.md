@@ -105,6 +105,16 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 - 트래픽이 GWLB → 보안 어플라이언스 통과 → 다시 GWLB → 목적지로 흐름
 - 시험 포인트: 3rd-party 가상 어플라이언스와 인라인 패킷 검사가 요구되면 GWLB를 검토
 
+### 보안 어플라이언스 장애와 기존 flow의 처리
+
+2026-10-10 GWLB의 health check와 target failover 문서 대조 기준. 패킷을 보안 어플라이언스로 전달하는 기능과 장애 뒤 기존 연결을 복구하는 기능은 구분한다.
+
+- 기본 `no_rebalance`에서는 대상이 unhealthy이거나 등록 해제돼도 기존 flow를 같은 대상으로 보낸다. 대상에 도달할 수 없으면 패킷이 버려진다. 새 flow는 정상 대상으로 보낸다.
+- `target_failover.on_unhealthy`와 `target_failover.on_deregistration`을 `rebalance`로 바꾸면 기존 flow의 대상 재선택을 구성할 수 있다. 두 속성은 같은 값이어야 하며, 상태 판정과 등록 해제 유예, 전파 지연 때문에 즉시 전환을 보장하지 않는다.
+- 모든 대상이 unhealthy이면 임의의 대상을 선택해 flow를 전달한다. 보안 어플라이언스를 우회해 목적지로 직접 전달하는 무중단 경로가 아니다.
+
+운영 점검에서는 단일 대상 장애, 전체 대상 장애와 등록 해제를 나눠 새 연결과 기존 연결을 시험한다. 대상 재선택만으로 방화벽의 세션 상태가 복원된다고 가정하지 않고, 재연결과 실제 요청의 성공을 확인한다(설계 제안).
+
 ## ELB 타입 비교 요약
 
 | 항목 | ALB | NLB | GWLB |
@@ -187,6 +197,8 @@ ALB의 504는 대상이 연결 timeout이나 idle timeout(기본 60초) 안에 �
 - **CLB는 이전 세대** — 기존 구성은 지원되지만 신규 설계는 ALB, NLB, GWLB의 기능을 우선 검토
 
 ## 출처
+- [Gateway Load Balancer 대상 그룹 health check](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/health-checks.html)
+- [Gateway Load Balancer 대상 그룹 속성](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/edit-target-group-attributes.html)
 - [AWS, Elastic Load Balancing pricing](https://aws.amazon.com/elasticloadbalancing/pricing/)
 - [Application Load Balancer 용량 예약](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html)
 - [Application Load Balancer 용량 예약 요청](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/request-capacity-unit-reservation.html)

@@ -38,6 +38,14 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 
 운영 점검 제안: 상품 노출 수, 결제 화면 도달과 주문 완료를 구분해 집계한다. 채널별 지원 범위와 주문 확인 절차를 시험하고, 유입 경로가 기록된 주문의 취소, 반품과 문의 비용까지 연결한다. 추천 화면의 등장만으로 매출 효과를 판정하지 않는다.
 
+### 채널 참여 설정과 공개 상품 노출은 별개다
+
+2026-10-10 Shopify 공식 안내 기준, ChatGPT나 Microsoft Copilot의 Shopify Catalog 접근을 해제해도 공개 웹 검색이나 다른 상품 피드를 통한 발견은 남을 수 있다. 반대로 웹 크롤러를 차단해도 활성화된 채널로 Catalog가 전달하는 상품 데이터까지 중단되지는 않는다. 따라서 AI 채널의 참여 여부를 하나의 허용 스위치로 해석하지 않는다.
+
+상품을 `Unlisted`로 바꾸면 AI 채널의 발견을 줄이는 것 외에 사이트맵, 일반 검색 엔진과 자체 쇼핑몰 검색에서도 숨겨지는 영향이 있다. 특정 유입 채널만 제한하려는 목적과 상품 자체를 검색에서 숨기는 목적을 구분한다.
+
+판매 운영 점검 제안: 채널별 데이터 제공, 공개 검색 노출과 결제 경로를 따로 확인한다. 설정 변경 전후의 유입과 주문을 비교하되, AI 채널을 끈 결과를 모든 외부 에이전트의 접근 차단이나 매출 변화의 인과 증거로 보지 않는다.
+
 ## 구매 승인에는 실제 거래 조건을 담는다
 
 상품 탐색을 맡겼다는 동의와 특정 거래를 결제하겠다는 동의는 구분한다. 고객이 승인할 화면에는 판매자, 품목, 수량과 최종 결제 금액을 보여주고, 승인한 범위가 실제 주문과 맞는지 확인하는 흐름을 설계한다.
@@ -59,6 +67,7 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 
 ## 출처
 
+- [Shopify Help Center, Shopify Catalog and product discovery for agentic storefronts](https://help.shopify.com/en/manual/online-sales-channels/agentic-storefronts/products) — Catalog 참여와 공개 검색 노출의 차이를 2026-10-10 대조
 - [How We Built Safety Into Muse — Meta AI Research](https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse) — 출시 시점의 Purchases 절, 2026-10-09 대조
 - [Shopify Help Center, Shopify agentic storefronts](https://help.shopify.com/en/manual/online-sales-channels/agentic-storefronts)
 - [Shopify, Carts and checkout for agents](https://shopify.dev/docs/agents/carts-and-checkout)

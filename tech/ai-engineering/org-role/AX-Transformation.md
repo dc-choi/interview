@@ -80,6 +80,18 @@ AI 사용률, 호출 수와 생성 코드량은 채택 활동의 보조 신호�
 
 조직문화가 AI보다 더 큰 생산성 향상을 만든다는 비교 우위는 경험 기반 견해이며 이를 직접 측정한 연구 결과가 아니다. 문화와 시스템이 AI 효과를 증폭한다는 모델은 도입 전 진단과 실험 설계에 쓰고, 실제 효과는 조직의 업무 흐름에서 검증한다.
 
+## 기술 실험은 데이터 준비와 평가 가능성부터 확인한다
+
+2026-10-10 AWS의 생성형 AI PoC 설계 지침을 대조했다. 모델을 실행할 수 있는지와 업무에 맞는 결과를 검증할 수 있는지는 다른 준비 조건이다. 필요한 데이터의 존재, 접근 가능성, 품질과 변환 이력을 확인하고, 전문가가 검토한 정답과 실제 업무 조건을 반영한 평가 입력을 준비한다.
+
+실험 범위의 설계 제안:
+
+- 기존 SQL, 규칙이나 검색만으로 해결할 수 있는 부분과 생성형 모델이 필요한 부분을 먼저 나눈다.
+- 소수의 모델로 프롬프트와 문맥 구성을 시험하고, 정확도뿐 아니라 전체 지연, 접근 권한과 기존 시스템 연결을 확인한다.
+- 성공 예제 시연과 대표 입력에 대한 평가 통과를 구분한다. 평가 근거가 없으면 시연 완료로만 기록하고 운영 도입 판단은 남겨 둔다.
+
+이 점검은 별도 전담 조직이나 자체 모델 학습을 필수로 요구하지 않는다. 평가 자료, 통합 조건과 실패 처리까지 설명할 수 있는 범위로 실험을 제한한다.
+
 ## Maker → Closer — 커리어 재정의
 
 | 구분 | Maker (기존) | Closer (AX) |
@@ -164,6 +176,7 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 - 조직 AX 성숙도 자가 진단 질문
 
 ## 출처
+- [AWS Prescriptive Guidance, Architecting a successful generative AI proof of concept](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-lifecycle-operational-excellence/dev-architecting.html) — 데이터 준비, 평가 기준과 기술 실현 가능성만 부분 대조
 - [flowkater.io — 조직에 Claude Code를 설치한다고 AX가 되지 않는다 (Tony Cho)](https://flowkater.io/posts/2026-03-15-ax-organization-transformation/)
 - [Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity — METR (2025)](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/)
 - [Good Culture is the Biggest Productivity Hack, Not AI — Engineering Leadership, Gregor Ojstersek](https://newsletter.eng-leadership.com/p/good-culture-is-the-biggest-productivity)

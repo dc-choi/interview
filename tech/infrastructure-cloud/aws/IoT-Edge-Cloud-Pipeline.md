@@ -50,6 +50,14 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 | 클라우드 데이터 통합 | 여러 장비의 이력 분석 | 재전송, 중복 처리와 저장 누락을 다루는가 |
 | 모델 개발과 배포 | 수집 데이터로 모델 개선 | 배포 버전, 실패 복구와 현장 호환성을 확인했는가 |
 
+### 로컬 도구 실행과 모델 호출 위치를 구분한다
+
+2026-10-10 Strands Agents의 agent loop와 Bedrock provider 문서를 대조했다. 기본 흐름은 모델 호출, 모델이 선택한 도구 실행, 도구 결과를 포함한 모델 재호출이다. 에이전트 프로세스와 센서 읽기 함수가 장비에서 실행돼도 Bedrock provider를 사용한 판단과 응답 생성에는 원격 API가 필요하다.
+
+따라서 GPIO로 토양 상태를 읽는 함수에 네트워크 호출이 없다는 사실만으로 자연어 질문부터 최종 답변까지 오프라인이라고 판단하지 않는다. 카메라 이미지 분석뿐 아니라 도구 선택과 결과 설명도 설정된 모델의 실행 위치를 확인한다. 이는 loop와 provider 계약에서 도출한 경계이며 특정 장비의 네트워크를 실측한 결과는 아니다.
+
+현장 설계에서는 센서 수집 지속 여부, 모델 요청 실패와 사용자 응답 실패를 각각 시험한다. 단절 중에도 필요한 상태 조회나 경보는 모델 호출 없이 수행하는 경로를 검토하고, 모델에 전달되는 센서 값과 이미지의 범위를 확인한다(설계 제안).
+
 ### 공장 간 배포와 모델 품질의 재검증
 
 모델을 여러 공장에 배포할 수 있다는 사실과 각 공장에서 같은 품질을 낸다는 사실은 구분한다. Audi의 2023-06-30 공개 사례에서는 점용접 품질 검사 모델을 다른 공장으로 확장하면서 용접 설정의 차이를 확인하고 모델 재학습을 준비했다. 이는 당시 확산 사례이며 모든 현장에 무수정으로 적용된다는 근거가 아니다.
@@ -134,6 +142,8 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [Strands Agents, Agent Loop](https://strandsagents.com/docs/user-guide/sdk/agents/agent-loop/) — 모델과 도구의 반복 호출 경계만 대조
+- [Strands Agents, Amazon Bedrock](https://strandsagents.com/docs/user-guide/sdk/model-providers/amazon-bedrock/) — Bedrock API를 사용하는 provider 계약을 대조
 - [AWS IoT TwinMaker, AWS IoT TwinMaker knowledge graph](https://docs.aws.amazon.com/iot-twinmaker/latest/guide/tm-knowledge-graph.html) — 설비 관계의 표현과 조회만 대조했다. 인과관계와 진단 검증은 설계 점검이다.
 - [Audi begins roll-out of artificial intelligence for quality control of spot welds — Audi](https://www.audi.com/en/press-releases/audi-begins-roll-out-of-artificial-intelligence-for-quality-control-of-spot-welds-15443) — 2023년 사례의 공장별 용접 설정 차이와 재학습 준비를 2026-10-10 대조했다.
 - [AWS IoT Greengrass, AWS IoT Greengrass component recipe reference](https://docs.aws.amazon.com/greengrass/v2/developerguide/component-recipe-reference.html) — 레시피, manifest 선택과 형식 검증의 범위를 대조했다.

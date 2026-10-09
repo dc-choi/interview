@@ -87,6 +87,14 @@ SaaS 도입에서는 다음과 같이 책임과 증거를 연결할 수 있다(�
 
 이 절은 기술 통제의 검증 방법이다. 특정 금융 업무의 SaaS 이용 허용 여부나 규제 절차를 판정하는 근거로 쓰지 않는다.
 
+## 별도 파티션에서는 SaaS 연동 계약도 다시 확인한다
+
+부분 검증(2026-10-10): AWS Marketplace의 European Sovereign Cloud 판매자 안내에서 SaaS 연동 요구를 대조했다. 이 절은 해당 Marketplace의 SaaS 등록과 연동 범위이며 모든 SaaS에 동일한 설정을 요구하는 것은 아니다.
+
+해당 안내는 SaaS 연동에 `eusc-de-east-1`과 Marketplace EventBridge 이벤트를 사용하고, 상용 파티션 endpoint나 SNS 알림에 의존하지 않도록 명시한다. 상용 카탈로그와 ESC 카탈로그의 상품도 독립적으로 관리한다. 기존 상품이 상용 AWS에서 운영된다는 사실만으로 ESC 등록이나 연동이 완료된 것은 아니다.
+
+이 차이를 전환 검토에 적용하면 배포 리전 외에 계정, API endpoint와 이벤트 수신 경로를 함께 점검해야 한다. 대상 파티션에서 구독부터 애플리케이션 제공까지 시험하고, 외부 API와 로그 전송이 요구한 데이터 경계를 벗어나지 않는지 확인하는 절차를 권한다. 특정 공급자의 출시 예고나 협력 발표를 실제 서비스 제공 범위 또는 법률 준수의 증거로 대신하지 않는다(설계 점검).
+
 ## 적용 예시
 
 대용량 분석 서비스에서 원본 파일, 분석 작업과 결과는 허용된 리전에 두고 중앙 control plane에는 관리에 필요한 최소 정보만 전달하는 구성을 검토할 수 있다. 어떤 정보를 전달할 수 있는지는 해당 데이터의 요구사항으로 결정한다. 이는 설계 예시이며 특정 의료기관의 실제 배포를 재현한 구성이 아니다.
@@ -95,6 +103,7 @@ SaaS 도입에서는 다음과 같이 책임과 증거를 연결할 수 있다(�
 
 ## 출처
 
+- [AWS Marketplace, Listing and Selling in AWS Marketplace for AWS European Sovereign Cloud](https://docs.aws.amazon.com/marketplace/latest/userguide/esc_seller_guide.html) — SaaS 연동의 endpoint와 이벤트 경로를 대조
 - [Shared Responsibility Model — AWS](https://aws.amazon.com/compliance/shared-responsibility-model/)
 - [AWS SaaS Architecture Fundamentals, SaaS identity](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/saas-identity.html)
 - [AWS SaaS Architecture Fundamentals, Tenant isolation](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/tenant-isolation.html)
