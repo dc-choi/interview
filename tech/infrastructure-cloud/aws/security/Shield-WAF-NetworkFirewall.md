@@ -84,6 +84,15 @@ NLB, EC2 직접 부착 ❌. NLB는 L4라 WAF 비대상.
 - **WAF Logs**: CloudWatch Logs, S3 또는 Amazon Data Firehose로 전송.
 - CloudWatch 메트릭: `AllowedRequests`, `BlockedRequests`, 룰별 카운트.
 
+### 변경 검증과 로그의 보호 범위
+
+2026-10-10 AWS 공식 문서 기준으로, 규칙 변경은 테스트 환경에서 조정한 뒤 운영 트래픽의 `Count` 결과를 확인하고 차단으로 전환한다. 애플리케이션 변경 뒤에도 정상 요청과 공격 요청을 함께 재검증한다.
+
+- 규칙과 IP set 변경은 전파에 수 초에서 수 분이 걸릴 수 있다. 전파 중에는 위치에 따라 이전 액션과 새 액션이 함께 관측될 수 있으므로 단일 요청 결과만으로 적용 완료를 판단하지 않는다.
+- 로그의 `redacted fields` 설정은 요청 샘플링과 Security Lake 수집에 적용되지 않는다. 민감 필드를 수집 또는 샘플링에서 제외하려면 Web ACL의 data protection 설정을 별도로 검토한다.
+
+이 절만 추가 대조했으며 기존 가격과 서비스별 지원 범위 전체를 다시 검증한 것은 아니다.
+
 ### 관리형 규칙의 오탐 예외
 
 이 절은 2026-10-09 AWS 공식 문서와 예외 구성 예제를 대조했다. 정상 요청의 오탐을 조정할 때는 해당 규칙과 예외 조건을 좁혀 다른 검사를 유지한다.
@@ -181,6 +190,8 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 
 ## 출처
 
+- [AWS WAF, Testing and tuning your AWS WAF protections](https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-testing.html)
+- [AWS WAF, Logging AWS WAF protection pack (web ACL) traffic](https://docs.aws.amazon.com/waf/latest/developerguide/logging.html)
 - [AWS WAF, Overriding rule group actions](https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-rule-group-override-options.html)
 - [AWS WAF, How labeling works](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-label-overview.html)
 - [How to customize behavior of AWS Managed Rules for AWS WAF — AWS Security Blog](https://aws.amazon.com/blogs/security/how-to-customize-behavior-of-aws-managed-rules-for-aws-waf/)

@@ -46,6 +46,17 @@ SCP는 조직 외부 주체의 권한을 직접 제한하지 않는다. 외부 �
 
 선언적 정책은 API 호출 권한 대신 서비스 control plane에서 구성 기준을 집행한다. 정책 유형별 지원 속성과 상속 규칙을 확인하며 SCP의 평가 방식을 그대로 대입하지 않는다. [[AWS-Control-Tower|Control Tower]]의 탐지 통제는 위반을 알리는 별도 기능이다.
 
+## 백업 정책의 상속과 실행 조건
+
+2026-10-10 AWS 공식 문서 기준이다. 백업 정책은 조직 루트, OU와 계정에 연결하며, 상위 정책과 계정 정책을 상속 규칙에 따라 합친 **effective backup policy**가 해당 계정의 백업 계획을 결정한다. 하위 정책의 재정의가 가능하므로 조직 전체가 같은 설정이라고 단정하지 않는다.
+
+- **완전한 정책:** 개별 정책은 부분 설정이어도 되지만 최종 effective policy에는 필수 요소가 모두 있어야 한다. 불완전하면 해당 리소스의 백업이 수행되지 않는다.
+- **실행 역할과 저장소:** 정책이 참조하는 IAM 역할은 각 대상 멤버 계정에, backup vault는 각 대상 계정의 지정 리전에 미리 존재해야 한다. 정책 연결이나 trusted access 활성화만으로 멤버 계정의 `AWSBackupDefaultServiceRole`이 생성되지는 않는다.
+- **리소스 선택:** 태그 기반 선택에서는 정책의 키와 값에 맞는 리소스가 대상이다. OU에 계정을 넣는 것과 그 계정의 모든 리소스가 백업되는 것은 다르다.
+- **관리 권한 위임:** AWS Backup의 위임 관리자 등록과 Organizations의 백업 정책 관리 권한 위임을 구분한다. 등록만으로 정책 편집이 허용되지 않으며, 관리 계정의 resource-based delegation policy와 위임 계정 주체의 `AWSBackupOrganizationAdminAccess` 정책 등 필요한 IAM 권한을 함께 확인한다.
+
+운영 점검에서는 effective policy, 선택된 리소스, 실행 역할과 vault, 실제 백업 작업의 성공 여부를 각각 확인한다. 정책 배포 성공을 백업 성공으로 간주하지 않는 것이 이 구조에서 도출되는 점검 원칙이다. 이 절의 검증일은 기존 SCP, RCP 설명 전체의 재검증일이 아니다.
+
 ## 적용 전 검증
 
 1. 테스트 계정과 작은 OU에서 허용해야 할 업무와 차단할 작업을 함께 실행한다.
@@ -68,6 +79,10 @@ SCP는 조직 외부 주체의 권한을 직접 제한하지 않는다. 외부 �
 
 ## 출처
 
+- [AWS, Backup policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_backup.html)
+- [AWS, Backup policy syntax and examples](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_backup_syntax.html)
+- [AWS, AWS Backup and AWS Organizations](https://docs.aws.amazon.com/organizations/latest/userguide/services-that-can-integrate-backup.html)
+- [AWS, Managing AWS Backup resources across multiple AWS accounts](https://docs.aws.amazon.com/aws-backup/latest/devguide/manage-cross-account.html)
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)
 - [AWS, What is AWS Organizations?](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html)
 - [AWS, Service control policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html)
