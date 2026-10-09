@@ -51,6 +51,10 @@ AX 진단은 다음 다섯 축을 함께 본다. 한 축만 움직이면 국소 
 - **AX**: 중앙 데이터 접근, 모델 권한, 감사 추적, 보안, 컴플라이언스
 - 사례: BBVA는 CEO와 회장을 포함한 주요 임원 250명을 교육하고, 초기 도입에서 위험 평가, 법무 검토와 GDPR 준수 절차를 정리했다.
 
+중앙 통합은 모든 사용 사례를 중앙 팀이 구현한다는 뜻이 아니다. 중앙은 전략과 공통 정책 경계를 정하고, 현장 팀은 그 안에서 문제를 고르고 실험하는 연합형 운영을 선택할 수 있다. Jabil의 2026년 공개 인터뷰에서 설명한 운영 사례도 이 구분을 따른다. 한 기업의 경험을 모든 조직의 성공 조건으로 일반화하지 않는다.
+
+이를 에이전트 운영에 적용할 때는 부서별 데이터, 신원과 권한 경계를 정의하고, 공통 정책과 관측 체계 안에서 기능을 재사용하도록 설계할 수 있다. 현장 실험 결과와 제약은 중앙 정책을 고치는 피드백으로 돌려보낸다. 이는 조직 운영 제안이며, 작은 팀에도 별도 중앙 조직이나 멀티테넌트 플랫폼을 의무화하는 기준은 아니다. 정책, 데이터와 신원 경계는 2026-10-09 AWS 공식 운영 지침과 대조했다.
+
 ### 5. 리소스 (Resource) — 라이선스 비용 → 운영 개혁 비용
 
 - **기존**: AI SaaS 라이선스 구매로 예산 집행 완료
@@ -71,6 +75,8 @@ AI는 조직의 병목을 자동으로 없애기보다 현재 일하는 방식�
 리더십은 해결할 문제, AI 사용 원칙, 데이터와 보안 경계 및 성공 기준을 명확히 하고, 현장 팀은 그 범위에서 작은 실험을 설계해 성공과 실패를 공유한다. 특정 도구를 일괄 강제하는 것과 기준 없는 자율 사용 중 하나를 고르는 문제가 아니다. 공통 경계와 현장 학습을 함께 설계해야 한다.
 
 AI 사용률, 호출 수와 생성 코드량은 채택 활동의 보조 신호이지 생산성 KPI가 아니다. 도입 전 기준선, 목표, 영향 대상, 기대 인과, 관측 기간과 관측 뒤 결정을 정하고 리드 타임, 리뷰와 재작업, 안정성 및 고객 결과를 함께 본다. 인력 대체나 개인 사용량 평가 중심의 메시지는 고용과 평가 불안, 숫자 맞추기를 유도할 수 있으므로 도구 실험의 목적과 분리한다.
+
+성과 계측은 도입이 끝난 뒤 덧붙이지 않고 업무 흐름 설계에 포함한다. 운영 제안으로, 단계별 시작과 완료, 사람에게 넘긴 사유, 재작업과 처리 비용을 수집하고 담당자와 평가 시점을 정한다. 이 기록으로 전체 처리 시간과 오류 감소를 비교하며, 소프트웨어 전달 지표와 최종 업무 성과를 구분한다. 구체적인 수집 항목은 업무별로 조정한다. 비용, 시간과 오류 지표의 구분은 2026-10-09 AWS 공식 지침과 대조했으며, 계측만으로 AI의 인과 효과나 투자 수익이 증명되지는 않는다.
 
 조직문화가 AI보다 더 큰 생산성 향상을 만든다는 비교 우위는 경험 기반 견해이며 이를 직접 측정한 연구 결과가 아니다. 문화와 시스템이 AI 효과를 증폭한다는 모델은 도입 전 진단과 실험 설계에 쓰고, 실제 효과는 조직의 업무 흐름에서 검증한다.
 
@@ -152,7 +158,7 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 - **5가지 변혁 축** (역할, 파이프라인, KPI, 거버넌스, 리소스)
 - **Maker vs Closer** 차이와 AI 시대 커리어 의미
 - 기능 조직의 **고속 사일로화** 현상
-- "핸드오프가 진짜 병목"이라는 관점
+- 핸드오프가 진짜 병목이라는 관점
 - 문화와 시스템이 AI 효과를 증폭한다는 모델과 근거의 경계
 - **METR 체감 vs 실측 간극** 연구의 시사점
 - 조직 AX 성숙도 자가 진단 질문
@@ -170,6 +176,10 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 - [Harvard Business Review Recognizes BBVA as a Benchmark for Corporate AI Adoption — BBVA](https://www.bbva.com/en/innovation/harvard-business-review-recognizes-bbva-as-a-benchmark-for-corporate-ai-adoption/)
 - [An important update on our team — Atlassian](https://www.atlassian.com/blog/announcements/atlassian-team-update-march-2026)
 - [We are Changing our Developer Productivity Experiment Design — METR](https://metr.org/blog/2026-02-24-uplift-update/)
+- [From Pilots to Paradigm Shift: AI Transformation at Jabil — AWS Executive Insights](https://www.youtube.com/watch?v=1Lq_0moA14M)
+- [Reinventing the Enterprise with Agentic AI — AWS Executive Insights](https://www.youtube.com/watch?v=zGIe-56QpZs)
+- [AWS Prescriptive Guidance, Architect for multi-tenancy and control](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-operationalizing-agentic-ai/focus-areas-multitenancy.html)
+- [AWS Prescriptive Guidance, Align agent models with business models](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-operationalizing-agentic-ai/focus-areas-model-alignment.html)
 
 ## 관련 문서
 - [[Harness-Engineering|하네스 엔지니어링]]
