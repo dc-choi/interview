@@ -1,7 +1,7 @@
 ---
 tags: [database, search, opensearch, performance, troubleshooting, monitoring]
 status: done
-verified_at: 2026-07-15
+verified_at: 2026-10-10
 category: "Data & Storage - NoSQL"
 ---
 
@@ -16,10 +16,12 @@ category: "Data & Storage - NoSQL"
 - `items[].error`를 분류하고 일시 오류만 backoff한다.
 - 429에 exponential backoff와 jitter를 적용한다.
 - Mapping 오류는 일반 error log에 남지 않을 수 있으므로 response를 보존한다.
+- `filter_path`로 bulk 응답을 줄일 때도 실패 항목을 식별하고 재시도하는 데 필요한 필드는 남긴다. 필요한 필드는 client마다 다르므로 응답 크기뿐 아니라 부분 실패 처리도 확인한다.
 
 ### Refresh와 replica
 
 - Near-real-time 요구가 낮으면 `index.refresh_interval`을 늘린다.
+- Refresh 간격의 증가는 색인한 문서가 검색에 보이기까지의 대기 시간을 늘린다. 검색 요청 자체의 응답 시간과 구분하고, 검색 가시성 요구가 허용하는 범위에서 조정한다.
 - 순수 일회성 적재는 refresh를 잠시 끌 수 있지만 완료 후 원복과 refresh가 필요하다.
 - `refresh=true` 반복은 작은 segment와 merge를 늘린다.
 - Replica 0은 재생 가능한 일회성 적재에서만 검토하고 node 장애 데이터 손실을 감수해야 한다.
@@ -30,6 +32,8 @@ category: "Data & Storage - NoSQL"
 - Translog flush threshold를 늘리면 flush 빈도는 줄지만 recovery 시간이 늘어난다.
 - Merge throttle과 segment 수가 증가하면 disk I/O가 병목인지 확인한다.
 - Hot shard가 있으면 node 평균 CPU보다 shard별 indexing rate와 routing 분포를 본다.
+
+Flush threshold를 바꾸기 전후에 `GET /{index}/_stats/flush`의 flush 횟수와 누적 소요 시간을 확인한다. 운영 비교에서는 같은 길이의 관측 구간에서 증가분과 적재량을 함께 기록한다. 현재 index에서 효과를 확인한 뒤 index template에 반영하며, 고정 크기를 모든 엔진 버전과 workload의 권장값으로 쓰지 않는다.
 
 ## 검색용 field model
 
@@ -55,6 +59,7 @@ Search latency는 가장 느린 shard의 tail에 끌린다. 평균 node 지표�
 
 - [OpenSearch Documentation, Tuning for indexing speed](https://docs.opensearch.org/latest/tuning-your-cluster/performance/)
 - [AWS Documentation, OpenSearch Service quotas](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html)
+- [AWS Documentation, Operational best practices for Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp.html)
 
 ## 관련 문서
 

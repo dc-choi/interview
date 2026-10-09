@@ -95,6 +95,18 @@ Kiro의 공식 문서를 2026-10-07에 대조한 사례는 다음과 같다. 이
 
 적용 제안: 주문 알림 작업이라면 생성 전에 알림 실패가 주문을 취소하는지, 재시도해도 한 번만 발송하는지를 정한다. 생성 뒤에는 그 결정이 수용 기준, 설계와 구현 작업에 일관되게 남았는지 확인한다. 문서 생성 완료와 테스트 통과, 실제 운영 결과는 각각 따로 확인한다.
 
+## 스펙을 팀의 변경 기록으로 유지한다
+
+스펙에는 원하는 기능뿐 아니라 합의한 제약과 설계 판단을 남기고, 설명하는 코드와 같은 저장소에서 버전 관리한다. 개인 대화에만 남은 결정을 다음 작업자도 검토하고 재사용할 수 있게 하는 방식이다.
+
+Kiro의 공식 Best practices를 2026-10-10에 대조한 변경 절차는 다음과 같다. 이 절의 부분 검증이며 기존 원칙 전체의 검증일은 유지한다.
+
+- Requirements-First는 요구사항을 수정한 뒤 설계 갱신을 요청하고, `tasks.md`의 Sync Files로 새 요구에 대응하는 작업을 생성한다.
+- Design-First는 설계를 바꾼 뒤 요구사항의 타당성 검토와 재생성을 요청하고 작업 목록을 동기화한다.
+- 버그 수정에서는 바뀌어야 하는 동작과 계속 유지해야 하는 동작을 함께 기록한다.
+
+적용 제안: 재시도 정책을 바꾸면 수용 기준, 설계와 작업 목록을 함께 대조한다. 스펙 동기화는 구현이나 회귀 검증의 완료를 뜻하지 않으므로 실제 코드와 테스트 결과를 별도로 확인한다.
+
 ## 흔한 실수
 
 ### 모호한 지시
@@ -150,6 +162,7 @@ Kiro의 공식 문서를 2026-10-07에 대조한 사례는 다음과 같다. 이
 - LLM-as-a-Judge 패턴이 필요한 상황
 
 ## 출처
+- [Kiro Docs, Best practices](https://kiro.dev/docs/specs/best-practices/)
 - [Kiro Docs, Quick Spec](https://kiro.dev/docs/specs/quick-spec/)
 - [Kiro Docs, Feature Specs](https://kiro.dev/docs/specs/feature-specs/)
 - [Lost in the Middle: How Language Models Use Long Contexts — Liu et al.](https://arxiv.org/abs/2307.03172)
