@@ -1,7 +1,7 @@
 ---
 tags: [ai, rag, retrieval, search]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["RAG Retrieval Engineering", "RAG 검색 엔지니어링", "RAG", "Hybrid Search", "Contextual Retrieval"]
 ---
@@ -100,6 +100,20 @@ BM25를 병행해 정확 token match를 보완하고 RRF나 score normalization�
 
 주문 상태, 재고, 가격처럼 정답이 구조화 시스템에 있는 질문은 원장을 tool/API로 조회하고, 정책 설명이나 문서 근거는 retrieval로 찾는다. 엔티티 추출은 어느 조회를 호출할지 돕지만 추출 오류와 권한 검사를 함께 다뤄야 한다. 모든 비정형 지식을 구조화하겠다는 목표보다 질문 유형별 `lookup`, `retrieve`, `hybrid` 라우팅이 현실적이다. [[Production-Agent-Architecture]]의 조회 우선순위와 같은 결이다.
 
+### 사전 색인과 요청 시점 조회를 함께 비교한다
+
+문서 근거를 가져오는 경로도 미리 복제해 색인하는 방식과 요청 시점에 원천 시스템에서 조회하는 방식으로 나뉜다. 임베딩을 미리 만들지 않아도 도구로 근거를 가져올 수 있지만, 그 선택만으로 검색 품질이나 권한 통제가 보장되지는 않는다. 다음은 두 방식을 비교할 설계 기준이다.
+
+| 경로 | 선택을 검토할 조건 | 확인할 비용과 실패 |
+|---|---|---|
+| 사전 색인 | 여러 문서에서 의미가 가까운 근거를 반복 검색 | 수집, 파싱과 색인 운영, 원문 변경과 권한 철회의 반영 지연 |
+| 요청 시점 조회 | 최신 상태가 필요하고 원천 API나 파일 탐색으로 필요한 범위를 좁힐 수 있음 | 추가 탐색의 지연, API 한도와 장애, 도구 선택 실패 |
+| 혼합 | 안정된 문서 근거와 자주 바뀌는 상태가 모두 필요 | 색인된 설명과 실시간 상태의 기준 시점 불일치 |
+
+제품 사례로 Microsoft 365 Copilot의 synced connector는 외부 내용을 Microsoft Graph에 색인하고, federated connector는 MCP로 요청 시점에 가져오며 Graph에 색인하지 않는다(2026-10-09 문서 확인). 이는 저장과 조회 경로의 차이다. Graph에 색인하지 않는다는 사실을 모델 입력, 응답이나 로그까지 데이터가 전혀 전달되지 않는다는 보장으로 확대하지 않는다. 실제 처리와 보존 범위는 별도로 확인한다.
+
+런타임 탐색은 미리 계산한 결과를 가져오는 것보다 느릴 수 있으므로, 자주 쓰는 근거는 먼저 제공하고 부족한 부분만 추가 탐색하는 혼합도 비교한다. 같은 질문 세트에서 정확도, 지연과 호출 수를 재고, 원천 조회가 실패했을 때 오래된 캐시를 현재 사실로 답하지 않는지 확인한다. 권한 검사는 어느 경로에서도 모델 밖에서 적용한다. 이 운영 점검은 특정 커넥터의 기본 보장이 아닌 설계 제안이다.
+
 ## 도메인 사전: 구축 vs 미택
 
 용어 사전은 약어와 도메인 명칭의 vocabulary gap을 줄일 수 있지만, 잘못된 동의어는 precision을 해치고 tenant별 관리 비용을 만든다. Zero-result와 reformulation 로그에서 반복되는 gap부터 작은 사전으로 검증한다. 효과가 운영 비용보다 작으면 hybrid retrieval이나 query rewrite로 보완하되, 이 대안도 같은 평가 set으로 비교한다.
@@ -165,6 +179,11 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 - [[LLM-Hallucination-Verification|LLM 환각 유형과 검증 (사실성과 충실성, 인용의 존재와 적용과 지지 검사)]]
 
 ## 출처
+
+2026-10-09에는 사전 색인과 요청 시점 조회의 구분을 Microsoft 문서에, 런타임 탐색의 지연과 혼합 전략을 Anthropic 글에 대조했다. 비교표와 실패 시 운영 점검은 이를 적용한 설계 제안이다. 기존 평가 논문 전체를 다시 검증한 기록은 아니다.
+
+- [Microsoft Learn, Microsoft 365 Copilot connectors overview](https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/overview-copilot-connector)
+- [Effective context engineering for AI agents — Anthropic](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 
 2026-10-02에는 검색 권한과 교차 유출 위험을 OWASP LLM08에 대조했다. 데이터 수명과 검증 항목은 그 원칙을 적용한 설계 제안이며 특정 검색 엔진의 기본 보장이 아니다. 기존 검색 기법과 평가 논문 전체를 다시 검증한 기록은 아니다. 2026-10-06에는 청크별 맥락 보강과 전체 투입 규모 안내를 Anthropic 발표에 대조했다. 맥락 재생성과 version 관리는 그 기법을 적용한 설계 제안이다. 같은 날 더한 적용 범위 메타데이터, 충돌 문서 처리, 조건과 예외의 청크 배치와 모델 입력 기록도 설계 제안이다.
 
