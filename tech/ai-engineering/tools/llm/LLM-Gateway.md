@@ -59,6 +59,24 @@ Gemini의 Generate Content API에서는 모델 응답의 `thoughtSignature`가 �
 
 따라서 게이트웨이가 모델 직접 호출용 공통 필드를 무조건 덧붙이면 관리 프롬프트 호출 계약을 어길 수 있다. 호출 유형별로 필드를 구성하고, 프롬프트 버전 변경 전후에 같은 평가 입력으로 결과를 비교하는 방안을 검토한다. 버전 생성 자체가 출력 품질 검증은 아니다. 이 절은 Bedrock API 계약을 확인한 것이며 특정 게이트웨이의 구현이나 배포 동작을 시험한 결과는 아니다.
 
+## 처리량 확장은 호출 한도와 데이터 이동을 함께 검토한다
+
+게이트웨이 인스턴스를 늘리는 것과 모델 제공자의 처리 한도를 늘리는 것은 다르다. 2026-10-10 Bedrock 공식 문서 기준, 계정에 적용되는 quota는 공개 기본값보다 낮을 수 있으므로 Service Quotas에서 실제 값을 확인한다. API 진입점의 여유 용량만으로 모델 추론의 여유를 판단하지 않는다.
+
+Cross-Region inference profile은 요청을 해당 프로파일의 목적지 리전으로 라우팅한다. 출발 리전에 따라 목적지가 달라질 수 있으므로 사용할 각 출발 리전에서 `GetInferenceProfile`의 `models`에 담긴 모델 ARN을 확인한다. 프로파일 이름의 지역 접두사만으로 데이터 처리 위치를 확정하지 않는다.
+
+프로파일의 목적지 중 하나라도 SCP에서 차단되면 다른 목적지가 허용돼 있어도 요청이 실패할 수 있다. 조직의 데이터 위치 제약을 먼저 확인하고 그 범위에 맞는 프로파일과 IAM/SCP를 선택한다. 처리량을 늘리기 위해 금지된 리전을 일괄 허용하는 방식으로 해결하지 않는다.
+
+다음은 이 제약에서 도출한 설계 점검이다. 모델, 리전과 호출 경로별 포화 및 스로틀링을 관측하고, 대기열이나 부하 제한을 검토한다. 다른 모델로의 폴백은 앞 절의 기능 호환성뿐 아니라 데이터 전송 허용 범위도 만족해야 한다. 멀티 리전 호출 자체를 모든 장애의 복구 보장으로 취급하지 않는다.
+
+## 공통 플랫폼에서도 업무별 정책을 보존한다
+
+모델 호출 API를 공통화해도 업무마다 허용 데이터, 답변 범위와 비용 귀속은 다를 수 있다. 공통 인증만 검사하고 모든 요청에 같은 정책을 적용하면 개별 업무의 제약을 놓칠 수 있다. 테넌트 격리의 구현 조건은 [[Generative-AI-Multi-Tenancy|생성형 AI의 테넌트 격리]]에서 다룬다.
+
+2026-10-10 대조한 2024년 9월 BT Group 공개 사례는 업무별 테넌트, PII 필터, 예산 추적과 애플리케이션 범위를 벗어난 질문의 필터링을 함께 설명한다. 이는 중앙 플랫폼 안에서도 업무별 경계를 유지하는 사례다. 발표만으로 각 통제의 누락 가능성이나 실제 차단 효과까지 검증한 것은 아니다.
+
+적용 시에는 인증된 호출자를 업무 정책에 연결하고 허용 모델, 데이터 처리 위치와 비용 귀속을 함께 결정하는 방안을 검토한다. 업무별 정상 요청뿐 아니라 다른 업무의 데이터 접근과 범위 밖 요청도 시험한다. 이 점검안은 해당 사례의 상세 구현을 재현했다는 뜻이 아니다.
+
 ## 출처
 
 - [당근은 왜 LLM Router를 직접 만들었을까? — 당근 팀, 2026 당근 빌더 밋업](https://www.youtube.com/watch?v=anmRVnqdyco)
@@ -69,6 +87,9 @@ Gemini의 Generate Content API에서는 모델 응답의 `thoughtSignature`가 �
 - [Google AI for Developers, Thought signatures (Generate Content API)](https://ai.google.dev/gemini-api/docs/generate-content/thought-signatures)
 - [Amazon Bedrock, Deploy a prompt to your application using versions in Prompt management](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management-deploy.html)
 - [Amazon Bedrock, Test a prompt using Prompt management](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management-test.html)
+- [Amazon Bedrock, Quotas for Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/quotas.html)
+- [Amazon Bedrock, Supported Regions and models for inference profiles](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html)
+- [BT Group’s Digital Unit launches ‘GenAI Gateway’ platform, powered by AWS — Amazon Press Center](https://press.aboutamazon.com/aws/2024/9/bt-groups-digital-unit-launches-genai-gateway-platform-powered-by-aws-accelerating-the-companys-safe-adoption-of-generative-ai-at-scale)
 
 ## 관련 문서
 

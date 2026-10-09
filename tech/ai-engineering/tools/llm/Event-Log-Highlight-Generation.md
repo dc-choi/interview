@@ -61,6 +61,22 @@ aliases: ["Event Log Highlight Generation", "이벤트 로그 기반 하이라�
 
 편집 경계도 전달 채널별로 확인한다. 해당 사례의 CLS Story Monitor는 해설자에게 전달하기 전 편집자가 결과를 검토, 수정하거나 제거할 수 있다. 팬 대상 live feed는 직접 통합하거나 편집 후보로 전달하는 등 관여 수준이 다르다. 검토 기능의 존재를 모든 출력의 필수 승인이나 사실성 보장으로 확대하지 않는다.
 
+## 사실 해설, 조건부 전망과 공개 판정을 구분한다
+
+이벤트의 주체, 행위와 결과를 설명하는 문장과 앞으로 일어날 수 있는 일을 설명하는 문장을 구분한다. 예를 들어 다음 샷에 성공하면 순위가 오른다는 조건부 설명을 이미 순위가 올랐다는 결과로 바꾸지 않는다. 성공 확률을 출력하려면 그 값을 만든 데이터와 계산 근거를 별도로 확인한다.
+
+2026-10-10 확인한 PGA TOUR의 2024년 공개 설계는 샷 데이터로 사실 해설을 만들고, 그 해설과 샷 데이터를 다시 결합해 맥락을 생성하는 두 단계를 설명한다. 생성 결과에서 사실과 맥락을 추출해 TOUR 데이터와 대조하는 검증도 포함한다. 해당 글에는 오래된 내용이라는 안내가 있으므로 현재 모델이나 서비스 상태의 근거로 쓰지 않는다.
+
+후속인 2025년 운영 공개 사례는 전문가가 채점한 표본으로 LLM 판정기를 대조하고, 과거 경기 데이터로 회귀 평가를 수행하는 방식을 설명한다. 판정 결과는 공개 여부 결정과 운영 지표에 사용하며, 프롬프트도 코드 저장소에서 관리해 테스트와 롤백에 연결한다.
+
+이 사례에서 도출한 적용안은 다음과 같다.
+
+- 사실 입력과 조건부 전망을 나누어 검증하고, 생성문에서 다시 추출한 값도 원본과 대조한다. 재추출 모델 자체의 오류 가능성도 남는다.
+- 토큰, 지연과 스로틀링 같은 시스템 지표와 사실 오류, 공개 거절 같은 콘텐츠 지표를 함께 본다. 호출 성공을 게시 성공으로 계산하지 않는다.
+- 프롬프트 변경 전후에 같은 과거 이벤트를 재생하되 당시 이용 가능했던 입력을 고정한다. 실제로 나중에 발생한 결과를 조건부 전망의 입력에 섞지 않는다.
+
+다른 모델로 평가하거나 공개 문턱을 두는 것만으로 편향과 사실 오류가 사라지지는 않는다. 판정기의 정렬과 한계는 [[Eval-LLM-Judge|LLM 판정기]]를 함께 확인한다.
+
 ## 적용 근거와 한계
 
 2025년 PNC 사례 발표는 필요한 게임 로그 선별, 규칙 기반 텍스트 변환, SQL 템플릿 매핑과 추가 검증을 결합한 구현을 소개한다. 위 패턴의 적용 사례이며, 발표의 특정 모델 속도와 평가 점수는 다른 워크로드의 성능 보장으로 사용하지 않는다. 본문에 적은 바인딩과 입력 검증은 적용을 위한 설계 제안이며 발표 구현의 확인 사실과 구분한다.
@@ -71,6 +87,8 @@ aliases: ["Event Log Highlight Generation", "이벤트 로그 기반 하이라�
 - [Revolutionizing fan engagement: Bundesliga generative AI-powered live commentary — AWS for M&E Blog](https://aws.amazon.com/blogs/media/revolutionizing-fan-engagementcer-bundesliga-generative-ai-powered-live-commentary/)
 - [Creating AI-generated stories for the Bundesliga channels — DFL](https://www.dfl.de/en/innovation/creating-ai-generated-stories-for-the-bundesliga-channels/)
 - [Bundesliga Data Story Finder: Delivering fans the stories they love — AWS for M&E Blog](https://aws.amazon.com/blogs/media/bundesliga-data-story-finder-delivering-fans-the-stories-they-love/)
+- [PGA TOUR automates play-by-play commentary with Amazon Bedrock — AWS for M&E Blog](https://aws.amazon.com/blogs/media/pga-tour-automates-play-by-play-commentary-with-amazon-bedrock/)
+- [PGA TOUR enhances AI commentary by operationalizing generative AI — AWS for M&E Blog](https://aws.amazon.com/blogs/media/pga-tour-enhances-ai-commentary-by-operationalizing-generative-ai/)
 
 ## 관련 문서
 
