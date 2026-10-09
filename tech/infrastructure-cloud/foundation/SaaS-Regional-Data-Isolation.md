@@ -66,6 +66,18 @@ AWS European Sovereign Cloud의 설계는 별도 파티션과 독립된 계정, 
 
 위 항목은 설계 검토 제안이다. 별도 파티션을 선택했다는 사실만으로 애플리케이션의 모든 데이터 경로나 법률상 의무를 충족했다고 판단하지 않는다.
 
+## 공급자 통제와 고객 구성의 검증을 나눈다
+
+2026-10-10 AWS 책임 공유 모델 대조 기준. AWS의 물리 시설 통제처럼 상속하는 통제와, 고객이 자기 환경에서 구현해야 하는 통제는 다르다. 구성 관리도 AWS 인프라와 고객의 DB 및 애플리케이션에서 각각 책임이 있다. 따라서 공급자의 인증이나 평가 자료를 확보한 것만으로 SaaS의 데이터 격리 구성이 검증됐다고 판단하지 않는다.
+
+SaaS 도입에서는 다음과 같이 책임과 증거를 연결할 수 있다(설계 점검 제안).
+
+- 기반 클라우드, SaaS 운영자와 이용 조직 사이에서 계정 관리, 데이터 접근, 로그 보존 및 복구의 담당 범위를 명시한다. 구체적 분담은 사용하는 서비스와 계약으로 확인한다.
+- 공급자 자료의 평가 대상과 기간을 확인하고, 실제 테넌트 설정과 데이터 경로에서 남는 통제를 찾는다.
+- 리전, 외부 연동이나 업무 범위가 바뀌면 앞서 확인한 격리와 복구 조건이 유지되는지 다시 시험한다.
+
+이 절은 기술 통제의 검증 방법이다. 특정 금융 업무의 SaaS 이용 허용 여부나 규제 절차를 판정하는 근거로 쓰지 않는다.
+
 ## 적용 예시
 
 대용량 분석 서비스에서 원본 파일, 분석 작업과 결과는 허용된 리전에 두고 중앙 control plane에는 관리에 필요한 최소 정보만 전달하는 구성을 검토할 수 있다. 어떤 정보를 전달할 수 있는지는 해당 데이터의 요구사항으로 결정한다. 이는 설계 예시이며 특정 의료기관의 실제 배포를 재현한 구성이 아니다.
@@ -74,6 +86,7 @@ AWS European Sovereign Cloud의 설계는 별도 파티션과 독립된 계정, 
 
 ## 출처
 
+- [Shared Responsibility Model — AWS](https://aws.amazon.com/compliance/shared-responsibility-model/)
 - [AWS SaaS Architecture Fundamentals, SaaS identity](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/saas-identity.html)
 - [AWS SaaS Architecture Fundamentals, Tenant isolation](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/tenant-isolation.html)
 - [SaaS Builder Toolkit for AWS — AWS Labs](https://github.com/awslabs/sbt-aws)

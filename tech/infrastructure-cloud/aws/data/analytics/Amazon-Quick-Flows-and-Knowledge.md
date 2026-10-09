@@ -44,6 +44,16 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 그래프 초기화는 개체와 관계를 지우지만 원본 파일, 메모리와 연결 서비스는 지우지 않는다. 자동 수집과 폴더 추출을 켜 두면 그래프가 다시 만들어질 수 있다. 따라서 그래프 삭제를 원본 데이터 삭제나 연결 해제로 간주하지 않는다.
 
+## 팀 자료를 모을 때의 공유 경계
+
+2026-10-10 Spaces 공식 문서 대조 기준. Space는 팀이나 업무 영역에 맞춰 파일, 대시보드, 지식 기반과 action을 모으는 단위다. 자료를 한곳에서 찾는 편의와 각 자료의 접근 권한은 구분한다.
+
+- 기존 Quick 리소스를 Space에 연결해도 원래 리소스의 접근 권한을 우회하지 않는다.
+- Space에 직접 업로드한 파일은 해당 Space에 접근할 수 있는 사람에게 공개된다. 원본 저장소의 개별 파일 권한이 업로드 사본에도 유지된다고 가정하지 않는다.
+- 파일의 `Text ready`는 텍스트 질의 준비 상태이며 이미지와 표는 아직 처리 중일 수 있다. `Ready`는 텍스트와 미디어 처리가 끝난 상태다.
+
+프로젝트 초안을 만들 때는 공유 가능한 자료만 올리고, 표나 이미지에 의존하는 질문은 처리 상태를 확인한 뒤 평가한다. 초안 생성 시간과 검토, 수정 및 실제 업무 완료 시간도 따로 측정한다. 이는 운영 점검 제안이며 특정 팀의 시간 절감률을 재현한다는 보장은 아니다.
+
 ## 적용 전 확인
 
 - 반복할 절차와 필요한 입력이 명확한가. 변하지 않는 단순 집계라면 기존 쿼리와 보고서로 충분한지도 검토한다.
@@ -53,6 +63,7 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 ## 출처
 
+- [Amazon Quick, Organize, collaborate, and share resources with spaces](https://docs.aws.amazon.com/quick/latest/userguide/working-with-spaces.html)
 - [Amazon Quick, Atlassian Jira Cloud integration](https://docs.aws.amazon.com/quick/latest/userguide/jira-integration.html)
 - [Amazon Quick, ServiceNow integration](https://docs.aws.amazon.com/quick/latest/userguide/servicenow-integration.html)
 - [Amazon Quick, Using Amazon Quick Flows](https://docs.aws.amazon.com/quick/latest/userguide/using-amazon-quick-flows.html)

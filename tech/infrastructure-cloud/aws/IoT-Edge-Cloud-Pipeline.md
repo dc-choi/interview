@@ -34,6 +34,20 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 | 클라우드 데이터 통합 | 여러 장비의 이력 분석 | 재전송, 중복 처리와 저장 누락을 다루는가 |
 | 모델 개발과 배포 | 수집 데이터로 모델 개선 | 배포 버전, 실패 복구와 현장 호환성을 확인했는가 |
 
+## 연결 단절과 MQTT 버퍼의 한계
+
+2026-10-10 Greengrass nucleus 공식 문서 대조 기준. MQTT spooler가 있어도 장기간의 단절이나 저장 공간 부족까지 데이터 무손실이 보장되지는 않는다.
+
+| 설정 | 확인할 경계 |
+|---|---|
+| `mqtt.spooler.storageType` | 기본값은 `Memory`. `Disk` 선택은 nucleus v2.11.0 이상에서 지원 |
+| `mqtt.spooler.maxSizeInBytes` | 기본값 `2621440` 바이트. 캐시가 가득 차면 새 메시지를 거부 |
+| `mqtt.spooler.keepQos0WhenOffline` | 기본값 `false`에서는 오프라인 중 QoS 0 메시지를 버림. QoS 1도 spool이 가득 차면 보관할 수 없음 |
+
+선박처럼 연결이 오래 끊길 수 있는 환경에서는 수집량과 예상 단절 시간으로 버퍼 용량을 산정하고, 재연결 후 새 데이터와 누적 데이터를 함께 전송할 처리량을 확인한다. 이는 설계 제안이며 Greengrass의 자동 용량 산정 기능이 아니다. 단절, 버퍼 포화와 프로세스 재시작을 각각 시험해 누락과 중복을 측정한다.
+
+별도 로컬 DB와 압축 업로드를 추가한다면 클라우드 반영 확인 전 로컬 데이터를 지우지 않도록 하고, 재전송의 중복 처리를 설계한다. 로컬 저장 성공, 전송 성공과 최종 저장 성공은 서로 다른 완료 조건이다.
+
 ## 장비 제어 요청과 보고 상태를 나눈다
 
 2026-10-09 AWS IoT Core 공식 문서 기준, Device Shadow는 장비가 오프라인이어도 애플리케이션이 저장된 상태를 조회하고 변경을 요청할 수 있게 한다. 상태 요청이 저장됐다는 사실과 장비가 실제로 수행했다는 사실은 구분한다.
@@ -88,6 +102,7 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT Greengrass, Greengrass nucleus](https://docs.aws.amazon.com/greengrass/v2/developerguide/greengrass-nucleus-component.html) — MQTT spooler 설정을 대조했다. 단절과 복구 점검은 설계 제안이다.
 - [AWS, Guidance for AI-Driven Robotic Simulation and Training on AWS](https://docs.aws.amazon.com/solutions/ai-driven-robotic-simulation-and-training-on-aws/) — 2026-10-09 상위 전략 생성과 시뮬레이션 제어의 분리를 대조했다. 현장 통과 조건은 설계 제안이며 기존 IoT 기능 전체의 재검증은 아니다.
 - [AWS IoT Core, AWS IoT Device Shadow service](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html)
 - [AWS IoT Core, Device Shadow service documents](https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-document.html)

@@ -136,6 +136,14 @@ SQL 문자열을 만드는 것과 권한 안에서 올바른 결과를 얻는 �
 
 AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명시하고 제한된 역할, 읽기 전용 DB와 샌드박싱을 권고한다. Redshift 연결 예시도 조회 권한을 부여하되 `CREATE`, `UPDATE`, `DELETE` 권한은 부여하지 않도록 안내한다(2026-10-07 확인). 이는 데이터 변경 방지 경계이며, 조회 가능한 데이터의 테넌트와 민감정보 범위까지 자동으로 보장하지는 않는다.
 
+### 실행 계획과 결과 건수만으로 정답을 판정하지 않는다
+
+2026-10-10 Redshift 공식 문서 기준, `EXPLAIN`은 쿼리를 실행하지 않고 실행 계획을 보여 준다. 따라서 계획 생성 성공을 결과 데이터나 업무 의미의 검증으로 취급하지 않는다.
+
+고객 추출 쿼리의 평가에서는 결과 건수가 같아도 고객 집합은 다를 수 있다. 예를 들어 기대 식별자가 `{1, 2}`이고 생성 쿼리의 결과가 `{3, 4}`이면 둘 다 2건이지만 오답이다. 검증용 고정 데이터에서 식별자 집합, 중복과 제외 조건을 함께 대조하는 방식을 검토한다. 집계 질의라면 집계값과 그룹별 결과를 비교한다. 이는 평가 설계 제안이며 특정 제품의 자동 평가 기능이 아니다.
+
+질문과 SQL 예시를 보강할 때도 실패 원인이 예시 부족인지, 업무 정의나 쿼리 오류인지 먼저 구분한다. 실패한 결과를 검토 없이 검색 예시에 추가하거나, 예시에 넣은 질문만으로 개선을 평가하지 않는다.
+
 ### 오류 종류에 따라 복구 지점을 나눈다
 
 같은 SQL을 반복 생성하는 대신 실패 원인이 있는 단계로 돌아간다. AWS의 공개 Text-to-SQL 구현도 실행 오류와 수정 힌트를 반환하고, 필요하면 테이블 목록과 스키마를 다시 조회한다(2026-10-07 확인).
@@ -184,6 +192,7 @@ AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명�
 - API 에이전트 플랫폼: 스킬셋 연결로 도메인 에이전트 생성, Detector-CoT-Answer 처리, 리트리벌 스킬(CoT+랭킹으로 RAG 확장)과 근거를 XML로 표시하는 랭킹 모델로 출처 추적.
 
 ## 출처
+- [Amazon Redshift, Creating and interpreting a query plan](https://docs.aws.amazon.com/redshift/latest/dg/c-the-query-plan.html)
 - [Amazon Bedrock User Guide, Create a knowledge base by connecting to a structured data store](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-structured-create.html) — query configurations와 생성 맥락의 비결정성.
 - [dbt Developer Hub, description](https://docs.getdbt.com/reference/resource-properties/description)
 - [Dynamic text-to-SQL for enterprise workloads with Amazon Bedrock Agents — AWS](https://aws.amazon.com/blogs/machine-learning/dynamic-text-to-sql-for-enterprise-workloads-with-amazon-bedrock-agents/)
