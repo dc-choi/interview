@@ -23,6 +23,22 @@ Rolling origin 평가는 예측 기준 시점을 앞으로 옮기며 반복한�
 
 시나리오의 외부 변수값을 고정한 예측 구간은 그 변수의 미래 불확실성까지 포함하지 않는다. 범위가 좁아 보인다는 이유만으로 전체 예측이 확실하다고 판단하지 않는다.
 
+## 서로 다른 입력을 예측 시점에 맞춘다
+
+센서 관측, 제품 메타데이터와 외부 환경 데이터를 결합할 때는 입력의 종류와 미래값을 알 수 있는지를 따로 구분한다. 다음은 TFT(Temporal Fusion Transformer) 원 논문의 입력 구분을 제조 예시에 적용한 것이다.
+
+| 입력 종류 | 예시와 확인 조건 |
+|---|---|
+| 정적 공변량 | 설비 유형처럼 해당 예측 구간에서 변하지 않는 속성. 변경되는 배합이나 설정값까지 정적으로 취급하지 않는다. |
+| 미래에 알려진 입력 | 예측 시점에 확정된 달력이나 작업 계획. 사후 변경된 계획을 과거 평가에 넣지 않는다. |
+| 과거에만 관측한 입력 | 센서값과 실제 외기 온도. 예측 대상 시점의 실제 관측값을 미리 제공하지 않는다. |
+
+TFT는 이 입력들을 함께 다루는 다중 예측 거리 모델이다. 입력 특성을 고르는 구성요소, 국소 시간 관계를 처리하는 순환 계층과 장기 의존성을 다루는 어텐션을 결합한다. 입력을 나누어 받는 구조가 잘못 정렬된 시각이나 미래 정보 누출을 자동으로 막는 것은 아니다.
+
+외부 변수가 있다는 이유만으로 딥러닝이 필수인 것은 아니다. **ARIMA 오차를 갖는 회귀 모델**도 외부 설명변수를 쓸 수 있다. 다만 예측에 필요한 미래 설명변수가 미지라면 별도로 예측하거나 시나리오 값을 정해야 한다. 그 값을 고정해 계산한 예측 구간에는 설명변수 자체의 예측 불확실성이 포함되지 않는다.
+
+모델 비교에서는 동일한 예측 시점에 이용 가능한 입력과 예측 거리를 맞춘다. 다음은 운영 적용을 위한 점검 제안이다. 데이터 결합 시각, 누락값 처리와 사후 수정 여부를 기록하고, 예측 오차뿐 아니라 재학습 시간과 추론 지연도 함께 비교한다. 복잡한 모델을 선택했다는 사실을 정확도 개선이나 안전한 공정 제어의 증거로 삼지 않는다.
+
 ## MAPE는 정답률이 아니다
 
 MAPE(Mean Absolute Percentage Error)는 실제값 대비 절대 백분율 오차의 평균이다. 실제값이 0이면 정의되지 않거나 무한대가 되고, 0에 가까우면 극단적인 값이 될 수 있다.
@@ -45,6 +61,8 @@ MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱
 
 ## 출처
 
+- [Temporal Fusion Transformers for Interpretable Multi-horizon Time Series Forecasting — Lim et al.](https://arxiv.org/abs/1912.09363) — 정적, 미래에 알려진 입력과 과거 관측 입력의 구분, TFT의 구성.
+- [Forecasting: Principles and Practice, Forecasting — Hyndman, Athanasopoulos](https://otexts.com/fpp3/forecasting.html) — ARIMA 오차 회귀와 미래 설명변수의 조건.
 - [Forecasting: Principles and Practice, Evaluating point forecast accuracy — Hyndman, Athanasopoulos](https://otexts.com/fpp3/accuracy.html)
 - [Forecasting: Principles and Practice, Time series cross-validation — Hyndman, Athanasopoulos](https://otexts.com/fpp3/tscv.html)
 - [Forecasting: Principles and Practice, Forecasting with regression — Hyndman, Athanasopoulos](https://otexts.com/fpp3/forecasting-regression.html)

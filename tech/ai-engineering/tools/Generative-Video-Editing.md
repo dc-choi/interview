@@ -1,7 +1,7 @@
 ---
 tags: [ai, video, generative-video, editing, evaluation]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-10
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["생성형 영상 편집", "Generative Video Editing"]
 ---
@@ -32,6 +32,16 @@ aliases: ["생성형 영상 편집", "Generative Video Editing"]
 
 발표의 기능 설명은 특정 입력에서 인물과 원본 구도를 완벽하게 보존한다는 성능 보장이 아니다. 아직 출시 예정으로 표기된 기능은 현재 사용 가능한 기능에 포함하지 않는다.
 
+## 제품 기능 사례: Amazon Nova Reel의 비동기 생성
+
+이 절은 2026-10-10 AWS 공식 문서 대조 기준이다. 위 Google Vids 기능은 앞 절에 명시한 확인 시점을 유지한다.
+
+- Nova Reel은 텍스트 또는 텍스트와 이미지를 입력받아 영상을 생성한다. 참조 이미지는 시작 키 프레임을 안내한다. 이 입력 계약만으로 기존 동영상의 특정 부분을 수정하는 기능까지 지원한다고 해석하지 않는다.
+- `amazon.nova-reel-v1:1`은 6초 단위로 최대 2분, 1280×720 해상도와 초당 24프레임의 영상을 생성한다. 6초보다 긴 생성에는 이 모델 ID가 필요하다. 길이 지원을 여러 장면의 인물이나 상품 일관성 보장으로 읽지 않는다.
+- Bedrock Runtime의 `StartAsyncInvoke`로 작업을 제출하고 `GetAsyncInvoke`로 상태를 조회한다. 결과는 지정한 S3 위치에서 확인한다. 작업 식별자를 받았다는 사실은 영상 생성 완료가 아니다.
+
+애플리케이션에서는 접수, 생성 완료와 검수 완료를 나누어 관리하는 편이 좋다. 실패 상태를 처리하고, 성공한 영상도 길이와 내용이 납품 조건에 맞는지 재생해 확인한다. 이는 공식 비동기 호출 흐름에 기반한 운영 제안이며 실제 계정에서의 실행 검증 결과는 아니다.
+
 ## 기존 영상을 모션 그래픽으로 재구성한다
 
 기존 영상의 판서나 도식을 다시 표현할 때는 내용 해석, 장면 구성과 영상 렌더링을 나누어 확인한다. MP4만 있다는 사실과 편집 가능한 텍스트, 도형, 타이밍을 복원했다는 사실은 다르다.
@@ -57,6 +67,8 @@ aliases: ["생성형 영상 편집", "Generative Video Editing"]
 
 ## 출처
 
+- [AWS, Generating videos with Amazon Nova Reel](https://docs.aws.amazon.com/nova/latest/userguide/video-generation.html) — 입력 형식과 Reel 1.1의 출력 범위.
+- [AWS, Generate a video](https://docs.aws.amazon.com/nova/latest/userguide/code-examples-video.html) — 비동기 작업 제출, 상태 조회와 S3 결과 확인.
 - [HyperFrames, What is HyperFrames?](https://hyperframes.heygen.com/introduction) — HTML 프로젝트와 프레임별 렌더링의 역할.
 - [Google Vids gets powerful upgrades with Gemini Omni — Google](https://blog.google/products-and-platforms/products/workspace/gemini-omni-personal-avatars/) — 자연어, 참조 이미지와 기존 클립의 단계적 편집.
 - [Anyone can make stunning HD videos with Gemini Omni in Google Vids — Google](https://blog.google/products-and-platforms/products/workspace/gemini-omni-in-google-vids/) — 2026-09-23 발표의 생성 기능, 접근 조건과 SynthID.
