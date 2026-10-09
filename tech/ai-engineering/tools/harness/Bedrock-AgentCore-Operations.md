@@ -34,6 +34,20 @@ Runtime의 microVM 기반 세션은 연산 자원, 메모리와 파일시스템�
 
 Memory의 short-term memory는 대화 턴과 이벤트를 저장하고, long-term memory는 대화에서 선호, 사실과 요약 등을 추출해 세션을 넘어 사용한다. 추출된 요약을 원문이나 승인된 업무 기록과 동일하게 취급하지 않는다. 재개에 필요한 상태와 모델이 추론한 기억을 나누는 것은 애플리케이션의 데이터 설계다.
 
+### 이벤트 저장과 장기 기억 생성은 완료 시점이 다르다
+
+2026-10-09 AgentCore Memory 공식 문서 기준이다. `CreateEvent`로 저장한 원시 대화는 short-term memory에 남고, 장기 기억은 백그라운드의 비동기 추출과 통합 과정을 거쳐 생성된다. 이벤트 저장 성공을 곧바로 장기 기억 검색 가능 상태로 해석하지 않는다.
+
+| 목적 | 확인할 데이터와 API |
+|---|---|
+| 직전 대화 복원 | `ListEvents`와 `GetEvent`로 저장된 원시 이벤트를 읽는다. |
+| 생성된 장기 기억 확인 | `GetMemoryRecord`와 `ListMemoryRecords`로 생성된 기록을 확인한다. |
+| 질문에 맞는 기억 검색 | `RetrieveMemoryRecords`로 의미 검색한다. 원문 전체를 그대로 반환하는 API로 가정하지 않는다. |
+
+개인화 기능을 검증할 때는 이벤트 저장 직후와 장기 기억 생성 뒤를 나눠 시험하는 것이 좋다. 즉시 필요한 주문 상태나 확정된 사용자 선택은 업무 정본에서 읽고, 아직 추출되지 않은 기억 때문에 이미 확인한 사실이 사라진 것으로 처리하지 않는다. 이는 비동기 생성 경계에서 도출한 설계 제안이다.
+
+이벤트 metadata는 검색 보조용 속성이다. 공식 문서는 customer-managed key로 암호화되지 않으므로 민감한 내용을 넣지 말라고 명시한다. 이를 이벤트 본문 전체가 평문이라는 뜻으로 확대하지 않는다. 이 절의 추가 검증일은 기존 서비스 설명 전체의 재검증일이 아니다.
+
 ## 도구 연결과 실행 권한은 별도 계약이다
 
 Gateway는 OpenAPI, Smithy, Lambda 같은 입력을 도구로 연결하고, 의미 검색으로 도구 후보를 찾는 기능을 제공한다. 도구 후보 검색을 사용자별 실행 권한 검사로 대체하지 않는다.
@@ -97,6 +111,7 @@ Experience를 만들었다는 사실만으로 적용이 끝나지 않는다. 상
 
 ## 출처
 
+- [AWS, Memory types](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-types.html)
 - [AWS Marketplace, Private Marketplace concepts](https://docs.aws.amazon.com/marketplace/latest/buyerguide/private-marketplace-concepts.html)
 - [AWS Marketplace, Configuring Private Marketplace](https://docs.aws.amazon.com/marketplace/latest/buyerguide/configure-private-marketplace.html)
 - [AWS, Temporal policies](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-temporal.html)

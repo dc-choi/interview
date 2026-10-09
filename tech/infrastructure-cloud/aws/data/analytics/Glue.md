@@ -88,6 +88,21 @@ AI 입력 파이프라인에 적용할 때는 품질 실패 후 색인이나 후
 
 NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 오류가 DB 도달, 서비스 접근, IAM 권한과 DB 인증 중 어디에서 발생했는지 좁히고, 변경 뒤 같은 연결 조건으로 다시 시험한다. 이 절은 연결 진단 범위의 보강이며 기존 런타임 전환 절의 검증 기준일은 유지한다.
 
+## Zero-ETL도 동기화 상태와 데이터 준비를 확인한다
+
+2026-10-09 AWS Glue 공식 문서 기준이다. DynamoDB를 소스로 하는 Glue zero-ETL 통합은 PITR 활성화와 테이블의 리소스 기반 접근 정책이 필요하다. Glue가 테이블을 조회하고 export를 만들며 export 상태를 확인할 권한을 준비한다. 파이프라인 코드 작성이 줄어도 소스 접근과 대상 데이터 검증은 남는다.
+
+| 상태 또는 변경 | 의미와 운영 판단 |
+|---|---|
+| `ACTIVE` | 초기 전체 로드를 시작하는 상태다. 표시만으로 초기 데이터 적재 완료를 판정하지 않는다. 전체 로드 뒤 주기적인 CDC가 이어진다. |
+| `SYNCING` | 입력 열의 자료형 변경을 감지하면 해당 테이블의 새 스냅샷을 요청한다. 기존 데이터와 같은 갱신 지연을 가정하지 않는다. |
+| `NEEDS_ATTENTION` | 권한, 소스나 대상의 부재, 미지원 데이터 또는 시스템 오류를 확인한다. 공식 문서는 7일간 동기화를 재시도한 뒤 미해결이면 `FAILED`로 전환한다고 설명한다. |
+| `FAILED` | 복구 가능한 일시 정지 상태가 아니다. 전송을 다시 시작하려면 통합을 삭제하고 재생성해야 한다. |
+
+소스 열 이름 변경은 스키마 감지가 정확히 된다고 보장되지 않으며, 통합에 미치는 결과도 정의돼 있지 않다. 이름 변경을 자동 반영 가능한 변경으로 취급하지 않는다. 통합 삭제는 대상 Glue Data Catalog 데이터베이스와 S3의 실제 데이터를 자동 정리하지 않으므로, 재생성 전에 남은 데이터의 처리 방식을 정한다.
+
+운영 검증에서는 소스 변경 시각과 대상 반영 시각, 대표 행의 값과 자료형을 함께 대조하는 절차를 권한다. `ACTIVE` 표시와 분석용 데이터의 준비 완료를 구분하기 위한 점검이며, zero-ETL이 모든 업무 변환이나 품질 검사를 대신한다는 뜻은 아니다. 이 절만 새로 대조했으며 앞 절들의 검증 기준일은 유지한다.
+
 ## 관련 문서
 
 - [[Athena]], [[Redshift]], [[EMR]]
@@ -96,6 +111,9 @@ NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 �
 
 ## 출처
 
+- [AWS Glue, Configuring a source for a zero-ETL integration](https://docs.aws.amazon.com/glue/latest/dg/zero-etl-sources.html)
+- [AWS Glue, Creating and managing integrations](https://docs.aws.amazon.com/glue/latest/dg/zero-etl-creating-managing.html)
+- [AWS Glue, Limitations](https://docs.aws.amazon.com/glue/latest/dg/zero-etl-limitations.html)
 - [AWS Glue, Troubleshooting connection issues in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/troubleshooting-connection.html)
 - [AWS Glue, Setting up network access to data stores](https://docs.aws.amazon.com/glue/latest/dg/start-connecting.html)
 - [AWS Glue, Setting up Amazon VPC for JDBC connections to Amazon RDS data stores from AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/setup-vpc-for-glue-access.html)
