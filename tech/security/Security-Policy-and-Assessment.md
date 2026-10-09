@@ -128,6 +128,12 @@ Security Hub CSPM 자체 control finding은 `UpdatedAt`을 기준으로 한다. 
 
 장기 감사 증거가 필요하면 S3 같은 별도 저장소로 내보낸다. AWS는 EventBridge 규칙과 custom action을 이용한 내보내기를 안내한다. 운영에서는 필요한 계정과 리전의 결과가 실제로 저장되는지, 접근 통제와 보존 기간이 요구사항에 맞는지 별도로 확인한다. 중앙 화면 연동과 감사 증거의 장기 보존은 서로 다른 완료 조건이다.
 
+### 런타임 경보 부재와 수집 공백을 구분한다
+
+2026-10-10 GuardDuty Runtime Monitoring 공식 문서 대조 기준. 구성 점검 결과와 실행 중 행위의 수집 상태는 서로 다른 증거다. GuardDuty의 coverage는 Runtime Monitoring 활성화, VPC endpoint와 보안 에이전트 배포 상태를 확인한다. `Healthy`는 런타임 이벤트를 받아 분석할 수 있다는 의미이며 침해가 없다는 판정이 아니다. `Unhealthy` 상태에서는 해당 자원의 런타임 행위를 수신하거나 모니터링할 수 없고 Runtime Monitoring finding도 생성할 수 없다.
+
+운영 적용 제안: 경보가 0건이어도 감시 대상 자원과 coverage를 먼저 대조한다. EventBridge로 coverage 변경을 알리고, 에이전트의 CPU와 메모리 사용량도 관측한다. 설치 완료, 이벤트 수신, 위협 탐지와 실제 대응 성공을 각각 확인하며, 센서 배포만으로 차단까지 완료됐다고 기록하지 않는다. 이 구체적인 상태 의미는 GuardDuty 기준이며 다른 보안 제품에도 같은 상태 계약이 있다고 가정하지 않는다.
+
 ## 인증 종류와 심사 범위를 먼저 정한다
 
 2026-10-09 KISA 제도 소개와 인증 절차를 대조한 범위다. 구성 점검 도구의 결과를 인증 전체의 충족 증거로 대신하지 않는다.
@@ -160,6 +166,8 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 
 ## 출처
 
+- [Amazon GuardDuty, Reviewing runtime coverage statistics and troubleshooting issues](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-assessing-coverage.html)
+- [Amazon GuardDuty, After you enable Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-after-configuration.html)
 - [Amazon RDS, Encrypting Amazon RDS resources](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html) — 암호화 사본 복원과 Blue/Green 전환 안내.
 - [Shared Responsibility Model — AWS](https://aws.amazon.com/compliance/shared-responsibility-model/)
 - [AWS Artifact, What is AWS Artifact?](https://docs.aws.amazon.com/artifact/latest/ug/what-is-aws-artifact.html)

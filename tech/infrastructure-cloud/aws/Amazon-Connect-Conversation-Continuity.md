@@ -66,6 +66,12 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 위 적용 기준은 공식 가이드의 입력 제한과 수동 검토 권고에서 도출한 운영 제안이다. 상담 복원, 인계 성공, 실제 업무 해결과 평가 정확도를 각각 측정한다.
 
+## 인계할 맥락과 임시 조회값의 보존 범위를 나눈다
+
+2026-10-10 `Set contact attributes` 공식 문서 기준. Flow attribute는 설정한 flow 안에서만 사용하는 임시 변수다. 다른 flow로 전송되지 않고 contact record, 상담원의 CCP와 `GetContactAttributes`에도 노출되지 않는다. Lambda로 전달하려면 `Invoke AWS Lambda function` 블록에 파라미터로 명시해야 한다. 그러나 flow logging이 켜져 있으면 키와 값이 CloudWatch 로그에 남는다. 임시 변수라는 이유만으로 민감정보가 저장되지 않는다고 판단하지 않는다.
+
+운영 적용 제안: 고객 기록 조회에 잠시 쓰는 값과 다음 상담원이 알아야 할 업무 맥락을 나눈다. 필요한 인계 정보만 별도로 전달하고, 민감한 조회값이 contact attributes나 로그에 복제되는지 확인한다. 임시 변수의 수명, 인계 가능 여부와 로그 보존을 각각 시험하며, 고객 기록의 매칭 결과를 본인 확인이나 해당 기록의 열람 권한으로 간주하지 않는다.
+
 ## 구현 검토에 적용하기
 
 다음은 위 제약에서 도출한 설계 점검 항목이다. 제품 도입이나 특정 환경의 동작을 검증한 결과는 아니다.
@@ -82,6 +88,7 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 ## 출처
 
+- [AWS, Flow block in Connect Customer: Set contact attributes](https://docs.aws.amazon.com/connect/latest/adminguide/set-contact-attributes.html)
 - [AWS, Evaluate agent performance in Connect Customer using generative AI](https://docs.aws.amazon.com/connect/latest/adminguide/generative-ai-performance-evaluations.html)
 - [AWS, Use agentic self-service](https://docs.aws.amazon.com/connect/latest/adminguide/agentic-self-service.html)
 - [AWS, AI agent traces using Contact search and Contact details](https://docs.aws.amazon.com/connect/latest/adminguide/ai-agent-traces.html)

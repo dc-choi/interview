@@ -89,6 +89,12 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 
 설계 점검 제안: 코드 변환 완료, 빌드 통과, 기존 업무 동작의 보존, 운영 전환 준비를 각각 확인한다. 외부 연동과 배포 설정을 포함한 회귀 검증 및 복귀 조건은 변환 도구의 성공 표시만으로 대체하지 않는다.
 
+### 업무 규칙 추출 전에 입력 누락과 추출 범위를 확인한다
+
+2026-10-10 AWS Transform의 mainframe custom job plan 공식 문서 기준. 업무 로직 추출에는 코드 의존성과 진입점 분석이 선행된다. 코드 분석에서 발견한 누락 파일은 S3 입력에 보완하고 분석을 다시 실행하도록 안내한다. Application level과 File level은 추출 범위가 다르며, 선택한 파일의 의존 파일이 추가돼 최초 선택보다 많은 규칙 파일이 생성될 수 있다.
+
+설계 점검 제안: 추출 결과마다 입력 코드 범위, 누락 의존성과 추가로 포함된 파일을 함께 검토한다. 업무 담당자와 정상 및 예외 입력의 기존 실행 결과를 대조해 유지할 규칙과 수정할 결함을 구분한다. 규칙 문서 생성 완료를 업무 동작 보존이나 운영 전환 완료로 계산하지 않는다.
+
 ### 장점
 - 기술 스택을 현대화하면서 내부 품질까지 상승
 - 유실된 사양서를 이 기회에 복구
@@ -184,6 +190,7 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 - "사람도 레거시가 될 수 있다"의 조직적 의미
 
 ## 출처
+- [AWS Transform, Transformation of mainframe applications](https://docs.aws.amazon.com/transform/latest/userguide/transform-app-mainframe-workflow.html)
 - [AWS Transform, How AWS Transform modernizes .NET applications](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-ide-how.html)
 - [AWS Transform, Modernizing .NET code with the AWS Transform web application](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-web-app.html)
 - [AWS Prescriptive Guidance, Decompose by business capability](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html)
