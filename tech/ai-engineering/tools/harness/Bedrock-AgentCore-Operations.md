@@ -74,6 +74,18 @@ AgentCore 배포가 끝났어도 내부에서 호출하는 Bedrock 모델의 접
 
 따라서 초기 활성화 역할과 상시 실행 역할을 나누는 구성을 검토한다. `AccessDeniedException`만 보고 Runtime 역할에 Marketplace 전체 권한을 추가하지 않는다. 구독 처리 중에도 접근 오류가 이어질 수 있으므로 선행 조건과 처리 상태를 확인한 뒤 제한적으로 재시도한다. 구독이 필요 없는 모델에 이 절차를 일괄 적용하지 않는다.
 
+### Private Marketplace의 승인 범위도 확인한다
+
+2026-10-09 AWS Marketplace 공식 문서 기준, Private Marketplace를 사용하는 조직에서는 IAM의 구독 권한과 상품 조달 승인을 구분한다. Experience는 승인된 상품 목록이고, audience는 조직 전체, OU 또는 계정이다. `Live` 상태인 experience가 연결된 audience를 통제한다.
+
+모델 구독 과정에서 Private Marketplace 자격 오류가 나타나면 다음을 확인한다.
+
+1. 호출 계정에 실제로 적용되는 governing experience를 찾는다. 계정에 직접 연결된 것뿐 아니라 상위 조직이나 OU에서 상속된 것도 확인한다.
+2. 해당 experience의 승인 목록에 필요한 모델 상품이 있는지 확인한다. 하위 audience에 별도의 `Live` experience가 있으면 상위 목록의 승인을 합산하지 않는다.
+3. 관리자에게 필요한 상품과 적용 계정을 명시해 승인 변경을 요청한다. Runtime 역할에 Marketplace 관리 권한을 추가하는 것으로 조달 정책 문제를 해결하지 않는다.
+
+Experience를 만들었다는 사실만으로 적용이 끝나지 않는다. 상태, audience 연결과 승인 목록을 함께 확인한다. 이 점검은 Private Marketplace를 사용하는 경우의 조달 경계이며, 모든 Bedrock 계정에 이를 새로 만들라는 뜻이 아니다. 조달 승인 후에도 모델 호출 IAM과 리전별 사용 가능 여부는 별도 조건이다.
+
 ## 운영 점검
 
 - 다른 사용자의 세션과 기억 조회를 거절하는가
@@ -85,6 +97,8 @@ AgentCore 배포가 끝났어도 내부에서 호출하는 Bedrock 모델의 접
 
 ## 출처
 
+- [AWS Marketplace, Private Marketplace concepts](https://docs.aws.amazon.com/marketplace/latest/buyerguide/private-marketplace-concepts.html)
+- [AWS Marketplace, Configuring Private Marketplace](https://docs.aws.amazon.com/marketplace/latest/buyerguide/configure-private-marketplace.html)
 - [AWS, Temporal policies](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-temporal.html)
 - [AWS, Authoring temporal policies](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-temporal-authoring.html)
 - [AWS, Request access to models](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html)

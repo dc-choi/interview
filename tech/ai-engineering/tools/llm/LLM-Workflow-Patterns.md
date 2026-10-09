@@ -121,6 +121,10 @@ Function Calling은 LLM이 외부 도구(함수)를 호출하는 능력이다. �
 
 ### 생성, 검증과 실행의 경계
 
+컬럼 이름을 맞혀도 그 안의 업무 값을 틀리면 실행에 성공한 잘못된 집계가 나온다. 예를 들어 취소 상태가 `C`로 저장되는 가상 스키마에서 모델이 `status = 'CANCELLED'`를 만들면, SQL 문법이 맞아도 취소 건수를 놓칠 수 있다. 상태값의 대응표와 지표 산식을 설명에 담고, 검토한 질문과 SQL 쌍으로 보완한 뒤 기대 집계와 대조한다.
+
+2026-10-09 Bedrock 공식 문서 기준, 구조화 Knowledge Base의 query configuration에는 테이블과 컬럼의 `description`, 자연어 질문과 SQL의 쌍인 `curatedQueries`를 넣을 수 있다. `INCLUDE`와 `EXCLUDE`는 SQL 생성 맥락을 조절하는 설정이며 접근 통제의 대체물이 아니다. 생성 맥락의 적용은 비결정적이므로 설정 뒤에도 생성 SQL과 실제 결과를 검증한다. 위 상태값은 기능을 설명하기 위한 가상 예시이며 제품이 보장하는 자동 교정 규칙이 아니다.
+
 SQL 문자열을 만드는 것과 권한 안에서 올바른 결과를 얻는 것은 별도 단계다. Amazon Bedrock Knowledge Bases의 `GenerateQuery`는 SQL 변환을 조회와 분리하고, `Retrieve`는 SQL 실행 결과를 반환한다. 생성 SQL의 정확도는 맥락, 스키마와 질문 의도에 따라 달라져 워크로드에 사용하기 전 평가가 필요하다(2026-10-07 공식 문서 기준).
 
 다음은 이 경계를 분석 서비스에 적용한 설계 예시다.
@@ -180,6 +184,7 @@ AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명�
 - API 에이전트 플랫폼: 스킬셋 연결로 도메인 에이전트 생성, Detector-CoT-Answer 처리, 리트리벌 스킬(CoT+랭킹으로 RAG 확장)과 근거를 XML로 표시하는 랭킹 모델로 출처 추적.
 
 ## 출처
+- [Amazon Bedrock User Guide, Create a knowledge base by connecting to a structured data store](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-structured-create.html) — query configurations와 생성 맥락의 비결정성.
 - [dbt Developer Hub, description](https://docs.getdbt.com/reference/resource-properties/description)
 - [Dynamic text-to-SQL for enterprise workloads with Amazon Bedrock Agents — AWS](https://aws.amazon.com/blogs/machine-learning/dynamic-text-to-sql-for-enterprise-workloads-with-amazon-bedrock-agents/)
 - [Enterprise-grade natural language to SQL generation using LLMs: Balancing accuracy, latency, and scale — AWS](https://aws.amazon.com/blogs/machine-learning/enterprise-grade-natural-language-to-sql-generation-using-llms-balancing-accuracy-latency-and-scale/)

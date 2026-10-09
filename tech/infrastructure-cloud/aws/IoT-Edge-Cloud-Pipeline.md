@@ -34,6 +34,20 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 | 클라우드 데이터 통합 | 여러 장비의 이력 분석 | 재전송, 중복 처리와 저장 누락을 다루는가 |
 | 모델 개발과 배포 | 수집 데이터로 모델 개선 | 배포 버전, 실패 복구와 현장 호환성을 확인했는가 |
 
+## 배포 상태와 장비별 복구 결과를 나눈다
+
+로봇처럼 여러 현장 장비에 소프트웨어를 배포할 때는 배포를 생성한 상태와 각 장비가 적용한 결과를 구분한다. 2026-10-09 Greengrass V2 공식 문서 기준, 개별 core device의 배포 작업은 `list-effective-deployments`로 확인할 수 있다. IoT job의 장비별 실행 상세에서는 다음 상태를 구분한다.
+
+| 상세 상태 | 의미 |
+|---|---|
+| `SUCCESSFUL` | 배포 성공 |
+| `FAILED_NO_STATE_CHANGE` | 적용 준비 중 실패 |
+| `FAILED_ROLLBACK_COMPLETE` | 배포는 실패했지만 이전 동작 구성으로 롤백 완료 |
+| `FAILED_ROLLBACK_NOT_REQUESTED` | 롤백을 요청하지 않은 배포 실패 |
+| `FAILED_UNABLE_TO_ROLLBACK` | 배포 실패 후 롤백도 실패 |
+
+롤백 완료는 새 버전 배포 성공이 아니다. 실패 시 `deployment-failure-cause`와 장비 로그를 함께 확인한다. 운영 적용에서는 목표 버전, 실제 적용 결과와 현장 기능 점검을 따로 기록하는 방식을 검토한다. 배포 성공도 로봇 동작의 안전성이나 물리적 작업 완료를 증명하지 않는다.
+
 ## 적용 시 점검할 실패 조건
 
 다음은 공개 구현 사례와 제품 기능을 바탕으로 한 설계 점검 항목이다. Greengrass가 자동으로 보장하는 기능 목록은 아니다.
@@ -47,6 +61,7 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 
 ## 출처
 
+- [AWS IoT Greengrass, Check deployment status](https://docs.aws.amazon.com/greengrass/v2/developerguide/check-deployment-status.html)
 - [AWS, What is AWS IoT Greengrass?](https://docs.aws.amazon.com/greengrass/v2/developerguide/what-is-iot-greengrass.html)
 - [AWS, How AWS IoT Greengrass works](https://docs.aws.amazon.com/greengrass/v2/developerguide/how-it-works.html)
 - [AWS IoT Core, SQS rule action](https://docs.aws.amazon.com/iot/latest/developerguide/sqs-rule-action.html)
