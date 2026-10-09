@@ -46,6 +46,14 @@ aliases: ["시장 실패와 외부효과", "Market Failure and Externalities"]
 
 **코즈 정리**의 출발점은 거래비용이 0이고 거래 가능한 권리가 정해진 이상적 조건이다. 이 조건에서는 당사자 간 협상으로 외부효과를 내부화하는 효율적 배분에 도달할 수 있다. 이를 정부나 법적 권리의 설정, 집행이 필요 없다는 뜻으로 읽지 않는다. 현실의 협상, 측정과 집행에는 비용이 들며, 권리 배분과 제도 선택이 결과에 영향을 준다. 협상이 어렵다는 이유만으로 특정 정부 개입이 더 낫다고 확정하지 않고 실제 대안의 비용과 효과를 비교한다.
 
+### 주거지원은 대상, 비교 집단과 결과 지표를 나눠 평가한다
+
+지원 대상의 소득이 낮다는 관찰만으로 지원이 빈곤의 원인이라고 결론 내리지 않는다. 정책 효과를 보려면 지원이 없었을 경우와 비교할 근거가 필요하며, 주거환경, 건강, 고용과 소득을 각각 측정해야 한다.
+
+미국의 Moving to Opportunity(MTO)는 고빈곤 지역의 공공주택 등 보조 주택에 살던 가구를 무작위로 나누어 이주용 바우처 제공 효과를 평가했다. 2011년 최종 평가에서는 주거환경과 성인의 일부 정신적, 신체적 건강이 개선됐지만, 성인의 취업과 소득 등 경제 지표에는 탐지 가능한 효과가 없었다. 소득 효과가 확인되지 않았다는 결과를 건강 개선까지 없었다는 뜻으로 읽지 않는다.
+
+비교 집단도 기존 주거지원의 자격을 유지했으므로 이 실험은 공공임대의 존재와 부재를 비교한 것이 아니다. 한국의 공공임대 전체나 입주자의 노력 성향에 일반화하지 않는다. 바우처를 제안받은 집단의 효과(ITT)와 실제 이용해 이주한 사람의 효과(TOT)도 구분한다. 2026-10-09 HUD 최종 평가 요약의 실험 설계와 성인 결과를 대조했으며, 아동의 후속 장기 성과와 국내 제도는 이 절의 검증 범위 밖이다.
+
 ## 6. 핵심 개념
 
 - **외부효과**: 가격에 안 잡히는 제3자 효과
@@ -69,6 +77,7 @@ aliases: ["시장 실패와 외부효과", "Market Failure and Externalities"]
 - [OpenStax, Principles of Economics 3e, The Problem of Imperfect Information and Asymmetric Information](https://openstax.org/books/principles-economics-3e/pages/16-1-the-problem-of-imperfect-information-and-asymmetric-information)
 - [OpenStax, Principles of Economics 3e, Insurance and Imperfect Information](https://openstax.org/books/principles-economics-3e/pages/16-2-insurance-and-imperfect-information)
 - [The Institutional Structure of Production — NobelPrize.org, Ronald H. Coase](https://www.nobelprize.org/prizes/economic-sciences/1991/coase/lecture/)
+- [HUD, Moving to Opportunity for Fair Housing Demonstration Program: Final Impacts Evaluation, Executive Summary (2011)](https://www.huduser.gov/publications/pdf/HUD_MTOExecSummary_v4.pdf) — 실험 설계와 성인 결과
 
 ## 관련 문서
 

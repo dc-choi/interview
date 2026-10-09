@@ -121,6 +121,14 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 - 보수적으로 알려진 경영진의 가이던스 상향을 강한 신호로 보는 시각은 경험칙이다. 과거 가이던스 달성 이력으로 따로 검증한다.
 - 체크리스트는 가치를 추정하기 위한 입력을 모으는 단계다. 결론은 여전히 가격과 비교해야 한다(1절).
 
+### 메모리 기업의 성장은 가격, 출하량과 제품 구성을 나눠 본다
+
+같은 매출 성장도 판매가격 상승과 출하량 증가의 기여가 다를 수 있다. 메모리 기업은 비트 출하량과 평균판매가격(ASP)을 구분하고, 이익률에서는 제품 구성과 제조원가도 함께 확인한다.
+
+Micron의 2025 회계연도 10-K는 전년 대비 DRAM 매출 62% 증가를 평균판매가격의 40%대 초반 상승과 비트 출하량의 10%대 중반 증가로 설명했다. NAND 매출 18% 증가는 주로 비트 출하량의 10%대 후반 증가에서 나왔다. DRAM 마진 개선에는 가격 상승 외에 HBM 등 고마진 제품 비중과 제조원가 절감도 기여했다.
+
+이 사례에서 도출할 점검 질문은 가격 상승이 둔화돼도 출하량, 제품 구성과 원가 개선이 이익을 유지할 수 있는가다. 한 회사의 과거 실적을 전체 메모리 업황이나 매도 시점으로 일반화하지 않는다. 2026-10-09 해당 10-K의 Results of Operations를 대조했으며, 현재 가격과 다음 분기 전망을 검증한 기록은 아니다.
+
 ### 매출의 총액, 순액과 연환산 기준을 맞춘다
 
 매출 규모를 비교하기 전에 고객 결제 총액, 회계상 매출과 수수료 수익을 구분한다. IFRS 15의 본인(principal)과 대리인(agent) 판단은 고객에게 이전하기 전에 특정 재화나 서비스를 통제하는지에 따른다. 본인은 수행의무를 충족할 때 받을 대가의 총액을 매출로 인식하고, 다른 당사자의 제공을 주선하는 대리인은 그 주선의 대가인 수수료를 인식한다. 공급자에게 지급하는 금액이 있다는 사실만으로 순액 매출이 되는 것은 아니다.
@@ -141,6 +149,7 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 
 ## 출처
 
+- [2025 Form 10-K — Micron Technology](https://s25.q4cdn.com/621799436/files/doc_financials/2025/ar/2025-Form-10-K.pdf) — Results of Operations, 보고서 52쪽의 매출과 마진 요인
 - [Post-implementation Review of IFRS 15 Revenue from Contracts with Customers — IFRS Foundation](https://www.ifrs.org/content/dam/ifrs/project/pir-ifrs-15/rfi-iasb-2023-4-pir-ifrs-15.pdf) — 5절 Background의 현행 요건 설명, 본인과 대리인 판단 및 총액과 수수료 수익
 - [IFRS Foundation, Principal versus Agent: Software Reseller (May 2022)](https://www.ifrs.org/content/dam/ifrs/supporting-implementation/agenda-decisions/2022/principal-versus-agent-software-reseller-may-2022.pdf)
 - [PTC Announces Third Quarter Fiscal 2024 Results — PTC, SEC 공시](https://www.sec.gov/Archives/edgar/data/857005/000095017024088530/ptc-ex99_1.htm) — Operating Measure의 ARR 정의

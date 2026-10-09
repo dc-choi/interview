@@ -92,6 +92,14 @@ B2B 인프라 시장은 다른 기업의 생산, 거래, 위험 관리를 가능
 
 이 구분에서 도출한 점검 질문은 주문의 매출 전환 시점, 납품 지연 가능성과 회수 조건이다. 비율이 1을 넘었다는 사실만으로 향후 이익이나 주가 상승을 확정하지 않는다. 2026-10-09에는 위 과거 수치와 지표 구분을 ABB의 2025년 4분기 실적 발표로 확인했다. 현재 분기 실적과 전망을 검증한 기록은 아니다.
 
+### 장비 검증과 파트너 자격을 매출로 바꾸어 읽지 않는다
+
+장비가 특정 요구사항을 충족했다는 검증, 기업의 파트너 자격, 고객의 발주와 회계상 매출 인식은 서로 다른 근거를 요구한다. 기술 적합성 발표만으로 주문 금액, 독점 공급이나 이익률을 추정하지 않는다.
+
+예를 들어 LG전자는 2026-09-28 NVIDIA Partner Network의 전력과 냉각 솔루션 Preferred Partner 참여를 발표했다. 같은 발표에서 600kW와 1MW CDU의 검증 완료, 2.6MW CDU의 DSX Ready 자격을 구분했다. 이 발표는 파트너 지위와 제품별 검증 범위를 확인하는 자료이며, NVIDIA의 구매 금액을 확인하는 계약 자료는 아니다.
+
+산업 분석에서는 검증된 제품과 적용 범위를 먼저 적고, 후속 공시에서 고객 계약, 납품과 현금 회수 근거를 각각 찾는다. 위 사례는 2026-10-09 기업의 공식 발표와 대조했으며, 실제 수주 실적이나 냉각 성능을 독립 측정한 결과는 아니다.
+
 ### 시장을 읽을 때 확인할 질문
 
 - [ ] 수요가 규제, 물리적 필요, 위험 이전 중 어디서 오는가
@@ -104,6 +112,7 @@ B2B 인프라 시장은 다른 기업의 생산, 거래, 위험 관리를 가능
 
 ## 출처
 
+- [LG Electronics — LG Electronics Becomes an NVIDIA Preferred Partner for Power and Cooling Solutions](https://www.lg.com/global/newsroom/news/eco-solution/lg-electronics-becomes-an-nvidia-preferred-partner-for-power-and-cooling-solutions/)
 - [ABB — Q4 2025 results](https://resources.news.e.abb.com/attachments/published/132985/bg-BG/30D6366E65E1/ABB-Q4-2025-press-release-English.pdf)
 - [NAIC, Reinsurance](https://content.naic.org/insurance-topics/reinsurance)
 - [국가기록원, 배출권거래제](https://www.archives.go.kr/next/newsearch/listSubjectDescription.do?id=009873&pageFlag=&sitePage=)
