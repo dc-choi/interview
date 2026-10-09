@@ -63,10 +63,20 @@ verified_at: 2026-10-03
 
 예를 들어 행사가 10, 만기 기초선물 가격 -20이면 풋의 단위당 내재가치는 30으로, 기초가격 0일 때의 10을 넘는다. 실제 손익에는 계약 승수와 수취 프리미엄도 반영한다. CME는 2020년 에너지 선물의 음수 가격에 대응하는 옵션 가격모형을 공지했으며, 계약별 가격과 결제 조건을 확인해야 한다.
 
+## 규제 발표는 절차와 적용 범위를 나눠 읽는다
+
+레버리지 거래 규제의 발표를 읽을 때는 검토 중인 방안과 이미 적용되는 의무를 구분한다. 미국 CFTC의 일반적인 규칙 제정 절차에서 **ANPRM**은 쟁점과 가능한 접근법에 관한 예비 의견수렴이고, **NPRM**은 구체적인 규칙안을 제시하는 단계다. 최종 규칙은 의견을 검토한 뒤 별도로 채택될 수 있으며, 관보에 적힌 효력 발생일과 단계별 준수 기한을 확인해야 한다. 모든 규칙 제정에 ANPRM이 필수인 것은 아니다.
+
+2026-10-05 CFTC의 CTX와 CAM 발표는 이 구분을 적용할 사례다. CEA 2(c)(2)(D)의 암호자산 소매상품거래에 관한 규칙과 지정계약시장 등록의 하위 범주를 검토하는 ANPRM이었다. 이 발표 자체를 모든 암호자산 현물 거래소에 새 등록 의무가 시행됐다는 근거로 쓰지 않는다. 기존 법에 따른 의무가 없다는 뜻도 아니다.
+
+실무적으로는 발표일, 적용 대상 거래와 참여자, 현재 절차, 최종 규칙과 시행일을 따로 기록한다. 이는 규제 자료를 읽는 기준이며 특정 거래의 법적 분류나 준법 판단을 대신하지 않는다. 이 절은 2026-10-09 CFTC의 절차 설명과 해당 발표를 대조했다.
+
 ## 출처
 
 검증 범위(2026-10-03): 선도와 선물의 거래 구조, 옵션 권리와 의무, 손실 한도, 증거금과 결제, 헤지의 잔여 위험을 대조했다. AIG와 음수 가격은 역사적 사례이며, 현재 계약별 증거금률과 만기, 인도, 자동행사 세부 규칙을 확인한 날짜는 아니다.
 
+- [Commission Rulemaking Explained — CFTC](https://www.cftc.gov/LawRegulation/CommissionRulemakingExplained/index.htm) — ANPRM, NPRM, 최종 규칙과 준수 기한의 구분
+- [CFTC Seeks Public Comment on Advanced Notice of Proposed Rulemaking Relating to Regulation Crypto Asset Transactions and Regulation Crypto Asset Markets — CFTC](https://www.cftc.gov/PressRoom/PressReleases/9307-26) — 2026-10-05 의견수렴 발표의 대상과 절차
 - [CFTC Glossary, basis risk](https://www.cftc.gov/LearnAndProtect/AdvisoriesAndArticles/CFTCGlossary/index.htm) — 베이시스, 헤지, 거래상대방 위험과 자동행사
 - [Economic Purpose of Futures Markets and How They Work — CFTC](https://www.cftc.gov/LearnAndProtect/AdvisoriesAndArticles/economicpurpose.html) — 헤지와 일일정산의 현금흐름, 청산기관의 역할
 - [CME Group, Futures Contracts Compared to Forwards](https://www.cmegroup.com/education/courses/introduction-to-futures/futures-contracts-compared-to-forwards) — 표준화와 거래소, 맞춤형과 장외 거래의 차이

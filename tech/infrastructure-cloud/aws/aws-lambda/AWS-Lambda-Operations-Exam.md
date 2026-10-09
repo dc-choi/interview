@@ -54,6 +54,22 @@ verified_at: 2026-09-30
 - SAM의 `AutoPublishAlias`와 `DeploymentPreference`는 새 버전을 발행하고 CodeDeploy로 alias 가중치를 canary, linear 방식으로 옮기며 실패하면 되돌린다. CodeDeploy 쪽 구성은 [[CICD-Tool-Selection-AWS-Code-Services|AWS Code 시리즈 운영]]
 - Provisioned Concurrency는 발행 버전이나 alias에 걸리므로 실제 트래픽이 들어오는 qualifier와 일치시킨다([[AWS-Lambda-Invocation-Concurrency|동시성 제어]])
 
+## 런타임 업그레이드와 패치 롤백
+
+`python3.12` 같은 **runtime identifier**와 개별 패치를 식별하는 **runtime version ARN**을 구분한다. 언어 버전을 바꾸려면 함수의 runtime identifier를 변경하고 코드, 의존성과 layer 호환성을 검증한다. `Auto`는 선택한 런타임의 패치를 적용하는 설정이며 다른 언어 버전으로 자동 전환하는 설정이 아니다.
+
+관리형 런타임의 업데이트 모드는 다음과 같다.
+
+- **Auto:** 기본 모드. 발행된 함수 버전에도 런타임 패치가 적용될 수 있다. 앞 절의 불변 스냅샷이 패치까지 영구 고정한다는 뜻은 아니다.
+- **Function update:** 함수를 갱신할 때 패치를 적용한다. 이 모드의 발행 버전은 런타임 패치도 유지하므로 이전 버전으로 트래픽을 돌려 코드, 설정과 패치를 함께 되돌릴 수 있다. 패치를 받으려면 주기적인 갱신과 버전 발행이 필요하다.
+- **Manual:** 지정한 runtime version ARN을 사용한다. 패치 호환성 문제의 임시 완화에 쓰고, 문제 해결 뒤 최신 패치를 받는 모드로 돌아간다.
+
+패치 롤백에는 정상 실행 당시 로그의 `INIT_START`에 기록된 ARN을 확인한다. 같은 패치 번호라도 리전과 CPU 아키텍처에 따라 ARN이 다를 수 있다. `$LATEST`가 Manual이면 런타임이나 아키텍처를 바꾸기 전에 Auto 또는 Function update로 전환해야 한다. 언어 버전 변경과 패치 ARN 롤백을 같은 작업으로 취급하지 않는다.
+
+컨테이너 이미지 함수는 업데이트된 베이스 이미지로 이미지를 다시 빌드하고 재배포해야 한다. 언어 버전 전환 전에는 지원 종료와 생성, 갱신 차단 일정을 확인한다. 기존 런타임의 갱신이 차단된 뒤에는 그 런타임으로 설정을 되돌리지 못할 수 있다.
+
+이 절은 2026-10-09 공식 런타임 관리, 롤백과 지원 정책을 대조했다. 실제 함수의 호환성 시험과 다른 절의 재검증을 뜻하지 않는다.
+
 ## RDB와 Lambda의 궁합 문제
 
 - Lambda가 동시 실행 환경을 늘릴 때 **각 환경이 DB 커넥션을 열면 데이터베이스 연결 한도를 빠르게 소진**할 수 있음
@@ -100,6 +116,9 @@ verified_at: 2026-09-30
 
 ## 출처
 
+- [Lambda runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html)
+- [Understanding how Lambda manages runtime version updates](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html)
+- [Rolling back a Lambda runtime version](https://docs.aws.amazon.com/lambda/latest/dg/runtime-management-rollback.html)
 - [Lambda quotas](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
 - [Lambda scaling behavior](https://docs.aws.amazon.com/lambda/latest/dg/scaling-behavior.html)
 - [Lambda execution environment lifecycle](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)

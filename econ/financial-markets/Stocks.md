@@ -36,6 +36,16 @@ aliases: ["주식", "Stocks"]
 
 ## 4. 밸류에이션의 첫걸음
 
+### 시가총액은 주가와 주식 수를 함께 본다
+
+시가총액은 **현재 주가 × 주식 수(outstanding shares)**로 계산한다. 회사가 보유한 현금이나 한 해 매출을 뜻하지 않는다. 주식 수가 변하지 않는다는 가정에서만 시가총액의 증가율과 주가 상승률이 같다.
+
+가상으로 주가가 100이고 주식 수가 1,000이면 시가총액은 100,000이다. 주식 수를 고정한 채 시가총액 120,000에 필요한 주가를 구하면 120이 된다. 이는 산술적 역산이며 그 가격에 도달할 확률이나 적정가치를 알려 주지 않는다. 목표 시가총액을 주가로 바꿀 때는 계산에 사용한 주식 수와 기준 시점을 함께 확인한다.
+
+이 절은 2026-10-09 Investor.gov의 정의를 대조했다. 개별 기업의 실시간 시가총액과 목표주가는 검증 범위에 포함하지 않는다.
+
+### PER과 PBR
+
 주가가 싼지 비싼지 가늠하는 대표 지표다(자세한 건 [[Valuation|밸류에이션]]).
 
 - **PER(주가수익비율)**: 주가 ÷ 주당순이익. 이익의 몇 배에 거래되나. 높으면 성장 기대가 크거나 고평가.
@@ -120,6 +130,7 @@ AI, 로봇이나 친환경 같은 투자 테마는 여러 산업을 가로지를
 
 ## 출처
 
+- [Investor.gov, Market Capitalization](https://www.investor.gov/introduction-investing/investing-basics/glossary/market-capitalization) — 시가총액의 정의와 주가, 주식 수의 관계
 - [The Global Industry Classification Standard (GICS) — MSCI](https://www.msci.com/indexes/index-resources/gics) — 2026-10-07 네 단계 분류, 주된 사업과 매출 중심 판단 기준 대조
 - [Asset Allocation and Diversification — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 2026-10-07 산업 집중 펀드와 분산의 구분 대조
 - [OECD, G20/OECD Principles of Corporate Governance 2023: The rights and equitable treatment of shareholders and key ownership functions](https://www.oecd.org/en/publications/g20-oecd-principles-of-corporate-governance-2023_ed750b30-en/full-report/component-5.html) — 2026-10-07 II.F와 II.G의 이해상충 관리, 소수주주 보호 원칙 대조
