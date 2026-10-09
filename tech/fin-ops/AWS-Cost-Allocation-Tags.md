@@ -49,6 +49,19 @@ Cost Categories는 계정, 서비스, 태그 등의 규칙으로 비용을 묶�
 
 **Split charge 결과는 Cost Categories 상세 페이지와 다운로드 CSV에서 확인한다. CUR와 Cost Explorer의 비용을 바꾸거나 다른 비용 관리 도구로 배분 결과를 전달하지 않는다.** 내부 비용 보고에 사용할 때는 원래 청구 비용과 배분 후 비용을 분리해 표시한다. 예산 경보도 자동으로 배분 후 금액을 감시한다고 가정하지 않는다.
 
+## 태그 누락은 리소스 수와 비용 비중을 함께 본다
+
+태그가 없는 리소스 개수만 줄여서는 비용 귀속의 사각지대가 얼마나 줄었는지 알기 어렵다. 비싼 리소스 하나가 다수의 저비용 리소스보다 큰 미분류 비용을 만들 수 있다.
+
+다음은 비용 기준의 점검 제안이다. AWS가 정한 고정 KPI나 목표치는 아니다.
+
+1. 비교 기간, 계정과 비용 기준을 맞춘다. 상각 비용과 청구 비용을 섞지 않는다.
+2. 전체 비용 중 담당 팀이나 서비스에 귀속하지 못한 금액과 비율을 함께 본다. 미분류 비율은 `미분류 비용 ÷ 같은 범위의 전체 비용`으로 계산하며 분모가 0이면 계산하지 않는다.
+3. 미분류 항목을 태그 누락, 활성화 대기, 잘못된 값, 태그로 직접 배분할 수 없는 비용으로 나눈다. 모두 태그 누락으로 집계하지 않는다.
+4. 누락 중 비용이 큰 항목부터 담당자가 수정하고, 다음 보고서에서 실제 비용 행의 귀속을 확인한다. 알림 발송만으로 처리를 완료하지 않는다.
+
+2026-10-09 대조한 AWS 태깅 가이드는 태깅할 수 없는 비용의 처리 기준을 별도로 정하도록 설명한다. 일부 RI/SP 약정 관련 비용처럼 태그를 추가하는 것만으로 해결되지 않는 항목은 계정이나 합의한 배분 기준으로 처리하고, 그 기준을 보고서에 남긴다. 미분류 비중이 줄어든 것은 비용을 더 잘 설명하게 됐다는 뜻이며 비용 절감액과 같지 않다.
+
 ## 운영 완료 기준
 
 다음은 태깅 결과와 비용 보고의 연결을 확인하는 점검 절차다.
@@ -62,6 +75,7 @@ Cost Categories는 계정, 서비스, 태그 등의 규칙으로 비용을 묶�
 
 ## 출처
 
+- [AWS 공식 문서, Building a cost allocation strategy](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/building-a-cost-allocation-strategy.html) — 비용 측정 범위와 태깅할 수 없는 비용의 처리, 과거 태그 적용은 위 backfill 절의 별도 문서를 따른다
 - [AWS Billing, Activating user-defined cost allocation tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html)
 - [AWS Resource Groups Tagging API, GetResources](https://docs.aws.amazon.com/resourcegroupstagging/latest/APIReference/API_GetResources.html)
 - [Amazon EKS, Organize Amazon EKS resources with tags](https://docs.aws.amazon.com/eks/latest/userguide/eks-using-tags.html)

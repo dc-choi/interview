@@ -112,6 +112,14 @@ AL2023의 커널 계열 변경 절차는 대상 패키지 설치, 기본 부팅 
 - `InstanceInitiatedShutdownBehavior`는 OS에서 `shutdown`, `poweroff`를 실행했을 때 stop과 terminate 중 무엇을 할지 정한다. EBS 기반 인스턴스의 기본값은 stop이고, 콘솔이나 `StopInstances` API로 멈추는 경우에는 적용되지 않는다
 - Stop 후 Start하면 자동 할당된 공인 IPv4가 바뀐다. 고정 주소가 필요하면 [[EC2-Network-Access|Elastic IP]]를 쓴다
 
+## 시작 실패: 계정 한도와 가용 용량을 구분한다
+
+2026-10-09 EC2 공식 문서 대조 기준이다. `InstanceLimitExceeded`는 리전의 계정 한도 문제이고, `InsufficientInstanceCapacity`는 요청을 충족할 On-Demand 용량이 현재 부족하다는 뜻이다. 중지한 인스턴스를 다시 시작할 때도 용량 부족이 생길 수 있다. 계정 한도 증설만으로 실제 용량 부족이 해결되지는 않는다.
+
+용량 부족이면 몇 분 후 재시도하거나 한 번에 요청하는 인스턴스 수를 줄인다. 새 인스턴스는 다른 AZ나 타입도 검토하되, 전환 전에 AMI와 CPU 아키텍처, 네트워크와 스토리지 의존성을 확인한다. 요청을 나누는 것은 가용 용량을 활용할 가능성을 높이는 대응이지 전체 대수 확보의 보장이 아니다.
+
+가용 용량이 꼭 필요한 워크로드는 Capacity Reservation을 미리 검토한다. **예약 요청 자체도 용량 부족이나 계정 한도 때문에 실패할 수 있으며, 사용 가능 여부는 `active` 상태로 확인한다.** 이미 발생한 용량 부족을 즉석에서 없애는 수단으로 보지 않는다. 확보된 예약의 미사용 용량도 과금되므로 필요한 대수와 기간을 함께 정한다. 구매 모델 비교는 [[EC2-Cost|EC2 비용 모델]]을 따른다.
+
 ## AMI (Amazon Machine Image)
 
 인스턴스를 시작하는 데 필요한 정보를 담은 **이미지 템플릿**. OS, 애플리케이션, 구성, 권한 정보 포함.
@@ -130,6 +138,9 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 
 ## 출처
 
+- [AWS 공식 문서, Troubleshoot Amazon EC2 instance launch issues](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/troubleshooting-launch.html)
+- [AWS 공식 문서, Create a Capacity Reservation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-create.html)
+- [AWS 공식 문서, Capacity Reservation pricing and billing](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html)
 - [Revert to a stable kernel after updates to an EC2 instance — AWS re:Post](https://repost.aws/knowledge-center/revert-stable-kernel-ec2-reboot)
 - [AWS 공식 문서, Prerequisites for the EC2 Serial Console](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console-prerequisites.html)
 - [AWS 공식 문서, Attach an Amazon EBS volume to an Amazon EC2 instance](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-attaching-volume.html)
