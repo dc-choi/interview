@@ -41,7 +41,7 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 | 라우팅 기준 | HTTP Header, Method, Host, Path, Query, Source IP |
 | SSL Offload | **ACM 통합** 지원 |
 | Cross-Zone | 기본 활성 (요금 부과 없음) |
-| 클라이언트 IP | **`X-Forwarded-For` 헤더**로 전달 (Source IP는 ALB Private IP로 치환) |
+| 클라이언트 IP | 기본 `append` 모드에서 **`X-Forwarded-For` 헤더**에 추가. `preserve`, `remove` 설정은 아래 절 참조 |
 | Public IP | **유동적** — 변경됨, DNS 이름으로 접근 필요 |
 | 대상 | EC2, IP, Lambda, 컨테이너 |
 
@@ -85,7 +85,7 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 - 리스너 포트 없음 — 모든 IP 트래픽 그대로 전달
 - 대상 그룹 인스턴스와 **Geneve Protocol(UDP 6081)** 가상 터널로 통신
 - 트래픽이 GWLB → 보안 어플라이언스 통과 → 다시 GWLB → 목적지로 흐름
-- 시험 포인트: "3rd-party 가상 어플라이언스, 인라인 패킷 검사" 키워드가 나오면 GWLB
+- 시험 포인트: 3rd-party 가상 어플라이언스와 인라인 패킷 검사가 요구되면 GWLB를 검토
 
 ## ELB 타입 비교 요약
 
@@ -128,11 +128,15 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 
 ## X-Forwarded-For
 
-L7(ALB)에서 클라이언트 원본 IP를 EC2가 알 수 있도록 ELB가 자동 주입하는 HTTP 헤더.
+2026-10-09 공식 문서 기준, ALB는 기본 `append` 모드에서 직접 연결한 클라이언트의 IP를 기존 헤더 끝에 추가한다. 헤더가 없으면 새로 만든다. `preserve`는 받은 값을 유지하고 `remove`는 제거한다. 따라서 모든 설정에서 ALB가 원본 IP를 넣는다고 가정하지 않는다.
 
 ```
 X-Forwarded-For: <client-ip>, <proxy1-ip>, <proxy2-ip>
 ```
+
+위 목록의 앞쪽 값은 요청자가 보낼 수도 있다. 로그에 기록한 헤더와 신뢰할 수 있는 클라이언트 주소를 구분하고, 인증이나 접근 제한에서 첫 값을 무조건 신뢰하지 않는다. 안전하게 관리되는 프록시가 추가한 값인지 확인한다.
+
+NGINX에서는 `log_format`에 `$http_x_forwarded_for`를 포함해 받은 헤더를 기록할 수 있다. 주소 재작성 설정이 없다면 `$remote_addr`는 연결 상대 주소이므로 두 값을 함께 남겨 구분한다. Real IP 모듈을 사용하면 주소가 바뀔 수 있으므로 별도 설정을 확인한다. 헤더를 기록하는 설정만으로 주소나 프록시 신뢰 정책이 바뀌지는 않는다. 적용 후 실제 요청의 로그를 대조한다.
 
 L4(NLB)는 HTTP 헤더를 주입하지 않는다. 원본 IP 보존 기본값은 대상 유형과 대상 그룹 프로토콜에 따라 다르다.
 
@@ -165,6 +169,10 @@ ALB의 504는 대상이 연결 timeout이나 idle timeout(기본 60초) 안에 �
 - **CLB는 이전 세대** — 기존 구성은 지원되지만 신규 설계는 ALB, NLB, GWLB의 기능을 우선 검토
 
 ## 출처
+- [Application Load Balancer HTTP 헤더](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/x-forwarded-headers.html)
+- [NGINX, ngx_http_log_module](https://nginx.org/en/docs/http/ngx_http_log_module.html)
+- [NGINX, ngx_http_core_module — Embedded Variables](https://nginx.org/en/docs/http/ngx_http_core_module.html#variables)
+- [NGINX, ngx_http_realip_module](https://nginx.org/en/docs/http/ngx_http_realip_module.html)
 - [Application Load Balancer 리스너 규칙의 action 유형](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-action-types.html)
 - [Application Load Balancer HTTPS 리스너 생성](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html)
 - [Route 53에서 ELB로 트래픽 라우팅](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-elb-load-balancer.html)

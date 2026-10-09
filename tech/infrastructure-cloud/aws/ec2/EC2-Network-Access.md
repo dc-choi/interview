@@ -105,8 +105,23 @@ EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를
 
 현업 권장: SSH Key Pair 의존을 줄이고 **AWS Systems Manager Session Manager**로 대체 (IAM 권한 기반, 포트 22 개방 불필요, 세션 로깅).
 
+### AWSSupport-ResetAccess로 접근 복구
+
+2026-10-09 Systems Manager Automation 공식 문서 기준이다. `AWSSupport-ResetAccess`는 EC2Rescue로 Linux에 새 SSH 키를 생성해 추가하거나 Windows의 암호 해독을 다시 활성화한다. Windows 키 페어를 분실한 경우에는 생성된 password-enabled AMI에서 보유한 키 페어로 새 인스턴스를 시작하는 경로도 제공한다. 잃어버린 개인키 자체를 복원하는 기능은 아니다.
+
+실행 전에 다음 조건을 확인한다.
+
+- **중단과 데이터 영향:** 대상 인스턴스를 중지하고 작업 전 AMI를 만든다. Instance store 데이터는 사라지고, EIP가 없으면 공인 IP가 바뀐다. 백업 AMI가 instance store까지 보존한다고 가정하지 않는다.
+- **복구 경로:** 지정할 구조용 서브넷은 대상과 같은 AZ에 있어야 하며 SSM endpoint에 접근할 수 있어야 한다. 하위 `AWSSupport-StartEC2RescueWorkflow`는 Marketplace AMI로 만든 인스턴스를 지원하지 않는다.
+- **루트 볼륨:** 하위 워크플로의 문서화된 단계는 루트 볼륨이 EBS이고 암호화되지 않았는지 검사한다. 암호화된 루트 볼륨에도 이 절차를 그대로 적용할 수 있다고 가정하지 않는다.
+- **실행 권한:** `AutomationAssumeRole`을 생략하면 실행한 사용자의 권한을 쓴다. 자동화 시작과 출력 조회 권한뿐 아니라 하위 워크플로의 EC2, IAM 등 필요한 권한도 확인한다.
+
+Linux 결과에는 백업 AMI와 새 SSH 키를 담은 SSM 파라미터의 이름이 나온다. 키를 보고서나 공유 로그에 복사하지 않고 접근을 제한한다. 완료 후 실제 접속과 서비스 상태를 확인하고, 남은 백업 AMI의 접근 권한과 보존 여부를 정한다. 이 절은 문서 기반 복구 절차이며 실제 인스턴스에서 실행한 기록은 아니다.
+
 ## 출처
 
+- [AWS 공식 문서, AWSSupport-ResetAccess](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-resetaccess.html)
+- [AWS 공식 문서, AWSSupport-StartEC2RescueWorkflow](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-startec2rescueworkflow.html)
 - [AWS 공식 문서, Amazon EC2 service quotas — Restriction on email sent using port 25](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html#port-25-throttle)
 - [Remove port 25 restrictions for instances and functions — AWS re:Post](https://repost.aws/knowledge-center/ec2-port-25-throttle)
 - [AWS 공식 문서, Connecting to an Amazon SES SMTP endpoint](https://docs.aws.amazon.com/ses/latest/dg/smtp-connect.html)

@@ -63,6 +63,18 @@ NIST SP 800-115의 계획, 수행, 사후 조치를 다음처럼 운영할 수 �
 
 외주 점검에서는 고객의 승인 범위와 제3자가 소유한 시스템의 허용 범위를 구분한다. 수집한 설정과 취약점 보고서도 민감한 자료이므로 접근과 취급 방법을 계획에 포함한다.
 
+## 사고 대응 훈련은 기술 복구와 의사결정을 함께 점검한다
+
+2026-10-09 NIST 용어집과 CISA 훈련 평가 지침을 대조한 범위다. Tabletop exercise는 시나리오를 놓고 역할과 대응을 토론하며 계획을 검토한다. Functional exercise는 모의 운영 환경에서 담당자가 계획과 비상 대응 준비 상태를 검증한다. 토론에서 답을 정했다는 사실을 시스템 복구 성공과 같게 보지 않는다.
+
+작은 서비스에서는 계정 탈취나 서비스 중단 하나를 골라 다음을 점검할 수 있다. 아래는 표준의 고정 평가표가 아닌 적용 예시다.
+
+- 기술 대응: 어떤 로그로 범위를 확인하고, 누가 차단이나 복구를 수행하며, 정상화는 무엇으로 확인하는가.
+- 의사결정과 소통: 서비스 중단을 누가 승인하고, 고객과 내부 담당자에게 확인된 사실과 미확인 사항을 어떻게 전달하는가.
+- 평가 증거: 시나리오와 목표, 실제 행동과 시각, 막힌 지점과 판단 근거를 남긴다. 훈련 중 점수나 한 번의 빠른 대응만으로 전체 운영 역량을 판정하지 않는다.
+
+CISA의 After-Action Report / Improvement Plan은 목표 대비 강점과 개선점을 분석하고, 시정 조치마다 책임자와 이행 일정을 연결한다. 운영에서는 수정한 절차를 다음 훈련에서 다시 확인할 조건도 정한다. 특정 훈련의 중간 관찰만으로 AI와 사람의 일반적인 대응 우열을 주장하지 않는다.
+
 ## AWS 구성 점검 도구와 예외 처리
 
 2026-10-07 Prowler 문서와 Service Screener 저장소를 대조한 범위다. 자동 점검 결과는 실제 위험과 조치 우선순위를 검토할 입력이며, 인증 충족이나 침해 부재의 증명으로 쓰지 않는다.
@@ -129,6 +141,9 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 
 ## 출처
 
+- [NIST, Tabletop Exercise](https://csrc.nist.gov/glossary/term/Tabletop_Exercise)
+- [NIST, Functional Exercise](https://csrc.nist.gov/glossary/term/functional_exercise)
+- [CISA, CTEP Facilitator / Evaluator Handbook](https://www.cisa.gov/sites/default/files/2023-01/3_-_ctep_facilitator_evaluator_handbook_2020_final_508.pdf)
 - [NIST, SP 800-207: Zero Trust Architecture](https://csrc.nist.gov/pubs/sp/800/207/final) — 네트워크 위치와 소유권에 따른 암묵적 신뢰 배제.
 - [AWS Security Hub CSPM, Creating and updating findings](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings.html) — 상태별 만료 기간, 기준 시각과 장기 보존.
 - [KISA, ISMS-P 제도소개](https://www.isms-p.or.kr/sysm/intro/selectSysmCertDetail.do)

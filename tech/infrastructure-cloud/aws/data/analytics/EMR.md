@@ -40,6 +40,16 @@ AWS에서 Hadoop, Spark 같은 빅데이터 프레임워크를 실행하는 관�
 | **Athena** | S3 데이터의 서버리스 SQL 조회가 대표 용도 |
 | **Redshift** | OLAP 데이터 웨어하우스 — 정형 분석 중심 |
 
+## 클러스터 시작의 internal error 진단
+
+2026-10-09 AWS 공식 자료 기준이다. `Failed to start the job flow due to an internal error`는 시작 실패 메시지이며, 이 문구만으로 원인을 하나로 확정하지 않는다. 새로 시작해도 반복되면 다음 경계를 나눠 확인한다.
+
+1. **IAM과 KMS:** EMR 서비스 역할과 EC2 인스턴스 프로파일 역할의 필요한 권한을 확인한다. 디스크 암호화 설정을 쓰면 서비스 역할이 지정한 KMS 키를 사용할 수 있는지도 확인한다. 오류를 없애기 위해 모든 자원에 관리자 권한을 부여하지 않는다.
+2. **실패한 노드의 증거:** 연결 timeout이 있다면 종료된 EC2 노드의 system log로 실패 지점을 확인한다. 종료 노드는 콘솔에 계속 남지 않으므로 확인 가능한 동안 로그를 확보한다.
+3. **VPC 경로와 보안 그룹:** 데이터 소스에 도달하는 서브넷 경로와 primary, core, task 노드의 보안 그룹을 확인한다. DNS hostnames와 DNS resolution 설정도 점검한다. Private subnet의 NAT gateway는 인터넷 통신이 필요한 경우의 선택지이며 모든 구성에 필수라고 단정하지 않는다.
+
+설정을 수정한 뒤 새 클러스터의 시작을 확인한다. 생성 성공과 실제 데이터 접근, 작업 성공은 별도로 검증한다. Spark 태스크가 실행된 뒤 발생하는 메모리 부족은 아래의 런타임 진단으로 분리한다.
+
 ## Spark 컨테이너 종료와 메모리 진단
 
 `Container killed on request. Exit code is 137`만으로 메모리 부족을 확정하지 않는다. Bash의 신호 종료 상태는 `128 + 신호 번호`이며, Linux의 SIGKILL은 9다. 종료 주체와 이유는 YARN 진단, driver/executor 로그와 노드의 OOM 기록을 함께 확인한다.
@@ -65,6 +75,8 @@ AWS에서 Hadoop, Spark 같은 빅데이터 프레임워크를 실행하는 관�
 
 ## 출처
 
+- [How do I resolve the error Failed to start the job flow due to an internal error in Amazon EMR? — AWS re:Post](https://repost.aws/knowledge-center/emr-failed-job-internal-error)
+- [AWS, Set up a VPC to host Amazon EMR clusters](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-vpc-host-job-flows.html)
 - [AWS, What is Amazon EMR?](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-what-is-emr.html)
 - [AWS, Understanding how to create and work with Amazon EMR clusters](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-overview.html)
 - [AWS, What is Amazon EMR Serverless?](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/emr-serverless.html)
