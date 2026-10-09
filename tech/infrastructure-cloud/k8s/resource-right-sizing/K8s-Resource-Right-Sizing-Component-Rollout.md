@@ -64,6 +64,16 @@ Consolidation은 빈 노드 제거, 다른 노드로 Pod 이동 또는 더 저�
 
 운영 검증에서는 이벤트 수신, 대체 노드 준비, 이미지 다운로드, Pod readiness와 실제 요청 성공을 구분해 측정한다. 큐를 연결했다는 사실만으로 무중단 복구가 입증되지는 않는다. 이는 공식 동작을 바탕으로 한 점검 제안이며 특정 비용 절감률이나 복구 시간을 보장하지 않는다.
 
+## 예비 용량으로 노드 생성 대기를 줄인다
+
+2026-10-10 Kubernetes와 Karpenter 공식 문서 대조 기준. 노드 비용을 줄이는 consolidation과 신규 Pod를 빠르게 배치하기 위한 예비 용량은 서로 다른 목표다.
+
+낮은 우선순위의 placeholder Pod에 CPU와 메모리 `requests`를 지정하면 스케줄러 관점에서 용량을 미리 차지한다. 더 높은 우선순위의 업무 Pod가 공간을 필요로 할 때 placeholder가 선점 대상이 되고, 업무 Pod는 그 자원을 사용할 수 있다. Kubernetes 공식 예제는 음수 PriorityClass와 서로 다른 노드를 선호하는 Pod anti-affinity를 사용한다.
+
+Karpenter는 배치할 수 없는 Pod의 requests와 스케줄링 조건을 바탕으로 노드를 준비한다. 선점 뒤 대체 placeholder가 Pending이 되면 조건을 만족하는 새 용량을 요청하는 구성을 만들 수 있다. NodePool의 허용 범위나 한도 때문에 배치하지 못하는 상황까지 해결하는 방식은 아니다.
+
+운영 점검 제안: placeholder 수와 requests로 유지할 여유를 정하고, 업무 Pod의 우선순위, 노드와 가용 영역 배치 제약을 함께 확인한다. 여유 용량 비용, Pending 시간과 실제 readiness 시간을 비교한다. 선점 가능성이 즉시 기동이나 이미지 다운로드 완료를 보장하지 않으며, 특정 사례의 비용 절감률과 노드 준비 시간을 일반 목표값으로 사용하지 않는다.
+
 ## 트레이드오프
 
 - **정확도 vs 쿼리 부하**: 샘플링 간격 ↓ = 정밀도 ↑ = 쿼리 부하 ↑.
@@ -82,6 +92,8 @@ Consolidation은 빈 노드 제거, 다른 노드로 Pod 이동 또는 더 저�
 
 ## 출처
 
+- [Kubernetes, Overprovision Node Capacity For A Cluster](https://kubernetes.io/docs/tasks/administer-cluster/node-overprovisioning/)
+- [Karpenter, Scheduling](https://karpenter.sh/docs/concepts/scheduling/)
 - [Karpenter, Disruption](https://karpenter.sh/docs/concepts/disruption/)
 - [AWS, Karpenter Best Practices](https://aws.github.io/aws-emr-containers-best-practices/performance/docs/karpenter/)
 - [옵저버빌리티 Right-Sizing: 여기어때에서 기준을 만드는 법 — 양현진(코플), 여기어때 기술블로그](https://techblog.gccompany.co.kr/%EC%98%B5%EC%A0%80%EB%B2%84%EB%B9%8C%EB%A6%AC%ED%8B%B0-right-sizing-%EC%97%AC%EA%B8%B0%EC%96%B4%EB%95%8C%EC%97%90%EC%84%9C-%EA%B8%B0%EC%A4%80%EC%9D%84-%EB%A7%8C%EB%93%9C%EB%8A%94-%EB%B2%95-8c9e1b3d3c97)

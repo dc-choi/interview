@@ -78,12 +78,19 @@ Claude 쪽에서는 커스텀 슬래시 커맨드도 스킬로 흡수됐다. 사
 
 | 구분 | 훅(Hook) | 스킬(Skill) |
 |---|---|---|
-| 실행 | 라이프사이클 시점에 자동, 결정론적 | 필요 시 (모델이나 사용자가 선택) |
-| 목적 | 흐름 제어, 강제 (반드시 실행) | 작업 수행 (재사용 플레이북) |
-| 성격 | 무시 불가한 강제 | 무시 가능한 지침 |
+| 실행 | 설정한 이벤트와 조건이 맞으면 실행, action은 명령 또는 에이전트 프롬프트 | 필요 시 (모델이나 사용자가 선택) |
+| 목적 | 흐름 제어, 자동 검사와 후속 작업 | 작업 수행 (재사용 플레이북) |
+| 성격 | 차단 여부는 호스트, 이벤트와 action의 계약에 따름 | 모델이 해석하는 작업 지침 |
 | 예 | 커밋 전 린트 차단, 위험 명령 거부 | 코드 포맷, 테스트 실행, 릴리스 노트 작성 |
 
-훅은 언제 실행될지를, 스킬은 무엇을 할지를 정의한다. 둘은 상보적이라 함께 쓰면 강해진다 — 훅으로 실행 흐름을 강제하고, 스킬로 작업을 자동화한다. 이는 권장(CLAUDE.md, AGENTS.md)과 강제(Hook)를 분리하는 원칙과 같은 축이다([[Context-Engineering]]). 훅의 세부(exit code 2만 차단, additionalContext 주입 등)는 [[Claude-Code-Extension-Reference]].
+훅은 실행 시점을, 스킬은 작업 방법을 정의한다. 자동으로 프롬프트를 전달하는 훅과 도구 호출을 차단하는 훅을 구분한다. 이벤트 발생이 결정돼 있어도 에이전트가 생성하는 결과까지 결정론적인 것은 아니다. Claude Code의 종료 코드와 컨텍스트 주입 계약은 [[Claude-Code-Extension-Reference]]를 참고하며 다른 호스트에 그대로 적용하지 않는다.
+
+### Kiro Hooks의 자동 실행과 차단 경계
+
+2026-10-10 Kiro 공식 문서의 부분 검증이다. IDE 1.0과 CLI 3.0의 현재 형식은 `.kiro/hooks/<id>.json`이며 `version: "v1"`, `hooks` 배열, PascalCase `trigger`, 선택적 정규식 `matcher`와 `action`을 사용한다. 이전 IDE의 설정 예제를 현재 형식으로 복사하지 않는다.
+- `command`는 셸 명령을 실행하고 `agent`는 현재 대화에 프롬프트를 전달한다. 저장 후 테스트 생성 요청은 결과를 별도로 확인한다.
+- 공식 IDE action 안내에서 명령의 0 이외 종료 코드는 오류를 전달한다. `PreToolUse`에서는 도구 실행을, Prompt Submit에서는 프롬프트 제출을 차단한다. Claude Code의 종료 코드 2 규칙과 구분한다.
+- 운영 점검 제안: 테스트 실행과 생성 요청을 나누고, 차단이 필요한 검사는 실제 거부 사례로 확인한다. 사후 검사 실패를 이미 수행된 변경의 자동 취소로 해석하지 않는다.
 
 ## Kiro Skills: 이식 가능한 형식과 호스트 동작을 구분한다
 
@@ -164,6 +171,8 @@ Powers는 MCP 도구, 스킬과 지식을 함께 설치하고 작업 맥락에 �
 
 ## 출처
 
+- [Kiro Docs, Hooks](https://kiro.dev/docs/hooks/)
+- [Kiro Docs, Hook actions](https://kiro.dev/docs/hooks/actions/)
 - [Kiro Docs, Agent Skills](https://kiro.dev/docs/skills/)
 - [Kiro Docs, Powers](https://kiro.dev/docs/powers/)
 - [Kiro Docs, Create powers](https://kiro.dev/docs/powers/create/)

@@ -68,6 +68,16 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 경쟁사 조사나 캠페인 보고서에 적용한다면, 먼저 조사에 쓸 자료를 정하고 결과의 근거를 확인한 뒤 예산 변경처럼 외부 상태를 바꾸는 action을 별도로 검토한다. 이는 기능을 활용하는 운영 제안이다. 보고서 생성이나 추천 출력만으로 캠페인 성과 개선이 입증되지는 않는다.
 
+## Chat agent의 배포와 자료 권한을 분리한다
+
+2026-10-10 Custom chat agents 공식 문서 대조 기준. 업무별 chat agent에는 응답 지침, Space 등의 지식 자료와 action을 연결할 수 있다. 에이전트 공유 권한과 연결한 개별 리소스의 접근 권한은 별도로 관리한다.
+
+- `Update preview`로 변경을 저장하고 시험한 뒤 `Launch`로 반영한다. 생성 도중 출시하지 않고 나가면 preview는 저장되지 않는다.
+- 처음 출시한 agent는 기본 비공개다. 공유 후 다시 수정하고 출시하면 접근 권한이 있는 사용자들에게 같은 agent의 변경이 반영된다.
+- `Owner`는 편집, 공유, 사용과 삭제를 할 수 있고 `Viewer`는 조회와 사용을 할 수 있다. 초안을 사용하는 사람 모두에게 편집 권한을 줄 필요는 없다.
+
+콘텐츠 생성에 적용할 때는 승인된 제품 설명과 대상 독자를 지침에 넣고, 실제 이용자의 권한으로 자료 조회와 결과를 시험한다. 이는 기능에 근거한 운영 제안이다. agent 링크 공유만으로 원문 접근, 문구의 정확성이나 콘텐츠 발행 승인까지 확보됐다고 판단하지 않는다.
+
 ## 적용 전 확인
 
 - 반복할 절차와 필요한 입력이 명확한가. 변하지 않는 단순 집계라면 기존 쿼리와 보고서로 충분한지도 검토한다.
@@ -77,6 +87,7 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 ## 출처
 
+- [Amazon Quick, Custom chat agents](https://docs.aws.amazon.com/quick/latest/userguide/custom-agents.html)
 - [Amazon Quick, Select research materials](https://docs.aws.amazon.com/quick/latest/userguide/select-research-materials.html)
 - [Amazon Quick, View research report](https://docs.aws.amazon.com/quick/latest/userguide/view-research-report.html)
 - [Amazon Quick, Salesforce integration](https://docs.aws.amazon.com/quick/latest/userguide/salesforce-integration.html) — 사용자 인증과 서비스 인증의 실행 주체.
