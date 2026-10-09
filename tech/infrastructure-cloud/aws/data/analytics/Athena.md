@@ -124,6 +124,17 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 공식 게이트웨이 예시의 Power BI 인증 선택값 `Anonymous`는 Athena 데이터를 익명 공개한다는 의미가 아니다. 그 구성에서는 ODBC 드라이버가 IAM 역할로 AWS 인증을 수행한다. 실제 사용자의 로그인, 게이트웨이 실행 역할과 조회 데이터 권한을 구분해 점검한다.
 
+## 쿼리 자원 부족은 실행 계획에서 좁힌다
+
+2026-10-10 AWS 공식 문서 대조 기준이다. `Query exhausted resources at this scale factor`가 나면 조인과 윈도 함수의 메모리 사용부터 확인한다. 스캔량을 줄이는 조치와 연산 중 유지하는 데이터를 줄이는 조치를 구분한다.
+
+1. **계획 확인:** `EXPLAIN`으로 조인 순서와 파티션 필터를 확인한다. 데이터를 스캔하지 않지만 Glue 메타데이터 조회 비용은 생길 수 있다. `EXPLAIN ANALYZE`는 실제 쿼리를 실행하므로 스캔 비용과 대상 SQL의 쓰기 효과를 고려한다.
+2. **조인 크기와 편향:** 등가 조건의 분산 해시 조인은 작은 관계를 오른쪽 build side에 두는 것을 출발점으로 삼고 실제 계획을 확인한다. 전체 build 데이터가 작아도 특정 키가 한 노드에 몰리면 실패할 수 있다. Disk spill도 실패 방지를 보장하지 않는다.
+3. **윈도 범위:** 큰 윈도는 메모리 부족을 일으킬 수 있다. 처리 범위를 줄이거나 결과 의미가 같은 집계로 바꾼다. 전역 상위 N개만 필요하면 `ORDER BY`와 `LIMIT`을 검토하되 그룹별 순위와 혼동하지 않는다.
+4. **파티션 경계:** Partition projection은 설정한 규칙으로 파티션 값과 위치를 계산한다. 기존 S3 파일을 물리적으로 나누는 기능이 아니다. 실제 저장 경로, projection 설정과 쿼리의 파티션 조건을 함께 확인한다.
+
+변경 전후에는 같은 입력 범위에서 결과와 스캔량, 실행 시간을 대조한다(운영 점검 제안). 조인 중복이나 순위의 의미를 바꾸면서 성공한 쿼리를 동등한 최적화로 처리하지 않는다. 이 절만 추가 대조했으며 실제 AWS 계정에서 실행한 결과는 아니다.
+
 ## 시험 체크포인트
 
 - **S3 데이터를 SQL로 즉시 분석, 인프라 관리 없이** → **Athena**.
@@ -137,6 +148,9 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 ## 출처
 
+- [Amazon Athena, Optimize queries](https://docs.aws.amazon.com/athena/latest/ug/performance-tuning-query-optimization-techniques.html)
+- [Amazon Athena, Using EXPLAIN and EXPLAIN ANALYZE in Athena](https://docs.aws.amazon.com/athena/latest/ug/athena-explain-statement.html)
+- [Amazon Athena, Use partition projection with Amazon Athena](https://docs.aws.amazon.com/athena/latest/ug/partition-projection.html)
 - [Amazon S3, Using Amazon S3 server access logs to identify requests](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-s3-access-logs-to-identify-requests.html)
 - [Amazon S3, Logging requests with server access logging](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html)
 - [Amazon Athena, Work with timestamp data](https://docs.aws.amazon.com/athena/latest/ug/data-types-timestamps.html)

@@ -110,6 +110,22 @@ Experience를 만들었다는 사실만으로 적용이 끝나지 않는다. 상
 
 세션 삭제 뒤 남는 저장소와 데이터의 정리 책임을 따로 정하는 것은 이 수명 경계에서 도출한 운영 점검이다. 이 절의 대조는 기존 AgentCore 설명 전체의 재검증이나 실제 배포 검증을 뜻하지 않는다.
 
+### BMA 호출자, 세션 역할과 실행 환경의 권한을 나눈다
+
+2026-10-10 BMA preview 공식 문서 기준, 세션에는 API 호출자, 서비스가 assume하는 세션 역할과 실행 환경의 identity가 참여한다. 세 역할을 분리하고 각각 필요한 권한만 부여한다.
+
+- **API 호출자:** 세션 생성 API 권한과 전달할 세션 역할에 대한 `iam:PassRole`을 확인한다. 역할 ARN 설정만 바꿔도 그 역할을 전달할 권한이 생기지는 않는다.
+- **세션 역할:** BMA가 모델을 호출하고, AgentCore 환경을 쓰는 경우 해당 Runtime을 호출하거나 세션을 중지하는 데 사용한다.
+- **실행 환경:** 명령과 MCP 도구는 실행 환경에 제공된 접근 권한으로 동작한다. 전용 작업 공간과 제한된 OS identity를 사용하고 배포 자격증명을 실행 환경에서 분리한다. 외부 변경의 인가와 필요한 사람 검토는 애플리케이션이나 도구 구현에서 강제한다.
+
+따라서 모델 호출 성공을 S3나 내부 API 접근 권한 검증으로 대신하지 않는다. 어떤 주체가 어느 단계에서 실패했는지 나누는 것은 위 권한 구조에 따른 운영 점검이다.
+
+### 요청 수락, 턴 종료와 업무 성공을 구분한다
+
+BMA에 메시지를 제출한 뒤 빈 응답이 와도 요청 수락만 뜻할 수 있다. `idle`은 현재 턴이 실행 중이 아니라는 상태이며, 모든 명령의 성공을 보장하지 않는다. 출력 item과 턴의 종료 이벤트, 명령의 exit code를 확인한다.
+
+네트워크 오류로 수락 여부가 불명확하면 세션 활동을 조회한 뒤 재전송을 판단한다. 진행 스트림의 연결 해제는 작업 취소를 보장하지 않으며, 취소 요청도 이미 끝난 도구의 외부 변경을 되돌리지 않는다. 외부 시스템의 실제 결과를 함께 확인한다. 이 두 절의 대조는 실제 배포나 장애 재현 검증을 뜻하지 않는다.
+
 ## 운영 점검
 
 - 다른 사용자의 세션과 기억 조회를 거절하는가
@@ -121,6 +137,8 @@ Experience를 만들었다는 사실만으로 적용이 끝나지 않는다. 상
 
 ## 출처
 
+- [AWS, Security and IAM roles](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-managed-agents-openai-security.html)
+- [AWS, Work with sessions, events, and results](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-managed-agents-openai-sessions.html)
 - [AWS, Amazon Bedrock Managed Agents, powered by OpenAI (preview)](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-managed-agents-openai.html)
 - [AWS, Preview availability and limitations](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-managed-agents-openai-quotas-limitations.html)
 - [AWS, Memory types](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-types.html)
