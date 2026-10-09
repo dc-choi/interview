@@ -132,6 +132,14 @@ const classify = (response: Message): Outcome => {
 - 폴백 모델은 같은 요청에 다르게 반응한다. 같은 제공자 안에서도 창이 1M인 모델과 200k인 모델(예: Haiku 4.5)이 섞여 있고 토크나이저, 구조화 출력 지원 여부, `tool_choice` 강제 지원(Opus 5.5, Sonnet 5.5, Fable 5.1은 `any`와 `tool`에 400), assistant prefill 지원(Claude 4.6 이후 400)이 다르다. 폴백 경로도 같은 eval로 합격선을 확인한다([[LLM-Model-Tiers|모델 티어와 폴백]], [[LLM-Eval-Strategy]]).
 - 평소에 쓰이지 않는 폴백 경로는 잠복 결함을 품기 쉬우므로([[External-Service-Resilience#Fallback|폴백의 잠복 결함]]) 실트래픽 일부를 폴백 모델에도 계속 보내고 그 결과를 eval에 넣는다.
 
+### Bedrock의 리전 간 추론과 애플리케이션 복구
+
+2026-10-09 AWS 문서 기준, cross-Region inference는 inference profile이 정한 대상 리전의 연산 자원으로 추론 요청을 라우팅한다. 모델 용량과 일시적인 가용성 문제에 대응하는 기능이며, 호출하는 애플리케이션의 게이트웨이나 함수 계층 장애까지 복구하지 않는다. 애플리케이션의 진입점과 상태 저장소 복구는 별도로 설계한다.
+
+- **처리 위치:** Geographic profile은 지정된 지리적 범위 안에서, Global profile은 지원되는 전 세계 상용 리전에서 처리한다. 입력과 출력이 호출 리전 밖으로 이동할 수 있으므로 허용된 처리 위치와 맞는 profile을 고른다.
+- **권한 실패:** Geographic profile은 profile 자체, 호출 리전의 모델과 모든 대상 리전의 모델에 대한 권한이 필요하다. SCP가 대상 리전을 막는다면 해당 리전을 허용하거나 특정 inference profile에 맞는 예외가 필요하다. 차단된 리전만 자동으로 제외한다고 가정하지 않는다.
+- **관측:** 호출 리전의 CloudTrail에서 `additionalEventData.inferenceRegion`으로 실제 처리 리전을 확인한다. 요청이 성공했다는 사실과 애플리케이션 전체의 리전 장애 복구 검증은 구분한다.
+
 ## 서킷 브레이커, 한도, 동시성
 
 - 용량과 속도 한도가 모델별이므로 서킷 브레이커와 동시성 한도도 제공자가 아니라 모델과 호스팅 경로 단위로 둔다([[External-Service-Resilience#3. Circuit Breaker (서킷 브레이커)|서킷 브레이커]]).
@@ -170,6 +178,9 @@ const classify = (response: Message): Outcome => {
 
 ## 출처
 
+- [Amazon Bedrock User Guide, Route model inference requests across AWS Regions with cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html)
+- [Amazon Bedrock User Guide, Geographic cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/geographic-cross-region-inference.html)
+- [AI agent exposure and integration on AWS — AWS Marketplace](https://aws.amazon.com/marketplace/build-learn/ai-agent-learning-series/agent-exposure-and-integration) — 2026-10-09 리전 간 추론의 범위와 애플리케이션 계층 장애의 구분을 대조했다. 기존 제공자별 오류 계약 전체를 재검증한 기록은 아니다.
 - [Claude Platform Docs, Errors](https://platform.claude.com/docs/en/api/errors)
 - [Claude Platform Docs, Rate limits](https://platform.claude.com/docs/en/api/rate-limits)
 - [Claude Platform Docs, Stop reasons and fallback](https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons)

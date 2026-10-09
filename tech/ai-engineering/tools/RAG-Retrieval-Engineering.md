@@ -39,6 +39,10 @@ RAGAS와 ARES 같은 연구도 retrieval context의 관련성, 답변 관련성,
 
 PDF, 스캔본 같은 비정형 문서는 청킹 전에 OCR과 layout parsing으로 텍스트, 표, 읽기 순서를 복원한다. Chunk 크기와 overlap은 정답이 아니라 corpus별 변수다. 대표 질문에서 retrieval recall과 context token 비용을 함께 비교한다.
 
+파서 선택도 검색 품질과 수집 비용을 바꾼다. 2026-10-09 Amazon Bedrock Knowledge Bases 문서 기준, 기본 파서는 텍스트만 출력한다. PDF 안의 표, 차트와 이미지가 답변 근거라면 Bedrock Data Automation이나 foundation model 파서를 검토한다. Data Automation은 페이지나 이미지 수, 모델 파서는 입력과 출력 토큰을 기준으로 과금한다. 둘 중 하나를 선택하면 같은 데이터 소스의 텍스트 전용 PDF에도 해당 파서와 비용이 적용된다.
+
+다음은 파서 선택에 적용할 검증 방법이다. 대표 문서에서 읽기 순서, 표의 행과 열 대응, 단위와 각주가 추출 결과에 남는지 원본과 대조한다. 같은 질문으로 기본 파서와 고급 파서의 검색 성공률, 답변 근거와 수집 비용을 비교한다. 텍스트를 추출했다는 사실만으로 문맥 보존이나 답변 정확도가 보장되지는 않는다.
+
 ### 청크별 문서 맥락 보강 (Contextual Retrieval)
 
 청크는 잘리는 순간 주어, 기간과 적용 범위 같은 문서 맥락을 잃을 수 있다. 회사 매출이 전 분기보다 3% 늘었다는 청크만으로는 어느 회사의 어느 분기인지 알 수 없다. 규칙과 예외가 다른 청크로 갈리면 예외 없는 규칙만 검색될 수도 있다(설명용 예시).
@@ -179,6 +183,8 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 - [[LLM-Hallucination-Verification|LLM 환각 유형과 검증 (사실성과 충실성, 인용의 존재와 적용과 지지 검사)]]
 
 ## 출처
+
+- [Amazon Bedrock User Guide, Parsing options for your data source](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-advanced-parsing.html) — 2026-10-09 파서별 추출 범위, 과금 단위와 데이터 소스 내 PDF 적용 범위를 대조했다. 원본 대조와 질문 세트 비교는 설계 제안이다.
 
 2026-10-09에는 사전 색인과 요청 시점 조회의 구분을 Microsoft 문서에, 런타임 탐색의 지연과 혼합 전략을 Anthropic 글에 대조했다. 비교표와 실패 시 운영 점검은 이를 적용한 설계 제안이다. 기존 평가 논문 전체를 다시 검증한 기록은 아니다.
 
