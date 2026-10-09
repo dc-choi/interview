@@ -53,6 +53,17 @@ aliases: ["Capacity Planning", "캐퍼시티 플래닝", "트래픽 스파이크
 
 정책 정비도 확보 수단이다. TTL 미지정 데이터에 TTL을 부여하고 eviction 정책을 volatile-ttl로 바꾸면 메모리 한도 도달 시의 동작이 예측 가능해진다 — [[Redis-Memory-Eviction|Redis Eviction Policy]].
 
+## 이벤트 시작 전에 확장 준비를 끝낸다
+
+시각이 정해진 행사는 부하가 오른 뒤 확장을 시작하면 늦을 수 있다. 메트릭 전달과 확장 판단, 새 자원의 준비에 시간이 걸리기 때문이다. 예약 확장은 예측 가능한 수요에 맞춰 자원을 확보하는 방법이다. 이 구분은 2026-10-10 AWS Well-Architected의 REL07-BP03으로 대조했다.
+
+다음은 이 원칙을 주문 서비스에 적용한 점검 예시다.
+
+- 행사 시작 시각과 확장 시작 시각을 구분하고, 부하 테스트로 확인한 준비 시간을 확보한다.
+- API 서버뿐 아니라 연결된 DB와 작업 처리기의 가용량을 함께 확인한다. 서버 수 증가가 DB 커넥션 수 증가로 이어지는지도 시험한다.
+- 목표 자원 수에 도달한 것과 실제 요청을 처리할 준비가 된 것을 구분한다. 준비가 끝난 상태에서 스텝 부하와 오류율을 확인한다.
+- 최대 확장 한도와 행사 종료 뒤 축소 조건을 정한다. 모든 구성 요소가 같은 방식의 자동 확장을 지원한다고 가정하지 않는다.
+
 ## 안전장치 — 실패를 전제로 설계
 
 스파이크 대비의 나머지 반은 그래도 무너질 때를 위한 격리와 복구다.
@@ -99,3 +110,4 @@ aliases: ["Capacity Planning", "캐퍼시티 플래닝", "트래픽 스파이크
 ## 출처
 
 - [LINE 메시징 서버가 새해 트래픽을 대비하는 방법 — LINE Engineering](https://engineering.linecorp.com/ko/blog/how-line-messaging-servers-prepare-for-new-year-traffic)
+- [AWS Well-Architected Framework, REL07-BP03 Obtain resources upon detection that more resources are needed for a workload](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_adapt_to_changes_proactive_adapt_auto.html)

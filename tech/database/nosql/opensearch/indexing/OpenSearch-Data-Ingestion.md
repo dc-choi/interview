@@ -44,6 +44,14 @@ Data Prepper pipeline은 `source`와 하나 이상의 `sink`가 필수이고 `bu
 
 Operation이 수락된 뒤 translog, refresh와 segment로 이어지는 과정은 [[OpenSearch-Indexing-Internals|색인 내부]], 지연과 불일치 감지는 [[OpenSearch-Indexing-Pipeline-Reliability|파이프라인 신뢰성]]에서 다룬다.
 
+## 여러 생산자의 JSON 계약과 mapping을 구분한다
+
+API와 배치 등 여러 경로가 같은 검색 문서를 만들면, 색인 전에 공통 JSON Schema로 입력 계약을 검사할 수 있다. `properties`에 필드를 선언한 것만으로 필수가 되지는 않으며, 필수 필드는 `required`에 지정한다. 단순한 object schema에서 미등록 필드를 거부하려면 `additionalProperties: false`를 사용한다.
+
+OpenSearch의 `dynamic: strict`는 mapping에 없는 새 필드의 추가를 거부하는 설정이다. 이를 필수 필드 존재 여부까지 검사하는 JSON Schema 검증의 대체물로 해석하지 않는다. 위 동작은 2026-10-10 양측 공식 문서로 대조했다.
+
+운영 적용 예시: 스키마 버전을 생산자와 소비자의 배포에 함께 연결하고, 필수 필드 누락과 미등록 필드가 있는 샘플을 각각 검증한다. 저장소에 스키마가 있다는 사실과 실행 중인 서비스가 해당 버전을 검사한다는 사실을 구분한다. 타입 검증을 통과해도 재고의 최신성이나 원본과의 일치가 입증되지는 않으므로, 기존 reconciliation과 순서 검증은 유지한다.
+
 ## Bulk API 요청 계약
 
 새 bulk 요청에는 `POST`를 사용한다. Target index는 path에 한 번 지정하거나 action metadata의 `_index`에 넣는다.
@@ -177,6 +185,8 @@ Ingest pipeline은 OpenSearch node CPU를 사용한다. Source 연결, buffer, �
 ## 출처
 
 - [OpenSearch Documentation, Ingest your data into OpenSearch](https://docs.opensearch.org/latest/getting-started/ingest-data/)
+- [JSON Schema, object](https://json-schema.org/understanding-json-schema/reference/object)
+- [OpenSearch Documentation, Dynamic mapping parameter](https://docs.opensearch.org/latest/mappings/mapping-parameters/dynamic/)
 - [OpenSearch Documentation, Bulk API](https://docs.opensearch.org/latest/api-reference/document-apis/bulk/)
 - [OpenSearch Documentation, OpenSearch Data Prepper](https://docs.opensearch.org/latest/data-prepper/)
 - [OpenSearch Documentation, Data Prepper buffers](https://docs.opensearch.org/latest/data-prepper/pipelines/configuration/buffers/buffers/)
