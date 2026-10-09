@@ -20,6 +20,12 @@ aliases: ["Legacy Modernization", "레거시 현대화", "레거시 개혁 전�
 
 네 전략은 **배타적이지 않다** — 하나의 현대화 프로젝트에서 도메인별로 다른 전략을 조합하는 경우가 많다.
 
+### 교체 전략 전에 도메인 경계를 확인한다
+
+분해 단위를 기존 테이블이나 배포 서버와 일치시킬 필요는 없다. 업무 역량을 기준으로 나누려면 전체 업무에 대한 이해와 영역별 전문가가 필요하다. EventStorming은 도메인 전문가와 개발자가 업무 흐름을 함께 탐색하는 워크숍이며, 그 결과를 설계의 입력으로 쓴다. 2026-10-09 AWS의 업무 역량 기반 분해와 도메인 모델링 지침으로 대조했다.
+
+설계 점검 제안: 먼저 사용자 시나리오와 사건, 명령을 정리하고 후보 경계마다 데이터 소유자, 직접 DB를 읽는 호출부, 새 API와 전환 중 동기화 경로를 적는다. 새 서비스의 배포 완료와 기존 DB 의존의 제거 완료를 구분한다. 설계 문서에는 이번에 분리할 기능과 남길 기능, 실패 시 복귀 조건을 함께 두어 범위를 검토한다. 워크숍을 했다는 사실만으로 모든 경계를 별도 마이크로서비스로 배포해야 하는 것은 아니다.
+
 ## 1. Strangler Fig Pattern
 
 Martin Fowler가 이름 붙인 고전 패턴. 레거시에 **seam**을 끼워 넣거나(요청을 가로채는 파사드나 프록시) 메시지 소비와 DB 쓰기 같은 기존 통합 지점을 seam으로 삼고, 기능 단위로 신규 구현에 트래픽과 동작을 점진 이동. 옛 나무를 옥죄어 죽이는 교살 무화과(strangler fig)에서 유래.
@@ -172,6 +178,8 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 - "사람도 레거시가 될 수 있다"의 조직적 의미
 
 ## 출처
+- [AWS Prescriptive Guidance, Decompose by business capability](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html)
+- [AWS Prescriptive Guidance, Best practices (Hexagonal architectures)](https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/best-practices.html)
 - [LY Corporation 테크블로그 — 레거시 시스템을 개혁하는 3가지 방법 (Demaecan 사례)](https://techblog.lycorp.co.jp/ko/three-ways-to-reform-legacy-systems)
 - [올리브영 테크블로그 — 때로는 오버엔지니어링이 필요합니다](https://oliveyoung.tech/2026-09-23/overengineering-message-system/)
 - [martinfowler.com — Strangler Fig](https://martinfowler.com/bliki/StranglerFigApplication.html)

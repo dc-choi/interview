@@ -27,6 +27,17 @@ Amazon Quick의 BI 기능. 서버리스 **머신러닝 기반 BI**로 대화형 
 - 임시 분석 수행
 - 비즈니스 인사이트 대시보드
 
+## Athena의 Access Denied는 권한 계층별로 확인한다
+
+부분 검증(2026-10-09): Athena 연결 문제와 Lake Formation 연동 공식 문서를 대조했다. 대시보드 열람 권한과 원본 데이터를 조회할 권한은 별개다.
+
+- **연결 허용**: Quick Sight에서 Athena와 사용할 S3 버킷의 접근을 허용했는지 확인한다. 버킷 선택을 바꿀 때 다른 데이터셋이 쓰는 버킷을 해제하지 않는다.
+- **원본과 결과 위치**: 원본 데이터의 조회 권한뿐 아니라 Athena workgroup의 S3 결과 위치에 대한 읽기와 쓰기 권한을 확인한다. 결과 버킷을 바꿨다면 새 경로에 대한 권한도 필요하다.
+- **암호화**: KMS로 암호화한 데이터에는 실제 연결에 쓰는 역할의 복호화 권한이 필요하다. 기본 역할을 사용하는 Athena 연결은 `aws-quicksight-s3-consumers-role-v0`를 우선 사용하고, 이 역할이 없으면 `aws-quicksight-service-role-v0`를 사용한다. 이름만 보고 다른 역할에 권한을 추가하지 않는다.
+- **Lake Formation**: 이를 통한 Enterprise Edition 연결에는 IAM 외의 데이터 접근 권한도 적용된다. 연결 방식에 맞는 주체를 확인하고, Quick 사용자와 그룹으로 권한을 부여하는 구성에서는 해당 ARN을 대상으로 확인한다.
+
+진단 순서 제안: 대상 테이블을 Athena에서 조회할 수 있는지 확인한 뒤 Quick Sight 연결을 확인한다. 두 경로의 실행 주체가 다르면 Athena 콘솔의 성공만으로 Quick Sight의 접근 권한까지 입증되지는 않는다. 오류 메시지, 실행 주체, workgroup과 S3 경로를 함께 비교한다.
+
 ## 조회 타임아웃은 발생 계층을 나눠 확인한다
 
 부분 검증(2026-10-09): AWS의 서비스 quota, 데이터 소스 quota와 타임아웃 해결 문서를 대조했다.
@@ -118,6 +129,9 @@ AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 �
 
 ## 출처
 
+- [Amazon Quick, Insufficient permissions when using Athena with Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/troubleshoot-athena-insufficient-permissions.html)
+- [Amazon Quick, I can't connect to Amazon Athena](https://docs.aws.amazon.com/quick/latest/userguide/troubleshoot-connect-athena.html)
+- [Amazon Quick, Authorizing connections through AWS Lake Formation](https://docs.aws.amazon.com/quick/latest/userguide/lake-formation.html)
 - [AWS General Reference, Amazon Quick Sight](https://docs.aws.amazon.com/general/latest/gr/quicksight.html)
 - [Amazon Quick, Data source quotas](https://docs.aws.amazon.com/quick/latest/userguide/data-source-limits.html)
 - [How do I resolve query timeout errors in Quick Suite? — AWS re:Post](https://repost.aws/knowledge-center/quicksight-resolve-query-timeout-issues)

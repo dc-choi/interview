@@ -1,7 +1,7 @@
 ---
 tags: [observability, opentelemetry, otel, distributed-tracing, trace-context]
 status: done
-verified_at: 2026-09-04
+verified_at: 2026-10-09
 category: "관측가능성(Observability)"
 aliases: ["OpenTelemetry", "OTel", "분산 트레이싱", "Distributed Tracing", "Trace Context Propagation", "W3C traceparent"]
 ---
@@ -76,12 +76,25 @@ sdk.start();
 - **Head 기반**: trace 시작 시 보존 여부 결정. 싸지만 **드문 에러 trace를 놓칠 수 있다**.
 - **Tail 기반**: trace가 끝난 뒤 Collector에서 결정 → **에러나 느린 trace만 골라 보존** 가능. 대신 버퍼링 비용.
 
+## Kubernetes에서 Collector의 수집 범위를 나눈다
+
+부분 검증(2026-10-09): Collector 설정과 Kubernetes 컴포넌트 공식 문서를 대조했다. EKS에도 수집 대상에 맞는 배치 방식을 선택하며, 모든 신호를 같은 형태로 배포할 필요는 없다.
+
+| 수집 대상 | 배치와 확인 사항 |
+|---|---|
+| 노드의 컨테이너 로그 | `filelog` receiver는 DaemonSet 배치를 우선 검토한다. 로그 경로를 마운트해야 하며 일반 Deployment 하나로는 배치된 노드의 파일만 읽는다 |
+| 클러스터 전체 상태 | `k8s_cluster` receiver는 클러스터 전체를 조회한다. 같은 수집 설정을 여러 replica나 모든 노드에서 실행하면 데이터가 중복된다 |
+
+receiver, processor, exporter를 정의하는 것만으로 수집이 켜지지 않는다. `service.pipelines`의 `logs`, `metrics`, `traces`에 필요한 컴포넌트를 연결해야 한다. processor는 pipeline에 나열한 순서로 적용된다.
+
+운영 점검 제안: Collector Pod의 정상 상태와 실제 수집 성공을 구분한다. 테스트 요청이나 로그 하나가 목적지에 도착하는지, 수집 대상 노드가 빠지거나 같은 데이터가 중복되지 않는지 확인한다. 고가용성을 위해 replica를 늘릴 때도 receiver의 수집 범위와 중복 방지 방식을 먼저 확인한다.
+
 ## 흔한 함정
 
 - **컨텍스트 전파 누락**(특히 비동기 큐) → trace가 끊김
 - 고카디널리티 속성 남발 → 저장 비용 폭발([[Cardinality|카디널리티 관리]])
 - 과한 샘플링으로 에러 trace 유실 → tail 샘플링 고려
-- Collector를 단일 인스턴스로 → SPOF. agent(노드) + gateway(중앙) 2단 구성
+- Collector 장애로 수집이 중단될 수 있음. agent와 gateway 분리를 검토하되, 클러스터 전체를 수집하는 receiver는 단순 복제로 중복을 만들지 않도록 배치
 
 ## 면접 체크포인트
 
@@ -93,6 +106,8 @@ sdk.start();
 
 ## 출처
 
+- [OpenTelemetry 공식 문서 — Configuration](https://opentelemetry.io/docs/collector/configuration/)
+- [OpenTelemetry 공식 문서 — Important Components for Kubernetes](https://opentelemetry.io/docs/platforms/kubernetes/collector/components/)
 - [OpenTelemetry 공식 문서 — Concepts, Instrumentation](https://opentelemetry.io/docs/)
 - [OpenTelemetry 공식 문서 — What is OpenTelemetry](https://opentelemetry.io/docs/what-is-opentelemetry/)
 - [OpenTelemetry, Context Propagators API](https://opentelemetry.io/docs/specs/otel/context/api-propagators/)

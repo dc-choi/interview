@@ -1,7 +1,7 @@
 ---
 tags: [architecture, messaging, event-driven, overview]
 status: done
-verified_at: 2026-09-04
+verified_at: 2026-10-09
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "EDA Overview", "Event-Driven", "이벤트 드리븐"]
 ---
@@ -91,6 +91,12 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
   - **Orchestration**: 중앙 코디네이터가 호출 순서 통제 (복잡할 때)
 
 **적용 결정**: 단일 서비스 안에서 풀 수 있으면 안 쓴다. 여러 서비스의 긴 비즈니스 흐름이고 각 단계에 보상 의미가 있으면 Saga를 검토한다. 참여 기술이 원자적 조정을 지원하고 짧은 블로킹과 복구 비용을 감당할 수 있으면 2PC도 선택지다.
+
+워크플로 조정이 필요하다고 모두 Saga인 것은 아니다. 파일 추출, 대체 OCR, 변환처럼 분기와 대기가 많은 작업도 오케스트레이터로 묶을 수 있다. 이벤트는 작업을 시작하거나 결과를 전달하고, 오케스트레이터는 한 작업 안의 순서와 실패 경로를 관리한다. 이벤트 기반 통합과 중앙 워크플로 조정을 함께 사용할 수 있다.
+
+부분 검증(2026-10-09): AWS의 오케스트레이션 지침과 Step Functions 오류 처리 문서를 대조했다. Step Functions에서는 `Task`, `Parallel`, `Map` 상태에 재시도와 실패 처리 경로를 둘 수 있고, `Retry`를 먼저 평가한 뒤 처리되지 않은 오류를 `Catch`로 넘긴다. `States.TaskFailed`는 `States.Timeout`을 포함하지 않으므로 타임아웃을 같은 오류로 취급하지 않는다.
+
+설계 점검 제안: 외부 API 폴링에는 종료 조건을 두고 재시도 가능한 실패와 대체 처리로 넘길 실패를 나눈다. 워크플로 실행 성공과 원래 서비스에 결과가 저장됐다는 사실도 따로 확인한다. 조정 로직을 옮겼다고 소비자의 멱등성이나 발행 신뢰성 문제가 사라지지는 않는다.
 
 ### 층 7: 이벤트 보관, 재처리 (Persistence & Replay)
 
@@ -194,6 +200,8 @@ CQRS와의 결합:
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Orchestration](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-integrating-microservices/orchestration.html)
+- [AWS Step Functions, Handling errors in Step Functions workflows](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html)
 - [PostgreSQL, PREPARE TRANSACTION](https://www.postgresql.org/docs/current/sql-prepare-transaction.html)
 - [AWS Prescriptive Guidance, Transactional Outbox](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
 - [Azure Architecture Center, Event Sourcing pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing)

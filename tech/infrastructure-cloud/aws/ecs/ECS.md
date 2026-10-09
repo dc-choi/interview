@@ -2,7 +2,7 @@
 tags: [infrastructure, aws, ecs, container, fargate]
 status: index
 category: "Infrastructure - AWS"
-verified_at: 2026-08-05
+verified_at: 2026-10-09
 aliases: ["ECS", "Amazon ECS", "Elastic Container Service", "Fargate"]
 ---
 
@@ -160,6 +160,17 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 - **FireLens** — Fluent Bit 사이드카로 로그 변환, 다중 백엔드 (Datadog, Splunk)
 - **Container Insights** — Task 단위 CPU, 메모리, 네트워크 메트릭
 - **ECS Exec** — `aws ecs execute-command`로 컨테이너 안 쉘 접근 (디버깅)
+
+### ECS Exec 연결 실패 점검
+
+부분 검증(2026-10-09): ECS Exec 공식 문서의 활성화, 권한과 연결 조건을 대조했다.
+
+1. `DescribeTasks`에서 `enableExecuteCommand=true`와 대상 컨테이너의 `ExecuteCommandAgent.lastStatus=RUNNING`을 확인한다. 실행 중인 기존 태스크에는 Exec을 뒤늦게 켤 수 없으므로 설정을 활성화한 새 태스크로 교체해야 한다.
+2. Fargate에서는 **Task Role**에 SSM Session Manager 권한이 있어야 한다. 이미지 pull 등에 쓰는 Task Execution Role과 혼동하지 않는다. 접속 사용자의 `ecs:ExecuteCommand` 권한도 별도로 확인한다.
+3. VPC 인터페이스 엔드포인트를 사용하는 구성에서는 `ssmmessages` 엔드포인트를 확인한다. 세션 암호화에 자체 KMS 키를 쓰는 경우 KMS 엔드포인트도 필요하다. 일반적인 SSM 구성의 엔드포인트 목록을 그대로 필수 목록으로 복사하지 않는다.
+4. SSM agent는 파일을 써야 하므로 `readonlyRootFilesystem`을 사용하는 컨테이너에는 ECS Exec이 지원되지 않는다. HTTP proxy를 쓴다면 `NO_PROXY=169.254.169.254,169.254.170.2`로 메타데이터와 역할 자격 증명 트래픽을 제외한다.
+
+운영 접근은 root 권한으로 실행된다. 연결 성공과 감사 기록을 따로 확인한다. 세션 로깅이 `DEFAULT`여도 `awslogs`가 없으면 로그가 저장되지 않으며, 명령 로그 업로드에는 이미지 안의 `script`와 `cat`이 필요하다. 애플리케이션 로그와 Exec 세션 로그는 별도 설정이다.
 
 ## 흔한 실수
 
