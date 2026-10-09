@@ -39,10 +39,20 @@ Role을 assume하려면 일반적으로 role의 trust policy가 principal을 신
 | **콘솔 액세스** | 비밀번호 + (MFA) | 웹 콘솔 로그인. 별도 로그인 링크(`https://<account>.signin.aws.amazon.com/console`) |
 | **프로그래밍 액세스** | Access Key + Secret Access Key | CLI, SDK, API 호출 |
 
-신규 유저 생성 시 기본 권한은 **없음**(빈 정책). Access Key는 **생성 시점에만 노출** — Secret Access Key는 다시 볼 수 없으니 즉시 안전한 곳에 보관(혹은 재발급).
+신규 유저 생성 시 기본 권한은 **없음**(빈 정책). **Access Key ID는 생성 후에도 조회할 수 있지만 Secret Access Key는 생성 시점에만 확인할 수 있다.** Secret을 분실하면 기존 키를 삭제하고 새 키를 만든다.
+
+### 장기 키를 발급해야 할 때
+
+2026-10-09 AWS 공식 문서 대조 기준, IAM 사용자당 Access Key는 최대 2개다. 발급 전에 IAM Role 같은 임시 자격증명으로 대체할 수 있는지 먼저 확인한다.
+
+- 키 생성과 리소스 권한 부여는 별개다. 키를 만들었다는 사실만으로 S3 같은 서비스에 접근할 수 있는 것은 아니다.
+- 다운로드한 자격증명 파일이나 Secret을 코드, 프로젝트 폴더와 저장소에 넣지 않는다. 보호된 저장 위치에서도 접근 범위를 제한한다.
+- 키를 생성한 뒤에는 사용 기록을 감시하고 필요에 따라 갱신하거나 삭제한다. 실제 리소스 접근 검증에서는 필요한 작업의 성공과 허용하지 않은 작업의 거부를 함께 확인한다.
 
 ## 출처
 
+- [AWS 공식 문서, Manage access keys for IAM users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html)
+- [AWS IAM API, ListAccessKeys](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListAccessKeys.html)
 - [AWS 공식 문서, IAM identities](https://docs.aws.amazon.com/IAM/latest/UserGuide/id.html)
 - [AWS 공식 문서, IAM roles and trust policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html#id_roles_terms-and-concepts)
 - [AWS STS API, AssumeRole permissions](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html)

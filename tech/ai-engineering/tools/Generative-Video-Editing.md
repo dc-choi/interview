@@ -32,6 +32,18 @@ aliases: ["생성형 영상 편집", "Generative Video Editing"]
 
 발표의 기능 설명은 특정 입력에서 인물과 원본 구도를 완벽하게 보존한다는 성능 보장이 아니다. 아직 출시 예정으로 표기된 기능은 현재 사용 가능한 기능에 포함하지 않는다.
 
+## 기존 영상을 모션 그래픽으로 재구성한다
+
+기존 영상의 판서나 도식을 다시 표현할 때는 내용 해석, 장면 구성과 영상 렌더링을 나누어 확인한다. MP4만 있다는 사실과 편집 가능한 텍스트, 도형, 타이밍을 복원했다는 사실은 다르다.
+
+2026-10-09 공식 문서 대조 기준, HyperFrames는 에이전트가 작성한 HTML, CSS와 JavaScript 프로젝트를 재생하거나 영상으로 렌더링한다. 실시간 재생 화면을 녹화하는 대신 각 프레임의 상태를 요청하는 방식이다. 렌더링 방식만으로 원본 판서의 의미나 글자가 정확히 복원됐다고 판단하지 않는다.
+
+다음은 이 구분을 적용한 검수 제안이다.
+
+- 판서의 용어, 수식과 화살표 관계를 먼저 확인하고, 흐린 글씨는 추측해 확정하지 않는다.
+- 새 도형과 자막의 등장 시점을 원본 설명 음성과 맞춘다. 미리보기뿐 아니라 최종 영상도 재생해 점검한다.
+- 후속 수정에 쓸 프로젝트와 최종 영상 파일을 함께 관리한다. 특정 모델의 편집 품질이나 자동 복원 정확도는 별도로 평가한다.
+
 ## 변경 범위와 검수 기준을 함께 쓴다
 
 다음은 제품 기능에 기반한 작업 제안이다.
@@ -45,6 +57,7 @@ aliases: ["생성형 영상 편집", "Generative Video Editing"]
 
 ## 출처
 
+- [HyperFrames, What is HyperFrames?](https://hyperframes.heygen.com/introduction) — HTML 프로젝트와 프레임별 렌더링의 역할.
 - [Google Vids gets powerful upgrades with Gemini Omni — Google](https://blog.google/products-and-platforms/products/workspace/gemini-omni-personal-avatars/) — 자연어, 참조 이미지와 기존 클립의 단계적 편집.
 - [Anyone can make stunning HD videos with Gemini Omni in Google Vids — Google](https://blog.google/products-and-platforms/products/workspace/gemini-omni-in-google-vids/) — 2026-09-23 발표의 생성 기능, 접근 조건과 SynthID.
 

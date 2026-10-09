@@ -52,7 +52,7 @@ verified_at: 2026-09-30
 - EC2 Instance Profile, IRSA의 자격증명 노출 메커니즘 (IMDS, OIDC)
 - Condition Key로 IP, MFA, 암호화 강제하는 fine-grained 제어
 - Access Key vs Role — 왜 Role 우선인가
-- **Access Key는 생성 시점에만 노출** — 분실 시 재발급
+- **Secret Access Key만 생성 시점에 확인 가능** — Access Key ID는 나중에도 조회 가능. Secret 분실 시 기존 키 삭제와 새 키 생성
 - 신규 User는 기본 **권한 없음**, 콘솔, 프로그래밍 액세스 별도 선택
 - 계정 비밀번호 정책은 root 비밀번호와 access key에 적용되지 않고, 만료 기간은 설정 즉시 적용된다
 - JSON 정책의 주요 요소는 `Effect`, `Action`, `Resource`, `Condition` 등이며 정책 유형마다 허용 요소가 다르다. `Principal`은 resource-based policy와 role trust policy에 사용하고 identity-based policy에는 넣지 않는다
@@ -65,6 +65,8 @@ verified_at: 2026-09-30
 
 ## 출처
 
+- [AWS, Manage access keys for IAM users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html)
+- [AWS IAM API, ListAccessKeys](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListAccessKeys.html)
 - [AWS IAM — Security best practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
 - [Principal 정책 요소](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html)
 - [IAM 정책 평가 로직](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html)
