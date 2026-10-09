@@ -42,6 +42,22 @@ Manager가 없을 때 기본값은 `cluster.no_cluster_manager_block=metadata_wr
 
 Green은 heap, latency, disk I/O까지 건강하다는 뜻이 아니다. Allocation 상태만 요약한다.
 
+### OpenSearch Service에서 과다 샤딩 징후 확인
+
+부분 검증(2026-10-10): 아래는 Amazon OpenSearch Service provisioned domain의 공식 지표와 장애 진단 자료를 대조한 절이다. 위 quorum과 cluster 설정 전체를 재검증한 날짜는 아니다.
+
+작은 shard가 누적되면 cluster state와 shard 유지에 필요한 자원이 늘어난다. Health 색상만 보지 말고 같은 시간축에서 다음 지표를 비교한다.
+
+| 관측 | 해석과 추가 확인 |
+|---|---|
+| `Shards.active` 증가 | 활성 primary와 replica의 합계다. 노드별 shard 배치와 작은 인덱스가 계속 생기는지 확인한다. |
+| `Nodes` 감소나 변동 | 노드 이탈과 배포 시점을 함께 확인한다. 전용 cluster manager와 Warm 노드도 포함하므로 이 값으로 단순히 나눈 값을 data node당 shard 수로 쓰지 않는다. |
+| `JVMMemoryPressure`, `CPUUtilization` 상승 | 과다 shard와 GC 부담의 후보 신호다. 요청 증가와 무거운 집계 등 다른 원인도 대조한다. |
+
+대응은 [[OpenSearch-Shard-Sizing|샤드 사이징]]과 [[OpenSearch-Index-Lifecycle|인덱스 수명주기]]로 연결한다. Index template의 primary 수를 줄여도 이미 만들어진 인덱스의 shard 수는 변하지 않는다. 기존 시계열 인덱스는 reindex로 통합하는 경로를 검토하고, 삭제가 필요하면 보존 요구와 수동 snapshot을 먼저 확인한다. Scale-up이나 scale-out은 자원 압박을 줄일 수 있지만 작은 shard를 계속 만드는 정책도 함께 고친다.
+
+노드당 1,000개를 모든 버전의 고정 상한으로 적용하지 않는다. 현재 엔진별 quota와 권장 shard 크기, heap 예산을 구분해 확인한다.
+
 ## 자주 틀리는 모델
 
 1. OpenSearch index 하나가 Lucene index 하나인 것이 아니다. 각 shard가 Lucene index다.
@@ -53,6 +69,9 @@ Green은 heap, latency, disk I/O까지 건강하다는 뜻이 아니다. Allocat
 
 ## 출처
 
+- [How do I recognize and resolve cluster health issues that have too many shards? — AWS re:Post](https://www.repost.aws/knowledge-center/opensearch-too-many-shards)
+- [AWS Documentation, Monitoring OpenSearch cluster metrics with Amazon CloudWatch](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-cloudwatchmetrics.html)
+- [AWS Documentation, Choosing the number of shards](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp-sharding.html)
 - [OpenSearch Documentation, Voting and quorum](https://docs.opensearch.org/latest/tuning-your-cluster/discovery-cluster-formation/voting-quorums/)
 - [OpenSearch Documentation, Cluster state API](https://docs.opensearch.org/latest/api-reference/cluster-api/cluster-state/), [OpenSearch source, NoClusterManagerBlockService](https://github.com/opensearch-project/OpenSearch/blob/main/server/src/main/java/org/opensearch/cluster/coordination/NoClusterManagerBlockService.java)
 - [OpenSearch Documentation, Cluster bootstrapping](https://docs.opensearch.org/latest/tuning-your-cluster/discovery-cluster-formation/bootstrapping/)

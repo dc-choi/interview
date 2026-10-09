@@ -78,6 +78,17 @@ SnapStart는 버전을 게시할 때 초기화한 실행 환경을 스냅샷으�
 - 선택: 50MB는 넘지만 250MB 안이면 S3 경유 zip, 여러 함수가 공유하는 의존성은 layer(함수당 5개, 250MB 합산에 포함), 250MB를 넘거나 네이티브 의존성과 빌드 환경을 이미지로 고정해야 하면 ECR에 저장하는 컨테이너 이미지를 쓴다. 패키지가 클수록 Cold Start의 코드 다운로드도 길어진다
 - zip 함수와 layer 코드를 담는 Lambda-managed storage는 리전당 300GB(비압축)이고 함수 버전과 layer 버전마다 소모되며 늘릴 수 없다. 쓰지 않는 버전을 정리하거나 self-managed S3 code storage(`S3ObjectStorageMode=REFERENCE`, 버킷 versioning 필요)로 S3 객체를 복사 없이 참조한다. 이 모드도 250MB 한도는 같고, Lambda가 원본 객체에 접근하지 못하면 함수가 `Inactive`가 된다
 
+### 컨테이너 이미지의 실행과 갱신 경계
+
+부분 검증(2026-10-10): 아래 이미지 배포 조건을 공식 문서와 대조했다. 다른 실행 모델과 기존 quota 전체를 재검증한 날짜는 아니다.
+
+- 이미지는 Lambda Runtime API를 구현해야 한다. AWS 언어별 베이스 이미지는 runtime interface client를 포함하지만, OS-only 또는 다른 베이스 이미지는 이를 추가해야 한다. 일반 웹 서버 이미지를 올리는 것만으로 Lambda 핸들러가 되지는 않는다.
+- Linux 이미지와 함수에 맞는 단일 CPU 아키텍처를 사용한다. 여러 아키텍처를 담은 이미지는 지원하지 않는다. 루트 파일시스템은 읽기 전용으로 실행 가능해야 하며, 임시 쓰기는 `/tmp`를 사용한다.
+- ECR 저장소는 함수와 같은 리전에 둔다. 기존 함수의 zip과 이미지 패키지 유형은 서로 바꿀 수 없으므로 전환하려면 새 함수를 만든다.
+- 로컬 runtime interface emulator로 이벤트와 응답을 시험한 뒤 실제 Lambda에서도 호출을 확인한다. 함수가 `Pending`이면 아직 호출할 수 없으므로 `Active` 전환을 확인한다.
+- Lambda는 이미지 태그를 특정 digest로 해석한다. 같은 태그에 새 이미지를 push해도 실행 코드는 자동 갱신되지 않는다. 다시 빌드하고 ECR에 올린 뒤 `update-function-code`로 함수 코드를 갱신한다.
+- 실행에 쓰는 이미지와 Lambda의 ECR 접근 권한을 유지한다. 원본 이미지를 삭제하거나 접근 권한을 철회하면 이후 함수가 `Failed`가 되어 호출이 실패할 수 있다.
+
 ## Function 구성요소
 
 함수(Function)는 코드 실행을 위해 호출되는 최소 단위 리소스. 다음 4가지로 구성된다.
@@ -89,6 +100,8 @@ SnapStart는 버전을 게시할 때 초기화한 실행 환경을 스냅샷으�
 
 ## 출처
 
+- [AWS, Create a Lambda function using a container image](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html)
+- [AWS, Deploy Node.js Lambda functions with container images](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-image.html)
 - [AWS, Understanding the Lambda execution environment lifecycle](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)
 - [AWS, Choosing a Lambda programming model](https://docs.aws.amazon.com/lambda/latest/dg/foundation-progmodel.html)
 - [AWS, Lambda Managed Instances](https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances.html)

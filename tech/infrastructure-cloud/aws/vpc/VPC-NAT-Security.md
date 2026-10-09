@@ -50,6 +50,16 @@ NACL은 요청과 응답을 각각 허용해야 한다. 외부 클라이언트�
 
 SG/NACL의 기본값, 연결 추적과 이 절은 2026-10-07 공식 문서로 확인했다. NAT와 규제 관련 기존 절 전체를 재검증한 날짜는 아니다.
 
+### 특정 IP 허용과 차단의 변경 범위
+
+부분 검증(2026-10-10): 아래 SG 규칙 합성과 NACL 변경 범위를 공식 문서로 확인했다. NAT와 규제 절 전체를 재검증한 것은 아니다.
+
+1. **허용 범위:** 단일 IPv4는 `/32`, IPv6는 `/128`로 지정하고 필요한 프로토콜과 포트만 연다. `0.0.0.0/0`은 특정 상대만 허용하는 규칙이 아니다.
+2. **SG 합성:** ENI에 연결된 여러 SG의 허용 규칙은 합쳐진다. 좁은 SG를 하나 더 붙여도 기존 SG의 넓은 허용을 취소하지 못한다. 해당 ENI에 연결된 모든 SG의 중복 허용을 확인한다.
+3. **공유 영향:** SG 규칙을 고치면 그 SG를 사용하는 다른 리소스에도 적용된다. 특정 인스턴스만 바꾸려는 작업이라면 공유 대상을 먼저 확인한다.
+4. **명시적 차단:** 서브넷 경계를 통과하는 특정 CIDR을 막으려면 NACL의 거부 규칙을 넓은 허용 규칙보다 작은 번호에 둔다. 같은 NACL에 연결된 모든 서브넷이 영향을 받으며, 같은 서브넷 내부 통신의 차단 수단으로 사용하지 않는다.
+5. **확인:** 변경 뒤 허용할 상대와 거부할 상대에서 각각 새 연결을 시험한다. 기존 연결은 SG 연결 추적의 영향을 받을 수 있으므로 새 연결의 결과와 구분한다. NACL은 요청과 응답 방향의 규칙을 함께 확인한다.
+
 ## Traffic Mirroring 수신 경로 점검
 
 Traffic Mirroring은 ENI의 트래픽을 복제해 분석 대상에 전달한다. 2026-10-09 공식 Traffic Mirroring 문서로 아래 전송 조건을 대조했다. 기존 NAT와 규제 절 전체를 재검증한 날짜는 아니다.
@@ -70,6 +80,8 @@ Traffic Mirroring은 ENI의 트래픽을 복제해 분석 대상에 전달한다
 
 ## 출처
 
+- [Amazon VPC User Guide, Security group rules](https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html)
+- [Amazon VPC User Guide, Network ACL rules](https://docs.aws.amazon.com/vpc/latest/userguide/nacl-rules.html)
 - [Amazon VPC User Guide, Get started using Traffic Mirroring to monitor network traffic](https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html)
 - [Amazon VPC User Guide, Understand traffic mirror target concepts](https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-targets.html)
 - [Amazon VPC User Guide, Traffic Mirroring limitations](https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-network-limitations.html)
