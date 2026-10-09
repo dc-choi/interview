@@ -34,6 +34,20 @@ VAD(Voice Activity Detection)는 말소리가 있는 구간을 찾는다. Turn d
 
 평가에서는 마지막 말소리부터 턴 확정까지의 대기와, 확정 이후 첫 응답 재생까지의 시간을 나눈다. 실제 상담 예문으로 문장 중간 쉼, 확인 요청, 짧은 맞장구와 배경 소음을 시험하고 조기 종료와 불필요한 대기를 함께 기록한다. 이는 적용 점검 방법이며 특정 모델의 실측 성능 주장은 아니다. 턴 종료 판단과 AI 발화 중 사용자의 끼어들기에 반응하는 정책도 별도로 조정한다(2026-10-06 LiveKit 공식 문서 대조).
 
+## 부분 전사와 실행 가능한 요청을 구분한다
+
+연쇄 파이프라인의 STT는 발화가 끝나기 전에도 텍스트를 내보낸다. 2026-10-09 Amazon Transcribe 공식 문서 기준으로 부분 전사는 추가 문맥에 따라 앞서 인식한 단어가 바뀔 수 있다. `IsPartial: false`는 해당 음성 구간의 전사가 완료됐다는 뜻이다. 이것만으로 사용자의 전체 발화 차례나 업무 요청이 끝났다고 판단하지 않는다.
+
+Partial-result stabilization을 켜면 바뀔 수 있는 범위가 마지막 몇 단어로 줄어든다. 단어와 문장부호의 `Stable: true`는 해당 항목이 이후 바뀌지 않는다는 표시다. 인식 내용이 정확하거나 사용자가 실행을 승인했다는 표시는 아니다. 높은 안정화 수준은 지연을 줄이는 대신 정확도에 영향을 줄 수 있으므로 통화 음질과 대상 언어로 비교한다.
+
+다음은 이 동작을 상담 시스템에 적용한 설계 제안이다.
+
+- 화면의 임시 자막과 업무 실행 입력을 분리한다. 부분 전사가 갱신될 때마다 새 요청으로 처리하지 않는다.
+- 부분 전사로 검색이나 답변 초안을 미리 만들었다면, 전사 확정과 턴 종료 판단 뒤 최신 요청에 맞는 결과인지 확인한다.
+- 예약 변경이나 환불 같은 쓰기 작업은 전사 확정 외에도 필요한 정보, 인가와 사용자 확인 조건을 검사한다.
+
+예를 들어 사용자가 날짜를 정정하는 동안 먼저 인식된 날짜로 예약을 확정하지 않는다. 테스트에서는 조기 실행 횟수, 전사 수정 반영 여부와 첫 응답 지연을 함께 측정한다.
+
 ## 대화 진행과 작업 완료를 나눈다
 
 GPT-Live 구성에서 음성 모델은 말하기 방식과 위임 시점을 담당하고, 백엔드는 추론, 업무 규칙과 도구 흐름을 담당한다. 애플리케이션은 권한, 필요한 확인, 실제 함수 실행과 작업 기록을 관리한다.
@@ -88,6 +102,8 @@ Client delegation의 위임 이벤트에는 작업 본문 대신 메타데이터
 
 ## 출처
 
+- [AWS, Streaming and partial results](https://docs.aws.amazon.com/transcribe/latest/dg/streaming-partial-results.html)
+- [AWS, Result](https://docs.aws.amazon.com/transcribe/latest/APIReference/API_streaming_Result.html)
 - [Griffin: The First Human Interaction Model — Tavus](https://www.tavus.io/griffin) — Face-to-face study와 Methodology, 1분 대화의 자체 평가 조건.
 
 - [LiveKit, Turns overview](https://docs.livekit.io/agents/logic/turns/)

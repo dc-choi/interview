@@ -52,6 +52,18 @@ SageMaker의 detailed observability는 지원되는 vLLM과 SGLang 컨테이너�
 
 이 절은 실시간 inference component 구성의 관측 경계다. Asynchronous Inference나 Serverless Inference의 대기열과 시작 동작으로 일반화하지 않는다.
 
+## Model Monitor의 정답 데이터와 이용 범위
+
+2026-10-09 공식 문서 기준으로 SageMaker Model Monitor는 신규 고객에게 제공되지 않는다. 기존 고객은 계속 이용할 수 있으며 보안과 가용성 개선은 유지되지만 새 기능은 계획하지 않는다. 이 제한을 SageMaker AI 전체나 endpoint의 detailed observability 종료로 확대하지 않는다. 아래는 기존 Model Monitor 구성의 평가 경계다.
+
+Model quality monitoring은 캡처한 예측값과 S3에 저장한 실제 정답 레이블을 결합해 비교한다. 데이터 캡처, 기준선, 모니터링 일정뿐 아니라 정답 수집이 필요하다. 입력 분포의 변화와 예측의 정답 여부는 다른 신호다.
+
+- 예측 레코드에 `inferenceId`가 있으면 이를 정답 레코드와의 결합에 사용하고, 없으면 캡처된 `eventId`를 사용한다. 호출자가 준 식별자는 예측과 정답 사이에서 일치해야 한다.
+- 정답 파일 경로의 날짜는 정답 수집 시점이며 추론 시점과 달라도 된다. 평가 구간을 정할 때 정답이 늦게 도착하는 상황을 고려한다.
+- 내장 지표는 회귀, 이진 분류와 다중 분류 등 문제 유형에 맞춰 계산된다. 이를 켰다는 사실만으로 자유 형식 LLM 응답의 사실성과 관련성이 평가되지는 않는다.
+
+운영 점검에서는 전체 예측 수와 정답이 연결된 평가 표본 수를 함께 기록한다(설계 제안). 정답 미도착이나 식별자 불일치로 빠진 표본을 정답으로 계산하지 않는다. LLM 응답의 품질 평가는 아래처럼 별도로 구성한다.
+
 ## 품질 평가는 별도 파이프라인이다
 
 인프라 지표를 켠다고 LLM의 정답성 점수가 자동으로 생성되지는 않는다. 응답 표본에 평가를 실행하고 평가 결과를 별도 지표로 발행해야 한다. 한 구현 방식은 MLflow 판정기와 Bedrock 모델로 응답을 평가하고 CloudWatch에 결과를 보내 Grafana에서 보는 것이다.
@@ -67,6 +79,10 @@ SageMaker의 detailed observability는 지원되는 vLLM과 SGLang 컨테이너�
 
 ## 출처
 
+- [AWS, Amazon SageMaker Model Monitor availability change](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor-availability-change.html)
+- [AWS, Model quality](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor-model-quality.html)
+- [AWS, Ingest Ground Truth labels and merge them with predictions](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor-model-quality-merge.html)
+- [AWS, Model quality metrics and Amazon CloudWatch monitoring](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor-model-quality-metrics.html)
 - [AWS, Inference optimization for Amazon SageMaker AI models](https://docs.aws.amazon.com/sagemaker/latest/dg/model-optimize.html)
 - [AWS, Evaluate the performance of optimized models](https://docs.aws.amazon.com/sagemaker/latest/dg/model-optimize-evaluate.html)
 - [AWS, Scale an endpoint to zero instances](https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-auto-scaling-zero-instances.html)
