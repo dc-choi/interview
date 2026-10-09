@@ -60,6 +60,16 @@ Prefill-decode disaggregation은 두 단계를 별도 자원에 배치해 간섭
 
 장비에서 커널 구성을 튜닝하는 Magnitude는 이러한 비교의 한 사례다. 프로젝트 README는 Metal에서 프리필 9%, 디코드 92% 개선을, CUDA에서는 각각 23%, 19% 개선을 제시한다. 이는 프로젝트가 보고한 특정 비교 결과이며 독립 재현 결과나 모든 장비의 성능 보장이 아니다. 이 문서에서는 수치를 재현하지 않았고, 실제 선택에는 위 조건과 응답 품질을 맞춘 별도 측정이 필요하다.
 
+### 추론 런타임의 최적화 목표와 호출 방식을 맞춘다
+
+하드웨어가 같아도 단일 요청 지연과 여러 요청의 처리량은 다른 최적화 목표다. OpenVINO 2024 문서의 performance hint를 2026-10-10에 대조한 범위는 다음과 같다. 이는 일반 추론 런타임의 설정이며 LLM 생성 전체의 속도 보장은 아니다.
+
+- `LATENCY`와 `THROUGHPUT`은 장치와 모델에 맞는 실행 설정을 선택하는 힌트다. `THROUGHPUT`은 CPU/GPU stream 수 등을 조정하지만 모델 적재 시간과 메모리 사용량이 늘 수 있다.
+- 해당 문서에서 두 힌트의 성능 개선은 비동기 추론 파이프라인을 전제로 한다. 동기 호출을 직렬로 반복하면서 처리량 힌트만 바꾼 결과를 런타임의 병렬 처리 한계로 해석하지 않는다.
+- 애플리케이션은 `optimal_number_of_infer_requests`를 조회해 권장 병렬 요청 수를 확인한다. 처리량 설정에 전달하는 `num_requests`는 애플리케이션이 제공할 수 있는 병렬성의 제약을 알리는 값이지 요청을 자동 생성하는 기능이 아니다.
+
+비교 시험에서는 힌트, 실제 동시 요청 수, 적재 시간과 최대 메모리를 함께 기록한다. LLM 서비스라면 TTFT, 토큰 간 지연과 전체 응답 시간도 별도로 측정한다. 이 절에서는 하드웨어 벤치마크나 비용, 전력 절감률을 재현하지 않았다.
+
 ## 에이전트 서빙은 세션 단위로 측정한다
 
 단일 요청의 입력 길이를 고정한 채 얻은 처리량은 대화와 도구 결과가 누적되는 세션의 용량을 대표하지 못할 수 있다. 턴이 진행될수록 프리필과 KV 캐시 부담이 달라지므로 다음 조건을 함께 남긴다.
@@ -113,6 +123,7 @@ CPU 사례에는 병렬화, 단계 간 데이터 전달, CPU 활용률과 하드
 
 ## 출처
 
+- [OpenVINO 2024, High-level Performance Hints](https://docs.openvino.ai/2024/openvino-workflow/running-inference/optimize-inference/high-level-performance-hints.html)
 - [DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving — USENIX OSDI 2024](https://www.usenix.org/system/files/osdi24-zhong-yinmin.pdf)
 - [AWS and Cerebras Collaboration Aims to Set a New Standard for AI Inference Speed and Performance in the Cloud — AWS](https://press.aboutamazon.com/aws/2026/3/aws-and-cerebras-collaboration-aims-to-set-a-new-standard-for-ai-inference-speed-and-performance-in-the-cloud)
 - [llama-bench — ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp/blob/master/tools/llama-bench/README.md)

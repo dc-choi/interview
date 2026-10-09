@@ -57,6 +57,15 @@ Collector와 중앙 버퍼는 같은 것이 아니다. Fluent Bit의 로컬 파�
 
 실무에서는 최근 로그를 검색 저장소에 두고 전체 원본이나 저빈도 로그를 객체 저장소에 보관하는 혼합 구조가 흔하다. 모든 로그를 고성능 검색 계층에 영구 보관할 필요는 없다.
 
+### 객체 저장소 경로에서 적재와 카탈로그를 구분한다
+
+2026-10-10 AWS 공식 문서로 Firehose의 형식 변환과 Athena의 카탈로그 역할을 확인했다. S3 기반 경로에서는 Firehose가 JSON을 Parquet 또는 ORC로 변환해 S3에 저장할 수 있고, Glue Data Catalog는 변환과 조회에 사용할 스키마를 제공한다. Athena는 카탈로그의 테이블과 컬럼 메타데이터를 이용해 S3 데이터를 조회한다. 이 구성에서 Data Catalog를 로그 본문을 저장하는 중간 저장소로 그리지 않는다.
+
+- Firehose 형식 변환에는 입력 구조와 맞는 스키마가 필요하다. 스키마에 없는 속성은 변환 결과에 포함되지 않을 수 있으므로 새 필드를 추가할 때 적재 성공뿐 아니라 결과 컬럼도 확인한다.
+- Glue crawler는 S3 데이터에서 스키마를 추론하는 선택지다. Athena의 `CREATE TABLE` 등으로 스키마를 정의할 수도 있으므로 crawler를 모든 구성의 필수 단계로 두지 않는다.
+
+다음은 기술지원용 조회 설계 제안이다. 클라이언트 이벤트, 미디어 통계와 서버 로그를 세션 식별자 및 시간축으로 연결하고, 사용자 조작과 장치 상태를 함께 탐색할 수 있게 한다. 수집 경로의 성공과 사용자가 경험한 통화 성공은 별개다. 세션 리플레이를 붙이더라도 원인 판정에는 해당 시점의 이벤트와 통계가 필요하며, 고객에게 보여 줄 로그는 테넌트 접근권과 민감정보를 별도로 제한한다.
+
 ## CDN 로그의 표본과 전달 누락을 구분한다
 
 2026-10-10 부분 검증: CloudFront의 표준 로그와 실시간 로그 전달 조건을 대조했다. 이 절의 제품 조건만 확인했으며 다른 수집기의 전체 동작을 재검증한 것은 아니다.
@@ -142,6 +151,9 @@ OpenSearch의 shard, rollover, storage tier는 [[OpenSearch-Index-Lifecycle]]을
 
 ## 출처
 
+- [AWS Documentation, Convert input data format in Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html)
+- [AWS Documentation, Use AWS Glue Data Catalog to connect to your data](https://docs.aws.amazon.com/athena/latest/ug/data-sources-glue.html)
+- [화상 통신 로그 분석 시스템 구축: 페이지콜 기술지원 프로세스 혁신 사례 연구 — Amazon Web Services Korea](https://www.youtube.com/watch?v=iW9kyN0OMaE)
 - [AWS Documentation, Use real-time access logs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/real-time-logs.html)
 - [AWS Documentation, Standard logging reference](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/standard-logs-reference.html)
 

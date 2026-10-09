@@ -154,6 +154,10 @@ Knowledge 수정 (Metric Registry / Rule / Skill)
 
 이 문서에서 Human-in-the-loop은 사람의 실행 검토를 포함하고, Closure-loop은 사전에 정한 위임 범위 안에서 실행을 닫힌 루프로 맡기는 운영 구분이다.
 
+사람의 승인은 실행 권한과 감사 기록을 대신하지 않는다. 운영 설계에서는 승인 화면에 실제 작업 내용을 보여 주고, 실행 자격증명의 접근 범위를 제한하며, 호출한 API와 입력, 응답을 추적하는 세 통제를 함께 점검한다. 승인받은 작업이 실행에 실패할 수 있으므로 승인 여부와 실행 결과도 구분한다.
+
+Mindflow AI Rooms의 공개 제품 설명은 중요한 작업의 실행 전 승인, 제공한 자격증명에서 상속한 접근권, API endpoint와 입력 및 응답의 감사 기록을 각각 제시한다(2026-10-10 확인). 이는 세 통제를 구분하는 사례이며 모든 행동에 승인이 강제되거나 권한 우회가 불가능하다는 실증은 아니다. 실제 도입에서는 승인 없이 실행 가능한 범위와 감사 기록의 민감정보 처리를 별도로 확인한다.
+
 ## 사례
 
 Meta Muse의 2026-09 공개 설계는 사용자별 VM에 에이전트와 데이터를 두고, 시스템 수준에서 분리한 Sentinel이 외부 통신을 승인하는 방식을 설명한다. 메일 발송과 구매 같은 민감한 행동에는 사용자 확인을 받고 감사 이력을 제공한다(2026-10-06 공식 발표 확인). 이는 실행 환경 격리와 외부 행동 통제를 별도로 두는 사례이며, 발표만으로 격리의 완전성이나 실제 사고 방지 효과를 검증한 것은 아니다.
@@ -192,6 +196,7 @@ Q. 자동 메모리를 끄는 이유는?
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 
 ## 출처
+- [AI Rooms — Mindflow](https://www.mindflow.io/ai-rooms)
 - [Amazon Bedrock, Use multi-agent collaboration with Amazon Bedrock Agents](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-multi-agent-collaboration.html)
 - [Amazon Bedrock API Reference, AssociateAgentCollaborator](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent_AssociateAgentCollaborator.html)
 - [Introducing Muse: The World's First Personal AI Agent Built for Everyone — Meta](https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/)
