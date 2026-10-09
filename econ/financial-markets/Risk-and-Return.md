@@ -26,6 +26,20 @@ aliases: ["위험과 수익", "Risk and Return"]
 - **입출금이 있는 계좌**: 잔액 증가는 납입 때문일 수 있으므로 그대로 수익으로 세지 않는다. 시간가중수익률은 외부 입출금 전후의 구간 수익률을 연결해 운용 성과를 비교하고, 금액가중수익률(IRR)은 납입과 인출의 금액 및 시점을 반영한 투자자의 결과를 나타낸다.
 - **같은 기준으로 비교**: 통화, 기간, 배당 재투자, 비용과 세금의 포함 여부를 맞춘다. 명목수익률과 물가를 뺀 실질수익률도 구분한다 → [[Inflation|인플레이션]].
 
+### 배당 ETF의 총수익과 현금 수입은 따로 읽는다
+
+가격 변화, 분배금을 포함한 총수익, 실제 받은 현금은 서로 다른 질문에 답한다. 운용사가 제시한 재투자 가정의 성과를 생활비로 인출할 수 있는 현금 증가율로 읽지 않는다.
+
+| 확인할 것 | 비교 기준 |
+|---|---|
+| 총수익 | 같은 시작일과 종료일, 시장가격 또는 NAV, 분배금 재투자 여부 |
+| 주당 분배금 변화 | 같은 길이의 지급 기간과 주식 분할을 맞춘 주당 금액 |
+| 계좌의 현금 수입 | 각 지급 시점의 보유 수량, 실제 분배금, 세금과 환전 결과 |
+
+가상으로 가격이 100에서 90으로 내려가고 재투자하지 않은 현금 분배금이 4라면, 비용과 세금을 제외한 보유기간 총수익률은 `(90 - 100 + 4) / 100 = -6%`다. 분배금을 받았다는 사실이 가격 손실을 없애지는 않는다. 추가 매수로 보유 수량이 늘어 현금 수입이 커진 경우도 주당 분배금 성장과 구분한다.
+
+공식 상품 페이지에서도 지표의 이름과 각 기준일을 따로 확인한다. 예를 들어 SCHD는 시장가격과 NAV의 총수익을 구분하고, 30일 SEC yield와 최근 12개월 distribution yield를 별도로 표시한다. 이 두 yield 지표를 총수익률이나 미래 지급 보장으로 해석하지 않는다. 2026-10-09 상품 페이지와 FINRA의 수익률 설명을 대조했으며, 특정 시점의 성과 순위나 매매 판단은 다루지 않는다.
+
 ## 3. 분산투자와 상관관계
 
 불완전하게 상관된 자산을 섞으면 가중치와 기대수익 등 다른 조건을 함께 볼 때 포트폴리오 변동성을 낮출 수 있다. 한 자산이 빠질 때 다른 자산이 다르게 움직일 수 있기 때문이다. **상관관계가 낮은 자산**을 모으는 게 중요하지만 상관관계는 시장 국면에 따라 바뀔 수 있다.
@@ -62,6 +76,7 @@ aliases: ["위험과 수익", "Risk and Return"]
 
 ## 출처
 
+- [Schwab U.S. Dividend Equity ETF — Schwab Asset Management](https://www.schwabassetmanagement.com/products/schd) — 2026-10-09 총수익, 시장가격/NAV 구분과 yield 기준일 확인
 - [Investor.gov, Asset Allocation and Diversification](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
 - [OpenStax, Principles of Finance, The Capital Asset Pricing Model (CAPM)](https://openstax.org/books/principles-finance/pages/15-3-the-capital-asset-pricing-model-capm)
 - [FINRA, Risk](https://www.finra.org/investors/investing/investing-basics/risk) — 2026-10-02 자산별 위험과 기대수익의 조건 대조

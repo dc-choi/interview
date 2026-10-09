@@ -40,6 +40,18 @@ EC2 containment는 인스턴스를 보존한 채 보안 그룹을 제한적인 �
 
 ## 운영 검토 예시
 
+### 자격 증명 침해는 조사 자료의 범위부터 확인한다
+
+GuardDuty의 자격 증명 관련 finding은 IAM 주체, 호출 API, 시각과 IP를 확인하는 조사 출발점이다. 해당 주체의 권한과 실제 사용 맥락을 대조한다. 낯선 활동이라는 이유만으로 정상 작업까지 침해로 확정하지 않는다.
+
+- `AKIA`로 시작하는 키는 IAM 사용자 또는 root 사용자의 장기 자격 증명이다. `ASIA`는 STS 임시 자격 증명이며 역할뿐 아니라 IAM 사용자에게도 발급될 수 있다. 역할 세션의 CloudTrail `sessionIssuer`는 사용한 역할 정보를 보여준다. 이 필드만으로 실제 행위자의 신원을 확정하지 않는다.
+- IAM credential report는 사용자별 비밀번호, 액세스 키와 MFA 상태를 확인하는 자료다. 요청 시 최근 4시간 안에 생성한 보고서가 있으면 재사용하므로, 다시 다운로드했다고 방금 바뀐 상태가 반영됐다고 가정하지 않는다. 보고서의 액세스 키 열은 사용자별 첫 두 키만 포함하며, 서비스별 자격 증명은 포함하지 않는다. 전체 현황을 조사하려면 `ListAccessKeys`와 `ListServiceSpecificCredentials`도 확인한다.
+- CloudTrail Event history는 계정의 **리전별 최근 90일 관리 이벤트**를 보여준다. 데이터 이벤트와 조직 전체 집계는 포함하지 않는다. 지속적인 보존에는 trail이나 event data store가 필요하며 조사에 필요한 이벤트 종류도 별도로 구성한다.
+
+이 범위에서 로그가 없다는 사실만으로 침해나 데이터 접근이 없었다고 판정하지 않는다. 보고서 생성 시각, 조사 계정과 리전, 이벤트 종류와 보존 기간을 조사 결과에 함께 적는다. 이 절은 2026-10-09 AWS 공식 문서와 대조했으며, 실제 계정의 수집 설정을 검사한 결과는 아니다.
+
+### 조치 전후의 확인
+
 다음은 위 기능을 조합할 때 사용할 설계 점검 항목이며, 제품이 자동으로 보장하는 동작은 아니다.
 
 1. finding의 자원, 계정과 리전을 확인하고 현재 자원 상태를 다시 읽는다. 이미 해결된 경보에 조치를 반복하지 않는다.
@@ -52,6 +64,10 @@ EC2 containment는 인스턴스를 보존한 채 보안 그룹을 제한적인 �
 
 ## 출처
 
+- [AWS, Remediating potentially compromised AWS credentials](https://docs.aws.amazon.com/guardduty/latest/ug/compromised-creds.html)
+- [AWS, Generate credential reports for your AWS account](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_getting-report.html)
+- [AWS, Working with CloudTrail event history](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html)
+- [AWS, CloudTrail userIdentity element](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-user-identity.html)
 - [AWS, Step 1: Enable and configure AWS Security Incident Response](https://docs.aws.amazon.com/security-ir/latest/userguide/deploy-configure.html)
 - [AWS, Detect and Analyze](https://docs.aws.amazon.com/security-ir/latest/userguide/detect-and-analyze.html)
 - [AWS, Contain](https://docs.aws.amazon.com/security-ir/latest/userguide/contain.html)
