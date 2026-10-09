@@ -55,7 +55,7 @@ verified_at: 2026-08-25
 - **Inventory**: 설치 SW, 구성 수집
 - **Automation**: 런북, 반복 작업
 - **State Manager**: 일관된 구성 유지
-- **Trusted Advisor**: 비용, 성능, 보안, 내결함성, 서비스 한도 — Basic은 일부, Business/Enterprise Support로 풀
+- **Trusted Advisor**: AWS 환경을 검사해 개선 권고를 제공한다. 검사 접근 범위는 Support 플랜에 따라 다르며 아래 운영 경계를 함께 확인한다.
 - **Compute Optimizer**: EC2, EBS, Lambda, ASG 리사이징 권장 (ML 기반)
 - **Cost Explorer**: 추세 분석, 예측. **태깅 활성화 후 24시간** 필요
 - **AWS Budgets**: 예산 알람 (SNS)
@@ -65,6 +65,15 @@ verified_at: 2026-08-25
 - **AWS Artifact**: 컴플라이언스 보고서 다운로드 (SOC, PCI, ISO)
 
 ---
+
+### Trusted Advisor의 검사 범위와 운영 경계
+
+2026-10-10 AWS 공식 문서 확인 기준이다. 과거 발표의 검사 수와 플랜 이름을 현재 접근 권한으로 간주하지 않는다.
+
+- **플랜별 접근:** Basic은 Service Limits 전체와 Security, Fault tolerance의 일부 검사에 접근한다. 공식 가이드는 전체 검사와 Trusted Advisor API 접근 플랜으로 Business Support+, Enterprise Support, Unified Operations를 안내한다. Basic에는 자동 검사 갱신이 없으므로 갱신 시점을 확인한다.
+- **조직 집계:** Organizational view에는 Organizations의 all features와 관리 계정의 지원 플랜 및 권한이 필요하다. 관리 계정에 기능을 켜도 멤버 계정의 검사 권한이 늘어나지는 않는다. 보고서에 포함되는 검사는 각 계정의 플랜을 따른다.
+- **보고서 해석:** 생성 전에 검사 상태를 갱신한다. 리소스 목록에 없다는 이유만으로 문제가 없다고 판단하지 않는다. 리소스 없는 검사는 summary에만 나타날 수 있고, 미사용 서비스나 아직 갱신되지 않은 검사는 목록에 없을 수 있다.
+- **이벤트 대응:** 상태 변화 이벤트는 미국 동부 버지니아 북부 리전의 EventBridge로 전달되며 best effort라 전달을 보장하지 않는다. 운영 설계에서는 이벤트 알림과 정기적인 검사 결과 대조를 조합한다. 권고 탐지와 실제 시정 조치의 성공도 따로 확인한다.
 
 ## 마이그레이션
 
@@ -160,4 +169,7 @@ verified_at: 2026-08-25
 - [AWS General Reference, Services in Full Shutdown](https://docs.aws.amazon.com/general/latest/gr/full_shutdown_services.html)
 - [AWS CloudFormation, DeletionPolicy attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html)
 - [AWS DMS, Converting database schemas using DMS Schema Conversion](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html)
+- [AWS Support, AWS Trusted Advisor](https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html)
+- [AWS Support, Organizational view for AWS Trusted Advisor](https://docs.aws.amazon.com/awssupport/latest/user/organizational-view.html)
+- [AWS Support, Monitoring AWS Trusted Advisor check results with Amazon EventBridge](https://docs.aws.amazon.com/awssupport/latest/user/cloudwatch-events-ta.html)
 - AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)

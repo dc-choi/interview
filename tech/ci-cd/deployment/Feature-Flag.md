@@ -13,7 +13,7 @@ aliases: ["Feature Flag", "Feature Toggle", "피처 플래그", "기능 플래�
 ## 핵심 명제
 
 - **배포는 파이프라인이, 노출은 flag가 결정한다** — 미완성 코드도 기본 OFF로 main에 머지하고 배포할 수 있다. Martin Fowler의 정리대로 release toggle은 완성되지 않은 코드 경로를 latent code로 프로덕션에 실어 보내는 장치다.
-- **복구 시간의 차이가 도입 근거** — 코드 롤백은 재배포 파이프라인을 한 바퀴 돌아야 하므로 분 단위지만, flag OFF는 제어면에서 값 하나를 바꾸는 초 단위 작업이다.
+- **복구 시간의 차이가 도입 근거** — flag OFF는 코드 재배포를 생략할 수 있다. 실제 복구 시간은 설정 배포 전략, 캐시 갱신, 폴링 주기와 애플리케이션의 평가 시점에 달려 있으므로 초 단위 복구를 보장하지 않는다.
 - **트래픽 레벨 전환과 기능 레벨 전환은 다른 층위** — [[Blue-Green|Blue-Green]]과 Canary는 배포 단위(빌드 전체)를 되돌리고, flag는 그 안의 기능 하나만 되돌린다. 둘은 대체재가 아니라 조합해서 쓴다.
 - **가역성 자체의 가치**는 [[One-Way-vs-Two-Way-Door|One-Way vs Two-Way Door]]에서 이미 논증한 프레임이며, flag는 그 프레임의 대표적인 구현 수단이다.
 
@@ -62,11 +62,23 @@ Unleash 문서가 정리한 원칙 중 두 가지가 여기에 직결된다. **�
 2. **내부 dogfooding** — 사내 계정 세그먼트만 ON. 로그와 에러 트래킹으로 새 경로가 실제로 실행되는지 확인한다.
 3. **비율 상승** — 1%, 5%, 25%, 50%, 100% 같은 단계로 올린다. 각 단계마다 **관측 창**(예: 최소 30분 또는 유효 표본 도달)을 미리 정한다.
 4. **중단 임계값 사전 정의** — 오류율, p99 지연, 핵심 비즈니스 지표를 단계 진입 전에 숫자로 적는다. 올린 뒤에 기준을 정하면 그 기준은 이미 결과에 오염돼 있다.
-5. **자동 롤백 트리거** — 임계값 초과 시 사람 판단 없이 flag를 OFF로 되돌리는 경로를 둔다. 배포 파이프라인 레벨의 자동 롤백은 [[Rollback|롤백 전략]] 쪽 이야기다.
+5. **자동 롤백 트리거** — 임계값 초과 시 이전의 안전한 설정으로 되돌리는 경로를 둔다. 이전 설정 복원과 flag OFF는 같지 않을 수 있다. 배포 파이프라인 레벨의 자동 롤백은 [[Rollback|롤백 전략]]에서 다룬다.
 
 실험 flag의 표본 크기, MDE, SRM, peeking 같은 통계 설계는 [[Recommendation-System-Online-Experimentation-Statistics|온라인 실험 통계]]에 정본이 있다. 비율만 올리고 눈으로 그래프를 보는 것은 실험이 아니다.
 
 ## 코드 안에서의 flag
+
+### AWS AppConfig의 설정 배포와 캐시
+
+2026-10-10 AWS 공식 문서 확인 기준이다. 코드 배포를 생략하더라도 설정 버전의 배포와 애플리케이션 반영은 별도 과정으로 남는다.
+
+- **속성 검증:** 숫자 속성에는 최솟값과 최댓값을 지정할 수 있다. 예를 들어 페이지 크기를 허용 범위 안에서만 바꾸도록 제한한다. `GetLatestConfiguration` 응답에는 활성화된 flag의 속성만 포함되므로, 비활성화 상태에서도 속성이 있다고 가정하지 않는다.
+- **조회 경로:** AppConfig Agent는 설정을 로컬에 캐시하고 서비스의 변경을 비동기로 폴링한다. 애플리케이션은 기본 `localhost:2772`의 HTTP endpoint로 조회한다. 첫 조회는 캐시를 채우기 위한 서비스 호출이 필요하므로, 캐시가 이미 있는 상태의 네트워크 장애 내성과 초기 조회 실패를 구분한다.
+- **Lambda:** extension을 layer로 연결하며 실행 인스턴스마다 독립된 캐시가 있다. 함수 호출 때 마지막 조회 이후 시간을 확인하고 폴링 간격이 지났으면 갱신을 확인한다. 설정이 함수에 보이는 시점은 배포 전략과 폴링 간격에 달려 있다.
+- **관측 창:** 배포 시간은 설정을 점진적으로 배포하는 구간이다. Bake time은 대상의 100%에 배포한 뒤 완료 판정 전에 알람을 관찰하는 추가 구간이다.
+- **자동 복원:** 환경에 연결한 CloudWatch 알람과 필요한 권한을 구성하면, 배포 중 `ALARM` 또는 `INSUFFICIENT_DATA` 상태에서 이전 설정 버전으로 롤백한다. 연결한 알람의 actions를 비활성화하면 자동 롤백하지 않는다. 운영 검증에서는 알람 발생부터 애플리케이션의 이전 설정 관측까지 확인한다.
+
+### 분기 배치와 테스트
 
 - **분기는 진입점 한 곳으로** — Fowler의 표현대로 조건문을 코드 전체에 뿌리지 말고 **결정 지점(decision point)과 결정 로직(decision logic)을 분리**한다. `isEnabled('x')`를 서른 군데서 호출하는 대신 전용 판정 메서드 하나를 두고 거기서만 묻는다.
 - **Inversion of Decision** — 컴포넌트가 flag 인프라에 직접 손을 뻗지 않고, 판정 함수나 전략 선택기를 주입받는다. NestJS provider factory는 bootstrap 때 한 번 평가되므로 배포 중 바뀌지 않는 wiring flag에만 맞는다. 런타임 flag는 요청 컨텍스트마다 판정하는 얇은 router를 주입해야 변경이 즉시 반영되고 사용자별 고정 분할도 유지된다.
@@ -128,6 +140,11 @@ flag OFF는 **코드 경로만** 되돌린다. 되돌리지 못하는 것들이 
 - [Unleash Documentation, Stickiness](https://docs.getunleash.io/reference/stickiness)
 - [OpenFeature Specification, Flag Evaluation API](https://openfeature.dev/specification/sections/flag-evaluation/)
 - [AWS AppConfig User Guide, Creating feature flags and free form configuration data in AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-configuration-and-profile.html)
+- [AWS AppConfig User Guide, Creating a feature flag configuration profile in AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-configuration-and-profile-feature-flags.html)
+- [AWS AppConfig User Guide, What is AWS AppConfig Agent?](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-agent.html)
+- [AWS AppConfig User Guide, Understanding how the AWS AppConfig Agent Lambda extension works](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-integration-lambda-extensions-how-it-works.html)
+- [AWS AppConfig User Guide, Working with deployment strategies](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-deployment-strategy.html)
+- [AWS AppConfig User Guide, Monitoring deployments for automatic rollback](https://docs.aws.amazon.com/appconfig/latest/userguide/monitoring-deployments.html)
 
 ## 관련 문서
 - [[CICD-Basics|CI/CD 기초]] — 배포와 릴리스 분리의 개념 정본
