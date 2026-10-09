@@ -25,6 +25,18 @@ Visa와 Mastercard 같은 네트워크 브랜드를 국내 카드 발급사와 �
 
 국내 카드사는 발급과 매입을 함께 수행하는 구조가 흔하지만 해외 거래, 제휴 카드, 대행 처리에서는 경로가 달라질 수 있다. 발급사와 매입사가 다르다는 사실만으로 국제 네트워크를 거친다고 단정하지 않는다. 같은 기관 안에서 처리하는 on-us 거래도 고객 승인과 가맹점 지급의 책임을 구분할 필요가 있다.
 
+## 계좌 결제도 앱, 연결 은행과 운영자를 구분한다
+
+아래 구분은 인도 UPI의 참여자 책임 구조다(2026-10-09 Google Pay 공식 역할 문서 확인). 국내 PG와 VAN의 법적 역할로 그대로 대응시키지 않는다.
+
+| 참여자 | UPI에서 맡는 책임 |
+|---|---|
+| NPCI | UPI 운영, 참여 승인, 거래 라우팅과 처리, 정산 및 분쟁 규칙 |
+| PSP 은행 | UPI 연결, 사용자 등록과 계좌 연결, 등록 시 인증, 제휴 앱의 보안과 감사 확인 |
+| TPAP(제3자 앱 제공자) | PSP를 통해 참여, 앱 보안과 규칙 준수, 이용자의 민원 접수 경로 제공 |
+
+결제 앱과 PSP 은행, 고객 계좌의 은행은 같은 주체라고 가정하지 않는다. 앱이 결제 화면을 제공해도 등록 인증, 계좌 연결, 거래 처리와 민원 대응의 책임은 나뉜다. 사업 검토에서는 앱의 기능 목록과 함께 제휴 은행, 운영자 규칙, 장애와 분쟁의 연락 경로를 확인한다. 이는 참여자 책임에서 도출한 검토 기준이다.
+
 ## 승인, 매입, 정산은 다른 사건이다
 
 | 사건 | 확인되는 것 | 아직 확정되지 않은 것 |
@@ -76,6 +88,7 @@ VAN 경로에 카드사 부담 비용이 포함될 수 있고, 가맹점에는 �
 
 ## 출처
 
+- [Google Pay, Roles and Responsibilities of NPCI, PSP and TPAP in UPI](https://pay.google.com/intl/en_in/about/external/npci/)
 - [Citi and Coinbase Expand Collaboration to Connect Digital and Fiat Payments for Corporations and Consumers — Citi](https://www.citigroup.com/global/news/press-release/2026/citi-coinbase-expand-collaboration-connect-digital-fiat-payments-corporations-consumers) — 스테이블코인 수취와 법정화폐 정산의 분리만 부분 대조
 - [Adyen, Pre-authorization and authorization adjustment](https://docs.adyen.com/point-of-sale/pre-authorisation/)
 - [토스페이먼츠, 카드 결제](https://docs.tosspayments.com/resources/glossary/card-payment)
