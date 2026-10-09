@@ -25,6 +25,16 @@ Query set을 최소한 다음 bucket으로 나눈다.
 
 BM25 only, vector only, weighted hybrid와 RRF를 같은 judgment로 비교한다. 평균 nDCG만 보지 말고 exact query의 회귀, zero-result, 최악 query와 latency budget을 함께 본다. Search Relevance Workbench는 실험을 자동화할 수 있지만 judgment 품질을 대신하지 않는다.
 
+## 질의 확장은 결합과 따로 평가한다
+
+결과 목록을 합치는 fusion과 첫 검색 결과로 질의를 보강하는 pseudo relevance feedback은 다른 단계다. Pseudo relevance feedback은 첫 검색의 상위 K개 문서를 관련 있다고 가정하고 질의를 보강한다. 사람이 그 문서의 관련성을 확인했다는 뜻은 아니다. 첫 결과가 특정 의미에 치우치면 다음 질의도 그 방향으로 벗어나는 query drift가 생길 수 있다.
+
+Wormhole vectors는 lexical, semantic, behavioral처럼 서로 다른 검색 공간을 오가는 실험적 접근이다. 독립적으로 얻은 목록을 합치는 것 외에 검색 공간 사이의 탐색을 추가한다. 2026-10-09 확인한 강연 소개도 이를 실험적 접근으로 설명하므로, OpenSearch의 기본 내장 기능이나 기존 hybrid보다 보편적으로 우수한 방법으로 간주하지 않는다.
+
+이 차이를 검증하려면 같은 query set과 judgment에서 기존 hybrid, 질의 확장 추가, 확장 결과의 fusion 추가를 나눠 비교한다. 초기 후보 수와 확장 횟수를 기록하고, 정확한 상품명과 다의어 질의에서 의도 이탈과 지연을 함께 확인한다. 이는 query drift 위험에서 도출한 평가 설계이며 특정 구현의 성능 보장이 아니다.
+
+Workbench의 자동 최적화 범위도 구분한다. 2026-10-09 공식 문서 기준 hybrid optimization은 정확히 두 query clause를 대상으로 한다. 이 제약을 hybrid 검색 전체의 clause 제한으로 확대하지 않으며, 다단계 질의 확장까지 자동 최적화한다고 가정하지 않는다.
+
 ## 운영 체크포인트
 
 - [ ] Query clause 순서와 pipeline weights를 함께 versioning하는가
@@ -39,6 +49,8 @@ Hybrid query, normalization processor와 score ranker processor는 서로 다른
 ## 출처
 
 - [OpenSearch Documentation, Optimizing hybrid search](https://docs.opensearch.org/latest/search-plugins/search-relevance/optimize-hybrid-search/)
+- [Pseudo relevance feedback — Introduction to Information Retrieval](https://nlp.stanford.edu/IR-book/html/htmledition/pseudo-relevance-feedback-1.html)
+- [Maven, Trey Grainger와 Dmitry Kan, Beyond Hybrid Search with Wormhole Vectors](https://maven.com/p/8c7de9)
 
 ## 관련 문서
 

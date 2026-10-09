@@ -143,6 +143,12 @@ Retriever의 top-k를 그대로 prompt에 붙이지 않는다. 중복 청크를 
 
 보안 검증에는 다른 tenant의 같은 질문, 권한 철회 직후 조회, 캐시 재사용, 인접 문서로의 우회 접근과 데이터 전송을 요구하는 삽입 지시를 포함한다. 품질 지표가 좋아져도 이 경계가 통과된 것은 아니다.
 
+### 스트리밍 수집과 검색 가능한 시점을 구분한다
+
+지속적으로 데이터를 수집해도 검색 결과가 즉시 최신이 되는 것은 아니다. OpenSearch는 색인한 변경을 refresh 뒤 검색에 노출한다. `refresh=wait_for`는 해당 색인 요청의 검색 가시성을 기다리는 옵션이며, 그 앞의 수집 대기나 임베딩 생성 시간을 없애지 않는다. 강제 refresh를 자주 호출하면 색인과 검색 성능에 부담을 줄 수 있다(2026-10-09 공식 Refresh Index API 문서 확인).
+
+RAG에 적용할 때는 원본 변경부터 수집, 청킹과 임베딩, 색인, 실제 검색 노출까지의 지연을 나눠 측정한다(설계 제안). 대표 문서의 추가, 수정과 삭제가 검색 결과 및 답변 캐시에 반영되는지 확인하고, 재처리로 오래된 청크가 다시 노출되는 경우도 시험한다. 수집 성공 응답만으로 최신성을 판정하지 않으며, 허용 지연을 넘으면 원천 조회나 응답 보류로 전환할 기준을 둔다. 원본 version과 재처리 순서의 상세 계약은 [[OpenSearch-Indexing-Internals#운영 DB와의 동기화|색인 동기화 경계]]를 따른다.
+
 ## 배포 전 평가 루프
 
 1. 고정 query set에 필요한 source와 passage judgment를 만든다.
@@ -184,6 +190,7 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 
 ## 출처
 
+- [OpenSearch Documentation, Refresh Index API](https://docs.opensearch.org/latest/api-reference/index-apis/refresh/) — 2026-10-09 색인과 검색 가시성, refresh 대기와 강제 refresh 비용을 대조했다. RAG 전 구간의 지연 측정과 재처리 시험은 설계 제안이다.
 - [Amazon Bedrock User Guide, Parsing options for your data source](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-advanced-parsing.html) — 2026-10-09 파서별 추출 범위, 과금 단위와 데이터 소스 내 PDF 적용 범위를 대조했다. 원본 대조와 질문 세트 비교는 설계 제안이다.
 
 2026-10-09에는 사전 색인과 요청 시점 조회의 구분을 Microsoft 문서에, 런타임 탐색의 지연과 혼합 전략을 Anthropic 글에 대조했다. 비교표와 실패 시 운영 점검은 이를 적용한 설계 제안이다. 기존 평가 논문 전체를 다시 검증한 기록은 아니다.

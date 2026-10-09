@@ -106,6 +106,14 @@ git branch -vv
 
 기여 전에는 원본 저장소의 contribution guide, base branch, 테스트와 commit 정책을 우선한다. 자세한 인증과 remote 모델은 [[GitHub-Repository-Operations|GitHub 저장소 운영]]을 참고한다.
 
+### 검토 가능한 기여와 AI 사용 범위
+
+큰 기능이나 방향 변경은 구현 전에 기존 이슈와 닫힌 논의를 검색하고, 유지관리자와 문제 및 범위를 먼저 맞춘다. 작은 수정까지 별도 이슈가 필수라는 뜻은 아니다. PR을 낸 뒤에는 질문과 수정 요청에 응답하고, 리뷰 중 생긴 별도 기능은 현재 목적과 분리한다. 리뷰 대기 시간이 길어져도 프로젝트가 정한 소통 경로와 유지관리자의 가용 시간을 존중한다.
+
+AI로 코드를 만들 수 있는지와 AI가 이슈, PR 본문이나 리뷰 답변을 대신 작성해도 되는지는 따로 확인한다. 생성한 코드와 설명의 정확성, 프로젝트 관례와 요구사항 충족 책임은 기여자에게 남는다.
+
+예를 들어 Apache Lucene의 AI 정책(2026-10-09 확인)은 AI 코딩 도구 사용을 허용하지만, 유지관리자와의 댓글 소통은 사람이 작성하고 변경을 자기 말로 설명하도록 요구한다. 자율 에이전트의 기여는 허용하지 않는다. 비원어민의 문장 편집은 자기 생각과 목소리를 유지하도록 안내하고, 번역은 원어와 AI 번역 인용문을 함께 두는 방식을 권한다. 이 사례를 모든 오픈소스의 공통 금지 규칙으로 옮기지 않고 대상 프로젝트의 현재 정책을 확인한다.
+
 ## Hotfix와 오래 사는 변경
 
 Hotfix 출발점과 되돌려 합칠 branch는 실제 배포 branch 전략으로 결정한다. 모든 저장소에 `develop`이 있다고 가정하지 않는다. 수정 후에는 운영 배포뿐 아니라 영향받는 활성 branch, release와 changelog에도 필요한 변경을 반영한다.
@@ -127,6 +135,8 @@ Hotfix 출발점과 되돌려 합칠 branch는 실제 배포 branch 전략으로
 - GitHub 공식 문서: [Pull requests](https://docs.github.com/en/pull-requests/reference/pull-requests), [Linking a pull request to an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue), [About Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects)
 - GitHub 공식 문서: [Configuring a remote for a fork](https://docs.github.com/en/pull-requests/how-tos/work-with-forks/configuring-a-remote-repository-for-a-fork), [About rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)
+- [How to Contribute to Open Source — Open Source Guides](https://opensource.guide/how-to-contribute/)
+- [AI Policy — Apache Lucene](https://github.com/apache/lucene/blob/main/AI_POLICY.md)
 - 얄팍한 코딩사전, [풀 리퀘스트](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=406135), [이슈와 프로젝트](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=406269), [오픈소스에 참여하기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=406630)
 
 ## 관련 문서

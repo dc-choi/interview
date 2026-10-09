@@ -74,6 +74,15 @@ Graphify는 tree-sitter AST에서 함수, class, import와 call 관계를 추출
           -> 최소 변경 -> 정적 검사와 테스트 -> index 갱신
 ```
 
+## 검색 품질과 작업 성공을 나눠 평가한다
+
+검색 결과에 관련 파일이 있다는 것과 에이전트가 올바른 변경을 끝냈다는 것은 다른 결과다. 검색 방식의 효과를 비교할 때는 다음 두 층을 분리한다.
+
+- 검색 평가: 질문마다 필요한 구현, 호출부와 테스트를 구분해 정답 근거를 정하고, 같은 저장소 revision에서 상위 K개 결과의 누락과 불필요한 문맥을 확인한다. 구현 위치를 찾는 단계에서 테스트를 낮게 배치하더라도, 수정 영향과 회귀를 검증하는 단계에서는 테스트를 다시 포함한다.
+- 작업 평가: 같은 모델과 작업 조건에서 검색 도구만 바꿔 빌드와 행동 검증 결과, 재시도, 전체 토큰과 시간을 비교한다. 검색 지연뿐 아니라 색인 구축과 변경 반영 비용도 따로 기록한다.
+
+이는 검색 평가와 에이전트 평가를 분리하는 실험 설계다. Cursor의 2025년 실험은 정답이 있는 코드 질문 평가와 같은 모델을 사용한 온라인 A/B 평가를 따로 두었다. GitHub의 코드 검색 평가도 자연어에서 코드 찾기, 코드 간 유사성, 문제 설명에서 수정 코드 찾기 등을 구분한다(두 공개 자료 2026-10-09 확인). 제품별 결과를 다른 저장소의 성공률이나 절감률로 옮기지 않고, 자기 작업에서 같은 비교를 반복한다.
+
 ## 셸 검색 도구 유도 — find, grep 대신 fd, rg
 
 에이전트가 셸로 탐색할 때 기본으로 고르는 `find`, `grep`, `ls`는 `.gitignore`를 무시하고 빌드 산출물과 의존성 폴더까지 훑어 출력이 길어지기 쉽다. `fd`와 `rg`는 기본으로 ignore 파일을 존중하고 병렬로 탐색하므로 같은 질문에 더 적은 출력 토큰과 짧은 지연으로 답하는 경우가 많다. 효과 크기는 저장소 크기와 ignore 구성에 따라 다르므로 자기 저장소에서 측정한다.
@@ -113,7 +122,8 @@ Graphify는 tree-sitter AST에서 함수, class, import와 call 관계를 추출
 - [Graphify와 Serena 조합 사례](https://blog.slpower.co.kr/ai/graphify-serena/)
 - [Claude Code Docs, Hooks reference](https://code.claude.com/docs/en/hooks)
 - [Claude Code Docs, Tools reference](https://code.claude.com/docs/en/tools-reference)
-- [에이전트에게 모던 CLI 쓰게 하기 — Threads, chiftkey](https://www.threads.com/@chiftkey/post/DWruy1pk-LW)
+- [Improving agent with semantic search — Cursor](https://cursor.com/blog/semsearch)
+- [GitHub Copilot gets smarter at finding your code: Inside our new embedding model — GitHub](https://github.blog/news-insights/product-news/copilot-new-embedding-model-vs-code/)
 
 ## 관련 문서
 
