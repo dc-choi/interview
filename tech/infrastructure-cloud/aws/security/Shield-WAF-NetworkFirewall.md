@@ -84,6 +84,17 @@ NLB, EC2 직접 부착 ❌. NLB는 L4라 WAF 비대상.
 - **WAF Logs**: CloudWatch Logs, S3 또는 Amazon Data Firehose로 전송.
 - CloudWatch 메트릭: `AllowedRequests`, `BlockedRequests`, 룰별 카운트.
 
+### 관리형 규칙의 오탐 예외
+
+이 절은 2026-10-09 AWS 공식 문서와 예외 구성 예제를 대조했다. 정상 요청의 오탐을 조정할 때는 해당 규칙과 예외 조건을 좁혀 다른 검사를 유지한다.
+
+1. 로그에서 차단 규칙과 label, URI를 확인하고 애플리케이션 담당자와 정상 요청인지 판단한다.
+2. 문제를 일으킨 **개별 규칙**을 `RuleActionOverrides`로 `Count` 처리한다. 규칙 그룹의 반환값만 `Count`로 바꾸는 설정은 그룹 내부의 종료 동작을 바꾸지 않으므로 구분한다.
+3. 관리형 그룹 다음에 `해당 label 일치 AND NOT 예외 조건`을 검사하는 `Block` 규칙을 둔다. label은 앞서 실행된 규칙이 붙여야 사용할 수 있다.
+4. 예외 요청과 예외 밖의 공격 요청을 재현해 최종 액션을 확인한다. 예외는 이 label 기반 차단을 건너뛰는 조건이며 다른 규칙의 차단까지 해제하지 않는다.
+
+이 흐름에서 `Count`는 허용 확정이 아니다. 선행 `Allow`로 URI 전체를 통과시키면 뒤의 검사도 종료되므로 같은 예외 처리로 취급하지 않는다.
+
 ### 시험에 잘 나오는 함정
 
 - WAF는 **HTTP/HTTPS만**. TCP/UDP DDoS는 Shield.
@@ -170,6 +181,9 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 
 ## 출처
 
+- [AWS WAF, Overriding rule group actions](https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-rule-group-override-options.html)
+- [AWS WAF, How labeling works](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-label-overview.html)
+- [How to customize behavior of AWS Managed Rules for AWS WAF — AWS Security Blog](https://aws.amazon.com/blogs/security/how-to-customize-behavior-of-aws-managed-rules-for-aws-waf/)
 - [AWS Shield pricing](https://aws.amazon.com/shield/pricing/)
 - [AWS WAF, What are AWS WAF and AWS Shield Advanced?](https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html)
 - [AWS WAF, Rate-based rule high-level settings](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based-high-level-settings.html)

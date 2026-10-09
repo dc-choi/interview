@@ -26,6 +26,14 @@ aliases: ["Agent Email Interface", "이메일 에이전트 인터페이스", "Em
 
 업무 설계에서는 알림 수와 새 메일 수를 동일시하지 않는다. 변경 내역을 확인한 뒤 대상 발신자와 업무 조건을 적용하고, 동일 메일로 같은 작업을 중복 생성하지 않도록 처리 기록을 둔다. 이는 API 특성에서 도출한 설계 제안이며 특정 에이전트 제품의 구현을 확인한 결과는 아니다. 자동 시작 조건이 충족돼도 외부 발송의 승인 경계는 별도로 유지한다.
 
+### 예약 요약과 새 메일 이벤트를 구분한다
+
+2026-10-09 확인한 Gemini Apps 공식 도움말은 메일, 일정과 할 일의 정기 요약을 예약 작업의 예로 제시한다. `Keep Activity`가 켜져 있어야 하며, Google Workspace처럼 다른 앱의 데이터를 쓰려면 해당 앱을 연결해야 한다. 개인 계정에는 순차 제공 중이므로 구독 이름만으로 계정의 기능 활성화를 판단하지 않는다.
+
+예약 응답은 전달 시각 전에 준비된다. 따라서 오전 10시에 전달된 메일 요약이 오전 10시까지 도착한 모든 메일을 반영한다고 보장할 수 없다. 예약 요약은 정기 점검에 활용하고, 수신 직후 처리가 필요한 업무는 앞 절의 변경 알림과 동기화 흐름을 검토한다. 이는 공식 동작에서 도출한 설계 기준이다.
+
+예약 등록, 실제 실행, Gmail 초안 저장과 외부 발송은 별도 결과로 확인한다. 예약 도움말의 정기 요약 지원만으로 초안 자동 저장이나 발송 지원까지 추정하지 않는다. 초안과 발송을 연결하는 업무에는 아래의 승인 경계를 별도로 적용한다.
+
 ## 아키텍처 — 엔티티별 액터 격리
 
 2026-10-09 확인한 Agentic Inbox의 공개 README는 메일박스와 에이전트를 별도 Durable Object로 나누는 구조를 설명한다. 아래는 공개된 설계 설명이며 배포 환경의 격리 동작을 시험한 결과는 아니다.
@@ -81,6 +89,7 @@ Agentic Inbox의 공개 README는 수신 메일의 자동 초안 생성과 발�
 
 ## 출처
 
+- [Google, Schedule actions in Gemini Apps](https://support.google.com/gemini/answer/16316416?hl=en)
 - [Google, Configure push notifications with the Gmail API](https://developers.google.com/workspace/gmail/api/guides/push)
 - [Google, Synchronize clients with Gmail](https://developers.google.com/workspace/gmail/api/guides/sync)
 - [Google, Create and send draft emails](https://developers.google.com/workspace/gmail/api/guides/drafts)
