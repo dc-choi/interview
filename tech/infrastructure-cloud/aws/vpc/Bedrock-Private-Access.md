@@ -65,7 +65,26 @@ Bedrock 호출 경로를 비공개로 만들었다고 프롬프트와 응답이 
 
 민감한 자료를 넣기 전에 실제 호출 경로와 저장 위치, 접근 역할, 보유기간을 확인한다. 비공개 전송, 모델 제공자의 접근 여부, AWS의 보존과 고객 계정의 로그 보관을 하나의 보안 보장으로 합치지 않는다.
 
+## 비공개 OpenSearch Serverless를 지식 베이스에 연결한다
+
+2026-10-10 공식 문서 대조 기준. 애플리케이션에서 Bedrock으로 들어가는 endpoint와 Bedrock Knowledge Bases에서 벡터 저장소로 나가는 접근은 별도 경계다.
+
+| 경계 | 확인할 설정 |
+|---|---|
+| 컬렉션 네트워크 | network policy의 대상 컬렉션에 `AllowFromPublic: false`, `SourceServices: ["bedrock.amazonaws.com"]`을 설정한다 |
+| 지식 베이스 서비스 역할 | 해당 컬렉션 ARN에 대한 IAM `aoss:APIAccessAll` 권한을 확인한다. 모델과 원본 데이터 접근 권한도 별도 필요하다 |
+| 데이터 작업 | data access policy의 `Principal`에 서비스 역할을 넣고 대상 컬렉션과 인덱스에 필요한 작업을 허용한다. IAM 권한만으로 이 정책을 대신하지 않는다 |
+| 운영자 접근 | 운영자가 인덱스를 생성하거나 조회하는 경로와 권한을 별도로 구성한다. 비공개 경로에는 OpenSearch Serverless 관리형 VPC endpoint를 허용할 수 있다 |
+
+AWS 서비스의 private access는 컬렉션의 OpenSearch endpoint에 적용되며 Dashboards 접근까지 열지 않는다. Dashboards를 사용하려면 운영자에게 필요한 네트워크 경로와 권한을 별도로 확인한다. 화면 접근을 위해 컬렉션 자체를 공개하는 것을 필수 절차로 두지 않는다.
+
+같은 컬렉션에 공개 허용 규칙이 겹치면 비공개 규칙보다 공개 허용이 우선한다. 이름 패턴으로 연결된 정책까지 함께 확인한다. 연결 시험은 서비스 역할의 수집과 검색, 운영자의 관리 작업을 나누어 수행한다. 이는 적용 점검 제안이며 이번 문서화에서 AWS 계정의 실제 연결을 시험한 것은 아니다.
+
 ## 출처
+
+- [Amazon OpenSearch Service, Network access for Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-network.html)
+- [Amazon OpenSearch Service, Data access control for Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-data-access.html)
+- [Amazon Bedrock, Create a service role for Amazon Bedrock Knowledge Bases](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-permissions.html)
 
 - [Amazon Bedrock, Identity-based policy examples for Amazon Bedrock Agents](https://docs.aws.amazon.com/bedrock/latest/userguide/security_iam_id-based-policy-examples-agent.html)
 - [Amazon Bedrock, Create a service role for Amazon Bedrock Agents](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-permissions.html)

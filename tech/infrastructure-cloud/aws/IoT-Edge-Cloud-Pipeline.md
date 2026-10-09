@@ -99,6 +99,16 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 시뮬레이션 성공, 배포 성공과 현장 작업 성공은 서로 다른 증거다. 장비별 배포 상태를 확인하는 절차만으로 앞의 판단과 제어 검증을 대체하지 않는다.
 
+## 컴포넌트 레시피와 실행 코드를 함께 검토한다
+
+2026-10-10 Greengrass V2 공식 recipe reference 대조 기준. 생성형 AI로 실행 코드나 레시피를 작성해도 배포 계약의 검토가 필요하다. 레시피는 설명용 메타데이터만이 아니라 의존성, 아티팩트와 설치, 실행 등의 lifecycle 명령을 정의한다.
+
+- **플랫폼 선택:** core device는 조건이 맞는 첫 manifest를 사용한다. 플랫폼 조건이 없는 manifest는 모든 장비와 일치하므로 순서에 주의한다. 맞는 manifest가 없으면 설치하지 못하고 배포가 실패한다.
+- **실행 연결:** 선택된 manifest에 lifecycle이 있으면 이를 사용한다. 없으면 전역 lifecycle과 selection 규칙에 따라 실행할 단계를 고른다. 코드 파일만 바꾸고 실제 실행 명령이나 아티팩트 경로를 놓치지 않도록 대조한다.
+- **검증 범위:** component version 생성 시 recipe validation은 JSON/YAML의 형식과 누락 필드 같은 오류를 검사한다. 이 통과를 장비별 프로그램 실행 성공이나 현장 동작 검증으로 대신하지 않는다.
+
+적용 시에는 대상 OS와 아키텍처에서 선택되는 manifest, 내려받은 아티팩트, 설치와 실행 로그를 확인하는 점검을 권한다. 코드 생성 도구의 제안, 레시피 생성 성공과 장비 실행 결과를 별개의 증거로 남긴다. 이 점검은 설계 제안이며 실제 장비에서 재현한 결과가 아니다.
+
 ## 적용 시 점검할 실패 조건
 
 다음은 공개 구현 사례와 제품 기능을 바탕으로 한 설계 점검 항목이다. Greengrass가 자동으로 보장하는 기능 목록은 아니다.
@@ -112,6 +122,7 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT Greengrass, AWS IoT Greengrass component recipe reference](https://docs.aws.amazon.com/greengrass/v2/developerguide/component-recipe-reference.html) — 레시피, manifest 선택과 형식 검증의 범위를 대조했다.
 - [AWS IoT SiteWise, AWS IoT SiteWise concepts](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/concept-overview.html) — 원시 스트림 수집, asset model과 property 연결을 대조했다.
 - [AWS IoT Greengrass, Greengrass nucleus](https://docs.aws.amazon.com/greengrass/v2/developerguide/greengrass-nucleus-component.html) — MQTT spooler 설정을 대조했다. 단절과 복구 점검은 설계 제안이다.
 - [AWS, Guidance for AI-Driven Robotic Simulation and Training on AWS](https://docs.aws.amazon.com/solutions/ai-driven-robotic-simulation-and-training-on-aws/) — 2026-10-09 상위 전략 생성과 시뮬레이션 제어의 분리를 대조했다. 현장 통과 조건은 설계 제안이며 기존 IoT 기능 전체의 재검증은 아니다.
