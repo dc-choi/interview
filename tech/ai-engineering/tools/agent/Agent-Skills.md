@@ -85,6 +85,17 @@ Claude 쪽에서는 커스텀 슬래시 커맨드도 스킬로 흡수됐다. 사
 
 훅은 언제 실행될지를, 스킬은 무엇을 할지를 정의한다. 둘은 상보적이라 함께 쓰면 강해진다 — 훅으로 실행 흐름을 강제하고, 스킬로 작업을 자동화한다. 이는 권장(CLAUDE.md, AGENTS.md)과 강제(Hook)를 분리하는 원칙과 같은 축이다([[Context-Engineering]]). 훅의 세부(exit code 2만 차단, additionalContext 주입 등)는 [[Claude-Code-Extension-Reference]].
 
+## Kiro Skills: 이식 가능한 형식과 호스트 동작을 구분한다
+
+이 절은 2026-10-10 Kiro 공식 문서의 부분 검증이다. 기존 Claude와 Codex 설명의 검증일은 유지한다.
+
+- `.kiro/skills/`는 프로젝트 범위, `~/.kiro/skills/`는 전역 범위다. 같은 이름이면 프로젝트 스킬이 우선한다. 전역 폴더 지원은 IDE와 CLI 기준이며 Web과 Mobile까지 확대하지 않는다.
+- 이름과 description으로 발견하고, 요청에 맞으면 본문을 읽는다. `/스킬이름`으로 직접 호출할 수도 있다. 카탈로그 비용과 실제 활성화된 본문 비용을 구분한다.
+- GitHub에서 가져올 때는 저장소 루트가 아닌 스킬 하위 폴더나 `SKILL.md` URL을 사용한다. 가져오기는 스킬 디렉터리로 복사하는 동작이므로 원본의 후속 변경까지 자동 동기화된다고 가정하지 않는다.
+- 공통 형식으로 지침을 옮겨도 스크립트의 실행 도구와 네트워크 요구는 남는다. `compatibility`로 환경 요구를 적고 실제 호스트에서 확인한다.
+
+이식 점검 제안: 지침 로드, 필요한 실행 파일의 존재, 스크립트의 실제 성공을 각각 확인한다. 스킬이 목록에 보이거나 활성화됐다는 사실만으로 작업 완료나 권한 부여를 판단하지 않는다.
+
 ## Kiro Powers: 도구와 지침을 함께 활성화한다
 
 이 절은 2026-10-07 Kiro 공식 문서로 확인한 범위다. 기존 Claude와 Codex 설명 전체를 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
@@ -153,6 +164,7 @@ Powers는 MCP 도구, 스킬과 지식을 함께 설치하고 작업 맥락에 �
 
 ## 출처
 
+- [Kiro Docs, Agent Skills](https://kiro.dev/docs/skills/)
 - [Kiro Docs, Powers](https://kiro.dev/docs/powers/)
 - [Kiro Docs, Create powers](https://kiro.dev/docs/powers/create/)
 - [Claude Code Skills vs Codex Skills: 구조와 차이 완전 정리 — AlienCoder](https://aliencoder.tistory.com/243)

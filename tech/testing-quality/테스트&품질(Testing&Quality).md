@@ -17,6 +17,7 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 - [x] [[Test-Double-Strategy|Test fixture 전략, 테스트 대역 (Classicist vs Mockist, Mock 설계 전략, Test Double, 상태별 fixture와 시나리오 준비)]]
 - [x] [[Test-Isolation|Test isolation (상태 초기화, Mock 격리, 컨텍스트 분리, 순차 실행 완화책)]]
 - [x] [[Deterministic-Test|Deterministic test]] — 기존 보강: [[Test-Isolation|순서 독립, 상태 초기화, fake timer]], [[NestJS-Testing|NestJS 테스트 격리]]
+- [x] [[Property-Based-Testing|속성 기반 테스트]] — 입력 생성과 판정 규칙, shrinking, 회귀 사례 보존과 명세 추적
 - [x] [[NestJS-Testing-Transport-and-Contracts|NestJS transport와 계약 테스트]], [[NestJS-Testing-Durable-Processes|웹훅과 durable workflow의 실패 복구 검증]]
 - [x] [[Load-Test-Automation|Load test automation]] — 기존 보강: [[performance|SLO 역산 threshold로 CI 판정 자동화]], [[Load-Test-K6|k6 도구와 실행 설정]], [[Test-Pyramid|성능 테스트의 파이프라인 위치]]
 - [x] [[Chaos-Testing|Chaos testing (optional)]]

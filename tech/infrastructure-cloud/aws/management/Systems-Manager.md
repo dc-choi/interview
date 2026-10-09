@@ -57,9 +57,19 @@ verified_at: 2026-07-21
 **SSH/RDP 없이** 브라우저, AWS CLI로 인스턴스 셸 세션.
 
 - **22번 포트 개방 불필요, Bastion 호스트 불필요** — 공격면 대폭 감소
-- 세션 로그를 **S3, CloudWatch Logs**로 기록 (감사 추적)
+- 세션 설정과 권한을 구성하면 지원되는 셸 세션의 명령과 출력을 **S3, CloudWatch Logs**로 기록
 - IAM 정책으로 사용자별, 인스턴스별 접근 제어
-- 시험에서 **"SSH 없이 인스턴스 접속"** 또는 **"Bastion 제거"** → Session Manager
+- 시험에서 **SSH 없이 인스턴스 접속** 또는 **Bastion 제거** → Session Manager
+
+#### API 호출 감사와 세션 내용 기록의 차이
+
+2026-10-10 Session Manager 공식 문서의 부분 검증이다. 다른 SSM 기능 전체를 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
+
+- CloudTrail은 Session Manager API 호출 정보를 기록한다. 이 기록이 셸에서 실행한 모든 명령과 출력까지 포함한다는 뜻은 아니다.
+- 세션 내용은 별도 로깅 설정과 저장 대상의 IAM 권한을 확인한다. 입력한 명령과 출력에 비밀 값이 포함될 수 있으므로 로그 접근 범위도 관리한다.
+- **SSH와 포트 포워딩으로 연결한 Session Manager 세션은 세션 내용 로깅을 지원하지 않는다.** 접속 이력과 작업 내용의 증거를 구분한다.
+
+운영 점검 제안: 일반 셸 세션에서 비민감 시험 명령을 실행하고 API 감사 이벤트와 S3 또는 CloudWatch Logs의 세션 출력을 각각 확인한다. SSH 터널이나 포트 포워딩을 허용하는 운영 경로는 별도 감사 수단과 기록 범위를 정한다.
 
 ### State Manager
 
@@ -109,6 +119,8 @@ verified_at: 2026-07-21
 
 ## 출처
 
+- [AWS, AWS Systems Manager Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html)
+- [AWS, Enabling and disabling session logging](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-logging.html)
 - [AWS Systems Manager State Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-state.html)
 - [CloudFormation의 SSM dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references-ssm.html)
 - [CodeBuild buildspec의 Parameter Store](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html)
