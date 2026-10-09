@@ -47,6 +47,16 @@ AWS 서비스 호출과 애플리케이션 작업을 상태 머신으로 연결�
 
 지원 여부는 워크플로 유형과 대상 서비스에 따라 다르다. Lambda 호출뿐 아니라 AWS SDK 통합, 최적화 통합, HTTPS API 호출을 사용할 수 있으며, 가능하면 워크플로용 응답 처리가 적용된 최적화 통합을 먼저 검토한다.
 
+### 콜백은 접수 응답과 작업 완료를 분리한다
+
+2026-10-10 공식 문서 대조 기준. `.waitForTaskToken`은 작업을 전달한 API의 응답만으로 다음 상태로 넘어가지 않고, 전달한 task token으로 `SendTaskSuccess` 또는 `SendTaskFailure`가 호출되기를 기다린다. 예를 들어 SQS 메시지에 token을 실어 외부 작업자에게 보내고 작업자가 결과를 돌려주는 구조다. 지원되는 통합과 Standard 워크플로에서 사용하는 패턴이며 Express에는 적용하지 않는다.
+
+- JSONPath 기반 정의에서는 `$$.Task.Token`으로 현재 작업의 token을 전달한다. AWS SDK 통합을 쓸 때는 대상 API에 token을 실을 수 있는 파라미터가 있어야 한다.
+- token을 반환하는 principal은 같은 AWS 계정에 속해야 한다. 외부 작업자의 위치와 콜백 호출에 사용하는 AWS 신원의 계정을 구분한다.
+- 콜백 누락으로 대기가 지속되지 않도록 `HeartbeatSeconds`와 실패 경로를 설계한다. heartbeat는 작업 생존 확인이며 성공 결과를 대신하지 않는다.
+
+token은 대기 중인 실행과 결과를 연결하는 값이지 업무 중복을 제거하는 키가 아니다. 다음은 운영 설계 제안이다. 재시도 시 업무 식별자와 현재 대기 중인 작업을 함께 대조하고, 이미 반영한 외부 변경을 다시 수행하지 않도록 별도 멱등성 검사를 둔다. 콜백 성공과 모델 산출물의 품질 승인도 구분한다.
+
 ### 비동기 작업 폴링 루프
 
 `.sync`를 쓸 수 없을 때는 Task, Wait, Choice로 완료를 폴링한다. 콘솔 샘플 프로젝트인 작업 폴러(Lambda와 AWS Batch)가 이 구조다.
@@ -98,6 +108,7 @@ Standard 워크플로의 redrive는 실패한 실행을 처음부터 새로 만�
 
 ## 출처
 
+- [AWS Step Functions — Discover service integration patterns in Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html) — 2026-10-10 콜백, task token과 계정 조건을 부분 대조했다. 기존 본문 전체의 재검증은 아니다.
 - [AWS Step Functions — Invoke and customize Amazon Bedrock models](https://docs.aws.amazon.com/step-functions/latest/dg/connect-bedrock.html)
 - [AWS Step Functions — Restarting state machine executions with redrive](https://docs.aws.amazon.com/step-functions/latest/dg/redrive-executions.html) — 2026-10-10 Bedrock 입력과 출력, redrive의 정의 보존과 재실행 범위를 부분 대조했다. 기존 본문 전체의 재검증은 아니다.
 - [AWS Step Functions — Choosing workflow type](https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html)

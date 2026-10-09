@@ -54,12 +54,29 @@ SQL을 대신 작성해도 어떤 질문을 해야 하는지, 결과가 무슨 �
 
 계정별 맥락을 계속 보관해도 최신 데이터의 확인과 성과 실험을 대신하지 않는다. 정적 운영 지침과 실시간 조회의 기술적 구분은 [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]]에서 다룬다.
 
+## ROAS 배수와 개선 배수를 구분한다
+
+ROAS는 광고에 귀속한 전환 가치와 광고비의 비율이다. Google Ads의 예처럼 매출을 전환 가치로 쓰면 매출 5, 광고비 1은 ROAS 5배 또는 500%다(2026-10-10 공식 도움말 확인). 따라서 ROAS 12배라는 값은 이전보다 성과가 12배 개선됐다는 뜻이 아니다. 개선 배수를 알려면 같은 정의로 측정한 이전 값이 필요하다.
+
+Nitro Commerce의 AWS 공개 사례에는 일부 고객의 12배 ROAS가 제시된다. 이를 모든 고객의 평균, 인과적으로 검증된 증분 매출이나 순이익으로 바꾸어 읽지 않는다. 공개 사례의 수치는 공급자 설명이며 독립적으로 재현한 성과가 아니다.
+
+다음은 광고 성과를 검토할 때의 적용 제안이다. 매출인지 별도로 설정한 전환 가치인지, 귀속 기간과 대상 고객이 무엇인지 먼저 고정한다. 이어 취소, 반품과 상품 원가, 광고 외 비용을 반영한 공헌이익을 대조한다. 높은 ROAS만으로 예산 확대를 결정하지 않는다.
+
+## 추천 반응과 구매 완료를 구분한다
+
+개인화 추천의 효과는 추천 노출, 상품 선택, 구매처 이동, 실제 구매를 나누어 읽는다. 구매처를 찾는 버튼의 클릭은 다음 행동에 대한 관심 신호이며 구매 완료나 이익 증가의 증거는 아니다. 클릭 수와 클릭률도 다르므로 분모와 관찰 기간을 함께 남긴다.
+
+Google Analytics의 전자상거래 계측은 상품 선택, 결제 시작과 구매를 서로 다른 이벤트로 다룬다(2026-10-10 공식 가이드 확인). 이를 적용할 때는 측정 가능한 마지막 단계까지 보고하고, 외부 판매처에서 구매 여부를 확인할 수 없다면 구매 전환은 미확인으로 둔다. 이벤트 이름만 구매로 지정해 실제 거래가 없는 클릭을 구매로 해석하지 않는다.
+
 ## 공개 사례를 읽는 범위
 
 LG전자와 AWS의 공개 설계는 마케팅 질문의 계획 수립, 코드 기반 분석과 보고서 생성을 연결한다. 이는 분석 업무 자동화의 사례이며, 같은 구조를 도입하면 매출이나 생산성이 일정 비율로 증가한다는 보장은 아니다. 기술 구조는 [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]]로 분리한다.
 
 ## 출처
 
+- [Google Ads Help, About Target ROAS bidding](https://support.google.com/google-ads/answer/6268637?hl=en)
+- [Google Analytics, Measure ecommerce](https://developers.google.com/analytics/devguides/collection/ga4/ecommerce)
+- [Nitro Commerce helps boost ad performance and customer insights with AI — AWS](https://aws.amazon.com/aws-startups/learn/nitro-commerce-helps-boost-ad-performance-and-customer-insights-with-ai/)
 - [Pixis Prism, Scheduled Workflows](https://prism-docs.pixis.ai/scheduled-workflows)
 - [Retention Futility: Targeting High-Risk Customers Might be Ineffective — Journal of Marketing Research, Eva Ascarza](https://journals.sagepub.com/doi/10.1509/jmr.16.0163)
 - [Affordable Uplift: Supervised Randomization in Controlled Experiments — arXiv, Johannes Haupt et al.](https://arxiv.org/abs/1910.00393)

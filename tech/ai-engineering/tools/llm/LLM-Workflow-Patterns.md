@@ -25,6 +25,16 @@ LLM 서비스의 중심축은 "질문하면 답하는 챗봇"에서 **업무 흐
 
 판단 축은 **업무의 예측 가능성** — 무엇을 할지 미리 알 수 있는가다. 버그 원인 찾기, 시장 조사, 일회성 분석처럼 탐색적인 업무는 에이전트가 맞고, 월 마감 정산, 규제와 감사 보고, 정기 리포트 생성, 입사자 계정 세팅처럼 절차가 미리 확정되고 감사 추적이 필요한 업무는 절차를 통제하는 체인 쪽이 맞다.
 
+### 현장 제어와 대화 지원의 지연 예산을 나눈다
+
+하나의 서비스 안에서도 인식, 제어와 상담은 다른 경로다. 번호판 인식과 출입문 개방, 문제가 생긴 이용자의 음성 상담을 모두 같은 LLM 루프로 처리해야 하는 것은 아니다. 아래는 경로를 나누는 설계 제안이다.
+
+- 정상 출입은 확인된 인식 결과와 출입 권한으로 처리하고, 대화가 필요한 예외를 별도 지원 경로로 보낸다.
+- 인식부터 제어 장치 응답까지의 시간과 음성 상담의 첫 응답, 문제 해결까지의 시간을 따로 측정한다.
+- 대화 지원이 지연되거나 실패했을 때의 사람 호출과 기존 지원 경로를 정한다. 모델의 설명이 실제 장치 동작을 대신하지 않는다.
+
+Get My Parking의 AWS 공개 사례는 컴퓨터 비전과 AI 상담을 함께 다루면서 게이트 지연의 중요성을 설명한다. 게이트의 수백 밀리초 요구를 음성 에이전트가 전체 대화를 그 안에 끝낸다는 실측으로 해석하지 않는다. 위 분리안은 공개 사례를 바탕으로 한 설계 제안이며 해당 회사의 내부 구현을 확인한 결과는 아니다.
+
 ### 그래프 워크플로우
 
 에이전트 워크플로우를 그래프로 구성하면, 각 노드가 **프롬프트와 LLM을 가진 작은 처리 단위**처럼 동작한다. 일반 처리 노드 사이에 **검색 결과나 생성 답변을 평가하는 노드**를 끼워, 품질이 미달이면 재검색이나 재생성으로 분기시킨다. 질문 분류 → 유형별 체인 선택(SQL 생성인지, 문서 검색인지, 채널 답변인지) → 동적 프롬프트 조합으로 이어진다.
@@ -174,6 +184,8 @@ AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명�
 
 **시작 전략**: 거창한 에이전트부터 만들기보다 반복적이고 검증 가능한 업무(문서 요약, FAQ 자동 응답, SQL 초안 생성, 업무 기록 정리)부터. 사람이 최종 확인할 수 있는 작업이 좋은 출발점이다. LLM은 사람을 대체하는 도구라기보다 **사람이 더 빠르게 판단하고 더 나은 결과를 만들게 돕는 업무 증폭기**다.
 
+내부 지식 봇은 배포 완료와 업무 개선을 나누어 평가한다. AWS의 생성형 AI 운영 가이드는 기술 지표와 업무 결과의 연결, 지속적인 모니터링을 요구한다(2026-10-10 확인). 이를 적용하는 예로 제한된 사용자 집단에서 실제 질문과 검토한 답을 모으고, 정답률뿐 아니라 재문의와 사람에게 넘기는 비율, 해결까지의 시간을 확인한 뒤 이용 범위를 넓힐 수 있다. 개발 기간 단축이나 이용 계정 수만으로 현장 직원의 생산성이 검증됐다고 보지 않는다.
+
 ## 면접 체크포인트
 
 - 체인 워크플로우와 에이전트 워크플로우의 선택 기준 (단순/결정론은 체인, 다양/단계점검은 에이전트, 다 에이전트로 풀지 않기)
@@ -192,6 +204,8 @@ AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명�
 - API 에이전트 플랫폼: 스킬셋 연결로 도메인 에이전트 생성, Detector-CoT-Answer 처리, 리트리벌 스킬(CoT+랭킹으로 RAG 확장)과 근거를 XML로 표시하는 랭킹 모델로 출처 추적.
 
 ## 출처
+- [Get My Parking accelerates AI innovation in the parking industry — AWS](https://aws.amazon.com/aws-startups/learn/get-my-parking-accelerates-ai-innovation-in-the-parking-industry/)
+- [AWS Prescriptive Guidance, Delivering and sustaining the value of a generative AI application](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-lifecycle-operational-excellence/prod-value.html)
 - [Amazon Redshift, Creating and interpreting a query plan](https://docs.aws.amazon.com/redshift/latest/dg/c-the-query-plan.html)
 - [Amazon Bedrock User Guide, Create a knowledge base by connecting to a structured data store](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-structured-create.html) — query configurations와 생성 맥락의 비결정성.
 - [dbt Developer Hub, description](https://docs.getdbt.com/reference/resource-properties/description)

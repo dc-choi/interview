@@ -146,6 +146,16 @@ Knowledge 수정 (Metric Registry / Rule / Skill)
 
 지표, 규칙, 테스트가 동시에 성장하며 엣지 케이스 커버리지가 누적된다.
 
+### 처리 시간은 시작과 종료 상태를 함께 정의한다
+
+모델 응답 시간, 서류 검토 시간, 대기열 해소 시간과 외부 시스템의 최종 처리 시간은 서로 다른 지표다. 다음은 업무 에이전트에 적용하는 계측 설계 제안이다.
+
+- 요청 접수, 자료 확보, 검토 완료, 승인과 외부 실행 완료를 서로 다른 상태로 남긴다.
+- 필요한 서류를 안내한 상태를 심사 승인으로, 이의제기 자료를 만든 상태를 환급 완료로 기록하지 않는다.
+- 정상 완료뿐 아니라 추가 자료 요청, 사람 검토, 실패와 재작업을 함께 집계한다. 완료된 쉬운 건만 골라 평균 시간을 내지 않는다.
+
+AWS의 2026-03-11 Zamp 공개 사례는 차지백 처리 기간 단축과 고객 확인에 필요한 누락 서류 안내를 구분해 설명한다. 이 사례는 단계별 완료 의미를 구분하는 참고이며, 제시된 속도를 모든 업무의 최종 완료 시간이나 독립 검증된 성과로 일반화하지 않는다.
+
 ## 고가용성: 워커 풀
 
 활성 워커와 대기 워커를 풀로 두고, Dispatcher가 리밋(주간/시간당), API 에러를 감지하면 즉시 교체한다. 사용자는 "워커 죽었으니 새 스레드 파세요" 안내를 받지 않는다 → **동료로서의 신뢰** 유지.
@@ -214,6 +224,7 @@ Q. 자동 메모리를 끄는 이유는?
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 
 ## 출처
+- [Zamp: Realizing an autonomous future for enterprise, with AWS — AWS](https://aws.amazon.com/aws-startups/learn/zamp-realizing-an-autonomous-future-for-enterprise-with-aws/)
 - [Four security principles for agentic AI systems — AWS Security Blog](https://aws.amazon.com/blogs/security/four-security-principles-for-agentic-ai-systems/)
 - [Amazon Bedrock, Integrate Automated Reasoning checks in your application](https://docs.aws.amazon.com/bedrock/latest/userguide/integrate-automated-reasoning-checks.html)
 - [Amazon Bedrock, Automated Reasoning checks concepts](https://docs.aws.amazon.com/bedrock/latest/userguide/automated-reasoning-checks-concepts.html)
