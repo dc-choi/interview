@@ -121,6 +121,16 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 - 보수적으로 알려진 경영진의 가이던스 상향을 강한 신호로 보는 시각은 경험칙이다. 과거 가이던스 달성 이력으로 따로 검증한다.
 - 체크리스트는 가치를 추정하기 위한 입력을 모으는 단계다. 결론은 여전히 가격과 비교해야 한다(1절).
 
+### 매출의 총액, 순액과 연환산 기준을 맞춘다
+
+매출 규모를 비교하기 전에 고객 결제 총액, 회계상 매출과 수수료 수익을 구분한다. IFRS 15의 본인(principal)과 대리인(agent) 판단은 고객에게 이전하기 전에 특정 재화나 서비스를 통제하는지에 따른다. 본인은 수행의무를 충족할 때 받을 대가의 총액을 매출로 인식하고, 다른 당사자의 제공을 주선하는 대리인은 그 주선의 대가인 수수료를 인식한다. 공급자에게 지급하는 금액이 있다는 사실만으로 순액 매출이 되는 것은 아니다.
+
+판단에는 계약상 약속, 이행 책임, 재고 위험과 가격 결정 재량 등을 함께 본다. 가격을 정할 수 있다는 한 조건만으로 본인이라고 확정하지 않는다. 실제 기업 비교에서는 적용 회계기준과 매출 인식 주석을 확인한다. 특정 AI 기업이 어떤 방식으로 회계 처리하는지는 그 회사의 공개 근거 없이 이 일반 원칙으로 대신 판정하지 않는다.
+
+**연환산 매출과 실제 연간 매출도 다르다.** 한 달 실적을 12배 한 값은 그 수준이 유지된다는 단순 환산이며, 과거 12개월 동안 인식한 매출이 아니다. 계약을 기준으로 계산하는 ARR도 있으므로 약어만 보고 같은 지표로 비교하지 않는다. 예를 들어 PTC의 2024년 3분기 공시에서 ARR(Annual Run Rate)은 기말 유효 구독 및 지원 계약의 연환산 가치이며, 인식 매출을 기준으로 계산하지 않는다고 명시했다. 비교표에는 산정일, 포함 계약, 사용량 매출 포함 여부와 환산 방식을 함께 적는다.
+
+이 절은 2026-10-09 IFRS Foundation의 IFRS 15 사후검토 자료 5절에 정리된 B34~B38의 요건과 소프트웨어 재판매 해석, PTC의 지표 정의를 대조했다. 지표 정의가 달라 생긴 차이와 실제 수요 감소는 분리해 확인하며, 특정 기업의 최신 매출이나 주가 하락 원인을 검증한 기록은 아니다.
+
 ### IPO 예상 가치와 확정 공모조건을 구분한다
 
 미국 IPO를 검토할 때는 보도된 예상 가치와 최신 등록신고서, 최종 투자설명서의 조건을 구분한다. 일반적으로 Form S-1과 수정본 S-1/A에서 회사와 공모 정보를 확인하고, 최종 투자설명서에서 최종 공모가격을 확인한다. 공모가격은 시장 여건, 분석과 협상을 반영한 추정이며 상장 뒤 거래가격을 보장하지 않는다.
@@ -131,6 +141,9 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 
 ## 출처
 
+- [Post-implementation Review of IFRS 15 Revenue from Contracts with Customers — IFRS Foundation](https://www.ifrs.org/content/dam/ifrs/project/pir-ifrs-15/rfi-iasb-2023-4-pir-ifrs-15.pdf) — 5절 Background의 현행 요건 설명, 본인과 대리인 판단 및 총액과 수수료 수익
+- [IFRS Foundation, Principal versus Agent: Software Reseller (May 2022)](https://www.ifrs.org/content/dam/ifrs/supporting-implementation/agenda-decisions/2022/principal-versus-agent-software-reseller-may-2022.pdf)
+- [PTC Announces Third Quarter Fiscal 2024 Results — PTC, SEC 공시](https://www.sec.gov/Archives/edgar/data/857005/000095017024088530/ptc-ex99_1.htm) — Operating Measure의 ARR 정의
 - [Updated Investor Bulletin: Investing in an IPO — SEC, Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-17)
 - [NYU Stern, More on normalizing earnings](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/valquestions/normearn.htm) — 2026-10-07 경기순환, 기업 규모 변화와 정상화 시점 대조
 - [NYU Stern, PEG Ratios](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/peg.htm) — 2026-10-07 EPS 기준, 예상 성장률의 기간과 위험 및 재투자에 따른 해석 한계 대조

@@ -1,7 +1,7 @@
 ---
 tags: [aws, rds, monitoring, cloudwatch, observability, performance-insights]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-10-09
 category: "Infrastructure - AWS"
 aliases: ["RDS Monitoring Metrics", "RDS 모니터링 지표와 알람"]
 ---
@@ -30,6 +30,19 @@ aliases: ["RDS Monitoring Metrics", "RDS 모니터링 지표와 알람"]
 | `ReplicaLag` | 서비스의 허용 지연, RPO 초과 | lag가 0보다 크면 read-after-write가 깨질 수 있어 라우팅 정책과 함께 확인 |
 | `DiskQueueDepth` | 정상 기준선 대비 지속 상승 | 지연, IOPS와 함께 I/O 병목 여부 판단 |
 | `BurstBalance` | gp2에서 지속 하락 | 버스트 크레딧 소진 전에 스토리지 유형과 용량 재검토 |
+
+### SwapUsage가 0보다 크다는 사실만으로 메모리 부족을 판정하지 않는다
+
+Linux 기반 RDS에서는 과거에 swap으로 옮긴 비활성 페이지가 남아 있어 여유 메모리가 회복돼도 `SwapUsage`가 0으로 돌아오지 않을 수 있다. `FreeableMemory` 하락과 `SwapUsage` 증가가 같은 시점에 나타나는지 보고, 쿼리 지연과 부하도 함께 대조한다. 남아 있는 swap을 없애는 것 자체를 성능 개선의 목표로 삼지 않는다.
+
+RDS for Oracle은 메모리 관리 모드와 PGA, SGA 사용량을 추가로 확인한다.
+
+- 자동 메모리 관리(AMM)는 `MEMORY_TARGET`, `MEMORY_MAX_TARGET`을 확인한다. 자동 공유 메모리 관리(ASMM)는 `SGA_TARGET`, `SGA_MAX_SIZE`와 PGA 설정을 확인한다.
+- `PGA_AGGREGATE_TARGET`은 실제 PGA 사용량의 강제 상한이 아니다. 목표를 초과할 수 있으므로 `PGA_AGGREGATE_LIMIT`과 실제 사용량을 구분한다.
+- `V$PGASTAT`, `V$SGASTAT`로 사용량을 보고, `V$PGA_TARGET_ADVICE`, `V$SGA_TARGET_ADVICE`와 프로세스 및 세션별 PGA 사용량으로 원인을 좁힌다. CDB에서는 조회한 컨테이너 범위도 확인한다.
+- PGA 한도를 낮추면 메모리 고갈 위험을 줄일 수 있지만 추가 메모리가 필요한 작업이 실패할 수 있다. 파라미터 변경은 시험 환경에서 검증하고, 엔진 및 HugePages 설정에 따른 재시작 필요 여부를 확인한 뒤 적용한다. 메모리를 많이 쓰는 쿼리의 튜닝과 인스턴스 확장도 비교한다.
+
+이 절은 2026-10-09 AWS Knowledge Center의 swap 해석과 Oracle 메모리 진단 절차를 대조했다. 예제의 메모리 비율을 모든 인스턴스에 적용하는 처방으로 사용하지 않는다.
 
 ### 알람 임계치 설계 원칙
 
@@ -61,6 +74,10 @@ RDS의 기본 CloudWatch 지표는 보통 1분 단위로 게시된다. **Enhance
 
 ## 출처
 
+2026-10-09에는 swap 해석과 Oracle 메모리 진단을 보강하고, Database Insights 전환 및 Enhanced Monitoring 수집 간격을 공식 문서와 대조했다. 예시 알람의 숫자는 서비스별 검토 기준이며 AWS가 보장하는 공통 임계치가 아니다.
+
+- [AWS re:Post — Why does my Amazon RDS DB instance use swap memory when I have sufficient memory?](https://repost.aws/knowledge-center/troubleshoot-rds-swap-memory)
+- [AWS re:Post — How do I handle low free memory or high swap usage issues in my Amazon RDS for Oracle database instance?](https://repost.aws/knowledge-center/rds-oracle-low-memory-high-swap)
 - [AWS RDS, Performance Insights overview and 2026 transition](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.Overview.html)
 - [CloudWatch Database Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html)
 - [proimaginer — Amazon RDS, CloudWatch로 모니터링하기](https://proimaginer.tistory.com/56)
