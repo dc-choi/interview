@@ -44,7 +44,32 @@ DB 트랜잭션으로 business row와 Outbox 테이블의 이벤트를 함께 �
 
 다른 시스템(SQS, Pub/Sub 등)과의 상세 비교는 [[Messaging-Patterns|메시징 패턴]]과 [[Messaging-Broker-Comparison|브로커 비교]] 참고.
 
+## 클러스터 이전: 데이터 복제와 소비 위치를 따로 확인한다
+
+2026-10-10 Amazon MSK Replicator 공식 문서 기준이다. 복제본의 레코드 offset은 원본과 다를 수 있다. Consumer group offset 동기화는 원본의 커밋 위치를 대상 위치로 변환하며, 정확히 같은 위치가 아니라 일부 재처리를 허용하는 근사 위치에서 재개할 수 있다. 외부 DB 갱신이나 결제 같은 부수효과에는 별도 멱등 처리가 필요하다.
+
+| 확인 대상 | 이전 전 확인할 조건 |
+|---|---|
+| 복제 시작 위치 | 기본은 `latest`다. 기존 이력이 필요하면 생성 시 `earliest`를 선택한다 |
+| 토픽과 그룹 필터 | 필요한 토픽과 consumer group이 include/exclude 조건에 포함되는가 |
+| 대상 그룹 상태 | 대상에서 이미 소비 중인 그룹에는 변환 offset을 덮어쓰지 않는다. 동기화 전에 소비자를 시작하면 기대한 재개 위치를 쓰지 못할 수 있다 |
+| 복귀 경로 | `LEGACY` 단방향 동기화는 역방향 복귀 위치를 자동으로 변환하지 않는다 |
+
+`ENHANCED` 동기화로 양방향 이동을 준비하려면 반대 방향의 Replicator도 구성하고 두 Replicator에 동일 토픽 이름 복제를 사용한다. 각 Replicator의 데이터 복제는 여전히 단방향이다. 옵션 하나를 켰다는 이유로 역방향 데이터 경로까지 생겼다고 판단하지 않는다.
+
+운영 점검에서는 데이터 복제 지연, consumer group 동기화 실패와 실제 재개 위치를 나눠 확인한다. 아래는 제품 기능에서 도출한 이전 검증 제안이다.
+
+1. 작은 기준 데이터에 이벤트 ID를 넣고 대상에서 누락과 중복을 비교한다.
+2. 같은 그룹의 소비 위치가 변환됐는지 확인한 뒤 소비자를 전환한다.
+3. 역방향 복제가 준비된 경우에만 복귀 시험을 하고, 외부 부수효과가 중복되지 않는지 확인한다.
+
+이 절은 이전 판단의 점검 항목이며 특정 클러스터의 무손실 전환을 검증한 실행 절차는 아니다.
+
 ## 출처
+
+- [Amazon MSK, Consumer group offset synchronization](https://docs.aws.amazon.com/msk/latest/developerguide/msk-replicator-bidirectional-offset-sync.html)
+- [Amazon MSK, Create a replicator using the AWS console](https://docs.aws.amazon.com/msk/latest/developerguide/msk-replicator-create-console.html)
+- [Amazon MSK, How replication works](https://docs.aws.amazon.com/msk/latest/developerguide/msk-replicator-how-replication-works.html)
 
 - [Debezium, Outbox Event Router](https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html)
 - [Debezium, Exactly once delivery](https://debezium.io/documentation/reference/configuration/eos.html)

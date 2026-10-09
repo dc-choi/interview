@@ -46,6 +46,16 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 운영 설계에서는 요약 부재를 상담 정상 종료나 업무 해결의 증거로 쓰지 않는다. 상담원이 권한 범위에서 전사문을 확인하고 후처리를 이어 갈 경로를 둔다. 외부 업무의 완료 상태는 해당 업무 시스템에서 확인한다.
 
+## AI 상담의 종료와 사람 상담원 인계를 연결한다
+
+2026-10-10 공식 문서 기준, agentic self-service의 `Complete`와 `Escalate`는 Return to Control 도구다. 호출하면 AI 대화가 끝나고 contact flow로 제어가 돌아간다. 도구 이름과 입력은 Lex session attributes에 저장되므로, flow가 이를 읽어 종료나 상담원 큐 전송으로 분기해야 한다. `Escalate`라는 도구를 추가한 것만으로 큐 라우팅 구성이 끝나지는 않는다.
+
+사용자 정의 인계 도구의 입력에는 고객 의도, 시도한 작업, 인계 이유와 요약을 담을 수 있다. 상담원이 볼 contact attributes로 필요한 값을 복사해 전달한다. 생성 요약과 실제 외부 업무 결과는 기존 업무 시스템의 기록으로 대조하는 것이 운영 점검 제안이다.
+
+2026-10-10 공식 가이드 기준, Contact details의 AI agent trace details는 음성 채널에서 제공된다. 이 화면에서 도구 호출 정보와 인계 시점 등을 조사할 수 있다. Automated Interaction Logs와 관련 설정, 조회 권한이 필요하며 음성 상담 종료 후 로그가 제공되기까지 최대 30분을 허용하라는 안내가 있다. 이 조회 경로와 대기 안내를 채팅에도 적용한다고 가정하지 않는다. 음성 상담도 종료 직후 로그가 없다는 사실만으로 도구 호출이나 인계가 없었다고 결론 내리지 않는다.
+
+검증 시에는 정상 종료, 도구 실패 후 인계, 고객의 사람 상담 요청을 각각 재현한다. AI가 인계를 요청한 기록과 실제 큐 전송 및 상담원 연결 결과를 구분해 확인한다. 이는 위 기능을 적용하기 위한 검증 제안이며 특정 기업의 처리량이나 비용 절감 성과를 일반화한 기준은 아니다.
+
 ## 구현 검토에 적용하기
 
 다음은 위 제약에서 도출한 설계 점검 항목이다. 제품 도입이나 특정 환경의 동작을 검증한 결과는 아니다.
@@ -62,6 +72,8 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 ## 출처
 
+- [AWS, Use agentic self-service](https://docs.aws.amazon.com/connect/latest/adminguide/agentic-self-service.html)
+- [AWS, AI agent traces using Contact search and Contact details](https://docs.aws.amazon.com/connect/latest/adminguide/ai-agent-traces.html)
 - [Omnichannel Customer Experience — AWS](https://aws.amazon.com/products/connect/customer/omnichannel/)
 - [AWS, Enable customers to resume chat conversations in Connect Customer](https://docs.aws.amazon.com/connect/latest/adminguide/chat-persistence.html)
 - [AWS, StartChatContact](https://docs.aws.amazon.com/connect/latest/APIReference/API_StartChatContact.html)

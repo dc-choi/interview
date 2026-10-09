@@ -110,7 +110,24 @@ AWS edge location을 통해 업로드한 뒤 AWS 네트워크로 S3에 전달한
 
 큰 객체를 범위 단위 병렬 GET — 동영상 스트리밍, 로그 부분 조회.
 
+### Mountpoint: 사전 다운로드와 파일시스템 호환성을 나눠 본다
+
+2026-10-10 AWS 제품 문서와 Mountpoint의 공개 동작 명세 대조 기준이다. Mountpoint for Amazon S3는 `open`, `read` 같은 파일 연산을 S3 API로 바꾸는 Linux용 클라이언트다. 대용량 객체를 읽는 분석 작업에서 전체 입력을 먼저 로컬에 내려받는 방식과 비교할 수 있지만, 완전한 POSIX 파일시스템을 제공하지는 않는다.
+
+| 작업 특성 | 확인할 제약 |
+|---|---|
+| 큰 참조 파일 읽기 | 순차 읽기와 seek를 포함한 임의 읽기를 지원한다. 필요한 데이터는 S3에서 전송되므로 다운로드 시간이 모두 없어지는 것은 아니다 |
+| General purpose bucket의 결과 파일 쓰기 | 파일 시작부터 순차 쓰기한다. 기존 객체 교체는 `--allow-overwrite`와 `O_TRUNC` 조건을 확인한다 |
+| 로컬 파일시스템 전제 | General purpose bucket의 파일 rename, symbolic link와 파일 잠금에 의존하는 코드는 그대로 호환된다고 가정하지 않는다 |
+| 여러 작업의 동시 출력 | 여러 Mountpoint 인스턴스가 같은 객체에 쓰는 작업을 서로 조정해 주지 않는다 |
+
+S3 Express One Zone의 append와 rename 지원은 별도 조건이다. 위 general purpose bucket의 쓰기 제약을 모든 버킷 유형에 확대하지 않는다.
+
+분석 파이프라인에 적용할 때는 입력 준비 시간, 실제 계산 시간, S3 요청과 전송량을 나눠 측정한다. 서로 다른 실행의 출력 key를 분리하고, 파일 API 호환성 및 결과 동등성을 작은 기준 데이터로 확인하는 것은 설계 점검 제안이다. 한 사례의 처리 시간이나 비용 절감률을 다른 분석 엔진에도 보장되는 값으로 쓰지 않는다.
+
 ## 출처
+- [Amazon S3 User Guide, Mount an Amazon S3 bucket as a local file system](https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint.html)
+- [Mountpoint for Amazon S3 file system behavior — AWS Labs](https://github.com/awslabs/mountpoint-s3/blob/main/doc/SEMANTICS.md)
 - [Amazon S3 User Guide, Performance guidelines for Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-guidelines.html)
 - [Amazon S3 User Guide, Amazon S3 server access log format](https://docs.aws.amazon.com/AmazonS3/latest/userguide/LogFormat.html)
 - [Troubleshoot HTTP 5xx errors from Amazon S3 — AWS re:Post](https://repost.aws/knowledge-center/http-5xx-errors-s3)
