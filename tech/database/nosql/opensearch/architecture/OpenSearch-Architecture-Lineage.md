@@ -15,6 +15,16 @@ OpenSearch와 OpenSearch Dashboards는 각각 Elasticsearch와 Kibana의 마지�
 
 공통 조상은 영구적인 기능 동등성과 client 호환성을 보장하지 않는다. OpenSearch 2.x 이상에서는 [[OpenSearch-JavaScript-Client|OpenSearch client]]를 기본으로 사용하고, migration 때 source와 target version뿐 아니라 index 생성 version, mapping, plugin, API와 snapshot 호환성을 함께 검증한다. 제품 선택은 source와 배포판 라이선스, 관리형 서비스 조건, 지원 기능의 target version, 운영 역량, 지원 계약, migration 비용과 실제 workload의 총비용을 함께 본다.
 
+### 거버넌스와 기능 지원을 구분한다
+
+2026-10-09 공식 저장소에서 확인한 역할은 다음과 같다.
+
+- **TSC:** 프로젝트 전체의 기술 방향을 다루는 위원회다. 공통 기술 논의는 공개 `technical-steering` 저장소의 이슈와 정책 문서를 통해 추적할 수 있다.
+- **TAG:** 검색, 관측가능성처럼 여러 저장소에 걸친 전문 영역을 조율한다. TSC가 설립을 승인하며 각 그룹의 책임은 해당 charter에 정의한다.
+- **저장소 maintainer:** 각 저장소의 PR 검토와 병합, 코드 품질, 이슈 분류와 로드맵 관리를 맡는다. TSC가 있다는 사실이 개별 저장소의 검토 책임을 대신하지 않는다.
+
+제품 도입에서는 로드맵의 방향과 실제 릴리스의 기능 지원을 구분한다. 필요한 기능의 상태, 목표 버전, 병합과 릴리스 여부를 원 저장소에서 확인하고, 관리형 서비스에서의 제공 여부는 해당 상품 문서로 따로 확인한다. 재단 소속만으로 모든 플러그인의 유지보수 수준이나 지원 계약을 보장할 수는 없다.
+
 ### 비교 벤치마크를 읽는 법
 
 제품 비교 수치는 version, 라이선스 배포판, hardware, mapping, query mix와 engine을 고정한 snapshot이다. P90 service time은 요청의 90퍼센트가 그 값 이하인 경계이고, 아래 연구는 반복 실행별 P90의 중앙값과 category별 기하평균을 사용하며 outlier도 포함했다. 따라서 처리량, 자원 비용과 안정성 전체의 승자를 뜻하지 않는다.
@@ -23,6 +33,10 @@ OpenSearch와 OpenSearch Dashboards는 각각 Elasticsearch와 Kibana의 마지�
 - 10M, 768차원 ANN에서는 OpenSearch 기본 NMSLIB가 Elasticsearch Lucene보다 11퍼센트 빨랐지만 OpenSearch Lucene은 Elasticsearch Lucene보다 258.2퍼센트 느렸다. 현재 NMSLIB는 deprecated이므로 이 수치를 현재 제품과 engine의 보편적 우열로 사용하지 않는다. OpenSearch Agentic Search와 Elasticsearch Agent Builder도 product boundary와 packaging이 다르므로 feature 이름만으로 선택하지 않는다.
 
 ## 출처
+
+- [Technical Steering — OpenSearch Project](https://github.com/opensearch-project/technical-steering)
+- [Technical Advisory Groups — OpenSearch Project](https://github.com/opensearch-project/technical-steering/blob/main/technical-advisory-groups/README.md)
+- [Maintainer Responsibilities — OpenSearch Project](https://github.com/opensearch-project/.github/blob/main/RESPONSIBILITIES.md)
 
 - [OpenSearch vs Elasticsearch 비교 — YouTube](https://www.youtube.com/watch?v=EPGVqk9TrTI), [Benchmarking OpenSearch and Elasticsearch — Trail of Bits](https://blog.trailofbits.com/2025/03/06/benchmarking-opensearch-and-elasticsearch/), [OpenSearch Documentation, Methods and engines](https://docs.opensearch.org/latest/mappings/supported-field-types/knn-methods-engines/)
 - [About OpenSearch — OpenSearch](https://opensearch.org/About/)

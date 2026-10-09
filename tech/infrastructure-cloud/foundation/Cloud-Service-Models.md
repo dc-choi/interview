@@ -3,12 +3,12 @@ tags: [infrastructure, cloud, iaas, paas, saas, faas, serverless]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["Cloud Service Models", "IaaS PaaS SaaS", "클라우드 서비스 모델"]
-verified_at: 2026-08-28
+verified_at: 2026-10-09
 ---
 
 # 클라우드 서비스 모델
 
-같은 "클라우드"라도 **어디까지 사업자가 관리하고, 어디부터 사용자가 관리하는지**에 따라 계층이 나뉜다. IaaS → PaaS → FaaS → SaaS 순으로 **추상화 수준이 높아지고 통제권은 낮아진다**. 서비스 선택은 곧 "내가 무엇을 책임지고, 무엇을 맡길 것인가"를 결정하는 일.
+같은 클라우드라도 **어디까지 사업자가 관리하고, 어디부터 사용자가 관리하는지**에 따라 계층이 나뉜다. 대체로 관리형 계층을 더 사용할수록 직접 운영할 범위가 줄지만, FaaS와 PaaS의 기능과 통제권을 일렬로 서열화할 수는 없다. 서비스 선택은 운영 책임과 위임 범위를 결정하는 일이다.
 
 ## 추상화 계층
 
@@ -20,7 +20,7 @@ verified_at: 2026-08-28
 | **FaaS**(Function as a Service) | + 앱 컨테이너 수명 | 함수 코드, 함수 설정, IAM, 이벤트 소스, 데이터 | AWS Lambda, Cloud Functions |
 | **SaaS**(Software as a Service) | 전부 | 계정, 설정, 데이터만 | Gmail, Slack, Notion, Zoom |
 
-일반적으로 "서버리스"는 FaaS, 관리형 서비스(DynamoDB, Aurora Serverless 등)를 포괄해 가리킨다.
+일반적으로 서버리스는 FaaS, 관리형 서비스(DynamoDB, Aurora Serverless 등)를 포괄해 가리킨다.
 
 ## IaaS
 
@@ -28,14 +28,14 @@ verified_at: 2026-08-28
 
 - 사업자: 물리 서버, 가상화 하이퍼바이저, 네트워크 백본
 - 사용자: **OS 선택, 설치, 패치**, 런타임, 앱, 보안 그룹, 로드밸런서 설정
-- 장점: 온프레미스에 가장 가까운 **통제권**, 어떤 워크로드도 수용
+- 장점: 온프레미스에 가까운 **통제권**, 제공되는 하드웨어와 OS 범위 안에서 폭넓은 워크로드 수용
 - 단점: OS, 보안 패치, 모니터링까지 직접 책임
 
 적합: 특수 커널 모듈, GPU 드라이버 필요, 레거시 앱의 lift and shift([[Cloud-Migration-Strategies|Rehost]]), 규제 요구로 세밀 통제 필요.
 
 ## PaaS
 
-사업자가 **OS와 런타임까지** 제공. 사용자는 코드만 푸시하면 됨.
+사업자가 **OS와 런타임을 포함한 실행 플랫폼**을 제공한다. 사용자는 코드, 빌드와 환경 설정을 관리하고, 플랫폼 업데이트 적용 방식은 상품별로 확인한다.
 
 - 사업자: OS 패치, 런타임, 스케일링 기본, 로드밸런서
 - 사용자: **소스 코드, 환경변수, 빌드 설정**
@@ -70,7 +70,7 @@ verified_at: 2026-08-28
 
 ## 책임 공유 모델 (Shared Responsibility)
 
-"보안은 사업자와 사용자가 공동 책임" — 어디까지가 사업자 몫인지 계층마다 다르다.
+보안은 사업자와 사용자가 공동으로 책임진다. 어디까지가 사업자 몫인지 계층과 상품마다 다르다.
 
 | 영역 | On-Prem | IaaS | PaaS | FaaS | SaaS |
 |---|---|---|---|---|---|
@@ -81,7 +81,7 @@ verified_at: 2026-08-28
 | 앱 코드 | 사용자 | 사용자 | 사용자 | 사용자 | 사업자 |
 | 데이터, 권한 | 사용자 | **사용자** | **사용자** | **사용자** | **사용자** |
 
-**데이터, IAM 권한 관리는 항상 사용자 몫**. 많은 침해 사고가 "클라우드 서비스가 해킹된" 것이 아니라 **사용자 측 설정 실수**.
+사용자에게는 데이터 분류와 접근 권한 설정 등의 책임이 남는다. 실제 책임 분담은 선택한 서비스와 계약을 확인한다. 위 표는 계층별 개념도이며 개별 상품의 업데이트와 운영 계약을 대체하지 않는다.
 
 ## 서비스 선택 기준
 
@@ -97,6 +97,17 @@ verified_at: 2026-08-28
 
 - 핵심 API는 IaaS/K8s, 비동기 작업은 FaaS, 인증은 SaaS(Auth0), 파일 저장은 관리형(S3)
 - 같은 AWS 안에서도 EC2 + Lambda + RDS + S3 + Cognito를 한 애플리케이션에서 조합
+
+## 여러 사이트를 한 서버에 둘 때의 경계
+
+2026-10-09 공식 문서 기준으로, 사이트 수와 서버 수만으로 비용이나 안전성을 판단하지 않는다.
+
+- **과금 단위:** 관리형 호스팅이 모두 사이트별 정액제인 것은 아니다. 예를 들어 Vercel Pro는 배포 권한 좌석, 부가 기능과 사용량을 함께 과금한다. 직접 운영도 인스턴스 외 저장소, 전송과 운영 시간을 포함해 비교한다.
+- **요청 분기:** Nginx는 수신 IP와 포트에 맞는 서버 후보를 고르고 HTTP `Host`로 가상 서버를 선택할 수 있다. 이는 여러 사이트로 요청을 나누는 기능이며, 폴더나 `server` 블록만으로 프로세스, 데이터와 권한이 격리되는 것은 아니다.
+- **운영 책임:** EC2에서는 게스트 OS 패치, 설치한 애플리케이션과 보안 그룹 설정을 사용자가 관리한다. 직접 운영한다는 사실만으로 관리형 서비스보다 안전하다고 판단하지 않는다.
+- **장애와 복구:** 한 인스턴스에 의존한 사이트는 그 인스턴스 장애의 영향을 함께 받는다. 백업 보유와 복구 완료는 다르므로 코드, 데이터와 실행 환경을 복원해 허용 중단 시간과 데이터 손실 목표를 검증한다. 스냅샷 하나로 일정한 복구 시간이 보장되지는 않는다.
+
+실무 적용 시에는 사이트 개수보다 메모리, CPU, DB 부하, 동시 요청과 허용 장애 범위를 측정한다. 이 절은 구성 검토 기준이며 특정 서버의 수용량을 실측한 결과가 아니다.
 
 ## 서버리스가 뜻하는 것
 
@@ -122,6 +133,10 @@ verified_at: 2026-08-28
 
 ## 출처
 
+- [AWS, Shared Responsibility Model](https://aws.amazon.com/compliance/shared-responsibility-model/)
+- [Vercel, Pro Plan](https://vercel.com/docs/plans/pro-plan)
+- [Nginx, How nginx processes a request](https://nginx.org/en/docs/http/request_processing.html)
+- [AWS, Disaster recovery options in the cloud](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html)
 - [AWS Lambda, Configuring provisioned concurrency](https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html)
 
 ## 관련 문서

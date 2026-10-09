@@ -1,14 +1,14 @@
 ---
 tags: [cs, typescript, compiler, ast, tooling]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-10-09
 category: "CS - TypeScript"
 aliases: ["TypeScript AST", "TypeScript 컴파일러", "AST"]
 ---
 
 # TypeScript와 AST
 
-TypeScript 컴파일러는 소스 코드를 **AST(Abstract Syntax Tree)** 로 변환한 뒤 타입을 검사하고 JavaScript로 변환한다. AST는 린터, 코드 변환기, 타입 체커 같은 모든 정적 분석 도구의 공통 기반이다. TypeScript 7.0의 `typescript` 패키지에는 stable compiler API가 없으므로, 현재 직접 다룰 때는 TypeScript 6 호환 패키지 또는 7.0의 비안정 API를 사용해야 한다.
+TypeScript 컴파일러는 소스 코드를 **AST(Abstract Syntax Tree)** 로 변환한 뒤 타입을 검사하고 JavaScript로 변환한다. AST는 린터, 코드 변환기, 타입 체커 등에서 사용하는 구조 표현이다. TypeScript 7.0 발표 문서는 해당 버전에 Compiler API가 없다고 명시하며, 기존 API가 필요한 도구에는 TypeScript 6 호환 패키지를 안내한다.
 
 ## 핵심 명제
 
@@ -70,7 +70,7 @@ VariableStatement
 
 ## AST 기반 도구의 동작 원리
 
-같은 AST 자원을 어떻게 쓰느냐에 따라 도구의 역할이 갈린다.
+소스 코드를 구조로 읽는다는 공통점이 있지만, 도구별 AST 형식과 추가 분석 정보는 다르다.
 
 | 도구 | AST 활용 방식 |
 |---|---|
@@ -84,9 +84,19 @@ VariableStatement
 
 tRPC는 코드 생성이나 AST 분석 없이 서버 라우터 타입을 클라이언트가 그대로 참조해 타입 안전성을 얻는다. Prisma는 TypeScript AST가 아니라 자체 스키마 언어인 PSL에서 클라이언트를 생성한다.
 
+### ESTree, 타입 정보와 주석의 경계
+
+- **노드 종류와 선언 속성:** ESTree에서 노드 종류는 `type`으로 구분한다. `const`/`let`/`var`는 `VariableDeclaration.kind`이며, 그 안의 각 `VariableDeclarator`는 `id`와 `init`을 가진다. TypeScript AST의 `kind: SyntaxKind`와 혼동하지 않는다.
+- **구문과 타입 검사:** TypeScript 파서로 교체하면 TS 문법을 파싱할 수 있다. 타입 정보를 쓰는 ESLint 규칙에는 타입 기반 규칙 설정과 프로젝트 타입 정보가 추가로 필요하다. `typescript-eslint`의 `projectService: true`는 그 정보를 TypeScript 서비스에서 얻도록 설정하는 방법이다.
+- **구조와 문자열:** 호출식은 `CallExpression`, 문자열은 `Literal`처럼 구분해 검사한다. 식별자 이름만 비교하는 단순 규칙은 같은 이름의 지역 변수나 계산된 프로퍼티 접근까지 정확히 구분하지 못하므로, 필요한 스코프와 참조 분석 범위를 따로 정한다.
+- **주석:** 실행 구문 노드가 아니라는 이유로 주석이 도구에서 사라지는 것은 아니다. ESLint는 `sourceCode.getAllComments()`로 주석을 제공한다. Prettier는 주석을 노드에 연결해 출력하거나 플러그인의 출력 로직으로 처리한다.
+- **포매팅:** Prettier의 printer는 AST에서 `Doc` 중간 표현을 만들고 줄 너비 등에 맞춰 문자열을 출력한다. 기존 공백만 치환하는 방식으로 이해하지 않는다.
+
+이 절과 Compiler API의 버전 경계는 2026-10-09 공식 문서에 대조했다. 사용자 프로젝트의 파서 설정이나 플러그인 동작을 실행 검증한 것은 아니다.
+
 ## TypeScript 6 Compiler API — 직접 쓰는 방법
 
-다음 코드는 TypeScript 6까지의 compiler API 예제다. TypeScript 7.0의 `typescript` 패키지에는 stable API가 없으므로 같은 API가 필요하면 `@typescript/typescript6` 호환 패키지를 사용한다. 7.0에는 `typescript/unstable/ast` 같은 비안정 진입점도 있지만 이후 릴리스에서 바뀔 수 있다.
+다음 코드는 TypeScript 6까지의 compiler API 예제다. TypeScript 7.0의 `typescript` 패키지에는 stable API가 없으므로 같은 API가 필요하면 `@typescript/typescript6` 호환 패키지를 사용한다. 패키지 버전과 API 지원 여부는 도구를 만들 때 다시 확인한다.
 
 ```ts
 import * as ts from '@typescript/typescript6';
@@ -137,7 +147,7 @@ Compiler API의 내부 함수와 노드 구조는 버전에 민감하다. 책의
 
 - **AST ≠ Parse Tree** — Parse Tree는 문법 규칙을 그대로 반영, AST는 **의미 있는 구조만** 추상화
 - **타입 별칭과 interface는 런타임에 없음** — 이름으로 `instanceof` 검증할 수 없다. 런타임 값인 class는 `instanceof`, primitive는 `typeof`로 좁힐 수 있지만 외부 객체의 전체 schema 검증과는 다르다.
-- **Babel의 AST와 TS의 AST는 다름** — 호환 안 됨. Babel-TS 플러그인이 있긴 하지만 기능 제한
+- **AST 형식은 도구별로 다름** — Babel AST도 ESTree와 다른 점이 있고 `estree` 플러그인으로 일부 차이를 되돌릴 수 있다. TypeScript AST와 직접 교환되는 형식으로 가정하지 않는다.
 - **ESLint의 AST는 ESTree 스펙** — TS AST와는 별도. `@typescript-eslint/parser`로 연결
 - **컴파일 시간이 긴 이유** — Type Checker가 프로젝트 전체 심볼을 분석. `tsc --noEmit`으로도 시간이 상당
 - **incremental 빌드의 의미** — 직전 컴파일의 project graph 정보(파일 목록, 버전과 시그니처, 옵션, 참조 관계, 캐시된 진단)를 `.tsbuildinfo`에 저장해 다음 실행에서 다시 검사하고 emit할 최소 파일 집합을 계산. AST나 타입 자체를 캐시하지는 않음
@@ -147,12 +157,20 @@ Compiler API의 내부 함수와 노드 구조는 버전에 민감하다. 책의
 - **TS 컴파일러 파이프라인 6단계** (Scanner, Parser, Binder, Type Checker, Transformer, Emitter)
 - **AST가 무엇이고 왜 필요한가** — 정적 분석, 변환의 공통 기반
 - **TS 타입이 런타임에 없는 이유**와 그 의미
-- ESLint, Prettier, Babel이 **같은 AST 자원**을 어떻게 다르게 쓰는지
+- ESLint, Prettier, Babel의 AST 형식과 분석, 출력 방식이 어떻게 다른지
 - **TS Compiler API**로 할 수 있는 일 5가지 (린터, 마이그레이션, 코드 생성, 검증, 디버깅)
 - `tsc --noEmit`, `incremental` 옵션의 의미
 - **AST 기반 최적화**(Zod AOT, Typia)가 런타임 검증을 어떻게 가속하는가
 
 ## 출처
+- [ESTree, ES2015 VariableDeclaration](https://github.com/estree/estree/blob/master/es2015.md#variabledeclaration)
+- [ESTree, ES5 VariableDeclarator](https://github.com/estree/estree/blob/master/es5.md#variabledeclarator)
+- [ESLint, Custom Parsers](https://eslint.org/docs/latest/extend/custom-parsers)
+- [ESLint, Migrating to v4.0.0](https://eslint.org/docs/latest/use/migrating-to-4.0.0)
+- [typescript-eslint, Linting with Type Information](https://typescript-eslint.io/getting-started/typed-linting/)
+- [Prettier, Technical Details](https://prettier.io/docs/technical-details)
+- [Prettier, Plugins](https://prettier.io/docs/plugins)
+- [Babel, @babel/parser](https://babeljs.io/docs/babel-parser)
 - [velog @chltjdrhd777 — Typescript와 AST](https://velog.io/@chltjdrhd777/Typescript%EC%99%80-AST)
 - [TypeScript Deep Dive, Compiler Internals — Basarat](https://basarat.gitbook.io/typescript/overview)
 - [Using the Compiler API — microsoft/TypeScript](https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API)
