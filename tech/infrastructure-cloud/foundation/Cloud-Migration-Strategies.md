@@ -113,6 +113,19 @@ EVS는 환경 배포를 자동화하지만 VCF 운영 전체를 AWS가 대신 �
 
 이전 설계에는 VCF 운영 담당자, 라이선스, 네트워크 연결, 백업과 복구의 책임을 함께 적는다. 파트너에게 맡기는 경우에도 계약한 범위와 고객에게 남는 작업을 구분한다. 이는 운영 책임을 구체화하기 위한 점검 기준이며, 특정 파트너의 제공 범위를 보장하는 목록은 아니다.
 
+## VMware에서 EC2로 옮길 때 복제 방식을 고른다
+
+2026-10-09 MGN 공식 문서 대조 기준. VM마다 AWS Replication Agent를 설치하는 방식과 vCenter의 스냅샷을 전송하는 agentless 방식은 원본에 접근하는 방법과 최종 동기화 조건이 다르다.
+
+| 방식 | 동작과 전제 | 전환 전에 확인할 것 |
+|---|---|---|
+| Agent-based | 소스 서버의 에이전트가 데이터를 지속 복제한다. AWS의 기본 권장 방식이다 | 에이전트 설치 정책, 지원 OS와 실제 복제 지연 |
+| Agentless | 별도 VM의 MGN vCenter Client가 스냅샷을 만들고, 초기 전체 동기화 후 CBT로 변경된 디스크 데이터를 전송한다 | vCenter 지원 버전, client VM과 스냅샷 처리 자원, 최신 스냅샷 전송 완료 |
+
+Agentless는 개별 소스 VM에 에이전트를 설치하지 않는다는 뜻이며, 원본 데이터센터에 설치할 구성요소가 없다는 뜻은 아니다. 에이전트 설치가 정책상 금지되거나 지원 OS 조건이 맞지 않을 때 대안으로 검토한다. Cutover에는 최신 스냅샷을 기다려야 할 수 있어 지속 복제보다 전환 창이 길어질 수 있다.
+
+다음은 이전 계획의 검증 기준이다. 발표에서 제시한 복제 주기나 짧은 전환 시간을 RPO/RTO 보장으로 옮기지 않는다. 실제 변경량, 전송 속도, 마지막 동기화와 애플리케이션 검증 시간을 리허설로 확인하고 허용 중단 시간 안에 끝나는지 판단한다.
+
 ## 서비스 개시 전 운영 준비를 검증한다
 
 인프라 이전 완료와 사용자를 받는 준비 완료는 다르다. 2026-10-09 AWS Countdown Premium 안내는 아키텍처 검토, 준비도 평가, 실행 절차서와 예정된 이벤트 지원을 설명하며, 이전 계획부터 리허설, cutover와 사후 분석까지 다룬다. 지원 상품 이용 자체가 애플리케이션의 성능이나 복구 성공을 증명하지는 않는다.
@@ -142,6 +155,8 @@ EVS는 환경 배포를 자동화하지만 VCF 운영 전체를 AWS가 대신 �
 
 ## 출처
 
+- [AWS, Agentless replication related FAQs](https://docs.aws.amazon.com/mgn/latest/ug/Agentless-Replication-Related-FAQ.html)
+- [AWS, Agentless replication overview](https://docs.aws.amazon.com/mgn/latest/ug/installing-vcenter-overview-mgn.html) — 2026-10-09 MGN 복제 방식과 cutover 대기 조건을 대조했다. 기존 전환 전략 전체의 재검증은 아니다.
 - [AWS, What is AWS App2Container?](https://docs.aws.amazon.com/app2container/latest/UserGuide/what-is-a2c.html)
 - [AWS, What is AWS Migration Hub Refactor Spaces?](https://docs.aws.amazon.com/migrationhub-refactor-spaces/latest/userguide/what-is-mhub-refactor-spaces.html)
 - [AWS, AWS .NET Modernization Tools availability change](https://docs.aws.amazon.com/app2container/latest/UserGuide/dotnet-modernization-tools-availability-change.html)
