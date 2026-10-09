@@ -61,6 +61,14 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 검토 절차 제안: 의사결정에 쓰는 수치와 핵심 주장부터 출처 원문, 기준일과 적용 범위를 대조한다. 짧은 요약본을 공유할 때는 인용이 있는 원본 보고서로 돌아갈 경로를 함께 제공한다. 접근하지 못한 자료와 서로 충돌하는 근거는 확인된 결론과 분리한다. 조사 도구가 보고서를 생성했다는 사실만으로 제안의 정확성이나 사업 성과가 입증되지는 않는다.
 
+## 지속되는 업무 맥락과 현재 데이터 조회를 나눈다
+
+업무 정의나 계정별 목표를 여러 세션에서 재사용하는 것과 현재 실적을 조회하는 것은 다른 기능이다. 저장된 지침의 적용 범위와 실제 조회한 데이터의 시점을 함께 확인한다.
+
+부분 검증(2026-10-10): Pixis Prism의 Brand Knowledge 공식 문서는 기본 지침과 발동 조건, 정적 참고 자료인 Advanced, 이름으로 조회할 수 있는 실시간 Google Sheets 연결인 Attribution을 구분한다. Advanced에 시트를 연결했다는 사실만으로 실시간 질의 경로가 생겼다고 가정하지 않는다. 지식의 생성, 수정과 활성화는 Admin 역할의 기능으로 설명한다.
+
+이를 적용한 설계 점검에서는 누가 운영 지침을 바꿀 수 있는지, 어떤 계정과 질문에 적용되는지, 숫자가 저장된 참고 자료와 이번 조회 중 어디에서 왔는지를 확인한다. 지속되는 기억이나 다른 에이전트의 재검토만으로 데이터 최신성과 계산 정확성이 입증되지는 않는다.
+
 ## 검증할 최소 계약
 
 다음은 계산과 보고서의 분리 원리를 적용한 설계 제안이다.
@@ -75,6 +83,7 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 ## 출처
 
+- [Pixis Prism, Brand Knowledge - Overview](https://prism-docs.pixis.ai/brand-knowledge/overview)
 - [AWS, Select research materials](https://docs.aws.amazon.com/quick/latest/userguide/select-research-materials.html)
 - [AWS, View research report](https://docs.aws.amazon.com/quick/latest/userguide/view-research-report.html)
 - [AWS, Summarizing the research](https://docs.aws.amazon.com/quick/latest/userguide/summarizing-research.html)

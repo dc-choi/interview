@@ -15,6 +15,14 @@ aliases: ["Data-Driven Decision", "데이터 기반 의사결정"]
 2. **숫자에 맥락을 붙인다** — 활성 사용자 수만 나열하지 않고, 비교 기간, 분모, 유입과 이탈 조건을 함께 기록한다
 3. **행동으로 이어진다** — 데이터 수집 자체가 목적이 아님. 데이터 → 인사이트 → 액션
 
+## 데이터 접근성과 활용 책임을 함께 설계한다
+
+데이터를 한곳에 모으는 것만으로 의사결정이 빨라지지는 않는다. 데이터의 의미와 품질을 설명할 담당자, 접근을 요청할 경로와 결과를 업무에 적용할 담당자가 필요하다.
+
+BMW Cloud Data Hub의 2022년 공개 설계는 데이터 제공자가 내용, 메타데이터와 품질을 책임지고, 소비자는 업무 우선순위와 분석을 맡도록 구분했다. 포털은 데이터 탐색과 접근 요청의 공통 진입점이다. 이는 역할과 협업 경계를 나눈 사례이며, 모든 조직에 중앙 저장소나 동일한 클라우드 구성이 필요하다는 근거는 아니다.
+
+작은 팀에 적용할 때는 데이터마다 담당자, 업무 정의, 갱신 기준과 사용 권한을 먼저 정한다. 도입 효과는 저장량이나 대시보드 수만 세기보다 필요한 데이터를 찾고 권한을 받아 검토 가능한 판단에 도달하는 시간으로 확인한다. 이 측정 방식은 사례를 바탕으로 한 적용 제안이며 보장된 성과 수치가 아니다.
+
 ## 전환 퍼널 분석
 
 사용자가 서비스를 처음 접한 순간부터 핵심 가치를 경험하기까지의 단계별 전환율을 추적한다.
@@ -81,4 +89,5 @@ Q. 어떤 지표를 추적했는가?
 - [[Tech-Decision|기술 의사결정]]
 
 ## 출처
+- [BMW Cloud Data Hub: A reference implementation of the modern data architecture on AWS — Rahul Shaurya 외 (AWS)](https://aws.amazon.com/blogs/industries/bmw-cloud-data-hub-a-reference-implementation-of-the-modern-data-architecture-on-aws/)
 - [UX기획자의 전문성 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/59)

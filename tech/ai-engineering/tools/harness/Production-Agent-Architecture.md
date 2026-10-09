@@ -31,6 +31,16 @@ Parent의 핵심 책무는 **정보 부족 시 재확인**이다. 모호한 요�
 
 관리형 API의 한 예로 Bedrock Agents Classic의 `AssociateAgentCollaborator`는 `relayConversationHistory`에 `TO_COLLABORATOR` 또는 `DISABLED`를 받는다(2026-10-07 공식 문서 확인). 같은 날 사용자 가이드는 Classic의 신규 고객 이용이 닫혀 있다고 안내하므로, 이 예시를 신규 도입 권고로 해석하지 않는다. 기존 에이전트의 단계적 연결과 대화 전달 계약을 이해하는 참고로 쓴다.
 
+### 환경을 넘는 위임은 호출자의 권한을 보존한다
+
+클라우드, 사내 시스템과 SaaS를 연결하는 에이전트는 연결 가능성과 실행 권한을 따로 확인한다. 다음은 IBM의 공개 신원 관리 원칙을 적용한 설계 점검이다(2026-10-10 확인).
+
+- 사용자와 실행 에이전트를 구분해 식별하고, 누가 어떤 작업을 위임했는지 남긴다. 공유 키 하나로 모든 행동을 같은 주체의 작업으로 기록하지 않는다.
+- 도구 호출에 필요한 범위와 수명으로 자격증명을 제한하고, API와 도구 실행 시점에 권한을 검사한다. 상위 에이전트가 요청을 전달했다는 이유로 하위 시스템의 권한 검사를 생략하지 않는다.
+- 위임, 실행과 감사 기록을 연결한다. 중앙에 정책을 정의했어도 각 환경에서 실제로 거절되는지, 권한 회수가 반영되는지는 별도 시험으로 확인한다.
+
+하이브리드 배치나 하나의 신원 시스템을 채택한 사실만으로 이 통제가 완성되지는 않는다. 제품 소개의 통제 목표와 실제 배포 환경에서 확인한 동작을 구분한다.
+
 ## 핵심 엔진: 프레임워크 vs 자체 구현
 
 오케스트레이션 엔진을 LangChain 같은 범용 프레임워크에 계속 맡길지, 자체 구현할지는 성숙도에 따라 갈린다. 프레임워크는 빠르게 PoC를 세우는 데 강하지만, 프로덕션에서 제어권, 디버깅, 성능 튜닝을 가져오려면 추상화가 오히려 족쇄가 된다.
@@ -196,6 +206,7 @@ Q. 자동 메모리를 끄는 이유는?
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 
 ## 출처
+- [Agentic AI identity management — IBM](https://www.ibm.com/solutions/agentic-ai-identity-management)
 - [AI Rooms — Mindflow](https://www.mindflow.io/ai-rooms)
 - [Amazon Bedrock, Use multi-agent collaboration with Amazon Bedrock Agents](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-multi-agent-collaboration.html)
 - [Amazon Bedrock API Reference, AssociateAgentCollaborator](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent_AssociateAgentCollaborator.html)

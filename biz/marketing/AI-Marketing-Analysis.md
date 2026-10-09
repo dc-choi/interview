@@ -42,12 +42,25 @@ SQL을 대신 작성해도 어떤 질문을 해야 하는지, 결과가 무슨 �
 
 행동 데이터를 임베딩으로 표현해도 개입의 인과 효과가 자동으로 검증되지는 않는다. 표현 방식이나 모델 복잡도를 높이기 전에 비교 기준과 측정 가능한 결과부터 마련한다.
 
+## 반복 분석과 광고비 집행은 다른 결정이다
+
+분석을 주기적으로 실행하는 기능과 예산을 바꾸는 권한은 분리해서 평가한다. Pixis Prism의 Scheduled Workflows는 특정 광고 계정과 에이전트에 일련의 프롬프트를 실행하고, 결과를 새 대화로 남기는 기능이다(2026-10-10 공식 문서 확인). 이 기능 설명만으로 캠페인 예산이 자동 변경되거나 광고 성과가 개선된다고 판단하지 않는다.
+
+다음은 분석 자동화를 광고 운영에 연결할 때의 적용 제안이다.
+
+1. 권고마다 대상 계정, 캠페인, 분석 기간과 지표 정의를 확인한다.
+2. 예산 변경은 변경 전후 금액, 실행 책임자와 승인 범위를 명시한 별도 작업으로 다룬다.
+3. 분석 완료, 권고 채택, 실제 집행과 집행 후 성과를 각각 기록한다. 보고서 생성 수를 매출이나 이익 개선으로 대신하지 않는다.
+
+계정별 맥락을 계속 보관해도 최신 데이터의 확인과 성과 실험을 대신하지 않는다. 정적 운영 지침과 실시간 조회의 기술적 구분은 [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]]에서 다룬다.
+
 ## 공개 사례를 읽는 범위
 
 LG전자와 AWS의 공개 설계는 마케팅 질문의 계획 수립, 코드 기반 분석과 보고서 생성을 연결한다. 이는 분석 업무 자동화의 사례이며, 같은 구조를 도입하면 매출이나 생산성이 일정 비율로 증가한다는 보장은 아니다. 기술 구조는 [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]]로 분리한다.
 
 ## 출처
 
+- [Pixis Prism, Scheduled Workflows](https://prism-docs.pixis.ai/scheduled-workflows)
 - [Retention Futility: Targeting High-Risk Customers Might be Ineffective — Journal of Marketing Research, Eva Ascarza](https://journals.sagepub.com/doi/10.1509/jmr.16.0163)
 - [Affordable Uplift: Supervised Randomization in Controlled Experiments — arXiv, Johannes Haupt et al.](https://arxiv.org/abs/1910.00393)
 - [데이터 쌓기만 하면 뭐하나? 어떻게 볼지를 모르는데 – LG전자의 Agentic AI 기반 인사이트 추출 시스템 개발기 — AWS](https://aws.amazon.com/ko/blogs/tech/lge-agentic-report-automation/)
