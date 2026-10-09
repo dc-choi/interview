@@ -1,6 +1,7 @@
 ---
 tags: [observability, logging, metrics]
 status: done
+verified_at: 2026-10-10
 category: "Observability"
 aliases: ["Logs vs Metrics", "로그 vs 메트릭"]
 ---
@@ -109,17 +110,37 @@ jvm_memory_used_bytes  — 현재 값 1.2GB
 
 로그, 메트릭 외에 **분산 추적(Distributed Tracing)**. 한 요청이 여러 서비스를 거칠 때의 전체 경로와 각 단계 소요시간.
 
+Trace는 서로 연결된 span으로 구성된다. Span은 시작과 종료 시각을 가진 작업 단위이며, 부모 span과 trace context로 호출 관계를 연결한다. 메트릭 여러 개를 모은 것과는 다르다.
+
 - **Jaeger, Zipkin, Tempo**: Trace 백엔드
 - **OpenTelemetry**: 계측 표준
 
 MSA 환경에선 Trace가 로그, 메트릭만큼 중요. 로그만으론 "어느 서비스에서 느려졌는지" 답하기 어려움.
+
+## 서버 관측과 사용자 경험을 함께 본다
+
+로그, 메트릭, 트레이스는 데이터 형태의 구분이다. 어디에서 관측했는지도 별도로 확인해야 한다. 백엔드 APM에서 오류가 보이지 않는다는 사실만으로 브라우저의 사용자 여정이 정상이라고 판단할 수 없다.
+
+| 관측 방식 | 확인하는 범위 | 해석할 때의 한계 |
+|---|---|---|
+| 백엔드 APM | 계측된 서버 요청의 처리 시간과 호출 관계 | 서버 요청 전에 발생한 화면 오류를 직접 설명하지 못할 수 있음 |
+| 합성 점검(Synthetic Monitoring) | 미리 정한 API 요청이나 브라우저 사용자 여정을 실행한 결과 | 선택한 경로와 실행 환경 밖의 경험까지 보장하지 않음 |
+| 실제 사용자 모니터링(RUM) | 수집된 사용자 세션의 프런트엔드 성능, JavaScript 오류와 동작 | 수집되지 않은 세션이나 사용하지 않은 경로의 정상 여부는 알 수 없음 |
+
+예를 들어 주문 버튼의 JavaScript 오류로 요청 자체가 나가지 않으면 서버 오류율만으로는 원인을 찾기 어렵다. 다음 순서로 조사할 수 있다(진단 예시).
+
+1. RUM에서 실패한 화면 동작과 오류를 찾고, 같은 시간대의 서버 요청 유무를 대조한다.
+2. 합성 점검에 해당 사용자 여정과 기대 결과를 넣어 재현 가능한 실패인지 확인한다.
+3. 서버까지 요청이 도달했다면 trace와 로그로 느리거나 실패한 단계를 좁힌다.
+
+세 신호가 연결되지 않는 경우에도 장애 원인과 수집 누락을 구분한다. 공통 시간 범위, 환경, 배포 버전과 요청 식별자를 맞추고 계측 및 샘플링 범위를 확인한다. 쓰기 여정의 합성 점검은 테스트 데이터와 외부 부수효과를 통제한 환경에서 설계한다.
 
 ## 흔한 실수
 
 - **메트릭에 user_id, request_id 같은 고카디널리티 라벨** → Prometheus 메모리 폭발
 - **로그를 메트릭처럼 쓰기** — "5분간 에러 로그 수" 집계를 로그 파싱으로 매번 하면 느림. 메트릭으로 카운터 만들기
 - **구조화 안 된 로그** — `console.log("user failed: " + userId)` 대신 **JSON 구조화** (`{level, msg, userId, ...}`) — 검색, 집계 가능
-- **알림을 로그 기반으로만 — 지연 크고 비쌈. 메트릭 기반이 정석
+- **알림을 로그 기반으로만** — 지연과 쿼리 비용을 확인하고 반복적인 수치 집계는 메트릭으로 분리한다.
 
 ## 면접 체크포인트
 
@@ -130,7 +151,15 @@ MSA 환경에선 Trace가 로그, 메트릭만큼 중요. 로그만으론 "어�
 - MDC, OpenTelemetry 역할
 
 ## 출처
+
+2026-10-10에는 Trace의 span 구성과 서버 관측, 합성 점검, RUM의 범위를 대조했다. 개별 서비스의 계측 설정이나 실제 장애 재현을 검증한 기록은 아니다.
+
+- [OpenTelemetry, Traces](https://opentelemetry.io/docs/concepts/signals/traces/)
+- [Real User Monitoring — Datadog](https://www.datadoghq.com/product/real-user-monitoring/)
+- [Synthetic Monitoring — Datadog](https://www.datadoghq.com/product/synthetic-monitoring/)
 - [매일메일 — 로그와 메트릭](https://www.maeil-mail.kr/question/66)
 
 ## 관련 문서
-(이 카테고리의 다른 문서 참고)
+- [[OpenTelemetry|OpenTelemetry와 분산 추적]]
+- [[Datadog-Operations|Datadog 운영 지도]]
+- [[Incident-Runbook|장애 대응 런북]]
