@@ -78,6 +78,22 @@ Dave McClure(500 Startups)가 제안한 스타트업 성장 지표 프레임워�
 
 2026-10-02에는 Microsoft의 지표 해석 연구에서 전체 클릭은 유지되면서 매출이 증가한 사례와 비율 지표의 분모 오류를 대조했다. 위 점검은 그 원리를 일반적인 사업 지표에 적용한 것이다. 실험 설계와 통계적 판정은 [[Recommendation-System-Online-Experimentation-Statistics|온라인 실험 통계]]를 참고한다.
 
+### 광고 노출, 브랜드 리프트와 전환을 구분한다
+
+조회수나 노출량, 브랜드 인지도 상승과 실제 구매는 서로 다른 결과다. 광고 효과를 평가할 때는 무엇을 바꾸려 했는지 먼저 정하고 그 결과에 맞는 지표를 고른다.
+
+| 측정 | 확인하는 결과 | 이것만으로 알 수 없는 것 |
+|---|---|---|
+| 노출과 조회 | 광고가 얼마나 전달되거나 시청됐는가 | 인식 변화, 추가 구매와 이익 |
+| Brand Lift | 광고 회상, 인지도와 구매 의향 같은 인식의 변화 | 실제 구매나 매출 증가 |
+| Conversion Lift | 광고로 추가 발생한 가입, 구매 등 정의한 전환 | 전환이 가입일 때의 구매, 비용을 뺀 이익 |
+
+리프트 실험은 광고를 보여주는 집단과 광고 노출을 차단한 대조 집단을 비교한다. 관찰된 조회수와 매출의 동반 상승만으로는 같은 인과 근거를 얻을 수 없다. 구매 의향 설문을 실제 구매 전환으로 바꾸어 읽지도 않는다.
+
+절대 브랜드 리프트는 노출 집단의 긍정 응답률에서 대조 집단의 긍정 응답률을 뺀 값이다. 상대 리프트는 그 차이를 대조 집단의 긍정 응답률로 나눈 값이다. 예를 들어 가정한 응답률이 각각 30%와 20%이면 절대 차이는 10%p, 상대 상승률은 50%다. 비교 집단 간 차이이며 한 집단의 시간상 증가를 뜻하지 않는다. 대조 집단의 응답률이 0이면 이 상대 산식을 적용할 수 없다.
+
+2026-10-09 부분 검증: 위 리프트 구분과 산식은 Google Ads 공식 도움말로 확인했다. 실제 판단에서는 응답 수, 비교 집단, 관찰 기간과 불확실성을 함께 확인한다. 인지도 효과가 확인돼도 지속 가능한 사업인지 판단하려면 [[Solo-Product-Market-Validation|시장 검증]]의 반복 사용, 수익과 운영 비용을 따로 봐야 한다.
+
 ## 코호트 분석
 
 같은 시기에 가입한 사용자 그룹의 행동을 시간축으로 추적한다. 리텐션 커브가 수평으로 안정되면(flattening) 반복 가치와 유지 가설을 검토할 신호가 될 수 있지만, 단독으로 PMF를 판정하지는 않는다.
@@ -142,6 +158,8 @@ Q. 어떤 지표를 추적하고 왜 그 지표를 선택했는가?
 - [허수지표가 되기 쉬운 KPI — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/754)
 - [A Dirty Dozen: Twelve Common Metric Interpretation Pitfalls in Online Controlled Experiments — Microsoft Research](https://www.microsoft.com/en-us/research/publication/a-dirty-dozen-twelve-common-metric-interpretation-pitfalls-in-online-controlled-experiments/)
 - [Amplitude, Lifecycle: track the growth of your product's user base](https://www.amplitude.com/docs/analytics/charts/lifecycle/lifecycle-track-growth)
+- [Google Ads, About lift studies](https://support.google.com/google-ads/answer/16104408?hl=en)
+- [Google Ads, Understand Lift measurement statuses and metrics in Google Ads](https://support.google.com/google-ads/answer/12383701?hl=en)
 - [The Power User Curve: The Best Way to Understand Your Most Engaged Users — a16z, Li Jin, Andrew Chen](https://a16z.com/the-power-user-curve-the-best-way-to-understand-your-most-engaged-users/)
 - [HR 직원이 2주 만에 만든 러닝 앱, 천 명 넘게 모였습니다 — YouTube, 하조은](https://www.youtube.com/watch?v=L542k5Ru9bk)
 
