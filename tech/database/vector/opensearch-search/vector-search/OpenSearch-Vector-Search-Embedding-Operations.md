@@ -19,6 +19,18 @@ Model artifact만 같다고 같은 vector가 보장되지는 않는다. 다음�
 
 Document와 query는 같은 vector 공간을 만드는 호환 encoder 계약으로 embedding해야 한다. 대칭 model은 같은 처리를 쓰고 E5 같은 비대칭 model은 passage와 query prefix나 `search_model_id`를 의도적으로 다르게 쓸 수 있지만 model pair, tokenizer, pooling, normalization, dimension과 space를 함께 versioning한다. 이 계약이 바뀌면 새 field 또는 새 index로 재임베딩하며 runtime patch는 parity가 유지되면 재임베딩 사유가 아니다.
 
+## 검색 벡터와 생성 모델의 입력을 구분한다
+
+텍스트 RAG에서 임베딩 벡터는 관련 자료를 찾기 위한 검색 표현이다. 생성 단계에는 검색한 원문 청크를 문맥으로 제공한다. 벡터 숫자 배열을 생성 모델에 전달하면 원문이 자동으로 복원된다는 흐름으로 설계하지 않는다.
+
+2026-10-10 Bedrock Knowledge Bases 공식 문서 기준, `Retrieve`는 관련 source chunk를 반환하고 `RetrieveAndGenerate`는 검색과 모델 호출을 결합해 답변을 생성한다. 텍스트 검색 결과에는 `content.text`, `metadata`, `location`과 `score`가 포함된다. 이는 Bedrock API의 필드이며 OpenSearch의 검색 응답 필드와 같다는 뜻은 아니다.
+
+다음은 이 경계를 직접 구성하는 검색 파이프라인의 점검안이다.
+
+1. 벡터와 원문 청크, 문서 위치를 연결해 검색 결과가 어떤 근거에서 나왔는지 유지한다.
+2. 생성 모델 호출 전에 실제로 전달할 청크를 확인한다. 검색 결과에 있었다는 사실과 최종 프롬프트에 포함됐다는 사실을 구분한다.
+3. 검색 점수는 순위를 분석하는 신호로 사용한다. 답변의 사실성 확률로 읽지 않고, 검색 관련도와 생성 답변의 근거 일치를 따로 평가한다.
+
 ## ML Commons connector와 Neural Search
 
 ML connector는 endpoint 인증과 request, response 변환 계층이지 semantic pipeline 전체가 아니다. Amazon OpenSearch Service는 IAM과 SigV4로 Bedrock이나 SageMaker AI에 연결한 뒤 remote model을 등록하고 배포해 얻은 `model_id`를 `text_embedding` ingest processor나 `neural` query에서 사용한다. 애플리케이션이 vector를 직접 생성하는 raw k-NN 경로도 가능하다. Connector를 써도 IAM과 FGAC, network, quota, latency, 비용, model 장애 책임은 남으므로 동기 ingest와 외부 비동기 worker를 workload로 비교한다.
@@ -56,6 +68,8 @@ Java에서는 ONNX Runtime을 직접 사용하거나 LangChain4j 같은 wrapper�
 
 ## 출처
 
+- [AWS Documentation, Retrieving information from data sources using Amazon Bedrock Knowledge Bases](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-how-retrieval.html)
+- [AWS Documentation, Query a knowledge base and retrieve data](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-test-retrieve.html)
 - [AWS Documentation, Amazon OpenSearch Service ML connectors](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ml-amazon-connector.html)
 - [Sentence Transformers Documentation, ONNX inference](https://www.sbert.net/docs/sentence_transformer/usage/efficiency.html)
 - [LangChain4j Documentation, In-process ONNX embedding](https://docs.langchain4j.dev/integrations/embedding-models/in-process/)

@@ -38,6 +38,18 @@ Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결�
 
 태그로 제외한 사용자와 역할에는 finding이 생성되지 않으며 조직 분석에서는 계정도 제외할 수 있다. 따라서 결과가 없다는 사실과 모든 권한이 적절하다는 판단을 구분한다. 점검 기록에는 추적 기간, 제외 범위와 결과 조회 시점을 함께 남기는 방식을 권한다. 앞서 설명한 리전별 중복 생성 불필요 원칙은 미사용 분석에 적용하며, 외부 접근 분석의 리전별 구성과 혼동하지 않는다.
 
+## 에이전트의 실행 권한과 요청자를 연결한다
+
+에이전트가 여러 도구를 고를 수 있어도 실행 권한은 작업에 필요한 범위로 제한한다. 사람의 넓은 권한을 복제하기보다 워크로드 역할과 임시 자격증명을 사용하고, 도구 실행 단계에서 허용된 action과 resource를 확인한다. 이는 IAM 최소 권한 원칙을 에이전트에 적용한 설계 기준이며 별도의 IAM 엔티티 유형을 뜻하지 않는다.
+
+2026-10-10 AWS 공식 문서 기준, 역할을 맡을 때 지정한 source identity는 CloudTrail에서 역할 세션의 요청자를 추적하는 데 사용할 수 있다. 다만 AWS가 이 값의 진위를 자동 보장하지 않으므로 애플리케이션이나 IdP가 값의 전달 경로를 통제해야 한다.
+
+- source identity 설정에는 `sts:SetSourceIdentity` 권한이 필요하다. 역할 연결(role chaining)에서는 호출 역할의 권한 정책과 대상 역할의 신뢰 정책을 함께 확인한다.
+- AWS 서비스나 service-linked role이 federated/workforce identity를 대신해 수행한 작업에는 source identity가 CloudTrail에 기록되지 않는 예외가 있다. 모든 후속 작업이 자동으로 최종 사용자에게 연결된다고 가정하지 않는다.
+- 운영 점검에서는 요청, 실행 역할, 도구 호출과 감사 이벤트를 연결하고 금지한 리소스 접근이 실제로 거부되는지 시험한다. 추적 식별자는 인가를 대신하지 않으며, 원문 프롬프트나 비밀 값을 감사 식별자에 넣지 않는다(설계 제안).
+
+모델의 행동 선택과 실제 권한 집행의 경계는 [[LLM-Application-Security|LLM 애플리케이션 보안]]에서 이어진다.
+
 ## IAM 사용자 비밀번호 정책 — 주기 변경 강제의 트레이드오프
 
 사람의 AWS 접근은 IAM Identity Center나 federation의 임시 자격 증명과 MFA를 기본으로 하고, 비밀번호를 가진 장기 IAM 사용자는 예외로 줄인다. 불가피한 IAM 사용자에게는 계정 비밀번호 정책을 둔다.
@@ -48,7 +60,7 @@ Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결�
 - 길이와 문자 종류 변경은 다음 비밀번호 변경 때 적용되지만 만료 기간은 즉시 적용된다. 기존 비밀번호가 그 기간보다 오래된 사용자는 다음 로그인에서 바꿔야 한다
 - hard expiry를 켜기 전에 비밀번호를 재설정할 수 있는 관리자(`iam:UpdateLoginProfile`)를 둘 이상 둬 잠김을 막는다
 - 로그인 실패 횟수로 잠그는 lockout 정책은 만들 수 없으므로 MFA와 함께 쓴다
-- NIST SP 800-63B-4(2025-08 최종)는 주기적 비밀번호 변경 요구를 금지하고 침해 증거가 있을 때만 변경을 강제하게 한다. 문자 종류 조합 규칙도 금지하며, 길이(단일 요소면 15자 이상, MFA의 일부면 8자 이상)와 흔하거나 유출된 비밀번호 차단 목록 대조를 요구한다. 주기 강제는 사용자가 예측 가능한 변형을 만들게 하기 쉽다
+- NIST SP 800-63B-4(2025-07-31 최종)는 주기적 비밀번호 변경 요구를 금지하고 침해 증거가 있을 때만 변경을 강제하게 한다. 문자 종류 조합 규칙도 금지하며, 길이(단일 요소면 15자 이상, MFA의 일부면 8자 이상)와 흔하거나 유출된 비밀번호 차단 목록 대조를 요구한다. 주기 강제는 사용자가 예측 가능한 변형을 만들게 하기 쉽다
 - 적용 방향: 길이 중심 정책, 재사용 방지, MFA를 기본으로 두고 만료는 규정이 요구할 때만 켠다. 규정 때문에 켰다면 그 근거를 기록한다. 매달이나 분기마다 전 사용자 비밀번호를 바꾸게 하는 방침은 이 기준과 맞지 않는다
 
 ## 흔한 실수
@@ -85,6 +97,7 @@ Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결�
 
 ## 출처
 
+- [AWS, Monitor and control actions taken with assumed roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_control-access_monitor.html)
 - [AWS, Create an IAM Access Analyzer unused access analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-create-unused.html)
 - [AWS, Using AWS Identity and Access Management Access Analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html)
 - [AWS, Review IAM Access Analyzer findings](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-findings-view.html)
@@ -98,4 +111,5 @@ Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결�
 - [IAM과 CloudTrail](https://docs.aws.amazon.com/IAM/latest/UserGuide/cloudtrail-integration.html)
 - [IAM 계정 비밀번호 정책](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_passwords_account-policy.html)
 - [NIST SP 800-63B-4 Authentication and Authenticator Management](https://pages.nist.gov/800-63-4/sp800-63b.html)
+- [NIST, SP 800-63B-4 publication record](https://csrc.nist.gov/pubs/sp/800/63/b/4/final)
 - [인프런, Sungmin Kim, IAM이란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43727)

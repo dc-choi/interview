@@ -63,6 +63,18 @@ EBS 볼륨 유형:
 
 이름은 후보를 좁히는 출발점이다. 실제 선택에서는 해당 타입과 크기의 CPU, 메모리, 네트워크와 EBS 사양을 확인하고 워크로드로 비교한다. 세대 숫자나 크기만으로 모든 자원의 성능 향상 비율을 추정하지 않는다.
 
+### AI 가속기는 실행 스택까지 함께 비교한다
+
+2026-10-10 부분 대조: AWS Neuron 공식 소개 기준, Trainium과 Inferentia는 Neuron 개발 스택을 사용하는 AWS 가속기다. Neuron에는 컴파일러, 런타임, 학습과 추론 라이브러리, 프로파일링 도구가 포함된다. GPU 인스턴스와 비교할 때 인스턴스 사양뿐 아니라 모델 실행에 필요한 소프트웨어 경로도 확인한다.
+
+다음은 가속기 선택을 위한 검증 제안이다.
+
+- 현재 모델과 연산, 프레임워크 버전이 대상 Neuron 릴리스에서 지원되는지 확인한다. 프레임워크 이름이 같다는 사실만으로 모든 사용자 정의 연산의 호환성을 가정하지 않는다.
+- 같은 모델, 정밀도와 입력 길이에서 결과 품질, 배치 크기별 처리량과 지연을 비교한다. 학습은 목표 품질에 도달하기까지, 추론은 실제 응답을 반환하기까지 측정한다.
+- 비용에는 실행 시간 외에 모델 이식, 컴파일과 배포 준비, 유휴 용량을 포함한다. 과거 발표의 절감률을 모든 모델과 현재 요금에 적용하지 않는다.
+
+서버 안팎의 메모리와 통신 병목은 [[GPU-Server-Infrastructure|GPU 서버 인프라]]와 함께 확인한다. 이 비교 절차는 특정 가속기의 우월성이나 이번 환경에서의 성능 측정 결과를 뜻하지 않는다.
+
 ## T 시리즈 CPU 크레딧 시스템
 
 2026-10-09 공식 문서로 아래 적립과 소진, 모드별 동작을 대조했다.
@@ -89,6 +101,7 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 
 ## 출처
 
+- [SDK for Gen AI and Deep Learning - AWS Neuron — AWS](https://aws.amazon.com/ai/machine-learning/neuron/)
 - [AWS Nitro System](https://docs.aws.amazon.com/whitepapers/latest/security-design-of-aws-nitro-system/the-components-of-the-nitro-system.html)
 - [Nitro 기반 EC2 인스턴스](https://docs.aws.amazon.com/ec2/latest/instancetypes/ec2-nitro-instances.html)
 - [버스터블 성능 인스턴스의 CPU 크레딧](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html)

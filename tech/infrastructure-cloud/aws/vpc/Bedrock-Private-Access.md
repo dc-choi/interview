@@ -65,6 +65,16 @@ Bedrock 호출 경로를 비공개로 만들었다고 프롬프트와 응답이 
 
 민감한 자료를 넣기 전에 실제 호출 경로와 저장 위치, 접근 역할, 보유기간을 확인한다. 비공개 전송, 모델 제공자의 접근 여부, AWS의 보존과 고객 계정의 로그 보관을 하나의 보안 보장으로 합치지 않는다.
 
+## 모델 커스터마이징의 저장소와 암호화 키를 나눈다
+
+2026-10-10 Bedrock 공식 문서 기준, model customization의 입력 파일은 고객 S3 버킷에 있고, 출력 지표 파일은 작업에서 지정한 S3 버킷에 저장된다. 생성된 custom model artifact는 AWS가 관리하는 S3 버킷에 저장된다. 세 대상을 하나의 저장소나 하나의 키 설정으로 취급하지 않는다.
+
+- custom model은 기본적으로 AWS owned key로 암호화되며 customer managed key를 선택할 수 있다. 고객 S3 버킷의 암호화 설정과는 별도다.
+- 출력 파일은 대상 S3 버킷의 SSE-S3 또는 SSE-KMS 설정을 따른다. 입력과 출력 버킷의 접근 권한, 암호화와 보관 정책을 각각 확인한다.
+- custom model에 customer managed key를 사용하면 Bedrock은 KMS grant를 이용한다. grant를 철회하거나 키 정책에서 접근을 제거하면 해당 키로 암호화한 모델에 접근할 수 없게 된다.
+
+저장 시 암호화가 학습 데이터의 출력 노출까지 막지는 않는다. 공식 문서는 미세조정한 모델이 학습 데이터 일부를 응답으로 재현할 수 있음을 명시한다. 출력되면 안 되는 기밀 자료는 학습 전에 제거한다. 네트워크 비공개 연결, 저장 암호화와 모델 출력 검사는 서로 다른 통제다.
+
 ## 비공개 OpenSearch Serverless를 지식 베이스에 연결한다
 
 2026-10-10 공식 문서 대조 기준. 애플리케이션에서 Bedrock으로 들어가는 endpoint와 Bedrock Knowledge Bases에서 벡터 저장소로 나가는 접근은 별도 경계다.
@@ -82,6 +92,7 @@ AWS 서비스의 private access는 컬렉션의 OpenSearch endpoint에 적용되
 
 ## 출처
 
+- [Amazon Bedrock, Encryption of custom models](https://docs.aws.amazon.com/bedrock/latest/userguide/encryption-custom-job.html)
 - [Amazon OpenSearch Service, Network access for Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-network.html)
 - [Amazon OpenSearch Service, Data access control for Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-data-access.html)
 - [Amazon Bedrock, Create a service role for Amazon Bedrock Knowledge Bases](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-permissions.html)
