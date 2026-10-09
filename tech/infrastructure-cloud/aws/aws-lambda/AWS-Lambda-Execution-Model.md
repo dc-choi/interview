@@ -42,8 +42,24 @@ Managed Instances는 고객 계정의 EC2 인스턴스에서 실행되며 실행
   - **Provisioned Concurrency** — 미리 warm 인스턴스 유지(비용 증가)
   - **SnapStart** — 지원되는 Java, Python, .NET 관리형 런타임에서 초기화된 상태의 스냅샷으로 시작 시간 단축
   - **작은 패키지** — 의존성, 코드 크기 최소화
-  - **Init 코드 최소화** — 무거운 초기화는 LazyLoad
+  - **초기화 위치 선택** — 사용하지 않을 의존성은 지연 로딩하되, SnapStart에서는 호출마다 필요한 무거운 의존성을 스냅샷 생성 전에 초기화해 복원 효과를 얻음
   - **주기적 ping**은 환경 재사용을 보장하지 않으므로, 예측 가능한 시작 시간이 필요하면 Provisioned Concurrency를 우선 검토
+
+### SnapStart의 복원과 고유성 경계
+
+부분 검증(2026-10-09): 아래 SnapStart 지원 조건과 복원 시 주의사항을 공식 문서로 대조했다. 문서 전체의 검증일을 갱신한 것은 아니다.
+
+SnapStart는 버전을 게시할 때 초기화한 실행 환경을 스냅샷으로 저장하고, 새 실행 환경을 이 상태에서 복원한다. Java 11 이상, Python 3.12 이상과 .NET 8 이상의 지원 런타임을 확인한다. 게시된 버전이나 그 버전을 가리키는 alias에 적용하며 `$LATEST`에는 적용할 수 없다. Provisioned Concurrency와 함께 사용할 수 없고, EFS와 512MB를 초과한 임시 저장소도 지원하지 않는다.
+
+| 복원할 상태 | 확인할 조건 |
+|---|---|
+| 고유 ID와 난수 상태 | 초기화 때 만든 값이 여러 실행 환경에 복제될 수 있다. 고유해야 하는 값은 초기화 이후에 생성한다. |
+| 네트워크 연결 | 초기화 때 연결됐어도 복원 뒤 유효함이 보장되지 않는다. 연결 상태를 검증하고 필요하면 다시 연결한다. |
+| 임시 자격 증명과 시각 | 스냅샷에 남은 값이 만료되거나 오래됐을 수 있다. 핸들러에서 사용 전에 갱신한다. |
+
+복원 성능을 높이려면 호출 경로에서 필요한 의존성을 미리 로드한다. 사전 워밍업을 위해 핸들러를 시험 호출할 때는 실제 주문이나 결제가 발생하지 않도록 부작용을 차단한다. 고유 ID의 생성과 연결 재검증은 이런 사전 초기화와 구분한다.
+
+1초 미만 시작은 최적 조건에서 가능한 성능이며 모든 함수의 보장값은 아니다. 실제 호출 빈도와 초기화 작업으로 지연 시간을 측정한다.
 
 ## 기본 컴퓨팅 표준 함수의 제약과 스펙
 
@@ -78,6 +94,7 @@ Managed Instances는 고객 계정의 EC2 인스턴스에서 실행되며 실행
 - [AWS, Lambda Managed Instances](https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances.html)
 - [AWS, Understanding the Lambda Managed Instances execution environment](https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances-execution-environment.html)
 - [AWS, Improving startup performance with Lambda SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html)
+- [AWS, Maximize Lambda SnapStart performance](https://docs.aws.amazon.com/lambda/latest/dg/snapstart-best-practices.html)
 - [AWS, Lambda quotas](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
 - [AWS, Self-managed S3 code storage](https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html)
 - [AWS Lambda Developer Guide, Lambda runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html)
