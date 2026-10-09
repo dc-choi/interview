@@ -77,12 +77,21 @@ aliases: ["Event Log Highlight Generation", "이벤트 로그 기반 하이라�
 
 다른 모델로 평가하거나 공개 문턱을 두는 것만으로 편향과 사실 오류가 사라지지는 않는다. 판정기의 정렬과 한계는 [[Eval-LLM-Judge|LLM 판정기]]를 함께 확인한다.
 
+## 초안의 주장을 구조화해 검증한다
+
+긴 기사에서는 수치 하나의 정확도뿐 아니라 문장마다 비교 대상과 기간이 올바른지 확인한다. 초안에서 검증할 주장을 표로 추출하고, 각 주장에 원천 조회 결과를 연결하면 오류를 수정할 지점을 좁힐 수 있다. 문체, 사실과 이미지 적합성도 서로 다른 검사로 나눈다.
+
+2026-10-10 대조한 2026-03-12 PGA TOUR 공개 설계는 조사, 작성, 검증과 편집 에이전트의 역할을 나눈다. 검증 에이전트는 초안의 주장을 구조화한 fact table로 만들고 권위 있는 데이터와 대조하며, 불일치가 있으면 작성 단계에 수정을 요청한다. 조사 경로는 자연어에 따라 도구를 고르는 방식과 콘텐츠 유형별로 정한 조회 순서를 수행하는 방식을 함께 설명한다.
+
+적용 예시로, 정형 경기 요약은 필요한 통계 조회를 고정하고 예외적인 질문에만 동적 탐색을 사용한다. 수정 뒤에는 바뀐 문장의 사실과 비교 범위를 다시 확인한다. 이는 설계 제안이며, 여러 에이전트의 일치나 fact table 생성만으로 오류 부재가 증명되지는 않는다. 해당 공개 설계도 사람의 개입을 최소화한 경로를 설명하므로 모든 결과에 사람의 사전 승인이 있다고 가정하지 않는다.
+
 ## 적용 근거와 한계
 
 2025년 PNC 사례 발표는 필요한 게임 로그 선별, 규칙 기반 텍스트 변환, SQL 템플릿 매핑과 추가 검증을 결합한 구현을 소개한다. 위 패턴의 적용 사례이며, 발표의 특정 모델 속도와 평가 점수는 다른 워크로드의 성능 보장으로 사용하지 않는다. 본문에 적은 바인딩과 입력 검증은 적용을 위한 설계 제안이며 발표 구현의 확인 사실과 구분한다.
 
 ## 출처
 
+- [Accelerating sports content creation using agentic AI: PGA TOUR — AWS for M&E Blog](https://aws.amazon.com/blogs/media/accelerating-sports-content-creation-usingagentic-ai-pga-tour/)
 - [생성형 AI를 통한 이스포츠 시청자 경험 향상 — Amazon Web Services Korea](https://www.youtube.com/watch?v=UgiHMSGcYj4)
 - [Revolutionizing fan engagement: Bundesliga generative AI-powered live commentary — AWS for M&E Blog](https://aws.amazon.com/blogs/media/revolutionizing-fan-engagementcer-bundesliga-generative-ai-powered-live-commentary/)
 - [Creating AI-generated stories for the Bundesliga channels — DFL](https://www.dfl.de/en/innovation/creating-ai-generated-stories-for-the-bundesliga-channels/)

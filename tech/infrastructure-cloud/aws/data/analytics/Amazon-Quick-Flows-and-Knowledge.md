@@ -60,6 +60,14 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 프로젝트 초안을 만들 때는 공유 가능한 자료만 올리고, 표나 이미지에 의존하는 질문은 처리 상태를 확인한 뒤 평가한다. 초안 생성 시간과 검토, 수정 및 실제 업무 완료 시간도 따로 측정한다. 이는 운영 점검 제안이며 특정 팀의 시간 절감률을 재현한다는 보장은 아니다.
 
+## Research의 자료 선택과 근거 추적
+
+2026-10-10 Quick Research 공식 문서 대조 기준. 조사 입력은 웹 검색, 업로드 파일과 Quick 자산 등에서 선택한다. 웹 검색의 선호 사이트에 도메인을 넣어도 실제 조사에 포함된다는 보장은 없다. 접근 제한이나 관련성 판단으로 빠질 수 있으므로 필수 자료가 사용됐는지는 결과에서 확인한다.
+
+보고서의 번호 인용은 원문 링크를 제공하고, `Understand the statement`는 문장을 도출한 근거와 결론의 설명을 보여준다. 인용의 존재와 설명 기능을 사실 검증 완료로 취급하지 않고 원문의 수치, 기간과 비교 대상을 대조한다.
+
+경쟁사 조사나 캠페인 보고서에 적용한다면, 먼저 조사에 쓸 자료를 정하고 결과의 근거를 확인한 뒤 예산 변경처럼 외부 상태를 바꾸는 action을 별도로 검토한다. 이는 기능을 활용하는 운영 제안이다. 보고서 생성이나 추천 출력만으로 캠페인 성과 개선이 입증되지는 않는다.
+
 ## 적용 전 확인
 
 - 반복할 절차와 필요한 입력이 명확한가. 변하지 않는 단순 집계라면 기존 쿼리와 보고서로 충분한지도 검토한다.
@@ -69,6 +77,8 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 ## 출처
 
+- [Amazon Quick, Select research materials](https://docs.aws.amazon.com/quick/latest/userguide/select-research-materials.html)
+- [Amazon Quick, View research report](https://docs.aws.amazon.com/quick/latest/userguide/view-research-report.html)
 - [Amazon Quick, Salesforce integration](https://docs.aws.amazon.com/quick/latest/userguide/salesforce-integration.html) — 사용자 인증과 서비스 인증의 실행 주체.
 - [Amazon Quick, Organize, collaborate, and share resources with spaces](https://docs.aws.amazon.com/quick/latest/userguide/working-with-spaces.html)
 - [Amazon Quick, Atlassian Jira Cloud integration](https://docs.aws.amazon.com/quick/latest/userguide/jira-integration.html)

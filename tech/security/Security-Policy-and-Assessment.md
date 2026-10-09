@@ -134,6 +134,14 @@ Security Hub CSPM 자체 control finding은 `UpdatedAt`을 기준으로 한다. 
 
 운영 적용 제안: 경보가 0건이어도 감시 대상 자원과 coverage를 먼저 대조한다. EventBridge로 coverage 변경을 알리고, 에이전트의 CPU와 메모리 사용량도 관측한다. 설치 완료, 이벤트 수신, 위협 탐지와 실제 대응 성공을 각각 확인하며, 센서 배포만으로 차단까지 완료됐다고 기록하지 않는다. 이 구체적인 상태 의미는 GuardDuty 기준이며 다른 보안 제품에도 같은 상태 계약이 있다고 가정하지 않는다.
 
+### 민감정보 발견 결과와 검사 범위를 함께 기록한다
+
+2026-10-10 Amazon Macie와 Security Lake 공식 문서 대조 기준. 데이터 보안 점검에서는 발견 건수와 실제 검사한 범위를 따로 본다. Macie job의 sampling depth는 분석할 적격 S3 객체의 비율이며, 선택한 각 객체에서 읽을 바이트 비율이 아니다. Discovery result에는 민감정보를 찾지 못한 객체와 권한 또는 형식 문제로 분석하지 못한 객체의 기록도 포함된다. Finding이 없다는 사실만으로 검사 완료나 민감정보 부재를 판정하지 않는다.
+
+에이전트 설치 여부와 스캔 인프라의 실행 위치도 나누어 확인한다. Security Lake의 Sentra 통합 안내는 고객 계정에 스캔 인프라를 배포하고 발견 메타데이터를 SaaS로 수집한 뒤 OCSF로 전달하는 흐름을 설명한다. 이를 운영에 적용할 때는 스캔 권한, 원본과 메타데이터의 이동 범위, 비용과 부하를 확인한다. 에이전트가 없다는 설명만으로 고객 계정의 실행 자원이나 외부 전달 데이터도 없다고 가정하지 않는다.
+
+개발용 데이터 복사본을 점검한다면 대상 목록, 분석 성공과 실패, 표본 추출 범위, 마스킹 조치와 재검사 결과를 연결한다. 이는 운영 점검 제안이며 특정 제품의 정확도나 위험 감소율을 보장하지 않는다.
+
 ## 인증 종류와 심사 범위를 먼저 정한다
 
 2026-10-09 KISA 제도 소개와 인증 절차를 대조한 범위다. 구성 점검 도구의 결과를 인증 전체의 충족 증거로 대신하지 않는다.
@@ -166,6 +174,9 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 
 ## 출처
 
+- [Amazon Macie, Scope options for sensitive data discovery jobs](https://docs.aws.amazon.com/macie/latest/user/discovery-jobs-scope.html)
+- [Amazon Macie, Storing and retaining sensitive data discovery results](https://docs.aws.amazon.com/macie/latest/user/discovery-results-repository-s3.html)
+- [Amazon Security Lake, Third-party integrations with Security Lake](https://docs.aws.amazon.com/security-lake/latest/userguide/integrations-third-party.html) — Sentra 통합의 스캔 위치와 발견 메타데이터 전달.
 - [Amazon GuardDuty, Reviewing runtime coverage statistics and troubleshooting issues](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-assessing-coverage.html)
 - [Amazon GuardDuty, After you enable Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-after-configuration.html)
 - [Amazon RDS, Encrypting Amazon RDS resources](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html) — 암호화 사본 복원과 Blue/Green 전환 안내.
