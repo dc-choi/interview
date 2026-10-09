@@ -3,7 +3,7 @@ tags: [architecture, clean-architecture]
 status: done
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Layered / Clean / Hexagonal", "클린 아키텍처", "계층 아키텍처"]
-verified_at: 2026-09-03
+verified_at: 2026-10-09
 ---
 
 # Layered / Clean / Hexagonal Architecture
@@ -75,6 +75,14 @@ UseCase    → [OutputPort] ← RepositoryAdapter (구현)
 - API Response: 외부 계약
 
 이 계약들이 실제로 독립적으로 진화한다면 분리가 결합을 줄인다. 반대로 제약과 변화 이유가 같은데 계층마다 1:1 복사 DTO를 만들면 매핑 비용만 늘어난다. 경계별 독립 계약이 있는지 확인한 뒤 분리한다.
+
+### FastAPI에서 HTTP 계약을 분리하는 예
+
+`APIRouter`로 경로 연산을 모듈로 나누고 `include_router()`로 애플리케이션에 연결할 수 있다. 이 도구는 라우트 구성을 돕지만, 서비스와 저장소의 책임 분리까지 대신하지 않는다. 폴더 이름보다 HTTP 입력, 업무 규칙과 저장 계약이 어디서 만나는지 확인한다.
+
+Pydantic 모델의 검증을 타입 변환 없는 엄격한 검사로 가정하지 않는다. 기본 모드에서는 정수 필드의 문자열 `"123"`을 `123`으로 변환할 수 있다. 변환을 제한해야 하면 필드나 모델의 strict 설정을 검토하고, JSON의 날짜 문자열처럼 strict 모드에서도 허용하는 타입별 예외를 확인한다.
+
+출력 DTO는 클래스를 선언하는 데서 끝나지 않는다. FastAPI의 `response_model`에 연결하면 반환 데이터를 해당 모델에 맞게 검증하고 필터링한다. 예를 들어 입력 모델에 비밀번호가 있어도 출력 모델에서 제외해 응답에 노출되지 않게 한다. 다만 `Response`를 직접 반환하면 이 자동 변환 경로를 우회하므로, 실제 응답 경로에서 민감 필드가 빠지는지 확인한다. DTO 분리만으로 권한 검사나 DB 교체 가능성이 보장되지는 않는다.
 
 ## Hexagonal Architecture (헥사고날, 포트와 어댑터)
 
@@ -148,6 +156,10 @@ MVC는 UI 구성의 역할을 설명하며 백엔드 전체의 계층 규칙을 
 
 ## 출처
 
+- [FastAPI, Bigger Applications - Multiple Files](https://fastapi.tiangolo.com/tutorial/bigger-applications/)
+- [FastAPI, Response Model - Return Type](https://fastapi.tiangolo.com/tutorial/response-model/)
+- [FastAPI, Return a Response Directly](https://fastapi.tiangolo.com/advanced/response-directly/)
+- [Pydantic, Strict Mode](https://docs.pydantic.dev/latest/concepts/strict_mode/)
 - [클린 코더스, Architecture](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279449)
 - [클린 코더스, Architecture UseCase](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279450)
 - [The Clean Architecture — Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
