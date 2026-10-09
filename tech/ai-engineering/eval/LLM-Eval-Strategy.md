@@ -63,6 +63,19 @@ Claude Sonnet 4.5의 2025년 안전성 평가에서는 특히 인위적이거나
 
 이는 평가 설계의 보완책이다. 특정 코딩 에이전트의 환각 원인이 평가 인식이었다고 확정하거나, 기존 평가를 전부 무효화하는 근거가 아니다.
 
+## 시각 검수: 정밀도, 누락과 전체 처리 시간을 나눈다
+
+이미지에서 필요한 부품이 보인다는 판정과 설비가 정상 동작한다는 판정은 다르다. 검수 자동화의 성공 조건은 객체 검출뿐 아니라 실제로 넘겨받을 업무 단계까지 정해야 한다.
+
+2026-02-10 공개된 Amazon의 IORA 사례는 대표 테스트 모듈에서 정밀도 92%, 이미지당 지연 2~5초와 전체 ORT 시간 60% 감소를 보고했다. 이는 해당 팀의 사례 수치이며 독립 재현 결과나 다른 현장의 기대 성능이 아니다. 정밀도를 전체 정확도나 재현율로 바꿔 읽지 않고, 이미지 한 장의 처리 지연을 현장 검수 전체 시간과 구분한다. ORT에는 설치 확인 외에 전원과 연결 등의 기능 시험도 포함된다.
+
+이 사례를 적용할 때의 평가 제안은 다음과 같다.
+
+- **거짓 통과와 누락**: 없는 부품을 있다고 판정한 비율과 실제 부품을 놓친 비율을 따로 본다. 검출되지 않은 항목을 곧바로 부재로 확정하지 않는다.
+- **입력 조건**: 조명, 촬영 각도와 이미지 안의 부품 수로 결과를 나눠 본다. 특정 사례의 부품 수 임계값을 모델의 보편 한도로 사용하지 않는다.
+- **업무 시간**: 촬영, 업로드, 추론, 사람 재검토와 기능 시험을 포함해 전체 소요 시간을 비교한다. 자동 통과 비율과 재작업도 함께 기록한다.
+- **정답 수정**: 모델이 기존 라벨의 누락을 제기하면 원본을 사람이 재검토한다. 모델의 이의를 검증 없이 정답으로 반영하지 않는다.
+
 ## 평가 축 정리
 
 | 관점 | 질문 | 비고 |
@@ -97,6 +110,7 @@ Q. 데이터 품질은 어떻게 지키나?
 - [[Harness-Engineering|하네스 엔지니어링 (Verify 축)]]
 
 ## 출처
+- [How Amazon uses Amazon Nova models to automate operational readiness testing for new fulfillment centers — AWS](https://aws.amazon.com/blogs/machine-learning/how-amazon-uses-amazon-nova-models-to-automate-operational-readiness-testing-for-new-fulfillment-centers/) — 2026-02-10 공개 사례의 ORT 절차와 평가 결과. 2026-10-09 확인.
 - [Anthropic’s Transparency Hub — Anthropic](https://www.anthropic.com/transparency) — Claude Sonnet 4.5의 Model Alignment and Evaluation Awareness 절
 - [OpenAI, Evaluating Large Language Models Trained on Code](https://arxiv.org/abs/2107.03374)
 - [AI ENGINEER NIGHT Q&A 총정리 — 채널톡 Tech](https://tech.channel.io/ko/articles/4052f1f4)

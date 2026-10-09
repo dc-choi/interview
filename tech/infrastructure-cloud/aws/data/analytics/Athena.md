@@ -100,6 +100,17 @@ S3에 저장된 데이터를 **별도 적재 없이 표준 SQL로 직접 쿼리*
 - **세션 연결**: 기록이 있으면 `AssumeRole` 응답의 임시 access key ID와 후속 이벤트의 `userIdentity.accessKeyId`를 연결한다. IAM 공식 문서는 해당 STS 호출의 `responseElements`에서 `secretAccessKey`를 제외한다고 명시한다. 호출 계정과 대상 계정의 이벤트를 구분해 조사한다.
 - **결과 판정**: `eventname`만 보고 리소스 생성이나 데이터 유출이 성공했다고 단정하지 않는다. `errorcode`, 응답과 관련 리소스 상태를 대조하고, 조회 결과가 없으면 수집 설정과 보존 기간, 파티션 경로부터 확인한다(조사 원칙).
 
+## S3 서버 액세스 로그의 경로와 날짜 조건
+
+2026-10-09 AWS 공식 문서 기준, S3 버킷으로 직접 전달한 서버 액세스 로그는 `RegexSerDe`를 사용하는 외부 테이블로 분석할 수 있다. S3에 저장됐다는 이유만으로 CloudTrail이나 ALB 로그의 스키마를 재사용하지 않는다.
+
+- **읽을 위치**: 테이블의 `LOCATION`은 요청 대상 버킷이 아니라 로그가 도착하는 버킷과 접두사다. 날짜 기반 형식이면 계정, 리전, 원본 버킷과 날짜까지 실제 객체 경로에 맞춘다.
+- **파티션 관리**: 공식 날짜 기반 예시는 `yyyy/MM/dd` 문자열 파티션과 `storage.location.template`을 사용한다. Partition projection을 쓰면 날짜별 카탈로그 등록을 생략할 수 있다. Crawler를 모든 구성의 필수 단계로 두지 않는다.
+- **날짜의 의미**: 로그 경로의 날짜가 이벤트 발생일인지 전달일인지 확인한다. 지연 전달된 기록은 두 날짜가 다를 수 있다. Hive 테이블에서는 파티션 조건과 `requestdatetime` 조건을 함께 넣어 스캔 범위와 실제 사건 시간 범위를 각각 제한한다.
+- **결과 해석**: 서버 액세스 로그는 best effort라 지연, 누락과 중복이 가능하다. 결과 0건을 접근이 없었다는 증거로 보지 않는다. AWS는 S3 요청 식별에 CloudTrail 데이터 이벤트 사용을 권장하므로, 조사 목적에 맞는 수집 여부와 보존 범위도 확인한다.
+
+운영 검증에서는 알려진 요청의 로그 한 건을 원본 객체와 조회 결과에서 대조하고, 날짜 조건을 넣었을 때 스캔량이 줄어드는지 확인한다. 이는 적용 점검 제안이며 실제 AWS 계정에서 쿼리를 실행한 결과는 아니다.
+
 ## SageMaker Unified Studio와 Power BI의 ODBC 연결
 
 Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연결을 지원한다. 2026-10-07 확인한 릴리스 노트에서는 `SageMakerBrowserIdc`와 `SageMakerIam` 지원이 2.2.0.0에 추가됐다. 실제 배포 버전은 이후 인증과 메타데이터 조회 수정 사항까지 확인해 선택한다.
@@ -126,6 +137,10 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 ## 출처
 
+- [Amazon S3, Using Amazon S3 server access logs to identify requests](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-s3-access-logs-to-identify-requests.html)
+- [Amazon S3, Logging requests with server access logging](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html)
+- [Amazon Athena, Work with timestamp data](https://docs.aws.amazon.com/athena/latest/ug/data-types-timestamps.html)
+- [Amazon S3 audit logging, Part 1: Analyzing server access logs with Amazon Athena for performance insights — AWS](https://aws.amazon.com/blogs/storage/amazon-s3-audit-logging-part-1-analyzing-server-access-logs-with-amazon-athena-for-performance-insights/)
 - [Amazon Athena, SageMaker Browser IDC](https://docs.aws.amazon.com/athena/latest/ug/odbc-v2-driver-sagemaker-idc.html)
 - [Amazon Athena, SageMaker IAM](https://docs.aws.amazon.com/athena/latest/ug/odbc-v2-driver-sagemaker-iam.html)
 - [Amazon Athena ODBC 2.x release notes — AWS](https://docs.aws.amazon.com/athena/latest/ug/odbc-v2-driver-release-notes.html)
