@@ -1,7 +1,7 @@
 ---
 tags: [ai, agent, llm, tool-use, function-calling, orchestration]
 status: done
-verified_at: 2026-10-01
+verified_at: 2026-10-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Agent From Scratch", "에이전트 직접 만들기", "Tool Calling Loop", "도구 호출 루프", "Planner Executor"]
 ---
@@ -73,6 +73,17 @@ const runAgent = async (userInput: string): Promise<string> => {
 - 메일 발송, 결제, 삭제처럼 되돌릴 수 없는 단계 앞에는 사람의 승인을 두고, 재실행에 대비해 멱등하게 만든다. [[LLM-Workflow-Patterns#되돌릴 수 없는 행동 직전 승인: 또 하나의 절충|되돌릴 수 없는 행동 직전 승인]]
 - 계획을 한 번에 다 세우고 실행하는 방식은 예측 가능하지만 중간 결과에 따라 계획을 바꾸기 어렵다. 단계마다 모델이 다음 행동을 고르는 루프 방식과의 절충은 [[LLM-Workflow-Patterns#Plan-and-Execute: 절충 패턴|Plan-and-Execute]]에 있다.
 
+### 추천, 승인과 실행 결과를 별도 상태로 둔다
+
+구매 후보를 추천하거나 장애 원인을 설명하는 응답은 발주나 설비 조작이 완료됐다는 증거가 아니다. 업무 자동화에 적용할 때는 추천 내용, 실행할 대상과 인자, 승인 여부, 실제 도구 실행 결과를 구분한다.
+
+2026-10-09 Amazon Bedrock 공식 문서에서 확인한 구현 예는 다음과 같다.
+
+- **사용자 확인:** 특정 action에 확인을 설정하면 사용자가 `CONFIRM` 또는 `DENY`로 결정한다. 해당 동작을 거부하면 실행하지 않는다. 모델이 필요하다고 판단한 것과 사용자가 승인한 것은 다른 상태다.
+- **제어권 반환:** action group을 return control로 설정하면 호출 후보와 인자를 `invocationInputs`, 식별자를 `invocationId`로 애플리케이션에 돌려준다. 애플리케이션이 실행 결과를 같은 `invocationId`와 `actionGroup`에 연결해 `sessionState`로 반환한다.
+
+이를 구매 업무에 적용한다면 추천 결과를 검토한 뒤 확정한 품목과 수량으로 실행하고, 발주 API의 결과를 확인해야 완료로 표시한다. 이는 공식 기능을 연결한 설계 예시이며 특정 제조 현장의 도입 성과나 설비 제어 안전성을 검증한 사례는 아니다. 제어권을 돌려받는 것만으로 승인, 인가와 중복 실행 방지가 구현되지는 않는다.
+
 ## 4. 메모리
 
 - **작업 메모리**: 한 요청 안의 단계 결과. 위 `saveAs` 저장소가 여기에 해당하고 프로세스 메모리로 충분하다.
@@ -93,6 +104,8 @@ const runAgent = async (userInput: string): Promise<string> => {
 
 ## 출처
 
+- [Amazon Bedrock, Get user confirmation before invoking action group function](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-userconfirmation.html)
+- [Amazon Bedrock, Return control to the agent developer by sending elicited information in an InvokeAgent response](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-returncontrol.html)
 - [AI 에이전트를 만드는 방법 — kciter.so, kciter](https://kciter.so/posts/how-to-build-an-agent/)
 - [Claude Docs, Define tools](https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools)
 - [OpenAI API Docs, Function calling](https://developers.openai.com/api/docs/guides/function-calling)

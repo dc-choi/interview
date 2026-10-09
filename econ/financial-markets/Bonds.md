@@ -40,6 +40,14 @@ aliases: ["채권", "Bonds"]
 
 만기별 국채 수익률을 이은 선이다. 우상향, 평탄, 역전 등 형태가 나타날 수 있다. 단기금리가 장기금리보다 높아지는 **역전**은 시장의 미래 단기금리 하락 기대와 term premium 등을 반영하며 일부 국가와 기간에는 경기침체 선행 신호로 관찰됐지만 확정 예측은 아니다 → [[Business-Cycle|경기순환]].
 
+### 장기금리 상승을 정책금리 전망 하나로 설명하지 않는다
+
+국채의 기간구조 모형은 장기 수익률을 만기까지의 예상 단기금리 경로와 **기간 프리미엄(term premium)**으로 나누어 해석한다. 기간 프리미엄은 장기채를 보유하며 금리 위험을 부담하는 데 요구하는 보상이다. 일정한 상수가 아니므로 장기금리 상승이 전부 정책금리 인상 기대라는 뜻은 아니다.
+
+가상 예로 예상 평균 단기금리가 0.2%p 내려가도 기간 프리미엄이 0.5%p 오르면 두 성분의 합은 0.3%p 오른다. 이는 분해 원리를 보여주는 계산이며 실제 시장 추정치가 아니다. 기간 프리미엄은 직접 관측하는 가격이 아니라 모형으로 추정하는 성분이므로 추정 방법과 기준 시점을 함께 확인한다.
+
+국채금리 뉴스를 읽을 때는 현재 정책금리, 앞으로의 금리 경로에 대한 기대, 장기 보유 위험의 보상을 구분한다. 금리 상승만으로 특정 투자자의 이탈이나 국가의 채무불이행 가능성을 확정하지 않는다. 이 절은 2026-10-09 뉴욕 연준의 기간구조 모형 설명을 대조했으며, 당일 금리 수준과 상승 원인을 검증한 기록은 아니다.
+
 ## 6. 채권의 위험
 
 - **금리 위험**: 금리가 오르면 가격이 떨어진다(특히 장기채).
@@ -63,6 +71,7 @@ aliases: ["채권", "Bonds"]
 
 ## 출처
 
+- [Federal Reserve Bank of New York — Forecasting Interest Rates over the Long Run](https://libertystreeteconomics.newyorkfed.org/2016/07/forecasting-interest-rates-over-the-long-run/)
 - [Investor.gov — Bonds or Fixed Income Products](https://www.investor.gov/introduction-investing/investing-basics/investment-products/bonds-or-fixed-income-products)
 - [FINRA, Bonds](https://www.finra.org/investors/investing/investment-products/bonds) — 2026-10-02 수익률 종류와 금리, 신용, 재투자, 유동성 위험 대조
 - [FINRA, Bond Yield and Return](https://www.finra.org/investors/insights/bond-yield-return) — 쿠폰금리, 현재수익률과 만기수익률의 차이

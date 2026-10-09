@@ -121,8 +121,17 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 - 보수적으로 알려진 경영진의 가이던스 상향을 강한 신호로 보는 시각은 경험칙이다. 과거 가이던스 달성 이력으로 따로 검증한다.
 - 체크리스트는 가치를 추정하기 위한 입력을 모으는 단계다. 결론은 여전히 가격과 비교해야 한다(1절).
 
+### IPO 예상 가치와 확정 공모조건을 구분한다
+
+미국 IPO를 검토할 때는 보도된 예상 가치와 최신 등록신고서, 최종 투자설명서의 조건을 구분한다. 일반적으로 Form S-1과 수정본 S-1/A에서 회사와 공모 정보를 확인하고, 최종 투자설명서에서 최종 공모가격을 확인한다. 공모가격은 시장 여건, 분석과 협상을 반영한 추정이며 상장 뒤 거래가격을 보장하지 않는다.
+
+투자설명서에서는 위험요인(Risk Factors), 자금 사용계획(Use of Proceeds), 희석(Dilution), 경영진 분석(MD&A), 재무제표와 주석을 함께 읽는다. 위험요인에 적힌 사건을 이미 발생한 사실로 바꾸지 않고, 위험의 크기와 재무 부담을 별도로 검토한다.
+
+이 절은 2026-10-09 SEC의 IPO 투자자 안내를 대조했다. 특정 기업의 상장 일정, 예상 가치와 재무 수치를 확인한 기록은 아니다.
+
 ## 출처
 
+- [Updated Investor Bulletin: Investing in an IPO — SEC, Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-17)
 - [NYU Stern, More on normalizing earnings](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/valquestions/normearn.htm) — 2026-10-07 경기순환, 기업 규모 변화와 정상화 시점 대조
 - [NYU Stern, PEG Ratios](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/peg.htm) — 2026-10-07 EPS 기준, 예상 성장률의 기간과 위험 및 재투자에 따른 해석 한계 대조
 - [NYU Stern, The Fundamental Determinants of Growth](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/valquestions/growth.htm) — 2026-10-06 재투자, 평균/한계 자본수익률과 측정 한계 대조

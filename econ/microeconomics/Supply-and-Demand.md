@@ -66,6 +66,14 @@ aliases: ["수요와 공급", "Supply and Demand"]
 
 고용주가 임금 결정력을 가진 monopsony 노동시장에서는 경쟁시장 모형의 결론이 그대로 적용되지 않는다. 따라서 가격통제의 방향을 설명할 때는 통제가 구속적인지, 시장지배력과 조정 방식이 어떤지, 실증 결과가 어떤지를 함께 본다.
 
+### 임대료 규제는 기존 세입자와 신규 진입자를 나누어 본다
+
+임대료 규제의 평가는 보호받는 세입자의 거주 안정과 이후 임대시장에 나오는 주택의 양을 함께 봐야 한다. 단기 보호 효과가 있다고 장기 공급 효과가 사라지거나, 공급 비용이 있다고 기존 세입자의 편익이 없었던 것은 아니다.
+
+샌프란시스코의 1994년 규제 확대를 분석한 준실험 연구에서는 대상 세입자의 이동성이 20% 줄고 도시 밖으로 밀려나는 현상이 감소했다. 동시에 규제 대상 임대인은 자가 거주자에게 매각하거나 재개발하는 방식으로 임대 공급을 15% 줄였다. **15%는 해당 연구의 규제 대상 임대인 공급 감소 추정치이며, 도시 전체 주택 수의 감소율이 아니다.** 2026-10-09 학술지에 공개된 논문 초록으로 대조했다.
+
+다른 도시에 적용할 때는 기존 세입자와 새로 집을 구하는 사람, 단기 거주 안정과 장기 공급, 임대주택과 자가주택 전환을 나누어 확인한다. 규제 대상과 예외가 다른 제도에 이 효과 크기를 그대로 옮기지 않는다. 신규 건설 감소와 기존 주택의 임대시장 이탈도 서로 다른 경로다.
+
 ## 7. 핵심 개념과 지표
 
 - **균형가격과 균형거래량**: 시장이 수렴하는 점
@@ -93,6 +101,7 @@ aliases: ["수요와 공급", "Supply and Demand"]
 
 ## 출처
 
+- [The Effects of Rent Control Expansion on Tenants, Landlords, and Inequality: Evidence from San Francisco — American Economic Review, Rebecca Diamond, Tim McQuade, Franklin Qian](https://www.aeaweb.org/articles?id=10.1257/aer.20181289)
 - [Samsung and SK join OpenAI’s Stargate initiative to advance global AI infrastructure — OpenAI](https://openai.com/index/samsung-and-sk-join-stargate/)
 - [SK Group Partners with OpenAI to Advance Global AI Infrastructure — SK](https://eng.sk.com/news/%73k-group-partners-with-openai-to-advance-global-ai-infrastructure)
 - [OpenStax, Principles of Economics 3e, Demand, Supply, and Equilibrium in Markets for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services) — 2026-10-02 수요의 지불 의향과 능력 조건 대조
