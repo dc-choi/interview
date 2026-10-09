@@ -45,6 +45,14 @@ SaaS Anywhere는 데이터나 애플리케이션 일부를 고객 환경에 배�
 
 Pool은 검색 필터를 빠뜨릴 수 없는 공통 호출 경로가 필요하다. Silo는 자원 수 증가와 배포, 삭제 절차를 관리해야 한다. 선택 기준은 고객 수만이 아니라 데이터 경계, 개별 설정 요구와 운영 부담이다.
 
+### 요청별 임시 자격 증명의 범위
+
+2026-10-10 AWS STS `AssumeRole` API 문서 대조 기준. 역할의 trust policy는 누가 역할을 맡을 수 있는지, permissions policy는 그 역할로 무엇을 할 수 있는지를 정한다. 호출에 session policy를 전달하면 역할의 identity-based policy가 허용한 권한과 교집합을 이루며, session policy로 역할의 권한을 늘릴 수는 없다.
+
+이를 테넌트 격리에 적용할 때는 서버가 검증한 테넌트와 허용 자원을 연결해 session policy를 만들고, 발급한 자격 증명을 해당 요청의 하위 호출에 사용한다(설계 제안). JWT를 전달하거나 모델 ID를 테넌트별로 저장하는 것만으로 이 정책이 자동 생성되지는 않는다. 리소스 기반 정책을 포함한 실제 인가 경로도 별도로 검토한다.
+
+테스트에서는 고객 A의 요청으로 고객 B의 모델이나 저장소를 직접 지정하는 경우와, 동시 요청 사이에 자격 증명이 섞이는 경우를 확인한다. 임시 자격 증명 발급 성공과 교차 테넌트 접근 차단은 서로 다른 검증 결과다.
+
 ## 요청 수와 토큰 사용량을 따로 제한한다
 
 동일한 요청 한 건도 입력 길이와 출력 길이, 재시도에 따라 사용량이 달라진다. 호출별 테넌트와 모델, 입력과 출력 토큰을 연결하는 계측은 [[LLM-Cost-Optimization|LLM 비용 최적화]]를 따른다. 비용 귀속과 고객에게 청구할 가격은 별개의 판단이다.
@@ -59,6 +67,7 @@ API Gateway REST API의 usage plan은 요청 수 기반이며 throttling과 quot
 
 ## 출처
 
+- [AWS STS, AssumeRole](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html) — 역할 정책과 session policy의 범위를 대조했다. 테넌트 매핑과 교차 접근 테스트는 설계 제안이며 기존 본문 전체의 재검증은 아니다.
 - [Patterns for Deploying SaaS in Remote Environments — AWS](https://aws.amazon.com/blogs/apn/patterns-for-deploying-saas-in-remote-environments/) — 2026-10-09 고객 계정 배치 세 유형과 공통 운영 책임을 대조했다. 추론 경로와 로그 점검은 생성형 AI에 적용한 설계 제안이며 기존 본문 전체의 재검증은 아니다.
 - [AWS, SaaS Architecture Fundamentals: Tenant isolation](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/tenant-isolation.html)
 - [Multi-tenant RAG with Amazon Bedrock Knowledge Bases — AWS](https://aws.amazon.com/blogs/machine-learning/multi-tenant-rag-with-amazon-bedrock-knowledge-bases/)

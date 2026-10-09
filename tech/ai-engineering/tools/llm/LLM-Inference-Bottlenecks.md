@@ -24,6 +24,14 @@ LLM 추론 속도는 가속기의 연산 성능(TOPS, FLOPS)만으로 예측할 
 
 배치 크기 1의 dense 행렬곱에서 FP16 가중치 하나(2바이트)는 MAC 1회(곱셈과 덧셈, 2 FLOPs)에 쓰인다. 가중치 읽기가 지배하고 입력과 출력 전송을 무시한 근사에서는 약 1 FLOP/byte다. 긴 컨텍스트에서는 KV 캐시 읽기도 중요해지므로 가중치 크기만으로 지연을 계산하지 않는다. 프롬프트 접두어의 프리필을 재사용하는 [[LLM-Prompt-Caching|프롬프트 캐싱]]은 프리필 쪽 비용을 줄이는 기법이다.
 
+### 프리필과 디코드를 다른 자원에 배치한다
+
+Prefill-decode disaggregation은 두 단계를 별도 자원에 배치해 간섭을 줄이고 단계별 자원 수와 병렬화 전략을 조정하는 방식이다. DistServe(OSDI 2024)는 TTFT와 TPOT 목표를 함께 만족하는 요청 처리율을 최적화한다. 단계를 나누면 KV 캐시 전달 비용이 생기므로 자원 사이의 통신 대역폭과 배치 위치도 고려한다.
+
+하드웨어를 다르게 선택하는 사례로 AWS와 Cerebras의 2026-03-13 발표가 있다. 발표한 구성은 Trainium 계열 서버가 프리필을, CS-3가 디코드를 맡고 EFA로 연결하는 구조다. 이 발표는 향후 Bedrock 제공 계획을 설명한 자료이므로 현재 사용 가능한 모델, 리전이나 성능 보장으로 옮기지 않는다.
+
+적용 여부는 같은 모델과 입력, 출력 길이 및 동시성에서 TTFT, TPOT, 전체 지연과 비용을 비교해 판단한다. 분리한 단계의 처리량이 높아져도 전달과 대기 비용을 포함한 지연 목표를 만족하는지 확인해야 한다. 2026-10-10 원 논문과 공식 발표의 구조를 대조했으며 제품 성능을 독립 재현하지 않았다.
+
 ## 서빙 기법이 줄이는 비용은 다르다
 
 - 배칭과 continuous batching: 한 번 읽은 가중치로 여러 요청의 토큰을 처리해 intensity를 올린다. 요청이 끝나는 대로 새 요청을 배치에 끼워 넣어 GPU가 비는 시간을 줄인다.
@@ -105,6 +113,8 @@ CPU 사례에는 병렬화, 단계 간 데이터 전달, CPU 활용률과 하드
 
 ## 출처
 
+- [DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving — USENIX OSDI 2024](https://www.usenix.org/system/files/osdi24-zhong-yinmin.pdf)
+- [AWS and Cerebras Collaboration Aims to Set a New Standard for AI Inference Speed and Performance in the Cloud — AWS](https://press.aboutamazon.com/aws/2026/3/aws-and-cerebras-collaboration-aims-to-set-a-new-standard-for-ai-inference-speed-and-performance-in-the-cloud)
 - [llama-bench — ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp/blob/master/tools/llama-bench/README.md)
 - [Magnitude — magnitudedev](https://github.com/magnitudedev/magnitude)
 

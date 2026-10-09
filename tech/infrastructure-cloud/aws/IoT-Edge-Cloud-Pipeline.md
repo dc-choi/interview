@@ -34,6 +34,12 @@ SiteWise에서는 asset model로 같은 종류의 설비가 공유할 구조를 
 
 적용 시에는 수집 성공과 맥락 연결 완료를 따로 확인한다. 단위가 다른 값을 같은 지표로 합치거나 교체된 센서를 이전 설비에 연결하지 않도록 매핑을 점검한다. 이 점검은 설계 제안이며 모델 생성만으로 원시 데이터의 정확성이나 현장 제어 안전성이 검증되지는 않는다.
 
+### 설비 관계 조회와 원인 판단을 구분한다
+
+2026-10-10 AWS IoT TwinMaker 공식 문서 대조 기준. TwinMaker의 knowledge graph는 workspace의 entity와 component에 정의한 관계를 조회한다. 관계는 component의 `RELATIONSHIP` 타입 property로 표현하며 방향을 가진다. `ExecuteQuery`는 PartiQL의 graph match 문법으로 entity와 관계를 탐색한다.
+
+예를 들어 설비, 센서와 생산 라인의 연결을 따라 관련 대상을 찾을 수 있다. 이 연결을 생성형 AI의 진단 입력으로 쓸 때는 조회한 설비 관계와 실제 측정값의 시각, 단위 및 누락 여부를 함께 확인하는 방식을 권한다. 그래프의 연결은 모델에 정의한 관계이며 고장 원인의 인과관계를 입증한 결과가 아니다. 원인 가설과 현장 조치는 별도로 검증한다(설계 점검).
+
 ## 엣지 추론과 클라우드 작업
 
 AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행하고 데이터를 필터링하거나 집계하는 런타임을 제공한다. 소프트웨어를 component 단위로 배포하고 관리할 수 있다. 모델 추론을 로컬로 옮기는 것과 전체 시스템의 오프라인 동작은 구분한다.
@@ -43,6 +49,12 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 | 엣지 수집과 추론 | 현장 데이터에 가까이서 반응 | 모델, 입력과 런타임이 장비에 준비됐는가 |
 | 클라우드 데이터 통합 | 여러 장비의 이력 분석 | 재전송, 중복 처리와 저장 누락을 다루는가 |
 | 모델 개발과 배포 | 수집 데이터로 모델 개선 | 배포 버전, 실패 복구와 현장 호환성을 확인했는가 |
+
+### 공장 간 배포와 모델 품질의 재검증
+
+모델을 여러 공장에 배포할 수 있다는 사실과 각 공장에서 같은 품질을 낸다는 사실은 구분한다. Audi의 2023-06-30 공개 사례에서는 점용접 품질 검사 모델을 다른 공장으로 확장하면서 용접 설정의 차이를 확인하고 모델 재학습을 준비했다. 이는 당시 확산 사례이며 모든 현장에 무수정으로 적용된다는 근거가 아니다.
+
+이를 적용할 때는 센서 스키마, 단위와 공정 조건을 비교하고 새 현장의 라벨이 있는 데이터로 오탐과 미탐을 평가한다. 배포 버전과 입력 조건, 작업자의 후속 검사 결과를 함께 기록한다. 이 절차는 설계 제안이며 실제 공장 검증을 수행한 결과가 아니다.
 
 ## 연결 단절과 MQTT 버퍼의 한계
 
@@ -122,6 +134,8 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT TwinMaker, AWS IoT TwinMaker knowledge graph](https://docs.aws.amazon.com/iot-twinmaker/latest/guide/tm-knowledge-graph.html) — 설비 관계의 표현과 조회만 대조했다. 인과관계와 진단 검증은 설계 점검이다.
+- [Audi begins roll-out of artificial intelligence for quality control of spot welds — Audi](https://www.audi.com/en/press-releases/audi-begins-roll-out-of-artificial-intelligence-for-quality-control-of-spot-welds-15443) — 2023년 사례의 공장별 용접 설정 차이와 재학습 준비를 2026-10-10 대조했다.
 - [AWS IoT Greengrass, AWS IoT Greengrass component recipe reference](https://docs.aws.amazon.com/greengrass/v2/developerguide/component-recipe-reference.html) — 레시피, manifest 선택과 형식 검증의 범위를 대조했다.
 - [AWS IoT SiteWise, AWS IoT SiteWise concepts](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/concept-overview.html) — 원시 스트림 수집, asset model과 property 연결을 대조했다.
 - [AWS IoT Greengrass, Greengrass nucleus](https://docs.aws.amazon.com/greengrass/v2/developerguide/greengrass-nucleus-component.html) — MQTT spooler 설정을 대조했다. 단절과 복구 점검은 설계 제안이다.

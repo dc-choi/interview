@@ -28,6 +28,14 @@ OpenTelemetry가 계측과 전송 형식을 표준화하고, OpenSearch Ingestio
 
 AWS 관측성 도구의 기능은 일부 겹친다. CloudWatch Application Signals도 service map, metric, trace, SLO와 원인 조사 workflow를 제공하고, OpenSearch Observability도 signal correlation과 service 분석을 제공한다. 참조 아키텍처에서는 CloudWatch를 AWS resource와 managed service monitoring의 중심으로, Amazon Managed Service for Prometheus를 대규모 metric 저장과 PromQL로, OpenSearch를 log와 trace의 심층 검색과 장기 보존으로 둘 수 있다. 실제 선택은 retention, query language, correlation workflow, 기존 계측과 비용으로 정한다.
 
+### Trace 분기와 peer 전송의 역할
+
+2026-10-10 AWS Ingestion과 OpenSearch Data Prepper 공식 문서 대조 기준. `trace_peer_forwarder`는 Trace Analytics의 raw와 service-map 하위 파이프라인으로 나누기 전에 peer 전송을 수행해 같은 이벤트의 중복 HTTP 전송을 줄인다. 클라이언트 IP를 복원하는 프로세서로 해석하지 않는다. 이 설명은 해당 프로세서를 사용하는 구성에 적용되며 모든 최신 관측성 파이프라인에 추가해야 한다는 뜻은 아니다.
+
+관리형 OpenSearch Ingestion은 Data Prepper의 플러그인과 옵션 중 일부를 지원한다. `buffer` 플러그인을 YAML에 직접 넣으면 validation error가 발생하며 서비스가 버퍼를 관리한다. 오픈소스 예제를 관리형 서비스 설정에 그대로 복사하지 않고 지원 옵션을 대조한다.
+
+공식 지원 표에서 `Aggregate`와 `Service-map`은 stateful processor이며 end-to-end acknowledgement는 stateless processor에만 지원된다. 따라서 서비스 맵 생성이 포함된 경로에 같은 전달 보장을 가정하지 않는다. 원시 trace 저장 성공, 서비스 맵 반영과 재처리 결과를 각각 확인하는 방식을 권한다(운영 점검). 이번 대조는 이 수집 경계에 한정하며 기존 UI와 AI 기능 전체의 재검증은 아니다.
+
 ## 세 신호가 답하는 질문
 
 | 신호 | 먼저 답하는 질문 | 다음 이동 |
@@ -193,6 +201,8 @@ OpenSearch UI 내장 Agentic AI는 현재 사용자의 IAM과 RBAC, document와 
 
 ## 출처
 
+- [OpenSearch Documentation, Trace Peer Forwarder processor](https://docs.opensearch.org/latest/data-prepper/pipelines/configuration/processors/trace-peer-forwarder/)
+- [AWS Documentation, Supported plugins and options for Amazon OpenSearch Ingestion pipelines](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/pipeline-config-reference.html)
 - [AWS Documentation, Optimized engine supported query languages](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/optimized-log-analytics-queries.html)
 - [AWS Documentation, Optimized engine setting up](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/optimized-log-analytics-prerequisites.html)
 - [AWS Documentation, Optimized engine storage behavior](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/optimized-log-analytics-storage.html)
