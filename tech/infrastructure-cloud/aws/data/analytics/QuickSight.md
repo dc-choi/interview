@@ -27,6 +27,22 @@ Amazon Quick의 BI 기능. 서버리스 **머신러닝 기반 BI**로 대화형 
 - 임시 분석 수행
 - 비즈니스 인사이트 대시보드
 
+## 조회 타임아웃은 발생 계층을 나눠 확인한다
+
+부분 검증(2026-10-09): AWS의 서비스 quota, 데이터 소스 quota와 타임아웃 해결 문서를 대조했다.
+
+| 실패 지점 | 확인할 제한과 동작 |
+|---|---|
+| 데이터셋 미리보기 | 서비스 quota의 대기 한도는 45초이며 조정할 수 없음 |
+| 시각화의 데이터 조회 | 서비스 quota는 120초이며 조정할 수 없음 |
+| 원본 데이터 소스 | DB 엔진이나 서비스의 별도 쿼리 제한이 적용됨. SPICE로 가져오는 동안에도 확인해야 함 |
+
+Direct query에서 화면이 타임아웃됐다고 원본 DB의 쿼리까지 취소됐다고 가정하지 않는다. 일부 드라이버는 2분 타임아웃에 반응하지 않아 쿼리가 계속 실행될 수 있다. DB에서 실행 상태를 확인하고 필요한 경우 해당 DB의 취소 절차로 자원을 회수한다.
+
+대응은 조회량과 실행 시간을 줄이는 데서 시작한다. 불필요한 열을 제외하고 데이터셋 필터나 사용자 정의 SQL의 `WHERE`, `HAVING`으로 범위를 좁힌다. SPICE 전환도 선택지지만, 화면의 대기 한도와 원본에서 데이터를 가져오는 단계의 타임아웃을 없애는 것은 아니다. Athena 같은 원본 서비스의 한도는 해당 계정에 적용된 quota로 확인한다.
+
+운영 점검 제안: 실패가 미리보기, 시각화, SPICE 적재 중 어디서 발생했는지 기록한다. 화면을 반복 새로고침하기 전에 원본 DB에 이전 쿼리가 남아 있는지 확인해 재시도 부하를 구분한다.
+
 ## 자연어 분석에는 업무 의미를 연결한다
 
 2026-10-09 공식 Topics 문서 기준, Topic은 여러 데이터셋과 그 관계를 묶는 의미 계층이다. 데이터셋을 추가하기 전에 컬럼 설명, 동의어, 의미 유형과 사용자 정의 지침을 보강한다. Topic에는 데이터셋 사이의 조인 키와 업무 정의, 모호한 표현을 해석할 지침을 둘 수 있다. 기존 Topics는 legacy Topics로 구분되므로 과거 발표의 설정 화면과 현재 구성을 같은 것으로 가정하지 않는다.
@@ -102,6 +118,9 @@ AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 �
 
 ## 출처
 
+- [AWS General Reference, Amazon Quick Sight](https://docs.aws.amazon.com/general/latest/gr/quicksight.html)
+- [Amazon Quick, Data source quotas](https://docs.aws.amazon.com/quick/latest/userguide/data-source-limits.html)
+- [How do I resolve query timeout errors in Quick Suite? — AWS re:Post](https://repost.aws/knowledge-center/quicksight-resolve-query-timeout-issues)
 - [Amazon Quick, Using row-level security with user-based rules to restrict access to a dataset](https://docs.aws.amazon.com/quick/latest/userguide/restrict-access-to-a-data-set-using-row-level-security.html)
 - [Amazon Quick, Working with Amazon Quick Sight Topics](https://docs.aws.amazon.com/quick/latest/userguide/topics.html)
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)

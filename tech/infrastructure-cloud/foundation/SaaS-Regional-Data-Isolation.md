@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, cloud, saas, multi-tenant, data-residency, isolation]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-09
 category: "Infrastructure - 클라우드 기초"
 aliases: ["SaaS Regional Data Isolation", "SaaS 리전별 데이터 격리"]
 ---
@@ -25,6 +25,20 @@ SaaS의 control plane은 온보딩, 인증, 테넌트 관리와 운영 분석 �
 | Bridge | 계층 또는 서비스별로 두 방식 혼합 | 웹 계층 공유와 저장소 분리처럼 요구에 맞출 수 있지만 경계별 정책을 함께 관리해야 함 |
 
 리전 선택과 격리 방식은 독립적인 결정이다. 특정 지역에 전용 데이터 저장소를 두더라도 공유 API, 작업 큐와 운영 도구가 다른 테넌트나 지역의 데이터를 섞지 않는지 확인한다. URL의 테넌트 이름만으로 접근 권한을 결정하지 않는다.
+
+## 테넌트 컨텍스트를 서비스 경계 너머로 전달한다
+
+부분 검증(2026-10-09): AWS의 SaaS identity와 tenant isolation 문서를 대조했다. 인증된 사용자와 테넌트의 연결은 요청을 처리하는 서비스에도 전달되어야 한다. 이 컨텍스트는 테넌트별 로그, 지표, 사용량 계측과 자원 접근 제한에 쓰인다.
+
+인증 성공이나 기능별 역할 권한만으로 테넌트 격리가 성립하지는 않는다. 예를 들어 보고서를 조회할 역할이 있는 사용자라도 다른 고객의 보고서를 읽어서는 안 된다. 자원 접근 시 현재 테넌트의 범위를 적용해야 한다.
+
+리전별 application plane에 적용할 때는 다음을 점검한다(설계 제안).
+
+- 요청의 테넌트와 허용 리전을 검증한 뒤 대상 자원으로 라우팅한다. 클라이언트가 보낸 테넌트 식별자를 검증 없이 권한으로 쓰지 않는다.
+- 내부 서비스 호출과 비동기 작업에도 검증된 테넌트 컨텍스트를 전달한다. 재시도나 배치 처리에서 이 값이 누락되거나 다른 고객의 값과 섞이는지 확인한다.
+- 같은 역할을 가진 두 테넌트로 교차 접근을 시험한다. 정상 조회 성공과 다른 테넌트의 자원 접근 차단을 각각 확인한다.
+
+SaaS Builder Toolkit for AWS는 control plane과 application plane의 패턴을 CDK 기반 구성요소로 제공한다. 공식 저장소는 이를 sample code로 규정하고 운영 배포 전 조직 기준에 맞는 인가와 보안 구현을 요구한다. 툴킷 도입 자체를 격리나 데이터 위치 요구 충족의 증거로 삼지 않는다.
 
 ## 데이터 경로 전체를 확인한다
 
@@ -60,6 +74,9 @@ AWS European Sovereign Cloud의 설계는 별도 파티션과 독립된 계정, 
 
 ## 출처
 
+- [AWS SaaS Architecture Fundamentals, SaaS identity](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/saas-identity.html)
+- [AWS SaaS Architecture Fundamentals, Tenant isolation](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/tenant-isolation.html)
+- [SaaS Builder Toolkit for AWS — AWS Labs](https://github.com/awslabs/sbt-aws)
 - [AWS European Sovereign Cloud, Design approach](https://docs.aws.amazon.com/whitepapers/latest/overview-aws-european-sovereign-cloud/design-approach.html)
 - [AWS SaaS Architecture Fundamentals, Control plane vs. application plane](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/control-plane-vs.-application-plane.html)
 - [AWS SaaS Tenant Isolation Strategies, Pool isolation](https://docs.aws.amazon.com/whitepapers/latest/saas-tenant-isolation-strategies/pool-isolation.html)
