@@ -73,6 +73,16 @@ OLTP와 OLAP는 처리할 업무의 성격을, 데이터 웨어하우스와 데�
 
 이 절은 분석 데이터 통합 방식의 구분을 보강한다. 기존 제품별 트랜잭션 지원 범위를 다시 검증한 것은 아니다.
 
+### 레이크하우스의 제어, 연산과 저장 경계
+
+분석 데이터를 통합해도 서비스 제어와 실제 연산, 저장 위치는 별개다. 2026-10-09 Databricks on AWS 공식 문서 기준, control plane은 웹 애플리케이션과 관리형 백엔드를 제공하고 compute plane은 데이터를 처리한다. Classic compute는 고객의 AWS 계정에서 실행되고 serverless compute는 Databricks가 관리하는 compute plane에서 실행된다. 이 구분을 모든 레이크하우스 제품의 공통 배포 구조로 일반화하지 않는다.
+
+Unity Catalog의 external location은 저장소 경로와 storage credential을 연결한다. 기존 파일을 external table로 등록하는 것은 그 파일을 가리키는 메타데이터와 접근 경계를 만드는 작업이며, 원본 전체를 control plane으로 이전하는 작업과 다르다. 반면 쿼리 결과, 캐시와 작업 로그 같은 파생 데이터는 별도로 저장될 수 있다. 원본 위치만 확인해 모든 데이터가 같은 곳에 남는다고 판단하지 않는다.
+
+운영 점검에서는 연산이 실행되는 계정, 원본과 파생 데이터의 저장 위치, Unity Catalog 권한과 저장소 직접 접근 권한을 따로 확인한다. 특히 managed table의 저장소에 별도 주체가 직접 접근하면 Unity Catalog의 접근 통제와 감사 경로를 우회할 수 있다. Plane 분리는 최소 권한 설정이나 실제 접근 검증을 대신하지 않는다.
+
+이 절은 AWS 배포와 저장소 연결 문서의 부분 대조이며 실제 워크스페이스의 보안이나 제품별 OLTP 적합성을 시험한 결과는 아니다.
+
 ## 부적합 시그널
 
 ### OLTP DB로 분석을 돌리고 있는 신호
@@ -100,6 +110,8 @@ OLTP와 OLAP는 처리할 업무의 성격을, 데이터 웨어하우스와 데�
 - 분리형 CDC 구조와 HTAP의 격리, freshness, 운영 복잡도 tradeoff
 
 ## 출처
+- [Databricks — High-level architecture](https://docs.databricks.com/aws/en/getting-started/high-level-architecture)
+- [Databricks — Connect to cloud object storage using Unity Catalog](https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage/)
 - [Databricks — What is a data lakehouse?](https://docs.databricks.com/aws/en/lakehouse/)
 - [NHN Cloud Meetup — MySQL 3분 vs ClickHouse 0.3초, 같은 쿼리입니다](https://meetup.nhncloud.com/posts/414)
 - [ClickHouse — Transactional support](https://clickhouse.com/docs/guides/developer/transactional)

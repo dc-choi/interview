@@ -39,6 +39,17 @@ GB/s와 Gb/s를 섞지 않는다. 400 Gb/s는 단위 환산으로 50 GB/s이며 
 
 여러 GPU의 메모리 총합은 한 GPU가 로컬 속도로 접근하는 단일 메모리 용량을 뜻하지 않는다. 작업 분할과 통신 비용을 함께 본다. 모델 적재 용량, KV 캐시와 오프로딩의 제약은 [[LLM-Inference-Bottlenecks|LLM 추론 병목]]에서 다룬다.
 
+## 패키지 기판과 서버 냉각은 다른 계층이다
+
+유리 코어 기판은 여러 칩을 연결하는 패키징 기반의 선택지다. 실리콘 연산 칩을 유리로 바꾸거나 서버 메인보드 전체를 교체한다는 뜻이 아니다. 유기 기판보다 높은 치수 안정성과 평탄도를 활용해 큰 칩렛 패키지와 조밀한 배선을 구현하려는 접근이다. 이는 위 H100 사양에 유리 기판이 적용됐다는 설명이 아니다.
+
+**TGV(Through-Glass Via)**는 유리 기판을 관통해 양쪽 배선층을 연결하는 경로다. LPKF의 LIDE(Laser Induced Deep Etching)는 다음 두 단계로 구멍을 만든다.
+
+1. 초고속 레이저로 선택한 영역의 유리 구조를 바꾼다. 이 단계에서 재료를 직접 제거하지 않는다.
+2. 습식 식각으로 변형된 영역을 선택적으로 제거한다. 이후 전기적 연결에는 비아의 금속화가 필요하다.
+
+2026-10-09 부분 대조: Intel의 유리 기판 발표와 LPKF의 공정 설명을 확인했다. 유리의 열적, 기계적 안정성은 검토할 재료 특성이며 모든 패키지의 휨이나 파손이 사라진다는 보장이 아니다. 제조 공정 소개만으로 특정 GPU의 채택, 양산 수율이나 서버 냉각 비용 절감을 확정하지 않는다. 도입 판단에서는 실제 제품 사양과 패키지 신뢰성 결과를 별도로 확인한다.
+
 ## 서버에서 랙으로 검토 범위를 넓힌다
 
 DGX H100/H200 공식 사용자 가이드의 예시는 GPU 8개, 최대 시스템 전력 10.2 kW, 8U, 최대 무게 130.45 kg이다. 전원 공급 장치는 3.3 kW 6개이며 4+2 이중화 구성이므로 정격 합계를 시스템 소비 전력으로 쓰지 않는다.
@@ -105,6 +116,9 @@ CUDA 상태의 중지만으로 CPU 스레드까지 멈추지는 않는다. 전�
 
 ## 출처
 
+- [Intel Unveils Industry-Leading Glass Substrates to Meet Demand for More Powerful Compute — Intel](https://www.intel.com/content/www/us/en/newsroom/news/intel-unveils-industry-leading-glass-substrates.html)
+- [LIDE Technology: Industry Standard for Advanced Glass Processing — LPKF](https://lide.lpkf.com/en/technology/lide)
+- [Glass Core Substrates: TGV Formation & Panel-Level Processing — LPKF](https://lide.lpkf.com/en/applications/glass-core-substrates)
 - [KEDA 2.18, Scaling Deployments, StatefulSets & Custom Resources](https://keda.sh/docs/2.18/concepts/scaling-deployments/)
 - [Karpenter, Scheduling](https://karpenter.sh/docs/concepts/scheduling/)
 - [cuda-checkpoint: CUDA checkpoint and restore utility — NVIDIA](https://github.com/NVIDIA/cuda-checkpoint)
