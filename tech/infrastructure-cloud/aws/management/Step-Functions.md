@@ -68,6 +68,19 @@ AWS 서비스 호출과 애플리케이션 작업을 상태 머신으로 연결�
 - 최상위 실행 실패는 같은 실행의 `Catch`로 잡을 수 없다. 호출자가 처리하거나 부모 워크플로에 중첩하고, Standard 실행 상태 이벤트를 EventBridge로 처리한다.
 - 여러 시스템에 이미 반영된 작업은 단순 롤백보다 취소 주문, 환불처럼 도메인 보상 작업을 명시한다.
 
+## Bedrock 호출과 실패 지점 재개
+
+2026-10-10 공식 문서 대조 기준. `arn:aws:states:::bedrock:invokeModel` 최적화 통합으로 모델을 직접 호출할 수 있다. 모델별 요청 형식은 애플리케이션이 확인해야 하며 Step Functions가 `Body` 내용을 검증하지 않는다. `Body`와 S3의 `Input`은 함께 지정할 수 없다. `Output`에 S3 위치를 지정하면 응답 본문 대신 저장 위치 참조를 받는다.
+
+Standard 워크플로의 redrive는 실패한 실행을 처음부터 새로 만드는 기능과 다르다.
+
+- 실행 종료 뒤 14일 이내 등 적격 조건을 만족해야 한다. 최대 실행 기간과 실행 기록 수 제한도 함께 확인한다.
+- 기존 입력, 실행 ARN과 상태 머신 정의를 유지한다. 정의나 연결된 alias를 고쳤다고 redrive에 새 정의가 적용되지는 않는다. 변경한 정의를 쓰려면 새 실행을 시작한다.
+- `Parallel`과 Inline `Map`은 실패하거나 중단된 분기 또는 반복을 재개한다. `States.DataLimitExceeded` 때문에 실패했다면 이미 성공한 분기나 반복도 다시 실행되는 예외가 있다.
+- 재개하는 `Task`, `Parallel`, Inline `Map`의 `Retry` 횟수는 0으로 초기화된다. 기존 재시도 상한이 실행 생애 전체의 시도 횟수 상한은 아니다.
+
+모델 생성 결과를 저장하고 다음 작업에서 참조하는 구조는 이 재개 동작에 맞춘 설계 선택이다. 외부 발송이나 쓰기는 redrive에서도 중복될 수 있으므로 업무 식별자로 중복을 통제한다. 재개 성공과 생성 내용의 품질 검증은 별도로 확인한다.
+
 ## 운영 체크리스트
 
 - 각 `Task`에 timeout과 필요한 경우 heartbeat를 둔다.
@@ -85,6 +98,8 @@ AWS 서비스 호출과 애플리케이션 작업을 상태 머신으로 연결�
 
 ## 출처
 
+- [AWS Step Functions — Invoke and customize Amazon Bedrock models](https://docs.aws.amazon.com/step-functions/latest/dg/connect-bedrock.html)
+- [AWS Step Functions — Restarting state machine executions with redrive](https://docs.aws.amazon.com/step-functions/latest/dg/redrive-executions.html) — 2026-10-10 Bedrock 입력과 출력, redrive의 정의 보존과 재실행 범위를 부분 대조했다. 기존 본문 전체의 재검증은 아니다.
 - [AWS Step Functions — Choosing workflow type](https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html)
 - [AWS Step Functions — Service integrations](https://docs.aws.amazon.com/step-functions/latest/dg/integrate-services.html)
 - [AWS Step Functions — Error handling](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html)

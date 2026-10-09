@@ -33,6 +33,19 @@ AWS는 기반 인프라를, Red Hat은 ROSA 플랫폼 운영을 맡는다. 세�
 
 플랫폼 모니터링과 애플리케이션 정상 동작도 별개다. 고객은 애플리케이션 route와 그 뒤 endpoint의 상태를 확인해야 한다.
 
+## OpenShift AI와 GPU 준비 상태
+
+2026-10-10 Red Hat 지원 구성표는 OpenShift AI Self-Managed의 대상에 ROSA HCP와 Classic을 포함한다. ROSA 클러스터의 준비와 OpenShift AI 구성, 모델 실행 준비를 각각 확인한다. 사용할 OpenShift AI와 OpenShift 버전의 조합은 지원표에서 대조한다.
+
+NVIDIA GPU를 사용하는 경우에는 EC2 GPU 노드가 생성됐다는 사실만으로 모델이 GPU를 사용할 수 있다고 판단하지 않는다. Red Hat의 ROSA 안내는 다음 단계를 구분한다.
+
+1. 대상 리전과 가용 영역의 GPU 인스턴스 quota와 용량을 확인한다.
+2. GPU machine pool을 만들고 노드 등록을 확인한다.
+3. Node Feature Discovery와 NVIDIA GPU Operator를 구성하고 GPU 자원의 노출을 확인한다.
+4. 테스트 Pod에서 GPU와 드라이버 동작을 확인한 뒤 OpenShift AI의 hardware profile과 workbench를 검증한다.
+
+이 순서는 해당 NVIDIA 구성의 점검 흐름이며 모든 가속기와 버전에 공통인 설치 명령은 아니다. 일반 worker의 여유 자원도 확인한다. GPU 노드가 있어도 OpenShift AI 구성요소가 스케줄링되지 않으면 대시보드가 준비되지 않을 수 있다. 마지막으로 실제 추론 요청을 보내 응답을 확인하는 것은 별도의 애플리케이션 검증이다.
+
 ## 도입 검토
 
 다음은 책임 분담에서 도출한 검토 항목이다.
@@ -45,6 +58,8 @@ AWS는 기반 인프라를, Red Hat은 ROSA 플랫폼 운영을 맡는다. 세�
 
 ## 출처
 
+- [Red Hat, Red Hat OpenShift AI: Supported Configurations](https://access.redhat.com/articles/rhoai-supported-configs)
+- [Red Hat Cloud Experts, ROSA with NVIDIA GPU workloads and OpenShift AI](https://cloud.redhat.com/experts/rosa/gpu/) — 2026-10-10 지원 대상과 GPU 준비 단계만 부분 대조했다. 실제 클러스터 배포와 추론은 시험하지 않았다.
 - [AWS ROSA, ROSA architecture](https://docs.aws.amazon.com/rosa/latest/userguide/rosa-architecture-models.html)
 - [AWS ROSA, Overview of responsibilities for ROSA](https://docs.aws.amazon.com/rosa/latest/userguide/rosa-responsibilities.html)
 - [ROSA service definition: Cluster backup policy — Red Hat OpenShift Documentation](https://github.com/openshift/openshift-docs/blob/main/modules/rosa-sdpolicy-platform.adoc)

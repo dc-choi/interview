@@ -28,6 +28,18 @@ aliases: ["Agent-Ready Data", "에이전트용 데이터 준비", "에이전트 
 - 비정형 데이터도 같은 규칙이 적용된다. 계약이 내용에서 주변 메타데이터로 옮겨갈 뿐이다. freshness 시계는 콘텐츠 변경 시점이 아니라 인덱스 재구축이 성공한 시점을 잰다. 아무것도 안 바뀐 것처럼 보여도 조용히 실패한 인덱서를 이 심장박동이 잡는다. 청크마다 source, version, timestamp, access scope를 요구하고 없으면 거부하며, 빈 청크, 잘린 청크, 근사 중복, OCR 오류, 임베딩 드리프트를 검사한다.
 - 신뢰도 임계 라우팅: 임계 이상이면 자율 진행, 미만이면 사람에게 넘긴다. 임계는 모델의 자신감이 아니라 freshness, 완전성, 일관성 같은 데이터 수준 신호가 구동한다. 모델은 낡은 답에 확신할 수 있고 freshness SLA가 그 확신을 무효화한다. 계약이나 SLA 위반은 다른 신호와 무관하게 사람을 강제하는 하드 게이트로 시작하고, 가중 점수 합성은 단순 규칙을 이긴다는 증거가 생긴 뒤에 도입한다. 신호를 하나의 점수로 합성하는 방법은 미해결 설계 문제다.
 
+### 행동 이벤트의 검증과 적재 차단은 별도다
+
+고객 행동을 에이전트 컨텍스트로 쓰려면 수집 성공, 검증 수행과 사용 허용을 구분한다. 위의 계약 검증 게이트는 설계 원칙이며, 수집 제품을 도입하면 같은 차단 동작이 기본 적용된다는 뜻은 아니다.
+
+2026-10-10 Snowplow 공식 문서 기준, event specification 검증에 실패한 이벤트도 기본 설정에서는 `event_specification_validation` 정보를 붙여 정상 enriched 이벤트와 함께 전달한다. 실패 이벤트 경로로 보내려면 tracking plan의 Data quality rules를 별도로 설정한다.
+
+- 이벤트가 선언한 specification을 찾지 못한 경우에는 실패 경로 전송을 설정해도 enriched 이벤트에 남는 예외가 있다.
+- 검증 결과 entity가 없다고 검증 통과를 단정할 수 없다. 명시한 specification을 검증한 경우와 inference로 specification을 연결한 경우를 구분한다.
+- 이벤트는 자신이 선언한 specification 버전으로 검증한다. 새 버전 적용에는 tracker 코드를 다시 생성하고 배포하는 과정이 필요하며, 여러 버전의 이벤트가 함께 존재할 수 있다.
+
+따라서 에이전트에 전달하기 전에 specification의 존재와 버전, 실패 정보, 데이터 시각과 접근 범위를 검사하는 사용 게이트를 설계한다. 이 게이트는 애플리케이션 설계 제안이며 Snowplow의 기본 기능 보장을 뜻하지 않는다. 최신 행동이 수집됐다는 사실도 사용자의 의도나 자동 실행 승인을 증명하지 않는다.
+
 ## 추적 — agentic lineage
 
 전통 lineage가 어떤 소스에 접근했는지를 추적한다면, agentic lineage는 왜 X에 접근했는지, 즉 소스 Z에서 Y를 찾았기 때문이라는 연결을 추적한다. 분산 추적의 trace와 span 모델을 그대로 쓴다. 예를 들어 신용장 승인 하나의 trace 안에 KYC 조회, 제재 목록 확인, 정책 엔진의 신용 조건 평가가 각각 span으로 놓이고, 마지막 span이 결정과 신뢰도, 전체 추론 체인을 담는다. 규제 관점에서 EU AI Act는 고위험 시스템에 생애 전반의 자동 로깅과 로그의 최소 6개월 보관을 요구하며, 이는 고립된 타임스탬프가 아니라 동작을 추적할 만큼의 로깅, 장기 보관, 사후에 어떤 소스를 봤고 어떤 로직을 적용했으며 어떤 대안을 기각했는지 재구성할 수 있을 것이라는 세 아키텍처 의무로 번역된다. 관측성은 나중에 붙이기가 훨씬 어려우므로 첫날부터 계측한다. → [[Audit-Log|감사 로그]]
@@ -80,6 +92,7 @@ aliases: ["Agent-Ready Data", "에이전트용 데이터 준비", "에이전트 
 
 ## 출처
 
+- [Snowplow, Event specification validation](https://docs.snowplow.io/docs/event-studio/tracking-plans/event-specification-validation/) — 2026-10-10 검증 실패의 기본 전달, specification 누락 예외와 버전 적용을 대조했다. 기존 본문의 법률 및 벤치마크 주장은 이번 검증 범위에 포함하지 않았다.
 - [Making Your Data Ready for Agentic AI — martinfowler.com, Pramod Sadalage와 Prem Chandrasekaran](https://martinfowler.com/articles/making-data-ready-for-agentic-ai.html)
 - [에이전트형 AI를 위한 데이터 준비하기 — GeekNews](https://news.hada.io/topic?id=33657)
 
