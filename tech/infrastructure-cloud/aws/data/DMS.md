@@ -18,7 +18,7 @@ verified_at: 2026-08-28
 | **Serverless replication configuration** | endpoint, table mapping과 최소, 최대 DCU를 정의하면 DMS가 실행 capacity를 provision하고 조정. Standard보다 지원 endpoint와 기능 범위가 좁을 수 있음 |
 | **소스 엔드포인트(Source Endpoint)** | 원본 DB 연결 정보 (호스트, 포트, 자격증명) |
 | **대상 엔드포인트(Target Endpoint)** | 마이그레이션 대상 DB 연결 정보 |
-| **마이그레이션 작업(Task)** | "어떤 테이블을, 어떤 방식으로, 언제까지" 정의 — 매핑 규칙 포함 |
+| **마이그레이션 작업(Task)** | 대상 테이블, 이전 방식과 범위 정의 — 매핑 규칙 포함 |
 
 복제 인스턴스가 소스에서 읽고 대상에 쓰는 구조다. 소스나 대상에 온프레미스 DB를 둘 수 있지만, 적어도 한쪽 endpoint는 AWS 서비스여야 한다. 온프레미스 DB끼리의 이전은 지원하지 않는다(2026-10-07 endpoint 생성 문서 확인).
 
@@ -52,6 +52,19 @@ verified_at: 2026-08-28
 
 변경 뒤에는 같은 복제 인스턴스와 endpoint 조합으로 연결을 다시 검사한다. 네트워크 경로와 별개로 TLS와 인증 설정을 확인하며, 연결 성공을 CDC나 데이터 정합성 검증으로 확대하지 않는다.
 
+### Oracle 소스의 권한은 운영 형태와 CDC 방식으로 나눈다
+
+2026-10-09 Oracle 소스 공식 문서 대조 기준이다. endpoint에 지정한 Oracle 계정의 DB 권한을 확인한다. AWS API를 호출하는 IAM 권한과는 별개다.
+
+| 조건 | 권한 검토 기준 |
+|---|---|
+| 자체 운영 Oracle | 기본 접속, 트랜잭션과 사전 뷰, 대상 테이블 권한을 확인한다. `V$` synonym 대신 `V_$` 실제 객체에 부여하는 항목을 구분한다. |
+| RDS for Oracle | `SYS` 객체의 `SELECT`, `EXECUTE` 권한은 `rdsadmin.rdsadmin_util.grant_sys_object` 절차로 부여한다. 자체 운영용 SQL을 그대로 복사하지 않는다. |
+| CDC | LogMiner와 Binary Reader 중 실제 사용할 방식에 맞춰 추가 권한과 로그 접근을 준비한다. 자체 운영 LogMiner의 추가 권한과 RDS의 기본 권한 묶음은 구성이 다르다. |
+| 선택 기능 | ASM, TDE, Standby, LOB 검증과 Serverless에 해당하는 조건부 권한을 별도로 확인한다. |
+
+LogMiner는 Oracle API로 redo log를 읽고 Binary Reader는 원시 redo log를 직접 읽고 해석한다. 두 방식의 전환에는 CDC task 재시작이 필요하다. 권한 목록은 Oracle 버전과 구성에 따라 달라지므로 단일 범용 GRANT 스크립트로 고정하지 않는다. endpoint 연결 성공 뒤에도 CDC 로그 접근과 실제 변경 반영을 별도로 검증한다.
+
 ## 마이그레이션 유형 3가지
 
 ### 1. Full Load (전체 로드)
@@ -71,7 +84,7 @@ DMS Standard는 replication instance와 task를 만들고, DMS Serverless는 rep
 
 - 초기 전체 로드 + 그 동안의 변경을 CDC로 따라잡기
 - **컷오버 직전까지 양쪽이 거의 동기화** → 짧은 점검 시간만으로 전환 가능
-- "운영 중단 없이 마이그레이션" 시나리오의 표준 패턴
+- 운영 중단을 줄이는 마이그레이션의 일반적인 패턴
 
 ## 이기종 마이그레이션 — 데이터와 스키마를 분리
 
@@ -162,6 +175,7 @@ DMS data validation은 지원되는 소스와 대상의 대응 행을 비교한�
 
 ## 출처
 
+- [AWS DMS, Using an Oracle database as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html)
 - [AWS DMS, Security in AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html)
 - [AWS DMS, Network Access Control List (NACL) configuration for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Advanced.Ednpoints.NACL.html)
 - [Amazon VPC, Custom network ACLs](https://docs.aws.amazon.com/vpc/latest/userguide/custom-network-acl.html)

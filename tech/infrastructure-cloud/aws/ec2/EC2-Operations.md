@@ -82,6 +82,18 @@ AL2023의 커널 계열 변경 절차는 대상 패키지 설치, 기본 부팅 
 
 커널 파일, initramfs나 부팅 항목이 없으면 기본값 변경만으로 복구되지 않을 수 있다. 배포판별 복구 절차를 따르며, 복구 후에는 실패한 업데이트의 원인을 따로 해결한다. 실제 인스턴스에서 수행한 검증 기록은 아니다.
 
+### initramfs 손상은 커널 선택과 별도로 복구한다
+
+2026-10-09 AWS 복구 문서 대조 기준이다. `Kernel panic - not syncing`만으로 원인을 확정하지 않는다. 루트 파일시스템을 마운트하지 못한 로그와 커널 파일, 대응하는 initramfs의 누락이나 손상을 함께 확인한다. 이 절은 위의 백업, 원본 중지와 같은 AZ의 구조용 인스턴스 준비를 전제로 한다.
+
+1. 원본 루트 파티션과 별도 `/boot`, `/boot/efi`를 식별해 올바른 위치에 마운트한다. 예제의 NVMe 장치명이나 파티션 번호를 고정값으로 쓰지 않는다.
+2. `/dev`, `/proc`, `/sys`, `/run`을 bind mount해 원본 루트의 `chroot` 환경을 준비한다. 기존 initramfs를 백업하고 `grubby --default-kernel` 및 `/boot` 파일 목록으로 복구할 커널 버전을 확인한다.
+3. 해당 배포판에서 `dracut`을 쓰는 경우 대상 커널 버전과 출력할 initramfs 경로를 명시해 재생성한다. 구조용 인스턴스에서 실행 중인 커널을 원본의 복구 대상으로 혼동하지 않는다.
+4. GRUB 갱신은 배포판 버전과 부팅 방식에 맞는 공식 절차를 따른다. UEFI라는 이유만으로 출력 경로를 하나로 고정하지 않는다.
+5. 마운트를 해제하고 원래 루트 장치 매핑으로 다시 연결한다. 부팅 로그, 실제 실행 커널과 애플리케이션 상태를 확인한 뒤 임시 자원을 정리한다.
+
+AWS 복구 문서의 대상은 AL2, AL2023, Fedora 16 이상과 RHEL 7 이상이다. 다른 배포판까지 같은 명령을 일반화하지 않으며, 여기서는 실제 복구를 실행하지 않았다.
+
 ## Auto Scaling Group (ASG) 연계
 
 - **Launch Template** — AMI, 인스턴스 타입, User Data, SG, IAM 정의
@@ -138,6 +150,7 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 
 ## 출처
 
+- [Troubleshoot kernel panic error in EC2 instances — AWS re:Post](https://repost.aws/knowledge-center/ec2-linux-kernel-panic-unable-mount)
 - [AWS 공식 문서, Troubleshoot Amazon EC2 instance launch issues](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/troubleshooting-launch.html)
 - [AWS 공식 문서, Create a Capacity Reservation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-create.html)
 - [AWS 공식 문서, Capacity Reservation pricing and billing](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html)

@@ -117,6 +117,15 @@ Fargate 외에 **EC2 launch type**에서만 등장하는 3번째 Role.
 
 Blue/Green은 ECS 자체 기능이라 CodeDeploy 없이 쓸 수 있다. CodeDeploy 기반 blue/green(`CODE_DEPLOY` 컨트롤러)도 별도로 남아 있다. 롤링의 용량 계산, circuit breaker 임계값, 타깃 그룹 드레이닝과 `stopTimeout`이 맞물리는 순서는 → [[ECS-Rolling-Deployment|ECS 롤링 배포 메커니즘]]
 
+### 서비스 삭제와 자원 정리
+
+2026-10-09 공식 DeleteService API와 콘솔 문서 대조 기준이다. 삭제는 서비스 운영을 끝내는 작업이므로 요청 처리와 데이터 보존 조건을 먼저 확인한다.
+
+- `REPLICA` 서비스는 태스크를 0으로 줄인 뒤 삭제하거나 `force`로 0까지 줄이지 않은 상태의 삭제를 요청할 수 있다. `force`를 모든 scheduling strategy의 필수 옵션으로 보지 않는다.
+- 정리할 태스크가 남아 있으면 서비스는 `DRAINING`으로 바뀌고 콘솔과 `ListServices`에서 사라질 수 있다. 목록에서 사라진 것만으로 종료 완료를 판단하지 않고 `DescribeServices`와 태스크 상태를 확인한다.
+- 모든 태스크가 `STOPPING` 또는 `STOPPED`가 되면 서비스는 `INACTIVE`로 전환한다. 따라서 `INACTIVE`도 모든 태스크가 이미 `STOPPED`라는 뜻은 아니다. `ACTIVE`나 `DRAINING`인 서비스와 같은 이름으로 새 서비스를 만들면 오류가 난다.
+- 연결된 로드밸런서와 service discovery 자원은 서비스 삭제로 제거되지 않는다. 공유 여부와 사용처를 확인한 뒤 불필요한 자원만 별도로 정리한다. 서비스 삭제 성공을 전체 비용 정리 완료로 취급하지 않는다.
+
 ## Service Connect, Service Discovery
 
 마이크로서비스 간 통신:
@@ -174,6 +183,8 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 - Task = **컨테이너 실행 최소 단위**(1개 이상 컨테이너 묶음), Fargate면 ENI/IP까지 Task 단위
 
 ## 출처
+- [AWS, DeleteService](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DeleteService.html)
+- [AWS, Deleting an Amazon ECS service using the console](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/delete-service-v2.html)
 - [AWS 핵심 서비스 정리 — 학습 메모]
 - AWS SAA C03 학습 자료 (로컬)
 - [What Is AWS App Mesh? — 2026-09-30 지원 종료 공지](https://docs.aws.amazon.com/app-mesh/latest/userguide/what-is-app-mesh.html)
