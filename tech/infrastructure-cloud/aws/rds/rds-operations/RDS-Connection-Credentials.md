@@ -12,9 +12,9 @@ verified_at: 2026-07-21
 
 RDS 연결에서는 DB 엔드포인트와 포트를 사용한다. 이 문서는 전송 구간 보안(SSL), 자격증명의 안전한 주입, 네트워크 경로(어느 VPC/SG에서 닿나)를 다룬다. 운영 자동화 기능은 [[RDS-Aurora]], 네트워크 방화벽 설계는 [[RDS-Security-Group]]에 둔다.
 
-## 연결 — host만 엔드포인트로 바꾸면 된다
+## 연결 — 엔드포인트와 TLS 설정을 함께 확인한다
 
-평소 로컬 연결에서 host만 RDS 엔드포인트로 바꾸면 끝이다. 전송 구간은 SSL/TLS로 암호화하는 게 권장이다.
+로컬 연결 설정을 옮길 때는 RDS 엔드포인트와 포트, 자격증명, 네트워크 접근 및 클라이언트의 TLS 검증 설정을 함께 확인한다.
 
 ```typescript
 // TypeORM (NestJS)
@@ -66,6 +66,17 @@ DATABASE_URL="mysql://user:pass@mydb.xxxx.ap-northeast-2.rds.amazonaws.com:3306/
   - **Access denied / authentication failed**는 네트워크는 뚫렸고 자격증명/권한이 틀린 것이다.
   - 이 둘을 헷갈려 비밀번호만 계속 고치면 SG 문제를 영영 못 잡는다.
 
+### MySQL의 ERROR 2026과 CA 교체
+
+`ERROR 2026 (HY000)`은 TLS 연결 실패를 나타내므로 뒤따르는 상세 메시지를 함께 확인한다. 비밀번호를 바꾸기 전에 인증서 검증과 파일 접근을 점검한다.
+
+- **CA 파일 접근**: 파일 존재 여부, 설정한 경로와 애플리케이션 실행 계정의 읽기 권한을 확인한다. 개발 PC에 파일이 있어도 배포 환경의 같은 경로에 있다는 뜻은 아니다.
+- **신뢰할 CA**: DB가 사용하는 CA에 맞는 AWS 인증서 번들을 클라이언트의 신뢰 저장소에 넣는다. 서버 CA만 교체하고 클라이언트의 신뢰 저장소를 갱신하지 않으면 인증서 검증 연결이 실패할 수 있다.
+- **검증 수준**: MySQL 클라이언트의 `VERIFY_CA`와 `VERIFY_IDENTITY`를 구분한다. 서버 이름까지 검증하려면 `VERIFY_IDENTITY`와 실제 DB 엔드포인트를 사용한다. 암호화된 연결 성공만으로 서버 신원 검증까지 성공했다고 판단하지 않는다.
+- **교체 순서**: 클라이언트가 새 CA를 신뢰하도록 먼저 배포하고, 개발 또는 스테이징에서 연결을 시험한 뒤 서버 인증서를 교체한다. 검증 비활성화를 정상 복구 상태로 남기지 않는다.
+
+2026-10-09에는 이 절의 CA 접근, 신뢰 저장소와 검증 모드를 AWS와 MySQL 공식 자료로 대조했다. 기존 ORM 예시의 실행과 실제 배포 환경은 시험하지 않았다.
+
 ### PostgreSQL 터널 연결과 인증서 이름
 
 다음 내용은 2026-10-08 AWS RDS와 PostgreSQL 18 libpq 공식 문서로 확인했다. SSH 터널이 로컬 포트를 RDS PostgreSQL로 전달하도록 이미 구성됐다는 전제다.
@@ -103,6 +114,9 @@ RDS 요금은 대략 다섯 축으로 쌓인다. 단가는 리전/인스턴스 �
 
 ## 출처
 
+- [How do I resolve an ERROR 2026 SSL connection error? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/rds-error-2026-ssl-connection)
+- [Amazon RDS User Guide, Updating applications to connect to MySQL DB instances using new SSL/TLS certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/ssl-certificate-rotation-mysql.html)
+- [MySQL 8.4 Reference Manual, Command Options for Connecting to the Server](https://dev.mysql.com/doc/refman/8.4/en/connection-options.html#option_general_ssl-mode)
 - [Amazon RDS User Guide, Using SSL with a PostgreSQL DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Concepts.General.SSL.html)
 - [PostgreSQL 18 Documentation, Database Connection Control Functions](https://www.postgresql.org/docs/18/libpq-connect.html)
 - [Amazon RDS User Guide — Connecting, IAM database authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html)
