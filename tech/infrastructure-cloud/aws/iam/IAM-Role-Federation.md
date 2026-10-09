@@ -65,6 +65,20 @@ Role의 특징:
 
 외부에서 인증된 사용자 → **STS AssumeRoleWithSAML / AssumeRoleWithWebIdentity** → 임시 자격증명 발급.
 
+### Amazon Connect SAML — IdP 로그인과 서비스 사용자 매핑
+
+2026-10-09 공식 Connect 관리자 가이드로 확인한 범위다. 아래는 일반 SAML 연동이며 Global Resiliency 배포는 별도 지침을 따른다. 기존 STS와 GitHub OIDC 절의 검증 날짜는 유지한다.
+
+IAM Identity Center 같은 IdP에 로그인했다고 Connect 사용자와 서비스 권한이 자동으로 준비되지는 않는다. 다음 경계를 따로 맞춘다.
+
+- 인스턴스 생성 시 SAML 2.0 인증을 선택하고, IAM에 SAML provider와 이를 신뢰하는 federation role을 구성한다.
+- 역할에 대상 인스턴스로 범위를 제한한 `connect:GetFederationToken` 권한을 부여한다. 이름이 비슷한 STS API와 구분한다.
+- Connect에도 사용자를 추가하고, 사용자명을 SAML 응답의 `RoleSessionName`과 대소문자까지 일치시킨다. IdP 인증 성공 뒤 Connect 접근만 거부된다면 이 매핑을 먼저 확인한다.
+- Connect 내부 기능 접근은 security profile로 제어한다. federation role의 AWS 권한과 서비스 내부 권한은 별개다.
+- 로그인은 IdP에서 시작한다. 리전별 SAML endpoint를 사용할 때는 ACS URL, 역할 trust policy의 `SAML:aud`, 대상 인스턴스로 향하는 RelayState를 함께 맞춘다.
+
+구성 검증은 IdP 인증, 역할 federation, Connect 사용자 매핑, 실제 화면 권한 순서로 나눈다. 로그인 성공만으로 필요한 기능까지 허용됐다고 판정하지 않는다.
+
 ### GitHub Actions OIDC — 장기 액세스 키 없는 배포 파이프라인
 
 CI 워크플로우에 AWS 액세스 키를 리포지토리 시크릿으로 박아 두는 대신, GitHub가 발급한 OIDC 토큰으로 `AssumeRoleWithWebIdentity`를 호출해 임시 자격증명을 받는 구조. 계정에 IdP `https://token.actions.githubusercontent.com`를 등록하고 role의 신뢰 정책에서 클레임을 검증한다.
@@ -134,6 +148,7 @@ IdP 속성을 session tag로 전달해 ABAC에 쓴다면 trust policy의 `sts:Ta
 위임 관리자가 이 한도 안에서만 사용자와 Role을 만들 수 있게 보장한다. 개발자에게 IAM 관리 위임할 때, 자기보다 강한 권한 부여 못 하게 막는 가드.
 
 ## 출처
+- [AWS Connect Administrator Guide, Configure SAML with IAM for Connect Customer](https://docs.aws.amazon.com/connect/latest/adminguide/configure-saml.html)
 - [AWS IAM User Guide, Delegate access across AWS accounts using IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html)
 - [AWS Bedrock User Guide, Prerequisites for running model inference](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-prereq.html)
 - [Use a cross-account to invoke Amazon Bedrock in another account — AWS re:Post](https://repost.aws/knowledge-center/bedrock-invoke-with-cross-account)

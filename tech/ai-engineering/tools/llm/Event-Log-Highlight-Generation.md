@@ -33,6 +33,24 @@ aliases: ["Event Log Highlight Generation", "이벤트 로그 기반 하이라�
 
 생성량은 최종 검토자가 처리할 수 있는 양과 맞춘다. 낮은 품질의 후보를 많이 보내면 선택과 검토가 병목이 된다. 전체 지연은 입력 수집 구간, 각 처리 단계와 최종 검토 대기를 나눠 측정한다.
 
+## 다국어 출력과 시각 콘텐츠의 검증 경계
+
+같은 사건을 여러 언어와 문체로 표현할 때는 **사실 입력과 표현 조건을 분리**한다. 이벤트에서 확인한 인물, 팀, 시각과 수치는 공유하고 언어와 문체만 출력 조건으로 지정한다. 다음은 적용을 위한 점검안이다.
+
+- 언어별 결과를 서로 비교하는 데서 끝내지 않고 각각 원본 이벤트와 대조한다. 같은 수치 오류가 모든 번역에 퍼질 수 있다.
+- 생성 지연과 사용자 화면에 표시되기까지의 지연을 구분한다. 수집, 전처리, 모델 호출과 전달 경로를 포함해 측정한다.
+- 기사와 사진으로 시각 콘텐츠를 만들 때는 경기와 인물 식별자, 사건 시각으로 자료를 연결한다. 자연스러운 문장과 그럴듯한 사진이 같은 사건을 나타내는지는 별도 검토 대상이다.
+- 초안 생성과 공개를 별도 상태로 둔다. 검토자가 원본과 결과를 함께 볼 수 있게 하고, 수정이 끝난 결과만 게시하도록 설계한다.
+
+### 공개 사례에서 확인되는 구현 범위
+
+2026-10-09 대조한 두 2024년 공개 사례는 서로 다른 콘텐츠 경로를 보여준다.
+
+- **실시간 해설**: 2024-07-09 AWS 구현 소개에서는 경기 이벤트를 ECS Fargate에서 전처리하고, Lambda가 언어와 문체를 포함한 프롬프트로 Bedrock을 호출한다. 결과는 AppSync를 거쳐 화면으로 전달되고 DynamoDB에 저장된다. 이는 이벤트 기반 생성과 전달의 사례이며 모든 결과를 사람이 사전 승인한다는 근거는 아니다.
+- **기사 기반 시각 스토리**: 2024-07-16 DFL 공개 자료에서는 기존 기사와 사진으로 초안을 만들고 편집자가 공개 전에 검토한다. 사진에는 경기와 선수 식별자를 활용하고, 경기 통계와 영상 시각으로 특정 사건의 프레임을 찾는다. 이 승인 절차를 실시간 해설 경로에도 적용된 것으로 일반화하지 않는다.
+
+두 사례의 지연이나 이용자 반응을 다른 서비스의 목표치로 복사하지 않는다. 입력과 전달 구조는 구현 참고로, 공개 전 사람 검토 여부는 콘텐츠 경로별 운영 조건으로 판단한다.
+
 ## 적용 근거와 한계
 
 2025년 PNC 사례 발표는 필요한 게임 로그 선별, 규칙 기반 텍스트 변환, SQL 템플릿 매핑과 추가 검증을 결합한 구현을 소개한다. 위 패턴의 적용 사례이며, 발표의 특정 모델 속도와 평가 점수는 다른 워크로드의 성능 보장으로 사용하지 않는다. 본문에 적은 바인딩과 입력 검증은 적용을 위한 설계 제안이며 발표 구현의 확인 사실과 구분한다.
@@ -40,6 +58,8 @@ aliases: ["Event Log Highlight Generation", "이벤트 로그 기반 하이라�
 ## 출처
 
 - [생성형 AI를 통한 이스포츠 시청자 경험 향상 — Amazon Web Services Korea](https://www.youtube.com/watch?v=UgiHMSGcYj4)
+- [Revolutionizing fan engagement: Bundesliga generative AI-powered live commentary — AWS for M&E Blog](https://aws.amazon.com/blogs/media/revolutionizing-fan-engagementcer-bundesliga-generative-ai-powered-live-commentary/)
+- [Creating AI-generated stories for the Bundesliga channels — DFL](https://www.dfl.de/en/innovation/creating-ai-generated-stories-for-the-bundesliga-channels/)
 
 ## 관련 문서
 

@@ -51,6 +51,19 @@ S3 Tables는 `s3tables` 서비스 네임스페이스를 사용한다. 일반 S3 
 
 따라서 검증할 때는 관리자 계정의 성공만 확인하지 않고 실제 분석 작업이 사용하는 역할로 조회한다. 이 절은 Lake Formation 통합 경로에 대한 설명이다. [테이블과 데이터베이스 접근 관리](https://docs.aws.amazon.com/AmazonS3/latest/userguide/grant-permissions-tables.html)
 
+### Table bucket policy와 table policy의 범위
+
+2026-10-09 공식 접근 관리 문서로 확인한 추가 범위다. 유지보수 절 전체를 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
+
+S3 Tables의 테이블은 `s3tables` 네임스페이스의 ARN으로 식별한다. 일반 S3 객체 prefix 권한을 그대로 복사하는 대신, 테이블 ARN과 필요한 `s3tables` 작업을 기준으로 권한을 정한다.
+
+- **Table bucket policy**는 버킷과 namespace 수준 작업, 여러 테이블에 공통인 권한을 관리할 수 있다.
+- **Table policy**는 개별 테이블의 작업 권한을 관리한다.
+- 요청은 IAM 정책과 관련 리소스 정책을 함께 평가한다. 버킷 정책이 삭제를 허용해도 테이블 정책이 `DeleteTable`을 명시적으로 거부하면 삭제할 수 없다.
+- 데이터 읽기와 메타데이터 접근도 구분한다. 공식 SELECT 예시는 `s3tables:GetTableData`와 `s3tables:GetTableMetadataLocation`을 함께 허용한다.
+
+따라서 접근 실패는 테이블 식별자, 작업 권한, 명시적 거부와 사용하는 분석 통합의 추가 권한 순서로 확인한다. ARN 단위로 관리할 수 있다는 사실이 Lake Formation 검사나 명시적 거부를 없애지는 않는다.
+
 ### 자체 관리와 비교할 질문
 
 - 작은 파일 병합과 스냅샷 정리에 실제로 얼마나 운영 시간이 드는가?
@@ -66,6 +79,8 @@ S3 Tables는 `s3tables` 서비스 네임스페이스를 사용한다. 일반 S3 
 - [AWS, Maintenance for tables](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-maintenance.html)
 - [AWS, Maintenance for table buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html)
 - [AWS, Managing access to a table or database with Lake Formation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/grant-permissions-tables.html)
+- [AWS, Access management for S3 Tables](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-setting-up.html)
+- [AWS, Resource-based policies for S3 Tables](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-resource-based-policies.html)
 
 ## 관련 문서
 
