@@ -33,6 +33,18 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 
 현금과 예금은 명목 금액을 보전해도 [[Inflation|인플레이션]]을 감안한 구매력이 줄 수 있다. 장기 자산 형성에서는 비용과 세금을 뺀 수익률을 물가상승률과 함께 본다. 다만 비상금과 가까운 시점에 쓸 돈은 유동성과 원금 보전이 우선일 수 있다. 물가를 이기려는 이유만으로 이 자금에 큰 가격 위험을 부담시키지는 않는다.
 
+### 목표 금액을 선택 가능한 생활 조건으로 바꾼다
+
+재무적 안녕(financial well-being)은 자산 규모만으로 판단하지 않는다. 현재의 지출을 관리할 수 있는지, 예상하지 못한 재정 충격을 감당할 수 있는지, 재무 목표를 향해 가고 있는지, 삶에서 중요하게 여기는 선택을 할 여유가 있는지를 함께 본다. 이는 CFPB의 재무적 안녕 프레임이며, 특정 수익률이나 은퇴 자산 금액을 보장하는 공식이 아니다.
+
+투자 목적을 정할 때는 이 관점을 다음 질문으로 옮길 수 있다. 아래는 자금 용도를 구체화하는 적용 예시다.
+
+- 어떤 지출이나 선택을 위해 돈을 모으고 있으며, 그 돈이 필요한 시점은 언제인가?
+- 소득이 끊기거나 예상하지 못한 지출이 생겨도 장기 투자자산을 급히 팔지 않을 여유가 있는가?
+- 목표 금액에 가까워지는 동안 필요한 유동성과 감당할 수 있는 손실은 어느 정도인가?
+
+높은 기대수익과 당장 쓸 수 있는 자금은 서로 다른 역할을 한다. 투자 성과가 좋더라도 필요한 시점에 현금화하기 어렵다면 선택권을 확보했다는 결론은 달라질 수 있다. 이 구분은 특정 종목 선택이나 집중투자가 필수라는 근거가 되지 않는다.
+
 ## 4. 위험과 수익, 시간지평
 
 - **위험과 수익**: 높은 기대수익에는 높은 위험이 따른다 → [[Risk-and-Return|위험과 수익]]. 공짜로 높은 수익을 주는 자산은 없다.
@@ -59,7 +71,7 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 ## 출처
 
 - [Investor.gov — Asset Allocation, Diversification, and Rebalancing](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
-- [Threads, worker_zetech — 종잣돈과 몸값이 먼저라는 재테크 순서](https://www.threads.com/@worker_zetech/post/DNPdt-GSw6n)
+- [CFPB — Explore financial well-being findings](https://www.consumerfinance.gov/consumer-tools/educator-tools/financial-well-being-resources/explore-findings/) — 2026-10-10 현재 지출 관리, 충격 흡수, 목표와 선택의 네 요소 대조
 - [Pay Off Credit Cards or Other High Interest Debt — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/save-and-invest/pay-credit-cards-or-other-high-interest) — 2026-10-03 투자 전 고금리 부채 검토 대조
 - [Save for a Rainy Day — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/save-and-invest/save-rainy-day) — 2026-10-03 비상금, 저축의 목적과 인플레이션 위험 대조
 - [Gauge Your Risk Tolerance — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/save-and-invest/gauge-your-risk-tolerance) — 2026-10-03 목표 시점과 단기 자금의 손실 위험 대조

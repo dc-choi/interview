@@ -70,6 +70,21 @@ verified_at: 2026-09-30
 
 이 절은 2026-10-09 공식 런타임 관리, 롤백과 지원 정책을 대조했다. 실제 함수의 호환성 시험과 다른 절의 재검증을 뜻하지 않는다.
 
+### AWS Transform custom으로 여러 저장소의 업그레이드를 반복한다
+
+2026-10-10 공식 사용 가이드 대조 기준. AWS Transform custom은 `AWS/python-version-upgrade`, `AWS/nodejs-version-upgrade`, `AWS/java-version-upgrade` 같은 관리형 변환으로 소스 코드의 언어 버전 전환을 돕는다. 대상 버전과 저장소를 지정하고 빌드, 테스트 명령을 제공한다. Lambda의 관리형 런타임 패치 모드와는 별도의 코드 변경 작업이다.
+
+AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과 IaC 템플릿도 변경하고, 로컬 Git 브랜치에 결과를 남긴다. 변환 후에는 diff와 테스트 결과를 검토한다. 코드 변환 완료를 운영 함수의 배포 완료나 외부 서비스와의 호환성 확인으로 계산하지 않는다.
+
+다음은 여러 함수에 적용할 때의 운영 점검 예시다.
+
+1. 변환 전 테스트 결과를 확보하고 대상 언어 버전, 공용 layer와 배포 템플릿의 범위를 확인한다.
+2. 변환 후 같은 업무 동작을 검사하고 실패한 테스트, 실행하지 못한 검증과 변경 파일을 구분한다.
+3. 검증한 산출물을 별도 배포 절차로 올리고 실제 이벤트 입력, 권한, DB 연결과 오류율을 확인한다.
+4. 저장소별 변환 성공, 배포 성공과 운영 확인을 각각 기록한다. 한 함수의 성공을 전체 함수의 호환성으로 확대하지 않는다.
+
+비대화형 실행은 여러 저장소에 반복 적용할 수 있지만 검증 기준을 없애는 방식은 아니다. 공식 예제의 `-t`는 모든 도구 실행을 신뢰해 확인을 생략하는 옵션이므로, 단순한 병렬 실행 옵션으로 오인하지 않는다. 이 절은 변환 절차만 확인했으며 실제 함수를 업그레이드하거나 성능 개선을 측정한 결과는 아니다.
+
 ## RDB와 Lambda의 궁합 문제
 
 - Lambda가 동시 실행 환경을 늘릴 때 **각 환경이 DB 커넥션을 열면 데이터베이스 연결 한도를 빠르게 소진**할 수 있음
@@ -116,6 +131,8 @@ verified_at: 2026-09-30
 
 ## 출처
 
+- [AWS Transform, Common Use Cases](https://docs.aws.amazon.com/transform/latest/userguide/custom-common-use-cases.html) — 언어별 변환, 검증 명령과 비대화형 실행 범위.
+- [Automate AWS Lambda Runtime Upgrades with AWS Transform custom — AWS](https://aws.amazon.com/blogs/devops/automate-aws-lambda-runtime-upgrades-with-aws-transform-custom/) — 변환 전 테스트, IaC 변경과 로컬 브랜치 검토 단계.
 - [Lambda runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html)
 - [Understanding how Lambda manages runtime version updates](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html)
 - [Rolling back a Lambda runtime version](https://docs.aws.amazon.com/lambda/latest/dg/runtime-management-rollback.html)

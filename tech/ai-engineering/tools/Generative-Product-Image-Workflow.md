@@ -23,6 +23,16 @@ Inpainting은 마스크로 지정한 영역을 다시 생성하는 방식이다.
 
 마스크는 생성할 위치를 지정하는 입력이다. 최종 이미지의 상품 영역이 픽셀 단위로 보존됐다는 증거를 대신하지 않는다. 보존이 필수인 영역은 원본 합성과 차이 비교를 별도 검수 후보로 둔다.
 
+## 상품 유형의 생성과 특정 피사체의 학습을 구분한다
+
+사다리형 선반이라는 유형을 그리는 것과 판매 중인 특정 선반의 외형을 재현하는 것은 서로 다른 목표다. 특정 상품을 다른 장면에 배치하려면 결과가 그럴듯한지만 보지 않고 참조 상품의 특징이 유지되는지 확인한다.
+
+DreamBooth는 특정 피사체의 이미지 몇 장으로 사전학습된 text-to-image 모델을 미세조정하고, 고유 식별자를 그 피사체와 연결하는 방법이다. 추론할 때 식별자와 장면 설명을 함께 사용해 다른 배경, 자세나 시점의 이미지를 생성한다. 클래스별 prior preservation loss는 피사체를 학습하는 동안 해당 클래스의 다양한 표현을 유지하도록 돕는다. 이는 마스크 영역을 지정하는 inpainting과 구분되는 학습 단계다.
+
+상품 업무에 적용할 때는 **프롬프트의 장면 조건**과 **참조 상품의 외형**을 별도 검수 항목으로 둔다. 미세조정을 했다는 사실만으로 로고, 문구와 세부 형상이 정확하다고 판정하지 않는다. 새 시점의 이미지를 생성할 수 있다는 연구 결과도 보이지 않는 면의 실제 사양을 확인했다는 뜻은 아니다. 이는 피사체 생성 기법을 상품 검수에 연결한 적용 기준이며 특정 상용 서비스의 현재 내부 구현을 설명하는 내용은 아니다.
+
+이 절은 2026-10-10 DreamBooth 연구진의 공개 방법 설명과 대조했다. 다른 절의 서비스 지원 범위를 다시 검증한 것은 아니다.
+
 ## 작업 그래프와 실행 환경을 분리한다
 
 ComfyUI는 노드를 연결해 생성 단계를 구성하고 워크플로우를 JSON으로 내보낼 수 있다. AWS의 SageMaker AI Processing 예시는 이 워크플로우를 컨테이너에서 실행하고, GPU 인스턴스로 배치 생성한 결과를 S3에 저장한다.
@@ -69,6 +79,7 @@ ComfyUI는 노드를 연결해 생성 단계를 구성하고 워크플로우를 
 
 ## 출처
 
+- [DreamBooth: Fine Tuning Text-to-Image Diffusion Models for Subject-Driven Generation — Google Research](https://dreambooth.github.io/) — 피사체 식별자, 미세조정과 클래스별 prior preservation.
 - [AWS AI Service Cards, Amazon Nova Canvas](https://docs.aws.amazon.com/ai/responsible-ai/nova-canvas/overview.html) — 참조에 없는 면의 생성과 축척의 한계.
 - [ComfyUI, Inpainting Workflow](https://docs.comfy.org/tutorials/basic/inpaint)
 - [Running ComfyUI workflows on Amazon SageMaker AI processing jobs — AWS](https://aws.amazon.com/blogs/machine-learning/running-comfyui-workflows-on-amazon-sagemaker-ai-processing-jobs/)
