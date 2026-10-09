@@ -89,6 +89,19 @@ hash(id)/images/2026/05/file.jpg  ← 분산
 
 오류가 지속되면 실패 요청의 S3 request ID 쌍을 확보해 지원 요청에 포함한다. 재시도 성공 여부와 최종 실패율을 나눠 측정하는 것은 애플리케이션 운영 점검 항목이다.
 
+### 전송 지연을 클라이언트와 S3 처리 시간으로 나눈다
+
+이 절은 2026-10-09 AWS 공식 문서 기준이다. 파일 전송 전체가 느리다는 사실만으로 S3 내부 처리가 느리다고 판단하지 않는다. DNS 조회, 네트워크 지연과 전송 속도, 클라이언트 CPU와 메모리 사용을 함께 측정한다. 가능하면 EC2와 버킷을 같은 리전에 두어 네트워크 지연을 줄인다.
+
+S3 server access log의 시간 필드는 클라이언트가 측정한 전체 시간과 범위가 다르다.
+
+| 측정값 | 범위와 해석 |
+|---|---|
+| `Total Time` | 서버가 요청을 받은 시점부터 응답의 마지막 바이트를 보낸 시점까지의 밀리초. 클라이언트 측 측정에는 추가 네트워크 지연이 포함될 수 있음 |
+| `Turn-Around Time` | 요청의 마지막 바이트를 받은 시점부터 응답의 첫 바이트를 보낸 시점까지의 밀리초. 클라이언트의 전체 업로드 시간과 같지 않음 |
+
+예를 들어 전체 업로드는 오래 걸리지만 `Turn-Around Time`이 짧다면, 그 값만으로 전체 경로가 정상이라고 결론 내릴 수 없다. 위 측정 범위를 근거로 클라이언트 자원과 네트워크 구간을 추가 확인한다(진단 제안). 로그의 `-`는 해당 값이 없거나 적용되지 않는다는 뜻이며 0밀리초로 해석하지 않는다.
+
 ### Transfer Acceleration
 
 AWS edge location을 통해 업로드한 뒤 AWS 네트워크로 S3에 전달한다. 추가 비용이 들며 개선 폭은 거리뿐 아니라 회선과 네트워크 상태에 따라 달라지므로 AWS Speed Comparison 도구나 실제 측정으로 결정한다.
@@ -98,6 +111,8 @@ AWS edge location을 통해 업로드한 뒤 AWS 네트워크로 S3에 전달한
 큰 객체를 범위 단위 병렬 GET — 동영상 스트리밍, 로그 부분 조회.
 
 ## 출처
+- [Amazon S3 User Guide, Performance guidelines for Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-guidelines.html)
+- [Amazon S3 User Guide, Amazon S3 server access log format](https://docs.aws.amazon.com/AmazonS3/latest/userguide/LogFormat.html)
 - [Troubleshoot HTTP 5xx errors from Amazon S3 — AWS re:Post](https://repost.aws/knowledge-center/http-5xx-errors-s3)
 - [Amazon S3 User Guide, Metrics and dimensions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metrics-dimensions.html)
 - [Amazon S3 User Guide, Monitoring metrics with Amazon CloudWatch](https://docs.aws.amazon.com/AmazonS3/latest/userguide/cloudwatch-monitoring.html)

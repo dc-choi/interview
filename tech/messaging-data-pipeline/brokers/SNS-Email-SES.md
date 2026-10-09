@@ -36,6 +36,17 @@ aliases: ["SNS Email vs SES", "SNS 이메일과 SES", "Amazon SES", "SES vs SNS"
 - bounce와 complaint 알림을 설정하지 않으면 SES가 Return-Path(없으면 Source) 주소로 알림 메일을 전달한다. 알림을 SNS topic이나 event publishing으로 받아 발송 대상 제외와 중단 판단을 자동화한다. 여러 방식을 함께 켜면 같은 이벤트를 여러 번 받는다.
 - 메일 수신은 SES가 수신을 지원하는 리전에서만 쓸 수 있으므로 리전을 고르기 전에 AWS General Reference의 수신 endpoint 목록을 확인한다.
 
+## SMTP 연결과 발송 실패를 나누어 확인한다
+
+이 절은 2026-10-09 AWS 공식 문서 기준이다. SMTP를 지원하는 기존 애플리케이션은 SES SMTP endpoint에 연결할 수 있다. 연결 성공, 인증 성공과 발신 권한 확인을 별도 단계로 다룬다.
+
+1. **리전과 자격 증명:** 발송 리전의 endpoint와 그 리전용 SMTP 자격 증명을 함께 설정한다. SMTP 비밀번호는 AWS secret access key와 다르다. 임시 AWS 자격 증명에서 변환한 SMTP 자격 증명은 지원하지 않는다.
+2. **TLS 방식과 포트:** STARTTLS는 25, 587, 2587에서 연결한 뒤 TLS로 전환한다. TLS Wrapper는 465, 2465에서 처음부터 TLS를 사용한다. SES SMTP 연결에는 TLS가 필요하므로 포트만 바꾸지 말고 클라이언트의 암호화 방식도 맞춘다.
+3. **연결 시간 초과:** EC2는 기본적으로 포트 25의 발신 트래픽을 제한한다. 다른 지원 포트를 사용하거나 제한 해제를 요청한다. 방화벽과 outbound 경로도 함께 확인한다.
+4. **인증과 발신 허용:** `535 Authentication Credentials Invalid`는 SMTP 자격 증명을 확인할 문제다. `554 Access denied`는 `ses:SendRawEmail` 권한을, `554 Message rejected: Email address is not verified`는 해당 리전의 identity 검증을 확인한다. Sandbox에서는 수신자 검증 조건도 남는다.
+
+연결 시간 초과를 비밀번호 변경으로, identity 검증 실패를 포트 변경으로 해결하려 하지 않는다. 먼저 실패 단계와 응답 코드를 좁힌다. SMTP의 4xx 응답은 대기 시간을 늘려 재시도하고, 5xx 응답은 요청이나 설정을 바로잡은 뒤 다시 시도한다. SDK의 자동 재시도 설명을 SMTP 클라이언트의 동작으로 간주하지 않는다. AWS SDK는 HTTPS 인터페이스를 사용한다.
+
 ## 출처
 
 - [Amazon SNS, Email subscription setup and management](https://docs.aws.amazon.com/sns/latest/dg/sns-email-notifications.html)
@@ -43,6 +54,10 @@ aliases: ["SNS Email vs SES", "SNS 이메일과 SES", "Amazon SES", "SES vs SNS"
 - [Amazon SES, Email receiving with Amazon SES](https://docs.aws.amazon.com/ses/latest/dg/receiving-email.html)
 - [Amazon SES, Receipt rule action options](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action.html)
 - [Amazon SES, Setting up event notifications](https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications.html)
+- [Amazon SES, Using the Amazon SES SMTP interface to send email](https://docs.aws.amazon.com/ses/latest/dg/send-email-smtp.html)
+- [Amazon SES, Obtaining Amazon SES SMTP credentials](https://docs.aws.amazon.com/ses/latest/dg/smtp-credentials.html)
+- [Amazon SES, Connecting to an Amazon SES SMTP endpoint](https://docs.aws.amazon.com/ses/latest/dg/smtp-connect.html)
+- [Amazon SES, Amazon SES SMTP issues](https://docs.aws.amazon.com/ses/latest/dg/troubleshoot-smtp.html)
 - [인프런, Sungmin Kim, SNS란?](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=83507)
 - [인프런, Sungmin Kim, SES VS SNS](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=83508)
 
