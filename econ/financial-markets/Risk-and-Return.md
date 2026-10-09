@@ -26,6 +26,14 @@ aliases: ["위험과 수익", "Risk and Return"]
 - **입출금이 있는 계좌**: 잔액 증가는 납입 때문일 수 있으므로 그대로 수익으로 세지 않는다. 시간가중수익률은 외부 입출금 전후의 구간 수익률을 연결해 운용 성과를 비교하고, 금액가중수익률(IRR)은 납입과 인출의 금액 및 시점을 반영한 투자자의 결과를 나타낸다.
 - **같은 기준으로 비교**: 통화, 기간, 배당 재투자, 비용과 세금의 포함 여부를 맞춘다. 명목수익률과 물가를 뺀 실질수익률도 구분한다 → [[Inflation|인플레이션]].
 
+### 장기 평균은 매년의 수익이나 다음 기간의 보장이 아니다
+
+S&P 500 같은 주가지수의 과거 연평균 수익률은 선택한 시작일과 종료일을 요약한 값이다. 과거에 연 10% 수준의 성과가 관측된 구간이 있다는 설명과 앞으로 매년 10%를 얻는다는 약속은 다르다. 시장 위험이 있는 주식의 미래 수익을 과거 평균만으로 보장할 수 없다.
+
+성과를 읽을 때는 산술평균과 CAGR, 가격 상승과 배당 포함 총수익, 명목값과 실질값을 먼저 구분한다. 특정 상승 구간만 제시한 자료라면 하락장을 포함한 다른 구간도 확인한다. 장기 평균 하나가 중간 손실이나 필요한 시점의 매도 위험을 없애지는 않는다.
+
+학습용 점검 방법은 같은 길이의 보유기간을 정하고 시작 시점을 옮겨 수익률을 비교하는 것이다. 이는 기간 선택에 따른 차이를 확인하는 제안이며, 특정 10년의 실제 성과나 향후 기대수익을 계산한 결과는 아니다. 2026-10-10 SEC의 성과 주장 점검 지침과 FINRA의 연환산 설명을 대조했다.
+
 ### 배당 ETF의 총수익과 현금 수입은 따로 읽는다
 
 가격 변화, 분배금을 포함한 총수익, 실제 받은 현금은 서로 다른 질문에 답한다. 운용사가 제시한 재투자 가정의 성과를 생활비로 인출할 수 있는 현금 증가율로 읽지 않는다.
@@ -76,6 +84,7 @@ aliases: ["위험과 수익", "Risk and Return"]
 
 ## 출처
 
+- [Investor Bulletin: Performance Claims — SEC Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-47)
 - [Schwab U.S. Dividend Equity ETF — Schwab Asset Management](https://www.schwabassetmanagement.com/products/schd) — 2026-10-09 총수익, 시장가격/NAV 구분과 yield 기준일 확인
 - [Investor.gov, Asset Allocation and Diversification](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
 - [OpenStax, Principles of Finance, The Capital Asset Pricing Model (CAPM)](https://openstax.org/books/principles-finance/pages/15-3-the-capital-asset-pricing-model-capm)

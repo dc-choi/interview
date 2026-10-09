@@ -121,8 +121,26 @@ $$h = W_0x + (\alpha/r)BAx$$
 
 실무에서는 프롬프트 기준선과 비교할 평가 데이터를 먼저 고정하고, 학습 데이터와 분리한 예제로 목적 과업과 기존 능력의 회귀를 확인한다. 배포할 기반 체크포인트, 어댑터, 양자화와 병합 구성을 함께 고정해 다시 평가한다. 최신 정보 제공과 출처 추적은 [[LLM-Generation-Mechanics-Context-and-Agent|Context와 RAG]]의 책임과 별도로 판단한다.
 
+## 분산 학습의 ZeRO는 학습 상태를 나눠 보관한다
+
+LoRA는 학습할 파라미터를 줄이고 양자화는 저장 정밀도를 낮춘다. DeepSpeed의 ZeRO는 데이터 병렬 프로세스마다 중복 보관하던 학습 상태를 분할한다. 서로 다른 메모리 절감 수단이므로 같은 기능으로 취급하지 않는다.
+
+| ZeRO 단계 | 프로세스 사이에 분할하는 상태 |
+|---|---|
+| 1 | 옵티마이저 상태 |
+| 2 | 옵티마이저 상태와 그래디언트 |
+| 3 | 옵티마이저 상태, 그래디언트와 모델 파라미터 |
+
+ZeRO-3는 순전파와 역전파 중 필요한 파라미터를 모으고 다시 분할한다. CPU 오프로딩도 상태 종류를 나눠 설정한다. `offload_optimizer`의 CPU 설정은 ZeRO 1, 2, 3에서 쓸 수 있고, `offload_param`은 ZeRO-3에서 사용한다. 분할은 저장 책임을 나누는 일이고 오프로딩은 저장 위치를 옮기는 일이다.
+
+실험에서는 모델, 입력 길이, 배치, 정밀도와 장비 조건을 고정한 뒤 최대 GPU 메모리, 단계별 시간과 최종 평가 성능을 함께 비교한다. 이는 검증 설계 제안이다. GPU 메모리에 들어간다는 결과를 일정 배수의 속도 향상이나 모든 LoRA, 양자화 조합의 호환성으로 확대하지 않는다.
+
+2026-10-10 DeepSpeed 공식 튜토리얼과 설정 문서에서 위 단계와 CPU 오프로딩 범위를 확인했다. 특정 SageMaker 이미지, 장비 조합이나 분산 학습 실행은 검증하지 않았다.
+
 ## 출처
 
+- [DeepSpeed, Zero Redundancy Optimizer](https://www.deepspeed.ai/tutorials/zero/)
+- [DeepSpeed, JSON Configuration: ZeRO optimizations](https://github.com/deepspeedai/DeepSpeed/blob/master/docs/_pages/config-json.md)
 - [Datasheets for Datasets — Gebru et al.](https://arxiv.org/html/1803.09010v8)
 - [KORMo: Korean Open Reasoning Model for Everyone — KAIST MLP Lab et al.](https://arxiv.org/html/2510.09426v1) — 공개 범위, tokenizer와 데이터 구성, 4.1.3절의 필터링
 - [LoRA: Low-Rank Adaptation of Large Language Models — Hu et al.](https://arxiv.org/abs/2106.09685)

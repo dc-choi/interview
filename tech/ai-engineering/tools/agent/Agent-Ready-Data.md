@@ -63,6 +63,14 @@ aliases: ["Agent-Ready Data", "에이전트용 데이터 준비", "에이전트 
 - 안티패턴: 기존 REST 엔드포인트를 1대1로 감싸 도구 50개를 만드는 것. 구분이 흐린 이름이 늘어나면 모델의 선택 정확도가 급락한다. 대안은 풍부한 설명과 파라미터를 가진 5개에서 10개의 비즈니스 capability다. 프로토콜과 무관한 원칙이다.
 - capability 선언: 누가 누구로서 호출할 수 있는지(permissions), 오작동 시 책임자(owner), 행동하는 capability는 preconditions와 reversibility를 추가로 갖는다. preconditions는 계획 단계에서 읽은 값이 아니라 행동 시점의 라이브 상태로 확인한다. reversibility는 깨끗하게 되돌릴 수 있음, 보상 트랜잭션으로 비용을 들여 되돌릴 수 있음, 불가역의 세 등급이다. 되돌릴 수 있는 큰 금액의 내부 원장 정정이 회수 불가능한 작은 외부 지급보다 자동화하기 안전하다. 불가역 행동은 에이전트가 어느 단계에 도달했든 사람 승인을 요구한다.
 
+## 업무 모델과 도구 입력을 같은 계약으로 연결한다
+
+업무 의미를 설명한 문서와 실제 도구가 조회하는 컬럼이 어긋나면 컨텍스트가 있어도 실행에 실패한다. 2026-10-10 Celonis Agent Tools 공식 문서 기준, `load_data`, `get_insights`, `search_data`는 `knowledge_input`에 정의한 KPI, 레코드 속성, 필터와 이벤트 로그를 사용한다. 도구 설정이 참조한 컬럼 ID가 knowledge model에 없으면 런타임 오류가 난다.
+
+같은 종류의 도구를 여러 개 노출할 때 추가 인스턴스에는 `unique_id`가 필요하며, 모델에 보이는 이름은 `{tool_id}_{unique_id}` 형태가 된다. 일반적인 도구 설명 대신 어떤 업무 조건에서 쓸지 설명한다. `load_data`에 `columns`를 설정하면 custom mode로 전환되어 질의를 설정에서 정의하며, 모델이 채울 값은 `input_schema`로 선언한 placeholder로 제한한다. 이 동작을 모든 도구의 공통 입력 규칙으로 확대하지 않는다.
+
+운영 적용 제안: 주문 상태 확인, 협력사 자원 조회, 외부 예약과 내부 상태 반영을 각각 검증한다. 조회 시점 뒤 상태가 바뀌거나 외부 예약만 성공한 경우를 재현하고, 실행 직전 조건 확인과 재시도의 중복 방지를 설계한다. 도구가 발견되거나 호출됐다는 기록만으로 여러 시스템의 업무 완료를 판정하지 않는다. 이는 연동 설계 제안이며 해당 제품이 원자적 완료를 제공한다는 주장이 아니다.
+
 ## 단계적 자율성 — 신입에게 첫날 법인카드를 주지 않는다
 
 | 단계 | 에이전트 | 사람 | 기록 |
@@ -92,6 +100,7 @@ aliases: ["Agent-Ready Data", "에이전트용 데이터 준비", "에이전트 
 
 ## 출처
 
+- [Celonis, Tools for MCP Server/Agent Tools assets](https://developer.celonis.com/mcp-server-asset/tools/tools_for_mcp_server) — 2026-10-10 knowledge model 참조와 도구 입력 구성을 대조했다.
 - [Snowplow, Event specification validation](https://docs.snowplow.io/docs/event-studio/tracking-plans/event-specification-validation/) — 2026-10-10 검증 실패의 기본 전달, specification 누락 예외와 버전 적용을 대조했다. 기존 본문의 법률 및 벤치마크 주장은 이번 검증 범위에 포함하지 않았다.
 - [Making Your Data Ready for Agentic AI — martinfowler.com, Pramod Sadalage와 Prem Chandrasekaran](https://martinfowler.com/articles/making-data-ready-for-agentic-ai.html)
 - [에이전트형 AI를 위한 데이터 준비하기 — GeekNews](https://news.hada.io/topic?id=33657)

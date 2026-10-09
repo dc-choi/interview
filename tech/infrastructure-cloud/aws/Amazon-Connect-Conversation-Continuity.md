@@ -72,6 +72,16 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 운영 적용 제안: 고객 기록 조회에 잠시 쓰는 값과 다음 상담원이 알아야 할 업무 맥락을 나눈다. 필요한 인계 정보만 별도로 전달하고, 민감한 조회값이 contact attributes나 로그에 복제되는지 확인한다. 임시 변수의 수명, 인계 가능 여부와 로그 보존을 각각 시험하며, 고객 기록의 매칭 결과를 본인 확인이나 해당 기록의 열람 권한으로 간주하지 않는다.
 
+## 상담 통합의 효과는 같은 지표 정의로 비교한다
+
+2026-10-10 Amazon Connect 공식 문서 기준, 평균 처리 시간(AHT)은 대화 시간뿐 아니라 고객 보류 시간과 상담 후처리(ACW)를 포함한다. task에는 상담원 일시정지 시간도 포함된다. `GetMetricData`의 식별자는 `HANDLE_TIME`, `GetMetricDataV2`는 `AVG_HANDLE_TIME`이다. 모든 구성 시간이 null인 contact record는 평균 계산에서 제외한다.
+
+따라서 AHT 감소를 대화 시간 감소나 고객 문제 해결의 증가와 같은 뜻으로 읽지 않는다. 다음은 통합 전후를 비교하기 위한 운영 제안이다.
+
+- 같은 채널, 상담 유형, 기간과 집계 조건을 맞추고 대화, 보류와 ACW를 나눠 확인한다.
+- 새 시스템에서 누락되는 기록이 있는지 확인해 분모 변경을 개선으로 오인하지 않는다.
+- 전사문과 업무 시스템의 완료 기록으로 실제 해결 여부를 별도 확인한다. 애플리케이션 수를 줄였다는 사실만으로 고객 경험 개선을 입증하지 않는다.
+
 ## 구현 검토에 적용하기
 
 다음은 위 제약에서 도출한 설계 점검 항목이다. 제품 도입이나 특정 환경의 동작을 검증한 결과는 아니다.
@@ -88,6 +98,7 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 ## 출처
 
+- [AWS, Metric definitions in Connect Customer](https://docs.aws.amazon.com/connect/latest/adminguide/metrics-definitions.html)
 - [AWS, Flow block in Connect Customer: Set contact attributes](https://docs.aws.amazon.com/connect/latest/adminguide/set-contact-attributes.html)
 - [AWS, Evaluate agent performance in Connect Customer using generative AI](https://docs.aws.amazon.com/connect/latest/adminguide/generative-ai-performance-evaluations.html)
 - [AWS, Use agentic self-service](https://docs.aws.amazon.com/connect/latest/adminguide/agentic-self-service.html)
