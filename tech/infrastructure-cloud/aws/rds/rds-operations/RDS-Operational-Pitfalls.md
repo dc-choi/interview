@@ -75,6 +75,17 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 - 문자셋과 collation 파라미터는 인스턴스와 데이터베이스를 만들기 **전에** 그룹에 넣어야 기본 데이터베이스와 새 데이터베이스에 적용된다. 이미 만든 데이터베이스에는 반영되지 않으므로 생성 뒤 파라미터만 바꾸고 재부팅하면 서버 기본값은 바뀌어도 기존 데이터베이스의 문자셋은 그대로 남아 `ALTER DATABASE`와 테이블 변환이 따로 필요하다. 값은 `utf8`(utf8mb3)이 아니라 `utf8mb4`로 둔다([[RDS-Operational-Pitfalls-Rare|문자셋 절]]).
 - 한 그룹을 여러 인스턴스가 공유하면 변경이 모두에 적용되므로 환경별로 그룹을 나눈다. 변경은 테스트 인스턴스에서 먼저 검증하고 백업한 뒤 적용한다. 스냅샷에서 복원한 인스턴스에는 기본 그룹이 붙으므로 복원할 때 그룹을 지정한다([[RDS-Aurora-Backup-Operations]]).
 
+### 자동 마이너 업그레이드도 환경별 순서를 정한다
+
+2026-10-10 RDS 공식 문서 대조 기준. AWS Organizations의 upgrade rollout policy는 자동 마이너 업그레이드가 활성화된 RDS 자원의 적용 순서를 `first`, `second`, `last`로 나눈다. 조직에서 정책 유형을 활성화하고 계정 단위 또는 자원 태그로 순서를 정한다. 개발, QA, 운영을 차례로 배정하는 것은 적용 예시다.
+
+- 새 마이너 버전의 자동 업그레이드 캠페인이 시작되면 `first`가 먼저 대상이 된다. 지정된 대기 기간 뒤 `second`, 추가 대기 기간 뒤 `last`가 대상이 된다. 실제 적용은 각 인스턴스의 유지보수 윈도에서 진행된다. `first` 앞에도 대기 기간이 있다고 가정하거나 단계 사이의 대기를 애플리케이션 검증의 자동 통과 조건으로 해석하지 않는다.
+- 정책을 설정하지 않았거나 정책에서 제외한 자원도 기본 순서는 `second`다. 정책 제외를 자동 업그레이드 중단으로 취급하지 않는다.
+- 앞선 환경에서 문제가 발견되면 후속 환경의 자동 마이너 업그레이드를 끄거나 다음 단계 전까지 문제를 해결한다. 정책이나 태그 변경에는 전파 시간이 걸린다.
+- 진행 중 캠페인에 합류한 자원은 현재 진행 단계에 따르므로, 뒤늦게 순서를 지정해도 처음부터 검증 기간을 확보한다고 가정하지 않는다.
+
+운영에서는 AWS Health와 RDS 이벤트의 대상, 예정 시각과 완료 상태를 확인하고, 별도로 애플리케이션 호환성을 검사한다. 예를 들어 개발 DB 패치 뒤 연결, 주요 쿼리와 배치가 정상인지 확인한 다음 운영 적용을 감시한다. 이는 검증 절차의 예시이며 정책 자체가 애플리케이션 테스트를 수행한다는 뜻은 아니다.
+
 ## 6. 모니터링 사각지대 — FreeableMemory 함정
 
 지표 오독으로 헛다리를 짚는 대표가 `FreeableMemory`다. 낮다고 "메모리 부족"으로 단정하면 오판이다. RDS는 남는 메모리를 버퍼 풀(InnoDB buffer pool 등) 캐싱에 적극적으로 쓰므로 free가 적은 건 오히려 정상일 수 있다. **진짜 위험 신호는 `SwapUsage` 상승** — 스왑을 쓰기 시작하면 성능이 급락한다. FreeableMemory 단독이 아니라 SwapUsage와 ReadIOPS 급증을 함께 본다. 지표 임계, Performance Insights, Enhanced Monitoring, slow query log 설계는 [[RDS-Monitoring]].
@@ -100,6 +111,7 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 
 ## 출처
 
+- [Amazon RDS, Using AWS Organizations upgrade rollout policy for automatic minor version upgrades](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/RDS.Maintenance.AMVU.UpgradeRollout.html)
 - [Amazon RDS User Guide — DB instance storage, parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
 - [Using Amazon RDS Proxy — connection pinning](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html)
 - [Working with read replicas — replication lag](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html)

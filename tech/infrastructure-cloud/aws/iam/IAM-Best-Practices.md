@@ -32,6 +32,12 @@ verified_at: 2026-09-30
 
 Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결과를 활성 목록에서 숨기는 상태 변경이며 권한 회수가 아니다. 의도하지 않은 접근은 실제 정책을 수정하고 재분석으로 해소 여부를 확인한다. AI 요약을 사용하더라도 원본 finding과 정책을 대조하고 변경 전후의 정상 호출을 검증한다.
 
+### 미사용 결과가 없을 때도 분석 대상을 확인한다
+
+2026-10-10 AWS 생성 절차 문서 기준, 미사용 접근 분석의 추적 기간은 1~365일로 설정한다. 선택한 기간 전체에 걸쳐 존재한 IAM 엔티티의 권한을 평가하므로, 90일로 설정했다면 생성된 지 얼마 되지 않은 권한까지 같은 기준으로 평가됐다고 가정하지 않는다. 분석기를 생성하거나 갱신한 직후에는 결과가 나타나기까지 시간이 걸릴 수 있다.
+
+태그로 제외한 사용자와 역할에는 finding이 생성되지 않으며 조직 분석에서는 계정도 제외할 수 있다. 따라서 결과가 없다는 사실과 모든 권한이 적절하다는 판단을 구분한다. 점검 기록에는 추적 기간, 제외 범위와 결과 조회 시점을 함께 남기는 방식을 권한다. 앞서 설명한 리전별 중복 생성 불필요 원칙은 미사용 분석에 적용하며, 외부 접근 분석의 리전별 구성과 혼동하지 않는다.
+
 ## IAM 사용자 비밀번호 정책 — 주기 변경 강제의 트레이드오프
 
 사람의 AWS 접근은 IAM Identity Center나 federation의 임시 자격 증명과 MFA를 기본으로 하고, 비밀번호를 가진 장기 IAM 사용자는 예외로 줄인다. 불가피한 IAM 사용자에게는 계정 비밀번호 정책을 둔다.
@@ -79,6 +85,7 @@ Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결�
 
 ## 출처
 
+- [AWS, Create an IAM Access Analyzer unused access analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-create-unused.html)
 - [AWS, Using AWS Identity and Access Management Access Analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html)
 - [AWS, Review IAM Access Analyzer findings](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-findings-view.html)
 - [AWS, Manage access keys for IAM users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html)
