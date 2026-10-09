@@ -20,6 +20,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [[Expo|Expo]] — Home/Guides/EAS/Reference/Learn 전체, SDK API, Expo UI, native 확장과 배포
 
 ## 추가 주제
+- [x] [[Bootstrap-6-Migration|Bootstrap 6 전환]] — alpha 기준 클래스와 Sass, JavaScript 로딩과 브라우저 조건
 - [x] [[Responsive-Web-Layout|반응형 웹 레이아웃]] — 좁은 화면의 정보 보존, 하단 바와 모달 메뉴의 접근성
 - [x] [[Swiper-Carousel|Swiper 이미지 슬라이드]] — CSS와 JavaScript 구성, 상호작용 뒤 재생과 접근성 제어
 - [x] [[Agent-Friendly-Websites|에이전트 친화적 웹사이트]] — 의미 있는 HTML, 접근성 정보와 시각적 표현의 일치

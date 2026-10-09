@@ -49,6 +49,18 @@ verified_at: 2026-09-03
 - TGW VPN attachment에서 dynamic routing을 구성하고 ECMP를 켜면 여러 VPN 터널을 집계할 수 있다. static routing VPN에는 ECMP가 지원되지 않는다
 - 표준 터널을 여러 개 집계한 대역폭은 이론적 상한일 뿐, 워크로드 측정으로 확인한다
 
+## Direct Connect 주 경로와 VPN 백업
+
+2026-10-09 AWS 라우팅 문서 기준, TGW는 먼저 목적지에 가장 구체적으로 일치하는 경로를 고른다. **같은 CIDR**의 전파 경로끼리 비교하면 Direct Connect gateway 경로가 Site-to-Site VPN 경로보다 우선한다. 이 조건에서 두 경로를 BGP로 전파하면 Direct Connect 주 경로와 VPN 백업을 구성할 수 있다.
+
+- 같은 CIDR의 정적 VPN 경로는 전파된 Direct Connect 경로보다 우선한다. 정적 경로를 무심코 추가하면 주 경로가 바뀔 수 있다.
+- VPN에서 더 구체적인 prefix를 광고해도 최장 prefix 기준이 먼저 적용되므로 의도와 달리 VPN으로 흐를 수 있다.
+- 정상 상태의 TGW 테이블에는 선호 경로만 표시될 수 있다. Direct Connect 경로 광고가 사라졌을 때 VPN 백업이 나타나는지 확인한다.
+
+attachment의 **association**은 들어온 패킷이 조회할 테이블을, **propagation**은 경로를 설치할 테이블을 정한다. 하나의 attachment는 한 테이블에 연결하고 여러 테이블에 경로를 전파할 수 있다. VPC subnet의 온프레미스 목적지 경로도 TGW를 향해야 한다.
+
+운영 검증 제안: 온프레미스의 AWS 방향 경로 선택, DX gateway allowed prefixes와 양쪽 통신을 함께 확인한다. 장애 감지와 경로 전환 뒤 실제 통신 복구를 시험하며, TGW 테이블 설정만으로 종단 간 failover 성공을 선언하지 않는다.
+
 ## 계정 간 공유 — AWS RAM
 
 - 단일 TGW를 여러 AWS 계정이 공유 어태치먼트로 사용 가능
@@ -66,7 +78,7 @@ verified_at: 2026-09-03
 | **비용** | 리전과 전송 경로별 AWS 가격표 확인 | attachment와 data processing의 리전별 AWS 가격표 확인 |
 | **암호화** | 경로와 상위 프로토콜의 암호화 요구를 별도 설계 | VPN은 IPsec, VPC 간 TGW 경로는 Encryption Support와 VPC Encryption Control 구성 여부 확인 |
 
-> 시험에서 **"수십~수백 개 VPC 연결"**, **"중앙 집중 라우팅"**, **"전이적"**, **"멀티 계정 네트워크 통합"** 키워드가 보이면 TGW.
+> 시험에서 **수십~수백 개 VPC 연결**, **중앙 집중 라우팅**, **전이적**, **멀티 계정 네트워크 통합** 키워드가 보이면 TGW를 검토한다.
 
 ## Multicast 지원
 

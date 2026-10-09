@@ -79,6 +79,14 @@ agent가 요구사항을 충족했는지뿐 아니라 삭제한 동작, 숨은 q
 
 금액 계산처럼 서로 의존하는 규칙은 한 번에 전부 맡기기보다 전체 취소, 부분 취소, 할인 배분, 반올림을 각각 검증 가능한 단계로 나눈다. 단계를 통과할 때 입력, 출력과 불변식을 남겨 다음 수정의 기준으로 쓴다.
 
+## 자동 코드 변환의 완료와 동작 보존을 구분한다
+
+런타임 업그레이드와 의존성 업그레이드는 범위가 다르다. 2026-10-09 Amazon Q Developer의 Java 변환 문서 기준, JDK 업그레이드는 대상 JDK와 호환되는 최소 변경을 수행한다. 제3자 라이브러리를 폭넓게 올리는 작업은 별도 변환으로 진행할 수 있으며, 변환 diff와 summary를 검토한 뒤 수락한다. JDK 전환이 끝났다는 이유로 모든 의존성 정리까지 완료됐다고 기록하지 않는다.
+
+기존 테스트의 이식과 변환 뒤 새 테스트 생성도 구분한다. 같은 날 확인한 AWS Transform의 .NET 문서에서는 기존 MSTest, NUnit, xUnit 테스트를 이식하고 실행한다. 선택적으로 생성하는 테스트는 현대화된 코드에 대해 만들어지므로 **원래 코드의 동작 보존을 검증하는 증거가 아니다**. 새 코드와 새 테스트가 함께 통과해도 이전 정책이 유지되는지는 별도로 확인한다.
+
+검증 제안: 변환 전에 고정한 입력과 기대 결과로 핵심 업무 흐름을 다시 실행한다. 변환 보고서와 남은 작업을 읽고, 애플리케이션 기능과 UI, 탐색 경로를 원래 동작과 비교한다. 위 내용은 문서로 확인한 도구의 범위이며 실제 프로젝트의 변환 성공률이나 절감률을 측정한 결과가 아니다.
+
 ## 기존 조회 함수를 재사용할 때
 
 함수 이름과 반환 타입이 같아도 조회 의미가 같다는 보장은 없다. 현재 SQL과 caller에서 상태 필터, soft delete, 소유자, 대상 타입, 정렬과 잠금을 확인한다. 과거의 전체 조회 함수를 새 타입별 조회에 그대로 쓰거나, 생략값을 전체 타입으로 해석하면 구현은 재사용해도 계약은 바뀐다. [[Backward-Compatibility-Design|하위 호환성]]과 함께 구 요청과 새 요청의 결과를 비교한다.
@@ -134,6 +142,9 @@ VS Code의 Call Hierarchy는 언어 확장이 제공하는 caller와 callee 관�
 이번 변경과 무관한 모듈을 잠시 추상화로 남겨도 된다. 다만 화면 변경이라도 공용 컴포넌트, 접근성, 권한과 API 계약처럼 영향을 받을 수 있는 경계는 확인한다. 지도 비유는 탐색 순서를 정하는 방법이지 변경 영향 검토를 생략하는 근거가 아니다.
 
 ## 출처
+- [Amazon Q Developer, Upgrading Java versions with Amazon Q Developer](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/code-transformation.html)
+- [AWS Transform, Unit tests](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-unit-tests.html)
+- [AWS Transform, Validation and finalization](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-bp-validation.html)
 - [코드를 읽지 않고 찾는 방법 — YouTube, 코딩맨](https://www.youtube.com/watch?v=WfAgL5Ves3Q) — 2025-12-20, 탐색 원칙은 경험적 설명, 도구 계약은 공식 문서 대조
 
 - [JetBrains, Junie Playbook](https://www.jetbrains.com/guide/ai/article/junie/)

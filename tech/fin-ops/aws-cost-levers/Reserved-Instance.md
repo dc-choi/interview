@@ -8,18 +8,17 @@ aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Saving
 
 # Reserved Instance / Savings Plans
 
-**일정 사용량을 1년 또는 3년 약정**하면 On-Demand 대비 단가를 30~70% 깎아주는 할인 모델. 기저 부하(상시 켜져 있는 서버)에 쓴다. 약정은 곧 **유연성을 비용과 맞바꾸는** 결정이다. [[AWS-Cost-Optimization]]에서 개요를, 여기서 선택 기준을 다룬다.
+**일정 사용량을 1년 또는 3년 약정**해 On-Demand 대비 할인을 받는 모델이다. 실제 할인율은 상품, 기간과 결제 옵션에 따라 달라지며 보편적인 최소 할인율을 전제하지 않는다. 기저 부하에 적용하되 약정 범위 밖으로 워크로드가 바뀌는 위험을 함께 본다. [[AWS-Cost-Optimization]]에서 개요를, 여기서 선택 기준을 다룬다.
 
 ## RI vs Savings Plans
 
 | | Reserved Instance | Savings Plans |
 |---|---|---|
 | 약정 대상 | 특정 인스턴스 속성 | **시간당 일정 금액($/h)** |
-| 유연성 | 낮음(Standard, 제한된 수정) ~ 중간(Convertible, 교환 가능) | 높음(Compute SP는 타입/리전/서비스 무관) |
+| 유연성 | 낮음(Standard, 제한된 수정) ~ 중간(Convertible, 교환 가능) | Compute SP는 EC2의 패밀리와 리전 변경, Fargate와 Lambda로의 이동에 유연 |
 | 적용 범위 | EC2, RDS, ElastiCache, Redshift 등 | EC2, Fargate, Lambda(Compute SP) |
-| 대세 | 레거시 | **권장 (관리 단순)** |
 
-요즘은 대부분 **Savings Plans**를 기본으로 한다. 약정 관리가 훨씬 단순하기 때문이다.
+Compute SP와 EC2 Instance SP의 선택은 서비스 이동 가능성과 특정 패밀리, 리전의 사용 지속성을 비교해 정한다. SP가 모든 워크로드의 기본값이거나 모든 AWS 비용을 할인하는 것은 아니다. 이 선택 범위와 아래 시간당 적용 규칙은 2026-10-09 AWS 문서로 대조했다.
 
 ## RI 세부 축
 
@@ -52,6 +51,19 @@ aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Saving
 - **점진적 약정**: 한 번에 100% 약정하지 말고 커버리지를 단계적으로 올림.
 - **Spot과 분리**: 약정은 상시 부하, Spot은 중단 가능 배치. 역할을 섞지 않는다.
 
+## 시간당 약정과 적용 순서
+
+시간당 약정액은 **On-Demand 지출액이 아니라 Savings Plans 요율 기준 금액**이다. 월평균 지출을 시간 수로 나눈 값만으로 구매액을 정하지 않는다. 각 시간의 남은 약정은 다음 시간으로 이월되지 않는다.
+
+EC2와 Compute SP 적용을 계산할 때는 다음 순서를 구분한다.
+
+1. EC2 RI를 먼저 적용하고, EC2 Instance SP를 Compute SP보다 먼저 적용한다.
+2. 통합 결제에서 공유를 켰다면 소유 계정 사용량을 먼저 처리하고 다른 계정에 남은 혜택을 적용한다.
+3. 해당 적용 범위 안에서는 절감률이 높은 사용량부터 처리한다. 절감률이 같으면 SP 요율이 낮은 사용량이 먼저다.
+4. 약정으로 덮이지 않은 사용량은 On-Demand 요율로 계산한다.
+
+따라서 인스턴스의 On-Demand 가격이 높다는 이유만으로 할인이 먼저 적용되는 것은 아니다. 구매 전에는 시간대별 사용량과 기존 RI/SP 적용 뒤 남은 대상 사용량을 함께 확인한다.
+
 ## 흔한 함정
 
 - 변동 큰 워크로드에 과약정 → 미사용 약정 = 손실
@@ -63,7 +75,7 @@ aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Saving
 
 ## 면접 체크포인트
 
-- RI와 Savings Plans의 차이, 왜 요즘 SP가 기본인지
+- RI와 Savings Plans의 차이, 약정 범위와 예상 워크로드 변경을 비교하는 이유
 - Standard RI의 제한된 수정과 Convertible RI의 교환 범위, Regional/Zonal, 결제 옵션의 트레이드오프
 - Coverage와 Utilization 두 지표의 의미와 목표
 - 기저 부하는 약정, 피크는 On-Demand/Spot의 분리 전략
@@ -77,6 +89,8 @@ aliases: ["Reserved Instance", "Reserved Instance / Savings Plan", "RI", "Saving
 - [Amazon EC2, Exchange Convertible Reserved Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-convertible-exchange.html)
 - [Amazon RDS, Reserved DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html)
 - [AWS Savings Plans, Plan types](https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html)
+- [AWS Savings Plans, Understanding how Savings Plans apply to your usage](https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-applying.html)
+- [AWS Savings Plans, Purchasing a custom Savings Plan commitment](https://docs.aws.amazon.com/savingsplans/latest/userguide/purchase-sp-direct.html)
 
 ## 관련 문서
 
