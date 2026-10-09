@@ -33,6 +33,18 @@ Spot은 AWS 여유 capacity를 쓰는 모델이다. 중단 notice는 일반적�
 
 비교: **Savings Plans**는 비용 약정으로 할인만, **Capacity Reservations**는 용량 확보 목적. 둘은 직교 개념.
 
+## Capacity Blocks: 기간을 정한 ML 용량 예약
+
+2026-10-09 EC2 공식 문서 기준, Capacity Blocks는 일정 기간의 ML 훈련과 실험에 필요한 가속 컴퓨팅 용량을 예약하는 선택지다. 지원 인스턴스와 리전, 시작 시각, 수량과 가용 offering을 확인한 뒤 구매한다. Savings Plans의 사용 금액 약정이나 위의 On-Demand Capacity Reservations와 구매 조건을 혼동하지 않는다.
+
+| 확인할 조건 | Capacity Blocks의 동작 |
+|---|---|
+| 가격과 결제 | 구매 시 수급으로 정해진 예약 가격을 선불로 지불하며, 예약 뒤 가격은 바뀌지 않는다 |
+| 할인과 취소 | Savings Plans와 Reserved Instance 할인은 적용되지 않으며 예약 취소도 허용되지 않는다 |
+| 종료 시각 | 일반 instance Capacity Block은 예약 종료 30분 전, UltraServer는 60분 전부터 실행 인스턴스 종료가 시작된다 |
+
+운영 계획에는 종료 처리 시작보다 앞선 체크포인트 저장과 결과 반출 시간을 포함한다. 예약 기간 전체를 모델 계산 시간으로 잡으면 마지막 작업을 잃을 수 있다. 인스턴스를 덜 사용해도 예약 선불 금액을 실제 가동 시간만큼만 내는 모델은 아니며, 실행 중 사용하는 운영체제의 별도 과금 조건도 확인한다.
+
 ## 관련 문서
 - [[EC2|AWS EC2 (목차)]]
 - [[EC2-Compute|컴퓨트 아키텍처]]
@@ -40,6 +52,9 @@ Spot은 AWS 여유 capacity를 쓰는 모델이다. 중단 notice는 일반적�
 
 ## 출처
 
+- [Amazon EC2, Capacity Blocks for ML](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html)
+- [Amazon EC2, How Amazon EC2 Capacity Blocks work](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-how.html)
+- [Amazon EC2, Capacity Blocks pricing and billing](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-pricing-billing.html)
 - [Amazon EC2 pricing](https://aws.amazon.com/ec2/pricing/)
 - [Amazon EC2 Reserved Instances pricing](https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/)
 - [Amazon EC2 Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html)

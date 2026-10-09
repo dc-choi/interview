@@ -49,6 +49,18 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 
 **HTTP/2 종단**: ALB는 HTTPS 리스너에서 클라이언트와 HTTP/2를 협상하고 미지원 클라이언트에는 HTTP/1.1을 사용한다. 대상 그룹의 프로토콜 버전은 HTTP/1.1, HTTP/2, gRPC 중 워크로드에 맞게 구성할 수 있으므로 백엔드가 항상 HTTP/1.1인 것은 아니다. 프로토콜 자체는 [[HTTP-2|HTTP/2]].
 
+### 도메인 전환용 redirect action
+
+2026-10-09 공식 문서 대조 범위는 이 절이다. ALB의 `redirect`는 클라이언트에 새 URL을 알려 주는 동작이며, 대상 그룹에 요청을 전달하는 `forward`와 구분한다. 영구 전환은 HTTP 301, 임시 전환은 HTTP 302를 선택한다.
+
+- `Host`를 새 도메인으로 바꾸고 `Path: /#{path}`, `Query: #{query}`로 기존 경로와 쿼리를 유지할 수 있다.
+- 루프 방지를 위해 protocol, hostname, port, path 중 적어도 하나를 바꿔야 한다. 쿼리만 바꾸는 것으로는 이 조건을 충족하지 못한다.
+- HTTP에서 HTTPS로, HTTPS에서 HTTPS로 전환할 수 있지만 HTTPS에서 HTTP로 전환할 수는 없다.
+- 기존 도메인이 ALB로 들어오도록 DNS를 설정한다. Route 53에서는 ALB를 가리키는 alias 레코드를 사용할 수 있다.
+- HTTPS로 들어오는 요청은 redirect 응답 전에 TLS 연결을 맺으므로 기존 도메인에 유효한 인증서도 필요하다.
+
+운영 점검에서는 실제 기존 도메인의 응답 코드와 `Location`, 경로와 쿼리 보존, 최종 URL의 응답을 따로 확인한다. ALB 주소로 한 번 성공한 결과만으로 기존 도메인의 DNS와 TLS까지 검증한 것으로 보지 않는다.
+
 ## NLB — Network Load Balancer
 
 **Layer 4** (TCP, UDP, TLS, QUIC) 로드밸런서. 초저지연, 고정 IP가 필요한 워크로드용.
@@ -153,6 +165,9 @@ ALB의 504는 대상이 연결 timeout이나 idle timeout(기본 60초) 안에 �
 - **CLB는 이전 세대** — 기존 구성은 지원되지만 신규 설계는 ALB, NLB, GWLB의 기능을 우선 검토
 
 ## 출처
+- [Application Load Balancer 리스너 규칙의 action 유형](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-action-types.html)
+- [Application Load Balancer HTTPS 리스너 생성](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html)
+- [Route 53에서 ELB로 트래픽 라우팅](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-elb-load-balancer.html)
 - [Elastic Load Balancing 작동 방식](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html)
 - [Classic Load Balancer 마이그레이션](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/migrate-classic-load-balancer.html)
 - [Network Load Balancer 리스너](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html)

@@ -34,6 +34,20 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 | 클라우드 데이터 통합 | 여러 장비의 이력 분석 | 재전송, 중복 처리와 저장 누락을 다루는가 |
 | 모델 개발과 배포 | 수집 데이터로 모델 개선 | 배포 버전, 실패 복구와 현장 호환성을 확인했는가 |
 
+## 장비 제어 요청과 보고 상태를 나눈다
+
+2026-10-09 AWS IoT Core 공식 문서 기준, Device Shadow는 장비가 오프라인이어도 애플리케이션이 저장된 상태를 조회하고 변경을 요청할 수 있게 한다. 상태 요청이 저장됐다는 사실과 장비가 실제로 수행했다는 사실은 구분한다.
+
+| 필드 | 의미와 쓰기 역할 |
+|---|---|
+| `desired` | 애플리케이션이나 클라우드 서비스가 요청하는 상태 |
+| `reported` | 장비가 보고한 상태 |
+| `delta` | 요청 상태와 보고 상태의 차이 |
+
+예를 들어 앱이 조명 켜기를 `desired`에 기록해도 오프라인 장비가 즉시 켜진 것은 아니다. 장비는 요청을 처리하고 결과를 `reported`로 보고해야 한다. 물리 동작 확인이 필요한 제품에서는 보고 값이 실제 센서 관측인지 소프트웨어 상태인지를 별도로 정의한다.
+
+Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 중인 버전보다 오래된 delta를 버릴 수 있다. 동시 갱신 충돌을 막으려면 update 요청에 `version`을 넣을 수 있으며, 서비스는 최신 버전과 일치할 때만 그 요청을 처리한다. 이는 클라우드 문서의 갱신 조건이지 물리 장비 명령의 정확히 한 번 실행 보장은 아니다.
+
 ## 배포 상태와 장비별 복구 결과를 나눈다
 
 로봇처럼 여러 현장 장비에 소프트웨어를 배포할 때는 배포를 생성한 상태와 각 장비가 적용한 결과를 구분한다. 2026-10-09 Greengrass V2 공식 문서 기준, 개별 core device의 배포 작업은 `list-effective-deployments`로 확인할 수 있다. IoT job의 장비별 실행 상세에서는 다음 상태를 구분한다.
@@ -61,6 +75,8 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 
 ## 출처
 
+- [AWS IoT Core, AWS IoT Device Shadow service](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html)
+- [AWS IoT Core, Device Shadow service documents](https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-document.html)
 - [AWS IoT Greengrass, Check deployment status](https://docs.aws.amazon.com/greengrass/v2/developerguide/check-deployment-status.html)
 - [AWS, What is AWS IoT Greengrass?](https://docs.aws.amazon.com/greengrass/v2/developerguide/what-is-iot-greengrass.html)
 - [AWS, How AWS IoT Greengrass works](https://docs.aws.amazon.com/greengrass/v2/developerguide/how-it-works.html)
