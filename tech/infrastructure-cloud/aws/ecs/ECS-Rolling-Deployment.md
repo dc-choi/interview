@@ -41,6 +41,16 @@ DAEMON 스케줄링 전략의 `minimumHealthyPercent` 기본값은 CLI, SDK, API
 
 컨테이너 헬스 체크 기본값은 `interval` 30초, `timeout` 5초, `retries` 3회이고 `startPeriod`는 기본 비활성이다. 부팅이 느린 런타임은 `startPeriod`와 서비스의 `healthCheckGracePeriodSeconds`(기본 0)를 함께 늘리지 않으면 뜨자마자 unhealthy 판정을 받고 교체가 반복된다.
 
+### 부하 테스트 반복 속도와 타깃 헬스 체크
+
+2026-10-10 공식 ECS 가이드로 아래 타깃 그룹 설정을 대조했다. 기존 배포 용량과 circuit breaker 절 전체의 재검증은 아니다.
+
+새로 등록한 타깃은 `HealthyThresholdCount`와 무관하게 헬스 체크를 한 번 성공하면 healthy가 된다. 이 threshold는 unhealthy 상태에서 healthy로 회복할 때 필요한 연속 성공 횟수다. 따라서 새 태스크가 처음 트래픽을 받는 시간과 장애 후 회복 시간을 같은 계산식으로 설명하지 않는다.
+
+공식 가이드는 서비스가 10초 안에 시작하고 안정화되는 경우 `HealthCheckIntervalSeconds=5`, `HealthyThresholdCount=2`를 최적화 예로 든다. 이는 앱 준비 시간이나 전체 배포 시간을 10초로 보장하는 설정이 아니다. 컨테이너 헬스 체크, 이미지 다운로드와 태스크 준비 시간도 남는다.
+
+부하 테스트에서는 새 태스크 등록과 unhealthy 회복을 나누어 측정하고, 설정을 줄인 뒤 준비되지 않은 앱에 요청이 도착하지 않는지 확인한다. 이 측정 절차는 위 동작을 바탕으로 한 운영 제안이다.
+
 ## 실패 감지와 자동 롤백 — deployment circuit breaker
 
 서킷 브레이커는 롤링 업데이트 컨트롤러에서만 쓸 수 있다. 두 단계로 실패를 센다.
@@ -101,6 +111,7 @@ DAEMON 스케줄링 전략의 `minimumHealthyPercent` 기본값은 CLI, SDK, API
 
 ## 출처
 
+- [Optimize load balancer health check parameters for Amazon ECS — 신규 등록과 unhealthy 회복의 판정 차이](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/load-balancer-healthcheck.html)
 - [Deploy Amazon ECS services by replacing tasks — 롤링 업데이트 용량 계산](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html)
 - [DeploymentConfiguration API — 기본 퍼센트, healthy 판정 조건, strategy](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DeploymentConfiguration.html)
 - [How the Amazon ECS deployment circuit breaker detects failures — 2단계 감지와 임계값](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-circuit-breaker.html)

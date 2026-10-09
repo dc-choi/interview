@@ -50,6 +50,16 @@ GuardDuty의 자격 증명 관련 finding은 IAM 주체, 호출 API, 시각과 I
 
 이 범위에서 로그가 없다는 사실만으로 침해나 데이터 접근이 없었다고 판정하지 않는다. 보고서 생성 시각, 조사 계정과 리전, 이벤트 종류와 보존 기간을 조사 결과에 함께 적는다. 이 절은 2026-10-09 AWS 공식 문서와 대조했으며, 실제 계정의 수집 설정을 검사한 결과는 아니다.
 
+### IAM 역할 세션 회수의 범위
+
+2026-10-10 공식 IAM 가이드로 확인한 범위다. 일반 IAM role의 세션 회수는 `AWSRevokeOlderSessions` 인라인 정책으로 기준 시각 이전에 발급된 임시 자격 증명의 권한을 거부한다. 특정 공격자의 세션 하나만 골라 끊는 작업이 아니며, 해당 시각 조건에 맞는 정상 사용자와 워크로드도 영향을 받는다.
+
+- 실행 주체에는 대상 역할의 `iam:PutRolePolicy` 권한이 필요하다. 조사용 읽기 권한만으로 회수할 수 있다고 가정하지 않는다.
+- 콘솔의 회수는 전파 지연을 고려해 약 30초 뒤까지 기준 시각을 잡는다. 그 이후 새로 발급된 세션은 이 거부 정책의 대상이 아니다. 따라서 유출 원인과 새 세션 발급 경로를 별도로 차단해야 한다.
+- service-linked role에는 이 회수 절차를 사용할 수 없다. Identity Center permission set으로 만든 역할은 IAM에서 직접 수정하지 않고 Identity Center의 해당 세션 회수 절차를 따른다.
+
+런북에는 영향받는 정상 호출, 회수 기준 시각과 새 세션 발급 가능 여부를 확인 항목으로 둔다. 이는 위 동작을 바탕으로 한 운영 점검 제안이다.
+
 ### 조치 전후의 확인
 
 다음은 위 기능을 조합할 때 사용할 설계 점검 항목이며, 제품이 자동으로 보장하는 동작은 아니다.
@@ -64,6 +74,7 @@ GuardDuty의 자격 증명 관련 finding은 IAM 주체, 호출 API, 시각과 I
 
 ## 출처
 
+- [AWS, Revoke IAM role temporary security credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_revoke-sessions.html)
 - [AWS, Remediating potentially compromised AWS credentials](https://docs.aws.amazon.com/guardduty/latest/ug/compromised-creds.html)
 - [AWS, Generate credential reports for your AWS account](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_getting-report.html)
 - [AWS, Working with CloudTrail event history](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html)

@@ -65,6 +65,17 @@ Role의 특징:
 
 외부에서 인증된 사용자 → **STS AssumeRoleWithSAML / AssumeRoleWithWebIdentity** → 임시 자격증명 발급.
 
+### IAM Identity Center 다중 리전 — 복제와 로그인 준비
+
+2026-10-10 공식 가이드 기준이다. organization instance는 외부 IdP 또는 Identity Center directory를 사용할 때 추가 리전으로 복제할 수 있다. Active Directory를 identity source로 쓰는 인스턴스와 account instance는 지원하지 않는다. 기본 활성화된 상용 리전에서 지원하며 opt-in 리전은 제외된다.
+
+- 같은 계정의 multi-Region customer managed KMS key를 사용하고, 추가할 리전에 replica key를 먼저 만든다. **KMS key policy는 리전 간 자동 동기화되지 않으므로** 각 키의 권한을 별도로 유지한다.
+- 리전을 추가한 뒤 상태가 `ACTIVE`인지 확인한다. 복제는 비동기 eventual consistency이며, 관리형 애플리케이션의 업무 데이터나 배포 위치까지 복제하지 않는다. 사용 중인 애플리케이션의 customer managed key 지원과 추가 리전 배포 지원도 확인한다.
+- 외부 IdP에는 추가 리전의 **ACS URL**을 등록한다. 사용자가 여는 access portal URL과 구분하며 기존 기본 리전 ACS도 유지한다. Identity Center directory에는 외부 IdP의 ACS 설정이 필요 없다.
+- 추가 리전 포털 로그인과 실제 계정 접근을 시험한다. CLI authorization은 리전 간 복제되지 않으므로 각 리전에서 별도로 승인해야 한다. 기본 리전 장애 시 접근 연속성은 장애 전에 프로비저닝된 권한을 전제로 한다.
+
+위 절만 대조했으며 기존 STS와 다른 federation 절 전체를 재검증하지 않았다.
+
 ### Amazon Connect SAML — IdP 로그인과 서비스 사용자 매핑
 
 2026-10-09 공식 Connect 관리자 가이드로 확인한 범위다. 아래는 일반 SAML 연동이며 Global Resiliency 배포는 별도 지침을 따른다. 기존 STS와 GitHub OIDC 절의 검증 날짜는 유지한다.
@@ -148,6 +159,9 @@ IdP 속성을 session tag로 전달해 ABAC에 쓴다면 trust policy의 `sts:Ta
 위임 관리자가 이 한도 안에서만 사용자와 Role을 만들 수 있게 보장한다. 개발자에게 IAM 관리 위임할 때, 자기보다 강한 권한 부여 못 하게 막는 가드.
 
 ## 출처
+- [AWS IAM Identity Center User Guide, Using IAM Identity Center across multiple AWS Regions](https://docs.aws.amazon.com/singlesignon/latest/userguide/multi-region-iam-identity-center.html)
+- [AWS IAM Identity Center User Guide, Replicate IAM Identity Center to an additional Region](https://docs.aws.amazon.com/singlesignon/latest/userguide/replicate-to-additional-region.html)
+- [AWS IAM Identity Center User Guide, Workforce access through an additional Region](https://docs.aws.amazon.com/singlesignon/latest/userguide/multi-region-workforce-access.html)
 - [AWS Connect Administrator Guide, Configure SAML with IAM for Connect Customer](https://docs.aws.amazon.com/connect/latest/adminguide/configure-saml.html)
 - [AWS IAM User Guide, Delegate access across AWS accounts using IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html)
 - [AWS Bedrock User Guide, Prerequisites for running model inference](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-prereq.html)
