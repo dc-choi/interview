@@ -47,6 +47,18 @@ Auto Unseal은 키 관리 책임을 없애지 않는다. 의존하는 KMS 키가
 
 AVP에서 Git 변경 없이 외부 시크릿 값만 바뀌면 Argo CD의 Hard Refresh로 플러그인을 재실행해 manifest를 재생성한 뒤 수동 Sync로 적용한다. Auto Sync를 쓴다면 최근 성공한 동기화와 같은 Git SHA 및 애플리케이션 파라미터에서 재동기화하려면 `selfHeal: true`가 필요하다. Hard Refresh만으로 배포되거나, 재렌더링 없는 일반 Sync만으로 새 값이 반영됐다고 가정하지 않는다.
 
+## Vault Secrets Operator의 동기화 경계
+
+Vault Secrets Operator(VSO)는 CRD에 지정한 외부 시크릿을 대상 Kubernetes Secret에 동기화하는 방식을 제공한다. 기존 Pod의 Secret 참조를 유지하면서 원본 관리를 Vault로 옮길 수 있지만, 이 방식에서는 Kubernetes Secret과 그 읽기 권한이 그대로 보호 대상이다. Vault CSI Provider나 Agent Injector의 직접 파일 주입과 구분한다(2026-10-10 공식 문서 대조).
+
+VSO에도 Kubernetes Secret 없이 Pod에 직접 마운트하는 CSI 방식이 있으며 공식 문서는 이를 Enterprise 기능으로 구분한다. 따라서 VSO라는 제품명만으로 저장 위치나 필요한 에디션을 판단하지 않고 실제로 선택한 연동 방식을 확인한다. 동기화 성공과 애플리케이션의 새 값 사용 여부도 각각 확인한다.
+
+## 중앙 관리와 테넌트 격리
+
+Vault namespace는 secrets engine, 인증 방법, 정책과 신원을 논리적으로 나누고 팀에 관리를 위임하는 단위다. 해당 기능에는 적절한 Vault Enterprise 라이선스 또는 HCP Vault Dedicated 클러스터가 필요하다. 단순 경로 접두사와 namespace를 같은 격리 기능으로 취급하지 않는다(2026-10-10 공식 문서 대조).
+
+하위 namespace에도 상위 관리자의 정책이 적용될 수 있고 시스템 관리 권한이 남는다. 그러므로 namespace를 만들었다는 사실만으로 운영자 접근이나 장애 영향까지 물리적으로 분리됐다고 판단하지 않는다. 실제 관리자 권한과 공유 인프라의 범위는 별도로 검토한다.
+
 ## 단계적 도입
 
 다음은 운영 요건에 맞춰 선택하는 순서다. Vault나 특정 주입 방식 자체를 모든 서비스의 필수 단계로 삼지 않는다.
@@ -102,6 +114,11 @@ Q. Vault 도입 시 가장 먼저 설계할 것은?
 - [[Hardcoded-Credentials|하드코딩된 자격증명]] — 코드에 박힌 키가 만드는 폭발 반경과 증폭 요인
 
 ## 출처
+
+2026-10-10에는 VSO의 Kubernetes Secret 동기화와 Enterprise CSI 대안, namespace의 에디션 및 관리 경계를 추가 대조했다. 나머지 기능의 전체 재검증일은 아니다.
+
+- [HashiCorp Vault, Vault Secrets Operator](https://developer.hashicorp.com/vault/docs/deploy/kubernetes/vso)
+- [HashiCorp Vault, Namespace and secure multi-tenancy (SMT) support in Vault](https://developer.hashicorp.com/vault/docs/enterprise/namespaces)
 
 2026-10-03에 아래 공식 문서로 주입 대상, userpass 토큰 TTL, 감사 로그, lease와 값 교체의 차이, seal 의존성과 OIDC 역할을 대조했다. 특정 클러스터의 버전 조합, 설정이나 무중단 갱신 성공을 검증한 것은 아니다. 도입 순서는 공개 기능을 연결한 설계 제안이다.
 

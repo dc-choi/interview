@@ -54,6 +54,19 @@ Customizations for AWS Control Tower(CfCT)는 CloudFormation 템플릿과 SCP, R
 
 운영에서는 검증 통과, 승인 완료와 대상 계정의 배포 성공을 별도 상태로 확인한다. 문법 검사는 조직의 권한 설계나 애플리케이션 동작의 적합성까지 보장하지 않는다. 이 절은 설정 문서 대조이며 실제 계정에 배포한 결과는 아니다.
 
+## 탐지 결과와 자동 조치의 현재 상태를 나눈다
+
+AWS Config의 remediation은 규칙에 SSM 문서와 실행 권한을 연결하는 별도 설정이다. Control Tower의 탐지 통제를 켰다는 사실만으로 수정 작업까지 구성되지는 않는다. `PutRemediationConfigurations`는 service-linked 규칙에 조치 설정을 추가하는 것을 지원하지 않으므로 규칙의 소유자와 배포 방식을 먼저 확인한다(2026-10-10 공식 문서 대조).
+
+자동 조치는 최근 compliance snapshot을 바탕으로 시작할 수 있다. 평가 뒤 사용자가 이미 수정한 리소스라도 오래된 위반 결과 때문에 조치가 실행될 수 있다. 이 제약에서 다음 운영 점검을 도출할 수 있다.
+
+- SSM 문서는 변경 직전에 대상의 현재 상태와 조치 조건을 다시 확인하도록 설계한다.
+- 반복 실행에서도 안전한 동작을 정하고, 재시도 횟수와 실행 실패를 추적한다.
+- 삭제나 접근 차단처럼 영향이 큰 조치는 별도의 승인이나 제한된 대상 시험을 검토한다.
+- 설정 저장, Automation 실행 성공과 리소스의 실제 준수 상태를 나누어 확인한다.
+
+이는 문서에 근거한 설계 점검이며, 실제 계정에서 자동 조치를 실행한 결과는 아니다.
+
 ## 운영에서 확인할 경계
 
 다음은 통제의 범위와 AWS 공동 책임 모델을 적용한 점검 기준이다.
@@ -68,6 +81,8 @@ Control Tower 도입 자체가 규제 준수의 완료 증거는 아니다. AWS�
 
 ## 출처
 
+- [AWS Config, Setting Up Auto Remediation for AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/setup-autoremediation.html)
+- [AWS Config, PutRemediationConfigurations](https://docs.aws.amazon.com/config/latest/APIReference/API_PutRemediationConfigurations.html)
 - [AWS Prescriptive Guidance, Document your AWS landing zone design](https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/document-your-aws-landing-zone-design.html)
 - [AWS와 함께하는 신한카드의 pLay — Amazon Web Services Korea](https://www.youtube.com/watch?v=FUt8eR5o3Kc) — 랜딩 존 재설계와 표준화의 발표 사례. 자체 구축을 Control Tower 도입 사례로 단정하지 않는다.
 - [AWS, Customizations for AWS Control Tower (CfCT) overview](https://docs.aws.amazon.com/controltower/latest/userguide/cfct-overview.html)

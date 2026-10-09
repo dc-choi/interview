@@ -123,6 +123,14 @@ export class OrderFulfillmentSaga {
 
 **보상 복구 유실** — 메모리에서만 보상 목록을 관리하면 coordinator 종료와 함께 복구 단서도 사라진다. 실패한 보상은 durable registry에 목표 동작, 상태, 재시도 시각, 마지막 오류를 저장하고 worker가 이어서 처리한다. 자동 판단이 안전하지 않은 항목만 운영자에게 올린다.
 
+## 동시 실행 격리는 별도로 설계한다
+
+Saga의 단계 실행과 보상은 여러 Saga 사이의 트랜잭션 격리를 제공하지 않는다. 같은 재고나 주문을 동시에 읽고 변경하면 오래된 상태를 기준으로 판단할 수 있다. AWS 공식 지침은 이 문제에 semantic locking을 제안한다(2026-10-10 확인).
+
+예를 들어 재고를 곧바로 판매 완료로 바꾸기 전에 예약 상태로 전이하고, 다른 요청은 가용 수량과 예약 상태를 함께 검사하도록 설계할 수 있다. 이 검사는 각 참여자의 로컬 트랜잭션에서 원자적으로 처리해야 한다. 예약 만료와 보상은 실제 예약 기록을 기준으로 수행한다. 이는 semantic locking을 재고에 적용한 설계 예시이며 특정 구현의 성공을 검증한 결과는 아니다.
+
+AWS Step Functions의 Standard workflow로 주문, 재고, 결제와 보상 단계를 조정할 수 있다. 조정 엔진을 도입해도 참여자의 멱등성, 업무상 보상 정의와 동시 변경 검사는 남는다. 구현 수단은 [[Step-Functions|Step Functions]]와 연결한다.
+
 ## Outbox와의 관계
 
 Saga는 **이벤트로 단계를 잇는다** → 이벤트가 유실되면 흐름이 중단. Outbox 패턴이 이를 막는다: 도메인 트랜잭션과 같은 DB 트랜잭션에 이벤트를 저장 → 별도 Relay가 브로커로 발행 → At-Least-Once 보장.
@@ -180,6 +188,7 @@ Q. 보상 트랜잭션 설계 시 주의점?
 
 - [Chris Richardson, Saga pattern](https://microservices.io/patterns/data/saga.html)
 - [AWS Prescriptive Guidance, Saga patterns](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/saga-patterns.html)
+- [AWS Prescriptive Guidance, Saga orchestration pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/saga-orchestration.html)
 - [Microsoft Learn, Saga distributed transactions pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/saga)
 - [Particular, Sagas: Dealing with out-of-order delivery](https://docs.particular.net/nservicebus/sagas/#dealing-with-out-of-order-delivery)
 - [Dowon Lee 강사, 분산 트랜잭션 처리 방법](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289778)

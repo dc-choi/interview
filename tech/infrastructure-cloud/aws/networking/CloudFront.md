@@ -95,6 +95,14 @@ AWS의 **CDN(Content Delivery Network) 서비스**. HTTP/HTTPS origin의 캐시 
 - **비용 주의**: Pay-as-you-go는 AWS 계정 전체에서 월 첫 1,000 path가 무료이고 이후 path당 과금. Flat-rate plan은 해당 플랜 조건 확인
 - 배포 루틴에 매번 사용하지 말고 **파일명 해시 전략**과 병행 (배포 산출물은 해시 파일명, `index.html`만 invalidate)
 
+### CMS의 게시 완료와 캐시 버전 갱신
+
+CDN을 쓰는 CMS에서는 원본 게시와 사용자의 새 콘텐츠 수신을 나누어 확인한다. Storyblok은 CloudFront 기반 CDN에서 Content Delivery API 응답을 캐시하며, `cv` 쿼리 파라미터로 캐시 버전을 구분한다. 새 콘텐츠를 게시해도 이전 `cv`의 응답은 캐시에 남으므로 앱이 사용할 버전을 갱신해야 한다(2026-10-10 공식 문서 대조).
+
+Storyblok에서는 access token의 TTL을 설정하지 않았다면 space의 `version`을 최신 `cv`로 사용할 수 있다. 토큰 TTL을 설정한 경우 두 값은 같지 않을 수 있으므로 stories, datasources 또는 datasource entries 응답에서 `cv`를 가져온다. 이는 CMS의 버전 계약이며 CloudFront의 Minimum TTL 설정과 같은 옵션이 아니다.
+
+게시 webhook이나 polling으로 버전 변경을 감지하고, 앱 자체 캐시에도 갱신을 연결한다. 게시 직후 space 버전 반영에 지연이 있을 수 있으므로 webhook 수신만으로 새 응답이 준비됐다고 판정하지 않는다. 이 확인 절차는 캐시 동작에서 도출한 운영 기준이며, API 캐시 무효화를 CloudFront 전체 경로 무효화와 동일시하지 않는다.
+
 ## 비용 — Price Class
 
 Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 절감** 가능.
@@ -174,6 +182,7 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - 지원되는 AWS origin → CloudFront 전송은 별도 데이터 전송 요금 없음, Shield Standard 포함
 
 ## 출처
+- [Storyblok, Caching](https://www.storyblok.com/docs/concepts/caching)
 - [AWS 공식 문서, Control the cache key with a policy](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html)
 - [AWS 공식 문서, Add CloudFront request headers](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-cloudfront-headers.html)
 - [AWS 공식 문서, HTTP 403 status code (Permission Denied)](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/http-403-permission-denied.html)
