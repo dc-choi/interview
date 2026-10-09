@@ -109,6 +109,12 @@ Prowler의 mutelist는 의도적인 설정에 대한 finding을 억제한다. CS
 - 실행마다 도구 버전, 계정과 리전, 검사 범위, 실패와 제외 항목을 함께 기록한다. 결과 수 감소만으로 보안이 좋아졌다고 판단하지 않는다.
 - 조치 뒤 같은 범위로 다시 검사하고 실제 접근 차단 여부도 확인한다. 보고서 생성과 위험 해소는 별도 완료 조건이다.
 
+### 보안 조치의 완료 조건에 서비스 전환을 포함한다
+
+2026-10-10 RDS 공식 문서 대조 기준. 암호화되지 않은 DB를 스냅샷으로 전환할 때는 원본 스냅샷의 암호화 사본을 만들고, 그 사본에서 새 DB 인스턴스를 복원한다. 암호화된 DB가 생성됐다는 사실만으로 기존 애플리케이션의 연결까지 새 DB로 바뀌지는 않는다.
+
+이 경로를 선택한 경우에는 스냅샷 이후 쓰기 데이터의 처리, 새 접속 대상과 권한, 애플리케이션 전환 및 복구 조건을 계획하고 확인한다. 이는 조치 완료를 판정하기 위한 운영 제안이다. 스냅샷 복원만을 유일한 전환 방법으로 일반화하지 않으며, 공식 문서는 Blue/Green 배포를 통한 암호화 전환도 별도로 안내한다. 지원 조건은 대상 엔진과 배포 구성에서 확인한다.
+
 ### 중앙 점검 결과와 장기 감사 증거를 구분한다
 
 2026-10-09 AWS Security Hub CSPM 공식 문서 기준, finding은 상태와 갱신 시각에 따라 만료된다. 처음 수집한 날부터 모든 결과를 일률적으로 90일 보존하는 구조로 이해하지 않는다.
@@ -154,6 +160,7 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 
 ## 출처
 
+- [Amazon RDS, Encrypting Amazon RDS resources](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html) — 암호화 사본 복원과 Blue/Green 전환 안내.
 - [Shared Responsibility Model — AWS](https://aws.amazon.com/compliance/shared-responsibility-model/)
 - [AWS Artifact, What is AWS Artifact?](https://docs.aws.amazon.com/artifact/latest/ug/what-is-aws-artifact.html)
 - [NIST, Tabletop Exercise](https://csrc.nist.gov/glossary/term/Tabletop_Exercise)

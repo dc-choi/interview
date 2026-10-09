@@ -36,6 +36,12 @@ ServiceNow REST API 경로에는 브라우저의 UI policy, UI action과 client 
 
 다음은 위 경계를 적용한 운영 점검 예시다. 티켓 생성 전에 대상 프로젝트나 테이블, 필수 필드와 실행 계정을 확인한다. 실행 뒤에는 반환된 식별자로 생성 결과를 확인하고, 응답이 끊긴 경우 기존 생성 여부부터 조회해 중복을 피한다. 보고서나 알림 초안이 만들어졌다는 사실을 외부 앱 변경이나 수신자 전달의 완료로 기록하지 않는다. 이 점검 절차는 커넥터가 자동으로 보장하는 동작이 아니다.
 
+### CRM 연결의 사용자 인증과 서비스 인증
+
+2026-10-10 Salesforce 연동 공식 문서 대조 기준. 사용자 인증(3LO)은 로그인한 사용자를 대신해 action을 실행하고, 서비스 인증(2LO)은 Salesforce에 지정한 `Run As` 사용자의 권한으로 실행한다. 여러 영업 담당자가 같은 통합을 쓴다고 해서 서비스 인증의 실행 주체가 각 담당자로 바뀌지는 않는다.
+
+영업 미팅용 자료 조회와 CRM 레코드 변경을 구분한다. 연결 성공뿐 아니라 어떤 계정의 권한으로 어떤 고객 자료를 읽고 변경할 수 있는지 확인한다. 이는 Salesforce 커넥터의 인증 경계를 적용한 점검 제안이며, 특정 회사가 사용한 CRM이나 실제 연동 구성을 뜻하지 않는다.
+
 ## 개인 지식 그래프의 근거
 
 Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 같은 개체와 관계를 추출하고 사용자별 계정에 보관한다. 연결 앱의 자동 수집과 폴더별 그래프 추출은 별도 설정이다. 폴더의 키워드/시맨틱 색인과 그래프 추출도 독립적이다.
@@ -63,6 +69,7 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 ## 출처
 
+- [Amazon Quick, Salesforce integration](https://docs.aws.amazon.com/quick/latest/userguide/salesforce-integration.html) — 사용자 인증과 서비스 인증의 실행 주체.
 - [Amazon Quick, Organize, collaborate, and share resources with spaces](https://docs.aws.amazon.com/quick/latest/userguide/working-with-spaces.html)
 - [Amazon Quick, Atlassian Jira Cloud integration](https://docs.aws.amazon.com/quick/latest/userguide/jira-integration.html)
 - [Amazon Quick, ServiceNow integration](https://docs.aws.amazon.com/quick/latest/userguide/servicenow-integration.html)

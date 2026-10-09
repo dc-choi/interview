@@ -50,6 +50,12 @@ ComfyUI는 노드를 연결해 생성 단계를 구성하고 워크플로우를 
 
 따라서 GPU 이미지 생성 환경을 설계할 때 Serverless Inference를 그대로 선택하지 않는다. 처리 지연을 허용하는 배치 작업인지, 큐에 넣고 결과를 나중에 받는 요청인지부터 구분한다. 생성 단계의 실행 시간만으로 전체 완료 시간을 계산하지 않고 대기, 자원 준비와 결과 저장도 측정한다.
 
+## 시각화된 상품과 실제 제품 사양을 구분한다
+
+2026-10-10 Amazon Nova Canvas의 AI Service Card 대조 기준. 가구 등 상품을 다른 장면에 배치하는 기능은 참조 사진에 없는 면의 세부를 생성할 수 있으며, 실제 치수를 알지 못하므로 정확한 축척을 보장하지 않는다. 사진처럼 보이는 렌더링도 제품 사양이나 물리적 시제품을 검증한 증거는 아니다.
+
+다음은 스케치나 참조 이미지로 상품 후보를 검토할 때의 적용 제안이다. 탐색용 시안과 확정 상품 이미지를 구분하고, 보이지 않는 면, 부품과 비율은 도면이나 실물에 대조한다. 제공된 참조만으로 확인할 수 없는 속성은 확정 사양으로 표시하지 않는다. 생성 모델의 종류를 모르는 고객 사례에 Nova Canvas를 사용했다고 추정하지 않는다.
+
 ## 검수 기준
 
 아래는 상품 이미지 업무에 적용할 점검 기준이다.
@@ -63,6 +69,7 @@ ComfyUI는 노드를 연결해 생성 단계를 구성하고 워크플로우를 
 
 ## 출처
 
+- [AWS AI Service Cards, Amazon Nova Canvas](https://docs.aws.amazon.com/ai/responsible-ai/nova-canvas/overview.html) — 참조에 없는 면의 생성과 축척의 한계.
 - [ComfyUI, Inpainting Workflow](https://docs.comfy.org/tutorials/basic/inpaint)
 - [Running ComfyUI workflows on Amazon SageMaker AI processing jobs — AWS](https://aws.amazon.com/blogs/machine-learning/running-comfyui-workflows-on-amazon-sagemaker-ai-processing-jobs/)
 - [Amazon SageMaker AI, Supported features](https://docs.aws.amazon.com/sagemaker/latest/dg/model-deploy-feature-matrix.html)

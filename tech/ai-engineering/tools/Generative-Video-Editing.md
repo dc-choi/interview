@@ -42,6 +42,14 @@ aliases: ["생성형 영상 편집", "Generative Video Editing"]
 
 애플리케이션에서는 접수, 생성 완료와 검수 완료를 나누어 관리하는 편이 좋다. 실패 상태를 처리하고, 성공한 영상도 길이와 내용이 납품 조건에 맞는지 재생해 확인한다. 이는 공식 비동기 호출 흐름에 기반한 운영 제안이며 실제 계정에서의 실행 검증 결과는 아니다.
 
+## 긴 영상의 하이라이트는 원문과 시간 구간을 연결한다
+
+2026-10-10에 대조한 AWS의 2024년 공개 구현 사례 기준이다. 기존 영상에서 숏폼을 만드는 작업은 새 장면 생성과 구분한다. Transcribe로 전사한 뒤 Bedrock 모델이 주제와 관련 대본을 고르고, Lambda가 선택된 텍스트를 단어별 타임스탬프와 대조해 원본 구간을 찾는다. 이 사례는 시간 구간 계산에 Python `difflib`를 사용한다.
+
+하이라이트 추출과 최종 제작은 두 Step Functions 워크플로로 나뉜다. 첫 결과를 사람이 검토해 제목과 자막, 구간별 화면 영역을 수정한 뒤 MediaConvert로 최종 영상을 만든다. LLM이 선택한 대본을 원본에 실제 존재하는 발화로 연결하는 단계가 필요하다.
+
+운영에서는 텍스트 매칭 성공과 편집 의미의 보존을 따로 검수한다. 같은 문장이 반복된 위치를 잘못 고르거나 떨어진 발화를 이어 조건과 부정 표현이 빠지지 않았는지 확인한다. 화면 영역을 바꾼 뒤에는 발표자의 얼굴뿐 아니라 설명에 필요한 도표와 자막도 최종 영상에서 확인한다. 이는 구현 사례에 기반한 검수 제안이며 자동 검증 기능의 보장이 아니다.
+
 ## 기존 영상을 모션 그래픽으로 재구성한다
 
 기존 영상의 판서나 도식을 다시 표현할 때는 내용 해석, 장면 구성과 영상 렌더링을 나누어 확인한다. MP4만 있다는 사실과 편집 가능한 텍스트, 도형, 타이밍을 복원했다는 사실은 다르다.
@@ -67,6 +75,7 @@ aliases: ["생성형 영상 편집", "Generative Video Editing"]
 
 ## 출처
 
+- [Amazon Bedrock을 활용한 AWS Korea YouTube 채널의 숏폼 자동화 사례 — AWS](https://aws.amazon.com/ko/blogs/tech/amazon-bedrock-shortform-content-automation/) — 원문 시간 구간 매칭과 검수 전후 워크플로 분리.
 - [AWS, Generating videos with Amazon Nova Reel](https://docs.aws.amazon.com/nova/latest/userguide/video-generation.html) — 입력 형식과 Reel 1.1의 출력 범위.
 - [AWS, Generate a video](https://docs.aws.amazon.com/nova/latest/userguide/code-examples-video.html) — 비동기 작업 제출, 상태 조회와 S3 결과 확인.
 - [HyperFrames, What is HyperFrames?](https://hyperframes.heygen.com/introduction) — HTML 프로젝트와 프레임별 렌더링의 역할.
