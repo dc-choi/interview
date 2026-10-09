@@ -23,6 +23,19 @@ TypeScript 직접 실행과 권한 모델이라는 초기 차별점은 현재 No
 
 TypeScript를 바로 실행한다는 점만으로는 차이가 약하다. 기본 거부 권한 모델, `fmt`, `lint`, `check`, `test`, `task`를 묶은 toolchain, Web 표준 API와 JSR, npm dependency 전략을 함께 비교한다. 속도나 Node 대체 가능성 같은 평가는 벤치마크와 채택 근거로 따로 확인한다.
 
+## 지원 계획과 운영 전환 (2026-10-10 확인)
+
+2026-10-09 발표 기준, Deno 팀은 Cloudflare에 합류하며 제품별로 다른 유지 계획을 공지했다.
+
+- **Deno runtime**: 발표 이후 1년 동안 버그 수정과 보안 업데이트를 포함한 월별 릴리스를 제공하고, 그 뒤 해당 팀의 런타임 개발을 종료할 계획이다. 코드는 오픈소스로 남으며 다른 주체의 개발 지속 가능성과 기존 팀의 지원 약속을 구분한다.
+- **Deno Deploy**: 발표 이후 6개월간 운영한 뒤 종료할 계획이다. 유료 고객의 Cloudflare Workers 이전 지원을 제공한다고 밝혔다.
+- **JSR**: 운영을 계속하며 인프라를 Cloudflare로 옮길 계획이다.
+- **rusty_v8**: 지원을 계속하고 workerd 통합을 추진한다.
+
+이 일정은 발표 시점의 계획이며 런타임이 이미 실행 불가능해졌다는 뜻은 아니다. 외부 플랫폼이 Deno 기반 런타임을 사용한다는 이유만으로 그 플랫폼의 종료 일정까지 확정하지 않는다. 플랫폼별 공식 지원 정책을 별도로 확인한다.
+
+운영 점검 제안: 직접 실행하는 런타임, Deploy 호스팅, JSR 패키지 의존성을 나누어 목록화한다. 런타임 API와 권한 모델의 호환성 시험, 데이터와 비밀값 이전, 배포와 복구 절차를 준비하고 실제 전환일은 서비스별 공지와 계약으로 확인한다. 아래 설치와 실행 예시는 기술 사용법이며 장기 지원 보장을 뜻하지 않는다.
+
 ## 설치와 프로젝트 구성
 
 공식 설치 경로 또는 package manager를 사용하고 `deno --version`으로 runtime, V8, TypeScript 버전을 함께 확인한다. 프로젝트 설정은 `deno.json` 또는 `deno.jsonc`에 둔다. `deno.json`은 Node의 `package.json`이 맡던 task와 dependency, `tsconfig.json`이 맡던 `compilerOptions`를 함께 담는다. Deno는 기본 TypeScript 설정을 권장하므로 필요한 옵션만 바꾼다.
@@ -126,6 +139,7 @@ CMD ["run", "--allow-net=0.0.0.0:8000", "src/main.ts"]
 
 ## 출처
 
+- [Deno is joining Cloudflare — Deno Blog](https://deno.com/blog/cloudflare)
 - [Deno, TypeScript](https://docs.deno.com/runtime/fundamentals/typescript/)
 - [Deno, deno.json and package.json](https://docs.deno.com/runtime/reference/deno_json/)
 - [Deno, Modules](https://docs.deno.com/runtime/fundamentals/modules/)

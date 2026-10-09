@@ -83,6 +83,12 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 4. **병렬 QA** — 기존 시스템과 동일 입력에 대해 출력이 같은지 비교
 5. Feature flag + 트래픽 점진 전환
 
+### AI 변환의 범위와 인수 검증
+
+2026-10-10 AWS Transform for .NET 공식 문서 기준, Visual Studio 경로는 프로젝트와 빌드에 필요한 의존성을 code group으로 묶는다. 직접 선택하지 않은 의존 프로젝트도 변환 대상이 될 수 있으므로 계획에서 변경 범위를 확인한다. 변환 보고서의 파일, 패키지와 API 변경, 실패 항목과 빌드 로그를 diff와 함께 검토한다. 웹 경로도 변환 뒤 개발자 검토, 검증과 디버깅을 별도 단계로 둔다.
+
+설계 점검 제안: 코드 변환 완료, 빌드 통과, 기존 업무 동작의 보존, 운영 전환 준비를 각각 확인한다. 외부 연동과 배포 설정을 포함한 회귀 검증 및 복귀 조건은 변환 도구의 성공 표시만으로 대체하지 않는다.
+
 ### 장점
 - 기술 스택을 현대화하면서 내부 품질까지 상승
 - 유실된 사양서를 이 기회에 복구
@@ -178,6 +184,8 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 - "사람도 레거시가 될 수 있다"의 조직적 의미
 
 ## 출처
+- [AWS Transform, How AWS Transform modernizes .NET applications](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-ide-how.html)
+- [AWS Transform, Modernizing .NET code with the AWS Transform web application](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-web-app.html)
 - [AWS Prescriptive Guidance, Decompose by business capability](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html)
 - [AWS Prescriptive Guidance, Best practices (Hexagonal architectures)](https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/best-practices.html)
 - [LY Corporation 테크블로그 — 레거시 시스템을 개혁하는 3가지 방법 (Demaecan 사례)](https://techblog.lycorp.co.jp/ko/three-ways-to-reform-legacy-systems)

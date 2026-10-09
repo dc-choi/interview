@@ -50,6 +50,14 @@ AWS 보안 표준의 CSPM 점검에 필요한 Config 구성도 활성화 조합�
 
 ## 개선 순서의 예
 
+### Extended 구독과 파트너 온보딩의 경계
+
+2026-10-10 공식 문서 기준, Extended plan은 Essentials plan을 활성화한 고객이 사용할 수 있다. 위임 관리자 계정뿐 아니라 standalone 계정에서도 접근한다. 조직을 구성하는 절차를 모든 사용자의 필수 전제로 일반화하지 않는다.
+
+파트너 제품 구독 뒤에는 해당 파트너의 가입과 온보딩 절차를 마쳐야 한다. 운영 점검에서는 구독 완료, 파트너 설정 완료, 기대한 finding의 실제 수신을 별도 단계로 확인한다. 구독 상태만으로 수집 범위와 신호 전달이 검증됐다고 판단하지 않는다. 구독 취소 때도 제품 구성에 따른 파트너의 추가 offboarding 절차를 확인한다.
+
+### 노출 개선 확인
+
 다음은 위 기능을 이용한 운영 판단 예시다.
 
 1. 공개가 필요한 서비스인지, 스캔의 IP와 포트가 현재 자원과 맞는지 확인한다.
@@ -59,6 +67,7 @@ AWS 보안 표준의 CSPM 점검에 필요한 Config 구성도 활성화 조합�
 
 ## 출처
 
+- [AWS Security Hub, Security Hub Extended plan](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-extended-plan.html)
 - [AWS Security Hub, Enabling Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-enable.html)
 - [AWS Security Hub, Enabling and configuring AWS Config for Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-setup-prereqs.html)
 - [AWS Security Hub, Network Scanning in Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-network-scanning.html)
