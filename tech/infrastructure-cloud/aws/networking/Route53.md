@@ -72,6 +72,16 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 - 거리 + 가중치(bias) 정밀 조정 → **Geo-proximity**
 - ELB 없이 단순 분산 + 헬스체크 → **Multi-Value Answer**
 
+### 국가별 배치와 지연 최적화는 다른 정책이다
+
+2026-10-09 Geolocation과 Latency-based 공식 문서 확인 기준이다. Geolocation은 DNS 질의의 추정 위치를 관리자가 지정한 리소스로 매핑한다. 국가별로 가까운 리전을 지정할 수 있지만, 이 정책 자체가 매 요청의 최저 지연 리전을 측정해 고르는 것은 아니다.
+
+- 국가와 대륙 레코드가 겹치면 더 작은 지리 범위가 우선한다. 예를 들어 유럽 전체와 특정 유럽 국가를 서로 다른 리소스로 보낼 수 있다.
+- 위치를 식별하지 못한 IP와 별도 레코드가 없는 지역을 처리하려면 `Default` 레코드를 둔다. 이 기본 레코드가 없으면 해당 질의에 `no answer`가 반환될 수 있다.
+- 지연 최적화가 목적이면 Latency-based 정책을 검토한다. 이 정책도 사용자와 AWS 데이터센터 사이에서 일정 기간 수집한 지연 데이터를 사용하며, 애플리케이션의 실시간 응답시간을 직접 비교하는 정책은 아니다.
+
+적용 검증에서는 DNS가 선택한 리전과 실제 페이지/API 응답시간을 따로 측정한다. 웹 서버만 여러 리전에 배치하고 그 서버가 호출하는 API나 DB가 한 리전에 남아 있다면, 후속 호출 경로도 별도로 확인해야 한다. 이는 DNS 정책의 보장 사항이 아니라 서비스 전체 경로를 점검하기 위한 설계 체크포인트다. 이번 대조는 이 절과 기존 라우팅 표의 관련 두 정책에 한정하며 frontmatter의 기존 검증일은 유지한다.
+
 ## Alias 레코드
 
 - Route 53 고유 확장. **CNAME과 유사하지만 더 강력**
@@ -130,7 +140,7 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 ## 시험 체크포인트
 
 - AWS 리소스를 도메인에 연결 + **루트 도메인** 사용 → **Alias 레코드** (CNAME 불가)
-- 글로벌 사용자에게 **가장 가까운/빠른 리전**으로 → **Latency-based**
+- AWS의 지연 데이터로 응답 리전을 선택 → **Latency-based** (지리적 최단 거리나 앱 전체 응답시간 보장은 아님)
 - **국가, 대륙별로 다른 서버** → **Geolocation**
 - **거리 + 특정 리전에 트래픽 더 보내기** → **Geo-proximity** (Bias 값 사용)
 - **Primary 장애 시 Secondary로 자동 전환** → **Failover + Health Check**
@@ -147,6 +157,7 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 
 ## 출처
 
+- [Geolocation routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html)
 - [Alias와 비 Alias 레코드 선택](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html)
 - [레코드 공통 값](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-shared.html)
 - [Route 53 DNSSEC 서명 구성](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec-cmk-requirements.html)

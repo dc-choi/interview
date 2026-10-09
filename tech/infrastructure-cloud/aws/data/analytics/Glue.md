@@ -77,6 +77,17 @@ AI 입력 파이프라인에 적용할 때는 품질 실패 후 색인이나 후
 
 전환 검증에서는 대표 입력으로 결과 행 수, 자료형과 실패 동작을 비교하고 하위 쿼리 엔진에서도 읽어 본다. 특히 런타임 업그레이드와 Iceberg 테이블 형식 변경을 한 번의 가역적 설정 변경으로 취급하지 않는다.
 
+## JDBC 연결 실패: 실행 서브넷, 권한과 인증을 나눠 본다
+
+2026-10-09 공식 연결 및 VPC 문서 확인 기준이다. Glue는 연결에 지정한 VPC와 서브넷에 private IP를 가진 ENI를 만들고 연결의 보안 그룹을 적용한다. 개발자 PC에서 DB에 접속된다는 사실만으로 Glue의 연결 경로가 검증되지는 않는다.
+
+1. **DB까지의 경로:** 연결의 호스트와 포트, 선택한 서브넷의 라우팅, Glue 보안 그룹의 outbound와 DB의 inbound를 확인한다. 점검 기준은 Glue ENI에서 데이터 저장소까지의 경로다.
+2. **Spark 내부 통신:** driver와 executor 사이에는 양방향 통신이 필요하다. 연결에 사용하는 보안 그룹 중 하나에 자기 보안 그룹을 source로 하는 모든 TCP 포트 inbound 규칙을 둔다. 이는 인터넷 전체에 포트를 여는 규칙과 다르다. outbound를 제한했다면 내부 통신과 필요한 목적지 허용도 확인한다.
+3. **서비스 접근 경로:** VPC 안에서 S3를 읽는 경로는 S3 VPC endpoint 구성을 확인한다. VPC 자원과 공개 인터넷을 함께 사용해야 할 때는 NAT 경로도 필요하다. Glue ENI에는 public IP가 없으므로 public subnet과 Internet Gateway만으로 인터넷 연결이 된다고 판단하지 않는다.
+4. **권한과 DB 인증:** 연결 또는 secret의 사용자 이름과 비밀번호를 점검한다. Secrets Manager를 쓰면 Glue 실행 역할의 secret 조회 권한과 서비스까지의 네트워크 경로를 따로 확인한다. 네트워크 구성에 따라 Secrets Manager VPC endpoint가 필요할 수 있다.
+
+NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 오류가 DB 도달, 서비스 접근, IAM 권한과 DB 인증 중 어디에서 발생했는지 좁히고, 변경 뒤 같은 연결 조건으로 다시 시험한다. 이 절은 연결 진단 범위의 보강이며 기존 런타임 전환 절의 검증 기준일은 유지한다.
+
 ## 관련 문서
 
 - [[Athena]], [[Redshift]], [[EMR]]
@@ -85,6 +96,9 @@ AI 입력 파이프라인에 적용할 때는 품질 실패 후 색인이나 후
 
 ## 출처
 
+- [AWS Glue, Troubleshooting connection issues in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/troubleshooting-connection.html)
+- [AWS Glue, Setting up network access to data stores](https://docs.aws.amazon.com/glue/latest/dg/start-connecting.html)
+- [AWS Glue, Setting up Amazon VPC for JDBC connections to Amazon RDS data stores from AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/setup-vpc-for-glue-access.html)
 - [AWS Glue, Migrating AWS Glue for Spark jobs to AWS Glue version 6.0](https://docs.aws.amazon.com/glue/latest/dg/migrating-version-60.html)
 - [AWS Glue, Using crawlers to populate the Data Catalog](https://docs.aws.amazon.com/glue/latest/dg/add-crawler.html)
 - [Amazon Data Firehose, PutRecordBatch](https://docs.aws.amazon.com/firehose/latest/APIReference/API_PutRecordBatch.html)
