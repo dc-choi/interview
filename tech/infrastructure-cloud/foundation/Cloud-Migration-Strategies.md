@@ -92,6 +92,27 @@ NC2는 작은 클러스터 또는 원격 EBS/S3 저장소를 활용하는 복구
 
 설계 검토에서는 허용 데이터 손실인 RPO와 복구 시간인 RTO를 먼저 정한다. 데이터 복제 지연뿐 아니라 자원 확보, 복원, 의존 서비스, 트래픽 전환과 업무 검증까지 훈련에 포함한다. 컴퓨팅 대기를 줄여도 저장소와 복제 비용은 남으며, 발표 사례의 절감률이나 복구 시간을 다른 환경의 보장값으로 쓰지 않는다.
 
+## VMware 유지와 운영 책임
+
+2026-10-09 Amazon EVS 공식 문서 대조 기준. Amazon Elastic VMware Service(EVS)는 사용자의 VPC 안에서 EC2 bare-metal 인스턴스에 VMware Cloud Foundation(VCF)을 실행하는 선택지다. 기존 VMware 워크로드를 유지하는 이전과 애플리케이션을 다른 플랫폼으로 바꾸는 현대화를 분리할 수 있다.
+
+EVS는 환경 배포를 자동화하지만 VCF 운영 전체를 AWS가 대신 맡는다는 뜻은 아니다. 직접 관리하거나 AWS 파트너의 관리 서비스를 선택할 수 있다. 특히 Self-deployed 모드에서는 고객이 VCF 설치, 패치와 업그레이드, 인증과 접근 제어, 보안 모니터링을 맡는다.
+
+이전 설계에는 VCF 운영 담당자, 라이선스, 네트워크 연결, 백업과 복구의 책임을 함께 적는다. 파트너에게 맡기는 경우에도 계약한 범위와 고객에게 남는 작업을 구분한다. 이는 운영 책임을 구체화하기 위한 점검 기준이며, 특정 파트너의 제공 범위를 보장하는 목록은 아니다.
+
+## 서비스 개시 전 운영 준비를 검증한다
+
+인프라 이전 완료와 사용자를 받는 준비 완료는 다르다. 2026-10-09 AWS Countdown Premium 안내는 아키텍처 검토, 준비도 평가, 실행 절차서와 예정된 이벤트 지원을 설명하며, 이전 계획부터 리허설, cutover와 사후 분석까지 다룬다. 지원 상품 이용 자체가 애플리케이션의 성능이나 복구 성공을 증명하지는 않는다.
+
+다음은 이를 적용한 운영 준비 점검 예시다.
+
+- 개시 전에 예상 동시 요청과 핵심 업무 흐름으로 부하를 재현하고, 용량 한계와 외부 의존성 병목을 확인한다.
+- 오류율, 응답 시간과 데이터 정합성의 통과 기준, 전환 중단 조건과 복구 담당자를 정한다.
+- 장애 알림이 실제 담당자에게 도달하는지, 실행 절차서대로 우회하거나 복구할 수 있는지 연습한다.
+- 개시 중에는 기술 지표와 업무 성공 지표를 함께 보고, 종료 후 예상과 실제 차이를 다음 절차에 반영한다.
+
+과거 발표의 지원 플랜 포함 여부나 고객 사례의 처리량을 현재 계약 조건과 자체 시스템의 보장값으로 옮기지 않는다.
+
 ## 흔한 실수
 
 - 전략 이름만 합의하고 바뀌는 범위를 적지 않아 견적, 일정과 책임이 어긋난다.
@@ -108,6 +129,9 @@ NC2는 작은 클러스터 또는 원격 EBS/S3 저장소를 활용하는 복구
 
 ## 출처
 
+- [AWS, What is Amazon Elastic VMware Service?](https://docs.aws.amazon.com/evs/latest/userguide/what-is-evs.html)
+- [AWS, Getting started with Amazon Elastic VMware Service](https://docs.aws.amazon.com/evs/latest/userguide/getting-started.html) — 2026-10-09 EVS 배포와 Self-deployed 모드의 운영 책임을 대조했다.
+- [AWS Countdown Premium — AWS](https://aws.amazon.com/premiumsupport/aws-countdown/) — 2026-10-09 운영 준비 지원 범위를 대조했다. 점검 목록은 적용 예시이며 기존 전환 전략 전체를 재검증한 기록은 아니다.
 - [Nutanix Cloud Clusters (NC2) on AWS — Nutanix](https://www.nutanix.com/library/datasheets/nc2-on-aws)
 - [Nutanix Cloud Platform for AWS — Nutanix](https://www.nutanix.com/en_gb/products/nutanix-cloud-clusters/aws)
 - [AWS, Disaster recovery options in the cloud](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html)

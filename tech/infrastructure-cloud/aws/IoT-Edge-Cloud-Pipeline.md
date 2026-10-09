@@ -62,6 +62,19 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 롤백 완료는 새 버전 배포 성공이 아니다. 실패 시 `deployment-failure-cause`와 장비 로그를 함께 확인한다. 운영 적용에서는 목표 버전, 실제 적용 결과와 현장 기능 점검을 따로 기록하는 방식을 검토한다. 배포 성공도 로봇 동작의 안전성이나 물리적 작업 완료를 증명하지 않는다.
 
+## 생성형 AI의 작업 제안과 물리 제어를 분리한다
+
+2026-10-09 AWS 로봇 시뮬레이션 가이드 대조 기준. 참조 구조에서는 Bedrock 모델이 작업 공간의 조건을 분석해 상위 수준의 전략을 제안하고, 시뮬레이션 애플리케이션이 이를 처리해 로봇의 위치와 속도를 계산한다. 모델의 자연어 응답을 그대로 모터 명령으로 해석하는 구조와 구분한다.
+
+이 구조를 현장에 적용할 때는 다음을 별도의 통과 조건으로 검토한다. 아래 항목은 설계 점검 제안이며 참조 구조가 물리적 안전성을 보장한다는 뜻은 아니다.
+
+1. 작업 대상을 잘못 인식하거나 현재 위치 정보가 오래됐을 때 계획을 거부하는지 확인한다.
+2. 생성한 전략을 시뮬레이션에서 실행하며 작업 공간, 속도와 충돌 조건을 검사한다.
+3. 시뮬레이션 통과 후에도 실제 장비의 센서 오차와 지연, 비상 정지 및 수동 전환을 별도로 확인한다.
+4. 검증한 모델과 제어 코드의 버전을 함께 추적하고, 새 배포의 적용 결과와 실제 작업 결과를 각각 확인한다.
+
+시뮬레이션 성공, 배포 성공과 현장 작업 성공은 서로 다른 증거다. 장비별 배포 상태를 확인하는 절차만으로 앞의 판단과 제어 검증을 대체하지 않는다.
+
 ## 적용 시 점검할 실패 조건
 
 다음은 공개 구현 사례와 제품 기능을 바탕으로 한 설계 점검 항목이다. Greengrass가 자동으로 보장하는 기능 목록은 아니다.
@@ -75,6 +88,7 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS, Guidance for AI-Driven Robotic Simulation and Training on AWS](https://docs.aws.amazon.com/solutions/ai-driven-robotic-simulation-and-training-on-aws/) — 2026-10-09 상위 전략 생성과 시뮬레이션 제어의 분리를 대조했다. 현장 통과 조건은 설계 제안이며 기존 IoT 기능 전체의 재검증은 아니다.
 - [AWS IoT Core, AWS IoT Device Shadow service](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html)
 - [AWS IoT Core, Device Shadow service documents](https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-document.html)
 - [AWS IoT Greengrass, Check deployment status](https://docs.aws.amazon.com/greengrass/v2/developerguide/check-deployment-status.html)
