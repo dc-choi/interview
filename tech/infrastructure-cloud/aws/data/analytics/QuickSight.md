@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, quicksight, bi, visualization, analytics]
 status: done
-verified_at: 2026-10-09
+verified_at: 2026-10-10
 category: "Infrastructure - AWS"
 aliases: ["QuickSight", "Amazon QuickSight", "Amazon Quick Sight", "BI"]
 ---
@@ -53,6 +53,19 @@ Direct query에서 화면이 타임아웃됐다고 원본 DB의 쿼리까지 취
 대응은 조회량과 실행 시간을 줄이는 데서 시작한다. 불필요한 열을 제외하고 데이터셋 필터나 사용자 정의 SQL의 `WHERE`, `HAVING`으로 범위를 좁힌다. SPICE 전환도 선택지지만, 화면의 대기 한도와 원본에서 데이터를 가져오는 단계의 타임아웃을 없애는 것은 아니다. Athena 같은 원본 서비스의 한도는 해당 계정에 적용된 quota로 확인한다.
 
 운영 점검 제안: 실패가 미리보기, 시각화, SPICE 적재 중 어디서 발생했는지 기록한다. 화면을 반복 새로고침하기 전에 원본 DB에 이전 쿼리가 남아 있는지 확인해 재시도 부하를 구분한다.
+
+## SPICE 조회 속도와 데이터 최신성을 구분한다
+
+부분 검증(2026-10-10): 공식 데이터 갱신 문서를 대조했다. SPICE는 가져온 데이터를 조회하므로 빠른 화면 응답이 원본의 최신 변경 반영을 뜻하지 않는다. Direct query는 연결된 데이터셋, 분석 또는 대시보드를 열 때 원본을 조회하며, SPICE의 갱신은 별도 적재 작업이다.
+
+Enterprise Edition의 SQL 기반 데이터 소스는 날짜 열과 look-back window를 지정한 증분 갱신을 지원한다. 이 방식은 해당 기간의 SPICE 행을 지우고 원본을 다시 조회한 결과로 대체하므로 기간 안의 삽입, 수정과 삭제를 반영한다. 단순히 새 행만 덧붙이는 방식으로 해석하지 않는다.
+
+운영 점검 제안:
+
+- 예약일을 기준으로 최근 7일만 갱신한다면, 예약일이 한 달 전인 건의 뒤늦은 취소는 그 범위 밖이다. 과거 정정 요구에 맞춰 조회 기간을 넓히거나 전체 갱신을 수행하는 정책을 검토한다.
+- 원본 집계 완료 시각과 SPICE 적재 완료 시각을 구분한다. 화면 새로고침을 적재 성공의 증거로 쓰지 않는다.
+- 복잡한 Custom SQL에서는 기간 필터가 효율적으로 적용되지 않아 증분 갱신이 전체 갱신보다 느릴 수도 있다. 같은 입력 범위와 원본 부하로 실행 시간을 비교한다.
+- DB 스키마가 바뀌면 갱신이 자동으로 이를 감지하지 못해 적재가 실패할 수 있다. 데이터셋을 편집하고 저장해 스키마를 맞춘 뒤 갱신 결과를 확인한다.
 
 ## 자연어 분석에는 업무 의미를 연결한다
 
@@ -129,6 +142,8 @@ AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 �
 
 ## 출처
 
+- [Amazon Quick, Refreshing data in Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/refreshing-data.html)
+- [Amazon Quick, Refreshing SPICE data](https://docs.aws.amazon.com/quick/latest/userguide/refreshing-imported-data.html)
 - [Amazon Quick, Insufficient permissions when using Athena with Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/troubleshoot-athena-insufficient-permissions.html)
 - [Amazon Quick, I can't connect to Amazon Athena](https://docs.aws.amazon.com/quick/latest/userguide/troubleshoot-connect-athena.html)
 - [Amazon Quick, Authorizing connections through AWS Lake Formation](https://docs.aws.amazon.com/quick/latest/userguide/lake-formation.html)

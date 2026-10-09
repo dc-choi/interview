@@ -39,6 +39,20 @@ Noriaki Kano(1984)가 제안한 고객 만족도 분류 프레임워크이다.
 - 결제 제안의 타이밍도 같은 문제 안에 있다. 가치를 경험하기 전의 결제 요구는 이탈 원인이 될 수 있다.
 - 기회와 해결책을 분리하는 [[#Continuous Discovery (Teresa Torres)|Continuous Discovery]]의 기회 해결 트리와 같은 원리다.
 
+## SaaS 전환에서는 고객군별 사용 차이를 조사한다
+
+구축형 제품을 SaaS로 바꿀 때 기존 고객의 요구를 새 고객군에도 그대로 적용하지 않는다. 사용자와 구매자의 역할, 업무 수행 환경과 도입 기대를 구분하고 대상 고객의 자료로 가정을 다시 확인한다. 온보딩은 계정을 만드는 단계뿐 아니라 고객이 가치를 얻기까지 필요한 업무와 운영 준비도 포함한다.
+
+다음은 고객 조사와 온보딩 원칙을 적용한 점검 제안이다.
+
+- 같은 기능을 잘 쓰는 고객과 거의 쓰지 않는 고객을 나누어 최근의 실제 업무를 묻는다. 사용량 차이만으로 원인을 확정하지 않는다.
+- 담당자, 입력 자료, 업무 절차가 준비되어 있는지 확인한다. 기능 부족, 사용성 문제와 고객의 업무 준비 부족을 서로 다른 가설로 둔다.
+- 구매자의 도입 결정과 실사용자의 반복 사용을 따로 확인한다. 계약 고객 수를 사용 정착의 증거로 대신하지 않는다.
+- 첫 가치 경험까지 걸린 시간과 그 전에 막힌 단계를 기록한다. 공통 문제는 제품 개선 후보로, 특정 고객만의 요구는 별도 검토 대상으로 분류한다.
+- 개선 후 같은 고객군에서 실제 과업 완료와 재사용이 달라졌는지 본다. 대상 고객군을 바꾸면 이전 결과를 새 집단에 그대로 일반화하지 않는다.
+
+이 점검은 모든 저사용 고객을 포기하거나 고객별 기능을 추가하라는 기준이 아니다. 관찰과 인터뷰로 병목을 좁힌 뒤 기능, 온보딩 또는 목표 고객군 중 무엇을 바꿀지 결정한다.
+
 ## 기능 우선순위 프레임워크
 
 ### RICE
@@ -126,13 +140,13 @@ Q. 사용자 피드백을 어떻게 관리하는가?
 - 직접 피드백이 없는 사용자의 미활동 신호를 GA4로 확인하되, 후속 조사 전에는 이탈 원인으로 단정하지 않음
 
 ## 출처
+- [AWS SaaS Journey Framework, Key Activities — Product Strategy](https://docs.aws.amazon.com/whitepapers/latest/saas-journey-framework/key-activities-1.html) — 사용자와 구매자, 고객 자료 수집, 온보딩과 첫 가치 경험
 - [GOV.UK, Finding participants for user research](https://www.gov.uk/service-manual/user-research/find-user-research-participants) — 연구 목적에 맞춘 모집, 경로별 편향과 참여 보상
 - [Intercom, RICE: Simple prioritization for product managers](https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/)
 - [Product Talk, Continuous Discovery Habits](https://www.producttalk.org/continuous-discovery-habits-book/)
 - [Product Talk, Opportunity Solution Trees](https://www.producttalk.org/opportunity-solution-trees/)
 - [Nielsen Norman Group, Interviewing Users](https://www.nngroup.com/articles/interviewing-users/)
 - [승무원을 위한 서비스 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/60)
-- [유저 말을 다 들으면 망하는 이유 — Threads, april__pm](https://www.threads.com/@april__pm/post/DW_XNu3mME0)
 
 ## 관련 문서
 - [[Product-Owner-Role|PO(Product Owner)의 역할과 책임]]
