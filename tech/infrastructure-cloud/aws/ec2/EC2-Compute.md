@@ -57,16 +57,24 @@ EBS 볼륨 유형:
 | `g, p` | GPU | ML 학습, 추론, 그래픽 |
 | `a1, m6g` (Graviton) | ARM | ARM64 호환성이 있는 워크로드에서 가격 대비 성능을 측정해 비교 |
 
+### 인스턴스 이름을 읽는 순서
+
+2026-10-09 공식 명명 규칙 기준, `c7gn.xlarge`는 `c`(컴퓨트 최적화), `7`(세대), `g`(Graviton), `n`(네트워크와 EBS 최적화), `xlarge`(크기)로 읽는다. 옵션 위치의 `a`는 AMD, `i`는 Intel, `d`는 인스턴스 스토어, `b`는 블록 스토리지 최적화를 뜻한다. 접두사의 `g` 계열과 옵션의 `g`를 같은 뜻으로 읽지 않는다.
+
+이름은 후보를 좁히는 출발점이다. 실제 선택에서는 해당 타입과 크기의 CPU, 메모리, 네트워크와 EBS 사양을 확인하고 워크로드로 비교한다. 세대 숫자나 크기만으로 모든 자원의 성능 향상 비율을 추정하지 않는다.
+
 ## T 시리즈 CPU 크레딧 시스템
+
+2026-10-09 공식 문서로 아래 적립과 소진, 모드별 동작을 대조했다.
 
 T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준으로:
 - 사용량 < 베이스라인 → **크레딧 적립**
 - 사용량 > 베이스라인 → **크레딧 소진하여 버스트** (100% CPU)
-- 크레딧 0 → 베이스라인으로 강제 제한
+- 적립 크레딧 소진 후 동작은 Standard와 Unlimited 모드에 따라 다름
 
 | 모드 | 동작 |
 |------|------|
-| Standard | 크레딧 0 시 베이스라인 제한 (예측 가능 비용) |
+| Standard | 적립 크레딧이 소진되면 CPU 사용률이 점차 베이스라인으로 내려가며, 크레딧이 다시 쌓이기 전까지 그 위로 버스트하지 못함 |
 | **Unlimited** | 크레딧 소진 후에도 베이스라인을 넘겨 버스트할 수 있고 일정 조건에서 surplus credit 요금 발생. T3/T4g 온디맨드의 초기 설정은 시작 경로와 구성에 따라 확인 |
 
 급증하는 트래픽이 있을 때 Unlimited는 추가 비용이 생길 수 있으므로 `CPUCreditBalance`, `CPUSurplusCreditBalance`, `CPUSurplusCreditsCharged`를 함께 모니터링한다.
@@ -86,3 +94,9 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 - [버스터블 성능 인스턴스의 CPU 크레딧](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html)
 - [인스턴스 스토어 수명](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html)
 - [EC2 데이터 보호와 인스턴스 간 전송 암호화](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-protection.html) — 전송 암호화 조건의 부분 검증
+- [Amazon EC2 인스턴스 유형 명명 규칙](https://docs.aws.amazon.com/ec2/latest/instancetypes/instance-type-names.html)
+
+## 관련 문서
+
+- [[EC2|EC2 전체 구성]]
+- [[EC2-Cost|구매 옵션과 용량 예약]]

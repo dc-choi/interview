@@ -61,6 +61,16 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 
 운영 점검에서는 실제 기존 도메인의 응답 코드와 `Location`, 경로와 쿼리 보존, 최종 URL의 응답을 따로 확인한다. ALB 주소로 한 번 성공한 결과만으로 기존 도메인의 DNS와 TLS까지 검증한 것으로 보지 않는다.
 
+### LCU 예약으로 급증 전에 최소 용량 확보
+
+2026-10-09 공식 문서 기준, ALB의 LCU 예약은 최소 처리 용량을 미리 확보하는 기능이다. 예약 뒤에도 트래픽에 따른 자동 확장은 계속된다. 신규 서비스 시작, 로드밸런서 이전과 예정된 급증에 사용할 수 있지만, 백엔드 대상의 처리 용량까지 확보해 주지는 않는다.
+
+- 용량은 대표 부하 테스트나 과거 트래픽의 `PeakLCUs` 1분 `Sum`으로 추정한다. 과금 차원을 집계하는 `ConsumedLCUs`를 같은 용도의 지표로 대체하지 않는다.
+- 요청량은 최소 100 LCU이며 상한은 계정 quota를 확인한다. 가용 용량에 따라 완료까지 수 시간이 걸릴 수 있으므로 요청 접수와 준비 완료를 구분하고, 이벤트 전에 상태가 `provisioned`인지 확인한다.
+- 예약 용량은 가용 영역에 균등 배분되므로 각 영역의 정상 대상과 처리 여력도 확인한다.
+- `ReservedLCUs`는 분 단위 과금 지표다. 6,000 LCU를 한 시간 예약하면 1분 합계는 100, 한 시간 합계는 6,000이다. `PeakLCUs` 1분 합계는 설정한 예약량 또는 `ReservedLCUs` 한 시간 합계와 비교한다.
+- 사용하지 않은 예약 용량도 취소 전까지 비용이 발생한다. 이벤트 뒤 축소나 취소를 점검하며 예약량 감소는 하루 두 번 제한을 고려한다.
+
 ## NLB — Network Load Balancer
 
 **Layer 4** (TCP, UDP, TLS, QUIC) 로드밸런서. 초저지연, 고정 IP가 필요한 워크로드용.
@@ -169,6 +179,9 @@ ALB의 504는 대상이 연결 timeout이나 idle timeout(기본 60초) 안에 �
 - **CLB는 이전 세대** — 기존 구성은 지원되지만 신규 설계는 ALB, NLB, GWLB의 기능을 우선 검토
 
 ## 출처
+- [Application Load Balancer 용량 예약](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html)
+- [Application Load Balancer 용량 예약 요청](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/request-capacity-unit-reservation.html)
+- [Application Load Balancer 용량 예약 모니터링](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/monitor-capacity-unit-reservation.html)
 - [Application Load Balancer HTTP 헤더](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/x-forwarded-headers.html)
 - [NGINX, ngx_http_log_module](https://nginx.org/en/docs/http/ngx_http_log_module.html)
 - [NGINX, ngx_http_core_module — Embedded Variables](https://nginx.org/en/docs/http/ngx_http_core_module.html#variables)
