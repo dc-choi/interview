@@ -56,6 +56,16 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 검증 시에는 정상 종료, 도구 실패 후 인계, 고객의 사람 상담 요청을 각각 재현한다. AI가 인계를 요청한 기록과 실제 큐 전송 및 상담원 연결 결과를 구분해 확인한다. 이는 위 기능을 적용하기 위한 검증 제안이며 특정 기업의 처리량이나 비용 절감 성과를 일반화한 기준은 아니다.
 
+## 대화 연속성과 자동 평가의 근거 범위를 구분한다
+
+이전 대화를 복원할 수 있다는 사실만으로 여러 상담에 걸친 문제 해결을 자동 평가할 수 있다고 가정하지 않는다. 2026-10-10 공식 가이드 기준, 생성형 AI 성과 평가는 대화 전사문을 근거로 질문에 답한다. CRM 같은 외부 시스템이나 화면 녹화에 접근하지 못하고, 여러 contact를 가로지르는 대화를 평가하지 못한다. 복원 기능과 평가 기능의 입력 범위는 별도로 확인한다. [성과 평가 가이드](https://docs.aws.amazon.com/connect/latest/adminguide/generative-ai-performance-evaluations.html)
+
+- 상담원이 해결 방법을 설명했는지는 전사문으로 평가할 수 있지만, 외부 시스템에서 실제 처리가 끝났는지는 업무 기록으로 대조한다.
+- 여러 언어가 섞이거나 인계 중 여러 사람이 겹쳐 말하면 전사 정확도가 낮아져 평가에도 영향을 준다. 이런 상담은 자동 평가 대상에서 제외하거나 사람이 검토할 조건을 정한다.
+- AI 평가의 표본을 사람이 다시 평가하고 시간에 따른 차이를 확인한다. 평가 건수 증가를 정확도 개선으로 해석하지 않는다.
+
+위 적용 기준은 공식 가이드의 입력 제한과 수동 검토 권고에서 도출한 운영 제안이다. 상담 복원, 인계 성공, 실제 업무 해결과 평가 정확도를 각각 측정한다.
+
 ## 구현 검토에 적용하기
 
 다음은 위 제약에서 도출한 설계 점검 항목이다. 제품 도입이나 특정 환경의 동작을 검증한 결과는 아니다.
@@ -72,6 +82,7 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 ## 출처
 
+- [AWS, Evaluate agent performance in Connect Customer using generative AI](https://docs.aws.amazon.com/connect/latest/adminguide/generative-ai-performance-evaluations.html)
 - [AWS, Use agentic self-service](https://docs.aws.amazon.com/connect/latest/adminguide/agentic-self-service.html)
 - [AWS, AI agent traces using Contact search and Contact details](https://docs.aws.amazon.com/connect/latest/adminguide/ai-agent-traces.html)
 - [Omnichannel Customer Experience — AWS](https://aws.amazon.com/products/connect/customer/omnichannel/)
