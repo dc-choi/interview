@@ -23,6 +23,20 @@ HealthOmics의 private workflow는 사용자가 정의한 분석 작업을 실�
 
 AI로 정의 파일을 변환하더라도 결과 비교는 남는다. 특정 사례의 처리 시간이나 비용 절감률을 다른 데이터 크기와 파이프라인의 보장값으로 쓰지 않는다.
 
+## 생성, 서열 설계와 구조 예측을 분리한다
+
+2026-10-09 AWS의 공개 설계 사례와 HealthOmics 제품 자료 대조 기준이다. 단백질 설계 파이프라인은 하나의 모델 호출이 아니라 산출물이 다른 여러 작업의 연결로 볼 수 있다.
+
+| 단계 예시 | 산출물과 다음 단계의 입력 |
+| --- | --- |
+| RFdiffusion 등으로 구조 생성 | 설계 조건을 반영한 구조 후보 |
+| ProteinMPNN 등으로 서열 설계 | 구조 후보에 대응하는 아미노산 서열 |
+| AlphaFold, ESMFold 등으로 구조 예측과 평가 | 후보의 예측 구조와 평가 결과 |
+
+이는 공개된 파이프라인의 예시이며 모든 HealthOmics workflow의 필수 모델 조합이나 기본 내장 구성을 뜻하지 않는다. 후보마다 병렬 분기하거나 평가 뒤 다시 설계하는 흐름도 가능하므로, task의 입력과 출력 및 반복 조건을 명시한다.
+
+재현성 점검에서는 결과에 사용한 입력, 모델 버전, 매개변수와 workflow 구성을 연결해 남긴다. 위 표의 예측 결과는 계산상 후보 선별 자료이며 실험실 검증 결과와 구분한다. 실행 완료, 예측 점수와 실제 실험 결과를 서로 다른 상태로 관리하는 것은 이 구분에서 도출한 운영 제안이다.
+
 ## 상태 이벤트와 업무 완료를 나눈다
 
 HealthOmics는 run과 task의 상태 변화를 EventBridge로 전달한다. 완료, 실패와 취소 상태에 맞춰 후속 처리를 연결할 수 있지만, **HealthOmics에서 EventBridge로의 전달은 best effort**다. 이벤트 도착만을 유일한 완료 확인 경로로 두지 않는다.
@@ -53,6 +67,8 @@ Run group으로 동시 실행과 자원 사용에 상한을 둘 수 있다. 자�
 
 ## 출처
 
+- [How Evolvere Biosciences performs macromolecule design on AWS — AWS HPC Blog](https://aws.amazon.com/blogs/hpc/how-evolvere-biosciences-performs-macromolecule-design-on-the-aws-cloud/)
+- [Drug Discovery — AWS HealthOmics](https://aws.amazon.com/healthomics/drug-discovery/)
 - [AWS HealthOmics, Private workflows in HealthOmics](https://docs.aws.amazon.com/omics/latest/dev/private-workflows.html)
 - [AWS HealthOmics, Task lifecycle in a HealthOmics run](https://docs.aws.amazon.com/omics/latest/dev/workflow-run-tasks.html)
 - [AWS HealthOmics, Using EventBridge with AWS HealthOmics](https://docs.aws.amazon.com/omics/latest/dev/eventbridge.html)

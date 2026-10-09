@@ -45,6 +45,17 @@ aliases: ["Personalization", "Recommendation", "개인화", "추천 시스템"]
 - **이미 구매한 상품의 재추천** — 명시적 제외 규칙이 필요하다 (소모품 재구매는 예외).
 - 알고리즘이 자동화돼도 무시할 데이터와 집중할 고객층을 가르는 판단은 사람의 몫으로 남는다.
 
+## 개인화의 증분 효과를 검증한다
+
+개인화 기능을 배포한 사실과 구매나 이용 성과가 개선된 사실은 구분한다. 추천 모델을 비교할 때는 측정 가능한 업무 목표와 가설을 먼저 정하고, 기존 추천을 유지하는 대조군과 변경된 추천을 받는 실험군을 비교한다.
+
+- 클릭률, 시청 시간이나 구매 금액처럼 가설에 맞는 지표를 고른다. 클릭 증가만으로 매출 개선을 결론 내리지 않는다.
+- 시작 전에 사용자 분할 방식과 실험 기간을 정하고, 실행 중 분할 비율을 임의로 바꾸지 않는다.
+- 가설과 무관한 화면, 지연 시간, 필터와 정렬 변경은 비교를 흐릴 수 있다. 행사와 마케팅 캠페인의 영향도 함께 점검한다.
+- 표본 규모와 통계적 불확실성을 확인한 뒤 판단한다. 짧은 기간의 수치 상승만으로 개인화의 효과를 확정하지 않는다.
+
+이 절차는 Amazon Personalize의 A/B 테스트 지침을 제품 판단에 적용한 것이다. 운영 적용에서는 효과 측정과 별도로 데이터 수집, 추천 제공과 검수에 드는 비용을 계산해 확대 여부를 정한다.
+
 ## 추천 AI의 윤리: FAT
 
 딥러닝 기반 추천은 인간이 과정을 평가하기 어려운 알고리즘을 단시간에 만들어낸다 — 블랙박스 문제. 그래서 공정성(Fairness), 책임감(Accountability), 투명성(Transparency)의 FAT 원칙이 추천 시스템의 운영 요건으로 들어온다.
@@ -70,6 +81,7 @@ aliases: ["Personalization", "Recommendation", "개인화", "추천 시스템"]
 - 알고리즘 고도화 이전에 제외 규칙(이미 구매, 품절, 테스트 데이터)이 추천 품질의 체감을 좌우한다.
 
 ## 출처
+- [Amazon Personalize, Measuring recommendation impact with A/B testing](https://docs.aws.amazon.com/personalize/latest/dg/ab-testing-recommendations.html)
 - [쇼핑몰이 고객을 분석한다 (개인화와 추천) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/41)
 - [재주는 AI가 부려도, 돈 버는 왕서방이 책임도 져라 (FAT) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/218)
 - [브랜드사, 이커머스의 미래를 대비하라 1편 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/45)

@@ -71,6 +71,16 @@ Private Subnet에서 S3를 자주 쓰면 Gateway Endpoint 설정만으로도 NAT
 
 보안 그룹의 방향도 구분한다. Resource gateway의 보안 그룹은 gateway에서 리소스로 나가는 트래픽을 제어한다. 클라이언트, endpoint나 VPC association, 대상 리소스의 보안 그룹과 애플리케이션 인증을 각각 확인한다. 적용 점검에서는 DNS 응답, TCP 연결, 애플리케이션 인증 성공과 금지된 클라이언트의 접근 거절을 나눠 확인한다.
 
+### 리전 간 PrivateLink와 장애 전환의 경계
+
+2026-10-09 공식 문서 기준, NLB를 앞에 둔 endpoint service는 공급자가 허용한 다른 리전의 interface endpoint에서 접근할 수 있다. 이 설명을 앞 절의 resource endpoint에 그대로 적용하지 않는다.
+
+- 공급자는 지원 리전을 설정하고 소비자는 endpoint 생성 시 서비스 리전을 선택한다. IAM의 `vpce:AllowMultiRegion` 권한도 필요하다.
+- PrivateLink는 가용 영역 사이의 장애 전환을 관리하지만 리전 사이의 장애 전환은 관리하지 않는다. 다른 리전에서 접근할 수 있다는 사실만으로 서비스 리전 전체의 장애가 해결되지는 않는다.
+- NLB의 TCP idle timeout을 사용자 지정한 구성과 UDP fragmentation에는 cross-Region 제약이 있다. 실제 대상 리전과 AZ의 지원 조건도 배포 전에 확인한다.
+
+리전 장애까지 대비하려면 별도 리전의 서비스 배포, 데이터 복구와 소비자의 연결 전환을 함께 설계한다. 이는 cross-Region 연결 기능의 자동 동작이 아니라 애플리케이션 운영 책임이다.
+
 ## 온프레미스 연결 — VPN vs Direct Connect
 
 | 옵션 | 특징 | 용도 |
@@ -84,6 +94,7 @@ Private Subnet에서 S3를 자주 쓰면 Gateway Endpoint 설정만으로도 NAT
 
 ## 출처
 
+- [AWS PrivateLink service sharing — cross-Region 권한과 장애 전환 경계](https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-share-your-services.html)
 - [AWS PrivateLink resource access — resource endpoint 구성과 연결 제약](https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-resources.html)
 - [AWS VPC Lattice operation — 서비스 네트워크와 소비자 연결 방식](https://docs.aws.amazon.com/vpc-lattice/latest/ug/how-it-works.html)
 - [AWS VPC Lattice auth policies — resource configuration 적용 제외](https://docs.aws.amazon.com/vpc-lattice/latest/ug/auth-policies.html)

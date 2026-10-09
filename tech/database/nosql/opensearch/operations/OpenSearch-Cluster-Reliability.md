@@ -34,6 +34,16 @@ Primary shard 수 계산, AWS sizing 휴리스틱, hot storage 공식, scale-up�
 
 Replica는 노드 장애와 읽기 분산을 위한 수단이다. 잘못된 delete와 논리 손상도 복제하므로 backup이 아니다.
 
+### 검색 라우팅과 쓰기 격리는 별도 제어다
+
+2026-10-09 공식 API와 cluster settings 문서 대조 기준이다. 아래는 self-managed OpenSearch의 제어 수단이며, 관리형 서비스의 자동 장애 전환 보장을 뜻하지 않는다.
+
+- **Weighted routing:** awareness attribute별 가중치로 검색 요청을 분배한다. 예를 들어 세 zone의 가중치 `1, 1, 0`은 정상 경로에서 앞의 두 zone으로 검색을 보내는 구성이다. `cluster.routing.weighted.fail_open`은 기본 `true`이며 가중 라우팅 대상이 모두 사용 불가능하면 다른 노드로 요청을 허용할 수 있다. 따라서 가중치 0을 절대적인 접근 차단으로 해석하지 않는다.
+- **Decommission:** 장애 zone을 awareness attribute 기준으로 격리해 복제 요청의 정체와 대기열 증가를 줄이는 별도 API다. 검색 가중치만 바꾸었다고 쓰기 복제 경로까지 격리됐다고 판단하지 않는다.
+- **설정 갱신:** weights의 `PUT`은 해당 attribute의 기존 구성을 교체한다. 현재 가중치와 `_version`을 조회한 뒤 전체 목표 구성을 보내고, 낙관적 동시성 제어로 다른 변경과의 충돌을 확인한다.
+
+운영 적용 시에는 생존 zone의 shard copy와 여유 용량을 확인하고 검색과 색인을 각각 시험한다. 격리 요청의 수락과 완료를 나누어 decommission 상태를 확인하며, 재합류 후에도 복구와 실제 요청 성공을 확인한다. 이 점검 순서는 API의 제어 범위를 바탕으로 한 운영 제안이다.
+
 ## Disk watermark
 
 기본적인 사용률 기준은 low 85%, high 90%, flood stage 95%다. 운영 버전의 실제 값을 반드시 확인한다.
@@ -139,6 +149,8 @@ Rolling upgrade는 인접 major version만 지원한다. 3.x로 갈 때는 sourc
 
 ## 출처
 
+- [OpenSearch Documentation, Cluster Routing And Awareness API](https://docs.opensearch.org/latest/api-reference/cluster-api/cluster-awareness/)
+- [OpenSearch Documentation, Cluster Decommission API](https://docs.opensearch.org/latest/api-reference/cluster-api/cluster-decommission/)
 - [OpenSearch Documentation, Creating a cluster](https://docs.opensearch.org/latest/tuning-your-cluster/index/)
 - [OpenSearch Documentation, Voting and quorum](https://docs.opensearch.org/latest/tuning-your-cluster/discovery-cluster-formation/voting-quorums/)
 - [OpenSearch Documentation, Cluster settings](https://docs.opensearch.org/latest/install-and-configure/configuring-opensearch/cluster-settings/)
