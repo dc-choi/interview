@@ -9,7 +9,7 @@ aliases: ["Data-Centric AI Shift", "AI 패러다임 전환", "임금 하방경�
 
 상위 문서: [[IT-Downturn-Career-Strategy|긴축기 IT 커리어 전략]]
 
-> 검토 기준일: 2026-07-28, 개발 비용 하락과 일자리 절은 2026-10-05. 시장 판단은 국가, 직무, 경력, 기업 단계에 따라 달라진다. 아래 내용은 예측이 아니라 지원 기업과 역할을 검증하는 프레임으로 사용한다.
+> 검토 기준일: 2026-07-28, 개발 비용 하락과 일자리 절은 2026-10-05, 직무 전환과 과업 노출도 절은 2026-10-09. 시장 판단은 국가, 직무, 경력, 기업 단계에 따라 달라진다. 아래 내용은 예측이 아니라 지원 기업과 역할을 검증하는 프레임으로 사용한다.
 
 ## AI 경쟁 축은 하나가 아니다
 
@@ -87,6 +87,23 @@ OECD Employment Outlook 2026에 따르면 OECD 평균 실질임금 증가율은 
 
 경기 요인과 구조 요인은 시간이 지나야 분명해지는 경우가 많으므로 원인 판정을 전환 결정의 전제 조건으로 두지 않는다. 이미 가진 역량을 버리는 전환은 위에서 든 지원 직무의 공고 수와 요구 경력, 면접 전환율, 개인 런웨이 같은 증거로 판단한다.
 
+## 직무 전환은 과업 노출도와 진입 조건을 함께 본다
+
+생성형 AI에 노출된 과업의 비중은 실제 해고 확률이 아니다. ILO의 2025년 직업 노출도 분석은 직업 안의 과업별 자동화 가능성을 평가하며, 실제 영향은 기술 채택, 비용, 인프라와 숙련 같은 조건에 따라 달라진다. 이 지표만으로 현장 노동 전체의 로봇 대체 가능성이나 한국의 고용 안정성을 판단할 수 없다.
+
+현장직도 직무 이름만으로 안전성을 판단하지 않는다. 미국 BLS의 용접 직군 안내는 기술 교육과 현장 훈련의 필요성을 설명하며, 숙련 수요가 있어도 제조업 자동화가 전체 수요를 제한할 수 있다고 본다. 미국 직군 설명을 한국의 채용 규모나 전환 성공률로 옮기지 않는다.
+
+다음은 위 근거를 직무 전환 검토에 적용한 질문이다.
+
+| 판단 대상 | 확인할 증거 |
+|---|---|
+| 실제 맡을 일 | 반복 과업, 현장 변수에 대한 판단, 고객과의 조율을 구분한 업무 목록 |
+| 진입 경로 | 교육과 현장 훈련, 필요한 자격, 초보자를 채용하고 훈련하는 공고 |
+| 고용 조건 | 계약 기간, 일감의 공백, 이동과 작업 환경, 지역별 채용 기회 |
+| 전환 비용 | 훈련 기간과 소득 공백, 기존 역량을 활용할 수 있는 범위 |
+
+한 직군의 AI 노출도가 낮다는 이유로 기존 역량을 버리지 않는다. 실제 공고와 훈련 경로를 확인하고, 기술적으로 가능한 자동화와 기업의 도입, 실제 고용 결과를 따로 추적한다.
+
 ## 관련 문서
 
 - [[IT-Downturn-Career-Strategy-Developer-Strategy|개발자 대응 전략]] — 개인의 AI 활용 역량과 상황별 준비
@@ -97,6 +114,8 @@ OECD Employment Outlook 2026에 따르면 OECD 평균 실질임금 증가율은 
 
 ## 출처
 
+- [How might generative AI impact different occupations? — International Labour Organization](https://www.ilo.org/resource/article/how-might-generative-ai-impact-different-occupations) — 2025년 과업별 잠재 노출도와 실제 영향의 구분.
+- [Welders, Cutters, Solderers, and Brazers — U.S. Bureau of Labor Statistics](https://www.bls.gov/ooh/production/welders-cutters-solderers-and-brazers.htm) — 직무 진입 훈련과 제조업 자동화의 수요 제약.
 - [The 2026 AI Index Report — Stanford HAI](https://hai.stanford.edu/ai-index/2026-ai-index-report)
 - [Research and Development, 2026 AI Index — Stanford HAI](https://hai.stanford.edu/ai-index/2026-ai-index-report/research-and-development)
 - [Technical Performance, 2026 AI Index — Stanford HAI](https://hai.stanford.edu/ai-index/2026-ai-index-report/technical-performance)

@@ -72,6 +72,19 @@ Prowler의 mutelist는 의도적인 설정에 대한 finding을 억제한다. CS
 - 실행마다 도구 버전, 계정과 리전, 검사 범위, 실패와 제외 항목을 함께 기록한다. 결과 수 감소만으로 보안이 좋아졌다고 판단하지 않는다.
 - 조치 뒤 같은 범위로 다시 검사하고 실제 접근 차단 여부도 확인한다. 보고서 생성과 위험 해소는 별도 완료 조건이다.
 
+### 중앙 점검 결과와 장기 감사 증거를 구분한다
+
+2026-10-09 AWS Security Hub CSPM 공식 문서 기준, finding은 상태와 갱신 시각에 따라 만료된다. 처음 수집한 날부터 모든 결과를 일률적으로 90일 보존하는 구조로 이해하지 않는다.
+
+| RecordState | 갱신되지 않았을 때의 만료 기간 |
+|---|---|
+| `ACTIVE` | 90일 |
+| `ARCHIVED` | 30일 |
+
+Security Hub CSPM 자체 control finding은 `UpdatedAt`을 기준으로 한다. 그 밖의 finding은 `ProcessedAt`과 `UpdatedAt` 중 더 최근 시각을 기준으로 한다. 만료된 finding은 영구 삭제되므로, 목록에서 사라졌다는 사실만으로 취약점이 해결됐다고 판단하지 않는다.
+
+장기 감사 증거가 필요하면 S3 같은 별도 저장소로 내보낸다. AWS는 EventBridge 규칙과 custom action을 이용한 내보내기를 안내한다. 운영에서는 필요한 계정과 리전의 결과가 실제로 저장되는지, 접근 통제와 보존 기간이 요구사항에 맞는지 별도로 확인한다. 중앙 화면 연동과 감사 증거의 장기 보존은 서로 다른 완료 조건이다.
+
 ## 인증 종류와 심사 범위를 먼저 정한다
 
 2026-10-09 KISA 제도 소개와 인증 절차를 대조한 범위다. 구성 점검 도구의 결과를 인증 전체의 충족 증거로 대신하지 않는다.
@@ -104,6 +117,7 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 
 ## 출처
 
+- [AWS Security Hub CSPM, Creating and updating findings](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings.html) — 상태별 만료 기간, 기준 시각과 장기 보존.
 - [KISA, ISMS-P 제도소개](https://www.isms-p.or.kr/sysm/intro/selectSysmCertDetail.do)
 - [KISA, ISMS-P 인증 절차 안내](https://www.isms-p.or.kr/cert/aply/selectCertPrcdDetail.do)
 - [KISA, 클라우드보안인증제](https://www.isms-p.or.kr/sysm/intro/selectSysmVrtlDetail.do)
