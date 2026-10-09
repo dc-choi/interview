@@ -100,6 +100,16 @@ AgentCore 배포가 끝났어도 내부에서 호출하는 Bedrock 모델의 접
 
 Experience를 만들었다는 사실만으로 적용이 끝나지 않는다. 상태, audience 연결과 승인 목록을 함께 확인한다. 이 점검은 Private Marketplace를 사용하는 경우의 조달 경계이며, 모든 Bedrock 계정에 이를 새로 만들라는 뜻이 아니다. 조달 승인 후에도 모델 호출 IAM과 리전별 사용 가능 여부는 별도 조건이다.
 
+## Managed Agents와 AgentCore Runtime의 경계
+
+2026-10-09 공식 User Guide 기준, Amazon Bedrock Managed Agents(BMA, powered by OpenAI)는 public preview다. BMA가 대화와 모델 상호작용을 관리하고, 명령과 도구는 사용자가 제공한 실행 환경에서 수행한다. 자체 호스트와 AgentCore Runtime 중에서 실행 환경을 선택할 수 있으므로 BMA의 세션과 Runtime의 연산 환경을 같은 대상으로 취급하지 않는다.
+
+- BMA preview는 `bedrock-runtime` 대신 `bedrock-mantle` endpoint를 사용한다. 기존 추론 API의 연결 설정을 그대로 재사용한다고 가정하지 않는다.
+- 서비스가 보관하는 대화와 실행 환경의 파일은 수명이 다르다. BMA 세션을 삭제해도 자체 S3 버킷이나 호스트에 저장한 파일은 삭제되지 않는다.
+- 현재 preview에는 내장 장기 기억 통합과 subagent 지원이 없다. AgentCore Memory의 기능을 BMA 세션에 자동 적용되는 기능으로 해석하지 않는다.
+
+세션 삭제 뒤 남는 저장소와 데이터의 정리 책임을 따로 정하는 것은 이 수명 경계에서 도출한 운영 점검이다. 이 절의 대조는 기존 AgentCore 설명 전체의 재검증이나 실제 배포 검증을 뜻하지 않는다.
+
 ## 운영 점검
 
 - 다른 사용자의 세션과 기억 조회를 거절하는가
@@ -111,6 +121,8 @@ Experience를 만들었다는 사실만으로 적용이 끝나지 않는다. 상
 
 ## 출처
 
+- [AWS, Amazon Bedrock Managed Agents, powered by OpenAI (preview)](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-managed-agents-openai.html)
+- [AWS, Preview availability and limitations](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-managed-agents-openai-quotas-limitations.html)
 - [AWS, Memory types](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-types.html)
 - [AWS Marketplace, Private Marketplace concepts](https://docs.aws.amazon.com/marketplace/latest/buyerguide/private-marketplace-concepts.html)
 - [AWS Marketplace, Configuring Private Marketplace](https://docs.aws.amazon.com/marketplace/latest/buyerguide/configure-private-marketplace.html)

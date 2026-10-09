@@ -61,6 +61,16 @@ IAM action은 DynamoDB API 작업마다 따로 평가된다. `dynamodb:PutItem`�
 - 거부 메시지에 나온 action만 추가하고 `dynamodb:*`로 넓히지 않는다. 배포 전 [[IAM-Policy|IAM Policy Simulator]]로 필요한 action 조합을 확인한다
 - 미처리 항목 재시도는 아래 스로틀링 절을 따른다
 
+### 다른 계정의 접근은 양쪽 정책과 대상 ARN을 확인한다
+
+2026-10-09 공식 문서로 대조한 추가 내용이다. 다른 계정의 주체가 테이블을 읽으려면 호출 주체의 identity-based policy와 대상 테이블의 resource-based policy가 모두 해당 action을 허용해야 한다. 호출 역할에 `GetItem`을 허용한 것만으로 다른 계정의 테이블에 접근할 수 있는 것은 아니다.
+
+- 교차 계정 호출의 `TableName`에는 대상 테이블의 전체 ARN을 전달한다. 이름만 주면 요청자 계정의 테이블을 대상으로 처리된다.
+- 같은 계정에서는 조건부 resource-based `Allow`만 추가해 기존의 무조건적인 identity-based `Allow`를 제한할 수 없다. 속성 접근을 제한하려면 명시적 `Deny` 등 전체 정책 평가를 검토한다.
+- AWS managed KMS key로 암호화한 테이블은 resource-based policy를 통한 교차 계정 접근을 지원하지 않는다. 테이블 정책과 암호화 키의 접근 조건을 따로 확인한다.
+
+이 절만 추가 대조했으며, 문서 전체의 `verified_at`은 갱신하지 않았다.
+
 ## 테이블 클래스
 
 | 클래스 | 용도 |
@@ -151,6 +161,9 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 ## 출처
 
+- [AWS DynamoDB — Cross-account access with resource-based policies](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/rbac-cross-account-access.html)
+- [AWS DynamoDB — Authorization with IAM identity-based policies and DynamoDB resource-based policies](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/rbac-auth-iam-id-based-policies-DDB.html)
+- [AWS DynamoDB — Resource-based policy considerations](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/rbac-considerations.html)
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)
 - [AWS DynamoDB 서비스 할당량](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ServiceQuotas.html)
 - [AWS DynamoDB On-Demand 용량 모드와 최대 처리량](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode-max-throughput.html)
