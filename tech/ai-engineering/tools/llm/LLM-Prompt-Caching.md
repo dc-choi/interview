@@ -34,7 +34,16 @@ verified_at: 2026-10-06
 
 1. **고정/변동 분리 (선행 구조 작업)** — 규칙, 지시문, few-shot 예시, 출력 스키마 같은 고정값은 시스템 프롬프트 블록으로, 상품 데이터와 사용자 입력 같은 변동값은 유저 메시지로 옮긴다. 이 분리가 안 돼 있으면 캐시 포인트를 추가해도 매 요청 해시가 달라져 무효화된다.
 2. **캐시 포인트 설정** — Bedrock Converse API는 시스템 프롬프트 블록 뒤에 CachePointBlock을 붙이고 type(DEFAULT)과 TTL을 지정한다. Anthropic API는 cache_control 블록으로 같은 지점을 지정한다.
-3. **히트율 모니터링** — cache_read, cache_write 토큰을 메트릭으로 수집한다. 캐시가 동작하지 않아도 API는 에러를 던지지 않고 cache_read가 0으로 찍힐 뿐이므로, 대시보드 없이는 실패를 인지할 수 없다.
+3. **히트율 모니터링** — cache_read, cache_write 토큰을 메트릭으로 수집한다. Bedrock에서 최소 토큰 미달은 추론 오류 없이 캐시되지 않으므로 응답 성공과 캐시 적중을 구분한다. 잘못된 요청까지 오류가 없다는 뜻은 아니다.
+
+### Bedrock의 체크포인트와 적중 조건
+
+2026-10-09 AWS 공식 문서 기준, 명시적 체크포인트는 캐시할 후보 구간을 지정하며 적중을 보장하지 않는다.
+
+- 최소 토큰은 각 체크포인트 앞의 전체 prefix를 누적해 계산한다. 해당 모델에서 허용하는 `tools`, `system`, `messages`가 포함되며, 인접 체크포인트 사이에 별도의 최소 길이가 필요한 것은 아니다.
+- 같은 prefix와 유효한 체크포인트를 보내도 실제 재사용은 응답의 캐시 사용량으로 확인한다.
+- Cross-region inference의 라우팅 최적화는 수요가 많을 때 캐시 쓰기를 늘릴 수 있다. 따라서 읽기 할인율만으로 총비용을 계산하지 않는다.
+- on-demand 추론 엔드포인트에서 지원하며 batch inference API는 지원하지 않는다. 클라이언트에서 여러 on-demand 요청을 보내는 배치 처리와 관리형 batch inference API를 구분한다.
 
 ## TTL 동작
 
@@ -53,7 +62,7 @@ verified_at: 2026-10-06
 | Cache Warming | 병렬 발사 전 워밍 콜 1회로 캐시 선적재 |
 | Relocation Trick | 시스템 프롬프트에 섞인 동적 값을 유저 메시지로 이동 |
 
-- **Cache Warming** — 캐시 항목은 첫 요청의 응답이 시작된 뒤에야 쓸 수 있으므로, 그 전에 나머지를 동시 발사하면 전부 miss가 된다. 워밍 콜 1회를 먼저 보내고 병렬 발사하면 TTL 내 동일 prefix 호출이 사실상 모두 hit로 전환된다. 워밍 콜 1회의 비용은 작고 효과는 뒤따르는 호출 전체에 미치므로 이득이 크다.
+- **Cache Warming** — 재사용할 prefix의 요청을 먼저 보내 캐시를 만든 뒤 후속 요청을 보낸다. Bedrock은 명시 캐싱도 적중을 보장하지 않으므로 워밍 호출 뒤의 읽기 토큰과 쓰기 비용을 함께 측정한다. 워밍 비용보다 후속 재사용의 절감액이 클 때 적용한다.
 - **Relocation Trick** — 타임스탬프, 요청 ID, 사용자 ID 같은 동적 값을 시스템 프롬프트에서 유저 메시지로 옮기는 한 줄 변경. 히트율이 한 자릿수로 낮게 나올 때 거의 항상 첫 번째로 의심할 원인이다.
 
 ## 캐시를 깨뜨리는 안티패턴
@@ -63,7 +72,7 @@ verified_at: 2026-10-06
 | 시스템 프롬프트에 타임스탬프 | 매초 해시가 달라짐 | 동적 값은 유저 메시지로 |
 | 시스템 프롬프트에 사용자 ID | 사용자마다 다른 해시 | 플레이스홀더 사용 |
 | JSON 직렬화 키 순서 비일관 | 요청마다 다른 해시 | 키 정렬 강제 |
-| 병렬 요청 동시 발사 | 첫 응답 시작 전 전부 miss | 워밍 콜 1회 선행 |
+| 캐시 생성 전 병렬 요청 동시 발사 | 같은 prefix를 여러 번 처리할 수 있음 | 워밍 호출 후 실제 읽기 토큰 확인 |
 | Tool 정의 순서 변경 | 전체 캐시 무효화 | 순서 고정(알파벳순) |
 | 최소 토큰 미달 | 에러 없이 미캐시 | 모델별 최소 토큰 확인 |
 
@@ -115,7 +124,7 @@ API의 토큰 단가와 구독형 앱의 사용량 차감은 구분한다. 2026-
 - [LLM 비용 64% 절감, 캐시 히트율 98% 달성기 — 무신사 테크블로그 (29CM)](https://techblog.musinsa.com/llm-%EB%B9%84%EC%9A%A9-64-%EC%A0%88%EA%B0%90-%EC%BA%90%EC%8B%9C-%ED%9E%88%ED%8A%B8%EC%9C%A8-98-%EB%8B%AC%EC%84%B1%EA%B8%B0-d568135bd40e)
 - [Anthropic Docs, Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) (가격 배율, 최소 토큰, TTL 갱신, 조직과 workspace 격리, 무효화 조건, 사용량 필드, 자동 캐싱)
 - [Anthropic Docs, Mid-conversation system messages](https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages) (대화 중 도구 변경 지원 모델과 베타 헤더)
-- [AWS Bedrock User Guide, Prompt caching](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html) (TTL 리셋, 모델별 최소 토큰, 읽기/쓰기 과금, OpenAI 모델의 `implicit` 기본 모드, 캐시 읽기의 입력 TPM 제외)
+- [AWS Bedrock User Guide, Prompt caching](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html) (TTL 리셋, 모델별 최소 토큰, 읽기/쓰기 과금, OpenAI 모델의 `implicit` 기본 모드, 캐시 읽기의 입력 TPM 제외. 2026-10-09 부분 확인: 누적 prefix 최소 길이, 적중 비보장, Cross-region inference의 쓰기 증가와 batch inference 제외)
 - [OpenAI API Docs, Prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching) (기본 활성, 최소 토큰, 30분 TTL, 쓰기와 읽기 배율, 사용량 필드, TPM 산입)
 - [OpenAI API Docs, Pricing](https://developers.openai.com/api/docs/pricing) (GPT-6 계열 캐시 읽기와 쓰기 단가)
 - [Gemini API Docs, Context caching](https://ai.google.dev/gemini-api/docs/caching) (암묵 캐싱 기본 활성)

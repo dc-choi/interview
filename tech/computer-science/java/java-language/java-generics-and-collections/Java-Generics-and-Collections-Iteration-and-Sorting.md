@@ -8,7 +8,7 @@ aliases: ["Java Iteration and Sorting", "Java 순회와 정렬"]
 
 # Java 순회, 정렬과 컬렉션 유틸리티
 
-김영한 강사의 순회와 정렬 단원은 자료구조별 탐색 방식을 `Iterable`과 `Iterator`로 통일하고, 자연 순서와 외부 정렬 전략을 분리한다. 편리한 문법 뒤의 계약을 알면 향상된 for문, 정렬 집합, 이진 탐색을 같은 원리로 설명할 수 있다.
+자료구조별 탐색 방식은 `Iterable`과 `Iterator`로 통일하고, 자연 순서와 외부 정렬 전략은 분리한다. 편리한 문법 뒤의 계약을 알면 향상된 for문, 정렬 집합, 이진 탐색을 같은 원리로 설명할 수 있다.
 
 ## Iterable과 Iterator
 
@@ -75,6 +75,26 @@ members.sort(ranking);
 - natural ordering이나 comparator가 `equals`와 일관되지 않을 수는 있지만, `TreeSet`과 `TreeMap`에서는 비교 결과 0이 원소나 키의 동일성을 정하므로 특별히 주의한다.
 - 여러 기준은 `thenComparing`으로 명시해 동점 처리와 결과 재현성을 보장한다.
 
+### equals와 compareTo의 동등성은 다를 수 있다
+
+Java SE 26 API를 2026-10-09에 대조한 비교 계약이다.
+
+- `equals(Object)`는 `Object`에 정의된 동등성 검사이며 `boolean`을 반환한다. 재정의하지 않은 기본 구현은 같은 객체 참조인지 검사한다.
+- `compareTo(T)`는 `Comparable<T>`의 자연 순서 비교이며 `int`를 반환한다. 결과 0은 그 순서에서 동등하다는 뜻이다.
+- 자연 순서가 `equals`와 일관되는 것은 강한 권고이며 필수 조건은 아니다. 불일치하는 타입은 그 사실을 명시하도록 권고하며, `compareTo` 자체의 추이성 같은 필수 계약과 구분한다.
+- `BigDecimal.equals`는 수치와 scale이 모두 같아야 참이고, `compareTo`는 scale이 달라도 수치가 같으면 0이다.
+
+`a = new BigDecimal("1.0")`, `b = new BigDecimal("1.00")`일 때:
+
+| 연산 | 결과 | 이유 |
+|---|---|---|
+| `a.equals(b)` | `false` | scale이 1과 2로 다름 |
+| `a.compareTo(b)` | `0` | 수치는 같음 |
+| 빈 `HashSet`에 두 값 추가 | 크기 2 | `equals` 기준으로 서로 다름 |
+| comparator 없는 빈 `TreeSet`에 두 값 추가 | 크기 1 | 자연 순서의 비교 결과가 0 |
+
+따라서 집합 구현을 바꾸기 전에 같은 값의 업무상 기준이 수치인지 표현까지 포함하는지 정한다. `equals`와 해시 계약은 [[Java-Generics-and-Collections-Hashing|해시와 HashSet 원리]]를 함께 본다.
+
 ### 비교 기준을 찾는 순서와 실패
 
 - 정렬 메서드나 정렬 컬렉션에 `Comparator`를 넘기면 원소가 `Comparable`을 구현했더라도 그 comparator가 순서를 정한다. `list.sort(null)`과 comparator 없이 만든 `TreeSet`, `TreeMap`은 natural ordering을 쓴다.
@@ -106,6 +126,7 @@ members.sort(ranking);
 - 향상된 for문이 가능한 대상과 `Map` 순회 방법
 - 향상된 for문이 컴파일 뒤 어떤 루프가 되는지와 직접 만든 자료구조를 for-each 대상으로 만드는 방법
 - 자연 순서와 외부 comparator를 나누는 이유
+- `BigDecimal("1.0")`과 `BigDecimal("1.00")`을 `HashSet`과 `TreeSet`에 넣었을 때 크기가 달라지는 이유
 - comparator도 `Comparable`도 없을 때 `TreeSet`이 첫 삽입부터 실패하는 이유
 - 기본형 배열과 객체 배열의 정렬 알고리즘이 다른 이유
 - 비교 함수에서 뺄셈을 피해야 하는 이유
@@ -125,8 +146,12 @@ members.sort(ranking);
 - [문제와 풀이](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216029)
 - [정리](https://www.inflearn.com/courses/lecture?courseId=333482&unitId=216030)
 
-## Java SE 26 근거
+## 출처
 
+아래 API 근거는 Java SE 26 기준이다.
+
+- [Object.equals](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object))
+- [BigDecimal](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/math/BigDecimal.html)
 - [Iterable](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html)
 - [Iterator](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Iterator.html)
 - [JLS 14.14.2, 향상된 for문](https://docs.oracle.com/javase/specs/jls/se26/html/jls-14.html#jls-14.14.2)
