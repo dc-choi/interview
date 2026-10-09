@@ -50,6 +50,17 @@ NACL은 요청과 응답을 각각 허용해야 한다. 외부 클라이언트�
 
 SG/NACL의 기본값, 연결 추적과 이 절은 2026-10-07 공식 문서로 확인했다. NAT와 규제 관련 기존 절 전체를 재검증한 날짜는 아니다.
 
+## Traffic Mirroring 수신 경로 점검
+
+Traffic Mirroring은 ENI의 트래픽을 복제해 분석 대상에 전달한다. 2026-10-09 공식 Traffic Mirroring 문서로 아래 전송 조건을 대조했다. 기존 NAT와 규제 절 전체를 재검증한 날짜는 아니다.
+
+1. **경로:** source와 target이 같은 VPC 또는 연결된 VPC에 있고, source의 라우트 테이블에 target으로 가는 경로가 있는지 확인한다.
+2. **전송 허용:** 복제 패킷은 VXLAN으로 캡슐화되어 UDP 4789로 전달된다. target의 SG와 NACL에서 source로부터 오는 이 트래픽을 허용한다. 원본 패킷의 TCP나 ICMP 규칙만 확인해서는 부족하다.
+3. **분석 처리:** 패킷 도착과 원본 내용 분석을 나누어 점검한다. 분석 도구가 VXLAN을 해석할 수 있어야 내부 패킷을 읽을 수 있다.
+4. **누락과 잘림:** target의 MTU, 세션의 packet length, 인스턴스 대역폭과 PPS 한도를 확인한다. 복제 트래픽도 인스턴스 대역폭을 사용하며 혼잡 시 복제 패킷이 버려질 수 있다.
+
+운영 확인은 대상에서 실제 복제 패킷을 관찰하고 분석 도구의 처리 결과와 대조하는 방식으로 설계한다. 일부 패킷이 보인다는 사실만으로 원본 트래픽을 빠짐없이 수집했다고 판정하지 않는다.
+
 ## 보안, 규제 관점
 
 - **ISMS-P, 전자금융법**: 망분리, 접근통제, 로그 보관이 의무. 초기부터 이를 반영한 설계 필요
@@ -59,6 +70,9 @@ SG/NACL의 기본값, 연결 추적과 이 절은 2026-10-07 공식 문서로 �
 
 ## 출처
 
+- [Amazon VPC User Guide, Get started using Traffic Mirroring to monitor network traffic](https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html)
+- [Amazon VPC User Guide, Understand traffic mirror target concepts](https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-targets.html)
+- [Amazon VPC User Guide, Traffic Mirroring limitations](https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-network-limitations.html)
 - [Amazon VPC User Guide, Control traffic to your AWS resources using security groups](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html)
 - [Amazon VPC User Guide, Default security groups for your VPCs](https://docs.aws.amazon.com/vpc/latest/userguide/default-security-group.html)
 - [Amazon VPC User Guide, Default network ACL for a VPC](https://docs.aws.amazon.com/vpc/latest/userguide/default-network-acl.html)

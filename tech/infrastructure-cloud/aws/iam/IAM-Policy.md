@@ -98,6 +98,21 @@ aliases: ["IAM 정책", "IAM Policy 평가 로직"]
 | `s3:x-amz-server-side-encryption` | 업로드(PUT) 요청 헤더의 서버 측 암호화 방식. 강제는 부정 연산자를 쓴 Deny로 |
 | `kms:ViaService` | 특정 서비스 경유한 KMS 호출만 |
 
+## EC2 리소스 제한은 action별로 나눈다
+
+2026-10-09 공식 EC2와 IAM 문서로 이 절을 대조했다. EC2는 리소스 수준 권한을 일부 action에서 지원하므로 모든 action에 인스턴스 ARN을 넣는 정책은 작동하지 않는다.
+
+| 작업 | 권한 범위를 정할 때 확인할 것 |
+|---|---|
+| 시작과 중지 | `ec2:StartInstances`, `ec2:StopInstances`는 인스턴스 ARN과 `aws:ResourceTag/Owner` 같은 태그 조건으로 제한할 수 있다 |
+| 인스턴스 조회 | `ec2:DescribeInstances`는 리소스 수준 권한을 지원하지 않아 `Resource: "*"`를 쓰는 별도 statement로 둔다. 시작과 중지를 제한해도 조회 결과까지 같은 인스턴스만 보이는 것은 아니다 |
+| 인스턴스 생성 | `ec2:RunInstances`는 AMI, 서브넷, 네트워크 인터페이스, 보안 그룹과 구성에 따른 EBS 볼륨 등 여러 리소스의 권한을 함께 확인한다 |
+| 생성 시 태그 | 태그를 붙여 생성하려면 `ec2:CreateTags`도 필요하다. `ec2:CreateAction`을 `RunInstances`로 제한해 생성 시 태깅과 기존 리소스 태그 변경 권한을 나눈다 |
+
+생성 요청의 태그는 `aws:RequestTag/<키>`, 기존 리소스의 태그는 해당 action이 지원하는 resource tag 조건으로 평가한다. 소유자 태그로 권한을 나눈다면 `CreateTags`와 `DeleteTags`도 통제해야 한다. 대상 태그를 자유롭게 바꿀 수 있는 주체에게 그 태그를 권한 경계로 맡기지 않는다는 설계 점검이다.
+
+AWS의 사용자명 기반 예제는 IAM 사용자 대상이다. 역할이나 연합 로그인에 그대로 복사하지 않고 실제 요청에서 사용할 수 있는 principal 정보와 조건 키를 확인한다. 변경 뒤에는 허용할 인스턴스와 금지할 인스턴스를 모두 점검한다. `StartInstances`의 `DryRun`은 실제 시작 없이 권한을 검사하며, 허용 시 `DryRunOperation`, 거부 시 `UnauthorizedOperation`을 반환한다.
+
 ## iam:PassRole — 역할 전달 권한과 실행 권한의 구분
 
 `iam:PassRole`은 AWS 서비스에 기존 역할을 전달할 수 있는 권한이다. 별도 API 호출이 아니며, 역할 ARN을 받는 리소스 생성이나 변경 요청에서 검사된다. 다음 내용은 2026-10-08 공식 IAM 문서로 확인했다. 기존 절 전체의 검증 날짜를 바꾸지는 않는다.
@@ -126,6 +141,11 @@ Policy Simulator는 identity policy, permissions boundary, SCP와 직접 넣어 
 
 ## 출처
 
+- [Amazon EC2 — Identity-based policies for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-for-amazon-ec2.html)
+- [Amazon EC2 — Example policies to control access the Amazon EC2 API](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ExamplePolicies_EC2.html)
+- [AWS IAM — Allows starting or stopping EC2 instances a user has tagged](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_ec2_tag-owner.html)
+- [Amazon EC2 — Tag your Amazon EC2 resources](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html)
+- [Amazon EC2 API Reference — StartInstances](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_StartInstances.html)
 - [AWS IAM — Grant a user permissions to pass a role to an AWS service](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html)
 - [AWS IAM — IAM policy testing with the policy simulator](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_testing-policies.html)
 - [AWS IAM — How to simulate policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/policies_policy-simulator-how-to.html)

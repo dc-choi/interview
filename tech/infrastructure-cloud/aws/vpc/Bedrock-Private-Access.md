@@ -1,7 +1,7 @@
 ---
 tags: [aws, bedrock, vpc, privatelink, security]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-09
 category: "Infrastructure - AWS"
 aliases: ["Bedrock 비공개 연결", "Bedrock Private Access"]
 ---
@@ -41,8 +41,36 @@ Amazon Bedrock의 interface VPC endpoint는 애플리케이션에서 Bedrock API
 
 PrivateLink를 도입했다는 사실만으로 데이터 유출이나 프롬프트 인젝션을 방어했다고 판정하지 않는다.
 
+## 에이전트의 AccessDenied는 호출 주체별로 확인한다
+
+Bedrock Agents의 생성, 준비와 실행 권한, 에이전트가 다른 서비스를 사용하는 권한은 서로 다르다. 아래는 Agents의 권한 구조이며 AgentCore의 실행 역할로 그대로 옮기지 않는다.
+
+| 경계 | 확인할 권한 |
+|---|---|
+| API 요청자 | 수행할 작업에 맞는 `bedrock:CreateAgent`, `bedrock:PrepareAgent`, `bedrock:InvokeAgent` 등을 확인한다. `InvokeAgent`의 리소스는 agent ARN이 아니라 agent alias ARN이다 |
+| 에이전트 서비스 역할의 신뢰 | `bedrock.amazonaws.com`의 `sts:AssumeRole`을 허용하고 `aws:SourceAccount`, `aws:SourceArn`으로 출처를 제한한다 |
+| 서비스 역할의 모델 접근 | 선택한 모델에 대한 `bedrock:InvokeModel`을 확인한다. inference profile 사용 시 profile ARN과 추가 action이 필요하므로 해당 공식 정책 예제를 함께 확인한다 |
+| 액션 그룹 Lambda | Lambda의 resource-based policy에서 Bedrock의 `lambda:InvokeFunction`을 허용한다. 서비스 역할에 Allow를 붙이는 것만으로 끝내지 않는다 |
+| 지식 베이스와 S3 | 지식 베이스 검색 권한과 액션 그룹 OpenAPI 스키마의 `s3:GetObject`를 구분한다. 두 권한은 같은 접근이 아니다 |
+
+연결이 성공해도 endpoint policy, SCP, permissions boundary나 명시적 Deny 때문에 호출이 거부될 수 있다. 실패한 action, 호출 역할과 대상 ARN을 먼저 특정하고 [[IAM-Policy|IAM 정책 평가]]에 따라 좁힌다. 진단을 위해 전체 관리자 권한을 상시 부여하지 않는다.
+
+## 비공개 연결과 데이터 보존은 별도 설정이다
+
+Bedrock 호출 경로를 비공개로 만들었다고 프롬프트와 응답이 어디에도 저장되지 않는 것은 아니다. 2026-10-09 공식 문서 기준으로 다음을 나누어 확인한다.
+
+- **서비스의 보존 조건:** 사용하는 모델, API와 리전의 data retention 설정을 확인한다. 모델에 따라 안전성 검토를 위한 보존이 있을 수 있으므로 서비스 이름만으로 무보존을 약속하지 않는다. `none` 설정과 보존이 필요한 모델은 호환되지 않아 요청이 차단될 수 있다.
+- **고객 계정의 호출 로그:** model invocation logging은 기본 비활성화지만, 켜면 지원되는 호출의 입력, 출력과 메타데이터를 CloudWatch Logs 또는 S3에 기록할 수 있다. 현재 이 기능은 `bedrock-runtime` 호출을 대상으로 하며 모든 endpoint에 적용되는 것은 아니다.
+- **애플리케이션의 보관:** 대화 DB, 첨부파일, 검색 색인과 도구 실행 로그는 서비스의 추론 보존 설정과 별도로 점검한다. 이것은 애플리케이션 설계 항목이며 Bedrock 설정 하나로 삭제된다고 가정하지 않는다.
+
+민감한 자료를 넣기 전에 실제 호출 경로와 저장 위치, 접근 역할, 보유기간을 확인한다. 비공개 전송, 모델 제공자의 접근 여부, AWS의 보존과 고객 계정의 로그 보관을 하나의 보안 보장으로 합치지 않는다.
+
 ## 출처
 
+- [Amazon Bedrock, Identity-based policy examples for Amazon Bedrock Agents](https://docs.aws.amazon.com/bedrock/latest/userguide/security_iam_id-based-policy-examples-agent.html)
+- [Amazon Bedrock, Create a service role for Amazon Bedrock Agents](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-permissions.html)
+- [Amazon Bedrock, Data retention](https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html)
+- [Amazon Bedrock, Monitor model invocation using CloudWatch Logs and Amazon S3](https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html)
 - [Amazon Bedrock, Use interface VPC endpoints](https://docs.aws.amazon.com/bedrock/latest/userguide/vpc-interface-endpoints.html)
 - [Amazon VPC, Control access to VPC endpoints using endpoint policies](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html)
 - [생성형 AI 보안 강화 전략의 첫번째, 심층 방어 아키텍처 설계 — Amazon Web Services Korea](https://www.youtube.com/watch?v=eI6rrOVDc_I)

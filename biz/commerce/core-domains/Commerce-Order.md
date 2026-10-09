@@ -100,6 +100,16 @@ aliases: ["Commerce Order", "커머스 주문"]
 
 이 뒤에서 도는 인프라(PG와 VAN, 인증 → 승인 → 매입, 간편결제 토큰)는 [[Payment-Service|결제 서비스]] 참조.
 
+### 결제 마찰과 사기 검토를 함께 설계한다
+
+자동 입력과 인증 단계 축소는 구매 마찰을 줄이는 수단이다. 사기 위험을 판정하는 정책과 결제 완료 상태는 별도로 관리한다. 2026-10-09 Stripe Radar 공식 문서로 아래 기능과 상태 구분을 확인했다.
+
+- Radar는 허용, 차단, 검토와 3D Secure 요청을 규칙으로 구분한다. 사용할 수 있는 custom rule과 결제수단의 범위를 확인하고, 일괄 추가 인증이 전환율을 낮출 수 있다는 점도 함께 검토한다.
+- **검토 중은 미결제와 다르다.** Radar 검토 큐의 결제는 수동 capture를 사용하는 경우 등을 제외하면 이미 처리됐을 수 있다. 검토의 `Approve`는 검토를 닫는 동작이며 결제 상태를 바꾸지 않는다. capture는 별도 동작이다.
+- 운영 설계에서는 결제 상태, 사기 검토 상태와 출고 가능 상태를 따로 둔다. 위험 검토가 필요한 주문을 결제 성공 이벤트만 보고 바로 출고할지는 별도 정책으로 정한다.
+
+개선 평가는 주문 완료율뿐 아니라 사기 손실, 정상 거래의 오차단과 수동 검토 부담을 함께 보는 방식으로 설계한다. 이는 위 기능에서 도출한 운영 점검 기준이며 특정 솔루션의 매출 개선 효과를 보장하는 수치는 아니다.
+
 ## 주문 클레임
 
 주문의 상태에 영향을 주는 고객 요청. 판단 트리로 분류한다.
@@ -159,6 +169,8 @@ aliases: ["Commerce Order", "커머스 주문"]
 - 클레임 처리가 정산에 미치는 영향 — 환불은 결제만의 문제가 아니라 판매자 정산 차감까지 이어지는 흐름.
 
 ## 출처
+- [Stripe Documentation, Fraud prevention rules](https://docs.stripe.com/radar/rules)
+- [Stripe Documentation, Review transactions](https://docs.stripe.com/radar/transaction-reviews)
 - [도메인 공부 커머스 - 주문(Order) — Good or Better (Tistory)](https://todayis1jun.tistory.com/entry/%EB%8F%84%EB%A9%94%EC%9D%B8-%EA%B3%B5%EB%B6%80-%EC%BB%A4%EB%A8%B8%EC%8A%A4-%EC%A3%BC%EB%AC%B8Order)
 - [기능의 아이덴티티를 고민하다 (위시리스트) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/3)
 - [들어오기는 쉬어도 나가기는 어렵다 (주문서 설계) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/6)
