@@ -70,6 +70,19 @@ FLS는 읽을 수 있는 field를 include 또는 exclude한다. 역시 write를 
 
 배포 전 `_plugins/_security/authinfo`와 대표 사용자별 query 회귀 테스트를 실행한다.
 
+### 통합 검색에서 원본 ACL을 연결하는 조건
+
+여러 원본을 한 검색 화면으로 묶어도 원본의 접근 권한이 자동으로 옮겨지지는 않는다. 문서에 ACL field를 색인하는 것과 그 field를 DLS 정책으로 집행하는 것은 별도 작업이다.
+
+2026-10-09 공식 DLS 문서 기준으로 `${user.name}`은 현재 username, `${user.roles}`는 backend role 목록으로 치환된다. 사용자 정의 attribute와 `terms_set`을 조합한 attribute-based security도 구성할 수 있다. 권한 식별 field는 `keyword`로 두고, 필요한 권한 중 하나면 되는지 전부 필요한지에 맞춰 query를 설계한다.
+
+다음은 제품의 자동 보장이 아니라 통합 검색을 구현할 때의 검증 기준이다.
+
+1. 검색 서비스가 모든 사용자를 같은 광범위 service 계정으로 조회하면 DLS가 보는 identity도 그 계정이다. 실제 검색 호출의 identity와 role mapping을 확인한다.
+2. 원본 ACL의 변경과 철회가 검색 문서에 반영되는 경로와 지연 한도를 정한다. 사용자 그룹 변경도 별도로 반영해야 한다.
+3. 결과 본문뿐 아니라 facet 집계, 후속 검색과 RAG에 전달할 근거에도 같은 권한 경계를 적용한다. 권한이 없는 문서를 먼저 LLM에 전달한 뒤 답변에서 숨기는 방식은 피한다.
+4. 권한 철회 전후의 같은 query로 본문과 집계 노출을 검사한다. 사용자별 cache와 대화 이력이 철회된 정보를 다시 노출하는지도 확인한다.
+
 ## Audit log
 
 Audit는 기본 비활성이다. 필요한 category만 선택한다.

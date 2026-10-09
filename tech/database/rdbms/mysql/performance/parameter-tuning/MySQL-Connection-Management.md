@@ -67,6 +67,21 @@ Pool을 크게 잡으면 대기열이 application에서 DB 내부로 이동할 �
 
 Connection 수만 높고 `Threads_running`이 낮다면 idle pool이 과한지 본다. 둘 다 높고 latency가 오르면 slow query, lock wait와 CPU saturation을 먼저 진단한다. `max_connections`를 올리는 것만으로 원인을 가리지 않는다.
 
+### 통신 오류는 연결 전과 연결 후를 나눈다
+
+`Got an error reading communication packets`나 `Aborted connection`만으로 timeout 부족을 확정하지 않는다. 2026-10-09에 대조한 MySQL 8.4 매뉴얼은 다음 두 지표를 구분한다.
+
+| 지표 | 실패 경계 | 먼저 확인할 원인 |
+|---|---|---|
+| `Aborted_connects` | 연결 성립 실패 | 인증과 접근 권한, 잘못된 연결 packet, server의 `connect_timeout` 초과 |
+| `Aborted_clients` | 연결 성공 뒤 비정상 종료 | client 종료 처리 누락, 유휴 timeout 초과, 전송 도중 process 종료 |
+
+Server의 `connect_timeout`은 연결 packet을 기다리는 시간이다. 앞 표의 application driver connect timeout이나 pool acquisition timeout과 같은 설정이 아니다.
+
+운영에서는 같은 시간 구간의 counter 증가량, error log, application 종료와 배포 이력을 대조한다. Pool connection 반환 누락과 실제 socket 종료 누락을 구분하고, 증상이 발생한 경계의 설정만 조정한다. Network 문제와 `max_allowed_packet` 부족도 후보이므로 timeout을 일괄 늘리는 것으로 진단을 대신하지 않는다.
+
+Packet 크기 문제라면 client와 server 각각의 `max_allowed_packet`을 확인한다. 한 SQL statement, 반환 row 또는 binary log event가 packet이 될 수 있으며, 한도를 넘으면 연결이 닫힐 수 있다. 전체 결과 건수나 DB 저장 용량을 packet 한도로 오인하지 않는다.
+
 ## 부하 테스트로 연결 상한을 정한다
 
 Pool 크기와 `max_connections`는 공식 하나로 정하지 않고, 부하를 단계적으로 올리며 처음 포화되는 자원을 찾아 정한다.
@@ -99,6 +114,8 @@ Pool 크기와 `max_connections`는 공식 하나로 정하지 않고, 부하를
 - [MySQL 8.4 Reference Manual, Connection Interfaces](https://dev.mysql.com/doc/refman/8.4/en/connection-interfaces.html)
 - [MySQL 8.4 Reference Manual, Server System Variables](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html)
 - [MySQL 8.4 Reference Manual, Server Status Variables](https://dev.mysql.com/doc/refman/8.4/en/server-status-variables.html)
+- [MySQL 8.4 Reference Manual, Communication Errors and Aborted Connections](https://dev.mysql.com/doc/refman/8.4/en/communication-errors.html)
+- [MySQL 8.4 Reference Manual, Packet Too Large](https://dev.mysql.com/doc/refman/8.4/en/packet-too-large.html)
 - [MySQL 8.4 Reference Manual, MySQL Enterprise Thread Pool](https://dev.mysql.com/doc/refman/8.4/en/thread-pool.html)
 - [인프런, Real MySQL 시즌 1 - Part 2, 커넥션 관리](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226586)
 - [MySQL 8.4 Reference Manual, memory use](https://dev.mysql.com/doc/refman/8.4/en/memory-use.html)

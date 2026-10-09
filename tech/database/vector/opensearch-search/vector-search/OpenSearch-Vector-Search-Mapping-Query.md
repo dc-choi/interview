@@ -42,6 +42,16 @@ PUT posts-vector-v1
 - Vector index의 memory 경로는 engine별로 다르다. Faiss와 NMSLIB index는 native library memory와 k-NN cache를 사용하고 circuit breaker의 영향을 받는다. Lucene engine은 Lucene segment와 OS page cache 경로를 사용하므로 모든 vector index를 native cache 모델로 설명하면 안 된다. Engine별 heap, native memory, page cache와 disk 지표를 분리한다.
 - Dimension, space, engine과 build parameter를 바꿀 때는 새 index를 만들고 backfill한 뒤 alias를 전환한다.
 
+## 실험 엔진 SVS의 적용 경계
+
+2026-10-09에 확인한 k-NN 저장소 `main`의 SVS는 sandbox 엔진이다. 기본 빌드와 릴리스 빌드는 sandbox를 포함하지 않으며, 실험하려면 `-Pknn.sandbox.enabled=true`로 빌드해야 한다. 저장소에 코드가 있다는 사실을 설치된 배포판이나 Amazon OpenSearch Service의 지원으로 해석하지 않는다.
+
+- Mapping은 `engine: "svs"`, method는 `svs_vamana`를 사용한다. Vamana 그래프에 `flat`, `sq`, `lvq`, `leanvec` encoder를 조합하며, LeanVec은 차원 축소를 포함한다.
+- 확인한 OpenSearch 통합 구현은 x86-64 Linux 전용이다. LVQ와 LeanVec은 Intel AVX-512가 필요하다. Mapping 검증 node만 조건을 만족하고 실제 data node는 만족하지 않으면 index build가 실패할 수 있으므로 node별 CPU 조건을 확인한다.
+- Nested field는 아직 지원하지 않는다. 기존 HNSW index의 기능이 그대로 제공된다고 가정하지 않고 필요한 filter, query와 update/delete workload를 별도로 검증한다.
+
+엔진 비교 시 같은 dataset, query set과 목표 `Recall@k`를 고정하고 QPS, p99, index memory와 build 비용을 함께 측정한다. 발표의 배수 개선을 다른 CPU나 데이터의 기대 성능으로 옮기지 않는다. 여기서는 빌드와 기능 경계를 문서로 대조했으며 실제 성능을 재현한 것은 아니다.
+
 ## Query와 filter
 
 ```json
@@ -84,6 +94,8 @@ GET posts-vector-v1/_search
 - [OpenSearch Documentation, k-NN API and stats](https://docs.opensearch.org/latest/vector-search/api/knn/)
 - [OpenSearch Documentation, Methods and engines](https://docs.opensearch.org/latest/mappings/supported-field-types/knn-methods-engines/), [OpenSearch Documentation, Vector spaces](https://docs.opensearch.org/latest/mappings/supported-field-types/knn-spaces/), [OpenSearch Documentation, Vector search settings](https://docs.opensearch.org/latest/vector-search/settings/)
 - [OpenSearch Documentation, Disk-based vector search](https://docs.opensearch.org/latest/vector-search/optimizing-storage/disk-based-vector-search/)
+- [The k-NN Sandbox — OpenSearch Project](https://github.com/opensearch-project/k-NN/blob/main/sandbox/README.md)
+- [SVS sandbox tenant — OpenSearch Project](https://github.com/opensearch-project/k-NN/blob/main/sandbox/svs/README.md)
 
 ## 관련 문서
 
