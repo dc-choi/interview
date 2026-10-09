@@ -49,6 +49,18 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 조회와 보고서 생성을 자동화했어도 생성, 변경과 삭제는 별도 실행 경계다. 점검 결과를 근거로 조치안을 제안하는 단계와 승인된 변경을 수행하는 단계를 나눈다. 프롬프트에 운영 규칙을 적는 것만으로 실제 IAM 권한이나 승인 절차가 생기지는 않는다.
 
+## 조사 보고서는 자료 선택과 인용 보존을 확인한다
+
+계산 결과를 설명하는 보고서와 여러 자료를 종합하는 조사 보고서는 근거가 다르다. 조사에서는 어떤 자료를 포함했는지, 각 주장에 연결된 원문이 무엇인지와 요약 뒤에도 그 근거를 찾을 수 있는지를 확인한다.
+
+부분 검증(2026-10-09): Amazon Quick Research의 자료 선택, 보고서 조회와 요약 기능을 공식 문서로 대조했다.
+
+- 자료 선택에서 웹 검색, 업로드 파일과 Quick 자산 등을 지정한다. 선호 웹사이트를 등록해도 실제 조사에 사용된다는 보장은 없다. 필요한 출처가 최종 보고서에 포함됐는지 확인한다.
+- 보고서의 번호 인용은 출처 페이지로 연결되고, `Understand the statement`는 문장의 근거 요약과 결론 도출 설명을 보여준다. 이 설명을 원문 대조를 대신하는 독립 검증으로 취급하지 않는다.
+- 기본 요약 유형 중 `Executive summary`는 인용을 포함하지 않고, `General share out`은 핵심 인용을 포함한다. 본문에 출처가 있었다는 사실만으로 모든 요약본에도 출처가 남는다고 가정하지 않는다.
+
+검토 절차 제안: 의사결정에 쓰는 수치와 핵심 주장부터 출처 원문, 기준일과 적용 범위를 대조한다. 짧은 요약본을 공유할 때는 인용이 있는 원본 보고서로 돌아갈 경로를 함께 제공한다. 접근하지 못한 자료와 서로 충돌하는 근거는 확인된 결론과 분리한다. 조사 도구가 보고서를 생성했다는 사실만으로 제안의 정확성이나 사업 성과가 입증되지는 않는다.
+
 ## 검증할 최소 계약
 
 다음은 계산과 보고서의 분리 원리를 적용한 설계 제안이다.
@@ -63,6 +75,9 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 ## 출처
 
+- [AWS, Select research materials](https://docs.aws.amazon.com/quick/latest/userguide/select-research-materials.html)
+- [AWS, View research report](https://docs.aws.amazon.com/quick/latest/userguide/view-research-report.html)
+- [AWS, Summarizing the research](https://docs.aws.amazon.com/quick/latest/userguide/summarizing-research.html)
 - [MSP 자동화 도구 AutoMSP와 생산성 강화를 위한 Agentic AI Platform — Amazon Web Services Korea](https://www.youtube.com/watch?v=i0g-h5OWPDE)
 - [AWS, DescribeInstances](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html)
 - [LG CNS의 Agentic AI를 활용한 APQR 시스템 설계 및 자동화 구축 사례 — AWS](https://aws.amazon.com/ko/blogs/tech/automate-apqr-system-with-agentic-ai/)

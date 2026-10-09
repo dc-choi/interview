@@ -102,6 +102,24 @@ KDS와 Firehose는 자주 함께 쓰인다: KDS로 수집, 재읽기 가능하�
 
 버퍼 간격을 0초로 설정하면 데이터를 수 초 내 전달한다. 60초 미만으로 설정한 S3 전송은 멀티파트 업로드를 사용하므로 S3 PUT 비용이 늘 수 있다.
 
+### Iceberg에 CDC를 적재할 때의 갱신 계약
+
+부분 검증(2026-10-09): 아래 내용은 Firehose의 Iceberg 대상 설정과 제한을 공식 문서로 대조했다. 앞선 KDS 직접 적재와는 별개의 경로다.
+
+AWS 공개 예제는 MySQL 변경 데이터를 DMS와 KDS로 전달하고, Firehose의 Lambda 변환을 거쳐 S3의 Iceberg 테이블에 반영한다. 이 서비스 조합은 구현 예시이며 모든 CDC 파이프라인의 필수 구성은 아니다.
+
+| 확인할 계약 | 동작과 실패 조건 |
+|---|---|
+| 작업 종류 | `insert`, `update`, `delete`를 구분한다. 작업을 생략하면 `insert`이며 동일한 레코드도 새 행으로 추가될 수 있다 |
+| 대상 행 식별 | `UniqueKeys`를 설정하거나 Iceberg의 `identifier-field-ids`를 사용한다. 둘 다 없으면 update/delete 전달이 실패한다 |
+| 갱신 의미 | `update` 대상 행이 없으면 삽입한다. 내부적으로 delete file과 insert를 사용하므로 S3 객체의 일부를 제자리 수정하는 것으로 설명하지 않는다 |
+| 라우팅 | 단일 테이블 insert는 테이블 설정만으로 라우팅할 수 있다. update/delete는 JSONQuery 또는 Lambda로 레코드별 작업 정보를 전달한다 |
+| 파일 유지보수 | 데이터 파일이 많아지면 읽기 성능에 영향을 준다. Glue 자동 compaction이나 Athena `OPTIMIZE` 같은 유지보수 방법을 별도로 검토한다 |
+
+같은 테이블에 여러 Firehose stream을 동시에 쓰는 구성은 AWS가 권장하지 않는다. 낙관적 동시성 제어의 commit 충돌로 재시도할 수 있으며, 재시도 기간이 끝나면 데이터와 delete file의 S3 경로가 오류 prefix로 전달된다. 오류 기록을 성공 적재로 세지 않는다.
+
+검증 제안: 대표 키의 삽입, 값 변경, 삭제와 존재하지 않는 키의 update를 각각 수행하고 최종 테이블을 조회한다. DMS의 처리 건수만으로 완료를 판정하지 않고, 목적지의 행 값과 오류 prefix를 함께 확인한다. 버퍼링 지연과 실제 전달 실패도 구분한다. 이는 문서 기반 점검안이며 AWS 계정에서 실행한 결과는 아니다.
+
 ## Amazon Managed Service for Apache Flink
 
 실시간 스트림을 Apache Flink 기반으로 처리, 분석한다. 예전 Kinesis Data Analytics for SQL Applications는 중단되어 2026년 1월 27일부터 삭제 절차가 진행되므로 신규 설계에 쓰면 안 된다.
@@ -138,6 +156,10 @@ KDS와 Firehose는 자주 함께 쓰인다: KDS로 수집, 재읽기 가능하�
 - "S3로 near real-time 적재" 요구사항 = **Firehose** (서버리스, 변환 가능)
 
 ## 출처
+- [Amazon Data Firehose, Set up the Firehose stream](https://docs.aws.amazon.com/firehose/latest/dev/apache-iceberg-stream.html)
+- [Amazon Data Firehose, Route incoming records to a single Iceberg table](https://docs.aws.amazon.com/firehose/latest/dev/apache-iceberg-format-input-record.html)
+- [Amazon Data Firehose, Considerations and limitations](https://docs.aws.amazon.com/firehose/latest/dev/apache-iceberg-considerations.html)
+- [Transactional Data Lake using Apache Iceberg with Amazon Data Firehose and DMS — AWS Samples](https://github.com/aws-samples/transactional-datalake-using-amazon-datafirehose-iceberg)
 - [Amazon Kinesis Data Streams, Streaming tables](https://docs.aws.amazon.com/streams/latest/dev/data-delivery-st.html)
 - [Amazon Kinesis Data Streams, How streaming table delivery works](https://docs.aws.amazon.com/streams/latest/dev/data-delivery-st-about.html)
 - [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
