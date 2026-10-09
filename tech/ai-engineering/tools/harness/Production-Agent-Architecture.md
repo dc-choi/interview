@@ -168,6 +168,14 @@ Knowledge 수정 (Metric Registry / Rule / Skill)
 
 Mindflow AI Rooms의 공개 제품 설명은 중요한 작업의 실행 전 승인, 제공한 자격증명에서 상속한 접근권, API endpoint와 입력 및 응답의 감사 기록을 각각 제시한다(2026-10-10 확인). 이는 세 통제를 구분하는 사례이며 모든 행동에 승인이 강제되거나 권한 우회가 불가능하다는 실증은 아니다. 실제 도입에서는 승인 없이 실행 가능한 범위와 감사 기록의 민감정보 처리를 별도로 확인한다.
 
+### 자율권은 작업별 증거로 넓히고 다시 줄인다
+
+2026-10-10 AWS의 공개 보안 원칙과 대조한 운영 기준이다. 에이전트의 제안, 사람의 승인 또는 거절, 실제 실행 결과를 함께 기록한다. 같은 유형의 작업에서 이 세 결과가 지속적으로 맞는지 평가한 뒤 사전 승인에서 사후 검토로 전환할 수 있다. 한 업무에서 얻은 신뢰를 관련 없는 업무의 실행 권한으로 확대하지 않는다.
+
+자율권 확대는 단방향 승격이 아니다. 모델, 프롬프트, 도구와 데이터가 바뀌면 행동을 다시 평가하고, 근거가 악화되면 사람의 감독을 복원한다. 저위험 작업까지 모두 승인 대상으로 만들어 검토가 형식적인 클릭으로 바뀌지 않도록 하되, 허용할 수 없는 결과를 막는 외부 권한 경계는 유지한다.
+
+정책 검사와 행동 차단도 구분한다. Bedrock Automated Reasoning은 검사 결과를 반환하는 detect mode이며 후속 차단은 애플리케이션 책임이다. 정책 변수로 표현되지 않은 내용까지 검증됐다고 보지 않는다. 구체적인 검사 범위와 API 실행 확인은 [[LLM-Hallucination-Verification#Bedrock의 근거 검사와 정책 검증|정책 검증]]을 따른다. 이 절은 운영 설계 기준이며 실제 서비스의 자율 실행 안전성을 시험한 결과는 아니다.
+
 ## 사례
 
 Meta Muse의 2026-09 공개 설계는 사용자별 VM에 에이전트와 데이터를 두고, 시스템 수준에서 분리한 Sentinel이 외부 통신을 승인하는 방식을 설명한다. 메일 발송과 구매 같은 민감한 행동에는 사용자 확인을 받고 감사 이력을 제공한다(2026-10-06 공식 발표 확인). 이는 실행 환경 격리와 외부 행동 통제를 별도로 두는 사례이며, 발표만으로 격리의 완전성이나 실제 사고 방지 효과를 검증한 것은 아니다.
@@ -206,6 +214,9 @@ Q. 자동 메모리를 끄는 이유는?
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 
 ## 출처
+- [Four security principles for agentic AI systems — AWS Security Blog](https://aws.amazon.com/blogs/security/four-security-principles-for-agentic-ai-systems/)
+- [Amazon Bedrock, Integrate Automated Reasoning checks in your application](https://docs.aws.amazon.com/bedrock/latest/userguide/integrate-automated-reasoning-checks.html)
+- [Amazon Bedrock, Automated Reasoning checks concepts](https://docs.aws.amazon.com/bedrock/latest/userguide/automated-reasoning-checks-concepts.html)
 - [Agentic AI identity management — IBM](https://www.ibm.com/solutions/agentic-ai-identity-management)
 - [AI Rooms — Mindflow](https://www.mindflow.io/ai-rooms)
 - [Amazon Bedrock, Use multi-agent collaboration with Amazon Bedrock Agents](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-multi-agent-collaboration.html)

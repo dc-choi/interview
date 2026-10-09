@@ -48,6 +48,14 @@ IDR에 연결하는 중요 알람은 즉각 대응할 업무 영향이 있을 �
 
 이 계약에서 도출한 운영 점검은 알람 전달, 내부 담당자 호출, 공동 대응 채널 합류를 각각 시험하는 것이다. 외부 지원에 등록했다는 사실만으로 전체 워크로드가 감시되거나 내부 대응 책임이 이전됐다고 보지 않는다. 실제 연락처와 회의 접근 정보는 접근 통제된 운영 런북에서 관리한다.
 
+### 외부 APM의 이벤트 경로와 수동 호출을 따로 확인한다
+
+2026-10-10 IDR 공식 가이드의 외부 APM 연동 예시는 API Gateway/SNS 또는 partner EventBridge event bus에서 받은 알람을 Transform Lambda로 변환해 custom EventBridge event bus에 전달한다. IDR의 managed rule은 이 custom bus에 설치되며, SaaS의 partner bus 자체에 설치되는 것이 아니다. 따라서 partner 연동 성공만으로 IDR 알람 수신을 확인했다고 볼 수 없다.
+
+운영 점검에서는 알람 발생, payload 변환, custom bus 전달과 IDR 수신을 나누어 확인한다. 제공된 CloudFormation 템플릿도 연동 유형에 맞는 수정이 필요하다. 실제 계정의 이벤트 전달과 대응 개시는 별도 시험 대상이다.
+
+감시 알람이 잡지 못한 실제 장애에는 IDR에 구독된 워크로드의 수동 지원 요청 경로를 둔다. 공식 안내는 `Service: Incident Detection and Response`, `Category: Active Incident`, `Severity: Business-critical system down`으로 접수한 사건에 5분 안의 접수 확인과 전문가 연결을 설명한다. 이 시간은 복구 완료 시간의 보장이 아니므로 런북의 복구 목표와 분리한다.
+
 ## 살아있게 유지하기
 
 - **장애 때마다 갱신**: 포스트모템 액션 아이템으로 런북을 보강.
@@ -78,12 +86,14 @@ IDR에 연결하는 중요 알람은 즉각 대응할 업무 영향이 있을 �
 
 ## 출처
 
-2026-10-10에는 IDR의 선택 알람, 내부 담당자 동시 호출과 에스컬레이션 계약을 대조했다. 실제 계정의 온보딩과 알림 전달은 시험하지 않았다.
+2026-10-10에는 IDR의 선택 알람, 내부 담당자 동시 호출과 에스컬레이션 계약, 외부 APM의 이벤트 경로와 수동 장애 요청을 대조했다. 실제 계정의 온보딩과 알림 전달은 시험하지 않았다.
 
 2026-10-03에 최소 진단과 피해 완화의 구분, 실행 전제와 예외 처리, 롤백의 호환성 조건을 아래 공식 자료와 대조했다. 개별 서비스의 명령, 권한, 복구 시간과 합성 점검의 실제 구현은 검증하지 않았다.
 
 - [Being On-Call — Google SRE Book](https://sre.google/sre-book/being-on-call/)
 - [AWS 공식 문서, AWS Incident Detection and Response monitoring and observability](https://docs.aws.amazon.com/IDR/latest/userguide/observe-idr.html)
+- [AWS 공식 문서, Ingesting Third Party Application Performance Monitoring Alarms](https://docs.aws.amazon.com/IDR/latest/userguide/idr-gs-ingest-apm-alarms.html)
+- [AWS 공식 문서, Request an Incident Response](https://docs.aws.amazon.com/IDR/latest/userguide/inbound-incident-idr.html)
 - [AWS 공식 문서, Workload onboarding questionnaire in Incident Detection and Response](https://docs.aws.amazon.com/IDR/latest/userguide/idr-gs-questionnaire.html)
 - [AWS 공식 문서, Develop runbooks and response plans for responding to an incident in Incident Detection and Response](https://docs.aws.amazon.com/IDR/latest/userguide/idr-workloads-dev-runbook.html)
 - [Effective Troubleshooting — Google SRE Book](https://sre.google/sre-book/effective-troubleshooting/)
