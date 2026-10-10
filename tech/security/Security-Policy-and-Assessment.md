@@ -23,6 +23,23 @@ NIST CSF 2.0은 조직 맥락과 우선순위에 맞춘 정책 수립, 전달과
 
 위 표는 CSF의 자산 관리, 위험 평가, 책임과 교육 항목을 연결한 실무 정리다. 정책, 세부 기준, 작업 절차로 문서를 나눌 수 있지만 파일 세 개를 만드는 것 자체가 목표는 아니다.
 
+### CSF 2.0의 여섯 기능과 현재, 목표 상태
+
+2026-10-10 NIST CSF 2.0의 2장과 3장을 대조한 범위다. CSF Core는 Govern, Identify, Protect, Detect, Respond, Recover의 여섯 기능으로 보안 성과를 분류한다. 순서대로 한 번씩 끝내는 사고 대응 단계가 아니며, 기능의 나열 순서가 중요도를 뜻하지도 않는다.
+
+| 기능 | 확인할 성과 |
+|---|---|
+| Govern | 위험 관리 전략, 책임과 정책을 정하고 전달하며 감독한다 |
+| Identify | 자산, 공급자와 현재 위험을 이해하고 개선 기회를 찾는다 |
+| Protect | 접근 통제, 교육과 데이터 보호 등 위험을 줄이는 조치를 적용한다 |
+| Detect | 공격과 침해 가능성을 발견하고 분석한다 |
+| Respond | 탐지한 사고를 분석하고 영향을 억제하며 소통한다 |
+| Recover | 영향을 받은 자산과 운영을 복원하고 복구 상황을 전달한다 |
+
+Govern은 다른 다섯 기능의 우선순위를 이끈다. Govern, Identify, Protect, Detect는 지속해서 수행하고, Respond와 Recover는 사고에 대비해 준비한다. 조직 규모와 위험에 맞춰 적용하되, CSF 자체를 정해진 도구 목록이나 일률적인 작업 체크리스트로 해석하지 않는다.
+
+Current Profile에는 현재 달성하거나 달성하려는 성과와 그 정도를, Target Profile에는 선택하고 우선순위를 정한 목표 성과를 기록한다. 두 상태의 차이로 실행 계획을 정하고 조치 뒤 갱신한다. 작은 서비스라면 관리자 권한 회수의 현재 증거와 목표를 비교해 담당자와 개선 작업을 정할 수 있다. 이는 적용 예시이며 Profile 작성만으로 보안 통제가 검증됐다는 뜻은 아니다.
+
 ## 경계 장비보다 자원과 접근 경로를 기준으로 점검한다
 
 2026-10-09 NIST SP 800-207과 CSF 2.0을 대조한 범위다. 내부망에 있거나 조직 소유 장비라는 이유만으로 사용자와 자원을 신뢰하지 않는다. 자원 접근 전에 인증과 인가를 확인하며, 외부 경계의 방화벽 점검만으로 계정, 장비와 데이터의 보호 상태를 판단하지 않는다.
@@ -194,7 +211,7 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 - [Prowler, Mutelisting](https://docs.prowler.com/user-guide/cli/tutorials/mutelist)
 - [Service Screener — AWS Samples](https://github.com/aws-samples/service-screener-v2)
 - [NIST, SP 800-50 Rev. 1: Building a Cybersecurity and Privacy Learning Program](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-50r1.pdf) — 2.4절의 측정과 2.5절의 대상별 학습
-- [NIST, The Cybersecurity Framework (CSF) 2.0](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf) — Appendix A의 GV.PO, GV.RR, ID.AM, ID.RA와 PR.AT
+- [NIST, The Cybersecurity Framework (CSF) 2.0](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf) — 2장의 여섯 기능, 3.1절의 Current/Target Profile, Appendix A의 GV.PO, GV.RR, ID.AM, ID.RA와 PR.AT
 - [NIST, SP 800-115: Technical Guide to Information Security Testing and Assessment](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-115.pdf) — 6장의 계획과 승인, 7장의 자료 취급, 8장의 개선과 재점검
 
 ## 관련 문서

@@ -99,8 +99,20 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 | **Spread** | 노드별 다른 하드웨어 | 소수 인스턴스, 동시 장애 회피 |
 | **Partition** | 파티션 단위 격리 (Kafka, HDFS) | 분산 시스템 장애 도메인 분리 |
 
+### HPC의 통신 경로와 EFA 적용 조건
+
+2026-10-10 EC2와 AWS ParallelCluster 공식 문서 대조 기준. 노드 간 통신이 많은 HPC에서는 CPU 코어 수와 함께 통신 경로를 확인한다. EFA는 지원되는 MPI와 Libfabric 경로에서 OS 커널을 우회해 장치와 통신한다. 인터페이스를 붙였다는 사실만으로 임의의 TCP 애플리케이션이 같은 경로를 쓰는 것은 아니다.
+
+- 대상 인스턴스의 EFA 지원과 애플리케이션의 MPI, Libfabric 구성을 확인한다.
+- ParallelCluster의 Slurm 구성에서는 `SlurmQueues / ComputeResources / Efa / Enabled`를 `true`로 설정한다. EFA의 OS-bypass 통신은 서로 다른 AZ 사이에서 사용할 수 없다.
+- AWS는 지연을 줄이기 위해 EFA 인스턴스를 cluster placement group에 배치하도록 권고한다. 지원 인터페이스, 통신 라이브러리와 물리 배치 조건을 함께 확인한다.
+
+다음은 선택을 검증하는 방법이다. 같은 입력과 결과 정확도를 유지한 채 노드 수를 늘려 계산, 통신과 파일 I/O 시간을 나누어 잰다. 작업 완료 시간과 전체 자원 비용을 함께 비교한다. 기상 시뮬레이션 한 사례의 절감률을 다른 워크로드의 보장값으로 사용하지 않으며, 코어 수 증가에 비례한 가속도 가정하지 않는다.
+
 ## 출처
 
+- [Amazon EC2, Elastic Fabric Adapter for AI/ML and HPC workloads on Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html)
+- [AWS ParallelCluster, Elastic Fabric Adapter](https://docs.aws.amazon.com/parallelcluster/latest/ug/efa-v3.html)
 - [SDK for Gen AI and Deep Learning - AWS Neuron — AWS](https://aws.amazon.com/ai/machine-learning/neuron/)
 - [AWS Nitro System](https://docs.aws.amazon.com/whitepapers/latest/security-design-of-aws-nitro-system/the-components-of-the-nitro-system.html)
 - [Nitro 기반 EC2 인스턴스](https://docs.aws.amazon.com/ec2/latest/instancetypes/ec2-nitro-instances.html)

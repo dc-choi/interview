@@ -123,6 +123,17 @@ const classify = (response: Message): Outcome => {
 - 기본 10분 타임아웃은 대화형 화면이 기다릴 수 있는 시간보다 길다. 경로마다 전체 deadline을 정하고 긴 생성은 스트리밍으로 받는다([[External-Service-Resilience#1. Timeout (타임아웃)|타임아웃 측정 범위]]).
 - OpenAI는 실패한 요청도 분당 한도를 소모한다고 밝힌다. 즉시 반복 재전송은 회복을 늦춘다.
 
+### Bedrock 가져온 모델의 준비 상태와 재시도
+
+2026-10-10 AWS 공식 문서 대조 기준. `ModelNotReadyException`은 HTTP 429지만 호출량 초과를 뜻하는 `ThrottlingException`과 구분한다. Custom Model Import는 비활성 모델을 실행 자원에서 내릴 수 있으며, 이후 호출은 모델 복원을 시작한다. 복원 시간은 모델 크기와 온디맨드 자원 가용성에 따라 달라진다. 고정된 유휴 시간이나 복원 완료 시간을 보장값으로 두지 않는다.
+
+- `GetModelImportJob`의 API 응답에서 `status`가 `Completed`인지 확인한다. 가져오기 성공과 유휴 이후 호출의 즉시 성공은 다른 조건이다. 사용자 가이드의 설명용 `Complete` 표기 대신 API 명세의 실제 enum을 따른다.
+- `InvokeModel` API 명세는 이 예외에 대해 AWS SDK가 최대 5회 자동 재시도한다고 안내한다. 사용 중인 SDK와 설정을 확인하고, 애플리케이션 재시도를 겹치기 전에 전체 대기 시간과 시도 예산을 정한다.
+- 재시도 중 응답 코드와 시각을 기록한다. 계속 실패하면 가져오기 상태를 재확인하고 모델 식별자와 시각을 포함해 지원 조사로 넘긴다.
+- 주기적인 워밍 호출을 검토한다면 지연 개선과 실행 중인 모델 사본의 비용을 함께 측정한다. 가져온 모델은 첫 성공 추론부터 5분 과금 구간이 적용되므로 준비 상태를 유지하는 호출을 무료 상태 검사로 취급하지 않는다.
+
+이 절은 가져온 모델의 복원과 오류 계약을 확인한 범위다. 워밍 주기나 실제 복원 지연을 실측한 결과는 아니다.
+
 ## 폴백과 기능 저하
 
 - 폴백 대상은 같은 제공자의 다른 모델, 다른 클라우드의 같은 모델, 다른 제공자, 캐시나 미리 만든 응답, 사람 이관 가운데 위 범위 표의 실패 범위에 맞춰 고른다.
@@ -178,6 +189,10 @@ const classify = (response: Message): Outcome => {
 
 ## 출처
 
+- [Amazon Bedrock User Guide, Invoke your imported model](https://docs.aws.amazon.com/bedrock/latest/userguide/invoke-imported-model.html) — 비활성 모델 복원과 재시도 진단.
+- [Amazon Bedrock API Reference, GetModelImportJob](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_GetModelImportJob.html) — `status`와 `Completed` enum.
+- [Amazon Bedrock API Reference, InvokeModel](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModel.html) — `ModelNotReadyException`과 SDK 재시도.
+- [Amazon Bedrock User Guide, Calculate the cost of running a custom model](https://docs.aws.amazon.com/bedrock/latest/userguide/import-model-calculate-cost.html) — 실행 중 모델 사본과 5분 과금 구간.
 - [Amazon Bedrock User Guide, Route model inference requests across AWS Regions with cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html)
 - [Amazon Bedrock User Guide, Geographic cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/geographic-cross-region-inference.html)
 - [AI agent exposure and integration on AWS — AWS Marketplace](https://aws.amazon.com/marketplace/build-learn/ai-agent-learning-series/agent-exposure-and-integration) — 2026-10-09 리전 간 추론의 범위와 애플리케이션 계층 장애의 구분을 대조했다. 기존 제공자별 오류 계약 전체를 재검증한 기록은 아니다.
