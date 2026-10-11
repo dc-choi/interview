@@ -1,5 +1,5 @@
 ---
-tags: [business, delegation, spending, performance, feedback]
+tags: [business, delegation, spending, performance, feedback, decision-making]
 status: done
 category: "비즈니스&제품(Business&Product)"
 aliases: ["지출 재량과 성과 피드백", "Delegated Spending and Performance Feedback"]
@@ -7,7 +7,7 @@ aliases: ["지출 재량과 성과 피드백", "Delegated Spending and Performan
 
 # 지출 재량과 성과 피드백
 
-운영 절차를 줄일 때는 무엇을 없애고 어떤 책임을 남기는지 구분한다. 지출 재량, 성과 등급, 피드백과 보상 판단은 서로 다른 설계 대상이다. 한 회사의 문화 사례만으로 절차를 줄이면 성과가 오른다고 일반화할 수 없다.
+운영 절차를 줄일 때는 무엇을 없애고 어떤 책임을 남기는지 구분한다. 지출 재량, 성과 등급, 피드백과 보상 판단, 결정 책임과 반대 의견 수렴은 서로 다른 설계 대상이다. 한 회사의 문화 사례만으로 절차를 줄이면 성과가 오른다고 일반화할 수 없다.
 
 ## 지출 재량의 범위
 
@@ -20,6 +20,20 @@ aliases: ["지출 재량과 성과 피드백", "Delegated Spending and Performan
 연간 등급이나 서열을 없애도 목표, 피드백, 성장 논의와 보상 결정은 남을 수 있다. 제도 변경을 평가가 전혀 없어진 상태로 해석하지 않는다.
 
 Adobe의 공개 Check-in 사례는 연간 평가와 등급 대신 지속적인 양방향 대화를 두고, 분기별 대화와 목표 기록을 운영한다. 공식 등급이나 순위는 없지만 관리자는 성과를 근거로 보수를 결정한다. 이 사례는 등급 폐지와 성과 판단의 폐지가 다름을 보여준다. 특정 기업의 제도를 다른 기업의 과거나 현재 정책을 입증하는 자료로 쓰지 않는다.
+
+## 최종 결정권과 반대 의견 수렴
+
+판단 책임자를 정하는 일과 반대 의견을 막는 일은 다르다. Netflix는 공개 문화 문서에서 중요한 결정마다 판단 책임자(informed captain)를 정하고, 이 책임자가 모든 직급의 사람에게서 다른 의견을 찾아 듣기를 기대한다(farming for dissent). 다만 모든 의견의 무게가 같지 않고 모두가 대부분의 결정에 참여하기도 어려워, 결정 분야에서 일하는 사람의 의견에 더 무게를 둔다. 결정이 나면 다른 방안을 주장했던 사람을 포함해 모두가 결정에 따라 실행에 전념하기를 기대하고(disagree then commit), 영향이 분명해지면 판단 책임자가 자기 선택에서 효과가 있었던 점과 없었던 점을 돌아봐 모두가 배우게 한다.
+
+이는 한 조직이 공개한 운영 원칙이며 대표의 독단이 이익을 높인다는 인과 증거가 아니다. 같은 문서에서 Netflix는 고위 리더가 내리는 결정이 적은 것을 자랑으로 여긴다고 밝히므로 판단 책임자를 대표와 같은 뜻으로 읽지 않는다. 결정권 배분은 [[DRI-Delegation-Culture|DRI와 권한 위임]], 결정 뒤 실행 참여는 [[One-Way-vs-Two-Way-Door|One-Way Door와 Two-Way Door의 Disagree and Commit]]에서 다룬다.
+
+소규모 사업에 적용한다면 누가 결정하는지, 어떤 근거로 반대할 수 있는지, 언제 결과를 다시 볼지를 함께 정할 수 있다. 다음은 Netflix 문서의 내용이 아니라 적용을 위해 제안하는 점검 예시이며, 검증된 성공 공식이나 사용자가 채택한 운영 규칙은 아니다.
+
+- 고객에게 지킬 약속과 아직 검증하지 않은 제품, 가격 가설을 구분한다.
+- 반대 의견의 근거와 손실 가능성을 듣고 책임자가 선택 이유를 남긴다. 전원 동의가 나올 때까지 기다리는 절차로 만들 필요는 없다.
+- 가격이나 메시지를 일정 기간 유지해 관찰하더라도 중대한 고객 피해나 계약 위반까지 감수하는 실험으로 만들지 않는다.
+- 결과를 보기 전에 어떤 결과가 나오면 가정을 수정할지 정한다.
+- 의사결정에 반대했다는 사실만으로 협업 역량 부족이나 가치관 불일치로 단정하지 않는다.
 
 ## 적용 전에 나눌 질문
 
@@ -37,7 +51,7 @@ Adobe의 공개 Check-in 사례는 연간 평가와 등급 대신 지속적인 �
 
 ## 출처
 
-- [Netflix Culture Memo — Netflix](https://jobs.netflix.com/culture) — 지출 원칙, 맥락 제공, 코칭과 개입의 경계, 2026-10-07 확인
+- [Netflix Culture Memo — Netflix](https://jobs.netflix.com/culture) — 지출 원칙, 맥락 제공, 코칭과 개입의 경계는 2026-10-07 확인. 판단 책임자, 반대 의견 수렴, 결정 후 실행과 회고는 2026-10-10 확인. 고위 리더의 결정 범위는 2026-10-11 확인
 - [How Adobe continues to inspire great performance and support career growth — Adobe](https://www.adobe.com/check-in.html) — 등급과 서열 없는 Check-in, 분기별 대화와 성과 기반 보상 판단, 2026-10-07 확인
 
 ## 관련 문서
@@ -45,4 +59,5 @@ Adobe의 공개 Check-in 사례는 연간 평가와 등급 대신 지속적인 �
 - [[측정과리스크(MeasurementAndRisk)|측정과 리스크]]
 - [[Risk-Management|지급 승인과 대사]]
 - [[DRI-Delegation-Culture|의사결정권 위임]]
+- [[One-Way-vs-Two-Way-Door|Disagree and Commit]]
 - [[Radical-Candor-Feedback|구체적인 피드백]]
