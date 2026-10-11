@@ -35,6 +35,7 @@ http
 - **PKCE가 기본값이 됐다.** Spring Security 7.0의 What's New는 인가 서버에서 PKCE를 기본으로 켰다고 적고, 7.1.1 API의 `ClientSettings.isRequireProofKey()` 기본값도 `true`다. 기본 설정에서는 PKCE가 필수이므로, 아래 흐름처럼 `code_challenge`와 `code_verifier` 없이 인가 코드를 교환하던 클라이언트는 7.x로 올리기 전에 PKCE를 보내게 하거나 그 클라이언트의 `ClientSettings`에서 `requireProofKey(false)`로 명시적으로 끈다. 기본값은 `ClientSettings.builder()`로 만드는 설정에 들어간다. `JdbcRegisteredClientRepository`는 저장된 설정을 `ClientSettings.withSettings(...)`로 다시 만들고 이 경로는 기본값을 넣지 않으므로, 저장소에 `requireProofKey`가 false로 저장된 클라이언트는 그 값을 유지한다.
 - **1.x 지원 기간:** 마지막 세대인 1.5.x는 OSS 지원이 2026-06-30에 끝났고 상용 지원은 2032-06-30까지다. 1.4.x의 상용 지원은 2026-12-31에 끝나고, 아래 코드의 기준인 1.3.x는 OSS(2025-06-30)와 상용(2026-06-30) 지원이 모두 끝났다. spring.io 세대 API에서 Spring Security 7.0.x는 Spring Boot 4.0.x, 7.1.x는 4.1.x와 짝을 이루므로 7.x 전환은 Boot 4 전환과 함께 계획한다([[Java-Spring-Stack-Migration|Java와 Spring 스택 마이그레이션]]).
 - **DPoP:** 1.5에서 OAuth 2.0 DPoP 지원이 추가됐다(2025-05-20 1.5 GA 발표). 토큰을 클라이언트 키에 묶는 프로토콜 동작은 [[OAuth2#DPoP: access token을 클라이언트 키에 묶기|OAuth2의 DPoP]]에 정리했다. nonce 같은 선택 기능의 지원 여부는 사용하는 버전의 문서로 확인한다.
+- **PAR:** 같은 1.5 GA 발표에서 Pushed Authorization Requests 지원도 추가됐다. Spring Security 7.1.x 소스 기준으로 PAR 엔드포인트는 기본 구성에 들어 있지 않아 `OAuth2AuthorizationServerConfigurer`의 `pushedAuthorizationRequestEndpoint(...)`를 호출해야 켜진다. 켰을 때의 경로 기본값은 2026-10-12 확인한 1.5.8 레퍼런스와 Spring Security 7.1.1 레퍼런스 모두 `/oauth2/par`이며 `AuthorizationServerSettings`에서 바꾼다. 아래 최소 구성만으로는 이 엔드포인트가 생기지 않는다. 프로토콜 동작은 [[OAuth2-PAR|PAR]]에 정리했다.
 
 ## 최소 구성 요소
 
@@ -121,10 +122,14 @@ RegisteredClient.withId(UUID.randomUUID().toString())
 - [JdbcRegisteredClientRepository.java (7.1.x) — GitHub](https://github.com/spring-projects/spring-security/blob/7.1.x/oauth2/oauth2-authorization-server/src/main/java/org/springframework/security/oauth2/server/authorization/client/JdbcRegisteredClientRepository.java)
 - [Spring Boot 3.1 Release Notes — GitHub Wiki](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.1-Release-Notes)
 - [Spring Boot 4.0 Migration Guide — GitHub Wiki](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide)
+- [Configuration Model, Spring Authorization Server 1.5.8 Reference — spring.io](https://docs.spring.io/spring-authorization-server/reference/configuration-model.html) — 2026-10-12 확인 시 current가 1.5.8
+- [Authorization Server Configuration Model, Spring Security 7.1.1 Reference — spring.io](https://docs.spring.io/spring-security/reference/servlet/oauth2/authorization-server/configuration-model.html) — 2026-10-12 확인 시 current가 7.1.1
+- [OAuth2AuthorizationServerConfigurer.java (7.1.x) — GitHub](https://github.com/spring-projects/spring-security/blob/7.1.x/config/src/main/java/org/springframework/security/config/annotation/web/configurers/oauth2/server/authorization/OAuth2AuthorizationServerConfigurer.java) — 기본 configurer 목록과 PAR configurer 추가 조건
 
 ## 관련 문서
 
 - [[OAuth2|OAuth2 / OIDC]]
+- [[OAuth2-PAR|OAuth 2.0 PAR]]
 - [[JWT|JWT]]
 - [[Password-Hashing|패스워드 해싱]]
 - [[Spring-Boot-Essentials|Spring Boot Essentials]]

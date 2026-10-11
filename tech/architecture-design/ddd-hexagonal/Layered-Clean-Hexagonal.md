@@ -3,7 +3,7 @@ tags: [architecture, clean-architecture]
 status: done
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Layered / Clean / Hexagonal", "클린 아키텍처", "계층 아키텍처"]
-verified_at: 2026-10-09
+verified_at: 2026-10-12
 ---
 
 # Layered / Clean / Hexagonal Architecture
@@ -84,7 +84,16 @@ UseCase    → [OutputPort] ← RepositoryAdapter (구현)
 
 등록 검사는 최종 경로와 HTTP 메서드를 함께 확인한다. 임시 GET 경로의 더미 응답이 보였다는 사실은 실제 POST 요청의 입력 검증, 저장과 인증을 확인한 근거가 아니다. 이는 라우터 조립과 업무 동작의 검증을 분리하는 적용 기준이다.
 
-Pydantic 모델의 검증을 타입 변환 없는 엄격한 검사로 가정하지 않는다. 기본 모드에서는 정수 필드의 문자열 `"123"`을 `123`으로 변환할 수 있다. 변환을 제한해야 하면 필드나 모델의 strict 설정을 검토하고, JSON의 날짜 문자열처럼 strict 모드에서도 허용하는 타입별 예외를 확인한다.
+Pydantic 모델의 검증을 타입 변환 없는 엄격한 검사로 가정하지 않는다. 기본 모드에서는 정수 필드의 문자열 `"123"`을 `123`으로 변환할 수 있다. 변환을 제한해야 하면 필드나 모델의 strict 설정을 검토하고, JSON의 날짜 문자열처럼 strict 모드에서도 허용하는 타입별 예외를 확인한다. 2026-10-12 확인한 FastAPI master 소스는 JSON 본문을 `request.json()`으로 먼저 파이썬 객체로 바꾼 뒤 검증하므로, JSON 입력 검증에만 있는 이런 예외가 요청 본문에는 적용되지 않을 수 있다. strict를 켰다면 날짜 필드를 실제 요청으로 확인한다.
+
+입력 모델은 선언한 만큼만 검증한다. 약관 동의가 섞인 회원가입 요청에서 놓치기 쉬운 지점은 다음과 같다. 필수 동의는 업무 규칙이기도 하므로 입력 모델의 검증과 별개로 유스케이스에서도 확인한다.
+
+- 필수 여부는 기본값으로 정해진다. 기본값이 없으면 필수이고 `= None` 같은 기본값이 있으면 선택이다. `str | None` 힌트만으로는 선택 필드가 되지 않는다.
+- 모델에 없는 필드는 기본 설정에서 오류 없이 무시된다. 알 수 없는 필드를 요청 오류로 만들려면 `model_config = ConfigDict(extra='forbid')`를 둔다.
+- 필수 동의 항목을 기본값 없는 `bool`로 선언하면 값이 있고 bool로 해석되는지만 검사하므로 `false`도 통과한다. 기본 모드에서는 `"no"`, `"off"`, `0` 같은 값도 `False`로 바뀐다. 동의해야만 진행하는 항목은 `Literal[True]`로 선언하거나 validator에서 참이 아니면 오류를 낸다.
+- `EmailStr`은 선택 패키지 `email-validator`를 설치해야 쓸 수 있다.
+- 검증에 실패하면 FastAPI가 `RequestValidationError`를 내고, 기본 핸들러가 422 상태와 `detail` 목록으로 응답한다(2026-10-12 master 소스 기준). 각 항목에는 유형(`type`), 위치(`loc`), 메시지(`msg`)와 받은 값(`input`)이 들어가므로, 비밀번호 같은 민감한 필드의 검증 오류는 제출한 값을 응답에 되돌려 줄 수 있다. 핸들러를 바꿀 때 `str(exc)`를 그대로 응답하면 파일과 줄 정보가 드러날 수 있다.
+- ORM 객체를 `Model.model_validate(obj)`로 직접 변환하려면 모델 설정이나 `model_validate()`의 인자로 `from_attributes`를 켠다. 이전 이름은 ORM Mode와 `from_orm()`이다.
 
 출력 DTO는 클래스를 선언하는 데서 끝나지 않는다. FastAPI의 `response_model`에 연결하면 반환 데이터를 해당 모델에 맞게 검증하고 필터링한다. 예를 들어 입력 모델에 비밀번호가 있어도 출력 모델에서 제외해 응답에 노출되지 않게 한다. 다만 `Response`를 직접 반환하면 이 자동 변환 경로를 우회하므로, 실제 응답 경로에서 민감 필드가 빠지는지 확인한다. DTO 분리만으로 권한 검사나 DB 교체 가능성이 보장되지는 않는다.
 
@@ -164,6 +173,14 @@ MVC는 UI 구성의 역할을 설명하며 백엔드 전체의 계층 규칙을 
 - [FastAPI, Response Model - Return Type](https://fastapi.tiangolo.com/tutorial/response-model/)
 - [FastAPI, Return a Response Directly](https://fastapi.tiangolo.com/advanced/response-directly/)
 - [Pydantic, Strict Mode](https://docs.pydantic.dev/latest/concepts/strict_mode/)
+- [FastAPI, Request Body](https://fastapi.tiangolo.com/tutorial/body/)
+- [FastAPI, Handling Errors](https://fastapi.tiangolo.com/tutorial/handling-errors/)
+- [FastAPI, Path Parameters](https://fastapi.tiangolo.com/tutorial/path-params/) — 검증 오류 항목의 `input`
+- [exception_handlers.py — GitHub, fastapi/fastapi](https://github.com/fastapi/fastapi/blob/master/fastapi/exception_handlers.py) — 2026-10-12 master, 기본 검증 오류 응답의 422와 `detail`
+- [routing.py — GitHub, fastapi/fastapi](https://github.com/fastapi/fastapi/blob/master/fastapi/routing.py) — 2026-10-12 master, JSON 본문을 `request.json()`으로 읽은 뒤 검증 단계로 넘김
+- [Pydantic, Models](https://pydantic.dev/docs/validation/latest/concepts/models/)
+- [Pydantic, Standard Library Types](https://pydantic.dev/docs/validation/latest/api/pydantic/standard_library_types/)
+- [Pydantic, Network Types](https://pydantic.dev/docs/validation/latest/api/pydantic/networks/)
 - [클린 코더스, Architecture](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279449)
 - [클린 코더스, Architecture UseCase](https://www.inflearn.com/courses/lecture?courseId=336905&unitId=279450)
 - [The Clean Architecture — Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
@@ -198,3 +215,4 @@ MVC는 UI 구성의 역할을 설명하며 백엔드 전체의 계층 규칙을 
 - [[DDD-Hexagonal-In-Production|DDD + Hexagonal 프로덕션 패턴]]
 - [[OOP|OOP / SOLID]]
 - [[App-Architecture-OOP|애플리케이션 아키텍처와 객체지향]]
+- [[NestJS-Pipes-Validation|NestJS Pipe와 입력 검증 (whitelist와 알 수 없는 필드 거부)]]

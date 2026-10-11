@@ -92,6 +92,8 @@ Authorization Code 흐름은 브라우저를 거치는 front-channel과 Token En
 1. **front-channel (브라우저 리다이렉트)** — Client는 사용자를 인가 서버의 `/authorize`로 보낸다 (`response_type=code&client_id=...&redirect_uri=...&scope=...`). 로그인과 동의는 인가 서버 화면에서 일어나므로 Client는 비밀번호를 보지 않는다. 인가 서버는 승인 결과와 `state`를 Client의 `redirect_uri`로 돌려보낸다.
 2. **back-channel (서버 간)** — Client 서버가 redirect_uri로 돌아온 code를 `POST /token`으로 교환한다. 본문은 `application/x-www-form-urlencoded`이고 PKCE면 `code_verifier`를 포함한다. confidential client 인증 방식과 토큰 종류는 제공자 등록 및 정책에 따른다. 이후 access_token을 `Authorization: Bearer`로 리소스 API에 첨부한다.
 
+front-channel로 보내는 인가 요청 파라미터는 HTTPS를 써도 사용자 에이전트를 평문으로 지나고 암호학적 무결성 보호도 없다. 요청을 인가 서버에 직접 요청으로 먼저 등록하고 일회용 참조값만 브라우저로 넘기는 방식은 [[OAuth2-PAR|PAR(RFC 9126)]]에 정리했다.
+
 ### 토큰 엔드포인트의 클라이언트 인증
 
 | 방식 | 자격 전달 위치 | 비고 |
@@ -184,5 +186,6 @@ OIDC 기반 로그인에서는 access token만으로 로그인을 판단하지 �
 - [[Spring-Authorization-Server|Spring Authorization Server (인가 서버 구현)]]
 - [[Refresh-Token-Rotation|Refresh Token Rotation]]
 - [[OAuth2-Token-Exchange|OAuth 2.0 Token Exchange]]
+- [[OAuth2-PAR|PAR (Pushed Authorization Requests)]]
 - [[Public-Key-Cryptography|공개키 암호]]
 - [[HTTPS-TLS|HTTPS, TLS Handshake]]
