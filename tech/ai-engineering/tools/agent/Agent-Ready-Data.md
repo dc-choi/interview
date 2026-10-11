@@ -56,6 +56,19 @@ aliases: ["Agent-Ready Data", "에이전트용 데이터 준비", "에이전트 
 
 비즈니스 로직이 BI 도구나 임시 SQL 뷰가 아니라 버전 관리되는 정의 안에 산다(예: 매출 = 주문 금액 - 할인 금액). 시맨틱 모델은 에이전트를 똑똑하게 만들지 않고 추측을 못 하게 막는다. 한 text-to-SQL 벤치마크에서는 같은 모델이 원시 스키마 기준 20% 미만이던 정확도가 시맨틱 레이어를 두자 92.5%를 넘었다는 제3자 인용이 있다. 데이터를 신뢰할 수 있게 만든 뒤 가장 수익률이 높은 투자다.
 
+### 시맨틱 뷰로 지표 정의를 공유할 때의 점검
+
+2026-10-12 확인한 Snowflake 문서 기준, 시맨틱 뷰는 업무 개념을 스키마 수준 객체로 저장한다. 구성 요소는 업무 엔티티에 대응하는 논리 테이블, 공유 키로 논리 테이블을 잇는 관계, 업무 이벤트나 거래를 나타내는 행 단위 값인 팩트, 누가, 무엇을, 어디서, 언제라는 질문에 답하는 범주 속성인 디멘션, 팩트나 컬럼을 집계한 KPI인 메트릭이다. 이 계층이 없으면 보고서와 애플리케이션마다 계산이 어긋날 수 있으므로 순매출 같은 지표를 집계식과 함께 한곳에 정의한다.
+
+- **조인과 집계 규칙:** Cortex Agents는 시맨틱 뷰에 명시한 관계가 없으면 테이블을 조인하지 않고, 서로 다른 시맨틱 뷰를 가로질러 조인하지도 않는다. 다대다 관계는 직접 지원하지 않아 공유 디멘션(브리지) 테이블을 두고 다대일 관계 두 개로 표현한다. 시점별 스냅샷처럼 특정 차원으로 더하면 안 되는 지표는 `NON ADDITIVE BY`로 그 차원을 지정한다. 그러면 해당 차원으로 정렬한 마지막 행의 값을 집계하며, 기본 오름차순에서는 시간 차원의 최신 스냅샷이 된다.
+- **설명, 동의어와 값 찾기:** Snowflake 모델링 지침은 테이블과 컬럼의 업무 설명을 정확도에 가장 중요한 요소로 꼽는다. 동의어는 정보 제공용이라 다른 정의에서 이름으로 참조할 수 없고, 사내 용어, 약어와 옛 이름에 한해 직접 넣기를 권한다. 질문의 필터 값이 저장된 값과 다르게 표현될 수 있으므로, 서로 다른 값이 10개 정도 이하인 디멘션은 샘플 값으로, 그보다 많거나 값이 자주 바뀌는 텍스트 디멘션은 Cortex Search 서비스로 실제 값을 찾게 하고, 숫자와 날짜 컬럼에는 검색 서비스를 붙이지 않는다. Snowsight에서 정의한 샘플 값은 메타데이터라 마스킹 정책이 적용되지 않고 시맨틱 뷰에 `GET_DDL`을 실행한 사용자에게 그대로 보이므로 민감하지 않은 대표값을 쓴다.
+- **검증 쿼리:** 검증 쿼리는 자연어 질문과 검증한 SQL의 쌍이며, Cortex Analyst는 비슷한 질문에 답할 때 저장된 관련 SQL을 활용한다. SQL에는 원본 이름이 아니라 시맨틱 모델의 논리 테이블과 컬럼 이름을 쓰고, 부정확한 쿼리는 성능과 정확도를 오히려 떨어뜨릴 수 있다. 설명이 갖춰진 뒤 자주 묻는 질문부터 더하고, 불완전한 모델을 메우는 수단으로 쓰지 않는다. Semantic View Autopilot은 생성 과정에서 받은 예시 SQL 중 유효성 검사를 통과한 쿼리를 검증 쿼리로 자동 추가하므로, 그 SQL이 질문의 업무 의미에 맞는지는 담당자가 따로 대조한다.
+- **평가와 배포:** Cortex Analyst 평가 기능은 검증 쿼리를 정답 세트로 삼아 생성 SQL의 실행 결과를 비교한다. 평가할 쿼리를 뺀 시맨틱 뷰의 임시 사본으로 SQL을 생성해 그 쿼리가 생성에 영향을 주지 않게 하고, 이전에 맞히던 질문이 틀리게 된 회귀를 따로 집계한다. 한 번의 실행은 시맨틱 뷰 하나만 평가하고 멀티턴 평가는 지원하지 않는다. 정의는 YAML이나 SQL DDL로 Git에 두고 CI/CD에서 테스트와 정확도 확인을 통과할 때만 배포하며, 문제가 생기면 Git의 이전 정상 정의를 다시 배포한다. 사용 사례를 아는 업무팀과 데이터 접근을 아는 데이터 엔지니어링팀이 소유권을 함께 진다.
+- **도구 간 정의 교환:** 도구마다 시맨틱 레이어를 다시 만들면 지표 정의가 각 제품 안에 갇히고 계산이 서로 어긋날 수 있다. Apache Ossie(incubating, 이전 이름 Open Semantic Interchange)는 메트릭, 디멘션과 관계를 표현하는 벤더 중립 YAML 기반 형식이며, 2026-07-08 Snowflake 블로그 기준 Apache Incubator에서 인큐베이션 중이다. Snowflake의 Ossie YAML 가져오기 프로시저는 미리 보기 기능이고 0.1.1 버전만 받으며, SNOWFLAKE나 ANSI_SQL 방언 식이 없는 필드와 메트릭은 경고 없이 건너뛴다. 변환 뒤에는 지표 목록과 대표 질문의 결과를 원래 도구와 대조한다.
+- **실행 권한:** Cortex Analyst가 만든 SQL은 계정의 가상 웨어하우스에서 역할 기반 접근 통제를 따라 실행된다. 시맨틱 뷰는 소유자 권한으로 동작해 시맨틱 뷰에 SELECT 권한이 있으면 원본 데이터 권한 없이도 조회할 수 있으므로, 접근 범위는 시맨틱 뷰의 권한 부여와 원본에 건 정책으로 통제한다. 마스킹과 행 접근 정책은 시맨틱 뷰에 직접 걸 수 없고, 원본 테이블과 컬럼에 건 정책이 시맨틱 뷰로 전파되어 적용된다. Cortex Agents는 호출 사용자의 기본 역할로 세션 권한을 정한다. 2026-09-02 적용 예정으로 공지된 동작 변경 이후에는 에이전트 명세에서 `orchestration.tool_not_accessible`을 생략하면 기본값 `accept`에 따라 접근 가능한 도구만으로 답하고 경고를 함께 보낸다. 부분 답변을 허용하지 않을 업무는 `reject`(또는 기존 동작인 `legacy`)를 새 에이전트 버전에 명시한다. 이 사전 점검은 Cortex Search, Cortex Analyst, MCP와 스킬 도구에만 적용되므로 사용자 정의 함수와 저장 프로시저의 실행 실패는 따로 확인한다. 이 항목과 위의 대조 절차는 문서 내용을 운영에 옮긴 제안이다.
+
+이 절은 Snowflake 문서의 부분 대조이며 실제 계정에서 정확도나 권한 동작을 시험한 결과는 아니다. 질문과 SQL 예시로 생성 맥락을 구성하고 평가하는 일반 원칙은 [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]의 Text-to-SQL 절에서 다룬다.
+
 ## 실행 — 읽기에서 쓰기로, 엔드포인트가 아니라 능력으로
 
 - 접근 스펙트럼 3단계: 검색(RAG, 벡터 검색, 대부분의 조직이 여기 머문다), 실시간 질의(라이브 시스템 상태 확인), 쓰기(티켓 생성, 레코드 갱신, 워크플로 트리거, 가장 강력하고 위험). 세 층을 별개의 통제된 접근 수준으로 유지한다.
@@ -104,6 +117,20 @@ aliases: ["Agent-Ready Data", "에이전트용 데이터 준비", "에이전트 
 - [Snowplow, Event specification validation](https://docs.snowplow.io/docs/event-studio/tracking-plans/event-specification-validation/) — 2026-10-10 검증 실패의 기본 전달, specification 누락 예외와 버전 적용을 대조했다. 기존 본문의 법률 및 벤치마크 주장은 이번 검증 범위에 포함하지 않았다.
 - [Making Your Data Ready for Agentic AI — martinfowler.com, Pramod Sadalage와 Prem Chandrasekaran](https://martinfowler.com/articles/making-data-ready-for-agentic-ai.html)
 - [에이전트형 AI를 위한 데이터 준비하기 — GeekNews](https://news.hada.io/topic?id=33657)
+- [Snowflake, Overview of semantic views](https://docs.snowflake.com/en/user-guide/views-semantic/overview) — 2026-10-12 시맨틱 뷰 절의 구성 요소, 검증 쿼리, 평가, 정의 교환과 실행 권한을 아래 Snowflake 문서와 함께 대조했다. 기존 본문의 법률 및 벤치마크 주장은 이번 검증 범위에 포함하지 않았다.
+- [Snowflake, CREATE SEMANTIC VIEW](https://docs.snowflake.com/en/sql-reference/sql/create-semantic-view)
+- [Snowflake, Best practices for modeling semantic views](https://docs.snowflake.com/en/user-guide/views-semantic/best-practices-modeling)
+- [Snowflake, Best practices for developing and deploying semantic views](https://docs.snowflake.com/en/user-guide/views-semantic/best-practices-dev)
+- [Snowflake, Semantic View Autopilot](https://docs.snowflake.com/en/user-guide/views-semantic/autopilot)
+- [Snowflake, Improve literal search to enhance Cortex Analyst responses](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/cortex-analyst-search-integration)
+- [Snowflake, Cortex Analyst](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst)
+- [Snowflake, Cortex Analyst Verified Query Repository](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/verified-query-repository)
+- [Snowflake, Cortex Analyst evaluations](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst-evaluations)
+- [Snowflake, SYSTEM$CREATE_SEMANTIC_VIEW_FROM_OSSIE_YAML](https://docs.snowflake.com/en/sql-reference/stored-procedures/system_create_semantic_view_from_ossie_yaml)
+- [Snowflake, Cortex Agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents)
+- [Snowflake, Cortex Agents Run API](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-run)
+- [Cortex Agents and Snowflake CoWork: Runs proceed when some tools are inaccessible — Snowflake](https://docs.snowflake.com/en/release-notes/bcr-bundles/un-bundled/bcr-2425) — 2026-10-12 확인 시 2026-09-02 적용 예정이며 바뀔 수 있다고 표시
+- [Apache Ossie (Incubating): The New Name for Open Semantic Interchange — Snowflake](https://www.snowflake.com/en/blog/apache-ossie-open-semantic-interchange-incubator/)
 
 ## 관련 문서
 
@@ -112,3 +139,6 @@ aliases: ["Agent-Ready Data", "에이전트용 데이터 준비", "에이전트 
 - [[LLM-Application-Security|LLM 애플리케이션 보안]] — 과도한 위임과 완전 중재
 - [[Audit-Log|감사 로그]] — 추적과 보관
 - [[Data-Integrity-Constraints|데이터 무결성 제약]] — 규칙을 어느 계층에 둘 것인가
+- [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]] — Text-to-SQL의 맥락 구성, 생성 SQL 검증과 평가
+- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]] — Metric Registry와 조회 우선순위
+- [[QuickSight#자연어 분석에는 업무 의미를 연결한다|Amazon Quick Sight Topics]] — 다른 BI 제품의 의미 계층 설정과 점검

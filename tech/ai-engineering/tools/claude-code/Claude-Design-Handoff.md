@@ -1,9 +1,9 @@
 ---
-tags: [ai, design, prototype, claude-code, handoff, frontend, impeccable]
+tags: [ai, design, prototype, claude-code, handoff, frontend, impeccable, license]
 status: done
-verified_at: 2026-10-11
+verified_at: 2026-10-12
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Claude Design Handoff", "AI 디자인과 구현 인계", "Impeccable", "AI 디자인 기본값 수렴"]
+aliases: ["Claude Design Handoff", "AI 디자인과 구현 인계", "Impeccable", "AI 디자인 기본값 수렴", "Taste Skill", "생성 UI 외부 자원 출처 확인"]
 ---
 
 # AI 디자인 시스템과 구현 인계
@@ -50,6 +50,21 @@ Impeccable은 지침과 결정적 검사를 묶은 사례다. Paul Bakaus가 Ant
 - 설치는 지원 도구에 프로젝트 훅을 함께 넣고, 엔진이 실행기 옆에 없으면 처음 실행 때 네이티브 엔진을 `~/.impeccable/bin/`에 내려받는다. Claude Code에서는 설치된 명령 훅이 모델 도구 승인과 별개로 돌아, 실행기 명령을 거부해도 첫 편집이나 Stop 이벤트에서 엔진을 내려받을 수 있다. 외부 스킬과 플러그인을 들일 때처럼 설치되는 파일, 훅이 실행하는 명령과 끄는 방법을 먼저 확인한다([[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]], [[Claude-Code-Customization#플러그인 — 확장을 묶어 설치하는 단위|플러그인의 보안 경계]]).
 - 이번에 확인한 개선 근거는 제작자 쪽 분석이고 GitHub 소개 문구에도 측정값이 없다. 독립 평가는 찾지 못했으므로 자기 화면에서 적용 전후를 비교하고 사람이 브리프와 대조해 판정한다.
 
+## 생성 UI를 다듬는 외부 자원과 납품 전 출처 확인
+
+지침 스킬, 컴포넌트, 아이콘과 레퍼런스 갤러리는 다듬는 대상이 다르고 출처와 라이선스를 남기는 방법도 다르다. 아래 개수와 라이선스는 2026-10-12에 각 공식 사이트, 저장소와 LICENSE 원문을 대조한 기준이며 바뀔 수 있다.
+
+- **지침 스킬:** Taste Skill은 Leon Lin과 blueemi가 만든 SKILL.md 묶음(MIT)으로, 공식 사이트는 Claude Code와 Codex 등 SKILL.md를 읽는 도구에 `npx skills add Leonxlnx/taste-skill`로 13개 스킬을 설치하도록 안내한다. 이 명령을 실행하는 skills CLI는 README 기준 `--all`을 주면 확인 없이 모든 스킬을 설치하므로, 기본 스킬만 필요하면 `--skill design-taste-frontend`를 지정한다. README가 실험 단계로 표시한 기본 스킬 `design-taste-frontend`는 브리프에서 방향을 추론해 레이아웃 변화, 움직임 강도, 정보 밀도의 세 다이얼을 정한다. 이미 만든 화면용으로는 처음부터 다시 쓰지 말고 변경마다 테스트하라고 지시하는 `redesign-existing-projects` 스킬이 따로 있다. 점검은 에이전트가 출력 전 체크리스트로 직접 수행하며, Impeccable 같은 결정적 탐지기와 훅이나 효과 측정 결과는 README와 기본 스킬에서 찾지 못했다. 앞의 Impeccable 운영 제안처럼 자기 화면에서 적용 전후를 비교하고, 설치 전 확인은 [[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]]를 따른다.
+- **컴포넌트:** Colorlib의 Velora UI는 React, Tailwind CSS 4와 shadcn/ui용 애니메이션 컴포넌트 100개와 블록 31개를 MIT로 공개한다. README 기준 100개 중 51개는 런타임 의존성이 없고 나머지는 Motion만 쓴다. 출시 예정인 유료 Pro 등급은 가격표에 MIT가 아닌 Commercial로 표시되므로 어느 등급에서 받은 항목인지 함께 기록한다.
+- **아이콘:** heroicons-animated는 Tailwind Labs의 Heroicons를 Motion으로 움직이게 만든 개인 프로젝트(Aniket Pawar, MIT)로 316개를 표시한다. 이 저장소의 LICENSE에는 Aniket Pawar의 저작권 고지만 있으므로 원본 Heroicons LICENSE의 고지(Copyright (c) Tailwind Labs, Inc.)도 함께 보존하는 편이 안전하다. Taste Skill 기본 스킬은 아이콘 허용 목록을 Phosphor, HugeIcons, Radix, Tabler로 두고 프로젝트마다 한 계열만 쓰라고 지시하므로, Heroicons 계열을 쓸 프로젝트라면 그 선택을 프로젝트 지침에 적어 둔다. 같은 저장소의 redesign 스킬은 Phosphor, Heroicons나 자체 세트를 권해 두 스킬의 지시가 다르다.
+- **레퍼런스 갤러리:** refs.gallery는 영상 설명 기준 사이트 레퍼런스 모음이며, 2026-10-12에는 HTTP 429로 페이지가 열리지 않아 내용과 이용 조건을 확인하지 못했다. 레퍼런스 갤러리를 쓸 때는 갤러리 이용 조건이 원래 사이트의 이미지, 문구와 일러스트 사용까지 허락한다고 가정하지 않고, 위계, 섹션 순서와 정보 밀도를 참고한 뒤 표면 시각은 브리프에 맞게 새로 만든다([[AI-Work-Tool-Selection|참고와 복제의 구분]]).
+
+고객 사이트로 납품할 때는 다음을 확인한다. 원문 조건을 납품에 적용한 제안이며 법률 판단을 대신하지 않는다. 라이선스별 조건은 [[Open-Source-License-Review|오픈소스 라이선스 검토]], 인계 범위는 [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]]를 따른다.
+
+- shadcn 레지스트리 방식은 npm 패키지 대신 컴포넌트 소스를 프로젝트에 넣는다. 2026-10-12에 확인한 Velora UI의 marquee와 heroicons-animated의 academic-cap 항목 소스에는 라이선스 주석이 없고, 이렇게 받은 컴포넌트 자체는 패키지 의존성 목록에 나타나지 않는다. 항목이 선언한 `motion` 같은 npm 의존성만 추가된다. Velora UI README는 shadcn MCP로 에이전트가 이름만으로 컴포넌트를 찾아 설치하는 방법도 안내하므로, 받은 항목, 레지스트리 URL, 받은 날짜와 LICENSE 사본을 인계 자료에 남긴다.
+- Velora UI README의 출처 표기 불필요(no attribution required) 안내와 별개로 MIT LICENSE 원문은 소프트웨어의 모든 복제물 또는 실질적인 부분에 저작권 고지와 허가 고지를 포함하라는 조건을 둔다. 화면의 출처 표기와 소스, 고지 파일의 고지를 구분하고 후자는 지우지 않는다.
+- 스킬의 라이선스와 스킬이 쓰게 하는 패키지의 라이선스는 별개다. Taste Skill 기본 스킬은 고정(pin)과 스크럽(scrub) 같은 스크롤 연출에 GSAP과 ScrollTrigger 코드 골격을 제시하는데, GSAP은 MIT가 아닌 Webflow의 Standard No Charge GSAP License를 따른다. 이 라이선스는 상업적 사용을 허용하지만 서면 동의 없이 Webflow의 시각적 애니메이션 제작 기능과 경쟁하는 노코드 도구에 쓰는 것은 금지한다(2025-05-30 개정판 기준).
+
 ## 내보내기와 구현 인계
 
 Claude Design은 PDF, PowerPoint와 HTML로 내보내거나 Canva 등 연결된 도구로 전달할 수 있다. Claude Code에는 디자인을 인계해 기존 작업을 이어 가는 흐름을 제공한다. 2026-10-06 확인한 공식 안내에는 `/design-sync`를 통한 디자인 시스템 반영과 `/design`을 통한 디자인 프로젝트 생성, 편집과 동기화가 설명돼 있다. 로컬 환경에서 해당 기능을 직접 실행해 확인한 기록은 아니다.
@@ -81,6 +96,7 @@ Claude Design은 PDF, PowerPoint와 HTML로 내보내거나 Canva 등 연결된 
 - 키보드 이동, 초점과 레이블을 포함한 접근성을 확인했는가?
 - 디자인에서 사용한 예시 데이터와 운영 데이터의 구분이 명확한가?
 - 브리프가 요구하지 않은 흔한 기본값(글꼴, 배경, 카드 중첩)을 이유 없이 그대로 쓰지 않았는가?
+- 외부에서 받은 컴포넌트, 아이콘과 그 의존성의 출처, 받은 날짜와 라이선스 고지를 인계 자료에 남겼는가?
 - 인계 후 남은 요구사항과 완료 증거를 코드 변경 단위로 설명할 수 있는가?
 
 위 항목은 구현 검토 기준이며 디자인 도구가 자동으로 보장하는 기능 목록은 아니다. 발표 자료와 서비스 구현은 각각의 완료 조건으로 검수한다.
@@ -109,6 +125,22 @@ Claude Design은 PDF, PowerPoint와 HTML로 내보내거나 Canva 등 연결된 
 - [Impeccable, audit](https://impeccable.style/docs/audit)
 - [GitHub Copilot app — GitHub](https://github.com/features/ai/github-app)
 - [Impeccable Kills AI Design Slop — Better Stack](https://www.youtube.com/watch?v=J1RYxganY20) — 2026-10-10 업로드, 규칙 수 61개는 당시 README의 59개와 다르며 효과 주장의 근거로 사용하지 않음
+- [Taste Skill — tasteskill.dev](https://tasteskill.dev)
+- [Leonxlnx/taste-skill — GitHub](https://github.com/Leonxlnx/taste-skill)
+- [design-taste-frontend SKILL.md — GitHub, Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill/blob/main/skills/taste-skill/SKILL.md) — GSAP 코드 골격과 아이콘 허용 목록
+- [redesign-existing-projects SKILL.md — GitHub, Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill/blob/main/skills/redesign-skill/SKILL.md)
+- [GSAP, Standard No Charge GSAP License](https://gsap.com/standard-license) — 2025-05-30 개정판
+- [ColorlibHQ/velora-ui — GitHub](https://github.com/ColorlibHQ/velora-ui)
+- [Pricing — Velora UI](https://velora.colorlib.com/pricing) — Free는 MIT, 출시 예정 Pro는 Commercial로 표시
+- [marquee 레지스트리 항목 — Velora UI](https://velora.colorlib.com/r/marquee.json) — 2026-10-12 확인, 소스에 라이선스 주석 없음
+- [heroicons-animated — Aniket Pawar](https://www.heroicons-animated.com)
+- [LICENSE — GitHub, Aniket-508/heroicons-animated](https://github.com/Aniket-508/heroicons-animated/blob/main/LICENSE)
+- [academic-cap 레지스트리 항목 — heroicons-animated](https://www.heroicons-animated.com/r/academic-cap.json) — 2026-10-12 확인, 소스에 라이선스 주석 없음
+- [LICENSE — GitHub, tailwindlabs/heroicons](https://github.com/tailwindlabs/heroicons/blob/master/LICENSE)
+- [shadcn/ui, Introduction](https://ui.shadcn.com/docs)
+- [refs.gallery](https://www.refs.gallery/info) — 2026-10-12 접속 제한(HTTP 429)으로 본문과 이용 조건을 확인하지 못함
+- [vercel-labs/skills — GitHub](https://github.com/vercel-labs/skills) — README의 `--all` 설치 옵션
+- [바이브 코딩 결과물 다듬는 무료 자료 5곳 — 코딩 수익화 : 투더제이 TTJ](https://www.youtube.com/watch?v=9mtacFyZD8Q) — 2026-10-10 업로드, 자원 목록의 출발점이며 개수와 라이선스는 공식 사이트와 LICENSE 원문으로 다시 확인함
 
 ## 관련 문서
 
@@ -118,3 +150,4 @@ Claude Design은 PDF, PowerPoint와 HTML로 내보내거나 Canva 등 연결된 
 - [[AI-Slop-Quality-Gate|AI 슬롭과 판단 관문]] — 정적 규칙과 사람 판정의 한계
 - [[Design-System-Lint|디자인 시스템 lint]] — 테마 토큰과 컴포넌트 계약의 정적 검사
 - [[Agent-Skills|에이전트 스킬]] — 필요할 때 불러오는 지침
+- [[Open-Source-License-Review|오픈소스 라이선스 검토]] — MIT 고지 보존과 외부 자산의 이용 조건

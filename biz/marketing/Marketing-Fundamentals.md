@@ -81,6 +81,18 @@ aliases: ["Marketing Fundamentals", "마케팅 기초", "Branding vs Marketing v
 
 이 카피 구조는 포지셔닝을 한 문장으로 압축하며, 세 번째는 Dunford의 시장 카테고리 정의와 같은 작업이다. 제품 경험이 그 정의를 뒷받침하지 못하면 문장만 남는다.
 
+### 드릴이 아니라 구멍: 제안은 고객이 이루려는 진전으로 쓴다
+
+"People don't want to buy a quarter-inch drill. They want a quarter-inch hole!"은 Christensen, Cook, Hall이 2005년 Harvard Business Review 글에서 하버드 경영대학원 마케팅 교수 Theodore Levitt의 말로 인용한 문장이다. Levitt 자신은 1969년 초판 The Marketing Mode에서 이 비유를 1/4인치 드릴이 팔린 이유는 사람들이 1/4인치 구멍을 원했기 때문이라는 Leo McGivena의 말로 소개하고 "People don't buy products; they buy the expectation of benefits."를 덧붙였다. 1974년 2판에도 표현만 drill bits로 바뀐 채 같은 귀속이 남았다. McGivena 귀속은 1947년 영업서까지 거슬러 올라가지만, 1942년과 1946년 광고에 이름 없이 같은 취지의 문장이 있어 처음 말한 사람은 확정되지 않았다.
+
+2005년 글은 이 문장을 구호로 삼아 마케터의 일을 고객이 끝내려는 일(job)을 이해하고 그 일에 맞는 제품과 브랜드를 설계하는 것으로 봤다. Christensen 등의 JTBD 이론은 job을 고객이 주어진 상황에서 이루려는 진전으로 정의하고 기능적 차원과 함께 감정적, 사회적 차원을 본다([[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]). 다음은 이를 서비스 메뉴, 요금표와 상세 페이지에 적용한 점검 기준이다.
+
+- 구성 목록보다 고객이 그 상황에서 이루려는 진전과 그 진전을 확인할 근거를 먼저 쓰고, 구성, 횟수, 가격과 조건은 지우지 않고 함께 밝힌다.
+- 내부 용어 대신 고객이 그 일을 부르는 말을 쓰고([[User-Feedback#JTBD 인터뷰 기법|JTBD 인터뷰]]), 묶음도 일 단위로 나눈다. 2016년 HBR 글에 실린 인터뷰에서 Intercom 공동창업자는 회사가 outbound messaging이라 부른 기능을 고객은 engage라고 불렀고, 모든 기능을 한 가격에 팔 때는 기능 전부가 필요한 고객이 없어 가격이 비싸게 느껴졌으며, 고객의 네 가지 일에 맞춘 서비스로 나눈 뒤 전환율이 올랐다고 말했다. 수치 없는 한 회사의 자기 보고이므로 묶음을 나눌지는 자기 고객의 일로 다시 확인한다.
+- 결과 문구만으로 높은 가격이 정당화된다고 보지 않는다. 같은 글은 일의 이해를 고객이 프리미엄 가격을 낼 제품을 만드는 첫 단계로 보고, 구매와 사용 경험을 설계해 회사 프로세스에 통합해야 한다고 했다. 집을 줄여 옮기려는 고객을 겨냥한 콘도 사례도 식탁 놓을 공간, 이사 서비스, 2년 보관과 분류 공간으로 제공물을 바꾼 뒤 이사와 보관 비용을 포함해 가격을 3,500달러 올렸다.
+- 결과 표현 가운데 사실과 관련한 사항은 실증할 수 있어야 하고(표시광고법 제5조 제1항), 공정거래위원회가 요청하면 15일 안에 실증자료를 내야 하므로(같은 조 제3항, 연장 가능) 근거는 게시 전에 갖춰 둔다.
+- 사실과 다르거나 지나치게 부풀린 결과, 은폐하거나 축소한 조건은 거짓, 과장이나 기만적인 표시, 광고가 될 수 있다(같은 법 제3조 제1항, 같은 법 시행령 제3조 제1항, 제2항). 운동 효과나 매출처럼 고객의 노력과 외부 조건에 달린 결과는 보장처럼 쓰지 않고, 사례를 쓰면 대상, 기간과 조건을 함께 밝힌다. 후기와 추천의 공개 기준은 [[Persuasion-Principles-and-Boundaries|설득 원리와 정직한 사용의 경계]]를 따른다.
+
 ## 4P 마케팅 믹스 — 어떻게 팔 것인가
 
 STP로 전략이 섰다면 4P로 실행한다.
@@ -180,6 +192,13 @@ CAC와 LTV의 정의와 비율 해석은 [[Business-Model|비즈니스 모델]]�
 - [고객 7단계와 단계별 대응 — Threads, fandom_doo](https://www.threads.com/@fandom_doo/post/DYOzGpokeOk)
 - [사람들은 물건이 아닌 정체성을 산다 — Threads, gentleman.kr](https://www.threads.com/@gentleman.kr/post/DZPqWROkrhN)
 - [카피 구조 A는 B다의 세 가지 쓰임 — Threads, copy_jay](https://www.threads.com/@copy_jay/post/Dck5gtBlMgE)
+- [What Customers Want from Your Products — Harvard Business School Working Knowledge, Clayton M. Christensen, Scott Cook, Taddy Hall](https://www.library.hbs.edu/working-knowledge/what-customers-want-from-your-products) — 2006-01-16, 2005-12 HBR 글 Marketing Malpractice: The Cause and the Cure의 발췌. Levitt 인용, 마케터의 일과 job의 세 차원
+- [Know Your Customers' Jobs to Be Done — Harvard Business Review, Clayton M. Christensen, Taddy Hall, Karen Dillon, David S. Duncan](https://hbr.org/2016/09/know-your-customers-jobs-to-be-done) — 2016-09, 진전으로 본 job 정의, 프리미엄 가격과 경험 설계, 콘도 사례와 Intercom 인터뷰
+- [Quote Origin: No One Wants a Drill. What They Want Is the Hole — Quote Investigator](https://quoteinvestigator.com/2019/03/23/drill/) — 1942년 광고부터의 사용 사례, Levitt과 McGivena 귀속 추적
+- [The Marketing Mode — McGraw-Hill, Theodore Levitt](https://archive.org/details/marketingmodepat00levi) — 1969년 초판. 본문 검색으로 McGivena 귀속과 expectation of benefits 문장 대조
+- [Marketing for Business Growth — McGraw-Hill, Theodore Levitt](https://archive.org/details/marketingforbusi00levi) — 1974년 2판(초판은 1969년 The Marketing Mode). 본문 검색으로 McGivena 인용 대조, 대출 전용 자료
+- [국가법령정보센터, 표시, 광고의 공정화에 관한 법률 제3조, 제5조](https://www.law.go.kr/법령/표시%E3%86%8D광고의공정화에관한법률) — 2026-10-12 확인, 2025-01-21 시행본
+- [국가법령정보센터, 표시, 광고의 공정화에 관한 법률 시행령 제3조](https://www.law.go.kr/법령/표시%E3%86%8D광고의공정화에관한법률시행령) — 2026-10-12 확인, 2026-07-01 시행본
 
 ## 관련 문서
 - [[GTM-Strategy|GTM 전략]] — 제품, 가격, 채널, 마케팅, 영업과 운영을 정렬하는 시장 진입 전략
