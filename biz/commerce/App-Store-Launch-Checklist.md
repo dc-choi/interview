@@ -1,7 +1,7 @@
 ---
 tags: [business, commerce, mobile-app, app-store, google-play, solo-business]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-11
 category: "비즈니스&제품(Business&Product)"
 aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인 개발자 앱 출시 체크리스트"]
 ---
@@ -17,7 +17,7 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 1. **계정 유형을 정한다.**
    - Apple Developer Program은 개인(1인 사업자 포함)과 조직으로 나뉜다. Apple 안내는 1인 사업자(sole proprietor)는 개인으로 가입해야 하고 App Store 판매자명에 법적 실명이 표시된다고 적는다. 조직은 계약을 맺을 수 있는 법인이어야 하고 상호, 가공의 사업체나 지점으로는 가입할 수 없으며, D-U-N-S 번호, 계약 권한, 조직 도메인의 이메일과 공개 웹사이트를 확인받는다. 조직으로 가입하면 법인명이 판매자명이 된다. 연회비는 99달러이며 지역마다 다를 수 있고 가입 때 지역 통화로 표시된다.
    - 법인격이 없는 국내 개인사업자는 Apple에서 개인에 해당하므로, 상호를 판매자명으로 쓰려면 법인으로 조직 가입을 해야 한다는 점을 출시 전에 감안한다.
-   - Google Play Console은 개인 용도(학생, 취미, 아마추어 개발자)면 개인 계정, 조직이나 사업(상업, 산업, 전문, 정부 활동)이면 조직 계정을 고르게 안내한다. 두 유형 모두 같은 기능을 쓰고 결제 프로필로 수익화할 수 있으며, 조직 계정은 D-U-N-S 번호가 필요하다(Dun & Bradstreet 발급은 무료). 금융, 일부 건강, VPN, 정부 앱은 조직 계정으로 등록하게 한다. 등록비는 1회 25달러이며 계정을 만들 때 신원 확인을 거친다. 국내 개발자가 2023-08-31 이후 만든 개인 계정은 개발자 전화번호를 인증해야 하고 그 번호가 Google Play에 표시된다.
+   - Google Play Console은 개인 용도(학생, 취미, 아마추어 개발자)면 개인 계정, 조직이나 사업(상업, 산업, 전문, 정부 활동)이면 조직 계정을 고르게 안내한다. 두 유형 모두 같은 기능을 쓰고 결제 프로필로 수익화할 수 있으며, 조직 계정은 D-U-N-S 번호가 필요하다(Dun & Bradstreet 발급은 무료). 금융, 일부 건강, VPN, 정부 앱은 조직 계정으로 등록하게 한다. 등록비는 1회 25달러이며 계정을 만들 때 신원 확인을 거친다. 국내 개발자가 2023-08-31 이후 만든 개인 계정은 개발자 전화번호를 인증해야 하고 그 번호가 Google Play에 표시된다. 2024년 초부터 새 개인 계정은 앱을 공개하기 전에 Play Console 모바일 앱으로 실제 Android 기기 접근도 확인해야 한다. 루팅하지 않은 Android 10 이상의 실물 Android 모바일 기기면 되고, 같은 기기로 여러 계정을 확인할 수 있으며, 나중에 다시 확인을 요청받아도 같은 기기일 필요는 없다.
    - 상업 활동을 하는 국내 개인사업자가 D-U-N-S 번호로 Google 조직 계정을 열 수 있는지는 도움말에 따로 적혀 있지 않으므로 등록 전에 확인한다.
 2. **테스트와 심사 기간을 일정에 넣는다.** Google 도움말은 2023-11-13 이후 만든 개인 계정에 12명 이상이 14일 이상 연속으로 참여한 비공개 테스트를 요구하고, 그 뒤 프로덕션 접근을 신청하게 한다. 신청 심사는 보통 7일 이내지만 더 걸릴 수 있다([[App-Monetization-Models|앱 수익 모델의 스토어 조건]]). Apple TestFlight의 내부와 외부 테스트, Beta App Review 조건은 [[Expo-TestFlight-Distribution|TestFlight 배포]]를 따른다.
 3. **유료 앱이나 인앱결제를 붙이면 판매 계약과 정산 정보를 넣는다.**
@@ -28,6 +28,16 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 4. **정책 문서와 개인정보 양식을 준비한다.** 두 스토어 모두 모든 앱에 개인정보처리방침을 요구한다. Apple은 App Store Connect 메타데이터와 앱 안의 쉽게 찾을 수 있는 위치에 링크를 두게 하고, 방침에 수집 데이터와 용도, 데이터를 공유하는 제3자가 같거나 동등한 수준으로 보호한다는 확인, 보관과 삭제 정책, 동의 철회와 삭제 요청 방법을 담게 한다. Google은 Play Console의 지정 필드와 앱 안(링크나 본문)에 두게 한다. 데이터를 수집하지 않는 앱도 Google의 Data safety 양식을 작성해야 하고, Apple은 새 앱과 업데이트를 제출할 때 App Privacy 정보를 요구한다. 계정을 만들 수 있는 앱은 Apple에서 앱 안 계정 삭제를 제공해야 한다(5.1.1(v)). Google은 앱 안 삭제 경로나 웹 삭제 페이지로 가는 앱 안 링크를 두고, 계정과 데이터 삭제를 요청할 웹 링크를 Data safety 양식에 등록하게 한다. 앱 밖에서 만들고 운영하는 계정은 Google 요건의 대상이 아니다. Apple은 앱과 지원 URL에 쉽게 연락할 방법을 넣도록 요구한다. 국내 개인정보 처리 기준은 [[Privacy-Operations-for-Small-Business|소규모 사업자의 개인정보 운영]]을, 스토어 등록 정보의 언어 설정은 [[App-Store-Listing-Localization|앱스토어 등록 정보의 기본 언어와 현지화]]를 본다.
 5. **로그인 수단을 정한다.** 주 계정을 Google 로그인 같은 서드파티나 소셜 로그인으로 만들게 하면 Apple은 동등한 로그인 수단을 함께 제공하게 한다. 그 수단은 수집 데이터를 이름과 이메일로 제한하고, 이메일을 숨길 수 있으며, 동의 없이 광고 목적으로 앱 사용을 수집하지 않아야 한다(App Review Guidelines 4.8). 자체 계정만 쓰는 앱, 기존 교육이나 기업 계정으로만 로그인하는 앱 등은 예외다.
 6. **국내 판매자 정보를 넣는다.** Apple은 전자상거래법에 따라 한국 기반 개발자의 판매자 정보를 받아 App Store 제품 페이지에 표시한다. 개인은 이메일과 사업자등록번호, 조직은 상호, 이메일, 전화번호와 사업자등록번호이며, 사업자등록번호는 Paid Apps Agreement를 맺었으면 한국 세금 양식의 값이 자동으로 표시되고 유료 콘텐츠가 없으면 원할 때 넣는다. Google은 유료 앱이나 인앱결제를 배포하는 국내 사업자에게 사업자등록번호, 통신판매업 신고번호와 신고 기관을 받는다. 2023-08-31 전에 만든 계정은 개발자 페이지에 넣은 이 정보가 한국 사용자에게만 앱 등록 정보에 보이고, 이후 만든 계정은 About you 페이지에 넣는다. 그래서 수익을 낼 계획이면 사업자등록과 과세유형([[Business-Tax-Setup|사업자 세무 초기 설정]])을 먼저 정하고, 통신판매업 신고 대상과 면제 기준은 [[Marketplace-Seller-Launch|오픈마켓 셀러 첫 상품 출시]]로 확인한다. 신고가 면제된 경우의 입력 방법은 출시 전에 스토어에 확인한다.
+
+## 빌드 환경과 출시 뒤 유지 요건
+
+출시 뒤에도 스토어 요건 때문에 기능 변경 없이 다시 빌드하고 제출해야 할 때가 있다. 아래는 2026-10-11에 확인한 기준이다.
+
+- **Apple 빌드 환경:** 2026-04-28부터 App Store Connect에 올리는 iOS, iPadOS, tvOS, visionOS, watchOS 앱은 Xcode 26 이상과 각 플랫폼의 26 SDK로 빌드해야 하고, 2026-09-09부터 올리는 iOS와 iPadOS 앱은 iOS 13 이상을 대상으로 해야 한다. Xcode는 macOS에서만 실행된다. 업로드는 Transporter 명령줄 도구(macOS, Windows 11, Red Hat Enterprise Linux. Windows와 Linux에서는 Xcode에서 내보낸 AppStoreInfo.plist가 필요하다)나 App Store Connect API로도 할 수 있지만, 올리는 바이너리는 위 빌드 요건을 충족해야 한다. Apple의 Xcode Cloud도 첫 workflow는 Xcode에서 설정한다. Apple은 iPad의 Swift Playground로 SwiftUI 앱을 제출할 수 있다고 안내한다. macOS 빌드를 대신 돌려 주는 서비스의 예는 [[Expo-EAS-Build-Overview|EAS Build]]와 [[Expo-EAS-Submit-iOS|EAS iOS 제출]]을 본다.
+- **Google 대상 API 수준:** 2026-08-31부터 새 앱과 업데이트는 Android 16(API 36) 이상을 대상으로 해야 제출할 수 있다. Wear OS와 Android Automotive OS는 API 35, Android TV와 Android XR은 API 34가 기준이다. 이 폼 팩터들을 뺀 기존 앱은 API 35 이상을 대상으로 해야 앱의 대상 API보다 높은 Android 버전을 쓰는 새 사용자에게 계속 제공되며, 폼 팩터별 기존 앱 기준은 더 낮다. 기존 설치 사용자에게는 영향이 없다. Play Console 정책 상태 페이지에서 기한을 2026-11-01까지 늘리는 연장을 신청할 수 있다.
+- **방치된 앱과 계정:** Apple은 3년 동안 업데이트하지 않았고 최근 12개월 다운로드가 최소 기준에 못 미치는 앱에 90일 안에 업데이트를 요구하며, 기한을 넘기면 업데이트가 승인될 때까지 App Store에서 내린다. 실행 즉시 종료되는 앱은 바로 내린다. 멤버십이 만료되면 앱을 내려받을 수 없고 새 앱과 업데이트도 제출할 수 없지만, 이미 설치한 사용자의 앱은 계속 동작한다. Google은 만든 지 1년이 넘은 계정 중 앱을 심사에 제출한 적이 없거나, 누적 설치 1,000 미만이면서 연락처를 인증하지 않고 180일 동안 Play Console을 쓰지 않은 계정을 폐쇄하며 등록비는 환불하지 않는다. 안내된 기한까지 연락처를 인증하고 앱이나 업데이트를 게시하면 피할 수 있다.
+
+외주로 앱을 만든다면 출시 이후 이런 요건 대응을 누가, 언제, 어떤 비용으로 맡는지 계약에 정해 두기를 제안한다. 새 기능이 없어도 Google 대상 API 기준에 못 미치면 최신 Android 기기의 새 사용자에게 제공되지 않고, 두 스토어 모두 다음 업데이트를 올릴 때 그 시점의 빌드 기준을 맞춰야 하기 때문이다.
 
 ## 게임을 낼 때 추가로 확인할 것
 
@@ -40,13 +50,15 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 
 - 개인 계정은 준비 서류가 적지만 공개되는 정보가 있다. Apple은 판매자명에 실명을 쓰고, Google 개인 계정은 법적 이름, 국가와 개발자 이메일을 표시하며 수익화하면 주소 전체를 표시한다. 국내 개발자의 신규 Google 개인 계정은 전화번호도 표시되고 테스트 기간이 붙는다.
 - 조직 계정은 Apple에서 법인, D-U-N-S 번호와 웹사이트가, Google에서 D-U-N-S 번호가 필요하다. Google 조직 계정은 법적 이름, 주소, 개발자 이메일과 전화번호를, Apple 한국 조직 계정은 상호, 이메일과 전화번호를 공개한다.
-- 스토어 정책, 등록비, 테스트 요건과 심사 기간은 바뀔 수 있다. 이 문서는 2026-10-06 공식 도움말 기준이다.
+- 스토어 정책, 등록비, 테스트 요건과 심사 기간은 바뀔 수 있다. 이 문서는 2026-10-06 공식 도움말 기준이며, 기기 확인, 빌드 환경과 출시 뒤 유지 요건은 2026-10-11에 새로 확인했고 등록비와 테스트 요건은 같은 날 다시 확인했다.
 - 등급분류, 신고와 세금 판단은 앱의 수익 구조와 배포 경로에 따라 달라지므로 이 목록만으로 의무 여부를 확정하지 않는다.
 
 ## 적용 점검
 
 - [ ] 개인과 조직 중 계정 유형을 정하고, 판매자명과 공개되는 연락처, 필요한 서류를 확인했는가
 - [ ] Google 비공개 테스트와 프로덕션 신청 심사, Apple 심사를 출시 일정에 넣었는가
+- [ ] Apple이 요구하는 현재 Xcode와 SDK(2026-10-11 기준 Xcode 26) 빌드 환경과 Google 개인 계정의 Android 기기 확인을 준비했는가
+- [ ] Google 대상 API 수준, Apple 빌드 SDK와 최소 지원 iOS 기준 상향에 따른 업데이트와 그 책임자를 정했는가
 - [ ] 판매 계약, 미국과 한국 세금 정보, 은행 계좌 확인과 사업자등록번호 입력을 마쳤는가
 - [ ] 개인정보처리방침, Data safety와 App Privacy, 계정 삭제 경로와 연락 수단을 준비했는가
 - [ ] 소셜 로그인을 쓰면 Apple 4.8의 동등한 로그인 수단을 넣었는가
@@ -74,6 +86,18 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 - [Play Console Help, Provide information for Google Play's Data safety section](https://support.google.com/googleplay/android-developer/answer/10787469?hl=en)
 - [Play Console Help, Understanding Google Play's app account deletion requirements](https://support.google.com/googleplay/android-developer/answer/13327111?hl=en)
 - [게임 확률형 아이템 정보, 3월 22일부터 투명하게 공개된다 — 대한민국 정책브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=148924297)
+- [Play Console Help, Device verification requirements for new developer accounts](https://support.google.com/googleplay/android-developer/answer/14316361?hl=en)
+- [Play Console Help, Target API level requirements for Google Play apps](https://support.google.com/googleplay/android-developer/answer/11926878?hl=en)
+- [Android Developers, Meet Google Play's target API level requirement](https://developer.android.com/google/play/requirements/target-sdk)
+- [Play Console Help, Closure of inactive developer accounts](https://support.google.com/googleplay/android-developer/answer/11605267?hl=en)
+- [Apple Developer, Upcoming Requirements](https://developer.apple.com/news/upcoming-requirements/)
+- [Apple Developer, SDKs and system requirements](https://developer.apple.com/xcode/system-requirements/)
+- [Apple Developer, Upload builds](https://developer.apple.com/help/app-store-connect/manage-builds/upload-builds)
+- [Apple Developer, Transporter User Guide 4.2](https://help.apple.com/itc/transporteruserguide/en.lproj/static.html)
+- [Apple Developer, Configuring your first Xcode Cloud workflow](https://developer.apple.com/documentation/xcode/configuring-your-first-xcode-cloud-workflow)
+- [Apple Developer, Swift Playground](https://developer.apple.com/swift-playground/)
+- [Apple Developer, App Store Improvements](https://developer.apple.com/support/app-store-improvements/)
+- [Apple Developer, Program Renewal](https://developer.apple.com/help/account/membership/renewal/)
 - [국가법령정보센터, 게임산업진흥에 관한 법률 제21조](https://www.law.go.kr/법령/게임산업진흥에관한법률/제21조)
 - [국가법령정보센터, 게임산업진흥에 관한 법률 제21조의2](https://www.law.go.kr/법령/게임산업진흥에관한법률/제21조의2)
 - [국가법령정보센터, 게임산업진흥에 관한 법률 제25조](https://www.law.go.kr/법령/게임산업진흥에관한법률/제25조)
@@ -86,3 +110,5 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 - [[Privacy-Operations-for-Small-Business|소규모 사업자의 개인정보 운영]]
 - [[App-Store-Listing-Localization|앱스토어 등록 정보의 기본 언어와 현지화]]
 - [[Expo-TestFlight-Distribution|TestFlight 배포]]
+- [[Expo-EAS-Build-Overview|EAS Build 시작과 산출물]]
+- [[Expo-EAS-Submit-iOS|iOS 제출과 App Store Connect]]

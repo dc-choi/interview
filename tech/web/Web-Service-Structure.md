@@ -1,9 +1,9 @@
 ---
-tags: [web, architecture, html, css, javascript, state, cookie, browser, ssr, csr]
+tags: [web, architecture, html, css, javascript, state, cookie, browser, ssr, csr, jamstack, serverless]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-11
 category: "웹&네트워크(Web&Network)"
-aliases: ["Web Service Structure", "웹 서비스의 구조", "웹 서비스 3대 요소", "정적 웹과 동적 웹", "CSR SSR 판별", "렌더링 방식 판별"]
+aliases: ["Web Service Structure", "웹 서비스의 구조", "웹 서비스 3대 요소", "정적 웹과 동적 웹", "CSR SSR 판별", "렌더링 방식 판별", "웹사이트 서버 구성 선택"]
 ---
 
 # 웹 서비스의 구조: 클라이언트 3요소, 서버 처리와 상태 저장
@@ -86,6 +86,23 @@ HTTP는 각 요청을 다른 요청과 독립적으로 해석하는 무상태 �
 
 이 판별은 스크립트를 실행하지 않거나 늦게 실행하는 소비자가 무엇을 받는지 확인하는 절차이기도 하다. Google 검색 문서(2026-03-04 갱신 기준)는 모든 봇이 JavaScript를 실행하지는 않으므로 서버 렌더링이나 사전 렌더링을 권하고, Google도 렌더링 대기열에서 몇 초 또는 그보다 오래 기다린 뒤 스크립트를 실행한다고 설명한다. 첫 문서에 본문과 메타데이터가 없으면 스크립트를 실행하지 않는 소비자에게는 빈 페이지다.
 
+## 사이트를 만들 때 서버 구성 고르기
+
+사이트의 서버 구성은 규모 등급만이 아니라 콘텐츠가 언제 바뀌는지, 요청마다 무엇을 계산하는지, 도메인과 팀을 어떻게 나누는지로 고른다. 흔히 함께 나열되는 Jamstack, 계층형, 서버리스, 마이크로서비스는 비교 축이 다르다. 계층형과 마이크로서비스는 애플리케이션을 나누는 방식, 서버리스는 실행과 운영 모델, Jamstack은 프런트엔드를 전달하는 방식이라 한 사이트 안에서 함께 쓸 수 있다.
+
+| 구성 | 동작 | 맞는 조건 | 비용과 확인할 점 |
+|---|---|---|---|
+| Jamstack(사전 생성과 CDN) | 빌드 때 만든 HTML과 자산을 CDN이 응답하고, 동적 기능은 JavaScript와 API로 붙인다 | 소개, 랜딩, 블로그처럼 방문자마다 내용이 같고 URL을 미리 알 수 있는 페이지 | 콘텐츠를 바꿀 때마다 다시 빌드한다. ISR 같은 부분 재생성은 재생성을 실행할 서버나 호스팅 기능이 필요하고 정적 export에서는 쓸 수 없다. URL을 미리 알기 어렵거나 고유 페이지가 아주 많으면 미리 만들기 어렵고, 첫 HTML에 실시간 데이터나 개인화가 들어가야 하면 요청 시점 서버 렌더링이 맞다 |
+| 계층형(N-tier) | 프레젠테이션, 선택적인 중간, 데이터 tier가 요청마다 응답을 만든다 | Azure가 드는 경우: 아키텍처 요구사항이 아직 정해지는 중인 애플리케이션, 온프레미스 애플리케이션을 최소 변경으로 Azure에 옮기는 경우, 온프레미스와 클라우드에 걸친 애플리케이션 | tier를 물리적으로 나누면 확장성과 복원력이 좋아지는 대신 네트워크 지연이 는다. 모놀리식 설계라 기능을 따로 배포할 수 없다. VM으로 옮길 때의 Azure 참조 구성은 tier마다 VM을 둘 이상 두고 데이터 tier를 복제한다 |
+| 서버리스 함수 | 요청이나 이벤트가 오면 준비된 실행 환경을 재사용하거나, 없으면 새로 만들어 함수를 실행한다 | 폼 제출, 웹훅, 예약 작업처럼 짧고 간헐적인 처리 | 인프라 관리는 맡기지만 함수 코드, 라이브러리, 설정, IAM 권한과 런타임 지원 종료 대응은 사용자 몫이다. 표준 Lambda 함수의 제한 시간은 최대 900초이고 콜드 스타트의 초기화 시간도 지연과 과금에 들어간다 |
+| 마이크로서비스 | 비즈니스 역량 단위로 나눈 서비스를 독립적으로 배포하고 확장한다 | 도메인이 복잡하고 변경이 잦으며 여러 팀이 독립 배포해야 하는 조직 | 시스템 전체 복잡도, 서비스 간 데이터 일관성, 배포와 관측 자동화 부담이 생긴다. 한 서비스의 장애가 전체로 번지지 않는 것은 상류 서비스가 장애를 처리하도록 설계했을 때뿐이다 |
+
+- **규모만으로 고르지 않는다.** Azure Architecture Center는 N-tier의 적합 조건에 사이트 크기 기준을 두지 않는다. 같은 센터의 마이크로서비스 문서는 서비스별 독립 확장을 이점으로 들면서도, 팀이 성공할 역량과 경험이 있는지 신중히 평가하라고 한다. Martin Fowler는 근거가 아직 적다는 단서와 함께, 팀에 마이크로서비스 구축 경험이 충분하지 않으면 마이크로서비스로 시작하지 말라고 본다(2015). Lewis와 Fowler는 모놀리스도 로드 밸런서 뒤에 여러 인스턴스를 두어 수평 확장할 수 있지만 애플리케이션 전체를 함께 늘려야 한다고 설명한다([[Monolith-vs-Microservice|모놀리스와 마이크로서비스]], [[Architecture-Styles|아키텍처 스타일 카탈로그]]).
+- **쓴 만큼 낸다는 말에도 조건이 있다.** Lambda의 프로비저닝된 동시성은 호출이 없어도 설정한 기간만큼 과금되고, 함께 쓰는 다른 서비스와 데이터 전송은 따로 청구될 수 있다. 같은 리전에서 S3, DynamoDB, SQS 등 요금 페이지가 열거한 서비스와의 데이터 전송은 무료이고, VPC나 VPC 피어링을 쓰면 추가 요금이 붙는다. 2025-08-01부터는 ZIP 패키지와 관리형 런타임을 쓰는 온디맨드 호출도 초기화(INIT) 단계를 과금한다. Firebase의 Cloud Functions는 배포에 Blaze 요금제가 필요하고 Blaze의 예산 알림은 사용량 상한이 아니다([[AWS-Lambda|AWS Lambda]], [[Cloud-Service-Models|클라우드 서비스 모델]]).
+- **빠르고 안전하다는 말에도 범위가 있다.** 사전 생성은 서버가 매번 HTML을 만들지 않아 TTFB가 일정하고 강화할 서버가 줄어든다. 상호작용 지표는 클라이언트 JavaScript를 줄였을 때만 좋아지며, 폼, 결제, 검색 같은 동적 기능의 보안 책임은 연결한 API와 외부 서비스 쪽으로 옮겨 가고, 외부 서비스에 맡겨도 키, 권한과 연동 설정은 사용자 몫으로 남는다([[NextJS-Static-Export|Next.js 정적 export]], [[Frontend-Rendering-Models|프런트엔드 렌더링 모델]]).
+
+다음은 위 조건에서 도출한 설계 예시다. 회사 소개와 블로그는 사전 생성해 CDN에 두고, 문의 폼은 서버리스 함수나 폼 서비스로 받으며, 예약이나 회원 기능이 생기면 그 경로에만 서버 계층과 DB를 붙인다. 마이크로서비스는 팀과 도메인이 커져 단일 애플리케이션의 배포가 병목이 된 뒤에 검토한다. 정적 파일 저장소를 공개하는 방식은 [[S3-Security-Patterns|S3 보안 설계 패턴]]을 따른다.
+
 ## 트레이드오프
 
 - **역할 분리는 요청 수를 늘린다.** HTML, CSS, JavaScript를 분리하면 유지보수는 쉬워지지만 문서 하나에 여러 파일 요청이 따른다. 이 비용이 번들링, 캐싱과 HTTP 다중화의 동기다 ([[versions|HTTP 버전]]).
@@ -102,6 +119,7 @@ HTTP는 각 요청을 다른 요청과 독립적으로 해석하는 무상태 �
 - 브라우저가 HTML 텍스트를 화면으로 만드는 단계와 스크립트가 끼어드는 지점
 - Elements 패널만으로 CSR과 SSR을 구분할 수 없는 이유와 첫 문서 응답, JavaScript 비활성화로 판별하는 방법
 - 정적 문서에서 SPA까지 각 단계가 푼 문제와 남긴 문제
+- Jamstack, 계층형, 서버리스, 마이크로서비스를 한 줄로 순위 매길 수 없는 이유와 소개 사이트에 동적 기능이 생길 때의 조합
 
 ## 출처
 
@@ -116,12 +134,32 @@ HTTP는 각 요청을 다른 요청과 독립적으로 해석하는 무상태 �
 - [Rendering on the Web — web.dev](https://web.dev/articles/rendering-on-the-web)
 - [Google Search Central, Understand JavaScript SEO Basics](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics)
 - [인프런, 윤상석, 서버 사이드 렌더링의 이해 (CSR vs SSR)](https://www.inflearn.com/courses/lecture?courseId=327273&unitId=86916)
+- [Azure Architecture Center, N-tier architecture style](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier)
+- [Azure Architecture Center, Microservices architecture style](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices)
+- [Monolith First — martinfowler.com, Martin Fowler](https://martinfowler.com/bliki/MonolithFirst.html)
+- [Microservices — martinfowler.com, James Lewis와 Martin Fowler](https://martinfowler.com/articles/microservices.html)
+- [AWS, AWS Lambda Pricing](https://aws.amazon.com/lambda/pricing/)
+- [AWS Lambda Developer Guide, Lambda quotas](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
+- [AWS Lambda Developer Guide, Understanding the Lambda execution environment lifecycle](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)
+- [AWS Lambda Developer Guide, Lambda runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html)
+- [AWS Lambda standardizes billing for INIT Phase — AWS Compute Blog](https://aws.amazon.com/blogs/compute/aws-lambda-standardizes-billing-for-init-phase/)
+- [AWS Whitepaper, Security Overview of AWS Lambda](https://docs.aws.amazon.com/pdfs/whitepapers/latest/security-overview-aws-lambda/security-overview-aws-lambda.pdf)
+- [Firebase, Get started: write, test, and deploy your first functions](https://firebase.google.com/docs/functions/get-started)
+- [Firebase, Firebase pricing plans](https://firebase.google.com/docs/projects/billing/firebase-pricing-plans)
+- [Next.js Docs, How to implement Incremental Static Regeneration (ISR)](https://nextjs.org/docs/app/guides/incremental-static-regeneration)
+- [What is Jamstack? — Jamstack](https://jamstack.org/what-is-jamstack/)
+- [Why Jamstack? — Jamstack](https://jamstack.org/why-jamstack/)
 
 ## 관련 문서
 
 - [[Internet-vs-Web|인터넷과 웹 (탄생 배경과 문서 뷰어 모델)]]
 - [[Web-Technology-Evolution|웹 기술의 진화와 퇴장 패턴]]
 - [[Mobile-App-Architectures|모바일 서비스 아키텍처 (SSR, CSR, SPA)]]
+- [[Frontend-Rendering-Models|프런트엔드 렌더링과 상호작용 모델]]
+- [[Monolith-vs-Microservice|모놀리스와 마이크로서비스]]
+- [[Architecture-Styles|아키텍처 스타일 카탈로그]]
+- [[AWS-Lambda|AWS Lambda]]
+- [[NextJS-Static-Export|Next.js 정적 export]]
 - [[Browser-URL-Flow|브라우저 URL 입력 흐름]]
 - [[HTTP-Semantics-and-Messages|HTTP 의미와 무상태]]
 - [[Cookie|Cookie]]

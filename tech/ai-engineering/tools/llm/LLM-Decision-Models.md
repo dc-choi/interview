@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, decision-model, classification, routing, calibration]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-11
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Decision Models", "결정 모델", "System One Models", "Jev", "Clef"]
 ---
@@ -137,6 +137,23 @@ Cloudflare가 Jev Decision Index의 평가 가운데 10개를 골라 직접 잰 
 
 게임 데모의 처리 속도는 입력 표현, 모델, 장비와 네트워크 조건에 의존한다. 특정 데모의 속도 배수를 문서 분류나 고객 문의 판정의 정확도 우위로 바꾸지 않는다.
 
+### 가드레일 비교 평가 (Red Hat, 2026-10-02 게시)
+
+Red Hat AI Safety 팀은 NeMo Guardrails 서버 뒤에 사전학습 분류기, zero-shot 분류기, LLM 판정기와 결정 모델을 두고 영어 데이터로 프롬프트 인젝션(PI)과 콘텐츠 안전(CS) 차단 판정을 비교했다. 평가팀은 가드레일에 작은 예측 모델을 쓰자고 주장해 왔다고 밝히며, 사전학습 분류기로 RedHatAI 배포본을 썼다. TypeSafe와는 독립된 평가지만 한쪽 관점의 평가로 읽는다. 아래는 9개 방식 중 5개의 본문 표 정확도와 중앙 지연이다.
+
+| 방법 | PI 정확도 | PI 지연(ms) | CS 정확도 | CS 지연(ms) |
+|---|---|---|---|---|
+| 사전학습 분류기(PI: DeBERTa 약 2억, CS: Granite Guardian HAP 1.25억) | 89.01% | 54.1 | 80.27% | 33.2 |
+| Qwen3.6-35B-A3B-FP8 판정기 | 89.31% | 312.5 | 85.47% | 307.6 |
+| DiffusionGemma | 87.72% | 561.7 | 85.53% | 499.3 |
+| Jev 1.13.0 | 86.35% | 348.1 | 86.20% | 360.4 |
+| Laya(영어, 약 4.2억) | 85.44% | 119.3 | 57.87% | 118.0 |
+
+- **측정 조건이 섞여 있다.** 사전학습 분류기와 Laya는 MacBook Pro M1 CPU에서, LLM 판정기와 DiffusionGemma는 미국 GPU 클러스터에서, Jev는 TypeSafe API로 돌렸고 평가 기계는 영국에 있었다. 저자들은 원격 방식 전체에 약 56ms 이상의 네트워크 지연이 붙는다고 추정했으며, 역시 미국 서버를 원격 호출한 Qwen 판정기도 Jev보다 중앙 지연이 짧았다(글은 TypeSafe 서버가 미국 데이터센터에서 돈다고만 적었고 세부 리전과 하드웨어는 밝히지 않았다).
+- **저자들은 결정 모델이 LLM 판정기보다 빠르거나 싸거나 품질이 높은 답을 낸다는 결과를 찾지 못했다고 결론 내리며, 작은 크기가 분명한 장점인 Laya는 한계를 프롬프트로 보완할 수 있다는 전제에서 예외로 두었다.** 또 Jev 같은 결정 모델은 LLM 판정기, 사전학습 모델과 오픈소스 결정 모델보다 속도나 정확도에서 일관되게 앞서지 않았다고 본다. 비용은 따로 측정하지 않았고 반복 실행, 신뢰구간과 표본 수를 보고하지 않았다. 본문 표와 부록 표의 일부 값도 어긋난다. 특히 사전학습 분류기의 PI 중앙 지연은 본문 54.1ms, 부록 80.4ms이며 위 표는 본문 기준이다.
+- **Laya에 맞춘 질문 문구는 Jev로 옮겨지지 않았다.** Laya용으로 고친 noul 질문 8개는 Laya의 CS 정확도를 75.20%로 올렸지만 중앙 지연도 289.4ms로 늘렸고, 같은 질문을 쓴 Jev는 82.53%로 3.67pp 낮아졌다. 모델을 바꿀 때는 엔드포인트뿐 아니라 질문과 문턱도 다시 검증한다.
+- **최상위 방식도 인젝션 일부를 통과시켰다.** 부록 기준 PI 차단 재현율은 Qwen 판정기 0.8427, 사전학습 분류기 0.8307, Jev 0.7787이다. 저자들은 학습 데이터가 풍부하고 위험 정의가 분명한 과제에서는 사전학습 분류기가 여전히 효과적이고, 분류기가 없거나 부족한 과제에서는 zero-shot 방식이 LLM 판정기의 대안이 된다고 본다. CS에서는 HAP 분류기가 Jev보다 약 6pp 낮았다.
+
 ## 한계
 
 - **닫힌 선택지**: 선택지 밖 입력도 어떤 선택지로든 확률이 배분된다. 해당 없음 선택지나 관련성을 묻는 `noul`을 따로 둔다. 입력에 답의 근거가 없는 질문(미래 성과 예측 등)에도 확률은 나온다.
@@ -163,6 +180,7 @@ Cloudflare가 Jev Decision Index의 평가 가운데 10개를 골라 직접 잰 
 - [Laya — GitHub, NandhaKishorM](https://github.com/NandhaKishorM/laya) — 로컬 결정 엔진, 체크포인트와 과업별 미세조정 평가
 - [laya-mlx — GitHub, mizorewww](https://github.com/mizorewww/laya-mlx) — 독립 MLX 포트와 정밀도, 언어별 체크포인트의 한계
 - [Introducing System One Models & Jev — TypeSafe](https://typesafe.ai/blog/introducing-system-one-models-and-jev)
+- [Benchmarking AI decision models against traditional guardrails — Red Hat Developer, Rob Geada, Mac Misiura, Shelton Cyril](https://developers.redhat.com/articles/2026/10/02/benchmarking-ai-decision-models-against-traditional-guardrails) — 2026-10-05 갱신본 기준 PI와 CS 정확도, 지연과 정책 재작성 실험
 - [Cloudflare Workers AI, clef](https://developers.cloudflare.com/workers-ai/models/clef/)
 - [Cloudflare Workers AI, clef-flash](https://developers.cloudflare.com/workers-ai/models/clef-flash/)
 - [Cloudflare Workers AI, Pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/)

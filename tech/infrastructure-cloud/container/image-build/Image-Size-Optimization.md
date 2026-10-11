@@ -1,9 +1,9 @@
 ---
-tags: [infrastructure, docker]
+tags: [infrastructure, docker, hardened-image]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
-aliases: ["Image Size Optimization", "이미지 최적화"]
-verified_at: 2026-09-30
+aliases: ["Image Size Optimization", "이미지 최적화", "Hardened Image", "강화 이미지"]
+verified_at: 2026-10-11
 ---
 
 # Image Size Optimization
@@ -27,6 +27,18 @@ Docker image는 작기만 하면 되는 산출물이 아니다. publisher 신뢰
 | Alpine | 매우 작은 musl/BusyBox 기반 | native module, glibc 가정, shell/coreutils 동작 차이 |
 
 Alpine이 항상 production 최적해는 아니다. native dependency를 source build하느라 build가 느려지거나 runtime 호환 문제가 생기면 slim 계열이 총비용이 낮을 수 있다. [[Alpine-vs-Debian-Image]]
+
+### 강화 이미지(hardened image)
+
+Docker 문서는 강화 이미지를 취약점을 줄이고 엄격한 보안, 규정 요구를 맞추려고 일부러 구성을 줄이고 보호한 container image로 정의한다. 셸이 없다는 것이 정의의 일부는 아니며, 구성은 제공 주체와 변형마다 다르다. 2026-10-11 Docker 문서 기준 Docker Hardened Images(DHI)는 다음과 같다.
+
+- **런타임과 dev 변형:** 런타임 이미지에는 셸과 패키지 관리자가 없고 기본적으로 non-root로 실행된다. dev 변형에는 셸, 패키지 관리자와 root 사용자가 있으므로 셸이나 패키지 설치가 필요한 build stage와 로컬 반복, 격리된 CI 단계에 `-dev` 태그를 쓰고, 최종 실행 stage는 런타임 변형으로 둔다([[Multi-Stage-Build|멀티스테이지 빌드]]).
+- **CVE 표현:** 문서 표현은 알려진 악용 가능 CVE가 거의 없다는 것이며 0을 보장하지 않는다. 악용 가능성 판정은 VEX 문서에 기대고 수정이 아직 없는 affected 상태도 있다. 스캐너가 VEX를 자동으로 반영하는지 확인한다.
+- **증거:** 서명된 SBOM과 SLSA Build Level 3 provenance를 제공하므로 release evidence에 연결할 수 있다.
+- **갱신 책임:** 상위 프로젝트의 새 릴리스나 CVE 수정이 나오면 Docker가 베이스 이미지를 다시 빌드한다. 그 위에 만든 내 앱 이미지는 저절로 바뀌지 않으므로, 갱신된 베이스로 다시 빌드하고 배포하는 일과 베이스 위에 설치한 소프트웨어의 패치는 사용자 몫이다. digest를 고정했다면 새 digest로 바꾸는 절차를 함께 둔다.
+- **제공 조건:** Docker는 2025-12-17 1,000개 이상의 강화 이미지를 Apache 2.0으로 무료 공개했다. 무료 이미지도 `dhi.io` 로그인이 필요하고, 심각도별 CVE 수정 기한(SLA)은 유료 등급에만 있다.
+
+셸이 없으면 `docker exec`나 `kubectl exec`로 들어가 진단하기 어렵다. Kubernetes 문서는 distroless처럼 디버깅 도구가 없는 이미지에 ephemeral container와 `kubectl debug`를 쓰도록 안내하며, distroless는 busybox 셸이 든 `:debug` 이미지 세트를 따로 제공한다([[Jib-Java-Container#Base Image 선택|distroless와 디버그 태그]]). Docker 문서는 DHI 진단에 임시 디버그 컨테이너를 붙이는 `docker debug`를 안내한다. 셸 스크립트 entrypoint와 셸 기반 health check도 동작하지 않으므로 exec 형식 entrypoint를 쓰고, Kubernetes에서는 httpGet 같은 probe를, Docker HEALTHCHECK에서는 이미지에 들어 있는 실행 파일을 exec 형식으로 호출한다(curl 같은 도구는 없을 수 있다)([[Container-Entrypoint-Signals|Entrypoint와 시그널]]).
 
 ## 최적화 기법
 
@@ -75,6 +87,19 @@ Q. Docker 이미지 최적화 경험이 있는가?
 
 - [Docker Docs, trusted content](https://docs.docker.com/docker-hub/image-library/trusted-content/)
 - [Docker Docs, image digests](https://docs.docker.com/dhi/explore/security-concepts/digests/)
+- [Docker Docs, Docker Hardened Images](https://docs.docker.com/dhi/) — 등급별 CVE 수정 SLA
+- [Docker Docs, What are hardened images and why use them?](https://docs.docker.com/dhi/explore/what/)
+- [Docker Docs, Available types of Docker Hardened Images](https://docs.docker.com/dhi/explore/available/)
+- [Docker Docs, Use a Docker Hardened Image](https://docs.docker.com/dhi/how-to/use/)
+- [Docker Docs, How Docker Hardened Images are built](https://docs.docker.com/dhi/explore/build-process/)
+- [Docker Docs, Understanding roles and responsibilities for Docker Hardened Images](https://docs.docker.com/dhi/explore/responsibility/)
+- [Docker Docs, Vulnerability Exploitability eXchange (VEX)](https://docs.docker.com/dhi/explore/security-concepts/vex/)
+- [Docker Docs, Supply-chain Levels for Software Artifacts (SLSA)](https://docs.docker.com/dhi/explore/security-concepts/slsa/)
+- [Docker Docs, Troubleshoot](https://docs.docker.com/dhi/how-to/debug/)
+- [Docker Makes Hardened Images Free, Open and Transparent for Everyone — Docker](https://www.docker.com/press-release/docker-makes-hardened-images-free-open-and-transparent-for-everyone/)
+- [GoogleContainerTools, distroless](https://github.com/GoogleContainerTools/distroless)
+- [Kubernetes Docs, Debug Running Pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/)
+- [Kubernetes Docs, Ephemeral Containers](https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/)
 - [Docker CLI, system prune](https://docs.docker.com/reference/cli/docker/system/prune/)
 - [Docker CLI, system df](https://docs.docker.com/reference/cli/docker/system/df/)
 - [Docker CLI, image ls](https://docs.docker.com/reference/cli/docker/image/ls/)
@@ -97,3 +122,5 @@ Q. Docker 이미지 최적화 경험이 있는가?
 - [[Multi-Stage-Build|Multi-stage build]]
 - [[Alpine-vs-Debian-Image|Alpine vs Debian 동작 차이 (busybox vs GNU coreutils)]]
 - [[Docker-Image-Pipeline|Docker image build pipeline]]
+- [[Cloud-Native-Buildpacks|Cloud Native Buildpacks]]
+- [[Supply-Chain-Security|공급망 보안]]

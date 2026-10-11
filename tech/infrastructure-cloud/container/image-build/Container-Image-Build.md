@@ -7,11 +7,12 @@ aliases: ["Container Image Build", "컨테이너 이미지 빌드와 베이스 �
 
 # 컨테이너 이미지 빌드와 베이스 이미지 선택
 
-Dockerfile 단계 분리와 베이스 이미지 선택으로 최종 이미지의 크기, 재현성, 런타임 동작이 결정되는 계층을 묶는다. Dockerfile 없이 굽는 Jib 같은 빌드 도구 교체와, 베이스 이미지 계열이 바뀔 때 조용히 달라지는 명령 동작까지 포함한다.
+Dockerfile 단계 분리와 베이스 이미지 선택으로 최종 이미지의 크기, 재현성, 런타임 동작이 결정되는 계층을 묶는다. Dockerfile 없이 굽는 Jib, Buildpacks 같은 빌드 도구 교체와, 베이스 이미지 계열이 바뀔 때 조용히 달라지는 명령 동작까지 포함한다.
 
 - [[Multi-Stage-Build|멀티스테이지 빌드]]: 빌드 단계와 실행 단계 분리, 2-Stage 패턴, 모노레포 적용, Go binary와 Node의 감소 폭 차이, Next.js standalone 출력 추적과 pnpm deploy, 이미지 크기와 배포 대기 시간을 줄인 실무 사례
-- [[Image-Size-Optimization|이미지 최적화]]: 베이스 이미지 선택 기준(publisher 신뢰, 지원 버전, digest 고정), 레이어와 캐시 최적화 기법, layer 공유 측정과 dangling image 발생 원리, 안전한 정리 정책
+- [[Image-Size-Optimization|이미지 최적화]]: 베이스 이미지 선택 기준(publisher 신뢰, 지원 버전, digest 고정), 강화 이미지의 런타임과 dev 변형, CVE 표현과 재빌드 책임, 레이어와 캐시 최적화 기법, layer 공유 측정과 dangling image 발생 원리, 안전한 정리 정책
 - [[Jib-Java-Container|Jib]]: Dockerfile과 데몬 없이 빌드 도구가 직접 굽는 방식, 5계층 레이어링과 재현성, distroless 베이스와 deprecated된 openjdk 대체, Dockerfile 방식과의 비교와 한계
+- [[Cloud-Native-Buildpacks|Cloud Native Buildpacks]]: builder, build image와 run image, lifecycle 단계와 rebase, Spring Boot `build-image`와 `bootBuildImage`의 기본값과 Docker 데몬 요구, Paketo의 JRE 실행과 메모리 계산기, Dockerfile, Jib과의 비교
 - [[Alpine-vs-Debian-Image|Alpine vs Debian 베이스 이미지]]: busybox와 GNU coreutils 동작 차이, cp 심링크 처리 사례, musl과 glibc, 동작을 맞추는 법과 마이그레이션 함정
 
 ## 함께 볼 문서
