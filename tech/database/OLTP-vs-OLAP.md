@@ -3,7 +3,7 @@ tags: [database, oltp, olap, architecture, data-warehouse]
 status: done
 category: "데이터&저장소(Data&Storage)"
 aliases: ["OLTP vs OLAP", "트랜잭션 처리 vs 분석 처리"]
-verified_at: 2026-07-21
+verified_at: 2026-10-11
 ---
 
 # OLTP vs OLAP
@@ -83,6 +83,21 @@ Unity Catalog의 external location은 저장소 경로와 storage credential을 
 
 이 절은 AWS 배포와 저장소 연결 문서의 부분 대조이며 실제 워크스페이스의 보안이나 제품별 OLTP 적합성을 시험한 결과는 아니다.
 
+### 레이크하우스의 거버넌스 계층
+
+레이크하우스에서 분석 데이터를 한곳에 모으는 것과 누가 어떤 자산을 쓸 수 있는지 관리하는 것은 별개의 문제다. 2026-10-11 Databricks on AWS 공식 문서 대조 기준, Unity Catalog는 Databricks에 내장된 데이터와 AI 거버넌스 계층이며 관리할 자산을 권한 부여 대상인 securable object로 다룬다. 테이블과 볼륨의 파일은 클라우드 객체 저장소에 있고, managed 테이블과 볼륨은 Unity Catalog가 거버넌스와 함께 저장 위치와 파일 수명주기까지 맡으며 external 테이블과 볼륨은 거버넌스만 맡는다. Apache 2.0 라이선스의 오픈소스 구현도 있지만 이 절은 Databricks 문서 기준이며 두 구현의 기능 범위가 같다고 가정하지 않는다.
+
+- **메타스토어와 이름 체계**: 메타스토어는 최상위 securable object이고 한 클라우드 리전 범위다. 조직이 운영하는 리전마다 메타스토어를 두고 같은 리전의 여러 워크스페이스에 연결한다. 테이블, 뷰, 테이블 형식이 아닌 파일(정형, 반정형, 비정형)을 다루는 볼륨, 함수와 모델은 `catalog.schema.object` 3단계 이름을 쓴다. 예를 들어 `sales.gold.orders`는 sales 카탈로그의 gold 스키마에 있는 orders 테이블이다. storage credential, external location, connection 등은 메타스토어 바로 아래에 둔다.
+- **외부 데이터 연결**: Lakehouse Federation은 외부 데이터베이스나 카탈로그를 Unity Catalog의 foreign catalog로 등록해 데이터를 옮기지 않고 테이블 단위 권한 아래에서 조회하게 한다. JDBC로 외부 데이터베이스에 쿼리를 내려보내는 query federation과, 외부 카탈로그의 테이블을 객체 저장소에서 Databricks 연산으로 직접 읽는 catalog federation이 있다. 쿼리는 기본적으로 읽기 전용이며, 워크스페이스의 legacy Hive metastore를 catalog federation으로 연결한 foreign table만 예외로 쓰기를 지원한다.
+- **권한**: 객체 소유자가 아닌 사용자나 그룹은 작업에 필요한 권한을 명시적으로 받아야 한다. 카탈로그나 스키마에 준 권한은 현재와 이후에 생길 하위 객체에 상속되지만, 테이블을 읽으려면 `SELECT`와 함께 상위 카탈로그의 `USE CATALOG`와 스키마의 `USE SCHEMA`가 모두 필요하다. 메타스토어에 준 권한은 `READ METADATA`를 빼면 하위로 상속되지 않고, 소유권도 하위로 상속되지 않는다. 상위 객체 소유자는 하위 객체를 관리할 수 있지만 하위 객체의 데이터를 쓰려면 권한을 따로 받아야 한다. 권한 외에 행과 열 필터, 속성 기반 정책도 접근 통제에 쓴다.
+- **계보**: 테이블이 메타스토어에 등록되어 있고 쿼리가 Spark DataFrame이나 Databricks SQL 인터페이스를 쓸 때 계보를 수집하며, 컬럼 수준은 가능한 범위에서만 남는다. 경로로 참조한 원본이나 대상은 컬럼 계보가 남지 않고 UDF는 테이블 수준 계보만 남는다. RDD와 global temp view는 수집되지 않으며 이름을 바꾼 객체의 계보는 보존되지 않는다. Databricks 밖 시스템의 자산은 external metadata 객체로 추가하고 관계를 설정해야 계보에 나타난다.
+- **감사**: 데이터 접근과 시스템 활동은 감사 로그 시스템 테이블 `system.access.audit`(Public Preview)에 기록된다. Unity Catalog 이벤트는 계정 수준으로 남아 `workspace_id`가 0으로 기록되고 요청한 워크스페이스는 `request_params.workspace_id`에 남으며, 테이블용 임시 자격 증명 발급 이벤트(`generateTemporaryTableCredential`)로 누가 언제 무엇을 조회했는지, `updatePermissions`로 securable object의 권한 변경을 확인한다.
+- **발견**: 자산은 Catalog Explorer, SQL, CLI와 REST API로 다룬다. 워크스페이스 검색은 테이블과 컬럼의 이름과 설명(comment), 테이블과 뷰의 태그 키로 자산을 찾으며, Unity Catalog에 등록된 테이블 중 볼 권한이 있는 객체만 결과에 나온다.
+
+이 기능들이 클라우드 저장소의 파일을 자동으로 모두 관리하지는 않는다. 검색과 계보는 등록된 테이블을 기준으로 한다. managed 자산의 저장소에 직접 접근하면 위 절에서 본 접근 통제와 감사 우회에 더해 계보에도 남지 않고, external 테이블도 외부 시스템이 파일에 직접 접근하면 Unity Catalog 권한이 적용되지 않는다. 따라서 어떤 경로를 테이블, 볼륨이나 external location으로 등록할지, 그룹별 권한과 저장소 직접 접근 차단은 관리자가 설계하고 점검해야 한다. AWS에서는 Glue Data Catalog가 메타데이터를 담고 [[Lake-Formation|AWS Lake Formation]]이 S3 데이터 레이크와 그 메타데이터에 대한 세밀한 접근 권한을 맡아 이 계층의 역할을 나눠 맡으며, 권한 모델과 지원 엔진이 Unity Catalog와 같다고 가정하지 않는다.
+
+이 절은 Unity Catalog 문서의 부분 대조다. 공식 문서가 함께 나열하는 데이터 분류, 품질 모니터링, 데이터 공유와 AI 거버넌스는 다루지 않았고, 실제 워크스페이스에서 권한 상속과 계보 수집을 시험한 결과도 아니다.
+
 ## 부적합 시그널
 
 ### OLTP DB로 분석을 돌리고 있는 신호
@@ -108,14 +123,30 @@ Unity Catalog의 external location은 저장소 경로와 storage credential을 
 - 분석용 시점 일관성을 위한 SCD Type 2의 역할
 - 분석 제품별 transaction, snapshot과 consistency 보장 차이
 - 분리형 CDC 구조와 HTAP의 격리, freshness, 운영 복잡도 tradeoff
+- 레이크하우스 거버넌스 계층(예: Unity Catalog)의 권한 상속과 USE 권한, 등록하지 않은 경로와 저장소 직접 접근이 통제 밖에 남는 이유
 
 ## 출처
 - [Databricks — High-level architecture](https://docs.databricks.com/aws/en/getting-started/high-level-architecture)
 - [Databricks — Connect to cloud object storage using Unity Catalog](https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage/)
 - [Databricks — What is a data lakehouse?](https://docs.databricks.com/aws/en/lakehouse/)
+- [Databricks — What is Unity Catalog?](https://docs.databricks.com/aws/en/data-governance/unity-catalog/)
+- [Databricks — Unity Catalog securable objects reference](https://docs.databricks.com/aws/en/data-governance/unity-catalog/securable-objects)
+- [Databricks — Create a Unity Catalog metastore](https://docs.databricks.com/aws/en/data-governance/unity-catalog/create-metastore)
+- [Databricks — Managed versus external assets in Unity Catalog](https://docs.databricks.com/aws/en/data-governance/unity-catalog/managed-versus-external)
+- [Databricks — Unity Catalog permissions model concepts](https://docs.databricks.com/aws/en/data-governance/unity-catalog/access-control/permissions-concepts)
+- [Databricks — Connect to external databases and catalogs](https://docs.databricks.com/aws/en/query-federation/)
+- [Databricks — What is query federation?](https://docs.databricks.com/aws/en/query-federation/database-federation)
+- [Databricks — What are Unity Catalog volumes?](https://docs.databricks.com/aws/en/volumes/)
+- [Databricks — Lineage in Unity Catalog](https://docs.databricks.com/aws/en/data-governance/unity-catalog/data-lineage)
+- [Databricks — Audit log system table reference](https://docs.databricks.com/aws/en/admin/system-tables/audit-logs)
+- [Databricks — Audit log reference](https://docs.databricks.com/aws/en/admin/account-settings/audit-logs)
+- [Databricks — Search for workspace objects](https://docs.databricks.com/aws/en/search/)
+- [Databricks — Work with external tables](https://docs.databricks.com/aws/en/tables/external)
+- [Unity Catalog](https://www.unitycatalog.io/)
 - [NHN Cloud Meetup — MySQL 3분 vs ClickHouse 0.3초, 같은 쿼리입니다](https://meetup.nhncloud.com/posts/414)
 - [ClickHouse — Transactional support](https://clickhouse.com/docs/guides/developer/transactional)
 - [VLDB — TiDB: A Raft-based HTAP Database](https://www.vldb.org/pvldb/vol13/p3072-huang.pdf)
+- [YouTube, 현수IT HyunsooIT, 처음부터 이해하는 Databricks Ep3. Unity Catalog와 데이터 관리](https://www.youtube.com/watch?v=fUyMzEUXO3g)
 
 ## 관련 문서
 - [[ClickHouse|ClickHouse]]
@@ -123,3 +154,5 @@ Unity Catalog의 external location은 저장소 경로와 storage credential을 
 - [[SCD-Type2|SCD Type 2]]
 - [[RDBMS|RDBMS (OLTP)]]
 - [[MQ-Kafka|Kafka]]
+- [[Lake-Formation|AWS Lake Formation]]
+- [[SageMaker-Catalog-Discovery|SageMaker Catalog의 메타데이터와 데이터 탐색]]

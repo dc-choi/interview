@@ -3,7 +3,7 @@ tags: [security, network-security, network-separation, air-gap, vdi, virtualizat
 status: done
 category: "Security - 네트워크 보안"
 aliases: ["Network Separation", "망분리", "물리적 망분리", "논리적 망분리", "망연계", "Cross Domain Solution", "CDS", "Air Gap", "에어갭", "SBC", "CBC"]
-verified_at: 2026-09-23
+verified_at: 2026-10-11
 ---
 
 # 망분리: 네트워크 경로로 신뢰 영역을 나누는 통제
@@ -93,7 +93,19 @@ SBC와 CBC는 국내 업계에서 쓰는 분류다. 서버 기반 방식은 어�
 
 망분리는 네트워크 위치로 신뢰를 나누는 경계(perimeter) 모델이다. NIST SP 800-207은 제로 트러스트를 물리적 위치나 네트워크 위치만으로 자산이나 계정에 암묵적 신뢰를 주지 않는 모델로 정의하고, 경계가 뚫린 뒤에는 내부 이동을 막지 못하는 점을 경계 중심 보안의 한계로 든다. 망분리 환경도 망 안의 인증, 최소 권한, 접속 기록과 내부 분할이 있어야 이 한계를 줄인다.
 
+NIST SP 800-207 3.1절은 제로 트러스트 구현 접근을 강화된 신원 거버넌스, 마이크로 세그멘테이션, 네트워크 인프라와 SDP(software defined perimeter)로 나누고, 완전한 솔루션은 세 접근의 요소를 모두 포함한다고 본다. 3.1.2절의 마이크로 세그멘테이션은 개별 자원이나 자원 묶음을 고유한 네트워크 세그먼트에 두고, 지능형 스위치나 라우터, 차세대 방화벽(NGFW), 전용 게이트웨이 또는 엔드포인트의 소프트웨어 에이전트나 방화벽을 정책 집행 지점(PEP)으로 삼아 요청마다 동적으로 접근을 허용한다. 완전히 작동하려면 신원 거버넌스 프로그램이 필요하고 PEP를 위협과 업무 흐름 변화에 맞춰 다시 구성할 수 있어야 한다. 덜 발전된 게이트웨이나 stateless 방화벽으로 일부 기능만 구현하는 방식은 관리 비용과 변화에 빠르게 맞추기 어려운 점 때문에 매우 나쁜 선택으로 본다.
+
 물리적 분리가 네트워크 경로를 끊는 강도는 가장 높다. 그러나 비용과 불편이 커질수록 자료 이동이 이동식 매체나 비공식 우회 경로로 몰릴 수 있고, 그 경로가 통제되지 않으면 실제 보안 수준은 떨어진다. 금융 로드맵은 보안대책을 조건으로 붙인 샌드박스 특례로 인터넷 활용 제한을 단계적으로 풀고, 공공 N2SF는 중요도 등급별 차등 통제를 내세운다. 두 흐름 모두 일률적 차단에서 조건부 허용과 차등 통제로 옮겨 가는 방향이다. 판단 기준은 가장 강한 분리가 아니라 자료의 중요도, 필요한 데이터 흐름, 규제 범위와 운영 비용의 조합이다.
+
+### 제로 트러스트 전환 사례와 정책 근거
+
+Google BeyondCorp는 특권 사내망(privileged intranet)을 전제로 하지 않도록 업무 애플리케이션을 인터넷으로 옮겨 간 구현 사례다. 2014년 논문 기준으로 접근은 사용자가 어느 네트워크에 있는지가 아니라 기기와 사용자 자격 증명으로 판단하며(필요하면 접근 제어 엔진이 위치 기반 통제를 더할 수 있다고도 적는다), 사내 건물 안에 있는 기기도 외부망과 비슷한 비특권 네트워크에 둔다. 기기는 기기 인벤토리 데이터베이스와 기기별 인증서로, 사용자는 사용자 데이터베이스, 그룹 데이터베이스와 SSO로 식별하며, 인증서는 기기를 식별할 뿐 그 자체로 권한을 주지 않는다. 모든 업무 애플리케이션은 인터넷에 노출된 접근 프록시를 거치고, 프록시 안의 접근 제어 엔진이 사용자와 그룹, 기기 인증서와 인벤토리 정보, 추론한 신뢰 수준으로 요청마다 인가한다. 전통적인 VPN 없이 어느 네트워크에서나 같은 방식으로 업무 애플리케이션에 접근하는 것이 논문이 설명한 목표 모델이다.
+
+BeyondCorp로의 전환은 단계적이었다. 스위치의 netflow 표본을 비특권 네트워크와 나머지 사내망 사이의 ACL에 대조하고, 사용자 기기에서 비특권 네트워크를 기록 모드와 차단 모드로 시뮬레이션해 기준을 넘은 사용자와 기기부터 옮겼다. VPN 권한은 필요가 입증된 사용자로 좁혀 나갔고, 논문 시점에도 이전은 진행 중이었으며 독점 프로토콜로 서버와 통신하는 팻 클라이언트 애플리케이션을 남은 과제로 꼽았다. NIST SP 800-207 7장도 대부분의 조직이 제로 트러스트와 경계 기반 방식을 혼합한 상태로 무기한 운영할 것으로 보고, 전환은 업무 프로세스 하나씩 진행할 수 있으며 착수 전에 자산, 주체, 데이터 흐름과 업무 흐름을 조사하라고 권한다.
+
+2022-01-26 OMB 각서 M-22-09(Moving the U.S. Government Toward Zero Trust Cybersecurity Principles)는 연방정부가 더는 기존 경계 기반 방어에 의존할 수 없다고 보고, 연방 기관에 2024 회계연도 말까지 CISA 제로 트러스트 성숙도 모델(ZTMM)이 정한 다섯 축(pillar)인 신원, 기기, 네트워크, 애플리케이션과 워크로드, 데이터에 맞춘 목표를 달성하도록 요구했다. 특정 네트워크에서 애플리케이션에 접근한다고 공용 인터넷에서 접근할 때보다 덜 위험하다고 보지 않으며, MFA는 VPN 같은 네트워크 인증이 아니라 애플리케이션 계층에서 강제하고 기관 직원, 계약자와 파트너에게는 PIV나 WebAuthn 같은 [[FIDO-WebAuthn#피싱과 재사용 공격에 강한 이유|피싱 저항형 MFA]]를 요구했다. 접근을 인가할 때 사용자 신원과 함께 기기 수준 신호를 하나 이상 고려하게 했고, 네트워크 축은 환경 안의 DNS 요청과 HTTP 트래픽을 모두 암호화하고 경계를 격리된 환경으로 나누는 계획의 실행을 시작하는 것을 목표로 두었다.
+
+ZTMM 2.0(2023년 4월판)은 이 다섯 축에 가시성과 분석, 자동화와 오케스트레이션, 거버넌스의 세 공통 역량을 두고, 축 사이의 조정이 필요해지기 전까지는 축마다 제 속도로 Traditional에서 Initial, Advanced, Optimal로 나아갈 수 있는 점진적 전환을 제시한다. 초기 구현은 비용을 늘리기 쉽지만 장기적으로는 제로 트러스트가 전사에 똑같이 투자하는 대신 가장 중요한 데이터와 서비스에 보안 투자를 배분하게 한다고 보며, 스스로를 여러 전환 경로 중 하나로 규정한다. 2026년 10월 확인 기준 CISA는 ZTMM 웹페이지를 보관 자료(Archived Content)로 표시하며, 2.0 이후 판은 확인하지 못했다. M-22-09는 미국 연방 기관에 대한 지시이고 ZTMM도 연방 기관에 맞춘 모델이므로, 국내 망분리 의무의 적용 여부는 앞의 국내 규정으로 판단한다.
 
 ## 개발과 운영 체크포인트
 
@@ -113,12 +125,14 @@ SBC와 CBC는 국내 업계에서 쓰는 분류다. 서버 기반 방식은 어�
 - 망연계의 역할, 방향별 정책, data diode와 방화벽의 차이
 - 금융 규정에서 업무용 시스템의 분리와 전산실 시스템 및 직접 접속 단말의 물리적 분리가 다르다는 점
 - 경계 모델로서 망분리의 한계와 제로 트러스트, 일률적 차단에서 조건부 허용과 차등 통제로의 이동
+- 마이크로 세그멘테이션이 단순 방화벽 구획과 다른 점, BeyondCorp의 기기와 사용자 기반 접근과 단계적 이전, M-22-09의 요구와 CISA ZTMM의 다섯 축
 
 ## 출처
 
-제공된 메모를 바탕으로 정리했으며 영상 본문과 자막은 직접 확인하지 못했다. 보완한 기술 설명과 규제 내용은 아래 공식 자료와 대조했고, N2SF는 공식 원문 대신 보도를 기준으로 했다.
+망분리 영상은 제공된 메모를 바탕으로 정리했으며 영상 본문과 자막은 직접 확인하지 못했다. 보완한 기술 설명과 규제 내용은 아래 공식 자료와 대조했고, N2SF는 공식 원문 대신 보도를 기준으로 했다. 제로 트러스트 영상은 음성 인식 전사문으로 확인한 계기 자료이고, 본문의 제로 트러스트 서술은 NIST, OMB, CISA 문서와 BeyondCorp 원문을 기준으로 했다.
 
 - [망분리에 대한 이야기 — 널널한 개발자 TV](https://www.youtube.com/watch?v=YPSfR8QnKO0&list=PLXvgR_grOs1BkUIxKsLEUdefyMWMA0_U-&index=10)
+- [제로 트러스트 심화: 해커가 내부에 있어도 안전한 보안 구조 90초 완성 — 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=3Wgr8vstc8Q)
 - [국가법령정보센터, 전자금융감독규정 (금융위원회고시 제2026-29호, 2026. 7. 15. 시행)](https://www.law.go.kr/%ED%96%89%EC%A0%95%EA%B7%9C%EC%B9%99/%EC%A0%84%EC%9E%90%EA%B8%88%EC%9C%B5%EA%B0%90%EB%8F%85%EA%B7%9C%EC%A0%95)
 - [국가법령정보센터, 개인정보의 안전성 확보조치 기준 (개인정보보호위원회고시 제2026-9호, 2026. 7. 1. 시행)](https://www.law.go.kr/%ED%96%89%EC%A0%95%EA%B7%9C%EC%B9%99/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EC%9D%98%EC%95%88%EC%A0%84%EC%84%B1%ED%99%95%EB%B3%B4%EC%A1%B0%EC%B9%98%EA%B8%B0%EC%A4%80)
 - [금융위원회, 금융분야 망분리 개선 로드맵 발표 (2024. 8. 13. 보도자료)](https://www.fsc.go.kr/no010101/82885)
@@ -128,6 +142,10 @@ SBC와 CBC는 국내 업계에서 쓰는 분류다. 서버 기반 방식은 어�
 - [NIST, SP 800-207: Zero Trust Architecture](https://csrc.nist.gov/pubs/sp/800/207/final)
 - [NIST CSRC, Glossary: transfer cross domain solution](https://csrc.nist.gov/glossary/term/transfer_cross_domain_solution)
 - [NIST CSRC, Glossary: access cross domain solution](https://csrc.nist.gov/glossary/term/access_cross_domain_solution)
+- [OMB, M-22-09: Moving the U.S. Government Toward Zero Trust Cybersecurity Principles](https://www.whitehouse.gov/wp-content/uploads/2022/01/M-22-09.pdf)
+- [CISA, Zero Trust Maturity Model Version 2.0](https://www.cisa.gov/sites/default/files/2023-04/zero_trust_maturity_model_v2_508.pdf)
+- [CISA, Zero Trust Maturity Model](https://www.cisa.gov/zero-trust-maturity-model) — 2026년 10월 확인 시 보관 자료(Archived Content) 표시
+- [BeyondCorp: A New Approach to Enterprise Security — USENIX ;login:, Rory Ward, Betsy Beyer](https://www.usenix.org/publications/login/dec14/ward)
 - [망분리 방식, 업무 특성, 사용 환경 맞게 선택해야 — 데이터넷](https://www.datanet.co.kr/news/articleView.html?idxno=70879)
 - [국정원, 국가 망 보안체계(N2SF) 보안가이드라인 정식판 공개 — 더페어](https://www.thefairnews.co.kr/news/articleView.html?idxno=57288)
 - [국정원 보안 통제 항목 176→260여개로...N2SF 정식 지침 공표 — ZDNet Korea](https://zdnet.co.kr/view/?no=20250909182304)
@@ -142,4 +160,6 @@ SBC와 CBC는 국내 업계에서 쓰는 분류다. 서버 기반 방식은 어�
 - [[VPC-NAT-Security|VPC, NAT와 보안 (규제 관점)]]
 - [[Fintech-Seminar#망분리|핀테크 세미나: 금융권 망분리 의무]]
 - [[TS-Backend-Meetup-1#금융권보안현실|TS 백엔드 밋업: 금융권 보안 현실]]
+- [[Access-Control-Models#접속 후에도 권한을 다시 평가한다|접속 후 권한 재평가 (제로 트러스트의 세션별 접근)]]
+- [[Security-Policy-and-Assessment#경계 장비보다 자원과 접근 경로를 기준으로 점검한다|경계 장비보다 자원과 접근 경로 기준의 점검]]
 - [[네트워크보안(NetworkSecurity)|네트워크 보안 인덱스]]

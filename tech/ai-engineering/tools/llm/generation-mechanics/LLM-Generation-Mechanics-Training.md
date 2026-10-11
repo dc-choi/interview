@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, training]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-11
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Generation Mechanics Training", "LLM 학습 원리", "LLM 사전학습과 정렬"]
 ---
@@ -60,6 +60,19 @@ loss = -log P(정답 Token | 앞선 Token들)
 - **Train, Validation과 Test**: 학습, 선택과 일반화 평가를 분리한다. Train loss만 낮고 새 데이터 성능이 나쁘면 과적합을 의심한다.
 
 Weight는 문장을 행 단위로 저장한 사실 데이터베이스가 아니다. 많은 예제에서 학습된 패턴과 연관이 분산된 수치로 들어가므로, 특정 사실을 정확히 조회하거나 출처를 그대로 복원한다고 보장할 수 없다.
+
+### 역전파 없이 기울기를 추정하는 0차 방법
+
+역전파는 망이 미분 가능해야 쓸 수 있다. 진화 전략과 Dust는 기울기를 직접 계산하지 않고 섭동에 따른 목적 함수 값의 변화로 기울기를 추정하는 0차(zeroth-order) 방법이다.
+
+- **진화 전략(Evolution Strategies, ES)**: 자연 진화 전략(NES) 계열의 한 형태는 파라미터에 가우스 잡음을 더한 후보 여러 개의 목적 함수 값을 구하고, 각 잡음을 그 값으로 가중 평균해 기울기를 추정한다. 단순한 가중치 공간 ES는 후보마다 섭동한 가중치 사본과 순전파가 따로 필요해 집단을 키울수록 비싸다. EGGROLL은 섭동을 저랭크 행렬로 구성해 GPU 배치 행렬곱의 산술 강도를 높인 ES다.
+- **Dust**: 가중치 대신 각 선형 층의 출력에 토큰마다 독립적인 가우스 잡음을 더하는 활성값 섭동(node perturbation)이다. 각 토큰이 가상 집단(virtual population)의 구성원이 되므로 순전파 한 번이 구성원 하나가 아니라 시퀀스의 토큰 수만큼을 평가한다. 각 토큰의 잡음에는 그 토큰의 손실 감소에 더해 감쇠 계수 γ로 줄인 뒤쪽 토큰들의 손실 감소까지 보상으로 준다. γ가 0이면 자기 토큰만 반영하고, key와 value처럼 뒤 토큰에 영향을 주는 위치에는 1에 가까운 γ를 쓴다. 보상으로 가중한 잡음을 여러 번의 잡음 추출(draw)에 걸쳐 평균해 층 출력의 오차로 추정한다. 이 오차와 층 입력의 외적이 가중치 기울기다. 역전파도 같은 외적을 만들고 출력 오차를 chain rule로 얻는다는 점만 다르다. 추정한 기울기로는 SGD 같은 옵티마이저가 가중치를 갱신한다.
+
+아래 결과는 Q Labs의 2026년 10월 연구 페이지와 부록 기준이며 학회나 저널 게재 표시는 없고, 최소 구현 코드가 공개돼 있다. FineWeb으로 학습한 GPT 계열 transformer(기본 8층, 폭 512)의 test loss(세 seed 평균)를 같은 토큰 예산에서 모멘텀 SGD로 학습한 역전파와 비교하면, 10만 토큰 예산에서 수백 draw, 100만 토큰에서 약 1,000 draw 이상이면 역전파보다 낮았다. 최선 측정값의 차이는 10만 토큰에서 0.051, 100만 토큰에서 0.025이고, 연산량을 맞춘 비교는 아니다. 1,000만, 2,000만 토큰에서는 학습 비교의 최대 집단(16k draw)도 역전파보다 높았다. 집단을 키울수록 격차는 줄었지만 1,000만 토큰에서는 감소가 완만해져 거듭제곱 외삽값도 역전파보다 약간 높았다. 연구진이 같은 transformer 구조로 구현한 EGGROLL(EGGROLL-Transformer)은 Dust 최소 집단(64 draw)의 256배 집단에서도 그 결과에 미치지 못했다(집단 크기는 Dust는 draw, EGGROLL은 배치 순전파 수 기준). 1,000만 토큰 고정 비교에서는 256 draw 이상의 같은 집단일 때 200만에서 3,800만 파라미터까지 클수록 loss가 낮았고, 가장 큰 2억 4,300만은 그보다 약간 높았다. 섭동하는 차원이 늘수록 추정 분산이 커져 0차 방법은 큰 망에 불리하다고 여겨져 왔는데, 연구진은 이 결과를 그 통념과 반대되는 근거로 제시했다.
+
+다만 역전파에 근접하려면 큰 집단, 즉 훨씬 많은 연산이 필요하고, 연구진도 현재 연산 수준에서 역전파의 실용적인 대안이 되려면 연산 효율이 자릿수 단위로 좋아져야 한다고 밝혔다. 망이 끝까지 미분 가능하지 않아도 된다는 성질은 외부 프로그램이 계산 루프에 들어간 망에, backward pass가 없다는 점은 시간 역전파(BPTT)로 학습하기 어려운 여러 단계 반복 transformer에 적용할 여지를 주지만, 두 구조는 이 연구에서 학습하지 않은 후속 과제로 남았다. 2억 4,300만 파라미터 모델은 1,000만 토큰, 2,000만 토큰 학습은 기본 3,770만 파라미터 모델까지의 결과이므로 대규모 사전학습에서 역전파를 대체한다는 근거로 확대하지 않는다.
+
+2026-10-11 연구 페이지와 부록, 코드 README, ES 논문의 알고리즘과 EGGROLL 논문 초록을 대조했다. 실험을 재현하거나 코드를 실행하지는 않았다.
 
 ## 사전학습 데이터와 재현 가능한 공개 범위
 
@@ -141,9 +154,15 @@ ZeRO-3는 순전파와 역전파 중 필요한 파라미터를 모으고 다시 
 
 - [DeepSpeed, Zero Redundancy Optimizer](https://www.deepspeed.ai/tutorials/zero/)
 - [DeepSpeed, JSON Configuration: ZeRO optimizations](https://github.com/deepspeedai/DeepSpeed/blob/master/docs/_pages/config-json.md)
+- [AI No Longer Needs Backpropagation — Better Stack](https://www.youtube.com/watch?v=SYVPCSnLhcY) — 2026-10-10, Dust 소개 영상
 - [Datasheets for Datasets — Gebru et al.](https://arxiv.org/html/1803.09010v8)
+- [Dust: Pretraining Transformers Without Backpropagation — Dahal et al.](https://qlabs.sh/research/dust) — Q Labs 연구 페이지, 방법, 실험 조건과 결론
+- [Dust: Pretraining Transformers Without Backpropagation, Appendix — Dahal et al.](https://qlabs.sh/research/dust/appendix.html) — Table 1의 토큰 예산별 test loss
+- [Evolution Strategies as a Scalable Alternative to Reinforcement Learning — Salimans et al.](https://arxiv.org/abs/1703.03864) — 2절과 Algorithm 1
+- [Evolution Strategies at the Hyperscale — Sarkar et al.](https://arxiv.org/abs/2511.16652)
 - [KORMo: Korean Open Reasoning Model for Everyone — KAIST MLP Lab et al.](https://arxiv.org/html/2510.09426v1) — 공개 범위, tokenizer와 데이터 구성, 4.1.3절의 필터링
 - [LoRA: Low-Rank Adaptation of Large Language Models — Hu et al.](https://arxiv.org/abs/2106.09685)
+- [qlabs-eng/dust — GitHub](https://github.com/qlabs-eng/dust)
 - [QLoRA: Efficient Finetuning of Quantized LLMs — Dettmers et al.](https://arxiv.org/abs/2305.14314)
 
 - [Introduction to Large Language Models — Google Machine Learning Crash Course](https://developers.google.com/machine-learning/crash-course/llm)

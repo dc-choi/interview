@@ -1,7 +1,7 @@
 ---
 tags: [observability, metrics, monitoring, golden-signals, latency, incident, sre]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-11
 category: "관측가능성(Observability)"
 aliases: ["Monitoring Graph Reading", "모니터링 그래프 해석", "서버 모니터링 분석", "Four Golden Signals", "네 가지 황금 신호"]
 ---
@@ -34,6 +34,7 @@ aliases: ["Monitoring Graph Reading", "모니터링 그래프 해석", "서버 �
 ### 지연시간
 
 - 평균은 분포의 모양을 지운다. 모든 요청이 100ms 근처인 서버와, 대부분 30ms인데 일부가 900ms씩 걸리는 서버의 평균은 둘 다 100ms일 수 있다. 수집은 지연 구간별 요청 수를 모으는 히스토그램으로 하고 P50, P95, P99로 읽는다. P50은 대표 경험, P95와 P99는 알람과 성능 목표에 쓴다.
+- 지연 수준이 크게 다른 빠른 경로와 느린 경로가 섞이면 분포가 두 봉우리로 갈라진다. 캐시 적중과 미스가 대표적이다. 두 무리가 뚜렷이 떨어져 있으면 느린 요청의 비중이 1%보다 크고 50%보다 작은 동안 P50은 빠른 봉우리에, P99는 느린 봉우리에 놓여 P50은 평온한데 P99만 높다. 비중이 1% 근처를 오가면 P99는 서서히 움직이지 않고 두 봉우리 사이를 건너뛴다. 이 모양은 히스토그램을 시간축으로 펼친 히트맵에서 보이며, Grafana 같은 대시보드 도구는 Prometheus 히스토그램으로 히트맵을 그릴 수 있다. 다만 히스토그램은 버킷보다 세밀하게 보여 주지 못한다. 두 경로의 지연 사이에 빈 버킷이 생길 만큼 경계가 촘촘해야 두 띠로 갈라져 보이고, 한 버킷이 그 간극을 덮으면 `histogram_quantile()`이 버킷 안을 선형으로 보간해 P99의 건너뜀도 완만하게 보일 수 있다.
 - 꼬리 지연은 소수의 문제가 아니다. 초당 1,000건이면 P99보다 느린 요청이 매초 약 10건 생긴다.
 - 한 화면이 API를 여러 번 호출하면 꼬리를 만날 확률이 커진다. 호출이 독립이라고 가정하면 40번 중 한 번 이상 P99 꼬리에 걸릴 확률은 1 - 0.99^40, 약 33%다. 요청을 많이 보내는 헤비 유저일수록 꼬리를 자주 겪는다.
 - 생존자 편향을 경계한다. 실패한 요청은 지연 분포에서 빠지거나 밀리초짜리 빠른 실패로 섞여 들어와, 장애가 심해질수록 P99가 오히려 좋아 보일 수 있다. 에러율은 최악인데 응답시간이 평소보다 좋으면 회복이 아니라 이 편향을 의심한다.
@@ -59,7 +60,9 @@ aliases: ["Monitoring Graph Reading", "모니터링 그래프 해석", "서버 �
 ### 메모리
 
 - 톱니 모양은 할당과 GC 회수가 반복되는 정상 패턴이다.
+- 톱니 간격도 읽는다. HotSpot JVM의 세대별 수집기는 세대가 차면 그 세대를 수집하므로 할당이 늘면 young 세대가 빨리 차 수집이 잦아지고 톱니가 촘촘해진다. 수집 비용은 대체로 살아 있는 객체 수에 비례해 곧 죽는 객체가 대부분이면 한 번은 짧지만, young 수집이 애플리케이션을 멈추는 수집기에서는 잦아진 GC 정지에 걸리는 요청이 늘어 P50은 그대로인데 P99가 오를 수 있다. GC 주기가 지표 수집 간격보다 짧으면 톱니가 그래프에 제대로 그려지지 않으므로 GC 횟수와 정지 시간 지표를 P99와 같은 시간축에 놓는다. [[JVM-GC]]
 - 톱니의 최저점이 계속 올라가면 회수되지 않는 객체가 쌓이는 누수 신호다. 힙 한계에 가까워질수록 GC가 더 자주, 더 오래 돌며 CPU를 잡아먹어 응답시간이 먼저 나빠지고, 마지막에는 메모리 부족으로 프로세스가 죽는다. 누수를 발견하면 그 자리에서 원인을 찾기보다 힙 덤프를 떠서 남기고 재시작으로 시간을 번 뒤 덤프로 분석한다.
+- Kubernetes에서 컨테이너가 memory limit을 넘어 계속 쓰면 커널의 OOM kill로 종료되고, 재시작할 수 있으면 kubelet이 다시 띄운다. 같은 파드에서 재시작해 수집 대상이 남아 있으면 수집이 실패하는 동안 `up`이 0이 되지만, 재시작이 수집 간격 안에 끝나면 0이 남지 않을 수 있고 파드가 교체되면 대상이 사라져 시계열이 끊긴다. 메모리 선이 끊겼다가 낮은 값에서 다시 시작하면 회복이 아니라 재시작일 수 있으니 종료 사유 `OOMKilled`와 재시작 횟수를 확인한다. JVM은 힙 상한(`-Xmx`)이 limit보다 충분히 낮으면 힙 누수가 이보다 먼저 `OutOfMemoryError`로 나타나므로 둘을 구분한다. [[JVM-Container-Memory]]
 - 계단식 수직 상승은 전체 조회, 대량 내보내기, 대용량 파일 처리, 엑셀 다운로드처럼 한 번에 큰 데이터를 올린 순간이다. 계단 시각과 액세스 로그를 대조해 범인 요청을 찾고, 페이징이나 스트리밍으로 고친다. 이미 장애가 났다면 그 API부터 차단한다.
 
 ### 동시 처리 수와 풀 고갈
@@ -75,6 +78,8 @@ aliases: ["Monitoring Graph Reading", "모니터링 그래프 해석", "서버 �
 트래픽은 한 건도 늘지 않았는데 서버가 죽는다. 큐에 들어간 요청의 응답시간은 자기 처리 시간에 앞선 요청 전부의 대기 시간을 더한 값이라, P99가 서서히 나빠지지 않고 어느 순간 수직으로 뛰었다면 어딘가의 풀이 방금 말랐을 가능성이 높다. 스레드가 전부 DB 대기에 묶이면 헬스체크도 타임아웃되고, 로드밸런서가 인스턴스를 빼면 남은 인스턴스에 부하가 몰려 연쇄적으로 무너진다. 이때 원인은 여전히 DB의 느린 쿼리이므로 죽은 서버를 재시작해도 같은 DB에 물리는 순간 다시 죽는다. 스레드 풀 지표는 사용률의 절대값보다 기울기를 본다. 활성 스레드가 트래픽을 따라 완만하게 움직이지 않고 급경사로 차오르면 원인은 풀이 아니라 어딘가의 지연이다. 스레드 수 산정은 [[Thread-Pool-Sizing]]을 따른다.
 
 커넥션 풀은 스레드 풀보다 작게 잡는 경우가 많아 먼저 바닥난다. HikariCP의 `maximumPoolSize` 기본값은 10이고, 풀이 가득 차면 `getConnection()`은 `connectionTimeout`(기본 30초)까지 대기한다. 로그에 connection timeout이 찍히면 풀을 늘리고 싶어지지만, DB가 느려서 커넥션이 마른 것이라면 풀을 늘리는 것은 느린 DB 앞에 줄을 더 길게 세우는 일이고 DB의 동시 세션이 늘어 더 느려질 수도 있다. 풀이 작은지보다 반납이 왜 늦어졌는지를 묻고, 커넥션 대기 시간 지표와 DB 슬로 쿼리 로그를 나란히 놓는다. [[Connection-Pool]]
+
+CPU 사용률을 목표로 하는 오토스케일은 이런 장애를 놓치기 쉽다. 스레드가 커넥션과 DB를 기다리는 동안 CPU가 목표 아래에 머물면 인스턴스가 늘지 않는다. 그렇다고 지연을 목표로 삼기도 어렵다. AWS 대상 추적 문서는 인스턴스 수에 비례해 오르내리는 지표를 쓰라고 하며, 로드밸런서 요청 지연은 사용률을 따라 커질 수 있어도 반드시 비례하지는 않아 맞지 않는 예로 든다. 늘린다 해도 풀은 인스턴스마다 따로 있어 DB 커넥션 상한이 인스턴스 수 x `maximumPoolSize`로 커지므로 병목이 DB라면 경합만 키울 수 있다. 늘리기 전에 병목이 인스턴스 안에 있는지 가리고, 지표 선택은 [[K8s-HPA-VPA]]와 [[Auto-Scaling|EC2 Auto Scaling]]을 따른다.
 
 ### 이벤트 루프 서버
 
@@ -92,6 +97,7 @@ Node.js나 Spring WebFlux처럼 이벤트 루프로 처리하는 서버는 동�
 - **배압**: 큐는 출렁임을 흡수하는 완충 장치지만 유입이 처리 용량을 지속적으로 넘으면 모두의 대기 시간을 늘리는 부채가 된다. 초당 100개를 처리하는데 큐에 100개가 있으면 다음 요청은 1초, 1만 개면 100초를 기다린다. 건강한 큐는 출렁이고, 문제 있는 큐는 우상향을 멈추지 않는다. 처리할 수 없는 요청은 429 같은 응답으로 일찍 거절하는 로드 셰딩을 검토한다. [[Backpressure]]
 - **캐시 히트율 급락**: 히트율 97%면 DB는 전체 읽기의 3%만 받으며, DB 용량도 그 3%에 맞춰져 있다. 히트율이 조금만 떨어져도 DB 부하는 몇 배로 뛴다. DB 스파이크를 보면 히트율부터 확인하고, 히트율 급락과 DB 스파이크가 같은 시각이면 인기 키 만료에서 오는 [[Cache-Stampede]]를 의심한다.
 - **타임아웃 예산 불일치**: 게이트웨이 타임아웃이 3초인데 백엔드 쿼리가 5초까지 기다리면, 게이트웨이는 504를 돌려주고 백엔드는 아무도 받지 않을 응답을 만드느라 커넥션과 CPU를 계속 쓴다. 안쪽 계층의 타임아웃을 바깥보다 짧게 둔다. 게이트웨이가 3초면 DB 타임아웃은 2.5초쯤이어야 백엔드가 먼저 포기하고 게이트웨이는 정돈된 에러를 받는다. 한 계층의 에러율과 다른 계층의 성공률이 모순되면 코드보다 타임아웃 설정부터 본다. [[Reactive-Systems-Principles]]
+- **해상도**: 그래프가 평평하다고 스파이크가 없었던 것은 아니다. 현재 상태를 나타내는 게이지는 수집한 순간의 값만 남는다. Prometheus는 따로 정하지 않으면 1분(`scrape_interval`)마다 수집하므로 그 사이에 올랐다 내려온 값은 기록되지 않는다. 카운터는 사건을 누적해 수집 사이의 일도 증가분에 남지만 `rate()`는 범위 전체의 초당 평균이라 범위보다 짧은 폭주를 편다. Grafana는 기간을 넓힐수록 그래프 간격을 키우고, Prometheus 범위 쿼리는 각 간격 시점 직전의 샘플을 쓰므로 게이지의 중간 샘플은 건너뛴다. Google SRE도 1분 단위로 본 CPU 부하는 꼬리 지연을 만드는 꽤 긴 스파이크조차 드러내지 못한다고 지적한다. P99는 튀는데 자원 그래프가 평평하면 그 자원을 배제하기 전에 해상도를 확인하고, `max_over_time`의 범위를 그래프 간격(Grafana의 `$__interval` 등)에 맞춰 수집된 샘플의 구간 최댓값을 보거나 대상에서 초 단위로 관측해 버킷으로 모은 분포를 쓴다.
 
 ## 증상별 의심 대상
 
@@ -99,9 +105,11 @@ Node.js나 Spring WebFlux처럼 이벤트 루프로 처리하는 서버는 동�
 |---|---|
 | P99 상승, CPU 상승 | 트래픽 초과, CPU를 많이 쓰는 코드 |
 | P99 상승, CPU 낮음 | DB, 풀 고갈, 락, 외부 호출 |
-| P99 수직 상승 | 어딘가의 풀이 방금 고갈됨 |
+| P99 수직 상승, P50과 풀 대기도 상승 | 어딘가의 풀이 방금 고갈됨. P50과 풀 지표가 그대로면 이봉 분포를 본다 |
+| P50 그대로, P99만 상승 | 캐시 미스, GC 정지처럼 일부 요청만 겪는 지연. 히트맵으로 분포가 갈라졌는지 본다 |
 | 모든 API가 느림 | DB, 캐시, 공용 풀 같은 공유 자원 |
 | 특정 API만 느림 | 그 API의 쿼리와 외부 호출 |
+| 같은 역할의 인스턴스 중 하나만 나쁨 | 그 인스턴스의 노드, 배포 버전, 자원과 그 인스턴스로 쏠린 트래픽. 공유 자원이 원인이면 대개 다른 인스턴스에도 비슷한 증상이 보이지만, 스티키 세션이나 오래 유지되는 연결로 부하가 한 인스턴스에 몰린 경우는 예외다 |
 | 에러 상승, P99 정상 또는 개선 | 의존 서비스가 즉시 실패를 반환, 생존자 편향 |
 | 에러 상승, P99 상승 | 타임아웃으로 끝나는 느린 실패 |
 | 장애 직후 트래픽 상승 | 재시도 폭주 |
@@ -111,8 +119,8 @@ Node.js나 Spring WebFlux처럼 이벤트 루프로 처리하는 서버는 동�
 ## 시점별로 읽는 법
 
 - **평시**: 매일 짧게 주요 그래프 모양을 익힌다. 오늘 P99 위에 지난주 같은 요일 P99를 겹친 주간 비교 패널을 두면 서서히 나빠지는 추세가 드러난다. 이런 추세는 임계치 알람에 걸리지 않고 비교로만 보인다. 추세에서 트래픽 증가, 누수, DB 저하, 히트율 하락 같은 가설을 세워 용량 계획으로 잇는다.
-- **배포 직후 약 30분**: 장애의 상당수는 실행 중인 시스템에 가한 변경에서 온다. Google SRE는 장애의 약 70%가 이런 변경에서 비롯된다고 본다. 그래프에 배포 마커를 남기는 것이 비용 대비 효과가 가장 큰 개선이다. 새 프로세스는 JIT 컴파일이 덜 됐고 로컬 캐시가 비어 있고 커넥션 풀을 새로 맺어야 하므로 P99가 두세 배 뛰는 것 자체는 이상이 아니다. 값보다 방향을 본다. 내려오는 곡선은 워밍업이고, 평평하거나 계속 오르면 사고다. 에러율이 X%를 넘거나 P99가 10분 안에 회복 추세를 보이지 않으면 토론 없이 롤백한다는 식의 기준을 미리 합의해 둔다. 카나리는 같은 시간, 같은 트래픽 조건에서 버전 라벨로 지표를 나눠 비교한다. 출렁임을 줄이려면 트래픽을 서서히 늘리는 슬로 스타트나 예열 요청을 먼저 보내는 워밍업 단계를 둔다. [[Deploy-Observability]]
-- **장애 중**: 원인보다 영향 범위부터 가른다. 전체 장애인지, 특정 API인지, 특정 지역이나 고객사인지가 대응의 급과 첫 용의자를 정한다. 다음으로 최근 30분에서 몇 시간 사이의 변경을 찾는다. 배포, 설정 변경, 피처 플래그, 인프라 작업, 마케팅 푸시로 인한 트래픽 급증이 후보이며, 변경이 있었다면 되돌리기부터 검토한다. 원인 규명보다 롤백, 재시작, 스케일 아웃, 기능 차단 같은 복구를 먼저 한다. 메트릭은 복구 뒤에도 남는다. 그래프를 한꺼번에 띄우기보다 DB가 느리면 커넥션 대기가 올라야 한다는 식으로 가설을 세우고 그 가설을 확인할 지표 하나를 본다. [[Incident-Runbook]]
+- **배포 직후 약 30분**: 장애의 상당수는 실행 중인 시스템에 가한 변경에서 온다. Google SRE는 장애의 약 70%가 이런 변경에서 비롯된다고 본다. 그래프에 배포 마커를 남기는 것이 비용 대비 효과가 가장 큰 개선이다. Grafana에서는 배포 파이프라인이 HTTP API로 annotation을 남기고 대시보드의 annotation 쿼리를 서비스 태그로 걸러 두면, 시계열처럼 annotation을 지원하는 패널에 배포 시점이 세로선으로 겹친다. 태그 쿼리는 지정한 태그가 모두 일치하는 annotation만 보여 주므로 버전은 조회 조건보다 설명에 둔다. 새 프로세스는 JIT 컴파일이 덜 됐고 로컬 캐시가 비어 있고 커넥션 풀을 새로 맺어야 하므로 P99가 두세 배 뛰는 것 자체는 이상이 아니다. 값보다 방향을 본다. 내려오는 곡선은 워밍업이고, 평평하거나 계속 오르면 사고다. 에러율이 X%를 넘거나 P99가 10분 안에 회복 추세를 보이지 않으면 토론 없이 롤백한다는 식의 기준을 미리 합의해 둔다. 카나리는 같은 시간, 같은 트래픽 조건에서 버전 라벨로 지표를 나눠 비교한다. 출렁임을 줄이려면 트래픽을 서서히 늘리는 슬로 스타트나 예열 요청을 먼저 보내는 워밍업 단계를 둔다. [[Deploy-Observability]]
+- **장애 중**: 원인보다 영향 범위부터 가른다. 전체 장애인지, 특정 API나 인스턴스인지, 특정 지역이나 고객사인지가 대응의 급과 첫 용의자를 정한다. 전체 에러를 API별로, 다시 인스턴스별로 나누듯 한 번에 한 차원씩 쪼개 좁히고, 문제 집단만 가진 특이점을 찾는 절차는 [[Root-Cause-Investigation-Loop|근본 원인 조사 루프]]를 따른다. 다음으로 최근 30분에서 몇 시간 사이의 변경을 찾는다. 배포, 설정 변경, 피처 플래그, 인프라 작업, 마케팅 푸시로 인한 트래픽 급증이 후보이며, 변경이 있었다면 되돌리기부터 검토한다. 원인 규명보다 롤백, 재시작, 스케일 아웃, 기능 차단 같은 복구를 먼저 한다. 메트릭은 복구 뒤에도 남는다. 그래프를 한꺼번에 띄우기보다 DB가 느리면 커넥션 대기가 올라야 한다는 식으로 가설을 세우고 그 가설을 확인할 지표 하나를 본다. [[Incident-Runbook]]
 - **장애 후**: 첫 흔적에서 알람까지를 감지 공백, 알람에서 복구까지를 대응 속도로 나눠 타임라인을 재구성한다. 첫 질문은 전조를 다음번에 알람으로 만들 수 있는가다. 표면 원인에서 한 단계 더 들어가 슬로 쿼리 때문이 아니라 대량 테이블 쿼리의 실행 계획을 확인하는 절차가 없어서까지 간다. 사람을 원인으로 적지 않고 그 판단을 낳은 맥락을 기록한다. 산출물은 반성문이 아니라 대시보드 패널, 새 알람, 미리 합의할 롤백 기준, 코드와 설정 수정처럼 다음 장애를 짧게 만드는 변경 목록이다. [[RCA-Postmortem]]
 
 ## 면접 체크포인트
@@ -123,14 +131,30 @@ Node.js나 Spring WebFlux처럼 이벤트 루프로 처리하는 서버는 동�
 - 리틀의 법칙으로 처리 시간 증가가 스레드 풀과 커넥션 풀 고갈, 연쇄 장애로 번지는 과정과 풀 크기를 늘리면 안 되는 경우
 - 사용률 80% 부근에서 대기 시간이 급격히 늘어나는 이유
 - 느린 실패와 빠른 실패의 차이, 타임아웃 예산을 바깥에서 안쪽으로 줄이는 이유
+- P50은 평온한데 P99만 오르는 이봉 분포, CPU 기준 오토스케일이 대기 병목을 놓치는 이유, 수집 간격과 집계가 짧은 스파이크를 가리는 방식
 
 ## 출처
 
 - [서버 모니터링 분석 가이드 — kciter.so, kciter](https://kciter.so/posts/server-monitoring-analysis-guide/)
+- [모니터링 대시보드 8가지 패턴의 진실 — YouTube, 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=qVtxpVBYgYo)
 - [Monitoring Distributed Systems — Google SRE Book](https://sre.google/sre-book/monitoring-distributed-systems/)
 - [Introduction — Google SRE Book](https://sre.google/sre-book/introduction/)
+- [Effective Troubleshooting — Google SRE Book](https://sre.google/sre-book/effective-troubleshooting/)
+- [Latency Heat Maps — Brendan Gregg](https://www.brendangregg.com/HeatMaps/latency.html)
+- [Prometheus Documentation, Configuration](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)
+- [Prometheus Documentation, Instrumentation](https://prometheus.io/docs/practices/instrumentation/)
+- [Prometheus Documentation, Query functions](https://prometheus.io/docs/prometheus/latest/querying/functions/)
+- [Prometheus Documentation, Querying basics](https://prometheus.io/docs/prometheus/latest/querying/basics/)
+- [Prometheus Documentation, Histograms and summaries](https://prometheus.io/docs/practices/histograms/)
+- [Prometheus Documentation, Jobs and instances](https://prometheus.io/docs/concepts/jobs_instances/)
+- [Grafana Documentation, Query and transform data](https://grafana.com/docs/grafana/latest/panels-visualizations/query-transform-data/)
+- [Grafana Documentation, Annotate visualizations](https://grafana.com/docs/grafana/latest/visualizations/dashboards/build-dashboards/annotate-visualizations/)
 - [Kubernetes Documentation, Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)
+- [Kubernetes Documentation, Assign Memory Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/)
+- [Amazon EC2 Auto Scaling User Guide, Target tracking scaling policies](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html)
+- [Oracle Java SE 25 GC Tuning Guide, Garbage Collector Implementation](https://docs.oracle.com/en/java/javase/25/gctuning/garbage-collector-implementation.html)
 - [HikariCP README — GitHub](https://github.com/brettwooldridge/HikariCP)
+- [HikariCP, About Pool Sizing](https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing)
 
 ## 관련 문서
 
@@ -139,8 +163,12 @@ Node.js나 Spring WebFlux처럼 이벤트 루프로 처리하는 서버는 동�
 - [[SLI-SLO|SLI/SLO]]
 - [[Deploy-Observability|배포 관측]]
 - [[Incident-Runbook|장애 런북]]
+- [[Root-Cause-Investigation-Loop|근본 원인 조사 루프]]
 - [[RCA-Postmortem|RCA와 포스트모템]]
 - [[Thread-Pool-Sizing|스레드 풀 크기 산정]]
 - [[Connection-Pool|커넥션 풀]]
+- [[K8s-HPA-VPA|Kubernetes HPA와 VPA]]
+- [[Auto-Scaling|EC2 Auto Scaling]]
+- [[JVM-GC|JVM GC]]
 - [[Backpressure|배압]]
 - [[Cache-Stampede|캐시 스탬피드]]
