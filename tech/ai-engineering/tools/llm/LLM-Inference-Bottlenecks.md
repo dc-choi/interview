@@ -50,6 +50,20 @@ Prefill-decode disaggregation은 두 단계를 별도 자원에 배치해 간섭
 
 운영에서는 대표 입력으로 답변 품질, 최대 메모리, 첫 토큰 지연과 이후 생성 속도를 함께 측정한다. 먼저 문맥 길이와 동시 요청 수를 제한하고, 용량이 부족하면 양자화나 오프로딩을 비교한다. 적재에 성공해도 대화형 응답 시간을 만족하지 못하면 더 작은 모델을 검토한다.
 
+### MoE는 전문가의 저장 위치와 계산 위치를 나눈다
+
+MoE(Mixture of Experts) 모델은 토큰마다 라우터가 고른 일부 전문가만 계산하므로, 모든 토큰이 쓰는 dense 가중치와 자주 쓰이는 전문가만 VRAM에 두고 나머지 전문가는 CPU RAM에 둘 수 있다. VRAM에 없는 전문가는 위의 가중치 오프로딩처럼 GPU로 옮겨 계산하거나, 활성값을 CPU로 보내 그 자리에서 계산한다. 2026-10-11에 원 논문, llama.cpp 서버 문서와 PR, 모델 카드와 프로젝트 저장소를 대조했다.
+
+- **계산 위치:** Fiddler(ICLR 2025)는 전문가에 들어가는 토큰이 적으면 활성값이 전문가 가중치보다 훨씬 작아 CPU 계산이 전송량을 줄이고, 입력이 임계값을 넘으면 가중치를 GPU로 옮기는 편이 낫다고 분석한다. 실행 중에는 CPU 계산 지연을 GPU 계산과 전송 지연의 합과 비교해 위치를 고르고, 자주 쓰이는 전문가는 오프라인 프로파일링으로 GPU에 둔다. 전문가당 입력 토큰이 적은 디코드와 많은 긴 프리필에서 유리한 계산 위치가 달라질 수 있다는 뜻이다.
+- **엔진 옵션:** llama.cpp 서버는 모든 MoE 가중치를 CPU에 두는 `--cpu-moe`와 앞쪽 N개 층의 MoE 가중치만 CPU에 두는 `--n-cpu-moe`를 제공한다(master 문서 기준). CPU에 둔 전문가의 GPU 캐시 크기를 MiB로 정하는 `--moe-cache-mib`(기본 0, 비활성)도 있으며, 2026-10-07(UTC) 병합된 PR 설명 기준으로 캐시를 켜면 32토큰 이하의 작은 배치에서는 CPU에 둔 전문가도 GPU에서 계산하되 LRU 캐시에 없는 전문가만 올리고, 큰 배치는 기존 오프로딩 경로를 쓴다. 값을 바꿀 때마다 최대 메모리, 프롬프트 처리와 생성 속도를 다시 잰다.
+
+Strata는 이 구조로 소비자 GPU 한 장에서 Qwen3.8-Flash-Next를 실행하는 추론 엔진이다. 모델 카드 기준 이 모델은 125B 파라미터 중 토큰당 6B가 활성화되는 MoE이며, 48개 층마다 라우팅 전문가 512개 중 10개와 별도의 공유 전문가 1개를 쓰고 별도로 51B n-gram 임베딩과 4B MTP(multi-token prediction) 층을 둔다. 아래 설명과 수치는 프로젝트 논문(2026년 9월)과 README 표의 것이다. 엔진은 이후 버전에서 샘플링 처리, 프롬프트 처리 단위, PCIe 복사 비율 같은 기본 동작이 바뀌고 있으므로, 수치는 해당 시점의 측정으로 읽고 현재 동작은 저장소 문서로 확인한다.
+
+- **접근 빈도별 배치:** 공유 전문가를 포함한 dense 가중치와 MTP 층은 VRAM에, 라우팅 전문가 24,576개(48층 × 512개) 전체는 고정(pinned) RAM에 두고 남은 VRAM을 자주 쓰이는 전문가 캐시로 채운다. 토큰마다 몇 행만 조회하는 28.8 GB n-gram 표는 SSD에 두고 필요한 16행을 한 단계 앞서 읽는다. 12 GB 카드의 4K 문맥에서 다른 프롬프트의 프로파일로 채운 4,500개 슬롯은 라우팅된 전문가의 50%를 처리했고, 대화에서 자주 쓰이는 전문가로 교체하자 약 72%로 올랐다. VRAM이 1 GB 늘 때마다 전문가 약 700개를 더 담아 CPU 계산이 줄므로, 프로젝트는 이 구성에서 더 빠른 GPU보다 더 큰 VRAM을 중요하게 본다.
+- **같은 층의 동시 처리:** 디코드(검증 창)에서는 층마다 라우터가 토큰별로 고른 전문가 ID(토큰당 10개)를 GPU가 고정 호스트 메모리의 작은 블록(doorbell)에 쓰면, 드라이버 대기 대신 이 블록을 계속 확인하던 CPU가 일을 나눈다. 캐시에 있는 전문가는 GPU가 계산하고, 놓친 전문가 중 일부는 PCIe로 복사해 GPU가, 나머지는 CPU가 RAM의 가중치로 계산한 뒤 GPU가 결과를 합친다. PCIe 복사도 RAM 대역폭을 쓰므로 복사 비율은 CPU 계산이 이미 RAM 대역폭을 쓰는 Q2_0에서 20%, 연산에 묶여 대역폭이 남는 i-quant 파일(IQ2_XS 등)에서 55%로 다르다(논문 측정 PC 기준). 논문 시점에는 프롬프트를 2,048토큰 단위로 처리해 전문가마다 여러 토큰이 몰리므로, 캐시에 없는 전문가를 층마다 PCIe로 GPU에 복사해 계산한다. 위 Fiddler의 임계값 분석과 같은 방향이다.
+- **MTP 검증:** 토큰마다 약 3.5 GB(논문 본문 기준)의 dense 가중치를 읽는 비용이 네 토큰을 함께 처리해도 거의 늘지 않으므로, 내장 MTP 층의 초안 최대 3개를 마지막 확정 토큰과 함께 한 번에 검증한다. 논문은 일부러 틀린 초안과 롤백을 넣은 시험으로 출력이 greedy decoding과 토큰 단위로 같다고 밝혔다. 이 동일성은 논문 시점의 greedy 설정에 대한 주장이며, 샘플링 설정과 이후 버전의 기본값에 그대로 옮기지 않는다.
+- **비교 경계:** README 표는 RTX 5070 12 GB, Ryzen 5 7600, 64 GB RAM에서 Q2_0(엔진 0.1.36)의 생성 94 tok/s(4K 조건)와 32K 프롬프트 처리 2,650 tok/s를 제시한다. 프로젝트 자체 측정이며 이 문서에서 재현하지 않았다. 클라우드 API와 잰 속도 배율은 가중치 정밀도, reasoning 설정과 출력 길이, 네트워크 왕복, 공급자의 동시 부하가 다르면 엔진 비교가 아니므로, 다음 절처럼 측정 구간과 설정을 맞춘 결과만 비교에 쓴다.
+
 ## 로컬 엔진 비교는 측정 구간과 설정을 맞춘다
 
 2026-10-09 확인한 `llama-bench` 문서는 prompt processing(`pp`)과 token generation(`tg`)을 나누고, 반복 실행의 평균 tok/s와 표준편차를 보고한다. 이 측정에는 토큰화와 샘플링 시간이 포함되지 않는다. 따라서 `tg` 속도 배율을 사용자 요청 전체의 응답 시간 배율로 옮기지 않는다.
@@ -120,9 +134,16 @@ CPU 사례에는 병렬화, 단계 간 데이터 전달, CPU 활용률과 하드
 - 프리필과 디코드의 병목이 왜 다른지 arithmetic intensity로 설명할 수 있는가.
 - 배칭, KV 캐시, speculative decoding, 양자화가 각각 어떤 비용을 줄이고 어떤 메모리를 추가로 요구하는지 설명할 수 있는가.
 - 가속기 스펙에서 TOPS 대신 무엇을 봐야 하는지, 스펙 대역폭과 실효 대역폭이 왜 다른지 말할 수 있는가.
+- MoE 모델이 VRAM보다 클 때 가중치를 토큰당 읽는 양과 접근 빈도에 따라 VRAM과 RAM에 나누고(토큰마다 몇 행만 읽는 대형 조회 표는 SSD도 고려하고), 놓친 전문가를 CPU에서 계산할지 GPU로 옮길지를 입력 토큰 수, 대역폭과 캐시 적중률로 판단할 수 있는가.
 
 ## 출처
 
+- [Fiddler: CPU-GPU Orchestration for Fast Inference of Mixture-of-Experts Models — arXiv](https://arxiv.org/abs/2402.07033)
+- [llama-server — ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md)
+- [llama : add a GPU cache for MoE experts kept in host memory — ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp/pull/29887)
+- [Qwen3.8-Flash-Next — Hugging Face, Qwen](https://huggingface.co/Qwen/Qwen3.8-Flash-Next)
+- [Strata — Niko1221](https://github.com/Niko1221/Strata)
+- [Running a 125-Billion-Parameter Model on a Normal PC — Niko1221/Strata](https://github.com/Niko1221/Strata/blob/main/docs/paper/Strata-Paper.pdf)
 - [OpenVINO 2024, High-level Performance Hints](https://docs.openvino.ai/2024/openvino-workflow/running-inference/optimize-inference/high-level-performance-hints.html)
 - [DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving — USENIX OSDI 2024](https://www.usenix.org/system/files/osdi24-zhong-yinmin.pdf)
 - [AWS and Cerebras Collaboration Aims to Set a New Standard for AI Inference Speed and Performance in the Cloud — AWS](https://press.aboutamazon.com/aws/2026/3/aws-and-cerebras-collaboration-aims-to-set-a-new-standard-for-ai-inference-speed-and-performance-in-the-cloud)

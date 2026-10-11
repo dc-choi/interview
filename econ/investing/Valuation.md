@@ -1,7 +1,7 @@
 ---
 tags: [econ, investing]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-11
 category: "Economics"
 aliases: ["밸류에이션", "Valuation"]
 ---
@@ -64,6 +64,22 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 
 검토할 때는 신규 투자의 기대수익률과 회수 시점, 설비와 운전자본 재투자, 경쟁에 따른 수익성 변화를 함께 본다. 장부가와 감가상각, 연구개발비 처리에 따라 측정 ROIC가 달라질 수 있으므로 기업 간 계산 기준도 맞춘다. AI 설비투자에도 이 질문을 적용할 수 있지만, 산업 성장만으로 개별 기업의 초과수익을 확정하지 않는다.
 
+### 투자 붐의 이익은 현금흐름과 자본수익률로 다시 본다
+
+같은 설비투자도 사는 쪽과 파는 쪽의 장부에 다르게 기록된다. 구매자는 서버와 데이터센터를 유형자산으로 올리고, 사용할 수 있는 상태가 된 시점(미국 공시의 placed in service)부터 추정 내용연수에 걸쳐 감가상각비로 나눠 인식한다(토지와 건설 중인 자산은 상각하지 않는다). 현금은 대금을 치를 때 나간다. 공급자는 고객이 제품의 통제를 얻을 때 대금을 매출로 인식하고 원가를 뺀 만큼 이익을 남긴다. 그래서 투자가 몰리는 동안에는 구매자가 그 설비로 최종 사용자 매출을 내기 전에도 시장 전체의 합산 이익이 늘 수 있으며, 합산 이익의 증가만으로 최종 수요가 검증됐다고 보지 않는다.
+
+가상 예시로 구매자가 서버를 100에 사고 공급자의 원가가 60이면, 구매자가 그 서버로 올린 매출이 아직 없는 첫해 두 회사의 합산 이익은 공급자 이익 40에서 5년 정액상각한 감가상각비 20(연초에 사용할 수 있게 됐다고 가정)을 뺀 20이다. 같은 해 합산 현금은 구매자가 낸 100에서 공급자에게 남은 40을 뺀 60만큼 줄어든다(세금과 대금 회수 시차는 무시). 내용연수를 10년으로 잡으면 합산 이익은 30이 되지만 현금 유출은 그대로이고, 감가상각 전 이익인 EBITDA도 달라지지 않는다. 반대로 공급자 이익률이 낮거나 내용연수가 짧으면 합산 이익은 줄 수 있다.
+
+**내용연수는 회사가 정하고 다시 검토하는 추정치다.** 추정을 바꾸면 변경 시점부터 감가상각비가 달라지고, 같은 시기에도 회사마다 방향이 갈릴 수 있다. NYU Stern의 Aswath Damodaran은 AI 인프라를 짓는 기업 다수가 쓰는 더 긴 상각 일정이 현재 이익에 대한 타격을 줄이고 있다고 본다. 기업 간 비교에서는 내용연수와 효과의 산정 기준을 맞추고, 다른 내용연수로 감가상각비를 다시 계산해 이익의 민감도를 본다.
+
+- 사례(2025 회계연도 10-K): Meta는 2025년 1월 1일부터 대부분의 서버와 네트워크 자산의 추정 내용연수를 5.5년으로 늘렸고, 2024년 말까지 사용 가능 상태가 된(placed in service) 자산 기준으로 2025년 감가상각비가 약 29억 달러 줄고 순이익이 약 26억 달러 늘었다고 공시했다. Amazon은 같은 날부터 일부 서버와 네트워크 장비의 내용연수를 6년에서 5년으로 줄이며 AI와 머신러닝 분야의 빠른 기술 발전을 이유로 들었고, 2024년 말 보유분과 2025년 취득분 기준으로 2025년 감가상각비가 14억 달러 늘고 순이익이 10억 달러 줄었다고 밝혔다.
+
+**이익과 함께 설비투자 뒤 현금흐름과 자본수익률을 본다.** 합산 이익이 늘어도 같은 기간 설비투자가 함께 늘면 잉여현금흐름은 이익보다 느리게 늘거나 줄 수 있다. 투자 기간의 낮은 현금흐름만으로 실패를 판정하지 않고, 성과는 신규 투자의 ROIC가 자본비용을 넘는지(앞 절)로 판단한다. 사례로 Damodaran이 2026-10-08 공개한 미국 상장사 합산 집계에서는 2026년 1분기와 2분기 순이익이 전년 동기보다 각각 35%와 57% 늘었지만 순이익이 줄어든 기업은 절반을 넘었고, 최근 12개월 배당과 자사주 매입은 2025년 연간보다 각각 약 5%와 9% 늘어 같은 기준(최근 12개월 대 2025년 연간)의 합산 순이익 증가율 약 24%에 못 미쳤다. 그는 비상장 AI 기업이 빠지고, 합작법인과 부외 실체의 회계가 특히 부채 쪽에서 결과를 다 반영하지 못할 수 있어, 공개 기업 수치는 전체 효과를 과소 집계하게 된다는 한계도 밝혔다.
+
+신규 투자의 자본수익률이 자본비용을 넘더라도 투자 기업은 이전보다 자본집약적인 사업이 되고, 이익이 늘어도 자본수익률이 자본비용에 못 미치면 장부가 아닌 시장에서 가치가 깎이며, 기대에 크게 못 미치면 설비투자의 대규모 상각과 차입 의존 기업의 부실이 따른다(Damodaran의 2026-10-08 시나리오 구분). 그는 AI 낙관론과 비관론 중 어느 쪽이 맞는지가 2026년 10월 당시의 연환산 매출 논쟁(8절의 연환산 매출 하위 절)이 아니라 AI 제품과 서비스 시장이 실체를 갖춘 뒤에야 가려지고, AI가 기대보다 잘되거나 못되면 AI 중심 기업의 주가가 회계 수치의 반응(실패 시 상각)보다 먼저 오르거나 내릴 것이라고 추정했다.
+
+이 절은 2026-10-11 Damodaran의 2026-10-08 글, Meta와 Amazon의 2025 회계연도 10-K Note 1, IFRS 15 사후검토 자료 4절의 매출 인식 시점 설명을 대조했다. 합산 수치는 2026년 2분기까지의 공시를 바탕으로 한 그의 집계이며, 특정 기업의 현재 투자 수익성이나 주가 방향을 검증한 기록은 아니다.
+
 ## 5. 가정의 민감성
 
 밸류에이션의 약점은 입력값에 결과가 크게 흔들린다는 점이다. 성장률이나 할인율을 조금만 바꿔도 가치가 크게 달라진다. 그래서 하나의 숫자보다 **범위로 보고, 보수적 가정에서도 말이 되는지** 확인하는 안전마진의 태도가 중요하다.
@@ -118,6 +134,7 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 
 - 고객 집중도는 부문 주석에서 먼저 찾는다. IFRS 8(국내 K-IFRS 1108)과 미국 기준 모두 단일 외부 고객 매출이 전체의 10% 이상이면 그 사실과 금액을 공시하게 한다. 10-K 본문(Regulation S-K Item 101)은 2020년 개정으로 중요 고객 의존을 원칙 중심으로 기재하게 바뀌어 형식이 회사마다 다르다.
 - 대형 고객의 설비투자 계획은 그 고객의 공시와 실적 발표에서 확인한다. 1~2년 가시성은 계약과 수주잔고가 뒷받침할 때만 믿는다.
+- 설비투자가 큰 기업은 추정 내용연수와 그 변경의 손익 효과를 주석에서, 설비투자 뒤 잉여현금흐름을 현금흐름표에서 확인한다. 10-K에서는 Item 8 주석의 회계정책과 Item 7을 함께 읽는다. 공급사의 이익 증가는 고객의 투자 확대가 만든 실적일 수 있으므로 최종 수요 시장, 고객 집중도 항목과 함께 본다(4절의 투자 붐 하위 절).
 - 보수적으로 알려진 경영진의 가이던스 상향을 강한 신호로 보는 시각은 경험칙이다. 과거 가이던스 달성 이력으로 따로 검증한다.
 - 체크리스트는 가치를 추정하기 위한 입력을 모으는 단계다. 결론은 여전히 가격과 비교해야 한다(1절).
 
@@ -149,8 +166,11 @@ Micron의 2025 회계연도 10-K는 전년 대비 DRAM 매출 62% 증가를 평�
 
 ## 출처
 
+- [Stock Prices, Earnings and Cashflows: The AI Effect plays through! — Musings on Markets, Aswath Damodaran](https://aswathdamodaran.blogspot.com/2026/10/stock-prices-earnings-and-cashflows-ai.html) — 2026-10-11 The AI Cap Ex Boom 절의 회계 효과 도식과 본문, 합산 순이익과 주주환원, The AI Business Resolution 절의 시나리오 표 대조
+- [2025 Form 10-K — Meta Platforms](https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm) — Note 1 Summary of Significant Accounting Policies의 서버와 네트워크 자산 내용연수 변경과 2025년 효과
+- [2025 Form 10-K — Amazon.com](https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm) — Note 1 Use of Estimates의 서버와 네트워크 장비 내용연수 변경과 2025년 효과
 - [2025 Form 10-K — Micron Technology](https://s25.q4cdn.com/621799436/files/doc_financials/2025/ar/2025-Form-10-K.pdf) — Results of Operations, 보고서 52쪽의 매출과 마진 요인
-- [Post-implementation Review of IFRS 15 Revenue from Contracts with Customers — IFRS Foundation](https://www.ifrs.org/content/dam/ifrs/project/pir-ifrs-15/rfi-iasb-2023-4-pir-ifrs-15.pdf) — 5절 Background의 현행 요건 설명, 본인과 대리인 판단 및 총액과 수수료 수익
+- [Post-implementation Review of IFRS 15 Revenue from Contracts with Customers — IFRS Foundation](https://www.ifrs.org/content/dam/ifrs/project/pir-ifrs-15/rfi-iasb-2023-4-pir-ifrs-15.pdf) — 4절 Background의 통제 이전 시점 매출 인식, 5절 Background의 현행 요건 설명, 본인과 대리인 판단 및 총액과 수수료 수익
 - [IFRS Foundation, Principal versus Agent: Software Reseller (May 2022)](https://www.ifrs.org/content/dam/ifrs/supporting-implementation/agenda-decisions/2022/principal-versus-agent-software-reseller-may-2022.pdf)
 - [PTC Announces Third Quarter Fiscal 2024 Results — PTC, SEC 공시](https://www.sec.gov/Archives/edgar/data/857005/000095017024088530/ptc-ex99_1.htm) — Operating Measure의 ARR 정의
 - [Updated Investor Bulletin: Investing in an IPO — SEC, Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-17)
@@ -172,4 +192,5 @@ Micron의 2025 회계연도 10-K는 전년 대비 DRAM 매출 62% 증가를 평�
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 할인율을 정하는 바닥
 - [[Career-Company-Judgment|이직과 회사 판단 체크리스트]] — 같은 공시로 회사 문제를 정의하기
 - [[Production-and-Cost|생산과 비용]] — 이익률 뒤의 원가 구조
+- [[Hidden-Infrastructure-Markets|보이지 않는 B2B 인프라 시장]] — 장비 공급사의 수주, 매출과 현금 구분
 - [[투자(Investing)]] — 지도
