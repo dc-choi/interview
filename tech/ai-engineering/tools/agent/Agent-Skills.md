@@ -197,3 +197,4 @@ Powers는 MCP 도구, 스킬과 지식을 함께 설치하고 작업 맥락에 �
 - [[MCP|MCP (외부 경계 확장)]]
 - [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리 (로컬 세션 로그 집계와 신뢰 경계)]]
 - [[Agent-Test-Verification-Behavior|에이전트 검증 행동 (스킬 본문 길이의 재읽기 비용, 튜토리얼형 스킬의 한계)]]
+- [[Hermes-Agent|Hermes Agent (에이전트가 경험에서 스킬을 만들고 고치는 사례, 쓰기 승인 대기열)]]

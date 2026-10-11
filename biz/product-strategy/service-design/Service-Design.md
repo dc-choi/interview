@@ -14,6 +14,7 @@ aliases: ["Service Design", "서비스 설계"]
 - [x] [[Backoffice-Workflow-Design|업무용 제품의 처리 흐름 설계]] — 접수와 보완 왕복, 다음 행동 중심 어드민, 경과 시간과 작업 시간의 구분
 - [x] [[Gamification|게이미피케이션]] — 5가지 적용 유형, 인증 뱃지, 보상 설계, 다크 패턴 경계
 - [x] [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]] — 리텐션 vs 조작, 사용자의 끝낼 자유, 자발적 재방문, 4가지 판별 질문
+- [x] [[Persuasion-Principles-and-Boundaries|설득 원리와 정직한 사용의 경계]] — 앵커링, 희소성, 사회적 증거 등 원리별 원 연구와 근거 강도, FTC와 공정위 기준, 랜딩 페이지 점검표
 - [x] [[Pagination-Patterns|페이지네이션 UX 패턴]] — Pagination, Load More, Infinite Scroll, SEO, 접근성
 - [x] [[Cross-Device-UX|크로스 디바이스 심리스 UX와 QR]] — 포그 행동 모델, 기술 상용화 조건, QR 로그인 플로우, 폴더블 화면 전환의 과업 연속성
 - [x] [[Search-UX|검색 UX 설계]] — 탐색형 vs 목적형, 여정 4구간 진단, 정렬/필터의 인덱스 비용

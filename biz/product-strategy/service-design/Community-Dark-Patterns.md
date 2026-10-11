@@ -149,3 +149,4 @@ aliases: ["Community Dark Patterns", "커뮤니티 다크 패턴", "리텐션 �
 - [[Output-vs-Outcome|산출물 vs 사용자 성과]] — 사용자가 과업을 끝내는가
 - [[DRI-Delegation-Culture|DRI와 권한 위임 문화]] — 팀의 자율성과 사용자 통제권
 - [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]] — 욕망 기반 기회 탐색의 윤리와 법적 경계
+- [[Persuasion-Principles-and-Boundaries|설득 원리와 정직한 사용의 경계]] — 희소성, 사회적 증거 문구가 거짓 믿음을 만드는 경계

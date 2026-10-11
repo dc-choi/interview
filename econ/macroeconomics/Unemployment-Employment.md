@@ -77,6 +77,16 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 - **실업률이 모든 고용 상태를 보여준다** → 구직단념자와 원치 않는 단시간 취업(반실업)은 잡지 못한다.
 - **일자리는 정해진 파이라 나눠 가져야 한다** → 노동총량의 오류다. 경제가 커지면 일자리도 늘어난다. 자동화가 일자리를 없애기만 하는 게 아니라 새 일자리를 만들기도 하는 이유다.
 
+## 9. 사례: 정년 60세와 청년 고용
+
+고용상 연령차별금지 및 고령자고용촉진에 관한 법률(고령자고용법) 제19조의 60세 이상 정년제는 2016년부터 300인 이상 사업장과 공공기관에서 먼저 시행됐다. 고용노동부의 2016-01-28 보도자료는 이와 함께 법에 규정된 임금체계 개편 의무도 이행해야 한다고 안내했다. 한국은행 BOK 이슈노트 제2025-8호(2025-04-08)는 이 정년연장을 임금체계 조정 없이 시행된 제도로 보고 노동시장 영향을 분석했다.
+
+- **고령층 고용**: 늘어나는 효과가 있었지만 시간이 지나며 줄었다. 보고서는 기업이 법적 정년연장에 따른 추가 부담을 조기퇴직 유도 같은 인사와 노무 정책으로 상쇄하려 한 신호로 해석했다.
+- **청년 고용**: 고령 근로자가 1명 늘 때 청년 근로자는 약 1명(0.4~1.5명) 줄어든 것으로 추정됐고, 대기업처럼 청년층 선호도가 높은 일자리에서 더 두드러졌다.
+- **혜택의 분포**: 정년연장의 혜택은 유노조, 대기업 일자리에 집중됐다.
+
+이 결과를 일자리 총량이 정해져 있다는 근거로 읽지 않는다(8절). 임금이 조정되지 않은 채 기존 근로자의 고용 기간이 늘면 기업의 추가 부담이 신규 채용 축소로 이어질 수 있다는 근거다. 추정 범위가 넓고 특정 제도와 시기의 결과이므로, 임금체계나 적용 방식이 다른 정년연장에 같은 수치를 대입하지 않는다.
+
 ## 출처
 
 - [U.S. Bureau of Labor Statistics, Concepts and Definitions (CPS)](https://www.bls.gov/cps/definitions.htm)
@@ -84,6 +94,9 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 - [Federal Reserve, Speech by Governor Kugler on navigating inflation waves while riding on the Phillips curve](https://www.federalreserve.gov/newsevents/speech/kugler20250220a.htm)
 - [Federal Reserve Bank of San Francisco, Okun's Law and the Unemployment Surprise of 2009](https://www.frbsf.org/research-and-insights/publications/economic-letter/2010/03/okun-law-unemployment-2009/) — 2026-10-02 갭 모형과 성장률 모형 및 단위 대조
 - [Federal Reserve Bank of San Francisco, Labor Markets in the Global Financial Crisis](https://www.frbsf.org/research-and-insights/publications/economic-letter/2013/12/labor-market-global-financial-crisis-okun-law/) — 국가와 시기별 계수 차이
+- [고용노동부, 60세+ 정년제 관련 궁금증을 풀어드립니다!](https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=6367) — 2016-01-28 보도자료. 2026-10-12 고령자고용법 제19조 근거, 2016년 300인 이상 사업장과 공공기관 우선 적용, 임금체계 개편 의무 안내 대조
+- [한국은행, 초고령사회와 고령층 계속근로 방안(BOK 이슈노트 제2025-8호)](https://www.bok.or.kr/portal/bbs/P0002353/view.do?nttId=10090795&menuNo=200433) — 2025-04-08 등록. 2026-10-12 고령층과 청년 고용 효과, 조기퇴직 해석과 혜택 분포 대조
+- [슈카월드, 이제는 말씀드리겠습니다.](https://www.youtube.com/watch?v=2hUkTmwYm3A) — 2026-10-10 공개 대담. 9절 논점의 계기이며 사실은 이 목록의 1차 출처로 대조
 
 ## 관련 문서
 

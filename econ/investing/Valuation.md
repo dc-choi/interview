@@ -1,7 +1,7 @@
 ---
 tags: [econ, investing]
 status: done
-verified_at: 2026-10-11
+verified_at: 2026-10-12
 category: "Economics"
 aliases: ["밸류에이션", "Valuation"]
 ---
@@ -120,7 +120,7 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 
 ## 8. 기업 검토 체크리스트
 
-개별 기업을 볼 때 확인할 일곱 항목이다. 미국 상장사는 연차보고서인 Form 10-K, 국내 상장사는 DART의 사업보고서가 기본 자료다. 10-K는 Item 1(사업), Item 1A(위험 요인), Item 7(경영진의 재무 상태와 실적 분석, MD&A), Item 8(감사받은 재무제표)로, 사업보고서는 회사의 개요, 사업의 내용, 재무에 관한 사항, 이사의 경영진단 및 분석의견 등으로 구성된다.
+개별 기업을 볼 때 확인할 여덟 항목이다. 미국 상장사는 연차보고서인 Form 10-K, 국내 상장사는 DART의 사업보고서가 기본 자료다. 10-K는 Item 1(사업), Item 1A(위험 요인), Item 7(경영진의 재무 상태와 실적 분석, MD&A), Item 8(감사받은 재무제표)로, 사업보고서는 회사의 개요, 사업의 내용, 재무에 관한 사항, 이사의 경영진단 및 분석의견 등으로 구성된다.
 
 | 항목 | 질문 | 10-K | 사업보고서 |
 |---|---|---|---|
@@ -131,6 +131,7 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 | **5. 고객 집중도** | 소수 고객 의존도가 얼마인가. 그 고객의 설비투자 계획이 우리 매출의 가시성을 주는가 | Item 1, 부문 정보 주석 | 사업의 내용, 영업부문 주석 |
 | **6. 해자** | 특허, 원가 우위, 전환비용이 이익률 추이로 확인되는가 | Item 1(경쟁, 지식재산) | 사업의 내용(경쟁 요소) |
 | **7. 경영진 가이던스** | 제시한 전망과 실제 실적의 차이 이력은 어떤가 | 실적 발표 자료와 컨퍼런스콜 속기록 | 잠정실적 공시와 IR 자료 |
+| **8. 자본배분과 지배구조** | 번 현금을 재투자, 인수, 차입 상환, 배당과 자사주 매입 중 어디에 쓰며 그 수익이 기회비용을 넘는가. 지배주주가 개인 지분을 가진 회사로 대여, 출자, 보증이 흐르면 조건과 승인 절차가 공개되는가([[Stocks#번 현금의 쓰임새를 기회비용과 비교한다]]) | Item 7, Item 8 현금흐름표와 주석 | 계열회사 등에 관한 사항, 대주주 등과의 거래내용, 재무제표 주석 |
 
 - 고객 집중도는 부문 주석에서 먼저 찾는다. IFRS 8(국내 K-IFRS 1108)과 미국 기준 모두 단일 외부 고객 매출이 전체의 10% 이상이면 그 사실과 금액을 공시하게 한다. 10-K 본문(Regulation S-K Item 101)은 2020년 개정으로 중요 고객 의존을 원칙 중심으로 기재하게 바뀌어 형식이 회사마다 다르다.
 - 대형 고객의 설비투자 계획은 그 고객의 공시와 실적 발표에서 확인한다. 1~2년 가시성은 계약과 수주잔고가 뒷받침할 때만 믿는다.
@@ -183,7 +184,7 @@ Micron의 2025 회계연도 10-K는 전년 대비 DRAM 매출 62% 증가를 평�
 - [NYU Stern, Valuation: Entry Page](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/valuation/val.htm)
 - [SEC, How to Read a 10-K](https://www.sec.gov/answers/reada10k.htm)
 - [SEC, Modernization of Regulation S-K Items 101, 103, and 105: A Small Entity Compliance Guide](https://www.sec.gov/resources-small-businesses/small-business-compliance-guides/modernization-regulation-s-k-items-101-103-105-small-entity-compliance-guide)
-- [금융감독원 DART, 기업공시 길라잡이 정기보고서](https://dart.fss.or.kr/info/main.do?menu=210)
+- [금융감독원 DART, 기업공시 길라잡이 정기보고서](https://dart.fss.or.kr/info/main.do?menu=210) — 2026-10-12 사업보고서 기재사항과 분기, 반기보고서 기재 생략 허용 항목 표의 계열회사 등에 관한 사항, 대주주 등과의 거래내용 대조
 - [IFRS Foundation, IFRS 8 Operating Segments (2021 issued)](https://www.ifrs.org/content/dam/ifrs/publications/pdf-standards/english/2021/issued/part-a/ifrs-8-operating-segments.pdf) — 문단 34의 주요 고객 매출 공시 기준
 
 ## 관련 문서

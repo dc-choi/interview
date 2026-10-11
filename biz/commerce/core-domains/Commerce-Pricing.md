@@ -189,3 +189,4 @@ aliases: ["Commerce Pricing", "커머스 가격"]
 - [[Commerce-Overview|커머스 도메인 개요]]
 - [[Pricing-Strategy|가격 정책 설계]]
 - [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]
+- [[Persuasion-Principles-and-Boundaries|설득 원리와 정직한 사용의 경계]] — 기준가 앵커링, 마감과 후기 표시의 경계

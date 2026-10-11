@@ -59,6 +59,24 @@ Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font Licen
 3. 한국어가 섞이면 한글 지원을 별도로 확인하고, 함께 쓸 한글 서체의 크기와 굵기, 행간을 맞춘다. 영문 후보를 고르는 것만으로 한글 서체를 대체했다고 보지 않는다.
 4. 납품 시 폰트 파일의 출처, 버전과 적용 라이선스를 인계한다. 유행이나 특정 기업의 채택 사례만으로 선택을 확정하지 않는다.
 
+## 텍스트 간격과 가독성 (WCAG 2.2)
+
+행간, 문단 간격, 정렬과 줄 길이도 접근성 기준으로 따로 확인한다. 아래는 2026-10-12 W3C 권고안 WCAG 2.2(2024-12-12판)와 W3C의 Understanding, Techniques 문서로 대조한 내용이다.
+
+- **SC 1.4.12 텍스트 간격(AA)**: HTML과 CSS처럼 해당 텍스트 스타일 속성을 바꿀 수 있는 마크업 기반 기술로 구현한 콘텐츠는 행 높이, 문단 뒤 간격, 자간, 단어 간격을 각각 글꼴 크기의 1.5배, 2배, 0.12배, 0.16배 이상으로 모두 설정하고 다른 스타일 속성은 바꾸지 않았을 때 콘텐츠나 기능을 잃지 않아야 한다. 작성자에게 기본 스타일을 이 값으로 정하거나 값을 바꾸는 수단을 제공하라고 요구하지는 않는다. 이 값은 상한이 아닌 기준선이며, 이 속성 중 하나 이상을 쓰지 않는 언어와 문자 체계는 그 조합에 있는 속성만으로 충족할 수 있다.
+- **SC 1.4.8 시각적 표현(AAA)**: 텍스트 블록에 대해 사용자의 전경색과 배경색 선택, 80자 또는 글리프 이하의 줄 폭(CJK는 40), 양쪽 정렬하지 않기, 문단 안 행간 1.5줄(space-and-a-half) 이상과 행간의 1.5배 이상인 문단 간격, 보조 기술 없이 200%까지 확대해도 전체 화면 창에서 한 줄을 읽으려고 가로로 스크롤하지 않기를 달성할 수단이 있어야 한다. 콘텐츠가 이 값을 직접 쓸 필요는 없고 브라우저 같은 사용자 에이전트가 수단을 제공해도 된다. 한중일(CJK) 문자는 비CJK 문자보다 폭이 약 두 배라서 최대 줄 폭이 절반이다. 일부 콘텐츠는 모든 AAA 기준을 충족할 수 없어 W3C는 사이트 전체에 AAA 적합성을 일반 정책으로 요구하는 것을 권장하지 않는다.
+
+홈페이지나 랜딩 페이지를 만들 때는 W3C의 충족 기법과 실패 사례에서 다음을 점검한다. 괄호 안은 W3C 문서 번호다.
+
+- 텍스트 컨테이너에는 늘어날 여유를 두거나 컨테이너 자체가 늘어나게 한다. 문단에 높이를 지정하지 않는 것이 그 예시다(C36). 늘어나지 않는 고정 크기 블록에서 `overflow: hidden`, 절대 위치나 빠듯한 테두리 때문에 간격 조정 뒤 글자가 잘리거나 다른 내용과 겹치면 1.4.12 실패다(F104). 단, 아래 말줄임표 항목처럼 전체 텍스트를 볼 수단이 있으면 예외가 될 수 있다.
+- 내비게이션 항목처럼 줄 바꿈하지 않을 짧은 텍스트는 컨테이너를 기본 텍스트 폭보다 넓게 잡거나 텍스트 방향으로 늘어나게 한다. 텍스트와 함께 늘어날 상자는 `display: inline-block`을 쓰고 음수 마진을 두지 않는 방법이 있고, 고정 폭이 꼭 필요하면 C35는 기본 최대 폭보다 20% 넓은 값을 안전한 값으로 제시한다.
+- 간격 조정으로 말줄임표가 생겨도 포커스나 활성화 때 전체 텍스트를 보여 주거나, 링크가 포함된 영역이면 링크한 페이지에서 전체 텍스트를 볼 수 있으면 충족할 수 있다. 그런 수단 없이 간격을 바꿀 때만 잘리면 실패다.
+- 확대 수준 100%에서 사용자 스타일시트, 북마클릿, 확장 프로그램이나 애플리케이션으로 네 값을 덮어쓴 뒤 잘림, 가림과 누락을 확인한다. 반응형처럼 레이아웃이 여러 개면 레이아웃마다 확인한다(C35, C36, F104).
+- 본문은 한쪽 정렬로 둔다. 양쪽 정렬의 고르지 않은 단어 간격은 세로로 흐르는 흰 강(rivers of white)을 만들어 읽기를 어렵게 할 수 있으며, W3C는 `text-align: justify` 같은 양쪽 정렬 텍스트를 1.4.8(AAA) 실패로 든다(F88).
+- 1.4.8(AAA)의 충족 기법으로 블록 텍스트의 행간을 CSS로 1.5에서 2 사이로 지정하고(C21), 단 너비는 `max-width: 70em`처럼 상대 단위로 정해 창 크기를 바꿨을 때 줄 길이가 평균 80자 이하가 될 수 있게 한다(C20). C20은 80자만 다루므로 한국어처럼 CJK 문자로 쓴 본문은 1.4.8의 40자 기준으로 확인하고, C21이 다루지 않는 문단 간격(행간의 1.5배 이상)도 따로 확인한다.
+
+대시보드 절의 한국어 행간, 자간 조정은 작성자가 정하는 기본값의 문제다. 1.4.12는 그 기본값과 별개로 사용자가 간격을 키웠을 때 콘텐츠와 기능이 유지되는지를 본다.
+
 ## 면접 체크포인트
 
 - 어드민, 백오피스 화면 설계에도 그대로 적용된다 — 운영자가 가장 자주 확인하는 정보와 위험한 액션(삭제, 환불 승인)의 위계, 대비 설계.
@@ -68,6 +86,15 @@ Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font Licen
 - [Carbon Design System, Spacing](https://www.carbondesignsystem.com/building-blocks/foundations/spacing/overview)
 - [W3C, Understanding SC 1.4.1: Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)
 - [W3C, Understanding SC 1.4.3: Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
+- [W3C, Web Content Accessibility Guidelines (WCAG) 2.2](https://www.w3.org/TR/WCAG22/)
+- [W3C, Understanding SC 1.4.12: Text Spacing](https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html)
+- [W3C, Understanding SC 1.4.8: Visual Presentation](https://www.w3.org/WAI/WCAG22/Understanding/visual-presentation.html)
+- [W3C, Technique C36: Allowing for text spacing override](https://www.w3.org/WAI/WCAG22/Techniques/css/C36)
+- [W3C, Technique C35: Allowing for text spacing without wrapping](https://www.w3.org/WAI/WCAG22/Techniques/css/C35)
+- [W3C, Technique C21: Specifying line spacing in CSS](https://www.w3.org/WAI/WCAG22/Techniques/css/C21)
+- [W3C, Technique C20: Using relative measurements to set column widths so that lines can average 80 characters or less when the browser is resized](https://www.w3.org/WAI/WCAG22/Techniques/css/C20)
+- [W3C, F104: Failure of Success Criterion 1.4.12 due to clipped or overlapped content when text spacing is adjusted](https://www.w3.org/WAI/WCAG22/Techniques/failures/F104)
+- [W3C, F88: Failure of Success Criterion 1.4.8 due to using text that is justified (aligned to both the left and the right margins)](https://www.w3.org/WAI/WCAG22/Techniques/failures/F88)
 - [시각적 위계를 만드는 5가지 방법 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/49)
 - [MDN, font-synthesis-style](https://developer.mozilla.org/en-US/docs/Web/CSS/font-synthesis-style)
 - [Inter, LICENSE.txt (SIL Open Font License 1.1)](https://github.com/rsms/inter/blob/master/LICENSE.txt)
@@ -81,3 +108,4 @@ Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font Licen
 - [[Service-Design-Principles|서비스 설계 원칙 (GOV.UK)]] — 일관성, 디자인 시스템
 - [[Pagination-Patterns|페이지네이션 UX 패턴]]
 - [[UX-Laws|UX 심리학 10가지 법칙]] — 폰 레스토프 효과 포함 전체 법칙
+- [[Responsive-Web-Layout|반응형 웹 레이아웃]] — WCAG 2.2 Reflow(SC 1.4.10) 기준
