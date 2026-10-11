@@ -92,7 +92,23 @@ verified_at: 2026-07-21
 - **경상흑자는 클수록 좋다** → 흑자는 높은 저축이나 약한 투자, 적자는 생산적인 투자나 과도한 소비를 반영할 수 있다. 0의 균형이 모든 나라의 건강한 목표는 아니다. 저축과 투자의 원인, 대외자산과 부채의 구성, 만기와 통화, 자금조달의 지속 가능성을 함께 본다.
 - **외환보유액은 많을수록 좋다** → 위기 방어엔 좋지만 쌓아두는 데도 비용(낮은 수익의 안전자산에 묶임)이 든다. 적정 수준이 있다.
 
+## 9. 사례: 엔화 약세와 일본의 국제수지
+
+아래 수치는 2026-10-11에 조회한 일본 재무성, 일본은행, 연준과 IMF 자료 기준이다. 일본의 회계연도는 4월에 시작한다.
+
+연준 집계 엔/달러 연평균은 2021년 109.84엔에서 2024년 151.46엔, 2025년 149.57엔이 됐고, 2026-09-28~10-02에는 157.25~157.81엔이었다. 숫자가 클수록 엔화 약세다.
+
+- **금리차와 그 한계**: 일본은행이 2024년부터 정책금리를 올렸지만 미국과의 차이는 크게 남았다(경로와 수치는 [[Interest-Rates-Monetary-Policy|금리와 통화정책]] 11절). IMF 2026 Article IV 협의 미션(2026-02 발표)은 엔/달러 환율이 역사적으로 미일 국채 수익률 차를 따라 움직였지만 2025년 중반부터 그 관계에서 벗어났다고 평가했다. 금리차 하나로 엔화 수준을 설명하지 않는다.
+- **경상흑자의 구성**: 2025 회계연도(2025-04~2026-03) 속보에서 경상수지 34.5조 엔 흑자는 본원소득수지(1차소득) 42.3조 엔 흑자에서 나왔고, 상품과 서비스 수지(2.5조 엔 적자)와 이전소득수지(2차소득, 5.2조 엔 적자)가 흑자를 줄였다. 상품수지는 2024 회계연도 3.0조 엔 적자에서 1.4조 엔 흑자로 돌아섰고 서비스수지는 3.9조 엔 적자였다. 서비스수지 안에서는 여행이 6.6조 엔 흑자였고 통신, 컴퓨터, 정보서비스가 2.4조 엔 적자, 기타사업서비스가 6.4조 엔 적자였다.
+- **경상흑자가 곧 엔 매수는 아니다**: 본원소득 가운데 직접투자의 재투자수익(속보 11.2조 엔, 순)은 배당하지 않고 기업 안에 남긴 이익의 몫이라 같은 금액이 금융계정의 직접투자(수익의 재투자)에도 기록된다. 속보 수치라 이후 개정될 수 있다. 소득이 엔으로 바뀌지 않고 해외에서 다시 투자되면 경상흑자만큼 엔 매수 수요가 생기지 않는다. 4절의 경상계정과 금융계정 대응을 적용한 해석이다.
+- **개입**: 재무성은 2026-04-30~05-06에 11.7조 엔 규모의 달러 매도, 엔 매수 개입을 했고, 2026-07-30~08-26 개입액은 15.4조 엔이었다. 재무상은 2026-07-31(미국 동부시간) 미국 재무부와 협조해 엔을 매수했다고 밝혔다. 연준 H.10 기준 엔/달러는 04-29 160.23엔에서 04-30 156.66엔이 됐지만 7월 말 163엔대까지 다시 올랐고, 07-29 163.86엔에서 07-30 159.47엔이 된 뒤 9월 말에는 157엔대였다. 개입 직후의 움직임만으로 추세 전환을 판단하지 않는다.
+- **물가 경로**: 일본은행은 2026-09 결정문에서 엔화 약세를 생산자물가 상승 요인의 하나로, 앞으로 내구재 중심 물가를 올릴 요인으로 들었다. 1절의 수입물가 경로가 정책 판단에 들어간 예다.
+
+엔화 약세 뉴스를 읽을 때는 금리차, 경상수지의 구성, 자본흐름과 개입을 나눠 확인하고 한 요인으로 단정하지 않는다.
+
 ## 출처
+
+2026-10-11 부분 검증: 9절의 환율, 국제수지, 개입과 물가 경로 수치를 아래 일본 재무성, 일본은행, 연준과 IMF 원문과 대조했다. 2026-07-30~08-26 개입의 일별 금액과 방향은 아직 공표되지 않아 검증 범위에 포함하지 않았다.
 
 2026-10-07 부분 검증: 2절의 정책 발표 전 기대, 향후 금리 경로와 상대국 금리차에 관한 설명을 RBA 자료와 대조했다. 점검 순서는 이를 적용한 분석 틀이며, 개별 국가의 최근 정책 결정과 환율 변동 원인은 검증 범위에 포함하지 않았다.
 
@@ -105,6 +121,18 @@ verified_at: 2026-07-21
 - [IMF, Choice of Exchange Rate Arrangement](https://www.imf.org/en/-/media/files/publications/miscellaneous/english/2022/mcm-technical-assistance-handbook/choice-of-exchange-rate-arrangement.pdf) — Appendix 2: 공식 제도와 실제 운용의 분류
 - [Real Exchange Rates: What Money Can Buy — IMF](https://www.imf.org/en/publications/fandd/issues/series/back-to-basics/real-exchange-rates) — PPP, 생산성과 비교역재 가격
 - [Current Account Deficits — IMF](https://www.imf.org/en/publications/fandd/issues/series/back-to-basics/current-account-deficits) — 저축과 투자, 자금조달과 대차대조표 위험
+- [Japan: Staff Concluding Statement of the 2026 Article IV Mission — IMF](https://www.imf.org/en/news/articles/2026/02/13/imf-cs-02172026-japan-staff-concluding-statement-of-the-2026-article-iv-mission) — 2026-02-17 발표. 2026-10-11 엔/달러와 미일 금리차의 괴리 평가 대조
+- [Change in the Guideline for Money Market Operations (September 18, 2026) — Bank of Japan](https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf) — 2026-10-11 엔화 약세의 물가 영향 평가 대조
+- [Statement by the Minister of Finance, Japan (August 3, 2026) — Ministry of Finance Japan](https://www.mof.go.jp/english/public_relations/statement/others/20260803073000.html) — 2026-10-11 미국 재무부와의 협조 엔 매수 대조
+- [3류 국가로 추락하는 일본, 어쩌다 민낯을 드러냈나 — 와이스트릿](https://www.youtube.com/watch?v=MeQcurRwaSw) — 2026-10-06 녹화 대담. 9절 논점의 계기이며 수치는 이 목록의 1차 출처로 대조
+- [Federal Reserve, H.10 Foreign Exchange Rates (October 5, 2026)](https://www.federalreserve.gov/releases/h10/20261005/) — 2026-10-11 2026-09-28~10-02 엔/달러 대조
+- [Federal Reserve, H.10 Foreign Exchange Rates (May 4, 2026)](https://www.federalreserve.gov/releases/h10/20260504/) — 2026-10-11 04-29와 04-30 엔/달러 대조
+- [Federal Reserve, H.10 Foreign Exchange Rates (August 3, 2026)](https://www.federalreserve.gov/releases/h10/20260803/) — 2026-10-11 07-27~07-31 엔/달러 대조
+- [Federal Reserve, G.5A Foreign Exchange Rates (January 5, 2026)](https://www.federalreserve.gov/releases/g5a/20260105/) — 2026-10-11 2024년과 2025년 연평균 대조
+- [Federal Reserve, G.5A Foreign Exchange Rates (January 3, 2022)](https://www.federalreserve.gov/releases/g5a/20220103/) — 2026-10-11 2021년 연평균 대조
+- [Ministry of Finance Japan, Balance of Payments for 2025 F.Y. (Preliminary)](https://www.mof.go.jp/policy/international_policy/reference/balance_of_payments/preliminary/bpfy2025.pdf) — 2026-05-13 재무성과 일본은행 공표. 2026-10-11 경상, 서비스, 1차소득과 재투자수익 대조
+- [일본 재무성, 외국환평형조작 실시 상황(2026년 4~6월)](https://www.mof.go.jp/policy/international_policy/reference/feio/data/quarter/2026_2Q.html) — 2026-10-11 일별 개입액과 달러 매도, 엔 매수 방향 대조
+- [일본 재무성, 외국환평형조작 실시 상황(2026-07-30~08-26)](https://www.mof.go.jp/policy/international_policy/reference/feio/data/monthly/20260828.html) — 2026-10-11 월간 개입액 대조
 
 ## 관련 문서
 

@@ -1,7 +1,7 @@
 ---
-tags: [infrastructure, gpu, ai, memory, network, power, cooling]
+tags: [infrastructure, gpu, ai, memory, network, power, cooling, distributed-training]
 status: done
-verified_at: 2026-10-09
+verified_at: 2026-10-11
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["GPU Server Infrastructure", "GPU 서버 인프라"]
 ---
@@ -107,12 +107,41 @@ CUDA 상태의 중지만으로 CPU 스레드까지 멈추지는 않는다. 전�
 
 성능 비교는 프로세스 복원 완료 대신 실제 추론 준비와 첫 정상 응답까지 측정한다. 같은 모델, 드라이버와 장비에서 일반 시작과 복원 시작을 비교하고 결과의 정확성도 확인한다(검증 제안).
 
+## 장기 분산 학습의 노드 장애와 작업 재개
+
+동기식 분산 학습에서는 노드 하나의 장애가 작업 전체의 재시작으로 이어질 수 있다. PyTorch 2.14 `torchrun` 문서 기준, worker 일부가 실패하면 살아 있는 worker까지 모두 멈추고 `max_restarts` 한도 안에서 전체를 다시 시작한다. 같은 문서는 진행 상황을 체크포인트로 남기고 학습 시작 시 읽는 구조를 권장한다. 이 체크포인트는 학습 코드가 저장하는 학습 상태이며 위 절의 CUDA 프로세스 복원과 다르다.
+
+장애 대응은 세 단계로 나눠 확인한다. 아래 표는 이 절의 공식 문서에서 도출한 점검 틀이다.
+
+| 단계 | 할 일 | 확인할 것 |
+| --- | --- | --- |
+| 감지 | 장치 오류, 장치 수 불일치, 통신 성능 저하와 작업 멈춤을 찾는다 | 상시 백그라운드 점검(passive)과 부하를 거는 능동 점검(active)의 범위, 점검 시간 |
+| 격리와 교체 | 장애 노드에 새 작업을 배치하지 않고 재부팅하거나 교체한다 | 대체 용량과 여분 노드, 교체 노드의 점검 시간 |
+| 재개 | 작업을 다시 시작해 마지막 체크포인트부터 이어 간다 | 저장과 로드 코드, 저장 주기, 교체 노드에서도 읽을 수 있는 저장 위치 |
+
+### 관리형 사례: SageMaker HyperPod
+
+2026-10-11 SageMaker HyperPod 공식 문서 기준이다. 오케스트레이터는 Slurm과 Amazon EKS 중에서 고른다. EKS 방식은 VPC 안에서 EKS 클러스터(제어 평면)와 HyperPod 클러스터(워커 노드)를 1:1로 연결한다.
+
+- **감지**: 노드의 Health Monitoring Agent(HMA)가 상시 백그라운드 점검(passive)을 한다. NVIDIA GPU에서는 DCGM 정책 위반 알림, `nvidia-smi` 오류, EC2 플랫폼 로그의 오류와 GPU 수를 확인한다. Slurm 방식의 HMA는 2025-09-11부터 지원되며, 쓰려면 클러스터 소프트웨어를 최신 AMI로 갱신해야 한다. 켜고 끌 수 있는 심층 점검(deep health checks)은 클러스터 생성과 업데이트 때 GPU와 NVLink 수, DCGM 진단 level 4, EFA 지연과 대역폭, 여러 GPU 사이의 NCCL 통신 성능을 시험한다. `StartClusterHealthCheck` API로 필요할 때 요청할 수도 있다.
+- **격리와 교체**: EKS 방식은 장애를 감지한 노드에 상태 label과 `sagemaker.amazonaws.com/node-health-status=Unschedulable:NoSchedule` taint를 붙인다. 노드 복구 옵션은 `Automatic`(권장, 기본값)과 `None`이다. `Automatic`은 장애 노드를 재부팅하거나 교체하고, `None`은 장애 노드에 label을 붙이지만 재부팅이나 교체는 시작하지 않는다. Slurm 방식은 HMA가 하드웨어 장애를 찾으면 노드를 drain으로 표시하고, 자동 복구가 켜져 있으면 그 노드의 작업이 모두 끝난 뒤 교체한다.
+- **재개**: EKS의 Kubeflow `PyTorchJob`은 auto-resume annotation 두 개와 `restartPolicy: OnFailure`로 켠다(Kubeflow Training Operator 1.7.0, 1.8.0, 1.8.1 필요). HyperPod training operator의 `HyperPodPyTorchJob`은 학습 로그 패턴 규칙으로 시작 지연, 멈춤과 처리량 저하를 감지해 재시작하도록 설정할 수 있고(규칙은 HyperPod elastic agent가 `sys.stdout`으로 내보낸 학습 로그를 읽어 평가한다), 프로세스 수준 재시작 횟수와 작업 전체 재시작으로 넘어갈 기준도 정한다. Slurm은 `srun --auto-resume=1`을 붙인 job step에만 적용된다.
+- **할당과 관측**: EKS 방식의 task governance는 팀별 compute 할당, 작업 우선순위, 유휴 compute의 대여와 차용, 팀 내 선점 여부를 정한다. observability add-on은 DCGM, node exporter, EFA, 파일 시스템, Kubernetes API, Kueue와 HyperPod task operator의 지표를 Amazon Managed Service for Prometheus로 보내고 Amazon Managed Grafana 대시보드로 볼 수 있게 한다.
+
+다음은 위 동작과 AWS 권장 구성을 운영 관점으로 정리한 것이다. 추론한 제안에는 운영 제안이라고 표시한다.
+
+- 재시작은 학습 프로그램을 다시 실행하는 일이다. 시작할 때 최신 체크포인트를 읽지 않으면 진행분을 잃는다. 저장 주기는 잃어도 되는 학습 시간과 저장 비용을 비교해 정한다(운영 제안). EKS의 PyTorch 학습에는 체크포인트를 CPU 메모리에 자주 저장해 인접 노드에 복제하고 S3 같은 영구 저장소에 주기적으로 보존하는 managed tiered checkpointing이 있다. 클러스터를 만들거나 업데이트할 때 `TieredStorageConfig`로 켜는 opt-in 기능이며, 학습 스크립트에서 `amzn-sagemaker-checkpointing` 라이브러리를 PyTorch DCP와 함께 호출해야 한다.
+- EKS 문서 기준, 심층 점검을 켜 두면 생성 때뿐 아니라 자동 교체로 추가된 인스턴스도 약 2시간의 인스턴스 수준 점검을 거친다. AWS는 여분 노드가 없고 빨리 재개해야 하면 생성 때만 심층 점검을 켜는 조합을 제안하고, 즉시 재개하려면 클러스터에 여분 노드를 두라고 권고한다. `HyperPodPyTorchJob`은 Kueue와 함께 작업용 여분 노드를 미리 예약할 수 있다.
+- Slurm에서 auto-resume을 쓰면 하드웨어 장애 노드는 재부팅 없이 교체되고, auto-resume이 없는 작업은 종료되어 다시 제출해야 한다. 재개 뒤에는 `$SLURM_JOB_NODELIST`가 오래된 값일 수 있으므로 진입 스크립트에서 노드 목록을 다시 구하고, 교체 노드에도 같은 환경을 만들도록 설정을 단일 `srun` 진입점에 둔다. GRES가 붙은 노드의 작업은 따로 막지 않으면 job step 재개 대신 큐에 다시 들어가 처음부터 실행된다.
+- 감지, 노드 교체, 작업 재시작과 첫 정상 학습 단계까지의 시간을 나눠 측정한다. 노드 교체 완료를 학습 재개 완료로 보지 않는다(운영 제안).
+
 ## 확인 질문
 
 - 작업이 연산, 메모리 용량, 메모리 대역폭, 서버 간 통신 중 어디에서 제한되는가?
 - 분기가 같은 워프 안에서 갈라지는가, 워프마다 다른 경로를 선택할 뿐인가?
 - GPU 수를 늘렸을 때 전체 처리량과 지연이 실제로 개선되는가?
 - 랙의 공간뿐 아니라 전력, 냉각과 하중 조건을 충족하는가?
+- 노드 장애 뒤 학습이 마지막 체크포인트에서 이어지는가, 처음부터 다시 시작하는가?
 
 ## 출처
 
@@ -129,8 +158,25 @@ CUDA 상태의 중지만으로 CPU 스레드까지 멈추지는 않는다. 전�
 - [NVIDIA GPU Telemetry, About GPU Telemetry](https://docs.nvidia.com/datacenter/cloud-native/gpu-telemetry/latest/)
 - [NVIDIA GPU Telemetry, DCGM Exporter](https://docs.nvidia.com/datacenter/cloud-native/gpu-telemetry/latest/dcgm-exporter.html)
 - [NVIDIA GPU Operator, Time-Slicing GPUs in Kubernetes](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/gpu-sharing.html)
+- [PyTorch 2.14, torchrun (Elastic Launch)](https://docs.pytorch.org/docs/2.14/elastic/run.html)
+- [Amazon SageMaker AI, Amazon SageMaker HyperPod](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod.html)
+- [Amazon SageMaker AI, Orchestrating SageMaker HyperPod clusters with Amazon EKS](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks.html)
+- [Amazon SageMaker AI, Health Monitoring System](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-health-monitoring-agent.html)
+- [Amazon SageMaker AI, Deep health checks](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-deep-health-checks.html)
+- [Amazon SageMaker AI, Automatic node recovery](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-node-recovery.html)
+- [Amazon SageMaker AI, Suggested resilience configurations](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-config-tips.html)
+- [Amazon SageMaker AI, Running jobs using kubectl](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-run-jobs-kubectl.html)
+- [Amazon SageMaker AI, Using the training operator to run jobs](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-operator-usage.html)
+- [Amazon SageMaker AI, Automatic node recovery and auto-resume](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-auto-resume.html)
+- [Amazon SageMaker AI, HyperPod managed tiered checkpointing](https://docs.aws.amazon.com/sagemaker/latest/dg/managed-tier-checkpointing.html)
+- [Amazon SageMaker AI, Set up managed tiered checkpointing](https://docs.aws.amazon.com/sagemaker/latest/dg/managed-tier-checkpointing-setup.html)
+- [Amazon SageMaker AI, SageMaker HyperPod task governance](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance.html)
+- [Amazon SageMaker AI, Amazon SageMaker HyperPod observability with Amazon Managed Grafana and Amazon Managed Service for Prometheus](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-observability-addon.html)
 
 ## 관련 문서
 
 - [[LLM-Inference-Bottlenecks|LLM 추론 병목과 메모리 예산]]
 - [[Storage-and-FileSystem-Performance|디스크 I/O와 RAID]]
+- [[Distributed-Batch-Execution|분산 배치의 체크포인트와 재시작]]
+- [[EC2-Compute#HPC의 통신 경로와 EFA 적용 조건|HPC 통신 경로와 EFA]]
+- [[EKS|Amazon EKS]]

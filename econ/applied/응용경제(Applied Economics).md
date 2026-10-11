@@ -26,6 +26,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[Personal-Income-Tax-Basics|개인 소득세와 연말정산]] — 결정세액과 환급, 공제 구분, 이직과 부업, 가상자산소득의 시행 시점과 취득가액 ✅
 - [[Career-Company-Judgment|이직, 회사 판단 체크리스트]] — 막연한 불안을 거시 사이클과 측정 가능한 회사 변수로 환원 ✅
 - [[Salary-Negotiation-Inflation|연봉 협상에 인플레이션 적용하기]] — 명목 vs 실질임금, 동결은 삭감, 물가상승률은 기준선 ✅
+- [[Public-Rental-Housing-Types|공공임대주택 유형과 신청 전 확인]] — 시행령의 여덟 유형과 공공지원민간임대 구분, 임대료 산정 방식, 임대의무기간과 거주기간, 공고 경로 ✅
 
 ### 3. 학습 가속기
 - [[Economics-Systems-Mapping|경제와 분산시스템 매핑]] — 통화정책=피드백 제어, 뱅크런=cascading failure. 시스템 직관으로 경제 흡수 ✅

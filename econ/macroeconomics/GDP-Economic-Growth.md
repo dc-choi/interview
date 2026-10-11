@@ -103,6 +103,16 @@ GDP는 강력하지만 모든 것을 담지는 못한다.
 
 읽는 기준은 두 가지다. 시장 규모 논거는 무역과 투자 개방으로 이미 외부 수요에 접근하는 경로와 비교해야 하고, 사회적 가치 측정은 7절의 GDP 한계를 보완하려는 후생지표 논의와 같은 측정 문제(무엇을, 누가, 어떤 가중치로 셀지)를 안고 있다.
 
+## 11. 사례: 일본의 장기 저성장
+
+흔히 잃어버린 30년이라 부르는 일본의 저성장은 성장률, 잠재성장률과 그 기여도 분해로 나눠 읽는다. 아래 수치는 2026-10-11 조회 기준이다.
+
+- **성장률**: IMF WEO DataMapper의 연도별 값(2026-10-11 조회, WEO 빈티지가 바뀌면 달라질 수 있다)으로 계산한 일본 실질 GDP 성장률의 단순 평균은 1980~1991년 약 4.3%, 1992~2024년 약 0.75%다. 6절의 70의 법칙으로 어림하면 경제가 두 배가 되는 기간이 약 16년에서 약 93년으로 늘어난 차이다.
+- **잠재성장률**: 일본은행 조사통계국 추정 잠재성장률은 1980년대 후반 4%를 넘었지만 1990년대에 빠르게 낮아져 2000년 이후로는 대체로 0~1% 수준에 머물렀고, 2026년 2분기 값도 1%를 밑돈다. 같은 추정의 기여도 분해에서 노동시간 기여는 1990년대 이후 줄곧 마이너스였고, 최근 플러스 기여의 가장 큰 몫은 TFP다.
+- **분배와 체감**: IMF 2026 Article IV 협의 미션은 노동력 부족에도 실질임금 상승이 부진했고 1996년 이후 생산성과 임금의 격차가 크게 벌어졌다고 평가했다. 7절처럼 총량 지표와 가계의 체감을 구분해야 하는 사례다.
+
+읽는 기준: 장기 저성장을 디지털 전환 지연 같은 단일 원인으로 단정하지 않는다. 4절의 노동, 자본, TFP 가운데 어디가 약한지 잠재성장률 분해로 먼저 나누고, 인구 구조와 [[Inflation|디플레이션]] 기간을 함께 본다.
+
 ## 출처
 
 - [United Nations — System of National Accounts 2025, 7.90-7.92](https://unstats.un.org/unsd/nationalaccount/docs/2025_SNA_Pre-edit.pdf)
@@ -110,6 +120,9 @@ GDP는 강력하지만 모든 것을 담지는 못한다.
 - [한국은행 — 2024년도 연차보고서, 국민계정 2020년 기준년 개편 결과](https://www.bok.or.kr/portal/bbs/P0000596/view.do?menuNo=200071&nttId=10090587)
 - [한국은행 — 경제성장률과 GDP갭의 관계](https://www.bok.or.kr/portal/bbs/B0000218/view.do?menuNo=200&nttId=10017531)
 - [IMF — World Economic Outlook DataMapper, GDP current prices](https://www.imf.org/external/datamapper/NGDPD@WEO/KOR/JPN/CHN/USA)
+- [IMF — World Economic Outlook DataMapper, Real GDP growth](https://www.imf.org/external/datamapper/NGDP_RPCH@WEO/JPN) — 2026-10-11 일본의 1980~2024년 연도별 값으로 단순 평균 계산
+- [Bank of Japan — Output Gap, Potential Growth Rate, and Labor Market Indicators](https://www.boj.or.jp/en/research/research_data/gap/index.htm) — 2026-10-05 갱신분의 잠재성장률 추이와 기여도 분해 도표를 2026-10-11 대조
+- [IMF — Japan: Staff Concluding Statement of the 2026 Article IV Mission](https://www.imf.org/en/news/articles/2026/02/13/imf-cs-02172026-japan-staff-concluding-statement-of-the-2026-article-iv-mission) — 2026-02-17 발표. 2026-10-11 실질임금과 생산성 격차 평가 대조
 - [AI 폐해와 신자본주의 세미나 정리 — Threads, do_signer](https://www.threads.com/@do_signer/post/DXtxfSqk4LI) — 2026-10-05 주장 1(한일 경제 통합, 전력망 연결 우선)과 주장 2(사회적 가치 측정과 보상) 대조
 
 ## 관련 문서

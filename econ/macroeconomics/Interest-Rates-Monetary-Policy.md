@@ -114,6 +114,20 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 - **중앙은행이 모든 금리를 정한다** → 중앙은행은 운영 체계에 따라 하나의 목표 금리나 목표 범위, 여러 예금과 대출 제도 금리를 정할 수 있다. ECB는 세 가지 key interest rates를 공표하고, 연준은 연방기금금리 목표 범위와 IORB 등을 함께 운용한다. 장기금리와 민간 대출금리는 기대, 만기와 신용위험까지 반영해 시장에서 형성된다.
 - **본원통화를 늘리면 곧장 같은 비율의 인플레이션이 난다** → 은행 준비금과 민간의 결제용 예금은 같지 않다. 물가 영향은 총수요, 공급 여건, 기대, 신용과 통화 유통속도를 포함한 전달 경로에 달려 있어 기계적인 일대일 관계가 아니다.
 
+## 11. 사례: 일본은행의 마이너스 금리 해제 이후
+
+아래 내용은 2026-10-11에 조회한 일본은행, 연준과 IMF 발표 기준이다.
+
+일본은행은 2024-03-19 마이너스 금리 정책을 끝내고 무담보 콜금리(익일물) 유도 목표를 0~0.1%로 정했다. 이후 0.25%(2024-07-31 결정), 0.5%(2025-01-24), 0.75%(2025-12-19), 1.0%(2026-06-16), 1.25%(2026-09-18 결정, 09-24 적용)로 올렸다. 2026-09 결정은 7대 2였고 반대한 두 위원은 물가와 경기 흐름을 근거로 동결을 주장했다. 일본은행은 인상을 2% 물가 목표를 지속적이고 안정적으로 달성하기 위한 완화 정도의 조정으로 설명했고, 환율은 경제와 물가의 위험 요인으로 다뤘다.
+
+- **명목 인상과 긴축 강도는 다르다**: 일본은행은 2026-06 결정문에서 주로 단기에서 중기 구간의 실질금리가 마이너스라고 했고, 2026-09 결정문에서는 같은 구간을 중심으로 실질금리가 낮은 수준에 머물러 있으며 인상 뒤에도 완화적 금융여건이 유지될 것으로 봤다. 정책금리가 1%를 넘었다는 사실만으로 긴축 기조라고 읽지 않고 7절의 실질금리로 확인한다.
+- **대차대조표 축소는 따로 진행한다**: 2024-07 월 약 5.7조 엔이던 국채 매입을 분기마다 줄여(2026-03까지 분기당 약 4,000억 엔, 그 뒤 2027-03까지 분기당 약 2,000억 엔) 2027-04부터 월 약 2조 엔으로 유지하는 계획이다(2026-06-16 계획 기준). 일본은행은 보유 국채가 2027-03 말 약 480조 엔으로 2024-06 말보다 약 17% 줄 것으로 추산했고, 장기금리가 급등하면 매입 증액 등으로 기동적으로 대응한다고 밝혔다. 6절의 양적긴축을 시장 안정 장치와 함께 운용하는 예다.
+- **금리 인상의 비용**: 국채 잔액이 크면 금리 상승이 신규 발행과 차환을 거쳐 정부 이자비용을 늘린다. → [[Fiscal-Policy|재정정책]] 5절의 일본 사례
+- **대외 금리차와 환율**: 연준이 2026-09-16 목표 범위를 3.75~4.00%로 올려 일본과의 정책금리 차이는 2.5%p 이상 남았지만, 금리차만으로 환율이 정해지지는 않는다(→ [[Exchange-Rates-Balance-of-Payments|환율과 국제수지]] 9절). 일본은행은 2026-09 결정문에서 엔화 약세를 물가 상승 요인으로 들었다.
+- **중립금리는 불확실하다**: IMF 2026 Article IV 협의 미션(2026-02-17 발표)은 당시 0.75%이던 정책금리가 직원 추정 중립금리보다 낮다며 2027년 중립 수준에 이르도록 완화 축소를 이어가라고 권고했지만, 중립금리 추정 자체의 불확실성이 크다고 밝혔다.
+
+학습 점검: 정책금리 인상 횟수만으로 긴축 강도를 판단하지 않는다. 긴축 강도는 실질금리와 국채 매입 축소 속도로, 파급은 정부 이자비용과 대외 금리차로 나눠 확인한다.
+
 ## 출처
 
 - [Federal Reserve — September 16, 2026: FOMC Projections materials, accessible version](https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm) — 2026-10-07 도입부, Table 1 주석과 Figure 2의 정의 대조. 위 점도표 절만 부분 검증
@@ -121,9 +135,20 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 - [Bank of England — Money creation in the modern economy](https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy)
 - [ECB — Key ECB interest rates](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html)
 - [Federal Reserve, Implementing Monetary Policy in an Ample-Reserves Regime](https://www.federalreserve.gov/econres/notes/feds-notes/implementing-monetary-policy-in-an-ample-reserves-regime-the-basics-note-1-of-3-20200701.html)
+- [Bank of Japan — Changes in the Monetary Policy Framework (March 19, 2024)](https://www.boj.or.jp/en/mopo/mpmdeci/state_2024/k240319a.htm) — 2026-10-11 마이너스 금리 해제와 0~0.1% 유도 목표 대조
+- [Bank of Japan — Change in the Guideline for Money Market Operations and Decision on the Plan for the Reduction of the Purchase Amount of Japanese Government Bonds (July 31, 2024)](https://www.boj.or.jp/en/mopo/mpmdeci/state_2024/k240731a.htm) — 2026-10-11 0.25% 인상과 월 약 5.7조 엔에서 시작한 매입 축소 계획 대조
+- [Bank of Japan — Change in the Guideline for Money Market Operations (January 24, 2025)](https://www.boj.or.jp/en/mopo/mpmdeci/state_2025/k250124a.htm) — 2026-10-11 0.5% 인상 대조
+- [Bank of Japan — Change in the Guideline for Money Market Operations (December 19, 2025)](https://www.boj.or.jp/en/mopo/mpmdeci/state_2025/k251219a.htm) — 2026-10-11 0.75% 인상 대조
+- [Bank of Japan — Change in the Guideline for Money Market Operations (June 16, 2026)](https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260616a.pdf) — 2026-10-11 1.0% 인상과 마이너스 실질금리 평가 대조
+- [Bank of Japan — Plan for the Outright Purchases of Japanese Government Bonds (June 16, 2026)](https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260616b.pdf) — 2026-10-11 월 매입액 경로, 장기금리 급등 시 대응과 보유 국채 추산 대조
+- [Bank of Japan — Change in the Guideline for Money Market Operations (September 18, 2026)](https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf) — 2026-10-11 1.25% 인상, 표결과 반대 사유, 실질금리, 엔화 약세와 환율 위험 평가 대조
+- [Federal Reserve — Federal Reserve issues FOMC statement (September 16, 2026)](https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm) — 2026-10-11 목표 범위 3.75~4.00% 인상 대조
+- [IMF — Japan: Staff Concluding Statement of the 2026 Article IV Mission](https://www.imf.org/en/news/articles/2026/02/13/imf-cs-02172026-japan-staff-concluding-statement-of-the-2026-article-iv-mission) — 2026-02-17 발표. 2026-10-11 중립금리 평가와 정상화 권고 대조
 
 ## 관련 문서
 
 - [[Inflation|인플레이션과 디플레이션]] — 통화정책이 잡으려는 대상
 - [[Business-Cycle|경기순환]] — 통화정책이 대응하는 리듬
+- [[Exchange-Rates-Balance-of-Payments|환율과 국제수지]] — 대외 금리차와 환율
+- [[Fiscal-Policy|재정정책]] — 금리 상승과 정부 이자비용
 - [[거시경제(Macroeconomics)]] — 지도
