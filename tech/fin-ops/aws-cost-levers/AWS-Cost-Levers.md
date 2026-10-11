@@ -15,7 +15,7 @@ FinOps 라이프사이클의 Optimize 단계에 해당하는 문서 묶음이다
 - [[Autoscaling-Cost|오토스케일링 비용]] — scale-in 균형, Spot 혼합, Warm Pool, 최소 용량
 - [[Reserved-Instance|RI / Savings Plans]] — RI vs SP, coverage와 utilization, 결제 옵션
 - [[Storage-Tiering|스토리지 티어링]] — S3 클래스, lifecycle, Glacier, gp3
-- [[Egress-Cost|데이터 전송 비용]] — egress, cross-AZ, NAT Gateway, VPC Endpoint, CDN
+- [[Egress-Cost|데이터 전송 비용]] — egress, cross-AZ, NAT Gateway, VPC Endpoint, CDN, Kubernetes의 같은 영역 라우팅과 AZ 쏠림
 - [[ECR-Cost-Reduction|ECR 비용 절감]] — Lifecycle Policy, 태그 전략, Terraform
 
 ## 상위 문서

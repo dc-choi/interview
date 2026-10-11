@@ -1,9 +1,9 @@
 ---
-tags: [finops, aws, data-transfer, egress, nat-gateway, vpc-endpoint, cost]
+tags: [finops, aws, data-transfer, egress, nat-gateway, vpc-endpoint, cost, kubernetes, cross-az]
 status: done
 category: "비용&운영(FinOps)"
-aliases: ["Egress Cost", "Egress cost 관리", "데이터 전송 비용", "data transfer cost", "NAT Gateway 비용"]
-verified_at: 2026-08-05
+aliases: ["Egress Cost", "Egress cost 관리", "데이터 전송 비용", "data transfer cost", "NAT Gateway 비용", "Topology Aware Routing"]
+verified_at: 2026-10-11
 ---
 
 # 데이터 전송 비용 (Egress / Data Transfer)
@@ -42,11 +42,26 @@ verified_at: 2026-08-05
 
 반면 ECR은 Gateway Endpoint가 없고 유료 Interface Endpoint(`ecr.api`, `ecr.dkr`)를 써야 한다. AZ별 시간 요금과 데이터 처리 요금이 붙으므로 우회할 NAT 처리량과 비교 계산해 이득일 때만 옮긴다(이미지 레이어는 S3에서 내려오므로 S3 Gateway Endpoint를 함께 둔다).
 
+## Kubernetes에서 같은 영역 호출을 우선한다
+
+2026-10-11 Kubernetes, Istio와 Amazon EKS Best Practices Guide 대조 기준. 여러 AZ에 노드를 둔 클러스터에서 Service 트래픽은 기본적으로 다른 AZ의 endpoint로도 분산된다. 호출이 잦은 서비스 사이에서는 이 분산이 cross-AZ 전송 요금과 지연을 만든다.
+
+| 수단 | 동작 | 주의 |
+|---|---|---|
+| Topology Aware Routing | Service에 `service.kubernetes.io/topology-mode: Auto`를 붙이면 EndpointSlice 컨트롤러가 AZ별 allocatable CPU에 비례해 endpoint에 hint를 넣고, kube-proxy는 자기 AZ용 hint가 붙은 endpoint로 보낸다(균형을 맞추려고 다른 AZ의 endpoint에 이 AZ의 hint를 붙이기도 한다). 1.27 이전 이름 `service.kubernetes.io/topology-aware-hints`는 deprecated 별칭이다 | endpoint가 AZ 수보다 적거나, 균형 배분이 어렵거나, 노드 하나라도 `topology.kubernetes.io/zone` 레이블이나 allocatable CPU 값이 없으면 hint를 넣지 않아 클러스터 전체로 분산된다. AZ마다 endpoint가 3개 미만이면 약 50% 확률로 그렇게 된다. Spot처럼 AZ별 용량이 흔들려도 hint가 할당되지 않을 수 있다 |
+| `spec.trafficDistribution` | `PreferSameZone`은 같은 AZ에 endpoint가 있으면 그 AZ의 트래픽을 모두 그쪽으로 보낸다. 필드는 1.33, `PreferSameZone`과 `PreferSameNode` 값은 1.35에 GA가 됐고 `PreferClose`는 `PreferSameZone`의 deprecated 별칭이다 | 예측 가능한 대신 AZ별 과부하는 운영자가 막아야 한다. `topology-mode: Auto`가 함께 있으면 annotation이 우선하고, 해당 트래픽 유형의 `externalTrafficPolicy`나 `internalTrafficPolicy`가 `Local`이면 그 설정이 우선한다. 문서는 annotation이 향후 이 필드로 대체돼 deprecated될 수 있다고 적는다 |
+| Istio locality load balancing | 사이드카 기반 라우팅에서는 기본 mesh 설정으로 locality load balancing이 켜져 있다. DestinationRule에 outlierDetection을 두면 `localityLbSetting`을 따로 쓰지 않아도 locality failover가 켜진다 | Istio 1.31 레퍼런스는 `failover`와 `failoverPriority`가 outlierDetection 없이는 효과가 없다고 적으므로 같은 locality 우선을 기대한다면 outlierDetection 구성을 함께 확인한다. ambient의 ztunnel 경로는 Service의 `spec.trafficDistribution` 필드나 `networking.istio.io/traffic-distribution` annotation(Service, ServiceEntry, Namespace)을 따르고 둘 다 있으면 필드가 우선한다. 아무것도 설정하지 않으면 locality 선호 없이 정상 endpoint 전체로 분산한다 |
+
+- Topology Aware Routing은 유입 트래픽이 AZ별 노드 용량에 대략 비례한다고 가정하고, `trafficDistribution`은 같은 AZ에 endpoint가 부족하거나 유입이 AZ별로 고르지 않으면 endpoint가 과부하될 수 있다. 한 AZ에서 트래픽이 많이 들어오면 그 AZ에 배정된 endpoint만 부하를 받고, HPA가 이 쏠림을 감지하지 못하거나 여러 AZ를 묶은 단일 HPA가 다른 AZ에 Pod를 늘려 문제를 풀지 못할 수 있다. 완화책은 Pod Topology Spread Constraints와 AZ별 Deployment, HPA다.
+- EKS는 Kubernetes의 alpha 기능을 지원하지 않는다(Karpenter처럼 따로 설치하는 컨트롤러 필드의 ALPHA 표시와는 별개다). 쓰려는 필드와 값이 클러스터 버전과 kube-proxy(또는 이를 대체하는 데이터플레인) 버전에서 지원되는지 먼저 확인한다. EKS 가이드는 `PreferSameNode`를 쓰려면 kube-proxy를 1.35 이상으로 올리라고 적는다.
+- 사례로 2023년 AWS re:Invent의 국내 음식 배달 서비스 발표는 Kubecost로 서비스 트래픽 비용을 보고 불필요한 외부 호출을 내부 호출로 바꿨고, topology aware hints와 Istio locality 라우팅을 설정해 cross-AZ 트래픽을 줄이고 AZ 안에서 트래픽이 전달되도록 했다고 밝혔다. 같은 발표는 Istio ingress gateway Pod 수가 AZ별로 고르지 않아 특정 AZ로 트래픽이 몰리고 그 AZ 노드의 부하가 장애로 이어진 경험도 설명했다. 운영 제안: AZ 우선 라우팅을 켤 때는 진입 계층과 서비스 Pod의 AZ별 수를 AZ별 유입 비율에 맞추고, 그 비율이 유지되는지 지표로 확인한다.
+
 ## 흔한 함정
 
 - 같은 VPC인데 Public DNS로 접근 → 불필요한 NAT/인터넷 경유
 - S3 접근을 NAT로 → Gateway Endpoint는 시간 요금과 데이터 처리 요금이 없는데 NAT 처리 요금을 냄
 - cross-AZ 트래픽을 인지 못 한 채 마이크로서비스 산개
+- AZ 우선 라우팅을 켜고 진입 계층과 Pod의 AZ별 배치, 유입 비율을 확인하지 않아 한 AZ에 부하가 몰림
 - CDN 없이 S3에서 직접 대량 다운로드 제공
 - 데이터 전송 비용을 태그/모니터링 안 해 원인 미추적
 
@@ -57,6 +72,7 @@ verified_at: 2026-08-05
 - VPC Endpoint(특히 시간 요금과 데이터 처리 요금이 없는 S3/DynamoDB Gateway)로 NAT 줄이기
 - 내부 통신 Private IP, CDN 전진 배치의 효과
 - NAT Gateway가 비용 누적의 핵심인 이유
+- Kubernetes에서 cross-AZ 호출을 줄이는 수단(topology-mode, trafficDistribution, Istio locality)과 각각의 과부하 위험
 
 ## 출처
 
@@ -67,6 +83,16 @@ verified_at: 2026-08-05
 - [Amazon EC2 On-Demand Pricing — Data Transfer(월 100GB 무료 한도)](https://aws.amazon.com/ec2/pricing/on-demand/)
 - [Amazon CloudFront pricing — AWS 오리진 전송 요금 면제](https://aws.amazon.com/cloudfront/pricing/)
 - [AWS Data Exports — Understanding data transfer charges(리전 내, 리전 간, 인터넷 과금 구조)](https://docs.aws.amazon.com/cur/latest/userguide/cur-data-transfers-charges.html)
+- [Kubernetes — Topology Aware Routing](https://kubernetes.io/docs/concepts/services-networking/topology-aware-routing/)
+- [Kubernetes — Well-Known Labels, Annotations and Taints(topology-aware-hints 별칭)](https://kubernetes.io/docs/reference/labels-annotations-taints/)
+- [Kubernetes — Virtual IPs and Service Proxies(trafficDistribution)](https://kubernetes.io/docs/reference/networking/virtual-ips/)
+- [Kubernetes — Feature Gates(ServiceTrafficDistribution, PreferSameTrafficDistribution)](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/)
+- [Istio — Locality Load Balancing](https://istio.io/latest/docs/tasks/traffic-management/locality-load-balancing/)
+- [Istio — Destination Rule(LocalityLoadBalancerSetting)](https://istio.io/latest/docs/reference/config/networking/destination-rule/)
+- [Istio — Traffic Distribution(ambient의 ztunnel)](https://istio.io/latest/docs/ambient/usage/traffic-distribution/)
+- [Amazon EKS Best Practices Guide — Cost Optimization, Networking](https://docs.aws.amazon.com/eks/latest/best-practices/cost-opt-networking.html)
+- [Amazon EKS — Understand the Kubernetes version lifecycle on EKS(alpha 기능 미지원)](https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html)
+- [AWS re:Invent 2023 — Continuous resource tracking with Amazon EKS for cost optimization (GBL210)](https://www.youtube.com/watch?v=xIDx2QmIS9A)
 
 ## 관련 문서
 
@@ -75,3 +101,5 @@ verified_at: 2026-08-05
 - [[CDN|CDN / CloudFront]]
 - [[AWS-Pricing|AWS 요금 구조]]
 - [[DR-Strategy|DR 전략 (cross-region 균형)]]
+- [[Istio-Traffic-Management-and-Resilience|Istio traffic management와 resilience (outlier detection)]]
+- [[K8s-HPA-VPA|HPA와 VPA (replica 계산과 스케일 지표)]]

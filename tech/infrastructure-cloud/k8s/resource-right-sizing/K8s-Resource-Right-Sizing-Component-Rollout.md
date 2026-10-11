@@ -1,9 +1,9 @@
 ---
-tags: [kubernetes, infrastructure, observability, finops]
+tags: [kubernetes, infrastructure, observability, finops, karpenter, spot]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
-aliases: ["컴포넌트별 버퍼 차등", "Right-Sizing 적용 순서", "Right-Sizing Rollout"]
-verified_at: 2026-07-21
+aliases: ["컴포넌트별 버퍼 차등", "Right-Sizing 적용 순서", "Right-Sizing Rollout", "Spot NodePool 인스턴스 선택"]
+verified_at: 2026-10-11
 ---
 
 # Kubernetes Resource Right-Sizing — 컴포넌트별 버퍼 차등과 적용
@@ -64,6 +64,21 @@ Consolidation은 빈 노드 제거, 다른 노드로 Pod 이동 또는 더 저�
 
 운영 검증에서는 이벤트 수신, 대체 노드 준비, 이미지 다운로드, Pod readiness와 실제 요청 성공을 구분해 측정한다. 큐를 연결했다는 사실만으로 무중단 복구가 입증되지는 않는다. 이는 공식 동작을 바탕으로 한 점검 제안이며 특정 비용 절감률이나 복구 시간을 보장하지 않는다.
 
+## Spot NodePool의 인스턴스 범위를 정한다
+
+Spot 비중을 높일수록 NodePool이 허용하는 인스턴스 범위가 비용과 가용성을 함께 좌우한다. 아래 앞의 세 항목은 2026-10-11 Karpenter v1.15 문서(NodePools, NodeClasses, FAQs, Disruption, Settings)와 Amazon EKS Best Practices Guide의 Karpenter 절을 대조한 공식 동작이며, 항목 안에서 추론이라고 표시한 문장은 그 동작에서 도출한 판단이다.
+
+- **용량 유형의 우선순위:** `karpenter.sh/capacity-type`에 여러 유형을 허용하면 Karpenter는 `reserved`, `spot`, `on-demand` 순으로 우선한다. `reserved`는 RI가 아니라 EC2NodeClass에서 고른 On-Demand 용량 예약과 Capacity Blocks다. EC2 Fleet API가 용량 부족을 돌려주면 그 인스턴스 타입과 가용 영역의 해당 용량 유형을 3분간 후보에서 뺀다. 상위 유형에 남은 후보가 없으면 하위 유형으로 전환을 시도하며 문서는 이 전환이 보통 밀리초 안에 일어난다고 설명한다. 전환이 빠르다는 사실이 새 노드의 준비 시간까지 보장하지는 않고, FAQ는 Spot이 부족할 때 On-Demand도 부족할 수 있다고 적는다.
+- **price-capacity-optimized:** Spot 요청은 EC2가 중단 위험이 낮은 깊은 풀 가운데 가격이 낮은 풀을 고르는 전략을 쓴다. 따라서 Spot에서 가장 싼 타입이 고정적으로 선택되지는 않는다. 허용한 타입이 많을수록 EC2가 Spot 인스턴스의 실행 지속을 더 잘 최적화할 수 있다. 타입을 지나치게 좁히면 Spot만 허용한 NodePool에서는 풀이 회수되고 대안이 없을 때 Pod가 Pending에 머물 수 있다. On-Demand를 함께 허용한 NodePool에서는 On-Demand로 전환되는 빈도가 늘어 비용이 오를 수 있다(추론). 가이드는 Spot을 쓸 때 다양한 인스턴스 타입을 허용하는 것을 일반 원칙으로 둔다.
+- **범위와 통합:** NodePools 문서는 인스턴스 타입 관련 요구사항을 정하지 않아 선택지를 최대화하는 쪽을 권장한다. 요구사항에는 `Gte`, `Lte`를 포함한 연산자를 쓸 수 있다. `minValues`는 후보에 서로 다른 값이 최소 몇 개 남도록 요구하는 다양성 하한이며(문서 예시 주석은 이 필드를 ALPHA로 표시한다), 기본 `Strict` 정책에서는 하한을 채우지 못하면 그 NodePool로 스케줄하지 못하고 `--min-values-policy=BestEffort`에서는 하한을 완화한다. Spot 노드를 더 싼 Spot 노드로 바꾸는 교체 통합은 `SpotToSpotConsolidation` 기능 플래그(v1.15 기준 alpha, 기본값 false)를 켜야 하고, 한 대를 한 대로 바꿀 때는 인스턴스 타입 유연성이 최소 15개 필요하다. 플래그를 켜지 않으면 Spot 노드에는 삭제 통합만 적용된다. 범위를 좁히면 이 교체 기회도 줄어든다(추론).
+
+다음은 위 동작을 바탕으로 한 운영 제안이다.
+
+- 제외는 관측 근거가 있는 범위로 한정한다. 오래된 세대에서 성능 편차나 오류가 관측됐다면 `karpenter.k8s.aws/instance-generation`의 하한으로 그 세대와 더 오래된 세대를 빼고(특정 세대 하나만 빼려면 `NotIn`), 카테고리, 크기와 가용 영역은 넓게 둔다. 하한을 둬도 남은 세대와 CPU 제조사 사이의 성능 차이는 남으므로 지연에 민감한 서비스는 노드 유형별 지연과 오류율을 나눠 본다.
+- 카테고리를 넓게 열어 둔 NodePool에서는 Karpenter가 Pod의 requests에 맞는 타입을 고르므로, 사람이 카테고리를 미리 고르기보다 실제 노드 구성과 청구액을 확인한다. On-Demand 노드는 consolidation이 더 싼 노드로의 교체를 검토하지만, Spot 노드끼리의 교체는 위 `SpotToSpotConsolidation`을 켠 경우에만 일어난다. 카테고리를 직접 정해야 하는 경우(카테고리를 고정한 노드 그룹이나 성능 일관성 때문에 범위를 좁힌 NodePool)에는 CPU와 메모리 비율이 맞는지만으로 고르지 않는다. 요청 합계를 담고 남는 자원과 실제로 내는 시간당 가격(Spot이면 해당 가용 영역의 Spot 가격)을 함께 비교하면 비율이 가까운 범용 타입보다 컴퓨팅 최적화나 메모리 최적화 타입이 싼 경우가 있다. 특정 타입이 항상 싸다는 뜻은 아니며, Spot 가격은 EC2가 인스턴스 타입과 가용 영역별로 정하고 장기 수급에 따라 점진적으로 조정한다.
+
+사례로 2023년 AWS re:Invent의 국내 음식 배달 서비스 발표는 Spot을 많이 쓰던 중 5세대와 6세대를 섞었다가 5세대 노드의 성능이 예상보다 낮아 5세대 쪽에서 장애가 많이 발생했고, 6세대 하나로 통일했다고 밝혔다. 발표 시점에는 노드의 80% 가까이를 Spot으로 운영하고, 비용을 비교해 2XL에서는 메모리 최적화 타입을, 4XL에서는 컴퓨팅 최적화와 메모리 최적화 타입을 섞어 쓴다고 설명했다. Spot 비율은 발표자가 밝힌 값이며 다른 환경의 목표치가 아니다. 운영 제안: 세대, 카테고리와 크기를 함께 좁힌 구성은 위 가이드의 다양성 원칙과 긴장 관계에 있으므로 Pending 시간, On-Demand 전환 비율과 Spot 중단에 따른 노드 교체 빈도를 함께 관찰한다.
+
 ## 예비 용량으로 노드 생성 대기를 줄인다
 
 2026-10-10 Kubernetes와 Karpenter 공식 문서 대조 기준. 노드 비용을 줄이는 consolidation과 신규 Pod를 빠르게 배치하기 위한 예비 용량은 서로 다른 목표다.
@@ -95,11 +110,18 @@ Karpenter는 배치할 수 없는 Pod의 requests와 스케줄링 조건을 바�
 - [Kubernetes, Overprovision Node Capacity For A Cluster](https://kubernetes.io/docs/tasks/administer-cluster/node-overprovisioning/)
 - [Karpenter, Scheduling](https://karpenter.sh/docs/concepts/scheduling/)
 - [Karpenter, Disruption](https://karpenter.sh/docs/concepts/disruption/)
+- [Karpenter, NodePools](https://karpenter.sh/docs/concepts/nodepools/)
+- [Karpenter, NodeClasses](https://karpenter.sh/docs/concepts/nodeclasses/)
+- [Karpenter, FAQs](https://karpenter.sh/docs/faq/)
+- [Karpenter, Settings](https://karpenter.sh/docs/reference/settings/)
+- [Amazon EKS Best Practices Guide, Karpenter](https://docs.aws.amazon.com/eks/latest/best-practices/karpenter.html)
+- [Amazon EC2, Spot Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html)
 - [AWS, Karpenter Best Practices](https://aws.github.io/aws-emr-containers-best-practices/performance/docs/karpenter/)
 - [옵저버빌리티 Right-Sizing: 여기어때에서 기준을 만드는 법 — 양현진(코플), 여기어때 기술블로그](https://techblog.gccompany.co.kr/%EC%98%B5%EC%A0%80%EB%B2%84%EB%B9%8C%EB%A6%AC%ED%8B%B0-right-sizing-%EC%97%AC%EA%B8%B0%EC%96%B4%EB%95%8C%EC%97%90%EC%84%9C-%EA%B8%B0%EC%A4%80%EC%9D%84-%EB%A7%8C%EB%93%9C%EB%8A%94-%EB%B2%95-8c9e1b3d3c97)
 - [Grafana Mimir, Planning capacity](https://grafana.com/docs/mimir/latest/manage/run-production-environment/planning-capacity/)
 - [AWS Compute Optimizer, Rightsizing recommendation preferences](https://docs.aws.amazon.com/compute-optimizer/latest/ug/rightsizing-preferences.html)
 - [Google Kubernetes Engine, Vertical Pod autoscaling](https://docs.cloud.google.com/kubernetes-engine/docs/concepts/verticalpodautoscaler)
+- [Continuous resource tracking with Amazon EKS for cost optimization (GBL210) — AWS re:Invent 2023](https://www.youtube.com/watch?v=xIDx2QmIS9A)
 
 ## 관련 문서
 
@@ -107,3 +129,6 @@ Karpenter는 배치할 수 없는 Pod의 requests와 스케줄링 조건을 바�
 - [[K8s-Resource-Right-Sizing-Criteria|기준 수립]] — 버퍼를 차등할 때 쓰는 P95와 목표 사용률 정의
 - [[K8s-Resource-Right-Sizing-PromQL|PromQL 쿼리]] — 롤백 조건으로 감시할 지표의 쿼리
 - [[K8s-Resource-Right-Sizing|Kubernetes Resource Right-Sizing]] — 상위 목차
+- [[Autoscaling-Cost|오토스케일링 비용]] — Spot과 약정 혼합, 인스턴스 타입 다양화
+- [[Resource-Right-Sizing|리소스 적정화]] — 인스턴스 타입 변경의 비용 판단
+- [[EKS|Amazon EKS]] — Cluster Autoscaler와 Karpenter의 노드 선택 비교

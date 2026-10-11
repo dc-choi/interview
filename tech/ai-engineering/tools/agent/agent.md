@@ -7,7 +7,7 @@ aliases: ["에이전트 심화", "Agent Engineering"]
 
 # 에이전트 심화 (Agent)
 
-에이전트를 프로덕션에서 설계하고 제어하는 실천 도구 — 컨텍스트 예산, 지시 설계, 코드 인텔리전스, 친화 API 설계, 데이터 준비, 이메일 인터페이스, 스킬, 루프 엔지니어링. 상위: [[tools|AI 엔지니어링 실천 도구]].
+에이전트를 프로덕션에서 설계하고 제어하는 실천 도구 — 컨텍스트 예산, 지시 설계, 코드 인텔리전스, 친화 API 설계, 데이터 준비, 이메일 인터페이스, 스킬, 루프 엔지니어링, 선언형 런타임. 상위: [[tools|AI 엔지니어링 실천 도구]].
 
 ## 목차
 - [x] [[Agent-Skills#Kiro Powers: 도구와 지침을 함께 활성화한다|Kiro Powers]] — 키워드 활성화, plugin.json과 스킬, API 명세 조회와 생성 코드 검증
@@ -22,3 +22,4 @@ aliases: ["에이전트 심화", "Agent Engineering"]
 - [x] [[Agent-Email-Interface|이메일 에이전트 인터페이스 (비동기 궁합, 주소=라우팅 키, 엔티티별 DO 격리, HITL 발신 게이트, 단일 신뢰 경계 명시, MCP vs CLI vs 스킬)]]
 - [x] [[Agent-Skills|에이전트 스킬 (재사용 작업 단위 = 온디맨드 플레이북, SKILL.md 폴더+description 자동 로드, 점진적 공개, Claude vs Codex 같은 포맷 다른 관례, 스킬 vs 훅, 수명주기 감사, 표면별 설치와 외부 스킬 신뢰)]]
 - [x] [[Agent-Loop-Engineering|루프 엔지니어링 (정지 조건이 본질, ralph 흡수 계보, 4중 루프 아키텍처 축과 공식 4분류 위임 축, 3종 가드, 하네스의 한 층 위)]]
+- [x] [[Agent-Declarative-Runtime|선언형 에이전트 런타임 (Docker Agent의 YAML 정의, 실행과 API, MCP, A2A 노출, OCI 배포, 세 가지 위임, 권한 경계와 Docker Agent의 A2A 인증 제약, 루프 가드와 예산)]]
