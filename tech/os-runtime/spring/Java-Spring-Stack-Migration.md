@@ -1,7 +1,7 @@
 ---
 tags: [java, spring-boot, migration, modernization, compatibility, graalvm, spring-ai]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-13
 category: "OS & Runtime"
 aliases: ["Java Spring Stack Migration", "Java Spring 현대화", "Spring Boot 4 마이그레이션", "모던 백엔드 전환"]
 ---
@@ -89,12 +89,18 @@ Golden response와 consumer contract, 실제 DB를 쓰는 integration test로 �
 
 ### 4. Native Image는 별도 배포 트랙
 
-GraalVM Native Image는 startup과 memory 특성을 바꿀 수 있지만 closed-world analysis 때문에 reflection, proxy, resource와 serialization metadata가 필요하다. JVM 배포가 성공했다고 native 전환까지 자동 승인하지 않는다.
+GraalVM Native Image는 startup과 memory 특성을 바꿀 수 있지만, 정적 분석으로 찾지 못하는 reflection, proxy, resource와 serialization 접근에는 reachability metadata가 필요하다. JVM 배포가 성공했다고 native 전환까지 자동 승인하지 않는다.
 
 - tracing agent 결과를 검토 가능한 reachability metadata로 고정한다.
 - build time, image size, startup, steady-state throughput와 memory를 함께 측정한다.
+- 메모리는 Java heap과 프로세스 RSS를 구분한다. Native Image에도 GC가 있으며, 기본 Serial GC는 수집 중 추가 메모리가 필요해 RSS가 일시적으로 증가할 수 있다. Heap 상한만으로 컨테이너 메모리 한도를 정하지 않는다.
+- JVM artifact와 native artifact의 메모리를 비교할 때는 같은 기능과 입력, 부하, 측정 구간, GraalVM 배포판(Oracle GraalVM 또는 Community Edition), GC와 빌드 설정을 기록한다. 한 프로그램의 측정값을 언어나 런타임 전체의 메모리 순위로 일반화하지 않는다.
 - observability agent, TLS와 동적 plugin의 native 호환성을 확인한다.
 - 같은 기능의 JVM artifact를 rollback 경로로 유지한다.
+
+Kotlin/JVM 애플리케이션을 GraalVM Native Image로 빌드하는 경로와 Kotlin/Native는 구분한다. Native Image는 Java bytecode를 입력으로 받고, Kotlin/Native는 LLVM 기반 backend를 사용하는 별도의 컴파일 기술이다. 결과가 네이티브 실행 파일이라는 이유만으로 두 경로의 라이브러리 호환성과 메모리 특성을 같게 보지 않는다.
+
+2026-10-13 부분 검증: 이 절의 컴파일 경로, 동적 접근 metadata와 Native Image GC의 메모리 동작을 GraalVM과 Kotlin 공식 문서와 대조했다. 다른 절의 버전 조합을 다시 대조한 기록은 아니다.
 
 ### 5. AI 통합은 core upgrade와 분리한다
 
@@ -156,6 +162,10 @@ DB migration은 application rollback과 독립적으로 되돌릴 수 없을 수
 - [Spring Framework 공식 문서 — Bean Validation](https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html)
 - [Oracle JDK 25 Migration Guide](https://docs.oracle.com/en/java/javase/25/migrate/)
 - [GraalVM Reachability Metadata](https://www.graalvm.org/latest/reference-manual/native-image/metadata/)
+- [GraalVM 공식 문서 — Native Image](https://www.graalvm.org/latest/reference-manual/native-image/)
+- [GraalVM 공식 문서 — Native Image Basics](https://www.graalvm.org/latest/reference-manual/native-image/basics/)
+- [GraalVM 공식 문서 — Memory Management](https://www.graalvm.org/latest/reference-manual/native-image/optimizations-and-performance/MemoryManagement/)
+- [Kotlin 공식 문서 — Kotlin/Native](https://kotlinlang.org/docs/native-overview.html)
 - [Spring AI Getting Started](https://docs.spring.io/spring-ai/reference/getting-started.html)
 - [Spring Framework 공식 문서 — Annotation-based Container Configuration](https://docs.spring.io/spring-framework/reference/core/beans/annotation-config.html)
 - [Spring Framework 공식 문서 — Context Hierarchy](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/context-hierarchy.html)
