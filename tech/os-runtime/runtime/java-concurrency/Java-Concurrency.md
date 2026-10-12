@@ -18,6 +18,7 @@ Java 동시성은 스레드를 많이 만드는 기술이 아니라, 공유 상�
 - [[Java-BlockingQueue-and-Producer-Consumer|BlockingQueue와 생산자, 소비자]]
 - [[Java-Atomic-and-Concurrent-Collections|Atomic 연산과 동시성 컬렉션]]
 - [[Java-Executors-Futures-and-Thread-Pools|Executor, Future와 thread pool]]
+- [[Java-Structured-Concurrency|StructuredTaskScope와 구조적 동시성]]
 
 ## 선택 순서
 

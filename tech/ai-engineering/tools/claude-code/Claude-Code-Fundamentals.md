@@ -14,7 +14,7 @@ AI 코딩 에이전트를 쓰기 전에 알아야 할 운영 기본기. 관통�
 
 목적에 따라 5가지 중 고른다: 개발 → 터미널 CLI 필수, 일반 업무 → Desktop 앱, 체험 → 웹(claude.ai/code), IDE 통합 → VS Code/JetBrains, 이동 중 → 모바일. CLI 설치는 `curl -fsSL https://claude.ai/install.sh | bash`, 확인은 `claude --version`.
 
-Desktop 앱의 3탭 구분이 핵심: **Chat**(파일 접근 없음, 첨부만), **Cowork**(클라우드 VM에서 자율 실행, 앱을 닫아도 계속되지만 로컬 파일, 브라우저, 컴퓨터를 쓰는 작업은 Desktop 앱이 열려 있어야 함), **Code**(로컬 파일 직접 읽기/수정, 승인 필요).
+Desktop 앱의 작업 구분은 계정마다 다르다(2026-10-12 공식 도움말 확인). 2026-09-16부터 Pro와 Max 플랜의 웹, Desktop, 모바일에 순차 적용 중인 통합 경험에서는 Chat과 Cowork를 고르지 않고 한 입력창에서 대화하며, 적용된 계정은 이전 구분으로 되돌릴 수 없다. 이 경우 Desktop 앱에서 폴더 접근을 허용하면 일반 대화에서도 그 폴더의 파일을 읽고 정리하고 만들 수 있고, 로컬 파일 작업은 Desktop 앱이 열려 있는 동안만 된다. Incognito 채팅은 이전 방식으로 열려 파일 생성과 코드 실행을 하지 않는다. 통합 경험이 아직 없는 계정과 Team, Enterprise 조직은 기존처럼 **Chat**(파일 접근 없음, 첨부만)과 유료 플랜의 **Cowork**(기본은 Anthropic 서버의 격리 환경에서 실행해 앱을 닫아도 계속되지만 로컬 파일, 브라우저, 컴퓨터를 쓰는 작업은 Desktop 앱이 열려 있어야 함)를 나눠 쓴다. **Code**(로컬 파일 직접 읽기/수정, 승인 필요) 탭은 어느 쪽이든 그대로다.
 
 ### 요금제와 Windows 준비 (2026-09-30 공식 문서 확인)
 
@@ -100,12 +100,17 @@ Desktop 앱의 3탭 구분이 핵심: **Chat**(파일 접근 없음, 첨부만),
 - [Claude Code — Customize your status line](https://code.claude.com/docs/en/statusline)
 - [Claude Platform Docs — Effort](https://platform.claude.com/docs/en/build-with-claude/effort)
 - [Claude Help Center — Models, usage, and limits in Claude Code](https://support.claude.com/en/articles/14552983-models-usage-and-limits-in-claude-code)
+- [Claude Help Center — Claude Cowork and chat are one Claude](https://support.claude.com/en/articles/16761823-claude-cowork-and-chat-are-one-claude)
+- [Claude Help Center — Release notes](https://support.claude.com/en/articles/12138966-release-notes)
+- [Claude Help Center — Claude Cowork architecture overview](https://support.claude.com/en/articles/14479288-claude-cowork-architecture-overview)
+- [Claude Help Center — Get started with Claude Cowork](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
 - [Claude — Plans and pricing](https://claude.com/pricing)
 - [인프런, 널널한 개발자, 학습안내 및 필수 소프트웨어 설치](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498056)
 - [인프런, 널널한 개발자, AI도구 설치](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498586)
 - [인프런, 널널한 개발자, Claude Code 소개 및 작업모드](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498595)
 - [인프런, 널널한 개발자, 핵심만 간단히! 주요 명령어](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498596)
 - [인프런, 널널한 개발자, 대화세션 관리와 Effort Control](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498597)
+- [나도 이런 콘텐츠 만들 수 있을까 | 무료 AI — YouTube, 피프](https://www.youtube.com/watch?v=vDodF0pDmRM) — 2026-10-11 공개 영상. Desktop 통합 경험을 확인한 계기이며 기능과 적용 범위는 위 공식 도움말로 대조
 
 ## 관련 문서
 

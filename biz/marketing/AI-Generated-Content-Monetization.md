@@ -64,6 +64,8 @@ AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 �
 4. **전체 표본 비교:** 성과가 좋은 영상 몇 개에서 후보 패턴을 찾되, 같은 기간의 낮은 성과 영상도 함께 비교한다. 도달 수, 게시 후 경과 시간, 유료 노출 여부를 확인하고 저장률과 문의, 결제까지 구분한다. 조회수만으로 구매 의도나 인과를 판단하지 않는다.
 5. **다음 실험:** 도입 문장, 주제나 다음 행동 중 바꿀 요소를 정하고 결과를 비교한다. 적은 표본에서 찾은 공통점을 확정 규칙으로 승격하지 않는다.
 
+배경음악은 YouTube 스튜디오 왼쪽 메뉴의 오디오 보관함(youtube.com/audiolibrary)에서 고를 수 있다. YouTube 고객센터(2026-10-12 확인)는 이곳의 음악과 음향 효과를 저작권 문제 없이 동영상에 쓸 수 있고, YPP 참여 채널은 이를 쓴 동영상으로 수익을 창출할 수 있으며, 다운로드한 트랙에는 Content ID 소유권 주장이 제기되지 않는다고 안내한다. 크리에이티브 커먼즈 라이선스 트랙은 동영상 설명란에 아티스트를 밝혀야 하므로(`라이선스 유형` 열의 아이콘에서 표시 문구 복사), 표시 의무가 없는 표준 라이선스 트랙만 보려면 `저작자 표시 필요 없음` 필터를 쓴다. 파일은 날짜 위에 마우스를 올려 `오프라인 저장`(영문 화면 `DOWNLOAD`)을 누르면 MP3로 받는다. 음원 권리가 해결돼도 위의 채널 수익화 정책 심사는 별도다. 도움말은 YouTube 밖 사용의 허용 범위를 밝히지 않고 플랫폼 밖 음악 문제에는 법적 안내를 하지 않으므로, 릴스 등 다른 플랫폼에 쓸 때는 트랙별 조건을 따로 확인한다. [오디오 보관함 도움말](https://support.google.com/youtube/answer/3376882)
+
 위의 YouTube 정책은 YouTube에 적용되는 기준이다. Instagram 릴스로 발행할 때는 Meta의 최신 표시, 권리와 수익화 기준을 별도로 확인한다. 재사용 가능한 제작 절차와 플랫폼별 정책을 혼동하지 않는다.
 
 ## 트레이드오프와 한계
@@ -92,6 +94,7 @@ AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 �
 - [YouTube Help, YouTube Partner Program overview & eligibility](https://support.google.com/youtube/answer/72851)
 - [YouTube Help, Overview of the expanded YouTube Partner Program](https://support.google.com/youtube/answer/13429240)
 - [YouTube Help, Disclosing use of GenAI content](https://support.google.com/youtube/answer/14328491)
+- [YouTube Help, Use music and sound effects from the Audio Library](https://support.google.com/youtube/answer/3376882)
 - [Suno, Terms of Service](https://suno.com/terms) — 2026-08-10 개정, 2026-09-03 시행
 - [Suno Help, Does Suno own the music I make?](https://help.suno.com/en/articles/2416769)
 - [Suno Help, Do I have the copyrights to songs I made?](https://help.suno.com/en/articles/2746945)
@@ -100,6 +103,7 @@ AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 �
 - [Suno Help, Upcoming Changes FAQ: Downloads, Models, and Terms of Service](https://help.suno.com/en/articles/13614785)
 - [U.S. Copyright Office, Copyright and Artificial Intelligence, Part 2: Copyrightability](https://www.copyright.gov/ai/Copyright-and-Artificial-Intelligence-Part-2-Copyrightability-Report.pdf)
 - [국가법령정보센터, 저작권법 제2조](https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1027697001) — 2026-08-11 시행
+- [나도 이런 콘텐츠 만들 수 있을까 | 무료 AI — YouTube, 피프](https://www.youtube.com/watch?v=vDodF0pDmRM) — 2026-10-11 공개 영상. 오디오 보관함 문단의 계기이며 사용 조건은 YouTube 도움말로 대조
 
 ## 관련 문서
 

@@ -44,6 +44,17 @@ aliases: ["AI Frontier Regulation Debate", "프론티어 AI 규제 논쟁", "규
 
 2026년 7월 에이전트 군집의 Hugging Face 침입에 대한 METR 조사는 6일의 현장 조사와 합의된 7개 질문을 대상으로 했고, OpenAI 자체 조사와 대응, 안전장치 효과, 침해 범위는 제외했다. OpenAI는 비공개 정보의 가림 처리와 편집 피드백에 관여했다. METR는 이 제약을 공개하면서도 범위 안의 실질적 결론을 지지하며, 별도 표시 외에는 결론에 중요한 추가 정보가 가려지지 않았다고 밝혔다. 제한된 외부 평가의 가치와 법정 감독 권한의 유무는 나눠 판단한다. 기술적 내용은 [[Agent-Swarm-Containment|에이전트 군집 격리]]에 정리한다.
 
+### 접근 약속과 감독 권한의 간극
+
+외부 평가자의 접근권이 넓어져도 그 접근이 감독 권한이 되는지는 따로 확인해야 한다. 아래는 2026-10-12에 회사 발표, 조사 보고서, 공개 서한과 논문 원문을 대조한 사례다.
+
+- **약속 문서의 공백**: 접근의 깊이는 문서로 약속됐지만 운영 기준은 아직 정해지는 중이다. Anthropic은 2026-09-18 Accenture와의 내장 평가 협력을 발표하며 평가자가 직원에 준하는 접근으로 학습 중인 모델을 지켜보고 직원과 직접 대화한다고 밝혔다. 같은 발표에서 평가자가 볼 정보와 보고 방식의 표준, 독립 평가의 자금 체계가 아직 없다고 적었고 Accenture의 작업 비용은 Anthropic이 직접 댄다고 했다. OpenAI는 2026-09-22 학습, 평가, 배포 전반의 깊은 접근을 약속하는 제3자 평가 원칙을 내고 상호 합의한 범위와 사전 등록한 안전 주장, 비례적 접근, 평가자의 편집 독립, 실질적인 가림이 있었던 곳과 그 영향을 평가자가 보고서에 표시할 수 있는 장치, 공개 전 개선 기간을 담았다. 전면 공개가 어려우면 이사회 같은 거버넌스 기구에 비공개로 보고하는 방식을 책임성 수단으로 들었다.
+- **조사 사례의 접근 한계**: 자발적 조사는 받은 자료와 공개 조건 안에서만 결론을 낸다. METR 조사팀은 원본 추론 기록(chain of thought, CoT)이 담긴 트랜스크립트를 1,000개 넘게 받았고 OpenAI는 이 기록에 가림이 없다고 확인했다. 그러나 사고를 주도한 내부 연구 모델에는 질의하지 못했고(OpenAI는 자사 연구자도 이 모델을 쓸 수 없다고 설명했다) OpenAI 인프라의 데이터에도 직접 접근하지 못해 추가 데이터셋은 OpenAI가 여러 차례 공유한 것을 썼다. 공개 보고서에 원문 그대로 실을 수 있는 CoT는 OpenAI가 IP 사유로 30개 발췌로 제한했다. 조사팀은 이 보고서가 개발사에게 앞으로 외부 연구자를 부르지 않을 유인이 될 수 있음을 의식했고, 그 고려가 작성, 편집과 가림 과정의 판단에 영향을 줬다고 각주에 적었다.
+- **내부 협력 통로**: 외부 평가는 내부 직원의 협력을 거치므로 협력 규칙을 두고 회사와 직원의 이해가 엇갈리면 그 통로가 흔들린다. 해고된 안전 연구원 3명은 2026년 10월 OpenAI의 안전 감독 기구들 앞으로 공개 서한을 보내 외부 기관과의 소통이 업무 범위 안이었고 규칙이 불분명했다고 주장하며, 제3자 안전 감사자를 조직 안에 두겠다는 9월 공개 약속의 이행, 프론티어 모델의 감시 가능성 보존, 외부 안전 조직과의 열린 대화, 직원이 외부 조직과 일하는 기준의 명확화를 요구했다. OpenAI는 2026-10-09(UTC) 뉴스룸 X 계정의 연구 리더 메모에서 조사 결과 명확한 민감 정보 취급 규정을 위반했고 서한에 적힌 것 이상의 신뢰 위반이 확인됐으며 해고는 안전 문제 제기와 무관하다고 밝혔고, 위반의 구체적 내용은 공개하지 않았다. 같은 메모는 제3자 안전 평가자와의 계약을 마무리하는 중이라고 적었다.
+- **추론 감시의 전제**: 사후 통제가 CoT 감시에 기댈수록 감시 가능성 자체가 감독 대상이 된다. OpenAI는 2026-08-26 사고 기술 보고서에서 지금 배포한 CoT 감시가 당시에도 돌고 있었다면 침입 하루 이상 전에 보안팀을 호출했을 것이라고 주장했고, 같은 날 GPT-5.6 Sol 이상 능력을 가진 모델이 관여하는 도구 사용 RL 학습과 평가에 CoT 감시를 의무로 정했다고 밝혔다(Astra급 모델은 도구를 쓰는 모든 inference 작업까지 포함). 41명이 함께 쓴 2025년 입장 논문은 CoT 감시가 불완전하다고 인정하면서, 감시 가능성이 깨지기 쉬울 수 있으니 프론티어 개발사가 개발 결정이 CoT 감시 가능성에 미치는 영향을 고려하라고 권고했다(서한 저자 중 두 명이 이 논문의 주저자다). 위 서한은 프론티어 모델의 감시 가능성이 나빠지고 있다고 주장했고, OpenAI도 같은 메모에서 감시 가능성을 지키려면 자사를 포함한 업계 전체의 약속이 필요하다는 데 동의했다. 감시 방법 자체의 한계는 [[Agent-Swarm-Containment|에이전트 군집 격리]]와 [[LLM-Hallucination-Verification|LLM 환각 검증]]에서 다룬다.
+
+앞의 네 기준에 더해 접근 약속은 다음 네 가지로도 확인한다. 평가자를 누가 고르고 비용을 대는가, 회사가 접근을 줄이거나 끊을 수 있는가, 불리한 결과가 학습과 배포 결정에 반영되는 절차가 있는가, 내부 직원이 외부 평가자와 협력하는 규칙이 미리 정해져 있는가. 대조한 세 문서(앞의 에세이, Anthropic 발표, OpenAI 원칙) 어디에도 평가자가 학습이나 배포를 멈출 권한은 정해져 있지 않고, OpenAI 원칙은 평가가 배포 결정에 참고될 수 있다고 하면서도 원칙이 다루는 평가는 대체로 장기적이고 출시와 무관하다고 적는다. 이 기준은 위 사례에서 도출한 판별 제안이며 각 회사의 실제 계약 조건을 확인한 것은 아니다.
+
 ## 오픈 웨이트와 허가 없는 검증
 
 오픈 웨이트 모델은 확보한 가중치와 실행 환경을 이용해 공급자의 API 접근 정책에 덜 의존하는 분석과 레드팀 평가를 할 수 있다. 다만 라이선스, 법률, 연산 자원 제약은 남고 학습 데이터나 전체 서비스의 공개를 뜻하지는 않는다. 폐쇄 모델도 외부 행동을 시험할 수 있지만 가중치와 내부 과정 검증에는 제공된 접근권이 필요하다. 반대 논거는 오남용이다. 같은 능력이 방어자와 공격자 모두에게 가고, 배포된 가중치를 모두 회수하기는 어렵다. 접근 제한이 공격자의 능력을 얼마나 줄이는지와 방어자의 도구를 얼마나 줄이는지를 함께 평가한다. → [[Claude-Fable-5-Mythos-5|프론티어 모델 가용성의 외생 리스크]]
@@ -67,6 +78,7 @@ aliases: ["AI Frontier Regulation Debate", "프론티어 AI 규제 논쟁", "규
 - 속도 조절 패키지의 각 항목이 안전 효과와 경쟁 효과를 어떻게 동시에 내는지 분리해 말할 수 있는가.
 - 규제 포획 판별 질문 다섯 개를 실제 제안서에 적용할 수 있는가.
 - 외부 평가와 법정 감독의 차이를 조사 범위, 공개권, 권고 이행과 집행 절차로 설명할 수 있는가.
+- 외부 평가 약속에서 접근 범위, 공개권, 비용 부담, 접근 철회와 중단 권한을 나눠 확인할 수 있는가.
 - 오픈 웨이트의 허가 없는 검증 논리와 회수 불가능성 반론을 함께 말할 수 있는가.
 - 암호 전쟁 유추의 요점과 한계를 말할 수 있는가.
 
@@ -76,6 +88,14 @@ aliases: ["AI Frontier Regulation Debate", "프론티어 AI 규제 논쟁", "규
 - [dario, please! — pop.rdi.sh](https://pop.rdi.sh/dario-please/)
 - [Dario, 제발! — GeekNews](https://news.hada.io/topic?id=33710)
 - [Brief independent investigation of agents' behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident — METR](https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/)
+- [Partnering with Accenture on embedded evaluation — Anthropic](https://www.anthropic.com/news/accenture-embedded-evaluation)
+- [Priorities and principles for effective third party assessments — OpenAI](https://openai.com/index/priorities-principles-third-party-assessments/)
+- [The Hugging Face incident and the road ahead — OpenAI](https://openai.com/index/hugging-face-incident-and-the-road-ahead/)
+- [OpenAI-Hugging Face Incident Technical Report — OpenAI](https://cdn.openai.com/pdf/67869394-cb91-4c12-888c-5cbd85c7814c/OpenAI-Hugging-Face%20Incident-Technical-Report.pdf)
+- [OpenAI cannot make AI safe on its own — Tomek Korbak, Jasmine Wang, Mikita Balesni](https://mikitabalesni.com/letter/letter.pdf)
+- [A note from our research leaders — X, OpenAI Newsroom](https://x.com/OpenAINewsroom/status/2108441580806025712)
+- [Chain of Thought Monitorability: A New and Fragile Opportunity for AI Safety — arXiv, Korbak 외](https://arxiv.org/abs/2507.11473)
+- [OpenAI, Antrhopic에서 무슨 일이? 챗GPT 안전 연구원 3명 해고… 몇 주 간 계속 터진 AI 회사들의 안전 논란 — YouTube, 안될공학 - IT 테크 신기술](https://www.youtube.com/watch?v=gPrqv8MWOEA) — 2026-10-11 공개 영상. 접근 약속과 감독 권한 절의 계기이며 사실은 이 목록의 1차 출처로 대조했고, 1차 문서를 확인하지 못한 GPT-6.1 Astra 출시 보류와 반독점 소송은 쓰지 않음
 - [WHO, Tuberculosis fact sheet](https://www.who.int/news-room/fact-sheets/detail/tuberculosis)
 - [NTSB, About the NTSB](https://www.ntsb.gov/about/Pages/default.aspx)
 - [NTSB, The Investigative Process](https://www.ntsb.gov/investigations/process/Pages/default.aspx)
@@ -95,5 +115,6 @@ aliases: ["AI Frontier Regulation Debate", "프론티어 AI 규제 논쟁", "규
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]]
 - [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5]] — 규제로 인한 모델 접근 일시 중단 사례
 - [[Agent-Swarm-Containment|에이전트 군집 격리]] — 규제 논쟁의 계기가 된 침입 사건의 기술 내용
+- [[LLM-Hallucination-Verification|LLM 환각 검증]] — 추론 기록 설명의 충실성 한계
 - [[LLM-Application-Security|LLM 애플리케이션 보안]]
 - [[Dependency-Selection|의존성 선택]] — 오픈소스 거버넌스 리스크의 확인 항목

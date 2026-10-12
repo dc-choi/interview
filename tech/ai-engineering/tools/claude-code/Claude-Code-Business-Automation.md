@@ -42,7 +42,7 @@ verified_at: 2026-09-30
 
 ## Cowork로 맡길 때 — 범위, 원본, 절차, 공유
 
-Cowork는 Claude Code와 같은 에이전트 구조를 터미널 없이 쓰는 작업 공간이다(Pro, Max, Team, Enterprise 플랜. Desktop 앱 외에 웹과 모바일은 플랜별로 제공). 작업은 Anthropic 서버의 격리 환경에서 돌고, 로컬 파일, 브라우저, 컴퓨터를 쓰는 동안에는 Desktop 앱이 열려 있어야 한다(2026-09-30 공식 문서 확인). 원본 자료를 읽고 결과물을 만드는 일이라면 일반 채팅보다 Cowork가 맞다.
+Cowork는 Claude Code와 같은 에이전트 구조를 터미널 없이 쓰는 작업 공간이다(Pro, Max, Team, Enterprise 플랜. Desktop 앱 외에 웹과 모바일은 플랜별로 제공). 작업은 Anthropic 서버의 격리 환경에서 돌고, 로컬 파일, 브라우저, 컴퓨터를 쓰는 동안에는 Desktop 앱이 열려 있어야 한다(2026-09-30 공식 문서 확인). Chat과 Cowork가 나뉜 계정(Team, Enterprise 조직과 통합 경험이 아직 적용되지 않은 Pro, Max 계정)에서 원본 자료를 읽고 결과물을 만드는 일이라면 일반 채팅보다 Cowork가 맞다. 통합 경험이 적용된 계정은 모드를 고르지 않고 일반 대화에서 허용한 폴더의 파일을 다루며, 계정별 차이는 [[Claude-Code-Fundamentals#설치 환경 선택|Claude Code 기초]]가 정본이다. 통합 경험에서 입력창의 권한 설정은 대화 전체에 적용되고, 기본값 Manual은 행동마다 허용 여부를 물으며 Auto는 단계마다 묻지 않고 진행하되 행동 전에 자동 안전 검사를 거친다. 기존에 Cowork에 허용한 폴더는 Trusted folders 목록에 표시된다(2026-10-12 공식 도움말 확인).
 
 - **범위는 프로젝트 폴더로**: Cowork 프로젝트는 로컬 폴더, 상시 지시, 참고 링크, 프로젝트 메모리를 묶어 컴퓨터에만 저장하고, 세션은 붙인 폴더를 읽고 쓴다. 2026-09 Desktop 업데이트로 홈 폴더나 드라이브 전체도 붙일 수 있게 됐으므로(Claude 자체 설정, SSH 키, 클라우드 자격 증명, 셸 시작 파일은 제외) 범위를 좁히는 일은 사용자의 몫이다. 업무별 작은 폴더를 만들어 붙인다
 - **원본은 복사본으로 보호**: 승인 프롬프트를 줄여 쓰려면 원본 대신 복사본 폴더를 붙이고 지시에 원본 수정 금지를 적는다. 지시는 권고라서 실제 방어선은 복사본이다. 공식 도움말은 파일을 영구 삭제하기 전에는 명시적 허용을 받는다고 안내한다
@@ -126,6 +126,8 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 - [Claude — Claude Desktop changelog](https://claude.com/docs/cowork/changelog)
 - [Claude — Get started with connectors](https://claude.com/docs/connectors/overview)
 - [Claude Help Center — Share artifacts](https://support.claude.com/en/articles/9547008-publish-and-share-artifacts)
+- [Claude Help Center — Claude Cowork and chat are one Claude](https://support.claude.com/en/articles/16761823-claude-cowork-and-chat-are-one-claude)
+- [Claude Help Center — Claude Cowork architecture overview](https://support.claude.com/en/articles/14479288-claude-cowork-architecture-overview)
 - [인프런, 널널한 개발자, Claude for Desktop 주요기능 소개](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498592)
 - [인프런, 널널한 개발자, 대화를 넘어! 행동하는 Cowork](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498593)
 
