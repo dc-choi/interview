@@ -56,6 +56,14 @@ DGX H100/H200 공식 사용자 가이드의 예시는 GPU 8개, 최대 시스템
 
 공식 환경 조건에는 전면에서 후면으로 흐르는 냉각 공기와 작동 온도 범위가 있다. 랙 공간이 남는다는 사실만으로 추가 설치가 가능하다고 판단하지 않는다. 도입 검토에서는 해당 모델의 전원 입력, 랙 하중, 풍량과 열 배출 요구를 설치 환경과 대조한다. 최대 전력 사양과 실제 부하의 소비 전력도 구분한다.
 
+### 정전 대응은 UPS와 발전기의 연결까지 확인한다
+
+UPS는 정전 시 배터리로 보호 대상에 전원을 공급하지만 무기한 전원 공급 장치가 아니다. 발전기를 함께 쓰는 구성에서는 발전기 전원이 UPS의 허용 전압과 주파수 범위에 들어와야 한다. 발전기가 켜져 있어도 입력이 허용 범위를 벗어나면 UPS가 배터리를 계속 소모해 부하가 꺼질 수 있다.
+
+UPS가 버티는 시간을 모든 시설에서 몇 분이라고 고정하지 않는다. Eaton 제품 자료도 부하와 배터리 노후도 등에 따라 runtime이 달라진다고 명시한다. GPU 증설 검토에서는 예상 부하에서의 배터리 지속 시간, 발전기 전환, 냉각과 통신을 포함한 보호 범위, 연료 확보와 정기 시험을 함께 점검한다(운영 제안). 서버 전원만 유지된다는 사실로 시설 전체의 지속 운영을 판단하지 않는다.
+
+2026-10-13 부분 대조: Eaton의 UPS와 발전기 호환성 설명, runtime 조건과 AWS 데이터센터의 백업 전력 설명을 확인했다. 특정 시설의 지속 시간이나 실제 전환 시험 결과를 확인한 것은 아니다. 전력 보호와 앞뒤 절의 작업 체크포인트, 재시작 준비는 서로 보완한다.
+
 ## GPU 사용률을 작업 성과와 연결한다
 
 `nvidia-smi`의 GPU utilization은 표본 구간에 하나 이상의 커널이 실행된 시간의 비율이다. 연산 장치를 최대한 활용한 비율이나 업무 처리량을 뜻하지 않는다. Memory utilization도 장치 메모리를 읽거나 쓴 시간의 비율이며, 메모리 용량 점유율과 다르다. [NVIDIA 지표 정의](https://docs.nvidia.com/deploy/nvidia-smi/index.html)
@@ -145,6 +153,9 @@ CUDA 상태의 중지만으로 CPU 스레드까지 멈추지는 않는다. 전�
 
 ## 출처
 
+- [UPS for generators: Six considerations to achieving generator-UPS harmony — Eaton](https://www.eaton.com/us/en-us/products/backup-power-ups-surge-it-power-distribution/backup-power-ups/six-considerations-to-achieving-generator-ups-harmony.html)
+- [Eaton, 5P G2 UPS](https://www.eaton.com/us/en-us/catalog/backup-power-ups-surge-it-power-distribution/eaton-5p-g2-ups.html) — 부하와 배터리 노후도에 따른 runtime 변동 조건
+- [Infrastructure Layer — AWS](https://aws.amazon.com/trust-center/data-center/infrastructure-layer/)
 - [Intel Unveils Industry-Leading Glass Substrates to Meet Demand for More Powerful Compute — Intel](https://www.intel.com/content/www/us/en/newsroom/news/intel-unveils-industry-leading-glass-substrates.html)
 - [LIDE Technology: Industry Standard for Advanced Glass Processing — LPKF](https://lide.lpkf.com/en/technology/lide)
 - [Glass Core Substrates: TGV Formation & Panel-Level Processing — LPKF](https://lide.lpkf.com/en/applications/glass-core-substrates)

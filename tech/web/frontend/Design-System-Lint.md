@@ -116,6 +116,16 @@ Next.js 16은 `next lint` 명령을 없앴고 `next build`는 더 이상 lint를
 
 이 날짜의 확인 범위는 해당 저장소 README, 대비 계산 소스와 WCAG 텍스트 대비 기준이다. 플러그인 설치나 실행, 앞 절의 `@shadcn/lint` 버전과 전체 동작 재검증은 포함하지 않는다.
 
+## 생성 전에 기준과 검증 입력을 고정한다
+
+다음은 디자인 시스템 구축 경험을 바탕으로 한 검증 절차 제안이다. 기존 토큰, 컴포넌트의 variant와 대표 화면을 먼저 정하고, 작은 컴포넌트 하나를 재현해 기준이 충분한지 확인한다. 전체 화면을 생성한 뒤 일괄 수정하기보다 높이, 여백, 테두리와 글자 크기를 대조할 단위를 작게 잡는다.
+
+문서만으로 재현할 수 있는지를 시험한다면 검증 환경에서 원본 디자인 노드나 구현을 직접 복사할 경로를 제한한다. 원본에 접근해 복사한 결과는 문서의 충분성을 입증하지 못한다. 원본 파일을 삭제할 필요는 없으며, 검증 입력과 허용 도구를 분리하면 된다. 여러 산출물을 유지할 때는 어느 토큰과 구현이 정본인지, 나머지를 어떻게 동기화할지 명시한다.
+
+버전도 입력 계약에 넣는다. 2026-10-13 Tailwind 공식 업그레이드 가이드 기준, v4는 v3의 `@tailwind` 지시문 대신 `@import "tailwindcss"`를 사용한다. 가이드가 명시한 브라우저 기준은 Safari 16.4+, Chrome 111+, Firefox 128+이며 이전 브라우저가 필요하면 v3.4 유지를 안내한다. 최신 버전 선택 자체보다 프로젝트의 지원 환경과 설정이 일치하는지 확인한다.
+
+이 절은 재현 조건과 버전 경계만 보강한 부분 검증이다. 도구별 토큰 비용 우열, 보편적인 비용 절감률이나 AI가 특정 디자인 수준을 넘지 못한다는 주장은 검증하지 않았다.
+
 ## 체크포인트
 
 - 디자인을 맞춰 달라는 자연어 요청보다 lint 진단이 AI 수정에 유리한 이유(위반 위치와 대체 토큰, variant가 정해진다)
@@ -127,6 +137,8 @@ Next.js 16은 `next lint` 명령을 없앴고 `next build`는 더 이상 lint를
 
 ## 출처
 
+- [디자인 시스템을 AI한테 맡기고 5천 달러를 태웠다 — 브런치스토리, MAYDEN](https://brunch.co.kr/@mayden/1) — 문서 재현 시험과 정본 관리의 경험 사례, 비용 일반화 근거로 사용하지 않음
+- [Tailwind CSS, Upgrade guide](https://tailwindcss.com/docs/upgrade-guide) — 2026-10-13 v3/v4 지시문과 브라우저 지원 조건 확인
 - [design-studio-plugins — GitHub](https://github.com/dbsxortime/design-studio-plugins) — 2026-10-07 토큰 생성과 정적/실측 검사 구분 확인
 - [design-studio-plugins, tokens.mjs — GitHub](https://github.com/dbsxortime/design-studio-plugins/blob/main/design-check/scripts/lib/tokens.mjs) — 2026-10-07 `contrastOn()`의 3:1 선택 조건 확인
 - [W3C WAI, Understanding SC 1.4.3: Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
