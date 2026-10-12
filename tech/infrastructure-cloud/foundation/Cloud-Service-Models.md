@@ -3,12 +3,20 @@ tags: [infrastructure, cloud, iaas, paas, saas, faas, serverless]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["Cloud Service Models", "IaaS PaaS SaaS", "클라우드 서비스 모델"]
-verified_at: 2026-10-09
+verified_at: 2026-10-13
 ---
 
 # 클라우드 서비스 모델
 
 같은 클라우드라도 **어디까지 사업자가 관리하고, 어디부터 사용자가 관리하는지**에 따라 계층이 나뉜다. 대체로 관리형 계층을 더 사용할수록 직접 운영할 범위가 줄지만, FaaS와 PaaS의 기능과 통제권을 일렬로 서열화할 수는 없다. 서비스 선택은 운영 책임과 위임 범위를 결정하는 일이다.
+
+## 서버의 역할과 실행 위치
+
+서버는 클라이언트에 서비스를 제공하는 소프트웨어 또는 그 소프트웨어를 실행하는 컴퓨터를 뜻한다. 웹 서버 프로그램과 물리 서버 장비를 같은 말로 부를 수 있으므로, 구성을 설명할 때 어느 쪽인지 구분한다. 서버라는 역할 자체가 특정 CPU나 데이터센터 입주를 필수로 뜻하지는 않는다.
+
+가상 서버는 물리 장비 위에서 CPU, 메모리와 저장소 등의 자원을 할당받아 OS와 애플리케이션을 실행한다. 클라우드의 가상 서버도 물리 장비를 기반으로 하며, 그 장비를 사업자가 관리한다. 따라서 서버 역할, 물리/가상 실행 형태, IaaS/PaaS 같은 운영 책임 계층은 구분해서 설명한다.
+
+예를 들어 EC2에 웹 애플리케이션을 올려도 게스트 OS 패치와 애플리케이션, 보안 그룹 설정은 고객의 책임이다. 요청을 처리하는 프로그램을 실행한 것과 운영 책임을 충족한 것은 다르다. 서비스 선택에서는 필요한 가용성과 복구 조건에 맞춰 어떤 책임을 직접 맡을지 확인한다.
 
 ## 추상화 계층
 
@@ -133,6 +141,10 @@ verified_at: 2026-10-09
 
 ## 출처
 
+2026-10-13 부분 검증: 서버의 하드웨어/소프트웨어 의미, 클라우드 가상 서버의 물리 기반과 EC2 책임 분담을 대조했다. 기존 가격과 개별 서비스 설정의 검증 범위는 각 절에 적힌 기준을 유지한다.
+
+- [MDN, Server](https://developer.mozilla.org/en-US/docs/Glossary/Server)
+- [What is a Cloud Server? — AWS](https://aws.amazon.com/what-is/cloud-server/)
 - [AWS, Shared Responsibility Model](https://aws.amazon.com/compliance/shared-responsibility-model/)
 - [Vercel, Pro Plan](https://vercel.com/docs/plans/pro-plan)
 - [Nginx, How nginx processes a request](https://nginx.org/en/docs/http/request_processing.html)

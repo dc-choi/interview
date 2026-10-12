@@ -44,6 +44,14 @@ const ping = (host: string): void => {
 
 위 예제는 고정된 허용 호스트를 쓰므로 선행 하이픈과 임의의 옵션 문자열을 받지 않는다. 문자 종류만 허용하는 정규식은 `-`로 시작하는 입력도 통과시킬 수 있다. 실행 파일과 스크립트 경로, `PATH`와 환경 변수도 신뢰할 수 있게 고정하며, Windows의 `.bat`/`.cmd`와 플랫폼별 `ping` 옵션을 이 Linux 예제와 동일하게 취급하지 않는다. Node.js `execFile()`은 Windows의 `.bat`/`.cmd`를 직접 실행하지 못하므로, 이를 위해 셸 경로로 전환할 때는 별도의 검토가 필요하다.
 
+## 실행 허용 목록과 쓰기 경로의 분리
+
+허용된 디렉터리에 있는 파일만 실행하더라도, 외부 입력을 처리하는 기능이 그 디렉터리에 파일을 쓸 수 있으면 실행 경계가 무너진다. 셸 메타문자 필터만으로는 경로 순회, 임의 파일 쓰기와 실행 기능이 결합되는 경로를 막지 못한다. 이 경우에는 직접적인 명령 문자열 삽입과 파일 쓰기를 통한 코드 실행을 구분해 점검한다.
+
+2026-08-27 공개된 UniBLEed의 `chat_go`와 `bashrunner` 연구 사례에서는 지식 저장 기능의 경로 순회가 실행 디렉터리의 파일 쓰기로 이어졌다. 실행기는 시작 시 디렉터리 목록을 허용 목록으로 만들고 파일 확장자와 무관하게 `sh`로 실행했다. 허용 목록을 만든 시점과 파일이 추가된 순서도 공격 성립 조건이었다. 이 내용은 연구 당시 동작이며, 현재 배포된 펌웨어 전체가 취약하다는 뜻이 아니다.
+
+방어 검토에서는 사용자 데이터의 저장 위치를 실행 파일 위치와 분리하고, 입력이 정해진 저장 경로를 벗어나지 못하게 검증한다. 실행 허용 목록의 원본을 외부 입력이 바꿀 수 있는지, 실행 파일과 상위 디렉터리에 누가 쓰기 권한을 갖는지, 실행 프로세스가 불필요한 권한을 갖는지도 확인한다. AI의 지식 저장 기능도 같은 파일 시스템 경계를 따른다.
+
 ## 점검 포인트
 
 - 코드베이스에서 `exec`, `execSync`, `shell: true`, 문자열로 조립한 명령, `eval`과 `new Function` 사용처를 찾는다. 정적 분석 도구의 규칙으로 막는다.
@@ -65,6 +73,7 @@ const ping = (host: string): void => {
 - [OWASP Cheat Sheet Series, OS Command Injection Defense Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/OS_Command_Injection_Defense_Cheat_Sheet.html)
 - [Node.js Child process API](https://nodejs.org/api/child_process.html)
 - [iputils — ping 소스](https://github.com/iputils/iputils/blob/master/ping/ping.c)
+- [UniBLEed: Unauthenticated Root RCE on Any Unitree G1 Humanoid Robot Within Bluetooth Range — Olivier Laflamme](https://boschko.ca/g1-ble-rce/) — 2026-08-27 공개 연구의 파일 쓰기와 실행 허용 목록 경로를 2026-10-13 대조했다. 장비 재현과 현재 펌웨어의 수정 여부는 검증하지 않았다.
 
 ## 관련 문서
 
