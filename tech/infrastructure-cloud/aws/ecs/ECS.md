@@ -182,6 +182,23 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 
 운영 접근은 root 권한으로 실행된다. 연결 성공과 감사 기록을 따로 확인한다. 세션 로깅이 `DEFAULT`여도 `awslogs`가 없으면 로그가 저장되지 않으며, 명령 로그 업로드에는 이미지 안의 `script`와 `cat`이 필요하다. 애플리케이션 로그와 Exec 세션 로그는 별도 설정이다.
 
+### ECS 관리 API 오류 분류
+
+부분 검증(2026-10-13): `UpdateService`의 오류 정의를 대조했다. API의 HTTP 상태 코드만 보고 원인을 결정하지 않고 예외 이름과 메시지를 함께 읽는다. 예를 들어 `AccessDeniedException`도 이 API에서는 HTTP 400이다.
+
+| 오류 | 먼저 확인할 대상 |
+|---|---|
+| `AccessDeniedException` | API를 호출한 주체의 해당 작업 권한 |
+| `ClientException` | 권한과 리소스 식별자. 존재하지 않는 리소스만의 오류로 한정하지 않음 |
+| `ClusterNotFoundException` | 클러스터 이름과 호출 리전. 클러스터는 리전별 리소스 |
+| `InvalidParameterException` | 해당 API의 파라미터와 값 |
+| `PlatformTaskDefinitionIncompatibilityException` | 태스크 정의의 요구 기능과 Fargate 플랫폼 버전의 호환성 |
+| `PlatformUnknownException` | 지정한 플랫폼 버전의 존재 여부 |
+| `ServiceNotActiveException` / `ServiceNotFoundException` | 서비스가 비활성인지, 지정 클러스터에 없는지 구분 |
+| `ServerException` | AWS 측 서버 문제. 이 API의 HTTP 500 오류 |
+
+진단 제안: 호출 API, 리전, 클러스터와 서비스, 예외 이름을 한 묶음으로 확인한다. 컨테이너 애플리케이션이 반환한 HTTP 500을 ECS 관리 API의 `ServerException`으로 분류하지 않는다. 전자는 애플리케이션 로그와 요청 경로를, 후자는 실패한 AWS API 호출을 조사한다.
+
 ## 흔한 실수
 
 - **executionRole에만 S3 권한** — 앱이 못 씀. **taskRole이 앱 자체 권한**
@@ -204,6 +221,7 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 - Task = **컨테이너 실행 최소 단위**(1개 이상 컨테이너 묶음), Fargate면 ENI/IP까지 Task 단위
 
 ## 출처
+- [Amazon ECS UpdateService — API 오류 정의](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_UpdateService.html)
 - [Amazon ECS standalone tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/standalone-tasks.html)
 - [Amazon ECS services](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)
 - [Amazon ECS service deployment controllers and strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_service-options.html)

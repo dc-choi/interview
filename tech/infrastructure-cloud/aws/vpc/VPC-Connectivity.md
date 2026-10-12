@@ -85,14 +85,31 @@ Private Subnet에서 S3를 자주 쓰면 Gateway Endpoint 설정만으로도 NAT
 
 | 옵션 | 특징 | 용도 |
 |---|---|---|
-| **Site-to-Site VPN** | AWS IPSec VPN. Customer Gateway(고객 측 공인 IP) + Virtual Private Gateway 또는 TGW로 터널 생성 | 빠른 구축, 임시, DR 백업 경로 |
+| **Site-to-Site VPN** | 고객 장비와 Virtual Private Gateway 또는 TGW 사이에 IPsec 터널 구성. 공인 IP 기반 연결과 DX 위 Private IP VPN의 종단 주소를 구분 | 빠른 구축, 임시, DR 백업 경로 |
 | **Direct Connect (DX)** | 표준 이더넷 광섬유 전용선. `AWS Region ↔ DX Location ↔ Customer` 경로 | 안정적 대역폭, 낮은 지연, 규제 환경 |
 | **Virtual Private Gateway (VGW)** | VPN/DX의 AWS 측 종단. **단일 VPC 전용** | 단일 VPC만 연결 필요할 때 |
 | **Transit Gateway** | 다수 VPC + VPN + DX 통합 허브 | 여러 VPC를 한꺼번에 온프렘과 연결 |
 
 > 시험 포인트: **VGW는 1 VPC, TGW는 N VPC**. DX는 대역폭과 지연이 안정적이지만 **기본 암호화는 없다** — 전송 구간 암호화가 필요하면 MACsec을 지원하는 연결을 쓰거나 DX 위에 Site-to-Site VPN을 얹는다. 회선 구축에는 수 주에서 수 개월이 걸린다.
 
+### 터널 이중화와 고객 장비 이중화
+
+부분 검증(2026-10-13): Site-to-Site VPN의 터널, 라우팅, 고객 장비 장애 범위와 Private IP VPN의 종단 주소를 공식 문서와 대조했다.
+
+- VPN 연결 하나에는 터널 두 개가 있다. 공인 IP 기반 Site-to-Site VPN에서는 각 AWS 터널 종단이 서로 다른 공인 IP와 AZ를 사용한다. 고객 장비에서 두 터널을 모두 구성해야 한쪽 유지보수나 장애 때 다른 터널을 사용할 수 있다.
+- **Private IP VPN over Direct Connect**는 공인 IP를 쓰는 설명의 예외다. Direct Connect의 transit VIF, Direct Connect gateway와 TGW를 이용하며, IPsec 터널의 TGW 측과 고객 장비 측 종단에 사설 IP를 지정한다.
+- 터널 두 개가 있어도 고객 측 장비 하나의 장애까지 해결되지는 않는다. 장비 장애에 대비하려면 별도 고객 장비와 두 번째 VPN 연결을 구성하는 방식이 있다.
+- VGW 기반 이중 장비 구성에서는 두 장비가 같은 대상 IP 범위를 광고하고 BGP 경로 정보로 가용 경로를 선택하도록 설계한다. 터널 상태와 실제 선택된 경로를 함께 확인한다.
+- 연결 생성 시 정적 또는 동적 라우팅을 정하고 VPC 서브넷의 라우팅 테이블도 갱신한다. VPN 연결을 만들었다는 사실만으로 애플리케이션의 왕복 통신이 보장되지는 않는다.
+
+운영 점검 제안: 터널 하나의 중단과 고객 장비 하나의 중단을 별도 장애 시나리오로 둔다. 각각 실제 트래픽의 전환과 복구를 확인한다. 전용선의 백업으로 VPN을 사용할 때도 백업 경로 존재와 전환 성공을 구분한다.
+
 ## 출처
+
+- [AWS Private IP VPN over Direct Connect — 사설 IP 터널 종단과 TGW 연결](https://docs.aws.amazon.com/vpn/latest/s2svpn/private-ip-dx.html)
+- [AWS Site-to-Site VPN tunnel options — 터널 두 개와 장애 전환](https://docs.aws.amazon.com/vpn/latest/s2svpn/VPNTunnels.html)
+- [AWS Site-to-Site VPN redundant connections — 고객 장비 이중화](https://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-redundant-connection.html)
+- [AWS Site-to-Site VPN routing options — 정적, 동적 경로와 서브넷 라우팅](https://docs.aws.amazon.com/vpn/latest/s2svpn/VPNRoutingTypes.html)
 
 - [AWS PrivateLink service sharing — cross-Region 권한과 장애 전환 경계](https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-share-your-services.html)
 - [AWS PrivateLink resource access — resource endpoint 구성과 연결 제약](https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-resources.html)

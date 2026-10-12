@@ -25,6 +25,18 @@ verified_at: 2026-09-30
 
 ### DB Instance, Storage 구성
 
+#### 생성 방식과 네트워크 준비
+
+부분 검증(2026-10-13): RDS DB 인스턴스 생성 문서의 콘솔 생성 방식과 VPC 연결 전제를 대조했다.
+
+- **Easy create**는 엔진, 인스턴스 크기와 식별자 등 일부 입력을 받고 나머지 옵션에 기본값을 사용한다. **Standard create**에서는 가용성, 보안, 백업과 유지관리 옵션을 더 상세히 지정한다. 생성이 간단하다는 사실을 운영 요건이 충족됐다는 뜻으로 해석하지 않는다.
+- 일반적인 리전 내 RDS DB 인스턴스 구성에서 DB subnet group은 최소 두 AZ의 서브넷을 포함한다. 서브넷 그룹의 AZ 수와 실제로 선택한 Single-AZ 또는 Multi-AZ 배포는 다른 설정이다.
+- 생성 시 같은 VPC의 EC2 인스턴스와 자동 연결을 선택하면 RDS가 관련 네트워크와 보안 그룹을 구성하며 DB는 비공개로 생성된다. 이 기능을 다른 VPC나 임의의 외부 클라이언트 연결까지 자동 구성하는 것으로 확대하지 않는다.
+
+적용 점검 제안: 생성 전에 가용성, 백업, 유지관리와 접근 경로를 확인한다. 생성 후에는 `Available` 상태와 애플리케이션에서의 실제 DB 연결을 각각 확인한다. 접속 계정과 네트워크 권한의 상세는 [[RDS-Connection-Credentials]], [[RDS-Security-Group]]을 따른다.
+
+#### 인스턴스와 스토리지 선택
+
 - **DB Instance**: 클라우드에서 격리되어 실행되는 DB 환경. 하나의 AZ에 격리되어 인스턴스로 동작. EC2처럼 다양한 클래스 선택(`db.m5`, `db.r5` 등)
 - **지원 엔진**: Db2, MySQL, MariaDB, PostgreSQL, Oracle, Microsoft SQL Server. Aurora는 MySQL, PostgreSQL 호환 엔진이다.
 - **Instance Storage**: **EBS** 기반. 필요 시 여러 EBS 볼륨에 자동 분할 저장, **Storage Auto Scaling** 지원
@@ -89,6 +101,7 @@ Read Replica는 읽기 전용 연결만 받는 별도 DB 인스턴스이고 고�
 
 ## 출처
 
+- [Amazon RDS, Creating a DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html)
 - [Amazon RDS, DB instance storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
 - [Amazon RDS, Amazon RDS DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.DBInstance.html)
 - [Amazon RDS, Multi-AZ DB instance deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html)

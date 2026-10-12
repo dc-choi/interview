@@ -34,6 +34,20 @@ Hybrid access mode는 같은 Data Catalog 객체에 두 권한 경로를 허용�
 
 - Athena, Redshift Spectrum, AWS Glue ETL, EMR의 Apache Spark 등 지원 통합에서 세부 권한을 적용한다. 실제 엔진과 데이터 형식의 지원 범위는 도입 시 확인한다.
 
+### LF-Tag 권한과 DataZone 구독의 경계
+
+부분 검증(2026-10-13): LF-TBAC와 Amazon DataZone의 Glue 자산 권한 부여 경로를 공식 문서와 대조했다.
+
+**LF-TBAC**는 Data Catalog 리소스에 LF-Tag를 붙이고, 그 태그 표현식에 대해 principal이 수행할 `SELECT` 등의 권한을 부여하는 방식이다. 태그를 붙이는 행위 자체가 조회 권한 부여는 아니다. LF-Tag는 IAM 태그와 서로 대체할 수 없다. 테이블은 데이터베이스의 LF-Tag를, 열은 테이블의 LF-Tag를 상속하며 상속 값을 재정의할 수 있다.
+
+**DataZone 구독**은 카탈로그의 자산을 찾고 프로젝트를 대신해 접근을 요청하는 흐름이다. 기본적으로 자산 소유자의 승인이 필요하지만 자동 승인 조건도 있으므로 모든 요청이 수동 심사를 거친다고 가정하지 않는다. 승인과 실제 권한 부여 완료도 구분한다.
+
+- 관리 대상 Glue 테이블은 Lake Formation이 관리하는 테이블이어야 한다. DataZone은 필요한 권한을 가진 관리 역할을 통해 Lake Formation 권한을 부여한다.
+- 이 DataZone Glue 자산 접근 관리 경로는 **LF-TBAC를 지원하지 않는다**. Lake Formation 자체의 태그 권한 기능과 DataZone 통합의 지원 범위는 별개다.
+- DataZone이 접근 권한을 자동 부여하지 못하는 비관리 자산은 승인 이벤트를 EventBridge로 내보낸다. 별도 처리기가 권한을 만들고 그 결과를 DataZone에 반영해야 한다.
+
+운영 점검 제안: 검색 가능, 구독 승인, 권한 부여 완료, 실제 질의 성공을 각각 확인한다. 태그 기반 권한으로 전환할 때는 기존 이름 기반 권한도 검토하여 의도보다 넓은 접근이 남지 않게 한다.
+
 ## 시험 빈출 포인트
 
 - 데이터 레이크의 중앙 권한 관리와 세부 접근 제어가 핵심이면 Lake Formation을 검토한다.
@@ -46,6 +60,10 @@ Hybrid access mode는 같은 Data Catalog 객체에 두 권한 경로를 허용�
 
 ## 출처
 
+- [AWS Lake Formation Developer Guide, Lake Formation tag-based access control](https://docs.aws.amazon.com/lake-formation/latest/dg/tag-based-access-control.html)
+- [Amazon DataZone User Guide, Approve or reject a subscription request](https://docs.aws.amazon.com/datazone/latest/userguide/approve-reject-subscription-request.html)
+- [Amazon DataZone User Guide, Grant access to managed AWS Glue Data Catalog assets](https://docs.aws.amazon.com/datazone/latest/userguide/grant-access-to-glue-asset.html)
+- [Amazon DataZone User Guide, Grant access for approved subscriptions to unmanaged assets](https://docs.aws.amazon.com/datazone/latest/userguide/grant-access-to-unmanaged-asset.html)
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)
 - [AWS Lake Formation Developer Guide, Blueprints and workflows](https://docs.aws.amazon.com/lake-formation/latest/dg/workflows-about.html)
 - [AWS Lake Formation Developer Guide, What is AWS Lake Formation?](https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html)
