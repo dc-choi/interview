@@ -19,7 +19,7 @@ aliases: ["Presentation Delivery", "발표 구성과 전달", "발표 슬라이�
 - **목차와 선행조직자는 다르다**: Ausubel의 선행조직자는 본문보다 추상적이고 포괄적인 개념 틀이다. Mayer(1979)가 정리한 동화 이론은 학습할 내용을 단순히 요약하거나 핵심 용어를 나열한 개관에는 조직자 효과가 없을 것으로 예측하고, 검토한 연구에서도 요약과 개요는 약한 조직자였고 구체적 모델, 비유와 예시가 좋은 조직자였다. 선행조직자의 평균 효과도 작다(조직자의 질을 가리지 않고 135개 연구를 묶은 학습 효과크기 평균 0.21). 낯선 주제라면 목차와 별개로 익숙한 비유나 상위 개념 모델을 먼저 주는 방식이 조직자에 가깝다.
 - **경계 조건**: Mayer는 학습자가 불필요한 처리에 압도되기 쉬운 상황, 예를 들어 사전지식이 낮은 학습자, 복잡한 내용, 시각과 언어 신호를 절제해 쓸 때 신호가 가장 강하게 작용할 수 있다고 정리한다. 숙련된 청중에게는 이득이 작을 수 있으므로, 예고와 강조를 줄이고 핵심 전환만 표시하는 것은 실무 판단으로 둔다.
 
-## 2. 화면의 글과 말의 역할을 나눈다
+## 2. 화면의 글과 말의 역할을 나누고 배치를 점검한다
 
 ### 슬라이드를 그대로 읽으면 안 된다는 조언은 조건부다
 
@@ -35,6 +35,18 @@ aliases: ["Presentation Delivery", "발표 구성과 전달", "발표 슬라이�
 - 다만 시험 부담이 큰 강의 조건에서는 곁가지가 해롭지 않았다는 연구도 있어 모든 상황의 규칙으로 쓰지 않는다.
 - W3C WAI의 접근성 있는 행사와 발표 체크리스트는 각 슬라이드의 글과 그래픽 정보를 모두 말로 전달하되 그대로 읽을 필요는 없다고 하고, 슬라이드에 글을 많이 넣지 말라고 한다. 추가 정보는 유인물이나 발표와 분리한 노트 포함 슬라이드로 줄 수 있다고 덧붙인다. 이를 적용하면 말로 다루지 않을 내용은 슬라이드에 남기기보다 부록이나 배포 자료로 옮기는 편이 낫다(부록은 이 문서의 적용 판단이다).
 - 좋은 설계는 강의처럼 청중이 속도를 조절할 수 없는 환경과 복잡한 자료에서 더 중요하다는 리뷰 종합 결과가 있다. 실제 의대 강의의 글머리표 슬라이드를 이 원리로 다시 만든 비교에서는 4주 뒤 재생과 전이까지 높았다(무작위 배정이 아닌 코호트 비교).
+
+### 정렬, 요소 간격과 바깥 여백을 따로 점검한다
+
+같은 행과 열의 정렬, 반복 요소 사이 간격, 콘텐츠 묶음과 슬라이드 가장자리 사이 여백을 각각 확인한다. 세 항목을 구분하는 것은 편집용 점검 방법이며, 모든 간격과 여백을 같은 값으로 맞춰야 한다는 규칙은 아니다. 의미가 다른 묶음은 간격으로 구분하고, 의도한 비대칭까지 기계적으로 없애지 않는다. 이 점검 방법은 실무 관행이며 연구로 확인한 규칙이 아니다.
+
+PowerPoint의 공식 도움말에서 확인한 기능은 다음과 같다(2026-10-12 Microsoft Support 대조, PowerPoint for Microsoft 365, 2024, 2021 기준).
+
+- **정렬:** `Align`에서 왼쪽, 가운데, 오른쪽 또는 위, 중간, 아래 기준을 선택한다. 선택한 개체끼리 맞추는 `Align Selected Objects`와 슬라이드를 기준으로 맞추는 `Align to Slide`를 구분한다. `Align` 메뉴의 위치는 Windows, Mac과 웹에서 다르다.
+- **간격:** 같은 방향으로 배치한 반복 요소는 세 개 이상 선택한 뒤 `Distribute Horizontally` 또는 `Distribute Vertically`로 균등 배치한다.
+- **기준선:** `View`의 `Guides`, `Gridlines`와 개체를 이동할 때 나타나는 스마트 가이드를 사용해 축과 간격을 확인한다.
+
+이 도움말은 기능의 존재와 사용법을 뒷받침한다. 정렬만으로 이해도나 발표 평가가 높아진다는 인과 근거로 사용하지 않는다.
 
 ## 3. 준비와 리허설
 
@@ -61,6 +73,8 @@ aliases: ["Presentation Delivery", "발표 구성과 전달", "발표 슬라이�
 
 ## 출처
 
+- [Microsoft Support, Guides for arranging things on a slide](https://support.microsoft.com/en-us/powerpoint/training/guides-for-arranging-things-on-a-slide) — 2026-10-12 Guides, Gridlines와 스마트 가이드, 정렬과 균등 배치 메뉴 확인
+- [Microsoft Support, Align or arrange objects](https://support.microsoft.com/en-us/office/graphics-visuals/align-or-arrange-objects) — 2026-10-12 Align Selected Objects와 Align to Slide 구분, 세 개 이상 선택한 개체의 균등 배치, 플랫폼별 메뉴 경로 확인
 - [The more total cognitive load is reduced by cues, the better retention and transfer of multimedia learning: A meta-analysis and two meta-regression analyses — PLoS ONE, Heping Xie 외](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0183884) — 2017
 - [A meta-analysis of signaling principle in multimedia learning environments — Educational Technology Research and Development, David Alpizar, Olusola O. Adesope, Rachel M. Wong](https://doi.org/10.1007/s11423-020-09748-7) — 2020
 - [Research-Based Principles for Designing Multimedia Instruction — Society for the Teaching of Psychology, Richard E. Mayer](https://www.unh.edu/teaching-learning-resource-hub/sites/default/files/media/2023-06/itow-research-based-principles-for-designing-multimedia-instruction-mayer.pdf) — 2023, In Their Own Words 수록, 원리별 검증 수와 중앙값 효과크기, 경계 조건
@@ -95,4 +109,5 @@ aliases: ["Presentation Delivery", "발표 구성과 전달", "발표 슬라이�
 
 - [[Developer-Communication|개발자 커뮤니케이션]] — 두괄식과 독자별로 나눠 쓰기
 - [[Tech-Writing-Craft|개발자 글쓰기]] — 독자와 목적 좁히기, 전문용어 풀어 쓰기 같은 글쓰기 원칙
+- [[Visual-Hierarchy|시각적 위계]] — 그룹 안 간격과 그룹 사이 간격 구분
 - [[커뮤니케이션(Communication)|커뮤니케이션]]

@@ -50,7 +50,18 @@ verified_at: 2026-09-30
 - **과한 꾸밈은 가점이 되지 않는다**: 스킬 아이콘, AI로 만든 이미지, 워터마크, 지원 회사의 큰 로고 같은 꾸밈은 가산점일 확률이 매우 낮고 본질을 가린다. 꾸민 버전의 결과가 나쁘면 담백한 버전을 만들어 본다.
 - 점검 질문: 내가 생각해서 만든 형식인가, 내용에 집중했는가, 어디서 들은 인사이트나 멘토링, 강의의 형식에 갇혀 쓰지 않았는가.
 
+### 편집 화면과 제출 PDF를 따로 확인한다
+
+Notion의 데스크톱 PDF 내보내기는 `Page format`으로 용지 크기, `Scale percent`로 배율을 조정한다(공식 도움말, 2026-10-12 확인). 아래는 이 기능을 이력서 제출에 적용한 점검 절차다.
+
+1. 채용공고의 제출 형식과 용지 규격이 있으면 먼저 따른다.
+2. PDF를 내보낸 뒤 실제 파일에서 글자 크기, 여백, 잘린 문장과 페이지 경계를 확인한다. 섹션 제목만 앞 장에 남고 본문이 다음 장으로 넘어가면 배치나 분량을 조정한다. PDF 내보내기에 실패하면 HTML로 내보내지고 사용자 지정 이모지는 PDF에 나타나지 않으므로, 받은 파일의 형식과 빠진 기호도 확인한다. 배율을 줄여 3장 기준을 맞추지 않고, 분량이 넘치면 내용을 줄인다.
+3. 제출할 파일의 텍스트 선택과 링크 이동을 확인한다([[Resume-Experience-Narrative-and-Evidence#외부 링크는 보조 증거로 쓴다|외부 링크 점검]]). 편집 화면에서 보기 좋다는 이유만으로 PDF도 같다고 가정하지 않는다.
+
+특정 용지 크기와 배율 조합을 모든 이력서의 정답으로 고정하지 않는다. 공식 도움말은 조정 기능을 설명할 뿐, 특정 설정의 채용 효과를 검증한 자료가 아니다. 형식 개선과 경험 내용의 적합성도 따로 판단한다.
+
 ## 출처
+- [Notion Help, Export your content](https://www.notion.com/help/export-your-content) — 2026-10-12 데스크톱 PDF의 용지 크기와 배율 설정, 사용자 지정 이모지 누락과 실패 시 HTML 내보내기 부분 확인
 - [F-Shaped Pattern of Reading on the Web: Misunderstood, But Still Relevant (Even on Mobile) — Nielsen Norman Group](https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content/)
 - [인프런, 제미니, OO OO을 읽지 않는다(모든 내용)](https://www.inflearn.com/courses/lecture?courseId=341151&unitId=424182)
 - [인프런, 제미니, OOO OO로 읽는다(위에서 아래로)](https://www.inflearn.com/courses/lecture?courseId=341151&unitId=424183)
