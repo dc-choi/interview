@@ -149,6 +149,14 @@ CUDA 상태의 중지만으로 CPU 스레드까지 멈추지는 않는다. 전�
 - Slurm에서 auto-resume을 쓰면 하드웨어 장애 노드는 재부팅 없이 교체되고, auto-resume이 없는 작업은 종료되어 다시 제출해야 한다. 재개 뒤에는 `$SLURM_JOB_NODELIST`가 오래된 값일 수 있으므로 진입 스크립트에서 노드 목록을 다시 구하고, 교체 노드에도 같은 환경을 만들도록 설정을 단일 `srun` 진입점에 둔다. GRES가 붙은 노드의 작업은 따로 막지 않으면 job step 재개 대신 큐에 다시 들어가 처음부터 실행된다.
 - 감지, 노드 교체, 작업 재시작과 첫 정상 학습 단계까지의 시간을 나눠 측정한다. 노드 교체 완료를 학습 재개 완료로 보지 않는다(운영 제안).
 
+### HyperPod 초기화 실패는 인스턴스별로 확인한다
+
+2026-10-13 HyperPod API와 Slurm 클러스터 관리 문서 부분 대조 기준. `ClusterLifeCycleConfig.SourceS3Uri`는 lifecycle script의 S3 위치이고, `OnCreate`는 그 위치 아래에서 클러스터 생성 중 실행할 진입 스크립트 파일명이다. HyperPod 인스턴스 역할에 붙는 관리형 정책 `AmazonSageMakerClusterInstanceRolePolicy`가 `sagemaker-` 접두사 버킷 접근을 허용하므로, API 문서는 S3 경로를 `s3://sagemaker-`로 시작하게 하라고 안내한다. 스크립트 업로드와 각 노드의 초기화 성공을 별도로 확인한다(운영 제안).
+
+Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 로그는 CloudWatch 로그 그룹 `/aws/sagemaker/Clusters/[ClusterName]/[ClusterID]`의 `LifecycleConfig/[instance-group-name]/[instance-id]` 스트림으로 올라간다. 사용자 정의 스크립트도 이 경로에 로그를 기록해야 해당 수집 경로로 볼 수 있다. 로그에는 S3 위치와 진입 스크립트, 다운로드 시작과 완료, 스크립트 성공 또는 실패 표시가 남는다. 여러 인스턴스에서 실패해도 오류 메시지는 한 인스턴스만 표시하므로, 로그 그룹의 인스턴스별 스트림을 확인하고 표시된 노드만으로 장애 범위를 확정하지 않는다.
+
+운영 점검에서는 스크립트 다운로드, 실행 결과와 학습 작업의 첫 정상 단계를 나누어 확인한다. 초기화 성공을 데이터 접근이나 학습 재개 성공으로 취급하지 않는다(운영 제안). 이 절의 초기화 계약과 로그만 추가 대조했으며 문서 전체의 검증일은 유지한다.
+
 ## 확인 질문
 
 - 작업이 연산, 메모리 용량, 메모리 대역폭, 서버 간 통신 중 어디에서 제한되는가?
@@ -159,6 +167,9 @@ CUDA 상태의 중지만으로 CPU 스레드까지 멈추지는 않는다. 전�
 
 ## 출처
 
+- [Amazon SageMaker API Reference, ClusterLifeCycleConfig](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterLifeCycleConfig.html)
+- [Amazon SageMaker AI, SageMaker HyperPod cluster management](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-cluster-management-slurm.html) — Slurm lifecycle script의 인스턴스별 로그와 오류 표시 범위
+- [파운데이션 모델의 파인 튜닝 및 대규모 모델 훈련 클러스터인 Amazon SageMaker HyperPod 배워보기 — Amazon Web Services Korea](https://www.youtube.com/watch?v=HaL3-NF4lqY)
 - [UPS for generators: Six considerations to achieving generator-UPS harmony — Eaton](https://www.eaton.com/us/en-us/products/backup-power-ups-surge-it-power-distribution/backup-power-ups/six-considerations-to-achieving-generator-ups-harmony.html)
 - [Eaton, 5P G2 UPS](https://www.eaton.com/us/en-us/catalog/backup-power-ups-surge-it-power-distribution/eaton-5p-g2-ups.html) — 부하와 배터리 노후도에 따른 runtime 변동 조건
 - [Infrastructure Layer — AWS](https://aws.amazon.com/trust-center/data-center/infrastructure-layer/)

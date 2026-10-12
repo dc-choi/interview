@@ -26,10 +26,18 @@ Stream도 schema를 가질 수 있고 batch도 매우 작을 수 있다. latency
 - event time은 사건이 원천에서 발생한 시각이고 processing time은 처리기가 관측한 시각이다.
 - out-of-order event가 존재하므로 watermark로 event time 진행 정도를 추정한다.
 - tumbling window는 겹치지 않는 고정 구간, hopping/sliding window는 겹치는 구간, session window는 활동 간격으로 경계를 만든다.
-- allowed lateness를 늘리면 늦은 event를 더 반영하지만 결과 확정과 state 정리가 늦어진다.
+- window의 allowed lateness를 늘리면 늦은 event를 더 반영하지만 결과 확정과 state 정리가 늦어진다. 이를 모든 연산자의 지연 데이터 처리 규칙으로 일반화하지 않는다.
 - window SQL은 Flink, ksqlDB 같은 처리 엔진의 문법일 수 있다. MySQL SQL로 오해하지 않는다.
 
 정확한 결과가 필요한 pipeline은 늦게 도착한 event를 무시하는 것으로 끝내지 않는다. 수정 event, 재집계 batch 또는 source와의 reconciliation 경로를 둔다.
+
+### CEP 패턴의 시간 조건과 지연 이벤트
+
+CEP(Complex Event Processing)는 스트림의 여러 이벤트가 정해진 순서와 조건을 만족하는지 탐지한다. 2026-10-13 Apache Flink 1.20.3 CEP 문서 대조 기준, `next()`는 이전 일치 이벤트 바로 다음의 일치를 요구하고, `followedBy()`는 사이에 불일치 이벤트가 끼어도 허용한다. `within(Duration)`은 패턴이 완성되어야 하는 최대 시간 간격을 첫 이벤트와 마지막 이벤트 사이로 제한하며(기본 `WithinType.FIRST_AND_LAST`), 1.20.3 소스에는 이웃한 두 이벤트 사이 간격을 제한하는 `within(Duration, WithinType.PREVIOUS_AND_CURRENT)` 오버로드도 있다. 몇 초 안에 다음 조건이 와야 한다는 요구라면 어느 간격 기준인지 먼저 정한다.
+
+event time으로 처리할 때 Flink CEP는 들어온 이벤트를 버퍼에 넣어 timestamp 순으로 정렬하고, watermark가 도착하면 timestamp가 현재 watermark 이하인 이벤트를 꺼내 처리한다. 그 뒤 timestamp가 현재 watermark 이하인 이벤트가 도착하면 늦은 이벤트로 보고 패턴 처리에서 제외한다. 공식 문서는 두 경계를 watermark보다 작은 timestamp로 설명하지만, 1.20.3 `CepOperator` 구현은 두 경계 모두 같은 timestamp를 포함하고 코드 주석은 늦은 이벤트 판정 쪽에서 이를 명시한다. `sideOutputLateData()`를 지정하면 늦은 이벤트를 별도 출력으로 모으고, 지정하지 않으면 버리고 `numLateRecordsDropped` 지표만 올린다. 별도 출력을 지정하면 이 지표가 늘지 않으므로 늦은 이벤트 건수는 별도 출력에서 따로 센다(운영 제안). 별도 출력으로 모은 이벤트가 패턴 매칭에 다시 들어가 탐지 결과를 고치지는 않는다. window의 allowed lateness와 구분한다.
+
+예를 들어 설비 가동 뒤 작업자 접근을 탐지하려면 설비와 구역 식별자, 이벤트 발생 시각, 패턴의 시간 간격을 먼저 정한다. 순서가 뒤집힌 입력과 watermark 뒤에 도착한 입력을 각각 재생해 탐지와 별도 출력 결과를 확인하고, 늦은 이벤트의 사후 분석 경로를 준비하며, 패턴 미검출을 현장 안전의 증거로 해석하지 않는다(설계 제안). 이 절은 CEP 처리 계약만 대조했으며 실제 현장 성능이나 최신 AWS 관리형 런타임의 지원 버전을 검증한 것은 아니다. 기존 검증일은 유지한다.
 
 ## 실시간 표시와 확정 결과를 분리한다
 
@@ -100,6 +108,11 @@ shuffle은 같은 key의 데이터를 partition 사이로 다시 모으는 과�
 
 ## 출처
 
+- [Apache Flink 1.20.3 Documentation, FlinkCEP - Complex event processing for Flink](https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/libs/cep/) — 패턴의 인접 조건, 시간 제약과 event time의 지연 이벤트 처리
+- [CepOperator.java release-1.20.3 — Apache Flink GitHub](https://github.com/apache/flink/blob/release-1.20.3/flink-libraries/flink-cep/src/main/java/org/apache/flink/cep/operator/CepOperator.java) — watermark 이하 timestamp의 처리와 늦은 이벤트 판정 경계
+- [Pattern.java release-1.20.3 — Apache Flink GitHub](https://github.com/apache/flink/blob/release-1.20.3/flink-libraries/flink-cep/src/main/java/org/apache/flink/cep/pattern/Pattern.java) — `within()` 오버로드와 기본 간격 기준
+- [WithinType.java release-1.20.3 — Apache Flink GitHub](https://github.com/apache/flink/blob/release-1.20.3/flink-libraries/flink-cep/src/main/java/org/apache/flink/cep/pattern/WithinType.java)
+- [포스코홀딩스의 복합인지 기반 실시간 스트리밍 분석 기술을 적용한 사전 재해예방 AI플랫폼 구축여정 — Amazon Web Services Korea](https://www.youtube.com/watch?v=EdASANctd_g)
 - [Building leaderboard functionality with serverless data analytics — AWS Compute Blog](https://aws.amazon.com/blogs/compute/building-serverless-applications-with-streaming-data-part-4/)
 - [AWS AppSync GraphQL, Using subscriptions for real-time data applications](https://docs.aws.amazon.com/appsync/latest/devguide/aws-appsync-real-time-data.html)
 - [Inside the Ropes: PGA TOUR X AWS: Powering TOURCAST — Amazon Web Services](https://www.youtube.com/watch?v=4doZZtycrqg)
