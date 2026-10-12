@@ -53,6 +53,20 @@ Pool은 검색 필터를 빠뜨릴 수 없는 공통 호출 경로가 필요하�
 
 테스트에서는 고객 A의 요청으로 고객 B의 모델이나 저장소를 직접 지정하는 경우와, 동시 요청 사이에 자격 증명이 섞이는 경우를 확인한다. 임시 자격 증명 발급 성공과 교차 테넌트 접근 차단은 서로 다른 검증 결과다.
 
+## 같은 테넌트 안에서도 문서 권한을 나눈다
+
+회사 단위 격리를 통과해도 모든 직원이 같은 문서를 볼 수 있는 것은 아니다. 부서, 역할과 개별 허용 범위로 검색 대상을 더 좁힌다. API 호출 권한과 문서 열람 권한도 별도로 판정한다.
+
+2026-10-13 AWS 공개 아키텍처 대조 기준, Amazon Verified Permissions의 Cedar 정책으로 요청자의 허용 부서를 판정하고, 미들웨어가 그 결과를 Bedrock `RetrieveAndGenerate`의 메타데이터 필터로 변환하는 구성이 있다. 이는 한 조직 내부의 논리적 문서 격리다. 필터 생성 경로가 실패하면 유출될 수 있으므로, 고객 간 IAM 자원 경계가 필요한 요구를 이 구성만으로 충족했다고 보지 않는다.
+
+Bedrock `RetrievalFilter` 명세 기준, `equals`와 `in`은 지정한 키와 허용 값에 맞는 문서를 선택하고, `andAll`은 조건들을 모두 만족하도록 결합한다. 반면 `notEquals`는 해당 키가 없는 문서도 반환한다. 따라서 금지 부서 하나를 제외하는 조건과 허용 부서만 선택하는 조건은 같지 않다.
+
+다음은 이 구성을 적용할 때의 설계 점검이다.
+
+- 서버가 확인한 테넌트 경계 안에서 사용자별 허용 범위를 적용한다. 질문이나 모델 출력으로 그 범위를 넓히지 않는다.
+- 권한 조회 실패나 허용 범위가 빈 경우에는 검색을 중단한다. 필터를 생략한 재시도를 허용하지 않는다.
+- 다른 부서 문서, 권한 메타데이터가 없는 문서, 권한 철회 뒤의 요청을 시험한다. 인가 캐시와 검색 색인의 갱신 지연도 확인한다.
+
 ## 요청 수와 토큰 사용량을 따로 제한한다
 
 동일한 요청 한 건도 입력 길이와 출력 길이, 재시도에 따라 사용량이 달라진다. 호출별 테넌트와 모델, 입력과 출력 토큰을 연결하는 계측은 [[LLM-Cost-Optimization|LLM 비용 최적화]]를 따른다. 비용 귀속과 고객에게 청구할 가격은 별개의 판단이다.
@@ -67,6 +81,8 @@ API Gateway REST API의 usage plan은 요청 수 기반이며 throttling과 quot
 
 ## 출처
 
+- [Secure multi-tenant RAG with Amazon Bedrock and Verified Permissions — AWS](https://aws.amazon.com/blogs/architecture/secure-multi-tenant-rag-with-amazon-bedrock-and-verified-permissions/) — 2026-10-13 조직 내부 문서 권한과 논리적 격리의 한계를 대조했다. 기존 본문 전체의 재검증은 아니다.
+- [Amazon Bedrock, RetrievalFilter](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent-runtime_RetrievalFilter.html) — 2026-10-13 허용 값 필터, 조건 결합과 `notEquals`의 키 누락 동작을 대조했다. 실패 처리와 테스트 항목은 설계 제안이다.
 - [AWS STS, AssumeRole](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html) — 역할 정책과 session policy의 범위를 대조했다. 테넌트 매핑과 교차 접근 테스트는 설계 제안이며 기존 본문 전체의 재검증은 아니다.
 - [Patterns for Deploying SaaS in Remote Environments — AWS](https://aws.amazon.com/blogs/apn/patterns-for-deploying-saas-in-remote-environments/) — 2026-10-09 고객 계정 배치 세 유형과 공통 운영 책임을 대조했다. 추론 경로와 로그 점검은 생성형 AI에 적용한 설계 제안이며 기존 본문 전체의 재검증은 아니다.
 - [AWS, SaaS Architecture Fundamentals: Tenant isolation](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/tenant-isolation.html)
