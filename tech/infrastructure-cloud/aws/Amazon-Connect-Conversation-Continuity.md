@@ -28,6 +28,21 @@ Persistent chat은 이전 채팅 전사문을 새 채팅에 불러오는 rehydra
 - Participant token은 소지자가 세션에 접근할 수 있는 bearer token이다. 발급 전에 인증과 인가를 확인하고, 로그와 URL에 넣지 않으며 HTTPS/TLS로 전달한다. [보안 가이드](https://docs.aws.amazon.com/connect/latest/adminguide/security-best-practices.html)
 - 상담 메시지를 화면에 표시할 때 `innerHTML`로 직접 삽입하지 않는다. 출력 인코딩과 CSP 등으로 DOM XSS에 대응한다. [보안 가이드](https://docs.aws.amazon.com/connect/latest/adminguide/security-best-practices.html)
 
+## Lex 응답과 상담 흐름의 종료를 구분한다
+
+2026-10-13 Lex V2 Lambda 응답과 Connect `Get customer input` 공식 문서 대조 기준이다. Lambda가 생성한 답변 텍스트와 다음 대화 동작은 별도 필드다. 응답에는 `sessionState.dialogAction.type`이 필요하며, 선택한 동작에 따라 추가 필드를 채운다.
+
+| 동작 | 의미와 필수 정보 |
+|---|---|
+| `Delegate` | 다음 단계를 Lex가 결정한다 |
+| `ElicitSlot` | 슬롯 값을 다시 받는다. `slotToElicit`과 intent 이름이 필요하다 |
+| `ConfirmIntent` | 슬롯 값과 의도 실행 여부를 확인한다. intent 이름, 확인할 slots와 확인 질문 메시지가 필요하다 |
+| `Close` | 해당 intent의 fulfillment 과정을 끝낸다. intent 이름과 state가 필요하며 `Failed`, `Fulfilled`, `InProgress`를 사용할 수 있다 |
+
+`Close`를 반환했다는 사실만으로 외부 업무 성공이나 상담원 연결 완료를 판정하지 않는다. Connect는 `Get customer input`에서 Lex intent에 따른 분기를 구성한다. `Timeout`은 입력 대기 시간 초과, `Default`는 분기 조건과 불일치, `Error`는 블록 오류나 Lex intent 미완료를 처리한다. 채팅에서는 이 블록에 Lex를 사용하지 않으면 Error 분기로 간다.
+
+구현 점검 제안: 답변 후 슬롯 재입력, 의도 확인 거절, 시간 초과, intent 실패와 정상 종료를 각각 재현한다. 상담원 연결을 선택한 흐름은 Lex 응답뿐 아니라 후속 큐 전송과 실제 연결 결과까지 확인한다. 대화 제어 상태를 업무 시스템의 완료 기록으로 대신하지 않는다.
+
 ## 상담 종료 후 요약과 업무 완료를 구분한다
 
 Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After Contact Work)를 돕는다. 이전 전사문을 복원하는 persistent chat과 별도 기능이며, 요약 생성만으로 환불이나 교환 같은 외부 업무가 완료되지는 않는다.
@@ -98,6 +113,8 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 ## 출처
 
+- [AWS, AWS Lambda response format for Lex V2](https://docs.aws.amazon.com/lexv2/latest/dg/lambda-response-format.html)
+- [AWS, Flow block in Connect Customer: Get customer input](https://docs.aws.amazon.com/connect/latest/adminguide/get-customer-input.html)
 - [AWS, Metric definitions in Connect Customer](https://docs.aws.amazon.com/connect/latest/adminguide/metrics-definitions.html)
 - [AWS, Flow block in Connect Customer: Set contact attributes](https://docs.aws.amazon.com/connect/latest/adminguide/set-contact-attributes.html)
 - [AWS, Evaluate agent performance in Connect Customer using generative AI](https://docs.aws.amazon.com/connect/latest/adminguide/generative-ai-performance-evaluations.html)
