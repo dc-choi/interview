@@ -46,6 +46,16 @@ Lock 파일만으로 bit-identical 바이너리가 보장되지는 않는다. OS
 
 프로젝트 요구와 팀 도구에 맞춰 선택한다. `pip` 중심 환경에서도 `pip-tools`나 `uv lock`처럼 해결된 버전을 재현할 방법을 둔다.
 
+#### 설치한 Python과 실행하는 Python 맞추기
+
+패키지 설치 성공과 프로그램 실행 환경의 일치는 별개다. `python -m pip`는 지정한 Python으로 pip를 실행하므로, 여러 Python이 설치된 장비에서는 실행할 인터프리터를 먼저 고르고 그 경로로 설치한다. IDE나 IDLE에서 import가 실패하면 그 프로세스의 `sys.executable`과 설치에 사용한 Python 경로를 비교한다.
+
+프로젝트별 패키지는 `venv`로 격리한다. 예를 들어 macOS/Linux에서는 `python3 -m venv .venv`로 만든 뒤 `.venv/bin/python -m pip install PyMySQL`로 설치하고 `.venv/bin/python app.py`로 실행한다. Windows에서는 생성에 쓸 Python을 지정하고 실행 경로를 `.venv\Scripts\python.exe`로 바꾼다. 인터프리터 경로를 직접 지정하면 가상 환경 활성화는 필수가 아니다.
+
+가상 환경은 설치 위치를 격리할 뿐 버전을 고정하지 않는다. 위 설치 예시는 환경 확인용이며, 재현 가능한 배포에는 앞서 설명한 버전 선언과 lock 정책을 함께 적용한다. `.venv` 자체는 Git에 넣거나 다른 장비로 복사하지 않고 의존성 정의로 다시 만든다. PyMySQL을 import할 수 있다는 사실만으로 DB 접속과 인증까지 검증되지는 않는다.
+
+2026-10-12 Python, pip와 PyMySQL 공식 문서로 이 절을 대조했다. 설치 명령과 DB 연결을 직접 실행한 결과는 아니며, 다른 언어의 도구와 버전은 이번 대조 범위 밖이다.
+
 ### JavaScript/TypeScript
 
 | 도구 | 특징 |
@@ -155,6 +165,11 @@ Spring, Java 엔터프라이즈는 **Maven**이 여전히 많이 쓰이고, 멀�
 - Dependabot, Snyk 같은 취약점 스캔 자동화
 
 ## 출처
+- [Python, venv — Creation of virtual environments](https://docs.python.org/3/library/venv.html)
+- [Python, sys.executable](https://docs.python.org/3/library/sys.html#sys.executable)
+- [pip, User Guide — Running pip](https://pip.pypa.io/en/stable/user_guide/#running-pip)
+- [PyMySQL, Installation](https://pymysql.readthedocs.io/en/latest/user/installation.html)
+- [YouTube, 한빛미디어, SQL with AI 21강. 파이썬 개발 환경 준비](https://www.youtube.com/watch?v=XsCm8z4r7zs)
 - [velog @city7310 — 백엔드가 이정도는 해줘야 함 8. 의존성 관리 도구 결정](https://velog.io/@city7310/%EB%B0%B1%EC%97%94%EB%93%9C%EA%B0%80-%EC%9D%B4%EC%A0%95%EB%8F%84%EB%8A%94-%ED%95%B4%EC%A4%98%EC%95%BC-%ED%95%A8-8.-%EC%9D%98%EC%A1%B4%EC%84%B1-%EA%B4%80%EB%A6%AC-%EB%8F%84%EA%B5%AC-%EA%B2%B0%EC%A0%95)
 - [pnpm, Motivation](https://pnpm.io/motivation)
 - [uv, Projects](https://docs.astral.sh/uv/guides/projects/)

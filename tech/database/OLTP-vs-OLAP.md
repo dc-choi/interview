@@ -73,6 +73,18 @@ OLTP와 OLAP는 처리할 업무의 성격을, 데이터 웨어하우스와 데�
 
 이 절은 분석 데이터 통합 방식의 구분을 보강한다. 기존 제품별 트랜잭션 지원 범위를 다시 검증한 것은 아니다.
 
+### Delta Lake의 로그와 읽기 스냅샷
+
+파일이 저장소에 있다는 사실과 테이블에 반영됐다는 사실은 다르다. Delta Lake는 트랜잭션 로그에 데이터 파일의 논리적 추가와 제거, 스키마 등 메타데이터 변경을 기록하고 커밋마다 테이블 버전을 만든다. 읽는 쪽은 로그로 한 버전의 스냅샷을 구성한다. `_delta_log`의 체크포인트는 상태를 모아 두어 매번 처음부터 모든 JSON 로그를 읽는 비용을 줄인다.
+
+- **실패와 노출**: 새 파일을 쓴 뒤 커밋 전에 작업이 실패하면 파일이 남을 수 있지만, 커밋된 테이블 상태에는 포함되지 않는다. 이 보장은 Delta 프로토콜로 읽는 경우에 적용하며 저장소 파일을 직접 읽는 경로와 구분한다.
+- **동시 쓰기**: Databricks의 낙관적 동시성 제어는 준비한 변경을 커밋하기 전에 충돌을 검사한다. 충돌하면 쓰기가 실패할 수 있으므로 ACID를 동시 작업이 모두 성공한다는 뜻으로 해석하지 않는다.
+- **과거 조회와 복구**: time travel에는 해당 버전을 재구성할 로그와 데이터 파일이 모두 필요하다. `VACUUM`으로 필요한 파일이 삭제되면 이력 정보만으로 복원할 수 없다. 보존 기간과 런타임의 조회 제한을 함께 확인하며, 테이블 이력을 장기 백업으로 대신하지 않는다.
+
+`RESTORE`는 과거 버전을 조회하는 것과 달리 현재 테이블을 바꾸는 작업이다. 이를 읽는 downstream 스트림은 복원된 내용을 새 변경으로 처리해 중복을 만들 수 있으므로 재처리와 중복 제거 조건도 점검한다. Unity Catalog의 권한과 계보 관리는 이 파일 버전 관리와 역할이 다르다.
+
+2026-10-12 Delta 프로토콜과 Databricks의 ACID, 테이블 이력 문서로 이 절을 대조했다. 실제 장애 주입이나 복구 시험 결과는 아니며, 기존 거버넌스 기능의 전체 재검증도 아니다.
+
 ### 레이크하우스의 제어, 연산과 저장 경계
 
 분석 데이터를 통합해도 서비스 제어와 실제 연산, 저장 위치는 별개다. 2026-10-09 Databricks on AWS 공식 문서 기준, control plane은 웹 애플리케이션과 관리형 백엔드를 제공하고 compute plane은 데이터를 처리한다. Classic compute는 고객의 AWS 계정에서 실행되고 serverless compute는 Databricks가 관리하는 compute plane에서 실행된다. 이 구분을 모든 레이크하우스 제품의 공통 배포 구조로 일반화하지 않는다.
@@ -126,6 +138,10 @@ Unity Catalog의 external location은 저장소 경로와 storage credential을 
 - 레이크하우스 거버넌스 계층(예: Unity Catalog)의 권한 상속과 USE 권한, 등록하지 않은 경로와 저장소 직접 접근이 통제 밖에 남는 이유
 
 ## 출처
+- [Delta Lake — Delta Transaction Log Protocol](https://github.com/delta-io/delta/blob/master/PROTOCOL.md)
+- [Databricks — What are ACID guarantees on Databricks?](https://docs.databricks.com/aws/en/lakehouse/acid)
+- [Databricks — Work with table history](https://docs.databricks.com/aws/en/tables/history)
+- [YouTube, 현수IT HyunsooIT, 처음부터 이해하는 Databricks Ep4. Delta Lake와 Transaction Log](https://www.youtube.com/watch?v=8a_VSHYV5MI)
 - [Databricks — High-level architecture](https://docs.databricks.com/aws/en/getting-started/high-level-architecture)
 - [Databricks — Connect to cloud object storage using Unity Catalog](https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage/)
 - [Databricks — What is a data lakehouse?](https://docs.databricks.com/aws/en/lakehouse/)
