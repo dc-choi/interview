@@ -94,6 +94,17 @@ AL2023의 커널 계열 변경 절차는 대상 패키지 설치, 기본 부팅 
 
 AWS 복구 문서의 대상은 AL2, AL2023, Fedora 16 이상과 RHEL 7 이상이다. 다른 배포판까지 같은 명령을 일반화하지 않으며, 여기서는 실제 복구를 실행하지 않았다.
 
+## Linux 관측 도구의 수집 주기와 이력 확인
+
+2026-10-13 AWS re:Post의 배포판별 설정 예시와 atop, sysstat 공식 자료로 이 절을 대조했다. `atop`은 시스템과 프로세스 활동을, sysstat의 `sar`는 시스템 활동 통계를 확인하는 도구다. 장애 이후를 조사하려면 사전에 수집한 이력이 필요하다. 설치와 이력 수집 활성화는 별도로 확인한다.
+
+- `/etc/os-release`와 설치된 패키지 버전을 확인한다. AWS 예시에서는 AL2023의 sysstat 수집에 systemd timer를, AL2에는 cron을 사용한다. 같은 설정 파일과 명령을 모든 배포판에 적용하지 않는다.
+- atop의 로그 수집 간격과 sar의 예약 수집 간격을 각각 확인한다. AWS 예시의 10분에서 1분으로 변경은 세밀한 관측을 위한 선택이며, 기본 주기와 보존 기간은 설치 패키지 및 현 설정에서 확인한다.
+- 운영 검증 제안: 변경 후 수집 서비스와 timer 또는 cron의 활성 상태를 확인하고, 새 이력 파일의 표본 시각이 의도한 간격으로 늘어나는지 확인한다. 서비스가 실행 중이라는 사실만으로 이력 수집 성공을 판정하지 않는다.
+- 기록한 atop raw 파일은 `atop -r <파일>`로 다시 볼 수 있다. 보존 기간과 파일 증가량도 함께 확인한다. 수집하지 않은 과거 구간은 설정 변경만으로 복원되지 않는다.
+
+이 절은 문서 대조이며 실제 EC2의 패키지 설치나 설정 변경을 수행하지 않았다. 수집 주기를 줄일 때는 필요한 시간 해상도와 저장 공간을 함께 검토한다.
+
 ## Auto Scaling Group (ASG) 연계
 
 - **Launch Template** — AMI, 인스턴스 타입, User Data, SG, IAM 정의
@@ -150,6 +161,9 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 
 ## 출처
 
+- [Configure monitoring tools for my EC2 Linux instance — AWS re:Post](https://repost.aws/knowledge-center/ec2-linux-configure-monitoring-tools)
+- [atop 공식 매뉴얼, atop(1)](https://www.atoptool.nl/download/man_atop-1.pdf)
+- [Performance monitoring tools for Linux — sysstat](https://github.com/sysstat/sysstat)
 - [Troubleshoot kernel panic error in EC2 instances — AWS re:Post](https://repost.aws/knowledge-center/ec2-linux-kernel-panic-unable-mount)
 - [AWS 공식 문서, Troubleshoot Amazon EC2 instance launch issues](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/troubleshooting-launch.html)
 - [AWS 공식 문서, Create a Capacity Reservation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-create.html)

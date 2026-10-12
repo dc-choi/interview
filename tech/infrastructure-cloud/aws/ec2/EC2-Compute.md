@@ -63,6 +63,17 @@ EBS 볼륨 유형:
 
 이름은 후보를 좁히는 출발점이다. 실제 선택에서는 해당 타입과 크기의 CPU, 메모리, 네트워크와 EBS 사양을 확인하고 워크로드로 비교한다. 세대 숫자나 크기만으로 모든 자원의 성능 향상 비율을 추정하지 않는다.
 
+### Graviton 이전은 이미지, 의존성과 성능을 함께 검증한다
+
+2026-10-13 AWS Graviton 전환 가이드와 Docker 공식 문서로 이 절을 대조했다. Graviton은 arm64이므로 인스턴스 타입만 바꾸지 않고 AMI, 컨테이너 이미지, 라이브러리, 런타임과 운영 에이전트의 지원을 확인한다. 언어가 이식 가능해도 함께 배포하는 네이티브 구성 요소까지 호환된다는 뜻은 아니다.
+
+- 사용하는 이미지의 **실제 태그나 digest**를 `docker buildx imagetools inspect <이미지>`로 조회한다. 멀티 플랫폼 이미지라면 manifest 목록에서 `linux/arm64` 지원을 확인한다. 다른 태그의 지원 여부로 현재 배포 이미지를 판단하지 않는다.
+- 빌드 방식은 QEMU 에뮬레이션, 아키텍처별 네이티브 빌더, 크로스 컴파일을 비교한다. QEMU는 시작하기 쉽지만 컴파일과 압축 같은 CPU 작업이 느려질 수 있다. 네이티브 빌더는 운영 비용이 들고, 크로스 컴파일은 언어와 툴체인의 지원이 필요하다.
+- 의존성 업그레이드가 필요하면 기존 x86 환경에서 먼저 검증해 버전 변경과 CPU 아키텍처 변경의 영향을 나눈다. arm64 산출물에도 기존 기능 테스트를 적용한다.
+- 부하 시험은 같은 요청 패턴에서 허용 지연과 오류율을 넘기 전의 최대 처리량을 비교한다. vCPU 수나 CPU 사용률만으로 성능이 같다고 판단하지 않는다. 검증 후 canary나 blue-green으로 트래픽 일부부터 전환한다.
+
+운영 검증 제안: 지연이 악화되면 애플리케이션과 네이티브 라이브러리를 프로파일링하고, 처리량당 비용을 다시 계산한다. 기존 x86 이미지와 배포 설정을 복구 경로로 유지한다. 발표 사례의 절감률이나 특정 언어의 이전 난이도를 일반적인 보장으로 사용하지 않는다. 실제 빌드, 부하 시험과 이전을 수행한 기록은 아니다.
+
 ### AI 가속기는 실행 스택까지 함께 비교한다
 
 2026-10-10 부분 대조: AWS Neuron 공식 소개 기준, Trainium과 Inferentia는 Neuron 개발 스택을 사용하는 AWS 가속기다. Neuron에는 컴파일러, 런타임, 학습과 추론 라이브러리, 프로파일링 도구가 포함된다. GPU 인스턴스와 비교할 때 인스턴스 사양뿐 아니라 모델 실행에 필요한 소프트웨어 경로도 확인한다.
@@ -111,6 +122,9 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 
 ## 출처
 
+- [Considerations when transitioning workloads to AWS Graviton based Amazon EC2 instances — AWS](https://github.com/aws/aws-graviton-getting-started/blob/main/transition-guide.md)
+- [Docker 공식 문서, Multi-platform builds](https://docs.docker.com/build/building/multi-platform/)
+- [Docker 공식 문서, docker buildx imagetools inspect](https://docs.docker.com/reference/cli/docker/buildx/imagetools/inspect/)
 - [Amazon EC2, Elastic Fabric Adapter for AI/ML and HPC workloads on Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html)
 - [AWS ParallelCluster, Elastic Fabric Adapter](https://docs.aws.amazon.com/parallelcluster/latest/ug/efa-v3.html)
 - [SDK for Gen AI and Deep Learning - AWS Neuron — AWS](https://aws.amazon.com/ai/machine-learning/neuron/)
