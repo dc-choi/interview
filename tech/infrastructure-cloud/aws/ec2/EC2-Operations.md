@@ -143,6 +143,12 @@ AWS 복구 문서의 대상은 AL2, AL2023, Fedora 16 이상과 RHEL 7 이상이
 
 가용 용량이 꼭 필요한 워크로드는 Capacity Reservation을 미리 검토한다. **예약 요청 자체도 용량 부족이나 계정 한도 때문에 실패할 수 있으며, 사용 가능 여부는 `active` 상태로 확인한다.** 이미 발생한 용량 부족을 즉석에서 없애는 수단으로 보지 않는다. 확보된 예약의 미사용 용량도 과금되므로 필요한 대수와 기간을 함께 정한다. 구매 모델 비교는 [[EC2-Cost|EC2 비용 모델]]을 따른다.
 
+### Cluster placement group의 용량 부족
+
+2026-10-13 EC2 배치 전략과 Stop/Start 공식 문서 대조 기준이다. Cluster placement group은 필요한 인스턴스를 같은 타입으로 한 번에 시작하는 구성을 권장한다. 나중에 추가하거나 타입을 섞으면 용량 부족 가능성이 커지므로, 앞 절의 일반적인 요청 분할 대응을 이 배치 전략의 기본값으로 적용하지 않는다.
+
+이미 실행 중인 그룹에 인스턴스를 추가하다 용량 오류가 나면, 그룹 전체를 Stop 후 Start하여 필요한 용량이 있는 하드웨어로 재배치될 가능성을 검토한다. 성공을 보장하는 절차는 아니다. 운영 적용 전에는 그룹 전체 중단의 영향과 복구 계획을 확인한다. Stop/Start는 EBS 루트 인스턴스에만 가능하며, 연결된 instance store 데이터는 중지 시 삭제되므로 필요한 데이터를 먼저 영속 저장소에 복사한다. 자동 할당 공인 IPv4의 변경 영향도 확인한다.
+
 ## AMI (Amazon Machine Image)
 
 인스턴스를 시작하는 데 필요한 정보를 담은 **이미지 템플릿**. OS, 애플리케이션, 구성, 권한 정보 포함.
@@ -161,6 +167,7 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 
 ## 출처
 
+- [AWS 공식 문서, Placement strategies for your placement groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html)
 - [Configure monitoring tools for my EC2 Linux instance — AWS re:Post](https://repost.aws/knowledge-center/ec2-linux-configure-monitoring-tools)
 - [atop 공식 매뉴얼, atop(1)](https://www.atoptool.nl/download/man_atop-1.pdf)
 - [Performance monitoring tools for Linux — sysstat](https://github.com/sysstat/sysstat)

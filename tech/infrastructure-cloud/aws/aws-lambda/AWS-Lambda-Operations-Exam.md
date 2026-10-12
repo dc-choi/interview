@@ -21,7 +21,7 @@ verified_at: 2026-09-30
 
 ## 장점
 
-- **운영 부담 제거** — OS 패치, 오토스케일, 고가용성을 AWS가 담당
+- **인프라 운영 부담 감소** — 실행 기반 관리를 AWS에 위임한다. 런타임 패치 적용 책임은 배포 방식과 업데이트 모드에 따라 달라지며 애플리케이션 권한과 코드 관리는 남는다
 - **비용 효율** — 온디맨드 호출량이 적거나 변동이 클 때 유휴 컴퓨트 비용을 줄일 수 있음. Provisioned Concurrency와 연결 서비스 비용은 별도
 - **자동 스케일** — 함수별 scaling rate, 계정 동시성 할당량과 downstream 용량 안에서 실행 환경을 늘림
 - **이벤트 통합 생태계** — 여러 AWS 서비스의 이벤트 소스와 목적지에 관리형 통합 제공
@@ -43,6 +43,18 @@ verified_at: 2026-09-30
 - **실시간 스트림 처리** — Kinesis → Lambda → DynamoDB/S3
 - **IoT 백엔드** — IoT Core 메시지 → Lambda 라우팅
 - **CloudWatch Alarm 자동화** — 알람 → Lambda → Slack, PagerDuty
+
+### 웹 API의 세 가지 권한 경계
+
+2026-10-13 Lambda의 API Gateway 통합과 실행 역할 공식 문서 대조 기준이다. API Gateway, Lambda와 DynamoDB를 연결할 때는 다음 권한을 따로 확인한다.
+
+| 경계 | 확인할 설정 |
+|---|---|
+| 클라이언트가 API에 접근 | API의 인증과 인가 설정 |
+| API Gateway가 함수를 호출 | Lambda 리소스 기반 정책의 호출 허용과 API, stage, method 범위 |
+| 함수가 DynamoDB 등 AWS 자원에 접근 | 함수 실행 역할의 작업과 자원 권한 |
+
+함수 실행 역할에 DB 권한을 주는 것만으로 API 호출자의 접근 통제가 설정되지는 않는다. 실행 역할은 함수에 필요한 권한만 부여한다. 운영 확인 예시로 정상 요청, 인증 없는 요청과 DB 접근 권한이 없는 함수의 실패를 각각 검사하면 어느 경계에서 거부되는지 구분할 수 있다. 실제 배포나 권한 시험을 수행한 기록은 아니다.
 
 ## 버전과 Alias — 불변 배포 단위, 환경 분리, 롤백
 
@@ -131,6 +143,9 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 
 ## 출처
 
+- [Invoking a Lambda function using an Amazon API Gateway endpoint](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html)
+- [Defining Lambda function permissions with an execution role](https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html)
+- [Understanding the shared responsibility model for Lambda runtime management](https://docs.aws.amazon.com/lambda/latest/dg/runtime-management-shared.html)
 - [AWS Transform, Common Use Cases](https://docs.aws.amazon.com/transform/latest/userguide/custom-common-use-cases.html) — 언어별 변환, 검증 명령과 비대화형 실행 범위.
 - [Automate AWS Lambda Runtime Upgrades with AWS Transform custom — AWS](https://aws.amazon.com/blogs/devops/automate-aws-lambda-runtime-upgrades-with-aws-transform-custom/) — 변환 전 테스트, IaC 변경과 로컬 브랜치 검토 단계.
 - [Lambda runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html)
