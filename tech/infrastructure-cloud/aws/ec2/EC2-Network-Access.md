@@ -105,6 +105,17 @@ EC2 SSH 접속 시 사용하는 **공개키/개인키 쌍**. AWS가 공개키를
 
 현업 권장: SSH Key Pair 의존을 줄이고 **AWS Systems Manager Session Manager**로 대체 (IAM 권한 기반, 포트 22 개방 불필요, 세션 로깅).
 
+### EC2 Instance Connect Endpoint — 연결 경로와 SSH 인증 분리
+
+2026-10-13 EC2 공식 문서 대조 기준이다. EC2 Instance Connect Endpoint(EICE)는 IAM으로 접근을 제어하는 TCP 프록시다. 인스턴스의 공인 IP, bastion host와 VPC의 직접 인터넷 연결 없이 관리 접속 경로를 제공하지만, Linux SSH 인증 준비까지 없애지는 않는다.
+
+- **자체 키 페어 사용:** Linux AMI에서 기존 SSH 키로 인증할 수 있다. EICE는 사설 연결 경로를 제공한다.
+- **자체 키 페어를 사용하지 않음:** 대상에 EC2 Instance Connect가 설치되어 있어야 한다. SSM Agent가 필요 없다는 설명을 게스트 측 준비가 전혀 없다는 뜻으로 확대하지 않는다.
+- **네트워크 권한:** endpoint 보안 그룹은 대상 인스턴스의 SSH 포트로 나가는 트래픽을 허용하고, 인스턴스 보안 그룹은 endpoint에서 오는 SSH 트래픽을 허용한다. Endpoint 보안 그룹의 인바운드 규칙과 무관하게 서비스 트래픽이 들어오므로, 누가 터널을 사용할지는 IAM으로 제한한다.
+- **소스 주소:** 인스턴스 인바운드 규칙에 endpoint 보안 그룹을 참조할 수 있다. IPv4 CIDR로 제한한다면 client IP preservation이 꺼졌을 때는 endpoint ENI 주소, 켜졌을 때는 클라이언트 주소를 기준으로 한다.
+
+접속 실패는 터널 사용 권한, endpoint에서 대상까지의 경로와 보안 그룹, OS 사용자와 SSH 인증 순서로 나누어 확인한다. EICE는 관리 트래픽용이며 대용량 데이터 전송의 기본 경로로 쓰지 않는다.
+
 ### AWSSupport-ResetAccess로 접근 복구
 
 2026-10-09 Systems Manager Automation 공식 문서 기준이다. `AWSSupport-ResetAccess`는 EC2Rescue로 Linux에 새 SSH 키를 생성해 추가하거나 Windows의 암호 해독을 다시 활성화한다. Windows 키 페어를 분실한 경우에는 생성된 password-enabled AMI에서 보유한 키 페어로 새 인스턴스를 시작하는 경로도 제공한다. 잃어버린 개인키 자체를 복원하는 기능은 아니다.
@@ -120,6 +131,8 @@ Linux 결과에는 백업 AMI와 새 SSH 키를 담은 SSM 파라미터의 이�
 
 ## 출처
 
+- [AWS 공식 문서, Connect to your instances using a private IP address and EC2 Instance Connect Endpoint](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect-with-ec2-instance-connect-endpoint.html)
+- [AWS 공식 문서, Security groups for EC2 Instance Connect Endpoint](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/eice-security-groups.html)
 - [AWS 공식 문서, AWSSupport-ResetAccess](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-resetaccess.html)
 - [AWS 공식 문서, AWSSupport-StartEC2RescueWorkflow](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-startec2rescueworkflow.html)
 - [AWS 공식 문서, Amazon EC2 service quotas — Restriction on email sent using port 25](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html#port-25-throttle)

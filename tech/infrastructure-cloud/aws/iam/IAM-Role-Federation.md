@@ -32,6 +32,14 @@ Role의 특징:
 - **Region에 국한되지 않음** (글로벌)
 - Role의 주체(Principal)는 IAM User, AWS 서비스(EC2, RDS, ELB 등), 외부 IdP로 인증된 사용자
 
+### CLI 역할 프로필과 수동 임시 자격증명의 차이
+
+2026-10-13 AWS CLI와 STS 공식 문서 대조 기준이다. CLI 역할 프로필은 `role_arn`과 `source_profile`을 연결해 `AssumeRole`을 호출한다. EC2나 ECS의 역할을 원본으로 쓸 때는 `source_profile` 대신 `credential_source`를 사용한다. CLI가 받은 자격증명은 로컬 캐시에 두고 만료 후 다시 요청하며, 갱신 시에도 원본 인증과 역할 위임 조건이 유효해야 한다.
+
+- 직접 STS를 호출해 응답을 저장하는 방식은 별개다. `AccessKeyId`, `SecretAccessKey`, `SessionToken`을 함께 사용하고 `Expiration`을 확인한다. 반환값을 정적 프로필에 복사했다고 역할 프로필의 자동 재발급 동작이 생기지는 않는다.
+- SAML은 `AssumeRoleWithSAML`에 SAML assertion을, web identity는 `AssumeRoleWithWebIdentity`에 IdP 토큰을 전달한다. 일반 역할 프로필에 SAML 응답을 넣는 방식과 혼동하지 않는다.
+- `aws sts get-caller-identity --profile <역할-프로필>`로 실제 `Account`와 `Arn`을 확인한다. 이 API는 호출 주체 확인용이며 별도 권한 없이 호출할 수 있으므로, 성공이 S3나 다른 업무 API의 허용을 증명하지는 않는다.
+
 ## 계정 간 Bedrock 호출 — 역할 위임과 추론 권한
 
 계정 B의 Lambda가 계정 A의 권한으로 Bedrock을 호출하는 경우, 세 가지 정책과 실제 요청 자격증명을 나누어 확인한다. 2026-10-07 공식 IAM과 Bedrock 문서로 대조한 범위다.
@@ -159,6 +167,10 @@ IdP 속성을 session tag로 전달해 ABAC에 쓴다면 trust policy의 `sts:Ta
 위임 관리자가 이 한도 안에서만 사용자와 Role을 만들 수 있게 보장한다. 개발자에게 IAM 관리 위임할 때, 자기보다 강한 권한 부여 못 하게 막는 가드.
 
 ## 출처
+- [AWS CLI User Guide, Using an IAM role in the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html)
+- [AWS STS API Reference, GetCallerIdentity](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html)
+- [AWS STS API Reference, AssumeRoleWithSAML](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithSAML.html)
+- [AWS STS API Reference, AssumeRoleWithWebIdentity](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html)
 - [AWS IAM Identity Center User Guide, Using IAM Identity Center across multiple AWS Regions](https://docs.aws.amazon.com/singlesignon/latest/userguide/multi-region-iam-identity-center.html)
 - [AWS IAM Identity Center User Guide, Replicate IAM Identity Center to an additional Region](https://docs.aws.amazon.com/singlesignon/latest/userguide/replicate-to-additional-region.html)
 - [AWS IAM Identity Center User Guide, Workforce access through an additional Region](https://docs.aws.amazon.com/singlesignon/latest/userguide/multi-region-workforce-access.html)

@@ -75,6 +75,17 @@ verified_at: 2026-08-25
 - **보고서 해석:** 생성 전에 검사 상태를 갱신한다. 리소스 목록에 없다는 이유만으로 문제가 없다고 판단하지 않는다. 리소스 없는 검사는 summary에만 나타날 수 있고, 미사용 서비스나 아직 갱신되지 않은 검사는 목록에 없을 수 있다.
 - **이벤트 대응:** 상태 변화 이벤트는 미국 동부 버지니아 북부 리전의 EventBridge로 전달되며 best effort라 전달을 보장하지 않는다. 운영 설계에서는 이벤트 알림과 정기적인 검사 결과 대조를 조합한다. 권고 탐지와 실제 시정 조치의 성공도 따로 확인한다.
 
+### Well-Architected 검토 — 답변과 개선 증거를 연결한다
+
+2026-10-13 AWS 공식 가이드 대조 기준이다. Well-Architected Tool은 선택한 모범 사례를 바탕으로 위험과 개선안을 정리한다. 따라서 위험 표시가 적다는 사실만으로 실제 워크로드의 안전성을 확정하지 않고, 답변의 근거와 검토 범위를 함께 확인한다.
+
+1. 워크로드의 환경, 리전, 검토 책임자와 적용할 lens를 정한다. 질문에는 현재 수행하는 모범 사례를 표시한다.
+2. 미적용 항목과 해당 없음은 구분한다. 해당 없음이나 아무 항목도 수행하지 않음을 선택했다면 Notes에 이유를 기록한다. 계획만 있는 조치를 이미 수행하는 것으로 표시하지 않는다.
+3. 최초 검토를 마치면 **milestone**으로 당시 상태를 보존하고 보고서를 만든다. HRI와 MRI는 각각 높은 위험과 중간 위험으로, 사업 영향과 개선 노력에 따라 실행 우선순위를 정한다.
+4. 실제 개선 뒤 답변과 Notes를 갱신하고 새 milestone을 저장해 진전을 비교한다. 답변 수정과 구현 완료를 혼동하지 않도록 변경 근거를 함께 남긴다.
+
+예를 들어 복구 자동화 항목을 완료로 바꾸기 전에는 장애 감지와 교체 설정뿐 아니라 복구 시험 결과를 확인하는 방식으로 운영한다. 체크리스트 작성 자체를 장애 복구 검증으로 취급하지 않는다.
+
 ## 마이그레이션
 
 - **DMS**(Database Migration Service): RDB, NoSQL의 full load와 CDC 데이터 이동. CDC를 구성하면 source write를 유지한 채 변경을 따라갈 수 있지만 target schema와 객체는 별도로 준비
@@ -155,6 +166,10 @@ verified_at: 2026-08-25
 
 ## 출처
 
+- [AWS Well-Architected Tool, Tutorial: Document a workload](https://docs.aws.amazon.com/wellarchitected/latest/userguide/tutorial.html)
+- [AWS Well-Architected Tool, Milestones](https://docs.aws.amazon.com/wellarchitected/latest/userguide/milestones.html)
+- [AWS Well-Architected Tool, Improving your workload](https://docs.aws.amazon.com/wellarchitected/latest/userguide/improving-your-workload.html)
+- [AWS Well-Architected Tool, Running a WAFR](https://docs.aws.amazon.com/wellarchitected/latest/userguide/running-a-wafr.html)
 - [AWS CloudTrail, Working with CloudTrail event history](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events-console.html)
 - [AWS Config, List of AWS Config Managed Rules](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-trigger-type.html)
 - [Amazon EC2, Manage detailed monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/manage-detailed-monitoring.html)
