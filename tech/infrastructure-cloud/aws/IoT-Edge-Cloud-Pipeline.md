@@ -24,6 +24,20 @@ IoT Core의 SQS rule action은 MQTT 메시지 데이터를 SQS 큐로 전달한�
 
 Standard SQS는 같은 메시지를 다시 전달할 수 있다. 소비자는 멱등하게 처리해야 한다. 이를 장비 상태 갱신에 적용하면 이벤트 식별자와 측정 시각 또는 장비별 순번을 두고, 늦게 도착한 값이 최신 상태를 덮어쓰지 않도록 하는 설계를 검토할 수 있다. 구체적인 순번과 재부팅 처리는 장비 계약에 따라 정한다.
 
+## 수집 대상과 시점을 장비에서 제한한다
+
+모든 신호를 계속 전송하기 전에 대상 장비, 필요한 신호와 수집 조건을 정한다. 2026-10-13 FleetWise campaign 문서 기준, 시간 간격에 따른 수집과 논리 조건에 따른 수집을 구분하며 `signalsToCollect`로 수집할 신호를 지정한다. 캠페인 승인만으로 장비가 수집을 시작하지는 않는다. 실행 중인 Edge Agent에 캠페인이 배포되어야 한다.
+
+조건 기반 수집의 `minimumTriggerIntervalMs`는 수집 이벤트 사이의 최소 간격이고, 신호별 `minimumSamplingIntervalMs`는 개별 신호 샘플 사이의 최소 간격이다. 둘을 같은 설정으로 취급하지 않는다. 필요한 변화가 누락되지 않는지와 전송량이 얼마나 줄었는지는 실제 입력으로 별도 측정한다(설계 점검).
+
+**FleetWise는 2026-04-30부터 신규 고객에게 제공되지 않는다.** 2026-10-13 AWS 공지 확인 기준이다. 과거 도입 사례를 신규 시스템의 채택 근거로 바로 쓰지 않고, 선택 수집 원리와 현재 도입 가능한 구성을 따로 검토한다.
+
+## 초기 등록 인증서와 운영 인증서를 분리한다
+
+2026-10-13 AWS IoT Core의 provisioning by claim 문서 기준, 장비는 사전에 넣은 claim 인증서로 최초 연결하고 장비별 인증서를 발급받는다. `RegisterThing`으로 등록한 뒤 영구 인증서를 저장하고, claim 인증서로 연결한 세션을 끊어 새 인증서로 다시 연결한다. claim 인증서의 정책은 장비 등록에 필요한 범위로 제한하고, 개인 키를 보호하며 오용을 감지하면 해당 claim 인증서를 비활성화한다.
+
+pre-provisioning hook은 `RegisterThing` 요청의 파라미터를 Lambda에서 검증하는 경계다. `allowProvisioning: true`를 반환해야 등록이 진행된다. 예를 들어 등록 대상 장비인지 별도 목록과 대조하는 로직을 둘 수 있다(설계 제안). 인증서 발급 성공, 등록 승인과 운영 연결 성공을 각각 확인하며, 이 단계의 성공을 물리 장비의 안전한 제어가 검증된 것으로 해석하지 않는다.
+
 ## 원시 수집과 설비 맥락 연결을 분리한다
 
 2026-10-10 AWS IoT SiteWise 공식 개념 문서 대조 기준. 센서 값을 저장하는 것과 그 값이 어떤 설비와 공정에 속하는지 표현하는 것은 별도의 작업이다.
@@ -142,6 +156,10 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT FleetWise, Collect AWS IoT FleetWise data with campaigns](https://docs.aws.amazon.com/iot-fleetwise/latest/developerguide/campaigns.html) — 2026-10-13 선택 수집, 두 간격 설정과 장비 배포 조건 대조
+- [AWS IoT FleetWise — AWS](https://aws.amazon.com/iot-fleetwise/) — 2026-10-13 신규 고객 제공 중단 날짜 대조
+- [AWS IoT Core, Provisioning devices that don't have device certificates using fleet provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html) — 2026-10-13 claim 인증서 제한, 장비 등록과 운영 인증서 재연결 대조
+- [AWS IoT Core, Pre-provisioning hooks](https://docs.aws.amazon.com/iot/latest/developerguide/pre-provisioning-hook.html) — 2026-10-13 등록 파라미터 검증과 허용 응답 조건 대조
 - [Strands Agents, Agent Loop](https://strandsagents.com/docs/user-guide/sdk/agents/agent-loop/) — 모델과 도구의 반복 호출 경계만 대조
 - [Strands Agents, Amazon Bedrock](https://strandsagents.com/docs/user-guide/sdk/model-providers/amazon-bedrock/) — Bedrock API를 사용하는 provider 계약을 대조
 - [AWS IoT TwinMaker, AWS IoT TwinMaker knowledge graph](https://docs.aws.amazon.com/iot-twinmaker/latest/guide/tm-knowledge-graph.html) — 설비 관계의 표현과 조회만 대조했다. 인과관계와 진단 검증은 설계 점검이다.

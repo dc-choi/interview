@@ -53,6 +53,10 @@ aliases: ["주식", "Stocks"]
 
 ### PER은 분모의 기간과 산정 기준을 맞춘다
 
+PER의 이익은 주주에게 귀속되는 순이익 기준이다. **시가총액을 영업이익으로 나눈 값을 PER이라고 부르면 안 된다.** 시가총액은 자기자본 가치인데 영업이익은 이자와 세금 등을 차감하기 전의 다른 이익 지표이기 때문이다. 영업이익 배수를 비교하려면 EV/EBIT처럼 분자와 분모의 범위를 맞춘 지표를 검토한다.
+
+가상으로 시가총액이 1,000, 연간 영업이익이 250, 같은 주주 범위의 연간 순이익이 150이면 시가총액/영업이익은 4배지만 PER은 약 6.7배다. 분기 영업이익을 네 배로 늘려 이 계산에 넣는 것도 실제 연간 순이익이나 다음 해 전망을 대신하지 못한다. 이 구분은 2026-10-13 Damodaran의 배수 계산 자료 중 분자와 분모의 일관성 표를 대조했다. 개별 기업의 최신 실적과 보상 제도는 검증 범위에 포함하지 않는다.
+
 과거 12개월 EPS를 쓰는 trailing PER과 미래 기간의 예상 EPS를 쓰는 forward PER은 서로 다른 지표다. 최근 결산연도, 다음 회계연도와 향후 12개월도 구분한다. 분기 EPS 하나를 연간 EPS처럼 사용하지 않는다.
 
 기업 실적 자료에서는 GAAP와 조정(non-GAAP), 기본과 희석 EPS를 구분한다. 조정 EPS에는 어떤 항목이 제외됐는지 확인한다. 예를 들어 NVIDIA의 2027회계연도 2분기 공식 발표는 GAAP와 non-GAAP 희석 EPS 및 조정 내역을 따로 제시한다. 이 구조는 확인 가능한 사례이며, 여기서 특정 기업의 목표주가를 도출하지 않는다.
@@ -148,6 +152,7 @@ AI, 로봇이나 친환경 같은 투자 테마는 여러 산업을 가로지를
 
 ## 출처
 
+- [Consistency in Multiples — Aswath Damodaran, NYU Stern](https://pages.stern.nyu.edu/~adamodar/pdfiles/eqnotes/webcasts/multiplecalc/multiplecalc.pdf) — 2026-10-13 9쪽의 자기자본 가치/순이익과 EV/EBIT 대응을 대조
 - [Investor.gov, Market Capitalization](https://www.investor.gov/introduction-investing/investing-basics/glossary/market-capitalization) — 시가총액의 정의와 주가, 주식 수의 관계
 - [The Global Industry Classification Standard (GICS) — MSCI](https://www.msci.com/indexes/index-resources/gics) — 2026-10-07 네 단계 분류, 주된 사업과 매출 중심 판단 기준 대조
 - [Asset Allocation and Diversification — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 2026-10-07 산업 집중 펀드와 분산의 구분 대조
