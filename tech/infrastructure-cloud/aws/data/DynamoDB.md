@@ -120,6 +120,14 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 - 재시도만 반복하지 말고 partition key 분산, GSI write pressure, capacity 또는 on-demand maximum을 교정한다.
 - `BatchWriteItem`, `BatchGetItem`의 미처리 항목만 backoff 후 다시 보낸다.
 
+## 원자적 갱신, 낙관적 잠금과 트랜잭션 재시도
+
+2026-10-13 공식 문서 부분 대조 기준. 단일 `UpdateItem`은 원자적으로 최신 항목에 적용된다. 애플리케이션이 값을 읽고 계산한 뒤 다시 쓰는 read-modify-write에는 그 사이 다른 요청이 값을 바꾸는 문제가 남는다. 낙관적 잠금은 버전 속성과 조건부 쓰기를 구성해 이를 감지하는 방식이며, 모든 쓰기에 자동 적용되는 기본 동작으로 해석하지 않는다.
+
+여러 항목을 함께 바꿔야 하면 같은 계정과 리전 안에서 `TransactWriteItems`로 전부 성공하거나 전부 실패하게 묶을 수 있다. 예를 들어 채팅방별 미확인 개수와 사용자별 합계를 함께 갱신할 수 있다. 단일 항목의 조건부 쓰기 충돌과 트랜잭션 충돌은 원인을 나누어 처리한다.
+
+`ClientRequestToken`은 해당 토큰을 처음 사용한 요청이 완료된 뒤 **10분** 동안 동일한 트랜잭션 요청의 중복 효과를 막는다. 이 기간에 같은 토큰으로 다른 파라미터를 보내면 `IdempotentParameterMismatch`가 발생하고, 기간 뒤에는 같은 토큰도 새 요청으로 취급된다. 더 긴 업무 중복 방지가 필요하면 별도 멱등 기록을 설계한다. 이 절만 대조했으므로 기존 기능 전체의 검증일은 유지한다.
+
 ## DAX (DynamoDB Accelerator)
 
 - **DynamoDB 호환 인메모리 캐시**. eventually consistent read의 cache hit에서 마이크로초 단위 응답을 목표로 하며 strongly consistent read는 DynamoDB로 통과시킴
@@ -161,6 +169,8 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 ## 출처
 
+- [AWS DynamoDB — Best practices for handling concurrent updates](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/BestPractices_ImplementingVersionControl.html)
+- [AWS DynamoDB — TransactWriteItems API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_TransactWriteItems.html)
 - [AWS DynamoDB — Cross-account access with resource-based policies](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/rbac-cross-account-access.html)
 - [AWS DynamoDB — Authorization with IAM identity-based policies and DynamoDB resource-based policies](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/rbac-auth-iam-id-based-policies-DDB.html)
 - [AWS DynamoDB — Resource-based policy considerations](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/rbac-considerations.html)

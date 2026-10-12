@@ -86,6 +86,12 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 
 이를 적용할 때는 센서 스키마, 단위와 공정 조건을 비교하고 새 현장의 라벨이 있는 데이터로 오탐과 미탐을 평가한다. 배포 버전과 입력 조건, 작업자의 후속 검사 결과를 함께 기록한다. 이 절차는 설계 제안이며 실제 공장 검증을 수행한 결과가 아니다.
 
+### 과거 비전 검사 서비스와 현재 도입 후보를 구분한다
+
+2026-10-13 AWS의 Lookout for Vision 전환 공지를 대조했다. AWS는 신규 고객 접근 중단일을 2024-10-10, 서비스 종료일을 2025-10-31로 공지했다. 따라서 과거의 Lookout for Vision과 Greengrass 조합을 신규 도입 절차로 그대로 재사용하지 않는다.
+
+공지에 제시된 SageMaker 기반 모델 구축과 파트너 솔루션은 대체 후보이며 기존 모델과 배포 구성을 그대로 승계한다는 보장은 아니다. 현장 적용에서는 보유 이미지와 라벨, 대상 장비의 실행 환경, 추론 지연과 불량 검출 품질을 다시 검증한다(설계 점검). 클라우드 대안의 존재만으로 오프라인 동작이 충족되는 것도 아니다. 이 절은 서비스 수명과 대체 검토 범위만 대조했다.
+
 ## 연결 단절과 MQTT 버퍼의 한계
 
 2026-10-10 Greengrass nucleus 공식 문서 대조 기준. MQTT spooler가 있어도 장기간의 단절이나 저장 공간 부족까지 데이터 무손실이 보장되지는 않는다.
@@ -164,6 +170,7 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [Exploring alternatives and seamlessly migrating data from Amazon Lookout for Vision — AWS](https://aws.amazon.com/blogs/machine-learning/exploring-alternatives-and-seamlessly-migrating-data-from-amazon-lookout-for-vision/) — 2026-10-13 종료 공지와 대체 후보의 범위를 대조
 - [Amazon Monitron, What is Amazon Monitron?](https://docs.aws.amazon.com/Monitron/latest/user-guide/what-is-monitron.html) — 2026-10-13 센서 입력, 경보와 오프라인 상태의 의미 대조
 - [Amazon Monitron, Document history for the Amazon Monitron User Guide](https://docs.aws.amazon.com/Monitron/latest/user-guide/doc-history.html) — 2026-10-13 신규 고객 제공 중단 날짜 대조
 - [AWS IoT FleetWise, Collect AWS IoT FleetWise data with campaigns](https://docs.aws.amazon.com/iot-fleetwise/latest/developerguide/campaigns.html) — 2026-10-13 선택 수집, 두 간격 설정과 장비 배포 조건 대조
