@@ -47,6 +47,24 @@ Terraform `v1.17.0-beta2`의 `-minimal-refresh`는 저장된 state와 구성으�
 
 ## 언어, 학습 곡선의 트레이드오프
 
+### Construct 수준과 검증 범위
+
+2026-10-13 AWS CDK v2 공식 문서 기준이다. 코드가 짧아져도 합성된 리소스와 권한의 검토 범위가 줄어드는 것은 아니다.
+
+| 수준 | 제공하는 추상화 | 검토할 대상 |
+|---|---|---|
+| L1 | `CfnBucket`처럼 CloudFormation 리소스에 직접 대응 | 명시한 속성과 필요한 설정의 누락 |
+| L2 | `Bucket`처럼 기본값과 권한 설정용 helper를 제공 | 기본값, helper가 생성한 정책과 리소스 |
+| L3 | `ApplicationLoadBalancedFargateService`처럼 여러 리소스를 패턴으로 조합 | 전체 구성, 네트워크 경계와 운영 비용 |
+
+검증은 다음처럼 나눠 설계한다.
+
+1. **특정 속성 검사:** assertions 모듈로 합성한 CloudFormation 템플릿의 필요한 속성을 확인한다.
+2. **Snapshot 비교:** 저장한 템플릿과 새 산출물의 차이를 본다. CDK 버전과 context 변경도 차이를 만들므로 실패를 곧바로 결함으로 보거나 기준선을 무조건 갱신하지 않는다.
+3. **배포 후 검증:** 템플릿 검사를 통과해도 실제 권한, 네트워크 연결과 애플리케이션 동작은 별도 확인한다. 이는 배포 검증 설계에 적용할 원칙이다.
+
+### 언어와 운영 조건 비교
+
 | 항목 | AWS CDK | Terraform |
 |---|---|---|
 | 언어 | 범용 언어(TS/Python) | HCL(도메인 특화) |
@@ -75,6 +93,8 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 - IaC 도구 선택에서 진보성보다 운영 안정성, 커뮤니티를 우선하는 판단 근거
 
 ## 출처
+- [AWS CDK, AWS CDK Constructs](https://docs.aws.amazon.com/cdk/v2/guide/constructs.html)
+- [AWS CDK, Test AWS CDK applications](https://docs.aws.amazon.com/cdk/v2/guide/testing.html)
 - [AWS CDK, cdk diff](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-diff.html)
 - [AWS CDK, cdk drift](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-drift.html)
 - [HashiCorp Terraform, plan command](https://developer.hashicorp.com/terraform/cli/commands/plan)

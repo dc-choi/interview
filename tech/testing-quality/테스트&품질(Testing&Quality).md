@@ -8,6 +8,7 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 # 테스트&품질(Testing&Quality)
 
 ## Checklist
+- [x] [[Requirements-Traceability|요구사항 추적성 (양방향 연결, 변경 영향 분석, 링크와 검증 결과의 구분)]]
 - [x] [[Test-Pyramid#Unit Test|Unit test (단위 범위, AAA 구조, 격리와 실행 비용)]]
 - [x] [[Test-Pyramid#Integration Test|Integration test (외부 의존과의 상호작용 검증 범위)]]
 - [x] [[framework-testing|프레임워크 테스트 (프레임워크 DI 컨테이너 위의 테스트 경계, Jest mock과 matcher, Spring test context와 MockMvcTester, NestJS TestingModule override와 request-scoped, 쿠키 인증 E2E, 동적 모듈 스텁)]]
