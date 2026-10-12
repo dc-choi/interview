@@ -24,6 +24,17 @@ aliases: ["SQS Consumer Lambda vs ECS", "Lambda vs ECS 워커", "SQS 컨슈머 �
 | 코드 재사용 | 가벼운 핸들러에 적합. NestJS 모듈도 쓸 수 있지만 package 크기, cold start와 connection 비용을 확인 | 기존 NestJS 모듈, DI, Prisma, 도메인 서비스 그대로 재사용 |
 | 운영 부담 | 인프라 부담은 낮지만 IAM, ESM 동시성, DLQ, alarm과 실패 처리는 필요 | task 정의, 오토스케일 정책, 헬스체크, 배포, ECR 이미지 관리 |
 
+## 비동기 추론은 응답 기한과 처리량으로 고른다
+
+입력 업로드와 모델 추론을 큐로 분리하면 API 응답과 분석 결과의 준비 시점이 달라진다. 다음은 2026-10-13 AWS의 SQS Standard와 ECS 큐 기반 확장 문서를 대조해 정리한 설계 점검이다. 기존 코드 예제와 비교표 전체의 재검증은 아니다.
+
+- **순서와 중복:** Standard 큐는 중복 전달과 순서 역전을 허용한다. 분석 조각이 독립적인지 확인하고, 결과 저장에는 입력 식별자와 모델 버전 등을 이용한 멱등 처리를 검토한다. 이전 조각의 상태가 필요한 추론이라면 순서 제어를 별도로 설계한다.
+- **대기시간 예산:** ECS의 backlog per task는 대기 메시지 수를 실행 중 task 수로 나눈 값이다. task가 한 번에 한 메시지를 처리한다는 전제에서는 허용 큐 대기시간을 평균 처리시간으로 나눈 값을 목표의 출발점으로 삼을 수 있다. 예를 들어 10초와 0.5초라면 task당 20건이다. 이는 지연 보장이 아니며 배치 크기와 동시성이 다르면 실측 처리량으로 보정한다.
+- **모델 준비 비용:** 컨테이너가 실행 중이어도 모델 로딩이 끝났는지 확인한다. 최소 용량과 확장 상한은 기동 지연, 입력 전송, 추론과 결과 저장을 포함한 전체 응답 기한으로 검증한다. Lambda와 ECS 모두 실제 workload로 비교한다.
+- **축소 중 작업:** 처리 중 task가 종료될 수 있으므로 재처리와 결과 중복을 시험한다. ECS task scale-in protection은 작업 중 축소를 막는 수단이지만, 멱등 처리와 실패 복구를 대신하지 않는다.
+
+추론 시간 단축과 사용자에게 결과가 도착하는 시간 단축은 같은 측정치가 아니다. 확장 정책과 0개 task에서의 재기동 조건은 [[ECS-Service-AutoScaling|ECS 워커 오토스케일링]]에서 함께 확인한다.
+
 ## Prisma/RDS 커넥션이 갈림길이 되는 이유
 
 실무에서 가장 자주 간과되는 축이다.
@@ -147,6 +158,8 @@ export class OrderConsumer implements OnApplicationShutdown {
 
 ## 출처
 
+- [AWS 공식 문서, Scale Amazon ECS services based on an Amazon SQS queue](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-autoscaling-queue.html) — 2026-10-13 backlog per task, 허용 대기시간과 축소 중 작업 보호 대조
+- [AWS 공식 문서, Amazon SQS standard queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html) — 2026-10-13 중복 전달과 순서 역전, 요청과 백그라운드 작업의 분리 대조
 - [AWS 공식 문서, Amazon SQS event source for Lambda](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html)
 - [AWS 공식 문서, Lambda timeout](https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html)
 - [AWS 공식 문서, SQS event source mapping 구성과 maximum concurrency](https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-configure.html)

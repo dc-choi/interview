@@ -54,6 +54,14 @@ SiteWise에서는 asset model로 같은 종류의 설비가 공유할 구조를 
 
 예를 들어 설비, 센서와 생산 라인의 연결을 따라 관련 대상을 찾을 수 있다. 이 연결을 생성형 AI의 진단 입력으로 쓸 때는 조회한 설비 관계와 실제 측정값의 시각, 단위 및 누락 여부를 함께 확인하는 방식을 권한다. 그래프의 연결은 모델에 정의한 관계이며 고장 원인의 인과관계를 입증한 결과가 아니다. 원인 가설과 현장 조치는 별도로 검증한다(설계 점검).
 
+## 설비 이상 경보와 관측 중단을 구분한다
+
+2026-10-13 Amazon Monitron 공식 문서 대조 기준. Monitron은 진동과 온도 센서, 게이트웨이와 클라우드 분석을 연결해 설비의 잠재적 이상을 알린다. `Alarm`은 측정값이 정상 범위를 벗어났다는 경보이고, `Maintenance`는 담당자가 경보를 확인해 조사 중인 상태다. 경보 확인을 수리 완료로 처리하지 않는다.
+
+`Healthy-offline`은 마지막 기록이 정상이었다는 뜻이며, 센서가 다시 연결되기 전에는 새 경보가 생성되지 않는다. 통합 관제나 챗봇에는 마지막 관측 시각과 연결 상태를 함께 전달하는 방식을 권한다. 오래된 정상값을 현재 정상으로 요약하지 않도록 하는 설계 점검이다.
+
+**Monitron은 2024-10-31부터 신규 고객에게 제공되지 않는다.** 과거 도입 사례를 신규 시스템의 채택 근거로 바로 쓰지 않는다. 이 절은 상태 해석과 도입 제한만 대조했으며, 기존 IoT 기능 전체를 재검증하지 않아 frontmatter의 검증일은 유지한다.
+
 ## 엣지 추론과 클라우드 작업
 
 AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행하고 데이터를 필터링하거나 집계하는 런타임을 제공한다. 소프트웨어를 component 단위로 배포하고 관리할 수 있다. 모델 추론을 로컬로 옮기는 것과 전체 시스템의 오프라인 동작은 구분한다.
@@ -156,6 +164,8 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [Amazon Monitron, What is Amazon Monitron?](https://docs.aws.amazon.com/Monitron/latest/user-guide/what-is-monitron.html) — 2026-10-13 센서 입력, 경보와 오프라인 상태의 의미 대조
+- [Amazon Monitron, Document history for the Amazon Monitron User Guide](https://docs.aws.amazon.com/Monitron/latest/user-guide/doc-history.html) — 2026-10-13 신규 고객 제공 중단 날짜 대조
 - [AWS IoT FleetWise, Collect AWS IoT FleetWise data with campaigns](https://docs.aws.amazon.com/iot-fleetwise/latest/developerguide/campaigns.html) — 2026-10-13 선택 수집, 두 간격 설정과 장비 배포 조건 대조
 - [AWS IoT FleetWise — AWS](https://aws.amazon.com/iot-fleetwise/) — 2026-10-13 신규 고객 제공 중단 날짜 대조
 - [AWS IoT Core, Provisioning devices that don't have device certificates using fleet provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html) — 2026-10-13 claim 인증서 제한, 장비 등록과 운영 인증서 재연결 대조
