@@ -67,6 +67,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 - 정의: JavaScript나 TypeScript 이벤트 핸들러로 된 플러그인이다. 도구 호출, 제출한 프롬프트, 화면 일부를 그리는 일 같은 이벤트가 생기면 Claude Code가 핸들러를 부르고, 핸들러는 이벤트를 지켜보거나(observe), 바꿔서 넘기거나(rewrite), 직접 응답해 원래 동작을 대신한다(answer). mods 문서는 mod의 핸들러를 hook, 설정 파일의 기존 훅을 settings hook이라 부른다. 이 문서의 `## 훅` 절은 settings hook을 다룬다
 - settings hook, 스킬과 MCP는 Claude Code 밖에서 동작한다(스크립트 실행, 텍스트나 도구 제공). mod는 프로세스 안에서 돌기 때문에 transcript 옆 pane과 프롬프트 위 band를 그리고, 도구 행이나 spinner처럼 Claude Code가 그리는 화면을 바꾸고, 도구 호출을 붙잡아 두거나 대신 답하고, Claude 턴 없이 실행되는 `/command`(작업 중 즉시 실행은 `immediate: true`)를 더하고, 같은 파일의 변수로 hook끼리 데이터를 나눈다. `/diff` pane과 `AGENTS.md` 로딩도 내장 mod다
+- 내장 mod: Claude Code 기능 일부가 mod로 들어 있으며 `/plugin`의 Installed 탭 Built-in 묶음에 보이고, 업데이트나 제거는 할 수 없다. 기본으로 꺼진 `cc-plugin-you-should-know`(v2.1.287에 추가된 You should know)는 Claude가 긴 작업을 하는 동안 사용자를 위해 상황을 살피는 보조 에이전트를 돌리고, 사용자나 Claude가 놓칠 만한 알아 둘 일을 찾으면 프롬프트 위에 메모를 띄운다. 조직에서 쓸 수 있으면 Installed의 Show disabled에 나타나고 `/plugin enable cc-plugin-you-should-know@builtin`으로 켠다(변경 기록 기준 텔레메트리를 켠 first-party 세션 대상)
 - 버전과 실행 위치: 설치한 mod는 기본으로 켜지며 터미널은 Claude Code v2.1.287 이상, Desktop 앱에 포함된 Claude Code는 v2.1.286 이상에서 지원한다. hook은 그 플러그인을 로드한 세션에서 돌지만 그리는 요소는 터미널과 Desktop 앱 Code 탭에만 보인다(Desktop은 터미널 전용 요소를 그리지 않고, 플러그인을 쓸 수 없는 Desktop의 WSL 세션에서는 hook도 돌지 않는다). VS Code 확장의 채팅 패널, `claude -p`와 Agent SDK에서는 hook만 돌고, 클라우드 세션은 그 세션까지 전달된 플러그인에 한해 hook만 돈다
 - 신뢰 경계: mod는 사용자 권한으로 Claude Code 안에서 도는 코드이고 샌드박스가 없다. 사용자 계정이 닿는 파일 읽기와 쓰기, 프로세스 실행과 네트워크 요청, 환경 변수와 설정 파일(그 안의 API 키 포함) 읽기, 모든 프롬프트와 도구 호출의 관찰과 재작성, 사용자가 입력한 것처럼 프롬프트를 제출하거나 다른 세션에 메시지 보내기, 사용자 대신 도구 호출 승인, 사용자의 요금제나 API 키로 모델 호출을 할 수 있다. sandbox를 켜도 격리되는 것은 Claude가 실행하는 Bash 명령이고 mod가 띄운 프로세스는 밖에서 돈다. 다만 권한 프롬프트 화면은 바꾸지 못한다
 - 권한 규칙과의 순서: `tool.check`를 처리하는 mod는 규칙과 PreToolUse 훅이 결정한 뒤에 답해 그 결정을 바꿀 수 있다. `ask` 규칙이 물을 호출과 managed settings 밖 PreToolUse 훅이 막은 호출을 승인할 수 있고, auto 모드에서 mod가 승인한 호출은 분류기 검사를 거치지 않는다. deny 규칙은 managed settings가 있는 기기나 Team, Enterprise 로그인에서 내장 guard가 로드될 때만 기본으로 mod보다 우선한다. 그 밖의 환경이나 조직이 guard 옵션 `allowModsToOverrideDenyRules`를 켠 경우, managed `prependPlugins`에서 guard를 빼 guard가 로드되지 않는 경우에는 mod가 deny 규칙이 거부한 호출도 승인할 수 있다. deny 규칙과 managed 훅은 mod 자신의 `$.fs`, `$.process` 호출에는 적용되지 않는다
@@ -108,7 +109,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 2026-10-06에는 mods, 플러그인 보안과 권한 문서로 Mod 절과 훅, 플러그인 절의 mod 관련 문장을 대조했다. 화면 변경 절과 터미널, Desktop의 지원 버전은 Mods overview와 interface, reference 문서로 추가 대조했다. 기존 훅 절의 exit code와 타임아웃 서술처럼 남은 버전 민감 주장이 최신 Hooks 문서와 맞는지는 이번에 다시 확인하지 않았으므로 frontmatter 검증일은 유지한다.
 
-2026-10-12에는 Create a mod, Use the mods API, Troubleshoot a mod, Draw in the interface with a mod, Mods reference, Manage mods for your organization, Configure permissions와 Settings reference 문서로 Claude에게 맡겨 만드는 흐름, 세션 범위, 명령 옵션과 이름 한도, 조용한 실패와 render site 목록을 추가 대조했다. 한글 명령 이름이 등록되지 않은 일은 공식 문서가 다루지 않는 사용 사례다. 훅 절은 이번에도 다시 대조하지 않아 frontmatter 검증일을 유지한다.
+2026-10-12에는 Create a mod, Use the mods API, Troubleshoot a mod, Draw in the interface with a mod, Mods reference, Manage mods for your organization, Configure permissions와 Settings reference 문서로 Claude에게 맡겨 만드는 흐름, 세션 범위, 명령 옵션과 이름 한도, 조용한 실패와 render site 목록을 추가 대조했다. 한글 명령 이름이 등록되지 않은 일은 공식 문서가 다루지 않는 사용 사례다. 같은 날 Mods overview의 내장 mod 표와 변경 기록(v2.1.287)으로 내장 mod 항목도 대조했다. 훅 절은 이번에도 다시 대조하지 않아 frontmatter 검증일을 유지한다.
 
 - [클로드 코드 가이드 (레퍼런스 08 MCP, 09 훅, 10 서브에이전트, 11 스킬, 18 플러그인) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code Docs, Orchestrate teams of Claude Code sessions](https://code.claude.com/docs/en/agent-teams)
@@ -128,6 +129,8 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - [Claude Code Docs, Troubleshoot a mod](https://code.claude.com/docs/en/plugins/mods/troubleshoot)
 - [Claude Code Docs, Settings reference (disableSideloadFlags)](https://code.claude.com/docs/en/settings-reference#disablesideloadflags)
 - [클로드 코드 Mods로 어디까지 바꿀 수 있을까 — YouTube, 잔재미코딩(DaveLee)](https://www.youtube.com/watch?v=ABpu4VbEpqM) — 2026-10-11, 일곱 가지 mod 제작 사례와 한글 명령 이름 등록 실패는 발표자의 사용 사례
+- [Claude Code CHANGELOG — GitHub, anthropics/claude-code](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) — 2.1.287의 You should know 추가와 활성화 조건
+- [Claude Code 2026 — YouTube, 토비의 스프링](https://www.youtube.com/watch?v=Y2mEVnN-FKY) — 2026-10-11, 2026년 변경을 소개하는 TTS 내레이션 영상. 내장 mod 항목의 단서로만 쓰고 이름과 동작은 Mods overview로 대조
 - [Claude Code Docs, Plugin security and trust](https://code.claude.com/docs/en/plugins/security)
 - [Claude Code Docs, Configure permissions (Extend permissions with hooks)](https://code.claude.com/docs/en/permissions)
 - [Agent Skills, Specification](https://agentskills.io/specification)

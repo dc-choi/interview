@@ -1,7 +1,7 @@
 ---
-tags: [ai, claude-code, cli, ci-cd, cost, troubleshooting]
+tags: [ai, claude-code, cli, ci-cd, cost, troubleshooting, code-review]
 status: done
-verified_at: 2026-09-29
+verified_at: 2026-10-12
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드 트러블슈팅", "클로드 코드 비용"]
 ---
@@ -24,7 +24,9 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 - CI 안전장치 4종: `--max-turns`(리뷰 5, 구현 10~15 권장), `--max-budget-usd`, 잡 타임아웃, dontAsk 권한 모드. `--dangerously-skip-permissions`는 격리 컨테이너에서만
 - 구조화 출력: `--output-format json` + `--json-schema`로 파이프라인에서 파싱 가능한 응답 강제
 - GitHub Actions: 공식 액션 + `@claude` 트리거. **모델 버전 고정이 필수** — 별칭이 새 모델을 가리키게 되면 미활성 모델 에러로 파이프라인이 깨진다
-- 자동 코드 리뷰: 커스터마이즈는 CLAUDE.md(위반이 nit 수준으로 격하)보다 리뷰 전용 파일(REVIEW.md, 최우선 주입)이 확실. 심각도 기준과 skip 규칙을 명시
+- 자동 코드 리뷰(Code Review, Team과 Enterprise 대상 research preview, ZDR이나 HIPAA 구성을 적용한 조직은 쓸 수 없고 Anthropic BAA 적용 대상도 아님): GitHub 앱이 저장소 설정에 따라 PR을 열 때, push마다 또는 `@claude review` 코멘트로 리뷰하고 발견을 해당 줄의 인라인 코멘트로 단다. 비용은 플랜 포함 사용량과 별도로 사용 크레딧(usage credits)에서 나가며 리뷰당 평균 $15에서 $25다. 커스터마이즈는 CLAUDE.md(새로 들어온 위반을 nit로 표시)보다 리뷰 전용 파일 REVIEW.md가 확실하다. REVIEW.md는 발견과 검증 에이전트에 리뷰 지침으로 직접 전달되고 순위와 보고 에이전트도 참고하므로 심각도 기준, nit 상한과 skip 규칙을 여기에 명시한다
+- 로컬 리뷰 `/code-review`(별칭 `/review`): GitHub 앱 없이 터미널 세션에서 정확성 버그를 찾고, 모델과 effort에 따라 재사용, 단순화, 효율 같은 정리 항목도 함께 보고한다. 기본 대상은 upstream보다 앞선 브랜치 커밋과 커밋하지 않은 변경이고, 파일 경로, PR 번호, 브랜치나 `main...my-feature` 같은 ref 범위를 대상으로 줄 수 있다. 기본으로 자체 컨텍스트를 가진 백그라운드 서브에이전트로 돌아 대화를 채우지 않고(`-p`, Agent SDK, 진행 중 재실행, `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`에서는 포그라운드), 비용은 일반 사용량에 포함된다. effort를 `low`로 주면 확신이 큰 발견만 보고해 오탐이 적고 `medium`부터 `max`까지는 범위를 넓힌다. 레벨을 생략하면 대화형 세션에서 마지막으로 직접 입력한 레벨을 이전 세션 것까지 재사용하고(`-p` 실행에서 준 레벨은 기억하지 않는다), 입력한 적이 없으면 세션의 현재 effort를 쓴다. `ultra`는 기억한 레벨을 쓰지도 바꾸지도 않는다. `--fix`는 발견을 작업 트리에 적용하는데 백그라운드 리뷰의 수정은 체크포인트 밖이라 `/rewind`가 아니라 git으로 되돌리고(포그라운드로 돌았으면 `/rewind`로 되돌린다), `--comment`는 GitHub PR에는 인라인 코멘트로, GitLab MR에는 노트 하나로 올린다(GitLab은 v2.1.257 이상과 `glab` CLI 필요, 없으면 터미널에 출력). CLAUDE.md는 따르지만 REVIEW.md는 읽지 않는다. 버그를 찾지 않고 정리 항목만 찾아 바로 고치는 리뷰는 `/simplify`다
+- 클라우드 리뷰 `/code-review ultra`(ultrareview, research preview, 계정에서 쓸 수 있으면 `/ultrareview`도 별칭으로 동작): Anthropic 인프라의 클라우드 샌드박스에서 리뷰어 에이전트 여럿이 변경을 병렬로 살피고, 보고하는 발견마다 독립적으로 재현하고 검증해 스타일 제안보다 실제 버그에 집중한다. 인자가 없으면 기본 브랜치 대비 현재 브랜치(커밋하지 않은 변경과 staged 변경 포함)를 묶어 업로드하고, github.com PR 번호를 주면 로컬에서 아무것도 올리지 않고 샌드박스가 PR을 clone한다. 보통 5분에서 10분 걸리는 백그라운드 작업이라 `/tasks`로 확인하고, 슬래시 명령은 사용자가 직접 입력할 때만 실행된다(Claude가 스스로 시작하지 않고 예약 작업도 클라우드 리뷰를 띄우지 않는다. Claude가 Bash로 `claude ultrareview`를 대신 실행하면 저장소 전체 리뷰 폴백은 거부된다). claude.ai 계정 인증이 필요하고 Bedrock, Google Cloud Agent Platform, Microsoft Foundry와 ZDR이나 HIPAA 구성 조직에서는 쓸 수 없으며, 쓸 수 없으면 세션 안의 로컬 리뷰로 대신 돈다. 플랜 포함 사용량이 아니라 사용 크레딧으로 과금되고, Pro와 Max에는 계정당 한 번 주는 무료 3회(갱신 없음)가 있으며 그 뒤에는 변경 규모에 따라 보통 $5에서 $25다. PR 모드는 Claude 계정에 연결한 GitHub 계정의 읽기 권한이 필요하다. 스크립트와 CI에서는 끝날 때까지 기다려 결과를 stdout으로 내는 `claude ultrareview`를 쓰며, 같은 claude.ai 인증과 사용 크레딧 설정이 필요하다(`claude -p '/code-review ultra'`는 기다리지 않고 종료하고, 사용 크레딧으로 과금될 리뷰는 아예 띄우지 않는다)
 
 ## 비용 관리 — 정량 감각
 
@@ -35,7 +37,7 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 
 ## 트러블슈팅 — 진단 순서
 
-- 원인을 모르면 `/doctor`부터 (설치, 설정 스키마, MCP, 키바인딩 일괄 점검). 세션 로그 분석은 `/debug`
+- 원인을 모르면 `/doctor`부터 (설치 상태, 설정, 확장(사용하지 않는 스킬, MCP 서버, 플러그인, 느린 훅), CLAUDE.md와 권한을 점검하고 확인을 받아 수정). 세션 없이 읽기 전용 설치 진단은 `claude doctor`, 키바인딩 경고는 `--debug` 로그에 남는다. 세션 로그 분석은 `/debug`
 - 성능 저하의 최다 원인은 커진 컨텍스트. 압축 직후 다시 차오르는 스래싱이면 파일을 라인 범위로 읽거나 조사를 서브에이전트로 위임
 - 인증 대표 함정: 셸 프로필에 남은 낡은 ANTHROPIC_API_KEY가 구독 OAuth를 조용히 오버라이드 — `/status`로 활성 자격 증명 확인
 - 설정 디버깅은 "실제로 뭐가 로드됐나"부터: /status, /context, /permissions, /hooks. 흔한 실수 — 훅 matcher를 배열로 작성(단일 문자열이어야 함), permissions를 엉뚱한 파일에 배치, 서브에이전트가 CLAUDE.md를 상속한다고 가정
@@ -53,6 +55,7 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 
 - 성능 저하와 비용 폭증의 공통 제1 원인 (컨텍스트)과 대응 순서
 - CI에서 에이전트를 태울 때의 안전장치 4종과 모델 버전 고정이 필수인 이유
+- 로컬 `/code-review`, 클라우드 `/code-review ultra`, 관리형 Code Review의 실행 위치, 과금과 REVIEW.md 반영 차이(관리형은 반영, 로컬은 읽지 않음, ultra는 ultrareview 문서에 언급 없음, 2026-10-12 기준)
 - 품질 저하 시 확인 순서 (컨텍스트, CLAUDE.md, CLI 버전과 기본값 변경, 재프롬프트), 커뮤니티 설정 팁이 현재 모델에 적용되는지
 - /btw와 서브에이전트의 트레이드오프
 - 안티패턴 5종과 각각의 처방
@@ -65,8 +68,12 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 - [Claude Code 공식 문서, Fast mode](https://code.claude.com/docs/en/fast-mode)
 - [Claude Code 공식 문서, Manage costs](https://code.claude.com/docs/en/costs)
 - [Claude Code 공식 문서, Model configuration](https://code.claude.com/docs/en/model-config)
+- [Claude Code 공식 문서, Code Review](https://code.claude.com/docs/en/code-review)
+- [Claude Code 공식 문서, Find bugs with ultrareview](https://code.claude.com/docs/en/ultrareview)
+- [Claude Code 공식 문서, Commands](https://code.claude.com/docs/en/commands)
 - [클로드 코드 가이드 (레퍼런스 03 기본 사용법, 13 CI/CD, 14 CLI, 16 베스트 프랙티스, 17 트러블슈팅) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code 품질 저하 때 adaptive thinking 끄기 — Threads, withfox](https://www.threads.com/@withfox/post/DXDx0mhCX4z)
+- [Claude Code 2026 — YouTube, 토비의 스프링](https://www.youtube.com/watch?v=Y2mEVnN-FKY) — 2026-10-11, 2026년 변경을 소개하는 TTS 내레이션 영상. 로컬 리뷰와 ultra 리뷰 항목의 단서로만 쓰고 내용은 공식 문서로 대조
 
 ## 관련 문서
 

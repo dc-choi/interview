@@ -2,8 +2,8 @@
 tags: [ai, claude-code, customization, voice, remote]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Claude Code Customization", "클로드 코드 커스터마이즈", "Voice Mode", "원격 제어"]
-verified_at: 2026-09-30
+aliases: ["Claude Code Customization", "클로드 코드 커스터마이즈", "Voice Mode", "원격 제어", "Remote Control"]
+verified_at: 2026-10-12
 ---
 
 # Claude Code 커스터마이즈 — 환경 설정, 음성, 원격 제어
@@ -20,9 +20,9 @@ verified_at: 2026-09-30
 ## Voice Mode — 음성 입력
 
 - `/voice`로 활성화, 스페이스바 홀드 → 녹음 → 손 떼면 텍스트 삽입. 타이핑과 혼합 가능
-- **전략**: 긴 지시는 음성, 정확한 식별자(`@src/auth.ts`, 브랜치명)는 타이핑 — 음성 인식이 코딩 어휘를 흘릴 수 있어서
+- **전략**: 긴 지시는 음성, 파일 경로 같은 정확한 식별자(`@src/auth.ts`)는 타이핑. 인식은 코딩 어휘에 맞춰져 있고 현재 프로젝트 이름과 git 브랜치 이름이 자동으로 인식 힌트에 들어가지만, 경로와 기호는 타이핑이 확실하다(제안)
 - 다국어: settings.json `"language": "korean"` (20개 언어, 미지원은 영어 폴백)
-- 제약: API 키 전용/Bedrock/Vertex 미지원, SSH나 클라우드 원격은 마이크 접근 불가
+- 제약: claude.ai 계정 로그인 전용(Anthropic API 키 직접 사용, Bedrock, Google Cloud Agent Platform, Microsoft Foundry 미지원), 로컬 마이크가 필요해 SSH와 클라우드 세션에서는 동작하지 않음
 
 ## 원격 제어 — 실행 위치 분리
 
@@ -30,9 +30,9 @@ verified_at: 2026-09-30
 
 | 방식 | 특징 | 제약 |
 |---|---|---|
-| `claude remote-control` (`/rc`) | QR/URL로 폰 접속해 로컬 세션 제어 | 터미널 닫으면 종료, 10분 단절 시 타임아웃, 인스턴스당 1개 |
-| Dispatch (Desktop, 터미널 불필요) | 폰 앱에서 데스크톱으로 작업 전송 | 데스크톱 켜짐 + 앱 실행 필수, 단일 스레드 |
-| Cowork 탭 | 클라우드 VM 실행, 컴퓨터 꺼도 진행 | 로컬 파일, 브라우저와 컴퓨터 사용 기능은 데스크톱 앱이 열려 연결돼 있어야 함. 이때 승인한 로컬 폴더를 직접 읽고 쓸 수 있음 |
+| Remote Control: `claude remote-control`(서버 모드), `claude --remote-control`, 세션 안 `/remote-control`(`/rc`) | 세션 URL, QR 코드나 세션 목록으로 Claude 앱 또는 claude.ai/code에서 로컬 세션을 이어 감. 실행과 파일 접근은 내 컴퓨터에 남고 폰과 브라우저는 그 세션을 보는 창. 폰에서 첨부한 사진은 Claude가 메시지의 일부로 바로 보고 다른 파일은 내 컴퓨터로 내려받아 `@` 참조로 넘김. 노트북이 잠들거나 네트워크가 끊겨도 다시 온라인이 되면 자동 재연결. 연결된 동안 메시지, 응답과 도구 활동을 담은 대화 기록은 기기 간 동기화와 재연결을 위해 Anthropic 서버에 저장 | 컴퓨터가 켜져 있고 `claude` 프로세스가 돌아야 함(터미널을 닫으면 되살릴 때까지 오프라인). 서버 모드 밖에서는 프로세스당 원격 세션 1개(서버 모드는 여러 세션 동시). 깨어 있는데 네트워크만 오래 끊기면 서버 모드는 약 10분 뒤 종료하고 대화형 세션은 복구될 때까지 재시도. Pro, Max, Team, Enterprise의 claude.ai 로그인 필요(API 키 불가, Team과 Enterprise는 Owner가 먼저 켬). Bedrock, Google Cloud Agent Platform, Microsoft Foundry, api.anthropic.com이 아닌 `ANTHROPIC_BASE_URL`(게이트웨이, 프록시), `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`이나 `DISABLE_GROWTHBOOK` 설정, 엔터프라이즈 Claude apps gateway 로그인, ZDR이나 HIPAA 구성 조직, `claude setup-token` 장기 토큰에서는 쓸 수 없음 |
+| Dispatch (Desktop, 터미널 불필요) | 폰 앱에서 데스크톱으로 작업 전송 | 데스크톱 켜짐 + 앱 실행 필수, 단일 스레드, Pro나 Max 플랜 필요(Team, Enterprise 불가, Desktop 문서 기준) |
+| Cowork 탭 | 클라우드 VM 실행, 컴퓨터 꺼도 진행(Team, Enterprise에서는 클라우드 실행이 베타, 2026-10-12 도움말 기준) | 로컬 파일, 브라우저와 컴퓨터 사용 기능은 데스크톱 앱이 열려 연결돼 있어야 함. 이때 승인한 로컬 폴더를 직접 읽고 쓸 수 있음 |
 | `claude --cloud` / `--teleport`(`/tp`) | 웹 세션 병렬 생성 후 로컬로 가져오기 | `--remote`는 폐기된 `--cloud` 별칭, teleport는 단방향(웹→터미널) |
 
 선택 기준: 로컬 파일이 필요하면 Desktop 계열, 무중단이 필요하면 클라우드 계열.
@@ -69,6 +69,9 @@ verified_at: 2026-09-30
 ## 출처
 
 - [Claude Code — CLI reference](https://code.claude.com/docs/en/cli-reference)
+- [Claude Code — Continue local sessions from any device with Remote Control](https://code.claude.com/docs/en/remote-control)
+- [Claude Code — Voice dictation](https://code.claude.com/docs/en/voice-dictation)
+- [Claude Code — Desktop application](https://code.claude.com/docs/en/desktop)
 - [Claude Cowork 시작하기](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
 - [Claude — Cowork overview](https://claude.com/docs/cowork/overview)
 - [Claude Code — How Claude remembers your project](https://code.claude.com/docs/en/memory)
@@ -86,6 +89,7 @@ verified_at: 2026-09-30
 - [Claude Code — Extend Claude with skills](https://code.claude.com/docs/en/skills)
 - [claude-plugins-official — GitHub, anthropics](https://github.com/anthropics/claude-plugins-official)
 - [인프런, 널널한 개발자, 스킬과 플러그인](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498598)
+- [Claude Code 2026 — YouTube, 토비의 스프링](https://www.youtube.com/watch?v=Y2mEVnN-FKY) — 2026-10-11, 2026년 변경을 소개하는 TTS 내레이션 영상. Remote Control과 `/voice` 항목의 단서로만 쓰고 내용은 공식 문서로 대조
 
 ## 관련 문서
 
