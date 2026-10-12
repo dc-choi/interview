@@ -1,6 +1,7 @@
 ---
 tags: [ai, llm, inference, serving, performance, edge, hardware]
 status: done
+verified_at: 2026-10-12
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Inference Bottlenecks", "LLM 추론 병목", "Memory-bound Decode", "루프라인과 LLM 서빙"]
 ---
@@ -125,6 +126,14 @@ CPU 사례에는 병렬화, 단계 간 데이터 전달, CPU 활용률과 하드
 
 한정: M1 실측이며 이후 세대에 그대로 적용할 근거는 없다. GPU 수치는 대역폭 측정 비교이지 종단 추론 성능 비교가 아니고, ANE의 존재 이유인 전력 효율은 분석 대상이 아니었다.
 
+## 연구 사례 — 가중치를 방송으로 받아 수신 회로에서 계산한다
+
+디코드가 가중치 이동에 묶인다는 진단에서 출발해, 기기가 가중치를 저장하거나 메모리에서 읽지 않게 하려는 연구 제안이 있다. 2026-09-30(UTC) arXiv에 v1이 제출된 AIR-LLM(MIT, Duke 연구진)은 중앙 무선국(예: 5G 기지국)이 가중치를 OFDM 부반송파에 실어 방송하고, 기기가 수신기의 RF 믹서에서 내적을 계산하는 구조를 제안한다. 이름이 비슷한 계층 단위 로딩 라이브러리 AirLLM과는 무관하다. 아래는 2026-10-12 논문 v1의 본문과 부록을 대조한 범위이며 시제품 성능이 아니다.
+
+- **계산 위치:** 복소 부반송파 하나가 서로 다른 두 행의 가중치를 실수부와 허수부로 운반한다. 기기가 활성값으로 만든 파형을 믹서의 LO에 넣으면 시간 영역의 곱이 주파수 영역의 합성곱이 되어 가운데 부반송파에 내적이 모인다. 활성값 파형은 디지털에서 precoding과 IFFT를 거친 뒤 DAC로 만든다. 믹서와 LPF를 거친 출력은 안테나마다 ADC로 샘플링하고, 디지털에서 FFT와 postcoding을 거친 보정 유닛 출력들을 합산한다. 모델 전체로는 가중치와 활성값의 행렬-벡터 곱(GEMV)만 아날로그로 계산하고 나머지 연산은 디지털로 처리한다. 프롬프트는 기기에 남고, 한 번의 방송을 커버리지 안의 여러 기기가 함께 쓴다.
+- **보고된 결과:** Llama 3.1 8B에서 도시마다 고른 사용자 한 명 기준(시퀀스 길이 2,048) WikiText-2 perplexity는 FP16의 6.24에서 Paris 사용자 6.49(4.0% 상승), Munich 사용자 7.37로 올랐다. 이 4.0%는 정확도 하락률이 아니다. Paris 사용자의 perplexity는 4비트 가중치 기준선(6.65~6.83)보다 낮았지만, 6개 상식 추론 과제의 zero-shot 평균 정확도는 75.00%에서 68.72%로 낮아져 4비트 기준선(73.77~74.51%)보다 낮고 3비트 기준선 범위(66.00~69.96%)에 들었다(Munich 사용자 65.67%). 논문은 후보 답마다 잡음이 따로 적용되는 채점 방식 때문에 이 지표가 perplexity보다 아날로그 계산에 불리하다고 설명한다. 토큰당 에너지는 Paris 사용자 기준 5G NR 유니캐스트로 FP16 가중치를 받는 원격 기준선 대비 157.7배, 로컬 메모리에서 FP16 가중치를 읽는 기준선 대비 51.5배 줄었고, 4비트 가중치를 받는 원격 기준선 대비로는 40.4배 줄었다고 보고한다. 토큰당 airtime은 Paris 단일 사용자 기준 원격 FP16 대비 5.11배, 원격 4비트 대비 1.28배 짧고, Paris 사용자 20명에서는 104.1배와 26.0배로 벌어진다.
+- **해석 경계:** 채널은 Paris와 Munich 디지털 트윈의 ray-tracing 시뮬레이션이고, 믹서 왜곡은 유선 테스트베드에서 잰 값이다. 기본 설정의 기기는 안테나 포트 4개와 보정 유닛 8개를 쓰고, 보정 유닛마다 안테나 수만큼 믹서, LPF, ADC 경로를 둔다. 에너지는 DAC와 ADC 샘플 수, 디지털 연산 FLOP에 연산당 문헌값을 곱한 기기 측 추정이다. 중앙 무선국의 송신 전력은 비교에 들어 있지 않고, 수신 RF 아날로그 회로의 전력도 에너지 식에 항목으로 없다. 채널에 따라 품질 편차가 크다. 20대씩 배치한 시나리오에서 유효 비트가 약 3.5비트 이상인 기기(Paris 16대, Munich 8대)는 자연스러운 문장을 냈지만, 그 아래에서는 perplexity가 7점대여도 지어낸 세부가 나타났고 약 2.5비트 아래에서야 붕괴했다. 채널 행렬이 거의 특이(singular)해진 Paris 기기 하나(경로 손실 84.0 dB)는 몇 개의 토큰을 되풀이했고 perplexity가 255.27이었다. 저자는 실패하는 기기가 단지 먼 기기가 아니라 채널을 역변환하기 어려운 소수라고 본다. 토큰마다 각 층의 가중치를 다시 방송해야 하고(논문은 토큰당 비용이 이 전송에 지배돼 문맥 길이와 무관하다고 보며 어텐션과 KV 캐시 비용은 따로 제시하지 않는다), 절대 지연과 처리량을 보고하지 않으므로 대화형 응답 시간은 이 결과로 판단하지 않는다.
+
 ## 학습 자료 — 파운데이션 모델 엔지니어링 교재
 
 웹에서 공개 열람할 수 있는 교재(영어, 한국어 번역 제공, 2026년 8월 기준 20장)가 사전학습과 학습 시스템, 스케일링, 사후학습과 정렬, 멀티모달, 추론 최적화, 압축, RAG, 추론 시점 스케일링, 에이전트, 평가, 안전, 해석가능성, 차세대 아키텍처를 한 축으로 묶는다. 역할별 진입점을 잡는 편이 순차 독파보다 낫다. 서빙 엔지니어는 추론 최적화(KV 캐시 관리, PagedAttention, continuous batching, speculative decoding, 긴 컨텍스트 서빙, 서빙 정책과 SLO)와 압축(양자화, 희소화, 증류) 장에서 시작한다. RAG 구축은 RAG 장, 평가 체계는 평가 장, 에이전트 신뢰성은 에이전트 장, 모델 선택과 학습 예산은 스케일링 법칙 장이 진입점이다. 각 장 마지막에 운영 절(서빙 SLO와 폴백, RAG 실패 모드, 에이전트 복구와 가드레일, 프로덕션 평가와 릴리스 게이트)이 있는 점이 특징이다. 라이선스가 명시되지 않았으므로 공개 열람이 가능하다는 사실과 재배포나 인용 허용 범위는 별개다.
@@ -139,6 +148,8 @@ CPU 사례에는 병렬화, 단계 간 데이터 전달, CPU 활용률과 하드
 ## 출처
 
 - [Fiddler: CPU-GPU Orchestration for Fast Inference of Mixture-of-Experts Models — arXiv](https://arxiv.org/abs/2402.07033)
+- [AIR-LLM: Broadcasting AI Weights over Radio for Memory-Free Edge LLM Inference via RF Computing — arXiv](https://arxiv.org/abs/2610.00465v1)
+- [AirLLM — lyogavin](https://github.com/lyogavin/airllm)
 - [llama-server — ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md)
 - [llama : add a GPU cache for MoE experts kept in host memory — ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp/pull/29887)
 - [Qwen3.8-Flash-Next — Hugging Face, Qwen](https://huggingface.co/Qwen/Qwen3.8-Flash-Next)

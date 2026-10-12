@@ -178,3 +178,4 @@ Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하
 - [[Global-IT-Interview|글로벌 IT 인터뷰 준비]]
 - [[Managing-Up|상사와 일하는 법]]
 - [[Incident-Commander|장애 대응 리딩]]
+- [[Presentation-Delivery|발표 구성과 전달]]

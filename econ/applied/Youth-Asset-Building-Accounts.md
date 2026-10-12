@@ -106,6 +106,7 @@ aliases: ["청년 자산형성 상품 비교", "Youth Asset Building Accounts", 
 ## 관련 문서
 
 - [[Tax-Advantaged-Accounts|절세 계좌: 연금저축, IRP, ISA]] — 현행 ISA의 과세와 2026 세제개편안(8월 발표안 기준)
+- [[Youth-Support-Programs|청년 지원 제도 확인]] — 월세, 취업, 교통, 문화 지원과 공유된 혜택 표의 대조
 - [[Personal-Cash-Flow-Planning|개인 현금흐름 계획]] — 매달 넣을 금액과 비상자금의 구분
 - [[Personal-Income-Tax-Basics|개인 소득세와 연말정산]] — 소득공제와 세액공제의 차이
 - [[Investing-Principles|투자의 기본 원칙]] — 원금 변동과 투자 기간

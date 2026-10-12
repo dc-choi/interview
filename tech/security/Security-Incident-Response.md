@@ -1,7 +1,7 @@
 ---
 tags: [security, incident-response, nist, recovery]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-12
 category: "보안(Security)"
 aliases: ["Security Incident Response", "보안 사고 대응", "침해사고 대응"]
 ---
@@ -81,6 +81,45 @@ Microsoft Defender XDR의 자동 공격 차단은 여러 제품의 신호를 사
 
 Defender는 자동 조치의 해제와 지원 대상 자산의 제외 설정을 제공하지만, 조치를 해제한다고 이미 생긴 업무 중단까지 없어지는 것은 아니다. 생성형 AI가 조사 설명을 보조할 때도 설명과 실행 권한을 분리한다. 외부 로그나 메일의 문장을 실행 지시로 받아들이는 위험은 [[LLM-Application-Security|LLM 애플리케이션 보안]]에서 다룬다.
 
+## SOAR로 대응 절차를 자동화한다
+
+SOAR(Security Orchestration, Automation and Response)는 여러 보안 도구를 커넥터로 연결하고 워크플로에 따라 보강, 대응, 수정(remediation) 작업을 실행하는 기술이다. CISA는 SOAR를 낮거나 중간 수준의 보안 이벤트에 대한 자동 대응을 포함하는, 서로 호환되는 소프트웨어 애플리케이션의 기술 스택으로 설명한다. NIST SP 800-215는 사고 대응 과정을 자동화하려고 발전한 보안 전략으로 SOAR를 설명하고, SP 800-61 Rev. 3는 SIEM과 함께 로그 감시, 이벤트 상관과 영향과 범위 추정에 쓰는 도구 예시로 든다. NIST 용어집에는 약어만 있고 규범적 정의는 없다. 범주는 제품명보다 기능으로 나눈다. Microsoft Sentinel은 SIEM이면서 SOAR 플랫폼이고, 위의 자동 공격 차단은 사용자가 작성하는 SOAR 자동 대응과 달리 제품에 내장된 기능이다. 이 절의 표준과 제품 서술은 2026-10-12 NIST, CISA, OASIS와 제품 공식 문서로 대조했다.
+
+| 구분 | 주된 기능 |
+|---|---|
+| SIEM | 로그 수집, 검색, 상관 분석과 탐지 |
+| SOAR | 이기종 도구를 잇는 워크플로로 보강, 대응, 수정(remediation) 실행 |
+| XDR | 엔드포인트, ID, 이메일 등 보호 영역의 신호를 묶어 탐지와 대응(수집 범위는 제품과 연결한 솔루션에 따라 다름) |
+
+### playbook과 자동화 규칙
+
+- NIST SP 800-61 Rev. 3는 playbook을 절차를 문서화하는 한 형식으로 소개하고, 여러 시나리오나 상황에서 사람이 수행할 실행 가능한 단계나 작업을 제공한다고 설명한다. CISA의 2021년 SLTT IOC 자동화 파일럿 자료(현재 아카이브)는 SOAR 워크플로를 playbook을 기계가 이해할 수 있게 코드화한 것으로 설명하고, OASIS CACAO Security Playbooks 2.0 위원회 명세(Committee Specification 01, 2023-11-27)에서는 action 단계의 명령마다 유형을 달리할 수 있어, 사람이나 사람을 대신하는 시스템이 처리하는 manual 명령과 자동 명령을 한 playbook에 섞어 쓸 수 있다. 사람이 수행할 절차와 기계가 실행할 단계를 구분해 기록한다.
+- Microsoft Sentinel 자동화 규칙은 트리거(인시던트 생성, 인시던트 갱신, 경고 생성), 조건, 동작으로 구성되고 순서 번호대로 차례로 실행된다. 상태와 심각도 변경, 소유자 지정, 태그와 작업 추가, 알려진 오탐(false positive)이나 무해한 양성(benign positive) 인시던트의 자동 종료는 규칙만으로 처리한다. 외부 시스템이 관련된 조치는 Azure Logic Apps로 만든 playbook을 호출한다.
+- 공식 권장 예시 중에는 사용자와 IP가 담긴 인시던트를 보안 채널에 알리고 관리자에게 차단과 무시 선택 메일을 보내 응답을 기다린 뒤, 차단을 고르면 방화벽에 IP 차단을, Microsoft Entra ID에 사용자 비활성화를 요청하는 흐름이 있다. 반대로 권장 사용 사례에는 사람의 개입을 최소화한 즉시 대응(Response)도 있다. playbook 개요 문서는 계정과 장비가 침해되면 SOC가 통보받기 전에 playbook이 장비를 네트워크에서 격리하고 계정을 차단할 수 있다고 예시한다. 권장 사례 문서는 이를 두 예시로 나눈다. 침해가 의심되는 사용자에게는 Teams로 본인 행위인지 확인을 요청하고 Microsoft Entra ID Protection에 침해 확인으로 표시하며, 침해된 장비는 Microsoft Defender for Endpoint로 격리한다.
+
+### 사람 승인은 조치마다 정하는 설계다
+
+자동 대응 전의 사람 승인은 SOAR의 고유 속성이 아니다. 제품은 승인 단계를 기능으로 제공하지만 설정에 따라 사람 없이 실행된다.
+
+| 제품 | 승인 방식 |
+|---|---|
+| Splunk SOAR (Cloud) | 승인자를 지정한 asset의 쓰기 action만 승인 대상이다. 1차 승인자 중 한 명이 거부하면 중단되고, 기한이 지나면 2차, executive 승인자로 넘어간 뒤 만료된다. playbook 안에서는 Prompt 블록으로 확인과 입력을 받는다 |
+| Google SecOps SOAR | action을 Manual로 바꾸고 Approval link를 켜면 승인과 거부 링크 placeholder가 생기고, 이를 앞 단계의 이메일 발송 action에 넣어 플랫폼 밖 사용자에게 보낸다. Time to respond로 응답 기한을 둘 수 있다 |
+| Defender for Office 365 AIR | 기본값에서는 수정 조치를 대기열에 넣고 SecOps가 승인한다. 관리자가 자동화 설정에서 유사 파일, 유사 URL, 여러 유사 속성 클러스터를 골라 켜면 악성으로 판정된 해당 클러스터의 조치(현재 soft delete만 가능)는 승인 없이 실행된다. 메시지가 10,000개를 넘는 클러스터는 자동 처리되지 않고 대기 조치로 남는다 |
+| Defender for Endpoint | 장치 그룹마다 자동화 수준 Full(권장), 승인이 필요한 Semi 수준들, No automated response 중 하나를 고른다. 모든 폴더에 승인을 요구하는 Semi 수준에서는 대기 조치가 7일 뒤 시간 초과되고 거부한 것과 같이 처리된다. Microsoft는 2026-09-01부터 Defender for Endpoint의 AIR를 별도 조사 경험으로 실행하지 않고 수동 실행도 제공하지 않는다고 공지했다(Defender for Office 365 AIR는 해당 없음). 2026-10-12 확인 시점의 자동화 수준 문서는 상단에 같은 변경 공지를 싣고 있지만 수준별 설명과 7일 시간 초과 설명은 그대로 두고 있어, 이 승인 흐름이 변경 뒤에도 적용되는지는 확인되지 않았다 |
+
+장치 그룹을 Semi 수준으로 둬도 자동 공격 차단은 수동 승인 없이 실행될 수 있다. 장치 그룹을 자동 봉쇄(containment)에서 빼려면 자동화 수준을 No automated response로 둘 수 있지만, Microsoft는 이 설정을 그다지 권장하지 않고 소수 장치에만 쓰라고 한다. 미리 보기 기능인 자동 장치 격리(isolation)에서 특정 장치를 빼려면 자동 공격 차단 제외를 설정한다.
+
+NIST SP 800-61 Rev. 3는 일부 격리 조치를 보안 기술이 자동으로 수행하게 구성하는 방안을 고려사항으로 두면서, 사고 처리자가 자동 조치 대신 또는 함께 격리 조치를 수동으로 선택해 수행할 수 있게 하라고 권고한다. 핵심 서비스 중단처럼 영향이 큰 조치의 결정 권한은 리더십에 둘 수 있다. CISA 파일럿의 자동 IOC 피드는 low regret 방법론을 따른다. 악성 위협이라는 확신이 있고 자동 차단이 운영을 방해하지 않을 것이 거의 확실하므로, 피드를 받는 기관이 IOC 자동 차단을 허용할 수 있다는 뜻이다. CISA의 확신도와 운영 영향, NIST의 영향이 큰 조치에 대한 결정 권한에 되돌리기 쉬운 정도를 더해 자동 실행, 승인 뒤 실행, 수동 실행을 나눈다.
+
+### 운영에서 확인할 것
+
+- **단계 성공과 실제 적용**: Microsoft Entra ID Protection에 사용자를 침해 확인으로 표시하는 동작은 그 자체로 강제 조치를 시작하지 않는다. 실제 강제 조치(예: 다음 로그인 때 MFA 요구)는 미리 정의한 정책에 달려 있으므로 playbook 성공 기록과 적용 결과를 따로 확인한다.
+- **실행 권한**: Sentinel 자동화 규칙은 playbook을 Sentinel 서비스 계정으로 실행하므로 playbook이 있는 리소스 그룹에 Microsoft Sentinel Automation Contributor 역할을 준다. 대상 시스템에 대한 조치 권한은 각 커넥터 연결이 인증에 쓰는 ID나 자격 증명의 권한에 달려 있다. Logic Apps는 상호작용하는 리소스마다 따로 연결하고 인증하며, 지원하는 인증 방식은 커넥터마다 다르다. 예를 들어 Microsoft Sentinel 커넥터는 관리 ID(미리 보기), 서비스 주체, Microsoft Entra 사용자를 지원한다.
+- **지연**: Defender 포털에서는 경고 발생 뒤 자동화 규칙 실행까지 최대 10분, Defender 인시던트가 Sentinel에 나타나기까지 최대 5분이 걸릴 수 있다. 자동화 규칙은 playbook이 2분 넘게 실행되면 시작 2분 뒤 완료 여부와 관계없이 다음 동작으로 넘어간다. 초 단위 대응을 전제로 설계하지 않는다.
+- **외부 승인 요청**: Google SecOps 문서는 플랫폼 밖 사용자에게 장비 격리 승인 링크를 메일로 보내는 예시를 들지만 승인자 인증 방식은 설명하지 않는다. Splunk SOAR (Cloud)는 외부 prompt 수신자에게 SAML 인증을 선택적으로 요구할 수 있다. 승인자 신원을 확인할 수 없는 외부 링크로는 호스트 격리처럼 영향이 큰 조치를 승인하지 않는다.
+- **효과 측정**: 분류 시간, 대응 시간과 놓친 사건을 자기 환경에서 같은 조건으로 잰다. 공개된 1차 측정치인 CISA 파일럿의 IOC 최초 식별부터 차단 성공까지 걸린 시간 단축(평균 3일에서 약 3분)은 특정 절차의 결과이고, fact sheet가 측정 방법을 설명하지 않으므로 인시던트 전반의 대응 시간으로 일반화하지 않는다. ML 상관이나 AI 경고 분류는 SIEM, XDR의 분석 기능이나 AI 에이전트 기능으로 SOAR playbook과 구분하고, 오탐을 자동으로 닫을 때 생기는 미탐 위험까지 평가한다. 경보 묶음과 억제, 정밀도와 재현율 기준은 [[Alert-Fatigue|알람 피로]]를 따른다.
+
 ## 생성형 AI로 만든 보안 리포트의 검증
 
 CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증거가 아니다. 생성된 코드와 설명은 원 API 응답에 대조하고, 누락을 정상 결과로 바꾸지 않는지 확인한다.
@@ -99,6 +138,7 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 2. 서비스가 켜진 것과 안전하게 복구된 것은 어떻게 다른가?
 3. 수집이 빠진 기간이 있으면 침해 타임라인의 어느 결론을 보류해야 하는가?
 4. 탐지 도구가 경고를 냈지만 차단할 수 없는 이유를 제품 연결과 권한으로 설명할 수 있는가?
+5. 어떤 대응 조치를 자동 실행하고 어떤 조치에 사람 승인을 둘지 확신도, 업무 영향과 되돌리기 쉬운 정도로 나눌 수 있는가?
 
 ## 출처
 
@@ -111,6 +151,22 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 - [Amazon Inspector API Reference, ListFindings](https://docs.aws.amazon.com/inspector/v2/APIReference/API_ListFindings.html)
 - [Amazon Inspector API Reference, Finding](https://docs.aws.amazon.com/inspector/v2/APIReference/API_Finding.html)
 - [Amazon Inspector API Reference, PackageVulnerabilityDetails](https://docs.aws.amazon.com/inspector/v2/APIReference/API_PackageVulnerabilityDetails.html)
+- [NIST, SP 800-215: Guide to a Secure Enterprise Network Landscape](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-215.pdf)
+- [NIST CSRC, Glossary: security orchestration, automation, and response](https://csrc.nist.gov/glossary/term/security_orchestration_automation_and_response)
+- [CISA, State, Local, Tribal & Territorial Indicators of Compromise Automation Pilot Fact Sheet](https://www.cisa.gov/sites/default/files/publications/SLTT%2520IOC%2520Factsheet_Final_508c_0.pdf) — 2021-07-14 개정 아카이브 문서
+- [OASIS, CACAO Security Playbooks Version 2.0](https://docs.oasis-open.org/cacao/security-playbooks/v2.0/security-playbooks-v2.0.html)
+- [Microsoft Learn, Automation in Microsoft Sentinel](https://learn.microsoft.com/en-us/azure/sentinel/automation/automation)
+- [Microsoft Learn, Automate threat response in Microsoft Sentinel with automation rules](https://learn.microsoft.com/en-us/azure/sentinel/automate-incident-handling-with-automation-rules)
+- [Microsoft Learn, Recommended Microsoft Sentinel playbook use cases, templates, and examples](https://learn.microsoft.com/en-us/azure/sentinel/automation/playbook-recommendations)
+- [Microsoft Learn, Automate Threat Response with Playbooks in Microsoft Sentinel](https://learn.microsoft.com/en-us/azure/sentinel/automation/automate-responses-with-playbooks)
+- [Microsoft Learn, Authenticate playbooks to Microsoft Sentinel](https://learn.microsoft.com/en-us/azure/sentinel/automation/authenticate-playbooks-to-sentinel)
+- [Microsoft Learn, Automation levels in automated investigation and remediation](https://learn.microsoft.com/en-us/defender-endpoint/automation-levels)
+- [Microsoft Learn, Go to the Action center to view and approve your automated investigation and remediation tasks](https://learn.microsoft.com/en-us/defender-xdr/m365d-action-center) — 2026-09-01 Defender for Endpoint AIR 변경 공지
+- [Microsoft Learn, Automated investigation and response in Microsoft Defender for Office 365](https://learn.microsoft.com/en-us/defender-office-365/air-about)
+- [Microsoft Learn, Automated remediation in AIR](https://learn.microsoft.com/en-us/defender-office-365/air-auto-remediation)
+- [Splunk Help, Approve actions before they run in Splunk SOAR (Cloud)](https://help.splunk.com/en/splunk-soar/soar-cloud/use-soar-cloud/get-started-using-splunk-soar-cloud/approve-actions-before-they-run-in-splunk-soar-cloud)
+- [Splunk Help, Require user input using the Prompt block in your Splunk SOAR (Cloud) playbook](https://help.splunk.com/en/splunk-soar/soar-cloud/build-playbooks/use-the-playbook-editor-to-create-and-view-playbooks-to-automate-analyst-workflows/require-user-input-using-the-prompt-block-in-your-splunk-soar-cloud-playbook)
+- [Google Cloud, Assign approval links in actions](https://docs.cloud.google.com/chronicle/docs/soar/respond/working-with-playbooks/assign-approval-links-in-actions)
 
 ## 관련 문서
 
@@ -118,3 +174,4 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 - [[Audit-Log|감사 로그]]
 - [[Incident-Runbook|장애 대응 런북]]
 - [[Incident-Recovery-Prevention|복구와 재발 방지]]
+- [[Alert-Fatigue|알람 피로]]

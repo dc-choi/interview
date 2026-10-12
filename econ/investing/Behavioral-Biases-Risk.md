@@ -23,6 +23,7 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 | **군중 심리** | 남들이 사면 따라 사고 팔면 따라 판다. 거품과 폭락의 연료 |
 | **과신** | 자기 예측력을 과대평가해 과도하게 매매하고 집중한다 |
 | **최근성 편향** | 최근 일이 계속될 거라 믿는다. 오를 때 더 낙관, 빠질 때 더 비관 |
+| **결과 편향** | 결정 당시의 정보와 과정이 같아도 결과가 좋으면 판단을 더 좋게 평가한다. 결정 뒤에야 알 수 있는 결과는 결정의 질과 무관하다는 기준으로, 당시의 근거와 예상을 기록해 두고 사후에 대조한다 |
 
 ## 3. 거품과 패닉의 심리
 
@@ -43,7 +44,7 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 편향은 의지로 이기기 어렵다. 그래서 미리 정한 규칙과 구조로 행동을 묶는다.
 
 - **분산투자**: 한 자산의 실패가 전체에 미치는 영향을 줄인다. 시장 전체의 하락과 큰 손실을 없애지는 못한다 → [[Asset-Allocation-Diversification|자산배분과 분산투자]].
-- **포지션 사이징**: 한 종목에 얼마까지 넣을지 미리 한도를 정한다. 과신을 제어한다.
+- **포지션 사이징**: 한 종목에 얼마까지 넣을지 미리 한도를 정한다. 과신을 제어한다. 비중이 클수록 한 번의 실패가 생존을 위협하는 원리는 [[Risk-and-Return|위험과 수익]]의 반복하는 투자에서 살아남기 절에 정리한다.
 - **리밸런싱 규칙**: 감정이 아니라 정해진 비율로 사고판다.
 - **비상금**: 필요한 현금을 안전하고 쉽게 꺼낼 수 있게 따로 두어, 급한 지출 때문에 투자자산을 매도해야 할 가능성을 줄인다. 필요한 규모는 소득과 지출 상황에 따라 다르다.
 - **적립식 자동화**: 매번 매수 시점을 예측하는 부담과 충동적 결정을 줄인다. 투자 대상과 금액의 적합성은 계속 점검하며 손실 위험은 남는다 → [[Investment-Strategies|투자 전략]].
@@ -67,6 +68,8 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 
 ## 출처
 
+2026-10-12 부분 검증: 결과 편향의 정의와 실험 결과를 원 논문과 사전등록 재현 연구로 대조했다. 투자자의 실제 성과에 미치는 효과 크기를 검증한 것은 아니다.
+
 2026-10-07 부분 검증: 소셜 심리 도구의 정보 오류, 시의성과 이해충돌 위험, 공시 대조와 성과 비교 기준을 SEC와 FINRA의 공동 안내로 확인했다. 특정 댓글이나 역발상 전략의 예측력을 검증한 것은 아니다.
 
 2026-10-03 부분 검증: 합리적 선택 모형과 행동경제학의 구분, 처분 효과와 아래 위험 완화 수단의 한계를 대조했다. 모든 편향의 원인과 효과 크기나 실제 투자자의 행동을 검증한 기록은 아니다.
@@ -78,10 +81,13 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 - [An essential guide to building an emergency fund — CFPB](https://www.consumerfinance.gov/an-essential-guide-to-building-an-emergency-fund/) — 2026-10-03 비상금의 목적, 접근성과 상황별 규모 대조
 - [The Benefits and Limitations of Dollar-Cost Averaging — FINRA](https://www.finra.org/investors/insights/dollar-cost-averaging) — 2026-10-03 자동 적립의 행동상 이점과 한계 대조
 - [Investor Bulletin: Social Sentiment Investing Tools — SEC, FINRA](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-18)
+- [Outcome Bias in Decision Evaluation — Journal of Personality and Social Psychology, Jonathan Baron, John C. Hershey](https://doi.org/10.1037/0022-3514.54.4.569) — 1988, 다섯 연구에서 결과가 좋을 때 사고의 질과 의사결정자의 능력을 더 높게 평가
+- [Outcomes Affect Evaluations of Decision Quality: Replication and Extensions of Baron and Hershey's (1988) Outcome Bias Experiment 1 — International Review of Social Psychology, Sriraj Aiyer 외](https://pmc.ncbi.nlm.nih.gov/articles/PMC12372742/) — 2023, 사전등록 재현(N = 692), 결과를 고려하면 안 된다고 답한 참가자에게서도 편향이 나타남
 
 ## 관련 문서
 
 - [[Investment-Strategies|투자 전략]] — 편향을 막는 규율적 전략
 - [[Backtesting-Pitfalls|백테스트의 함정]] — 좋은 과거 성과 숫자를 초과수익으로 착각하는 이유
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 리스크 관리의 토대
+- [[Risk-and-Return|위험과 수익]] — 반복과 생존, Kelly 비중, 손실 회복의 비대칭
 - [[투자(Investing)]] — 지도

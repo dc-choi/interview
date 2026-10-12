@@ -69,15 +69,74 @@ S&P 500 같은 주가지수의 과거 연평균 수익률은 선택한 시작일
 
 **베타**는 선택한 시장 포트폴리오 수익률에 대한 자산 수익률의 민감도를 추정한 값이다. CAPM에서는 베타가 기대수익을 설명하는 핵심 변수지만, 현실에서는 추정 기간과 benchmark에 따라 달라지고 규모, 가치, 수익성 등 다른 요인도 수익률 설명에 사용된다. 베타 하나를 자산의 전체 위험이나 미래수익으로 등치하지 않는다.
 
-## 6. 핵심 개념
+## 6. 반복하는 투자에서 살아남기
+
+투자는 한 번의 선택이 아니라 비슷한 판단을 수십 년 반복하는 과정이다. 그래서 한 번의 기대수익보다 같은 방법을 반복해도 게임에서 밀려나지 않는지를 먼저 본다.
+
+### 작은 파산 확률도 반복하면 누적된다
+
+매번 1% 확률로 투자금 전부를 잃는 판단을 서로 독립적으로 100번 반복하면 한 번도 전부 잃지 않을 확률은 0.99^100 ≈ 36.6%다. 적어도 한 번 전부 잃을 확률이 63.4%라는 뜻이다. 매번의 판단이 안전해 보여도 한 번의 실패가 끝을 내는 구조라면 반복할수록 살아남을 확률이 줄어든다.
+
+기댓값과 한 사람이 겪는 경로도 다르다. 동전을 던져 앞면이면 자산이 1.5배, 뒷면이면 0.6배가 되는 내기를 계속 반복하면 기댓값은 회당 1.05배로 커진다. 하지만 전형적인 경로는 회당 √(1.5 × 0.6) ≈ 0.949배, 즉 약 5.1%씩 줄어든다. 평균을 끌어올리는 것은 소수의 운 좋은 경로다.
+
+### 손실과 회복은 대칭이 아니다
+
+손실률 L을 회복하려면 남은 자산이 L/(1−L)만큼 올라야 한다.
+
+| 손실 | 원금 회복에 필요한 수익률 |
+|---|---|
+| 10% | 약 11.1% |
+| 20% | 25% |
+| 50% | 100% |
+| 80% | 400% |
+| 90% | 900% |
+
+같은 비율의 이익과 손실이 서로 상쇄된다는 착각은 흔하다. 미국 온라인 참가자 3,498명이 참여한 다섯 실험에서 이 오류가 널리 나타났고, 금융 이해력, 수리력과 숙고가 각각 정답률에 기여했다(상관 설계라 인과로 단정하지는 않는다).
+
+변동은 복리 수익률도 깎는다. +100% 뒤 −50%면 산술평균은 +25%지만 자산은 그대로다(복리 수익률 0%). 복리 수익률이 대략 산술평균 수익률에서 분산(기간 수익률의 모분산)의 절반을 뺀 값이라는 근사식이 있지만, 수익률이 크면 오차가 커진다(이 예에서 근사값은 약 −3.1%). 실제 값은 기간별 (1 + 수익률)을 곱해 계산한다.
+
+### 가격 하락과 영구적 손실을 구분한다
+
+변동성은 재기 쉽고 위험성을 보여 주는 지표나 위험의 한 형태일 수 있지만 투자 위험의 유일한 정의로는 부족하다. 투자 판단에서는 영구적 손실의 가능성을 함께 보며, 이는 주된 위험일 수 있지만 유일한 위험은 아니다. 일시적 하락은 그 국면에 팔 때 손실로 확정된다. 그렇게 팔게 만드는 원인으로는 확신 상실, 투자 기간에서 오는 요구(돈이 필요한 시점 등), 재무적 급박함과 감정적 압박이 꼽힌다.
+
+판단이 맞아도 기다릴 수 없으면 일시적 하락이 영구적 손실이 된다. 아래 처음 두 구조는 미리 피하고, 세 번째처럼 기다리는 것 자체가 위험한 경우도 구분한다.
+
+- **증거금(신용) 거래**: 미국 FINRA의 증거금 공시 문안(Rule 2264)은 계좌 지분이 유지증거금이나 회사의 더 높은 기준 아래로 떨어지면 회사가 고객에게 연락하지 않고 증권을 팔 수 있다고 적는다. 고객은 팔 종목을 고르거나 기한 연장을 요구할 권리가 없고, 예치한 금액보다 더 많이 잃을 수 있다. 국내 신용거래의 반대매매 조건은 증권사 약관과 국내 규정으로 따로 확인한다.
+- **곧 쓸 돈**: SEC 투자자 안내는 단기 재무 목표에는 현금성 투자만 하는 것이 적절할 수 있다고 설명한다. 생활비와 비상금을 투자 자산과 나누는 기준은 [[Personal-Cash-Flow-Planning|개인 현금흐름 계획]]을 따른다.
+- **근거가 깨진 투자**: 투자한 이유가 틀린 것으로 확인됐다면 가격 회복을 기다리는 것도 위험이다. 매입가보다 현재 투자 근거로 판단한다([[Behavioral-Biases-Risk|행동 편향과 리스크 관리]]의 처분 효과).
+
+### 좋은 기회와 걸 비중은 다른 문제다
+
+같은 기회라도 전체 자산 중 얼마를 거느냐가 생존을 바꾼다. Kelly 기준(1956)은 반복 베팅에서 자본의 장기 성장률을 최대화하려면 매번 자본 로그의 기댓값을 최대화하는 비율을 걸라는 기준이다. 기댓값이 양수인 내기에서도 매번 전 자본을 걸면 자본의 기댓값은 가장 크지만 계속하면 확률 1로 파산한다.
+
+- 성장 최적 비율보다 많이 걸수록 위험은 커지고 장기 성장률은 떨어진다. 연속시간 근사에서는 최적 비율의 정확히 두 배를 걸면 무위험 수익률을 넘는 성장이 0이 된다.
+- 자본을 무한히 나눌 수 있다고 가정하고 전 자본보다 작은 고정 비율로 걸면 자산이 정확히 0이 되지는 않는다(실제 베팅은 최소 단위가 있어 파산이 가능하다). 그러나 승률 53%이고 이기면 건 금액만큼 받는(1:1 배당) 내기에서 최적 비율은 6%이고, 약 12%(임계값 0.1197)를 넘게 걸면 자산이 거의 확실히 0으로 수렴한다.
+- 실제 투자에서는 승률과 손익비를 정확히 모르고 추정 오차가 있다. 이 공식을 비중 계산기로 쓰기보다 과도한 비중이 장기 성장 자체를 깎는다는 원리로 읽는다.
+
+### 결과보다 결정 시점의 과정으로 평가한다
+
+좋은 판단이 나쁜 결과를, 나쁜 판단이 좋은 결과를 낼 수 있다. 결정의 질은 결정 당시 알 수 있었던 정보와 과정으로 평가하고, 결과는 그 과정이 반복 가능한지 확인하는 자료로 쓴다. 결과를 보고 판단을 평가하는 경향은 [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]]의 결과 편향이다.
+
+투자 방법을 고를 때는 위 원리를 다음 질문으로 점검한다.
+
+- 확률이 낮더라도 한 번 크게 틀리면 게임에서 밀려나는가
+- 틀린 뒤에도 다시 판단할 기회와 자본이 남는가
+- 증거금이나 생활비처럼 내 뜻과 관계없이 팔아야 하는 상황이 생길 수 있는가
+- 결과가 나쁠 때 이유를 확인하고 다음 판단을 고칠 수 있는가
+- 같은 방법을 수십 년 반복해도 논리가 유지되는가
+
+## 7. 핵심 개념
 
 - **위험-수익 트레이드오프**: 표준 모형에서 기대수익은 위험 부담과 연결
 - **분산투자**: 불완전하게 상관된 자산을 조합해 포트폴리오 위험을 조정
 - **체계적 위험**: 분산해도 남는 위험. CAPM에서는 기대수익의 보상 대상
 - **베타**: 시장 대비 민감도
+- **생존과 비중**: 한 번의 실패가 끝을 내는 구조를 피하고, 좋은 기회를 고르는 일과 걸 비중을 정하는 일을 따로 판단한다
+- **손실 회복의 비대칭**: 추가 납입이 없으면 손실률 L은 남은 자산의 L/(1−L) 수익으로만 회복된다
 
-## 7. 흔한 오해
+## 8. 흔한 오해
 
+- **50% 떨어진 뒤 50% 오르면 원금이다** → 원금의 75%에 그친다. 50% 손실은 100% 올라야 회복한다.
 - **분산하면 손실이 없다** → 체계적 위험은 못 없앤다. 시장이 무너지면 분산 포트폴리오도 빠진다.
 - **변동성이 크면 무조건 나쁘다** → 위험은 목표와 현금 필요 시점에 따라 다르다. 영구적 자본 손실뿐 아니라 필요한 때의 가격 하락과 강제 매도, 현금화 실패도 실제 위험이다.
 - **위험을 피하는 게 상책이다** → 현금만 들면 인플레이션에 실질가치가 깎인다. 위험 회피 자체가 또 다른 위험이다 → [[Inflation|인플레이션]].
@@ -92,8 +151,22 @@ S&P 500 같은 주가지수의 과거 연평균 수익률은 선택한 시작일
 - [FINRA, How Are Your Investments Doing? Returns Explained](https://syndication.finra.org/content/how-are-your-investments-doing-returns-explained) — 총수익, 비용, 연환산과 비교 기준
 - [FINRA, 2022 Annual Conference: Private Placements](https://www.finra.org/sites/default/files/2022-05/2022_AC_Private_Placements.pdf) — 시간가중수익률과 IRR의 입출금 처리 차이
 
+2026-10-12 부분 검증: 반복 판단의 생존 확률과 손실 회복률은 직접 계산했고, 손실과 회복의 비대칭에 대한 착각, 복리 수익률 근사식, 영구적 손실의 관점, 증거금 계좌의 강제 매도, 단기 자금의 투자 기준, Kelly 기준과 과대 베팅, 곱셈적 내기의 기댓값과 전형적 경로를 아래 원문과 대조했다. 특정 자산의 손실 확률이나 적정 비중을 계산한 것은 아니다.
+
+- [Downside financial risk is misunderstood — Judgment and Decision Making, Philip W. S. Newall](https://www.cambridge.org/core/journals/judgment-and-decision-making/article/downside-financial-risk-is-misunderstood/E3D4E5858EE34B9903A0B1C8E296DD4F) — 2016, 다섯 실험 3,498명
+- [Diversification Returns and Asset Contributions — Financial Analysts Journal, David G. Booth, Eugene F. Fama](https://rpc.cfainstitute.org/research/financial-analysts-journal/1992/faj-v48-n3-26) — 1992, 복리 수익률 근사식
+- [Risk Revisited — Oaktree Capital, Howard Marks](https://www.oaktreecapital.com/docs/default-source/memos/2014-09-03-risk-revisited.pdf) — 2014-09-03 메모, 변동성과 영구적 손실, 하락 국면 매도의 이유
+- [FINRA, Rule 2264 Margin Disclosure Statement](https://www.finra.org/rules-guidance/rulebooks/finra-rules/2264)
+- [SEC, Ten Things to Consider Before You Make Investing Decisions](https://www.sec.gov/investor/pubs/tenthingstoconsider.htm)
+- [A New Interpretation of Information Rate — Bell System Technical Journal, J. L. Kelly Jr.](https://archive.org/stream/bstj35-4-917/bstj35-4-917_djvu.txt) — 1956
+- [Long-term capital growth: the good and bad properties of the Kelly and fractional Kelly capital growth criteria — Quantitative Finance, Leonard C. MacLean, Edward O. Thorp, William T. Ziemba](https://escholarship.org/content/qt5mr5k8qj/qt5mr5k8qj.pdf) — 2010
+- [The Kelly Criterion and the Stock Market — The American Mathematical Monthly, Louis M. Rotando, Edward O. Thorp](https://escholarship.org/content/qt2sf6m38g/qt2sf6m38g.pdf) — 1992, 고정 비율 베팅의 임계값
+- [Evaluating gambles using dynamics — Chaos, Ole Peters, Murray Gell-Mann](https://arxiv.org/abs/1405.0585) — 2016, 곱셈적 내기의 기댓값과 시간평균
+- [LTO Thesis A Week 2. 평생 반복해도 살아남는 투자 — YouTube, Long-term Optimization](https://www.youtube.com/watch?v=2Qid_NneYus) — 2026-10-11 영상, 반복과 생존 관점과 다섯 점검 질문의 틀(수치와 사실은 위 원문으로 확인)
+
 ## 관련 문서
 
 - [[Stocks|주식]], [[Bonds|채권]] — 위험과 수익이 다른 두 자산
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 이 원리를 실제 포트폴리오로
+- [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]] — 처분 효과, 결과 편향과 포지션 한도
 - [[금융시장(Financial Markets)]] — 지도
