@@ -25,6 +25,19 @@ verified_at: 2026-07-21
 
 원화 약세는 외화 표시 수출 가격을 낮추거나 원화 매출을 늘릴 여지를 주지만, 계약 통화, 기업의 가격 결정, 수입 중간재 비중과 수요 탄력성에 따라 효과가 달라진다. 수출기업의 이익도 수입 원가, 외화부채와 환헤지에 따라 줄어들 수 있다. 동시에 수입품의 원화 가격을 높여 국내 물가 압력으로 전가될 수 있다.
 
+### 외화 가격이 그대로여도 원화 부담은 달라진다
+
+다음은 환율 효과만 분리한 계산 예시다. 수수료, 세금과 환헤지는 제외하고 외화 가격과 부채 원금은 고정한다.
+
+| 항목 | 1달러 = 1,000원 | 1달러 = 1,200원 |
+|---|---|---|
+| 10달러 수입품의 원화 환산액 | 10,000원 | 12,000원 |
+| 1,000달러 부채 원금의 원화 환산액 | 1,000,000원 | 1,200,000원 |
+
+판매자가 달러 가격을 올리지 않아도 원화로 필요한 금액은 늘어난다. 다만 이 환산액이 국내 소비자 가격에 즉시 같은 비율로 반영되는 것은 아니다. 판매자의 가격 조정 시점과 마진에 따라 전가 폭과 시차가 달라진다.
+
+외화부채도 달러 원금 자체가 늘어난 것은 아니다. 원화로 상환 재원을 마련할 때 부담이 커진다. 같은 통화의 수입과 자산이 있다면 함께 환산해야 순노출을 판단할 수 있다. 이는 [[Exchange-Rates-Balance-of-Payments#6. 달러 패권과 신흥국|외화부채의 통화 불일치]]와 연결된다.
+
 ## 2. 환율은 무엇이 결정하나
 
 환율은 결국 두 통화에 대한 수요와 공급이지만, 그 배후에는 몇 가지 큰 힘이 있다.
@@ -106,6 +119,7 @@ verified_at: 2026-07-21
 
 - **환율이 오르면(원화 약세) 무조건 나쁘다** → 수출 가격경쟁력이나 원화 매출에는 유리할 수 있지만, 수입 원가와 외화부채, 환헤지를 함께 봐야 실제 득실을 판단할 수 있다.
 - **경상흑자는 클수록 좋다** → 흑자는 높은 저축이나 약한 투자, 적자는 생산적인 투자나 과도한 소비를 반영할 수 있다. 0의 균형이 모든 나라의 건강한 목표는 아니다. 저축과 투자의 원인, 대외자산과 부채의 구성, 만기와 통화, 자금조달의 지속 가능성을 함께 본다.
+- **무역적자가 나면 환율은 반드시 오른다** → 수입 결제는 외화 수요의 한 경로지만, 투자자금 유입과 유출, 금리차와 기대도 환율에 작용한다. 무역수지 하나만으로 통화 가치의 방향을 정할 수 없다.
 - **외환보유액은 많을수록 좋다** → 위기 방어엔 좋지만 쌓아두는 데도 비용(낮은 수익의 안전자산에 묶임)이 든다. 적정 수준이 있다.
 
 ## 9. 사례: 엔화 약세와 일본의 국제수지
@@ -124,6 +138,8 @@ verified_at: 2026-07-21
 
 ## 출처
 
+2026-10-12 부분 검증: 1절의 외화 가격과 부채 환산 예시, 가격 전가 시차와 8절의 무역적자 해석을 RBA 교육 자료와 대조했다. 표는 실제 시세가 아닌 가정값의 곱셈이며, 국가별 환율 전망과 기존 사례 수치를 다시 검증한 것은 아니다.
+
 2026-10-12 부분 검증: 2절의 주가와 환율 관계, 6절의 중앙은행 통화스와프 사실을 아래 연준 원문과 NBER 논문 페이지와 대조했다. 2절의 포트폴리오 재조정 경로는 NBER 페이지의 초록과 같은 저자의 AER 2004 논문 제목에 근거한 요약이며 논문 본문의 모형 도출은 대조하지 않았다. 2020년 임시 라인의 연장과 종료 시점은 검증 범위에 포함하지 않았다.
 
 2026-10-11 부분 검증: 9절의 환율, 국제수지, 개입과 물가 경로 수치를 아래 일본 재무성, 일본은행, 연준과 IMF 원문과 대조했다. 2026-07-30~08-26 개입의 일별 금액과 방향은 아직 공표되지 않아 검증 범위에 포함하지 않았다.
@@ -135,6 +151,7 @@ verified_at: 2026-07-21
 - [Monetary Policy: Forward Looking and Data Dependent in the Face of Uncertainty — RBA](https://www.rba.gov.au/speeches/2025/sp-ag-2025-03-18.html) — 충분히 예상된 결정과 발표 뒤 환율 반응의 구분
 - [The Impact of Monetary Policy on the Exchange Rate: A Study Using Intraday Data — RBA](https://www.rba.gov.au/publications/rdp/2005/2005-02.html) — 향후 정책 기대에 따라 달라지는 반응. 연구 표본의 효과 크기를 일반 예측값으로 사용하지 않음
 - [RBA, Drivers of the Australian Dollar Exchange Rate](https://www.rba.gov.au/education/resources/explainers/drivers-of-the-aud-exchange-rate.html) — 상대국 금리차, 자본흐름과 위험선호
+- [RBA, Exchange Rates and the Australian Economy](https://www.rba.gov.au/education/resources/explainers/exchange-rates-and-the-australian-economy.html) — 수입 가격의 전가 시차와 외화 표시 자산, 부채의 환산 효과
 - [IMF — Balance of Payments and International Investment Position Manual, Sixth Edition](https://www.imf.org/-/media/websites/imf/imported-full-text-pdf/external/pubs/ft/bop/2007/pdf/_bpm6.pdf) — 2.12–2.21, 8.1–8.8: 거래, 기타 증감과 잔액의 구분
 - [IMF, Choice of Exchange Rate Arrangement](https://www.imf.org/en/-/media/files/publications/miscellaneous/english/2022/mcm-technical-assistance-handbook/choice-of-exchange-rate-arrangement.pdf) — Appendix 2: 공식 제도와 실제 운용의 분류
 - [Real Exchange Rates: What Money Can Buy — IMF](https://www.imf.org/en/publications/fandd/issues/series/back-to-basics/real-exchange-rates) — PPP, 생산성과 비교역재 가격
