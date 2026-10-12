@@ -1,9 +1,9 @@
 ---
-tags: [ai, mcp, security, oauth, gateway, credential]
+tags: [ai, mcp, security, oauth, gateway, credential, http-header]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-12
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["MCP Security Boundaries", "MCP 보안 경계", "MCP Gateway", "MCP 게이트웨이", "Credential Injection", "자격 증명 주입"]
+aliases: ["MCP Security Boundaries", "MCP 보안 경계", "MCP Gateway", "MCP 게이트웨이", "Credential Injection", "자격 증명 주입", "x-mcp-header", "MCP 헤더 미러링"]
 ---
 
 # MCP 보안 경계: 서버 자격 증명, 요청 검증과 게이트웨이
@@ -71,6 +71,35 @@ downstream 자격 증명은 네 방식으로 나눠 볼 수 있다.
 
 공개 사례로 DoorDash는 엔지니어링 블로그에서 에이전트의 도구 발견과 호출을 한 관문으로 모으고, 그 관문이 호출자 인증, 권한 확인, 승인된 도구 목록 노출, 자격 증명 주입, downstream MCP 서버 라우팅과 사용 이벤트 기록을 맡는 Agent Gateway를 설명했다.
 
+## 헤더 미러링: 관문이 읽는 값과 서버의 대조
+
+2026-07-28 명세에서 Streamable HTTP 요청은 본문의 일부 값을 HTTP 헤더에도 싣는다. 로드밸런서, 게이트웨이, WAF 같은 중개자가 JSON-RPC 본문을 파싱하지 않고 라우팅과 정책 판단을 하게 하려는 것이다. `Mcp-Method`, `Mcp-Name`과 `x-mcp-header`는 SEP-2243으로 추가됐고, 2025-06-18부터 있던 `MCP-Protocol-Version`은 이제 본문 `_meta`의 버전과도 같아야 한다.
+
+| 헤더 | 담는 값 | 2026-07-28 명세 기준 |
+|---|---|---|
+| `MCP-Protocol-Version` | 프로토콜 버전 | 모든 POST에 필수(MUST)이고 본문 `_meta`의 버전과 같아야 한다 |
+| `Mcp-Method` | JSON-RPC `method` | 모든 요청에 필수 |
+| `Mcp-Name` | `params.name` 또는 `params.uri` | `tools/call`, `resources/read`, `prompts/get`에 필수 |
+| `Mcp-Param-{Name}` | 서버가 `x-mcp-header`로 지정한 도구 인자 | 지정은 서버의 선택(MAY), 지원은 클라이언트의 의무(MUST) |
+
+- **도구 인자 복제 규칙**: 서버는 도구 `inputSchema`의 속성에 `x-mcp-header`를 붙여 그 인자를 `Mcp-Param-{Name}` 헤더로 보내게 한다. 이름은 비어 있지 않은 HTTP token이고 스키마 안에서 대소문자 구분 없이 유일해야 한다. 값의 타입은 string, integer, boolean만 허용하고 number는 허용하지 않으며, integer는 −2^53+1부터 2^53−1 범위여야 한다. 속성은 루트에서 `properties` 키만 거쳐 닿아야 하며 `items`를 비롯한 배열 키워드, 조합 키워드(`oneOf`, `anyOf`, `allOf`, `not`), 조건 키워드(`if`, `then`, `else`), `$ref`를 거치면 안 된다. ASCII가 아닌 값, 제어 문자나 앞뒤 공백이 있는 값과 인코딩 표시처럼 보이는 평문 값은 `=?base64?...?=` 형식의 Base64로 보내며, `Mcp-Name`에도 같은 인코딩을 쓴다. stdio 같은 다른 전송은 이 표시를 무시할 수 있다.
+- **잘못된 표시는 클라이언트 목록의 도구 누락으로 드러날 수 있다**: Streamable HTTP 클라이언트는 규칙을 어긴 `x-mcp-header`가 있는 도구 정의를 거부하고(MUST) `tools/list` 결과에서 뺀다. 도구 이름과 이유를 담은 경고 로그는 권고(SHOULD)다. 한 도구의 잘못된 정의가 다른 정상 도구까지 막지 않게 하려는 규칙이다. 그래서 등록 때 표시를 검사하지 않는 서버 구현에서는 서버가 정상 기동하고 클라이언트 목록에서만 도구가 빠진다.
+- **본문과 다르면 거절한다**: 본문을 처리하는 서버는 헤더 값이 본문 값과 다르면 요청을 거절해야 한다(MUST). 응답은 400 Bad Request와 JSON-RPC 오류 `-32020`(`HeaderMismatch`)이며, 필수 헤더 누락, 디코딩 뒤 불일치와 잘못된 문자도 같은 오류로 처리한다. 다만 2025-06-18 이전 클라이언트를 지원하는 서버는 `MCP-Protocol-Version`이 없는 요청을 2025-03-26 버전으로 볼 수 있고(MAY), 중개자는 HTTP 오류 상태만 돌려주면 된다. 대조가 없으면 관문은 헤더 값으로 라우팅하고 서버는 본문 값으로 실행하는 어긋남이 생긴다. 이 오류 코드는 SEP 원문의 `-32001`에서 2026-07-28 명세의 `-32020`으로 바뀌었다. SEP 본문에는 notification 헤더와 중첩 허용 범위처럼 최종 명세와 다른 부분도 남아 있으므로 구현 기준은 명세로 삼는다. 필수 `Mcp-Param-*` 헤더가 없거나 본문과 달라 거절됐다면 클라이언트는 `tools/list`로 도구 스키마 변경을 확인한 뒤 다시 보내도록 권고된다(SHOULD).
+- **관문은 버전부터 확인한다**: 테넌트별 라우팅이나 rate limit처럼 복제된 헤더로 정책을 거는 중개자는 `MCP-Protocol-Version`이 헤더와 본문 대조를 요구하는 버전인지 확인하고, 이전 버전이거나 헤더가 없으면 검증되지 않은 헤더 값을 믿지 말고 요청을 거절하도록 권고된다(SHOULD). 알지 못하는 `Mcp-Param-{Name}` 헤더는 그대로 전달한다(MUST). 관문이 도구 이름에 접두사를 붙이거나 `tools/list`를 다시 쓴다면, 대조 규칙상 downstream으로 넘기는 본문과 `Mcp-Name`, `Mcp-Param-*` 헤더를 함께 맞춰야 한다.
+- **헤더 값을 권한의 근거로 쓰지 않는다**: 헤더 값은 네트워크 중개자에게 보이므로 비밀번호, API 키, 토큰과 개인정보 인자에는 `x-mcp-header`를 붙이지 않는다(SHOULD NOT). Base64는 인코딩일 뿐 기밀성을 주지 않는다. SEP-2243의 보안 절은 테넌트 ID나 지역처럼 자원 접근을 암시하는 헤더 값을 접근 허용 전에 인증된 사용자의 권한과 따로 대조하도록 요구한다(MUST). 명세 본문에는 이 대조 요구에 해당하는 헤더 한정 문구가 없고, 모든 도구 입력을 검증하고 접근 제어를 구현하라는 일반 원칙(MUST)이 있다. 요청 인자를 신뢰하지 않는다는 위의 네 경계와 같은 원칙이다.
+
+## MCP Python SDK 2.3.0 업그레이드 점검
+
+2026-10-02(UTC) 릴리스 노트와 SDK의 Header parameters 문서 기준이다. 헤더 검증, 인증 흐름과 호환성에 걸친 동작 변화라 업그레이드 점검 목록으로 함께 둔다.
+
+- **등록 시점 실패**: `MCPServer`의 `@mcp.tool()`, `add_tool`, `Tool.from_function`은 잘못된 `x-mcp-header`가 있으면 도구 이름과 문제를 담은 `InvalidSignature`를 던진다. 이전에는 서버가 그대로 떴고 2026-07-28 클라이언트의 목록에서만 도구가 빠졌다. `str`, `int`, `bool`이 아닌 인자(`str | None`, `float`, 리스트, enum 포함), token이 아닌 이름과 대소문자만 다른 두 이름이 거부된다. 선택 인자를 헤더로 보내려면 pydantic `WithJsonSchema`로 스키마를 직접 적는다. 값 제약은 표시를 쓰는 서버에도 걸리는 MUST지만 명세가 정한 시행 지점은 클라이언트의 제외이고, 등록 시점 거부는 SDK가 고른 시행 지점이다. 저수준 `Server`는 표시를 검사하지 않아 잘못된 표시가 그대로 제공된다.
+- **검증에 쓰는 스키마**: `MCPServer`는 `tools/call`마다 `tools/list`를 돌리지 않고 이름으로 찾은 등록 스키마로 `Mcp-Param-*`를 검증한다. `tools/list`를 걸러 내거나 바꾸는 미들웨어는 이 검증에 영향을 주지 않고, 미들웨어에 추가 `tools/list` 요청도 보이지 않는다. 저수준 `Server`는 `get_tool_input_schema`를 주지 않으면 표시한 도구가 없어도 인자가 있는 호출마다 `on_list_tools` 핸들러를 실행해 스키마를 얻는다.
+- **클라이언트 재시도**: `Client.call_tool`은 `HeaderMismatch`(`-32020`)를 받으면 도구 목록을 다시 받고 한 번 재시도한다.
+- **로그인 대기와 요청 타임아웃의 분리**: `OAuthClientProvider`가 `redirect_handler`와 `callback_handler`를 기다리는 동안 요청 타임아웃이 멈춘다. 아무도 끝내지 않는 로그인을 요청 타임아웃이 끊어 주지 않으므로, 무인 실행 환경에서는 `callback_handler` 안에 대기 상한을 둔다.
+- **빈 필드 생략**: 2025-11-25 이하 버전 연결에서는 빈 `_meta`를 더 보내지 않고 `ping`과 커서 없는 목록 요청을 `params` 없이 보낸다. 받는 쪽에서는 `ctx.meta`가 `{}` 대신 `None`이고, `params`가 없는 요청에서 미들웨어가 보는 `ctx.params`도 `None`이다. 빈 객체를 가정하고 값을 꺼내는 인증이나 감사 미들웨어는 요청을 실패시킬 수 있으므로 함께 점검한다. 2026-07-28 연결은 바뀌지 않았다.
+
+업그레이드 검증은 서버 기동과 도구 등록 경로부터 시작한다. 저수준 `Server`처럼 등록 때 표시를 검사하지 않는 구현을 쓰면 클라이언트의 실제 `tools/list` 결과에 도구가 모두 있는지 확인한다.
+
 ## 면접 체크포인트
 
 - 서버에 둔 토큰의 권한을 결국 누가 쓰는지와 네 경계(인증, 파일 경로, API 목적지, Origin과 Host)
@@ -79,6 +108,8 @@ downstream 자격 증명은 네 방식으로 나눠 볼 수 있다.
 - 게이트웨이에서 호출자 신원과 downstream 자격 증명을 분리하는 이유
 - 발견(`tools/list`)과 실행(`tools/call`)을 따로 인가하는 이유
 - URL 모드 elicitation으로 외부 계정을 연결할 때 지킬 조건(클라이언트가 선언한 모드, 클라이언트를 거치지 않는 자격 증명, 같은 사용자 확인)
+- 본문 값을 헤더로 복제할 때 서버가 둘을 대조해야 하는 이유(`HeaderMismatch`, `-32020`)와 관문이 `MCP-Protocol-Version`을 먼저 확인하는 이유
+- 등록 때 표시를 검사하지 않는 구현에서 잘못된 `x-mcp-header`가 서버 오류가 아니라 클라이언트 목록의 도구 누락으로 나타나는 구조와 업그레이드 검증 순서
 
 ## 출처
 
@@ -86,6 +117,12 @@ downstream 자격 증명은 네 방식으로 나눠 볼 수 있다.
 - [Model Context Protocol, Streamable HTTP (2026-07-28)](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
 - [Model Context Protocol, Security Best Practices (2026-07-28)](https://modelcontextprotocol.io/specification/2026-07-28/basic/security_best_practices)
 - [Model Context Protocol, Elicitation (2026-07-28)](https://modelcontextprotocol.io/specification/2026-07-28/client/elicitation)
+- [Model Context Protocol, Tools (2026-07-28)](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
+- [Model Context Protocol, Overview, Error Codes (2026-07-28)](https://modelcontextprotocol.io/specification/2026-07-28/basic/index#error-codes)
+- [Model Context Protocol, Key Changes (2026-07-28)](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
+- [Model Context Protocol, SEP-2243: HTTP Header Standardization for Streamable HTTP Transport](https://modelcontextprotocol.io/seps/2243-http-standardization)
+- [v2.3.0 — GitHub, modelcontextprotocol/python-sdk](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.3.0)
+- [MCP Python SDK, Header parameters](https://py.sdk.modelcontextprotocol.io/advanced/header-parameters/)
 - [Unauthenticated HTTP MCP requests can use globally configured Jira and Confluence credentials (GHSA-vc8m-84rp-53hx) — GitHub, sooperset/mcp-atlassian](https://github.com/sooperset/mcp-atlassian/security/advisories/GHSA-vc8m-84rp-53hx)
 - [Unauthenticated arbitrary local file read via upload_attachment file_path, chained with missing auth on streamable-http transport (GHSA-cc5h-2pwp-pvcc) — GitHub, sooperset/mcp-atlassian](https://github.com/sooperset/mcp-atlassian/security/advisories/GHSA-cc5h-2pwp-pvcc)
 - [Incomplete fix for CVE-2026-27826: DNS rebinding bypasses SSRF validation (validated IP not pinned) (GHSA-72fm-whvq-jghf) — GitHub, sooperset/mcp-atlassian](https://github.com/sooperset/mcp-atlassian/security/advisories/GHSA-72fm-whvq-jghf)
@@ -101,6 +138,7 @@ downstream 자격 증명은 네 방식으로 나눠 볼 수 있다.
 - [OSV, CVE-2026-61568](https://osv.dev/vulnerability/CVE-2026-61568)
 - [How DoorDash Built a Centralized Gateway for AI Agent-Tool Access — DoorDash Engineering](https://careersatdoordash.com/blog/how-doordash-built-a-centralized-gateway-for-ai-agent-tool-access/)
 - [MCP 서버 보안, 넣어 둔 토큰이 요청자의 권한이 되는 이유 — YouTube, 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=zQ4SFM857L4)
+- [MCP Python SDK 2.3.0, 도구 등록이 멈추는 이유 — YouTube, 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=8cn9qiyRS8U)
 
 ## 관련 문서
 

@@ -151,6 +151,7 @@ aliases: ["WMS Inbound Context Modeling", "WMS 입고 컨텍스트 모델링", "
 
 ## 관련 문서
 
+- [[WMS-Outbound-Context-Modeling|WMS 출고 컨텍스트 모델링 (같은 분석 순서를 출고에 적용)]]
 - [[DDD|DDD (Bounded Context, Context Map, 상태 전이 규칙)]]
 - [[DDD-Hexagonal-In-Production-Pragmatics|DDD + Hexagonal 외부 통합과 ACL]]
 - [[Commerce-Order|커머스 주문 상태와 전환 트리거]]

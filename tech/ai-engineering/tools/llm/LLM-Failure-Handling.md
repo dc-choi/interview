@@ -139,7 +139,7 @@ const classify = (response: Message): Outcome => {
 - 폴백 대상은 같은 제공자의 다른 모델, 다른 클라우드의 같은 모델, 다른 제공자, 캐시나 미리 만든 응답, 사람 이관 가운데 위 범위 표의 실패 범위에 맞춰 고른다.
 - 작업마다 폴백이 포기해도 되는 것(개인화, 문체)과 지켜야 하는 것(원천 데이터 대조, 실시간 정합성)을 정하고 허용 폴백 목록을 둔다([[Failure-Evolution-Under-Load#Degradation 사다리 — 폴백에도 지켜야 할 것이 있다|Degradation 사다리]]).
 - 같은 계정과 키를 쓰는 폴백은 계정 범위 실패와 제공자 장애를 함께 맞는다. 합산 한도로 묶인 모델(OpenAI 문서의 shared limit 계열 포함)로 바꾸면 속도 한도도 같이 맞는다.
-- Anthropic 서버 측 `fallbacks`(Claude API 베타, Message Batches와 Bedrock, Google Cloud, Microsoft Foundry 미지원)는 안전 분류기 거절에만 동작한다. 요청한 모델의 속도 한도, 과부하, 서버 오류는 그대로 돌아오므로 가용성 폴백은 직접 만든다. 폴백 모델이 한도에 걸리거나 과부하면 폴백 없이 거절이 돌아오고 실행된 시도는 모두 각 모델의 한도를 소모하므로, 폴백 모델의 한도를 예상 물량에 맞춘다.
+- Anthropic 서버 측 `fallbacks`(Claude API 베타, Message Batches와 Bedrock, Google Cloud, Microsoft Foundry 미지원)는 안전 분류기 거절에만 동작한다. 요청한 모델의 속도 한도, 과부하, 서버 오류는 그대로 돌아오므로 가용성 폴백은 직접 만든다. 폴백 모델이 한도에 걸리거나 과부하면 폴백 없이 거절이 돌아오고 실행된 시도는 모두 각 모델의 한도를 소모하므로, 폴백 모델의 한도를 예상 물량에 맞춘다. 2026-10-12 공식 문서 기준 Haiku 5.5에는 서버 측 폴백과 폴백 크레딧이 없다. `fallbacks: "default"`를 줘도 거절이 그대로 돌아오고 폴백 모델 목록을 주면 400이므로, SDK 미들웨어나 직접 재시도로 다른 모델에 보낸다. 이때 폴백 크레딧이 없어 넘겨받은 모델의 프롬프트 캐시 쓰기 비용을 모두 낸다.
 - 폴백 모델은 같은 요청에 다르게 반응한다. 같은 제공자 안에서도 창이 1M인 모델과 200k인 모델(예: Haiku 4.5)이 섞여 있고 토크나이저, 구조화 출력 지원 여부, `tool_choice` 강제 지원(Opus 5.5, Sonnet 5.5, Fable 5.1은 `any`와 `tool`에 400), assistant prefill 지원(Claude 4.6 이후 400)이 다르다. 폴백 경로도 같은 eval로 합격선을 확인한다([[LLM-Model-Tiers|모델 티어와 폴백]], [[LLM-Eval-Strategy]]).
 - 평소에 쓰이지 않는 폴백 경로는 잠복 결함을 품기 쉬우므로([[External-Service-Resilience#Fallback|폴백의 잠복 결함]]) 실트래픽 일부를 폴백 모델에도 계속 보내고 그 결과를 eval에 넣는다.
 

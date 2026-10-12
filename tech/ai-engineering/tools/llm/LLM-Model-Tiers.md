@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, cost, model-selection]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-12
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model Routing"]
 ---
@@ -20,7 +20,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 | 균형형 | 일상 업무용, 플래그십 대비 큰 폭 저렴 | 대부분의 프로덕션 트래픽, 일반 생성, 요약 |
 | 저비용형 | 가장 빠르고 가장 싼 | 분류, 추출, 라우팅, 단순 변환, 대량 배치 |
 
-벤더별 매핑 예: 2026-09-29 Codex 모델 문서 기준 OpenAI는 GPT-6 Astra를 가장 강한 모델로, GPT-6 Sol(복잡한 코딩과 에이전트 작업)과 GPT-6 Luna(범위가 분명한 대량 반복 작업)를 권장 모델로 안내한다. 이전 세대 GPT-5.6 Sol, Terra, Luna는 롤아웃 기간 동안 유지된다. Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. 2026-09-30 공식 모델 개요 기준 현재 모델은 Fable 5.1(100만 토큰당 입력 $10, 출력 $50), Opus 5.5($4, $20), Sonnet 5.5($2, $10), Haiku 4.5($1, $5)이고 컨텍스트는 Haiku 4.5만 200K, 나머지는 1M이다. 공식 안내는 대부분의 작업을 Opus 5.5로 시작하고, 어려운 추론과 장기 에이전트 작업이나 Opus 5.5를 높은 effort로 돌려도 eval이 모자랄 때 Fable 5.1을 쓰라는 것이다. 대부분의 작업에서 Opus 5.5가 Fable 5.1 수준이라는 벤더 발표도 같은 패턴을 잇는다. Google은 Gemini Pro, Flash 계열. 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
+벤더별 매핑 예: 2026-09-29 Codex 모델 문서 기준 OpenAI는 GPT-6 Astra를 가장 강한 모델로, GPT-6 Sol(복잡한 코딩과 에이전트 작업)과 GPT-6 Luna(범위가 분명한 대량 반복 작업)를 권장 모델로 안내한다. 이전 세대 GPT-5.6 Sol, Terra, Luna는 롤아웃 기간 동안 유지된다. Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. 2026-10-12 공식 모델 개요 기준 현재 모델은 Fable 5.1(100만 토큰당 입력 $10, 출력 $50), Opus 5.5($4, $20), Sonnet 5.5($2, $10), Haiku 5.5(프롬프트 10만 토큰 이하 $0.10, $0.50)이고 네 모델 모두 컨텍스트 1M, 최대 출력 128K다. 2026-10-07 출시된 Haiku 5.5가 저비용형 자리를 이었고 Haiku 4.5($1, $5, 컨텍스트 200K)는 2026-10-12 기준 레거시 목록에 남아 아직 쓸 수 있다. 공식 안내는 대부분의 작업을 Opus 5.5로 시작하고, 어려운 추론과 장기 에이전트 작업이나 Opus 5.5를 높은 effort로 돌려도 eval이 모자랄 때 Fable 5.1을 쓰라는 것이다. 대부분의 작업에서 Opus 5.5가 Fable 5.1 수준이라는 벤더 발표도 같은 패턴을 잇는다. Google은 Gemini Pro, Flash 계열. 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
 
 ## 티어 간 트레이드오프
 
@@ -29,6 +29,15 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - **능력 게이팅**: 최상위 추론 강도(max reasoning effort)나 특수 모드는 플래그십에서만 열리는 경우가 있다. 즉 일부 능력은 돈을 더 낸다고 아무 티어에서나 살 수 없고, 티어 자체를 올려야 한다.
 - **재작업 비용**: 호출 단가만 보면 하위 티어가 싸지만, 복잡한 작업에서는 근거 없는 내용을 사실처럼 쓰거나 스스로 점검하지 못하고 중간에 멈춰 사람이 뒷수습하는 비용이 붙는다. 반대로 스펙이 확정된 단순 반복 구현(CRUD, 정해진 양식의 보고서)에 상위 티어를 쓰면 비용만 늘고 결과가 더 좋지도 않다. 초기 오류를 막는 일이 중요하고 디버깅이 비싼 작업은 상위 티어와 높은 effort를, 스펙이 분명하고 속도가 중요한 작업은 하위 티어를 먼저 고른다. 경험칙이므로 같은 과업의 품질, 시간, 비용으로 확인한다.
 - **effort는 두 번째 손잡이**: 같은 모델 안에서도 effort가 사고뿐 아니라 텍스트와 도구 호출을 포함한 출력 토큰 전체의 성향을 바꾼다. 적응형 사고(adaptive thinking)는 모델이 요청마다 생각할지와 얼마나 생각할지를 스스로 정하는 방식이고 effort가 그 성향을 조절한다. 공식 문서는 낮은 effort를 서브에이전트처럼 단순하고 빠른 작업에 권하고, effort를 엄격한 예산이 아닌 행동 신호로 설명한다. 티어를 내리기 전에 effort를 먼저 조정해 볼 수 있다.
+
+### 저비용형으로 내릴 때 확인할 조건
+
+Haiku 5.5 사례를 2026-10-12 공식 발표, 가격표와 모델 문서에 대조한 내용이다. 티어 이름만 보고 이전 세대의 저비용형과 같은 조건이라고 가정하지 않는다.
+
+- **프롬프트 길이에 따른 단가 구간**: Haiku 5.5는 프롬프트가 10만 토큰 이하면 입력 $0.10, 출력 $0.50, 넘으면 $0.50, $2.50이다(100만 토큰당). 프롬프트 길이에는 캐시 읽기와 쓰기 토큰도 들어가고, 높은 단가는 넘은 부분이 아니라 그 요청 전체에 붙는다. 가격표는 Claude 4.6 이후 모델 가운데 Haiku 5.5만 예외로 두고 나머지는 1M 컨텍스트 전체를 같은 단가로 받는다고 적는다. 긴 문서를 통째로 넣는 경로와 대화가 길어지는 에이전트는 몇 번째 요청부터 구간을 넘는지 계산한다.
+- **평균 절감률의 조건**: 공식 발표는 Haiku 4.5 대비 단가가 10만 토큰 이하 요청에서 90%, 넘는 요청에서 50% 낮다고 하면서 평균 실행 비용 절감은 약 75%로 적는다. 이 평균에는 Haiku 4.5 요청의 약 90%가 10만 토큰 이하였다는 요청 구성과, 같은 텍스트가 약 30% 많은 토큰으로 세어지는 새 토크나이저(증가 폭은 내용에 따라 다름)가 함께 반영됐다. 이전 턴의 사고 블록을 컨텍스트에 남기므로 다턴 대화의 입력 토큰은 토크나이저 차이보다 더 늘 수 있다. 단가 인하율을 비용 절감률로 그대로 쓰지 않고 같은 과업의 토큰 수와 요청 길이 분포로 비교한다.
+- **안전 분류기 거절**: Haiku 5.5는 안전 분류기가 요청을 거절할 수 있고(HTTP 200의 `stop_reason: "refusal"`), Haiku 4.5에서 옮기면 새로 생기는 응답이다. 서버 측 폴백과 폴백 크레딧이 없어 클라이언트가 직접 처리한다([[LLM-Failure-Handling|LLM 실패 처리]]). 사이버 보안 세이프가드는 Haiku 4.5보다 엄격하고 다른 최신 모델보다는 다소 완화돼 Sonnet 5.5보다 넓은 방어 작업을 허용하지만 침투 테스트 같은 공격 쪽 기법은 막는다. 보안 업무 경로라면 거절률을 eval에 넣고, 해당되면 Cyber Verification Program을 검토한다.
+- **맡길 일**: 공식 안내는 분류, 추출, 라우팅 같은 대량, 지연 민감 작업과 코딩 작업의 서브에이전트를 쓰임으로 들고, 복잡한 에이전트 코딩은 Sonnet 5.5와 Opus 5.5가 낫다고 적는다. effort를 지원하는 첫 Haiku이며 Claude API의 기본값은 `medium`이다.
 
 ## 모델 라우팅 (티어 선택 패턴)
 
@@ -112,7 +121,13 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - [OpenAI API, GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna)
 - [OpenAI API, Pricing](https://developers.openai.com/api/docs/pricing) (2026-10-06 GPT-6 계열과 GPT-5.6 가격 확인)
 - [Gemini API, Pricing](https://ai.google.dev/gemini-api/docs/pricing) (2026-10-06 Gemini 3.1 Pro Preview 가격 확인)
-- [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격, 2026-09-30 현재 모델 확인, 2026-10-06 재확인)
+- [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격, 2026-09-30 현재 모델 확인, 2026-10-06 재확인, 2026-10-12 Haiku 5.5 반영)
+- [Introducing Claude Haiku 5.5 — Anthropic](https://www.anthropic.com/claude-haiku-5-5)
+- [Anthropic Platform Docs, What's new in Claude Haiku 5.5](https://platform.claude.com/docs/en/models/haiku-5-5/whats-new-haiku-5-5)
+- [Anthropic Platform Docs, Claude Haiku 5.5](https://platform.claude.com/docs/en/models/haiku-5-5/overview)
+- [Anthropic Platform Docs, Prompting Claude Haiku 5.5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-haiku-5-5)
+- [Anthropic Platform Docs, Pricing](https://platform.claude.com/docs/en/about-claude/pricing) (2026-10-12 Haiku 5.5 단가 구간 확인)
+- [Anthropic Platform Docs, Refusals and fallback](https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback)
 - [Anthropic Platform Docs, Effort](https://platform.claude.com/docs/en/build-with-claude/effort)
 - [Anthropic Platform Docs, Steering thinking](https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost)
 - [Introducing Claude Opus 5.5 — Anthropic](https://www.anthropic.com/claude-opus-5-5)
@@ -125,3 +140,4 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - [서로 검토하는 멀티 모델 코딩 파이프라인 — Threads, claudical_official](https://www.threads.com/@claudical_official/post/Daw9YLkD3qu)
 - [기획은 하위 모델, 구현은 상위 모델 — Threads, dev.inniverse](https://www.threads.com/@dev.inniverse/post/Dac6StsCbgH)
 - [인프런, 널널한 개발자, 앤트로픽 AI 모델별 특징](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498589)
+- [이제 AI 괴롭히면 차단, 하이쿠5.5, 클로드 스타트업 지원 프로그램 소식 — YouTube, ZeroCho TV](https://www.youtube.com/watch?v=C3AmewdOnk0)
