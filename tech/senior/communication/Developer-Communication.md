@@ -103,6 +103,14 @@ Microsoft의 메일 작성 지침을 업무 접수에 적용한 운영 제안이
 
 문서보다 실행 가능한 시제품을 함께 보며 논의하는 편이 나은 상황도 있다. 형식보다 동료가 방향을 바꿀 수 있는 시점에 참여하는지가 기준이다. 위의 30%, 70%는 중간 점검 예시이며, 막힘이 드러났는데 그 비율까지 기다리는 규칙으로 쓰지 않는다.
 
+### 문서 품질과 결정 속도를 함께 관리한다
+
+문서의 분량 제한은 검토를 없애라는 뜻이 아니다. Amazon의 2017년 주주서한은 슬라이드 대신 서술형 6쪽 메모를 쓰고 회의 시작에 함께 묵독하는 방식을 설명한다. 좋은 메모에는 동료 피드백, 재작성과 시간을 두고 다시 읽는 과정이 필요하며, 일주일 이상 걸릴 수 있다고 적는다. 이 사례를 보고서 폐지나 모든 문서를 빨리 작성하라는 근거로 쓰지 않는다.
+
+결정의 속도는 문서 품질과 별도로 설계한다. 2016년 주주서한은 되돌릴 수 있는 결정에 가벼운 절차를 쓰고, 잘못된 결정을 빠르게 발견해 고치는 능력을 강조한다. 원하는 정보의 약 70%에서 결정하라는 제안도 이 경영 맥락의 조언이며, 통계로 검증된 기준이나 모든 업무의 승인 조건은 아니다.
+
+실무 적용에서는 결정할 사항, 되돌릴 수 있는 범위, 실패를 발견할 지표와 재검토 시점을 초안에 적는다. 표현을 다듬느라 피드백을 늦추는지와, 결정에 필요한 근거가 실제로 빠졌는지를 구분한다. 이는 위 두 운영 원칙을 조합한 적용 제안이며, 보안이나 계약 검토를 생략하라는 뜻이 아니다. 2026-10-13 두 주주서한의 해당 절을 대조했다.
+
 ## 고맥락과 저맥락 문화
 
 Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하며, 그 첫째인 커뮤니케이션 척도가 저맥락과 고맥락을 나눈다. 저맥락 문화에서는 말한 그대로가 메시지이고 명확하고 단순하게 반복하는 것이 좋은 소통이다. 고맥락 문화에서는 누가, 언제, 어떤 분위기에서 말했는지까지 메시지에 포함되며 행간을 읽는 것이 기대된다. 책의 척도에서 미국은 가장 저맥락 쪽, 일본은 가장 고맥락 쪽에 있고 한국도 고맥락 쪽에 놓인다(책 기준, 국가 위치는 상대 비교다).
@@ -142,6 +150,8 @@ Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하
 제안하는 것과 일정을 약속할 권한은 다르다. 변경된 범위와 위험을 책임자가 승인하도록 확인하고, 불법이거나 안전하지 않은 요구에는 거절이 필요할 수 있다. 항상 대안을 만들어 상대를 붙잡아야 전문가라는 의무로 확대하지 않는다. 작은 일에서 판단의 근거와 한계를 설명하는 연습으로 사용한다.
 
 ## 출처
+- [2017 Letter to Shareholders — Amazon](https://www.aboutamazon.com/news/company-news/2017-letter-to-shareholders) — Six-Page Narratives, 메모 작성과 검토 방식
+- [2016 Letter to Shareholders — Amazon](https://www.aboutamazon.com/news/company-news/2016-letter-to-shareholders) — High-Velocity Decision Making, 가역적 결정과 빠른 수정
 - [GitLab Onboarding Buddies — GitLab Handbook](https://handbook.gitlab.com/handbook/people-group/general-onboarding/onboarding-buddies/)
 - [All-Remote Meetings — GitLab Handbook](https://handbook.gitlab.com/handbook/company/culture/all-remote/meetings/)
 - [the senior engineer death spiral — Sunil Pai](https://sunilpai.dev/posts/the-senior-engineer-death-spiral/) — 2026-09-19, 작업 공유와 작은 기여를 통한 회복에 관한 경험적 조언
