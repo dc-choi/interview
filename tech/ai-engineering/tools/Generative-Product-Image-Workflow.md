@@ -66,6 +66,18 @@ ComfyUI는 노드를 연결해 생성 단계를 구성하고 워크플로우를 
 
 다음은 스케치나 참조 이미지로 상품 후보를 검토할 때의 적용 제안이다. 탐색용 시안과 확정 상품 이미지를 구분하고, 보이지 않는 면, 부품과 비율은 도면이나 실물에 대조한다. 제공된 참조만으로 확인할 수 없는 속성은 확정 사양으로 표시하지 않는다. 생성 모델의 종류를 모르는 고객 사례에 Nova Canvas를 사용했다고 추정하지 않는다.
 
+## 이미지 속 문구와 연속 편집을 따로 검수한다
+
+이미지에 넣을 문구는 먼저 텍스트로 확정하고, 생성 요청에 문구, 글꼴의 특징과 전체 배치를 구체적으로 적는다. Gemini 이미지 생성 문서는 문구를 먼저 생성한 다음 그 문구를 포함한 이미지를 요청하는 방식을 권장한다. 같은 피사체를 다른 각도로 이어 그릴 때는 앞서 생성한 이미지를 다음 요청의 참조로 넣도록 안내한다.
+
+상품 이미지에 적용할 때는 다음을 별도 합격 기준으로 둔다. 이는 공식 성능 보장이 아니라 검수 설계 제안이다.
+
+- **문구 정확성**: 상품명, 숫자, 단위와 한글 받침을 확정 문안과 대조한다. 큰 제목과 작은 설명문을 나눠 보고 실제 게시 크기에서도 읽히는지 확인한다.
+- **편집 일관성**: 번역이나 문구 교체 뒤 상품의 색상, 로고와 배치가 유지됐는지 원본과 비교한다. 시리즈 이미지에서는 각 결과를 기준 이미지와 대조한다.
+- **비교 조건**: 모델 식별자, 참조 이미지, 출력 크기와 재시도 횟수를 함께 남긴다. 몇 장의 시연 결과를 모든 상품과 언어에서의 우열로 일반화하지 않는다.
+
+문구가 정확해야 하는 최종 산출물은 배경 생성과 확정 텍스트의 후편집 합성을 나누는 방법도 검토한다. 2026-10-13 Google 공식 문서의 문구 작성과 참조 이미지 권고를 대조했다. 모델 간 한국어 성능을 실측하거나 기존 AWS 배포 지원 범위를 재검증한 것은 아니다.
+
 ## 검수 기준
 
 아래는 상품 이미지 업무에 적용할 점검 기준이다.
@@ -79,6 +91,7 @@ ComfyUI는 노드를 연결해 생성 단계를 구성하고 워크플로우를 
 
 ## 출처
 
+- [Google AI for Developers, Nano Banana image generation](https://ai.google.dev/gemini-api/docs/image-generation) — Accurate text in images, Character consistency와 Limitations의 문구 및 참조 입력 권고.
 - [DreamBooth: Fine Tuning Text-to-Image Diffusion Models for Subject-Driven Generation — Google Research](https://dreambooth.github.io/) — 피사체 식별자, 미세조정과 클래스별 prior preservation.
 - [AWS AI Service Cards, Amazon Nova Canvas](https://docs.aws.amazon.com/ai/responsible-ai/nova-canvas/overview.html) — 참조에 없는 면의 생성과 축척의 한계.
 - [ComfyUI, Inpainting Workflow](https://docs.comfy.org/tutorials/basic/inpaint)

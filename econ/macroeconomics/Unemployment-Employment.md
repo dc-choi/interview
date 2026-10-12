@@ -87,8 +87,25 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 
 이 결과를 일자리 총량이 정해져 있다는 근거로 읽지 않는다(8절). 임금이 조정되지 않은 채 기존 근로자의 고용 기간이 늘면 기업의 추가 부담이 신규 채용 축소로 이어질 수 있다는 근거다. 추정 범위가 넓고 특정 제도와 시기의 결과이므로, 임금체계나 적용 방식이 다른 정년연장에 같은 수치를 대입하지 않는다.
 
+## 10. 자동화의 대체 효과와 새 과업의 고용 효과
+
+자동화의 고용 효과는 직업 전체보다 **과업의 배분**에서 출발해 본다. Acemoglu와 Restrepo의 2019년 과업 기반 모형에서는 생산성 향상과 노동 수요 증가가 같은 뜻이 아니다.
+
+| 경로 | 모형에서 구분하는 효과 |
+| --- | --- |
+| 대체 효과(displacement effect) | 자본이 기존 노동 과업을 맡아 노동소득분배율을 낮추고 노동 수요를 줄이는 방향으로 작용 |
+| 생산성 효과(productivity effect) | 자동화가 생산성을 높여 자동화되지 않은 과업의 노동 수요를 늘리는 방향으로 작용 |
+| 복원 효과(reinstatement effect) | 노동이 비교우위를 갖는 새 과업이 생겨 노동 수요와 노동소득분배율을 높이는 방향으로 작용 |
+
+자동화의 순효과는 대체와 생산성 효과의 상대적 크기에 달려 있다. 새 과업의 창출은 별도 경로이며 자동화가 진행된다는 이유만으로 충분히 생긴다고 가정하지 않는다. 여기서 새 과업은 노동이 비교우위를 갖는 과업을 뜻하므로, 새로 생긴 자동 처리 기능을 모두 복원 효과로 세지 않는다.
+
+AI 도입을 평가할 때는 줄어든 기존 작업, 남은 작업의 생산성, 새로 필요한 인간 과업을 나눠 기록하는 방식으로 적용할 수 있다. 이는 모형을 연결한 판단 기준이다. AI 기업의 매출 증가만으로 전체 고용이나 임금 분포의 방향을 확정하거나, 불평등 급증과 거품 붕괴만을 가능한 결말로 단정하지 않는다.
+
+2026-10-13 부분 검증: 2019년 논문의 개념 설명(pp. 3–5)을 대조했다. 현재 AI 산업의 매출, 유료 이용률과 투자 회수 전망은 이 절의 검증 범위에 포함하지 않았다.
+
 ## 출처
 
+- [Journal of Economic Perspectives, Automation and New Tasks: How Technology Displaces and Reinstates Labor](https://economics.mit.edu/sites/default/files/inline-files/Automation%20and%20New%20Tasks%20-%20How%20Technology%20Displaces%20and%20Reinstates%20Labor.pdf) — Daron Acemoglu, Pascual Restrepo, 2019. 과업 배분, 대체, 생산성과 복원 효과.
 - [U.S. Bureau of Labor Statistics, Concepts and Definitions (CPS)](https://www.bls.gov/cps/definitions.htm)
 - [U.S. Bureau of Labor Statistics, Comparing employment from the BLS household and payroll surveys](https://www.bls.gov/web/empsit/ces_cps_trends.htm)
 - [Federal Reserve, Speech by Governor Kugler on navigating inflation waves while riding on the Phillips curve](https://www.federalreserve.gov/newsevents/speech/kugler20250220a.htm)
