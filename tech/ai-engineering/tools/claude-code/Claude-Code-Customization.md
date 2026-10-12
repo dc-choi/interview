@@ -58,6 +58,16 @@ verified_at: 2026-10-12
 - **역할별 조합 제안**: 의사결정은 gstack, 실행은 Superpowers, 긴 작업의 안정화는 GSD, 대규모 병렬이 필요하면 oh-my-claudecode를 더하는 3층 구성이 제안된다. 디자인 시스템의 토큰과 컴포넌트를 조합해 주는 것처럼 특정 산출물용 도메인 플러그인도 있으며, 개인이 만든 플러그인은 유지보수 주체와 갱신 빈도를 먼저 본다
 - **하나로 시작**: 여러 개를 한 번에 설치하지 않는다. 비슷한 역할의 스킬과 훅이 겹치면 어느 흐름이 발동할지 예측하기 어렵고 매 턴 컨텍스트 비용이 쌓인다. 하나로 시작해 실제로 쓰는 스킬만 남기거나 필요한 스킬만 `.claude/skills/`로 흡수하고, 플러그인은 프로젝트 범위로 골라 설치한다
 
+## Mods: 프로세스 내부 확장과 UI
+
+Mod는 Claude Code 프로세스 안에서 실행되는 JavaScript/TypeScript 이벤트 핸들러를 포함한 플러그인이다. 프롬프트, 도구 호출과 UI 렌더링 이벤트를 관찰하거나 수정하고, 직접 처리해 기본 동작을 대체할 수 있다. 설정 파일의 훅도 도구 호출을 차단하거나 인자를 바꿀 수 있으므로, 이벤트 수정 자체가 Mod만의 기능은 아니다. UI 패널과 입력창 위 영역을 그리거나 여러 이벤트 사이에 상태를 공유해야 할 때 Mod를 검토한다.
+
+- **실행과 표시를 구분**: 플러그인을 불러오는 세션에서 핸들러가 실행된다. 터미널과 Desktop Code 탭은 Mod UI를 표시하지만, Desktop의 WSL 세션은 플러그인을 지원하지 않아 핸들러와 UI 모두 실행되지 않는다. Desktop에서도 terminal-only로 표시된 UI 요소는 지원하지 않는다. VS Code 채팅 패널과 `claude -p`는 핸들러가 실행돼도 Mod UI를 표시하지 않는다. 설치 여부만으로 모든 화면에서 같은 기능이 보인다고 가정하지 않는다.
+- **권한과 비용**: Mod는 사용자 권한으로 파일과 네트워크에 접근하고 프로세스를 실행할 수 있으며 샌드박스로 격리되지 않는다. 프롬프트나 도구 호출을 바꾸고 모델을 호출해 구독 또는 API 사용량을 소비할 수도 있다. 화면을 꾸미는 기능이어도 실행 코드를 확인한다.
+- **설치 전 확인**: `claude plugin validate <플러그인 디렉터리>`로 코드를 실행하지 않고 `hooks:`와 `calls:` 목록을 확인한다. 이 목록은 검토 자료이며 안전성 보증이 아니다. 기존 훅, 스킬이나 상태표시줄로 목적을 달성하면 그 구성을 유지한다.
+
+2026-10-13 공식 Mods overview의 실행 경계와 표시 조건을 대조했다. 이 절은 다른 환경 설정과 원격 기능을 전부 재검증한 기록이 아니다.
+
 ## 체크포인트
 
 - 설정을 파일 직접 편집 대신 자연어로 시키는가
@@ -68,6 +78,7 @@ verified_at: 2026-10-12
 
 ## 출처
 
+- [Claude Code — Mods overview](https://code.claude.com/docs/en/plugins/mods/overview)
 - [Claude Code — CLI reference](https://code.claude.com/docs/en/cli-reference)
 - [Claude Code — Continue local sessions from any device with Remote Control](https://code.claude.com/docs/en/remote-control)
 - [Claude Code — Voice dictation](https://code.claude.com/docs/en/voice-dictation)
