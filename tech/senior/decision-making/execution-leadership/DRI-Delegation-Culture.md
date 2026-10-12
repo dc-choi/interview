@@ -2,7 +2,7 @@
 tags: [senior, decision-making, delegation, autonomy, dri, org-culture]
 status: done
 category: "Senior - 의사결정"
-aliases: ["DRI", "Directly Responsible Individual", "권한 위임 문화", "분산된 의사결정", "마이크로매니징"]
+aliases: ["DRI", "Directly Responsible Individual", "권한 위임 문화", "분산된 의사결정", "마이크로매니징", "Task-Relevant Maturity", "과업 관련 성숙도", "Handbook First"]
 ---
 
 # DRI와 권한 위임 문화 (분산된 의사결정과 실행 속도)
@@ -44,6 +44,16 @@ DRI(Directly Responsible Individual)는 어떤 사안의 **단일 최종 의사�
 
 Netflix는 문화 문서에서 관리자에게 context not control, 즉 모든 것을 직접 통제하기보다 팀이 좋은 결정을 내리는 데 필요한 맥락과 명료함을 주라고 요구한다. 한계도 있다. 맥락에서 기대치를 스스로 끌어내지 못하는 사람이나 합류 초기의 구성원에게는 맥락과 함께 완료 기준, 기한과 확인 시점을 명시적으로 합의해야 한다. 맥락만 주고 기대를 말하지 않으면 위임이 아니라 방치가 된다.
 
+## 절차 문서와 과업 성숙도에 맞춘 위임
+
+맥락 위임이 절차를 없애자는 뜻은 아니다. 반대로 모든 행동을 고정 매뉴얼로 먼저 정하고 숙달한 뒤에야 자율을 준다는 일괄 규칙도 아래 자료와 맞지 않는다. 위임의 수준은 사람 단위가 아니라 과업 단위로, 그 과업에 대한 성숙도에 맞춰 정하고, 문서는 판단을 대신하는 장치가 아니라 판단 기준을 공유하는 수단으로 쓴다.
+
+- **성숙도에 따라 관리 방식을 바꾼다**: Andy Grove는 효과적인 관리 방식을 정하는 기본 변수로 부하의 과업 관련 성숙도(task-relevant maturity, TRM)를 든다. TRM은 성취 지향과 책임을 맡을 준비, 교육, 훈련과 경험을 합친 개념이라 기술 숙련만을 뜻하지 않는다. 성숙도가 낮으면 무엇을, 언제, 어떻게 할지 구체적으로 지시하는 구조화된 방식이, 중간이면 쌍방 소통과 지원이, 높으면 목표를 정하고 모니터링하는 최소한의 개입이 효과적이라고 본다. 일이 갑자기 바뀌면 같은 사람의 성숙도도 떨어지며, 후속 확인 없는 위임은 책임 포기(abdication)라고 쓴다.
+- **문서는 자율의 기반이다**: GitLab은 프로세스를 핸드북에 먼저 적어 단일 정본으로 삼고(handbook first), 핸드북을 바꿔야 프로세스가 바뀐다고 본다. 구성원에게는 매일 확인받지 않아도 목표를 이루는 managers of one을 기대한다. 신규 입사자는 표준화된 온보딩 과업을 순서대로 스스로 수행하고, 원격 온보딩 모범 사례로는 주간 1:1을 잡아 질문을 받으라고 권한다. 핸드북은 완성되지 않으며 처음에는 비어 있어도 된다고 밝히고, 필요 없는 프로세스는 관료주의가 된다고 경고한다. 리더십 방식도 High Output Management의 원칙으로 만들었다고 밝히며, 후속 확인 없는 위임은 방기(abandonment)라고 쓴다. 리더에게는 핸드북 우선의 본보기가 되라고 요구한다.
+- **규칙은 위험이 큰 곳에 최소로 둔다**: Netflix의 현행 문화 문서(2024-06 갱신)는 출시, 마케팅, 보상, 분기 결산처럼 프로세스가 필요한 일과 괴롭힘, 회사 정보 유출, 내부자 거래처럼 엄격한 규칙이 필요한 영역을 인정하면서도 규칙은 최소로, 프로세스는 단순하고 효율적으로 유지한다고 밝힌다. context not control은 손을 떼는 관리가 아니라고 하며, 관리자는 주변 업무에 관여해 팀을 적극적으로 코칭해야 하고, 누군가 비윤리적이거나 회사에 중대한 피해를 줄 수 있는 결정을 내리려 할 때, 위기 상황이나 신규 구성원에게 충분한 맥락이 없을 때는 개입해야 할 수도 있다고 적는다.
+
+적용 제안: 반복 업무를 맡은 사람과 합류 초기 구성원에게는 절차와 완료 기준을 문서로 주고 확인 시점을 정한다. 성숙도가 높아진 과업은 목표와 확인 지표만 남기고 맥락 위임으로 옮기며, 과업이나 환경이 크게 바뀌어 성숙도가 떨어지면 다시 구체적인 지시에서 시작한다. 절차 문서는 리더도 같은 기준으로 따르고, 바꿀 때는 문서를 먼저 고친다. 개인에게 일을 맡기며 성장을 설계하는 방법은 [[People-Leadership#위임 — 방치가 아니라 성장 설계|사람 리더십의 위임]]에서 다룬다.
+
 ## 상향식 제안을 실행 책임으로 연결한다
 
 직급과 관계없이 문제를 제안할 수 있는 통로와, 제안 이후 제품화를 책임지는 구조를 함께 둔다. 다른 팀이 판단할 수 있도록 사용자 문제, 작은 동작 예제와 관측 결과를 공유한다. 공개 범위는 조직 내부의 업무 권한을 따르며 고객 정보나 내부 자료를 외부에 공개하라는 뜻이 아니다.
@@ -70,6 +80,7 @@ Netflix는 문화 문서에서 관리자에게 context not control, 즉 모든 �
 - 한두 번의 실패로 통제를 회수해 **학습된 무기력**을 키우고 있지 않은가
 - 영입한 시니어의 판단을 신뢰하고 권한을 넘기는가
 - 할 일만 넘기지 않고 목표, 풀어야 할 문제와 이유를 함께 넘기는가
+- 과업별 성숙도에 맞춰 지시의 구체성과 확인 빈도를 조정하고, 반복 업무의 절차와 완료 기준을 문서로 남기는가
 - 리더 본인이 그 문화를 먼저 지키는가
 
 ## 관련 문서
@@ -80,6 +91,7 @@ Netflix는 문화 문서에서 관리자에게 context not control, 즉 모든 �
 - [[Toxic-Org-Detection|독성 조직 판별 프레임]] — 윗분 뜻 vs 투명한 의사결정
 - [[Failure-Tolerant-Culture|실패에 관대한 문화]] — 위임과 짝을 이루는 실험 문화
 - [[Co-Leadership-Partnership|공동 리더십]] — 역할은 나누되 관심은 나누지 말라
+- [[People-Leadership#위임 — 방치가 아니라 성장 설계|사람 리더십의 위임]] — 개인 단위 위임과 성장 설계
 
 ## 출처
 
@@ -88,4 +100,11 @@ Netflix는 문화 문서에서 관리자에게 context not control, 즉 모든 �
 - 빠르게 일하는 조직의 권한 위임 문화 — 개인 블로그 회고
 - [공정함은 과정에서 온다 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-07-fairness-in-process/)
 - [리더는 할 일이 아니라 맥락을 파는 사람 — Threads, heathyune](https://www.threads.com/@heathyune/post/DRwaPhFj2bc)
-- [Netflix Culture — Netflix](https://jobs.netflix.com/culture)
+- [Netflix Culture — Netflix](https://jobs.netflix.com/culture) — 2026-10-12 현행 메모(PDF 2024-06 갱신)로 프로세스와 규칙의 범위, context not control과 관리자 개입 조건 대조
+- [Handbook first — GitLab Handbook](https://handbook.gitlab.com/handbook/company/culture/all-remote/handbook-first/)
+- [Handbook usage — GitLab Handbook](https://handbook.gitlab.com/handbook/about/handbook-usage/)
+- [Values, Managers of one — GitLab Handbook](https://handbook.gitlab.com/handbook/values/)
+- [Leadership — GitLab Handbook](https://handbook.gitlab.com/handbook/leadership/)
+- [Effective delegation — GitLab Handbook](https://handbook.gitlab.com/handbook/leadership/effective-delegation/)
+- [All-remote onboarding — GitLab Handbook](https://handbook.gitlab.com/handbook/company/culture/all-remote/onboarding/)
+- [High Output Management — Vintage, Andrew S. Grove](https://books.google.com/books?id=piCeCgAAQBAJ) — Google Books 미리보기 스니펫과 1983년 초판 사본으로 TRM 대목 확인

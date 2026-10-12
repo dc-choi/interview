@@ -7,7 +7,7 @@ aliases: ["Network"]
 
 # 네트워크(Network)
 
-OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처, 브라우저 URL 입력부터 렌더링까지.
+OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처, Wi-Fi 센싱, 브라우저 URL 입력부터 렌더링까지.
 
 ## 목차
 - [x] [[HTTPS-TLS|HTTPS / TLS Handshake]]
@@ -28,6 +28,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[Loopback-And-Localhost|Loopback, Localhost 동작 원리 (127.0.0.1, ::1, loopback NIC, 커널 내 처리, 디버깅)]]
 - [x] [[Browser-URL-Flow|브라우저 URL 입력 프로세스 (DNS→ARP→TCP/TLS→HTTP→렌더링, Core Web Vitals)]]
 - [x] [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark (libpcap/Npcap, dumpcap, dissector, promiscuous 모드, 캡처 필터와 디스플레이 필터, TCP 스트림 재조립, SPAN/TAP, TLS 복호화, 법적 범위)]]
+- [x] [[WiFi-Sensing|Wi-Fi 센싱 (CSI, 카메라를 교사로 쓰는 학습, 교차 환경 정확도, IEEE 802.11bf, 벽 너머 감지와 프라이버시)]]
 
 ## 관련 문서
 

@@ -1,7 +1,7 @@
 ---
 tags: [cicd, devops, devsecops, security, automation, iac]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-12
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["DevOps vs DevSecOps", "데브옵스 vs 데브섹옵스", "보안을 왼쪽으로"]
 ---
@@ -14,7 +14,7 @@ DevOps가 개발과 운영의 협업을 강조한다면, DevSecOps는 **보안(S
 
 - **DevOps = 개발 + 운영 통합**. 속도, 협업, 자동화가 가치
 - **DevSecOps = DevOps + 보안 통합**. 속도, 협업, 자동화 **+ 보안 내재화**
-- 보안을 **말기에 다루면** 취약점 수정 비용, 리드타임 폭증
+- 보안을 **말기에 다루면** 취약점 수정 비용과 리드타임이 늘어날 수 있다. 배수는 조건에 따라 다르다
 - **Shift Left**: 왼쪽(초기 단계)으로 보안 검증 이동
 - **Everything as Code** — IaC, Policy as Code로 보안도 자동화
 
@@ -50,7 +50,7 @@ DevOps가 개발과 운영의 협업을 강조한다면, DevSecOps는 **보안(S
 
 - 개발 속도와 보안 검토 기준을 합의하지 않으면 팀 사이에 갈등이 생길 수 있다
 - 팀 간 물리적, 조직적 거리로 갈등 발생
-- DevSecOps는 **조기 발견**으로 비용 효율 확보
+- DevSecOps는 **조기 발견**으로 재작업 비용을 줄이는 것을 노린다
 - 성공 열쇠: **교육 과정**으로 팀 구성원이 서로의 언어를 이해하게
 
 ## Shift Left 단계별 적용
@@ -58,7 +58,7 @@ DevOps가 개발과 운영의 협업을 강조한다면, DevSecOps는 **보안(S
 ```
 Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
   ↑      ↑      ↑       ↑
-  보안이 여기까지 이동해야 비용 절감이 크다
+  보안 검증을 앞당기는 구간 (절감 효과는 측정으로 확인)
 ```
 
 | 단계 | 보안 활동 |
@@ -72,7 +72,13 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 | **Operate** | WAF, 런타임 보안 모니터링 |
 | **Monitor** | 이상 감지, 침해 대응 |
 
-초기 단계에서 잡는 비용이 배포 후 잡는 비용보다 낮다는 것이 Shift Left의 근거다. 다만 흔히 인용되는 **배포 후 약 100배** 수치는 IBM Systems Sciences Institute 자료로 귀속되지만 원 연구가 확인되지 않는 경험칙이다. 방향성 근거로만 쓰고, 측정된 값처럼 인용하지 않는다.
+초기 단계에서 잡는 비용이 배포 후 잡는 비용보다 낮다는 것이 Shift Left의 근거다. 다만 흔히 인용되는 **배포 후 약 100배** 수치는 모든 프로젝트에 통하는 상수가 아니다. IBM Systems Sciences Institute 자료로 알려진 차트는 원 연구와 데이터가 확인되지 않는다. Menzies 등은 지연 효과 인용의 대부분이 Boehm의 1981년 저서나 관련 저작으로 거슬러 올라가고, 그 바탕은 1970년대 후반 IBM, TRW, GTE, Bell Labs의 대형 시스템 자료이며 원자료가 분석용으로 공개되지 않았다고 정리한다. 추적 가능한 자료의 배수도 조건에 따라 크게 다르다.
+
+- **Boehm과 Basili(2001):** 납품 뒤에 문제를 찾아 고치면 요구사항과 설계 단계에서 고칠 때보다 흔히(often) 100배 비싸다고 쓰면서, 작고 중요도가 낮은 시스템은 5:1에 가깝고 대형 핵심 시스템도 좋은 아키텍처로 배율을 줄일 수 있다는 단서를 달았다. 세 쪽짜리 칼럼의 이 항목에는 근거 데이터셋 인용이 없다.
+- **NIST 보고서(2002):** 단계별 1X, 5X, 10X, 15X, 30X 표(Table 5-1)는 예시(Example Only)로 표기돼 있고 근거 데이터의 출처가 표기돼 있지 않다. 보고서 자체 설문에서 요구사항 단계 결함을 출시 후에 고치는 시간은 요구사항 단계에서 고칠 때의 약 5배(운송 분야 CAD/CAM/CAE/PDM 개발사)와 약 15배(금융 거래를 지원하는 라우터, 스위치와 게이트웨이 제조사)로 응답됐다. 둘 다 응답 기업의 추정치다.
+- **Menzies 등(2017):** 2006~2014년 TSP(Team Software Process)를 쓴 171개 프로젝트에서 늦은 단계에서 고칠수록 해결 노력이 일관되게 또는 크게 늘어나는 지연 효과를 찾지 못했다. 표본은 주로 중소 규모 프로젝트이고, 납품 후 단계, TSP가 아닌 프로젝트와 결함 심각도는 연구 범위 밖이다.
+
+세 자료 모두 보안 취약점만 따로 측정한 데이터가 아니다. 배수는 시스템 규모, 중요도, 프로세스와 측정 방식에 따라 달라지므로 조기 발견의 방향성 근거로만 쓰고, 효과는 자기 조직에서 발견 단계별 수정 시간을 측정해 확인한다.
 
 ## 대표 도구 스택
 
@@ -170,7 +176,7 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 ## 면접 체크포인트
 
 - DevOps와 DevSecOps의 **한 문장 차이**
-- Shift Left의 정의와 이득. 100x 법칙을 근거로 들 때 원 연구가 확인되지 않는다는 한계까지 말할 수 있는가
+- Shift Left의 정의와 이득. 100배 수치를 근거로 들 때 IBM 자료로 알려진 차트의 출처 문제, Boehm과 Basili의 규모 단서, 납품 전 단계로 한정된 반대 연구(Menzies 등)의 범위까지 말할 수 있는가
 - SAST, DAST, SCA, IaC Security 용어 구분
 - False Positive가 DevSecOps의 실패를 만드는 메커니즘
 - 조직 성숙도별 **도입 단계**(CI 스캔 → IaC 정책 → Runtime)
@@ -182,6 +188,9 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 - [Vulnerability Scan GitHub Action for Amazon Inspector — AWS](https://github.com/aws-actions/vulnerability-scan-github-action-for-amazon-inspector)
 - [요즘IT — 데브옵스 vs 데브섹옵스](https://yozm.wishket.com/magazine/detail/1553/) — 문서의 뼈대. 다만 이 기사에 100배 수치는 없고, 운영 환경에서 발견된 결함은 수정 비용이 크다는 서술만 있다
 - [The Register (2021-07-22) — Everyone cites that 'bugs are 100x more expensive to fix in production' research, but the study might not even exist](https://www.theregister.com/2021/07/22/bugs_expense_bs/) — Laurent Bossavit, Hillel Wayne의 추적. IBM Systems Sciences Institute는 사내 교육 프로그램이었고 차트를 뒷받침하는 데이터가 확인되지 않는다
+- [Software Defect Reduction Top 10 List — IEEE Computer, Barry Boehm, Victor R. Basili](http://www.cs.umd.edu/projects/SoftEng/ESEG/papers/82.78.pdf) — 2001-01, DOI 10.1109/2.962984. 항목 1의 often과 5:1 단서
+- [The Economic Impacts of Inadequate Infrastructure for Software Testing — NIST, RTI](https://www.nist.gov/document/report02-3pdf) — Planning Report 02-3(2002-05). Table 5-1은 예시이고 설문 값은 Table 6-3과 Table 7-5
+- [Are delayed issues harder to resolve? Revisiting cost-to-fix of defects throughout the lifecycle — Empirical Software Engineering, Tim Menzies, William Nichols, Forrest Shull, Lucas Layman](https://arxiv.org/abs/1609.04886) — 2017, arXiv 사본으로 데이터셋과 연구 범위를 대조
 - [Netsparker is now Invicti — Invicti](https://www.invicti.com/blog/news/netsparker-is-now-invicti-signaling-a-new-era-for-modern-appsec/)
 - [Terrascan — Tenable](https://github.com/tenable/terrascan)
 - [tfsec — Aqua Security](https://github.com/aquasecurity/tfsec)

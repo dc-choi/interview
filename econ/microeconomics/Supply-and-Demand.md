@@ -99,12 +99,34 @@ aliases: ["수요와 공급", "Supply and Demand"]
 
 따라서 수급 분석에서는 **예상 수요 → 확정 주문 → 생산능력 확보 → 실제 생산과 납품**을 각각 확인한다. 이 구분은 사례에서 도출한 분석 기준이다. 해당 발표만으로 이후 공급 부족의 기간, 메모리 가격이나 개별 기업의 이익을 확정할 수 없다. 세계 생산능력과 비율을 비교할 때도 전체 DRAM과 HBM의 범위, 웨이퍼 투입량과 완제품 수량, 기준 시점을 맞춘다.
 
+### 계약 구조가 가격 반영 시차와 위험 배분을 바꾼다
+
+같은 가격 상승기에도 계약으로 가격을 정하는 주기에 따라 매출에 반영되는 속도가 다르다. 2026-10-12에 TrendForce 보도자료, 회사 발표와 공시를 대조한 메모리 사례다.
+
+- **가격 결정 주기**: 최근에는 다음 해 HBM 물량과 가격을 전년에 협상해 왔다. TrendForce는 공급 3사가 HBM에 연간 가격 방식을 써서 분기마다 오르는 시장 가격이 계약가에 제때 반영되지 못했다고 설명했고, 2026년 HBM 계약가 하락으로 2026년 1분기 SK하이닉스의 전체 ASP 상승이 일부 제약됐다고 밝혔다. 같은 시기 TrendForce는 범용 DRAM 계약가가 2026년 2분기에 전 분기보다 58~63% 더 오를 것으로 전망했다.
+- **점유율은 매출 비중이다**: TrendForce 기준 SK하이닉스는 2025년 2분기 DRAM 매출 점유율 38.7%로 1위였고 2025년 4분기에 삼성전자에 1위를 내줬다. 2026년 2분기 점유율은 삼성전자 39.4%, SK하이닉스 24.9%, 마이크론 23.3%였다. 같은 분기 SK하이닉스 매출은 전 분기보다 37.9%, 마이크론 매출은 65.5% 늘었다. TrendForce는 전체 비트 출하량에서 HBM 비중이 3사 가운데 가장 높았던 SK하이닉스의 ASP 상승이 상대적으로 제한됐다고 밝혔다. 매출이 크게 늘어도 경쟁사 매출이 더 빨리 늘면 점유율은 떨어지므로, 점유율 하락을 곧바로 기술 경쟁력 하락으로 읽지 않는다. 가격, 출하량과 제품 구성을 나눠 읽는 법은 [[Valuation#메모리 기업의 성장은 가격, 출하량과 제품 구성을 나눠 본다|밸류에이션의 메모리 기업 점검]]을 따른다.
+- **전망치의 구성**: TrendForce는 2026-09-29 발표에서 2027년 HBM 혼합(blended) ASP가 전년보다 121% 오를 것으로 전망했다. 공급 제약에 더해 단가가 높은 HBM4 비중 확대와 2027년 하반기 HBM4E의 점진적 양산 확대를 반영한 값이라, 같은 제품의 가격이 121% 오른다는 뜻이 아니다.
+- **물량 약정과 take-or-pay**: take-or-pay는 구매자가 정한 최소 물량을 실제로 인수하든 하지 않든 그 대금을 지급하기로 하는 계약 조건이다. 인수하지 못한 물량의 대금을 이후 연도의 인수분에 반영하는 조건이 붙기도 한다. 마이크론은 2026 회계연도 10-K에서 전략 고객 계약을 여러 해에 걸쳐 계약상 강제할 수 있는 특정 물량을 확약하는 take-or-pay 계약으로 구성했고, 고객이 최소 구매 약정을 지키면 예치금을 돌려주되 지키지 못하면 전부나 일부를 보유할 수 있다고 공시했다. 같은 10-K는 전략 계약 다수에 최저와 최고 가격 구간을 둔다고 적는다. SK하이닉스는 주요 전략 파트너를 포함한 약 10개 고객과 장기공급계약(LTA)을 맺었고 주요 고객과 논의를 이어 간다고 발표했다. 삼성전자의 2027년 메모리 생산량의 약 80%에 이미 납품처가 정해졌다는 수치는 업계 취재 보도이며 회사가 발표한 수치가 아니다. 삼성전자와 SK하이닉스 계약의 take-or-pay 여부도 회사 발표로는 확인되지 않는다.
+
+다음은 위 계약 구조에서 도출한 해석이다. 구매 약정과 예치금은 수요가 줄어드는 위험의 일부를 구매자에게 옮겨 공급자의 증설 부담을 덜어 주고, 가격 구간은 양쪽의 가격 변동 위험을 함께 제한한다. 다만 계약 조건은 회사와 고객마다 다르고 공개된 범위도 좁으며, 한국경제 보도는 위약금을 내면 해지할 수 있는 구조도 전한다. 장기계약이 늘었다는 사실만으로 업황의 순환이 사라졌다고 판단하지 않는다. 장기계약 물량 비율을 비교할 때도 생산능력 기준인지 특정 연도 생산량 기준인지 맞춘다.
+
 ## 출처
 
 - [The Effects of Rent Control Expansion on Tenants, Landlords, and Inequality: Evidence from San Francisco — American Economic Review, Rebecca Diamond, Tim McQuade, Franklin Qian](https://www.aeaweb.org/articles?id=10.1257/aer.20181289)
 - [Samsung and SK join OpenAI’s Stargate initiative to advance global AI infrastructure — OpenAI](https://openai.com/index/samsung-and-sk-join-stargate/)
 - [SK Group Partners with OpenAI to Advance Global AI Infrastructure — SK](https://eng.sk.com/news/%73k-group-partners-with-openai-to-advance-global-ai-infrastructure)
-- [OpenStax, Principles of Economics 3e, Demand, Supply, and Equilibrium in Markets for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services) — 2026-10-02 수요의 지불 의향과 능력 조건 대조
+- [2Q25 DRAM Revenue Jumps 17.1%, SK hynix Expands Market Share as Taiwanese Vendors Deliver Strong Growth, Says TrendForce — TrendForce](https://www.trendforce.com/presscenter/news/20250902-12694.html) — 2025-09-02
+- [Price Rally Drives 4Q25 DRAM Revenue Up 29.4%; Samsung Regains No. 1 Market Share, Says TrendForce — TrendForce](https://www.trendforce.com/presscenter/news/20260226-12937.html) — 2026-02-26
+- [Rapid Contract Price Surge Drives 1Q26 DRAM Industry Up 81% QoQ, Says TrendForce — TrendForce](https://www.trendforce.com/presscenter/news/20260601-13070.html) — 2026-06-01, HBM 계약가 하락과 2Q26 범용 DRAM 계약가 전망
+- [Tight DRAM Supply Gives Suppliers Greater Pricing Power in HBM, with HBM Contract Prices Expected to Surge Multiples Higher in 2027, Says TrendForce — TrendForce](https://www.trendforce.com/presscenter/news/20260602-13074.html) — 2026-06-02, HBM 연간 가격 방식
+- [HBM Prices to Increase by 5–10% in 2025, Accounting for Over 30% of Total DRAM Value, Says TrendForce — TrendForce](https://www.trendforce.com/presscenter/news/20240506-12125.html) — 2024-05-06, 2025년 HBM 가격 협상이 2024년 2분기에 시작
+- [DRAM Industry Revenue Rises 59.5% QoQ in 2Q26 as Supply Expansion Continues to Lag Demand Growth, Says TrendForce — TrendForce](https://www.trendforce.com/presscenter/news/20260907-13219.html) — 2026-09-07
+- [HBM Supply Constraints Persist, 2027 Price Outlook Revised Upward with Blended ASP Forecast to Rise 121% YoY, Says TrendForce — TrendForce](https://www.trendforce.com/presscenter/news/20260929-13255.html) — 2026-09-29
+- [SK hynix Announces 3Q25 Financial Results — SK hynix Newsroom](https://news.skhynix.com/SK-hynix-announces-3q25-financial-results/) — 2025-10-29, 다음 해 HBM 공급 협의 완료
+- [SK hynix Announces 2Q26 Financial Results — SK hynix Newsroom](https://news.skhynix.com/en/q2-2026-business-results/) — 2026-07-29, 약 10개 고객과 LTA
+- [Micron Technology, Form 10-K (fiscal 2026) — SEC EDGAR](https://www.sec.gov/Archives/edgar/data/0000723125/000072312526000023/mu-20260903.htm) — take-or-pay 계약, 고객 예치금과 가격 구간
+- [HMRC, Oil Taxation Manual OT20300](https://www.gov.uk/hmrc-internal-manuals/oil-taxation-manual/ot20300) — take-or-pay 정의
+- [삼성전자 물량 80%가 장기계약분…빅테크 줄섰다 — 한국경제](https://www.hankyung.com/article/2026100929291) — 2026-10-09, 회사가 발표하지 않은 업계 취재 보도- [OpenStax, Principles of Economics 3e, Demand, Supply, and Equilibrium in Markets for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services) — 2026-10-02 수요의 지불 의향과 능력 조건 대조
 - [OpenStax, Principles of Economics 3e, Shifts in Demand and Supply for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-2-shifts-in-demand-and-supply-for-goods-and-services)
 - [OpenStax, Principles of Microeconomics 3e, Demand and Supply at Work in Labor Markets](https://openstax.org/books/principles-microeconomics-3e/pages/4-1-demand-and-supply-at-work-in-labor-markets)
 - [OpenStax, Principles of Economics 3e, Wages and Employment in an Imperfectly Competitive Labor Market](https://openstax.org/books/principles-economics-3e/pages/14-2-wages-and-employment-in-an-imperfectly-competitive-labor-market)

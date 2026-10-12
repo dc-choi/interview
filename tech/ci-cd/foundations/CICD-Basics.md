@@ -44,7 +44,7 @@ aliases: ["CICD Basics", "CI/CD 기초", "Continuous Integration", "Continuous D
 ### 자동화의 가치
 
 - 매번 **같은 검증**을 보장 (수동 누락 방지)
-- 버그 발견 시점이 **개발 초기**로 이동 → 수정 비용 급감
+- 버그 발견 시점이 **개발 초기**로 이동 → 재작업과 원인 추적 비용을 줄일 수 있다. 늦게 고칠 때의 배수는 조건에 따라 다르다([[DevOps-vs-DevSecOps#Shift Left 단계별 적용|Shift Left의 비용 근거]])
 - 팀원이 서로의 변경을 **빠르게 감지** → 머지 컨플릭트 최소화
 
 ## CD — Continuous Delivery vs Continuous Deployment
