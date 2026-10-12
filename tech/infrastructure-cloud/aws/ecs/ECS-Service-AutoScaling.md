@@ -156,6 +156,17 @@ BacklogPerTask 알람에 단계별 조정을 직접 정의한다. 살짝 넘으�
 
 전체 Terraform 코드화(공통 + Fargate/EC2 옵션)는 → [[ECS-SQS-Worker-Terraform|SQS 워커 ECS 오토스케일링 Terraform]]
 
+### EC2 용량이 늘지 않을 때 확인할 조건
+
+부분 검증(2026-10-13): ASG capacity provider의 managed scaling 동작을 공식 문서와 대조했다.
+
+`CapacityProviderReservation = 필요한 인스턴스 수 / 실행 중인 인스턴스 수 × 100`이다. CPU 사용률 자체가 아니며, 값이 `targetCapacity`보다 크면 확장 알람을 통해 ASG의 desired capacity가 증가한다.
+
+- 태스크가 capacity provider strategy를 사용하는지 확인한다. strategy 없이 launch type으로 실행한 대기 태스크는 capacity provider의 확장 계산을 유발하지 않는다.
+- 혼합 인스턴스 ASG에서는 최소 인스턴스 유형에도 태스크 하나가 들어가는지 확인한다. 맞지 않는 태스크는 확장 계산에서 제외되어 `PROVISIONING`에 남을 수 있다. CPU와 메모리뿐 아니라 ENI, 포트와 GPU 요구도 확인한다.
+- `targetCapacity < 100`에서 `binpack`과 `spread`를 함께 쓰면 `binpack`을 먼저 둔다. ASG의 최대 용량도 확인한다. cluster auto scaling은 ASG의 min/max를 바꾸지 않는다.
+- ECS가 관리하는 ASG desired capacity에 별도의 scaling policy를 겹쳐 붙이지 않는다. 정책 조정은 capacity provider의 managed scaling 설정에서 한다.
+
 ## 표준 셋업 요약
 
 토대(scalable target) → Target Tracking 한 방 → 지표는 CPU 말고 backlog-per-task(Metric Math 또는 Lambda publish) → cooldown 비대칭 + graceful shutdown + age 알람.
@@ -169,6 +180,9 @@ BacklogPerTask 알람에 단계별 조정을 직접 정의한다. 살짝 넘으�
 - [[CloudWatch|CloudWatch]]
 
 ## 출처
+
+- [AWS 공식 문서, Amazon ECS managed scaling behavior](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-scaling-behavior.html)
+- [AWS 공식 문서, Automatically manage Amazon ECS capacity with cluster auto scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html)
 
 - [AWS Auto Scaling 공식 문서, Scaling based on Amazon SQS](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html)
 - [AWS 공식 문서, Amazon ECS service auto scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html)

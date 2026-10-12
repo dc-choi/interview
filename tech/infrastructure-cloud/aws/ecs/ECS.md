@@ -31,6 +31,16 @@ ecs 폴더 문서 구성:
 
 Task = 1개 이상 컨테이너 묶음 (sidecar 가능). Service = ReplicaSet+Deployment 비유. Cluster = 노드 그룹 비유.
 
+### 일회성 작업과 서비스 스케줄링
+
+부분 검증(2026-10-13): 작업 실행 방식과 서비스 scheduling strategy를 공식 문서와 대조했다.
+
+- **Standalone task**: 처리 후 종료하는 배치 작업에 사용한다. 일회성 실행은 `RunTask`, 정기 실행은 EventBridge Scheduler로 구성할 수 있다. 서비스의 desired count 유지와 구분한다.
+- **`REPLICA` 서비스**: 지정한 태스크 수를 유지한다. 태스크가 종료되거나 실패하면 서비스 스케줄러가 대체 태스크를 실행한다.
+- **`DAEMON` 서비스**: 배치 제약을 만족하는 각 활성 컨테이너 인스턴스에 태스크 하나를 배치한다. desired count와 Service Auto Scaling으로 개수를 조절하지 않으며, Fargate와 `CODE_DEPLOY`, `EXTERNAL` 배포 컨트롤러에서는 지원하지 않는다.
+
+예를 들어 완료 후 끝나는 데이터 변환 작업은 standalone task, 계속 요청을 받는 API는 `REPLICA`, EC2 인스턴스별 수집 에이전트는 `DAEMON`을 검토한다. 이는 실행 수명과 배치 단위에 따른 선택 예시다.
+
 ## 시작 유형 — Fargate vs EC2
 
 | 측면 | Fargate | EC2 launch type |
@@ -194,6 +204,9 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 - Task = **컨테이너 실행 최소 단위**(1개 이상 컨테이너 묶음), Fargate면 ENI/IP까지 Task 단위
 
 ## 출처
+- [Amazon ECS standalone tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/standalone-tasks.html)
+- [Amazon ECS services](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)
+- [Amazon ECS service deployment controllers and strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_service-options.html)
 - [AWS, DeleteService](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DeleteService.html)
 - [AWS, Deleting an Amazon ECS service using the console](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/delete-service-v2.html)
 - [AWS 핵심 서비스 정리 — 학습 메모]
