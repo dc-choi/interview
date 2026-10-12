@@ -54,6 +54,17 @@ aliases: ["Video Streaming System Design", "VOD System Design", "주문형 비�
 
 재시도는 임시 오류만 제한적으로 수행하고 영구 오류와 반복 실패는 DLQ와 운영자 검토로 보낸다. out-of-order 완료가 최신 publish version을 덮지 않도록 asset version과 상태 전이 조건을 저장소에서 확인한다.
 
+### 관리형 영상 처리에 위임할 때의 공개 조건
+
+작은 서비스는 처리와 미디어 전달을 관리형 서비스에 위임할 수 있다. Cloudflare Stream은 업로드, 저장, 인코딩과 전송을 제공한다. 애플리케이션은 영상 ID와 카탈로그의 연결, 공개 시점과 시청 권한을 계속 관리한다. 다음 상태 해석은 2026-10-13 공식 문서 대조 기준이다.
+
+- **업로드 완료와 재생 가능을 구분한다.** 파일을 보냈다는 사실만으로 카탈로그를 공개하지 않고 처리 상태를 확인한다.
+- **최소 화질과 전체 화질 완료를 구분한다.** `readyToStream: true`는 적어도 한 화질이 준비됐다는 뜻이다. 전체 화질 완료를 기다리는 정책이면 `status.state`가 `ready`이고 `status.pctComplete`가 수치상 100인지도 확인한다. 응답 예시는 진행률을 문자열로 표시하므로 숫자형이라고 가정하지 않는다.
+- **완료 통지의 출처를 확인한다.** Stream webhook은 처리 성공이나 오류를 알린다. `Webhook-Signature`의 timestamp와 원본 body로 서명을 검증하고 허용 기간을 벗어난 요청을 거절한 뒤 상태에 반영한다.
+- **재생 가능과 공개 승인을 분리한다.** 처리 성공은 서비스의 시청 자격을 뜻하지 않는다. 비공개 영상은 signed URL 요구 설정과 애플리케이션의 권한 확인을 함께 설계한다.
+
+따라서 최소 화질부터 공개할지, 전체 화질을 기다릴지를 먼저 정하고 준비 중, 처리 실패, 공개 가능 상태를 따로 시험한다. 관리형 서비스를 붙인 재생 데모의 성공만으로 업로드 실패나 비공개 접근 제어까지 검증됐다고 판단하지 않는다.
+
 ## 재생 경로와 ABR
 
 1. 클라이언트가 로그인, 작품 조회와 재생 시작을 요청한다.
@@ -127,6 +138,9 @@ VOD는 자산을 저장하고 처리를 마친 뒤 공개하지만, 라이브는
 
 ## 출처
 
+- [Cloudflare Stream, Overview](https://developers.cloudflare.com/stream/)
+- [Cloudflare Stream, Use webhooks](https://developers.cloudflare.com/stream/manage-video-library/using-webhooks/)
+- [Cloudflare Stream, Secure your Stream](https://developers.cloudflare.com/stream/viewing-videos/securing-your-stream/)
 - [Netflix Open Connect, Overview of Open Connect](https://openconnect.netflix.com/Open-Connect-Overview.pdf)
 - [Netflix Open Connect](https://openconnect.netflix.com/)
 - [The Making of VES: the Cosmos Microservice for Netflix Video Encoding — Netflix TechBlog](https://netflixtechblog.com/the-making-of-ves-the-cosmos-microservice-for-netflix-video-encoding-946b9b3cd300)

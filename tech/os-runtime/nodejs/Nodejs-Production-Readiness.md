@@ -124,6 +124,13 @@ Node.js 특유:
 - 공격 상시 대비 (레이트 리밋, IP 제한, 서명 검증)
 - 멱등 키 필수 ([[Idempotency]])
 
+금액과 큰 정수는 DB부터 API 응답까지 타입 경계를 검증한다. 아래 드라이버와 명세 대조 기준은 2026-10-13이며, 문서 전체의 재검증 날짜는 아니다.
+
+- **DB 반환 타입**: node-postgres의 기본 `int8` 결과는 정밀도 손실을 피하려고 문자열로 반환된다. `COUNT(*)`도 `int8` 결과라 이 경계를 통과한다. 사용자 정의 parser가 이를 바꿀 수 있으므로 실제 드라이버, ORM과 설정을 확인하고 모든 Node.js ORM의 공통 동작으로 일반화하지 않는다.
+- **변환과 집계**: `Number`의 최대 안전 정수는 `2 ** 53 - 1`이다. 입력뿐 아니라 중간 합계와 최종 결과가 안전 범위에 남는지 검증한다. 큰 정수를 먼저 `Number`로 바꾼 뒤 `BigInt`로 복구하려고 하지 않는다.
+- **전송 계약**: 기본 `JSON.stringify`는 BigInt를 그대로 직렬화하지 못한다. 큰 정수 필드는 검증된 10진 문자열로 전송하는 등 schema를 정하고 DB 조회, 계산, 저장, 응답의 왕복에서 값이 유지되는지 검사한다. 표현과 소수 금액의 반올림 경계는 [[JavaScript-BigInt|BigInt와 정수 정밀도]]를 따른다.
+- **선택 기준**: 특정 금액을 넘으면 언어 자체가 결제에 부적합하다고 결론 내리지 않는다. 사용하는 저장 타입, 산술 표현, 드라이버 변환과 검증 비용을 실제 결제 흐름에서 비교한다.
+
 ### 정기점검, 패치
 - Node.js LTS 버전 추적, EOL 전 업그레이드
 - 의존성 보안 패치 정기 적용
@@ -175,6 +182,10 @@ Node.js 특유:
 - [NestJS — Terminus (Healthchecks)](https://docs.nestjs.com/recipes/terminus)
 - [Terminus 12.0.0 release — NestJS](https://github.com/nestjs/terminus/releases/tag/12.0.0)
 - [NestJS — Migration guide (v11)](https://docs.nestjs.com/v11/migration-guide)
+- [node-postgres — Data Types](https://node-postgres.com/features/types)
+- [Type parsing for node-postgres — node-pg-types](https://github.com/brianc/node-pg-types)
+- [ECMAScript — Number.MAX_SAFE_INTEGER](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-number.max_safe_integer)
+- [ECMAScript — SerializeJSONProperty](https://tc39.es/ecma262/multipage/structured-data.html#sec-serializejsonproperty)
 
 ## 관련 문서
 - [[Backend-Engineer-Baseline|백엔드 엔지니어 기본 역량 체크리스트]]
