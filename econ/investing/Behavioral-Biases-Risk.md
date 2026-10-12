@@ -2,7 +2,7 @@
 tags: [econ, investing]
 status: done
 category: "Economics"
-aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Management"]
+aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Management", "투자자 수익률 격차", "Investor Return Gap"]
 ---
 
 # 행동 편향과 리스크 관리
@@ -53,12 +53,24 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 
 좋은 전략을 알아도 지키지 못하면 소용이 없다. 다만 급락장에서 무조건 보유하거나 상승장에서 무조건 덜 사는 규칙도 보편 정답은 아니다. 자산의 건전성, 목표 시점, 목표 비중과 현금 수요가 바뀌면 매도나 리밸런싱이 합리적일 수 있다. 통제 가능한 비용, 분산, 포지션 크기와 사전 규칙에 집중한다.
 
+### 투자자 수익률 격차를 행동 비용으로 단정하지 않는다
+
+펀드가 공시하는 총수익률은 대개 기간 첫날 한 번에 넣고 끝까지 보유했다고 가정한 시간가중수익률이다. 투자자 수익률은 월별 순유출입까지 반영해 내부수익률처럼 계산한 금액가중수익률이라 같은 펀드라도 두 값이 달라진다([[Risk-and-Return#수익률 비교의 분모와 기간|시간가중과 금액가중의 구분]]). Morningstar는 미국 뮤추얼펀드와 ETF를 묶어 이 차이를 투자자 수익률 격차로 매년 추정한다.
+
+- **관측치**: 2025년 말까지 10년 동안 평균 1달러는 연 8.7%를 벌었고 같은 펀드의 총수익률은 연 9.9%로 격차가 연 약 1.2%p였다. 2024년 말까지 10년은 연 7.0% 대 8.2%로 약 1.2%p, 2023년 말까지 10년은 약 1.1%p였다. 해마다 표본 펀드와 계산 방식이 조금씩 달라 수치 변화를 그대로 추세로 읽지 않는다.
+- **범주, 변동성과 거래 빈도**: 자산을 넓게 나누고 리밸런싱 같은 일상 작업을 펀드가 대신하는 자산배분형 펀드는 투자자가 펀드 수익을 다른 유형보다 많이 가져간 결과가 반복됐다(2023년 말까지 10년 격차 연 0.4%p로 가장 좁았고 섹터 주식형이 연 2.6%p로 가장 넓었으며, 2025년 말까지 10년에는 미국 주식형만 예외였다). 같은 유형 안에서 변동성이 큰 펀드일수록 격차가 평균적으로 큰 경향도 여러 해 보고됐다. 2024년 말까지 10년에는 현금흐름 변동성으로 잰 거래가 가장 잦은 5분위의 격차(연 1.8%p)가 가장 적은 5분위(연 0.8%p)보다 컸다.
+- **해석의 한계**: 격차는 매수와 매도의 시점과 규모에서 생긴다. 충동적인 고점 매수나 저점 매도뿐 아니라 월급의 일부를 꾸준히 투자하거나 정기적으로 리밸런싱하는 계획된 거래도 격차를 만들 수 있어, 격차 전체를 나쁜 매매 타이밍의 비용이나 개인투자자의 실수 증거로 읽지 않는다. 격차의 원인에는 논쟁이 있으며 행동만이 아니라 펀드를 쓰는 맥락 같은 여러 요인이 반영된 것으로 보인다. 2024년 보고서에서 매달 같은 금액을 넣었다고 가정한 가상 투자자도 대부분의 범주에서 총수익률보다 낮았다(미국 주식형 연 1.4%p, 자산배분형 연 2.0%p 격차). 같은 기간(2015~2024년)과 펀드 범주로 다시 분석한 연구는 매수 뒤 수익이 나빠져 생긴 부분과 좋은 과거 성과 뒤 자금이 들어와 생기는 사후 효과를 나눠, 합산한 뮤추얼펀드 투자자 기준으로 나쁜 타이밍의 비용을 연 0.10%p 수준으로 추정했다.
+- **측정 범위**: Morningstar 추정치는 월말 자산과 총수익률로 순유출입을 추정한 펀드 묶음의 평균 1달러 수익률이다. ETF의 일별 매매를 모두 반영하지 못하고, 평균적인 투자자의 금액가중수익률을 대신하지도 않는다. 개인의 결과는 각자의 매매 시점과 규모에 달려 있다.
+
+내 계좌의 금액가중수익률이 보유 펀드의 총수익률보다 낮다면 납입과 인출의 날짜, 금액과 이유를 먼저 대조해 하락장의 계획 밖 매도 같은 행동 요인과 정기 적립 같은 계획된 현금흐름의 영향을 구분한다. 돈을 넣기 전에 오른 구간을 놓친 것만으로 타이밍 손실이라 단정하지 않고, 넣고 뺀 뒤의 수익을 본다. 이 대조는 이 문서의 적용 판단이며 격차의 크기를 예측하지 않는다.
+
 ## 6. 핵심 개념
 
 - **손실 회피와 처분 효과**: 매입가와 본전 여부가 보유, 매도 판단을 왜곡할 수 있는 편향
 - **군중 심리**: 거품과 폭락의 연료
 - **규칙 기반 관리**: 감정을 구조로 누르기
 - **자기 통제**: 비용, 분산, 포지션 크기와 함께 통제 가능한 변수
+- **투자자 수익률 격차**: 금액가중 투자자 수익률과 시간가중 총수익률의 차이. 매매 타이밍, 계획된 현금흐름과 과거 성과를 뒤따른 자금 유입의 측정상 효과가 함께 섞여 있다
 
 ## 7. 흔한 오해
 
@@ -68,7 +80,7 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 
 ## 출처
 
-2026-10-12 부분 검증: 결과 편향의 정의와 실험 결과를 원 논문과 사전등록 재현 연구로 대조했다. 투자자의 실제 성과에 미치는 효과 크기를 검증한 것은 아니다.
+2026-10-12 부분 검증: 결과 편향의 정의와 실험 결과를 원 논문과 사전등록 재현 연구로 대조했다. 투자자의 실제 성과에 미치는 효과 크기를 검증한 것은 아니다. 같은 날 투자자 수익률 격차의 정의, 계산 방식, 범주별 격차와 변동성 경향, 가상 적립식 계산과 해석상 주의를 Morningstar 2024, 2025 보고서 원문으로, 2025년 말까지 10년의 수치와 자산배분형, 변동성 결과를 Morningstar 2026 기사로, 타이밍 비용 재추정은 FAJ 논문 초록과 공저자 소속 대학의 연구 요약으로 대조했다. FAJ 논문 본문의 분해 방법은 확인하지 못했다.
 
 2026-10-07 부분 검증: 소셜 심리 도구의 정보 오류, 시의성과 이해충돌 위험, 공시 대조와 성과 비교 기준을 SEC와 FINRA의 공동 안내로 확인했다. 특정 댓글이나 역발상 전략의 예측력을 검증한 것은 아니다.
 
@@ -83,6 +95,11 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 - [Investor Bulletin: Social Sentiment Investing Tools — SEC, FINRA](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-18)
 - [Outcome Bias in Decision Evaluation — Journal of Personality and Social Psychology, Jonathan Baron, John C. Hershey](https://doi.org/10.1037/0022-3514.54.4.569) — 1988, 다섯 연구에서 결과가 좋을 때 사고의 질과 의사결정자의 능력을 더 높게 평가
 - [Outcomes Affect Evaluations of Decision Quality: Replication and Extensions of Baron and Hershey's (1988) Outcome Bias Experiment 1 — International Review of Social Psychology, Sriraj Aiyer 외](https://pmc.ncbi.nlm.nih.gov/articles/PMC12372742/) — 2023, 사전등록 재현(N = 692), 결과를 고려하면 안 된다고 답한 참가자에게서도 편향이 나타남
+- [Mind the Gap 2024: Investors lost out on about 15% of the return their funds generated — Morningstar, Jeffrey Ptak](https://marketing.morningstar.com/content/cs-assets/v3/assets/blt9415ea4cc4157833/blt5d1d34a59bd78a2c/680a4bd8c4d2e877fdb4b354/Mind_the_Gap_2024.pdf) — 2024-08-15 보고서, 시간가중 총수익률과 금액가중 투자자 수익률의 정의, 범주별 격차와 변동성, 가상 적립식 계산과 해석상 주의
+- [Mind the Gap 2025: The more investors traded, the less they made — Morningstar, Jeffrey Ptak](https://www.morningstar.com/content/cs-assets/v3/assets/blt9415ea4cc4157833/blt2c5c4d9171638c42/689b424311f3880edc4b4813/US_Mind_the_Gap_2025.pdf) — 2025-08-13 보고서, 2024년 말까지 10년의 수치, 현금흐름 변동성별 격차, 추정치의 범위와 계산 방식 변경
+- [Are you one of the investors that left money on the table? — Morningstar, Jeffrey Ptak](https://www.morningstar.com.au/funds/are-you-one-investors-that-left-money-table) — 2026-08-14 기사, 2025년 말까지 10년의 수치와 자산배분형, 변동성 결과
+- [Bad Timing Does Not Cost Investors 15% of Their Funds' Returns: An Examination of Morningstar's "Mind the Gap" Study — Financial Analysts Journal, Jon A. Fulkerson, Bradford Jordan, Timothy Brandon Riley, Qing Yan](https://rpc.cfainstitute.org/research/financial-analysts-journal/2026/bad-timing-does-not-cost-investors-funds-returns) — 2026-05-12 온라인 공개 논문, Vol. 82 No. 3, pp. 34-42, 초록만 대조
+- [Do Investors Really Lose 15% of Fund Returns to Bad Timing? New Research Challenges a Popular Claim — University of Arkansas Walton College](https://walton.uark.edu/insights/posts/do_investors_really_lose_fund_returns_to_bad_timing.php) — 2026-07-07 연구 요약, 분해 방식과 표본 설명
 
 ## 관련 문서
 

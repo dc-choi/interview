@@ -2,7 +2,7 @@
 tags: [senior, quality, incentives, decision-making, ai]
 status: done
 category: "시니어역량(SeniorEngineer)"
-aliases: ["Software Quality Economics", "소프트웨어 품질의 경제학", "품질 저하의 구조"]
+aliases: ["Software Quality Economics", "소프트웨어 품질의 경제학", "품질 저하의 구조", "Capability Trap", "역량 함정"]
 ---
 
 # 소프트웨어 품질의 경제학
@@ -18,6 +18,17 @@ aliases: ["Software Quality Economics", "소프트웨어 품질의 경제학", "
 ### 가시성 인센티브 — 버그 픽스는 발표 자료에 없다
 
 신기능은 지표와 발표 자료에 보이지만 안정성 개선은 잘 보이지 않는다. 분기 하나를 버그 픽스에 쓰겠다는 계획은 KPI 중심 문화에서 정당화가 어렵다. 산출물이 아니라 결과로 측정하지 않으면([[Output-vs-Outcome|Output vs Outcome]]) 품질 투자는 구조적으로 밀린다. 좁은 경계의 KPI 최적화가 시스템 전체 비용을 옮기는 일반 구조는 [[Problem-Response-Patterns|문제 대응 패턴]]이 정본이다.
+
+### 역량 함정 — 지름길의 이득은 바로 오고 비용은 늦게 온다
+
+역량 함정(capability trap)은 성과 압박에 개선과 유지보수 시간을 깎아 대응할수록 프로세스 역량이 줄고, 줄어든 역량이 다시 압박을 키우는 악순환이다. 통신, 반도체, 화학, 석유, 자동차 등 여러 산업의 개선 프로그램 사례 연구와 시스템 다이내믹스 모형에서 정리된 개념이다. 이 모형에서 프로세스 성과는 일한 시간과 프로세스 역량에 달려 있고, 역량은 개선에 쓴 시간에 따라 지연을 두고 늘어나고, 정기적으로 유지하지 않으면 침식되는 저량이다([[Feedback-Delay#저량과 유량을 분리해서 보기|저량과 유량]]).
+
+- **지름길은 먼저 좋아지고 나중에 나빠진다(better-before-worse)**: 성과 격차가 생기면 일하는 시간을 늘리고, 그래도 모자라면 개선, 유지보수, 문서화와 학습 시간을 깎는다. 모형 시뮬레이션에서는 산출이 바로 오르지만 역량이 늦게 줄어 결국 처음보다 성과가 낮아진다. 일정을 맞추려 문서화를 건너뛴 엔지니어가 몇 주나 몇 달 뒤 테스트에서 나온 버그를 고칠 때 비용을 치르는 것도 같은 구조다.
+- **개선은 먼저 나빠지고 나중에 좋아진다(worse-before-better)**: 모형 시뮬레이션에서는 일하는 시간을 개선으로 옮기면 단기 성과가 먼저 떨어지고, 개선이 성공해 역량이 쌓이면 처음보다 높아진다. 화학 공장 정비 모형 분석에서는 계획 정비를 늘리면 가동 중인 장비를 멈춰야 해 단기 가동률이 먼저 떨어지고, 정비 학습 프로그램을 도입한 한 정유 공장은 첫 6개월 동안 정비 비용이 30% 늘었다. 이 지연 때문에 압박받는 조직은 지름길을 고르기 쉽다.
+- **자기확증 귀인 오류**: 역량 저하는 원인과 시간상 멀리 떨어져 나타나므로 관리자는 낮은 성과를 프로세스보다 사람의 노력 부족으로 돌리기 쉽다. 압박을 높이면 산출이 실제로 오르지만 그 일부가 깎인 훈련, 실험과 개선 시간에서 나왔다는 사실은 잘 보이지 않는다. 그래서 압박의 효과를 과대평가하고(예시 계산에서는 세 배) 잘못된 귀인이 확인된 것처럼 보인다.
+- **보상 구조**: 급한 불 끄기(firefighting)에 의존할수록 조직은 위기를 막는 학습, 훈련과 개선 활동보다 막판의 문제 해결을 보상하고, 영웅적으로 문제를 수습한 사람을 승진시킨다. 일어나지 않은 문제를 막은 일은 눈에 보이지 않아 공로로 인정받기 어렵다.
+
+근거는 사례 연구와 모형이며 개선 투자의 회수를 보장하지 않는다. 개선 시도가 근본 원인을 찾지 못하거나 실험이 실패할 위험도 있다. 지름길이 언제나 쇠퇴로 번지는 것도 아니다. 후속 모형은 역량이 임계점보다 충분히 높으면 단기 실적을 위해 장기 투자를 줄여도 남는 비용이 작고, 임계점 아래에서는 같은 행동이 가속하는 쇠퇴를 부를 수 있다고 본다.
 
 ### 시장 임계선 균형
 
@@ -46,6 +57,8 @@ MVP 관행이 행복 경로만 구현하고 출시하는 습관으로 굳으면 
 
 - 품질을 보이는 지표로 만든다. 오류율, 이탈, 지원 티켓, 회귀 건수를 신기능 지표와 같은 대시보드에 올리되, 단일 지표를 목표로 승격하면 왜곡되므로 상보 지표 조합으로 둔다 ([[Software-Productivity-Measurement|생산성 측정]]의 Goodhart 원칙).
 - 버그 픽스와 안정화 작업을 성과 서사로 번역한다 ([[Technical-Reliability|기술적 안정성]]의 문장 패턴).
+- 개선과 안정화 작업은 착수 전에 단기 지표가 먼저 나빠질 수 있음을 알리고, 관찰 기간과 재발 장애, 재작업, 수동 처리 시간 같은 선행 지표를 함께 합의한다. 역량 함정을 일정 계획에 적용한 판단이다.
+- 막은 장애는 대개 직접 관찰되지 않으므로 예방 효과를 단정하지 않는다. 재발률, 변경 실패율 같은 역량 지표의 기준선과 변화를 기록하고, 인과 사슬을 검증하지 못했다면 가설로 남긴다 ([[Performance-Evidence-Playbook#결과 주장 gate|결과 주장 gate]]).
 - 자기 도메인의 품질 하한이 시장 임계선인지 규제 하한인지 식별하고, 신뢰가 자산인 영역(결제, 인증, 데이터)은 임계선 위에 여유를 둔다.
 - AI로 생성한 코드는 검증 비용을 계획에 계상하고 가드레일을 함께 배치한다 ([[Agent-Coding-Guardrails|LLM 코딩 가드레일]]).
 
@@ -56,6 +69,7 @@ MVP 관행이 행복 경로만 구현하고 출시하는 습관으로 굳으면 
 - happy path 밖 예외 경로를 출시 전에 어디까지 소진하는가
 - 일정과 견적에 예외 경로를 정상 흐름과 별도 항목으로 계상하는가
 - AI 생성 코드의 검증 비용을 계획에 계상하는가
+- 성과 압박에 개선, 문서화와 유지보수 시간을 깎아 대응하고 있지 않은가 (역량 함정)
 
 ## 관련 문서
 
@@ -67,9 +81,13 @@ MVP 관행이 행복 경로만 구현하고 출시하는 습관으로 굳으면 
 - [[Technical-Debt|기술 부채 (미검토 코드, 우발부채 명명의 정본)]]
 - [[Software-Productivity-Measurement|생산성 측정 (Goodhart, 상보 지표 조합)]]
 - [[PRD-Writing|PRD 작성법 (부정 케이스를 초반에)]]
+- [[Feedback-Delay|피드백 지연 (저량과 유량, 늦게 오는 비용)]]
+- [[Performance-Evidence-Playbook|성과 증거 플레이북 (결과 주장 gate, 검증 못 한 인과는 가설로)]]
 
 ## 출처
 
 - [Nothing Works and Everyone Is Euphoric — Piotr (ptrchm)](https://ptrchm.com/posts/nothing-works-and-everyone-is-euphoric/)
 - [코딩이 해결됐다면 왜 소프트웨어는 계속 나빠지는가? — GeekNews](https://news.hada.io/topic?id=31787)
 - [인프런, 스프링 MVC 1편 - 백엔드 웹 개발 핵심 기술, 다음으로](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71242)
+- [Nobody Ever Gets Credit for Fixing Problems that Never Happened: Creating and Sustaining Process Improvement — California Management Review, Nelson P. Repenning, John D. Sterman](https://web.mit.edu/nelsonr/www/Repenning=Sterman_CMR_su01_.pdf) — Summer 2001, Vol. 43 No. 4, pp. 64-88
+- [Making the Numbers? “Short Termism” and the Puzzle of Only Occasional Disaster — Management Science, Hazhir Rahmandad, Rebecca Henderson, Nelson P. Repenning](https://doi.org/10.1287/mnsc.2016.2670) — 2018, Vol. 64 No. 3, pp. 1328-1347, 초록 대조
