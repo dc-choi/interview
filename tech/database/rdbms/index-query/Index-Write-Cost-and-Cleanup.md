@@ -54,7 +54,8 @@ Partial Index는 `WHERE status = 'active'`처럼 조건을 만족하는 행만 �
 InnoDB는 인덱스를 만들거나 재구성할 때 행을 한 건씩 넣지 않고 sorted index build로 bulk load한다. clustered index를 스캔해 index entry를 sort buffer에 모으고, 가득 찰 때마다 정렬해 임시 파일에 쓴 뒤 merge sort하고, 정렬된 entry를 가장 오른쪽 leaf에 이어 붙이며 트리를 아래에서 위로 채운다. 건마다 삽입 위치를 찾고 페이지를 분할, 병합하던 방식의 비용을 피한다. 공간 인덱스는 이 방식을 지원하지 않는다.
 
 - 초기 대량 적재와 마이그레이션은 데이터를 먼저 넣고 보조 인덱스를 나중에 만든다. MySQL 8.4 문서도 보조 인덱스 없이 테이블을 만들어 적재한 뒤 인덱스를 추가하면 전체 과정이 빨라질 수 있다고 안내한다. 강의 측정에서는 적재 구간이 약 3.4배 빨랐고, 데이터가 커질수록 랜덤 I/O 차이로 격차가 벌어진다.
-- 트래픽이 흐르는 테이블의 보조 인덱스 추가와 삭제는 in-place online DDL이라 동시 DML을 허용하지만 무영향은 아니다. clustered index 스캔과 정렬 파일 I/O, 작업 중 들어온 DML 변경을 기록했다가 반영하는 처리가 서비스와 자원을 나누고, `CREATE INDEX`는 테이블에 접근 중인 트랜잭션이 끝나야 완료된다. 주문, 결제 같은 핵심 테이블은 요청이 적은 시간대에 하고 작은 테이블도 지연을 보며 진행한다([[Index#운영 중 추가의 함정|운영 중 추가의 함정]]).
+- 트래픽이 흐르는 테이블의 일반 B-tree 보조 인덱스 추가와 삭제는 in-place online DDL이라 동시 DML을 허용하지만 무영향은 아니다. clustered index 스캔과 정렬 파일 I/O, 작업 중 들어온 DML 변경을 기록했다가 반영하는 처리가 서비스와 자원을 나누고, `CREATE INDEX`는 테이블에 접근 중인 트랜잭션이 끝나야 완료된다. 주문, 결제 같은 핵심 테이블은 요청이 적은 시간대에 하고 작은 테이블도 지연을 보며 진행한다([[Index#운영 중 추가의 함정|운영 중 추가의 함정]]).
+- PK는 처음 `CREATE TABLE`에서 정의하는 편이 좋다. online DDL의 보조 인덱스 최적화가 PK에는 적용되지 않고, 행이 PK 순서의 clustered index에 저장되므로 기존 테이블에 `ALTER TABLE ... ADD PRIMARY KEY`로 PK를 붙이거나 PK를 바꾸면 in-place로 실행해도 테이블 데이터를 새 clustered index로 복사하고 보조 인덱스도 다시 적재한다. MySQL 8.4 문서로 2026-10-12 확인한 기준이다.
 
 ## 쓰이지 않는 인덱스 찾기
 
@@ -97,6 +98,16 @@ ALTER TABLE orders DROP INDEX idx_orders_status;            -- 문제가 없으�
 - 숨긴 인덱스를 쓰는 계획과 비교하려면 세션의 `optimizer_switch`에서 `use_invisible_indexes=on`(기본 off)을 켜거나 `SET_VAR` 힌트로 한 쿼리에만 켠다. 인덱스는 invisible 상태로 남는다.
 
 PostgreSQL에는 같은 기능이 없다. `pg_get_indexdef()`로 재생성 DDL을 보관하고, `DROP INDEX CONCURRENTLY`로 테이블 쓰기를 막지 않고 제거한다. 이 명령은 트랜잭션 블록 안에서 실행할 수 없고 PK나 `UNIQUE` 제약을 받치는 인덱스에는 쓸 수 없다. 되돌릴 때는 `CREATE INDEX CONCURRENTLY`로 다시 만드는 시간이 걸린다는 점을 롤백 계획에 넣는다.
+
+### MySQL에서 PK 인덱스를 지울 때
+
+MySQL 8.4 문서로 2026-10-12 확인한 기준이다.
+
+- `DROP INDEX`는 `ALTER TABLE ... DROP INDEX`로 매핑된다. PK 이름은 `PRIMARY`이므로 예약어를 인용한 식별자 문법인 ``DROP INDEX `PRIMARY` ON t``로도 삭제할 수 있다.
+- 새 PK를 함께 추가하지 않는 PK 삭제는 `ALGORITHM=COPY`만 지원하며 동시 DML을 허용하지 않는다. PK 교체는 `DROP PRIMARY KEY, ADD PRIMARY KEY (...), ALGORITHM=INPLACE, LOCK=NONE`을 한 `ALTER TABLE`에 묶을 수 있지만, 테이블 재구성과 메타데이터 잠금 비용은 남는다.
+- `sql_require_primary_key`(기본 OFF)가 켜져 있으면 PK만 지우는 작업은 거부된다. PK를 교체하려면 같은 문장에서 새 PK를 추가한다.
+- FK가 필요로 하는 마지막 인덱스는 삭제할 수 없다(오류 1553). `foreign_key_checks=0`도 이 제한을 없애지 않는다. 참조 무결성을 유지해야 한다면 같은 FK를 받칠 수 있는 대체 인덱스를 먼저 준비한다. FK 자체를 폐기하기로 한 경우에만 자식 테이블에서 `ALTER TABLE 자식 DROP FOREIGN KEY 제약명`을 먼저 실행한다.
+- FK 이름은 자식의 `SHOW CREATE TABLE`이나 `INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS`로 찾는다. 여러 스키마에 같은 테이블명이 있으면 `CONSTRAINT_SCHEMA`, `UNIQUE_CONSTRAINT_SCHEMA`, `REFERENCED_TABLE_NAME`을 함께 확인한다.
 
 ## 변경 기록: EXPLAIN 전후 비교
 
@@ -155,13 +166,16 @@ GROUP BY index_name;
 - [MySQL 8.4 Reference Manual, Online DDL Performance and Concurrency](https://dev.mysql.com/doc/refman/8.4/en/innodb-online-ddl-performance.html)
 - [MySQL 8.4 Reference Manual, The INFORMATION_SCHEMA TABLES Table](https://dev.mysql.com/doc/refman/8.4/en/information-schema-tables-table.html)
 - [MySQL 8.4 Reference Manual, Configuring Persistent Optimizer Statistics Parameters](https://dev.mysql.com/doc/refman/8.4/en/innodb-persistent-stats.html)
+- [MySQL 8.4 Reference Manual, DROP INDEX Statement](https://dev.mysql.com/doc/refman/8.4/en/drop-index.html)
+- [MySQL 8.4 Reference Manual, CREATE INDEX Statement](https://dev.mysql.com/doc/refman/8.4/en/create-index.html)
+- [MySQL 8.4 Reference Manual, Server System Variables](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_sql_require_primary_key)
+- [MySQL 8.4 Reference Manual, The INFORMATION_SCHEMA REFERENTIAL_CONSTRAINTS Table](https://dev.mysql.com/doc/refman/8.4/en/information-schema-referential-constraints-table.html)
 - [MySQL 8.4 Error Message Reference](https://dev.mysql.com/doc/mysql-errors/8.4/en/server-error-reference.html)
 - [PostgreSQL 18 Documentation, Heap-Only Tuples (HOT)](https://www.postgresql.org/docs/18/storage-hot.html)
 - [PostgreSQL 18 Documentation, The Cumulative Statistics System](https://www.postgresql.org/docs/18/monitoring-stats.html)
 - [PostgreSQL 18 Documentation, DROP INDEX](https://www.postgresql.org/docs/18/sql-dropindex.html)
 - [PostgreSQL 18 Documentation, CREATE TABLE](https://www.postgresql.org/docs/18/sql-createtable.html)
 - [PostgreSQL 16 Release Notes](https://www.postgresql.org/docs/release/16.0/)
-- [DB 인덱스 원리 — Threads, bear_dba](https://www.threads.com/@bear_dba/post/Dbohewzk3lI)
 - [인프런, 김영한, 실습 데이터 확인 2](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471847)
 - [인프런, 김영한, 데이터 저장 구조](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471854)
 - [인프런, 김영한, 실행 계획 필요성](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471858)

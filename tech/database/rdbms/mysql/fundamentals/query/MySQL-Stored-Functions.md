@@ -78,7 +78,8 @@ DELIMITER ;
 
 - `DELIMITER`는 서버 SQL이 아니라 mysql 클라이언트 명령이다. 본문의 세미콜론에서 클라이언트가 문장을 끊지 않도록 바꾸는 것이므로 드라이버로 직접 보낼 때는 `CREATE FUNCTION`부터 `END`까지를 한 문장으로 보내고 `DELIMITER`를 넣지 않는다. migration 도구는 Flyway처럼 스크립트의 `DELIMITER`를 해석하는 도구와 그렇지 않은 도구가 있으므로 그 도구의 문장 구분 규칙을 따른다.
 - `RETURNS`는 함수에 필수이고 본문에는 `RETURN`이 있어야 한다. 파라미터는 항상 IN이다.
-- `CONTAINS SQL`(기본), `NO SQL`, `READS SQL DATA`, `MODIFIES SQL DATA`는 서버가 강제하지 않는 권고 정보다. binary logging이 켜져 있으면 `DETERMINISTIC`, `NO SQL`, `READS SQL DATA` 중 하나도 명시하지 않은 `CREATE FUNCTION`은 오류 1418로 거부된다. `log_bin_trust_function_creators`로 우회하기보다 실제 성질을 선언한다.
+- `CONTAINS SQL`(기본), `NO SQL`, `READS SQL DATA`, `MODIFIES SQL DATA`는 서버가 강제하지 않는 권고 정보다. binary logging이 켜져 있고 `log_bin_trust_function_creators=0`(기본값)이면 `DETERMINISTIC`, `NO SQL`, `READS SQL DATA` 중 하나도 명시하지 않은 `CREATE FUNCTION`은 오류 1418로 거부된다. 데이터를 바꾸는 함수에 `MODIFIES SQL DATA`만 적어도 이 조건을 채우지 못한다.
+- `log_bin_trust_function_creators`로 우회하기보다 실제 성질을 선언한다. MySQL 8.4 문서로 2026-10-12 확인한 기준으로 binary logging은 기본으로 켜져 있어(`log_bin=ON`) 별도 설정 없이도 오류 1418을 만날 수 있고, `log_bin_trust_function_creators`는 deprecated로 표시되어 있다. 전역 변수라서 1로 바꾸면 서버 전체의 함수 생성에서 선언 조건과 추가 권한 요구가 풀리고 트리거 생성에도 적용된다.
 - 지역 변수는 `DECLARE`로 선언하고 선언한 `BEGIN ... END` 블록 안에서만 유효하다. `@avg` 같은 사용자 정의 변수는 세션 범위라 함수가 끝난 뒤에도 남는다. 연결 풀의 연결은 여러 요청이 재사용하므로 함수 안에서 사용자 변수를 임시 저장소로 쓰면 연결을 초기화하지 않는 한 값이 다음 요청으로 새어 나갈 수 있다.
 - 지역 변수나 파라미터 이름이 컬럼 이름과 같으면 MySQL은 변수로 해석한다. 파라미터 이름을 `dept_id`로 지으면 `WHERE dept_id = dept_id`가 컬럼 비교가 아니게 되므로 `p_`, `v_` 같은 접두사로 이름을 구분한다.
 - 함수는 결과 집합을 반환할 수 없고, 명시적이거나 암묵적인 commit과 rollback을 포함할 수 없으며, 재귀 호출할 수 없다. 이런 작업 단위는 [[MySQL-Stored-Procedures|MySQL 저장 프로시저]]로 옮긴다.
@@ -116,6 +117,8 @@ LEFT JOIN (
 - [MySQL 8.4 Reference Manual, CREATE PROCEDURE and CREATE FUNCTION](https://dev.mysql.com/doc/refman/8.4/en/create-procedure.html)
 - [MySQL 8.4 Reference Manual, Date and Time Functions](https://dev.mysql.com/doc/refman/8.4/en/date-and-time-functions.html)
 - [MySQL 8.4 Reference Manual, Stored Program Binary Logging](https://dev.mysql.com/doc/refman/8.4/en/stored-programs-logging.html)
+- [MySQL 8.4 Reference Manual, The Binary Log](https://dev.mysql.com/doc/refman/8.4/en/binary-log.html)
+- [MySQL 8.4 Reference Manual, Binary Logging Options and Variables, log_bin_trust_function_creators](https://dev.mysql.com/doc/refman/8.4/en/replication-options-binary-log.html#sysvar_log_bin_trust_function_creators)
 - [MySQL 8.4 Reference Manual, Mathematical Functions, RAND](https://dev.mysql.com/doc/refman/8.4/en/mathematical-functions.html#function_rand)
 - [인프런, Real MySQL 시즌 1 - Part 1, Stored Function](https://www.inflearn.com/courses/lecture?courseId=333931&unitId=226565)
 - [MySQL 8.4 Reference Manual, Defining Stored Programs](https://dev.mysql.com/doc/refman/8.4/en/stored-programs-defining.html)

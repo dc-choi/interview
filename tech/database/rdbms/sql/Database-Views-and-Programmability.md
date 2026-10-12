@@ -73,7 +73,7 @@ Procedure는 `CALL`로 실행하는 statement 묶음이고 IN/OUT parameter를 �
 
 저장 프로그램은 낡아서 무조건 금지하거나 network가 줄어 항상 빠른 기능이 아니다. data locality, 원자성, 변경 주체, DB 병목과 이식성으로 선택한다.
 
-MySQL의 파라미터 모드, 트랜잭션 경계와 프로시저와 함수의 차이는 [[MySQL-Stored-Procedures|MySQL 저장 프로시저]], 함수의 결정성과 정의 규칙은 [[MySQL-Stored-Functions|MySQL 저장 함수]]에 둔다. Oracle의 cursor, exception, package specification/body, definer/invoker rights와 trigger transaction 경계는 [[PL-SQL-Cursors-Routines-and-Triggers|PL/SQL 커서와 저장 프로그램]]에서 분리해 다룬다.
+MySQL의 파라미터 모드, 트랜잭션 경계, 커서와 동적 SQL, 프로시저와 함수의 차이는 [[MySQL-Stored-Procedures|MySQL 저장 프로시저]], 함수의 결정성과 정의 규칙은 [[MySQL-Stored-Functions|MySQL 저장 함수]]에 둔다. Oracle의 cursor, exception, package specification/body, definer/invoker rights와 trigger transaction 경계는 [[PL-SQL-Cursors-Routines-and-Triggers|PL/SQL 커서와 저장 프로그램]]에서 분리해 다룬다.
 
 ### 변경 배포와 공유의 비용
 

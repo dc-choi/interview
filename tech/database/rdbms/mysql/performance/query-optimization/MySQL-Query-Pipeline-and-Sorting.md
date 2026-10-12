@@ -3,7 +3,7 @@ tags: [database, rdbms, mysql, iterator, sorting, group-by, performance]
 status: done
 category: "Database - RDBMS"
 aliases: ["MySQL Query Pipeline and Sorting", "MySQL 파이프라인과 정렬"]
-verified_at: 2026-09-30
+verified_at: 2026-10-12
 ---
 
 # MySQL 쿼리 파이프라인과 정렬
@@ -29,12 +29,13 @@ LIMIT 20;
 
 ## 파이프라인과 애플리케이션 소비
 
-iterator가 row를 흘려보내 첫 행을 빨리 내도 애플리케이션까지 한 행씩 전달된다는 뜻은 아니다. MySQL Connector/J는 기본적으로 결과 집합 전체를 받아 메모리에 두고, forward-only와 read-only 결과에 fetch size `Integer.MIN_VALUE`를 주거나 `useCursorFetch`를 켜야 스트리밍한다. 스트리밍 중에는 결과를 끝까지 읽거나 닫기 전까지 같은 connection에 다른 쿼리를 보낼 수 없고, 문장이 끝나야 그 문장이 잡은 잠금도 풀린다.
+iterator가 row를 흘려보내 첫 행을 빨리 내도 애플리케이션까지 한 행씩 전달된다는 뜻은 아니다. MySQL Connector/J는 기본적으로 결과 집합 전체를 받아 메모리에 둔다. forward-only와 read-only 결과에 fetch size `Integer.MIN_VALUE`를 주면 행 단위 스트리밍을 사용한다. `useCursorFetch=true`와 양수 `setFetchSize(n)`을 함께 쓰면 커서 기반으로 n행씩 가져온다. 행 단위 스트리밍 중에는 결과를 끝까지 읽거나 닫기 전까지 같은 connection에 다른 쿼리를 보낼 수 없다. 명시적 트랜잭션에서 잡은 잠금은 결과 소비가 끝났다는 이유만으로 풀리지 않고 트랜잭션 종료까지 유지될 수 있다.
 
 - 결과를 소비하는 동안 connection을 붙잡아 pool이 마를 수 있고, 스트림과 리소스 해제를 직접 관리해야 한다. 해제를 빠뜨리면 누수가 생긴다. ORM의 엔티티 변환과 캐시도 거치지 않는다. TypeORM `stream()`은 엔티티가 아닌 raw data를 돌려준다.
 - 사용자 화면의 목록은 페이징으로 나눠 조회하고([[Pagination-Optimization|페이징 성능 최적화]]), 스트리밍은 수백만 건 배치나 엑셀 내보내기처럼 한 흐름으로 끝까지 소비하는 작업에 한정한다. Node.js 메모리 대책으로서의 cursor 스트리밍은 [[OOM-Troubleshooting-Response|OOM 대응]]과 함께 본다.
 - 행 단위 전달이 행마다 디스크 I/O를 한다는 뜻은 아니다. 내부 읽기는 페이지 단위다.
 - 기본 버퍼링과 스트리밍 옵션은 드라이버마다 다르므로 사용하는 드라이버 문서로 확인한다.
+- PyMySQL과 MySQL Connector/Python은 버퍼링 기본값이 반대다. PyMySQL(1.2.3 기준) 기본 `Cursor`는 `execute()`에서 결과 전체를 클라이언트 메모리로 읽어 두므로 `fetchall()` 대신 `fetchone()`을 반복해도 결과 전체가 메모리에 올라가는 것은 같다. 행을 필요할 때 읽는 `SSCursor`는 일부만 읽고 멈춰도 cursor를 닫거나 같은 connection에 다음 문장을 보낼 때 남은 행을 모두 읽어 폐기하므로, 앞부분만 필요하면 SQL에 `LIMIT`을 둔다. MySQL Connector/Python의 기본 cursor는 버퍼링하지 않아, 연결 인자 `consume_results`가 기본값 `False`이면 결과를 다 읽기 전에 같은 connection에서 다른 문장을 실행할 때 `InternalError`(Unread result found)가 난다. 연결 인자 `buffered=True`는 실행 직후 결과 전체를 받아 두고, `consume_results=True`는 남은 결과를 자동으로 읽는다.
 
 ## `Using filesort` 해석
 
@@ -122,6 +123,10 @@ Loose scan은 group 안의 모든 entry를 읽지 않을 수 있지만 tight/str
 - [MySQL 8.4, GROUP BY Optimization](https://dev.mysql.com/doc/refman/8.4/en/group-by-optimization.html)
 - [MySQL 8.4, Internal Temporary Table Use](https://dev.mysql.com/doc/refman/8.4/en/internal-temporary-tables.html)
 - [MySQL Connector/J Developer Guide, JDBC API Implementation Notes](https://dev.mysql.com/doc/connector-j/en/connector-j-reference-implementation-notes.html)
+- [PyMySQL Documentation, Cursor Objects](https://pymysql.readthedocs.io/en/latest/modules/cursors.html)
+- [pymysql 패키지 소스 v1.2.3 — PyMySQL GitHub](https://github.com/PyMySQL/PyMySQL/tree/v1.2.3/pymysql)
+- [MySQL Connector/Python Developer Guide, cursor.MySQLCursorBuffered Class](https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursorbuffered.html)
+- [MySQL Connector/Python Developer Guide, Connector/Python Connection Arguments](https://dev.mysql.com/doc/connector-python/en/connector-python-connectargs.html)
 - [TypeORM, Select using Query Builder](https://typeorm.io/docs/query-builder/select-query-builder/)
 - [인프런, Top-N 최적화](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471871)
 - [인프런, 파이프라인 모델 최적화](https://www.inflearn.com/courses/lecture?courseId=343202&unitId=471872)

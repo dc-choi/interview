@@ -83,6 +83,7 @@ WHERE user_id = NEW.user_id;
 - 프로시저는 애플리케이션의 호출부가 연결 고리가 되지만 트리거는 코드에 흔적이 없다. 테이블별 트리거와 동작을 migration과 스키마 문서에 남기고 `SHOW TRIGGERS`나 `information_schema.TRIGGERS`로 운영 정의를 대조한다.
 - bulk import, backfill과 replication에서 실행 여부/부하를 rehearsal한다.
 - business actor/reason은 DB session만으로 알 수 없을 수 있어 application context 전달이 필요하다.
+- 트리거 안의 `CURRENT_USER()`는 변경 문장을 실행한 계정이 아니라 트리거의 `DEFINER` 계정을 돌려준다. 트리거에는 `SQL SECURITY` 특성을 지정할 수 없어 `INVOKER`로 바꿀 수도 없다. 이력에 DB 접속 계정을 남기려면 접속할 때 지정한 사용자 이름과 클라이언트 host를 돌려주는 `USER()`나 `SESSION_USER()`를 쓴다. 애플리케이션이 공용 계정 하나로 접속하면 이 값도 최종 사용자가 아니다. MySQL 8.4 문서로 2026-10-12 확인한 기준이다.
 
 이력 기록은 trigger, application write와 CDC 중 누락 가능성, business context와 운영 비용을 비교한다. trigger가 있다는 이유로 history table의 retention/권한/검증이 해결되지는 않는다. 애플리케이션 write path, [[Transactional-Outbox|Transactional Outbox]]나 CDC로 같은 목적을 이룰 수 있으면 그쪽을 먼저 검토하고, 모든 writer에게 강제해야 하는 작은 규칙에만 트리거를 남긴다.
 
@@ -92,6 +93,7 @@ WHERE user_id = NEW.user_id;
 - [MySQL 8.4 Reference Manual, Trigger Syntax and Examples](https://dev.mysql.com/doc/refman/8.4/en/trigger-syntax.html)
 - [MySQL 8.4 Reference Manual, Using Triggers](https://dev.mysql.com/doc/refman/8.4/en/triggers.html)
 - [MySQL 8.4 Reference Manual, Restrictions on Stored Programs](https://dev.mysql.com/doc/refman/8.4/en/stored-program-restrictions.html)
+- [MySQL 8.4 Reference Manual, Information Functions](https://dev.mysql.com/doc/refman/8.4/en/information-functions.html)
 - [MySQL 8.4 Reference Manual, Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
 - [MySQL 8.4 Error Message Reference, Server Error Message Reference](https://dev.mysql.com/doc/mysql-errors/8.4/en/server-error-reference.html)
 - [PostgreSQL 18 Documentation, CREATE TRIGGER](https://www.postgresql.org/docs/18/sql-createtrigger.html)

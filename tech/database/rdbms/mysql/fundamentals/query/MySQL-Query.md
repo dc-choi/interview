@@ -14,7 +14,7 @@ SELECT 결과의 의미를 정확히 읽고 MySQL 방언의 조회 기능을 활
 - [[MySQL-Query-Fundamentals-Functions|MySQL 내장 함수와 암묵 변환]]: 문자열과 숫자 비교가 인덱스를 잃는 방향, 반올림과 절사, 문자열 위치와 NULL 전파, 월말 보정과 날짜 차이
 - [[MySQL-Lateral-Derived-Tables|MySQL LATERAL 파생 테이블]]: 선행 테이블 참조, Top-N, 실행 계획과 제약
 - [[MySQL-Stored-Functions|MySQL 저장 함수]]: 결정성 선언, 실행 계획, 복제와 보안 컨텍스트, DELIMITER와 변수 범위, 행마다 실행되는 쿼리, 난수 ID 충돌
-- [[MySQL-Stored-Procedures|MySQL 저장 프로시저]]: 파라미터 모드, 결과 집합, CALL과 트랜잭션 경계, 암묵 commit, DROP 후 CREATE 배포, 저장 함수와의 차이
+- [[MySQL-Stored-Procedures|MySQL 저장 프로시저]]: 파라미터 모드, 결과 집합, CALL과 트랜잭션 경계, 암묵 commit, 커서와 NOT FOUND 핸들러, 동적 SQL, DROP 후 CREATE 배포, 저장 함수와의 차이
 
 ## 함께 볼 문서
 

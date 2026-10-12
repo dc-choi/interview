@@ -3,7 +3,7 @@ tags: [database, rdbms, transaction, mvcc]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["트랜잭션", "Transactions"]
-verified_at: 2026-10-05
+verified_at: 2026-10-12
 ---
 
 # 트랜잭션
@@ -21,6 +21,8 @@ commit 전 실패라면 rollback으로 아직 확정되지 않은 rollback 가�
 JDBC에서 하나의 local transaction은 한 `Connection`, 즉 DB의 한 session에서 수행된다. 여러 SQL이 하나의 transaction이어야 한다면 같은 connection에서 실행하고 마지막에 commit 또는 rollback해야 한다. 각 repository가 별도 connection을 얻으면 하나의 원자적 작업으로 묶이지 않는다.
 
 - Auto-commit mode에서는 각 statement가 독립적으로 commit된다. 단일 statement에는 편리하며 그 자체가 잘못된 설정은 아니다. MySQL은 새 연결을 autocommit으로 시작해 오류 없이 끝난 문장마다 commit하고, 오류가 난 문장의 commit 또는 rollback은 오류 종류에 따른다. 현재 상태는 `SELECT @@autocommit`으로 확인한다.
+- 서버 기본값과 클라이언트 API 기본값은 다를 수 있다. JDBC `Connection`은 auto-commit mode로 시작하지만 Python DB-API(PEP 249)는 DB가 auto-commit을 지원해도 처음에는 꺼 두도록 정한다. PyMySQL과 MySQL Connector/Python도 `autocommit` 기본값이 `False`라 연결 직후 session의 autocommit을 끄므로 그 연결의 `@@autocommit`은 0이다. PyMySQL은 `autocommit=None`을 주면 서버 값을 그대로 쓴다. autocommit이 꺼진 session에는 항상 transaction이 열려 있으므로 조회만 하는 스크립트도 commit이나 rollback으로 끝낸다([[MySQL-Long-Transactions-and-Batch|장기 트랜잭션과 배치]]).
+- 이런 연결에서 InnoDB 테이블에 INSERT한 뒤 `commit()` 없이 연결을 닫으면 PEP 249의 `close()` 규칙과 MySQL의 session 종료 규칙([[#START TRANSACTION과 mode 변경]])에 따라 rollback된다. 다만 그 사이에 암시적 commit을 일으키는 문장을 실행했다면 앞선 INSERT도 그때 확정된다. TEMPORARY가 아닌 `CREATE TABLE`은 실행 전에 열린 transaction을 commit하고 자신도 rollback되지 않으므로, 테이블을 만든 뒤 INSERT하고 `commit()`을 빠뜨리면 테이블만 남고 행은 없는 상태가 된다.
 - 계좌 이체처럼 여러 statement가 모두 성공하거나 모두 취소돼야 하면 auto-commit을 끄고 명시적 transaction boundary를 둔다.
 - Commit은 현재 transaction의 rollback 가능 변경을 확정하고, rollback은 아직 commit하지 않은 rollback 가능 변경을 취소한다. DDL과 비트랜잭션 테이블은 이 경계에서 제외될 수 있다.
 - Service use case가 transaction boundary를 소유하고 repository가 `Connection`을 business interface로 노출하지 않게 한다.
@@ -160,4 +162,8 @@ MySQL에서 transaction이 열린 채로 `START TRANSACTION`이나 `BEGIN`을 �
 - [MySQL 8.0 Reference Manual, CHECK Constraints](https://dev.mysql.com/doc/refman/8.0/en/create-table-check-constraints.html)
 - [PostgreSQL 18 Documentation, CREATE TABLE](https://www.postgresql.org/docs/18/sql-createtable.html)
 - [Java SE 27 API, java.sql.Connection](https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html)
+- [Python, PEP 249 Python Database API Specification v2.0](https://peps.python.org/pep-0249/)
+- [PyMySQL Documentation, Connection Object](https://pymysql.readthedocs.io/en/latest/modules/connections.html)
+- [MySQL Connector/Python Developer Guide, MySQLConnection.autocommit Property](https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlconnection-autocommit.html)
+- [MySQL 8.4 Reference Manual, Statements That Cause an Implicit Commit](https://dev.mysql.com/doc/refman/8.4/en/implicit-commit.html)
 - YouTube, 쉬운코드, [데이터베이스 트랜잭션과 ACID](https://www.youtube.com/watch?v=sLJ8ypeHGlM)
