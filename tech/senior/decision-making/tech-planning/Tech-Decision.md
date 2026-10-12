@@ -55,6 +55,18 @@ aliases: ["Tech Decision", "기술 의사결정"]
 
 이는 해당 실험 조건의 선택 경향이다. 실제 운영 품질, 전체 개발자의 선호나 특정 도구의 우월성을 입증하지 않는다. 연구 주체가 개발자 도구 성장 서비스를 판매한다는 이해관계도 함께 읽는다. 기술 선정에는 선택 빈도보다 자신의 요구와 실패 조건에 대한 검증이 필요하다.
 
+## 에이전트가 직접 쓸 코드를 줄이는 쪽으로 스택을 고른다
+
+에이전트는 짧은 시간에 많은 코드를 만들지만, 만든 코드는 이후 수정, 보안 패치와 운영의 대상으로 남는다. 시스템을 안정적으로 유지하는 장기 비용은 거의 언제나 만들 때 겪는 어떤 불편보다도 훨씬 크다(Choose Boring Technology). 생성된 코드의 수정 용이성 같은 비기능 요구를 매번 사람이 보정하기보다, 에이전트가 새로 작성할 코드의 양과 선택지를 처음부터 줄이도록 기술을 고를 수 있다.
+
+1. 작업을 맡기기 전에 쓸 프레임워크, 라이브러리와 관리형 서비스를 정해 저장소 지시 파일에 적는다. 정해진 부품으로 조립하게 하면 같은 문제를 매번 다른 직접 구현으로 푸는 일을 줄일 수 있다. 확인한 범위에서는 이 효과를 직접 잰 자료를 찾지 못했으므로 새 의존성 추가와 중복 구현은 리뷰와 CI에서 확인한다. 2026-10-12 기준 Claude Code 문서는 Claude가 CLAUDE.md를 강제 설정이 아닌 맥락으로 다룬다고 설명하므로, 승인하지 않은 패키지 설치 명령은 실행 전 훅으로, 의존성 목록 변경은 CI의 허용 목록 검사로 막는다([[Agent-Repository-Instructions|저장소 지시 파일 작성과 운영]]). managed settings 밖 훅의 차단은 `tool.check`를 처리하는 mod가 승인으로 바꿀 수 있으므로 최종 확인은 CI에 둔다.
+2. 인증, 결제, 메일 발송처럼 그 기능 자체가 사업이 아니어서 차별화와 거리가 먼 기능은 에이전트에게 직접 구현시키기 전에 기존 스택의 부품, 성숙한 라이브러리와 관리형 서비스를 위 의존성 판단 절차로 비교한다. AWS Well-Architected의 운영 우수성 설계 원칙도 가능한 곳에서 AWS 관리형 서비스로 운영 부담을 줄이고 운영 절차를 그 서비스와의 상호작용에 맞춰 짜라고 권한다. 관리형 서비스를 파는 공급자의 지침이라는 점도 함께 읽는다. 인증과 결제를 직접 만들지 않는 근거는 [[Build-vs-Buy|Build vs Buy]]를 따른다.
+3. 모듈과 레이어 경계, 데이터 소유처럼 코드를 어디에 둘지 정하는 설계는 위임하지 않는 판단으로 남긴다([[Developer-Role-AI-Era|AI 시대 개발자 역할]]). 사람이 정한 분할이 에이전트의 유지보수에도 맞는지 판단할 정립된 기준을 찾지 못했으므로 경계는 테스트와 [[Architecture-Fitness-Functions|fitness function]]으로 확인한다.
+
+AI 보조 코드의 유지보수 근거는 엇갈린다. 코드 분석 업체 GitClear의 2025년 보고서는 2020년부터 2024년까지 바뀐 2억 1,100만 줄을 집계해, 2024년에 처음으로 복사해 붙인 줄(한 커밋 안에서 여러 파일이나 함수에 같은 내용으로 들어간 줄)이 옮긴 줄(이 업체가 리팩터링의 신호로 보는 지표)보다 많아졌다고 보고했다. AI가 쓴 줄을 구분하지 않은 전체 변경 줄의 추이이고, 옵트인 고객사와 오픈소스로 된 표본의 구성이 해마다 바뀌며, 학술 심사를 거치지 않았고 이 지표를 재는 자사 제품을 파는 업체의 보고서다. DORA의 2024년 조사 분석은 AI 도입이 25% 늘 때 문서 품질 약 7.5%, 코드 품질 약 3.4% 개선과 함께 전달 처리량 약 1.5%, 전달 안정성 약 7.2% 감소의 연관을 추정했다. 2025년 보고서에서는 처리량과의 관계가 양으로 바뀌었고 안정성과의 음의 관계는 이어졌다([[AX-Transformation|AX 조직 전환]]). 설문 기반 모형의 연관이지 원인 증명은 아니다. 통제 실험도 있다. 두 단계로 나눈 실험(전체 151명, 95%가 현업 개발자)에서 AI 도움 여부를 달리해 Java 웹 앱에 더한 기능을 다른 개발자들이 AI 없이 이어서 개발했을 때 완료 시간과 코드 품질에 유의한 차이가 없었다. 사람이 AI 보조 도구를 쓴 조건이라 에이전트가 자율로 쓴 코드에 그대로 옮기지 않으며, 세 자료 모두 사용하는 스택을 제한하거나 관리형 서비스로 옮긴 효과를 잰 것은 아니다.
+
+이 방향은 위험을 없애지 않고 옮긴다. 외부 서비스는 요금, 장애와 정책 변경, 데이터 위치와 이전 비용을, 라이브러리는 공급망과 버전 갱신 부담을 들여온다. 각 후보는 위 의존성 판단 절차로 비교한다. 기능이 적은 프레임워크를 여러 개 조합하면 한 프레임워크가 맡던 통합과 버전 호환을 팀이 직접 맞춰야 하므로, 기능 수가 적다는 이유만으로 결함이 줄어든다고 가정하지 않는다. AI 생성 코드의 구조 품질을 재는 방법과 한계는 [[AI-Slop-Quality-Gate|AI 슬롭과 판단 관문]]을 따른다.
+
 ## 결정의 전달과 진화
 
 아키텍처 결정은 결정권자의 머릿속에서 끝나지 않는다. 기술 팀에는 구현 제약과 검증 방법을, 비기술 이해관계자에게는 비용, 위험과 전달 속도에 미치는 영향을 설명해야 실제로 같은 방향으로 움직일 수 있다.
@@ -128,6 +140,14 @@ Q. 의사결정을 어떻게 문서화하는가?
 - [Choose Boring Technology — Dan McKinley](https://mcfunley.com/choose-boring-technology)
 - [Which tools do Claude Code, Codex and Cursor choose? We measured 16,893 sessions to find out. — Armature](https://armature.tech/blog/which-tools-coding-agents-install) — 2026-10-06 실험 구성과 첫 공개 표본 확인
 - [코드가 아니라 시스템을 설계하는 개발자의 사고법 — YouTube, 코딩맨](https://www.youtube.com/watch?v=S9Xo8IsK17w) — 2025-09-21, 비용, 시간, 인간은 발표자의 설계 관점
+- [바이브코딩인데 유지보수성 높이기? — YouTube, 뉴런데브](https://www.youtube.com/watch?v=zN5eiTiKmZE) — 2026-10-11, AI가 쓸 코드를 줄이는 운영 가능성 전략은 발표자의 관점
+- [AI Copilot Code Quality: Evaluating 2024's Increased Defect Rate via Code Quality Metrics — GitClear, William Harding](https://gitclear-public.s3.us-west-2.amazonaws.com/GitClear-AI-Copilot-Code-Quality-2025.pdf) — 2025-02, 2026-10-12 집계 범위와 복사 줄, 옮긴 줄 추이 확인
+- [Announcing the 2024 DORA report — Google Cloud](https://cloud.google.com/blog/products/devops-sre/announcing-the-2024-dora-report) — 2024-10-23, 2026-10-12 문서와 코드 품질 개선, 처리량 1.5%와 안정성 7.2% 감소 추정 확인
+- [Impact of Generative AI in Software Development — DORA](https://dora.dev/ai/gen-ai-report/) — 2025-04 공개(v.2025.2), 2026-10-12 AI 도입 25% 증가 기준의 처리량과 안정성 추정 확인
+- [Announcing the 2025 DORA Report: State of AI-Assisted Software Development — Google Cloud](https://cloud.google.com/blog/products/ai-machine-learning/announcing-the-2025-dora-report) — 2025-09-24, 2026-10-12 처리량과의 양의 관계, 안정성과의 음의 관계 확인
+- [Echoes of AI: Investigating the Downstream Effects of AI Assistants on Software Maintainability — arXiv, Markus Borg 외](https://arxiv.org/abs/2507.00788) — v3 2026-02-26, 2026-10-12 실험 설계와 결과 확인
+- [AWS Well-Architected Framework, Operational excellence design principles](https://docs.aws.amazon.com/wellarchitected/latest/framework/oe-design-principles.html) — 2026-10-12 Use managed services 원칙 확인
+- [Claude Code Docs, How Claude remembers your project](https://code.claude.com/docs/en/memory) — 2026-10-12 CLAUDE.md가 강제 설정이 아닌 맥락이라는 설명 확인
 
 - [Discussion of A Philosophy of Software Design — John Ousterhout, Stanford](https://web.stanford.edu/~ouster/cgi-bin/cs190-winter20/lecture.php?topic=bookReview)
 - [45권의 기술 서적에서 얻은 핵심 인사이트 — GeekNews](https://news.hada.io/topic?id=31718)
@@ -139,3 +159,6 @@ Q. 의사결정을 어떻게 문서화하는가?
 - [[Data-Driven-Decision|데이터 기반 의사결정]]
 - [[Tradeoff|트레이드오프 & 성과 측정 프레임워크]]
 - [[Change-Pressure-Proportion|변경 압력과 비례 감각]] — 도입하지 않음이 정당한 결론이 되는 구조적 배경
+- [[Agent-Overengineering-Guard|에이전트 과잉설계 방지]] — 변경 하나에서 새 코드를 줄이는 결정 사다리
+- [[AI-Slop-Quality-Gate|AI 슬롭과 판단 관문]] — AI 생성 코드의 구조 품질 측정과 한계
+- [[Own-Your-Core|코어는 직접 소유하라]] — 위임하지 않을 핵심 판단과 단일 실패점

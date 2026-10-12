@@ -59,6 +59,21 @@ aliases: ["금융시스템 개관", "Financial System Overview"]
 
 무위험금리 곡선은 [[Interest-Rates-Monetary-Policy|통화정책]]뿐 아니라 기대 인플레이션, 만기와 시장 수급의 영향을 받는다. 다른 조건이 같다면 금리 상승은 할인율을 높여 현금흐름 자산의 현재가치를 낮추는 압력으로 작용하지만, 동시에 성장 기대나 위험 프리미엄이 바뀌면 실제 가격 반응은 달라질 수 있다.
 
+### 현금흐름이 계속될 때: 자본환원
+
+현금흐름이 같은 금액이나 일정한 성장률로 끝없이 이어지고 할인율도 기간과 관계없이 하나(r)라고 가정하면 위 합산식이 단순해진다. 정기적인 소득원의 가치를 원금 규모로 환산해 비교할 때 이 계산을 쓴다.
+
+```
+영구 현금흐름:          현재가치 = C ÷ r
+일정하게 성장하는 경우: 현재가치 = C₁ ÷ (r − g)   (g < r일 때만 성립)
+C: 다음 기부터 매기 같은 기대 현금흐름, C₁: 다음 기 기대 현금흐름, r: 할인율, g: 영구 성장률
+```
+
+- 예: 연 600만 원(월 50만 원을 연 단위로 묶어 받는다고 단순화)이 계속 들어온다고 보고 r = 5%로 환산하면 600만 원 ÷ 0.05 = 1.2억 원이다. C와 r은 둘 다 세전이거나 둘 다 세후로 맞춘다. 같은 방식으로 세전 연 1.5억 원을 세전 5%로 얻으려면 30억 원이 필요하다.
+- 할인율은 그 현금흐름의 위험에 맞춘다 → [[Risk-and-Return|위험과 수익]]. 광고 수입이나 작은 사업의 이익처럼 변동과 중단 가능성이 큰 흐름의 현재 수준을 그대로 C로 두고 예금 금리 수준의 할인율로 환산하면 가치가 부풀려진다. 중단 가능성을 기대 현금흐름에 이미 반영했다면 할인율에 다시 더하지 않는다. 유지에 드는 시간과 비용을 뺀 순현금흐름을 넣는다.
+- 성장률을 넣으면 g가 r에 가까워질수록 값이 급격히 커져 가정 하나가 결과를 좌우한다. 영원히 이어질 성장률은 현금흐름과 같은 통화, 같은 명목 또는 실질 기준으로 잰, 그 현금흐름이 의존하는 경제의 성장률을 넘을 수 없고, 간단한 경험칙으로는 평가에 쓴 무위험금리를 넘지 않게 잡는다. 하나의 값보다 범위로 본다 → [[Valuation|밸류에이션]]의 가정 민감성.
+- 세금 처리가 다른 소득원끼리 비교할 때는 세후로 맞춘다. 2026-10-12 법령 대조 기준으로 일반 이자소득은 지급 때 15.4%가 떼인다(소득세 원천징수 14%, 지방소득세 특별징수 1.4%). 비과세와 분리과세를 뺀 이자와 배당의 합계가 한 해 2천만 원 이하이면 원천징수된 소득은 원천징수로 끝나지만(국내에서 원천징수되지 않은 국외 이자와 배당 등은 금액과 관계없이 종합소득에 합산), 넘으면 그 이자와 배당 전액이 다른 종합소득과 함께 종합과세 대상이 되고 세액은 두 방식으로 계산한 금액 중 큰 쪽으로 정한다(비교과세) → [[Tax-Advantaged-Accounts|절세 계좌]]. 위 예의 연 이자 1.5억 원에서 15.4%만 떼어 월 약 1,058만 원으로 보면 세후 수입을 과대평가한다. 다른 소득과 공제가 없다고 단순화하면 2천만 원 × 14%에 나머지 1.3억 원의 기본세율 세액을 더한 약 3,286만 원이 1.5억 원 × 14%인 2,100만 원보다 커서 국세가 약 3,286만 원(약 21.9%)이다. 지방소득세도 표준세율로 같은 방식의 비교를 따로 하면 약 329만 원이 더해져 합계 약 24.1%, 세후 월 약 949만 원이다. 기본공제 같은 공제를 반영하면 세액은 이보다 조금 줄어든다.
+
 ## 6. 시장의 세 가지 기능
 
 - **자본 배분**: 자금이 기대수익과 위험에 따라 이동하도록 돕는다. 정보 비대칭과 외부효과 때문에 항상 최적 배분이 되는 것은 아니다.
@@ -76,9 +91,22 @@ aliases: ["금융시스템 개관", "Financial System Overview"]
 - [IMF, Financial Soundness Indicators Compilation Guide, Overview of the Financial System](https://www.elibrary.imf.org/display/book/9781589063853/ch002.xml)
 - [Money creation in the modern economy — Bank of England](https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy)
 - [금융위원회, 예금보호한도 상향 관련 주요 QA (2025-07-22)](https://www.fsc.go.kr/po020201/84975) — 2026-10-02 시행일, 기관별 합산과 상품별 보호 범위 대조
+- [OpenStax, Principles of Finance, 8.1 Perpetuities](https://openstax.org/books/principles-finance/pages/8-1-perpetuities) — 2026-10-12 영구 현금흐름 공식 대조
+- [OpenStax, Principles of Finance, 11.2 Dividend Discount Models (DDMs)](https://openstax.org/books/principles-finance/pages/11-2-dividend-discount-models-ddms) — 2026-10-12 다음 기 현금흐름과 r > g 조건 대조
+- [Closure in Valuation: Estimating Terminal Value — NYU Stern, Aswath Damodaran](https://pages.stern.nyu.edu/~adamodar/pdfiles/papers/termvalue.pdf) — 2026-10-12 안정 성장률의 상한 대조
+- [국가법령정보센터, 소득세법 제129조(원천징수세율)](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%86%8C%EB%93%9D%EC%84%B8%EB%B2%95/%EC%A0%9C129%EC%A1%B0) — 2026-10-12 일반 이자소득 14% 대조(법률 제21221호 현행본)
+- [국가법령정보센터, 지방세법 제103조의13(특별징수의무)](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%A7%80%EB%B0%A9%EC%84%B8%EB%B2%95/%EC%A0%9C103%EC%A1%B0%EC%9D%9813) — 2026-10-12 원천징수 소득세의 10% 특별징수 대조
+- [국가법령정보센터, 소득세법 제14조(과세표준의 계산)](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%86%8C%EB%93%9D%EC%84%B8%EB%B2%95/%EC%A0%9C14%EC%A1%B0) — 2026-10-12 2천만 원 종합과세기준금액 대조
+- [국가법령정보센터, 소득세법 제62조(이자소득 등에 대한 종합과세 시 세액 계산의 특례)](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%86%8C%EB%93%9D%EC%84%B8%EB%B2%95/%EC%A0%9C62%EC%A1%B0) — 2026-10-12 비교과세 대조
+- [국가법령정보센터, 소득세법 제55조(세율)](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%86%8C%EB%93%9D%EC%84%B8%EB%B2%95/%EC%A0%9C55%EC%A1%B0) — 2026-10-12 기본세율 구간으로 예시 세액 계산
+- [국가법령정보센터, 지방세법 제92조(세율)](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%A7%80%EB%B0%A9%EC%84%B8%EB%B2%95/%EC%A0%9C92%EC%A1%B0) — 2026-10-12 종합소득 개인지방소득세 표준세율(소득세 기본세율의 10분의 1) 대조
+- [국가법령정보센터, 지방세법 제93조(세액계산의 순서 및 특례)](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%A7%80%EB%B0%A9%EC%84%B8%EB%B2%95/%EC%A0%9C93%EC%A1%B0) — 2026-10-12 이자소득 등 종합과세의 비교 계산 대조
+- [30억 넘어가면서 발생하는 자본주의 특이현상 — 주언규 joo earn gyu](https://www.youtube.com/watch?v=fzfATJKA2mQ) — 2023-12-03 공개 영상. 자본환원 절의 계기이며 수치와 세법은 이 목록의 1차 출처로 대조
 
 ## 관련 문서
 
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 모든 자산 가격의 기준
+- [[Valuation|밸류에이션]] — 현금흐름 할인, 성장과 가정의 민감성
+- [[Tax-Advantaged-Accounts|절세 계좌]] — 금융소득종합과세와 비교과세
 - [[Stocks|주식]], [[Bonds|채권]] — 직접금융의 두 축
 - [[금융시장(Financial Markets)]] — 지도

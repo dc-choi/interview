@@ -24,6 +24,7 @@ aliases: ["시니어역량(SeniorEngineer)", "Senior Engineer Capabilities"]
 - [x] [[Debugging-Principles#다른 사람이 재현할 수 있는 버그 보고|재현 가능한 버그 보고]] — 재현 절차, 기대 결과와 실제 결과 분리, 관측과 추측 구분
 - [x] [[Software-Productivity-Measurement#토큰 사용량과 성과를 분리한다|토큰 사용량과 성과 평가]] — 사용 사례별 관측, 채택된 변경당 비용과 검토 부담
 - [x] [[Tech-Decision#에이전트가 제안한 의존성도 기술 결정이다|에이전트의 기술 선택 검토]] — 기존 스택 대안, 운영과 제거 비용, 선택 빈도 실험의 한계
+- [x] [[Tech-Decision#에이전트가 직접 쓸 코드를 줄이는 쪽으로 스택을 고른다|에이전트가 쓸 코드를 줄이는 스택 선택]] — 정해 둔 부품과 관리형 서비스, 지시 파일의 강제력 한계, AI 코드 품질 자료의 경계
 - [x] [[Software-Productivity-Measurement#AI 도구 설문을 생산성 근거로 읽는 법|AI 도구 설문 해석]] — 사용과 사용 계획, 신뢰, 자기보고 생산성과 실측 결과 구분
 - [x] [[Incident-Commander|장애 대응 리딩 (Incident Commander)]] — 기존 보강: [[Incident-Runbook|장애 절차와 에스컬레이션]], [[Incident-Recovery-Prevention|복구와 포스트모템]]
 - [x] [[People-Leadership|멘토링 (1:1, 질문형 코칭, 위임과 안전망, 성장 과제, 온보딩)]] — 기술적 조언과 자율성, 갈등의 사실 확인과 문제 제기 경로

@@ -66,12 +66,20 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 ## Mod — Claude Code 안에서 도는 함수 훅
 
 - 정의: JavaScript나 TypeScript 이벤트 핸들러로 된 플러그인이다. 도구 호출, 제출한 프롬프트, 화면 일부를 그리는 일 같은 이벤트가 생기면 Claude Code가 핸들러를 부르고, 핸들러는 이벤트를 지켜보거나(observe), 바꿔서 넘기거나(rewrite), 직접 응답해 원래 동작을 대신한다(answer). mods 문서는 mod의 핸들러를 hook, 설정 파일의 기존 훅을 settings hook이라 부른다. 이 문서의 `## 훅` 절은 settings hook을 다룬다
-- settings hook, 스킬과 MCP는 Claude Code 밖에서 동작한다(스크립트 실행, 텍스트나 도구 제공). mod는 프로세스 안에서 돌기 때문에 transcript 옆 pane과 프롬프트 위 band를 그리고, 도구 행이나 spinner처럼 Claude Code가 그리는 화면을 바꾸고, 도구 호출을 붙잡아 두거나 대신 답하고, Claude 턴 없이 바로 실행되는 `/command`를 더하고, 같은 파일의 변수로 hook끼리 데이터를 나눈다. `/diff` pane과 `AGENTS.md` 로딩도 내장 mod다
+- settings hook, 스킬과 MCP는 Claude Code 밖에서 동작한다(스크립트 실행, 텍스트나 도구 제공). mod는 프로세스 안에서 돌기 때문에 transcript 옆 pane과 프롬프트 위 band를 그리고, 도구 행이나 spinner처럼 Claude Code가 그리는 화면을 바꾸고, 도구 호출을 붙잡아 두거나 대신 답하고, Claude 턴 없이 실행되는 `/command`(작업 중 즉시 실행은 `immediate: true`)를 더하고, 같은 파일의 변수로 hook끼리 데이터를 나눈다. `/diff` pane과 `AGENTS.md` 로딩도 내장 mod다
 - 버전과 실행 위치: 설치한 mod는 기본으로 켜지며 터미널은 Claude Code v2.1.287 이상, Desktop 앱에 포함된 Claude Code는 v2.1.286 이상에서 지원한다. hook은 그 플러그인을 로드한 세션에서 돌지만 그리는 요소는 터미널과 Desktop 앱 Code 탭에만 보인다(Desktop은 터미널 전용 요소를 그리지 않고, 플러그인을 쓸 수 없는 Desktop의 WSL 세션에서는 hook도 돌지 않는다). VS Code 확장의 채팅 패널, `claude -p`와 Agent SDK에서는 hook만 돌고, 클라우드 세션은 그 세션까지 전달된 플러그인에 한해 hook만 돈다
 - 신뢰 경계: mod는 사용자 권한으로 Claude Code 안에서 도는 코드이고 샌드박스가 없다. 사용자 계정이 닿는 파일 읽기와 쓰기, 프로세스 실행과 네트워크 요청, 환경 변수와 설정 파일(그 안의 API 키 포함) 읽기, 모든 프롬프트와 도구 호출의 관찰과 재작성, 사용자가 입력한 것처럼 프롬프트를 제출하거나 다른 세션에 메시지 보내기, 사용자 대신 도구 호출 승인, 사용자의 요금제나 API 키로 모델 호출을 할 수 있다. sandbox를 켜도 격리되는 것은 Claude가 실행하는 Bash 명령이고 mod가 띄운 프로세스는 밖에서 돈다. 다만 권한 프롬프트 화면은 바꾸지 못한다
 - 권한 규칙과의 순서: `tool.check`를 처리하는 mod는 규칙과 PreToolUse 훅이 결정한 뒤에 답해 그 결정을 바꿀 수 있다. `ask` 규칙이 물을 호출과 managed settings 밖 PreToolUse 훅이 막은 호출을 승인할 수 있고, auto 모드에서 mod가 승인한 호출은 분류기 검사를 거치지 않는다. deny 규칙은 managed settings가 있는 기기나 Team, Enterprise 로그인에서 내장 guard가 로드될 때만 기본으로 mod보다 우선한다. 그 밖의 환경이나 조직이 guard 옵션 `allowModsToOverrideDenyRules`를 켠 경우, managed `prependPlugins`에서 guard를 빼 guard가 로드되지 않는 경우에는 mod가 deny 규칙이 거부한 호출도 승인할 수 있다. deny 규칙과 managed 훅은 mod 자신의 `$.fs`, `$.process` 호출에는 적용되지 않는다
 - 설치 전 점검: 플러그인 파일을 받아 `claude plugin validate <경로>`를 실행하면 코드를 돌리지 않고 `hooks:`(처리하는 이벤트)와 `calls:`(호출하는 mods API 메서드)를 보여 준다. hook은 mods API를 거쳐야만 자기 코드 밖의 일을 할 수 있어서 이 목록이 가능하고, 이 명령이 읽을 수 없는 방식으로 API를 쓰는 mod는 로드되지 않는다. 다만 목록은 메서드 이름이라 `$.process.run`으로 띄운 프로그램의 동작까지 보여 주지는 않는다
 - 끄기: 플러그인 단위로 비활성화하거나, 한 세션은 `--safe-mode`, 모든 세션은 `~/.claude/settings.json`의 `"disableAllHooks": true`를 쓴다(내 settings hook과 커스텀 상태표시줄도 멈추고, 조직이 관리하는 것은 계속 돈다). `--safe-mode`, `--bare`, `disableAllHooks`는 내장 mod를 멈추지 않는다. 조직은 managed settings의 `pluginConfigs`에서 내장 guard(`cc-plugin-sec-default@builtin`)의 `allowManagedModsOnly` 옵션을 켜 조직 것으로 인정되는 mod(관리 설정이 가리키는 기기 안 디렉터리 마켓플레이스에서 켠 mod)와 내장 mod만 로드하게 한다. 조직이 켠 원격 마켓플레이스의 mod도 사용자 mod로 분류돼 막히고, 이 옵션은 guard가 로드되는 환경에서만 적용된다
+
+### Claude에게 맡겨 만들 때와 고장을 찾을 때
+
+- 만들기: 대화형 세션에서 원하는 동작을 설명하면 Claude가 내장 `plugin-authoring` 스킬을 불러와 mod를 쓸 수 있다(`/plugin-authoring`으로 직접 불러올 수도 있다). 파일은 `~/.claude/dev-mods/<세션 ID>/<mod 이름>/`에 생기고, `~/.claude`가 보호 경로라 default와 acceptEdits 모드에서는 파일마다 승인한다. 첫 파일이 저장되면 이 세션의 hot reload를 켤지 묻는다. 켜면 그 턴이 끝날 때 로드되고 이후 파일을 바꾼 턴이 끝날 때마다 다시 로드된다. Not now를 고르면 지금은 로드되지 않지만 그 세션을 다음에 시작할 때 로드되므로, 아예 막으려면 mod 디렉터리를 지운다. `claude -p`나 dontAsk 모드처럼 승인할 사람이 없는 세션, 신뢰하지 않은 작업 폴더, mod를 끈 세션(`--safe-mode`, `--bare`, `disableAllHooks`), 조직 정책이 막은 세션(`allowManagedModsOnly`, `disableSideloadFlags`, `skills-dir`이 없는 마켓플레이스 허용 목록)에서는 Claude가 쓴 mod가 로드되지 않는다
+- 다른 세션에서 쓰기: Claude가 쓴 mod는 만든 세션에서만 로드되고, 그 세션의 mods 폴더는 `cleanupPeriodDays`가 지나면 지워진다. 계속 쓰려면 폴더를 다른 위치로 복사해 `claude --plugin-dir <경로>`로 띄우거나 마켓플레이스에 올려 설치한다. 플래그를 줄 수 없는 앱은 `CLAUDE_CODE_PLUGIN_DIRS` 환경 변수에 절대 경로를 `:`(Windows는 `;`)로 이어 넘긴다. 조직이 managed settings에 `disableSideloadFlags`를 켜면 `--plugin-dir`을 주거나 `CLAUDE_CODE_PLUGIN_DIRS`에 폴더를 둔 실행은 시작 단계에서 오류를 내고 종료하고(환경 변수 검사는 v2.1.280 이상) Claude가 세션에서 쓴 mod도 로드되지 않는다. 수정은 설치본이 아니라 `--plugin-dir`로 띄운 작업 폴더에서 한다. 설치본은 버전별로 캐시돼 버전을 올려 다시 설치하기 전에는 수정이 반영되지 않는다
+- 명령: mod가 더한 `/명령`을 Claude 턴 중에 입력하면 턴이 끝날 때까지 기다린다. 작업 중에도 바로 실행할 명령은 `$.command.register`에 `immediate: true`를 준다. 명령, 도구, subagent 유형, pane 이름은 문서상 letters, 숫자, `_`, `-`로 64자까지이고 letters의 범위는 밝히지 않는다. 한글 이름이 등록되지 않았다는 사용 보고가 있어 영문 이름이 안전하다. 이미 쓰인 이름(예: 기본 명령)은 등록에서 예외가 나고, 예외를 던진 hook은 건너뛰므로 같은 `session.start` hook의 나머지도 돌지 않는다. 등록은 hook 끝에 두거나 `try`와 `catch`로 감싼다
+- 조용한 실패: 모듈이나 hook이 실패하면 Claude Code는 그 부분을 건너뛰고 세션을 계속하므로 고장 난 mod가 아무것도 안 하는 것처럼 보일 수 있다(v2.1.289 이전에는 transcript 행의 그리기 오류가 세션을 끝냈다). hook은 예외를 던지거나, 이벤트 하나에 자기 실행 시간 10초(`prompt.edit`은 50ms)를 넘기거나, 결과 형태가 틀리면 건너뛴다(`.catch` 처리기를 등록하면 실패를 직접 처리할 수 있다). 이유를 담은 줄은 `--plugin-dir`로 띄웠거나 hot reload를 켠 대화형 세션이면 transcript의 흐린 줄로, 그 밖의 대화형 세션이면 `claude --debug`로 남긴 디버그 로그에만, `claude -p`에 `--plugin-dir`을 준 실행이면 stderr에 남는다. 만든 직후 직접 써 보고, `hook skipped` 줄은 mod, 이벤트와 콜론 뒤 이유를 담으므로 그 줄을 그대로 Claude에게 넘긴다. 세션 없이 확인하려면 `claude plugin validate`로 이벤트 이름 오타와 manifest를 보고, 직접 쓴 `*.test.ts` 테스트를 `claude plugin test`로 돌려 hook 동작을 시험한다
+- 그릴 수 있는 곳: `ui.render`가 다루는 render site는 Mods reference(v2.1.290 기준)에 15곳이다. `Pane`, `AbovePrompt`, `UserMessage`, `AssistantMessage`, `ToolUse`, `ToolResult`, `ToolGroup`, `CommandOutput`, `AskUserQuestion`, `ToolProgress`, `Spinner`, `TurnDuration`, `InfoNotice`, `SessionMode`, `PromptHint`가 있고 시작 화면 로고는 목록에 없다. 질문 창(`AskUserQuestion`)은 모양을 바꿀 수 있어도 Claude Code의 대화상자를 정확히 한 번 포함하고 자기 요소는 그 위에 두어야 하며, 어기면 Claude Code가 자기 대화상자를 그린다. v2.1.292부터는 mod의 `tool.check` 승인으로도 질문을 건너뛰지 못한다. 권한 프롬프트는 다시 그릴 수 없어 확인 창을 없애는 mod는 보통 `tool.check`로 호출을 대신 승인하고, 그러면 평소 확인을 묻던 `rm -rf`나 force push 같은 명령도 묻지 않고 실행될 수 있다. deny 규칙이 우선하는 조건은 위 권한 규칙 순서를 따른다
 
 ### 화면 변경과 데이터 보호의 경계
 
@@ -100,6 +108,8 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 2026-10-06에는 mods, 플러그인 보안과 권한 문서로 Mod 절과 훅, 플러그인 절의 mod 관련 문장을 대조했다. 화면 변경 절과 터미널, Desktop의 지원 버전은 Mods overview와 interface, reference 문서로 추가 대조했다. 기존 훅 절의 exit code와 타임아웃 서술처럼 남은 버전 민감 주장이 최신 Hooks 문서와 맞는지는 이번에 다시 확인하지 않았으므로 frontmatter 검증일은 유지한다.
 
+2026-10-12에는 Create a mod, Use the mods API, Troubleshoot a mod, Draw in the interface with a mod, Mods reference, Manage mods for your organization, Configure permissions와 Settings reference 문서로 Claude에게 맡겨 만드는 흐름, 세션 범위, 명령 옵션과 이름 한도, 조용한 실패와 render site 목록을 추가 대조했다. 한글 명령 이름이 등록되지 않은 일은 공식 문서가 다루지 않는 사용 사례다. 훅 절은 이번에도 다시 대조하지 않아 frontmatter 검증일을 유지한다.
+
 - [클로드 코드 가이드 (레퍼런스 08 MCP, 09 훅, 10 서브에이전트, 11 스킬, 18 플러그인) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code Docs, Orchestrate teams of Claude Code sessions](https://code.claude.com/docs/en/agent-teams)
 - [Claude Code Docs, Hooks](https://code.claude.com/docs/en/hooks)
@@ -113,6 +123,11 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - [Claude Code Docs, Manage mods for your organization](https://code.claude.com/docs/en/plugins/mods/admin)
 - [Claude Code Docs, Mods reference](https://code.claude.com/docs/en/plugins/mods/reference)
 - [Claude Code Docs, Draw in the interface with a mod](https://code.claude.com/docs/en/plugins/mods/interface)
+- [Claude Code Docs, Create a mod](https://code.claude.com/docs/en/plugins/mods/create)
+- [Claude Code Docs, Use the mods API](https://code.claude.com/docs/en/plugins/mods/api)
+- [Claude Code Docs, Troubleshoot a mod](https://code.claude.com/docs/en/plugins/mods/troubleshoot)
+- [Claude Code Docs, Settings reference (disableSideloadFlags)](https://code.claude.com/docs/en/settings-reference#disablesideloadflags)
+- [클로드 코드 Mods로 어디까지 바꿀 수 있을까 — YouTube, 잔재미코딩(DaveLee)](https://www.youtube.com/watch?v=ABpu4VbEpqM) — 2026-10-11, 일곱 가지 mod 제작 사례와 한글 명령 이름 등록 실패는 발표자의 사용 사례
 - [Claude Code Docs, Plugin security and trust](https://code.claude.com/docs/en/plugins/security)
 - [Claude Code Docs, Configure permissions (Extend permissions with hooks)](https://code.claude.com/docs/en/permissions)
 - [Agent Skills, Specification](https://agentskills.io/specification)
