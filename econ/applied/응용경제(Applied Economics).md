@@ -29,6 +29,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[Public-Rental-Housing-Types|공공임대주택 유형과 신청 전 확인]] — 시행령의 여덟 유형과 공공지원민간임대 구분, 임대료 산정 방식, 임대의무기간과 거주기간, 공고 경로 ✅
 - [[Youth-Asset-Building-Accounts|청년 자산형성 상품 비교]] — 정부기여금형 적금과 세제 혜택형 투자 계좌의 차이, 상품별 단계와 가입 요건, 중도해지와 갈아타기, 선택 질문 ✅
 - [[Youth-Support-Programs|청년 지원 제도 확인]] — 공유된 혜택 표를 공고로 대조하는 법, 청년월세, 비수도권 근속 인센티브, 구직촉진수당, 모두의 카드, 문화와 예술 지원의 2026년 조건 ✅
+- [[Housing-Finance-Regulations|주택금융과 거래 규제]] — LTV와 DSR, 스트레스 금리, 장래소득 인정, 구간별 주담대 한도, 전세대출 보증, 토지거래허가구역 실거주, 청약통장 납입 인정의 2026-10 기준과 적용 점검 순서 ✅
 
 ### 3. 학습 가속기
 - [[Economics-Systems-Mapping|경제와 분산시스템 매핑]] — 통화정책=피드백 제어, 뱅크런=cascading failure. 시스템 직관으로 경제 흡수 ✅

@@ -31,10 +31,11 @@ AI는 수고를 줄이는 장치다. 줄인 수고를 어디로 보내느냐가 
 
 조사부터 팩트체크까지 6~12분에 도는 AI 파이프라인을 갖추고도 이를 대량 자동 발행에 쓰지 않는 팀이 있다. 사실과 설명, 제품 정보를 검색 가능한 정본(source of truth)으로 관리하고 다단계 구조로 단일 프롬프트 고정을 막으며 승인된 체크포인트로 되돌아간다. 파이프라인의 속도가 아니라 관문의 존재가 품질을 지킨다.
 
-반대 방향의 사례도 있다. 작성자가 이해하지 못한 채 올린 AI 생성 대형 PR을 여러 엔지니어가 몇 주씩 검토하느라 팀의 리뷰 용량이 바닥나고, 시니어의 리뷰 코멘트는 작성자의 학습으로 이어지지 않은 채 다음 프롬프트의 재료로만 쓰이며, 조직 행사에서 AI가 쓴 수천 줄이 성과처럼 박수를 받는다. 모두 비용 전가의 코드 버전이다.
+코드 리뷰에서도 같은 비용 전가가 생길 수 있다. 작성자가 생성 코드를 읽지 않고 리뷰 피드백까지 그대로 모델에 넘기면, 리뷰어가 구현 방향과 정확성 확인을 대신 맡게 된다. 작성자의 이해와 자체 검증을 리뷰 요청의 전제로 두는 이유다.
 
 - 코드의 책임은 도구가 아니라 PR을 올린 작성자에게 있다. 설명할 수 없는 줄은 머지 대상이 아니라 작성자에게 돌려보낼 대상이다
 - 슬롭을 리뷰하는 일은 품질 관리가 아니라 작성자가 건너뛴 이해와 검증을 리뷰어가 대신 떠안는 일이다. PR 크기 상한, 작성자의 변경 설명과 자체 검증 결과 첨부를 리뷰 요청의 전제 조건으로 둔다
+- AI 출력을 읽고 이해하고 검증하지 않은 채 대화, 메신저, 리뷰 코멘트로 옮기기만 하는 중계도 같은 전가다(사람이 끼어든 프록시라는 비유로 meat proxy라 부르기도 한다). 받는 사람도 AI에 직접 물을 수 있어 중계가 더하는 가치는 적고, 장황하고 그럴듯한 오류가 섞이기 쉬운 출력을 읽고 가려내는 수고만 받는 사람에게 넘어간다. 위 사례처럼 코드를 읽지 않은 채 리뷰 피드백을 그대로 프롬프트로 넘기면 구현을 사실상 리뷰어가 AI로 하게 되므로, AI를 쓰더라도 출력을 읽고 이해하고 검증한 뒤 자기 말로 답한다
 - 줄 수를 산출로 축하하면 아래 측정 절의 경고처럼 지표가 목표가 되어 의미를 잃는다
 
 AI는 반복 작업을 덜어 몰입(flow)을 지켜 주기도 하지만, 이해 없이 결과만 받아 넘기면 몰입의 대상인 문제 풀이 자체가 빠지고 코드를 읽는 능력이 약해진다. 피드백이 사람을 거치지 않고 모델로 곧장 흘러가면 멘토링이 숙련으로 쌓이지 않는다. 숙련 저하와 이를 막는 학습 설계는 [[Expertise-Formation-AI|AI 시대 전문성 형성]]이 다룬다.
@@ -88,12 +89,10 @@ AI가 짠 코드를 읽지 않으면 권한과 책임은 남은 채 지식이 �
 
 - [How We Use AI Without Making AI Slop — Ahrefs](https://ahrefs.com/blog/how-we-use-ai-without-making-ai-slop/)
 - [If coding is solved, what now?: Measuring the sloppiness of code — EARENDIL](https://earendil.com/posts/measuring-code-sloppiness/)
-- [코딩이 해결됐다면, 코드의 조잡함은 어떻게 측정할까? — GeekNews](https://news.hada.io/topic?id=33547)
 - [What the hell is going on right now? — catskull.net](https://catskull.net/what-the-hell-is-going-on-right-now.html)
-- [지금 무슨 일이 일어나고 있는가? — GeekNews](https://news.hada.io/topic?id=22678)
-- [AI 남용과 엔지니어 번아웃 — Threads, flowkater](https://www.threads.com/@flowkater/post/DNvs-ya3lRL)
 - [Coding is NOT solved — Alex Ewerlöf](https://blog.alexewerlof.com/p/coding-is-not-solved)
 - [AI 쓰면 코딩 몰라도 된다는 사람들 다 거짓말입니다 (+실무 이야기) — YouTube, 실용주의 개발](https://www.youtube.com/watch?v=m5QIQe5T-l8)
+- [Don't be a meat proxy — Niklas Gruhn](https://gruhn.me/blog/2026-08-03/)
 
 ## 관련 문서
 
