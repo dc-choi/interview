@@ -8,7 +8,7 @@ aliases: ["AWS Fundamentals", "AWS 기본 용어", "Region", "Availability Zone"
 
 # AWS Fundamentals — 기본 용어
 
-AWS 모든 서비스의 기반이 되는 인프라 개념. **Region, AZ, Edge Location**의 3 계층 위에 모든 AWS 서비스가 배치되며, 가용성, 지연 시간, 비용, 규정 준수의 설계가 이 계층 위에서 결정된다.
+**Region, AZ, Edge Location**은 AWS 인프라의 위치와 장애 경계를 이해하는 주요 개념이다. 서비스마다 배포 범위가 다르므로 세 개념을 모든 서비스가 순서대로 거치는 단일 계층으로 해석하지 않는다.
 
 ## 사용량 기반 비용 모델
 
@@ -18,10 +18,10 @@ AWS 모든 서비스의 기반이 되는 인프라 개념. **Region, AZ, Edge Lo
 
 ## Region
 
-AWS가 운영하는 **IDC(데이터센터) 집합 단위**. 거의 모든 클라우드 서비스가 Region을 단위로 탑재된다.
+AWS가 여러 AZ를 운영하는 **물리적 지리 영역**이다. Region과 AZ는 같은 단위가 아니며, AZ 하나도 데이터센터 건물 하나와 반드시 일치하지 않는다.
 
 - 전 세계 주요 대도시 단위로 분포 (서울 `ap-northeast-2`, 도쿄 `ap-northeast-1`, 버지니아 `us-east-1` 등)
-- 각 Region은 **다수의 AZ로 구성** (보통 3~4개)
+- 각 Region은 **다수의 AZ로 구성**되며, 개수와 계정에서 사용 가능한 AZ는 공식 목록과 계정 조회로 확인한다
 - Region 단위로 **별도의 클라우드망**을 구성할 수 있고, 서비스/리소스는 기본적으로 Region에 종속
 - Region 간 데이터 전송은 별도 비용이 부과되며 지연 시간이 상대적으로 큼
 - 일부 서비스는 **글로벌**(IAM, Route 53, CloudFront)이고, 대부분은 **리저널** (EC2, S3, RDS 등)
@@ -38,10 +38,10 @@ AWS가 운영하는 **IDC(데이터센터) 집합 단위**. 거의 모든 클라
 
 ## Availability Zone (AZ)
 
-**가용 영역**. Region 내부의 **물리적으로 분리된 데이터센터**로, 실체가 있는 IDC의 역할.
+**가용 영역**. Region 안에서 하나 이상의 별도 데이터센터로 구성되는 인프라 단위다. 데이터센터는 이중화된 전력, 네트워크와 연결 설비를 갖춘다.
 
-- 보통 Region당 **3~4개의 AZ**가 존재
-- AZ는 서로 수십 km 이내로 가깝되, 전력, 네트워크, 냉각이 **독립**되어 있어 한 AZ 장애가 다른 AZ로 전파되지 않음
+- AZ 개수는 Region마다 다르며, 용량 제약 때문에 계정별로 사용 가능한 AZ가 다를 수도 있다
+- 여러 AZ를 활용하면 단일 데이터센터 의존을 줄일 수 있다. 물리적 분리만으로 애플리케이션의 무중단이나 모든 장애의 격리가 보장되지는 않는다
 - AZ 간은 저지연 전용 회선으로 연결 → 동기 복제 수준의 다중 AZ 아키텍처 가능
 - **VPC의 서브넷 1개 = AZ 1개**에 묶임 (서브넷은 단일 AZ에 종속)
 - EBS 볼륨도 단일 AZ에 종속 — 다른 AZ EC2에는 직접 부착 불가
@@ -59,10 +59,10 @@ AWS가 운영하는 **IDC(데이터센터) 집합 단위**. 거의 모든 클라
 
 **CloudFront(CDN)가 사용하는 캐시 서버 거점**. Region, AZ보다 훨씬 많은 수가 전 세계에 분포.
 
-- 사용자에 가장 가까운 Edge에서 콘텐츠를 캐시, 서빙 → 지연 시간 최소화
-- Edge Location끼리 **데이터를 공유**하며 동작
+- 요청을 잘 처리할 수 있는 POP로 라우팅하며, 보통 지연 시간 기준으로 가까운 위치를 선택한다
+- POP에 객체가 없으면 일반적으로 Regional Edge Cache를 조회하고, 거기에도 없으면 Origin에서 가져온다. 모든 POP가 서로의 캐시를 직접 동기화한다는 뜻은 아니다
 - CloudFront뿐 아니라 **Route 53, AWS Global Accelerator, Shield, WAF**도 Edge 인프라를 활용
-- Edge 캐시 미스 시 **Regional Edge Cache → Origin** 순으로 폴백
+- 동적 요청과 `PUT`, `POST`, `PATCH`, `OPTIONS`, `DELETE`는 Regional Edge Cache를 거치지 않고 Origin으로 간다. S3 Origin과 최적 Regional Edge Cache의 Region이 같을 때도 이 중간 캐시를 건너뛴다
 
 ## 탄력성(Elasticity) vs 확장성(Scalability)
 
@@ -91,15 +91,15 @@ Out/In은 **stateless 워크로드**에 적합 (웹, API). Up/Down은 **DB, 캐�
 
 ## AWS의 책임 공유 모델 (참고)
 
-- **AWS가 책임**: Region, AZ, 하이퍼바이저, 물리 보안 — "Of the Cloud"
-- **사용자가 책임**: 데이터 암호화, IAM, SG, OS 패치, 앱 보안 — "In the Cloud"
+- **AWS가 책임**: 서비스를 구동하는 하드웨어, 네트워크, 기반 소프트웨어와 시설 보호
+- **사용자가 책임**: 선택한 서비스에 맞는 데이터, 접근 권한과 보안 설정. EC2에서는 게스트 OS 패치, 설치한 앱과 보안 그룹도 관리한다. S3 같은 추상화된 서비스까지 게스트 OS 패치 책임을 일반화하지 않는다
 
 기본 용어 이해는 곧 책임 경계 이해. Region, AZ는 AWS가 운영하지만, 그 위에 어떤 가용성, 보안 설계를 얹을지는 사용자 몫.
 
 ## 시험 체크포인트 (SAA-C03)
 
-- Region과 AZ의 차이 — Region은 IDC 집합, AZ는 개별 IDC
-- 보통 Region은 **3~4개 AZ**로 구성된다
+- Region과 AZ의 차이 — Region은 여러 AZ를 포함하고, AZ는 하나 이상의 데이터센터로 구성된다
+- AZ 개수와 계정에서 사용 가능한 AZ는 별도로 확인한다
 - VPC 서브넷은 **단일 AZ에 종속** (Multi-AZ를 위해 서브넷도 AZ별로 생성)
 - Edge Location은 **CloudFront 캐시 서버** — Region 수보다 훨씬 많음
 - **Elasticity** vs **Scalability** 정의 구분 — Elasticity는 필요할 때 자원을 확보하고 불필요해지면 반납하는 능력이며 수평, 수직 확장을 모두 포함한다. Scalability도 늘어난 수요를 수평 또는 수직으로 감당하는 성질이다
@@ -108,6 +108,12 @@ Out/In은 **stateless 워크로드**에 적합 (웹, API). Up/Down은 **DB, 캐�
 
 ## 출처
 
+2026-10-13 부분 대조: Region/AZ의 정의와 사용 가능 범위, CloudFront 캐시 경로의 예외, 서비스별 보안 책임을 확인했다. 기존 비용, CLI와 확장성 설명 전체를 재검증한 것은 아니므로 문서 전체의 기존 검증일은 유지한다.
+
+- [AWS, Global infrastructure](https://docs.aws.amazon.com/whitepapers/latest/aws-overview/global-infrastructure.html)
+- [AWS, AWS Availability Zones](https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-availability-zones.html)
+- [Amazon CloudFront, How CloudFront delivers content](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/HowCloudFrontWorks.html)
+- [AWS, Shared Responsibility Model](https://aws.amazon.com/compliance/shared-responsibility-model/)
 - [AWS 글로벌 인프라](https://aws.amazon.com/about-aws/global-infrastructure/)
 - [AWS Pricing](https://aws.amazon.com/pricing/)
 - [AWS Free Tier](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier.html)
