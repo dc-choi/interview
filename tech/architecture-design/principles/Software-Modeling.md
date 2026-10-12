@@ -102,6 +102,22 @@ class PointAccount {
 
 세부 구현은 AI가 점점 잘 만들어 주지만, 문제를 재정의하고 무엇을 담고 버릴지, 어디서 나눌지를 정하는 일은 여전히 사람의 몫이다. 모델링은 AI에게 일을 정확하게 시키는 핵심이기도 하다. 모델과 계약이 명확할수록 AI가 만든 구현을 검증하기 쉽다. [[Agent-Spec-Writing]], [[Essential-vs-Accidental-Complexity]]
 
+### 도메인 언어와 경계를 에이전트 지시로 옮긴다
+
+대화에서는 넘어가는 다의어도 코드에서는 컨텍스트마다 한 뜻으로 정해야 한다. 기본 개념은 [[DDD#Strategic Design — 경계, 언어, 맥락|DDD 전략 설계]]에 있고, 아래 정의는 2026-10-12에 DDD Reference(2015)와 대조했다.
+
+- **유비쿼터스 언어**: 도메인 모델을 뼈대로 삼아 한 바운디드 컨텍스트 안의 모든 팀원이 쓰는 언어다. 언어가 바뀌면 모델이 바뀐 것이므로 클래스, 메서드와 모듈 이름도 새 모델에 맞춰 고친다.
+- **Customer/Supplier**: 하류의 우선순위를 상류 계획에 반영하는 팀 사이의 관계이며, 함께 만든 자동 인수 테스트로 상류가 제공할 인터페이스를 검증할 수 있다.
+- **부패 방지 계층(Anti-Corruption Layer)**: 협력으로 모델을 맞추기 어려운 상류의 기능을 하류가 자기 도메인 모델의 말로 쓰도록 번역하는 격리 계층이다.
+- **Conformist**: 상류가 하류의 요구를 들어줄 동기가 없을 때 하류가 상류 모델을 그대로 따르는 방식이다. 하류가 이상적인 모델을 얻기는 어렵지만 번역을 없애 통합을 크게 단순하게 한다.
+
+적용 제안: 아래는 위 정의를 에이전트 지시와 스펙에 옮긴 것이며, 결과 개선 폭을 측정한 1차 근거는 확인하지 못했다.
+
+- **용어집**: 이번 작업에 나오는 용어만 컨텍스트별로 골라 뜻, 코드 이름, 쓰지 않을 동의어와 전제 상태를 적는다. 환불(`Refund`)을 정산된 결제의 금액 반환으로 정했다면 정산 전 취소(`Cancel`)나 삭제와 바꿔 쓰지 않게 한다. 저장소 전체에 적용할 용어집은 AGENTS.md 같은 저장소 지시 파일에서 경로를 안내한다.
+- **범위와 계약**: 수정 범위는 작업마다 한 바운디드 컨텍스트로 좁히고, 다른 컨텍스트는 OpenAPI 문서, DTO나 이벤트 스키마 같은 계약으로만 알려 준다. 상류 계약을 소비하는 작업에서는 상류 코드 수정을 금지하고 상류 계약 변경은 사전 확인 대상으로 두며, 부족한 계약은 보고하게 한다. 작업을 작게 나누는 근거로 인용되기도 하는 Lost in the Middle 연구는 2023년 당시 모델의 다중 문서 질의응답과 키-값 검색을 측정했고 코드 생성은 다루지 않았다. [[Long-Context-Evaluation]]
+- **외부 데이터와 패턴**: 외부 응답은 부패 방지 계층에서 도메인 용어로 번역해 외부 필드명과 상태값이 도메인 코드로 번지지 않게 하되, 외부 모델을 그대로 따라도 되면 번역 계층을 요구하지 않는다. DDD 스타일로 짜라는 포괄 지시 대신 업무 규칙이 복잡한 곳에만 애그리거트나 도메인 이벤트 같은 패턴을 지정한다. [[Agent-Overengineering-Guard]]
+- **검증**: 리뷰에서 diff의 이름이 용어집과 맞는지, 금지한 동의어와 경계 밖 수정이 없는지 확인한다. 범위를 좁힌 효과도 같은 과제에서 결과를 비교해 확인한다.
+
 ## 체크포인트
 
 - 모델링이 다이어그램이나 테이블 설계보다 넓은 개념인 이유와 일상 코드에서의 예
@@ -109,10 +125,15 @@ class PointAccount {
 - 블랙박스로 쓸 수 있는 모델과 예측할 수 있는 모델이 함께 성립하는 이유
 - 부호나 플래그로 동작을 바꾸는 API의 문제와 개선 방향
 - 모델의 크기와 의존 수를 인지 부하 기준으로 정하는 이유
+- 유비쿼터스 언어와 바운디드 컨텍스트를 에이전트 지시로 옮기는 방법과 그 효과를 확인하는 방법
 
 ## 출처
 
 - [모델링 시리즈: 서문 — kciter.so, kciter](https://kciter.so/posts/modeling-series-foreword/)
+- [Domain-Driven Design Reference — Domain Language, Eric Evans](https://www.domainlanguage.com/ddd/reference/)
+- [Bounded Context — martinfowler.com, Martin Fowler](https://martinfowler.com/bliki/BoundedContext.html)
+- [Lost in the Middle: How Language Models Use Long Contexts — arXiv, Nelson F. Liu 외](https://arxiv.org/abs/2307.03172)
+- ['AI가 코드를 짜주니까 설계는 필요 없다'는 생각이 위험한 이유 — YouTube, 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=5Xql-mqliIQ) — 2026-10-11 공개 영상. 에이전트 지시 절의 계기이며 정의는 DDD Reference로 대조했고 효과 크기 주장은 근거로 쓰지 않음
 
 ## 관련 문서
 
@@ -128,3 +149,5 @@ class PointAccount {
 - [[VO-DTO|VO와 DTO]]
 - [[DDD|DDD]]
 - [[Essential-vs-Accidental-Complexity|본질적 복잡성과 우발적 복잡성]]
+- [[Agent-Overengineering-Guard|에이전트 과잉설계 방지]]
+- [[Long-Context-Evaluation|긴 문맥 평가]]

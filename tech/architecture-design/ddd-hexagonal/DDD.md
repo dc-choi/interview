@@ -93,7 +93,7 @@ DDD는 크게 **Strategic Design**(거시적 경계 분할)과 **Tactical Design
 
 - **Partnership**: 양쪽이 같이 성공, 실패하는 강한 협력 관계
 - **Shared Kernel**: 두 맥락이 공유하는 작은 모델 (공용 코드, 테이블)
-- **Customer-Supplier**: 상류(supplier)가 변경을 통제, 하류(customer)가 의존
+- **Customer-Supplier**: 하류(customer)가 상류(supplier)에 의존하는 관계에서 하류의 우선순위를 상류 계획에 반영하고, 함께 만든 자동 인수 테스트로 상류가 제공할 인터페이스를 검증할 수 있다. 하류가 상류의 우선순위에 끌려가지 않게 하되 하류에 거부권을 주지 않고, 상류는 하류를 깨뜨릴 걱정을 덜고 바꿀 수 있게 하는 협력 방식이다
 - **Conformist**: 하류가 상류 모델을 그대로 따를 수밖에 없는 관계
 - **Anti-Corruption Layer**: 외부 모델을 내 도메인 언어로 번역하는 어댑터
 - **Published Language**: 여러 컨텍스트가 공유하는 공식 스키마 (JSON, Protobuf)
@@ -142,7 +142,7 @@ Aggregate Root를 통해 내부 엔티티를 변경하고, 저장도 루트를 �
 
 엔티티가 도메인 서비스를 필요로 한다면 필요한 행위나 이름 있는 정적 팩토리의 인자로 받을 수 있다. 예를 들어 비밀번호 검증 능력의 계약은 도메인 언어로 표현하고 구체 해시 구현은 외부에 둔다. 엔티티를 Spring Bean처럼 필드 주입 대상으로 만들 필요는 없다. 테스트 대역은 도메인 협력을 확인하고, 실제 보안 구현은 별도로 검증한다.
 
-참고: [Fowler, Anemic Domain Model](https://martinfowler.com/bliki/AnemicDomainModel.html), [Model View Controller](https://martinfowler.com/eaaCatalog/modelViewController.html).
+참고: [Fowler, Anemic Domain Model](https://martinfowler.com/bliki/AnemicDomainModel.html), [Model View Controller](https://martinfowler.com/eaaCatalog/modelViewController.html), [Eric Evans, Domain-Driven Design Reference](https://www.domainlanguage.com/ddd/reference/)(Customer/Supplier 정의 대조, 2026-10-12).
 
 ## 강의 참고
 
