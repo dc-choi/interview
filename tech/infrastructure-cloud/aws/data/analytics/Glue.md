@@ -88,6 +88,16 @@ AI 입력 파이프라인에 적용할 때는 품질 실패 후 색인이나 후
 
 NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 오류가 DB 도달, 서비스 접근, IAM 권한과 DB 인증 중 어디에서 발생했는지 좁히고, 변경 뒤 같은 연결 조건으로 다시 시험한다. 이 절은 연결 진단 범위의 보강이며 기존 런타임 전환 절의 검증 기준일은 유지한다.
 
+### SSL 연결과 인증서 검증 실패
+
+2026-10-13 공식 연결 속성 문서 확인 기준. 네트워크 경로와 DB 인증이 맞아도 SSL 설정 때문에 JDBC 연결이 실패할 수 있다. `Require SSL connection`을 선택한 JDBC 연결에서는 Glue가 인증서와 호스트 이름을 검증하며, SSL로 연결하지 못하면 해당 작업이나 Crawler가 실패한다.
+
+- DB가 요구하는 SSL 설정과 연결의 호스트 이름을 먼저 대조한다. 포트에 도달했다는 사실만으로 인증서 검증까지 통과한 것은 아니다.
+- 사용자 지정 루트 인증서가 필요하면 `Custom JDBC certificate in S3`에 인증서 위치를 지정한다. 형식은 X.509 인증서의 PEM 형식이며, 이 필드가 비어 있으면 기본 인증서를 사용한다.
+- `Skip certificate validation`은 사용자 지정 인증서의 검증을 건너뛰는 옵션이다. 검증을 켜면 Glue는 서명 알고리즘과 공개 키 알고리즘을 확인하고, 실패 시 해당 연결을 쓰는 ETL 작업이나 Crawler가 실패한다.
+
+연결 성공만을 목표로 인증서 검증을 끄는 대신 신뢰할 루트 인증서와 호스트 일치 조건을 확인하는 절차를 권한다. 이 보강은 SSL 연결 속성에 한정하며 앞 절들의 검증 기준일은 유지한다.
+
 ## Zero-ETL도 동기화 상태와 데이터 준비를 확인한다
 
 2026-10-09 AWS Glue 공식 문서 기준이다. DynamoDB를 소스로 하는 Glue zero-ETL 통합은 PITR 활성화와 테이블의 리소스 기반 접근 정책이 필요하다. Glue가 테이블을 조회하고 export를 만들며 export 상태를 확인할 권한을 준비한다. 파이프라인 코드 작성이 줄어도 소스 접근과 대상 데이터 검증은 남는다.
@@ -111,6 +121,7 @@ NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 �
 
 ## 출처
 
+- [AWS Glue, AWS Glue connection properties](https://docs.aws.amazon.com/glue/latest/dg/connection-properties.html)
 - [AWS Glue, Configuring a source for a zero-ETL integration](https://docs.aws.amazon.com/glue/latest/dg/zero-etl-sources.html)
 - [AWS Glue, Creating and managing integrations](https://docs.aws.amazon.com/glue/latest/dg/zero-etl-creating-managing.html)
 - [AWS Glue, Limitations](https://docs.aws.amazon.com/glue/latest/dg/zero-etl-limitations.html)

@@ -34,6 +34,21 @@ DR은 **정의한 재해 범위에서 서비스를 복구하는 계획**이다. 
 
 비즈니스가 요구하는 RTO/RPO, 중단과 손실의 비용 및 운영 역량으로 정한다. 결제나 주문이라는 도메인 이름만으로 Warm Standby 이상을 필수로 정하지 않는다. 선택한 전략이 실제 거래 복구와 정합성 목표를 충족하는지 드릴로 확인한다.
 
+## 트래픽 전환 경로도 장애를 견뎌야 한다
+
+2026-10-13 Amazon Application Recovery Controller(ARC) 공식 문서 확인 기준. 복구 대상이 준비되어 있어도 전환에 필요한 관리 API가 응답하지 않으면 복구가 지연될 수 있다. 리소스를 생성하는 제어 계층과, 미리 구성한 경로를 전환하는 데이터 계층을 나눠 설계한다.
+
+ARC의 routing control은 Route 53 헬스체크 상태를 바꾸는 on/off 스위치다. 이 헬스체크를 각 애플리케이션 복제본의 DNS 레코드에 미리 연결해 두면 routing control 상태 변경으로 트래픽을 전환할 수 있다. 스위치 자체가 서비스 응답 시간이나 TCP 연결을 관측하는 것은 아니므로, 장애 탐지와 전환 결정은 별도 모니터링에 근거한다.
+
+| 단계 | 준비와 확인 |
+|---|---|
+| 평시 구성 | 클러스터, routing control, 헬스체크와 DNS 연결을 준비한다. 리소스 생성과 삭제는 제어 계층 작업이다. |
+| 전환 실행 | 5개 리전에 걸친 클러스터 데이터 계층의 API로 상태를 조회하고 바꾼다. `ListRoutingControls`, `UpdateRoutingControlState`를 CLI나 SDK에서 호출한다. |
+| 호출 경로 장애 | 클러스터 엔드포인트 5개와 routing control ARN을 사전에 확보한다. 선택한 엔드포인트가 응답하지 않으면 다른 엔드포인트로 재시도한다. 장애 중 `DescribeCluster` 호출이나 콘솔 접근에 의존하지 않도록 준비한다. |
+| 클라이언트 복귀 | DNS TTL과 이미 열린 연결의 재사용 시간을 함께 확인한다. 상태 변경 성공과 모든 요청의 새 리전 도착은 다른 사건이다. |
+
+DNS 응답이 바뀌어도 기존 연결은 재연결 전까지 장애 리전에 요청을 보낼 수 있다. 따라서 DR 드릴에서는 API 성공 시각뿐 아니라 새 연결과 재사용 연결의 요청 성공 시각도 측정하는 절차를 권한다. 이 절은 전환 경로의 설계 기준이며 특정 서비스의 복구 시간을 보장하지 않는다.
+
 ## 단일 AZ 배치 클러스터의 재생성과 작업 재개
 
 2026-10-10 Amazon EMR 공식 문서 대조 기준, EMR on EC2의 개별 클러스터는 한 AZ에 존재한다. Instance fleets에 여러 AZ의 subnet을 후보로 지정해도 생성할 AZ의 용량 선택 폭을 넓히는 것이며, 한 클러스터의 노드를 여러 AZ에 분산하는 설정은 아니다. 다른 AZ의 클러스터로 복구하는 설계와 리전 전체 장애에 대비하는 설계를 구분한다.
@@ -60,17 +75,22 @@ Bootstrap action은 인스턴스 시작 뒤 EMR 애플리케이션 설치와 데
 ## 면접 체크포인트
 
 - AZ 장애 복구와 리전 장애 복구의 범위 차이
-- 4가지 전략과 RTO/RPO/비용 트레이드오프, "데이터 복제 = RPO, 컴퓨팅 상시화 = RTO"
+- 4가지 전략과 RTO/RPO/비용 트레이드오프, 데이터 복제와 컴퓨팅 상시화가 각 복구 목표에 미치는 영향
 - Aurora Global Database의 RPO/RTO와 크로스 리전 복제본 승격
 - Route 53 헬스체크 failover와 TTL의 역할
 - DR 드릴과 설정 드리프트, 리전별 KMS/Secrets 의존성
 
 ## 출처
 
+2026-10-13에는 ARC routing control의 데이터 계층, 엔드포인트 재시도와 기존 연결의 전환 지연을 대조했다. 앞선 절들의 검증 기준일은 유지하며 실제 AWS 환경에서 장애 전환을 실행한 결과는 아니다.
+
 2026-10-10에는 EMR의 AZ 선택과 bootstrap 실행 계약을 추가 대조하고, 기존 전략 비교와 Aurora switchover/failover 설명이 공식 문서와 상충하지 않음을 확인했다. 작업 재개 점검은 이 계약에서 도출한 설계 제안이며 실제 복구 시간을 측정한 결과가 아니다.
 
 2026-10-02에는 전략별 시간 예시의 한계, 백업과 복제의 구분 및 Aurora switchover/failover 계약을 대조했다. 특정 서비스가 표의 목표를 달성했다는 운영 검증은 아니다.
 
+- [AWS — Data and control planes for routing control](https://docs.aws.amazon.com/r53recovery/latest/dg/data-and-control-planes.html)
+- [AWS — About routing control](https://docs.aws.amazon.com/r53recovery/latest/dg/routing-control.about.html)
+- [AWS — Best practices for routing control in ARC](https://docs.aws.amazon.com/r53recovery/latest/dg/route53-arc-best-practices.regional.html)
 - [AWS — Availability Zone flexibility for an Amazon EMR cluster](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-flexibility.html)
 - [AWS — Create bootstrap actions to install additional software with an Amazon EMR cluster](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-plan-bootstrap.html)
 - [Amazon Aurora — Using switchover or failover in Amazon Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html)
