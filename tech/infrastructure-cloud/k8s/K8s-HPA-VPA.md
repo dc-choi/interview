@@ -36,7 +36,13 @@ desiredReplicas = ceil[ currentReplicas × ( currentMetricValue / desiredMetricV
 | `custom.metrics.k8s.io` | Prometheus Adapter 등 adapter | 클러스터 오브젝트에 딸린 애플리케이션 지표 (RPS, 활성 커넥션) |
 | `external.metrics.k8s.io` | 외부 시스템 adapter | 클러스터 밖 지표 (큐 depth, 클라우드 지표) |
 
-KEDA는 별도 축이 아니라 이 중 external metrics adapter 자리에 들어가 ScaledObject로부터 HPA를 만들어 주는 계층이다. 실제 replica 결정은 여전히 위의 HPA 공식이 한다.
+KEDA는 이벤트 소스의 지표를 노출하고 ScaledObject에서 HPA를 생성한다. 모든 replica 결정을 HPA에 맡기는 것은 아니다. 2026-10-13 KEDA 2.18 공식 문서 대조 기준, 0개 전환과 활성화 이후의 확장을 구분한다.
+
+- **0개에서 활성화하거나 다시 0개로 축소:** KEDA operator가 scaler의 활성 상태를 판단한다. 문서는 이를 `0 ↔ 1` 활성화 단계로 설명한다.
+- **활성화 이후 1개 이상 구간:** HPA가 생성된 설정과 지표로 replica 수를 조정한다.
+- **대기 시간:** ScaledObject의 `cooldownPeriod`는 0개로 돌아가는 축소에 적용된다. 1개 이상 구간의 축소 안정화는 HPA의 `behavior.scaleDown`으로 구분해 본다.
+
+운영 점검 제안: 큐가 비었는데 replica가 줄지 않으면 현재 개수가 0개로 전환되는 구간인지, HPA가 조정하는 구간인지부터 확인한다. 두 설정의 이름이나 기본 시간이 비슷하다는 이유로 같은 제어라고 해석하지 않는다.
 
 ## CPU 타깃이 맞지 않는 워크로드가 있다
 
@@ -68,6 +74,8 @@ behavior:
 - `policies`는 `Pods`(절대 개수) 또는 `Percent`(비율)로 기간당 변화 폭을 제한하고, `selectPolicy`는 `Max`, `Min`, `Disabled` 중 하나로 정책 선택 방식을 정한다.
 - **비대칭이 기본이다.** 확장이 늦으면 장애지만 축소가 늦으면 비용일 뿐이다. 비용 관점의 정리는 [[Autoscaling-Cost|오토스케일링 비용]]으로 넘긴다.
 - 지표를 여러 개 걸면 각각 독립적으로 desiredReplicas를 계산한 뒤 **가장 큰 값**을 채택한다. 지표 하나를 추가하는 것은 사실상 하한을 하나 더 다는 일이다.
+
+2026-10-13 Kubernetes 공식 문서 대조 기준, 일부 지표 조회에 실패하고 나머지 지표가 축소를 요구하면 HPA는 축소를 건너뛴다. 반대로 정상 지표가 현재보다 많은 replica를 요구하면 확장은 가능하다. 지표 장애를 부하가 없다는 뜻으로 처리하지 않는다.
 
 ASG의 target tracking, step scaling, cooldown과의 대응 관계는 [[Auto-Scaling|EC2 Auto Scaling]]을 참고한다.
 
@@ -137,6 +145,8 @@ HPA를 15초 주기로 돌려도 트래픽이 실제 처리되기까지는 여�
 
 ## 출처
 
+- [KEDA 2.18, Scaling Deployments, StatefulSets & Custom Resources](https://keda.sh/docs/2.18/concepts/scaling-deployments/)
+- [KEDA 2.18, ScaledObject specification](https://keda.sh/docs/2.18/reference/scaledobject-spec/)
 - [Kubernetes Docs, Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
 - [Kubernetes Docs, HorizontalPodAutoscaler Walkthrough](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/)
 - [Kubernetes Docs, Autoscaling Workloads](https://kubernetes.io/docs/concepts/workloads/autoscaling/)

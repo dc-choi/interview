@@ -36,6 +36,10 @@ Martin Fowler가 이름 붙인 고전 패턴. 레거시에 **seam**을 끼워 �
 
 ### 점진 이동 전술 — Event Interception, 과도기 아키텍처, 전환 순서
 
+처음 옮길 기능은 분리의 편익과 검증 가능성을 함께 본다. 2026-10-13 AWS의 ASP.NET 웹 서비스 현대화 지침은 테스트 커버리지가 좋고 기술 부채가 적은 컴포넌트, 확장 요구가 있는 컴포넌트, 요구사항 변경과 배포가 잦은 컴포넌트를 초기 후보로 제시한다. 특정 환경의 권장 기준이며 가장 복잡한 기능부터 운영 전환하라는 일반 규칙은 아니다.
+
+설계 제안: 기술 위험을 일찍 확인하는 실험과 첫 운영 전환 대상을 구분한다. 어려운 데이터 동기화나 외부 연동은 좁은 실험으로 먼저 검증하되, 첫 사용자 전환은 입력과 출력 비교, 라우팅 변경과 복귀 조건을 확인할 수 있는 기능으로 제한한다. 기반 시설 구축 완료와 실제 기능의 전환 완료도 별도로 기록한다.
+
 - **Event Interception**: 레거시 호출부를 바꾸기 어렵거나 비쌀 때 레거시 구성 요소 사이의 기존 통합 지점(메시지 소비자, HTTP API, SQL 연결, 배치)을 seam으로 삼아 상태 변경을 가로채고 일부를 새 컴포넌트로 보낸다. 수십 개 호출부가 같은 테이블 INSERT나 저장 프로시저를 거친다면 호출부 대신 그 지점에서 변경을 잡는다. 트랜잭션 로그로 이벤트 스트림을 만드는 [[CDC-Debezium-Concept|CDC]]는 쓰기를 엄밀히 가로채지 않고 새 시스템이 커밋된 변경을 병행 소비하는 방식이라, 구 소비자를 끄는 시점을 따로 설계한다. 호출부가 많은 한 인터페이스의 제공자만 바꾼다면 새 구현이 레거시 인터페이스를 그대로 구현하는 Legacy Mimic이 가로채기 계층 없이 같은 역할을 할 수 있다.
 - **과도기 아키텍처(Transitional Architecture)**: 신구 공존을 위해 설치하고 교체가 끝나면 제거할 것을 전제로 한 요소다. 버릴 코드의 비용은 줄이는 위험과 앞당기는 가치로 정당화한다. 도입 전에 세 가지를 답한다. 줄이는 전환 위험(빅뱅 전환, 조용한 누락)이 구축과 운영 비용보다 큰가, 전환 중 조용히 실패하는 구간을 구간별 지표와 경보로 드러내는가, 관측 가능한 제거 조건과 제거를 쉽게 하는 장치가 있는가. 생산자별 전환 일정이 달라 기한을 예측하기 어렵다면 날짜 대신 모든 쓰기 경로에서 센 레거시 입력 건수 0을 제거 조건으로 두고, 월말이나 분기 배치처럼 드물게 도는 생산자까지 포함하는 관측 기간 동안 0이 유지되는지 확인한다. 정해진 주기 없이 사건이 날 때만 쓰는 생산자는 관측 기간에 드러나지 않을 수 있으므로 구 입구(예: 테이블 INSERT, 프로시저 호출)를 쓰는 코드와 작업 목록과도 대조한 뒤 걷어낸다. 제거 뒤 구 입구로 들어오는 쓰기는 조용히 쌓이지 않게 거부하거나 경보로 드러낸다.
 - **전환 순서**: CDC 병행 소비처럼 두 경로가 같은 입력을 각자 소비해 켜고 끄는 지점이 둘로 나뉘면, 신 경로를 먼저 켤 때 두 경로가 함께 처리하는 중첩 구간(중복 위험)이, 구 경로를 먼저 끌 때 아무도 처리하지 않는 공백 구간(누락이나 지연 위험)이 생기므로 둘 중 더 비싼 쪽을 피한다. 파사드나 라우터 한 곳이 건마다 목적지를 하나만 고르면 그 지점의 설정 변경으로 전환해 중첩 구간을 만들지 않을 수 있다(라우터가 재전달하면 같은 건이 전환 전후 양쪽으로 갈 수 있다). 되돌릴 수 없는 외부 효과에서 중첩을 택하면 저유량 시간대에 짧게 둔다. 두 경로가 같은 [[Idempotent-Consumer|멱등 키나 조건부 claim]]을 공유할 수 있으면 그것으로 두 경로의 중복을 거르고, 공유하지 못하면 남는 중복 가능성을 감수 범위로 명시한다. 새 경로를 [[Feature-Flag|기능 플래그]] OFF로 먼저 배포할 때 플래그는 외부 호출뿐 아니라 완료 이력 기록과 원본 행 삭제처럼 구 경로와 공유하는 상태 변경도 막아야 한다. OFF 상태의 새 경로가 행을 지우거나 완료로 표시하면 구 경로가 그 건을 건너뛰어 조용한 누락이 생긴다([[Shadow-Traffic#부수효과 차단이 전제조건|부수효과 차단]]). 이렇게 두면 수신, 원본 조회와 요청 구성은 운영 트래픽으로 검증되지만, 외부 호출과 완료 기록은 플래그를 켠 순간 운영 트래픽으로 처음 실행되고 그 뒤의 외부 효과는 플래그를 꺼도 되돌릴 수 없다.
@@ -190,6 +194,7 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 - "사람도 레거시가 될 수 있다"의 조직적 의미
 
 ## 출처
+- [AWS Prescriptive Guidance, The strangler fig pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-aspnet-web-services/fig-pattern.html) — 초기 전환 컴포넌트 선택 기준
 - [AWS Transform, Transformation of mainframe applications](https://docs.aws.amazon.com/transform/latest/userguide/transform-app-mainframe-workflow.html)
 - [AWS Transform, How AWS Transform modernizes .NET applications](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-ide-how.html)
 - [AWS Transform, Modernizing .NET code with the AWS Transform web application](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-web-app.html)
