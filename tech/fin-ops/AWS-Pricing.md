@@ -64,6 +64,18 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 
 알림 설정은 리소스 중지나 지출 상한 설정이 아니다. [[Budget-Alert|예산 알람의 지연과 조치 범위]]를 함께 보고, 청구 항목과 실제 리소스를 연결해 남아 있는 과금 원인을 점검한다.
 
+## 결제 수단 변경과 미납 청구
+
+2026-10-13 AWS Billing의 결제 설정, 카드 관리와 payment profile 문서 대조 기준이다. 비용 발생과 결제 수단의 유효성은 별도로 점검한다.
+
+- **카드 갱신:** Billing and Cost Management의 `Payment preferences`에서 카드의 만료일과 연결 정보를 수정하거나 새 카드를 추가한다. 새 카드 등록과 기본 결제 수단 지정은 구분하며, 사용할 수단이 `Set as default`로 선택됐는지 확인한다.
+- **미납 금액:** 카드를 추가하거나 갱신하면 AWS가 이전 달의 미납 청구서를 새 카드에 청구할 수 있다. 변경 효과를 다음 결제 주기에만 한정하지 않는다.
+- **기존 카드 제거:** 먼저 다른 유효한 결제 수단을 기본값으로 지정해야 한다. 기본값으로 설정된 카드는 삭제할 수 없다.
+- **판매 법인별 결제:** 여러 AWS 판매 법인(SOR)의 청구서를 받으면 payment profile로 법인별 통화와 결제 수단을 지정할 수 있다. 지원 수단은 법인에 따라 다르므로 기본 카드 하나가 모든 청구에 유효하다고 가정하지 않는다.
+- **Billing transfer:** 사용 중이면 청구를 넘겨받는 bill transfer account가 해당 청구서의 결제 설정을 제어한다. 청구를 넘기는 bill source account에서 설정을 바꿔도 transfer가 활성화된 동안에는 효력이 없다.
+
+운영 적용 제안: 카드 재발급 때 만료일, 기본값, 판매 법인별 profile과 미납 청구 상태를 함께 확인한다. 결제 정보 수정 완료를 실제 납부 성공으로 기록하지 않는다.
+
 ## 계정 폐쇄 뒤에도 남는 청구
 
 2026-10-08 공식 계정 관리와 CloudTrail 문서 확인 기준이다. 계정 폐쇄, 종량 사용 중단과 약정 종료는 서로 다른 사건이다.
@@ -93,6 +105,9 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 
 ## 출처
 
+- [AWS, Customizing your AWS payment preferences](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-payment-method.html)
+- [AWS, Managing credit cards](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-cc.html)
+- [AWS, Using payment profiles](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-paymentprofiles.html)
 - [AWS, Close an AWS account](https://docs.aws.amazon.com/accounts/latest/reference/manage-acct-closing.html)
 - [AWS, AWS account closure and trails](https://docs.aws.amazon.com/en_en/awscloudtrail/latest/userguide/cloudtrail-account-closure.html)
 - [Why did I receive a bill after I closed my AWS account? — AWS re:Post](https://repost.aws/knowledge-center/closed-account-bill)

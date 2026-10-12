@@ -107,6 +107,17 @@ NIST SP 800-115의 계획, 수행, 사후 조치를 다음처럼 운영할 수 �
 - 조치, 내부 보완 통제와 오탐 정정의 증거를 구분하고 후속 확인 조건을 정한다.
 - 거래 기준에 등급을 사용하더라도 인증 충족, 내부 통제 전체의 효과나 침해 부재를 등급 하나로 확정하지 않는다.
 
+### 협력사 점검을 거래 전후의 위험 관리로 연결한다
+
+2026-10-13 NIST CSF 2.0 Appendix A의 GV.SC 대조 기준이다. 외부 등급은 협력사 위험 관리의 입력이며, 등급 확인만으로 거래 전후의 관리가 끝나지 않는다.
+
+- **우선순위:** 공급자를 식별하고 중요도에 따라 우선순위를 정한다(GV.SC-04). 낮은 보안 등급 순서만으로 관리 순서를 고정하지 않는다.
+- **거래 전:** 공식 관계를 맺기 전에 계획과 실사를 수행하고, 공급망 보안 요구사항을 정해 계약과 합의에 반영한다(GV.SC-05, GV.SC-06).
+- **거래 중:** 공급자, 제품과 서비스가 만드는 위험을 기록, 평가, 대응하고 관계가 유지되는 동안 관찰한다. 관련 공급자를 사고 계획, 대응과 복구에 포함한다(GV.SC-07, GV.SC-08).
+- **거래 종료 후:** 계약이나 협력 관계가 끝난 뒤 필요한 활동도 위험 관리 계획에 포함한다(GV.SC-10).
+
+작은 서비스의 적용 예시로는 접근 가능한 데이터, 운영 권한과 중단 영향을 기준으로 협력사를 분류하고, 사고 연락 역할과 종료 시 권한 회수 확인을 연결할 수 있다. 이 예시는 표준의 고정 점검표나 특정 등급 달성 의무가 아니다.
+
 ## 사고 대응 훈련은 기술 복구와 의사결정을 함께 점검한다
 
 2026-10-09 NIST 용어집과 CISA 훈련 평가 지침을 대조한 범위다. Tabletop exercise는 시나리오를 놓고 역할과 대응을 토론하며 계획을 검토한다. Functional exercise는 모의 운영 환경에서 담당자가 계획과 비상 대응 준비 상태를 검증한다. 토론에서 답을 정했다는 사실을 시스템 복구 성공과 같게 보지 않는다.
@@ -227,7 +238,7 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 - [Prowler, Mutelisting](https://docs.prowler.com/user-guide/cli/tutorials/mutelist)
 - [Service Screener — AWS Samples](https://github.com/aws-samples/service-screener-v2)
 - [NIST, SP 800-50 Rev. 1: Building a Cybersecurity and Privacy Learning Program](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-50r1.pdf) — 2.4절의 측정과 2.5절의 대상별 학습
-- [NIST, The Cybersecurity Framework (CSF) 2.0](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf) — 2장의 여섯 기능, 3.1절의 Current/Target Profile, Appendix A의 GV.PO, GV.RR, ID.AM, ID.RA와 PR.AT
+- [NIST, The Cybersecurity Framework (CSF) 2.0](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf) — 2장의 여섯 기능, 3.1절의 Current/Target Profile, Appendix A의 GV.PO, GV.RR, GV.SC, ID.AM, ID.RA와 PR.AT
 - [NIST, SP 800-115: Technical Guide to Information Security Testing and Assessment](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-115.pdf) — 5.2절의 침투 테스트 영향, 6장의 계획과 승인, 6.2절의 시점 한계, 7장의 자료 취급, 8장의 개선과 재점검
 
 ## 관련 문서
