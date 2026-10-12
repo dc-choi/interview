@@ -95,6 +95,18 @@ NIST SP 800-115의 계획, 수행, 사후 조치를 다음처럼 운영할 수 �
 
 침투 테스트는 취약점들을 연결했을 때의 영향과 방어자의 탐지, 대응 능력을 확인할 수 있지만 운영 시스템을 손상시키거나 중단시킬 위험도 있다. NIST SP 800-115의 5.2절은 침투 테스트의 효과, 위험과 계획을, 6.2절은 평가 결과가 특정 시점의 상태만 보여주는 한계를 다룬다(2026-10-13 대조). 적용 예시: 계약에 허용 기법, 점검 시간과 중단 조건을 정하고, 인증 획득 여부와 실제 공격 경로 검증을 구분한다. 점검 뒤 구성이나 배포가 바뀌면 이전 결과의 적용 범위를 다시 확인한다.
 
+### 외부 보안 등급은 관측 범위와 자산 귀속을 함께 확인한다
+
+2026-10-13 SecurityScorecard 공식 도움말과 finding 처리 안내 대조 기준. SecurityScorecard는 인터넷에 노출된 자산의 보안 이슈와 기타 평가 요소를 점수 및 A~F 등급으로 표현한다. 수집한 신호를 IP와 도메인에 연결하고 조직의 자산으로 귀속시킨 뒤 분석한다. 따라서 등급을 받았다는 사실과 내부 통제를 직접 검사했다는 사실은 구분한다.
+
+공식 처리 안내는 외부 관측으로 확인할 수 없는 내부 보완 통제와 잘못 귀속된 finding을 근거 자료로 정정할 수 있음을 설명한다. 예를 들어 보안 패치를 이전 버전에 이식해도 외부 배너가 이를 드러내지 않으면 반영되지 않을 수 있다. 등급 개선이 실제 취약점 수정 때문인지, 자산 귀속이나 관측 해석의 정정 때문인지 함께 확인한다.
+
+협력사 점검에 적용할 때의 제안은 다음과 같다.
+
+- 등급과 함께 대상 IP와 도메인, 관측 시점, 개별 finding과 실제 관리 책임을 확인한다.
+- 조치, 내부 보완 통제와 오탐 정정의 증거를 구분하고 후속 확인 조건을 정한다.
+- 거래 기준에 등급을 사용하더라도 인증 충족, 내부 통제 전체의 효과나 침해 부재를 등급 하나로 확정하지 않는다.
+
 ## 사고 대응 훈련은 기술 복구와 의사결정을 함께 점검한다
 
 2026-10-09 NIST 용어집과 CISA 훈련 평가 지침을 대조한 범위다. Tabletop exercise는 시나리오를 놓고 역할과 대응을 토론하며 계획을 검토한다. Functional exercise는 모의 운영 환경에서 담당자가 계획과 비상 대응 준비 상태를 검증한다. 토론에서 답을 정했다는 사실을 시스템 복구 성공과 같게 보지 않는다.
@@ -193,6 +205,8 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 
 ## 출처
 
+- [SecurityScorecard, How SecurityScorecard calculates your scores](https://support.securityscorecard.com/hc/en-us/articles/8366223642651-How-SecurityScorecard-calculates-your-scores)
+- [How to Resolve Findings on Your SecurityScorecard Rating — SecurityScorecard](https://securityscorecard.com/blog/how-to-resolve-findings-on-your-securityscorecard-rating/)
 - [Amazon Macie, Scope options for sensitive data discovery jobs](https://docs.aws.amazon.com/macie/latest/user/discovery-jobs-scope.html)
 - [Amazon Macie, Storing and retaining sensitive data discovery results](https://docs.aws.amazon.com/macie/latest/user/discovery-results-repository-s3.html)
 - [Amazon Security Lake, Third-party integrations with Security Lake](https://docs.aws.amazon.com/security-lake/latest/userguide/integrations-third-party.html) — Sentra 통합의 스캔 위치와 발견 메타데이터 전달.
