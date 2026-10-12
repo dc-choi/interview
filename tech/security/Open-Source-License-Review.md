@@ -1,7 +1,7 @@
 ---
 tags: [security, open-source, license, supply-chain, compliance]
 status: done
-verified_at: 2026-10-02
+verified_at: 2026-10-13
 category: "보안(Security)"
 aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소프트웨어의 오픈소스 의무"]
 ---
@@ -11,6 +11,14 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 오픈소스는 상용 사용과 유상 배포가 가능하지만, 그 허가에 붙은 조건까지 없어지는 것은 아니다. 라이선스 비용, 고지 의무, 소스 제공 의무와 유지보수 비용을 따로 판단한다. 소스를 읽을 수 있다는 사실만으로 OSI의 오픈소스 정의를 충족하지도 않는다. 사업 분야의 사용 제한 등을 포함하는 source-available 조건은 원문을 따로 확인한다. [OSI 정의](https://opensource.org/osd)
 
 2026-10-02에 MIT, Apache License 2.0, GPLv3, AGPLv3와 GNU FAQ를 대조한 기본 검토 지식이다. 아래 절차는 원문 조건을 개발과 납품에 적용하기 위한 제안이다. 개별 결합 저작물의 범위, 추가 예외와 한국법상 계약의 효력은 이 문서만으로 확정하지 않는다.
+
+## 공개 저장소와 오픈소스 허가는 다르다
+
+2026-10-13에 GitHub의 저장소 라이선스 안내와 OSI 정의를 대조했다. 이 절의 확인은 위에 적은 개별 라이선스 검토 날짜와 구분한다.
+
+- GitHub의 public 저장소라는 사실만으로 코드를 자유롭게 사용, 수정하거나 재배포할 허가가 생기지는 않는다. 별도 라이선스가 없으면 기본 저작권 규칙이 적용된다. 다만 GitHub 약관에 따른 플랫폼 내 열람과 fork 권한은 별개다. fork 버튼의 존재를 외주 납품이나 재배포 허가로 해석하지 않는다. [GitHub 라이선스 안내](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)
+- 오픈소스 여부는 코드 접근뿐 아니라 재배포, 수정과 파생물 배포 등 이용 조건으로 판단한다. AI로 기능을 재구현할 수 있다는 시연만으로 원 제품의 소스나 라이선스가 공개됐다고 판단하지 않는다. 재구현물과 원 제품을 구분하고 각각의 권리와 포함 자산을 검토한다. 이는 OSI 정의를 적용한 검토 기준이며, 특정 역공학 방식의 적법성을 판정한 것은 아니다. [OSI 정의](https://opensource.org/osd)
+- GitHub의 라이선스 표시는 알려진 라이선스 파일을 탐지한 결과다. 복수 라이선스나 복잡한 조건이 있으면 표시가 불명확할 수 있으므로 배지나 검색 필터만으로 판단하지 않고 실제 파일과 적용 범위를 읽는다. [GitHub 라이선스 탐지 안내](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository#detecting-a-license)
 
 ## 무엇을 어떤 방식으로 제공하는가
 
@@ -71,6 +79,7 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 
 ## 출처
 
+- [GitHub Docs, Licensing a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)
 - [OSI, The Open Source Definition](https://opensource.org/osd)
 - [OSI, The MIT License](https://opensource.org/license/mit)
 - [Apache Software Foundation, Apache License Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
