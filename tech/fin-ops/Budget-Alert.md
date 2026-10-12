@@ -1,7 +1,7 @@
 ---
 tags: [finops, aws, budgets, alert, budget-actions, governance]
 status: done
-verified_at: 2026-10-03
+verified_at: 2026-10-12
 category: "비용&운영(FinOps)"
 aliases: ["Budget Alert", "예산 알람", "AWS Budgets", "예산 가드레일"]
 ---
@@ -21,6 +21,19 @@ AWS Budgets 정보는 하루 최대 세 번, 보통 이전 갱신 후 8~12시간
 | **RI/SP budget** | 약정의 **활용률/커버리지** ([[Reserved-Instance]]) |
 
 비용 예산은 서비스/연결 계정/활성화된 비용 할당 태그/비용 카테고리로 범위를 좁혀 팀 단위로도 관리한다. 연결 계정 필터는 멤버 계정에서 사용할 수 없다. [[AWS-Cost-Optimization|태그 정책]]과 결합.
+
+## 템플릿으로 시작하기
+
+2026-10-12 AWS Budgets 문서 기준, 콘솔의 `Use a template (simplified)`는 5단계 고급 흐름 대신 한 페이지에서 예산을 만든다.
+
+| 템플릿 | 알리는 조건 |
+|---|---|
+| Zero spend budget | 지출이 AWS Free Tier 한도를 넘은 뒤 |
+| Monthly cost budget | 월 예산을 넘었거나 넘을 것으로 예측될 때 |
+| Daily Savings Plans coverage budget | Savings Plans 커버리지가 목표 아래로 떨어질 때(On-Demand 지출을 일찍 발견) |
+| Daily reservation utilization budget | Reserved Instances 활용률이 목표 아래로 떨어질 때(이미 산 약정의 미사용 발견) |
+
+템플릿의 기본값은 만든 뒤 고급 흐름에서 바꿀 수 있어(연결 계정, 비용 카테고리 필터 추가 등) 대부분을 템플릿으로 만들고 필요한 설정만 고치면 된다. 템플릿 설정을 JSON으로 내려받아 AWS CLI나 CloudFormation에 쓸 수도 있다. 비용 예산 설정은 신규 계정 크레딧 활동 다섯 개 중 하나다([[AWS-Pricing|AWS 요금 구조]]). `Sign up for AWS (advanced)`로 만든 독립 계정에서 IAM 주체로 Budgets 화면에 들어가려면 root의 Billing 콘솔 접근 활성화가 먼저 필요하다. AWS Billing 접근 제어 문서 기준으로 Organizations에서 만든 멤버 계정은 이 설정이 기본으로 켜져 있다([[IAM-Best-Practices|IAM 모범 사례]]).
 
 ## Actual vs Forecasted — 두 임계
 
@@ -84,6 +97,8 @@ AWS Budgets 정보는 하루 최대 세 번, 보통 이전 갱신 후 8~12시간
 - [AWS, Configuring a budget action](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-action-configure.html)
 - [AWS, Best practices for AWS Budgets](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-best-practices.html)
 - [AWS, Budget filters](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-create-filters.html)
+- [AWS, Using a budget template (simplified)](https://docs.aws.amazon.com/cost-management/latest/userguide/budget-templates.html)
+- [AWS, Overview of managing access permissions](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/control-access-billing.html) — Billing 콘솔 접근 활성화와 멤버 계정 기본값
 - [AWS, Receiving budget alerts in chat applications](https://docs.aws.amazon.com/cost-management/latest/userguide/sns-alert-chime.html)
 - [AWS, How EC2 instance stop and start works](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ec2-instance-stop-start-works.html)
 - [AWS, Stopping an Amazon RDS DB instance temporarily](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_StopInstance.html)

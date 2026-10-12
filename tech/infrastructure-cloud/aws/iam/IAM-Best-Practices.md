@@ -3,20 +3,30 @@ tags: [infrastructure, aws, iam, security, identity]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["IAM 모범 사례", "IAM 면접 체크포인트"]
-verified_at: 2026-09-30
+verified_at: 2026-10-12
 ---
 
 # IAM 모범 사례, 흔한 실수, 체크포인트
 
 ## 모범 사례
 
-- **Root 사용자 일상 사용 금지** — passkey 또는 MFA로 보호하고 AWS가 root credentials를 요구하는 root-only task에만 사용. 일상 작업은 federation과 IAM Role의 임시 자격증명을 우선
+- **Root 사용자 일상 사용 금지** — passkey나 보안 키를 우선하는 MFA로 보호하고 AWS가 root credentials를 요구하는 root-only task에만 사용. 일상 작업은 federation과 IAM Role의 임시 자격증명을 우선
 - **최소 권한 원칙** — `*` 정책 회피, 필요한 Action, Resource만
 - **MFA 강제** — 콘솔, 민감 API 호출
 - **장기 Access Key 최소화** — 사람은 federation, workload는 IAM Role의 임시 자격증명을 우선. 장기 키가 불가피하면 사용 사례에 필요한 시점에 갱신하고 미사용 키를 제거하며 노출을 모니터링
 - **CloudTrail로 감사** — 모든 IAM 호출 기록
 - **Access Analyzer** — 외부 공개, 크로스 어카운트 노출 자동 탐지
 - **태그 기반 권한** — `aws:RequestTag` / `aws:ResourceTag`로 동적 분리
+
+## 새 계정의 첫 설정 순서
+
+2026-10-12 AWS IAM, Billing과 계정 관리 문서 기준이다. `Sign up for AWS (advanced)` 경로로 단일 독립 계정을 연 경우의 순서다. 일부 고객에게 제한 배포 중인 `Sign up for AWS (new)` 경로는 root 사용자를 만들지 않고 AWS Organizations와 IAM Identity Center에 자동으로 참여하므로 이 순서를 그대로 적용하지 않는다.
+
+1. **root MFA 등록:** root 사용자에는 MFA가 필수이며, MFA가 없으면 콘솔 첫 로그인 시도부터 35일 안에 등록해야 한다. 피싱에 강한 passkey나 보안 키를 우선하고, root 하나에 MFA를 최대 8개까지 등록할 수 있으므로 예비 장치를 함께 둔다. 모든 MFA를 잃으면 계정에 등록한 이메일과 전화번호로 복구하므로 두 연락처를 최신으로 유지한다.
+2. **Billing 콘솔 접근 활성화:** IAM 사용자와 역할은 Billing 기능을 허용하는 정책을 가져도 기본적으로 Billing and Cost Management 콘솔에 들어갈 수 없다. root가 계정 설정의 `IAM User and Role Access to Billing Information`에서 `Activate IAM Access`를 한 번 켠다. 켜는 것만으로는 권한이 생기지 않는다. 이 설정은 Budgets, Bills, Cost Explorer 같은 콘솔 페이지에 적용되고 Cost Anomaly Detection 콘솔 페이지와 Cost Explorer, Budgets API에는 적용되지 않는다.
+3. **일상 관리 주체 만들기:** root 대신 일상 작업용 관리 주체를 만들고, 사람의 작업은 임시 자격 증명으로 하게 한다. AWS는 단일 독립 계정에서는 IAM 역할을, Organizations로 여러 계정을 관리하면 IAM Identity Center 사용자를 쓰라고 권한다. 이 경로에서 Free plan 계정이 Organizations에 가입하면 Paid plan으로 자동 전환되고 약관상 남은 Free Tier 크레딧도 쓸 수 없게 되므로([[AWS-Pricing|AWS 요금 구조]]) Identity Center 도입 시점을 함께 정한다. 단일 계정에서 역할을 맡을 사람의 로그인 수단은 외부 IdP 연동이나 MFA를 건 IAM 사용자 가운데서 정한다(운영 제안). 비밀번호와 access key 같은 장기 자격 증명을 가진 IAM 사용자는 이렇게 필요한 범위로 줄이고, 쓰는 사용자에는 MFA를 건다.
+4. **Billing 권한 연결:** 3단계에서 만든 주체에 AWS 관리형 `Billing` 정책 같은 Billing 권한을 붙인다. 관리자 권한을 준 IAM 주체로 예산 화면이 막히면 2단계 설정부터 확인한다.
+5. **root access key 만들지 않기:** root에는 access key를 만들지 않는다. root 작업은 콘솔에서 하고, 프로그래밍 접근이 꼭 필요하면 AWS CLI 2.32.0 이상의 `aws login`으로 받는 임시 자격 증명을 쓴다. 이 자격 증명은 15분마다 자동 갱신되고 세션은 최대 12시간 유지된다.
 
 ## Access Analyzer의 분석 범위와 조치 경계
 
@@ -108,6 +118,12 @@ Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결�
 - [IAM 정책 평가 로직](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html)
 - [제3자 접근과 ExternalId](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html)
 - [Root user 전용 작업](https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-tasks.html)
+- [AWS, Root user best practices for your AWS account](https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html)
+- [AWS, Multi-factor authentication for AWS account root user](https://docs.aws.amazon.com/IAM/latest/UserGuide/enable-mfa-for-root.html)
+- [AWS, Setting up your AWS account](https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started-account-iam.html)
+- [AWS Billing, Overview of managing access permissions](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/control-access-billing.html)
+- [AWS, Sign up for AWS (advanced)](https://docs.aws.amazon.com/accounts/latest/reference/getting-started.html)
+- [AWS, Compare sign-up options](https://docs.aws.amazon.com/accounts/latest/reference/sign-up-for-aws.html)
 - [IAM과 CloudTrail](https://docs.aws.amazon.com/IAM/latest/UserGuide/cloudtrail-integration.html)
 - [IAM 계정 비밀번호 정책](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_passwords_account-policy.html)
 - [NIST SP 800-63B-4 Authentication and Authenticator Management](https://pages.nist.gov/800-63-4/sp800-63b.html)

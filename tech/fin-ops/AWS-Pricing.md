@@ -1,7 +1,7 @@
 ---
 tags: [finops, aws, pricing, billing, cost-model]
 status: done
-verified_at: 2026-08-25
+verified_at: 2026-10-12
 category: "비용&운영(FinOps)"
 aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 모델"]
 ---
@@ -15,7 +15,7 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 - **On-Demand 종량제(pay-as-you-go)**: 선결제 없이 쓴 만큼 낸다. Reserved Instances와 Savings Plans는 사용량 약정으로 단가를 낮출 수 있다. [[Reserved-Instance]]
 - **규모의 경제**: 쓸수록 단가 구간이 내려가는 서비스(S3 등)도 있음.
 - **리전별 단가 차이**: 같은 서비스도 리전마다 가격이 다르다.
-- **Free Tier**: 2025-07-15 이후 만든 신규 계정은 Free 또는 Paid account plan을 고른다. Free plan은 계정 생성 뒤 최대 6개월 또는 크레딧 소진까지이며, Always Free 서비스에는 월별 무료 한도가 있다. 그 이전 계정에는 서비스별 레거시 조건이 남아 있을 수 있으므로 계정과 서비스 문서를 확인한다. 실험용 혜택일 뿐 프로덕션 비용 기준으로 쓰지 않는다.
+- **Free Tier**: 2025-07-15 이후 `Sign up for AWS (advanced)` 경로로 만든 신규 계정은 Free 또는 Paid account plan을 고른다(새 가입 경로는 아래 절 참고). Free plan은 계정 생성 뒤 최대 6개월 또는 크레딧 소진까지이며, Always Free 서비스에는 월별 무료 한도가 있다. 그 이전 계정에는 서비스별 레거시 조건이 남아 있을 수 있으므로 계정과 서비스 문서를 확인한다. 실험용 혜택일 뿐 프로덕션 비용 기준으로 쓰지 않는다.
 
 ## 서비스별 과금 차원
 
@@ -43,11 +43,22 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 - **Cost Explorer**: 실제 청구를 서비스/태그별로 분해. [[Budget-Alert]]
 - 둘을 비교해 가정과 실제의 괴리를 좁힌다.
 
+## 신규 계정의 크레딧과 Free plan 종료
+
+2026-10-12 AWS Billing과 계정 관리 문서, AWS Free Tier 약관(2025-07-09 갱신), Free Tier FAQ와 2025-07-15 AWS News Blog 대조 기준이며 `Sign up for AWS (advanced)` 경로로 만든 계정에 해당한다. 2025-07-15 이전에 만든 계정은 레거시 Free Tier를 따르고, Free plan과 크레딧은 AWS 계정을 가진 적이 없는 신규 고객만 받는다. 2026-10-12 일부 고객에게 제한 배포 중인 `Sign up for AWS (new)` 경로는 root 사용자를 만들지 않고 AWS Organizations와 IAM Identity Center에 자동으로 참여하며, Paid plan 프로젝트에 월 세전 비용 한도(spend limit)를 둘 수 있는 등 지원 기능이 달라 아래 조건을 그대로 적용하지 않는다.
+
+- **크레딧:** 가입 크레딧 100달러는 플랜과 관계없이 받는다. 콘솔의 Explore AWS 위젯에 있는 활동 다섯 개(EC2 인스턴스 시작, Bedrock playground에서 모델 호출, Budgets 비용 예산 설정, Lambda 웹 앱 만들기, RDS 데이터베이스 생성)를 마치면 활동당 20달러, 최대 100달러를 더 받는다. Budgets를 뺀 네 활동은 실제 서비스를 쓰므로 그 사용료가 크레딧에서 차감된다. 활동은 계정을 연 날부터 6개월 안에 마쳐야 하고, AWS Organizations에 가입하거나 Control Tower landing zone을 설정하면 남은 활동이 즉시 만료되고 추가 크레딧 자격도 끝난다.
+- **Free plan에 머무는 동안의 위험은 청구가 아니라 계정 폐쇄다:** Free plan에서는 요금이 발생하지 않는 대신, 6개월이 지나거나 크레딧을 다 쓰면 계정이 자동으로 닫히고 리소스와 데이터에 접근할 수 없게 된다. AWS는 콘텐츠를 90일 동안 보관한 뒤 계정과 리소스를 영구 삭제하며, 그 안에 Paid plan으로 전환하면 계정을 다시 열고 접근을 복구할 수 있다. 약관도 Free plan 계정을 평가용으로 두고 민감한 데이터 처리에 쓰지 말라고 정한다. 따라서 운영 중인 서비스를 Free plan 계정에 두면 플랜 종료 시점이 곧 서비스 중단 위험이 된다(운영 판단).
+- **종료 전 알림:** 2025-07-15 발표 기준, 크레딧이 50%, 25%, 10% 남았을 때 이메일을 보내고 6개월 기간이 15일, 7일, 2일 남았을 때 콘솔과 이메일로 알린다. 현재 Billing 문서는 기준값 없이 크레딧 잔액과 플랜 종료가 다가올 때 주기적으로 이메일을 보낸다고 적는다.
+- **Free plan의 제약:** Free plan은 일부 서비스와 기능만 쓸 수 있다. 크레딧을 크게 소진할 수 있는 서비스와 하드웨어 구매가 제외되며 Savings Plans, Reserved Instances와 요금이 발생할 수 있는 일부 AWS Marketplace 상품이 그 예다. 쓸 수 있는 서비스는 AWS Free Tier 페이지의 적격 목록으로 확인하고, 다른 프로모션 크레딧과 할인은 Paid plan에서만 받을 수 있다.
+- **자동 Paid 전환:** AWS Organizations 가입, Control Tower landing zone 설정, AWS Partner Network 가입, Professional Services 계약, Enterprise Agreement 체결, AWS Skill Builder Team 구독 구매, HIPAA나 SEC 준수 계정 지정 중 하나를 하면 Free plan이 자동으로 Paid plan으로 바뀐다. 그때부터 크레딧을 넘는 사용과 크레딧 비적용 서비스에 표준 요금이 붙는다. 특히 약관은 Free plan 계정이 AWS Organizations에 가입하면 Paid plan으로 바뀌고 Free Tier 크레딧을 더는 쓰거나 받을 수 없다고 정한다.
+- **전환 뒤 남은 크레딧:** 약관과 2025-07-15 발표는 Free Tier 크레딧이 계정을 연 날부터 12개월 뒤 만료된다고 하며, 발표는 Paid plan으로 직접 전환해도 남은 크레딧을 그때까지 쓸 수 있다고 한다. Organizations 가입으로 전환된 경우는 위 항목대로 크레딧을 쓸 수 없다. 2026-10-12 FAQ의 일반 문항은 크레딧이 계정 생성 6개월 뒤 만료된다고 적으면서 2026년 10월 새 가입 경험 출시 전에 가입했다면 Credits 페이지를 보라고 덧붙인다. 실제 만료일은 Billing의 Credits 페이지에서 확인한다.
+
 ## Free Tier 사용 중의 청구 점검
 
 이 절은 2026-10-09 AWS Billing 문서 대조 기준이다. 서비스별 무료 사용량, 크레딧 잔액과 계정 플랜을 따로 확인한다.
 
-- **플랜 경계:** 신규 Free account plan은 최대 6개월 또는 크레딧 소진 중 먼저 오는 시점까지다. Paid plan으로 전환하기 전에는 요금이 발생하지 않는다. Paid plan은 크레딧을 초과한 사용이나 크레딧 비적용 서비스에 표준 요금이 적용될 수 있다. 레거시 계정에 신규 플랜 조건을 그대로 적용하지 않는다.
+- **플랜 경계:** Free plan 계정은 Paid plan으로 전환하기 전에는 요금이 발생하지 않는다. Paid plan은 크레딧을 초과한 사용이나 크레딧 비적용 서비스에 표준 요금이 적용될 수 있다. 플랜 기간과 종료 조건은 위 절을 따르고, 레거시 계정에 신규 플랜 조건을 그대로 적용하지 않는다.
 - **사용량 확인:** Billing의 Free Tier 화면에서 서비스별 혜택과 실제 사용량을 대조하고, Bills에서는 서비스, 리전과 사용 기간별 청구를 확인한다. 무료 혜택 대상 서비스라는 사실만으로 그 서비스의 모든 사용이 무료라고 판단하지 않는다.
 - **알림 범위:** Free Tier 사용량 알림은 해당 월의 활성 혜택을 대상으로 서비스별 한도의 85% 초과를 알린다. 개별 계정에는 기본 활성화되지만 AWS Organizations 관리 계정은 opt-in이 필요하다. 수신 주소와 활성 상태를 확인하고 `zero spend budget`으로 추가 감시할 수 있다.
 
@@ -87,7 +98,12 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 - [Why did I receive a bill after I closed my AWS account? — AWS re:Post](https://repost.aws/knowledge-center/closed-account-bill)
 - [AWS, How AWS Pricing Works](https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/how-aws-pricing-works.html)
 - [AWS, Explore AWS services with AWS Free Tier](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier.html)
-- [AWS, AWS Free Tier FAQs](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-FAQ.html)
+- [AWS, Choosing a plan](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-plans.html)
+- [AWS, Earning additional credits](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-plans-activities.html)
+- [AWS Free Tier update: New customers can get started and explore AWS with up to $200 in credits — AWS News Blog](https://aws.amazon.com/blogs/aws/aws-free-tier-update-new-customers-can-get-started-and-explore-aws-with-up-to-200-in-credits/)
+- [AWS, AWS Free Tier FAQs](https://aws.amazon.com/free/free-tier-faqs/)
+- [AWS, Compare sign-up options](https://docs.aws.amazon.com/accounts/latest/reference/sign-up-for-aws.html)
+- [AWS, AWS Free Tier Terms](https://aws.amazon.com/free/terms/) — 2025-07-09 갱신본, 크레딧 만료와 Organizations 가입 시 크레딧 상실
 - [AWS, Tracking your AWS Free Tier usage](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/tracking-free-tier-usage.html)
 - [AWS, Track your Free Tier usage for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-free-tier-usage.html)
 - [AWS Pricing Calculator](https://calculator.aws/)

@@ -1,9 +1,9 @@
 ---
-tags: [ai, design, prototype, claude-code, handoff, frontend, impeccable, license]
+tags: [ai, design, prototype, claude-code, handoff, frontend, impeccable, license, design-system]
 status: done
 verified_at: 2026-10-12
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Claude Design Handoff", "AI 디자인과 구현 인계", "Impeccable", "AI 디자인 기본값 수렴", "Taste Skill", "생성 UI 외부 자원 출처 확인"]
+aliases: ["Claude Design Handoff", "AI 디자인과 구현 인계", "Impeccable", "AI 디자인 기본값 수렴", "Taste Skill", "생성 UI 외부 자원 출처 확인", "DESIGN.md", "oh-my-design"]
 ---
 
 # AI 디자인 시스템과 구현 인계
@@ -15,6 +15,14 @@ AI로 만든 화면을 구현에 넘길 때는 이미지뿐 아니라 디자인 
 색상, 타이포그래피와 컴포넌트 규칙을 공유하면 화면마다 스타일을 다시 설명하는 일을 줄일 수 있다. Claude Design은 코드베이스와 디자인 파일을 읽어 디자인 시스템을 구성하고, 이를 후속 프로젝트에 적용하는 흐름을 제공한다. 텍스트뿐 아니라 이미지, 문서와 웹 캡처를 입력으로 사용할 수 있다.
 
 시스템에 넣을 자료는 사용 권한과 공개 범위를 확인한다. 만들어진 컴포넌트가 기존 코드의 실제 API와 맞는지는 구현 단계에서 대조한다.
+
+디자인 시스템을 코딩 에이전트에 넘기는 파일로 프로젝트에 `DESIGN.md`를 두는 방식도 쓰인다. 같은 파일명을 쓰는 명세 가운데 아래 두 형식은 파일 구조가 달라 이름만으로는 어느 형식인지 알 수 없다. 2026-10-12 각 저장소의 README와 명세 원문 기준이며 바뀔 수 있다.
+
+- **Google Labs 형식:** google-labs-code/design.md는 코딩 에이전트에 시각적 정체성을 설명하는 형식 명세(Apache-2.0)다. 형식 버전은 alpha이고 명세, 토큰 스키마와 CLI가 개발 중이라 형식이 바뀔 수 있다. 파일 맨 위 YAML front matter에 `colors`, `typography`, `rounded`, `spacing`, `components` 같은 디자인 토큰을 두고 이 값을 규범으로 삼는다. Markdown 본문은 그 값이 있는 이유와 적용 방법을 설명하며, `##` 절은 생략할 수 있지만 쓰는 절은 Overview, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, Do's and Don'ts 순서를 따른다.
+- **Google 형식의 CLI:** `npx @google/design.md lint DESIGN.md`는 명세 구조, 정의되지 않은 토큰 참조, 컴포넌트 배경색과 글자색 쌍의 WCAG AA(4.5:1) 대비를 검사해 에이전트가 다룰 수 있는 구조화된 JSON으로 보고한다. `diff`는 두 판의 토큰 단위 변화를 비교하고, `export`는 Tailwind v3 설정 JSON, Tailwind v4 `@theme` CSS와 W3C Design Tokens 형식(`dtcg`)으로 내보내며, `spec`은 에이전트 프롬프트에 넣을 형식 명세를 출력한다. `lint`는 error가 있을 때만 종료 코드 1을 내고 대비 부족(`contrast-ratio`)은 warning 등급이라, `lint`의 종료 코드만 보는 CI 단계는 대비 부족만으로는 실패하지 않는다. 검사 대상은 DESIGN.md 파일이므로 생성된 코드가 그 토큰을 지키는지는 [[Design-System-Lint|디자인 시스템 lint]] 같은 코드 검사로 따로 확인한다.
+- **oh-my-design Core v2:** 아래 외부 자원 절의 oh-my-design이 정한 DESIGN.md Core v2는 초안 상태의 상호운용 계약으로, Google의 공식 형식이나 같은 명세라고 주장하지 않는다. `DESIGN.md`는 YAML front matter로 시작하면 안 되고(MUST NOT), experience부터 governance까지 일곱 개의 고정 앵커를 정해진 순서로 둔다. Google 형식 문서는 호환 입력으로 분류해 가져오지만 작성기는 Core v2만 쓴다.
+
+적용 제안: 검증기와 내보내기 도구를 고르기 전에 파일이 어느 명세를 따르는지 확인하고, 프로젝트에서 쓸 형식을 에이전트 지시 파일에 적어 둔다.
 
 ## 탐색, 선택과 세부 조정을 나눈다
 
@@ -52,18 +60,20 @@ Impeccable은 지침과 결정적 검사를 묶은 사례다. Paul Bakaus가 Ant
 
 ## 생성 UI를 다듬는 외부 자원과 납품 전 출처 확인
 
-지침 스킬, 컴포넌트, 아이콘과 레퍼런스 갤러리는 다듬는 대상이 다르고 출처와 라이선스를 남기는 방법도 다르다. 아래 개수와 라이선스는 2026-10-12에 각 공식 사이트, 저장소와 LICENSE 원문을 대조한 기준이며 바뀔 수 있다.
+지침 스킬, 컴포넌트, 아이콘, 레퍼런스 갤러리와 디자인 시스템 카탈로그는 다듬는 대상이 다르고 출처와 라이선스를 남기는 방법도 다르다. 아래 개수와 라이선스는 2026-10-12에 각 공식 사이트, 저장소와 LICENSE 원문을 대조한 기준이며 바뀔 수 있다.
 
 - **지침 스킬:** Taste Skill은 Leon Lin과 blueemi가 만든 SKILL.md 묶음(MIT)으로, 공식 사이트는 Claude Code와 Codex 등 SKILL.md를 읽는 도구에 `npx skills add Leonxlnx/taste-skill`로 13개 스킬을 설치하도록 안내한다. 이 명령을 실행하는 skills CLI는 README 기준 `--all`을 주면 확인 없이 모든 스킬을 설치하므로, 기본 스킬만 필요하면 `--skill design-taste-frontend`를 지정한다. README가 실험 단계로 표시한 기본 스킬 `design-taste-frontend`는 브리프에서 방향을 추론해 레이아웃 변화, 움직임 강도, 정보 밀도의 세 다이얼을 정한다. 이미 만든 화면용으로는 처음부터 다시 쓰지 말고 변경마다 테스트하라고 지시하는 `redesign-existing-projects` 스킬이 따로 있다. 점검은 에이전트가 출력 전 체크리스트로 직접 수행하며, Impeccable 같은 결정적 탐지기와 훅이나 효과 측정 결과는 README와 기본 스킬에서 찾지 못했다. 앞의 Impeccable 운영 제안처럼 자기 화면에서 적용 전후를 비교하고, 설치 전 확인은 [[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]]를 따른다.
 - **컴포넌트:** Colorlib의 Velora UI는 React, Tailwind CSS 4와 shadcn/ui용 애니메이션 컴포넌트 100개와 블록 31개를 MIT로 공개한다. README 기준 100개 중 51개는 런타임 의존성이 없고 나머지는 Motion만 쓴다. 출시 예정인 유료 Pro 등급은 가격표에 MIT가 아닌 Commercial로 표시되므로 어느 등급에서 받은 항목인지 함께 기록한다.
 - **아이콘:** heroicons-animated는 Tailwind Labs의 Heroicons를 Motion으로 움직이게 만든 개인 프로젝트(Aniket Pawar, MIT)로 316개를 표시한다. 이 저장소의 LICENSE에는 Aniket Pawar의 저작권 고지만 있으므로 원본 Heroicons LICENSE의 고지(Copyright (c) Tailwind Labs, Inc.)도 함께 보존하는 편이 안전하다. Taste Skill 기본 스킬은 아이콘 허용 목록을 Phosphor, HugeIcons, Radix, Tabler로 두고 프로젝트마다 한 계열만 쓰라고 지시하므로, Heroicons 계열을 쓸 프로젝트라면 그 선택을 프로젝트 지침에 적어 둔다. 같은 저장소의 redesign 스킬은 Phosphor, Heroicons나 자체 세트를 권해 두 스킬의 지시가 다르다.
 - **레퍼런스 갤러리:** refs.gallery는 영상 설명 기준 사이트 레퍼런스 모음이며, 2026-10-12에는 HTTP 429로 페이지가 열리지 않아 내용과 이용 조건을 확인하지 못했다. 레퍼런스 갤러리를 쓸 때는 갤러리 이용 조건이 원래 사이트의 이미지, 문구와 일러스트 사용까지 허락한다고 가정하지 않고, 위계, 섹션 순서와 정보 밀도를 참고한 뒤 표면 시각은 브리프에 맞게 새로 만든다([[AI-Work-Tool-Selection|참고와 복제의 구분]]).
+- **디자인 시스템 카탈로그:** oh-my-design은 실제 회사의 디자인 시스템을 코딩 에이전트용 DESIGN.md로 다시 쓴 카탈로그다. 2026-10-12 사이트 기준 18개국 521개 회사를 싣고 근거 수준으로 등급을 나눈다. 사이트 정의로는 verified 299개는 모든 값이 운영 중인 제품이나 공식 문서의 캡처로 추적되고, partial 109개는 캡처했지만 일부 값이나 출처가 빠졌거나 오래됐으며, legacy 113개는 근거 캡처 이전에 작성돼 증거가 아닌 출발점이다. `npx oh-my-design-cli@latest`는 Claude Code, Codex, Cursor와 OpenCode에 스킬 28개와 오프라인 카탈로그를 설치한다. README는 기본 설치가 감지된 모든 에이전트를 대상으로 한다고 적고, 비대화형으로 한 채널만 설치하려면 `install-skills --agent <이름> --all` 하위 명령을 안내한다. README 기준 Claude Code에는 스킬과 하위 에이전트 20개, 훅이 들어가고, Codex와 OpenCode에도 하위 에이전트 역할이 들어가며, Cursor에는 하위 에이전트와 훅 없이 호환되는 스킬 27개가 들어간다. 설치 전 확인은 [[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]]를 따른다. 저장소는 MIT이며 README는 레퍼런스가 각 회사에 속하고 교육용 참고로 재현했다고 밝힌다.
 
 고객 사이트로 납품할 때는 다음을 확인한다. 원문 조건을 납품에 적용한 제안이며 법률 판단을 대신하지 않는다. 라이선스별 조건은 [[Open-Source-License-Review|오픈소스 라이선스 검토]], 인계 범위는 [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]]를 따른다.
 
 - shadcn 레지스트리 방식은 npm 패키지 대신 컴포넌트 소스를 프로젝트에 넣는다. 2026-10-12에 확인한 Velora UI의 marquee와 heroicons-animated의 academic-cap 항목 소스에는 라이선스 주석이 없고, 이렇게 받은 컴포넌트 자체는 패키지 의존성 목록에 나타나지 않는다. 항목이 선언한 `motion` 같은 npm 의존성만 추가된다. Velora UI README는 shadcn MCP로 에이전트가 이름만으로 컴포넌트를 찾아 설치하는 방법도 안내하므로, 받은 항목, 레지스트리 URL, 받은 날짜와 LICENSE 사본을 인계 자료에 남긴다.
 - Velora UI README의 출처 표기 불필요(no attribution required) 안내와 별개로 MIT LICENSE 원문은 소프트웨어의 모든 복제물 또는 실질적인 부분에 저작권 고지와 허가 고지를 포함하라는 조건을 둔다. 화면의 출처 표기와 소스, 고지 파일의 고지를 구분하고 후자는 지우지 않는다.
 - 스킬의 라이선스와 스킬이 쓰게 하는 패키지의 라이선스는 별개다. Taste Skill 기본 스킬은 고정(pin)과 스크럽(scrub) 같은 스크롤 연출에 GSAP과 ScrollTrigger 코드 골격을 제시하는데, GSAP은 MIT가 아닌 Webflow의 Standard No Charge GSAP License를 따른다. 이 라이선스는 상업적 사용을 허용하지만 서면 동의 없이 Webflow의 시각적 애니메이션 제작 기능과 경쟁하는 노코드 도구에 쓰는 것은 금지한다(2025-05-30 개정판 기준).
+- 카탈로그 저장소의 라이선스와 그 안에 재현된 회사 디자인 시스템의 권리도 별개다. oh-my-design 저장소가 MIT여도 README는 레퍼런스가 각 회사에 속한다고 밝히므로, MIT를 그 디자인 시스템의 이용 허락으로 읽지 않는다. 고객 사이트에는 카탈로그 항목을 절 구성과 작성 방식의 참고로만 쓰고, DESIGN.md는 고객의 로고, 색과 글꼴 같은 자체 브랜드 자산에서 새로 작성한다. 공공 서비스라면 [[Service-Design-Principles#디자인 시스템|KRDS]] 같은 공개 디자인 시스템이 출발점 후보다. 저장소 안의 모든 파일이 MIT인 것도 아니다. 스킬 번들의 인라인 라이브러리 라이선스 목록은 GSAP 3.15.0 파일을 GSAP Standard License로 표시하므로, 생성한 HTML에 이 파일이 들어가면 앞 항목의 GSAP 조건을 함께 확인한다.
 
 ## 내보내기와 구현 인계
 
@@ -105,6 +115,11 @@ Claude Design은 PDF, PowerPoint와 HTML로 내보내거나 Canva 등 연결된 
 
 - [Introducing Claude Design by Anthropic Labs — Anthropic](https://www.anthropic.com/news/claude-design-anthropic-labs)
 - [Claude Design now stays on brand for daily work — Anthropic](https://claude.com/resources/articles/claude-design-stays-on-brand-for-daily-work)
+- [google-labs-code/design.md — GitHub](https://github.com/google-labs-code/design.md) — 2026-10-12 README의 front matter와 절 순서, CLI 명령, lint 규칙 등급과 종료 코드, alpha 상태 확인
+- [kwakseongjae/oh-my-design — GitHub](https://github.com/kwakseongjae/oh-my-design) — README의 에이전트별 설치 범위, MIT와 레퍼런스 귀속 고지
+- [DESIGN.md Core v2 — GitHub, kwakseongjae/oh-my-design](https://github.com/kwakseongjae/oh-my-design/blob/main/spec/design-md-core-v2.md) — YAML front matter 금지와 Google 형식과의 관계
+- [oh-my-design — oh-my-design.kr](https://oh-my-design.kr) — 2026-10-12 회사 수, 국가 수, 등급별 개수와 정의, CLI 설치 범위
+- [Inline library licenses — GitHub, kwakseongjae/oh-my-design](https://github.com/kwakseongjae/oh-my-design/blob/main/.claude/skills/omd-aphrodite/docs/design-excellence/fx-library/scroll-gsap/lib/LICENSES.md) — GSAP 3.15.0 파일의 GSAP Standard License 표시
 - [Remotion, Composition](https://www.remotion.dev/docs/terminology/composition)
 - [Remotion, Don't use CSS animations in Remotion](https://www.remotion.dev/docs/troubleshooting/css-animations)
 - [Remotion, Importing .srt subtitles into Remotion](https://www.remotion.dev/docs/captions/importing)

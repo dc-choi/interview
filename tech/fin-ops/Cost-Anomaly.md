@@ -1,7 +1,7 @@
 ---
 tags: [finops, aws, cost-anomaly-detection, monitoring, ml, alert]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-12
 category: "비용&운영(FinOps)"
 aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 ---
@@ -27,6 +27,16 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 - **ML 베이스라인**: 과거 비용 패턴을 학습해 비용 증가의 이상 여부를 평가한다.
 - **근본 원인 분해**: 서비스/계정/리전/사용 유형별 기여 비용을 제시한다. 실제 원인은 리소스와 사용 내역을 추가로 확인한다.
 - **Alert Subscription**: 예상 대비 증가액(절대 금액)이나 증가율 임계로 알림을 설정한다. 개별 알림은 SNS, 일/주 요약은 이메일로 받는다. AWS User Notifications로 별도 전달/필터 규칙도 구성할 수 있다.
+
+## Cost Explorer를 켜면 생기는 기본 설정
+
+2026-10-12 AWS Cost Management 문서 기준이다.
+
+- Cost Explorer는 콘솔에서 처음 열 때 활성화되며 API로는 켤 수 없다. 켜면 이번 달과 지난 13개월의 비용 데이터를 준비하고 다음 12개월을 예측한다. 이번 달 데이터는 약 24시간 뒤에 보이고 나머지는 며칠 더 걸린다.
+- 활성화 과정에서 AWS가 Cost Anomaly Detection을 자동 구성한다. AWS services monitor 하나와 일일 요약 alert subscription을 만들고, 대부분의 AWS 서비스에서 비용 영향이 100달러와 예상 지출의 40%를 넘는 이상 지출을 알린다. opt-out은 언제든 할 수 있으며, 그러려면 계정의 cost monitor와 alert subscription을 모두 삭제해야 한다.
+- 일일 요약은 전날 알림 가운데 상위 10개를 비용 영향 순으로 정리한 이메일이다. 매일 UTC 00:00에 만들어지며 실제 도착 시각은 달라질 수 있다. 탐지되는 대로 받으려면 SNS topic이 필요한 개별 알림을 쓴다.
+- 임계 미만의 이상도 ML 모델은 계속 탐지하며 `Detected anomalies` 탭에 남는다. 알림이 없었다는 사실을 이상이 없었다는 뜻으로 읽지 않는다.
+- 기본 구독은 비용 영향이 100달러와 예상 지출의 40%를 함께 넘는 이상만 알리므로, 비용 영향이 100달러 미만인 이상은 증가율이 커도 알리지 않는다. 월 비용이 작은 계정은 임계를 낮추거나 [[Budget-Alert|예산 알림]]을 함께 두는 구성을 검토한다(운영 제안).
 
 ## 탐지 시점과 범위의 한계
 
@@ -78,8 +88,10 @@ Amazon Q Developer의 비용 조사 기능은 비용 기여 차원을 분해하�
 
 ## 출처
 
-2026-10-07에는 탐지 지연과 근본 원인 분해, Amazon Q Developer의 비용 조사 범위를 대조했다. 위 조사 절차는 이를 적용한 설계 제안이다.
+2026-10-07에는 탐지 지연과 근본 원인 분해, Amazon Q Developer의 비용 조사 범위를 대조했다. 위 조사 절차는 이를 적용한 설계 제안이다. 2026-10-12에는 Cost Explorer 활성화 시 기본 구성과 일일 요약, 임계 미만 탐지의 표시 범위를 대조했다.
 
+- [AWS Cost Management, Enabling Cost Explorer](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-enable.html)
+- [AWS Cost Management, Opting out of Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/opting-out-cad.html)
 - [AWS Cost Management, Investigating anomaly root causes with Amazon Q Developer](https://docs.aws.amazon.com/cost-management/latest/userguide/investigating-ad.html)
 - [AWS Cost Management, Getting started with AWS Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/getting-started-ad.html)
 - [AWS Cost Management, Detecting unusual spend with AWS Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html)

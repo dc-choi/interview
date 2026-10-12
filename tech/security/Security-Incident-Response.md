@@ -3,7 +3,7 @@ tags: [security, incident-response, nist, recovery]
 status: done
 verified_at: 2026-10-12
 category: "보안(Security)"
-aliases: ["Security Incident Response", "보안 사고 대응", "침해사고 대응"]
+aliases: ["Security Incident Response", "보안 사고 대응", "침해사고 대응", "Vulnerability Disclosure", "security.txt", "취약점 제보"]
 ---
 
 # 보안 사고 대응
@@ -35,6 +35,18 @@ NIST SP 800-61 Rev. 3(2025)은 CSF 2.0의 여섯 기능에 대응을 연결한�
 4. 모의 상황에서 접수부터 판단, 조치까지 따라가며 권한 부재와 인계 누락을 찾고 절차에 반영한다.
 
 AI의 경고 요약은 이 과정의 보조 자료다. 요약 생성과 신고 검증, 차단 실행을 서로 다른 단계로 기록한다.
+
+## 외부 취약점 제보를 받는다
+
+외부 보고 수단은 사고뿐 아니라 취약점 제보에도 필요하다. RFC 9116은 보고 창구를 찾기 어려우면 취약점이 보고되지 않은 채 남을 수 있다고 본다. ISO/IEC 29147:2018은 제품과 서비스의 취약점 공개(vulnerability disclosure)에 관한 요구사항과 권고를, ISO/IEC 30111:2019는 제보된 잠재 취약점을 처리하고 조치하는 방법에 관한 요구사항과 권고를 벤더에게 제시한다(IEC Webstore 카탈로그 초록 기준). 이 절의 RFC, 지침, 법령과 판례는 2026-10-12 공식 원문으로 대조했고, 운영 제안으로 표시한 내용은 이를 작은 운영 조직에 적용한 제안이다.
+
+- **공개 창구**: RFC 9116(Informational, 2022년 4월)에 따라 웹 기반 서비스는 security.txt를 `/.well-known/security.txt`에 두고 `https`로 제공한다. 필수 필드는 `Contact`와 `Expires`이고, `Expires`는 한 번만 쓰며 오래된 정보가 남지 않도록 1년 미만 뒤의 시점을 권장한다. `Encryption`, `Acknowledgments`, `Preferred-Languages`, `Canonical`, `Policy`, `Hiring`은 선택 필드이고 OpenPGP cleartext 서명은 권장 사항이다. 파일은 조회한 도메인이나 IP 주소에 적용되고 서브도메인이나 상위 도메인에는 적용되지 않으며, 조직이 제공하는 제품과 서비스에도 적용될 수 있다. 파일 유무만으로 보안 테스트의 허락이나 거부를 가정하지 않으며, 허락 여부는 취약점 공개 정책 등에 밝힐 수 있다. 공개하면 자동 스캔 결과와 스팸 제보가 늘 수 있어 RFC는 분석에 드는 자원과 함께 공개 여부를 판단하라고 한다. 운영 제안: 제보를 받을 도메인마다 파일을 두고 `Policy`로 범위와 허락 조건을 적은 정책 문서를 가리킨다.
+- **정책과 응답**: OWASP는 안전한 보고 방법과 첫 응답, 분류(triage) 일정, safe harbor 조항을 마련하라고 권한다. 접수하면 분류 일정을, 취약점을 확인하면 수정 일정을 알리고 진행 상황을 정기적으로 공유하며, 보상과 크레딧을 제공하라고 한다. 연구자를 법적 조치로 위협하지 말고, 버그 바운티는 취약점을 해결하는 강한 내부 절차가 뒷받침하는 성숙한 취약점 공개 절차를 이미 갖춘 조직만 도입하라고 한다. CISA의 BOD 20-01 기관용 정책 템플릿은 3영업일 안 접수 확인과, 정책을 지키려고 선의로 노력한 연구를 허가된 것으로 보고 법적 조치를 권고하거나 추진하지 않는다는 문구를 예시로 둔다. 이런 문구를 둘지는 운영자가 정하며, 국내법상 효과는 이 문서에서 확인하지 않았다.
+- **처리 흐름(운영 제안)**: 접수 확인, 재현, 영향 범위와 노출 데이터 판단, 차단과 수정, 제보자 안내와 크레딧을 기록하고, 신고와 통지 판단은 차단과 병행한다. 법정 신고 기한은 사실을 알게 된 때부터 세므로 수정이 끝날 때까지 미루지 않는다. 다른 이용자의 결제 정보가 보인다는 제보는 [[IDOR]]처럼 객체 단위 권한 확인이 빠진 결함일 수 있다. 제보된 엔드포인트만 고치지 말고 같은 조회 패턴을 쓰는 경로와 제보자 외의 접근 흔적도 로그로 확인한다.
+- **신고와 통지 판단**: 2026-10-02 시행 정보통신망법 기준으로 정보통신서비스 제공자는 침해사고가 발생하면 그 사실을 알게 된 때부터 24시간 이내에 발생 일시와 대응 현황 등을 과학기술정보통신부장관이나 한국인터넷진흥원(KISA)에 신고해야 한다(제48조의3 제1항). 2026-03-31 신설된 같은 조 제4항은 대통령령으로 정하는 침해사고가 발생하면 지체 없이 해당 이용자에게 통지하게 하고, 시행령 제58조의9는 그 대상으로 2시간 이상 이어진 서비스 장애나 기능 중단, 이용자 정보가 분실, 도난, 유출, 변조, 훼손, 유용되거나 그 가능성이 있는 침해사고, 이에 준해 이용자 정보보호에 중대한 영향을 미칠 우려가 있는 침해사고를 든다. 통지에는 발생 일시와 원인, 피해 내용, 대응 현황, 이용자의 대처 방법, 피해구제 조치와 담당 부서 연락처가 들어가며, 연락처를 모르는 등 정당한 사유가 있으면 홈페이지에 30일 이상 게시해 갈음할 수 있다. 취약점 존재만 확인된 경우, 다른 사람의 접근을 로그로 배제할 수 없는 경우, 실제 무단 접근이나 유출이 확인된 경우를 나눠 이 신고와 통지, [[Privacy-Operations-for-Small-Business|개인정보 유출 통지와 신고]] 해당 여부를 각각 판단한다. 고객사 사이트를 대신 운영해도 법정 신고와 통지 의무자는 법이 정하므로, 계약에는 인지 즉시 통보, 신고 준비와 협조 범위를 미리 정한다(운영 제안).
+- **대가 요구와 공개 압박**: OWASP는 세부 내용을 밝히기 전에 대가를 요구하는 제보가 정당할 수도 있지만 사기인 경우가 많다고 보고, 중개형 버그 바운티 플랫폼을 거쳐 공개하도록 요청하는 방법을 제시한다. 운영 제안: 세부 내용을 확인하기 전에는 지급을 약속하지 않고, 요구와 공개 예고를 담은 대화 원본을 보존해 보안 사고로 관리한다.
+- **제보자의 경계**: OWASP는 연구자에게 테스트가 합법적이고 허가된 것인지 확인하고, 다른 사람의 프라이버시를 존중하며, 재현할 수 있는 세부 내용을 주되 보고 전에 개인정보를 가리라고 권한다. 정보 제공의 조건으로, 또는 세부 내용을 공개하거나 규제기관에 알리지 않는 대가로 보상을 요구하면 갈취(extortion)가 될 수 있다고 경고한다. CISA 템플릿은 취약점 존재를 확인하는 데 필요한 만큼만 익스플로잇을 쓰고 데이터를 탈취하거나 다른 시스템으로 옮겨 가지 말며, 취약점을 확인했거나 개인정보, 금융 정보 같은 민감 데이터를 만나면 테스트를 멈추고 즉시 알리라고 정한다.
+- **법적 경계**: 정보통신망법 제48조 제1항은 누구든지 정당한 접근권한 없이 또는 허용된 접근권한을 넘어 정보통신망에 침입하지 못하게 한다(법률 제21988호, 2026-10-02 시행). 대법원은 구 정보통신망법 사안에서 접근권한을 서비스제공자가 부여한 권한을 기준으로 판단하고, 권한을 받은 이용자가 아닌 제3자가 보호조치를 침해하거나 훼손하지 않아도 부정한 방법으로 타인의 식별부호를 쓰거나 보호조치에 따른 제한을 면하는 부정한 명령을 입력하는 등의 방법으로 침입하는 행위가 금지된다고 봤다(대법원 2024. 11. 14. 선고 2021도5555 판결, 이미 로그인된 다른 사람의 계정으로 사진 앨범에 접근한 사안). 인증된 이용자가 요청의 식별자를 바꿔 다른 사람의 데이터를 조회한 제보와는 사실관계가 다르므로 이 판례를 그대로 대입하지 않는다. 운영 제안: 공개된 엔드포인트만 호출했다는 주장만으로 허용된 접근이라고 가정하지 않고, 개별 사안의 위법성은 법률 전문가와 확인한다.
 
 ## 대응 중 남길 근거
 
@@ -139,6 +151,7 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 3. 수집이 빠진 기간이 있으면 침해 타임라인의 어느 결론을 보류해야 하는가?
 4. 탐지 도구가 경고를 냈지만 차단할 수 없는 이유를 제품 연결과 권한으로 설명할 수 있는가?
 5. 어떤 대응 조치를 자동 실행하고 어떤 조치에 사람 승인을 둘지 확신도, 업무 영향과 되돌리기 쉬운 정도로 나눌 수 있는가?
+6. 다른 이용자의 결제 정보가 보인다는 제보와 함께 공개 예고나 대가 요구를 받으면 무엇을 확인하고 어떤 기록을 남기는가?
 
 ## 출처
 
@@ -167,6 +180,15 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 - [Splunk Help, Approve actions before they run in Splunk SOAR (Cloud)](https://help.splunk.com/en/splunk-soar/soar-cloud/use-soar-cloud/get-started-using-splunk-soar-cloud/approve-actions-before-they-run-in-splunk-soar-cloud)
 - [Splunk Help, Require user input using the Prompt block in your Splunk SOAR (Cloud) playbook](https://help.splunk.com/en/splunk-soar/soar-cloud/build-playbooks/use-the-playbook-editor-to-create-and-view-playbooks-to-automate-analyst-workflows/require-user-input-using-the-prompt-block-in-your-splunk-soar-cloud-playbook)
 - [Google Cloud, Assign approval links in actions](https://docs.cloud.google.com/chronicle/docs/soar/respond/working-with-playbooks/assign-approval-links-in-actions)
+- [RFC 9116, A File Format to Aid in Security Vulnerability Disclosure](https://www.rfc-editor.org/rfc/rfc9116)
+- [OWASP Cheat Sheet Series, Vulnerability Disclosure Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Vulnerability_Disclosure_Cheat_Sheet.html)
+- [ISO/IEC 29147:2018, Vulnerability disclosure](https://webstore.iec.ch/en/publication/64099) — IEC Webstore 카탈로그
+- [ISO/IEC 30111:2019, Vulnerability handling processes](https://webstore.iec.ch/en/publication/65872) — IEC Webstore 카탈로그
+- [CISA, Vulnerability Disclosure Policy Template](https://www.cisa.gov/vulnerability-disclosure-policy-template) — BOD 20-01 템플릿
+- [국가법령정보센터, 정보통신망 이용촉진 및 정보보호 등에 관한 법률 제48조 (법률 제21988호, 2026. 10. 2. 시행)](https://www.law.go.kr/LSW/lsLawLinkInfo.do?lsJoLnkSeq=900629437&chrClsCd=010202)
+- [국가법령정보센터, 정보통신망 이용촉진 및 정보보호 등에 관한 법률 제48조의3 (법률 제21988호, 2026. 10. 2. 시행)](https://www.law.go.kr/LSW/lsLinkProc.do?lsNm=%EC%A0%95%EB%B3%B4%ED%86%B5%EC%8B%A0%EB%A7%9D+%EC%9D%B4%EC%9A%A9%EC%B4%89%EC%A7%84+%EB%B0%8F+%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8+%EB%93%B1%EC%97%90+%EA%B4%80%ED%95%9C+%EB%B2%95%EB%A5%A0&mode=11&joNo=004803)
+- [국가법령정보센터, 대법원 2024. 11. 14. 선고 2021도5555 판결](https://www.law.go.kr/LSW/precInfoP.do?precSeq=599601)
+- [국가법령정보센터, 정보통신망 이용촉진 및 정보보호 등에 관한 법률 시행령 제58조의9 (대통령령 제36728호, 2026. 10. 2. 시행)](https://www.law.go.kr/LSW/lsLinkProc.do?lsNm=%EC%A0%95%EB%B3%B4%ED%86%B5%EC%8B%A0%EB%A7%9D+%EC%9D%B4%EC%9A%A9%EC%B4%89%EC%A7%84+%EB%B0%8F+%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8+%EB%93%B1%EC%97%90+%EA%B4%80%ED%95%9C+%EB%B2%95%EB%A5%A0+%EC%8B%9C%ED%96%89%EB%A0%B9&mode=11&joNo=005809)
 
 ## 관련 문서
 
