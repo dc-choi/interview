@@ -93,6 +93,8 @@ NIST SP 800-115의 계획, 수행, 사후 조치를 다음처럼 운영할 수 �
 
 외주 점검에서는 고객의 승인 범위와 제3자가 소유한 시스템의 허용 범위를 구분한다. 수집한 설정과 취약점 보고서도 민감한 자료이므로 접근과 취급 방법을 계획에 포함한다.
 
+침투 테스트는 취약점들을 연결했을 때의 영향과 방어자의 탐지, 대응 능력을 확인할 수 있지만 운영 시스템을 손상시키거나 중단시킬 위험도 있다. NIST SP 800-115의 5.2절은 침투 테스트의 효과, 위험과 계획을, 6.2절은 평가 결과가 특정 시점의 상태만 보여주는 한계를 다룬다(2026-10-13 대조). 적용 예시: 계약에 허용 기법, 점검 시간과 중단 조건을 정하고, 인증 획득 여부와 실제 공격 경로 검증을 구분한다. 점검 뒤 구성이나 배포가 바뀌면 이전 결과의 적용 범위를 다시 확인한다.
+
 ## 사고 대응 훈련은 기술 복구와 의사결정을 함께 점검한다
 
 2026-10-09 NIST 용어집과 CISA 훈련 평가 지침을 대조한 범위다. Tabletop exercise는 시나리오를 놓고 역할과 대응을 토론하며 계획을 검토한다. Functional exercise는 모의 운영 환경에서 담당자가 계획과 비상 대응 준비 상태를 검증한다. 토론에서 답을 정했다는 사실을 시스템 복구 성공과 같게 보지 않는다.
@@ -212,7 +214,7 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 - [Service Screener — AWS Samples](https://github.com/aws-samples/service-screener-v2)
 - [NIST, SP 800-50 Rev. 1: Building a Cybersecurity and Privacy Learning Program](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-50r1.pdf) — 2.4절의 측정과 2.5절의 대상별 학습
 - [NIST, The Cybersecurity Framework (CSF) 2.0](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf) — 2장의 여섯 기능, 3.1절의 Current/Target Profile, Appendix A의 GV.PO, GV.RR, ID.AM, ID.RA와 PR.AT
-- [NIST, SP 800-115: Technical Guide to Information Security Testing and Assessment](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-115.pdf) — 6장의 계획과 승인, 7장의 자료 취급, 8장의 개선과 재점검
+- [NIST, SP 800-115: Technical Guide to Information Security Testing and Assessment](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-115.pdf) — 5.2절의 침투 테스트 영향, 6장의 계획과 승인, 6.2절의 시점 한계, 7장의 자료 취급, 8장의 개선과 재점검
 
 ## 관련 문서
 

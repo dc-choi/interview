@@ -59,6 +59,12 @@ AI의 경고 요약은 이 과정의 보조 자료다. 요약 생성과 신고 �
 
 백업이 있다는 사실만으로 복구를 시작하지 않는다. 복원 자산의 침해 흔적과 손상을 확인한다. 운영 재개 전에는 복구된 자산의 무결성과 근본 원인 조치를 확인하고, 서비스 소유자와 정상 동작을 검증한다.
 
+### 데이터 갈취는 암호화 피해와 따로 확인한다
+
+2026-10-13 CISA 공동 #StopRansomware Guide의 서론과 대응 체크리스트를 대조했다. 파일 암호화와 탈취 데이터의 공개 협박을 함께 사용하는 것이 이중 갈취(double extortion)다. 랜섬웨어로 암호화하지 않고 데이터를 빼내 공개를 협박하는 형태도 있다. 따라서 서비스가 정상 동작하거나 백업 복원이 끝났다는 사실만으로 데이터 유출 위험이 해소됐다고 판단하지 않는다.
+
+운영 적용 예시: 복구 작업과 병행해 비정상적인 외부 전송량, 관련 계정과 데이터 접근 기록을 확인하고, 확인된 반출과 공격자의 주장을 구분한다. CISA가 든 Rclone, Rsync 같은 도구는 정상 업무에도 쓰이므로 설치 흔적만으로 유출을 확정하지 않는다. 침해 계정의 접근 차단과 노출 범위 확인을 별도 완료 조건으로 두며, 기록이 부족한 구간은 미확인으로 남긴다. 백업은 가용성 복구 수단이고 이미 외부로 복사된 데이터의 회수 수단은 아니라는 구분이 핵심이다.
+
 ## 로그로 침해 흐름 재구성하기
 
 로그는 수집한 사건의 기록이다. 모든 행동이 자동으로 남거나 공격자가 흔적을 지울 수 없다는 보장은 없다. 수집 누락, 저장 공간 부족에 따른 덮어쓰기, 변조와 삭제가 조사 범위를 제한한다.
@@ -155,6 +161,7 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 
 ## 출처
 
+- [CISA, #StopRansomware Guide](https://www.cdfifund.gov/system/files/2023-11/StopRansomware_Guide_508C_v3.pdf) — 공동 지침의 미국 재무부 CDFI Fund 게시본, 서론과 데이터 반출 조사 항목.
 - [Microsoft Learn, Incidents and alerts in the Microsoft Defender portal](https://learn.microsoft.com/en-us/defender-xdr/incidents-overview)
 - [AhnLab XDR 출시, 통합 보안의 정점을 향하다 — AhnLab](https://www.ahnlab.com/ko/contents/content-center/34045)
 - [NIST, SP 800-61 Rev. 3: Incident Response Recommendations and Considerations for Cybersecurity Risk Management](https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-61r3.pdf)

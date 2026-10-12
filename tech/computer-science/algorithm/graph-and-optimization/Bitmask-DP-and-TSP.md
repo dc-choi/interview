@@ -66,6 +66,14 @@ C++에서는 signed shift와 범위를 벗어난 shift에 기대지 않고 `std:
 
 TSP는 모든 도시를 한 번씩 방문하고 시작점으로 돌아오는 minimum-cost tour를 찾는다. optimization version은 NP-hard이며 완전 탐색은 tour 수가 factorial로 증가한다.
 
+### 해밀턴 회로와 비용 최적화의 구분
+
+해밀턴 회로(Hamiltonian cycle)는 모든 정점을 한 번씩 방문하고 시작점으로 돌아오는 회로다. 회로의 존재를 찾는 문제와 가능한 회로 중 최소 비용을 찾는 TSP는 구분한다. 모든 정점을 방문하는 회로를 하나 찾았다고 이동 비용까지 최적이라는 뜻은 아니다.
+
+스네이크 게임에서는 미리 만든 해밀턴 회로를 따라가는 방식이 충돌 회피의 예가 된다. 장애물 없는 판에 회로가 있고, 초기 몸이 회로 방향에 맞게 연속해서 놓이며, 먹이를 먹을 때 한 칸씩 자라는 규칙을 가정한다. 몸이 판을 채우기 전에는 머리의 다음 칸이 비어 있고, 먹이가 빈 칸에 그대로 남아 있으면 회로를 따라가다 도달한다. 판을 가득 채우면 종료하며, 가장 빨리 먹이에 도달하는 전략은 아니다. 임의로 배치된 초기 몸이나 지름길에는 이 보장을 그대로 적용하지 않는다.
+
+상하좌우 이동만 허용하고 경계를 넘어 반대편으로 이동하지 않는 직사각형 격자의 제약은 색칠로 설명할 수 있다. 체스판처럼 칠하면 매 이동마다 색이 바뀌므로 닫힌 회로는 두 색을 같은 수만큼 방문한다. 가로와 세로가 모두 홀수인 판은 두 색의 칸 수가 달라 전체를 도는 해밀턴 회로가 없다. 이는 해당 격자에 대한 직접 논증이며 장애물, 대각 이동이나 경계 연결이 있는 판까지 같은 결론으로 일반화하지 않는다. 회로가 없다는 사실만으로 모든 다른 게임 전략도 실패한다고 결론 내리지 않는다.
+
 ### Held-Karp 형태의 DP
 
 `dp[mask][last]`를 다음처럼 정의한다.
@@ -124,6 +132,8 @@ brute force보다 크게 개선되지만 polynomial algorithm은 아니다. 실�
 
 ## 출처
 
+- [NIST Dictionary of Algorithms and Data Structures, Hamiltonian cycle](https://xlinux.nist.gov/dads/HTML/hamiltonianCycle.html)
+- [Nokia 6110 Part 3 – Algorithms — John Tapsell](https://johnflux.com/2015/05/02/nokia-6110-part-3-algorithms/) — 구현자의 회로 추종 방식과 몸의 순서 조건. 격자의 색칠 논증은 본문에 별도 제시.
 - [바킹독의 실전 알고리즘 부록 C, 비트마스킹 — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=gSLf6lMi7kw)
 - 인프런, 큰돌 강사, [비트마스킹 개념 #1. 이진수](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100311), [비트마스킹 개념 #2-1. 비트연산자의 기초(+, -)](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=125045), [비트마스킹 개념 #2-2. 비트연산자의 기초(&, |) AND, OR](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=144239), [비트마스킹 개념 #2-3. 비트연산자 기초 (<<, >>) SHIFT](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=145028), [비트마스킹 개념 #2-4. 비트연산자의 기초(^, ~) XOR, Ones' complement](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=145029)
 - 인프런, 큰돌 강사, [비트마스킹 개념 #3-1. 비트연산자 활용법: idx번째 비트끄기](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=145030), [비트마스킹 개념 #3-2. 비트연산자 활용법: idx번째 비트 XOR 연산](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=145031), [비트마스킹 개념 #3-3. 비트연산자 활용법: 최하위 켜져있는 비트 찾기](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=145032), [비트마스킹 개념 #3-4. 비트연산자 활용법 : 크기가 n인 집합의 모든 비트를 켜기](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=145033), [비트마스킹 개념 #3-5. 비트연산자 활용법 :  idx번째 비트를 켜기](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=145034)
