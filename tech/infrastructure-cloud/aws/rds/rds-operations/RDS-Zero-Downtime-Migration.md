@@ -1,6 +1,7 @@
 ---
 tags: [infrastructure, aws, rds, migration, dms, cdc, blue-green, zero-downtime]
 status: done
+verified_at: 2026-10-13
 category: "Infrastructure - AWS"
 aliases: ["RDS Zero Downtime Migration", "무중단 마이그레이션", "near-zero downtime cutover", "AUTO_INCREMENT drift"]
 ---
@@ -9,50 +10,50 @@ aliases: ["RDS Zero Downtime Migration", "무중단 마이그레이션", "near-z
 
 > 상위 문서: [[RDS-Migration-Scenarios|RDS 데이터 마이그레이션 — 언제 필요한가]]
 
-진짜 0초는 앱 레벨 오케스트레이션(dual-write, 점진적 트래픽 전환) 없이는 사실상 불가능하다. 현실적 목표는 **다운타임을 초 단위로 줄이는 near-zero**다. 어떤 상황에서 옮기는지는 [[RDS-Migration-Scenarios]], 여기서는 그걸 무중단에 가깝게 해내는 법을 다룬다.
+초기 복사 중 서비스를 유지하고 최종 전환의 중단을 줄이는 것이 목표다. **near-zero는 중단 시간 보장이 아니다.** 복제 지연, 승격, 검증과 재연결 시간을 리허설로 확인한다. 어떤 상황에서 옮기는지는 [[RDS-Migration-Scenarios]], 여기서는 그 전환과 복구 조건을 다룬다.
 
-## 공통 골격 — 모든 무중단 마이그레이션의 뼈대
+## 공통 골격 — 초기 복사, 변경 추적, 전환
 
-방법이 무엇이든 구조는 같다.
+온라인 데이터 이전에서 자주 쓰는 흐름이다. 관리형 복제와 엔진별 승격 절차는 이 개념적 흐름을 서로 다르게 구현한다.
 
 1. **Full Load(초기 적재)** — 기존 데이터를 통째로 복사. 이 동안 소스는 계속 살아 쓰기를 받는다.
-2. **CDC(Change Data Capture)** — full load 도중과 이후의 변경분을 계속 따라잡아 타깃을 동기 상태로 유지.
+2. **CDC(Change Data Capture)** — full load 도중과 이후의 변경분을 추적하고 타깃에 적용한다. 적용 지연이 있으므로 두 DB가 매 순간 같은 상태라는 뜻은 아니다.
 3. **Cutover(전환)** — 쓰기를 잠깐 멈추고, 타깃이 마지막 변경분까지 따라잡으면 앱을 타깃으로 돌리고 쓰기 재개.
 
-**다운타임 = 쓰기를 멈춰둔 시간**이다. CDC로 평소에 거의 다 따라잡아 두면 컷오버 때 멈추는 건 마지막 몇 초뿐이다. 이것이 near-zero의 원리다.
+**쓰기 중단 구간과 사용자가 체감하는 장애 구간을 따로 측정한다.** CDC가 전환 직전까지 변경분을 줄여도 연결 종료, DNS 반영과 앱 재시도가 끝나야 요청이 회복된다.
 
 ## 방법 세 가지
 
-- **Blue/Green Deployment (관리형, 동종/업그레이드)** — AWS가 위 골격을 대신한다. 운영(blue)의 논리 복제본 green을 띄워 거기서 업그레이드/스키마/파라미터 변경을 검증한 뒤 switchover를 누르면, blue 쓰기 정지 → green 따라잡기 → 엔드포인트 바꿔치기를 AWS가 한다. 보통 1분 이하, 결정적으로 **엔드포인트 이름이 그대로 유지**돼 앱 커넥션 문자열을 안 바꿔도 된다. 메이저 버전 업그레이드나 동종 변경이면 1순위. 제약은 같은 리전, 동종 엔진.
-- **DMS + CDC (이기종/복잡)** — 엔진 전환(MySQL→PostgreSQL)이나 구조 재설계처럼 Blue/Green이 안 되면 DMS다. 소스에 CDC 설정이 필요하다 — MySQL은 `binlog_format=ROW` + binlog 보존 기간, PostgreSQL은 `wal_level=logical`. 가장 강력하지만 함정도 가장 많다. 메커니즘은 [[DMS]].
-- **Read Replica 승격 (동종/리전 이동)** — 소스의 Read Replica는 계속 복제 중이므로, 준비되면 승격(promote)하고 앱을 돌리면 끝. 리전 이동이면 크로스 리전 복제본을 만들어 승격한다. 단 **승격은 비가역**이고 엔진/버전을 크게 못 바꾼다.
+- **Blue/Green Deployment (관리형, 동종/업그레이드)** — blue의 복사본 green에서 지원되는 변경을 검증하고 전환한다. RDS PostgreSQL은 조건에 따라 물리 또는 논리 복제를 사용하므로 스키마 변경 허용 범위를 먼저 확인한다. 전환은 쓰기와 연결 차단, 복제 따라잡기, 이름 변경을 포함한다. **기존 운영 엔드포인트 이름을 green이 이어받지만 재연결은 필요하다.** 지원 엔진, 버전과 리전을 공식 지원표로 확인한다.
+- **DMS + CDC (이기종/복잡)** — 엔진 전환 등에서 검토하는 데이터 이전 수단이다. 지원되는 소스와 타깃, 로그 설정, 보존 기간과 변환 제약을 확인한다. 스키마 변환과 앱 호환성 수정까지 DMS가 대신한다고 가정하지 않는다. 메커니즘은 [[DMS]].
+- **Read Replica 승격 (동종/리전 이동)** — 지원되는 복제본을 따라잡게 한 뒤 독립 DB로 승격하고 앱을 전환한다. 승격은 기존 복제 관계를 끊으며 RDS가 인스턴스를 재부팅한다. **수 분 이상 걸릴 수 있으므로** DMS 컷오버와 같은 중단 시간으로 가정하지 않는다. 리전 간 복제와 엔진/버전 조합의 지원 여부도 확인한다.
 
-정리하면 같은 엔진 업그레이드면 Blue/Green, 엔진을 바꾸거나 복잡하면 DMS, 단순 동종 이전이나 리전 이동이면 Read Replica 승격.
+같은 엔진 업그레이드는 Blue/Green, 엔진 전환은 DMS, 동종 이전은 Read Replica 승격을 후보로 비교한다. 지원 조합과 허용 중단 시간, 복구 절차를 확인한 뒤 선택한다.
 
 ## 컷오버 시퀀스 — 여기서 사고가 난다
 
 방법을 골랐어도 실제로 데이는 건 전환 순간이다. 이 순서를 지킨다.
 
 ```
-1. 사전: 복제 지연(lag)이 거의 0으로 수렴했는지 확인
-2. 소스 쓰기 정지          ← 다운타임 시작 (앱 read-only 플래그 또는 writer 정지)
-3. lag = 0 도달까지 대기    (타깃이 마지막 변경분까지 따라잡음)
-4. 행 수 / 체크섬 검증
-5. AUTO_INCREMENT / 시퀀스 값 맞추기   ← 빼먹으면 바로 사고
-6. 앱을 새 엔드포인트로 전환
-7. 새 타깃에서 쓰기 재개     ← 다운타임 끝
+1. 사전: 초기 적재, 데이터 검증과 복제 상태를 확인
+2. 소스 쓰기 정지          ← 쓰기 중단 시작 (API, 배치와 워커 포함)
+3. 진행 중 쓰기 종료와 마지막 변경분의 타깃 적용을 확인
+4. 남은 차이, 미검증 행과 핵심 업무 불변조건을 검사
+5. AUTO_INCREMENT / 시퀀스 값과 필요한 승격 절차를 확인
+6. 앱 연결을 타깃으로 전환하고 기존 연결을 정리
+7. 새 타깃에서 쓰기 재개 후 실제 요청 성공을 확인
 ```
 
-2~7 사이가 다운타임이고, CDC가 잘 따라잡고 있었으면 보통 수 초에서 수십 초다.
+위 순서는 수동 컷오버의 점검 틀이다. 관리형 Blue/Green에서는 AWS가 제공하는 전환 절차를 따른다. 지연 지표 하나가 0이라는 사실만으로 모든 테이블의 이전과 검증이 완료됐다고 판단하지 않는다.
 
 ## 컷오버 함정 (사고의 대부분)
 
 ### AUTO_INCREMENT / 시퀀스 드리프트 — 가장 악명 높은 함정
 
-DMS 같은 논리적 적재에서 데이터는 다 옮겨졌는데 AUTO_INCREMENT(MySQL)나 시퀀스(PostgreSQL)의 "다음 값"이 안 맞으면, 컷오버 후 쓰기 재개하자마자 **중복 키 에러(PK 충돌)**가 터진다. 특히 **PostgreSQL + DMS는 시퀀스 현재값을 안 옮긴다**. 반드시 수동 보정한다.
+DMS 같은 논리적 적재에서 행은 옮겨졌어도 ID 생성기의 다음 값이 기존 키와 겹치면 **중복 키 에러(PK 충돌)**가 발생한다. DMS는 PostgreSQL 타깃의 시퀀스를 CDC로 이전하지 않으므로 복제를 멈춘 뒤 보정한다. 빈 테이블, 증가폭과 여러 테이블이 공유하는 시퀀스는 별도로 확인한다. 다음 예시는 쓰기를 멈춘 상태의 비어 있지 않은 테이블과 증가폭 1을 전제한다.
 
 ```sql
--- PostgreSQL: 각 시퀀스를 실제 max(id)+1로
+-- PostgreSQL: 다음 nextval이 max(id)+1이 되도록 현재 값을 설정
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 ```
 
@@ -67,14 +68,14 @@ ALTER TABLE users AUTO_INCREMENT = <max(id)+1>;
 ### DNS/엔드포인트 전환
 
 - 앱 설정에 RDS 엔드포인트를 박아두면 재배포가 필요하고, 커넥션 풀이 옛 커넥션을 붙잡아 깔끔하지 않다.
-- 더 나은 방법: **Route 53 CNAME**을 RDS 엔드포인트 앞에 두고 컷오버 때 CNAME만 새 엔드포인트로 바꾼다. 단 **DNS TTL을 미리 낮춰둬야**(예: 5초) 빠르게 전환된다. 안 그러면 옛 주소를 오래 캐싱한다.
-- Blue/Green은 AWS가 엔드포인트를 바꿔치기해 이 고민이 없다.
+- **Route 53 CNAME** 같은 별칭은 전환 선택지다. TTL을 낮춰도 기존 연결은 바뀌지 않는다. 별칭과 서버 인증서의 호스트명 검증이 맞는지 확인하고 TLS 검증을 끄는 우회는 하지 않는다.
+- Blue/Green도 기존 연결을 종료하므로 드라이버의 재연결과 DNS 캐시 동작을 확인한다.
 - failover와 똑같이 풀이 쥔 옛 커넥션은 폐기되게 한다(→ [[RDS-Operational-Pitfalls|죽은 소켓 evict]]).
 
 ### DMS 특유의 함정
 
-- **PK 없는 테이블** — CDC는 update/delete를 적용하려면 PK(또는 유니크 키)가 필요하다. PK 없는 테이블은 CDC가 제대로 못 따라가니 미리 만든다.
-- **FK / 트리거** — full load 중 FK 순서 위반이 날 수 있어 로드 중에는 FK 체크를 끄고 끝나면 켠다. 타깃 트리거도 CDC 적용 중에는 꺼서 중복 발화를 막는다.
+- **PK 없는 테이블** — CDC 지원과 update/delete의 행 식별 방식은 엔드포인트별로 확인한다. DMS 데이터 검증에는 PK 또는 unique index가 필요하므로 키 없는 테이블을 검증 성공으로 처리하지 않는다.
+- **FK / 트리거** — full load의 테이블 적재 순서는 FK를 위반할 수 있다. 타깃의 FK와 트리거 비활성화, 복원 시점을 계획한다. CDC도 적용 모드에 따라 제약 위반 가능성이 있으므로 full load 종료만으로 복원 시점을 정하지 않는다. 앱 쓰기 재개 전 필요한 제약과 트리거의 복원, 데이터 정합성을 확인한다.
 - **큰 LOB/BLOB** — DMS의 LOB 모드를 안 맞추면 잘리거나 느리다. 큰 바이너리 컬럼이 있으면 모드를 확인한다.
 
 ### DDL 동결
@@ -83,14 +84,17 @@ ALTER TABLE users AUTO_INCREMENT = <max(id)+1>;
 
 ## 검증과 롤백
 
-- **검증** — DMS는 행 단위 data validation을 제공하고, MySQL이면 `pt-table-checksum`으로 소스/타깃을 비교한다. 컷오버 전에 돌려 데이터 일치를 확인한다.
-- **롤백** — **소스를 바로 지우지 않는 것**이 중요하다. 검증될 때까지 살려둔다. 단 새 타깃에서 쓰기가 이미 시작됐으면 단순 롤백 시 그 사이 데이터를 잃는다. 진짜 안전하게 가려면 **역방향 복제(타깃 → 소스)**까지 거는데 난이도가 확 오른다. 보통은 "검증을 빨리 하고, 문제 시 짧은 윈도 안에 되돌린다"로 타협한다.
+- **검증 완료와 미완료를 구분한다.** DMS의 `ValidationFailed`뿐 아니라 `ValidationPending`, `ValidationSuspended`와 테이블 오류도 확인한다. 실패 0건이어도 비교하지 못한 행이 남으면 완료가 아니다. validation 쿼리는 양쪽 DB와 네트워크 부하를 늘리므로 사전 수행과 최종 확인의 시간을 나눈다.
+- **업무 계약도 확인한다.** 행 비교와 별도로 주문 합계, 환불 상태, 중복 ID와 핵심 조회를 검사하는 것을 운영 기준으로 둔다. 이 기준은 스키마와 업무에 맞게 정하며 DMS가 자동 검증하는 범위와 구분한다.
+- **쓰기 재개 전후의 롤백은 다르다.** 새 타깃에서 쓰기 전이면 소스 복귀를 검토할 수 있다. 쓰기 후에는 타깃에만 생긴 변경을 소스로 반영할 절차가 필요하다. 역방향 복제나 재적재, 재처리의 중복과 충돌 정책을 리허설하지 않았다면 주소만 되돌리지 않는다. 짧은 시간 안에 되돌려도 데이터 유실 위험은 남는다.
+- **Blue/Green의 전환 실패 복구와 완료 후 복귀를 구분한다.** 전환 도중 실패하면 AWS가 변경을 되돌리지만, 전환 완료 뒤 기존 blue가 새 쓰기를 자동으로 받는 롤백 환경이라고 가정하지 않는다. 이전 DB 보존은 복구 재료를 남기는 조치이지 동기화 보장이 아니다.
 
 ## 현실적인 다운타임
 
-- **Blue/Green**: switchover 시 보통 1분 이하. 관리형이라 가장 안정적.
-- **DMS / Read Replica 컷오버**: 쓰기 정지~전환 사이 수 초~수십 초. CDC가 얼마나 따라잡아 뒀는지에 달림.
-- **진짜 0초**: 앱 레벨 dual-write나 점진적 트래픽 전환을 직접 구현해야 해 복잡도가 매우 높다. 대개 위 방법으로 초 단위 near-zero에서 타협한다.
+- **Blue/Green**: AWS는 workload에 따라 보통 1분 미만이라고 설명한다. 해당 환경의 보장값은 아니다.
+- **DMS 컷오버**: CDC에는 지연 SLA가 없다. 복제 적체, 최종 검증과 앱 재연결까지 측정한다.
+- **Read Replica 승격**: 재부팅을 포함해 수 분 이상 걸릴 수 있다. 허용 중단 시간이 짧으면 리허설 결과로 적합성을 판단한다.
+- **앱의 dual-write와 점진 전환**: 부분 실패, 순서와 충돌 해결이 추가로 필요하다. 도입 자체가 0초 중단이나 데이터 무손실을 보장하지 않는다.
 
 ## 구체적 런북
 
@@ -99,11 +103,11 @@ ALTER TABLE users AUTO_INCREMENT = <max(id)+1>;
 
 ## 면접 체크포인트
 
-- 무중단의 공통 골격(Full Load → CDC → Cutover)과 다운타임이 곧 쓰기 정지 시간인 이유
+- Full Load → CDC → Cutover에서 쓰기 중단과 사용자 체감 회복 시점이 다른 이유
 - 세 방법의 적용 경계: Blue/Green(동종 업그레이드), DMS+CDC(이기종/복잡), Read Replica 승격(동종/리전)
 - 컷오버 시퀀스에서 AUTO_INCREMENT/시퀀스 보정을 빼먹으면 생기는 사고(PK 충돌), PostgreSQL+DMS가 특히 위험한 이유
-- 엔드포인트 전환을 Route 53 CNAME + 낮은 TTL로 하는 이유, Blue/Green이 엔드포인트를 유지하는 장점
-- CDC가 PK 없는 테이블을 못 따라가는 이유
+- DNS 변경 뒤에도 기존 연결 정리가 필요한 이유와 Blue/Green의 재연결 조건
+- CDC 행 식별과 DMS 데이터 검증의 키 요구사항을 따로 확인하는 이유
 - 롤백을 위해 소스를 살려두는 것과 역방향 복제의 트레이드오프
 
 ## 출처
@@ -111,6 +115,12 @@ ALTER TABLE users AUTO_INCREMENT = <max(id)+1>;
 - [Amazon RDS Blue/Green Deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-overview.html)
 - [AWS DMS — Using change data capture (CDC)](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html)
 - [AWS DMS — Data validation](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Validating.html)
+- [Amazon RDS — Switching a blue/green deployment](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-switching.html)
+- [Amazon RDS — Promoting a read replica to be a standalone DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.Promote.html)
+- [AWS DMS — Best practices](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html)
+- [AWS DMS — Using a PostgreSQL database as a target](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.PostgreSQL.html)
+- [PostgreSQL 18 Documentation — Sequence Manipulation Functions](https://www.postgresql.org/docs/18/functions-sequence.html)
+- [Amazon RDS — Using SSL/TLS to encrypt a connection to a DB instance or cluster](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html)
 
 ## 관련 문서
 

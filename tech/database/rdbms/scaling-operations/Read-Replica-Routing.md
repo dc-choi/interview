@@ -3,12 +3,12 @@ tags: [database, replication, read-replica, performance, routing]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["Read Replica Routing", "읽기 복제본 라우팅"]
-verified_at: 2026-07-21
+verified_at: 2026-10-13
 ---
 
 # Read Replica 라우팅
 
-DB에 읽기 복제본이 있으면 **"어떤 쿼리를 어디로 보낼지"** 를 앱이 결정해야 한다. 쓰기와 primary의 최신 상태를 전제로 한 transaction은 primary가 기본이고, stale read를 허용하는 read-only workload는 replica를 사용할 수 있다. **복제 지연(replication lag)** 때문에 read-after-write와 snapshot 시점을 명시해야 한다.
+DB에 읽기 복제본이 있으면 **어떤 쿼리를 어디로 보낼지**를 앱이 결정해야 한다. 쓰기와 primary의 최신 상태를 전제로 한 transaction은 primary가 기본이고, stale read를 허용하는 read-only workload는 replica를 사용할 수 있다. **복제 지연(replication lag)** 때문에 read-after-write와 snapshot 시점을 명시해야 한다.
 
 ## 전제: Replication 자체와 다름
 
@@ -23,37 +23,37 @@ DB에 읽기 복제본이 있으면 **"어떤 쿼리를 어디로 보낼지"** �
 
 | 계층 | 예 | 장점 | 단점 |
 |---|---|---|---|
-| **DB 레이어** | Aurora 자동 endpoint (writer, reader) | 앱 무지 | 라우팅 로직이 제한적 |
+| **DB endpoint** | Aurora writer, reader endpoint | 연결 대상 선택을 단순화 | SQL별 읽기/쓰기 자동 분기는 아님 |
 | **프록시** | RDS Proxy, ProxySQL, HAProxy | 앱 무관, 공통 규칙 중앙화 | 추가 인프라, 단일 장애점 가능 |
 | **애플리케이션 / 드라이버** | Prisma, TypeORM, Sequelize 확장 | 세밀한 제어, 쿼리 의도 반영 | 각 서비스마다 구현 필요 |
 
-보통 **DB endpoint + 앱 라우팅** 조합. 프록시는 대규모 공용 인프라일 때.
+Aurora reader endpoint는 쿼리가 아닌 연결을 분산한다. 연결 풀의 한 연결은 같은 인스턴스를 사용하므로, 읽기/쓰기 의도에 맞는 endpoint 선택은 앱에 남는다.
 
 ## 표준 라우팅 규칙
 
-### 자동 분기
-- **Read queries (SELECT)** → 복제본
+### 자동 분기 정책 예시 (도구와 설정 확인)
+- **stale 허용 read queries** → 복제본. SELECT라도 locking read와 최신 상태가 필요한 조회는 별도 분기한다.
 - **Write queries (INSERT/UPDATE/DELETE)** → primary
 - **Transactions** → primary (한 트랜잭션 안 모든 쿼리)
 - **Raw queries** → primary (안전 기본값 — SELECT인지 판별 어려움)
 
 ### 명시적 오버라이드
 
-대부분의 ORM이 두 가지 API를 제공:
-- **primary 강제**: 쓰고 바로 읽을 때 (Read-Your-Own-Writes 보장)
+복제 지원 ORM은 다음과 같은 명시적 선택 수단을 제공한다:
+- **primary 강제**: commit 완료 뒤 새 snapshot으로 읽어 자신의 쓰기를 확인할 때
 - **replica 강제**: 무거운 분석 쿼리가 primary에 영향 안 주게. 단, Aurora처럼 공유 스토리지면 Reader의 장기 조회도 Writer의 undo purge를 지연시킬 수 있다 → [[MySQL-Undo-Purge-HLL|Undo Purge와 HLL]]
 
 구체 이름은 도구마다 다름:
 | 도구 | primary 강제 | replica 강제 |
 |---|---|---|
 | Prisma (`extension-read-replicas`) | `$primary()` | `$replica()` |
-| TypeORM | QueryRunner, DataSource replication 설정 | 기본 읽기 동작 |
+| TypeORM | `createQueryRunner("master")`, `defaultMode: "master"` | `createQueryRunner("slave")`, 기본 읽기 분기 |
 | Sequelize | `{ useMaster: true }` 옵션 | 기본 (`findAll` 등) |
-| Spring (Spring Data JPA) | `@Transactional(readOnly = false)` + `AbstractRoutingDataSource` 라우터 | `@Transactional(readOnly = true)` |
+| Spring (Spring Data JPA) | `AbstractRoutingDataSource` 등 별도 라우터 구현 | `readOnly`는 힌트이며, annotation만으로 replica를 선택하지 않음 |
 
 ## Replication Lag와 Read-After-Write
 
-비동기 복제는 primary → replica 동기화에 **ms~수 초** 지연. 이로 인한 전형적 버그:
+비동기 복제는 primary의 commit 시점에 replica 적용 완료를 보장하지 않는다. 지연은 부하와 장애에 따라 늘어날 수 있으며 고정 상한으로 가정하지 않는다.
 
 ```
 1. 사용자가 글 수정 → primary에 UPDATE 완료
@@ -67,25 +67,25 @@ DB에 읽기 복제본이 있으면 **"어떤 쿼리를 어디로 보낼지"** �
 방금 쓴 사용자의 바로 다음 읽기만 primary로 강제. ORM의 `$primary()` 같은 API 사용. 작은 범위에 가장 실용적.
 
 **2. Session Affinity (방금 쓴 사용자 N초 동안)**
-세션, 쿠키에 "last-write-at" 기록. N초 내 같은 사용자의 읽기는 전부 primary.
-- 장점: 사용자 경험 일관
-- 단점: 세션 상태 관리 복잡
+세션이나 쿠키에 쓰기 시점을 기록하고 N초 동안 primary로 보낸다.
+- 인스턴스가 바뀌어도 같은 쓰기 표식을 읽을 수 있어야 한다. 프로세스 로컬 기록만으로는 서버 간 요청을 연결하지 못한다.
+- N초가 지나도 복제가 끝나지 않을 수 있다. 시간 창은 완화책이며 일관성 보장이 아니다.
 
-**3. 복제 완료 확인 (Replication Lag 모니터)**
-primary에서 쓴 후 replica에서 해당 row(또는 GTID)가 보일 때까지 poll → 보이면 읽기.
-- 장점: 정확
-- 단점: 추가 쿼리, 지연
+**3. 필요한 쓰기의 적용 위치 확인**
+MySQL 8.4는 해당 commit을 포함한 GTID 집합을 전달해 `WAIT_FOR_EXECUTED_GTID_SET(gtid_set, timeout)`으로 적용을 기다릴 수 있다. 반환값 0은 성공, 1은 시간 초과이며 `timeout=0`은 무기한 대기다.
+- 행 존재만으로 특정 갱신의 반영을 판단하지 않는다. 대기한 replica에서 조회하고, 적용 전부터 유지한 오래된 snapshot도 재사용하지 않는다.
+- 제한 시간 초과나 오류 시 primary 조회 또는 명시적 실패로 처리한다. 성공으로 간주하지 않는다.
 
 **4. Eventual Consistency 수용 (도메인이 허용하면)**
-"몇 초 늦어도 OK"인 도메인(피드, 집계)은 그냥 replica 사용. UX상 약간의 지연 수용.
+피드와 집계처럼 지연을 허용하는 조회는 허용 범위와 초과 시 동작을 정하고 replica를 사용한다.
 
-대부분의 실무는 **1번(primary 강제)** 이 간결하고 충분. 복잡한 경우만 2~3.
+쓰기 직후 primary 조회부터 검토하고, primary 부하와 신선도 요구 때문에 필요한 경우에만 2~3을 추가한다. PostgreSQL 18의 `synchronous_commit=remote_apply`는 설정된 동기 standby의 적용을 기다린다. `synchronous_standby_names`가 비었으면 원격 적용을 기다리지 않으며, 비동기 replica 전체의 최신성도 보장하지 않는다. commit 지연 증가와 실제 읽기 대상, snapshot을 함께 검토한다.
 
 ## 트랜잭션과 읽기 복제본
 
 쓰기, locking read와 방금 쓴 값의 read-your-writes가 필요한 transaction은 한 primary connection에 고정한다. primary와 replica를 한 논리 transaction 안에서 섞으면 atomicity와 동일 snapshot을 제공하지 못한다.
 
-다만 replica도 자체 isolation level에 따른 **read-only snapshot transaction**을 실행할 수 있다. 이 snapshot은 replica가 적용한 replication position 기준이라 primary 최신 상태보다 뒤처질 수 있지만, 리포트 안 여러 query를 한 시점으로 맞추는 데 유용하다. 긴 리포트를 transaction 없이 실행해야 한다는 뜻은 아니다.
+다만 replica도 지원하는 isolation level에 따라 **read-only snapshot transaction**을 실행할 수 있다. MySQL InnoDB의 `REPEATABLE READ`는 첫 consistent read의 snapshot을 유지하지만, `READ COMMITTED`는 읽기마다 새 snapshot을 만든다. 여러 query를 한 시점으로 맞추려면 transaction 사용 여부뿐 아니라 isolation level도 확인한다. replica의 snapshot은 primary 최신 상태보다 뒤처질 수 있다.
 
 ORM 확장이 transaction을 primary에 고정하는 것은 일반적인 쓰기 transaction의 안전한 기본값이다. stale 허용 read-only transaction을 replica로 보내려면 별도 client, read-only 표시와 freshness 요구를 명시한다.
 
@@ -99,7 +99,7 @@ const primary = new PrismaClient({ adapter: primaryAdapter })
 const replica1 = new PrismaClient({ adapter: replicaAdapter1 })
 
 const prisma = primary.$extends(
-  readReplicas({ replicas: [replica1, replica2] })
+  readReplicas({ replicas: [replica1] })
 )
 
 // 자동: findMany → replica
@@ -111,7 +111,7 @@ await prisma.$primary().user.findUnique({...})
 ```
 
 주의점:
-- Prisma 7.0+ + **Driver Adapter 또는 Accelerate** 필수
+- 현재 확장은 Prisma 7.0+와 **Driver Adapter 또는 Accelerate URL**을 요구한다. Prisma 6.x는 확장 0.4.1을 사용한다.
 - 여러 replica면 랜덤 선택 → 부하 분산
 - 다른 확장과 체인 시 **마지막에 적용**
 - Raw 쿼리(`$queryRaw`)는 기본 primary — 복제본 쓰려면 `$replica()` 명시
@@ -133,7 +133,7 @@ new DataSource({
 })
 ```
 
-Repository는 기본 slaves에서 읽고, write는 master로. QueryRunner로 세밀 제어.
+TypeORM의 기본 find와 SelectQueryBuilder는 slave를 사용하고, write와 raw query는 master를 사용한다. `defaultMode: "master"`로 읽기 기본값을 바꿀 수 있다. QueryRunner로 목적지를 고정하고 사용 후 `finally`에서 해제한다.
 
 ## 구현 예 3: 드라이버 직접 (Node.js pg, mysql2)
 
@@ -156,19 +156,19 @@ async function updateUser(id, data) {
 ## 흔한 함정
 
 ### Primary 과부하 해결 안 됨
-트랜잭션 안에 읽기를 많이 넣으면 → 전부 primary → 복제본 활용 효과 0. **읽기 전용 쿼리는 트랜잭션 밖**으로 빼야 의미 있음.
+ORM이 transaction을 primary에 고정하면 그 안의 읽기는 replica로 분산되지 않는다. 여러 읽기의 동일 snapshot이 필요하면 transaction을 없애지 말고 replica의 read-only transaction 지원과 라우팅을 확인한다.
 
 ### Raw 쿼리로 SELECT 하면 primary로 감
-대부분 라이브러리가 Raw 쿼리 안의 SELECT 자동 감지 못 함 → primary 기본값. 명시적 API(`$replica()`)로 우회 필요.
+Prisma read-replicas 확장과 TypeORM은 raw query를 기본 primary로 보낸다. SQL이 SELECT여도 replica로 자동 분기된다고 가정하지 말고 명시적 API를 사용한다.
 
 ### Replication Lag 미측정
 Lag가 실제로 얼마나 되는지 **모니터링 안 하고** 앱 설계 → 예상보다 큰 지연에서 read-after-write 빈발. 대시보드 필수.
 
 ### 커넥션 풀 합산 관리 실패
-primary + replica N대 각각 풀 생성 → 커넥션 총합이 예상보다 많음 → DB 커넥션 한도 초과.
+풀 구성은 도구마다 다르다. Sequelize v6는 read/write 풀 두 개를 유지하며, 별도 client를 만드는 구성은 client별 풀도 확인한다. 앱 인스턴스 수까지 포함해 각 DB로 열리는 연결의 상한을 계산한다.
 
 ### 장애 시 fallback 없음
-Replica 죽으면 읽기 실패. **Replica 헬스체크 + primary fallback** 전략 필수 (ORM이 지원하면 활용, 아니면 직접 구현).
+Replica 장애 시 primary fallback, 제한된 stale 결과, 명시적 실패 중 정책을 정한다. primary 여유 용량 없이 모든 읽기를 우회하면 쓰기까지 영향을 받을 수 있다.
 
 ## 면접 체크포인트
 
@@ -178,9 +178,14 @@ Replica 죽으면 읽기 실패. **Replica 헬스체크 + primary fallback** 전
 - 쓰기, locking read와 read-your-writes transaction을 primary에 고정하는 이유
 - stale 허용 read-only snapshot transaction을 replica에서 실행할 때의 snapshot 시점
 - Raw 쿼리가 기본 primary인 이유 (안전 기본값)
-- 읽기 전용 쿼리를 트랜잭션 밖으로 빼야 하는 이유
+- 시간 기반 sticky routing이 보장이 아닌 이유와, GTID 대기 뒤 읽을 replica 및 snapshot 선택
 
 ## 출처
+- [MySQL 8.4 Reference Manual — GTID Functions](https://dev.mysql.com/doc/refman/8.4/en/gtid-functions.html)
+- [PostgreSQL 18 Documentation — Write Ahead Log](https://www.postgresql.org/docs/18/runtime-config-wal.html)
+- [Amazon Aurora User Guide — Reader endpoints](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Reader.html)
+- [TypeORM Documentation — Multiple data sources, databases, schemas and replication setup](https://typeorm.io/docs/data-source/multiple-data-sources/)
+- [Sequelize v6 Documentation — Read Replication](https://sequelize.org/docs/v6/other-topics/read-replication/)
 - [Prisma Docs — Read Replicas](https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/read-replicas)
 - [GitHub — prisma/extension-read-replicas](https://github.com/prisma/extension-read-replicas)
 - [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
