@@ -35,6 +35,16 @@ aliases: ["People Leadership", "사람 리더십", "팀원 성장 리더십", "1
 | 역량 | 전공과 강점을 고려한 도전 과제 | 손 비는 사람에게 무작위 배분 |
 | 책임 | 예측 가능한 실수는 함께 책임 | 문제가 생기면 전가 |
 
+### 실험의 공로와 승인 책임
+
+실험을 위임할 때는 팀원의 아이디어와 실행 성과를 인정하는 일, 리더가 승인한 위험에 책임지는 일을 함께 설계한다. 다음은 이를 적용하는 점검안이다. 보편적인 성과 향상 공식으로 보지 않는다.
+
+- 리더가 결과를 책임진다는 이유로 실행 방법을 매 단계 다시 승인하게 만들지 않는다. 해결할 문제와 맡긴 판단 범위를 먼저 합의한다.
+- 시도를 승인할 때 고객 영향의 관찰 지표와 문제가 생기면 조정할 책임자를 정한다. 성공 뒤 공로를 가져가거나 실패 뒤 승인 책임을 팀원에게 넘기지 않는다.
+- 예상과 다른 결과를 얻은 실험과 안전 경계를 지키지 않은 실행은 구분한다. AWS Well-Architected는 안전한 실험 환경과 제한된 검증을 권장하며, 원치 않은 결과를 얻었다는 이유만으로 팀원을 처벌하지 않도록 한다(2026-10-13 확인).
+
+가설, 중단 기준과 롤백을 정하는 절차는 [[Failure-Tolerant-Culture|실패에 관대한 문화]]와 연결한다. 리더의 책임 선언만으로 운영 안전장치가 마련되지는 않는다.
+
 ### 기회를 설계하는 리더
 
 Blumberg와 Pringle(1982)은 성과를 수행 역량(capacity), 의지(willingness), 수행 기회(opportunity)의 상호작용으로 보고, 셋 중 하나라도 없으면 성과가 나오지 않는다고 제안했다. 역량과 동기만 보는 평가는 기회의 몫을 놓친다. 리더가 설계할 수 있는 기회는 다음과 같다.
@@ -167,6 +177,8 @@ Blumberg와 Pringle(1982)은 성과를 수행 역량(capacity), 의지(willingne
 
 ## 출처
 
+- [The Power of Purpose: AWS VP Ruba Borno on Leading with Why — AWS Executive Insights](https://www.youtube.com/watch?v=_hvMoEvJ7KM)
+- [AWS Well-Architected Framework, OPS03-BP05 Experimentation is encouraged](https://docs.aws.amazon.com/wellarchitected/latest/framework/ops_org_culture_team_enc_experiment.html)
 - [우아한테크세미나 공감 토크쇼 — 시니어 개발자의 리더십과 성장 — YouTube](https://www.youtube.com/watch?v=vga0PZK6AvI&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=13)
 - [공정함은 과정에서 온다 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-07-fairness-in-process/)
 - [후배가 생겼는데 어떻게 해야 할지 모르는 개발자에게 — Team Grit](https://teamgrit.co/article/408)

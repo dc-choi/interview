@@ -25,6 +25,14 @@ SQL을 대신 작성해도 어떤 질문을 해야 하는지, 결과가 무슨 �
 
 이 표는 분석 자동화를 운영에 적용하기 위한 평가 제안이다. 시작할 때는 반복되는 질문 하나, 담당자 한 명과 검토한 기준 보고서를 정한다. 데이터 정의와 자주 틀리는 질문을 누적해 입력과 검토 절차를 고친다.
 
+### 시간 단축률의 측정 범위를 고정한다
+
+처리 시간 감소율은 `(기존 시간 - 변경 후 시간) / 기존 시간`이다. 가령 한 분석 단계가 100분에서 10분으로 줄면 그 단계의 시간은 90% 감소한다. 여기에 바뀌지 않은 검수 100분이 더 필요하다면 전체 업무 시간은 200분에서 110분으로 줄어 감소율은 45%다. 이는 계산 예시이며 특정 제품의 측정 결과가 아니다.
+
+도입을 검토할 때는 같은 데이터량과 산출물, 품질 기준에서 비교하고, 모델 응답 시간인지 분석 단계 전체인지 사람의 검수까지 포함한 시간인지 구분한다. AWS Generative AI Lens도 과업별 기준 데이터로 평가하고 지연, 처리량과 과업 성능을 함께 고려하도록 한다(2026-10-13 확인). 요약 작업의 좋은 결과를 다른 분석 작업의 성능으로 일반화하지 않는다.
+
+이 기준을 마케팅 도구 평가에 적용하면 브랜드별 반복 보고서 하나를 정해 생성, 검수와 재작업 시간을 따로 기록할 수 있다. 특정 처리 단계의 개선율을 팀 전체의 생산성, 인건비 절감이나 매출 증가율로 바꾸지 않는다. 기술적인 모델 선택과 라우팅은 [[LLM-Model-Tiers|LLM 모델 티어 선택]]에서 다룬다.
+
 ## 이탈 예측과 유지 캠페인의 효과를 나눈다
 
 이탈할 가능성이 높은 고객과 개입으로 이탈을 막을 수 있는 고객이 반드시 같지는 않다. 이탈 예측은 위험을 추정하고, uplift 모델링은 개입 유무에 따른 결과 차이를 추정한다. 높은 예측 정확도만으로 할인이나 메시지가 효과적이라고 판단할 수 없다.
@@ -74,6 +82,7 @@ LG전자와 AWS의 공개 설계는 마케팅 질문의 계획 수립, 코드 �
 
 ## 출처
 
+- [AWS Generative AI Lens, Establish performance evaluation processes](https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/genperf01.html)
 - [Google Ads Help, About Target ROAS bidding](https://support.google.com/google-ads/answer/6268637?hl=en)
 - [Google Analytics, Measure ecommerce](https://developers.google.com/analytics/devguides/collection/ga4/ecommerce)
 - [Nitro Commerce helps boost ad performance and customer insights with AI — AWS](https://aws.amazon.com/aws-startups/learn/nitro-commerce-helps-boost-ad-performance-and-customer-insights-with-ai/)
