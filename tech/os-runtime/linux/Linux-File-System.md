@@ -143,10 +143,15 @@ GUI가 없는 서버와 컨테이너에서는 CLI로 원인을 좁힌다. 옵션
 | `touch notes.txt` | 파일이 없으면 빈 파일을 만들고, 있으면 접근 시각과 수정 시각을 갱신한다 | 기존 내용을 비우는 명령이 아니다 |
 | `cp source.txt copy.txt` | 원본을 남기고 복사하지만 기존 목적지 파일을 덮어쓸 수 있다 | 원본뿐 아니라 목적지 존재 여부도 확인한다. `-i`는 덮어쓰기 전에 묻는다 |
 | `cp a.txt b.txt backup/` | 여러 원본을 목적지 디렉터리에 복사한다 | 마지막 인자는 목적지 디렉터리여야 한다 |
+| `cp -R notes notes-copy` | 디렉터리와 내부 항목을 재귀적으로 복사한다 | `notes-copy`가 없을 때와 이미 디렉터리로 있을 때 최종 경로가 달라질 수 있다 |
+| `mv copy.txt archive/` | 기존 `archive` 디렉터리 안으로 파일을 옮긴다 | 성공하면 이전 경로에 복사본을 하나 더 남기지 않는다. 목적지의 동명 파일도 확인한다 |
+| `mv -i copy.txt renamed.txt` | 목적지가 디렉터리가 아니면 파일 이름을 바꾸며, 기존 파일을 덮기 전 확인한다 | 목적지가 기존 디렉터리라면 그 안으로 이동한다. 새 이름인지 디렉터리인지 먼저 구분한다 |
 | `rm -i copy.txt` | 해당 파일을 지우기 전에 확인을 묻는다 | 거부는 그 삭제를 건너뛰는 것이며, 이미 끝난 삭제를 되돌리는 기능은 아니다 |
 | `rm -r copies/` | 디렉터리와 그 안의 항목을 재귀적으로 제거한다 | `-r` 자체는 확인 질문을 켜지 않는다 |
 
 목적지 목록을 확인한 것만으로 복사 내용까지 검증한 것은 아니다. 중요한 원본을 정리하기 전에는 복사본의 내용과 복구 가능성도 따로 확인한다.
+
+재귀 복사와 이동의 행은 GNU coreutils `cp(1)`, `mv(1)`을 2026-10-12에 부분 대조했다. 목적지의 존재 여부와 종류가 동작을 바꾸므로 같은 명령의 재실행을 첫 실행과 같다고 가정하지 않는다.
 
 ## 흔한 실수
 
@@ -167,6 +172,7 @@ GUI가 없는 서버와 컨테이너에서는 CLI로 원인을 좁힌다. 옵션
 - `df`와 `du` 값이 다를 때 먼저 의심할 원인(지웠지만 열린 파일, 마운트에 가려진 데이터)
 
 ## 출처
+- [GNU coreutils, mv(1)](https://man7.org/linux/man-pages/man1/mv.1.html) — 이동과 이름 변경, 목적지 디렉터리와 `-i`의 의미(2026-10-12 부분 검증)
 - [GNU coreutils, cp(1)](https://man7.org/linux/man-pages/man1/cp.1.html), [touch(1)](https://man7.org/linux/man-pages/man1/touch.1.html), [rm(1)](https://man7.org/linux/man-pages/man1/rm.1.html) (파일 작업의 대상 상태와 확인 옵션, 2026-10-06 부분 검증)
 - [Tecoble — Linux 파일 디렉토리 시스템](https://tecoble.techcourse.co.kr/post/2021-10-18-linux-file-directory-system/)
 - [GNU coreutils, `rm` source](https://git.savannah.gnu.org/cgit/coreutils.git/plain/src/rm.c)

@@ -11,6 +11,20 @@ aliases: ["Community Knowledge and Co-Creation", "커뮤니티 지식 축적", "
 
 이 흐름은 커뮤니티 운영 관찰과 향후 구상에서 추출한 설계 조건이다. 지식 공유가 자동으로 매출이나 지속 가능한 IP를 만든다는 뜻은 아니다.
 
+## 학습 공동체를 만드는 세 요소
+
+실천공동체(community of practice)는 같은 일을 더 잘 수행하려는 사람들이 반복적으로 교류하며 배우는 구조다. Wenger-Trayner의 개념 틀은 다음 세 요소를 함께 본다.
+
+| 요소 | 확인할 내용 |
+|---|---|
+| 공동 영역(domain) | 어떤 문제와 역량을 함께 중요하게 여기는가 |
+| 관계(community) | 서로 질문하고 돕는 활동과 관계가 이어지는가 |
+| 실천(practice) | 경험, 사례, 도구와 반복 문제의 해결 방법이 공동 자원으로 축적되는가 |
+
+같은 직함을 가진 사람이 모이거나 웹사이트를 열었다는 사실만으로 이 조건을 충족하지는 않는다. 반대로 매일 함께 일해야 하는 것도 아니다. 문제 해결, 경험 요청, 기존 산출물 재사용과 반복 문제의 문서화가 실천을 발전시키는 활동에 포함된다.
+
+이를 사업 운영에 적용할 때는 회원 수와 게시물 수에 더해, 공유한 방법을 실제로 사용한 사례와 그 결과를 확인하는 점검 기준으로 쓸 수 있다. 이는 위 개념 틀을 적용한 운영 제안이며 수익 예측 모형은 아니다. 실명 참여, 회원 간 거래나 생산자 비율만으로 매출과 지속성을 보장하지 않는다.
+
 ## 대화를 공동 자산으로 남기기
 
 1. 회의와 활동의 목적을 정하고 기록에 대한 동의를 받는다.
@@ -57,6 +71,7 @@ AI 초안에서도 주제와 독자, 사용할 관점과 표현 기준을 사람
 
 ## 출처
 
+- [Communities of practice: a brief introduction — Etienne and Beverly Wenger-Trayner](https://www.wenger-trayner.com/wp-content/uploads/2022/01/07-Brief-introduction-to-communities-of-practice.pdf) — 공동 영역, 관계와 실천의 구분, 활동 예시(2015, 1~3쪽)
 - [커뮤니티의 미래를 엿보다 — 만년필, 정회권](https://10000yearspen.com/post/%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0%EC%9D%98-%EB%AF%B8%EB%9E%98%EB%A5%BC-%EC%97%BF%EB%B3%B4%EB%8B%A4-7BMVyKkoQ7GqGIPbis7yxA)
 - [메타버스까지의 여정 — 만년필, 정회권](https://10000yearspen.com/post/%EB%A9%94%ED%83%80%EB%B2%84%EC%8A%A4%EA%B9%8C%EC%A7%80%EC%9D%98-%EC%97%AC%EC%A0%95-7WbxZ1wVQZ2ZPXL2d-MCyw)
 
