@@ -41,6 +41,28 @@ aliases: ["System Time and Clock Sync", "시스템 시간과 시계 동기화", 
 - 실제 구현은 여러 서버의 결과를 모아 틀린 서버를 걸러 내고 결합한 뒤, 작은 오차는 시계 속도를 조금씩 바꿔 흡수하고 큰 오차는 한 번에 맞춘다. 벽시계가 뒤로 가거나 건너뛸 수 있는 이유다.
 - 지속적인 보정은 chrony나 systemd-timesyncd 같은 동기화 데몬이 맡는다. `rdate`처럼 한 번 시각을 가져와 맞추는 도구는 시계를 순간적으로 건너뛰게 하고 이후의 흐름은 보정하지 않는다. 클라우드 인스턴스는 대개 제공자의 시간 서비스로 이미 동기화된다.
 
+## Windows 도메인에서는 설정과 실제 시간 원천을 구분한다
+
+부분 검증(2026-10-13): Microsoft W32Time 문서와 AWS EC2 시간 설정 문서로 이 절을 확인했다. 기존 시간 표현과 NTP 절 전체를 다시 검증한 날짜는 아니다.
+
+도메인에 가입한 Windows 컴퓨터는 기본적으로 `NT5DS` 유형으로 AD 도메인 계층을 따라 시간을 맞춘다. 별도의 신뢰 가능한 시간 원천을 구성하지 않았다면 포리스트 루트 도메인의 PDC emulator가 계층의 기준이 된다. 이 서버가 외부 시간 원천을 사용하려면 별도 구성이 필요하며, 외부 동기화를 구성하지 않으면 내부 하드웨어 시계가 시간을 결정한다. EC2의 로컬 Amazon Time Sync Service 주소 `169.254.169.123`을 사용할 수 있다는 사실과 도메인 멤버가 그 주소를 직접 사용하도록 구성됐다는 사실은 다르다.
+
+관리자 권한의 명령 프롬프트에서 다음을 확인한다. `dc.example.com`은 실제 점검할 도메인 컨트롤러 이름으로 바꾼다.
+
+```powershell
+w32tm /query /configuration
+w32tm /query /source
+w32tm /query /status
+w32tm /stripchart /computer:dc.example.com /samples:5 /dataonly
+```
+
+- `configuration`은 실행 설정과 그 설정의 출처를, `source`는 시간 원천을 보여 준다. `NT5DS` 설정만 보고 동기화 성공으로 판정하지 않는다.
+- `stripchart`는 지정한 서버와의 오프셋을 측정한다. 원천 설정을 바꾸거나 지속 동기화를 대신하는 명령이 아니다.
+- W32Time NTP 클라이언트는 UDP 출발지 포트 123을 쓰지만 `stripchart`는 임시 출발지 포트를 쓴다. 따라서 `stripchart` 성공만으로 서비스의 네트워크 경로까지 정상이라고 결론 내리지 않는다.
+- `SpecialPollInterval`은 수동 peer에 `SpecialInterval` 플래그가 설정됐을 때 쓰는 간격이다. 이 값에 900을 넣었다는 이유만으로 `NT5DS`가 정확히 900초마다 동기화한다고 설명하지 않는다.
+
+위 명령은 문서 기반 진단 예시이며 실제 Windows 또는 AWS Managed Microsoft AD 환경에서 실행한 결과는 아니다.
+
 ## 분산 시스템에서 시각을 믿는 범위
 
 NTP로 맞춰도 서버마다 수 밀리초 이상 차이가 날 수 있고, 보정 순간에 벽시계가 움직인다.
@@ -67,6 +89,9 @@ NTP로 맞춰도 서버마다 수 밀리초 이상 차이가 날 수 있고, 보
 
 ## 출처
 
+- [Microsoft Learn, How the Windows Time Service works](https://learn.microsoft.com/en-us/windows-server/networking/windows-time-service/how-the-windows-time-service-works)
+- [Microsoft Learn, Windows Time service tools and settings](https://learn.microsoft.com/en-us/windows-server/networking/windows-time-service/windows-time-service-tools-and-settings)
+- [AWS, Set the time reference on your EC2 instance to use the local Amazon Time Sync Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configure-ec2-ntp.html)
 - [시간에 대해 탐구하기 — kciter.so, kciter](https://kciter.so/posts/deep-dive-into-datetime/)
 - [RFC 5905, Network Time Protocol Version 4](https://www.rfc-editor.org/rfc/rfc5905)
 - [POSIX.1-2024, Base Definitions, General Concepts](https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap04.html)

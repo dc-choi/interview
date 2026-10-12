@@ -55,6 +55,18 @@ GET products-v1/_search?search_pipeline=rerank-v1
 
 Rerank 대상 수는 1단계가 반환하는 hit 수가 결정한다. `size: 100`이면 cross-encoder가 100개의 query-document pair에 점수를 매겨야 한다. 다만 serving 계층이 이를 한 batch나 여러 batch로 묶을 수 있으므로 endpoint 호출 수가 반드시 100회인 것은 아니다. 후보 깊이는 요청 `size` 또는 앞단 `oversample` request processor로 늘리고, 최종 노출 수는 `truncate_hits` response processor로 원래 크기까지 줄일 수 있다. `by_field.keep_previous_score`는 별도 field rerank type의 디버깅용 이전 점수 반환 옵션이며 ML rerank 깊이나 비용을 조절하지 않는다. 계산량과 입력 token은 대체로 pair 수와 길이에 따라 늘지만, 실제 p99는 batch 크기, accelerator, queue, network와 truncation 정책까지 부하 테스트해야 한다.
 
+### 재정렬 점수의 계산과 적용을 구분한다
+
+부분 검증(2026-10-13): 이 절의 `by_field`와 실패 처리 옵션은 OpenSearch 공식 processor 문서로 대조했다. 기존 neural sparse 모델과 벤치마크 전체를 다시 검증한 날짜는 아니다.
+
+재정렬을 반드시 cross-encoder로 구현해야 하는 것은 아니다. `by_field`는 `target_field`에 지정한 필드의 점수를 사용한다. 여러 모델의 점수를 결합하는 설계라면 점수 계산을 담당하는 단계와 그 결과로 후보를 정렬하는 단계를 구분한다. `by_field` 설정만으로 모델 추론이나 앙상블 계산이 생기는 것은 아니다.
+
+- `target_field`에는 점수 필드 이름이나 점으로 연결한 경로를 지정한다. 필요하면 `remove_target_field: true`로 응답에서 해당 필드를 제거한다.
+- 재정렬 전 점수 비교에는 `keep_previous_score: true`를 쓴다. 최신 문서는 `previous_score_field`로 응답 필드 이름을 바꾸는 옵션을 설명하지만, 이를 모든 `by_field` 지원 버전에서 쓸 수 있다고 가정하지 않는다. 기존 문서에 `previous_score` 필드가 있으면 대상 버전의 옵션 지원 여부를 확인하고 충돌하지 않는 이름을 지정한다. 지원 여부와 실제 응답을 확인하기 전에는 `keep_previous_score`를 켜지 않는 편이 안전하다(운영 제안).
+- `ignore_failure: true`는 해당 processor의 실패를 무시하고 남은 pipeline을 계속 실행한다. 별도 모델을 호출하는 폴백으로 해석하지 않는다.
+
+검증 제안: 점수 생성 단계와 재정렬 단계를 나눠 확인하고, 실패 시 실제 후보 순서와 응답 필드를 검사한다. 재정렬 성공률만으로 품질 개선을 판단하지 않고 같은 후보 집합에서 순위 품질과 지연을 함께 비교한다.
+
 ## Neural sparse search (2.11+)
 
 Neural sparse search는 학습된 model이 텍스트를 token과 weight 쌍의 sparse vector로 확장해 `rank_features` field에 색인한다. BM25처럼 역색인 자료구조를 쓰지만 term weight를 통계가 아니라 학습으로 얻고, 원문에 없는 의미적 연관 token까지 확장한다는 점이 다르다.

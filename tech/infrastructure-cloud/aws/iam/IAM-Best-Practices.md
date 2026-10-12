@@ -48,6 +48,18 @@ Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결�
 
 태그로 제외한 사용자와 역할에는 finding이 생성되지 않으며 조직 분석에서는 계정도 제외할 수 있다. 따라서 결과가 없다는 사실과 모든 권한이 적절하다는 판단을 구분한다. 점검 기록에는 추적 기간, 제외 범위와 결과 조회 시점을 함께 남기는 방식을 권한다. 앞서 설명한 리전별 중복 생성 불필요 원칙은 미사용 분석에 적용하며, 외부 접근 분석의 리전별 구성과 혼동하지 않는다.
 
+### 내부 접근 분석은 선택한 리소스와 정책 반영 범위를 본다
+
+부분 검증(2026-10-13): 이 절은 AWS의 내부 접근 분석기 생성 문서와 `InternalAccessDetails` API 명세를 대조했다. 기존 계정 설정과 비밀번호 정책 절 전체의 재검증 날짜는 아니다.
+
+내부 접근 분석은 계정이나 조직 안에서 선택한 리소스에 접근할 수 있는 IAM 사용자와 역할을 찾는다. 외부 접근 분석이 조직 밖 공유를 찾는 것과 질문이 다르다. 내부 분석도 감시할 리전마다 분석기를 만들고 대상 리소스를 지정한다. 따라서 통합 대시보드가 있다는 이유만으로 모든 리소스를 검사했다고 보지 않는다.
+
+- 내부 분석의 지원 리소스는 외부 분석보다 좁다. 2026-10-13 문서 기준으로 S3 버킷과 directory bucket, RDS DB/클러스터 스냅샷, DynamoDB 테이블과 스트림을 지원한다.
+- 계정을 신뢰 영역으로 삼은 결과에서 SCP/RCP 제한 상태가 `APPLICABLE`이면 정책이 존재하지만 유효 권한 평가에는 포함되지 않았다는 뜻이다. 조직을 신뢰 영역으로 삼은 결과의 `APPLIED`는 평가에 포함했다는 뜻이다.
+- `FAILED_TO_EVALUATE_SCP` 또는 `FAILED_TO_EVALUATE_RCP`는 해당 정책 평가 실패다. Finding의 action 목록만으로 실제 호출 성공을 확정하지 않고 제한 상태와 정책 원문을 함께 확인한다.
+
+운영 제안: 결과를 검토할 때 분석기 리전, 신뢰 영역, 선택한 리소스와 SCP/RCP 반영 상태를 함께 남긴다. 정책상 접근 가능성과 실제 실행 이력은 별도로 확인한다.
+
 ## 에이전트의 실행 권한과 요청자를 연결한다
 
 에이전트가 여러 도구를 고를 수 있어도 실행 권한은 작업에 필요한 범위로 제한한다. 사람의 넓은 권한을 복제하기보다 워크로드 역할과 임시 자격증명을 사용하고, 도구 실행 단계에서 허용된 action과 resource를 확인한다. 이는 IAM 최소 권한 원칙을 에이전트에 적용한 설계 기준이며 별도의 IAM 엔티티 유형을 뜻하지 않는다.
@@ -107,6 +119,9 @@ Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결�
 
 ## 출처
 
+- [AWS, Create an IAM Access Analyzer internal access analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-create-internal.html)
+- [AWS, IAM Access Analyzer supported resource types for external and internal access](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-resources.html)
+- [AWS IAM Access Analyzer API, InternalAccessDetails](https://docs.aws.amazon.com/access-analyzer/latest/APIReference/API_InternalAccessDetails.html)
 - [AWS, Monitor and control actions taken with assumed roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_control-access_monitor.html)
 - [AWS, Create an IAM Access Analyzer unused access analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-create-unused.html)
 - [AWS, Using AWS Identity and Access Management Access Analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html)
