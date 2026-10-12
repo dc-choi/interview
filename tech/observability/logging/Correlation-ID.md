@@ -30,6 +30,14 @@ aliases: ["Correlation ID", "Trace ID"]
 
 ID는 헤더로 도는 것만으로는 소용이 없고, 모든 로그 레코드에 필드(`trace_id`, `request_id`)로 박혀야 검색이 된다. 요청 컨텍스트 전파(AsyncLocalStorage, MDC)와 필드 명명 규약은 [[Structured-Logging|Structured logging]]이 정본이다.
 
+## 수집 이후에도 상관 필드의 이름을 맞춘다
+
+요청에 같은 ID를 넣었어도 수집과 변환 과정에서 필드 이름이 달라지면 분석 도구가 두 데이터를 연결하지 못할 수 있다. 2026-10-13 Splunk Observability Cloud의 Related Content 문서 기준, APM의 `trace_id`와 로그의 `trace.id`는 값이 같아도 자동으로 연결되지 않는다. 계측이나 필드 매핑에서 키 이름을 맞춰야 한다.
+
+요청 연결과 인프라 연결의 키도 구분한다. Splunk에서 특정 Kubernetes pod로 연결할 때는 `k8s.pod.name`뿐 아니라 `k8s.cluster.name`으로도 범위를 좁혀야 한다. 클러스터가 다르면 같은 pod 이름이 있을 수 있기 때문이다. 이 필드명과 동작은 해당 제품의 계약이며 모든 관측 도구의 공통 규격으로 일반화하지 않는다.
+
+설정 검증에서는 식별 가능한 요청 하나를 만들고 원본 로그, 수집 후 필드, 저장된 trace와 화면의 연결 결과를 차례로 대조하는 방식을 권한다. 로그와 trace가 각각 조회되는 것만으로 상관 연결까지 성공했다고 판단하지 않는다. 이는 문서 기반 점검안이며 실제 환경에서 재현한 결과는 아니다. 이 절만 대조했으므로 기존 `verified_at`은 유지한다.
+
 ## 관련 문서
 - [[Structured-Logging|Structured logging]]
 - [[Log-Pipeline|Log Pipeline]]
@@ -37,5 +45,6 @@ ID는 헤더로 도는 것만으로는 소용이 없고, 모든 로그 레코드
 
 ## 출처
 
+- [Splunk, Related Content in Splunk Observability Cloud](https://help.splunk.com/en/splunk-observability-cloud/data-tools/related-content) — 2026-10-13 상관 필드 이름과 Kubernetes 클러스터 범위 조건 대조
 - [W3C, Trace Context](https://www.w3.org/TR/trace-context/)
 - [OpenTelemetry, Context propagation](https://opentelemetry.io/docs/concepts/context-propagation/)

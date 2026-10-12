@@ -31,6 +31,14 @@ AWS Organizations 등 여러 서비스의 기능을 조합해 멀티 계정 환�
 
 설계 문서는 개발자와 운영자가 함께 볼 수 있는 위치에서 관리하고, 조직에 맞는 변경 검토와 승인 절차를 둔다. IaC 템플릿을 재사용해도 새 워크로드의 접근 권한이나 운영 요구사항이 자동으로 충족되는 것은 아니다. 외부 구축 업체가 참여했는지와 별개로 내부 운영자가 구조, 예외와 변경 절차를 이해할 수 있어야 한다.
 
+## 계정 구조와 사용자 접근 권한을 따로 설계한다
+
+2026-10-13 IAM Identity Center 공식 문서 대조 기준. Permission set은 하나 이상의 IAM 정책을 묶은 템플릿이며, 사용자나 그룹에 대상 AWS 계정의 접근 권한을 할당할 때 사용한다. 할당하면 Identity Center가 대상 계정에 관리 대상 IAM 역할을 만들고 정책을 연결한다. OU에 계정을 배치하는 것과 누가 어떤 역할로 접근할지 정하는 것은 별개의 작업이다.
+
+같은 사용자에게 여러 permission set을 할당할 수 있다. 일상 조회와 관리 작업을 구분해 필요한 권한의 역할을 선택하도록 설계할 수 있다. 팀별 그룹을 만들었다는 사실만으로 최소 권한이 충족되지는 않으므로, 실제 업무에서 필요한 작업을 정책과 대조한다.
+
+운영 점검에서는 사용자 또는 그룹, 대상 계정, permission set의 조합을 확인하고 대표 작업의 허용과 거부를 각각 시험하는 방식을 권한다. 랜딩 존과 계정 생성 성공을 기존 애플리케이션의 계정 이전이나 접근 검증 완료로 계산하지 않는다. 이는 설계 점검 제안이며 실제 계정에서 시험한 결과는 아니다. 이 절만 대조했으므로 문서 전체의 기존 검증일은 유지한다.
+
 ## 통제의 세 가지 동작
 
 | 동작 | 구현 수단 | 판정할 때 주의할 점 |
@@ -81,6 +89,7 @@ Control Tower 도입 자체가 규제 준수의 완료 증거는 아니다. AWS�
 
 ## 출처
 
+- [AWS IAM Identity Center, Manage AWS accounts with permission sets](https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html) — 2026-10-13 계정별 사용자 접근과 permission set의 역할 대조
 - [AWS Config, Setting Up Auto Remediation for AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/setup-autoremediation.html)
 - [AWS Config, PutRemediationConfigurations](https://docs.aws.amazon.com/config/latest/APIReference/API_PutRemediationConfigurations.html)
 - [AWS Prescriptive Guidance, Document your AWS landing zone design](https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/document-your-aws-landing-zone-design.html)
