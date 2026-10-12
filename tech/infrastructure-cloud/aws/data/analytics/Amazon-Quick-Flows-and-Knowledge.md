@@ -66,6 +66,15 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 프로젝트 초안을 만들 때는 공유 가능한 자료만 올리고, 표나 이미지에 의존하는 질문은 처리 상태를 확인한 뒤 평가한다. 초안 생성 시간과 검토, 수정 및 실제 업무 완료 시간도 따로 측정한다. 이는 운영 점검 제안이며 특정 팀의 시간 절감률을 재현한다는 보장은 아니다.
 
+### SharePoint의 지식 수집과 action 권한
+
+2026-10-13 SharePoint 공식 문서 부분 대조 기준. SharePoint 연결은 자료를 색인하는 지식 기반과 목록, 파일, Excel을 읽거나 변경하는 action 통합을 구분한다. 지식 기반은 문서 라이브러리, 사이트, 목록과 페이지를 검색과 질의응답에 사용한다.
+
+- 관리자 관리형 지식 기반은 문서별 ACL을 선택적으로 지원한다. ACL을 활성화하면 SharePoint의 접근 목록을 동기화하고 질의 시 사용자의 권한을 확인한다. 관리자 연결을 만들었다는 사실만으로 ACL 적용을 단정하지 않는다.
+- action의 사용자 인증은 로그인한 사용자를 대신한다. 서비스 인증은 사용자 없이 애플리케이션 권한으로 실행하며, 통합 이용자는 그 서비스가 접근할 수 있는 사이트에 action을 수행할 수 있다. 지식 기반의 문서별 ACL을 action의 쓰기 권한으로 확대 해석하지 않는다.
+
+운영 적용 예로, 배송 보고서를 만들 때 필요한 문서를 찾는 단계와 원본 Excel의 셀을 갱신하는 단계를 나눈다. 각 단계의 인증 방식과 허용 대상을 확인하고, 실제 이용자별로 자료 조회와 쓰기 가능 범위를 시험한다. 자동화의 시간 절감은 생성 시간뿐 아니라 검토와 수정까지 포함해 측정한다. 이는 운영 제안이며 특정 공급망 사례의 절감률이나 연동 구성을 재현한다는 주장이 아니다. 이 절의 기능만 추가 대조했으며 frontmatter의 기존 검증일은 유지한다.
+
 ## Research의 자료 선택과 근거 추적
 
 2026-10-10 Quick Research 공식 문서 대조 기준. 조사 입력은 웹 검색, 업로드 파일과 Quick 자산 등에서 선택한다. 웹 검색의 선호 사이트에 도메인을 넣어도 실제 조사에 포함된다는 보장은 없다. 접근 제한이나 관련성 판단으로 빠질 수 있으므로 필수 자료가 사용됐는지는 결과에서 확인한다.
@@ -93,6 +102,9 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 ## 출처
 
+- [Amazon Quick, Microsoft SharePoint knowledge base integration](https://docs.aws.amazon.com/quick/latest/userguide/sharepoint-knowledge-base.html)
+- [Amazon Quick, Admin-managed setup (service credentials)](https://docs.aws.amazon.com/quick/latest/userguide/sharepoint-kb-admin-managed.html)
+- [Amazon Quick, Microsoft SharePoint action integration](https://docs.aws.amazon.com/quick/latest/userguide/sharepoint-action-integration.html)
 - [Amazon Quick, Custom chat agents](https://docs.aws.amazon.com/quick/latest/userguide/custom-agents.html)
 - [Amazon Quick, Select research materials](https://docs.aws.amazon.com/quick/latest/userguide/select-research-materials.html)
 - [Amazon Quick, View research report](https://docs.aws.amazon.com/quick/latest/userguide/view-research-report.html)

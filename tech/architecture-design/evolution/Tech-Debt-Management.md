@@ -80,6 +80,18 @@ CodeScene의 hotspot 분석도 같은 결론에 선다. 코드 건강이 나빠�
 
 ## 3단계 — 상환 운영
 
+### 코드 밖의 개선 항목과 상환 범위
+
+클라우드 이전만으로 기존 설계의 변경 비용이 사라지지는 않는다. 코드 부채와 함께 인프라 운영, 복원력, 보안의 미해결 항목도 살피되, 모든 문제를 같은 부채로 묶지 않고 원인과 처방을 구분한다. 다음 세 축은 개선 후보를 찾기 위한 점검 틀이다.
+
+| 점검 축 | 확인할 내용 |
+| --- | --- |
+| 운영 효율 | 기능 전달 생산성, 실행 성능, 자원 활용 효율 |
+| 플랫폼 신뢰성 | 안정성, 장애 복구 능력, 수요 변화에 대한 탄력성 |
+| 장기 변경 역량 | 요구 변화 대응, 보안, 유지보수성 |
+
+장기 구조 개선을 끝낸 뒤에야 운영 최적화를 시작할 필요는 없다. 서로의 변경을 방해하지 않는 작은 개선을 병행하는 방법도 검토한다. 적용 예로, 모듈 경계 개선과 자원 적정화를 별도 작업으로 나누고 각각 변경 리드타임과 자원 사용량으로 평가할 수 있다. 담당자, 검증과 복구 여력이 겹치면 순서를 나누며, 병행 자체를 목표로 삼지 않는다. 이는 위 점검 틀을 적용한 운영 제안이다.
+
 | 모드 | 맞는 부채 규모 | 대표 실패 |
 |---|---|---|
 | 기회주의적 상환 (만지는 김에) | 함수, 클래스 단위의 작은 부채 | 모듈 경계나 데이터 모델 같은 구조 부채는 이 방식으로 도달하지 못함 |
@@ -159,7 +171,7 @@ CodeScene의 hotspot 분석도 같은 결론에 선다. 코드 건강이 나빠�
 - [A Field Study of Technical Debt — SEI Blog](https://www.sei.cmu.edu/blog/a-field-study-of-technical-debt/)
 - [The Developer Coefficient — Stripe](https://stripe.com/files/reports/the-developer-coefficient.pdf)
 - [Tech debt: Reclaiming tech equity — McKinsey](https://www.mckinsey.com/capabilities/tech-and-ai/our-insights/tech-debt-reclaiming-tech-equity)
-- [기술 부채는 빚이다 — Threads, ahn_partners](https://www.threads.com/@ahn_partners/post/DZW04DPHzdV)
+- [A Framework for Accelerated Modernization and Technical Debt Reduction — AWS Migration & Modernization Blog](https://aws.amazon.com/blogs/migration-and-modernization/a-framework-for-accelerated-modernization-and-technical-debt-reduction/)
 - [코드빌런 강사, 소프트웨어 품질관리와 기술부채](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242766)
 - [코드빌런 강사, 시니어가 되는 길목에서 알아야 할 것들](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242768)
 
