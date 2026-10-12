@@ -47,10 +47,27 @@ MAX는 `max(min(3, 5), min(2, 9)) = 3`이므로 왼쪽을 고른다. 9점을 얻
 
 이해 확인: 오른쪽 결과를 4와 9로 바꾸면 어떤 수를 골라야 하는가? MIN 차례까지 모두 최댓값으로 계산하면 어떤 가정을 잘못 넣게 되는가?
 
+### 가지치기와 방문 순서
+
+점수는 MAX 관점으로 유지한다. `alpha`는 현재 경로의 MAX가 확보한 대안의 하한이고, `beta`는 MIN이 확보한 대안의 상한이다. MIN 노드의 값이 `alpha` 이하가 되거나 MAX 노드의 값이 `beta` 이상이 되면 나머지 자식을 생략할 수 있다.
+
+위 예에서 잎을 `3, 5, 2, 9` 순서로 읽으면 마지막 9를 생략한다. `3, 5, 9, 2` 순서라면 네 값을 모두 읽는다. 유리한 수를 먼저 보는 순서는 가지치기를 늘리지만, 그 자체로 평가 함수의 정확도를 높이지 않는다.
+
+동일한 깊이와 평가값을 쓰면 알파 베타 가지치기는 루트의 미니맥스 값을 보존한다. 잘린 내부 노드의 반환값까지 정확한 미니맥스 값이라고 해석해서는 안 된다. 이상적인 방문 순서에서는 `O(b^(m/2))`까지 줄지만, 가지치기가 안 되면 기본 탐색의 `O(b^m)` 비용이 남는다.
+
+### 시간 제한에서는 완료한 깊이의 결과를 보관한다
+
+반복 심화는 깊이를 1, 2, 3으로 늘려 탐색한다. 구현할 때는 한 깊이의 탐색을 완료할 때마다 선택한 수를 보관하고, 다음 탐색이 시간 제한으로 끊기면 마지막 완료 결과를 사용한다. 첫 탐색도 끝내지 못할 경우에는 미리 정한 합법적인 수가 필요하다.
+
+이 방식은 제한 시간에 행동을 반환하기 위한 운영 방법이다. 종료 상태까지 보지 않은 평가값은 여전히 추정이므로 게임 전체의 최적 수를 보장하지 않는다.
+
+이해 확인: 깊이 3 탐색 도중 시간이 끝났다면 어느 결과를 반환하는가? 루트 값이 보존된다는 사실로 잘린 모든 내부 노드의 값을 신뢰해도 되는가?
+
 ## 출처
 
 - [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Games](https://inst.eecs.berkeley.edu/~cs188/textbook/games/games.html)
 - [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Minimax](https://inst.eecs.berkeley.edu/~cs188/textbook/games/minimax.html)
+- [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Spring 2025 Lecture 6: Adversarial Search](https://inst.eecs.berkeley.edu/~cs188/archive/sp25/assets/lectures/cs188-sp25-lec06.pdf) — 알파 베타 경계와 방문 순서, 깊이 제한과 반복 심화.
 
 ## 관련 문서
 
