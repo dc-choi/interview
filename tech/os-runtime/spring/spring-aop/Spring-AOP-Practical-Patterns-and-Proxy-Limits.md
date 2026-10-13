@@ -55,6 +55,22 @@ Client가 proxy를 호출한 뒤 target 내부의 `this.inner()`는 target refer
 4. `AopContext.currentProxy()`는 target을 Spring AOP에 직접 결합하므로 마지막 수단이다.
 5. 내부 호출 자체를 weave해야 할 강한 요구라면 AspectJ weaving의 운영 복잡성과 비교한다.
 
+## `@Async`의 실행 경계와 예외 관측
+
+프록시를 통과해 비동기로 실행된 작업의 실패와, self-invocation으로 비동기 Advice 자체가 적용되지 않은 경우를 구분한다. 어노테이션 유무만으로 실행 스레드나 예외 전달 경로를 판단하지 않는다.
+
+| 반환형 | 작업 실행 중 예외를 확인하는 경로 | 주의점 |
+|---|---|---|
+| `void` | `AsyncUncaughtExceptionHandler` | 작업 예외를 원래 호출자에게 전달할 반환값이 없다 |
+| `Future` | 반환받은 Future의 `get()` | 결과가 아직 없으면 기다리며, 반환값을 무시하면 이 경로로 실패를 확인하지 못한다 |
+| `CompletableFuture` | 반환값에 후속 처리를 연결해 성공과 실패를 관측 | 반환형만 바꾸고 결과를 버리면 실패 대응이 완성되지 않는다 |
+
+Spring Framework 7.0.0의 기본 `SimpleAsyncUncaughtExceptionHandler`는 `logger.error(..., ex)`로 예외를 기록한다. 기본 동작을 WARN 로그나 무조건 무로그라고 설명하면 틀린다. 로그가 보이지 않으면 사용자 정의 handler와 로깅 설정, 수집 경로를 확인한다. 위 표는 작업 본문에서 발생한 예외에 관한 설명이며 모든 호출 단계의 실패가 같은 경로라는 뜻은 아니다.
+
+운영 점검 제안: 의도적으로 실패하는 작업으로 handler 또는 반환값의 실패 처리 경로를 확인하고, 기록된 실패를 재시도할지 보상할지 정한다. 예외를 기록하는 것과 업무 결과를 복구하는 것은 별도 책임이다.
+
+2026-10-14 부분 검증: 이 절의 반환형별 예외 계약과 기본 handler 구현을 Spring 공식 문서와 7.0.0 소스로 대조했다. 나머지 문서 전체를 재검증한 것은 아니므로 기존 `verified_at`은 유지한다.
+
 ## proxy type과 DI
 
 JDK proxy는 interface contract를 구현하므로 concrete target class로 cast/주입할 수 없다. CGLIB proxy는 target subclass라 concrete type으로 보이지만 그 이유만으로 implementation type DI를 권장하지 않는다.
@@ -94,6 +110,8 @@ Spring Boot AOP auto-configuration은 기본적으로 CGLIB를 선택한다. `sp
 
 ## 출처
 
+- [Spring Framework, Task Execution and Scheduling](https://docs.spring.io/spring-framework/reference/integration/scheduling.html)
+- [SimpleAsyncUncaughtExceptionHandler.java (v7.0.0) — Spring Framework](https://github.com/spring-projects/spring-framework/blob/v7.0.0/spring-aop/src/main/java/org/springframework/aop/interceptor/SimpleAsyncUncaughtExceptionHandler.java)
 - [Spring Boot, Aspect-Oriented Programming](https://docs.spring.io/spring-boot/reference/features/aop.html)
 
 - [Spring Framework 7.0, Proxying Mechanisms](https://docs.spring.io/spring-framework/reference/core/aop/proxying.html)
