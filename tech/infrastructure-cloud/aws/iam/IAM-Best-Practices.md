@@ -28,6 +28,14 @@ verified_at: 2026-10-12
 4. **Billing 권한 연결:** 3단계에서 만든 주체에 AWS 관리형 `Billing` 정책 같은 Billing 권한을 붙인다. 관리자 권한을 준 IAM 주체로 예산 화면이 막히면 2단계 설정부터 확인한다.
 5. **root access key 만들지 않기:** root에는 access key를 만들지 않는다. root 작업은 콘솔에서 하고, 프로그래밍 접근이 꼭 필요하면 AWS CLI 2.32.0 이상의 `aws login`으로 받는 임시 자격 증명을 쓴다. 이 자격 증명은 15분마다 자동 갱신되고 세션은 최대 12시간 유지된다.
 
+## CLI 프로파일 이름과 실제 호출 주체를 구분한다
+
+부분 검증(2026-10-13): AWS CLI 환경 변수와 STS 명령 문서, AWS CLI v2의 프로파일 처리와 자격 증명 선택 소스를 대조했다. 기존 계정 설정과 비밀번호 정책의 검증일은 유지한다.
+
+`AWS_PROFILE`은 기본으로 사용할 프로파일을 고르고, 명령의 `--profile`은 그 선택보다 우선한다. 자격 증명 우선순위는 두 선택 방식을 구분한다. `--profile`을 지정하지 않고 `AWS_PROFILE`만 설정하면 환경 변수의 `AWS_ACCESS_KEY_ID`와 `AWS_SECRET_ACCESS_KEY`가 프로파일의 정적 키보다 우선한다. 반면 AWS CLI v2에서 정적 키가 있는 프로파일을 `--profile`로 명시하면 기본 자격 증명 체인의 환경 변수 공급자를 제외하고 해당 프로파일의 키를 사용한다. 따라서 환경 키가 항상 프로파일보다 우선한다고 일반화하지 않는다. 직접 전달받은 STS 임시 자격 증명에는 `AWS_SESSION_TOKEN`도 필요하다.
+
+운영 제안: 변경 명령과 같은 셸, 같은 프로파일 선택으로 `aws sts get-caller-identity`를 먼저 실행해 `Account`와 `Arn`을 대조한다. 호출 주체 조회 성공은 업무 API의 권한을 증명하지 않는다([[IAM-Role-Federation|역할 프로파일과 권한 확인]]). 리전도 별도로 확인한다. `AWS_REGION`은 `AWS_DEFAULT_REGION`과 프로파일의 리전보다 우선하고, 명령의 `--region`이 이들보다 우선한다. 실제 계정에 접속하거나 로컬 자격 증명 파일을 읽어 검증한 기록은 아니다.
+
 ## Access Analyzer의 분석 범위와 조치 경계
 
 이 절은 2026-10-09 AWS 공식 문서 기준이다. 정책 문법 검증, 외부 접근 분석과 미사용 권한 분석은 서로 다른 질문에 답한다.
@@ -119,6 +127,10 @@ Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결�
 
 ## 출처
 
+- [AWS CLI v2 프로파일 인자 처리 소스 — AWS](https://github.com/aws/aws-cli/blob/v2/awscli/clidriver.py)
+- [AWS CLI v2 자격 증명 선택 소스 — AWS](https://github.com/aws/aws-cli/blob/v2/awscli/botocore/credentials.py)
+- [AWS CLI, Configuring environment variables for the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html)
+- [AWS CLI, get-caller-identity](https://docs.aws.amazon.com/cli/latest/reference/sts/get-caller-identity.html)
 - [AWS, Create an IAM Access Analyzer internal access analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-create-internal.html)
 - [AWS, IAM Access Analyzer supported resource types for external and internal access](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-resources.html)
 - [AWS IAM Access Analyzer API, InternalAccessDetails](https://docs.aws.amazon.com/access-analyzer/latest/APIReference/API_InternalAccessDetails.html)

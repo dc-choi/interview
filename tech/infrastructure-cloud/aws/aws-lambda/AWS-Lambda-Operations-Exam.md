@@ -151,6 +151,10 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 - 또는 연결 모델과 부하 특성에 따라 DynamoDB, Aurora Serverless v2, Data API 등을 비교
 - 서버가 장기 연결을 직접 유지해야 하는 워크로드는 Lambda의 실행 시간과 연결 모델을 확인하고 ECS/Fargate 등과 비교
 
+부분 검증(2026-10-13): RDS Proxy의 연결 풀과 pinning 공식 문서를 대조했다. Proxy는 즉시 처리할 수 없는 연결을 대기시키거나 제한하고, 설정한 한도를 넘으면 거부한다. 따라서 연결 수 감소를 쿼리 처리량이나 지연 개선의 보장으로 해석하지 않는다. 세션이 특정 DB 연결에 고정되는 pinning은 재사용 효과를 줄이며, 자세한 조건은 [[RDS-Operational-Pitfalls|RDS 운영 함정]]과 엔진별 문서를 함께 본다.
+
+부하 검증 제안: Lambda 동시성을 늘릴 때 클라이언트 연결 수, 실제 DB 연결 수, `DatabaseConnectionsCurrentlySessionPinned`, 지연과 오류율을 함께 비교한다. Proxy 적용 성공만으로 DB 병목이 해소됐다고 판단하지 않는다. 실제 배포나 성능 측정은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## 비용 구조
 
 - **요청 수**: 요청, 아키텍처, 리전에 따른 최신 단가와 계정의 Free Tier 적용 조건을 요금표에서 확인
@@ -197,6 +201,8 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 
 ## 출처
 
+- [Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html)
+- [Avoiding pinning an RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-pinning.html)
 - [Understanding techniques to reduce AWS Lambda costs in serverless applications — AWS](https://aws.amazon.com/blogs/compute/understanding-techniques-to-reduce-aws-lambda-costs-in-serverless-applications/)
 - [Building well-architected serverless applications: Approaching application lifecycle management – part 2 — AWS](https://aws.amazon.com/blogs/compute/building-well-architected-serverless-applications-approaching-application-lifecycle-management-part-2/)
 - [AWS Lambda Web Adapter — AWS](https://github.com/aws/aws-lambda-web-adapter)
