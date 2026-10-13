@@ -151,6 +151,18 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 | **저장 시 SSE-KMS** | AWS 관리형 또는 고객 관리형 KMS key 사용. key policy, 권한과 KMS 비용을 함께 관리 |
 | **접근 제어** | IAM Policy로 SQS API 호출 권한 통제, Queue Policy(Resource-based)로 cross-account 허용 |
 
+### 같은 계정과 교차 계정의 접근 권한
+
+2026-10-13 부분 검증: 아래는 SQS 권한과 `AccessDenied` 진단 문서로 확인한 범위이며, 앞의 가격과 처리량 전체를 재검증한 날짜는 아니다.
+
+- **동일 계정의 IAM 주체**: IAM policy 또는 queue policy에 대상 action의 명시적 Allow가 필요하다. 적용되는 명시적 Deny가 우선하며 permissions boundary, 세션 정책과 SCP 같은 추가 제한도 확인한다.
+- **교차 계정의 직접 호출**: 호출자 계정의 IAM policy와 큐 소유 계정의 queue policy가 모두 허용해야 한다. 큐 정책의 `Principal`, `Action`, `Resource`와 조건을 호출 주체, 작업, 큐 ARN에 맞춘다.
+- **AWS 서비스 주체**: queue policy에서 해당 서비스의 접근을 허용한다. IAM 역할을 통해 호출하는 경우에는 실제 역할을 기준으로 평가한다.
+- **추가 차단 지점**: VPC endpoint를 거치면 endpoint policy를 확인한다. 고객 관리형 KMS 키를 쓰면 생산자에 `kms:GenerateDataKey`, `kms:Decrypt`, 소비자에 `kms:Decrypt` 권한도 필요하다.
+- **교차 계정 예외**: `CreateQueue`, `DeleteQueue`, `SetQueueAttributes` 같은 관리 작업에는 교차 계정 권한이 적용되지 않는다. 메시지 송수신 허용을 큐 관리 권한까지 넓혀 해석하지 않는다.
+
+진단은 `aws sts get-caller-identity`로 실제 주체를 확인하고, 대상 큐 ARN, action과 정책 조건을 대조한 뒤 KMS와 endpoint 정책을 보는 순서로 진행한다. `sqs:*`를 추가하는 방식으로 원인을 덮지 않는다.
+
 ## 시험 체크포인트 (SAA-C03)
 
 - AWS Decoupling 3종 = SQS(Queue) / SNS(Pub-Sub) / Kinesis(Real-time Streaming) — 모델 차이로 구분
@@ -163,6 +175,9 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 - KMS로 저장 시 암호화, HTTPS로 전송 중 암호화, IAM Policy로 API 접근 통제
 
 ## 출처
+- [AWS 공식 문서, Policy evaluation logic](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html)
+- [AWS 공식 문서, Troubleshoot an access denied error in Amazon SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/troubleshooting-access-denied.html)
+- [AWS 공식 문서, Overview of managing access in Amazon SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-overview-of-managing-access.html)
 - [AWS SQS API Reference, CreateQueue](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html)
 - [AWS 공식 문서, Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
 - [AWS 공식 문서, Amazon SQS FIFO queue quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-fifo.html)

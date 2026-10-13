@@ -8,7 +8,7 @@ verified_at: 2026-09-30
 
 # Lambda 실행 모델 — 표준 함수, Durable Functions, Cold Start
 
-아래 기본 수명주기와 단일 동시 실행 설명은 **Lambda 기본 컴퓨팅의 표준 함수(Standard Functions)** 기준이다. Durable Functions와 Lambda Managed Instances는 각각 다른 상태, 실행 환경 모델을 쓴다.
+아래 기본 수명주기와 단일 동시 실행 설명은 **Lambda 기본 컴퓨팅의 표준 함수(Standard Functions)** 기준이다. 2026-10-12 발표에서 기존 이벤트 핸들러 방식에는 Event Functions라는 이름이 붙었다. Durable Functions, Lambda Managed Instances와 Web Functions는 상태 또는 실행 환경 모델을 구분해서 읽는다.
 
 ## 핵심 명제
 
@@ -33,6 +33,16 @@ Durable Functions는 checkpoint, 대기와 재시도를 코드로 정의하고 A
 ### Lambda Managed Instances
 
 Managed Instances는 고객 계정의 EC2 인스턴스에서 실행되며 실행 환경 하나가 여러 호출을 동시에 처리할 수 있다. 기본 컴퓨팅과 달리 호출 사이에 환경을 freeze하지 않고 계속 실행하므로, 런타임별 thread safety, 공유 상태와 요청 context 격리를 따로 설계해야 한다.
+
+### Web Functions: HTTP 서버 실행 모델
+
+2026-10-13 부분 검증: 2026-10-12 AWS 출시 발표와 제품 안내로 아래 범위를 확인했다. 기존 Event Functions의 quota 전체를 재검증한 날짜는 아니다.
+
+- **요청 처리**: 이벤트 핸들러 대신 포트에서 HTTP 요청을 받는 Node.js 서버를 실행한다. 별도 Lambda 어댑터는 필요 없지만 서버가 `AWS_LAMBDA_HTTP_ENDPOINT`의 host와 port를 사용하도록 설정해야 한다.
+- **동시성**: warm 실행 환경 하나에서 최대 128개 요청을 동시에 처리한다. 요청별 전역 변수와 DB 연결 풀의 공유를 점검해야 하며, cold start가 사라진다는 보장은 아니다.
+- **과금**: active CPU 시간과 환경 수명 동안의 메모리를 구분한다. I/O를 기다리는 동안 CPU 사용은 작아질 수 있지만 요청, 메모리와 데이터 전송 비용까지 없어지는 것은 아니다.
+- **배포**: 선택한 리전에 코드를 복제하고 단일 endpoint에서 지연 기반으로 라우팅한다. 변경 불가능한 revision 사이에 트래픽 비중을 나눌 수 있다. 코드 복제를 데이터베이스의 다중 리전 복제로 해석하지 않는다.
+- **출시 범위**: Node.js 24, Arm64이며 버지니아 북부, 오하이오, 오리건, 도쿄와 아일랜드에서 출시됐다. 서울 리전 사용 가능 여부를 이 목록 밖으로 추정하지 않는다.
 
 ### Cold Start, 기본 컴퓨팅
 
@@ -100,6 +110,8 @@ SnapStart는 버전을 게시할 때 초기화한 실행 환경을 스냅샷으�
 
 ## 출처
 
+- [Announcing AWS Lambda Web Functions — AWS](https://aws.amazon.com/blogs/aws/announcing-aws-lambda-web-functions-for-fast-consistent-web-app-performance-anywhere/)
+- [AWS, AWS Lambda Web Functions](https://aws.amazon.com/lambda/lambda-web-functions/)
 - [AWS, Create a Lambda function using a container image](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html)
 - [AWS, Deploy Node.js Lambda functions with container images](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-image.html)
 - [AWS, Understanding the Lambda execution environment lifecycle](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)

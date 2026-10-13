@@ -149,6 +149,14 @@ CA 대신 **개인 간 신뢰 링크**로 공개키 정당성을 검증. 대규�
 - "요청마다 비대칭키와 대칭키를 번갈아 쓴다" — 비대칭 연산은 연결 수립 시 핸드셰이크(인증과 키 합의)에 쓰이고, 그 연결의 이후 요청과 응답은 합의한 대칭 세션 키로 암호화한다
 - "개인키가 노출되면 회수할 수 있다" — 공격자가 가진 사본을 회수했다고 보장할 수 없다. 키를 교체하고 기존 키의 사용과 검증 신뢰를 제거한다. TLS 인증서라면 CA의 폐기 절차도 확인하며, 로컬 키 파일 삭제만으로 공격자의 사본이나 이미 발급한 자격증명이 무효화되지는 않는다([[Secret-Management|시크릿 관리]])
 
+## 양자 위협을 구분하는 기준
+
+2026-10-13 부분 검증: NIST의 양자내성 암호 설명과 FAQ로 아래 구분을 대조했다. 특정 장비의 RSA 해독 시간이나 전환 완료 시점을 검증한 것은 아니다.
+
+- **공개키와 대칭키**: 충분한 규모의 양자 컴퓨터가 RSA와 ECC를 위협하는 것과 AES의 키 탐색은 다른 문제다. Grover 알고리즘의 이론적 제곱근 가속에는 순차 실행과 하드웨어 비용 제약이 있어 모든 암호가 같은 시점에 무너진다고 일반화하지 않는다.
+- **장기 기밀성**: 현재 복호화하지 못하는 통신도 수집해 두었다가 미래에 해독하는 `harvest now, decrypt later` 위협이 있다. 전환 우선순위는 암호문이 보호돼야 할 기간과 시스템 교체에 걸리는 시간을 함께 고려한다. 양자 컴퓨터의 등장 연도를 먼저 확정할 필요는 없다.
+- **전환 대상**: 키 합의, 서명, 데이터 암호화를 따로 식별한다. ML-KEM은 공유 비밀을 수립하는 KEM이고 ML-DSA와 SLH-DSA는 서명이다. AES를 ML-KEM으로 일괄 교체하는 방식으로 설계하지 않는다.
+
 ## 면접 체크포인트
 
 - 공개망에서 대칭키 분배가 되풀이되는 문제인 이유, 비대칭키가 이를 줄이는 방식과 남는 공개키 진위 문제
@@ -161,6 +169,8 @@ CA 대신 **개인 간 신뢰 링크**로 공개키 정당성을 검증. 대규�
 - Post-Quantum 시대 대비(키 수립은 FIPS 203의 키 캡슐화 메커니즘 ML-KEM으로 CRYSTALS-Kyber에서 파생, 서명은 FIPS 204의 ML-DSA와 FIPS 205의 SLH-DSA)
 
 ## 출처
+- [What Is Post-Quantum Cryptography? — NIST](https://www.nist.gov/cybersecurity-and-privacy/what-post-quantum-cryptography)
+- [NIST, Post-Quantum Cryptography FAQs](https://csrc.nist.gov/Projects/post-quantum-cryptography/faqs)
 - [공개키 암호(Public Key Cryptography) — Crocus (Internet Archive 사본)](https://web.archive.org/web/20240616224244/https://www.crocus.co.kr/1236)
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
 - [비대칭키 작동구조와 코인의 실체 — 널널한 개발자 TV](https://www.youtube.com/watch?v=z5RN8XKLDd8)
@@ -169,7 +179,6 @@ CA 대신 **개인 간 신뢰 링크**로 공개키 정당성을 검증. 대규�
 - [암호학1 - 양방향 암호화 방식, 대칭키 방식 — 생활코딩](https://www.youtube.com/watch?v=0nPDwJPxOVQ)
 - [암호학1 - 비대칭키(공개키 방식), 기밀성을 위해서 사용하기 — 생활코딩](https://www.youtube.com/watch?v=MR4sCU82tgo)
 - [암호법1 - 비대칭키(공개키), 전자 서명하는 방법 — 생활코딩](https://www.youtube.com/watch?v=O7SiDuTCysM)
-- [브라우저 렌더링 파이프라인에서 HTTPS 위치 — Threads, 2weekhun](https://www.threads.com/@2weekhun/post/DbZPqiNCuv-)
 - [NIST, FIPS 197: Advanced Encryption Standard (AES)](https://csrc.nist.gov/pubs/fips/197/final)
 - [IETF, RFC 8017: PKCS #1: RSA Cryptography Specifications Version 2.2](https://www.rfc-editor.org/rfc/rfc8017.html)
 - [IETF, RFC 8032: Edwards-Curve Digital Signature Algorithm (EdDSA)](https://www.rfc-editor.org/rfc/rfc8032.html)

@@ -64,6 +64,17 @@ aws rds modify-db-instance \
 - CloudWatch Logs 저장 비용, 수집 요금 별도 과금 → General Log는 필요 시에만
 - 일반 쿼리 로그는 양이 매우 크므로 단기간 진단용으로만 활성화
 
+### RDS for MySQL 감사 플러그인의 생성과 게시
+
+2026-10-13 부분 검증: 아래는 RDS for MySQL의 `MARIADB_AUDIT_PLUGIN` 문서와 CloudWatch 게시 문서를 대조한 범위다. MariaDB 엔진의 옵션과 Aurora에는 그대로 적용하지 않는다.
+
+1. 엔진과 주 버전에 맞는 사용자 정의 option group에 `MARIADB_AUDIT_PLUGIN`을 넣고 DB 인스턴스에 연결한다. 로그 생성과 CloudWatch의 `audit` 내보내기 선택은 별도 설정이다.
+2. `SERVER_AUDIT_EVENTS`로 필요한 이벤트를 고른다. 기본값은 `CONNECT,QUERY`이며, `QUERY_DDL`, `QUERY_DML_NO_SELECT`, `QUERY_DCL` 등으로 범위를 좁힐 수 있다. MySQL에서는 `TABLE` 이벤트를 지원하지 않는다.
+3. `SERVER_AUDIT_INCL_USERS`와 `SERVER_AUDIT_EXCL_USERS`는 함께 설정하지 않는다. 사용자를 제외하더라도 `CONNECT` 활동은 모든 사용자에 대해 기록된다.
+4. 추가 후 DB 재시작은 필요 없고 option group이 활성화되면 감사를 시작한다. 다만 AWS는 추가 과정에서 중단 가능성이 있다고 명시하므로 저부하 시간이나 유지보수 창에 적용한다. 플러그인 제거는 자동 재시작을 일으키며 `SERVER_AUDIT_LOGGING=OFF`로 끌 수 없다.
+
+검수에서는 시험 연결과 쿼리를 실행한 뒤 DB 감사 파일과 `/aws/rds/instance/{instance-name}/audit` 양쪽에 기록이 도착하는지 확인한다. 쿼리 문자열은 `SERVER_AUDIT_QUERY_LOG_LIMIT`(기본 1,024)로 잘릴 수 있고 파일 내 이벤트 순서도 보장되지 않으므로, 전체 SQL과 시간순 증거가 확보됐다고 단정하지 않는다.
+
 ### Redo Log 크기 (MySQL 8)
 
 - 8.0.32 이하: `innodb_log_file_size` 기본 256MB (128MB × 2)
@@ -110,6 +121,7 @@ Slack Webhook (채널별 분기)
 
 ## 출처
 
+- [AWS Docs — MariaDB Audit Plugin support for MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.MySQL.Options.AuditPlugin.html)
 - [jojoldu — AWS RDS PostgreSQL Slack 알람 구현](https://jojoldu.tistory.com/711)
 - [AWS Docs — RDS for MySQL 데이터베이스 로그 개요](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQL.LogFileSize.html)
 - [AWS Docs — CloudWatch Logs에 MySQL 로그 게시](https://docs.aws.amazon.com/ko_kr/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQLDB.PublishtoCloudWatchLogs.html)
