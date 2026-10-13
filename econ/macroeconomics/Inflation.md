@@ -50,6 +50,16 @@ aliases: ["인플레이션과 디플레이션", "Inflation and Deflation"]
 - **실질임금**: 명목임금이 물가만큼 못 오르면 실제 살림은 나빠진다. 인플레이션기에 "월급 빼고 다 올랐다"는 체감이 여기서 온다.
 - **비효율 비용**: 가격표를 자주 바꾸는 메뉴비용, 현금 가치가 녹으니 자주 은행을 들락거리는 구두창비용 등.
 
+### 실질 부채 감소와 상환 여력은 다르다
+
+물가가 올라도 약정한 명목 원리금이 자동으로 줄거나 상환이 완료되지는 않는다. 고정 명목 부채의 구매력 기준 가치가 낮아지는 것과 매달 낼 돈을 마련할 수 있는지는 구분한다. 다음은 IMF의 구매력과 고정금리 설명, CFPB의 미국 변동금리 주택담보대출 설명을 연결한 점검 기준이다(2026-10-14 대조).
+
+- **소득과 생활비:** 소득이 물가만큼 늘지 않으면 실질소득이 줄어든다. 고정된 상환액이라도 생활비를 지출한 뒤 남는 현금이 충분한지 별도로 확인한다.
+- **금리와 계약:** 변동금리는 계약에 따라 적용 금리와 납입액이 높아질 수 있다. 미국 ARM은 초기 금리 기간 뒤 지표금리와 가산금리, 금리 조정 한도 등이 작용한다. 국내 대출에 같은 계약 구조를 그대로 적용하지 않는다.
+- **기대와 실제:** 예상 밖 인플레이션이 기존 고정 명목 계약의 채무자에게 유리할 수 있다는 설명을, 새 대출도 인플레이션만 기다리면 유리하다는 결론으로 확대하지 않는다.
+
+계산 예시로, 명목 부채 잔액이 100으로 그대로이고 물가지수가 100에서 110으로 오르면 기준 시점 구매력으로 환산한 잔액은 `100 / 1.10 ≈ 90.9`다. 장부상 잔액은 여전히 100이며, 이 계산은 이자, 실제 상환과 소득 변화를 제외한 예시다. 실질가치 감소만으로 상환 여력이나 투자 수익을 판단할 수 없다.
+
 ## 6. 디플레이션과 그 위험
 
 디플레이션은 물가 수준이 **지속적으로 내려가는** 현상이다. 공급 측 생산성 향상에 따른 가격 하락과 달리, 수요 위축과 부채 부담이 결합된 디플레이션은 심각한 경기 침체를 증폭할 수 있다.
@@ -92,11 +102,12 @@ AI가 생산성을 높일 가능성과 당장 물가를 낮추는지는 별개�
 
 ## 출처
 
+- [CFPB, For an adjustable-rate mortgage (ARM), what are the index and margin, and how do they work?](https://www.consumerfinance.gov/ask-cfpb/for-an-adjustable-rate-mortgage-arm-what-are-the-index-and-margin-and-how-do-they-work-en-1949/) — 2026-10-14 미국 ARM의 금리 조정과 납입액 변화 대조
 - [What Will Artificial Intelligence Mean for the Labor Market and the Economy? — Federal Reserve, Michael S. Barr](https://www.federalreserve.gov/newsevents/speech/barr20260217a.htm) — 2026-02-17 연설, 2026-10-13 생산성 향상과 단기 전력 수급 제약의 물가 경로 대조
 - [AI and the euro area economy — ECB, Philip R. Lane](https://www.ecb.europa.eu/press/key/date/2026/html/ecb.sp260323_1~1e06784a89.en.html) — 2026-03-23 연설, 2026-10-13 투자, 에너지 수요와 미래 소득 기대의 조건부 효과 대조
 
 - [U.S. BEA, GDP Price Deflator](https://www.bea.gov/data/prices-inflation/gdp-price-deflator)
-- [IMF, Inflation: Prices on the Rise](https://www.imf.org/en/publications/fandd/issues/series/back-to-basics/inflation) — 2026-10-02 비교 기간별 물가 상승률과 실질 구매력 개념 대조
+- [IMF, Inflation: Prices on the Rise](https://www.imf.org/en/publications/fandd/issues/series/back-to-basics/inflation) — 2026-10-02 비교 기간별 물가 상승률과 실질 구매력 개념 대조. 2026-10-14 실질소득과 고정금리 계약의 부채 영향 추가 대조, 문서 전체 재검증은 아님
 - [한국은행, 물가안정목표제](https://www.bok.or.kr/portal/main/contents.do?menuNo=200291) — 2026-10-04 물가목표가 소비자물가 상승률(전년동기대비) 기준 2%임을 대조
 - [e-나라지표, 소비자물가지수](https://www.index.go.kr/unity/potal/main/EachDtlPageDetail.do?idx_cd=1060) — 2026-10-04 소비자물가지수와 체감물가를 설명하는 생활물가지수의 구분 대조
 
