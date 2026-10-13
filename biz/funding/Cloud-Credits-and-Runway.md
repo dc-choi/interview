@@ -20,6 +20,20 @@ AWS Activate는 사례다. 다음 조건은 2026-10-07 공식 안내를 확인�
 
 공통 자격에는 설립 10년 이내, Series B 이전 단계, AWS Paid Tier 계정, 신규 수혜 또는 이전 수혜액보다 큰 크레딧 요청이 포함된다. 자격과 제출 자료를 확인한 뒤 신청하므로 최대액을 승인 전 예산에 넣지 않는다. 특정 개인 사업자나 외주 사업이 적격인지는 이 표만으로 판정할 수 없다.
 
+## 기술 지원과 판로 지원을 크레딧과 구분한다
+
+2026-10-13 AWS for Startups와 Global Startup Program 공식 안내 대조 기준이다. 스타트업 지원에는 요금 상계뿐 아니라 기술 자문, 사업 멘토링과 시장 진출 자원이 포함될 수 있다. 이를 하나의 현금 지원액으로 합산하지 않는다.
+
+| 지원 종류 | 계획에 반영할 때 확인할 것 |
+| --- | --- |
+| 크레딧 | 승인된 잔액, 적용 서비스와 만료일 |
+| 기술 자문 | 해결할 설계 문제, 제공 범위와 결과물. 운영 책임까지 이전되는 것으로 가정하지 않는다 |
+| 시장 진출과 공동 판매 | 프로그램 자격, 참여 승인과 실제 고객 기회를 구분한다. 소개나 등록을 매출로 계산하지 않는다 |
+
+예를 들어 Global Startup Program은 초대 기반 프로그램이며 제품 개발, 마케팅과 공동 판매를 지원한다. 현재 공개 참여 요건에는 최소 Series A 투자, 전담 AWS 제휴 담당, `Deployed on AWS` 배지를 받은 제품, 최근 12개월의 AWS Marketplace Private Offer 거래 2건 이상, ISV Accelerate 가입 등이 있다. 자격을 충족한 뒤에도 담당 PDM과 추천 제출을 진행해야 하므로, Activate 크레딧 신청만으로 이 지원까지 받는다고 가정할 수 없다.
+
+실무 적용 제안: 지원을 찾기 전에 현재 막힌 것이 클라우드 지출, 설계 역량 또는 고객 확보인지 정한다. 그 문제에 맞는 프로그램의 최신 조건과 실제 받을 결과물을 확인한다. 과거 행사에서 소개된 지원 지역, 모집 기한과 프로그램을 현재 신청 가능한 혜택으로 옮겨 쓰지 않는다.
+
 ## 크레딧이 대신 내는 비용의 범위
 
 AWS 프로모션 약관은 현금 교환과 환급을 허용하지 않으며, 크레딧을 넘는 서비스 요금은 청구한다. 적용 대상 세금에도 크레딧이 사용되지 않는다. 적용 가능한 서비스와 유효기간은 받은 크레딧의 조건을 확인한다.
@@ -68,6 +82,8 @@ Claude Startups는 2026-10-06 공지, 프로그램 페이지와 약관을 대조
 
 ## 출처
 
+- [AWS for Startups — AWS](https://aws.amazon.com/startups/)
+- [AWS Global Startup Program — AWS](https://aws.amazon.com/partners/programs/global-startup/)
 - [AWS Partner Central, Managing fund requests in AWS Partner Central](https://docs.aws.amazon.com/partner-central/latest/getting-started/partner-funding.html)
 - [AWS Partner Central, Creating a fund request](https://docs.aws.amazon.com/partner-central/latest/getting-started/create-fund-request.html)
 - [Claude Startups — Anthropic](https://claude.com/programs/startups) — 2026-10-08 페이지 본문의 자격, API와 Team 혜택 및 기간 확인. 2026-10-11 FAQ의 혜택 한도 초과와 재심사, 자격 문구, Console 신청과 1주 심사 목표, 크레딧 사용 범위와 rate limit, 오피스아워와 VC 경로 확인

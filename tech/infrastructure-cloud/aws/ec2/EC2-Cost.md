@@ -45,6 +45,23 @@ Spot은 AWS 여유 capacity를 쓰는 모델이다. 중단 notice는 일반적�
 
 운영 계획에는 종료 처리 시작보다 앞선 체크포인트 저장과 결과 반출 시간을 포함한다. 예약 기간 전체를 모델 계산 시간으로 잡으면 마지막 작업을 잃을 수 있다. 인스턴스를 덜 사용해도 예약 선불 금액을 실제 가동 시간만큼만 내는 모델은 아니며, 실행 중 사용하는 운영체제의 별도 과금 조건도 확인한다.
 
+## 인스턴스 종료 뒤에도 남는 비용
+
+2026-10-13 EC2 종료 문서와 AWS Billing의 예상 밖 청구 안내를 대조한 범위다. 기존 구매 옵션 전체를 다시 검증한 것은 아니므로 frontmatter 검증일은 유지한다.
+
+인스턴스가 `shutting-down` 또는 `terminated`가 되면 그 인스턴스의 사용 요금은 멈춘다. 그러나 **인스턴스 종료와 계정의 모든 비용 종료는 다르다.** 청구 기간의 이전 사용분과 종료 뒤 남은 자원 또는 약정 비용을 나누어 확인한다.
+
+| 확인 대상 | 종료 뒤 남는 이유와 점검 |
+| --- | --- |
+| EBS 볼륨 | 종료 시 삭제하지 않도록 설정한 볼륨은 남는다. 보존 필요를 확인하고 불필요한 볼륨만 삭제한다 |
+| EBS 스냅샷 | 볼륨 삭제로 스냅샷까지 지워지지 않는다. 다른 스냅샷이 참조하는 블록은 보존되므로 스냅샷 하나 삭제가 같은 크기의 비용 감소를 뜻하지 않는다 |
+| Elastic IP | 인스턴스에서 분리돼도 계정에 할당된 상태가 유지된다. 더 이상 필요 없으면 주소를 해제한다 |
+| 다른 리전 | 자원이 남은 리전을 비활성화해도 과금은 멈추지 않는다. 사용했던 모든 리전을 확인한다 |
+| 상위 관리 서비스 | Elastic Beanstalk 같은 서비스가 종료한 자원을 다시 만들 수 있다. 자원을 만든 서비스의 종료 절차부터 확인한다 |
+| RI와 Savings Plans | 인스턴스를 지웠다는 이유로 구매 약정이 해지되지 않는다. 남은 기간과 결제 조건을 확인한다 |
+
+비용만 보고 백업을 일괄 삭제하지 않는다. 필요한 복구 지점과 보존 조건을 먼저 확인하고, 정리 뒤에도 사용 기간별 청구 내역을 다시 대조한다.
+
 ## 관련 문서
 - [[EC2|AWS EC2 (목차)]]
 - [[EC2-Compute|컴퓨트 아키텍처]]
@@ -52,6 +69,8 @@ Spot은 AWS 여유 capacity를 쓰는 모델이다. 중단 notice는 일반적�
 
 ## 출처
 
+- [Amazon EC2, Terminate Amazon EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html)
+- [AWS Billing, Understanding unexpected charges](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/checklistforunwantedcharges.html)
 - [Amazon EC2, Capacity Blocks for ML](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html)
 - [Amazon EC2, How Amazon EC2 Capacity Blocks work](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-how.html)
 - [Amazon EC2, Capacity Blocks pricing and billing](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-pricing-billing.html)

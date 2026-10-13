@@ -22,6 +22,24 @@ Domain과 Serverless collection의 보안 경계, 데이터 수집 경로, 관�
 
 Serverless data-plane 호출은 network policy, IAM의 `aoss:APIAccessAll`, collection과 index의 data access policy를 모두 통과해야 한다. Browser Dashboards에는 `aoss:DashboardsAccessAll`도 필요하며 SigV4 service name은 `aoss`다. 여러 network policy 중 하나라도 public access를 허용하면 VPC 제한보다 public access가 우선한다.
 
+## Cognito 로그인과 데이터 권한을 나누어 진단한다
+
+2026-10-13 Cognito 연동과 fine-grained access control 공식 문서 대조 기준이다. Provisioned domain의 Dashboards를 다루며 Serverless에 그대로 적용하지 않는다. 기존 수집과 관측 설정 전체는 다시 검증하지 않아 frontmatter 검증일은 유지한다.
+
+User pool은 사용자 로그인, identity pool은 로그인한 사용자의 임시 IAM 역할을 담당한다. `CognitoAccessForAmazonOpenSearch`는 OpenSearch Service가 Cognito를 구성하는 서비스 역할이다. **서비스 역할과 사용자의 authenticated role은 서로 다르다.** 두 pool은 같은 리전에 있어야 하지만 OpenSearch domain까지 같은 리전이어야 하는 것은 아니다.
+
+| 증상 또는 단계 | 먼저 확인할 경계 |
+| --- | --- |
+| VPC domain에 도달하지 못함 | VPC 연결과 보안 그룹부터 확인한다. Cognito를 켜도 네트워크 경로가 생기지 않는다 |
+| 로그인 정보가 거부됨 | 사용자 존재와 user pool 또는 외부 identity provider 구성을 확인한다 |
+| `Invalid identity pool configuration` | authenticated role의 신뢰 정책에서 `cognito-identity.amazonaws.com`, `sts:AssumeRoleWithWebIdentity`, 대상 pool의 `aud`와 `authenticated` 조건을 확인한다 |
+| 로그인 뒤 Dashboards 접근 실패 | domain access policy가 실제 authenticated role을 허용하는지 확인한다. FGAC와 open/IP 정책을 쓰는 구성은 공식 문서의 별도 조건을 따른다 |
+| 특정 인덱스나 기능만 거부됨 | FGAC의 OpenSearch role과 사용자 또는 IAM backend role 매핑을 확인한다. IAM 역할과 OpenSearch role은 같은 객체가 아니다 |
+
+모든 사용자를 master user로 바꾸는 것을 일반 해결책으로 삼지 않는다. 읽기 전용과 관리 역할을 나누고 실제 필요 권한을 매핑한다.
+
+OpenSearch Service가 생성한 app client를 이름 변경하거나 삭제하지 않는다. domain의 Cognito 옵션 변경이나 Elasticsearch에서 OpenSearch로의 업그레이드는 수동 app client 변경을 덮어쓸 수 있으므로, 변경 뒤 필요한 사용자 구성을 재확인한다.
+
 ## 데이터 수집
 
 주요 경로는 애플리케이션 bulk, CDC와 outbox, Data Firehose, CloudWatch Logs, OpenSearch Ingestion이다.
@@ -82,6 +100,7 @@ Provisioned domain에서 CPU가 높으면 먼저 부하가 몰린 node와 실행
 
 ## 출처
 
+- [AWS Documentation, Configuring Amazon Cognito authentication for OpenSearch Dashboards](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cognito-auth.html)
 - [How do I troubleshoot high CPU utilization on my OpenSearch Service cluster? — AWS re:Post Knowledge Center](https://www.repost.aws/knowledge-center/opensearch-troubleshoot-high-cpu)
 - [AWS Documentation, AWSSupport-TroubleshootOpenSearchHighCPU](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-troubleshoot-opensearch-high-cpu.html)
 - [AWS Documentation, Fine-grained access control](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/fgac.html)
