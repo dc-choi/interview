@@ -99,6 +99,19 @@ aliases: ["Performance Evidence Playbook", "성과 증거 플레이북"]
 
 타인의 이름, 연락처와 비공개 피드백 원문은 이 문서에 남기지 않는다. 제출용 경험 서술은 [[Resume-Experience-Narrative-and-Evidence|이력서 경험 서술과 증거 설계]]를 따른다.
 
+## 평판을 성과 증거로 바꾸는 질문
+
+좋다는 평판은 확인할 행동을 찾는 출발점이다. 함께 일한 사람의 관찰로 경험 서술을 확인하되, 직무에 필요한 역량과 연결된 질문을 사용하고 기록과 판단 기준을 일관되게 둔다. 막연한 칭찬과 구체적인 업무 수행 근거는 구분한다.
+
+다음은 구조화된 레퍼런스 확인과 성과 기록 방식을 개인 성장 점검에 적용한 질문이다. 승진이나 사업 성과를 보장하는 공식은 아니다.
+
+- **관찰 범위:** 직접 본 행동인가, 다른 사람에게 전해 들은 평가인가? 어떤 상황과 기간을 관찰했는가?
+- **행동과 결과:** 무엇을 했고 누구의 어떤 문제가 해결됐는가? 친절함이나 긴 근무시간만으로 결과를 대신하지 않았는가?
+- **기여 확인:** 개인의 판단과 팀의 지원을 구분할 수 있는가? 자기 설명을 확인할 작업 결과가 있는가?
+- **다음 역할과의 연결:** 현재 역할에서 확인한 행동은 무엇인가? 더 넓은 책임에서 아직 확인하지 못한 역량은 무엇인가?
+
+한 번의 칭찬 뒤에 승진이나 매출 성장이 있었다는 일화만으로 인과관계를 확정하지 않는다. 공개 기록에는 재사용할 질문과 익명화한 학습만 남기고, 실제 평가자의 신원과 피드백 원문은 옮기지 않는다.
+
 ## 되짚기 질문
 
 - 이번 작업에서 무엇을 증거로 확인했고 무엇은 아직 가설인가?
@@ -110,6 +123,7 @@ aliases: ["Performance Evidence Playbook", "성과 증거 플레이북"]
 
 - [Do People Have Insight Into Their Abilities? A Metasynthesis — Ethan Zell, Zlatan Krizan](https://www.psychologicalscience.org/journals/perspectives/1745691613518075/) — 2014년 연구의 공개 초록, 2026-10-07 대조. 자기평가와 수행 결과의 관계 및 영역별 차이만 참조했다.
 - [OPM, Accomplishment Records](https://www.opm.gov/policy-data-oversight/assessment-and-selection/other-assessment-methods/accomplishment-records/) — 2026-10-07 대조. 직무 역량별 행동 기준, 성과 서술과 사실 확인을 참조했다.
+- [OPM, Reference Checking](https://www.opm.gov/policy-data-oversight/assessment-and-selection/other-assessment-methods/reference-checking/) — 2026-10-13 대조. 직무 관련 질문, 관찰자의 정보로 경험을 확인하는 방식과 구조화된 기록을 참조했다. 같은 날 Accomplishment Records의 행동, 결과 서술과 확인 절차도 재대조했다. 미국 연방 채용 안내를 개인 성장 점검에 응용한 것이며 국내 인사 절차의 법적 기준은 아니다.
 
 ## 관련 문서
 
