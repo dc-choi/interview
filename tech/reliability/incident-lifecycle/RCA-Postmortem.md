@@ -41,6 +41,14 @@ aliases: ["RCA Postmortem", "근본 원인 분석", "Root Cause Analysis", "포�
 - "더 조심하자"는 액션이 아니다 — 알람 추가, 가드 추가, 자동화 같은 **시스템 변경**이어야 한다.
 - 우선순위는 에러 버짓 소모와 재발 가능성으로 매긴다. [[SLI-SLO|에러 버짓]] 소진 장애는 즉시 처리.
 
+### 테스트 이력과 복구 완료 시점을 나눠 기록하기
+
+장애가 났다는 사실만으로 배포 전 테스트가 없었다고 결론 내리지 않는다. 어떤 조건을 시험했고, 실제 장애에서 어떤 입력과 설정의 조합이 추가됐는지 구분한다. 임시 완화가 성공했어도 후속 수정과 검증 과제는 별도로 추적한다.
+
+2026-10-08 FIA 조사 발표의 Sepang 사례에서는 낮은 엔진 회전수와 특정 구간의 우천 출력 제한이 겹쳐 의도보다 큰 출력 손실이 발생했다. 배포 전 시뮬레이션과 두 대회의 연습 주행 테스트는 있었다. 따라서 확인할 것은 테스트 유무뿐 아니라 조건 조합의 검증 범위다.
+
+같은 발표의 현지 시각 타임라인은 15:45 시작 절차 중단, 15:50 원인 식별과 수정 설정 배포, 16:03 추가 설치와 운영 지침 전달, 16:20 팀들의 통합 완료, 16:33 재시작 절차 출발을 구분한다. 설정 배포까지 5분이라는 값은 전체 복구 시간을 뜻하지 않는다. 포스트모템에서도 수정본 제공, 소비자의 적용, 정상 동작 확인과 서비스 재개를 나눠 기록해야 지연이 생긴 단계를 찾을 수 있다.
+
 ## 문화 정착 — 강제가 아니라 시범
 
 포스트모템이 안 쌓이는 조직의 전형은 복구에 집중하느라 공유가 안 되고, 해결 뒤에도 분석 내용이 전파되지 않는 상태다. 이를 규정으로 강제하기보다, **전담자(SRE 등)가 수개월간 보고서를 직접 작성해 유용함을 예시로 보여주는 방식**이 효과적이다. 한 사례에서는 3개월 이상 직접 작성해 시범을 보인 뒤 약 3년에 걸쳐 모든 엔지니어가 요청 없이도 자율적으로 작성하는 문화가 정착됐다. 문화 정착은 느리지만, 쌓인 교훈은 복리로 문제 해결 효과를 만든다.
@@ -72,6 +80,7 @@ aliases: ["RCA Postmortem", "근본 원인 분석", "Root Cause Analysis", "포�
 - [Google SRE Book — Postmortem Culture: Learning from Failure](https://sre.google/sre-book/postmortem-culture/)
 - [Atlassian — Incident postmortem / blameless RCA](https://www.atlassian.com/incident-management/postmortem)
 - [네이버 검색의 SRE 시스템 — NAVER D2](https://d2.naver.com/helloworld/2047663) (문화 정착 시범 사례)
+- [FIA — FIA concludes investigation into Bahrain GP in Malaysia formation lap “software bug”](https://www.fia.com/news/fia-concludes-investigation-bahrain-gp-malaysia-formation-lap-software-bug) (2026-10-08 발표, 2026-10-14 대조)
 
 ## 관련 문서
 

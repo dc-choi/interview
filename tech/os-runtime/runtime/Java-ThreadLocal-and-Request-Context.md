@@ -1,7 +1,7 @@
 ---
 tags: [java, threadlocal, scoped-value, request-context, concurrency]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-14
 category: "OS & Runtime"
 aliases: ["Java ThreadLocal", "ThreadLocal Request Context", "쓰레드 로컬"]
 ---
@@ -65,7 +65,15 @@ static final ScopedValue<RequestContext> REQUEST = ScopedValue.newInstance();
 ScopedValue.where(REQUEST, context).run(() -> handle());
 ```
 
-binding이 lexical scope 종료와 함께 자동 해제되고 callee가 임의로 값을 바꾸기 어렵다. 그러나 legacy framework integration이나 값의 mutation이 필요하면 ThreadLocal이 여전히 쓰인다.
+binding은 `run` 또는 `call`의 동적 실행 범위가 끝나면 해제되거나 이전 binding으로 돌아간다. 같은 key를 중첩 범위에서 다시 binding할 수 있으며, 참조하는 객체 자체가 불변이 되는 것은 아니다. 그러나 legacy framework integration이나 값의 mutation이 필요하면 ThreadLocal이 여전히 쓰인다.
+
+### 구조적 동시성을 도입할 때의 전파 경계
+
+Java SE 26 기준 `StructuredTaskScope`는 preview API다. scope를 열 때의 `ScopedValue` binding을 포착하고, `fork`로 시작한 자식 thread가 이를 상속한다. 기존 framework가 읽는 일반 `ThreadLocal`이 이 과정에서 `ScopedValue`로 변환되거나 자동 복사되지는 않는다. 인증과 tracing을 ThreadLocal에 둔 서비스라면 병렬 호출이 성공하는지만 보지 말고 자식 작업이 같은 요청 context를 읽는지도 확인한다.
+
+Micrometer Context Propagation 1.2.1에서는 `ContextRegistry`에 필요한 `ThreadLocalAccessor`를 등록하고 `ContextSnapshot`으로 값을 포착한다. 자식 작업에서 `snapshot.setThreadLocals()`가 반환한 scope를 try-with-resources로 닫으면 작업 전의 thread-local 값으로 복원한다. snapshot 이후 원래 thread에서 바꾼 값은 그 snapshot에 반영되지 않으므로, 포착 시점과 적용 범위를 요청 경계에 맞춘다. 라이브러리가 모든 인증 context를 자동 등록한다고 가정하지 않는다.
+
+회귀 검증에서는 서로 다른 요청의 인증값과 trace ID, 예외 종료 후 기존 값 복원, context가 없는 다음 작업으로의 값 누출을 함께 확인한다. `ScopedValue`로 공유한 객체를 여러 자식이 수정한다면 불변 객체로 바꾸거나 접근을 동기화해야 한다. 작업 수명과 취소 정책은 [[Java-Structured-Concurrency|구조적 동시성]]에서 별도로 다룬다.
 
 ## 실행 모델별 선택
 
@@ -91,6 +99,10 @@ binding이 lexical scope 종료와 함께 자동 해제되고 callee가 임의�
 
 ## 출처
 
+2026-10-14에는 Java SE 26의 ThreadLocal, Thread, ScopedValue와 StructuredTaskScope 문서, Micrometer Context Propagation 1.2.1 예제를 대조했다. 실제 서비스의 인증과 tracing 연동을 실행 검증한 기록은 아니다.
+
+- [Java SE 26, StructuredTaskScope](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/StructuredTaskScope.html)
+- [Micrometer Context Propagation, Examples](https://docs.micrometer.io/context-propagation/reference/usage.html)
 - [Java SE 26, ThreadLocal](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ThreadLocal.html)
 - [Java SE 26, ScopedValue](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ScopedValue.html)
 - [Java SE 26, Thread](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html)
