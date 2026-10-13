@@ -38,7 +38,7 @@ verified_at: 2026-09-30
 - AWS가 자동 생성, 관리 (`aws/s3`, `aws/ebs` 등 별칭)
 - 사용자는 **사용만 가능**, 키 삭제, 정책 변경 불가
 - AWS가 약 365일마다 키 머티리얼을 자동 로테이션한다.
-- "암호화 활성화"만 한 채 키를 별도 지정하지 않았다면 → 이게 사용 중
+- 암호화 활성화만으로 키 유형을 판단하지 않는다. 예를 들어 S3의 기본 SSE-S3는 KMS 키를 사용하지 않는다(2026-10-13 공식 FAQ 확인).
 
 ### 고객 관리형 키 (CMK)
 
@@ -62,6 +62,15 @@ verified_at: 2026-09-30
 - **key users**: 대칭 키 기준 `Encrypt`, `Decrypt`, `ReEncrypt*`, `GenerateDataKey*`, `DescribeKey`를 받고, `kms:GrantIsForAWSResource` 조건이 붙은 `CreateGrant`, `ListGrants`, `RevokeGrant`로 EBS 같은 통합 서비스가 키를 쓰게 할 수 있다.
 - **SSE-KMS 객체는 S3 권한만으로 열리지 않는다**: 다운로드에는 `kms:Decrypt`, SSE-KMS 업로드에는 `kms:GenerateDataKey`, multipart 업로드에는 둘 다 필요하다. S3 권한이 넉넉한데 특정 객체만 403이면 그 객체를 암호화한 KMS 키의 권한(키 정책, 또는 키 정책이 허용한 IAM 정책)부터 본다. `aws/s3` AWS 관리형 키로 암호화한 객체는 키를 가진 계정 안에서만 쓸 수 있어 교차 계정 공유에는 고객 관리형 키가 필요하다.
 - **S3 Bucket Key**: S3는 요청자마다 bucket-level key를 최소 한 번 KMS에서 가져와 그 접근을 CloudTrail에 남기고, 이후 그 key를 쓰는 요청은 KMS 호출과 키 정책 검증 없이 처리한다. encryption context가 객체 ARN에서 버킷 ARN으로 바뀌므로 객체 ARN context 조건을 쓴 정책은 버킷 ARN으로 고친다.
+
+### Organizations 소속 조건과 교차 계정 권한
+
+2026-10-13 KMS와 IAM 공식 문서로 이 절을 대조했다. 고객 관리형 키를 조직 계정에 공유할 때 키 정책의 `StringEquals` 조건에 `aws:PrincipalOrgID`와 정확한 조직 ID를 지정하면 계정 ID 목록을 수동으로 관리하는 부담을 줄일 수 있다. 이 조건은 조직의 관리 계정에도 적용되며, 계정 가입과 탈퇴에 따라 조건을 만족하는 범위가 바뀐다.
+
+- 이 방식의 **교차 계정 사용에는 키 정책과 호출 계정의 IAM 정책 양쪽 허용**이 필요하다. 조직 소속만으로 모든 역할이 키를 사용할 수 있는 것은 아니다. IAM 정책의 Resource에는 대상 키 ARN을 지정하고 필요한 암호 연산만 허용한다.
+- `Principal: "*"`를 쓴 허용 문장에서 조직 조건을 제거하면 의도보다 넓게 공유된다. 조직 ID 값에 와일드카드를 쓰지 않으며, 조직 전체 공유가 필요하지 않으면 대상 역할을 더 좁힌다.
+- 조직 조건이 있는 허용 문장 하나가 다른 허용 경로를 자동으로 차단하지는 않는다. 다른 정책 문장과 grant도 점검한다. AWS 서비스 직접 호출의 허용 조건은 해당 서비스의 KMS 통합 문서에서 별도로 확인한다.
+- 검증 제안: 허용된 조직 역할의 성공, IAM 권한이 없는 조직 역할의 거부, 조직 밖 역할의 거부를 각각 확인한다. 교차 계정 KMS 연산은 호출 계정과 키 소유 계정의 CloudTrail 양쪽에서 추적한다.
 
 ## 데이터 키 (Data Key)
 
@@ -137,7 +146,7 @@ KMS의 핵심 동작 방식. **데이터 키로 데이터를 암호화하고, �
 
 ## 시험 체크포인트
 
-- **EBS, S3, RDS 암호화 키워드**면 → 백엔드는 **KMS**
+- EBS와 RDS의 저장 데이터 암호화는 KMS 통합을 확인한다. S3 서버 측 암호화에서는 **SSE-KMS와 DSSE-KMS**가 KMS 키를 사용하며, **SSE-S3**는 S3 관리 키를 사용한다. S3 암호화라는 표현만으로 KMS 사용을 단정하지 않는다.
 - `AWS_KMS` 원본 키의 키 머티리얼은 KMS HSM 밖으로 평문 유출되지 않음. 가져온 키와 사용자 지정 키 스토어는 책임 경계가 다름
 - **봉투 암호화** 흐름은 단골 — `GenerateDataKey` → 평문 데이터 키로 암호화 → 평문 폐기 → 암호화된 데이터 키 동봉 저장
 - **자동 로테이션 주기** — AWS 관리형은 강제 1년, 고객 관리형은 옵션이며 90~2560일 범위에서 지정 가능
@@ -151,6 +160,9 @@ KMS의 핵심 동작 방식. **데이터 키로 데이터를 암호화하고, �
 
 ## 출처
 
+- [AWS 공식 문서, AWS global condition context keys — aws:PrincipalOrgID](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-principalorgid)
+- [Amazon S3, Default encryption FAQ](https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-encryption-faq.html)
+- [Amazon S3, Protecting data with server-side encryption](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html)
 - AWS SAA C03 학습 자료 (로컬)
 - [AWS KMS 공식 문서, Enable automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/example_kms_EnableKeyRotation_section.html)
 - [GenerateDataKey — AWS KMS API](https://docs.aws.amazon.com/kms/latest/APIReference/API_GenerateDataKey.html)

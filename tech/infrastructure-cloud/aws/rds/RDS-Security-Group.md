@@ -59,7 +59,7 @@ RDS Security Group (RDB-SG):
 **Security Group이 다른 Security Group을 참조**하는 것이 핵심.
 - API 인스턴스가 몇 대든 자동으로 허용
 - API IP가 변해도 SG ID는 불변 → 유지보수 필요 없음
-- "API 계층 → DB 계층" 같은 **계층별 보안 모델**을 IaC로 표현 가능
+- API 계층에서 DB 계층으로 접근하는 **계층별 보안 모델**을 IaC로 표현 가능
 
 ## 실무 흐름
 
@@ -96,6 +96,17 @@ Bastion-SG inbound:
 
 ### 4. 자동 생성 SG 제거
 RDS가 만든 `rds-launch-wizard-N`은 분리, 삭제.
+
+### 로컬에서 비공개 RDS로 접속하는 경계
+
+2026-10-13 AWS 공식 문서와 접속 안내로 이 절을 대조했다. 관리용 접속은 로컬에서 EC2에 도달하는 경로와 EC2에서 RDS에 도달하는 경로를 나누어 확인한다. DB를 공개로 바꾸는 대신 EC2를 경유하는 포트 포워딩을 사용할 수 있다.
+
+- **EC2에서 DB로:** 같은 VPC의 배스천을 사용하는 예에서는 DB-SG의 실제 DB 포트에 Bastion-SG를 source로 허용한다. 배스천의 해당 포트 outbound와 라우팅도 필요하다. 이 연결의 source를 로컬 PC의 공인 IP로 혼동하지 않는다.
+- **로컬에서 EC2로:** 공개 배스천의 SSH는 허용된 관리 IP로 제한한다. 비공개 EC2라면 EC2 Instance Connect Endpoint로 접근하는 선택지가 있다. Endpoint 사용 권한은 IAM으로, Endpoint에서 EC2로 가는 SSH는 Endpoint SG의 outbound와 EC2 SG의 inbound로 제어한다.
+- **Endpoint의 source:** EC2 SG에서 Endpoint SG를 참조할 수 있다. CIDR로 허용한다면 client IP preservation 활성 여부에 따라 원래 클라이언트 IP 또는 Endpoint ENI의 IP를 기준으로 한다.
+- **NAT와의 구분:** EC2 Instance Connect Endpoint로 EC2에 접속하는 데 VPC의 직접 인터넷 연결은 필요하지 않다. 여기서 NAT gateway를 필수로 추론하지 않는다. EC2가 외부 패키지 저장소 등에 나가는 요구는 별도로 판단한다.
+
+점검 순서는 관리 경로 연결, EC2에서 RDS endpoint와 DB 포트 도달, DB 인증이다. 터널 연결 성공을 DB 권한 확보로 간주하지 않는다. 이 절은 구성 점검 기준이며 실제 환경에서 접속을 검증한 기록은 아니다.
 
 ## Lambda에서 RDS 접근
 
@@ -152,7 +163,7 @@ resource "aws_security_group" "db" {
 
 ## 흔한 실수
 
-- **`0.0.0.0/0`으로 열어두고 "임시로" 방치** — 거의 영구화
+- **`0.0.0.0/0`으로 열어두고 임시 설정을 방치** — 거의 영구화
 - **IP 하드코딩** — 유동 IP 환경에서 깨짐, SG 참조 선호
 - **자동 생성 SG 방치** — 이름 모호, 여러 개 쌓임
 - **로그 못 봄** — SG 자체는 로깅 없음. **VPC Flow Logs** 활성화로 드롭된 패킷 추적
@@ -166,6 +177,10 @@ resource "aws_security_group" "db" {
 - 최소 권한 원칙을 SG에 적용하는 방법
 
 ## 출처
+- [AWS 공식 문서, Connect to your instances using a private IP address and EC2 Instance Connect Endpoint](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect-with-ec2-instance-connect-endpoint.html)
+- [AWS 공식 문서, Security groups for EC2 Instance Connect Endpoint](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/eice-security-groups.html)
+- [Securely connect to an Amazon RDS or Amazon EC2 database instance remotely with your preferred GUI — AWS Database Blog](https://aws.amazon.com/blogs/database/securely-connect-to-an-amazon-rds-or-amazon-ec2-database-instance-remotely-with-your-preferred-gui/)
+- [How do I use an EC2 instance to connect to a private RDS DB instance from a local machine? — Amazon Web Services](https://www.youtube.com/watch?v=TRkp54ekyY4)
 - [velog @city7310 — 백엔드가 이정도는 해줘야 함 17. DB에 Security Group 할당](https://velog.io/@city7310/%EB%B0%B1%EC%97%94%EB%93%9C%EA%B0%80-%EC%9D%B4%EC%A0%95%EB%8F%84%EB%8A%94-%ED%95%B4%EC%A4%98%EC%95%BC-%ED%95%A8-17.-DB%EC%97%90-Security-Group%EC%9D%84-%EB%A7%8C%EB%93%A4%EC%96%B4-%ED%95%A0%EB%8B%B9%ED%95%98%EA%B8%B0-cajtiqe36n)
 - [AWS 공식 문서, Security groups](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html)
 - [AWS 공식 문서, Security group rules](https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html)

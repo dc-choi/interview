@@ -63,6 +63,17 @@ AWS에서 Hadoop, Spark 같은 빅데이터 프레임워크를 실행하는 관�
 
 변경 뒤에는 같은 입력에서 실패 재현 여부, 최대 메모리, spill과 수행 시간을 비교한다. 종료 코드 해석과 JVM 힙 밖 메모리의 일반 원리는 [[JVM-Container-Memory|JVM 컨테이너 메모리]]와 연결한다.
 
+## Spark 클래스 누락과 의존성 배포
+
+2026-10-13 Spark 3.5.7 공식 문서로 이 절을 대조했다. `java.lang.ClassNotFoundException`이 발생하면 먼저 누락된 클래스 이름과 실패한 프로세스(driver 또는 executor)를 확인하고, 해당 클래스를 포함한 JAR의 배포와 classpath를 점검한다. 적용할 EMR 릴리스의 Spark 버전도 함께 확인한다.
+
+- `spark-submit --jars`의 쉼표로 구분한 JAR 목록은 클러스터에 전달되고 driver와 executor classpath에 포함된다. 이 옵션은 디렉터리 확장을 지원하지 않는다.
+- `local:/` URI는 각 worker에 이미 존재하는 파일을 가리킨다. 경로를 적었다는 사실만으로 파일이 배포됐다고 판단하지 않는다.
+- `spark.driver.extraClassPath`는 driver의 classpath 앞에 경로를 추가한다. client mode에서는 JVM이 이미 시작된 뒤 애플리케이션의 `SparkConf`로 바꾸지 말고 `--driver-class-path` 또는 기본 properties 파일에서 설정한다. executor용 설정과 driver용 설정을 혼동하지 않는다.
+- assembly JAR를 만들 때 클러스터가 제공하는 Spark와 Hadoop은 `provided` 의존성으로 둔다. 기본 런타임 JAR까지 중복으로 묶어 누락 문제를 해결하려 하지 않는다. 적용 설정의 출처가 불분명하면 `spark-submit --verbose`로 확인한다.
+
+검증 제안: 같은 입력으로 driver 시작과 executor 태스크 실행을 모두 확인한다. 기본 classpath를 통째로 바꾸기보다 누락된 사용자 의존성을 좁혀 추가한다. 특정 콘솔 화면의 입력 제한을 모든 EMR 6.x 이후 릴리스의 설정 불가로 일반화하지 않는다.
+
 ## 서비스 선택 포인트
 
 - Hadoop/Spark/HBase 프레임워크가 필요하면 EMR을 검토한다.
@@ -97,6 +108,7 @@ EMR on EKS는 기존 EKS 클러스터에서 분석 워크로드를 컨테이너�
 
 ## 출처
 
+- [Apache Spark 3.5.7, Submitting Applications](https://spark.apache.org/docs/3.5.7/submitting-applications.html)
 - [AWS, What is Amazon EMR on EKS?](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/emr-eks.html)
 - [AWS, Managing virtual clusters](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/virtual-cluster.html)
 - [AWS, Customizing Docker images for Amazon EMR on EKS](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/docker-custom-images.html)

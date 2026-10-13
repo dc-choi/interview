@@ -74,6 +74,8 @@ EBS 볼륨 유형:
 
 운영 검증 제안: 지연이 악화되면 애플리케이션과 네이티브 라이브러리를 프로파일링하고, 처리량당 비용을 다시 계산한다. 기존 x86 이미지와 배포 설정을 복구 경로로 유지한다. 발표 사례의 절감률이나 특정 언어의 이전 난이도를 일반적인 보장으로 사용하지 않는다. 실제 빌드, 부하 시험과 이전을 수행한 기록은 아니다.
 
+Porting Advisor for Graviton은 알려진 코드 패턴과 의존성 호환성 문제를 찾는 사전 점검 도구다(2026-10-13 AWS 저장소 README 확인). 비 ARM 장비에서도 실행할 수 있고 소스를 자동 수정하지 않는다. 빌드에서 제외한 파일까지 소스 트리 검사에 포함해 오탐이 생길 수 있으므로 결과를 실제 빌드 대상과 대조한다. 문제를 찾지 못했다는 결과는 Graviton 기능 테스트와 부하 시험을 대신하지 않는다.
+
 ### AI 가속기는 실행 스택까지 함께 비교한다
 
 2026-10-10 부분 대조: AWS Neuron 공식 소개 기준, Trainium과 Inferentia는 Neuron 개발 스택을 사용하는 AWS 가속기다. Neuron에는 컴파일러, 런타임, 학습과 추론 라이브러리, 프로파일링 도구가 포함된다. GPU 인스턴스와 비교할 때 인스턴스 사양뿐 아니라 모델 실행에 필요한 소프트웨어 경로도 확인한다.
@@ -85,6 +87,12 @@ EBS 볼륨 유형:
 - 비용에는 실행 시간 외에 모델 이식, 컴파일과 배포 준비, 유휴 용량을 포함한다. 과거 발표의 절감률을 모든 모델과 현재 요금에 적용하지 않는다.
 
 서버 안팎의 메모리와 통신 병목은 [[GPU-Server-Infrastructure|GPU 서버 인프라]]와 함께 확인한다. 이 비교 절차는 특정 가속기의 우월성이나 이번 환경에서의 성능 측정 결과를 뜻하지 않는다.
+
+#### 저정밀도 연산과 확률적 반올림
+
+2026-10-13 AWS Neuron의 Rounding Modes 문서로 대조했다. NeuronCore-v2부터는 RNE(round nearest, ties to even)와 stochastic rounding을 선택할 수 있다. 크기가 크게 다른 값을 더할 때 RNE에서 작은 증가분이 반올림으로 사라질 수 있으며, stochastic rounding은 인접한 표현 가능 값과의 거리에 따라 확률적으로 반올림해 작은 증가분이 누적될 수 있게 한다.
+
+문서의 예제는 `NEURON_RT_STOCHASTIC_ROUNDING_EN=0`으로 RNE, `=1`로 stochastic rounding을 선택한다. 이 기능을 모든 모델의 FP32 정확도 보장이나 같은 결과의 재현 보장으로 해석하지 않는다. 가속기를 비교할 때는 데이터 타입과 반올림 모드도 기록하고, 같은 데이터에서 손실과 검증 품질, 처리량을 함께 측정하는 것이 점검 기준이다.
 
 ## T 시리즈 CPU 크레딧 시스템
 
@@ -122,6 +130,8 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 
 ## 출처
 
+- [Porting Advisor for Graviton — AWS](https://github.com/aws/porting-advisor-for-graviton)
+- [AWS Neuron, Neuron Rounding Modes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.30.0/about-neuron/arch/neuron-features/rounding-modes.html)
 - [Considerations when transitioning workloads to AWS Graviton based Amazon EC2 instances — AWS](https://github.com/aws/aws-graviton-getting-started/blob/main/transition-guide.md)
 - [Docker 공식 문서, Multi-platform builds](https://docs.docker.com/build/building/multi-platform/)
 - [Docker 공식 문서, docker buildx imagetools inspect](https://docs.docker.com/reference/cli/docker/buildx/imagetools/inspect/)
