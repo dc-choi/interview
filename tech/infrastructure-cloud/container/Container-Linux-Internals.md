@@ -112,6 +112,16 @@ image는 kernel을 포함한 완전한 OS disk가 아니다. user-space executab
 
 그러나 `chroot`나 namespace 하나는 보안 경계가 아니다. production runtime은 user mapping, capability 축소, device 접근, seccomp/LSM, read-only mount와 자원 한도를 함께 다룬다. 직접 조립한 container를 신뢰할 수 없는 workload의 sandbox로 사용하지 않는다.
 
+### root 경로 변경과 권한 제거는 별개다
+
+2026-10-13 부분 검증: Linux의 `chroot(2)`, `pivot_root(2)`와 Docker의 실행 권한 문서로 이 절을 대조했다. 기존 이미지, 자원 제어와 성능 설명 전체를 재검증한 것은 아니므로 문서의 기존 검증일은 유지한다.
+
+- `chroot()`는 절대 경로 탐색에 사용할 root directory를 바꾼다. 현재 작업 디렉터리를 바꾸거나 이미 열린 파일 디스크립터를 닫지 않으므로, 남아 있는 참조를 통해 새 root 바깥에 접근할 여지가 있다. 모든 비권한 프로세스가 `cd ..`만으로 탈출한다는 뜻은 아니다.
+- `pivot_root()`는 호출자의 mount namespace 안에서 root mount를 교체하고 이전 root를 `put_old` 아래로 옮긴다. 새 root는 mount point여야 하며 관련 mount의 공유 전파 조건도 만족해야 한다. 호출 후 작업 디렉터리를 새 `/`로 옮기고 이전 root mount를 해제하는 절차까지 구분한다.
+- root 교체 성공만으로 capability, device 접근이나 syscall 정책이 제한됐다고 판단하지 않는다. Docker의 `--privileged`는 모든 capability와 host device 접근을 부여하고 AppArmor/SELinux 제한을 크게 완화한다. 특정 기능이 필요하면 `--cap-add`, `--cap-drop`, `--device`로 필요한 권한을 따로 검토한다.
+
+실습 확인도 두 단계로 나눈다. 먼저 새 root와 process 목록이 보이는지 확인하고, 다음으로 의도하지 않은 host 경로, 장치와 특권 작업의 접근이 거부되는지 확인한다. 전자는 격리된 화면의 증거이고, 후자는 선택한 공격 경로에 대한 통제의 증거다. 둘 다 전체 탈출 가능성이 사라졌다는 증명은 아니다.
+
 ## 장애를 계층으로 분해한다
 
 | 증상 | 먼저 볼 계층 |
@@ -125,6 +135,9 @@ image는 kernel을 포함한 완전한 OS disk가 아니다. user-space executab
 
 ## 출처
 
+- [Linux manual, chroot(2)](https://man7.org/linux/man-pages/man2/chroot.2.html)
+- [Linux manual, pivot_root(2)](https://man7.org/linux/man-pages/man2/pivot_root.2.html)
+- [Docker Docs, Running containers: Runtime privilege and Linux capabilities](https://docs.docker.com/engine/containers/run/#runtime-privilege-and-linux-capabilities)
 - [Linux manual, namespaces overview](https://man7.org/linux/man-pages/man7/namespaces.7.html)
 - [Linux kernel documentation, cgroup v2](https://docs.kernel.org/admin-guide/cgroup-v2.html)
 - [Linux kernel documentation, OverlayFS](https://docs.kernel.org/filesystems/overlayfs.html)

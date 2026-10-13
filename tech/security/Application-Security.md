@@ -71,6 +71,17 @@ API는 객체 식별자를 받는 Endpoint와 문서화되지 않은 Host가 많
 
 MSA에서는 공통 통제와 서비스별 통제를 나눈다. API Gateway는 Token 검증, Rate Limit과 Payload 크기 제한 같은 공통 Filter를 맡지만 객체 소유권과 속성 권한(API1, API3)은 알 수 없으므로 각 서비스가 집행한다. 기능 권한(API5)도 Gateway Route 규칙만 믿지 않고 서비스가 기본 거부로 다시 확인하며, 서비스별 인가 Test를 둔다([[Microservice-Edge-and-Composition-Patterns|API Gateway 패턴]]). Rate Limit은 API4의 기본 통제지만 API6의 업무 흐름 남용은 요청 빈도만으로 드러나지 않을 수 있다. OWASP는 보호할 흐름을 업무 관점에서 먼저 정하고 기기 지문, 사람 여부 확인과 비정상 흐름 탐지를 함께 고르라고 권한다.
 
+### API 자산 목록은 경로 수보다 배포와 데이터 흐름을 관리한다
+
+2026-10-13 부분 검증: OWASP API9:2023의 자산 관리와 예방 지침을 대조했다. 이 절 외의 보안 항목 전체를 재검증한 것은 아니므로 기존 검증일은 유지한다.
+
+- API host마다 운영/스테이징/테스트 환경, 허용할 네트워크 접근 대상, 실행 version과 폐기 계획을 기록한다. 현재 운영 version뿐 아니라 노출된 구버전과 beta host도 보호 범위에 포함한다.
+- 연동 서비스의 역할, 교환하는 데이터와 민감도를 함께 기록한다. endpoint 목록만 있어서는 제3자로 나가는 민감정보 흐름을 설명할 수 없다.
+- 인증, 오류, redirect, rate limit, CORS, parameter와 요청/응답 계약을 문서화하고 CI/CD에서 문서 생성을 연결한다. 문서는 사용할 권한이 있는 대상에게만 공개한다.
+- 비운영 API가 운영 데이터를 쓰는 구성을 피한다. 불가피하면 운영 API와 같은 수준의 보안 통제를 적용한다. 운영 host 앞의 rate limit만 설정하고 같은 기능의 beta host를 열어 두면 우회 경로가 남는다.
+
+운영 점검으로는 배포 목록과 API 문서를 대조하고, 통제의 적용 여부와 실제 공격 관측을 따로 기록한다. 자산 발견이나 정책 점검 성공만으로 객체별 인가 테스트와 공격 경로 검증을 대신하지 않는다.
+
 ## 최근 개발 트렌드가 만드는 리스크
 
 개발 방식의 변화가 새 취약점 표면을 만든다.
@@ -157,6 +168,7 @@ Q. 보안팀과 개발팀의 충돌은?
 
 ## 출처
 
+- [OWASP, API9:2023 Improper Inventory Management](https://api-security.owasp.org/editions/2023/en/0xa9-improper-inventory-management/)
 - [OWASP, Input Validation Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html) (서버 검증과 입력 계약, 2026-10-06 부분 검증)
 - [WHATWG, HTML Standard: The required attribute](https://html.spec.whatwg.org/dev/input.html#the-required-attribute) (비밀번호 확인과 `oninput`, `setCustomValidity` 예제)
 - [OWASP, Top 10:2025](https://owasp.org/Top10/2025/)

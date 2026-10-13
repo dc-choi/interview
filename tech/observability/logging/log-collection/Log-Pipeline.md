@@ -66,6 +66,18 @@ Collector와 중앙 버퍼는 같은 것이 아니다. Fluent Bit의 로컬 파�
 
 다음은 기술지원용 조회 설계 제안이다. 클라이언트 이벤트, 미디어 통계와 서버 로그를 세션 식별자 및 시간축으로 연결하고, 사용자 조작과 장치 상태를 함께 탐색할 수 있게 한다. 수집 경로의 성공과 사용자가 경험한 통화 성공은 별개다. 세션 리플레이를 붙이더라도 원인 판정에는 해당 시점의 이벤트와 통계가 필요하며, 고객에게 보여 줄 로그는 테넌트 접근권과 민감정보를 별도로 제한한다.
 
+### 보관 가능성과 조회 기능을 따로 확인한다
+
+로그를 고객 소유 객체 저장소에 남기는 것, 외부 엔진으로 읽는 것, 운영 대시보드에서 즉시 쓰는 것은 서로 다른 조건이다. 보관 기간만 늘려도 모든 조회와 경보 기능이 같은 방식으로 동작한다고 가정하지 않는다.
+
+2026-10-13 부분 검증: Coralogix의 S3 archive, 직접 조회와 dashboard 문서로 아래 사례를 확인했다. 기존 파이프라인 전체의 검증일은 유지한다.
+
+- **보관 위치와 형식:** Coralogix는 고객 S3 bucket에 logs와 traces를 Parquet로 저장할 수 있다. 자체 bucket을 쓴다는 사실과 분석 제품의 기능 지원 범위는 분리해서 확인한다.
+- **외부 조회 계약:** `cx-data` 직접 조회 문서는 Parquet reader와 필요한 schema를 사용한다. `team_id`, UTC event timestamp 기준 `dt`와 `hr` partition, metadata/labels/user data의 JSON 문자열 필드를 해석해야 한다. Athena에서는 external table과 partition 설정도 필요하므로 파일을 보유하는 것만으로 기존 분석 쿼리가 그대로 이전되지는 않는다.
+- **화면별 지원 범위:** custom dashboard widget은 기본적으로 Frequent Search 데이터를 조회한다. Monitoring 데이터는 별도로 추가해야 하고, Compliance 데이터는 Explore에서 조회되더라도 custom dashboard에는 제공되지 않는다. 같은 시간창의 Explore 결과와 빈 widget이 다르면 저장 유실을 판정하기 전에 tier와 조회 설정을 확인한다.
+
+이 구분에서 도출한 운영 점검은 실제 archive 파일을 외부 엔진으로 읽고 필수 필드를 복원해 보는 것이다. 조회 권한, schema와 partition, 보존 정책, 검색 범위와 비용을 함께 확인해야 저장소 소유권을 실제 조사와 이전 가능성으로 연결할 수 있다.
+
 ## CDN 로그의 표본과 전달 누락을 구분한다
 
 2026-10-10 부분 검증: CloudFront의 표준 로그와 실시간 로그 전달 조건을 대조했다. 이 절의 제품 조건만 확인했으며 다른 수집기의 전체 동작을 재검증한 것은 아니다.
@@ -151,6 +163,9 @@ OpenSearch의 shard, rollover, storage tier는 [[OpenSearch-Index-Lifecycle]]을
 
 ## 출처
 
+- [Coralogix Docs, Configure an Amazon S3 bucket](https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/)
+- [Coralogix Docs, Access CX-Data directly](https://coralogix.com/docs/user-guides/data-query/archive-query/access-cx-data-directly/)
+- [Coralogix Docs, Add monitoring data to custom dashboard widgets](https://www.coralogix.com/docs/user-guides/custom-dashboards/tutorials/add-monitoring-data-to-custom-dashboard-widgets/)
 - [AWS Documentation, Convert input data format in Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html)
 - [AWS Documentation, Use AWS Glue Data Catalog to connect to your data](https://docs.aws.amazon.com/athena/latest/ug/data-sources-glue.html)
 - [화상 통신 로그 분석 시스템 구축: 페이지콜 기술지원 프로세스 혁신 사례 연구 — Amazon Web Services Korea](https://www.youtube.com/watch?v=iW9kyN0OMaE)
