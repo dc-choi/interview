@@ -34,6 +34,10 @@ AWS Activate는 사례다. 다음 조건은 2026-10-07 공식 안내를 확인�
 
 실무 적용 제안: 지원을 찾기 전에 현재 막힌 것이 클라우드 지출, 설계 역량 또는 고객 확보인지 정한다. 그 문제에 맞는 프로그램의 최신 조건과 실제 받을 결과물을 확인한다. 과거 행사에서 소개된 지원 지역, 모집 기한과 프로그램을 현재 신청 가능한 혜택으로 옮겨 쓰지 않는다.
 
+운영 대행도 별도의 구매 항목으로 본다. 2026-10-13 공식 안내 기준 AWS Managed Services Provider(MSP) Program은 계획, 이전, 지속 운영과 최적화를 제공하는 파트너를 검증하며, 등록에는 기술 역량과 사업 건전성에 대한 제3자 감사가 필요하다. 이 검증은 파트너 역량에 관한 것이므로 개별 고객이 받을 작업 범위, 가격이나 절감액은 별도 제안과 계약에서 확인한다.
+
+비교를 위한 관리 제안: 클라우드 사용료, 초기 구축비, 반복 운영 대행료, 교육비와 계약 종료 시 인계 비용을 나누어 적는다. 크레딧으로 줄어든 사용료만 보고 총비용이 감소했다고 판단하지 않는다. 장애 접수와 변경 승인, 보안 점검, 운영 기록 인계의 담당자도 정해 두면 일회성 자문과 지속 운영 계약을 구분할 수 있다. 파트너의 작업 뒤 내부 담당자가 직접 처리할 수 있어야 하는 업무를 합의하고, 그 인계에 필요한 시간도 비용 비교에 포함한다.
+
 ## 크레딧이 대신 내는 비용의 범위
 
 AWS 프로모션 약관은 현금 교환과 환급을 허용하지 않으며, 크레딧을 넘는 서비스 요금은 청구한다. 적용 대상 세금에도 크레딧이 사용되지 않는다. 적용 가능한 서비스와 유효기간은 받은 크레딧의 조건을 확인한다.
@@ -84,6 +88,7 @@ Claude Startups는 2026-10-06 공지, 프로그램 페이지와 약관을 대조
 
 - [AWS for Startups — AWS](https://aws.amazon.com/startups/)
 - [AWS Global Startup Program — AWS](https://aws.amazon.com/partners/programs/global-startup/)
+- [AWS Managed Services Provider Program — AWS](https://aws.amazon.com/partners/programs/msp/) — 2026-10-13 계획부터 운영, 최적화까지의 지원 범위와 제3자 감사 확인
 - [AWS Partner Central, Managing fund requests in AWS Partner Central](https://docs.aws.amazon.com/partner-central/latest/getting-started/partner-funding.html)
 - [AWS Partner Central, Creating a fund request](https://docs.aws.amazon.com/partner-central/latest/getting-started/create-fund-request.html)
 - [Claude Startups — Anthropic](https://claude.com/programs/startups) — 2026-10-08 페이지 본문의 자격, API와 Team 혜택 및 기간 확인. 2026-10-11 FAQ의 혜택 한도 초과와 재심사, 자격 문구, Console 신청과 1주 심사 목표, 크레딧 사용 범위와 rate limit, 오피스아워와 VC 경로 확인
