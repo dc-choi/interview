@@ -88,6 +88,16 @@ Porting Advisor for Graviton은 알려진 코드 패턴과 의존성 호환성 �
 
 서버 안팎의 메모리와 통신 병목은 [[GPU-Server-Infrastructure|GPU 서버 인프라]]와 함께 확인한다. 이 비교 절차는 특정 가속기의 우월성이나 이번 환경에서의 성능 측정 결과를 뜻하지 않는다.
 
+#### Neuron 이식은 연산 검사와 실행 검증을 나눈다
+
+부분 검증(2026-10-13): AWS Neuron의 프레임워크 비교와 Analyze, Tracing API 문서를 대조했다. Inf1의 `torch-neuron`은 아카이브되어 적극적인 개발이 중단된 경로다. 과거 Inf1 예제의 API와 컴파일 옵션을 Inf2/Trn1의 `torch-neuronx`에 그대로 적용하지 않는다. 아래는 `torch-neuronx` 추론 경로의 조건이며, 기존 문서 전체의 검증일은 유지한다.
+
+- `torch_neuronx.analyze`는 예제 입력으로 연산별 컴파일러 지원 여부를 검사하고, 지원하지 않는 연산의 실패 정보와 코드 위치를 반환한다. 실행할 traced model을 만들지는 않는다. 지원 비율만으로 전체 모델의 컴파일 성공이나 출력 정확도를 보장하지 않는다.
+- `torch_neuronx.trace`의 기본 결과는 입력 shape와 데이터 타입이 고정된 그래프다. 입력 데이터에 따라 달라지는 Python 분기 조건을 추론 때 다시 평가하지 않으므로, trace 성공과 원래 모델의 의미 보존을 별도로 검증한다. 가변 입력에는 bucketing 같은 별도 처리 전략이 필요하다.
+- 오류를 찾을 때는 모델을 작은 블록으로 줄이고 입력 shape, 연산 옵션과 컴파일러 버전을 기록하는 방법을 검토한다. 연산을 치환하거나 분할했다면 기준 모델과 출력 오차를 비교한다. 과거 사례의 특정 연산 한계값을 현재 SDK의 공통 제한으로 쓰지 않는다(검증 절차 제안).
+
+비용 비교 제안: 허용 지연과 품질을 만족하는 배치 설정마다 인스턴스당 처리량을 측정한 뒤, 목표 처리량을 나누어 올림한 대수와 시간당 단가를 곱한다. 이는 균등한 부하 분배를 가정한 1차 추정이다. 배치 대기, 부하 편차와 장애 여유를 포함한 전체 서비스 부하 시험으로 검증하며, 한 대의 가격이나 과거 절감률만으로 이전을 결정하지 않는다.
+
 #### 저정밀도 연산과 확률적 반올림
 
 2026-10-13 AWS Neuron의 Rounding Modes 문서로 대조했다. NeuronCore-v2부터는 RNE(round nearest, ties to even)와 stochastic rounding을 선택할 수 있다. 크기가 크게 다른 값을 더할 때 RNE에서 작은 증가분이 반올림으로 사라질 수 있으며, stochastic rounding은 인접한 표현 가능 값과의 거리에 따라 확률적으로 반올림해 작은 증가분이 누적될 수 있게 한다.
@@ -130,6 +140,9 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 
 ## 출처
 
+- [AWS Neuron, Comparison of torch-neuron (Inf1) versus torch-neuronx (Inf2 & Trn1) for Inference](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/guide-torch-neuron-vs-torch-neuronx-inference.html)
+- [AWS Neuron, PyTorch NeuronX Analyze API for Inference](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/torch-neuronx/api-reference-guide/inference/api-torch-neuronx-analyze.html)
+- [AWS Neuron, PyTorch NeuronX Tracing API for Inference](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/torch-neuronx/api-reference-guide/inference/api-torch-neuronx-trace.html)
 - [Porting Advisor for Graviton — AWS](https://github.com/aws/porting-advisor-for-graviton)
 - [AWS Neuron, Neuron Rounding Modes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.30.0/about-neuron/arch/neuron-features/rounding-modes.html)
 - [Considerations when transitioning workloads to AWS Graviton based Amazon EC2 instances — AWS](https://github.com/aws/aws-graviton-getting-started/blob/main/transition-guide.md)

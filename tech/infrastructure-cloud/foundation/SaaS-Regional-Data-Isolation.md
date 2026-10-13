@@ -71,6 +71,16 @@ SaaS Builder Toolkit for AWS는 control plane과 application plane의 패턴을 
 
 복제 전략은 RPO, 데이터 정합성과 위치 제약을 함께 만족하도록 정한다. 복구 속도만을 이유로 허용하지 않은 지역에 사본을 만들지 않는다. 모든 유전체 또는 의료 데이터에 같은 반출 금지가 적용된다고 일반화하지 않으며, 특정 클라우드나 리전 선택을 법률 준수의 증명으로 쓰지 않는다.
 
+### 테넌트의 저장 리전과 AI 추론 리전은 다를 수 있다
+
+부분 검증(2026-10-13): Amazon Bedrock과 Qlik Cloud의 cross-region inference 문서를 대조했다. 서비스가 여러 리전에 배포된다는 사실만으로 모든 기능이 선택한 리전 안에서 처리된다고 판단하지 않는다. 이 절의 추론 경로만 대조했으며 기존 `verified_at`은 유지한다.
+
+Bedrock의 geographic inference profile은 지정한 지리 범위 안에서, global profile은 전 세계의 지원 AWS 상용 리전에서 추론 요청을 처리할 수 있다. 지리 범위 제한과 단일 리전 고정은 다르다. 계정에서 수동 활성화하지 않은 리전도 처리 대상이 될 수 있으므로 계정의 활성 리전 목록만으로 추론 위치를 판단하지 않는다. Bedrock을 직접 호출하는 구성에서는 소스 리전의 CloudTrail 기록에 있는 `additionalEventData.inferenceRegion`으로 실제 처리 리전을 확인한다.
+
+SaaS 사례로 Qlik Cloud는 cross-region inference를 활성화하면 테넌트 리전의 모델 가용성이나 용량에 따라 요청을 다른 리전으로 보내 처리한다. 해당 기능은 처리 리전에 데이터를 저장하거나 캐시하지 않는 일시적 처리로 설명되지만, 저장하지 않는다는 조건이 그 리전에서 처리하지 않는다는 뜻은 아니다. 기능별 목적지와 적용 기간은 공급자의 현재 처리 위치 표로 확인한다.
+
+설계 점검 제안: 저장, 백업과 추론의 허용 위치를 따로 적고, AI 기능을 켤 때 입력에 포함되는 사용자 질문, 업무 데이터와 메타데이터의 전송 경로를 확인한다. 자체 Bedrock 호출의 로그 확인 방법을 관리형 SaaS 고객에게 그대로 요구하지 않으며, SaaS에서는 공급자가 제공하는 처리 위치와 설정 증거를 확인한다. 암호화나 일시적 처리만으로 위치 요구 충족을 판정하지 않는다.
+
 ## 데이터 위치와 운영 주권의 경계
 
 데이터 저장 리전을 정하는 것과 계정, 인증, 과금, 운영 지원의 의존성을 분리하는 것은 다른 설계다. 운영 주권 요구가 있으면 업무 데이터 외에 제어 기능과 운영자 접근 경계도 확인한다.
@@ -122,6 +132,8 @@ SaaS 도입에서는 다음과 같이 책임과 증거를 연결할 수 있다(�
 
 ## 출처
 
+- [Amazon Bedrock, Route model inference requests across AWS Regions with cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html)
+- [Qlik Cloud, Enabling cross-region inference](https://help.qlik.com/en-US/cloud-services/Subsystems/Hub/Content/Sense_Hub/Admin/cross-region-data-processing.htm)
 - [Kubernetes, Multi-tenancy](https://kubernetes.io/docs/concepts/security/multi-tenancy/)
 - [AWS, IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
 - [AWS Marketplace, Listing and Selling in AWS Marketplace for AWS European Sovereign Cloud](https://docs.aws.amazon.com/marketplace/latest/userguide/esc_seller_guide.html) — SaaS 연동의 endpoint와 이벤트 경로를 대조
