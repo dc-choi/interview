@@ -102,6 +102,20 @@ April Dunford의 프레임워크: **"우리 제품이 최고인 시장을 정의
 | Earned | 자발적 노출 | 입소문, PR, 리뷰 |
 | Paid | 유료 광고 | 구글 광고, SNS 광고 |
 
+### 실물 상품의 판매 경로와 국가별 확장
+
+Owned, Earned, Paid는 고객에게 도달하는 방식이고, 도매, 자사몰, 마켓플레이스는 주문을 받는 판매 경로다. GTM에서는 두 축을 함께 설계한다. 도매와 직접 판매는 병행할 수 있지만, 고객 관계와 운영 책임이 다르다.
+
+| 판매 경로 | 얻는 접점 | 함께 비교할 부담 |
+|---|---|---|
+| 도매와 소매점 입점 | 유통 파트너의 고객과 매장 진열 | 낮아지는 단위 판매가, 최종 고객 데이터의 제한, 파트너 영업과 관계 관리 |
+| 자사몰 직접 판매 | 가격과 고객 경험의 통제, 직접 수집한 고객 데이터 | 고객 획득, 배송, 반품과 고객 지원을 직접 운영하는 비용 |
+| 해외 마켓플레이스 | 해당 국가의 온라인 판매 경로 | 국가와 상품별 판매 수수료, 선택한 물류 서비스와 광고의 추가 비용 |
+
+자사몰이 중간 유통 단계를 줄여도 최종 수익성이 더 높다고 단정할 수 없다. 채널 선택에는 판매가와 매출뿐 아니라 해당 경로를 운영하는 비용을 함께 비교한다. 해외 확장에서는 한 국가의 성과를 다른 국가의 예상 성과로 그대로 쓰지 않는 것을 판단 기준으로 삼는다. Amazon의 판매 비용과 상품 요건도 국가와 상품에 따라 달라지므로 진입 대상별로 다시 확인한다.
+
+2026-10-14 Shopify의 도매와 직접 판매 비교, Amazon Global Selling의 비용과 국가별 상품 요건 안내를 대조했다. 위 표는 판매 경로를 비교하는 틀이며 특정 브랜드의 수익률이나 국가별 수요를 검증한 결과는 아니다.
+
 ### 글로벌 1인 제작자의 커뮤니티 채널
 
 영어권 시장을 노리는 1인 제작자에게 Reddit 서브레딧은 초기 Earned 채널 후보다. r/indiehackers, r/startups, r/entrepreneur, r/smallbusiness, r/freelance처럼 창업과 사업 주제, r/webdev, r/gamedev, r/uxdesign처럼 직군 주제로 나뉘며, 타깃 사용자가 실제로 모이는 곳을 고른다.
@@ -161,6 +175,8 @@ Q. GTM 전략을 어떻게 수립/실행했는가?
 - 전환은 동일 cohort 계측 이후 판정하고, 현재는 MAO와 행동 신호를 구분
 
 ## 출처
+- [Wholesale vs. Direct-to-Consumer: Key Differences — Shopify](https://www.shopify.com/enterprise/blog/direct-to-consumer-vs-wholesale)
+- [Global Selling — Amazon](https://sell.amazon.com/global-selling/)
 - [Interpret your Retention Analysis chart: Usage interval — Amplitude](https://www.amplitude.com/docs/analytics/charts/retention-analysis/retention-analysis-interpret-usage) — 2026-10-02 제품별 사용 주기와 유지율 해석 범위 확인
 - [승무원을 위한 서비스 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/60)
 - [Crossing the Chasm — Geoffrey A. Moore (HarperBusiness, 1991, 3판 2014)](https://geoffreyamoore.com/book/crossing-the-chasm/)
