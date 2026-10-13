@@ -71,6 +71,18 @@ Team Topologies는 팀 사이의 관계를 세 가지 모드로 정리한다 (Te
 - 요청을 받는 쪽이라면 개별 예외 승인을 반복하지 않는 방법도 있다. 들어온 예외 요청을 정책의 테스트 케이스로 모아두고 정해진 시점에 한꺼번에 검토해 정책을 개정하는 방식이다 (Irrational Exuberance 기준).
 - 장애 상황의 에스컬레이션 기준과 호출 대상은 성격이 다르다. [[Incident-Runbook|장애 런북]]을 따른다.
 
+### 할 일 목록에서 결정할 질문을 꺼낸다
+
+여러 부서가 기다리는 작업은 진행 상황을 묻기 전에 무엇이 결정되지 않았는지 확인한다. 예를 들어 출시 준비 요청을 반복하는 대신, 전체 범위의 일정 연장과 범위 축소 후 예정일 출시 중 무엇을 선택할지 질문으로 만든다. 이는 아래 DACI 역할 구분을 팀 간 의존성에 적용한 예시이며, 모든 지연이 의사결정 문제라는 뜻은 아니다.
+
+Atlassian의 DACI는 결정 절차를 진행하는 Driver와 최종 결정을 내리는 Approver 한 명을 구분한다. Contributors는 전문 지식과 의견을 제공하고, Informed는 결정의 영향을 받아 결과를 전달받는 사람들이다. PM이 자료를 모으고 결정을 추진한다고 해서 다른 부서의 자원과 우선순위를 바꿀 권한까지 갖는 것은 아니다.
+
+- **결정 전:** 질문, 배경, 영향, 결정 기한, 관련 자료와 선택지별 장단점, 비용과 자원 요구를 공유한다. 부족한 정보와 질문에는 확인 담당을 붙인다.
+- **결정 시:** 합의한 Approver가 판단하도록 한다. 전원의 의견 제공과 전원의 승인권을 혼동하지 않는다.
+- **결정 후:** 선택한 안과 이유를 남기고 영향을 받는 팀에 전달한다. 실행할 후속 작업과 담당도 정한다.
+
+이미 결정된 작업의 공수 부족이나 기술적 막힘은 이 양식만으로 풀리지 않는다. 그 경우에는 자원 배정, 범위 변경이나 기술 지원을 별도로 합의한다. 2026-10-14 DACI의 역할 정의와 실행 절차를 대조했으며, 도입만으로 성과가 개선된다는 인과 주장은 포함하지 않는다.
+
 ## 기다릴 것인가 우회할 것인가
 
 상대 팀 작업을 기다리는 동안에도 쓸 수 있는 카드가 있고, 그 카드는 대부분 부채를 남긴다. 문제는 우회 자체가 아니라 **부채를 기록하지 않는 것**이다.
@@ -116,6 +128,7 @@ Team Topologies는 팀 사이의 관계를 세 가지 모드로 정리한다 (Te
 
 ## 출처
 
+- [DACI: A Decision-Making Framework — Atlassian Team Playbook](https://www.atlassian.com/team-playbook/plays/daci)
 - [How to Win at Dependency Mapping: a Step-By-Step Guide — Atlassian Team Playbook](https://www.atlassian.com/team-playbook/plays/dependency-mapping)
 - [Key concepts and practices for applying a Team Topologies approach to team-of-teams org design — Team Topologies](https://teamtopologies.com/key-concepts)
 - [Work the policy, not the exceptions — Irrational Exuberance, Will Larson](https://lethain.com/work-policy-not-exceptions/)
