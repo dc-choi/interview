@@ -24,6 +24,14 @@ Webhook 인증은 연동 종류에 맞춘다. Bearer token과 HMAC은 다른 방
 
 ## 운영 확인
 
+### 조사, 복구 계획과 예방 분석의 범위
+
+2026-10-14 AWS 공식 문서와 장애 조사 아키텍처 설명을 대조했다. DevOps Agent의 mitigation plan에는 조치 절차, 변경 전 확인, 성공 기준과 롤백 절차가 포함된다. 계획에 명령이나 코드 변경이 있어도 그 변경을 실행했다는 뜻은 아니다. 해당 장애 조사 흐름에서는 운영자가 복구 조치를 실행한다.
+
+Grafana 연동이 장애 조사에 쓰인다고 모든 예방 분석에도 쓰이는 것은 아니다. 현재 연동 문서는 proactive incident prevention이 Grafana 도구를 사용하지 않는다고 명시한다. 따라서 Grafana 연결 성공만으로 과거 Grafana 데이터까지 예방 분석에 활용된다고 판단하지 않는다.
+
+### 전달부터 복구까지 확인한다
+
 다음은 전달과 조회 경계를 확인하기 위한 점검 제안이다.
 
 1. 테스트 알림의 HTTP 성공, 조사 생성과 조사에 전달된 설명을 각각 확인한다.
@@ -35,6 +43,7 @@ Webhook 인증은 연동 종류에 맞춘다. Bearer token과 HMAC은 다른 방
 
 ## 출처
 
+- [How AWS DevOps Agent uses multi-agent reasoning to find root causes — AWS DevOps & Developer Productivity Blog](https://aws.amazon.com/blogs/devops/how-aws-devops-agent-uses-multi-agent-reasoning-to-find-root-causes/)
 - [AWS DevOps Agent, Connecting Grafana](https://docs.aws.amazon.com/devopsagent/latest/userguide/connecting-telemetry-sources-connecting-grafana.html)
 - [AWS DevOps Agent, Invoking DevOps Agent through Webhook](https://docs.aws.amazon.com/devopsagent/latest/userguide/configuring-integrations-and-knowledge-invoking-devops-agent-through-webhook.html)
 

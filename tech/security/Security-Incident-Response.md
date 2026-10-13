@@ -140,6 +140,14 @@ NIST SP 800-61 Rev. 3는 일부 격리 조치를 보안 기술이 자동으로 �
 
 ## 생성형 AI로 만든 보안 리포트의 검증
 
+### AI 조사 결과와 실제 조치의 상태
+
+2026-10-14 Trellix EDR 공식 문서를 대조했다. Trellix Wise는 자연어 조사, 요약과 개체 관계 시각화를 제공하며 대응 조치를 추천한다. 추천 문장 생성과 실제 대응 실행은 별도로 확인한다.
+
+Historical Search는 저장된 엔드포인트 텔레메트리를, Real Time Search는 연결된 단말의 현재 프로세스와 이벤트를 조회한다. 같은 자연어 질문이라도 조회 대상과 시점이 다르므로 결과의 수집 범위를 함께 기록한다. EDR의 remediation 또는 mitigation reaction은 대상 단말이 오프라인이면 저장됐다가 다시 온라인이 될 때 실행된다. 운영 점검에서는 AI의 권고, 조치 요청, 단말 연결 상태와 실행 결과를 나눠 확인하며 요청 성공을 격리나 삭제 완료로 해석하지 않는다.
+
+### 생성한 파일과 원본 응답을 대조한다
+
 CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증거가 아니다. 생성된 코드와 설명은 원 API 응답에 대조하고, 누락을 정상 결과로 바꾸지 않는지 확인한다.
 
 다음은 2026-10-07 Amazon Inspector API Reference를 대조한 검증 예시다.
@@ -161,6 +169,8 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 
 ## 출처
 
+- [Trellix, Investigate threats using Generative AI](https://docs.trellix.com/docs/investigate-threats-using-generative-ai-1)
+- [Trellix, Remediate threats](https://docs.trellix.com/docs/remediate-threats)
 - [CISA, #StopRansomware Guide](https://www.cdfifund.gov/system/files/2023-11/StopRansomware_Guide_508C_v3.pdf) — 공동 지침의 미국 재무부 CDFI Fund 게시본, 서론과 데이터 반출 조사 항목.
 - [Microsoft Learn, Incidents and alerts in the Microsoft Defender portal](https://learn.microsoft.com/en-us/defender-xdr/incidents-overview)
 - [AhnLab XDR 출시, 통합 보안의 정점을 향하다 — AhnLab](https://www.ahnlab.com/ko/contents/content-center/34045)

@@ -21,6 +21,14 @@ AWS Cloud WAN은 core network policy로 네트워크 segment와 attachment 연�
 
 따라서 TGW를 한 번에 없애는 방식만 가능한 것은 아니다. TGW route table attachment를 이용한 공존 구성을 검토할 수 있다. 실제로 어떤 경로를 공유할지는 각 route table과 segment 정책을 대조한다.
 
+## segment 격리는 실제 경로로 확인한다
+
+2026-10-14 공식 정책 매개변수를 대조했다. `isolate-attachments`의 기본값은 `false`다. `true`로 설정하면 같은 segment의 attachment 사이에서 일반적으로 공유되는 경로를 제한하지만, 다른 segment에서 공유한 경로와 정적 경로는 남을 수 있다.
+
+TGW route table attachment에서 들어오는 경로는 이 설정의 영향을 받지 않으므로 연결한 TGW route table의 전파 경로를 별도로 관리한다. 반대로 같은 segment의 다른 attachment에서 route table attachment로 향하는 경로에는 일반 격리 동작이 적용된다.
+
+공유 서비스 segment가 `prod`와 `dev`에 경로를 공유해도 그 `share`만으로 `prod`와 `dev` 사이에 경로가 공유되지는 않는다. 전환 검증에서는 정책 이름이나 segment 수 대신, 허용할 통신과 차단할 통신을 왕복 경로와 실제 요청으로 각각 확인한다.
+
 ## 정책 생성과 적용은 별도다
 
 새 policy version은 자동 배포되지 않는다. change set에서 기존 LIVE 정책과 새 정책의 차이를 확인하고 적용한다. 이전 정책 버전을 다시 현재 버전으로 복원하는 기능도 제공한다.

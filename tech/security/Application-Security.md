@@ -29,6 +29,12 @@ aliases: ["Application Security", "애플리케이션 보안", "시큐어코딩"
 
 진단은 넓고 얕게 빠진 항목을 찾고, 모의해킹은 좁고 깊게 실제 침투 경로를 증명한다. 둘은 대체재가 아니라 보완재다.
 
+### 자동 모의해킹의 검사 대상과 접근 범위
+
+2026-10-14 AWS Security Agent의 모의해킹 생성 문서를 대조했다. 검사 대상 도메인은 소유권 검증을 거쳐야 하며, 로그인과 탐색에만 쓰는 accessible domain은 검사 대상과 구분한다. 인증 성공이나 외부 도메인 접근 가능 여부가 그 도메인을 공격할 허가를 뜻하지 않는다.
+
+AWS는 비운영 환경에서 검사하고 운영 시스템에 접근할 수 있는 자격증명을 제공하지 않도록 안내한다. 운영 적용 시에는 로그인 뒤 도달하는 공유 서비스와 제3자 도메인을 확인하고, 파괴적 동작이 있는 경로를 검사 범위에서 제외한다. 자동 수정 옵션으로 생성한 PR도 수정 코드의 제안이며 병합, 배포와 재검증 완료를 의미하지 않는다. 실제 공격이나 계정 연동은 수행하지 않은 문서 기반 점검 기준이다.
+
 ## 시큐어코딩: 충돌을 줄이는 방식
 
 보안팀은 개발자가 만든 서비스를 공격자 관점에서 테스트하므로, 개발자에게는 배포를 막거나 일을 늘리는 존재로 느껴지기 쉽다. 이 충돌을 구조적으로 줄이는 것이 시큐어코딩 — **처음부터 취약점이 생기기 어렵게 코드를 작성**하는 것이다.
@@ -168,6 +174,7 @@ Q. 보안팀과 개발팀의 충돌은?
 
 ## 출처
 
+- [AWS Security Agent, Create a penetration test](https://docs.aws.amazon.com/securityagent/latest/userguide/perform-penetration-test.html)
 - [OWASP, API9:2023 Improper Inventory Management](https://api-security.owasp.org/editions/2023/en/0xa9-improper-inventory-management/)
 - [OWASP, Input Validation Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html) (서버 검증과 입력 계약, 2026-10-06 부분 검증)
 - [WHATWG, HTML Standard: The required attribute](https://html.spec.whatwg.org/dev/input.html#the-required-attribute) (비밀번호 확인과 `oninput`, `setCustomValidity` 예제)
