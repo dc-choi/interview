@@ -1,7 +1,7 @@
 ---
 tags: [architecture, recommendation-system, taxonomy, content-based-filtering, metadata]
 status: done
-verified_at: 2026-09-03
+verified_at: 2026-10-13
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Recommendation Taxonomy and Content-Based Filtering", "추천 시스템 택소노미", "택소노미 기반 콘텐츠 추천"]
 ---
@@ -101,6 +101,10 @@ Model은 새 운영 concept를 즉시 만들지 않는다. 미등록 표현은 `
 
 허용 ID를 강제하는 constrained output은 schema와 ID 유효성만 보장하고 의미상 올바른 할당을 보장하지 않는다. Concept 수가 커서 먼저 label 후보를 검색한다면 최종 tagger 품질 외에 label retrieval recall도 별도 gate로 측정한다.
 
+입력 snapshot에 넣을 자료도 gold set에서 정한다. 줄거리와 설명문, 자막이나 전사문은 담긴 근거와 입력 토큰 비용이 다르므로 축별 품질과 비용을 함께 비교하고, 자막과 전사문은 사용 권한, spoiler와 전사 품질을 따로 확인한다(설계 제안). 공개 사례로 PBS는 50개 프로그램에서 직원이 대본을 바탕으로 직접 만든 태그와 모델 결과를 병행 비교했고, 설명문과 전사문이 분석 입력으로 가격 대비 가치가 가장 컸다고 밝혔다(2025-10-22 AWS 블로그). 이는 해당 catalog와 권한 조건에서 나온 판단이므로 다른 서비스의 입력 우선순위로 그대로 옮기지 않는다.
+
+기존 catalog 전체를 처음 태깅하는 backfill은 사용자 요청 경로 밖에 있으므로 비동기 batch 작업으로 돌리고, 신작과 metadata 수정분은 증분 경로로 나눌 수 있다(설계 제안). 2026-10-13 확인 기준 Bedrock batch inference 안내는 tool calling과 structured output(`response_format`)을 지원하지 않는다고 적지만, structured output 안내의 기능 표는 batch inference를 지원한다고 적어 AWS 문서끼리 다르다. 요청 필드도 InvokeModel의 Claude 모델은 `output_config.format`, open-weight 모델은 `response_format`, Converse는 `outputConfig.textFormat`으로 다르다. 출력 record 순서는 입력과 같다고 보장되지 않는다. 따라서 소규모 batch로 확인하기 전에는 batch 경로의 schema 강제를 가정하지 않고, `contentId`와 `taxonomyVersion` 등으로 만든 고유 `recordId`로 결과를 입력 snapshot과 다시 결합한 뒤 4단계 validator와 5단계 검수 queue를 그대로 거친다(설계 제안). 단가 비교와 job 운영 조건은 [[LLM-Cost-Optimization|LLM 비용 최적화]]에 둔다.
+
 ## 작품과 사용자 벡터
 
 ```text
@@ -177,4 +181,9 @@ Taxonomy의 incremental Recall은 taxonomy source 단독 Recall이 아니다. �
 - [NewsML-G2 relevance and confidence — IPTC](https://www.iptc.org/std/NewsML-G2/guidelines/#aligning-subject-and-keyword-properties)
 - [On Calibration of Modern Neural Networks — Guo et al.](https://proceedings.mlr.press/v70/guo17a.html)
 - [Grammar-Constrained Decoding for Structured NLP Tasks without Finetuning — Geng et al.](https://aclanthology.org/2023.emnlp-main.674/)
+- [PBS enhances search on digital platforms using Amazon Bedrock — AWS for M&E Blog](https://aws.amazon.com/blogs/media/pbs-enhances-search-on-digital-platforms-using-amazon-bedrock)
+- [Inside PBS: How AI is quietly improving your life—and you don't even know it — Amazon Web Services](https://www.youtube.com/watch?v=FuGgtlBIXvg)
+- [Process multiple prompts with batch inference — Amazon Bedrock User Guide](https://docs.aws.amazon.com/bedrock/latest/userguide/batch-inference.html)
+- [Format and upload your batch inference data — Amazon Bedrock User Guide](https://docs.aws.amazon.com/bedrock/latest/userguide/batch-inference-data.html)
+- [Get validated JSON results from models — Amazon Bedrock User Guide](https://docs.aws.amazon.com/bedrock/latest/userguide/structured-output.html)
 - Korean Film Council: [아수라](https://www.koreanfilm.or.kr/eng/films/index/filmsView.jsp?movieCd=20153443), [다만 악에서 구하소서](https://www.koreanfilm.or.kr/eng/films/index/filmsView.jsp?movieCd=20197922)

@@ -64,8 +64,28 @@ LLM 비용 최적화의 일반 레버는 셋이다: Prompt Caching, 모델 다�
 | 모델 다운사이즈 | 단가 절감 | 정확도 검증 필수 |
 | Batch API | 비동기 할인 단가 | 지연 허용 워크로드만 |
 
-- 각 레버는 독립 적용 가능하고 효과는 누적된다. 사례의 시뮬레이션 기준으로 전 단계 누적 시 90% 이상 절감을 예상했다 (예측치).
+- 각 레버는 독립 적용 가능하고 효과는 누적된다. 다만 Bedrock batch inference 경로에서는 아래처럼 캐시 할인과 batch 할인이 같은 요청에 겹치지 않는다. 사례의 시뮬레이션 기준으로 전 단계 누적 시 90% 이상 절감을 예상했다 (예측치).
 - 의존성: 캐싱을 먼저 적용해야 이후 레버(다운사이즈, Batch)의 효과가 같은 메트릭 위에서 분리 측정된다.
+
+### Bedrock에서 지연을 허용하는 대량 작업
+
+2026-10-13 AWS 공식 문서 기준이다. 기존 카탈로그 일괄 태깅이나 문서 요약처럼 즉시 응답이 필요 없는 작업은 다음 경로를 같은 요청 표본의 실측 토큰으로 비교한다(운영 제안).
+
+| 경로 | 호출 방식 | 비용 근거 | 확인할 제약 |
+|---|---|---|---|
+| Batch inference | S3에 둔 JSONL(`recordId`, `modelInput`)을 job으로 제출하고 결과를 S3에서 받는다 | 가격표 기준 일부 모델은 on-demand보다 50% 낮은 단가 | Prompt caching 미지원. Tool calling과 structured output은 AWS 문서끼리 표기가 달라 소규모 job으로 확인. 지원 모델과 리전은 batch 전용 표로 확인 |
+| Flex service tier | Runtime 요청에서 service tier를 `flex`로 지정한다 | 처리 시간이 더 걸려도 되는 작업을 위한 할인 단가 | 지원 여부는 모델 카드로 확인. 모델의 on-demand quota를 Standard, Priority 요청과 공유 |
+| On-demand와 prompt caching | 반복되는 고정 prefix를 캐시에서 읽는다 | 캐시에서 읽은 토큰만 cache read 단가 | 적중 비보장. 모델에 따라 캐시 쓰기 단가가 입력 단가보다 높음. [[LLM-Prompt-Caching]] 정본 |
+
+Bedrock의 prompt caching은 on-demand 추론 endpoint에서만 지원되고 batch inference API에서는 지원되지 않는다. 그래서 Bedrock batch inference 경로에서는 위 레버 스택의 캐시 할인과 batch 할인을 같은 요청에 겹쳐 계산하지 않는다. Anthropic API의 Message Batches는 prompt caching 할인과 batch 할인이 겹칠 수 있다고 안내하고 캐시 적중은 best-effort로 설명하므로, 겹침 여부는 제공자와 API 경로별로 확인한다. Structured output은 2026-10-13 기준 batch inference 안내가 미지원으로, structured output 안내의 기능 표가 지원으로 적어 AWS 문서끼리 다르므로 소규모 job으로 확인하기 전에는 schema 강제를 가정하지 않는다(운영 제안). Batch 지원 모델과 리전은 별도 표로 제공되며, 2026-10-13 표에 있는 Anthropic 모델 중 최신 행은 Claude Opus 5, Sonnet 4.6, Haiku 4.5다. Prompt caching 지원 표에 있는 Opus 5.5, Sonnet 5.5, Haiku 5.5는 batch 표에 없으므로 모델을 정하기 전에 두 표를 함께 확인한다(운영 제안). 요청을 실제로 처리한 tier는 CloudWatch 지표의 `ResolvedServiceTier` 차원에서 확인하고, API 응답과 CloudTrail 이벤트에도 처리된 요청의 service tier 설정이 남는다.
+
+Batch inference를 고르면 다음을 job 운영 계약으로 둔다.
+
+- 출력 record 순서는 입력과 같다고 보장되지 않으므로 `recordId`로 원본과 결합한다. `recordId`를 생략하면 Bedrock이 출력에 추가하므로, 원본과 결합하려면 업무 식별자로 만든 고유 값을 직접 넣는 편이 안전하다(운영 제안).
+- 추론 오류가 난 줄은 `modelOutput` 대신 `error`를 담는다. Job 상태와 record별 성공을 구분하고 `manifest.json.out`의 성공과 오류 record 수, 입력과 출력 토큰 수를 청구 자료와 대조한다(운영 제안).
+- Job 검증 단계는 S3 접근 권한, JSONL 형식, 파일 크기와 record 수를 보지만 `modelInput`이 모델 요청 형식과 맞는지는 확인하지 않는다. 작은 표본을 on-demand로 먼저 호출해 요청 형식과 출력 파싱을 확인한다(운영 제안).
+- `timeoutDurationInHours`는 24~168시간이다. 제한 시간 전에 시작하지 못한 job은 `Expired`, 시간 안에 일부 record를 처리하지 못한 job은 `PartiallyCompleted`가 되므로 미처리와 오류 record만 모아 다시 제출한다. 남은 record가 모델별 job 최소 record 수보다 적으면 다음 job에 합치거나 on-demand로 처리한다(운영 제안).
+- Job당 최소와 최대 record 수, 입력 파일과 job 크기는 모델별 batch inference quota로 확인한다. Job 상태 변화는 polling 대신 EventBridge 알림으로 받을 수 있다.
 
 ## 5. 모델 라우팅: 선택 비용과 재시도 비용을 포함한다
 
@@ -85,7 +105,7 @@ LLM 비용 최적화의 일반 레버는 셋이다: Prompt Caching, 모델 다�
 
 ## 사례 요약
 
-Bedrock 기반 배치 워크로드에서 가시성 대시보드 구축, 92% 파레토 발견, 고정/변동 분리와 1시간 TTL Prompt Caching 적용까지의 결과: 1주 실측 캐시 히트율 98%, 전체 LLM 청구액 64% 절감.
+Bedrock 기반 배치 워크로드에서 가시성 대시보드 구축, 92% 파레토 발견, 고정/변동 분리와 1시간 TTL Prompt Caching 적용까지의 결과: 1주 실측 캐시 히트율 98%, 전체 LLM 청구액 64% 절감. Bedrock의 prompt caching은 on-demand 호출에서만 지원되므로 이 사례의 배치는 위 batch inference API가 아니라 on-demand 호출을 모아 처리한 작업으로 읽는다(해석).
 
 ## 면접 체크포인트
 
@@ -105,6 +125,16 @@ Bedrock 기반 배치 워크로드에서 가시성 대시보드 구축, 92% 파�
 - [Amazon Bedrock User Guide, Monitor bedrock-runtime inference using CloudWatch metrics](https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html)
 - [Amazon Bedrock User Guide, Monitor model invocation using CloudWatch Logs and Amazon S3](https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html)
 - [AWS Cost Management User Guide, Managing your costs with AWS Budgets](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html)
+- [Amazon Bedrock User Guide, Process multiple prompts with batch inference](https://docs.aws.amazon.com/bedrock/latest/userguide/batch-inference.html)
+- [Amazon Bedrock User Guide, Format and upload your batch inference data](https://docs.aws.amazon.com/bedrock/latest/userguide/batch-inference-data.html)
+- [Amazon Bedrock User Guide, View the results of a batch inference job](https://docs.aws.amazon.com/bedrock/latest/userguide/batch-inference-results.html)
+- [Amazon Bedrock User Guide, Supported Regions and models for batch inference](https://docs.aws.amazon.com/bedrock/latest/userguide/batch-inference-supported.html)
+- [Amazon Bedrock API Reference, ModelInvocationJobSummary](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_ModelInvocationJobSummary.html) (job 상태와 `timeoutDurationInHours` 범위)
+- [Amazon Bedrock User Guide, Service tiers for optimizing performance and cost](https://docs.aws.amazon.com/bedrock/latest/userguide/service-tiers-inference.html)
+- [Amazon Bedrock User Guide, Prompt caching for faster model inference](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html) (batch inference 미지원, 지원 모델 표)
+- [Amazon Bedrock pricing — AWS](https://aws.amazon.com/bedrock/pricing/) (일부 모델의 batch inference 50% 할인)
+- [Amazon Bedrock User Guide, Get validated JSON results from models](https://docs.aws.amazon.com/bedrock/latest/userguide/structured-output.html) (기능 표의 batch inference 지원 표기, 모델별 요청 필드)
+- [Claude Developer Platform, Batch processing](https://platform.claude.com/docs/en/build-with-claude/batch-processing) (Message Batches와 prompt caching 할인 중첩, best-effort 캐시 적중)
 - [RouteLLM: An Open-Source Framework for Cost-Effective LLM Routing — LMSYS Org](https://www.lmsys.org/blog/2024-07-01-routellm/) (사전 라우팅과 비용, 품질 평가)
 - [FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance — arXiv](https://arxiv.org/abs/2305.05176) (LLM 캐스케이드 연구)
 - [LLM 비용 64% 절감, 캐시 히트율 98% 달성기 — 무신사 테크블로그 (29CM)](https://techblog.musinsa.com/llm-%EB%B9%84%EC%9A%A9-64-%EC%A0%88%EA%B0%90-%EC%BA%90%EC%8B%9C-%ED%9E%88%ED%8A%B8%EC%9C%A8-98-%EB%8B%AC%EC%84%B1%EA%B8%B0-d568135bd40e)
@@ -117,3 +147,4 @@ Bedrock 기반 배치 워크로드에서 가시성 대시보드 구축, 92% 파�
 - [[Cost-Anomaly|비용 이상 탐지 (베이스라인 모니터링)]]
 - [[LLM-Model-Tiers|LLM 모델 티어 선택, 라우팅 (다운사이즈 레버)]]
 - [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리 (활동량과 비용/품질 분리)]]
+- [[Recommendation-System-Taxonomy-Content-Based|추천 택소노미 LLM 태깅 (batch backfill 검증 계약)]]

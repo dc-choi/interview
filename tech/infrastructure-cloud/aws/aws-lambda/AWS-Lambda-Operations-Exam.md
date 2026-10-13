@@ -43,6 +43,7 @@ verified_at: 2026-09-30
 - **실시간 스트림 처리** — Kinesis → Lambda → DynamoDB/S3
 - **IoT 백엔드** — IoT Core 메시지 → Lambda 라우팅
 - **CloudWatch Alarm 자동화** — 알람 → Lambda → Slack, PagerDuty
+- **에이전트 도구** — AgentCore Gateway → Lambda (MCP 도구 호출을 함수 호출로 변환)
 
 ### 웹 API의 세 가지 권한 경계
 
@@ -55,6 +56,27 @@ verified_at: 2026-09-30
 | 함수가 DynamoDB 등 AWS 자원에 접근 | 함수 실행 역할의 작업과 자원 권한 |
 
 함수 실행 역할에 DB 권한을 주는 것만으로 API 호출자의 접근 통제가 설정되지는 않는다. 실행 역할은 함수에 필요한 권한만 부여한다. 운영 확인 예시로 정상 요청, 인증 없는 요청과 DB 접근 권한이 없는 함수의 실패를 각각 검사하면 어느 경계에서 거부되는지 구분할 수 있다. 실제 배포나 권한 시험을 수행한 기록은 아니다.
+
+### 기존 함수를 에이전트 도구로 노출할 때
+
+2026-10-13 Amazon Bedrock AgentCore Gateway 공식 개발자 가이드 대조 기준이다. Gateway는 MCP 요청을 Lambda 호출과 API 요청으로 바꾸고, 여러 함수와 API를 하나의 endpoint 뒤에 묶는다. Gateway 전반의 정책 경계는 [[Bedrock-AgentCore-Operations|AgentCore 운영 경계]], MCP 관문의 일반 원칙은 [[MCP-Security-Boundaries|MCP 보안 경계]]를 따른다.
+
+- **도구 스키마는 Gateway에 등록한다**: Lambda 대상을 추가할 때 도구마다 `name`, `description`, `inputSchema`(필수)와 `outputSchema`(선택)를 inline으로 넣거나 S3 위치로 지정한다. S3에서 읽으면 Gateway 서비스 역할에 그 버킷 접근 권한도 필요하다.
+- **입력 계약이 달라진다**: event는 `inputSchema`에 정의한 속성과 값의 맵이고, 도구 이름과 gateway, target ID 같은 메타데이터는 context로 온다(Python 예제 기준 `context.client_context.custom`). MCP에 보이는 도구 이름과 context의 `bedrockAgentCoreToolName`은 `${target_name}___${tool_name}` 형식이므로, 한 함수가 여러 도구를 처리하면 접두사를 잘라 낸 이름으로 분기한다.
+- **기존 함수는 코드 변경을 전제로 한다**: 공식 문서는 기존 함수를 도구로 가져오면 event와 context 형식 변화에 맞춰 코드를 바꿔야 한다고 안내한다. 응답은 Gateway가 파싱할 수 있는 유효한 JSON이어야 하고, 함수 timeout은 도구의 처리 시간에 맞춘다.
+- **Gateway 할당량은 함수 설정과 별도다**: 대상당 도구 1,000개, Gateway 호출 timeout 15분, `tools/call` payload 6 MB가 기본값이며 조정할 수 있다. Gateway 쪽 할당량을 늘려도 함수의 최대 실행 시간과 동기 호출 payload는 Lambda 할당량을 따른다.
+
+| 경계 | 확인할 설정 |
+|---|---|
+| 에이전트가 Gateway에 접근 | 인바운드 인가(JWT, `bedrock-agentcore:InvokeGateway` 기반 IAM). `AUTHENTICATE_ONLY`는 SigV4 서명으로 인증만 하고 `NONE`은 인증도 하지 않으며, 둘 다 Gateway가 인가하지 않으므로 policy engine, interceptor Lambda나 대상에서 인가한다. Lambda 대상의 context 메타데이터에는 호출자 신원 필드가 없으므로 함수 안에서 호출자를 구분해 인가할 수 있다고 가정하지 않는다(설계 제안) |
+| Gateway가 함수를 호출 | Lambda 대상의 아웃바운드 인가는 Gateway 서비스 역할 방식만 지원한다. 역할 정책에 `lambda:InvokeFunction`을 주고, 함수가 다른 계정에 있으면 함수의 리소스 기반 정책에도 역할 ARN을 principal로 넣는다 |
+| 함수가 AWS 자원에 접근 | 함수 실행 역할의 작업과 자원 권한 |
+
+Gateway 서비스 역할은 이 방식(`GATEWAY_IAM_ROLE`)으로 설정한 모든 대상이 공유하며, 공식 문서는 그 권한이 인가된 호출자가 Gateway로 행사할 수 있는 상한이라고 설명한다. 같은 문서는 민감도나 업무가 다른 대상을 실행 역할이 서로 다른 Gateway로 나누고, 공유 Gateway에서는 policy engine으로 호출자별 대상을 제한하도록 권한다. 인바운드 `NONE`은 테스트 편의로 쓰거나 민감한 정보를 돌려줄 수 있는 대상에 쓰지 않도록 권고된다.
+
+함수가 이미 API Gateway REST API 뒤에 있다면 그 stage를 대상으로 붙이는 선택지도 있다. 같은 계정과 리전에 있는 public endpoint 유형의 REST API만 지원하며 HTTP API, WebSocket API, `{proxy+}` 같은 프록시 리소스의 메서드와 `AWS_IAM` 인가와 API key를 함께 요구하는 메서드는 지원하지 않는다. 도구 이름은 Gateway가 `GetExport`로 받은 OpenAPI의 `operationId`나 tool override에서 오고, 아웃바운드 인가는 IAM(API에 IAM 인가 필요), API key와 권장되지 않는 인가 없음 중에서 고른다.
+
+Gateway가 MCP 요청을 REST API의 HTTP 요청으로 바꾸므로 명시적으로 정의한 resource와 method의 이벤트 형식은 유지할 수 있지만, API와 함수가 보는 요청 주체는 원래 에이전트 사용자가 아니라 Gateway의 아웃바운드 인가 방식(서비스 역할, API key 또는 인가 없음)으로 정해진다(해석). 아웃바운드 인가를 위해 API의 인가 설정을 바꾸면 기존 호출자에게도 영향이 간다(설계 제안). 직접 호출하던 함수라면 기존 핸들러는 두고 도구 인자를 업무 로직 입력으로 바꾸는 어댑터 함수를 따로 두면 기존 호출자의 회귀 범위를 줄일 수 있다(설계 제안). 이 절은 공식 문서 대조이며 실제 Gateway 배포나 호출 시험을 수행한 기록은 아니다.
 
 ## 버전과 Alias — 불변 배포 단위, 환경 분리, 롤백
 
@@ -140,11 +162,21 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 - **`$LATEST`, 발행 버전, Alias** 차이와 alias 재지정 롤백, weighted alias canary의 제약(발행 버전 2개, 같은 실행 역할과 DLQ)
 - 메모리를 늘리면 비용이 줄어들 수 있는 이유(CPU 비례)
 - 서버리스가 어울리지 않는 워크로드 유형
+- 기존 Lambda를 에이전트 도구로 노출할 때 Lambda 대상과 REST API stage 대상의 선택 기준, `GATEWAY_IAM_ROLE` 대상에서 Gateway 서비스 역할 권한이 Gateway로 행사할 수 있는 권한의 상한이 되는 이유
 
 ## 출처
 
 - [Invoking a Lambda function using an Amazon API Gateway endpoint](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html)
 - [Defining Lambda function permissions with an execution role](https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html)
+- [Amazon Bedrock AgentCore Gateway: A secure AI gateway for agents, tools, and models](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html)
+- [AWS Lambda function targets](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-add-target-lambda.html)
+- [Understand how AgentCore Gateway tools are named](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-tool-naming.html)
+- [Set up permissions for AgentCore Gateway](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-prerequisites-permissions.html)
+- [Set up inbound authorization for your gateway](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html)
+- [Set up outbound authorization for your gateway](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-outbound-auth.html)
+- [Amazon API Gateway REST API stages as targets](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-api-gateway.html)
+- [Quotas for Amazon Bedrock AgentCore](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/bedrock-agentcore-limits.html)
+- [Exposing legacy Lambdas as agent tools via AWS Bedrock AgentCore Gateway — Amazon Web Services](https://www.youtube.com/watch?v=Or5M1v-2-FE) — 발표는 기존 함수를 코드 변경 없이 연결한다고 설명하지만 공식 Lambda 대상 문서는 event와 context 형식에 맞춘 코드 변경을 안내하므로 본문은 공식 문서를 따랐다
 - [Understanding the shared responsibility model for Lambda runtime management](https://docs.aws.amazon.com/lambda/latest/dg/runtime-management-shared.html)
 - [AWS Transform, Common Use Cases](https://docs.aws.amazon.com/transform/latest/userguide/custom-common-use-cases.html) — 언어별 변환, 검증 명령과 비대화형 실행 범위.
 - [Automate AWS Lambda Runtime Upgrades with AWS Transform custom — AWS](https://aws.amazon.com/blogs/devops/automate-aws-lambda-runtime-upgrades-with-aws-transform-custom/) — 변환 전 테스트, IaC 변경과 로컬 브랜치 검토 단계.
