@@ -49,6 +49,14 @@ AWS 완전관리형 **서버리스 NoSQL** 키-값/문서 데이터베이스. �
 - **Parallel Scan**: 순차 Scan은 한 번에 한 파티션만 읽어 단일 파티션 처리량에 묶인다. `Segment`와 `TotalSegments`로 table이나 index를 논리 분할해 worker마다 요청한다. 세그먼트는 PK hash로 배정되어 불균등할 수 있으므로 세그먼트 수를 늘린다고 빨라진다는 보장이 없다. worker가 많으면 provisioned throughput을 모두 소진할 수 있어 다른 트래픽이 많은 시간을 피하고 요청별 `Limit`으로 worker당 소비를 제한한다.
 - Scan이 무난한 곳은 작은 테이블이나 자주 바뀌지 않는 참조용 룩업 테이블 정도다. 대형 테이블 전체 분석은 Scan보다 아래 Export to S3와 Athena를 먼저 비교한다.
 
+## 강한 읽기와 연결 정보의 사용 시점
+
+2026-10-13 공식 읽기 일관성 문서 부분 대조 기준. `GetItem`, `Query`, `Scan`의 `ConsistentRead=true`는 해당 읽기 전에 성공한 쓰기를 반영한다. 테이블과 LSI에서 지원하며 GSI와 Streams에서는 지원하지 않는다. 읽기가 끝난 직후 다른 요청이 항목을 바꾸는 것까지 막지는 않는다.
+
+채팅 연결 정보를 예로 들면, DB에서 최신 연결을 읽었어도 실제 전송 전에 기기가 재접속할 수 있다. 따라서 강한 읽기와 메시지 전달 시점의 유효성은 별도 문제다. 외부 캐시나 로컬 캐시에서 응답하는 경로에 DynamoDB의 강한 읽기 보장이 자동 적용되는 것도 아니다.
+
+설계 검토 제안: 허용할 오래된 정보의 시간을 정하고, 변경이 잦은 연결 정보와 변경이 드문 표시용 메타데이터의 캐시 정책을 구분한다. 재접속으로 연결이 교체된 경우를 재현해 전송 실패와 재조회, 연결 ID 검증 및 이력 복구를 확인한다. 특정 캐시 잠금 구현이나 제품 하나만으로 종단 간 정합성이 확보된다고 판단하지 않는다. 이 절만 대조했으므로 기존 기능 전체의 검증일은 유지한다.
+
 ## 항목 단위 접근 제어
 
 IAM condition의 `dynamodb:LeadingKeys`로 요청의 partition key가 사용자나 tenant 식별자와 일치할 때만 항목 작업을 허용할 수 있다. 실제 권한은 허용한 API, table과 index ARN, condition을 모두 만족해야 한다. `Scan`은 전체 항목을 읽는 작업이라 이 방식의 partition key 격리 정책과 양립하지 않으므로 허용하지 않는다. 멀티테넌트 경계는 key 설계, 인증된 principal tag와 정책 테스트까지 함께 검증한다.
@@ -169,6 +177,7 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 ## 출처
 
+- [AWS DynamoDB — DynamoDB read consistency](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html)
 - [AWS DynamoDB — Best practices for handling concurrent updates](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/BestPractices_ImplementingVersionControl.html)
 - [AWS DynamoDB — TransactWriteItems API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_TransactWriteItems.html)
 - [AWS DynamoDB — Cross-account access with resource-based policies](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/rbac-cross-account-access.html)

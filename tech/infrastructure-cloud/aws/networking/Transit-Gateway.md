@@ -95,6 +95,17 @@ attachment의 **association**은 들어온 패킷이 조회할 테이블을, **p
 - TGW multicast domain은 연결한 VPC attachment 사이의 IP 멀티캐스트를 지원한다
 - Direct Connect, Site-to-Site VPN, peering, Connect attachment를 통한 multicast는 지원하지 않는다
 
+### 하이브리드 멀티캐스트와 가상 라우터
+
+2026-10-13 공식 multicast 문서와 AWS 참조 아키텍처 부분 대조 기준이다. 온프레미스의 멀티캐스트를 AWS까지 확장할 때 Direct Connect 연결만으로 TGW의 multicast domain에 직접 전달할 수는 없다. 참조 아키텍처는 VPC 안의 가상 라우터와 온프레미스 라우터 사이에 GRE 터널을 만들고, PIM을 이용해 멀티캐스트를 라우팅하는 구성을 제시한다. 이 터널은 가상 라우터 사이의 연결이며 TGW Connect attachment의 멀티캐스트 지원을 뜻하지 않는다.
+
+- multicast domain에는 서브넷을 연결하고, group의 참여 호스트는 EC2의 ENI로 식별한다. domain 연결과 송신자, 수신자 등록을 각각 확인한다.
+- non-Nitro 인스턴스는 송신자가 될 수 없다. 수신자로 사용할 때는 source/destination check 해제가 필요하다. 모든 참여 인스턴스가 반드시 Nitro여야 한다고 확대하지 않는다.
+- TGW는 조각난 멀티캐스트 패킷을 버린다. 터널의 캡슐화 크기와 경로 MTU를 고려해 실제 메시지 크기로 손실을 시험한다.
+- IGMPv2를 쓰면 데이터용 UDP뿐 아니라 멤버십을 유지하는 IGMP 트래픽도 보안 그룹과 NACL에서 허용해야 한다.
+
+시세 배포에 적용하더라도 고빈도 매매에 적합한 지연을 자동 보장하지 않는다. AWS도 지연에 민감한 워크로드의 적합성과 quota 검토를 별도로 요구한다. 가상 라우터 장애 전환, 그룹 재가입과 수신 손실을 부하 조건별로 시험한다. 이는 운영 검증 제안이며 실제 성능 시험 결과가 아니다. 이 절만 추가 대조했으므로 기존 검증일은 유지한다.
+
 ## 시험 체크포인트
 
 - **표준 VPN 터널 1.25 Gbps 초과** 필요 → dynamic routing의 **TGW + ECMP** 또는 TGW/Cloud WAN의 최대 5 Gbps Large Bandwidth Tunnel 검토
@@ -111,6 +122,7 @@ attachment의 **association**은 들어온 패킷이 조회할 테이블을, **p
 
 ## 출처
 
+- [AWS, Multicast Reference Architectures with AWS Transit Gateway](https://d1.awsstatic.com/architecture-diagrams/ArchitectureDiagrams/transitgateway_multicast_ra.pdf)
 - [AWS, Transit gateway peering attachments in AWS Transit Gateway](https://docs.aws.amazon.com/vpc/latest/tgw/tgw-peering.html)
 - AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)
 - [AWS, Transit Gateway quotas](https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-quotas.html)

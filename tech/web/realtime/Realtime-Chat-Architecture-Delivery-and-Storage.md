@@ -48,6 +48,16 @@ aliases: ["Realtime Chat Delivery and Storage", "채팅 메시지 전달 경로"
 
 레지스트리와 실제 연결 사이에는 늘 시차가 있다. 죽은 서버의 항목은 TTL이 지우고, 이미 끊긴 연결로 보낸 메시지는 재연결 때 `lastSequence` 이후 재조회로 복구한다. 실시간 경로는 최선 노력이고 정본은 내구성 저장소라는 원칙이 그대로 적용된다.
 
+### 관리형 WebSocket에서도 연결 레지스트리는 정리해야 한다
+
+2026-10-13 API Gateway 공식 문서 부분 대조 기준이다. API Gateway WebSocket API와 Lambda를 사용해도 업무의 사용자, 방과 연결 ID의 대응은 애플리케이션이 관리한다. `$connect`에서 연결 ID, domain과 stage를 저장하고, 대상 연결의 `@connections` endpoint로 메시지를 보낼 수 있다. 관리 API 호출에는 IAM 권한과 SigV4 서명이 필요하다.
+
+- `$connect` integration이 끝나기 전에는 실제 연결이 성립하지 않는다. 연결 ID를 얻었다는 사실만으로 즉시 callback을 보낼 준비가 끝난 것은 아니다.
+- `$disconnect`는 연결이 닫힌 뒤 전달되는 best-effort 이벤트다. 전달이 보장되지 않으므로 이 이벤트만으로 레지스트리를 정리하면 끊긴 연결이 남을 수 있다.
+- `GoneException`은 이미 종료된 연결뿐 아니라 아직 성립하지 않은 연결에 보낼 때도 발생할 수 있다. 오류 하나만으로 사용자 전체가 오프라인이라고 판단하지 않는다.
+
+운영 설계 제안: 만료와 재확인 경로를 두고 연결별로 정리한다. 재연결한 새 연결을 이전 연결의 늦은 종료 처리로 지우지 않도록 `connectionId`를 대조한다. 메시지 이력과 복구 커서는 연결 레지스트리와 분리한다. 이 절의 관리형 연결 동작만 대조했으며 기존 문서 전체의 검증일은 유지한다.
+
 ## 오프라인 수신자 알림
 
 채팅 서버가 실시간 전달과 푸시 발송을 함께 맡지 않고 알림 모듈을 따로 둔다. 푸시 제공자의 지연, 할당량과 재시도가 WebSocket 처리 경로를 막지 않게 격리하려는 것이다.
@@ -100,6 +110,9 @@ aliases: ["Realtime Chat Delivery and Storage", "채팅 메시지 전달 경로"
 - 이력 저장소의 키 설계(방 ID, 시간 버킷, 정렬 키)와 RDB도 후보가 되는 조건
 
 ## 출처
+
+- [Amazon API Gateway, Manage connected users and client apps: $connect and $disconnect routes](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-route-keys-connect-disconnect.html)
+- [Amazon API Gateway, Use @connections commands in your backend service](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html)
 
 2026-10-02 부분 검증: Kafka의 외부 효과 보장 범위와 알림 발송 기록의 crash 구간을 공식 Kafka 문서 및 [[Idempotent-Consumer|멱등 컨슈머]] 원문과 대조하고, FCM 자동 표시와 앱 처리의 경계를 공식 문서로 확인했다. Discord 저장소 사례 전체를 다시 검증한 기록은 아니다.
 
