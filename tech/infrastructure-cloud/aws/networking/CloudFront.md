@@ -44,6 +44,16 @@ AWS의 **CDN(Content Delivery Network) 서비스**. HTTP/HTTPS origin의 캐시 
 
 이 구분에서 도출한 운영 점검: 대표 플레이어에서 manifest와 segment 접근, 자막과 실제 재생을 확인한다. 객체가 존재하거나 CDN 요청이 성공했다는 사실만으로 최종 재생 품질을 판정하지 않는다.
 
+### 개인화 광고의 manifest와 segment 캐시
+
+2026-10-13 MediaTailor의 CloudFront 연동과 캐시 최적화 문서 대조 기준이다. 서버 측 광고 삽입(SSAI)에서는 개인별 광고 선택을 담은 manifest와 재사용 가능한 콘텐츠, 광고 segment를 나누어 처리한다.
+
+- 개인화된 HLS playlist와 DASH MPD에는 `CachingDisabled`를 적용하고, 개인화에 필요한 요청 정보는 origin request policy로 전달한다. 이 정책의 Minimum, Default, Maximum TTL은 모두 0이다.
+- 콘텐츠와 광고 segment에는 별도 behavior와 캐시 정책을 둔다. manifest를 캐시하지 않는다는 이유로 미디어 바이트까지 모두 origin에서 받게 만들 필요는 없다.
+- 이 경계를 모든 manifest에 일반화하지 않는다. SGAI의 일부 media playlist와 channel assembly는 별도의 캐시 지침을 따르므로 삽입 방식과 경로를 먼저 확인한다.
+
+운영 검증 제안: 서로 다른 시청 세션으로 manifest의 광고 선택이 섞이지 않는지 확인하고, 같은 segment의 반복 요청에서는 캐시 적중을 별도로 측정한다. 재생 성공과 광고 개인화 성공을 같은 지표로 판정하지 않는다.
+
 ### 실시간 접근 로그와 플레이어 관측
 
 부분 검증(2026-10-13): real-time access log 공식 문서의 전송과 수집 범위를 확인했다. 기존 요금제의 기능 제한도 함께 확인하고 적용한다.
@@ -99,6 +109,16 @@ AWS의 **CDN(Content Delivery Network) 서비스**. HTTP/HTTPS origin의 캐시 
 
 - cache behavior의 cache policy가 Origin의 `Cache-Control`과 함께 실제 TTL을 결정한다. 헤더가 없으면 Default TTL을 사용
 - Min/Max/Default TTL을 behavior별로 지정. **Minimum TTL이 0보다 크면 `no-cache`, `no-store`, `private`에도 최소 TTL이 적용될 수 있음**
+
+### 공개 SSR과 개인 응답의 캐시 경계
+
+2026-10-13 cache key, managed cache policy와 cookie 문서 부분 대조 기준이다. 서버가 HTML을 렌더링한다는 사실만으로 캐시 가능 여부가 정해지지는 않는다. 같은 캐시 키의 요청에 같은 공개 응답을 돌려줘도 되는지가 기준이다.
+
+- 적용 예시로 공개 상품 소개와 회원 주문 화면의 경로를 나눈다. 공개 화면도 언어, 사이트와 쿠키에 따라 응답이 달라지면 그 차이를 키에 반영하거나 캐시하지 않는다. 비로그인 상태만으로 동일 응답이라고 가정하지 않는다.
+- 개인 응답을 공유 캐시에서 재사용하지 않을 설계라면 해당 경로에 `CachingDisabled`를 붙인다. 인증에 필요한 정보의 origin 전달은 별도 정책으로 확인한다. origin request policy에 쿠키를 넣는 것만으로 캐시 키가 분리되지는 않는다.
+- 쿠키를 전달하는 구성에서는 origin의 `Set-Cookie`도 객체와 함께 캐시되어 캐시 hit에 재전송될 수 있다. 본문은 공유 가능하고 쿠키 헤더만 저장하지 않아야 할 때 `Cache-Control: no-cache="Set-Cookie"`를 검토한다. 이 지시자는 개인화된 본문을 공유해도 된다는 뜻이 아니다.
+
+운영 검증 제안: 캐시가 비었을 때와 채워진 뒤에 익명 요청, 서로 다른 회원 요청을 교차시켜 본문과 `Set-Cookie`를 비교한다. 캐시 적중률을 높이기 전에 다른 사용자의 응답이 재사용되지 않는지 확인한다.
 
 ### 같은 URL의 미디어 변형과 캐시 키
 
@@ -213,6 +233,12 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - 지원되는 AWS origin → CloudFront 전송은 별도 데이터 전송 요금 없음, Shield Standard 포함
 
 ## 출처
+- [AWS 공식 문서, Understand the cache key](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/understanding-the-cache-key.html)
+- [AWS 공식 문서, Use managed cache policies](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html)
+- [AWS 공식 문서, Cache content based on cookies](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Cookies.html)
+- [AWS 공식 문서, Control origin requests with a policy](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html)
+- [AWS 공식 문서, Set up basic CloudFront integration with MediaTailor](https://docs.aws.amazon.com/mediatailor/latest/ug/cloudfront-basic-setup.html)
+- [AWS 공식 문서, Caching optimization for CDN and MediaTailor integrations](https://docs.aws.amazon.com/mediatailor/latest/ug/cdn-optimize-caching.html)
 - [AWS 공식 문서, Video on demand and live streaming video with CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/on-demand-streaming-video.html)
 - [AWS 공식 문서, Use real-time access logs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/real-time-logs.html)
 - [AWS 공식 문서, Optimize high availability with CloudFront origin failover](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html)
