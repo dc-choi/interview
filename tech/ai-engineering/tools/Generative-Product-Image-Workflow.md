@@ -33,6 +33,20 @@ DreamBooth는 특정 피사체의 이미지 몇 장으로 사전학습된 text-t
 
 이 절은 2026-10-10 DreamBooth 연구진의 공개 방법 설명과 대조했다. 다른 절의 서비스 지원 범위를 다시 검증한 것은 아니다.
 
+## LoRA 학습물과 배포 가능한 모델을 구분한다
+
+LoRA는 적은 수의 추가 가중치를 학습해 학습 대상 파라미터와 저장할 가중치를 줄이는 방법이다. DreamBooth와 서로 배타적인 선택지는 아니다. Diffusers는 DreamBooth 학습에 LoRA를 결합하는 방식을 제공한다. 따라서 두 이름만으로 결과 파일의 크기나 품질을 비교하지 않고, 전체 모델 미세조정인지 LoRA 학습인지와 저장한 파일 범위를 함께 확인한다.
+
+추론 예시는 기반 모델로 파이프라인을 만든 뒤 `load_lora_weights`로 학습물을 불러온다. LoRA 파일만 전달했다고 실행 환경까지 전달한 것은 아니다. 다음은 반복적인 스타일 학습과 배포에 적용할 설계 점검 항목이다.
+
+- 기반 모델 식별자와 revision, LoRA 가중치, 추론 코드와 의존성 버전을 함께 기록한다.
+- 학습 전 이미지와 캡션의 대응, 해상도와 누락 파일을 검사한다. 학습 완료 뒤에는 고정된 검수 입력으로 스타일과 피사체 보존을 확인한다.
+- 학습 성공, 모델 배포 준비, 실제 생성 요청 성공을 서로 다른 완료 상태로 둔다. 작은 학습 파일이 곧 낮은 추론 메모리 사용량을 뜻한다고 가정하지 않는다.
+
+SageMaker Pipelines는 EventBridge 규칙의 대상으로 실행할 수 있고, 규칙의 역할에는 `StartPipelineExecution` 권한이 필요하다. 이미지 묶음의 업로드를 자동화에 연결할 때는 개별 파일 도착과 데이터셋 준비 완료를 구분한다. 예를 들어 검수가 끝난 manifest나 완료 마커를 입력 경계로 삼고, 같은 데이터셋이 다시 통지될 때 중복 학습을 막는 방식을 별도로 설계한다. 이는 권장 설계 예시이며 EventBridge 연결만으로 데이터셋 완결성이나 한 번만 실행됨을 보장한다는 뜻은 아니다.
+
+2026-10-13 Diffusers의 LoRA와 DreamBooth 가이드, AWS의 Pipeline 실행 가이드를 대조했다. 실제 학습이나 배포를 실행한 결과는 아니며 기존 절의 서비스 지원 범위를 다시 검증한 것은 아니다.
+
 ## 작업 그래프와 실행 환경을 분리한다
 
 ComfyUI는 노드를 연결해 생성 단계를 구성하고 워크플로우를 JSON으로 내보낼 수 있다. AWS의 SageMaker AI Processing 예시는 이 워크플로우를 컨테이너에서 실행하고, GPU 인스턴스로 배치 생성한 결과를 S3에 저장한다.
@@ -91,6 +105,9 @@ ComfyUI는 노드를 연결해 생성 단계를 구성하고 워크플로우를 
 
 ## 출처
 
+- [Hugging Face Diffusers, LoRA](https://huggingface.co/docs/diffusers/main/en/training/lora)
+- [Hugging Face Diffusers, DreamBooth](https://huggingface.co/docs/diffusers/main/en/training/dreambooth)
+- [Amazon SageMaker AI, Schedule Pipeline Runs](https://docs.aws.amazon.com/sagemaker/latest/dg/pipeline-eventbridge.html)
 - [Google AI for Developers, Nano Banana image generation](https://ai.google.dev/gemini-api/docs/image-generation) — Accurate text in images, Character consistency와 Limitations의 문구 및 참조 입력 권고.
 - [DreamBooth: Fine Tuning Text-to-Image Diffusion Models for Subject-Driven Generation — Google Research](https://dreambooth.github.io/) — 피사체 식별자, 미세조정과 클래스별 prior preservation.
 - [AWS AI Service Cards, Amazon Nova Canvas](https://docs.aws.amazon.com/ai/responsible-ai/nova-canvas/overview.html) — 참조에 없는 면의 생성과 축척의 한계.

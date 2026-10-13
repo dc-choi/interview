@@ -28,6 +28,20 @@ SageMaker의 detailed observability는 지원되는 vLLM과 SGLang 컨테이너�
 - 사용자 정의 컨테이너는 Prometheus 형식 지표를 노출해야 한다. 공식 설정 가이드의 포트, 경로와 `ContainerMetricsConfig` 조건을 확인한다.
 - PromQL 조회에는 CloudWatch의 OTel enrichment 설정이 필요하다. 외부 Grafana 연결은 리전별 PromQL endpoint와 SigV4 인증을 사용한다. 기존 CloudWatch 데이터 소스를 연결했다는 사실만으로 이 경로가 구성됐다고 보지 않는다.
 
+## Inference component의 예약량과 사용량을 구분한다
+
+2026-10-13 SageMaker API와 CloudWatch 지표 문서 대조 기준. Inference component는 모델을 endpoint에 배포하는 호스팅 객체다. Endpoint보다 상위의 객체가 아니다. `RuntimeConfig.CopyCount`는 모델 컨테이너의 실행 복제본 수이며 인스턴스 수와 구분한다.
+
+| 관측 대상 | 지표와 차원 | 해석 |
+|---|---|---|
+| 인스턴스의 GPU 예약 | `/aws/sagemaker/Endpoints`의 `GPUReservation` | 컨테이너에 예약된 GPU 비율이며 실제 연산 사용률이 아니다 |
+| component의 GPU 사용 | `/aws/sagemaker/InferenceComponents`의 `GPUUtilizationNormalized`, `InferenceComponentName` 차원 | `NumberOfAcceleratorDevicesRequired`가 설정되면 예약량을 기준으로 정규화한다 |
+| 복제본당 요청 | `AWS/SageMaker`의 `InvocationsPerCopy` | component 복제본 수로 정규화한 호출량이다 |
+
+예를 들어 GPU 4개 중 2개가 예약되면 `GPUReservation`은 50%다. 이 값만으로 GPU가 절반의 시간 동안 연산했다거나 나머지 자원에 다른 모델을 안전하게 넣을 수 있다고 판단하지 않는다. 운영 점검에서는 예약량, 실제 사용량, GPU 메모리와 요청 지연을 함께 본다. 같은 이름의 정규화 지표라도 namespace와 차원이 다른 값을 섞지 않는다.
+
+이는 모델을 함께 배치할 때의 관측 제안이다. 특정 모델 조합의 성능이나 비용 절감률을 보장하지 않으며, 이 절의 대조로 기존 절 전체의 최신성을 재검증한 것은 아니다.
+
 ## 모델 준비 시간과 요청 지연을 구분한다
 
 모델을 배포하거나 용량을 늘릴 때의 준비 시간과, 준비된 모델이 요청을 처리하는 시간은 다른 구간이다. Ahead-of-time compilation은 새 인스턴스에서 수행할 컴파일을 앞당기고, fast model loading은 사전 분할한 가중치를 S3에서 GPU로 병렬 스트리밍해 적재 경로를 줄인다. 적재 시간의 개선 배율을 토큰 생성 속도의 개선 배율로 옮기지 않는다.
@@ -79,6 +93,8 @@ Model quality monitoring은 캡처한 예측값과 S3에 저장한 실제 정답
 
 ## 출처
 
+- [AWS, CreateInferenceComponent](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateInferenceComponent.html)
+- [AWS, Amazon SageMaker AI metrics in Amazon CloudWatch](https://docs.aws.amazon.com/sagemaker/latest/dg/monitoring-cloudwatch.html)
 - [AWS, Amazon SageMaker Model Monitor availability change](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor-availability-change.html)
 - [AWS, Model quality](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor-model-quality.html)
 - [AWS, Ingest Ground Truth labels and merge them with predictions](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor-model-quality-merge.html)
