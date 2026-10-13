@@ -1,6 +1,7 @@
 ---
 tags: [llm, wiki, knowledge-management, rag, provenance]
 status: done
+verified_at: 2026-10-14
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Wiki", "LLM 위키", "지식 합성의 영속화"]
 ---
@@ -18,6 +19,20 @@ LLM 위키는 여러 원문에서 조합한 지식을 주제별 Markdown으로 �
 | 규칙 | 문서 구조, 출처 표기, 충돌 처리와 갱신 절차를 정한다 |
 
 수집한 자료 하나가 기존 페이지 여러 개를 바꿀 수 있다. 질문의 답을 저장할 때도 기존 개념과 연결하고, 주기적으로 충돌, 오래된 주장과 끊긴 링크를 점검한다. 목차는 내용 탐색을, 변경 기록은 갱신 이력 확인을 맡는다.
+
+## 채팅 링크 수집과 지식 반영의 구분
+
+채팅에 올라온 링크를 표에 모으는 단계와 원문을 읽고 기존 개념에 연결하는 단계는 완료 조건이 다르다. 제목, 분류와 요약 열이 채워졌더라도 링크 본문을 확보했는지, 요약의 주장을 확인했는지는 별도로 남긴다. 다음은 원문과 파생 위키의 분리를 수집 자동화에 적용한 설계 예시다.
+
+| 단계 | 남길 내용 | 완료 조건 |
+|---|---|---|
+| 수집 | 원문 위치, 수집 시각과 처리 식별자 | 나중에 원문을 다시 찾을 수 있다 |
+| 초안 | 확보한 본문 범위, 생성 요약과 분류 | 제목만 본 경우와 본문을 읽은 경우가 구분된다 |
+| 지식 반영 | 대조한 근거, 반영 문서와 검토 상태 | 기존 내용과의 중복 및 충돌을 확인했다 |
+
+예를 들어 Slack Events API의 HTTP 전달은 실패한 요청을 재시도하며, 이벤트에는 고유한 `event_id`가 있다. Google Sheets의 `spreadsheets.values.append`는 지정 범위에서 표를 찾아 다음 행에 값을 추가한다. 따라서 이벤트를 받을 때마다 행을 추가하는 설계에는 재전달로 같은 자료가 여러 행에 들어갈 위험이 있다. 이 동작에서 도출한 설계 점검으로, 수집 식별자별 처리 상태와 저장 결과를 확인하고 중복 저장을 막는 절차를 둔다. 단순한 사전 조회만으로 동시 처리 경쟁까지 해결됐다고 보지 않는다.
+
+위 API 사실은 2026-10-14 공식 문서 기준이다. 이는 직접 구성하는 수집 파이프라인의 검토 기준이며, 특정 AI 제품의 채팅 연동이나 자동 요약 기능이 같은 방식으로 구현되었다는 뜻은 아니다. 비공개 채팅의 원문 위치와 식별자는 접근이 제한된 수집 기록에 두고, 공개 위키에는 공개 가능한 근거와 개념만 반영한다.
 
 ## 자동 갱신의 검증 경계
 
@@ -38,6 +53,8 @@ LLM 위키는 여러 원문에서 조합한 지식을 주제별 Markdown으로 �
 ## 출처
 
 - [LLM Wiki — Andrej Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+- [Slack, The Events API](https://docs.slack.dev/apis/events-api/) — HTTP 재전달과 이벤트 식별자, 2026-10-14 부분 대조
+- [Google Sheets API, spreadsheets.values.append](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/append) — 표의 다음 행에 값을 추가하는 동작, 2026-10-14 부분 대조
 - [YouTube, 메타코드M, 클로드 x 옵시디언으로 우리 회사 LLM Wiki 만들기](https://www.youtube.com/watch?v=yZKXJMMPrxc) — 2026-10-06 공개 강의, 33:56 이후 자동 갱신과 검증 사례
 
 ## 관련 문서
