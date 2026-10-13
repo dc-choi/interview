@@ -44,6 +44,10 @@ AWS의 **CDN(Content Delivery Network) 서비스**. HTTP/HTTPS origin의 캐시 
 
 이 구분에서 도출한 운영 점검: 대표 플레이어에서 manifest와 segment 접근, 자막과 실제 재생을 확인한다. 객체가 존재하거나 CDN 요청이 성공했다는 사실만으로 최종 재생 품질을 판정하지 않는다.
 
+과거 변환 파이프라인의 서비스 수명도 확인한다. 2026-10-14 AWS 공식 종료 공지를 대조한 결과, Elastic Transcoder는 2025-11-13 지원 종료 이후 콘솔과 리소스에 접근할 수 없다고 안내되어 있다. 과거의 Elastic Transcoder 구성을 신규 도입 절차로 재사용하지 않는다.
+
+MediaConvert에서는 단일 출력의 인코딩 설정을 `preset`, 작업 전반의 재사용 설정을 `job template`으로 구분한다. 장비 유형별 광고 영상을 준비한다면 코덱과 해상도 등의 출력 설정을 명시하고 실제 장비의 재생 결과를 확인하는 방식을 권한다(설계 제안). 변환 작업 성공과 CDN 전달 성공만으로 장비 호환성을 판정하지 않는다. 이 추가 내용은 종료 공지와 MediaConvert 구성 단위만 대조했으며 기존 CloudFront 기능 전체의 검증일은 유지한다.
+
 ### 개인화 광고의 manifest와 segment 캐시
 
 2026-10-13 MediaTailor의 CloudFront 연동과 캐시 최적화 문서 대조 기준이다. 서버 측 광고 삽입(SSAI)에서는 개인별 광고 선택을 담은 manifest와 재사용 가능한 콘텐츠, 광고 segment를 나누어 처리한다.
@@ -234,6 +238,8 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - 지원되는 AWS origin → CloudFront 전송은 별도 데이터 전송 요금 없음, Shield Standard 포함
 
 ## 출처
+- [Amazon Elastic Transcoder Product Details — AWS](https://aws.amazon.com/elastictranscoder/details/)
+- [AWS 공식 문서, What is AWS Elemental MediaConvert?](https://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html)
 - [AWS 공식 문서, Understand the cache key](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/understanding-the-cache-key.html)
 - [AWS 공식 문서, Use managed cache policies](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html)
 - [AWS 공식 문서, Cache content based on cookies](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Cookies.html)

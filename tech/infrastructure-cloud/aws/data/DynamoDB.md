@@ -23,7 +23,7 @@ AWS 완전관리형 **서버리스 NoSQL** 키-값/문서 데이터베이스. �
 - **Simple primary key**: partition key(PK) 하나. 같은 PK 값을 가진 아이템은 둘일 수 없다
 - **Composite primary key**: PK + sort key(SK). 여러 아이템이 같은 PK를 가질 수 있고 (PK, SK) 조합이 유일해야 한다. 고객 ID를 PK, 구매 시각을 SK로 두면 한 고객의 여러 구매를 저장할 수 있는 이유다. 같은 PK를 공유하는 아이템 묶음을 item collection이라 부른다
 - PK 값은 내부 hash 함수를 거쳐 물리 파티션을 정하고, 같은 PK의 아이템은 SK 순으로 함께 저장된다. 그래서 PK 선택이 트래픽 분산(hot partition, 아래 스로틀링 절)과 한 번의 Query로 가져올 범위를 함께 정한다. 키 속성 타입은 String, Number, Binary만 된다
-- 쿼리는 PK 일치 + SK 조건이 기본. 비키 필드 검색은 **Scan** 또는 **GSI/LSI** 필요
+- 일반 `Query`는 PK 일치 + SK 조건이 기본이다. 비키 속성 조건은 Scan이나 해당 속성을 키로 삼은 GSI/LSI를 검토한다. 벡터 유사도 검색은 별도 vector index와 `SearchVectors`를 사용한다.
 - `PutItem`은 같은 primary key의 아이템이 있으면 오류 없이 통째로 교체한다. 새 아이템만 만들려면 `ConditionExpression`에 `attribute_not_exists(<PK 속성명>)`을 넣고, 덮어썼는지 확인하려면 `ReturnValues=ALL_OLD`로 이전 아이템을 받는다. 키 중복을 insert 실패로 기대하면 조용한 덮어쓰기 사고가 난다
 
 ## 보조 인덱스, LSI와 GSI
@@ -48,6 +48,16 @@ AWS 완전관리형 **서버리스 NoSQL** 키-값/문서 데이터베이스. �
 - 최신 N건은 시간 값을 sort key로 두고 `ScanIndexForward=false`, `Limit=N`으로 Query한다. `ConsistentRead=true` Scan은 기본보다 RCU를 두 배 쓴다.
 - **Parallel Scan**: 순차 Scan은 한 번에 한 파티션만 읽어 단일 파티션 처리량에 묶인다. `Segment`와 `TotalSegments`로 table이나 index를 논리 분할해 worker마다 요청한다. 세그먼트는 PK hash로 배정되어 불균등할 수 있으므로 세그먼트 수를 늘린다고 빨라진다는 보장이 없다. worker가 많으면 provisioned throughput을 모두 소진할 수 있어 다른 트래픽이 많은 시간을 피하고 요청별 `Limit`으로 worker당 소비를 제한한다.
 - Scan이 무난한 곳은 작은 테이블이나 자주 바뀌지 않는 참조용 룩업 테이블 정도다. 대형 테이블 전체 분석은 Scan보다 아래 Export to S3와 Athena를 먼저 비교한다.
+
+## 벡터 검색은 별도 인덱스와 API를 사용한다
+
+2026-10-14 `SearchVectors` 공식 API 대조 기준이다. 숫자 배열을 항목에 저장하는 것과 그 배열로 유사한 항목을 검색할 인덱스를 갖추는 것은 다르다.
+
+- `TableName`, `IndexName`, `SearchVector`, `TopK`를 전달한다. vector index는 `ACTIVE`여야 하고 검색 벡터의 차원 수는 인덱스 설정과 같아야 한다. `TopK`의 허용 범위는 1~100이다.
+- `COSINE`과 `EUCLIDEAN`은 점수가 작을수록, `DOT_PRODUCT`는 클수록 더 유사하다. 모든 거리 함수에 같은 정렬 방향이나 임계값을 적용하지 않는다.
+- 응답은 vector index에 투영된 속성을 반환한다. 투영하지 않은 원본 속성까지 `ProjectionExpression`으로 가져올 수는 없다.
+
+이미지 검색에 적용할 때는 같은 임베딩 모델과 전처리로 입력을 맞추고, 검색 후보와 실제 상품 또는 재료의 일치를 따로 평가한다(설계 제안). 유사한 사진이 반환됐다는 사실은 사진에 없는 재료나 제조법을 확인했다는 증거가 아니다. 이 절은 API 계약만 대조했으며 지연시간, 검색 품질, 리전별 지원과 기존 기능 전체는 재검증하지 않아 frontmatter의 검증일을 유지한다.
 
 ## 강한 읽기와 연결 정보의 사용 시점
 
@@ -177,6 +187,7 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 ## 출처
 
+- [AWS DynamoDB — SearchVectors API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_SearchVectors.html)
 - [AWS DynamoDB — DynamoDB read consistency](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html)
 - [AWS DynamoDB — Best practices for handling concurrent updates](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/BestPractices_ImplementingVersionControl.html)
 - [AWS DynamoDB — TransactWriteItems API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_TransactWriteItems.html)

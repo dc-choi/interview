@@ -93,6 +93,16 @@ NLB, EC2 직접 부착 ❌. NLB는 L4라 WAF 비대상.
 
 이 절만 추가 대조했으며 기존 가격과 서비스별 지원 범위 전체를 다시 검증한 것은 아니다.
 
+### 로그 필터와 요청 차단을 구분한다
+
+2026-10-14 WAF의 `LoggingFilter`와 `Filter` API를 대조했다. 로그 저장량을 줄이는 설정은 웹 요청을 허용하거나 차단하는 규칙과 별개다.
+
+- `LoggingFilter`는 규칙 액션과 평가 중 붙은 label을 기준으로 로그를 `KEEP` 또는 `DROP` 처리한다. 어떤 필터에도 맞지 않는 로그는 `DefaultBehavior`를 따른다.
+- 필터의 `MEETS_ALL`은 조건 전체, `MEETS_ANY`는 하나 이상의 조건이 맞아야 한다는 뜻이다. 로그의 `DROP`을 요청의 `Block`으로 해석하지 않는다.
+- 운영 점검 제안: 차단 요청과 오탐 조사에 필요한 요청을 포함한 표본으로 로그 보존 결과를 확인한다. 버린 로그는 그 저장소에서 사후 분석할 수 없으므로, 수집량 감소를 탐지 품질 향상으로 판정하지 않는다.
+
+이 절은 로그 선택 계약만 확인했으며 실제 운영 로그의 비용이나 탐지율을 측정한 결과는 아니다. 기존 기능 전체의 검증일은 유지한다.
+
 ### 관리형 규칙의 오탐 예외
 
 이 절은 2026-10-09 AWS 공식 문서와 예외 구성 예제를 대조했다. 정상 요청의 오탐을 조정할 때는 해당 규칙과 예외 조건을 좁혀 다른 검사를 유지한다.
@@ -138,7 +148,7 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 ### 룰 엔진 2종
 
 - **Stateless Rule Engine** — 패킷 단위 평가. 방향 무관, 양방향 패킷을 각각 검사. 빠르지만 세션 추적 ❌.
-- **Stateful Rule Engine** — 연결 상태(세션) 추적. 방화벽을 통과한 outbound 요청에 대한 inbound 응답을 자동 허용. **Suricata 규칙 문법** 사용 가능 (IDS/IPS 룰 셋 그대로 도입).
+- **Stateful Rule Engine** — 연결 상태(세션)를 추적하며 Suricata 호환 규칙과 평가 순서, 기본 액션에 따라 처리한다. 연결 상태를 추적한다는 사실만으로 모든 응답을 자동 허용한다고 해석하지 않는다(2026-10-14 firewall policy 설정 대조).
 
 ### 필터링 가능 항목
 
@@ -202,6 +212,9 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 
 ## 출처
 
+- [AWS WAFV2, LoggingFilter](https://docs.aws.amazon.com/waf/latest/APIReference/API_LoggingFilter.html)
+- [AWS WAFV2, Filter](https://docs.aws.amazon.com/waf/latest/APIReference/API_Filter.html)
+- [AWS Network Firewall, Firewall policy settings](https://docs.aws.amazon.com/network-firewall/latest/developerguide/firewall-policy-settings.html)
 - [AWS WAF, Choosing and configuring Bot Control for your use case](https://docs.aws.amazon.com/waf/latest/developerguide/waf-bot-control-use-cases.html)
 - [AWS WAF, CAPTCHA and Challenge action behavior](https://docs.aws.amazon.com/waf/latest/developerguide/waf-captcha-and-challenge-actions.html)
 - [AWS WAF, Testing and tuning your AWS WAF protections](https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-testing.html)

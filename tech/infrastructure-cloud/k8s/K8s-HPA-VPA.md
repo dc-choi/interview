@@ -56,6 +56,18 @@ KEDA는 이벤트 소스의 지표를 노출하고 ScaledObject에서 HPA를 생
 
 ## CPU 타깃이 맞지 않는 워크로드가 있다
 
+### KEDA의 예약 확장과 CPU 목표를 함께 쓰는 경우
+
+2026-10-14 KEDA 2.18의 Cron과 CPU scaler 문서 대조 기준이다. 예약 시각과 실제 부하를 함께 사용할 때는 replica를 고정하는 설정인지 하한을 만드는 설정인지 구분한다.
+
+- Cron trigger의 `timezone`, `start`, `end`로 시간 구간을 정하고 `desiredReplicas`를 지정한다. CPU 등 다른 trigger와 함께 쓰면 해당 구간의 `desiredReplicas`는 동적인 하한 역할을 하며, 다른 지표가 더 큰 수를 요구하면 HPA가 더 늘릴 수 있다. `maxReplicaCount`도 함께 확인한다.
+- CPU trigger의 `metricType: Utilization`은 **request 대비 사용률**이다. limit 대비 비율로 설정값을 계산하지 않는다. `AverageValue`는 Pod들의 평균 사용량 절대값을 목표로 한다.
+- 운영 점검 제안: 행사 시작 시각에 replica 수가 늘어나는 것과 실제 처리 준비 완료를 구분한다. 예약 구간 안팎의 CPU 부하를 바꿔 생성된 HPA의 목표와 replica 수를 확인하고, 노드 확보와 readiness 지연도 측정한다.
+
+이 절은 KEDA 2.18의 설정 의미만 대조했다. 실제 클러스터 시험이나 기존 VPA 기능 전체의 재검증은 아니므로 frontmatter의 검증일은 유지한다.
+
+### 부하 특성에 맞는 지표 선택
+
 - **IO 바운드 서비스**: 외부 API나 DB 응답을 기다리는 동안 CPU는 한가한데 커넥션과 지연은 쌓인다. CPU 타깃은 이미 늦은 뒤에야 반응한다.
 - **큐 소비자**: 처리해야 할 일의 양은 큐에 있지 Pod의 CPU에 있지 않다. backlog 기반 타깃으로 가야 하고, 소비자당 backlog를 목표치로 두는 실무 계산은 [[ECS-Service-AutoScaling|ECS Service Auto Scaling]]의 backlog-per-task 방식과 같은 형태다.
 - **memory 타깃**: working set은 page cache 회수 특성 때문에 부하가 빠져도 잘 내려오지 않아 축소가 걸리지 않을 수 있다. 지표 해석은 [[Container-Memory-Metrics|컨테이너 메모리 지표 해석]]을 따른다.
@@ -155,6 +167,8 @@ HPA를 15초 주기로 돌려도 트래픽이 실제 처리되기까지는 여�
 
 ## 출처
 
+- [KEDA 2.18, Cron](https://keda.sh/docs/2.18/scalers/cron/)
+- [KEDA 2.18, CPU](https://keda.sh/docs/2.18/scalers/cpu/)
 - [KEDA 2.18, Scaling Deployments, StatefulSets & Custom Resources](https://keda.sh/docs/2.18/concepts/scaling-deployments/)
 - [KEDA 2.18, ScaledObject specification](https://keda.sh/docs/2.18/reference/scaledobject-spec/)
 - [Kubernetes Docs, Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
