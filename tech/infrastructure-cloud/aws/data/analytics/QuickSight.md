@@ -114,6 +114,16 @@ Data story는 선택한 대시보드의 시각화를 바탕으로 설명을 구�
 
 운영 점검 제안: 다른 조직의 독자, 규칙이 없는 독자와 데이터셋 소유자로 같은 대시보드를 조회한다. 정상 조회뿐 아니라 보이면 안 되는 행이 감춰지는지 확인한다. 이 권한 검증은 자연어 질문의 의미상 정확성이나 지표 정의 검증을 대신하지 않는다.
 
+### 외부 독자용 익명 임베딩도 권한을 지정한다
+
+부분 검증(2026-10-14): `GenerateEmbedUrlForAnonymousUser` API를 대조했다. Quick Sight 독자 계정을 등록하지 않고 대시보드나 시각화를 웹사이트에 넣을 수 있지만, 사전에 대시보드와 권한을 구성해야 한다. 익명은 데이터 전체 공개를 뜻하지 않는다.
+
+- `AuthorizedResourceArns`로 해당 세션이 접근할 리소스를 지정한다. `AllowedDomains`를 전달하면 콘솔의 정적 허용 도메인 대신 그 요청의 도메인 목록이 적용된다.
+- 태그 기반 RLS를 쓰려면 데이터셋에 `RowLevelPermissionTagConfiguration`을 구성한다. `SessionTags`는 신뢰할 수 있는 백엔드에서 결정하고 사용자가 바꾸는 요청값을 그대로 넘기지 않는다. 위의 사용자/그룹 기반 RLS와 설정 경로를 구분한다.
+- 생성 URL의 bearer token은 5분 안에 사용해야 하고 사용 뒤 재사용할 수 없다. 세션 수명은 별도 값이며 `SessionLifetimeInMinutes`로 15~600분을 지정한다.
+
+검증 제안: 공개용 데이터와 고객별 제한 데이터를 구분하고, 서로 다른 고객의 세션에서 허용되지 않은 행이 나오지 않는지 시험한다. 임베딩 화면이 열리는 것과 접근 제한, 집계 정확성, 데이터 최신성을 각각 확인한다. 특정 공개 서비스가 이 API를 사용했다는 주장은 아니며 실제 임베딩 실행도 수행하지 않았다. 이 절만 대조해 기존 검증일은 유지한다.
+
 ## 상담 녹취의 분석 결과를 시각화한다
 
 음성을 텍스트로 바꾸는 작업, 문의 유형을 분류하는 작업과 대시보드 집계는 다른 단계다. Quick Sight에는 분석 결과를 데이터셋으로 연결한다. 음성 파일을 S3에 넣었다는 사실만으로 상담 지표가 만들어지지는 않는다.
@@ -165,6 +175,7 @@ AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 �
 
 ## 출처
 
+- [Amazon Quick, GenerateEmbedUrlForAnonymousUser](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_GenerateEmbedUrlForAnonymousUser.html)
 - [Amazon Quick, Filtering data in Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/adding-a-filter.html)
 - [Amazon Quick, Adding filter controls to analysis sheets](https://docs.aws.amazon.com/quick/latest/userguide/filter-controls.html)
 - [Amazon Quick, Build visuals with Generative BI](https://docs.aws.amazon.com/quick/latest/userguide/generative-bi-build-visuals.html)

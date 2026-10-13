@@ -98,6 +98,16 @@ AMP에는 workspace의 remote write endpoint, SigV4 서명과 해당 쓰기 권�
 
 운영 검증 제안: 원격 저장소 조회 성공과 별도로 scrape 누락, 전송 적체, 장애 후 따라잡기와 데이터 공백을 확인한다. 관리형 저장소 도입만으로 관측 경로 전체의 무유실을 주장하지 않는다.
 
+### VPC별 수집과 중앙 조회를 분리한다
+
+부분 검증(2026-10-14): Prometheus Agent mode와 AMP의 interface VPC endpoint 문서를 대조했다. 각 VPC의 수집기가 가까운 대상을 scrape하고 중앙 저장소로 remote write하면 중앙 수집기가 모든 대상에 직접 접근하는 구성을 줄일 수 있다. 대상에서 수집기로는 pull, 수집기에서 저장소로는 push인 두 경로다.
+
+Agent mode는 scrape와 service discovery를 유지하지만 로컬 쿼리, recording rule과 alerting을 제공하지 않는다. `--agent`로 전환하기 전에 조회와 규칙 평가를 원격 시스템에서 수행할 수 있는지 확인한다. 전송용 WAL을 장기 조회 저장소로 취급하지 않는다.
+
+AMP에 비공개로 접근하려면 AWS PrivateLink 기반 interface endpoint를 검토한다. Prometheus 호환 API는 `com.amazonaws.<region>.aps-workspaces`, workspace 관리 API는 `com.amazonaws.<region>.aps`를 사용한다. VPC peering만 구성했다고 AMP 서비스 endpoint가 생기는 것은 아니다. 인터넷 경로 없는 VPC의 remote write에 대해 AWS는 SigV4를 위한 STS interface endpoint와 regional STS endpoint 설정도 안내한다.
+
+운영 점검 제안: 수집 대상 접근, AMP 전송, 인증 토큰 획득, 중앙 쿼리와 경보 평가를 각각 확인한다. 네트워크를 바꾼 뒤 전송 적체와 데이터 공백도 확인하며, 한 사례의 절감률이나 데이터 무유실을 일반 보장으로 옮기지 않는다. 실제 네트워크 구성은 수행하지 않았으며 기존 검증일은 유지한다.
+
 ## 흔한 함정
 
 - 고카디널리티 라벨(user_id, request_id) → 시계열 폭발, OOM ([[Cardinality]])
@@ -117,6 +127,8 @@ AMP에는 workspace의 remote write endpoint, SigV4 서명과 해당 쓰기 권�
 
 ## 출처
 
+- [Prometheus — Prometheus Agent Mode](https://prometheus.io/docs/prometheus/latest/prometheus_agent/)
+- [AWS — Using Amazon Managed Service for Prometheus with interface VPC endpoints](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-and-interface-VPC.html)
 - [Prometheus — Remote write tuning](https://prometheus.io/docs/practices/remote_write/)
 - [AWS — Set up ingestion from an existing Prometheus server in Kubernetes on EC2](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-onboard-ingest-metrics-existing-Prometheus.html)
 - [Prometheus — Overview / Data model / Querying](https://prometheus.io/docs/introduction/overview/)

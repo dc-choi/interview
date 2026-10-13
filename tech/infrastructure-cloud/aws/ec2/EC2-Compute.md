@@ -63,6 +63,14 @@ EBS 볼륨 유형:
 
 이름은 후보를 좁히는 출발점이다. 실제 선택에서는 해당 타입과 크기의 CPU, 메모리, 네트워크와 EBS 사양을 확인하고 워크로드로 비교한다. 세대 숫자나 크기만으로 모든 자원의 성능 향상 비율을 추정하지 않는다.
 
+### AMD 세대 비교는 패밀리와 크기를 고정한다
+
+부분 검증(2026-10-14): C8a, M8a와 R8a 공식 제품 사양을 대조했다. 세 패밀리는 5세대 AMD EPYC 기반이며 C8a는 컴퓨트 최적화, M8a는 범용, R8a는 메모리 최적화다. 같은 세대라는 이유로 용도를 서로 바꾸어 읽지 않는다.
+
+각 vCPU는 물리 코어 하나에 대응한다. 다른 CPU 계열과 비교할 때 같은 vCPU 수가 같은 코어 구성이나 처리량을 뜻하지는 않는다. 공식 사양에서 `c8a.large`는 네트워크 최대 12.5 Gbps, EBS 최대 10 Gbps지만 `c8a.48xlarge`는 각각 75 Gbps, 60 Gbps다. 패밀리의 최대 대역폭을 모든 크기의 보장값으로 쓰지 않는다.
+
+AWS가 제시하는 최대 30% 성능 향상은 각각 C7a, M7a, R7a와 비교한 제품 설명이다. 서비스의 지연이나 비용이 같은 비율로 개선된다는 보장은 아니다. 선택 검증에서는 같은 요청과 데이터, 런타임을 유지하고 CPU, 메모리, 네트워크와 EBS 병목을 나누어 처리량과 지연을 측정한다(검증 제안). 실제 부하 시험은 수행하지 않았으며 이 절만 추가 대조해 기존 검증일은 유지한다.
+
 ### Graviton 이전은 이미지, 의존성과 성능을 함께 검증한다
 
 2026-10-13 AWS Graviton 전환 가이드와 Docker 공식 문서로 이 절을 대조했다. Graviton은 arm64이므로 인스턴스 타입만 바꾸지 않고 AMI, 컨테이너 이미지, 라이브러리, 런타임과 운영 에이전트의 지원을 확인한다. 언어가 이식 가능해도 함께 배포하는 네이티브 구성 요소까지 호환된다는 뜻은 아니다.
@@ -148,6 +156,9 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 
 ## 출처
 
+- [Amazon EC2 C8a instances — AWS](https://aws.amazon.com/ec2/instance-types/c8a/)
+- [Amazon EC2 M8a instances — AWS](https://aws.amazon.com/ec2/instance-types/m8a/)
+- [Amazon EC2 R8a instances — AWS](https://aws.amazon.com/ec2/instance-types/r8a/)
 - [AWS Neuron, Neuron Persistent Cache](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/neuron-caching.html)
 - [AWS Neuron, Comparison of torch-neuron (Inf1) versus torch-neuronx (Inf2 & Trn1) for Inference](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/guide-torch-neuron-vs-torch-neuronx-inference.html)
 - [AWS Neuron, PyTorch NeuronX Analyze API for Inference](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/torch-neuronx/api-reference-guide/inference/api-torch-neuronx-analyze.html)
