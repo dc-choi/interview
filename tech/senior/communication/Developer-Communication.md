@@ -111,6 +111,12 @@ Microsoft의 메일 작성 지침을 업무 접수에 적용한 운영 제안이
 
 실무 적용에서는 결정할 사항, 되돌릴 수 있는 범위, 실패를 발견할 지표와 재검토 시점을 초안에 적는다. 표현을 다듬느라 피드백을 늦추는지와, 결정에 필요한 근거가 실제로 빠졌는지를 구분한다. 이는 위 두 운영 원칙을 조합한 적용 제안이며, 보안이나 계약 검토를 생략하라는 뜻이 아니다. 2026-10-13 두 주주서한의 해당 절을 대조했다.
 
+### 절차의 목적과 지연 원인을 구분한다
+
+회의와 승인 단계는 어떤 위험을 줄이고 무슨 결정을 가능하게 하는지 설명할 수 있어야 한다. 역사적 사례로, CIA가 공개한 소개 글은 2차대전 당시 OSS의 *Simple Sabotage Field Manual*에 안건을 위원회로 넘기고 관료적 검토를 늘리는 방해 방식이 포함됐다고 설명한다. 이 자료는 당시의 공작 훈련 맥락이며, 현대 기업의 표준 운영 절차가 해롭다는 실증 연구나 현재 CIA의 기업 운영 지침이 아니다.
+
+이를 조직 소통에 적용하는 점검 제안은 결정할 안건, 책임자, 필요한 근거와 검토 기한을 명시하는 것이다. 결정이 늦어지면 추가 검토가 줄일 위험과 기다림의 비용을 함께 확인한다. 회의가 많다는 사실만으로 악의나 사내 정치를 단정하거나 보안, 품질과 계약상 검토를 없애지 않는다.
+
 ## 고맥락과 저맥락 문화
 
 Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하며, 그 첫째인 커뮤니케이션 척도가 저맥락과 고맥락을 나눈다. 저맥락 문화에서는 말한 그대로가 메시지이고 명확하고 단순하게 반복하는 것이 좋은 소통이다. 고맥락 문화에서는 누가, 언제, 어떤 분위기에서 말했는지까지 메시지에 포함되며 행간을 읽는 것이 기대된다. 책의 척도에서 미국은 가장 저맥락 쪽, 일본은 가장 고맥락 쪽에 있고 한국도 고맥락 쪽에 놓인다(책 기준, 국가 위치는 상대 비교다).
@@ -150,6 +156,7 @@ Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하
 제안하는 것과 일정을 약속할 권한은 다르다. 변경된 범위와 위험을 책임자가 승인하도록 확인하고, 불법이거나 안전하지 않은 요구에는 거절이 필요할 수 있다. 항상 대안을 만들어 상대를 붙잡아야 전문가라는 의무로 확대하지 않는다. 작은 일에서 판단의 근거와 한계를 설명하는 연습으로 사용한다.
 
 ## 출처
+- [The Art of Simple Sabotage — CIA](https://www.cia.gov/stories/story/the-art-of-simple-sabotage/) — 2019-04-01, OSS 훈련 자료의 역사적 맥락
 - [2017 Letter to Shareholders — Amazon](https://www.aboutamazon.com/news/company-news/2017-letter-to-shareholders) — Six-Page Narratives, 메모 작성과 검토 방식
 - [2016 Letter to Shareholders — Amazon](https://www.aboutamazon.com/news/company-news/2016-letter-to-shareholders) — High-Velocity Decision Making, 가역적 결정과 빠른 수정
 - [GitLab Onboarding Buddies — GitLab Handbook](https://handbook.gitlab.com/handbook/people-group/general-onboarding/onboarding-buddies/)

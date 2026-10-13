@@ -98,6 +98,14 @@ Porting Advisor for Graviton은 알려진 코드 패턴과 의존성 호환성 �
 
 비용 비교 제안: 허용 지연과 품질을 만족하는 배치 설정마다 인스턴스당 처리량을 측정한 뒤, 목표 처리량을 나누어 올림한 대수와 시간당 단가를 곱한다. 이는 균등한 부하 분배를 가정한 1차 추정이다. 배치 대기, 부하 편차와 장애 여유를 포함한 전체 서비스 부하 시험으로 검증하며, 한 대의 가격이나 과거 절감률만으로 이전을 결정하지 않는다.
 
+#### 컴파일 산출물과 컴파일 캐시를 구분한다
+
+부분 검증(2026-10-13): Neuron Tracing API와 Persistent Cache 문서를 대조했다. `torch_neuronx.trace`의 결과는 `torch.jit.save`로 저장하고 `torch.jit.load`로 불러오는 Neuron 전용 추론 산출물이다. 컴파일 작업과 서빙 시작을 분리할 때 재사용할 수 있지만, 일반 CPU나 GPU용 모델 파일로 취급하지 않는다.
+
+**Neuron Persistent Cache**는 별도 기능이다. 문서의 XLA 학습 경로에서는 컴파일러 flags와 XLA graph의 hash를 캐시 키로 사용하며, 컴파일러 버전이나 graph가 바뀌면 다시 컴파일한다. 배치 크기 변경도 graph를 바꿀 수 있다. 가중치를 상수로 고정해 함께 컴파일하는 `torch-neuronx` trace 경로에는 이 캐시가 적용되지 않는다. 저장한 traced model과 자동 컴파일 캐시를 같은 기능으로 설명하지 않는다.
+
+배포 점검 제안: 모델 revision, 입력 shape, 정밀도, 컴파일러 버전과 옵션을 산출물과 함께 기록한다. 컴파일 완료 후 대상 Neuron 환경에서 로딩, 출력 품질과 지연을 확인한 산출물만 배포한다. 컴파일에 쓰는 자원과 서빙 자원을 따로 산정하고, 과거 사례의 특정 인스턴스 크기를 모든 모델의 필수 조건으로 적용하지 않는다.
+
 #### 저정밀도 연산과 확률적 반올림
 
 2026-10-13 AWS Neuron의 Rounding Modes 문서로 대조했다. NeuronCore-v2부터는 RNE(round nearest, ties to even)와 stochastic rounding을 선택할 수 있다. 크기가 크게 다른 값을 더할 때 RNE에서 작은 증가분이 반올림으로 사라질 수 있으며, stochastic rounding은 인접한 표현 가능 값과의 거리에 따라 확률적으로 반올림해 작은 증가분이 누적될 수 있게 한다.
@@ -140,6 +148,7 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 
 ## 출처
 
+- [AWS Neuron, Neuron Persistent Cache](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/neuron-caching.html)
 - [AWS Neuron, Comparison of torch-neuron (Inf1) versus torch-neuronx (Inf2 & Trn1) for Inference](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/guide-torch-neuron-vs-torch-neuronx-inference.html)
 - [AWS Neuron, PyTorch NeuronX Analyze API for Inference](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/torch-neuronx/api-reference-guide/inference/api-torch-neuronx-analyze.html)
 - [AWS Neuron, PyTorch NeuronX Tracing API for Inference](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/torch-neuronx/api-reference-guide/inference/api-torch-neuronx-trace.html)

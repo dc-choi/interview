@@ -12,10 +12,21 @@ aliases: ["CloudWatch Agent", "CloudWatch 운영과 비용 함정"]
 
 | 인사이트 | 자동 수집 |
 |---------|---------|
-| **Container Insights** | ECS, EKS Task별 CPU, 메모리, 네트워크, 디스크 |
+| **Container Insights** | ECS의 task/service, EKS의 node/pod/container 등 실행 환경과 수집 방식에 따른 인프라 지표 |
 | **Lambda Insights** | Lambda 콜드스타트, Init duration, 메모리, CPU |
 | **Application Insights** | .NET, Java 서비스의 자동 모니터링 |
 | **Synthetics** | Canary로 외부에서 주기적 헬스 체크 |
+
+### EKS와 Fargate는 수집 경로부터 확인한다
+
+부분 검증(2026-10-13): EKS add-on 설치와 Fargate 지표 수집을 공식 문서로 대조했다. 아래는 수집 경로 선택과 검증 제안이며, 실제 클러스터에 설치한 기록은 아니다.
+
+- EKS에서는 `amazon-cloudwatch-observability` add-on이나 공식 Helm chart로 CloudWatch agent와 Fluent Bit을 설치할 수 있다. 설치와 CloudWatch 전송용 IAM 권한 부여는 별도다.
+- add-on 3.1.0 이상에서는 EKS Pod Identity를 통한 권한 부여가 가능하다. 이 방식을 쓰면 역할 연결과 Pod Identity agent 준비를 확인한다. 기존 IRSA 구성을 그대로 쓰는 경우와 구분한다.
+- 해당 설치 경로는 Container Insights와 Application Signals를 기본 활성화한다. 다만 EKS의 Windows 환경에서는 Application Signals를 지원하지 않는다. 필요한 수집 범위와 설정을 검토하고, 인프라 지표만 예상한 비용 계산에 추가 telemetry를 빠뜨리지 않는다.
+- EKS on Fargate는 ADOT를 통해 시스템 지표를 CloudWatch Container Insights 대시보드로 보낼 수 있다. EC2 worker node용 설치 구성을 그대로 적용하지 말고 Fargate용 수집 경로를 확인한다.
+
+검증은 수집기 pod의 상태, 이벤트와 로그, IAM 권한, 대상 cluster와 region, 최근 데이터포인트 순으로 진행한다. 수집기 실행과 CloudWatch 수신 성공을 구분하며, 대시보드가 비었다는 사실을 자원 사용량이 없다는 뜻으로 해석하지 않는다. 이 순서는 장애 원인을 좁히기 위한 점검 제안이다.
 
 ## CloudWatch Agent
 
@@ -80,6 +91,9 @@ X-Ray 분산 추적과 CloudWatch 메트릭, 로그 통합 뷰 (트레이스 →
 
 ## 출처
 
+- [AWS, Install the CloudWatch agent with the Amazon CloudWatch Observability EKS add-on or the Helm chart](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/install-CloudWatch-Observability-EKS-addon.html)
+- [AWS, Collect AWS Fargate app and usage metrics](https://docs.aws.amazon.com/eks/latest/userguide/monitoring-fargate-usage.html)
+- [AWS, Metrics collected by Container Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Container-Insights-metrics.html)
 - [AWS, CloudWatch metrics that are available for your instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html)
 - [AWS, CloudWatchAgentServerPolicy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/CloudWatchAgentServerPolicy.html)
 - [AWS, Manually create or edit the CloudWatch agent configuration file](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-Configuration-File-Details.html)

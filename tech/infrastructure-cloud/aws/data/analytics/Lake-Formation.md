@@ -48,6 +48,20 @@ Hybrid access mode는 같은 Data Catalog 객체에 두 권한 경로를 허용�
 
 운영 점검 제안: 검색 가능, 구독 승인, 권한 부여 완료, 실제 질의 성공을 각각 확인한다. 태그 기반 권한으로 전환할 때는 기존 이름 기반 권한도 검토하여 의도보다 넓은 접근이 남지 않게 한다.
 
+## 교차 계정 공유는 링크와 실제 권한을 나눈다
+
+부분 검증(2026-10-13): 교차 계정 공유와 resource link 동작을 AWS 공식 문서로 대조했다. 문서 전체의 검증일은 유지한다.
+
+Lake Formation은 Data Catalog 리소스의 교차 계정 공유에 AWS RAM을 사용한다. 다른 조직의 계정으로 공유하면 수신 계정에서 RAM 초대를 수락해야 한다. Hybrid access mode도 교차 계정 공유를 지원하므로, 기존 IAM 접근을 모두 제거하는 절차를 모든 공유 방식의 공통 전제로 삼지 않는다.
+
+**Resource link**는 공유된 데이터베이스나 테이블을 가리키는 수신 측 Data Catalog 객체다. Athena와 Redshift Spectrum에서 공유 테이블을 질의할 때 사용한다. Glue ETL 스크립트는 resource link 없이도 공유 리소스를 참조할 수 있으며, 같은 이름이 겹치면 catalog ID로 구분할 수 있다.
+
+- 링크의 `DESCRIBE` 권한과 대상 테이블의 `SELECT` 같은 데이터 권한은 별도로 부여한다. 링크 권한만으로 원본 조회 권한이 생기지 않는다.
+- 링크 생성 시 대상 리소스의 존재나 교차 계정 권한을 검사하지 않는다. 생성 성공을 공유 완료의 증거로 삼지 않는다.
+- 링크를 삭제해도 원본은 삭제되지 않는다. 원본을 삭제해도 링크가 자동으로 사라지지는 않는다.
+
+운영 점검 제안: 실제 소비자 역할로 링크 조회, 허용된 질의, 거부되어야 할 질의를 각각 시험한다. 관리자의 성공 결과로 소비자 권한을 추정하지 않는다. 공유 수락, 카탈로그 탐색과 실제 데이터 조회를 별도 단계로 확인한다.
+
 ## 시험 빈출 포인트
 
 - 데이터 레이크의 중앙 권한 관리와 세부 접근 제어가 핵심이면 Lake Formation을 검토한다.
@@ -60,6 +74,8 @@ Hybrid access mode는 같은 Data Catalog 객체에 두 권한 경로를 허용�
 
 ## 출처
 
+- [AWS Lake Formation Developer Guide, Cross-account data sharing in Lake Formation](https://docs.aws.amazon.com/lake-formation/latest/dg/cross-account-permissions.html)
+- [AWS Lake Formation Developer Guide, How resource links work in Lake Formation](https://docs.aws.amazon.com/lake-formation/latest/dg/resource-links-about.html)
 - [AWS Lake Formation Developer Guide, Lake Formation tag-based access control](https://docs.aws.amazon.com/lake-formation/latest/dg/tag-based-access-control.html)
 - [Amazon DataZone User Guide, Approve or reject a subscription request](https://docs.aws.amazon.com/datazone/latest/userguide/approve-reject-subscription-request.html)
 - [Amazon DataZone User Guide, Grant access to managed AWS Glue Data Catalog assets](https://docs.aws.amazon.com/datazone/latest/userguide/grant-access-to-glue-asset.html)
