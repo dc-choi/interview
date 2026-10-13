@@ -1,34 +1,43 @@
 ---
 tags: [observability, logging, sampling, cost, tracing, head-tail-sampling]
 status: done
+verified_at: 2026-10-14
 category: "관측가능성(Observability)"
 aliases: ["Log Sampling", "로그 샘플링", "trace sampling", "head/tail sampling"]
 ---
 
 # 로그 / 트레이스 샘플링 (Sampling)
 
-고트래픽에서 **모든 로그와 추적을 100% 저장하면 비용과 카디널리티가 감당이 안 된다**. 샘플링은 일부만 남기되 **진단 가치가 높은 것(에러, 느린 요청)은 빠짐없이** 남기는 기술이다. 무작정 깎는 게 아니라 가치 기준으로 고른다. [[Long-Term-Retention]]
+샘플링은 로그나 추적의 일부를 선택해 수집, 전송과 저장 비용을 조절하는 방법이다. 에러와 느린 요청처럼 진단 가치가 높은 데이터를 우선할 수 있지만, 정책 설정만으로 누락 없는 보존이 보장되지는 않는다. 데이터량이 적거나 원문 보존이 필요한 경우에는 전량 보존도 비교한다. [[Long-Term-Retention]]
 
 ## 왜 필요한가
 
 - 초당 수만 요청 × 요청당 수 KB 로그 = 일 테라바이트 → 적재/인덱싱/검색 비용 폭증. [[Log-Pipeline]]
-- 정상 요청 로그는 대부분 같은 내용이라 **희소 표본으로 충분**하고, 비정상만 전부 필요하다.
+- 정상 요청은 표본으로 분석할 수 있는지, 드문 오류와 감사 기록은 어느 범위까지 보존해야 하는지 먼저 구분한다.
 
 ## Head vs Tail 샘플링 (추적)
 
 | 방식 | 결정 시점 | 장점 | 약점 |
 |---|---|---|---|
-| **Head-based** | 요청 **시작 때** 확률로 결정 | 가볍고 분산 친화적 | 시작 때라 그 요청이 에러/느릴지 아직 모름 |
-| **Tail-based** | 요청 **완료 후** 전체를 보고 결정 | 에러/느린 trace를 골라 남김 | 모든 span을 잠시 버퍼링 → 메모리/복잡도↑ |
+| **Head-based** | trace 전체를 보기 전에 결정, 확률 방식이 대표적 | 가볍고 분산 친화적 | 나중에 발생할 에러와 지연으로 선택하기 어려움 |
+| **Tail-based** | trace의 전체 또는 대부분 span을 모아 결정 | 에러/느린 trace를 골라 남김 | 상태 유지와 버퍼 자원, 운영 복잡도 필요 |
 
 핵심: head는 싸지만 무엇이 중요할지 모르고, tail은 **결과를 보고 중요한 것만** 남긴다. [[OpenTelemetry]] Collector가 tail sampling을 지원한다.
 
 ## 실전 정책 — 가치 기반
 
-- **에러는 100% 보존**, 성공은 1~10% 샘플(에러 편향 샘플링).
-- **느린 요청(P99 초과)은 100%**, 빠른 정상은 샘플.
+- 정책 예: 수집기에 도달한 에러 trace는 전량 선택하고, 성공 trace는 1~10%를 선택한다. 비율은 트래픽과 진단 요구에 맞춰 조정한다.
+- 정책 예: 느린 요청은 우선 보존하고 빠른 정상 요청은 샘플링한다. 지연 기준은 서비스별로 정한다.
 - **신규 배포/특정 사용자/디버그 헤더**가 붙으면 동적으로 샘플률↑(dynamic sampling).
-- 요청 단위 일관성: 한 trace는 전부 남기거나 전부 버린다(부분 trace는 무의미).
+- 요청 단위 일관성: 같은 trace의 span이 일관된 선택을 따르게 한다. 부분 trace도 단서가 될 수 있지만 빠진 구간을 정상으로 해석하지 않는다.
+
+## 전량 수집과 보존 보장을 구분한다
+
+Head 단계에서 버린 trace를 뒤의 tail sampler가 복원할 수는 없다. 에러를 전량 선택하는 tail 정책은 그 단계에 도달한 데이터를 대상으로 한다. 수집기 과부하와 전달 실패까지 해결하는 보장은 아니다. 메모리, 큐와 전송 실패를 함께 확인한다.
+
+전량 수집 기능도 애플리케이션 계측과 전달 설정을 전제로 한다. 예를 들어 Splunk APM의 full-fidelity tracing은 서비스가 보낸 trace를 샘플링 없이 받는 기능이며, Istio 연동 안내도 trace 전송과 sampling 설정을 별도로 요구한다. 제품 도입만으로 계측하지 않은 구간이나 상류에서 버린 trace가 생기지는 않는다.
+
+다음은 이 구분에서 도출한 도입 점검 기준이다. 계측 범위, 상류 샘플링, 수집기 누락, 저장소의 보존 기간과 검색 가능 범위를 나누어 확인한다. 비용도 저장량 절감만 보지 않고 수집기의 계산 자원과 운영 비용을 합쳐 비교한다. 이 기준은 특정 제품의 장애 원인 분석 성공률을 보장하지 않는다.
 
 ## 로그 레벨 vs 샘플링
 
@@ -46,14 +55,16 @@ aliases: ["Log Sampling", "로그 샘플링", "trace sampling", "head/tail sampl
 
 - 샘플링이 필요한 이유(비용/카디널리티)와 가치 기반 선택
 - head vs tail 샘플링의 트레이드오프, tail이 에러/지연을 잡는 이유
-- 에러 100% + 성공 샘플의 에러 편향 정책
-- trace 단위 일관성(부분 trace 금지)
+- 에러 우선 보존 정책이 상류에서 버린 trace를 복구하지 못하는 이유
+- trace 단위 일관성과 부분 trace의 해석 한계
 - 정량 집계는 샘플 로그가 아니라 메트릭으로 해야 하는 이유
 
 ## 출처
 
 - [OpenTelemetry — Sampling (head/tail)](https://opentelemetry.io/docs/concepts/sampling/)
 - [Honeycomb — Dynamic sampling guide](https://docs.honeycomb.io/manage-data-volume/sample/)
+- [Splunk — Learn what you can do with Splunk APM](https://help.splunk.com/en/splunk-observability-cloud/monitor-application-performance/set-up-splunk-apm/learn-what-you-can-do-with-splunk-apm)
+- [Splunk — Send traces from Istio to Splunk Observability Cloud](https://help.splunk.com/en/splunk-observability-cloud/manage-data/instrument-back-end-services/instrument-back-end-applications-to-send-spans-to-splunk-apm/send-spans-from-the-istio-service-mesh)
 
 ## 관련 문서
 

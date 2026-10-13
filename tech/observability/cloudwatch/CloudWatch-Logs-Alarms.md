@@ -110,6 +110,21 @@ ML 기반 정상 범위 자동 학습 — 정적 임계값 대신 동적 밴드.
 
 알람을 만든 뒤 `SetAlarmState`로 상태를 잠시 바꿔 실제 수신까지 확인한다. 상태가 달라지면 그 상태에 설정된 작업이 실제로 실행되므로 EC2 중지나 종료, Auto Scaling, Lambda 호출, OpsItem이나 Incident Manager incident 생성, investigation 시작이 걸린 알람에는 쓰지 않고, 알림 topic만 action으로 둔 테스트 알람으로 확인한다. 그 topic에 Lambda나 SQS 구독이 있으면 테스트 알림도 그쪽으로 전달된다. metric alarm은 보통 몇 초 안에 실제 상태로 돌아오지만 composite alarm은 자식 알람 중 하나의 상태가 바뀌거나 설정을 고칠 때까지 강제한 상태에 머물 수 있다. 구독 상태와 반송 억제 여부는 정기 점검 항목에 넣는다.
 
+### 암호화된 SNS 토픽 — 발행 권한과 키 권한
+
+2026-10-14 AWS 공식 문서 기준, CloudWatch 알람에서 암호화된 SNS 토픽으로 보내려면 두 권한 경계를 확인한다.
+
+| 경계 | 확인할 권한 |
+|---|---|
+| SNS 토픽 정책 | `cloudwatch.amazonaws.com`이 해당 토픽에 `sns:Publish`를 수행할 수 있는지 |
+| KMS 키 정책 | 같은 서비스 주체가 해당 키의 `kms:GenerateDataKey*`, `kms:Decrypt`를 사용할 수 있는지 |
+
+이 구성에는 대칭 암호화용 **고객 관리형 KMS 키**를 사용한다. 알람을 생성한 사용자의 권한이나 SNS 발행 허용만으로 CloudWatch 서비스의 키 사용 권한까지 충족되는 것은 아니다.
+
+토픽 정책에서는 `aws:SourceArn`을 알림을 보내는 **알람 ARN**으로 제한하고, `aws:SourceAccount`에는 그 알람의 계정을 지정한다. 토픽 ARN을 SourceArn에 넣지 않는다. 알람 ARN에 비ASCII 문자가 있으면 CloudWatch 공식 안내대로 `aws:SourceAccount`만 사용해 제한한다. KMS 정책의 조건도 해당 서비스의 지원 범위를 따르며 EventBridge용 정책을 그대로 복사하지 않는다.
+
+운영 점검에서는 알람 상태 전환, SNS 발행, 최종 구독 수신을 분리한다. 사용자 자격으로 SNS에 직접 보낸 테스트가 성공해도 CloudWatch 서비스 주체의 KMS 권한은 별도 확인이 필요하다. 위의 알림 전용 테스트 알람으로 실제 경로를 확인하며, 이 절은 설정 기준이지 실제 계정의 전달 성공 기록은 아니다.
+
 ## 출처
 
 - [Amazon CloudWatch — Configuring how alarms treat missing data](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarms-and-missing-data.html)
@@ -119,6 +134,8 @@ ML 기반 정상 범위 자동 학습 — 정적 임계값 대신 동적 밴드.
 - [Amazon CloudWatch Logs, Field indexes](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatchLogs-Field-Indexing.html)
 - [Amazon CloudWatch — Create a billing alarm to monitor your estimated AWS charges](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/monitor_estimated_charges_with_cloudwatch.html)
 - [Amazon SNS — Email subscription setup and management](https://docs.aws.amazon.com/sns/latest/dg/sns-email-notifications.html)
+- [Amazon SNS — Managing Amazon SNS encryption keys and costs](https://docs.aws.amazon.com/sns/latest/dg/sns-key-management.html)
+- [Amazon CloudWatch — Notifying users on alarm changes](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Notify_Users_Alarm_Changes.html)
 - [Sungmin Kim 강사 — CloudWatch란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=48604)
 - [Sungmin Kim 강사 — CloudWatch Alarm](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=49555)
 - [Sungmin Kim 강사 — CloudWatch 실습](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=50085)

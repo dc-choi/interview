@@ -115,6 +115,16 @@ LLM 응답도 입력과 재사용 조건이 같으면 해시 키로 캐시할 �
 
 이 절의 저장 유형과 캐시 재사용 구분은 2026-10-07 공식 문서에 대조했다. 측정과 키 구성은 적용 시 확인할 설계 기준이다.
 
+## 10. Bloom filter로 조회 전 후보를 거른다
+
+2026-10-14 공식 문서 기준 ElastiCache의 Bloom filter는 Valkey 8.1 이상에서 제공된다. 정확한 집합 대신 확률형 필터로 비싼 조회를 줄인다.
+
+`BF.EXISTS`의 `1`은 존재 가능성이 있다는 뜻이고, `0`은 필터에 없다는 뜻이다. **필터 키 자체가 없어도 `0`을 반환한다.** 따라서 DB와의 동기화가 끝나지 않았거나 필터가 사라진 상태에서 `0`을 DB에도 없다는 증거로 사용하면 안 된다. 설계 시 필터 준비 상태와 갱신 실패를 별도로 확인하고, 불확실하면 정본 조회로 돌아간다. 사용자명 등록과 결제 중복 방지처럼 정확성이 필요한 작업은 필터 결과만으로 승인하거나 거절하지 않고 정본의 유일성 제약과 멱등성 검사를 유지한다.
+
+생성 시 `BF.RESERVE key error_rate capacity`로 허용 오탐률과 초기 용량을 정한다. 예를 들어 `0.001`은 0.1%다. 확장형은 용량 증가에 따라 하위 필터를 추가하고, `NONSCALING`은 용량을 넘는 새 항목 추가를 거부한다. ElastiCache에서는 Bloom 객체 하나의 메모리가 128 MB로 제한되므로 확장형도 무제한으로 늘어나지 않는다.
+
+`BF.INFO`의 `SIZE`, `FILTERS`, `MAXSCALEDCAPACITY`로 메모리, 하위 필터 수와 확장 한계를 확인한다. `ERROR`를 운영 트래픽에서 직접 측정한 오탐 비율로 해석하지 않는다. 실제 오탐은 필터의 양성 응답을 정본과 대조해 따로 측정하는 것이 운영 점검 기준이다.
+
 ## 출처
 
 - [AWS Docs, 일반적인 ElastiCache 사용 사례](https://docs.aws.amazon.com/ko_kr/AmazonElastiCache/latest/dg/elasticache-use-cases.html)
@@ -125,6 +135,10 @@ LLM 응답도 입력과 재사용 조건이 같으면 해시 키로 캐시할 �
 - [Redis Docs, Semantic cache](https://redis.io/docs/latest/develop/use-cases/semantic-cache/)
 - [Redis Docs, RedisVL LLM Cache API](https://redis.io/docs/latest/develop/ai/redisvl/api/cache/)
 - [Redis INCR rate limiter와 race condition](https://redis.io/docs/latest/commands/incr/)
+- [AWS Docs, Getting started with Bloom filters](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/BloomFilters.html)
+- [Valkey Docs, BF.EXISTS](https://valkey.io/commands/bf.exists/)
+- [Valkey Docs, BF.RESERVE](https://valkey.io/commands/bf.reserve/)
+- [Valkey Docs, BF.INFO](https://valkey.io/commands/bf.info/)
 
 ## 관련 문서
 
