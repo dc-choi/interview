@@ -78,6 +78,14 @@ PII, 재무, 건강, 기밀 데이터, 독점 알고리즘이 출력으로 새�
 
 - 완화: 학습 전 데이터 정제(마스킹), 엄격한 입력 검증, 최소 권한 접근, 명확한 옵트아웃 정책, 연합 학습(federated learning), 차등 프라이버시(노이즈 추가), 동형 암호화, 토큰화
 
+### 연합 학습의 원본 보관과 정보 유출을 구분한다
+
+연합 학습은 원본 학습 데이터를 각 참여자에게 두고 로컬에서 계산한 모델 업데이트를 모아 공동 모델을 학습하는 방식이다. 원본을 중앙에 모으지 않는다는 사실만으로 개인정보 보호가 보장되지는 않는다. 학습 중 공유하는 업데이트와 학습이 끝난 모델에서 학습 데이터가 추출될 수 있으므로 두 공격면을 따로 본다.
+
+업데이트를 집계하는 주체가 개별 업데이트를 보지 못하도록 보호하는 것은 input privacy의 문제다. 학습 과정이 보호돼도 최종 모델에서 정보가 새는 문제는 남는다. 차등 프라이버시는 이러한 output privacy를 위한 접근이며, 연합 학습을 도입한 것만으로 자동 적용되는 보장은 아니다.
+
+설계 점검 제안: 참여자, 집계자와 모델 이용자가 각각 볼 수 있는 산출물을 먼저 적고, 업데이트 보호와 최종 모델의 정보 유출 방어를 별도로 검증한다. 원본 비이동을 데이터 소유권 보호나 모델 출력의 비밀성 전체에 대한 증명으로 쓰지 않는다. 2026-10-14 원 논문과 NIST의 공격 분류를 대조한 범위이며, 개별 서비스의 보호 구현과 이 문서의 다른 항목은 재검증하지 않아 기존 `verified_at`을 유지한다.
+
 ## LLM03 공급망
 
 학습 데이터, 모델, 배포 플랫폼의 무결성에 영향을 주는 취약점. 기존 SW 공급망(A06:2021)에 더해 **사전학습 모델, 데이터셋, LoRA 어댑터, 모델 병합, 온디바이스 배포**가 새 리스크를 만든다.
@@ -161,6 +169,9 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 - 무제한 소비의 지갑 거부 공격(DoW)과 모델 추출
 
 ## 출처
+
+- [Communication-Efficient Learning of Deep Networks from Decentralized Data — PMLR](https://proceedings.mlr.press/v54/mcmahan17a.html)
+- [Privacy Attacks in Federated Learning — NIST](https://www.nist.gov/blogs/cybersecurity-insights/privacy-attacks-federated-learning)
 
 2026-10-02에는 Dual-LLM 원 제안의 Controller와 데이터 격리 조건, PuzzleMask의 실험 표본과 성공률을 대조했다. OWASP 전체 항목과 개별 제품의 현재 방어 상태를 재인증한 기록은 아니다. 2026-10-06에는 Spotlighting과 Instruction Hierarchy 원 논문, Model Spec 2026-08-18판의 권한 수준, 적응형 공격 평가, Agents Rule of Two, CaMeL, Gemini 다층 방어와 OWASP 2026판의 LLM01 완화와 순위 변경을 대조했다. 2026판 LLM02 이하의 본문은 대조하지 않았다.
 
