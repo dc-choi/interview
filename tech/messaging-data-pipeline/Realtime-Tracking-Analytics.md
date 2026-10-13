@@ -43,6 +43,16 @@ AWS의 NFL Next Gen Stats 영상 공개 기준(2026-02-02), 현장 서버에서 
 
 이 사례가 Cassandra의 모든 쿼리 지연이 일정하다거나 모든 파이프라인에 여러 DB가 필요하다는 근거는 아니다. 영상에 소개된 MSK, DocumentDB와 Keyspaces 같은 관련 서비스 설명도 실제 채택 사실과 구분한다.
 
+### 실시간 수집과 경기 후 적재가 함께 있는 경우
+
+부분 검증(2026-10-14): AWS의 World Surf League 공개 사례에서 수집, 경기 후 처리와 분석 저장 경로를 대조했다. 이 절의 사례만 확인했으며 기존 본문 전체의 검증일은 유지한다.
+
+- 웨어러블 데이터는 Kinesis로 전달되며, 각 heat(경기 단위)가 끝나면 로그 파일을 S3로 보내 처리하고 시계열 데이터를 Timestream에 기록한다.
+- Glue는 웨어러블 데이터와 심판 판정, 파도 특성 및 날씨를 결합하고, 분석 데이터는 Redshift에 모인다.
+- Bedrock을 이용한 자연어 조회는 이 구조화 데이터를 해설자가 질의하는 소비 경로다. 사례에서 설명한 구성이지 모든 질의의 정확도나 현재 배포 상태를 독립 검증한 결과는 아니다.
+
+적용 점검 제안: 실시간 수집이 있다는 이유로 모든 결과가 즉시 확정된다고 표시하지 않는다. 화면과 API가 수신 중인 측정값, 경기 후 처리 결과, 결합된 분석 데이터 중 무엇을 읽는지 구분하고, 마지막 반영 시각과 누락 구간을 함께 확인한다. 처리 단계가 다른 두 수치를 비교할 때는 같은 경기 범위와 집계 완료 조건인지 먼저 맞춘다.
+
 ## 운영에서는 속도와 데이터 품질을 함께 본다
 
 엔지니어링의 처리 상태, QA의 측정값과 이벤트 품질 확인, 분석가의 결과 해석은 서로 다른 책임이다. 작은 팀에서는 한 사람이 맡더라도 점검 항목을 분리할 수 있다. 처리 지연이 짧다는 이유만으로 통계의 의미가 올바르다고 판정하지 않는다.
@@ -58,6 +68,7 @@ API Gateway 같은 관리형 진입점의 도입만으로 인증과 접근 제�
 
 ## 출처
 
+- [How World Surf League Brought Data Analytics to the Ocean with AWS and Generative AI — AWS](https://aws.amazon.com/solutions/case-studies/world-surf-league-case-study/)
 - [Going Deep: AWS + NFL Next Gen Stats — AWS](https://aws.amazon.com/sports/nfl/going-deep/)
 - [How AWS Captures Every Play — Amazon Web Services](https://www.youtube.com/watch?v=tG_GlFFoc-M)
 - [The Storage Playbook — Amazon Web Services](https://www.youtube.com/watch?v=ntz36SUsUrE)
