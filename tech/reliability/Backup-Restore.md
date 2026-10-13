@@ -35,6 +35,17 @@ MySQL 8.4의 `--single-transaction`은 비트랜잭션 테이블까지 일관되
 
 복구 시점을 초 단위로 지정할 수 있다는 것과 데이터 손실이 1초 이내라는 것은 다르다. 로그 아카이빙 지연과 누락이 실제 복구 가능한 끝 시점을 제한한다. RDS DB 인스턴스의 자동 백업 보존은 최대 35일이며 0일이면 비활성화된다. 실제 PITR 범위는 설정된 보존 기간과 `LatestRestorableTime`으로 확인한다. [[RDS-Aurora]]
 
+### Keyspaces: 데이터 시점과 복원 설정을 분리한다
+
+2026-10-14 Amazon Keyspaces 공식 문서 대조 기준. 이 절만 추가 검증했으며 기존 절의 검증일은 유지한다.
+
+- PITR의 복구 시작점은 **35일 전과 PITR 활성화 시각 중 더 최근 시각**이다. 활성화 직후 35일의 과거 데이터가 생기는 것은 아니다. PITR을 끄면 백업 이력이 지워지고, 다시 켜면 시작점도 재설정된다.
+- 복원은 선택한 시점의 스키마와 데이터를 **새 테이블**에 만든다. 기존 테이블을 덮어쓰지 않는다. 데이터 복구 시점과 설정 적용 시점도 다르다. 예를 들어 처리 용량은 과거 데이터 시점의 값이 아니라 복원 시작 시 원본 설정을 따르며 복원 요청에서 재정의할 수 있다.
+- CDC 스트림, IAM 정책, CloudWatch 지표와 알람은 자동 복원되지 않는다. 새 테이블에 맞게 다시 구성해야 한다.
+- PITR이 켜진 테이블을 삭제했더라도 복구 구간 안에서는 복원할 수 있다. 다만 같은 keyspace에 같은 이름의 테이블을 새로 만들면 삭제한 테이블은 더 이상 복원할 수 없다.
+
+이 계약에서 도출한 복구 점검은 새 테이블의 데이터 확인, 권한과 관측 설정, 소비자의 CDC 연결 및 애플리케이션 참조 전환을 각각 확인하는 것이다. 테이블 생성 완료만으로 업무 복구를 선언하지 않는다. 실제 복원을 실행하거나 복구 시간을 측정한 결과는 아니다.
+
 ## 스냅샷의 함정 — 복원은 생각보다 느리다
 
 RDS DB 인스턴스의 스냅샷 복원은 `available` 이후에도 S3에서 데이터를 lazy-load할 수 있어, 아직 로드되지 않은 데이터의 첫 접근이 느릴 수 있다. 모든 스냅샷이 같은 성능 저하를 보인다고 가정하지 말고 실제 복원 경로와 주요 쿼리를 측정한다. 서비스가 요구하는 성능까지의 워밍업도 RTO에 포함한다. [[RDS-Operational-Pitfalls|스냅샷 워밍업]]
@@ -94,6 +105,7 @@ Legal hold는 연속 백업에는 적용되지 않으며, 계정이나 리전 �
 
 ## 출처
 
+- [Amazon Keyspaces — How point-in-time recovery works in Amazon Keyspaces](https://docs.aws.amazon.com/keyspaces/latest/devguide/PointInTimeRecovery_HowItWorks.html)
 - [AWS Backup — Legal holds and AWS Backup](https://docs.aws.amazon.com/aws-backup/latest/devguide/legalhold.html)
 - [AWS Backup — AWS Backup Vault Lock](https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html)
 
