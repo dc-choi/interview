@@ -34,6 +34,12 @@ STAR는 경험 나열이 아니라 내 비즈니스 임팩트를 네 단계로 �
 
 결과에 정량 지표(예: 응답 속도 20% 이상 개선, 목표 구매 건수 초과)를 붙이면 이상적이다. 수치에는 기준점과 측정 범위를 함께 둔다 ([[Resume-Experience-Narrative-and-Evidence#숫자는 맥락과 함께 쓴다|숫자는 맥락과 함께 쓴다]]).
 
+### 팀 성과와 개인 행동 구분
+
+팀 프로젝트도 상황과 공동 목표를 설명한 뒤, 행동 단계에서는 본인이 맡은 책임과 직접 수행한 일을 특정한다. 결과는 팀 전체의 성과와 본인 작업에서 확인한 변화를 구분한다. 팀이 했다는 말만 반복하거나 공동 성과를 혼자 만든 것으로 표현하지 않는다.
+
+준비할 때는 각 사례 옆에 직접 결정한 일, 직접 구현한 일, 동료와 조율한 일, 다른 사람이 맡은 일을 나눠 적는다. 예를 들어 팀이 결제 실패율을 낮췄다면, 본인은 재시도 조건을 설계했는지, 대사 작업을 구현했는지, 지표만 관찰했는지를 구분한다. 이는 기여 범위를 설명하는 예시이며 실제로 하지 않은 일을 답변에 보태는 틀이 아니다.
+
 ## 문제 해결 기법을 답변 뼈대로 쓰기
 
 생산과 품질 관리의 개선 기법, 일반적인 상황 기술 점검 목록을 인성면접과 기술면접 답변에 활용할 수 있다. 아래 항목 모두가 도요타 생산 방식에서 유래한 것은 아니다. 이름과 뜻을 구분해 쓴다.
@@ -61,6 +67,7 @@ STAR는 경험 나열이 아니라 내 비즈니스 임팩트를 네 단계로 �
 - 질문 풀은 [[Common-Interview-Questions-Behavioral|자주하는 면접 질문 — Behavioral]].
 
 ## 출처
+- [Amazon recruiting manager shares tips for a successful interview — Amazon](https://www.aboutamazon.com/news/workplace/amazon-interview-best-tips)
 - [인프런, 코드빌런, 행동양식 기반 면접과 답변 방향](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242765)
 - [인프런, 코드빌런, 기술면접과 인성면접에서 고려해야 할 사항과 채용단계 점검](https://www.inflearn.com/courses/lecture?courseId=334899&unitId=242763)
 - [Toyota Production System — Toyota Motor Corporation](https://global.toyota/en/company/vision-and-philosophy/production-system/)

@@ -1,7 +1,7 @@
 ---
 tags: [security, auth, selection]
 status: done
-verified_at: 2026-10-03
+verified_at: 2026-10-13
 category: "Security - 인증"
 aliases: ["Auth Method Selection", "인증 방식 선택"]
 ---
@@ -145,6 +145,14 @@ Access Token(짧은 수명) + Refresh Token(긴 수명) 조합. Refresh 시 **�
 
 상세는 [[Password-Hashing]].
 
+### 비밀번호 재사용과 복구 경로
+
+소수의 비밀번호를 여러 서비스에서 돌려 쓰면 한 서비스의 유출이 다른 계정에 대한 credential stuffing으로 이어질 수 있다. 서비스마다 다른 비밀번호를 쓰고, 기억 부담은 비밀번호 관리자의 생성과 보관 기능으로 줄인다. 관리 도구 자체의 안전성과 접근 보호도 확인한다.
+
+NIST SP 800-63B-4 §3.1.1.2는 준수 대상 검증자에게 비밀번호 관리자와 자동완성 허용을 요구하고, 붙여넣기 허용을 권고한다. 이 기준을 로그인 UI 설계에 참고하되 모든 민간 서비스의 법적 의무라는 뜻으로 쓰지 않는다.
+
+비밀번호를 모른다는 사실 자체는 계정 탈취 방어가 아니다. 매번 재설정하는 흐름도 복구 수단과 토큰 보호에 의존한다. OWASP 기준으로 복구 토큰은 안전한 난수, 충분한 길이, 안전한 저장, 단회 사용과 만료를 갖추고 요청 남용을 제한한다. 비밀번호 망각을 정상 로그인 전략으로 삼기보다 인증과 복구를 각각 설계한다.
+
 ## HTTPS 필수
 
 자격증명을 주고받는 로그인과 보호 API, 세션 전체에 HTTPS를 적용한다. TLS 종료 이후의 전달 구간도 보호한다. HTTPS는 전송 중 노출과 변조를 막는 통제이며 XSS, 권한 검사 누락이나 안전하지 않은 저장을 대신하지 않는다.
@@ -169,6 +177,10 @@ Access Token(짧은 수명) + Refresh Token(긴 수명) 조합. Refresh 시 **�
 
 2026-10-03 부분 검증: RFC 6750/9700의 전달과 OAuth 경계, OWASP의 세션/API key 통제, RFC 7519의 JWS/JWE 구분을 대조했다. 선택 가이드는 이를 적용한 판단 기준이며 특정 앱과 모든 라이브러리의 동작을 검증한 기록은 아니다.
 
+2026-10-13 부분 검증: 비밀번호 재사용, 관리자 지원과 복구 토큰 통제를 NIST SP 800-63B-4와 OWASP에 대조했다. 기존 프로토콜 비교 전체를 재검증한 날짜는 아니다.
+
+- [NIST, SP 800-63B-4: Authentication and Authenticator Management](https://pages.nist.gov/800-63-4/sp800-63b.html)
+- [OWASP Cheat Sheet Series, Forgot Password](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html)
 - [IETF, RFC 6750: OAuth 2.0 Bearer Token Usage, §2](https://www.rfc-editor.org/rfc/rfc6750.html#section-2)
 - [IETF, RFC 7519: JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519.html)
 - [IETF, RFC 7617: The Basic HTTP Authentication Scheme](https://www.rfc-editor.org/rfc/rfc7617.html)
