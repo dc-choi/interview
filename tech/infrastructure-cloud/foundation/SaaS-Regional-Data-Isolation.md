@@ -81,6 +81,12 @@ SaaS 사례로 Qlik Cloud는 cross-region inference를 활성화하면 테넌트
 
 설계 점검 제안: 저장, 백업과 추론의 허용 위치를 따로 적고, AI 기능을 켤 때 입력에 포함되는 사용자 질문, 업무 데이터와 메타데이터의 전송 경로를 확인한다. 자체 Bedrock 호출의 로그 확인 방법을 관리형 SaaS 고객에게 그대로 요구하지 않으며, SaaS에서는 공급자가 제공하는 처리 위치와 설정 증거를 확인한다. 암호화나 일시적 처리만으로 위치 요구 충족을 판정하지 않는다.
 
+### 리전의 존재와 모델 호출 가능성을 따로 확인한다
+
+부분 검증(2026-10-14): Amazon Bedrock의 모델 가용성과 호환성 문서는 모델별 리전, endpoint와 API 지원을 별도로 안내한다. 특정 AWS 리전에 인프라가 있다는 사실만으로 원하는 모델과 호출 방식이 그 리전에서 제공된다고 판단하지 않는다. 이 절만 대조했으며 기존 `verified_at`은 유지한다.
+
+설계 점검 제안: 모델 버전, 호출 API, endpoint, 직접 처리 가능한 리전과 cross-region inference 필요 여부를 한 묶음으로 확인한다. 필요한 모델을 다른 리전에서만 쓸 수 있다면 앞 절의 데이터 처리 위치 요구와 다시 대조한다. 기능을 사용하기 위해 위치 제한을 임의로 완화하지 않고, 허용된 경계 안의 다른 모델이나 기능 범위 조정을 검토한다.
+
 ## 데이터 위치와 운영 주권의 경계
 
 데이터 저장 리전을 정하는 것과 계정, 인증, 과금, 운영 지원의 의존성을 분리하는 것은 다른 설계다. 운영 주권 요구가 있으면 업무 데이터 외에 제어 기능과 운영자 접근 경계도 확인한다.
@@ -132,6 +138,7 @@ SaaS 도입에서는 다음과 같이 책임과 증거를 연결할 수 있다(�
 
 ## 출처
 
+- [Amazon Bedrock, Model availability & compatibility](https://docs.aws.amazon.com/bedrock/latest/userguide/models.html)
 - [Amazon Bedrock, Route model inference requests across AWS Regions with cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html)
 - [Qlik Cloud, Enabling cross-region inference](https://help.qlik.com/en-US/cloud-services/Subsystems/Hub/Content/Sense_Hub/Admin/cross-region-data-processing.htm)
 - [Kubernetes, Multi-tenancy](https://kubernetes.io/docs/concepts/security/multi-tenancy/)

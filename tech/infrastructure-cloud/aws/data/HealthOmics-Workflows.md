@@ -65,7 +65,22 @@ Run manifest는 실행 완료 후 확인하고 자원 조정의 근거로 쓴다
 
 Run group으로 동시 실행과 자원 사용에 상한을 둘 수 있다. 자원 최적화는 workflow가 안정된 뒤 진행하고, 작은 입력만으로 정한 자원량이 큰 입력에서도 충분한지 확인한다. 병렬 실행이 가능하다는 사실을 무제한 자원이나 일정한 처리 시간으로 해석하지 않는다.
 
+## 실행 스토리지의 확장 방식과 파일 연산을 확인한다
+
+부분 검증(2026-10-14): HealthOmics의 run storage 공식 문서를 대조했다. Run storage는 실행 중 워크플로 엔진이 사용하는 임시 파일 시스템이며, `DYNAMIC`과 `STATIC`을 선택할 수 있다. 이 절의 저장소 동작만 확인했으므로 기존 `verified_at`은 유지한다.
+
+| 방식 | 용량과 동작 | 이전 시 확인할 것 |
+| --- | --- | --- |
+| `DYNAMIC` | 사용량에 따라 용량과 처리량을 조정하며 NFS를 사용한다 | 파일 생성, 삭제와 이름 변경의 경합을 처리해야 한다 |
+| `STATIC` | 시작할 때 지정한 고정 용량을 할당하며 Lustre를 사용한다 | 용량이 부족하면 실행이 실패할 수 있으므로 입력과 중간 산출물 크기를 추정한다 |
+
+동적 스토리지로 이전할 때는 이미 삭제된 파일의 재삭제처럼 예상 가능한 파일 상태를 처리한다. 존재하지 않는 파일이라는 이유만 허용하고 권한 오류나 다른 I/O 실패까지 성공으로 삼지 않는다. 자동 용량 조정이 워크플로 코드의 파일 연산 오류까지 해결하지는 않는다.
+
+동적 실행의 최대 사용량은 실행 후 `GetRun`의 `storageCapacity`와 run manifest에서 확인할 수 있지만, 2시간 이내에 끝난 실행에서는 값이 없을 수 있다. 누락을 사용량 0으로 해석하지 않는다. 적용 점검 제안: 같은 입력과 도구 버전으로 결과, 실행 시간과 스토리지 비용을 비교해 저장소 방식을 선택한다.
+
 ## 출처
+
+- [AWS HealthOmics, Run storage types in HealthOmics workflows](https://docs.aws.amazon.com/omics/latest/dev/workflows-run-types.html)
 
 - [How Evolvere Biosciences performs macromolecule design on AWS — AWS HPC Blog](https://aws.amazon.com/blogs/hpc/how-evolvere-biosciences-performs-macromolecule-design-on-the-aws-cloud/)
 - [Drug Discovery — AWS HealthOmics](https://aws.amazon.com/healthomics/drug-discovery/)
