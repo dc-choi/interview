@@ -116,7 +116,7 @@ Fargate 외에 **EC2 launch type**에서만 등장하는 3번째 Role.
 | Role | 부여 대상 | 용도 |
 |------|-----------|------|
 | **EC2 Instance Role** | EC2 인스턴스 | ECS Agent의 클러스터 등록, ECR pull, CloudWatch Logs |
-| **Task Execution Role** | ECS Agent (Task 시작 시) | ECR pull, Secrets, 로그 — Fargate, EC2 공통 |
+| **Task Execution Role** | ECS Agent (Task 시작 시) | Fargate의 ECR pull, Secrets, 로그 등. EC2의 일반 ECR pull은 Instance Role을 확인 |
 | **Task Role** | Task 내부 앱 | 앱이 호출하는 AWS API 권한 (S3, DynamoDB 등) |
 
 ## Service — desired count + 배포
@@ -211,6 +211,18 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 
 진단 제안: 호출 API, 리전, 클러스터와 서비스, 예외 이름을 한 묶음으로 확인한다. 컨테이너 애플리케이션이 반환한 HTTP 500을 ECS 관리 API의 `ServerException`으로 분류하지 않는다. 전자는 애플리케이션 로그와 요청 경로를, 후자는 실패한 AWS API 호출을 조사한다.
 
+### CannotPullContainerError 진단
+
+부분 검증(2026-10-13): 이미지 가져오기 오류와 지원 런북을 공식 문서와 대조했다. 앱 실행 전 이미지 확보 단계의 실패이므로 중지된 태스크의 구체적인 오류 메시지부터 확인한다.
+
+1. 태스크 정의의 이미지 저장소, 태그나 digest가 실제 레지스트리에 있는지 확인한다.
+2. ECR pull 권한은 EC2 launch type이면 **Container Instance Role**, Fargate이면 **Task Execution Role**을 확인한다. 앱의 Task Role에 권한을 더하는 것으로 대체하지 않는다.
+3. Timeout이나 연결 오류는 이미지 레지스트리까지의 경로를 조사한다. 인터넷 경로의 라우팅과 보안 규칙, VPC endpoint 구성 등을 구분한다. ECR 이미지 계층을 가져오는 S3 접근도 확인한다.
+4. `no space left on device`는 EC2 launch type이면 호스트 디스크, Fargate이면 태스크 임시 스토리지와 이미지 크기를 확인한다. Fargate Linux 플랫폼 1.4.0 이상에서는 압축된 이미지와 압축 해제한 이미지가 모두 임시 스토리지를 사용하므로 둘을 포함해 용량을 잡고, 필요하면 태스크 정의의 `ephemeralStorage`를 조정한다.
+5. `toomanyrequests`는 레지스트리의 요청 제한을 확인한다. 오류 종류를 가리지 않고 IAM 권한을 확대하지 않는다.
+
+`AWSSupport-TroubleshootECSTaskFailedToStart`는 실패한 태스크와 같은 리전에서 `ClusterName`과 가장 최근 실패한 `TaskId`를 지정한다. 네트워크, 실행 역할 권한, endpoint, 시크릿과 로그 설정을 분석한다. 네트워크 검사 과정에서 임시 Lambda와 필요한 IAM 역할을 만들 수 있으며, 자동 정리에 실패하면 수동 정리가 필요하다. 읽기 전용 조회로 간주하지 않고 실행 권한과 생성 자원을 확인한다. 여기서는 문서를 대조했으며 실제 계정에서 런북을 실행하지 않았다.
+
 ## 흔한 실수
 
 - **executionRole에만 S3 권한** — 앱이 못 씀. **taskRole이 앱 자체 권한**
@@ -233,6 +245,9 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 - Task = **컨테이너 실행 최소 단위**(1개 이상 컨테이너 묶음), Fargate면 ENI/IP까지 Task 단위
 
 ## 출처
+- [AWS, Fargate task ephemeral storage for Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html)
+- [AWS, CannotPullContainer task errors in Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_cannot_pull_image.html)
+- [AWS, AWSSupport-TroubleshootECSTaskFailedToStart](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-aws-troubleshootecstaskfailedtostart.html)
 - [AWS, Amazon ECS clusters for external instances](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-anywhere.html)
 - [Amazon ECS UpdateService — API 오류 정의](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_UpdateService.html)
 - [Amazon ECS standalone tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/standalone-tasks.html)

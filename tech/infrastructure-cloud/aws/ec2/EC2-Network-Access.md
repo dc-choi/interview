@@ -80,6 +80,23 @@ iperf3 -c SERVER_PRIVATE_IP -p 5201 -t 10 -u -b 100M
 
 시험 뒤 서버 프로세스를 종료하고 임시 보안 그룹 규칙을 제거한다. 이 결과는 테스트 경로의 네트워크 기준선이며, DB 처리나 애플리케이션 응답 시간까지 측정한 결과는 아니다.
 
+### 평균 사용률이 낮아도 한도를 넘는 경우
+
+부분 검증(2026-10-13): ENA 지표의 의미와 CloudWatch 수집 방식을 공식 문서와 대조했다. 짧은 트래픽 집중은 긴 구간의 평균에서 희석될 수 있으므로, 평균 대역폭이 낮다는 이유만으로 한도 초과를 배제하지 않는다.
+
+| ENA 지표 | 구분할 한도와 영향 |
+|---|---|
+| `bw_in_allowance_exceeded`, `bw_out_allowance_exceeded` | 인바운드, 아웃바운드 대역폭 초과로 대기하거나 버린 패킷 |
+| `pps_allowance_exceeded` | 양방향 PPS 한도 초과로 대기하거나 버린 패킷 |
+| `conntrack_allowance_exceeded` | 연결 추적 한도 초과로 새 연결을 만들지 못해 버린 패킷 |
+| `linklocal_allowance_exceeded` | Amazon DNS, IMDS, Time Sync 등 로컬 프록시 서비스의 PPS 한도 초과로 버린 패킷 |
+
+Linux에서는 실제 인터페이스 이름으로 `ethtool -S <interface>`를 실행해 지표를 확인한다. 위 초과 카운터는 드라이버가 재설정된 뒤 누적된 값이므로, 진단 시 구간별 증가량과 재설정 여부를 함께 본다. 누적값 자체를 현재 초당 손실률로 읽지 않는다.
+
+바이트 지표인 `NetworkIn`, `NetworkOut`은 기본 모니터링에서 5분, 상세 모니터링에서 1분 간격으로 제공된다. 패킷 수 지표인 `NetworkPacketsIn`, `NetworkPacketsOut`은 5분 간격만 제공되므로 상세 모니터링을 켜도 1분 지표가 되지 않는다. 상세 모니터링을 켜도 ENA 지표가 자동으로 수집되지는 않는다. Linux에서 CloudWatch로 보낼 ENA 지표는 agent 설정의 `metrics_collected.ethtool`에 따로 지정한다. 1분 지표도 그보다 짧은 피크를 그대로 보여 주는 것은 아니다.
+
+진단 제안: 지연이나 손실이 발생한 시간대의 초과 카운터를 먼저 확인하고, 대역폭, PPS와 연결 추적 중 어떤 한도인지 나눈 뒤 송신 평준화나 인스턴스 크기와 분산을 검토한다. 카운터 증가만으로 트래픽 집중의 발생 주체까지 확정하지 않는다.
+
 ## 메일 발송과 포트 25 제한
 
 이 절은 2026-10-09 AWS 공식 문서 기준이다. EC2에서 공인 주소로 SMTP 연결이 timeout이면 보안 그룹뿐 아니라 AWS의 포트 25 제한도 확인한다. 기본적으로 공인 IPv4와 IPv6 목적지로 향하는 포트 25 트래픽을 제한하지만, 출발 ENI가 속한 VPC의 primary CIDR과 RFC 1918, RFC 6598, RFC 4193 주소 범위에는 예외가 있다. 모든 사설망 SMTP 통신까지 차단된다고 일반화하지 않는다.
@@ -131,6 +148,10 @@ Linux 결과에는 백업 AMI와 새 SSH 키를 담은 SSM 파라미터의 이�
 
 ## 출처
 
+- [AWS 공식 문서, CloudWatch metrics that are available for your instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html)
+- [AWS 공식 문서, Monitor network performance for ENA settings on your EC2 instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-network-performance-ena.html)
+- [AWS 공식 문서, Manage detailed monitoring for your EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/manage-detailed-monitoring.html)
+- [AWS 공식 문서, Collect network performance metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-network-performance.html)
 - [AWS 공식 문서, Connect to your instances using a private IP address and EC2 Instance Connect Endpoint](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect-with-ec2-instance-connect-endpoint.html)
 - [AWS 공식 문서, Security groups for EC2 Instance Connect Endpoint](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/eice-security-groups.html)
 - [AWS 공식 문서, AWSSupport-ResetAccess](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-resetaccess.html)

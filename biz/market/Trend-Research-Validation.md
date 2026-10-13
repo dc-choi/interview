@@ -40,10 +40,21 @@ Google Trends 웹 화면은 실제 검색 요청의 표본을 사용한다. 지�
 - **세그먼트:** 같은 조사에서 술을 자주 마시는 그룹의 무알콜 소비도 관찰된다. 무알콜 수요를 비음주자만의 수요로 한정하면 사용 상황을 놓칠 수 있다.
 - **검증 제안:** 건강, 모임 참여, 맛처럼 선택 이유를 나누어 고객을 만나고, 실제 주문과 재구매로 제품 가설을 확인한다. 전체 주류 소비 감소가 특정 무알콜 상품의 매출 성장을 보장하지는 않는다.
 
+## 세대 이름을 구매 성향으로 바꾸기 전에
+
+세대별 트렌드에서는 **같은 시점의 연령 차이와 세대 고유의 차이를 구분**한다. 지금의 20대와 50대가 다르다는 관찰만으로 특정 세대가 평생 같은 소비 성향을 유지한다고 결론 내릴 수 없다. 세대 효과를 비교하려면 서로 다른 출생 집단이 비슷한 생애 단계에 있었을 때의 자료가 필요하며, 조사 방법과 연령 외 요인도 확인한다. 이 기준은 2026-10-13 Pew Research Center의 세대 분석 방법론과 대조했다.
+
+- 한 세대 안에서도 소득, 교육과 생활 조건이 다르므로 집단 평균을 구성원 모두의 성향으로 적용하지 않는다.
+- 과거 전화 조사와 현재 온라인 조사의 차이처럼 수집 방식이 바뀌었다면 관측 차이를 곧바로 세대 변화로 해석하지 않는다.
+- 연령별 차이는 현재 고객을 탐색할 단서로 활용할 수 있다. 장기 세대 효과를 입증하지 못했다고 현재 연령별 관측까지 버릴 필요는 없다.
+
+**사업 적용 제안:** 세대명만으로 고객을 정하기보다 해결할 문제, 이용 상황, 구매 예산과 실제 주문을 함께 확인한다. 예를 들어 중장년층의 시간 절약 수요는 인터뷰와 유료 제안으로 시험할 가설이지, 연령만으로 입증되는 구매 의향이 아니다.
+
 ## 출처
 
 - [Google Trends Help, FAQ about Google Trends data](https://support.google.com/trends/answer/4365533?hl=en)
 - [MZ세대 주류 트렌드 리포트 2026 — 오픈서베이 블로그](https://blog.opensurvey.co.kr/trendreport/mz-alcoholic-beverage-2026/)
+- [How Pew Research Center will report on generations moving forward — Pew Research Center, Kim Parker](https://www.pewresearch.org/short-reads/2023/05/22/how-pew-research-center-will-report-on-generations-moving-forward/)
 
 ## 관련 문서
 
