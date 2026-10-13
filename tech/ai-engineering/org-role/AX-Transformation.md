@@ -61,6 +61,14 @@ AX 진단은 다음 다섯 축을 함께 본다. 한 축만 움직이면 국소 
 - **AX**: 업무 재설계, 변화 관리, 교육, 평가 개편이 진짜 투자 대상
 - 사례: Atlassian은 2026년 3월 약 10% 감원을 발표하며 AI와 엔터프라이즈 영업 투자 재원을 마련하고, System of Work를 중심으로 재조직하겠다고 밝혔다.
 
+### 교육을 실제 업무 실험과 연결한다
+
+기존 구성원의 업무 지식을 활용하려면 필요한 AI 역량과 실험할 업무를 함께 정한다. 교육 이수와 실제 업무 수행 가능성을 같은 결과로 기록하지 않는다. 2026-10-13 AWS의 워크로드 평가 지침에서 필요한 기술과 지식, 교육과 워크숍, 측정 가능한 업무 목표와 실행 계획을 함께 점검하는 기준을 확인했다.
+
+운영 제안으로, 업무를 아는 구성원과 기술, 데이터, 보안 담당자가 작은 과제를 함께 고르고 허용된 데이터와 테스트 환경에서 실습한다. 산출물에는 결과의 검토 방법과 실패 시 사람에게 넘길 조건을 포함한다. 채용을 대체한다는 전제 대신 기존 인력으로 익힐 수 있는 범위와 추가 전문성이 필요한 빈칸을 확인한다. 도구 로그인 수보다 실험에서 배운 제약과 다음 업무에서 재사용할 수 있는 결과를 검토한다.
+
+이는 교육이나 내부 인력 활용의 성과 우위를 입증한 비교 연구가 아니라 조직 운영 제안이다. 코치 양성과 역량 이전 방법은 [[AI-Capability-Transfer|AI 역량 이전]]에서 다룬다.
+
 ## 문화와 시스템이 AI 효과를 좌우하는 조건
 
 AI는 조직의 병목을 자동으로 없애기보다 현재 일하는 방식을 증폭한다. DORA 2025는 전 세계 기술 종사자 약 5,000명의 설문과 100시간 이상의 정성 자료에서 AI 도입이 전달 처리량, 제품 성과와는 양의 관계를, 전달 안정성과는 음의 관계를 보였다고 보고했다. 내부 플랫폼, 명확한 업무 흐름, 팀 정렬과 빠른 피드백 같은 주변 조건이 효과를 좌우했다. 이는 관찰 연구의 관계이지 특정 도구나 문화가 성과를 만든다는 인과 증명은 아니다.
@@ -190,6 +198,8 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 - 조직 AX 성숙도 자가 진단 질문
 
 ## 출처
+- [AWS Prescriptive Guidance, Targeted business outcomes](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-workload-assessment/outcomes.html) — 2026-10-13 교육 필요, 업무 목표와 실행 계획 부분 대조
+- [Agentic AI Transformation: Workforce Strategy & Leadership — Amazon Web Services](https://www.youtube.com/watch?v=goc2yyg2eH4) — 공개 인터뷰의 인력 개발과 통합 실험 제안, 제공된 사람 자막 대조
 - [AWS Well-Architected, GENOPS01-BP01 Periodically evaluate functional performance](https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/genops01-bp01.html) — 새 모델과 맞춤화의 재평가, 최소 성능 기준과 담당자
 - [Innovation Without Friction: Lessons for the AI Era — AWS Executive Insights](https://www.youtube.com/watch?v=fldCczwjcTA) — 모델 교체 시 기존 맞춤화의 유지 문제를 제기한 공개 인터뷰
 - [AWS Prescriptive Guidance, Architecting a successful generative AI proof of concept](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-lifecycle-operational-excellence/dev-architecting.html) — 데이터 준비, 평가 기준과 기술 실현 가능성만 부분 대조

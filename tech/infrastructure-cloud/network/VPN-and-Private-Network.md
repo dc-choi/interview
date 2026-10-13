@@ -49,6 +49,18 @@ VPN이라는 이름 자체가 암호화를 보장하지도 않는다. 예를 들
 
 VPN은 물리적으로 같은 LAN을 만드는 기술로 한정되지 않는다. L3 VPN은 서로 다른 서브넷을 라우팅으로 연결할 수 있으며, 모든 브로드캐스트나 모든 내부 서비스가 원격 단말까지 확장되는 것은 아니다.
 
+## AWS Client VPN — 연결과 자원 접근을 따로 점검한다
+
+2026-10-13 AWS 공식 문서 부분 대조 기준이다. 아래 주소 설정은 IPv4 클라이언트에 해당한다. 기존 메시 VPN 제품의 요금과 정책을 이번에 다시 검증한 것은 아니다.
+
+- **주소 계획**: 클라이언트 IPv4 CIDR은 `/22`부터 `/12` 크기이며, 대상 네트워크와 VPC, 연결할 경로의 주소 대역과 겹치면 안 된다. 생성 뒤 클라이언트 주소 대역은 변경할 수 없다. 이 제한을 엔드포인트의 모든 설정이 변경 불가능하다는 뜻으로 확대하지 않는다.
+- **대상 서브넷과 경로**: 대상 서브넷을 처음 연결하면 엔드포인트가 `available` 상태가 되고 VPN 연결이 가능해진다. 서브넷 연결 시 해당 VPC의 local route가 엔드포인트 라우팅 테이블에 자동 추가된다. 인가 규칙을 추가해서 경로가 생기는 것은 아니다.
+- **인가**: 경로가 있어도 목적지 네트워크에 대한 authorization rule이 별도로 필요하다. 기본은 접근 거부이며, 규칙은 접근을 허용하는 방식이다. 특정 네트워크를 거부하는 규칙을 추가하는 방식이 아니다.
+- **가용 영역**: 복수 대상 서브넷은 서로 다른 가용 영역에 둔다. AWS는 가용 영역 이중화를 위해 두 개 이상의 서브넷 연결을 권고한다.
+- **분할 터널**: 연결할 때 엔드포인트의 경로를 클라이언트에 전달하고 그 경로에 해당하는 트래픽을 VPN으로 보낸다. 분할 터널에서 `0.0.0.0/0` 경로를 추가하면 연결 장애가 생길 수 있어 권고하지 않는다. 엔드포인트 라우팅 테이블을 수정하면 모든 클라이언트 연결이 재설정된다.
+
+운영 점검은 터널 연결, 목적지 경로, 인가 규칙, 보안 그룹과 애플리케이션 응답을 나누어 수행한다. VPN 연결 성공만으로 내부 서비스에 필요한 접근이 모두 허용됐다고 판단하지 않는다.
+
 ## 메시 VPN (오버레이 네트워크)
 
 전통적인 원격 접속 VPN은 모든 단말이 중앙 게이트웨이를 거치는 hub-and-spoke 구조다. 메시 VPN은 단말끼리 직접 암호화 터널을 맺어, 폰, 태블릿, 노트북, 데스크톱, 홈랩 서버와 NAS를 하나의 사설 네트워크처럼 묶는다. 공유기에 포트를 열거나 공인 IP를 두지 않고도 밖에서 집의 장비에 접속할 수 있어 개인 인프라와 원격 개발에 많이 쓰인다. Tailscale이 대표적인 예다.
@@ -72,16 +84,18 @@ Tailscale 공식 설명 기준 구조는 다음과 같다.
 
 ## 출처
 
-이번 참고 영상은 제공된 메모를 바탕으로 반영했으며 영상 본문과 자막은 직접 확인하지 못했다. 보완한 기술 설명은 아래 공식 자료와 대조했다.
+AWS Client VPN 절은 2026-10-13 아래 AWS 공식 문서와 대조했다. 다른 절의 검증 기준은 기존 기록을 유지한다.
 
 - [IETF, RFC 4301: Security Architecture for the Internet Protocol](https://www.rfc-editor.org/rfc/rfc4301.html)
 - [IETF, RFC 4364: BGP/MPLS IP Virtual Private Networks](https://www.rfc-editor.org/rfc/rfc4364.html)
 - [NIST, SP 800-46 Rev. 2: Guide to Enterprise Telework, Remote Access, and BYOD Security](https://csrc.nist.gov/pubs/sp/800/46/r2/final)
-- [YouTube, VPN과 프라이빗 네트워크 (제공 메모의 참고 영상)](https://www.youtube.com/watch?v=6w1F6qnPQiE&list=PLXvgR_grOs1BkUIxKsLEUdefyMWMA0_U-&index=3)
 - [How Tailscale works — Tailscale Blog](https://tailscale.com/blog/how-tailscale-works)
 - [Tailscale, Pricing](https://tailscale.com/pricing)
 - [Tailscale Docs, Key expiry](https://tailscale.com/kb/1028/key-expiry)
-- [Tailscale 추천 — Threads, dinggiiiiillll](https://www.threads.com/@dinggiiiiillll/post/Db7gzt8jNdn)
+- [AWS Client VPN, Create an AWS Client VPN endpoint](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-endpoint-create.html)
+- [AWS Client VPN, AWS Client VPN target networks](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-target.html)
+- [AWS Client VPN, AWS Client VPN authorization rules](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-rules.html)
+- [AWS Client VPN, Split-tunnel on AWS Client VPN endpoints](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/split-tunnel-vpn.html)
 
 ## 관련 문서
 
