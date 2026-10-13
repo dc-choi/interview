@@ -36,6 +36,10 @@ aliases: ["주식", "Stocks"]
 
 ## 4. 밸류에이션의 첫걸음
 
+### 이익률 하락과 이익 금액 감소를 나눈다
+
+매출총이익은 매출에서 매출원가를 뺀 금액이고, 매출총이익률은 이를 매출로 나눈 비율이다. 가상으로 매출 100, 이익률 60%이면 매출총이익은 60이다. 다음 기간에 매출이 150, 이익률이 50%라면 비율은 낮아져도 금액은 75로 늘어난다. 영업비용, 이자와 세금 등을 반영한 순이익은 또 다른 지표다. 매출총이익 증가만으로 순이익이나 주가 상승까지 확정하지 않는다. 2026-10-14 SEC의 손익계산서 설명을 대조한 산술 예시이며 특정 기업의 실적 전망은 검증하지 않았다.
+
 ### 시가총액은 주가와 주식 수를 함께 본다
 
 시가총액은 **현재 주가 × 주식 수(outstanding shares)**로 계산한다. 회사가 보유한 현금이나 한 해 매출을 뜻하지 않는다. 주식 수가 변하지 않는다는 가정에서만 시가총액의 증가율과 주가 상승률이 같다.
@@ -138,6 +142,10 @@ IPO 자료에서는 [[Startup-Equity-and-Dilution#신주와 구주: 회사에 �
 
 개별 종목이 아니라 시장 전체의 흐름을 보는 묶음이다. 코스피와 코스닥(한국), S&P500과 나스닥(미국)이 대표적이다. 지수는 시장 전반의 체온계이자, 패시브 투자의 기준이 된다 → [[Investment-Strategies|투자 전략]].
 
+### 지수의 가중 방식과 상승 종목 수를 구분한다
+
+**지수 상승과 상승 종목 수는 다르다.** 시가총액 가중 지수에서는 큰 기업의 가격 변화가 더 크게 반영되고, 유동주식 조정 방식은 거래되지 않는 대규모 지분을 가중치 계산에서 제외한다. 같은 구성 종목이라도 동일가중 방식과 수익률이 다를 수 있다. 따라서 지수 상승만으로 다수 종목이나 내 포트폴리오도 올랐다고 추정하지 않는다. 같은 기간의 구성 종목, 가중치와 상승 종목 비율을 따로 비교한다. 이는 2026-10-14 S&P Dow Jones Indices의 가중 방식 설명에서 도출한 독해 기준이며 당시 시장 수익률이나 상승 종목 비율을 확인한 기록은 아니다.
+
 ### 산업 분류와 투자 테마를 구분한다
 
 GICS는 MSCI와 S&P Dow Jones Indices가 만든 산업 분류 체계다. Sector, Industry Group, Industry, Sub-Industry의 네 단계로 나누며 기업은 주된 사업 활동에 따라 각 단계에서 하나의 분류를 부여받는다. 매출이 핵심 판단 요소이고 이익과 시장의 인식도 고려한다. 분류 체계는 정기적으로 검토되므로 과거의 분류를 영구적인 기업 속성으로 보지 않는다.
@@ -164,6 +172,8 @@ AI, 로봇이나 친환경 같은 투자 테마는 여러 산업을 가로지를
 
 ## 출처
 
+- [Beginners' Guide to Financial Statement — SEC](https://www.sec.gov/about/reports-publications/investorpubsbegfinstmtguide) — 매출총이익, 영업이익과 순이익의 구분
+- [Methodology Matters — S&P Dow Jones Indices](https://www.spglobal.com/spdji/en/research-insights/index-literacy/methodology-matters/) — 시가총액, 유동주식 조정과 동일가중 방식의 차이
 - [Updated Investor Bulletin: Investing in an IPO — SEC, Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-17) — 2026-10-14 Use of Proceeds, Selling shareholders와 최신 투자설명서 대조
 - [Consistency in Multiples — Aswath Damodaran, NYU Stern](https://pages.stern.nyu.edu/~adamodar/pdfiles/eqnotes/webcasts/multiplecalc/multiplecalc.pdf) — 2026-10-13 9쪽의 자기자본 가치/순이익과 EV/EBIT 대응을 대조
 - [Investor.gov, Market Capitalization](https://www.investor.gov/introduction-investing/investing-basics/glossary/market-capitalization) — 시가총액의 정의와 주가, 주식 수의 관계

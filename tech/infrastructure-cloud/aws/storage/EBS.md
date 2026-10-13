@@ -53,6 +53,17 @@ EC2 인스턴스에 부착되는 **블록 수준 네트워크 스토리지**. �
 
 스냅샷 자동화: **Data Lifecycle Manager (DLM)** 또는 **AWS Backup**으로 주기 백업, 보존 정책 적용.
 
+### 생성이 오래 걸리거나 pending에 머물 때
+
+2026-10-14 AWS 생성, 삭제 문서와 Knowledge Center를 대조한 진단 기준이다. 이 절의 검증일이며 기존 볼륨 유형과 성능 수치 전체를 다시 검증한 날짜는 아니다.
+
+- **전송량:** 첫 스냅샷은 볼륨에 기록된 데이터 블록 전체를, 후속 스냅샷은 변경 블록을 저장한다. 변경량이 많으면 오래 걸리므로 경과 시간만으로 실패를 판정하지 않는다. 요청 시점에 볼륨에 기록된 데이터가 대상이며 애플리케이션과 OS 캐시에만 남은 데이터는 포함하지 않는다.
+- **다중 볼륨:** 인스턴스의 여러 볼륨을 하나의 세트로 백업하면 각 스냅샷의 전송은 독립적으로 진행해도 완료는 함께 이뤄진다. 일부가 99%에서 기다릴 때는 같은 세트의 다른 스냅샷도 확인한다. EBS 기반 AMI의 진행이 느리면 연결된 스냅샷부터 살핀다.
+- **중첩 요청:** 같은 볼륨에 진행 중인 스냅샷이 있는데 다시 요청하면 후속 작업이 0%에서 대기할 수 있다. 추가 요청으로 해결하려 하지 말고 기존 작업과 동시 생성 한도를 확인한다. 여러 `pending` 작업은 볼륨 성능에도 영향을 줄 수 있다.
+- **삭제와 취소:** 진행 중 스냅샷에 삭제를 요청해도 생성이 끝난 뒤 삭제가 적용된다. 즉시 작업을 취소하거나 동시 생성 한도를 확보하는 방법으로 쓰지 않는다.
+
+정기 생성 간격은 RPO에 맞추되 이전 작업의 완료 여부도 확인한다. 간격을 줄이면 회차당 변경 블록을 줄일 수 있지만, 보존 기간과 변경량에 따른 저장 비용까지 함께 검토한다.
+
 ## EBS 암호화
 
 - **AWS KMS Key**를 사용한 AES-256 암호화
@@ -121,6 +132,9 @@ EBS는 AZ 안에서 중복 저장되므로 단일 볼륨의 일반적인 내구�
 
 ## 출처
 
+- [Why is my AMI or Amazon EBS snapshot creation slow or stuck in the pending state? — AWS re:Post](https://www.repost.aws/knowledge-center/ebs-snapshot-ec2-ami-creation-slow)
+- [Create Amazon EBS snapshots](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-creating-snapshot.html)
+- [Delete an Amazon EBS snapshot](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-deleting-snapshot.html)
 - [Amazon EBS 사용 설명서](https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html)
 - [Amazon EBS 볼륨 유형](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html)
 - [io2 Block Express 볼륨](https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html)

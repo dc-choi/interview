@@ -77,6 +77,12 @@ array expression은 많은 문맥에서 첫 원소를 가리키는 pointer로 �
 
 ## 표준 Algorithm의 정확한 계약
 
+### Container의 복잡도와 실제 처리 시간을 구분한다
+
+`std::list`는 위치를 가리키는 iterator가 주어지면 원소 하나의 삽입과 삭제가 상수 시간이다. 임의 위치에 빠르게 접근하는 기능은 없으므로, 그 위치를 찾는 순회 비용까지 없어진다는 뜻은 아니다. `std::vector`는 중간 삽입과 삭제가 선형 시간이지만, 일반적인 원소 타입은 연속 저장되어 순회할 때 캐시와 prefetch에 유리할 수 있다(`vector<bool>` 특수화는 구분한다).
+
+따라서 중간 삽입이 있다는 이유만으로 list가 전체 작업에서 빠르다고 결론 내리지 않는다. 탐색, 할당, 순회와 변경을 포함한 실제 작업을 측정하고 iterator 안정성 같은 요구도 비교한다. 이는 C++ Core Guidelines의 SL.con.2와 Per.6을 적용한 선택 기준이며, 특정 하드웨어의 성능 순위를 보장하지 않는다. 2026-10-14 이 기준과 working draft의 vector/list 계약을 대조했으며, 나머지 언어 규칙 전체를 재검증한 것은 아니다.
+
 ### 순열
 
 `std::next_permutation(first, last)`는 현재 배열을 사전식으로 바로 다음 순열로 바꾼다. 호출 전에 정렬해야만 동작하는 함수는 아니다. 다만 모든 순열을 중복 없이 사전식 첫 상태부터 열거하려면 먼저 정렬한 뒤 반환값이 `false`가 될 때까지 반복한다.
@@ -120,6 +126,9 @@ shift 횟수는 0 이상이고 승격된 왼쪽 피연산자 폭보다 작아야
 
 ## 출처
 
+- [C++ Core Guidelines, SL.con.2와 Per.6](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#slcon2-prefer-using-stl-vector-by-default-unless-you-have-a-reason-to-use-a-different-container)
+- [C++ working draft, vector overview](https://eel.is/c++draft/vector.overview)
+- [C++ working draft, list overview](https://eel.is/c++draft/list.overview)
 - 인프런 보충 강의: [(필수개념) 조합(combination)](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=123557), [2주차 개념 #4-1. 인접행렬(adjacency matrix)](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=134742), [2-G](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100331), [비트마스킹 개념 #2-3. 비트연산자 기초 (<<, >>) SHIFT](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=145028), [6-I](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=100955), [8-T](https://www.inflearn.com/courses/lecture?courseId=326485&unitId=101073)
 
 - [C++ working draft, priority_queue](https://eel.is/c++draft/priority.queue)
