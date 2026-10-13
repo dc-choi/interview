@@ -58,6 +58,18 @@ Argo CD RBAC은 Casbin 기반이다. `p, <subject>, <resource>, <action>, <objec
 
 push 기반 CI 대비 이점은 여기서 나온다. CI 러너가 클러스터 credential을 아예 갖지 않고, 클러스터에 쓰는 주체는 클러스터 안의 컨트롤러 ServiceAccount 하나로 좁혀진다. 단, 이것이 review gate가 되려면 CI 토큰이 protected production branch에 직접 push하거나 승인 없이 auto-merge할 수 없어야 한다. 러너가 PR만 만들 수 있고 해당 branch가 승인된 머지를 요구할 때에만 탈취가 곧바로 클러스터 쓰기 권한으로 이어지지 않는다. 컨트롤러 ServiceAccount 권한도 필요한 리소스로 최소화한다.
 
+## 보안 패치 — Git 밖의 렌더링과 삭제 경로
+
+2026-10-13 공식 보안 공지와 v3.5.4 릴리스 노트를 대조한 범위다. 아래 네 취약점의 패치 릴리스에는 3.3.15, 3.4.10, 3.5.4와 3.6.0-rc2가 포함된다. 실제 업그레이드는 사용하는 계열의 후속 보안 공지와 호환성도 확인한다.
+
+- **렌더링 입력 권한:** 영향받는 버전에서는 Kustomize 파일을 Git에 커밋하는 경로 외에 `POST /api/v1/applications/manifestsWithFiles`로 업로드하는 경로가 있다. 후자는 기존 Application의 `get` 권한만으로 가능하며 Git 쓰기, Application 수정이나 sync 권한을 요구하지 않는다. Jsonnet도 기존 directory Application의 조회 권한을 통한 업로드 경로가 있다.
+- **완화 범위:** 업로드 경로를 막아도 Git에 들어온 파일의 렌더링은 남는다. Kustomize remote ref 취약점은 로컬 전송 경로를 사용할 수 있어 repo-server의 외부 통신 차단만으로 막히지 않는다. Helm config home 취약점은 Kustomize의 `--enable-helm` 사용이 전제다.
+- **렌더링 결과:** Jsonnet 취약점의 임시 완화책인 `jsonnet.enable: "false"`는 `.jsonnet` 파일을 오류로 거절하는 대신 렌더링에서 제외한다. 따라서 sync 성공만 보지 말고 기대한 리소스가 생성 결과에 남아 있는지 확인한다.
+- **삭제 권한:** 패치 전 PreDelete/PostDelete hook 생성 경로는 sync 때의 AppProject 검사를 우회할 수 있다. Git에 hook을 넣는 권한, Application을 삭제하는 권한과 대상 클러스터에 대한 application-controller의 권한을 함께 제한한다. 패치는 삭제 hook에도 destination과 resource 검사를 적용한다.
+- **호환성:** v3.5.4에서는 Kustomize의 `helmGlobals.configHome`을 통한 Helm 플러그인 로딩에 의존한 빌드가 동작하지 않는다. 일반 `http`, `https`, `oci` chart 저장소는 계속 지원한다. OCI manifest가 4 MiB보다 크면 거부하므로 차트 아카이브 크기와 혼동하지 않는다.
+
+운영 점검 제안은 사용 버전 확인, 권한 경로 확인, 패치 전후 렌더링 결과 비교와 삭제 hook 검증을 분리하는 것이다. 실제 클러스터에서 재현한 결과는 아니며 기존 튜닝 기본값 전체를 다시 검증한 것도 아니다.
+
 ## CI와 CD의 경계 — desired state를 누가 쓰는가
 
 공식 best practices는 애플리케이션 코드 repo와 manifest repo를 분리하라고 권한다. 이유는 replica 수만 바꾸려는데 전체 CI 빌드를 돌릴 필요가 없다는 점, 배포 이력만 담긴 깨끗한 audit trail, 코드 커밋 권한과 프로덕션 배포 권한의 분리, 그리고 config 변경이 빌드를 유발하고 그 빌드가 다시 config를 바꾸는 무한 루프 방지다.
@@ -94,6 +106,11 @@ Argo CD Image Updater를 붙이면 registry의 새 이미지를 자동 반영할
 - Argo CD가 죽었을 때의 우회 배포 경로, 그리고 UI 장애와 배포 장애를 구분하는 시각
 
 ## 출처
+- [Argo CD v3.5.4 release notes — Argo Project](https://github.com/argoproj/argo-cd/releases/tag/v3.5.4)
+- [A Kustomize remote ref can run commands in the repo-server — Argo Project](https://github.com/argoproj/argo-cd/security/advisories/GHSA-9v9p-x54c-58gc)
+- [A Kustomize Helm config home can run commands in the repo-server — Argo Project](https://github.com/argoproj/argo-cd/security/advisories/GHSA-fw5c-w8rc-j7fx)
+- [A Jsonnet import can read files from the repo-server — Argo Project](https://github.com/argoproj/argo-cd/security/advisories/GHSA-m3vr-7329-44ww)
+- [AppProject restrictions bypassed by PreDelete/PostDelete resource hooks — Argo Project](https://github.com/argoproj/argo-cd/security/advisories/GHSA-fmxq-cgp8-87wp)
 - [Argo CD, Architecture Overview](https://argo-cd.readthedocs.io/en/stable/operator-manual/architecture/)
 - [Argo CD, Core Concepts](https://argo-cd.readthedocs.io/en/stable/core_concepts/)
 - [Argo CD, Declarative Setup](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/)

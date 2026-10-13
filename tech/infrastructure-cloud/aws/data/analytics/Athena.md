@@ -135,6 +135,17 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 변경 전후에는 같은 입력 범위에서 결과와 스캔량, 실행 시간을 대조한다(운영 점검 제안). 조인 중복이나 순위의 의미를 바꾸면서 성공한 쿼리를 동등한 최적화로 처리하지 않는다. 이 절만 추가 대조했으며 실제 AWS 계정에서 실행한 결과는 아니다.
 
+## 조회가 성공했는데 결과가 0건일 때
+
+2026-10-13 AWS 공식 문서 기준, S3 외부 테이블의 0건 결과는 데이터 부재와 읽을 경로의 불일치를 구분해 진단한다.
+
+1. **실제 객체와 LOCATION:** 테이블 위치는 끝에 `/`가 있는 S3 접두사로 지정한다. 개별 파일, wildcard와 접두사 내부의 빈 경로 `//`를 사용하지 않는다. 읽으려는 객체가 그 위치에 있는지 먼저 대조한다.
+2. **파일과 스키마:** `_`나 `.`로 시작하는 파일은 숨김 파일로 취급된다. Glue crawler의 exclude pattern은 Athena의 읽기 제외 규칙이 아니므로, 서로 다른 스키마의 파일을 제외 설정만 믿고 같은 위치에 섞지 않는다.
+3. **카탈로그 기반 파티션:** 새 Hive 호환 파티션은 `MSCK REPAIR TABLE`로 등록할 수 있다. 비호환 경로는 `ALTER TABLE ADD PARTITION`을 사용한다. `MSCK`는 사라진 파티션을 삭제하지 않으며 대소문자가 섞인 객체 경로에서는 등록하지 못할 수 있다.
+4. **Projection 기반 파티션:** 활성화하면 Athena는 해당 테이블의 Glue 파티션 메타데이터를 무시한다. 계산한 S3 위치와 실제 객체, 설정한 범위와 조회 값을 대조한다. 존재하지 않는 위치나 범위 밖 값은 오류 없이 0건을 반환할 수 있다. 기본 Hive 형태와 다른 경로는 `storage.location.template`으로 지정한다.
+
+점검할 때는 이미 존재하는 객체 한 개의 파티션 값으로 조회 범위를 좁힌다. `SHOW PARTITIONS`에 projection으로만 계산한 파티션이 보이지 않는 것은 데이터 부재의 증거가 아니다. 이 절은 문서 대조와 진단 절차이며 AWS 계정에서 실행한 검증 결과는 아니다.
+
 ## 시험 체크포인트
 
 - **S3 데이터를 SQL로 즉시 분석, 인프라 관리 없이** → **Athena**.
@@ -148,6 +159,9 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 ## 출처
 
+- [Amazon Athena, Specify a table location in Amazon S3](https://docs.aws.amazon.com/athena/latest/ug/tables-location-format.html)
+- [Amazon Athena, Troubleshoot issues in Athena](https://docs.aws.amazon.com/athena/latest/ug/troubleshooting-athena.html)
+- [Amazon Athena, MSCK REPAIR TABLE](https://docs.aws.amazon.com/athena/latest/ug/msck-repair-table.html)
 - [Amazon Athena, Optimize queries](https://docs.aws.amazon.com/athena/latest/ug/performance-tuning-query-optimization-techniques.html)
 - [Amazon Athena, Using EXPLAIN and EXPLAIN ANALYZE in Athena](https://docs.aws.amazon.com/athena/latest/ug/athena-explain-statement.html)
 - [Amazon Athena, Use partition projection with Amazon Athena](https://docs.aws.amazon.com/athena/latest/ug/partition-projection.html)

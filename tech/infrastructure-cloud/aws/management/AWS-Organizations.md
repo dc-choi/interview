@@ -57,6 +57,22 @@ SCP는 조직 외부 주체의 권한을 직접 제한하지 않는다. 외부 �
 
 운영 점검에서는 effective policy, 선택된 리소스, 실행 역할과 vault, 실제 백업 작업의 성공 여부를 각각 확인한다. 정책 배포 성공을 백업 성공으로 간주하지 않는 것이 이 구조에서 도출되는 점검 원칙이다. 이 절의 검증일은 기존 SCP, RCP 설명 전체의 재검증일이 아니다.
 
+## 태그 규격, 생성 시 필수 태그와 삭제 방지
+
+2026-10-13 AWS 공식 문서 기준, 태그 정책과 SCP는 서로 다른 조건을 통제한다. 태그 정책을 연결한 사실만으로 모든 리소스에 필수 태그가 있다고 판단하지 않는다.
+
+| 통제할 조건 | 수단과 범위 |
+|---|---|
+| 태그 키의 대소문자와 허용 값 | 태그 정책에 규격을 정의하고 지원하는 리소스 유형의 enforcement를 활성화한다. 태그가 없는 리소스와 정책에 정의되지 않은 태그는 준수 평가 대상이 아니다 |
+| 생성 요청의 필수 태그 누락 | 생성 시 태깅과 조건 키를 지원하는 API에 SCP를 적용한다. EC2에서는 `ec2:RunInstances`에 `aws:RequestTag/<키>`의 누락을 `Null` 조건으로 검사해 Deny하는 방식이 있다 |
+| 생성 후 필수 태그 삭제 | 생성 차단과 별도로 `ec2:DeleteTags` 등 삭제 작업을 제한한다. 보호할 태그와 기타 태그를 구분하고 실제 요청에서 조건이 작동하는지 검증한다 |
+
+필수 태그가 여러 개이면 각각 빠진 경우를 독립적으로 거부해야 한다. AWS의 EC2 예시는 키마다 별도 Deny statement를 둔다. 태그 정책이 태그의 존재를 강제한다거나 EC2 예시가 모든 서비스의 생성 API에 그대로 적용된다고 일반화하지 않는다.
+
+정상 요청의 IAM 권한도 필요하다. EC2 생성 요청에 태그를 포함하면 `ec2:RunInstances`뿐 아니라 `ec2:CreateTags` 권한도 평가한다. 규격에 맞는 태그를 넣고도 실패하면 SCP를 완화하기 전에 해당 권한과 요청 대상을 확인한다.
+
+테스트 계정에서는 태그 누락, 잘못된 값, 정상 값, 필수 태그 삭제와 기타 태그 변경을 나누어 확인한다(운영 점검 제안). SCP가 적용되지 않는 관리 계정이나 service-linked role의 성공 결과를 멤버 계정 일반 역할의 검증으로 대신하지 않는다. 이 절만 추가 대조했으며 실제 조직 정책을 배포하거나 실행하지 않았다.
+
 ## 적용 전 검증
 
 1. 테스트 계정과 작은 OU에서 허용해야 할 업무와 차단할 작업을 함께 실행한다.
@@ -79,6 +95,9 @@ SCP는 조직 외부 주체의 권한을 직접 제한하지 않는다. 외부 �
 
 ## 출처
 
+- [AWS, Tag policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_tag-policies.html)
+- [Amazon EC2, Grant permission to tag Amazon EC2 resources during creation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-iam-actions-tagging.html)
+- [Implement AWS resource tagging strategy using AWS Tag Policies and Service Control Policies (SCPs) — AWS](https://aws.amazon.com/blogs/mt/implement-aws-resource-tagging-strategy-using-aws-tag-policies-and-service-control-policies-scps/)
 - [AWS, Backup policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_backup.html)
 - [AWS, Backup policy syntax and examples](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_backup_syntax.html)
 - [AWS, AWS Backup and AWS Organizations](https://docs.aws.amazon.com/organizations/latest/userguide/services-that-can-integrate-backup.html)
