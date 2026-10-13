@@ -92,6 +92,16 @@ ComfyUI는 노드를 연결해 생성 단계를 구성하고 워크플로우를 
 
 문구가 정확해야 하는 최종 산출물은 배경 생성과 확정 텍스트의 후편집 합성을 나누는 방법도 검토한다. 2026-10-13 Google 공식 문서의 문구 작성과 참조 이미지 권고를 대조했다. 모델 간 한국어 성능을 실측하거나 기존 AWS 배포 지원 범위를 재검증한 것은 아니다.
 
+## 인쇄용 산출물은 재단과 색상을 추가로 검수한다
+
+생성한 이미지를 상품 라벨이나 패키지에 쓰면 화면상 품질과 인쇄 파일의 적합성을 구분한다. Avery의 제품 템플릿은 재단선, 안전 영역과 bleed 영역을 구분한다. 보존할 문구와 로고는 안전 영역 안에 두고, 가장자리까지 인쇄할 배경은 바깥 bleed 영역까지 확장한다. 여백 수치는 제품과 템플릿의 규격을 확인한다.
+
+Avery Artwork Guidelines는 실제 인쇄 크기에서의 최소 300 dpi, 글꼴과 그래픽의 포함을 요구하며, 이미지 유형에 따라 더 높은 해상도를 권한다. RGB와 CMYK를 모두 받지만 인쇄 전 색상 변환이 일어날 수 있고, 화면 교정본은 실제 인쇄색과 정확히 일치하지 않는다. 이 조건을 다른 인쇄 업체 전체의 동일한 규격으로 일반화하지 않는다.
+
+적용 제안: 배경 생성 뒤 확정 문구와 로고를 편집 가능한 레이아웃에 합성하고, 선택한 제품 템플릿에 맞춰 출력 파일을 검사한다. 브랜드 색상이 중요하면 실제 인쇄 교정본을 검토한다. 생성 성공, 인쇄 파일 검사와 최종 인쇄 승인에 서로 다른 완료 기준을 둔다.
+
+2026-10-13 Avery의 bleed, 안전 영역과 artwork 공식 가이드를 대조했다. 실제 인쇄나 특정 생성 모델의 브랜드 일관성을 시험한 것은 아니며 기존 AWS 배포 지원 범위의 검증일은 유지한다.
+
 ## 검수 기준
 
 아래는 상품 이미지 업무에 적용할 점검 기준이다.
@@ -105,6 +115,8 @@ ComfyUI는 노드를 연결해 생성 단계를 구성하고 워크플로우를 
 
 ## 출처
 
+- [Avery, What are the Bleed and the Safe Areas?](https://www.avery.com/help/article/what-are-the-bleed-and-the-safe-areas)
+- [Avery, Artwork Guidelines](https://www.avery.com/custom-printing/resources/artwork-guidelines)
 - [Hugging Face Diffusers, LoRA](https://huggingface.co/docs/diffusers/main/en/training/lora)
 - [Hugging Face Diffusers, DreamBooth](https://huggingface.co/docs/diffusers/main/en/training/dreambooth)
 - [Amazon SageMaker AI, Schedule Pipeline Runs](https://docs.aws.amazon.com/sagemaker/latest/dg/pipeline-eventbridge.html)

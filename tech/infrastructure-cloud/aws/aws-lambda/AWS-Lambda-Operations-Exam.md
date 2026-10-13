@@ -45,6 +45,10 @@ verified_at: 2026-09-30
 - **CloudWatch Alarm 자동화** — 알람 → Lambda → Slack, PagerDuty
 - **에이전트 도구** — AgentCore Gateway → Lambda (MCP 도구 호출을 함수 호출로 변환)
 
+S3 처리에서는 입력과 출력 경로를 분리한다. 객체 업로드 알림으로 실행된 함수가 같은 알림 조건에 맞는 객체를 다시 쓰면 자신을 재호출하는 루프가 생길 수 있다. 입력과 출력 버킷을 나누거나, 입력용 prefix에만 알림을 걸고 출력 객체는 그 범위 밖에 저장한다.
+
+부분 검증(2026-10-13): AWS의 S3 이벤트 통합 가이드에서 비동기 호출과 위 재귀 방지 구성을 확인했다. 배포 점검 제안: 입력 업로드가 처리를 시작하는지와 결과 저장이 같은 처리를 다시 시작하지 않는지를 따로 확인한다. 실제 배포 시험이나 기존 절 전체의 재검증은 수행하지 않았다.
+
 ### 기존 HTTP 서버를 Lambda Web Adapter로 옮기기
 
 2026-10-13 공식 저장소와 Lambda 모범 사례 대조 기준이다. Lambda Web Adapter는 Express 같은 HTTP 웹 애플리케이션을 Lambda에서 실행하도록 연결한다. API Gateway REST/HTTP API, Function URL과 ALB를 진입점으로 지원한다. HTTP 프레임워크를 유지할 수 있다는 사실이 세션, 권한과 운영 조건까지 그대로 유지된다는 뜻은 아니다.
@@ -201,6 +205,7 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 
 ## 출처
 
+- [Process Amazon S3 event notifications with Lambda](https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html)
 - [Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html)
 - [Avoiding pinning an RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-pinning.html)
 - [Understanding techniques to reduce AWS Lambda costs in serverless applications — AWS](https://aws.amazon.com/blogs/compute/understanding-techniques-to-reduce-aws-lambda-costs-in-serverless-applications/)
