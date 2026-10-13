@@ -168,6 +168,17 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 
 `Redirect HTTP to HTTPS`도 모든 HTTP 요청을 리디렉션하지는 않는다. GET/HEAD는 301, HTTP/1.1 이상의 POST/PUT/DELETE/OPTIONS/PATCH는 307이며, 뒤의 메서드를 HTTP/1.0으로 보내면 403이다. 장애를 없애려고 HTTP 허용 범위를 넓히기 전에 요청 프로토콜과 정책을 맞춘다.
 
+## Origin failover의 메서드와 요청별 전환
+
+2026-10-13 공식 origin failover 문서 대조 기준이다. 기본 origin 우선순위 방식에서는 primary와 secondary 두 origin을 그룹으로 묶고 cache behavior에 연결한다. 캐시 hit는 캐시에서 응답하고, miss는 먼저 primary로 보낸다.
+
+- primary가 지정한 실패 상태 코드를 반환하면 secondary로 다시 요청한다. 연결 실패는 failover 코드에 `503`, 응답 timeout은 `504`가 설정되어 있어야 전환한다.
+- 전환 대상 메서드는 `GET`, `HEAD`, `OPTIONS`다. `OPTIONS`는 behavior의 캐시 대상 메서드에도 포함해야 한다. `POST`와 `PUT` 같은 쓰기 요청에는 이 전환이 적용되지 않는다.
+- 직전 요청이 secondary로 전환됐어도 다음 cache miss는 다시 primary를 시도한다. 한 번의 실패로 이후 트래픽 전체를 secondary에 고정하는 방식이 아니다.
+- 연결 timeout과 시도 횟수는 전환 대기 시간에 영향을 준다. 장애 전환 설정만으로 즉시 복구를 보장하지 않는다.
+
+운영 검증 제안: 캐시 miss에서 primary 연결 실패, 응답 지연과 지정 상태 코드를 나누어 재현하고, GET과 POST의 결과를 구분한다. 쓰기 API의 복구 경로와 중복 처리 방지는 별도로 설계한다. 이 절은 문서 대조이며 실제 장애 전환 시험 결과는 아니다.
+
 ## 시험, 면접 체크포인트
 
 - **CDN의 두 가지 효과**: 지리적 근접성(지연 ↓) + Origin 부하 분산
@@ -182,6 +193,7 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - 지원되는 AWS origin → CloudFront 전송은 별도 데이터 전송 요금 없음, Shield Standard 포함
 
 ## 출처
+- [AWS 공식 문서, Optimize high availability with CloudFront origin failover](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html)
 - [Storyblok, Caching](https://www.storyblok.com/docs/concepts/caching)
 - [AWS 공식 문서, Control the cache key with a policy](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html)
 - [AWS 공식 문서, Add CloudFront request headers](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-cloudfront-headers.html)

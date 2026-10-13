@@ -45,6 +45,17 @@ verified_at: 2026-09-30
 - **CloudWatch Alarm 자동화** — 알람 → Lambda → Slack, PagerDuty
 - **에이전트 도구** — AgentCore Gateway → Lambda (MCP 도구 호출을 함수 호출로 변환)
 
+### 기존 HTTP 서버를 Lambda Web Adapter로 옮기기
+
+2026-10-13 공식 저장소와 Lambda 모범 사례 대조 기준이다. Lambda Web Adapter는 Express 같은 HTTP 웹 애플리케이션을 Lambda에서 실행하도록 연결한다. API Gateway REST/HTTP API, Function URL과 ALB를 진입점으로 지원한다. HTTP 프레임워크를 유지할 수 있다는 사실이 세션, 권한과 운영 조건까지 그대로 유지된다는 뜻은 아니다.
+
+- ZIP 배포는 adapter layer, `AWS_LAMBDA_EXEC_WRAPPER=/opt/bootstrap`과 서버 시작 스크립트 handler를 구성한다. 컨테이너 배포는 adapter를 `/opt/extensions/`에 포함한다.
+- 기본 트래픽 포트는 `8080`, readiness 경로는 `/`다. `AWS_LWA_PORT`, `AWS_LWA_READINESS_CHECK_PATH` 등을 실제 서버 설정에 맞춘다.
+- 기본 HTTP readiness 성공 범위는 `100-499`라서 404도 준비 완료로 판정될 수 있다. 전환 점검 제안: 전용 준비 상태 경로와 `AWS_LWA_READINESS_CHECK_HEALTHY_STATUS`를 설정하고, 의존 서비스가 준비되지 않은 상태도 시험한다.
+- 실행 환경 재사용은 DB 연결 초기화 비용을 줄이는 데 활용할 수 있지만 사용자 데이터를 그 환경에 저장하면 호출 사이에 유출될 수 있다. 기존 서버의 메모리 세션과 사용자별 전역 변수를 점검한다.
+
+전환 검증 제안: 로그인 연속 요청, 서로 다른 사용자 요청, 초기화 지연과 DB 연결 부하를 각각 검사한다. adapter가 시작됐다는 사실만으로 기존 웹 서비스의 기능과 격리가 보존됐다고 판정하지 않는다. 실제 배포 시험은 수행하지 않았다.
+
 ### 웹 API의 세 가지 권한 경계
 
 2026-10-13 Lambda의 API Gateway 통합과 실행 역할 공식 문서 대조 기준이다. API Gateway, Lambda와 DynamoDB를 연결할 때는 다음 권한을 따로 확인한다.
@@ -178,6 +189,8 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 
 ## 출처
 
+- [AWS Lambda Web Adapter — AWS](https://github.com/aws/aws-lambda-web-adapter)
+- [Best practices for working with AWS Lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html)
 - [Designing Lambda applications](https://docs.aws.amazon.com/lambda/latest/dg/concepts-application-design.html)
 - [Introduction to using sam sync to sync to AWS Cloud](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/using-sam-cli-sync.html)
 - [Use direct service integrations to optimize your architecture — AWS](https://aws.amazon.com/blogs/architecture/use-direct-service-integrations-to-optimize-your-architecture/)

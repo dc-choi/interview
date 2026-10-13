@@ -61,6 +61,16 @@ attachment의 **association**은 들어온 패킷이 조회할 테이블을, **p
 
 운영 검증 제안: 온프레미스의 AWS 방향 경로 선택, DX gateway allowed prefixes와 양쪽 통신을 함께 확인한다. 장애 감지와 경로 전환 뒤 실제 통신 복구를 시험하며, TGW 테이블 설정만으로 종단 간 failover 성공을 선언하지 않는다.
 
+## 리전 간 피어링의 경로와 DNS 경계
+
+2026-10-13 공식 peering attachment 문서 대조 기준이다. TGW는 같은 리전과 다른 리전의 TGW를 피어링할 수 있으며, 다른 계정과도 연결할 수 있다. 상대 TGW 소유자가 요청을 수락한 뒤 peering attachment를 향하는 정적 경로를 구성한다. 피어링 연결 생성만으로 상대 리전의 목적지 경로가 자동 완성되지는 않는다.
+
+- 경로 검증 제안: 양쪽 TGW 테이블의 상대 CIDR 경로와 반환 경로, 각 VPC subnet의 TGW 방향 경로를 함께 검사한다. attachment 상태와 실제 종단 간 통신 성공을 구분한다.
+- 다른 리전의 Route 53 Resolver를 이용해 피어링 양쪽 VPC의 public/private IPv4 DNS hostname을 private IPv4 주소로 해석하는 기능은 TGW peering에서 지원하지 않는다. IP 경로 연결과 DNS 해석을 별도 항목으로 검사한다.
+- inter-Region peering은 리전 간 트래픽을 가상 네트워크 계층에서 AES-256으로 암호화한다. AWS의 물리 통제 밖 링크에는 물리 계층 암호화도 적용된다. 이 설명을 같은 리전의 모든 TGW 경로에 그대로 확대하지 않는다.
+
+여러 리전으로 늘릴 때는 연결 개수뿐 아니라 정적 경로 변경과 DNS 운영 범위를 비교한다. 정책 기반 글로벌 연결로 전환하는 절차는 [[Cloud-WAN-Migration|Cloud WAN 마이그레이션]]을 참고한다. 실제 네트워크 구성이나 장애 시험을 수행한 기록은 아니다.
+
 ## 계정 간 공유 — AWS RAM
 
 - 단일 TGW를 여러 AWS 계정이 공유 어태치먼트로 사용 가능
@@ -101,6 +111,7 @@ attachment의 **association**은 들어온 패킷이 조회할 테이블을, **p
 
 ## 출처
 
+- [AWS, Transit gateway peering attachments in AWS Transit Gateway](https://docs.aws.amazon.com/vpc/latest/tgw/tgw-peering.html)
 - AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)
 - [AWS, Transit Gateway quotas](https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-quotas.html)
 - [AWS, How Transit Gateway works](https://docs.aws.amazon.com/vpc/latest/tgw/how-transit-gateways-work.html)
