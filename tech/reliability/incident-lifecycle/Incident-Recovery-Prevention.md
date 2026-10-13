@@ -113,6 +113,14 @@ Unified Operations의 해결 효과는 확보한 맥락에 영향을 받는다. 
 
 운영 적용 제안: 내부 감지, 공급자 문의, 최초 응답, 완화와 복구 완료 시각을 따로 기록한다. 문의에는 영향 범위, 발생 시각, 최근 변경과 관측 근거를 준비하고, 지원을 기다리는 동안 실행할 내부 런북과 담당자를 정한다. 지원 플랜 가입만으로 애플리케이션 복구 목표가 충족됐다고 판단하지 않는다. 이번 확인은 문서 대조이며 실제 지원 요청과 응답 시간을 시험하지 않았다.
 
+### AI 지원, 기술 응답과 보안 사고 지원의 범위를 나눈다
+
+2026-10-14 AWS Support 가이드와 Business Support+ 제품 안내 대조 기준이다. Basic의 계정, 청구와 서비스 할당량 지원을 프로덕션 기술 장애 지원과 구분한다. Business Support+는 생성형 AI의 맥락 기반 응답과 24시간 지원 엔지니어 접근을 제공한다. **30분 미만 사람 응답은 business-critical system down 등급에 대한 안내**이며 모든 문의의 응답 시간이 아니다. 제품 안내에는 최초 요청에 해당 시간 내 응답하도록 합리적인 노력을 다한다는 조건이 있다.
+
+Enterprise Support는 지정 TAM과 AWS Security Incident Response 접근을 추가로 제공한다. 보안 사고 지원은 계정 탈취, 데이터 유출과 랜섬웨어 등의 준비, 대응과 복구 지침을 다룬다. 일반 기술 장애 문의와 보안 사고 대응 경로를 같은 것으로 취급하지 않는다.
+
+운영 적용 제안: AI가 제시한 진단, 사람의 최초 기술 응답과 실제 복구를 별도로 기록한다. 외주 서비스의 운영 인수인계에는 가입 플랜, 심각도 기준, 문의 권한과 보안 사고 연락 경로를 함께 남긴다. AI 응답을 받았다는 사실만으로 원인 확인이나 지원 엔지니어 연결이 완료됐다고 판단하지 않는다.
+
 ## 면접포인트
 - "장애 경험?" → 감지 → 대응 → Root Cause → 재발 방지까지 전체 사이클로 답변
 - "사람 의존 vs 시스템 의존?" → 수동 대응을 자동화로 전환한 경험
@@ -127,6 +135,8 @@ Unified Operations의 해결 효과는 확보한 맥락에 영향을 받는다. 
 - [AWS Well-Architected, Conduct game days regularly](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_testing_resiliency_game_days_resiliency.html)
 - [AWS Unified Operations — AWS](https://aws.amazon.com/premiumsupport/plans/unified-operations/)
 - [AWS Enterprise Support — AWS](https://aws.amazon.com/premiumsupport/plans/enterprise/) — 2026-10-14 최초 응답 조건과 TAM 역할 대조
+- [AWS Support, AWS Support Plans](https://docs.aws.amazon.com/awssupport/latest/user/aws-support-plans.html) — Basic, 기술 지원과 보안 사고 지원의 범위
+- [AWS Business Support+ — AWS](https://aws.amazon.com/premiumsupport/plans/business-plus/) — business-critical 최초 응답 조건
 
 ## 관련 문서
 
