@@ -95,6 +95,7 @@ AWS의 **CDN(Content Delivery Network) 서비스**. HTTP/HTTPS origin의 캐시 
 
 - Distribution 단위로 **Allowlist / Blocklist** 국가 지정
 - 지정 국가 IP는 응답 거부 (라이선스, 규제, 차단 대응)
+- 2026-10-13 WAF 문서 대조: geo restriction이 거부한 요청은 AWS WAF로 전달되지 않고 허용한 요청만 전달된다. 지리 조건을 다른 WAF 조건과 결합하려면 geo restriction 대신 WAF geo match를 쓴다([[WAF-Bot-Control#지리 조건과 사이트별 정책|WAF 지리 조건]])
 
 ### Signed URL / Signed Cookie
 
@@ -173,7 +174,7 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 
 - **HTTPS / HTTP/2 / HTTP/3** 기본 지원
 - alternate domain name에 ACM 인증서를 연결할 때는 **us-east-1(N. Virginia)** 리전에서 발급 또는 import. 기본 CloudFront 도메인은 기본 인증서를 사용할 수 있음
-- **AWS WAF 연동** — L7 공격 필터
+- **AWS WAF 연동** — L7 공격 필터. 2026-10-13 AWS Security Blog 대조: 앞단 WAF가 넣은 `x-amzn-waf-` 헤더는 캐시 키 계산과 CloudFront Functions에서 쓸 수 있다([[WAF-Bot-Control|WAF Bot Control]])
 - **AWS Shield Standard 자동 포함** — L3/L4 DDoS 방어 (Advanced는 유료)
 - **Field-Level Encryption** — 민감 필드만 추가 암호화하여 Origin까지 전달
 
@@ -254,6 +255,9 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - [AWS 공식 문서, OAC로 S3 origin 접근 제한](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)
 - [AWS 공식 문서, Signed URL trusted signer](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html)
 - [AWS 공식 문서, CloudFront cache expiration](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html)
+- [AWS 공식 문서, Geographic match rule statement](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-geo-match.html)
+- [AWS 공식 문서, Using AWS WAF with Amazon CloudFront](https://docs.aws.amazon.com/waf/latest/developerguide/cloudfront-features.html)
+- [Do more with AWS WAF labels using dynamic label interpolation — AWS Security Blog](https://aws.amazon.com/blogs/security/do-more-with-aws-waf-labels-using-dynamic-label-interpolation/)
 
 ## 관련 문서
 - [[CDN|CDN 일반 개념, S3+CloudFront 정적 배포]]
@@ -262,3 +266,4 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - [[AWS-Lambda|Lambda@Edge]]
 - [[VPC|VPC]]
 - [[IAM|IAM (Signed URL, OAC 정책)]]
+- [[WAF-Bot-Control|WAF Bot Control (봇 label 헤더와 캐시 분리)]]

@@ -1,5 +1,5 @@
 ---
-tags: [ai, saas, multi-tenancy, rag, bedrock, isolation]
+tags: [ai, saas, multi-tenancy, rag, bedrock, isolation, sagemaker, marketplace]
 status: done
 verified_at: 2026-10-07
 category: "AI엔지니어링(AIEngineering)"
@@ -33,6 +33,22 @@ SaaS Anywhere는 데이터나 애플리케이션 일부를 고객 환경에 배�
 | Remote Application Plane | 애플리케이션 전체와 저장소 | 공통 관리 계층 |
 
 고객 계정에 옮기면 온보딩 권한, 업데이트, 계정 간 관측과 장애 대응의 책임을 함께 정해야 한다. 배치 범위는 고객 환경에 있어야 하는 자원으로 좁힌다. 생성형 AI에 적용할 때는 원본 저장소 위치 외에 검색 결과가 전달되는 추론 경로와 로그도 따로 확인한다(설계 점검). 저장소만 고객 계정에 둔 사실은 모델로 데이터가 전달되지 않는다는 보장이 아니다.
+
+## 공급자와 고객이 데이터와 가중치를 서로 넘기지 않는 모델 제공
+
+모델 공급자가 고객 데이터로 추론하거나 미세조정해 주는 사업에서는 고객이 학습과 추론 데이터를, 공급자가 가중치와 학습 코드를 서로 넘기기 어렵다. AWS Marketplace를 거쳐 고객 계정의 SageMaker AI에서 실행하는 모델과 알고리즘 제품은 두 방향을 함께 막는 배치의 예다. 다만 구매자 데이터로 학습하는 알고리즘 제품에서 학습된 가중치의 보호는 판매자의 산출물 암호화에 달려 있다(2026-10-13 AWS 공식 문서 대조).
+
+- **양방향 보호:** 제품은 구매자 계정의 SageMaker AI에서 실행되므로 판매자는 구매자의 추론 데이터에 접근할 수 없다. 구매자는 AWS 서비스 endpoint로만 제품을 쓰며 판매자가 게시한 컨테이너 이미지와 모델 패키지 아티팩트를 직접 가져가거나 기반 인프라에 접근할 수 없다. SageMaker JumpStart의 독점 모델도 가중치와 스크립트를 보여 주지 않는다.
+- **네트워크 격리:** Marketplace 리소스로 학습과 추론을 하려면 network isolation이 필수다. 컨테이너는 인터넷, VPC endpoint와 S3를 포함한 어떤 서비스로도 나가는 호출을 할 수 없고 AWS 자격 증명도 받지 않는다. S3 입출력은 SageMaker AI가 컨테이너 밖에서 작업을 만든 구매자의 실행 역할로 처리하며, VPC와 함께 쓰면 데이터와 아티팩트의 내려받기와 올리기가 구매자 VPC 서브넷을 거친다. 그래서 공급자는 의존성을 이미지에 넣어야 하고, 학습 산출물을 암호화한다면 그 키도 이미지에 넣어야 한다.
+- **이 배치의 대가:** Marketplace 모델과 알고리즘은 네트워크 연결이 필요한 Serverless Inference endpoint에 배포할 수 없다. 실시간 endpoint의 호출당 한도(입력 25MB, 처리 60초, 스트리밍 응답 8분)는 SageMaker AI의 일반 실시간 추론 한도와 같은 값이라 이 배치만의 대가로 보지 않는다.
+- **학습 산출물:** 알고리즘 제품으로 구매자 데이터를 학습하면 모델 아티팩트는 구매자가 정한 S3 경로에 저장되고, 구매자는 판매자의 추론 이미지로 그 모델을 배포한다. AWS는 아티팩트에 담긴 판매자의 지식재산을 보호하려면 출력 전에 암호화하라고 권하지만 강제하지 않는다. 암호화하지 않은 산출물은 구매자 계정에 읽을 수 있는 형태로 남는다(문서에서 도출).
+- **과금:** 판매자가 정한 소프트웨어 요금에 사용한 인스턴스 기준의 SageMaker AI 인프라 요금이 더해진다. 세부 요금 방식은 Marketplace 머신러닝 상품 요금 문서를 따른다.
+
+다음은 이 배치를 고를 때의 설계 점검이다.
+
+- 판매자가 산출물을 암호화했다면 고객 데이터로 만든 모델이라도 판매자 이미지 없이는 쓰지 못할 수 있다. 반대로 암호화하지 않았다면 학습된 가중치가 구매자 쪽에 남는다. 어느 쪽인지와 구독 해지 뒤의 사용, 이전과 삭제 조건을 계약에서 확인한다.
+- 앞의 고객 계정 배치는 제공자의 관리 계층이 고객 환경을 운영하지만, 이 배치는 런타임의 외부 연결 자체를 막는다. 품질 감시와 장애 분석을 구매자 계정의 로그와 지원 절차로 설계한다.
+- 네트워크 격리는 판매자 컨테이너가 데이터를 밖으로 보내는 경로를 막을 뿐이다. 구매자 계정 안의 저장 위치, 권한과 로그 보관은 구매자가 따로 통제한다. 미세조정한 모델이 학습 데이터를 재현할 위험은 [[Bedrock-Private-Access#모델 커스터마이징의 저장소와 암호화 키를 나눈다|Bedrock 모델 커스터마이징]]을 참고한다. Bedrock 사용자 지정 모델과 산출물 저장 위치는 다르므로 재현 위험의 원리만 적용한다.
 
 ## 검색 전에 테넌트 범위를 확정한다
 
@@ -78,6 +94,7 @@ API Gateway REST API의 usage plan은 요청 수 기반이며 throttling과 quot
 - 정상 로그인한 고객이 다른 테넌트 ID로 검색하면 어느 계층이 차단하는가?
 - 전용 knowledge base를 두어도 공유 collection의 성능 경합이 남는 이유는 무엇인가?
 - 요청 수 제한을 통과한 긴 프롬프트와 반복 호출의 비용을 어떻게 계측하고 제한하는가?
+- 공급자는 가중치를, 고객은 데이터를 넘기지 않으려 할 때 어떤 배치가 두 조건을 함께 만족하며, 그 대가로 무엇을 포기하는가?
 
 ## 출처
 
@@ -88,9 +105,18 @@ API Gateway REST API의 usage plan은 요청 수 기반이며 throttling과 quot
 - [AWS, SaaS Architecture Fundamentals: Tenant isolation](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/tenant-isolation.html)
 - [Multi-tenant RAG with Amazon Bedrock Knowledge Bases — AWS](https://aws.amazon.com/blogs/machine-learning/multi-tenant-rag-with-amazon-bedrock-knowledge-bases/)
 - [Amazon API Gateway, Usage plans and API keys for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html)
+- [AWS Marketplace, Security and intellectual property with Amazon SageMaker AI](https://docs.aws.amazon.com/marketplace/latest/userguide/ml-security-and-intellectual-property.html) — 2026-10-13 구매자 계정 실행, 이미지와 아티팩트 비공개, 산출물 저장 위치와 암호화 키 포함을 대조했다.
+- [AWS Marketplace, Service restrictions and quotas for machine learning products](https://docs.aws.amazon.com/marketplace/latest/userguide/ml-service-restrictions-and-limits.html) — 2026-10-13 Serverless Inference 배포 불가와 호출당 입력, 처리 시간 상한을 대조했다.
+- [Amazon SageMaker AI, Inference options](https://docs.aws.amazon.com/sagemaker/latest/dg/deploy-model-options.html) — 실시간 추론의 일반 입력과 처리 시간 한도
+- [AWS Marketplace, Machine learning product pricing](https://docs.aws.amazon.com/marketplace/latest/userguide/machine-learning-pricing.html) — 판매자 소프트웨어 요금과 구매자 인프라 요금의 구성
+- [Amazon SageMaker AI, Run Training and Inference Containers in Internet-Free Mode](https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html) — 2026-10-13 Marketplace 리소스의 network isolation 필수, 자격 증명 미제공과 S3 입출력 처리를 대조했다.
+- [AWS, Amazon SageMaker AI FAQs](https://aws.amazon.com/sagemaker/ai/faqs/) — 2026-10-13 판매자와 구매자 사이 데이터와 가중치 비공유, 독점 모델의 가중치 비공개와 과금 구성을 대조했다.
+- [\[Keynote\] Game-Changing Generative AI for Games — Amazon Web Services Korea](https://www.youtube.com/watch?v=vrLANVrx8KM) — 고객 데이터와 공급자 노하우를 서로 넘기기 꺼리는 문제 제기를 계기로 삼았다. 해결 구조는 위 공식 문서로 정리했다.
 
 ## 관련 문서
 
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]]
 - [[LLM-Application-Security|LLM 애플리케이션 보안]]
 - [[LLM-Cost-Optimization|LLM 비용 최적화]]
+- [[Bedrock-Private-Access|Bedrock 비공개 연결]]
+- [[Data-Flywheel-Moat|데이터 플라이휠과 해자]]

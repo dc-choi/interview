@@ -115,6 +115,17 @@ Private Subnet에서 S3를 자주 쓰면 Gateway Endpoint 설정만으로도 NAT
 
 운영 점검 제안: 터널 하나의 중단과 고객 장비 하나의 중단을 별도 장애 시나리오로 둔다. 각각 실제 트래픽의 전환과 복구를 확인한다. 전용선의 백업으로 VPN을 사용할 때도 백업 경로 존재와 전환 성공을 구분한다.
 
+### 이전 과도기에 계층을 나눠 둘 때
+
+부분 검증(2026-10-13): AWS Prescriptive Guidance의 wave 계획 문서와 Direct Connect 요금 페이지를 대조했다. 아래 내용만 추가 검증했으므로 기존 `verified_at`은 유지한다. 의존성 판정과 move group, wave 구성 자체는 [[Cloud-Migration-Strategies|클라우드 마이그레이션 전략]]을 따르고, 이 절은 그 과도기에 회선이 맡는 조건만 다룬다.
+
+- 앱 서버를 먼저 AWS로 옮기고 DB는 온프레미스에 둔 채 Direct Connect나 VPN으로 잇는 과도기 구성은 두 계층의 의존이 위치와 무관할 때만 성립한다. 같은 로컬 네트워크에서 동작하던 두 시스템이라도 앱 서버와 DB 사이 통신이 낮은 지연에 크게 의존하면 위치에 묶인 의존(hard dependency)이라, 한쪽만 옮기면 해결할 수 없는 기능이나 성능 문제가 생긴다. 이런 계층은 함께 전환한다. 지연 허용치는 네트워크 데이터만으로 판단하기 어려우므로 애플리케이션 담당자와 확인한다.
+- 요청 하나가 DB를 순차로 여러 번 왕복하는 경로에서는 회선 RTT 증가분이 왕복 횟수만큼 쌓인다(설계 해석). 병렬로 보내거나 한 번에 묶는 쿼리는 그만큼 쌓이지 않는다. 운영 제안으로, 대표 요청의 쿼리 수와 실제 회선 RTT를 리허설로 측정하고 순차 왕복이 많은 경로는 분리 전에 줄이거나 DB와 함께 옮긴다.
+- Active Directory, 백업과 모니터링 같은 공유 서비스는 모든 앱이 의존해 이전 묶음을 판정할 때는 빼지만, 과도기에는 AWS로 옮긴 서버도 계속 써야 한다. 회선을 통해 인증, DNS, 백업과 모니터링이 동작하는지 확인하거나 첫 이전 전에 AWS 쪽 landing zone에 준비한다(설계 제안).
+- Direct Connect 요금은 연결 용량, 포트 시간과 AWS에서 나가는 전송량으로 정해진다. 포트 시간은 데이터가 흐르지 않아도 청구되고, 나가는 전송 단가는 출발 리전이나 Local Zone과 DX 위치에 따라 다르며, 들어오는 전송은 모든 DX 위치에서 GB당 0달러다. Direct Connect 파트너나 회선 사업자의 요금은 이 요금에 포함되지 않는다(2026-10-13 요금 페이지 기준, 회선 구성 비용은 [[Direct-Connect-SiteLink|Direct Connect SiteLink]] 참고). 과도기가 길어질수록 포트 비용과 양쪽 운영 부담이 쌓이므로 종료 조건을 함께 정한다(운영 제안).
+
+운영 점검 제안: 서버를 먼저 옮기고 DB를 나중에 옮긴 사례가 있어도 이를 일반적인 순서로 삼지 않는다. 계층 사이 의존의 성격과 측정한 지연으로 판단한다. DB 전환과 롤백은 [[RDS-Zero-Downtime-Migration|RDS 무중단 마이그레이션]]을 따른다.
+
 ## 출처
 
 - [Amazon SageMaker AI networking — notebook instance의 기본 경로와 direct internet access](https://docs.aws.amazon.com/sagemaker/latest/dg/appendix-notebook-and-internet-access.html)
@@ -136,8 +147,14 @@ Private Subnet에서 S3를 자주 쓰면 Gateway Endpoint 설정만으로도 NAT
 - [Amazon VPC pricing — Gateway Endpoint 무과금, NAT Gateway 요금](https://aws.amazon.com/vpc/pricing/)
 - [AWS PrivateLink pricing — Interface Endpoint AZ별 시간 요금, 데이터 처리 요금](https://aws.amazon.com/privatelink/pricing/)
 - [Encryption in AWS Direct Connect — 기본 미암호화, MACsec, DX 위 VPN](https://docs.aws.amazon.com/directconnect/latest/UserGuide/encryption-in-transit.html)
+- [AWS Prescriptive Guidance wave planning — 위치에 묶인 의존과 지연 허용치 판단](https://docs.aws.amazon.com/prescriptive-guidance/latest/application-portfolio-assessment-guide/wave-planning.html)
+- [AWS Direct Connect pricing — 연결 용량, 포트 시간과 나가는 전송량 과금, 파트너 요금 별도](https://aws.amazon.com/directconnect/pricing/)
+- [\[Keynote\] 네오위즈의 클라우드 여정 Evolution for NEOWIZ — Amazon Web Services Korea](https://www.youtube.com/watch?v=2wqU_KDCLxk)
 
 ## 관련 문서
 
 - [[RDS-Security-Group|RDS 보안 그룹 구성]]
 - [[VPC-NAT-Security|NAT, 보안 그룹과 NACL]]
+- [[Cloud-Migration-Strategies|클라우드 마이그레이션 전략]]
+- [[RDS-Zero-Downtime-Migration|RDS 무중단 마이그레이션]]
+- [[Direct-Connect-SiteLink|Direct Connect SiteLink]]

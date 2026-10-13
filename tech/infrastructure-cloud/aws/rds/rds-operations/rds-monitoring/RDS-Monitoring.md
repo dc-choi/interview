@@ -17,6 +17,7 @@ RDS는 관리형이지만 **운영 책임은 여전히 우리에게 있다.** �
 
 ## 관련 문서
 
+- [[MySQL-Synch-Wait-Events|MySQL SYNCH 대기 이벤트]] — DB Load의 synch 대기 해석, Enhanced Monitoring 1초 확인, innodb_sync_array_size
 - [[rds-operations|RDS 운영 폴더 인덱스]]
 - [[RDS-Aurora|RDS / Aurora 관리형 DB]]
 - [[관측가능성(Observability)|관측가능성 전반]]

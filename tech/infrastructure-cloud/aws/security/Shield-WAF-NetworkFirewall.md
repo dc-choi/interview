@@ -114,6 +114,8 @@ NLB, EC2 직접 부착 ❌. NLB는 L4라 WAF 비대상.
 
 운영 제안: 차단 건수뿐 아니라 정상 로그인과 API 성공률, 검증 응답 처리와 재요청을 확인한다. 유효한 토큰 뒤에도 다른 규칙이 차단할 수 있으므로 최종 액션을 함께 본다.
 
+Bot Control의 보호 수준, 검증된 봇과 AI 봇 정책, label을 헤더로 넘기는 캐시 분리와 비용 관리는 [[WAF-Bot-Control|WAF Bot Control]]에서 다룬다.
+
 ### 시험에 잘 나오는 함정
 
 - WAF는 **HTTP/HTTPS만**. TCP/UDP DDoS는 Shield.
@@ -216,6 +218,7 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 
 ## 관련 문서
 
+- [[WAF-Bot-Control|WAF Bot Control]]
 - [[CloudFront]]
 - [[ELB]]
 - [[API-Gateway]]
