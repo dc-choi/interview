@@ -28,6 +28,19 @@ Persistent chat은 이전 채팅 전사문을 새 채팅에 불러오는 rehydra
 - Participant token은 소지자가 세션에 접근할 수 있는 bearer token이다. 발급 전에 인증과 인가를 확인하고, 로그와 URL에 넣지 않으며 HTTPS/TLS로 전달한다. [보안 가이드](https://docs.aws.amazon.com/connect/latest/adminguide/security-best-practices.html)
 - 상담 메시지를 화면에 표시할 때 `innerHTML`로 직접 삽입하지 않는다. 출력 인코딩과 CSP 등으로 DOM XSS에 대응한다. [보안 가이드](https://docs.aws.amazon.com/connect/latest/adminguide/security-best-practices.html)
 
+## 고객 정보 조회의 대기와 결과 인계를 나눈다
+
+2026-10-14 공식 Lambda 연동과 flow 블록 문서 부분 대조 기준이다. 상담 흐름은 Lambda로 기존 업무 시스템을 조회할 수 있지만, 호출 성공과 고객에게 전달할 결과의 준비를 별도로 확인한다.
+
+| 실행 방식 | 다음 블록으로 이동하는 시점 | 블록 timeout 설정의 최대값 |
+|---|---|---|
+| 동기 | Lambda 호출이 끝난 뒤 | 8초 |
+| 비동기 | Lambda 완료를 기다리지 않고 이동 | 60초 |
+
+비동기 실행 뒤에는 `Wait` 블록으로 기다리고 `Load Lambda Result`로 결과를 읽을 수 있다. 결과 로드에 사용할 호출 ID는 `$.LambdaInvocation.InvocationId`에 있으며 가장 최근의 비동기 호출을 가리킨다. 여러 조회를 연결할 때는 고객과 호출 결과가 올바르게 대응하는지 확인한다(설계 점검).
+
+`STRING_MAP` 응답은 문자열 값의 평평한 객체이고, `JSON` 검증은 중첩 JSON을 허용한다. 함수 응답과 블록의 검증 모드를 맞춘다. 조회 실패나 시간 초과 때 이전 고객 정보로 성공 흐름을 이어 가지 않는지, 후속 상담원에게 미확인 상태가 전달되는지 시험한다(운영 제안). 실제 상담 환경의 통합 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## Lex 응답과 상담 흐름의 종료를 구분한다
 
 2026-10-13 Lex V2 Lambda 응답과 Connect `Get customer input` 공식 문서 대조 기준이다. Lambda가 생성한 답변 텍스트와 다음 대화 동작은 별도 필드다. 응답에는 `sessionState.dialogAction.type`이 필요하며, 선택한 동작에 따라 추가 필드를 채운다.
@@ -113,6 +126,8 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 ## 출처
 
+- [AWS, Grant Connect Customer access to your AWS Lambda functions](https://docs.aws.amazon.com/connect/latest/adminguide/connect-lambda-functions.html)
+- [AWS, Flow block in Connect Customer: AWS Lambda function](https://docs.aws.amazon.com/connect/latest/adminguide/invoke-lambda-function-block.html)
 - [AWS, AWS Lambda response format for Lex V2](https://docs.aws.amazon.com/lexv2/latest/dg/lambda-response-format.html)
 - [AWS, Flow block in Connect Customer: Get customer input](https://docs.aws.amazon.com/connect/latest/adminguide/get-customer-input.html)
 - [AWS, Metric definitions in Connect Customer](https://docs.aws.amazon.com/connect/latest/adminguide/metrics-definitions.html)

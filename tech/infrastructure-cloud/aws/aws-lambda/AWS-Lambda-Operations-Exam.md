@@ -8,6 +8,8 @@ verified_at: 2026-09-30
 
 # Lambda 실무 — EC2 비교, 패턴, 비용, 흔한 실수, 체크포인트
 
+이 문서의 15분 실행 제한은 기본 Lambda 컴퓨팅의 함수 호출 기준이다. Managed Instances의 일부 호출 방식과 Durable Functions 워크플로의 제한은 별도로 확인한다.
+
 ## EC2 vs Lambda
 
 | 항목 | EC2 | Lambda |
@@ -179,6 +181,16 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 - **큰 이벤트 전체를 로그로** → CloudWatch Logs 비용 급증, 민감정보 유출
 - **15분 안에 끝낼 수 있겠지**하고 긴 배치 → 중간 실패 시 재시도, 상태 복구가 지옥. Step Functions로 분할
 
+### 시간 초과는 평균 처리 시간과 호출 성공 여부를 나눠 진단한다
+
+2026-10-14 Lambda timeout 설정과 실행 문제 해결 문서 부분 대조 기준이다. 평균 실행 시간에 가깝게 timeout을 잡으면 입력 크기, 연산량이나 외부 서비스 지연이 늘 때 실패할 가능성이 커진다. 작은 샘플뿐 아니라 실제로 예상하는 최대 데이터 크기와 건수를 넣어 검사한다.
+
+- 함수가 직접 반환한 오류는 HTTP `200 OK` 안에도 들어갈 수 있다. 직접 호출 응답의 `X-Amz-Function-Error`와 오류 본문을 확인하며, HTTP 상태만으로 업무 성공을 판정하지 않는다.
+- 메모리나 CPU가 부족해 느린 경우 메모리를 늘리면 CPU도 함께 늘어난다. 외부 서비스 대기와 연산 병목을 구분한 뒤 같은 입력으로 실행 시간과 비용을 비교한다(진단 제안).
+- 함수 실행 제한과 호출자의 응답 대기 제한을 각각 확인한다. 예를 들어 Connect의 동기 Lambda 블록은 최대 8초를 기다린다. 함수 timeout만 늘리는 것으로 호출자의 대기 제한까지 바뀌지는 않는다.
+
+운영 점검 제안: 같은 요청의 호출 응답과 함수 로그를 연결하고, 정상 입력, 최대 예상 입력과 외부 응답 지연을 따로 재현한다. 이 절은 진단 기준이며 실제 함수를 실행한 결과가 아니다. 기존 절 전체의 검증일은 유지한다.
+
 ## 언제 Lambda를 피해야 하는가
 
 - 지속적으로 높은 트래픽 — Lambda가 부적합하다고 요청량만으로 단정하지 말고 실행 시간, 메모리, 동시성, 할인 모델, 운영비를 EC2/ECS와 계산
@@ -205,6 +217,9 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 
 ## 출처
 
+- [Configure Lambda function timeout](https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html)
+- [Troubleshoot execution issues in Lambda](https://docs.aws.amazon.com/lambda/latest/dg/troubleshooting-execution.html)
+- [Flow block in Connect Customer: AWS Lambda function](https://docs.aws.amazon.com/connect/latest/adminguide/invoke-lambda-function-block.html)
 - [Process Amazon S3 event notifications with Lambda](https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html)
 - [Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html)
 - [Avoiding pinning an RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-pinning.html)

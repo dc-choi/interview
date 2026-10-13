@@ -109,6 +109,14 @@ GPU 워크로드에는 GPU 자원 요구를 명시하고 해당 장치 플러그
 
 노드 축소와 재배치의 중단 제약은 [[K8s-Resource-Right-Sizing-Component-Rollout|Pod 적정화와 노드 통합]]에서 이어진다. 이 절은 설정과 검증 기준이며 특정 클러스터에서의 용량 확보나 지연 보장 결과가 아니다.
 
+### EC2 할당량과 실제 GPU 용량은 별도로 확인한다
+
+2026-10-14 EC2 인스턴스 시작 문제 해결 문서 부분 대조 기준이다. GPU 인스턴스를 늘릴 때 계정의 리전별 할당량과 AWS의 가용 On-Demand 용량은 다른 조건이다. `InsufficientInstanceCapacity`는 요청을 충족할 가용 용량이 부족하다는 뜻이며, 할당량 증설만으로 해소된다고 가정하지 않는다.
+
+공식 대응 후보는 잠시 뒤 재시도, 요청 인스턴스 수 축소, 시작 시 가용 영역 선택 완화와 다른 인스턴스 타입 사용이다. 대안을 선택할 때 GPU 메모리, 드라이버와 통신 요구가 유지되는지도 확인한다(운영 제안). 대규모 증설 사례의 소요 시간을 다른 리전이나 시점의 보장으로 사용하지 않는다.
+
+이 절은 EC2 용량 부족의 구분만 추가 대조했다. 실제 GPU 확보나 분산 작업의 성능 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## GPU 체크포인트와 초기화 비용
 
 2026-10-07 NVIDIA `cuda-checkpoint` 문서 기준이다. 이 도구는 Linux 프로세스의 CUDA 상태를 중지하고 복원한다. GPU 상태를 바꾸는 API를 잠그고 이미 제출한 작업의 완료를 기다린 뒤 장치 메모리를 호스트로 복사하고 GPU 자원을 해제한다. 복원할 때는 메모리와 CUDA 객체를 되살린다.
@@ -169,6 +177,7 @@ Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 �
 
 ## 출처
 
+- [Amazon EC2, Troubleshoot Amazon EC2 instance launch issues](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/troubleshooting-launch.html)
 - [Amazon SageMaker API Reference, ClusterLifeCycleConfig](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterLifeCycleConfig.html)
 - [Amazon SageMaker AI, SageMaker HyperPod cluster management](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-cluster-management-slurm.html) — Slurm lifecycle script의 인스턴스별 로그와 오류 표시 범위
 - [Amazon SageMaker AI, Continuous provisioning for enhanced cluster operations with Slurm](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-scaling-slurm.html) — 우선 노드 기준 InService 전환, 워커 비동기 재시도와 lifecycle script 과금
