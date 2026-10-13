@@ -27,6 +27,21 @@ Amazon Quick의 BI 기능. 서버리스 **머신러닝 기반 BI**로 대화형 
 - 임시 분석 수행
 - 비즈니스 인사이트 대시보드
 
+## 필터의 적용 범위와 선택 목록의 연동은 별개다
+
+부분 검증(2026-10-13): 필터와 컨트롤 공식 문서를 대조했다. 데이터셋 필터는 해당 데이터셋을 사용하는 분석과 대시보드에 이어지고, 분석 필터는 해당 분석과 게시한 대시보드에 적용된다. 분석 안에서는 한 시각화, 일부 시각화 또는 해당 데이터셋을 쓰는 시각화 등 적용 범위를 지정한다.
+
+최상위 필터끼리는 `AND`, 그 안에 묶은 필터 그룹은 `OR`로 결합된다. 지역과 매장을 별도 최상위 필터로 두면 두 조건을 동시에 만족해야 하므로 서로 다른 지역의 매장을 선택하면 결과가 비어 있을 수 있다.
+
+매장 컨트롤에서 `Show relevant values only`를 켜고 지역 컨트롤과 대응 필드를 선택하면 지역에 맞는 매장 후보만 표시할 수 있다. 이 cascading control에는 다음 제약이 있다.
+
+- 부모와 자식 컨트롤은 같은 데이터셋의 열에 연결해야 한다.
+- 자식은 dropdown 또는 list여야 한다. 필터 컨트롤이면 고정된 값 목록 대신 필터에 연결해야 한다.
+- 부모는 지원되는 형식이어야 한다. DateTime 파라미터와 top-bottom 필터 등은 해당 부모 조건에서 제외된다.
+- 한 값만 선택할 텍스트 필터는 `Dropdown`, 여러 값은 `Dropdown - multiselect`를 사용한다.
+
+검수 제안: 각 필터가 의도한 차트에 적용되는지 먼저 확인하고, 지역 변경 뒤 매장 후보와 실제 집계 결과를 따로 확인한다. 선택 목록을 좁히는 기능을 행 수준 접근 제어로 사용하지 않는다. 조회 권한은 아래 RLS 절의 별도 조건으로 검증한다. 이번 확인은 이 절에 한정하며 기존 문서의 검증일은 유지한다.
+
 ## Athena의 Access Denied는 권한 계층별로 확인한다
 
 부분 검증(2026-10-09): Athena 연결 문제와 Lake Formation 연동 공식 문서를 대조했다. 대시보드 열람 권한과 원본 데이터를 조회할 권한은 별개다.
@@ -150,6 +165,8 @@ AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 �
 
 ## 출처
 
+- [Amazon Quick, Filtering data in Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/adding-a-filter.html)
+- [Amazon Quick, Adding filter controls to analysis sheets](https://docs.aws.amazon.com/quick/latest/userguide/filter-controls.html)
 - [Amazon Quick, Build visuals with Generative BI](https://docs.aws.amazon.com/quick/latest/userguide/generative-bi-build-visuals.html)
 - [Amazon Quick, Creating a data story with Generative BI](https://docs.aws.amazon.com/quick/latest/userguide/working-with-stories-create.html)
 - [Amazon Quick, Refreshing data in Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/refreshing-data.html)

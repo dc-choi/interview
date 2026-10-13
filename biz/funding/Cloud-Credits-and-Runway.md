@@ -20,6 +20,22 @@ AWS Activate는 사례다. 다음 조건은 2026-10-07 공식 안내를 확인�
 
 공통 자격에는 설립 10년 이내, Series B 이전 단계, AWS Paid Tier 계정, 신규 수혜 또는 이전 수혜액보다 큰 크레딧 요청이 포함된다. 자격과 제출 자료를 확인한 뒤 신청하므로 최대액을 승인 전 예산에 넣지 않는다. 특정 개인 사업자나 외주 사업이 적격인지는 이 표만으로 판정할 수 없다.
 
+## 무투자 신청 가능과 사업 형태의 적격 여부는 다르다
+
+2026-10-13 Google Cloud, Cloudflare와 Microsoft 공식 프로그램 안내를 대조했다. 투자 유무만으로 적격 여부를 판단하지 않고 제품 소유권, 사업 형태, 설립 시점과 기존 수혜 이력을 함께 확인한다.
+
+| 프로그램 | 공개 혜택과 경계 |
+| --- | --- |
+| Google for Startups Cloud의 Start tier | 최대 2,000달러, 유효기간 1년. 설립 24개월 이내, 작동하는 MVP와 명확한 사업 모델, 가까운 시일 내 벤처 투자 유치 계획, 무료 체험 외 기존 크레딧 미수혜 등을 요구한다. 개발 용역 회사, 컨설팅사와 대행사는 제외한다 |
+| Cloudflare for Startups의 Tier 3 | 자가 자금 운영 또는 투자금 100만 달러 미만 기업에 10,000달러를 안내한다. 기술 제품, 공개 웹사이트와 소셜 프로필, 도메인과 일치하는 사업 이메일 등을 확인하며 컨설팅사, 서비스 대행사, MSP와 리셀러는 제외한다 |
+| Microsoft for Startups | 회사가 소유한 소프트웨어 제품이나 서비스를 개발하는 비상장 영리 기업이 대상이다. 컨설팅사와 대행사는 제외하며 지원 국가, Series C 이전 단계와 기존 Azure 크레딧 수혜 조건도 확인한다. 최대 150,000달러는 검증된 진척, 서비스 채택과 지속적인 Azure 사용에 따라 단계적으로 열리는 한도다 |
+
+Google의 Scale tier는 별도의 투자 단계 요건을 적용하며 최대 200,000달러, AI 스타트업은 최대 350,000달러를 안내한다. 일반 경로의 첫해는 사용료 100%를 최대 100,000달러까지, 둘째 해는 사용료의 20%를 추가 100,000달러 한도까지 상계한다. 둘째 해에도 모든 사용료를 대신 내는 구조로 계산하지 않는다.
+
+Cloudflare의 크레딧은 1년 또는 소진 시점 중 먼저 도달할 때 끝나며, 현재 연장은 허용하지 않는다. Tier 3의 Workers AI 한도는 2,500달러이고 AI Gateway와 도메인 등록, 갱신 비용은 제외된다. 상위 tier의 제품별 한도를 그대로 적용하지 않는다. 같은 페이지의 일반 자격란에는 최근 12개월 내 투자 문구도 있어 Tier 3의 무투자 허용 안내와 적용 관계가 명확하지 않다. 이 조건은 신청 전에 제공사에 확인하고 자동 적격으로 해석하지 않는다.
+
+신청 판단 제안: 고객의 제품을 대신 만드는 외주와 회사가 소유한 제품을 구분해 설명한다. 두 사업을 병행한다면 그 사실과 비용의 귀속을 밝히고 적격 여부를 확인한다. 크레딧을 받기 위해 현재 사업 형태를 다르게 표현하거나 승인 전 최대액을 현금 계획에 넣지 않는다.
+
 ## 기술 지원과 판로 지원을 크레딧과 구분한다
 
 2026-10-13 AWS for Startups와 Global Startup Program 공식 안내 대조 기준이다. 스타트업 지원에는 요금 상계뿐 아니라 기술 자문, 사업 멘토링과 시장 진출 자원이 포함될 수 있다. 이를 하나의 현금 지원액으로 합산하지 않는다.
@@ -86,6 +102,9 @@ Claude Startups는 2026-10-06 공지, 프로그램 페이지와 약관을 대조
 
 ## 출처
 
+- [Startups program eligibility and benefits — Google Cloud](https://cloud.google.com/startup/benefits) — 2026-10-13 Start/Scale 자격, 연도별 상계율과 제외 업종 확인
+- [Startup Program — Cloudflare](https://www.cloudflare.com/startups/) — 2026-10-13 Tier 3, 기간, 제품별 한도와 제외 업종 확인. 투자 조건의 적용 관계는 미확정
+- [Microsoft Learn, What is Microsoft for Startups?](https://learn.microsoft.com/en-us/startups/microsoft-for-startups/overview) — 2026-10-13 자격과 단계별 크레딧 확대 확인
 - [AWS for Startups — AWS](https://aws.amazon.com/startups/)
 - [AWS Global Startup Program — AWS](https://aws.amazon.com/partners/programs/global-startup/)
 - [AWS Managed Services Provider Program — AWS](https://aws.amazon.com/partners/programs/msp/) — 2026-10-13 계획부터 운영, 최적화까지의 지원 범위와 제3자 감사 확인

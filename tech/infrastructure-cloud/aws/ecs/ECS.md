@@ -148,6 +148,16 @@ Blue/Green은 ECS 자체 기능이라 CodeDeploy 없이 쓸 수 있다. CodeDepl
 - 모든 태스크가 `STOPPING` 또는 `STOPPED`가 되면 서비스는 `INACTIVE`로 전환한다. 따라서 `INACTIVE`도 모든 태스크가 이미 `STOPPED`라는 뜻은 아니다. `ACTIVE`나 `DRAINING`인 서비스와 같은 이름으로 새 서비스를 만들면 오류가 난다.
 - 연결된 로드밸런서와 service discovery 자원은 서비스 삭제로 제거되지 않는다. 공유 여부와 사용처를 확인한 뒤 불필요한 자원만 별도로 정리한다. 서비스 삭제 성공을 전체 비용 정리 완료로 취급하지 않는다.
 
+### Copilot의 배포 추상화와 지원 종료
+
+부분 검증(2026-10-13): AWS Copilot CLI 공식 문서와 지원 종료 공지를 대조했다. Copilot은 애플리케이션 안에 환경과 서비스를 묶고, manifest를 CloudFormation 템플릿으로 변환해 배포하는 도구다. 환경의 네트워크와 공유 자원을 만드는 단계와 서비스 배포는 구분된다. 환경만 배포했다고 애플리케이션이 실행된 것은 아니다.
+
+Copilot의 Load Balanced Web Service는 ECS Fargate에서 실행되며 기본 구성은 ALB를 사용한다. `nlb`를 지정하면 NLB를 사용할 수 있고, `http: false`로 ALB를 끄면 NLB만 사용하는 구성도 가능하다. 이 서비스 유형은 ALB와 NLB 중 적어도 하나가 필요하다. Request-Driven Web Service는 App Runner를 사용하므로 모든 서비스 유형을 ECS 배포로 해석하지 않는다.
+
+AWS Copilot CLI는 **2026-06-12 지원이 종료**됐으며 AWS의 신규 기능, 보안 업데이트와 기술 지원을 받지 않는다. 생성된 CloudFormation 템플릿과 스택을 인수해 관리하거나 ECS Express Mode, CDK 등으로 전환하는 경로를 검토한다. 기존 CLI를 지원 없이 계속 사용하는 선택도 남아 있으므로 도구의 지원 종료를 배포 자원의 자동 종료로 해석하지 않는다.
+
+이전 점검 제안: 환경별 네트워크, ALB/NLB와 리스너의 포트 및 프로토콜, 태스크 정의와 IAM 역할, 시크릿 참조, 오토스케일링 설정을 먼저 비교한다. 새 배포 경로에서 요청 처리와 실패 복구를 확인한 뒤 자원 정리를 진행한다. 간단한 웹/API와 세밀한 인프라 제어가 필요한 구성을 나누어 대안을 선택하며, 이 문서에서는 실제 이전을 실행하지 않았다. 기존 ECS 기능 전체의 검증일은 유지한다.
+
 ## Service Connect, Service Discovery
 
 마이크로서비스 간 통신:
@@ -245,6 +255,11 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 - Task = **컨테이너 실행 최소 단위**(1개 이상 컨테이너 묶음), Fargate면 ENI/IP까지 Task 단위
 
 ## 출처
+- [Announcing the end-of-support for the AWS Copilot CLI — AWS Containers Blog](https://aws.amazon.com/blogs/containers/announcing-the-end-of-support-for-the-aws-copilot-cli/)
+- [AWS Copilot CLI — AWS](https://github.com/aws/copilot-cli) — 지원 종료 후 보안 패치와 기술 지원 중단 공지
+- [AWS Copilot CLI, Manifest](https://aws.github.io/copilot-cli/en/docs/manifest/overview/)
+- [AWS Copilot CLI, Load Balanced Web Service](https://aws.github.io/copilot-cli/en/docs/manifest/lb-web-service/) — ALB 기본 구성과 NLB 전용 구성 조건
+- [AWS Copilot CLI, Environments](https://aws.github.io/copilot-cli/docs/concepts/environments/)
 - [AWS, Fargate task ephemeral storage for Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html)
 - [AWS, CannotPullContainer task errors in Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_cannot_pull_image.html)
 - [AWS, AWSSupport-TroubleshootECSTaskFailedToStart](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-aws-troubleshootecstaskfailedtostart.html)
