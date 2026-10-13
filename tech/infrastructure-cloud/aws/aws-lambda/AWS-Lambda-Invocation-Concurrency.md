@@ -71,6 +71,17 @@ Throttle 발생 시: 동기 호출은 즉시 에러, 비동기는 자동 재시�
 - VPC에 연결한 함수가 IPv4 인터넷으로 나가려면 일반적으로 프라이빗 서브넷의 NAT 경로가 필요하다. AWS 서비스 접근은 VPC 엔드포인트를 쓸 수 있고, IPv6 경로는 별도 구성한다.
 - 과거엔 Cold Start 시 ENI 생성으로 지연 컸으나, **Hyperplane ENI(공유 ENI)** 도입 후 초기화 지연 대폭 감소
 
+### VPC 함수에서 DynamoDB로 연결하기
+
+부분 검증(2026-10-13): 아래는 같은 리전의 DynamoDB에 gateway endpoint로 접근하는 구성이다. 기존 호출 모델 전체를 재검증한 날짜는 아니다.
+
+1. **라우팅:** DynamoDB gateway endpoint를 만들고 Lambda에 지정한 각 서브넷의 라우트 테이블과 연결한다. 이 경로의 DynamoDB 요청에는 NAT나 인터넷 게이트웨이가 필요하지 않다. 다른 외부 API의 인터넷 경로까지 생기는 것은 아니다.
+2. **권한:** 실행 역할의 DynamoDB 작업 권한과 endpoint policy를 함께 확인한다. `GetItem` 예제라면 대상 테이블의 `dynamodb:GetItem`을 허용한다. endpoint policy는 IAM과 리소스 정책을 대체하지 않으며, ENI 관리 권한만으로 테이블을 읽을 수는 없다.
+3. **통신:** DNS 해석, 함수 SG의 DynamoDB 방향 HTTPS 아웃바운드와 NACL의 요청, 응답 규칙을 확인한다. SG에는 DynamoDB prefix list를 쓸 수 있지만 NACL에는 해당 IP 범위가 필요하다.
+4. **변경 검증:** endpoint 생성이나 변경은 기존 TCP 연결을 끊을 수 있다. SDK의 재연결과 실제 테이블 조회를 시험한다. public subnet을 지정하는 것만으로 Lambda에 공인 IP가 생기지는 않는다.
+
+진단 제안: timeout은 DNS, 라우팅과 통신 규칙부터, `AccessDenied`는 실행 역할, endpoint policy와 테이블의 접근 정책부터 확인한다. 응답 유형은 조사 순서의 단서이며 원인 확정은 아니다.
+
 ## Lambda@Edge, CloudFront Functions
 
 - **Lambda@Edge** — CloudFront 엣지에서 실행. 4가지 이벤트(Viewer Request/Response, Origin Request/Response)에서 동작. A/B 테스트, 헤더 조작, SEO 라우팅, 이미지 변환
@@ -81,6 +92,8 @@ Provisioned Concurrency는 콜드 스타트를 절대 제거하지 않는다. �
 
 ## 출처
 
+- [DynamoDB gateway endpoint 구성과 고려사항](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html)
+- [VPC endpoint policy의 접근 제어 범위](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html)
 - [Lambda 함수 확장과 동시성](https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html)
 - [Provisioned Concurrency 문제 해결](https://docs.aws.amazon.com/lambda/latest/dg/troubleshooting-invocation.html)
 - [비동기 호출 기록과 Destinations](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async-retain-records.html)

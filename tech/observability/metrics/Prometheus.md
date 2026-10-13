@@ -86,6 +86,18 @@ histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by 
 - 해법: **remote-write로 외부 저장**(Thanos, Mimir, Cortex)으로 보냄. [[Thanos]], [[Long-Term-Retention]]
 - 메트릭 전용 — 로그는 Loki, 추적은 Tempo/Jaeger로 분리. [[OpenTelemetry]]
 
+### 관리형 저장소로 옮겨도 수집 경로는 남는다
+
+부분 검증(2026-10-13): 기존 Prometheus의 remote write와 Amazon Managed Service for Prometheus(AMP) 전송 구성을 공식 문서로 확인했다. 기존 PromQL 절 전체를 재검증한 날짜는 아니다.
+
+AMP에는 workspace의 remote write endpoint, SigV4 서명과 해당 쓰기 권한을 구성해 메트릭을 보낼 수 있다. 저장소를 옮겨도 기존 Prometheus가 수행하는 scrape와 전송의 장애까지 없어지지는 않는다.
+
+- 전송은 WAL을 읽어 shard별 메모리 큐에 넣고 원격 endpoint로 보낸다. shard 하나의 큐가 차면 모든 shard에 대한 WAL 읽기가 막힐 수 있다.
+- remote write는 메모리, CPU와 네트워크 사용을 늘린다. `prometheus_remote_storage_samples_pending` 증가와 자원 포화를 함께 확인한다. 큐 용량과 shard 수를 무조건 늘리면 메모리 부담도 커진다.
+- 공식 튜닝 문서는 원격 endpoint 중단이 2시간을 넘으면 WAL 압축으로 아직 보내지 못한 데이터가 유실된다고 설명한다. 이를 모든 수집 모드와 저장 설정의 동일한 복구 보장으로 확대하지 않는다.
+
+운영 검증 제안: 원격 저장소 조회 성공과 별도로 scrape 누락, 전송 적체, 장애 후 따라잡기와 데이터 공백을 확인한다. 관리형 저장소 도입만으로 관측 경로 전체의 무유실을 주장하지 않는다.
+
 ## 흔한 함정
 
 - 고카디널리티 라벨(user_id, request_id) → 시계열 폭발, OOM ([[Cardinality]])
@@ -105,6 +117,8 @@ histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by 
 
 ## 출처
 
+- [Prometheus — Remote write tuning](https://prometheus.io/docs/practices/remote_write/)
+- [AWS — Set up ingestion from an existing Prometheus server in Kubernetes on EC2](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-onboard-ingest-metrics-existing-Prometheus.html)
 - [Prometheus — Overview / Data model / Querying](https://prometheus.io/docs/introduction/overview/)
 - [Prometheus — Alerting & Alertmanager](https://prometheus.io/docs/alerting/latest/overview/)
 - [Prometheus — Querying basics](https://prometheus.io/docs/prometheus/latest/querying/basics/)

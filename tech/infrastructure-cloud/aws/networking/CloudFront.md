@@ -34,6 +34,26 @@ AWS의 **CDN(Content Delivery Network) 서비스**. HTTP/HTTPS origin의 캐시 
 - CloudFront는 AWS의 글로벌 네트워크와 캐시 계층을 사용하지만 실제 지연시간과 가용성 개선 폭은 viewer 위치, origin과 cache hit율로 측정
 - AWS가 정한 지원 origin에서 CloudFront로 보내는 데이터 전송에는 별도 요금이 없으며, viewer 전송과 요청 요금은 선택한 플랜에 따름
 
+### 영상의 인코딩, 패키징과 전달 경계
+
+부분 검증(2026-10-13): CloudFront의 VOD와 live streaming 설명을 대조했다. CDN을 연결하는 것만으로 원본 영상의 인코딩과 패키징이 끝나지는 않는다.
+
+- 스트리밍용 패키징은 영상, 음성과 자막의 segment 및 재생 순서를 설명하는 manifest를 만든다. CloudFront는 준비된 콘텐츠를 HTTP origin에서 받아 전달한다.
+- VOD는 MediaConvert 같은 인코더로 재생용 파일을 만든 뒤 S3나 서버에 저장하고 CloudFront로 제공할 수 있다. 원본 업로드 성공, 변환 완료, 배포 경로의 재생 성공을 별도 단계로 확인한다.
+- live와 VOD 모두 HTTP origin을 사용할 수 있다. 모든 미디어 서비스를 필수 구성으로 붙이지 않고 입력 방식, 변환과 저장 요구에 맞춰 앞단을 선택한다.
+
+이 구분에서 도출한 운영 점검: 대표 플레이어에서 manifest와 segment 접근, 자막과 실제 재생을 확인한다. 객체가 존재하거나 CDN 요청이 성공했다는 사실만으로 최종 재생 품질을 판정하지 않는다.
+
+### 실시간 접근 로그와 플레이어 관측
+
+부분 검증(2026-10-13): real-time access log 공식 문서의 전송과 수집 범위를 확인했다. 기존 요금제의 기능 제한도 함께 확인하고 적용한다.
+
+- cache behavior별로 수집을 연결하고 sampling rate와 필요한 필드를 고른다. 로그는 Kinesis Data Streams로 전달되며, 이후 consumer나 Firehose로 분석 저장소에 보낼 수 있다.
+- 로그 전달은 best effort다. sampling rate가 100이어도 지연이나 누락 가능성이 있어 전체 요청의 완전한 회계 기록으로 사용할 수 없다.
+- `time-to-first-byte`와 `time-taken`은 서버에서 측정한 시간이다. 플레이어의 재생 시작과 버퍼링까지 같은 값으로 해석하지 않는다. CMCD 필드는 플레이어가 CloudFront에 해당 데이터를 보낸 경우에만 로그에 나타난다.
+
+운영 적용 제안: CDN 요청 지표와 플레이어 이벤트의 식별자, 시각 및 수집 비율을 맞춰 비교한다. 서버 응답 성공과 사용자의 정상 시청은 서로 다른 확인 대상이다.
+
 ## Origin 접근 제어 — OAI vs OAC
 
 일반 S3 bucket origin을 사용할 때 **버킷을 public으로 풀지 않고 CloudFront만 접근 허용**하는 메커니즘이다. S3 website endpoint는 custom origin으로 취급하므로 OAI와 OAC를 사용할 수 없다.
@@ -193,6 +213,8 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - 지원되는 AWS origin → CloudFront 전송은 별도 데이터 전송 요금 없음, Shield Standard 포함
 
 ## 출처
+- [AWS 공식 문서, Video on demand and live streaming video with CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/on-demand-streaming-video.html)
+- [AWS 공식 문서, Use real-time access logs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/real-time-logs.html)
 - [AWS 공식 문서, Optimize high availability with CloudFront origin failover](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html)
 - [Storyblok, Caching](https://www.storyblok.com/docs/concepts/caching)
 - [AWS 공식 문서, Control the cache key with a policy](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html)

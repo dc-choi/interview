@@ -22,6 +22,17 @@ NAT Instance는 **추천하지 않음** — Public Subnet에 두는 특수 EC2(`
 
 > NAT Instance를 만든다면 `SrcDestCheck` 비활성화, Public Subnet 배치, Private Subnet RT에 `0.0.0.0/0 → NAT Instance` 설정이 필수.
 
+## 외부 서비스의 IP 허용 목록과 고정 송신 경로
+
+부분 검증(2026-10-13): 아래는 IPv4 인터넷 연결과 AZ별 public NAT gateway 구성이다. 기존 규제 절 전체의 재검증은 아니다.
+
+- ECS Fargate 태스크를 private subnet에 두고 public IP 할당을 끈 뒤, 해당 서브넷의 인터넷 경로를 public NAT gateway로 보낼 수 있다. 외부 서비스에 등록할 주소는 태스크 IP가 아니라 이 경로의 NAT에 연결된 Elastic IP다.
+- public NAT는 public subnet에 두고 인터넷 게이트웨이로 라우팅한다. public NAT의 Elastic IP는 같은 VPC의 인터넷 게이트웨이를 거칠 때 송신 주소로 쓰인다. Transit Gateway나 VPN 방향에도 같은 공인 IP가 보인다고 가정하지 않는다.
+- AZ별 NAT를 사용하면 외부 서비스가 볼 수 있는 Elastic IP도 여러 개다. 실제 송신에 쓰는 주소를 모두 허용 목록에 등록한다. 주소를 하나로 줄이려고 여러 AZ가 단일 AZ의 NAT를 공유하면 그 AZ의 장애가 다른 AZ의 인터넷 연결에도 영향을 준다.
+- private NAT에는 Elastic IP를 연결할 수 없고, 인터넷 게이트웨이로 보낸 트래픽도 드롭된다. 인터넷 상대의 고정 공인 IP 요구를 private NAT로 충족할 수는 없다.
+
+운영 검증 제안: 각 AZ의 태스크에서 상대 서비스가 관측한 송신 IP와 요청 성공을 확인하고, 태스크 교체와 NAT 경로 변경 뒤에도 반복한다. NAT 사용 시간과 처리량 비용을 포함해 운영 부담을 비교한다. 실제 계정에서 이 검증을 수행한 기록은 아니다.
+
 ## SG vs NACL
 
 | 구분 | Security Group | Network ACL |
@@ -80,6 +91,8 @@ Traffic Mirroring은 ENI의 트래픽을 복제해 분석 대상에 전달한다
 
 ## 출처
 
+- [Amazon VPC User Guide, NAT gateways](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html)
+- [Amazon ECS Developer Guide, Connect Amazon ECS applications to the internet](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/networking-outbound.html)
 - [Amazon VPC User Guide, Security group rules](https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html)
 - [Amazon VPC User Guide, Network ACL rules](https://docs.aws.amazon.com/vpc/latest/userguide/nacl-rules.html)
 - [Amazon VPC User Guide, Get started using Traffic Mirroring to monitor network traffic](https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html)
