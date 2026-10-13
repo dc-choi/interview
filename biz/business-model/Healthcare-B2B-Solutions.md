@@ -81,6 +81,20 @@ aliases: ["Healthcare B2B Solutions", "의료 B2B 솔루션", "의료 솔루션 
 
 구매 판단에서는 **절감한 업무 시간의 가치에서 도입, 연동, 검토와 운영 비용을 뺀 효과**를 검증한다. 이 계산은 사업성 평가 틀이며, 절약한 시간이 같은 크기의 인건비 감소로 실현된다는 뜻은 아니다. 실제 현장 시험에서는 누가 결과를 승인하고 오류를 수정할지, 기존 시스템의 어느 단계까지 연결해야 완료로 볼지도 함께 정한다.
 
+## 의료와 생활 지원을 연결하는 서비스 경계
+
+의료기관 밖의 식품, 주거와 이동 지원을 연결하는 서비스에서는 안내 이후의 신청, 처리 결과와 실제 제공을 나누어 본다. 다음은 2026-10-14 각 운영기관의 공개 설명에서 확인한 기능이며, 세 기관의 연동 구조나 성과를 독립 검증한 결과는 아니다.
+
+| 역할 | 공개된 기능 사례 | 사업 설계에서 확인할 인계 지점 |
+|---|---|---|
+| 식품 지원 연결 | U.S. Hunger의 Full Cart Connect는 의료 네트워크 등을 대상으로 사람과 식품을 연결하는 플랫폼으로 소개된다 | 지원 요청을 접수한 뒤 실제 전달까지 누가 책임지는가 |
+| 프로그램 신청과 후속 확인 | ThriveLink는 전화와 디지털 AI 에이전트에 사람의 지원을 결합해 프로그램 등록을 돕고, 의료기관에 처리 결과를 돌려주는 기능을 소개한다 | 신청 접수, 승인이나 거절, 대안 연결을 구분해 누가 후속 연락하는가 |
+| 필요한 물품과 비용의 직접 지원 | HelpLink는 요청 검토, 기부와 필요의 매칭, 물품 구매나 청구 비용의 직접 지급, 후원자 보고 흐름을 설명한다 | 매칭 뒤 실제 제공과 보고가 완료됐는지 확인할 수 있는가 |
+
+사업 검증에서는 최종 이용자, 도입 기관과 재원 제공자를 별도로 확인한다. 공개 사례에 파트너십이나 기부 흐름이 있다는 사실만으로 유료 계약, 가격이나 반복 매출을 추정하지 않는다. 각 기관의 수익 배분과 통합 서비스의 계약 조건도 별도 확인 대상이다.
+
+도입 시험의 측정 예시로는 접수부터 결과 확인까지 걸린 시간, 미완료 신청 비율, 실제 지원 제공률, 사람의 후속 연락 시간과 기관 간 인계 비용이 있다. 이 지표는 기능 사례를 사업 판단에 연결한 제안이다. 서비스 추천 건수나 상담 완료를 실제 지원 수령 또는 건강 개선으로 계산하지 않는다.
+
 ## 근거 범위
 
 의료 솔루션과 전시회 영업에 관한 경험담을 재사용 가능한 사업 검증 질문으로 정리했다. 공식 자료는 청구 주체와 행사 성격을 확인하는 보충 근거다. 역할 구분표와 검증 절차는 이 문서의 적용 틀이며, 특정 회사의 실적이나 직군 전체의 특성을 입증하는 자료가 아니다.
@@ -98,6 +112,9 @@ aliases: ["Healthcare B2B Solutions", "의료 B2B 솔루션", "의료 솔루션 
 - [Transforming Clinical Research: myTomorrows’ GenAI Solution for Universal Trial Access — myTomorrows](https://mytomorrows.com/blog/mytomorrows-updates/transforming-clinical-research/)
 - [Das KI-unterstützte CRM für die Sozialwirtschaft — CareMates](https://caremates.de/)
 - [Prozessautomatisierung in der Arztpraxis mit KI — ETERNO Cloud](https://www.eterno.cloud/ki)
+- [A better recipe for social impact — U.S. Hunger](https://home.ushunger.org/)
+- [Support anyone. Reach everyone. — ThriveLink](https://www.mythrivelink.com/)
+- [Together is Better — HelpLink](https://helplink.org/)
 
 ## 관련 문서
 
