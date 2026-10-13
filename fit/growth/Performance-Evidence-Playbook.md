@@ -112,6 +112,21 @@ aliases: ["Performance Evidence Playbook", "성과 증거 플레이북"]
 
 한 번의 칭찬 뒤에 승진이나 매출 성장이 있었다는 일화만으로 인과관계를 확정하지 않는다. 공개 기록에는 재사용할 질문과 익명화한 학습만 남기고, 실제 평가자의 신원과 피드백 원문은 옮기지 않는다.
 
+## 책임 확대와 승진 승인을 구분한다
+
+추가 업무를 맡았다는 사실과 다음 직급의 역할을 수행했다는 근거는 다르다. 승진을 논의할 때는 업무 개수보다 어떤 책임 범위에서 어떤 행동과 결과를 반복해서 보여 주었는지 정리한다. 목표 직급의 기대 행동과 현재 기록을 대조하고, 아직 확인하지 못한 역량은 다음 관찰 대상으로 남긴다.
+
+GitLab의 공개 승진 지침은 다음 단계의 지속적인 수행과 사업상 역할 필요를 함께 본다. 준비된 구성원도 역할 범위나 예산이 없으면 승진하지 못할 수 있다. 이는 한 조직의 공개 운영 사례이며 다른 회사의 승진 조건이나 보상 약속으로 일반화하지 않는다.
+
+이를 개인 성장 점검에 적용하면 다음 질문을 사용할 수 있다.
+
+- **책임:** 추가 업무가 기존 일을 더 많이 하는 것인지, 더 넓은 판단과 협업 책임을 맡는 것인지 구분했는가?
+- **근거:** 목표 역할의 기대 행동에 연결되는 결과와 본인 기여를 설명할 수 있는가?
+- **지속성:** 한 번의 성공 외에 같은 수준의 수행을 확인할 기록이 있는가?
+- **결정 조건:** 역량 확인과 별개로 조직의 역할 필요, 예산과 승인 절차를 확인했는가?
+
+옷차림, 바쁜 인상이나 사교성에 관한 조언을 검증된 업무 성과로 기록하지 않는다. 협업도 인상 평가에 머물지 않고 관찰한 행동과 결과로 설명한다. 추가 업무 수락이 승진이나 보상 인상을 보장한다고 약속하지 않으며, 실제 인사 결정과 개인 처우 수치는 이 문서에 옮기지 않는다.
+
 ## 되짚기 질문
 
 - 이번 작업에서 무엇을 증거로 확인했고 무엇은 아직 가설인가?
@@ -121,6 +136,7 @@ aliases: ["Performance Evidence Playbook", "성과 증거 플레이북"]
 
 ## 출처
 
+- [GitLab Handbook, Promotions and Transfers](https://handbook.gitlab.com/handbook/people-group/promotions-transfers/) — 2026-10-14 대조. 다음 단계의 지속적인 수행, 성과 근거와 사업상 역할 필요를 구분하는 조직 사례만 참조했다.
 - [Do People Have Insight Into Their Abilities? A Metasynthesis — Ethan Zell, Zlatan Krizan](https://www.psychologicalscience.org/journals/perspectives/1745691613518075/) — 2014년 연구의 공개 초록, 2026-10-07 대조. 자기평가와 수행 결과의 관계 및 영역별 차이만 참조했다.
 - [OPM, Accomplishment Records](https://www.opm.gov/policy-data-oversight/assessment-and-selection/other-assessment-methods/accomplishment-records/) — 2026-10-07 대조. 직무 역량별 행동 기준, 성과 서술과 사실 확인을 참조했다.
 - [OPM, Reference Checking](https://www.opm.gov/policy-data-oversight/assessment-and-selection/other-assessment-methods/reference-checking/) — 2026-10-13 대조. 직무 관련 질문, 관찰자의 정보로 경험을 확인하는 방식과 구조화된 기록을 참조했다. 같은 날 Accomplishment Records의 행동, 결과 서술과 확인 절차도 재대조했다. 미국 연방 채용 안내를 개인 성장 점검에 응용한 것이며 국내 인사 절차의 법적 기준은 아니다.
