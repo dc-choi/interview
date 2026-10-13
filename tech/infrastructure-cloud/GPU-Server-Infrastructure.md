@@ -151,11 +151,13 @@ CUDA 상태의 중지만으로 CPU 스레드까지 멈추지는 않는다. 전�
 
 ### HyperPod 초기화 실패는 인스턴스별로 확인한다
 
-2026-10-13 HyperPod API와 Slurm 클러스터 관리 문서 부분 대조 기준. `ClusterLifeCycleConfig.SourceS3Uri`는 lifecycle script의 S3 위치이고, `OnCreate`는 그 위치 아래에서 클러스터 생성 중 실행할 진입 스크립트 파일명이다. HyperPod 인스턴스 역할에 붙는 관리형 정책 `AmazonSageMakerClusterInstanceRolePolicy`가 `sagemaker-` 접두사 버킷 접근을 허용하므로, API 문서는 S3 경로를 `s3://sagemaker-`로 시작하게 하라고 안내한다. 스크립트 업로드와 각 노드의 초기화 성공을 별도로 확인한다(운영 제안).
+2026-10-13 HyperPod API와 Slurm 클러스터 관리 문서 부분 대조 기준. `ClusterLifeCycleConfig.SourceS3Uri`는 lifecycle script의 S3 위치이고, `OnCreate`는 그 위치 아래에서 클러스터 생성 중 실행할 진입 스크립트 파일명이다. `OnInitComplete`는 AMI 기반 초기화가 끝난 뒤 노드에서 실행할 진입 스크립트 파일명이다. HyperPod 인스턴스 역할에 붙는 관리형 정책 `AmazonSageMakerClusterInstanceRolePolicy`가 `sagemaker-` 접두사 버킷 접근을 허용하므로, API 문서는 S3 경로를 `s3://sagemaker-`로 시작하게 하라고 안내한다. 스크립트 업로드와 각 노드의 초기화 성공을 별도로 확인한다(운영 제안).
 
 Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 로그는 CloudWatch 로그 그룹 `/aws/sagemaker/Clusters/[ClusterName]/[ClusterID]`의 `LifecycleConfig/[instance-group-name]/[instance-id]` 스트림으로 올라간다. 사용자 정의 스크립트도 이 경로에 로그를 기록해야 해당 수집 경로로 볼 수 있다. 로그에는 S3 위치와 진입 스크립트, 다운로드 시작과 완료, 스크립트 성공 또는 실패 표시가 남는다. 여러 인스턴스에서 실패해도 오류 메시지는 한 인스턴스만 표시하므로, 로그 그룹의 인스턴스별 스트림을 확인하고 표시된 노드만으로 장애 범위를 확정하지 않는다.
 
-운영 점검에서는 스크립트 다운로드, 실행 결과와 학습 작업의 첫 정상 단계를 나누어 확인한다. 초기화 성공을 데이터 접근이나 학습 재개 성공으로 취급하지 않는다(운영 제안). 이 절의 초기화 계약과 로그만 추가 대조했으며 문서 전체의 검증일은 유지한다.
+2026-10-13 Slurm continuous provisioning 문서 기준, 이 방식(`NodeProvisioningMode`가 `Continuous`)에서는 컨트롤러 노드 1개(로그인 인스턴스 그룹을 지정했다면 로그인 노드 1개 포함)가 준비되면 클러스터가 `InService`가 되고, 용량 부족 등으로 바로 확보하지 못한 워커 노드는 비동기로 재시도된다. 클러스터 생성 중 컨트롤러의 lifecycle script 실패는 재시도하지 않는 오류로 분류되어 클러스터가 `Failed`가 된다. 과금은 인스턴스 단위로 lifecycle script 실행이 시작될 때부터이며, 같은 문서는 스크립트가 실패하면 인스턴스 프로비저닝을 재시도하고 그 실행 시간만큼 과금한다고 적는다. 이 문서는 이 방식을 새 클러스터의 기본값이라고 하면서 선택 구성이라고도 적고, CreateCluster API 레퍼런스는 이 모드를 EKS 오케스트레이션 클러스터에서만 지원한다고 적으므로 실제 클러스터의 모드를 먼저 확인한다. 클러스터 상태만으로 모든 워커의 초기화 완료를 판단하지 않고 반복 실패하는 스크립트의 비용도 함께 본다(운영 제안).
+
+운영 점검에서는 스크립트 다운로드, 실행 결과와 학습 작업의 첫 정상 단계를 나누어 확인한다. 초기화 성공을 데이터 접근이나 학습 재개 성공으로 취급하지 않는다(운영 제안). 이 절의 초기화 계약, 로그와 continuous provisioning의 상태 전환과 과금만 추가 대조했으며 문서 전체의 검증일은 유지한다.
 
 ## 확인 질문
 
@@ -169,6 +171,8 @@ Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 �
 
 - [Amazon SageMaker API Reference, ClusterLifeCycleConfig](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterLifeCycleConfig.html)
 - [Amazon SageMaker AI, SageMaker HyperPod cluster management](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-cluster-management-slurm.html) — Slurm lifecycle script의 인스턴스별 로그와 오류 표시 범위
+- [Amazon SageMaker AI, Continuous provisioning for enhanced cluster operations with Slurm](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-scaling-slurm.html) — 우선 노드 기준 InService 전환, 워커 비동기 재시도와 lifecycle script 과금
+- [Amazon SageMaker API Reference, CreateCluster](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateCluster.html) — `NodeProvisioningMode`의 EKS 전용 표기
 - [파운데이션 모델의 파인 튜닝 및 대규모 모델 훈련 클러스터인 Amazon SageMaker HyperPod 배워보기 — Amazon Web Services Korea](https://www.youtube.com/watch?v=HaL3-NF4lqY)
 - [UPS for generators: Six considerations to achieving generator-UPS harmony — Eaton](https://www.eaton.com/us/en-us/products/backup-power-ups-surge-it-power-distribution/backup-power-ups/six-considerations-to-achieving-generator-ups-harmony.html)
 - [Eaton, 5P G2 UPS](https://www.eaton.com/us/en-us/catalog/backup-power-ups-surge-it-power-distribution/eaton-5p-g2-ups.html) — 부하와 배터리 노후도에 따른 runtime 변동 조건

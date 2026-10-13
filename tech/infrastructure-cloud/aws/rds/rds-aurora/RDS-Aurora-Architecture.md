@@ -2,8 +2,8 @@
 tags: [infrastructure, aws, rds, aurora, managed-db, database, ncp, saa-c03]
 status: done
 category: "Infrastructure - AWS"
-aliases: ["Aurora 공유 스토리지", "Aurora 클러스터와 엔드포인트"]
-verified_at: 2026-08-28
+aliases: ["Aurora 공유 스토리지", "Aurora 클러스터와 엔드포인트", "Aurora PostgreSQL Limitless Database"]
+verified_at: 2026-10-13
 ---
 
 # Aurora — RDS와 무엇이 다른가
@@ -85,6 +85,31 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 
 다음은 복구 훈련의 완료 기준 예다. DB 승격 완료 후 새 연결의 쓰기와 읽기를 확인하고, 누락된 트랜잭션 및 외부 처리 결과를 대사한다. 정상화된 이전 리전의 복제 상태까지 확인해야 다음 장애에 대비한 구성이 복구됐다고 판단할 수 있다.
 
+## Limitless Database의 테이블 배치와 운영 제약
+
+2026-10-13 Aurora 사용자 가이드로 대조한 범위다. Limitless Database 클러스터에는 writer와 reader 인스턴스 대신 **DB shard group**이 있다. **router**는 클라이언트의 SQL 연결을 받아 데이터 위치 메타데이터에 따라 명령을 shard로 보내고, 결과를 모아 반환하며 분산 트랜잭션의 일관성을 관리한다. **shard**는 데이터의 일부를 저장하는 Aurora PostgreSQL DB 인스턴스이고 클라이언트가 직접 연결할 수 없다. 개별 router와 shard는 계정에 보이지 않으며 클러스터 엔드포인트로 접속한다. shard key 선택의 일반 기준은 [[Sharding]]을 따른다.
+
+| 테이블 유형 | 배치 | 맞는 대상 |
+|---|---|---|
+| Sharded | shard key 해시로 모든 shard에 분산하고 같은 key 값은 같은 shard에 둔다. range나 list 분할이 아니다 | 독립된 데이터 부분집합 단위로 다루는 테이블, 매우 큰 테이블이나 다른 테이블보다 빠르게 커질 수 있는 테이블 |
+| Sharded(collocated) | 같은 shard key를 쓰고 함께 배치하도록 명시한 sharded table. join에 필요한 데이터가 같은 shard에 있어 shard 간 이동 없이 join할 수 있다 | 고객의 주문과 주문 상세처럼 같은 key로 함께 읽는 테이블 |
+| Reference | 모든 shard에 전체 사본을 둔다 | 쓰기가 적지만 자주 join하는 작은 테이블(날짜, 주, 도시와 우편번호 같은 지리 데이터) |
+| Standard | 기본 유형. 모든 standard table이 시스템이 고른 한 shard에 모이고 shard 최대 용량 128 TiB에 묶이며, 그 shard에 다른 유형의 데이터도 있어 실효 한도는 더 낮다 | 분산하지 않을 테이블. 나중에 sharded나 reference로 전환할 수 있다 |
+
+질의의 모든 관계가 같은 shard를 가리키는 shard key 조건의 sharded table이거나 reference table이면, router는 planning을 건너뛰고 질의 전체를 shard로 내려보낸다. 이 single-shard 최적화는 `INSERT`, `SELECT`, `UPDATE`, `DELETE`에 적용되며 상수 조건으로 partition을 제거하는 방식이라 statement의 모든 sharded table에 shard key의 filter 또는 join 조건이 있어야 한다. 같은 고객의 데이터가 한 shard에 있어도 한 테이블의 shard key 조건이 빠지면 분산 질의가 된다. `EXPLAIN`의 `Single Shard Optimized` 표시로 확인하며, 등록하지 않은 mutable 함수, `security_barrier` view, PL/pgSQL 변수, `plan_cache_mode`가 `force_generic_plan`인 prepared statement와 여러 사용자 권한이 필요한 객체 등이 이 최적화를 막는다.
+
+도입 전에 확인할 제약은 다음과 같다.
+
+- shard key 값은 `UPDATE`할 수 없다. 행을 `DELETE`한 뒤 새 key로 `INSERT`한다.
+- isolation level은 read uncommitted, read committed, repeatable read를 지원하며 serializable로는 설정할 수 없다.
+- shard group 최대 용량은 16~6144 ACU이고 그 이상은 AWS에 문의한다. 생성 때 정한 최대 용량이 초기 router와 shard 수를 정하며, 이후 최대 용량을 바꿔도 노드 수는 그대로다. shard 분할과 router 추가는 SQL 함수로 하고, shard 병합과 개별 노드 삭제는 지원하지 않는다.
+- compute redundancy를 0보다 크게 두면 shard 수가 두 배나 세 배로 늘어 비용이 증가하고, 2로 두면 DB subnet group에 AZ가 3개 이상 필요하다. 서브넷에는 router마다 IP 1개, shard마다 최대 3개가 필요하다. us-east-1에서는 `us-east-1e` AZ를 DB subnet group에 넣지 않는다.
+- 클러스터 엔드포인트로 접속하면 Route 53이 router로 연결하는데, 부하 분산 능력이 제한돼 router 간 부하가 고르지 않을 수 있다. AWS JDBC Driver의 Limitless Connection Plugin은 부하를 고려한 클라이언트 측 분산을 제공한다.
+- I/O-Optimized 스토리지 구성과 `16.X-limitless` 엔진 버전만 쓴다. Enhanced Monitoring, 보존 기간 31일 이상의 Performance Insights와 PostgreSQL 로그의 CloudWatch Logs 전송이 필수이며 추가 요금이 든다. 제공 리전은 아시아 태평양(타이베이)을 제외한 AWS 리전이다.
+- Global Database, Blue/Green Deployments, RDS Proxy, read replica, cloning, AWS Backup, zero-ETL 통합, Secrets Manager 등은 지원하지 않으며 복제 소스가 될 수 없다. 위 절의 Global Database, cloning과 Auto Scaling 설명은 일반 Aurora 클러스터 기준이다.
+
+주요 트랜잭션과 조회가 고객이나 테넌트 같은 한 shard key 값 안에서 끝나는지 먼저 확인한다. 여러 key를 가로지르는 join과 집계가 주 경로라면 router의 분산 실행 비중이 커지므로 대표 질의의 `EXPLAIN`과 부하 시험으로 이점을 판단한다. 기존 DR, 배포와 자격 증명 운영 절차를 위 미지원 목록과 대조해 대체 수단이 없는 항목은 도입 차단 조건으로 둔다(설계 제안).
+
 ## 언제 RDS 대신 Aurora를 고르나
 
 - 읽기 트래픽이 많고 Lag에 민감한 서비스
@@ -102,3 +127,11 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 - [Aurora Auto Scaling](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html)
 - [Aurora PostgreSQL Limitless Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html)
 - [Amazon Aurora User Guide, Aurora MySQL isolation levels](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.IsolationLevels.html)
+- [Aurora PostgreSQL Limitless Database architecture](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless-architecture.html)
+- [Aurora PostgreSQL Limitless Database requirements and considerations](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless-reqs-limits.html)
+- [Creating a DB cluster that uses Aurora PostgreSQL Limitless Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless-cluster.html)
+- [Working with DB shard groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless-shard.html)
+- [Querying Aurora PostgreSQL Limitless Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless-query.html)
+- [Single-shard queries in Aurora PostgreSQL Limitless Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless-query.single-shard.html)
+- [DML limitations and other information for Aurora PostgreSQL Limitless Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless-reference.DML-limitations.html)
+- [AWS Builder를 위한 2024년 AWS가 선보이는 혁신적인 클라우드 서비스 — Amazon Web Services Korea](https://www.youtube.com/watch?v=UlLKTq0fxI0) — re:Invent 2023에서 소개된 서비스를 다룬 2024-08 공개 발표. 본문의 계약은 위 공식 문서로 다시 대조했다

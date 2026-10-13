@@ -2,8 +2,8 @@
 tags: [infrastructure, aws, s3, object-storage]
 status: done
 category: "Infrastructure - AWS"
-aliases: ["S3 스토리지 모델", "S3 성능 최적화"]
-verified_at: 2026-09-30
+aliases: ["S3 스토리지 모델", "S3 성능 최적화", "S3 Express One Zone"]
+verified_at: 2026-10-13
 ---
 
 # S3 스토리지 모델과 성능
@@ -31,7 +31,7 @@ S3는 **계층형 파일시스템이 아님** — `folder/file.txt`는 단일 �
 
 ## 내구성과 일관성
 
-- **내구성**: **99.999999999%** (11 9s) — 객체 손실 확률 매우 낮음. 다중 AZ 자동 복제
+- **내구성**: **99.999999999%** (11 9s) — 객체 손실 확률 매우 낮음. One Zone-IA와 Express One Zone을 제외한 클래스는 3개 이상 AZ에 저장하며, 이 두 단일 AZ 클래스는 재해로 인한 AZ의 물리적 손실에 대비하도록 설계되지 않았다
 - **가용성**: 99.99% (Standard)
 - **Strong Consistency** (2020.12부터) — PUT, DELETE 후 즉시 GET이 최신 결과 보장. 이전엔 덮어쓰기, 삭제가 eventual이었음
 
@@ -40,7 +40,8 @@ S3는 **계층형 파일시스템이 아님** — `folder/file.txt`는 단일 �
 | 클래스 | 접근 빈도 | 최소 보관 | 검색 시간 | 비고 |
 |--------|----------|----------|----------|------|
 | **Standard** | 자주 | 없음 | 즉시 | 기본 |
-| **Intelligent-Tiering** | 가변 | 없음 | 즉시 | 패턴 자동 이동 (모니터링 비용) |
+| **Express One Zone** | 자주, 지연 민감 | 없음 | 즉시 (한 자릿수 ms 설계) | 선택한 단일 AZ의 directory bucket, 설계 가용성 99.95%. 아래 절 참고 |
+| **Intelligent-Tiering** | 가변 | 없음 | 즉시 (선택형 archive 계층은 복원 필요) | 패턴 자동 이동 (모니터링 비용) |
 | **Standard-IA** | 가끔 | 30일 | 즉시 | 검색 시 GB당 요금 |
 | **One Zone-IA** | 가끔, 재생성 가능 | 30일 | 즉시 | 단일 AZ (가용성↓) |
 | **Glacier Instant Retrieval** | 분기 1회 미만 | 90일 | 즉시 | IA보다 저렴 |
@@ -68,7 +69,7 @@ S3는 **계층형 파일시스템이 아님** — `folder/file.txt`는 단일 �
 
 ### Request Rate
 
-prefix당 초당:
+general purpose bucket 기준 prefix당 초당:
 - **3,500 PUT/COPY/POST/DELETE**
 - **5,500 GET/HEAD**
 
@@ -125,6 +126,22 @@ S3 Express One Zone의 append와 rename 지원은 별도 조건이다. 위 gener
 
 분석 파이프라인에 적용할 때는 입력 준비 시간, 실제 계산 시간, S3 요청과 전송량을 나눠 측정한다. 서로 다른 실행의 출력 key를 분리하고, 파일 API 호환성 및 결과 동등성을 작은 기준 데이터로 확인하는 것은 설계 점검 제안이다. 한 사례의 처리 시간이나 비용 절감률을 다른 분석 엔진에도 보장되는 값으로 쓰지 않는다.
 
+## S3 Express One Zone을 고르기 전에 확인할 계약
+
+2026-10-13 Amazon S3 사용자 가이드 기준이며, AZ에 만든 directory bucket을 다룬다. S3 Express One Zone(`EXPRESS_ONEZONE`)은 지연 시간에 민감한 애플리케이션에 일관된 한 자릿수 밀리초 접근을 제공하도록 만든 단일 AZ 스토리지 클래스다. 객체는 사용자가 고른 AZ의 directory bucket에 저장되며, 그 AZ 안의 여러 장치에는 중복 저장하지만 AZ 사이에는 중복 저장하지 않는다. 설계 가용성은 99.95%다.
+
+| 항목 | 계약 |
+|---|---|
+| 위치 | 버킷을 만들 때 Region과 AZ를 고르며 EC2, EKS, ECS 컴퓨트와 같은 AZ를 권장한다. AZ 이름과 물리 위치의 대응은 계정마다 다를 수 있어 계정 사이에서는 AZ ID로 맞춘다. 서울 리전의 지원 AZ ID는 `apne2-az3` 하나다 |
+| 네트워크 | 버킷 관리 API는 Regional endpoint, 객체 API는 Zonal endpoint를 쓴다. VPC에서는 gateway endpoint로 추가 비용 없이 접근하며, S3용 AWS PrivateLink는 지원하지 않는다 |
+| 인증 | Zonal API는 `CreateSession`이 발급한 버킷 범위 임시 자격 증명을 쓰고, 이 자격 증명은 5분 뒤 만료된다. 콘솔, CLI와 SDK는 세션을 대신 만든다. `CopyObject`와 `HeadBucket`은 IAM 자격 증명으로 서명하지만 권한은 다른 Zonal API처럼 `s3express:CreateSession`으로 판정한다. 접근 제어 경계는 버킷 단위뿐이다 |
+| 미지원 기능 | Versioning, Object Lock, Replication, Event Notifications, 객체 태그, Lifecycle 전환, server access log, Transfer Acceleration, SSE-C, DSSE-KMS, MD5 checksum, AWS 관리형 정책 등. 객체 API 호출은 CloudTrail data event로 기록할 수 있다 |
+| 동작 차이 | `ListObjectsV2`는 사전순으로 반환하지 않고 delimiter는 `/`만 허용한다. 객체를 지우면 비게 된 상위 디렉터리도 지워진다. ETag는 MD5가 아닌 무작위 문자열이고 multipart part 번호는 연속이어야 한다. CLI `s3 sync` 대신 `s3 cp --recursive`를 쓴다 |
+
+Directory bucket의 Lifecycle은 객체 만료와 미완료 multipart upload 삭제 규칙을 지원하고 클래스 전환은 지원하지 않는다. S3 Lifecycle 서비스 주체(`lifecycle.s3.amazonaws.com`)에 `ReadWrite` 세션 모드의 `s3express:CreateSession`을 허용하지 않았거나 활성 정책이 그 주체의 삭제 권한을 명시적으로 거부하면 객체가 만료되지 않는다. CLI `s3 rm`, Mountpoint의 삭제와 콘솔의 Empty는 진행 중인 multipart upload를 지우지 못하므로 `ListMultipartUploads`로 찾아 `AbortMultipartUpload`로 정리한다.
+
+같은 AZ의 컴퓨트가 작은 단위 접근이나 무작위 접근을 많이 해서 저장소 지연이 처리 시간을 좌우하고, AZ를 잃어도 원본에서 다시 만들 수 있는 학습 입력, 대화형 분석 입력과 중간 산출물에 맞다(설계 제안). 유일한 원본이나 버전 관리, 복제, 이벤트 알림이 필요한 데이터는 general purpose bucket의 다중 AZ 클래스(Standard, Standard-IA 등)에 둔다(설계 제안). 도입 전에는 컴퓨트 서브넷의 AZ ID, `s3express:CreateSession` 기반 정책, 정렬된 목록과 ETag 비교에 기대는 코드를 점검하고, 위 5xx 진단의 server access log 대신 CloudTrail data event를 조사 경로로 준비하며 request metrics 지원 여부도 확인한다. 비용은 저장 기간, 요청 수와 전송량을 실제 접근 패턴으로 넣어 S3 요금표에서 비교한다(설계 제안).
+
 ## 출처
 - [Amazon S3 User Guide, Mount an Amazon S3 bucket as a local file system](https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint.html)
 - [Mountpoint for Amazon S3 file system behavior — AWS Labs](https://github.com/awslabs/mountpoint-s3/blob/main/doc/SEMANTICS.md)
@@ -144,6 +161,13 @@ S3 Express One Zone의 append와 rename 지원은 별도 조건이다. 위 gener
 - [Amazon S3 User Guide, Working with object metadata](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html)
 - [Amazon S3 User Guide, Editing object metadata in the Amazon S3 console](https://docs.aws.amazon.com/AmazonS3/latest/userguide/add-object-metadata.html)
 - [Amazon S3 User Guide, Checking object integrity](https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html)
+- [Amazon S3 User Guide, High performance workloads](https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html)
+- [Amazon S3 User Guide, Understanding and managing Amazon S3 storage classes](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html)
+- [Amazon S3 User Guide, Differences for directory buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-differences.html)
+- [Amazon S3 User Guide, Authorizing Zonal endpoint API operations with CreateSession](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-create-session.html)
+- [Amazon S3 User Guide, S3 Express One Zone Availability Zones and Regions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-Endpoints.html)
+- [Amazon S3 User Guide, Working with S3 Lifecycle for directory buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-buckets-objects-lifecycle.html)
+- [AWS Builder를 위한 2024년 AWS가 선보이는 혁신적인 클라우드 서비스 — Amazon Web Services Korea](https://www.youtube.com/watch?v=UlLKTq0fxI0) — re:Invent 2023에서 소개된 서비스를 다룬 2024-08 공개 발표. 본문의 계약은 위 공식 문서로 다시 대조했다
 - [인프런, Sungmin Kim, S3란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43742)
 - [인프런, Sungmin Kim, S3 실습 1부](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=45759)
 
