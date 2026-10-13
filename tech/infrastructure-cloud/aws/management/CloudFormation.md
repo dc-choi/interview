@@ -80,6 +80,16 @@ AWS의 **네이티브 IaC 서비스**. JSON, YAML 템플릿으로 AWS 리소스(
 - 조직(AWS Organizations) 단위로 일괄 배포 가능
 - 대표 사용 사례 — 모든 계정에 **공통 IAM 역할, CloudTrail, 보안 베이스라인** 일괄 적용
 
+### 폐쇄 또는 정지된 계정의 Stack instance 분리
+
+2026-10-13 공식 API와 AWS Knowledge Center 검색 본문 대조 기준. 대상 계정에 접근할 수 없어 삭제가 막히면 `DeleteStackInstances`의 `RetainStacks=true`로 StackSet과의 연결을 제거할 수 있다. 이 작업은 대상 스택과 리소스의 물리적 삭제가 아니다.
+
+- **Self-managed permissions**: 대상 `Accounts`와 `Regions`를 지정한다.
+- **Service-managed permissions**: `DeploymentTargets`에 OU와 대상 계정을 지정하고 `AccountFilterType=INTERSECTION`으로 해당 OU 안의 지정 계정만 선택한다. OU 전체를 대상으로 하는 `NONE`과 구분한다.
+- **보존 옵션**: CLI의 `--retain-stacks`는 스택과 리소스를 남긴다. 일반 스택 삭제의 `RetainResources`가 논리 리소스 ID를 받는 것과 다른 범위다.
+
+운영 점검에서는 계정, 리전과 권한 모델을 확인한 뒤 작업 결과와 StackSet에서의 분리 여부를 대조한다. 남은 자원의 정리 책임은 별도로 관리한다. 이 절은 문서에 근거한 절차이며 실제 계정에서 삭제를 실행한 결과가 아니다. 부분 대조이므로 기존 검증일은 유지한다.
+
 ## Nested Stack (중첩 스택)
 
 - 스택 안에서 다른 스택을 리소스로 선언 (`AWS::CloudFormation::Stack`)
@@ -177,6 +187,9 @@ IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인�
 
 ## 출처
 
+- [Delete stack instances from CloudFormation stack sets in closed or suspended AWS accounts — AWS re:Post](https://repost.aws/knowledge-center/cloudformation-removal-stacksets) — 검색 본문에서 계정 상태와 RetainStacks 조건 확인, 직접 열람은 403
+- [AWS CloudFormation — DeleteStackInstances](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_DeleteStackInstances.html)
+- [AWS CloudFormation — DeploymentTargets](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_DeploymentTargets.html)
 - [AWS CloudFormation — Troubleshooting, Delete stack fails](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html#troubleshooting-errors-delete-stack-fails)
 - [AWS CloudFormation — Delete a stack from the CloudFormation console](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-delete-stack.html)
 - [AWS CloudFormation — DeleteStack API](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_DeleteStack.html)

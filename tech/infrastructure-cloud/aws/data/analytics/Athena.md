@@ -146,6 +146,16 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 점검할 때는 이미 존재하는 객체 한 개의 파티션 값으로 조회 범위를 좁힌다. `SHOW PARTITIONS`에 projection으로만 계산한 파티션이 보이지 않는 것은 데이터 부재의 증거가 아니다. 이 절은 문서 대조와 진단 절차이며 AWS 계정에서 실행한 검증 결과는 아니다.
 
+## HIVE_BAD_DATA는 원본 값과 읽기 스키마를 대조한다
+
+2026-10-13 AWS 공식 문서 대조 기준. `HIVE_BAD_DATA`는 테이블 타입과 원본 값이 맞지 않거나 같은 필드에 서로 다른 타입이 섞일 때 발생할 수 있다. 오류에 나온 필드와 실제 S3 객체, 테이블 정의와 SerDe를 함께 확인한다.
+
+- **정수와 소수 혼합:** 정수 컬럼에 소수가 섞이면 원본의 의미와 필요한 정밀도를 먼저 정한다. 쿼리를 통과시키려고 소수부를 버리는 변환을 정답으로 취급하지 않는다.
+- **숫자 범위:** Athena의 `INT`는 32비트, `BIGINT`는 64비트 부호 있는 정수다. `DECIMAL(p,s)`는 전체 자릿수와 소수부 자릿수를 나누므로 실제 값이 두 조건에 들어가는지 확인한다.
+- **CSV 날짜 형식:** `OpenCSVSerDe`의 `DATE`는 1970-01-01 이후 일수, `TIMESTAMP`는 밀리초 단위 UNIX epoch를 읽는다. 일반 날짜 문자열을 그대로 받는다고 가정하지 않는다. 다른 형식은 `STRING`으로 읽고 쿼리에서 명시적으로 변환하는 방식을 검토한다. 이 규칙을 다른 SerDe나 Parquet에 일괄 적용하지 않는다.
+
+수정 뒤에는 문제가 난 값, 경계값과 정상값을 함께 조회해 값의 보존과 NULL 여부를 비교한다(운영 점검 제안). 실행 성공과 값의 정확성은 별도로 확인한다. 이 절은 문서 대조이며 실제 데이터로 실행한 결과가 아니므로 문서 전체의 기존 검증일은 유지한다.
+
 ## 시험 체크포인트
 
 - **S3 데이터를 SQL로 즉시 분석, 인프라 관리 없이** → **Athena**.
@@ -159,6 +169,8 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 ## 출처
 
+- [Amazon Athena, Data types in Amazon Athena](https://docs.aws.amazon.com/athena/latest/ug/data-types.html)
+- [Amazon Athena, Open CSV SerDe for processing CSV](https://docs.aws.amazon.com/athena/latest/ug/csv-serde.html)
 - [Amazon Athena, Specify a table location in Amazon S3](https://docs.aws.amazon.com/athena/latest/ug/tables-location-format.html)
 - [Amazon Athena, Troubleshoot issues in Athena](https://docs.aws.amazon.com/athena/latest/ug/troubleshooting-athena.html)
 - [Amazon Athena, MSCK REPAIR TABLE](https://docs.aws.amazon.com/athena/latest/ug/msck-repair-table.html)

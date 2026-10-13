@@ -31,6 +31,14 @@ AWS Organizations 등 여러 서비스의 기능을 조합해 멀티 계정 환�
 
 설계 문서는 개발자와 운영자가 함께 볼 수 있는 위치에서 관리하고, 조직에 맞는 변경 검토와 승인 절차를 둔다. IaC 템플릿을 재사용해도 새 워크로드의 접근 권한이나 운영 요구사항이 자동으로 충족되는 것은 아니다. 외부 구축 업체가 참여했는지와 별개로 내부 운영자가 구조, 예외와 변경 절차를 이해할 수 있어야 한다.
 
+### 기반 환경의 역량과 제품 설치를 구분한다
+
+2026-10-13 AWS Cloud Foundation 백서 대조 기준. Capability는 서비스 하나가 아니라 사람, 절차와 기술을 포함하는 운영 역량이다. 정의, 적용 시나리오, 구현 지침과 운영에 필요한 알림, 이벤트 처리 및 조치 절차를 함께 다룬다. 따라서 Control Tower 설치 완료만으로 기반 환경의 모든 운영 준비가 끝났다고 판단하지 않는다.
+
+각 역량에는 책임을 지는 주 담당 영역과 의사결정에 참여할 이해관계자가 있다. 현재 상태와 목표 상태를 비교하고 역량 사이의 의존성으로 구현 순서를 정한다. 모든 기능을 한 번에 설치하는 계획보다 현재 워크로드의 운영과 거버넌스 요구에 맞게 범위를 정하고 확장하는 방식이다.
+
+적용 예로 감사 로그 기능은 저장소 생성뿐 아니라 열람 책임, 누락 감지와 사건 대응 절차까지 점검할 수 있다. 이는 백서의 역량 개념을 적용한 점검 예이며, Control Tower가 해당 절차를 자동으로 완성한다는 뜻은 아니다. 이 절만 추가 대조했으므로 문서 전체의 기존 검증일은 유지한다.
+
 ## 계정 구조와 사용자 접근 권한을 따로 설계한다
 
 2026-10-13 IAM Identity Center 공식 문서 대조 기준. Permission set은 하나 이상의 IAM 정책을 묶은 템플릿이며, 사용자나 그룹에 대상 AWS 계정의 접근 권한을 할당할 때 사용한다. 할당하면 Identity Center가 대상 계정에 관리 대상 IAM 역할을 만들고 정책을 연결한다. OU에 계정을 배치하는 것과 누가 어떤 역할로 접근할지 정하는 것은 별개의 작업이다.
@@ -89,6 +97,8 @@ Control Tower 도입 자체가 규제 준수의 완료 증거는 아니다. AWS�
 
 ## 출처
 
+- [AWS, Establishing Your Cloud Foundation on AWS — Capabilities](https://docs.aws.amazon.com/whitepapers/latest/establishing-your-cloud-foundation-on-aws/capabilities.html)
+- [AWS, Establishing Your Cloud Foundation on AWS — Working with the capabilities](https://docs.aws.amazon.com/whitepapers/latest/establishing-your-cloud-foundation-on-aws/working-with-the-capabilities.html)
 - [AWS IAM Identity Center, Manage AWS accounts with permission sets](https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html) — 2026-10-13 계정별 사용자 접근과 permission set의 역할 대조
 - [AWS Config, Setting Up Auto Remediation for AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/setup-autoremediation.html)
 - [AWS Config, PutRemediationConfigurations](https://docs.aws.amazon.com/config/latest/APIReference/API_PutRemediationConfigurations.html)
