@@ -46,6 +46,14 @@ SCP는 조직 외부 주체의 권한을 직접 제한하지 않는다. 외부 �
 
 선언적 정책은 API 호출 권한 대신 서비스 control plane에서 구성 기준을 집행한다. 정책 유형별 지원 속성과 상속 규칙을 확인하며 SCP의 평가 방식을 그대로 대입하지 않는다. [[AWS-Control-Tower|Control Tower]]의 탐지 통제는 위반을 알리는 별도 기능이다.
 
+### TLS 강제 RCP의 범위를 읽는 방법
+
+부분 검증(2026-10-13): Organizations의 RCP 구문 예제는 `Action: s3:*`, `Resource: *`와 `aws:SecureTransport` 조건을 조합해 TLS를 사용하지 않는 S3 요청을 거부한다. 여기서 `Resource: *`는 모든 AWS 통신을 암호화한다는 뜻이 아니다. 실제 범위는 statement의 작업, RCP 지원 리소스와 정책이 연결된 계정 경계로 결정된다.
+
+`aws:SecureTransport`는 요청이 TLS를 사용하는지 검사한다. 이 조건만으로 저장 데이터의 암호화 방식이나 KMS 키 선택까지 강제하지는 않는다. 전송 보호와 저장 시 암호화의 요구사항은 별도 정책과 설정으로 검증한다.
+
+RCP 예제는 그대로 배포하라는 권고가 아니다. 테스트 OU에서 허용할 TLS 요청과 거부할 비 TLS 요청, 서비스 연동에 필요한 예외를 확인한 뒤 범위를 넓힌다. 관리 계정 리소스와 service-linked role 호출은 RCP의 제한 대상이 아니라는 점도 검증 대상 선정에 반영한다. 이는 정책 문서 대조에 따른 점검 절차이며 실제 조직에 적용한 결과가 아니다. 기존 절 전체의 검증일은 유지한다.
+
 ## 백업 정책의 상속과 실행 조건
 
 2026-10-10 AWS 공식 문서 기준이다. 백업 정책은 조직 루트, OU와 계정에 연결하며, 상위 정책과 계정 정책을 상속 규칙에 따라 합친 **effective backup policy**가 해당 계정의 백업 계획을 결정한다. 하위 정책의 재정의가 가능하므로 조직 전체가 같은 설정이라고 단정하지 않는다.
@@ -95,6 +103,9 @@ SCP는 조직 외부 주체의 권한을 직접 제한하지 않는다. 외부 �
 
 ## 출처
 
+- [AWS, RCP syntax](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_rcps_syntax.html)
+- [AWS, Resource control policy examples](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_rcps_examples.html)
+- [AWS IAM, AWS global condition context keys — aws:SecureTransport](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-securetransport)
 - [AWS, Tag policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_tag-policies.html)
 - [Amazon EC2, Grant permission to tag Amazon EC2 resources during creation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-iam-actions-tagging.html)
 - [Implement AWS resource tagging strategy using AWS Tag Policies and Service Control Policies (SCPs) — AWS](https://aws.amazon.com/blogs/mt/implement-aws-resource-tagging-strategy-using-aws-tag-policies-and-service-control-policies-scps/)

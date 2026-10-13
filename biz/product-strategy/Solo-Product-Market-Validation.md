@@ -72,6 +72,12 @@ Fake Door는 신청 직후 아직 제공되지 않는다는 사실을 알린다.
 
 Buffer의 초기 실험은 소개와 이메일 신청에 요금 선택 단계를 추가한 뒤 작동 제품을 개발했다. 창업자의 2011년 회고에서 7주는 저녁과 주말의 제품 개발 기간이고, 첫 유료 고객은 출시 후 4일 안에 나왔다. 가격 클릭을 결제로 해석하거나 대기자 모집 기간과 개발 기간을 합치지 않는다. 이메일 120명이라는 수치는 이 회고에서 확인되지 않아 검증 기준으로 쓰지 않는다.
 
+### 구현 범위와 관찰할 경험을 분리한다
+
+프로토타입은 내부 시스템을 모두 구현하기 전에 고객이 판단할 핵심 경험을 재현하는 수단이다. GV의 Design Sprint는 문제와 가설을 고른 뒤 현실적인 고객 접점을 만들고 대상 고객의 반응을 관찰하는 절차다. 모든 기능을 완성하는 것과 시험할 경험을 완성하는 것은 다르다.
+
+적용 제안: 카드 게임이면 핵심 규칙을 직접 플레이할 수 있는 모형을, 업무 도구면 대표 입력에서 결과를 확인하는 화면 흐름을 만든다. 무엇을 수동으로 대체했는지 기록하고, 팀 내부 반복 시험 뒤에는 실제 대상 고객이 같은 가치를 경험하는지 확인한다. 내부에서 재미있거나 사용하기 편하다는 판단만으로 시장 수요와 결제, 지속 운영을 통과 처리하지 않는다. 각 반복에서 관찰한 문제와 바꿀 가정이 남아야 한다.
+
 ## 콘텐츠도 최소 제품이 될 수 있다
 
 핵심 가치가 정보와 사례 접근이라면 인터뷰, 뉴스레터나 수동 큐레이션으로 먼저 전달할 수 있다. 소프트웨어 기능 수 대신 사용자가 얻는 결과를 기준으로 최소 단위를 정한다. 콘텐츠 수집과 편집 노동, 반복 방문과 구독, 광고주나 후원자의 실제 지불을 별도로 관찰한다.
@@ -179,6 +185,7 @@ Indie Hackers 공식 소개는 2017년 4월 Stripe 인수와 2023년 3월 독립
 
 ## 출처
 
+- [The Design Sprint — GV](https://www.gv.com/sprint)
 - [Assumption Testing — Product Talk](https://www.producttalk.org/glossary-discovery-assumption-testing/)
 - [Assumption Testing: Everything You Need to Know to Get Started — Product Talk](https://www.producttalk.org/assumption-testing/) — 실패한 가정의 수정, 여러 테스트의 종합 판단과 결과 기록
 - [Viability — Product Talk](https://www.producttalk.org/glossary-discovery-viability/)

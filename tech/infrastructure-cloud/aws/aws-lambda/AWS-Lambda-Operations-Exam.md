@@ -103,6 +103,8 @@ Lambda가 업무 판단 없이 다른 서비스의 API만 호출한다면 직접
 
 ## 버전과 Alias — 불변 배포 단위, 환경 분리, 롤백
 
+부분 검증(2026-10-13): 기능별 임시 환경은 함수 alias만 바꾸는 방식과 구분한다. AWS의 애플리케이션 수명주기 지침은 IaC로 별도 스택을 배포해 관리형 서비스와의 통합을 시험하고, 사용이 끝난 환경을 정리하도록 안내한다. Alias로 함수 버전을 나눠도 함께 쓰는 DB, 큐와 권한까지 자동 분리되지는 않는다(설계 해석). 테스트용 데이터와 외부 연동 설정, 스택 소유자와 정리 조건을 함께 정하고 운영 자원에 쓰기가 발생하지 않는지 확인한다(운영 제안). 실제 환경을 배포한 기록은 아니며 기존 절 전체의 검증일은 유지한다.
+
 - **`$LATEST`**: 코드와 설정을 고칠 수 있는 유일한 미발행 버전이다. 코드를 배포할 때마다 덮어쓰며, qualifier 없는 함수 ARN으로 호출하면 `$LATEST`가 실행된다
 - **발행 버전**: `publish-version`은 `$LATEST`를 복사해 코드, 런타임, 아키텍처, 메모리, layer 등 대부분의 설정을 고정한 스냅샷을 만든다. 번호는 1부터 늘고 함수를 지웠다 다시 만들어도 재사용되지 않으며 ARN 끝에 `:1`처럼 붙는다. `$LATEST`가 직전 발행 버전과 같으면 새 버전이 생기지 않는다. 발행 뒤에도 트리거, Destinations, Provisioned Concurrency, 비동기 호출 설정은 바꿀 수 있다
 - **Alias**: 한 버전을 가리키는 이름 포인터이며 자기 ARN(`function:my-fn:Prod`)을 가진다. 다른 alias는 가리킬 수 없다. Prod alias는 검증된 버전, Staging alias는 새 버전을 가리키게 두면 환경을 나눌 수 있고, 문제가 생기면 alias를 이전 발행 버전으로 되돌려 새 배포 없이 롤백한다
@@ -189,6 +191,7 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 
 ## 출처
 
+- [Building well-architected serverless applications: Approaching application lifecycle management – part 2 — AWS](https://aws.amazon.com/blogs/compute/building-well-architected-serverless-applications-approaching-application-lifecycle-management-part-2/)
 - [AWS Lambda Web Adapter — AWS](https://github.com/aws/aws-lambda-web-adapter)
 - [Best practices for working with AWS Lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html)
 - [Designing Lambda applications](https://docs.aws.amazon.com/lambda/latest/dg/concepts-application-design.html)
