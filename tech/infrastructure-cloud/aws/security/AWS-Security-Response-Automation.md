@@ -31,6 +31,19 @@ Security Hub CSPM의 automation rule은 finding 필드를 변경한다. 이를 E
 
 운영 점검 예로, 대상 계정과 리전 목록을 실제 활성화 및 집계 설정과 대조한다. 화면에 경보가 없다는 관측과 필요한 영역을 모두 검사했다는 결론을 구분한다. 이 구조는 Security Hub CSPM의 집계 방식이며, 특정 기업의 SIEM 구성이나 원본 로그 전체 수집을 설명하는 것은 아니다. 이 절만 추가 대조했으며 기존 검증일은 유지한다.
 
+## Finding 집계와 로그 분석 저장소
+
+2026-10-13 AWS 공식 가이드 부분 대조 기준이다. 중앙 대시보드를 구성할 때 탐지 결과를 모으는 경로와 조사할 로그를 보관하는 경로를 구분한다.
+
+| 대상 | 형식과 역할 | 확인할 경계 |
+|---|---|---|
+| Security Hub CSPM finding | 보안 검사와 탐지 결과를 ASFF로 정규화 | finding 수집을 원본 로그 전체 수집으로 간주하지 않는다 |
+| Security Lake의 로그와 이벤트 | 고객 계정의 S3 기반 데이터 레이크, OCSF 스키마와 Parquet 형식 | 필요한 데이터 소스, 계정과 리전의 수집 범위를 확인한다 |
+
+Security Lake에는 Security Hub CSPM finding도 수집할 수 있다. 따라서 두 서비스를 서로 배타적인 대체재로 보지 않는다. finding은 조사의 출발점이고, 관련 로그는 사건의 범위와 실제 활동을 대조하는 근거로 사용한다.
+
+설계 점검 제안: 대시보드의 각 지표가 finding 건수인지 로그 이벤트 건수인지 명시하고, 사건 시각과 원래 계정, 리전, 자원을 추적할 수 있게 한다. 정규화된 분석 데이터의 보존 정책과 별도 원본 로그 보존 필요성도 나눠 결정한다. 이 절의 부분 대조는 문서 전체 재검증이나 실제 계정의 수집 확인을 뜻하지 않는다.
+
 ## 런북의 권한과 승인
 
 AWS의 Automated Security Response 솔루션은 대상 계정의 조치 역할과 Systems Manager 런북을 구성하는 예다. 계정 간 이벤트 전달만으로 대상 자원의 변경 권한까지 생기지는 않는다. 조치에 필요한 API와 대상 자원으로 실행 역할을 제한한다.
@@ -84,6 +97,8 @@ GuardDuty의 자격 증명 관련 finding은 IAM 주체, 호출 API, 시각과 I
 
 ## 출처
 
+- [AWS, Creating and updating findings in Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings.html)
+- [AWS, What is Amazon Security Lake?](https://docs.aws.amazon.com/security-lake/latest/userguide/what-is-security-lake.html)
 - [AWS, Understanding cross-Region aggregation in Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/finding-aggregation.html)
 - [AWS, Revoke IAM role temporary security credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_revoke-sessions.html)
 - [AWS, Remediating potentially compromised AWS credentials](https://docs.aws.amazon.com/guardduty/latest/ug/compromised-creds.html)

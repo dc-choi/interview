@@ -86,6 +86,16 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 
 운영 제안: 미캐시 다운로드, 기존 저장 아티팩트와 컨테이너 이미지를 각각 시험하고 정책 위반 표시, 격리 상태와 다운로드 결과를 함께 남긴다. 레지스트리 차단과 이미 배포한 워크로드의 영향 조사는 별도 작업이다.
 
+### AI 모델과 컨테이너의 검사 범위
+
+2026-10-13 JFrog Xray 공식 지원 문서 부분 대조 기준이다. 모델을 저장하고 버전을 관리하는 기능과 그 모델의 위험을 검사하는 기능은 구분한다.
+
+- **저장소 범위:** Artifactory의 local repository는 Xray 색인 설정 뒤 검사한다. remote repository는 캐시된 아티팩트만 검사하며 upstream 레지스트리 전체를 검사하지 않는다.
+- **컨테이너와 모델:** 컨테이너 이미지의 OS 패키지, 의존성과 포함된 ML 모델을 검사하지만 모델의 출처에 따라 라이선스와 악성 모델 탐지 지원이 달라진다. 같은 이미지 안에 있다는 이유로 모든 구성요소가 같은 검사를 받았다고 판단하지 않는다.
+- **결과의 의미:** Xray는 모델 자체에 CVE 취약점 결과를 보고하지 않는다. CVE가 없다는 결과만으로 모델의 악성 동작이나 출력 안전성이 검증됐다고 해석하지 않는다.
+
+운영 점검 제안: 반입한 모델과 실행 이미지의 버전, 실제 검사 대상과 지원 범위, 승인한 배포 대상을 함께 기록한다. 검사하지 못한 구성요소를 정상으로 집계하지 않는다. 이 절의 검사 범위만 대조했으며 문서 전체의 검증일은 유지한다.
+
 ### 대응 플레이북 (사고 발생 시)
 
 1. 영향받는 버전, 아티팩트가 깔렸는지 확인 (lockfile, `pip show`, `node_modules` 내 의심 패키지)
@@ -109,6 +119,7 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 - **Chrome 제로데이 (2026-02-13)** — CSS use-after-free 취약점(CVE-2026-2441)을 수정한 스테이블 업데이트가 배포됐고, 릴리스 노트에 악용 사례가 실제로 존재한다고 명시. AI 도구와 무관한 기본 보안 운영 부담의 예.
 
 ## 출처
+- [JFrog, Supported Technologies](https://docs.jfrog.com/security/docs/supported-technologies-xray)
 - [Cloudsmith, Package deny policy](https://docs.cloudsmith.com/policy-management/deny-policy)
 - [Cloudsmith, Vulnerability policy](https://docs.cloudsmith.com/policy-management/vulnerability-policy)
 - [Security Update: Suspected Supply Chain Incident — LiteLLM](https://docs.litellm.ai/blog/security-update-march-2026)

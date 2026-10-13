@@ -20,6 +20,16 @@ GameLift Servers는 멀티플레이 게임 서버의 호스팅과 세션 생명�
 
 이를 적용할 때는 이벤트 전환으로 모든 API의 호출 한도 문제가 해결됐다고 판단하지 않는다. 배치 상태 조회, fleet 정보 조회와 세션 검색의 호출량을 따로 측정하고, 자주 바뀌지 않는 정보의 갱신 주기와 사용자 요청당 외부 호출 수를 조정한다.
 
+## 백엔드 API와 실제 플레이 연결
+
+2026-10-13 공식 상호작용 가이드 기준으로, 관리형 EC2와 Anywhere 구성의 백엔드는 클라이언트를 대신해 GameLift Servers API로 세션을 요청한다. 세션이 준비되면 클라이언트는 전달받은 주소와 포트로 게임 서버 프로세스에 직접 연결한다. 백엔드를 Lambda로 구성하더라도 실제 플레이 연결까지 Lambda가 유지하는 구조는 아니다.
+
+- `ProcessReady()`는 서버 프로세스가 세션을 호스팅할 준비가 됐다는 통지다. 새 세션의 초기화 뒤에는 `ActivateGameSession()`을 호출해 플레이어 연결 준비를 알린다.
+- 선택적으로 player session을 사용하면 백엔드가 만든 예약은 `RESERVED` 상태다. 서버는 연결 시 `AcceptPlayerSession()`으로 ID를 검증하며, 제한 시간 안에 수락하지 않으면 `TIMEDOUT`으로 바뀌고 슬롯이 다시 열린다.
+- 연결 종료를 감지하면 `RemovePlayerSession()`으로 알려 슬롯을 반환한다. 게임 세션 전체 종료와 플레이어 한 명의 이탈을 같은 작업으로 처리하지 않는다.
+
+운영 점검 제안: 매치 요청 성공, 세션 활성화, 플레이어 예약과 실제 접속을 각각 관측한다. 매칭 API가 정상이어도 게임 서버의 주소, 포트 접근이나 player session 검증에서 접속이 실패할 수 있다. 실제 네트워크와 부하 시험을 수행한 기록은 아니다.
+
 ## Anywhere와 FleetIQ의 운영 책임
 
 2026-10-13 공식 문서 대조 기준이다. 자체 서버를 활용한다는 공통점만으로 두 방식을 같은 호스팅 모델로 취급하지 않는다.
@@ -71,6 +81,7 @@ On-Demand 목적지를 두었다는 것만으로 즉시 대체할 용량이 생�
 
 ## 출처
 
+- [Amazon GameLift Servers, Game client/server interactions with Amazon GameLift Servers](https://docs.aws.amazon.com/gameliftservers/latest/developerguide/gamelift-sdk-interactions.html)
 - [Amazon GameLift Servers, Set up event notification for game session placement](https://docs.aws.amazon.com/gameliftservers/latest/developerguide/queue-notification.html)
 - [Amazon GameLift Servers, Amazon GameLift Servers Anywhere fleets](https://docs.aws.amazon.com/gameliftservers/latest/developerguide/fleets-intro-anywhere.html)
 - [Amazon GameLift Servers, How Amazon GameLift Servers FleetIQ works](https://docs.aws.amazon.com/gameliftservers/latest/fleetiqguide/gsg-howitworks.html)
