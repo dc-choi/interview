@@ -44,6 +44,14 @@ Martin Fowler가 이름 붙인 고전 패턴. 레거시에 **seam**을 끼워 �
 - **과도기 아키텍처(Transitional Architecture)**: 신구 공존을 위해 설치하고 교체가 끝나면 제거할 것을 전제로 한 요소다. 버릴 코드의 비용은 줄이는 위험과 앞당기는 가치로 정당화한다. 도입 전에 세 가지를 답한다. 줄이는 전환 위험(빅뱅 전환, 조용한 누락)이 구축과 운영 비용보다 큰가, 전환 중 조용히 실패하는 구간을 구간별 지표와 경보로 드러내는가, 관측 가능한 제거 조건과 제거를 쉽게 하는 장치가 있는가. 생산자별 전환 일정이 달라 기한을 예측하기 어렵다면 날짜 대신 모든 쓰기 경로에서 센 레거시 입력 건수 0을 제거 조건으로 두고, 월말이나 분기 배치처럼 드물게 도는 생산자까지 포함하는 관측 기간 동안 0이 유지되는지 확인한다. 정해진 주기 없이 사건이 날 때만 쓰는 생산자는 관측 기간에 드러나지 않을 수 있으므로 구 입구(예: 테이블 INSERT, 프로시저 호출)를 쓰는 코드와 작업 목록과도 대조한 뒤 걷어낸다. 제거 뒤 구 입구로 들어오는 쓰기는 조용히 쌓이지 않게 거부하거나 경보로 드러낸다.
 - **전환 순서**: CDC 병행 소비처럼 두 경로가 같은 입력을 각자 소비해 켜고 끄는 지점이 둘로 나뉘면, 신 경로를 먼저 켤 때 두 경로가 함께 처리하는 중첩 구간(중복 위험)이, 구 경로를 먼저 끌 때 아무도 처리하지 않는 공백 구간(누락이나 지연 위험)이 생기므로 둘 중 더 비싼 쪽을 피한다. 파사드나 라우터 한 곳이 건마다 목적지를 하나만 고르면 그 지점의 설정 변경으로 전환해 중첩 구간을 만들지 않을 수 있다(라우터가 재전달하면 같은 건이 전환 전후 양쪽으로 갈 수 있다). 되돌릴 수 없는 외부 효과에서 중첩을 택하면 저유량 시간대에 짧게 둔다. 두 경로가 같은 [[Idempotent-Consumer|멱등 키나 조건부 claim]]을 공유할 수 있으면 그것으로 두 경로의 중복을 거르고, 공유하지 못하면 남는 중복 가능성을 감수 범위로 명시한다. 새 경로를 [[Feature-Flag|기능 플래그]] OFF로 먼저 배포할 때 플래그는 외부 호출뿐 아니라 완료 이력 기록과 원본 행 삭제처럼 구 경로와 공유하는 상태 변경도 막아야 한다. OFF 상태의 새 경로가 행을 지우거나 완료로 표시하면 구 경로가 그 건을 건너뛰어 조용한 누락이 생긴다([[Shadow-Traffic#부수효과 차단이 전제조건|부수효과 차단]]). 이렇게 두면 수신, 원본 조회와 요청 구성은 운영 트래픽으로 검증되지만, 외부 호출과 완료 기록은 플래그를 켠 순간 운영 트래픽으로 처음 실행되고 그 뒤의 외부 효과는 플래그를 꺼도 되돌릴 수 없다.
 
+### DB 변경 전달과 업무 의미 변환을 나눈다
+
+CDC로 행 변경을 전달하는 것과 새 도메인의 업무 이벤트를 정의하는 것은 다른 책임이다. Anti-corruption layer는 기존 모델의 의미를 새 모델에 맞게 변환한다. 레거시의 테이블과 필드를 그대로 새 서비스의 계약으로 삼을지, 변환 계층을 둘지부터 결정한다.
+
+설계 점검 제안: 여러 테이블, 저장 프로시저와 배치가 하나의 업무 상태를 만든다면 어떤 커밋과 조건을 상태 전이로 인정할지 정한다. 중간 상태를 완성된 업무 이벤트로 발행하지 않는지, 같은 변경을 다시 읽어도 중복 부수효과가 없는지 검증한다. 이는 CDC 도입만으로 자동 해결되는 조건이 아니다.
+
+관계형 DB의 outbox 방식은 업무 데이터와 이벤트 레코드를 같은 트랜잭션에 저장하고 별도 발행자가 커밋된 이벤트를 전달한다. 발행이나 전달 과정의 중복 가능성은 남으므로 소비자의 멱등 처리와 순서 요구사항을 별도로 확인한다. 2026-10-14 AWS의 ACL과 transactional outbox 지침을 대조했으며, 특정 회사의 무중단 전환이나 이벤트 무손실을 검증한 것은 아니다.
+
 ## 2. 인프라 단절 (Infrastructure Disconnection)
 
 Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서로 다른 인프라에 둔 뒤 API(WebAPI/gRPC/JSON) 로만 연결**. 더 나아가 **지역/사용자 세그먼트/점포 단위**로 트래픽을 끊어내며 이동.
@@ -194,6 +202,8 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 - "사람도 레거시가 될 수 있다"의 조직적 의미
 
 ## 출처
+- [AWS Prescriptive Guidance, Anti-corruption layer pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/acl.html)
+- [AWS Prescriptive Guidance, Transactional outbox pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
 - [AWS Prescriptive Guidance, The strangler fig pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-aspnet-web-services/fig-pattern.html) — 초기 전환 컴포넌트 선택 기준
 - [AWS Transform, Transformation of mainframe applications](https://docs.aws.amazon.com/transform/latest/userguide/transform-app-mainframe-workflow.html)
 - [AWS Transform, How AWS Transform modernizes .NET applications](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-ide-how.html)

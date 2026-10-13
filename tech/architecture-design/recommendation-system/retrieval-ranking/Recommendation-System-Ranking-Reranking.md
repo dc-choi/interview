@@ -52,6 +52,25 @@ Pointwise, pairwise와 listwise는 주로 학습 예제와 loss의 단위다. �
 
 GBDT는 scorer의 모델 계열이고 Learning-to-Rank는 순서 학습 문제와 목적함수의 계열이다. 둘은 대안 축이 아니며 LambdaMART처럼 gradient boosted tree에 pairwise 순서 목적을 결합할 수 있다.
 
+## LLM 재채점과 점수 캐시
+
+검색에서 재랭킹은 회수한 후보의 관련성을 다시 계산해 순서를 바꾸는 단계도 뜻한다. 이 문서의 목록 다양성 조정과 구분한다. Bedrock의 관리형 reranker는 질의와 문서 목록을 입력받아 관련성 순으로 재정렬한다. 범용 LLM에 평가 기준을 주어 직접 점수를 생성하는 설계와 같은 API라고 가정하지 않는다.
+
+다음은 후보마다 독립적으로 점수를 생성하는 LLM 랭커에 적용할 설계 제안이다. 후보 전체를 함께 비교하는 listwise 추론에는 목록 구성도 입력이므로 질의와 후보 한 쌍만으로 결과를 재사용하면 안 된다.
+
+| 캐시 | 재사용하는 것 | 적중 뒤 남는 작업 |
+|---|---|---|
+| 프롬프트 캐시 | 고정 평가 기준과 질의 등 반복되는 입력 prefix의 처리 결과 | 새 후보를 처리하고 점수를 생성하는 추론 |
+| 점수 결과 캐시 | 같은 평가 입력으로 이미 생성한 점수 | 해당 후보의 LLM 호출을 생략하고 최종 목록 구성 |
+
+프롬프트 캐시는 지원 모델과 API, 최소 입력 길이와 만료 조건을 확인한다. 같은 prefix여도 적중이 보장되지 않으므로 사용량 필드로 확인한다. 일반 원리는 [[LLM-Prompt-Caching|프롬프트 캐싱]]을 따른다.
+
+- **점수 유효성**: 질의와 후보의 내용 버전, 평가 기준과 모델 버전, 점수에 영향을 주는 맥락을 키나 무효화 조건에 반영한다. ID가 같아도 내용이 바뀌면 이전 점수의 재사용을 막는다. 캐시된 점수가 현재 노출 권한이나 가용성을 대신하지 않는다.
+- **미적중 경로**: cache-aside를 점수 계산에 적용하면 캐시를 먼저 조회하고, 없을 때 추론한 결과를 저장한다. TTL은 변경 빈도와 오래된 점수의 영향을 보고 정하며, TTL만으로 즉시 무효화를 보장하지 않는다.
+- **측정**: 결과 캐시의 적중과 미적중, 모델 입력 캐시의 적중을 따로 센다. 후보 수, 전체 요청 지연과 추론 호출 수를 함께 비교한다. 캐시 조회 시간만을 전체 추천 응답 시간으로 보고하지 않는다.
+
+2026-10-14 AWS의 reranking, prompt caching과 cache-aside 및 캐시 유효성 문서를 대조했다. 키 설계와 측정 항목은 이를 랭커에 적용한 제안이며, 특정 채용 서비스의 성과 수치나 기존 추천 모델 전체를 재검증한 것은 아니다.
+
 ## Implicit label을 그대로 믿지 않는다
 
 - 클릭은 관심 신호지만 제목과 위치의 영향을 받는다.
@@ -153,6 +172,10 @@ Soft objective는 정확도와 tradeoff가 있으므로 weight와 영향 범위�
 
 ## 출처
 
+- [Amazon Bedrock, Improve the relevance of query responses with a reranker model](https://docs.aws.amazon.com/bedrock/latest/userguide/rerank.html)
+- [Amazon Bedrock, Prompt caching for faster model inference](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html)
+- [AWS Whitepaper, Caching patterns](https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/caching-patterns.html)
+- [AWS Whitepaper, Cache Validity](https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/cache-validity.html)
 - [Scoring — Google for Developers](https://developers.google.com/machine-learning/recommendation/dnn/scoring)
 - [Re-ranking — Google for Developers](https://developers.google.com/machine-learning/recommendation/dnn/re-ranking)
 - [Listwise ranking — TensorFlow Recommenders](https://www.tensorflow.org/recommenders/examples/listwise_ranking)
