@@ -16,7 +16,7 @@ aliases: ["RDS Monitoring Metrics", "RDS 모니터링 지표와 알람"]
 | **DB 내부 지표** | CloudWatch Database Insights와 Performance Insights 데이터 | 쿼리 대기 이벤트, Top SQL, 세션 활동 |
 | **쿼리 로그** | RDS Log + CloudWatch Logs | Slow Query, DDL, Error |
 
-세 계층을 결합해야 "왜 느려졌는가"에 답할 수 있다. CloudWatch만 보면 CPU 90% 사실만 알지 어떤 쿼리 때문인지 모름.
+세 계층을 결합해야 느려진 이유를 설명할 수 있다. CloudWatch만 보면 CPU 90% 사실만 알지 어떤 쿼리 때문인지 모름.
 
 ## CloudWatch 핵심 지표
 
@@ -62,15 +62,31 @@ AWS는 Performance Insights 독립 콘솔 경험을 **2026-07-31** 종료하고 
 - 문제 쿼리 식별 후 `EXPLAIN`, 인덱스 조정으로 연결
 - 총 AAS가 vCPU 선을 넘으면 CPU, I/O, lock 등 기여도를 먼저 나눈다. CPU load 자체가 vCPU 용량에 근접하면 쿼리와 인스턴스 CPU를 검토하고, wait가 주원인이면 해당 병목을 해결한다.
 
+### AAS는 실행 횟수가 아니라 표본의 평균이다
+
+Database Insights는 매초 활성 세션을 표본 수집하고, 관찰 구간의 활성 세션 수 합계를 표본 수로 나눠 AAS를 계산한다. 예를 들어 5개 표본이 각각 1, 0, 2, 1, 1이면 AAS는 1이다. 연결 수, 완료한 트랜잭션 수나 초당 쿼리 수를 뜻하지 않는다.
+
+- 짧은 쿼리는 표본 사이에서 시작하고 끝날 수 있다. Top SQL에 보이지 않는다는 사실만으로 실행되지 않았다고 결론 내리지 않는다. 실행 이력 확인에는 해당 엔진의 로그와 통계를 함께 사용한다.
+- 같은 총 트랜잭션 수라도 동시에 실행하는 세션 수와 각 작업의 실행 및 대기 시간이 다르면 DB Load가 달라진다. 부하 시험에서는 총 작업량과 동시성을 따로 기록한다.
+- AAS가 낮거나 Max vCPU 선 아래여도 특정 작업의 대기와 자원 경합은 있을 수 있다. AAS 하나로 DB 문제를 배제하거나 인스턴스 축소를 결정하지 않고, 문제가 발생한 시간대의 대기 이벤트와 응답 지연을 함께 본다.
+
 ## Enhanced Monitoring
 
 RDS의 기본 CloudWatch 지표는 보통 1분 단위로 게시된다. **Enhanced Monitoring**은 활성화할 때 **1, 5, 10, 15, 30, 60초 중 하나**의 수집 간격으로 OS 레벨 지표를 수집한다.
 
 - `top` 스타일 OS 프로세스 목록. SQL 원인 분석은 Database Insights와 쿼리 로그를 함께 본다.
 - Linux I/O 통계(swap, iowait, context switch)
-- 짧은 피크를 놓치지 않음 (기본 CloudWatch는 1분 평균이라 스파이크 묻힘)
+- 기본 1분 지표에서 희석되는 짧은 피크를 더 세밀하게 관찰할 수 있다. 선택한 수집 간격보다 짧은 변화를 모두 포착한다는 보장은 아니다.
 
 추가 비용과 수집 오버헤드를 확인하고, 짧은 OS 스파이크 분석이 필요한 핵심 DB와 튜닝 환경에서 사용한다.
+
+### 수집 위치, 표시 주기와 보관 위치를 구분한다
+
+- **수집 위치:** RDS의 CloudWatch CPU 지표는 하이퍼바이저에서, Enhanced Monitoring 지표는 DB 인스턴스의 에이전트에서 수집한다. 관측 위치가 달라 CPU 수치가 일치하지 않을 수 있다.
+- **표시 주기:** Enhanced Monitoring을 1초 간격으로 설정해도 RDS 콘솔은 가장 빠르게 5초마다 갱신된다. 1초 단위 자료를 확인하려면 CloudWatch Logs를 조회한다.
+- **보관 위치:** Enhanced Monitoring 결과는 일반 CloudWatch Metrics가 아니라 CloudWatch Logs의 `RDSOSMetrics` 로그 그룹에 저장한다. 기본 보관 기간은 30일이며 로그 그룹의 retention으로 바꾼다. 간격을 짧게 할수록 보고 빈도와 로그 비용도 늘 수 있다.
+
+부분 검증(2026-10-13): AAS 표본 해석과 Enhanced Monitoring의 수집 위치, 표시 주기, 보관 설정을 AWS 공식 문서와 대조했다. 부하 시험과 로그 대조 절차는 지표의 정의와 표본 수집 한계를 적용한 운영 제안이다. 기존 Oracle 메모리 진단 등 나머지 절의 검증일은 유지한다.
 
 ## 출처
 
@@ -79,6 +95,9 @@ RDS의 기본 CloudWatch 지표는 보통 1분 단위로 게시된다. **Enhance
 - [AWS re:Post — Why does my Amazon RDS DB instance use swap memory when I have sufficient memory?](https://repost.aws/knowledge-center/troubleshoot-rds-swap-memory)
 - [AWS re:Post — How do I handle low free memory or high swap usage issues in my Amazon RDS for Oracle database instance?](https://repost.aws/knowledge-center/rds-oracle-low-memory-high-swap)
 - [AWS RDS, Performance Insights overview and 2026 transition](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.Overview.html)
+- [AWS RDS, Database load](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.Overview.ActiveSessions.html)
+- [AWS RDS, Maximum CPU](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.Overview.MaxCPU.html)
+- [AWS RDS, Monitoring OS metrics with Enhanced Monitoring](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.html)
 - [CloudWatch Database Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html)
 - [proimaginer — Amazon RDS, CloudWatch로 모니터링하기](https://proimaginer.tistory.com/56)
 - [AWS Docs — Enhanced Monitoring 활성화](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.Enabling.html)
