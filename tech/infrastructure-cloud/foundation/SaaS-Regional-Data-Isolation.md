@@ -46,6 +46,19 @@ SaaS의 control plane은 온보딩, 인증, 테넌트 관리와 운영 분석 �
 
 SaaS Builder Toolkit for AWS는 control plane과 application plane의 패턴을 CDK 기반 구성요소로 제공한다. 공식 저장소는 이를 sample code로 규정하고 운영 배포 전 조직 기준에 맞는 인가와 보안 구현을 요구한다. 툴킷 도입 자체를 격리나 데이터 위치 요구 충족의 증거로 삼지 않는다.
 
+## Kubernetes 배치 단위와 접근 통제를 구분한다
+
+부분 검증(2026-10-13): Kubernetes 멀티테넌시와 Amazon EKS IRSA 공식 문서를 대조했다. Namespace는 클러스터 안의 논리적 관리 단위다. Namespace를 나눴다는 사실만으로 테넌트의 네트워크, AWS 자원과 실행 환경이 모두 격리되지는 않는다.
+
+| 경계 | 필요한 통제와 한계 |
+|---|---|
+| Kubernetes API 접근 | RBAC로 사용자와 service account의 접근 범위를 제한한다. Namespace 생성만으로 다른 고객의 API 자원 접근이 차단됐다고 판단하지 않는다 |
+| Pod 사이 통신 | NetworkPolicy로 허용 경로를 정하고 이를 집행하는 CNI 지원을 확인한다. 지원하지 않는 플러그인에서는 정책 객체가 있어도 집행되지 않는다 |
+| AWS 자원 접근 | IRSA는 service account에 IAM role을 연결한다. 테넌트별 S3 경로나 DynamoDB 자원처럼 실제 접근 대상을 IAM 정책에서 제한해야 한다 |
+| 노드의 자격 증명과 실행 환경 | IMDS 접근이 제한되지 않으면 Pod가 노드 IAM role 자격 증명에도 접근할 수 있다. IRSA를 사용해도 같은 노드의 Pod는 커널을 공유하므로 컨테이너 자체가 보안 경계로 바뀌지는 않는다 |
+
+적용 점검 제안: 테넌트 A의 Pod에서 테넌트 B의 API, 저장소와 네트워크 목적지 접근이 각각 거부되는지 시험한다. 한 계층의 거부 결과로 다른 계층의 격리를 대신 증명하지 않는다. 여러 고객 요청을 받는 공유 Pod에서는 IRSA role 연결만으로 요청별 테넌트 인가가 끝났다고 보지 않고 애플리케이션의 접근 경계도 검증한다. 이 절은 격리 설계의 점검 기준이며 배포 시험이나 데이터 위치 정책 전체의 재검증 결과가 아니다. 기존 `verified_at`은 유지한다.
+
 ## 데이터 경로 전체를 확인한다
 
 다음은 배치와 복제 원칙에서 도출한 설계 점검 제안이다.
@@ -109,6 +122,8 @@ SaaS 도입에서는 다음과 같이 책임과 증거를 연결할 수 있다(�
 
 ## 출처
 
+- [Kubernetes, Multi-tenancy](https://kubernetes.io/docs/concepts/security/multi-tenancy/)
+- [AWS, IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
 - [AWS Marketplace, Listing and Selling in AWS Marketplace for AWS European Sovereign Cloud](https://docs.aws.amazon.com/marketplace/latest/userguide/esc_seller_guide.html) — SaaS 연동의 endpoint와 이벤트 경로를 대조
 - [Shared Responsibility Model — AWS](https://aws.amazon.com/compliance/shared-responsibility-model/)
 - [AWS SaaS Architecture Fundamentals, SaaS identity](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/saas-identity.html)

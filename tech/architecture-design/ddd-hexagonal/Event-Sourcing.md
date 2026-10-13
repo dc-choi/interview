@@ -80,6 +80,17 @@ Event Sourcing은 CQRS(Command Query Responsibility Segregation)와 자주 결�
 
 단순한 도메인은 현재 상태를 이벤트에서 동기적으로 복원하거나 같은 프로세스에서 Projection할 수도 있다. 조회 부하와 모델이 쓰기 모델과 달라질 때 별도 Read Model을 두는 CQRS의 이점이 커진다.
 
+## Kinesis로 Projection을 갱신할 때의 복구 경계
+
+부분 검증(2026-10-13): Kinesis Data Streams의 보존 기간, `PutRecords`와 중복 처리 문서를 대조했다. 영속 Event Store와 이벤트 전달용 스트림의 역할을 구분한다. 이 절의 제품 동작만 확인했으므로 문서 전체의 기존 `verified_at`은 유지한다.
+
+- **보존:** Kinesis 레코드의 기본 보존 기간은 24시간이며 최대 365일까지 늘릴 수 있다. 조회 모델을 전체 재구축해야 하는 기간이 이를 넘으면 스트림만으로 복구할 수 없으므로, 필요한 이력을 보존하는 Event Store나 별도 원본이 있어야 한다.
+- **순서:** `PutRecords`는 일부 레코드가 실패해도 뒤의 레코드를 처리하므로 순서를 보장하지 않는다. 같은 aggregate의 partition key를 맞추는 것만으로 발행 순서까지 보장됐다고 판단하지 않는다. 순서가 필요하면 `PutRecord` 기반 직렬 발행 등 발행 계약과 aggregate 버전 검사를 함께 설계한다(설계 제안).
+- **중복:** producer가 응답을 받지 못해 재시도하면 같은 내용이 서로 다른 sequence number로 저장될 수 있다. payload에 안정적인 event ID를 두고 Projection의 중복 반영을 막는다. 스트림 sequence number를 업무 이벤트의 유일한 중복 판정 기준으로 삼지 않는다.
+- **체크포인트:** KCL consumer가 처리 후 checkpoint 전에 종료되면 마지막 checkpoint 이후 레코드를 다시 처리할 수 있다. 조회 모델 반영과 checkpoint를 별개 단계로 보고 재처리에 안전하게 만든다.
+
+운영 점검 제안: 이벤트 저장 후 발행 실패, 부분 발행 실패, 조회 모델 갱신 후 consumer 종료를 각각 재현한다. 재시도 뒤 예약 수나 금액이 중복 누적되지 않는지, 누락과 버전 역전을 발견할 수 있는지 확인한다. 스트림 보존 기간이 지난 이력으로 새 조회 모델을 재구축하는 경로도 시험한다. 이는 복구 설계 기준이며 특정 구현의 시험 결과가 아니다.
+
 ## 장점
 
 - **변경 이력**: 상태 변화가 사건으로 보존돼 감사 자료의 기반이 된다. 다만 접근 기록, 관리자 작업, 법적 증빙처럼 이벤트에 없는 요구사항은 별도 audit log와 통제가 필요하다
@@ -157,6 +168,9 @@ Outbox는 **메시지 발행 신뢰성** 문제 해결이 목적이고, Event So
 
 ## 출처
 
+- [AWS, Handle duplicate records](https://docs.aws.amazon.com/streams/latest/dev/kinesis-record-processor-duplicates.html)
+- [AWS, Amazon Kinesis Data Streams Terminology and concepts](https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html)
+- [AWS, PutRecords](https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecords.html)
 - [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html)
 - [Azure Architecture Center, Event Sourcing pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing)
 - [NIST, Cryptographic Erase](https://csrc.nist.gov/glossary/term/cryptographic_erase)
