@@ -79,6 +79,14 @@ Enterprise Edition의 SQL 기반 데이터 소스는 날짜 열과 look-back win
 
 의미 정보는 해석을 돕는 설정이다. 데이터 접근 권한이나 결과 정확성을 대신 보장하지 않는다.
 
+## 생성형 BI의 시각화와 설명을 검토한다
+
+부분 검증(2026-10-13): Generative BI의 시각화 생성과 data story 공식 절차를 대조했다. 자연어로 만든 시각화는 생성 결과를 검토하고 수정한 뒤 분석에 추가한다. 추천 질문에는 AI 생성 질문과 사람이 검증한 질문이 함께 있으며, 검증된 질문에 표시가 붙는다. 이 표시를 새로 만든 모든 응답의 정확성 보장으로 확대하지 않는다.
+
+Data story는 선택한 대시보드의 시각화를 바탕으로 설명을 구성한다. 시각화는 최대 20개까지 추가할 수 있지만, Redshift의 trusted identity propagation을 사용하는 데이터셋이나 제한된 폴더의 데이터셋 등은 추가가 제한될 수 있다. 생성 뒤에는 `Keep`, `Try again`, `Discard`로 결과를 검토한다.
+
+검토 예로, 월별 주문 차트를 요청했다면 날짜 컬럼, 주문 수의 정의, 필터와 집계 단위를 대조한다. 설명문이 그래프에서 관찰되는 차이를 인과관계로 바꾸지 않았는지도 확인한다. 이는 운영 점검 제안이며, 설명 생성 성공을 분석 결론이나 사업 성과의 검증으로 취급하지 않는다. 이 절만 추가 대조했으며 기존 검증일은 유지한다.
+
 ## 셀프서비스 BI와 조회 권한을 구분한다
 
 업무 담당자가 직접 분석하도록 도구를 제공하는 것과 모든 데이터를 공개하는 것은 다른 결정이다. 지표의 정의와 집계 단위를 공유하더라도 조직별로 열람할 수 있는 행은 따로 제한할 수 있다.
@@ -142,6 +150,8 @@ AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 �
 
 ## 출처
 
+- [Amazon Quick, Build visuals with Generative BI](https://docs.aws.amazon.com/quick/latest/userguide/generative-bi-build-visuals.html)
+- [Amazon Quick, Creating a data story with Generative BI](https://docs.aws.amazon.com/quick/latest/userguide/working-with-stories-create.html)
 - [Amazon Quick, Refreshing data in Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/refreshing-data.html)
 - [Amazon Quick, Refreshing SPICE data](https://docs.aws.amazon.com/quick/latest/userguide/refreshing-imported-data.html)
 - [Amazon Quick, Insufficient permissions when using Athena with Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/troubleshoot-athena-insufficient-permissions.html)

@@ -83,6 +83,16 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 경쟁사 조사나 캠페인 보고서에 적용한다면, 먼저 조사에 쓸 자료를 정하고 결과의 근거를 확인한 뒤 예산 변경처럼 외부 상태를 바꾸는 action을 별도로 검토한다. 이는 기능을 활용하는 운영 제안이다. 보고서 생성이나 추천 출력만으로 캠페인 성과 개선이 입증되지는 않는다.
 
+## 웹 자료 동기화와 보고서 실행은 따로 확인한다
+
+2026-10-13 Web Crawler와 Flows 예약 실행 공식 문서 부분 대조 기준. Enterprise Edition의 Web Crawler는 웹페이지를 수집해 지식 기반을 만드는 통합이다. 웹사이트를 변경하는 action은 제공하지 않는다. 지식 기반 생성 시 동기화가 시작되고, 첫 전체 수집 뒤에는 변경분을 동기화한다.
+
+- 수집 깊이와 링크 범위가 대상 페이지를 포함하는지 확인한다. PDF 같은 연결 파일은 첨부파일 수집 설정도 확인한다.
+- JavaScript 렌더링은 지원하지만 클릭, 스크롤과 hover를 흉내 내지는 않는다. 상호작용 뒤에만 나타나는 링크가 빠질 수 있으므로 수집 성공과 대상 문서 확보를 구분한다.
+- Flows 실행 이력은 30일 보존된다. 예약 실행 성공 기록만으로 원천 자료가 최신인지, 필요한 페이지를 전부 수집했는지 판단하지 않는다.
+
+공개 정책 변경을 모니터링하는 운영 예라면 원천 페이지의 개정일, 지식 기반 동기화 상태와 보고서 실행 시각을 각각 확인한다. 필요한 규정의 누락과 요약 오류를 원문 대조로 점검하고, 장기 감사가 필요하면 실행 결과와 근거 보존 방식을 별도로 정한다. 이는 기능 경계에 근거한 운영 제안이며 실시간 변경 탐지나 규정 준수의 보장은 아니다. 이 절만 추가 대조했으며 기존 검증일은 유지한다.
+
 ## Chat agent의 배포와 자료 권한을 분리한다
 
 2026-10-10 Custom chat agents 공식 문서 대조 기준. 업무별 chat agent에는 응답 지침, Space 등의 지식 자료와 action을 연결할 수 있다. 에이전트 공유 권한과 연결한 개별 리소스의 접근 권한은 별도로 관리한다.
@@ -102,6 +112,7 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 ## 출처
 
+- [Amazon Quick, Web Crawler integration](https://docs.aws.amazon.com/quick/latest/userguide/web-crawler-integration.html)
 - [Amazon Quick, Microsoft SharePoint knowledge base integration](https://docs.aws.amazon.com/quick/latest/userguide/sharepoint-knowledge-base.html)
 - [Amazon Quick, Admin-managed setup (service credentials)](https://docs.aws.amazon.com/quick/latest/userguide/sharepoint-kb-admin-managed.html)
 - [Amazon Quick, Microsoft SharePoint action integration](https://docs.aws.amazon.com/quick/latest/userguide/sharepoint-action-integration.html)

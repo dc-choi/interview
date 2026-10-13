@@ -25,6 +25,17 @@ CREATE INDEX ON items USING hnsw (embedding vector_cosine_ops);
 
 벡터 컬럼이 있는 테이블에 일반 컬럼도 함께 둘 수 있다. **Aurora PostgreSQL은 DB 버전마다 지원하는 pgvector 버전이 정해져** 있고, DB 버전은 두고 pgvector만 따로 올리기는 어렵다 — 도입 전 호환성 확인 필수.
 
+## Aurora를 Bedrock 지식 기반에 연결할 때
+
+부분 검증(2026-10-13): Aurora PostgreSQL과 Bedrock Knowledge Bases의 공식 연동 조건을 대조했다. SQL로 벡터를 저장할 수 있다는 사실과 관리형 지식 기반에 연결할 준비가 됐다는 사실은 다르다.
+
+- **연결 전제**: 지원되는 Aurora PostgreSQL 버전, 대상 DB의 pgvector 0.5.0 이상, 활성화한 RDS Data API와 Secrets Manager의 DB 사용자 자격 증명이 필요하다. Aurora 클러스터와 지식 기반은 같은 AWS 계정에 있어야 한다.
+- **테이블 계약**: UUID 기본 키, 임베딩, 원문 청크와 Bedrock 관리 메타데이터 컬럼을 매핑한다. 벡터 차원은 사용할 임베딩 모델의 출력과 맞춘다. 사용자 메타데이터 필터가 필요하면 `custom_metadata` JSONB 컬럼 또는 개별 속성 컬럼도 준비한다.
+- **인덱스 계약**: 이 연동 가이드는 임베딩의 HNSW cosine 인덱스와 청크 텍스트의 GIN 인덱스를 요구한다. `custom_metadata` 컬럼을 사용하면 해당 GIN 인덱스도 필요하다. 이는 pgvector 자체의 모든 사용 사례에 부과되는 요건은 아니다.
+- **변경 경계**: 지식 기반 생성 전에 컬럼 매핑을 확정한다. 공식 설정 문서에서는 이 필드를 생성 뒤 갱신할 수 없다고 명시한다.
+
+운영 점검 제안: 연결 생성 뒤 별도의 데이터 수집을 수행하고, 청크 적재와 검색 결과의 원문 대응을 확인한다. 생성 성공만으로 원천 문서가 모두 들어갔다고 판단하지 않는다. 이 절은 연동 계약만 추가 확인했으며 앞선 pgvector 설명 전체의 검증일은 유지한다.
+
 ## 도입 전 3가지 결정
 
 | 결정 | 선택지 | 영향 |
@@ -95,6 +106,8 @@ CREATE INDEX ON items USING hnsw (embedding vector_cosine_ops);
 IVFFlat은 대표 데이터를 적재한 뒤 index를 만들고 소량 data의 planner 선택을 확인한다. enable_seqscan 변경은 session 한정 경로 진단이며 운영의 보편 설정이 아니다.
 
 ## 출처
+- [AWS Documentation, Using Aurora PostgreSQL as a Knowledge Base for Amazon Bedrock](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.VectorDB.html)
+- [AWS Documentation, Prerequisites for using a vector store you created for a knowledge base](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-setup.html)
 - [pgvector README — indexing, filtering, iterative scans and scaling](https://github.com/pgvector/pgvector)
 - [AWS Documentation, Aurora PostgreSQL extension versions](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Extensions.html)
 - [pgvector 검색 최적화 — HNSW, halfvec, 쿼리 패턴, 운영 (YouTube)](https://www.youtube.com/watch?v=n3_LY7YFCwE&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=6)

@@ -41,6 +41,16 @@ CA/Browser Forum TLS Baseline Requirements 2.3.1의 6.3.2절 기준이다. 발�
 
 예를 들어 Kubernetes Secret에는 갱신본이 있지만 Pod가 이전 인증서를 메모리에 보관하면 발급 지표는 정상이어도 만료 장애가 날 수 있다. reload 설계와 외부 관측을 함께 두는 이유다.
 
+## 설치 도구와 인증 방식에 맞춘 갱신
+
+2026-10-13 AWS Knowledge Center와 Certbot 공식 가이드 부분 대조 기준. Lightsail의 Bitnami 스택에서는 같은 Let's Encrypt 인증서라도 발급 도구가 다를 수 있다. 먼저 실제 서버 인증서와 로컬 인증서 목록을 대조한다. `/opt/bitnami/letsencrypt`는 bncert-tool 또는 Lego, `/etc/letsencrypt`는 Certbot의 단서이며 경로만으로 확정하지 않는다.
+
+- **도구 확인**: Lego의 `list` 또는 `certbot certificates` 결과로 대상 인증서를 식별한 뒤 해당 도구의 갱신 절차를 따른다.
+- **인증 방식 확인**: Certbot은 기존 발급에 사용한 플러그인과 옵션을 갱신에 재사용한다. 갱신 설정의 `authenticator`와 자동화 hook 유무를 확인한다.
+- **수동 DNS 인증**: hook 없는 `--manual` 발급은 새 TXT 값을 사람이 반영해야 하므로 cron에 같은 명령을 넣는 것만으로 무인 갱신되지 않는다. `--manual-auth-hook`으로 챌린지를 자동 처리하거나 자동 갱신을 지원하는 다른 플러그인을 쓰는 경로는 별도로 검토한다. 수동 방식을 유지한다면 TXT 전파를 확인한 뒤 검증을 진행한다.
+
+AWS의 Bitnami 복구 예제는 서비스 중지, 갱신, 재시작 순서를 포함한다. 이를 모든 ACME 갱신의 필수 절차로 일반화하지 않는다. 서비스 중단 필요성은 인증 플러그인과 배포 방식에 맞춰 판단하고, 재시작 뒤 외부 TLS 응답도 확인한다. 이 절만 추가 대조했으며 기존 본문 전체의 검증일은 유지한다.
+
 ## 실패와 복구 경계
 
 이전 인증서로 되돌리는 조치는 그 인증서가 아직 유효하고 키가 안전한 경우에만 복구 후보가 된다. 만료되었거나 키 유출이 의심되는 인증서를 복구 수단으로 삼지 않는다. 키 유출 시에는 새 키와 인증서로 교체하고 기존 인증서 폐기를 처리한다.
@@ -55,6 +65,8 @@ cert-manager는 기본적으로 `Certificate` 삭제 시 대응 Secret을 지우
 
 ## 출처
 
+- [How do I renew a Let's Encrypt SSL certificate in a Bitnami stack hosted on a Lightsail instance? — AWS Knowledge Center](https://repost.aws/knowledge-center/lightsail-bitnami-renew-ssl-certificate)
+- [Certbot, User Guide: Manual](https://eff-certbot.readthedocs.io/en/stable/using.html#manual)
 - [NIST, SP 1800-16B: TLS Server Certificate Management](https://www.nccoe.nist.gov/publication/1800-16/VolB/index.html)
 - [CA/Browser Forum, Baseline Requirements for TLS Server Certificates](https://cabforum.org/working-groups/server/baseline-requirements/requirements/)
 - [Certbot, User Guide: Renewing certificates](https://eff-certbot.readthedocs.io/en/stable/using.html#renewing-certificates)

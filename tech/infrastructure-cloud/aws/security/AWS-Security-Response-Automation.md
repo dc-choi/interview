@@ -21,6 +21,16 @@ aliases: ["AWS Security Response Automation", "AWS 보안 대응 자동화"]
 
 Security Hub CSPM의 automation rule은 finding 필드를 변경한다. 이를 EC2 격리나 접근 정책 수정으로 해석하지 않는다. Security Hub의 새 finding과 갱신 finding을 EventBridge로 받아 Lambda나 Step Functions 등을 호출하는 대응 경로는 별도로 구성한다. GuardDuty finding을 EventBridge로 직접 받는 경로도 가능하다.
 
+## 중앙 집계와 수집 누락을 구분한다
+
+2026-10-13 Security Hub CSPM 공식 가이드 부분 대조 기준. 교차 리전 집계는 연결된 리전의 finding과 갱신 내용, insight, control 준수 상태와 보안 점수를 home Region에서 보게 한다. 중국과 GovCloud의 집계 범위에는 별도 제한이 있으므로 이 전체 목록을 모든 파티션에 동일하게 적용하지 않는다.
+
+- 집계 설정은 각 계정과 리전의 Security Hub CSPM을 자동으로 활성화하지 않는다. 활성화된 리전의 자료만 집계되며 연결 리전이 없으면 복제도 없다.
+- 관리자는 home Region에서 연결된 멤버 계정과 리전의 집계 자료를 확인한다. 멤버 계정은 다른 멤버 계정의 자료를 볼 수 없다.
+- finding의 갱신은 home Region과 연결 리전 사이에 복제되며 충돌하면 최근 갱신이 사용된다. 중앙 화면에서 상태를 바꾸는 작업도 운영 변경으로 추적한다.
+
+운영 점검 예로, 대상 계정과 리전 목록을 실제 활성화 및 집계 설정과 대조한다. 화면에 경보가 없다는 관측과 필요한 영역을 모두 검사했다는 결론을 구분한다. 이 구조는 Security Hub CSPM의 집계 방식이며, 특정 기업의 SIEM 구성이나 원본 로그 전체 수집을 설명하는 것은 아니다. 이 절만 추가 대조했으며 기존 검증일은 유지한다.
+
 ## 런북의 권한과 승인
 
 AWS의 Automated Security Response 솔루션은 대상 계정의 조치 역할과 Systems Manager 런북을 구성하는 예다. 계정 간 이벤트 전달만으로 대상 자원의 변경 권한까지 생기지는 않는다. 조치에 필요한 API와 대상 자원으로 실행 역할을 제한한다.
@@ -74,6 +84,7 @@ GuardDuty의 자격 증명 관련 finding은 IAM 주체, 호출 API, 시각과 I
 
 ## 출처
 
+- [AWS, Understanding cross-Region aggregation in Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/finding-aggregation.html)
 - [AWS, Revoke IAM role temporary security credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_revoke-sessions.html)
 - [AWS, Remediating potentially compromised AWS credentials](https://docs.aws.amazon.com/guardduty/latest/ug/compromised-creds.html)
 - [AWS, Generate credential reports for your AWS account](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_getting-report.html)
