@@ -118,6 +118,19 @@ EMR on EKS는 기존 EKS 클러스터에서 분석 워크로드를 컨테이너�
 - **통신:** namespace 생성만으로 Pod 간 통신이 차단되지 않는다. NetworkPolicy와 이를 구현하는 네트워크 플러그인의 지원을 확인한다.
 - **검증:** 같은 입력으로 작업 대기 시간, 실행 시간, 실패율과 전체 실행 비용을 비교한다. 이는 도입 시 사용할 점검안이며 특정 환경에서 측정한 결과가 아니다.
 
+## EMR on EC2 서비스 상태와 지표 누락
+
+부분 검증(2026-10-13): AWS Knowledge Center의 서비스 감시 스크립트와 CloudWatch 누락 데이터 규칙을 대조했다. 이 절의 application은 노드에 설치한 HiveServer2와 YARN 서비스이며, EMR Serverless application 상태와 다르다. 기존 절 전체를 다시 검증한 것은 아니므로 frontmatter 날짜는 유지한다.
+
+- 예제의 선행 조건은 EMR 5.30.0 이상과 `cloudwatch:PutMetricData` 권한이다. 실제 배포에서는 노드 역할, 설치된 서비스와 S3 스크립트 접근 권한도 확인한다.
+- bootstrap action으로 감시 스크립트를 노드에 배포하고 주기적으로 실행한다. primary의 ResourceManager/HiveServer2와 core/task의 NodeManager처럼 노드별 감시 대상을 나눈다.
+- 공식 예제는 `disabled` 서비스를 건너뛰고, 검사한 서비스가 `active`가 아닐 때만 `EMR/ServiceStatus`의 `ServiceStatus=1`을 전송한다. 정상 상태의 `0`을 매번 전송하는 heartbeat가 아니다.
+- `ClusterId`, `InstanceId`, `NodeServiceName`, `NodeType` dimension과 전송 리전을 맞춘다. 값 `1`을 정상 가동으로 읽거나 다른 노드의 시계열을 섞지 않는다.
+
+오류 때만 보내는 지표에는 누락을 `notBreaching`으로 다루는 선택지가 있다. 다만 무데이터는 정상 상태뿐 아니라 감시 프로세스 중단이나 전송 실패에서도 생길 수 있다. `notBreaching` 설정만으로 서비스 복구나 감시 경로의 정상 동작을 증명할 수 없다.
+
+운영 검증 제안: 서비스 중단, 복구와 감시 스크립트 자체 중단을 따로 재현하고 알람 상태를 확인한다. 정상값도 주기적으로 보내도록 바꾼다면 누락 데이터 정책도 그 계약에 맞춰 다시 정한다. 서비스 오류 지표와 감시 경로의 생존 확인을 분리한다.
+
 ## 관련 문서
 
 - [[Athena]], [[Redshift]]
@@ -125,6 +138,8 @@ EMR on EKS는 기존 EKS 클러스터에서 분석 워크로드를 컨테이너�
 
 ## 출처
 
+- [How do I publish and monitor an Amazon EMR application status with CloudWatch integration? — AWS re:Post](https://repost.aws/knowledge-center/emr-publish-monitor-service-status)
+- [AWS, Configuring how CloudWatch alarms treat missing data](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarms-and-missing-data.html)
 - [AWS, Interact with and configure an EMR Serverless application](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/applications.html)
 - [AWS, Understanding application behavior in EMR Serverless](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/app-behavior.html)
 - [AWS, Pre-initialized capacity for working with an application in EMR Serverless](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/pre-init-capacity.html)

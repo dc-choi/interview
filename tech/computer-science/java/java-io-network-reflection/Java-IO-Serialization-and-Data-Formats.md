@@ -69,6 +69,17 @@ Oracle API는 신뢰하지 않는 data의 deserialization이 본질적으로 위
 - snapshot file을 transaction log처럼 사용하지 않는다. crash 중 partial write와 concurrent writer를 처리해야 한다.
 - file을 교체할 때 temp file, sync, atomic move 가능 여부와 recovery sequence를 설계한다.
 
+## JSON 파싱 성공과 상호운용성은 다르다
+
+부분 검증(2026-10-13): 이 절은 RFC 8259의 문법, 객체, 숫자와 파서 규칙을 대조했다. 기존 Java API 설명의 검증 날짜는 유지한다.
+
+- **중복 키:** 객체 이름의 유일성은 RFC의 `SHOULD`다. 중복을 모든 파서가 거부해야 한다는 뜻은 아니다. 마지막 값만 남기거나 오류를 내는 등 구현이 달라질 수 있으므로 입력 계약에서 거부 정책을 정한다.
+- **문법 확장:** 주석과 trailing comma는 표준 JSON 문법에 없다. 파서는 확장을 허용할 수 있지만, 생성기는 표준 문법을 따라야 한다. 개발 도구가 읽었다는 사실만으로 다른 소비자와 호환된다고 보지 않는다.
+- **숫자:** 구현은 범위와 정밀도를 제한할 수 있다. binary64 기반 소비자 간 정수값 일치 범위는 `[-(2^53)+1, (2^53)-1]`다. 이를 넘는 식별자는 문자열 등 손실 없는 표현을 계약으로 정하고 실제 소비자의 변환을 확인한다.
+- **순서와 크기:** 객체 필드 순서에 의미를 의존하지 않는다. 입력 크기와 중첩 깊이 제한은 파서마다 달라질 수 있으므로 수신 경계에서 확인한다.
+
+적용 점검: 중복 키, 주석, trailing comma, 큰 정수와 깊은 중첩을 각각 입력해 생산자와 소비자의 결과를 비교한다. 관대한 파싱을 켜는 것과 업무상 허용할 데이터를 검증하는 것은 별도 결정이다.
+
 ## NestJS와 TypeORM으로 옮길 때
 
 NestJS DTO를 JSON representation과 domain entity로 동시에 쓰면 validation, persistence와 API evolution이 결합된다. transport DTO, use-case input과 TypeORM entity의 책임을 분리하고 mapping을 둔다. 외부 JSON은 `ValidationPipe`와 size limit을 통과시켜도 object prototype과 business invariant까지 자동으로 안전해지는 것은 아니다.
@@ -83,6 +94,7 @@ NestJS DTO를 JSON representation과 domain entity로 동시에 쓰면 validatio
 
 ## 출처
 
+- [IETF, RFC 8259: The JavaScript Object Notation (JSON) Data Interchange Format](https://www.rfc-editor.org/rfc/rfc8259)
 - [Java SE 26, ObjectInputFilter](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/io/ObjectInputFilter.html)
 - [Java SE 26, Serializable](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/io/Serializable.html)
 - [Java SE 26, DataOutputStream](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/io/DataOutputStream.html)
