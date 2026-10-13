@@ -47,6 +47,16 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 - **규모의 경제**: 키울수록 단가가 내려간다. 대량생산, 분업, 고정비 분산. 진입장벽의 원천이기도 하다.
 - **규모의 불경제**: 너무 커지면 관리와 소통 비용이 늘어 단가가 다시 오른다.
 
+### 생산량 확대와 공정 변경을 구분한다
+
+규모의 경제는 주어진 기술 조건에서 생산 규모와 평균비용의 관계다. 공정 자체를 바꾸는 기술 변화는 장기 평균비용 곡선을 이동시킬 수 있다. 자동화나 조립 순서 변경으로 단가가 낮아졌다는 설명을 생산량 증가의 효과와 같은 것으로 계산하지 않는다.
+
+공정 선택에서는 같은 품질과 산출량을 내는 대안의 노동, 설비와 운영 비용을 비교한다. 노동을 설비로 대체하는 방식이 가장 저렴한지는 각 투입의 가격과 실제 생산량에 달려 있다.
+
+가상으로 같은 기간의 총비용이 공정 A는 `20 + 6Q`, 공정 B는 `100 + 2Q`라고 하자. 금액 단위를 같게 두고 초기 준비 비용을 포함하면 `Q = 20`에서 둘 다 140이다. 이 단순 모형에서는 20개 미만이면 A, 초과하면 B가 저렴하다. B의 단위당 추가 비용이 낮다는 사실만으로 소량 주문에도 B가 유리하다고 판단할 수 없다.
+
+이는 2026-10-14 OpenStax의 생산기술 선택과 비용곡선 이동 설명을 적용한 계산 예다. 실제 공정의 생산속도, 품질이나 비용 절감률을 검증한 수치는 아니다. 설비 용량, 가동 중단과 재작업 비용이 다르면 그 조건을 넣어 다시 비교한다.
+
 ## 7. 매몰비용과 조업중단
 
 - **매몰비용 무시 원칙**: 이미 써서 회수 못 하는 돈은 앞으로의 결정에서 빼야 한다. 과거 투자가 아까워 손해 나는 사업을 계속 끌고 가는 대표적 함정이 매몰비용 오류(콩코드 오류라고도 한다)다.
@@ -114,11 +124,9 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 - [OpenStax, Evaluate and Determine Whether to Accept or Reject a Special Order](https://openstax.org/books/principles-managerial-accounting/pages/10-2-evaluate-and-determine-whether-to-accept-or-reject-a-special-order) — 여유 용량과 추가 비용, 기존 고객에 미치는 영향
 - [OpenStax, Evaluate and Determine How to Make Decisions When Resources Are Constrained](https://openstax.org/books/principles-managerial-accounting/pages/10-6-evaluate-and-determine-how-to-make-decisions-when-resources-are-constrained) — 병목 자원당 공헌이익. 서비스 수주 예시는 이를 적용한 가정이다.
 - [OpenStax, Principles of Microeconomics 3e, How Perfectly Competitive Firms Make Output Decisions](https://openstax.org/books/principles-microeconomics-3e/pages/8-2-how-perfectly-competitive-firms-make-output-decisions)
-- [OpenStax, Principles of Microeconomics 3e, Costs in the Long Run](https://openstax.org/books/principles-microeconomics-3e/pages/7-5-costs-in-the-long-run) — 2026-10-05 규모의 경제, 규모에 대한 수익 불변 구간과 규모의 불경제 대조
+- [OpenStax, Principles of Microeconomics 3e, Costs in the Long Run](https://openstax.org/books/principles-microeconomics-3e/pages/7-5-costs-in-the-long-run) — 2026-10-05 규모의 경제, 규모에 대한 수익 불변 구간과 규모의 불경제 대조. 2026-10-14 생산기술 선택과 기술 변화에 따른 비용곡선 이동 추가 대조
 - [KIFRS.com, 기업회계기준서 제1002호 재고자산의 취득원가](https://www.kifrs.com/s/1002/a36dbb) — 매입원가, 전환원가와 제외 원가
 - [IFRS Foundation, IAS 2 Inventories](https://www.ifrs.org/issued-standards/list-of-standards/ias-2-inventories/) — 문단 11, 12, 16
-- [원가 구성 도식과 댓글 논의 — Threads, i.am_goldenhour](https://www.threads.com/@i.am_goldenhour/post/DdafhDikm86)
-- [매몰비용과 손절의 경제학 — Threads, vibebuild.dev](https://www.threads.com/@vibebuild.dev/post/DRBEktMk0aL)
 
 ## 관련 문서
 

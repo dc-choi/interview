@@ -109,7 +109,19 @@ PER의 이익은 주주에게 귀속되는 순이익 기준이다. **시가총�
 
 이 절은 2026-10-12 Damodaran의 기업재무 입문 자료와 DART 정기보고서 안내를 대조했다. 기회비용 비교, 이해상충 구조와 노출 합계의 해석은 이 자료를 공시 읽기에 적용한 분석이며, 특정 기업의 거래 내용이나 위법 여부를 검증한 기록은 아니다.
 
-## 5. 주식 vs 채권 (자본구조)
+## 5. 자본구조와 자금조달
+
+### IPO의 공모 규모와 회사 조달액은 다를 수 있다
+
+IPO 자료에서는 [[Startup-Equity-and-Dilution#신주와 구주: 회사에 들어오는 돈부터 구분|신주와 구주매출]]의 비중부터 확인한다. 기존 주주가 보유 주식을 파는 구주매출의 대금은 그 주주에게 가므로, 공모 규모 전체를 발행회사의 투자 재원으로 계산하지 않는다.
+
+미국 IPO 투자설명서의 `Use of Proceeds`는 회사가 조달한 돈의 사용 계획을, `Principal and Selling Shareholders` 같은 절은 매도 주주의 공모 전 보유량, 매각량과 공모 후 잔존 지분을 확인하는 출발점이다. 예비 자료가 바뀔 수 있으므로 최종 가격과 조건이 담긴 최신 자료를 대조한다.
+
+자회사의 상장을 검토할 때도 모회사와 자회사 중 누가 현금을 받는지, 모회사의 잔존 지분과 자금 용도가 무엇인지 나누어 읽는다. 이는 공모 구조를 적용한 분석 기준이며 상장만으로 기존 주주의 손익 방향을 확정하지 않는다. 국내외 중복상장의 허용 조건과 개별 기업의 추진 여부는 별도 확인 대상이다.
+
+2026-10-14 SEC의 IPO 투자자 안내에서 자금 용도, 구주매출과 최신 투자설명서 확인 원칙을 대조했다. 개별 기업의 상장설, 예상 기업가치와 주가 하락 원인을 검증한 것은 아니다.
+
+### 보통주와 일반 채권을 비교한다
 
 같은 기업의 보통주와 일반적인 고정금리 채권을 비교한다. 우선주, 전환사채나 후순위채권은 계약 조건을 별도로 확인한다.
 
@@ -152,6 +164,7 @@ AI, 로봇이나 친환경 같은 투자 테마는 여러 산업을 가로지를
 
 ## 출처
 
+- [Updated Investor Bulletin: Investing in an IPO — SEC, Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-17) — 2026-10-14 Use of Proceeds, Selling shareholders와 최신 투자설명서 대조
 - [Consistency in Multiples — Aswath Damodaran, NYU Stern](https://pages.stern.nyu.edu/~adamodar/pdfiles/eqnotes/webcasts/multiplecalc/multiplecalc.pdf) — 2026-10-13 9쪽의 자기자본 가치/순이익과 EV/EBIT 대응을 대조
 - [Investor.gov, Market Capitalization](https://www.investor.gov/introduction-investing/investing-basics/glossary/market-capitalization) — 시가총액의 정의와 주가, 주식 수의 관계
 - [The Global Industry Classification Standard (GICS) — MSCI](https://www.msci.com/indexes/index-resources/gics) — 2026-10-07 네 단계 분류, 주된 사업과 매출 중심 판단 기준 대조

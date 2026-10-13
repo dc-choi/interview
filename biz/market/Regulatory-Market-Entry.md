@@ -46,12 +46,25 @@ aliases: ["규제와 시장 진입"]
 
 ## 사업 검토에 적용
 
+### 투자금 회수기간과 수익률을 분리한다
+
+운영 자산이 얼마를 벌어 주는지 볼 때 매출, 순현금흐름과 회계상 이익을 나눈다. 단순 회수기간은 초기 투자금을 순현금유입으로 되찾는 데 걸리는 시간이다. 매년 같은 양의 순현금유입이 생긴다는 가정에서는 `초기 투자금 / 연간 순현금유입`으로 계산하고, 해마다 금액이 다르면 누적 현금흐름으로 회수 시점을 찾는다.
+
+가상으로 초기 투자금이 3,000만 원이고 연간 순현금유입이 600만 원이면 단순 회수기간은 5년이다. 매출이 3,000만 원이라는 정보만으로는 회수기간을 구할 수 없다. 운행 서비스라면 앞 절의 가동률과 정비 등 운영 조건을 현금 유입과 유출 가정에 연결해야 한다.
+
+이 계산은 화폐의 시간가치를 반영하지 않고, 회수 뒤의 현금흐름만으로 달라지는 사업 가치도 표현하지 못한다. 따라서 짧은 회수기간을 높은 투자수익률의 증명이나 주식의 배당수익률로 바꾸어 읽지 않는다. 순현금흐름 가정이 달라질 때 회수기간도 어떻게 바뀌는지 먼저 비교한다.
+
+2026-10-14 OpenStax의 회수기간 계산과 현금흐름, 순이익의 구분을 대조했다. 위 금액은 계산용 가정이며 특정 차량의 가격이나 수익 전망이 아니다. 기존 인허가 사례와 지역별 운행 상태는 이번 대조 범위에 포함하지 않는다.
+
+### 허용 범위와 확대 가정을 점검한다
+
 - 시장 규모 계산의 서비스 가능 범위에 지역과 규제 조건을 반영한다.
 - 확정된 허용 조건과 제도 변경을 전제로 한 확대 시나리오를 나눈다.
 - 일정과 비용 추정에서 추가 시험, 시정과 출시 지연의 가정을 드러낸다.
 
 ## 출처
 
+- [Evaluate the Payback and Accounting Rate of Return in Capital Investment Decisions — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/11-2-evaluate-the-payback-and-accounting-rate-of-return-in-capital-investment-decisions) — 2026-10-14 단순 회수기간, 일정하거나 변동하는 순현금흐름과 시간가치 미반영 대조
 - [NHTSA Opens Investigation into Tesla Cybercab Self-Certification Following Austin Deployment — NHTSA](https://www.nhtsa.gov/press-releases/investigation-tesla-cybercab-self-certification)
 - [Spaced Out: Perspectives on parking policy — RAC Foundation](https://www.racfoundation.org/wp-content/uploads/2017/11/spaced_out-bates_leibling-jul12.pdf) — 2012, 주차와 주행 시간 비중 추정
 - [Summary of Travel Trends: 2022 National Household Travel Survey — FHWA](https://nhts.ornl.gov/assets/2022/pub/2022_NHTS_Summary_Travel_Trends.pdf) — 가구당 차량, 운전 시간과 차량 점유율
