@@ -25,7 +25,7 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 
 - **npm `postinstall` 스크립트**: 패키지 설치 직후 임의 코드 실행
 - **Python `.pth` 파일**: site-packages에 놓이면 Python 프로세스가 시작될 때마다 자동 실행
-- 둘 다 "의존성으로 깔리기만 하면" 트리거되므로, 직접 사용 여부와 무관하다
+- 둘 다 의존성으로 설치되는 경로에서 실행될 수 있으므로, 직접 사용 여부와 무관하다
 
 ### 가짜 의존성 주입
 
@@ -60,7 +60,7 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 ### 상방-하방 딜레마
 
 - **상방(개방)** — 전 직원에게 AI 도구를 열어 생산성을 끌어올림. 그러나 보안 인력이 충분치 않으면 잦은 전사 대응(버전 점검, 크레덴셜 로테이션, 패치 공지)을 감당 못 함
-- **하방(통제)** — 지식 있는 사람만 도구를 설치하고 의존성과 환경을 통제하면 안전하지만, "전 직원이 AI를 자유롭게 쓰는 조직"과 멀어지는 아이러니
+- **하방(통제)** — 지식 있는 사람만 도구를 설치하고 의존성과 환경을 통제하면 위험을 줄일 수 있지만, 전 직원의 자유로운 AI 활용에는 제약이 생김
 
 정답이 있는 문제가 아니라 **조직 상황(보안/데브옵스 인력, 데이터 민감도)에 맞게 어디쯤 설지 선택하는 문제**다. 가장 위험한 건 이 고민 자체를 하지 않고 개방의 매력에만 끌려 하방 상태를 돌아보지 않는 것이다. AI 생태계가 커질수록 공격 표면도 함께 커지므로 빈도는 줄지 않는다.
 
@@ -86,6 +86,16 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 
 운영 제안: 미캐시 다운로드, 기존 저장 아티팩트와 컨테이너 이미지를 각각 시험하고 정책 위반 표시, 격리 상태와 다운로드 결과를 함께 남긴다. 레지스트리 차단과 이미 배포한 워크로드의 영향 조사는 별도 작업이다.
 
+### 반입 전 조회와 프록시 격리는 별도 통제다
+
+2026-10-13 Sonatype Guide와 Repository Firewall 공식 문서 부분 대조 기준이다. 아래는 해당 제품의 통제 경계이며 다른 스캐너에 그대로 적용하지 않는다.
+
+- **선택 전 조회:** Sonatype MCP Server의 `getComponentVersion`, `getLatestComponentVersion`, `getRecommendedComponentVersions`는 각각 특정 버전 정보, 최신 버전 정보와 권장 버전 후보를 제공한다. 현재 버전을 생략한 권장 조회는 처음 도입할 버전 후보를 반환한다. 서버는 요청에 포함된 의존성 정보를 처리하며 소스 저장소나 로컬 파일 전체를 검사하지 않는다.
+- **다운로드 차단:** Repository Firewall에서 격리를 활성화하고 `PROXY` 단계 정책을 `FAIL`로 설정하면 정책에 위반된 신규 요청 구성요소를 격리한다. 기존 프록시 구성요소는 감사하지만 자동 격리하지 않으므로, 설치된 의존성과 배포된 애플리케이션의 위험 관리는 별도로 수행한다.
+- **검사 서비스 장애:** 격리가 활성화된 상태에서 Firewall 서비스를 사용할 수 없으면 신규 구성요소를 평가하고 해제할 때까지 격리한다. 기존 캐시와 신규 다운로드의 가용성 영향을 구분한다. 위반 면제는 위험 수용이지 위험 제거가 아니다.
+
+운영 제안: AI의 버전 추천 결과, 실제 lockfile의 버전과 다운로드 통제 결과를 대조한다. 추천 조회 성공을 설치 차단이나 전체 의존성 검사 완료로 계산하지 않는다. 실제 제품을 설치하거나 차단 시험을 수행한 기록은 아니다.
+
 ### AI 모델과 컨테이너의 검사 범위
 
 2026-10-13 JFrog Xray 공식 지원 문서 부분 대조 기준이다. 모델을 저장하고 버전을 관리하는 기능과 그 모델의 위험을 검사하는 기능은 구분한다.
@@ -95,6 +105,8 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 - **결과의 의미:** Xray는 모델 자체에 CVE 취약점 결과를 보고하지 않는다. CVE가 없다는 결과만으로 모델의 악성 동작이나 출력 안전성이 검증됐다고 해석하지 않는다.
 
 운영 점검 제안: 반입한 모델과 실행 이미지의 버전, 실제 검사 대상과 지원 범위, 승인한 배포 대상을 함께 기록한다. 검사하지 못한 구성요소를 정상으로 집계하지 않는다. 이 절의 검사 범위만 대조했으며 문서 전체의 검증일은 유지한다.
+
+Sonatype의 Hugging Face 분석은 모델 파일 디렉터리를 IQ CLI로 검사하거나 Jenkins 및 IQ Server UI로 평가할 수 있다(2026-10-13 공식 문서 대조). 지원 형식과 실행 버전을 확인한다. IQ release 189부터는 전체 모델을 다운로드하지 않은 Git LFS pointer도 분석할 수 있으며, IQ CLI 2.3.0은 pointer로 모델 식별자를 알아낸다. 따라서 모델 식별과 정책 평가 결과를 파일 전체의 직접 검사나 추론 출력 안전성 검증으로 확대하지 않는다(검사 범위에 대한 해석). 프록시 반입 통제와 애플리케이션 분석도 별도 기능으로 확인한다.
 
 ### 대응 플레이북 (사고 발생 시)
 
@@ -106,9 +118,9 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 
 ## 면접 체크포인트
 
-- 공급망 공격이 "내 코드가 멀쩡해도" 위험한 이유 (postinstall, `.pth` 설치 시점 실행)
+- 직접 작성한 코드에 문제가 없어도 공급망 공격이 위험한 이유 (postinstall과 `.pth`의 실행 경로)
 - 전이 의존성 때문에 "그 패키지 안 써요"가 안전 근거가 못 되는 이유
-- 침해 시 왜 "모든 크레덴셜 탈취 간주 + 전체 로테이션"이 기본 대응인가
+- 침해 시 모든 크레덴셜의 탈취 가능성을 검토하고 로테이션하는 이유
 - lockfile 고정, `--ignore-scripts`, 해시 핀, 사설 레지스트리, provenance의 역할
 - AI 네이티브 조직의 상방-하방 트레이드오프와 조직별로 답이 다른 이유
 
@@ -119,6 +131,9 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 - **Chrome 제로데이 (2026-02-13)** — CSS use-after-free 취약점(CVE-2026-2441)을 수정한 스테이블 업데이트가 배포됐고, 릴리스 노트에 악용 사례가 실제로 존재한다고 명시. AI 도구와 무관한 기본 보안 운영 부담의 예.
 
 ## 출처
+- [Sonatype, Sonatype MCP Server](https://help.sonatype.com/en/automate-with-sonatype-guide.html)
+- [Sonatype, Firewall Quarantine](https://help.sonatype.com/en/firewall-quarantine.html)
+- [Sonatype, Hugging Face Model Analysis](https://help.sonatype.com/en/hugging-face-model-analysis.html)
 - [JFrog, Supported Technologies](https://docs.jfrog.com/security/docs/supported-technologies-xray)
 - [Cloudsmith, Package deny policy](https://docs.cloudsmith.com/policy-management/deny-policy)
 - [Cloudsmith, Vulnerability policy](https://docs.cloudsmith.com/policy-management/vulnerability-policy)

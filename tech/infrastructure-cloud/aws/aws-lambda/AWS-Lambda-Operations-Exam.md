@@ -157,6 +157,12 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 - **컴퓨트**: 메모리와 실행 시간의 적분으로 과금하며 CPU 아키텍처, 리전, Provisioned Concurrency, ephemeral storage 등의 단가가 다름
 - **무거운 연산은 메모리를 늘려 CPU를 확보**하면 실행 시간 단축 → **총비용이 오히려 줄 수 있음** (AWS Lambda Power Tuning으로 최적 메모리 찾기)
 
+### 직접 사용료와 총소유비용을 나눠 비교한다
+
+2026-10-13 AWS의 Lambda 비용 최적화 글에서 초기 개발, 지속 유지보수와 인프라를 함께 보는 TCO 관점을 확인했다. 서버 관리를 위임하면 운영 부담을 줄일 수 있지만, 특정 사례의 절감률을 모든 워크로드의 결과로 사용하지 않는다. 기존 제품 기능과 한도 전체의 검증일은 유지한다.
+
+비교 절차 제안: 같은 트래픽과 지연, 가용성 목표를 놓고 EC2와 Lambda의 직접 사용료를 먼저 계산한다. 이어 배포, 패치, 용량 조정과 장애 대응에 드는 시간을 별도 항목으로 비교한다. 메모리 증설로 실행 시간을 줄이는 실험도 개발 공수와 예상 사용료 절감을 함께 본다. 몇 밀리초의 단축에 드는 엔지니어링 비용이 사용료 절감보다 클 수 있으므로, 실행 시간만 짧아졌다는 이유로 최적화를 채택하지 않는다. 실제 비용이나 운영 시간의 측정 결과는 아니다.
+
 ## 흔한 실수
 
 - **handler 안에서 매번 DB 풀 생성** → 호출마다 연결 수립. `handler` 밖(init phase)에 두어 실행 환경이 재사용될 때 연결을 재사용하되 유휴 연결 검증과 재연결 처리 필요
@@ -191,6 +197,7 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 
 ## 출처
 
+- [Understanding techniques to reduce AWS Lambda costs in serverless applications — AWS](https://aws.amazon.com/blogs/compute/understanding-techniques-to-reduce-aws-lambda-costs-in-serverless-applications/)
 - [Building well-architected serverless applications: Approaching application lifecycle management – part 2 — AWS](https://aws.amazon.com/blogs/compute/building-well-architected-serverless-applications-approaching-application-lifecycle-management-part-2/)
 - [AWS Lambda Web Adapter — AWS](https://github.com/aws/aws-lambda-web-adapter)
 - [Best practices for working with AWS Lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html)
