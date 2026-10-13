@@ -132,6 +132,12 @@ SNS는 메시징 이외에:
 - **SMS** — 전 세계 휴대폰 (지역별 가격 차이)
 - **Email/Email-JSON** — 내부 시스템 경보용. 수신자가 구독을 확인해야 받고 본문을 꾸밀 수 없어 회원 대상 메일과 대량 발송은 SES가 맞다. 비교는 [[SNS-Email-SES|SNS 이메일 알림과 SES 선택]]
 
+### 미국 SMS는 발신 식별자와 리전을 함께 확인한다
+
+2026-10-14 공식 SMS 문서 대조 기준. 미국 수신자에게 보낼 때는 Sender ID를 사용할 수 없고, 10DLC, toll-free number 또는 short code를 검토한다. `No origination identity available` 오류를 조사할 때는 발송 리전에 사용할 수 있는 번호가 있는지부터 확인한다. 번호는 리전 간 복제되지 않으므로 다른 리전에 확보한 번호만으로 준비가 끝나지 않는다.
+
+10DLC는 회사 또는 브랜드와 캠페인을 등록하고 승인된 캠페인에 번호를 연결하는 절차가 필요하다. 번호 확보와 등록 완료를 같은 상태로 취급하지 않는다. 실제 전송 성공은 별도로 확인하며, 이 절은 발신 식별자 조건만 대조한 것으로 기존 Topic과 quota 전체의 재검증은 아니다. frontmatter의 검증일은 유지한다.
+
 ## 보안
 
 - **Topic Policy** — Resource-based, 누가 Publish, Subscribe 가능한지
@@ -169,6 +175,9 @@ SNS는 메시징 이외에:
 - KMS Key로 Topic 메시지 SSE 암호화, HTTPS API로 전송 중 암호화, IAM Policy로 API 접근 통제
 
 ## 출처
+- [Amazon SNS, Origination identities for Amazon SNS SMS messages](https://docs.aws.amazon.com/sns/latest/dg/channels-sms-originating-identities.html)
+- [AWS End User Messaging SMS, United States 10DLC registration](https://docs.aws.amazon.com/sms-voice/latest/userguide/registrations-10dlc.html)
+- [AWS End User Messaging SMS, Best Practices](https://docs.aws.amazon.com/sms-voice/latest/userguide/best-practices.html) — 리전별 번호 확보와 미국의 번호 유형 대조
 - [AWS 공식 문서, Amazon SNS service quotas](https://docs.aws.amazon.com/general/latest/gr/sns.html)
 - [AWS 공식 문서, High throughput FIFO topics](https://docs.aws.amazon.com/sns/latest/dg/fifo-high-throughput.html)
 - [AWS 공식 문서, Amazon SNS message delivery retries](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html)

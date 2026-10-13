@@ -24,6 +24,14 @@ IoT Core의 SQS rule action은 MQTT 메시지 데이터를 SQS 큐로 전달한�
 
 Standard SQS는 같은 메시지를 다시 전달할 수 있다. 소비자는 멱등하게 처리해야 한다. 이를 장비 상태 갱신에 적용하면 이벤트 식별자와 측정 시각 또는 장비별 순번을 두고, 늦게 도착한 값이 최신 상태를 덮어쓰지 않도록 하는 설계를 검토할 수 있다. 구체적인 순번과 재부팅 처리는 장비 계약에 따라 정한다.
 
+### 스트림 수집과 목적별 저장을 분리한다
+
+IoT Core 뒤에 Kafka 스트림을 두면 소비 애플리케이션에서 메시지 해석과 저장 대상 연결을 나눌 수 있다. 2023-05-03 공개된 SOCAR 사례는 MSK 소비, 변환 handler와 저장 loader를 분리하고 ElastiCache for Redis와 DynamoDB에 목적별로 적재했다. 이는 당시 구현 사례이며 같은 구성이 모든 차량 시스템에 최적이라는 근거는 아니다.
+
+2026-10-14 AWS IoT Core 문서 기준, Apache Kafka rule action은 MSK와 외부 또는 자체 운영 Kafka 클러스터로 메시지를 전달한다. **이 action은 IAM 인증을 지원하지 않아 MSK Serverless와 직접 연결할 수 없다.** 네트워크 인터페이스를 관리하는 IAM 역할과 Kafka broker 인증은 별개의 경계다. Kafka 이후 소비자가 IAM 인증을 쓴다는 사실만으로 IoT Core의 직접 발행 경로도 지원된다고 판단하지 않는다.
+
+적용 시에는 소비, 변환과 저장 단계의 실패를 구분하고 저장 대상별 지연, 재처리와 중복 처리를 확인한다(설계 점검). 이 절은 공개 사례와 Kafka action의 연결 조건만 대조했으며 실제 부하 시험이나 기존 IoT 기능 전체의 재검증은 아니다. frontmatter의 검증일은 유지한다.
+
 ## 수집 대상과 시점을 장비에서 제한한다
 
 모든 신호를 계속 전송하기 전에 대상 장비, 필요한 신호와 수집 조건을 정한다. 2026-10-13 FleetWise campaign 문서 기준, 시간 간격에 따른 수집과 논리 조건에 따른 수집을 구분하며 `signalsToCollect`로 수집할 신호를 지정한다. 캠페인 승인만으로 장비가 수집을 시작하지는 않는다. 실행 중인 Edge Agent에 캠페인이 배포되어야 한다.
@@ -176,6 +184,8 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [How SOCAR handles large IoT data with Amazon MSK and Amazon ElastiCache for Redis — AWS](https://aws.amazon.com/blogs/big-data/how-socar-handles-large-iot-data-with-amazon-msk-and-amazon-elasticache-for-redis/) — 2023년 구현의 소비, 변환과 저장 역할을 2026-10-14 대조
+- [AWS IoT Core, Apache Kafka](https://docs.aws.amazon.com/iot/latest/developerguide/apache-kafka-rule-action.html) — 2026-10-14 Kafka action의 IAM 인증과 MSK Serverless 제한 대조
 - [AWS IoT Core, Device Shadow MQTT topics](https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html) — 2026-10-14 조회, 변경과 삭제의 topic 및 발행, 구독, 수신 권한을 대조
 - [Exploring alternatives and seamlessly migrating data from Amazon Lookout for Vision — AWS](https://aws.amazon.com/blogs/machine-learning/exploring-alternatives-and-seamlessly-migrating-data-from-amazon-lookout-for-vision/) — 2026-10-13 종료 공지와 대체 후보의 범위를 대조
 - [Amazon Monitron, What is Amazon Monitron?](https://docs.aws.amazon.com/Monitron/latest/user-guide/what-is-monitron.html) — 2026-10-13 센서 입력, 경보와 오프라인 상태의 의미 대조
