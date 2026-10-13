@@ -81,6 +81,10 @@ AWS가 제시한 최대 4.6배 AI 추론 성능과 최대 2.1배 그래픽 성�
 
 ### Graviton 이전은 이미지, 의존성과 성능을 함께 검증한다
 
+부분 검증(2026-10-14): M9g와 M9gd는 Graviton5 기반 범용 인스턴스다. M9g는 EBS 전용이고 M9gd는 로컬 NVMe SSD를 추가로 제공한다. 공식 제품 표에서 `m9g.large`는 2 vCPU, 메모리 8 GiB, 네트워크 최대 15 Gbps와 EBS 최대 12 Gbps이며, `m9g.48xlarge`는 192 vCPU, 메모리 768 GiB, 네트워크 100 Gbps와 EBS 72 Gbps다. 같은 패밀리의 최대 사양을 작은 인스턴스에 적용하지 않는다.
+
+AWS의 최대 25% 컴퓨트 성능 향상은 Graviton4 기반 M8g와의 비교다. 애플리케이션의 비용 절감률이나 응답 지연 개선율로 바꾸어 쓰지 않는다. 실제 성능은 아래 이전 검증 절차로 측정해야 하며, 이번 확인은 공식 제품 사양 대조이므로 기존 문서 전체의 검증일은 유지한다.
+
 2026-10-13 AWS Graviton 전환 가이드와 Docker 공식 문서로 이 절을 대조했다. Graviton은 arm64이므로 인스턴스 타입만 바꾸지 않고 AMI, 컨테이너 이미지, 라이브러리, 런타임과 운영 에이전트의 지원을 확인한다. 언어가 이식 가능해도 함께 배포하는 네이티브 구성 요소까지 호환된다는 뜻은 아니다.
 
 - 사용하는 이미지의 **실제 태그나 digest**를 `docker buildx imagetools inspect <이미지>`로 조회한다. 멀티 플랫폼 이미지라면 manifest 목록에서 `linux/arm64` 지원을 확인한다. 다른 태그의 지원 여부로 현재 배포 이미지를 판단하지 않는다.
@@ -164,6 +168,7 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 
 ## 출처
 
+- [Amazon EC2 M9g instances — AWS](https://aws.amazon.com/ec2/instance-types/m9g/)
 - [Amazon EC2 G7 instances — AWS](https://aws.amazon.com/ec2/instance-types/g7/)
 - [Amazon EC2 C8a instances — AWS](https://aws.amazon.com/ec2/instance-types/c8a/)
 - [Amazon EC2 M8a instances — AWS](https://aws.amazon.com/ec2/instance-types/m8a/)
