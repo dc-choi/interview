@@ -51,6 +51,22 @@ Thymeleaf는 server-side model을 HTML에 적용하면서 template 자체를 bro
 
 ## form binding
 
+### 여러 화면에 공통 조회값 전달하기
+
+장바구니 배지처럼 여러 HTML 화면에서 쓰는 값은 `@ControllerAdvice`의 `@ModelAttribute("cartCount")` 메서드로 model에 넣을 수 있다. 이 메서드는 대상 Controller의 `@RequestMapping` 메서드보다 먼저 실행되고, Advice의 공통 model 초기화는 Controller 내부의 model 초기화보다 앞선다. Advice 자체가 모든 HTTP 요청을 받는 Controller라는 뜻은 아니다.
+
+다음은 장바구니 화면에 적용할 설계 기준이다.
+
+- 사용자 식별자는 요청의 임의 회원 번호가 아니라 인증된 사용자 정보에서 얻는다. 비로그인 상태의 표시값은 0 등으로 명시한다.
+- 배지의 개수가 상품 종류 수인지 수량 합계인지 정하고, 그 계약에 맞는 조회만 수행한다.
+- Advice는 기본적으로 REST Controller에도 적용되므로, 화면용 패키지나 `assignableTypes`로 범위를 좁혀 불필요한 조회를 피한다.
+- model 초기화는 handler보다 앞서므로, 같은 POST에서 장바구니를 바꿔도 미리 구한 값이 자동 재계산되지는 않는다. 성공 후 GET으로 redirect하거나 변경 결과로 model을 갱신한다.
+- 이미 브라우저에 그린 배지는 서버 model만으로 즉시 바뀌지 않는다. 비동기 추가 요청을 쓰면 응답값이나 후속 조회로 화면도 갱신한다. 세션 저장 역시 변경 시 갱신하거나 무효화하는 계약을 두면 사용할 수 있다.
+
+2026-10-14 Spring Framework의 Controller Advice와 Model 문서로 적용 범위와 실행 순서를 대조했다. 장바구니 집계와 화면 갱신 방식은 이를 적용한 설계 예시다.
+
+### 입력 객체 바인딩
+
 `@ModelAttribute`는 form parameter를 input object에 bind하고 model attribute로도 사용할 수 있다. 편리함이 validation/authorization을 대신하지 않는다.
 
 ```java
@@ -103,6 +119,8 @@ Spring `RedirectView`는 기본 HTTP 1.0 호환 모드에서 302를 사용한다
 
 ## 출처
 
+- [Spring Framework, Controller Advice](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-advice.html)
+- [Spring Framework, Model](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-modelattrib-methods.html)
 - [Spring Boot, Welcome Page](https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.spring-mvc.welcome-page)
 - [Spring Data Commons, PageRequest](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/PageRequest.html)
 - [Spring Data Commons, Defining Query Methods](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html)

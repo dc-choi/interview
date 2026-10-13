@@ -58,7 +58,11 @@ final class Account {
 
 ## 공유 여부를 정확히 판단하기
 
-지역 variable 자체는 thread stack에 있지만, 그 variable이 가리키는 object는 다른 thread와 공유될 수 있다. `final` reference도 재할당만 막으며 대상 object를 immutable하게 만들지 않는다. Local이나 final이라는 표면적 표기보다 실제 object의 escape와 mutation 경로를 추적한다.
+지역 variable과 메서드 매개변수 자체는 thread 사이에 공유되지 않지만, 그 variable이 가리키는 object는 다른 thread와 공유될 수 있다. `final` reference도 재할당만 막으며 대상 object를 immutable하게 만들지 않는다. Local이나 final이라는 표면적 표기보다 실제 object의 escape와 mutation 경로를 추적한다.
+
+Java 21에 정식 도입된 virtual thread도 이 구분을 바꾸지 않는다. JEP 444의 virtual thread stack은 GC가 관리하는 heap의 stack chunk object로 저장되고 필요에 따라 커지거나 줄어든다. 물리적으로 heap에 놓였다는 이유로 지역 variable이 다른 thread에 공개되는 것은 아니다. 반대로 heap의 object라도 한 thread에만 한정하고 밖으로 넘기지 않으면 공유 쓰기 경합의 대상이 아니다.
+
+2026-10-14 JLS 17.4.1과 JEP 444의 메모리 설명을 대조했다. 특정 stack 크기나 동시에 생성 가능한 thread 수는 JVM 설정과 workload에 따라 달라지므로 고정 수치로 보장하지 않는다.
 
 `synchronized` monitor 대기는 timeout이나 fairness를 선택할 수 없다. interruptible acquisition, timeout이나 여러 condition queue가 필요하면 [[Java-Locks-Monitors-and-Conditions|Lock과 Condition]]을 검토한다.
 
@@ -83,6 +87,7 @@ final class Account {
 
 ## 공식 문서
 
+- [JEP 444: Virtual Threads — OpenJDK](https://openjdk.org/jeps/444)
 - [JLS 17, Threads and Locks, Java SE 26](https://docs.oracle.com/javase/specs/jls/se26/html/jls-17.html)
 - [JLS 17.4.5, Happens-before Order](https://docs.oracle.com/javase/specs/jls/se26/html/jls-17.html#jls-17.4.5)
 - [JLS 14.19, The synchronized Statement](https://docs.oracle.com/javase/specs/jls/se26/html/jls-14.html#jls-14.19)

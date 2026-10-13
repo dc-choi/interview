@@ -46,6 +46,22 @@ Provisioned domain의 가용성 설계, service software update와 engine upgrad
 
 ## 프로덕션 체크리스트
 
+### Red와 yellow 상태의 진단 순서
+
+Red는 primary shard가 하나 이상 미할당되어 일부 데이터가 가용하지 않은 상태다. Yellow는 primary가 모두 할당됐지만 replica 일부가 미할당된 상태다. Yellow 자체가 데이터 손실을 뜻하지는 않지만 추가 node 장애를 견딜 복제 여유가 줄었다는 신호다.
+
+1. `GET /_cat/shards?h=index,shard,prirep,state,unassigned.reason`으로 미할당 shard를 찾는다.
+2. `GET /_cluster/allocation/explain`에 `index`, `shard`, `primary`를 지정해 해당 shard의 allocation 판단을 확인한다. body를 생략하면 첫 미할당 shard 하나를 설명하므로 전체 shard 원인을 한 번에 조사한 것으로 보지 않는다.
+3. node 수와 allocation filter, shard 한도, node별 디스크 여유와 편중, `JVMMemoryPressure`, node 장애를 확인한다. cluster 평균 디스크 여유만으로 특정 node의 부족을 배제하지 않는다.
+4. Red 상태에서는 부하 완화, shard 복구와 지원되는 index 설정 조정 등 원인에 맞는 복구를 먼저 검토한다. Node 수나 instance type 변경 같은 domain 재구성으로 바로 확장하지 않는다. AWS는 red 해소 전 재구성이 `Processing` 정체를 일으킬 수 있다고 경고하며, 구성 변경 검증의 `RedCluster` 오류는 우회할 수 없다.
+5. Red를 해소한 뒤 용량 확장이나 domain 재구성이 필요하면 사전 검증과 여유 용량을 확인한다. Yellow만 남은 경우에도 allocation 원인에 맞춰 node 수와 replica 수를 검토한다. 같은 shard의 primary와 replica는 같은 node에 둘 수 없다.
+
+인덱스 삭제 후 snapshot 복구는 가용한 데이터도 제거할 수 있는 복구 선택이다. Red라는 이유만으로 바로 삭제하지 않고, 대상 shard의 복구 가능성, snapshot의 성공 시점과 포함 범위, 원본 재생 경로와 허용 손실을 먼저 확인한다. Replica 수를 줄여 green으로 만드는 것도 복제 안전성을 회복하는 것과 구분한다.
+
+2026-10-14 AWS의 Handling errors, 구성 변경 검증과 OpenSearch API 문서로 상태 의미, 진단 요청과 red 상태의 재구성 제약을 대조했다. 삭제 전 확인사항은 데이터 보존을 위한 운영 판단 기준이며 실제 cluster 복구 시험은 수행하지 않았다.
+
+### 운영 준비 점검
+
 - [ ] Provisioned와 Serverless의 API, 비용, 운영 제약을 실제 workload로 비교했는가
 - [ ] Node나 zone 하나를 잃은 상태에서도 SLO를 만족하는가
 - [ ] Blue-green 배포와 reindex가 동시에 필요한 여유 용량이 있는가
@@ -67,6 +83,8 @@ Provisioned domain의 가용성 설계, service software update와 engine upgrad
 
 ## 출처
 
+- [AWS Documentation, Making configuration changes in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html)
+- [OpenSearch Documentation, Cluster Allocation Explain API](https://docs.opensearch.org/latest/api-reference/cluster-api/cluster-allocation/)
 - [AWS Documentation, Multi-AZ domain 구성](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html)
 - [AWS Documentation, Service software updates](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/service-software.html)
 - [AWS Documentation, Domain engine upgrade](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/version-migration.html)

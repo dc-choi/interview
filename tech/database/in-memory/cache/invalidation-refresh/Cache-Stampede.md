@@ -22,15 +22,21 @@ aliases: ["Cache stampede 방지", "Cache Stampede"]
 - 가장 간단하고 효과적인 1차 대응
 - 예: 기본 TTL 300초 + jitter 0~60초 → 300~360초 사이에 분산 만료
 
+Jitter는 여러 키의 만료 집중을 완화한다. 단일 hot key가 만료된 순간의 중복 조회를 합치는 기능은 없으므로, 요청 병합이나 갱신 조정과 구분한다. 만료 시간을 늘릴 때는 허용 가능한 데이터 지연 범위 안에서 정한다.
+
 ### 2. Mutex Lock (분산 잠금)
-- 캐시 미스 시 **한 요청만 DB를 조회**하고, 나머지는 대기 또는 stale 데이터 반환
+- 캐시 미스 시 lock 소유 요청이 DB를 조회하고, 나머지는 대기 또는 stale 데이터 반환
 - Redis `SET key lock_value NX EX 10` (NX: 키가 없을 때만 설정)로 구현
 - lock 획득 실패한 요청은 짧은 sleep 후 캐시 재확인
 - 단점: lock 보유 요청이 실패하면 나머지도 지연
 
+Lock을 얻은 뒤에도 캐시를 다시 확인한다. 최초 miss와 lock 획득 사이에 앞선 요청이 값을 채웠을 수 있기 때문이다. 획득에 실패한 요청에는 대기 기한과 재시도 상한을 두고, 기한 뒤에는 허용된 stale 응답이나 명시적 실패 등 종료 경로를 정한다. 모든 대기 요청이 동시에 DB로 우회하면 원본 부하가 다시 몰릴 수 있다.
+
+Redis의 TTL lock만으로 장애 상황까지 단일 소유권을 보장하지는 않는다. 비동기 복제에서 lock 기록이 replica에 전달되기 전에 primary가 장애를 일으키고 replica가 승격되면, TTL 이내에도 다른 요청이 같은 lock을 얻을 수 있다. DB 조회가 lock TTL을 넘을 때도 새 소유자와 이전 조회가 겹칠 수 있으므로, 중복 계산 허용 범위와 오래된 결과의 덮어쓰기 방지를 별도로 검토한다. 해제 때의 토큰 비교만으로 늦게 끝난 작업의 쓰기까지 막지는 못한다.
+
 ### 3. 백그라운드 갱신 (Preemptive Refresh)
 - TTL 만료 **전에** 백그라운드에서 미리 캐시를 갱신
-- 실제 만료가 발생하지 않으므로 stampede 자체를 원천 차단
+- 갱신이 만료 전에 성공하면 miss를 줄인다. 갱신 실패나 지연으로 만료될 때의 fallback은 별도로 필요하다.
 - 구현: TTL의 80% 시점에 갱신 트리거, 또는 별도 스케줄러로 주기적 갱신
 - 적합: 조회 빈도가 매우 높고 DB 조회 비용이 큰 데이터
 
@@ -89,6 +95,10 @@ EVAL "if redis.call('get', KEYS[1]) == ARGV[1]
 - **트래픽 폭증, 외부 의존성 큼**: 위 조합 + 짧은 TTL stale-while-revalidate 패턴
 
 ## 출처
+2026-10-14 부분 검증: AWS의 cold start와 요청 병합 설명, Redis의 lock 유효 시간, 비동기 복제 장애조치의 중복 소유 가능성과 안전한 해제를 대조했다. 캐시 재확인, 대기 상한과 늦은 쓰기 검토는 그 실패 조건에 대응하는 설계 기준이다. 실제 장애나 성능 재현 기록은 아니다.
+
+- [Caching challenges and strategies — Amazon Builders' Library](https://aws.amazon.com/builders-library/caching-challenges-and-strategies/)
+- [Redis Documentation, Distributed Locks with Redis](https://redis.io/docs/latest/develop/clients/patterns/distributed-locks/)
 - [Andrea Vattani, Flavio Chierichetti, Keegan Lowenstein — Optimal Probabilistic Cache Stampede Prevention, PVLDB Vol. 8 No. 8, pp. 886-897, 2015](http://www.vldb.org/pvldb/vol8/p886-vattani.pdf)
 
 ## 관련 문서

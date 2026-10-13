@@ -18,15 +18,15 @@ aliases: ["Cache Locality", "Locality Principle", "지역성 원리"]
 
 ## 80/20 법칙 (Pareto)
 
-실제 워크로드에서 **20%의 hot 데이터가 80%의 요청을 처리**하는 분포가 흔하다. 이 분포가 곧 캐시의 성공 조건:
+일부 hot 데이터에 요청이 집중되면 전체 데이터를 담지 않아도 캐시가 효과를 낼 수 있다. 20%와 80%는 분포를 설명하는 예시이며 모든 워크로드의 비율이나 캐시 성공 조건이 아니다.
 
 | 분포 | 캐시 효과 |
 |------|----------|
-| 멱법칙(Power Law), Zipfian | 매우 큼 — 작은 캐시로도 hit rate 90%+ |
-| 균등(Uniform) | 작음 — 캐시 크기 ≈ 데이터 크기여야 효과 |
-| 일회성, 랜덤 | 거의 없음 — 캐시가 오히려 오버헤드 |
+| 멱법칙(Power Law), Zipfian | hot 데이터가 캐시에 남으면 높은 적중률을 기대할 수 있으나 분포의 편향과 정책에 따라 다름 |
+| 독립적인 균등 요청 | 같은 크기 항목 N개 중 C개가 채워져 있으면 다음 요청의 적중 확률은 C/N, C ≤ N |
+| 재사용 없는 일회성 접근 | 재사용 이득 없이 조회와 저장 비용이 추가될 수 있음 |
 
-캐시 도입 전에 **분포 측정이 선행**돼야 한다. Hit rate 추정의 본질은 분포 추정.
+캐시 도입 전에 **접근 분포와 순서를 측정**한다. 같은 빈도 분포여도 재접근 간격, 만료와 교체 정책에 따라 적중률이 달라진다.
 
 ## 암달의 법칙 (부분 개선의 상한)
 
@@ -53,7 +53,7 @@ s = 그 부분만 떼어 본 속도 향상 배수
 
 | 계층 | Temporal 활용 | Spatial 활용 |
 |------|--------------|-------------|
-| **CPU 캐시** (L1/L2/L3) | 최근 명령, 데이터 보관 | **캐시 라인** 64B 단위 적재 |
+| **CPU 캐시** (L1/L2/L3) | 최근 명령, 데이터 보관 | 캐시 라인 단위 적재, 크기는 대상 CPU에서 확인 |
 | **OS 페이지 캐시** | 최근 파일 페이지 보관 | **read-ahead** (인접 페이지 미리) |
 | **DB Buffer Pool** | hot 페이지 보관 | **B+Tree leaf** 인접 페이지 함께 |
 | **앱 캐시 (Redis 등)** | LRU, LFU eviction | **Prefetch** (관련 키 미리 로드) |
@@ -62,6 +62,18 @@ s = 그 부분만 떼어 본 속도 향상 배수
 같은 원리가 nanoseconds 부터 millisecond까지 모든 계층에 일관되게 작동.
 
 ## Spatial Locality와 Prefetch
+
+### 배열 순회 순서와 접근 간격
+
+연속된 배열 원소를 안쪽 loop에서 순회하면 큰 간격으로 건너뛰는 접근보다 한 cache line에 가져온 데이터를 재사용하기 쉽다. 행 우선으로 배치한 평탄한 배열이라면 열 인덱스를 안쪽에서 늘리는 방식이 그 예다. Loop interchange는 이 접근 간격을 줄이는 후보지만, 반복 사이의 데이터 의존성을 지켜 결과가 같을 때만 적용한다.
+
+Java의 `int[][]`는 하위 배열을 참조하는 배열이다. 각 행의 길이가 다르거나 같은 행 객체를 여러 위치에서 참조할 수도 있어 전체 행렬이 하나의 연속 메모리 구간이라고 가정하지 않는다. 고정 폭 행렬을 `int[]`로 평탄화하고 `row * width + column`으로 접근하는 것은 별도 설계 선택이며, 인덱스 계산과 크기 검증 비용도 포함해 비교한다.
+
+검증할 때는 배열 크기, CPU, JVM 또는 컴파일러, warm-up 조건을 고정하고 실행 시간과 메모리 접근 병목을 함께 본다. 64B line과 4B 원소를 가정하면 한 line에 16개가 들어가지만, 이를 적중률 93%나 일정 배수의 속도 향상 보장으로 환산하지 않는다. 정렬, 기존 cache 상태, prefetch와 write 경로가 결과에 영향을 준다.
+
+2026-10-14 Intel의 loop interchange 사례와 Java SE 26 배열 명세를 대조했다. 이 문서에서 성능 benchmark를 실행한 것은 아니다.
+
+### 애플리케이션에서 관련 값 미리 읽기
 
 Spatial은 코드로 직접 활용 가능 — **읽힐 것을 미리 읽기**.
 
@@ -85,21 +97,21 @@ LRU는 최근에 쓰지 않은 키부터 지우므로 **크롤러, 이상 트래
 
 ## Working Set 개념
 
-특정 시간 윈도우 안에 접근되는 **고유 키의 집합**. 캐시 크기는 working set 크기 이상이어야 hit rate가 의미 있게 나옴.
+Working set은 특정 시간 윈도우 안에 접근되는 **고유 키의 집합**이다. 전체를 담지 못해도 hot 키가 반복 사용되면 높은 적중률이 나올 수 있다. 용량, 고유 키 수와 총 요청 수만으로 적중률을 계산하지 않는다.
 
-```
-hit_rate ≈ 1 - (working_set_size - cache_size) / total_requests   (간략)
-```
+빈 캐시에서 시작하는 용량 9개의 정확한 LRU 모형을 생각하자. 같은 크기의 키 10개를 0부터 9까지 순환하며 100회 반복하면 1,000번 모두 miss다. 반면 각 키를 100번 연속 요청한 뒤 다음 키로 넘어가면 miss는 10번, hit는 990번이다. 고유 키 수와 요청별 빈도는 같지만 순서만으로 적중률이 0%와 99%로 달라진다. 이 모형은 TTL과 무효화가 없고 miss마다 값을 적재하며, Redis의 근사 LRU나 CPU cache를 그대로 재현하지 않는다.
+
+실측 적중률은 같은 관측 구간의 `hits / (hits + misses)`로 계산한다. Redis에서는 `INFO stats`의 `keyspace_hits`, `keyspace_misses` 증가분을 사용할 수 있다. 분모가 0이면 해당 구간의 적중률을 계산하지 않는다. 2026-10-14 Redis 문서의 계산식과 대조했고, 위 LRU 예시는 작은 순차 시뮬레이션으로 두 결과를 확인했다.
 
 운영 모니터링:
 - 캐시 크기 vs 추정 working set 비교
-- `evicted_keys` 폭증 = cache_size < working_set 신호
+- `evicted_keys` 증가와 hit/miss, `expired_keys`를 함께 관찰해 메모리 압박, 교체 정책과 TTL의 영향을 구분
 - 시간대별 working set 변동 (피크 vs 야간)
 
 ## 흔한 실수
 
-- **분포 측정 없이 도입** — 균등 분포면 캐시 효과 없음
-- **Spatial 무시 단일 키 캐시** — 인접 데이터까지 prefetch하면 hit rate 크게 오름
+- **분포와 순서 측정 없이 도입** — 균등 분포도 용량 비율에 따라 적중하므로 실제 이득과 비용을 비교
+- **근거 없는 prefetch** — 관련 데이터가 실제로 뒤이어 쓰이는지 확인하고 추가 I/O와 캐시 오염을 측정
 - **bot 트래픽이 진짜 hot을 가림** — 측정 시 user-agent 필터 필요
 - **working set 변동 무시** — 야간엔 작아도 피크엔 캐시보다 큰 경우
 - **CPU 캐시 라인 무시한 자료구조** — 핫 필드끼리 묶어 같은 캐시 라인에 두면 spatial 활용
@@ -108,7 +120,7 @@ hit_rate ≈ 1 - (working_set_size - cache_size) / total_requests   (간략)
 ## 면접 체크포인트
 
 - Temporal vs Spatial Locality 차이와 각각 어떤 정책에 매핑되는가
-- 80/20 분포가 캐시의 전제 조건인 이유 — 균등 분포면 무용
+- 80/20이 필수 조건이 아닌 이유와 균등 요청에서 용량 비율이 적중률에 미치는 영향
 - 암달의 법칙으로 캐시 효과의 상한을 계산하는 방법 (p, s, 적중률이 s를 정하는 방식)
 - LRU의 cache pollution 문제 → LFU, ARC 대안
 - Spatial Locality를 앱에서 활용하는 방법 (prefetch 패턴)
@@ -117,6 +129,9 @@ hit_rate ≈ 1 - (working_set_size - cache_size) / total_requests   (간략)
 - DB의 B+Tree leaf 인접 페이지 적재가 spatial 활용 사례
 
 ## 출처
+- [Redis Documentation, Key eviction](https://redis.io/docs/latest/develop/reference/eviction/)
+- [Intel Advisor, Optimize Memory Access Patterns using Loop Interchange and Cache Blocking Techniques](https://www.intel.com/content/www/us/en/docs/advisor/cookbook/2023-1/optimize-memory-access-patterns.html)
+- [Java Language Specification, Chapter 10. Arrays, Java SE 26](https://docs.oracle.com/javase/specs/jls/se26/html/jls-10.html)
 - [TS Backend Meetup — NestJS 캐싱 전략 정리]
 - [AFIPS Spring Joint Computer Conference 1967 — Validity of the single processor approach to achieving large scale computing capabilities](https://dl.acm.org/doi/10.1145/1465482.1465560)
 - [인프런, 성장랜턴, 캐시 & CDN](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278151)

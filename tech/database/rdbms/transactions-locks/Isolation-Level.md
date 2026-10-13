@@ -3,7 +3,7 @@ tags: [database, rdbms]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["트랜잭션 격리 수준", "Isolation Level"]
-verified_at: 2026-10-05
+verified_at: 2026-10-14
 ---
 
 # 트랜잭션 격리 수준
@@ -52,6 +52,16 @@ SQL-92는 격리 수준을 세 현상의 허용 여부로 정의했다.
 ## 격리 수준은 성능 등급표가 아니다
 
 격리 수준은 어떤 동시 실행 결과를 허용할지 정하는 계약이다. 강한 수준은 lock wait나 abort를 늘릴 수 있지만 실제 처리량은 query, index, 충돌률과 구현에 따라 달라지므로 level 이름만으로 예측하지 않는다.
+
+## 복제 로그 형식과 함께 확인한다
+
+MySQL 8.4에서는 InnoDB의 기본 격리 수준이 `REPEATABLE READ`이고, binary logging의 기본 형식은 `ROW`다. 두 기본값은 서로 다른 설정이며 row-based logging으로 바꿨다고 격리 수준도 바뀌지 않는다.
+
+- InnoDB의 `READ COMMITTED`에서는 row-based binary logging만 지원한다. `binlog_format=MIXED`라면 서버가 row-based logging을 사용한다.
+- `ROW`는 변경 행을 기록하므로 DML 문장을 replica에서 다시 평가하는 방식과 구분한다. 다만 `CREATE TABLE` 같은 DDL은 `ROW`에서도 statement 형식으로 기록된다.
+- 복제 로그가 행 변경을 전달하는 것과 source에서 잔액, 재고의 동시 갱신을 안전하게 처리하는 것은 별개다. 격리 수준을 낮출 때는 snapshot, gap lock, 재시도와 업무 불변식을 함께 검토한다.
+
+현재의 복제 제약은 확인할 수 있지만, 그것만으로 RR 기본값의 유일한 역사적 이유나 기본값을 유지하는 조직적 의도를 확정하지 않는다. 일반 SELECT의 snapshot이 INSERT를 막는 것도 아니다. 삽입 범위 보호는 앞서 설명한 locking read와 DML의 next-key locking으로 구분한다.
 
 ## MVCC와 격리 수준의 관계
 
@@ -122,6 +132,9 @@ Read Uncommitted는 나중에 사라질 중간 상태를 결제/정산 판단에
 
 ## 출처
 
+2026-10-14 부분 검증: MySQL 8.4의 RR 기본값, RC의 binary logging 제약, ROW 기본값과 DDL 예외를 공식 문서와 대조했다. 기본값 결정의 역사적 동기와 운영 성능은 검증하지 않았다.
+
+- [MySQL 8.4 Reference Manual, Setting The Binary Log Format](https://dev.mysql.com/doc/refman/8.4/en/binary-log-setting.html)
 2026-10-03 부분 검증: dirty read의 정의, RC의 consistent read와 잠금 차이를 MySQL 8.4 공식 문서와 대조했다. 실제 DB의 동시 실행이나 애플리케이션의 격리 수준 변경을 시험한 기록은 아니다.
 
 2026-10-05 부분 검증: SQL-92 현상 표는 Berenson 등의 논문과 대조했고, 제품별 기본 격리 수준과 PostgreSQL의 READ UNCOMMITTED, phantom 처리는 MySQL 8.4, PostgreSQL 18, Oracle 19c 공식 문서와 대조했다. 이 역시 실행 재현 기록은 아니다.
