@@ -66,6 +66,21 @@ Namespace: MyApp/Performance
 
 비용 점검에서는 메트릭 수, API 요청과 알람을 구분한다. EMF도 로그 수집과 커스텀 메트릭 비용이 있으므로 `PutMetricData`를 직접 호출하지 않는다는 사실을 무료라는 뜻으로 해석하지 않는다.
 
+### 평균과 백분위의 질문을 구분한다
+
+부분 검증(2026-10-13): 아래는 기존 CloudWatch 메트릭의 통계 정의와 커스텀 메트릭의 백분위 조회 조건이다.
+
+- `Average`는 조회 기간의 `Sum / SampleCount`다. `p95`는 그 기간 데이터 분포의 95번째 백분위 경계이며 평균이나 표준편차가 아니다.
+- 평균 지연이 낮아도 일부 요청은 오래 걸릴 수 있다. 운영 점검에서는 같은 메트릭, 단위와 기간의 평균, p95 또는 p99, 표본 수를 함께 본다. 정규분포를 확인하지 않고 백분위를 평균에서 몇 표준편차 떨어진 값으로 바꾸지 않는다.
+- p99가 높다는 사실만으로 전체 요청이 그만큼 느리다고 해석하지 않는다. 어떤 기간과 요청 집합을 집계했는지, 느린 요청이 어떤 경로에 속하는지 로그와 함께 확인한다.
+
+커스텀 메트릭의 백분위 계산에는 원시 데이터포인트가 필요하다. `Min`, `Max`, `Sum`, `SampleCount`로 미리 집계한 statistic set은 다음 중 하나를 만족해야 백분위를 조회할 수 있다.
+
+1. `SampleCount = 1`이고 `Min = Max = Sum`이다.
+2. `Min = Max`이고 `Sum = Min * SampleCount`다.
+
+메트릭 값에 음수가 있으면 백분위 통계를 사용할 수 없다. 요청별 지연의 p99가 필요하다면 평균값만 게시한 뒤 원래 요청 분포를 복원할 수 있다고 가정하지 않는다.
+
 ## Embedded Metric Format (EMF) — 로그+메트릭 동시
 
 JSON 로그 안에 메트릭을 임베드하면 CloudWatch가 자동 파싱:
@@ -93,6 +108,7 @@ JSON 로그 안에 메트릭을 임베드하면 CloudWatch가 자동 파싱:
 
 ## 출처
 
+- [CloudWatch statistics definitions — AWS](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html)
 - [Metrics concepts — AWS](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_concepts.html)
 - [Analyzing, optimizing, and reducing CloudWatch costs — AWS](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_billing.html)
 - [CloudWatch metrics for your Application Load Balancer — AWS](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-cloudwatch-metrics.html)
