@@ -86,6 +86,16 @@ MySQL의 파라미터 모드, 트랜잭션 경계, 커서와 동적 SQL, 프로�
 - table 권한 대신 프로시저 실행 권한만 주는 경계는 프로시저가 반환하는 데이터만큼만 보호한다. 정의를 바꿀 수 있는 사람은 경계를 넘을 수 있으므로 최소 권한, 민감 컬럼 암호화와 접근 감사를 함께 둔다.
 - DB는 데이터를 가진 상태 계층이라 부하가 몰릴 때 애플리케이션 서버처럼 인스턴스를 바로 늘리기 어렵다. 새 replica는 데이터 복제가 끝나야 쓸 수 있으므로 계산이 많은 로직을 프로시저로 옮기면 가장 늘리기 어려운 계층에 부하가 모인다([[Business-Logic-App-vs-DB|비즈니스 로직 위치]]).
 
+### 상태 갱신과 조회를 나눈 SQLDoom 사례
+
+SQLDoom은 게임 상태와 로직, 렌더링을 CedarDB 안에 두고 Python이 입력, 시계와 화면 출력을 맡는 구현 사례다. 2026-09-22 공개된 제작사의 설명을 2026-10-14 대조했다. 저장 함수와 CedarDB의 `cedarscript`를 사용하므로 SQL이라는 이름만으로 다른 DBMS에서 그대로 실행된다고 가정하지 않는다.
+
+- **쓰기 경계:** 별도 Python referee가 공유 게임 시계를 35 Hz로 진행하며, 한 tick의 갱신을 트랜잭션으로 묶는다. 렌더링은 상태 테이블을 읽는 별도 경로다.
+- **권한 경계:** 플레이어 생성 코드가 호출하는 `grant_player_api`는 정해진 API 함수의 실행 권한 외에 `sound_assets` 테이블, API view와 설치된 프레임 view의 `SELECT`, sequence의 `USAGE`도 부여한다. 게임 상태 테이블의 직접 수정 권한은 이 함수에서 부여하지 않는다. 입력 함수는 `session_user`에 연결된 플레이어를 찾고 입력값을 허용 범위로 제한하며, `SECURITY DEFINER` 권한으로 갱신한다. 허용된 조회와 직접 수정 제한, 함수 입력 검증을 구분한다.
+- **해석의 한계:** 트랜잭션으로 부분 갱신 노출을 막는 설계와 모든 클라이언트가 같은 순간에 같은 화면을 보는 것은 구분한다. 이 사례를 멀티플레이어 구현 비용이 없다는 일반 법칙으로 바꾸지 않는다.
+
+설계 검토에 적용할 질문은 상태 전이의 원자성, 함수 권한과 입력 검증, 읽기와 쓰기의 부하 분리다. 게임 이식의 성립만으로 운영 시스템에서도 DB 계산이 유리하다고 결론 내리지 않고, 실제 부하와 변경 배포 비용을 측정한다.
+
 ## Event scheduler
 
 MySQL Event Scheduler는 server 안에서 정해진 시각이나 주기로 SQL을 실행한다. 작은 maintenance와 summary 작업에는 단순하지만 외부 workflow engine을 자동으로 대체하지 않는다.
@@ -131,6 +141,9 @@ MySQL view의 `SELECT *`는 생성 시점 column 목록으로 고정된다. base
 
 ## 출처
 
+- [We ported the original Doom to SQL — CedarDB, Lukas Vogel](https://cedardb.com/blog/sqldoom/)
+- [SQLDoom 플레이어 권한 설정 — CedarDB](https://github.com/cedardb/sqldoom/blob/main/cedarscript_runtime.py#L283-L316)
+- [SQLDoom 플레이어 생성 호출부 — CedarDB](https://github.com/cedardb/sqldoom/blob/main/scripts/add_player.py#L24-L31)
 - [MySQL 8.4, Updatable and Insertable Views](https://dev.mysql.com/doc/refman/8.4/en/view-updatability.html)
 - [MySQL 8.4, The View WITH CHECK OPTION Clause](https://dev.mysql.com/doc/refman/8.4/en/view-check-option.html)
 - [MySQL 8.4, Using Views](https://dev.mysql.com/doc/refman/8.4/en/views.html)

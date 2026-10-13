@@ -43,6 +43,16 @@ Radical Candor는 상대를 한 사람으로 아끼는 태도(Care Personally)�
 
 성격과 의도를 단정하는 표현은 피한다. 장면과 영향이 빠진 평가는 방어를 만들고, 구체적 기대가 빠진 지적은 개선으로 이어지지 않는다.
 
+## 갈등을 함께 올리는 clean escalation
+
+동료 사이의 업무 갈등에서는 당사자에게 관찰한 행동과 영향을 직접 설명하고, 해결되지 않으면 두 당사자가 함께 관리자에게 조정을 요청하는 방식을 사용할 수 있다. 관리자가 양쪽의 불만을 따로 전달하는 중계자가 되기보다, 같은 자리에서 각자의 설명을 듣고 해결을 돕는 구조다. Radical Candor의 실천 지침이며 모든 갈등에서 효과가 보장되는 법칙은 아니다.
+
+- 직접 해결하지 못했다는 이유로 도움을 요청한 사람을 벌주지 않는다. 관리자는 쟁점과 다음 행동을 정하도록 지원한다.
+- 칭찬도 관리자를 통해서만 전달하지 않고, 좋은 행동을 관찰한 사람이 해당 동료에게 직접 전할 수 있게 한다.
+- 권력 차이가 커서 직접 말하기 어려운 상황에는 같은 절차를 강제하지 않는다. 관리자 동석이나 상위 관리자와의 별도 피드백 경로를 검토한다. 당사자 없는 대화를 모두 험담으로 취급하면 필요한 지원까지 막을 수 있다.
+
+적용 질문은 누구 편인지보다 어떤 행동을 관찰했고, 무엇이 해결되지 않았으며, 안전하게 도움을 받을 경로가 있는지다. 상대의 속마음을 추정하거나 친근한 표정을 유지하는 일을 문제 해결의 증거로 삼지 않는다.
+
 ## CORE로 개선 피드백을 구체화한다
 
 Radical Candor의 공식 FAQ는 개선 피드백 예시에서 CORE 사용을 안내한다. 공식 자료에는 마지막 E를 `Expected next steps` 또는 `Explore`로 표기한 경우가 있으나, 공통점은 다음 행동을 일방적으로 지시하지 않고 대화로 정한다는 데 있다.
@@ -76,6 +86,8 @@ CORE는 어려운 대화를 자동으로 해결하는 문구가 아니다. 사�
 - [[Code-Review-Reviewer-Guide|코드 리뷰 리뷰어 가이드]] — 코드 위 피드백의 실전
 
 ## 출처
+- [How to Make Work Less Like Junior High (A Tale of 2 Jasons) — Radical Candor](https://www.radicalcandor.com/podcast/s5-e10-how-to-make-work-less-like-junior-high)
+- [6 Ways to Encourage Feedback Between Others — Radical Candor](https://www.radicalcandor.com/wp-content/uploads/2021/08/6-ways-to-Encourage-Feedback-Between-Others.pdf)
 - [좋은 피드백만 골라서 상위 1% 개발자 되는 법 — YouTube, 코딩맨](https://www.youtube.com/watch?v=Hm_64T6q1rE) — 2025-09-26, 피드백의 질에 관한 견해, 제목과 본문의 비율은 일반 통계가 아님
 
 - 킴 스콧 — 실리콘밸리의 팀장들(Radical Candor) (도서, 2x2 프레임 원전)
