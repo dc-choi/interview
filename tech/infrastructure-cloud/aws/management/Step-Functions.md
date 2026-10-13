@@ -26,6 +26,14 @@ AWS 서비스 호출과 애플리케이션 작업을 상태 머신으로 연결�
 
 상태 사이에 전달하는 데이터는 JSONPath 또는 JSONata 기반 필드로 선택, 변환한다. 큰 페이로드를 상태에 계속 복사하기보다 S3 같은 외부 저장소에 두고 식별자만 전달하면 실행 기록 크기와 비용을 제어하기 쉽다.
 
+### Workflow Studio와 정의 검토
+
+부분 검증(2026-10-13): Workflow Studio의 편집 모드와 아래 Express 호출 및 로그 동작을 공식 문서와 대조했다. 기존 본문 전체의 재검증은 아니다.
+
+- Design 모드에서 상태를 배치하고 입력, 출력과 오류 처리를 설정하면 ASL 정의가 생성된다. Code 모드에서는 같은 정의를 직접 편집한다.
+- Config 모드에서는 실행 역할과 로깅 등 상태 머신 설정을 관리한다. 화면에서 흐름이 연결됐다는 사실과 필요한 권한 및 실패 경로가 준비됐다는 사실을 구분한다.
+- 운영 검토 제안: 생성한 ASL을 내보내 변경 이력을 관리하고, 정상 입력 외에 누락 필드와 하위 서비스 오류를 넣어 분기 및 데이터 변환 결과를 확인한다.
+
 ## Standard와 Express
 
 | 기준 | Standard | Express |
@@ -36,6 +44,13 @@ AWS 서비스 호출과 애플리케이션 작업을 상태 머신으로 연결�
 | 통합 제약 | 모든 통합 패턴 지원 | `.sync`, `.waitForTaskToken` 미지원 |
 
 워크플로 유형은 생성 후 바꿀 수 없다. Express 작업은 중복 실행 가능성을 전제로 멱등하게 설계하고, 결제처럼 비멱등 작업은 Standard를 우선 검토한다. Standard라고 외부 서비스 호출 자체가 자동으로 멱등해지는 것은 아니므로 재시도 대상 작업에는 idempotency key나 조건부 쓰기가 필요하다.
+
+### Express의 응답과 이력 확인
+
+- `StartExecution`으로 시작하는 비동기 Express는 시작 확인을 반환하고 완료를 기다리지 않는다. 동기 Express의 `StartSyncExecution`은 완료 결과를 반환하며 Standard에는 사용할 수 없다.
+- `StartSyncExecution`은 워크플로가 실패해도 HTTP 200을 반환할 수 있다. 응답의 `status`가 `SUCCEEDED`인지 확인하고, `FAILED`나 `TIMED_OUT`이면 `error`와 `cause`를 함께 처리한다. HTTP 성공만으로 업무 성공을 기록하지 않는다.
+- Express도 CloudWatch Logs를 통해 상태별 실행 이벤트를 확인할 수 있다. `ALL`은 상태 진입과 종료를 포함하지만 `ERROR`와 `FATAL`은 일부 이벤트만 남긴다. API, CLI와 CloudFormation으로 생성할 때는 로깅을 별도로 활성화해야 한다.
+- 로그 전달은 best effort이며 완전성과 적시성을 보장하지 않는다. 빠짐없는 업무 이력이 필요하면 별도 저장 단계나 Standard를 검토한다. 로그의 부재를 실행되지 않았다는 증거로 취급하지 않는다.
 
 ## 서비스 통합 패턴
 
@@ -108,6 +123,9 @@ Standard 워크플로의 redrive는 실패한 실행을 처음부터 새로 만�
 
 ## 출처
 
+- [AWS Step Functions — Developing workflows in Workflow Studio](https://docs.aws.amazon.com/step-functions/latest/dg/workflow-studio.html)
+- [AWS Step Functions — StartSyncExecution](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartSyncExecution.html)
+- [AWS Step Functions — Using CloudWatch Logs to log execution history](https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html)
 - [AWS Step Functions — Discover service integration patterns in Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html) — 2026-10-10 콜백, task token과 계정 조건을 부분 대조했다. 기존 본문 전체의 재검증은 아니다.
 - [AWS Step Functions — Invoke and customize Amazon Bedrock models](https://docs.aws.amazon.com/step-functions/latest/dg/connect-bedrock.html)
 - [AWS Step Functions — Restarting state machine executions with redrive](https://docs.aws.amazon.com/step-functions/latest/dg/redrive-executions.html) — 2026-10-10 Bedrock 입력과 출력, redrive의 정의 보존과 재실행 범위를 부분 대조했다. 기존 본문 전체의 재검증은 아니다.

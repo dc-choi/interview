@@ -58,6 +58,18 @@ Task = 1개 이상 컨테이너 묶음 (sidecar 가능). Service = ReplicaSet+De
 
 ## 네트워킹 모드
 
+### ECS Anywhere는 외부 인스턴스의 제약을 따로 확인한다
+
+부분 검증(2026-10-13): ECS Anywhere의 외부 인스턴스 실행과 네트워크 제약을 공식 문서와 대조했다. 기존 ECS 기능 전체의 재검증은 아니다.
+
+- 온프레미스 서버나 VM을 ECS 클러스터에 등록하고 `EXTERNAL` launch type으로 태스크나 서비스를 실행한다. 이 값은 사용자 정의 배포를 뜻하는 `EXTERNAL` deployment controller와 다른 설정이다.
+- 외부 인스턴스에서는 capacity provider를 지원하지 않는다. EC2 Auto Scaling과 연결한 기존 capacity provider 구성을 그대로 적용하지 않는다.
+- 네트워크 모드는 `bridge`, `host`, `none`을 사용하며 `awsvpc`, 서비스 로드밸런싱과 서비스 디스커버리를 지원하지 않는다. 아웃바운드 통신이나 데이터 처리와 달리 인바운드 웹 서비스는 별도 진입 경로를 검토해야 한다.
+- AWS 관리 API 통신을 위한 인스턴스 IAM 역할과 엔드포인트 연결이 필요하다. CloudWatch Logs 전송에는 태스크 정의의 Task Execution Role도 확인한다.
+- 지원 OS는 배포 전에 현재 목록을 확인한다. 공식 문서는 2026-08-07부터 Windows Server를 포함한 일부 OS 지원이 종료됐다고 명시한다. 과거의 Linux와 Windows 지원 설명을 현재 조건으로 그대로 사용하지 않는다.
+
+### EC2와 Fargate 네트워크 모드
+
 | 모드 | 동작 | 적합 |
 |------|------|------|
 | `bridge` | Docker 내장 가상 네트워크 — Linux EC2의 기본값 | EC2 launch type 단순 케이스 |
@@ -65,7 +77,7 @@ Task = 1개 이상 컨테이너 묶음 (sidecar 가능). Service = ReplicaSet+De
 | `awsvpc` (Fargate 필수) | **Task마다 ENI와 프라이빗 IP 부여** | SG, IAM, VPC 흐름이 Task 단위 |
 | `none` | 외부 네트워크 연결 없음 | 배치 작업 |
 
-AWS는 특별한 이유가 없으면 `awsvpc`를 권장한다 — Task마다 IP, SG가 분리되어 보안 정책이 단순. `bridge`, `host`, `none`은 EC2의 Linux 컨테이너 전용이고 EC2의 Windows 컨테이너는 `default`(nat 드라이버)를 쓴다.
+AWS는 특별한 이유가 없으면 `awsvpc`를 권장한다 — Task마다 IP, SG가 분리되어 보안 정책이 단순. 위 표의 EC2 구성에서 `bridge`, `host`, `none`은 Linux 컨테이너용이고 EC2의 Windows 컨테이너는 `default`(nat 드라이버)를 쓴다. 외부 인스턴스는 앞 절의 별도 제약을 따른다.
 
 ## Task Definition 핵심 필드
 
@@ -221,6 +233,7 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 - Task = **컨테이너 실행 최소 단위**(1개 이상 컨테이너 묶음), Fargate면 ENI/IP까지 Task 단위
 
 ## 출처
+- [AWS, Amazon ECS clusters for external instances](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-anywhere.html)
 - [Amazon ECS UpdateService — API 오류 정의](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_UpdateService.html)
 - [Amazon ECS standalone tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/standalone-tasks.html)
 - [Amazon ECS services](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)
