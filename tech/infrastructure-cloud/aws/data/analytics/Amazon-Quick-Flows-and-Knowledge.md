@@ -120,6 +120,16 @@ ACL을 활성화한 지식 기반에서는 ACL 항목이 없는 문서를 수집
 
 콘텐츠 생성에 적용할 때는 승인된 제품 설명과 대상 독자를 지침에 넣고, 실제 이용자의 권한으로 자료 조회와 결과를 시험한다. 이는 기능에 근거한 운영 제안이다. agent 링크 공유만으로 원문 접근, 문구의 정확성이나 콘텐츠 발행 승인까지 확보됐다고 판단하지 않는다.
 
+## 메일 피드와 Outlook 확장의 읽기 조건
+
+2026-10-14 Activity feed와 Outlook extension 공식 문서 부분 대조 기준. 연결 서비스의 활동을 모으는 피드와 Outlook 안에서 요청을 실행하는 확장은 읽기 조건이 다르다.
+
+- 활동 피드는 연결된 메일, 메시지와 일정에서 중요도를 정하고 요약과 후속 행동을 제안한다. 표시할 출처와 확인 주기를 설정하며, 데스크톱 앱을 닫거나 컴퓨터를 꺼도 클라우드에서 갱신될 수 있다.
+- Outlook 확장은 사이드 패널이 닫혀 있으면 메일과 콘텐츠를 읽지 않으며, 사용자가 프롬프트를 보내기 전에는 Quick으로 데이터를 보내지 않는다. 이 조건을 별도로 연결한 활동 피드의 중지 조건으로 해석하지 않는다.
+- 받은편지함 정리와 일정 관리 같은 일부 확장 기능은 관리자가 승인한 Microsoft Graph API 권한이 필요하다. 확장 설치와 필요한 권한 확보를 구분한다.
+
+운영 점검 제안: 고객 후속 연락을 관리할 때 어떤 연결이 백그라운드로 자료를 읽는지 확인하고, 제안된 답장과 할 일을 원문에 대조한다. 생성한 답장에는 수신자가 접근할 수 없는 자료가 포함될 수 있으므로 발송 전에 공유 범위를 검토한다. 피드에서 항목이 해결됨으로 표시된 사실을 CRM 변경이나 고객 연락의 완료 증거로 대신하지 않는다. 이 절만 추가 대조했으며 기존 검증일은 유지한다.
+
 ## 적용 전 확인
 
 - 반복할 절차와 필요한 입력이 명확한가. 변하지 않는 단순 집계라면 기존 쿼리와 보고서로 충분한지도 검토한다.
@@ -129,6 +139,8 @@ ACL을 활성화한 지식 기반에서는 ACL 항목이 없는 문서를 수집
 
 ## 출처
 
+- [Amazon Quick, Activity feed](https://docs.aws.amazon.com/quick/latest/userguide/activity-feed-desktop.html)
+- [Amazon Quick, Amazon Quick Microsoft Outlook extension](https://docs.aws.amazon.com/quick/latest/userguide/outlook-extension-guide.html)
 - [Amazon Quick, Model Context Protocol (MCP) integration](https://docs.aws.amazon.com/quick/latest/userguide/mcp-integration.html)
 - [Amazon Quick, Amazon S3 integration](https://docs.aws.amazon.com/quick/latest/userguide/s3-integration.html)
 - [Amazon Quick, Troubleshooting Amazon S3 integration issues](https://docs.aws.amazon.com/quick/latest/userguide/s3-integration-troubleshooting.html)
