@@ -54,6 +54,18 @@ WHO의 ICD-11은 번아웃을 관리되지 않은 만성적 직장 스트레스�
 
 업무량이 많아도 진전과 기여를 체감하면 버틸 힘이 생길 수 있지만, 성과 감각이 과로의 위험을 없애지는 않는다. 워라밸과 회복은 사치가 아니라 장기 페이스의 전제 조건이다.
 
+## 도전과 해로운 직무 스트레스를 구분한다
+
+새로운 일을 배우고 해결하는 도전과 건강을 해치는 직무 스트레스는 같은 개념이 아니다. NIOSH는 직무 요구가 개인의 능력, 자원이나 필요와 맞지 않을 때 생기는 해로운 신체적, 정서적 반응을 직무 스트레스로 설명한다. 도전의 학습 효과를 근거로 과도한 요구나 지원 부족까지 성장에 필요한 조건으로 받아들이지 않는다.
+
+일이 생계뿐 아니라 목적의식, 성취감과 긍정적인 관계를 제공할 수 있다는 점도 함께 본다. 직장이 본래 괴로운 곳이라고 단정하거나 기대를 낮추는 것만으로 대응하면 바꿀 수 있는 업무 조건을 놓칠 수 있다. 업무 밖의 휴식과 관계를 확보하면서 업무 안의 과도한 부담, 낮은 통제권과 지원 부족도 조정한다.
+
+다음은 이 구분을 업무에 적용하는 점검 예시이며 진단 기준이 아니다.
+
+- 새 과제를 맡을 때 필요한 학습 시간, 피드백과 도움을 요청할 경로가 있는지 확인한다.
+- 마감이 겹치면 개인의 인내심보다 범위, 일정과 우선순위를 먼저 협의한다.
+- 일을 해냈다는 사실과 감당한 부담을 따로 돌아본다. 산출물 완성을 회복 상태의 증거로 삼지 않는다.
+
 ## 능력, 권한, 책임을 맞춘다
 
 의미 있는 성과를 만들려면 현재 능력 범위와 맡은 판단 수준을 구분해야 한다. 능력 범위는 안주할 울타리가 아니라, 어디까지 독립적으로 판단하고 어디부터 학습과 지원이 필요한지를 아는 경계다.
@@ -141,6 +153,8 @@ WHO의 ICD-11은 번아웃을 관리되지 않은 만성적 직장 스트레스�
 
 2026-10-02 WHO 자료와 정의, 조직 차원의 대응 범위를 대조했다. 아래 에세이의 회복 경험과 학습 조언은 개인 사례이며, 진단 기준이나 보편적인 회복 기간의 근거로 사용하지 않는다.
 
+2026-10-14 도전과 직무 스트레스의 구분은 NIOSH 자료와, 일이 제공할 수 있는 긍정적 기능과 업무 조건 조정은 WHO 자료와 추가 대조했다. 이 확인을 삶의 모든 고통이나 역경의 효과로 일반화하지 않는다.
+
 - [크리스마스에 코딩 공부해서 성공하기 (보다 중요한 것) — YouTube, 코딩맨](https://www.youtube.com/watch?v=pHJDrHxsP_Y) — 2025-12-24, 생활과 학습의 균형에 관한 조언
 
 - 2년 근무 회고 (번아웃과 팀, 지속 가능한 페이스) — 개인 블로그 에세이
@@ -151,3 +165,5 @@ WHO의 ICD-11은 번아웃을 관리되지 않은 만성적 직장 스트레스�
 - [번아웃을 한 번에 해결할 수 있는 방법은 성과다 — 테오 블로그](https://dataportal.kr/%EB%B2%88%EC%95%84%EC%9B%83%EC%9D%84-%ED%95%9C-%EB%B2%88%EC%97%90-%ED%95%B4%EA%B2%B0%ED%95%A0-%EC%88%98-%EC%9E%88%EB%8A%94-%EB%B0%A9%EB%B2%95%EC%9D%80-%EC%84%B1%EA%B3%BC%EB%8B%A4/)
 - [Burn-out an occupational phenomenon: International Classification of Diseases — WHO](https://www.who.int/news/item/28-05-2019-burn-out-an-occupational-phenomenon-international-classification-of-diseases)
 - [Mental health at work — WHO](https://www.who.int/news-room/fact-sheets/detail/mental-health-at-work)
+- [Stress and Work — CDC, NIOSH](https://www.cdc.gov/niosh/stress/about/)
+- [Research Rounds, April 2016: Job Stress — CDC, NIOSH](https://archive.cdc.gov/www_cdc_gov/niosh/research-rounds/resroundsv1n10.html)
