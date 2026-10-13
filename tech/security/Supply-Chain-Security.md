@@ -76,6 +76,16 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 - **provenance 검증**: Sigstore, npm provenance로 "이 아티팩트가 그 소스에서 그 CI로 빌드됐는가" 확인
 - **런타임 격리, 최소 권한**: 개발 환경의 egress 제한(C2 통신 탐지), 단기 토큰, 최소 권한 IAM, EDR
 
+### 아티팩트 저장소의 역할과 보안 통제
+
+2026-10-13 Sonatype Nexus Repository 공식 문서 부분 대조 기준이다. 저장소를 경유한다는 사실과 보안 정책으로 반입을 차단한다는 사실은 구분한다.
+
+- **Proxy:** 외부 저장소의 구성요소를 가져와 캐시한다. 캐시가 있다는 이유로 원격 조회가 영구히 사라지는 것은 아니며 캐시 설정에 따라 다시 확인한다.
+- **Hosted:** 내부 릴리스 등 직접 게시한 구성요소의 정본을 저장한다.
+- **Group:** 여러 저장소를 한 URL로 제공한다. 구성한 저장소 순서대로 구성요소를 찾으므로 포함된 저장소와 순서도 검토 대상이다.
+
+이 기능들은 저장과 배포 경로를 정리한다. 정책 위반 구성요소의 격리는 아래 Repository Firewall 설정으로 따로 확인한다. 운영 점검 제안은 빌드가 실제로 사용하는 저장소 URL, group 구성과 격리 결과를 함께 확인하는 것이다. 문서 전체의 공격 사례를 재검증한 것은 아니므로 `verified_at`은 유지한다.
+
 ### 패키지 정책의 탐지와 실제 차단
 
 2026-10-13 Cloudsmith 공식 문서 부분 대조 기준이다. 아래는 정책 집행의 구체적인 예이며 다른 레지스트리의 동작까지 보장하지 않는다.
@@ -131,6 +141,7 @@ Sonatype의 Hugging Face 분석은 모델 파일 디렉터리를 IQ CLI로 검�
 - **Chrome 제로데이 (2026-02-13)** — CSS use-after-free 취약점(CVE-2026-2441)을 수정한 스테이블 업데이트가 배포됐고, 릴리스 노트에 악용 사례가 실제로 존재한다고 명시. AI 도구와 무관한 기본 보안 운영 부담의 예.
 
 ## 출처
+- [Sonatype, Repository Types](https://help.sonatype.com/en/repository-types.html)
 - [Sonatype, Sonatype MCP Server](https://help.sonatype.com/en/automate-with-sonatype-guide.html)
 - [Sonatype, Firewall Quarantine](https://help.sonatype.com/en/firewall-quarantine.html)
 - [Sonatype, Hugging Face Model Analysis](https://help.sonatype.com/en/hugging-face-model-analysis.html)

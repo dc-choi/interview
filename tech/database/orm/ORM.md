@@ -114,6 +114,16 @@ prisma db push   : migration history 없이 schema 상태를 DB에 push
 
 `$transaction`과 TypeORM transaction은 여러 DB 작업의 commit/rollback 경계를 만든다. 단순히 감쌌다는 이유로 read-modify-write race가 해결되지는 않는다. 재고나 잔액은 조건부 UPDATE, 적절한 isolation, optimistic version 또는 pessimistic lock 중 충돌 특성에 맞는 제어가 필요하다.
 
+## SQL 중심 DSL의 타입 보장 범위
+
+2026-10-13 jOOQ 3.21 매뉴얼 부분 대조 기준이다. Java에서 SQL 자체를 DSL로 표현하는 jOOQ는 객체 영속성 API와 비교할 별도 선택지다. code generation은 선택 기능이며, schema에서 table과 record 등의 타입을 생성해 IDE 지원과 컴파일 검사를 강화한다.
+
+- **schema 변경 감지:** 컬럼을 삭제한 뒤 코드를 재생성하면 그 컬럼을 참조하던 코드에서 컴파일 오류를 찾을 수 있다. 생성물을 갱신하지 않은 빌드 성공을 배포 DB와의 일치 증거로 삼지 않는다.
+- **결과의 NULL 가능성:** 테이블의 `NOT NULL` 컬럼도 `LEFT JOIN`에서 대응 행이 없으면 결과가 `NULL`일 수 있다. Kotlin 생성 타입의 비-null 설정만으로 모든 query 결과의 비-null을 보장하지 않는다.
+- **적용 판단:** SQL을 직접 조합하는 read model이 필요하면 검토할 수 있지만, 타입 검사와 업무 결과 검증은 별개다. 생성 SQL, 외부 조인의 누락 행과 실행 계획을 실제 DB에서 확인하는 절차를 함께 둔다.
+
+이 절은 SQL DSL 선택과 타입 보장의 경계를 보완한다. 기존 TypeORM, Prisma, MikroORM 비교 전체를 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
+
 ## Entity, domain model과 DTO
 
 ORM Entity를 domain model과 통합할지 mapper로 분리할지는 복잡도에 따른 선택이다.
@@ -158,6 +168,9 @@ Prisma 버전, 데이터베이스 커넥터와 query shape에 따라 생성 SQL�
 2026-10-03 부분 검증: raw SQL에서도 TypeORM `DataSource.query()`의 파라미터 API를 사용할 수 있음을 공식 문서와 대조했다. 문서의 예제 기준과 사용자의 실제 ORM 선택도 구분했다. 나머지 ORM 비교와 버전별 동작을 전부 재검증한 기록은 아니다.
 
 - [NestJS — Prisma](https://docs.nestjs.com/recipes/prisma)
+- [jOOQ — SQL building](https://www.jooq.org/doc/3.21/manual/sql-building/)
+- [jOOQ — Code generation](https://www.jooq.org/doc/latest/manual/code-generation/)
+- [jOOQ — KotlinGenerator](https://www.jooq.org/doc/3.21/manual/code-generation/codegen-output-languages/kotlingenerator/)
 - [NestJS — Database와 TypeORM](https://docs.nestjs.com/techniques/database)
 - [TypeORM — Getting Started](https://typeorm.io/docs/getting-started/)
 - [TypeORM — Data Source Options](https://typeorm.io/docs/data-source/data-source-options/)

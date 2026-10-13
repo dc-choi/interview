@@ -76,6 +76,16 @@ Terraform `v1.17.0-beta2`의 `-minimal-refresh`는 저장된 state와 구성으�
 
 CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수록 운영 복잡도가 오른다. Terraform은 HCL을 새로 익혀야 하나 문법이 단출하고 참고 자료가 많아 장기 운영에 유리하다.
 
+## 스택 삭제와 데이터 삭제의 경계
+
+2026-10-13 AWS CDK v2 S3 construct 공식 문서 부분 대조 기준이다. 배포 도구의 삭제 명령과 저장 데이터의 보존 정책을 함께 검토한다.
+
+- S3 `Bucket` construct의 기본 제거 정책은 버킷을 계정에 남긴다. 스택에서 리소스를 제거하거나 스택을 삭제해도 버킷이 남을 수 있다.
+- `RemovalPolicy.DESTROY`를 설정해도 버킷에 객체가 있으면 버킷을 삭제할 수 없다. `autoDeleteObjects: true`는 버킷 삭제 과정에서 객체도 지우도록 하는 별도 설정이다.
+- 운영 검토에서는 재생성 가능한 임시 데이터와 보존할 데이터를 구분한다. 자동 객체 삭제를 켠 예제를 운영 데이터에 적용하기 전에 삭제 범위와 복구 수단을 확인한다. 이는 검토 원칙이며 실제 삭제 시험을 수행한 기록은 아니다.
+
+이 절만 추가 대조했으며 Terraform과 기존 CDK 비교 전체의 검증일은 유지한다.
+
 ## 의사결정 원칙
 
 - 기술의 진보성보다, **팀 규모가 작을수록 운영 안정성, 문서, 커뮤니티 규모**의 가중치가 커진다.
@@ -93,6 +103,7 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 - IaC 도구 선택에서 진보성보다 운영 안정성, 커뮤니티를 우선하는 판단 근거
 
 ## 출처
+- [AWS CDK, Amazon S3 Construct Library — Bucket deletion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3-readme.html#bucket-deletion)
 - [AWS CDK, AWS CDK Constructs](https://docs.aws.amazon.com/cdk/v2/guide/constructs.html)
 - [AWS CDK, Test AWS CDK applications](https://docs.aws.amazon.com/cdk/v2/guide/testing.html)
 - [AWS CDK, cdk diff](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-diff.html)
