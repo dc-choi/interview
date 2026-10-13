@@ -78,7 +78,22 @@ aliases: ["인플레이션과 디플레이션", "Inflation and Deflation"]
 - **한 번 오른 뒤 멈추면 인플레이션이 아니다** → 물가가 점프한 기간에는 측정된 인플레이션이 나타난다. 이후 추가 상승이 없더라도 전년 대비 지표에는 높은 상승률이 한동안 남을 수 있다. 지속적인 상승 동력과 특정 기간에 측정된 상승률을 구분한다.
 - **임금이 오르니 인플레는 손해가 아니다** → 명목임금이 물가만큼 따라잡는다는 보장이 없고, 보통 시차를 두고 뒤처진다. 그 격차만큼 실질소득이 준다.
 
+## 10. AI의 생산성 효과와 투자 수요를 나눠 본다
+
+AI가 생산성을 높일 가능성과 당장 물가를 낮추는지는 별개의 문제다. 2026-10-13 대조한 연준과 ECB의 공개 연설은 다음 경로를 구분한다. 이는 조건부 메커니즘이며 특정 연도의 물가 예측을 확정하는 근거는 아니다.
+
+| 경로 | 물가에 작용하는 조건 |
+|---|---|
+| 생산성 향상 | 같은 자원으로 더 많이 생산할 수 있으면 공급 능력이 커져 물가 상승 압력을 완화할 수 있다 |
+| 인프라 투자 | 데이터센터 건설과 운영을 위한 수요가 전력 공급 능력과 충돌하면 도입기에 에너지 가격과 물가 상승 압력이 커질 수 있다 |
+| 미래 소득 기대 | 가계와 기업이 생산성 향상으로 늘어날 소득을 예상해 지출을 앞당기면 공급 확대 전에도 수요가 늘 수 있다. 불확실성 때문에 지출을 천천히 조정하면 이 효과는 약해진다 |
+
+따라서 AI 확산 뒤 인플레이션과 디플레이션이 정해진 순서로 온다고 단정하지 않는다. 생산성의 실제 확산 속도, 투자 규모, 전력 공급 제약과 소득 기대에 따른 지출을 함께 봐야 한다. 공급 측 개선으로 **물가 상승률이 낮아지는 것**도 물가 수준이 계속 내려가는 디플레이션과 구분한다.
+
 ## 출처
+
+- [What Will Artificial Intelligence Mean for the Labor Market and the Economy? — Federal Reserve, Michael S. Barr](https://www.federalreserve.gov/newsevents/speech/barr20260217a.htm) — 2026-02-17 연설, 2026-10-13 생산성 향상과 단기 전력 수급 제약의 물가 경로 대조
+- [AI and the euro area economy — ECB, Philip R. Lane](https://www.ecb.europa.eu/press/key/date/2026/html/ecb.sp260323_1~1e06784a89.en.html) — 2026-03-23 연설, 2026-10-13 투자, 에너지 수요와 미래 소득 기대의 조건부 효과 대조
 
 - [U.S. BEA, GDP Price Deflator](https://www.bea.gov/data/prices-inflation/gdp-price-deflator)
 - [IMF, Inflation: Prices on the Rise](https://www.imf.org/en/publications/fandd/issues/series/back-to-basics/inflation) — 2026-10-02 비교 기간별 물가 상승률과 실질 구매력 개념 대조
