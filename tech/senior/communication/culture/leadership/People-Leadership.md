@@ -9,6 +9,12 @@ aliases: ["People Leadership", "사람 리더십", "팀원 성장 리더십", "1
 
 시니어의 역할은 코드를 잘 짜는 것을 넘어 팀원이 성장할 환경을 만들고 팀이 스스로 방향을 잡게 하는 것이다. 성장의 무게중심이 개인의 성과에서 팀원의 성장과 팀의 문제 발견으로 옮겨간다. 좋은 리더십은 정답을 주는 능력이 아니라 자주 듣고, 위임하고, 심리적 안전감을 만들고, 팀이 스스로 문제를 찾게 하는 데서 나온다. 시니어의 성장은 개인 실력의 문제가 아니라 **영향력의 확장 과정**이다.
 
+## 개인 성과와 리더 선발을 구분한다
+
+리더 선발에서는 현재 직무의 성과와 다른 사람의 성과를 돕는 역량을 나누어 확인한다. 2018년 NBER 작업논문은 214개 기업의 영업 인력 자료에서, 관리 성과를 더 잘 예측하는 다른 관찰 특성보다 현재 영업 성과를 승진에 우선하는 패턴을 보고했다. 이는 영업 조직의 관찰 자료에 근거한 결과이며 모든 고성과자가 나쁜 관리자라는 뜻은 아니다.
+
+실무 적용안은 개인 실적과 관리 역할의 증거를 별도로 검토하는 것이다. 작은 공동 과제에서 목표 정렬, 동료 지원, 피드백 수용과 위험 보고를 관찰하고 역할 전환 뒤에도 지원과 평가를 이어 간다. 리더가 되고 싶다는 의사만으로 적합성을 확정하지 않되, 직책 없이 리더 역할을 수행할 기회가 없었다는 이유만으로 자격이 없다고 단정하지 않는다. 이 선발 절차 자체가 위 논문에서 검증된 것은 아니다.
+
 ## 1:1 — 보고가 아니라 신뢰
 
 1:1 미팅의 목적은 업무 현황 확인이 아니라 팀원이 편하게 말할 수 있는 관계를 만드는 것이다.
@@ -185,6 +191,7 @@ Blumberg와 Pringle(1982)은 성과를 수행 역량(capacity), 의지(willingne
 
 ## 출처
 
+- [Promotions and the Peter Principle — NBER, Benson, Li, Shue (2018 작업논문)](https://www.nber.org/papers/w24343)
 - [Work Environment Structure and Psychological Ownership: The Mediating Effects of Control — The Journal of Social Psychology, Pierce, O'Driscoll, Coghlan (2004)](https://www.researchgate.net/profile/Michael-Odriscoll/publication/8265029_Work_Environment_Structure_and_Psychological_Ownership_The_Mediating_Effects_of_Control/links/54f62fb50cf27d8ed71d684c/Work-Environment-Structure-and-Psychological-Ownership-The-Mediating-Effects-of-Control.pdf)
 - [The Power of Purpose: AWS VP Ruba Borno on Leading with Why — AWS Executive Insights](https://www.youtube.com/watch?v=_hvMoEvJ7KM)
 - [AWS Well-Architected Framework, OPS03-BP05 Experimentation is encouraged](https://docs.aws.amazon.com/wellarchitected/latest/framework/ops_org_culture_team_enc_experiment.html)

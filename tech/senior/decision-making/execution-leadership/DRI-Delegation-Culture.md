@@ -30,6 +30,14 @@ DRI(Directly Responsible Individual)는 어떤 사안의 **단일 최종 의사�
 
 권한이 완전히 위임되면 각 조직은 스스로 방향을 정하고 만들고 결과를 관찰하는 이터레이션을 돈다. 그 사이에 **불필요한 보고와 승인이 없어** 아이데이션부터 배포까지의 거리가 짧아진다. 누가 시켜서가 아니라 스스로 정해 만들기 때문에 제품 애정도와 몰입도 높다. 가역적 결정을 팀이 빠르게 내리는 원리는 [[One-Way-vs-Two-Way-Door|되돌릴 수 있는 문 vs 없는 문]]의 Disagree and Commit, 전사 승인을 비건강 신호로 보는 관점과 같은 축이다.
 
+## 문서 작성과 최종 판단의 책임을 나눈다
+
+결과에 책임지는 사람이 모든 자료 조사와 보고서 작성을 직접 해야 하는 것은 아니다. GitLab의 TeamOps는 DRI를 최종 의사결정자로 두면서 모든 실무를 혼자 수행할 책임과 구분한다. GitLab Handbook의 RACI 설명에서도 실행을 맡는 Responsible과 최종 책임을 지는 Accountable을 구분한다(2026-10-13 확인).
+
+보고서 업무에 적용하면 초안 작성자, 사실과 규정의 검토자, 최종 결정자를 정할 수 있다. 작성자는 근거와 불확실성을 드러내고, 결정자는 필요한 전문가의 검토를 받아 대안과 위험을 판단하며, 미해결 쟁점을 다음 확인으로 연결한다. 이는 역할 구분을 적용한 운영 제안이지 특정 국가의 군대나 모든 조직이 같은 방식으로 운영된다는 사실은 아니다.
+
+DRI에게도 위임 경계가 있다. GitLab은 큰 재무 영향, 사업 위험이나 여러 기능 조직의 조정이 필요한 사안에서 추가 승인 또는 별도 최종 결정자를 둘 수 있다고 명시한다. 문서 작성의 위임, 의사결정권의 위임과 승인 예외를 따로 합의해야 책임을 모호하게 만들지 않는다.
+
 ## 마이크로매니징의 악순환
 
 위임의 반대편에는 마이크로매니징이 있다. 경영 전문가인 리더가 제품 디테일까지 관여하면 그 분야 전문가인 실무자의 판단이 무시된다.
@@ -99,7 +107,8 @@ Netflix는 문화 문서에서 관리자에게 context not control, 즉 모든 �
 - [직급 상관없이 바텀업할 수 있는 문화 — 당근 팀](https://www.youtube.com/watch?v=udIvW_8YcJs)
 - 빠르게 일하는 조직의 권한 위임 문화 — 개인 블로그 회고
 - [공정함은 과정에서 온다 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-07-fairness-in-process/)
-- [리더는 할 일이 아니라 맥락을 파는 사람 — Threads, heathyune](https://www.threads.com/@heathyune/post/DRwaPhFj2bc)
+- [Equal Contributions — GitLab Handbook](https://handbook.gitlab.com/teamops/equal-contributions/)
+- [Directly Responsible Individuals (DRI) — GitLab Handbook](https://handbook.gitlab.com/handbook/people-group/directly-responsible-individuals/)
 - [Netflix Culture — Netflix](https://jobs.netflix.com/culture) — 2026-10-12 현행 메모(PDF 2024-06 갱신)로 프로세스와 규칙의 범위, context not control과 관리자 개입 조건 대조
 - [Handbook first — GitLab Handbook](https://handbook.gitlab.com/handbook/company/culture/all-remote/handbook-first/)
 - [Handbook usage — GitLab Handbook](https://handbook.gitlab.com/handbook/about/handbook-usage/)
