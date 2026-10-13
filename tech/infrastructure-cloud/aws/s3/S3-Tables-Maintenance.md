@@ -28,6 +28,16 @@ Compaction은 새 스냅샷을 만든다. 스냅샷 만료와 실제 파일 삭�
 
 적용할 때는 필요한 과거 조회 기간, 장기 실행 작업과 복구 요구를 먼저 정하고 보존 정책을 맞춘다. 이는 삭제 동작에서 도출한 운영 점검 기준이며, 자동 유지보수만으로 백업과 복구 요구가 충족된다는 뜻은 아니다.
 
+### 스냅샷은 전체 데이터의 복사본이 아니다
+
+부분 검증(2026-10-14): Apache Iceberg 명세와 유지보수 문서, S3 Tables의 snapshot management를 대조했다. 아래는 파일 참조와 정리의 관계를 보강한 내용이며 다른 절의 검증 기준일은 유지한다.
+
+Iceberg는 디렉터리 전체가 아니라 개별 데이터 파일을 추적한다. 테이블 메타데이터가 스냅샷을 관리하고, manifest list를 사용하는 스냅샷에서는 그 목록이 manifest 파일들을 가리킨다. 데이터 파일을 추적하는 manifest에는 파일 경로, 파티션 정보와 통계가 들어간다. 변경되지 않은 manifest와 데이터 파일을 여러 스냅샷이 공유할 수 있으므로, 스냅샷 하나를 전체 데이터 복사본 하나로 계산하지 않는다. [Iceberg 명세](https://iceberg.apache.org/spec/)
+
+이 구조 때문에 현재 스냅샷에서 빠진 파일도 과거 조회에 필요할 수 있다. 과거 스냅샷을 만료하면 그 스냅샷으로 time travel을 할 수 없지만, 다른 유효 스냅샷이 참조하는 데이터 파일까지 불필요해지는 것은 아니다. 저장 공간 정리는 보존할 스냅샷과 파일 참조를 함께 판단해야 한다. [Iceberg 유지보수](https://iceberg.apache.org/docs/latest/maintenance/)
+
+자체 관리 Iceberg와 비교할 때는 실패한 쓰기가 남긴 orphan file도 따로 본다. 이 파일은 테이블 메타데이터에 연결되지 않아 일반적인 스냅샷 만료만으로 정리되지 않을 수 있다. orphan 정리 유예기간을 쓰기 완료 예상 시간보다 짧게 잡으면 진행 중 파일을 지워 테이블을 손상시킬 수 있다. 이 경고는 자체 관리 Iceberg 정리에 관한 것이며, S3 Tables의 정리 설정에 같은 값이나 절차를 그대로 적용하라는 뜻은 아니다. [Orphan 파일 정리](https://iceberg.apache.org/docs/latest/maintenance/#delete-orphan-files)
+
 ### Iceberg 설정과 서비스 설정의 충돌
 
 확인 시점의 S3 Tables snapshot management는 다음 조건에서 테이블 전체의 자동 스냅샷 만료에 실패한다.
@@ -75,6 +85,8 @@ S3 Tables의 테이블은 `s3tables` 네임스페이스의 ARN으로 식별한�
 
 ## 출처
 
+- [Apache Iceberg, Table Spec](https://iceberg.apache.org/spec/)
+- [Apache Iceberg, Maintenance](https://iceberg.apache.org/docs/latest/maintenance/)
 - [AWS, Working with Amazon S3 Tables and table buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables.html)
 - [AWS, Maintenance for tables](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-maintenance.html)
 - [AWS, Maintenance for table buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html)
