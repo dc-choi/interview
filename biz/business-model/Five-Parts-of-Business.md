@@ -47,6 +47,18 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 - 실무 적용은 별도의 진단 휴리스틱이다. 가장 막힌 기능 하나를 고르고, 직접 수행할 일과 외부 도움을 받을 일을 나눈다. 외부에 맡겨도 요구사항, 검수 기준과 비용을 판단할 최소 이해는 남긴다.
 - 학습 범위를 무작정 넓히기보다 해당 기능의 입력, 결과물과 실패 신호를 설명해 본다. 설명이 막히는 부분부터 보완하며 전문 자격이나 법적 책임을 기초 지식으로 대체하지 않는다.
 
+### 소득 방식과 실제 결정권을 따로 본다
+
+직장인, 프리랜서, 사업가라는 이름만으로 필요한 능력이나 시간의 자율성을 확정하지 않는다. ILO의 ICSE-18은 일의 관계를 권한과 경제적 위험이라는 두 축으로 분류한다. 종속 계약자(dependent contractor)는 고용계약 대신 상업적 계약으로 일하지만, 업무 조직, 수입 또는 시장 접근을 다른 경제 단위에 의존할 수 있다. 이윤을 얻기 위한 위험을 부담하면서도 결정권은 제한될 수 있다는 뜻이다. 이는 노동 통계의 분류이며 개인의 역량이나 성공 순위를 뜻하지 않는다.
+
+사업 진단에 적용할 때는 다음 질문을 별도로 사용한다. 공식 분류의 판정표나 소득 증가를 보장하는 처방은 아니다.
+
+- 가격, 고객 접근과 작업 방식을 실제로 누가 결정하는가?
+- 직접 작업을 멈추면 다섯 사업 기능 중 어느 구간이 멈추는가?
+- 위임할 기능의 입력, 납품 기준과 실패 시 책임을 설명할 수 있는가?
+
+외주를 시작한다는 이유만으로 전문성을 버리거나 채용부터 늘리지 않는다. 자신의 작업량, 판매 경로의 의존성과 전달 체계의 병목을 나누어 필요한 역량을 고른다.
+
 ## 유추 대신 제1원칙으로 원가 분해
 
 유추에 의한 추론(reasoning by analogy)은 비슷한 선례의 가격, 구조, 관행을 그대로 전제로 삼는다. 제1원칙 사고(first principles thinking)는 대상을 더 쪼갤 수 없는 구성 요소까지 분해한 뒤 거기서 다시 쌓아 올린다.
@@ -105,6 +117,7 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 
 ## 출처
 
+- [Casting a light on dependent contractors: a new statistical and increasingly important category — ILOSTAT](https://ilostat.ilo.org/blog/casting-a-light-on-dependent-contractors-a-new-statistical-and-increasingly-important-category/) — ICSE-18의 권한, 경제적 위험과 종속 계약자 구분
 - [The 5 Parts of Every Business — The Personal MBA, Josh Kaufman](https://personalmba.com/5-parts-of-every-business/)
 - [Entrepreneurship — IZA Discussion Paper No. 760, Edward P. Lazear](https://www.iza.org/en/publications/dp/760/entrepreneurship) — 2003년 연구의 공식 초록, 균형 역량 가설과 창업 선택의 관련성. 모든 사업자의 성공을 보장하는 기준으로 사용하지 않는다.
 - [Elon Musk's Mission to Mars — Wired, Chris Anderson](https://www.wired.com/2012/10/ff-elon-musk-qa/) (2026-10-05 인터넷 아카이브 사본으로 대조)

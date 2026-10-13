@@ -62,8 +62,18 @@ Multi-AZ DB instance failover는 보통 **60~120초** 걸린다. Aurora는 일�
 
 gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **burst credit**으로 3000 IOPS까지 끌어쓰는데, 크레딧이 바닥나면 baseline으로 떨어진다. `BurstBalance`로 소진 여부를 확인한다. AWS가 권장하는 gp3는 IOPS와 용량을 독립적으로 조정할 수 있다. 작은 MySQL, MariaDB와 PostgreSQL 볼륨의 baseline은 3000 IOPS이고, 엔진과 용량에 따라 4개 볼륨 striping이 적용되면 12000 IOPS로 올라가므로 대상 표를 확인한다. (스토리지 타입 상세는 [[EBS]].)
 
-- **스토리지가 꽉 차면 DB가 멈춘다**. `storage-full`은 사실상 사용 불가. Storage Autoscaling을 켜되 쿨다운과 최대 한도가 있어 무한이 아니다.
+- **스토리지가 꽉 차면 DB가 멈춘다**. `storage-full`은 사실상 사용 불가. Storage Autoscaling을 켜도 최적화 완료 조건, 변경 횟수와 최대 용량 제한이 있다.
 - **기존 인스턴스의 할당 스토리지는 제자리에서 줄일 수 없다.** 2026-09-22 AWS 문서 기준, 지원 조건에 맞으면 Blue/Green 생성 시 더 작은 green 스토리지를 지정해 전환할 수 있다. 목표 용량은 현재 사용량보다 최소 20% 커야 한다. 지원되지 않는 경우에는 작은 인스턴스로 논리 덤프나 DMS 이전을 검토한다([[RDS-Migration-Scenarios]]).
+
+### 자동 확장을 켰는데도 공간이 부족한 경우
+
+2026-10-13 RDS storage autoscaling 공식 문서 대조 기준. 자동 확장의 시작 조건과 증설량을 분리해서 본다.
+
+- **시작 조건:** 여유 공간이 할당 용량의 10% 이하인 상태가 5분 이상 지속되고, 이전 스토리지 변경의 최적화가 완료됐으며 지난 24시간의 스토리지 변경 횟수가 4회 미만이어야 한다.
+- **증설량:** 10 GiB, 현재 할당 용량의 10%, 최근 1시간의 `FreeStorageSpace`로 예측한 향후 7시간의 필요 증설량 중 큰 값을 사용한다. 10 GiB와 10%만 비교하면 예측 항목을 빠뜨린다.
+- **한계:** 최대 storage threshold와 변경 제한 때문에 대량 적재 중 `storage-full`을 완전히 막지는 못한다. 추가 스토리지 볼륨에는 autoscaling을 지원하지 않는다.
+
+운영 점검은 `FreeStorageSpace`의 감소 추세, 남은 상한, 최적화 상태와 최근 변경 횟수를 함께 보는 방식으로 구성한다. 대량 적재 전 용량을 확보하고, 최적화 중 수동 증설이나 autoscaling 해제가 제한을 즉시 없앨 것이라고 가정하지 않는다. 복제본 승격이나 복원으로 우회할 때는 [[RDS-Migration-Scenarios|이전 절차]]의 데이터 동기화와 전환 조건을 별도로 검토한다.
 
 ## 5. 메이저 업그레이드와 파라미터 static/dynamic
 
@@ -111,6 +121,7 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 
 ## 출처
 
+- [Amazon RDS, Managing capacity automatically with Amazon RDS storage autoscaling](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html)
 - [Amazon RDS, Using AWS Organizations upgrade rollout policy for automatic minor version upgrades](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/RDS.Maintenance.AMVU.UpgradeRollout.html)
 - [Amazon RDS User Guide — DB instance storage, parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
 - [Using Amazon RDS Proxy — connection pinning](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html)
