@@ -141,7 +141,25 @@ VS Code의 Call Hierarchy는 언어 확장이 제공하는 caller와 callee 관�
 
 이번 변경과 무관한 모듈을 잠시 추상화로 남겨도 된다. 다만 화면 변경이라도 공용 컴포넌트, 접근성, 권한과 API 계약처럼 영향을 받을 수 있는 경계는 확인한다. 지도 비유는 탐색 순서를 정하는 방법이지 변경 영향 검토를 생략하는 근거가 아니다.
 
+## 소스가 없을 때는 분석 산출물과 실행 관찰을 구분한다
+
+소스가 없는 애플리케이션을 이해할 때도 조사할 기능과 검증할 입력, 출력을 먼저 좁힌다. 번들에서 찾은 모듈 관계나 바이너리의 의사 코드는 동작을 설명할 근거지만, 해당 경로가 실제 실행됐다는 관찰과 구분한다.
+
+2026-10-13 부분 검증: REA의 공개 README와 CLI 문서에서 아래 분석 범위와 증거 계약을 확인했다. 도구를 설치하거나 대상 앱을 실행하지 않았으며, 처리 시간과 복원 정확도는 검증하지 않았다. 기존 절 전체를 재검증한 것은 아니므로 frontmatter의 검증일은 유지한다.
+
+| 분석 경로 | 확인할 수 있는 자료 | 구분할 경계 |
+|---|---|---|
+| JavaScript/Electron 정적 분석 | 모듈, import, source map, IPC와 native add-on 관계 | 제공한 파일을 읽으며 대상 애플리케이션을 실행하지 않는다 |
+| 네이티브 바이너리 분석 | 의사 코드, 어셈블리, 문자열, 심볼과 참조 | Hopper, Ghidra, IDA 같은 분석 엔진과 대상 지원 범위에 의존한다 |
+| 런타임 관찰 | 선택한 대상의 실행 또는 상호작용 결과 | 사용자 권한으로 대상에 작용하므로 정적 파일 읽기와 같은 작업으로 취급하지 않는다 |
+
+REA의 Evidence는 대상 산출물 식별, 원본 위치, 관찰, 추론과 미해결 항목을 보존한다. 결과를 인계할 때도 이 구분을 유지하고, 저장된 분석 결과를 새로운 실행의 증거로 바꾸어 읽지 않는다. 로컬에서 분석하더라도 도구 결과는 에이전트에 전달되므로 모델 제공자의 데이터 처리 정책은 별도로 확인한다.
+
+검증 제안: 분석 권한이 있는 대상에서 한 기능의 진입점과 호출 경로를 찾고, 재현 입력과 관찰 결과를 연결한다. 복원한 구현을 사용할 때는 앞 절의 characterization test로 필요한 외부 동작을 비교한다. 분석 완료와 호환 구현 완료는 별도 판정이다.
+
 ## 출처
+- [REA: Reverse Engineer Anything — morluto/rea](https://github.com/morluto/rea)
+- [REA, CLI and Evidence](https://github.com/morluto/rea/blob/main/docs/cli.md)
 - [Amazon Q Developer, Upgrading Java versions with Amazon Q Developer](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/code-transformation.html)
 - [AWS Transform, Unit tests](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-unit-tests.html)
 - [AWS Transform, Validation and finalization](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-bp-validation.html)
