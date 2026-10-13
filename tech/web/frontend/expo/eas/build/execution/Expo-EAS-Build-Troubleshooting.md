@@ -1,7 +1,7 @@
 ---
 tags: [expo, eas, build]
 status: done
-verified_at: 2026-10-01
+verified_at: 2026-10-14
 category: "웹&네트워크(Web&Network)"
 aliases: ["EAS build 실패와 runtime crash 진단"]
 ---
@@ -32,9 +32,19 @@ Android release variant 또는 iOS Release 구성으로 compile/run한다. expo 
 
 로컬만 성공하면 새 checkout에서도 같은지 확인하고 toolchain, 환경 변수와 업로드 archive를 비교한다. 로컬 환경의 설치 도구나 cache가 숨겨진 전제일 수 있다. 오류 보고에는 build ID, 최초 오류, 재현 source와 기대/실제 결과를 포함하고 credential과 개인정보는 제거한다.
 
+## 빌드는 성공했지만 실행 중 종료될 때
+
+Expo Go에서 정상 동작해도 설치한 release 앱이 시작 직후 종료되거나 splash 화면에 멈출 수 있다. 이 경우 빌드 로그와 별도로 실행 중 오류를 수집한다.
+
+1. 스토어에 배포한 Android 앱은 Google Play Console의 crash 보고서를, TestFlight 또는 App Store의 iOS 앱은 Xcode Crashes Organizer를 확인한다.
+2. 재현 기기를 연결해 Android는 `adb logcat`, iOS는 macOS Console에서 native 로그를 수집한다. JavaScript 오류 출력만으로 드러나지 않는 native module 오류와 종료 원인을 함께 찾는다.
+3. `npx expo start --no-dev --minify`로 production JavaScript 조건을 확인한다. native release 재현은 별도로 `npx expo run:android --variant release` 또는 `npx expo run:ios --configuration Release`로 수행한다.
+4. 원인이 좁혀지지 않으면 최소 재현 프로젝트에 변경을 하나씩 적용해 실패를 일으키는 부분을 분리한다. 기존 오류 수집 도구가 있으면 stack trace와 기기 정보도 대조한다.
+
 ## 출처
 
 - [Expo Documentation, Troubleshoot build errors and crashes](https://docs.expo.dev/build-reference/troubleshooting)
+- [Expo Documentation, Debugging runtime issues](https://docs.expo.dev/debugging/runtime-issues/)
 
 ## 관련 문서
 
