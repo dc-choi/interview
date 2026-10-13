@@ -78,6 +78,18 @@ Gateway 서비스 역할은 이 방식(`GATEWAY_IAM_ROLE`)으로 설정한 모�
 
 Gateway가 MCP 요청을 REST API의 HTTP 요청으로 바꾸므로 명시적으로 정의한 resource와 method의 이벤트 형식은 유지할 수 있지만, API와 함수가 보는 요청 주체는 원래 에이전트 사용자가 아니라 Gateway의 아웃바운드 인가 방식(서비스 역할, API key 또는 인가 없음)으로 정해진다(해석). 아웃바운드 인가를 위해 API의 인가 설정을 바꾸면 기존 호출자에게도 영향이 간다(설계 제안). 직접 호출하던 함수라면 기존 핸들러는 두고 도구 인자를 업무 로직 입력으로 바꾸는 어댑터 함수를 따로 두면 기존 호출자의 회귀 범위를 줄일 수 있다(설계 제안). 이 절은 공식 문서 대조이며 실제 Gateway 배포나 호출 시험을 수행한 기록은 아니다.
 
+## 중계 함수와 개발용 동기화의 경계
+
+2026-10-13 Lambda 설계와 AWS SAM 공식 가이드 대조 기준이다. 아래는 중계 코드의 필요성과 개발 중 통합 검증을 확인한 범위이며, 기존 절 전체의 재검증은 아니다.
+
+Lambda가 업무 판단 없이 다른 서비스의 API만 호출한다면 직접 서비스 통합으로 대체할 수 있는지 확인한다. 예를 들어 Step Functions는 DynamoDB 작업과 SQS 메시지 전송을 직접 연결할 수 있다. 복잡한 데이터 변환이나 업무 규칙이 필요한 함수는 별도로 남긴다. 함수를 줄였다는 사실만으로 권한, 입력 매핑과 실패 처리의 검증이 끝나지는 않는다.
+
+개발 절차 제안: 업무 로직은 로컬 단위 테스트로 빠르게 검사하고, 실제 AWS 서비스 간 연결은 개발용 클라우드 스택에서 확인한다. 로컬 성공만으로 IAM 권한과 이벤트 전달까지 검증했다고 보고하지 않는다.
+
+- `sam sync --watch`는 로컬 변경을 감지해 클라우드 자원을 갱신한다. 지원하는 변경은 서비스 API로 적용하고, 그렇지 않으면 CloudFormation 배포를 사용한다.
+- 서비스 API로 직접 반영한 변경은 CloudFormation 스택과 차이를 만들 수 있다. `sam sync`는 개발 스택에서 사용하며 운영 배포에는 `sam deploy`나 CI/CD 파이프라인을 사용한다.
+- 코드 동기화 성공, 통합 테스트 통과와 운영 배포 승인을 구분한다. 동기화가 빠르다는 이유로 운영 스택을 개발 대상으로 쓰지 않는다.
+
 ## 버전과 Alias — 불변 배포 단위, 환경 분리, 롤백
 
 - **`$LATEST`**: 코드와 설정을 고칠 수 있는 유일한 미발행 버전이다. 코드를 배포할 때마다 덮어쓰며, qualifier 없는 함수 ARN으로 호출하면 `$LATEST`가 실행된다
@@ -166,6 +178,9 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 
 ## 출처
 
+- [Designing Lambda applications](https://docs.aws.amazon.com/lambda/latest/dg/concepts-application-design.html)
+- [Introduction to using sam sync to sync to AWS Cloud](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/using-sam-cli-sync.html)
+- [Use direct service integrations to optimize your architecture — AWS](https://aws.amazon.com/blogs/architecture/use-direct-service-integrations-to-optimize-your-architecture/)
 - [Invoking a Lambda function using an Amazon API Gateway endpoint](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html)
 - [Defining Lambda function permissions with an execution role](https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html)
 - [Amazon Bedrock AgentCore Gateway: A secure AI gateway for agents, tools, and models](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html)

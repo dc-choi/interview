@@ -51,6 +51,21 @@ docker pull <account-id>.dkr.ecr.ap-northeast-2.amazonaws.com/api:<tag>
 - **tag immutability와 exclusion filter** — release tag 덮어쓰기를 막을 수 있음
 - **수명 주기 정책** (Lifecycle Policy) — 오래된 이미지 자동 삭제
 
+### 스캔 범위와 배포 승인을 구분한다
+
+2026-10-13 공식 스캔 가이드 대조 기준이다. 이미지 push 성공과 취약점 검사 완료는 별도 상태다.
+
+| 방식 | 검사 범위 | 실행 방식 |
+|---|---|---|
+| Basic | 운영체제 패키지 취약점 | 수동 또는 push 시 스캔 |
+| Enhanced | 운영체제와 프로그래밍 언어 패키지 취약점, Amazon Inspector 통합 | 저장소 필터에 따라 push 시 또는 지속 스캔 |
+
+Enhanced를 켜도 필터에 맞지 않는 저장소는 스캔 빈도가 `Off`이며 검사하지 않는다. 두 빈도의 필터가 함께 일치하면 지속 스캔을 우선한다. 지속 스캔도 설정된 검사 기간을 확인하며, 검사 자격이 만료된 이미지는 `SCAN_ELIGIBILITY_EXPIRED` 상태를 구분한다. 초기 활성화 때는 최근 14일 안에 push한 이미지만 인식하므로 오래된 이미지의 검사 여부를 따로 확인한다.
+
+새 Basic scanning의 결과는 `DescribeImageScanFindings`로 조회한다. `DescribeImages`의 `imageScanFindingsSummary`와 `imageScanStatus`만으로 검사 결과를 판단하지 않는다.
+
+배포 절차 설계 제안: 배포할 digest의 검사 완료 여부, 발견한 취약점과 허용 기준을 함께 확인한다. 검사하지 않은 이미지를 취약점이 없는 이미지로 취급하지 않는다. 스캔 결과를 배포 차단과 연결하는 정책은 별도로 구성하며, 이 절은 실제 이미지 검사나 배포 차단 시험의 결과가 아니다.
+
 ## Docker Repository 비교
 
 | 레지스트리 | 종류 |
@@ -64,8 +79,8 @@ registry라는 역할은 Docker Hub와 같다. image에 실행 runtime이 들어
 ## 시험 빈출 포인트
 
 - ECS/EKS의 이미지 소스 → ECR
-- "도커 이미지 취약점 스캐닝" → ECR Basic/Enhanced Scanning
-- "오래된 이미지 자동 정리" → ECR Lifecycle Policy
+- 도커 이미지 취약점 스캐닝 → ECR Basic/Enhanced Scanning
+- 오래된 이미지 자동 정리 → ECR Lifecycle Policy
 
 ## 관련 문서
 
@@ -74,6 +89,8 @@ registry라는 역할은 Docker Hub와 같다. image에 실행 runtime이 들어
 
 ## 출처
 
+- [Amazon ECR 공식 문서 — Scan images for software vulnerabilities](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html)
+- [Amazon ECR 공식 문서 — Scan images for OS and programming language package vulnerabilities](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html)
 - [Amazon ECR 공식 문서 — 서비스 개요와 기능](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html)
 - [Amazon ECR 공식 문서 — Private registry](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html)
 - [Amazon ECR 공식 문서 — Tag immutability](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-tag-mutability.html)
