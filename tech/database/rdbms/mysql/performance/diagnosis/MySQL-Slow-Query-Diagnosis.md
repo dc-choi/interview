@@ -99,6 +99,17 @@ Deadlock은 wait timeout과 다르다. `SHOW ENGINE INNODB STATUS`의 최근 dea
 
 Hit ratio나 `long_query_time`에 보편적인 합격선은 없다. 사용자 SLO와 baseline 대비 변화가 판단 기준이다.
 
+## Aurora에서는 스토리지와 네트워크 경로도 나눈다
+
+2026-10-13 AWS의 Aurora MySQL SELECT 진단 자료로 이 절을 대조했다. 앞의 일반 MySQL 진단에 다음 관찰을 추가한다.
+
+- `ReadIOPS`, `BufferCacheHitRatio`, `FreeableMemory`를 같은 문제 시간대에 비교한다. 캐시 적중률 하락과 읽기 I/O 증가를 함께 보되, 비율 하나로 특정 SQL의 원인을 확정하지 않는다.
+- 클러스터 볼륨 I/O 외에 임시 테이블의 로컬 스토리지 접근을 구분한다. 관측 화면에서 제공되는 `Rdstemp` OS 지표도 함께 확인한다.
+- 결과 전송과 스토리지 통신 모두 네트워크를 사용한다. `NetworkThroughput`과 `StorageNetworkThroughput`을 인스턴스의 네트워크 용량과 대조한다.
+- 장기 트랜잭션과 HLL 증가가 겹치면 [[MySQL-Undo-Purge-HLL|Undo와 purge 진단]]으로 이어간다. 이미 설명한 blocker, 실행 계획과 인덱스 검토를 생략하거나 HLL 수치만으로 세션을 종료하지 않는다.
+
+확인 질문: CPU가 낮은데 SELECT 지연이 커졌다면, 캐시 누락, 임시 파일 I/O, 네트워크와 잠금 대기를 어떤 지표로 구분할 것인가?
+
 ## Index hint의 강도
 
 `USE INDEX (idx)`는 인덱스 후보를 제한하지만 table scan도 허용한다. `FORCE INDEX (idx)`는 table scan 비용을 매우 높게 취급하며 `IGNORE INDEX`는 후보를 제거한다. MySQL 8.4의 `/*+ INDEX(t idx) */`는 FORCE INDEX에 대응하므로 USE INDEX를 문법만 바꿔 교체하면 강도가 달라진다. `NO_INDEX`로 잘못된 후보만 배제하는 방법도 비교한다. 동일한 강도 설명은 [[MySQL-Advanced-Index-Access]]의 hint 판단과 연결한다.
@@ -122,6 +133,7 @@ PROCESS 권한 유무에 따라 다른 사용자의 session 가시성이 달라�
 
 ## 출처
 
+- [How do I troubleshoot a slowly running SELECT statement in my Aurora MySQL-Compatible DB cluster? — AWS re:Post](https://repost.aws/knowledge-center/aurora-mysql-slow-select-query)
 - [MySQL 8.4 Reference Manual, Slow Query Log](https://dev.mysql.com/doc/refman/8.4/en/slow-query-log.html)
 - [MySQL 8.4 Reference Manual, Statement Summary Tables](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-statement-summary-tables.html)
 - [MySQL 8.4 Reference Manual, Performance Schema Data Lock Tables](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-data-locks-table.html)

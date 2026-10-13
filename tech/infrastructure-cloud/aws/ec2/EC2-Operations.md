@@ -115,11 +115,13 @@ AWS 복구 문서의 대상은 AL2, AL2023, Fedora 16 이상과 RHEL 7 이상이
 
 ## EC2 인스턴스 상태(Lifecycle)
 
-| 상태 | 의미 | 과금 |
+2026-10-13 AWS 인스턴스 상태 문서 대조 기준이다. 아래 과금은 인스턴스 사용료이며 EBS, 공인 IPv4와 예약 약정 비용은 별도로 확인한다.
+
+| 상태 | 의미 | 인스턴스 사용료 |
 |------|------|------|
 | **Pending** | 부팅 준비 중 | 미청구 |
 | **Running** | 정상 실행 중 | **청구** |
-| **Stopping** | 중지 전환 중 | 미청구 (EBS 스토리지 비용은 별도) |
+| **Stopping** | 중지 전환 중 | 일반 Stop은 미청구, 최대 절전(hibernate)으로 전환 중이면 청구 |
 | **Stopped** | 중지 완료, EBS 데이터 유지 | EC2 미청구, **EBS, EIP는 별도** |
 | **Shutting-down** | 종료 준비 중 | 미청구 |
 | **Terminated** | 종료 완료 | 미청구 |
@@ -149,6 +151,17 @@ AWS 복구 문서의 대상은 AL2, AL2023, Fedora 16 이상과 RHEL 7 이상이
 
 이미 실행 중인 그룹에 인스턴스를 추가하다 용량 오류가 나면, 그룹 전체를 Stop 후 Start하여 필요한 용량이 있는 하드웨어로 재배치될 가능성을 검토한다. 성공을 보장하는 절차는 아니다. 운영 적용 전에는 그룹 전체 중단의 영향과 복구 계획을 확인한다. Stop/Start는 EBS 루트 인스턴스에만 가능하며, 연결된 instance store 데이터는 중지 시 삭제되므로 필요한 데이터를 먼저 영속 저장소에 복사한다. 자동 할당 공인 IPv4의 변경 영향도 확인한다.
 
+## Windows EC2Rescue의 수집과 복구를 구분한다
+
+2026-10-13 EC2Rescue GUI, CLI와 Systems Manager Automation 공식 문서로 이 절을 대조했다. 현재 인스턴스에서 로그를 수집하는 것과, 중지한 인스턴스의 루트 볼륨을 고치는 것은 다른 작업이다.
+
+- **현재 인스턴스:** Current instance 또는 CLI의 `/online`으로 로그를 수집한다. 수집 성공을 부팅이나 RDP 설정의 복구 성공으로 판단하지 않는다.
+- **오프라인 인스턴스:** 원본을 중지하고 EBS 루트 볼륨을 도구가 설치된 정상 Windows 인스턴스에 보조 볼륨으로 연결한다. 선택한 디스크가 원본인지 확인한 뒤 Diagnose and Rescue 또는 Restore를 사용한다. 앞 절의 백업과 중지 영향 확인을 먼저 적용한다.
+- **검사 옵션의 부수효과:** CLI의 `/check-only`를 지정해도 디스크 서명 충돌은 기본적으로 수정될 수 있다. 해당 수정을 막으려면 `/no-fix-signature`도 확인한다. 옵션 이름만 보고 읽기 전용 실행이라고 간주하지 않는다.
+- **자동화의 별도 제약:** `AWSSupport-ExecuteEC2Rescue`는 암호화된 루트 볼륨을 지원하지 않는다. 대상 중지와 AMI 생성을 수행하며 instance store 데이터 손실과 자동 공인 IP 변경이 발생할 수 있다. 이 제약을 모든 수동 EC2Rescue 경로의 제한으로 확대하지 않는다.
+
+운영 적용 시에는 복구 후 부팅, RDP와 애플리케이션 상태를 각각 확인한다. 이 절은 실제 인스턴스에서 복구를 실행한 기록이 아니다.
+
 ## AMI (Amazon Machine Image)
 
 인스턴스를 시작하는 데 필요한 정보를 담은 **이미지 템플릿**. OS, 애플리케이션, 구성, 권한 정보 포함.
@@ -167,6 +180,10 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 
 ## 출처
 
+- [AWS 공식 문서, Amazon EC2 instance state changes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html)
+- [AWS 공식 문서, Troubleshoot impaired Windows instance with the EC2Rescue GUI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2rw-gui.html)
+- [AWS 공식 문서, Troubleshoot impaired Windows instance with the EC2Rescue CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2rw-cli.html)
+- [AWS 공식 문서, AWSSupport-ExecuteEC2Rescue](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-executeec2rescue.html)
 - [AWS 공식 문서, Placement strategies for your placement groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html)
 - [Configure monitoring tools for my EC2 Linux instance — AWS re:Post](https://repost.aws/knowledge-center/ec2-linux-configure-monitoring-tools)
 - [atop 공식 매뉴얼, atop(1)](https://www.atoptool.nl/download/man_atop-1.pdf)

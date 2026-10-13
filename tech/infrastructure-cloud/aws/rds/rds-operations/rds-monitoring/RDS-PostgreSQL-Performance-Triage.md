@@ -48,6 +48,16 @@ CPU가 주원인이면 실행 계획과 자원 요구량을, 잠금 대기가 �
 - 연결 생성과 종료가 잦으면 인증 비용과 연결 지연도 본다. 현재 연결 수가 많다는 관찰과 connection churn은 같은 지표가 아니다.
 - 세션 종료 전에는 소유 애플리케이션, 열린 트랜잭션과 재시도 영향을 확인한다. 반복 문제는 연결 반환, 트랜잭션 경계, 풀 예산과 timeout 설정에서 해결한다.
 
+## 관측 권한과 중단 권한은 별개다
+
+2026-10-13 PostgreSQL 18 공식 문서로 이 절을 대조했다. `pg_read_all_stats` 권한은 다른 세션의 통계 정보를 보는 경로이며 쿼리 중단 권한과 같지 않다. 관리형 엔진에서는 실제 역할과 허용 범위를 따로 확인한다.
+
+- `pg_cancel_backend(pid)`는 해당 세션의 현재 쿼리 취소를 요청한다.
+- `pg_terminate_backend(pid)`는 세션 종료를 요청한다. 기본 `timeout = 0`에서 반환값 `true`는 신호 전송 성공이며 프로세스 종료 완료의 증거가 아니다.
+- 양쪽 모두 호출 역할, 대상 역할과 `pg_signal_backend` 등의 권한 조건을 확인한다. PostgreSQL의 superuser backend에는 별도 제한이 있으므로 관측 계정에 통계가 보인다는 이유로 종료 가능하다고 가정하지 않는다.
+
+운영 판단 제안: 조치 직전에 PID, 사용자, 쿼리와 트랜잭션을 다시 확인하고, 조치 후 세션 상태와 애플리케이션의 오류 및 재시도 결과를 확인한다. 이 절은 종료 명령을 실행한 기록이 아니다.
+
 ## 누적 SQL 통계와 문제 구간을 구분한다
 
 `pg_stat_activity`가 현재 세션을 보여 준다면 `pg_stat_statements`는 정규화한 SQL별 누적 계획과 실행 통계를 보여 준다. PostgreSQL 18 기준으로 다음을 구분한다.
@@ -80,6 +90,7 @@ CPU가 주원인이면 실행 계획과 자원 요구량을, 잠금 대기가 �
 
 ## 출처
 
+- [PostgreSQL 18 Documentation, System Administration Functions](https://www.postgresql.org/docs/18/functions-admin.html)
 - [AWS RDS User Guide, Amazon CloudWatch metrics for Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-metrics.html)
 - [AWS RDS User Guide, Setting up and enabling Enhanced Monitoring](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.Enabling.html)
 - [AWS RDS User Guide, Monitoring OS metrics with Enhanced Monitoring](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.html)
