@@ -103,7 +103,17 @@ AI 도입을 평가할 때는 줄어든 기존 작업, 남은 작업의 생산�
 
 2026-10-13 부분 검증: 2019년 논문의 개념 설명(pp. 3–5)을 대조했다. 현재 AI 산업의 매출, 유료 이용률과 투자 회수 전망은 이 절의 검증 범위에 포함하지 않았다.
 
+### 생성형 AI 노출과 임금 전망은 구분한다
+
+2025년 ILO의 직업 노출 분석은 직업을 구성하는 과업별 자동화 가능성과 과업 간 차이를 평가한다. **잠재 노출은 실제 도입이나 해고를 측정한 값이 아니다.** 비용, 디지털 역량, 인프라와 운영상의 제약에 따라 실제 도입은 달라진다. 대부분의 직업에 인간의 투입이 필요한 과업이 남는다는 결과도 직업이 그대로 유지되거나 임금이 오른다는 보장은 아니다.
+
+따라서 현장 작업, 협상, 책임과 예외 판단이 필요하다는 관찰에서 곧바로 해당 직종의 임금 상승을 결론 내리지 않는다. 위의 과업 모형에 연결하면 남은 과업의 수요, 새 과업의 생성과 기존 과업의 대체를 따로 봐야 한다. 실제 임금 전망에는 지역과 업종별 채용, 보상과 인력 공급 자료를 추가로 대조한다. 이는 노출 분석을 읽는 점검 기준이며 한국의 특정 직종에 대한 임금 예측은 아니다.
+
+2026-10-13 부분 검증: ILO의 2025년 노출 분석 해설에서 과업 단위 평가와 잠재 노출의 한계를 확인했다.
+
 ## 출처
+
+- [International Labour Organization, How might generative AI impact different occupations?](https://www.ilo.org/resource/article/how-might-generative-ai-impact-different-occupations)
 
 - [Journal of Economic Perspectives, Automation and New Tasks: How Technology Displaces and Reinstates Labor](https://economics.mit.edu/sites/default/files/inline-files/Automation%20and%20New%20Tasks%20-%20How%20Technology%20Displaces%20and%20Reinstates%20Labor.pdf) — Daron Acemoglu, Pascual Restrepo, 2019. 과업 배분, 대체, 생산성과 복원 효과.
 - [U.S. Bureau of Labor Statistics, Concepts and Definitions (CPS)](https://www.bls.gov/cps/definitions.htm)

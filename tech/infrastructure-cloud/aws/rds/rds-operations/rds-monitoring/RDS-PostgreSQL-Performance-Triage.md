@@ -19,6 +19,18 @@ aliases: ["RDS PostgreSQL Performance Triage", "RDS와 Aurora PostgreSQL 성능 
 
 CPU가 주원인이면 실행 계획과 자원 요구량을, 잠금 대기가 주원인이면 막고 있는 트랜잭션을 조사한다. 모든 병목을 느린 SQL 하나나 인스턴스 부족으로 환원하지 않는다.
 
+## 디스크 대기열과 크레딧의 계층을 나눈다
+
+`DiskQueueDepth`는 디스크 접근을 기다리는 미완료 읽기와 쓰기 I/O 요청 수다. 증가한 시점의 `ReadLatency`, `WriteLatency`, `ReadIOPS`, `WriteIOPS`와 처리량을 함께 확인한다. 같은 관찰 구간에서 읽기와 쓰기의 IOPS를 더한 값과 처리량을 더한 값을 각각 비교하되, IOPS와 bytes/s를 서로 같은 단위로 취급하지 않는다.
+
+- `BurstBalance`는 gp2 스토리지의 버스트 I/O 크레딧 잔량이다.
+- `EBSIOBalance%`와 `EBSByteBalance%`는 지원되는 인스턴스 크기에서 각각 I/O와 처리량 크레딧을 보여 준다. DB 파일 볼륨뿐 아니라 루트 볼륨을 포함한 전체 볼륨의 사용량을 반영한다. 이 두 지표에 `Sum` 통계를 적용하지 않는다.
+- 따라서 gp2의 볼륨 크레딧과 인스턴스의 EBS 크레딧을 구분하고, 실제 스토리지와 인스턴스 조건에 해당하는 지표를 고른다. 지표 하나가 없다는 이유로 크레딧이 충분하다고 해석하지 않는다.
+
+짧은 I/O 급증이 집계 구간 안에 가려졌는지 조사하려면 Enhanced Monitoring의 수집 간격과 CloudWatch Logs의 OS 지표를 확인한다. 1초 수집을 설정해도 RDS 콘솔은 가장 빨라도 5초마다 갱신하므로 1초 단위 자료는 CloudWatch Logs에서 조회한다. 활성화에는 IAM 역할과 권한이 필요하고, 수집 간격을 줄이면 로그 수집량과 비용이 늘 수 있다. 운영 설정 변경 전에 관찰할 기간을 정한다.
+
+2026-10-13 부분 검증: AWS의 지표 정의와 Enhanced Monitoring 설정을 대조했다. 특정 큐 길이를 모든 스토리지의 장애 임계값으로 제시하지 않으며, 위 절차만으로 실제 I/O 병목이 확인됐다고 판단하지 않는다.
+
 ## 세션의 세 가지 시간을 구분한다
 
 | 필드 | 의미 | 오해하기 쉬운 점 |
@@ -68,6 +80,9 @@ CPU가 주원인이면 실행 계획과 자원 요구량을, 잠금 대기가 �
 
 ## 출처
 
+- [AWS RDS User Guide, Amazon CloudWatch metrics for Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-metrics.html)
+- [AWS RDS User Guide, Setting up and enabling Enhanced Monitoring](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.Enabling.html)
+- [AWS RDS User Guide, Monitoring OS metrics with Enhanced Monitoring](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.html)
 - [AWS RDS User Guide, Initial troubleshooting for common PostgreSQL performance issues](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.InitialTroubleshooting.html)
 - [AWS Aurora User Guide, Initial troubleshooting for common PostgreSQL performance issues](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/PostgreSQL.InitialTroubleshooting.html)
 - [AWS RDS User Guide, Database load](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.Overview.ActiveSessions.html)

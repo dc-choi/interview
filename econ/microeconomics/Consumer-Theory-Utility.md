@@ -66,6 +66,14 @@ aliases: ["소비자 이론과 효용", "Consumer Theory and Utility"]
 - **한계효용은 늘 양수다** → 과식처럼 한계효용이 음수가 되는 지점도 있다.
 - **사람은 늘 효용을 정확히 계산해 고른다** → 현실의 선택은 편향과 어림짐작에 크게 휘둘린다(행동경제학의 출발점).
 
+## 9. 한계효용과 행복의 자산 임계값을 혼동하지 않는다
+
+같은 재화의 추가 소비에서 얻는 효용이 줄어든다는 설명으로, 특정 순자산을 넘으면 누구나 같은 삶의 질을 얻는다고 결론 내릴 수는 없다. 소비 선택을 설명하는 효용, 일상에서 보고하는 정서적 안녕과 삶 전반의 평가는 측정 대상이 다르다. **자산 잔액과 연간 소득도 다른 변수**다.
+
+2023년 PNAS의 공동 재분석은 미국 취업 성인의 경험 표집 자료에서 소득과 정서적 안녕의 관계가 행복 수준에 따라 달랐음을 보였다. 정체 양상은 가장 불행한 집단에 제한됐고, 더 행복한 집단에서는 소득의 로그값과 행복이 함께 증가했다. 이를 모든 사람에게 적용되는 행복 상한이나 자산 목표로 바꾸지 않는다. 관찰된 연관성만으로 소득 증가의 인과 효과를 확정할 수도 없다.
+
+주장을 평가할 때는 소득인지 순자산인지, 어떤 집단과 기간인지, 무엇을 행복으로 측정했는지부터 확인한다. 같은 소비재를 살 수 있다는 사실만으로 전체 삶의 질이 같다는 결론은 나오지 않는다. 2026-10-13에는 위 논문의 초록, 표본 설명과 집단별 분석을 대조했다.
+
 ## 출처
 
 2026-10-03에는 내부해와 접점 조건의 구분, 예산선 기울기의 부호, 가격 변화의 총효과 설명을 보완했다. 실제 소비자나 특정 시장의 반응을 검증한 기록은 아니다.
@@ -74,6 +82,7 @@ aliases: ["소비자 이론과 효용", "Consumer Theory and Utility"]
 - [OpenStax, Principles of Microeconomics 2e, Indifference Curves](https://openstax.org/books/principles-microeconomics-2e/pages/b-indifference-curves)
 - [Solutions at Kinks — EconGraphs, Christopher Makler](https://www.econgraphs.org/explanations/consumer/optimization/kinks) — 완전보완재와 꺾인 점에서의 최적 선택
 - [Transforming Utility Functions — EconGraphs, Christopher Makler](https://www.econgraphs.org/textbooks/intermediate_micro/scarcity_and_choice/preferences_and_utility/transforming_utility_functions) — 선호 순서를 유지하는 효용 변환
+- [Income and emotional well-being: A conflict resolved — PNAS, Matthew A. Killingsworth, Daniel Kahneman, Barbara Mellers](https://pmc.ncbi.nlm.nih.gov/articles/PMC10013834/) — 2023년 공동 재분석, 소득과 정서적 안녕의 집단별 관계
 
 ## 관련 문서
 

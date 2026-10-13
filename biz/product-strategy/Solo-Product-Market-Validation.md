@@ -175,9 +175,12 @@ Indie Hackers 공식 소개는 2017년 4월 Stripe 인수와 2023년 3월 독립
 
 첫 실험의 목적은 시장 전체를 증명하는 것이 아니라 다음 시간과 비용을 투자할 근거를 얻는 것이다. 구현 완료나 `status: done`이 아니라 관찰된 고객 행동과 그에 따른 결정이 검증의 결과다.
 
+작은 실패를 반복하려면 제품 전체의 실패보다 **틀린 가정 하나를 식별할 수 있는 테스트**를 설계한다. 핵심 가정이 틀렸을 때 아이디어를 버릴지, 그 가정을 피하도록 해법을 바꿀지 구분한다. 한 번의 실패나 통과로 제품 전체를 판정하지 않고 여러 테스트의 증거를 함께 본다. 가정, 대상, 방법, 사전에 정한 성공 기준, 결과와 다음 행동을 남겨야 다음 판단에 재사용할 수 있다. 반복 횟수만 늘고 무엇을 바꿀지 남지 않으면 학습이 쌓였다고 보지 않는다.
+
 ## 출처
 
 - [Assumption Testing — Product Talk](https://www.producttalk.org/glossary-discovery-assumption-testing/)
+- [Assumption Testing: Everything You Need to Know to Get Started — Product Talk](https://www.producttalk.org/assumption-testing/) — 실패한 가정의 수정, 여러 테스트의 종합 판단과 결과 기록
 - [Viability — Product Talk](https://www.producttalk.org/glossary-discovery-viability/)
 - [Startup School Week 4 Recap — Y Combinator](https://www.ycombinator.com/blog/startup-school-week-4-recap-kat-manalac-and-gustaf-alstromer)
 - [How Superhuman Built an Engine to Find Product-Market Fit — First Round Review](https://review.firstround.com/how-superhuman-built-an-engine-to-find-product-market-fit/)
