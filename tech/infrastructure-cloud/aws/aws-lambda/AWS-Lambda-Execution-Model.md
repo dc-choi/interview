@@ -30,6 +30,14 @@ verified_at: 2026-09-30
 
 Durable Functions는 checkpoint, 대기와 재시도를 코드로 정의하고 AWS가 실행 상태를 저장해 재개하는 모델이다. 최대 1년 동안 실행할 수 있다. 이는 표준 함수의 메모리나 `/tmp`가 호출 사이에 유지된다는 뜻이 아니므로 두 상태 모델을 구분한다.
 
+부분 검증(2026-10-14): 아래 호출과 멱등성 경계를 AWS 공식 문서로 대조했다. 다른 실행 모델과 quota 전체의 검증일은 유지한다.
+
+- 최대 1년은 비동기 durable execution의 범위다. 동기 호출은 설정에 따라 최대 15분 이하이며, 대기 작업을 넣어도 호출자의 제한이 사라지지 않는다.
+- `wait`, `waitForCallback`이나 자동 step 재시도 때 실행을 중단하고, 재개 시 SDK가 checkpoint 기록을 재생한다. 완료가 기록된 step은 저장한 결과를 반환하지만, 완료 전에 실패하거나 중단된 step은 다시 실행될 수 있다. 기본 step 실행 의미는 at-least-once다.
+- 실행 시작의 중복 방지와 step 내부의 부작용 중복 방지는 별개다. execution name을 지정하면 같은 이름과 payload의 재호출은 보존 기간 안에서 기존 실행 정보를 반환한다. 이름 없이 호출하면 새 실행이 생기며, event source mapping은 실행 시작의 멱등성을 지원하지 않으므로 코드나 dispatcher에서 중복을 제어한다.
+
+설계 점검 제안: 외부 API 호출과 DB 쓰기에 업무 멱등키를 적용하고, 외부 처리 성공 직후 checkpoint가 남기 전에 중단되는 경우를 시험한다. 자동 복구를 외부 부작용의 exactly-once 보장으로 해석하지 않는다.
+
 ### Lambda Managed Instances
 
 Managed Instances는 고객 계정의 EC2 인스턴스에서 실행되며 실행 환경 하나가 여러 호출을 동시에 처리할 수 있다. 기본 컴퓨팅과 달리 호출 사이에 환경을 freeze하지 않고 계속 실행하므로, 런타임별 thread safety, 공유 상태와 요청 context 격리를 따로 설계해야 한다.
@@ -110,6 +118,8 @@ SnapStart는 버전을 게시할 때 초기화한 실행 환경을 스냅샷으�
 
 ## 출처
 
+- [AWS, Invoking durable Lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/durable-invoking.html)
+- [AWS, Idempotency](https://docs.aws.amazon.com/lambda/latest/dg/durable-execution-idempotency.html)
 - [Announcing AWS Lambda Web Functions — AWS](https://aws.amazon.com/blogs/aws/announcing-aws-lambda-web-functions-for-fast-consistent-web-app-performance-anywhere/)
 - [AWS, AWS Lambda Web Functions](https://aws.amazon.com/lambda/lambda-web-functions/)
 - [AWS, Create a Lambda function using a container image](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html)

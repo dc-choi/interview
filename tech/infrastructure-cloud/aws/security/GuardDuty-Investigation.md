@@ -38,6 +38,21 @@ GuardDuty Investigation은 finding, 계정 또는 조직 범위의 보안 신호
 
 ## 경보가 없을 때 보호 범위부터 확인한다
 
+### 공격 시퀀스와 실제 수집 범위를 구분한다
+
+부분 검증(2026-10-14): Extended Threat Detection과 Runtime Monitoring 활성화 문서를 대조했다. 기존 Investigation Preview와 조직 정책 전체를 재검증한 날짜는 아니다.
+
+Extended Threat Detection은 계정 안에서 시간과 리소스에 걸친 신호를 연결해 공격 시퀀스 finding을 만든다. GuardDuty 활성화 시 기본으로 켜지고 이 기능 자체의 추가 비용은 없지만, 추가 보호 계획의 활성화와 비용까지 포함한다는 뜻은 아니다.
+
+- EC2는 Auto Scaling group, instance profile, launch template 같은 공통 속성으로 관련 인스턴스를 묶을 수 있다. `AttackSequence:EC2/CompromisedInstanceGroup`은 Critical finding이며, Runtime Monitoring을 더하면 프로세스 행동과 시스템 호출 신호를 보강한다.
+- ECS의 `AttackSequence:ECS/CompromisedCluster` 탐지에는 실행 방식에 맞는 EC2 또는 Fargate Runtime Monitoring이 필요하다. 현재 문서는 ECS on Managed EC2 instances를 지원하지 않는다고 명시한다.
+- Runtime Monitoring 설정 활성화와 security agent 배포를 모두 확인한다. 설정이 켜졌다는 사실만으로 대상 리소스의 이벤트가 수집된다고 판단하지 않는다.
+- 보관 처리한 finding은 공격 시퀀스 상관분석에서 제외된다. suppression rule이 자동 보관한 finding도 포함되므로, 경보를 줄이는 규칙의 탐지 영향을 함께 점검한다.
+
+운영 점검 제안: 시퀀스의 신호, 시각, 리소스를 원 로그와 대조한 뒤 격리 대상을 결정한다. finding 하나로 묶였다는 사실을 모든 관련 자원의 침해 확정이나 자동 복구 완료로 해석하지 않는다.
+
+### 계정과 보호 계획 설정을 대조한다
+
 2026-10-09 공식 문서 대조 기준. Cost Explorer의 GuardDuty 비용은 조사할 계정과 리전을 찾는 보조 신호다. 비용이 없다는 사실만으로 미활성화를 확정하거나, 비용이 있다는 사실만으로 모든 보호 계획이 현재 활성화됐다고 판단하지 않는다. 대부분의 보호 계획에는 계정별 30일 무료 체험이 있으며, Cost Explorer 데이터도 최소 하루 한 번 갱신하지만 상위 청구 데이터에 따라 24시간보다 늦게 반영될 수 있다.
 
 다음은 비용과 설정을 대조하는 점검 절차다.
@@ -51,6 +66,8 @@ GuardDuty Investigation은 finding, 계정 또는 조직 범위의 보안 신호
 
 ## 출처
 
+- [Amazon GuardDuty, GuardDuty Extended Threat Detection](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-extended-threat-detection.html)
+- [Amazon GuardDuty, Enabling Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-enablement.html)
 - [Amazon GuardDuty, GuardDuty Investigation (Preview)](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-investigation.html)
 - [Amazon GuardDuty, Monitoring GuardDuty Usage and Estimating Costs](https://docs.aws.amazon.com/guardduty/latest/ug/monitoring_costs.html)
 - [AWS Cost Management, Analyzing your costs and usage with AWS Cost Explorer](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html)
