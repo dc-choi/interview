@@ -186,6 +186,17 @@ SQS 워커는 CPU가 부하 신호가 아니므로 **backlog-per-task**(큐 메�
 
 EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부족 → 자동 EC2 노드 추가, Task 빠지면 노드 축소. Fargate는 자동.
 
+### Fargate와 Spot의 배분은 장애 시 대체 정책이 아니다
+
+부분 검증(2026-10-13): capacity provider 전략의 `base`, `weight`와 Fargate Spot의 용량 부족 동작을 공식 문서와 대조했다. 기존 ECS 기능 전체의 검증일은 유지한다.
+
+- `base`는 지정한 provider에 우선 배치할 최소 태스크 수다. 한 전략에서 하나의 provider에만 지정하며, 이 수를 먼저 충족한 뒤 나머지를 `weight`의 상대 비율로 배분한다.
+- `weight`를 생략하면 콘솔은 1, API와 CLI는 0을 기본값으로 사용한다. 적어도 하나의 provider에는 양수 가중치가 필요하므로 콘솔에서 만든 전략을 코드로 옮길 때 값을 명시한다.
+- Fargate 계열과 EC2 Auto Scaling group 계열 provider를 같은 클러스터에 연결할 수 있지만, 하나의 전략 안에서 두 계열을 섞을 수는 없다.
+- Spot 용량이 부족하면 서비스는 태스크 실행을 재시도한다. Fargate가 부족한 Spot 용량을 온디맨드로 자동 대체하지는 않는다.
+
+설계 예로 `FARGATE`에 `base=2, weight=1`, `FARGATE_SPOT`에 `weight=3`을 두면 기본 2개를 먼저 배치하고 추가 태스크를 1:3 비율로 배분한다. 이것은 원하는 배분 규칙이며 용량 확보 보장은 아니다. 중단되면 안 되는 처리량을 Spot까지 포함해 계산하지 말고, 필요한 온디맨드 용량과 Spot 지연 시 대응을 별도로 정한다.
+
 ## 로깅, 모니터링
 
 - **CloudWatch Logs** — `awslogs` 드라이버 표준
@@ -255,6 +266,7 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 - Task = **컨테이너 실행 최소 단위**(1개 이상 컨테이너 묶음), Fargate면 ENI/IP까지 Task 단위
 
 ## 출처
+- [AWS, CapacityProviderStrategyItem](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CapacityProviderStrategyItem.html)
 - [Announcing the end-of-support for the AWS Copilot CLI — AWS Containers Blog](https://aws.amazon.com/blogs/containers/announcing-the-end-of-support-for-the-aws-copilot-cli/)
 - [AWS Copilot CLI — AWS](https://github.com/aws/copilot-cli) — 지원 종료 후 보안 패치와 기술 지원 중단 공지
 - [AWS Copilot CLI, Manifest](https://aws.github.io/copilot-cli/en/docs/manifest/overview/)

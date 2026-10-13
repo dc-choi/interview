@@ -48,6 +48,15 @@ ServiceNow REST API 경로에는 브라우저의 UI policy, UI action과 client 
 
 영업 현황을 질의해 응답을 받는 것과 CRM 자료를 지속적으로 색인해 지식 기반으로 보관하는 구성을 구분한다. 레코드 변경은 대상 식별자와 변경 필드를 확인하고 실행 뒤 원래 CRM에서 결과를 조회하는 절차를 권한다(운영 점검 제안). 자연어 성공 응답만으로 변경 완료를 판정하지 않는다. 이 절만 추가 대조했으며 문서 전체의 검증일은 유지한다.
 
+### MCP 연결과 도구 갱신
+
+2026-10-13 MCP 통합 공식 문서 부분 대조 기준. Quick은 원격 MCP 서버의 도구를 action으로 등록한다. 로컬 `stdio` 연결은 지원하지 않으며 HTTP streaming을 우선하고 SSE도 지원한다. Enterprise 구독과 서버 접근 조건을 확인한다.
+
+- 비공개 서버는 Quick VPC 연결로 접근할 수 있다. MCP 도구 호출 경로의 `VpcConnectionArn`과 OAuth 인증 경로의 `AuthVpcConnectionArn`은 독립적이다. 도구 서버 연결 성공만으로 비공개 인증 서버까지 연결됐다고 판단하지 않는다.
+- 내장 MCP 커넥터는 자동 동기화하지만 사용자 정의 커넥터는 소유자가 `Sync`를 실행해야 도구 변경을 반영한다. 동기화는 재인증 흐름을 시작하며 새로 요구되는 OAuth scope가 허용되지 않았으면 실패한다.
+
+운영 점검 제안: 서버 도구를 바꾼 뒤 Quick에 등록된 action 목록과 실제 권한을 다시 확인한다. 도구 발견, 호출 성공과 외부 상태 변경 완료를 각각 검증한다. 이 절만 추가 대조했으며 기존 검증일은 유지한다.
+
 ## 개인 지식 그래프의 근거
 
 Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 같은 개체와 관계를 추출하고 사용자별 계정에 보관한다. 연결 앱의 자동 수집과 폴더별 그래프 추출은 별도 설정이다. 폴더의 키워드/시맨틱 색인과 그래프 추출도 독립적이다.
@@ -65,6 +74,14 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 - 파일의 `Text ready`는 텍스트 질의 준비 상태이며 이미지와 표는 아직 처리 중일 수 있다. `Ready`는 텍스트와 미디어 처리가 끝난 상태다.
 
 프로젝트 초안을 만들 때는 공유 가능한 자료만 올리고, 표나 이미지에 의존하는 질문은 처리 상태를 확인한 뒤 평가한다. 초안 생성 시간과 검토, 수정 및 실제 업무 완료 시간도 따로 측정한다. 이는 운영 점검 제안이며 특정 팀의 시간 절감률을 재현한다는 보장은 아니다.
+
+### S3 버킷 접근과 문서별 수집 권한
+
+2026-10-13 S3 통합 공식 문서 부분 대조 기준. S3 통합은 버킷의 문서를 색인해 지식 기반으로 사용하는 기능이다. Enterprise 구독과 관리자의 대상 버킷 접근 허용이 필요하며, 다른 계정의 버킷을 연결할 때도 같은 리전이어야 한다.
+
+ACL을 활성화한 지식 기반에서는 ACL 항목이 없는 문서를 수집하지 않는다. 전역 ACL 파일이나 문서 메타데이터 파일에 해당 문서의 ACL이 있는지 확인한다. 버킷을 연결했지만 특정 문서가 검색되지 않는다면 연결 권한뿐 아니라 문서별 ACL 누락도 조사한다.
+
+이 지식 기반 수집과 파일 업로드, 다운로드, 삭제 action은 별도 기능이다. 공식 안내에서 S3 action은 Quick Automate용으로 한정한다. 지식 기반을 Space에 연결했다고 채팅에서 S3 파일 변경까지 가능하다고 가정하지 않는다. 이 절의 기능만 대조했으며 기존 검증일은 유지한다.
 
 ### SharePoint의 지식 수집과 action 권한
 
@@ -112,6 +129,9 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 ## 출처
 
+- [Amazon Quick, Model Context Protocol (MCP) integration](https://docs.aws.amazon.com/quick/latest/userguide/mcp-integration.html)
+- [Amazon Quick, Amazon S3 integration](https://docs.aws.amazon.com/quick/latest/userguide/s3-integration.html)
+- [Amazon Quick, Troubleshooting Amazon S3 integration issues](https://docs.aws.amazon.com/quick/latest/userguide/s3-integration-troubleshooting.html)
 - [Amazon Quick, Web Crawler integration](https://docs.aws.amazon.com/quick/latest/userguide/web-crawler-integration.html)
 - [Amazon Quick, Microsoft SharePoint knowledge base integration](https://docs.aws.amazon.com/quick/latest/userguide/sharepoint-knowledge-base.html)
 - [Amazon Quick, Admin-managed setup (service credentials)](https://docs.aws.amazon.com/quick/latest/userguide/sharepoint-kb-admin-managed.html)
