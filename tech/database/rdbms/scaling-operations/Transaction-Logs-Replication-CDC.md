@@ -47,9 +47,11 @@ CDC를 붙인 뒤 로그 보존 기간은 다음 셋 중 가장 긴 값 이상�
 
 ## 운영 사고: slot이 WAL을 붙잡는다
 
-PostgreSQL replication slot은 소비자가 확인한 위치 이전의 WAL을 지우지 않는다. 소비자가 사라지거나 멈춘 slot은 WAL을 계속 쌓아 디스크를 채운다. logical slot은 카탈로그 정리도 막아, 극단적인 경우 XID wraparound 방지를 위한 중단까지 이어질 수 있다.
+PostgreSQL replication slot의 `restart_lsn`은 소비자에게 아직 필요할 수 있는 가장 오래된 WAL 위치다. slot은 이 위치부터 필요한 WAL의 제거를 막지만, 보존 상한을 넘으면 필요한 파일이 제거될 수 있다. logical slot의 `confirmed_flush_lsn`은 소비자가 수신을 확인한 위치이므로 보존 시작 위치와 구분한다. 소비자가 멈춰도 slot은 남아 필요한 WAL과 시스템 카탈로그 행을 붙잡으며, 극단적인 경우 디스크 고갈이나 XID wraparound 방지를 위한 중단으로 이어질 수 있다.
 
-1. **지연 감시**: slot별로 붙잡은 WAL 양을 주기적으로 본다.
+이 절의 위치 정의와 보존 설정은 2026-10-14 PostgreSQL 18 공식 문서로 부분 대조했다. 다른 엔진과 문서 전체를 다시 검증한 날짜는 아니다.
+
+1. **보존 범위 감시**: slot별 현재 WAL 위치와 `restart_lsn`의 바이트 차이를 주기적으로 본다. 시간 단위의 복제 지연이나 실제 디스크 점유량과 같은 값으로 해석하지 않는다.
 
    ```sql
    SELECT slot_name, active, wal_status,
@@ -58,7 +60,10 @@ PostgreSQL replication slot은 소비자가 확인한 위치 이전의 WAL을 �
    ```
 
 2. **미사용 slot 제거**: 소비자를 폐기할 때 `pg_drop_replication_slot()`으로 slot도 함께 지운다. slot 생성과 삭제를 커넥터 배포 절차에 묶는다.
-3. **상한 설정**: `max_slot_wal_keep_size`를 두면 디스크 고갈 대신 해당 slot이 무효화된다. 18부터는 `idle_replication_slot_timeout`으로 오래 쉬는 slot을 무효화할 수 있다. 어느 쪽이든 무효화된 소비자는 스냅샷부터 다시 시작해야 하므로, 디스크 보호와 재동기화 비용 중 무엇을 택할지 미리 정한다.
+3. **상한 설정**: `max_slot_wal_keep_size`는 체크포인트 시점에 slot이 `pg_wal`에 보존할 수 있는 WAL 양을 제한한다. 기본값 `-1`은 이 상한을 두지 않는다. 양수 값을 정해도 전체 디스크 사용량의 즉시 상한이 되는 것은 아니며, 필요한 WAL이 제거되면 소비자가 이어 읽지 못할 수 있다.
+4. **비활성 slot 만료**: PostgreSQL 18의 `idle_replication_slot_timeout`은 기본값 `0`에서 비활성화된다. 설정한 시간보다 오래 사용하지 않은 slot의 무효화는 체크포인트에서 일어나므로 시간 초과와 조치 사이에 지연이 있다. WAL을 보존하지 않는 slot과 primary에서 동기화 중인 standby slot은 적용 대상이 아니다.
+
+`wal_status = unreserved`는 필요한 WAL의 보존을 더 이상 보장하지 않는 상태이며, `lost`는 slot을 사용할 수 없는 상태다. `unreserved`가 곧바로 `lost`라는 뜻은 아니다. 무효화 뒤에는 기존 위치에서 재개할 수 있다고 가정하지 않고, 새 스냅샷 등 소비자 상태를 재구축할 절차와 비용을 확인한다. 커넥터별 감시와 복구 조건은 [[CDC-Debezium-Setup|CDC Debezium 설정]]을 따른다.
 
 MySQL도 같은 문제가 다른 모습으로 나타난다. binlog 보존 기간이 너무 짧으면 멈춘 커넥터와 복제본이 이어 읽지 못하고, 너무 길면 디스크가 찬다.
 
@@ -93,6 +98,7 @@ logical slot이 대기 서버로 따라가는지는 PostgreSQL 버전과 설정�
 - [MySQL 8.4 Reference Manual, Replication Formats](https://dev.mysql.com/doc/refman/8.4/en/replication-formats.html)
 - [PostgreSQL 18 Documentation, Logical Decoding Concepts](https://www.postgresql.org/docs/18/logicaldecoding-explanation.html)
 - [PostgreSQL 18 Documentation, Replication](https://www.postgresql.org/docs/18/runtime-config-replication.html)
+- [PostgreSQL 18 Documentation, pg_replication_slots](https://www.postgresql.org/docs/18/view-pg-replication-slots.html)
 - [PostgreSQL 18 Documentation, Write Ahead Log](https://www.postgresql.org/docs/18/runtime-config-wal.html)
 - [PostgreSQL 13 Release Notes](https://www.postgresql.org/docs/release/13.0/)
 - [PostgreSQL 17 Release Notes](https://www.postgresql.org/docs/release/17.0/)
@@ -100,8 +106,6 @@ logical slot이 대기 서버로 따라가는지는 PostgreSQL 버전과 설정�
 - [Oracle Database 19c Administrator's Guide, Managing Archived Redo Log Files](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/managing-archived-redo-log-files.html)
 - [Oracle Database 19c Utilities, Using LogMiner to Analyze Redo Log Files](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-logminer-utility.html)
 - [Debezium Documentation, Debezium Connector for Oracle](https://debezium.io/documentation/reference/stable/connectors/oracle.html)
-- [트랜잭션 로그의 세계: Binlog, WAL, Archive Log — Threads, bear_dba](https://www.threads.com/@bear_dba/post/DaMpzH1mO7E)
-- [PostgreSQL 논리 복제 슬롯 누수와 fail-over 대응 — Threads, dev.dailyq](https://www.threads.com/@dev.dailyq/post/DYUAg39msEl)
 
 ## 관련 문서
 
