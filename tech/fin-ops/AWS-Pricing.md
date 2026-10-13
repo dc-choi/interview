@@ -1,7 +1,7 @@
 ---
 tags: [finops, aws, pricing, billing, cost-model]
 status: done
-verified_at: 2026-10-12
+verified_at: 2026-10-13
 category: "비용&운영(FinOps)"
 aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 모델"]
 ---
@@ -40,7 +40,7 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 ## 비용 추정 도구
 
 - **AWS Pricing Calculator**: 설계 단계에서 워크로드 가정으로 견적.
-- **Cost Explorer**: 실제 청구를 서비스/태그별로 분해. [[Budget-Alert]]
+- **Cost Explorer**: 청구 데이터를 서비스/태그별로 분해. 진행 중인 달은 추정치다([[AWS-Pricing#월 청구서 확정과 결제 시점|월 청구서 확정]]). [[Budget-Alert]]
 - 둘을 비교해 가정과 실제의 괴리를 좁힌다.
 
 ## 신규 계정의 크레딧과 Free plan 종료
@@ -63,6 +63,17 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 - **알림 범위:** Free Tier 사용량 알림은 해당 월의 활성 혜택을 대상으로 서비스별 한도의 85% 초과를 알린다. 개별 계정에는 기본 활성화되지만 AWS Organizations 관리 계정은 opt-in이 필요하다. 수신 주소와 활성 상태를 확인하고 `zero spend budget`으로 추가 감시할 수 있다.
 
 알림 설정은 리소스 중지나 지출 상한 설정이 아니다. [[Budget-Alert|예산 알람의 지연과 조치 범위]]를 함께 보고, 청구 항목과 실제 리소스를 연결해 남아 있는 과금 원인을 점검한다.
+
+## 월 청구서 확정과 결제 시점
+
+2026-10-13 AWS Billing 문서, Cost Explorer 문서와 Data Exports의 CUR 열 정의 대조 기준이다. 월중에 보이는 금액과 확정된 청구 금액을 구분한다.
+
+- **확정 전후 상태:** 월 사용료와 정기 요금은 월 청구 기간이 닫힌 뒤 인보이스로 발행된다. Bills 화면에서 청구 기간이 닫혀 인보이스가 발행되면 `Issued`, 그 전에는 `Pending`으로 표시되며 `Pending` 금액은 그때까지 계량된 사용량으로 계산한 추정치다. All Upfront Reserved Instance 구매 같은 일회성 요금은 월말을 기다리지 않고 즉시 청구된다.
+- **결제:** AWS는 매월 초 기본 결제 수단에 자동으로 청구한다. 신용카드는 월 청구 기간이 끝나 인보이스가 발행될 때 함께 청구된다. 결제 수단에 따라 출금 시점이 다르다. 미국 은행 계좌와 USD 결제에만 쓰는 ACH direct debit은 월초 10일 안에 인보이스 발행과 출금을 시작하며, 성공 표시까지 3~5일, 콘솔에 `Succeeded`로 보인 뒤 최종 완료까지 최대 20일이 걸릴 수 있다. 자동 청구가 실패하면 Payments 화면의 `Payments due`에서 미납 인보이스를 골라 직접 결제한다.
+- **시간대:** Cost Explorer의 월과 일은 UTC 기준이고 CUR의 청구 기간 시작일과 종료일도 UTC 시각으로 기록된다. 따라서 한국 시간(UTC+9) 매월 1일 0시부터 9시 전까지의 사용분은 이 집계에서 이전 달에 들어간다. 월 경계 비용을 한국 시간 달력으로 잘라 대조하지 않는다.
+- **확정 여부를 데이터로 판단:** CUR의 인보이스 ID 열(레거시 CUR의 `bill/InvoiceId`, CUR 2.0의 `bill_invoice_id`)은 보고서가 확정되기 전까지 비어 있다. 다만 확정 뒤에도 환불, 크레딧이나 Support 요금이 적용되면 AWS가 보고서를 갱신할 수 있다. Developer, Business와 Enterprise Support 요금은 최종 사용료로 계산되므로 보통 다음 달 6일이나 7일에 지난달 보고서에 반영되고, 환불은 별도 파일로 생성된다. 사용료가 확정된 뒤의 재집계는 [[Cloud-Unit-Cost|클라우드 단위 비용]]의 계산 원칙을 따른다.
+
+운영 적용 제안: 월 비용 집계 파이프라인은 인보이스 ID가 채워진 값을 확정치로, 비어 있는 동안의 값을 잠정치로 표시하되 확정 표시 뒤에도 재집계를 허용한다. 일회성 요금은 즉시 청구되므로 인보이스 ID가 있는 행이 일부 있다는 사실만으로 그 달 사용료 전체가 확정됐다고 보지 않는다. 외주 고객에게 AWS 사용료를 넘겨 청구하거나 월 비용 보고를 낼 때, 고객 전용 독립 계정이면 `Issued` 인보이스 금액을, AWS Organizations 통합 결제나 billing transfer에 속한 계정이면 Bills의 계정별 금액(`Charges by account`)을, 한 계정을 여러 고객이 함께 쓰면 계정이나 태그 단위의 CUR 행을 기준으로 한다. 월중 Bills와 Cost Explorer 금액은 추정치로 표시한다.
 
 ## 결제 수단 변경과 미납 청구
 
@@ -105,6 +116,13 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 
 ## 출처
 
+- [AWS, Understanding your bill](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/getting-viewing-bill.html)
+- [AWS, Making payments](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-making-a-payment.html)
+- [AWS, Managing ACH direct debit](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-ach-debit.html) — 미국 은행 계좌와 USD 조건, 최종 완료까지 최대 20일
+- [AWS, What are AWS Cost and Usage Reports?](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) — 확정 뒤 환불, 크레딧, Support 요금 반영과 별도 환불 파일
+- [AWS, Modifying your chart](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-modify.html) — Cost Explorer의 UTC 기간 정의
+- [AWS, Billing details](https://docs.aws.amazon.com/cur/latest/userguide/billing-columns.html) — 레거시 CUR의 `bill/InvoiceId`와 청구 기간 열
+- [AWS, Bill columns](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-bill.html) — CUR 2.0의 `bill_invoice_id`
 - [AWS, Customizing your AWS payment preferences](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-payment-method.html)
 - [AWS, Managing credit cards](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-cc.html)
 - [AWS, Using payment profiles](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-paymentprofiles.html)
@@ -122,6 +140,7 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 - [AWS, Tracking your AWS Free Tier usage](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/tracking-free-tier-usage.html)
 - [AWS, Track your Free Tier usage for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-free-tier-usage.html)
 - [AWS Pricing Calculator](https://calculator.aws/)
+- [When will my AWS bill be ready? — Amazon Web Services](https://www.youtube.com/watch?v=1ycHyJT3M8U)
 
 ## 관련 문서
 

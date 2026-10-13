@@ -52,6 +52,7 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[MySQL-Slow-Query-Diagnosis|Slow Query 진단 (Slow Query Log, performance_schema, processlist, 락 대기, 실행 계획 대조, 시스템 신호 연결)]]
 - [x] [[MySQL-Digest-Statistics|Digest 통계 운영 (max_digest_length 절단, digests_size 포화/truncate, QUANTILE_99와 BUCKET_QUANTILE P99, COUNT_STAR/Questions QPS, Prepared Statement PI 영향, PG 비교)]]
 - [x] [[MySQL-Undo-Purge-HLL|Undo Purge와 History List Length (read view 수명, HLL 급증 진단, Aurora 공유 스토리지와 ARRRC)]]
+- [x] [[MySQL-Synch-Wait-Events|SYNCH 대기 이벤트 (mutex, rwlock, sxlock, cond, spin과 CPU, 보호 대상별 대응, innodb_sync_array_size)]]
 
 ## Oracle
 - [x] [[oracle|Oracle Database 폴더 인덱스 (SQL과 PL/SQL, tablespace, 권한, index, 데이터 딕셔너리, 11g 역사 자료)]]

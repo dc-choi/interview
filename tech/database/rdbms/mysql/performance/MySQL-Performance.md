@@ -11,7 +11,7 @@ MySQL 성능을 좌우하는 실행 계획, 인덱스, 정렬과 join, 파라미
 
 - [[MySQL-Query-Optimization|MySQL Query 최적화]]: 고급 인덱스 접근, 옵티마이저 통계, 쿼리 pipeline과 정렬, 조인 최적화
 - [[MySQL-Parameter-Tuning|MySQL 파라미터 튜닝]]: InnoDB 튜닝, Aurora 파라미터 표준, Connection 관리
-- [[MySQL-Diagnosis|MySQL 진단]]: Slow Query, Digest 통계, Undo Purge와 HLL
+- [[MySQL-Diagnosis|MySQL 진단]]: Slow Query, Digest 통계, Undo Purge와 HLL, SYNCH 대기 이벤트
 
 ## 함께 볼 문서
 
