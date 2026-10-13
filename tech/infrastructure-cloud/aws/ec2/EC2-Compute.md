@@ -108,6 +108,12 @@ Porting Advisor for Graviton은 알려진 코드 패턴과 의존성 호환성 �
 
 서버 안팎의 메모리와 통신 병목은 [[GPU-Server-Infrastructure|GPU 서버 인프라]]와 함께 확인한다. 이 비교 절차는 특정 가속기의 우월성이나 이번 환경에서의 성능 측정 결과를 뜻하지 않는다.
 
+#### Trainium3의 칩 사양과 UltraServer 합계를 구분한다
+
+부분 검증(2026-10-14): AWS 제품 페이지에서 Trainium3 칩당 HBM3e는 144 GB, 메모리 대역폭은 4.9 TB/s다. Trn3 UltraServer는 최대 144개 칩, 최대 20.7 TB HBM3e와 706 TB/s 합산 메모리 대역폭을 안내한다. 칩당 수치와 서버 전체 합계를 같은 단위의 성능으로 비교하지 않는다.
+
+NeuronSwitch-v1과 NeuronLink-v4는 칩 사이 통신을 위한 구성이다. 높은 연결 대역폭이나 최대 칩 수가 모든 모델에서 통신 병목이 없다는 뜻은 아니다. 검증 제안: 모델 분할, 칩 수와 정밀도를 기록하고 실제 처리량, 지연과 통신 시간을 비교한다. 제품의 최대 사양을 애플리케이션 성능 보장으로 사용하지 않는다. 이번 확인은 사양 대조이며 실제 실행 시험은 하지 않아 문서 전체의 검증일은 유지한다.
+
 #### Neuron 이식은 연산 검사와 실행 검증을 나눈다
 
 부분 검증(2026-10-13): AWS Neuron의 프레임워크 비교와 Analyze, Tracing API 문서를 대조했다. Inf1의 `torch-neuron`은 아카이브되어 적극적인 개발이 중단된 경로다. 과거 Inf1 예제의 API와 컴파일 옵션을 Inf2/Trn1의 `torch-neuronx`에 그대로 적용하지 않는다. 아래는 `torch-neuronx` 추론 경로의 조건이며, 기존 문서 전체의 검증일은 유지한다.
@@ -168,6 +174,7 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 
 ## 출처
 
+- [Amazon EC2 Trn3 UltraServers — AWS](https://aws.amazon.com/ec2/instance-types/trn3/) — 2026-10-14 칩당 사양과 UltraServer 합계 대조
 - [Amazon EC2 M9g instances — AWS](https://aws.amazon.com/ec2/instance-types/m9g/)
 - [Amazon EC2 G7 instances — AWS](https://aws.amazon.com/ec2/instance-types/g7/)
 - [Amazon EC2 C8a instances — AWS](https://aws.amazon.com/ec2/instance-types/c8a/)

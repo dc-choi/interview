@@ -105,6 +105,14 @@ AWS Unified Operations는 이벤트 지원 이후에도 과거 사고 분석, �
 
 적용 제안: 예정된 대규모 이벤트가 끝나면 예상과 실제 부하, 경보, 병목과 수동 개입을 비교한다. 장애가 없었어도 드러난 운영 공백을 개선 대상으로 남기고, 다음 이벤트 전 관련 시험을 반복한다. Game day에서 발견한 개선 항목도 담당자와 후속 조치를 정해 완료까지 추적한다. 이 절은 운영 검토 방법이며 특정 서비스의 배포나 부하 시험 결과가 아니다.
 
+### 지원 응답 시간과 서비스 복구 시간을 구분한다
+
+2026-10-14 AWS 공식 제품 안내 대조 기준, Unified Operations는 중요 장애에 5분 이내 응답을 안내한다. Enterprise Support는 production-critical 문제에 15분 이내 최초 응답을 안내하며, 해당 시간 내 응답을 위해 합리적인 노력을 다한다는 조건을 붙인다. **최초 응답 시간은 장애 해결이나 서비스 복구 완료 시간의 보장이 아니다.** 위의 내부 P1~P4 분류도 공급자의 심각도 기준과 자동으로 일치하지 않는다.
+
+Unified Operations의 해결 효과는 확보한 맥락에 영향을 받는다. 알람을 온보딩한 workload는 사전 맥락을 활용하고, 온보딩하지 않은 workload는 서비스 상태와 고객이 제공한 정보에서 시작한다. Enterprise Support의 지정 TAM은 전략적 운영 지침과 아키텍처 검토를 제공하는 역할이며, 최초 기술 응답을 맡는 지원 엔지니어와 역할을 구분한다.
+
+운영 적용 제안: 내부 감지, 공급자 문의, 최초 응답, 완화와 복구 완료 시각을 따로 기록한다. 문의에는 영향 범위, 발생 시각, 최근 변경과 관측 근거를 준비하고, 지원을 기다리는 동안 실행할 내부 런북과 담당자를 정한다. 지원 플랜 가입만으로 애플리케이션 복구 목표가 충족됐다고 판단하지 않는다. 이번 확인은 문서 대조이며 실제 지원 요청과 응답 시간을 시험하지 않았다.
+
 ## 면접포인트
 - "장애 경험?" → 감지 → 대응 → Root Cause → 재발 방지까지 전체 사이클로 답변
 - "사람 의존 vs 시스템 의존?" → 수동 대응을 자동화로 전환한 경험
@@ -118,6 +126,7 @@ AWS Unified Operations는 이벤트 지원 이후에도 과거 사고 분석, �
 - [AWS Well-Architected, Appendix B: Example ORR questions](https://docs.aws.amazon.com/wellarchitected/latest/operational-readiness-reviews/appendix-b-example-orr-questions.html)
 - [AWS Well-Architected, Conduct game days regularly](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_testing_resiliency_game_days_resiliency.html)
 - [AWS Unified Operations — AWS](https://aws.amazon.com/premiumsupport/plans/unified-operations/)
+- [AWS Enterprise Support — AWS](https://aws.amazon.com/premiumsupport/plans/enterprise/) — 2026-10-14 최초 응답 조건과 TAM 역할 대조
 
 ## 관련 문서
 

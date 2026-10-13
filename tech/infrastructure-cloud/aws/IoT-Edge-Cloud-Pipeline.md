@@ -40,6 +40,14 @@ IoT Core 뒤에 Kafka 스트림을 두면 소비 애플리케이션에서 메시
 
 **FleetWise는 2026-04-30부터 신규 고객에게 제공되지 않는다.** 2026-10-13 AWS 공지 확인 기준이다. 과거 도입 사례를 신규 시스템의 채택 근거로 바로 쓰지 않고, 선택 수집 원리와 현재 도입 가능한 구성을 따로 검토한다.
 
+### 신호의 의미와 디코딩 규칙을 연결한다
+
+2026-10-14 FleetWise decoder manifest 문서 대조 기준. Decoder manifest는 차량의 바이너리 데이터를 해석 가능한 값으로 변환하는 정보를 담고 차량 모델과 연결된다. 차량 모델의 각 신호에는 대응하는 signal decoder가 필요하다. 이 변환을 암호문 복호화나 차량 통신의 보안 보장으로 해석하지 않는다.
+
+API의 `CreateDecoderManifest`로 생성하면 `DRAFT` 상태로 남는다. 이 상태의 manifest와 연결된 모델에서는 차량을 만들 수 없으므로 `UpdateDecoderManifest`로 `ACTIVE` 전환이 필요하다. 콘솔 생성은 자동 활성화하며, `ACTIVE` 상태의 manifest는 편집할 수 없다. 생성 경로와 상태를 함께 확인한다.
+
+적용 점검 제안: 알려진 원시 입력을 기대 신호값과 대조하고, 차량 모델과 디코딩 규칙의 연결이 맞는지 확인한다. 규칙의 활성화와 수집 성공을 신호 해석의 정확성 검증으로 대신하지 않는다. 앞의 신규 고객 제공 제한은 그대로 적용되며, 이번 대조는 디코딩 계약에 한정하므로 기존 검증일은 유지한다.
+
 ## 초기 등록 인증서와 운영 인증서를 분리한다
 
 2026-10-13 AWS IoT Core의 provisioning by claim 문서 기준, 장비는 사전에 넣은 claim 인증서로 최초 연결하고 장비별 인증서를 발급받는다. `RegisterThing`으로 등록한 뒤 영구 인증서를 저장하고, claim 인증서로 연결한 세션을 끊어 새 인증서로 다시 연결한다. claim 인증서의 정책은 장비 등록에 필요한 범위로 제한하고, 개인 키를 보호하며 오용을 감지하면 해당 claim 인증서를 비활성화한다.
@@ -184,6 +192,7 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT FleetWise, Manage AWS IoT FleetWise decoder manifests](https://docs.aws.amazon.com/iot-fleetwise/latest/developerguide/decoder-manifests.html) — 2026-10-14 모델 연결과 활성화 조건 대조
 - [How SOCAR handles large IoT data with Amazon MSK and Amazon ElastiCache for Redis — AWS](https://aws.amazon.com/blogs/big-data/how-socar-handles-large-iot-data-with-amazon-msk-and-amazon-elasticache-for-redis/) — 2023년 구현의 소비, 변환과 저장 역할을 2026-10-14 대조
 - [AWS IoT Core, Apache Kafka](https://docs.aws.amazon.com/iot/latest/developerguide/apache-kafka-rule-action.html) — 2026-10-14 Kafka action의 IAM 인증과 MSK Serverless 제한 대조
 - [AWS IoT Core, Device Shadow MQTT topics](https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html) — 2026-10-14 조회, 변경과 삭제의 topic 및 발행, 구독, 수신 권한을 대조
