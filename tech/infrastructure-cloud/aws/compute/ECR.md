@@ -66,6 +66,14 @@ Enhanced를 켜도 필터에 맞지 않는 저장소는 스캔 빈도가 `Off`�
 
 배포 절차 설계 제안: 배포할 digest의 검사 완료 여부, 발견한 취약점과 허용 기준을 함께 확인한다. 검사하지 않은 이미지를 취약점이 없는 이미지로 취급하지 않는다. 스캔 결과를 배포 차단과 연결하는 정책은 별도로 구성하며, 이 절은 실제 이미지 검사나 배포 차단 시험의 결과가 아니다.
 
+### 이미지 정리는 미리보기와 롤백 대상을 대조한다
+
+부분 검증(2026-10-13): ECR lifecycle policy 공식 문서 기준이다. 수명 주기 정책은 여러 규칙을 먼저 평가한 뒤 우선순위에 따라 적용한다. 우선순위 숫자가 작을수록 먼저 적용하므로 규칙 하나씩의 예상 결과만으로 전체 정책을 판단하지 않는다.
+
+적용 전 lifecycle policy preview로 실제 대상 이미지를 확인한다. 조건을 충족한 이미지의 만료나 아카이브는 24시간 안에 진행될 수 있고, 수행한 작업은 CloudTrail에 기록된다. 정책을 저장하자마자 정리가 끝났다고 가정하지 않는다. Manifest list에서 참조하는 이미지는 해당 list가 먼저 삭제되거나 아카이브돼야 정리할 수 있다.
+
+운영 점검 제안: 미리보기 결과를 현재 배포와 롤백에 필요한 digest 목록과 대조한다. 이미지 정리 정책과 취약점 스캔은 별도 기능이므로, 오래된 이미지를 지웠다는 사실만으로 남은 이미지가 안전하다고 판단하지 않는다. 이 절은 정책 실행 시험 결과가 아니며 기존 인증과 스캔 절의 검증 기준일은 유지한다.
+
 ## Docker Repository 비교
 
 | 레지스트리 | 종류 |
@@ -89,6 +97,7 @@ registry라는 역할은 Docker Hub와 같다. image에 실행 runtime이 들어
 
 ## 출처
 
+- [Amazon ECR 공식 문서 — Automate the cleanup of images by using lifecycle policies in Amazon ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html)
 - [Amazon ECR 공식 문서 — Scan images for software vulnerabilities](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html)
 - [Amazon ECR 공식 문서 — Scan images for OS and programming language package vulnerabilities](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html)
 - [Amazon ECR 공식 문서 — 서비스 개요와 기능](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html)

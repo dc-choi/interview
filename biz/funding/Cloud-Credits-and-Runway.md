@@ -26,6 +26,16 @@ AWS 프로모션 약관은 현금 교환과 환급을 허용하지 않으며, �
 
 Billing의 크레딧 상세에서 잔액, 시작일, 만료일과 적용 가능한 상품을 확인한다. 크레딧은 적격 요금에 자동 적용되며 소진되거나 만료되면 적용이 끝난다. 만료월의 세부 처리는 약관과 청구 주기 기준을 따른다.
 
+## 파트너 PoC 지원은 신청, 승인과 정산을 구분한다
+
+2026-10-13 AWS Partner Central 공개 문서 확인 기준이다. 파트너 지원은 프로그램에 따라 현금 또는 AWS 프로모션 크레딧 형태로 제공된다. 고객이 직접 받는 Activate 크레딧과 같은 신청 경로로 보지 않는다. 파트너 계정의 자격과 해당 프로그램의 요건을 먼저 확인한다.
+
+PoC 지원의 `Tech Approval`은 프로젝트 계획과 작업 범위의 기술적 실행 가능성을 검토하는 단계다. `Finance Approval`은 현금 요청의 구매주문서(PO)나 크레딧 코드를 준비하는 단계이며, 요청 제출 자체가 지원금 수령을 뜻하지 않는다. 프로그램별 승인 절차에는 차이가 있다.
+
+`Pre-Approval`은 필요한 승인을 받아 활동을 시작할 수 있는 단계다. 현금 지원의 `Cash Claim`은 프로젝트나 마일스톤 완료 뒤 실제 수행 내역을 제출하고 검토받는 과정이며, 승인된 내역에 따라 송장을 제출한다. MAP 요청은 별도 `Pre-Approval` 단계를 거치지 않는 예외가 있으므로 단계 이름만으로 모든 프로그램을 같은 절차로 처리하지 않는다.
+
+계약과 현금 계획을 위한 점검 제안: 지원받는 주체, 크레딧 적용 계정, 지원 제외 비용, 증빙과 청구 시점, PoC 이후 운영비를 구분해 확인한다. 파트너에게 승인된 혜택이 고객에게 동일한 금액으로 전달된다고 가정하지 않으며, 지원 승인과 기술 검증 성공도 따로 판단한다.
+
 ## AI 지원 프로그램은 자격과 혜택을 나누어 확인한다
 
 Claude Startups는 2026-10-06 공지, 프로그램 페이지와 약관을 대조한 사례다. 지원 조건과 심사 통과, 혜택 수령은 별개다.
@@ -58,6 +68,8 @@ Claude Startups는 2026-10-06 공지, 프로그램 페이지와 약관을 대조
 
 ## 출처
 
+- [AWS Partner Central, Managing fund requests in AWS Partner Central](https://docs.aws.amazon.com/partner-central/latest/getting-started/partner-funding.html)
+- [AWS Partner Central, Creating a fund request](https://docs.aws.amazon.com/partner-central/latest/getting-started/create-fund-request.html)
 - [Claude Startups — Anthropic](https://claude.com/programs/startups) — 2026-10-08 페이지 본문의 자격, API와 Team 혜택 및 기간 확인. 2026-10-11 FAQ의 혜택 한도 초과와 재심사, 자격 문구, Console 신청과 1주 심사 목표, 크레딧 사용 범위와 rate limit, 오피스아워와 VC 경로 확인
 - [We're expanding the Claude Startups program to help founders build — Claude](https://claude.com/blog/were-expanding-the-claude-startups-program-to-help-founders-build) — 2026-10-06 공지의 자격, Team과 API 크레딧 혜택, 혜택 가치 산정
 - [Claude Help Center, What is the Team plan?](https://support.claude.com/en/articles/9266767-what-is-the-team-plan) — 2026-10-11 Team 플랜의 최소 인원 확인

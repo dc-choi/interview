@@ -113,6 +113,16 @@ NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 �
 
 운영 검증에서는 소스 변경 시각과 대상 반영 시각, 대표 행의 값과 자료형을 함께 대조하는 절차를 권한다. `ACTIVE` 표시와 분석용 데이터의 준비 완료를 구분하기 위한 점검이며, zero-ETL이 모든 업무 변환이나 품질 검사를 대신한다는 뜻은 아니다. 이 절만 새로 대조했으며 앞 절들의 검증 기준일은 유지한다.
 
+## 로그 양을 줄이기 전에 런타임과 출력 경로를 확인한다
+
+부분 검증(2026-10-13): 공식 로깅 가이드, 작업 파라미터와 PySpark API를 대조했다. Glue 4.0 이하의 continuous logging과 Glue 5.0의 실시간 로깅은 구분한다. 아래 5.0 설명을 다른 런타임 버전에 확인 없이 확대하지 않는다.
+
+- **Glue 4.0 이하:** continuous logging의 `--enable-continuous-log-filter=true`는 Spark driver/executor와 Hadoop YARN heartbeat의 불필요한 메시지를 줄이는 표준 필터다. `false`는 필터를 적용하지 않는다.
+- **Glue 5.0:** 모든 작업에 실시간 로깅 기능이 있다. 기본적으로 시스템, Spark daemon과 Glue Logger 로그는 `/aws-glue/jobs/error`, 사용자 stdout/stderr는 `/aws-glue/jobs/output`으로 간다. 그룹 이름의 `error`를 오류 수준 메시지만 있다는 뜻으로 읽지 않는다.
+- **Spark 로그 수준:** `sc.setLogLevel("WARN")`처럼 `SparkContext.setLogLevel`로 조정한다. 유효 수준은 `ALL`, `DEBUG`, `ERROR`, `FATAL`, `INFO`, `OFF`, `TRACE`, `WARN`이다. Spark 로그 설정 변경만으로 사용자 stdout/stderr의 출력량까지 줄었다고 판단하지 않는다.
+
+운영 점검 제안: 동일한 대표 입력으로 변경 전후 로그 양과 실패 진단 가능성을 비교한다. 업무 로그는 별도로 출력 수준을 정하고, 그룹의 보존 기간도 확인한다. 로그가 사라졌다면 필터 효과뿐 아니라 전송 권한과 경로 오류를 점검한다. 로그 절감과 진단 정보 유실을 같은 성과로 계산하지 않는다. 이 절 외 기존 내용의 검증 기준일은 유지한다.
+
 ## 관련 문서
 
 - [[Athena]], [[Redshift]], [[EMR]]
@@ -121,6 +131,10 @@ NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 �
 
 ## 출처
 
+- [AWS Glue, Logging for AWS Glue jobs](https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging.html)
+- [AWS Glue, Enabling continuous logging for AWS Glue 4.0 and earlier jobs](https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging-enable.html)
+- [AWS Glue, Using job parameters in AWS Glue jobs](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html)
+- [Apache Spark, pyspark.SparkContext.setLogLevel](https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.SparkContext.setLogLevel.html)
 - [AWS Glue, AWS Glue connection properties](https://docs.aws.amazon.com/glue/latest/dg/connection-properties.html)
 - [AWS Glue, Configuring a source for a zero-ETL integration](https://docs.aws.amazon.com/glue/latest/dg/zero-etl-sources.html)
 - [AWS Glue, Creating and managing integrations](https://docs.aws.amazon.com/glue/latest/dg/zero-etl-creating-managing.html)

@@ -91,6 +91,22 @@ NAT나 방화벽 뒤 게이트웨이를 인바운드 개방 없이 중앙에서 
 - **Prometheus Operator** — ServiceMonitor CRD로 스크레이프 대상 동적 관리
 - **라벨 카디널리티** — Pod IP, uuid 같은 고카디널리티 라벨은 폭발 주의
 
+## EKS 관리형 수집기도 수집 성공을 따로 확인한다
+
+부분 검증(2026-10-13): Amazon Managed Service for Prometheus의 관리형 collector 공식 문서를 대조했다. Collector는 Prometheus 호환 메트릭을 발견하고 수집한다. 로그와 트레이스 수집까지 완료하는 기능으로 해석하지 않는다.
+
+EKS용 scraper는 지정한 서브넷마다 ENI를 만들고, 수집한 메트릭을 VPC endpoint를 통해 workspace로 전송한다. EKS endpoint의 private access와 VPC DNS를 활성화해야 한다. 생성 시 서로 다른 가용 영역의 서브넷을 두 개 이상 지정하며, 클러스터와 scraper, workspace는 같은 리전에 둔다.
+
+접근 권한은 EKS access entry 또는 수동 구성을 확인한다. 기존 클러스터가 `API` 또는 `API_AND_CONFIG_MAP` 인증 모드라면 새 scraper를 생성할 때 access entry 정책이 자동으로 만들어진다. 이 구성과 애플리케이션이 의도한 메트릭을 노출하는지는 별개다.
+
+| 조회 결과 | 다음 확인 |
+|---|---|
+| 해당 endpoint의 `up` 없음 | 대상 발견 설정, 권한과 VPC DNS |
+| `up=0` | 프로토콜, 포트, HTTP 응답과 Prometheus 형식 |
+| `up>0` | 수집 경로는 동작한다. 필요한 메트릭 이름, 라벨과 조회 조건을 별도 대조 |
+
+운영 점검 제안: scraper 생성 성공, 시계열 도착과 알람 동작을 각각 확인한다. 관리형 수집으로 전환해도 업무 지표 정의와 누락 검증은 남는다. 이 절은 문서 대조이며 실제 AWS 환경의 수집 시험 결과는 아니다.
+
 ## 로그 수집 전략
 
 - **Stdout/Stderr 우선** — 12-factor 원칙. 파일 로그는 컨테이너 철학에 역행
@@ -127,6 +143,8 @@ NAT나 방화벽 뒤 게이트웨이를 인바운드 개방 없이 중앙에서 
 - 쿠버네티스에서 kube-state-metrics가 추가로 필요한 이유
 
 ## 출처
+- [AWS, Ingest metrics with AWS managed collectors](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-collector.html)
+- [AWS, Set up managed collectors for Amazon EKS](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-collector-how-to.html)
 - [m0rph2us — 컨테이너 모니터링 구축기](https://m0rph2us.github.io/docker/monitoring/2020/10/08/container-monitoring.html)
 - [Fluent Bit, Fluentd and Fluent Bit](https://docs.fluentbit.io/manual/about/fluentd-and-fluent-bit)
 - [Fluent Bit, Memory management](https://docs.fluentbit.io/manual/administration/memory-management)
