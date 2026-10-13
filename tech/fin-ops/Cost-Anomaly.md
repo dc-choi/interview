@@ -64,6 +64,18 @@ Amazon Q Developer의 비용 조사 기능은 비용 기여 차원을 분해하�
 
 분석 시간 단축, 예상 절감액과 실제 청구 절감은 별도 지표다. 쿼리 비용, 에이전트 비용과 사람의 검토 시간을 포함해 비교한다. AWS의 조사 기능 자체 요금과 별개로 CloudWatch Logs Insights 같은 하위 서비스 사용료가 발생할 수 있다.
 
+### 선결제와 사용량 증가를 구분한다
+
+월별 총액이 커졌다고 사용량이 늘었다고 단정하지 않는다. 2026-10-14 AWS 문서 대조 기준, Savings Plans의 All Upfront와 Partial Upfront 구매에는 일회성 `SavingsPlanUpfrontFee`가 생긴다. Cost Explorer의 amortized cost는 예약 선결제와 정기 요금을 기간에 배분하며, net amortized cost는 할인도 반영한다. 청구 시점의 급증과 기간별 유효 비용은 다른 질문에 답한다.
+
+다음은 비용 조사에 적용하는 점검 순서다.
+
+1. 비교할 계정, 기간, 필터와 비용 지표를 고정하고 서비스와 charge type으로 증가분을 나눈다.
+2. 선결제 항목은 실제 지출로 보존하면서 사용량 증가 조사에서 따로 분리한다. 약정 비용을 제거한 금액을 총비용이나 절감액으로 보고하지 않는다.
+3. 사용량과 단가, 할인 배분을 각각 대조한다. Cost Anomaly Detection은 net unblended cost를 쓰므로 상각 비용 차트를 탐지 입력과 같은 값으로 취급하지 않는다.
+
+Savings Plans의 `SavingsPlanCoveredUsage`에 표시된 unblended cost는 할인 전 온디맨드 금액이며 `SavingsPlanNegation`이 이를 상쇄한다. 사용 항목만 더해 과다 지출로 판단하지 않고, 약정에 배분된 사용 비용은 `savingsPlan/SavingsPlanEffectiveCost`와 함께 확인한다. 이 절은 청구 해석 기준이며 실제 계정의 절감이나 장애 원인을 확인한 결과가 아니다.
+
 ## 운영 팁
 
 - **태그 기반 Monitor**로 팀/서비스별 책임 소재를 명확히. [[AWS-Cost-Optimization|태그 정책]]
@@ -96,6 +108,8 @@ Amazon Q Developer의 비용 조사 기능은 비용 기여 차원을 분해하�
 - [AWS Cost Management, Getting started with AWS Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/getting-started-ad.html)
 - [AWS Cost Management, Detecting unusual spend with AWS Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html)
 - [AWS Cost Management, Using AWS User Notifications with Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/cad-user-notifications.html)
+- [AWS Cost Management, Choosing advanced options](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-advanced.html)
+- [AWS Data Exports, Understanding Savings Plans](https://docs.aws.amazon.com/cur/latest/userguide/cur-sp.html)
 
 ## 관련 문서
 

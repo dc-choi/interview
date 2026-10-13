@@ -87,6 +87,12 @@ agent가 요구사항을 충족했는지뿐 아니라 삭제한 동작, 숨은 q
 
 검증 제안: 변환 전에 고정한 입력과 기대 결과로 핵심 업무 흐름을 다시 실행한다. 변환 보고서와 남은 작업을 읽고, 애플리케이션 기능과 UI, 탐색 경로를 원래 동작과 비교한다. 위 내용은 문서로 확인한 도구의 범위이며 실제 프로젝트의 변환 성공률이나 절감률을 측정한 결과가 아니다.
 
+### JDK 변경과 Jakarta 패키지 전환을 분리한다
+
+2026-10-14 부분 검증: Spring Boot 3.0은 Java 17 이상과 Spring Framework 6.0을 요구하며, 사용하는 Jakarta EE 사양을 EE 10 기준으로 올렸다. 이에 따른 Servlet과 JPA 의존성 및 `javax`에서 `jakarta`로의 import 변경은 프레임워크와 해당 API의 전환이다. Java 17로 올리면 모든 `javax` 패키지가 사라진다는 뜻은 아니다. Java SE 17에도 `javax.sql`과 `DataSource`가 남아 있으므로 접두사 전체를 일괄 치환하지 않는다.
+
+변환 계획에는 JDK, 프레임워크, 직접 및 전이 의존성의 목표 버전을 나눠 적는다. 생성 diff에서 해당 API의 좌표와 import가 함께 바뀌었는지 확인하고, 빌드 뒤 실제 연결과 요청 흐름을 검사한다. Amazon Q의 최소 JDK 변환 완료를 전체 프레임워크 전환 완료로 해석하지 않는다. 이 절의 버전 경계만 대조했으며 기존 문서 전체의 검증일은 갱신하지 않았다.
+
 ## 기존 조회 함수를 재사용할 때
 
 함수 이름과 반환 타입이 같아도 조회 의미가 같다는 보장은 없다. 현재 SQL과 caller에서 상태 필터, soft delete, 소유자, 대상 타입, 정렬과 잠금을 확인한다. 과거의 전체 조회 함수를 새 타입별 조회에 그대로 쓰거나, 생략값을 전체 타입으로 해석하면 구현은 재사용해도 계약은 바뀐다. [[Backward-Compatibility-Design|하위 호환성]]과 함께 구 요청과 새 요청의 결과를 비교한다.
@@ -161,6 +167,8 @@ REA의 Evidence는 대상 산출물 식별, 원본 위치, 관찰, 추론과 미
 - [REA: Reverse Engineer Anything — morluto/rea](https://github.com/morluto/rea)
 - [REA, CLI and Evidence](https://github.com/morluto/rea/blob/main/docs/cli.md)
 - [Amazon Q Developer, Upgrading Java versions with Amazon Q Developer](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/code-transformation.html)
+- [Spring Boot, Spring Boot 3.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide)
+- [Java SE 17, Package javax.sql](https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/javax/sql/package-summary.html)
 - [AWS Transform, Unit tests](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-unit-tests.html)
 - [AWS Transform, Validation and finalization](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-bp-validation.html)
 - [코드를 읽지 않고 찾는 방법 — YouTube, 코딩맨](https://www.youtube.com/watch?v=WfAgL5Ves3Q) — 2025-12-20, 탐색 원칙은 경험적 설명, 도구 계약은 공식 문서 대조
