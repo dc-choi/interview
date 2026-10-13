@@ -79,6 +79,17 @@ NLB, EC2 직접 부착 ❌. NLB는 L4라 WAF 비대상.
 
 - Web ACL 내 룰은 **우선순위(번호) 순서대로 평가**. Allow/Block은 즉시 종료, Count는 매칭 카운트만 올리고 계속.
 
+### L7 DDoS: 집계 범위와 공격 판정을 구분한다
+
+2026-10-14 AWS 공식 문서 부분 대조 기준이다. 아래 요청 집계와 Anti-DDoS 규칙만 확인했으며 기존 가격과 전체 서비스 지원 범위의 `verified_at`은 유지한다.
+
+- **집계 키와 검사 범위는 다르다:** URI path를 집계 키로 고르면 경로별로 카운터가 나뉜다. 특정 경로만 보호하려면 scope-down 조건으로 대상을 좁힌다. 예를 들어 `/login` 조건과 IP 집계를 결합하면 해당 경로의 요청을 IP별로 센다. URI만 집계하면 같은 경로를 호출한 여러 IP가 하나의 카운터를 공유한다.
+- **Count는 제한을 집행하지 않는다:** rate-based rule의 Count는 한도 초과 요청을 세고 뒤의 규칙 평가를 계속한다. CAPTCHA/Challenge도 유효한 토큰이 있는 요청에는 종료 액션을 내리지 않으므로, 엄격한 요청량 차단과 같은 정책으로 취급하지 않는다.
+- **이벤트 label은 개별 공격 판정이 아니다:** `AWSManagedRulesAntiDDoSRuleSet`의 `awswaf:managed:aws:anti-ddos:event-detected`는 공격으로 판단된 이벤트 동안 정상 요청에도 붙는다. 이 label만으로 모든 요청을 공격자로 분류하지 않는다.
+- **Challenge와 Block의 적용 조건을 따로 본다:** Challenge는 이를 처리할 수 있는 클라이언트에 사용하고, 처리할 수 없는 URI는 예외 설정을 검토한다. `ChallengeDDoSRequests`의 민감도 기반 평가는 선행 `ChallengeAllDuringEvent`를 Count로 재정의했을 때만 실행된다. `DDoSRequests`는 별도의 차단 민감도에 따라 동작한다. 이 관리형 그룹에는 추가 요금이 있다.
+
+운영 점검 제안: 정상 로그인과 API 호출을 포함한 표본으로 집계 단위, 최종 액션과 오탐을 확인한다. 예시 임계치를 서비스 용량이나 정상 트래픽 측정 없이 그대로 적용하지 않는다.
+
 ### 로깅, 모니터링
 
 - **WAF Logs**: CloudWatch Logs, S3 또는 Amazon Data Firehose로 전송.
@@ -212,6 +223,10 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 
 ## 출처
 
+- [AWS WAF, Rate-based rule aggregation instances and counts](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based-aggregation-instances.html)
+- [AWS WAF, Applying rate limiting to requests](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based-request-limiting.html)
+- [AWS WAF, Distributed Denial of Service (DDoS) prevention rule group](https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-anti-ddos.html)
+- [AWS WAF, Adding the Anti-DDoS managed rule group to your protection pack](https://docs.aws.amazon.com/waf/latest/developerguide/waf-anti-ddos-rg-using.html)
 - [AWS WAFV2, LoggingFilter](https://docs.aws.amazon.com/waf/latest/APIReference/API_LoggingFilter.html)
 - [AWS WAFV2, Filter](https://docs.aws.amazon.com/waf/latest/APIReference/API_Filter.html)
 - [AWS Network Firewall, Firewall policy settings](https://docs.aws.amazon.com/network-firewall/latest/developerguide/firewall-policy-settings.html)
