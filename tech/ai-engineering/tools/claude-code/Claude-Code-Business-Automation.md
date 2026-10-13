@@ -40,6 +40,15 @@ verified_at: 2026-09-30
 
 이 구성을 적용한 결과는 같은 원문과 검토 기준으로 비교한다. 문체가 자연스러워진 것과 분석이 정확해진 것을 별도로 평가한다.
 
+### PDF 입력과 Markdown 변환의 비용을 비교한다
+
+2026-10-13 Anthropic API의 PDF 문서와 Microsoft MarkItDown 저장소를 대조한 범위다. API의 토큰 계산을 Claude 구독 화면의 사용량 차감 방식과 동일하게 취급하지 않는다.
+
+- **PDF 입력:** 페이지별 텍스트와 이미지를 함께 분석하므로 도표와 배치도 근거로 사용할 수 있다. 공식 안내의 페이지당 1,500~3,000토큰은 일반적인 텍스트 비용 추정이고 이미지 비용은 별도다. 따라서 30페이지를 항상 총 90,000토큰으로 계산할 수 없다.
+- **Markdown 변환:** MarkItDown은 PDF, Word, PowerPoint, Excel 등을 텍스트 분석에 사용할 Markdown으로 바꾸며 제목, 목록, 표와 링크 등 구조 보존을 지향한다. 고충실도 레이아웃 복원 도구는 아니므로 변환 성공과 내용 보존을 구분한다.
+- **선택 기준:** 본문 검색이나 문장 추출은 변환본을 검토하고, 도표나 시각적 배치가 답의 근거라면 원본 PDF 또는 필요한 페이지를 함께 확인한다. 텍스트만 전달하면 이미지 자체가 분석 입력에서 빠진다.
+- **검증 방법:** 같은 문서와 질문으로 토큰 수, 지연, 숫자와 표의 대응, 근거 누락을 비교한다. API에서는 token counting으로 해당 입력을 추정한다. 고정된 절감률이나 답변 품질 향상을 전제하지 않는다.
+
 ## Cowork로 맡길 때 — 범위, 원본, 절차, 공유
 
 Cowork는 Claude Code와 같은 에이전트 구조를 터미널 없이 쓰는 작업 공간이다(Pro, Max, Team, Enterprise 플랜. Desktop 앱 외에 웹과 모바일은 플랜별로 제공). 작업은 Anthropic 서버의 격리 환경에서 돌고, 로컬 파일, 브라우저, 컴퓨터를 쓰는 동안에는 Desktop 앱이 열려 있어야 한다(2026-09-30 공식 문서 확인). Chat과 Cowork가 나뉜 계정(Team, Enterprise 조직과 통합 경험이 아직 적용되지 않은 Pro, Max 계정)에서 원본 자료를 읽고 결과물을 만드는 일이라면 일반 채팅보다 Cowork가 맞다. 통합 경험이 적용된 계정은 모드를 고르지 않고 일반 대화에서 허용한 폴더의 파일을 다루며, 계정별 차이는 [[Claude-Code-Fundamentals#설치 환경 선택|Claude Code 기초]]가 정본이다. 통합 경험에서 입력창의 권한 설정은 대화 전체에 적용되고, 기본값 Manual은 행동마다 허용 여부를 물으며 Auto는 단계마다 묻지 않고 진행하되 행동 전에 자동 안전 검사를 거친다. 기존에 Cowork에 허용한 폴더는 Trusted folders 목록에 표시된다(2026-10-12 공식 도움말 확인).
@@ -109,6 +118,8 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 
 ## 출처
 
+- [Anthropic — PDF support](https://platform.claude.com/docs/en/build-with-claude/pdf-support)
+- [MarkItDown — Microsoft](https://github.com/microsoft/markitdown)
 - [Anthropic — Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)
 - [Claude Code — MCP](https://code.claude.com/docs/en/mcp)
 - [Claude Code — Routines](https://code.claude.com/docs/en/routines)

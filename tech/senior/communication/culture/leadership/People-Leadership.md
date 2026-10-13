@@ -54,6 +54,14 @@ Blumberg와 Pringle(1982)은 성과를 수행 역량(capacity), 의지(willingne
 - 실패해도 되돌릴 수 있는 범위에서 주도적으로 맡을 일을 준다.
 - 다른 팀의 회의나 업무를 참관하도록 초대하고, 업계 소식과 컨퍼런스 참여를 공유한다.
 
+### 심리적 소유감과 실제 결정권
+
+심리적 소유감은 업무나 조직을 자신의 것으로 느끼는 상태다. 법적 지분 소유, 조직에 남으려는 의지와 동일한 개념은 아니다. 주인의식을 요구하는 말만으로 이 상태나 성과가 생긴다고 가정하지 않는다.
+
+2004년의 업무 환경 연구는 자율성과 의사결정 참여 등 업무 구조, 지각된 통제감, 업무와 조직에 대한 소유감의 관계를 조사했다. 통제감의 매개 관계를 관찰했지만 횡단면 상관 연구이므로 권한 부여가 소유감이나 성과를 반드시 높인다는 인과 증거는 아니다. 대상에 대한 깊은 이해와 자신의 노력 투입은 이 논문이 소개하는 다른 이론적 경로이며, 해당 연구가 함께 검증한 결과로 확대하지 않는다.
+
+실무 적용안은 팀원이 직접 결정할 범위, 판단에 필요한 정보, 자신의 제안을 반영할 기회를 점검하는 것이다. 예를 들어 장애 개선 과제를 맡길 때 목표와 안전 경계는 합의하고, 대안 비교와 실행 방법 선택은 담당자에게 맡길 수 있다. 소유감을 무제한 책임이나 희생을 요구하는 근거로 사용하지 않는다.
+
 ## 명령보다 장면과 질문으로 가르친다
 
 정답을 바로 지시하면 당장의 실수는 줄어도 팀원이 스스로 판단 기준을 만드는 기회를 잃는다. 리더는 문제가 드러난 장면과 제약을 구체적으로 보여주고 질문으로 사고를 돕는다.
@@ -177,6 +185,7 @@ Blumberg와 Pringle(1982)은 성과를 수행 역량(capacity), 의지(willingne
 
 ## 출처
 
+- [Work Environment Structure and Psychological Ownership: The Mediating Effects of Control — The Journal of Social Psychology, Pierce, O'Driscoll, Coghlan (2004)](https://www.researchgate.net/profile/Michael-Odriscoll/publication/8265029_Work_Environment_Structure_and_Psychological_Ownership_The_Mediating_Effects_of_Control/links/54f62fb50cf27d8ed71d684c/Work-Environment-Structure-and-Psychological-Ownership-The-Mediating-Effects-of-Control.pdf)
 - [The Power of Purpose: AWS VP Ruba Borno on Leading with Why — AWS Executive Insights](https://www.youtube.com/watch?v=_hvMoEvJ7KM)
 - [AWS Well-Architected Framework, OPS03-BP05 Experimentation is encouraged](https://docs.aws.amazon.com/wellarchitected/latest/framework/ops_org_culture_team_enc_experiment.html)
 - [우아한테크세미나 공감 토크쇼 — 시니어 개발자의 리더십과 성장 — YouTube](https://www.youtube.com/watch?v=vga0PZK6AvI&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=13)
