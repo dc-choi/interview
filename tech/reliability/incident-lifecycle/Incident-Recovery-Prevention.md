@@ -91,9 +91,36 @@ aliases: ["장애 복구와 재발 방지"]
 | 코드 리뷰 + 테스트 게이트 | PR 단계에서 품질 확보 |
 | Circuit Breaker | 외부 의존성 장애 시 연쇄 장애 차단 |
 
+### 출시와 트래픽 급증 전 운영 준비
+
+부분 검증(2026-10-14): AWS ORR의 예시 질문과 game day 지침을 대조했다. ORR은 고객에게 영향을 주는 API와 의존성, 실패 시 영향, 재시작 런북과 부하 시험 계획을 확인한다. 부하 시험에서는 병목을 찾고 수정한 뒤 다시 시험하며, 일부 대형 고객의 급증과 여러 소형 고객의 부하처럼 서로 다른 분포를 고려한다.
+
+Game day는 시스템뿐 아니라 실제 대응 인력과 절차도 시험한다. 운영과 유사한 환경에서 감지, 호출, 진단과 완화를 연습하고 참여자에게 일정과 시나리오를 미리 알린다. 부정적 영향이 관측되면 시험을 되돌리고 런북에 따라 조치한다. 설계 검토나 부하 시험 성공만으로 대응 준비가 끝났다고 판단하지 않는다.
+
+적용 제안: 출시 전에는 예상 트래픽과 실패 시나리오별 결과를 함께 기록한다. 처리량뿐 아니라 오류율, 꼬리 지연과 대응 흐름을 확인하고 미해결 병목, 완화 수단과 담당자를 남긴다. 특정 출시 사례의 가용성이나 확장 배수를 다른 서비스의 보장값으로 사용하지 않는다.
+
+### 행사 종료 뒤 개선을 다음 운영에 반영한다
+
+AWS Unified Operations는 이벤트 지원 이후에도 과거 사고 분석, 관측 임계값과 용량 계획 조정, 런북 갱신을 설명한다(2026-10-14 공식 서비스 소개 대조). 지원 계약 자체를 장애 예방이나 복구 완료의 증거로 보지 않는다.
+
+적용 제안: 예정된 대규모 이벤트가 끝나면 예상과 실제 부하, 경보, 병목과 수동 개입을 비교한다. 장애가 없었어도 드러난 운영 공백을 개선 대상으로 남기고, 다음 이벤트 전 관련 시험을 반복한다. Game day에서 발견한 개선 항목도 담당자와 후속 조치를 정해 완료까지 추적한다. 이 절은 운영 검토 방법이며 특정 서비스의 배포나 부하 시험 결과가 아니다.
+
 ## 면접포인트
 - "장애 경험?" → 감지 → 대응 → Root Cause → 재발 방지까지 전체 사이클로 답변
 - "사람 의존 vs 시스템 의존?" → 수동 대응을 자동화로 전환한 경험
 - "운영 자동화 경험?" → 반복 작업을 시스템화하여 본업에 집중할 수 있도록 개선
 - "장애 등급을 어떻게 나누나?" → P1~P4 등급별 대응 SLA 차등
 - "포스트모템에 뭘 쓰나?" → 타임라인, 근본 원인, 영향 범위, 액션 아이템. 비난 없는 문화가 핵심
+
+## 출처
+
+- [[Toss-Runners-High-Seminar|토스 러너스하이 세미나]] — 기존 기술 운영 평가 기록
+- [AWS Well-Architected, Appendix B: Example ORR questions](https://docs.aws.amazon.com/wellarchitected/latest/operational-readiness-reviews/appendix-b-example-orr-questions.html)
+- [AWS Well-Architected, Conduct game days regularly](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_testing_resiliency_game_days_resiliency.html)
+- [AWS Unified Operations — AWS](https://aws.amazon.com/premiumsupport/plans/unified-operations/)
+
+## 관련 문서
+
+- [[Incident-Lifecycle|장애 대응 라이프사이클]]
+- [[N-1-Capacity-Headroom|장애 시 남은 가용량]]
+- [[RCA-Postmortem|근본 원인 분석과 후속 조치]]

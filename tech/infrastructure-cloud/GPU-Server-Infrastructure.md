@@ -157,6 +157,16 @@ CUDA 상태의 중지만으로 CPU 스레드까지 멈추지는 않는다. 전�
 - Slurm에서 auto-resume을 쓰면 하드웨어 장애 노드는 재부팅 없이 교체되고, auto-resume이 없는 작업은 종료되어 다시 제출해야 한다. 재개 뒤에는 `$SLURM_JOB_NODELIST`가 오래된 값일 수 있으므로 진입 스크립트에서 노드 목록을 다시 구하고, 교체 노드에도 같은 환경을 만들도록 설정을 단일 `srun` 진입점에 둔다. GRES가 붙은 노드의 작업은 따로 막지 않으면 job step 재개 대신 큐에 다시 들어가 처음부터 실행된다.
 - 감지, 노드 교체, 작업 재시작과 첫 정상 학습 단계까지의 시간을 나눠 측정한다. 노드 교체 완료를 학습 재개 완료로 보지 않는다(운영 제안).
 
+### Checkpointless 복구와 저장된 체크포인트의 경계
+
+부분 검증(2026-10-14): HyperPod checkpointless training과 in-process recovery 공식 문서 기준이다. 이 기능은 EKS 기반 HyperPod와 training operator v1.2.0 이상을 전제로 하며 NVIDIA NeMo 기반 학습에 통합한다. 일반적인 체크포인트 저장과 자동 재시작을 켰다고 이 복구 방식까지 활성화되는 것은 아니다.
+
+모델과 optimizer 상태의 복제본을 활용해 정상 rank에서 복구 대상 rank로 상태를 전달한다. 정상 프로세스의 메모리 상태를 유지하면서 필요한 코드 구간(RCB)을 다시 실행할 수 있다. NeMo 전략의 `num_distributed_optimizer_instances`는 optimizer 복제를 위해 최소 2가 필요하다. 체크포인트가 없다는 이름을 상태 보존이나 복제 비용이 없다는 뜻으로 해석하지 않는다.
+
+복구 가능 여부는 global step 일관성, rank 상태와 모델 상태 무결성 등을 확인해 판단한다. checkpointless 재개가 불가능하거나 시도가 실패하면 저장소의 체크포인트를 읽는 경로로 돌아간다. 따라서 운영 설계에서는 이 경로의 저장과 복원 준비를 유지하고, 복구 후 첫 정상 학습 단계와 진행 상태를 확인한다(운영 제안). 모든 장애에서 즉시 복구되거나 진행분 손실이 없다고 일반화하지 않는다.
+
+이 절의 전제와 복구 경계만 대조했으며 실제 분산 학습이나 장애 주입은 수행하지 않았다. 문서 전체의 기존 검증일은 유지한다.
+
 ### HyperPod 초기화 실패는 인스턴스별로 확인한다
 
 2026-10-13 HyperPod API와 Slurm 클러스터 관리 문서 부분 대조 기준. `ClusterLifeCycleConfig.SourceS3Uri`는 lifecycle script의 S3 위치이고, `OnCreate`는 그 위치 아래에서 클러스터 생성 중 실행할 진입 스크립트 파일명이다. `OnInitComplete`는 AMI 기반 초기화가 끝난 뒤 노드에서 실행할 진입 스크립트 파일명이다. HyperPod 인스턴스 역할에 붙는 관리형 정책 `AmazonSageMakerClusterInstanceRolePolicy`가 `sagemaker-` 접두사 버킷 접근을 허용하므로, API 문서는 S3 경로를 `s3://sagemaker-`로 시작하게 하라고 안내한다. 스크립트 업로드와 각 노드의 초기화 성공을 별도로 확인한다(운영 제안).
@@ -177,6 +187,8 @@ Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 �
 
 ## 출처
 
+- [Amazon SageMaker AI, Checkpointless training in Amazon SageMaker HyperPod](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless.html)
+- [Amazon SageMaker AI, In-process recovery and checkpointless training](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless-in-process-recovery.html)
 - [Amazon EC2, Troubleshoot Amazon EC2 instance launch issues](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/troubleshooting-launch.html)
 - [Amazon SageMaker API Reference, ClusterLifeCycleConfig](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterLifeCycleConfig.html)
 - [Amazon SageMaker AI, SageMaker HyperPod cluster management](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-cluster-management-slurm.html) — Slurm lifecycle script의 인스턴스별 로그와 오류 표시 범위
