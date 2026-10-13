@@ -19,6 +19,17 @@ verified_at: 2026-08-05
 - **장점**: 빠르고 간단, 추가 비용 최소
 - **한계**: **Transitive 불가** — A↔B, B↔C가 있어도 A↔C는 안 됨. N개 VPC 완전 연결 시 **N×(N-1)/2** 연결 필요 (10개 VPC = 45개 Peering)
 
+### SageMaker notebook에서 다른 VPC의 RDS에 연결하기
+
+부분 검증(2026-10-13): SageMaker AI **notebook instance**의 네트워크 문서와 VPC Peering 문서를 대조했다. Studio의 네트워크 구성에 그대로 적용하지 않는다. 아래 내용만 추가 검증했으므로 기존 `verified_at`은 유지한다.
+
+- Peering을 `active`로 만든 뒤 notebook과 RDS가 속한 서브넷의 라우팅 테이블에 상대 주소 범위를 Peering으로 보내는 경로를 각각 둔다. 연결 승인만으로 왕복 경로가 생기지는 않는다.
+- DB 포트에 필요한 notebook 측 송신과 RDS 측 수신을 보안 그룹에서 허용한다. Peering 상대의 보안 그룹 참조는 같은 리전에서 사용할 수 있다. 다른 리전의 보안 그룹은 참조할 수 없으므로 허용할 상대 CIDR 범위를 지정한다.
+- Direct internet access를 켠 notebook은 고객 VPC와 서비스 관리 인터넷 경로에 각각 연결된다. 기본 OS 경로는 고객 VPC의 CIDR에 해당하는 트래픽을 고객 VPC 인터페이스로 보내고 나머지는 서비스 관리 인터넷 경로로 보낸다. 따라서 Peering 양쪽의 서브넷 경로가 맞아도 다른 VPC의 RDS로 가는 notebook 내부 경로가 잘못될 수 있다.
+- 이 경우 RDS 주소 범위를 고객 VPC 인터페이스와 VPC 라우터로 보내도록 notebook의 OS 경로를 조정한다. 인터페이스명과 라우터 주소는 실제 환경에서 확인하며 예시 값을 복사하지 않는다. 수동 경로는 중지와 재시작 뒤 유지되지 않으므로 반복 적용이 필요하면 시작 시 실행하는 lifecycle configuration을 사용한다.
+
+운영 점검 제안: DNS가 반환한 주소, notebook의 OS 경로, 양쪽 서브넷 경로, 보안 그룹과 NACL을 나누어 확인한다. TCP 포트 연결 성공과 DB 인증 및 필요한 쿼리 권한 확보는 별도로 검증한다. 재시작 뒤에도 같은 경로로 연결되는지 확인한다.
+
 ### Transit Gateway (TGW)
 
 Hub & Spoke 구조. 모든 VPC가 **TGW 한 허브**에 연결되고, TGW가 중앙 라우팅.
@@ -106,6 +117,10 @@ Private Subnet에서 S3를 자주 쓰면 Gateway Endpoint 설정만으로도 NAT
 
 ## 출처
 
+- [Amazon SageMaker AI networking — notebook instance의 기본 경로와 direct internet access](https://docs.aws.amazon.com/sagemaker/latest/dg/appendix-notebook-and-internet-access.html)
+- [AWS VPC Peering routing — 양쪽 서브넷의 왕복 경로](https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-routing.html)
+- [AWS VPC Peering security groups — 같은 리전 참조와 리전 간 CIDR 조건](https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-security-groups.html)
+- [Understanding Amazon SageMaker notebook instance networking configurations and advanced routing options — AWS](https://aws.amazon.com/blogs/machine-learning/understanding-amazon-sagemaker-notebook-instance-networking-configurations-and-advanced-routing-options/) — 2018년 게시, 2022년 검토된 OS 경로와 lifecycle 구성 예시
 - [AWS Private IP VPN over Direct Connect — 사설 IP 터널 종단과 TGW 연결](https://docs.aws.amazon.com/vpn/latest/s2svpn/private-ip-dx.html)
 - [AWS Site-to-Site VPN tunnel options — 터널 두 개와 장애 전환](https://docs.aws.amazon.com/vpn/latest/s2svpn/VPNTunnels.html)
 - [AWS Site-to-Site VPN redundant connections — 고객 장비 이중화](https://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-redundant-connection.html)
@@ -121,3 +136,8 @@ Private Subnet에서 S3를 자주 쓰면 Gateway Endpoint 설정만으로도 NAT
 - [Amazon VPC pricing — Gateway Endpoint 무과금, NAT Gateway 요금](https://aws.amazon.com/vpc/pricing/)
 - [AWS PrivateLink pricing — Interface Endpoint AZ별 시간 요금, 데이터 처리 요금](https://aws.amazon.com/privatelink/pricing/)
 - [Encryption in AWS Direct Connect — 기본 미암호화, MACsec, DX 위 VPN](https://docs.aws.amazon.com/directconnect/latest/UserGuide/encryption-in-transit.html)
+
+## 관련 문서
+
+- [[RDS-Security-Group|RDS 보안 그룹 구성]]
+- [[VPC-NAT-Security|NAT, 보안 그룹과 NACL]]
