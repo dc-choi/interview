@@ -120,6 +120,12 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 
 Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 중인 버전보다 오래된 delta를 버릴 수 있다. 동시 갱신 충돌을 막으려면 update 요청에 `version`을 넣을 수 있으며, 서비스는 최신 버전과 일치할 때만 그 요청을 처리한다. 이는 클라우드 문서의 갱신 조건이지 물리 장비 명령의 정확히 한 번 실행 보장은 아니다.
 
+### 자연어 제어에서도 MQTT 작업별 권한을 구분한다
+
+2026-10-14 Device Shadow MQTT topics 문서 대조 기준. MQTT로 shadow를 조회하려면 `/get` topic에 `iot:Publish`가 필요하다. 따라서 `Publish`를 모두 장비 변경 권한으로 해석하면 안 된다. 변경은 `/update`, 삭제는 `/delete` topic에 대한 발행으로 구분한다. 응답 수신에는 해당 `topicfilter`의 `iot:Subscribe`와 `topic`의 `iot:Receive` 권한을 구분해 구성한다.
+
+빌딩의 자연어 인터페이스에 적용할 때는 조회와 제어 도구를 나누고, 서버에서 사용자에게 허용된 건물과 장비인지 확인하는 방식을 권한다(설계 제안). 모델이 선택한 장비 이름을 권한 증거로 삼지 않는다. MQTT topic별 권한 확인은 업무 사용자의 인가나 장비의 물리 동작 검증을 대신하지 않는다. 이 절은 MQTT 경로만 대조했으며 기존 제품 기능 전체의 재검증은 아니므로 frontmatter의 검증일은 유지한다.
+
 ## 배포 상태와 장비별 복구 결과를 나눈다
 
 로봇처럼 여러 현장 장비에 소프트웨어를 배포할 때는 배포를 생성한 상태와 각 장비가 적용한 결과를 구분한다. 2026-10-09 Greengrass V2 공식 문서 기준, 개별 core device의 배포 작업은 `list-effective-deployments`로 확인할 수 있다. IoT job의 장비별 실행 상세에서는 다음 상태를 구분한다.
@@ -170,6 +176,7 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT Core, Device Shadow MQTT topics](https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html) — 2026-10-14 조회, 변경과 삭제의 topic 및 발행, 구독, 수신 권한을 대조
 - [Exploring alternatives and seamlessly migrating data from Amazon Lookout for Vision — AWS](https://aws.amazon.com/blogs/machine-learning/exploring-alternatives-and-seamlessly-migrating-data-from-amazon-lookout-for-vision/) — 2026-10-13 종료 공지와 대체 후보의 범위를 대조
 - [Amazon Monitron, What is Amazon Monitron?](https://docs.aws.amazon.com/Monitron/latest/user-guide/what-is-monitron.html) — 2026-10-13 센서 입력, 경보와 오프라인 상태의 의미 대조
 - [Amazon Monitron, Document history for the Amazon Monitron User Guide](https://docs.aws.amazon.com/Monitron/latest/user-guide/doc-history.html) — 2026-10-13 신규 고객 제공 중단 날짜 대조
