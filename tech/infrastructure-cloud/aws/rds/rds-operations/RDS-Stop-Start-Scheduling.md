@@ -44,6 +44,28 @@ AWS Knowledge Center는 대상 태그, Lambda와 EventBridge로 유지보수 시
 
 자동화가 복잡해지면 상태 대기와 실패 분기를 관리할 방법을 검토한다. [[Step-Functions|Step Functions]]나 Systems Manager Maintenance Windows는 대안이며, 단순한 일정에 모두 도입할 필요는 없다.
 
+## Instance Scheduler의 태그, 일정과 수동 조작
+
+부분 검증(2026-10-13): Instance Scheduler on AWS의 공식 운영 가이드와 일정 정의를 대조했다. 이 절은 RDS 인스턴스에 일정을 연결하는 방법을 보강하며, 앞 절의 중지 지원 조건과 유지보수 검증 기준일은 유지한다.
+
+Instance Scheduler는 리소스 태그와 Lambda를 사용해 여러 계정과 리전의 EC2, RDS 시작과 중지를 자동화하는 배포형 솔루션이다. RDS에서는 중지 가능한 구성인지 먼저 확인한 뒤 다음 연결을 점검한다.
+
+| 설정 | 확인할 관계 |
+|---|---|
+| 태그 key | 솔루션 배포 때 지정한 key와 같아야 한다. 기본값은 `Schedule`이다 |
+| 태그 value | 적용할 **schedule 이름**이다. period 이름을 넣는 필드가 아니다 |
+| schedule | 하나 이상의 period를 참조한다. 여러 period 중 하나라도 실행 조건을 만족하면 실행 대상으로 판단한다 |
+| period와 시간대 | period에 실행 시간과 요일 등을 두고 schedule의 `timezone`을 명시한다. 한국 업무 시간 예시는 `Asia/Seoul`이다 |
+
+태그에 적은 schedule이 없거나 이름이 틀리면 `UnknownSchedule` 오류로 중지되지 않을 수 있다. informational tagging을 켠 경우 `IS-Error`와 `IS-LastAction`을 실제 DB 상태와 함께 확인한다.
+
+- `enforced: false`가 기본이다. 실행 시간 중 수동으로 중지한 인스턴스를 다시 시작하지 않으며, 최초 중지 전환 이후 실행 시간 밖에서 수동 시작한 인스턴스도 자동 중지하지 않는다. `true`는 이런 수동 변경을 일정에 맞게 되돌린다.
+- `stop_new_instances: false`이면 처음 태그를 붙일 때 실행 시간 밖에서 켜져 있던 인스턴스가 다음 중지 전환까지 계속 실행될 수 있다.
+- `retain_running: true`이면 실행 시간 전에 수동 시작한 인스턴스를 해당 실행 시간 종료 시 중지하지 않는다. 긴급 작업 예외로 사용할 때는 종료 책임과 모니터링을 함께 정한다.
+- CloudFormation custom resource로 관리하는 schedule과 period는 DynamoDB 콘솔이나 Scheduler CLI로 따로 수정하지 않는다. 선언한 설정과 저장된 값이 어긋나기 때문이다.
+
+적용 점검 제안: 개발 DB 하나에서 정상 일정, 잘못된 태그와 수동 시작을 각각 시험한다. 실행 시간 감소만으로 절감액을 확정하지 않고 남는 스토리지 비용과 솔루션 운영 비용도 함께 비교한다.
+
 ## 이해 점검
 
 - 7일보다 긴 미사용 기간과 7일 연속 중지는 어떻게 다른가?
@@ -52,6 +74,9 @@ AWS Knowledge Center는 대상 태그, Lambda와 EventBridge로 유지보수 시
 
 ## 출처
 
+- [Instance Scheduler on AWS, Operator guide](https://docs.aws.amazon.com/solutions/latest/instance-scheduler-on-aws/operator-guide.html)
+- [Instance Scheduler on AWS, Schedule reference](https://docs.aws.amazon.com/solutions/latest/instance-scheduler-on-aws/schedule-reference.html)
+- [Instance Scheduler on AWS, Automate starting and stopping AWS instances](https://docs.aws.amazon.com/solutions/latest/instance-scheduler-on-aws/solution-overview.html)
 - [Amazon RDS, Stopping an Amazon RDS DB instance temporarily](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_StopInstance.html)
 - [How do I use a Lambda function to stop an Amazon RDS DB instance for more than seven days? — AWS re:Post](https://repost.aws/knowledge-center/rds-stop-seven-days)
 - [Amazon RDS, Maintaining a DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html)

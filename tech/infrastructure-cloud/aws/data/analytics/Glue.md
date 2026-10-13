@@ -123,6 +123,17 @@ NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 �
 
 운영 점검 제안: 동일한 대표 입력으로 변경 전후 로그 양과 실패 진단 가능성을 비교한다. 업무 로그는 별도로 출력 수준을 정하고, 그룹의 보존 기간도 확인한다. 로그가 사라졌다면 필터 효과뿐 아니라 전송 권한과 경로 오류를 점검한다. 로그 절감과 진단 정보 유실을 같은 성과로 계산하지 않는다. 이 절 외 기존 내용의 검증 기준일은 유지한다.
 
+## BigQuery 수집의 연결 권한과 재처리 경계
+
+부분 검증(2026-10-13): 공식 BigQuery 연결과 Job Bookmarks 문서를 대조했다. Glue for Spark는 Glue 4.0 이상에서 BigQuery 테이블 읽기와 쓰기를 지원한다. 외부 클라우드의 데이터를 S3 분석 영역으로 모으는 경우에도 연결 생성과 반복 실행의 정합성은 따로 설계한다.
+
+- **연결과 권한:** GCP 자격 증명을 연결한 Secrets Manager secret과 Google BigQuery 유형의 Glue connection을 준비한다. Glue 실행 역할의 secret 읽기 권한과 GCP 서비스 계정의 BigQuery 작업 권한은 별개다. 작업의 Additional network connection에도 연결을 지정한다.
+- **읽기 방식:** 테이블 읽기는 `sourceType: table`과 `table`을, 쿼리 읽기는 `sourceType: query`와 `query`를 사용한다. 공식 쿼리 예제는 `viewsEnabled`와 `materializationDataset`, 해당 데이터셋에 테이블을 만들 권한도 요구한다.
+- **프로젝트 구분:** `parentProject`는 과금에 사용할 프로젝트다. 테이블이 있는 프로젝트와 별도로 확인한다.
+- **북마크의 한계:** Job Bookmarks의 공식 지원 목록은 JDBC, Relationalize와 일부 S3 소스다. BigQuery 연결에 JDBC의 증분 처리 규칙을 그대로 적용하지 않는다. 지원 소스에서도 기본 설정은 `Disable`이며, bookmark reset이나 rewind는 기존 대상 파일을 지우지 않는다.
+
+반복 수집 설계 예시: 조회할 날짜 구간과 완료 기준을 명시하고, 실패한 구간을 다시 처리했을 때 S3 결과가 중복되지 않도록 출력 경로와 교체 또는 중복 제거 방식을 정한다. 연결 성공이나 Crawler의 스키마 발견만으로 재처리 안전성이 검증된 것은 아니다. 앞 절들의 검증 기준일은 유지한다.
+
 ## 관련 문서
 
 - [[Athena]], [[Redshift]], [[EMR]]
@@ -131,6 +142,8 @@ NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 �
 
 ## 출처
 
+- [AWS Glue, BigQuery connections](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-connect-bigquery-home.html)
+- [AWS Glue, Tracking processed data using job bookmarks](https://docs.aws.amazon.com/glue/latest/dg/monitor-continuations.html)
 - [AWS Glue, Logging for AWS Glue jobs](https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging.html)
 - [AWS Glue, Enabling continuous logging for AWS Glue 4.0 and earlier jobs](https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging-enable.html)
 - [AWS Glue, Using job parameters in AWS Glue jobs](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html)
