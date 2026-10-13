@@ -38,6 +38,16 @@ EC2 인스턴스에 부착되는 **블록 수준 네트워크 스토리지**. �
 
 일반 워크로드는 **gp3**를 우선 검토한다. IOPS와 처리량을 크기와 독립적으로 설정할 수 있으며, gp2 대비 절감률은 리전, 용량, 필요한 성능에 따라 계산한다.
 
+### Torn Write Prevention과 DB 쓰기 정렬
+
+2026-10-14 AWS EC2 공식 문서 부분 대조 기준이다. Torn Write Prevention(TWP)은 지원되는 Linux 인스턴스와 스토리지에서 정해진 크기의 쓰기가 일부만 기록되는 것을 방지한다. DB 페이지가 장치의 원자적 쓰기 단위보다 클 때 사용하는 doublewrite buffer의 추가 I/O를 줄이는 데 활용할 수 있다. DB 트랜잭션 전체의 원자성이나 백업을 대신하는 기능은 아니다.
+
+- **장치 조건:** 지원 쓰기 크기는 4 KiB, 8 KiB, 16 KiB이며 시작 LBA가 해당 경계에 정렬돼야 한다. 인스턴스와 볼륨 조합의 지원 여부 및 경계 크기를 NVMe namespace 정보로 확인한다.
+- **소프트웨어 조건:** AWS가 시험한 구성에는 Amazon Linux 2의 커널 5.10 이상, ext4 `bigalloc`과 16 KiB cluster, e2fsprogs 1.46.5 이상 및 `O_DIRECT`가 포함된다. 다른 구성이 같은 결과를 낸다고 추정하지 않는다.
+- **적용 순서:** MySQL과 MariaDB는 파일시스템의 16 KiB 정렬과 direct I/O 조건을 먼저 갖춘 뒤 doublewrite 비활성화를 검토한다. LVM이나 다른 저장소 가상화 계층이 시작 offset을 어긋나게 하면 보호가 무효가 될 수 있다. 지원 인스턴스로 옮긴 사실만으로 doublewrite를 끄지 않는다.
+
+운영 적용 전에는 별도 테스트 볼륨에서 전체 저장 경로의 정렬과 장애 복구를 검증한다(적용 제안). 파일시스템 재생성은 기존 데이터를 지울 수 있으므로 운영 볼륨에 포맷 명령을 그대로 적용하지 않는다. 성능 개선 폭은 실제 DB 부하로 측정하며 이 절은 재현 시험 결과가 아니다.
+
 ## EBS 스냅샷
 
 스냅샷은 EBS 볼륨 데이터를 **S3에 백업**하는 메커니즘 (S3 버킷에는 직접 노출되지 않음).
@@ -132,6 +142,11 @@ EBS는 AZ 안에서 중복 저장되므로 단일 볼륨의 일반적인 내구�
 
 ## 출처
 
+- [Torn write prevention on Amazon EC2 Linux instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/storage-twp.html)
+- [Block sizes for torn write prevention on Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-block-sizes.html)
+- [Requirements for using torn write prevention on Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/twp-reqs.html)
+- [Check Amazon EC2 instance support for torn write prevention](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/twp-namespace.html)
+- [Configure your workload on Amazon EC2 for torn write prevention](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configure-twp.html)
 - [Why is my AMI or Amazon EBS snapshot creation slow or stuck in the pending state? — AWS re:Post](https://www.repost.aws/knowledge-center/ebs-snapshot-ec2-ami-creation-slow)
 - [Create Amazon EBS snapshots](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-creating-snapshot.html)
 - [Delete an Amazon EBS snapshot](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-deleting-snapshot.html)

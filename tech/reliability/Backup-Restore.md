@@ -80,6 +80,20 @@ Legal hold는 연속 백업에는 적용되지 않으며, 계정이나 리전 �
 
 2026-10-09에는 이 절만 AWS Backup 공식 문서와 대조했다. 잠금 해제나 백업 삭제를 실행한 기록이 아니며, 다른 제품의 잠금 방식에 그대로 적용하지 않는다.
 
+### 백업 vault의 암호화 키가 원본과 분리되는 조건
+
+2026-10-14 AWS Backup 암호화 문서 부분 대조 기준이다. 별도 vault에 저장했다는 사실만으로 원본의 KMS 키와 백업 키가 분리됐다고 판단하지 않는다. 독립 암호화 지원은 리소스 유형에 따라 다르다.
+
+| 백업 대상 | 기본 암호화 경계 |
+|---|---|
+| S3, EFS, Advanced backup이 활성화된 DynamoDB | vault에 구성한 KMS 키로 백업을 독립 암호화할 수 있다 |
+| EBS와 EC2 AMI의 EBS snapshot | 기본적으로 원본 EBS의 암호화 키를 따르거나 암호화되지 않는다. AMI 자체와 포함된 snapshot을 구분한다 |
+| RDS와 Aurora snapshot | 원본 DB 또는 cluster의 암호화 설정을 따른다 |
+
+계정이나 리전 간 복사에서는 대상 vault의 키와 리소스별 복사 조건을 다시 확인한다. 예를 들어 AWS Backup이 완전 관리하지 않는 리소스의 계정 간 복사는 AWS managed key 제약이 있으며, 암호화되지 않은 Aurora cluster의 복사본도 암호화되지 않는다. 모든 복사본이 새 키로 자동 보호된다고 일반화하지 않는다.
+
+복구 점검 제안: 실제 복구 지점과 사본의 키, 복원 역할의 IAM 권한과 KMS key policy를 확인하고 격리 환경에서 복원한다. 삭제 보호, 암호화 키의 분리와 복호화 가능성은 각각 검증한다. 이번 대조는 이 절에 한정하며 실제 복원은 수행하지 않았다.
+
 ## 데이터 복구 시나리오
 
 - **실수 삭제(DELETE/DROP)**: PITR로 직전 시점 복구. 운영 인스턴스 덮어쓰기가 아니라 새 인스턴스로 복원해 데이터를 옮긴다.
@@ -105,6 +119,7 @@ Legal hold는 연속 백업에는 적용되지 않으며, 계정이나 리전 �
 
 ## 출처
 
+- [AWS Backup — Encryption for backups in AWS Backup](https://docs.aws.amazon.com/aws-backup/latest/devguide/encryption.html)
 - [Amazon Keyspaces — How point-in-time recovery works in Amazon Keyspaces](https://docs.aws.amazon.com/keyspaces/latest/devguide/PointInTimeRecovery_HowItWorks.html)
 - [AWS Backup — Legal holds and AWS Backup](https://docs.aws.amazon.com/aws-backup/latest/devguide/legalhold.html)
 - [AWS Backup — AWS Backup Vault Lock](https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html)

@@ -51,6 +51,14 @@ Monitor
 
 트레이스와 로그는 서로 독립적으로 샘플링될 수 있다. 로그에 trace ID가 있는데 연결된 트레이스가 보이지 않는 현상만으로 계측 실패라고 단정하지 않고 ingestion과 retention 설정을 확인한다.
 
+### Lambda의 계측과 payload 수집
+
+2026-10-14 Datadog 공식 Lambda 문서 부분 대조 기준이다. Node.js의 수동 계측은 Lambda Library와 Extension을 구성하고, handler 연결 또는 wrapper 적용까지 확인한다. Extension layer 하나를 추가한 사실만으로 애플리케이션 계측이 끝났다고 판단하지 않는다. 지원되는 배포 도구 통합은 이 구성을 자동화할 수 있다.
+
+요청과 응답의 JSON payload 수집은 기본 비활성화다. 활성화할 때는 `DD_CAPTURE_LAMBDA_PAYLOAD` 같은 설치 방식별 설정을 확인하고, `DD_APM_REPLACE_TAGS` 또는 `datadog.yaml`의 `apm_config.replace_tags`로 민감 필드를 가리는 규칙을 함께 적용한다. 규칙 등록만으로 모든 민감정보가 가려졌다고 간주하지 않는다.
+
+검증 제안: 식별 가능한 가짜 토큰을 넣은 정상, 오류 요청으로 trace와 로그를 각각 확인한다. API 응답 뒤 SQS 소비자가 처리하는 구조라면 응답 지연과 최종 저장 완료 시간을 구분한다. 이 절은 계측 설정의 확인 범위이며 실제 환경의 연결 성공을 검증한 기록은 아니다.
+
 ## 4. Service Page에서 RED를 본다
 
 Service Page의 시작점은 요청 수, 오류율, 지연이다. 전체 서비스에서 이상을 찾은 뒤 Resource 단위로 내려가 endpoint나 query를 좁힌다.
@@ -165,6 +173,9 @@ route는 실제 URL이 아니라 `/contents/:id` 같은 템플릿으로 기록�
 
 ## 출처
 
+- [Instrumenting Node.js Serverless Applications — Datadog](https://docs.datadoghq.com/serverless/aws_lambda/instrumentation/nodejs/)
+- [Configure Serverless Monitoring for AWS Lambda — Datadog](https://docs.datadoghq.com/serverless/aws_lambda/configuration/)
+- [Serverless Libraries and Integrations — Datadog](https://docs.datadoghq.com/serverless/libraries_integrations/)
 - [What Is LLM Observability & Monitoring? — Datadog](https://www.datadoghq.com/knowledge-center/llm-observability/)
 - [Unified Service Tagging — Datadog](https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/)
 - [Catalog — Datadog](https://docs.datadoghq.com/internal_developer_portal/software_catalog/)
