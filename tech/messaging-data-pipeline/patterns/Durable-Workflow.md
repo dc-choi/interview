@@ -8,13 +8,13 @@ verified_at: 2026-09-30
 
 # 지속 실행 워크플로 (Durable Workflow)
 
-엔티티 하나의 장기 실행 과정을 코드로 기술하되, 그 실행 상태를 저장소에 durable하게 남겨 크래시와 긴 대기를 견디게 하는 오케스트레이션 모델이다. 대기 구간에는 스레드와 메모리를 붙잡지 않고 상태만 남긴 채 잠들었다가, 예정 시각이나 외부 신호에 다시 깨어나 이어서 실행한다. 폴링 배치나 손으로 만든 상태 머신의 대안이다.
+엔티티 하나의 장기 실행 과정을 코드로 기술하되, 복구에 필요한 실행 기록을 영속화해 크래시와 긴 대기를 견디게 하는 오케스트레이션 모델이다. 같은 애플리케이션 프로세스가 계속 살아 있어야 하는 의존을 줄이고, 타이머나 외부 신호를 받아 실행을 이어간다. 폴링 배치나 손으로 만든 상태 머신의 대안이다.
 
 ## 폴링 배치가 장기 실행에 안 맞는 지점
 
 주기 배치로 "미접수 3분 경과 시 알림" 같은 엔티티별 장기 대기를 흉내 내면 아래가 겹친다.
 
-- 타이머 정밀도: 폴링 주기가 곧 오차다. 1분 주기면 최대 59초 늦게 발화한다.
+- 타이머 정밀도: 1분 주기로 조회하면 조건 충족부터 다음 조회까지 약 1분 미만의 대기가 생기고, 스케줄링과 처리 지연이 더해진다.
 - 피크 결합: 한 회차의 처리량이 대상 수에 선형으로 늘어 피크에 부담이 몰린다.
 - 원천 부하: 매 회차 대량 조회로 DB를 훑는다.
 - 상태 외재화: "얼마나 기다렸나, 신호가 왔나"를 매번 저장소에서 재구성해야 한다.
@@ -28,27 +28,37 @@ verified_at: 2026-09-30
 | Workflow | 비즈니스 흐름 자체. 결정적(deterministic)이어야 replay로 복원된다 |
 | Activity | 외부 부수효과 호출(네트워크, DB 쓰기). 타임아웃과 재시도의 단위 |
 | Signal | 실행 중인 인스턴스로 들어오는 외부 이벤트(예: 접수 완료) |
-| Timer / Scheduler | durable sleep. `resumeAt` 시각에만 인스턴스를 깨운다 |
+| Timer | 대기 만료를 영속 실행 흐름에 연결한다. 반복 실행을 시작하는 Schedule과는 구분한다 |
 
 부수효과는 Activity 안에만 두고 Workflow 본문은 결정적으로 유지한다. 이것이 replay 복구의 전제다.
 
 ## 상태 지속과 suspend/resume (mental model)
 
-- `await(3분)`을 만나면 스레드를 반납하고 상태를 저장소에 남긴다. 대기 중 메모리 점유는 사실상 0이다.
-- 스케줄러는 `resumeAt`이 지난 인스턴스만 폴링해 깨운다. 대기 물량은 저장소에만 쌓이므로 대기가 곧 메모리 압력이 되지 않는다 (지속 상태 기반의 자연스러운 backpressure).
-- 깨어나면 저장된 결과로 빠르게 이어가고 다음 단계를 실행한다.
+부분 검증(2026-10-13): 이 절과 아래 Temporal replay, Activity 재시도 경계를 공식 문서와 대조했다. pg_durable의 버전과 API는 기존 절에 적힌 확인 시점을 유지한다.
 
-폴링 배치가 회차마다 전체를 훑는 것과 달리, 각 엔티티가 자기 시각에만 깨어나므로 대상이 몰려도 피크가 분산된다.
+- Workflow가 SDK의 Timer나 Signal을 기다리면 실행 진전을 멈추고, 이후 이벤트를 처리할 때 다시 이어간다. 이 대기를 일반 프로세스의 sleep이나 메모리 스냅샷 저장과 동일하게 보지 않는다.
+- Temporal Worker는 처리한 Workflow 상태를 메모리 캐시에 보관할 수 있다. 캐시가 없어져도 Event History로 재구성하므로, 프로세스의 생존과 복구 가능성을 분리할 수 있다. 대기 중 메모리 사용량이 0이라는 뜻은 아니다.
+- 타이머 만료와 실제 코드 실행 시점은 구분한다. 후속 Task를 처리할 Worker와 용량이 필요하며, 동일 시각에 많은 대기가 끝나면 작업이 몰릴 수 있다.
+
+따라서 durable timer는 업무 테이블의 반복 스캔을 줄이는 수단이지, 자동 부하 분산이나 backpressure의 보장은 아니다. 대기 수, Worker 처리량과 재시도 유입을 따로 관측한다.
 
 ## 신뢰성 정책 (선언적, Activity 단위)
 
 - 타임아웃: 개별 시도 상한(start-to-close)과 모든 재시도를 포함한 총 상한(schedule-to-close)을 나눈다.
 - 재시도: maxAttempts와 backoff 곡선을 Activity별로 선언한다. 일시 오류와 영구 오류를 분류한다.
-- 멱등성: invocation token 같은 실행 식별자를 외부 API의 idempotency 키로 넘겨, 재시도와 replay로 호출이 반복돼도 중복 반영을 막는다.
+- 멱등성: 같은 업무 작업의 재시도 동안 유지되는 키를 외부 API에 넘긴다. 매 시도마다 새 키를 만들면 중복 반영 방지가 되지 않는다. 완료 결과가 기록된 Activity의 replay와 결과가 확정되지 않은 Activity의 재시도는 구분한다.
 
 ## 복구와 replay
 
-크래시가 나도 마지막 체크포인트부터 자동 재개한다. 저장된 이벤트 히스토리를 단계별로 재생해 in-memory 상태를 복원하므로, 같은 히스토리에 대해 같은 결정을 내려야 한다. Workflow 코드에 시계, 난수, 직접 I/O 같은 비결정 요소를 두면 replay가 어긋난다.
+Temporal은 메모리 스냅샷이나 임의의 코드 줄에서 복구하지 않는다. 캐시가 없으면 Workflow 코드를 다시 실행하면서 Event History에 기록된 결과를 사용해 상태를 재구성한다. 같은 히스토리에 대해 호환되는 Command 순서를 만들어야 하며, 외부 I/O는 Activity로 분리하고 시간과 난수는 SDK가 제공하는 replay-safe API와 규칙을 따른다.
+
+### Workflow replay와 Activity 재시도의 차이
+
+- **완료가 기록된 Activity**: Workflow replay는 기록된 결과를 재사용한다. replay 자체를 이유로 외부 API를 다시 호출하지 않는다.
+- **완료가 기록되지 않은 Activity**: 외부 시스템은 요청을 반영했지만 Worker가 결과를 보고하기 전에 끊길 수 있다. 재시도 정책에 따라 같은 작업이 다시 실행될 수 있으므로 외부 부수효과의 멱등성이 필요하다.
+- **긴 Activity**: Workflow 복구가 Activity 함수 내부의 실행 위치까지 복원하는 것은 아니다. Activity 재시도는 기본적으로 처음부터 시작하며, Heartbeat details를 체크포인트로 활용하려면 Activity 코드가 해당 정보를 읽고 이어서 처리해야 한다.
+
+예를 들어 결제 승인 뒤 완료 보고가 유실됐다면 재시도에서도 같은 결제 키를 써야 한다. Workflow가 복구된다는 사실만으로 결제가 한 번만 반영된다고 보장할 수 없다.
 
 ## 언제 쓰나 — 대안 비교
 
@@ -92,13 +102,16 @@ verified_at: 2026-09-30
 
 - 모든 인스턴스 상태를 한 저장소에 모으면 상태별 카운트 대시보드, 다음 깨움 시각, replay 히스토리, 변수 스냅샷을 한 화면에서 본다.
 - 멱등성 키 없이 재시도하면 외부 부수효과가 중복된다. Activity 경계마다 idempotency를 설계한다.
-- Workflow 본문의 비결정 요소는 replay를 깨뜨린다. 시계와 I/O는 Activity와 Timer로 밀어낸다.
-- 타이머 정밀도가 요건이면 폴링 주기 오차 대신 `resumeAt` 기반 durable timer를 쓴다.
+- Workflow 본문의 비결정 요소는 replay를 깨뜨릴 수 있다. 외부 I/O는 Activity에 두고 시간과 대기는 SDK의 replay-safe API를 사용한다.
+- 타이머 요건은 대기 만료와 후속 Task의 실제 시작 지연을 나눠 측정한다. durable timer를 실시간 실행 시각 보장으로 해석하지 않는다.
 
 ## 출처
 
 - [한꺼번에 짊어지던 배치를 내려놓고, 하나씩 흘려보내는 워크플로로 — 우아한형제들 기술블로그](https://techblog.woowahan.com/26832/)
 - [Temporal Documentation, Workflows](https://docs.temporal.io/workflows)
+- [Temporal Documentation, Workflow Execution overview](https://docs.temporal.io/workflow-execution)
+- [Temporal Documentation, Activities](https://docs.temporal.io/activities)
+- [Temporal Documentation, Workers](https://docs.temporal.io/workers)
 - [pg_durable — GitHub, microsoft](https://github.com/microsoft/pg_durable)
 - [Microsoft, pg_durable User Guide](https://github.com/microsoft/pg_durable/blob/main/USER_GUIDE.md#transaction-semantics)
 
