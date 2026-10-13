@@ -1,7 +1,7 @@
 ---
 tags: [finops, aws, pricing, billing, cost-model]
 status: done
-verified_at: 2026-10-13
+verified_at: 2026-10-14
 category: "비용&운영(FinOps)"
 aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 모델"]
 ---
@@ -80,6 +80,7 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 2026-10-13 AWS Billing의 결제 설정, 카드 관리와 payment profile 문서 대조 기준이다. 비용 발생과 결제 수단의 유효성은 별도로 점검한다.
 
 - **카드 갱신:** Billing and Cost Management의 `Payment preferences`에서 카드의 만료일과 연결 정보를 수정하거나 새 카드를 추가한다. 새 카드 등록과 기본 결제 수단 지정은 구분하며, 사용할 수단이 `Set as default`로 선택됐는지 확인한다.
+- **청구 주기 말의 변경:** 기본 결제 수단을 바꿔도 청구 주기 말에 변경하면 해당 주기 요금이 이전 수단으로 청구될 수 있다. 변경 완료 화면만으로 이번 청구서의 결제 수단까지 바뀌었다고 판단하지 않는다. 이 예외는 2026-10-14 AWS 공식 Knowledge Center에서 대조했다.
 - **미납 금액:** 카드를 추가하거나 갱신하면 AWS가 이전 달의 미납 청구서를 새 카드에 청구할 수 있다. 변경 효과를 다음 결제 주기에만 한정하지 않는다.
 - **기존 카드 제거:** 먼저 다른 유효한 결제 수단을 기본값으로 지정해야 한다. 기본값으로 설정된 카드는 삭제할 수 없다.
 - **판매 법인별 결제:** 여러 AWS 판매 법인(SOR)의 청구서를 받으면 payment profile로 법인별 통화와 결제 수단을 지정할 수 있다. 지원 수단은 법인에 따라 다르므로 기본 카드 하나가 모든 청구에 유효하다고 가정하지 않는다.
@@ -97,6 +98,12 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 - **CloudTrail trail:** 계정 폐쇄 뒤에도 trail이 남을 수 있다. 다른 계정의 S3 버킷으로 전송하던 trail은 전달이 가능한 동안 이벤트를 계속 보낼 수 있다. 종료 전 보존 요구와 전달 대상을 확인해 삭제 여부를 정하고, 이미 닫았다면 AWS Support에 삭제를 요청할 수 있다. 이 동작을 CloudTrail Lake 등 모든 관련 리소스에 일반화하지 않는다.
 
 운영 점검은 Bills에서 **서비스, 리전, 사용 기간과 약정**을 분리해 대조하는 순서로 한다. 폐쇄 후 90일 동안은 과거 청구 조회와 미납 요금 납부가 가능하지만, 이를 서비스 사용 권한이나 납부 유예 기간으로 해석하지 않는다.
+
+### Marketplace 구독 취소와 인스턴스 종료를 함께 확인한다
+
+EC2 인스턴스로 실행하는 Marketplace 소프트웨어는 구독 취소만으로 사용료가 멈추지 않을 수 있다. 실행 중인 인스턴스가 남으면 소프트웨어 사용료가 청구되고 인프라 비용도 발생할 수 있다. 2026-10-14 AWS 공식 Knowledge Center 대조 기준, 구독의 `View instances`에서 실행 리전을 확인하고 **각 리전의 관련 인스턴스를 종료한 뒤 구독을 취소**하는 순서가 권장된다. 종료 전 필요한 데이터와 서비스 의존성을 확인하는 것은 이 절차를 적용하기 위한 운영 점검이다.
+
+구독을 취소한 소프트웨어의 새 인스턴스는 Marketplace 콘솔과 EC2 콘솔에서 시작할 수 없다. 따라서 취소를 비용 중단뿐 아니라 다시 실행할 수 있는지의 문제로도 점검한다. 이 절차를 SaaS나 기간 약정 상품 전체의 취소, 환불 조건으로 확대하지 않는다.
 
 ## 흔한 함정
 
@@ -116,6 +123,8 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 
 ## 출처
 
+- [How do I change the default payment method that's associated with my AWS account? — AWS re:Post](https://repost.aws/knowledge-center/change-default-payment-method) — 청구 주기 말 변경 시 이전 수단으로 청구될 수 있는 예외
+- [How do I terminate instances in my AWS Marketplace subscription and cancel the subscription? — AWS re:Post](https://repost.aws/knowledge-center/cancel-marketplace-subscription) — 리전별 인스턴스 종료, 구독 취소와 잔존 사용료의 구분
 - [AWS, Understanding your bill](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/getting-viewing-bill.html)
 - [AWS, Making payments](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-making-a-payment.html)
 - [AWS, Managing ACH direct debit](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-ach-debit.html) — 미국 은행 계좌와 USD 조건, 최종 완료까지 최대 20일
