@@ -80,6 +80,18 @@ CodePipeline은 직접 컴파일하거나 배포하는 실행기가 아니다. s
 
 CodeCommit의 신규 계정 제공 상태는 공식 페이지끼리도 어긋나 있다. User Guide history는 2024년 7월 신규 고객 중단 뒤 2025년 11월 재개를 기록하지만, pricing 페이지에는 중단 안내가 남아 있다. 새 도입 전 대상 계정과 리전의 console에서 생성 가능 여부를 확인하고 GitHub, GitLab 같은 source provider도 비교한다.
 
+### 통합 개발 플랫폼의 도입 가능성과 이전 범위
+
+부분 검증(2026-10-14): CodeCatalyst 이전 가이드와 Amazon Q Developer의 명칭 변경 안내를 대조했다. 이 절 외의 비교표와 제품 상태를 다시 검증한 것은 아니다.
+
+Amazon CodeCatalyst는 2025-11-07부터 신규 고객 접근을 중단했다. 기존 고객은 기존 space를 계속 사용할 수 있지만 새 space를 만들 수 없으며, AWS는 보안과 가용성에 계속 투자하되 새 기능을 추가할 계획은 없다고 명시한다. 따라서 과거의 프로젝트 자동 생성 데모만으로 신규 도입 후보에 넣지 않는다. 신규 접근 중단을 기존 space의 즉시 서비스 종료로 해석해서도 안 된다.
+
+이전 범위는 Git 저장소보다 넓다. 공식 가이드는 저장소 이전과 별도로 workflow 산출물, issue 첨부파일과 action 소스의 추출을 안내한다. CodeCatalyst에서 만든 외부 AWS 또는 타사 서비스 자원은 해당 서비스에서 따로 정리해야 하며, space 삭제만으로 그 자원의 과금이 끝나지 않는다.
+
+이전 점검 제안: 저장소의 branch와 tag, 보존할 산출물, CI/CD 정의, 외부 연결과 배포 대상 자원을 목록화한다. 새 환경에서 build와 배포를 검증하고 필요한 기록을 확보한 뒤 기존 환경의 종료를 판단한다. Git 복제 성공을 전체 개발 환경 이전 완료로 보고하지 않는다.
+
+함께 소개되던 Amazon CodeWhisperer는 2024-04-30 Amazon Q Developer에 통합됐다. 코딩 보조 기능의 제품명 변경과 CI/CD 플랫폼의 접근 정책은 서로 다른 변경이므로 따로 확인한다.
+
 ### CodeDeploy AppSpec와 lifecycle hook
 
 AppSpec file은 revision의 파일 배치와 배포 생명주기별 검증, 전환 스크립트를 정하는 배포 계약이다. CodeDeploy의 전제(instance profile, service role, agent), 배포 구성별 성공 판정, EC2 in-place hook 순서와 load balancer 구간, CodePipeline S3 source와 CodeBuild의 Docker build 함정은 [[CICD-Tool-Selection-AWS-Code-Services|AWS Code 시리즈 운영]]에 정리한다.
@@ -119,10 +131,12 @@ K8s 마이그레이션 시 작은 SRE 팀이 흔히 채택하는 조합: **GitHu
 - **Jenkins가 부담스러운 이유** (관리 포인트, 블랙박스화, 장애 대응)
 - **GitOps의 핵심 가치**와 ArgoCD/FluxCD의 차이
 - **ApplicationSet**이 멀티 클러스터에서 해결하는 문제
-- 작은 팀에서 도구 선택 시 **"유행 vs 컨텍스트"** 판단
+- 작은 팀에서 도구 선택 시 **유행 vs 컨텍스트** 판단
 - 도구 도입 시 **장애 시나리오와 우회 경로**를 함께 설계해야 하는 이유
 
 ## 출처
+- [Amazon CodeCatalyst — How to migrate from CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/migration.html)
+- [Amazon Q Developer — Amazon Q Developer rename - Summary of changes](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/service-rename.html)
 - [sienna1022 — [SRE] CI/CD 툴 선택 및 이유](https://sienna1022.tistory.com/entry/SRE-CICD-%ED%88%B4-%EC%84%A0%ED%83%9D-%EB%B0%8F-%EC%9D%B4%EC%9C%A0)
 - [AWS CodePipeline — Concepts](https://docs.aws.amazon.com/codepipeline/latest/userguide/concepts.html)
 - [AWS CodeDeploy — Working with deployments](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments.html)

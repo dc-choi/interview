@@ -62,6 +62,18 @@ Lake Formation은 Data Catalog 리소스의 교차 계정 공유에 AWS RAM을 �
 
 운영 점검 제안: 실제 소비자 역할로 링크 조회, 허용된 질의, 거부되어야 할 질의를 각각 시험한다. 관리자의 성공 결과로 소비자 권한을 추정하지 않는다. 공유 수락, 카탈로그 탐색과 실제 데이터 조회를 별도 단계로 확인한다.
 
+## 분석 샌드박스의 읽기 권한은 유효 범위로 검증한다
+
+부분 검증(2026-10-14): AWS의 데이터 필터와 제한 사항을 대조했다. 이 절은 분석자가 원천 데이터를 읽고 별도 공간에서 분석하는 설계에 적용할 권한 점검이며, 문서 전체의 검증일은 유지한다.
+
+Lake Formation 데이터 필터는 통합된 분석 엔진의 조회 결과에서 행과 열 접근을 제한한다. 필터는 `SELECT`에 적용하며, 원본 객체를 익명화하거나 쓰기 권한까지 제한하는 기능으로 해석하지 않는다.
+
+- **행과 열을 따로 정한다:** 행 조건은 읽을 레코드를, 열 포함 또는 제외 목록은 읽을 속성을 정한다. 컬럼 필터로 partition key를 숨길 수는 없다.
+- **겹친 권한을 확인한다:** 사용자와 사용자가 속한 그룹에 각각 행 권한이 있으면 유효 행 권한은 합집합이다. all-rows 조건과 제한 조건이 동시에 적용되면 all-rows가 우선한다. 제한 필터를 추가하는 것만으로 기존의 넓은 권한이 축소되지 않는다.
+- **교차 계정 재부여는 구분한다:** 외부 계정에 부여한 행 조건과 그 계정이 사용자에게 직접 부여한 행 조건은 교집합으로 제한된다. 이를 사용자와 그룹 사이의 합집합 규칙과 혼동하지 않는다.
+
+설계 점검 예시: 분석 역할에는 필요한 원천 테이블의 읽기 범위를 정하고, 가공 결과의 쓰기 위치는 별도로 둔다. 실제 분석 역할로 허용 행, 거부 행과 제외 열을 조회하고 기존 S3 직접 접근 경로도 확인한다. 필터 생성 성공이나 관리자의 조회 성공만으로 샌드박스 격리를 판정하지 않는다.
+
 ## 시험 빈출 포인트
 
 - 데이터 레이크의 중앙 권한 관리와 세부 접근 제어가 핵심이면 Lake Formation을 검토한다.
@@ -74,6 +86,8 @@ Lake Formation은 Data Catalog 리소스의 교차 계정 공유에 AWS RAM을 �
 
 ## 출처
 
+- [AWS Lake Formation Developer Guide, Data filtering and cell-level security in Lake Formation](https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html)
+- [AWS Lake Formation Developer Guide, Data filtering limitations](https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering-notes.html)
 - [AWS Lake Formation Developer Guide, Cross-account data sharing in Lake Formation](https://docs.aws.amazon.com/lake-formation/latest/dg/cross-account-permissions.html)
 - [AWS Lake Formation Developer Guide, How resource links work in Lake Formation](https://docs.aws.amazon.com/lake-formation/latest/dg/resource-links-about.html)
 - [AWS Lake Formation Developer Guide, Lake Formation tag-based access control](https://docs.aws.amazon.com/lake-formation/latest/dg/tag-based-access-control.html)

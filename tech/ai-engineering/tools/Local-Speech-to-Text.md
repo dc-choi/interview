@@ -117,6 +117,19 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 - 경로, 식별자, 대소문자와 명령 옵션을 실행 전에 읽는다. 자연스러운 문장으로 정리됐다는 이유로 명령까지 정확하다고 보지 않는다.
 - 입력문 검수와 코딩 에이전트의 변경 및 테스트 결과 검수를 분리한다. 받아쓰기 앱이 지시를 잘 정리한 것과 코드가 요구사항을 만족한 것은 별개다.
 
+## 강의 자막은 인식, 도메인 적응과 편집을 나눠 검증한다
+
+부분 검증(2026-10-14): Amazon Transcribe의 사용자 지정 어휘, 언어 모델과 자막 문서를 대조했다. 아래는 클라우드 STT의 기능 경계를 설명하는 예이며, 로컬 엔진의 설정이나 기존 실측 결과를 다시 검증한 것은 아니다.
+
+- **사용자 지정 어휘:** 특정 용어, 약어와 잘못 인식되는 단어의 인식을 보완하는 수단이다. 어휘 목록에 기밀, 개인정보와 보호 대상 건강정보를 넣지 않는다.
+- **사용자 지정 언어 모델:** 단어 목록만 주는 방식과 달리, 해당 분야의 텍스트로 단어가 쓰이는 문맥과 관계를 학습한다. 지원 언어를 먼저 확인하고, 학습 자료와 선택적 튜닝 자료는 겹치지 않게 구성한다.
+- **자동 언어 식별과 모델 조합:** 배치 전사의 단일 언어 식별(`IdentifyLanguage`)은 `LanguageIdSettings`의 언어별 `LanguageModelName`으로 사용자 지정 모델을 지정할 수 있다. 다중 언어 식별(`IdentifyMultipleLanguages`)은 사용자 지정 모델을 지원하지 않는다. 언어를 직접 지정할 때는 `LanguageCode`와 `ModelSettings.LanguageModelName`을 쓴다. CLM 개요에는 자동 언어 식별을 사용할 수 없다는 상충 설명이 남아 있으므로, 여기서는 `StartTranscriptionJob` API 명세와 배치 언어 식별 안내의 구체적인 구분을 따른다. 실제 요청 성공 여부는 별도 시험해야 한다.
+- **자막 출력:** 배치 전사에서 WebVTT와 SubRip을 하나 또는 둘 다 생성할 수 있다. 추가 정보가 담긴 일반 전사 파일도 함께 생성되며, 음성 발화가 없으면 자막 파일은 생성되지 않는다. 기본 자막 시작 인덱스는 `0`이므로 대상 편집기와의 호환성을 확인하고 필요하면 `OutputStartIndex=1`을 지정한다.
+
+검수 절차 제안: 자동 생성 뒤 사람이 원음을 들으며 용어, 숫자, 부정 표현과 자막의 표시 구간을 확인한다. 대표 강의 표본에서 CER/WER, 도메인 용어 오류, 음성 1분당 실제 편집 시간을 따로 측정한다. 인식률 하나로 편집 시간 절감이나 다른 과목의 품질까지 일반화하지 않는다.
+
+자막의 개인정보 가림과 원음 보호도 별개다. Transcribe의 자막 redaction과 vocabulary filter는 텍스트 출력에 반영되지만 오디오는 바꾸지 않는다. 기능별 지원 언어를 확인하고, 공개 영상은 자막뿐 아니라 원음도 별도로 검수한다.
+
 ## 운영 체크포인트
 
 - 전사문에는 화면의 슬라이드와 코드가 없다. 발표가 화면 위주면 핵심 내용이 빠진다.
@@ -126,6 +139,11 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 
 ## 출처
 
+- [Amazon Transcribe, Custom vocabularies](https://docs.aws.amazon.com/transcribe/latest/dg/custom-vocabulary.html)
+- [Amazon Transcribe, Custom language models](https://docs.aws.amazon.com/transcribe/latest/dg/custom-language-models.html)
+- [Amazon Transcribe API Reference, StartTranscriptionJob](https://docs.aws.amazon.com/transcribe/latest/APIReference/API_StartTranscriptionJob.html)
+- [Amazon Transcribe, Language identification with batch transcription jobs](https://docs.aws.amazon.com/transcribe/latest/dg/lang-id-batch.html)
+- [Amazon Transcribe, Creating video subtitles](https://docs.aws.amazon.com/transcribe/latest/dg/subtitles.html)
 - [Typeless, How to use Dictate](https://www.typeless.com/help/quickstart/dictate)
 - [whisper.cpp — GitHub, ggml-org](https://github.com/ggml-org/whisper.cpp)
 - [whisper.cpp 모델 파일 — Hugging Face, ggerganov](https://huggingface.co/ggerganov/whisper.cpp)
