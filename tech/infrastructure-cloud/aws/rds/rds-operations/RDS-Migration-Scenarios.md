@@ -66,6 +66,23 @@ RDS MySQL 8.4 이상은 `mysql.rds_set_external_source`, 8.0 이하는 `mysql.rd
 
 복제 재개 뒤에는 지연뿐 아니라 복제 오류와 데이터 반영을 확인한다. 리전 간 지연과 전송 비용이 있고, 외부 복제가 연결됐다는 사실만으로 애플리케이션 전환이나 장애 복구 검증이 끝난 것은 아니다. 이번 확인은 계정 간 복제와 스냅샷 공유 경계에 대한 부분 검증이다.
 
+## 도구를 고르기 전의 사전 점검
+
+2026-10-14 AWS 마이그레이션 준비 가이드와 DMS 모범 사례 대조 기준. 데이터 복사 도구를 정하기 전에 애플리케이션 의존성과 대상 환경의 제약을 확인한다. 다음은 Oracle 동종 이전 가이드의 점검 항목을 일반적인 이전 검토에 적용한 목록이며, 엔진별 지원 조건은 별도로 확인한다.
+
+| 점검 대상 | 확인할 내용 |
+|---|---|
+| 호출과 연계 | 직접 연결하는 앱, 다른 DB와의 링크, 외부 스케줄러, 함께 옮기지 않는 시스템과의 지연 |
+| 호스트 의존성 | DB 서버의 파일 시스템에 쓰는 보고서, 설치 소프트웨어, 특정 옵션과 패치 요구를 대상 환경에서도 충족할 수 있는지 |
+| 실제 부하 | CPU, 메모리, I/O와 트랜잭션 특성, 배치와 보고서 작업, 변경 로그 발생량 |
+| 중단 조건 | 업무가 허용하는 중단 시간과 온라인 또는 오프라인 이전의 적합성 |
+
+일반 DMS 복제 작업은 테이블과 기본 키 같은 기본 스키마를 만들 수 있지만, 보조 인덱스, 외래 키와 사용자 계정까지 자동으로 재현하지는 않는다. 이 경로에서는 같은 엔진의 네이티브 스키마 도구나 DMS Schema Conversion 등으로 준비할 범위를 분리한다.
+
+별도 기능인 **Homogeneous data migrations**에는 다른 규칙이 적용된다. 예를 들어 PostgreSQL 동종 이전의 `Drop tables on target` 모드는 대상 테이블을 삭제한 뒤 다시 만들며, 소스 테이블 메타데이터에 정의된 보조 인덱스 등도 생성한다. 단, PostgreSQL의 스키마 사용자는 미리 만들어야 한다. PostgreSQL의 CDC 전용 이전은 대상 스키마와 객체가 이미 존재해야 한다. 동종 엔진이라는 사실만으로 자동 이전 범위를 정하지 말고, 사용하는 DMS 기능과 이전 유형, 대상 테이블 준비 모드를 함께 확인한다.
+
+지원하지 않는 데이터 타입과 소스/대상 설정도 확인한다. 데이터 적재 성공을 스키마와 애플리케이션 호환성 검증 완료로 보지 않는다. 세부 절차는 [[DMS]], 전환과 복구 조건은 [[RDS-Zero-Downtime-Migration]]을 따른다.
+
 ## 도구 선택 매트릭스
 
 | 도구 | 적합 상황 | 다운타임 | 비고 |
@@ -89,6 +106,10 @@ RDS MySQL 8.4 이상은 `mysql.rds_set_external_source`, 8.0 이하는 `mysql.rd
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Strategies for homogeneous migration of Oracle databases — Phase 1: Prepare](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-oracle-database-homogeneous-migration/prepare.html)
+- [AWS DMS, Best practices for AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html)
+- [AWS DMS, Target table preparation mode](https://docs.aws.amazon.com/dms/latest/userguide/dm-migrating-data-table-prep.html)
+- [AWS DMS, Migrating data from PostgreSQL databases with homogeneous data migrations in AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/dm-migrating-data-postgresql.html)
 - [Amazon RDS — Backing up, restoring, and exporting data](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html)
 - [Amazon RDS Blue/Green Deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-overview.html)
 - [Amazon RDS, Creating a blue/green deployment — Modify storage and performance settings](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-creating.html#blue-green-deployments-creating-storage)
