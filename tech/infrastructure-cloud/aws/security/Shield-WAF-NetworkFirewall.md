@@ -73,7 +73,7 @@ NLB, EC2 직접 부착 ❌. NLB는 L4라 WAF 비대상.
   - **AWS Managed Rules** — Core, Known Bad Inputs, SQLi, Linux/Windows OS, PHP, WordPress, Anonymous IP, Bot Control 등.
   - **AWS Marketplace** 서드파티 룰(F5, Fortinet 등).
 - **Bot Control / Account Takeover Prevention** — 별도 과금 관리형 룰.
-- **CAPTCHA / Challenge** — 의심 요청에 사람 검증 강제.
+- **CAPTCHA / Challenge** — 토큰 상태에 따라 CAPTCHA 퍼즐 또는 자동 브라우저 검증을 수행한다.
 
 ### 액션 우선순위
 
@@ -103,6 +103,16 @@ NLB, EC2 직접 부착 ❌. NLB는 L4라 WAF 비대상.
 4. 예외 요청과 예외 밖의 공격 요청을 재현해 최종 액션을 확인한다. 예외는 이 label 기반 차단을 건너뛰는 조건이며 다른 규칙의 차단까지 해제하지 않는다.
 
 이 흐름에서 `Count`는 허용 확정이 아니다. 선행 `Allow`로 URI 전체를 통과시키면 뒤의 검사도 종료되므로 같은 예외 처리로 취급하지 않는다.
+
+### 봇 분류와 클라이언트별 검증
+
+2026-10-13 Bot Control과 CAPTCHA/Challenge 공식 문서 부분 대조 기준이다. 기존 가격과 보호 서비스 전체의 재검증은 아니다.
+
+- **분류와 정책을 나눈다:** Bot Control의 이름, 범주와 검증 상태 label로 원치 않는 scraper와 허용할 검색 크롤러를 구분한다. 봇이라는 이유만으로 모든 자동 요청을 같은 액션에 넣지 않는다.
+- **토큰 통과는 최종 허용이 아니다:** CAPTCHA 또는 Challenge 규칙에 매칭돼도 유효한 토큰이 있으면 Count와 비슷하게 뒤의 규칙 평가를 계속한다. 토큰이 없거나 유효하지 않으면 원래 목적지로 보내지 않고 Challenge는 HTTP 202, CAPTCHA는 HTTP 405를 반환한다.
+- **HTML 응답을 처리할 수 있어야 한다:** `Accept: text/html` 요청에는 검증 스크립트 페이지를 줄 수 있다. JSON API 호출에 이 응답을 그대로 적용하면 클라이언트가 처리하지 못할 수 있으므로 SDK 통합과 실제 요청 흐름을 검증한다. 브라우저의 교차 출처 요청에서는 WAF 검증 응답에 CORS 헤더가 없어 JavaScript가 `x-amzn-waf-action`을 읽을 수 없다.
+
+운영 제안: 차단 건수뿐 아니라 정상 로그인과 API 성공률, 검증 응답 처리와 재요청을 확인한다. 유효한 토큰 뒤에도 다른 규칙이 차단할 수 있으므로 최종 액션을 함께 본다.
 
 ### 시험에 잘 나오는 함정
 
@@ -190,6 +200,8 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 
 ## 출처
 
+- [AWS WAF, Choosing and configuring Bot Control for your use case](https://docs.aws.amazon.com/waf/latest/developerguide/waf-bot-control-use-cases.html)
+- [AWS WAF, CAPTCHA and Challenge action behavior](https://docs.aws.amazon.com/waf/latest/developerguide/waf-captcha-and-challenge-actions.html)
 - [AWS WAF, Testing and tuning your AWS WAF protections](https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-testing.html)
 - [AWS WAF, Logging AWS WAF protection pack (web ACL) traffic](https://docs.aws.amazon.com/waf/latest/developerguide/logging.html)
 - [AWS WAF, Overriding rule group actions](https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-rule-group-override-options.html)

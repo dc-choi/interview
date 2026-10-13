@@ -76,6 +76,16 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 - **provenance 검증**: Sigstore, npm provenance로 "이 아티팩트가 그 소스에서 그 CI로 빌드됐는가" 확인
 - **런타임 격리, 최소 권한**: 개발 환경의 egress 제한(C2 통신 탐지), 단기 토큰, 최소 권한 IAM, EDR
 
+### 패키지 정책의 탐지와 실제 차단
+
+2026-10-13 Cloudsmith 공식 문서 부분 대조 기준이다. 아래는 정책 집행의 구체적인 예이며 다른 레지스트리의 동작까지 보장하지 않는다.
+
+- **탐지와 격리:** vulnerability policy는 임계값 이상 취약점을 찾더라도 자동 격리 옵션이 꺼져 있으면 위반 표시만 남긴다. 스캔 결과가 있다는 사실과 다운로드가 막혔다는 사실을 구분한다.
+- **전파와 캐시:** 새 deny policy는 upstream에서 직접 프록시하는 미캐시 패키지에 즉시 적용하지만 기존 패키지는 백그라운드로 처리한다. 정책 상태가 `Pending`에서 `Complete`로 바뀌는지 확인한다. 긴급하면 기존 아티팩트의 수동 격리도 검토하며, 전파 완료 뒤에도 최근 다운로드한 사용자는 CDN 캐시 때문에 잠시 다시 받을 수 있다.
+- **검사 단위:** deny policy로 Docker 이미지 이름이나 digest를 차단할 수 있지만, 이미지 내부 SBOM 구성요소에 같은 정책이 적용되는 것은 아니다. Python 패키지 차단만으로 그 패키지를 포함한 이미지까지 차단됐다고 판단하지 않는다.
+
+운영 제안: 미캐시 다운로드, 기존 저장 아티팩트와 컨테이너 이미지를 각각 시험하고 정책 위반 표시, 격리 상태와 다운로드 결과를 함께 남긴다. 레지스트리 차단과 이미 배포한 워크로드의 영향 조사는 별도 작업이다.
+
 ### 대응 플레이북 (사고 발생 시)
 
 1. 영향받는 버전, 아티팩트가 깔렸는지 확인 (lockfile, `pip show`, `node_modules` 내 의심 패키지)
@@ -99,6 +109,8 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 - **Chrome 제로데이 (2026-02-13)** — CSS use-after-free 취약점(CVE-2026-2441)을 수정한 스테이블 업데이트가 배포됐고, 릴리스 노트에 악용 사례가 실제로 존재한다고 명시. AI 도구와 무관한 기본 보안 운영 부담의 예.
 
 ## 출처
+- [Cloudsmith, Package deny policy](https://docs.cloudsmith.com/policy-management/deny-policy)
+- [Cloudsmith, Vulnerability policy](https://docs.cloudsmith.com/policy-management/vulnerability-policy)
 - [Security Update: Suspected Supply Chain Incident — LiteLLM](https://docs.litellm.ai/blog/security-update-march-2026)
 - [CRITICAL: Malicious litellm_init.pth in litellm 1.82.8 — BerriAI/litellm Issue #24512](https://github.com/BerriAI/litellm/issues/24512)
 - [Post Mortem: axios npm supply chain compromise — axios/axios Issue #10636](https://github.com/axios/axios/issues/10636)

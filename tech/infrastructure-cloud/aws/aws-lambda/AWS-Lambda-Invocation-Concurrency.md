@@ -50,6 +50,17 @@ verified_at: 2026-09-30
 
 Throttle 발생 시: 동기 호출은 즉시 에러, 비동기는 자동 재시도. 버퍼링이 필요하면 **SQS를 앞에 끼우면** 자연스럽게 흡수.
 
+### Provisioned Concurrency의 준비와 실제 사용 확인
+
+2026-10-13 공식 문서 부분 대조 기준이다. 아래는 사전 초기화한 환경을 사용하는 일반 Lambda 함수의 운영 절차다.
+
+1. **호출 대상:** `$LATEST`에는 설정할 수 없다. 버전이나 Alias에 용량을 할당한 뒤 API Gateway 등 호출 측도 그 버전이나 Alias를 가리키는지 확인한다.
+2. **준비 완료:** 설정 요청의 성공과 할당 완료를 구분한다. `GetProvisionedConcurrencyConfig`의 `Status`가 `READY`인지 확인하고 요청량, 할당량과 가용량을 함께 본다. `IN_PROGRESS`는 준비 중이며 `FAILED`면 `StatusReason`을 확인한다.
+3. **실제 사용:** `ProvisionedConcurrencyInvocations`의 `Sum`은 사전 초기화 환경에서 처리한 호출 수다. `ProvisionedConcurrentExecutions`의 `Max`는 동시에 처리 중인 환경 수로, 할당한 전체 용량이 아니다.
+4. **초과와 유휴:** `ProvisionedConcurrencySpilloverInvocations`의 `Sum`은 준비된 용량이 모두 사용 중일 때 일반 동시성으로 실행된 호출 수다. `ProvisionedConcurrencyUtilization`의 `Max`가 지속해서 낮으면 과다 할당 가능성을 확인한다.
+
+예를 들어 용량 100개 중 한 관측 구간에 최대 40개만 처리 중이었다면 실행 환경 지표의 Max는 40이다. 이것만으로 나머지 60개의 준비가 실패했다고 판단하지 않는다. 실제 지연과 spillover를 함께 보고 용량을 조정한다(운영 제안).
+
 ## VPC Lambda
 
 - Lambda 함수를 VPC 내부 리소스(RDS, ElastiCache, EC2)에 붙이려면 **VPC 구성** 필요. 기본 함수는 Lambda가 관리하는 VPC에서 실행되어 고객 VPC의 private subnet 리소스에 닿지 않는다
@@ -92,6 +103,9 @@ Provisioned Concurrency는 콜드 스타트를 절대 제거하지 않는다. �
 
 ## 출처
 
+- [Provisioned Concurrency 구성과 호출 대상](https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html)
+- [GetProvisionedConcurrencyConfig 응답과 상태](https://docs.aws.amazon.com/lambda/latest/api/API_GetProvisionedConcurrencyConfig.html)
+- [Lambda 동시성 모니터링 지표](https://docs.aws.amazon.com/lambda/latest/dg/monitoring-concurrency.html)
 - [DynamoDB gateway endpoint 구성과 고려사항](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html)
 - [VPC endpoint policy의 접근 제어 범위](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html)
 - [Lambda 함수 확장과 동시성](https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html)
