@@ -69,6 +69,23 @@ Vercel 통합도 공개 API를 사용한다는 것이 이 문서의 계약이다
 컴포넌트별 정적/동적 조합을 유지하려면 플랫폼이 그 경계의 서버 실행과 스트림을 처리할 수 있어야 한다.
 정적 export로 충분한 앱과 인증, Actions, 요청 기반 렌더링이 필요한 앱은 요구 조건부터 다르다.
 
+## Amplify Hosting의 SSR 지원 범위
+
+2026-10-13 AWS 공식 지원표 대조 기준, Amplify Hosting compute의 관리형 SSR 지원 범위는 Next.js 12~15다. 프레임워크 자체가 제공하는 기능과 호스팅 사업자가 지원하는 기능을 따로 확인한다.
+
+| 앱이 사용하는 기능 | Amplify Hosting compute 지원표 |
+| --- | --- |
+| SSR, 정적 페이지, API Routes, 시간 기반 ISR | 지원 |
+| Next.js 13의 app 디렉터리, 이미지 최적화 | 지원 |
+| On-Demand ISR, Next.js streaming | 미지원 |
+| Edge API Routes와 Edge middleware | 미지원 |
+| 정적 자산과 최적화 이미지에 대한 middleware 실행 | 미지원 |
+| 응답 후 실행하는 Next.js 15의 실험 기능 `unstable_after` | 미지원 |
+
+따라서 SSR 페이지가 정상 표시된다는 사실만으로 스트리밍이나 요청 기반 캐시 무효화까지 동작한다고 판단하지 않는다. 최신 Next.js 버전으로 올릴 때도 지원표의 버전 범위를 다시 확인한다. 위의 일반 플랫폼 계약을 Amplify의 기능 보장으로 옮기지 않는다.
+
+운영 검증 제안: 앱의 실제 Next.js 버전과 필요한 기능을 목록으로 만든 뒤, 배포 환경에서 동적 응답, ISR 갱신과 스트리밍 도착 여부를 각각 확인한다. 배포 성공과 기능 검증을 별도 완료 조건으로 둔다.
+
 ## 이해 확인
 
 - 어댑터 테스트가 통과해도 공유 캐시 없는 두 서버가 서로 다른 ISR 결과를 줄 수 있는 이유는 무엇인가?
@@ -77,6 +94,7 @@ Vercel 통합도 공개 API를 사용한다는 것이 이 문서의 계약이다
 ## 출처
 
 - [Next.js, deploying-to-platforms](https://nextjs.org/docs/app/guides/deploying-to-platforms)
+- [AWS Amplify Hosting, Amplify support for Next.js](https://docs.aws.amazon.com/amplify/latest/userguide/ssr-amplify-support.html)
 
 ## 관련 문서
 

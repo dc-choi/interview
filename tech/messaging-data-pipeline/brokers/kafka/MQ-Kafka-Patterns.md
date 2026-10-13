@@ -65,6 +65,16 @@ DB 트랜잭션으로 business row와 Outbox 테이블의 이벤트를 함께 �
 
 이 절은 이전 판단의 점검 항목이며 특정 클러스터의 무손실 전환을 검증한 실행 절차는 아니다.
 
+### 새 토픽 생성 직후의 복제 공백
+
+2026-10-13 Amazon MSK 공식 문서 대조 기준이다. MSK Replicator는 비동기로 복제하며, `Detect and copy new topics`를 켜도 새 토픽이나 파티션의 발견과 대상 생성에 최대 30초가 걸릴 수 있다. 기본 `latest` 시작 조건에서는 대상 토픽이 만들어지기 전에 원본에 쓴 메시지가 복제되지 않는다. 기존 메시지까지 필요하면 Replicator 생성 시 `earliest` 시작을 선택한다.
+
+이는 소비자의 `auto.offset.reset`과 다른 단계다. 대상에 복제되지 않은 레코드는 대상 소비자를 `earliest`로 시작해도 읽을 수 없다. 원본의 보존 기간 안에 남아 있는 데이터와 복제 시작 위치를 함께 점검한다.
+
+기본 토픽 이름은 `<sourceKafkaClusterAlias>.topic`처럼 접두사가 붙는다. 원본과 동일한 토픽 이름을 사용하는 모드도 있으므로, 대상 소비자의 구독 이름이 실제 복제 설정과 맞는지 확인한다.
+
+운영 검증 제안: 새 토픽 생성 직후와 대상 토픽 생성 확인 뒤에 서로 다른 이벤트 ID를 발행하고, 선택한 복제 시작 조건에서 어느 레코드가 도착하는지 비교한다. 데이터 도착과 consumer group offset 변환의 성공 여부도 따로 확인한다.
+
 ## 출처
 
 - [Amazon MSK, Consumer group offset synchronization](https://docs.aws.amazon.com/msk/latest/developerguide/msk-replicator-bidirectional-offset-sync.html)
