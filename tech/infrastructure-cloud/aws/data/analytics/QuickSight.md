@@ -82,6 +82,14 @@ Enterprise Edition의 SQL 기반 데이터 소스는 날짜 열과 look-back win
 - 복잡한 Custom SQL에서는 기간 필터가 효율적으로 적용되지 않아 증분 갱신이 전체 갱신보다 느릴 수도 있다. 같은 입력 범위와 원본 부하로 실행 시간을 비교한다.
 - DB 스키마가 바뀌면 갱신이 자동으로 이를 감지하지 못해 적재가 실패할 수 있다. 데이터셋을 편집하고 저장해 스키마를 맞춘 뒤 갱신 결과를 확인한다.
 
+## 기간 비교는 날짜 기준과 비교 간격을 고정한다
+
+부분 검증(2026-10-14): 공식 기간 비교 함수 문서를 대조했다. `periodOverPeriodDifference`는 두 기간의 집계값 차이를, `periodOverPeriodLastValue`는 비교 대상 기간의 집계값을 구한다. 행 개수에 따른 고정 간격 대신 날짜 기준으로 비교하므로 중간 날짜가 빠진 데이터에서도 비교 시점이 단순히 앞 행으로 이동하지 않는다.
+
+`period`와 `offset`을 생략하면 시각화의 날짜 집계 단위와 기본 간격 1을 사용한다. 비교 기준을 고정하려면 두 인자를 함께 지정한다. 예를 들어 `periodOverPeriodLastValue(sum(Sales), {Order Date}, MONTH, 1)`은 주문일을 기준으로 한 달 전의 집계값을 구한다. 기간 간 비교와 연초부터 현재까지의 누적 계산은 구분한다.
+
+BI 전환 검수 제안: 예약일, 출발일과 회계일 중 어떤 날짜를 기준으로 삼았는지 먼저 정하고 기존 보고서와 같은 집계 단위, 필터, 비교 기간으로 결과를 대조한다. 중간 월이 없는 표본과 연도가 바뀌는 표본도 포함한다. 같은 이름의 전년비 지표라도 날짜와 계산 정의가 다르면 이관 성공으로 판정하지 않는다. 실제 계산 실행은 하지 않았으며 이 절만 대조해 기존 검증일은 유지한다.
+
 ## 자연어 분석에는 업무 의미를 연결한다
 
 2026-10-09 공식 Topics 문서 기준, Topic은 여러 데이터셋과 그 관계를 묶는 의미 계층이다. 데이터셋을 추가하기 전에 컬럼 설명, 동의어, 의미 유형과 사용자 정의 지침을 보강한다. Topic에는 데이터셋 사이의 조인 키와 업무 정의, 모호한 표현을 해석할 지침을 둘 수 있다. 기존 Topics는 legacy Topics로 구분되므로 과거 발표의 설정 화면과 현재 구성을 같은 것으로 가정하지 않는다.
@@ -175,6 +183,9 @@ AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 �
 
 ## 출처
 
+- [Amazon Quick, periodOverPeriodDifference](https://docs.aws.amazon.com/quick/latest/userguide/periodOverPeriodDifference-function.html)
+- [Amazon Quick, periodOverPeriodLastValue](https://docs.aws.amazon.com/quick/latest/userguide/periodOverPeriodLastValue-function.html)
+- [Add comparative and cumulative date/time calculations in Amazon QuickSight — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/add-comparative-and-cumulative-date-time-calculations-in-amazon-quicksight/)
 - [Amazon Quick, GenerateEmbedUrlForAnonymousUser](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_GenerateEmbedUrlForAnonymousUser.html)
 - [Amazon Quick, Filtering data in Amazon Quick Sight](https://docs.aws.amazon.com/quick/latest/userguide/adding-a-filter.html)
 - [Amazon Quick, Adding filter controls to analysis sheets](https://docs.aws.amazon.com/quick/latest/userguide/filter-controls.html)

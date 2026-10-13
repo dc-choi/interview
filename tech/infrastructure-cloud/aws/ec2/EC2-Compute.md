@@ -71,6 +71,14 @@ EBS 볼륨 유형:
 
 AWS가 제시하는 최대 30% 성능 향상은 각각 C7a, M7a, R7a와 비교한 제품 설명이다. 서비스의 지연이나 비용이 같은 비율로 개선된다는 보장은 아니다. 선택 검증에서는 같은 요청과 데이터, 런타임을 유지하고 CPU, 메모리, 네트워크와 EBS 병목을 나누어 처리량과 지연을 측정한다(검증 제안). 실제 부하 시험은 수행하지 않았으며 이 절만 추가 대조해 기존 검증일은 유지한다.
 
+### GPU 메모리와 대역폭은 인스턴스 크기별로 확인한다
+
+부분 검증(2026-10-14): EC2 G7 공식 제품 사양을 대조했다. G7은 NVIDIA RTX PRO 4500 Blackwell Server Edition GPU를 사용하며 GPU당 메모리는 32 GB다. `g7.2xlarge`는 GPU 1개, 네트워크 최대 60 Gbps이고, `g7.48xlarge`는 GPU 8개, 총 GPU 메모리 256 GB와 네트워크 700 Gbps로 명시된다. 패밀리의 최대 사양을 모든 크기의 사양으로 읽지 않는다.
+
+AWS가 제시한 최대 4.6배 AI 추론 성능과 최대 2.1배 그래픽 성능은 G6와 비교한 제품 설명이다. 현재 애플리케이션의 지연이나 비용이 같은 비율로 개선된다는 보장은 아니다.
+
+선택 검증 제안: 모델과 정밀도, 입력 길이와 배치 크기를 고정하고 GPU 메모리 사용량, CPU 전처리, 데이터 전송, 처리량과 지연을 함께 측정한다. 여러 GPU의 메모리 합계를 단일 GPU 메모리처럼 취급하지 말고 사용하는 실행 스택의 모델 분할과 통신 구성을 확인한다. 실제 GPU 부하 시험은 수행하지 않았으며 이 절만 대조해 기존 검증일은 유지한다.
+
 ### Graviton 이전은 이미지, 의존성과 성능을 함께 검증한다
 
 2026-10-13 AWS Graviton 전환 가이드와 Docker 공식 문서로 이 절을 대조했다. Graviton은 arm64이므로 인스턴스 타입만 바꾸지 않고 AMI, 컨테이너 이미지, 라이브러리, 런타임과 운영 에이전트의 지원을 확인한다. 언어가 이식 가능해도 함께 배포하는 네이티브 구성 요소까지 호환된다는 뜻은 아니다.
@@ -156,6 +164,7 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 
 ## 출처
 
+- [Amazon EC2 G7 instances — AWS](https://aws.amazon.com/ec2/instance-types/g7/)
 - [Amazon EC2 C8a instances — AWS](https://aws.amazon.com/ec2/instance-types/c8a/)
 - [Amazon EC2 M8a instances — AWS](https://aws.amazon.com/ec2/instance-types/m8a/)
 - [Amazon EC2 R8a instances — AWS](https://aws.amazon.com/ec2/instance-types/r8a/)
