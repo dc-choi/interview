@@ -75,6 +75,30 @@ Paketo Java buildpack은 빌드에 JDK를, 실행에 JRE를 쓰는 것이 기본
 - Spring Boot 플러그인 경로는 Docker 호환 엔진에 의존하므로 CI 러너의 데몬 접근 권한을 검토한다. 데몬 권한을 줄이는 것이 목표면 Jib이나 레지스트리로 직접 내보내는 CNB 플랫폼이 대안이다.
 - 명령 하나로 이미지가 나온다는 것은 빌드 관례가 적용됐다는 뜻이다. 헬스체크, 리소스 한도, 취약점 대응과 배포 정책까지 끝났다는 뜻은 아니다([[Docker-Image-Pipeline|Docker 이미지 빌드 파이프라인]]).
 
+## Hardened builder와 산출물 검증
+
+이 절의 제품 동작과 명령은 2026-10-14 공식 문서 기준이다. 기존 Spring Boot 설정 절의 검증 기준은 별도로 유지한다.
+
+Hardened builder는 빌드 자동화에 보안 패치를 관리하는 run image를 결합한다. 예를 들어 BellSoft의 Paketo 기반 builder는 hardened run image를 사용하고 `bellsoft/buildpacks.builder:glibc`와 `bellsoft/buildpacks.builder:musl` 변형을 제공한다. libc 선택은 이미지 크기만으로 정하지 않고 애플리케이션과 네이티브 의존성의 호환성을 시험한다. 공급자가 패치 이미지를 제공해도 사용자는 갱신한 이미지로 다시 빌드하거나 호환 가능한 rebase를 수행하고 배포해야 한다.
+
+SBOM, 서명과 취약점 검사는 서로 다른 질문에 답한다.
+
+| 증거 | 확인할 내용 | 남는 확인 |
+|---|---|---|
+| SBOM | 어떤 구성요소와 버전이 들어 있는가 | 생성 도구의 수집 범위, 알려진 취약점과의 대조 |
+| 이미지 서명 | 신뢰할 서명자가 해당 digest에 서명했는가 | 애플리케이션 동작과 취약점 유무 |
+| 취약점 검사 | 검사 시점에 알려진 취약점과 일치하는가 | 새 취약점 공개 후 재검사와 패치 배포 |
+
+Paketo의 SBOM은 buildpack이 직접 설치한 JVM 같은 런타임과 패키지 관리자로 설치한 언어 의존성을 구분한다. 지원 형식은 각 buildpack의 `buildpack.toml`에 있는 `buildpack.sbom-formats`에서 확인한다. SBOM이 있다는 사실만으로 모든 CNB 이미지의 수집 범위가 같다고 보지 않는다.
+
+```bash
+pack sbom download my-app:my-tag --output-dir ./sbom
+```
+
+이 명령으로 얻는 Paketo의 Syft, CycloneDX, SPDX SBOM은 **실행 시점 애플리케이션 의존성**을 담는다. 빌드 시점 의존성도 보존하려면 `pack build`의 `--sbom-output-dir` 옵션으로 빌드 중 SBOM을 추출한다. 따라서 다운로드한 SBOM 하나를 빌드 도구와 베이스 OS 전체의 목록으로 간주하지 말고, 베이스 이미지 공급자가 제공하는 SBOM과 최종 이미지 검사 결과의 범위를 함께 확인한다.
+
+서명 확인에서는 신뢰하는 공개 키 또는 keyless 인증서의 identity와 OIDC issuer를 검증 기준으로 정한다. Cosign은 기본적으로 서명 payload의 digest와 대상 이미지의 digest가 일치하는지도 검사한다. 운영에서는 검증한 digest를 배포 대상과 대조하고, 재빌드나 rebase로 산출물이 바뀌면 해당 산출물의 증거를 다시 확인한다. Hardened라는 이름이나 서명 성공을 애플리케이션 전체에 취약점이 없다는 보증으로 사용하지 않는다.
+
 ## 면접 체크포인트
 
 - builder, build image, run image와 lifecycle이 각각 무엇을 맡는지
@@ -100,6 +124,10 @@ Paketo Java buildpack은 빌드에 JDK를, 실행에 JRE를 쓰는 것이 기본
 - [Paketo Buildpacks, How To Configure Paketo Buildpacks](https://paketo.io/docs/howto/configuration/)
 - [Paketo Buildpacks, ubuntu-noble-base-images](https://github.com/paketo-buildpacks/ubuntu-noble-base-images)
 - [Paketo Buildpacks, Stacks](https://paketo.io/docs/concepts/stacks/)
+- [BellSoft Releases Hardened Builder for Paketo Buildpacks — BellSoft](https://bell-sw.com/blog/bellsoft-releases-hardened-builder-for-paketo-buildpacks/)
+- [Paketo Buildpacks, Software Bill of Materials (SBOM)](https://paketo.io/docs/concepts/sbom/)
+- [Paketo Buildpacks, How to Access the Software Bill of Materials](https://paketo.io/docs/howto/sbom/)
+- [Sigstore, Verifying Signatures](https://docs.sigstore.dev/cosign/verifying/verify/)
 - [One command gets you a production-ready Spring Boot image — Coffee + Software](https://www.youtube.com/watch?v=jhdDfrXLm1Q)
 
 ## 관련 문서
