@@ -75,6 +75,26 @@ aws rds modify-db-instance \
 
 검수에서는 시험 연결과 쿼리를 실행한 뒤 DB 감사 파일과 `/aws/rds/instance/{instance-name}/audit` 양쪽에 기록이 도착하는지 확인한다. 쿼리 문자열은 `SERVER_AUDIT_QUERY_LOG_LIMIT`(기본 1,024)로 잘릴 수 있고 파일 내 이벤트 순서도 보장되지 않으므로, 전체 SQL과 시간순 증거가 확보됐다고 단정하지 않는다.
 
+### Aurora MySQL Advanced Auditing의 생성과 게시
+
+2026-10-14 부분 검증: 이 절은 Aurora MySQL의 Advanced Auditing과 CloudWatch 게시 문서를 대조했다. 기존 절 전체를 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
+
+Aurora MySQL은 사용자 정의 **DB cluster parameter group**에서 감사를 설정한다. RDS for MySQL의 option group과 `MARIADB_AUDIT_PLUGIN` 설치 절차를 그대로 적용하지 않는다.
+
+1. `server_audit_logging=1`과 필요한 `server_audit_events`를 함께 설정한다. 이벤트 기본값은 빈 문자열이므로 logging만 켜면 감사 데이터가 남지 않는다. 예를 들어 `CONNECT,QUERY_DDL`로 연결과 DDL을 기록한다. Aurora는 `TABLE` 이벤트도 지원한다.
+2. 이미 연결된 parameter group의 감사 파라미터 수정에는 재시작이 필요 없지만, parameter group을 클러스터에 처음 연결할 때는 공식 문서상 클러스터 재시작이 필요하다. 설정 저장과 실제 적용을 구분한다.
+3. CloudWatch 게시 방법을 선택한다. 클러스터의 Log exports에서 `audit`를 켜거나, 아래 CLI로 게시한다. 대안인 `server_audit_logs_upload=1`을 쓰려면 CloudWatch Logs 접근 IAM role과 그 ARN을 지정하는 `aws_default_logs_role`도 필요하다.
+
+```bash
+aws rds modify-db-cluster \
+  --db-cluster-identifier mydbcluster \
+  --cloudwatch-logs-export-configuration '{"EnableLogTypes":["audit"]}'
+```
+
+검수에서는 시험 연결과 DDL을 실행하고 인스턴스의 `audit/audit.log.*`와 `/aws/rds/cluster/{cluster-name}/audit`의 해당 로그 스트림을 대조한다. 클러스터 내 인스턴스별 이벤트는 서로 다른 스트림으로 게시된다. 로그 파일의 줄 순서는 시간순이 아니므로 타임스탬프를 기준으로 확인한다.
+
+`QUERY`는 실패한 쿼리도 평문으로 기록하므로 접근권과 보존 기간을 정한다. 내보내기를 꺼도 기존 CloudWatch 로그는 삭제되지 않고 보관 비용이 남는다. 게시 중단 시에는 Log exports와 `server_audit_logs_upload`를 통한 경로가 모두 꺼졌는지 확인한다.
+
 ### Redo Log 크기 (MySQL 8)
 
 - 8.0.32 이하: `innodb_log_file_size` 기본 256MB (128MB × 2)
@@ -128,6 +148,8 @@ Slack Webhook (채널별 분기)
 - [AWS Docs — CloudWatch Logs quotas](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/cloudwatch_limits_cwl.html)
 - [Amazon Aurora — Monitoring Amazon Aurora with Database Activity Streams](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html)
 - [Amazon Aurora — Monitoring database activity streams](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.Monitoring.html)
+- [Amazon Aurora — Using Advanced Auditing with an Amazon Aurora MySQL DB cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Auditing.html)
+- [Amazon Aurora — Publishing Amazon Aurora MySQL logs to Amazon CloudWatch Logs](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.CloudWatch.html)
 
 ## 관련 문서
 
