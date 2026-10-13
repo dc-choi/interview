@@ -86,6 +86,21 @@ DMS Standard는 replication instance와 task를 만들고, DMS Serverless는 rep
 - **컷오버 직전까지 양쪽이 거의 동기화** → 짧은 점검 시간만으로 전환 가능
 - 운영 중단을 줄이는 마이그레이션의 일반적인 패턴
 
+### MySQL CDC의 Error 1236은 세부 메시지로 나눈다
+
+부분 검증(2026-10-13): AWS DMS MySQL 소스 문서와 AWS Knowledge Center의 오류 분류를 대조했다. `Error 1236`만 보고 보존 시간을 늘리거나 같은 위치에서 반복 재시작하지 않는다.
+
+| 세부 증상 | 확인할 것과 대응 |
+|---|---|
+| 필요한 binlog 파일이 없음 | `SHOW BINARY LOGS` 결과와 task가 요청한 파일을 대조한다. 보존 기간 부족이나 task 장기 중단으로 삭제됐다면 보존 설정을 보완하고 Full Load 재실행 등 초기 동기화를 다시 설계한다. 보존 시간을 늘려도 삭제된 로그가 돌아오지는 않는다. |
+| `max_allowed_packet` 초과 | 큰 행, BLOB, 트랜잭션과 로그 손상을 구분한다. 필요한 패킷 크기를 확인하며, AWS 오류 가이드가 제시한 상한은 1 GB다. 값을 올려도 지속되면 binlog 손상을 조사한다. |
+| 이벤트 중간에서 binlog가 잘림 | 소스의 `sync_binlog`와 로그 손상을 확인한다. `sync_binlog=1` 설정만으로 이미 손상된 파일이 복구됐다고 보지 않는다. |
+| 요청한 복제 위치가 유효하지 않음 | 소스의 비정상 종료와 요청 파일, 위치를 확인한다. CDC-only의 시작 위치를 건너뛰면 누락 구간이 생길 수 있으므로, 복구 후 대상 정합성을 별도로 확인한다. |
+
+자체 운영 MySQL 8.0 이상은 `binlog_expire_logs_seconds`를 확인한다. `expire_logs_days`는 8.0에서 deprecated되고 8.4에서 제거됐으므로 오래된 절차를 그대로 쓰지 않는다. RDS for MySQL과 Aurora MySQL은 `mysql.rds_show_configuration`과 `mysql.rds_set_configuration`의 `binlog retention hours` 설정을 확인한다. 보존 시간은 장애 감지와 복구, CDC 지연을 감당하도록 정한다.
+
+위 대응은 오류 진단과 복구 계획이다. 실제 재적재와 CDC 시작점 변경은 task 유형, target table preparation 및 기존 대상 데이터를 확인한 뒤 수행한다. task가 다시 실행된다는 사실만으로 누락과 중복이 없다고 판단하지 않는다.
+
 ## 이기종 마이그레이션 — 데이터와 스키마를 분리
 
 다른 엔진 간 마이그레이션 (예: **SQL Server → Aurora PostgreSQL**, Oracle → MySQL).
@@ -175,6 +190,8 @@ DMS data validation은 지원되는 소스와 대상의 대응 행을 비교한�
 
 ## 출처
 
+- [AWS DMS, Using a MySQL-compatible database as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.MySQL.html)
+- [Why did my AWS DMS CDC task fail with Error 1236 when I used MySQL as the source? — AWS re:Post](https://repost.aws/knowledge-center/dms-cdc-error-1236-msql)
 - [AWS DMS, Using an Oracle database as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html)
 - [AWS DMS, Security in AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html)
 - [AWS DMS, Network Access Control List (NACL) configuration for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Advanced.Ednpoints.NACL.html)

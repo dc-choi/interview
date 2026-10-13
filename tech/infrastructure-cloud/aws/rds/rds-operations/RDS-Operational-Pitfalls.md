@@ -37,6 +37,16 @@ Prisma v7에서는 URL parameter가 아니라 driver adapter 옵션으로 설정
 - **Lambda 인스턴스가 늘면 각 인스턴스의 풀이 누적**된다. 동시성 상한과 pool size를 함께 계산하고, 급격한 확장이 예상되면 [[RDS-Connection-Credentials|RDS Proxy]] 같은 외부 풀링을 검토한다.
 - RDS Proxy의 함정은 **커넥션 피닝(pinning)**. 세션 상태(임시 테이블, 세션 변수, 일부 prepared statement)를 쓰면 Proxy가 그 커넥션을 특정 클라이언트에 고정해 멀티플렉싱 이득이 사라진다. CloudWatch `DatabaseConnectionsCurrentlySessionPinned`로 피닝 빈도를 본다.
 
+### Aurora 연결 상한은 엔진과 용량 방식부터 구분한다
+
+부분 검증(2026-10-13): 이 절은 Aurora 공식 문서와 AWS Knowledge Center를 대조했다. 위의 RDS for MySQL 기본 수식을 Aurora MySQL에 그대로 적용하지 않는다. Aurora PostgreSQL은 `SHOW max_connections;`, Aurora MySQL은 `SHOW GLOBAL VARIABLES LIKE 'max_connections';`로 실제 값을 확인한다.
+
+- **Provisioned:** 연결 증가에 필요한 메모리를 먼저 확인한다. 기본값 유지나 더 큰 인스턴스 클래스도 선택지다. 파라미터만 올리면 메모리 부족과 비정상 종료 위험이 커질 수 있다. Aurora PostgreSQL과 Aurora MySQL의 그룹 설정 범위가 다르므로 엔진에 맞는 custom parameter group을 사용한다.
+- **Aurora Serverless v2:** 기본 `max_connections`는 현재 ACU가 아니라 설정한 **최대 ACU에 해당하는 메모리**로 계산한다. 스케일 다운마다 연결 상한을 줄이지 않는다. 최대 ACU를 바꾼 뒤 연결 상한을 갱신하려면 인스턴스 재부팅이 필요하다.
+- **PostgreSQL 호환 Serverless v2의 예외:** 최소 용량이 0 또는 0.5 ACU이면 `max_connections` 상한은 2,000이다. 최대 ACU만 보고 허용 연결 수를 예상하지 않는다.
+
+새 parameter group 연결, 기존 그룹의 값 수정과 Serverless 용량 변경을 같은 작업으로 취급하지 않는다. 대상 파라미터의 static/dynamic과 재부팅 필요 여부를 확인하고 변경 뒤 실제 값을 다시 조회한다. 연결 수와 `FreeableMemory`를 함께 관찰하며, 연결 상한의 증가를 쿼리 처리량의 증가로 해석하지 않는다.
+
 ## 2. Multi-AZ Failover는 무중단이 아니다
 
 Multi-AZ DB instance failover는 보통 **60~120초** 걸린다. Aurora는 일반적으로 60초 안에 복구되고 종종 30초 미만이다. 이 과정에서 기존 연결은 다시 맺어야 하고 진행 중 작업은 실패하거나 롤백될 수 있으며, 엔드포인트의 DNS record가 새 primary를 가리키도록 바뀐다.
@@ -121,6 +131,8 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 
 ## 출처
 
+- [How do I increase maximum connections for my Amazon Aurora DB instance? — AWS re:Post](https://repost.aws/knowledge-center/aurora-postgresql-max-connections)
+- [Amazon Aurora, Performance and scaling for Aurora serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html)
 - [Amazon RDS, Managing capacity automatically with Amazon RDS storage autoscaling](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html)
 - [Amazon RDS, Using AWS Organizations upgrade rollout policy for automatic minor version upgrades](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/RDS.Maintenance.AMVU.UpgradeRollout.html)
 - [Amazon RDS User Guide — DB instance storage, parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)

@@ -80,6 +80,23 @@ AWS에서 Hadoop, Spark 같은 빅데이터 프레임워크를 실행하는 관�
 - 중단을 견디는 처리 용량은 EMR Task 노드의 Spot 활용을 검토한다.
 - 서버리스 ETL은 Glue와 EMR Serverless를 작업 특성에 따라 비교한다. 클러스터를 직접 관리하지 않는다는 조건만으로 EMR을 제외하지 않는다.
 
+## EMR Serverless의 실행과 용량 경계
+
+부분 검증(2026-10-13): EMR Serverless의 application 설정, 자동 시작과 중지, 사전 초기화 용량을 공식 문서로 대조했다. 앞선 EMR on EC2의 노드 유형이나 YARN 운영 절차와 구분한다.
+
+Application은 Spark 또는 Hive 작업을 실행할 환경과 용량 설정을 관리한다. 생성됐다는 사실과 실행 자원이 준비됐다는 사실은 다르다. `CREATED`는 생성 후 아직 용량을 provision하지 않은 상태이고, `STARTED`는 작업을 받을 준비가 된 상태다. 작업 제출 시 자동 시작은 기본 활성화되지만 끌 수 있다.
+
+| 설정 | 의미와 운영상 확인할 점 |
+|---|---|
+| `initialCapacity` | 미리 준비할 worker 수와 자원을 정한다. 빠른 시작에 유리하지만 application이 유휴 상태여도 준비된 worker에는 비용이 발생한다. |
+| 최대 용량 | application이 확장할 CPU, 메모리와 디스크 상한이다. worker 크기와 개수에 맞춰 구성한다. 사전 초기화 용량과 같은 개념이 아니다. |
+| 자동 중지 | 기본 유휴 시간은 15분이다. 중지되면 사전 초기화 용량도 해제된다. 대기 시간을 바꾸거나 자동 중지를 끌 수 있으므로 실제 설정을 확인한다. |
+| Spark worker 크기 | driver/executor 메모리에 overhead까지 더해 worker 메모리에 맞춘다. 사전 초기화 worker가 필요 이상으로 크면 작업에 쓰지 않는 용량이 생긴다. |
+
+사전 초기화 자원을 다른 작업이 쓰고 있거나 작업 요구량이 더 크면 application은 설정한 최대 용량까지 추가 worker를 요청한다. 작업 종료 후 추가 자원은 해제하지만 application이 시작 상태인 동안 사전 초기화 용량은 유지한다.
+
+운영 비교에서는 작업 실행 시간뿐 아니라 제출 후 시작 대기, 유휴 시간과 전체 비용을 함께 측정한다. 시작 지연을 줄일 필요가 있는 작업에 사전 초기화를 적용할지 판단한다. 서버리스라는 이유만으로 모든 작업이 즉시 시작하거나 유휴 비용이 없다고 가정하지 않는다. 이는 설정을 비교하는 점검안이며 특정 환경에서 측정한 성능 결과는 아니다.
+
 ## EMR on EKS의 실행 환경과 격리 경계
 
 부분 검증(2026-10-13): 이 절은 EMR on EKS와 Kubernetes 공식 문서로 대조했다. 앞선 EMR on EC2의 노드 구성과 YARN 진단을 그대로 적용하지 않는다.
@@ -108,6 +125,9 @@ EMR on EKS는 기존 EKS 클러스터에서 분석 워크로드를 컨테이너�
 
 ## 출처
 
+- [AWS, Interact with and configure an EMR Serverless application](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/applications.html)
+- [AWS, Understanding application behavior in EMR Serverless](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/app-behavior.html)
+- [AWS, Pre-initialized capacity for working with an application in EMR Serverless](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/pre-init-capacity.html)
 - [Apache Spark 3.5.7, Submitting Applications](https://spark.apache.org/docs/3.5.7/submitting-applications.html)
 - [AWS, What is Amazon EMR on EKS?](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/emr-eks.html)
 - [AWS, Managing virtual clusters](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/virtual-cluster.html)
