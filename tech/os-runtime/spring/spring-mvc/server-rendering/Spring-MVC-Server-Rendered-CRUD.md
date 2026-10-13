@@ -36,6 +36,19 @@ Thymeleaf는 server-side model을 HTML에 적용하면서 template 자체를 bro
 - Domain entity 전체 대신 화면에 필요한 View model만 전달한다.
 - Template에서 database 접근이나 business decision을 수행하지 않는다.
 
+## 홈 화면의 상품 목록도 조회 계약을 정한다
+
+홈 화면에 최신 상품 일부를 보여줄 때는 `GET /` Controller가 service에서 제한된 목록을 받아 model에 넣고 `index` view를 반환하도록 구성할 수 있다. Spring Boot의 welcome page 자동 선택은 명시한 홈 route가 없을 때의 fallback이다. 정적 위치의 `index.html`을 먼저 찾고, 없으면 `index` template을 찾으므로 파일 배치와 실제 처리 handler를 함께 확인한다.
+
+다음은 최신 상품 8개 화면을 위한 설계 예시다. 8개가 보편적인 권장 수량이라는 뜻은 아니다.
+
+1. 최신의 기준을 등록일, 공개일 중 하나로 정하고 공개 가능한 상품만 조회한다.
+2. `PageRequest.of(0, 8, sort)`처럼 첫 페이지와 크기를 지정한다. page 번호는 0부터이고 크기는 양수여야 한다. 정렬 없는 `PageRequest.of(0, 8)`만으로 최신순이 되지는 않는다.
+3. 같은 시각의 상품도 순서를 정할 수 있도록 고유 식별자를 보조 정렬 기준으로 둔다. 전체 건수가 필요 없는 화면이면 `Page`의 count 조회가 필요한지 검토한다. 반환형 선택과 정렬의 상세는 [[Spring-Data-JPA-Paging-and-Web|페이징과 웹 경계]]를 따른다.
+4. 화면에는 필요한 상품 정보만 전달하고, 빈 목록과 이미지 누락 때의 표시를 정한다. template에서 전체 목록을 잘라 보이게 하는 것과 조회 단계에서 반환량을 제한하는 것을 구분한다.
+
+2026-10-14 Spring Boot의 welcome page 규칙과 Spring Data의 `PageRequest`, 반환형별 count 조회를 대조했다. 위 상품 노출 기준과 빈 화면 처리는 그 규칙을 적용한 설계 제안이다.
+
 ## form binding
 
 `@ModelAttribute`는 form parameter를 input object에 bind하고 model attribute로도 사용할 수 있다. 편리함이 validation/authorization을 대신하지 않는다.
@@ -90,6 +103,9 @@ Spring `RedirectView`는 기본 HTTP 1.0 호환 모드에서 302를 사용한다
 
 ## 출처
 
+- [Spring Boot, Welcome Page](https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.spring-mvc.welcome-page)
+- [Spring Data Commons, PageRequest](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/PageRequest.html)
+- [Spring Data Commons, Defining Query Methods](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html)
 - [Spring, RedirectView](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/view/RedirectView.html)
 
 - [Spring Framework, annotated controllers](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller.html), [`@ModelAttribute`](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html), [redirect attributes](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/redirecting-passing-data.html), [Thymeleaf integration](https://docs.spring.io/spring-framework/reference/web/webmvc-view/mvc-thymeleaf.html)

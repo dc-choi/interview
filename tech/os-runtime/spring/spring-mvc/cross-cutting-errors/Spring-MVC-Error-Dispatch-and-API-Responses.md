@@ -33,6 +33,19 @@ Spring Boot Servlet application은 일반적으로 Container error page를 `/err
 - 상세 원인은 server log/trace ID로 연결하고 client에는 stable code와 안전한 detail을 준다.
 - `/error` fallback은 마지막 안전망이고 domain API 설계의 주 경로가 아니다.
 
+### HTML 오류 화면은 기본 경로부터 꾸민다
+
+Spring Boot의 Servlet 오류 자동 구성을 유지하고 Thymeleaf를 사용할 때, `src/main/resources/templates/error/404.html`에 상태별 화면을 둘 수 있다. 동적 값이 필요 없는 정적 HTML은 `src/main/resources/public/error/404.html` 같은 정적 리소스 위치에 둔다. 파일명은 정확한 상태 코드 또는 `4xx`, `5xx` 계열 마스크를 사용하며, template 확장자는 사용하는 엔진에 맞춘다.
+
+화면 디자인만 바꾸려면 이 경로부터 사용한다. 그 목적만으로 `/error` Controller를 다시 만들거나 모든 예외를 잡는 Advice를 추가할 필요는 없다. 아래는 오류 화면을 확장할 때의 점검 제안이다.
+
+- 오류 제목과 안내문, 홈으로 돌아가는 링크를 제공한다. 내부 예외 메시지를 사용자 안내문으로 그대로 쓰지 않는다.
+- 화면과 JSON API가 공존하면 Advice의 적용 대상과 반환 형식을 분리한다. `@ControllerAdvice`는 기본적으로 `@RestController`에도 적용되므로, 화면용 handler를 특정 패키지나 controller 집합에 한정했는지 확인한다. Advice를 모든 요청보다 먼저 실행되는 일반 Controller로 해석하지 않는다.
+- 화면에 표시한 상태 코드와 실제 HTTP 응답 코드를 각각 확인한다. model의 숫자나 view 이름만으로 상태 코드 검증을 대신하지 않는다.
+- 존재하지 않는 URL, Controller 예외와 Filter 실패를 따로 재현한다. 시험용 예외 발생 URL 하나에서 화면이 나왔다는 사실만으로 모든 오류 경로가 처리됐다고 판단하지 않는다.
+
+2026-10-14 공식 문서의 사용자 정의 오류 페이지와 Advice 적용 범위를 대조했다. 오류 화면 배치와 적용 범위에 대한 부분 검증이며, 특정 애플리케이션의 Security 설정이나 container 동작을 실행 검증한 것은 아니다.
+
 ## HandlerExceptionResolver
 
 `DispatcherServlet` 내부에서 발생한 예외는 resolver chain이 예외를 response/`ModelAndView`로 변환할 기회를 가진다. Spring MVC의 주요 resolver는 다음 역할을 맡는다.
@@ -94,6 +107,8 @@ Boot의 오류 view는 exact status와 `4xx`/`5xx` series resource, 기본 `erro
 
 ## 출처
 
+- [Spring Boot, Custom Error Pages](https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.spring-mvc.error-handling.error-pages)
+- [Spring Framework, Controller Advice](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-advice.html)
 - [Spring MVC, HandlerExceptionResolver contract](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/exceptionhandlers.html)
 
 - [Spring Framework, MVC exceptions](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html), [Spring MVC error responses](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html), [Spring Boot error handling](https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.spring-mvc.error-handling)
