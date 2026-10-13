@@ -66,6 +66,16 @@ AWS의 **네이티브 IaC 서비스**. JSON, YAML 템플릿으로 AWS 리소스(
 - Change Set은 변경을 미리 보여 주지만 실행 성공을 보장하지 않는다. runtime condition, custom resource와 서비스별 제약은 실행 중 실패할 수 있음
 - 전통적인 Change Set은 이전 템플릿과 새 템플릿을 비교한다. 지원 리소스에서는 drift-aware change set으로 실제 상태, 이전 배포 상태, 목표 상태의 3-way diff를 검토할 수 있음
 
+### REVIEW_IN_PROGRESS와 변경 세트 실행
+
+새 스택에 `ChangeSetType=CREATE`로 변경 세트를 만들면 스택 ID는 생기지만 스택에 템플릿과 리소스는 아직 생성되지 않는다. 변경 세트를 실행하기 전까지 스택은 `REVIEW_IN_PROGRESS`에 머문다. 이 상태만으로 리소스 생성 장애라고 판단하지 않는다.
+
+1. 대상 계정과 리전을 확인하고 스택의 Change sets에서 적용할 변경 세트와 변경 내용을 검토한다.
+2. 콘솔의 Execute change set 또는 `aws cloudformation execute-change-set --change-set-name <변경-세트-ARN>`으로 실행한다. 실행 요청 이후에는 Events나 `describe-stacks`로 실제 진행과 최종 상태를 확인한다.
+3. CodePipeline에서는 `CHANGE_SET_REPLACE`가 변경 세트를 만들거나 교체하고, `CHANGE_SET_EXECUTE`가 이를 실행한다. 변경 세트 생성 방식의 파이프라인이라면 실행 action이 이어지는지, `StackName`과 `ChangeSetName`이 의도한 대상인지 확인한다. `CREATE_UPDATE`로 직접 생성하거나 갱신하는 구성과 구분한다.
+
+2026-10-14 공식 API와 사용자 가이드로 이 절을 부분 대조했다. 실제 AWS 계정에서 배포를 실행한 결과는 아니며, 문서의 나머지 버전 민감 주장을 전부 재검증하지 않아 기존 `verified_at`을 유지한다.
+
 ## Drift Detection (드리프트 감지)
 
 - 스택 생성 후 누군가 **콘솔, CLI로 직접 리소스를 수정**한 경우, 템플릿과 실제 상태 사이의 불일치를 감지
@@ -187,6 +197,9 @@ IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인�
 
 ## 출처
 
+- [AWS CloudFormation — CreateChangeSet](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateChangeSet.html)
+- [AWS CloudFormation — Execute a change set for a CloudFormation stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets-execute.html)
+- [AWS CloudFormation — CloudFormation configuration properties reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-action-reference.html)
 - [Delete stack instances from CloudFormation stack sets in closed or suspended AWS accounts — AWS re:Post](https://repost.aws/knowledge-center/cloudformation-removal-stacksets) — 검색 본문에서 계정 상태와 RetainStacks 조건 확인, 직접 열람은 403
 - [AWS CloudFormation — DeleteStackInstances](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_DeleteStackInstances.html)
 - [AWS CloudFormation — DeploymentTargets](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_DeploymentTargets.html)
