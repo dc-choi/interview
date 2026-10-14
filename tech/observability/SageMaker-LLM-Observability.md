@@ -80,6 +80,18 @@ Model quality monitoring은 캡처한 예측값과 S3에 저장한 실제 정답
 
 ## 품질 평가는 별도 파이프라인이다
 
+### NLP 입력 변화와 정답성의 구분
+
+2026-10-14 공식 문서와 AWS의 2022년 NLP 사례 대조 기준. 아래는 기존 Model Monitor 고객이 사용할 수 있는 사용자 정의 분석 구조이며, 신규 고객의 서비스 이용 가능성을 뜻하지 않는다.
+
+내장 Model Monitor 분석 컨테이너는 표 형식 데이터를 대상으로 한다. 문장처럼 비정형 입력을 분석하려면 사용자 정의 분석을 구성할 수 있다. 한 방식은 기준 문장과 실제 추론 입력을 같은 BERT 모델과 전처리로 임베딩하고, 입력별로 기준 문장 벡터들과의 평균 코사인 유사도를 계산하는 것이다. 점수가 정한 임계보다 낮은 입력을 위반 보고서에 기록한다. 토큰화만으로 문장 임베딩이 만들어지는 것은 아니다.
+
+데이터 캡처는 S3에 입력과 응답을 저장하고, 모니터링 일정은 별도 Processing job을 실행해 분석 결과를 만든다. 캡처 성공과 분석 작업 성공, 위반 발견과 알림 수신을 따로 확인한다.
+
+이는 기준 입력과 다른 문장을 찾는 신호이지 예측 오류나 개념 변화의 확정 판정이 아니다. 운영 제안으로는 임계값을 정상 입력과 알려진 변화 사례에 대조하고, 위반 비율과 정답 기반 품질을 함께 본다. 기준 집합과 임베딩 모델을 바꾸면 점수의 비교 조건도 달라지므로 함께 기록한다. 이 사례의 NLP 분류기 탐지 결과를 자유 형식 LLM 답변의 사실성 평가로 확대하지 않는다.
+
+### LLM 응답 평가 연결
+
 인프라 지표를 켠다고 LLM의 정답성 점수가 자동으로 생성되지는 않는다. 응답 표본에 평가를 실행하고 평가 결과를 별도 지표로 발행해야 한다. 한 구현 방식은 MLflow 판정기와 Bedrock 모델로 응답을 평가하고 CloudWatch에 결과를 보내 Grafana에서 보는 것이다.
 
 다음은 위 구조에서 도출한 운영 점검 항목이다.
@@ -93,6 +105,7 @@ Model quality monitoring은 캡처한 예측값과 S3에 저장한 실제 정답
 
 ## 출처
 
+- [Detect NLP data drift using custom Amazon SageMaker Model Monitor — AWS](https://aws.amazon.com/blogs/machine-learning/detect-nlp-data-drift-using-custom-amazon-sagemaker-model-monitor/)
 - [AWS, CreateInferenceComponent](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateInferenceComponent.html)
 - [AWS, Amazon SageMaker AI metrics in Amazon CloudWatch](https://docs.aws.amazon.com/sagemaker/latest/dg/monitoring-cloudwatch.html)
 - [AWS, Amazon SageMaker Model Monitor availability change](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor-availability-change.html)

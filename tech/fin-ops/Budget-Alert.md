@@ -61,6 +61,16 @@ AWS Budgets 정보는 하루 최대 세 번, 보통 이전 갱신 후 8~12시간
 - Slack 전달은 SNS를 받은 별도 채팅 연동을 통해 구성하며, Budget Action 자체가 아니다.
 - SNS 발행 권한과 수신 구독 확인을 별도로 점검한다.
 
+## 정기 보고서와 임계 알림의 역할
+
+2026-10-14 AWS Budgets Reports 문서 대조 기준. 임계 알림은 조건 충족을 통보하고, 정기 보고서는 선택한 기존 예산의 상태를 일별, 주별 또는 월별로 이메일에 전달한다. 예산을 만들거나 임계 알림을 설정한 것만으로 정기 보고서까지 생성되지는 않는다.
+
+- 보고서 하나에 예산을 최대 50개 포함하고 이메일 수신자를 최대 50명 지정할 수 있다. 이 수신자 한도를 개별 예산의 임계 알림 한도와 혼용하지 않는다.
+- 주간 보고서는 요일을, 월간 보고서는 날짜를 정한다. 지정일의 UTC 00:00 무렵에 전달하며, 해당 월에 지정한 날짜가 없으면 그달 마지막 날에 전달한다.
+- 보고서 전달 주기와 비용 데이터 갱신 주기는 다르다. 정기 이메일을 받았다는 사실로 실시간 비용이 확인됐다고 판단하지 않는다.
+
+운영에서는 임계 알림을 대응 담당자에게 연결하고, 정기 보고서는 예산 범위와 사용 추세를 주기적으로 검토하는 데 쓴다. 보고서는 지출 차단이나 Budget Action의 실행 성공을 대신하는 증거가 아니다.
+
 ## 층으로 쓰기
 
 아래는 설명용 예시이며 공통 권장값이 아니다. 비용 증가 속도, 데이터 지연, 대응 시간과 서비스 중요도에 맞춰 임계를 정한다.
@@ -92,6 +102,8 @@ AWS Budgets 정보는 하루 최대 세 번, 보통 이전 갱신 후 8~12시간
 
 ## 출처
 
+- [AWS, Reporting your metrics with AWS Budgets Reports](https://docs.aws.amazon.com/cost-management/latest/userguide/reporting-cost-budget.html)
+- [AWS, Creating an AWS Budgets report](https://docs.aws.amazon.com/cost-management/latest/userguide/create-budget-report.html)
 - [AWS, AWS Budgets](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html)
 - [AWS, Configuring budget actions](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html)
 - [AWS, Configuring a budget action](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-action-configure.html)

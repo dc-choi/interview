@@ -104,6 +104,16 @@ Logistic Regression은 강한 baseline이자 feature와 label 문제를 드러�
 
 이 표는 의무 도입 순서가 아니다. Popularity, taxonomy, item-to-item과 behavior source를 함께 쓰고 공통 ranker에서 결합할 수 있다. Transformer나 bandit은 baseline 대비 증분 가치와 운영 가능성이 입증될 때 선택한다.
 
+## Factorization Machine과 희소 특징의 의미
+
+Factorization Machine(FM)은 선형 항에 특징 쌍의 상호작용을 더하는 지도 학습 모델이다. 각 특징의 잠재 벡터 내적으로 쌍의 효과를 표현한다. 사용자와 아이템 ID뿐 아니라 추가 특징을 같은 입력 벡터에 넣을 수 있어, 사용자-아이템 행렬을 분해하는 설명만으로 모델 전체를 한정하지 않는다.
+
+사용자 ID의 one-hot 벡터와 아이템 ID의 one-hot 벡터를 이어 붙이면 한 관측 행에는 두 위치만 1이고 나머지는 0이다. **이 0은 해당 행에서 다른 ID가 선택되지 않았다는 뜻이다.** 사용자가 다른 모든 아이템을 싫어한다거나 미평가 항목에 0점을 줬다는 뜻이 아니다. 특징 행렬의 희소성과 사용자-아이템 평점 행렬의 미관측을 구분한다.
+
+예를 들어 평점 4~5를 양성, 1~3을 음성으로 바꾸면 관측된 평점에 대한 이진 분류 문제가 된다. 이 변환 자체가 평점 없는 쌍을 음성으로 만드는 것은 아니다. 임계값 선택은 제품 목적에 맞게 정하고, 미관측 쌍을 학습에 추가하려면 별도의 negative sampling 계약을 둔다.
+
+2026-10-14 SageMaker AI 공식 문서 기준으로 내장 FM은 2차 특징 상호작용을 다루며 이진 분류와 회귀를 지원한다. 학습 입력은 `Float32` tensor의 `recordIO-protobuf` 형식이다. 이는 해당 서비스 구현의 입력 계약이며 FM이라는 모델 전체의 파일 형식 요구가 아니다.
+
 ## Accuracy보다 Top K를 보는 이유
 
 Pointwise classification의 accuracy, log loss와 calibration은 모델 진단에 쓸 수 있지만, 최종 제품이 상위 K개를 순서대로 보여준다면 그것만으로 목록 품질을 보장하지 않는다.
@@ -133,6 +143,9 @@ MovieLens는 rating과 timestamp가 있는 교육용 데이터다. 실제 impres
 
 ## 출처
 
+- [AWS, Factorization Machines Algorithm](https://docs.aws.amazon.com/sagemaker/latest/dg/fact-machines.html)
+- [AWS, How Factorization Machines Work](https://docs.aws.amazon.com/sagemaker/latest/dg/fact-machines-howitworks.html)
+- [Build a movie recommender with factorization machines on Amazon SageMaker — AWS](https://aws.amazon.com/blogs/machine-learning/build-a-movie-recommender-with-factorization-machines-on-amazon-sagemaker/)
 - [Collaborative Filtering for Implicit Feedback Datasets — Hu, Koren, Volinsky](https://yifanhu.net/PUB/cf.pdf)
 - [BPR: Bayesian Personalized Ranking from Implicit Feedback — Rendle et al.](https://arxiv.org/abs/1205.2618)
 - [Matrix Factorization Techniques for Recommender Systems — Koren, Bell, Volinsky](https://doi.org/10.1109/MC.2009.263)
