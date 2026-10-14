@@ -81,6 +81,18 @@ DB의 SG에서 인바운드 TCP 5432의 source를 애플리케이션 SG로 지�
 
 다른 서브넷의 두 인스턴스 사이를 middlebox로 라우팅하면 상대 SG를 source로 참조하는 것만으로 통신을 허용할 수 없다. 이 경우 각 인스턴스 SG에서 상대의 사설 IP나 상대 서브넷 CIDR을 source로 지정하는 조건을 확인한다.
 
+### SG 규칙 quota와 ENI당 그룹 수를 함께 계산한다
+
+부분 검증(2026-10-14): AWS VPC 공식 문서로 아래 quota와 규칙 계산을 대조했다. 기존 NAT와 규제 절 전체를 재검증하지 않아 frontmatter의 `verified_at`은 유지한다.
+
+- **기본 한도:** SG당 인바운드와 아웃바운드 규칙은 각각 60개이며 IPv4와 IPv6에도 별도로 적용된다. 모든 방향과 주소 체계를 합쳐 120개라고 계산하지 않는다. 규칙 quota를 변경하면 인바운드와 아웃바운드 양쪽에 적용된다.
+- **두 quota의 곱:** `SG당 규칙 quota × ENI당 SG quota ≤ 1,000` 조건을 충족해야 한다. 현재 등록한 규칙 수나 실제 연결한 SG 수의 합만 확인해서는 부족하다. SG당 250개가 필요하면 ENI당 SG quota도 4개 이하로 맞춰야 하며, 기본값 5보다 낮추는 요청은 AWS Support 절차를 따른다. ENI에 실제 SG를 4개만 붙이는 것과 quota를 낮추는 것은 다르다.
+- **규칙 계산:** CIDR 또는 다른 SG를 참조하면 규칙 1개로 센다. 고객 관리형 prefix list는 현재 항목 수가 아니라 최대 크기로, AWS 관리형 prefix list는 해당 목록의 weight로 센다. 목록 참조를 한 줄로 표현했다고 quota도 1개만 사용하는 것은 아니다.
+
+운영 점검 제안: 대상 계정과 리전의 적용 quota를 먼저 확인하고, 불필요한 규칙을 정리한 뒤 증설을 요청한다. CIDR이나 포트 범위를 합칠 때는 새로 허용되는 접근이 생기는지 검토한다. 규칙 수를 줄이기 위해 허용 범위를 무심코 넓히지 않는다.
+
+VPC Flow Logs는 트래픽 기록과 진단 도구이며 패킷 차단을 수행하는 필터가 아니다. SG 규칙의 대체 수단으로 계산하지 않고, 변경 후 필요한 연결이 허용되는지 진단하는 데 사용한다.
+
 ## Traffic Mirroring 수신 경로 점검
 
 Traffic Mirroring은 ENI의 트래픽을 복제해 분석 대상에 전달한다. 2026-10-09 공식 Traffic Mirroring 문서로 아래 전송 조건을 대조했다. 기존 NAT와 규제 절 전체를 재검증한 날짜는 아니다.
@@ -116,6 +128,7 @@ Traffic Mirroring은 ENI의 트래픽을 복제해 분석 대상에 전달한다
 - [Amazon EC2 User Guide, Security group connection tracking](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-connection-tracking.html)
 - [Amazon VPC User Guide, NAT gateway basics](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html)
 - [Amazon VPC quotas — ENI당 보안 그룹 기본 5개, 최대 16개까지 조정](https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html)
+- [Amazon VPC User Guide, Logging IP traffic using VPC Flow Logs](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html)
 
 ## 관련 문서
 
