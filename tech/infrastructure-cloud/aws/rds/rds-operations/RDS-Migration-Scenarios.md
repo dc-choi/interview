@@ -124,6 +124,17 @@ Multi-AZ를 먼저 해제해야 한다는 과거 제약을 그대로 적용하�
 
 검증 제안: 복원 성공과 애플리케이션 전환 성공을 나누어 확인하고, 데이터 정합성과 접속을 검증하기 전 원본을 삭제하지 않는다. 실제 에디션 변경 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
 
+## Oracle 이전에서 파일 전달과 데이터 반영을 구분한다
+
+부분 검증(2026-10-14): RDS for Oracle의 S3 통합과 AWS DMS LOB 문서를 대조했다. 네이티브 덤프 전달과 DMS 행 복제는 서로 다른 경로다.
+
+- **S3 통합 준비:** DB 인스턴스와 버킷은 같은 리전이어야 한다. 필요한 S3 접근 권한을 가진 IAM 역할의 연결과 `S3_INTEGRATION`이 포함된 option group을 확인한다. Data Pump 파일을 전달해도 DB에 import하는 단계는 별도로 남는다.
+- **전달 완료 확인:** `rdsadmin.rdsadmin_s3_tasks.upload_to_s3`와 `download_from_s3`는 비동기 작업이다. 반환된 task ID로 `BDUMP`의 `dbtask-<task-id>.log`와 RDS 이벤트를 확인한다. task ID 반환을 전송 완료로 처리하지 않는다.
+- **다운로드 재실행:** Oracle 대상 디렉터리에 같은 이름의 파일이 있으면 다운로드를 건너뛴다. S3 prefix에 맞는 객체가 없어도 기본 설정에서는 실패하지 않으며, 필요하면 `p_error_on_zero_downloads=TRUE`로 무일치 오류를 켠다. 따라서 성공 상태와 예상 파일의 존재, 내용은 따로 확인한다.
+- **DMS LOB 크기:** limited LOB 모드는 설정한 최대 크기를 넘는 값을 잘라낸다. 원천 LOB 크기를 조사하고 경계값과 이전 결과를 대사한다. CDC에서 LOB가 있는 테이블에는 primary key 또는 unique index가 필요하므로, 성능을 이유로 키와 인덱스를 일괄 제거하지 않는다.
+
+검수 제안: 파일 전송, import 또는 복제, 데이터 대사, 애플리케이션 SQL 검증을 각각 완료 조건으로 둔다. 실제 이전 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## 도구 선택 매트릭스
 
 | 도구 | 적합 상황 | 다운타임 | 비고 |
@@ -147,6 +158,11 @@ Multi-AZ를 먼저 해제해야 한다는 과거 제약을 그대로 적용하�
 
 ## 출처
 
+- [Amazon RDS, Amazon S3 integration](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html)
+- [Amazon RDS, Configuring IAM permissions for RDS for Oracle integration with Amazon S3](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.preparing.html)
+- [Amazon RDS, Adding the Amazon S3 integration option](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.preparing.option-group.html)
+- [Amazon RDS, Transferring files between Amazon RDS for Oracle and an Amazon S3 bucket](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.using.html)
+- [AWS DMS, Setting LOB support for source databases in an AWS DMS task](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.LOBSupport.html)
 - [Automate SQL Server discovery and assessment to accelerate migration to AWS — AWS Database Blog](https://aws.amazon.com/blogs/database/automate-sql-server-discovery-and-assessment-to-accelerate-migration-to-aws/)
 - [Amazon RDS for SQL Server enhances differential and transaction log restores support — AWS](https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-rds-sql-server-diff-and-log-restores-for-maz-and-rr/)
 - [Amazon RDS, Restoring to a DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html)

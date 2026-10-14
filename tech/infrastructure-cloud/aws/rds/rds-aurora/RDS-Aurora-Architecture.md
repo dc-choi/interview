@@ -68,6 +68,17 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 | **Database Cloning** | 운영 DB의 특정 시점을 빠르게 복제 DB로. 전체 물리 복사 대신 **스토리지 페이지 공유(copy-on-write)** 라 빠르고 저렴 |
 | **Aurora PostgreSQL Limitless Database** | router와 shard로 구성된 DB shard group에서 sharded table을 수평 확장. AWS가 제시하는 petabyte, 대규모 write 처리 목표와 별개로 지원 SQL, shard key, isolation level, Region과 용량 제한을 검증 |
 
+## Serverless v2의 용량과 장애 조치 준비
+
+부분 검증(2026-10-14): Aurora 공식 용량 설정과 확장 문서를 대조했다. Serverless v2의 ACU 조정은 인스턴스 수를 늘리는 Aurora Auto Scaling과 다르다. 지원 최소, 최대 ACU는 엔진과 플랫폼 버전에 따라 확인하며, 과거 발표의 용량 한도를 현재 공통 한도로 사용하지 않는다.
+
+- **최소 용량:** 현재 용량이 높을수록 더 빠르게 확장할 수 있다. 최소 ACU를 낮추면 대기 비용은 줄지만 버퍼 캐시가 축소되어 재확장 때 읽기 I/O가 늘 수 있다. 필요한 working set과 급증 부하로 최소값을 검증한다.
+- **Reader 승격 등급:** Serverless Reader의 tier 0과 1은 Writer 용량 이상을 최소 용량으로 유지해 장애 조치를 준비한다. tier 2~15는 독립 확장하므로 읽기 부하뿐 아니라 Writer 변경을 반영할 용량도 점검한다.
+- **인스턴스별 상한:** 클러스터에 설정한 최대 ACU는 Serverless 인스턴스 각각에 적용된다. 같은 최대값을 쓰는 인스턴스가 n개라면 총 컴퓨트 용량은 이론적으로 최대값의 n배까지 필요할 수 있다.
+- **설정 반영:** 최대 ACU에서 계산되는 기본 `max_connections` 등은 용량 범위 변경 후 재부팅이 필요할 수 있다. 범위 변경 성공과 `pending-reboot` 해소, 실제 파라미터 값을 구분해 확인한다.
+
+실제 부하와 장애 조치 시험은 수행하지 않았다. 이 절만 추가 대조했으므로 문서 전체의 기존 검증일은 유지한다.
+
 ## Global Database의 대기 구성과 전환 준비
 
 2026-10-07 공식 DR 및 연결 문서로 대조한 범위다. 스토리지가 복제되고 있다는 사실과 애플리케이션이 새 리전에서 요청을 처리할 준비가 됐다는 사실은 구분한다.
@@ -119,6 +130,9 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 
 ## 출처
 
+- [Amazon Aurora User Guide, Performance and scaling for Aurora serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html)
+- [Amazon Aurora User Guide, How Aurora serverless works](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html)
+- [Amazon Aurora User Guide, Managing Aurora serverless DB clusters](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-administration.html)
 - [Amazon Aurora User Guide, Using switchover or failover in Amazon Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html)
 - [Amazon Aurora User Guide, Connecting to Amazon Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-connecting.html)
 - [Aurora Reader Endpoint](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Reader.html)

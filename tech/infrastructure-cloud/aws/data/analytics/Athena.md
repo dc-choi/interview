@@ -64,6 +64,12 @@ S3에 저장된 데이터를 **별도 적재 없이 표준 SQL로 직접 쿼리*
 - **Workgroup별 제어**: 쿼리당 스캔 한도, Workgroup 누적 스캔 알림, 결과 저장 S3 경로, CloudWatch 메트릭, 암호화 설정.
 - 쿼리당 한도를 넘으면 해당 쿼리가 취소된다. Workgroup 누적 임계값은 SNS 알림을 보내지만 실행 중인 쿼리를 자동 취소하지 않으므로, 필요하면 알림을 받아 Workgroup을 비활성화하는 별도 자동화를 둔다.
 
+### BI 도구의 그룹과 Athena 실행 권한을 맞춘다
+
+부분 검증(2026-10-14): 팀별 BI 데이터 소스에 workgroup을 지정해도 그 설정만으로 다른 workgroup 사용을 막지는 못한다. 실제 실행 역할의 IAM 정책에서 허용할 workgroup ARN을 제한하고, BI 도구가 보내는 workgroup과 일치하는지 확인한다(운영 점검 제안).
+
+`Override client-side settings`를 켜면 해당 workgroup의 결과 위치, 암호화 등의 설정이 콘솔, API, JDBC/ODBC 클라이언트 설정보다 우선한다. 변경 전에는 기존 결과 버킷을 읽는 자동화의 의존성을 확인한다. 이 옵션과 쿼리당 스캔 한도는 서로 다른 제어다. 실제 BI 연결 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## Athena vs Redshift Spectrum
 
 | 항목 | Athena | Redshift Spectrum |
@@ -193,6 +199,8 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 ## 출처
 
+- [Amazon Athena, Configure access to workgroups and tags](https://docs.aws.amazon.com/athena/latest/ug/workgroups-access.html)
+- [Amazon Athena, Override client-side settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html)
 - [Amazon API Gateway, Log REST API calls to Amazon Data Firehose in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-logging-to-kinesis.html)
 - [Amazon Athena, Considerations and limitations for CTAS queries](https://docs.aws.amazon.com/athena/latest/ug/ctas-considerations-limitations.html)
 - [Amazon Athena, DROP TABLE](https://docs.aws.amazon.com/athena/latest/ug/drop-table.html)

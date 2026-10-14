@@ -42,6 +42,12 @@ Hybrid access mode는 같은 Data Catalog 객체에 두 권한 경로를 허용�
 
 - Athena, Redshift Spectrum, AWS Glue ETL, EMR의 Apache Spark 등 지원 통합에서 세부 권한을 적용한다. 실제 엔진과 데이터 형식의 지원 범위는 도입 시 확인한다.
 
+### Governed Tables와 현재 권한 관리를 구분한다
+
+부분 검증(2026-10-14): **Governed Tables는 2024-12-31 지원이 종료됐다.** 이후 해당 테이블의 트랜잭션 생성, 쓰기와 Athena 조회를 사용할 수 없으며, 2025-02-17 이후에는 Governed Table API도 실패한다. Glue Data Catalog 메타데이터와 S3 데이터가 남아 있다는 사실은 기능을 계속 사용할 수 있다는 뜻이 아니다.
+
+이 종료는 Lake Formation 전체나 Hive, Iceberg, Hudi, Delta Lake 테이블의 종료가 아니다. 과거 자료의 ACID 트랜잭션, 자동 압축과 time travel 설명을 현재 Lake Formation 권한 관리의 공통 기능으로 옮기지 않는다. 트랜잭션이 필요하면 테이블 형식과 이를 읽고 쓰는 엔진의 지원 범위를 따로 검토한다. Athena의 Iceberg 변경 반영은 [[Athena#Iceberg 테이블의 CDC 병합|Iceberg CDC 병합]]을 참고한다. 종료 공지 대조만 수행했으며 기존 기능 전체의 검증일은 유지한다.
+
 ### LF-Tag 권한과 DataZone 구독의 경계
 
 부분 검증(2026-10-13): LF-TBAC와 Amazon DataZone의 Glue 자산 권한 부여 경로를 공식 문서와 대조했다.
@@ -128,6 +134,7 @@ Lake Formation으로 관리하는 데이터를 Athena에서 조회할 때는 실
 
 ## 출처
 
+- [Deprecation of Lake Formation’s Governed Tables Feature — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/deprecation-of-lake-formations-governed-tables-feature/)
 - [AWS Prescriptive Guidance, Aligning your data strategy to your business goals](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/alignment.html)
 - [AWS Prescriptive Guidance, Data strategy framework](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/data-strategy-framework.html)
 - [How can I troubleshoot Lake Formation permission issues in Athena? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/athena-insufficient-lake-formation-permissions)
