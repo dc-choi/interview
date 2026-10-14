@@ -80,8 +80,11 @@ Thread pool size는 단독으로 정하는 숫자가 아니라 애플리케이�
 | Node.js | `UV_THREADPOOL_SIZE` (libuv 1.x 기준 기본 4, 최대 1024) | 파일 시스템, DNS 조회, 일부 crypto의 위임 작업 | [[libuv-Threading|libuv 스레딩]] |
 | Node.js | Worker Threads 풀 (직접 구현) | CPU 작업의 병렬 실행 수 | [[Worker-Threads|Worker Threads]] |
 | OpenSearch | 노드별 fixed pool과 queue 크기 | search, write 등 작업 종류별 동시성 | [[OpenSearch-Performance-Troubleshooting|OpenSearch 성능 진단]] |
+| Nginx | `worker_processes` (기본 1, `auto`는 코어 수 감지), `worker_connections` (지시어 생략 시 기본 512, 소스 배포의 nginx.conf 예시는 1024), `worker_rlimit_nofile`, `listen`의 `backlog` (Linux 기본 511) | worker 프로세스 수, worker당 동시 연결 수, worker의 열린 파일 수 한도, 대기 연결 큐 길이 (nginx 문서 기준) | 아래 단락, [[Reverse-Proxy|Reverse Proxy, Nginx]] |
 
 `UV_THREADPOOL_SIZE`는 이벤트 루프 자체의 동시성이 아니라 블로킹 작업의 위임 슬롯 수라는 점을 혼동하지 않는다 — [[Async-vs-Threads|비동기와 스레드]].
+
+Nginx의 연결 한도는 2026-10-14 nginx 공식 문서와 Linux man-pages로 대조했다. `worker_connections`는 클라이언트 연결만 세지 않고 프록시 대상 서버와의 연결도 포함한다. 리버스 프록시에서는 클라이언트 쪽과 upstream 쪽 연결이 함께 이 한도를 쓰므로 받을 수 있는 클라이언트 수가 설정값보다 작다. 실제 동시 연결 수는 열린 파일 수 한도도 넘지 못하므로 `worker_rlimit_nofile`이나 프로세스 fd 한도를 함께 확인한다 — [[File-Descriptor-Limit|파일 디스크립터 한도]]. `backlog`도 Linux에서 `net.core.somaxconn`보다 크면 그 값으로 잘린다(Linux 5.4부터 기본 4096, 이전 128). CPU와 메모리가 남는데 연결이 거절되거나 지연되면 스레드 풀과 함께 이 연결 한도도 원인 후보로 둔다.
 
 ## Virtual thread 이후
 
@@ -147,6 +150,10 @@ Java 21 이후 virtual thread 모델에서는 스레드가 희소 자원이 아�
 - [Apache Tomcat 11.0, The HTTP Connector](https://tomcat.apache.org/tomcat-11.0-doc/config/http.html)
 - [Spring Boot, Common Application Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
 - [libuv 1.x, Thread pool work scheduling](https://docs.libuv.org/en/v1.x/threadpool.html)
+- [nginx, Core functionality](https://nginx.org/en/docs/ngx_core_module.html)
+- [nginx, Module ngx_http_core_module](https://nginx.org/en/docs/http/ngx_http_core_module.html#listen)
+- [Linux man-pages, listen(2)](https://man7.org/linux/man-pages/man2/listen.2.html)
+- [nginx conf/nginx.conf — GitHub](https://github.com/nginx/nginx/blob/master/conf/nginx.conf)
 - [How to set an ideal thread pool size — Zalando Engineering Blog](https://engineering.zalando.com/posts/2019/04/how-to-set-an-ideal-thread-pool-size.html)
 - [인프런, 김영한, 동시 요청 - 멀티 쓰레드](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71162)
 
@@ -168,3 +175,5 @@ Java 21 이후 virtual thread 모델에서는 스레드가 희소 자원이 아�
 - [[Application-Performance-Monitoring|APM]] — W와 C 측정
 - [[Backfill-Resource-Isolation|백필 자원 격리]] — batch와 온라인 요청의 분리
 - [[Servlet-vs-Spring-Container|서블릿 컨테이너와 Spring 컨테이너]] — 요청당 스레드 모델과 싱글톤 Bean의 공유 상태
+- [[Reverse-Proxy|Reverse Proxy, Nginx]] — 프록시 연결과 upstream keepalive
+- [[File-Descriptor-Limit|파일 디스크립터 한도]] — 동시 연결 수의 상한이 되는 fd 한도

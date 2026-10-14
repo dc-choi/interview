@@ -56,6 +56,22 @@ Launch Configuration은 한번 만들면 못 바꾸므로 변경 시 **새로 �
 
 운영 판단 예시로, 증설 뒤 목표 대수만 확인하지 않고 정상 target 수, 실제 요청 지연과 오류를 확인한다. 앱 대수가 늘어도 DB 연결 풀이나 하위 서비스가 병목이면 문제가 남는다. `default instance warmup`은 `InService` 뒤 지표 집계에 참여하는 시간을 조절하며, 애플리케이션 준비 완료 검사를 대신하지 않는다.
 
+## 시각을 모르는 급증은 원인 이벤트에서 증설을 시작한다
+
+2026-10-14 공식 문서 대조 기준이다. 대량 푸시 발송처럼 급증의 원인을 애플리케이션이 먼저 아는 경우가 있다. Target tracking은 지표가 목표값을 벗어난 뒤에 움직이고, CPU 사용률 같은 EC2 지표는 기본 5분 간격이며 세부 모니터링을 켜야 1분 간격이 된다. 여기에 인스턴스 시작과 warmup 시간이 더해지므로, 원인 이벤트가 생긴 시점에 API로 용량을 올리는 수동 조정을 동적 정책과 함께 쓸 수 있다.
+
+- `SetDesiredCapacity`는 목표 용량만 바꾼다. 수동 조정은 기본적으로 cooldown을 기다리지 않으며 `HonorCooldown`을 주면 기다린다.
+- `UpdateAutoScalingGroup`은 최소, 최대와 목표 용량을 함께 바꾼다. 목표 용량은 최소 이상 최대 이하여야 하고, 목표 용량 없이 최소를 현재 대수보다 크게 올리면 목표 용량도 새 최소가 된다.
+- 수동 조정 뒤에도 조정 정책과 예약 작업은 다시 동작한다. 부하가 지표에 반영되기 전에 정책이 축소하지 않도록 유지할 대수를 최소 용량으로도 올린다. 충돌을 피하려고 정책과 예약 작업을 잠시 끄는 방법도 있다.
+- 되돌릴 때 목표 용량을 직접 낮추면 그 값까지 축소하며 종료할 인스턴스는 종료 정책으로 고른다. 요청에 넣지 않은 속성은 바뀌지 않으므로 최소만 원래 값으로 낮추면 목표 용량은 그대로 남고 이후 축소는 동적 정책이 판단한다. 최대를 현재 대수보다 낮추면 목표 용량도 새 최대로 내려가 축소 활동이 시작된다(scale-in protection이 걸린 인스턴스는 보호 해제 전까지 종료되지 않는다). Target tracking은 트래픽이 줄 때 더 점진적으로 축소한다.
+- 진행 중인 조정 활동이나 대기 중인 갱신과 겹치면 `ScalingActivityInProgress`나 `ResourceContention` 오류가 날 수 있다.
+
+증설을 일찍 시작해도 인스턴스가 요청을 받기까지의 시간은 남는다. 시작할 때마다 애플리케이션과 의존성을 설치하는 bootstrapping은 설치가 크거나 복잡하면 배포와 확장을 늦춘다. 산출물의 상당 부분을 AMI에 미리 넣는 prebaking은 시작과 투입을 앞당길 수 있고, 환경별 구성만 시작 때 적용하는 식으로 둘을 조합할 수 있다. 초기화 자체가 길면 아래 Warm Pool을 검토한다.
+
+운영 점검 제안: 같은 사건이 호출을 여러 번 만들어도 결과 용량이 같도록 요청값을 정하고, 위 오류는 재시도한다. 축소 조건은 최소 유지 시간과 트래픽이 증설 전 수준으로 돌아왔는지를 함께 본다. 원인 이벤트, API 호출 결과와 최종 용량을 운영 채널에 남겨 사람이 증설을 알 수 있게 한다. 최대 용량을 올리면 그 대수의 커넥션 풀 합계가 DB 연결 상한 안에 드는지도 확인한다 — [[MySQL-Connection-Management|MySQL 연결 관리]]. 이 절은 문서 대조이며 실제 그룹에서 실행한 기록은 아니다.
+
+사례(2020년 발표 기준): 평상시의 약 100배까지 요청이 순간적으로 몰리던 팬 커뮤니티 서비스는 아티스트 게시물처럼 시각을 모르는 이벤트가 생기면 푸시 발송과 동시에 API Gateway를 거쳐 Lambda를 호출해 목표, 최소, 최대 용량을 올렸다. 약 30분 유지한 뒤 트래픽이 증설 전 수준으로 내려왔을 때만 되돌렸다. 판매 일정처럼 미리 아는 행사는 Lambda가 일정 캘린더를 주기적으로 조회해 같은 방식으로 증설했고, 두 경우 모두 결과를 메신저 채널로 알렸다. 기본 AMI에서 부팅할 때 구성하던 방식을 JAR 배포 직전까지 구성한 서비스별 AMI로 바꿔 새 서버가 투입되기까지의 시간을 약 5분에서 3분으로 줄였다.
+
 ## Cooldown과 Instance Warmup — 중복 조정 방지
 
 ```
@@ -146,6 +162,12 @@ EC2, ELB, VPC Lattice, EBS 또는 사용자 지정 헬스 체크가 인스턴스
 - [Decrease latency for applications with long boot times using warm pools](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html)
 - [Use lifecycle hooks with a warm pool in Auto Scaling group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/warm-pool-instance-lifecycle.html)
 - [Use instance scale-in protection to control instance termination](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-protection.html)
+- [Manual scaling for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scaling-manually.html)
+- [SetDesiredCapacity API Reference](https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_SetDesiredCapacity.html)
+- [UpdateAutoScalingGroup API Reference](https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_UpdateAutoScalingGroup.html)
+- [Target tracking scaling policies for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html)
+- [Prebaking vs. bootstrapping AMIs](https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/prebaking-vs.-bootstrapping-amis.html)
+- [전 세계 팬들이 모일 수 있는 플랫폼 만들기 — AWS Community Day 2020, 강진우](https://www.youtube.com/watch?v=X2I4NuTOWS8)
 
 ## 관련 문서
 - [[EC2|EC2]]
@@ -154,3 +176,5 @@ EC2, ELB, VPC Lattice, EBS 또는 사용자 지정 헬스 체크가 인스턴스
 - [[CloudWatch|CloudWatch]]
 - [[EventBridge|EventBridge]]
 - [[AWS-Lambda|Lambda]]
+- [[Capacity-Planning|캐퍼시티 플래닝]] — 시각을 아는 급증의 사전 확장과 준비 완료 검증
+- [[Notification-Broadcast-System|대규모 알림 시스템]] — 알림 뒤 동시 진입으로 생기는 백엔드 급증

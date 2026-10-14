@@ -12,6 +12,7 @@ AWS의 **가상 서버 컴퓨트 서비스**. 인스턴스의 컴퓨트, 네트�
 - [[EC2-Compute|컴퓨트 아키텍처]] — Nitro System, Instance Store vs EBS, 인스턴스 패밀리, T 시리즈 크레딧, Placement Group
 - [[EC2-Network-Access|네트워크와 접근]] — IMDS, Elastic IP, 기본 사설 IPv4 변경과 ENI 보존, ENA, Key Pair
 - [[EC2-Operations|운영과 수명주기]] — User Data, AL2023 저장소 버전과 패치, ASG 연계, 인스턴스 상태, AMI
+- [[EC2-Status-Checks|상태 검사와 접속 불가 진단]] — 시스템, 인스턴스, 연결된 EBS 검사, 자동 복구, 마운트와 OS 네트워크 구성 실패
 - [[EC2-Cost|비용 모델]] — On-Demand, Reserved, Savings Plans, Spot, Capacity Reservations
 - [[EC2-Checkpoints|흔한 실수와 체크포인트]] — 운영 실수, 면접, SAA-C03 시험 대비
 - [[Auto-Scaling|EC2 Auto Scaling]] — ASG, Launch Template, Scaling Policy, Cooldown, Lifecycle Hook
