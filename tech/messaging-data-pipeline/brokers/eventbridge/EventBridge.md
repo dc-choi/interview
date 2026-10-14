@@ -171,3 +171,4 @@ cron/rate 표현식 → Scheduler → Target (Lambda, SQS, Step Functions 등)
 - [[Messaging-Patterns|메시징 패턴]]
 - [[Delivery-Semantics|전달 보장]]
 - [[Transactional-Outbox|Transactional Outbox]]
+- [[CloudTrail-Config#EventBridge로 계정 활동과 유지보수 알림 받기|CloudTrail과 AWS Health 이벤트로 받는 운영 알림]]

@@ -117,6 +117,28 @@ verified_at: 2026-10-13
 
 실무 적용 시에는 사이트 개수보다 메모리, CPU, DB 부하, 동시 요청과 허용 장애 범위를 측정한다. 이 절은 구성 검토 기준이며 특정 서버의 수용량을 실측한 결과가 아니다.
 
+## 작은 팀과 작은 예산의 단계별 선택
+
+2026-10-14 AWS 공식 문서 대조 기준이며, 이 절만 추가 대조했다. 단계 구분과 우선순위는 운영 판단의 기준이며 특정 서비스의 우열을 정한 결과가 아니다.
+
+**초기(MVP):** 사람, 시간과 돈이 가장 부족한 단계라 학습 비용을 줄이는 선택을 먼저 한다.
+
+- 익숙한 런타임과 DB를 PaaS나 단순한 VM 구성에 올려 출시 속도를 확보한다. 처음부터 마이크로서비스나 함수로 잘게 나누면 기능보다 배포, 로그와 권한 경로를 먼저 설계하게 되기 쉽다.
+- 접근 패턴이 아직 바뀌는 동안에는 관계형 DB가 유연하다. AWS는 DynamoDB 스키마를 자주 쓰는 쿼리에 맞춰 설계하고, 답해야 할 질문을 알기 전에는 설계를 시작하지 말라고 안내한다. JOIN이 없어 비정규화를 전제로 하고, 테이블의 기본 키 값만 고유하며 GSI 키 값은 중복될 수 있다.
+- 소개 페이지 같은 정적 사이트는 S3와 CloudFront로 분리한다. 캐시가 응답한 만큼 오리진이 직접 처리할 요청이 줄어든다.
+
+**작은 예산의 상시 운영:** 고정비를 낮추고 간헐적인 부하를 사용량 과금 서비스로 넘긴다.
+
+- 트래픽이 적은 서버는 [[EC2-Compute#T 시리즈 CPU 크레딧 시스템|버스터블 인스턴스]]가 저렴하다. 계정 기본값을 바꾸지 않았다면 T8i, T4g, T3a와 T3는 Unlimited로 시작해(Dedicated Host의 T3는 Standard) 크레딧이 떨어져도 느려지지 않는 대신 24시간 평균 사용률이 baseline을 넘으면 추가 요금이 붙고, Standard로 시작하는 T2는 크레딧이 떨어지면 baseline으로 내려간다. `CPUCreditBalance`(Unlimited는 `CPUSurplusCreditBalance`도)에 경보를 걸고 운영 전 부하 시험으로 평균 사용률을 확인한다. AWS 문서의 us-east-1 Linux 예시에서 t3.large는 평균 CPU 42.5%를 넘으면 m5.large보다 비싸다. AWS는 T3가 계속 100%로 버스트하면 같은 크기 M5의 약 1.5배를 낸다고 설명한다.
+- 작은 인스턴스의 CPU를 쓰는 주기 작업(외부 API 수집, 지표 조회)은 함수로 옮기고 정적 콘텐츠는 CDN 캐시로 넘겨, 인스턴스가 핵심 요청에 크레딧을 쓰게 한다.
+- 가끔 도는 배치는 S3 업로드 이벤트로 Lambda를 호출하고 결과를 SNS로 알리는 식으로 상시 서버 없이 구성한다. S3 이벤트 알림은 최소 한 번 전달되고 보통 수 초 안에 오지만 1분 이상 걸릴 수 있다. 함수가 트리거 조건에 맞는 위치에 결과를 쓰면 자신을 다시 호출하므로 입력과 출력 경로를 나눈다([[AWS-Lambda-Operations-Exam#실무 패턴|Lambda 실무 패턴]]).
+- 단기 분석은 중단을 견딜 수 있으면 Spot 인스턴스로 돌리고, 결과를 S3에 남긴 뒤 환경을 지운다. Spot은 회수 2분 전에 중단 알림을 받는다.
+
+**성장 단계:** 사용자, 개발자와 리소스가 늘면 초기의 임시 구성을 모범 사례로 옮긴다.
+
+- 비운영과 운영을 별도 계정으로 나눈다([[IaC#규모가 커질 때의 Terraform 구성 분할|환경 분리]]). 넓게 시작한 IAM 권한은 CloudTrail 활동 기반 정책 생성(IAM Access Analyzer)과 마지막 사용 정보로 좁힌다. 민감 데이터에 대한 명시적 Deny는 어떤 Allow보다 우선해 권한을 좁히기 전의 보호 장치가 되지만, 그 자체가 최소 권한은 아니다.
+- 콘솔 로그인, access key 생성과 AWS 유지보수 일정은 이벤트로 알림을 받는다([[CloudTrail-Config#EventBridge로 계정 활동과 유지보수 알림 받기|운영 알림]]). PoC 때 남긴 보안 예외는 요구사항을 충족한 뒤에도 남기 쉬우므로 단계를 넘어갈 때마다 남은 예외와 정리 계획을 기록한다(운영 제안).
+
 ## 서버리스가 뜻하는 것
 
 - "서버가 없다"가 아니라 **사용자가 서버를 관리하지 않는다**
@@ -138,6 +160,7 @@ verified_at: 2026-10-13
 - 책임 공유 모델 — 데이터, IAM은 사용자 몫
 - Lambda(FaaS)와 EC2(IaaS) 선택을 가르는 트래픽, 비용, 제약 기준
 - 하이브리드 아키텍처가 실무 기본인 이유
+- 작은 예산에서 버스터블 인스턴스와 사용량 과금 서비스를 조합할 때 확인할 것(크레딧 모드, 손익분기 사용률, S3 이벤트 루프)
 
 ## 출처
 
@@ -150,6 +173,18 @@ verified_at: 2026-10-13
 - [Nginx, How nginx processes a request](https://nginx.org/en/docs/http/request_processing.html)
 - [AWS, Disaster recovery options in the cloud](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html)
 - [AWS Lambda, Configuring provisioned concurrency](https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html)
+- [Amazon DynamoDB, NoSQL design for DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-general-nosql-design.html)
+- [Amazon DynamoDB, Best practices for modeling relational data in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-relational-modeling.html)
+- [Amazon DynamoDB, Using Global Secondary Indexes in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html)
+- [Amazon CloudFront, Caching and availability](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ConfiguringCaching.html)
+- [Amazon EC2, Key concepts for burstable performance instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html)
+- [Amazon EC2, Unlimited mode concepts for burstable instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances-unlimited-mode-concepts.html)
+- [Amazon S3, Amazon S3 Event Notifications](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html)
+- [Amazon EC2, Spot Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html)
+- [AWS IAM, Security best practices in IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
+- [AWS IAM, How AWS enforcement code logic evaluates requests](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html)
+- [스타트업 관점에서 본 AWS 선택과 집중 — Amazon Web Services Korea](https://www.youtube.com/watch?v=rkr8ToCiiL0)
+- [일본 시골 개발자의 AWS 활용기 — Amazon Web Services Korea](https://www.youtube.com/watch?v=9oBS8X7TNEQ)
 
 ## 관련 문서
 

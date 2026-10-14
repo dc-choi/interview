@@ -100,6 +100,24 @@ Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 4. **퍼블릭 S3 교정**: Config Rule + SSM Automation으로 탐지 후 승인된 교정 수행
 5. **SCP 위반 추적**: CloudTrail에서 AccessDenied 이벤트 추적
 
+## EventBridge로 계정 활동과 유지보수 알림 받기
+
+2026-10-14 AWS 공식 문서 대조 기준이며, 이 절만 추가 대조했다. 작은 팀이 계정 보안과 유지보수 신호를 놓치지 않기 위한 최소 구성이다. CloudWatch Logs 지표 필터 경로와 달리 로그 그룹 없이 default 이벤트 버스의 규칙으로 받는다.
+
+| 신호 | 이벤트 식별 | 수신 조건과 주의 |
+|---|---|---|
+| API 변경 호출(access key 생성 등) | `detail-type: AWS API Call via CloudTrail`과 `detail.eventName` | 쓰기 관리 이벤트는 일반 `ENABLED` 규칙이 받고, 읽기 전용 관리 이벤트는 `ENABLED_WITH_ALL_CLOUDTRAIL_MANAGEMENT_EVENTS` 상태의 규칙만 받는다 |
+| 콘솔 로그인 | `source: aws.signin`과 `detail.eventName: ConsoleLogin` | 기록 리전이 사용자 유형과 로그인 엔드포인트에 따라 다르다. root 로그인은 us-east-1, us-east-2, us-west-2 중 한 곳에 기록된다 |
+| ECR 이미지 push | `detail-type: ECR Image Action`과 `detail.action-type: PUSH` | ECR이 best effort로 보낸다 |
+| 유지보수 예정과 서비스 장애 | `source: aws.health`와 `detail-type: AWS Health Event` | 리전별 규칙이 필요하다. IAM처럼 리전에 속하지 않는 전역 Health 이벤트는 us-east-1 규칙이 받는다 |
+
+- CloudTrail 경유 이벤트(API 호출, 콘솔 로그인)는 로깅 중인 trail이 있어야 받을 수 있고, best effort로 전달되며 default 버스로만 들어온다. IAM과 CloudFront 이벤트, STS 전역 엔드포인트(`sts.amazonaws.com`) 호출은 us-east-1에 기록되고 STS 리전 엔드포인트 호출은 그 리전에 기록되므로, 다른 리전의 규칙이 반응하지 않으면 규칙의 리전부터 확인한다. 콘솔 로그인 규칙의 `detail-type` 문자열은 콘솔의 샘플 이벤트로 확인한다.
+- AWS Health는 durable 방식으로 최소 한 번 전달을 시도하며, 규칙은 자기 계정의 이벤트만 받는다. 여러 계정의 유지보수 알림을 한곳에서 보려면 AWS Organizations(all features)에서 organizational view를 켜 관리 계정이나 위임 관리자 계정이 조직 전체 이벤트를 하나의 흐름으로 받게 한다. 조직 이벤트는 90일까지 보관된다. 계정마다 장기 access key를 보관해 조회하는 방식은 장기 자격 증명을 늘리므로 피한다([[IAM-Best-Practices|IAM 모범 사례]]).
+- 한 계정에서 여러 리전의 계정별 Health 이벤트를 규칙 하나로 받으려면 us-west-2에 중앙 규칙을 둘 수 있다. 이 방식은 공개 이벤트를 받지 못하고 고가용성 구성이 아니며, AWS는 조치가 필요한 이벤트 수집에만 권한다.
+- 표준 파티션에서 us-west-2는 다른 리전 Health 이벤트의 백업 수신 리전이라, 리전별 규칙과 us-west-2 규칙을 함께 두면 같은 이벤트를 두 번 받는다. 백업이 필요 없으면 us-west-2 규칙에서 `detail.backupEvent`가 false인 이벤트만 받고, 고가용성을 위해 둘 다 받으면 `detail.communicationId`로 중복을 거른다.
+- Slack 같은 채팅 채널로는 SNS 주제를 Amazon Q Developer in chat applications(구 AWS Chatbot)에 연결해 보낸다. 직접 만든 알림 구성의 규칙에 따라 AWS 서비스 이벤트를 콘솔 알림 센터, 이메일, 채팅과 모바일 푸시로 보내는 AWS User Notifications도 EventBridge를 기반으로 동작한다.
+- 알림 전달은 조치 완료가 아니다. 알림마다 담당자와 대응 절차를 함께 정한다.
+
 ## 비용, 운영 주의
 
 - **CloudTrail Management Event**: S3로 전달되는 관리 이벤트의 첫 번째 복사본은 리전별로 CloudTrail 요금이 없고, 추가 복사본과 CloudTrail Lake, 데이터 이벤트, 네트워크 활동 이벤트 등은 별도 과금. S3와 CloudWatch Logs 요금도 별도
@@ -129,6 +147,7 @@ Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 - 자동 교정 = **Config + SSM Automation**
 - 거버넌스 질문 시 CloudTrail + Config + AWS Organizations + SCP 조합 답변
 - CloudTrail Log File **무결성 검증**은 SHA-256 다이제스트
+- CloudTrail 경유 이벤트를 EventBridge로 받을 때의 trail 조건, 읽기 전용 관리 이벤트의 규칙 상태와 이벤트가 기록되는 리전
 
 ## 출처
 
@@ -137,10 +156,25 @@ Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 - [AWS Config 작동 방식](https://docs.aws.amazon.com/config/latest/developerguide/how-does-config-work.html)
 - [AWS Config Managed Rules 목록](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html)
 - [CloudTrail Insights 이벤트 로깅](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-insights-events-with-cloudtrail.html)
+- [CloudTrail 경유 AWS 서비스 이벤트(EventBridge)](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-service-event-cloudtrail.html)
+- [콘솔 로그인 이벤트(CloudTrail)](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-aws-console-sign-in-events.html)
+- [AWS Sign-In 이벤트(EventBridge)](https://docs.aws.amazon.com/eventbridge/latest/ref/events-ref-signin.html)
+- [Amazon ECR 이벤트와 EventBridge](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr-eventbridge.html)
+- [EventBridge로 AWS Health 이벤트 모니터링](https://docs.aws.amazon.com/health/latest/ug/cloudwatch-events-health.html)
+- [AWS Health 이벤트의 리전별 EventBridge 규칙](https://docs.aws.amazon.com/health/latest/ug/choosing-a-region.html)
+- [AWS Health 이벤트의 계정 간 집계](https://docs.aws.amazon.com/health/latest/ug/aggregate-events.html)
+- [AWS Health organizational view와 위임 관리자의 EventBridge 수신](https://docs.aws.amazon.com/health/latest/ug/aggregating-health-events.html)
+- [Amazon Q Developer in chat applications 개요](https://docs.aws.amazon.com/chatbot/latest/adminguide/what-is.html)
+- [AWS User Notifications 개요](https://docs.aws.amazon.com/notifications/latest/userguide/what-is-service.html)
+- [IAM 보안 모범 사례](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
+- [스타트업 관점에서 본 AWS 선택과 집중 — Amazon Web Services Korea](https://www.youtube.com/watch?v=rkr8ToCiiL0)
+- [일본 시골 개발자의 AWS 활용기 — Amazon Web Services Korea](https://www.youtube.com/watch?v=9oBS8X7TNEQ)
 
 ## 관련 문서
 
 - [[IAM]]
+- [[IAM-Best-Practices|IAM 모범 사례]]
+- [[EventBridge|EventBridge]]
 - [[CloudWatch]]
 - [[S3]]
 - [[KMS]]

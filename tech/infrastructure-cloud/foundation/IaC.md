@@ -56,6 +56,27 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 - **락킹(Locking)**: 동시에 여러 명이 상태를 바꾸지 못하게 잠근다. S3 backend의 state locking은 opt-in이며, 새 구성에서는 `use_lockfile = true`로 `.tflock` 파일을 사용한다. `dynamodb_table` 기반 잠금은 deprecated 상태다.
 - **Plan**: apply 전 변경 사항을 미리 계산, 검토. 실수 적용을 막는 안전장치.
 
+## 규모가 커질 때의 Terraform 구성 분할
+
+2026-10-14 HashiCorp와 AWS 공식 문서 대조 기준이며, 이 절만 추가 대조했다. 여러 팀의 서비스 인프라를 한 운영 조직이 함께 관리하는 상황을 전제로 한다.
+
+한 폴더(root module)에 리소스를 계속 더하면 plan과 apply가 느려지고, 같은 state 잠금을 기다리는 작업이 늘며, 실수 하나의 영향이 전체로 번진다. HashiCorp는 논리적으로 관련된 리소스만 묶어 폭발 반경(blast radius)을 작게 유지하고, 변경 빈도, 팀 책임과 필요한 권한, 리소스 규모를 기준으로 구성을 나누라고 권한다. 서비스 단위로 나누면 담당 팀의 권한도 그 서비스 범위로 좁힐 수 있다.
+
+| 구성 단위 | 예 | 따로 두는 이유 |
+|---|---|---|
+| 계정과 리전의 공용 기반 | VPC, 서브넷 | 변경이 드물고 여러 서비스가 의존한다 |
+| 서비스 구성 | 서비스 모듈 호출과 버전 지정만 둔 폴더 | 담당 팀과 변경 주기가 같다 |
+| 공용 모듈 | LB, 오토스케일링 그룹이나 컨테이너 서비스, 서비스 전용 IAM과 DB를 찍어내는 블록 | 태그, 네이밍과 보안 기본값을 한 곳에서 바꾼다 |
+
+- **환경 분리:** AWS는 비운영과 운영을 별도 계정에 두면 리소스와 데이터가 기본적으로 분리되고, 문제의 영향을 한 계정 안에 가둘 수 있다고 설명한다. Terraform CLI workspace는 하나의 backend를 공유하며 state만 바꿔 쓰므로, 시스템 분해나 별도 자격 증명과 접근 통제가 필요한 배포의 격리 수단으로 쓰지 않는다. 환경마다 backend가 다른 구성을 두고 공통 부분은 모듈로 재사용한다. HCP Terraform workspace는 구성, 변수와 state를 따로 갖는 단위라 CLI workspace와 의미가 다르다.
+- **모듈 버전 승격:** Git 소스는 `?ref=`로 태그, 브랜치 또는 커밋을 지정하고, 레지스트리 모듈은 `version` 제약을 쓴다. 새 모듈 버전은 개발 환경 구성에서 먼저 참조해 검증한 뒤 스테이징과 운영 구성의 참조를 차례로 올린다. 재사용 모듈은 Terraform과 provider의 최소 버전만 제약하고, provider의 상한과 하한(`~>`)은 root module이 정한다.
+- **서비스 리소스의 위치:** 서비스 전용 IAM 역할을 전역 폴더에 따로 두면 서비스를 없애거나 담당자가 바뀔 때 함께 정리할 대상을 놓치기 쉽다. 서비스 모듈 안에서 만들되, 같은 계정에서 모듈을 여러 번 쓰면 이름이 겹칠 수 있다. IAM 사용자, 그룹, 역할과 인스턴스 프로파일의 이름은 계정 안에서 대소문자를 구분하지 않고 고유해야 하므로 환경과 서비스 이름을 이름에 넣는다.
+- **구성 간 값 공유:** `terraform_remote_state`는 root module의 output만 노출하지만, 읽는 쪽은 민감 정보가 들어 있을 수 있는 state snapshot 전체에 접근해야 한다. HashiCorp는 공유할 값을 SSM Parameter Store 같은 별도 위치에 게시하고 data source로 읽어, 공유 값과 state에 다른 접근 통제를 적용하라고 권한다.
+- **구조 변경과 교체:** 리소스 이름을 바꾸거나 모듈 안으로 옮기면 Terraform은 기본적으로 기존 객체를 삭제하고 새 주소에 다시 만든다. Terraform v1.1 이상은 `moved` 블록으로 교체 없이 주소를 옮길 수 있고, 공유 모듈에서 이전 `moved` 블록을 지우면 사용자에게는 삭제 후 재생성이 되므로 남겨 둔다. DB처럼 지우면 안 되는 리소스의 `prevent_destroy`는 리소스 블록 자체를 구성에서 지우면 삭제를 막지 못한다. plan의 교체와 삭제 항목을 리뷰 기준으로 둔다.
+- **배포 도구와의 소유 경계:** 배포마다 이미지를 새로 굽고 오토스케일링 그룹이나 태스크 정의를 교체하는 불변 배포에서 같은 속성을 Terraform과 배포 도구가 함께 바꾸면 서로 덮어쓴다. 정적인 기반은 Terraform이, 배포마다 바뀌는 속성은 배포 도구가 맡고, Terraform에는 외부 프로세스가 관리하는 속성을 `lifecycle.ignore_changes`로 지정한다.
+
+공용 모듈을 여러 사용처가 쓰면 Terraform 버전과 리전 차이로 한 곳에서만 깨질 수 있으므로 모듈 저장소에서 먼저 시험한다([[IaC-Tooling-Evolution#Terraform 모듈 테스트|Terraform 모듈 테스트]]).
+
 ## 검사가 통과한 단계를 구분한다
 
 검사 스크립트가 정상 종료해도 필요한 모든 단계가 실행됐다는 뜻은 아니다. 단계별 결과를 통과, 실패, 생략으로 나누고 대상 환경과 생략 사유를 함께 남긴다.
@@ -112,6 +133,7 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 - 프로비저닝 도구 vs 구성 관리 도구의 역할 구분과 조합
 - 상태, 멱등성, 구성 드리프트, 불변 인프라가 왜 IaC의 핵심 가치인지
 - IaC가 CI/CD, GitOps와 어떻게 맞물려 DevOps를 떠받치는지
+- Terraform 구성을 나누는 기준(폭발 반경, 변경 빈도, 팀 권한, 규모)과 CLI workspace를 환경 격리 수단으로 쓰지 않는 이유
 
 ## 출처
 - [Infrastructure as Code(IaC)란? — Red Hat](https://www.redhat.com/ko/topics/automation/what-is-infrastructure-as-code-iac)
@@ -126,6 +148,17 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 - [Terraform, validate](https://developer.hashicorp.com/terraform/cli/commands/validate)
 - [Terraform, plan](https://developer.hashicorp.com/terraform/cli/commands/plan)
 - [Terraform, apply](https://developer.hashicorp.com/terraform/cli/commands/apply)
+- [HCP Terraform, Workspace best practices](https://developer.hashicorp.com/terraform/cloud-docs/workspaces/best-practices)
+- [Terraform, Workspaces](https://developer.hashicorp.com/terraform/cli/workspaces)
+- [Terraform, module block](https://developer.hashicorp.com/terraform/language/block/module)
+- [Terraform, Module sources](https://developer.hashicorp.com/terraform/language/modules/sources)
+- [Terraform, Version constraints](https://developer.hashicorp.com/terraform/language/expressions/version-constraints)
+- [Terraform, terraform_remote_state data source](https://developer.hashicorp.com/terraform/language/state/remote-state-data)
+- [Terraform, Refactoring modules](https://developer.hashicorp.com/terraform/language/modules/develop/refactoring)
+- [Terraform, lifecycle meta-argument](https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle)
+- [AWS, Benefits of using multiple AWS accounts](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/benefits-of-using-multiple-aws-accounts.html)
+- [AWS, IAM and AWS STS quotas](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html)
+- [Terraform을 기반한 AWS 기반 대규모 마이크로서비스 인프라 운영 노하우 — Amazon Web Services Korea](https://www.youtube.com/watch?v=9PTdO7DM6XQ)
 
 ## 관련 문서
 - [[CDK-vs-Terraform|CDK vs Terraform (IaC 도구 선택)]]
