@@ -66,7 +66,7 @@ EC2 인스턴스에 부착되는 **블록 수준 네트워크 스토리지**. �
 
 스냅샷은 EBS 볼륨 데이터를 **S3에 백업**하는 메커니즘 (S3 버킷에는 직접 노출되지 않음).
 
-- **증분식(Incremental)** — 마지막 스냅샷 이후 **변경된 블록만** 추가 저장
+- **일반 생성 스냅샷은 증분식(Incremental)** — 첫 스냅샷은 기록된 블록 전체를, 후속 스냅샷은 변경된 블록을 저장한다. Archive에서 Standard로 복원한 스냅샷은 예외로 전체 스냅샷이다.
 - 복원 시점 데이터로 **새 EBS 볼륨 생성** 가능
 - 스냅샷은 리전 리소스이며 같은 리전의 다른 AZ에서 볼륨을 만들 수 있다. 다른 리전에는 스냅샷 복사 기능을 사용한다.
 - **다른 AWS 계정과 공유** 가능 (권한 부여)
@@ -87,6 +87,19 @@ EC2 인스턴스에 부착되는 **블록 수준 네트워크 스토리지**. �
 - **삭제와 취소:** 진행 중 스냅샷에 삭제를 요청해도 생성이 끝난 뒤 삭제가 적용된다. 즉시 작업을 취소하거나 동시 생성 한도를 확보하는 방법으로 쓰지 않는다.
 
 정기 생성 간격은 RPO에 맞추되 이전 작업의 완료 여부도 확인한다. 간격을 줄이면 회차당 변경 블록을 줄일 수 있지만, 보존 기간과 변경량에 따른 저장 비용까지 함께 검토한다.
+
+### 아카이브와 삭제 복구의 경계
+
+2026-10-14 AWS 공식 가이드 부분 대조 기준이다. Archive는 장기 보관 계층이고 Recycle Bin은 삭제한 리소스를 보존 규칙에 따라 복구하는 기능이다. 둘을 같은 복원 단계로 취급하지 않는다.
+
+- **Archive 전환:** 증분 스냅샷을 해당 시점에 기록된 블록 전체를 포함하는 스냅샷으로 바꾼다. 볼륨 생성, 공유와 복사 전에 Standard로 복원해야 하며, 복원에는 최대 72시간이 걸릴 수 있다.
+- **보관 기간:** 최소 아카이브 기간은 90일이다. 그 전에 삭제하거나 영구 복원하면 남은 기간에 대한 요금이 발생한다. 비용 비교는 [[Storage-Tiering#EBS 아카이브는 증분 크기 그대로 과금하지 않는다|EBS 아카이브 비용 조건]]을 함께 본다.
+- **임시와 영구 복원:** 임시 복원은 Archive 사본을 남기고 지정 기간 동안 Standard 사본을 사용한다. 기간이 끝나면 Standard 사본이 제거된다. 영구 복원은 Archive 사본을 제거하고 Standard에 유지한다.
+- **복원 후 과금:** 두 복원 방식 모두 Standard의 복원본은 전체 스냅샷이다. 복원본의 저장 비용을 기존 증분 크기로 계산하지 않는다. 임시 복원 중에는 Archive 사본과 Standard 복원본의 저장 요금이 함께 발생하며, 일회성 검색(retrieval) 요금도 별도다. AWS 요금 예시 10은 기록된 데이터가 200 GB인 스냅샷을 임시 복원할 때 Standard 저장 요금도 200 GB로 계산한다.
+- **삭제 보호의 전제:** 보호할 리전에 스냅샷용 Recycle Bin 보존 규칙을 먼저 만든다. 태그 수준 규칙은 지정 태그와 일치하는 대상을, 리전 수준 규칙은 제외 태그에 해당하지 않는 해당 유형의 리소스를 보호한다. 스냅샷 보존 기간은 1~365일이며 만료 후에는 복구할 수 없다.
+- **두 단계 복구:** 보존 규칙과 일치해 Recycle Bin에 들어간 Archive 스냅샷은 먼저 Recycle Bin에서 복구하고, 이어 Standard로 복원해야 사용할 수 있다. Recycle Bin에서 꺼냈다고 Archive 복원이 끝난 것은 아니다.
+
+운영 적용 제안: 즉시 복구용 백업과 장기 보관용 스냅샷을 나누고, 보존 규칙의 태그와 리전 및 실제 복원 시간을 시험한다. 여기서는 계정 설정과 복원을 실행하지 않았으며 기존 절의 검증일은 유지한다.
 
 ## EBS 암호화
 
@@ -129,7 +142,7 @@ EBS는 AZ 안에서 중복 저장되므로 단일 볼륨의 일반적인 내구�
 
 - **프로비저닝 사이즈** 기준 GB, 월 과금 (실사용량 아님)
 - io1, io2는 IOPS 프로비저닝 추가 비용, gp3는 IOPS, Throughput을 기본 한도 초과 시 추가
-- **스냅샷은 변경 블록 단위**로 과금된다. 변경률, 보존 기간, 아카이브와 복사 여부에 따라 비용이 누적되므로 정책으로 관리한다.
+- **일반 생성 스냅샷은 첫 전체 데이터와 이후 변경 블록의 저장량**을 기준으로 과금된다. Archive 스냅샷과 Archive에서 Standard로 복원한 스냅샷은 전체 스냅샷 크기로 저장 비용을 계산한다. 복원 방식별 추가 요금은 위의 아카이브 절을 따른다(2026-10-14 부분 대조).
 - 미사용 볼륨도 과금 — 인스턴스 종료 후 **고아 볼륨 정리** 필수
 
 ## 흔한 실수
@@ -146,7 +159,7 @@ EBS는 AZ 안에서 중복 저장되므로 단일 볼륨의 일반적인 내구�
 - EBS는 **AZ 종속** — 다른 AZ EC2 부착 불가, 스냅샷 경유
 - 현재 세대 EBS 볼륨 유형 6종 (`gp3`, `gp2`, `io2 Block Express`, `io1`, `st1`, `sc1`)과 **부트 가능 여부**. SSD는 지원하고 현재 세대 HDD인 `st1`, `sc1`은 지원하지 않으며, 이전 세대 Magnetic은 지원
 - io2 Block Express의 **Multi-Attach** — 동일 AZ 내 다수 인스턴스 부착
-- 스냅샷은 **증분식**, S3에 저장 (사용자 버킷 X)
+- 일반 생성 스냅샷은 **증분식**, S3에 저장 (사용자 버킷 X). Archive 전환 시 전체 스냅샷으로 저장하며 Standard로 복원해도 전체 스냅샷이다.
 - 스냅샷의 **Cross-Region, Cross-Account 공유** 가능
 - 암호화는 **KMS 기반 AES-256**, 스냅샷/볼륨 간 **자동 전파**
 - 암호화되지 않은 EBS 직접 암호화 불가 → 스냅샷 복사 우회
@@ -156,6 +169,10 @@ EBS는 AZ 안에서 중복 저장되므로 단일 볼륨의 일반적인 내구�
 
 ## 출처
 
+- [Considerations and limitations for archiving Amazon EBS snapshots](https://docs.aws.amazon.com/ebs/latest/userguide/snapshot-archive-considerations.html)
+- [Restore an archived Amazon EBS snapshot](https://docs.aws.amazon.com/ebs/latest/userguide/restore-archived-snapshot.html)
+- [How does Recycle Bin work?](https://docs.aws.amazon.com/ebs/latest/userguide/recycle-bin-concepts.html)
+- [Amazon EBS pricing](https://aws.amazon.com/ebs/pricing/)
 - [Amazon CloudWatch metrics for Amazon EBS](https://docs.aws.amazon.com/ebs/latest/userguide/using_cloudwatch_ebs.html)
 - [Torn write prevention on Amazon EC2 Linux instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/storage-twp.html)
 - [Block sizes for torn write prevention on Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-block-sizes.html)
