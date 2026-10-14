@@ -66,6 +66,24 @@ EC2와 Compute SP 적용을 계산할 때는 다음 순서를 구분한다.
 
 ## 흔한 함정
 
+### 구매 계정과 혜택을 받은 계정의 비용을 구분한다
+
+2026-10-14 Cost Explorer 공식 가이드와 AWS의 계정별 배분 시연을 대조한 범위다. 기존 RI와 상품별 조건의 검증일은 유지한다.
+
+Cost Explorer에서 같은 기간을 보더라도 `Unblended costs`와 `Amortized costs`는 약정 비용을 다르게 표시한다. 선결제와 상쇄 항목의 기본 해석은 [[Cost-Anomaly#선결제와 사용량 증가를 구분한다|비용 증가 조사]]를 참고한다.
+
+| 확인할 질문 | 조회 기준 | 해석 |
+|---|---|---|
+| 약정을 구매한 계정이 부담하는 요금은 얼마인가 | Unblended, `Charge type`의 Savings Plan upfront fee와 recurring fee, `Linked account` | 선결제와 정기 약정 요금을 구분한다 |
+| 각 계정의 사용에 얼마의 약정 비용이 배분됐는가 | Amortized, Savings Plan covered usage, `Linked account` | covered usage는 On-Demand 환산액이 아니라 Savings Plans 요율로 표시된다 |
+| 사용하지 못한 약정은 얼마인가 | Amortized에서 Savings Plan recurring fee와 소유 계정 확인 | 미사용 약정 비용은 약정 소유 계정에 귀속된다. 소유자가 관리 계정이라고 고정하지 않는다 |
+
+Amortized는 약정 비용을 적용 기간의 사용에 배분한다. 일별 화면의 미사용 약정 비용은 월초나 구매일에 나타날 수 있으므로 그 날짜의 사용량 급증과 구분한다. `Net amortized costs`는 할인도 반영하므로 내부 배부표와 비교할 때 비용 지표 이름까지 맞춘다.
+
+운영 점검 제안: 멤버 계정의 EC2 비용을 볼 때 `Purchase option`과 EC2 running hours를 함께 확인하고, Unblended에서 Amortized로 전환해 약정 적용분을 대조한다. 계정, 기간, 필터와 비용 지표가 다른 두 화면의 차이를 곧바로 청구 오류로 판단하지 않는다. 실제 조직의 청구나 내부 배부 정책을 검증한 결과는 아니다.
+
+### 약정 선택에서 놓치기 쉬운 조건
+
 - 변동 큰 워크로드에 과약정 → 미사용 약정 = 손실
 - Standard RI를 전혀 수정할 수 없다고 오해 → 가능한 AZ, scope, 같은 family와 generation 안의 size 변경을 놓침
 - Standard RI로 묶은 뒤 family, OS, tenancy를 바꿔야 함 → Standard는 교환 불가이므로 Convertible RI나 Savings Plans 검토
@@ -83,6 +101,9 @@ EC2와 Compute SP 적용을 계산할 때는 다음 순서를 구분한다.
 
 ## 출처
 
+- [AWS Cost Management, Filtering the data that you want to view](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html)
+- [AWS Cost Management, Exploring your data using Cost Explorer](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-exploring-data.html)
+- [How to track Savings Plans allocation in AWS Cost Explorer — Amazon Web Services](https://www.youtube.com/watch?v=ayEICqKa5wU)
 - [AWS — Savings Plans vs Reserved Instances](https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html)
 - [AWS — Reserved Instances (Standard vs Convertible, Regional vs Zonal)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html)
 - [Amazon EC2, Modify Reserved Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-modifying.html)

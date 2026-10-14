@@ -38,6 +38,17 @@ GuardDuty Investigation은 finding, 계정 또는 조직 범위의 보안 신호
 
 ## 경보가 없을 때 보호 범위부터 확인한다
 
+### 탐지용 수집과 조사 증거 보존을 나눈다
+
+2026-10-14 foundational data sources와 finding export 공식 가이드 부분 대조 기준이다. 기존 Investigation Preview와 조직 정책의 검증일은 유지한다.
+
+- 기본 탐지는 CloudTrail 관리 이벤트, EC2의 VPC flow log와 Route 53 Resolver DNS query log를 분석한다. GuardDuty는 독립적인 데이터 스트림을 사용하므로 이 분석을 위해 사용자가 trail이나 VPC Flow Logs를 별도로 만들 필요는 없다.
+- DNS 분석에는 EC2가 사용하는 resolver 조건이 있다. 외부 DNS나 직접 구성한 resolver를 사용하면 이 DNS 데이터 소스를 분석할 수 없다. 경보 부재를 확인할 때 실제 resolver 경로도 조사한다.
+- GuardDuty는 분석에 필요한 필드를 추출한 뒤 수집 로그를 폐기한다. 탐지 기능 활성화가 조사자가 조회할 원 로그의 보존을 대신하지 않으므로 CloudTrail과 VPC Flow Logs의 보존은 별도로 설계한다.
+- 생성된 finding은 90일 보존한다. 더 긴 이력이 필요하면 S3 내보내기를 구성하고, 리전별 설정과 S3/KMS 권한을 확인한다. 보관 상태의 finding과 suppression으로 보관된 발생분은 기본적으로 내보내지 않는다.
+
+운영 점검 제안: 탐지 범위, 원 로그 보존, finding 내보내기를 각각 확인한다. S3에 finding이 있다는 사실만으로 사건의 원 로그까지 확보했다고 판단하지 않는다. 위 기본 데이터 수집 조건을 security agent가 필요한 Runtime Monitoring에 확대 적용하지 않는다.
+
 ### 공격 시퀀스와 실제 수집 범위를 구분한다
 
 부분 검증(2026-10-14): Extended Threat Detection과 Runtime Monitoring 활성화 문서를 대조했다. 기존 Investigation Preview와 조직 정책 전체를 재검증한 날짜는 아니다.
@@ -66,6 +77,8 @@ Extended Threat Detection은 계정 안에서 시간과 리소스에 걸친 신�
 
 ## 출처
 
+- [Amazon GuardDuty, GuardDuty foundational data sources](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html)
+- [Amazon GuardDuty, Exporting generated GuardDuty findings to Amazon S3 buckets](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_exportfindings.html)
 - [Amazon GuardDuty, GuardDuty Extended Threat Detection](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-extended-threat-detection.html)
 - [Amazon GuardDuty, Enabling Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-enablement.html)
 - [Amazon GuardDuty, GuardDuty Investigation (Preview)](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-investigation.html)
