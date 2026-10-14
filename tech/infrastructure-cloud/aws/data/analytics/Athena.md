@@ -96,6 +96,17 @@ S3에 저장된 데이터를 **별도 적재 없이 표준 SQL로 직접 쿼리*
 - **Federated Query**: 운영 RDS + 로그 S3를 한 SQL로 조인.
 - **CTAS / INSERT INTO**: SQL만으로 데이터 변환 파이프라인 구성 가능.
 
+## 예약 쿼리의 시작과 완료를 구분한다
+
+부분 검증(2026-10-14): EventBridge가 Lambda를 호출하고 Lambda가 `StartQueryExecution`을 요청하는 방식으로 정기 조회를 구성할 수 있다. Lambda가 요청을 성공적으로 반환한 것과 Athena SQL이 끝난 것은 별개다.
+
+- **시간 기준:** 기존 EventBridge scheduled rule은 UTC 기준이다. 신규 구성에는 AWS가 권장하는 EventBridge Scheduler를 검토한다. Scheduler의 cron은 지정한 시간대를 사용할 수 있으므로, 매일 한국 시각 06시 실행은 `cron(0 6 * * ? *)`와 `Asia/Seoul`을 함께 지정하는 예로 표현한다. 두 방식의 시간대 설정을 혼동하지 않는다.
+- **완료 확인:** 반환된 `QueryExecutionId`로 `GetQueryExecution`의 상태를 추적한다. `QUEUED`와 `RUNNING`은 완료가 아니며, 후속 처리는 `SUCCEEDED`, `FAILED`, `CANCELLED`를 구분한다. 성공 상태 뒤에도 업무상 필요한 결과를 별도로 확인한다(운영 점검 제안).
+- **중복 요청:** 같은 `ClientRequestToken`으로 같은 요청을 재전송하면 새 쿼리를 만들지 않고 같은 실행 ID를 반환한다. 매일 실행할 서로 다른 회차에 고정 토큰을 재사용하지 않는다. 예약 회차별 토큰을 보존해 해당 회차의 재시도에만 재사용하는 방식은 설계 선택이다. SQL 등 요청 파라미터가 바뀌면 같은 토큰 요청은 오류가 된다.
+- **실행 경계:** workgroup, 데이터베이스와 결과 위치를 명시하고 실행 역할의 데이터 접근 권한을 확인한다. Workgroup의 강제 설정이 클라이언트 결과 위치를 덮어쓸 수 있으므로, 코드에 적은 S3 경로만으로 실제 출력 위치를 단정하지 않는다.
+
+이는 공식 문서로 대조한 운영 설계이며 실제 예약 작업과 쿼리를 실행한 검증은 아니다. 기존 절 전체의 검증일은 유지한다.
+
 ## API 사용량 집계와 CTAS 재실행의 경계
 
 부분 검증(2026-10-14): API Gateway의 REST API 액세스 로그는 Firehose로 보낼 수 있다. Firehose의 S3 적재 결과를 Athena로 조회하면 운영 DB에서 원본 요청을 반복 집계하는 경로를 분리할 수 있다. 이것만으로 집계의 완전성이나 청구 정확성이 보장됐다고 보지는 않는다.
@@ -199,6 +210,12 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 ## 출처
 
+- [How do I schedule an Amazon Athena query? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/schedule-query-athena)
+- [Amazon Athena, StartQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_StartQueryExecution.html)
+- [Amazon Athena, GetQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_GetQueryExecution.html)
+- [Amazon Athena, QueryExecutionStatus](https://docs.aws.amazon.com/athena/latest/APIReference/API_QueryExecutionStatus.html)
+- [Amazon EventBridge, Creating a scheduled rule (legacy)](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html)
+- [Amazon EventBridge Scheduler, Schedule types](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html)
 - [Amazon Athena, Configure access to workgroups and tags](https://docs.aws.amazon.com/athena/latest/ug/workgroups-access.html)
 - [Amazon Athena, Override client-side settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html)
 - [Amazon API Gateway, Log REST API calls to Amazon Data Firehose in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-logging-to-kinesis.html)

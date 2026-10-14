@@ -86,6 +86,16 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 
 이 절만 추가 대조했으며 Terraform과 기존 CDK 비교 전체의 검증일은 유지한다.
 
+### 남은 리소스와 재배포의 이름 충돌
+
+부분 검증(2026-10-14): 스택 삭제 뒤 보존된 S3 버킷이 있는데 같은 `bucketName`으로 새 버킷을 만들면 이름 충돌이 날 수 있다. 스택의 삭제 완료를 데이터의 삭제 완료로 해석하지 않는다.
+
+- **기존 데이터를 계속 관리할 때:** 지원되는 리소스는 `cdk import`로 스택 관리에 편입할 수 있다. 다른 CloudFormation 스택이 현재 관리 중인 리소스인지 먼저 확인한다. 가져오기 전 `cdk diff`로 대기 중인 변경이 없는지 확인하고, 가져올 리소스의 추가 외에 갱신이나 삭제를 같은 작업에 섞지 않는다.
+- **정의와 실제 상태:** 버킷의 암호화, 수명 주기 등 현재 속성을 construct에 맞춰 적는다. 가져오기 성공이 속성 정의의 정확성과 완전성을 검증하지는 않으므로 이후 drift detection으로 확인한다. 불완전한 정의는 다음 배포에서 예상하지 못한 변경을 만들 수 있다.
+- **새 리소스가 필요할 때:** 새 이름으로 만드는 선택은 기존 데이터와 소비자의 참조를 이전하는 문제를 남긴다. 이름 충돌만 피하려고 보존 리소스를 삭제하거나 `DESTROY`로 바꾸지 않고, 보존과 이전 조건부터 정한다(운영 판단 기준).
+
+문서에 근거한 복구 선택지이며 실제 가져오기나 삭제 시험은 수행하지 않았다. 기존 비교 전체의 검증일은 유지한다.
+
 ## 자동 배포의 bootstrap과 승인 경계
 
 2026-10-14 AWS CDK v2 공식 문서 부분 대조 기준이다. 데이터 파이프라인을 여러 계정과 리전에 재배포할 때 코드 재사용과 배포 환경 준비를 구분한다.
@@ -113,6 +123,8 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 - IaC 도구 선택에서 진보성보다 운영 안정성, 커뮤니티를 우선하는 판단 근거
 
 ## 출처
+- [AWS CDK, cdk import](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-import.html)
+- [AWS CDK, CLI reference — Import existing resources into a stack](https://docs.aws.amazon.com/cdk/v2/guide/cli.html#import-resources)
 - [AWS CDK, Bootstrap your environment for use with the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html)
 - [AWS CDK, cdk deploy](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-deploy.html)
 - [AWS CDK, Amazon S3 Construct Library — Bucket deletion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3-readme.html#bucket-deletion)
