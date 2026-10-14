@@ -129,6 +129,18 @@ VOD는 자산을 저장하고 처리를 마친 뒤 공개하지만, 라이브는
 
 공개 글은 새 스트림의 배정만 설명하고, 진행 중인 스트림을 다른 origin으로 옮기는 방식이나 시청자 쪽 edge가 같은 라우팅을 쓰는지는 밝히지 않는다. 설계에 옮길 때는 이 둘을 따로 정한다. 네트워크 상태에 따른 재생 화질 적응과 코덱 변환 세부는 이 절의 범위 밖이다.
 
+### 라이브 ingest 풀의 실행 상태와 방송 수용 가능 상태
+
+방송 시작에 맞춘 용량 준비에서는 VM 실행과 실제 스트림 수용 준비를 구분한다. 2026-10-14 AWS 공식 문서 기준, EC2 Auto Scaling의 launch lifecycle hook은 초기화 중 인스턴스를 대기시켜 애플리케이션 준비 뒤 로드밸런서에 등록하도록 구성할 수 있다. Hook은 준비 상태를 자동 판정하는 기능이 아니므로 초기화와 완료 통지는 별도로 구현한다.
+
+라이브 ingest에 적용할 때는 다음을 점검한다(설계 제안).
+
+- 송출 연결, 인코더 초기화와 실제 미디어 처리 확인까지를 준비 시간으로 측정한다. VM 기동 시간만으로 방송 시작 대기 시간을 약속하지 않는다.
+- 동시 시청자 수와 동시 방송 수를 분리한다. 시청자 전달 용량과 ingest 및 변환 용량을 각각 산정하고, 방송 하나의 장애가 영향을 주는 범위를 정한다.
+- 풀에서 인스턴스를 제거하기 전에 새 방송 할당을 중지하고 진행 중인 방송을 어떻게 종료하거나 복구할지 정한다. 종료 hook의 대기 시간에는 한계가 있으므로 방송 전체가 끝날 때까지 무기한 보호된다고 가정하지 않는다.
+
+이 절은 라이브 ingest의 용량 준비 비교이며 관리형 영상 서비스 전체에 EC2 hook을 요구하는 것은 아니다. 실제 방송과 장애 전환 시험은 수행하지 않았고 기존 `verified_at`은 유지한다.
+
 ## Netflix 공개 사례를 읽는 경계
 
 - 2024년 공개된 VES/Cosmos 사례는 비동기 workflow와 독립적인 media processing service, chunked encoding의 필요성을 보여 준다. 전체 내부 topology나 현재 운영 수치를 공개한 명세로 읽지 않는다.
@@ -138,6 +150,7 @@ VOD는 자산을 저장하고 처리를 마친 뒤 공개하지만, 라이브는
 
 ## 출처
 
+- [Amazon EC2 Auto Scaling, Amazon EC2 Auto Scaling lifecycle hooks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html)
 - [Cloudflare Stream, Overview](https://developers.cloudflare.com/stream/)
 - [Cloudflare Stream, Use webhooks](https://developers.cloudflare.com/stream/manage-video-library/using-webhooks/)
 - [Cloudflare Stream, Secure your Stream](https://developers.cloudflare.com/stream/viewing-videos/securing-your-stream/)

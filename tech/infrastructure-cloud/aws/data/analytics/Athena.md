@@ -90,6 +90,18 @@ S3에 저장된 데이터를 **별도 적재 없이 표준 SQL로 직접 쿼리*
 - **Federated Query**: 운영 RDS + 로그 S3를 한 SQL로 조인.
 - **CTAS / INSERT INTO**: SQL만으로 데이터 변환 파이프라인 구성 가능.
 
+## API 사용량 집계와 CTAS 재실행의 경계
+
+부분 검증(2026-10-14): API Gateway의 REST API 액세스 로그는 Firehose로 보낼 수 있다. Firehose의 S3 적재 결과를 Athena로 조회하면 운영 DB에서 원본 요청을 반복 집계하는 경로를 분리할 수 있다. 이것만으로 집계의 완전성이나 청구 정확성이 보장됐다고 보지는 않는다.
+
+- **수집 설정:** REST API의 stage에서 Firehose를 액세스 로그 대상으로 선택하며 스트림 이름은 `amazon-apigateway-`로 시작해야 한다. 액세스 로그 목적지로 CloudWatch와 Firehose를 동시에 켤 수는 없다. 이 제약을 실행 로그 설정이나 다른 API 유형으로 확대하지 않는다.
+- **집계 계약:** 요청 시각, 테넌트, 기능과 결과 상태를 구분하고 실패 요청과 재시도를 사용량에 포함할지 먼저 정한다. 시간별 집계라면 늦게 도착한 로그의 재집계 범위와 중복 판별 기준도 정한다(설계 제안).
+- **CTAS 출력:** 일반 Hive 외부 테이블을 만드는 CTAS의 `external_location`은 비어 있어야 하며 기존 객체를 덮어쓰지 않는다. 외부 테이블의 `DROP TABLE`은 S3 데이터를 남기므로 같은 작업을 다시 시작할 때도 출력 경로를 따로 확인한다. 이 삭제 동작을 관리형 Iceberg 테이블에 적용하지 않는다.
+- **실패와 재실행:** 실패하거나 취소한 CTAS와 `INSERT INTO`는 부분 파일을 남길 수 있다. manifest로 파일을 확인하되 급작스러운 실패에는 manifest가 없을 수도 있어 실제 경로도 점검한다. 실행별 출력 경로를 분리하고 완료한 결과만 집계 대상으로 선택하는 방식을 검토한다(설계 제안).
+- **결과 저장:** 시간별 합계를 운영 DB에 저장하면 그 쓰기와 조회 부하는 남는다. 같은 구간을 다시 계산할 때 합계가 중복 가산되지 않도록 대체 또는 멱등 갱신 규칙을 정하고, 알려진 요청과 대조한다(설계 제안).
+
+비용은 변환과 집계 쿼리의 스캔량, 저장과 전달 비용을 함께 비교한다. 특정 자료의 압축률이나 비용 배수를 일반 보장값으로 쓰지 않는다. 실제 파이프라인을 실행한 검증은 아니며 기존 절 전체의 검증일은 유지한다.
+
 ## CloudTrail 로그의 파티션과 호출 주체 추적
 
 2026-10-07 AWS 공식 문서 기준, CloudTrail Event history는 계정과 리전별 최근 90일의 관리 이벤트만 제공한다. 데이터 이벤트 조회나 장기 조사는 사전에 수집한 Trail의 S3 로그 등 별도 기록이 필요하다. Athena는 기록되지 않은 과거 이벤트를 복원하지 않는다.
@@ -181,6 +193,11 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 ## 출처
 
+- [Amazon API Gateway, Log REST API calls to Amazon Data Firehose in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-logging-to-kinesis.html)
+- [Amazon Athena, Considerations and limitations for CTAS queries](https://docs.aws.amazon.com/athena/latest/ug/ctas-considerations-limitations.html)
+- [Amazon Athena, DROP TABLE](https://docs.aws.amazon.com/athena/latest/ug/drop-table.html)
+- [Amazon Athena, DROP TABLE for Iceberg](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg-drop-table.html)
+- [Amazon Data Firehose, Configure destination settings](https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html)
 - [Amazon Athena, MERGE INTO](https://docs.aws.amazon.com/athena/latest/ug/merge-into-statement.html)
 - [Amazon Athena, Update Iceberg table data](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg-updating-iceberg-table-data.html)
 - [Amazon Athena, Query Apache Iceberg tables](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg.html)

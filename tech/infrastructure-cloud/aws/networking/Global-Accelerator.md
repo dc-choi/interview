@@ -53,9 +53,19 @@ AWS 엣지 로케이션의 **고정 Anycast IP**를 글로벌 진입점으로 �
 
 1. 클라이언트가 Anycast IP로 요청 발신.
 2. BGP 라우팅으로 **가장 가까운 엣지 로케이션** 도착.
-3. 엣지에서 AWS 백본을 타고 **헬스 OK + Traffic Dial > 0 + 가장 가까운 Endpoint Group** 선택.
+3. 표준 accelerator는 사용자 위치, 상태와 설정한 가중치 등을 바탕으로 리전 엔드포인트를 선택한다. 정상 엔드포인트가 하나도 없으면 모든 엔드포인트로 라우팅하는 예외가 있다.
 4. 그룹 내에서 가중치 기반으로 **Endpoint 선택** → 트래픽 전달.
 5. 엔드포인트(ALB/NLB/EC2)가 하위 인스턴스로 라우팅.
+
+## TCP 연결 가속과 애플리케이션 지연을 나눠 측정한다
+
+부분 검증(2026-10-14): AWS 동작 문서 기준, Global Accelerator는 클라이언트의 TCP 연결을 엣지에서 종단하고 엔드포인트로 새 TCP 연결을 거의 동시에 맺는다. 이 연결 경로의 개선과 응답 캐시로 원본 요청을 줄이는 효과는 구분한다.
+
+- **ping의 측정 범위:** accelerator IP의 ICMP echo에는 엣지가 응답한다. ping이 리전 엔드포인트까지 전달되지 않으므로 그 값만으로 API의 왕복 시간을 비교하지 않는다.
+- **비교 조건:** 실제 사용자 지역에서 같은 API, 요청 크기, 응답과 연결 재사용 조건으로 직접 경로와 가속 경로를 비교한다. 연결 수립, 첫 바이트와 전체 응답 시간을 나누고 서버 처리 시간도 함께 본다(측정 설계 제안).
+- **효과의 귀속:** 비교 경로에 캐시나 프록시를 함께 넣었다면 네트워크 가속만의 성과로 보고하지 않는다. 요청 수와 캐시 적중 여부를 따로 기록한다(측정 설계 제안).
+
+실제 네트워크 측정은 수행하지 않았다. 이 절과 라우팅 예외, 아래 CloudFront IP 비교만 대조했으며 기존 문서 전체의 검증일은 유지한다.
 
 ## 사용 사례
 
@@ -69,7 +79,7 @@ AWS 엣지 로케이션의 **고정 Anycast IP**를 글로벌 진입점으로 �
 | 항목 | Global Accelerator | CloudFront |
 |---|---|---|
 | 계층 | L4 (TCP/UDP) | L7 (HTTP/HTTPS, WebSocket) |
-| 진입 IP | IPv4 2개 또는 dual-stack 4개의 고정 Anycast IP | 동적 IP (DNS 기반) |
+| 진입 IP | IPv4 2개 또는 dual-stack 4개의 고정 Anycast IP | DNS 기반 접근. 별도 요청과 구성으로 Anycast static IP도 사용 가능 |
 | 캐싱 | 없음 | 있음 (엣지 캐시) |
 | 주 용도 | 비-HTTP, 고정 IP, 백본 가속 | 정적/동적 콘텐츠 캐싱, 글로벌 웹 가속 |
 | 오리진 | ALB/NLB/EC2/EIP | S3, ALB, 외부 HTTP 오리진 등 |
@@ -102,6 +112,7 @@ AWS 엣지 로케이션의 **고정 Anycast IP**를 글로벌 진입점으로 �
 ## 출처
 
 - [AWS Global Accelerator, How AWS Global Accelerator works](https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html)
+- [Amazon CloudFront, Request Anycast static IPs to use for allowlisting](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/request-static-ips.html)
 - [AWS Global Accelerator, Preserve client IP addresses](https://docs.aws.amazon.com/global-accelerator/latest/dg/preserve-client-ip-address.html)
 - [AWS Global Accelerator, BYOIP requirements](https://docs.aws.amazon.com/global-accelerator/latest/dg/using-byoip.requirements.html)
 - AWS SAA C03 학습 자료 (로컬)
