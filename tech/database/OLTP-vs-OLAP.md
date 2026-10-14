@@ -59,6 +59,18 @@ OLTP(Online Transaction Processing)와 OLAP(Online Analytical Processing)는 제
 - 분석 DB에서는 [[SCD-Type2|SCD Type 2]] 같은 이력 모델로 시점 일관성 확보
 - 운영 DB는 가벼운 스키마를 유지, 분석 DB는 정렬 키, Materialized View로 별도 최적화
 
+## 분석 연산의 격리와 확장
+
+분석용 저장소를 공유하면서 연산 자원만 워크로드별로 나눌 수 있다. Snowflake의 virtual warehouse는 다른 warehouse와 연산 자원을 공유하지 않는 독립 compute cluster다. 예를 들어 ETL과 BI에 별도 warehouse를 배정하면 서로 같은 compute를 두고 경쟁하는 상황을 피할 수 있다. 이는 연산 격리의 설명이며 데이터 접근 권한이나 읽는 시점까지 같아진다는 뜻은 아니다.
+
+- **크기 확장:** 복잡한 쿼리에 더 많은 자원을 배정하는 선택이다. 작은 쿼리는 크기를 늘려도 빨라지지 않을 수 있고, 추가 자원은 준비된 뒤 대기 중이거나 새로 제출한 쿼리에 쓰인다. 이미 실행 중인 쿼리를 즉시 가속하지 않는다.
+- **동시성 확장:** 동시 사용자와 쿼리의 대기가 문제라면 별도 warehouse나 multi-cluster warehouse를 검토한다. Multi-cluster는 Enterprise Edition 이상에서 제공하며 단일 쿼리 가속과 목적이 다르다.
+- **비용과 캐시:** Standard warehouse는 시작하거나 재개할 때마다 최소 60초 과금이 적용되고 이후 초 단위로 계산한다. Interactive warehouse는 최소 과금이 1시간이며 재개할 때 새 최소 과금이 발생하므로 이 조건을 구분한다. Warehouse를 중지하면 해당 warehouse의 테이블 데이터 캐시가 사라지므로 잦은 중지와 재개는 최소 과금과 캐시 재구축을 함께 비교해야 한다.
+
+검증 제안: 같은 데이터와 대표 쿼리로 크기별 실행 시간, 동시 요청의 대기 시간과 소비 크레딧을 비교한다. 자원을 늘리면 처리 시간이 정확히 반으로 줄거나 비용이 같다는 전제는 두지 않는다.
+
+부분 검증(2026-10-14): 이 절의 Snowflake 연산 구조, 확장과 과금 조건을 공식 문서로 대조했다. 기존 제품별 트랜잭션과 거버넌스 범위는 재검증하지 않아 frontmatter 날짜를 유지한다. 실제 계정에서 성능을 측정한 결과는 아니다.
+
 ## 분석 데이터 통합과 레이크하우스
 
 OLTP와 OLAP는 처리할 업무의 성격을, 데이터 웨어하우스와 데이터 레이크, 레이크하우스는 데이터를 저장하고 관리하는 방식을 설명한다. 두 분류를 같은 축으로 보지 않는다.
@@ -138,6 +150,10 @@ Unity Catalog의 external location은 저장소 경로와 storage credential을 
 - 레이크하우스 거버넌스 계층(예: Unity Catalog)의 권한 상속과 USE 권한, 등록하지 않은 경로와 저장소 직접 접근이 통제 밖에 남는 이유
 
 ## 출처
+- [Snowflake — Snowflake key concepts and architecture](https://docs.snowflake.com/en/user-guide/intro-key-concepts)
+- [Snowflake — Overview of warehouses](https://docs.snowflake.com/en/user-guide/warehouses-overview)
+- [Snowflake — Warehouse considerations](https://docs.snowflake.com/en/user-guide/warehouses-considerations)
+- [Snowflake — Snowflake interactive analytics](https://docs.snowflake.com/en/user-guide/interactive#cost-and-billing-considerations)
 - [Delta Lake — Delta Transaction Log Protocol](https://github.com/delta-io/delta/blob/master/PROTOCOL.md)
 - [Databricks — What are ACID guarantees on Databricks?](https://docs.databricks.com/aws/en/lakehouse/acid)
 - [Databricks — Work with table history](https://docs.databricks.com/aws/en/tables/history)
