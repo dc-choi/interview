@@ -88,6 +88,14 @@ AI 사용률, 호출 수와 생성 코드량은 채택 활동의 보조 신호�
 
 조직문화가 AI보다 더 큰 생산성 향상을 만든다는 비교 우위는 경험 기반 견해이며 이를 직접 측정한 연구 결과가 아니다. 문화와 시스템이 AI 효과를 증폭한다는 모델은 도입 전 진단과 실험 설계에 쓰고, 실제 효과는 조직의 업무 흐름에서 검증한다.
 
+### 작은 조직에서는 대표의 승인 대기도 측정한다
+
+대표가 영업, 납품과 최종 검토를 함께 맡는 조직에서는 초안 생성이 빨라져도 승인 대기가 쌓일 수 있다. 이는 모든 스타트업의 공통 특성이라는 결론이 아니라 실제 업무 흐름에서 확인할 병목 가설이다. 운영 제안으로, 대표에게 올라오는 요청의 종류, 대기 시간, 반려 사유와 반복되는 판단 기준을 먼저 기록한다.
+
+위임 범위를 정할 때는 초안 작성, 사람이 승인한 뒤 실행, 허용 범위 안의 자동 실행을 구분한다. 단계마다 책임자, 필요한 근거와 권한 밖 요청을 사람에게 넘길 조건을 정한다. 자동화 확대는 개별 결과를 모두 검수하기 어렵다는 이유만으로 결정하지 않고, 업무 위험과 평가 결과에 맞춰 승인 경계와 개입 수단을 유지한다. 이 감독 설계는 2026-10-14 PwC의 에이전트 운영 지침에서 의사결정 권한, 책임자, 개입 지점과 실행 증거를 대조했다.
+
+검수가 남아 있다는 사실만으로 자동화 실패를 판정하지 않는다. 예를 들어 고객 문의 분류와 답변 초안만 맡겨도 접수부터 최종 답변까지의 시간과 오류가 줄었는지 평가할 수 있다. 검수 시간과 재작업을 포함한 전체 결과를 비교하며, 대표의 승인 요청을 줄인 수치만으로 품질이나 사업 성과가 개선됐다고 판단하지 않는다.
+
 ## 기술 실험은 데이터 준비와 평가 가능성부터 확인한다
 
 2026-10-10 AWS의 생성형 AI PoC 설계 지침을 대조했다. 모델을 실행할 수 있는지와 업무에 맞는 결과를 검증할 수 있는지는 다른 준비 조건이다. 필요한 데이터의 존재, 접근 가능성, 품질과 변환 이력을 확인하고, 전문가가 검토한 정답과 실제 업무 조건을 반영한 평가 입력을 준비한다.
@@ -198,6 +206,8 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 - 조직 AX 성숙도 자가 진단 질문
 
 ## 출처
+- [As AI agents take on more work, trust should become operational — PwC](https://www.pwc.com/us/en/about-us/newsroom/operationalizing-trust-in-agentic-ai.html) — 2026-10-14 감독, 권한, 책임과 실행 증거 부분 대조
+- [스타트업 AX 프로그램의 업무 병목과 검수 설계 — 아웃스탠딩TV](https://www.youtube.com/watch?v=A5xt0-tVV60) — 프로그램 담당자의 공개 인터뷰, 04:04~12:19와 38:36~41:43의 경험과 제안만 반영. 전체 스타트업이나 고용 변화로 일반화하지 않음
 - [AWS Prescriptive Guidance, Targeted business outcomes](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-workload-assessment/outcomes.html) — 2026-10-13 교육 필요, 업무 목표와 실행 계획 부분 대조
 - [Agentic AI Transformation: Workforce Strategy & Leadership — Amazon Web Services](https://www.youtube.com/watch?v=goc2yyg2eH4) — 공개 인터뷰의 인력 개발과 통합 실험 제안, 제공된 사람 자막 대조
 - [AWS Well-Architected, GENOPS01-BP01 Periodically evaluate functional performance](https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/genops01-bp01.html) — 새 모델과 맞춤화의 재평가, 최소 성능 기준과 담당자
