@@ -15,6 +15,7 @@ AWS의 통합 옵저버빌리티 — Metrics, Logs, Alarms, Events, Insights를 
 - [x] [[Bedrock-Observability|Bedrock 관측]] — 성공 호출과 전체 시도, 지연과 로그 전달, RAG 계측과 피드백 EMF
 - [x] [[CloudWatch-Metrics|CloudWatch Metrics (기본 5분 vs 상세 1분, Namespace/Dimension, 카디널리티 함정, EMF)]]
 - [x] [[CloudWatch-Logs-Alarms|CloudWatch Logs와 Alarms (Log Group/Stream, Log Insights, Static/Composite Alarm, Anomaly Detection, Billing Alarm, SNS 이메일 구독 점검)]]
+- [x] [[CloudWatch-Metric-Filters|CloudWatch Logs 지표 필터]] — 필터 패턴 문법, 지표 값과 기본값, dimension 비용, 소급 없음과 중복 전달, 서비스 기본 지표와의 중복
 - [x] [[CloudWatch-Operations|CloudWatch 운영 (Container/Lambda Insights, Agent, EventBridge, 비용 함정, 면접 체크포인트)]]
 
 ## 출처

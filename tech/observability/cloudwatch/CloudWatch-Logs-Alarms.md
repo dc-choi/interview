@@ -33,7 +33,7 @@ Log Group (e.g., /aws/lambda/my-function)
 |------|------|
 | **Retention** | 1일~10년, 무기한 (기본 무기한 — 비용 함정) |
 | **Subscription Filter** | 로그를 Kinesis, Firehose, Lambda로 실시간 스트리밍 |
-| **Metric Filter** | 로그 패턴 매칭 → 메트릭 자동 생성 |
+| **Metric Filter** | 로그 패턴 매칭 → 메트릭 자동 생성 ([[CloudWatch-Metric-Filters\|지표 필터]]) |
 | **Encryption** | KMS 암호화 옵션 |
 
 ### Log Insights 쿼리
