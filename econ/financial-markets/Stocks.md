@@ -34,6 +34,14 @@ aliases: ["주식", "Stocks"]
 
 가상 예로 전년 주당순이익이 5, 발표 전 예상이 8, 실제가 7이면 전년 대비 40% 성장했지만 예상에는 못 미쳤다. 이 비교만으로 주가 방향을 확정할 수는 없다. 실적의 수준, 예상과의 차이, 다음 기간 전망을 각각 확인하는 예시다.
 
+### 정규장 밖 거래는 체결 조건부터 확인한다
+
+미국 주식의 정규장 전후 거래에서는 상대 주문이 적어 일부만 체결되거나 전혀 체결되지 않을 수 있다. 적은 거래량과 장외 시간의 실적 발표는 가격 변동을 키울 수 있으며, 그때의 체결가가 다음 정규장의 시가를 결정하지는 않는다. 시간대만으로 상승이나 손실을 확정하는 매매 법칙으로 해석하지 않는다.
+
+지정가 매수는 지정 가격 이하, 지정가 매도는 지정 가격 이상에서만 체결되지만 **체결 자체는 보장하지 않는다**. 주문 전에 증권사가 허용하는 거래 시간, 거래 장소, 주문 유형과 미체결 주문의 취소 또는 이월 조건을 확인한다. 이는 체결 위험을 점검하는 절차이며 특정 종목의 매수 권고가 아니다.
+
+2026-10-14 FINRA의 미국 시간외 거래 안내와 SEC의 지정가 주문 설명을 대조했다. 국내 NXT의 운영 시간, 호가 유형과 주문 처리 규칙은 이 미국 안내로 대체하지 않고 해당 시장과 증권사의 현행 안내를 별도로 확인한다.
+
 ## 4. 밸류에이션의 첫걸음
 
 ### 이익률 하락과 이익 금액 감소를 나눈다
@@ -172,6 +180,8 @@ AI, 로봇이나 친환경 같은 투자 테마는 여러 산업을 가로지를
 
 ## 출처
 
+- [Extended-Hours Trading: Know the Risks — FINRA](https://www.finra.org/investors/insights/extended-hours-trading) — 미국 시간외 거래의 유동성, 변동성과 주문 처리 조건
+- [Limit Orders — SEC](https://www.sec.gov/answers/limit.htm) — 지정가의 가격 조건과 미체결 가능성
 - [Beginners' Guide to Financial Statement — SEC](https://www.sec.gov/about/reports-publications/investorpubsbegfinstmtguide) — 매출총이익, 영업이익과 순이익의 구분
 - [Methodology Matters — S&P Dow Jones Indices](https://www.spglobal.com/spdji/en/research-insights/index-literacy/methodology-matters/) — 시가총액, 유동주식 조정과 동일가중 방식의 차이
 - [Updated Investor Bulletin: Investing in an IPO — SEC, Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-17) — 2026-10-14 Use of Proceeds, Selling shareholders와 최신 투자설명서 대조

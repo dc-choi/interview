@@ -26,6 +26,14 @@ verified_at: 2026-09-30
 
 호출이 끝나도 실행 환경은 freeze되어 일정 기간 재사용될 수 있다. 종료 시점과 다음 호출 때 재사용할지는 보장되지 않는다. 새 실행 환경을 준비하는 호출은 **cold start**, 준비된 환경 재사용은 **warm start**다.
 
+### 초기화 재사용과 요청별 상태를 구분한다
+
+SDK 클라이언트와 DB 연결을 핸들러 밖에서 초기화하면 같은 실행 환경의 후속 호출이 재사용할 수 있다. 다만 유휴 연결은 정리될 수 있으므로 객체가 메모리에 남아 있다는 사실만으로 연결도 유효하다고 가정하지 않는다. 사용하는 런타임의 keep-alive 설정을 확인한다.
+
+사용자 데이터, 이벤트 본문과 보안상 민감한 요청 상태를 다음 호출이 읽을 수 있는 전역 상태로 보관하지 않는다. 실행 환경 재사용은 초기화 비용을 줄이는 기회이며 요청 간 상태 격리를 대신하지 않는다. 기본 컴퓨팅의 한 번에 한 호출 모델에서도 이전 호출의 값이 남는 문제는 생길 수 있다.
+
+검증 제안: 사용자 A와 B의 요청을 같은 환경에서 차례로 처리해 상태가 섞이지 않는지 확인하고, 유휴 연결이 끊어진 뒤의 오류 처리도 시험한다. 이는 테스트 설계 제안이며 실제 워크로드에서 검증한 결과는 아니다. 2026-10-14 AWS의 Event Functions 모범 사례 중 초기화 재사용, 사용자 데이터와 keep-alive 항목만 대조했으며 기존 전체 검증일은 유지한다.
+
 ### Durable Functions
 
 Durable Functions는 checkpoint, 대기와 재시도를 코드로 정의하고 AWS가 실행 상태를 저장해 재개하는 모델이다. 최대 1년 동안 실행할 수 있다. 이는 표준 함수의 메모리나 `/tmp`가 호출 사이에 유지된다는 뜻이 아니므로 두 상태 모델을 구분한다.
@@ -126,6 +134,7 @@ SnapStart는 버전을 게시할 때 초기화한 실행 환경을 스냅샷으�
 
 ## 출처
 
+- [AWS, Best practices for working with AWS Lambda Event Functions](https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html)
 - [AWS, Invoking durable Lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/durable-invoking.html)
 - [AWS, Idempotency](https://docs.aws.amazon.com/lambda/latest/dg/durable-execution-idempotency.html)
 - [Announcing AWS Lambda Web Functions — AWS](https://aws.amazon.com/blogs/aws/announcing-aws-lambda-web-functions-for-fast-consistent-web-app-performance-anywhere/)
