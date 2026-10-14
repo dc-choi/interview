@@ -181,6 +181,16 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 `ClientRequestToken`은 해당 토큰을 처음 사용한 요청이 완료된 뒤 **10분** 동안 동일한 트랜잭션 요청의 중복 효과를 막는다. 이 기간에 같은 토큰으로 다른 파라미터를 보내면 `IdempotentParameterMismatch`가 발생하고, 기간 뒤에는 같은 토큰도 새 요청으로 취급된다. 더 긴 업무 중복 방지가 필요하면 별도 멱등 기록을 설계한다. 이 절만 대조했으므로 기존 기능 전체의 검증일은 유지한다.
 
+### 정산 집계와 중복 처리 기록을 함께 커밋한다
+
+부분 검증(2026-10-14): Lambda의 DynamoDB event source mapping은 at-least-once 처리이므로 같은 레코드가 중복 실행될 수 있다. 스트림 레코드의 저장 보장과 소비자의 집계 실행 횟수를 구분한다.
+
+설계 예로, 같은 계정과 리전의 DynamoDB 안에서 판매 이벤트의 처리 기록과 정산 합계를 함께 관리한다. 이벤트 식별자를 키로 하는 별도 기록의 조건부 `Put`(`attribute_not_exists`)과 합계 항목의 `Update`를 하나의 `TransactWriteItems`로 묶는다. 둘은 서로 다른 항목이어야 한다. 같은 이벤트가 다시 오면 기록의 존재 조건이 실패해 합계도 다시 증가하지 않는다. 기록만 먼저 저장하면 집계 실패 때 재처리가 막히고, 집계만 먼저 하면 기록 실패 뒤 재시도에서 두 번 더해질 수 있다.
+
+이 설계가 막는 범위는 해당 DynamoDB 트랜잭션의 중복 효과다. 외부 송금이나 다른 저장소 쓰기까지 원자적으로 묶이지 않는다. 이벤트 식별자가 같은 다른 내용을 조용히 버리지 않도록 처리 기록에 입력의 검증값을 남겨 대조하는 방법도 검토한다. 모든 트랜잭션 취소를 중복 성공으로 처리하지 않고 조건 실패, 충돌과 용량 부족을 구분한다(설계 점검).
+
+처리 기록에 TTL을 둔다면 보존 기간은 지연 도착과 수동 재처리를 포함한 중복 방지 요구에서 정한다. TTL 삭제는 비동기이므로 만료 시각을 지났어도 기록이 남아 조건부 쓰기를 막을 수 있다. 반대로 기록이 실제 삭제된 뒤 같은 이벤트가 오면 새 처리로 허용될 수 있다. 특정 보존 일수를 모든 정산에 적용하지 않는다. 문서 대조에 한정하며 실제 이벤트 재전달과 장애 복구는 시험하지 않았다.
+
 ## DAX (DynamoDB Accelerator)
 
 - **DynamoDB 호환 인메모리 캐시**. eventually consistent read의 cache hit에서 마이크로초 단위 응답을 목표로 하며 strongly consistent read는 DynamoDB로 통과시킴
@@ -231,6 +241,7 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 - [AWS DynamoDB — DynamoDB read consistency](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html)
 - [AWS DynamoDB — Best practices for handling concurrent updates](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/BestPractices_ImplementingVersionControl.html)
 - [AWS DynamoDB — TransactWriteItems API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_TransactWriteItems.html)
+- [AWS Lambda — Using AWS Lambda with Amazon DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html)
 - [AWS DynamoDB — Cross-account access with resource-based policies](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/rbac-cross-account-access.html)
 - [AWS DynamoDB — Authorization with IAM identity-based policies and DynamoDB resource-based policies](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/rbac-auth-iam-id-based-policies-DDB.html)
 - [AWS DynamoDB — Resource-based policy considerations](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/rbac-considerations.html)
