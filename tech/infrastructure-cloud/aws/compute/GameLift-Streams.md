@@ -46,8 +46,21 @@ Stream URL은 별도 클라이언트 연동이나 수신자의 AWS 계정 없이
 
 게임 빌드의 호환성, 실제 사용자 네트워크에서의 입력 지연과 시작 성공률을 시험한다. 브라우저 지원이나 저지연이라는 제품 설명을 모든 단말의 동일한 품질 보장으로 해석하지 않는다.
 
+### Unreal Pixel Streaming 직접 운영과 비교한다
+
+2026-10-14 AWS와 Epic Games 공식 문서 부분 대조 기준이다. GameLift Streams는 자체 스트리밍 기술과 관리형 자원을 제공한다. Unreal Engine의 Pixel Streaming을 직접 호스팅하는 구성은 별도의 선택지이며, 그 서버 구성을 GameLift Streams의 내부 구조로 해석하지 않는다.
+
+직접 운영을 검토할 때는 다음 경계를 나눈다.
+
+- **연결과 미디어 전달:** 시그널링은 연결 협상을 중개한다. STUN은 외부에서 보이는 주소를 찾고, 직접 연결이 어려우면 TURN이 미디어를 중계한다. 회사망이나 이동통신망에서는 TURN 경로가 필요할 수 있으므로 서버 기동과 실제 영상 수신을 따로 시험한다.
+- **사용자 배치와 용량 확보:** 기존 Pixel Streaming matchmaker는 빈 인스턴스를 사용자와 연결했지만 동적 확장 기능은 아니었다. Epic은 이 구성요소를 Unreal Engine 5.5에서 deprecated로 표시했다. 과거 예제의 matchmaker만 배치해 자동 확장이 완성됐다고 판단하지 않는다.
+- **다수 시청자:** SFU는 Unreal Engine이 만든 스트림을 여러 수신자에게 전달하고 네트워크 조건에 맞는 품질을 선택한다. 게임 실행 인스턴스를 사용자별로 늘리는 기능과는 다르다. 공식 가이드는 Pixel Streaming SFU를 experimental로 표시하므로 운영 요구에 맞는 검증이 필요하다.
+
+비교 시험에서는 세션 시작 지연, 직접 연결과 TURN 경유 성공률, 동시 실행 용량과 전송량을 나눠 측정한다. 이는 도입 판단을 위한 점검 제안이며 두 방식의 성능이나 비용을 실제로 비교한 결과는 아니다. NAT 통과 원리는 [[IPv4-NAT-and-Traversal|NAT, STUN, TURN과 ICE]]를 참고한다.
+
 ## 출처
 
+- [Epic Games, Hosting and Networking Guide for Pixel Streaming](https://dev.epicgames.com/documentation/unreal-engine/hosting-and-networking-guide-for-pixel-streaming-in-unreal-engine)
 - [Amazon GameLift Streams, Share stream sessions with stream URLs](https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/stream-urls.html)
 - [Amazon GameLift Streams, What is Amazon GameLift Streams?](https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/what-is-service.html)
 - [Amazon GameLift Streams, Manage streaming with a stream group](https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/stream-groups.html)

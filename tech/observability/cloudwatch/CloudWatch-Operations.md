@@ -66,6 +66,25 @@ CloudWatch Agent (EC2)
 
 X-Ray 분산 추적과 CloudWatch 메트릭, 로그 통합 뷰 (트레이스 → 메트릭 → 로그). 비용 함정: Log retention 무기한, 고카디널리티 Dimension, 고해상도 메트릭 남발, Log Insights 넓은 시간 범위, Custom 메트릭 무분별 — 환경별 retention 정책, EMF 통합, 태그 활용으로 절감.
 
+### Vended logs는 전달, 보관과 조회 요금을 나눈다
+
+2026-10-14 AWS 공식 과금 문서 부분 대조 기준이다. Vended logs는 VPC Flow Logs처럼 AWS 서비스가 사용자를 대신해 생성하는 로그다. 청구 항목은 로그 목적지와 클래스에 따라 달라진다.
+
+| Usage type의 핵심 문자열 | 의미 |
+|---|---|
+| `VendedLog-Bytes` | CloudWatch Logs Standard로 전달 |
+| `VendedLogIA-Bytes` | CloudWatch Logs Infrequent Access로 전달 |
+| `S3-Egress-Bytes` | Amazon S3로 전달 |
+| `FH-Egress-Bytes` | Amazon Data Firehose로 전달 |
+| `TimedStorage-ByteHrs` | Standard 로그 보관 |
+| `DataScanned-Bytes` | Logs Insights 조회의 스캔량 |
+
+Cost Explorer에서 CloudWatch 서비스를 필터링하고 usage type별 비용과 사용량을 비교한다. 단위가 다른 항목의 사용량을 합산하지 않고, 필요한 경우 Cost and Usage Reports를 Athena로 조회해 계정, usage type과 operation을 나눈다.
+
+S3나 Firehose로 직접 전달해도 CloudWatch 전달 요금이 발생한다. 따라서 목적지 변경을 무료화로 계산하지 않고 목적지 서비스의 비용과 필요한 조회 기능까지 비교한다. 보존 기간을 줄이는 조치는 보관량에 영향을 주지만 새 로그의 전달량을 줄이는 조치와는 구분한다. 수집 범위 축소는 필요한 감사와 장애 분석 자료를 남길 수 있는지 확인한 뒤 검토한다.
+
+이 구분은 비용 분석 절차이며 실제 계정의 청구 원인을 확인한 결과는 아니다. EMF도 로그 수집, 보관과 생성된 custom metric에 비용이 발생하므로 API 호출 감소만으로 전체 비용 절감을 단정하지 않는다.
+
 ## 흔한 실수
 
 - **로그에 시크릿 평문** — 데이터 보호 정책으로 감사, 마스킹하고 로그 그룹은 KMS 키로 암호화. Subscription Filter는 Kinesis Data Streams, Firehose, Lambda로 로그를 실시간 전달
@@ -80,7 +99,7 @@ X-Ray 분산 추적과 CloudWatch 메트릭, 로그 통합 뷰 (트레이스 →
 - 메트릭, 로그, 알람, 이벤트의 통합 구조
 - 기본 모니터링 **5분 / 상세 모니터링 1분** (상세는 옵션, 유료)
 - EC2의 디스크 I/O와 메모리, 파일시스템 사용률 구분, Agent 설정 적용과 수신 확인
-- EMF가 PutMetricData보다 비용, 디버깅에서 우월한 이유
+- EMF와 PutMetricData의 API 호출, 로그 수집과 보관, custom metric 비용 비교
 - Dimension 고카디널리티의 함정과 대안 (태그, 로그)
 - Composite Alarm vs Static Threshold — 오탐 감소
 - Alarm Action으로 EC2 **중지, 종료, 재부팅, 복구** + Auto Scaling 트리거 가능
@@ -91,6 +110,8 @@ X-Ray 분산 추적과 CloudWatch 메트릭, 로그 통합 뷰 (트레이스 →
 
 ## 출처
 
+- [AWS, Analyzing, optimizing, and reducing CloudWatch costs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_billing.html)
+- [AWS, Enable logging from AWS services](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html)
 - [AWS, Install the CloudWatch agent with the Amazon CloudWatch Observability EKS add-on or the Helm chart](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/install-CloudWatch-Observability-EKS-addon.html)
 - [AWS, Collect AWS Fargate app and usage metrics](https://docs.aws.amazon.com/eks/latest/userguide/monitoring-fargate-usage.html)
 - [AWS, Metrics collected by Container Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Container-Insights-metrics.html)
@@ -101,3 +122,8 @@ X-Ray 분산 추적과 CloudWatch 메트릭, 로그 통합 뷰 (트레이스 →
 - [AWS, Metrics collected by the CloudWatch agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/metrics-collected-by-CloudWatch-agent.html)
 - [AWS, PutAccountPolicy](https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_PutAccountPolicy.html)
 - [AWS, Encrypt log data in CloudWatch Logs using AWS Key Management Service](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)
+
+## 관련 문서
+
+- [[CloudWatch|CloudWatch 인덱스]]
+- [[CloudWatch-Logs-Alarms|로그 조회와 알람]]
