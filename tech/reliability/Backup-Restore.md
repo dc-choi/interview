@@ -102,6 +102,20 @@ Legal hold는 연속 백업에는 적용되지 않으며, 계정이나 리전 �
 
 운영 점검 제안: 백업의 일관성 유형을 기록하고 격리 환경에 복원해 SQL 조회와 업무 정합성을 확인한다. 지원되는 인스턴스와 애플리케이션 범위를 먼저 확인하며, EC2 백업 성공을 모든 데이터베이스의 무손실 복구 보장으로 해석하지 않는다. 이 절만 대조했고 실제 백업과 복원은 실행하지 않아 기존 검증일은 유지한다.
 
+### 계정 접근 상실에 대비한 다자 승인 복구
+
+부분 검증(2026-10-14): AWS Backup의 logically air-gapped vault와 Multi-party approval(MPA) 문서를 대조했다. 이 vault는 AWS Backup 서비스 소유 계정에 백업을 저장하고 Vault Lock의 compliance 모드를 사용한다. 기본 AWS owned key 외에 customer-managed KMS key도 선택할 수 있으므로 키 유형을 확인한다.
+
+MPA는 원본 계정에 접근할 수 없을 때 별도 복구 계정에서 백업에 접근할 경로를 마련한다. 모든 백업 작업마다 사람의 승인을 요구하는 기능으로 해석하지 않는다.
+
+1. 사전에 승인 팀을 구성하고 AWS RAM으로 vault 소유 계정과 복구 계정에 공유한 뒤 vault에 연결한다. AWS는 복구 조직을 주 조직과 분리하는 구성을 권장한다.
+2. 복구 계정이 접근을 요청하고 팀의 **설정된 승인 정족수**를 충족하면 restore access backup vault가 만들어진다. 팀원 전원의 승인이 항상 필요한 것은 아니다.
+3. 이 access vault는 별도 백업 사본이 아니라 원본 복구 지점에 접근하는 창구다. 접근 승인 뒤 실제 복원과 애플리케이션 정합성 확인을 수행한다.
+
+첫 승인 팀 연결과 이후 변경의 계약도 다르다. 기존 팀의 교체, 연결 해제와 복구 접근 철회에는 현재 승인 팀의 승인이 필요하다. 접근 요청 역할에는 Backup 권한 외에 `mpa:StartSession`도 필요하다.
+
+운영 점검 제안: 승인자의 로그인 가능 여부와 승인 대기 시간을 복구 훈련에 포함한다. MPA 팀 리소스는 `us-east-1`에 생성되며 다른 리전의 사용도 이 리전에 의존한다. 별도 복구 계정만으로 모든 인증과 리전 의존성이 사라졌다고 판단하지 않는다. 이번 대조에서는 실제 승인이나 복원을 실행하지 않았고 기존 절의 검증일은 유지한다.
+
 ## 데이터 복구 시나리오
 
 - **실수 삭제(DELETE/DROP)**: PITR로 직전 시점 복구. 운영 인스턴스 덮어쓰기가 아니라 새 인스턴스로 복원해 데이터를 옮긴다.
@@ -127,6 +141,9 @@ Legal hold는 연속 백업에는 적용되지 않으며, 계정이나 리전 �
 
 ## 출처
 
+- [AWS Backup — Multi-party approval for logically air-gapped vaults](https://docs.aws.amazon.com/aws-backup/latest/devguide/multipartyapproval.html)
+- [AWS Backup — Requester tasks](https://docs.aws.amazon.com/aws-backup/latest/devguide/multipartyapproval-tasks-requester.html)
+- [AWS Backup — Logically air-gapped vault](https://docs.aws.amazon.com/aws-backup/latest/devguide/logicallyairgappedvault.html)
 - [AWS Backup — Create Windows VSS backups](https://docs.aws.amazon.com/aws-backup/latest/devguide/windows-backups.html)
 - [AWS Backup — Encryption for backups in AWS Backup](https://docs.aws.amazon.com/aws-backup/latest/devguide/encryption.html)
 - [Amazon Keyspaces — How point-in-time recovery works in Amazon Keyspaces](https://docs.aws.amazon.com/keyspaces/latest/devguide/PointInTimeRecovery_HowItWorks.html)

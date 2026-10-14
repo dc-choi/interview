@@ -65,6 +65,18 @@ aliases: ["Video Streaming System Design", "VOD System Design", "주문형 비�
 
 따라서 최소 화질부터 공개할지, 전체 화질을 기다릴지를 먼저 정하고 준비 중, 처리 실패, 공개 가능 상태를 따로 시험한다. 관리형 서비스를 붙인 재생 데모의 성공만으로 업로드 실패나 비공개 접근 제어까지 검증됐다고 판단하지 않는다.
 
+### 요청 시 HLS를 생성할 때의 공개 경계
+
+앞의 불변 publish version은 필요한 자산을 준비한 뒤 공개하는 기본 설계다. 요청을 받은 뒤 변환을 시작하고 재생 중에도 세그먼트를 추가하는 대안은 갱신 가능한 플레이리스트 계약을 별도로 설계해야 한다. 다음은 2026-10-14 RFC 8216의 4.3.3.4, 4.3.3.5와 6.2.1절을 대조한 내용이다.
+
+- 클라이언트가 읽은 Media Playlist에 적힌 세그먼트는 즉시 다운로드할 수 있어야 한다. 아직 만들지 않은 파일의 주소를 먼저 공개하고 플레이어의 재시도로 복구될 것이라 가정하지 않는다.
+- `EXT-X-PLAYLIST-TYPE:VOD`는 플레이리스트가 바뀌지 않는다는 계약이다. 생성 중 목록에 세그먼트를 계속 붙일 때 이 태그를 사용하지 않는다. `EVENT`는 기존 내용을 변경하거나 삭제하지 않고 뒤에만 추가할 수 있다.
+- `EXT-X-ENDLIST`는 더 추가할 세그먼트가 없음을 나타낸다. 목록 갱신은 클라이언트 관점에서 원자적으로 이루어져야 한다.
+
+설계 제안: 원본 버전과 변환 프로필로 중복 작업을 제어하고, 다운로드 가능한 세그먼트만 목록에 반영한다. 갱신 중 목록에 완성된 불변 목록과 같은 긴 캐시 정책을 적용하지 않는다. 첫 재생 시간뿐 아니라 인코더 중단, 동시 첫 요청과 CDN의 오래된 목록 때문에 생기는 재생 중단도 시험한다. 이번 대조는 프로토콜 계약 확인이며 실제 플레이어 시험은 수행하지 않았다.
+
+AWS의 과거 온디맨드 사례를 적용할 때는 서비스 지원 시점도 확인한다. S3 Object Lambda는 2025-11-07부터 기존 사용 고객과 일부 APN 파트너로 제공 대상이 제한됐다. 신규 설계의 일반 전제로 두지 않고 호출 경로를 다시 고른다. 이 부분 검증으로 기존 본문 전체의 `verified_at`을 갱신하지 않는다.
+
 ## 재생 경로와 ABR
 
 1. 클라이언트가 로그인, 작품 조회와 재생 시작을 요청한다.
@@ -150,6 +162,8 @@ VOD는 자산을 저장하고 처리를 마친 뒤 공개하지만, 라이브는
 
 ## 출처
 
+- [RFC Editor, RFC 8216: HTTP Live Streaming](https://www.rfc-editor.org/rfc/rfc8216)
+- [Amazon S3, Amazon S3 Object Lambda availability change](https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazons3-ol-change.html)
 - [Amazon EC2 Auto Scaling, Amazon EC2 Auto Scaling lifecycle hooks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html)
 - [Cloudflare Stream, Overview](https://developers.cloudflare.com/stream/)
 - [Cloudflare Stream, Use webhooks](https://developers.cloudflare.com/stream/manage-video-library/using-webhooks/)
