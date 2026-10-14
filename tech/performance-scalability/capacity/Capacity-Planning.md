@@ -23,6 +23,7 @@ aliases: ["Capacity Planning", "캐퍼시티 플래닝", "트래픽 스파이크
 
 - 대시보드를 먼저 준비하고, 실 트래픽 라우팅을 단계적으로 늘리며 모니터링한다.
 - 이상 징후가 보이면 즉시 라우팅 트래픽을 줄인다. 재시도 메커니즘이 설계에 있으면 테스트 중에도 요청 유실을 막을 수 있다.
+- 부하 생성기와 행사 전 임시 시험 환경처럼 중단돼도 다시 돌리면 되는 자원은 Spot 인스턴스로 비용을 줄일 수 있다. Spot은 실행 시점이 유연하고 중단을 견디는 작업에 맞는다. 중지나 종료로 회수되기 2분 전에 통지되지만 최선 노력 방식이며, 최대 절전 모드로 회수되면 2분 전 경고가 없다(2026-10-14 EC2 문서 대조). 운영 제안: 생성기가 중단된 구간의 측정값은 버리고 다시 잰다.
 
 ### 램프업의 함정 — 스파이크는 스텝으로 온다
 
@@ -37,6 +38,8 @@ aliases: ["Capacity Planning", "캐퍼시티 플래닝", "트래픽 스파이크
 
 - 사이클마다 트래픽 패턴, 특이사항, 개선 필요 사항을 기록으로 남기고, 모든 팀과 컴포넌트의 내용을 통합 문서화한다. 이 기록이 다음 해 예상치 산정의 근거가 된다.
 - 패턴은 세그먼트별로 다르다. 예를 들어 국가별로 텍스트 메시지 위주인 곳과 이미지, 동영상 위주인 곳은 부하의 성격 자체가 다르므로 컴포넌트별 대비도 달라진다.
+- 예상치는 운영팀 혼자 정하지 않는다. AWS Games Industry Lens GAMEOPS03-BP05는 과거 동시 접속, 참여 지표와 판매 데이터를 근거로 판매, 마케팅 담당자와 함께 다가올 행사의 수요를 추정하라고 권한다(2026-10-14 대조).
+- 커머스 행사라면 기간과 예상 방문자 수에 더해 유입 경로(앱 푸시, 광고, SNS)와 그 실행 시각을 받는다. 행사 시작, 매일 같은 시각의 상품 공개와 푸시 발송 직후에 요청이 계단처럼 몰릴 수 있으므로 이 시각들을 스텝 시나리오의 입력으로 삼는다(아래 커머스 사례).
 
 ## 가용량 판단과 확보 — Redis 예시
 
@@ -61,6 +64,10 @@ aliases: ["Capacity Planning", "캐퍼시티 플래닝", "트래픽 스파이크
 
 - 행사 시작 시각과 확장 시작 시각을 구분하고, 부하 테스트로 확인한 준비 시간을 확보한다.
 - API 서버뿐 아니라 연결된 DB와 작업 처리기의 가용량을 함께 확인한다. 서버 수 증가가 DB 커넥션 수 증가로 이어지는지도 시험한다.
+- 연동된 시스템도 시험 범위에 넣는다. 전용선으로 이어진 기존 데이터센터의 재고, 회원 시스템처럼 서비스 밖의 구성 요소가 먼저 한계에 닿을 수 있다. GAMEOPS03-BP05는 상하위 계층의 장애를 흉내 내는 부하 테스트로 단일 장애 지점을 찾으라고 권한다.
+- 행사 진입 페이지는 대부분의 사용자가 처음 도달하는 곳이라 부하가 먼저 몰린다. CDN 캐시로 응답할 수 있는 정적 구성 비중을 높이고 상품평이나 재고처럼 DB를 읽는 영역은 분리한다. CloudFront 문서 기준으로 캐시에서 바로 응답하는 비율을 높이면 오리진으로 가는 요청이 줄어든다.
+- 확장에 중단이 따르는 계층은 행사 전에 크기를 정한다. Amazon RDS는 DB 인스턴스 클래스를 바꾸는 동안 중단이 생기므로(Multi-AZ 구성으로 줄일 수 있다) 행사 중 인스턴스 클래스 변경을 전제로 계획하지 않는다(2026-10-14 RDS 문서 대조).
+- 로드밸런서도 트래픽에 따라 자동으로 확장하지만, ALB는 예정된 급증에 대비해 LCU 예약으로 최소 용량을 미리 확보할 수 있다 — [[ELB#LCU 예약으로 급증 전에 최소 용량 확보|ELB LCU 예약]]. NLB도 LCU 예약을 지원하지만 2026-10-14 문서 기준 지원 리전이 제한되고(서울 리전은 목록에 없다) AZ당 최소 2,750 LCU를 요청해야 한다.
 - 목표 자원 수에 도달한 것과 실제 요청을 처리할 준비가 된 것을 구분한다. 준비가 끝난 상태에서 스텝 부하와 오류율을 확인한다.
 - 최대 확장 한도와 행사 종료 뒤 축소 조건을 정한다. 모든 구성 요소가 같은 방식의 자동 확장을 지원한다고 가정하지 않는다.
 
@@ -109,12 +116,21 @@ aliases: ["Capacity Planning", "캐퍼시티 플래닝", "트래픽 스파이크
 - **2019년 푸시 장애**: 위와 같이 Armeria로 전환한 푸시 발송 컴포넌트가 자정 기점의 순간 커넥션 폭증으로 힙 메모리가 급증하며 Full GC를 유발, 응답 지연으로 큐가 적체되어 푸시가 유실됐다. 램프업 BMT만 수행해 미리 발견하지 못한 케이스. 당시에는 적체된 일부 푸시를 버리고 빠른 복구를 택했고, 이후 커넥션 재활용(한정된 수만 생성), 알림 큐의 역할별 분리, Circuit Breaker 도입으로 개선한 뒤 스텝 시나리오 BMT를 추가해 재검증했다.
 - **Redis 클러스터 개선**: 성격이 다른 데이터를 별도 클러스터로 분리해 기존 클러스터 IOPS를 1/4로 줄였고(무중단 작업 4~5일 소요), 악성 사용자 요청 필터링을 강화해 신년 패턴을 가리던 IOPS 스파이크를 제거했으며, TTL 미지정 데이터에 TTL을 부여하고 volatile-ttl로 전환했다.
 
+## 사례 — 커머스 할인 행사 대응 (2017 발표 기준)
+
+연 2회 대형 할인 행사를 AWS에서 치른 커머스의 기록이다.
+
+- **스텝은 마케팅 일정이 만든다**: 요청은 행사 시작 시각과 매일 같은 시각의 상품 공개에 맞춰 계단처럼 몰렸고, 유입이 기대보다 적어 앱 푸시를 보내자 다시 치솟았다. 사업부에서 기간, 예상 고객 수와 광고 채널을 받아 규모를 산정하고, 진입 페이지에서 상품 상세, 주문, 결제로 이어지는 시나리오의 부하 시험과 원인 분석을 문제가 사라질 때까지 반복한 뒤 열었다.
+- **DB는 증설로 풀리지 않았다**: 웹 계층은 자동 확장 그룹으로 늘었지만, 전년 행사에서는 미리 크게 잡아 둔 DB의 CPU가 100% 수준까지 올랐고 발표자는 튜닝과 사전 검증 부족을 원인으로 들었다. 발표 주간의 행사에서도 DB CPU가 높아졌는데, 인덱스 정비와 통계 갱신이 제대로 되지 않은 것이 원인이었고 통계를 갱신하자 CPU가 바로 내려갔다. 부하 시험 중에는 APM으로 느린 SQL을 찾아 인덱스와 통계부터 고쳤다 — [[DB-Incident-Triage|DB 장애 분류]].
+- **중요한 행사는 미리 늘려 시작했다**: 동적 확장에 맡기지 않고, 시험으로 확인한 서버 대수로 자동 확장 그룹의 원하는 용량을 올려 두었다. 행사가 끝나면 방문자 수와 문제를 기록해 다음 행사의 규모 산정에 썼다.
+
 ## 면접 체크포인트
 
 - "대규모 이벤트 트래픽을 어떻게 대비하나?" → 계측, 계획, 개선, 검증, 회고의 사이클. 작년 수치를 믿지 않고 재계측하는 이유(코드가 계속 바뀜)까지.
 - "부하 테스트는 어떻게 설계하나?" → 램프업과 스텝을 구분. 순간 급증은 커넥션 폭증, Full GC 같은 별도 실패 모드를 유발하므로 램프업 통과가 스파이크 안전을 보장하지 않는다.
 - "장애가 나면?" → 격리(큐 분리, Circuit Breaker)로 전파를 막고, 복구 우선 판단(일부 버리고 빠른 복구)의 트레이드오프를 설명.
 - "가용량 부족이 보이면?" → 증설만이 답이 아니다. 분리, 요청 절감(필터링), 정책 정비, 증설의 순서로 검토.
+- 행사 수요는 어떻게 추정하나 → 과거 기록에 판매, 마케팅의 행사 일정, 예상 방문자와 유입 경로를 더한다. 상품 공개와 푸시 발송 시각이 스텝의 시점이 될 수 있다.
 
 ## 관련 문서
 
@@ -128,6 +144,9 @@ aliases: ["Capacity Planning", "캐퍼시티 플래닝", "트래픽 스파이크
 - [[RCA-Postmortem|RCA와 포스트모템]] — 회고의 형식
 - [[SRE|SRE]] — 예측 불가능한 스파이크(재난, 이슈)의 비상 대응 체계
 - [[Failure-Tolerant-Culture|실패에 관대한 문화]] — 책임 추궁 없는 공유
+- [[Auto-Scaling|EC2 Auto Scaling]] — scheduled action으로 행사 전 확장
+- [[ELB|ELB]] — LCU 예약과 용량 산정
+- [[DB-Incident-Triage|DB 장애 분류]] — 통계와 실행 계획 변화 확인
 
 ## 출처
 
@@ -137,3 +156,9 @@ aliases: ["Capacity Planning", "캐퍼시티 플래닝", "트래픽 스파이크
 - [AWS 공식 문서, Troubleshoot Amazon EC2 instance launch issues](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/troubleshooting-launch.html)
 - [AWS Well-Architected Framework, REL11-BP04 Rely on the data plane and not the control plane during recovery](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_withstand_component_failures_avoid_control_plane.html)
 - [AWS Well-Architected Framework, REL11-BP05 Use static stability to prevent bimodal behavior](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_withstand_component_failures_static_stability.html)
+- [AWS기반 대규모 트래픽 견디기 (AWS Community Day) — Amazon Web Services Korea](https://www.youtube.com/watch?v=s-KWaV4f41Q)
+- [AWS 공식 문서, Settings for DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ModifyInstance.Settings.html)
+- [AWS 공식 문서, Capacity reservations for your Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html)
+- [AWS 공식 문서, Capacity reservations for your Network Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/capacity-unit-reservation.html)
+- [AWS 공식 문서, Spot Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html)
+- [AWS 공식 문서, Increase the proportion of requests that are served directly from the CloudFront caches (cache hit ratio)](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cache-hit-ratio.html)
