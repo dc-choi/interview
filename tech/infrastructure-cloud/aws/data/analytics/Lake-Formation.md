@@ -84,6 +84,30 @@ Lake Formation 데이터 필터는 통합된 분석 엔진의 조회 결과에�
 
 설계 점검 제안: 생산자가 공개할 데이터셋, 갱신 주기와 품질 오류 대응 책임을 정하고, 중앙 운영자는 검색과 감사의 공통 기준을 정한다. 카탈로그 등록과 접근 허가는 따로 확인한다. 이 방식은 기존 데이터 레이크 위에 적용할 수 있지만, 도메인별 운영 책임이 필요하지 않은 작은 조직에까지 필수 구조로 삼지 않는다.
 
+## Athena 권한 오류는 실패한 작업별로 나눈다
+
+부분 검증(2026-10-14): Athena 권한 가이드, Lake Formation 권한 레퍼런스와 AWS Knowledge Center의 오류별 해결 절차를 대조했다. 이 절만 추가 검증했으며 기존 절의 검증 기준일은 유지한다.
+
+Lake Formation으로 관리하는 데이터를 Athena에서 조회할 때는 실제 질의를 실행한 IAM 사용자나 역할을 기준으로 진단한다. 관리자에게 데이터베이스와 테이블이 보인다는 사실만으로 데이터 조회 권한까지 있다고 판단하지 않는다.
+
+| 실패 지점 또는 오류 단서 | 확인할 권한과 범위 |
+| --- | --- |
+| 등록된 S3 위치를 참조하는 카탈로그 생성이나 변경 실패 | 해당 위치의 명시적 또는 암묵적 데이터 위치 권한을 확인한다. 명시적 권한은 `DATA_LOCATION_ACCESS`다 |
+| 데이터베이스 권한 부족 | 대상 데이터베이스의 유효 `DESCRIBE` 권한을 확인한다 |
+| `Required Create Table` | 대상 데이터베이스의 `CREATE_TABLE`과 IAM의 `glue:CreateTable`을 확인한다. 등록된 S3 위치를 가리키면 데이터 위치 권한 조건도 확인한다 |
+| `COLUMN_NOT_FOUND`와 조회 가능한 열이 없다는 메시지 | 스키마 누락으로 단정하지 않고 데이터베이스 탐색 권한과 테이블 또는 필요한 열의 `SELECT` 권한을 확인한다 |
+
+**데이터 위치 권한은 객체 읽기 권한이 아니다.** `DATA_LOCATION_ACCESS`는 등록된 S3 위치를 가리키는 Data Catalog 객체의 생성과 변경을 제어한다. 기존 테이블을 조회한다는 이유만으로 이 권한을 추가하지 않는다. 데이터베이스의 등록된 위치 아래에 테이블을 만들고 그 데이터베이스에 `CREATE_TABLE`이 있으면 암묵적 위치 권한이 성립할 수 있다.
+
+`DESCRIBE`도 매번 별도로 부여해야 하는 것은 아니다. 리소스의 다른 Lake Formation 권한에 의해 암묵적으로 포함될 수 있다. 특히 열을 제한한 `SELECT`는 허용한 열의 메타데이터와 데이터만 노출하므로 오류 해결을 위해 전체 테이블 조회 권한으로 넓히지 않는다.
+
+권한 경로 점검 제안:
+
+1. 실제 실행 주체, catalog, database, table과 실패한 SQL 작업을 먼저 확인한다.
+2. Athena API와 workgroup의 IAM 권한, `lakeformation:GetDataAccess`, 대상의 Lake Formation 권한을 나누어 확인한다.
+3. 사용자 소유 S3 결과 버킷은 별도 IAM 권한으로 점검한다. Lake Formation의 원천 데이터 권한이 결과 파일 접근을 제한해 주지는 않는다. CTAS는 결과 테이블의 S3 위치에 쓰는 IAM 권한도 필요하다.
+4. 필요한 범위만 조정한 뒤 같은 실행 주체로 허용 조회와 거부 조회를 재현한다. 이 절차는 진단 제안이며 실제 계정에서의 실행 결과는 아니다.
+
 ## 시험 빈출 포인트
 
 - 데이터 레이크의 중앙 권한 관리와 세부 접근 제어가 핵심이면 Lake Formation을 검토한다.
@@ -96,6 +120,10 @@ Lake Formation 데이터 필터는 통합된 분석 엔진의 조회 결과에�
 
 ## 출처
 
+- [How can I troubleshoot Lake Formation permission issues in Athena? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/athena-insufficient-lake-formation-permissions)
+- [Amazon Athena User Guide, Manage Lake Formation and Athena user permissions](https://docs.aws.amazon.com/athena/latest/ug/lf-athena-user-permissions.html)
+- [AWS Lake Formation Developer Guide, Underlying data access control](https://docs.aws.amazon.com/lake-formation/latest/dg/access-control-underlying-data.html)
+- [AWS Lake Formation Developer Guide, Lake Formation permissions reference](https://docs.aws.amazon.com/lake-formation/latest/dg/lf-permissions-reference.html)
 - [Design a data mesh architecture using AWS Lake Formation and AWS Glue — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/design-a-data-mesh-architecture-using-aws-lake-formation-and-aws-glue/)
 - [AWS Lake Formation Developer Guide, Data filtering and cell-level security in Lake Formation](https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html)
 - [AWS Lake Formation Developer Guide, Data filtering limitations](https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering-notes.html)
