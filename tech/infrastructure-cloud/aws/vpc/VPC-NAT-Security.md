@@ -81,6 +81,18 @@ DB의 SG에서 인바운드 TCP 5432의 source를 애플리케이션 SG로 지�
 
 다른 서브넷의 두 인스턴스 사이를 middlebox로 라우팅하면 상대 SG를 source로 참조하는 것만으로 통신을 허용할 수 없다. 이 경우 각 인스턴스 SG에서 상대의 사설 IP나 상대 서브넷 CIDR을 source로 지정하는 조건을 확인한다.
 
+### 서브넷 간 방화벽 경유는 양방향 라우팅을 확인한다
+
+부분 검증(2026-10-14): 아래는 AWS VPC의 middlebox 라우팅 문서와 경로 우선순위를 대조한 내용이다. 기존 NAT와 규제 절 전체의 재검증은 아니므로 frontmatter의 검증일은 유지한다.
+
+같은 VPC의 서로 다른 서브넷 사이도 `local` 경로보다 구체적인 경로를 추가해 보안 장비를 경유시킬 수 있다. 이때 목적지는 상대 서브넷의 전체 IPv4 또는 IPv6 CIDR과 일치해야 한다. 임의의 호스트 `/32` 경로를 넣는 것으로 일반화하지 않는다.
+
+- **경로 예시:** VPC가 `10.0.0.0/16`이고 A와 B가 각각 `10.0.1.0/24`, `10.0.2.0/24`라면, A의 라우팅 테이블에 B의 `/24`를 보안 장비 ENI로 보내는 경로를 둔다. B에도 A의 `/24`를 같은 장비로 보내는 반환 경로를 둔다.
+- **장비 조건:** EC2 기반 장비는 출발지와 목적지와 다른 서브넷에 배치하고 source/destination check를 끈다. NAT 수행 자체는 필수 조건이 아니다.
+- **적용 경계:** 같은 서브넷에 있는 호스트 간 트래픽을 이 방식으로 장비에 우회시킬 수는 없다. SG 참조만으로 경유 후 통신을 허용할 수 있다고 가정하지 않고, 앞 절의 사설 IP와 CIDR 규칙도 함께 확인한다.
+
+운영 점검 제안: 양쪽 서브넷에서 새 연결을 만들고 보안 장비의 관측 결과와 응답 경로를 확인한다. 경로 등록 성공과 실제 패킷 검사 성공은 구분한다. 실제 계정에서 수행한 검증 기록은 아니다.
+
 ### SG 규칙 quota와 ENI당 그룹 수를 함께 계산한다
 
 부분 검증(2026-10-14): AWS VPC 공식 문서로 아래 quota와 규칙 계산을 대조했다. 기존 NAT와 규제 절 전체를 재검증하지 않아 frontmatter의 `verified_at`은 유지한다.
@@ -113,6 +125,8 @@ Traffic Mirroring은 ENI의 트래픽을 복제해 분석 대상에 전달한다
 
 ## 출처
 
+- [Amazon VPC User Guide, Example routing options: Routing for a middlebox appliance](https://docs.aws.amazon.com/vpc/latest/userguide/route-table-options.html#route-tables-appliance-routing)
+- [Amazon VPC User Guide, How route priority works](https://docs.aws.amazon.com/vpc/latest/userguide/route-tables-priority.html)
 - [Amazon VPC User Guide, NAT gateways](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html)
 - [Amazon ECS Developer Guide, Connect Amazon ECS applications to the internet](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/networking-outbound.html)
 - [Amazon VPC User Guide, Security group rules](https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html)
