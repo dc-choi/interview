@@ -109,11 +109,27 @@ EKS용 scraper는 지정한 서브넷마다 ENI를 만들고, 수집한 메트�
 
 ## 로그 수집 전략
 
-- **Stdout/Stderr 우선** — 12-factor 원칙. 파일 로그는 컨테이너 철학에 역행
+- **Stdout/Stderr 우선** — 파일 출력이 필요한 앱은 사이드카로 파일을 읽어 표준 출력으로 보내거나 별도 수집기를 둔다
 - **구조화 로그** — JSON 한 줄이 표준. [[Structured-Logging]] 참조
 - **컨테이너 라벨 자동 첨부** — pod name, namespace, container name, image
-- **애플리케이션 로그는 호스트 볼륨에 영구 저장 후 수집기가 배달** — 컨테이너 크래시해도 로그 보존
+- **보존 주기를 실행 자원과 분리** — 노드 로컬 파일만으로 장기 보존을 보장하지 않는다. 필요한 로그는 별도 백엔드로 전달한다
 - **비용 관리** — 로그는 용량 폭증 1순위. 샘플링, 레벨 조정, 보존 기간 제한. 사례: [[TS-Backend-Meetup-1#로그 적재 비용 개선기|로그 비용 개선 300$→2$]]
+
+## Pod 교체 뒤에도 조사할 근거를 남긴다
+
+부분 검증(2026-10-14): Kubernetes의 Pod 수명과 로그 보존, OpenTelemetry의 Kubernetes 메타데이터 연결을 공식 문서로 대조했다. 위 로그 수집 전략의 파일 출력과 보존 범위도 함께 정정했다.
+
+Pod를 교체하면 이름이 같더라도 UID는 달라진다. 운영 설계에서는 서비스 단위 집계와 특정 Pod 인스턴스 조사를 구분하고, 장애 당시 시간과 Pod UID를 함께 남긴다. UID를 모든 메트릭 라벨에 추가하는 방식은 시계열 수를 늘리므로 신호별 저장 위치를 먼저 정한다.
+
+OpenTelemetry의 `k8sattributes` processor는 Kubernetes API를 조회해 `k8s.namespace.name`, `k8s.pod.name`, `k8s.pod.uid`, `k8s.node.name` 등의 리소스 속성을 붙인다. 기본 연결은 들어오는 요청의 IP를 사용하며, 리소스 속성 기반의 Pod 연결 규칙도 설정할 수 있다. Collector의 Kubernetes API 조회 권한과 실제 속성 부착 여부를 따로 확인한다. 요청 단위 로그와 추적 연결은 [[Correlation-ID]]를 따른다.
+
+로그 조회 가능 범위도 구분한다.
+
+- 컨테이너 재시작 시 kubelet은 기본적으로 종료된 컨테이너 하나와 그 로그를 남긴다. 재시작 즉시 모든 로그가 없어진다고 단정하지 않는다.
+- Pod가 노드에서 축출되면 해당 컨테이너와 로그도 제거된다. 노드와 독립된 보존이 필요하면 별도 로그 백엔드가 필요하다.
+- `kubectl logs`는 최신 로그 파일의 내용만 반환한다. 회전된 파일 전체나 중앙 저장소의 보존 범위까지 조회하는 명령은 아니다.
+
+운영 점검 제안: 테스트 로그를 남긴 뒤 컨테이너 재시작과 Pod 교체를 각각 수행하고, 중앙 저장소에서 이전 UID와 시간 범위로 찾을 수 있는지 확인한다. 이 문서는 해당 실험을 수행한 결과가 아니며, 수집 지연과 유실 대응은 [[Log-Pipeline]]에서 이어 본다.
 
 ## 알림 설계 원칙
 
@@ -129,7 +145,7 @@ EKS용 scraper는 지정한 서브넷마다 ENI를 만들고, 수집한 메트�
 - **cAdvisor만 쓰고 node_exporter 없음** → 호스트 레이어 문제(디스크, iowait) 놓침
 - **`container_memory_usage_bytes`로 OOM 판단** → 캐시 포함이라 실제 압박 오판. `working_set_bytes` 사용
 - **고카디널리티 라벨 폭주** → Prometheus TSDB 비대. 사용자 ID, 요청 ID를 라벨로 쓰지 말 것(tracing은 Trace ID로)
-- **stdout 대신 파일 로그** → 컨테이너 사라지면 로그도 사라짐
+- **로컬 로그만 보관** → stdout과 파일 출력 모두 외부 전달과 보존 구성이 없으면 Pod 축출이나 노드 손실 뒤 조사 근거를 잃을 수 있음
 - **전역 알람 하나로 모두 수신** → 알람 피로도 → 진짜 장애 놓침
 - **대시보드만 만들고 알람 없음** → 눈으로 봐야 아는 지표는 실질적 모니터링 아님
 
@@ -143,6 +159,9 @@ EKS용 scraper는 지정한 서브넷마다 ENI를 만들고, 수집한 메트�
 - 쿠버네티스에서 kube-state-metrics가 추가로 필요한 이유
 
 ## 출처
+- [Kubernetes, Logging Architecture](https://kubernetes.io/docs/concepts/cluster-administration/logging/)
+- [Kubernetes, Pod Lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/)
+- [OpenTelemetry, Important Components for Kubernetes](https://opentelemetry.io/docs/platforms/kubernetes/collector/components/)
 - [AWS, Ingest metrics with AWS managed collectors](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-collector.html)
 - [AWS, Set up managed collectors for Amazon EKS](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-collector-how-to.html)
 - [m0rph2us — 컨테이너 모니터링 구축기](https://m0rph2us.github.io/docker/monitoring/2020/10/08/container-monitoring.html)
