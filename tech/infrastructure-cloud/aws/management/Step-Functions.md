@@ -72,6 +72,18 @@ AWS 서비스 호출과 애플리케이션 작업을 상태 머신으로 연결�
 
 token은 대기 중인 실행과 결과를 연결하는 값이지 업무 중복을 제거하는 키가 아니다. 다음은 운영 설계 제안이다. 재시도 시 업무 식별자와 현재 대기 중인 작업을 함께 대조하고, 이미 반영한 외부 변경을 다시 수행하지 않도록 별도 멱등성 검사를 둔다. 콜백 성공과 모델 산출물의 품질 승인도 구분한다.
 
+### Activity 작업자는 실행할 일을 가져온다
+
+부분 검증(2026-10-14): Activities와 heartbeat API를 대조했다. 기존 본문 전체의 검증일은 유지한다.
+
+Activity는 Standard 워크플로에서 외부 작업자가 작업을 가져가 처리하는 방식이다. `CreateActivity`로 만든 ARN을 `Task`의 리소스로 지정하고, 작업자는 그 ARN으로 `GetActivityTask`를 호출한다. 응답의 `input`과 `taskToken`을 받아 처리한 뒤 `SendTaskSuccess` 또는 `SendTaskFailure`로 결과를 돌려준다. EC2나 ECS뿐 아니라 API에 연결할 수 있는 외부 환경에서도 작업자를 운영할 수 있다.
+
+- 작업자가 실행할 일을 가져오는 폴링과, 이미 제출한 외부 작업의 완료 상태를 조회하는 아래 폴링 루프는 목적이 다르다.
+- `SendTaskHeartbeat`는 `HeartbeatSeconds`의 시계를 재설정한다. 작업 전체의 `TimeoutSeconds`는 늘리지 않으므로 정상 생존 중이어도 전체 제한에 도달하면 시간 초과가 된다.
+- Activity는 자체 버전 관리를 제공하지 않는다. 작업자와 입력 계약의 하위 호환성이 깨지면 고유한 이름으로 새 Activity를 만들고 해당 ARN을 참조한다.
+
+운영 점검 제안: 작업자 중단, heartbeat 누락과 결과 회신 실패를 각각 시험한다. 업무 반영 후 회신만 실패한 경우를 구분할 수 있도록 업무 식별자와 처리 결과를 보존하고, 재시도에서 같은 변경이 중복되지 않게 한다.
+
 ### 비동기 작업 폴링 루프
 
 `.sync`를 쓸 수 없을 때는 Task, Wait, Choice로 완료를 폴링한다. 콘솔 샘플 프로젝트인 작업 폴러(Lambda와 AWS Batch)가 이 구조다.
@@ -123,6 +135,8 @@ Standard 워크플로의 redrive는 실패한 실행을 처음부터 새로 만�
 
 ## 출처
 
+- [AWS Step Functions — Learn about Activities in Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-activities.html)
+- [AWS Step Functions — SendTaskHeartbeat](https://docs.aws.amazon.com/step-functions/latest/apireference/API_SendTaskHeartbeat.html)
 - [AWS Step Functions — Developing workflows in Workflow Studio](https://docs.aws.amazon.com/step-functions/latest/dg/workflow-studio.html)
 - [AWS Step Functions — StartSyncExecution](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartSyncExecution.html)
 - [AWS Step Functions — Using CloudWatch Logs to log execution history](https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html)

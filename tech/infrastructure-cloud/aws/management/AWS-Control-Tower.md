@@ -83,6 +83,18 @@ Customizations for AWS Control Tower(CfCT)는 CloudFormation 템플릿과 SCP, R
 
 운영에서는 검증 통과, 승인 완료와 대상 계정의 배포 성공을 별도 상태로 확인한다. 문법 검사는 조직의 권한 설계나 애플리케이션 동작의 적합성까지 보장하지 않는다. 이 절은 설정 문서 대조이며 실제 계정에 배포한 결과는 아니다.
 
+## AFT — 계정 설정의 순서와 기존 계정 재적용
+
+부분 검증(2026-10-14): Account Factory for Terraform(AFT)의 개요와 계정 사용자 정의 문서를 대조했다. 기존 본문 전체의 검증일은 유지한다.
+
+AFT는 기존 Control Tower 랜딩 존 위에서 Terraform 기반 계정 생성과 사용자 정의 설정을 자동화한다. AFT 관리 계정은 Control Tower 관리 계정과 구분한다. 애플리케이션용 EC2 같은 워크로드 자원 배포를 맡기는 일반 배포 파이프라인으로 사용하도록 설계된 기능은 아니다.
+
+- 계정 프로비저닝 프레임워크 단계 뒤에 공통 설정인 global customizations가 적용되고, 이어서 지정된 account customizations가 적용된다.
+- 계정 요청의 `account_customizations_name`은 해당 사용자 정의 저장소의 폴더 이름과 맞춘다. 공통 기준과 계정별 요구를 이 두 단계로 나눌 수 있다.
+- 이미 생성된 계정에 설정을 다시 적용할 때는 사용자 정의 저장소에 변경을 푸시하는 것만으로 끝나지 않는다. AFT 관리 계정의 `aft-invoke-customizations`를 실행하고 계정, OU 또는 태그로 대상과 제외 범위를 지정한다.
+
+운영 점검 제안: 재호출에 포함할 계정과 제외할 계정을 먼저 검토한다. Step Functions의 대상 선택 결과, 해당 계정의 CodePipeline 실행과 실제 설정을 구분해 확인한다. 계정 생성 성공만으로 후속 사용자 정의 적용까지 완료했다고 보고하지 않는다. 실제 AWS 계정에서 실행한 검증은 아니다.
+
 ## 탐지 결과와 자동 조치의 현재 상태를 나눈다
 
 AWS Config의 remediation은 규칙에 SSM 문서와 실행 권한을 연결하는 별도 설정이다. Control Tower의 탐지 통제를 켰다는 사실만으로 수정 작업까지 구성되지는 않는다. `PutRemediationConfigurations`는 service-linked 규칙에 조치 설정을 추가하는 것을 지원하지 않으므로 규칙의 소유자와 배포 방식을 먼저 확인한다(2026-10-10 공식 문서 대조).
@@ -110,6 +122,8 @@ Control Tower 도입 자체가 규제 준수의 완료 증거는 아니다. AWS�
 
 ## 출처
 
+- [AWS, Overview of AWS Control Tower Account Factory for Terraform (AFT)](https://docs.aws.amazon.com/controltower/latest/userguide/aft-overview.html)
+- [AWS, Account customizations](https://docs.aws.amazon.com/controltower/latest/userguide/aft-account-customization-options.html)
 - [AWS, Configure the Region deny control](https://docs.aws.amazon.com/controltower/latest/userguide/region-deny.html)
 - [AWS, Region deny control applied to the OU](https://docs.aws.amazon.com/controltower/latest/controlreference/ou-region-deny.html)
 - [AWS IAM, AWS global condition context keys — aws:RequestedRegion](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-requestedregion)
