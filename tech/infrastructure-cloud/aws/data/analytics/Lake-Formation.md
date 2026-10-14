@@ -74,6 +74,16 @@ Lake Formation 데이터 필터는 통합된 분석 엔진의 조회 결과에�
 
 설계 점검 예시: 분석 역할에는 필요한 원천 테이블의 읽기 범위를 정하고, 가공 결과의 쓰기 위치는 별도로 둔다. 실제 분석 역할로 허용 행, 거부 행과 제외 열을 조회하고 기존 S3 직접 접근 경로도 확인한다. 필터 생성 성공이나 관리자의 조회 성공만으로 샌드박스 격리를 판정하지 않는다.
 
+## 데이터 메시에서 중앙 권한과 도메인 소유권을 나눈다
+
+부분 검증(2026-10-14): AWS의 Lake Formation과 Glue 기반 데이터 메시 참조 설계를 대조했다. 이 절은 책임 배치와 공유 구조만 다루며, 문서 전체의 검증일은 유지한다.
+
+데이터 메시(data mesh)는 도메인 팀이 데이터 제품의 수집, 처리, 제공과 품질 문제를 책임지는 운영 방식이다. Lake Formation의 중앙 권한 관리를 도입하는 것만으로 도메인 소유권까지 정해지는 것은 아니다.
+
+중앙 카탈로그로 검색과 공유를 모으면서 원본 데이터와 파이프라인은 생산자 도메인에 유지할 수 있다. 이 참조 설계의 공유는 메타데이터 연결을 사용하며 원본 데이터를 중앙 계정에 복사하지 않는다. 소비자는 허가받은 데이터를 자신의 분석 환경에서 사용한다. 도메인 하나가 다른 도메인의 소비자이면서 새 데이터 제품의 생산자일 수도 있다.
+
+설계 점검 제안: 생산자가 공개할 데이터셋, 갱신 주기와 품질 오류 대응 책임을 정하고, 중앙 운영자는 검색과 감사의 공통 기준을 정한다. 카탈로그 등록과 접근 허가는 따로 확인한다. 이 방식은 기존 데이터 레이크 위에 적용할 수 있지만, 도메인별 운영 책임이 필요하지 않은 작은 조직에까지 필수 구조로 삼지 않는다.
+
 ## 시험 빈출 포인트
 
 - 데이터 레이크의 중앙 권한 관리와 세부 접근 제어가 핵심이면 Lake Formation을 검토한다.
@@ -86,6 +96,7 @@ Lake Formation 데이터 필터는 통합된 분석 엔진의 조회 결과에�
 
 ## 출처
 
+- [Design a data mesh architecture using AWS Lake Formation and AWS Glue — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/design-a-data-mesh-architecture-using-aws-lake-formation-and-aws-glue/)
 - [AWS Lake Formation Developer Guide, Data filtering and cell-level security in Lake Formation](https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html)
 - [AWS Lake Formation Developer Guide, Data filtering limitations](https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering-notes.html)
 - [AWS Lake Formation Developer Guide, Cross-account data sharing in Lake Formation](https://docs.aws.amazon.com/lake-formation/latest/dg/cross-account-permissions.html)

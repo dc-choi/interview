@@ -126,6 +126,20 @@ DevOps는 별도 도구팀의 이름이 아니라 개발과 운영이 전달 결
 
 성숙도는 서비스 수, Kubernetes 사용 여부나 polyglot 개수로 판단하지 않는다. 작은 변경의 lead time, 독립 배포 비율, 복구 시간, 변경 실패율과 서비스 간 조율 횟수처럼 결과로 판단한다.
 
+## 전환 완료를 인프라, 배포와 데이터로 나눠 판단한다
+
+부분 검증(2026-10-14): AWS의 Strangler Fig와 공유 데이터베이스 지침을 대조했다. 아래 완료 기준은 두 지침을 적용한 설계 점검 제안이며, 기존 절 전체를 재검증한 것은 아니다.
+
+| 전환 축 | 확인할 증거 | 별도로 남을 수 있는 결합 |
+|---|---|---|
+| 실행 인프라 | 새 환경에서 요청을 처리하고 장애 때 복구할 수 있는가 | 기존 DB와 원격 호출 경로 |
+| 애플리케이션 전달 | 한 서비스의 변경과 롤백을 다른 서비스와 독립적으로 수행하는가 | 공통 스키마 변경과 동시 배포 요구 |
+| 데이터 소유권 | 쓰기 주체와 스키마 변경 책임을 경계별로 설명할 수 있는가 | 공유 테이블, 잠금과 교차 서비스 트랜잭션 |
+
+공유 DB를 유지하는 전환에서는 스키마 변경을 다른 서비스와 조율해야 하고, 한 서비스의 긴 트랜잭션이 다른 서비스의 접근을 막을 수 있다. 테이블이나 열 제거는 모든 관련 서비스의 현재 버전과 이전 버전이 더 이상 참조하지 않는지 확인한 뒤 수행한다. 컨테이너 배포 성공만으로 이 결합이 해소됐다고 판단하지 않는다.
+
+점진 전환 중 요청을 구 시스템과 새 시스템으로 나누는 프록시도 장애 지점이나 성능 병목이 될 수 있다. 첫 경계의 전환 점검에 라우팅 실패와 지연을 포함하고, 공유 DB 유지가 필요한 구간과 재검토 조건을 함께 정한다. 구체적인 데이터 이전 절차는 [[Microservice-Database-Decomposition|마이크로서비스 DB 분해]]에서 다룬다.
+
 ## 자주 만나는 오해
 
 - **MSA면 확장성이 좋아진다**: 선택 확장이 가능해질 뿐, 상태와 호출 경계가 나쁘면 병목도 분산된다.
@@ -136,6 +150,8 @@ DevOps는 별도 도구팀의 이름이 아니라 개발과 운영이 전달 결
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Strangler fig pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/strangler-fig.html)
+- [AWS Prescriptive Guidance, Shared-database-per-service pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/shared-database.html)
 - [Martin Fowler, Microservice Prerequisites](https://martinfowler.com/bliki/MicroservicePrerequisites.html)
 - [Martin Fowler, Monolith First](https://martinfowler.com/bliki/MonolithFirst.html)
 - [Martin Fowler, Microservice Trade-Offs](https://martinfowler.com/articles/microservice-trade-offs.html)
