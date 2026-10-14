@@ -42,6 +42,22 @@ PostgreSQL의 prepared transaction은 상태가 디스크에 저장되고 세션
 
 2PC가 항상 나쁜 것도, Saga가 항상 더 가용적인 것도 아니다. 원자적 결정의 가치가 크고 참여 기술과 복구 체계가 갖춰졌다면 2PC가 더 단순할 수 있다. 장시간 사용자 흐름이나 XA를 지원하지 않는 참여자가 섞이면 비용이 급격히 커진다.
 
+### DB와 메시지 브로커의 실제 참여 범위
+
+`@Transactional`이라는 표기만으로 DB와 JMS가 하나의 원자적 작업이 되지는 않는다. `JpaTransactionManager`는 단일 `EntityManagerFactory`를 위한 관리자다. 여러 트랜잭션 자원을 묶으려면 JTA와 각 자원의 참여 구성을 확인해야 한다. 다음은 주문 저장과 메시지 발행의 실패 경계를 비교하는 설계 예시다.
+
+| 구성과 중단 지점 | 남을 수 있는 상태 |
+|---|---|
+| DB를 먼저 커밋한 뒤 메시지 발행 전에 종료 | 주문만 저장되고 메시지는 없음 |
+| DB 로컬 트랜잭션 안에서 독립적으로 메시지를 확정한 뒤 DB 커밋 전에 종료 | DB는 롤백되지만 메시지는 남음 |
+| DB와 JMS가 같은 XA 트랜잭션에 참여하고 prepare 뒤 종료 | 복구 가능한 미결 상태가 남을 수 있으며 코디네이터의 결정과 복구 절차로 종료해야 함 |
+
+Spring의 XA 메시지 수신 구성에는 `JtaTransactionManager`뿐 아니라 XA를 지원하고 코디네이터에 등록된 JMS `ConnectionFactory`가 필요하다. 로컬 JMS 트랜잭션의 `sessionTransacted`만 켜면 DB 작업은 독립적이다. 생산자의 DB 저장과 메시지 발행을 묶어도 이후 소비자의 업무 처리까지 같은 트랜잭션에 자동 포함되지는 않는다. 소비자의 수신 확인과 DB 갱신 경계는 별도로 설계한다.
+
+복구 로그도 데이터와 함께 보호해야 한다. Atomikos의 JTA Properties 문서는 로그를 안정적인 저장소에 둘 것과 운영에서 디스크 로깅을 끄지 말 것을 명시한다. 같은 DB에 연결하는 여러 transaction manager의 이름 충돌도 피해야 한다. 점검 예시는 prepare 뒤 강제 종료, 로그가 보존된 재시작, 미결 거래 해소와 DB/메시지 결과 대사다. Prepared라는 사실만으로 임의 커밋하지 않는다.
+
+부분 검증(2026-10-14): Spring의 자원 참여 경계와 Atomikos의 로그 보존 원칙을 공식 문서로 대조했다. 실제 장애 주입, 특정 Spring Boot 4 조합의 호환성과 starter 추가만으로 필요한 설정이 충족되는지는 확인하지 않았다. 기존 TCC와 Saga 전체의 재검증은 아니므로 frontmatter 날짜를 유지한다.
+
 ## TCC의 상태 모델
 
 TCC는 DB 락 대신 업무 수준의 예약을 드러낸다.
@@ -143,6 +159,9 @@ MySQL XA에서는 `XA START`, 작업, `XA END`, `XA PREPARE` 뒤 최종 결정�
 
 ## 출처
 
+- [Spring Framework, JpaTransactionManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/orm/jpa/JpaTransactionManager.html)
+- [Spring Framework, Receiving a Message](https://docs.spring.io/spring-framework/reference/integration/jms/receiving.html)
+- [Atomikos, JTA Properties](https://www.atomikos.com/Documentation/JtaProperties)
 - [TCC 구현하기(1) - Product Try API 구현하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325064)
 - [TCC 구현하기(2) - 동시성문제 해결하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325074)
 - [TCC 구현하기(3) - Product Confirm API 구현하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325165)

@@ -122,6 +122,16 @@ Unity Catalog의 external location은 저장소 경로와 storage credential을 
 
 이 절은 Unity Catalog 문서의 부분 대조다. 공식 문서가 함께 나열하는 데이터 분류, 품질 모니터링, 데이터 공유와 AI 거버넌스는 다루지 않았고, 실제 워크스페이스에서 권한 상속과 계보 수집을 시험한 결과도 아니다.
 
+### 테이블 삭제와 파일 수명주기
+
+2026-10-14 Databricks on AWS의 Unity Catalog 문서 대조 기준이다. Managed와 external의 차이는 테이블 메타데이터뿐 아니라 파일의 삭제 책임에서도 드러난다.
+
+- **Managed**: `DROP TABLE` 뒤 기본 복구 기간은 7일이며 `UNDROP TABLE`로 복구할 수 있다. 복구 기간이 끝나면 비동기 purge가 파일을 삭제하므로 복구 가능 기간의 종료와 물리적 삭제 완료는 같은 시점이 아니다. 카탈로그나 스키마에서 복구 기간을 바꾸는 기능은 Public Preview이며, 0으로 복구를 끄거나 7~30일로 설정할 수 있다. 운영 전 실제 적용값을 확인한다.
+- **External**: `DROP TABLE`은 메타데이터를 제거하고 원본 파일은 남긴다. 별도 파일 삭제와 보존 정책은 고객이 책임진다. 외부 도구로 테이블 메타데이터를 바꿨다면 Unity Catalog에 자동 동기화되지 않으므로 `MSCK REPAIR TABLE <table-name> SYNC METADATA`로 맞춘다.
+- **선택 기준**: 다른 엔진에서 읽는다는 이유만으로 external이 필수인 것은 아니다. Managed도 지원되는 외부 클라이언트와 공개 API로 접근할 수 있다. 기존 파일 형식, 직접 경로 접근 요구와 클라이언트 호환성을 확인하고, 파일의 수명주기를 누가 관리할지 결정한다.
+
+이 절만 부분 검증했으며 기존 제품별 기능 전체와 실제 삭제/복구 동작을 재검증하지 않아 frontmatter 날짜는 유지한다.
+
 ## 부적합 시그널
 
 ### OLTP DB로 분석을 돌리고 있는 신호
@@ -174,6 +184,8 @@ Unity Catalog의 external location은 저장소 경로와 storage credential을 
 - [Databricks — Audit log reference](https://docs.databricks.com/aws/en/admin/account-settings/audit-logs)
 - [Databricks — Search for workspace objects](https://docs.databricks.com/aws/en/search/)
 - [Databricks — Work with external tables](https://docs.databricks.com/aws/en/tables/external)
+- [Databricks — Unity Catalog managed tables for Delta Lake and Apache Iceberg](https://docs.databricks.com/aws/en/tables/managed)
+- [Databricks — DROP TABLE](https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-drop-table)
 - [Unity Catalog](https://www.unitycatalog.io/)
 - [NHN Cloud Meetup — MySQL 3분 vs ClickHouse 0.3초, 같은 쿼리입니다](https://meetup.nhncloud.com/posts/414)
 - [ClickHouse — Transactional support](https://clickhouse.com/docs/guides/developer/transactional)
