@@ -59,6 +59,16 @@ Redis가 임시 projection인지 장바구니 원본인지 먼저 정한다. Red
 
 ## 도입 판단
 
+### 예제: 전체 순위와 조건별 순위
+
+부분 검증(2026-10-14): Redis `ZRANGE`와 AWS 캐시 유효성 문서를 대조했다. `ZRANGE`는 sorted set의 순위, 점수 또는 사전식 범위로 멤버를 조회하며 `REV`로 역순 조회할 수 있다. 이 명령 자체가 회원의 지역, 등급 같은 임의 속성을 SQL 조건처럼 평가하는 것은 아니다.
+
+설계 예시: 단일 점수의 전체 순위는 sorted set을 후보로 둔다. 지역과 등급 조합별 순위가 필요하면 조건별 sorted set을 유지하는 방식과 RDB에서 조건을 적용해 계산한 결과를 Redis에 캐시하는 방식을 비교한다. 전자는 조건 조합의 수와 갱신 비용, 후자는 쿼리 비용과 캐시된 순위의 지연을 확인한다. 복합 조건이 있다는 이유만으로 Redis 전체에서 구현이 불가능하다고 단정하지 않는다.
+
+캐시 방식에서는 조건 조합을 키에 구분하고 허용 가능한 오래된 순위의 범위를 먼저 정한다. TTL은 원본 변경 속도와 오래된 결과가 미치는 영향에 맞춘다. 만료 후에는 원본 조회가 필요하며, 여러 키가 동시에 만료되면 DB 부하가 몰릴 수 있어 TTL에 작은 무작위 차이를 두는 방식을 검토한다. 이는 설계 예시이며 부하 시험 결과는 아니다. 기존 문서 전체의 검증일은 유지한다.
+
+### 도입 전 질문
+
 1. 현재 저장소가 만드는 개발 마찰이나 충족하지 못하는 latency, query 또는 scale 요구가 측정됐는가?
 2. 새 저장소의 정본 여부와 허용 가능한 stale 범위가 명확한가?
 3. 초기 snapshot, incremental update, replay와 full rebuild가 가능한가?
@@ -70,6 +80,8 @@ Redis가 임시 projection인지 장바구니 원본인지 먼저 정한다. Red
 
 ## 출처
 
+- [Redis Documentation, ZRANGE](https://redis.io/docs/latest/commands/zrange/)
+- [AWS, Database Caching Strategies Using Redis — Cache Validity](https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/cache-validity.html)
 - [Polyglot Persistence — Martin Fowler](https://martinfowler.com/bliki/PolyglotPersistence.html)
 - [MySQL 8.4 Reference Manual, JSON Data Type](https://dev.mysql.com/doc/refman/8.4/en/json.html)
 - [Redis Documentation, Persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)

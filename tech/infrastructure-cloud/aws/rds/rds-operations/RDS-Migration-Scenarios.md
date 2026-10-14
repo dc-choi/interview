@@ -87,12 +87,32 @@ RDS MySQL 8.4 이상은 `mysql.rds_set_external_source`, 8.0 이하는 `mysql.rd
 
 부분 검증(2026-10-14): RDS for SQL Server의 네이티브 백업, 복원 설정과 오류 문서를 대조했다. 이 경로를 일반 RDS 스냅샷 복원이나 DMS 이전과 구분한다.
 
+### 이전 전 호환성과 용량 평가
+
+RDS Discovery는 사용 중인 SQL Server 버전, 에디션, 기능과 고가용성 구성을 수집해 RDS 지원 여부와 Enterprise 전용 기능 의존성을 점검한다. SQLServerAssessment(SSAT)는 관측 기간의 CPU, 메모리, IOPS와 처리량으로 대상 크기를 제안한다. **기능 호환성 평가와 부하 기반 용량 산정은 서로 다른 결과**다.
+
+운영 검토 제안: 짧은 시연 구간의 측정치만으로 운영 크기를 확정하지 않는다. 배치와 피크가 포함됐는지 확인하고, 추천 인스턴스에서 애플리케이션을 검증한다. AWS의 도구 소개는 SQL Server 시스템 관리자 자격증명을 요구한다고 설명하므로 실행 전 권한과 운영 접근 범위를 검토한다. 도구 결과만으로 이전 성공을 보장하지 않는다.
+
+### 복원 설정과 상태 확인
+
 - **옵션 활성화:** 대상 DB 인스턴스에 연결된 option group에 `SQLSERVER_BACKUP_RESTORE`가 있는지 확인한다.
 - **파일 접근:** `Access Denied`는 DB 접속 비밀번호 문제로 단정하지 않는다. 백업 객체의 S3 ARN, 버킷과 파일 경로, option에 연결한 IAM 역할의 권한을 확인한다. 다른 계정의 버킷이면 해당 객체에 대한 교차 계정 접근 권한도 함께 확인한다.
 - **SQL 실행 권한:** `rds_backup_database`, `rds_restore_database`의 `EXECUTE permission` 오류는 S3 접근 오류와 구분한다. 공식 가이드는 master user 사용과 그 사용자의 권한 상태를 확인하도록 안내한다.
 - **진행 상태:** `msdb.dbo.rds_task_status`의 `lifecycle`과 `task_info`로 결과를 확인한다. 호출 직후 `CREATED`는 완료가 아니며, `IN_PROGRESS`로 바뀌기까지 최대 5분이 걸릴 수 있다. 상태는 약 2분마다 갱신된다.
 
 검증 제안: 복원 task의 `SUCCESS` 뒤에도 대상 DB의 데이터와 애플리케이션 동작을 확인한다. 오류를 없애려고 기존 백업을 덮어쓰거나 원본 DB의 암호화를 해제하는 조치를 먼저 적용하지 않는다. 이 절은 문서 기반 진단이며 실제 복원 시험은 수행하지 않았다.
+
+### 전체 백업 뒤 로그를 이어 적용하는 경로
+
+2026-10-14 공식 문서 대조 기준. 전체 백업 이후 변경분을 적용하려면 복원 task 완료와 DB를 온라인으로 여는 시점을 구분한다.
+
+1. 원본의 전체 백업을 S3로 옮겨 `msdb.dbo.rds_restore_database`의 `@with_norecovery=1`로 복원한다. task가 성공해도 DB는 `RESTORING` 상태로 남는다.
+2. 이어지는 원본 로그 백업을 `msdb.dbo.rds_restore_log`의 `@with_norecovery=1`로 순서대로 적용한다. 다음 로그를 적용하기 전 앞선 task의 성공과 로그 체인 연결을 확인한다.
+3. 전환 때는 원본 쓰기를 멈추고 마지막 변경까지 담은 로그를 확보한다. 마지막 로그를 `@with_norecovery=0`으로 복원하면 DB가 온라인이 된다. 이미 온라인인 DB에는 후속 로그 백업을 계속 복원할 수 없다.
+
+`RESTORING` 상태이고 대기 중인 복원 task가 없을 때는 `msdb.dbo.rds_finish_restore`로 복원을 마칠 수도 있다. 데이터 대사, 접속 전환과 복구 기준은 [[RDS-Zero-Downtime-Migration]]을 따른다. 이 경로도 최종 쓰기 중단과 검증 시간을 없애지는 않는다.
+
+Multi-AZ를 먼저 해제해야 한다는 과거 제약을 그대로 적용하지 않는다. 2026-01 AWS 발표 이후 Multi-AZ 및 같은 리전의 읽기 복제본을 둔 인스턴스에도 차등 백업과 로그 복원이 지원된다. 실제 엔진과 구성의 제한은 실행 시 공식 문서를 확인한다. 도구 실행과 실제 데이터 이전은 검증하지 않았으며 기존 절 전체의 검증일은 유지한다.
 
 ## SQL Server 에디션 변경 경로
 
@@ -127,6 +147,8 @@ RDS MySQL 8.4 이상은 `mysql.rds_set_external_source`, 8.0 이하는 `mysql.rd
 
 ## 출처
 
+- [Automate SQL Server discovery and assessment to accelerate migration to AWS — AWS Database Blog](https://aws.amazon.com/blogs/database/automate-sql-server-discovery-and-assessment-to-accelerate-migration-to-aws/)
+- [Amazon RDS for SQL Server enhances differential and transaction log restores support — AWS](https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-rds-sql-server-diff-and-log-restores-for-maz-and-rr/)
 - [Amazon RDS, Restoring to a DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html)
 - [AWS Prescriptive Guidance, Evaluate downgrading Microsoft SQL Server from Enterprise edition to Standard edition on AWS — Next steps](https://docs.aws.amazon.com/prescriptive-guidance/latest/evaluate-downgrading-sql-server-edition/next-steps.html)
 - [Amazon RDS, Setting up for native backup and restore](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.Native.Enabling.html)
