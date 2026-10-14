@@ -39,6 +39,17 @@ AWS의 **네이티브 IaC 서비스**. JSON, YAML 템플릿으로 AWS 리소스(
 - 템플릿 안 참조: `!Ref`는 파라미터 이름이면 그 값을, 리소스 논리 ID면 리소스를 식별하는 값(보통 이름, EC2 인스턴스는 ID, EIP는 IP)을 돌려준다. ARN 같은 다른 속성은 `!GetAtt`로 읽는다
 - 생성 순서: `!Ref`, `!GetAtt`, `!Sub` 참조는 암묵적 의존성이 되어 참조 대상이 먼저 만들어지고 나중에 삭제된다. 의존성이 없는 리소스는 병렬로 만들며, 참조 없이 순서만 필요할 때(VPC gateway attachment 뒤에 만들 public IP 리소스, 역할 정책이 먼저 있어야 하는 리소스)는 `DependsOn`으로 명시한다
 
+### SSM으로 AMI를 참조할 때의 값 확정 시점
+
+`AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>`는 AMI ID 대신 Parameter Store의 키를 입력받고, `!Ref`로 해석된 AMI ID를 리소스에 전달한다. 공개 매개변수의 기본 개념은 [[SSM-Parameter-Store#공개 매개변수|공개 매개변수]]를 참고한다. 다음은 2026-10-14 공식 문서로 부분 대조한 배포 시점의 주의점이다.
+
+- `UsePreviousValue=true`는 **같은 Parameter Store 키를 유지**한다는 뜻이다. 예전에 해석한 AMI ID를 고정하는 옵션이 아니며, 업데이트 시 그 키의 최신 값을 다시 읽는다.
+- 변경 세트를 만들 때 읽은 값은 변경 세트에 담긴다. 실행 시에는 변경 세트의 값을 사용하므로, 생성과 실행 사이에 Parameter Store 값이 바뀌어도 실행 직전에 최신 AMI를 다시 선택한다고 가정하지 않는다.
+- `describe-change-set`과 `describe-stacks`에서 해석된 값을 확인할 수 있다. 실행 전 변경 세트의 AMI ID와 리소스 변경을 검토하고, 적용 후 스택의 해석값을 대조한다.
+- 파라미터의 허용값 같은 제약은 Parameter Store **키**를 검증한다. 그 키에 저장된 값의 적합성까지 검증하는 것으로 해석하지 않는다.
+
+재현 가능한 배포를 위해 키 이름뿐 아니라 해석된 AMI ID도 배포 기록에 남기는 것을 운영 기준으로 삼을 수 있다. 실제 AWS 배포는 실행하지 않았고 나머지 버전 민감 주장은 재검증하지 않아 기존 `verified_at`을 유지한다.
+
 ## Stack
 
 - **하나의 단위로 관리되는 AWS 리소스 모음**
@@ -197,6 +208,7 @@ IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인�
 
 ## 출처
 
+- [AWS CloudFormation — Specify existing resources at runtime with CloudFormation-supplied parameter types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-supplied-parameter-types.html)
 - [AWS CloudFormation — CreateChangeSet](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateChangeSet.html)
 - [AWS CloudFormation — Execute a change set for a CloudFormation stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets-execute.html)
 - [AWS CloudFormation — CloudFormation configuration properties reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-action-reference.html)

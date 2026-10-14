@@ -60,6 +60,17 @@ aliases: ["Network Traffic Monitoring", "네트워크 트래픽 모니터링"]
 - [ ] 대시보드만 보지 않도록 이상 트래픽 임계 알림을 연결했는가
 - [ ] 트래픽 기록의 보존 기간과 접근 통제를 정했는가
 
+## AWS 워크로드의 TCP 흐름 관측
+
+앞 절의 게이트웨이 대시보드와 별개로, Amazon CloudWatch Network Flow Monitor는 워크로드에 설치한 에이전트가 실제 TCP 흐름의 성능 지표를 수집하는 방식이다. 다음 내용은 2026-10-14 AWS 공식 문서로 확인했다. 기존 게이트웨이 구현 설명까지 재검증한 것은 아니므로 문서 전체의 `verified_at`은 추가하지 않는다.
+
+- 에이전트는 RTT, 재전송, 재전송 타임아웃과 전송 바이트를 집계한다. Workload insights에서 재전송, 타임아웃과 전송량의 상위 기여 흐름을 보고, 조사할 범위를 좁혀 monitor를 만든다.
+- monitor의 지표는 `AWS/NetworkFlowMonitor` namespace에서 조회한다. `RoundTripTime`은 마이크로초 단위 평균이며, 항상 계산되는 지표가 아니므로 빈 구간을 지연 0으로 읽지 않는다.
+- `HealthIndicator`는 선택한 기간과 monitor의 흐름에 관련된 AWS 네트워크 문제를 나타낸다. `100`은 Degraded, `0`은 Healthy다. 100을 건강 점수로 해석하면 의미가 반대가 된다.
+- Healthy는 해당 범위에서 AWS 네트워크 문제가 감지되지 않았다는 뜻이다. 이를 애플리케이션 전체 정상의 증거로 확대하지 않고 요청 오류, 지연과 워크로드 자원을 함께 조사한다.
+
+운영에서는 재전송 증가만으로 특정 가용 영역 전체의 장애를 확정하지 않는다. 영향받은 흐름과 시간 범위, NHI를 먼저 대조하고, 복구 조치 뒤 애플리케이션의 오류율과 지연도 확인한다. 지표 수집과 알람 구성은 별도이며, monitor를 만들었다는 사실만으로 장애 알림이 설정됐다고 보지 않는다.
+
 ## 관련 문서
 
 - [[Application-Performance-Monitoring|APM]]
@@ -74,3 +85,6 @@ aliases: ["Network Traffic Monitoring", "네트워크 트래픽 모니터링"]
 
 - [neko-master - 네트워크 트래픽 시각화 및 분석용 대시보드 — GeekNews](https://news.hada.io/topic?id=31816)
 - [neko-master — GitHub](https://github.com/foru17/neko-master)
+- [AWS CloudWatch, What is Network Flow Monitor?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-NetworkFlowMonitor-What-is-NetworkFlowMonitor.html)
+- [AWS CloudWatch, Evaluate network flows with workload insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-NetworkFlowMonitor-configure-evaluate-flows.html)
+- [AWS CloudWatch, View Network Flow Monitor metrics in CloudWatch](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-NetworkFlowMonitor-cw-metrics.html)
