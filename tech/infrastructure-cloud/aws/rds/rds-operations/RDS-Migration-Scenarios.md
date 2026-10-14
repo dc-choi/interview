@@ -94,6 +94,16 @@ RDS MySQL 8.4 이상은 `mysql.rds_set_external_source`, 8.0 이하는 `mysql.rd
 
 검증 제안: 복원 task의 `SUCCESS` 뒤에도 대상 DB의 데이터와 애플리케이션 동작을 확인한다. 오류를 없애려고 기존 백업을 덮어쓰거나 원본 DB의 암호화를 해제하는 조치를 먼저 적용하지 않는다. 이 절은 문서 기반 진단이며 실제 복원 시험은 수행하지 않았다.
 
+## SQL Server 에디션 변경 경로
+
+2026-10-14 부분 검증: RDS 스냅샷 복원 문서와 SQL Server 에디션 하향 가이드를 대조했다. 엔진 버전 업그레이드와 Express, Web, Standard, Enterprise 사이의 에디션 변경은 별도로 판단한다.
+
+- **스냅샷을 이용한 상향:** Standard에서 Enterprise로, Web에서 Standard 또는 Enterprise로, Express에서 Web, Standard 또는 Enterprise로 복원할 수 있다. 기존 인스턴스에 덮어쓰는 방식이 아니라 새 인스턴스를 만들며, 스냅샷에 대상 에디션에 충분한 스토리지가 할당되어 있어야 한다.
+- **하향과 다른 경로:** 스냅샷 복원이 지원하지 않는 에디션 변경은 네이티브 백업과 복원을 검토한다. 사용하는 SQL Server 기능이 대상 에디션과 호환되는지 확인한다. Enterprise에서 Standard로 이전할 때 중단 시간을 줄이려면 지원 버전과 에디션 조건을 확인한 DMS의 전체 적재와 변경분 동기화를 비교한다.
+- **복원 후 설정:** 사용자 지정 parameter group, VPC, subnet group과 security group이 자동으로 그대로 연결된다고 가정하지 않는다. 복원 시 지정한 값과 실제 연결 상태를 확인한다.
+
+검증 제안: 복원 성공과 애플리케이션 전환 성공을 나누어 확인하고, 데이터 정합성과 접속을 검증하기 전 원본을 삭제하지 않는다. 실제 에디션 변경 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## 도구 선택 매트릭스
 
 | 도구 | 적합 상황 | 다운타임 | 비고 |
@@ -117,6 +127,8 @@ RDS MySQL 8.4 이상은 `mysql.rds_set_external_source`, 8.0 이하는 `mysql.rd
 
 ## 출처
 
+- [Amazon RDS, Restoring to a DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html)
+- [AWS Prescriptive Guidance, Evaluate downgrading Microsoft SQL Server from Enterprise edition to Standard edition on AWS — Next steps](https://docs.aws.amazon.com/prescriptive-guidance/latest/evaluate-downgrading-sql-server-edition/next-steps.html)
 - [Amazon RDS, Setting up for native backup and restore](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.Native.Enabling.html)
 - [Amazon RDS, Troubleshooting native backup and restore](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.Native.Troubleshooting.html)
 - [Amazon RDS, Using native backup and restore](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.Native.Using.html)

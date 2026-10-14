@@ -86,6 +86,16 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 
 이 절만 추가 대조했으며 Terraform과 기존 CDK 비교 전체의 검증일은 유지한다.
 
+## 자동 배포의 bootstrap과 승인 경계
+
+2026-10-14 AWS CDK v2 공식 문서 부분 대조 기준이다. 데이터 파이프라인을 여러 계정과 리전에 재배포할 때 코드 재사용과 배포 환경 준비를 구분한다.
+
+- **환경 준비:** 기본 bootstrap은 배포와 파일 및 이미지 게시에 쓸 IAM 역할, S3 버킷과 ECR 저장소 등을 준비한다. 대상 계정과 리전의 조합마다 준비 상태를 확인한다. bootstrap을 다시 실행하면 필요한 경우 스택을 갱신하므로, 갱신을 위해 기존 bootstrap 스택을 삭제하고 재생성하지 않는다.
+- **승인 생략:** `cdk deploy --require-approval never`는 CLI의 수동 승인 요구를 없애는 옵션이다. 기본값인 `broadening`은 권한이나 security group 규칙이 넓어질 때 승인을 요구한다. 이 옵션을 합성 결과나 권한의 안전성을 검증하는 기능으로 해석하지 않는다.
+- **외부 검토와 실행 분리:** `--method=prepare-change-set`으로 변경 집합을 만들고 실행은 미룰 수 있다. 자동 배포를 설계할 때 합성 산출물과 변경 집합의 검토를 어디서 수행할지 정한다. 이는 검토 원칙이며 해당 데이터 파이프라인을 실제 배포해 검증한 기록은 아니다.
+
+이 절의 추가 확인으로 기존 Terraform 비교 전체의 검증일을 갱신하지 않는다.
+
 ## 의사결정 원칙
 
 - 기술의 진보성보다, **팀 규모가 작을수록 운영 안정성, 문서, 커뮤니티 규모**의 가중치가 커진다.
@@ -103,6 +113,8 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 - IaC 도구 선택에서 진보성보다 운영 안정성, 커뮤니티를 우선하는 판단 근거
 
 ## 출처
+- [AWS CDK, Bootstrap your environment for use with the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html)
+- [AWS CDK, cdk deploy](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-deploy.html)
 - [AWS CDK, Amazon S3 Construct Library — Bucket deletion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3-readme.html#bucket-deletion)
 - [AWS CDK, AWS CDK Constructs](https://docs.aws.amazon.com/cdk/v2/guide/constructs.html)
 - [AWS CDK, Test AWS CDK applications](https://docs.aws.amazon.com/cdk/v2/guide/testing.html)

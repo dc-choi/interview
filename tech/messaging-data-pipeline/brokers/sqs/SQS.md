@@ -173,6 +173,17 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 - **키 교체는 기존 메시지를 다시 암호화하지 않는다.** 이전 키로 암호화한 메시지를 처리하고 제거할 때까지 이전 키와 필요한 복호화 권한을 유지한다. 새 키 설정 직후 이전 키를 비활성화하거나 삭제하지 않는다.
 - **발행과 수신을 각각 확인한다.** 구독의 큐 ARN과 확인 상태를 점검하고 테스트 메시지를 발행한 뒤 큐에서 수신까지 확인한다. SNS 발행 성공만으로 큐 전달과 소비자 처리 성공을 판정하지 않는다.
 
+### QueueDoesNotExist 진단
+
+2026-10-14 부분 검증: SQS API 오류 가이드와 `GetQueueUrl` 명세를 대조했다. 오류명만 보고 큐를 재생성하지 않고 요청 대상과 권한을 먼저 확인한다.
+
+1. **대상 식별:** 큐 이름과 URL의 대소문자를 확인한다. 다른 계정의 큐를 `GetQueueUrl`로 조회할 때는 `QueueOwnerAWSAccountId`에 큐 소유 계정을 지정한다. 계정 지정은 접근 권한 부여를 대신하지 않는다.
+2. **리전:** SDK나 CLI 클라이언트에 설정된 리전이 큐의 리전과 일치하는지 확인한다. 큐 URL이 맞다는 사실만으로 클라이언트 설정까지 맞다고 판단하지 않는다.
+3. **삭제와 권한:** 오류 직전의 `DeleteQueue`를 CloudTrail에서 확인하고, 실제 호출 주체의 권한을 점검한다. 큐가 없거나 접근할 수 없다는 오류는 권한 부족에서도 발생할 수 있다.
+4. **메시지 삭제 오류 분리:** `ReceiptHandleIsInvalid`와 `InvalidParameterValue`는 receipt handle이 잘못됐거나 만료됐을 때 발생할 수 있다. 재수신하면 새 handle을 사용하며, 가시성 시간 안에 해당 수신의 handle로 삭제한다.
+
+이 절은 문서 기반 진단 순서이며 실제 큐를 생성하거나 삭제해 재현한 기록은 아니다.
+
 ## 시험 체크포인트 (SAA-C03)
 
 - AWS Decoupling 3종 = SQS(Queue) / SNS(Pub-Sub) / Kinesis(Real-time Streaming) — 모델 차이로 구분
@@ -185,6 +196,8 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 - KMS로 저장 시 암호화, HTTPS로 전송 중 암호화, IAM Policy로 API 접근 통제
 
 ## 출처
+- [AWS 공식 문서, Troubleshoot Amazon SQS API errors](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/troubleshooting-api-errors.html)
+- [AWS SQS API Reference, GetQueueUrl](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_GetQueueUrl.html)
 - [AWS 공식 문서, Amazon SQS Key management](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-key-management.html)
 - [AWS 공식 문서, Subscribing an Amazon SQS queue to an Amazon SNS topic](https://docs.aws.amazon.com/sns/latest/dg/subscribe-sqs-queue-to-sns-topic.html)
 - [AWS 공식 문서, Managing Amazon SNS encryption keys and costs](https://docs.aws.amazon.com/sns/latest/dg/sns-key-management.html)
