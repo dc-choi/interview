@@ -3,7 +3,7 @@ tags: [database, replication, read-replica, performance, routing]
 status: done
 category: "Data & Storage - RDB"
 aliases: ["Read Replica Routing", "읽기 복제본 라우팅"]
-verified_at: 2026-10-13
+verified_at: 2026-10-14
 ---
 
 # Read Replica 라우팅
@@ -50,6 +50,9 @@ Aurora reader endpoint는 쿼리가 아닌 연결을 분산한다. 연결 풀의
 | TypeORM | `createQueryRunner("master")`, `defaultMode: "master"` | `createQueryRunner("slave")`, 기본 읽기 분기 |
 | Sequelize | `{ useMaster: true }` 옵션 | 기본 (`findAll` 등) |
 | Spring (Spring Data JPA) | `AbstractRoutingDataSource` 등 별도 라우터 구현 | `readOnly`는 힌트이며, annotation만으로 replica를 선택하지 않음 |
+| Django | `.using()`으로 primary alias 지정(router보다 우선) | router의 `db_for_read`가 replica alias 반환 |
+
+Django는 `DATABASES`에 `default` 항목을 요구하고, 다른 DB를 고르지 않은 경로는 `default`를 쓴다. primary를 `default`로 두면 router를 거치지 않는 경로도 primary로 간다. 공식 문서의 primary/replica router 예시는 복제 지연과 transaction 상호작용을 다루지 않는다고 밝히므로, 아래의 read-after-write 대응과 transaction 고정은 router에서 따로 구현한다.
 
 ## Replication Lag와 Read-After-Write
 
@@ -190,6 +193,8 @@ Replica 장애 시 primary fallback, 제한된 stale 결과, 명시적 실패 �
 - [GitHub — prisma/extension-read-replicas](https://github.com/prisma/extension-read-replicas)
 - [MySQL 8.4 Reference Manual — Consistent Nonlocking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)
 - [Spring Framework Reference, Using `@Transactional`](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html)
+- [Django 6.1 Documentation — Multiple databases](https://docs.djangoproject.com/en/6.1/topics/db/multi-db/)
+- [Amazon Web Services Korea (YouTube) — 높은 가용성과 성능 향상을 위한 Amazon Aurora 및 ElastiCache 활용 팁](https://www.youtube.com/watch?v=bDDfVQkOcQM)
 
 ## 관련 문서
 - [[Replication|Replication (sync / async)]]
@@ -197,5 +202,6 @@ Replica 장애 시 primary fallback, 제한된 stale 결과, 명시적 실패 �
 - [[Connection-Pool|Connection Pool 사이징]]
 - [[Isolation-Level|Isolation Level]]
 - [[ORM|ORM]]
+- [[RDS-Aurora-Endpoints|Aurora Endpoint 운영 (Writer와 Reader 읽기 분산 비율)]]
 - [[RDS-Operational-Pitfalls|RDS 운영 함정 (복제 지연 read-after-write 버그)]]
 - [[RDS-Zero-Downtime-Migration|무중단 마이그레이션 (Read Replica 승격 컷오버)]]

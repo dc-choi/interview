@@ -30,6 +30,14 @@ Aurora는 공유 스토리지라 Replica Lag가 보통 밀리초 수준이지만
 
 **3. 프록시를 넣어도 DNS 캐시가 분산을 무력화할 수 있다.** Reader Endpoint는 새 연결 단위로 Reader를 나눈다. ProxySQL 문서 기준으로 ProxySQL은 2.4.5부터 백엔드 호스트명의 DNS 조회 결과를 캐시하며 기본으로 켜져 있다(`mysql-monitor_local_dns_cache_ttl` 기본 300000ms, 갱신 주기 `mysql-monitor_local_dns_cache_refresh_interval` 기본 60000ms). Reader Endpoint를 ProxySQL 백엔드로 등록하면 캐시가 유지되는 동안 새 백엔드 연결이 같은 IP, 즉 같은 Reader로 몰릴 수 있다. 두 변수 중 하나를 0으로 두면 캐시가 꺼지지만 연결마다 DNS 조회 지연이 다시 생긴다. 각 Instance Endpoint를 백엔드로 등록하거나 ProxySQL의 `mysql_aws_aurora_hostgroups`로 Writer, Reader와 복제 지연을 자동 탐지해 분산하는 방식도 비교한다. 1번의 해법으로 프록시를 넣는 것만으로 균등 분산이 보장되지는 않는다.
 
+## Writer와 Reader에 읽기를 함께 나눌 때
+
+2026-10-14 Aurora 사용자 가이드 기준. Writer도 읽기를 처리할 수 있어서 읽기를 Writer와 Reader에 함께 나누기도 한다. 이때 앱의 분기와 Endpoint의 분산이 겹치면 비율이 어긋난다. 앱이 읽기마다 Writer Endpoint와 Reader Endpoint 중 하나를 같은 확률로 고르면 Writer가 읽기의 절반을 받고, Reader N대가 나머지 절반을 나눠 각각 약 1/(2N)을 받는다. Reader가 2대면 대략 50:25:25이고, Reader를 늘려도 Writer의 몫은 줄지 않는다. Endpoint의 분산은 연결 단위 DNS 분산이라 실제 비율은 연결을 만들고 재사용하는 방식에 따라 달라진다.
+
+- 앱에서 가중치를 정한다면 인스턴스 수에 맞추고, Reader를 늘리거나 줄일 때마다 함께 바꾼다.
+- Writer와 Reader를 함께 넣은 `ANY` 유형 Custom Endpoint로 보내면 Aurora가 등록된 인스턴스에 같은 확률로 연결을 보낸다. 연결이 Writer와 Reader 중 어디에 붙을지 정해지지 않으므로 이 Endpoint로는 쓰기를 보내지 않는다.
+- Writer가 읽기를 함께 받으면 쓰기 지연이 늘 수 있다. Writer의 여유와 쓰기 지연을 같이 보고 비중을 정한다.
+
 ## Custom Endpoint — 워크로드 격리
 
 Default Reader Endpoint는 모든 Reader를 대상으로 해서 OLTP와 배치/분석 쿼리를 분리할 수 없다. OLTP는 빠른 응답이 핵심이고, 배치/분석은 무거운 대신 응답 시간이 덜 중요하다. 둘이 같은 인스턴스에서 돌면 무거운 쿼리가 버퍼 풀 캐시를 밀어내고 CPU/I/O 경합을 일으켜 온라인 응답까지 느려진다.
@@ -41,6 +49,8 @@ Custom Endpoint로 **OLTP용 Reader 그룹과 배치용 Reader 그룹을 분리*
 - 인스턴스 이름에 `batch` 같은 용도 키워드를 넣어 운영자가 즉시 식별
 - 배치 Reader는 CPU가 원래 높게 튀므로 **Auto Scaling 지표 대상에서 제외** (상세는 [[RDS-Aurora-AutoScaling|Aurora Auto Scaling]])
 - Aurora MySQL 기준, Reader 그룹 분리는 버퍼 풀 캐시와 CPU/I/O 경합을 격리할 뿐 공유 스토리지의 undo purge 부담은 분리되지 않는다. 배치 Reader의 장기 조회는 여전히 Writer의 History List Length를 키울 수 있다 → [[MySQL-Undo-Purge-HLL|Undo Purge와 HLL]]
+- Custom Endpoint 유형은 `READER`와 `ANY`다. 콘솔로 만든 Custom Endpoint는 모두 `ANY`라서 failover나 승격으로 역할이 바뀌어도 멤버가 그대로다. 배치용 Reader가 Writer로 승격되면 배치 연결이 Writer로 갈 수 있으므로, Reader만 담을 Endpoint는 CLI나 API로 `READER` 유형을 지정한다. `READER` 유형은 승격된 인스턴스를 멤버에서 자동으로 뺀다. Custom Endpoint는 클러스터마다 최대 5개다(2026-10-14 Aurora 사용자 가이드 기준).
+- Aurora MySQL에서 Writer가 실행한 DDL은 그 테이블을 사용 중인 Reader 연결을 끊을 수 있다(2026-10-14 Aurora 사용자 가이드 기준). 배치 Reader의 장기 작업은 스키마 변경 일정과 겹치지 않게 하고 재시도 경계를 둔다.
 
 ## Failover 시 read-only transaction 오류
 
@@ -65,7 +75,8 @@ Endpoint 멤버십, 제외 대상, Auto Scaling 정책, 알람 연결은 CLI로 
 - Writer Endpoint를 읽기에 쓰는 경우(read-your-own-writes, Lag 민감)
 - Reader Endpoint가 지능형 LB가 아닌 점, Reader 부재 시 Writer 폴백의 위험
 - 프록시의 DNS 캐시가 Reader Endpoint의 연결 분산을 무력화하는 이유와 대안(캐시 끄기, Instance Endpoint 등록, Aurora 토폴로지 자동 탐지)
-- Custom Endpoint로 OLTP/배치를 격리하는 이유(캐시 밀림, CPU/I/O 경합)
+- 앱의 Writer/Reader 분기와 Endpoint 분산이 겹칠 때의 부하 비대칭과 `ANY` Custom Endpoint
+- Custom Endpoint로 OLTP/배치를 격리하는 이유(캐시 밀림, CPU/I/O 경합)와 `READER`, `ANY` 유형의 failover 뒤 멤버 차이
 - Failover에서 연결 끊김 vs 역할만 바뀜의 차이와 read-only transaction 오류
 - AWS Advanced JDBC Wrapper의 목적과 도입 전 부하 테스트 필요성
 
@@ -77,6 +88,10 @@ Endpoint 멤버십, 제외 대상, Auto Scaling 정책, 알람 연결은 CLI로 
 - [ProxySQL Documentation, MySQL Monitor Variables](https://proxysql.com/documentation/global-variables/mysql-monitor-variables/)
 - [ProxySQL Documentation, AWS Aurora](https://proxysql.com/documentation/aws-aurora-configuration/)
 - [인프런, Real MySQL 시즌 1 - Part 2, 커넥션 관리](https://www.inflearn.com/courses/lecture?courseId=333745&unitId=226586)
+- [Amazon Aurora User Guide, Custom endpoints](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Custom.html)
+- [Amazon Aurora User Guide, Considerations for custom endpoints](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Custom.Considerations.html)
+- [Amazon Aurora User Guide, Replication with Aurora MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Replication.html)
+- [높은 가용성과 성능 향상을 위한 Amazon Aurora 및 ElastiCache 활용 팁 (YouTube)](https://www.youtube.com/watch?v=bDDfVQkOcQM)
 
 ## 관련 문서
 - [[RDS-Aurora-AutoScaling|Aurora Auto Scaling 운영]] — Reader 스케일링, Flapping, Cache Warming

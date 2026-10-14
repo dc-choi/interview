@@ -44,6 +44,15 @@ RDS for Oracle은 메모리 관리 모드와 PGA, SGA 사용량을 추가로 확
 
 이 절은 2026-10-09 AWS Knowledge Center의 swap 해석과 Oracle 메모리 진단 절차를 대조했다. 예제의 메모리 비율을 모든 인스턴스에 적용하는 처방으로 사용하지 않는다.
 
+### ReplicaLag가 0이어도 따라왔다고 단정하지 않는다
+
+RDS for MySQL과 MariaDB의 `ReplicaLag`는 replica가 보고하는 지연 초 값이다. AWS 문서는 `Seconds_Behind_Master`로 적지만 MySQL 8.0.22 이상의 `SHOW REPLICA STATUS`에서는 이 필드 이름이 `Seconds_Behind_Source`이고, MariaDB와 8.0.22 이전 MySQL은 `Seconds_Behind_Master`를 쓴다. `-1`은 복제가 활성 상태가 아니라는 뜻이고 `NULL`과 같다. 0은 보통 replica가 따라왔다는 뜻이지만 값의 정의상 receiver 지연은 드러나지 않을 수 있다.
+
+- 이 값은 applier가 이미 받은 relay log를 얼마나 늦게 적용하는지에 가깝다. 다른 리전 replica처럼 network가 느리면 receiver가 source보다 크게 뒤처져도 0으로 보일 수 있으므로, 의심되면 source와 replica의 binlog 좌표를 비교한다([[Replication#밀린 쪽을 binlog 좌표로 가린다|receiver와 applier 진단]]).
+- 새 read replica는 source의 snapshot으로 만든다. snapshot에서 만든 인스턴스는 아직 내려받지 않은 데이터를 처음 읽을 때 S3에서 가져오는 lazy loading을 하므로, 생성 직후에는 적용과 조회가 느려 lag가 튈 수 있다. 읽기 트래픽을 보내기 전에 자주 쓰는 테이블을 `SELECT *`처럼 전체를 읽는 쿼리로 먼저 읽어 두고 lag가 안정되는지 확인한다.
+
+이 절은 2026-10-14 RDS 사용자 가이드의 복제 모니터링, read replica 생성과 snapshot 복원 설명, MySQL 8.0과 8.4 매뉴얼의 `Seconds_Behind_Source` 정의, MariaDB 문서의 필드 이름과 대조했다. 새 replica의 초기 lag를 lazy loading과 연결한 설명은 AWS Knowledge Center 영상에 근거한다. 나머지 절의 검증일은 유지한다.
+
 ### 알람 임계치 설계 원칙
 
 - **P99, 정적값보다 변화량** — "평소 30% → 80% 증가"가 "80% 상태"보다 유의미
@@ -102,6 +111,14 @@ RDS의 기본 CloudWatch 지표는 보통 1분 단위로 게시된다. **Enhance
 - [proimaginer — Amazon RDS, CloudWatch로 모니터링하기](https://proimaginer.tistory.com/56)
 - [AWS Docs — Enhanced Monitoring 활성화](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.Enabling.html)
 - [AWS Docs — RDS 스토리지](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
+- [AWS RDS, Monitoring read replication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.Monitoring.html)
+- [AWS RDS, Working with DB instance read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html)
+- [AWS RDS, Restoring to a DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html)
+- [MySQL 8.4 Reference Manual, SHOW REPLICA STATUS Statement](https://dev.mysql.com/doc/refman/8.4/en/show-replica-status.html)
+- [MySQL 8.0 Reference Manual, SHOW REPLICA STATUS Statement](https://dev.mysql.com/doc/refman/8.0/en/show-replica-status.html)
+- [MariaDB Documentation, SHOW REPLICA STATUS](https://mariadb.com/kb/en/show-replica-status/)
+- [AWS Database Blog — Prewarm an Amazon RDS for Oracle database to reduce the impact of lazy loading](https://aws.amazon.com/blogs/database/prewarm-an-amazon-rds-for-oracle-database-to-reduce-the-impact-of-lazy-loading)
+- [Amazon Web Services (YouTube) — How do I troubleshoot high replica lag with Amazon RDS for MySQL?](https://www.youtube.com/watch?v=XG4UYKS611k)
 
 ## 관련 문서
 

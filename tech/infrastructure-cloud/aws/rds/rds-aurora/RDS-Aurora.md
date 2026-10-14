@@ -14,7 +14,7 @@ aliases: ["RDS Overview", "Aurora", "Managed Database", "관리형 DB", "RDS vs 
 - [[RDS-Aurora-Architecture|Aurora 공유 스토리지 아키텍처와 클러스터 엔드포인트, 특장점, RDS 대신 고르는 기준]]
 - [[RDS-Aurora-Replica-Lag|Reader 지연과 재시작 진단 — 밀리초 단위, Writer 변경량, Reader 용량과 purge 부담]]
 - [[RDS-Aurora-Graviton|Graviton(ARM) 인스턴스 전환 — 세대별 비교, 벤치마크 한계, 실서비스 쿼리와 현재 지원 Aurora MySQL release 검증]]
-- [[RDS-Aurora-Endpoints|Endpoint 운영 (Writer/Reader/Custom/Instance, Reader Endpoint 함정과 Writer 폴백, 프록시 DNS 캐시, Custom Endpoint 워크로드 격리, Failover read-only + AWS Advanced JDBC Wrapper)]]
+- [[RDS-Aurora-Endpoints|Endpoint 운영 (Writer/Reader/Custom/Instance, Reader Endpoint 함정과 Writer 폴백, 프록시 DNS 캐시, Writer와 Reader 읽기 분산 비율, Custom Endpoint 워크로드 격리와 유형별 failover 멤버, Failover read-only + AWS Advanced JDBC Wrapper)]]
 - [[RDS-Aurora-AutoScaling|Auto Scaling 운영 (Custom Metric으로 배치 제외, Target Tracking vs Step Scaling, Flapping, Cooldown, Scale-out/in 커넥션 풀, Cache Warming)]]
 - [[RDS-Aurora-Selection-Exam|NCP 등 타 클라우드 비교, 관리형 DB 선택 기준, 흔한 함정, SAA-C03 체크포인트]]
 

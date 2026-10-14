@@ -98,6 +98,18 @@ Durability는 지원 노드 유형의 Valkey 9.0 이상에서 cluster mode enabl
 
 개발 또는 검증 환경의 `TestFailover`로 쓰기 중단, 클라이언트 복구와 오류 처리를 확인한다. 이 API는 장애 시 애플리케이션 동작을 시험하기 위한 기능이며 운영 장애를 해결하는 도구로 설계되지 않았다.
 
+### Endpoint와 replica 읽기
+
+2026-10-14 ElastiCache 사용자 가이드 기준이다. 노드가 여럿인 cluster mode disabled 구성은 endpoint가 세 가지다.
+
+| Endpoint | 가리키는 대상 | 운영 포인트 |
+|---|---|---|
+| Primary | 항상 현재 primary 노드 | replica 승격 같은 변경에도 이름이 그대로라 쓰기에 사용 |
+| Reader | replica 중 하나를 round robin으로 돌려주는 DNS 기록 | load balancer가 아니다. 연결을 replica에 고르게 나누지만 실제 분산은 연결을 언제 만들고 얼마나 재사용하는지가 정한다. replica 추가와 제거는 실시간으로 반영 |
+| Node | 특정 노드 | replica를 더하거나 지우면 앱 설정도 바꿔야 함 |
+
+cluster mode enabled는 configuration endpoint 하나로 shard별 primary와 read endpoint를 찾으므로 cluster를 지원하는 client가 필요하다. replica에서 읽는 cache-aside 앱은 replica가 응답하지 않을 때 그 읽기를 miss로 보고 원본 DB로 우회할지 정하고, 우회한 부하를 원본이 감당할 수 있는 범위로 제한한다([[Cache-Decision|캐시 장애 대비]]).
+
 ## 엔진 업그레이드와 클라이언트 복구
 
 이 절은 2026-10-07 AWS 공식 문서로 확인한 **node-based Valkey와 Redis OSS**의 범위다. Serverless에 같은 노드 교체 절차를 적용하지 않는다. 다른 절 전체의 검증일을 갱신한 것은 아니다.
@@ -120,6 +132,7 @@ Durability는 지원 노드 유형의 Valkey 9.0 이상에서 cluster mode enabl
 ## 비용, 사이징
 
 - **인스턴스 타입**: 데이터 크기, eviction, CPU, 네트워크와 엔진 호환성을 측정해 선택한다. Graviton 계열의 가격 대비 성능도 워크로드에서 비교한다.
+- **예약 메모리**: 노드 기반 Valkey와 Redis OSS는 parameter group의 `reserved-memory-percent`(기본 25%)만큼을 데이터가 아닌 용도로 남기고 나머지를 `maxmemory`로 쓴다. 예약분은 replica의 client output buffer, 단편화, fork한 bgsave의 copy-on-write에 쓰이며, AWS는 이 값을 낮추지 말라고 안내한다. forked bgsave나 full sync 중에는 메모리 사용량이 트래픽에 따라 두 배 이상이 될 수 있다. `FreeableMemory`가 모자라면 ElastiCache가 forkless 저장으로 바꾸는데, 메모리는 덜 쓰지만 큰 항목에서 client 지연을 늘릴 수 있어 그 지연이 문제면 예약분을 늘린다. 운영용 small 인스턴스는 30%, micro는 50%로 올리도록 권한다(2026-10-14 사용자 가이드 기준).
 - **샤딩**: 단일 노드 메모리 한도(100GB+) 넘으면 Redis Cluster 모드로 샤딩
 - **비용 지표**: 인스턴스 시간 + 데이터 전송 + 스냅샷 스토리지
 
@@ -137,6 +150,8 @@ Durability는 지원 노드 유형의 Valkey 9.0 이상에서 cluster mode enabl
 - [ElastiCache 백업과 복원](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/backups.html)
 - [ElastiCache 엔진 버전 고려사항](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/VersionManagementConsiderations.html)
 - [ElastiCache 엔진 선택](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/SelectEngine.html)
+- [ElastiCache 연결 endpoint 찾기](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Endpoints.html)
+- [ElastiCache Valkey와 Redis OSS 예약 메모리 관리](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/redis-memory-management.html)
 
 ## 관련 문서
 
