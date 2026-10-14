@@ -78,6 +78,14 @@ SiteWise에서는 asset model로 같은 종류의 설비가 공유할 구조를 
 
 **Monitron은 2024-10-31부터 신규 고객에게 제공되지 않는다.** 과거 도입 사례를 신규 시스템의 채택 근거로 바로 쓰지 않는다. 이 절은 상태 해석과 도입 제한만 대조했으며, 기존 IoT 기능 전체를 재검증하지 않아 frontmatter의 검증일은 유지한다.
 
+## MCU의 운영체제와 게이트웨이 런타임을 구분한다
+
+2026-10-14 FreeRTOS와 Greengrass V2 공식 문서 대조 기준. FreeRTOS는 마이크로컨트롤러와 소형 마이크로프로세서용 RTOS이며 커널과 연결, 보안, OTA 라이브러리를 제공한다. Greengrass는 장비에서 컴포넌트를 배포하고 실행하는 엣지 런타임이다. 센서 MCU와 데이터를 모으는 게이트웨이에 각각 배치하는 구성을 검토할 수 있으며, 같은 계층의 대체 제품으로만 비교하지 않는다.
+
+Greengrass V2에서도 일반 nucleus와 nucleus lite를 나눈다. 일반 nucleus는 Linux와 Windows를 지원하고, lite는 systemd가 있는 Linux에서 동작하며 기능 일부만 제공한다. 메모리 절약만 보고 선택하지 말고 필요한 컴포넌트와 IPC 기능의 호환성을 확인한다. 예를 들어 공식 호환성 표에서 lite는 Greengrass Lambda 함수와 로컬 MQTT 클라이언트 장비 상호작용을 지원하지 않는다.
+
+장비 선정 시에는 OS, 연결 방식, 사용할 컴포넌트와 추가 언어 런타임을 먼저 정하고 실제 메모리를 측정한다(설계 점검). 영상에 나온 단일 RAM 수치를 모든 Greengrass 구성의 최소 요구량으로 재사용하지 않는다. 이 절은 제품 역할과 런타임 선택만 대조했으며 기존 기능 전체의 검증일은 유지한다.
+
 ## 엣지 추론과 클라우드 작업
 
 AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행하고 데이터를 필터링하거나 집계하는 런타임을 제공한다. 소프트웨어를 component 단위로 배포하고 관리할 수 있다. 모델 추론을 로컬로 옮기는 것과 전체 시스템의 오프라인 동작은 구분한다.
@@ -192,6 +200,9 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS FreeRTOS, What is FreeRTOS?](https://docs.aws.amazon.com/freertos/latest/userguide/what-is-freertos.html)
+- [AWS IoT Greengrass, Choosing your AWS IoT Greengrass nucleus runtime](https://docs.aws.amazon.com/greengrass/v2/developerguide/choosing-your-runtime.html)
+- [AWS IoT Greengrass, Greengrass feature compatibility](https://docs.aws.amazon.com/greengrass/v2/developerguide/operating-system-feature-support-matrix.html)
 - [AWS IoT FleetWise, Manage AWS IoT FleetWise decoder manifests](https://docs.aws.amazon.com/iot-fleetwise/latest/developerguide/decoder-manifests.html) — 2026-10-14 모델 연결과 활성화 조건 대조
 - [How SOCAR handles large IoT data with Amazon MSK and Amazon ElastiCache for Redis — AWS](https://aws.amazon.com/blogs/big-data/how-socar-handles-large-iot-data-with-amazon-msk-and-amazon-elasticache-for-redis/) — 2023년 구현의 소비, 변환과 저장 역할을 2026-10-14 대조
 - [AWS IoT Core, Apache Kafka](https://docs.aws.amazon.com/iot/latest/developerguide/apache-kafka-rule-action.html) — 2026-10-14 Kafka action의 IAM 인증과 MSK Serverless 제한 대조

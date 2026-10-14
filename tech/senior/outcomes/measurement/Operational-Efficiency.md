@@ -48,6 +48,24 @@ aliases: ["운영 및 생산성 효율화 (Operational Efficiency)", "Operationa
 
 다섯 축 모두 절감 자체가 목적이 아니다. 확보한 여유가 어디로 갔는지가 성과 서술의 마지막 칸이다 ([[Strategic-Slack|의도적 여유]]).
 
+## 전달 단위당 비용으로 개선을 비교한다
+
+Cost to Serve Software(CTS-SW)는 소프트웨어 전달에 드는 총비용을 전달 단위와 연결해 보는 시스템 수준의 측정 방식이다. 비용 범위에는 개발 노력과 도구를 포함하고, 전달 단위는 팀이 검토, 병합, 배포하고 고객을 위해 지원하는 작업으로 정한다. 코드 줄 수나 개인별 활동량으로 대체하지 않는다.
+
+단위는 전달 방식에 따라 달라질 수 있다. 2025년 공개된 Amazon 적용 사례는 마이크로서비스에 배포를, 모놀리스와 모바일 앱에 PR 완료를 사용했다. 이는 해당 사례의 선택이며 모든 팀이 같은 분모를 써야 한다는 표준은 아니다.
+
+적용할 때는 다음을 점검한다. 아래 항목은 측정 방식의 운영 제안이며 실제 조직에서 측정한 결과가 아니다.
+
+1. 같은 팀의 비교 기간에 비용 범위와 전달 단위를 고정한다. 정의가 달라진 팀들의 원시 수치로 순위를 매기지 않는다.
+2. 비용과 전달량을 함께 남긴다. 단위를 잘게 나눠 분모만 늘린 변화를 효율 개선으로 확정하지 않는다.
+3. 보안, 가용성과 팀 만족도 같은 보조 지표를 함께 본다. 비용 감소와 동시에 품질이나 팀 상태가 나빠지면 개선 판정을 다시 검토한다.
+4. 절감한 시간, 실제 현금 지출 감소와 추가 작업을 수행할 여력을 구분한다. 개발자 경험 개선만으로 매출 증가나 같은 비율의 인건비 절감을 단정하지 않는다.
+
+## 출처
+
+- [Quantifying the Impact of Developer Experience: Amazon’s 15.9% Breakthrough — AWS](https://aws.amazon.com/blogs/enterprise-strategy/business-value-of-developer-experience-improvements-amazons-15-9-breakthrough/) — 전달 단위, 전체 과정 비용과 보조 지표의 구성
+- [Measuring Developer Experience Impact with Cost to Serve — Amazon Web Services](https://www.youtube.com/watch?v=o0UBh62nw3Y) — 팀 단위 비교와 만족도, 안전성의 보조 지표
+
 ## 관련 문서
 - [[Business-Impact|비즈니스 임팩트 (Business Value)]]
 - [[Technical-Reliability|기술적 탁월함과 안정성 (Technical Reliability)]]

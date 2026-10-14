@@ -47,6 +47,18 @@ MAPE(Mean Absolute Percentage Error)는 실제값 대비 절대 백분율 오차
 
 MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱 오차를 집계한다. 어느 지표가 작은지만 보지 말고 평가 기간, 예측 거리와 비교 기준 모델을 함께 명시한다.
 
+## 분위수 예측과 분위수 손실을 구분한다
+
+2026-10-14 Amazon Forecast 평가 문서 대조 기준. **P90은 예측 분포의 90번째 백분위수이고, wQL은 특정 분위수 예측을 실제 관측값과 비교하는 손실 지표**다. 둘 다 0.9라는 숫자로 표현되는 하나의 확률이라고 해석하지 않는다.
+
+- P90 예측이 300이면 실제값이 그 예측값 아래에 놓이는 비율을 90%로 목표하는 분위수 예측이다. 실제값이 정확히 300일 확률이 90%라는 뜻은 아니다. 운영 데이터에서 그 비율이 달성되는지는 따로 평가한다.
+- P10과 P90 사이는 명목상 80% 예측 구간이다. 몇 개의 관측값이 그 안에 들었다는 사실만으로 전체 기간의 보정이 입증되지는 않는다.
+- wQL은 과소 예측과 과대 예측의 페널티를 분위수에 따라 다르게 준다. 높은 분위수는 과소 예측을 더 크게 벌한다. wQL 값 자체를 수요량이나 성공 확률로 사용하지 않는다.
+
+재고 예측의 적용 점검으로는 같은 예측 거리에서 분위수별 손실과 실제 구간 포함 비율을 함께 확인한다. 품절과 폐기 비용이 다르면 적절한 분위수도 달라질 수 있으므로 P90을 모든 업무의 기본값으로 고정하지 않는다. 이는 평가 설계 제안이며 특정 매장의 절감 효과를 검증한 결과는 아니다.
+
+제품 도입과 평가 원리는 구분한다. AWS는 Amazon Forecast의 신규 고객 접근을 2024-07-29부터 중단한다고 공지했고 기존 고객은 계속 사용할 수 있다고 밝혔다. 과거 구축 영상을 신규 도입 절차로 그대로 사용하지 않는다. 검증 범위는 이 절의 분위수 해석과 해당 서비스 공지다.
+
 ## 물리적 운전 구간을 예측 평가에 반영한다
 
 풍력 발전 출력은 풍속이 커질수록 끝없이 증가하지 않는다. 미국 에너지부의 출력 곡선 설명은 발전을 시작하는 cut-in, 정격 출력에 도달하는 rated speed와 보호를 위해 정지하는 cut-out을 구분한다. 정격 도달 이후의 출력 제한과 정지 구간이 있으므로 풍속의 세제곱 관계를 실제 전력 출력의 모든 구간에 적용하지 않는다. 구간 경계는 터빈별로 확인한다.
@@ -69,6 +81,8 @@ MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱
 
 ## 출처
 
+- [Amazon Forecast, Evaluating Predictor Accuracy](https://docs.aws.amazon.com/forecast/latest/dg/metrics.html) — 2026-10-14 분위수와 wQL의 의미 대조
+- [Transition your Amazon Forecast usage to Amazon SageMaker Canvas — AWS](https://aws.amazon.com/cn/blogs/machine-learning/transition-your-amazon-forecast-usage-to-amazon-sagemaker-canvas/) — 신규 고객 접근 중단 공지
 - [How Do Wind Turbines Survive Severe Weather and Storms? — U.S. Department of Energy](https://www.energy.gov/cmei/wind/articles/how-do-wind-turbines-survive-severe-weather-and-storms) — 출력 곡선의 운전 구간을 2026-10-14 대조
 - [Temporal Fusion Transformers for Interpretable Multi-horizon Time Series Forecasting — Lim et al.](https://arxiv.org/abs/1912.09363) — 정적, 미래에 알려진 입력과 과거 관측 입력의 구분, TFT의 구성.
 - [Forecasting: Principles and Practice, Forecasting — Hyndman, Athanasopoulos](https://otexts.com/fpp3/forecasting.html) — ARIMA 오차 회귀와 미래 설명변수의 조건.
