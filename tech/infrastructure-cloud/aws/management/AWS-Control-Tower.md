@@ -57,6 +57,19 @@ AWS Organizations 등 여러 서비스의 기능을 조합해 멀티 계정 환�
 
 `mandatory`, `strongly recommended`, `elective`는 적용 권고 분류다. 위의 동작 분류와 별개다. 공식 문서 기준 랜딩 존 4.0부터 mandatory controls도 기본 적용되지 않으므로, 분류 이름 대신 환경에서 실제 활성화한 통제를 확인한다.
 
+## 리전 차단은 적용 범위와 예외를 함께 확인한다
+
+부분 검증(2026-10-14): Control Tower 리전 차단 문서와 IAM 조건 키 문서를 대조했다. 기존 문서 전체의 검증일은 유지한다.
+
+- `AWS-GR_REGION_DENY`는 랜딩 존 단위 설정이며 `AWSControlTowerBaseline`이 활성화된 OU에 적용된다. 특정 OU만 별도로 구성하는 통제가 아니다.
+- `CT.MULTISERVICE.PV.1`은 지정한 OU에 적용하는 별도 SCP 통제다. 허용 리전과 예외 작업, 예외 주체를 구성할 수 있다. 홈 리전은 허용 목록에 포함해야 한다.
+- OU 통제의 예외가 다른 적용 대상 SCP의 명시적 거부를 덮어쓰지는 않는다. 랜딩 존 통제와 OU 통제를 함께 쓰면 상위 정책까지 대조한다.
+- IAM과 Organizations 같은 글로벌 서비스에는 예외가 있다. 실제 배포된 정책의 `NotAction`과 주체 예외를 확인하며, 리전 차단을 해당 리전의 모든 행위 차단으로 설명하지 않는다.
+
+`aws:RequestedRegion`은 호출하는 서비스 엔드포인트의 리전을 제한한다. 작업이 다른 리전에 미치는 영향까지 같은 조건으로 제한하지는 않는다. 예를 들어 S3 복제는 복제 구성에 따라 다른 리전에도 영향을 주므로 데이터 이동 요구사항은 별도로 검토한다.
+
+운영 적용 전에는 차단할 리전의 기존 자원과 의존성을 조사하고 시험 계정에서 필요한 작업의 허용과 거부를 확인한다(검증 제안). 정책 활성화 후에는 기존 자원에 접근하지 못할 수 있다. 이번 대조에서 실제 계정의 정책은 변경하거나 시험하지 않았다.
+
 ## CfCT — 공통 정책 배포와 승인
 
 Customizations for AWS Control Tower(CfCT)는 CloudFormation 템플릿과 SCP, RCP를 계정 또는 OU에 배포해 랜딩 존을 확장한다. Account Factory의 새 계정 생성 같은 lifecycle event와도 연결된다. 대상 OU에는 `AWSControlTowerBaseline`이 활성화되어 있어야 한다.
@@ -97,6 +110,9 @@ Control Tower 도입 자체가 규제 준수의 완료 증거는 아니다. AWS�
 
 ## 출처
 
+- [AWS, Configure the Region deny control](https://docs.aws.amazon.com/controltower/latest/userguide/region-deny.html)
+- [AWS, Region deny control applied to the OU](https://docs.aws.amazon.com/controltower/latest/controlreference/ou-region-deny.html)
+- [AWS IAM, AWS global condition context keys — aws:RequestedRegion](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-requestedregion)
 - [AWS, Establishing Your Cloud Foundation on AWS — Capabilities](https://docs.aws.amazon.com/whitepapers/latest/establishing-your-cloud-foundation-on-aws/capabilities.html)
 - [AWS, Establishing Your Cloud Foundation on AWS — Working with the capabilities](https://docs.aws.amazon.com/whitepapers/latest/establishing-your-cloud-foundation-on-aws/working-with-the-capabilities.html)
 - [AWS IAM Identity Center, Manage AWS accounts with permission sets](https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html) — 2026-10-13 계정별 사용자 접근과 permission set의 역할 대조

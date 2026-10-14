@@ -96,6 +96,14 @@ AWS의 최대 25% 컴퓨트 성능 향상은 Graviton4 기반 M8g와의 비교�
 
 Porting Advisor for Graviton은 알려진 코드 패턴과 의존성 호환성 문제를 찾는 사전 점검 도구다(2026-10-13 AWS 저장소 README 확인). 비 ARM 장비에서도 실행할 수 있고 소스를 자동 수정하지 않는다. 빌드에서 제외한 파일까지 소스 트리 검사에 포함해 오탐이 생길 수 있으므로 결과를 실제 빌드 대상과 대조한다. 문제를 찾지 못했다는 결과는 Graviton 기능 테스트와 부하 시험을 대신하지 않는다.
 
+배치와 최적화 작업에는 웹 요청 처리량과 다른 비교 기준이 필요하다. 2026-10-14 AWS Graviton Performance Runbook의 질문 정의와 변수 통제 원칙을 대조했으며, 다음은 이를 배송 경로 최적화 같은 작업에 적용한 검증 제안이다.
+
+- 같은 입력 데이터, 업무 제약, 런타임과 의존성 버전을 고정한다. 계산을 끝까지 실행하는 작업은 완료 시간과 자원 비용을 비교한다.
+- 제한 시간에 맞춰 탐색을 멈추는 작업은 같은 시간 안에 얻은 목적함수 값과 제약 충족 여부를 비교한다. 목표 품질에 도달하는 시간을 재는 실험과 구분하고, 더 빨리 끝났다는 사실만으로 더 좋은 해라고 판단하지 않는다.
+- 전처리, 최적화 계산과 결과 저장을 나누어 측정해 CPU 밖의 병목을 확인한다. 비교 대상과 입력, 종료 조건이 다른 발표 사례의 절감률을 현재 작업에 대입하지 않는다.
+
+실제 최적화 프로그램이나 Graviton 인스턴스에서 측정하지 않았으며, 이번 대조만으로 기존 문서 전체의 검증일을 갱신하지 않는다.
+
 ### AI 가속기는 실행 스택까지 함께 비교한다
 
 2026-10-10 부분 대조: AWS Neuron 공식 소개 기준, Trainium과 Inferentia는 Neuron 개발 스택을 사용하는 AWS 가속기다. Neuron에는 컴파일러, 런타임, 학습과 추론 라이브러리, 프로파일링 도구가 포함된다. GPU 인스턴스와 비교할 때 인스턴스 사양뿐 아니라 모델 실행에 필요한 소프트웨어 경로도 확인한다.
@@ -174,6 +182,8 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 
 ## 출처
 
+- [Graviton Performance Runbook, Quick introduction to benchmarking — AWS](https://github.com/aws/aws-graviton-getting-started/blob/main/perfrunbook/intro_to_benchmarking.md)
+- [Graviton Performance Runbook, Defining your benchmark — AWS](https://github.com/aws/aws-graviton-getting-started/blob/main/perfrunbook/defining_your_benchmark.md)
 - [Amazon EC2 Trn3 UltraServers — AWS](https://aws.amazon.com/ec2/instance-types/trn3/) — 2026-10-14 칩당 사양과 UltraServer 합계 대조
 - [Amazon EC2 M9g instances — AWS](https://aws.amazon.com/ec2/instance-types/m9g/)
 - [Amazon EC2 G7 instances — AWS](https://aws.amazon.com/ec2/instance-types/g7/)

@@ -66,6 +66,17 @@ DATABASE_URL="mysql://user:pass@mydb.xxxx.ap-northeast-2.rds.amazonaws.com:3306/
   - **Access denied / authentication failed**는 네트워크는 뚫렸고 자격증명/권한이 틀린 것이다.
   - 이 둘을 헷갈려 비밀번호만 계속 고치면 SG 문제를 영영 못 잡는다.
 
+### IP 주소와 DNS 해석 위치를 분리한다
+
+부분 검증(2026-10-14): AWS RDS VPC 문서와 Knowledge Center의 IP, 피어링 DNS 안내를 대조했다. 아래는 DB 인스턴스의 IPv4 연결 기준이다. 기존 문서 전체의 검증일은 유지한다.
+
+- **연결 설정은 엔드포인트 이름으로 유지한다.** 장애 조치, 호스트 교체나 유지보수로 IP가 달라질 수 있다. 클라이언트가 해석한 IP를 영구 캐시하지 않도록 DNS TTL과 재연결 동작을 확인한다.
+- **진단은 실제 클라이언트 위치에서 한다.** `dig <DB 엔드포인트>` 또는 `nslookup <DB 엔드포인트>`의 결과를 애플리케이션이 사용하는 주소와 대조한다. 같은 VPC에서는 사설 IP로 해석되며, 공개 접근이 구성된 DB는 VPC 밖에서 공인 IP로 해석될 수 있다.
+- **피어링 연결 생성과 DNS 설정은 별개다.** 공개 RDS 엔드포인트를 피어 VPC에서 사설 IP로 해석하려면 Requester와 Accepter의 DNS resolution 설정을 확인한다. 사용자 정의 DNS라면 AmazonProvidedDNS로의 질의 전달 경로도 확인한다. 이름 해석이 성공해도 라우팅과 SG 허용까지 입증되지는 않는다.
+- **공개 접근 설정만으로 연결이 열리지 않는다.** 공개 연결이 필요한 구성에서는 DB subnet group의 모든 서브넷에 인터넷 게이트웨이 경로가 있는지, SG가 필요한 소스와 포트만 허용하는지 확인한다. 공개와 비공개 서브넷을 섞으면 장애 조치 뒤 연결 문제가 생길 수 있다. 이 조건은 기존 비공개 DB를 공개하라는 권고가 아니다.
+
+실제 DB의 설정 변경이나 장애 조치 시험은 수행하지 않았다. DNS 캐시, 경로와 자격증명을 순서대로 분리해 확인하는 진단 기준이다.
+
 ### MySQL의 ERROR 2026과 CA 교체
 
 `ERROR 2026 (HY000)`은 TLS 연결 실패를 나타내므로 뒤따르는 상세 메시지를 함께 확인한다. 비밀번호를 바꾸기 전에 인증서 검증과 파일 접근을 점검한다.
@@ -114,6 +125,9 @@ RDS 요금은 대략 다섯 축으로 쌓인다. 단가는 리전/인스턴스 �
 
 ## 출처
 
+- [Amazon RDS User Guide, Working with a DB instance in a VPC](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html)
+- [How do I troubleshoot issues with the IP addresses for my Amazon RDS DB instances? — AWS re:Post Knowledge Center](https://www.repost.aws/knowledge-center/rds-ip-address-issues)
+- [Why can't I resolve domain names over my Amazon VPC peering connection? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/vpc-peering-troubleshoot-dns-resolution)
 - [How do I resolve an ERROR 2026 SSL connection error? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/rds-error-2026-ssl-connection)
 - [Amazon RDS User Guide, Updating applications to connect to MySQL DB instances using new SSL/TLS certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/ssl-certificate-rotation-mysql.html)
 - [MySQL 8.4 Reference Manual, Command Options for Connecting to the Server](https://dev.mysql.com/doc/refman/8.4/en/connection-options.html#option_general_ssl-mode)
