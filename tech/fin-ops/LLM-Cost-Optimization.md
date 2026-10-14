@@ -87,6 +87,30 @@ Batch inference를 고르면 다음을 job 운영 계약으로 둔다.
 - `timeoutDurationInHours`는 24~168시간이다. 제한 시간 전에 시작하지 못한 job은 `Expired`, 시간 안에 일부 record를 처리하지 못한 job은 `PartiallyCompleted`가 되므로 미처리와 오류 record만 모아 다시 제출한다. 남은 record가 모델별 job 최소 record 수보다 적으면 다음 job에 합치거나 on-demand로 처리한다(운영 제안).
 - Job당 최소와 최대 record 수, 입력 파일과 job 크기는 모델별 batch inference quota로 확인한다. Job 상태 변화는 polling 대신 EventBridge 알림으로 받을 수 있다.
 
+### 오픈 웨이트 소형 모델을 직접 서빙할 때
+
+다운사이즈를 API의 하위 티어가 아니라 오픈 웨이트 소형 모델을 상시 인스턴스에 직접 서빙하는 방식으로 하면 과금 단위가 토큰에서 인스턴스 사용 시간으로 바뀐다. 2026-10-14 SageMaker AI 가격표는 실시간 추론을 선택한 인스턴스의 사용량으로 과금하고, 가격 예시도 인스턴스를 띄워 둔 시간 전체로 계산한다. 요청이 드문 경로에 GPU 인스턴스를 상시 띄우면 비용 대부분이 요청이 없는 시간에서 나온다.
+
+비교용 단순 모델로 상시 인스턴스의 요청당 비용은 `시간당 인스턴스 비용 / 시간당 실제 요청 수`다. 분모에는 최대 처리량이 아니라 실제 유입량을 넣고, 같은 요청 표본의 API 토큰 비용과 비교해 손익분기 유입량을 구한다. 가용성을 위해 인스턴스를 여러 대 두면 분자도 그만큼 커진다.
+
+크기는 평가를 통과하는 범위에서 내린다(운영 제안).
+
+1. 실제 질의를 반영한 평가 세트와 도메인 전문가 검토로 합격선을 먼저 정한다.
+2. 합격 가능성이 높은 크기의 최신 상위 공개 모델로 시작하고, 합격하면 더 작은 크기로 줄여 다시 평가한다. 2025-05 기준 예로는 7~8B급에서 시작해 5B, 3B급으로 줄인다. 크기 구간은 모델 세대에 따라 바뀐다.
+3. 후보의 가중치 메모리 하한을 [[LLM-Inference-Bottlenecks#로컬 추론의 용량과 지연을 따로 계산한다|용량 산식]]으로 먼저 거른 뒤, 대표 문맥 길이와 동시 요청 수에서 KV 캐시와 런타임 할당까지 포함한 최대 메모리가 가속기 하나나 CPU 메모리에 분할 없이 들어가는지 측정한다. 들어가면 모델을 여러 장치에 나누는 서빙 구성이 필요 없다.
+
+GPU를 상시 띄우지 않는 선택지는 다음과 같다(2026-10-14 AWS 문서 기준).
+
+| 선택지 | 맞는 경우 | 확인할 제약 |
+|---|---|---|
+| Graviton CPU 추론 | GPU 용량을 구하기 어렵거나 지연을 어느 정도 허용하는 소량 워크로드 | AWS Graviton 기술 가이드는 llama.cpp로 Graviton CPU에서 LLM을 추론하는 절차를 제공한다. Graviton3(E), 4, 5는 BFloat16과 MMLA 명령을 지원하고, 이 하드웨어 기능은 Linux 커널 5.10부터 켜진다. 예제는 Q4_0 GGUF를 쓰고, Python 바인딩은 `n_threads`를 vCPU 수로 주지 않으면 절반만 쓴다. arm64 이미지와 의존성은 [[EC2-Compute#Graviton 이전은 이미지, 의존성과 성능을 함께 검증한다\|Graviton 이전 검증]]을 따른다 |
+| SageMaker Serverless Inference | 요청 사이에 유휴 구간이 있고 콜드 스타트를 허용하는 경로 | 요청 처리에 쓴 컴퓨트를 ms 단위로 과금하고 요청이 없으면 0으로 줄인다. GPU, VPC 구성과 네트워크 격리는 지원하지 않는다. 메모리는 1~6GB 중 고르고 메모리에 비례해 vCPU가 배정되며, 컨테이너 이미지는 최대 10GB다 |
+| 인스턴스 0개 축소 | GPU 엔드포인트가 필요하지만 유휴 시간이 긴 경우 | Inference component를 호스팅하는 엔드포인트만 가능하다. 0에서 다시 늘리는 데 몇 분이 걸리고 그동안 호출은 오류를 받으므로 대기열이나 폴백 경로를 함께 둔다(운영 제안) |
+
+CPU 추론은 소형 모델과 비동기 에이전트 같은 작업에 맞춘다. 소형 모델은 최대 규모 LLM의 능력에 못 미칠 수 있고, 배치를 키우면 처리량은 늘지만 사용자당 지연이 커지므로 도입 전에 사용 사례 적합성을 평가한다(2025-06 AWS Graviton 사례 기준). Graviton 가이드의 Deep Learning Container 추론 서버는 기본적으로 인증 없이 0.0.0.0에 바인딩되므로 사설 네트워크(security group, VPC) 안에 두고, 필요하면 `LLAMA_API_KEY`로 요청마다 bearer 토큰을 요구한다.
+
+트래픽이 적으면 양자화한 소형 모델을 애플리케이션과 같은 인스턴스나 파드에서 실행해 별도 GPU 엔드포인트의 유휴 비용과 단일 장애점을 없애는 구성도 검토할 수 있다. 대신 추론과 애플리케이션이 CPU와 메모리를 나눠 써 서로의 지연에 영향을 주고, 인스턴스 수만큼 모델 메모리가 중복되며, 모델 교체가 애플리케이션 배포와 묶인다. 동시 요청이 많은 경로에는 별도 추론 계층을 둔다(설계 점검).
+
 ## 5. 모델 라우팅: 선택 비용과 재시도 비용을 포함한다
 
 요청을 먼저 분류해 모델 하나를 고르는 **사전 라우팅**과, 저비용 모델의 답을 평가한 뒤 필요하면 상위 모델을 호출하는 **캐스케이드**는 비용 구조가 다르다. RouteLLM은 전자의 비용과 품질 절충을, FrugalGPT는 후자의 모델 조합을 연구한 사례다. 연구에서 얻은 절감률을 다른 요청 분포와 모델 조합에 그대로 적용하지 않는다.
@@ -115,6 +139,7 @@ Bedrock 기반 배치 워크로드에서 가시성 대시보드 구축, 92% 파�
 - LLM 시뮬레이션에서 산술을 결정론 경로에 두는 이유
 - 레버들의 트레이드오프 (정확도, 코드 변경량, 지연)와 적용 순서 결정 기준
 - 캐시 히트율 98%가 전체 비용 64% 절감으로 이어진 구조 (파레토 집중 + 입력 비용 방어)
+- 소형 모델을 상시 인스턴스로 직접 서빙하면 비용이 토큰이 아니라 인스턴스 사용 시간에 묶이는 이유와 유휴 비용을 줄이는 선택지 (CPU 추론, 서버리스 추론, 0개 축소)
 
 ## 출처
 
@@ -138,6 +163,12 @@ Bedrock 기반 배치 워크로드에서 가시성 대시보드 구축, 92% 파�
 - [RouteLLM: An Open-Source Framework for Cost-Effective LLM Routing — LMSYS Org](https://www.lmsys.org/blog/2024-07-01-routellm/) (사전 라우팅과 비용, 품질 평가)
 - [FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance — arXiv](https://arxiv.org/abs/2305.05176) (LLM 캐스케이드 연구)
 - [LLM 비용 64% 절감, 캐시 히트율 98% 달성기 — 무신사 테크블로그 (29CM)](https://techblog.musinsa.com/llm-%EB%B9%84%EC%9A%A9-64-%EC%A0%88%EA%B0%90-%EC%BA%90%EC%8B%9C-%ED%9E%88%ED%8A%B8%EC%9C%A8-98-%EB%8B%AC%EC%84%B1%EA%B8%B0-d568135bd40e)
+- [Amazon SageMaker AI pricing — AWS](https://aws.amazon.com/sagemaker/ai/pricing/) (실시간 추론의 인스턴스 사용량 과금과 가격 예시, Serverless Inference의 ms 단위 과금)
+- [Amazon SageMaker AI Developer Guide, Deploy models with Amazon SageMaker Serverless Inference](https://docs.aws.amazon.com/sagemaker/latest/dg/serverless-endpoints.html)
+- [Amazon SageMaker AI Developer Guide, Scale an endpoint to zero instances](https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-auto-scaling-zero-instances.html)
+- [AWS Graviton Technical Guide, llama.cpp](https://aws.github.io/graviton/machinelearning/llama.cpp.html)
+- [Run small language models cost-efficiently with AWS Graviton and Amazon SageMaker AI — AWS Machine Learning Blog](https://aws.amazon.com/blogs/machine-learning/run-small-language-models-cost-efficiently-with-aws-graviton-and-amazon-sagemaker-ai/)
+- [EP2: ARCEE.AI small language models, open source and cost efficient AI — AWS for AI podcast, Amazon Web Services](https://www.youtube.com/watch?v=0vkw5TaTYPo) (소형 모델부터 평가하는 크기 선택과 애플리케이션 동거 배치 제안)
 
 ## 관련 문서
 

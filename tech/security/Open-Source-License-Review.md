@@ -1,7 +1,7 @@
 ---
 tags: [security, open-source, license, supply-chain, compliance]
 status: done
-verified_at: 2026-10-13
+verified_at: 2026-10-14
 category: "보안(Security)"
 aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소프트웨어의 오픈소스 의무"]
 ---
@@ -19,6 +19,16 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 - GitHub의 public 저장소라는 사실만으로 코드를 자유롭게 사용, 수정하거나 재배포할 허가가 생기지는 않는다. 별도 라이선스가 없으면 기본 저작권 규칙이 적용된다. 다만 GitHub 약관에 따른 플랫폼 내 열람과 fork 권한은 별개다. fork 버튼의 존재를 외주 납품이나 재배포 허가로 해석하지 않는다. [GitHub 라이선스 안내](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)
 - 오픈소스 여부는 코드 접근뿐 아니라 재배포, 수정과 파생물 배포 등 이용 조건으로 판단한다. AI로 기능을 재구현할 수 있다는 시연만으로 원 제품의 소스나 라이선스가 공개됐다고 판단하지 않는다. 재구현물과 원 제품을 구분하고 각각의 권리와 포함 자산을 검토한다. 이는 OSI 정의를 적용한 검토 기준이며, 특정 역공학 방식의 적법성을 판정한 것은 아니다. [OSI 정의](https://opensource.org/osd)
 - GitHub의 라이선스 표시는 알려진 라이선스 파일을 탐지한 결과다. 복수 라이선스나 복잡한 조건이 있으면 표시가 불명확할 수 있으므로 배지나 검색 필터만으로 판단하지 않고 실제 파일과 적용 범위를 읽는다. [GitHub 라이선스 탐지 안내](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository#detecting-a-license)
+
+## 오픈 웨이트 모델과 Open Source AI는 다르다
+
+2026-10-14에 OSI의 Open Source AI Definition 1.0(2024-10-28 공개)과 Llama 3.1 Community License 원문을 대조했다. 이 절의 확인 날짜는 위의 다른 절과 구분한다.
+
+- OSAID 1.0은 AI 시스템을 어떤 목적으로든 사용하고, 동작을 연구하고, 수정하고, 공유할 자유를 요구한다. 수정에 적합한 형태로 데이터 정보(Data Information), 코드(Code), 파라미터(Parameters)를 모두 제공해야 한다. 코드는 학습과 실행에 쓴 전체 소스 코드다. [OSAID 1.0](https://opensource.org/ai/open-source-ai-definition)
+- 데이터 정보는 숙련자가 실질적으로 동등한 시스템을 만들 수 있을 만큼 상세해야 한다. 학습에 쓴 데이터 전체(공유할 수 없는 데이터를 썼다면 그것도 포함)의 출처, 범위와 특성, 수집과 선별 방법, 라벨링 절차, 처리와 필터링 방법을 설명하고, 공개 데이터와 제3자에게서 구할 수 있는 데이터(유료 포함)의 목록과 입수처를 밝혀야 한다. 요구 요소는 데이터 원본이 아니라 이 데이터 정보다. [OSAID 1.0](https://opensource.org/ai/open-source-ai-definition)
+- 같은 정의는 Open Source 모델과 Open Source 가중치가 그 파라미터를 도출한 데이터 정보와 코드를 포함해야 한다고 적는다. 가중치를 내려받을 수 있다는 사실(오픈 웨이트)만으로 Open Source AI라고 판단하지 않고, 모델 카드의 라이선스와 이용 정책 원문을 코드 라이선스와 별도로 확인한다.
+- 예를 들어 Llama 3.1 Community License는 출시일(2024-07-23)에 라이선스 이용자나 계열사가 제공하는 제품과 서비스의 직전 달 월간 활성 사용자가 7억 명을 넘었다면 Meta의 별도 라이선스를 받기 전까지 권리를 주지 않는다. Llama 자료나 이를 포함한 제품과 서비스를 배포하거나 제공하면 계약서 사본을 함께 주고 Built with Llama를 눈에 띄게 표시해야 하며, Llama 자료나 그 출력으로 만들거나 미세조정한 모델을 배포하거나 제공하면 모델 이름 앞에 Llama를 붙여야 한다. Acceptable Use Policy 준수도 조건이다. [Llama 3.1 License](https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE)
+- 미세조정, 가중치 병합이나 증류로 만든 파생 모델은 원 모델들의 조건을 함께 확인한다. 어댑터와 병합 모델의 공급망 위험은 [[LLM-Application-Security#LLM03 공급망|LLM 공급망]]에서 다룬다.
 
 ## 무엇을 어떤 방식으로 제공하는가
 
@@ -88,10 +98,14 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 - [OSI, GNU Affero General Public License Version 3](https://opensource.org/license/agpl-3.0)
 - [GNU, Frequently Asked Questions about the GNU Licenses](https://www.gnu.org/licenses/gpl-faq.en.html)
 - [SPDX, License List](https://spdx.org/licenses/)
+- [OSI, The Open Source AI Definition 1.0](https://opensource.org/ai/open-source-ai-definition)
+- [Open Source AI Definition on the road: Looking back and forward — OSI](https://opensource.org/blog/open-source-ai-definition-on-the-road-looking-back-and-forward) (1.0 공개일)
+- [Meta, Llama 3.1 Community License Agreement](https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE)
 
 ## 관련 문서
 
 - [[Supply-Chain-Security|공급망 보안]] — 구성요소의 출처와 악성 배포 위험
 - [[Dependency-Vulnerability-Scanning|의존성 취약점 스캐닝]] — 스캔 결과와 SBOM의 범위
 - [[Side-Project-Asset-Sale|사이드 프로젝트와 디지털 자산 매각]] — 제3자 권리와 인계 조건
+- [[LLM-Application-Security|LLM 애플리케이션 보안]] — 사전학습 모델, 어댑터와 병합 모델의 공급망 위험
 - [[보안(Security)|보안 인덱스]]

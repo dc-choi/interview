@@ -62,6 +62,19 @@ Instruction Hierarchy(OpenAI, 2024)는 시스템 메시지, 사용자 메시지,
 
 이 연구는 입력 분류기 하나만 신뢰할 수 없다는 반례다. 위험한 행위는 도구 실행 직전에도 LLM 밖에서 권한과 인자를 검증한다. 듀얼 LLM 격리와 행동 통제도 각 경계가 실제로 지켜지는지 검증해야 한다.
 
+### 관리형 가드레일의 검사 범위 — Amazon Bedrock Guardrails 사례
+
+관리형 입출력 필터를 도입할 때는 무엇을 검사하지 않는지부터 확인한다. 아래는 2026-10-14 AWS 공식 문서로 대조한 Amazon Bedrock Guardrails의 범위다. 콘텐츠 필터(혐오, 모욕, 성적, 폭력, 부정행위), 이미지 콘텐츠 필터, 프롬프트 공격(탈옥, 인젝션, Standard tier의 프롬프트 유출), 거부 주제, 민감 정보 필터(PII 차단과 마스킹, 정규식), 단어 필터, 근거 검사와 Automated Reasoning 검사를 정책으로 조합한다.
+
+- **모델 밖에서 적용**: `ApplyGuardrail`은 모델을 호출하지 않고 임의의 텍스트를 `source: INPUT` 또는 `OUTPUT`으로 평가하므로 자체 호스팅한 오픈 웨이트 모델이나 다른 제공자의 모델에도 같은 정책을 쓸 수 있다. Bedrock Marketplace 모델도 이 API를 쓰도록 안내한다. 입력이 차단되면 모델을 부르지 않고 통과하면 응답을 다시 평가하는 순서는 앱이 만든다. IAM 조건 키 `bedrock:GuardrailIdentifier`의 guardrail 강제는 `InvokeModel`과 `Converse` 계열 추론 API에만 걸리므로, 자체 호스팅 엔드포인트를 검사 없이 부를 수 있는 경로가 있으면 우회된다(설계 점검)
+- **도구 경로는 보지 않는다**: 추론 호출에 연결한 콘텐츠 필터, 프롬프트 공격과 민감 정보 필터는 도구 결과(`toolResult`)와 도구 정의(`toolSpec`)를 평가하지 않고, 콘텐츠 필터와 민감 정보 필터는 모델이 만든 도구 호출 인자도 평가하지 않는다. 간접 인젝션이 들어오는 도구 결과와 검색 문서는 따로 넘겨 검사한다. 2026-06-16 발표된 `InvokeGuardrailChecks`는 guardrail 리소스 없이 요청마다 검사를 골라 도구 실행 전후에 쓸 수 있지만, 차단이나 마스킹 없이 검사별 0~1 점수(민감 정보는 탐지 위치 포함)를 돌려주며 지원 리전에 서울이 없다
+- **입력 태그**: `InvokeModel`과 `InvokeModelWithResponseStream`은 사용자 입력을 입력 태그로 감싸야 프롬프트 공격을 평가하고 태그가 없으면 거르지 않는다. IAM 조건 키로 guardrail을 강제해도 호출자가 입력 태그로 프롬프트 쪽 평가를 피할 수 있으며 응답에는 항상 적용된다
+- **한국어와 처리 위치**: Classic tier의 콘텐츠 필터, 프롬프트 공격과 거부 주제는 영어, 프랑스어, 스페인어만 지원하고 한국어는 Standard tier에서 지원한다. Standard tier는 cross-Region inference를 써서 입력과 출력이 같은 지리 범위의 다른 리전에서 처리될 수 있다. 단어 필터와 근거 검사의 지원 언어에는 한국어가 없고, 공식 문서는 지원하지 않는 언어에서 guardrail이 효과가 없다고 적는다
+- **로그의 원문**: 마스킹은 모델 입력과 응답에만 적용된다. Model invocation logging의 `input`과 trace의 `match`에는 원래 PII 값이 남으므로 로그 쪽 보호를 따로 둔다
+- **탐지 모델의 변화**: 정책은 AWS가 자동으로 갱신하는 기반 모델로 동작하고, 배포용 guardrail 버전은 설정의 스냅샷이다. 버전을 고정해도 같은 시험 세트로 탐지율과 과잉 차단을 다시 잰다(운영 해석)
+
+이런 관리형 필터도 아래 분류에서 주입 성공률을 낮추는 통제에 속하며, 피해 반경을 묶는 권한 통제를 대신하지 않는다. 이 절은 2026-10-14 Bedrock Guardrails 공식 문서만 대조한 범위이며 다른 항목은 재검증하지 않아 기존 `verified_at`을 유지한다.
+
 ### 적응형 공격과 피해 반경 제한
 
 - **적응형 공격(Nasr, Carlini 외, 2025-10)**: 방어 설계를 알고 경사 하강, 강화학습, 무작위 탐색과 사람 레드팀으로 공격을 최적화하자 최근 탈옥과 프롬프트 인젝션 방어 12종 대부분에서 성공률이 90%를 넘었다. 원 논문들은 대부분 0에 가까운 성공률을 보고했었다. AgentDojo의 정적 공격에서 1%까지 낮았던 Spotlighting과 Prompt Sandwiching(비신뢰 입력 뒤에 사용자 프롬프트를 다시 붙이는 방어)은 탐색 기반 공격에서 둘 다 95%를 넘었고, 학습 기반 MetaSecAlign은 정적 2%에서 96%가 됐다. 사람 레드팀 참가자는 Spotlighting을 뚫는 공격을 265건 만들었다.
@@ -160,6 +173,7 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 ## 면접 체크포인트
 
 - 프롬프트 인젝션의 직접/간접/멀티모달 구분과 완전한 예방은 불가능하고 완화만 가능하다는 전제
+- 관리형 가드레일이 도구 결과와 도구 호출 인자를 검사하지 않을 때 간접 인젝션 경로를 어디서 따로 검사하고, 모델 밖에서 적용한 검사의 우회 경로를 어떻게 막는가
 - Spotlighting의 세 방식과 delimiting을 실무에서 권하지 않는 이유, Instruction Hierarchy가 앱이 아니라 모델 학습의 영역이고 앱은 메시지 채널로 출처를 보존해야 하는 이유
 - 정적 벤치마크에서 0%에 가깝던 방어 대부분이 적응형 공격에서 90% 넘게 뚫리는 이유와 Rule of Two, 결정적 정책 엔진, 실제 행동을 보여 주는 승인으로 피해 반경을 묶는 설계
 - 부적절한 출력 처리가 왜 기존 인젝션(XSS, SQLi, RCE)의 재현인지
@@ -192,6 +206,22 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 - [AWS, Machine Learning Lens: MLSEC03-BP04 Enforce data lineage](https://docs.aws.amazon.com/wellarchitected/latest/machine-learning-lens/mlsec03-bp04.html)
 - [AWS, Machine Learning Lens: MLOPS04-BP02 Establish reliable packaging patterns to access approved public libraries](https://docs.aws.amazon.com/wellarchitected/latest/machine-learning-lens/mlops04-bp02.html)
 - [AWS, Machine Learning Lens: MLREL05-BP02 Create a recoverable endpoint with a managed version control strategy](https://docs.aws.amazon.com/wellarchitected/latest/machine-learning-lens/mlrel05-bp02.html)
+- [Amazon Bedrock User Guide, How Amazon Bedrock Guardrails works](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-how.html)
+- [Amazon Bedrock User Guide, Create your guardrail](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-components.html) (근거 검사와 Automated Reasoning 검사)
+- [Amazon Bedrock User Guide, Concepts: Messages, content block types, and checks](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-use-invoke-guardrail-checks-concepts.html) (InvokeGuardrailChecks의 검사별 결과 필드)
+- [Amazon Bedrock User Guide, Use the ApplyGuardrail API in your application](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-use-independent-api.html)
+- [Amazon Bedrock User Guide, Use the InvokeGuardrailChecks API in your application](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-use-invoke-guardrail-checks.html)
+- [Amazon Bedrock Guardrails announces a new API targeting agentic AI workflows — AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-bedrock-guardrails-api-ai/)
+- [Amazon Bedrock User Guide, Block harmful words and conversations with content filters](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-content-filters.html)
+- [Amazon Bedrock User Guide, Detect prompt attacks with Amazon Bedrock Guardrails](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-prompt-attack.html)
+- [Amazon Bedrock User Guide, Remove PII from conversations by using sensitive information filters](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-sensitive-filters.html)
+- [Amazon Bedrock User Guide, Safeguard tiers for guardrails policies](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-tiers.html)
+- [Amazon Bedrock User Guide, Languages supported by Amazon Bedrock Guardrails](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-supported-languages.html)
+- [Amazon Bedrock User Guide, Distribute guardrail inference across AWS Regions](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-cross-region.html)
+- [Amazon Bedrock User Guide, Deploy your guardrail](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-deploy.html)
+- [Amazon Bedrock User Guide, Enforce the use of specific guardrails in model inference requests](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-permissions-id.html)
+- [Amazon Bedrock User Guide, Model compatibility](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-marketplace-model-reference.html) (Bedrock Marketplace 모델의 ApplyGuardrail 안내)
+- [Amazon Bedrock Guardrails: Securing Open-Weight Models in GenAI Applications — Amazon Web Services](https://www.youtube.com/watch?v=typL6MOLpf0)
 
 ## 관련 문서
 
