@@ -162,6 +162,17 @@ AWS 복구 문서의 대상은 AL2, AL2023, Fedora 16 이상과 RHEL 7 이상이
 
 운영 적용 시에는 복구 후 부팅, RDP와 애플리케이션 상태를 각각 확인한다. 이 절은 실제 인스턴스에서 복구를 실행한 기록이 아니다.
 
+### Windows 드라이버 갱신의 온라인과 오프라인 경계
+
+부분 검증(2026-10-14): `AWSSupport-UpgradeWindowsAWSDrivers` 공식 문서 기준이다. 온라인 경로는 SSM Agent를 통해 드라이버 설치를 시도하며 재부팅을 포함한다. SSM Agent에 연결할 수 없는 경우의 오프라인 경로는 별도 허용이 필요하므로 무중단 복구 도구로 해석하지 않는다.
+
+- `AllowOffline` 기본값은 `false`다. 오프라인 갱신에는 Stop/Start가 필요하고 instance store 데이터 손실과 자동 공인 IPv4 변경이 발생할 수 있다.
+- 두 경로 모두 드라이버 변경 전에 AMI를 만들며 완료 후에도 남긴다. 운영자는 접근 보호, 복구 가능성 확인과 보존 또는 정리를 맡는다.
+- 공식 문서상 Systems Manager에 VPC endpoint로 연결하는 인스턴스는 `us-east-1` 밖에서 이 런북이 실패한다. Domain controller에서도 실패하므로 별도의 공식 수동 갱신 절차를 확인한다.
+- 오프라인 복구용 subnet을 지정한다면 대상 인스턴스와 같은 AZ에 있어야 하고 SSM endpoint 접근이 가능해야 한다.
+
+운영 점검 제안: 지원 OS, 역할 권한과 네트워크 조건을 확인하고 유지보수 시간에 적용한다. 완료 후 드라이버 버전, 부팅, 네트워크와 애플리케이션 상태를 각각 확인한다. 실제 인스턴스에서 실행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## AMI (Amazon Machine Image)
 
 인스턴스를 시작하는 데 필요한 정보를 담은 **이미지 템플릿**. OS, 애플리케이션, 구성, 권한 정보 포함.
@@ -180,6 +191,7 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 
 ## 출처
 
+- [AWS 공식 문서, AWSSupport-UpgradeWindowsAWSDrivers](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-upgradewindowsawsdrivers.html)
 - [AWS 공식 문서, Amazon EC2 instance state changes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html)
 - [AWS 공식 문서, Troubleshoot impaired Windows instance with the EC2Rescue GUI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2rw-gui.html)
 - [AWS 공식 문서, Troubleshoot impaired Windows instance with the EC2Rescue CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2rw-cli.html)

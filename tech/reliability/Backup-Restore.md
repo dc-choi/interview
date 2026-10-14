@@ -94,6 +94,14 @@ Legal hold는 연속 백업에는 적용되지 않으며, 계정이나 리전 �
 
 복구 점검 제안: 실제 복구 지점과 사본의 키, 복원 역할의 IAM 권한과 KMS key policy를 확인하고 격리 환경에서 복원한다. 삭제 보호, 암호화 키의 분리와 복호화 가능성은 각각 검증한다. 이번 대조는 이 절에 한정하며 실제 복원은 수행하지 않았다.
 
+### Windows VSS는 작업 완료와 애플리케이션 일관성을 구분한다
+
+부분 검증(2026-10-14): AWS Backup의 Windows VSS 문서를 대조했다. EC2의 Windows 애플리케이션이 VSS writer를 등록하고 SSM Agent, 인스턴스 역할의 권한과 VSS 구성 요소를 갖춰야 애플리케이션 일관성 백업을 사용할 수 있다. 백업 설정에서도 Windows VSS를 활성화한다.
+
+백업 작업의 `Completed` 표시만 보고 VSS 성공을 판단하지 않는다. AWS는 VSS 포함을 best effort로 설명하며, `Completed with issues`는 VSS 작업이 실패하고 crash-consistent 백업만 성공한 경우다. 작업 세부 정보와 VSS 오류 메시지를 함께 확인한다. VSS를 지원하지 않는 대상의 백업 성공도 애플리케이션 일관성을 뜻하지 않는다.
+
+운영 점검 제안: 백업의 일관성 유형을 기록하고 격리 환경에 복원해 SQL 조회와 업무 정합성을 확인한다. 지원되는 인스턴스와 애플리케이션 범위를 먼저 확인하며, EC2 백업 성공을 모든 데이터베이스의 무손실 복구 보장으로 해석하지 않는다. 이 절만 대조했고 실제 백업과 복원은 실행하지 않아 기존 검증일은 유지한다.
+
 ## 데이터 복구 시나리오
 
 - **실수 삭제(DELETE/DROP)**: PITR로 직전 시점 복구. 운영 인스턴스 덮어쓰기가 아니라 새 인스턴스로 복원해 데이터를 옮긴다.
@@ -119,6 +127,7 @@ Legal hold는 연속 백업에는 적용되지 않으며, 계정이나 리전 �
 
 ## 출처
 
+- [AWS Backup — Create Windows VSS backups](https://docs.aws.amazon.com/aws-backup/latest/devguide/windows-backups.html)
 - [AWS Backup — Encryption for backups in AWS Backup](https://docs.aws.amazon.com/aws-backup/latest/devguide/encryption.html)
 - [Amazon Keyspaces — How point-in-time recovery works in Amazon Keyspaces](https://docs.aws.amazon.com/keyspaces/latest/devguide/PointInTimeRecovery_HowItWorks.html)
 - [AWS Backup — Legal holds and AWS Backup](https://docs.aws.amazon.com/aws-backup/latest/devguide/legalhold.html)

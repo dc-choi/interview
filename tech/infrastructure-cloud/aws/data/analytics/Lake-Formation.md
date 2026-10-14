@@ -30,6 +30,14 @@ Hybrid access mode는 같은 Data Catalog 객체에 두 권한 경로를 허용�
 
 운영 점검 제안: 접근 주체와 테이블을 정하고 허용 조회와 거부 조회를 각각 시험한다. CloudTrail을 통한 Lake Formation 접근 감사는 서비스 경유 접근을 확인하는 근거이며, 이것만으로 모든 데이터 경로의 감사와 규정 준수가 완료됐다고 결론 내리지 않는다.
 
+### 데이터 사용 준비와 권한 검증을 별도로 닫는다
+
+부분 검증(2026-10-14): AWS 데이터 전략 가이드의 데이터 표준화, 분류, 품질과 역할 구분을 대조했다. 다음은 그 원칙을 분석 시스템의 검수에 적용한 설계 제안이다. 기존 Lake Formation 기능 전체의 검증일은 유지한다.
+
+실제 소비자가 사용할 테이블마다 필드의 업무 의미, 필요한 최신성, 누락 허용 기준과 오류 대응 책임을 정한다. 테스트를 **권한이 맞는가**와 **허가받은 데이터가 용도에 맞는가**로 나누고, 허용/거부 질의와 품질 검사를 따로 수행한다. 조회 성공은 최신성이나 완전성의 검증을 대신하지 않는다.
+
+예를 들어 주문 분석에는 접근 가능한 행 범위와 주문 시각, 취소 상태의 해석이 모두 필요하다. 다른 분석에 재사용할 공통 정의는 보존하되 현재 용도에 필요한 품질 조건부터 확인한다. 사업 효과의 우선순위와 측정은 [[Metrics-Framework#데이터 거버넌스의 활동량과 사업 성과를 나눈다|거버넌스 성과 지표]]로 분리한다.
+
 ## 분석 도구 통합
 
 - Athena, Redshift Spectrum, AWS Glue ETL, EMR의 Apache Spark 등 지원 통합에서 세부 권한을 적용한다. 실제 엔진과 데이터 형식의 지원 범위는 도입 시 확인한다.
@@ -120,6 +128,8 @@ Lake Formation으로 관리하는 데이터를 Athena에서 조회할 때는 실
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Aligning your data strategy to your business goals](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/alignment.html)
+- [AWS Prescriptive Guidance, Data strategy framework](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/data-strategy-framework.html)
 - [How can I troubleshoot Lake Formation permission issues in Athena? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/athena-insufficient-lake-formation-permissions)
 - [Amazon Athena User Guide, Manage Lake Formation and Athena user permissions](https://docs.aws.amazon.com/athena/latest/ug/lf-athena-user-permissions.html)
 - [AWS Lake Formation Developer Guide, Underlying data access control](https://docs.aws.amazon.com/lake-formation/latest/dg/access-control-underlying-data.html)

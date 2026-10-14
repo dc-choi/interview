@@ -43,6 +43,14 @@ DocumentDB는 MongoDB API를 지원하지만 전용 엔진을 사용하며 쿼�
 
 데이터 이전 자체의 검증은 [[DMS|DMS 마이그레이션]], 캐시 엔진의 선택과 호환성은 [[ElastiCache-Engine-Deployment|ElastiCache 엔진 선택]]과 연결한다. 관리형 서비스의 채택과 AI가 만든 운영 스크립트의 정확성도 별도 검증 대상이다.
 
+### 공유 스토리지가 읽기 직후의 최신성을 보장하지는 않는다
+
+부분 검증(2026-10-14): 인스턴스 기반 클러스터의 읽기 일관성과 가용성을 공식 문서로 대조했다. DocumentDB의 스토리지 내구성과 읽기 replica의 최신성은 별개다. 스토리지를 공유해도 replica 읽기는 eventual consistency이며, 문서에 나온 통상적인 복제 지연을 최대 지연 보장으로 사용하지 않는다.
+
+Primary 읽기는 정상 운영 중 read-after-write 일관성을 제공하지만 쓰기와 후속 읽기 사이에 failover가 발생하면 일시적으로 강한 일관성이 아닌 결과가 나올 수 있다. Cluster endpoint에 `replicaSet=rs0`로 연결하고 업무에 맞는 read preference를 선택한다. `secondaryPreferred`는 활성 replica가 있으면 그쪽을 읽고, 없으면 primary로 돌아간다.
+
+운영 점검 제안: 만료, 권한 회수와 상태 변경 직후의 조회를 replica 지연과 failover 조건에서 시험한다. TTL 삭제 완료, 조회 결과의 최신성, 애플리케이션의 유효성 판단을 각각 확인한다. Replica가 없는 클러스터도 스토리지 내구성은 유지하지만 primary 장애 시 새 인스턴스 생성이 필요하므로, replica 승격과 같은 복구 시간을 기대하지 않는다. 실제 장애 시험을 수행한 기록은 아니며 기존 검증일은 유지한다.
+
 ## 출처
 
 - [Amazon DocumentDB, How it works](https://docs.aws.amazon.com/documentdb/latest/devguide/how-it-works.html)

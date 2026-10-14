@@ -26,6 +26,14 @@ AWS 완전관리형 **서버리스 NoSQL** 키-값/문서 데이터베이스. �
 - 일반 `Query`는 PK 일치 + SK 조건이 기본이다. 비키 속성 조건은 Scan이나 해당 속성을 키로 삼은 GSI/LSI를 검토한다. 벡터 유사도 검색은 별도 vector index와 `SearchVectors`를 사용한다.
 - `PutItem`은 같은 primary key의 아이템이 있으면 오류 없이 통째로 교체한다. 새 아이템만 만들려면 `ConditionExpression`에 `attribute_not_exists(<PK 속성명>)`을 넣고, 덮어썼는지 확인하려면 `ReturnValues=ALL_OLD`로 이전 아이템을 받는다. 키 중복을 insert 실패로 기대하면 조용한 덮어쓰기 사고가 난다
 
+### 복합 sort key로 함께 읽을 범위를 표현한다
+
+부분 검증(2026-10-14): AWS의 데이터 모델링 building blocks를 대조했다. 엔티티마다 테이블을 정하기 전에 필요한 조회 조건과 반환 범위를 적는다. 같은 PK 아래 SK를 `ORDER#<주문ID>#ITEM#<항목ID>`처럼 계층으로 구성하면, PK 동등 조건과 SK의 `begins_with`로 특정 주문의 항목을 선택할 수 있다. `#`은 계층 구분 관례이며 데이터베이스가 관계를 자동 해석하는 문법은 아니다.
+
+큰 문서를 여러 항목으로 나누는 vertical partitioning은 함께 읽을 관계를 유지하면서 일부 항목만 갱신하도록 설계하는 방법이다. 위 방식으로 나눠도 업무상 여러 항목의 원자적 변경이 필요하면 별도 트랜잭션 판단이 남는다. Query 결과가 커지면 다음 절의 페이지 처리가 필요하므로 같은 PK를 쓴다는 이유로 한 응답에 모두 온다고 가정하지 않는다.
+
+쓰기 집중을 줄이려고 PK에 shard suffix를 추가하면 읽을 때 여러 shard를 조회해 합쳐야 한다. 운영 검토에서는 분산된 쓰기와 늘어난 읽기 요청, 집계 시점과 GSI의 키 집중을 함께 비교한다. 이는 설계 검토 기준이며 모든 엔티티를 반드시 한 테이블에 넣으라는 규칙이 아니다. 이 절만 대조했으므로 기존 기능 전체의 검증일은 유지한다.
+
 ## 보조 인덱스, LSI와 GSI
 
 | 축 | LSI | GSI |
@@ -206,6 +214,7 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 ## 출처
 
+- [AWS DynamoDB — Data modeling building blocks in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/data-modeling-blocks.html)
 - [AWS DynamoDB — DynamoDB table classes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html)
 - [AWS DynamoDB — Considerations when choosing a table class in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.tableclasses.html)
 - [AWS DynamoDB — Evaluate your DynamoDB table usage patterns](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/CostOptimization_TableUsagePatterns.html)

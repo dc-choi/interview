@@ -94,6 +94,19 @@ Dave McClure(500 Startups)가 제안한 스타트업 성장 지표 프레임워�
 
 2026-10-09 부분 검증: 위 리프트 구분과 산식은 Google Ads 공식 도움말로 확인했다. 실제 판단에서는 응답 수, 비교 집단, 관찰 기간과 불확실성을 함께 확인한다. 인지도 효과가 확인돼도 지속 가능한 사업인지 판단하려면 [[Solo-Product-Market-Validation|시장 검증]]의 반복 사용, 수익과 운영 비용을 따로 봐야 한다.
 
+## 데이터 거버넌스의 활동량과 사업 성과를 나눈다
+
+데이터 거버넌스는 데이터를 업무에 사용할 수 있도록 의미, 품질, 보호와 책임을 관리하는 일이다. 카탈로그에 등록한 테이블 수나 품질 규칙 수는 수행한 활동을 보여주지만, 고객 문제를 해결했거나 이익을 늘렸다는 증거는 아니다.
+
+2026-10-14 AWS 데이터 전략 가이드의 사업 목표 연결과 로드맵 절을 대조했다. 데이터 투자는 먼저 해결할 업무 문제와 기대 결과를 정하고, 그 결과에 필요한 데이터와 부족한 역량을 역산하는 방식으로 검토할 수 있다. 아래는 이를 지표 설계에 적용한 점검 순서다.
+
+1. 고객 문의 처리 시간 단축처럼 바꿀 결과와 기준선을 정한다.
+2. 해당 업무에 필요한 데이터의 의미, 누락과 갱신 지연을 확인하고 해결 책임자를 정한다.
+3. 데이터 준비 지표와 업무 결과 지표를 구분한다. 필수 항목 누락률이 줄어도 처리 시간이나 해결률의 개선은 별도로 측정한다.
+4. 기존에 갖춘 기능을 제외하고 필요한 개선을 우선순위화한다. 기대 매출 또는 비용 영향과 구현 노력을 비교하되 추정치를 실적으로 기록하지 않는다.
+
+재사용할 데이터의 공통 정의를 남기되 모든 사용 사례를 미리 해결하는 플랫폼을 선행 조건으로 삼지 않는다. 반대로 한 애플리케이션만 이해할 수 있는 정의로 고립시키지 않는다. 이 순서는 판단 도구이며 특정 거버넌스 제품의 도입이나 성과를 보장하지 않는다. 기술적인 권한과 품질 검증의 구분은 [[Lake-Formation#데이터 사용 준비와 권한 검증을 별도로 닫는다|데이터 사용 준비]]에서 다룬다.
+
 ## 코호트 분석
 
 같은 시기에 가입한 사용자 그룹의 행동을 시간축으로 추적한다. 리텐션 커브가 수평으로 안정되면(flattening) 반복 가치와 유지 가설을 검토할 신호가 될 수 있지만, 단독으로 PMF를 판정하지는 않는다.
@@ -154,6 +167,9 @@ Q. 어떤 지표를 추적하고 왜 그 지표를 선택했는가?
 - 온보딩 전환은 같은 코호트 계측을 완성한 뒤에만 계산
 
 ## 출처
+- [AWS Prescriptive Guidance, Aligning your data strategy to your business goals](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/alignment.html)
+- [AWS Prescriptive Guidance, Data strategy roadmap](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/roadmap.html)
+- [AWS Prescriptive Guidance, Data strategy framework](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/data-strategy-framework.html)
 - [Startup Metrics for Pirates — SlideShare, Dave McClure](https://www.slideshare.net/slideshow/startup-metrics-for-pirates-long-version/89026)
 - [허수지표가 되기 쉬운 KPI — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/754)
 - [A Dirty Dozen: Twelve Common Metric Interpretation Pitfalls in Online Controlled Experiments — Microsoft Research](https://www.microsoft.com/en-us/research/publication/a-dirty-dozen-twelve-common-metric-interpretation-pitfalls-in-online-controlled-experiments/)
