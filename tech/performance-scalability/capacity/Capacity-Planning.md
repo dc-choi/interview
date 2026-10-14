@@ -64,6 +64,28 @@ aliases: ["Capacity Planning", "캐퍼시티 플래닝", "트래픽 스파이크
 - 목표 자원 수에 도달한 것과 실제 요청을 처리할 준비가 된 것을 구분한다. 준비가 끝난 상태에서 스텝 부하와 오류율을 확인한다.
 - 최대 확장 한도와 행사 종료 뒤 축소 조건을 정한다. 모든 구성 요소가 같은 방식의 자동 확장을 지원한다고 가정하지 않는다.
 
+### 할당량, 실제 용량과 준비 완료를 따로 확인한다
+
+2026-10-14 AWS Games Industry Lens와 EC2 시작 오류 문서로 대조한 구분이다. 부하 테스트로 필요한 대수를 계산했어도 그 대수를 확보할 수 있는지는 별도 문제다.
+
+- **계정 할당량:** `InstanceLimitExceeded`는 리전의 인스턴스 실행 한도에 도달한 경우다. 이벤트 전에 사용하는 서비스의 quota와 예상 사용량을 확인하고 필요한 증설을 요청한다.
+- **실제 가용 용량:** `InsufficientInstanceCapacity`는 현재 요청을 충족할 On-Demand 용량이 부족한 경우다. 할당량 증설만으로 해소되지 않는다. 다른 AZ나 인스턴스 타입, 더 작은 요청 단위를 검토하되 성공을 보장하지는 않는다.
+- **서비스 준비 완료:** 목표 대수 확보 뒤에도 실제 사용자 흐름을 실행해 각 계층과 구성 요소가 부하를 처리하는지 확인한다. 관리형 서비스 사용 자체를 목표 부하 검증의 대체물로 보지 않는다.
+
+운영 적용 제안: 대체 인스턴스 타입을 허용할 때는 CPU 아키텍처와 메모리, 네트워크 요구를 먼저 확인하고 해당 구성으로 다시 계측한다. 총 대수뿐 아니라 AZ별 배치와 하위 저장소의 부하도 확인한다. 시작 오류 대응의 상세는 [[EC2-Operations#시작 실패: 계정 한도와 가용 용량을 구분한다|EC2 용량 부족 대응]]을 따른다.
+
+### 요청 처리 능력과 자원 확장 능력을 나눠 검증한다
+
+2026-10-14 AWS Well-Architected REL11-BP04와 REL11-BP05 대조 기준이다. 데이터 플레인은 일상적인 서비스 트래픽을 처리하고, 컨트롤 플레인은 자원의 생성과 변경 같은 관리 작업을 수행한다. 이미 준비된 서버의 처리량과 새로운 서버를 준비하는 능력은 같은 지표가 아니다.
+
+다음은 이 구분을 부하 테스트에 적용한 검증 제안이다.
+
+1. 준비된 자원으로 사용자 요청을 처리하는 시험과, 자원을 늘려 준비 완료까지 도달하는 시험을 분리한다. 두 시험의 오류율과 소요 시간을 각각 기록한다.
+2. 자원 생성이나 배포가 지연될 때 기존 요청 처리에 미치는 영향을 확인한다. 새 자원이 추가되어야만 복구되는 경로를 식별한다.
+3. 중요한 서비스는 AZ 장애 시 남은 자원만으로 부하를 감당할 수 있는지 검토한다. 장애 중 새 인스턴스를 확보할 수 있다고 가정하지 않고, 필요한 여유 용량과 유지 비용을 함께 판단한다.
+
+이 원칙은 정상 수요 증가에 대한 자동 확장을 금지하지 않는다. 장애 시 즉시 복구를 새 자원 생성에 의존하는 정도를 줄이려는 기준이다. 앞의 이벤트 사전 확장과 장애 대비 여유 용량은 목적을 구분해 산정한다. 실제 환경에서 부하 테스트나 장애 시험을 수행한 기록은 아니다.
+
 ## 안전장치 — 실패를 전제로 설계
 
 스파이크 대비의 나머지 반은 그래도 무너질 때를 위한 격리와 복구다.
@@ -111,3 +133,7 @@ aliases: ["Capacity Planning", "캐퍼시티 플래닝", "트래픽 스파이크
 
 - [LINE 메시징 서버가 새해 트래픽을 대비하는 방법 — LINE Engineering](https://engineering.linecorp.com/ko/blog/how-line-messaging-servers-prepare-for-new-year-traffic)
 - [AWS Well-Architected Framework, REL07-BP03 Obtain resources upon detection that more resources are needed for a workload](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_adapt_to_changes_proactive_adapt_auto.html)
+- [AWS Games Industry Lens, GAMEOPS03-BP05 Pre-scale infrastructure required to support peak requirements](https://docs.aws.amazon.com/wellarchitected/latest/games-industry-lens/gameops03-bp05.html)
+- [AWS 공식 문서, Troubleshoot Amazon EC2 instance launch issues](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/troubleshooting-launch.html)
+- [AWS Well-Architected Framework, REL11-BP04 Rely on the data plane and not the control plane during recovery](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_withstand_component_failures_avoid_control_plane.html)
+- [AWS Well-Architected Framework, REL11-BP05 Use static stability to prevent bimodal behavior](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_withstand_component_failures_static_stability.html)
