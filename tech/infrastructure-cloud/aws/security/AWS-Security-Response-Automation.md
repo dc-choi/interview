@@ -21,6 +21,16 @@ aliases: ["AWS Security Response Automation", "AWS 보안 대응 자동화"]
 
 Security Hub CSPM의 automation rule은 finding 필드를 변경한다. 이를 EC2 격리나 접근 정책 수정으로 해석하지 않는다. Security Hub의 새 finding과 갱신 finding을 EventBridge로 받아 Lambda나 Step Functions 등을 호출하는 대응 경로는 별도로 구성한다. GuardDuty finding을 EventBridge로 직접 받는 경로도 가능하다.
 
+## GuardDuty 탐지와 알림 주기를 나눠 본다
+
+2026-10-14 공식 EventBridge 연동 가이드 부분 대조 기준이다. 알림 주기는 finding 생성 뒤의 전달 정책이며, 공격 발생부터 탐지와 대응 완료까지 걸리는 시간을 보장하는 값이 아니다.
+
+- **새 finding**: 고유 finding ID가 생성되면 준실시간으로 EventBridge에 알린다. 기존 finding의 후속 발생에 적용하는 주기와 구분한다.
+- **후속 발생**: 기본 6시간 간격으로 집계해 전달한다. 관리자는 15분, 1시간 또는 6시간으로 바꿀 수 있지만, 멤버 계정이 자기 계정의 주기를 따로 바꿀 수는 없다.
+- **보관과 억제**: 수동으로 보관한 finding은 보관 완료 뒤 발생한 후속 내용도 전달된다. suppression rule로 자동 보관한 finding은 최초와 후속 발생을 EventBridge에 보내지 않는다. 이 finding은 GuardDuty 콘솔에서 확인할 수 있다.
+
+운영 점검 제안: 탐지 시각, 이벤트 수신 시각과 조치 완료 시각을 나누어 기록하고, 이벤트가 없으면 suppression 설정과 전달 규칙도 확인한다. 15분이라는 설정만으로 모든 위협이 15분 안에 탐지되거나 차단된다고 판단하지 않는다. 기존 문서의 검증일은 유지하며 실제 계정의 전달 상태를 확인한 것은 아니다.
+
 ## 중앙 집계와 수집 누락을 구분한다
 
 2026-10-13 Security Hub CSPM 공식 가이드 부분 대조 기준. 교차 리전 집계는 연결된 리전의 finding과 갱신 내용, insight, control 준수 상태와 보안 점수를 home Region에서 보게 한다. 중국과 GovCloud의 집계 범위에는 별도 제한이 있으므로 이 전체 목록을 모든 파티션에 동일하게 적용하지 않는다.

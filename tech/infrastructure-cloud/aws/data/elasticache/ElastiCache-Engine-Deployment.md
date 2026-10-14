@@ -44,11 +44,27 @@ verified_at: 2026-07-21
 - **스토리지와 요청량 과금** — Serverless는 저장 데이터를 GB-hour로, 요청 처리를 ElastiCache Processing Unit(ECPU)으로 측정한다. 엔진별 최소 측정 스토리지가 있으므로 유휴 비용도 0으로 단정할 수 없다
 - 비용 우위는 최소 저장량, 데이터 처리량, 노드 사용률과 엔진에 따라 달라지므로 예측 부하는 Serverless와 노드 기반 구성을 계산기로 비교한다. 트래픽 패턴이 예측 불가하거나 변동이 큰 워크로드에는 Serverless가 유리하다
 
+### Serverless 확장 한도와 사전 준비
+
+2026-10-14 AWS 공식 확장 가이드와 요금 문서 부분 대조 기준이다. 자동 확장도 허용 용량과 확장 속도의 경계를 가지므로, 급증하는 모든 요청을 즉시 처리한다고 가정하지 않는다.
+
+| 설정 | 한도에 도달했을 때의 영향 |
+|---|---|
+| 데이터 저장량 최대값 | TTL이 있는 항목을 LRU 방식으로 축출하며, 축출 가능한 항목이 없으면 추가 데이터를 쓰는 요청에 OOM 오류 발생 |
+| 초당 ECPU 최대값 | 사용량이 최대값을 넘으면 요청을 throttling |
+| 저장량 또는 초당 ECPU 최소값 | 예상 급증을 위한 pre-scaling에 사용하며, 반영 뒤 실제 사용량이 적어도 설정한 최소량부터 과금 |
+
+최소 용량을 높이는 변경은 반영에 최대 60분이 걸릴 수 있다. 예상 피크보다 최소 60분 앞서 설정하고 완료 이벤트를 확인한다. 최소 용량은 캐시 전체의 합산 규모를 대상으로 하므로 특정 키와 슬롯에 몰리는 부하까지 해소한다고 보지 않는다.
+
+ECPU는 애플리케이션 API 호출 수가 아니다. 단순 GET/SET은 전송 KB를 기준으로 계산하며 명령당 최소 1 ECPU를 소비한다. CPU 소모가 큰 명령은 전송량뿐 아니라 CPU도 반영한다. API 한 번에 캐시 명령을 여러 번 실행하면 각 명령의 처리량을 함께 계산해야 한다.
+
+운영 점검 제안: `BytesUsedForCache`와 `ElastiCacheProcessingUnits`에 최대값 도달 전 경보를 두고, 축출과 throttling 때 원본 DB로 몰릴 부하도 시험한다. 캐시의 처리량, API 지연과 실제 비용을 따로 측정한다. 이 절만 추가 대조했으므로 기존 문서 전체의 검증일은 유지한다.
+
 ## 클러스터, 노드 구조 (시험 관점)
 
 node-based ElastiCache는 **Node**를 서비스 단위로 사용한다. Node는 인스턴스 타입에 따른 메모리와 endpoint를 가지며 AWS가 관리형 인프라 작업을 수행한다. Serverless는 이 node 구성을 사용자에게 추상화하므로 아래 구조와 동일하게 해석하지 않는다.
 
-**Memcached**: `Cluster ↔ Node` 2계층. 다른 AZ 분산은 되지만 **복제본, Failover 불가**, 용량 증설은 Node 추가만.
+**Node-based Memcached**: `Cluster ↔ Node` 2계층. 노드를 여러 AZ에 분산할 수 있지만 노드 사이 복제와 replica 승격 방식의 failover는 지원하지 않는다. 용량은 노드 추가뿐 아니라 노드 유형 변경으로도 늘릴 수 있다. 2026-10-14 공식 가이드 기준으로 수직 확장은 Memcached 엔진 1.5 이상과 Auto Discovery 활성화가 필요하다. 기존 클러스터에도 적용할 수 있으며, 대상 클러스터에서 허용되는 노드 유형은 `ListAllowedNodeTypeModifications`로 확인한다.
 
 **Redis / Valkey**: `Cluster → Shard → Node` 3계층. Shard = Primary 1 + Replica N. Cluster 모드 비활성 시 **Shard 1개**(복제만), 활성 시 **다수 Shard로 키스페이스 샤딩**. 복제본 → **Failover, Multi-AZ 지원**.
 
@@ -109,6 +125,8 @@ Durability는 지원 노드 유형의 Valkey 9.0 이상에서 cluster mode enabl
 
 ## 출처
 
+- [ElastiCache Memcached 노드 기반 수직 확장의 지원 조건](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Scaling-self-designed.mem-heading.html)
+- [ElastiCache Serverless 확장 한도와 pre-scaling](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Scaling-serverless.html)
 - [ElastiCache 노드 기반 업그레이드 고려사항](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/VersionManagement-upgrade-considerations.html)
 - [ElastiCache 엔진 업그레이드와 엔진 전환](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/VersionManagement.HowTo.html)
 - [ElastiCache Multi-AZ와 자동 장애 조치](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/AutoFailover.html)
