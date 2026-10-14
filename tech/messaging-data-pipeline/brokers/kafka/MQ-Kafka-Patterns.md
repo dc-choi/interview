@@ -75,8 +75,22 @@ DB 트랜잭션으로 business row와 Outbox 테이블의 이벤트를 함께 �
 
 운영 검증 제안: 새 토픽 생성 직후와 대상 토픽 생성 확인 뒤에 서로 다른 이벤트 ID를 발행하고, 선택한 복제 시작 조건에서 어느 레코드가 도착하는지 비교한다. 데이터 도착과 consumer group offset 변환의 성공 여부도 따로 확인한다.
 
+## Confluent Cluster Linking의 offset 보존과 장애 전환
+
+부분 검증(2026-10-14): Confluent Cloud의 mirror topic 문서를 대조했다. 앞 절의 MSK Replicator와 다른 제품 계약이며 문서 전체의 검증일은 유지한다.
+
+Mirror topic은 원본 레코드의 바이트와 offset을 보존하는 **비동기 복제본**이다. Offset이 같다는 사실은 최신 메시지가 이미 도착했다는 뜻이 아니다. 토픽 설정, consumer group offset과 ACL의 동기화도 비동기로 진행된다.
+
+- **소비 위치:** consumer group offset 동기화의 `consumer.offset.sync.enable` 기본값은 `false`다. 동기화를 켜고 필요한 그룹 필터를 지정했는지 별도로 확인한다.
+- **계획된 전환:** `promote`는 메시지, 설정과 소비 위치의 지연이 없는지 확인하므로 원본 클러스터에 연결할 수 있어야 한다.
+- **장애 전환:** `failover`는 원본의 접근 가능 여부와 복제 지연에 관계없이 전환할 수 있다. 아직 복제되지 않은 데이터의 손실 가능성을 전환 성공과 구분한다.
+- **복귀:** 양방향 링크의 `truncate-and-restore`는 기존 원본을 새 원본의 mirror로 바꾸면서 분기된 레코드를 잘라낼 수 있다. 데이터 보존과 재처리 계획을 확인한 뒤 복귀 절차를 정한다.
+
+운영 검증 제안: 원본과 복제본의 마지막 offset, 동기화된 그룹 위치, 생산자와 소비자의 실제 접속 대상을 각각 확인한다. 링크 구성만으로 클라이언트 전환이나 무손실 복구가 완료됐다고 판단하지 않는다.
+
 ## 출처
 
+- [Confluent Documentation, Manage Mirror Topics for Cluster Linking on Confluent Cloud](https://docs.confluent.io/cloud/current/multi-cloud/cluster-linking/mirror-topics-cc.html)
 - [Amazon MSK, Consumer group offset synchronization](https://docs.aws.amazon.com/msk/latest/developerguide/msk-replicator-bidirectional-offset-sync.html)
 - [Amazon MSK, Create a replicator using the AWS console](https://docs.aws.amazon.com/msk/latest/developerguide/msk-replicator-create-console.html)
 - [Amazon MSK, How replication works](https://docs.aws.amazon.com/msk/latest/developerguide/msk-replicator-how-replication-works.html)

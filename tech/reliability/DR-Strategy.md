@@ -61,6 +61,18 @@ Bootstrap action은 인스턴스 시작 뒤 EMR 애플리케이션 설치와 데
 2. 입력, 중간 상태, 최종 결과를 나눠 보존 위치와 재계산 범위를 정한다. 클러스터 재생성만으로 중단된 작업이 이어지거나 결과 중복이 방지된다고 가정하지 않는다.
 3. 클러스터 생성 시간에 bootstrap, 작업 재제출, 결과 정합성 확인까지 더해 복구 시간을 측정한다. 원래 AZ로 복귀할 때도 작업 인계와 용량을 다시 확인한다.
 
+## 백업 복사, 복원 작업과 서비스 검증을 나눈다
+
+부분 검증(2026-10-14): AWS Backup의 리전 간 복사, 복원 메타데이터와 restore testing validation을 대조했다. 기존 절의 검증일은 유지한다.
+
+백업을 DR 리전에 복사해 두는 작업과 애플리케이션을 다시 서비스하는 작업은 다르다. AWS Backup의 리전 간 복사 지원은 리소스와 리전별로 확인해야 한다. 특히 RDS의 사용자 정의 option group은 그대로 전달되지 않으며, persistent option을 쓰면 대상 리전에 같은 option group을 미리 준비해야 하는 조건이 있다.
+
+복원 자동화는 `GetRecoveryPointRestoreMetadata`로 백업의 복원 설정을 조회하고, 리소스별로 필요한 값을 검토한 뒤 `StartRestoreJob`을 호출하는 흐름으로 설계할 수 있다. DR 리전의 서브넷과 보안 그룹 등 대상 환경에 맞는 설정, IaC와 실행 경로의 가용성을 별도로 확인한다.
+
+Restore testing의 복원 작업이 `COMPLETED`가 되면 EventBridge로 별도 검증 워크플로를 실행할 수 있다. 이 워크플로가 데이터 조회나 애플리케이션 health check를 수행하고 `PutRestoreValidationResult`로 결과를 기록한다. 복원 완료 상태 자체가 업무 동작의 검증 결과는 아니다. 기록한 validation status는 변경할 수 없으므로 검사 결과를 모은 뒤 보고한다.
+
+운영 검증 제안: DR 리전에서 백업 접근, 리소스 복원, 애플리케이션 연결, 핵심 업무 조회와 트래픽 전환까지 시험한다. AWS Backup은 복원 시간 SLA를 제공하지 않으므로, 복원 작업 시간과 전체 서비스 복구 시간을 각각 측정해 RTO 충족 여부를 판단한다.
+
 ## 흔한 함정
 
 - **DR을 한 번도 드릴 안 함** — 진짜 재해 때 처음 돌려보다 실패
@@ -88,6 +100,9 @@ Bootstrap action은 인스턴스 시작 뒤 EMR 애플리케이션 설치와 데
 
 2026-10-02에는 전략별 시간 예시의 한계, 백업과 복제의 구분 및 Aurora switchover/failover 계약을 대조했다. 특정 서비스가 표의 목표를 달성했다는 운영 검증은 아니다.
 
+- [AWS — Creating backup copies across AWS Regions](https://docs.aws.amazon.com/aws-backup/latest/devguide/cross-region-backup.html)
+- [AWS — Restore a backup by resource type](https://docs.aws.amazon.com/aws-backup/latest/devguide/restoring-a-backup.html)
+- [AWS — Restore testing validation](https://docs.aws.amazon.com/aws-backup/latest/devguide/restore-testing-validation.html)
 - [AWS — Data and control planes for routing control](https://docs.aws.amazon.com/r53recovery/latest/dg/data-and-control-planes.html)
 - [AWS — About routing control](https://docs.aws.amazon.com/r53recovery/latest/dg/routing-control.about.html)
 - [AWS — Best practices for routing control in ARC](https://docs.aws.amazon.com/r53recovery/latest/dg/route53-arc-best-practices.regional.html)

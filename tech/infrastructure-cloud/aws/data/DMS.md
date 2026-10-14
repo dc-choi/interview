@@ -136,6 +136,18 @@ DMS data validation은 지원되는 소스와 대상의 대응 행을 비교한�
 
 애플리케이션 검증은 별도 설계가 필요하다. 예를 들어 DB Link를 API로 바꾸면 기존 호출의 원자성, 타임아웃과 실패 후 재시도 경계를 다시 정의한다. AI가 만든 변환 코드도 같은 회귀 기준으로 검토하며, 특정 프로젝트의 자동 변환 비율이나 기간을 다른 시스템의 보장값으로 쓰지 않는다.
 
+### 타입 호환성은 소스, DMS와 대상의 매핑을 연결해서 본다
+
+부분 검증(2026-10-14): Oracle 소스와 MySQL 대상의 공식 타입 매핑을 대조했다. 문서 전체의 검증일은 유지한다. 이기종 이전에서는 소스 타입의 이름뿐 아니라 DMS 내부 타입을 거쳐 대상에 저장되는 표현을 확인한다.
+
+| 소스와 설정 | 확인할 변환 경계 |
+|---|---|
+| Oracle `NUMBER(p,s)`의 `s < 0` | 기본 매핑은 DMS `REAL8`이고, MySQL 대상에서는 `DOUBLE PRECISION`이다. 이를 정확한 십진수 표현이 그대로 보존된다는 보장으로 해석하지 않는다. |
+| Oracle `TIMESTAMP WITH TIME ZONE`, `TIMESTAMP WITH LOCAL TIME ZONE` | DMS 기본 매핑은 시간대 정보를 나타내는 `STRING`이다. 일반 `TIMESTAMP`의 `DATETIME` 매핑과 구분한다. |
+| Oracle endpoint의 `ConvertTimestampWithZoneToUTC` | 기본값은 `false`이며, `true`로 설정하면 두 시간대 타입의 값을 UTC로 변환한다. 대상 컬럼과 애플리케이션의 시간 해석도 함께 확인한다. |
+
+검증 제안: 숫자의 경계값과 소수 정밀도, 같은 시각을 서로 다른 시간대로 표현한 값을 작은 시험 테이블로 비교한다. Full Load와 CDC의 변경 반영을 각각 검사하고, 필요하면 명시적 타입 변환과 대상 DDL을 설계한다. 한 프로젝트가 쓴 중간 테이블을 모든 이관의 필수 구성으로 삼지 않는다.
+
 ## 동종 마이그레이션 — 스키마 준비와 데이터 전송
 
 같은 엔진 계열 간에는 변환 도구가 필요하지 않을 수 있지만, 대상 schema와 객체 준비는 여전히 필요하다. DMS의 target table preparation은 테이블, primary key와 일부 unique index만 만들 수 있으므로, 그 밖의 객체와 운영 DDL은 별도 확인한다.
@@ -190,6 +202,7 @@ DMS data validation은 지원되는 소스와 대상의 대응 행을 비교한�
 
 ## 출처
 
+- [AWS DMS, Using a MySQL-compatible database as a target for AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.MySQL.html)
 - [AWS DMS, Using a MySQL-compatible database as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.MySQL.html)
 - [Why did my AWS DMS CDC task fail with Error 1236 when I used MySQL as the source? — AWS re:Post](https://repost.aws/knowledge-center/dms-cdc-error-1236-msql)
 - [AWS DMS, Using an Oracle database as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html)
