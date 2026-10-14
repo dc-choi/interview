@@ -96,6 +96,16 @@ IAM action은 DynamoDB API 작업마다 따로 평가된다. `dynamodb:PutItem`�
 | **Standard** | 자주 액세스되는 데이터 (기본) |
 | **Standard-IA** (Infrequent Access) | 자주 액세스되지 않는 데이터. 스토리지 단가는 낮고 읽기/쓰기 단가는 높으므로 리전별 최신 요금으로 비교 |
 
+### 저장 비용 비율의 분모와 전환 제약
+
+2026-10-14 AWS 공식 문서 부분 대조 기준. 먼저 Cost Explorer나 Cost and Usage Reports에서 테이블의 저장 비용과 읽기/쓰기 비용을 구분한다. Standard-IA 검토 기준으로 제시된 **50%는 Standard의 읽기와 쓰기 처리량 비용 대비 저장 비용**이다. 총 청구액에서 저장 비용이 차지하는 비율 50%와는 다르다.
+
+- 예를 들어 같은 기간의 읽기/쓰기 비용을 100, 저장 비용을 60으로 놓으면 이 기준에 해당한다. 저장 비용의 총합 대비 비중은 `60 / 160 = 37.5%`다. 이는 분모를 설명하는 가상 예시이며 실제 요금이나 절감률이 아니다.
+- 과거 비용 비율은 후보를 찾는 기준이다. 전환 판단은 예상 저장량과 요청량에 각 클래스의 해당 리전 요금을 적용해 비교한다. 모든 보조 인덱스도 테이블과 같은 클래스를 사용한다.
+- 클래스 전환에는 애플리케이션 코드 변경이 필요하지 않고 기존 API와 endpoint를 사용한다. 전환은 백그라운드에서 진행되며 소요 시간은 트래픽과 저장량 등에 따라 달라진다. 최근 30일 동안 최대 두 번만 전환할 수 있으므로 단기 변동마다 바꾸는 정책은 피한다.
+
+이 절의 클래스 선택과 전환 조건만 대조했으며 기존 기능 전체의 `verified_at`은 유지한다.
+
 ## 용량 모드
 
 | 모드 | 특징 |
@@ -111,6 +121,7 @@ On-Demand 테이블의 기본 테이블별 할당량은 초당 읽기 40,000 req
 - **1 WCU**: 최대 1KB 항목을 초당 한 번 write
 - 항목 크기는 읽기는 4KB, 쓰기는 1KB 단위로 올림한다. 6KB 항목의 strongly consistent read 한 번은 2 RCU, write 한 번은 6 WCU가 필요하다.
 - 필요한 용량은 평균이 아니라 peak request rate, 일관성, item size와 GSI write까지 계산한다. batch 요청도 내부의 각 항목이 capacity를 소비한다.
+- 항목 크기에는 속성값뿐 아니라 속성명도 포함된다. 속성명을 줄여 읽기 4KB 또는 쓰기 1KB의 과금 구간 경계를 넘지 않게 되면 소비 용량을 줄일 수 있다(2026-10-14 공식 비용 최적화 문서 대조). 같은 구간 안에서 바이트만 줄어들면 요청당 용량이 줄어든다고 보장할 수 없다.
 
 ### TTL
 
@@ -187,6 +198,9 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 ## 출처
 
+- [AWS DynamoDB — DynamoDB table classes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html)
+- [AWS DynamoDB — Considerations when choosing a table class in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.tableclasses.html)
+- [AWS DynamoDB — Evaluate your DynamoDB table usage patterns](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/CostOptimization_TableUsagePatterns.html)
 - [AWS DynamoDB — SearchVectors API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_SearchVectors.html)
 - [AWS DynamoDB — DynamoDB read consistency](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html)
 - [AWS DynamoDB — Best practices for handling concurrent updates](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/BestPractices_ImplementingVersionControl.html)
