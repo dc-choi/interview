@@ -87,6 +87,16 @@ aliases: ["Realtime Chat Delivery and Storage", "채팅 메시지 전달 경로"
 - 인기 방은 한 파티션에 동시 읽기가 몰리는 핫 파티션이 된다. 같은 행에 대한 동시 요청을 한 번의 조회로 합치거나 최근 구간을 캐시해 저장소 앞에서 흡수한다.
 - 개별 메시지의 가치가 낮다는 특성은 보존 정책으로 이어진다. 오래된 버킷은 저비용 계층으로 옮기거나 보존 기간 뒤 삭제하되, 법적 보존 의무와 사용자의 삭제 요청을 먼저 확인한다.
 
+### DynamoDB의 조회 페이지와 화면 페이지를 구분한다
+
+2026-10-14 DynamoDB 공식 문서 부분 대조 기준이다. 방 ID와 정렬 가능한 메시지 ID로 이력을 조회할 때, [[DynamoDB#Query와 Scan|Query와 Scan의 읽기 범위]]를 화면의 페이지 계약에 연결한다.
+
+`Query`의 `Limit`은 필터를 통과해 화면에 표시할 메시지 수가 아니라 평가할 항목 수다. 필터 적용 전 최대 1 MB 또는 `Limit` 경계에서 조회가 멈추므로, 숨김 메시지 등을 필터링하면 **빈 결과와 `LastEvaluatedKey`가 함께 올 수 있다**. 빈 배열만 보고 과거 대화가 끝났다고 판정하면 남은 이력을 놓친다. 다음 조회에는 반환된 키를 `ExclusiveStartKey`로 전달하며, 키가 있다는 사실만으로 다음 페이지에 표시할 메시지가 있다고 확정하지 않는다.
+
+애플리케이션 설계 제안: 화면의 목표 개수만큼 더 읽는 경우 조회 횟수나 시간에 상한을 두고 이어 읽기 커서를 반환한다. 한 DB 페이지에서 일부만 화면에 반환했다면 나머지를 버린 채 그 페이지 끝의 키로 진행하지 않는다. 마지막으로 반환한 메시지의 위치나 남은 항목을 커서 설계에 반영해 이력이 빠지지 않게 한다. 필터는 이미 읽은 데이터의 read capacity를 줄이지 않으므로, 반복해서 많은 항목을 버리면 접근 패턴과 키 설계를 재검토한다.
+
+이 절의 조회 계약만 대조했으며 기존 메시지 전달 구조와 공개 사례 전체의 검증일은 유지한다.
+
 ### 사례: Discord의 메시지 저장소 (공개 글 기준)
 
 - 초기에는 모든 데이터를 MongoDB replica set 하나에 두고 메시지를 `channel_id`, `created_at` 복합 인덱스로 조회했다. 2015년 11월 저장 메시지가 약 1억 건에 이르자 데이터와 인덱스가 RAM에 들어가지 않아 지연이 불안정해졌고, Cassandra로 옮겼다(2017-01 공개 글).
@@ -111,6 +121,8 @@ aliases: ["Realtime Chat Delivery and Storage", "채팅 메시지 전달 경로"
 
 ## 출처
 
+- [Amazon DynamoDB, Query](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html)
+- [Amazon DynamoDB, Paginating table query results](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.Pagination.html)
 - [Amazon API Gateway, Manage connected users and client apps: $connect and $disconnect routes](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-route-keys-connect-disconnect.html)
 - [Amazon API Gateway, Use @connections commands in your backend service](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html)
 

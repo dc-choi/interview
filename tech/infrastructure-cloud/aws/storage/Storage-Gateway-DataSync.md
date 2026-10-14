@@ -111,6 +111,17 @@ Enhanced의 검증은 전송한 데이터를 대상으로 하므로 대상 버�
 
 agent 운영비가 없어져도 Azure의 데이터 전송과 요청, DataSync 처리, S3 요청과 저장 비용은 남는다. 소규모 전송에서 권한, 태그와 검증 결과를 먼저 확인한 뒤 전체 범위를 옮기는 것은 이 제약을 적용한 운영 절차다.
 
+## DataSync 병렬 전송과 agent 장애 경계
+
+2026-10-14 공식 가이드 부분 대조 기준이다. 병렬화를 늘리기 전에 원본과 목적지의 I/O 여유, 회선 대역폭과 파일 크기 분포를 확인한다. task 수가 늘면 스토리지 부하도 늘기 때문에 전송 시간이 같은 비율로 줄어든다고 가정하지 않는다.
+
+- **여러 task로 분할:** 폴더, prefix, include/exclude filter 또는 manifest로 데이터 범위를 나눈다. agent가 필요한 구성은 task마다 별도 agent를 사용해 병렬 실행한다. 같은 agent를 사용하는 다른 실행이 진행 중이면 task가 대기열에 들어갈 수 있다.
+- **목적지 충돌 방지:** 서로 다른 데이터셋을 같은 S3 버킷으로 모을 때는 task별 목적지 prefix를 나누어 파일명 충돌과 권한 범위를 관리한다.
+- **한 location에 여러 agent:** 작은 파일이 많은 경우 검토할 수 있지만 전송 준비 시간이 줄어드는 방식은 아니다. location에는 Basic용과 Enhanced용 agent를 각각 최대 4개 연결할 수 있고, task는 자기 모드에 맞는 agent를 사용한다.
+- **고가용성과 구분:** 같은 location의 다중 agent는 장애 대체 구성이 아니다. 연결된 agent가 모두 online이어야 task를 시작할 수 있으며, 하나가 offline이면 실행할 수 없다.
+
+운영 점검 제안: 일부 범위로 먼저 전송해 준비 시간과 전송 시간, I/O 부하를 따로 측정한다. 작업 분할 후 누락과 중복 범위를 확인하고 검증 결과까지 비교한다. 이 절만 추가 대조했으며 Storage Gateway와 기존 전송 조합 전체의 검증일은 유지한다.
+
 ## Storage Gateway vs DataSync
 
 | 기준 | Storage Gateway | DataSync |
@@ -132,6 +143,8 @@ agent 운영비가 없어져도 Azure의 데이터 전송과 요청, DataSync �
 - Volume Gateway 데이터 암호화 — 전송 SSL, 저장 **SSE-S3**
 
 ## 출처
+
+- [AWS DataSync, Creating a task for transferring your data](https://docs.aws.amazon.com/datasync/latest/userguide/create-task-how-to.html)
 
 2026-10-07 추가 대조 범위는 DataSync task mode, 파티션 간 S3 location 구성, Azure Blob 전송의 SAS, 태그와 접근 계층 조건이다. Storage Gateway 절의 기존 검증 기준은 2026-09-03이다.
 

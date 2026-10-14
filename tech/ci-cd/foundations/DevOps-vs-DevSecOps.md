@@ -140,6 +140,16 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 
 예외 등록으로 경고 수만 줄어든 것과 취약점을 수정한 것은 다른 결과다. 관문 도입 효과를 볼 때는 확인된 취약점의 수정 시간, 검토에 든 시간과 배포 후 발견 건수를 함께 본다. 특정 고객 사례의 비용 절감률을 다른 조직의 예상 효과로 적용하지 않는다.
 
+### 파이프라인 자체도 보호 대상이다
+
+2026-10-14 AWS 공식 가이드 부분 대조 기준이다. 애플리케이션을 검사하는 **security in the pipeline**과 검사, 빌드, 배포 경로 자체를 보호하는 **security of the pipeline**을 나누어 점검한다. 보안 스캔을 통과해도 파이프라인 권한이나 검사 정의가 변조되면 안전한 배포를 보장할 수 없다.
+
+- 파이프라인 역할에는 담당 배포에 필요한 권한만 주고 임시 자격 증명을 사용한다. 운영 배포 권한을 테스트 단계에 그대로 공유하지 않는다.
+- 필수 보안 검사의 변경과 우회 권한을 일반 빌드, 배포 사용 권한과 분리한다. 검사를 추가한 사실과 사용자가 그 검사를 끌 수 없는지는 별도로 확인한다.
+- 입력 검증, 잘못된 환경으로의 배포 방지, 파이프라인 상태와 이상 활동 모니터링을 함께 확인한다. 이는 스캔 결과를 해석하는 정책을 보완하는 파이프라인 운영 기준이다.
+
+이번 대조는 파이프라인 보호 범위에 한정하며 기존 도구 목록과 연구 자료 전체의 검증일은 유지한다.
+
 ## 조직적 접근
 
 ### 성공 조건
@@ -183,6 +193,8 @@ Plan → Code → Build → Test → Release → Deploy → Operate → Monitor
 - Policy as Code가 주는 이점과 주의
 
 ## 출처
+- [AWS DevOps Guidance, Treat pipelines as production resources](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/ag.sad.3-treat-pipelines-as-production-resources.html)
+- [AWS Well-Architected Framework, Regularly assess security properties of the pipelines](https://docs.aws.amazon.com/wellarchitected/latest/framework/sec_appsec_regularly_assess_security_properties_of_pipelines.html)
 - [AWS DevOps Guidance, Enhance source code security with static application security testing](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/qa.st.4-enhance-source-code-security-with-static-application-security-testing.html)
 - [Amazon Inspector, Creating a custom CI/CD pipeline integration with Amazon Inspector Scan](https://docs.aws.amazon.com/inspector/latest/user/cicd-custom.html)
 - [Vulnerability Scan GitHub Action for Amazon Inspector — AWS](https://github.com/aws-actions/vulnerability-scan-github-action-for-amazon-inspector)
