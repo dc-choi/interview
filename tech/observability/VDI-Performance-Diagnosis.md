@@ -29,6 +29,21 @@ CPU Ready는 vCPU가 실행할 준비가 됐지만 물리 CPU에서 실행되지
 
 eG Enterprise의 게스트 OS 검사는 CPU 소비가 큰 프로세스를 상세 진단할 수 있다. 다만 순간적인 CPU 스파이크는 메트릭에 나타나도 상세 진단 목록에는 잡히지 않을 수 있다. 프로세스 목록에 없다는 이유로 순간 부하를 배제하지 않는다.
 
+## WorkSpaces에서는 접속, 왕복 지연과 자원 소비를 나눈다
+
+2026-10-14 AWS 관리 가이드 대조 기준, `AWS/WorkSpaces`의 지표는 다음처럼 구분한다. 아래 점검은 WorkSpaces에 적용하며 ESXi의 CPU Ready 값을 대신하는 지표 목록은 아니다.
+
+| 지표 | 측정 범위와 해석 |
+|---|---|
+| `SessionLaunchTime` | 세션을 시작하는 데 걸린 시간, 초 단위 |
+| `InSessionLatency` | 클라이언트와 WorkSpace 사이의 왕복 시간, 밀리초 단위 |
+| `CPUUsage`, `MemoryUsage` | WorkSpace의 CPU와 메모리 사용 비율 |
+| `UDPPacketLossRate` | PCoIP는 클라이언트에서 게이트웨이 방향, DCV는 게이트웨이에서 클라이언트 방향의 손실률 |
+
+`ConnectionAttempt`, `ConnectionSuccess`, `ConnectionFailure`와 `SessionLaunchTime`은 클라이언트 인증 성공 뒤 세션 연결을 시작할 때 발행된다. 이 값이 없다는 사실만으로 인증 이전 단계까지 정상이라고 판단하지 않는다.
+
+조사 적용 예시: 같은 `WorkspaceId`와 시간 구간에서 왕복 지연과 자원 사용률을 비교한다. CPU 사용률이 낮아도 세션 왕복 지연이 높을 수 있으므로 컴퓨트 증설을 바로 결론 내리지 않는다. 프로토콜을 바꿔 비교할 때는 UDP 손실률의 측정 방향도 바뀐다는 점을 기록한다.
+
 ## 조사 순서
 
 1. 느린 동작과 시간 범위를 고정한다.
@@ -40,6 +55,7 @@ eG Enterprise의 게스트 OS 검사는 CPU 소비가 큰 프로세스를 상세
 
 ## 출처
 
+- [AWS, Monitor your WorkSpaces using CloudWatch metrics](https://docs.aws.amazon.com/workspaces/latest/adminguide/cloudwatch-metrics.html) — 2026-10-14 WorkSpaces 절만 추가 대조, 기존 Horizon과 ESXi 절의 검증일은 유지
 - [eG Innovations, Horizon User Logon Details - OS Test](https://docs.eginnovations.com/Omnissa-Horizon-Desktop-Group/Horizon-User-Logon-Details-OS-Test.htm)
 - [eG Innovations, System Details - OS Test](https://docs.eginnovations.com/Omnissa-Horizon-Desktop-Group/System-Details-OS-Test.htm)
 - [High Network Latency and CPU Ready Time on Virtual Appliances with CPU Limits — Broadcom](https://knowledge.broadcom.com/external/article/456240/high-network-latency-and-cpu-ready-time.html)

@@ -33,7 +33,16 @@ aliases: ["Test Pyramid Blind Spots", "초록불이 못 잡는 것"]
 
 기존 동작을 보존하는 [[Legacy-Code-Testing|특성화 테스트]]는 현재 출력의 기록 자체가 목적일 수 있다. 요구사항 충족 검사와 구분하고, 알려진 오류를 고칠 때는 승인된 새 기대값을 기준으로 삼는다. 에이전트에게 검증을 지시하는 구체적인 실패 패턴은 [[Agent-Test-Verification-Behavior|에이전트 검증 행동]]에서 다룬다.
 
+## 정상 명령도 잘못된 상태에서 실행될 수 있다
+
+입력 형식이 맞는지와 현재 상태에서 실행해도 되는지는 다른 검증이다. 숙련된 사용자는 실수하지 않는다는 가정으로 상태별 금지 동작을 테스트에서 빼면, 정상 흐름이 통과해도 데이터 손상 경로가 남을 수 있다.
+
+적용 예시로 결제가 끝난 주문에 초기화 명령을 보내는 경우를 생각할 수 있다. 상태와 명령의 조합을 나누고, 금지된 조합은 거절되는지뿐 아니라 기존 데이터와 외부 부수효과가 보존되는지도 확인한다. 사용 설명서의 경고, 실행 전 차단, 오류 후 복구는 각각 다른 역할이다.
+
+역사적 사례: Apollo 8의 비행 중 발사 전 프로그램 `P01` 선택과 데이터 손상은 개발 참여자의 구술 기록에 남아 있다. 사전 시뮬레이션에서 위험을 발견해 경고를 문서에 넣었지만 실제 비행에서 같은 입력이 발생했다. 복구는 컴퓨터 재시작이 아니라 손상된 데이터의 재입력이었으며, 차단 수정은 다음 임무에 반영됐다는 회고다(Computer History Museum 구술 기록, 28~29쪽). 이를 방어적 프로그래밍의 최초 사례나 한 사람만의 성과로 일반화하지 않는다.
+
 ## 출처
+- [Oral History of Margaret Hamilton — Computer History Museum](https://archive.computerhistory.org/resources/access/text/2022/03/102738243-05-01-acc.pdf) — 28~29쪽, 상태에 맞지 않는 명령과 경고, 차단, 복구의 구분
 - [Can we find bugs using LLM-generated oracles? — Michael Konstantinou 외, arXiv v2](https://arxiv.org/html/2410.21136v2)
 - [유닛 테스트 209개를 통과한 PR인데, 실제로 돌려보니 저장이 한 건도 안 됐다 — velog](https://velog.io/@donghoong2/OCR-WORKER-%EC%9C%A0%EB%8B%9B-%ED%85%8C%EC%8A%A4%ED%8A%B8-209%EA%B0%9C%EB%A5%BC-%ED%86%B5%EA%B3%BC%ED%95%9C-PR%EC%9D%B8%EB%8D%B0-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%8F%8C%EB%A0%A4%EB%B3%B4%EB%8B%88-%EC%A0%80%EC%9E%A5%EC%9D%B4-%ED%95%9C-%EA%B1%B4%EB%8F%84-%EC%95%88-%EB%90%90%EB%8B%A4)
 - [테스트는 다 초록불이었다 — 아무도 안 읽는 값이었고, 마스킹도 안 걸릴 뻔했다 — velog](https://velog.io/@donghoong2/OCR-WORKER-%ED%85%8C%EC%8A%A4%ED%8A%B8%EB%8A%94-%EB%8B%A4-%EC%B4%88%EB%A1%9D%EB%B6%88%EC%9D%B4%EC%97%88%EB%8B%A4-%EA%B7%BC%EB%8D%B0-%EC%95%84%EB%AC%B4%EB%8F%84-%EC%95%88-%EC%9D%BD%EB%8A%94-%EA%B0%92%EC%9D%B4%EC%97%88%EA%B3%A0-%EB%A7%88%EC%8A%A4%ED%82%B9%EB%8F%84-%EC%82%AC%EC%8B%A4-%EC%95%88-%EA%B1%B8%EB%A6%B4-%EB%BB%94%ED%96%88%EB%8B%A4)
