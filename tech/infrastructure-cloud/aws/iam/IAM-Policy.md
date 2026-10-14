@@ -98,6 +98,22 @@ aliases: ["IAM 정책", "IAM Policy 평가 로직"]
 | `s3:x-amz-server-side-encryption` | 업로드(PUT) 요청 헤더의 서버 측 암호화 방식. 강제는 부정 연산자를 쓴 Deny로 |
 | `kms:ViaService` | 특정 서비스 경유한 KMS 호출만 |
 
+## 다중 계정의 데이터 접근 경계
+
+부분 검증(2026-10-14): AWS의 data perimeter와 VPC endpoint policy 문서를 대조했다. 데이터 접근 경계는 **누가, 어떤 리소스를, 어느 네트워크에서 사용하는가**를 함께 제한하며 개별 작업의 최소 권한을 대신하지 않는다.
+
+| 경계 | 정책과 조건의 역할 |
+|---|---|
+| 호출 주체 | RCP 또는 리소스 정책과 VPC endpoint policy에서 `aws:PrincipalOrgID` 등으로 신뢰할 주체를 제한한다 |
+| 대상 리소스 | SCP와 VPC endpoint policy에서 `aws:ResourceOrgID` 등으로 허용할 리소스 소유 범위를 제한한다 |
+| 요청 네트워크 | SCP와 RCP 또는 리소스 정책에서 `aws:SourceVpc`, `aws:SourceVpce` 등으로 요청 경로를 제한한다 |
+
+RCP와 각 조건 키는 대상 서비스의 지원 여부를 확인한다. RCP가 지원하지 않는 리소스에는 해당 서비스의 resource-based policy를 검토한다. VPC endpoint policy는 endpoint를 사용하는 요청을 제어하며 identity policy나 리소스 정책을 대체하지 않는다. 기본 endpoint policy의 전체 허용을 조직 경계가 설정된 상태로 오인하지 않는다.
+
+AWS 서비스가 대신 접근하는 경로도 구분한다. `aws:ViaAWSService`는 Forward access sessions(FAS), `aws:PrincipalIsAWSService`는 서비스 principal의 요청을 판별한다. 두 키를 서로 바꿔 쓰거나 AWS 서비스라는 이유만으로 모든 접근을 허용하지 않는다. 허용할 서비스 호출과 필요한 조건을 확인한 뒤 네트워크 제한의 예외를 설계한다.
+
+검증 제안: VPC 내부 직접 호출, 온프레미스의 사설 연결, 공개 endpoint 호출과 서비스 대행 호출을 나눠 허용과 거부 사례를 확인한다. 이번 작업은 문서 대조이며 실제 정책을 배포하거나 기존 정책 전체를 재검증하지 않아 frontmatter 검증일은 유지한다.
+
 ## EC2 리소스 제한은 action별로 나눈다
 
 2026-10-09 공식 EC2와 IAM 문서로 이 절을 대조했다. EC2는 리소스 수준 권한을 일부 action에서 지원하므로 모든 action에 인스턴스 ARN을 넣는 정책은 작동하지 않는다.
@@ -141,6 +157,8 @@ Policy Simulator는 identity policy, permissions boundary, SCP와 직접 넣어 
 
 ## 출처
 
+- [AWS IAM — Establish permissions guardrails using data perimeters](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_data-perimeters.html)
+- [Amazon VPC — Control access to VPC endpoints using endpoint policies](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html)
 - [Amazon EC2 — Identity-based policies for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-for-amazon-ec2.html)
 - [Amazon EC2 — Example policies to control access the Amazon EC2 API](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ExamplePolicies_EC2.html)
 - [AWS IAM — Allows starting or stopping EC2 instances a user has tagged](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_ec2_tag-owner.html)

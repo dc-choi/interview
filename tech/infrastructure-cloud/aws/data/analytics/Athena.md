@@ -156,6 +156,18 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 수정 뒤에는 문제가 난 값, 경계값과 정상값을 함께 조회해 값의 보존과 NULL 여부를 비교한다(운영 점검 제안). 실행 성공과 값의 정확성은 별도로 확인한다. 이 절은 문서 대조이며 실제 데이터로 실행한 결과가 아니므로 문서 전체의 기존 검증일은 유지한다.
 
+## Iceberg 테이블의 CDC 병합
+
+부분 검증(2026-10-14): Athena의 Iceberg와 `MERGE INTO` 공식 문서를 대조했다. 아래는 분석 테이블의 변경 반영이며, 애플리케이션용 OLTP 데이터베이스를 대체한다는 뜻은 아니다.
+
+- **지원 조건:** `MERGE INTO`는 Athena engine version 3의 Iceberg 테이블에서 조건별 삽입, 수정과 삭제를 하나의 트랜잭션으로 실행한다. 일반 S3 외부 테이블에 같은 기능이 적용된다고 가정하지 않는다.
+- **중복과 순서:** 대상 행 하나가 여러 source 행과 매칭되면 오류가 난다. CDC 입력을 병합하기 전에 키별 변경 순서와 중복 처리 규칙을 정한다. 전체 행의 최종 상태를 만드는 파이프라인이라면 원천의 순서 정보로 최종 변경을 고르는 방식이 후보지만, 부분 변경 이벤트를 무조건 마지막 한 건으로 줄이면 앞선 변경을 잃을 수 있다(설계 점검).
+- **삭제와 삽입:** source 행마다 처음 매칭되는 `WHEN` 절만 실행된다. 삭제 이벤트가 대상과 매칭되지 않을 때 일반 `WHEN NOT MATCHED` 삽입 절로 들어가지 않도록 이벤트 종류를 조건에 반영한다(설계 점검).
+- **쓰기 방식:** Athena의 `UPDATE`, `MERGE INTO`, `DELETE FROM`은 positional delete를 사용하는 merge-on-read 방식이다. copy-on-write 테이블 속성을 설정해도 Athena는 이를 무시하고 merge-on-read를 사용한다.
+- **다른 엔진과의 공유:** Athena는 Glue catalog 기반 Iceberg 테이블과 Glue optimistic locking을 지원한다. 다른 잠금 구현을 사용하는 writer와 섞으면 트랜잭션과 데이터 정합성을 해칠 수 있으므로 writer별 catalog와 잠금 설정을 확인한다.
+
+실제 CDC 파이프라인과 AWS 쿼리를 실행한 검증은 아니다. 기존 절 전체의 검증일은 유지한다.
+
 ## 시험 체크포인트
 
 - **S3 데이터를 SQL로 즉시 분석, 인프라 관리 없이** → **Athena**.
@@ -165,10 +177,13 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 - **여러 데이터 소스(RDS, DynamoDB 등)를 하나의 SQL로 조회** → **Athena Federated Query** (Lambda Connector).
 - **사용자/팀별 데이터 스캔 한도, 결과 위치 분리** → **Workgroup**.
 - **실패 쿼리는 무료, 취소 쿼리는 취소 시점까지 과금**.
-- Athena는 **OLAP, ad-hoc 분석용**. 트랜잭션, 짧은 응답이 필요하면 부적합.
+- Athena는 **OLAP, ad-hoc 분석용**이다. Iceberg 변경에는 트랜잭션을 지원하지만 짧은 응답이 필요한 애플리케이션용 OLTP 저장소와는 용도가 다르다.
 
 ## 출처
 
+- [Amazon Athena, MERGE INTO](https://docs.aws.amazon.com/athena/latest/ug/merge-into-statement.html)
+- [Amazon Athena, Update Iceberg table data](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg-updating-iceberg-table-data.html)
+- [Amazon Athena, Query Apache Iceberg tables](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg.html)
 - [Amazon Athena, Data types in Amazon Athena](https://docs.aws.amazon.com/athena/latest/ug/data-types.html)
 - [Amazon Athena, Open CSV SerDe for processing CSV](https://docs.aws.amazon.com/athena/latest/ug/csv-serde.html)
 - [Amazon Athena, Specify a table location in Amazon S3](https://docs.aws.amazon.com/athena/latest/ug/tables-location-format.html)
