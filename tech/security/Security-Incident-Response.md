@@ -55,6 +55,12 @@ AI의 경고 요약은 이 과정의 보조 자료다. 요약 생성과 신고 �
 - 처음 발견한 시스템 외의 잠재적 대상도 확인해 범위를 과소평가하지 않는다.
 - 차단과 제거는 사고 유형, 영향과 조치 유지 기간을 고려해 선택한다.
 
+### 유출 범위에서 PII의 의미
+
+PII는 Personally Identifiable Information의 약어다. NIST SP 800-122(2010) 2.1~2.2절은 개인을 식별하거나 추적할 수 있는 정보와 개인에게 연결되거나 연결할 수 있는 정보를 함께 포함한다. 이름과 식별번호뿐 아니라 개인과 연결된 의료, 교육, 금융과 고용 정보도 해당한다. 따라서 PII를 고유 식별번호만 뜻하는 말로 번역하면 조사할 데이터 범위를 좁히게 된다. 이 정의는 2026-10-14 원문과 대조했으며 국내법상 용어의 정의를 대신하지 않는다.
+
+운영 적용 예시: 유출 주장을 접수하면 번호 필드뿐 아니라 함께 노출된 속성과 다른 자료와의 연결 가능성을 확인한다. 공개 보고서에는 데이터 유형과 확인 범위를 적고, 조사용 개인정보 원본은 접근이 통제된 증거 저장소에서 관리한다.
+
 ## 복구 완료 조건
 
 백업이 있다는 사실만으로 복구를 시작하지 않는다. 복원 자산의 침해 흔적과 손상을 확인한다. 운영 재개 전에는 복구된 자산의 무결성과 근본 원인 조치를 확인하고, 서비스 소유자와 정상 동작을 검증한다.
@@ -169,6 +175,7 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 
 ## 출처
 
+- [NIST, SP 800-122: Guide to Protecting the Confidentiality of Personally Identifiable Information (PII)](https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-122.pdf) — 2.1~2.2절의 정의와 예시
 - [Trellix, Investigate threats using Generative AI](https://docs.trellix.com/docs/investigate-threats-using-generative-ai-1)
 - [Trellix, Remediate threats](https://docs.trellix.com/docs/remediate-threats)
 - [CISA, #StopRansomware Guide](https://www.cdfifund.gov/system/files/2023-11/StopRansomware_Guide_508C_v3.pdf) — 공동 지침의 미국 재무부 CDFI Fund 게시본, 서론과 데이터 반출 조사 항목.

@@ -32,8 +32,14 @@ Application은 배포 단위를 정의하는 CRD다. `source`(`repoURL`, `path` 
 - **sync status**는 live state가 target state와 같은가를 본다. Git이 말하는 것과 클러스터에 있는 것이 같은지의 diff 축이다.
 - **health status**는 그 리소스가 실제로 정상 동작하는가를 본다. Deployment의 observed generation과 updated replicas, LoadBalancer Service의 `status.loadBalancer.ingress`, PVC의 `Bound` 같은 내장 판정이 있다.
 - Application health는 **직속 자식 리소스 health의 최악값**(Healthy, Suspended, Progressing, Missing, Degraded, Unknown 순)이며, 리소스 health는 자식에서 상속되지 않고 그 리소스 자신의 정보만으로 계산된다.
-- 따라서 내장 판정도 커스텀 판정도 없는 CRD는 health 축에 기여하지 못한다. **Synced이면서 Healthy로 보여도 CRD 컨트롤러가 실제 프로비저닝에 실패한 상태일 수 있다.** ExternalSecret, Certificate, 데이터베이스 오퍼레이터처럼 실제 상태가 중요한 CRD는 `argocd-cm`의 `resource.customizations.health.<group>_<kind>` Lua health check를 등록해야 배포 성공 판정이 진실해진다.
+- 따라서 내장 판정도 커스텀 판정도 없는 CRD는 health 축에 기여하지 못한다. **Synced이면서 Healthy로 보여도 CRD 컨트롤러가 실제 프로비저닝에 실패한 상태일 수 있다.** 먼저 사용하는 Argo CD 버전에 해당 CRD의 health check가 포함돼 있는지 확인한다. 2026-10-14 대조한 v3.5.4 소스에는 `external-secrets.io/ExternalSecret`과 `cert-manager.io/Certificate`의 Lua health check가 기본 제공된다. 적절한 기본 판정이 없거나 기존 판정을 보완해야 할 때 `argocd-cm`의 `resource.customizations.health.<group>_<kind>`에 Lua health check를 정의한다. health는 컨트롤러가 보고한 상태를 해석하므로 실제 서비스의 종단 간 검증을 대신하지 않는다.
 - 반대로 특정 자식이 Application health를 흔들지 않게 하려면 `argocd.argoproj.io/ignore-healthcheck: "true"` 어노테이션으로 제외한다.
+
+### Rollout 일시정지와 Application 상태
+
+2026-10-14 Argo Rollouts 공식 FAQ의 Argo CD 통합 설명을 대조했다. Argo CD는 Rollout 리소스의 health check로 `Progressing`, `Suspended`, `Degraded`, `Healthy` 상태를 해석한다. Rollout이 일시정지되면 Application이 `Suspended`로 표시될 수 있으며, 검증 뒤 resource action으로 일시정지를 해제해 진행할 수 있다.
+
+운영 적용 예시: Git의 선언이 반영됐는지와 새 버전으로의 전환이 끝났는지를 별도로 확인한다. `Suspended`를 곧바로 장애로 처리하거나 sync 성공만으로 배포 완료를 기록하지 않고, 의도한 대기 단계인지와 재개 조건을 확인한다. 이 절은 상태 해석에 한정하며 트래픽 전환 전략은 기존 GitOps 정본을 따른다.
 
 ## 규모 확장 — App of Apps와 ApplicationSet
 
@@ -106,6 +112,9 @@ Argo CD Image Updater를 붙이면 registry의 새 이미지를 자동 반영할
 - Argo CD가 죽었을 때의 우회 배포 경로, 그리고 UI 장애와 배포 장애를 구분하는 시각
 
 ## 출처
+- [Certificate health check (v3.5.4) — Argo Project](https://github.com/argoproj/argo-cd/blob/v3.5.4/resource_customizations/cert-manager.io/Certificate/health.lua)
+- [ExternalSecret health check (v3.5.4) — Argo Project](https://github.com/argoproj/argo-cd/blob/v3.5.4/resource_customizations/external-secrets.io/ExternalSecret/health.lua)
+- [Argo Rollouts, FAQ: How does Argo Rollouts integrate with Argo CD?](https://argoproj.github.io/argo-rollouts/FAQ/#how-does-argo-rollouts-integrate-with-argo-cd)
 - [Argo CD v3.5.4 release notes — Argo Project](https://github.com/argoproj/argo-cd/releases/tag/v3.5.4)
 - [A Kustomize remote ref can run commands in the repo-server — Argo Project](https://github.com/argoproj/argo-cd/security/advisories/GHSA-9v9p-x54c-58gc)
 - [A Kustomize Helm config home can run commands in the repo-server — Argo Project](https://github.com/argoproj/argo-cd/security/advisories/GHSA-fw5c-w8rc-j7fx)
