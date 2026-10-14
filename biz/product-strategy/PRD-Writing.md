@@ -70,6 +70,14 @@ aliases: ["PRD", "Product Requirements Document", "제품 요구사항 정의서
 
 작은 제품에서는 **기능 산출물, 기대하는 고객 행동, 확인할 증거**를 한 줄로 연결할 수 있다. 예를 들어 문의 폼 출시, 적합한 고객의 상담 요청 증가, 실제 상담으로 이어진 비율을 나누어 적는다. 이는 적용 예시이며 폼 출시만으로 매출이나 고객 가치가 입증되는 것은 아니다. 관찰 기간과 판단 기준을 미리 정해 유지, 수정 또는 중단을 결정한다.
 
+PRFAQ를 작성할 때는 고객에게 전달할 가치와 팀이 해결해야 할 제약을 함께 검토한다. PR은 고객 경험의 핵심을, FAQ는 상세한 경험과 구현 비용, 어려움을 설명한다. [Amazon의 Working Backwards 설명](https://www.aboutamazon.com/news/workplace/an-insider-look-at-amazons-culture-and-processes)을 작은 제품에 적용하면 다음 질문으로 구체화할 수 있다.
+
+- 고객은 현재 대안과 비교해 무엇이 나아져야 행동을 바꾸는가?
+- 그 경험을 제공하려면 어떤 비용과 해결되지 않은 문제가 남는가?
+- 피드백을 반영해 더 검증할 것인가, 제약을 해결할 것인가, 보류할 것인가?
+
+이는 문서의 완성도를 제품 수요의 증거로 대체하지 않기 위한 점검이다. 잘 쓴 PRFAQ도 개발 착수나 출시를 보장하지 않으며, 검토 결과 만들지 않기로 결정하는 것도 자원 배분의 결과다.
+
 ### 근거 기반 우선순위
 
 - **사용자 근거**: 인터뷰 수, 설문 응답, 정량 지표
@@ -177,6 +185,7 @@ PRD는 **의견 대립 시 판단 기준점**이다. "디자이너와 개발자�
 
 ## 출처
 
+- [An insider look at Amazon's culture and processes — Amazon](https://www.aboutamazon.com/news/workplace/an-insider-look-at-amazons-culture-and-processes)
 - [AWS, Prioritize customer needs to deliver optimal business outcomes](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/oa.ti.6-prioritize-customer-needs-to-deliver-optimal-business-outcomes.html)
 - [GOV.UK, How the live phase works](https://www.gov.uk/service-manual/agile-delivery/how-the-live-phase-works) — 운영과 지원 인력의 준비, 지속 개선 기준
 - [PRD 제품 요구사항 정의서 작성법 — 코드스테이츠](https://www.codestates.com/blog/content/prd-%EC%A0%9C%ED%92%88%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD%EC%A0%95%EC%9D%98%EC%84%9C)

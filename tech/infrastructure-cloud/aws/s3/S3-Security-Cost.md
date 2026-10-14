@@ -80,6 +80,22 @@ verified_at: 2026-09-30
 
 흔한 비용 함정: 작은 파일 다수 — 요청 수, 메타데이터 비용 큼. **로그 작은 파일은 batch+gzip로 묶어 PUT**.
 
+### 작은 객체의 클래스 전환 비용
+
+부분 검증(2026-10-14): 이 절은 S3 가격표와 Lifecycle 전환 문서를 대조했다. 기존 보안 절 전체의 검증일은 갱신하지 않는다.
+
+총용량이 같아도 객체 수가 많으면 객체별 Lifecycle 전환 요청 비용이 커진다. 저장 단가만 비교하지 말고 다음 과금 조건을 함께 계산한다.
+
+| 조건 | 비용에 미치는 영향 |
+|---|---|
+| Glacier Instant Retrieval | 최소 과금 객체 크기는 128 KB, 최소 과금 보관 기간은 90일이다. 즉시 조회할 수 있어도 요청과 데이터 retrieval 요금은 별도다 |
+| Glacier Flexible Retrieval과 Deep Archive | 객체마다 메타데이터 40 KB가 추가 과금된다. 8 KB는 Standard, 32 KB는 해당 Glacier 클래스 요금이다. 최소 보관 기간은 각각 90일과 180일이다 |
+| 최소 보관 기간 전 삭제, 덮어쓰기나 다른 클래스로 전환 | 사용한 기간의 저장 비용 외에 남은 최소 기간에 대한 비례 요금이 발생한다. 조기 삭제 자체를 금지하는 조건은 아니다 |
+
+2024년 9월부터 새로 만들거나 수정한 Lifecycle 구성은 기본적으로 **128 KB 미만 객체를 어느 클래스로도 전환하지 않는다.** 그 전에 만든 구성은 수정 전까지 이전 기본 동작을 유지한다. 작은 객체를 옮겨야 하면 크기 필터로 기본값을 재정의할 수 있지만, 전환 가능 여부와 비용 절감 여부는 별도로 판단한다. 이는 [[Storage-Tiering#Intelligent-Tiering 동작과 적용 조건|Intelligent-Tiering의 자동 티어링 대상 크기]]와는 다른 규칙이다.
+
+운영 적용 제안: 객체 크기별로 예상 보관 기간의 저장 절감액을 계산하고, 전환 요청, 메타데이터, 조회와 복원 및 조기 삭제 비용 증가분과 비교한다. 필요한 복원 시간을 만족하면서 순절감이 남는 크기 구간에 전환 규칙을 적용한다. 작은 파일을 묶는 방법도 개별 조회와 삭제 요구를 충족할 때 선택한다. 특정 사례의 손익분기 개월 수를 다른 리전이나 데이터 분포에 그대로 적용하지 않는다. 과금 조건은 [S3 가격표](https://aws.amazon.com/s3/pricing/), 전환 기본값은 [Lifecycle 전환 문서](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html)를 기준으로 확인한다.
+
 ## 흔한 실수
 
 - **Lifecycle 미완료 Multipart abort 누락** — part 데이터가 영구 누적
@@ -120,6 +136,8 @@ verified_at: 2026-09-30
 - [[VPC|VPC Gateway Endpoint]]
 
 ## 출처
+- [Amazon S3 pricing](https://aws.amazon.com/s3/pricing/)
+- [Amazon S3 Lifecycle 전환 조건](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html)
 - [AWS, 기본 SSE-KMS와 요청별 암호화 재정의](https://repost.aws/knowledge-center/s3-aws-kms-default-encryption)
 - [AWS What's New — Amazon S3 increases maximum object size to 50 TB](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-s3-maximum-object-size-50-tb/)
 - [Amazon S3 User Guide — What's new](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WhatsNew.html)
