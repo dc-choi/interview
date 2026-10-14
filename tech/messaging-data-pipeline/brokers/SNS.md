@@ -144,6 +144,7 @@ SNS는 메시징 이외에:
 - **Cross-Account** — Topic Policy + Subscription Confirmation
 - **KMS 암호화** — 저장 시점 암호화
 - **VPC Endpoint** — 사설망에서 SNS 호출
+- **HTTP(S) 구독자의 서명 검증** — SNS는 HTTP(S) endpoint로 보내는 알림과 구독, 구독 해제 확인 메시지에 서명을 붙이며, 받는 쪽은 처리 전에 서명을 검증해야 한다. SignatureVersion2(SHA256)가 권장된다. 서명 인증서는 HTTPS로 받아 SNS가 발급했는지와 신뢰 체인을 확인하고, 예상하지 않은 `TopicArn`의 메시지는 거부한다. 직접 구현보다 AWS SDK의 검증 기능을 우선 쓴다. 서명은 메시지가 SNS에서 왔는지 확인하는 장치이고, 누가 토픽에 게시할 수 있는지는 Topic Policy와 IAM이 정한다(2026-10-14 공식 문서 대조)
 
 ## 흔한 실수
 
@@ -188,6 +189,7 @@ SNS는 메시징 이외에:
 - [Amazon SNS, Subscribe an SQS queue to an SNS topic](https://docs.aws.amazon.com/sns/latest/dg/subscribe-sqs-queue-to-sns-topic.html)
 - [Amazon SNS payload-based message filtering — AWS](https://aws.amazon.com/about-aws/whats-new/2022/11/amazon-sns-payload-based-message-filtering/)
 - [Amazon SNS, Email subscription setup and management](https://docs.aws.amazon.com/sns/latest/dg/sns-email-notifications.html)
+- [Amazon SNS, Verifying the signatures of Amazon SNS messages](https://docs.aws.amazon.com/sns/latest/dg/sns-verify-signature-of-message.html)
 - [AWS 핵심 서비스 정리 — 학습 메모]
 - AWS SAA C03 학습 자료 (로컬)
 

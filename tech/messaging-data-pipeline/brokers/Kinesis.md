@@ -69,6 +69,26 @@ KDS에 적재된 데이터를 다음에서 수집/처리:
 
 대표 사용 예시: 다수 웹사이트의 **Click Stream Data** → KDS → Firehose → S3 (저장, 분석).
 
+## Lambda로 소비할 때의 실패 격리
+
+부분 검증(2026-10-14): Lambda의 Kinesis와 Kafka 이벤트 소스 매핑 문서, CreateEventSourceMapping API와 Serverless Applications Lens를 대조했다. 문서의 다른 절과 quota 전체를 재검증한 것은 아니다.
+
+Lambda는 shard마다 배치를 순서대로 처리하고, 함수가 오류를 반환하면 그 shard의 다음 레코드 처리를 멈춘다. 기본값은 재시도 횟수와 레코드 나이에 제한이 없어(-1) 실패한 배치를 레코드가 스트림에서 만료될 때까지 다시 시도한다. 그동안 잘못된 레코드 하나가 같은 shard의 뒤 레코드를 모두 막는다. 같은 오류 처리 설정은 DynamoDB Streams 소스에도 있다. Amazon MSK와 자체 관리 Kafka 소스는 provisioned mode에서 이 설정을 쓰며, 무제한 재시도와 실패 대상을 함께 두면 재시도가 최대 10회로 제한된다.
+
+| 설정 | 동작 |
+|---|---|
+| `MaximumRetryAttempts` | -1(무제한, 기본)에서 10,000까지. 횟수를 넘긴 배치는 버리고 다음 레코드로 진행 |
+| `MaximumRecordAgeInSeconds` | -1(무제한, 기본) 또는 60~604,800초. 더 오래된 레코드는 버린다. throttling으로 호출 전에 실패할 때도 적용 |
+| `BisectBatchOnFunctionError` | 함수 오류 시 배치를 둘로 나눠 다시 시도해 문제 레코드를 좁힌다. 분할은 재시도 횟수를 소모하지 않는다 |
+| 실패 대상(`OnFailure`) | 버린 배치의 정보를 SQS, SNS 또는 S3로 보낸다(Kafka topic 대상은 provisioned mode를 켠 Kafka 이벤트 소스 매핑 전용이다). SQS와 SNS에는 shard ID, 시작과 끝 sequence number 같은 메타데이터만 가므로 보존 기간 안에 스트림에서 원본을 다시 읽어야 한다. S3에는 원래 호출 레코드도 함께 저장된다 |
+| `ReportBatchItemFailures` | 함수가 실패 레코드의 sequence number를 `batchItemFailures`로 돌려주면 가장 작은 번호부터 다시 처리한다. 켜지 않으면 일부 실패도 배치 전체 실패로 처리한다 |
+| `MaximumBatchingWindowInSeconds` | 0~300초. 저유량 스트림에서 레코드를 모아 적은 레코드로 자주 호출하는 것을 줄인다 |
+| `ParallelizationFactor` | 1~10. shard 하나의 배치를 동시에 여러 개 처리하며 partition key 단위 순서는 유지한다. KPL 집계 레코드와 함께 쓸 때 enhanced fan-out이 없으면 내부 레코드의 partition key가 모두 집계 레코드와 같아야 순서가 보장되고, enhanced fan-out에서는 partition key가 맞지 않는 내부 레코드가 처리되지 않고 실패 대상에도 가지 않는다 |
+
+이벤트 소스 매핑은 레코드를 최소 한 번 처리하고, 부분 실패 뒤에는 체크포인트 이후의 성공 레코드도 다시 처리하므로 소비 코드를 멱등하게 만든다([[Idempotent-Consumer|멱등 소비자]]). Serverless Lens는 비동기 처리의 동시성을 함수 동시성 제한 대신 shard 수와 병렬화 계수로 조절하는 방법도 제시한다.
+
+설정 제안: 업무가 허용하는 지연에 맞춰 최대 재시도와 레코드 나이를 정하고 실패 대상과 `IteratorAge` 경보를 함께 둔다. SQS나 SNS 실패 대상의 메시지만으로 원본을 복구할 수 있다고 가정하지 않는다. 실제 스트림에서 실행한 결과는 아니다.
+
 ## KDS에서 S3 Tables로 직접 적재
 
 2026-10-07 AWS 공식 문서 기준, **Streaming tables**는 KDS 레코드를 Amazon S3 Tables의 Apache Iceberg 테이블로 전달한다. Shard에서 읽은 데이터를 버퍼링하고 스키마 검증 후 Parquet로 변환해 inline compaction과 Iceberg commit을 수행한다. Athena 같은 엔진으로 결과를 조회할 수 있다.
@@ -169,6 +189,14 @@ AWS 공개 예제는 MySQL 변경 데이터를 DMS와 KDS로 전달하고, Fireh
 - [Managed Service for Apache Flink, Add streaming data sources](https://docs.aws.amazon.com/managed-flink/latest/java/how-sources.html)
 - [Managed Service for Apache Flink, Java examples](https://docs.aws.amazon.com/managed-flink/latest/java/examples-new-java.html)
 - [Amazon Kinesis Data Analytics for SQL Applications, Discontinuation](https://docs.aws.amazon.com/kinesisanalytics/latest/dev/discontinuation.html)
+- [AWS Lambda, Using Lambda to process records from Amazon Kinesis Data Streams](https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html)
+- [AWS Lambda, Retain discarded batch records for a Kinesis Data Streams event source](https://docs.aws.amazon.com/lambda/latest/dg/kinesis-on-failure-destination.html)
+- [AWS Lambda, Configuring partial batch response with Kinesis Data Streams and Lambda](https://docs.aws.amazon.com/lambda/latest/dg/services-kinesis-batchfailurereporting.html)
+- [AWS Lambda API Reference, CreateEventSourceMapping](https://docs.aws.amazon.com/lambda/latest/api/API_CreateEventSourceMapping.html)
+- [AWS Lambda, Using a Kafka topic as an on-failure destination](https://docs.aws.amazon.com/lambda/latest/dg/kafka-on-failure-destination.html)
+- [AWS Lambda, Configuring error handling controls for Kafka event sources](https://docs.aws.amazon.com/lambda/latest/dg/kafka-retry-configurations.html)
+- [Serverless Applications Lens, Failure management](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/failure-management.html)
+- [Serverless Applications Lens, Foundations](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/rel-foundations.html)
 - AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서

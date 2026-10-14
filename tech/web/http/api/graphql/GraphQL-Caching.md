@@ -57,6 +57,20 @@ const { loading, error, data, dataState } = useQuery(GET_TEAMS, {
 - 전체 응답 캐시 플러그인은 계산된 정책대로 응답을 인메모리, Redis 같은 백엔드에 통째로 저장한다. PRIVATE 응답은 세션 식별 함수가 있어야 캐시되며 로그인과 비로그인 사용자의 캐시가 분리된다.
 - 응답 단위 캐시의 약점은 무효화다: 세밀한 invalidation이 안 되므로 캐시 키에 연산 이름 같은 접두사를 설계해 두고, mutation 이벤트 때 접두사 패턴으로 배치 삭제한다(Redis에선 블로킹인 KEYS 대신 SCAN 순회). 안정적인 데이터는 긴 TTL로, 자주 변하는 데이터는 이벤트 기반 eviction으로 나눈다. 키가 연산별로 충분히 유일하지 않으면 다른 쿼리나 사용자의 응답이 새어 나갈 수 있다.
 
+### AWS AppSync의 서버 측 캐시
+
+2026-10-14 AWS AppSync 개발자 가이드 대조 기준. 관리형 GraphQL 서비스인 AppSync는 API에 캐시 동작을 정하고 필요하면 resolver마다 키와 TTL을 설정한다. 캐시는 API와 같은 계정과 리전의 ElastiCache(Redis OSS) 인스턴스로 제공되며 unit과 pipeline resolver 모두에 쓸 수 있다.
+
+| 동작 | 캐시 단위와 키 |
+|---|---|
+| Full request caching | 요청에서 실행된 resolver마다 결과를 따로 캐시한다. 키는 `context.arguments`와 `context.identity` |
+| Per-resolver caching | 명시적으로 켠 resolver만 캐시한다. TTL은 필수이고 키는 `context.arguments`, `context.source`, `context.identity`나 그 안의 문자열 필드에서 고른다. 키를 지정하지 않으면 세 map 전체가 키가 된다 |
+| Operation level caching | query 응답 전체를 최대 15MB까지 캐시한다. 키는 query 문자열, operationName, variables, `context.identity`와 예약 헤더를 뺀 요청 헤더로 만들고 인가 방식에 따라 추가 요소가 붙는다 |
+
+- TTL은 최대 3,600초다. 새 캐시는 저장 중과 전송 중 암호화가 항상 켜진다.
+- 데이터가 바뀌면 resolver에서 `evictFromApiCache`로 특정 항목을 지우거나, 콘솔이나 CLI의 flush cache API로 캐시 전체를 비운다. 항목을 지우려면 키를 알아야 하므로 AWS는 동적 eviction이 필요하면 per-resolver caching으로 키를 명시하라고 권한다.
+- 사용자별 데이터를 per-resolver로 캐시하면서 키에서 `context.identity`를 빼면 다른 사용자의 요청이 같은 항목을 받을 수 있다(설계 해석). 앞의 PRIVATE scope 문제와 같은 성격이다.
+
 ## persisted document로 GET 캐싱
 
 - GET은 query 연산에만 쓸 수 있고 HTTP 캐시나 CDN 엣지 캐시를 태울 수 있다. 하지만 복잡한 쿼리는 문자열이 길어 브라우저와 CDN의 URL 길이 한도를 넘는다.
@@ -128,5 +142,6 @@ GraphQL-over-HTTP은 Stage 2 draft라 아직 최종 표준이 아니다. 구현�
 - [Apollo Server — Cache control plugin (defaultMaxAge, inheritMaxAge)](https://www.apollographql.com/docs/apollo-server/api/plugin/cache-control)
 - [GraphQL-over-HTTP Stage 2 Draft](https://graphql.github.io/graphql-over-http/draft/)
 - [Apollo Router — Automatic Persisted Queries](https://www.apollographql.com/docs/graphos/routing/operations/apq)
+- [AWS AppSync — Configuring server-side caching and API payload compression](https://docs.aws.amazon.com/appsync/latest/devguide/enabling-caching.html)
 - [얄팍한 코딩사전 강사 — React와 Apollo Client](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=65906)
 - [얄팍한 코딩사전 강사 — Query와 Mutation을 사용하여 웹페이지 만들기](https://www.inflearn.com/courses/lecture?courseId=326283&unitId=65979)

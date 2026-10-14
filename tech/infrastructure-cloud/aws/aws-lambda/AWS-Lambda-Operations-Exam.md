@@ -62,6 +62,30 @@ S3 처리에서는 입력과 출력 경로를 분리한다. 객체 업로드 알
 
 전환 검증 제안: 로그인 연속 요청, 서로 다른 사용자 요청, 초기화 지연과 DB 연결 부하를 각각 검사한다. adapter가 시작됐다는 사실만으로 기존 웹 서비스의 기능과 격리가 보존됐다고 판정하지 않는다. 실제 배포 시험은 수행하지 않았다.
 
+### 함수 분할 단위: 단일 라우팅 함수와 기능별 함수
+
+2026-10-14 Lambda 개발자 가이드, Serverless Applications Lens와 Lambda 보안 백서 대조 기준이다. 기존 웹 서버를 그대로 옮기면 API Gateway의 모든 경로를 함수 하나가 받아 내부 라우터로 분기하는 구성이 되기 쉽다. AWS 개발자 가이드는 이를 Lambda monolith 안티패턴으로 분류한다. 동작은 하지만 비용과 복잡도를 늘릴 수 있으므로 함수 하나가 잘 정의된 작업 하나를 맡도록 나누기를 권하고, 경로가 적은 단순한 웹 앱 예시에서는 API Gateway 경로를 분할 기준으로 삼을 수 있다고 설명한다.
+
+| 비교 항목 | 단일 라우팅 함수 | 기능별 함수 |
+|---|---|---|
+| 권한 | 실행 역할에 모든 경로의 권한이 모여 최소 권한을 지키기 어렵다 | 함수마다 필요한 권한만 준다. 역할 하나를 여러 함수가 공유하면 같은 문제가 생기기 쉽다 |
+| 변경 범위 | 경로 하나를 고쳐도 함수 전체를 갱신하므로 변경 실패가 전체 API로 번질 수 있다 | 경로별로 배포하고 되돌린다. 관리할 함수, 설정과 배포 단위는 늘어난다 |
+| 패키지와 초기화 | 모든 경로의 코드와 의존성이 한 패키지와 초기화 코드에 쌓인다 | 함수마다 필요한 의존성과 초기화 코드만 둔다 |
+| 설정 | 메모리, timeout과 동시성은 함수 단위라 모든 경로가 같은 값을 쓴다 | 경로 특성에 맞춰 따로 정한다 |
+| 실행 환경 | 모든 경로가 같은 실행 환경을 재사용한다. 한 호출이 남긴 `/tmp`와 메모리 상태가 다른 경로의 다음 호출에 영향을 줄 수 있다 | 실행 환경은 함수 버전마다 따로 예약되어 다른 함수와 섞이지 않는다 |
+
+해석: 실행 환경은 같은 함수 버전의 요청만 재사용하므로 모든 경로의 트래픽을 함수 하나에 모으면 warm 환경을 만날 가능성이 커질 수 있고, 호출이 드문 함수로 잘게 나누면 함수마다 cold start를 따로 겪는다. AWS는 cold start가 호출 빈도가 낮은 개발과 시험 함수에서 더 흔하다고 설명하지만 분할 방식별 차이를 수치로 제시하지 않는다. 실제 함수의 `REPORT` 로그에서 `Init Duration`이 찍힌 호출 비율로 비교한다.
+
+선택 기준(설계 제안): 경로마다 권한, 메모리와 timeout 요구가 다르거나 독립 배포가 필요하면 나눈다. 경로가 적고 같은 데이터와 권한을 쓰며 운영할 함수 수를 줄이는 편이 중요한 작은 팀은 단일 함수로 시작할 수 있다. 이때도 실행 역할의 권한 범위와 호출 사이에 남는 상태를 점검하고, 경로가 늘면 [[Legacy-Modernization-Strategies|Strangler Fig]]처럼 경로 단위로 떼어 낸다.
+
+함께 쓰는 구성:
+
+- **호출 방식별 함수**: 같은 코드 아티팩트라도 동기 웹 요청과 큐 소비를 다른 함수로 배포하면 timeout, 메모리, 동시성과 실행 역할을 따로 정할 수 있다. Serverless Lens는 동시성 할당량을 계정과 리전 단위로 함께 쓰므로 인가처럼 중요한 함수가 비동기 후처리 같은 낮은 우선순위 함수의 폭주로 동시성을 잃지 않게 하라고 권한다. 큐 소비 함수의 visibility timeout과 배치 설정은 [[SQS-Lambda-ESM|SQS와 Lambda 연결]]을 따른다.
+- **이벤트로 조회 모델 갱신(설계 제안)**: 상품 상태 변경 같은 이벤트를 큐에 넣고 소비 함수가 검색 인덱스나 캐시를 갱신하면 웹 요청 경로에서 무거운 조인과 동기 갱신을 덜어 낼 수 있다. 표준 큐는 같은 메시지를 다시 전달할 수 있으므로 갱신을 멱등하게 만들고([[Idempotent-Consumer|멱등 소비자]]), 반영 전까지 오래된 값이 보이는 시간을 요구사항과 맞춘다([[Cache-Invalidation|캐시 무효화]]).
+- **응답 캐시로 호출 줄이기**: 반복 조회 응답을 CloudFront나 [[API-Gateway|API Gateway]] 캐시에서 돌려주면 함수 호출 자체가 줄어든다. edge-optimized endpoint는 서비스가 제어하는 CloudFront 배포와 연결되므로, API Gateway 개발자 가이드는 클라이언트가 지리적으로 흩어져 있어도 Regional endpoint 앞에 직접 관리하는 CloudFront 배포를 두는 선택지를 안내한다. 캐시 키와 TTL을 직접 정하려면 이 구성을 검토한다(설계 제안, [[CloudFront|CloudFront]]).
+
+사례(2022년 AWS 고객 발표): 개발자 2명이 운영하던 이커머스는 서비스를 멈추지 않으려고 DNS를 Route 53으로, 정적 자원을 CloudFront로 먼저 옮긴 뒤 화면 계층을 유지한 채 업무 로직을 API 단위로 Lambda에 옮겼다. 웹 요청은 컨테이너 이미지로 배포한 함수 하나와 내부 라우터가 처리했고, 같은 소스를 SQS 트리거 함수로도 배포해 스케줄과 비동기 작업을 맡겼다. 발표자는 warm 상태 유지와 관리 지점 축소를 근거로 들었다. 상품 상태 변경과 캐시 갱신 시점은 이벤트로 SQS에 넣어 검색 인덱스와 DynamoDB 캐시에 반영했다. 당시 검색에 쓴 Amazon CloudSearch는 2024-07-25부터 신규 고객에게 열려 있지 않으며, AWS는 [[OpenSearch-Service|OpenSearch Service]]를 권한다.
+
 ### 웹 API의 세 가지 권한 경계
 
 2026-10-13 Lambda의 API Gateway 통합과 실행 역할 공식 문서 대조 기준이다. API Gateway, Lambda와 DynamoDB를 연결할 때는 다음 권한을 따로 확인한다.
@@ -198,6 +222,23 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 - 장시간 실행(15분 초과) 또는 대량 메모리 필요
 - RDB 커넥션 중심 워크로드(RDS Proxy 비용, 복잡도 초과)
 
+## 서버리스 구성을 Well-Architected 관점으로 점검하기
+
+2026-10-14 AWS Well-Architected Framework와 Serverless Applications Lens(2022-07-14 개정) 대조 기준이다. Lens는 Framework 가운데 서버리스에 특화된 내용만 다루므로 Framework의 일반 모범 사례도 함께 본다. Framework의 관점은 운영 우수성, 보안, 안정성, 성능 효율성, 비용 최적화, 지속 가능성 여섯 가지다. 지속 가능성 Pillar 문서는 2021-12-02에 처음 공개됐으므로 그 전 자료는 다섯 관점으로 설명한다.
+
+REST API, 이벤트 버퍼링, 팬아웃, 스트림 처리처럼 패턴을 먼저 고른 뒤 아래 질문으로 빠진 부분을 채운다.
+
+| 관점 | 서버리스에서 먼저 확인할 것 | 자세한 문서 |
+|---|---|---|
+| 운영 우수성 | 지표와 경보, 중앙화된 구조적 로그, 분산 추적, 배포 방식 | [[CloudWatch-Metrics\|CloudWatch 지표와 EMF]], [[AWS-X-Ray\|X-Ray]] |
+| 보안 | API 인가 방식(IAM, Cognito user pool, Lambda authorizer, resource policy, mTLS)을 정한다. API key는 사용량 추적용이며 인가 수단이 아니다. 실행 역할은 함수마다 최소 권한으로 둔다 | [[API-Gateway\|API Gateway]], 위 함수 분할 단위 절 |
+| 안정성 | API 단위 throttling과 429 응답, 하위 시스템을 보호하는 함수 동시성 제한, 실패 이벤트 보관(DLQ, 실패 대상), 스트림 배치 실패 제어, 중복 이벤트 처리, 긴 트랜잭션의 상태 머신과 Saga 보상 | [[AWS-Lambda-Invocation-Concurrency\|동시성과 Destinations]], [[Kinesis\|Kinesis 소비 실패 처리]], [[Step-Functions\|Step Functions]], [[Saga-Pattern\|Saga]] |
+| 성능 효율성 | 평상시와 급증 부하로 시험, 메모리 설정별 비교, 클라이언트 분포에 맞는 API endpoint 유형, 저유량 스트림의 배치 창 | [[AWS-Lambda-Execution-Model\|실행 모델과 Cold Start]] |
+| 비용 최적화 | 메모리와 실행 시간의 조합, 로그 수집과 보관량, 중계 함수 대신 직접 서비스 통합, Step Functions Express와 Standard 선택 | 이 문서의 비용 구조, 중계 함수 절 |
+| 지속 가능성 | Lens에는 서버리스 고유 항목이 없어 Sustainability Pillar 문서를 따른다 | |
+
+점검 결과는 패턴마다 관점별 확인 여부와 남은 위험으로 기록한다(운영 제안). 표의 항목을 모두 채웠다는 사실이 설계 검토 완료나 장애 대응 능력의 증명은 아니며, 부하와 장애 주입 시험으로 따로 확인한다.
+
 ## 면접, 시험 체크포인트
 
 - Lambda 실행 모델(Init-Invoke-Shutdown)과 컨테이너 재사용 개념
@@ -214,6 +255,8 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 - 메모리를 늘리면 비용이 줄어들 수 있는 이유(CPU 비례)
 - 서버리스가 어울리지 않는 워크로드 유형
 - 기존 Lambda를 에이전트 도구로 노출할 때 Lambda 대상과 REST API stage 대상의 선택 기준, `GATEWAY_IAM_ROLE` 대상에서 Gateway 서비스 역할 권한이 Gateway로 행사할 수 있는 권한의 상한이 되는 이유
+- 웹 경로 전체를 함수 하나가 처리하는 Lambda monolith와 기능별 함수의 트레이드오프(실행 역할 권한, 변경 범위, 실행 환경 재사용과 상태 공유)
+- Serverless Applications Lens의 여섯 관점으로 서버리스 패턴의 빠진 점검 항목을 찾는 방법
 
 ## 출처
 
@@ -258,3 +301,19 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 - [EC2 On-Demand 요금](https://aws.amazon.com/ec2/pricing/on-demand/)
 - [Sungmin Kim 강사 — Lambda란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=52051) — 입문 구조 참고. 강의의 5분 제한은 현재 15분으로 변경됨
 - [Sungmin Kim 강사 — Lambda - Version Control](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=69323)
+- [Creating event-driven architectures with Lambda](https://docs.aws.amazon.com/lambda/latest/dg/concepts-event-driven-architectures.html) — Lambda monolith 안티패턴의 단점, 작업 단위 분리 권고와 API 경로 기준 예시
+- [Security Overview of AWS Lambda](https://docs.aws.amazon.com/pdfs/whitepapers/latest/security-overview-aws-lambda/security-overview-aws-lambda.pdf) — 함수 버전별 실행 환경 예약과 같은 버전 안의 호출 간 상태 공유
+- [API endpoint types for REST APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html)
+- [Transition from Amazon CloudSearch to Amazon OpenSearch Service — AWS](https://aws.amazon.com/blogs/big-data/transition-from-amazon-cloudsearch-to-amazon-opensearch-service/)
+- [Serverless Applications Lens](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/welcome.html)
+- [Serverless Applications Lens, Foundations](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/rel-foundations.html)
+- [Serverless Applications Lens, Failure management](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/failure-management.html)
+- [Serverless Applications Lens, Identity and access management](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/identity-and-access-management.html)
+- [Serverless Applications Lens, Operate](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/operate.html)
+- [Serverless Applications Lens, Selection](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/selection.html)
+- [Serverless Applications Lens, Optimizing over time](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/optimizing-over-time.html)
+- [Serverless Applications Lens, Sustainability pillar](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/sustainability.html)
+- [AWS Well-Architected Framework, The pillars of the framework](https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html)
+- [Sustainability Pillar, Document revisions](https://docs.aws.amazon.com/wellarchitected/latest/sustainability-pillar/document-revisions.html) — 지속 가능성 Pillar 최초 공개일
+- [단 2명으로 연 매출 650억 온라인 쇼핑몰을 구축한 리씽크몰의 성공 비결, AWS Builders 온라인 시리즈 2022 — Amazon Web Services Korea](https://www.youtube.com/watch?v=EteZ_kh2x7s) — 고객 사례 발표. 응답 속도와 전환율 개선 수치는 측정 조건이 공개되지 않아 본문에 옮기지 않았다
+- [서버리스 아키텍처 패턴 및 모범 사례, AWS Summit Online Korea 2020 — Amazon Web Services Korea](https://www.youtube.com/watch?v=sJfl339Y_y4) — 2020년 발표라 다섯 관점과 당시 제품 한도를 기준으로 하므로 본문은 2022년 Lens와 현재 공식 문서를 따랐다
