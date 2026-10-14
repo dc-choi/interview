@@ -1,8 +1,9 @@
 ---
-tags: [performance, scalability, scale-up, scale-out]
+tags: [performance, scalability, scale-up, scale-out, aws]
 status: done
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["Scale Up vs Scale Out", "수직 vs 수평 확장"]
+verified_at: 2026-10-14
 ---
 
 # Scale Up vs Scale Out
@@ -127,6 +128,25 @@ Up과 Out의 이분법은 같은 애플리케이션을 복제하는 방향만 �
 
 대규모 트래픽을 실제로 겪기 전에는 부하 테스트로 현재 구조의 처리 한계를 재고 개선 전후를 비교하며, 설계 단계에서 가장 먼저 병목이 될 지점과 급증 시 대응을 정해 둔다. 판단 기록은 [[System-Design-Quality-Attribute-Decision|품질 속성 결정 루프]]를 따른다.
 
+### AWS에서 단계별로 바뀌는 구성
+
+AWS에서는 단계마다 병목이 된 일을 별도 계층으로 떼어 내고, 직접 설치해 운영하던 부분은 가능하면 관리형 서비스로 넘긴다.
+
+| 단계 | AWS 구성 예 |
+|---|---|
+| 1. 단일 서버 | Route 53, EC2 한 대, 같은 인스턴스의 DB 또는 처음부터 RDS |
+| 2. 애플리케이션 수평 확장 | ALB([[ELB]]), 여러 AZ에 나눈 EC2와 Auto Scaling 그룹, RDS Multi-AZ |
+| 3. 데이터 계층과 작업 분리 | RDS 읽기 복제본, ElastiCache, S3와 CloudFront, SQS, S3 이벤트로 실행하는 Lambda, 기능별 DB와 샤딩 |
+| 4. 기능 분해 | 서비스별 배포 단위와 저장소, API Gateway와 Lambda, SQS와 SNS로 느슨하게 묶은 비동기 처리, 일부 기능의 DynamoDB |
+| 5. 지역 분산 | 멀티 리전 배포, DynamoDB 글로벌 테이블([[DynamoDB]]) |
+
+- **관리형의 경계**: RDS는 백업, 소프트웨어 패치, 장애 감지와 복구를 맡지만 쿼리 튜닝과 애플리케이션 최적화는 사용자 몫이다. EC2에 DB를 직접 설치하면 OS와 DB의 설치와 패치, 백업, 고가용성을 직접 진다.
+- **이중화와 읽기 분산은 다르다**: Multi-AZ DB 인스턴스 배포의 대기 인스턴스는 장애 조치용이라 읽기를 받지 않으므로 읽기 분산은 읽기 복제본이 맡는다(RDS for MySQL과 RDS for PostgreSQL의 지원 인스턴스 클래스에서 읽을 수 있는 대기 인스턴스 2개를 두는 Multi-AZ DB 클러스터 배포는 예외). 이 배포의 장애 조치는 보통 60~120초 걸리고 DB의 DNS 레코드를 대기 인스턴스로 바꾸므로 애플리케이션은 연결을 다시 맺어야 한다([[RDS-Aurora-RDS-Core|RDS 핵심 기능]]).
+- **Auto Scaling의 전제**: 그룹은 최소와 최대 용량 사이에서 인스턴스를 띄우고 종료하며 비정상 인스턴스를 교체하므로 세션과 파일을 서버 밖으로 뺀 뒤에 켠다([[Auto-Scaling]]). EC2 기본 지표에는 메모리 사용률이 없어 메모리로 조정하려면 CloudWatch 에이전트 같은 수집기로 사용자 지정 지표를 보내야 하고, 대상 추적 정책에 쓰려면 그 지표가 인스턴스당 사용률을 나타내 인스턴스를 늘리면 그만큼 낮아지는지(예: 부하가 고르게 나뉜 그룹의 평균 CPU) 먼저 확인한다([[CloudWatch-Metrics]]).
+- **서버를 거치지 않는 전송**: 정적 파일은 S3에 두고 CloudFront 엣지에서 캐시해 보내며, 업로드는 presigned URL로 클라이언트가 S3에 직접 올린다([[S3-File-Upload-Direct-Transfer|S3 직접 업로드]]). 업로드 뒤 처리를 S3 트리거 Lambda에 맡길 때 결과를 트리거가 걸린 같은 버킷에 쓰면 함수가 자신을 다시 호출하는 루프가 생길 수 있으므로 입력과 출력 버킷을 나누거나, 트리거를 입력용 prefix로 한정하고 결과는 그 밖에 쓴다([[AWS-Lambda-Operations-Exam#실무 패턴|Lambda 실무 패턴]]).
+- **기능별 DB의 대가**: 기능별로 DB를 나누면 기능 사이의 조인과 참조 무결성을 애플리케이션이 맡는다. 한 기능의 부하가 그 DB의 한계를 넘으면 그 안을 다시 샤딩하고 샤드 위치를 찾는 매핑을 애플리케이션이나 저장소가 진다([[Sharding]]). NoSQL은 측정으로 확인한 병목이 있는 기능부터 부분적으로 들인다([[NoSQL-Overview|NoSQL 개요]]).
+- **노드가 늘면 자동화**: 인프라는 CloudFormation이나 CDK 코드로 재현하고([[IaC]]), 접속은 인바운드 포트와 배스천 호스트 없이 Session Manager로 하며([[Systems-Manager]]), 지표, 로그와 경보를 갖춰 이상을 먼저 감지한다.
+
 ## 흔한 오해
 
 ### "Scale Out이 항상 낫다"
@@ -147,8 +167,11 @@ Auto Scaling은 **자동화된 Scale Out**. 수동으로 Out 할 수도 있고, 
 - Scale Up의 "비선형 비용 급증" 구체 예시
 - Scale Cube의 X, Y, Z축이 각각 무엇을 해결하고 무엇을 대가로 치르는지, 어떻게 조합하는지
 - 단계적 확장 경로에서 다음 단계로 넘어갈 신호를 무엇으로 확인하는지
+- AWS에서 단계마다 병목이 된 일을 어떤 계층과 관리형 서비스로 떼어 내는지, Multi-AZ 대기 인스턴스와 읽기 복제본의 역할이 어떻게 다른지
 
 ## 출처
+2026-10-14 부분 대조: AWS 단계별 구성 절의 RDS 관리 범위, Multi-AZ 대기 인스턴스와 장애 조치, EC2 기본 지표와 Auto Scaling 사용자 지정 지표, S3 트리거 Lambda의 재귀 호출, 기능 분할과 샤딩의 대가를 공식 문서로 확인했다. 기존 절 전체를 다시 대조한 것은 아니다.
+
 - [The Twelve-Factor App, VI. Processes](https://12factor.net/processes)
 - [매일메일 — 스케일 업과 스케일 아웃](https://www.maeil-mail.kr/question/128)
 - [microservices.io — The Scale Cube](https://microservices.io/articles/scalecube.html)
@@ -158,6 +181,15 @@ Auto Scaling은 **자동화된 Scale Out**. 수동으로 Out 할 수도 있고, 
 - [인프런, Dowon Lee, Data Partitioning](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290722)
 - [인프런, Dowon Lee, Scalability 개요](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290731)
 - [인프런, 성장랜턴, 확장성](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=277936)
+- [Amazon Web Services Korea — Scaling from 0 to millions on AWS](https://www.youtube.com/watch?v=ktnq-T4Lgqg) — 2021-11-25 업로드. 서비스 수, 인프라 규모와 당시 개발 도구 목록은 반영하지 않았다.
+- [Amazon RDS User Guide, What is Amazon RDS?](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html)
+- [Amazon RDS User Guide, Multi-AZ DB instance deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html)
+- [Amazon RDS User Guide, Failing over a Multi-AZ DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Failover.html)
+- [Amazon RDS User Guide, Multi-AZ DB cluster deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts.html)
+- [Amazon EC2 User Guide, CloudWatch metrics that are available for your instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html)
+- [Amazon EC2 Auto Scaling User Guide, Target tracking scaling policies](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html)
+- [Amazon S3 User Guide, Amazon S3 Event Notifications](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html)
+- [Microsoft Azure Well-Architected Framework, Data partitioning recommendations for reliability](https://learn.microsoft.com/en-us/azure/well-architected/design-guides/partition-data)
 
 ## 관련 문서
 - [[Load-Balancer|Load Balancer]]
