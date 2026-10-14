@@ -22,6 +22,12 @@ AI coding agent는 낯선 codebase의 탐색과 반복 수정을 빠르게 할 �
 
 AI에게 전체 repository 설명을 한 번에 요청하기보다 구체적인 path와 질문을 준다. 예를 들어 상품 주문 흐름의 entry point, 상태 전이, transaction 경계, 외부 부수효과와 미확인 가정을 각각 요구한다. 결과에는 근거 file/symbol을 붙이게 하고 직접 source를 읽는다.
 
+### 코드 설명의 형식과 사실 검증을 분리한다
+
+레거시 문서 생성에는 대상 코드와 출력 템플릿을 함께 준다. 프로그램 개요, 데이터 구조, 메서드, 테스트 구성, 의존성, 오류 처리와 성능 검토 항목을 고정하면 인계 때 빠진 항목을 찾기 쉽다. Amazon Q Developer의 ABAP 문서 생성 예제는 이런 사용자 정의 템플릿을 사용한다(2025-07-01 AWS 공개 예제, 2026-10-14 대조).
+
+검토 제안: 각 설명에 파일과 심볼을 연결하고, 코드에서 읽은 사실과 실행으로 확인할 가정을 나눈다. 빈 항목은 추측으로 채우지 않고 미확인으로 남긴다. 형식이 완성된 문서만으로 현재 업무 규칙이나 표준 기능으로의 대체 가능성이 검증되지는 않는다. 이 절은 문서 생성 방식만 대조했으며 실제 SAP 실행과 기존 절 전체의 재검증은 수행하지 않았다.
+
 ## 요구사항을 실행 가능한 계약으로 바꾼다
 
 러프한 화면이나 한 문장 요구사항에는 구현을 결정할 정보가 부족하다. agent를 실행하기 전에 다음을 명시한다.
@@ -164,6 +170,7 @@ REA의 Evidence는 대상 산출물 식별, 원본 위치, 관찰, 추론과 미
 검증 제안: 분석 권한이 있는 대상에서 한 기능의 진입점과 호출 경로를 찾고, 재현 입력과 관찰 결과를 연결한다. 복원한 구현을 사용할 때는 앞 절의 characterization test로 필요한 외부 동작을 비교한다. 분석 완료와 호환 구현 완료는 별도 판정이다.
 
 ## 출처
+- [Build SAP applications faster with Amazon Q Developer — AWS](https://aws.amazon.com/blogs/awsforsap/build-sap-applications-faster-with-amazon-q-developer/)
 - [REA: Reverse Engineer Anything — morluto/rea](https://github.com/morluto/rea)
 - [REA, CLI and Evidence](https://github.com/morluto/rea/blob/main/docs/cli.md)
 - [Amazon Q Developer, Upgrading Java versions with Amazon Q Developer](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/code-transformation.html)

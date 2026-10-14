@@ -115,6 +115,14 @@ Android에서는 테스트의 실행 위치와 검증 범위가 서로 다른 �
 
 통합 테스트가 통과해도 실행하지 않은 오류 경로나 권한 거부까지 검증된 것은 아니다. 클라우드 실행을 못 했다면 템플릿 검사만 통과했다고 남긴다.
 
+### 생성한 테스트의 활성화, 실행과 커버리지를 구분한다
+
+기존 코드를 입력해 만든 테스트 클래스도 검토 대상이다. Amazon Q Developer의 ABAP 예제는 코드에서 테스트 초안을 생성하고 구문 오류를 수정하는 흐름을 보여준다. 생성과 저장, 활성화가 끝났다고 테스트를 실행했거나 목표 커버리지를 달성한 것은 아니다.
+
+2026-10-14 AWS 공개 예제와 SAP의 RAP 테스트 튜토리얼을 대조했다. SAP 예제는 테스트를 저장하고 활성화한 뒤 `Run as > ABAP Unit Test`로 실행한다. CDS와 SQL test double을 구성하고, 생성과 액션 실행 뒤 오류 응답뿐 아니라 저장된 상태와 할인 결과를 assertion으로 검사한다. 이는 예제의 격리된 데이터 검증이며 실제 외부 연동까지 시험했다는 뜻은 아니다.
+
+검증 제안: 에이전트에게 목표 커버리지만 요구하지 말고 실행 결과, 커버리지 측정 결과와 요구사항별 기대값의 근거를 따로 제출하게 한다. 실패한 테스트를 고칠 때는 구현 결함, 잘못된 fixture, 잘못된 기대값을 먼저 구분한다. 통과를 위해 assertion을 지우거나 현재 출력으로 기대값을 바꾸지 않았는지 diff를 확인한다. 여기서는 SAP를 실행하거나 커버리지를 측정하지 않았고, 기존 실험 절 전체도 재검증하지 않았다.
+
 ## 면접 체크포인트
 
 - 에이전트에게 테스트 기법 이름을 지시하는 것이 왜 행동을 바꾸지 못하는지 설명할 수 있는가.
@@ -125,6 +133,8 @@ Android에서는 테스트의 실행 위치와 검증 범위가 서로 다른 �
 
 ## 출처
 
+- [Build SAP applications faster with Amazon Q Developer — AWS](https://aws.amazon.com/blogs/awsforsap/build-sap-applications-faster-with-amazon-q-developer/)
+- [SAP Developer Center, Write an ABAP Unit Test for the RAP Business Object](https://developers.sap.com/tutorials/abap-environment-rap100-unit-testing/)
 - [AWS CDK v2, Test AWS CDK applications](https://docs.aws.amazon.com/cdk/v2/guide/testing.html)
 - [How to write and execute integration tests for AWS CDK applications — AWS](https://aws.amazon.com/blogs/devops/how-to-write-and-execute-integration-tests-for-aws-cdk-applications/)
 - [Android Developers, Fundamentals of testing Android apps](https://developer.android.com/training/testing/fundamentals)
