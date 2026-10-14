@@ -163,6 +163,16 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 
 진단은 `aws sts get-caller-identity`로 실제 주체를 확인하고, 대상 큐 ARN, action과 정책 조건을 대조한 뒤 KMS와 endpoint 정책을 보는 순서로 진행한다. `sqs:*`를 추가하는 방식으로 원인을 덮지 않는다.
 
+### SNS에서 SSE-KMS 큐로 전달되지 않을 때
+
+2026-10-14 부분 검증: 이 절의 SNS 구독과 KMS 권한만 공식 문서로 대조했다. 문서 전체의 검증일을 갱신한 것은 아니다.
+
+- **큐 정책과 키 정책을 나누어 확인한다.** 큐 정책은 `sns.amazonaws.com`의 `sqs:SendMessage`를 허용하고 `aws:SourceArn`으로 발신 토픽 ARN을 제한한다. 별도로 큐의 고객 관리형 KMS 키 정책에서 같은 서비스 주체에 `kms:GenerateDataKey`, `kms:Decrypt`를 허용해야 한다.
+- **SSE-KMS의 키 종류를 확인한다.** SNS 연동에 필요한 키 정책은 고객 관리형 키에 설정한다. SQS의 AWS 관리형 KMS 키 정책은 수정할 수 없다. 이 조건을 SSE-SQS까지 포함한 모든 저장 암호화의 제약으로 확대하지 않는다.
+- **토픽 암호화는 별도 권한 경계다.** SNS 토픽도 암호화했다면 발행 주체에 `sns:Publish`와 토픽의 KMS 키에 대한 `kms:GenerateDataKey*`, `kms:Decrypt` 권한이 필요하다. 토픽 발행 권한과 SQS 전달 권한을 서로 대신할 수 없다.
+- **키 교체는 기존 메시지를 다시 암호화하지 않는다.** 이전 키로 암호화한 메시지를 처리하고 제거할 때까지 이전 키와 필요한 복호화 권한을 유지한다. 새 키 설정 직후 이전 키를 비활성화하거나 삭제하지 않는다.
+- **발행과 수신을 각각 확인한다.** 구독의 큐 ARN과 확인 상태를 점검하고 테스트 메시지를 발행한 뒤 큐에서 수신까지 확인한다. SNS 발행 성공만으로 큐 전달과 소비자 처리 성공을 판정하지 않는다.
+
 ## 시험 체크포인트 (SAA-C03)
 
 - AWS Decoupling 3종 = SQS(Queue) / SNS(Pub-Sub) / Kinesis(Real-time Streaming) — 모델 차이로 구분
@@ -175,6 +185,9 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 - KMS로 저장 시 암호화, HTTPS로 전송 중 암호화, IAM Policy로 API 접근 통제
 
 ## 출처
+- [AWS 공식 문서, Amazon SQS Key management](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-key-management.html)
+- [AWS 공식 문서, Subscribing an Amazon SQS queue to an Amazon SNS topic](https://docs.aws.amazon.com/sns/latest/dg/subscribe-sqs-queue-to-sns-topic.html)
+- [AWS 공식 문서, Managing Amazon SNS encryption keys and costs](https://docs.aws.amazon.com/sns/latest/dg/sns-key-management.html)
 - [AWS 공식 문서, Policy evaluation logic](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html)
 - [AWS 공식 문서, Troubleshoot an access denied error in Amazon SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/troubleshooting-access-denied.html)
 - [AWS 공식 문서, Overview of managing access in Amazon SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-overview-of-managing-access.html)
