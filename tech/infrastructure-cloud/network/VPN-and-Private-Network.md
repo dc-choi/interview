@@ -61,6 +61,21 @@ VPN은 물리적으로 같은 LAN을 만드는 기술로 한정되지 않는다.
 
 운영 점검은 터널 연결, 목적지 경로, 인가 규칙, 보안 그룹과 애플리케이션 응답을 나누어 수행한다. VPN 연결 성공만으로 내부 서비스에 필요한 접근이 모두 허용됐다고 판단하지 않는다.
 
+## AWS Site-to-Site VPN — 터널 시작과 장애 뒤 재협상
+
+부분 검증(2026-10-14): 아래 내용은 공인 IP 기반 연결의 IKE 시작과 DPD 동작을 AWS 공식 문서와 대조한 것이다. 다른 제품의 요금과 정책은 재검증하지 않아 기존 `verified_at`을 유지한다.
+
+터널을 누가 처음 여는지와 상대 장비가 응답하지 않을 때 무엇을 하는지는 서로 다른 설정이다. 고객 장비가 시작하는 것이 기본값이지만, 모든 구성에서 고객 장비만 시작할 수 있는 것은 아니다.
+
+| 설정 | 기본 동작 | 선택 가능한 변경 |
+|---|---|---|
+| Startup action | `Add`: 고객 장비가 IKE 협상을 시작한다 | `Start`: AWS가 시작한다. AWS 측 시작은 IKEv2만 지원하며 고객 게이트웨이의 IP 주소가 필요하다 |
+| DPD timeout action | `Clear`: IKE 세션을 끝내고 터널과 경로를 정리한다 | `Restart`: IKE 세션을 다시 시작한다. `None`: 타임아웃에 별도 조치를 하지 않는다 |
+
+AWS 측 시작을 사용할 때 고객 장비가 NAT 뒤에 있으면 IDr 설정도 확인한다. `Start`에는 연결 시도를 끝내는 타임아웃 설정이 없으므로 연결 실패를 관찰할 로그와 알람을 별도로 마련한다(운영 제안).
+
+운영 점검은 최초 연결, 유휴 상태, DPD 타임아웃 뒤 재연결을 나누어 수행한다. 터널 두 개의 구성과 고객 장비 이중화는 [[VPC-Connectivity#터널 이중화와 고객 장비 이중화|별도 장애 범위]]다. IKE 협상 성공만으로 목적지 경로와 애플리케이션 통신까지 정상이라고 판단하지 않는다.
+
 ## 메시 VPN (오버레이 네트워크)
 
 전통적인 원격 접속 VPN은 모든 단말이 중앙 게이트웨이를 거치는 hub-and-spoke 구조다. 메시 VPN은 단말끼리 직접 암호화 터널을 맺어, 폰, 태블릿, 노트북, 데스크톱, 홈랩 서버와 NAS를 하나의 사설 네트워크처럼 묶는다. 공유기에 포트를 열거나 공인 IP를 두지 않고도 밖에서 집의 장비에 접속할 수 있어 개인 인프라와 원격 개발에 많이 쓰인다. Tailscale이 대표적인 예다.
@@ -96,6 +111,8 @@ AWS Client VPN 절은 2026-10-13 아래 AWS 공식 문서와 대조했다. 다�
 - [AWS Client VPN, AWS Client VPN target networks](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-target.html)
 - [AWS Client VPN, AWS Client VPN authorization rules](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-rules.html)
 - [AWS Client VPN, Split-tunnel on AWS Client VPN endpoints](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/split-tunnel-vpn.html)
+- [AWS Site-to-Site VPN, AWS Site-to-Site VPN tunnel initiation options](https://docs.aws.amazon.com/vpn/latest/s2svpn/initiate-vpn-tunnels.html) — 2026-10-14 IKE 시작 주체, IKEv2와 NAT 조건 대조
+- [AWS Site-to-Site VPN, Configure tunnel options for AWS Site-to-Site VPN](https://docs.aws.amazon.com/vpn/latest/s2svpn/tunnel-configure.html) — 2026-10-14 Startup action과 DPD timeout action 대조
 
 ## 관련 문서
 

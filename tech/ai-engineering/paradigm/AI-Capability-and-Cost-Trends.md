@@ -51,6 +51,17 @@ AI가 대회에서 사람을 이겼다, 어려운 시험의 절반을 넘었다,
 
 같은 성능의 가격이 내려가는 것과 새 최상위 모델의 단가, 실제 작업에 드는 총비용은 서로 다르다. Epoch AI(2025-03)는 추론 모델이 토큰을 훨씬 많이 생성해 같은 성능에서 토큰당 가격으로 비교하면 오해를 낳는다며 분석에서 뺐고, 평가 비용도 토큰 단가와 비슷하게 하락했다고 적었다. 추론 토큰과 호출 횟수가 늘면 단가가 내려가도 총비용이 늘 수 있으므로 자기 작업의 토큰 사용량으로 계산한다.
 
+### 모델 비교에서 속도와 비용의 측정 단위를 분리한다
+
+부분 검증(2026-10-14): Artificial Analysis의 방법론에서 아래 지표 정의를 확인했다. 기존 대회 결과와 모델별 점수 전체를 다시 검증한 것은 아니므로 `verified_at`은 유지한다.
+
+- **첫 토큰과 첫 답변 토큰**: Time to First Token은 응답의 첫 토큰까지 걸린 시간이다. 추론 토큰을 반환하는 모델에서는 첫 추론 토큰일 수 있다. Time to First Answer Token은 사고 시간을 지난 뒤 첫 답변 토큰이 도착하는 시간이다.
+- **출력 속도와 완료 시간**: 초당 출력 토큰 수는 첫 토큰 이후 생성 속도다. 사용자가 답변 전체를 받는 시간에는 입력 처리, 추론과 답변 생성이 모두 들어간다. 빠른 출력만으로 전체 대기 시간이 짧다고 판단하지 않는다.
+- **Time per Task는 추정값**: 벤치마크별 답변과 추론 토큰을 답변 출력 속도로 나누고 Intelligence Index의 가중치로 합산한다. 평가 실행 중 직접 잰 완료 시간이 아니며, 속도는 가격과 같은 엔드포인트에서 측정한 10k 입력 워크로드의 중앙값을 사용한다.
+- **가중 단가와 과업 비용**: Blended Price는 캐시 적중, 입력, 출력 토큰 비율을 7:2:1로 가정한다. Cost per Task는 실제 소비한 토큰과 단가를 반영한 과업당 가중 평균 비용이다. 같은 단가라도 추론이나 답변이 길면 과업 비용은 커질 수 있다.
+
+도입 점검 제안: 채팅은 첫 답변과 전체 대기 시간, 긴 작업은 완료율과 작업당 비용을 함께 비교한다. 자기 업무의 캐시 적중률과 출력 길이가 다르면 가중 단가 순위를 그대로 예산에 적용하지 않는다.
+
 ## 4. 오픈웨이트 모델과 사용량 점유율
 
 - **토큰과 지출은 다르다**: OpenRouter 자료에서 중국 오픈소스 모델의 주간 토큰 점유율은 2024-11~2025-11 평균 약 13%였다. 2026년 6월 초에는 중국 모델이 토큰 점유율에서 미국 모델을 앞질렀고, 2026-09-14 주에는 토큰의 69%가 중국 연구소 모델, 72%가 오픈웨이트 모델이었다. 원문이 9월 둘째 주라고 적은 주에는 지출의 73%가 클로즈드웨이트 모델에 갔다(2026-01-05 주는 89%). 모두 OpenRouter를 거친 사용량이며 시장 전체 점유율이 아니다. 점유율의 분모와 채널을 읽는 기준은 [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]]를 따른다.
@@ -106,6 +117,7 @@ METR는 사람 전문가가 걸리는 시간으로 잰 소프트웨어와 추론
 - [Inferred 01: The Token State of Play — OpenRouter](https://openrouter.ai/data/newsletter/the-token-state-of-play) — 2026-09-22
 - [Recent open weights model launches — Artificial Analysis](https://artificialanalysis.ai/articles/recent-open-weights-model-launches) — 2026-04-30
 - [Comparison of Models: Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models) — 2026-10-12 열람
+- [Artificial Analysis, Artificial Analysis Benchmarking Methodology](https://artificialanalysis.ai/methodology) — 2026-10-14 응답 시간, 과업 시간 추정과 비용 지표 정의 대조
 - [Chinese AI models have lagged the US frontier by 7 months on average since 2023 — Epoch AI](https://epoch.ai/data-insights/us-vs-china-eci) — 2026-01-02
 - [Open models lag state-of-the-art closed models by 4 months — Epoch AI](https://epoch.ai/data-insights/open-closed-eci-gap) — 2026-05-29
 - [Measuring AI Ability to Complete Long Software Tasks — METR](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/) — 2025-03-19
