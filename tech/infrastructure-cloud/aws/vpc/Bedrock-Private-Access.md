@@ -1,7 +1,7 @@
 ---
-tags: [aws, bedrock, vpc, privatelink, security]
+tags: [aws, bedrock, vpc, privatelink, security, iam, knowledge-base]
 status: done
-verified_at: 2026-10-09
+verified_at: 2026-10-14
 category: "Infrastructure - AWS"
 aliases: ["Bedrock 비공개 연결", "Bedrock Private Access"]
 ---
@@ -90,12 +90,46 @@ AWS 서비스의 private access는 컬렉션의 OpenSearch endpoint에 적용되
 
 같은 컬렉션에 공개 허용 규칙이 겹치면 비공개 규칙보다 공개 허용이 우선한다. 이름 패턴으로 연결된 정책까지 함께 확인한다. 연결 시험은 서비스 역할의 수집과 검색, 운영자의 관리 작업을 나누어 수행한다. 이는 적용 점검 제안이며 이번 문서화에서 AWS 계정의 실제 연결을 시험한 것은 아니다.
 
+## 지식 베이스 생성 오류는 막힌 주체부터 나눈다
+
+2026-10-14 Bedrock, OpenSearch Serverless 공식 문서와 AWS 지원 문서 대조 기준. 지식 베이스 생성 오류는 요청자의 IAM 권한, 서비스 역할의 신뢰와 권한, 벡터 저장소의 정책 중 어디에서 막혔는지 먼저 나눈다. 루트 사용자로는 지식 베이스를 만들 수 없으므로 IAM 사용자나 역할로 시작한다.
+
+| 오류나 증상 | 막힌 경계 | 확인할 설정 |
+|---|---|---|
+| `Bedrock Knowledge Base was unable to assume the given role`, 또는 콘솔에서 지식 베이스를 만들 때 기존 서비스 역할 목록에 사용자 지정 역할이 보이지 않음(AWS 지원 영상 기준) | 서비스 역할의 신뢰 | trust policy가 `bedrock.amazonaws.com`의 `sts:AssumeRole`을 허용하는지, `aws:SourceAccount`와 `aws:SourceArn`(`knowledge-base/*`) 조건이 실제 계정과 리전에 맞는지 본다. 생성 뒤에는 `*`를 실제 지식 베이스 ID로 좁힌다 |
+| `... is not authorized to perform: iam:CreateRole` | 요청자의 역할 생성 | Bedrock에 새 서비스 역할 생성을 맡겼다면 요청자에게 `iam:CreateRole`과 `iam:CreatePolicy`가 필요하다. AWS 지원 문서는 역할에 정책을 붙이는 `iam:AttachRolePolicy`, `iam:PutRolePolicy`도 함께 허용하라고 안내한다. OpenSearch Service(Serverless 포함)를 벡터 저장소로 쓰는 지식 베이스면 `aoss:CreateAccessPolicy`, `iam:CreateServiceLinkedRole` 등 추가 권한도 필요하다 |
+| `... is not authorized to perform: iam:PassRole` | 요청자의 역할 전달 | 요청자의 identity policy가 서비스 역할 ARN에 대한 `iam:PassRole`을 허용하는지 본다. `iam:PassedToService`는 `bedrock.amazonaws.com`으로 제한할 수 있다 |
+| `ValidationException`의 `The knowledge base storage configuration provided is invalid...`(OpenSearch Serverless는 `[security_exception] 403 Forbidden`) | 서비스 역할의 벡터 저장소 권한 | OpenSearch Serverless면 서비스 역할의 컬렉션 ARN 대상 `aoss:APIAccessAll`과 data access policy의 `Principal`을 함께 본다. Secrets Manager secret으로 인증하는 벡터 저장소면 그 secret의 `secretsmanager:GetSecretValue`와, 고객 관리형 키로 암호화한 경우 그 키의 `kms:Decrypt`를 확인한다 |
+| 같은 오류의 `[http_exception] server returned 401` | 컬렉션 네트워크 | 비공개 컬렉션의 network policy가 AWS 서비스 비공개 접근으로 `bedrock.amazonaws.com`을 허용하는지 위 절의 컬렉션 네트워크 설정으로 확인한다 |
+| 같은 오류의 `no such index [bedrock-knowledge-base-default-index]` | 인덱스 존재와 반영 | 서비스 역할의 컬렉션 권한과 `vectorIndexName`의 인덱스가 실제로 있는지 본다. 운영자가 그 인덱스를 조회하거나 직접 만들 수 있으면 반영 지연일 수 있으므로 기다린 뒤 다시 시도하고, 만들 수 없으면 운영자의 권한부터 고친다. S3 데이터 소스면 AWS 지원 문서는 버킷의 CORS 설정 누락도 원인으로 들지만 Bedrock 사용 설명서의 지식 베이스 권한과 생성 문서에는 이 요구가 없으므로, 인덱스와 권한을 확인한 뒤에도 남을 때만 검토한다 |
+
+AWS 관리형 정책 `AmazonBedrockFullAccess`(2026-10-14 확인한 v11)는 ARN이 `role/*AmazonBedrock*`에 맞는 역할을 `bedrock.amazonaws.com`에 전달하거나, `role/*SageMaker*ForBedrock*`에 맞는 역할을 `sagemaker.amazonaws.com` 또는 `bedrock.amazonaws.com`에 전달할 때만 `iam:PassRole`을 허용한다. `iam:CreateRole`과 `iam:CreatePolicy`는 포함하지 않는다. 이 정책만 가진 요청자는 두 패턴에 맞지 않는 사용자 지정 역할을 고르면 PassRole 오류를, 새 역할 생성을 맡기면 CreateRole 또는 CreatePolicy 오류를 받을 수 있다. PassRole의 일반 진단은 [[IAM-Policy|IAM 정책 평가]]의 PassRole 절을 따른다.
+
+OpenSearch Serverless 공식 문서는 data access policy를 만든 뒤 권한이 적용되기까지 약 1분, 수정한 뒤 몇 분이 걸릴 수 있다고 안내한다. AWS 지원 문서는 운영자가 인덱스를 직접 만들 수 있는데도 `no such index`가 나면 약 5분 기다리라고 안내한다. 운영자가 콘솔의 인덱스 탭에서 403을 받으면 그 principal이 data access policy에 없는지, IAM의 `aoss:APIAccessAll`(Dashboards를 쓰면 `aoss:DashboardsAccessAll`도)이 없는지 확인한다. data access policy의 권한은 합산되고 정책 안에서 명시적으로 거부할 수 없으므로, 넓은 패턴의 정책이 있으면 다른 정책으로 좁히지 못한다.
+
+벡터 저장소를 연결하는 지식 베이스의 서비스 역할에는 벡터 저장소 외의 실행 권한도 필요하다. 관리형 지식 베이스(Amazon Bedrock Managed Knowledge Base)는 별도 서비스 역할 문서를 따른다. 관리형 지식 베이스를 만들 때 지정한 고객 관리형 키는 키 정책으로 생성 주체에게 권한을 주고 Bedrock이 그 키에 만든 grant로 쓰므로, 서비스 역할에는 그 키의 권한이 필요하지 않다.
+
+- 임베딩: 선택한 임베딩 모델 ARN에 대한 `bedrock:InvokeModel`, 리소스 `*`에 대한 `bedrock:ListFoundationModels`, `bedrock:ListCustomModels`
+- S3 데이터 소스: 데이터 소스 버킷과 prefix로 한정한 `s3:ListBucket`, `s3:GetObject`. 고객 관리형 키로 암호화했으면 그 키의 `kms:Decrypt`
+- 수집 작업 암호화: 수집 중 임시 저장 데이터에 고객 관리형 키를 지정하면 그 키에 대한 `kms:GenerateDataKey`, `kms:Decrypt`
+
+`CreateDataSource`, `UpdateDataSource`, `StartIngestionJob`은 역할을 전달하지 않아 `iam:PassRole` 검사가 적용되지 않는다. 수집은 지식 베이스에 이미 연결된 서비스 역할로 실행되므로, 데이터 소스를 관리할 수 있는 주체는 S3 권한 없이도 그 역할이 읽을 수 있는 위치를 수집해 `Retrieve`로 조회할 수 있다. 서비스 역할의 읽기 범위를 필요한 버킷과 prefix로 좁히고 데이터 소스 작업을 특권 작업으로 관리한다.
+
+콘솔의 Quick create에서 Amazon OpenSearch Serverless를 고르면 컬렉션과 인덱스, 필수 필드를 함께 만든다(Aurora PostgreSQL Serverless, Neptune Analytics, S3 Vectors도 고를 수 있다). 공식 문서는 벡터 저장소 자동 생성을 원하면 API 대신 콘솔을 쓰라고 안내한다. API나 IaC로 기존 컬렉션에 연결할 때는 컬렉션을 만들어도 인덱스가 생기지 않으므로 인덱스를 먼저 만든다. 벡터 필드(faiss 엔진, 임베딩 모델과 같은 차원), 텍스트 필드와 Bedrock 관리 메타데이터 필드를 두고 그 이름을 지식 베이스의 `vectorIndexName`과 `fieldMapping`에 맞춘다. 2026-10-14 CloudFormation Template Reference 기준 `AWS::OpenSearchServerless::Index`로 `knn_vector` 필드와 k-NN method를 선언할 수 있다. 쓰는 IaC 도구에 인덱스 리소스가 없으면 Lambda 같은 custom resource로 만든다. 직접 만들든 IaC로 만들든 인덱스를 만드는 주체에게 IAM `aoss:APIAccessAll`과 data access policy의 `aoss:CreateIndex`가 필요하다.
+
 ## 출처
 
 - [Amazon Bedrock, Encryption of custom models](https://docs.aws.amazon.com/bedrock/latest/userguide/encryption-custom-job.html)
 - [Amazon OpenSearch Service, Network access for Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-network.html)
 - [Amazon OpenSearch Service, Data access control for Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-data-access.html)
 - [Amazon Bedrock, Create a service role for Amazon Bedrock Knowledge Bases](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-permissions.html)
+- [Amazon Bedrock, Create a service role for managed Amazon Bedrock Knowledge Bases](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-managed-permissions.html)
+- [Amazon Bedrock, Prerequisites for creating an Amazon Bedrock knowledge base with a unstructured data source](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-prereq.html)
+- [Amazon Bedrock, Prerequisites for using a vector store you created for a knowledge base](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-setup.html)
+- [Amazon Bedrock, Create a knowledge base by connecting to a data source](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-create.html)
+- [Amazon Bedrock, Encryption of knowledge base resources](https://docs.aws.amazon.com/bedrock/latest/userguide/encryption-kb.html)
+- [AWS Managed Policy Reference, AmazonBedrockFullAccess](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonBedrockFullAccess.html)
+- [AWS CloudFormation, AWS::OpenSearchServerless::Index](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-opensearchserverless-index.html)
 
 - [Amazon Bedrock, Identity-based policy examples for Amazon Bedrock Agents](https://docs.aws.amazon.com/bedrock/latest/userguide/security_iam_id-based-policy-examples-agent.html)
 - [Amazon Bedrock, Create a service role for Amazon Bedrock Agents](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-permissions.html)
@@ -104,9 +138,13 @@ AWS 서비스의 private access는 컬렉션의 OpenSearch endpoint에 적용되
 - [Amazon Bedrock, Use interface VPC endpoints](https://docs.aws.amazon.com/bedrock/latest/userguide/vpc-interface-endpoints.html)
 - [Amazon VPC, Control access to VPC endpoints using endpoint policies](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html)
 - [생성형 AI 보안 강화 전략의 첫번째, 심층 방어 아키텍처 설계 — Amazon Web Services Korea](https://www.youtube.com/watch?v=eI6rrOVDc_I)
+- [How do I troubleshoot permission errors that I get when I create a knowledge base in Amazon Bedrock? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/bedrock-knowledge-base-permission-errors)
+- [How do I troubleshoot permission errors when creating a knowledge base in Amazon Bedrock? — Amazon Web Services](https://www.youtube.com/watch?v=LYkLyNiVGeg)
 
 ## 관련 문서
 
 - [[VPC-Connectivity|VPC 연결과 endpoint]]
 - [[IAM|IAM 권한 평가]]
+- [[IAM-Policy|IAM 정책과 PassRole]]
+- [[OpenSearch-Service-Security-Observability|OpenSearch Serverless 보안 경계]]
 - [[LLM-Application-Security|LLM 애플리케이션 보안]]
