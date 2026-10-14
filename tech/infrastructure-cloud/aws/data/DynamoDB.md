@@ -46,6 +46,14 @@ AWS 완전관리형 **서버리스 NoSQL** 키-값/문서 데이터베이스. �
 
 인덱스는 SQL optimizer가 자동 선택하지 않는다. 요청이 `IndexName`을 명시해야 하며, access pattern에서 역으로 key와 projection을 설계한다. GSI에 write가 전파되므로 읽기 비용만이 아니라 write amplification과 hot key도 함께 본다.
 
+### 희소 GSI의 후보 조회와 실제 참여 조건을 구분한다
+
+부분 검증(2026-10-14): 희소 인덱스, 읽기 일관성과 `TransactWriteItems` 공식 문서를 대조했다. GSI에는 인덱스 PK와, 정의했다면 SK 속성이 모두 있는 항목만 들어간다. 예를 들어 열린 게임에만 문자열 `OpenAt`을 두고 GSI를 `MapId`와 `OpenAt`으로 구성하면 맵별 참가 후보를 Query할 수 있다. 게임을 닫을 때 `OpenAt`을 제거하는 방식은 테이블 전체를 Scan하고 상태로 필터링하는 것과 다르다.
+
+GSI는 eventual consistency이므로 닫힌 게임이 잠시 후보로 보일 수 있다. 목록에 있다는 사실만으로 참가를 허용하지 않는다. 설계 예로 게임 항목의 조건부 `Update`에서 미시작 상태와 정원 미달을 확인하며 인원을 늘리고, 별도 참가 항목의 조건부 `Put`으로 중복 참가를 막는 두 작업을 하나의 트랜잭션으로 묶는다. 조건 하나라도 실패하면 전체 쓰기가 실패한다.
+
+같은 트랜잭션에서 게임 항목에 `ConditionCheck`와 `Update`를 각각 지정할 수는 없다. 수정 대상의 조건은 해당 `Update` 안에 둔다. 실제 적용에서는 마지막 자리의 동시 참가와 게임 시작 직후의 참가를 시험한다(검증 제안). 이번 대조는 이 설계의 API 조건에 한정하며 기존 기능 전체의 검증일은 유지한다.
+
 ## Query와 Scan
 
 - `Query`는 partition key equality가 필수이고 sort key 조건으로 범위를 좁힌다. 필요한 access pattern이 현재 key로 표현되지 않으면 GSI나 LSI를 설계한다.
@@ -214,6 +222,7 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 ## 출처
 
+- [AWS DynamoDB — Take advantage of sparse indexes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-indexes-general-sparse-indexes.html)
 - [AWS DynamoDB — Data modeling building blocks in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/data-modeling-blocks.html)
 - [AWS DynamoDB — DynamoDB table classes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html)
 - [AWS DynamoDB — Considerations when choosing a table class in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.tableclasses.html)

@@ -79,8 +79,21 @@ MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱
 
 오차 개선과 업무 성과는 별도 관측 대상이다. 업무 의사결정에는 예측 외의 제약도 있으므로 모델 오차 감소만으로 비용 절감이나 수익 향상을 단정하지 않는다.
 
+### 재학습 평가와 배치 예측을 별도 실행으로 둔다
+
+2026-10-14 SageMaker AI 공식 문서와 AWS의 배치 운영 예제를 대조했다. 학습한 모델을 평가하고 등록하는 실행과, 승인된 모델로 새로운 입력을 예측하는 실행은 서로 다른 주기로 구성할 수 있다. 매번 예측할 때 모델까지 다시 학습해야 하는 것은 아니다.
+
+- **학습과 평가:** SageMaker Pipelines의 `ConditionStep`은 평가 결과를 조건으로 후속 모델 등록 등의 실행을 나눌 수 있다. 조건 통과와 모델 등록, 승인 상태를 구분하며, 학습 작업 성공을 운영 채택으로 계산하지 않는다.
+- **예측 실행:** 상시 endpoint가 필요 없는 대량 입력에는 Batch Transform을 검토할 수 있다. 예측 실행에 사용한 모델 버전과 입력 범위를 남기고 실제값이 나온 뒤 그 결과를 평가한다.
+- **주기 결정:** 데이터 확정 시각, 예측을 사용할 시점과 성능 변화에 따라 재학습과 추론 주기를 정한다(설계 제안). 월별 집계라는 이유만으로 월 1회 실행을 보편 규칙으로 삼지 않는다. 수정된 입력이나 별도 시나리오가 들어오면 같은 기간의 재예측도 필요할 수 있다.
+
+평가 조건에는 앞 절의 시간 분할과 업무에 맞는 지표를 연결한다. 예제의 임계값을 그대로 복사하거나 파이프라인 성공만으로 미래 성능을 보장하지 않는다. 이 절은 실행 구조와 기능 범위의 부분 검증이며 실제 AWS 배포나 예측 품질을 시험한 결과는 아니다.
+
 ## 출처
 
+- [Amazon SageMaker AI, Define a pipeline](https://docs.aws.amazon.com/sagemaker/latest/dg/define-pipeline.html)
+- [Amazon SageMaker AI, Batch transform for inference](https://docs.aws.amazon.com/sagemaker/latest/dg/batch-transform.html)
+- [Create SageMaker Pipelines for training, consuming and monitoring your batch use cases — AWS](https://aws.amazon.com/blogs/machine-learning/create-sagemaker-pipelines-for-training-consuming-and-monitoring-your-batch-use-cases/)
 - [Amazon Forecast, Evaluating Predictor Accuracy](https://docs.aws.amazon.com/forecast/latest/dg/metrics.html) — 2026-10-14 분위수와 wQL의 의미 대조
 - [Transition your Amazon Forecast usage to Amazon SageMaker Canvas — AWS](https://aws.amazon.com/cn/blogs/machine-learning/transition-your-amazon-forecast-usage-to-amazon-sagemaker-canvas/) — 신규 고객 접근 중단 공지
 - [How Do Wind Turbines Survive Severe Weather and Storms? — U.S. Department of Energy](https://www.energy.gov/cmei/wind/articles/how-do-wind-turbines-survive-severe-weather-and-storms) — 출력 곡선의 운전 구간을 2026-10-14 대조
