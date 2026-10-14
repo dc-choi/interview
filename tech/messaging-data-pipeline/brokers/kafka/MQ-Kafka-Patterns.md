@@ -25,6 +25,18 @@ DB 트랜잭션으로 business row와 Outbox 테이블의 이벤트를 함께 �
 - Outbox의 고유 event ID를 메시지에 보존하고, consumer는 그 ID로 멱등 처리 또는 중복 제거. Kafka Connect exactly-once 설정은 별도 지원 범위와 운영 조건을 확인
 - Debezium MySQL Connector는 source server의 binlog를 **단일 task**로 읽는다. 같은 DB의 Outbox 테이블만 나누거나 `tasks.max`를 늘려도 Connector 병렬화가 되지 않는다. DB가 이미 shard별 server로 분리된 경우에만 server별 Connector 구성을 검토
 
+## MSK Connect로 DB 변경을 S3에 적재한다
+
+2026-10-14 부분 검증: MSK Connect 개요와 Debezium source connector 공식 문서를 대조했다. 기존 절 전체의 검증일은 유지한다.
+
+데이터 경로는 **DB 변경 → Debezium source connector → Kafka 토픽 → S3 sink connector → S3 객체**로 나눈다. Source는 외부 데이터를 토픽에 넣고 sink는 토픽 데이터를 외부 저장소로 내보낸다. MSK Connect는 이 커넥터의 실행 인프라를 관리한다. Source 생성 성공만으로 S3 적재까지 확인한 것은 아니다.
+
+- **확장 조건:** Debezium MySQL connector는 task 하나만 지원한다. AWS는 MSK Connect에서 autoscaled capacity 대신 provisioned capacity와 `workerCount=1`을 사용하도록 안내한다. 일반적인 MSK Connect 자동 확장 기능을 이 커넥터의 병렬 처리 보장으로 적용하지 않는다.
+- **접근 조건:** DB 연결, Kafka 인증과 토픽 권한, sink의 S3 쓰기 권한을 구분한다. AWS의 Debezium 예제는 Secrets Manager Config Provider로 DB 자격증명을 커넥터 설정 밖에 둔다. 예제의 평문 비밀번호를 운영 설정에 복사하지 않는다.
+- **데이터 의미:** Debezium의 `before`, `after`, `op`는 변경 이벤트를 설명한다. S3에 이벤트 파일이 생겼다는 사실을 현재 DB 테이블과 같은 조회 결과가 만들어졌다는 뜻으로 해석하지 않는다. 갱신과 삭제를 반영한 현재 상태가 필요하면 별도 변환과 검증을 설계한다.
+
+검증 제안: 초기 데이터와 이후 INSERT, UPDATE, DELETE를 구분해 토픽과 S3 양쪽에서 확인한다. 커넥터 재시작 뒤 중복, 누락과 소비 지연도 확인하고, S3 sink의 파일 생성 조건과 오류 로그를 별도로 점검한다. 이 절은 특정 플러그인 조합의 실행 성공이나 end-to-end exactly-once를 보장하지 않는다.
+
 ## Event Bus (Spring Cloud RemoteApplicationEvent)
 
 설정 변경과 라우팅 규칙 같은 **모든 인스턴스가 동시에 알아야 하는 브로드캐스트**에 사용.
@@ -90,6 +102,10 @@ Mirror topic은 원본 레코드의 바이트와 offset을 보존하는 **비동
 
 ## 출처
 
+- [Amazon MSK, Understand MSK Connect](https://docs.aws.amazon.com/msk/latest/developerguide/msk-connect.html)
+- [Amazon MSK, Use Debezium source connector with configuration provider](https://docs.aws.amazon.com/msk/latest/developerguide/mkc-debeziumsource-connector-example.html)
+- [AWS News Blog — Introducing Amazon MSK Connect](https://aws.amazon.com/blogs/aws/introducing-amazon-msk-connect-stream-data-to-and-from-your-apache-kafka-clusters-using-managed-connectors/)
+- [Amazon Web Services Korea — Amazon MSK Connect를 활용해 쉽게 DB 데이터를 S3로 이동하기](https://www.youtube.com/watch?v=MQ6Zvsqxpfc)
 - [Confluent Documentation, Manage Mirror Topics for Cluster Linking on Confluent Cloud](https://docs.confluent.io/cloud/current/multi-cloud/cluster-linking/mirror-topics-cc.html)
 - [Amazon MSK, Consumer group offset synchronization](https://docs.aws.amazon.com/msk/latest/developerguide/msk-replicator-bidirectional-offset-sync.html)
 - [Amazon MSK, Create a replicator using the AWS console](https://docs.aws.amazon.com/msk/latest/developerguide/msk-replicator-create-console.html)

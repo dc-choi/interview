@@ -95,6 +95,19 @@ aws rds modify-db-cluster \
 
 `QUERY`는 실패한 쿼리도 평문으로 기록하므로 접근권과 보존 기간을 정한다. 내보내기를 꺼도 기존 CloudWatch 로그는 삭제되지 않고 보관 비용이 남는다. 게시 중단 시에는 Log exports와 `server_audit_logs_upload`를 통한 경로가 모두 꺼졌는지 확인한다.
 
+### RDS for PostgreSQL pgAudit의 설정과 게시
+
+2026-10-14 부분 검증: pgAudit 설정, 객체 감사와 PostgreSQL 로그 게시 공식 문서를 대조했다. 기존 절 전체의 `verified_at`은 유지한다.
+
+1. `rds_superuser` 권한으로 사용자 정의 DB parameter group의 `shared_preload_libraries`에 기존 항목을 보존하면서 `pgaudit`을 추가한다. 인스턴스를 재시작하고 `SHOW shared_preload_libraries;`로 적용 여부를 확인한다.
+2. 감사할 DB에 접속해 `CREATE EXTENSION pgaudit;`를 실행한다. 라이브러리 로딩 뒤 extension이 설치하는 event trigger가 DDL 감사에 필요하다.
+3. `pgaudit.log`로 session 감사 범위를 정한다. 기본값 `none`은 session 감사를 기록하지 않으며, `ddl`은 `ROLE` 분류를 제외한 DDL이다. 권한 변경까지 필요하면 `role` 분류도 검토한다.
+4. 특정 객체의 접근을 감사하려면 `rds_pgaudit` DB role을 만들고 `pgaudit.role`에 지정한다. RDS에서 이 파라미터에 허용하는 값은 `rds_pgaudit`이다. 대상 테이블의 SELECT 감사 예에서는 해당 role에 그 테이블의 SELECT 권한을 부여한다. 공식 절차대로 파라미터 변경을 적용한 뒤 `SHOW pgaudit.role;`로 확인한다.
+
+pgAudit 기록은 PostgreSQL 로그에 들어간다. CloudWatch에 보내려면 DB 인스턴스의 `postgresql` 로그 내보내기를 별도로 켜고 `/aws/rds/instance/{instance-name}/postgresql`에서 확인한다. MySQL의 `audit` 로그 유형을 그대로 선택하지 않는다. 나중에 내보내기를 켜면 기존 로그는 소급 게시되지 않고 이후 생성된 로그부터 전송된다.
+
+검증 제안: 감사 대상과 비대상 쿼리를 실행해 `AUDIT: SESSION` 또는 `AUDIT: OBJECT` 기록을 DB 로그와 CloudWatch에서 대조한다. 기록 범위에 따른 저장량, SQL의 민감 정보와 보존 기간을 함께 점검한다. Extension 설치만으로 필요한 감사 기록이 모두 확보됐다고 판단하지 않는다.
+
 ### Redo Log 크기 (MySQL 8)
 
 - 8.0.32 이하: `innodb_log_file_size` 기본 256MB (128MB × 2)
@@ -141,6 +154,9 @@ Slack Webhook (채널별 분기)
 
 ## 출처
 
+- [AWS Docs — Setting up the pgAudit extension](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.PostgreSQL.CommonDBATasks.pgaudit.basic-setup.html)
+- [AWS Docs — Auditing database objects](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.PostgreSQL.CommonDBATasks.pgaudit.auditing.html)
+- [AWS Docs — RDS for PostgreSQL database log files](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.PostgreSQL.html)
 - [AWS Docs — MariaDB Audit Plugin support for MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.MySQL.Options.AuditPlugin.html)
 - [jojoldu — AWS RDS PostgreSQL Slack 알람 구현](https://jojoldu.tistory.com/711)
 - [AWS Docs — RDS for MySQL 데이터베이스 로그 개요](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQL.LogFileSize.html)
