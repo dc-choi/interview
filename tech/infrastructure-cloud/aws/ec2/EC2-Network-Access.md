@@ -64,6 +64,16 @@ EC2 네트워크 인터페이스에 부여하는 **정적 공인 IP**. 기본 Pu
 
 검증 제안: 지원 조건을 만족하는 같은 AZ의 두 인스턴스로 TCP와 UDP, 단일 flow와 병렬 flow를 나누어 비교한다. 설정값뿐 아니라 ENA Express 지표로 SRD 사용 여부를 확인한다. 실제 네트워크 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
 
+### 세대 변경 뒤에는 ENA 드라이버 호환성도 확인한다
+
+부분 검증(2026-10-14): AWS의 6세대 이후 인스턴스 이전 가이드를 대조했다. 오래된 ENA 드라이버는 처리량과 PPS 저하뿐 아니라 인스턴스 시작, ENI 연결과 장치 초기화 실패의 원인이 될 수 있다. 해당 가이드는 C6g, M6g, R6g를 드라이버 갱신 요구의 예외로 명시하므로 세대 숫자만으로 일괄 판단하지 않는다.
+
+- Amazon Linux나 GitHub에서 설치한 ENA는 `modinfo ena`로 버전을 확인한다. 다른 Linux 배포판은 OS와 실행 중인 커널 버전을 해당 배포판의 요구 표와 대조한다.
+- 가이드의 최소 기준은 GitHub Linux ENA `2.2.9g`, FreeBSD ENA `2.3.1`, DPDK `20.11`, Windows ENA `2.2.3`이다. 배포판 내장 드라이버에는 배포판별 커널 기준을 적용하며, 이 값을 최신 권장 버전으로 해석하지 않는다.
+- 지원되는 OS와 커널 또는 새 AMI로 갱신한 뒤 같은 경로와 부하에서 처리량, PPS와 지연을 다시 비교한다. 드라이버 호환성과 앞 절의 대역폭, PPS 한도 진단은 별개다.
+
+운영 적용 제안: 변경 전 복구 경로를 확보하고 검증용 인스턴스에서 먼저 확인한다. 이 절은 문서 대조 결과이며 실제 드라이버 갱신이나 성능 시험 결과는 아니다.
+
 ## 인스턴스 간 처리량을 측정하는 기준
 
 이 절은 2026-10-09 AWS와 ESnet 공식 문서 기준이다. 같은 VPC라도 인스턴스 타입, 배치, 트래픽 경로와 연결 수가 다르면 결과가 달라진다. **단일 연결 처리량과 병렬 연결의 합산 처리량을 따로 측정**한다. 인스턴스의 최대 대역폭을 단일 TCP 연결의 보장값으로 읽지 않는다. [EC2 대역폭](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html)
@@ -158,6 +168,7 @@ Linux 결과에는 백업 AMI와 새 SSH 키를 담은 SSM 파라미터의 이�
 
 ## 출처
 
+- [How do I resolve network performance issues with sixth generation and later Amazon EC2 instances? — AWS re:Post](https://repost.aws/knowledge-center/migrate-to-gen6-ec2-instance)
 - [AWS 공식 문서, CloudWatch metrics that are available for your instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html)
 - [AWS 공식 문서, Monitor network performance for ENA settings on your EC2 instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-network-performance-ena.html)
 - [AWS 공식 문서, Manage detailed monitoring for your EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/manage-detailed-monitoring.html)

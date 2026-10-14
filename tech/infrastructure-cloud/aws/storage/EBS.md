@@ -48,6 +48,20 @@ EC2 인스턴스에 부착되는 **블록 수준 네트워크 스토리지**. �
 
 운영 적용 전에는 별도 테스트 볼륨에서 전체 저장 경로의 정렬과 장애 복구를 검증한다(적용 제안). 파일시스템 재생성은 기존 데이터를 지울 수 있으므로 운영 볼륨에 포맷 명령을 그대로 적용하지 않는다. 성능 개선 폭은 실제 DB 부하로 측정하며 이 절은 재현 시험 결과가 아니다.
 
+## CloudWatch에서 평균 IOPS와 처리량 계산
+
+부분 검증(2026-10-14): EBS CloudWatch 지표 정의를 대조했다. 같은 `VolumeId`, 시간 구간과 period를 선택하고 읽기, 쓰기 지표의 통계는 `Sum`으로 맞춘다. `VolumeReadOps`, `VolumeWriteOps`는 해당 구간에 완료된 작업 수이며 그 자체가 초당 값은 아니다.
+
+| 계산 대상 | 구간 합계로 계산하는 식 |
+|---|---|
+| 전체 구간 평균 IOPS | `(Sum(VolumeReadOps) + Sum(VolumeWriteOps)) / 구간 초` |
+| 전체 구간 평균 처리량, bytes/s | `(Sum(VolumeReadBytes) + Sum(VolumeWriteBytes)) / 구간 초` |
+| MiB/s로 변환 | 위 bytes/s 값을 `1024 × 1024`로 나눔 |
+
+`VolumeIdleTime`은 읽기나 쓰기 요청이 제출되지 않은 시간의 합이다. 활동 시간만 기준으로 비교하려면 분모를 `구간 초 - Sum(VolumeIdleTime)`으로 바꾸되 **활동 시간 기준 평균**으로 표시한다. 전체 구간 평균과 섞어 비교하지 않는다. 분모가 0인 구간은 이 계산에서 제외하며, Multi-Attach 볼륨은 이 idle 지표를 지원하지 않는다.
+
+예를 들어 60초 동안 6,000건을 처리하고 idle이 30초라면 전체 평균은 100 IOPS, 활동 시간 기준은 200 IOPS다. 이 평균만으로 짧은 피크나 프로비저닝 한도 초과 여부를 확정하지 않는다. 실제 볼륨 측정은 수행하지 않았으며 기존 절의 검증일은 유지한다.
+
 ## EBS 스냅샷
 
 스냅샷은 EBS 볼륨 데이터를 **S3에 백업**하는 메커니즘 (S3 버킷에는 직접 노출되지 않음).
@@ -142,6 +156,7 @@ EBS는 AZ 안에서 중복 저장되므로 단일 볼륨의 일반적인 내구�
 
 ## 출처
 
+- [Amazon CloudWatch metrics for Amazon EBS](https://docs.aws.amazon.com/ebs/latest/userguide/using_cloudwatch_ebs.html)
 - [Torn write prevention on Amazon EC2 Linux instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/storage-twp.html)
 - [Block sizes for torn write prevention on Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-block-sizes.html)
 - [Requirements for using torn write prevention on Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/twp-reqs.html)

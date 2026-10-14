@@ -89,6 +89,16 @@ receiver, processor, exporter를 정의하는 것만으로 수집이 켜지지 �
 
 운영 점검 제안: Collector Pod의 정상 상태와 실제 수집 성공을 구분한다. 테스트 요청이나 로그 하나가 목적지에 도착하는지, 수집 대상 노드가 빠지거나 같은 데이터가 중복되지 않는지 확인한다. 고가용성을 위해 replica를 늘릴 때도 receiver의 수집 범위와 중복 방지 방식을 먼저 확인한다.
 
+## 목적지별 pipeline과 AWS 인증을 분리한다
+
+부분 검증(2026-10-14): Collector 설정과 ADOT의 Amazon Managed Service for Prometheus(AMP) 전송 문서를 대조했다. 같은 신호를 여러 팀에 보내되 필터가 다르면 `metrics/team`처럼 이름이 다른 pipeline으로 나눈다. 같은 receiver를 여러 pipeline에서 참조할 수 있으며, processor는 여러 pipeline에 참조돼도 pipeline마다 별도 인스턴스로 만들어진다.
+
+예를 들어 개발팀에는 전체 지표, 운영팀에는 선택한 지표만 보내려면 후자의 pipeline에만 필터 processor를 둔다(설계 예시). 공통 수집 단계에서 데이터를 먼저 버리면 다른 목적지에도 보낼 수 없으므로 필터의 적용 위치를 확인한다.
+
+AMP로 보내는 `prometheusremotewrite` exporter는 `auth.authenticator`에 `sigv4auth`를 연결해 요청에 AWS SigV4 서명을 한다. 인증 extension을 정의하는 것 외에 `service.extensions`에도 등록해야 활성화된다. HTTPS endpoint 지정만으로 SigV4 서명이 추가되지는 않는다. 전송 대상의 리전과 인증 구성을 함께 맞춘다.
+
+검증 제안: 목적지마다 필요한 지표가 도착하고 제외할 지표는 빠지는지 확인한다. Collector 실행, 인증 성공과 지표 수신을 별도 단계로 본다. 배포판에 필요한 컴포넌트가 포함됐는지도 확인하며, 이 절은 실제 배포 시험 결과가 아니다.
+
 ## 흔한 함정
 
 - **컨텍스트 전파 누락**(특히 비동기 큐) → trace가 끊김
@@ -106,6 +116,7 @@ receiver, processor, exporter를 정의하는 것만으로 수집이 켜지지 �
 
 ## 출처
 
+- [AWS Distro for OpenTelemetry 공식 문서 — Prometheus Remote Write Exporter Advanced Configurations for AMP](https://aws-otel.github.io/docs/getting-started/advanced-prometheus-remote-write-configurations/)
 - [OpenTelemetry 공식 문서 — Configuration](https://opentelemetry.io/docs/collector/configuration/)
 - [OpenTelemetry 공식 문서 — Important Components for Kubernetes](https://opentelemetry.io/docs/platforms/kubernetes/collector/components/)
 - [OpenTelemetry 공식 문서 — Concepts, Instrumentation](https://opentelemetry.io/docs/)

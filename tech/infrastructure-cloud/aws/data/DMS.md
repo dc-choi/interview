@@ -41,6 +41,14 @@ verified_at: 2026-08-28
 
 연결 검사는 마이그레이션 완료 판정이 아니다. CDC용 로그 설정, 테이블 접근 권한, 데이터 불일치와 애플리케이션 호환성은 아래 검증 절차에서 별도로 확인한다.
 
+### Endpoint settings 변경의 우선순위와 교체 범위
+
+부분 검증(2026-10-14): endpoint 생성 가이드와 `ModifyEndpoint` API를 대조했다. Endpoint settings는 연결별 추가 설정이며 지원 키와 값은 소스 또는 대상 엔진에 따라 확인한다. 같은 속성을 Endpoint settings와 Extra connection attributes(ECA)에 함께 지정하면 **Endpoint settings가 우선**한다. ECA만 고쳤는데 동작이 그대로라면 중복 설정부터 확인한다.
+
+`ModifyEndpoint`의 `ExactSettings=false`는 같은 이름의 설정을 새 값으로 바꾸고 새 이름의 설정을 추가한다. `true`는 요청에 지정한 설정으로 기존 endpoint settings 전체를 교체하므로, 전달하지 않은 기존 설정을 유지하는 부분 수정과 다르다. ECA 문자열 자체를 초기화할 때는 `ExtraConnectionAttributes`에 빈 문자열을 전달한다.
+
+운영 적용 제안: 변경 전 설정을 보존하고 원하는 변경 범위와 API 옵션을 대조한다. 변경 뒤 실제 저장된 설정을 확인하고, 해당 복제 인스턴스에서 연결을 재검사한 다음 Full Load 또는 CDC 반영을 검증한다. endpoint 생성이나 수정 API 성공만으로 연결과 데이터 이전 성공을 판단하지 않는다. 실제 endpoint는 변경하지 않았으며 기존 절의 검증일은 유지한다.
+
 ### 연결 실패는 출발지와 왕복 경로로 좁힌다
 
 2026-10-09 AWS 네트워크 보안과 NACL 문서를 대조한 DMS Standard 진단 절차다. 연결 오류를 보고 DB 비밀번호부터 바꾸기보다 복제 인스턴스에서 각 endpoint까지 실제로 허용된 경로를 확인한다.
@@ -202,6 +210,7 @@ DMS data validation은 지원되는 소스와 대상의 대응 행을 비교한�
 
 ## 출처
 
+- [AWS DMS, ModifyEndpoint](https://docs.aws.amazon.com/dms/latest/APIReference/API_ModifyEndpoint.html)
 - [AWS DMS, Using a MySQL-compatible database as a target for AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.MySQL.html)
 - [AWS DMS, Using a MySQL-compatible database as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.MySQL.html)
 - [Why did my AWS DMS CDC task fail with Error 1236 when I used MySQL as the source? — AWS re:Post](https://repost.aws/knowledge-center/dms-cdc-error-1236-msql)

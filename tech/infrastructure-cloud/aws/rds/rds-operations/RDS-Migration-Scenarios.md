@@ -83,6 +83,17 @@ RDS MySQL 8.4 이상은 `mysql.rds_set_external_source`, 8.0 이하는 `mysql.rd
 
 지원하지 않는 데이터 타입과 소스/대상 설정도 확인한다. 데이터 적재 성공을 스키마와 애플리케이션 호환성 검증 완료로 보지 않는다. 세부 절차는 [[DMS]], 전환과 복구 조건은 [[RDS-Zero-Downtime-Migration]]을 따른다.
 
+## SQL Server 네이티브 백업 복원의 실패 경계
+
+부분 검증(2026-10-14): RDS for SQL Server의 네이티브 백업, 복원 설정과 오류 문서를 대조했다. 이 경로를 일반 RDS 스냅샷 복원이나 DMS 이전과 구분한다.
+
+- **옵션 활성화:** 대상 DB 인스턴스에 연결된 option group에 `SQLSERVER_BACKUP_RESTORE`가 있는지 확인한다.
+- **파일 접근:** `Access Denied`는 DB 접속 비밀번호 문제로 단정하지 않는다. 백업 객체의 S3 ARN, 버킷과 파일 경로, option에 연결한 IAM 역할의 권한을 확인한다. 다른 계정의 버킷이면 해당 객체에 대한 교차 계정 접근 권한도 함께 확인한다.
+- **SQL 실행 권한:** `rds_backup_database`, `rds_restore_database`의 `EXECUTE permission` 오류는 S3 접근 오류와 구분한다. 공식 가이드는 master user 사용과 그 사용자의 권한 상태를 확인하도록 안내한다.
+- **진행 상태:** `msdb.dbo.rds_task_status`의 `lifecycle`과 `task_info`로 결과를 확인한다. 호출 직후 `CREATED`는 완료가 아니며, `IN_PROGRESS`로 바뀌기까지 최대 5분이 걸릴 수 있다. 상태는 약 2분마다 갱신된다.
+
+검증 제안: 복원 task의 `SUCCESS` 뒤에도 대상 DB의 데이터와 애플리케이션 동작을 확인한다. 오류를 없애려고 기존 백업을 덮어쓰거나 원본 DB의 암호화를 해제하는 조치를 먼저 적용하지 않는다. 이 절은 문서 기반 진단이며 실제 복원 시험은 수행하지 않았다.
+
 ## 도구 선택 매트릭스
 
 | 도구 | 적합 상황 | 다운타임 | 비고 |
@@ -106,6 +117,9 @@ RDS MySQL 8.4 이상은 `mysql.rds_set_external_source`, 8.0 이하는 `mysql.rd
 
 ## 출처
 
+- [Amazon RDS, Setting up for native backup and restore](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.Native.Enabling.html)
+- [Amazon RDS, Troubleshooting native backup and restore](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.Native.Troubleshooting.html)
+- [Amazon RDS, Using native backup and restore](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.Native.Using.html)
 - [AWS Prescriptive Guidance, Strategies for homogeneous migration of Oracle databases — Phase 1: Prepare](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-oracle-database-homogeneous-migration/prepare.html)
 - [AWS DMS, Best practices for AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html)
 - [AWS DMS, Target table preparation mode](https://docs.aws.amazon.com/dms/latest/userguide/dm-migrating-data-table-prep.html)

@@ -75,6 +75,16 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 
 운영 적용 제안: 월 비용 집계 파이프라인은 인보이스 ID가 채워진 값을 확정치로, 비어 있는 동안의 값을 잠정치로 표시하되 확정 표시 뒤에도 재집계를 허용한다. 일회성 요금은 즉시 청구되므로 인보이스 ID가 있는 행이 일부 있다는 사실만으로 그 달 사용료 전체가 확정됐다고 보지 않는다. 외주 고객에게 AWS 사용료를 넘겨 청구하거나 월 비용 보고를 낼 때, 고객 전용 독립 계정이면 `Issued` 인보이스 금액을, AWS Organizations 통합 결제나 billing transfer에 속한 계정이면 Bills의 계정별 금액(`Charges by account`)을, 한 계정을 여러 고객이 함께 쓰면 계정이나 태그 단위의 CUR 행을 기준으로 한다. 월중 Bills와 Cost Explorer 금액은 추정치로 표시한다.
 
+### VAT 인보이스가 보이지 않을 때
+
+부분 검증(2026-10-14): AWS의 VAT 인보이스 조회 안내를 대조했다. VAT가 실제 부과됐는지, 청구서가 확정됐는지, 로그인한 계정에 조회 권한이 있는지를 나누어 확인한다.
+
+- **일반 계정:** VAT를 납부하며 root 사용자 또는 `ViewBilling` 권한이 있는 IAM 사용자로 접근하는 조건을 확인한다. 권한이 있는데도 조회되지 않으면 계정 관리자에게 확인한다.
+- **AWS Organizations:** 관리 계정은 조직의 멤버 계정 VAT 인보이스를 조회할 수 있다. 멤버 계정은 조직에서 특정 TRN(세금 등록 번호)을 사용하는 유일한 계정인 경우 직접 다운로드할 수 있다. TRN을 공유하거나 통합 인보이스를 사용한다면 관리 계정에 요청한다.
+- **조회 경로:** Billing and Cost Management의 `Bills`에서 해당 월과 `Taxes`를 확인하고 세금 인보이스 항목을 찾는다. VAT 인보이스는 청구 확정 후 제공된다. 판매 법인에 따라 표시 위치가 달라질 수 있다.
+
+인보이스는 청구 내역이며 납부 완료 증명이 아니다. 비용 증빙 수집과 실제 결제 상태 확인을 분리한다. 이 절은 AWS 콘솔의 문서 조회 조건이며 국가별 세무 공제 요건을 판단하는 지침은 아니다.
+
 ## 결제 수단 변경과 미납 청구
 
 2026-10-13 AWS Billing의 결제 설정, 카드 관리와 payment profile 문서 대조 기준이다. 비용 발생과 결제 수단의 유효성은 별도로 점검한다.
@@ -123,6 +133,8 @@ EC2 인스턴스로 실행하는 Marketplace 소프트웨어는 구독 취소만
 
 ## 출처
 
+- [How do I get a VAT invoice from AWS? — AWS re:Post](https://repost.aws/knowledge-center/aws-vat-invoice)
+- [How do I download an invoice for my monthly AWS charges? — AWS re:Post](https://repost.aws/knowledge-center/download-pdf-invoice)
 - [How do I change the default payment method that's associated with my AWS account? — AWS re:Post](https://repost.aws/knowledge-center/change-default-payment-method) — 청구 주기 말 변경 시 이전 수단으로 청구될 수 있는 예외
 - [How do I terminate instances in my AWS Marketplace subscription and cancel the subscription? — AWS re:Post](https://repost.aws/knowledge-center/cancel-marketplace-subscription) — 리전별 인스턴스 종료, 구독 취소와 잔존 사용료의 구분
 - [AWS, Understanding your bill](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/getting-viewing-bill.html)
