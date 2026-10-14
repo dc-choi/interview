@@ -52,7 +52,45 @@ SCP는 조직 외부 주체의 권한을 직접 제한하지 않는다. 외부 �
 
 `aws:SecureTransport`는 요청이 TLS를 사용하는지 검사한다. 이 조건만으로 저장 데이터의 암호화 방식이나 KMS 키 선택까지 강제하지는 않는다. 전송 보호와 저장 시 암호화의 요구사항은 별도 정책과 설정으로 검증한다.
 
+2026-10-14 AWS RCP 샘플 저장소 대조 기준, HTTPS 강제 샘플은 `Principal: *`와 `BoolIfExists` 조건으로 `aws:SecureTransport`가 `false`인 요청을 거부한다. 대상 작업은 S3, STS, KMS, SQS, Secrets Manager, Cognito(`cognito-identity`, `cognito-idp`), CloudWatch Logs, DynamoDB, ECR, OpenSearch Serverless(`aoss`)다. RCP 지원 서비스 목록은 이 샘플보다 넓고 바뀔 수 있으므로 조직이 쓰는 서비스와 샘플의 `Action`을 대조하고, 목록에 없는 서비스는 이 정책으로 보호되지 않는다고 본다.
+
 RCP 예제는 그대로 배포하라는 권고가 아니다. 테스트 OU에서 허용할 TLS 요청과 거부할 비 TLS 요청, 서비스 연동에 필요한 예외를 확인한 뒤 범위를 넓힌다. 관리 계정 리소스와 service-linked role 호출은 RCP의 제한 대상이 아니라는 점도 검증 대상 선정에 반영한다. 이는 정책 문서 대조에 따른 점검 절차이며 실제 조직에 적용한 결과가 아니다. 기존 절 전체의 검증일은 유지한다.
+
+## 초기 조직에서 먼저 검토할 예방 통제
+
+부분 검증(2026-10-14): Organizations의 SCP와 S3 정책 문서, IAM root 관리 문서, S3 Block Public Access 문서, Bedrock 교차 리전 추론 문서, GuardDuty 권한 참조와 AWS 샘플 정책 저장소를 대조했다. 이 절만 대조했으며 문서 전체의 검증일은 유지한다.
+
+운영 담당자가 따로 없는 초기 조직은 한 번 연결하면 멤버 계정마다 반복 설정하지 않아도 되는 거부 정책부터 검토할 수 있다(운영 제안). 샘플은 그대로 배포할 정책이 아니며 아래 적용 전 검증 순서대로 테스트 OU에서 넓힌다.
+
+- **승인 리전 외 사용 차단(SCP):** `aws:RequestedRegion`이 승인 리전이 아니면 Deny하고 글로벌 서비스는 `NotAction`으로 제외하며, 지정한 관리 역할만 `ArnNotLike` `aws:PrincipalArn`으로 예외 처리한다. 글로벌 서비스 목록은 길고 바뀌므로 최신 샘플과 대조한다. 적용 범위와 예외는 [[AWS-Control-Tower|Control Tower의 리전 차단]]을 본다.
+  - Bedrock 교차 리전 추론은 리전 차단 SCP에서 따로 다룬다. 지리 프로필은 프로필의 대상 리전을 모두 허용하거나 `bedrock:InferenceProfileArn` 조건으로 프로필 예외를 둔다. global 프로필은 리전 무관 모델 리소스를 평가할 때 `aws:RequestedRegion`이 `unspecified`이므로 허용 목록에 `unspecified`를 넣거나 같은 조건으로 예외를 둔다. 프로필 예외를 쓰면 다른 서비스의 허용 리전을 넓히지 않아도 되지만, 원래 호출 리전의 차단까지 풀리지는 않는다.
+- **멤버 계정 root 사용 차단(SCP):** `aws:PrincipalArn`이 `arn:aws:iam::*:root`와 `ArnLike`로 맞으면 Deny한다. 이 조건 키에 root ARN을 쓰면 해당 계정의 root 사용자만 제한하며, 리소스 정책의 `Principal`에 root ARN을 써서 계정에 권한을 위임하는 것과 의미가 다르다. 관리 계정 예외에 더해 root로 Enterprise Support 플랜에 가입하는 일 같은 일부 root 작업은 SCP로 막을 수 없다.
+- **보안 서비스 중단 방지(SCP):** CloudTrail의 `StopLogging`, `DeleteTrail`, `UpdateTrail`, `PutEventSelectors`, Config의 `StopConfigurationRecorder`, `DeleteConfigurationRecorder`, `DeleteDeliveryChannel`, GuardDuty의 `DeleteDetector`, `UpdateDetector`, `DisassociateFromAdministratorAccount` 같은 작업을 Deny하고 보안 운영 역할만 `ArnNotLike` `aws:PrincipalArn`으로 예외 처리한다. 사용 중단된 이전 이름 `DisassociateFromMasterAccount`도 별도 IAM 작업으로 남아 있고 AWS 샘플에는 이 이름만 있으므로 두 작업을 함께 거부한다. AWS 샘플의 CloudTrail 정책은 보호할 trail ARN을 지정한다. 조직 trail은 멤버 계정 사용자가 삭제하거나 로깅을 끄거나 기록할 이벤트 유형을 바꿀 수 없어 CloudTrail 보호의 대안이 된다.
+- **전송 구간 TLS 강제(RCP):** 위의 TLS 강제 RCP 절을 본다.
+- **S3 퍼블릭 액세스 차단 설정 보호:** 아래 S3 절을 본다.
+
+예외로 둔 관리 역할을 다른 주체가 수정하거나 맡을 수 있으면 예외가 우회 경로가 된다. AWS 샘플에는 지정한 역할의 정책과 신뢰 정책 변경, `sts:AssumeRole`을 관리 역할 외에는 거부하는 SCP가 있으므로 함께 검토한다(설계 점검).
+
+### root 자격 증명의 중앙 관리
+
+IAM의 Organizations 신뢰 접근을 켜고 root 자격 증명 관리와 멤버 계정의 privileged root 작업을 활성화하면, 관리 계정이나 IAM 위임 관리자가 멤버 계정의 root 비밀번호, access key, 서명 인증서를 지우고 MFA를 비활성화할 수 있다. 활성화 뒤 Organizations에서 만드는 새 계정은 기본적으로 root 자격 증명이 없다.
+
+root가 필요한 일부 작업은 `sts:AssumeRoot`로 받은 짧은 privileged session에서 한다. 세션 범위는 `S3UnlockBucketPolicy`, `SQSUnlockQueuePolicy`, `IAMDeleteRootUserCredentials` 같은 작업 정책으로 정하며, 모든 주체를 거부하는 버킷 정책이나 큐 정책 삭제, root 자격 증명 삭제와 비밀번호 복구 허용이 여기에 해당한다. `AssumeRoot`는 전역 STS endpoint를 지원하지 않아 리전 endpoint로 호출한다.
+
+root 차단 SCP를 쓰면서 이 세션을 허용하려면 AWS 샘플처럼 `aws:AssumedRoot` 키가 없는 요청(`Null` 조건)에만 Deny를 건다. 자격 증명 삭제는 root 로그인과 복구 경로를 없애고, SCP는 root 주체의 작업 권한을 제한한다는 점에서 역할이 다르다.
+
+### S3 퍼블릭 액세스 차단 설정 보호
+
+S3 Block Public Access(BPA)는 조직, 계정, 버킷과 액세스 포인트 수준에서 설정하며 S3는 적용되는 설정 중 가장 엄격한 조합을 쓴다. BPA는 기존 버킷 정책과 ACL을 바꾸지 않으므로 설정을 해제하면 공개 정책이나 ACL이 남은 리소스가 다시 공개된다. 그래서 설정을 켜는 것과 해제를 막는 것을 함께 설계한다.
+
+| 방식 | 동작 | 제약 |
+|---|---|---|
+| SCP | 계정 수준 설정은 변경과 삭제 모두 `s3:PutAccountPublicAccessBlock`, 버킷 수준은 `s3:PutBucketPublicAccessBlock`으로 평가되므로 두 작업을 Deny하고 관리 역할만 예외로 둔다 | 관리 계정에는 적용되지 않는다 |
+| Organizations의 S3 정책(2025-11-26 출시) | 네 설정을 `all` 또는 `none`으로 함께 지정한다. 연결 범위의 계정 수준 설정을 덮어쓰고 계정 수준 변경을 막으며, 새로 가입한 계정도 위치에 따라 상속한다 | 설정을 하나씩 고를 수 없다. all features와 S3 정책 유형 활성화가 필요하다 |
+
+버킷 수준 Deny는 BPA를 켜는 호출도 같은 작업으로 평가되어 함께 막는다. 버킷을 만들며 BPA를 설정하는 배포 역할은 예외에 넣고, 계정 수준 설정을 SCP나 조직 S3 정책 `all`로 보호해 충분하면 버킷 수준 Deny의 생략을 검토한다(운영 점검).
+
+조직 정책이 `all`이면 버킷 수준에서 BPA를 꺼도 더 엄격한 계정의 유효 설정이 적용된다. 정책을 분리하면 S3가 보존해 둔 이전 계정 수준 설정으로 돌아가므로 분리 전에 그 설정과 공개 정책이 남은 버킷을 확인한다(운영 점검). 공개가 필요한 계정은 정책 연결 범위에서 나누거나 버킷을 공개하지 않는 제공 경로를 검토한다([[S3-Security-Cost|S3 보안과 비용]]).
 
 ## 백업 정책의 상속과 실행 조건
 
@@ -99,7 +137,7 @@ RCP 예제는 그대로 배포하라는 권고가 아니다. 테스트 OU에서 
 
 ## 관련 문서
 
-- [[IAM]], [[CloudTrail-Config]], [[Shield-WAF-NetworkFirewall]]
+- [[IAM]], [[CloudTrail-Config]], [[Shield-WAF-NetworkFirewall]], [[AWS-Control-Tower]], [[IAM-Best-Practices]], [[S3-Security-Cost]]
 
 ## 출처
 
@@ -120,3 +158,20 @@ RCP 예제는 그대로 배포하라는 권고가 아니다. 테스트 OU에서 
 - [AWS, Authorization policies in AWS Organizations](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_authorization_policies.html)
 - [AWS, Declarative policies in AWS Organizations](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_declarative_policies.html)
 - [거버넌스 마스터플랜: 클라우드 카오스를 질서로 바꾸는 7가지 방법 — Amazon Web Services Korea](https://www.youtube.com/watch?v=ShOQ8WP51ho)
+- [AWS, Amazon S3 policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_s3.html)
+- [AWS, Amazon S3 policy syntax and examples](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_s3_syntax.html)
+- [Amazon S3, Blocking public access to your Amazon S3 storage](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html)
+- [Amazon S3 Block Public Access now supports organization-level enforcement — AWS](https://aws.amazon.com/about-aws/whats-new/2025/11/amazon-s3-block-public-access-organization-level-enforcement/)
+- [AWS IAM, Centralize root access for member accounts](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-enable-root-access.html)
+- [AWS IAM, Perform a privileged task on an AWS Organizations member account](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user-privileged-task.html)
+- [AWS IAM, AWS global condition context keys — aws:PrincipalArn](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-principalarn)
+- [AWS IAM, AWS global condition context keys — aws:AssumedRoot](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-assumedroot)
+- [AWS CloudTrail, Creating a trail for an organization](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html)
+- [Amazon Bedrock, Route model inference requests across AWS Regions with cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html)
+- [Amazon Bedrock, Geographic cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/geographic-cross-region-inference.html)
+- [Amazon Bedrock, Global cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/global-cross-region-inference.html)
+- [AWS Service Authorization Reference, Actions, resources, and condition keys for Amazon GuardDuty](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonguardduty.html)
+- [Amazon GuardDuty API Reference, DisassociateFromMasterAccount](https://docs.aws.amazon.com/guardduty/latest/APIReference/API_DisassociateFromMasterAccount.html)
+- [Service control policy examples — AWS Samples](https://github.com/aws-samples/service-control-policy-examples)
+- [Resource control policy examples — AWS Samples](https://github.com/aws-samples/resource-control-policy-examples)
+- [Top 5 preventative controls for AWS Startups — Amazon Web Services](https://www.youtube.com/watch?v=cp6yRtNRazw)

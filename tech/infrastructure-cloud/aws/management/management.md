@@ -9,13 +9,13 @@ aliases: ["AWS 관리 인덱스"]
 
 멀티 계정, IaC, 감사, 운영 자동화 서비스 모음.
 
-- [[AWS-Organizations|Organizations — 멀티 계정, SCP와 RCP의 권한 상한, 선언적 정책, OU와 통합 결제]]
+- [[AWS-Organizations|Organizations — 멀티 계정, SCP와 RCP의 권한 상한, 초기 예방 통제와 root 중앙 관리, S3와 선언적 정책, OU와 통합 결제]]
 - [[AWS-Control-Tower|Control Tower — 랜딩 존, 계정 생성과 통제의 적용 경계]]
 - [[CloudFormation|CloudFormation — IaC 템플릿, 스택, 롤백 실패 복구와 건너뛴 리소스 정합성]]
 - [[Step-Functions|Step Functions — 상태 머신, 서비스 오케스트레이션, 재시도와 보상]]
 - [[CloudTrail-Config|CloudTrail과 Config — API 감사, 리소스 구성 추적]]
 - [[Systems-Manager|Systems Manager — Run Command, Patch Manager, Session Manager]]
-- [[SSM-Parameter-Store|SSM Parameter Store — 계층형 설정 저장, Secrets Manager 비교]]
+- [[SSM-Parameter-Store|SSM Parameter Store — 계층 경로와 재귀 조회 권한, 버전과 레이블, 처리량 한도, 공개 매개변수, Secrets Manager 비교]]
 
 ## 관련 문서
 
