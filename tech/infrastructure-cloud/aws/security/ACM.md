@@ -84,6 +84,19 @@ dig @ns-parent.example.net sub.example.com NS
 - **내보내기 가능 인증서**: 유효기간은 198일이며 ACM이 만료 45일 전에 갱신을 시작한다. 내보내서 설치한 복사본은 자동 재배포되지 않는다.
 - **Imported 인증서**: 자동 갱신 없음. 만료 임박 이벤트는 EventBridge로 알림 가능.
 
+## 내보내기와 갱신본 배포
+
+2026-10-16 ACM의 내보내기, 관리형 갱신과 EventBridge 공식 문서 대조 기준. 이 절은 ACM에서 발급한 내보내기 가능 퍼블릭 인증서를 직접 설치하는 경로를 다룬다.
+
+1. 인증서를 요청할 때 내보내기를 활성화하고 도메인 소유를 검증한다. 2025-06-17 이전에 생성한 ACM 퍼블릭 인증서는 내보낼 수 없다.
+2. 인증서 본문, 인증서 체인과 암호화된 개인키를 내보낸다. 개인키에 지정한 passphrase는 이후 복호화에 필요하다. CLI에서는 passphrase를 명령행에 직접 쓰지 않고 접근을 제한한 파일로 전달하며, 그 파일 끝에는 줄바꿈을 넣지 않는다.
+3. 대상 서버나 애플리케이션에 설치한다. 내보낸 키와 passphrase의 저장 위치와 접근 권한을 관리한다.
+4. 갱신본이 준비되면 다시 내보내고 배포한다. 발급 또는 마지막 갱신 이후 내보낸 이력은 관리형 갱신 자격의 하나다. 갱신 시 ARN은 유지되지만 외부에 설치한 복사본은 자동으로 바뀌지 않는다.
+
+EventBridge의 `ACM Certificate Available` 이벤트는 발급, 갱신과 가져오기 때 발생한다. 갱신 배포를 시작할 때는 대상 인증서 ARN과 `detail.Action`의 `RENEWAL`을 함께 확인한다. 이벤트 수신은 ACM에서 갱신본이 준비됐다는 신호이며 외부 호스트의 교체 완료 증거가 아니다.
+
+운영 점검에서는 **갱신본 준비, 내보내기 성공, 호스트 배포와 실제 TLS 응답 확인**을 별도 단계로 기록하는 방식을 권한다. 서비스가 제공하는 인증서의 만료일과 식별 정보를 확인하고, 배포 실패나 일부 호스트 누락을 만료 전에 발견할 수 있도록 점검한다. 이 점검 흐름은 배포 설계 제안이며 ACM이 호스트 배포까지 수행한다는 뜻은 아니다.
+
 ## 외부 인증서 가져오기와 재가져오기
 
 가져오기 전에 인증서 본문, 대응하는 개인키와 필요한 CA 체인을 구분한다. PFX/PKCS#12 묶음은 각 구성요소를 추출해 PEM으로 변환해야 한다. 파일 확장자만 바꾸는 것은 변환이 아니다.
@@ -138,6 +151,8 @@ dig @ns-parent.example.net sub.example.com NS
 - [AWS Certificate Manager — DNS validation](https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html)
 - [AWS Certificate Manager — Managed automation with integrated services](https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html)
 - [AWS Certificate Manager — Exportable public certificates](https://docs.aws.amazon.com/acm/latest/userguide/acm-exportable-certificates.html)
+- [AWS Certificate Manager — Export a public certificate](https://docs.aws.amazon.com/acm/latest/userguide/export-public-certificate.html)
+- [AWS Certificate Manager — Amazon EventBridge support for ACM](https://docs.aws.amazon.com/acm/latest/userguide/supported-events.html)
 - [AWS Certificate Manager pricing](https://aws.amazon.com/certificate-manager/pricing/)
 - [AWS Certificate Manager — Managed renewal](https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html)
 - [AWS Certificate Manager now supports ACME](https://aws.amazon.com/about-aws/whats-new/2026/07/aws-certificate-manager-acme/)
