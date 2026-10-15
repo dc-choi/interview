@@ -63,6 +63,16 @@ AWS에서 Hadoop, Spark 같은 빅데이터 프레임워크를 실행하는 관�
 
 변경 뒤에는 같은 입력에서 실패 재현 여부, 최대 메모리, spill과 수행 시간을 비교한다. 종료 코드 해석과 JVM 힙 밖 메모리의 일반 원리는 [[JVM-Container-Memory|JVM 컨테이너 메모리]]와 연결한다.
 
+### 조인과 executor 설정을 함께 확인한다
+
+부분 검증(2026-10-16): Spark 3.5.7 SQL 튜닝과 EMR Spark 설정 문서 기준이다. 과거 릴리스의 설정 예시를 현재 클러스터의 최적값으로 복사하지 않는다.
+
+- `spark.sql.autoBroadcastJoinThreshold`는 자동 broadcast할 테이블의 **최대 크기**이며 Spark 3.5.7 기본값은 10,485,760바이트다. 큰 테이블을 이 값 이상이면 broadcast한다는 의미가 아니다. `BROADCAST` hint는 통계상 크기가 임계값을 넘어도 우선 고려되지만, 모든 조인 유형에서 적용을 보장하지 않는다.
+- AQE는 실행 중 통계로 shuffle 파티션 병합, 조인 전략 변경과 skew 최적화를 수행한다. `spark.sql.adaptive.enabled`와 관련 하위 설정, 실제 실행 계획을 함께 확인한다. 노드를 늘렸다는 사실만으로 데이터 편향이 해결됐다고 판단하지 않는다.
+- EMR의 `maximizeResourceAllocation`은 하드웨어를 기준으로 executor 설정을 계산한다. 크기가 다른 타입을 섞은 instance fleet에는 계산된 설정이 최적이 아닐 수 있어 별도 조정이 필요하다. HBase 같은 다른 분산 애플리케이션을 함께 실행하면 YARN 설정 충돌로 Spark 작업이 실패할 수 있어 AWS는 이 옵션을 사용하지 말라고 안내한다.
+
+운영 점검 제안: EMR 기본 설정에서 기준값을 측정한 뒤 같은 입력과 결과 정확성을 유지하며 shuffle, spill, 태스크별 시간과 전체 비용을 비교한다. 실제 작업을 실행한 기록은 아니며 문서의 다른 절 검증일은 유지한다.
+
 ## Spark 클래스 누락과 의존성 배포
 
 2026-10-13 Spark 3.5.7 공식 문서로 이 절을 대조했다. `java.lang.ClassNotFoundException`이 발생하면 먼저 누락된 클래스 이름과 실패한 프로세스(driver 또는 executor)를 확인하고, 해당 클래스를 포함한 JAR의 배포와 classpath를 점검한다. 적용할 EMR 릴리스의 Spark 버전도 함께 확인한다.
@@ -149,6 +159,8 @@ EMR on EKS는 기존 EKS 클러스터에서 분석 워크로드를 컨테이너�
 
 ## 출처
 
+- [Apache Spark 3.5.7, Performance Tuning](https://spark.apache.org/docs/3.5.7/sql-performance-tuning.html)
+- [AWS, Configure Spark](https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-spark-configure.html)
 - [AWS, Supported instance types with Amazon EMR](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-supported-instance-types.html)
 - [AWS, Availability Zone flexibility for an Amazon EMR cluster](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-flexibility.html)
 - [How do I publish and monitor an Amazon EMR application status with CloudWatch integration? — AWS re:Post](https://repost.aws/knowledge-center/emr-publish-monitor-service-status)

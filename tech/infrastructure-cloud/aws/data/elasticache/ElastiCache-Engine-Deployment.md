@@ -100,6 +100,14 @@ Durability는 지원 노드 유형의 Valkey 9.0 이상에서 cluster mode enabl
 
 개발 또는 검증 환경의 `TestFailover`로 쓰기 중단, 클라이언트 복구와 오류 처리를 확인한다. 이 API는 장애 시 애플리케이션 동작을 시험하기 위한 기능이며 운영 장애를 해결하는 도구로 설계되지 않았다.
 
+### FIS로 AZ 장애와 클라이언트 복구를 시험한다
+
+부분 검증(2026-10-16): AWS FIS action과 중단 조건의 공식 문서를 대조했다. `aws:elasticache:replicationgroup-interrupt-az-power`는 Multi-AZ가 켜진 Valkey 또는 Redis 복제 그룹에서 지정 AZ의 노드 전원 중단을 주입한다. Serverless는 이 action의 대상이 아니다.
+
+복제 그룹마다 한 번에 한 AZ에 영향을 주며, primary가 대상이면 복제 지연이 가장 작은 read replica를 승격한다. 주입 중에는 해당 AZ의 replica 대체가 차단돼 그룹이 줄어든 용량으로 동작한다. 이 action 하나를 애플리케이션, RDS와 네트워크까지 포함한 AZ 전체 장애 실험으로 해석하지 않는다.
+
+운영 점검 제안: 대상 복제 그룹과 AZ, 실행 역할의 권한을 제한하고, 읽기와 쓰기 성공률, timeout, 재연결과 원본 DB 우회 부하를 각각 측정한다. CloudWatch alarm으로 허용할 지연이나 오류의 중단 조건을 정한다. 중단 조건이 발동한 실험은 재개할 수 없으며, 실험 중단과 애플리케이션 복구 완료는 별도로 확인한다. 이 절은 실험 설계 기준이며 실제 장애 주입 결과가 아니다. 기존 다른 절의 검증일은 유지한다.
+
 ### Endpoint와 replica 읽기
 
 2026-10-14 ElastiCache 사용자 가이드 기준이다. 노드가 여럿인 cluster mode disabled 구성은 endpoint가 세 가지다.
@@ -140,6 +148,8 @@ cluster mode enabled는 configuration endpoint 하나로 shard별 primary와 rea
 
 ## 출처
 
+- [AWS FIS, Actions reference, Amazon ElastiCache actions](https://docs.aws.amazon.com/fis/latest/userguide/fis-actions-reference.html#elasticache-actions-reference)
+- [AWS FIS, Stop conditions](https://docs.aws.amazon.com/fis/latest/userguide/stop-conditions.html)
 - [AWS, Amazon ElastiCache Service Level Agreement](https://aws.amazon.com/elasticache/sla/) — 2026-10-15 Serverless 월별 가동률과 서비스 크레딧 청구 조건 확인
 - [ElastiCache Memcached 노드 기반 수직 확장의 지원 조건](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Scaling-self-designed.mem-heading.html)
 - [ElastiCache Serverless 확장 한도와 pre-scaling](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Scaling-serverless.html)

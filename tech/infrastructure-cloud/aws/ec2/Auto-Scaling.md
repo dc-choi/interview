@@ -32,6 +32,16 @@ ASG는 인스턴스를 시작할 Launch Template을 사용한다. 기존 그룹�
 
 Launch Configuration은 한번 만들면 못 바꾸므로 변경 시 **새로 만들어 ASG에 교체**해야 한다.
 
+### 혼합 인스턴스의 가중치와 용량 단위
+
+부분 검증(2026-10-16): AWS의 instance weights 문서를 대조했다. 가중치를 쓰면 최소, 목표, 최대 용량을 인스턴스 대수가 아닌 같은 용량 단위로 지정한다. 가중치는 인스턴스가 용량에 기여하는 양이며, 실제 타입을 고르는 allocation strategy와 다르다.
+
+- 예를 들어 가중치 2와 12인 타입을 함께 쓰고 남은 목표가 5단위인데 12단위 인스턴스가 시작되면 목표를 7단위 초과한다. 정수 대수로 공급하므로 목표와 실제 용량이 꼭 같지는 않다.
+- 가중치 그룹은 AZ 균형과 allocation strategy를 따르면서 최대 용량 설정을 초과할 수도 있다. 공식 문서가 설명하는 강제 상한은 목표 용량에 가장 큰 가중치를 더한 값이다. 최대값을 인스턴스 대수나 절대 비용 상한으로 읽지 않는다.
+- 기존 그룹의 가중치를 바꾸면 새 단위의 목표에 맞춰 인스턴스가 시작되거나 종료될 수 있다. 단위 변경을 단순한 표시 수정으로 취급하지 않는다.
+
+운영 점검 제안: 타입별 처리 성능과 비용을 같은 단위로 비교하고, 변경 전후 대수와 가중 용량을 함께 확인한다. 실제 ASG 변경은 실행하지 않았으며 다른 절의 검증일은 유지한다.
+
 ## Scaling Policy — 3가지 동적 정책
 
 | 정책 | 트리거 | 동작 |
@@ -163,6 +173,7 @@ EC2, ELB, VPC Lattice, EBS 또는 사용자 지정 헬스 체크가 인스턴스
 - 현행 설계는 Launch Template을 기준으로 하며 Mixed Instances Policy에서 여러 인스턴스 유형과 구매 옵션을 조합할 수 있다
 
 ## 출처
+- [AWS, Configure an Auto Scaling group to use instance weights](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups-instance-weighting.html)
 - [EC2 Auto Scaling의 Launch Template](https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-templates.html)
 - [Mixed Instances Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups.html)
 - [Scaling cooldown](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scaling-cooldowns.html)

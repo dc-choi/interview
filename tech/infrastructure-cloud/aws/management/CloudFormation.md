@@ -57,6 +57,19 @@ AWS의 **네이티브 IaC 서비스**. JSON, YAML 템플릿으로 AWS 리소스(
 - **스택 삭제** → 기본적으로 포함 리소스를 삭제하지만 `DeletionPolicy`, retain option과 리소스별 삭제 제약에 따라 보존되거나 삭제가 실패할 수 있음
 - **Automatic Rollback on Error**가 기본 동작이다. 다만 preserve successfully provisioned resources를 선택하면 성공한 리소스를 유지한 채 실패 지점에서 진단, 재시도할 수 있음
 
+### 삭제, 교체와 업데이트 보호의 경계
+
+부분 검증(2026-10-16): CloudFormation의 보호 정책별 공식 문서를 대조했다. 삭제를 막는 설정과 삭제 과정에서 자원을 남기는 설정은 적용 시점이 다르다.
+
+| 수단 | 적용 범위와 한계 |
+|---|---|
+| Termination protection | 스택 삭제 요청을 막는다. 업데이트 자체를 막지 않으며, 업데이트가 중첩 스택을 제거하면 그 중첩 스택은 삭제될 수 있다. 설정은 root 스택에서 관리한다. |
+| Stack policy | 스택 업데이트 중 지정 리소스의 `Update:Modify`, `Update:Replace`, `Update:Delete`를 제한한다. 전체 스택 삭제와 IAM 접근 제어를 대신하지 않는다. 보호 대상에는 명시적 `Deny`를 둔다. |
+| `DeletionPolicy: Retain` | 스택 삭제 또는 템플릿에서 리소스 정의를 제거할 때 물리 자원을 남긴다. 속성 변경에 따른 교체에서 이전 자원을 보존하는 설정은 아니다. |
+| `UpdateReplacePolicy: Retain` | 업데이트로 교체되는 이전 물리 자원을 남긴다. 교체 자체를 막거나 새 자원으로 데이터를 이전하는 기능으로 해석하지 않는다. |
+
+보존된 자원은 CloudFormation 관리 범위에서 빠져도 계속 존재하며 해당 비용이 발생한다. 운영 점검에서는 보존 대상과 이후 관리 책임을 함께 정한다. IAM으로 스택 변경 권한뿐 아니라 `SetStackPolicy`, `UpdateTerminationProtection`처럼 보호를 바꾸는 권한도 검토한다. Stack policy는 승인된 업데이트 동안 임시 정책으로 재정의할 수 있으므로 영구적인 변경 불가 보장이 아니다. 이 절만 대조했으며 실제 삭제나 업데이트는 실행하지 않았다.
+
 ### DELETE_FAILED 진단과 잔존 리소스
 
 2026-10-07 공식 문서 대조 기준이다. 스택 Events에서 실패한 논리 ID와 사유를 확인하고, 삭제를 막는 원인을 먼저 구분한다.
@@ -208,6 +221,10 @@ IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인�
 
 ## 출처
 
+- [AWS CloudFormation — Protect CloudFormation stacks from being deleted](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html)
+- [AWS CloudFormation — Prevent updates to stack resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/protect-stack-resources.html)
+- [AWS CloudFormation — DeletionPolicy attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html)
+- [AWS CloudFormation — UpdateReplacePolicy attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatereplacepolicy.html)
 - [AWS CloudFormation — Specify existing resources at runtime with CloudFormation-supplied parameter types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-supplied-parameter-types.html)
 - [AWS CloudFormation — CreateChangeSet](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateChangeSet.html)
 - [AWS CloudFormation — Execute a change set for a CloudFormation stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets-execute.html)

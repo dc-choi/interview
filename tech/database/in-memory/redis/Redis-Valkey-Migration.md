@@ -45,6 +45,14 @@ Redis의 단일 스레드 명령 처리 모델(→ [[Redis-Architecture]])은 �
 - 메인 스레드가 소켓 read, write syscall과 파싱으로 CPU를 소진하는 상황이 아니거나 남는 코어가 없으면 효과가 없거나 오히려 느려진다. 서버와 `valkey-benchmark`를 한 노트북에서 돌리면 서버 I/O 스레드, 메인 스레드, 벤치마크 스레드가 같은 코어를 나눠 써 이득이 사라지거나 역전된다. 강의 실습(강사 노트북 측정)에서는 `io-threads` 6이 1보다 GET 처리량을 낮췄고, 같은 장비에서 pipeline 16과 클라이언트 100 조합이 GET 약 초당 100만 요청에 도달했다. 강의는 127.0.0.1 loopback에 NIC 병목이 없다는 점도 원인으로 들지만, loopback에서도 syscall과 파싱은 CPU를 쓰므로 NIC 유무로 효과를 판단하지 않는다
 - 측정할 때는 벤치마크 클라이언트도 `--threads`로 늘려 클라이언트 병목을 먼저 없애고, 명령 종류, pipeline 깊이, 연결 수와 payload를 자기 워크로드에 맞춘다. 명령마다 왕복을 기다리는 것이 병목이면 스레드보다 [[Redis-Architecture#Pipeline vs Transaction|pipeline]]이 먼저다
 
+### 슬롯별 통계로 편향을 확인한다
+
+부분 검증(2026-10-16): Valkey의 `CLUSTER SLOT-STATS` 명령 문서 기준이다. 이 명령은 8.0.0부터 제공되며 현재 shard에 할당된 슬롯의 사용 통계를 반환한다. 한 노드의 응답을 클러스터 전체 통계로 읽지 않는다.
+
+기본 반환값은 `key-count`다. `cpu-usec`, `network-bytes-in`, `network-bytes-out`도 보려면 `cluster-slot-stats-enabled yes` 설정이 필요하다. 명령 자체가 슬롯별 지연 백분위나 cache hit/miss를 모두 제공한다고 가정하지 않는다. `ORDERBY`로 특정 지표 순서를, `SLOTSRANGE`로 조회할 슬롯 범위를 정할 수 있다.
+
+운영 점검 제안: 키 수가 많은 슬롯과 CPU 또는 전송량이 큰 슬롯을 구분해 배치 변경이나 키 설계를 검토한다. 메모리 절감률과 노드 평균 CPU만으로 hot slot이 해소됐다고 결론 내리지 않는다. 실제 클러스터 측정은 수행하지 않았으며 기존 버전, 패키지와 가격의 검증일은 유지한다.
+
 ## Redis 상식 중 Valkey에서 달라진 것
 
 | 통념 | Valkey 기준 |
@@ -121,6 +129,7 @@ ElastiCache 인플레이스 업그레이드는 새 노드를 붙여 데이터를
 
 ## 출처
 
+- [Valkey 공식 문서, CLUSTER SLOT-STATS](https://valkey.io/commands/cluster-slot-stats/)
 - [Valkey GLIDE, Connection Management](https://glide.valkey.io/how-to/connection-management/)
 - [Valkey GLIDE, Command Routing](https://glide.valkey.io/concepts/client-features/command-routing/)
 - [Valkey 공식 문서, Migration from Redis to Valkey](https://valkey.io/topics/migration/)
