@@ -54,6 +54,14 @@ aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 
 앱 수나 스토어 순위만으로 획득 비용을 회수했다고 판단하지 않는다. 광고 노출을 늘리거나 구독을 더하는 선택도 같은 코호트의 유지율과 누적 공헌이익을 확인하는 실험으로 다룬다.
 
+### 광고 형식과 이용 가능 조건을 함께 비교한다
+
+2026-10-15 Google 공식 문서 부분 대조 기준이다. 새 형식의 존재와 모든 앱에서의 이용 가능성, 수익 개선은 별도로 확인한다.
+
+- **Picture-in-Picture 배너:** 기존 화면 위에 겹치는 정사각형 광고다. 일부 게시자 대상 베타이며, 홈이나 메뉴처럼 상호작용이 적은 화면에 맞는다. 사용자는 광고를 끌어 옮기고 3초 뒤 닫을 수 있다. 반복 터치 구간이나 곧 누를 버튼 위에 배치하면 오클릭을 유발할 수 있고, 전면 광고 위에 계속 남겨서는 안 된다. 화면을 가리지 않는 형식으로 해석하지 않는다.
+- **Swipeable interstitial:** iOS 베타 레퍼런스는 스와이프 같은 사용자 지정 닫기 동작을 제어하는 전면 광고 형식을 제공한다. 로드한 광고 소재가 요구하는 최소 화면 유지 시간이 있으므로 언제든 즉시 넘길 수 있다고 약속하지 않는다. 실제 제공 대상과 도입 조건은 해당 SDK와 계정에서 확인한다.
+- **도입 판단:** 광고를 닫거나 이동할 수 있다는 기능만으로 사용자 경험과 수익이 함께 좋아진다고 단정하지 않는다. 기존 형식과 비교할 때 실제 노출, 정산 수익, 유지율과 핵심 작업 완료율을 함께 측정한다. 이는 효과가 확인된 결과가 아니라 실험 설계 제안이다.
+
 ### ARPU와 당일 매출만으로 광고를 늘리지 않는다
 
 ARPU는 사용자당 매출이며 이익이 아니다. GA4의 ARPU는 활성 사용자를 분모로 사용한다. 광고로 획득한 전체 설치를 분모로 삼는 CPI와 비교하려면 대상 집합과 관찰 기간을 먼저 맞춰야 한다. 최초 실행 코호트의 매출 지표도 설치 계측과 귀속 범위가 같은지 확인하고 사용한다.
@@ -107,6 +115,8 @@ ARPU는 사용자당 매출이며 이익이 아니다. GA4의 ARPU는 활성 사
 - [Changes to Google Play's service fee in 2021 — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/10632485?hl=en)
 - [Understanding Google Play's lower service fees — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/16954621?hl=en)
 - [Getting started FAQs — Google AdMob Help](https://support.google.com/admob/answer/6168758?hl=en)
+- [About Picture-in-Picture banner ads (Beta) — Google AdMob Help](https://support.google.com/admob/answer/17155813?hl=en)
+- [GoogleMobileAds (Beta), GADSwipeableInterstitialAd — Google for Developers](https://developers.google.com/admob/ios/api/beta/reference/Classes/GADSwipeableInterstitialAd)
 - [Analytics dimensions and metrics — Google Analytics Help](https://support.google.com/analytics/table/13948007?hl=en) — ARPU의 활성 사용자 분모와 최초 실행 코호트 매출 지표
 - [How Google Ads promotional offers work with different payment settings — Google Ads Help](https://support.google.com/google-ads/answer/16915411?hl=en) — 제안별 조건, 환급 제한과 크레딧 소진 뒤 과금
 - [Principles of Accounting, Volume 2, 3.1 Contribution Margin — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/3-1-explain-contribution-margin-and-calculate-contribution-margin-per-unit-contribution-margin-ratio-and-total-contribution-margin)

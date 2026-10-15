@@ -54,6 +54,14 @@ YouTube의 채널 수익화, YPP 신청과 AI 공개 기준, Suno의 약관과 �
 4. **공개 설정**: 업로드 때 합성 콘텐츠 공개를 켠다.
 5. **기간 설정**: 초기 조회수가 낮아도 버틸 기간과 중단 기준(업로드 수, 기간, 구독 전환율)을 미리 정한다.
 
+### 제작 역할과 시장 반응을 나누어 확인한다
+
+AI 음악의 제작 과정을 검토할 때는 보컬 생성, 작사, 기획과 프로듀싱을 구분한다. 생성 도구를 썼다는 사실만으로 전 과정을 자동화한 결과물이라고 판단하지 않는다.
+
+공개 사례인 머무르의 「꿈꾸던 어른이 되었나요?」는 멜론 앨범 소개에서 Suno AI로 보컬을 생성하고, 아티스트가 기획, 작사와 전체 프로듀싱 디렉션을 맡았다고 명시한다(2026-10-15 확인). 이는 제작자의 공개 설명을 확인한 범위이며 생성 과정과 작업량을 독립 검증한 결과는 아니다.
+
+차트 순위는 차트 종류와 집계 시점이 붙은 관측값으로 다룬다. 한 곡의 순위로 제작 방식의 우열, 반복 가능한 수익이나 제작자의 권리 상태를 추정하지 않는다. 사업 검토에서는 제작비, 유통 조건과 실제 정산 자료를 따로 확인한다. 이 구분은 개별 성공 사례를 사업성 보장으로 확대하지 않기 위한 판단 기준이다.
+
 ## 짧은 영상의 기획, 제작과 피드백
 
 AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 만들 수 있다. 제작을 보조하는 과정과 실제 수익 발생은 별개다. 다음은 릴스 제작 경험담을 실험 절차로 정리한 제안이며, 특정 모델이나 세 개의 프롬프트만으로 성과를 보장하지 않는다.
@@ -87,9 +95,7 @@ AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 �
 
 ## 출처
 
-- [AI 릴스 채널 기획과 대본, 성과 피드백 — Threads, yutipman](https://www.threads.com/@yutipman/post/Dd5sMd-m_d3) — 제작 절차의 참고 경험담. 특정 모델과 기간에 따른 성과는 검증하지 않았다.
-
-- [AI 음악 유튜브 수익화 첫날 세팅 — Threads, kjkl_55](https://www.threads.com/@kjkl_55/post/DdllH1Nm0ie)
+- [꿈꾸던 어른이 되었나요? 앨범 정보 — 머무르 (멜론)](https://www.melon.com/album/detail.htm?albumId=13744621) — 제작 역할에 관한 공개 설명, 2026-10-15 확인
 - [YouTube Help, YouTube channel monetization policies](https://support.google.com/youtube/answer/1311392)
 - [YouTube Help, YouTube Partner Program overview & eligibility](https://support.google.com/youtube/answer/72851)
 - [YouTube Help, Overview of the expanded YouTube Partner Program](https://support.google.com/youtube/answer/13429240)
