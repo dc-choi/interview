@@ -46,6 +46,17 @@ Launch Configuration은 한번 만들면 못 바꾸므로 변경 시 **새로 �
 
 대상 추적 지표 예: `ASGAverageCPUUtilization`, `ASGAverageNetworkIn/Out`, `ALBRequestCountPerTarget`.
 
+### 여러 대상 추적 정책의 조합과 지표 선택
+
+2026-10-16 공식 문서 부분 대조 기준이다. 서로 다른 지표를 쓰는 target tracking 정책을 함께 설정하면, 하나라도 확장을 요구할 때 scale-out할 수 있다. 축소는 **scale-in이 활성화된 모든 target tracking 정책**이 축소할 준비가 되었을 때만 한다. 이 규칙을 다른 종류의 정책이나 수동 조정까지 포함한 전체 ASG의 축소 금지로 해석하지 않는다.
+
+- 대상 추적에는 용량 변화에 비례해 인스턴스당 부하가 변하는 지표를 고른다. 전체 `RequestCount`, 지연 시간, SQS의 전체 메시지 수를 그대로 목표로 삼는 것은 부적합하다. 요청 수는 `ALBRequestCountPerTarget`, 큐 적체는 인스턴스당 메시지 수 같은 지표를 검토한다.
+- 예를 들어 CPU와 target당 요청 수 정책을 함께 쓰면 CPU가 낮아도 요청 수 정책이 확장을 요구할 수 있다. 두 정책의 목표값을 평균내어 하나의 조건으로 판단하는 방식이 아니다.
+- 해당 지표의 데이터가 빠져 경보가 `INSUFFICIENT_DATA`가 되면 그 대상 추적 정책으로 조정할 수 없다. 관측 누락을 부하 0으로 취급하지 않는다. 다른 정책과 수동 조정의 실행 여부는 별도로 확인한다.
+- 위기 구간에 더 큰 폭의 확장이 필요하면 step scaling을 추가로 검토할 수 있다. 확장과 축소 임계값에는 여유를 두어 반복 증감(flapping)을 피한다.
+
+운영 점검 제안: 부하 테스트에서 목표값뿐 아니라 정책별 경보, 실제 용량 변화와 애플리케이션 지연을 함께 확인한다. 이 절은 정책 동작의 문서 대조이며 실제 ASG에서 실행한 결과는 아니다.
+
 ## 예정된 급증은 준비 완료 시각에서 역산한다
 
 2026-10-07 공식 문서 대조 기준이다. 광고나 판매 시작처럼 시각을 아는 부하는 scheduled action으로 미리 용량을 확보하고, 예측 오차는 동적 정책으로 대응한다. 예약 실행 시각과 애플리케이션이 트래픽을 받을 수 있는 시각은 다르다.
@@ -166,6 +177,7 @@ EC2, ELB, VPC Lattice, EBS 또는 사용자 지정 헬스 체크가 인스턴스
 - [SetDesiredCapacity API Reference](https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_SetDesiredCapacity.html)
 - [UpdateAutoScalingGroup API Reference](https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_UpdateAutoScalingGroup.html)
 - [Target tracking scaling policies for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html)
+- [Step and simple scaling policies for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html)
 - [Prebaking vs. bootstrapping AMIs](https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/prebaking-vs.-bootstrapping-amis.html)
 - [전 세계 팬들이 모일 수 있는 플랫폼 만들기 — AWS Community Day 2020, 강진우](https://www.youtube.com/watch?v=X2I4NuTOWS8)
 
