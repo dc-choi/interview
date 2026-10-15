@@ -3,7 +3,7 @@ tags: [infrastructure, docker]
 status: done
 category: "Infrastructure - Container"
 aliases: ["Docker Compose", "도커 컴포즈"]
-verified_at: 2026-09-30
+verified_at: 2026-10-15
 ---
 
 # Docker Compose
@@ -45,7 +45,7 @@ verified_at: 2026-09-30
 - `container_name`을 지정하면 그 service는 컨테이너 하나를 넘어 scale할 수 없고 시도하면 오류다. 같은 이름의 컨테이너가 이미 있으면 생성도 실패하므로 꼭 필요할 때만 쓴다.
 - `volumes`의 상대 host 경로는 compose 파일이 있는 폴더 기준이고 named volume과 구분되도록 `.`이나 `..`로 시작해야 하며, 로컬 container runtime에서만 지원된다.
 - service가 쓰는 named volume은 최상위 `volumes`에 선언해야 하고, 빠지면 `refers to undefined volume` 오류로 project가 거부된다. 이 선언을 여러 service가 함께 쓰며, Compose 밖에서 만든 volume은 `external: true`로 참조해 Compose가 만들지 않게 한다(없으면 오류). anonymous volume과 DB data 경로의 수명은 [[Docker-Core-Storage|Docker 데이터 영속성]].
-- CLI v1은 Python으로 된 `docker-compose`, v2(2020 발표)는 Go로 된 `docker compose`다. v2부터 top-level `version:`을 무시하고 Compose Specification으로 해석한다. 현재 지원 CLI는 v2와 2025년에 나온 v5(v2와 기능 동일)이므로 `docker-compose` 표기는 `docker compose`로 읽는다.
+- CLI v1은 Python으로 된 `docker-compose`, v2(2020 발표)는 Go로 된 `docker compose`다. v2부터 top-level `version:`을 무시하고 Compose Specification으로 해석한다. 공식 이력 문서는 v5의 2025년 도입 당시 차이를 Go SDK 제공으로 설명한다. 이후 추가 기능의 지원 범위는 개별 릴리스를 확인한다.
 
 ## Health check와 기동 순서
 
@@ -84,6 +84,19 @@ container가 update되면 IP는 바뀔 수 있으므로 IP를 고정 저장하�
 
 `down -v`는 Compose가 만든 volume까지 삭제할 수 있으므로 database가 있는 환경에서 cleanup 명령으로 습관적으로 쓰지 않는다. `docker image prune`도 rollback에 필요한 image와 보존 정책을 확인한 뒤 실행한다.
 
+## 작업 정의와 예약 실행의 경계
+
+Compose v5.6.0(2026-10-02)의 jobs 지원은 수동 트리거에 한정된다. 이 버전에는 예약 실행이 없으며, 전체 지원은 Docker Engine의 대응 기능 병합에 의존한다. 따라서 jobs 정의가 생겼다는 이유만으로 cron의 시간 기반 실행까지 이전할 수는 없다. 후속 버전의 예약 기능은 별도로 확인한다.
+
+운영 적용 시에는 실행 요청, 실제 실행과 결과 확인을 나눠 점검한다.
+
+- **수동 작업과 정기 작업**: 관리자가 시작하는 작업은 검토 후보지만, 정해진 시각에 시작해야 하는 작업은 v5.6.0 jobs만으로 대체하지 않는다. 기존 스케줄러의 책임과 작업 본체를 구분한다.
+- **Provider 연결**: v5.6.0에는 provider endpoint를 위한 network relay와 필요 시 image 배포 변경도 포함된다. 적용 환경에서는 연결 경로와 이미지 전달 결과를 각각 확인한다.
+- **지원하지 않는 속성**: v5.6.0은 미지원 Compose 속성을 경고한다. 경고를 없애려고 설정을 지우기 전에 그 속성이 담당하던 운영 요구가 다른 곳에서 충족되는지 확인한다.
+- **Dry run과 실행 증거**: `docker compose --dry-run up --build -d`는 실행 단계를 미리 보는 명령이다. v5.6.0에 포함된 PR #14150은 하위 dry-run 클라이언트의 변경 작업 차단을 강화했다. 변경 전에도 Compose의 commit 경로는 `s.dryRun` 검사로 `ContainerCommit` 호출 전에 반환했으므로, 기존 CLI가 실제 이미지를 만들던 오류의 수정으로 설명하지 않는다. 모의 출력의 이미지 생성 메시지를 실제 산출물로 취급하지 않고, CI의 실제 build 뒤 이미지와 실행 결과를 확인한다.
+
+위 점검은 릴리스의 지원 범위에 근거한 적용 기준이다. jobs의 구체적인 YAML 문법이나 예약 실행 도입 시점은 이 릴리스 노트만으로 확정하지 않는다.
+
 ## 면접 포인트
 
 Q. Docker Compose를 왜 사용하는가?
@@ -103,6 +116,12 @@ Q. 코드를 바꿨는데 `docker compose up`에 반영되지 않는 이유는?
 
 ## 출처
 
+2026-10-15 부분 검증: CLI 버전 설명, v5.6.0 jobs와 provider 변경, 미지원 속성 경고와 dry-run의 경계를 공식 이력, 릴리스 노트와 CLI 문서에 대조했다. dry-run 변경의 성격은 PR #14150의 검토와 변경 전 commit 경로도 확인했다. 실행 환경에서의 재현은 포함하지 않는다.
+
+- [v5.6.0 릴리스 — docker/compose](https://github.com/docker/compose/releases/tag/v5.6.0)
+- [PR #14150 dry-run 방어 강화와 기존 동작 검토 — docker/compose](https://github.com/docker/compose/pull/14150)
+- [변경 전 commit 경로의 dry-run 검사 — docker/compose](https://github.com/docker/compose/blob/727fa0e/pkg/compose/commit.go)
+- [Docker Docs — docker compose](https://docs.docker.com/reference/cli/docker/compose/)
 - [Docker Docs — Compose networking](https://docs.docker.com/compose/how-tos/networking/)
 - [Docker Docs — Control startup order](https://docs.docker.com/compose/how-tos/startup-order/)
 - [Docker Docs — Use secrets in Compose](https://docs.docker.com/compose/how-tos/use-secrets/)
