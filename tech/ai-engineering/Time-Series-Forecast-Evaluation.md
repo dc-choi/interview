@@ -1,6 +1,7 @@
 ---
 tags: [ai, machine-learning, time-series, forecasting, evaluation]
 status: done
+verified_at: 2026-10-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["시계열 예측 평가", "Time Series Forecast Evaluation", "Rolling Origin Evaluation"]
 ---
@@ -48,6 +49,16 @@ TFT는 이 입력들을 함께 다루는 다중 예측 거리 모델이다. 입�
 - `dynamic_feat`으로 학습했다면 추론에서도 과거 입력과 예측 구간 전체의 특성값이 필요하다. 미래 행사 일정처럼 예측 시점에 확보 가능한 값인지 확인하며, 나중에 관측한 실제값으로 채우지 않는다.
 
 평가 설계 제안: 단일 시계열 기준 모델과 같은 예측 거리와 시간 분할로 비교하고, 전체 평균 외에 제품군별 오차를 확인한다. 관련 없는 시계열을 함께 묶은 결과나 특정 매장의 개선 효과는 검증하지 않았다. 이 절은 DeepAR의 입력 조건 대조이며 실제 모델 학습 결과가 아니다.
+
+### 미래 외부 변수가 없는 경우의 모델 비교
+
+부분 검증(2026-10-16): Amazon Forecast의 CNN-QR과 관련 시계열 문서를 대조했다. 외부 변수의 미래값이 없다는 조건은 그 변수의 과거 관측도 사용할 수 없다는 뜻이 아니다.
+
+- **CNN-QR**은 예측 구간의 값이 없는 과거 관련 시계열도 사용할 수 있다. 기본 동작에서 이 입력은 encoder에만 들어가며, 예측 구간까지 있는 관련 시계열은 encoder와 decoder에 들어간다.
+- **SageMaker AI DeepAR**의 `dynamic_feat` 입력은 앞 절처럼 예측 구간까지 필요하다. Amazon Forecast의 legacy predictor에서도 DeepAR+의 관련 시계열은 미래 구간을 포함해야 한다. 서비스별 입력 계약을 구분하며 이 조건을 모든 시계열 모델에 확대하지 않는다.
+- 관련 시계열이나 상품 메타데이터를 추가해도 정확도가 반드시 좋아지지는 않는다. CNN-QR의 AutoML 또는 HPO는 이 입력을 사용하는 경우와 사용하지 않는 경우를 평가한다.
+
+평가 제안: 미래 날씨의 실제 관측값을 알고 있다고 가정한 실험과, 예측 당시의 기상 예보 또는 과거 날씨만 사용한 실험을 나눈다. 입력을 확보할 수 있는 조건에 맞춰 모델 후보를 정한 뒤 같은 예측 거리에서 비교한다. 과거 발표의 정확도 개선율과 학습 속도 배율은 일반 성능 보장으로 옮기지 않는다. Forecast의 신규 고객 접근 제한은 아래 서비스 공지 절을 따르며, 이 비교는 신규 도입 권고나 실제 학습 결과가 아니다.
 
 ## 판매 0, 품절과 행사 급증을 구분한다
 
@@ -114,6 +125,8 @@ MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱
 
 ## 출처
 
+- [Amazon Forecast, CNN-QR Algorithm](https://docs.aws.amazon.com/forecast/latest/dg/aws-forecast-algo-cnnqr.html) — 과거 관련 시계열의 encoder 입력과 추가 특성 평가를 2026-10-16 대조
+- [Amazon Forecast, Using Related Time Series Datasets](https://docs.aws.amazon.com/forecast/latest/dg/related-time-series-datasets.html) — legacy predictor별 관련 시계열 지원 범위를 2026-10-16 대조
 - [Amazon SageMaker AI, Use the SageMaker AI DeepAR forecasting algorithm](https://docs.aws.amazon.com/sagemaker/latest/dg/deepar.html) — 다중 시계열 학습, 범주값과 미래 동적 특성의 입력 조건을 2026-10-16 대조
 - [Amazon Forecast, Handling Missing Values](https://docs.aws.amazon.com/forecast/latest/dg/howitworks-missing-values.html) — 재고 가용 여부와 0/NaN 대치의 편향을 2026-10-16 대조
 - [Forecasting: Principles and Practice, Dealing with outliers and missing values — Hyndman, Athanasopoulos](https://otexts.com/fpp3/practical.html#dealing-with-outliers-and-missing-values)
