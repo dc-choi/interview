@@ -178,6 +178,17 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 롤백 완료는 새 버전 배포 성공이 아니다. 실패 시 `deployment-failure-cause`와 장비 로그를 함께 확인한다. 운영 적용에서는 목표 버전, 실제 적용 결과와 현장 기능 점검을 따로 기록하는 방식을 검토한다. 배포 성공도 로봇 동작의 안전성이나 물리적 작업 완료를 증명하지 않는다.
 
+### 원격 지원 터널과 장비 애플리케이션을 구분한다
+
+2026-10-16 AWS IoT secure tunneling과 local proxy 문서 대조 기준. Secure tunneling은 기존 인바운드 방화벽 규칙을 바꾸지 않고 원격 장비와 양방향 통신 경로를 만든다. 인터넷 연결까지 불필요하다는 뜻은 아니다. Local proxy는 터널 endpoint에 HTTPS에서 WebSocket으로 전환한 연결을 만들며, 웹 프록시를 사용하는 네트워크라면 그 설정도 필요하다.
+
+- **터널 양끝:** local proxy 구성에서는 source와 destination에 각각 프록시를 실행하고 `OpenTunnel`이 반환한 해당 방향의 client access token으로 연결한다. 원격 데스크톱 같은 대상 애플리케이션의 준비와 인증은 별도로 확인한다(설계 점검).
+- **토큰과 권한:** AWS는 토큰을 명령행 `-t` 대신 `AWSIOT_TUNNEL_ACCESS_TOKEN` 환경 변수로 전달하고, 프록시를 OS의 최소 권한으로 실행하도록 권고한다. 환경 변수 사용만으로 토큰 노출이 방지된다고 가정하지 않는다.
+- **재연결:** 프록시는 I/O 오류나 예상하지 못한 WebSocket 종료 때 기본적으로 재연결을 시도하지만, TCP 연결은 닫힌다. 터널 복구를 진행 중이던 원격 작업의 무중단 성공으로 처리하지 않는다.
+- **종료:** 사용 후 프록시를 중지하고 `CloseTunnel`로 명시적으로 닫는다. API 호출 직후 활성 터널 클라이언트가 모두 종료된다고 보장되지는 않으므로 실제 세션 종료도 확인한다.
+
+지원 사용자에게 허용된 장비인지 검사하고, 연결 단절 뒤 원격 애플리케이션의 재인증과 작업 상태를 확인하는 절차를 권한다. 이는 설계 점검이며 실제 장비 연결, 권한 정책과 원격 데스크톱 호환성을 시험한 결과는 아니다. 이번 대조는 터널 경계에 한정하므로 기존 기능 전체의 검증일은 유지한다.
+
 ### 배포 성공과 로그 업로드 성공을 구분한다
 
 2026-10-15 Greengrass V2 Log manager 문서의 v2.3.10 설정 절 대조 기준. `aws.greengrass.LogManager`는 장비 로그를 CloudWatch Logs로 올리지만, 컴포넌트 배포 성공이 로그 도착을 증명하지는 않는다.
@@ -226,6 +237,8 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT Core, AWS IoT secure tunneling](https://docs.aws.amazon.com/iot/latest/developerguide/secure-tunneling.html) — 2026-10-16 원격 접근과 인바운드 방화벽 경계 대조
+- [AWS IoT Core, How to use the local proxy](https://docs.aws.amazon.com/iot/latest/developerguide/how-use-local-proxy.html) — 양끝 프록시, 토큰 전달, 재연결과 명시적 종료 조건 대조
 - [AWS IoT SiteWise, Query data from AWS IoT SiteWise](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/query-industrial-data.html) — 2026-10-16 TQV 구조와 품질 상태 대조
 - [AWS IoT Core, MQTT](https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html) — 2026-10-15 공유 구독의 그룹, 큐 조건, 전달 한도와 큐 깊이 조회 대조
 - [AWS IoT Core, AWS IoT metrics and dimensions](https://docs.aws.amazon.com/iot/latest/developerguide/metrics_dimensions.html) — `Queued.Success`의 정의 대조

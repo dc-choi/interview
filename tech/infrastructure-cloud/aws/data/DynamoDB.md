@@ -34,6 +34,18 @@ AWS 완전관리형 **서버리스 NoSQL** 키-값/문서 데이터베이스. �
 
 쓰기 집중을 줄이려고 PK에 shard suffix를 추가하면 읽을 때 여러 shard를 조회해 합쳐야 한다. 운영 검토에서는 분산된 쓰기와 늘어난 읽기 요청, 집계 시점과 GSI의 키 집중을 함께 비교한다. 이는 설계 검토 기준이며 모든 엔티티를 반드시 한 테이블에 넣으라는 규칙이 아니다. 이 절만 대조했으므로 기존 기능 전체의 검증일은 유지한다.
 
+### 조회 범위와 정렬 순서를 함께 설계한다
+
+부분 검증(2026-10-16): `Query`와 sort key 설계 문서를 대조했다. 문자열 SK의 결과는 UTF-8 바이트 순서로 정렬되며, `ScanIndexForward=false`는 그 순서를 뒤집는다. SK 중간에 들어 있는 시각만 골라 정렬하는 옵션은 아니다.
+
+가상 설계 예로 PK를 `USER#<사용자ID>`, SK를 `TXN#<카드ID>#<UTC시각>#<거래ID>`로 구성한다. 시각은 같은 길이와 정밀도의 UTC 문자열로 통일하고, 식별자 안의 구분자는 인코딩하거나 금지한다.
+
+- `begins_with(SK, 'TXN#<카드ID>#')`는 해당 카드의 거래를 시각 순서로 조회하는 데 맞는다. 같은 시각의 거래는 거래 ID로 구분한다.
+- `begins_with(SK, 'TXN#')`는 여러 카드의 거래를 선택하지만 카드 ID가 시각보다 먼저 비교된다. 역순 조회에 `Limit=10`만 붙여도 사용자 전체의 최신 10건이 되는 것은 아니다.
+- 전체 카드의 최신 거래가 필요하면 사용자별 PK와 `TXN#<UTC시각>#<거래ID>` 형태의 SK를 가진 별도 GSI 등 조회 경로를 검토한다. 이는 설계 제안이며 GSI의 쓰기 비용과 eventual consistency를 함께 고려한다.
+
+키 설계 검토에는 반환 대상뿐 아니라 정렬, 페이지 경계와 동시각 충돌도 포함한다. 이번 대조는 조회 계약과 위 예시의 정렬 해석에 한정하며 실제 테이블 시험과 기존 기능 전체의 재검증은 아니므로 frontmatter 검증일은 유지한다.
+
 ## 보조 인덱스, LSI와 GSI
 
 | 축 | LSI | GSI |
@@ -242,6 +254,7 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 ## 출처
 
+- [AWS DynamoDB — Best practices for using sort keys to organize data in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-sort-keys.html)
 - [AWS DynamoDB — UpdateItem API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html)
 - [AWS DynamoDB — Take advantage of sparse indexes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-indexes-general-sparse-indexes.html)
 - [AWS DynamoDB — Data modeling building blocks in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/data-modeling-blocks.html)
