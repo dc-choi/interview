@@ -58,6 +58,14 @@ Spring의 XA 메시지 수신 구성에는 `JtaTransactionManager`뿐 아니라 
 
 부분 검증(2026-10-14): Spring의 자원 참여 경계와 Atomikos의 로그 보존 원칙을 공식 문서로 대조했다. 실제 장애 주입, 특정 Spring Boot 4 조합의 호환성과 starter 추가만으로 필요한 설정이 충족되는지는 확인하지 않았다. 기존 TCC와 Saga 전체의 재검증은 아니므로 frontmatter 날짜를 유지한다.
 
+### 공유 로그와 복구 실행 주체를 분리한다
+
+트랜잭션 로그를 외부 DB에 보존해도 복구를 실행하는 프로세스는 필요하다. Atomikos LogCloud 구성에서는 애플리케이션 노드가 공유 DBMS에 로그를 남기고, 노드 안의 복구 컴포넌트가 리더를 선출해 활성 노드 하나에서 복구를 수행한다. 이 구성은 클러스터에 노드가 하나 이상 온라인일 때 복구가 진행된다. 따라서 모든 노드를 종료하는 운영에서는 로그의 내구성과 복구 재개 시점을 따로 확인한다.
+
+복구 노드는 로그 DB뿐 아니라 대상 XA 자원에도 접근할 수 있어야 한다. 애플리케이션 설정에서 XA 자원을 지우기 전에 미결 prepared XID가 남아 있지 않은지 확인한다. LogCloud의 동일 애플리케이션 클러스터는 `tm_unique_name`을 공유하므로, 앞 절의 이름 충돌 방지를 모든 replica에 서로 다른 이름을 주라는 규칙으로 적용하지 않는다. 여러 마이크로서비스가 참여하는 구성에서는 같은 서비스의 replica끼리 공유하고 서로 다른 서비스는 구별한다.
+
+부분 검증(2026-10-15): 공유 로그, 활성 복구 노드와 XA 접근 조건, 구성별 이름 규칙을 Atomikos LogCloud 공식 문서와 대조했다. 특정 서버리스 플랫폼에서의 배포와 장애 복구 시간은 확인하지 않았다.
+
 ## TCC의 상태 모델
 
 TCC는 DB 락 대신 업무 수준의 예약을 드러낸다.
@@ -162,6 +170,7 @@ MySQL XA에서는 `XA START`, 작업, `XA END`, `XA PREPARE` 뒤 최종 결정�
 - [Spring Framework, JpaTransactionManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/orm/jpa/JpaTransactionManager.html)
 - [Spring Framework, Receiving a Message](https://docs.spring.io/spring-framework/reference/integration/jms/receiving.html)
 - [Atomikos, JTA Properties](https://www.atomikos.com/Documentation/JtaProperties)
+- [Atomikos, LogCloud Documentation](https://www.atomikos.com/Documentation/LogCloud)
 - [TCC 구현하기(1) - Product Try API 구현하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325064)
 - [TCC 구현하기(2) - 동시성문제 해결하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325074)
 - [TCC 구현하기(3) - Product Confirm API 구현하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=325165)

@@ -87,6 +87,14 @@ Spring Boot major upgrade guide를 기준으로 다음 순서를 따른다.
 
 Golden response와 consumer contract, 실제 DB를 쓰는 integration test로 이전 artifact와 새 artifact를 비교한다. 차이가 의도된 경우 contract version과 migration note를 남긴다.
 
+#### 반복 변경 자동화와 패치 적용을 나눈다
+
+보안 패치를 공급받는 계약과 그 패치를 애플리케이션에 반영해 배포하는 경로는 별도다. Spring Enterprise는 OSS 지원이 끝난 프로젝트에도 보안 수정과 주요 버그 수정을 담은 Enterprise release를 제공한다. 지원 여부는 사용하는 버전과 계약 범위로 확인하고, 패치 확보만으로 업그레이드와 배포가 끝났다고 판단하지 않는다.
+
+OpenRewrite는 소스를 Lossless Semantic Tree로 표현하고 recipe에 묶인 visitor로 변경한 뒤 코드로 출력한다. 반복 가능한 API와 설정 변경은 지원 recipe로 처리하고 결과 diff를 검토한다. Spring Application Advisor는 이를 활용해 build 설정과 Java 파일 변경을 PR로 만들고, 함께 올려야 하는 Spring 프로젝트를 판단한다. 예를 들어 Spring Web과 Spring Security의 연계 업그레이드가 이에 해당한다. 도구가 만든 PR도 위의 동작 계약과 아래의 배포 게이트를 통과해야 한다. 자동 변환을 모든 사내 코드와 전이 의존성의 호환성 보장으로 확대하지 않는다.
+
+부분 검증(2026-10-15): OpenRewrite의 변환 방식, Application Advisor의 PR 생성과 동시 업그레이드 범위, Enterprise release의 패치 제공을 공식 자료로 대조했다. 실제 도구 실행과 성능 개선은 검증하지 않았으며 다른 절의 버전 조합과 frontmatter 날짜는 유지한다.
+
 ### 4. Native Image는 별도 배포 트랙
 
 GraalVM Native Image는 startup과 memory 특성을 바꿀 수 있지만, 정적 분석으로 찾지 못하는 reflection, proxy, resource와 serialization 접근에는 reachability metadata가 필요하다. JVM 배포가 성공했다고 native 전환까지 자동 승인하지 않는다.
@@ -155,6 +163,9 @@ DB migration은 application rollback과 독립적으로 되돌릴 수 없을 수
 
 ## 출처
 
+- [Application Advisor — Spring Enterprise](https://enterprise.spring.io/spring-application-advisor/)
+- [Upgrades and Support — Spring Enterprise](https://enterprise.spring.io/business-continuity/)
+- [OpenRewrite 공식 문서 — Introduction to OpenRewrite by Moderne](https://docs.openrewrite.org/)
 - [모던 백엔드 강좌 소개 — Nextree](https://www.nextree.io/modeon-baegendeu-gangjwa-sogae/)
 - [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide)
 - [Spring Framework 7 General Availability](https://spring.io/blog/2025/11/13/spring-framework-7-0-general-availability/)

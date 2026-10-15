@@ -24,6 +24,14 @@ aliases: ["UX Laws", "UX 심리학 법칙", "Laws of UX"]
 | 테슬러의 법칙 | 일부 복잡성은 사용자와 시스템 사이에서 이동한다는 설계 휴리스틱 | 동네 범위를 직접 고르게 하지 않고 슬라이더로 — 복잡성을 시스템이 흡수 |
 | 도허티 임계 | 0.4초는 역사적 상호작용 연구에서 나온 휴리스틱이지 보편적 제한이 아니다 | 제품별 측정으로 응답 목표를 정하고 지연 시 진행 상태 제공 |
 
+## 피츠의 법칙을 적용할 때: 보이는 크기와 입력 영역
+
+아이콘의 시각적 크기와 실제 클릭하거나 터치할 수 있는 영역은 다를 수 있다. 작은 아이콘을 유지하면서 주변 여백을 같은 동작의 입력 영역으로 포함하면 조작하기 쉬워진다. Android 접근성 가이드는 24×24dp 아이콘에 여백을 더해 48×48dp 터치 영역을 만드는 예를 들며, 48×48dp 이상과 인접 영역 사이 8dp 이상의 간격을 권한다. 영역을 넓힐 때는 옆 버튼과 겹쳐 잘못된 동작이 선택되지 않는지 확인한다.
+
+웹의 WCAG 2.2 성공 기준 2.5.8(AA)은 기본적으로 24×24 CSS px 이상의 포인터 입력 영역을 요구한다. 더 작은 대상은 bounding box 중심의 지름 24 CSS px 원이 다른 대상이나 다른 작은 대상의 원과 겹치지 않는 간격 예외를 적용할 수 있다. 같은 페이지의 동등한 다른 컨트롤, 문장 안 링크, 작성자가 크기를 바꾸지 않은 사용자 에이전트 컨트롤, 본질적으로 필요하거나 법적으로 요구되는 표현도 예외가 있다. Android의 dp 권장치와 웹의 CSS px 준수 기준을 같은 규격으로 취급하지 않는다.
+
+확인 범위(2026-10-15): Google과 W3C의 입력 영역 설계 지침을 대조했다. 특정 스마트폰 키보드의 예측 알고리즘과 도입 연도는 이 설명의 근거에 포함하지 않는다.
+
 ## 백엔드 관점의 연결
 
 - **0.4초를 API SLO로 그대로 옮기지 않는다** — 사용자가 기다리는 전체 경로, 네트워크와 렌더링을 측정해 p95 목표를 정한다. 즉시 완료할 수 없으면 진행 상태, 낙관적 업데이트나 비동기 처리를 검토한다.
@@ -37,6 +45,8 @@ aliases: ["UX Laws", "UX 심리학 법칙", "Laws of UX"]
 - 기능 단순화 요구에 테슬러의 법칙으로 — 불필요한 복잡성은 먼저 제거하고, 업무상 남는 환원 불가능한 복잡성을 누가(사용자 vs 시스템) 감당할지의 의사결정임을 짚는다.
 
 ## 출처
+- [Google Android Accessibility Help, Touch target size](https://support.google.com/accessibility/android/answer/7101858?hl=en)
+- [W3C, Understanding Success Criterion 2.5.8: Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)
 - [당근마켓으로 배우는 UX 심리학 법칙 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/11)
 - [The magical number 4 in short-term memory — Nelson Cowan](https://pubmed.ncbi.nlm.nih.gov/11515286/)
 
