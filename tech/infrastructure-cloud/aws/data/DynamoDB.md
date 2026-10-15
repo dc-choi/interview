@@ -42,6 +42,10 @@ AWS 완전관리형 **서버리스 NoSQL** 키-값/문서 데이터베이스. �
 
 큰 문서를 여러 항목으로 나누는 vertical partitioning은 함께 읽을 관계를 유지하면서 일부 항목만 갱신하도록 설계하는 방법이다. 위 방식으로 나눠도 업무상 여러 항목의 원자적 변경이 필요하면 별도 트랜잭션 판단이 남는다. Query 결과가 커지면 다음 절의 페이지 처리가 필요하므로 같은 PK를 쓴다는 이유로 한 응답에 모두 온다고 가정하지 않는다.
 
+부분 검증(2026-10-16): 데이터 모델링 building blocks와 TTL 문서를 추가 대조했다. 분리 기준에는 읽기/쓰기 빈도뿐 아니라 보존 기간도 포함한다. TTL은 속성 일부가 아니라 항목 전체를 삭제하므로, 오래 보존할 프로필과 짧게 보존할 접속 이력을 한 항목에 넣으면 이력에만 TTL을 적용할 수 없다.
+
+설계 예로 같은 사용자 PK 아래 `PROFILE`, `CHARACTER#<캐릭터ID>`, `HISTORY#<시각>#<이벤트ID>`를 각각 SK로 둔다. 프로필과 캐릭터는 필요한 항목만 읽고, 이력 항목에만 만료 시각을 둔다. 이는 크기 한도에 맞춰 문서를 잘라 다음 조각의 포인터를 순서대로 읽는 방식과 달리 업무별 조회와 만료 경계를 드러낸다. TTL이 지원되는 테이블에 적용하며, 실제 삭제가 늦어질 수 있으므로 만료 이력의 노출 여부는 별도로 판단한다. 이번 대조는 모델링 원리이며 실제 게임 부하나 비용 절감률은 검증하지 않았다.
+
 쓰기 집중을 줄이려고 PK에 shard suffix를 추가하면 읽을 때 여러 shard를 조회해 합쳐야 한다. 운영 검토에서는 분산된 쓰기와 늘어난 읽기 요청, 집계 시점과 GSI의 키 집중을 함께 비교한다. 이는 설계 검토 기준이며 모든 엔티티를 반드시 한 테이블에 넣으라는 규칙이 아니다. 이 절만 대조했으므로 기존 기능 전체의 검증일은 유지한다.
 
 ### 조회 범위와 정렬 순서를 함께 설계한다
@@ -251,6 +255,21 @@ Warm throughput은 테이블과 GSI가 즉시 지원할 준비가 된 읽기/쓰
 - 여러 리전 간 **다중 활성** 복제 (Multi-Active, Multi-Region)
 - 각 리전에서 로컬 replica를 읽고 쓰는 다중 리전 구성을 지원한다. 실제 저지연과 DR은 consistency mode, 애플리케이션 라우팅과 failover, 충돌 처리, RTO/RPO 시험까지 갖춰야 달성됨
 
+### MREC와 MRSC의 읽기 보장과 기능 제약
+
+부분 검증(2026-10-16): Global tables Version 2019.11.21의 공식 동작 문서를 대조했다. 기본 모드는 MREC이며 생성한 global table의 일관성 모드를 나중에 바꿀 수 없다.
+
+| 구분 | MREC | MRSC |
+|---|---|---|
+| 복제 | 다른 리전으로 비동기 전파 | 쓰기 성공 응답 전에 적어도 다른 한 리전에 동기 복제 |
+| 강한 읽기 | 다른 리전의 최신 쓰기는 아직 보이지 않을 수 있음 | 어느 replica의 강한 읽기든 최신 항목을 반환 |
+| RPO | 리전 간 복제 지연만큼 데이터 손실 가능 | RPO 0 지원 |
+| 주요 제약 | 트랜잭션의 원자성은 호출 리전 안에 한정 | TTL, LSI와 트랜잭션 API 미지원. GSI 읽기는 eventual consistency |
+
+MRSC는 정확히 세 리전에 replica 세 개 또는 replica 두 개와 witness 하나를 배치한다. Witness는 애플리케이션의 읽기/쓰기 대상이 아니다. 리전 간 통신이 필요하므로 지원 리전 조합과 지연시간을 도입 시 다시 확인한다.
+
+운영 점검 제안: RPO 0을 요청 실패 없음이나 RTO 0으로 해석하지 않는다. 장애 시 트래픽 전환, 강한 읽기 설정과 외부 캐시 경로를 함께 시험한다. 이번 확인은 복제와 읽기 계약에 한정하며 실제 장애 전환과 기존 기능 전체는 재검증하지 않아 frontmatter 검증일은 유지한다.
+
 ## 백업, 복구
 
 - **PITR (Point-In-Time Recovery)**: 기본 35일, 1-35일로 설정 가능한 연속 백업에서 초 단위 복원 지점 선택
@@ -272,6 +291,7 @@ Warm throughput은 테이블과 GSI가 즉시 지원할 준비가 된 읽기/쓰
 
 ## 출처
 
+- [AWS DynamoDB — How DynamoDB global tables work](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html)
 - [How do I troubleshoot the provided key element does not match the schema error in DynamoDB? — AWS re:Post](https://repost.aws/knowledge-center/dynamodb-provided-key-element-error)
 - [AWS DynamoDB — GetItem API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html)
 - [AWS DynamoDB — AttributeValue API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html)
