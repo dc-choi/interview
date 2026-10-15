@@ -53,6 +53,17 @@ Amazon Quick의 BI 기능. 서버리스 **머신러닝 기반 BI**로 대화형 
 
 진단 순서 제안: 대상 테이블을 Athena에서 조회할 수 있는지 확인한 뒤 Quick Sight 연결을 확인한다. 두 경로의 실행 주체가 다르면 Athena 콘솔의 성공만으로 Quick Sight의 접근 권한까지 입증되지는 않는다. 오류 메시지, 실행 주체, workgroup과 S3 경로를 함께 비교한다.
 
+## 다른 계정의 S3 연결은 버킷, 서비스 설정과 복호화 권한을 나눠 확인한다
+
+부분 검증(2026-10-16): Quick Sight의 계정 간 S3 연결 안내와 KMS 권한 문서를 대조했다. Quick Sight가 있는 계정을 A, 데이터 버킷이 있는 계정을 B로 구분한다.
+
+- B에서 A의 실제 Quick Sight 실행 역할에 필요한 S3 읽기 권한을 부여한다. 기본 역할 구성에서는 `aws-quicksight-s3-consumers-role-v0`가 있으면 이 역할을 사용하고, 없으면 `aws-quicksight-service-role-v0`를 확인한다. 과거 예제의 역할 이름을 그대로 복사하지 않는다.
+- A의 Quick Sight에서도 B의 버킷을 접근 가능한 S3 리소스로 추가한다. 버킷 정책을 허용하는 작업과 서비스에서 대상 버킷을 선택하는 작업은 별개다.
+- SSE-KMS로 암호화한 객체라면 S3 읽기 권한 외에 해당 키의 복호화 권한을 확인한다. 키 정책과 IAM 정책을 사용하는 계정 간 권한 구성에서는 B의 키 정책과 A의 역할 정책 양쪽 허용이 필요하다. KMS grant를 사용하는 구성은 그 grant의 대상 역할과 허용 작업을 별도로 확인한다.
+- 권한 설정 뒤 S3 manifest로 데이터셋을 만든다. Manifest는 읽을 파일을 지정하는 입력이며, 파일 경로가 적혀 있다는 사실만으로 접근 권한이 생기지는 않는다.
+
+검증 제안: 실제 연결 역할, 버킷과 객체 경로, 암호화 키를 기록하고 데이터셋 적재로 확인한다. 대시보드 템플릿 공유 성공을 원본 S3 접근 성공의 증거로 삼지 않는다. 이 절만 대조했고 AWS 계정에서 실행하지 않았으므로 기존 문서의 검증일은 유지한다.
+
 ## 조회 타임아웃은 발생 계층을 나눠 확인한다
 
 부분 검증(2026-10-09): AWS의 서비스 quota, 데이터 소스 quota와 타임아웃 해결 문서를 대조했다.
@@ -183,6 +194,9 @@ AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 �
 
 ## 출처
 
+- [Amazon Quick, Datasets using S3 files in another AWS account](https://docs.aws.amazon.com/quick/latest/userguide/using-s3-files-in-another-aws-account.html)
+- [AWS KMS, Allowing users in other accounts to use a KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html)
+- [How do I set up cross-account access from Quick Suite to an Amazon S3 bucket in another account? — AWS re:Post](https://www.repost.aws/knowledge-center/quicksight-cross-account-s3)
 - [Amazon Quick, periodOverPeriodDifference](https://docs.aws.amazon.com/quick/latest/userguide/periodOverPeriodDifference-function.html)
 - [Amazon Quick, periodOverPeriodLastValue](https://docs.aws.amazon.com/quick/latest/userguide/periodOverPeriodLastValue-function.html)
 - [Add comparative and cumulative date/time calculations in Amazon QuickSight — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/add-comparative-and-cumulative-date-time-calculations-in-amazon-quicksight/)
