@@ -55,6 +55,18 @@ AI의 경고 요약은 이 과정의 보조 자료다. 요약 생성과 신고 �
 - 처음 발견한 시스템 외의 잠재적 대상도 확인해 범위를 과소평가하지 않는다.
 - 차단과 제거는 사고 유형, 영향과 조치 유지 기간을 고려해 선택한다.
 
+### AI 도구의 관여와 침해 원인을 구분한다
+
+AI가 공격에 쓰였다는 주장과 실제로 어떤 보안 통제가 실패했는지는 따로 조사한다. NCSC의 2025-05-07 위협 평가는 2027년까지 AI가 정찰, 취약점 연구와 익스플로잇 개발 등 기존 공격 기법의 효율을 높일 가능성을 다룬다. 이는 특정 사건에서 AI 도구가 사용됐거나 공격 전체가 자율 수행됐다는 증거가 아니다.
+
+NIST SP 800-61 Rev. 3의 RS.AN-03은 사건 순서, 관련 자산과 취약점, 근본 원인을 조사하도록 권고한다. RS.AN-06/07은 조사 기록과 증거의 무결성, 출처 보존을 다룬다. 다음은 이를 AI 관여 주장에 적용한 조사 기준이다.
+
+- **도구 흔적과 실행:** 콘솔 화면이나 도구 이름은 단서로 보존하고, 실행 기록과 대상 시스템의 요청 기록을 연결해 실제 사용 범위를 확인한다.
+- **실행과 성공:** 도구 실행만으로 침해 성공을 확정하지 않는다. 접근 권한 변화, 데이터 조회와 반출 등 관찰한 결과를 구분하고, 기록이 없는 구간은 미확인으로 남긴다.
+- **수단과 원인:** AI 사용 여부와 별개로 인증, 인가, 패치와 설정 중 어떤 통제가 실패했는지 확인한다. 도구 이름을 특정하는 것으로 원인 조사와 재발 방지를 대신하지 않는다.
+
+2026-10-15 위 두 공식 자료의 해당 범위를 대조했다. 이 절은 조사 기준이며 개별 금융기관의 침해 여부, 피해 규모나 특정 공격 도구를 확인한 기록이 아니다.
+
 ### 유출 범위에서 PII의 의미
 
 PII는 Personally Identifiable Information의 약어다. NIST SP 800-122(2010) 2.1~2.2절은 개인을 식별하거나 추적할 수 있는 정보와 개인에게 연결되거나 연결할 수 있는 정보를 함께 포함한다. 이름과 식별번호뿐 아니라 개인과 연결된 의료, 교육, 금융과 고용 정보도 해당한다. 따라서 PII를 고유 식별번호만 뜻하는 말로 번역하면 조사할 데이터 범위를 좁히게 된다. 이 정의는 2026-10-14 원문과 대조했으며 국내법상 용어의 정의를 대신하지 않는다.
@@ -175,6 +187,7 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 
 ## 출처
 
+- [Impact of AI on cyber threat from now to 2027 — NCSC](https://www.ncsc.gov.uk/report/impact-ai-cyber-threat-now-2027) — 2025-05-07 위협 평가, 특정 사건의 조사 보고서가 아님
 - [NIST, SP 800-122: Guide to Protecting the Confidentiality of Personally Identifiable Information (PII)](https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-122.pdf) — 2.1~2.2절의 정의와 예시
 - [Trellix, Investigate threats using Generative AI](https://docs.trellix.com/docs/investigate-threats-using-generative-ai-1)
 - [Trellix, Remediate threats](https://docs.trellix.com/docs/remediate-threats)
