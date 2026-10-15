@@ -50,6 +50,17 @@ fields @timestamp, @message
 
 지원 연산에는 `filter`, `filterIndex`, `stats`, `sort`, `bin`, `parse`(정규식 추출), `display` 등이 있다. 스캔량 기반 과금이라 시간 범위를 좁힐수록 빠르고 저렴하지만 인덱스가 없는 것은 아니다. 구조화 로그에는 field index를 만들 수 있고 Standard 로그 클래스에는 `@logStream`, `traceId` 같은 기본 field index가 적용된다. 인덱싱된 필드를 `=` 또는 `IN`으로 조회하면 해당 필드가 없는 event를 건너뛰어 scan volume을 줄인다. Index는 정책 생성 이후 수집된 event에 적용되고 수집 시점부터 30일간 유지된다.
 
+### VPC Flow Logs로 연결 실패 후보를 좁힌다
+
+2026-10-16 AWS 공식 문서 대조 기준. Flow Logs를 받는 로그 그룹과 장애 시간 범위를 선택하고, 실제로 발견된 필드를 먼저 확인한다. Logs Insights의 VPC 필드명은 `interfaceId`, `srcAddr`, `dstAddr`, `srcPort`, `dstPort`, `action`, `logStatus`다. 원시 레코드의 `interface-id`, `srcaddr` 표기를 쿼리에 그대로 옮기지 않는다.
+
+- **거부 흐름:** 대상 `interfaceId`와 `action = "REJECT"`로 좁힌 뒤 주소, 포트와 프로토콜을 확인한다. `REJECT`는 SG나 NACL 차단뿐 아니라 연결 종료 후 도착한 패킷에서도 나타날 수 있으므로 특정 규칙을 원인으로 바로 확정하지 않는다.
+- **서브넷 범위:** IP 문자열 일부를 검색하는 대신 `isIpv4InSubnet(srcAddr, "192.0.2.0/24")`처럼 CIDR 포함 여부를 검사한다. 예시 주소는 실제 조사 대상 범위로 바꾼다.
+- **집계 단위:** `count(*)`는 flow log 레코드 수다. 패킷 수와 전송량은 각각 `sum(packets)`, `sum(bytes)`로 구분한다. 레코드는 집계 구간의 네트워크 흐름이므로 요청 수나 HTTP 오류 수로 읽지 않는다.
+- **빈 결과:** `logStatus = "SKIPDATA"`는 일부 기록이 생략됐다는 뜻이다. 로그 전달도 best effort이므로 결과가 없다는 사실만으로 통신 정상이나 트래픽 부재를 확정하지 않는다.
+
+HTTP 503이나 timeout의 원인을 조사할 때는 같은 시각의 애플리케이션과 로드 밸런서 로그를 함께 대조한다(운영 점검 제안). Flow Logs의 허용/거부 기록만으로 애플리케이션 응답 원인을 확정할 수 없다. 이번 대조는 필드와 해석 범위에 한정하며 실제 AWS 계정에서 쿼리를 실행한 결과는 아니다. 기존 절 전체를 재검증하지 않아 frontmatter 검증일은 유지한다.
+
 ### SMS 발송 이벤트를 CloudWatch Logs로 받기
 
 2026-10-15 AWS End User Messaging SMS 공식 문서 기준이다. 이벤트 목적지는 발송 상태를 관측하는 경로이며, 고객이 보낸 메시지를 받는 [[End-User-Messaging-Two-Way-SMS|양방향 SMS 수신 경로]]와 구분한다.
@@ -142,6 +153,9 @@ ML 기반 정상 범위 자동 학습 — 정적 임계값 대신 동적 밴드.
 
 ## 출처
 
+- [Amazon CloudWatch Logs — Supported logs and discovered fields](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_AnalyzeLogData-discoverable-fields.html)
+- [Amazon CloudWatch Logs — Sample queries](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_QuerySyntax-examples.html)
+- [Amazon VPC — Flow log records](https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html)
 - [AWS End User Messaging SMS — Set up an Amazon CloudWatch event destination](https://docs.aws.amazon.com/sms-voice/latest/userguide/configuration-sets-cloud-watch.html)
 - [AWS End User Messaging SMS — Create an Amazon CloudWatch event destination](https://docs.aws.amazon.com/sms-voice/latest/userguide/configuration-sets-cloud-watch-add.html)
 - [AWS End User Messaging SMS — IAM policy for Amazon CloudWatch](https://docs.aws.amazon.com/sms-voice/latest/userguide/configuration-sets-cloud-watch-creating-role.html)

@@ -78,6 +78,16 @@ SiteWise에서는 asset model로 같은 종류의 설비가 공유할 구조를 
 
 대시보드나 생성형 AI에 숫자만 넘기면 오래된 관측과 품질이 불확실한 관측을 구분할 근거가 빠진다. 설계 제안으로, 설비와 단위에 더해 관측 시각과 품질을 유지하고, 허용할 데이터 나이와 품질별 처리 기준을 업무에서 정한다. `GOOD` 표시는 해당 데이터의 품질 상태이며 현재 공정의 안전성이나 모델 답변의 정확성을 입증하지 않는다. 이번 대조는 조회 결과의 계약에 한정하며 기존 기능 전체의 검증일은 유지한다.
 
+### SiteWise 이상 탐지의 학습, 실행과 진단을 구분한다
+
+2026-10-16 AWS IoT SiteWise native anomaly detection 공식 문서 대조 기준. Computation model에 입력 property와 결과 property를 연결한 뒤, 대상 asset의 과거 구간으로 모델을 학습하고 추론 일정을 시작한다. 학습 완료와 추론 실행은 별도 단계다. 알려진 고장 구간의 label과 학습 후 평가 구간을 선택적으로 지정할 수 있다.
+
+추론 간격인 `dataUploadFrequency`와 늦게 도착하는 데이터를 기다리는 `dataDelayOffsetInMinutes`는 다른 설정이다. Offset은 0~60분 범위이며 `weeklyOperatingWindow`로 실행 요일과 시간을 제한할 수 있다. 영상의 5분 주기와 3분 지연을 모든 설비의 권장값으로 재사용하지 않고, 실제 데이터 도착 지연과 필요한 감지 시간을 대조한다(설계 점검).
+
+결과의 `prediction`은 정상 0, 이상 1이며, `diagnostics`는 각 센서가 판단에 기여한 상대적 중요도를 담는다. 정상 판정에도 diagnostics가 반환된다. 센서의 높은 기여도를 고장의 확정 원인이나 교체 명령으로 바꾸지 않고 현장 관측과 정비 이력으로 확인한다(해석과 운영 제안).
+
+이 기능은 운전 조건의 변동이 제한적인 고정 산업 설비를 대상으로 하는 백엔드 분석이며 기존 정비 체계를 보완한다. 실제 설비에서 오탐, 미탐이나 제어 안전성을 검증한 결과는 아니다. 이번 대조는 이상 탐지 경계에 한정하므로 기존 기능 전체의 검증일은 유지한다.
+
 ### 설비 관계 조회와 원인 판단을 구분한다
 
 2026-10-10 AWS IoT TwinMaker 공식 문서 대조 기준. TwinMaker의 knowledge graph는 workspace의 entity와 component에 정의한 관계를 조회한다. 관계는 component의 `RELATIONSHIP` 타입 property로 표현하며 방향을 가진다. `ExecuteQuery`는 PartiQL의 graph match 문법으로 entity와 관계를 탐색한다.
@@ -237,6 +247,10 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT SiteWise, Native anomaly detection](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/sitewise-anomaly-detection.html)
+- [AWS IoT SiteWise, Enable anomaly detection on sensors of an asset](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/anom-detection-sensors-asset.html)
+- [AWS IoT SiteWise, Advanced inference configurations](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/advanced-inference-configurations.html)
+- [AWS IoT SiteWise, Review inference results](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/reviewing-inference-results.html)
 - [AWS IoT Core, AWS IoT secure tunneling](https://docs.aws.amazon.com/iot/latest/developerguide/secure-tunneling.html) — 2026-10-16 원격 접근과 인바운드 방화벽 경계 대조
 - [AWS IoT Core, How to use the local proxy](https://docs.aws.amazon.com/iot/latest/developerguide/how-use-local-proxy.html) — 양끝 프록시, 토큰 전달, 재연결과 명시적 종료 조건 대조
 - [AWS IoT SiteWise, Query data from AWS IoT SiteWise](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/query-industrial-data.html) — 2026-10-16 TQV 구조와 품질 상태 대조
