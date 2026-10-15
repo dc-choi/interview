@@ -61,7 +61,7 @@ Data Record → Shard로 순서를 이루고 → Shard들이 모여 Data Stream.
 
 ### Consumer
 KDS에 적재된 데이터를 다음에서 수집/처리:
-- **KCL (Kinesis Client Library)** — Shard별 리스 관리, 체크포인트 자동
+- **KCL (Kinesis Client Library)** — Shard별 리스 관리, 체크포인트 저장 지원. 처리 진도는 애플리케이션의 record processor가 checkpointer로 기록한다
 - **AWS Lambda** (Event Source Mapping)
 - **Amazon Data Firehose** (변환, 전송 파이프라인으로 위임)
 - **Amazon Managed Service for Apache Flink**
@@ -179,6 +179,15 @@ AWS 공개 예제는 MySQL 변경 데이터를 DMS와 KDS로 전달하고, Fireh
 
 핵심 구분: **SQS는 소비 후 삭제, Kinesis는 보존 → 다수 소비자 재읽기**. 같은 이벤트를 여러 시스템이 각자 속도로 처리해야 하면 KDS, 한 워커가 처리하고 끝이면 SQS.
 
+### MSK와 비교할 때는 용량 관리 방식까지 구분한다
+
+부분 검증(2026-10-15): KDS 용량 모드, MSK Serverless와 KCL Java 소비자 문서를 대조했다. 기존 절 전체의 검증일은 유지한다.
+
+- **KDS:** Provisioned는 shard 수를 지정하고 조절한다. On-demand는 서비스가 shard를 관리하므로 모든 KDS 사용자가 직접 shard 수를 운영한다고 설명하지 않는다.
+- **MSK Serverless:** Kafka 클러스터 용량을 자동으로 준비하고 확장한다. Kafka 호환 클라이언트를 사용할 수 있지만 IAM 접근 제어가 필수이고 Kafka ACL은 지원하지 않는다. 따라서 MSK 전체를 브로커 용량 수동 관리 모델로 묶지 않는다.
+- **선택 기준:** 기존 Kafka 클라이언트와 인증 방식의 호환성, 필요한 설정과 quota를 확인한다. 자동 확장만으로 KDS와 MSK를 구분하거나 처리량에 한계가 없다고 판단하지 않는다.
+- **소비자 책임:** KCL이 리스와 체크포인트 저장을 지원해도 업무 로직의 완료를 자동 판단하지 않는다. record processor가 처리 진도를 checkpoint하고, 재시작으로 다시 전달될 레코드를 멱등하게 처리한다. 이는 공식 API 계약의 설명이며 실행 시험 결과는 아니다.
+
 ## 시험 체크포인트 (SAA-C03)
 
 - AWS Decoupling 3종 = SQS(Queue) / SNS(Pub-Sub) / **Kinesis(Real-time Streaming)** 모델 차이
@@ -194,6 +203,9 @@ AWS 공개 예제는 MySQL 변경 데이터를 DMS와 KDS로 전달하고, Fireh
 - S3로 near real-time 적재하는 요구사항에는 **Firehose**를 검토한다(서버리스, 변환 가능).
 
 ## 출처
+- [Amazon Kinesis Data Streams, Choose the right mode to stream in](https://docs.aws.amazon.com/streams/latest/dev/how-do-i-size-a-stream.html)
+- [Amazon MSK, What is MSK Serverless?](https://docs.aws.amazon.com/msk/latest/developerguide/serverless.html)
+- [Amazon Kinesis Data Streams, Develop consumers with KCL in Java](https://docs.aws.amazon.com/streams/latest/dev/develop-kcl-consumers-java.html)
 - [Amazon Kinesis Data Streams, PutRecord](https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecord.html)
 - [Amazon Kinesis Data Streams, PutRecords](https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecords.html)
 - [Amazon Kinesis Data Streams, Handle duplicate records](https://docs.aws.amazon.com/streams/latest/dev/kinesis-record-processor-duplicates.html)

@@ -80,6 +80,17 @@ AWS에서 Hadoop, Spark 같은 빅데이터 프레임워크를 실행하는 관�
 - 중단을 견디는 처리 용량은 EMR Task 노드의 Spot 활용을 검토한다.
 - 서버리스 ETL은 Glue와 EMR Serverless를 작업 특성에 따라 비교한다. 클러스터를 직접 관리하지 않는다는 조건만으로 EMR을 제외하지 않는다.
 
+### Graviton 전환과 Spot 후보 확장
+
+부분 검증(2026-10-15): EMR on EC2의 지원 인스턴스 표와 instance flexibility 지침을 대조했다. 특정 과거 사례의 절감률이나 최소 버전을 모든 리전과 인스턴스에 적용하지 않으며, 기존 절 전체의 검증일은 유지한다.
+
+1. **지원 범위:** 대상 리전과 인스턴스 타입별 최소 EMR 릴리스를 확인한다. 지원되는 타입이어도 선택한 AZ의 용량에 따라 생성이 지연되거나 실패할 수 있다.
+2. **실행 자원:** EC2 사양만 비교하지 말고 YARN 할당량과 Spark executor가 들어갈 수 있는 최소 CPU, 메모리를 확인한다. EMR 콘솔의 인스턴스 선택에 표시되는 vCPU 값은 EC2 vCPU 수가 아니라 YARN vcore 수다.
+3. **후보 구성:** 작업의 최소 executor 크기를 수용하는 타입으로 후보를 넓힌다. 크기, 세대와 Graviton 후보의 다양화는 사용 가능한 용량 풀을 늘릴 수 있지만, CPU와 메모리 비율이 달라지면 자원을 덜 활용할 수 있다.
+4. **AZ 의미:** instance fleet 생성 시 여러 AZ의 subnet을 후보로 줄 수 있다. EMR이 그중 배치할 곳을 고르는 것이며 하나의 클러스터가 여러 AZ에 분산되는 것은 아니다.
+
+검증 제안: 같은 입력과 결과 정확성을 기준으로 작업 시간, executor 배치, spill, 재시도와 전체 작업 비용을 비교한다. Spot 할인율 하나나 인스턴스 단가만으로 전환 효과를 확정하지 않는다. 실제 클러스터에서 측정한 성능 결과는 아니다.
+
 ## EMR Serverless의 실행과 용량 경계
 
 부분 검증(2026-10-13): EMR Serverless의 application 설정, 자동 시작과 중지, 사전 초기화 용량을 공식 문서로 대조했다. 앞선 EMR on EC2의 노드 유형이나 YARN 운영 절차와 구분한다.
@@ -138,6 +149,8 @@ EMR on EKS는 기존 EKS 클러스터에서 분석 워크로드를 컨테이너�
 
 ## 출처
 
+- [AWS, Supported instance types with Amazon EMR](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-supported-instance-types.html)
+- [AWS, Availability Zone flexibility for an Amazon EMR cluster](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-flexibility.html)
 - [How do I publish and monitor an Amazon EMR application status with CloudWatch integration? — AWS re:Post](https://repost.aws/knowledge-center/emr-publish-monitor-service-status)
 - [AWS, Configuring how CloudWatch alarms treat missing data](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarms-and-missing-data.html)
 - [AWS, Interact with and configure an EMR Serverless application](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/applications.html)
