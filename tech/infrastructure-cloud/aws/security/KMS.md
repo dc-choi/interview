@@ -72,6 +72,22 @@ verified_at: 2026-09-30
 - 조직 조건이 있는 허용 문장 하나가 다른 허용 경로를 자동으로 차단하지는 않는다. 다른 정책 문장과 grant도 점검한다. AWS 서비스 직접 호출의 허용 조건은 해당 서비스의 KMS 통합 문서에서 별도로 확인한다.
 - 검증 제안: 허용된 조직 역할의 성공, IAM 권한이 없는 조직 역할의 거부, 조직 밖 역할의 거부를 각각 확인한다. 교차 계정 KMS 연산은 호출 계정과 키 소유 계정의 CloudTrail 양쪽에서 추적한다.
 
+### Grant와 grant token을 구분한다
+
+Grant는 특정 KMS 키의 허용 연산을 지정한 주체에 부여하는 권한 수단이다. 키 정책과 IAM 정책과 함께 접근 판단에 사용되며, grant 자체는 거부 권한을 표현하지 않는다. 정책에서 받은 `kms:CreateGrant` 권한은 생성자가 직접 갖고 있지 않은 암호 연산도 위임할 수 있으므로 허용할 연산과 주체를 제한한다.
+
+Grant token은 새 grant가 KMS 전체에 전파되기 전에 그 권한을 사용할 때 전달하는 값이다. 토큰을 가진 누구에게나 권한을 주는 로그인 자격증명이 아니다. 권한을 받은 주체가 사용하며 전파가 끝난 뒤에는 토큰 없이도 해당 grant의 권한을 사용할 수 있다. 폐기에도 전파 지연이 있으므로 `RevokeGrant`나 `RetireGrant` 응답 직후 모든 요청이 즉시 차단된다고 가정하지 않는다.
+
+### Encryption context는 비밀값이 아닌 인증 데이터다
+
+대칭 암호화 KMS 키의 encryption context는 ciphertext에 결합되는 추가 인증 데이터(AAD)다. 암호화에 지정했다면 복호화에도 같은 키와 값의 쌍이 필요하다. 비대칭 키와 HMAC 키의 암호 연산에는 이 context를 지정할 수 없다.
+
+- Context는 암호화되지 않고 CloudTrail에 평문으로 기록된다. 개인정보, 비밀번호나 토큰을 넣지 않는다.
+- 파일 경로를 context로 쓰는 경우, 복호화 요청에서 현재 경로로 context를 다시 구성해야 경로 변경이 불일치로 드러난다. 파일 이름만 바꾸고 저장된 context를 그대로 넘기면 이름 변경 자체를 KMS가 알아내는 것은 아니다.
+- 키 정책과 IAM 정책의 조건, grant의 제약에 context를 사용할 수 있다. Context가 일치한다는 사실만으로 모든 호출자에게 복호화 권한이 생기지는 않는다.
+
+두 절은 2026-10-16 KMS의 Grants와 Encryption context 공식 문서를 부분 대조했다. 실제 API 호출과 나머지 버전 민감 주장의 재검증은 하지 않아 기존 `verified_at`을 유지한다.
+
 ## 데이터 키 (Data Key)
 
 - 실제 데이터를 암호화하는 대칭 데이터 키. `GenerateDataKey`는 AES-128 또는 AES-256 키를 생성할 수 있다
@@ -168,6 +184,8 @@ KMS의 핵심 동작 방식. **데이터 키로 데이터를 암호화하고, �
 
 ## 출처
 
+- [AWS KMS 공식 문서, Grants in AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/grants.html)
+- [AWS KMS 공식 문서, Encryption context](https://docs.aws.amazon.com/kms/latest/developerguide/encrypt_context.html)
 - [Amazon EKS, Default envelope encryption for all Kubernetes API Data](https://docs.aws.amazon.com/eks/latest/userguide/envelope-encryption.html)
 - [Kubernetes, Using a KMS provider for data encryption](https://kubernetes.io/docs/tasks/administer-cluster/kms-provider/)
 - [AWS 공식 문서, AWS global condition context keys — aws:PrincipalOrgID](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-principalorgid)

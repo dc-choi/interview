@@ -70,6 +70,17 @@ AWS의 **네이티브 IaC 서비스**. JSON, YAML 템플릿으로 AWS 리소스(
 
 보존된 자원은 CloudFormation 관리 범위에서 빠져도 계속 존재하며 해당 비용이 발생한다. 운영 점검에서는 보존 대상과 이후 관리 책임을 함께 정한다. IAM으로 스택 변경 권한뿐 아니라 `SetStackPolicy`, `UpdateTerminationProtection`처럼 보호를 바꾸는 권한도 검토한다. Stack policy는 승인된 업데이트 동안 임시 정책으로 재정의할 수 있으므로 영구적인 변경 불가 보장이 아니다. 이 절만 대조했으며 실제 삭제나 업데이트는 실행하지 않았다.
 
+### IN_PROGRESS가 길어질 때의 진단 순서
+
+`CREATE_IN_PROGRESS`, `UPDATE_IN_PROGRESS`, `DELETE_IN_PROGRESS`는 진행 상태이며 그 자체로 장애를 뜻하지 않는다. CloudFormation이 기다리는 리소스의 안정화 조건과 예상 소요 시간을 먼저 확인한다.
+
+1. Resources에서 진행 중인 리소스의 논리 ID와 물리 ID를 찾고, Events에서 해당 작업의 시작 시각을 확인한다.
+2. 해당 서비스의 콘솔과 이벤트를 확인한다. 예를 들어 ECS라면 서비스 이벤트와 태스크 상태를 대조한다.
+3. 서비스 화면만으로 원인이 드러나지 않으면 그 시각 주변의 CloudTrail 이벤트에서 해당 리소스 API와 오류를 찾는다. EBS 업데이트라면 `ModifyVolume`이 단서가 될 수 있다. 로그 반영이 늦을 수 있으므로 즉시 조회한 빈 결과를 호출 부재로 단정하지 않는다.
+4. 원인과 리소스별 복구 방법을 확인한 뒤 기다림, 수정 또는 업데이트 취소를 선택한다. 상태를 빨리 끝내려는 목적만으로 스택이나 의존 리소스를 삭제하지 않는다. 삭제는 위 보호 정책과 데이터 보존 범위를 함께 검토한다.
+
+2026-10-16 AWS Knowledge Center의 검색 본문으로 진단 순서를 부분 대조했다(페이지 직접 열람은 실패). 실제 계정에서 재현하지 않았으며 리소스별 제한 시간과 나머지 버전 민감 주장은 재검증하지 않아 기존 `verified_at`을 유지한다.
+
 ### DELETE_FAILED 진단과 잔존 리소스
 
 2026-10-07 공식 문서 대조 기준이다. 스택 Events에서 실패한 논리 ID와 사유를 확인하고, 삭제를 막는 원인을 먼저 구분한다.
@@ -221,6 +232,7 @@ IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인�
 
 ## 출처
 
+- [Why is my CloudFormation stack stuck in an IN_PROGRESS state? — AWS re:Post](https://repost.aws/knowledge-center/cloudformation-stack-stuck-progress) — Resources, Events, 서비스 콘솔과 CloudTrail을 연결하는 절차를 검색 본문으로 확인
 - [AWS CloudFormation — Protect CloudFormation stacks from being deleted](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html)
 - [AWS CloudFormation — Prevent updates to stack resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/protect-stack-resources.html)
 - [AWS CloudFormation — DeletionPolicy attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html)
