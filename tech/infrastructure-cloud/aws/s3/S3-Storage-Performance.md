@@ -50,6 +50,18 @@ S3는 **계층형 파일시스템이 아님** — `folder/file.txt`는 단일 �
 
 **Lifecycle Rule**로 자동 전환 — 30일 후 IA, 90일 후 Glacier, 1년 후 Deep Archive 같은 식.
 
+### 아카이브 대량 복원: 작업 완료와 읽기 가능 시점을 나눈다
+
+부분 검증(2026-10-16): 아래 복원 절차만 AWS 공식 문서와 대조했으며 문서 전체의 기존 검증일은 유지한다. S3 Batch Operations의 Restore 작업은 manifest에 적힌 객체마다 `RestoreObject` 요청을 시작한다. **Batch 작업의 성공은 복원 요청 시작을 뜻하며 객체가 읽기 가능해졌다는 뜻은 아니다.**
+
+1. S3 Inventory 보고서나 CSV로 복원 대상을 정하고, 아카이브 객체와 같은 리전에 작업을 만든다. 작업 역할에는 필요한 Batch Operations 권한을 부여한다.
+2. Batch 복원은 `STANDARD` 또는 `BULK`를 선택한다. `EXPEDITED`는 Batch Operations에서 지원하지 않는다.
+3. Glacier Flexible Retrieval과 Deep Archive는 `ExpirationInDays`를 1 이상 지정한다. 복원본은 지정 기간 동안만 사용할 수 있는 임시 복사본이다.
+4. Intelligent-Tiering의 Archive Access와 Deep Archive Access는 `ExpirationInDays`를 지정하지 않는다. 복원하면 Frequent Access로 이동한다. 이 대상들과 앞의 Glacier 두 클래스를 하나의 Batch 작업에 섞지 않는다.
+5. 완료 보고서의 요청 처리 결과와 실제 복원 상태를 따로 확인한다. 객체의 `head-object` 결과나 `s3:ObjectRestore:Completed` 이벤트로 읽기 가능 여부를 확인한다. Glacier 임시 복사본은 `Restore`의 `ongoing-request="false"`와 만료 시각을 함께 본다.
+
+운영 점검 제안: 후속 다운로드나 분석은 필요한 객체의 복원 완료를 확인한 뒤 시작하고 임시 복사본 만료 전에 끝낼 시간을 확보한다. 실제 계정에서 복원 작업이나 비용 측정을 수행한 기록은 아니다.
+
 ## Multipart Upload — 대용량 병렬
 
 100 MB 이상 파일은 **Multipart Upload**를 고려하라는 것이 AWS의 일반 지침이다.
@@ -143,6 +155,8 @@ Directory bucket의 Lifecycle은 객체 만료와 미완료 multipart upload 삭
 같은 AZ의 컴퓨트가 작은 단위 접근이나 무작위 접근을 많이 해서 저장소 지연이 처리 시간을 좌우하고, AZ를 잃어도 원본에서 다시 만들 수 있는 학습 입력, 대화형 분석 입력과 중간 산출물에 맞다(설계 제안). 유일한 원본이나 버전 관리, 복제, 이벤트 알림이 필요한 데이터는 general purpose bucket의 다중 AZ 클래스(Standard, Standard-IA 등)에 둔다(설계 제안). 도입 전에는 컴퓨트 서브넷의 AZ ID, `s3express:CreateSession` 기반 정책, 정렬된 목록과 ETag 비교에 기대는 코드를 점검하고, 위 5xx 진단의 server access log 대신 CloudTrail data event를 조사 경로로 준비하며 request metrics 지원 여부도 확인한다. 비용은 저장 기간, 요청 수와 전송량을 실제 접근 패턴으로 넣어 S3 요금표에서 비교한다(설계 제안).
 
 ## 출처
+- [Amazon S3 User Guide, Restore objects with Batch Operations](https://docs.aws.amazon.com/AmazonS3/latest/userguide/batch-ops-initiate-restore-object.html)
+- [Amazon S3 User Guide, Restoring an archived object](https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html)
 - [Amazon S3 User Guide, Mount an Amazon S3 bucket as a local file system](https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint.html)
 - [Mountpoint for Amazon S3 file system behavior — AWS Labs](https://github.com/awslabs/mountpoint-s3/blob/main/doc/SEMANTICS.md)
 - [Amazon S3 User Guide, Performance guidelines for Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-guidelines.html)

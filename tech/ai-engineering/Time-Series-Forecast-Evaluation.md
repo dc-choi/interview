@@ -39,6 +39,19 @@ TFT는 이 입력들을 함께 다루는 다중 예측 거리 모델이다. 입�
 
 모델 비교에서는 동일한 예측 시점에 이용 가능한 입력과 예측 거리를 맞춘다. 다음은 운영 적용을 위한 점검 제안이다. 데이터 결합 시각, 누락값 처리와 사후 수정 여부를 기록하고, 예측 오차뿐 아니라 재학습 시간과 추론 지연도 함께 비교한다. 복잡한 모델을 선택했다는 사실을 정확도 개선이나 안전한 공정 제어의 증거로 삼지 않는다.
 
+## 판매 0, 품절과 행사 급증을 구분한다
+
+2026-10-16 Amazon Forecast의 결측값 문서와 예측 교재의 이상치 처리 원칙을 대조했다. 판매량이 0인 이유를 구분하지 않고 채우면 예측 대상의 의미가 달라진다.
+
+| 관측 상태 | 전처리에서 확인할 것 |
+|---|---|
+| 판매 가능한 재고가 있었지만 판매 0 | 실제 무판매 관측이다. 이를 일괄 결측 처리하면 수요를 높게 예측하는 편향이 생길 수 있다 |
+| 품절로 판매할 수 없었음 | 판매 0을 고객 수요 0으로 단정하지 않는다. 품절 구간을 0으로 채우면 수요를 낮게 예측할 수 있다 |
+| 기록 누락이나 수집 실패 | 원인을 확인하고 모델의 결측 처리 방식에 맞춘다. 품절과 같은 상태로 자동 분류하지 않는다 |
+| 행사 중 판매 급증 | 큰 값이라는 이유만으로 제거하지 않는다. 입력 오류인지, 반복될 수 있는 실제 변화인지 확인한다 |
+
+적용 제안: 원본 판매량과 재고 가용 여부, 누락 사유를 따로 보존한다. 행사 시작과 종료 구간을 나누어 오차를 보고, 예측 시점에 확정된 행사 일정과 가격만 입력한다. 이상치 판정과 대치 규칙도 각 평가 회차의 학습 구간에서 정하고 이후 관측을 미리 사용하지 않는다. 이 점검은 특정 매장의 성능 개선을 보장하거나 검증한 결과가 아니다.
+
 ## MAPE는 정답률이 아니다
 
 MAPE(Mean Absolute Percentage Error)는 실제값 대비 절대 백분율 오차의 평균이다. 실제값이 0이면 정의되지 않거나 무한대가 되고, 0에 가까우면 극단적인 값이 될 수 있다.
@@ -91,6 +104,9 @@ MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱
 
 ## 출처
 
+- [Amazon Forecast, Handling Missing Values](https://docs.aws.amazon.com/forecast/latest/dg/howitworks-missing-values.html) — 재고 가용 여부와 0/NaN 대치의 편향을 2026-10-16 대조
+- [Forecasting: Principles and Practice, Dealing with outliers and missing values — Hyndman, Athanasopoulos](https://otexts.com/fpp3/practical.html#dealing-with-outliers-and-missing-values)
+- [시계열 분석을 사용한 수요 예측 및 재고 관리 최적화 사례 — Amazon Web Services Korea](https://www.youtube.com/watch?v=yKymTXu2ZS8) — 행사 구간과 전처리 문제의 학습 계기. 사례의 개선율을 일반 성능으로 옮기지 않았다
 - [Amazon SageMaker AI, Define a pipeline](https://docs.aws.amazon.com/sagemaker/latest/dg/define-pipeline.html)
 - [Amazon SageMaker AI, Batch transform for inference](https://docs.aws.amazon.com/sagemaker/latest/dg/batch-transform.html)
 - [Create SageMaker Pipelines for training, consuming and monitoring your batch use cases — AWS](https://aws.amazon.com/blogs/machine-learning/create-sagemaker-pipelines-for-training-consuming-and-monitoring-your-batch-use-cases/)
