@@ -112,6 +112,10 @@ Blumberg와 Pringle(1982)은 성과를 수행 역량(capacity), 의지(willingne
 - 리더의 일은 모두에게 같은 난이도의 과제를 주는 것이 아니라, 각자의 욕구와 상태를 파악해 **적절한 도전 과제를 배치**하는 것이다.
 - 성장 욕구가 높은 사람에게는 크고 복잡한 문제를, 낮은 사람에게도 가끔 작은 도전을 제공해 정체되지 않게 한다.
 
+동기를 점검할 때는 자율성, 숙달, 목적이라는 실무 질문과 자기결정이론(SDT)의 기본 욕구를 구별한다. SDT의 세 욕구는 **자율성, 유능감, 관계성**이며 목적이 관계성을 대신하는 것은 아니다. 외재적 동기에도 스스로 가치를 받아들인 형태가 있으므로 보상과 내재적 동기를 단순한 양자택일로 다루지 않는다([[Intrinsic-vs-Extrinsic-Motivation|내재적 동기와 외재적 동기]]).
+
+이를 팀에 적용하는 점검안은 결정에 참여할 여지, 과제를 수행할 지원과 피드백, 동료에게 도움을 요청할 관계를 함께 묻는 것이다. 예를 들어 새 설계 과제를 맡길 때 선택권만 주고 검토할 동료를 붙이지 않았다면 자율성 외의 지원도 확인한다. 이 질문만으로 개인의 동기 저하 원인이나 퇴사를 예측할 수는 없다.
+
 ## 온보딩 — 적절한 난이도의 좌절
 
 신규 입사자는 실제 개발 흐름을 경험하며 적응한다. 개발, 코드 리뷰, 배포까지 짧은 주기로 도는 **파일럿 프로젝트**가 그 예다.
@@ -191,6 +195,8 @@ Blumberg와 Pringle(1982)은 성과를 수행 역량(capacity), 의지(willingne
 
 ## 출처
 
+- [Theory — Center for Self-Determination Theory](https://selfdeterminationtheory.org/theory/)
+- [Intrinsic and Extrinsic Motivations: Classic Definitions and New Directions — Ryan and Deci, 2000](https://selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_IntExtDefs.pdf)
 - [Promotions and the Peter Principle — NBER, Benson, Li, Shue (2018 작업논문)](https://www.nber.org/papers/w24343)
 - [Work Environment Structure and Psychological Ownership: The Mediating Effects of Control — The Journal of Social Psychology, Pierce, O'Driscoll, Coghlan (2004)](https://www.researchgate.net/profile/Michael-Odriscoll/publication/8265029_Work_Environment_Structure_and_Psychological_Ownership_The_Mediating_Effects_of_Control/links/54f62fb50cf27d8ed71d684c/Work-Environment-Structure-and-Psychological-Ownership-The-Mediating-Effects-of-Control.pdf)
 - [The Power of Purpose: AWS VP Ruba Borno on Leading with Why — AWS Executive Insights](https://www.youtube.com/watch?v=_hvMoEvJ7KM)
