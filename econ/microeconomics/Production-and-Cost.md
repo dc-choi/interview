@@ -88,6 +88,14 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 
 이 비율은 단일 병목과 비교 가능한 작업을 가정한 출발점이다. 실제 수요 한도, 묶어서만 받을 수 있는 작업, 납기, 품질, 미수 위험과 기존 고객 약속도 확인한다. 장기적으로는 공통비와 필요한 보상까지 회수할 수 있는지를 [[Business-Model|사업 전체 손익]]에서 별도로 본다.
 
+### 자체 생산과 외부 구매의 비용 경계
+
+공급자의 판매가격에 이윤이 붙어 있다는 사실만으로 자체 생산이 더 싸다고 결론 내릴 수는 없다. 같은 품질과 수량, 기간을 놓고 **선택에 따라 달라지는 미래 비용**을 비교한다. 자체 생산에는 재료, 노동과 변동 간접비뿐 아니라 새로 필요한 설비나 전문인력 비용이 생길 수 있다. 외부 구매에는 구매대금과 계약에 따른 부대비용을 넣는다. 어느 쪽을 골라도 남는 기존 고정비는 비교 차이에서 상쇄한다.
+
+자체 생산에 쓰는 용량을 다른 수익성 있는 일에 쓸 수 있다면 포기하는 이익도 비교한다. 반대로 구매로 비운 공간이나 시간이 있어도 실제 대안이 없다면 가상의 수익을 절감액에 더하지 않는다. 품질, 납기, 공급자의 가격 변경과 수량 조절 가능성도 함께 확인한다.
+
+수직 통합의 원가 우위를 검토할 때도 이 기준을 적용할 수 있다. 다만 이는 make-or-buy 판단의 적용이며, 특정 기업의 공장 건설, 장비 확보, 수율이나 미래 주가를 확인한 결과는 아니다. 장기 설비 투자는 이 단기 비용 비교만으로 확정하지 않는다.
+
 ## 8. 회계의 원가 구성
 
 회계에서 제품 원가는 보통 다음처럼 쌓는다. 직접경비를 따로 떼는 분류도 있다.
@@ -120,6 +128,7 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 
 ## 출처
 
+- [OpenStax, Evaluate and Determine Whether to Make or Buy a Component](https://openstax.org/books/principles-managerial-accounting/pages/10-3-evaluate-and-determine-whether-to-make-or-buy-a-component) — 2026-10-15 관련 비용, 생산 용량과 공급 의존 조건 대조
 - [OpenStax, Identify Relevant Information for Decision-Making](https://openstax.org/books/principles-managerial-accounting/pages/10-1-identify-relevant-information-for-decision-making) — 선택 간 차이와 회피 가능한 비용
 - [OpenStax, Evaluate and Determine Whether to Accept or Reject a Special Order](https://openstax.org/books/principles-managerial-accounting/pages/10-2-evaluate-and-determine-whether-to-accept-or-reject-a-special-order) — 여유 용량과 추가 비용, 기존 고객에 미치는 영향
 - [OpenStax, Evaluate and Determine How to Make Decisions When Resources Are Constrained](https://openstax.org/books/principles-managerial-accounting/pages/10-6-evaluate-and-determine-how-to-make-decisions-when-resources-are-constrained) — 병목 자원당 공헌이익. 서비스 수주 예시는 이를 적용한 가정이다.

@@ -74,6 +74,14 @@ aliases: ["소비자 이론과 효용", "Consumer Theory and Utility"]
 
 주장을 평가할 때는 소득인지 순자산인지, 어떤 집단과 기간인지, 무엇을 행복으로 측정했는지부터 확인한다. 같은 소비재를 살 수 있다는 사실만으로 전체 삶의 질이 같다는 결론은 나오지 않는다. 2026-10-13에는 위 논문의 초록, 표본 설명과 집단별 분석을 대조했다.
 
+## 10. 콘텐츠 전환과 만족을 구분한다
+
+새 콘텐츠로 옮겨 가는 행동만으로 만족이 높아졌다고 판단하지 않는다. 같은 재화의 추가 소비를 설명하는 한계효용 체감과, 영상 사이를 이동하거나 영상 안에서 건너뛰는 행동의 효과는 별도로 확인할 문제다.
+
+2024년 디지털 전환 연구의 일곱 실험에서는 지루함이 전환을 유발하고, 영상 사이 또는 영상 안의 전환이 오히려 지루함을 높이며 만족과 주의를 낮추는 결과가 관찰됐다. 그러나 온라인 글과 대학생이 아닌 표본을 다룬 조건에서는 결과가 덜 명확했다. 모든 콘텐츠나 이용자에게 같은 효과가 있다고 확대하지 않는다.
+
+소비자 행동을 해석할 때는 클릭과 전환 횟수, 이용 후 보고한 만족을 다른 지표로 다룬다. 이는 위 실험에서 끌어낸 측정상의 주의점이다. 특정 유행어의 증가나 한 행사 방문자 수만으로 사회 전체의 권태가 늘었거나 그 원인이 디지털 소비라고 확정할 수는 없다.
+
 ## 출처
 
 2026-10-03에는 내부해와 접점 조건의 구분, 예산선 기울기의 부호, 가격 변화의 총효과 설명을 보완했다. 실제 소비자나 특정 시장의 반응을 검증한 기록은 아니다.
@@ -83,6 +91,7 @@ aliases: ["소비자 이론과 효용", "Consumer Theory and Utility"]
 - [Solutions at Kinks — EconGraphs, Christopher Makler](https://www.econgraphs.org/explanations/consumer/optimization/kinks) — 완전보완재와 꺾인 점에서의 최적 선택
 - [Transforming Utility Functions — EconGraphs, Christopher Makler](https://www.econgraphs.org/textbooks/intermediate_micro/scarcity_and_choice/preferences_and_utility/transforming_utility_functions) — 선호 순서를 유지하는 효용 변환
 - [Income and emotional well-being: A conflict resolved — PNAS, Matthew A. Killingsworth, Daniel Kahneman, Barbara Mellers](https://pmc.ncbi.nlm.nih.gov/articles/PMC10013834/) — 2023년 공동 재분석, 소득과 정서적 안녕의 집단별 관계
+- [Fast-Forward to Boredom: How Switching Behavior on Digital Media Makes People More Bored — Journal of Experimental Psychology: General, Katy Y. Y. Tam, Michael Inzlicht](https://www.apa.org/pubs/journals/releases/xge-xge0001639.pdf) — 2026-10-15 영상 전환 실험과 글, 표본에 따른 일반화 한계 대조
 
 ## 관련 문서
 

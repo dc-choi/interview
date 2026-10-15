@@ -87,6 +87,14 @@ Spence의 1973년 논문은 노동시장의 교육을 예로 든다. 고용주�
 - **구직자 쪽**: 결과물만 보여 주기보다 과정과 검증 경로를 함께 보인다. 이력서 서술은 [[Resume-Experience-Narrative-and-Evidence|이력서 경험 서술과 증거 설계]], 직접 경험 기록의 희소성은 [[First-Hand-Experience-AI-Era|AI 시대의 직접 경험기와 작성자 신뢰]]에서 다룬다.
 - **외주 수행자 쪽**: 발주자는 계약 전에 품질을 판단하기 어려운 구매자다. 화려한 시안은 AI로 싸지는 신호이므로, 범위와 완료 기준, 중간 확인 방식, 하자 기간과 계정 이전처럼 지키지 못하면 수행자에게 비용이 되는 약속을 먼저 제시하는 편이 분리 신호에 가깝다. 시장 쪽 변화는 [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]]에서 본다.
 
+### 노력의 인상과 품질을 가르는 신호는 다르다
+
+제작 시간이 길었다는 정보를 보고 작품을 높게 평가하는 **노력 휴리스틱**과, 유형별 모방 비용 차이로 품질을 구별하는 신호는 같은 설명이 아니다. 노력의 인상이 평가에 영향을 주더라도 실제 품질 차이나 분리균형이 입증된 것은 아니다.
+
+2023년 노력 휴리스틱 재현 연구는 실험과 측정 항목에 따라 혼합된 결과를 보고했다. 특히 Prolific 표본의 시 평가에서는 호감과 품질 지표의 효과가 관찰됐지만 금전 가치 평가의 효과는 뒷받침되지 않았다. 이 결과를 사람이 공들인 결과물에는 언제나 가격 프리미엄이 붙는다는 규칙으로 바꾸지 않는다.
+
+과정 기록을 평가할 때는 투입 시간, 실제로 확인되는 품질, 구매자가 매긴 가치를 나누어 본다. 이는 연구와 신호 모형을 함께 적용한 점검 방법이다. 제작 비하인드가 흥미롭다는 관찰만으로 판매 증가나 특정 작품의 성공 원인을 확정하지 않는다.
+
 ## 7. 트레이드오프와 한계
 
 - 신호는 정보를 주는 대가로 자원을 쓴다. 분리균형에서도 높은 유형은 구분되기 위한 비용을 치르고, 모두가 신호 경쟁에 뛰어들면 그 비용이 커진다.
@@ -107,6 +115,7 @@ Spence의 1973년 논문은 노동시장의 교육을 예로 든다. 고용주�
 2026-10-06 신호의 비용 조건, 다중균형과 선별의 자기선택 구조를 대조했다. NobelPrize.org의 보도자료, 대중용 해설과 시상 연설은 직접 열기가 403으로 실패하여 공식 페이지의 검색 색인에 수록된 해당 본문으로 확인했다. Spence 논문은 학술지의 서지 정보만 확인했고, 분리균형과 풀링균형의 분류와 직관적 기준의 결과는 강의 자료로 확인했다. 4절의 숫자는 가상 예시이고 6절의 AI 적용은 모형에서 끌어낸 해석이며 실증 결과가 아니다.
 
 - [Job Market Signaling — The Quarterly Journal of Economics, Michael Spence](https://doi.org/10.2307/1882010)
+- [The Effort Heuristic Revisited: Mixed Results for Replications of Kruger et al. (2004)'s Experiments 1 and 2 — Collabra: Psychology, Ignazio Ziano 외](https://online.ucpress.edu/collabra/article/9/1/87489/197632/The-Effort-Heuristic-Revisited-Mixed-Results-for) — 2026-10-15 재현 결과와 호감/품질, 금전 가치 지표의 차이 대조
 - [The Prize in Economic Sciences 2001, Press release — NobelPrize.org](https://www.nobelprize.org/prizes/economic-sciences/2001/press-release/)
 - [The 2001 Prize in Economic Sciences, Popular information — NobelPrize.org](https://www.nobelprize.org/prizes/economic-sciences/2001/popular-information/)
 - [The Prize in Economics 2001, Presentation Speech — NobelPrize.org](https://www.nobelprize.org/prizes/economic-sciences/2001/ceremony-speech/)
