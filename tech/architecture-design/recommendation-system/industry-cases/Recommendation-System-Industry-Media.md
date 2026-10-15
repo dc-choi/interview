@@ -68,6 +68,17 @@ CTR만 높아도 화면 전체 소비가 한 row로 쏠리거나 장기 만족�
 
 공개 자료만으로 현재 요청별 latency budget, 후보 수, cache topology와 model별 online traffic 비율은 확인할 수 없다.
 
+### GenRec: 언어 이해와 catalog 점수화를 결합한다
+
+2026-07-30 공개된 GenRec은 사용자 이력, 작품 metadata와 요청 context를 텍스트로 표현하고, Netflix 데이터로 적응한 LLM을 ranking 목적에 맞게 후학습하는 방식이다. 아래 범위는 2026-10-15 공식 기술 글과 대조했다.
+
+- **입력:** 신호가 강한 최근 행동을 우선하고 반복 행동은 압축한다. 이력을 길게 넣는 것 자체보다 token 예산 안의 ranking 품질을 측정한다.
+- **학습:** catalog ranking, 언어 모델링과 reward-weighted loss를 결합한다. 대화 형식의 학습 예제는 사용자가 챗봇으로 추천을 요청해야 한다는 뜻이 아니다.
+- **출력:** pooled hidden state와 학습된 item embedding을 ranking head에서 점수화한다. vLLM 기반 prefill-only 추론으로 후보를 평가하며 추천 문장을 token별로 생성하지 않는다.
+- **평가:** 공개 A/B 실험은 batch-compute 추천 표면에서 약 4주, Netflix traffic 약 10%를 대상으로 했다. 이 범위를 실시간 요청 전체나 모든 추천 화면의 전환 완료로 확대하지 않는다.
+
+Catalog에 제한된 출력은 목록 밖 작품 생성 문제를 줄이지만, 지역별 권리와 프로필별 자격 확인을 대신하지 않는다. 적용할 때는 [[Recommendation-System-Eligibility-Availability|가용성과 자격 계약]]을 별도로 지킨다. 적은 Phase-2 학습 예제로 얻은 비교 결과도 기반 LLM과 Phase-1 학습까지 포함한 전체 학습 비용 절감률은 아니다.
+
 ## YouTube: 큰 catalog를 줄이는 2단계 funnel
 
 ### Candidate generation
@@ -167,6 +178,7 @@ OTT에 적용할 때 법적, 연령과 안전 제약은 모든 후보 경로에�
 
 ## 출처
 
+- [GenRec: Towards LLM-Native Recommendation at Netflix — Netflix Technology Blog](https://netflixtechblog.com/genrec-towards-llm-native-recommendation-at-netflix-f20be6f643e3)
 - [The Netflix Recommender System: Algorithms, Business Value, and Innovation — ACM](https://doi.org/10.1145/2843948)
 - [System Architectures for Personalization and Recommendation — Netflix Technology Blog](https://netflixtechblog.com/system-architectures-for-personalization-and-recommendation-e081aa94b5d8)
 - [Foundation Model for Personalized Recommendation — Netflix Technology Blog](https://netflixtechblog.com/foundation-model-for-personalized-recommendation-1a0bd8e02d39)
