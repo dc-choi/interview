@@ -145,6 +145,12 @@ Access Token(짧은 수명) + Refresh Token(긴 수명) 조합. Refresh 시 **�
 
 상세는 [[Password-Hashing]].
 
+### 비밀번호 변경 시점
+
+NIST SP 800-63B-4 §3.1.1.2는 준수 대상 검증자와 CSP가 사용자에게 주기적인 비밀번호 변경을 강제하지 못하도록 한다. 반대로 인증 수단이 침해됐다는 증거가 있으면 검증자는 변경을 강제해야 한다. 정기 변경을 없애는 것과 유출된 비밀번호를 계속 허용하는 것은 다르다. 이 기준을 모든 민간 서비스의 법적 의무로 일반화하지 않는다.
+
+같은 절은 비밀번호 설정과 변경 시 흔하거나 예상 가능하거나 유출된 비밀번호의 차단 목록과 전체 값을 대조하도록 요구한다. 실패한 인증 시도에는 계정별 시도 제한을 적용한다. OWASP도 정기 변경 강제 대신 강한 비밀번호와 MFA 사용을 권장하고, 유출이나 침해 확인 시 변경하도록 안내한다. 기존 세션과 토큰의 폐기 범위는 [[Session#비밀번호 변경과 재인증 상태|비밀번호 변경 흐름]]에서 별도로 정한다.
+
 ### 비밀번호 재사용과 복구 경로
 
 소수의 비밀번호를 여러 서비스에서 돌려 쓰면 한 서비스의 유출이 다른 계정에 대한 credential stuffing으로 이어질 수 있다. 서비스마다 다른 비밀번호를 쓰고, 기억 부담은 비밀번호 관리자의 생성과 보관 기능으로 줄인다. 관리 도구 자체의 안전성과 접근 보호도 확인한다.
@@ -179,7 +185,10 @@ NIST SP 800-63B-4 §3.1.1.2는 준수 대상 검증자에게 비밀번호 관리
 
 2026-10-13 부분 검증: 비밀번호 재사용, 관리자 지원과 복구 토큰 통제를 NIST SP 800-63B-4와 OWASP에 대조했다. 기존 프로토콜 비교 전체를 재검증한 날짜는 아니다.
 
+2026-10-15 부분 검증: 비밀번호 변경 시점 절의 정기 변경 금지, 침해 증거가 있을 때의 변경, 차단 목록과 인증 시도 제한을 NIST SP 800-63B-4 §3.1.1.2와 OWASP Authentication에 대조했다. 다른 절의 검증 날짜는 유지한다.
+
 - [NIST, SP 800-63B-4: Authentication and Authenticator Management](https://pages.nist.gov/800-63-4/sp800-63b.html)
+- [OWASP Cheat Sheet Series, Authentication](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Forgot Password](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html)
 - [IETF, RFC 6750: OAuth 2.0 Bearer Token Usage, §2](https://www.rfc-editor.org/rfc/rfc6750.html#section-2)
 - [IETF, RFC 7519: JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519.html)
