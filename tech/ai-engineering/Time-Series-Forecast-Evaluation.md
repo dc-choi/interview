@@ -39,6 +39,16 @@ TFT는 이 입력들을 함께 다루는 다중 예측 거리 모델이다. 입�
 
 모델 비교에서는 동일한 예측 시점에 이용 가능한 입력과 예측 거리를 맞춘다. 다음은 운영 적용을 위한 점검 제안이다. 데이터 결합 시각, 누락값 처리와 사후 수정 여부를 기록하고, 예측 오차뿐 아니라 재학습 시간과 추론 지연도 함께 비교한다. 복잡한 모델을 선택했다는 사실을 정확도 개선이나 안전한 공정 제어의 증거로 삼지 않는다.
 
+## 여러 시계열을 함께 학습할 때의 입력 계약
+
+부분 검증(2026-10-16): SageMaker AI DeepAR 공식 문서 기준, 서로 같거나 유사한 생성 과정을 가진 여러 시계열을 하나의 모델로 함께 학습할 수 있다. 상품별 모델을 따로 만드는 방식과 비교할 후보이며, 단순히 데이터 수를 늘리면 정확도가 좋아진다는 보장은 아니다.
+
+- 시계열마다 시작일과 길이는 달라도 되지만 관측 주기와 범주형 특성 수, 동적 특성 수는 맞춰야 한다.
+- `cat`으로 학습했다면 추론에도 해당 특성을 제공한다. 각 범주값은 학습 데이터에 등장한 값이어야 한다. 학습한 시계열과 유사한 새 시계열을 예측할 수 있다는 설명을 미관측 범주값도 허용한다는 뜻으로 해석하지 않는다.
+- `dynamic_feat`으로 학습했다면 추론에서도 과거 입력과 예측 구간 전체의 특성값이 필요하다. 미래 행사 일정처럼 예측 시점에 확보 가능한 값인지 확인하며, 나중에 관측한 실제값으로 채우지 않는다.
+
+평가 설계 제안: 단일 시계열 기준 모델과 같은 예측 거리와 시간 분할로 비교하고, 전체 평균 외에 제품군별 오차를 확인한다. 관련 없는 시계열을 함께 묶은 결과나 특정 매장의 개선 효과는 검증하지 않았다. 이 절은 DeepAR의 입력 조건 대조이며 실제 모델 학습 결과가 아니다.
+
 ## 판매 0, 품절과 행사 급증을 구분한다
 
 2026-10-16 Amazon Forecast의 결측값 문서와 예측 교재의 이상치 처리 원칙을 대조했다. 판매량이 0인 이유를 구분하지 않고 채우면 예측 대상의 의미가 달라진다.
@@ -104,6 +114,7 @@ MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱
 
 ## 출처
 
+- [Amazon SageMaker AI, Use the SageMaker AI DeepAR forecasting algorithm](https://docs.aws.amazon.com/sagemaker/latest/dg/deepar.html) — 다중 시계열 학습, 범주값과 미래 동적 특성의 입력 조건을 2026-10-16 대조
 - [Amazon Forecast, Handling Missing Values](https://docs.aws.amazon.com/forecast/latest/dg/howitworks-missing-values.html) — 재고 가용 여부와 0/NaN 대치의 편향을 2026-10-16 대조
 - [Forecasting: Principles and Practice, Dealing with outliers and missing values — Hyndman, Athanasopoulos](https://otexts.com/fpp3/practical.html#dealing-with-outliers-and-missing-values)
 - [시계열 분석을 사용한 수요 예측 및 재고 관리 최적화 사례 — Amazon Web Services Korea](https://www.youtube.com/watch?v=yKymTXu2ZS8) — 행사 구간과 전처리 문제의 학습 계기. 사례의 개선율을 일반 성능으로 옮기지 않았다

@@ -189,8 +189,22 @@ AWS 복구 문서의 대상은 AL2, AL2023, Fedora 16 이상과 RHEL 7 이상이
 
 AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 패턴.
 
+### 계정 간 AMI 공유와 복사의 권한 경계
+
+부분 검증(2026-10-16): EC2의 AMI 공유와 복사 공식 문서를 대조했다. 다른 계정에 실행 권한을 주는 것과 대상 계정이 소유하는 AMI를 만드는 것은 다르다.
+
+- **공유 후 실행:** 원본 계정이 소유한 AMI를 특정 계정에 비공개로 공유한다. 공유받은 AMI로 인스턴스를 시작할 때는 연결된 EBS 스냅샷을 별도로 공유할 필요가 없다. 암호화된 스냅샷을 사용한다면 KMS 키 사용 권한은 필요하다.
+- **공유 후 복사:** 대상 계정이 AMI를 복사하려면 AMI 실행 권한 외에 기반 스토리지의 읽기 권한도 필요하다. EBS 기반 AMI는 연결된 EBS 스냅샷, S3 기반 AMI는 연결된 S3 버킷의 권한을 확인한다. 암호화된 스냅샷이 있으면 관련 KMS 키 권한도 필요하다. 실행 성공만으로 복사 권한까지 있다고 판단하지 않는다.
+- **암호화 제약:** 기본 AWS 관리형 키로 암호화된 스냅샷 기반 AMI는 공유할 수 없다. 고객 관리형 키로 암호화하고 대상 계정에 필요한 키 권한을 부여하는 경로를 검토한다.
+- **소유와 수명:** 복사본은 대상 계정이 소유하며 별도의 AMI ID를 갖는다. 원본 AMI의 변경이나 등록 해제는 복사본에 영향을 주지 않는다. 복사 요청 뒤에는 상태가 `Available`인지 확인한다.
+
+운영 점검 제안: 계정 간 이전에서 대상 AMI로 새 인스턴스를 시작한 뒤 애플리케이션 설정이 원본 계정의 데이터와 서비스에 계속 연결되는지 확인한다. 복사 완료와 서비스 이전 완료를 구분하고 원본 정리는 별도로 결정한다. 실제 계정 간 복사나 부팅 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## 출처
 
+- [AWS 공식 문서, Share an AMI with specific AWS accounts](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sharingamis-explicit.html)
+- [AWS 공식 문서, How Amazon EC2 AMI copy works](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ami-copy-works.html)
+- [AWS 공식 문서, Copy an Amazon EC2 AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html)
 - [AWS 공식 문서, AWSSupport-UpgradeWindowsAWSDrivers](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-upgradewindowsawsdrivers.html)
 - [AWS 공식 문서, Amazon EC2 instance state changes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html)
 - [AWS 공식 문서, Troubleshoot impaired Windows instance with the EC2Rescue GUI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2rw-gui.html)

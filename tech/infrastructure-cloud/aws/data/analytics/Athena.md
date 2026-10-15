@@ -197,6 +197,16 @@ WHERE "$path" = 's3://amzn-s3-demo-bucket/events/file-01.json';
 
 테이블명과 객체 경로는 예시다. `"$path"`는 행의 원본 위치이며 쿼리 결과를 저장하는 S3 위치와 다르다. 쿼리가 읽지 못한 객체까지 열거하는 버킷 목록으로 해석하지 않는다. 파티션 테이블의 진단에서는 파티션 조건도 함께 좁히고 실제 스캔량을 확인한다(운영 점검 제안). 실제 AWS 실행은 하지 않았으며 기존 절의 검증일은 유지한다.
 
+## 중복 컬럼과 JSON 키 충돌을 구분한다
+
+부분 검증(2026-10-16): AWS Knowledge Center의 중복 컬럼 진단과 OpenX JSON SerDe 공식 문서를 대조했다. 오류 이름만 보지 않고 오류 메시지의 세부 원인과 테이블 정의를 함께 확인한다.
+
+- **메타데이터의 이름 중복:** `HIVE_INVALID_METADATA`와 함께 `Table descriptor contains duplicate columns`가 나오면 Glue 테이블의 컬럼 이름 중복, 일반 컬럼과 파티션 컬럼의 이름 충돌을 확인한다. `SHOW CREATE TABLE` 또는 Glue 콘솔의 스키마에서 두 종류의 컬럼을 대조한다.
+- **JSON 키의 대소문자 충돌:** OpenX JSON SerDe의 `case.insensitive` 기본값은 `TRUE`다. `URL`과 `Url`처럼 소문자로 바꾸면 같아지는 키는 중복 키 오류를 낼 수 있다. 이는 위 메타데이터 오류와 다른 `HIVE_CURSOR_ERROR`로 나타날 수 있다.
+- **명시적 매핑:** 두 JSON 키를 별개 값으로 읽어야 하면 `case.insensitive`를 `FALSE`로 두고 `mapping.url1 = URL`, `mapping.url2 = Url`처럼 서로 다른 컬럼에 연결한다. 이 설정은 OpenX JSON SerDe의 속성이며 모든 파일 형식에 적용되는 해결책이 아니다.
+
+운영 점검 제안: 변경 뒤 두 원본 키에 서로 다른 값을 넣은 표본으로 각 컬럼이 의도한 값을 읽는지 확인한다. 오류가 사라진 것과 값의 의미가 보존된 것은 별도 조건이다. 실제 Athena 질의는 실행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## HIVE_BAD_DATA는 원본 값과 읽기 스키마를 대조한다
 
 2026-10-13 AWS 공식 문서 대조 기준. `HIVE_BAD_DATA`는 테이블 타입과 원본 값이 맞지 않거나 같은 필드에 서로 다른 타입이 섞일 때 발생할 수 있다. 오류에 나온 필드와 실제 S3 객체, 테이블 정의와 SerDe를 함께 확인한다.
@@ -248,6 +258,7 @@ Hive 파티션을 복구할 때 쓰는 `MSCK REPAIR TABLE`은 Iceberg에서 지�
 
 ## 출처
 
+- [Why does my Athena query fail with the error HIVE_INVALID_METADATA? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/athena-hive-invalid-metadata-duplicate)
 - [Amazon Athena, SELECT](https://docs.aws.amazon.com/athena/latest/ug/select.html) (행의 S3 원본 경로 조회와 경로 조건)
 - [How do I troubleshoot Apache Iceberg table errors with Athena? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/athena-iceberg-table-error)
 - [Amazon Athena, Supported data types for Iceberg tables in Athena](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg-supported-data-types.html)
