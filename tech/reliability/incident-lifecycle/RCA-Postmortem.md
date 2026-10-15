@@ -33,6 +33,23 @@ aliases: ["RCA Postmortem", "근본 원인 분석", "Root Cause Analysis", "포�
 - **기여 요인(contributing factors)**: 대형 장애는 단일 원인 신화가 아니라 여러 결함이 겹친 결과다(스위스 치즈 모델). "근본 원인 1개"로 닫지 말고 막을 수 있었던 모든 지점을 적는다.
 - **반사실 점검**: 어느 방어선이 하나라도 작동했으면 막혔을까를 짚어 액션을 도출한다.
 
+### 원인 목록을 인과관계와 방어선으로 연결한다
+
+원인 후보를 여러 개 적는 것만으로는 충분하지 않다. 장애를 시작한 계기, 그 계기가 실패로 이어진 조건, 영향이 확대된 경로와 피해를 줄인 방어선을 나누어 기록한다. 각 연결에는 로그, 변경 이력이나 재현 결과를 붙이고, 확인하지 못한 연결은 가설로 남긴다. 조사 근거를 모으는 절차는 [[Root-Cause-Investigation-Loop|근본 원인 조사 루프]]를 따른다.
+
+Google SRE Workbook의 서버 폐기 사례에서는 작업 재실행으로 대상 목록이 비었고, API가 빈 목록을 대상 없음이 아니라 필터 없음으로 해석했다. 이 입력 검증 결함과 불충분한 작업 속도 제한이 결합해 대규모 서버 폐기로 이어졌다. 데이터센터가 우회 트래픽을 수용한 용량 계획은 사용자 영향을 줄였다. 재실행이라는 계기만 고치면 잘못된 입력 해석과 피해 확산 경로를 놓친다.
+
+다음은 이 사례를 일반화한 기록 틀이다. 각 장애에서 인과관계는 별도로 검증한다.
+
+| 구분 | 기록할 질문 |
+|---|---|
+| 계기 | 어떤 요청이나 변경이 잠복 결함을 드러냈는가 |
+| 실패 조건 | 입력과 상태가 어떤 규칙을 거쳐 잘못된 동작을 만들었는가 |
+| 확산과 완화 | 영향 범위를 키운 제약 누락과 피해를 줄인 방어선은 무엇인가 |
+| 후속 조치 | 발생 가능성을 줄일 조치와 발생 후 피해를 제한할 조치를 각각 어떻게 확인할 것인가 |
+
+같은 유형의 장애가 다시 생겼다는 이유만으로 이전 조치가 무효였다고 단정하지 않는다. 이 사례에서는 후속 조치가 이후 유사 장애의 영향 범위와 확산 속도를 줄였다. 재발 여부와 함께 사용자 영향도 비교한다.
+
 ## 액션 아이템이 핵심 — 없으면 그냥 의식
 
 포스트모템의 가치는 문서가 아니라 **실행된 재발 방지**에 있다.
@@ -78,6 +95,7 @@ aliases: ["RCA Postmortem", "근본 원인 분석", "Root Cause Analysis", "포�
 ## 출처
 
 - [Google SRE Book — Postmortem Culture: Learning from Failure](https://sre.google/sre-book/postmortem-culture/)
+- [Google SRE Workbook — Postmortem Culture: Learning from Failure](https://sre.google/workbook/postmortem-culture/) (서버 폐기 사례와 후속 조치 효과, 2026-10-15 대조)
 - [Atlassian — Incident postmortem / blameless RCA](https://www.atlassian.com/incident-management/postmortem)
 - [네이버 검색의 SRE 시스템 — NAVER D2](https://d2.naver.com/helloworld/2047663) (문화 정착 시범 사례)
 - [FIA — FIA concludes investigation into Bahrain GP in Malaysia formation lap “software bug”](https://www.fia.com/news/fia-concludes-investigation-bahrain-gp-malaysia-formation-lap-software-bug) (2026-10-08 발표, 2026-10-14 대조)
