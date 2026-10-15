@@ -167,6 +167,14 @@ AWS SAM template specification은 CloudFormation을 확장한 서버리스 전�
 - `sam package`로 코드를 S3에 올리고 코드 위치를 S3로 바꾼 패키지 템플릿을 만든 뒤 `sam deploy --template-file`로 배포하던 두 단계 흐름은 이제 `sam deploy`가 암묵적으로 수행한다. 업로드 버킷은 `--s3-bucket` 또는 `--resolve-s3`로 정하고, 명령행 값은 `--save-params`로 `samconfig.toml`에 저장해 재사용한다.
 - SAM은 별도 상태 관리 엔진이 아니다. 최종 stack, change set, rollback과 IAM 권한은 CloudFormation 동작을 따른다. SAM이 만든 함수와 역할도 스택 리소스라 스택을 지우면 함께 삭제된다.
 
+### SAM의 정적 검사와 변경 세트 검토를 분리한다
+
+2026-10-16 공식 SAM CLI 문서 기준, `sam validate --lint`는 cfn-lint 규칙으로 템플릿을 검사하며 설정 파일의 사용자 규칙과 검사 옵션도 적용한다. 검사 통과는 템플릿에 대한 결과이며 실제 계정의 배포 성공을 보장하지 않는다.
+
+`sam deploy --no-execute-changeset`은 변경 세트를 만들고 적용하지 않은 채 종료한다. 따라서 로컬에서만 수행하는 검사로 취급하지 않는다. 운영 검토에서는 생성, 교체, 삭제와 IAM 변경을 확인하고 승인된 변경 세트를 실행한 뒤 스택 결과와 애플리케이션 동작을 별도로 확인한다. `--confirm-changeset`은 계산된 변경 세트를 배포할지 묻는 대화형 옵션이므로, 변경 세트 생성 후 종료하는 옵션과 구분한다.
+
+이 절은 CLI 옵션의 동작만 대조했으며 실제 배포는 수행하지 않았다. 기존 본문의 나머지 버전 민감 주장은 재검증하지 않아 `verified_at`을 유지한다.
+
 ## Capabilities 확인 — IAM 리소스와 매크로
 
 IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인해야 한다. 대상은 `AWS::IAM::Role`, `Policy`, `ManagedPolicy`, `InstanceProfile`, `User`, `Group`, `AccessKey`, `UserToGroupAddition`이며, 승인 없이 생성, 업데이트를 요청하면 `InsufficientCapabilities` 오류로 실패한다. 콘솔은 IAM 리소스 생성 확인 체크박스로 같은 승인을 받는다.
@@ -260,6 +268,7 @@ IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인�
 - [AWS SAM — How SAM works](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam-overview.html)
 - [AWS SAM — Deploying applications](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-deploying.html)
 - [AWS SAM — sam deploy](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-deploy.html)
+- [AWS SAM — Validate your AWS SAM applications with CloudFormation Linter](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/validate-cfn-lint.html)
 - [AWS SAM — sam package](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-package.html)
 - [AWS CloudFormation — CreateStack Capabilities](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateStack.html)
 - [AWS CloudFormation — AWS::CloudFormation::Stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-cloudformation-stack.html)

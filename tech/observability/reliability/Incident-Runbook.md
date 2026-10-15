@@ -34,6 +34,12 @@ AWS는 알려진 결과를 달성하는 절차를 runbook, 문제를 조사하�
 
 런북은 **알람에서 한 번에 닿아야** 가치가 있다. 알람 메시지에 런북 URL을 박아 [[Alert-Fatigue|받는 즉시 행동]]으로 잇는다. 런북 없는 알람은 "받았는데 뭘 하지"가 된다.
 
+### 대시보드는 고객 영향에서 상세 진단으로 연결한다
+
+알람의 진입 화면에는 서비스 건강 상태와 고객 영향 범위를 두고, 그 아래에서 API 요청, 처리와 응답 지표 및 개별 서비스의 상세 지표로 이동하게 한다. CPU와 메모리 수치만으로 고객 피해의 유무를 판단하지 않는다. 상위 화면에는 판단에 필요한 지표를 추리고 세부 분석은 연결된 화면으로 넘긴다.
+
+그래프에는 지표의 의미, 정상 범위와 알람 임계값을 설명하고 런북, 상세 대시보드와 배포 이력을 연결한다. 자동 완화가 시작됐어도 담당자가 실행 중인 조치와 고객 영향의 변화를 확인할 수 있어야 한다. 이는 2026-10-16 AWS Builders' Library의 대시보드 설계 원칙을 대조한 내용이며, 개별 서비스의 임계값과 실제 대응 시간은 검증한 것이 아니다.
+
 ## 최소 진단으로 완화하고, 근본 원인은 복구 후 조사한다
 
 큰 장애에서는 근본 원인을 끝까지 규명하느라 사용자 피해를 방치하지 않는다. 다만 빠른 완화도 영향 범위, 최근 변경, 조치의 적용 조건을 확인하는 최소 진단이 필요하다. 배포 변경이 의심되고 이전 버전이 현재 데이터와 호환된다면 롤백을 우선 검토한다. 원인이 다르거나 롤백이 위험하면 기능 격리, 트래픽 제어와 다른 복구 수단을 비교한다. [[Hotfix-Decision-Loop|핫픽스 판단과 학습 루프]]
@@ -99,6 +105,7 @@ AI가 만든 절차와 실제로 실행해도 되는 절차를 구분한다. 다
 
 ## 출처
 
+- [Building dashboards for operational visibility — AWS Builders' Library](https://d1.awsstatic.com/onedam/marketing-channels/website/aws/en_US/builders-library/approved/images/building-dashboards.pdf)
 - [Cutover Help Center, AI Assistant](https://help.cutover.com/en/articles/13621942-ai-assistant)
 - [AWS 공식 문서, aws:approve – Pause an automation for manual approval](https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-action-approve.html)
 

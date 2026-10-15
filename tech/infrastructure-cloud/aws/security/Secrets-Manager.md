@@ -28,6 +28,18 @@ verified_at: 2026-10-13
 
 자동 교체는 비밀 값과 대상 서비스의 자격증명을 갱신하는 절차다. 지원 서비스의 관리형 교체와 Lambda 함수 기반 교체를 구분하고, 도입할 때 조회 권한, 갱신 뒤 새 연결 성공, 캐시와 로그 노출을 함께 점검한다. ECS 환경 변수 주입의 갱신 경계는 [[ECS-Secrets-Injection|ECS 시크릿 주입]]을 따른다.
 
+## 로컬 HTTP 캐시와 교체 반영 시점
+
+2026-10-16 공식 가이드 기준, AWS Workload Credentials Provider는 기존 Secrets Manager Agent의 후속 명칭이다. 로컬 HTTP 서비스가 비밀을 읽어 메모리에 캐시하며, 비밀 자체를 수정하지 않는다.
+
+- 기본 TTL은 300초다. TTL이 지난 뒤 다음 조회에서 갱신하므로, 비밀 교체 즉시 모든 캐시가 바뀌는 구조가 아니다.
+- `refreshNow=true`는 캐시를 우회해 Secrets Manager를 호출하고, 성공하면 캐시 값과 TTL을 갱신한다. 프로세스를 재시작하면 메모리 캐시는 초기화된다.
+- 요청에는 유효한 SSRF 토큰 헤더가 필요하다. 기본 이름은 `X-Aws-Parameters-Secrets-Token`이다. 토큰이 없거나 틀린 요청은 거부된다.
+- 조회 권한은 실행 환경의 IAM 자격증명에 따른다. 로컬 endpoint와 SSRF 토큰에 접근할 수 있는 사용자는 캐시된 비밀에 접근할 수 있으므로, 토큰을 애플리케이션별 인가 수단으로 오해하지 않는다.
+- 캐시 안의 값은 암호화되지 않는다. 메모리, 토큰 접근과 애플리케이션 로그를 보호하고, 캐시 갱신 뒤 기존 DB 연결의 재생성 여부도 따로 확인한다.
+
+이 절의 이름, 캐시와 접근 경계만 대조했다. 설치와 교체 실험, 기존 가격과 복제 정책은 재검증하지 않아 기존 `verified_at`을 유지한다.
+
 ## 다중 리전 암호
 
 - 여러 AWS 리전에 암호 복제 → 기본 암호와 동기화된 **읽기 전용 복제본** 유지
@@ -55,6 +67,8 @@ verified_at: 2026-10-13
 - [[SSM-Parameter-Store]], [[KMS]], [[RDS-Security-Group]]
 
 ## 출처
+
+- [AWS Secrets Manager, Using the AWS Workload Credentials Provider](https://docs.aws.amazon.com/secretsmanager/latest/userguide/workload-credentials-provider.html)
 
 2026-10-13 부분 검증: 조회 API의 권한과 반환값, 로그 보호, 캐시 권고, 교체 방식과 가격 예제를 확인했다. 개별 애플리케이션의 교체 무중단 동작을 검증한 기록은 아니다.
 
