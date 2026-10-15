@@ -116,6 +116,14 @@ Owned, Earned, Paid는 고객에게 도달하는 방식이고, 도매, 자사몰
 
 2026-10-14 Shopify의 도매와 직접 판매 비교, Amazon Global Selling의 비용과 국가별 상품 요건 안내를 대조했다. 위 표는 판매 경로를 비교하는 틀이며 특정 브랜드의 수익률이나 국가별 수요를 검증한 결과는 아니다.
 
+### 클라우드 소프트웨어의 판매 채널
+
+AWS Marketplace는 제3자 소프트웨어, 데이터와 서비스를 찾아 구매하고 배포, 관리하는 카탈로그다. AMI와 SaaS 등 전달 방식이 있으므로, GTM에서는 고객에게 알리는 경로와 구매를 완료하는 경로를 구분한다. 아래 기능 범위는 2026-10-16 AWS 판매자 문서로 확인했다.
+
+- **협상과 거래:** private offer는 공개 제안과 다른 가격이나 EULA 등을 판매자와 구매자가 협상해 특정 구매자 AWS 계정에 제시하는 방식이다. 구매자가 수락하면 agreement가 되며 AWS Marketplace의 거래 도구로 청구된다. 모든 상품 유형에서 지원되는 것은 아니다.
+- **채널 검증:** 등록 여부, 제안 전달, 구매 수락과 실제 사용을 각각 확인한다. 등록을 수요 검증이나 영업 완료로 취급하지 않는 것은 GTM의 판단 기준이다.
+- **선택 질문:** 목표 고객이 이 경로로 구매할 수 있는지, 협상할 조건을 지원하는지, 제품 전달과 고객 지원을 감당할 수 있는지 확인한다. 카탈로그의 규모만으로 자사 제품의 매출을 예측하지 않는다.
+
 ### 글로벌 1인 제작자의 커뮤니티 채널
 
 영어권 시장을 노리는 1인 제작자에게 Reddit 서브레딧은 초기 Earned 채널 후보다. r/indiehackers, r/startups, r/entrepreneur, r/smallbusiness, r/freelance처럼 창업과 사업 주제, r/webdev, r/gamedev, r/uxdesign처럼 직군 주제로 나뉘며, 타깃 사용자가 실제로 모이는 곳을 고른다.
@@ -175,6 +183,8 @@ Q. GTM 전략을 어떻게 수립/실행했는가?
 - 전환은 동일 cohort 계측 이후 판정하고, 현재는 MAO와 행동 신호를 구분
 
 ## 출처
+- [AWS, What is AWS Marketplace?](https://docs.aws.amazon.com/marketplace/latest/userguide/what-is-marketplace.html)
+- [AWS, Preparing a private offer for your AWS Marketplace product](https://docs.aws.amazon.com/marketplace/latest/userguide/private-offers-overview.html)
 - [Wholesale vs. Direct-to-Consumer: Key Differences — Shopify](https://www.shopify.com/enterprise/blog/direct-to-consumer-vs-wholesale)
 - [Global Selling — Amazon](https://sell.amazon.com/global-selling/)
 - [Interpret your Retention Analysis chart: Usage interval — Amplitude](https://www.amplitude.com/docs/analytics/charts/retention-analysis/retention-analysis-interpret-usage) — 2026-10-02 제품별 사용 주기와 유지율 해석 범위 확인
