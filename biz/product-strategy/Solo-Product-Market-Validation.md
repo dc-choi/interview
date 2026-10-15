@@ -86,6 +86,14 @@ Buffer의 초기 실험은 소개와 이메일 신청에 요금 선택 단계를
 
 초기 고객을 직접 찾아가 사용을 돕는 활동과 대규모 획득 투자는 단계가 다르다. 작은 출시로 피드백을 얻더라도 재사용과 결제 증거가 생기기 전에 광고 지출과 획득량부터 키우지는 않는다. 공개 범위는 앞 절의 제공 가능량과 안내 조건 안에서 정한다.
 
+### 양면 시장에서는 실제로 만날 수 있는 조건을 검증한다
+
+매칭 서비스의 적용 제안: 등록한 공급자와 수요자의 총수만 보지 않고, 같은 시간과 지역에서 서로의 조건을 충족하는지 확인한다. 분류되지 않은 게시물, 반복 입력과 우회 등록은 기존 제품이 지원하지 못하는 작업의 단서로 삼는다. 우회 행동이 있다는 사실만으로 수요 규모나 해법을 확정하지 않고 당사자의 목적과 실제 연결 결과를 확인한다.
+
+사례: 당근알바의 2026년 건설업 PMF 탐색 발표에서는 기타로 분류되던 공고를 별도 카테고리로 드러낸 뒤, 근무지와 구직자 거주지의 분포 차이를 살폈다. 서로 다른 지역에 같은 공고를 올리는 행동을 관찰하고 근무지와 광고 노출 지역을 분리했으며, 기숙사와 통근버스 정보를 보여줘 먼 공고에 지원할 수 있는 조건을 전달했다. 이는 기존 플랫폼에서 발견한 매칭 장애의 사례이며, 새 제품도 같은 사용자 기반이나 성과를 얻는다는 증거는 아니다.
+
+적용 제안: 공고 등록, 첫 유효 지원, 실제 채용과 다음 채용 주기의 재등록을 나누어 측정한다. 기능 사용률 상승은 해당 기능의 채택을 보여줄 뿐, 실제 채용이나 반복 가치까지 증명하지 않는다. 지역별로 결과를 나누고 기존 이용 경험을 해치는지 함께 확인한다. 단순한 변경 전후 비교만으로 기능의 인과 효과를 확정하거나 한 지역의 결과를 전체 시장에 일반화하지 않는다.
+
 ## 콘텐츠도 최소 제품이 될 수 있다
 
 핵심 가치가 정보와 사례 접근이라면 인터뷰, 뉴스레터나 수동 큐레이션으로 먼저 전달할 수 있다. 소프트웨어 기능 수 대신 사용자가 얻는 결과를 기준으로 최소 단위를 정한다. 콘텐츠 수집과 편집 노동, 반복 방문과 구독, 광고주나 후원자의 실제 지불을 별도로 관찰한다.
@@ -200,6 +208,8 @@ Indie Hackers 공식 소개는 2017년 4월 Stripe 인수와 2023년 3월 독립
 - [Startup School Week 4 Recap — Y Combinator](https://www.ycombinator.com/blog/startup-school-week-4-recap-kat-manalac-and-gustaf-alstromer)
 - [How Superhuman Built an Engine to Find Product-Market Fit — First Round Review](https://review.firstround.com/how-superhuman-built-an-engine-to-find-product-market-fit/)
 - [하드코딩에서 플랫폼까지, 현장결제 실험루프 — 당근 팀](https://www.youtube.com/watch?v=qM6AC_Nyxgw)
+- [당근알바 건설업, PMF 탐색기 — 당근 팀](https://www.youtube.com/watch?v=YP0m2YfZec0) — 2026 당근 빌더 밋업, 카테고리와 지역별 매칭 조건 개선 사례
+- [당근의 실험 문화는 어떻게 자리 잡았을까 — 당근 팀](https://careers.daangn.com/blog/post/당근-실험-문화-pm-데이터/) — 전후 비교의 인과 추론 한계, 가드레일 지표와 지역별 실험
 - [Idea to Paying Customers in 7 Weeks: How We Did It — Buffer, Joel Gascoigne](https://buffer.com/resources/idea-to-paying-customers-in-7-weeks-how-we-did-it/)
 - [Courtland of Indie Hackers on Acquired — Indie Hackers Podcast](https://www.indiehackers.com/podcast/185-courtland-of-indie-hackers-on-acquired)
 - [About Indie Hackers — Indie Hackers](https://www.indiehackers.com/about)
