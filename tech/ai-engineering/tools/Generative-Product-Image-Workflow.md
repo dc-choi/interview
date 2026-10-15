@@ -23,6 +23,16 @@ Inpainting은 마스크로 지정한 영역을 다시 생성하는 방식이다.
 
 마스크는 생성할 위치를 지정하는 입력이다. 최종 이미지의 상품 영역이 픽셀 단위로 보존됐다는 증거를 대신하지 않는다. 보존이 필수인 영역은 원본 합성과 차이 비교를 별도 검수 후보로 둔다.
 
+### 편집 API의 입력 계약과 반환 결과를 확인한다
+
+2026-10-16 Amazon Nova Canvas 공식 문서 대조 기준, 이미지 생성과 편집은 Bedrock `InvokeModel`로 요청하며 작업 종류에 맞는 입력을 사용한다. 다음은 상품 배경 편집에 연결되는 계약이다.
+
+- `INPAINTING`과 `OUTPAINTING` 요청에는 `maskPrompt` 또는 `maskImage` 중 하나만 넣는다. 직접 만든 마스크 이미지는 입력 이미지와 같은 크기여야 하며 순수한 검정과 흰색만 사용한다.
+- `OUTPAINTING`의 `DEFAULT` 모드는 원본 픽셀을 새 배경의 시작점으로 사용해 경계를 자연스럽게 잇는다. 배경색이 크게 바뀌면 halo가 생길 수 있다. `PRECISE`는 마스크 경계를 엄격하게 따르는 모드이므로 경계 처리 목적에 따라 선택한다.
+- 성공 응답의 `images` 수가 요청한 `numberOfImages`와 같지 않을 수 있다. 생성 뒤 콘텐츠 정책에 걸린 이미지는 반환 목록에서 제외될 수 있고 `error` 필드가 함께 올 수 있다.
+
+적용 제안: 요청 성공 여부, 실제 반환 이미지 수와 개별 결과의 상품 정합성을 따로 검사한다. 필요한 장수가 모두 만들어졌다고 가정해 다음 편집 단계로 넘기지 않고 부족한 결과와 재작업 사유를 남긴다. 이 절은 API 문서 대조이며 실제 이미지 생성, 품질 측정과 기존 배포 지원 범위의 재검증은 수행하지 않았다.
+
 ## 상품 유형의 생성과 특정 피사체의 학습을 구분한다
 
 사다리형 선반이라는 유형을 그리는 것과 판매 중인 특정 선반의 외형을 재현하는 것은 서로 다른 목표다. 특정 상품을 다른 장면에 배치하려면 결과가 그럴듯한지만 보지 않고 참조 상품의 특징이 유지되는지 확인한다.
@@ -115,6 +125,8 @@ Avery Artwork Guidelines는 실제 인쇄 크기에서의 최소 300 dpi, 글꼴
 
 ## 출처
 
+- [Amazon Nova, Image generation and editing](https://docs.aws.amazon.com/nova/latest/userguide/image-gen-access.html)
+- [Amazon Nova, Request and response structure for image generation](https://docs.aws.amazon.com/nova/latest/userguide/image-gen-req-resp-structure.html)
 - [Avery, What are the Bleed and the Safe Areas?](https://www.avery.com/help/article/what-are-the-bleed-and-the-safe-areas)
 - [Avery, Artwork Guidelines](https://www.avery.com/custom-printing/resources/artwork-guidelines)
 - [Hugging Face Diffusers, LoRA](https://huggingface.co/docs/diffusers/main/en/training/lora)

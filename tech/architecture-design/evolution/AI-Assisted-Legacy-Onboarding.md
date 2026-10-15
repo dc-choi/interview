@@ -28,6 +28,10 @@ AI에게 전체 repository 설명을 한 번에 요청하기보다 구체적인 
 
 검토 제안: 각 설명에 파일과 심볼을 연결하고, 코드에서 읽은 사실과 실행으로 확인할 가정을 나눈다. 빈 항목은 추측으로 채우지 않고 미확인으로 남긴다. 형식이 완성된 문서만으로 현재 업무 규칙이나 표준 기능으로의 대체 가능성이 검증되지는 않는다. 이 절은 문서 생성 방식만 대조했으며 실제 SAP 실행과 기존 절 전체의 재검증은 수행하지 않았다.
 
+생성할 문서의 범위도 입력으로 정한다. 루트 README는 전체 구조와 시작점을 설명하고, 모듈 README는 해당 코드의 실행 방법과 외부 의존성을 다루도록 나눌 수 있다. AWS의 2025-04-11 문서 생성 예제는 선택한 폴더의 README 생성, 기존 README 갱신과 결과 승인 전 수정을 보여준다. 해당 예제의 문서 분석은 `.gitignore`에 지정한 파일을 제외하며, 접근할 수 없는 내부 플랫폼이나 사용자 정의 도구의 지식은 수동 보완 대상으로 둔다(2026-10-16 대조).
+
+적용 제안: 생성 요청에 대상 폴더와 독자를 적고, 코드에서 확인할 수 없는 설정과 운영 절차는 별도 확인 항목으로 남긴다. 인계받는 사람이 README의 시작 명령부터 핵심 사용자 흐름까지 재현할 수 있는지 검사한다. 파일 제외는 이 예제의 분석 범위이며 비밀 보호나 도구 전체의 접근 통제를 보장하지 않는다. 문서 생성 기능을 직접 실행하거나 기존 절 전체를 재검증한 것은 아니므로 문서 전체의 검증일은 유지한다.
+
 ## 요구사항을 실행 가능한 계약으로 바꾼다
 
 러프한 화면이나 한 문장 요구사항에는 구현을 결정할 정보가 부족하다. agent를 실행하기 전에 다음을 명시한다.
@@ -170,6 +174,7 @@ REA의 Evidence는 대상 산출물 식별, 원본 위치, 관찰, 추론과 미
 검증 제안: 분석 권한이 있는 대상에서 한 기능의 진입점과 호출 경로를 찾고, 재현 입력과 관찰 결과를 연결한다. 복원한 구현을 사용할 때는 앞 절의 characterization test로 필요한 외부 동작을 비교한다. 분석 완료와 호환 구현 완료는 별도 판정이다.
 
 ## 출처
+- [Simplifying Code Documentation with Amazon Q Developer — AWS](https://aws.amazon.com/blogs/devops/simplifying-code-documentation-with-amazon-q-developer/)
 - [Build SAP applications faster with Amazon Q Developer — AWS](https://aws.amazon.com/blogs/awsforsap/build-sap-applications-faster-with-amazon-q-developer/)
 - [REA: Reverse Engineer Anything — morluto/rea](https://github.com/morluto/rea)
 - [REA, CLI and Evidence](https://github.com/morluto/rea/blob/main/docs/cli.md)
