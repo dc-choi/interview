@@ -68,6 +68,18 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 | **Database Cloning** | 운영 DB의 특정 시점을 빠르게 복제 DB로. 전체 물리 복사 대신 **스토리지 페이지 공유(copy-on-write)** 라 빠르고 저렴 |
 | **Aurora PostgreSQL Limitless Database** | router와 shard로 구성된 DB shard group에서 sharded table을 수평 확장. AWS가 제시하는 petabyte, 대규모 write 처리 목표와 별개로 지원 SQL, shard key, isolation level, Region과 용량 제한을 검증 |
 
+## Backtrack의 복구 범위와 사전 조건
+
+2026-10-16 Aurora 공식 문서로 Backtrack의 적용 조건을 대조했다. **PITR은 새 클러스터를 복원하지만 Backtrack은 기존 클러스터 전체를 되돌린다.** 특정 테이블이나 잘못된 변경 하나만 취소하는 기능이 아니며 백업을 대체하지 않는다.
+
+- 생성할 때 Backtrack을 활성화한 클러스터만 사용할 수 있다. 기존 클러스터의 설정 변경으로 켤 수 없으며, 새 클러스터 생성이나 스냅샷 복원 때 활성화한다. Aurora PostgreSQL은 지원하지 않고 Aurora MySQL도 리전과 버전 지원을 확인한다.
+- 목표 window는 최대 72시간이다. 실제 window는 변경량과 change record 저장 여건 때문에 목표보다 짧아질 수 있다. 설정값만으로 복구 가능 시점을 판단하지 않는다.
+- 시작 전에 애플리케이션을 중지하거나 일시 정지해 새 읽기와 쓰기를 막는다. 작업 중에는 연결이 닫히고 미커밋 읽기와 쓰기가 폐기된다.
+- 지정 시각과 정확히 같은 시각이 아니라 가능한 가장 가까운 일관된 시점으로 돌아갈 수 있다. 완료 뒤 `describe-db-cluster-backtracks`로 실제 시점을 확인한다.
+- binlog를 켠 상태에서는 일반적으로 오류가 나며 강제 Backtrack은 하위 replica를 깨뜨리고 Blue/Green 배포 같은 작업에 영향을 준다. 강제 옵션을 일반 복구 절차로 사용하지 않는다.
+
+복구 점검 예: 잘못된 변경 이후의 정상 쓰기도 함께 되돌아갈 수 있으므로 복구 범위를 먼저 정한다. 완료 후 실제 복구 시점과 업무 데이터를 검증하고, DB 밖에서 끝난 결제나 메시지 처리는 별도로 대사한다. 이 절은 문서 대조이며 실제 복구 시간과 외부 시스템의 정합성은 시험하지 않았다.
+
 ## Serverless v2의 용량과 장애 조치 준비
 
 부분 검증(2026-10-14): Aurora 공식 용량 설정과 확장 문서를 대조했다. Serverless v2의 ACU 조정은 인스턴스 수를 늘리는 Aurora Auto Scaling과 다르다. 지원 최소, 최대 ACU는 엔진과 플랫폼 버전에 따라 확인하며, 과거 발표의 용량 한도를 현재 공통 한도로 사용하지 않는다.
@@ -130,6 +142,7 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 
 ## 출처
 
+- [Amazon Aurora User Guide, Backtracking an Aurora DB cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html)
 - [Amazon Aurora User Guide, Performance and scaling for Aurora serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html)
 - [Amazon Aurora User Guide, How Aurora serverless works](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html)
 - [Amazon Aurora User Guide, Managing Aurora serverless DB clusters](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-administration.html)

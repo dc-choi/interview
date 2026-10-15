@@ -44,6 +44,18 @@ backup window는 UTC로 지정한다. 콘솔의 PITR 화면은 로컬 시간대�
 - 2026-09-03 기준 지원: MySQL, PostgreSQL, MariaDB, Microsoft SQL Server, Aurora. SQL Server는 2022와 2014 메이저 버전 미지원 등 엔진별 제약이 있으므로 지원 조합을 확인한다
 - Lambda 처럼 **연결이 빠르게 생성, 소멸**하는 워크로드에 특히 유효
 
+### 연결 상한과 대기 시간을 함께 확인한다
+
+2026-10-16 RDS Proxy의 연결 설정과 pinning 공식 문서를 대조했다. 아래는 설정 검토 기준이며 실제 부하 시험 결과는 아니다.
+
+- `MaxConnectionsPercent`는 대상 DB의 `max_connections`에 대한 비율이다. 그 수만큼 연결을 미리 만드는 설정은 아니다. 내부 예약 연결 때문에 실제 워크로드용 상한인 `MaxDatabaseConnectionsAllowed`는 단순 곱셈 결과보다 작을 수 있다.
+- `DatabaseConnections`가 상한에 가까워질 때 `DatabaseConnectionsBorrowLatency`도 함께 본다. 연결 수만 낮다고 여유가 충분한 것은 아니며, 대기 시간과 pinning을 같이 확인한다.
+- `ConnectionBorrowTimeout`은 풀에서 연결을 빌릴 때 기다리는 시간이다. 기본값은 120초이며 연결 고갈뿐 아니라 failover로 처리 가능한 DB가 없을 때도 적용된다. 실행 중 SQL의 query timeout과 구분한다.
+- 앱의 커넥션 풀도 연결 수립 비용을 줄일 수 있다. 다만 클라이언트 연결 수명은 Proxy의 24시간 한도보다 짧게, 유휴 제한은 `IdleClientTimeout`보다 짧게 설정해 예상치 못한 연결 종료를 줄인다.
+- pinning된 연결은 클라이언트 세션이 끝날 때까지 다른 클라이언트가 재사용할 수 없다. 앱 풀에서 쉬는 연결도 DB 연결을 붙잡을 수 있으므로 `DatabaseConnectionsCurrentlySessionPinned`와 로그를 확인한다. 모든 `SET`이 모든 엔진에서 같은 동작을 한다고 일반화하지 않는다.
+
+운영 점검 예: 연결 상한, 연결 차용 지연, pinning 수를 함께 관측하고 앱의 요청 제한 시간 안에서 실패와 재시도가 처리되는지 시험한다. Proxy 도입만으로 SQL 처리 용량이나 장애 중 요청 성공이 보장되지는 않는다.
+
 ## Enhanced Monitoring
 
 - **인스턴스 내부 에이전트**가 지표 수집 (일반 모니터링은 **하이퍼바이저** 레벨에서 수집)
@@ -57,6 +69,8 @@ backup window는 UTC로 지정한다. 콘솔의 PITR 화면은 로컬 시간대�
 
 ## 출처
 
+- [AWS 공식 문서, RDS Proxy connection considerations](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-connections.html)
+- [AWS 공식 문서, Avoiding pinning an RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-pinning.html)
 - [AWS 공식 문서, Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html)
 - [AWS 공식 문서, Backup retention period](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.BackupRetention.html)
 - [AWS 공식 문서, Managing automated backups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ManagingAutomatedBackups.html)
