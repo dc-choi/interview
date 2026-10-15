@@ -139,6 +139,16 @@ PEG는 `PER ÷ 예상 주당순이익(EPS) 성장률`이다. 성장률은 퍼센
 - 보수적으로 알려진 경영진의 가이던스 상향을 강한 신호로 보는 시각은 경험칙이다. 과거 가이던스 달성 이력으로 따로 검증한다.
 - 체크리스트는 가치를 추정하기 위한 입력을 모으는 단계다. 결론은 여전히 가격과 비교해야 한다(1절).
 
+### 고객 비중과 가동률은 분모부터 확인한다
+
+고객 다변화를 평가할 때는 비중과 절대 매출을 함께 본다. 가상 예시로 주요 고객 매출 70, 나머지 고객 매출 30이면 주요 고객 비중은 70%다. 주요 고객 매출이 30으로 줄고 나머지가 그대로여도 비중은 50%로 낮아진다. 반대로 주요 고객 매출 70을 유지하면서 나머지가 70으로 늘어도 50%다. 같은 비중 하락이 기존 매출 감소인지 신규 매출 증가인지 구분해야 한다.
+
+공시의 주요 고객을 임의로 특정 브랜드와 연결하지 않는다. 예를 들어 AASB 8의 2021년 적용본 문단 34는 주요 고객의 매출액과 관련 보고부문을 요구하지만 고객의 신원 공개까지 요구하지는 않는다. 고객 식별 근거가 없으면 익명 고객으로 비교하고, 연도별 익명 표기가 같은 거래처를 가리키는지도 확인한다.
+
+가동률은 생산능력 산정 방식과 함께 읽는다. 연준의 자동차 산업 설명은 지속 가능한 최대 생산능력과 현재 교대조, 라인 속도에 기반한 산업 자료의 생산능력을 구분한다. 분모가 작으면 같은 생산량에서도 가동률은 높아진다. 개별 기업에도 적용할 점검 질문은 산정 시간, 교대조와 설비 범위가 전기와 같은가다. 가동률이 100%를 넘었다는 숫자만으로 물리적 한계 초과나 가격 인상 능력을 확정하지 않는다.
+
+수익성 검토에서는 고객별 매출의 증감, 판매가격과 제품 구성, 원가와 현금 회수를 별도로 확인한다. 고객 수나 생산량 증가만으로 이익 개선을 판정하지 않고, 가격 협상력은 실제 계약 조건과 판매가격의 근거가 있을 때 평가한다. 위 예시와 질문은 공시를 읽기 위한 분석 절차이며 특정 제조사의 현재 실적이나 투자 가치를 검증한 결과가 아니다. 이 절의 공시 범위와 가동률 정의는 2026-10-15 AASB와 연준 자료를 대조했다.
+
 ### 메모리 기업의 성장은 가격, 출하량과 제품 구성을 나눠 본다
 
 같은 매출 성장도 판매가격 상승과 출하량 증가의 기여가 다를 수 있다. 메모리 기업은 비트 출하량과 평균판매가격(ASP)을 구분하고, 이익률에서는 제품 구성과 제조원가도 함께 확인한다.
@@ -167,6 +177,8 @@ Micron의 2025 회계연도 10-K는 전년 대비 DRAM 매출 62% 증가를 평�
 
 ## 출처
 
+- [AASB, AASB 8 Operating Segments (2021년 적용본)](https://standards.aasb.gov.au/aasb-8-mar-2020) — 문단 34의 주요 고객 공시와 고객 신원 공개 범위
+- [Federal Reserve Board, Industrial Production and Capacity Utilization, Technical Q&As](https://www.federalreserve.gov/releases/G17/g17_technical_qa.htm) — 2018-05-03 자동차 산업 생산능력 산정 방식과 자료 간 가동률 차이
 - [Stock Prices, Earnings and Cashflows: The AI Effect plays through! — Musings on Markets, Aswath Damodaran](https://aswathdamodaran.blogspot.com/2026/10/stock-prices-earnings-and-cashflows-ai.html) — 2026-10-11 The AI Cap Ex Boom 절의 회계 효과 도식과 본문, 합산 순이익과 주주환원, The AI Business Resolution 절의 시나리오 표 대조
 - [2025 Form 10-K — Meta Platforms](https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm) — Note 1 Summary of Significant Accounting Policies의 서버와 네트워크 자산 내용연수 변경과 2025년 효과
 - [2025 Form 10-K — Amazon.com](https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm) — Note 1 Use of Estimates의 서버와 네트워크 장비 내용연수 변경과 2025년 효과
