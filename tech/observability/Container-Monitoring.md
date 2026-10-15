@@ -115,6 +115,18 @@ EKS용 scraper는 지정한 서브넷마다 ENI를 만들고, 수집한 메트�
 - **보존 주기를 실행 자원과 분리** — 노드 로컬 파일만으로 장기 보존을 보장하지 않는다. 필요한 로그는 별도 백엔드로 전달한다
 - **비용 관리** — 로그는 용량 폭증 1순위. 샘플링, 레벨 조정, 보존 기간 제한. 사례: [[TS-Backend-Meetup-1#로그 적재 비용 개선기|로그 비용 개선 300$→2$]]
 
+### ECS FireLens는 로그 라우터와 전송 권한을 함께 구성한다
+
+부분 검증(2026-10-16): ECS FireLens 공식 가이드와 작업 정의 예시를 대조했다. FireLens는 Fluent Bit 또는 Fluentd 기반 로그 라우팅 기능이며, Linux의 ECS on EC2와 Fargate 작업을 지원한다. Windows 컨테이너에는 지원되지 않는다.
+
+작업 정의에는 `firelensConfiguration`이 있는 로그 라우터 컨테이너와 `awsfirelens` 로그 드라이버를 쓰는 애플리케이션 컨테이너를 둔다. AWS 목적지에 로그를 쓰는 권한은 **task role**에 필요하다. 이미지 다운로드 등 ECS 실행에 필요한 **task execution role**과 구분한다.
+
+- ECS는 기본적으로 라우터를 먼저 시작하고 애플리케이션 컨테이너가 멈춘 뒤 라우터를 멈춘다. 직접 컨테이너 의존성을 지정하면 기본 시작 순서를 덮어쓰므로 이를 다시 확인한다.
+- 수신 포트 `24224`를 작업 밖에 노출하지 않는다. `awsvpc`는 작업 보안 그룹, `host`는 호스트 보안 그룹에서 인바운드를 허용하지 않고, `bridge`에서는 이 포트의 매핑을 만들지 않는다.
+- `ecs_cluster`, `ecs_task_arn`, `ecs_task_definition` 메타데이터는 기본으로 추가된다. 실제 로그에서 작업 ARN과 작업 정의 revision을 확인해 교체 전후 실행을 구분한다.
+
+운영 점검 제안: 애플리케이션 로그와 라우터 자체 로그를 구분하고, 목적지 권한 오류와 전송 중단 때 재시도, 버퍼와 유실을 확인한다. 라우터 시작 성공은 저장소 도착 증거가 아니다. 이 절은 문서 대조이며 실제 ECS 작업의 전송 시험은 수행하지 않았다.
+
 ## Pod 교체 뒤에도 조사할 근거를 남긴다
 
 부분 검증(2026-10-14): Kubernetes의 Pod 수명과 로그 보존, OpenTelemetry의 Kubernetes 메타데이터 연결을 공식 문서로 대조했다. 위 로그 수집 전략의 파일 출력과 보존 범위도 함께 정정했다.
@@ -159,6 +171,8 @@ OpenTelemetry의 `k8sattributes` processor는 Kubernetes API를 조회해 `k8s.n
 - 쿠버네티스에서 kube-state-metrics가 추가로 필요한 이유
 
 ## 출처
+- [AWS, Send Amazon ECS logs to an AWS service or AWS Partner](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html)
+- [AWS, Example Amazon ECS task definition: Route logs to FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/firelens-taskdef.html)
 - [Kubernetes, Logging Architecture](https://kubernetes.io/docs/concepts/cluster-administration/logging/)
 - [Kubernetes, Pod Lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/)
 - [OpenTelemetry, Important Components for Kubernetes](https://opentelemetry.io/docs/platforms/kubernetes/collector/components/)

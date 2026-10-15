@@ -60,7 +60,7 @@ Producer
 - 각 Subscriber가 자기 속도로 SQS Pull (백프레셔 격리)
 - Subscriber 추가, 삭제가 Producer에 영향 없음
 - SQS DLQ로 소비 실패 안전 격리
-- 다수 SQS Queue에 직접 fan-out하던 Producer 로직이 비정상 종료/실패해도 일부 Queue만 수신하는 문제 해소 — SNS가 책임지고 전 Subscriber에 전달
+- Producer가 여러 SQS Queue로 직접 전송하는 로직을 SNS에 위임한다. 각 구독의 전달은 별개로 실패할 수 있으므로 전체 소비자의 수신이나 업무 완료를 원자적으로 보장하지 않는다
 
 ### 대표 예시 — S3 Event Fan-out
 
@@ -99,7 +99,16 @@ Publisher가 `MessageAttributes` 또는 message body에 키-값을 붙이면 Sub
 
 - **At-least-once** — 동일 메시지 2번 이상 전달 가능, 소비자 멱등성 필수
 - **재시도 정책**: HTTP/S Subscriber는 Delivery Policy로 재시도 횟수와 백오프를 조정할 수 있다. 사용자 정의 정책의 총 재시도 시간은 최대 3,600초
-- **DLQ** — Subscription 단위 SQS DLQ 설정. 모든 재시도 실패 시 이동
+- **DLQ** — Subscription 단위 SQS DLQ 설정. 재시도하지 않는 클라이언트 오류나 서버 오류의 재시도 소진으로 전달하지 못한 메시지를 보관한다
+
+### SNS 전달 실패와 SQS 처리 실패를 분리한다
+
+2026-10-16 공식 SNS와 SQS DLQ 문서 부분 대조 기준이다. `SNS → SQS → 워커`에는 서로 다른 두 실패 경계가 있다.
+
+- **SNS 구독 DLQ**: 큐 삭제나 접근 정책 변경 등으로 SNS가 구독 큐에 전달하지 못한 메시지를 받는다. 구독과 같은 계정, 리전의 SQS 큐를 지정한다. 클라이언트 오류는 재시도하지 않으므로 재시도 횟수만 늘려 해결할 수 없다.
+- **SQS 소비 DLQ**: 구독 큐에는 도착했지만 워커가 처리하고 삭제하지 못한 메시지를 격리한다. 원본 큐의 `maxReceiveCount`는 수신 횟수 기준이며 업무 실패 횟수와 동일하지 않다.
+
+운영 점검 제안: 전달 권한 오류와 워커 처리 오류를 각각 재현하고 어느 DLQ에 남는지 확인한다. SNS 구독 DLQ만으로 워커 실패까지 보존된다고 판단하지 않는다. 이 절과 위 전달 설명만 대조했으며 기존 quota 전체의 검증일은 유지한다.
 
 ## 메시지 크기와 한도
 
@@ -176,6 +185,8 @@ SNS는 메시징 이외에:
 - KMS Key로 Topic 메시지 SSE 암호화, HTTPS API로 전송 중 암호화, IAM Policy로 API 접근 통제
 
 ## 출처
+- [Amazon SNS, Amazon SNS dead-letter queues](https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html)
+- [Amazon SQS, Using dead-letter queues in Amazon SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html)
 - [Amazon SNS, Origination identities for Amazon SNS SMS messages](https://docs.aws.amazon.com/sns/latest/dg/channels-sms-originating-identities.html)
 - [AWS End User Messaging SMS, United States 10DLC registration](https://docs.aws.amazon.com/sms-voice/latest/userguide/registrations-10dlc.html)
 - [AWS End User Messaging SMS, Best Practices](https://docs.aws.amazon.com/sms-voice/latest/userguide/best-practices.html) — 리전별 번호 확보와 미국의 번호 유형 대조

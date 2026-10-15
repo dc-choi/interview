@@ -21,6 +21,16 @@ aliases: ["AWS Security Response Automation", "AWS 보안 대응 자동화"]
 
 Security Hub CSPM의 automation rule은 finding 필드를 변경한다. 이를 EC2 격리나 접근 정책 수정으로 해석하지 않는다. Security Hub의 새 finding과 갱신 finding을 EventBridge로 받아 Lambda나 Step Functions 등을 호출하는 대응 경로는 별도로 구성한다. GuardDuty finding을 EventBridge로 직접 받는 경로도 가능하다.
 
+## GuardDuty 탐지용 입력과 조사 로그 보존은 다르다
+
+2026-10-16 공식 foundational data sources 가이드 부분 대조 기준이다. GuardDuty의 기본 입력은 CloudTrail 관리 이벤트, EC2의 VPC flow log 데이터와 Route 53 Resolver DNS 질의 로그다.
+
+- CloudTrail 관리 이벤트와 VPC flow log는 독립된 복제 스트림으로 분석한다. GuardDuty 분석을 위해 사용자가 trail이나 VPC Flow Logs를 먼저 만들 필요는 없다.
+- 이 경로가 사용자의 원본 로그 저장소를 만들어 주지는 않는다. CloudTrail의 접근과 보존, VPC Flow Logs의 조회와 보존은 각각 별도로 구성한다. GuardDuty는 분석에 필요한 필드를 추출한 뒤 입력 로그를 폐기한다.
+- EC2 DNS 분석은 AWS DNS resolver를 사용하는 경우에 적용된다. 자체 resolver나 외부 DNS를 쓰면 해당 데이터 소스를 분석하지 못하며, Outposts의 EC2 DNS 로그 모니터링도 지원하지 않는다.
+
+운영 점검 제안: 탐지 활성화, 입력의 적용 범위와 사후 조사 로그의 보존 기간을 따로 기록한다. finding이 있다는 사실로 원본 로그를 다시 조회할 수 있다고 가정하지 않는다. 이 절은 기본 입력만 대조했으며 추가 보호 기능과 실제 계정 설정은 확인하지 않았다. 기존 문서의 검증일은 유지한다.
+
 ## GuardDuty 탐지와 알림 주기를 나눠 본다
 
 2026-10-14 공식 EventBridge 연동 가이드 부분 대조 기준이다. 알림 주기는 finding 생성 뒤의 전달 정책이며, 공격 발생부터 탐지와 대응 완료까지 걸리는 시간을 보장하는 값이 아니다.
@@ -107,6 +117,7 @@ GuardDuty의 자격 증명 관련 finding은 IAM 주체, 호출 API, 시각과 I
 
 ## 출처
 
+- [AWS, GuardDuty foundational data sources](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html)
 - [AWS, Creating and updating findings in Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings.html)
 - [AWS, What is Amazon Security Lake?](https://docs.aws.amazon.com/security-lake/latest/userguide/what-is-security-lake.html)
 - [AWS, Understanding cross-Region aggregation in Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/finding-aggregation.html)
