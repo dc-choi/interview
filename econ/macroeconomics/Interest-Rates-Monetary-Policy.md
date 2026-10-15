@@ -50,6 +50,16 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 
 **역사적 모델 사례:** 2025-03-18 RBA 연설에서 사용한 MARTIN 모형은 완화의 산출 효과가 9~12개월 뒤 가장 크고, 물가 효과의 정점은 더 늦게 나타나는 경로를 제시했다. 이는 당시 호주 모형의 추정이며, 모든 나라와 시기에 적용할 고정 시차가 아니다.
 
+### 포워드 가이던스는 미래 정책 기대를 현재 결정에 연결한다
+
+포워드 가이던스(forward guidance)는 중앙은행이 앞으로의 통화정책 방향에 관한 정보를 제공하는 수단이다. 가계와 기업이 예상 차입 비용을 소비와 투자 결정에 반영하므로, 오늘 정책금리를 바꾸지 않아도 미래 정책에 관한 설명이 현재 금융여건에 영향을 줄 수 있다. 특히 정책금리가 매우 낮아 추가 인하 여력이 작을 때 사용할 수 있는 보완 수단이다.
+
+안내된 경로를 경제 상황과 무관한 확정 일정으로 읽지 않는다. ECB는 정책 의향이 현재 경제와 미래 물가 전망의 평가에 일관되어야 신뢰를 유지할 수 있다고 설명한다. 연준의 금융위기 대응 사례도 저금리 지속 안내가 경제 조건의 변화에 의존하는 형태로 발전했음을 보여준다. 이는 모든 중앙은행이 현재 같은 가이던스를 사용한다는 뜻이 아니다.
+
+정책 발표를 읽을 때는 **이번 회의의 결정, 미래 경로에 관한 안내, 그 안내를 바꿀 경제 조건**을 나눠 적는다. 아래 점도표의 참가자별 전망도 위원회 차원의 정책 약속과 구분한다. 이 읽기 절차는 두 중앙은행의 설명을 적용한 학습 방법이다.
+
+확인 범위: 2026-10-16 ECB와 연준의 포워드 가이던스 설명을 대조했다. 다른 절의 정책금리와 전망 자료는 기존 확인 날짜를 유지한다.
+
 ## 5. 통화량과 신용창조
 
 중앙은행이 공급하는 본원통화는 전체 통화량의 일부다. 상업은행이 대출을 승인하면 대출 자산과 고객 예금 부채를 동시에 기록해 **새 예금을 만든다**. 은행이 기존 예금을 단순히 떼어 재대출하거나 중앙은행 돈에 고정 배수를 곱하는 과정으로 설명하면 부정확하다. 대출은 자본, 유동성, 규제, 수익성, 신용 가능한 차입 수요와 중앙은행의 금리 조건에 제약받는다. 상환하면 반대로 은행 예금 통화가 줄어든다.
@@ -130,6 +140,8 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 
 ## 출처
 
+- [ECB — What is forward guidance?](https://www.ecb.europa.eu/ecb-and-you/explainers/tell-me/html/what-is-forward_guidance.en.html) — 2026-10-16 정책 의향, 기대 경로와 신뢰 조건 대조
+- [Federal Reserve — What is forward guidance, and how is it used in the Federal Reserve's monetary policy?](https://www.federalreserve.gov/faqs/what-is-forward-guidance-how-is-it-used-in-the-federal-reserve-monetary-policy.htm) — 2026-10-16 현재 소비와 투자에 미치는 경로, 경제 조건에 따른 안내 변화 대조
 - [Federal Reserve — September 16, 2026: FOMC Projections materials, accessible version](https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm) — 2026-10-07 도입부, Table 1 주석과 Figure 2의 정의 대조. 위 점도표 절만 부분 검증
 - [RBA — Monetary Policy: Forward Looking and Data Dependent in the Face of Uncertainty](https://www.rba.gov.au/speeches/2025/sp-ag-2025-03-18.html) — 2025-03-18 연설. 전달 경로, 시차와 데이터 의존 절을 2026-10-07 대조.
 - [Bank of England — Money creation in the modern economy](https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy)
