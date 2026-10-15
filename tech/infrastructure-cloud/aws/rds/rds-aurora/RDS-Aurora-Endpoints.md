@@ -11,12 +11,22 @@ aliases: ["Aurora Endpoints", "Aurora Endpoint 운영", "Custom Endpoint", "Auro
 
 Aurora Endpoint는 애플리케이션이 특정 DB 인스턴스를 직접 바라보지 않게 해주는 추상화 진입점이다. Writer 인스턴스가 바뀌어도 앱은 같은 Endpoint 이름을 쓸 수 있다. 다만 기존 연결과 DNS 캐시까지 자동으로 정상화되는 것은 아니므로 각 Endpoint의 장애 시 거동을 운영 정책에 포함해야 한다.
 
-## Endpoint 4종
+## 단일 클러스터의 Endpoint 4종
 
 - **Cluster(Writer) Endpoint**: 현재 Writer 역할 인스턴스를 가리키는 읽기와 쓰기 진입점. Aurora 생성 시 자동 생성되며, 장애 조치 뒤 DNS 변경 반영과 재연결이 필요하다.
 - **Reader Endpoint**: 클러스터 내 **모든** Reader 인스턴스에 대한 단일 진입점. 자동 생성.
 - **Custom Endpoint**: 사용자가 직접 정의하고 멤버를 관리하는 Endpoint. 워크로드 격리용.
 - **Instance Endpoint**: 특정 인스턴스에 직접 연결. 진단이나 특정 노드 작업용.
+
+## Global writer endpoint의 이름과 DNS 전환
+
+부분 검증(2026-10-16): Aurora Global Database 연결 문서와 RDS 이벤트 목록을 대조했다. Global writer endpoint는 위 단일 클러스터의 Writer Endpoint와 구분한다. 관리형 cross-Region switchover 또는 failover 뒤 새 primary의 writer를 가리키므로 연결 문자열을 매번 바꾸는 작업을 줄인다.
+
+- **이름 변경 예외:** Global Database 이름을 바꾸면 global writer endpoint 이름도 바뀐다. 리전 전환 때 연결 문자열을 유지한다는 설명을 DB 이름 변경에도 적용하지 않는다.
+- **DNS 변경 확인:** `RDS-EVENT-0397`은 Aurora가 global writer endpoint의 DNS 대상을 변경했음을 알린다. 클라이언트의 DNS 캐시 갱신이나 기존 풀 연결의 교체, 애플리케이션의 쓰기 성공까지 증명하는 이벤트는 아니다.
+- **전환 후 도달성:** 앱에서 승격 가능한 각 리전의 VPC까지 네트워크 연결을 준비한다. DNS가 새 primary를 가리켜도 해당 주소에 접근할 경로가 없으면 연결하지 못한다.
+
+운영 점검 제안: 이벤트 수신, 앱 실행 환경의 DNS 재해석, 새 연결 생성과 쓰기 성공 시각을 따로 기록한다. Global writer endpoint로 연결해도 비동기 복제의 데이터 손실과 split-brain 위험은 남는다. 복구 정책은 [[RDS-Aurora-Architecture#Global Database의 대기 구성과 전환 준비|Global Database 전환 준비]]를 따른다. 실제 리전 전환이나 복구 시간은 시험하지 않았다.
 
 ## Writer Endpoint와 Replica Lag
 
@@ -94,7 +104,7 @@ Endpoint 멤버십, 제외 대상, Auto Scaling 정책, 알람 연결은 CLI로 
 
 ## 면접 체크포인트
 
-- Endpoint 4종(Writer/Reader/Custom/Instance)과 각각의 용도
+- 단일 클러스터의 Endpoint 4종(Writer/Reader/Custom/Instance)과 Global writer endpoint의 구분
 - Writer Endpoint를 읽기에 쓰는 경우(read-your-own-writes, Lag 민감)
 - Reader Endpoint가 지능형 LB가 아닌 점, Reader 부재 시 Writer 폴백의 위험
 - 프록시의 DNS 캐시가 Reader Endpoint의 연결 분산을 무력화하는 이유와 대안(캐시 끄기, Instance Endpoint 등록, Aurora 토폴로지 자동 탐지)
@@ -104,6 +114,8 @@ Endpoint 멤버십, 제외 대상, Auto Scaling 정책, 알람 연결은 CLI로 
 - AWS Advanced JDBC Wrapper의 목적, SQLState별 복구와 재시도, 풀 연동과 도입 전 부하 테스트
 
 ## 출처
+- [Amazon Aurora User Guide, Connecting to Amazon Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-connecting.html)
+- [Amazon Aurora User Guide, Amazon RDS event categories and event messages for Aurora](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_Events.Messages.html)
 - [Aurora Endpoint와 Auto Scaling 운영 (YouTube)](https://www.youtube.com/watch?v=qzjx24vJ350&list=PLaHcMRg2hoBoFR-9MlfJP56xrcIxBInCm&index=2)
 - [Amazon Aurora User Guide, Aurora MySQL isolation levels](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.IsolationLevels.html)
 - [Amazon Aurora User Guide, Reader endpoints](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Reader.html)
