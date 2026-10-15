@@ -40,6 +40,16 @@ AWS는 알려진 결과를 달성하는 절차를 runbook, 문제를 조사하�
 
 그래프에는 지표의 의미, 정상 범위와 알람 임계값을 설명하고 런북, 상세 대시보드와 배포 이력을 연결한다. 자동 완화가 시작됐어도 담당자가 실행 중인 조치와 고객 영향의 변화를 확인할 수 있어야 한다. 이는 2026-10-16 AWS Builders' Library의 대시보드 설계 원칙을 대조한 내용이며, 개별 서비스의 임계값과 실제 대응 시간은 검증한 것이 아니다.
 
+### 전화 알림은 발신, 담당자 확인과 복구 상태를 나눈다
+
+부분 검증(2026-10-16): Amazon Connect의 `StartOutboundVoiceContact` 성공 응답은 `ContactId`를 반환한다. 이 응답만으로 담당자가 전화를 받거나 장애 대응을 맡았다고 판단하지 않는다. Contact event의 `CONNECTED_TO_SYSTEM`도 사람뿐 아니라 음성사서함 연결을 포함하므로 담당자 확인의 증거로 쓰기에는 부족하다.
+
+- **발신 요청:** 목적지 번호는 E.164 형식으로 전달한다. 동일 발신 요청을 재시도할 때는 `ClientToken`을 보존한다. 토큰은 생성 후 7일간 유효하며 이미 시작한 contact가 있으면 그 ID를 반환한다.
+- **대응 상태:** 사건 상태와 개별 발신 시도를 따로 관리한다(설계 제안). 같은 API 요청의 재시도와 의도한 다음 발신을 구분하고, 담당자 확인, 일정 시간 알림 보류, 다음 담당자 호출과 사건 종료의 전환 조건을 명시한다.
+- **복구 판정:** 담당자의 확인과 전화 종료는 서비스 복구와 별개다. 미응답과 음성사서함 연결, 명시적 확인, 보류 후 재호출을 각각 시험하고, 사건 종료에는 앞서 정의한 사용자 여정과 데이터 정합성 확인을 적용한다(운영 점검 제안).
+
+실제 발신과 재시도 시험은 수행하지 않았다. 번호와 연락 대상은 접근 통제된 운영 설정에 두며, 기존 절 전체의 `verified_at`은 유지한다.
+
 ## 최소 진단으로 완화하고, 근본 원인은 복구 후 조사한다
 
 큰 장애에서는 근본 원인을 끝까지 규명하느라 사용자 피해를 방치하지 않는다. 다만 빠른 완화도 영향 범위, 최근 변경, 조치의 적용 조건을 확인하는 최소 진단이 필요하다. 배포 변경이 의심되고 이전 버전이 현재 데이터와 호환된다면 롤백을 우선 검토한다. 원인이 다르거나 롤백이 위험하면 기능 격리, 트래픽 제어와 다른 복구 수단을 비교한다. [[Hotfix-Decision-Loop|핫픽스 판단과 학습 루프]]
@@ -105,6 +115,8 @@ AI가 만든 절차와 실제로 실행해도 되는 절차를 구분한다. 다
 
 ## 출처
 
+- [AWS 공식 문서, StartOutboundVoiceContact](https://docs.aws.amazon.com/connect/latest/APIReference/API_StartOutboundVoiceContact.html)
+- [AWS 공식 문서, Contact events](https://docs.aws.amazon.com/connect/latest/adminguide/contact-events.html)
 - [Building dashboards for operational visibility — AWS Builders' Library](https://d1.awsstatic.com/onedam/marketing-channels/website/aws/en_US/builders-library/approved/images/building-dashboards.pdf)
 - [Cutover Help Center, AI Assistant](https://help.cutover.com/en/articles/13621942-ai-assistant)
 - [AWS 공식 문서, aws:approve – Pause an automation for manual approval](https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-action-approve.html)

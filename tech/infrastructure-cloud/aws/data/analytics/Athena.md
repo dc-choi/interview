@@ -42,6 +42,16 @@ OpenX JSON SerDe에는 예상과 다른 행 수나 NULL이 나올 수 있다는 
 
 적재 전후의 대표 이벤트 ID, 행 수와 필수 필드 값을 대조한다(운영 점검 제안). 실제 AWS 조회는 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
 
+### 다른 계정의 카탈로그와 S3 접근을 따로 확인한다
+
+부분 검증(2026-10-16): IAM과 Glue resource policy로 다른 계정의 Glue Data Catalog를 조회하는 구성에서는 메타데이터 접근과 실제 S3 데이터 접근을 별도로 허용해야 한다. 중앙 데이터 레이크의 테이블을 볼 수 있다는 사실만으로 분석 계정이 데이터를 읽을 수 있다고 판단하지 않는다.
+
+- **카탈로그:** 조회 계정 역할의 IAM 정책과 소유 계정의 Glue resource policy를 함께 구성한다. 다른 계정의 카탈로그를 Athena `DataCatalog`로 등록하면 그 연결은 해당 리전 범위이며, 쿼리는 `catalog.database.table`로 대상을 지정할 수 있다.
+- **원본 데이터:** 소유 계정의 S3 bucket policy와 조회 역할의 IAM 정책을 대조한다. 고객 관리형 KMS 키로 암호화한 데이터라면 소유 계정의 key policy와 조회 역할의 키 사용 권한도 필요하다.
+- **암호화된 메타데이터:** AWS 관리형 키로 암호화한 Glue 카탈로그는 이 교차 계정 조회를 지원하지 않는다. 교차 계정 조회 대상에는 고객 관리형 키를 사용한다. 카탈로그의 암호화 키와 S3 객체의 암호화 키를 같은 것으로 가정하지 않는다.
+
+운영 점검 제안: 테이블 메타데이터 조회, 알려진 S3 표본의 SQL 조회, 결과 저장과 열람을 단계별로 확인한다. 이 절은 IAM 기반 직접 공유 경로를 다루며 Lake Formation 공유 설정을 대체하지 않는다. 실제 계정 간 조회는 수행하지 않았고 기존 절 전체의 검증일은 유지한다.
+
 ## 요금 책정과 절감
 
 - **On-demand SQL**: 쿼리가 스캔한 **데이터 양(TB당)** 기준. 결과 크기, 실행 시간이 아닌 **스캔량**이 핵심.
@@ -277,6 +287,8 @@ Hive 파티션을 복구할 때 쓰는 `MSCK REPAIR TABLE`은 Iceberg에서 지�
 
 ## 출처
 
+- [Amazon Athena, Configure cross-account access to AWS Glue data catalogs](https://docs.aws.amazon.com/athena/latest/ug/security-iam-cross-account-glue-catalog-access.html)
+- [Amazon Athena, Configure cross-account access in Athena to Amazon S3 buckets](https://docs.aws.amazon.com/athena/latest/ug/cross-account-permissions.html)
 - [Amazon Athena, Create and query a table for Amazon VPC flow logs using partition projection](https://docs.aws.amazon.com/athena/latest/ug/vpc-flow-logs-partition-projection.html)
 - [Amazon VPC, Flow log records](https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html)
 - [Amazon Athena, Use Machine Learning (ML) with Amazon Athena](https://docs.aws.amazon.com/athena/latest/ug/querying-mlmodel.html)

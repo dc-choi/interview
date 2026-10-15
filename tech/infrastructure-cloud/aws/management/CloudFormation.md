@@ -39,6 +39,16 @@ AWS의 **네이티브 IaC 서비스**. JSON, YAML 템플릿으로 AWS 리소스(
 - 템플릿 안 참조: `!Ref`는 파라미터 이름이면 그 값을, 리소스 논리 ID면 리소스를 식별하는 값(보통 이름, EC2 인스턴스는 ID, EIP는 IP)을 돌려준다. ARN 같은 다른 속성은 `!GetAtt`로 읽는다
 - 생성 순서: `!Ref`, `!GetAtt`, `!Sub` 참조는 암묵적 의존성이 되어 참조 대상이 먼저 만들어지고 나중에 삭제된다. 의존성이 없는 리소스는 병렬로 만들며, 참조 없이 순서만 필요할 때(VPC gateway attachment 뒤에 만들 public IP 리소스, 역할 정책이 먼저 있어야 하는 리소스)는 `DependsOn`으로 명시한다
 
+### 고객별 입력값과 비밀값의 배포 경계
+
+부분 검증(2026-10-16): 공통 템플릿을 여러 고객 환경에 배포할 때는 `Parameters`로 입력을 분리하고 타입, 허용값과 패턴 제약을 정의할 수 있다. 입력을 필수로 받는 것만으로 값이 유효해지는 것은 아니다.
+
+- **표시 가림의 한계:** `NoEcho: true`는 스택 조회 응답의 파라미터 값을 가리지만 템플릿 `Metadata`, `Outputs`와 리소스의 `Metadata`에 넣은 정보는 가리지 않는다. 리소스의 기본 식별자를 구성하는 속성에도 비밀값을 넣지 않는다. 평문 값이 식별자와 그 파생 출력에 노출될 수 있다.
+- **비밀값 참조:** 암호를 배포 템플릿에 직접 넣는 대신 Secrets Manager의 dynamic reference를 사용할 수 있다. 참조할 secret의 `GetSecretValue` 권한이 필요하며, 값을 받는 서비스에서 노출될 가능성도 확인한다.
+- **갱신 시점:** Secrets Manager에서 값만 바꿔도 CloudFormation이 자동으로 다시 읽는 것은 아니다. 해당 참조를 포함한 리소스의 생성 또는 변경을 수반하는 업데이트 때 값을 가져온다. Secrets Manager의 자동 rotation 구성은 이 템플릿 해석 동작과 구분한다.
+
+운영 점검 제안: 공개 가능한 템플릿 버전과 환경별 설정을 분리하고 비밀값을 템플릿, 출력과 배포 로그에 복제하지 않는다. 실제 고객 계정 배포나 rotation은 시험하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ### SSM으로 AMI를 참조할 때의 값 확정 시점
 
 `AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>`는 AMI ID 대신 Parameter Store의 키를 입력받고, `!Ref`로 해석된 AMI ID를 리소스에 전달한다. 공개 매개변수의 기본 개념은 [[SSM-Parameter-Store#공개 매개변수|공개 매개변수]]를 참고한다. 다음은 2026-10-14 공식 문서로 부분 대조한 배포 시점의 주의점이다.
@@ -240,6 +250,8 @@ IAM 리소스를 만드는 템플릿은 권한 변경을 명시적으로 승인�
 
 ## 출처
 
+- [AWS CloudFormation — CloudFormation template Parameters syntax](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html)
+- [AWS CloudFormation — Get a secret or secret value from Secrets Manager](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references-secretsmanager.html)
 - [Why is my CloudFormation stack stuck in an IN_PROGRESS state? — AWS re:Post](https://repost.aws/knowledge-center/cloudformation-stack-stuck-progress) — Resources, Events, 서비스 콘솔과 CloudTrail을 연결하는 절차를 검색 본문으로 확인
 - [AWS CloudFormation — Protect CloudFormation stacks from being deleted](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html)
 - [AWS CloudFormation — Prevent updates to stack resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/protect-stack-resources.html)
