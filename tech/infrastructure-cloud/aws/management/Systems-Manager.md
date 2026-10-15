@@ -13,7 +13,7 @@ verified_at: 2026-07-21
 ## SSM Agent — 전제 조건
 
 - 대부분 AWS AMI(Amazon Linux, Ubuntu, Windows Server)에 **사전 설치**
-- 노드는 환경에 맞는 IAM 권한과 Systems Manager 등록이 필요. EC2는 instance profile, 하이브리드와 멀티클라우드 노드는 service role과 managed-instance activation 등을 사용
+- 노드는 환경에 맞는 IAM 권한과 Systems Manager 등록이 필요. EC2는 instance profile 또는 조건을 충족한 Default Host Management Configuration, 하이브리드와 멀티클라우드 노드는 service role과 managed-instance activation 등을 사용
 - 에이전트가 SSM 엔드포인트와 통신 → **인바운드 포트 개방 불필요** (아웃바운드만)
 
 ## 주요 도구
@@ -71,6 +71,25 @@ verified_at: 2026-07-21
 
 운영 점검 제안: 일반 셸 세션에서 비민감 시험 명령을 실행하고 API 감사 이벤트와 S3 또는 CloudWatch Logs의 세션 출력을 각각 확인한다. SSH 터널이나 포트 포워딩을 허용하는 운영 경로는 별도 감사 수단과 기록 범위를 정한다.
 
+#### 연결 실패를 나누어 진단하기
+
+부분 검증(2026-10-16): 아래 연결 진단과 앞의 EC2 권한 부여 경로를 AWS 공식 문서로 대조했다. 다른 SSM 기능의 검증 날짜를 바꾸지는 않는다.
+
+| 증상 | 먼저 확인할 경계 |
+|---|---|
+| 관리 노드가 목록에 없거나 Agent가 offline | 등록, Agent 실행 상태, 서비스 endpoint까지의 네트워크 경로 |
+| 노드는 보이지만 세션 시작이 거부됨 | 호출자의 세션 시작 권한과 노드의 Session Manager 권한을 각각 확인 |
+| `TargetNotConnected` | 대상의 세션 설정, 호출 계정과 리전이 대상과 일치하는지 확인 |
+| CLI에서 plugin을 찾지 못함 | 접속하는 로컬 컴퓨터의 Session Manager plugin 설치와 Windows `PATH` |
+| 세션을 시작해도 빈 화면 | 노드의 루트 볼륨 여유 공간, 로그 대상 존재 여부, 로그 전송 경로와 암호화 설정 |
+
+- KMS로 세션 데이터를 암호화하면 세션 시작 사용자와 대상 노드 모두 해당 키를 사용할 권한이 필요하다. 기본 관리 권한만으로 모든 암호화와 로깅 구성이 충족된다고 판단하지 않는다.
+- Default Host Management Configuration을 사용한다면 실제 권한을 제공하는 IAM 역할을 확인한다. instance profile만 고치는 것으로 해결됐다고 간주하지 않는다.
+- VPC endpoint를 쓰는 구성에서는 세션 연결 경로와 로그 전송 경로를 나눠 점검한다. S3 기록에는 `s3`, CloudWatch Logs 기록에는 `logs` endpoint 구성을 확인한다.
+- 암호화 필수 설정과 로그 저장소가 맞지 않으면 접속이 실패할 수 있다. 운영 복구안은 요구한 암호화, 저장소와 권한을 맞추는 것으로 잡고, 암호화 검사를 끈 접속 성공만으로 복구를 완료 처리하지 않는다.
+
+이 절은 문서 기반 진단 순서다. 실제 인스턴스에서 연결과 로그 저장을 재현한 결과는 아니다.
+
 ### State Manager
 
 **원하는 구성 상태 유지** (Desired State Configuration).
@@ -119,6 +138,10 @@ verified_at: 2026-07-21
 
 ## 출처
 
+- [AWS, Troubleshooting Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-troubleshooting.html)
+- [AWS, Verify or add instance permissions for Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started-instance-profile.html)
+- [AWS, Turn on KMS key encryption of session data](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-preferences-enable-encryption.html)
+- [AWS, Install the Session Manager plugin for the AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
 - [AWS, AWS Systems Manager Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html)
 - [AWS, Enabling and disabling session logging](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-logging.html)
 - [AWS Systems Manager State Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-state.html)
