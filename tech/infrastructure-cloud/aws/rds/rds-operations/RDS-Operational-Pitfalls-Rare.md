@@ -63,7 +63,22 @@ RDS 서버 인증서를 검증하는 **CA 번들에는 만료일이 있다**. AW
 
 ## 기존 인스턴스는 암호화를 나중에 못 켠다
 
-암호화 없이 만든 RDS 인스턴스에 **나중에 암호화를 직접 켤 수 없다**. 켜려면 스냅샷을 뜨고 → 그 스냅샷을 암호화 옵션으로 복사하고 → 복원하는 우회가 필요해 다운타임이나 마이그레이션이 든다. 그래서 **인스턴스 생성 시 처음부터 암호화를 켜는 게 정답**이다. 나중에 보안 요건이 생겨 켜려면 일거리가 된다.
+암호화 없이 만든 기존 RDS 인스턴스에 **암호화를 직접 켤 수 없다**. 대표적인 전환 방식은 스냅샷 생성, 암호화한 사본 만들기, 새 인스턴스로 복원하는 순서다. 새 인스턴스로의 연결 전환과 데이터 동기화 계획도 필요하다. 생성 시 암호화 요구사항과 사용할 키를 정하면 이 전환 작업을 줄일 수 있다.
+
+## KMS 키 접근 불가와 복구 가능 상태
+
+2026-10-16 RDS, Aurora와 KMS 공식 문서로 대조한 범위는 앞의 암호화 전환 절과 이 절이다. 다른 운영 항목 전체를 재검증한 날짜는 아니다.
+
+암호화한 DB가 KMS 키를 사용할 수 없으면 DB 상태와 키 상태를 함께 확인한다. `inaccessible-encryption-credentials-recoverable`과 `inaccessible-encryption-credentials`는 복구 경로가 다르다.
+
+| 대상 | 복구 가능 상태의 조건과 한계 |
+| --- | --- |
+| RDS DB 인스턴스 | 백업이 활성화된 경우 키 접근 상실 감지 후 2시간에 복구 가능 상태로 전환한다. 중지할 수 있어야 하며, 읽기 복제본과 읽기 복제본이 있는 인스턴스에는 이 유예가 적용되지 않는다. |
+| Aurora DB 클러스터 | 키 접근 상실로 복구 가능 상태에 들어갈 수 있다. 중지할 수 없는 구성, 예를 들어 교차 리전 읽기 복제본이 있는 클러스터에는 이 유예가 적용되지 않는다. |
+
+복구 가능 상태에서는 DB가 중지되며 유예는 7일이다. 삭제 예약된 키는 예약을 취소하고, 비활성화된 키는 다시 활성화한 뒤 DB를 시작한다. RDS 인스턴스에는 `start-db-instance`, Aurora 클러스터에는 `start-db-cluster`를 사용한다. 모든 구성에 7일의 복구 기회가 있다고 가정하지 않는다.
+
+유예 안에 복구하지 못해 terminal 상태가 되면 기존 DB를 시작하는 대신 스냅샷이나 백업에서 새 DB로 복원해야 한다. **백업이 있어도 복호화에 필요한 키가 사용 가능해야 한다.** RDS의 최종 스냅샷도 원본 DB와 같은 키로 암호화되므로 복원 전에 그 키를 다시 활성화해야 한다. 삭제가 완료된 단일 리전 대칭 KMS 키는 새 키를 만들어 대체할 수 없고, 그 키로 암호화된 백업만으로 데이터를 복구할 수 없다. KMS의 다중 리전 복제 키는 원본 primary key가 남아 있으면 재생성할 수 있는 별도 예외다. 이 예외를 일반적인 DB 복원 절차로 가정하지 않는다.
 
 ## 로그가 디스크를 잠식한다
 
@@ -83,7 +98,9 @@ IAM 데이터베이스 인증은 비밀번호 대신 **15분짜리 토큰**으�
 
 ## (PostgreSQL) autovacuum과 XID wraparound
 
-PostgreSQL 한정이지만 터지면 가장 무섭다. autovacuum이 오래된 튜플을 제때 freeze 못 하면 **트랜잭션 ID가 한계(약 20억)에 가까워지고**, PostgreSQL이 데이터 보호를 위해 **쓰기를 막고 보호 모드로 들어간다**. 사실상 서비스 정지다. 쓰기 많은 큰 테이블에서 autovacuum이 못 따라갈 때 생긴다. `pg_stat_user_tables`에서 dead tuple, 마지막 vacuum 시각, wraparound까지 남은 여유를 모니터링하면 미리 막는다. MySQL에는 이 개념이 없는 PostgreSQL 고유 숙제다(MVCC 차이는 [[MySQL-vs-PostgreSQL]]).
+2026-10-16 PostgreSQL 18 공식 문서 부분 대조 기준이다. 오래된 미동결 XID를 제때 처리하지 못하면 wraparound로 인한 데이터 손실을 막기 위해 **새 XID를 할당하는 명령이 거부된다**. 이때 새 읽기 전용 트랜잭션과 `VACUUM`은 가능하지만 데이터 변경 작업은 실패할 수 있어 쓰기 서비스의 장애로 이어진다.
+
+`pg_stat_user_tables`의 `n_dead_tup`은 dead tuple 추정치이고, `last_vacuum`과 `last_autovacuum`은 최근 실행 시각이다. 이 값들만으로 wraparound 여유를 판단하지 않는다. 테이블별 미동결 XID의 나이는 `age(pg_class.relfrozenxid)`, 데이터베이스별 나이는 `age(pg_database.datfrozenxid)`로 확인한다. 테이블을 점검할 때 연결된 TOAST 테이블의 XID 나이도 함께 본다. dead tuple 회수와 XID 동결은 관측 항목을 구분한다(MVCC 차이는 [[MySQL-vs-PostgreSQL]]).
 
 ## 면접 체크포인트
 
@@ -91,6 +108,7 @@ PostgreSQL 한정이지만 터지면 가장 무섭다. autovacuum이 오래된 �
 - utf8과 utf8mb4의 차이, 네 군데(서버/테이블/컬럼/커넥션) 일치가 필요한 이유
 - RDS CA 번들 만료가 코드 변경 없이 장애를 내는 시나리오
 - 암호화는 생성 시점에 켜야 하는 이유와 우회 절차(스냅샷 복사 복원)
+- KMS 키 복구와 DB 시작의 순서, 복구 가능 상태의 예외, 백업 복원에도 키가 필요한 이유
 - Read Replica 승격의 비가역성
 - IAM 15분 토큰을 커넥션 풀과 어떻게 결합하나
 - XID wraparound가 무엇이고 왜 쓰기가 멈추나(PostgreSQL)
@@ -98,8 +116,12 @@ PostgreSQL 한정이지만 터지면 가장 무섭다. autovacuum이 오래된 �
 ## 출처
 
 - [Amazon RDS — Working with parameter groups, SSL/TLS, encryption](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html)
+- [Amazon RDS — Encrypting Amazon RDS resources](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html)
+- [Amazon Aurora — Encrypting Amazon Aurora resources](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Overview.Encryption.html)
+- [AWS KMS — Delete an AWS KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html)
 - [Amazon Aurora storage and reliability — I/O-Optimized](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.StorageReliability.html)
 - [PostgreSQL — Routine Vacuuming, preventing transaction ID wraparound](https://www.postgresql.org/docs/current/routine-vacuuming.html)
+- [PostgreSQL — The Cumulative Statistics System, pg_stat_all_tables](https://www.postgresql.org/docs/18/monitoring-stats.html#MONITORING-PG-STAT-ALL-TABLES-VIEW)
 
 ## 관련 문서
 
